@@ -10,6 +10,8 @@
 #include "vtlib/core/SRTerrain.h"
 #include "vtlib/core/TVTerrain.h"
 #include "vtlib/core/SMTerrain.h"
+#include "vtdata/vtLog.h"
+#include ".\createdlg.h"
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4800 ) 
@@ -50,7 +52,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_bVehicles = FALSE;
 	m_fVehicleSize = 1.0f;
 	m_bTriStrips = FALSE;
-	m_strMemRequired = _T("");
 	m_bDetailTexture = FALSE;
 	m_bPreLight = TRUE;
 	m_bDirt = FALSE;
@@ -93,6 +94,7 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CCreateDlg)
+	DDX_Text(pDX, IDC_TNAME, m_strName);
 	DDX_Control(pDX, IDC_LODMETHOD, m_cbLodMethod);
 	DDX_Control(pDX, IDC_LIGHT_FACTOR, m_cePreLightFactor);
 	DDX_Control(pDX, IDC_INITTIME, m_dtTime);
@@ -134,7 +136,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_VEHICLESIZE, m_fVehicleSize);
 	DDV_MinMaxFloat(pDX, m_fVehicleSize, 1.e-002f, 1000.f);
 	DDX_Check(pDX, IDC_TRISTRIPS, m_bTriStrips);
-	DDX_Text(pDX, IDC_MEMREQUIRED, m_strMemRequired);
 	DDX_Check(pDX, IDC_DETAILTEXTURE, m_bDetailTexture);
 	DDX_Check(pDX, IDC_PRELIGHT, m_bPreLight);
 	DDX_Check(pDX, IDC_DIRT, m_bDirt);
@@ -172,6 +173,8 @@ BEGIN_MESSAGE_MAP(CCreateDlg, CDialog)
 	ON_BN_CLICKED(IDC_DERIVED, OnChangeMem)
 	ON_BN_CLICKED(IDC_PRELIT, OnPrelit)
 	//}}AFX_MSG_MAP
+	ON_EN_CHANGE(IDC_TFILEBASE2, OnEnChangeTfilebase2)
+	ON_EN_CHANGE(IDC_TNAME, OnEnChangeTname)
 END_MESSAGE_MAP()
 
 //
@@ -249,7 +252,10 @@ BOOL CCreateDlg::OnInitDialog()
 
 void CCreateDlg::SetParams(TParams &Params)
 {
+	VTLOG("CCreateDlg::SetParams\n");
+
 	// set the values in the dialog from the supplied paramter structure
+	m_strName =			Params.GetValueString(STR_NAME);
 	m_strFilename =		Params.GetValueString(STR_ELEVFILE);
 	// LocationsFilename
 	m_fVerticalExag =	Params.GetValueFloat(STR_VERTICALEXAG);
@@ -305,8 +311,11 @@ void CCreateDlg::SetParams(TParams &Params)
 
 void CCreateDlg::GetParams(TParams &Params)
 {
+	VTLOG("CCreateDlg::GetParams\n");
+
 	// get the values from the dialog into the supplied paramter structure
-	Params.SetValueString(STR_NAME, (const char *) m_strFilename);
+	Params.SetValueString(STR_NAME, (const char *) m_strName);
+	Params.SetValueString(STR_ELEVFILE, (const char *) m_strFilename);
 	// LocationsFilename
 	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
 	Params.SetValueInt(STR_MINHEIGHT, m_iMinHeight);
@@ -384,46 +393,6 @@ void CCreateDlg::OnChangeTfilebase()
 }
 
 
-void CCreateDlg::UpdateMem()
-{
-	int k = 0;
-
-	k += (m_iTerrainSize * m_iTerrainSize * m_iTerrainDepth) / 1024;	// for ElevationGrid and LocalGrid
-
-	k += (m_iTerrainSize * 8) / 1024;		 // Lookup tables
-	switch (m_iLodMethod)
-	{
-		case LM_ROETTGER:
-//			k += SRTerrain::MemoryRequired(m_iTerrainSize);
-			break;
-		case LM_TOPOVISTA:
-			k += TVTerrain::MemoryRequired(m_iTerrainSize);
-			break;
-		case LM_MCNALLY:
-			k += SMTerrain::MemoryRequired(m_iTerrainSize);
-			break;
-	}
-	if (!m_bPreLit)
-		k += (m_iTerrainSize * m_iTerrainSize * 12) / 1024;	// Normal vectors array
-	k += (m_iTerrainSize * 4);	// Kludge factor
-
-	switch (m_iTexture)
-	{
-	case 1:
-		// single texture
-		k += 200;	// overhead
-		k += (m_iTextureSize * m_iTextureSize * 2) / 1024;
-		break;
-	case 2:
-		k += 200;	// overhead
-		k += (NTILES * NTILES) * (m_iTilesize * m_iTilesize) * 2 / 1024;
-		break;
-	}
-
-	m_strMemRequired.Format("%3.1f MB + roads&trees", k/1024.0f);
-	UpdateData(FALSE);
-}
-
 void CCreateDlg::OnChangeMem() 
 {
 	UpdateData(TRUE);	// retrieve data
@@ -444,8 +413,6 @@ void CCreateDlg::OnChangeMem()
 
 	// if derived texture, prelit only if prelighting
 	if (m_iTexture == 3) m_bPreLit = m_bPreLight;
-
-	UpdateMem();
 }
 
 
@@ -531,7 +498,6 @@ void CCreateDlg::OnSelchangeFilename()
 	{
 		m_cbLODFilename.GetLBText(cursel, m_strFilename);
 		DetermineTerrainSizeFromBT();
-		UpdateMem();
 	}
 }
 
@@ -543,7 +509,6 @@ void CCreateDlg::OnSelchangeTfilesingle()
 	CString str;
 	m_cbTextureFileSingle.GetLBText(m_cbTextureFileSingle.GetCurSel(), m_strTextureSingle);
 	DetermineSizeFromBMP();
-	UpdateMem();
 }
 
 void CCreateDlg::UpdateTimeEnable()
@@ -587,4 +552,29 @@ void CCreateDlg::OnPrelit()
 	UpdateData(TRUE);
 	if (m_bPreLight) m_bPreLit = TRUE;
 	UpdateData(FALSE);
+}
+
+void CCreateDlg::OnCbnSelchangeFilename2()
+{
+	// TODO: Add your control notification handler code here
+}
+
+void CCreateDlg::OnEnChangeTfilebase2()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialog::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+}
+
+void CCreateDlg::OnEnChangeTname()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialog::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
 }

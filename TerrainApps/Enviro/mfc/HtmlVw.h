@@ -29,7 +29,7 @@ protected: // create from serialization only
 
 // Attributes
 public:
-	class ISMDocument* GetDocument();
+	class CSimpleDoc* GetDocument();
 
 // Operations
 public:

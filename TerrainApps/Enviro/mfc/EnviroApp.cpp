@@ -29,9 +29,10 @@ END_MESSAGE_MAP()
 
 EnviroApp::EnviroApp() : CWinApp()
 {
+	m_pMainView = NULL;
 }
 
-EnviroApp::~EnviroApp()	// try to close ole
+EnviroApp::~EnviroApp()
 {
 }
 
@@ -60,6 +61,9 @@ BOOL EnviroApp::InitInstance()
 
 	LoadStdProfileSettings();  // Load standard INI file options (including MRU)
 
+	if (!OnInit())
+		return FALSE;
+
 	// Register the application's document templates.  Document templates
 	//  serve as the connection between documents, frame windows and views.
 
@@ -77,9 +81,6 @@ BOOL EnviroApp::InitInstance()
 
 	// Dispatch commands specified on the command line
 	if (!ProcessShellCommand(cmdInfo))
-		return FALSE;
-
-	if (!OnInit())
 		return FALSE;
 
 	// The one and only window has been initialized, so show and update it.
@@ -105,6 +106,7 @@ bool EnviroApp::OnInit()
 	g_App.Startup();	// starts log
 
 	VTLOG("Application framework: MFC\n");
+	vtGetScene()->Init();
 	g_App.LoadTerrainDescriptions();
 
 	//
@@ -118,14 +120,13 @@ bool EnviroApp::OnInit()
 	g_StartDlg.PutOptionsTo(g_Options);
 	g_Options.Write();
 
-	vtGetScene()->Init();
 	g_App.StartControlEngine();
 
 	return TRUE;
 }
 
 #if 0
-void EnviroApp::OnMouse(ISMVec2f pos, uint32 flags)
+void EnviroApp::OnMouse(IPoint2 pos, uint32 flags)
 {
 	int foo = 1;
 
@@ -206,6 +207,19 @@ void EnviroApp::OnAppAbout()
 {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal();
+}
+
+BOOL EnviroApp::OnIdle(LONG lCount)
+{
+	// Important: let the default Idle processing occur first
+	while (CWinApp::OnIdle(lCount) == TRUE)
+		lCount++;
+
+	// Then we can repaint on idle
+	if (m_pMainView)
+		m_pMainView->PaintOnIdle();
+
+	return FALSE;	// FALSE no more idle time needed
 }
 
 /////////////////////////////////////////////////////////////////////////////

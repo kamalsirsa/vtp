@@ -40,6 +40,8 @@ public:
 
 // Operations
 public:
+	void PaintOnIdle();
+
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(EnviroView)

@@ -36,6 +36,7 @@ public:
 
 protected:
 	// Overrides
+	BOOL OnIdle(LONG lCount);
 	bool OnInit();
 	DECLARE_MESSAGE_MAP()
 public:

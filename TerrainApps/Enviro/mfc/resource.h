@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by Enviro.rc
 //
 #define IDC_OPENGL_INFO                 3
@@ -24,12 +24,13 @@
 #define IDC_MIPMAP                      1006
 #define IDC_TFILEBASE                   1007
 #define IDC_16BIT                       1008
-#define IDC_PLANTS                       1009
+#define IDC_PLANTS                      1009
 #define IDC_FSPEED1                     1010
 #define IDC_PRELIGHT                    1010
 #define IDC_ROADS                       1011
 #define IDC_SKY                         1012
 #define IDC_FENCES                      1013
+#define IDC_TFILEBASE2                  1013
 #define IDC_NONE                        1014
 #define IDC_SINGLE                      1015
 #define IDC_TILED                       1016
@@ -39,7 +40,7 @@
 #define IDC_WIDTHEXAG                   1020
 #define IDC_ROADHEIGHT                  1020
 #define IDC_TFILESINGLE                 1021
-#define IDC_VEGDISTANCE                1022
+#define IDC_VEGDISTANCE                 1022
 #define IDC_SIZEEXAG                    1023
 #define IDC_TIMEOFDAY                   1024
 #define IDC_INITTIME                    1025
@@ -70,7 +71,6 @@
 #define IDC_FENCEFILE                   1052
 #define IDC_MAXTEXSIZE                  1053
 #define IDC_AIRPORTS                    1053
-#define IDC_MEMREQUIRED                 1054
 #define IDC_TRISTRIPS                   1055
 #define IDC_DETAILTEXTURE               1056
 #define IDC_ROADDISTANCE                1057
@@ -216,7 +216,7 @@
 #define ID_FLYTO_SPACE                  32817
 #define ID_FLYTO_TERRAIN                32818
 #define ID_SPACE_SHOWTIME               32821
-#define ID_EARTH_SHOWSHADING               32821
+#define ID_EARTH_SHOWSHADING            32821
 #define ID_EARTH_FLATUNFOLD             32822
 #define ID_EARTH_ADDPOINTDATA           32823
 #define ID_TOOLS_MOVE                   32825

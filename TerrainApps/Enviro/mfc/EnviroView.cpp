@@ -88,6 +88,12 @@ EnviroView::EnviroView()
 	m_bMaintainHeight = false;
 
 	m_bRunning = false;
+
+	// We use a combination of paint-on-idle and a timer to keep the
+	//  rendering continuous.  Idle events drive the painting, and these
+	//  timer events (which we ignore) keep the event queue moving.
+	// Interval of 10ms is 100fps.
+	int timer = SetTimer(1, 10, 0);
 }
 
 EnviroView::~EnviroView()
@@ -604,10 +610,6 @@ void EnviroView::OnSize(UINT nType, int cx, int cy)
 
 void EnviroView::OnPaint() 
 {
-	// try to let MFC do some of its idle processing
-	LONG lIdle = 0;
-	while ( AfxGetApp()->OnIdle(lIdle++ ) );
-
 	if (1)
 	{
 		CPaintDC dc(this); // device context for painting
@@ -631,16 +633,17 @@ void EnviroView::OnPaint()
 		pFrame->UpdateStatusBar();
 	}
 
-	// try to let MFC do some of its idle processing
-	lIdle = 0;
-	while ( AfxGetApp()->OnIdle(lIdle++ ) );
-
+	// We are now using repain on idle, so don't repaint on paint
+#if 0
 	if (m_bRunning)
 		InvalidateRect(NULL,FALSE);	//for Continuous Rendering
+#endif
+}
 
-	// try to let MFC do some of its idle processing
-	lIdle = 0;
-	while ( AfxGetApp()->OnIdle(lIdle++ ) );
+void EnviroView::PaintOnIdle()
+{
+	if (m_bRunning)
+		InvalidateRect(NULL,FALSE);
 }
 
 /////////////////////////////////////////////////////////////////////////////

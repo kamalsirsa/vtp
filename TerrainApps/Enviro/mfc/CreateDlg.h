@@ -25,6 +25,7 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CCreateDlg)
 	enum { IDD = IDD_TPARAMS };
+	CString	m_strName;
 	CComboBox	m_cbLodMethod;
 	CEdit	m_cePreLightFactor;
 	CDateTimeCtrl	m_dtTime;
@@ -62,7 +63,6 @@ public:
 	BOOL	m_bVehicles;
 	float	m_fVehicleSize;
 	BOOL	m_bTriStrips;
-	CString	m_strMemRequired;
 	BOOL	m_bDetailTexture;
 	BOOL	m_bPreLight;
 	BOOL	m_bDirt;
@@ -88,7 +88,6 @@ public:
 
 	void DetermineTerrainSizeFromBT();
 	void DetermineSizeFromBMP();
-	void UpdateMem();
 	void UpdateTiledTextureFilename();
 	void UpdateTimeEnable();
 
@@ -118,6 +117,10 @@ protected:
 	afx_msg void OnPrelit();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnCbnSelchangeFilename2();
+	afx_msg void OnEnChangeTfilebase2();
+	afx_msg void OnEnChangeTname();
 };
 
 //{{AFX_INSERT_LOCATION}}
