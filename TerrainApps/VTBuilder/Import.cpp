@@ -480,6 +480,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_TIF);
 		AddType(filter, FSTRING_COMP);
 		AddType(filter, FSTRING_XYZ);
+		AddType(filter, FSTRING_HGT);
 		break;
 	case LT_IMAGE:
 		// doq, tif

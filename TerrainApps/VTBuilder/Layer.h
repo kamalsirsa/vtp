@@ -32,6 +32,7 @@
 #define FSTRING_DTED	_T("DTED Files (*.dte, *.dt0, *.dt1, *.dt2)|*.dte;*.dt0;*.dt1;*.dt2|")
 #define FSTRING_GML		_T("GML Files (*.gml, *.xml)|*.gml;*.xml|")
 #define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr|")	
+#define FSTRING_HGT		_T("HGT SRTM Files (*.hgt)|*.hgt|")
 #define FSTRING_IMG		_T("IMG Files (*.img)|*.img|")
 #define FSTRING_JPEG	_T("JPEG Files (*.jpg)|*.jpg|")
 #define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir|")
