@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for a wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,21 +31,16 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CLOSE(vtFrame::OnClose)
 END_EVENT_TABLE()
 
-// My frame constructor
+// Frame constructor
 vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style):
 	wxFrame(parent, -1, title, pos, size, style)
 {
-	// Make a vtGLCanvas
-  //   FIXME:  Can remove this special case once wxMotif 2.3 is released
-#ifdef __WXMOTIF__
-	int gl_attrib[20] = { GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
-			GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
-			GLX_DOUBLEBUFFER, None };
-#else
-	int *gl_attrib = NULL;
-#endif
+	// We definitely want full color and a 24-bit Z-buffer!
+	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
+		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
 
+	// Make a vtGLCanvas
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
 		"vtGLCanvas", gl_attrib);
 
@@ -61,9 +56,8 @@ vtFrame::~vtFrame()
 }
 
 //
-// Intercept commands
+// Intercept close command
 //
-
 void vtFrame::OnClose(wxCloseEvent &event)
 {
 	m_canvas->m_bRunning = false;
