@@ -81,7 +81,7 @@ public:
 	bool		RemoveAt(unsigned int i, int n = 1);
 	int			Append(const E&);
 	int			Append(const Array<E>&);
-	unsigned int Find(const E&) const;
+	int			Find(const E&) const;
 
 protected:
 //	Internal functions
@@ -367,7 +367,7 @@ template <class E> inline E& Array<E>::operator[](unsigned int i)
 \endcode
  *
  */
-template <class E> unsigned int Array<E>::Find(const E& elem) const
+template <class E> int Array<E>::Find(const E& elem) const
 {
 	const E* p = m_Data;
 
