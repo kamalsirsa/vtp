@@ -407,9 +407,9 @@ void vtElevationGrid::_AllocateArray()
 {
 	if (m_bFloatMode) {
 		m_pData = NULL;
-		m_pFData = (float *)calloc(m_iColumns, m_iRows*sizeof(float));
+		m_pFData = (float *)malloc(m_iColumns * m_iRows * sizeof(float));
 	} else {
-		m_pData = (short *)calloc(m_iColumns, m_iRows*sizeof(short));
+		m_pData = (short *)malloc(m_iColumns * m_iRows * sizeof(short));
 		m_pFData = NULL;
 	}
 
