@@ -6,6 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
 
 #include <osg/PolygonMode>
 using namespace osg;
@@ -554,6 +555,11 @@ void vtMesh::AddFan(int *idx, int iNVerts)
 void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 {
 	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
+	if (!pDrawArrayLengths)
+	{
+		VTLOG("Error, calling AddStrip when primtype is %d\n", m_ePrimType);
+		return;
+	}
 	for (int i = 0; i < iNVerts; i++)
 		m_Index->push_back(pIndices[i]);
 
@@ -570,6 +576,20 @@ void vtMesh::AddLine(int p0, int p1)
 	m_Index->push_back(p0);
 	m_Index->push_back(p1);
 
+	pDrawArrays->setCount(m_Index->size());
+}
+
+/**
+ * Add a triangle.
+ *  p0, p1, p2 are the indices of the vertices of the triangle.
+ */
+void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
+{
+	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+	m_Index->push_back(p0);
+	m_Index->push_back(p1);
+	m_Index->push_back(p2);
+	m_Index->push_back(p3);
 	pDrawArrays->setCount(m_Index->size());
 }
 

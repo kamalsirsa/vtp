@@ -117,6 +117,7 @@ protected:
 class vtMesh : public vtMeshBase, public osg::Referenced
 {
 	friend class vtGeom;
+	friend class vtSprite;
 
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
@@ -130,6 +131,7 @@ public:
 	void AddFan(int *idx, int iNVerts);
 	void AddStrip(int iNVerts, unsigned short *pIndices);
 	void AddLine(int p0, int p1);
+	void AddQuad(int p0, int p1, int p2, int p3);
 
 	// Access vertex properties
 	void SetVtxPos(int, const FPoint3&);
