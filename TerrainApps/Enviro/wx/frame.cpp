@@ -1477,7 +1477,8 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		// Fill instance dialog with global and terrain-specific content
 		m_pInstanceDlg->ClearContent();
 		m_pInstanceDlg->AddContent(&vtGetContent());
-		m_pInstanceDlg->AddContent(&pTerrain->m_Content);
+		if (pTerrain->m_Content.NumItems() != 0)
+			m_pInstanceDlg->AddContent(&pTerrain->m_Content);
 
 		// Also switch to the time engine for the terrain, not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
