@@ -1192,45 +1192,52 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item1->Add( item22, 0, wxALIGN_CENTER, 5 );
 
-    item0->Add( item1, 0, wxALL, 10 );
+    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("Animation Paths:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item27 = new wxStaticBox( parent, -1, _("Time") );
-    wxStaticBoxSizer *item26 = new wxStaticBoxSizer( item27, wxVERTICAL );
+    wxString *strs27 = (wxString*) NULL;
+    wxListBox *item27 = new wxListBox( parent, ID_ANIM_PATHS, wxDefaultPosition, wxSize(80,80), 0, strs27, wxLB_SINGLE );
+    item1->Add( item27, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item28 = new wxBoxSizer( wxVERTICAL );
+    item0->Add( item1, 0, wxGROW|wxALL, 10 );
 
-    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("Initial Time: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item28->Add( item29, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item29 = new wxStaticBox( parent, -1, _("Time") );
+    wxStaticBoxSizer *item28 = new wxStaticBoxSizer( item29, wxVERTICAL );
 
-    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_TEXT_INIT_TIME, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item28->Add( item30, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item30 = new wxBoxSizer( wxVERTICAL );
 
-    wxButton *item31 = new wxButton( parent, ID_SET_INIT_TIME, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
-    item28->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("Initial Time: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item26->Add( item28, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxTextCtrl *item32 = new wxTextCtrl( parent, ID_TEXT_INIT_TIME, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item30->Add( item32, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item32 = new wxBoxSizer( wxHORIZONTAL );
+    wxButton *item33 = new wxButton( parent, ID_SET_INIT_TIME, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item33 = new wxCheckBox( parent, ID_TIMEMOVES, _("Time Moves"), wxDefaultPosition, wxDefaultSize, 0 );
-    item32->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item26->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item28->Add( item30, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item35 = new wxStaticText( parent, ID_TEXT, _("Faster than real: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxCheckBox *item35 = new wxCheckBox( parent, ID_TIMEMOVES, _("Time Moves"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item36 = new wxTextCtrl( parent, ID_TIMESPEED, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 0 );
+    item28->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticText *item37 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item37, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item36 = new wxBoxSizer( wxHORIZONTAL );
 
-    item26->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticText *item37 = new wxStaticText( parent, ID_TEXT, _("Faster than real: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item37, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item0->Add( item26, 1, wxALIGN_CENTER_HORIZONTAL|wxRIGHT|wxTOP|wxBOTTOM, 10 );
+    wxTextCtrl *item38 = new wxTextCtrl( parent, ID_TIMESPEED, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item36->Add( item38, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item28->Add( item36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item0->Add( item28, 1, wxALIGN_CENTER_HORIZONTAL|wxRIGHT|wxTOP|wxBOTTOM, 10 );
 
     if (set_sizer)
     {

@@ -136,6 +136,7 @@ public:
 	float   m_fFogDistance;
 
 	std::vector<vtTagArray> m_Layers;
+	vtStringArray m_AnimPaths;
 	int		m_iStructDistance;
 	bool	m_bStructureShadows;
 	int		m_iStructureRez;
@@ -166,6 +167,7 @@ public:
 //  wxString2   m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxListBox* GetAnimPaths()  { return (wxListBox*) FindWindow( ID_ANIM_PATHS ); }
 	wxComboBox* GetDTName()  { return (wxComboBox*) FindWindow( ID_DT_NAME ); }
 	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
@@ -201,6 +203,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
+	wxListBox* m_pAnimFiles;
 	wxListBox* m_pRawFiles;
 	wxComboBox* m_pDTName;
 	wxChoice* m_pNavStyle;
@@ -237,6 +240,7 @@ private:
 	void OnCheckBox( wxCommandEvent &event );
 	void OnListDblClickStructure( wxCommandEvent &event );
 	void OnListDblClickRaw( wxCommandEvent &event );
+	void OnListDblClickAnimPaths( wxCommandEvent &event );
 	void OnChoiceLocFile( wxCommandEvent &event );
 	void OnChoiceInitLocation( wxCommandEvent &event );
 	void OnSetInitTime( wxCommandEvent &event );

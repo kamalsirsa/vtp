@@ -85,6 +85,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
 	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
+	EVT_LISTBOX_DCLICK( ID_ANIM_PATHS, TParamsDlg::OnListDblClickAnimPaths )
 
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
@@ -120,6 +121,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pPreLightFactor = GetLightFactor();
 	m_pStructFiles = GetStructFiles();
 	m_pRawFiles = GetRawFiles();
+	m_pAnimFiles = GetAnimPaths();
 	m_pRoadFile = GetRoadfile();
 	m_pTreeFile = GetTreefile();
 	m_pTextureFileSingle = GetTfilesingle();
@@ -234,12 +236,14 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// listbox controls without having to subclass.
 	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
 	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
+	m_pAnimFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
 }
 
 TParamsDlg::~TParamsDlg()
 {
 	m_pStructFiles->PopEventHandler(true);
 	m_pRawFiles->PopEventHandler(true);
+	m_pAnimFiles->PopEventHandler(true);
 }
 
 //
@@ -262,19 +266,20 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bTin =			Params.GetValueBool(STR_TIN);
 
 	/// navigation
-	m_iMinHeight =	  Params.GetValueInt(STR_MINHEIGHT);
-	m_iNavStyle =	   Params.GetValueInt(STR_NAVSTYLE);
-	m_fNavSpeed =	   Params.GetValueFloat(STR_NAVSPEED);
+	m_iMinHeight =		Params.GetValueInt(STR_MINHEIGHT);
+	m_iNavStyle =		Params.GetValueInt(STR_NAVSTYLE);
+	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
 	m_strLocFile.from_utf8(Params.GetValueString(STR_LOCFILE));
 	m_strInitLocation.from_utf8(Params.GetValueString(STR_INITLOCATION));
-	m_fHither =		 Params.GetValueFloat(STR_HITHER);
-	m_bAccel =		  Params.GetValueBool(STR_ACCEL);
+	m_fHither =			Params.GetValueFloat(STR_HITHER);
+	m_bAccel =			Params.GetValueBool(STR_ACCEL);
+	m_AnimPaths =		Params.m_AnimPaths;
 
 	// LOD
-	m_iLodMethod =	  Params.GetLodMethod();
-	m_fPixelError =	 Params.GetValueFloat(STR_PIXELERROR);
-	m_iTriCount =	   Params.GetValueInt(STR_TRICOUNT);
-	m_bTriStrips =	  Params.GetValueBool(STR_TRISTRIPS);
+	m_iLodMethod =		Params.GetLodMethod();
+	m_fPixelError =		Params.GetValueFloat(STR_PIXELERROR);
+	m_iTriCount =		Params.GetValueInt(STR_TRICOUNT);
+	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
 
 	// time
 	m_bTimeOn =		 Params.GetValueBool(STR_TIMEON);
@@ -283,14 +288,14 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// texture
 	m_iTexture =		Params.GetTextureEnum();
-	m_iTilesize =	   Params.GetValueInt(STR_TILESIZE);
+	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
 	m_strTextureSingle.from_utf8(Params.GetValueString(STR_TEXTURESINGLE));
 	m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
 	m_bJPEG =		   (Params.GetValueBool(STR_TEXTUREFORMAT) == 1);
 	m_strTextureFilename.from_utf8(Params.CookTextureFilename());
-	m_bMipmap =		 Params.GetValueBool(STR_MIPMAP);
-	m_b16bit =		  Params.GetValueBool(STR_REQUEST16BIT);
-	m_bPreLight =	   Params.GetValueBool(STR_PRELIGHT);
+	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
+	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
+	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
 	m_fPreLightFactor = Params.GetValueFloat(STR_PRELIGHTFACTOR);
 	m_bCastShadows =	Params.GetValueBool(STR_CAST_SHADOWS);
 	m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
@@ -302,17 +307,17 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fDetailDistance = Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
 
 	// culture
-	m_bRoads =		  Params.GetValueBool(STR_ROADS);
+	m_bRoads =			Params.GetValueBool(STR_ROADS);
 	m_strRoadFile.from_utf8(Params.GetValueString(STR_ROADFILE));
 	m_bHwy =			Params.GetValueBool(STR_HWY);
-	m_bPaved =		  Params.GetValueBool(STR_PAVED);
-	m_bDirt =		   Params.GetValueBool(STR_DIRT);
-	m_fRoadHeight =	 Params.GetValueFloat(STR_ROADHEIGHT);
-	m_fRoadDistance =   Params.GetValueFloat(STR_ROADDISTANCE);
-	m_bTexRoads =	   Params.GetValueBool(STR_TEXROADS);
+	m_bPaved =			Params.GetValueBool(STR_PAVED);
+	m_bDirt =			Params.GetValueBool(STR_DIRT);
+	m_fRoadHeight =		Params.GetValueFloat(STR_ROADHEIGHT);
+	m_fRoadDistance =	Params.GetValueFloat(STR_ROADDISTANCE);
+	m_bTexRoads =		Params.GetValueBool(STR_TEXROADS);
 	m_bRoadCulture =	Params.GetValueBool(STR_ROADCULTURE);
 
-	m_bPlants =		 Params.GetValueBool(STR_TREES);
+	m_bPlants =			Params.GetValueBool(STR_TREES);
 	m_strVegFile.from_utf8(Params.GetValueString(STR_TREEFILE));
 	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
 
@@ -380,6 +385,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueString(STR_INITLOCATION, m_strInitLocation.to_utf8());
 	Params.SetValueFloat(STR_HITHER, m_fHither);
 	Params.SetValueBool(STR_ACCEL, m_bAccel);
+	Params.m_AnimPaths = m_AnimPaths;
 
 	// LOD
 	Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
@@ -757,9 +763,10 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pDerived->SetValue(m_iTexture == TE_DERIVED);
 	m_pTiled->SetValue(m_iTexture == TE_TILED);
 
+	unsigned int i;
 	m_pStructFiles->Clear();
 	m_pRawFiles->Clear();
-	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	for (i = 0; i < m_Layers.size(); i++)
 	{
 		vtString ltype = m_Layers[i].GetValueString("Type");
 		vtString fname = m_Layers[i].GetValueString("Filename");
@@ -773,6 +780,11 @@ bool TParamsDlg::TransferDataToWindow()
 	}
 	m_pStructFiles->Append(_("(double-click to add files)"));
 	m_pRawFiles->Append(_("(double-click to add files)"));
+
+	m_pAnimFiles->Clear();
+	for (i = 0; i < m_AnimPaths.size(); i++)
+		m_pAnimFiles->Append(wxString2(m_AnimPaths[i]));
+	m_pAnimFiles->Append(_("(double-click to add files)"));
 
 	bool result = wxDialog::TransferDataToWindow();
 	m_bSetting = false;
@@ -937,6 +949,24 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 		lay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
 		lay.SetValueString("Filename", result.vt_str(), true);
 		m_Layers.push_back(lay);
+		TransferDataToWindow();
+	}
+}
+
+void TParamsDlg::OnListDblClickAnimPaths( wxCommandEvent &event )
+{
+	unsigned int i;
+	wxArrayString strings;
+
+	for (i = 0; i < m_datapaths.size(); i++)
+		AddFilenamesToArray(strings, m_datapaths[i] + "Locations", "*.vtap");
+
+	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose an animpath file"),
+		strings, this);
+
+	if (result.Cmp(_T(""))) // user selected something
+	{
+		m_AnimPaths.push_back(result.vt_str());
 		TransferDataToWindow();
 	}
 }
