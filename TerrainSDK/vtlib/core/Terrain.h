@@ -76,7 +76,7 @@ public:
 	bool SetParamFile(const char *fname);
 	bool LoadParams();
 	vtString GetParamFile()  { return m_strParamFile; }
-	void SetParams(TParams &pParams) { m_Params = pParams; }
+	void SetParams(const TParams &pParams) { m_Params = pParams; }
 	TParams &GetParams() { return m_Params; }
 
 	// each terrain can have a long descriptive name
