@@ -158,9 +158,7 @@ bool vtUtilityLayer::ConvertProjection(vtProjection &proj)
 	for (i = 0; i < count; i++)
 	{
 		tower = GetAt(i);
-		loc = tower->GetLocation();
 		trans->Transform(1, &loc.x, &loc.y);
-		tower->SetLocation(loc);
 	}
 */
 	delete trans;
