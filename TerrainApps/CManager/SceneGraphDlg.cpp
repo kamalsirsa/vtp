@@ -287,7 +287,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 	if (!pEng) return;
 
 	wxString2 str = pEng->GetName2();
-	if (str == "")
+	if (str == wxString2(""))
 		str = "unnamed";
 
 	int targets = pEng->NumTargets();
