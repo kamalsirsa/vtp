@@ -118,7 +118,7 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 	if (m_bTextLabels)
 	{
 		pLayer.SetValueRGBi("LabelColor", m_LabelColor, true);
-		pLayer.SetValueBool("TextFieldIndex", m_bTextLabels, true);
+		pLayer.SetValueInt("TextFieldIndex", m_iTextField, true);
 		pLayer.SetValueInt("ColorFieldIndex", m_iColorField, true);
 		pLayer.SetValueFloat("Elevation", m_fLabelHeight, true);
 		pLayer.SetValueFloat("LabelSize", m_fLabelSize, true);
