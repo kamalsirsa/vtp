@@ -401,6 +401,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		// fill in Sky files
 		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.bmp");
 		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.png");
+		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.jpg");
 		sel = m_pSkyTexture->FindString(m_strSkyTexture);
 		if (sel != -1)
 			m_pSkyTexture->SetSelection(sel);
