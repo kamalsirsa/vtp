@@ -11,11 +11,12 @@ and distributed under a completely free <a href="../../license.txt">open source 
   <tr>
     <td valign="top">Built Structures
       <ul>
+        <li>vtStructure</li>
+        <li>vtStructInstance</li>
         <li>vtBuilding</li>
         <li>vtWall</li>
         <li>vtStory</li>
         <li>vtFence</li>
-        <li>vtStructure</li>
         <li>vtStructureArray</li>
       </ul>
       <p>Vegetation</p>
@@ -69,6 +70,7 @@ and distributed under a completely free <a href="../../license.txt">open source 
         <li>vtContentManager</li>
         <li>vtItem</li>
         <li>vtModel</li>
+        <li>vtTagArray</li>
       </ul>
       <p>Elevation</p>
       <ul>

@@ -34,6 +34,10 @@ public:
 	bool		m_attempted_load;
 };
 
+/**
+ * Each tag has two strings: a Name and a Value.
+ * This is similar to the concept of a tag in XML.
+ */
 struct vtTag
 {
 	vtString name;
@@ -41,32 +45,35 @@ struct vtTag
 };
 
 /**
- * A simple set of tags.  If this gets used for something more
- * performance-sensitive, we could replace the linear lookup with a hash map.
+ * A simple set of tags.  Each tag (vtTag) has two strings: a Name and a Value.
+ * This is similar to the concept of a tag in XML.
+ * \par
+ * If this gets used for something more performance-sensitive, we could replace
+ * the linear lookup with a hash map.
  */
 class vtTagArray
 {
 public:
-	void AddTag(vtTag *tag)
+	void AddTag(vtTag *pTag)
 	{
-		m_tags.Append(tag);
+		m_tags.Append(pTag);
 	}
-	vtTag *FindTag(const char *name);
-	vtTag *GetTag(int i)
+	vtTag *FindTag(const char *szTagName);
+	vtTag *GetTag(int index)
 	{
-		return m_tags.GetAt(i);
+		return m_tags.GetAt(index);
 	}
 	int NumTags()
 	{
 		return m_tags.GetSize();
 	}
-	void RemoveTag(int i)
+	void RemoveTag(int index)
 	{
-		m_tags.RemoveAt(i);
+		m_tags.RemoveAt(index);
 	}
 
-	void SetValue(const char *name, const char *value);
-	const char *GetValue(const char *name);
+	void SetValue(const char *szTagName, const char *szValue);
+	const char *GetValue(const char *szTagName);
 
 protected:
 	Array<vtTag*>	m_tags;
