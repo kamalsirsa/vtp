@@ -38,7 +38,7 @@
 
 BEGIN_EVENT_TABLE(LinearStructureDlg, AutoDialog)
 	EVT_INIT_DIALOG (LinearStructureDlg::OnInitDialog)
-	EVT_CHOICE( ID_LINEAR_STRUCTURE_STYLE, LinearStructureDlg::OnFenceStyle )
+	EVT_CHOICE( ID_LINEAR_STRUCTURE_STYLE, LinearStructureDlg::OnStyle )
 	EVT_TEXT( ID_POST_HEIGHT_EDIT, LinearStructureDlg::OnTextEdit )
 	EVT_TEXT( ID_POST_SPACING_EDIT, LinearStructureDlg::OnTextEdit )
 	EVT_TEXT( ID_POST_SIZE_EDIT, LinearStructureDlg::OnTextEdit )
@@ -89,6 +89,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetStyle()->Append(_("Metal posts, wire"));
 	GetStyle()->Append(_("Metal poles, chain-link"));
 	GetStyle()->Append(_("Dry-stone wall"));
+	GetStyle()->Append(_("Stone wall"));
 	GetStyle()->Append(_("Privet hedge"));
 	GetStyle()->Append(_("Railing (Pipe)"));
 	GetStyle()->Append(_("Railing (Wire)"));
@@ -103,6 +104,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	GetConnType()->Append(_("wire"));
 	GetConnType()->Append(_("chain-link"));
 	GetConnType()->Append(_("drystone"));
+	GetConnType()->Append(_("stone"));
 	GetConnType()->Append(_("privet"));
 	GetConnType()->Append(_("railing_wire"));
 	GetConnType()->Append(_("railing_eu"));
@@ -178,15 +180,15 @@ void LinearStructureDlg::OnPostType( wxCommandEvent &event )
 	OnSetOptions(m_param);
 }
 
-void LinearStructureDlg::OnFenceStyle( wxCommandEvent &event )
+void LinearStructureDlg::OnStyle( wxCommandEvent &event )
 {
 	if (m_bSetting) return;
 
 	TransferDataFromWindow();
-	FenceStyle style = (FenceStyle) m_iStyle;
+	vtLinearStyle style = (vtLinearStyle) m_iStyle;
 	if (style != FS_TOTAL)
 	{
-		m_param.ApplyFenceStyle(style);
+		m_param.ApplyStyle(style);
 		UpdateTypes();
 		ValuesToSliders();
 		m_bSetting = true;

@@ -75,7 +75,7 @@ private:
 	void OnConnType( wxCommandEvent &event );
 	void OnPostType( wxCommandEvent &event );
 	void OnSlider( wxCommandEvent &event );
-	void OnFenceStyle( wxCommandEvent &event );
+	void OnStyle( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()
