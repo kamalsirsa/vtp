@@ -383,17 +383,7 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	m_proj.Clear();
-
-	switch ((DATUM) m_iDatum)
-	{
-	case NAD27:  m_proj.SetWellKnownGeogCS( "NAD27" ); break;
-	case NAD83:  m_proj.SetWellKnownGeogCS( "NAD83" ); break;
-	case WGS_72: m_proj.SetWellKnownGeogCS( "WGS72" ); break;
-	case WGS_84: m_proj.SetWellKnownGeogCS( "WGS84" ); break;
-	// TODO: Need to support more datums here!
-	default:	 m_proj.SetWellKnownGeogCS( "WGS84" ); break;
-	}
+	m_proj.SetGeogCSFromDatum((DATUM) m_iDatum);
 
 	m_eProj = (ProjType) m_iProj;
 	switch (m_eProj)

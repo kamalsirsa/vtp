@@ -76,23 +76,36 @@ int	vtProjection::GetUTMZone()
 		return -zone;
 }
 
+
 /**
  * Set the datum as an enumeration (see DATUM)
  */
 void vtProjection::SetDatum(DATUM datum)
 {
-	// Convert the DATUM enumeration to a Datum string
-	OGR_SRSNode *dnode = GetAttrNode("DATUM");
-	if (!dnode)
-		return;
-	switch (datum)
+	if (IsGeographic())
 	{
-	case NAD27:		dnode->GetChild(0)->SetValue("North_American_Datum_1927"); break;
-	case NAD83:		dnode->GetChild(0)->SetValue("North_American_Datum_1983"); break;
-	case WGS_72:	dnode->GetChild(0)->SetValue("WGS_1972"); break;
-	case OLD_HAWAIIAN_MEAN:	dnode->GetChild(0)->SetValue("Old_Hawaiian"); break;
-	default:
-	case WGS_84:	dnode->GetChild(0)->SetValue("WGS_1984"); break;
+		// re-create the object with the new datum
+		SetGeogCSFromDatum(datum);
+	}
+	else
+	{
+		// Try to fake it by just changing the DATUM node.  This is not
+		// good enough for all purposes, but it suffices to make coordinate
+		// transformations work (which use PROJ.4)
+
+		// Convert the DATUM enumeration to a Datum string
+		OGR_SRSNode *dnode = GetAttrNode("DATUM");
+		if (!dnode)
+			return;
+		switch (datum)
+		{
+		case NAD27:		dnode->GetChild(0)->SetValue("North_American_Datum_1927"); break;
+		case NAD83:		dnode->GetChild(0)->SetValue("North_American_Datum_1983"); break;
+		case WGS_72:	dnode->GetChild(0)->SetValue("WGS_1972"); break;
+		case OLD_HAWAIIAN_MEAN:	dnode->GetChild(0)->SetValue("Old_Hawaiian"); break;
+		default:
+		case WGS_84:	dnode->GetChild(0)->SetValue("WGS_1984"); break;
+		}
 	}
 }
 
@@ -103,20 +116,54 @@ DATUM vtProjection::GetDatum()
 {
 	// Convert new DATUM string to old Datum enum
 	const char *datum_string = GetAttrValue("DATUM");
-	if (datum_string)
-	{
-		if (!strcmp(datum_string, "North_American_Datum_1927"))
-			return NAD27;
-		if (!strcmp(datum_string, "North_American_Datum_1983"))
-			return NAD83;
-		if (!strcmp(datum_string, "WGS_1984"))
-			return WGS_84;
-		if (!strcmp(datum_string, "WGS_1972"))
-			return WGS_72;
-		if (!strcmp(datum_string, "Old_Hawaiian"))
-			return OLD_HAWAIIAN_MEAN;
-	}
-	return WGS_84;	// default
+	if (!datum_string)
+		return NO_DATUM;
+
+	if (!strcmp(datum_string, "Adindan"))
+		return ADINDAN;
+	if (!strcmp(datum_string, "Arc_1950"))
+		return ARC1950;
+	if (!strcmp(datum_string, "Arc_1960"))
+		return ARC1960;
+	if (!strcmp(datum_string, "Australian_Geodetic_Datum_1966"))
+		return AUSTRALIAN_GEODETIC_1966;
+	if (!strcmp(datum_string, "Australian_Geodetic_Datum_1984"))
+		return AUSTRALIAN_GEODETIC_1984;
+	if (!strcmp(datum_string, "Cape"))
+		return CAPE;
+	if (!strcmp(datum_string, "European_Datum_1950"))
+		return EUROPEAN_DATUM_1950;
+	if (!strcmp(datum_string, "New_Zealand_Geodetic_Datum_1949"))
+		return GEODETIC_DATUM_1949;
+	if (!strcmp(datum_string, "Hu_Tzu_Shan"))
+		return HU_TZU_SHAN;
+
+	if (!strcmp(datum_string, "North_American_Datum_1927"))
+		return NAD27;
+	if (!strcmp(datum_string, "North_American_Datum_1983"))
+		return NAD83;
+
+	if (!strcmp(datum_string, "Old_Hawaiian"))
+		return OLD_HAWAIIAN_MEAN;
+	if (!strcmp(datum_string, "Fahud"))
+		return OMAN;
+	if (!strcmp(datum_string, "OSGB 1936"))
+		return ORDNANCE_SURVEY_1936;
+	if (!strcmp(datum_string, "Puerto_Rico"))
+		return PUERTO_RICO;
+	if (!strcmp(datum_string, "Pulkovo_1942"))
+		return PULKOVO_1942;
+	if (!strcmp(datum_string, "Provisional_South_American_Datum_1956"))
+		return PROVISIONAL_S_AMERICAN_1956;
+	if (!strcmp(datum_string, "Tokyo"))
+		return TOKYO;
+
+	if (!strcmp(datum_string, "WGS_1972"))
+		return WGS_72;
+	if (!strcmp(datum_string, "WGS_1984"))
+		return WGS_84;
+
+	return UNKNOWN_DATUM;
 }
 
 /**
@@ -203,6 +250,49 @@ const char *vtProjection::GetProjectionNameShort()
 	return "Other";
 }
 
+
+/**
+ * Set the projection to a fresh, new geographical coordinate system
+ * based on the indicated Datum.
+ */
+void vtProjection::SetGeogCSFromDatum(DATUM eDatum)
+{
+	Clear();
+	switch (eDatum)
+	{
+	case ADINDAN:			SetWellKnownGeogCS( "EPSG:4201" ); break;
+	case ARC1950:			SetWellKnownGeogCS( "EPSG:4209" ); break;
+	case ARC1960:			SetWellKnownGeogCS( "EPSG:4210" ); break;
+	case AUSTRALIAN_GEODETIC_1966: SetWellKnownGeogCS( "EPSG:4202" ); break;
+	case AUSTRALIAN_GEODETIC_1984: SetWellKnownGeogCS( "EPSG:4203" ); break;
+//	case CAMP_AREA_ASTRO:	SetWellKnownGeogCS( "EPSG:" ); break;
+	case CAPE:				SetWellKnownGeogCS( "EPSG:4222" ); break;
+	case EUROPEAN_DATUM_1950: SetWellKnownGeogCS( "EPSG:4230" ); break;
+//	case EUROPEAN_DATUM_1979: SetWellKnownGeogCS( "EPSG:" ); break;
+	case GEODETIC_DATUM_1949: SetWellKnownGeogCS( "EPSG:4272" ); break;
+//	case HONG_KONG_1963:	SetWellKnownGeogCS( "EPSG:" ); break;
+	case HU_TZU_SHAN:		SetWellKnownGeogCS( "EPSG:4236" ); break;
+//	case INDIAN:			SetWellKnownGeogCS( "EPSG:" ); break;	// there are 2 Indian Datum
+
+	case NAD27:				SetWellKnownGeogCS( "NAD27" ); break;
+	case NAD83:				SetWellKnownGeogCS( "NAD83" ); break;
+
+	case OLD_HAWAIIAN_MEAN: SetWellKnownGeogCS( "EPSG:4135" ); break;
+	case OMAN:				SetWellKnownGeogCS( "EPSG:4232" ); break;	// Fahud
+	case ORDNANCE_SURVEY_1936: SetWellKnownGeogCS( "EPSG:4277" ); break;
+	case PUERTO_RICO:		SetWellKnownGeogCS( "EPSG:4139" ); break;
+	case PULKOVO_1942:		SetWellKnownGeogCS( "EPSG:4284" ); break;
+	case PROVISIONAL_S_AMERICAN_1956: SetWellKnownGeogCS( "EPSG:4248" ); break;
+	case TOKYO:				SetWellKnownGeogCS( "EPSG:4301" ); break;
+
+	case WGS_72:			SetWellKnownGeogCS( "WGS72" ); break;
+	case WGS_84:			SetWellKnownGeogCS( "WGS84" ); break;
+
+	default:				SetWellKnownGeogCS( "WGS84" ); break;
+	}
+}
+
+
 /**
  * Convenient way to set a simple projection.
  *
@@ -213,24 +303,14 @@ const char *vtProjection::GetProjectionNameShort()
  */
 void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
 {
-	switch (eDatum)
-	{
-	case NAD27:	 SetWellKnownGeogCS( "NAD27" ); break;
-	case NAD83:	 SetWellKnownGeogCS( "NAD83" ); break;
-	case WGS_72: SetWellKnownGeogCS( "WGS72" ); break;
-	case WGS_84: SetWellKnownGeogCS( "WGS84" ); break;
-	// We may need to support more datums here!
-	default:	 SetWellKnownGeogCS( "WGS84" ); break;
-	}
+	SetGeogCSFromDatum(eDatum);
 	if (bUTM)
 	{
-		// Must we assume Northern Hemisphere?  Revisit if needed.
-		SetUTM( iUTMZone, TRUE );
-	}
-	switch (eDatum)
-	{
-	case OLD_HAWAIIAN_MEAN:
-		SetDatum(eDatum);
+		// Northern Hemisphere for positive zone numbers
+		if (iUTMZone > 0)
+			SetUTM( iUTMZone, TRUE);
+		else
+			SetUTM( -iUTMZone, FALSE);
 	}
 }
 
@@ -479,11 +559,81 @@ const char *datumToString(DATUM d)
 		return "WGS72";
 	case WGS_84:
 		return "WGS84";
+	case UNKNOWN_DATUM:
+		return "Unknown";
 	case NO_DATUM:
-		return "NO DATUM";
+		return "None";
+	case DEFAULT_DATUM:
+		return "Default";
 	default:
-		return "Unknown Datum";
+		return "Bad";
 	}
+}
+
+
+/**
+ * Convert an enumerated DATUM to a (short) string of the Datum Name.
+ */
+const char *datumToStringShort(DATUM d)
+{
+	switch ( d )
+	{
+	case ADINDAN:
+		return "ADINDAN";
+	case ARC1950:
+		return "ARC1950";
+	case ARC1960:
+		return "ARC1960";
+	case AUSTRALIAN_GEODETIC_1966:
+		return "AGD66";
+	case AUSTRALIAN_GEODETIC_1984:
+		return "AGD84";
+	case CAMP_AREA_ASTRO:
+		return "CAMP AREA ASTRO";
+	case CAPE:
+		return "CAPE";
+	case EUROPEAN_DATUM_1950:
+		return "ED50";
+	case EUROPEAN_DATUM_1979:
+		return "ED79";
+	case GEODETIC_DATUM_1949:
+		return "GD49";
+	case HONG_KONG_1963:
+		return "HONG KONG 1963";
+	case HU_TZU_SHAN:
+		return "HU TZU SHAN";
+	case INDIAN:
+		return "INDIAN";
+	case NAD27:
+		return "NAD27";
+	case NAD83:
+		return "NAD83";
+	case OLD_HAWAIIAN_MEAN:
+		return "OLD HAWAII";
+	case OMAN:
+		return "OMAN";
+	case ORDNANCE_SURVEY_1936:
+		return "OSGB 1936";
+	case PULKOVO_1942:
+		return "PULKOVO 1942";
+	case PROVISIONAL_S_AMERICAN_1956:
+		return "PSAD 1956";
+	case TOKYO:
+		return "TOKYO";
+	case WGS_72:
+		return "WGS72";
+	case WGS_84:
+		return "WGS84";
+	case UNKNOWN_DATUM:
+		return "Unknown";
+	case NO_DATUM:
+		return "None";
+	case DEFAULT_DATUM:
+		return "Default";
+	default:
+		return "Bad";
+	}
+
 }
 
 

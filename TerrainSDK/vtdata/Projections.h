@@ -78,6 +78,8 @@ public:
 	DATUM	GetDatum();
 	LinearUnits	GetUnits();
 
+	void	SetGeogCSFromDatum(DATUM eDatum);
+
 	void	SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum);
 	void	SetSpatialReference(OGRSpatialReference *pRef);
 
@@ -110,6 +112,8 @@ struct StatePlaneInfo
 // Helper functions
 
 const char *datumToString(DATUM d);
+const char *datumToStringShort(DATUM d);
+
 StatePlaneInfo *GetStatePlaneTable();
 int GetNumStatePlanes();
 void CreateSimilarGeographicProjection(vtProjection &source, vtProjection &geo);
