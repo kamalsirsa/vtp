@@ -181,7 +181,7 @@ void Enviro::LoadTerrainDescriptions()
 			//  class, for a particular config file, rather than the default
 			//  vtTerrain.
 			vtTerrain *pTerr;
-			if (before_dot == "Hawai`i" || before_dot == "Honoka`a" || before_dot == "Kealakekua" )
+			if (before_dot == "Hawai`i" || before_dot == "Hawaii" || before_dot == "Honoka`a" || before_dot == "Kealakekua" )
 				pTerr = new IslandTerrain();
 			else if (before_dot == "Nevada")
 				pTerr = new NevadaTerrain();
