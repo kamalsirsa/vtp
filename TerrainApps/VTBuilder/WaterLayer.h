@@ -38,6 +38,7 @@ public:
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
 	void Offset(const DPoint2 &p);
+	void GetPropertyText(wxString &str);
 
 	void AddFeature(const DLine2 &dline, bool bIsBody = false);
 	vtWaterFeature &GetFeature(int i) { return (vtWaterFeature &) m_Lines[i]; }

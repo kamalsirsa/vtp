@@ -140,6 +140,23 @@ void vtWaterLayer::Offset(const DPoint2 &p)
 	}
 }
 
+void vtWaterLayer::GetPropertyText(wxString &strIn)
+{
+	wxString2 str;
+
+	str.Printf(_("Features: %d\n"), m_Lines.size());
+	strIn += str;
+
+	unsigned int i;
+	int count = 0;
+	for (i = 0; i < m_Lines.size(); i++)
+		if (m_IsBody[i]) count++;
+	str.Printf(_("Water bodies: %d\n"), count);
+	strIn += str;
+	str.Printf(_("Water vectors: %d\n"), m_Lines.size()-count);
+	strIn += str;
+}
+
 void vtWaterLayer::PaintDibWithWater(vtDIB *dib)
 {
 	// TODO - need extents of DIB, create DIB subclass?
