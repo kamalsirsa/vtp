@@ -104,9 +104,17 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
 		}
-		if (!strExt.CmpNoCase("bcf"))
+		else if (!strExt.CmpNoCase("bcf"))
 		{
 			pLayer = ImportFromBCF(strFileName);
+		}
+		else if (!strExt.CmpNoCase("dlg"))
+		{
+			pLayer = ImportFromDLG(strFileName, ltype);
+		}
+		else if (!strFileName.Right(8).CmpNoCase("catd.ddf"))
+		{
+			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
 		break;
 	case LT_VEG:
@@ -222,6 +230,7 @@ LayerType MainFrame::GuessLayerTypeFromDLG(vtDLGFile *pDLG)
 	case DLG_ROAD:		ltype = LT_ROAD; break;
 	case DLG_RAIL:		ltype = LT_ROAD; break;
 	case DLG_MTF:		ltype = LT_RAW; break;
+	case DLG_MANMADE:	ltype = LT_STRUCTURE; break;
 	case DLG_UNKNOWN:
 		{
 			// if we can't tell from the DLG, ask the user
@@ -264,6 +273,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_Surfer);
 		AddType(filter, FSTRING_TER);
 		AddType(filter, FSTRING_TIF);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_IMAGE:
 		// doq, tif
@@ -275,23 +285,29 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_DLG);
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_SDTS);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_STRUCTURE:
-		// shp
+		// dlg, shp, bcf, sdts-dlg
+		AddType(filter, FSTRING_DLG);
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_BCF);
+		AddType(filter, FSTRING_SDTS);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_WATER:
-		// dlg, shp, sdts
+		// dlg, shp, sdts-dlg
 		AddType(filter, FSTRING_DLG);
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_SDTS);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_VEG:
 		// lulc, shp, sdts
 		AddType(filter, FSTRING_LULC);
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_SDTS);
+		AddType(filter, FSTRING_COMP);
 		break;
 	case LT_UTILITY:
 		AddType(filter, FSTRING_SHP);
@@ -332,6 +348,11 @@ vtLayerPtr MainFrame::ImportFromDLG(wxString &strFileName, LayerType ltype)
 	{
 		vtWaterLayer *pWL = (vtWaterLayer *)pLayer;
 		pWL->AddElementsFromDLG(pDLG);
+	}
+	if (ltype == LT_STRUCTURE)
+	{
+		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
+		pSL->AddElementsFromDLG(pDLG);
 	}
 	// now we no longer need the DLG object
 	delete pDLG;
@@ -510,6 +531,11 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltyp
 	{
 		vtWaterLayer *pWL = (vtWaterLayer *)pLayer;
 		pWL->AddElementsFromOGR(datasource, progress_callback);
+	}
+	if (ltype == LT_STRUCTURE)
+	{
+		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
+		pSL->AddElementsFromOGR(datasource, progress_callback);
 	}
 
 	delete datasource;
