@@ -639,7 +639,10 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP) const
 		// count total vertices in all parts
 		int total = 0;
 		for (part = 0; part < parts; part++)
+		{
 			total += poly[part].GetSize();
+			total++;	// duplicate first vertex
+		}
 
 		double *dX = new double[total];
 		double *dY = new double[total];
@@ -658,6 +661,11 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP) const
 				dY[vert] = pt.y;
 				vert++;
 			}
+			// duplicate first vertex, it's just what SHP files do.
+			DPoint2 pt = dl.GetAt(0);
+			dX[vert] = pt.x;
+			dY[vert] = pt.y;
+			vert++;
 		}
 
 		// Save to SHP
