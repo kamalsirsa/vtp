@@ -53,8 +53,6 @@ vtTerrainScene::vtTerrainScene()
 	horizon_color.Set(0.70f, 0.85f, 1.0f);
 	azimuth_color.Set(0.12f, 0.32f, 0.70f);
 
-	m_yondist = 1000.0f;
-
 	m_pSkyDome = NULL;
 	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
@@ -81,7 +79,7 @@ vtTerrainScene::~vtTerrainScene()
 	m_pCurrentTerrain = NULL;
 }
 
-void vtTerrainScene::create_skydome(const StringArray &datapath)
+void vtTerrainScene::_CreateSkydome(const StringArray &datapath)
 {
 	if (m_pSkyDome != NULL)
 		return;
@@ -108,9 +106,9 @@ void vtTerrainScene::create_skydome(const StringArray &datapath)
 	vtGetScene()->AddEngine(m_pSkyTrack);
 }
 
-//
-// Find a terrain whose name begins with a given string
-//
+/**
+ * Find a terrain whose name begins with a given string.
+ */
 vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 {
 	int len = strlen(name);
@@ -125,7 +123,7 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 	return NULL;
 }
 
-void vtTerrainScene::create_fog()
+void vtTerrainScene::_CreateFog()
 {
 #if 0
 	int dist = m_pFirstTerrain->m_Params.m_iFogDistance;
@@ -148,7 +146,7 @@ void vtTerrainScene::create_fog()
 }
 
 
-void vtTerrainScene::create_engines(bool bDoSound)
+void vtTerrainScene::_CreateEngines(bool bDoSound)
 {
 	// Set Time in motion
 	m_pTime = new TimeEngine(this, 0);
@@ -158,9 +156,13 @@ void vtTerrainScene::create_engines(bool bDoSound)
 }
 
 
+/**
+ * Call this method once before adding any terrains, to initialize
+ * the vtTerrainScene object.
+ */
 vtRoot *vtTerrainScene::BeginTerrainScene(bool bDoSound)
 {
-	create_engines(bDoSound);
+	_CreateEngines(bDoSound);
 
 	m_pTop = new vtRoot();
 	m_pTop->SetName2("All Terrain");
@@ -185,6 +187,9 @@ vtRoot *vtTerrainScene::BeginTerrainScene(bool bDoSound)
 	return m_pTop;
 }
 
+/**
+ * Adds a terrain to the scene.
+ */
 void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 {
 	// add to linked list
@@ -192,16 +197,16 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 	m_pFirstTerrain = pTerrain;
 }
 
-//
-// call after you have appended all terrains
-//
+/**
+ * Call once after you have appended all of your terrains.
+ */
 void vtTerrainScene::Finish(const StringArray &datapath)
 {
-	create_skydome(datapath);
+	_CreateSkydome(datapath);
 
 	// create fog AFTER the shapes
 //	if (m_pFirstTerrain != NULL)
-//		create_fog();
+//		_CreateFog();
 
 	// start out with no scene active
 	for (vtTerrain *t = m_pFirstTerrain; t != NULL; t=t->GetNext())
@@ -209,6 +214,11 @@ void vtTerrainScene::Finish(const StringArray &datapath)
 }
 
 
+/**
+ * Set the current Terrain for the scene.  There can only be one terrain
+ * active a at time.  If you have more than one terrain, you can use this
+ * method to switch between them.
+ */
 void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 {
 	if (m_pCurrentTerrain != NULL)
@@ -244,9 +254,6 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	if (radius > max_radius)
 		radius = max_radius;
 	m_pSkyDome->SetRadius(radius);
-	FPoint3 center = pTerrain->GetCenter();
-	center.y = 0.0f;
-	m_pSkyDome->SetTrans(center);
 
 	// Set background color to match the ocean
 	vtGetScene()->SetBgColor(m_pCurrentTerrain->GetOceanColor());
@@ -282,13 +289,11 @@ void vtTerrainScene::SetFog(bool fog)
 	{
 		vtGetScene()->SetFog(m_pFog);
 		vtGetScene()->SetBackColor(horizon_color);
-		vtGetScene()->GetCamera()->SetYon(m_pFirstTerrain->m_Params.m_iFogDistance	* 1000.0f);
 	}
 	else
 	{
 		vtGetScene()->SetFog(NULL);
 		vtScene::SetBgColor(m_pCurrentTerrain->GetOceanColor());
-		vtGetScene()->GetCamera()->SetYon(m_yondist);
 	}
 #endif
 }
