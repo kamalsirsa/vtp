@@ -25,36 +25,6 @@ vtStructInstance::vtStructInstance() : vtStructure()
 	m_pItem = NULL;
 }
 
-void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)
-{
-	const char *coord_format = "%.9lg";	// up to 9 significant digits
-
-	fprintf(fp, "\t<structure type=\"instance\">\n");
-
-	// first write the placement
-	fprintf(fp, "\t\t<placement location=\"");
-	fprintf(fp, coord_format, m_p.x);
-	fprintf(fp, " ");
-	fprintf(fp, coord_format, m_p.y);
-	fprintf(fp, "\"");
-	if (m_fRotation != 0.0f)
-	{
-		fprintf(fp, " rotation=\"%f\"", m_fRotation);
-	}
-	fprintf(fp, " />\n");
-/*
-	// now write any and all tags
-	int i;
-	for (i = 0; i < NumTags(); i++)
-	{
-		vtTag *tag = GetTag(i);
-		fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
-			(const char *)tag->value, (const char *)tag->name);
-	}
-*/
-	fprintf(fp, "\t</structure>\n");
-}
-
 void vtStructInstance::WriteXML(GZOutput &out, bool bDegrees)
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
@@ -187,7 +157,14 @@ void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAtt
 				pDescriptor->SetSourceName(attval);
 			attval = atts.getValue("Scale");
 			if (attval)
-				pDescriptor->SetUVScale((float)atof(attval));
+			{
+				float x, y;
+				int terms = sscanf(attval, "%f, %f", &x, &y);
+				if (terms == 1)
+					pDescriptor->SetUVScale(x, x);
+				if (terms == 2)
+					pDescriptor->SetUVScale(x, y);
+			}
 			attval = atts.getValue("RGB");
 			if (attval)
 			{
@@ -209,20 +186,27 @@ vtMaterialDescriptor::vtMaterialDescriptor()
 	m_pName = NULL;
 	m_Type = 0;
 	m_Colorable = VT_MATERIAL_SELFCOLOURED_TEXTURE;
-	m_fUVScale = 0.0;
+	m_UVScale.Set(1,1);
+	m_bTwoSided = false;
+	m_bAmbient = false;
+	m_bBlending = false;
 	m_RGB.Set(0,0,0);
 	m_iMaterialIndex = -1;
 }
 
 vtMaterialDescriptor::vtMaterialDescriptor(const char *name,
 	const vtString &SourceName, const vtMaterialColorEnum Colorable,
-	const float UVScale, RGBi Color)
+	const float fUVScaleX, const float fUVScaleY, const bool bTwoSided,
+	const bool bAmbient, const bool bBlending, const RGBi &Color)
 {
 	m_pName = new vtString(name);	//GetGlobalMaterials()->FindName(name);
 	m_Type = 0;
 	m_SourceName = SourceName;
 	m_Colorable = Colorable;
-	m_fUVScale = UVScale;
+	m_UVScale.Set(fUVScaleX, fUVScaleY);
+	m_bTwoSided = bTwoSided;
+	m_bAmbient = bAmbient;
+	m_bBlending = bBlending;
 	m_RGB = Color;
 	m_iMaterialIndex = -1;
 }
@@ -241,7 +225,7 @@ vtMaterialDescriptor::~vtMaterialDescriptor()
 void vtMaterialDescriptorArray::CreatePlain()
 {
 	// First provide plain material, which does need to be serialized
-	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURED, 1.0f));
+	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURED));
 }
 
 bool vtMaterialDescriptorArray::Load(const char *szFileName)

@@ -52,8 +52,12 @@ public:
 	vtMaterialDescriptor(const char *name,
 					const vtString &SourceName,
 					const vtMaterialColorEnum Colorable = VT_MATERIAL_SELFCOLOURED_TEXTURE,
-					const float UVScale = 0.0,
-					RGBi Color = RGBi(0,0,0));
+					const float fUVScaleX=-1,
+					const float fUVScaleY=-1,
+					const bool bTwoSided = false,
+					const bool bAmbient = false,
+					const bool bBlended = false,
+					const RGBi &Color = RGBi(0,0,0));
 	~vtMaterialDescriptor();
 
 	void SetName(const vtString& Name)
@@ -72,13 +76,14 @@ public:
 	{
 		return m_Type;
 	}
-	void SetUVScale(const float fScale)
+	// UV Scale: texture units per meter, or -1 to scale to fit
+	void SetUVScale(const float fScaleX, const float fScaleY)
 	{
-		m_fUVScale = fScale;
+		m_UVScale.Set(fScaleX, fScaleY);
 	}
-	const float GetUVScale() const
+	FPoint2 GetUVScale() const
 	{
-		return m_fUVScale;
+		return m_UVScale;
 	}
 	void SetMaterialIndex(const int Index)
 	{
@@ -112,6 +117,30 @@ public:
 	{
 		return m_RGB;
 	}
+	void SetTwoSided(bool bTwoSided)
+	{
+		m_bTwoSided = bTwoSided;
+	}
+	const bool GetTwoSided()
+	{
+		return m_bTwoSided;
+	}
+	void SetAmbient(bool bAmbient)
+	{
+		m_bAmbient = bAmbient;
+	}
+	const bool GetAmbient()
+	{
+		return m_bAmbient;
+	}
+	void SetBlending(bool bBlending)
+	{
+		m_bBlending = bBlending;
+	}
+	const bool GetBlending()
+	{
+		return m_bBlending;
+	}
 	// Operator  overloads
 	bool operator == (const vtMaterialDescriptor& rhs) const
 	{
@@ -127,18 +156,21 @@ public:
 		Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
 			<< " Colorable=\"" << (Input.m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE) << "\""
 			<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
-			<< " Scale=\"" << Input.m_fUVScale << "\""
+			<< " Scale=\"" << Input.m_UVScale.x << ", " << Input.m_UVScale.y << "\""
 			<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
 			<< "/>" << std::endl;
 		return Output;
 	}
 private:
 	const vtString *m_pName; // Name of material
-	int m_Type;		// 0 for surface materials, >0 for classification type
+	int m_Type;				// 0 for surface materials, >0 for classification type
 	vtMaterialColorEnum m_Colorable;
-	vtString m_SourceName; // Source of material
-	float m_fUVScale; // Texel scale;
-	RGBi m_RGB; // Color for VT_MATERIAL_RGB
+	vtString m_SourceName;	// Source of material
+	FPoint2 m_UVScale;		// Texel scale;
+	RGBi m_RGB;				// Color for VT_MATERIAL_RGB
+	bool m_bTwoSided;		// default false
+	bool m_bAmbient;		// default false
+	bool m_bBlending;		// default false
 
 	// The following field is only used in 3d construction, but it's not
 	//  enough distinction to warrant creating a subclass to contain it.
@@ -221,7 +253,6 @@ public:
 	virtual bool GetExtents(DRECT &rect) const = 0;
 	virtual bool IsContainedBy(const DRECT &rect) const = 0;
 	virtual void WriteXML(GZOutput &out, bool bDegrees) = 0;
-	virtual void WriteXML_Old(FILE *fp, bool bDegrees) = 0;
 
 	void WriteTags(GZOutput &out);
 
@@ -269,7 +300,6 @@ public:
 	vtStructInstance();
 
 	void WriteXML(GZOutput &out, bool bDegrees);
-	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void Offset(const DPoint2 &delta);
 
 	bool GetExtents(DRECT &rect) const;
