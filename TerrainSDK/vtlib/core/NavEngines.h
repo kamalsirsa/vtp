@@ -27,8 +27,9 @@ class vtFlyer : public vtLastMouse
 public:
 	vtFlyer(float fSpeed = 1.0f, bool bPreventRoll = false);
 
-	void SetSpeed(float fSpeed);
-	float GetSpeed();
+	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
+	float GetSpeed() { return m_fSpeed; }
+
 	void SetAlwaysMove(bool bMove);
 
 	void Eval();
@@ -81,6 +82,40 @@ protected:
 	bool	m_bFollow;
 	float	m_fMaintainHeight;
 	bool	m_bMaintain;
+};
+
+
+/**
+ * This engine has the ability to do usefully constrained navigation over
+ * a (generally sparse) TIN terrain.
+ */
+class vtTinFlyer : public vtLastMouse
+{
+public:
+	vtTinFlyer(float fSpeed);
+
+	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
+	float GetSpeed() { return m_fSpeed; }
+
+	/// Set the TIN heightfield to which to constrain
+	void SetTin(vtTin *pTin);
+
+	/// Set the desired minimum height above the terrain.
+	void SetHeight(float fHeightAboveTerrain) { m_fHeightAboveTerrain = fHeightAboveTerrain; }
+
+	/// Get the minimum height about the terrain.
+	float GetHeight() { return m_fHeightAboveTerrain; }
+
+	// implementation override
+	void Eval();
+
+protected:
+	float	m_fSpeed;	// max units per frame of movement
+	vtTin	*m_pTin;
+	float	m_fHeightAboveTerrain;
+	float	m_fPitch;
+
+	void KeepAboveGround();
 };
 
 

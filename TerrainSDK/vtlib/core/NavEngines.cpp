@@ -6,6 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/core/vtTin.h"
 #include "NavEngines.h"
 
 #define GRAVITY_CONSTANT 9.81*WORLD_SCALE  //g = 9.81 meters/sec^2
@@ -18,16 +19,6 @@ vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
 	m_fSpeed = fSpeed;
 	m_bPreventRoll = bPreventRoll;
 	m_bAlwaysMove = false;
-}
-
-void vtFlyer::SetSpeed(float fSpeed)
-{
-	m_fSpeed = fSpeed;
-}
-
-float vtFlyer::GetSpeed()
-{
-	return m_fSpeed;
 }
 
 void vtFlyer::SetAlwaysMove(bool bMove)
@@ -144,6 +135,98 @@ void vtTerrainFlyer::KeepAboveGround()
 		}
 		pTarget->SetTrans(pos);
 	}
+}
+
+
+//////////////////////
+//
+// vtTinFlyer
+//
+
+vtTinFlyer::vtTinFlyer(float fSpeed) : vtLastMouse()
+{
+	m_pTin = NULL;
+	m_fSpeed = fSpeed;
+	m_fHeightAboveTerrain = 1.0f;
+	m_fPitch = 0.0f;
+}
+
+void vtTinFlyer::SetTin(vtTin *pTin)
+{
+	m_pTin = pTin;
+}
+
+void vtTinFlyer::Eval()
+{
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (!pTarget)
+		return;
+
+	vtScene* scene = vtGetScene();
+	IPoint2	WinSize = scene->GetWindowSize();
+	float	mx = (float) m_pos.x / WinSize.x;
+	float	my = (float) m_pos.y / WinSize.y;
+
+	FPoint3 pos = pTarget->GetTrans();
+	float maintain_y = pos.y;
+
+	//	Left button: forward-backward, parent yaw
+	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
+	{
+		float trans = (my - 0.5f) * m_fSpeed;
+		float rotate = -(mx - 0.5f) / 15.0f;
+
+		pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, trans));
+		pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+	}
+
+	//  Right button: up-down, left-right
+	if ((m_buttons & VT_RIGHT) && !(m_buttons & VT_LEFT))
+	{
+		FPoint3 pos = pTarget->GetTrans();
+
+		float updown = -(my - 0.5f) * m_fSpeed;
+		float leftright = (mx - 0.5f) * m_fSpeed;
+
+		maintain_y += updown;
+		pTarget->TranslateLocal(FPoint3(leftright, 0.0f, 0.0f));
+	}
+
+	//  Both buttons: pitch (constrained to a range)
+	if ((m_buttons & VT_LEFT) && (m_buttons & VT_RIGHT))
+	{
+		float updown = -(my - 0.5f) / 20.0f;
+
+		float fPrevious = m_fPitch;
+		m_fPitch += updown;
+		if (m_fPitch < -PID2f)
+			m_fPitch = -PID2f;
+		if (m_fPitch > 0.0f)
+			m_fPitch = 0.0f;
+		float diff = m_fPitch - fPrevious;
+		pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), diff);
+	}
+
+	pos = pTarget->GetTrans();
+
+	if (m_pTin)
+	{
+		float mini = (m_pTin->m_fMinHeight - 4.5)*WORLD_SCALE;
+		float maxi = (m_pTin->m_fMaxHeight + 100)*WORLD_SCALE;
+		if (maintain_y < mini) maintain_y = mini;
+		if (maintain_y > maxi) maintain_y = maxi;
+
+		FPoint3 vec = m_pTin->FindVectorToClosestVertex(pos);
+		float horiz_dist = sqrt(vec.x*vec.x + vec.z*vec.z);
+		if (horiz_dist > (100.0f * WORLD_SCALE))
+		{
+			vec *= 0.05f;
+			pos += vec;
+		}
+	}
+
+	pos.y = maintain_y;
+	pTarget->SetTrans(pos);
 }
 
 
