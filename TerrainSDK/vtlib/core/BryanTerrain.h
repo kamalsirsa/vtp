@@ -10,6 +10,8 @@
 
 #include "DynTerrain.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 // Machine-specific typedefs
 //   NOTE:  On UNIX, INT{8,16,32,64} are defined in X11/Xmd.h, and
 //		  not necessarily signed
@@ -95,5 +97,7 @@ private:
 	FPoint3			m_eyepos_ogl;
 	UINT_32			m_nPoints;
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 #endif

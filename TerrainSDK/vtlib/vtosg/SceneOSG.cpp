@@ -181,9 +181,9 @@ void vtScene::DoUpdate()
 	m_pOsgSceneView->draw();
 }
 
-void vtScene::SetRoot(vtRoot *pRoot)
+void vtScene::SetRoot(vtGroup *pRoot)
 {
-	m_pOsgSceneRoot = pRoot->m_pOsgRoot;
+	m_pOsgSceneRoot = pRoot->GetOsgGroup();
 	m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
 	m_pRoot = pRoot;
 }

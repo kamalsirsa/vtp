@@ -153,12 +153,12 @@ void vtTerrainScene::_CreateEngines(bool bDoSound)
  * Call this method once before adding any terrains, to initialize
  * the vtTerrainScene object.
  */
-vtRoot *vtTerrainScene::BeginTerrainScene(bool bDoSound)
+vtGroup *vtTerrainScene::BeginTerrainScene(bool bDoSound)
 {
 	VTLOG("BeginTerrainScene:\n");
 	_CreateEngines(bDoSound);
 
-	m_pTop = new vtRoot();
+	m_pTop = new vtGroup();
 	m_pTop->SetName2("All Terrain");
 
 	// create the sun

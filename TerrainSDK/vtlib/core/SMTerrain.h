@@ -72,6 +72,8 @@ Seumas says:
 #define FRUST_PARTIN	1
 #define FRUST_ALLIN		2
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 class BinTri
 {
 public:
@@ -100,6 +102,8 @@ public:
 	int va[2];
 };
 typedef Block *BlockPtr;
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /*!
 	The SMTerrain class implements Seumas McNally's algorithm for regular-grid

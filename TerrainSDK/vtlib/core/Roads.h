@@ -1,12 +1,20 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef TERRAINROADSH
 #define TERRAINROADSH
+
+/** \defgroup transp Transportation
+ * These classes are used for transportation - roads, trails and rails.
+ * Transportation in the vtlib library consists of subclassing the vtdata
+ * transportation classes to extend them with the ability to create and
+ * operate on 3D geometry of the plants.
+ */
+/*@{*/
 
 #include "vtdata/FilePath.h"
 #include "vtdata/RoadMap.h"
@@ -15,9 +23,10 @@
 
 #define ROAD_CLUSTER	16
 
-//
-// A place where 2 or more roads meet
-//
+/**
+ * A Node is a place where 2 or more links meet.  NodeGeom extents Node
+ * with 3D geometry.
+ */
 class NodeGeom : public Node
 {
 public:
@@ -32,33 +41,28 @@ public:
 	FPoint3 GetUnitRoadVector(int i);
 
 	int m_iVerts;
-	FPoint3 *m_v;
-
+	FLine3 m_v;		// vertices of the polygon
 	FPoint3 m_p3;
 };
 
-
-class Lane
-{
-public:
-	Lane() { m_p3 = NULL; }
-	~Lane() { if (m_p3) delete m_p3; }
-	FPoint3 *m_p3;
-};
-
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+//
+// Holds information about a roadway, used internally by vtRoadMap3d during
+// road construction.
+//
 class RoadBuildInfo {
 public:
 	RoadBuildInfo(int iCoords);
-	~RoadBuildInfo();
-	FPoint3 *left;
-	FPoint3 *right;
-	FPoint3 *center;
-	FPoint3 *crossvector;
-	float *fvLength;
+	FLine3 left;
+	FLine3 right;
+	FLine3 center;
+	FLine3 crossvector;
+	Array<float> fvLength;
 
 	int verts;
 	int vert_index;
 };
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 enum normal_direction {
 	ND_UP,
@@ -66,6 +70,17 @@ enum normal_direction {
 	ND_RIGHT
 };
 
+/**
+ * A 'virtual' texture is a subset of an another texture; defined by
+ * rectangular UV extents that refer to an area of source texels.  It is
+ * used by the RoadMap classes to pack a number of textures into a single
+ * "roadway" texture, but could certainly by extended into a general-purpose
+ * class in the future.
+ *
+ * One thing to watch out for is that a virtual texture won't necessarily
+ * tile (repeat) as expected, since it make have other virtual textures
+ * adjacent to it in the source texture.
+ */
 class VirtualTexture
 {
 public:
@@ -96,9 +111,10 @@ enum RoadVTIndices
 	VTI_TOTAL
 };
 
-//
-// a series of points, connecting one node to another
-//
+/**
+ * A link is series of points, connecting one node to another.  LinkGeom
+ * extents Link with 3D geometry.
+ */
 class LinkGeom : public Link
 {
 public:
@@ -122,11 +138,19 @@ public:
 	LinkGeom *GetNext() { return (LinkGeom *)m_pNext; }
 
 	int m_vti;
-	FPoint3 *m_p3;
-	Lane *m_pLanes;
+	FLine3 m_centerline;
+
+	/* Lanes lines, which define the centerline of each trafficable lane,
+	 * are created by vtRoadMap3d for traffic simulation/visualization
+	 * purposes.
+	 */
+	std::vector<FLine3> m_Lanes;
 };
 
 
+/**
+ * vtRoadMap3d extents vtRoadMap with 3D geometry.
+ */
 class vtRoadMap3d : public vtRoadMap
 {
 public:
@@ -142,7 +166,6 @@ public:
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
 	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
-	void GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max);
 	vtGroup *GenerateGeometry(bool do_texture, const vtStringArray &paths);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
@@ -166,19 +189,22 @@ public:
 	int		m_mi_red;
 
 protected:
+	void _GatherExtents();
+
 	vtGroup	*m_pGroup;
 	vtMaterialArray *m_pMats;
 
 	vtLOD		*m_pRoads[ROAD_CLUSTER][ROAD_CLUSTER];
-	FPoint3		m_cluster_min;
-	FPoint3		m_cluster_max;
-	FPoint3		m_cluster_range;
+	FBox3		m_extents;
+	FPoint3		m_extent_range;
 	float		m_fLodDistance;		// in meters
 };
 
 // Useful typedefs
 typedef NodeGeom *NodeGeomPtr;
 typedef LinkGeom *LinkGeomPtr;
+
+/*@}*/  // transp
 
 #endif
 

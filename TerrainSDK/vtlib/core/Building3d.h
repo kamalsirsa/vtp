@@ -14,12 +14,16 @@
 
 class vtHeightField;
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 struct MatMesh
 {
 	int		m_iMatIdx;
 	vtMesh	*m_pMesh;
 	int		m_iPrimType;
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 class vtBuilding3d : public vtBuilding, public vtStructure3d
 {

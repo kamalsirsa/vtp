@@ -437,7 +437,7 @@ void VFlyer::Eval()
 		m_bMaintain = bPreserveMaintain;
 }
 
-void VFlyer::SetUpwardVelocity(float velocity)
+void VFlyer::SetVerticalVelocity(float velocity)
 {
 	m_Velocity.y = velocity;
 }

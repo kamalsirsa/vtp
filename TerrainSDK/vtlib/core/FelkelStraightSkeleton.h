@@ -16,6 +16,13 @@
 #include "FelkelComponents.h"
 #include "FelkelIntersection.h"
 
+/**
+ * This class implements a Straight skeleton algorithm, used for generating
+ * geometry for building roofs when the footprint is complicated (more than
+ * just a regular rectangle).
+ *
+ * See the top of the header file for history and credits.
+ */
 class CStraightSkeleton
 {
 public:

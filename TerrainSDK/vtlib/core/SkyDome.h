@@ -16,6 +16,8 @@ inline const int TIME_TO_INT(const double hr, const double min, const double sec
 	return (int)((hr * 60 + min) * 60 + sec);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 struct Star
 {
 	// Right Ascension
@@ -31,6 +33,8 @@ struct Star
 	// Cartesian coordinate
 	FPoint3 cartpt;
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 
 /**

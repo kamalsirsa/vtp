@@ -13,6 +13,8 @@
 #ifndef FELKELINTERSECTIONH
 #define FELKELINTERSECTIONH
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include <queue>
 
 #include "FelkelComponents.h"
@@ -49,4 +51,5 @@ public:
 	}
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 #endif // FELKELINTERSECTIONH

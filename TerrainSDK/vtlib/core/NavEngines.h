@@ -11,6 +11,12 @@
 #include "vtdata/HeightField.h"
 #include "Engine.h"
 
+/** \defgroup nav Navigation
+ * These classes are used for navigation: moving a camera or similar object
+ * based on user input.
+ */
+/*@{*/
+
 ///////////////////////////////////////////////////
 
 /**
@@ -164,16 +170,16 @@ protected:
 };
 
 
-//
-// Similar to vtTerrainFlyer, but a velocity is maintained.
-// Viewpoint moves even after mouse button is released.
-//
+/**
+ * Similar to vtTerrainFlyer, but a velocity is maintained.
+ * Viewpoint moves even after mouse button is released.
+ */
 class VFlyer : public vtTerrainFlyer
 {
 public:
 	VFlyer(float scale, float fHeightAboveTerrain, bool bMin);
 
-	void SetUpwardVelocity(float velocity);
+	void SetVerticalVelocity(float velocity);
 
 	void Eval();	// overrides
 
@@ -183,9 +189,11 @@ protected:
 };
 
 
-//
-// Implemetation of a Quake-like engine
-//
+/**
+ * Implementation of a Quake-like navigation engine.  Mouse position
+ * rotates the view direction, and keyboard input moves the view
+ * position.
+ */
 class QuakeFlyer : public vtTerrainFlyer
 {
 public:
@@ -205,6 +213,11 @@ protected:
 
 //////////////////////////////////////////////////
 
+/**
+ * A Trackball is a navigation engine which can move a Camera (or any
+ * other Transform target) and move it around a center point based on
+ * mouse input.
+ */
 class vtTrackball : public vtEngine
 {
 public:
@@ -234,6 +247,8 @@ protected:
 	int		m_zoom_button;
 	int		m_zoom_modifier;
 };
+
+/*@}*/	// Group nav
 
 #endif
 

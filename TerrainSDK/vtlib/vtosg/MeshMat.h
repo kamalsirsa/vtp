@@ -167,6 +167,10 @@ protected:
 	virtual ~vtMesh();
 };
 
+/**
+ * A Font for use with vtTextMesh.  vtFont can be constructed from any
+ * TrueType font on your computer.
+ */
 class vtFont
 {
 public:
@@ -177,6 +181,11 @@ public:
 	osg::ref_ptr<osgText::Font> m_pOsgFont;
 };
 
+/**
+ * A Text Mesh is a special kind of Mesh which contains text instead of
+ * general geometry primitives.  vtTextMesh is used similarly with vtMesh:
+ * you create them and add them to vtGeom objects to add them to the scene.
+ */
 class vtTextMesh : public osg::Referenced
 {
 public:

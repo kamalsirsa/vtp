@@ -11,13 +11,16 @@
 #include "../core/FrameTimer.h"
 #include <osg/Timer>
 
-/*
- * A "scene" currently encapsulates:
+/**
+ * A Scene is the all-encompassing container for all 3D objects
+ * that are to be managed and drawn by the scene graph / graphics
+ * pipeline functionality of vtlib.
  *
- * 1. a scene graph
- * 2. a set of engines
- * 3. a window
- * 4. a current camera
+ * A Scene currently encapsulates:
+ *	- A scene graph
+ *	- A set of engines (vtEngine)
+ *  - A window
+ *  - A current camera (vtCamera)
  */
 class vtScene : public vtSceneBase
 {
@@ -27,7 +30,7 @@ public:
 
 	void SetBgColor(RGBf color);
 	void SetAmbient(RGBf color);
-	void SetRoot(vtRoot *pRoot);
+	void SetRoot(vtGroup *pRoot);
 
 	void SetGlobalWireframe(bool bWire);
 	bool GetGlobalWireframe();

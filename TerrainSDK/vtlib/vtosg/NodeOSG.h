@@ -18,6 +18,8 @@ namespace osg
 	class Fog;
 }
 
+/** \addtogroup sg */
+/*@{*/
 
 /**
  * Represents a Node in the vtlib Scene Graph.
@@ -160,18 +162,10 @@ protected:
 	virtual ~vtTransform();
 };
 
-class vtRoot : public vtGroup
-{
-public:
-	vtRoot();
-	void Release();
-
-	osg::ref_ptr<osg::Group> m_pOsgRoot;
-
-protected:
-	virtual ~vtRoot();
-};
-
+/**
+ * A Light node is placed into the scene graph to illumninate all
+ * lit geometry with vertex normals.
+ */
 class vtLight : public vtNode
 {
 public:
@@ -179,8 +173,8 @@ public:
 
 	void Release();
 
-	void SetColor2(const RGBf &color);
-	void SetAmbient2(const RGBf &color);
+	void SetColor(const RGBf &color);
+	void SetAmbient(const RGBf &color);
 
 	// provide override to catch this state
 	virtual void SetEnabled(bool bOn);
@@ -192,11 +186,18 @@ protected:
 	virtual ~vtLight();
 };
 
+/**
+ * A utility class which simply wraps a light (vtLight) inside a
+ * transform (vtTransform) so that you can move it.
+ */
 class vtMovLight : public vtTransform
 {
 public:
-	vtMovLight(vtLight *pContained);
-	vtLight *GetLight() { return m_pLight; }
+	vtMovLight(vtLight *pContained)
+	{
+		m_pLight = pContained;
+		AddChild(pContained);
+	}
 	vtLight	*m_pLight;
 };
 
@@ -213,7 +214,7 @@ class vtTextMesh;
 	permits a large number of visual instances (each with potentially different
 	material and transform) with very little memory cost.
  */
-class vtGeom : public vtGeomBase, public vtNode
+class vtGeom : public vtNode
 {
 public:
 	vtGeom();
@@ -258,6 +259,10 @@ protected:
 	virtual ~vtGeom();
 };
 
+/**
+ * A utility class which simply wraps a geometry (vtGeom) inside a
+ * transform (vtTransform) so that you can move it.
+ */
 class vtMovGeom : public vtTransform
 {
 public:
@@ -269,16 +274,21 @@ public:
 	vtGeom	*m_pGeom;
 };
 
-class vtDynMesh : public osg::Drawable
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+/**
+ * We create our own OSG drawable in order to override the draw method.
+ */
+class OsgDynMesh : public osg::Drawable
 {
 public:
-	vtDynMesh();
+	OsgDynMesh();
 
 	// overrides
-	virtual osg::Object* cloneType() const { return new vtDynMesh(); }
-	virtual osg::Object* clone(const osg::CopyOp &foo) const { return new vtDynMesh(); }
-	virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const vtDynMesh*>(obj)!=NULL; }
-	virtual const char* className() const { return "vtDynMesh"; }
+	virtual osg::Object* cloneType() const { return new OsgDynMesh(); }
+	virtual osg::Object* clone(const osg::CopyOp &foo) const { return new OsgDynMesh(); }
+	virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const OsgDynMesh*>(obj)!=NULL; }
+	virtual const char* className() const { return "OsgDynMesh"; }
 
 	virtual bool computeBound() const;
 	virtual void drawImplementation(osg::State& state) const;
@@ -286,8 +296,10 @@ public:
 	class vtDynGeom		*m_pDynGeom;
 
 protected:
-	virtual ~vtDynMesh();
+	virtual ~OsgDynMesh();
 };
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * vtDynGeom extends the vtGeom class with the ability to have dynamic geometry
@@ -336,7 +348,7 @@ public:
 	FPlane		*m_pPlanes;
 
 protected:
-	vtDynMesh	*m_pDynMesh;
+	OsgDynMesh	*m_pDynMesh;
 };
 
 //////////////////////////////////////////////////
@@ -361,6 +373,12 @@ protected:
 	virtual ~vtLOD();
 };
 
+/**
+ * A Camera is analogous to a physical camera: it description the location
+ * of a point from which the scene is rendered.  It can either be a
+ * perspective or orthographic camera, and it very easy to control
+ * since it inherits all the methods of a transform (vtTransform).
+ */
 class vtCamera : public vtTransform
 {
 public:
@@ -393,12 +411,14 @@ protected:
 	virtual ~vtCamera();
 };
 
-class vtSprite : public vtGroup
+class vtSprite : public vtNode
 {
 public:
 	void SetText(const char *msg);
 	void SetWindowRect(float l, float t, float r, float b) {}
 };
+
+/*@}*/	// Group sg
 
 #endif	// VTOSG_NODEH
 

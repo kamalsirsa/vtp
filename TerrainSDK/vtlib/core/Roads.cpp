@@ -31,9 +31,9 @@
 FPoint3 find_adjacent_roadpoint(LinkGeom *pR, NodeGeom *pN)
 {
 	if (pR->GetNode(0) == pN)
-		return pR->m_p3[1];
+		return pR->m_centerline[1];
 	else if (pR->GetNode(1) == pN)
-		return pR->m_p3[pR->GetSize() - 2];
+		return pR->m_centerline[pR->GetSize() - 2];
 	else
 	{
 		// Adjacent road point not found!
@@ -88,7 +88,6 @@ NodeGeom::NodeGeom()
 
 NodeGeom::~NodeGeom()
 {
-	if (m_v) delete m_v;
 }
 
 FPoint3 NodeGeom::GetRoadVector(int i)
@@ -126,7 +125,7 @@ void NodeGeom::BuildIntersection()
 	{
 		// dead end: only need 2 vertices for this node
 		m_iVerts = 2;
-		m_v = new FPoint3[2];
+		m_v.SetSize(2);
 
 		// get info about the road
 		LinkGeom *r = GetRoad(0);
@@ -144,7 +143,7 @@ void NodeGeom::BuildIntersection()
 	{
 		// only need 2 vertices for this node; no intersection
 		m_iVerts = 2;
-		m_v = new FPoint3[2];
+		m_v.SetSize(2);
 
 		// get info about the roads
 		w = (GetRoad(0)->m_fWidth + GetRoad(1)->m_fWidth) / 2.0f;
@@ -165,7 +164,7 @@ void NodeGeom::BuildIntersection()
 	{
 		// intersection: need 2 vertices for each road meeting here
 		m_iVerts = 2 * m_iLinks;
-		m_v = new FPoint3[m_iVerts];
+		m_v.SetSize(m_iVerts);
 
 		// for each road
 		for (int i = 0; i < m_iLinks; i++)
@@ -327,38 +326,28 @@ vtMesh *NodeGeom::GenerateGeometry()
 
 ////////////////////////////////////////////////////////////////////////
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+RoadBuildInfo::RoadBuildInfo(int iCoords)
+{
+	left.SetSize(iCoords);
+	right.SetSize(iCoords);
+	center.SetSize(iCoords);
+	crossvector.SetSize(iCoords);
+	fvLength.SetSize(iCoords);
+	verts = vert_index = 0;
+}
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+////////////////////////////////////////////////////////////////////////
+
 LinkGeom::LinkGeom()
 {
-	m_p3 = NULL;
-	m_pLanes = NULL;
 }
 
 LinkGeom::~LinkGeom()
 {
-	if (m_p3)
-		delete m_p3;
-	if (m_pLanes)
-		delete [] m_pLanes;
-}
-
-RoadBuildInfo::RoadBuildInfo(int iCoords)
-{
-	left = new FPoint3[iCoords];
-	right = new FPoint3[iCoords];
-	center = new FPoint3[iCoords];
-	crossvector = new FPoint3[iCoords];
-	fvLength = new float[iCoords];
-	verts = vert_index = 0;
-}
-
-RoadBuildInfo::~RoadBuildInfo()
-{
-	// clean up our temporary storage
-	delete right;
-	delete left;
-	delete center;
-	delete crossvector;
-	delete fvLength;
 }
 
 void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
@@ -372,8 +361,8 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		if (j > 0)
 		{
 			// increment length
-			v.x = m_p3[j].x - m_p3[j-1].x;
-			v.z = m_p3[j].z - m_p3[j-1].z;
+			v.x = m_centerline[j].x - m_centerline[j-1].x;
+			v.z = m_centerline[j].z - m_centerline[j-1].z;
 			length += v.Length();
 		}
 		bi.fvLength[j] = length;
@@ -388,9 +377,9 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 		}
 		if (j > 0 && j < GetSize()-1)
 		{
-			pn0 = m_p3[j-1];
-			pn1 = m_p3[j];
-			pn2 = m_p3[j+1];
+			pn0 = m_centerline[j-1];
+			pn1 = m_centerline[j];
+			pn2 = m_centerline[j+1];
 
 			// add 2 vertices at this point, directed at the previous and next points
 			v = CreateRoadVector(pn0, pn2, m_fWidth);
@@ -628,9 +617,11 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 #endif
 
 	// set lane coordinates
-	m_pLanes = new Lane[m_iLanes];
+	m_Lanes.resize(m_iLanes);
 	for (int i = 0; i < m_iLanes; i++)
-		m_pLanes[i].m_p3 = new FPoint3[GetSize()];
+	{
+		m_Lanes.at(i).SetSize(GetSize());
+	}
 	for (j = 0; j < GetSize(); j++)
 	{
 		for (int i = 0; i < m_iLanes; i++)
@@ -638,7 +629,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 			float offset = -((float)(m_iLanes-1) / 2.0f) + i;
 			offset *= LANE_WIDTH;
 			FPoint3 offset_diff = bi.crossvector[j] * offset;
-			m_pLanes[i].m_p3[j] = bi.center[j] + offset_diff;
+			m_Lanes[i].SetAt(j, bi.center[j] + offset_diff);
 		}
 	}
 
@@ -656,28 +647,28 @@ FPoint3 LinkGeom::FindPointAlongRoad(float fDistance)
 	if (fDistance <= 0) {
 		static int c = 0;
 		c++;
-		return m_p3[0];
+		return m_centerline[0];
 	}
 	// compute 2D length of this road, by adding up the 2d road segment lengths
 	for (int j = 0; j < GetSize()-1; j++)
 	{
 		// consider length of next segment
-		v.x = m_p3[j+1].x - m_p3[j].x;
+		v.x = m_centerline[j+1].x - m_centerline[j].x;
 		v.y = 0;
-		v.z = m_p3[j+1].z - m_p3[j].z;
+		v.z = m_centerline[j+1].z - m_centerline[j].z;
 		length = v.Length();
 		if (fDistance <= length)
 		{
 			float fraction = fDistance / length;
 			FPoint3 p0, p1, diff;
-			p0 = m_p3[j];
+			p0 = m_centerline[j];
 			v *= fraction;
 			return p0 + v;
 		}
 		fDistance -= length;
 	}
 	// if we pass the end of line, just return the last point
-	return m_p3[GetSize()-1];
+	return m_centerline[GetSize()-1];
 }
 
 //
@@ -695,8 +686,8 @@ float LinkGeom::Length()
 		if (j > 0)
 		{
 			// increment length
-			v.x = m_p3[j].x - m_p3[j-1].x;
-			v.z = m_p3[j].z - m_p3[j-1].z;
+			v.x = m_centerline[j].x - m_centerline[j-1].x;
+			v.z = m_centerline[j].z - m_centerline[j-1].z;
 			float l = v.Length();
 			if (l < 0) {
 				assert(false);
@@ -741,8 +732,8 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 	pMesh->GetBoundBox(bound);
 	FPoint3 center = bound.Center();
 
-	a = (int)((center.x - m_cluster_min.x) / m_cluster_range.x * ROAD_CLUSTER);
-	b = (int)((center.z - m_cluster_min.z) / m_cluster_range.z * ROAD_CLUSTER);
+	a = (int)((center.x - m_extents.min.x) / m_extent_range.x * ROAD_CLUSTER);
+	b = (int)((center.z - m_extents.min.z) / m_extent_range.z * ROAD_CLUSTER);
 
 	// safety check
 	if (a < 0 || a >= ROAD_CLUSTER || b < 0 || b >= ROAD_CLUSTER)
@@ -771,9 +762,9 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 		m_pGroup->AddChild(m_pRoads[a][b]);
 
 		FPoint3 lod_center;
-		lod_center.x = m_cluster_min.x + ((m_cluster_range.x / ROAD_CLUSTER) * (a + 0.5f));
-		lod_center.y = m_cluster_min.y + (m_cluster_range.y / 2.0f);
-		lod_center.z = m_cluster_min.z + ((m_cluster_range.z / ROAD_CLUSTER) * (b + 0.5f));
+		lod_center.x = m_extents.min.x + ((m_extent_range.x / ROAD_CLUSTER) * (a + 0.5f));
+		lod_center.y = m_extents.min.y + (m_extent_range.y / 2.0f);
+		lod_center.z = m_extents.min.z + ((m_extent_range.z / ROAD_CLUSTER) * (b + 0.5f));
 		m_pRoads[a][b]->SetCenter(lod_center);
 
 #if 0
@@ -896,12 +887,11 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 			m_pRoads[a][b] = NULL;
 		}
 
-	GatherExtents(m_cluster_min, m_cluster_max);
-	m_cluster_range = m_cluster_max - m_cluster_min;
+	_GatherExtents();
 
 #if 0
 	vtGeom *pGeom = CreateLineGridGeom(m_pMats, 0,
-						   m_cluster_min, m_cluster_max, ROAD_CLUSTER);
+						   m_extents.min, m_extents.max, ROAD_CLUSTER);
 	m_pGroup->AddChild(pGeom);
 #endif
 
@@ -980,32 +970,20 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 }
 
 
-void vtRoadMap3d::GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max)
+void vtRoadMap3d::_GatherExtents()
 {
 	// find extents of area covered by roads
-	cluster_min.x = 1E10f;
-	cluster_min.y = 1E10f;
-	cluster_min.z = 1E10f;
+	m_extents.InsideOut();
 
-	cluster_max.x = -1E10f;
-	cluster_max.y = -1E10f;
-	cluster_max.z = -1E10f;
-
-	// examine the range of the cluster area
+	// examine the range of the roadmap area
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
-	{
-		if (pN->m_p3.x < cluster_min.x) cluster_min.x = pN->m_p3.x;
-		if (pN->m_p3.y < cluster_min.y) cluster_min.y = pN->m_p3.y;
-		if (pN->m_p3.z < cluster_min.z) cluster_min.z = pN->m_p3.z;
+		m_extents.GrowToContainPoint(pN->m_p3);
 
-		if (pN->m_p3.x > cluster_max.x) cluster_max.x = pN->m_p3.x;
-		if (pN->m_p3.y > cluster_max.y) cluster_max.y = pN->m_p3.y;
-		if (pN->m_p3.z > cluster_max.z) cluster_max.z = pN->m_p3.z;
-	}
 	// expand slightly for safety
-	FPoint3 diff = cluster_max - cluster_min;
-	cluster_min -= (diff / 20.0f);
-	cluster_max += (diff / 20.0f);
+	FPoint3 diff = m_extents.max - m_extents.min;
+	m_extents.min -= (diff / 20.0f);
+	m_extents.max += (diff / 20.0f);
+	m_extent_range = m_extents.max - m_extents.min;
 }
 
 
@@ -1133,13 +1111,11 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 	}
 	for (LinkGeom *pR = GetFirstLink(); pR; pR = (LinkGeom *)pR->m_pNext)
 	{
-		pR->m_p3 = new FPoint3[pR->GetSize()];
+		pR->m_centerline.SetSize(pR->GetSize());
 		for (int j = 0; j < pR->GetSize(); j++)
 		{
 			pHeightField->ConvertEarthToSurfacePoint(pR->GetAt(j), p);
-			pR->m_p3[j].x = p.x;
-			pR->m_p3[j].y = p.y;
-			pR->m_p3[j].z = p.z;
+			pR->m_centerline[j] = p;
 		}
 		// ignore width from file - imply from properties
 		pR->m_fWidth = pR->m_iLanes * LANE_WIDTH;

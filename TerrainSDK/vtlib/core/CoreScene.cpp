@@ -22,6 +22,15 @@ OpenGL and other lower-level APIs such as OSG and SGL.
 Because it is higher-level, <b>vtlib</b> lets you construct 3d geometry
 and simulations much faster and easier than using the lower-level libraries
 directly.
+
+Some documentation for vtlib, and important discussion of how to use the
+library, is <a href="http://vterrain.org/Implementation/Libs/vtlib.html">
+online</a>.
+
+This folder contains documentation of the classes and methods - see the
+<a href="hierarchy.html">Class Hierarchy</a> or <a href="inherits.html">
+graphical class hierarchy</a>.
+
 */
 
 #include "vtlib/vtlib.h"

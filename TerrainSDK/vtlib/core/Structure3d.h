@@ -109,7 +109,7 @@ protected:
 
 /**
  * This class extends vtStructInstance with the ability to construct and
- * manage 3d representations of the instance.
+ * manage 3D representations of the instance.
  */
 class vtStructInstance3d : public vtStructInstance, public vtStructure3d
 {
@@ -132,7 +132,7 @@ protected:
 
 /**
  * This class extends vtStructureArray with the ability to construct and
- * manage 3d representations of the structures.
+ * manage 3D representations of the structures.
  */
 class vtStructureArray3d : public vtStructureArray
 {

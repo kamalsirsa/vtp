@@ -8,6 +8,8 @@
 #include "vtlib/vtlib.h"
 #include "BryanTerrain.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 typedef unsigned long UINT_32;
 typedef long INT_32;
 
@@ -609,3 +611,6 @@ void BryanTerrain::RecursRender(	UINT16 nNode, UINT_32 NW_X, UINT_32 NW_Y, UINT_
 		glEnd();
 	}
 }
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+

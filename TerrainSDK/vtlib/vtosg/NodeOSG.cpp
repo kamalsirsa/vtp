@@ -351,27 +351,6 @@ void vtTransform::PointTowards(const FPoint3 &point)
 
 
 ///////////////////////////////////////////////////////////////////////
-// vtRoot
-//
-
-vtRoot::vtRoot() : vtGroup(true)
-{
-	m_pOsgRoot = new osg::Group();
-	SetOsgGroup(m_pOsgRoot.get());
-}
-
-vtRoot::~vtRoot()
-{
-}
-
-void vtRoot::Release()
-{
-	m_pOsgRoot = NULL;
-	vtGroup::Release();
-}
-
-
-///////////////////////////////////////////////////////////////////////
 // vtLight
 //
 
@@ -397,12 +376,12 @@ void vtLight::Release()
 	vtNode::Release();
 }
 
-void vtLight::SetColor2(const RGBf &color)
+void vtLight::SetColor(const RGBf &color)
 {
 	m_pLight->setDiffuse(v2s(color));
 }
 
-void vtLight::SetAmbient2(const RGBf &color)
+void vtLight::SetAmbient(const RGBf &color)
 {
 	m_pLight->setAmbient(v2s(color));
 }
@@ -417,13 +396,6 @@ void vtLight::SetEnabled(bool bOn)
 
 */
 	vtNode::SetEnabled(bOn);
-}
-
-vtMovLight::vtMovLight(vtLight *pContained) : vtTransform()
-{
-	m_pLight = pContained;
-	AddChild(pContained);
-//	m_pGroup->addChild(m_pLight->m_pLightSource);
 }
 
 
@@ -532,7 +504,7 @@ void vtSprite::SetText(const char *msg)
 // vtGeom
 //
 
-vtGeom::vtGeom() : vtGeomBase(), vtNode()
+vtGeom::vtGeom() : vtNode()
 {
 	m_pGeode = new Geode();
 	SetOsgNode(m_pGeode.get());
@@ -709,12 +681,13 @@ void vtLOD::SetCenter(FPoint3 &center)
 	m_pLOD->setCenter(p);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 ///////////////////////////////////////////////////////////////////////
-// vtDynGeom
+// OsgDynMesh
 //
 
-vtDynMesh::vtDynMesh()
+OsgDynMesh::OsgDynMesh()
 {
 	// The following line code is a workaround provided by Robert Osfield himself
 	// create an empty stateset, to force the traversers
@@ -722,11 +695,11 @@ vtDynMesh::vtDynMesh()
 	setStateSet(new StateSet);
 }
 
-vtDynMesh::~vtDynMesh()
+OsgDynMesh::~OsgDynMesh()
 {
 }
 
-bool vtDynMesh::computeBound() const
+bool OsgDynMesh::computeBound() const
 {
 	FBox3 box;
 	m_pDynGeom->DoCalcBoundBox(box);
@@ -740,7 +713,7 @@ bool vtDynMesh::computeBound() const
 
 State *hack_global_state = NULL;
 
-void vtDynMesh::drawImplementation(State& state) const
+void OsgDynMesh::drawImplementation(State& state) const
 {
 	hack_global_state = &state;
 
@@ -766,9 +739,11 @@ void vtDynMesh::drawImplementation(State& state) const
 #endif
 }
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 vtDynGeom::vtDynGeom() : vtGeom()
 {
-	m_pDynMesh = new vtDynMesh();
+	m_pDynMesh = new OsgDynMesh();
 	m_pDynMesh->m_pDynGeom = this;
 	m_pDynMesh->setSupportsDisplayList(false);
 

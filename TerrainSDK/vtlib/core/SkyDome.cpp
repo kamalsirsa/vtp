@@ -199,8 +199,8 @@ void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 
 //		color = white;
 		color *= intensity;
-		m_pSunLight->GetLight()->SetColor2(color);
-		m_pSunLight->GetLight()->SetAmbient2(RGBf(ambient, ambient, ambient));
+		m_pSunLight->m_pLight->SetColor(color);
+		m_pSunLight->m_pLight->SetAmbient(RGBf(ambient, ambient, ambient));
 	}
 }
 

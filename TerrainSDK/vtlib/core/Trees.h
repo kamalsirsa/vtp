@@ -8,6 +8,13 @@
 #ifndef TERRAINTREESH
 #define TERRAINTREESH
 
+/** \defgroup veg Vegetation
+ * These classes are used for vegetation.  Vegetation in the vtlib library
+ * consists of subclassing the vtdata vegetation classes to extend them with
+ * the ability to create and operate on 3D geometry of the plants.
+ */
+/*@{*/
+
 #include "vtdata/Selectable.h"
 #include "vtdata/Plants.h"
 #include "vtdata/LULC.h"
@@ -21,6 +28,10 @@
 #include "\dism\xfrog2dism\xfrog2dism.h"
 #endif
 
+/**
+ * This class extends vtPlantAppearance with the ability to construct 3D
+ * geometry for an appearance.
+ */
 class vtPlantAppearance3d : public vtPlantAppearance
 {
 public:
@@ -48,6 +59,10 @@ protected:
 #endif
 };
 
+/**
+ * This class extends vtPlantSpecies with the ability to manage 3D
+ * appearances of the species.
+ */
 class vtPlantSpecies3d : public vtPlantSpecies
 {
 public:
@@ -65,14 +80,16 @@ public:
 };
 
 
-class AttribMap;
-
+/**
+ * This class extends vtPlantList with the ability to construct and
+ * manage 3D representations of the plants.
+ */
 class vtPlantList3d : public vtPlantList
 {
 public:
 	vtPlantList3d();
 
-	// copy
+	// copy operator
 	vtPlantList3d &operator=(const vtPlantList &v);
 
 	void CreatePlantSurfaces(const vtStringArray &paths, float fTreeScale,
@@ -86,6 +103,11 @@ public:
 //	vtGeom *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
 };
 
+/**
+ * This class works in parallel with vtPlantInstance to contain the 3D
+ * geometry for a plant instance.  An array of these objects are
+ * maintained by vtPlantInstanceArray3d.
+ */
 class vtPlantInstance3d : public Selectable
 {
 public:
@@ -101,7 +123,9 @@ public:
 
 /**
  * This class extends vtPlantInstanceArray with the ability to construct and
- * manage 3d representations of the plants.
+ * manage 3D representations of the plants.
+ *
+ * \ingroup veg
  */
 class vtPlantInstanceArray3d : public vtPlantInstanceArray
 {
@@ -141,6 +165,8 @@ protected:
 	Array<vtPlantInstance3d*>	m_Instances3d;
 	vtHeightField3d		*m_pHeightField;
 };
+
+/*@}*/	// Group veg
 
 #endif	// TERRAINTREESH
 

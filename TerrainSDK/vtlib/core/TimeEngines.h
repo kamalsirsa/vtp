@@ -19,6 +19,13 @@ public:
 
 ///////////////////////////////////////////////////
 
+/**
+ * The TimeEngine class keeps track of time of day (hours, minutes, seconds
+ * since midnight) and when evaluated, informs each of its target of the time.
+ *
+ * Time can advance at either real time (1 second simulated = 1 real second),
+ * or at any faster or slower rate.
+ */
 class TimeEngine : public vtEngine
 {
 public:

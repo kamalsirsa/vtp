@@ -32,12 +32,12 @@ public:
 	~vtTerrainScene();
 
 	// scene setup
-	vtRoot *BeginTerrainScene(bool bDoSound);
+	vtGroup *BeginTerrainScene(bool bDoSound);
 	void AppendTerrain(vtTerrain *pTerrain);
 	void Finish(const vtStringArray &datapath) {}	// dummy; obsolete method
 	void SetTerrain(vtTerrain *pTerrain);
 
-	vtRoot *GetTop() { return m_pTop; }
+	vtGroup *GetTop() { return m_pTop; }
 	vtSkyDome *GetSkyDome() { return m_pSkyDome; }
 
 	/// Get the first terrain in the list.
@@ -58,7 +58,7 @@ public:
 
 protected:
 	// main scene graph outline
-	vtRoot		*m_pTop;
+	vtGroup		*m_pTop;
 	vtSkyDome	*m_pSkyDome;
 
 	void _CreateSkydome(const vtStringArray &datapath);

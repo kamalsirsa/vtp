@@ -65,10 +65,19 @@ class vtMaterial;
 class vtMaterialArray;
 class vtCamera;
 class vtGroup;
-class vtRoot;
 class vtEngine;
 class vtGeom;
 
+/** \defgroup sg Scene Graph
+ * These classes are used for scene graph functionality: geometry, cameras,
+ * rendering, LOD, and simulation.
+ */
+/*@{*/
+
+/** This class is a placeholder parent class for all objects which can
+ * be the target of an Engine (vtEngine).  Given a vtTarget point, you
+ * can use dynamic_cast<> to downcast safely to any specific child class.
+ */
 class vtTarget
 {
 public:
@@ -98,9 +107,7 @@ public:
 	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR) = 0;
 };
 
-//
-// Base class for a Group node (scene graph node that can have children).
-//
+/** Virtual Base class for a Group node (scene graph node that can have children). */
 #if VTLIB_PSM
 class vtGroupBase : public vtNodeBase
 #else
@@ -116,9 +123,7 @@ public:
 	virtual vtNodeBase*	FindDescendantByName(const char *name) = 0;
 };
 
-//
-// Abstract base class for a scene graph node that can move.
-//
+/** Abstract base class for a scene graph node that can move. */
 #if VTLIB_PSM
 class vtTransformBase : public vtGroupBase
 #else
@@ -245,13 +250,19 @@ protected:
 	int	m_iNumVertsUsed;
 };
 
+/**
+ * This class provides basic methods for the vtImage class.
+ */
 class vtImageBase
 {
 public:
 	vtImageBase() { m_bLoaded = false; }
 	vtImageBase(const char *fname) { m_bLoaded = false; }
 
+	/// Call after construction to see whether an image load succeeded.
 	bool LoadedOK() { return m_bLoaded; }
+
+	/// Return the name of the file, if any, from which the image was loaded.
 	vtString GetFilename() { return m_strFilename; }
 
 protected:
@@ -350,17 +361,11 @@ public:
 	virtual int AppendMaterial(vtMaterial *pMat) = 0;
 };
 
-#if VTLIB_PSM
-class vtGeomBase : public vtNodeBase
-#else
-class vtGeomBase
-#endif
-{
-public:
-	virtual void SetMaterials(class vtMaterialArray *mats) = 0;
-	virtual vtMaterialArray	*GetMaterials() = 0; //{ return m_pMaterialArray; }
-};
-
+/**
+ * vtSceneBase provides the Scene methods that are common across all
+ * 3D libraries supported by vtlib.
+ * See vtScene for an overview of the Scene class.
+ */
 class vtSceneBase
 {
 public:
@@ -385,14 +390,14 @@ public:
 	void SetWindowSize(int w, int h) { m_WindowSize.Set(w, h); }
 	IPoint2 GetWindowSize() { return m_WindowSize; }
 
-	virtual void SetRoot(vtRoot *pRoot) = 0;
-	vtRoot *GetRoot() { return m_pRoot; }
+	virtual void SetRoot(vtGroup *pRoot) = 0;
+	vtGroup *GetRoot() { return m_pRoot; }
 
 protected:
 	Array<vtEngine *> m_Engines;
 	vtCamera *m_pCamera;
 	IPoint2	m_WindowSize;
-	vtRoot *m_pRoot;
+	vtGroup *m_pRoot;
 };
 
 // helper functions
@@ -406,6 +411,8 @@ vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						   bool bCentered = true, int direction = 1);
 vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 					   FPoint3 min1, FPoint3 max1, int steps);
+
+/*@}*/	// Group sg
 
 #endif	// VTLIB_BASEH
 
