@@ -1128,6 +1128,26 @@ void vtDIB::SetPixel1(int x, int y, bool value)
 		(*adr) &= ~(1 << bit_offset);
 }
 
+void vtDIB::ScalePixel24(int x, int y, float fScale)
+{
+	RGBi rgb;
+	GetPixel24(x, y, rgb);
+	rgb *= fScale;
+	if (rgb.r > 255) rgb.r = 255;
+	if (rgb.g > 255) rgb.g = 255;
+	if (rgb.b > 255) rgb.b = 255;
+	SetPixel24(x, y, rgb);
+}
+
+void vtDIB::ScalePixel8(int x, int y, float fScale)
+{
+	unsigned int texel = GetPixel8(x, y);
+	texel = (int) (texel * fScale);
+	if (texel > 255)
+		texel = 255;
+	SetPixel8(x, y, texel);
+}
+
 void vtDIB::SetColor(const RGBi &rgb)
 {
 	unsigned int i, j;

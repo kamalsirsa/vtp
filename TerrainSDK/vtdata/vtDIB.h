@@ -64,6 +64,9 @@ public:
 	bool GetPixel1(int x, int y) const;
 	void SetPixel1(int x, int y, bool color);
 
+	void ScalePixel24(int x, int y, float fScale);
+	void ScalePixel8(int x, int y, float fScale);
+
 	void SetColor(const RGBi &rgb);
 
 	unsigned int GetWidth() const { return m_iWidth; }
