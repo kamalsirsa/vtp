@@ -1327,6 +1327,8 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 //////////////////
 // Keyboard shortcuts
 
+#include "vtui/wxString2.h"
+
 void BuilderView::OnChar(wxKeyEvent& event)
 {
 	bool ctrl = event.ControlDown();
@@ -1354,6 +1356,26 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		pRaw->ReadGeoURL();
 		Refresh();
 #endif
+		wxString str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
+
+		const char *from = str.mb_str();
+		VTLOG("from wxString's mb_str: %s\n", from);
+
+		wxString2 wx2 = str.c_str();
+
+		const char *from2 = wx2.mb_str();
+		VTLOG("from wxString2's mb_str: %s\n", from2);
+
+		wstring2 str2 = str.c_str();
+		const char *utf8 = str2.to_utf8();
+		VTLOG("as UTF-8: %s\n", utf8);
+
+		// back again
+		wstring2 str3;
+		size_t result = str3.from_utf8(utf8);
+
+		utf8 = str3.to_utf8();
+		VTLOG("Twice converted: %s\n", utf8);
 	}
 	else
 		event.Skip();
