@@ -118,7 +118,7 @@ vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 }
 
 vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
-	bool bFloats, float fScale, vtProjection proj) : vtLayer(LT_ELEVATION)
+	bool bFloats, float fScale, const vtProjection &proj) : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
 	m_pGrid = new vtElevationGrid(area, iColumns, iRows, bFloats, proj);

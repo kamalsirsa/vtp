@@ -434,7 +434,7 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 	return bReject;
 }
 
-void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, vtProjection &proj,
+void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj,
 									 void progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");

@@ -39,7 +39,7 @@ class vtElevLayer : public vtLayer
 public:
 	vtElevLayer();
 	vtElevLayer(const DRECT &area, int iColumns, int iRows,
-		bool bFloats, float fScale, vtProjection proj);
+		bool bFloats, float fScale, const vtProjection &proj);
 	virtual ~vtElevLayer();
 
 	// overrides

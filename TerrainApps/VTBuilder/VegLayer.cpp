@@ -348,7 +348,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
  *		(string), or the ID of a biotype (int).
  */
 void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
-										  vtProjection &proj,
+										  const vtProjection &proj,
 										  int iField, int datatype)
 {
 	// Open the SHP File
@@ -459,7 +459,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
  * imported file are to be interpreted.
  */
 bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
-										   vtProjection &proj,
+										   const vtProjection &proj,
 										   VegPointOptions &opt)
 {
 	// We will be creating plant instances

@@ -1040,7 +1040,7 @@ void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 // Import methods
 
 bool vtStructureLayer::AddElementsFromSHP(const wxString2 &filename,
-										  vtProjection &proj, DRECT rect)
+										  const vtProjection &proj, DRECT rect)
 {
 	ImportStructDlg dlg(NULL, -1, _T("Import Structures"));
 
