@@ -116,6 +116,7 @@ void SceneGraphDlg::RefreshTreeContents()
 	m_pTree->DeleteAllItems();
 
 	// Fill in the tree with nodes
+	m_bFirst = true;
 	vtNode *pRoot = scene->GetRoot();
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
@@ -204,7 +205,10 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	}
 
 	if (m_bFirst)
+	{
 		hNewItem = m_pTree->AddRoot(str);
+		m_bFirst = false;
+	}
 	else
 		hNewItem = m_pTree->AppendItem(hParentItem, str, nImage, nImage);
 

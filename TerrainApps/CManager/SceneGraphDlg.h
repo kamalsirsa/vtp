@@ -55,6 +55,7 @@ public:
 private:
 	// WDR: member variable declarations for SceneGraphDlg
 	wxImageList *m_imageListNormal;
+	bool m_bFirst;
 
 private:
 	// WDR: handler declarations for SceneGraphDlg
