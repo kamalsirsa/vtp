@@ -1,7 +1,7 @@
 //
-// Name:		FeatInfoDlg.h
+// Name: FeatInfoDlg.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #endif
 
 #include "VTBuilder_wdr.h"
+#include "RawLayer.h"
 #include "vtui/AutoDialog.h"
 
 class vtFeatures;
@@ -34,13 +35,15 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	void SetView(BuilderView *pView) { m_pView = pView; }
-	void SetFeatureSet(vtFeatures *pFeatures);
+	void SetFeatureSet(vtRawLayer *pFeatures);
 	void Clear();
 	void ShowSelected();
 	void ShowPicked();
 	void ShowAll();
 	void ShowFeature(int iFeat);
+	void UpdateFeatureText(int iItem, int iFeat);
 	void RefreshItems();
+	bool EditValue(int iFeature, int iColumn);
 
 	// WDR: method declarations for FeatInfoDlg
 	wxStaticText* GetTextVertical()  { return (wxStaticText*) FindWindow( ID_TEXT_VERTICAL ); }
@@ -52,14 +55,17 @@ public:
 private:
 	// WDR: member variable declarations for FeatInfoDlg
 	BuilderView *m_pView;
-	vtFeatures *m_pFeatures;
-	int	 m_iShow;
-	int	 m_iVUnits;
+	vtRawLayer *m_pFeatures;
+	int m_iShow;
+	int m_iVUnits;
+	int	m_iCoordColumns;
 
 	bool m_bGeo;	// true if coordinates are geographic (lon-lat)
 
 private:
 	// WDR: handler declarations for FeatInfoDlg
+	void OnItemRightClick( wxListEvent &event );
+	void OnLeftDClick( wxMouseEvent &event );
 	void OnDeleteHighlighted( wxCommandEvent &event );
 	void OnChoiceVertical( wxCommandEvent &event );
 	void OnChoiceShow( wxCommandEvent &event );

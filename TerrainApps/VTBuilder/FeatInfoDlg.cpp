@@ -13,15 +13,16 @@
 #include "wx/wxprec.h"
 
 #include "FeatInfoDlg.h"
+#include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
 #include "vtui/wxString2.h"
 #include "BuilderView.h"
 
 // WDR: class implementations
 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // FeatInfoDlg
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 // WDR: event table for FeatInfoDlg
 
@@ -32,6 +33,7 @@ BEGIN_EVENT_TABLE(FeatInfoDlg,AutoDialog)
 	EVT_CHOICE( ID_CHOICE_SHOW, FeatInfoDlg::OnChoiceShow )
 	EVT_CHOICE( ID_CHOICE_VERTICAL, FeatInfoDlg::OnChoiceVertical )
 	EVT_BUTTON( ID_DEL_HIGH, FeatInfoDlg::OnDeleteHighlighted )
+	EVT_LEFT_DCLICK( FeatInfoDlg::OnLeftDClick )
 END_EVENT_TABLE()
 
 FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -44,7 +46,7 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	FeatInfoDialogFunc( this, TRUE ); 
 }
 
-void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
+void FeatInfoDlg::SetFeatureSet(vtRawLayer *pFeatures)
 {
 	if (m_pFeatures == pFeatures)
 		return;
@@ -55,16 +57,21 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 	m_bGeo = (proj.IsGeographic() != 0);
 
 	int field = 0;
-	GetList()->ClearAll();	// clears all items and columns
+	GetList()->ClearAll();  // clears all items and columns
+	m_iCoordColumns = 0;
 
 	int type = m_pFeatures->GetEntityType();
 	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
-		GetList()->InsertColumn(field++, _T("X"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
-		GetList()->InsertColumn(field++, _T("Y"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
+		GetList()->InsertColumn(field++, _T("X"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 60);
+		GetList()->InsertColumn(field++, _T("Y"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 60);
+		m_iCoordColumns = 2;
 	}
 	if (type == SHPT_POINTZ)
-		GetList()->InsertColumn(field++, _T("Z"), wxLIST_FORMAT_LEFT, 80);
+	{
+		GetList()->InsertColumn(field++, _T("Z"), wxLIST_FORMAT_LEFT, 70);
+		m_iCoordColumns = 3;
+	}
 
 	GetTextVertical()->Enable(type == SHPT_POINTZ);
 	GetChoiceVertical()->Enable(type == SHPT_POINTZ);
@@ -144,13 +151,17 @@ void FeatInfoDlg::ShowAll()
 
 void FeatInfoDlg::ShowFeature(int iFeat)
 {
-	wxString2 str;
-	int i, next;
-
-	next = GetList()->GetItemCount();
+	int next = GetList()->GetItemCount();
 	GetList()->InsertItem(next, _T("temp"));
 	GetList()->SetItemData(next, iFeat);
 
+	UpdateFeatureText(next, iFeat);
+}
+
+void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
+{
+	wxString2 str;
+	int i;
 	int field = 0;
 	DPoint3 p;
 	m_pFeatures->GetPoint(iFeat, p);
@@ -165,23 +176,25 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
 		str.Printf(strFormat, p.x);
-		GetList()->SetItem(next, field++, str);
+		GetList()->SetItem(iItem, field++, str);
 		str.Printf(strFormat, p.y);
-		GetList()->SetItem(next, field++, str);
+		GetList()->SetItem(iItem, field++, str);
 	}
 	if (type == SHPT_POINTZ)
 	{
 		double scale = GetMetersPerUnit((LinearUnits) (m_iVUnits+1));
 		str.Printf(_T("%.2lf"), p.z / scale);
-		GetList()->SetItem(next, field++, str);
+		GetList()->SetItem(iItem, field++, str);
 	}
 
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
-		str = (const char *) vs;
-		GetList()->SetItem(next, field++, str);
+		wstring2 wide;
+		wide.from_utf8(vs);
+		str = wide.c_str();
+		GetList()->SetItem(iItem, field++, str);
 	}
 }
 
@@ -195,7 +208,47 @@ void FeatInfoDlg::RefreshItems()
 		ShowAll();
 }
 
+bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
+{
+	if (iColumn < m_iCoordColumns)
+	{
+		// TODO: allow numeric entry of point coordinates
+	}
+	else
+	{
+		int iField = iColumn - m_iCoordColumns;
+		vtString vs;
+		m_pFeatures->GetValueAsString(iFeature, iField, vs);
+		wstring2 wide;
+		wide.from_utf8(vs);
+		wxString2 str = wide.c_str();
+
+		Field *pField = m_pFeatures->GetField(iField);
+
+		wxString message, caption;
+		message.Printf(_T("Enter a new value for field '%hs'"),
+			(const char *) pField->m_name);
+		caption.Printf(_T("Text entry"));
+		str = wxGetTextFromUser(message, caption, str, this);
+		if (str != _T(""))
+		{
+#if wxUSE_UNICODE
+			wide = str.c_str();
+			str = wide.to_utf8();
+#endif
+			m_pFeatures->SetValueFromString(iFeature, iField, (const char *) str);
+			return true;
+		}
+	}
+	return false;
+}
+
+
 // WDR: handler implementations for FeatInfoDlg
+
+void FeatInfoDlg::OnLeftDClick( wxMouseEvent &event )
+{
+}
 
 void FeatInfoDlg::OnInitDialog(wxInitDialogEvent& event)
 {
@@ -220,6 +273,7 @@ void FeatInfoDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void FeatInfoDlg::OnDeleteHighlighted( wxCommandEvent &event )
 {
+	int iDeleted = 0;
 	int iFeat;
 	int item = -1;
 	for ( ;; )
@@ -230,10 +284,15 @@ void FeatInfoDlg::OnDeleteHighlighted( wxCommandEvent &event )
 			break;
 		iFeat = (int) GetList()->GetItemData(item);
 		m_pFeatures->SetToDelete(iFeat);
+		iDeleted++;
 	}
-	m_pFeatures->ApplyDeletion();
-	m_pView->Refresh();
-	RefreshItems();
+	if (iDeleted > 0)
+	{
+		m_pFeatures->SetModified(true);
+		m_pFeatures->ApplyDeletion();
+		m_pView->Refresh();
+		RefreshItems();
+	}
 }
 
 void FeatInfoDlg::OnChoiceVertical( wxCommandEvent &event )
@@ -250,7 +309,43 @@ void FeatInfoDlg::OnChoiceShow( wxCommandEvent &event )
 
 void FeatInfoDlg::OnListRightClick( wxListEvent &event )
 {
-	
+/*	int iFeat;
+	int item = -1;
+
+	item = GetList()->GetNextItem(item, wxLIST_NEXT_ALL,
+								  wxLIST_STATE_SELECTED);
+	if ( item == -1 )
+		return; */
+	int iItem = event.GetIndex();
+	int iFeat = (int) GetList()->GetItemData(iItem);
+/*	for (int i = 0; i < m_pFeatures->GetNumFields(); i++)
+	{
+		vtString vs;
+		m_pFeatures->GetValueAsString(iFeat, i, vs);
+		wstring2 wide;
+		wide.from_utf8(vs);
+		VTLOG(_T("Field %d, Value '%ls'\n"), i, wide.c_str());
+	} */
+	wxPoint mouse = event.GetPoint();
+	int x = 0;
+	int columns = GetList()->GetColumnCount();
+	for (int i = 0; i < columns; i++)
+	{
+		int width = GetList()->GetColumnWidth(i);
+		if (x < mouse.x && mouse.x < x+width)
+		{
+			// Found it;
+			VTLOG("Clicked column %d\n", i);
+			if (EditValue(iFeat, i))
+			{
+				// Refresh the display
+				m_pFeatures->SetModified(true);
+				UpdateFeatureText(iItem, iFeat);
+			}
+			return;
+		}
+		x += width;
+	}
 }
 
 void FeatInfoDlg::OnItemSelected( wxListEvent &event )
