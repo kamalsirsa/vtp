@@ -815,9 +815,8 @@ void EscapeStringForXML(const std::string &input, std::string &output)
 void EscapeStringForXML(const std::wstring &input, std::string &output)
 {
 	output = "";
-	const wchar_t *p1 = input.c_str();
 	char cbuf[3];
-	for (; (L'\0' != *p1); p1++)
+	for (const wchar_t *p1 = input.c_str(); *p1 != L'\0'; p1++)
 	{
 		switch (*p1)
 		{
@@ -837,7 +836,8 @@ void EscapeStringForXML(const std::wstring &input, std::string &output)
 			output += "&apos;";
 			break;
 		default:
-			wcrtomb(cbuf, *p1, NULL);
+			// wide character to multi-byte
+			wctomb(cbuf, *p1);
 			output += *cbuf;
 		}
 	}
@@ -898,7 +898,7 @@ wstring2::wstring2(const char *__s)
 const char *wstring2::eb_str() const
 {
 	const wchar_t *guts = c_str();
-	int result = wcsrtombs(s_buffer, &guts, MAX_WSTRING2_SIZE, NULL);
+	int result = wcstombs(s_buffer, guts, MAX_WSTRING2_SIZE);
 	return s_buffer;
 }
 
