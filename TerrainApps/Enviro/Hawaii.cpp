@@ -23,8 +23,6 @@
 
 IslandTerrain::IslandTerrain() : PTerrain()
 {
-	m_pDetailMats = NULL;
-	m_pDetailMat = NULL;
 	m_pSA = NULL;
 	m_pTelescopes = NULL;
 
@@ -44,8 +42,6 @@ IslandTerrain::IslandTerrain() : PTerrain()
 
 IslandTerrain::~IslandTerrain()
 {
-	if (m_pDetailMats)
-		m_pDetailMats->Release();
 }
 
 void IslandTerrain::CreateCustomCulture()
@@ -108,9 +104,6 @@ void IslandTerrain::CreateCustomCulture()
 		create_airplanes(1, speed);
 		create_ground_vehicles(size, speed);
 	}
-
-	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
-		set_detail_texture();
 }
 
 
@@ -169,36 +162,6 @@ void IslandTerrain::create_state_park()
 	}
 #endif
 }
-
-void IslandTerrain::set_detail_texture()
-{
-	const char *fname = "GeoTypical/grass_repeat2_512.jpg";
-
-	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
-	vtDIB *dib = new vtDIB;
-
-	if (!dib->ReadBMP((const char *) path))
-		return;
-
-	m_pDetailMats = new vtMaterialArray();
-
-	vtImage *pDetailTexture = new vtImage(dib);
-	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
-					 true,	// culling
-					 false,	// lighting
-					 true,	// transp: blend
-					 false,	// additive
-					 0.0f, 1.0f,	// ambient, diffuse
-					 0.5f, 0.0f,	// alpha, emmisive
-					 true, false,	// texgen, clamp
-					 true);			// mipmap
-	m_pDetailMat = m_pDetailMats->GetAt(index);
-
-	FRECT r = m_pHeightField->m_WorldExtents;
-	float width_meters = r.Width();
-	m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
-}
-
 
 vtGeom *IslandTerrain::make_test_cone()
 {
@@ -455,7 +418,7 @@ public:
 	// these are overrides for virtual methods
 	void DoRender();
 	void DoCalcBoundBox(FBox3 &box);
-	void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) {}
+	void DoCull(const vtCamera *pCam) {}
 };
 
 void MyGeom::DoRender()
