@@ -32,6 +32,8 @@ public:
 	// WDR: method declarations for LayerDlg
 	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
+	void RefreshTreeTerrain();
+	void RefreshTreeSpace();
 
 private:
 	// WDR: member variable declarations for LayerDlg
