@@ -53,6 +53,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	GetField()->SetSelection(0);
 
+	// The order of these must not change
 	GetCondition()->Append(" = ");
 	GetCondition()->Append(" > ");
 	GetCondition()->Append(" < ");
