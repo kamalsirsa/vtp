@@ -19,6 +19,14 @@ struct IcoVert
 	FPoint2 uv;
 };
 
+/**
+ * IcoGlobe is an icosahedral globe.  To use it:
+ *  - call Create() with the desired parameters to construct the object
+ *  - call GetTop() to get the top node in the globe's scene graph
+ *  - add that node to your scene graph
+ *
+ * The globe has unit radius.
+ */
 class IcoGlobe : public DymaxIcosa
 {
 public:
@@ -38,30 +46,39 @@ public:
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	int AddGlobePoints(const char *fname);
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
-	vtTransform *GetTop() { return m_mgeom; }
+	vtTransform *GetTop() { return m_top; }
+
+	void DoTest(float f);
+	void SetUnfolding(float f);
 
 protected:
 	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
+	void FindLocalOrigin(int mface);
+	void SetMeshConnect(int mface);
+	void EstimateTesselation(int iTriangleCount);
+	void CreateUnfoldableDymax();
+	void CreateNormalSphere();
 
 	// these methods create a mesh for each face composed of strips
 	void add_face1(vtMesh *mesh, int face, bool second);
 	void set_face_verts1(vtMesh *geom, int face, float f);
 
 	// these methods use a right-triangle recursion to create faces
-	void add_face2(vtMesh *mesh, int face, bool second, float f);
+	void add_face2(vtMesh *mesh, int face, int mface, int subfaces, bool second);
 	void set_face_verts2(vtMesh *geom, int face, float f);
 	void add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
-								   bool flip, int depth, float f);
-	void refresh_face_positions(vtMesh *mesh, int face, float f);
+								   bool flip, int depth);
+	void refresh_face_positions(vtMesh *mesh, int mface, float f);
 
 	int		m_red;
 	int		m_yellow;
 
-	vtMovGeom	*m_mgeom;
+	vtTransform	*m_top;
 	vtGeom		*m_geom;
 	vtMaterialArray	*m_mats;
 	int		m_globe_mat[10];
 	vtMesh	*m_mesh[22];
+	int		m_mfaces;	// either 20 or 22
 
 	IcoGlobe::Style m_style;
 
@@ -70,8 +87,13 @@ protected:
 
 	// for RIGHT_TRIANGLE
 	int		m_vert;
-	Array<IcoVert>	m_rtv[20];	// right-triangle vertices
+	Array<IcoVert>	m_rtv[22];	// right-triangle vertices
 	int		m_depth;	// tesselation depth
+
+	// for DYMAX_UNFOLD
+	vtTransform *m_xform[22];
+	FPoint3 m_local_origin[22];
+	FPoint3 m_axis[22];
 };
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath);

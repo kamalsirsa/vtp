@@ -6,6 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/core/Engine.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
 
@@ -130,18 +131,18 @@ void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 //
 // argument "f" goes from 0 (icosahedron) to 1 (sphere)
 //
-void IcoGlobe::set_face_verts2(vtMesh *mesh, int face, float f)
+void IcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
 {
-	refresh_face_positions(m_mesh[face], face, f);
+	refresh_face_positions(m_mesh[mface], mface, f);
 
 	if (f == 1.0f)
 	{
 		// sphere normals pointing straight outwards
-		for (int i = 0; i < m_rtv[face].GetSize(); i++)
-			mesh->SetVtxNormal(i, m_rtv[face][i].p);
+		for (int i = 0; i < m_rtv[mface].GetSize(); i++)
+			mesh->SetVtxNormal(i, m_rtv[mface][i].p);
 	}
 	else
-		m_mesh[face]->SetNormalsFromPrimitives();
+		m_mesh[mface]->SetNormalsFromPrimitives();
 }
 
 void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
@@ -219,7 +220,7 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 	delete [] indices;
 }
 
-void IcoGlobe::add_face2(vtMesh *mesh, int face, bool second, float f)
+void IcoGlobe::add_face2(vtMesh *mesh, int face, int mface, int subfaces, bool second)
 {
 	int i;
 	IcoVert v0, v1, v2, e0, e1, e2, center;
@@ -253,49 +254,55 @@ void IcoGlobe::add_face2(vtMesh *mesh, int face, bool second, float f)
 	e2.uv = (v2.uv + v0.uv) / 2;
 	center.uv = (v0.uv + v1.uv + v2.uv) / 3;
 
-	m_rtv[face].Append(v0);
-	m_rtv[face].Append(v1);
-	m_rtv[face].Append(v2);
-	m_rtv[face].Append(e0);	// 3
-	m_rtv[face].Append(e1);	// 4
-	m_rtv[face].Append(e2);	// 5
-	m_rtv[face].Append(center); // 6
+	m_rtv[mface].Append(v0);
+	m_rtv[mface].Append(v1);
+	m_rtv[mface].Append(v2);
+	m_rtv[mface].Append(e0);	// 3
+	m_rtv[mface].Append(e1);	// 4
+	m_rtv[mface].Append(e2);	// 5
+	m_rtv[mface].Append(center); // 6
 	m_vert = 7;
 
 	for (i = 0; i < 7; i++)
-		mesh->AddVertexNUV(m_rtv[face][i].p, m_rtv[face][i].p, m_rtv[face][i].uv);
+		mesh->AddVertexNUV(m_rtv[mface][i].p, m_rtv[mface][i].p, m_rtv[mface][i].uv);
 
 	// iterate the 6 subfaces
-	add_subface(mesh, face, 0, 3, 6, false, m_depth, f);
-	add_subface(mesh, face, 1, 3, 6, true, m_depth, f);
+	if (subfaces & (1<<1))
+		add_subface(mesh, mface, 0, 3, 6, false, m_depth);
+	if (subfaces & (1<<2))
+		add_subface(mesh, mface, 1, 3, 6, true, m_depth);
 
-	add_subface(mesh, face, 1, 4, 6, false, m_depth, f);
-	add_subface(mesh, face, 2, 4, 6, true, m_depth, f);
+	if (subfaces & (1<<3))
+		add_subface(mesh, mface, 1, 4, 6, false, m_depth);
+	if (subfaces & (1<<4))
+		add_subface(mesh, mface, 2, 4, 6, true, m_depth);
 
-	add_subface(mesh, face, 2, 5, 6, false, m_depth, f);
-	add_subface(mesh, face, 0, 5, 6, true, m_depth, f);
+	if (subfaces & (1<<5))
+		add_subface(mesh, mface, 2, 5, 6, false, m_depth);
+	if (subfaces & (1<<6))
+		add_subface(mesh, mface, 0, 5, 6, true, m_depth);
 
 	// now, deal with curvature
-	refresh_face_positions(mesh, face, f);
+	refresh_face_positions(mesh, mface, 1);
 }
 
-void IcoGlobe::refresh_face_positions(vtMesh *mesh, int face, float f)
+void IcoGlobe::refresh_face_positions(vtMesh *mesh, int mface, float f)
 {
 	int i;
 	double len;
 	FPoint3 fp;
-	int total = m_rtv[face].GetSize();
+	int total = m_rtv[mface].GetSize();
 	for (i = 0; i < total; i++)
 	{
 		// do interpolation between icosa face and sphere
-		len = m_rtv[face][i].p.Length();
-		fp = m_rtv[face][i].p / len * (f + (1 - f) * len);
+		len = m_rtv[mface][i].p.Length();
+		fp = m_rtv[mface][i].p / len * (f + (1 - f) * len);
 		mesh->SetVtxPos(i, fp);
 	}
 }
 
 void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
-										 bool flip, int depth, float f)
+						   bool flip, int depth)
 {
 	if (depth > 0)
 	{
@@ -316,9 +323,9 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 		mesh->AddVertexNUV(m_rtv[face][v3].p, m_rtv[face][v3].p, m_rtv[face][v3].uv);
 		mesh->AddVertexNUV(m_rtv[face][v4].p, m_rtv[face][v4].p, m_rtv[face][v4].uv);
 
-		add_subface(mesh, face, v0, v4, v3, !flip, depth - 1, f);
-		add_subface(mesh, face, v2, v4, v3,  flip, depth - 1, f);
-		add_subface(mesh, face, v2, v1, v3, !flip, depth - 1, f);
+		add_subface(mesh, face, v0, v4, v3, !flip, depth - 1);
+		add_subface(mesh, face, v2, v4, v3,  flip, depth - 1);
+		add_subface(mesh, face, v2, v1, v3, !flip, depth - 1);
 		return;
 	}
 
@@ -398,6 +405,172 @@ void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImag
 	}
 }
 
+// This array describes the configuration and topology of the subfaces in
+// the flattened dymaxion map.
+struct dymax_info
+{
+	int face;
+	int subfaces;
+	int parent_face;
+	int parent_mface;
+	int parentedge;
+}
+dymax_subfaces[22] = 
+{
+	{  0, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, -1, -1, -1 }, // 0
+
+	{  1, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  0, 0, 2 },	// 1
+	{  4, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  0, 0, 0 },	// 2
+	{  5, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  0, 0, 1 },	// 3
+
+	{  7, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  1, 1, 1 },	// 4
+	{  2, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  1, 1, 2 },	// 5
+
+	{  6, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  7, 4, 2 },	// 6
+	{  8,               1<<4 | 1<<3 | 1<<2 | 1<<1,  7, 4, 0 },	// 7
+	{  9, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  2, 5, 1 },	// 8
+	{  3, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  2, 5, 2 },	// 9
+
+	{ 16, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  8, 7, 1 },	// 10
+	{  8, 1<<6 | 1<<5,                              9, 8, 2 },	// 11
+	{ 11, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1,  3, 9, 1 },	// 12
+
+	{ 15,               1<<4 | 1<<3 | 1<<2,        16, 10, 2 },	// 13
+	{ 10, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 11, 12, 2 },	// 14
+	{ 12, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 11, 12, 0 },	// 15
+
+	{ 17, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 10, 14, 1 },	// 16
+	{ 18, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 12, 15, 1 },	// 17
+	{ 13, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 12, 15, 2 },	// 18
+
+	{ 19, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 18, 17, 0 },	// 19
+
+	{ 15, 1<<6 | 1<<5 |                      1<<1, 19, 19, 0 },	// 20
+	{ 14, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 19, 19, 1 },	// 21
+};
+
+class TestEngine : public vtEngine
+{
+public:
+	TestEngine() { f = 0; dir = -0.004; }
+	void Eval() {
+		f += dir;
+		if (f < -globe->DihedralAngle())
+			dir = 0.004;
+		if (f > 0)
+			dir = -0.004;
+		globe->DoTest(f);
+	}
+	IcoGlobe *globe;
+	float f, dir;
+};
+
+int GetMaterialForFace(int face, bool &which)
+{
+	for (int i = 0; i < 10; i++)
+	{
+		if (icosa_face_pairs[i][0] == face)
+		{
+			which = false;
+			return i;
+		}
+		if (icosa_face_pairs[i][1] == face)
+		{
+			which = true;
+			return i;
+		}
+	}
+	return -1;
+}
+
+void IcoGlobe::FindLocalOrigin(int mface)
+{
+	int face = dymax_subfaces[mface].face;
+	int parent_face = dymax_subfaces[mface].parent_face;
+	int edge = dymax_subfaces[mface].parentedge;
+
+	DPoint3 v0 = m_verts[icosa_face_v[parent_face][0]];
+	DPoint3 v1 = m_verts[icosa_face_v[parent_face][1]];
+	DPoint3 v2 = m_verts[icosa_face_v[parent_face][2]];
+
+	// find the center of each edge
+	DPoint3 ec[3], axis[3];
+	ec[0] = (v0 + v1) / 2;
+	ec[1] = (v1 + v2) / 2;
+	ec[2] = (v2 + v0) / 2;
+	axis[0] = v1 - v0;
+	axis[1] = v2 - v1;
+	axis[2] = v0 - v2;
+
+	m_local_origin[mface] = ec[edge];
+	m_axis[mface] = axis[edge];
+	m_axis[mface].Normalize();
+}
+
+void IcoGlobe::SetMeshConnect(int mface)
+{
+	int parent_face = dymax_subfaces[mface].parent_face;
+	int parent_mface = dymax_subfaces[mface].parent_mface;
+
+	vtTransform *xform = m_xform[mface];
+	vtMesh *mesh = m_mesh[mface];
+
+	// attach heirarchy
+//	if (mface < 4)
+		m_xform[parent_mface]->AddChild(xform);
+
+	// translate vertices to set origin of this mface
+	int i;
+	int verts = mesh->GetNumVertices();
+	FPoint3 pos;
+
+	FPoint3 edge_center = m_local_origin[mface];
+
+	for (i = 0; i < verts; i++)
+	{
+		pos = mesh->GetVtxPos(i);
+		pos -= edge_center;
+		mesh->SetVtxPos(i, pos);
+	}
+	if (parent_mface == 0)
+		xform->Translate1(edge_center);
+	else
+	{
+		xform->Translate1(edge_center - m_local_origin[parent_mface]);
+	}
+//	xform->RotateLocal(m_axis[mface], -DihedralAngle());
+}
+
+void IcoGlobe::DoTest(float f)
+{
+	int mface = 1;
+	for (int i = 1; i < 22; i++)
+	{
+		FPoint3 pos = m_xform[i]->GetTrans();
+		m_xform[i]->Identity();
+		m_xform[i]->SetTrans(pos);
+		m_xform[i]->RotateLocal(m_axis[i], f);
+	}
+}
+
+void IcoGlobe::SetUnfolding(float f)
+{
+	// only possible on unfoldable globes
+	if (m_style != DYMAX_UNFOLD)
+		return;
+
+	for (int i = 1; i < 22; i++)
+	{
+		FPoint3 pos = m_xform[i]->GetTrans();
+		m_xform[i]->Identity();
+		m_xform[i]->SetTrans(pos);
+		m_xform[i]->RotateLocal(m_axis[i], f);
+	}
+}
+
+/**
+ * Create the globe's geometry and nodes.
+ */
 void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 					  const vtString &strImagePrefix, Style style)
 {
@@ -406,6 +579,40 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 	m_style = style;
 	InitIcosa();
 
+	CreateMaterials(paths, strImagePrefix);
+
+	EstimateTesselation(iTriangleCount);
+
+	// Estimate number of meshes, and number of vertices per mesh
+	int i, numvtx;
+	if (m_style == GEODESIC)
+	{
+		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
+		m_mfaces = 20;
+	}
+	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
+	{
+		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
+		m_mfaces = (style == RIGHT_TRIANGLE) ? 20 : 22;
+	}
+
+	for (i = 0; i < m_mfaces; i++)
+	{
+		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
+		m_mesh[i]->AllowOptimize(false);
+	}
+
+	m_top = new vtTransform;
+	m_top->SetName2("GlobeXForm");
+
+	if (style == DYMAX_UNFOLD)
+		CreateUnfoldableDymax();
+	else
+		CreateNormalSphere();
+}
+
+void IcoGlobe::EstimateTesselation(int iTriangleCount)
+{
 	int per_face = iTriangleCount / 20;
 	if (m_style == GEODESIC)
 	{
@@ -420,7 +627,7 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 		else
 			m_freq = iLess;
 	}
-	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
+	else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
 	{
 		// Recursive right-triangle subdivision gives (2 * 3 ^ (depth+1))
 		// triangles.  Find what depth most closely matches the desired
@@ -436,27 +643,64 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 		else
 			m_depth = a-1;
 	}
+}
 
+void IcoGlobe::CreateUnfoldableDymax()
+{
 	int i;
-	int numvtx;
-	int meshes;
-	if (m_style == GEODESIC)
+	for (i = 0; i < 22; i++)
 	{
-		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
-		meshes = 20;
-	}
-	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
-	{
-		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
-		meshes = style == RIGHT_TRIANGLE ? 20 : 22;
-	}
+		m_xform[i] = new vtTransform;
+		vtGeom *geom = new vtGeom;
+		m_xform[i]->AddChild(geom);
 
-	for (i = 0; i < meshes; i++)
-	{
-		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
-		m_mesh[i]->AllowOptimize(false);
-	}
+		int face = dymax_subfaces[i].face;
+		int subfaces = dymax_subfaces[i].subfaces;
 
+		bool which;
+		int mat = GetMaterialForFace(face, which);
+
+		add_face2(m_mesh[i], face, i, subfaces, which);
+
+		geom->SetMaterials(m_mats);
+		geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
+
+		// flatten mesh
+		refresh_face_positions(m_mesh[i], i, 0);
+	}
+	m_top->AddChild(m_xform[0]);
+
+	for (i = 1; i < 22; i++)
+		FindLocalOrigin(i);
+	for (i = 1; i < 22; i++)
+		SetMeshConnect(i);
+
+	// Determine angle and offset to orient flat map toward viewer.
+	// When unfolded, the edge vector(2->0) of face 0 corresponds to
+	// (1,0,0) in world coords.
+	DPoint3 v0 = m_verts[icosa_face_v[0][0]];
+	DPoint3 v2 = m_verts[icosa_face_v[0][2]];
+	FPoint3 diff = v0 - v2;
+	diff.Normalize();
+	FPoint3 right(1, 0, 0);
+	FPoint3 axis = right.Cross(diff);
+	float angle = (float) acos(right.Dot(axis));
+	m_xform[0]->RotateLocal(axis, angle);
+
+	// Create a geom to contain the surface mesh features
+	m_geom = new vtGeom();
+	m_geom->SetName2("SurfaceGeom");
+	m_geom->SetMaterials(m_mats);
+	m_top->AddChild(m_geom);
+
+	TestEngine *test = new TestEngine();
+	test->globe = this;
+	vtGetScene()->AddEngine(test);
+}
+
+void IcoGlobe::CreateNormalSphere()
+{
+	// Create the meshes
 	int pair;
 	for (pair = 0; pair < 10; pair++)
 	{
@@ -468,21 +712,20 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 			add_face1(m_mesh[f1], f1, false);
 			add_face1(m_mesh[f2], f2, true);
 		}
-		else if (style == RIGHT_TRIANGLE)
+		else if (m_style == RIGHT_TRIANGLE)
 		{
-			add_face2(m_mesh[f1], f1, false, 1);
-			add_face2(m_mesh[f2], f2, true, 1);
+			int all = 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1;
+			add_face2(m_mesh[f1], f1, f1, all, false);
+			add_face2(m_mesh[f2], f2, f2, all, true);
 		}
 	}
 
-	CreateMaterials(paths, strImagePrefix);
-
+	// Create a geom to contain the meshes
 	m_geom = new vtGeom();
 	m_geom->SetName2("GlobeGeom");
 	m_geom->SetMaterials(m_mats);
 
-	m_mgeom = new vtMovGeom(m_geom);
-	m_mgeom->SetName2("GlobeXForm");
+	m_top->AddChild(m_geom);
 
 	for (pair = 0; pair < 10; pair++)
 	{
@@ -493,17 +736,23 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 	}
 }
 
-//
-// takes an argument from 0 (icosahedron) to 1 (sphere)
-//
+/**
+ * Set the amount of inflation of the globe.
+ *
+ * \param f Ranges from 0 (icosahedron) to 1 (sphere)
+ */
 void IcoGlobe::SetInflation(float f)
 {
-	for (int face = 0; face < 20; face++)
+	// not allowed for unfoldable globes
+	if (m_style == DYMAX_UNFOLD)
+		return;
+
+	for (int mface = 0; mface < m_mfaces; mface++)
 	{
 		if (m_style == GEODESIC)
-			set_face_verts1(m_mesh[face], face, f);
+			set_face_verts1(m_mesh[mface], mface, f);
 		else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
-			set_face_verts2(m_mesh[face], face, f);
+			set_face_verts2(m_mesh[mface], mface, f);
 	}
 }
 
@@ -643,7 +892,7 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 			double area = PIf * spheres[i].radius * spheres[i].radius;
 			mgeom->Scale3(0.002f, area*1000, 0.002f);
 		}
-		m_mgeom->AddChild(mgeom);
+		m_top->AddChild(mgeom);
 	}
 
 }
