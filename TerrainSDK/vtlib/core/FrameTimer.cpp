@@ -76,20 +76,26 @@ void FrameTimer::updateFrameTick()
 
 #ifdef WIN32
 
-__inline __int64 get_rdtsc()	 // use the Pentium RDTSC instruction
-								 // to grap the CPU frequency counter
-{								// (value in ticks since powerup)
-	_asm xor eax, eax			//  Used when QueryPerformanceCounter()
-		_asm xor edx, edx		//  not supported or minimal overhead
-		_asm _emit 0x0f		  //  desired
-		_asm _emit 0x31		  //
-}								//  Change TICKS_PER_US as appropriate
-
 TLONG FrameTimer::_tick()
 {
-	static volatile unsigned __int64 rdtsc;
-	rdtsc = get_rdtsc();
-	return rdtsc;
+	volatile unsigned __int64 ts;
+
+    volatile unsigned int HighPart;
+    volatile unsigned int LowPart;
+    _asm
+    {
+        xor eax, eax        //  Used when QueryPerformanceCounter()
+        xor edx, edx        //  not supported or minimal overhead
+        _emit 0x0f          //  desired
+        _emit 0x31          //
+        mov HighPart,edx
+        mov LowPart,eax
+    }
+    //ts = LowPart | HighPart >> 32;
+    *((unsigned int*)&ts) = LowPart;
+    *((unsigned int*)&ts+1) = HighPart;
+
+	return ts;
 }
 
 #else
