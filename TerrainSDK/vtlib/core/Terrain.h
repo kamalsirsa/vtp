@@ -107,6 +107,7 @@ public:
 	/// add a model (or any node) to the LOD grid of the terrain 
 	void AddNodeToLodGrid(vtTransform *pTrans);
 	void AddNodeToLodGrid(vtGeom *pGeom);
+	void RemoveNodeFromLodGrid(vtNode *pNode);
 
 	/// place a model on the terrain
 	void PlantModel(vtTransform *model);
@@ -141,6 +142,7 @@ public:
 
 	// structures
 	vtStructureArray3d &GetStructures() { return m_Structures; }
+	void DeleteSelectedStructures();
 
 	// overridable by subclasses to extend culture
 	virtual void CreateCustomCulture(bool bDoSound);

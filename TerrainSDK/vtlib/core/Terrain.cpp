@@ -95,16 +95,42 @@ vtTerrain::~vtTerrain()
 	delete m_pDIB;
 //	delete m_pTreeGroup;	// don't delete, same as m_pLodGrid
 	delete m_pRoadMap;
-	delete m_pRoadGroup;
+	if (m_pRoadGroup)
+	{
+		m_pTerrainGroup->RemoveChild(m_pRoadGroup);
+		m_pRoadGroup->Destroy();
+	}
 	delete m_pTerrApps1;
 	delete m_pTerrApps2;
-	delete m_pOceanGeom;
-	delete m_pLodGrid;
+	if (m_pOceanGeom)
+	{
+		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
+		m_pOceanGeom->Destroy();
+	}
+	if (m_pLodGrid)
+	{
+		m_pTerrainGroup->RemoveChild(m_pLodGrid);
+		m_pLodGrid->Destroy();
+	}
 //	delete m_pInputGrid;	// don't delete, copied to m_pElevGrid
 	delete m_pTin;
-	delete m_pDynGeom;
-	delete m_pTerrainGeom;
-	delete m_pTerrainGroup;
+	if (m_pDynGeom)
+	{
+		m_pDynGeomScale->RemoveChild(m_pDynGeom);
+		m_pDynGeom->Destroy();
+	}
+	if (m_pTerrainGeom)
+	{
+		m_pTerrainGroup->RemoveChild(m_pTerrainGeom);
+		m_pTerrainGeom->Destroy();
+	}
+	if (m_pDynGeomScale)
+	{
+		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
+		m_pDynGeomScale->Destroy();
+	}
+	if (m_pTerrainGroup)
+		m_pTerrainGroup->Destroy();
 }
 
 
@@ -471,6 +497,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform();
+	m_pDynGeomScale->SetName2("Dynamic Geometry Container");
 
 	DPoint2 spacing = m_pElevGrid->GetWorldSpacing();
 	m_pDynGeomScale->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
@@ -691,6 +718,23 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 				AddNodeToLodGrid(pGeom);
 		}
 	}
+}
+
+void vtTerrain::DeleteSelectedStructures()
+{
+	// first remove them from the terrain
+	for (int i = 0; i < m_Structures.GetSize(); i++)
+	{
+		vtStructure *str = m_Structures.GetAt(i);
+		if (str->IsSelected())
+		{
+			vtStructure3d *str3d = m_Structures.GetStructure3d(i);
+			RemoveNodeFromLodGrid(str3d->GetTransform());
+		}
+	}
+
+	// then do a normal delete-selected
+	m_Structures.DeleteSelected();
 }
 
 /**
@@ -1622,3 +1666,8 @@ void vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
 }
 
 
+void vtTerrain::RemoveNodeFromLodGrid(vtNode *pNode)
+{
+	if (m_pLodGrid)
+		m_pLodGrid->RemoveNodeFromGrid(pNode);
+}
