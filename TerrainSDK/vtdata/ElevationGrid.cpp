@@ -410,6 +410,23 @@ void vtElevationGrid::Offset(const DPoint2 &delta)
 		m_Corners[i] += delta;
 }
 
+void vtElevationGrid::ReplaceValue(float value1, float value2)
+{
+	bool bModified = false;
+	int i, j;
+	for (i=0; i<m_iColumns; i++)
+	{
+		for (j=0; j<m_iRows; j++)
+		{
+			if (GetFValue(i, j) == value1)
+				SetFValue(i, j, value2);
+			bModified = true;
+		}
+	}
+	if (bModified)
+		ComputeHeightExtents();
+}
+
 /** Set an elevation value to the grid.
  * \param i, j Column and row location in the grid.
  * \param value The value in (integer) meters.
@@ -822,8 +839,9 @@ void vtElevationGrid::SetupConversion(float fVerticalExag)
 	m_fVerticalScale = fVerticalExag;
 }
 
-float vtElevationGrid::GetElevation(int iX, int iZ) const
+float vtElevationGrid::GetElevation(int iX, int iZ, bool bTrue) const
 {
+	// we ignore bTrue because this class always stores true elevation
 	return GetFValue(iX, iZ);
 }
 
@@ -906,8 +924,10 @@ void vtElevationGrid::GetChecksum(unsigned char **ppChecksum) const
 	// TODO
 }
 
-bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
+bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude,
+										   bool bTrue) const
 {
+	// we ignore bTrue because this class always stores true elevation
 	DPoint2 spacing = GetSpacing();
 	int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);
 	int iY = (int)((p.y - m_EarthExtents.bottom) / spacing.y);

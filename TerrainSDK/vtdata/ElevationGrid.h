@@ -43,6 +43,7 @@ public:
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
 	void ComputeHeightExtents();
 	void Offset(const DPoint2 &delta);
+	void ReplaceValue(float value1, float value2);
 
 	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, void progress_callback(int) = NULL );
@@ -122,10 +123,10 @@ public:
 
 	// Implement vtHeightField methods
 	void GetChecksum(unsigned char **ppChecksum) const;
-	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
+	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// Implement vtHeightField3d methods
-	virtual float GetElevation(int iX, int iZ) const;
+	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const;
 
 	// methods that deal with world coordinates
