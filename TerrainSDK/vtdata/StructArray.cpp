@@ -1089,6 +1089,12 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			attval = atts.getValue("Color");
 			if (attval)
 				m_pEdge->m_Color = ParseHexColor(attval);
+			attval = atts.getValue("Slope");
+			if (attval)
+				m_pEdge->m_iSlope = atoi(attval);
+			attval = atts.getValue("EaveLength");
+			if (attval)
+				m_pEdge->m_fEaveLength = (float) atof(attval);
 
 			m_state = 5;
 		}
