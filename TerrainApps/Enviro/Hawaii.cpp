@@ -313,13 +313,14 @@ void IslandTerrain::create_building_manually()
 	pLev->m_fStoryHeight = 2.4385f;
 	pLev->m_iStories = 1;
 
-	pEdge = pLev->m_Edges[0];
+	pEdge = pLev->GetEdge(0);
 	pLev->SetEdgeColor(RGBi(128, 128, 128));
-	pEdge->m_Features.Empty();
+	pEdge->m_Features.clear();
+	int feat1 = pEdge->NumFeatures();
 	pEdge->AddFeature(WFC_GAP);
 
-	pEdge = pLev->m_Edges[1];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(1);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WALL, -1);
 	pEdge->AddFeature(WFC_WALL, -2, 0, 0.5);
 	pEdge->AddFeature(WFC_WALL, -4);
@@ -327,12 +328,12 @@ void IslandTerrain::create_building_manually()
 	pEdge->AddFeature(WFC_WALL, -1);
 	pEdge->m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_WOOD);
 
-	pEdge = pLev->m_Edges[2];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(2);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_GAP);
 
-	pEdge = pLev->m_Edges[3];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(3);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WALL, -1, 0, 0.5);
 	pEdge->AddFeature(WFC_WALL);
 	pEdge->AddFeature(WFC_WALL, -1, 0, 0.5);
@@ -351,8 +352,8 @@ void IslandTerrain::create_building_manually()
 	pLev->m_iStories = 1;
 	pLev->SetEdgeMaterial(BMAT_NAME_WOOD);
 
-	pEdge = pLev->m_Edges[0];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(0);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
 	pEdge->AddFeature(WFC_WALL, -8);
 	pEdge->AddFeature(WFC_WINDOW, -8, 0.5f, 1.0f);
@@ -360,8 +361,8 @@ void IslandTerrain::create_building_manually()
 	pEdge->AddFeature(WFC_DOOR, -3);
 	pEdge->AddFeature(WFC_WALL, -8);
 
-	pEdge = pLev->m_Edges[1];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(1);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
 	pEdge->AddFeature(WFC_WALL, -4);
 	pEdge->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
@@ -370,8 +371,8 @@ void IslandTerrain::create_building_manually()
 	pEdge->AddFeature(WFC_WALL, -4);
 	pEdge->AddFeature(WFC_WINDOW, -4, 0.7f, 1.0f);
 
-	pEdge = pLev->m_Edges[2];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(2);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WALL, -6);
 	pEdge->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
 	pEdge->AddFeature(WFC_WALL, -2);
@@ -382,21 +383,21 @@ void IslandTerrain::create_building_manually()
 	pEdge->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
 	pEdge->AddFeature(WFC_WALL, -8);
 
-	pEdge = pLev->m_Edges[3];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(3);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WALL, -8);
 	pEdge->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
 	pEdge->AddFeature(WFC_WALL, -4);
 	pEdge->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
 	pEdge->AddFeature(WFC_WALL, -4);
 
-	pEdge = pLev->m_Edges[4];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(4);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_WALL, -4);
 	pEdge->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
 
-	pEdge = pLev->m_Edges[5];
-	pEdge->m_Features.Empty();
+	pEdge = pLev->GetEdge(5);
+	pEdge->m_Features.clear();
 	pEdge->AddFeature(WFC_DOOR, -4);
 	pEdge->AddFeature(WFC_WALL, -8);
 

@@ -145,7 +145,7 @@ void BuildingDlg::OnFeatDoor( wxCommandEvent &event )
 	f.m_width = -1.0f;
 	f.m_vf1 = 0.0f;
 	f.m_vf2 = 0.8f;
-	m_pEdge->m_Features.Append(f);
+	m_pEdge->m_Features.push_back(f);
 	UpdateFeatures();
 	Modified();
 }
@@ -157,7 +157,7 @@ void BuildingDlg::OnFeatWindow( wxCommandEvent &event )
 	f.m_width = -1.0f;
 	f.m_vf1 = 0.3f;
 	f.m_vf2 = 0.8f;
-	m_pEdge->m_Features.Append(f);
+	m_pEdge->m_Features.push_back(f);
 	UpdateFeatures();
 	Modified();
 }
@@ -169,14 +169,14 @@ void BuildingDlg::OnFeatWall( wxCommandEvent &event )
 	f.m_width = -1.0f;
 	f.m_vf1 = 0;
 	f.m_vf2 = 1;
-	m_pEdge->m_Features.Append(f);
+	m_pEdge->m_Features.push_back(f);
 	UpdateFeatures();
 	Modified();
 }
 
 void BuildingDlg::OnFeatClear( wxCommandEvent &event )
 {
-	m_pEdge->m_Features.Empty();
+	m_pEdge->m_Features.clear();
 	UpdateFeatures();
 	Modified();
 }
@@ -367,7 +367,7 @@ void BuildingDlg::RefreshEdgesBox()
 {
 	m_pEdgeListBox->Clear();
 	wxString str;
-	int i, edges = m_pLevel->GetNumEdges();
+	int i, edges = m_pLevel->NumEdges();
 	for (i = 0; i < edges; i++)
 	{
 		str.Printf(_T("%d"), i);
@@ -477,7 +477,7 @@ void BuildingDlg::UpdateColorControl()
 
 		// Draw the image with vertical bands corresponding to all the edges
 		int xsize = 32, ysize = 18;
-		int edges = m_pLevel->GetNumEdges();
+		int edges = m_pLevel->NumEdges();
 		float factor = (float) edges / (float) xsize * .9999f;
 		wxImage pImage(xsize, ysize);
 		int i, j;
@@ -538,7 +538,7 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 		m_pLevel->SetRoofType(ROOF_FLAT, 0);
 	else if (sel == 4)
 	{
-		int i, edges = m_pLevel->GetNumEdges();
+		int i, edges = m_pLevel->NumEdges();
 		for (i = 0; i < edges; i++)
 			m_pLevel->GetEdge(i)->m_iSlope = 90;
 	}
@@ -555,7 +555,7 @@ void BuildingDlg::UpdateSlopes()
 	{
 		wxString str;
 		m_strEdgeSlopes = _T("");
-		int i, edges = m_pLevel->GetNumEdges();
+		int i, edges = m_pLevel->NumEdges();
 		for (i = 0; i < edges; i++)
 		{
 			vtEdge *edge = m_pLevel->GetEdge(i);
