@@ -35,8 +35,9 @@
 // use a grid of LOD cells of size LOD_GRIDSIZE x LOD_GRIDSIZE
 #define LOD_GRIDSIZE		192
 
-// static data path
+// All terrains share a static data path and content manager
 StringArray vtTerrain::m_DataPaths;
+vtContentManager3d vtTerrain::s_Content;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -67,6 +68,7 @@ vtTerrain::vtTerrain()
 	m_pDynGeomScale = NULL;
 	m_pTin = NULL;
 	m_pNext = NULL;
+	m_iStructSet = 0;
 
 	m_CamLocation.Identity();
 }
@@ -459,10 +461,8 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 void vtTerrain::AddFence(vtFence3d *fen)
 {
-	vtTagArray options;
-
-	m_Structures.Append(fen);
-	fen->CreateNode(m_pHeightField, options);
+	GetStructures()->Append(fen);
+	fen->CreateNode(this);
 
 	// Add to LOD grid
 	AddNodeToLodGrid(fen->GetGeom());
@@ -477,16 +477,14 @@ void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
 
 	f->AddPoint(epos);
 
-	vtTagArray dummy;
-	f->CreateNode(m_pHeightField, dummy);
+	f->CreateNode(this);
 
 	AddNodeToLodGrid(f->GetGeom());
 }
 
 void vtTerrain::RedrawFence(vtFence3d *f)
 {
-	vtTagArray dummy;
-	f->CreateNode(m_pHeightField, dummy);
+	f->CreateNode(this);
 }
 
 // routes
@@ -637,40 +635,30 @@ bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 ///////////////////////////////////////////////
 // Built Structures
 
-void vtTerrain::CreateStructuresFromXML(vtString strFilename)
+vtStructureArray3d *vtTerrain::CreateStructuresFromXML(const vtString &strFilename)
 {
-	if (!m_Structures.ReadXML(strFilename))
+	VTLOG("CreateStructuresFromXML '%s'\n", (const char *) strFilename);
+	vtStructureArray3d *structures = new vtStructureArray3d;
+	if (!structures->ReadXML(strFilename))
 	{
-		// Format("Couldn't load file %s", strFilename);
-		return;
+		VTLOG("\tCouldn't load file.\n");
+		return NULL;
 	}
-	int num_structs = m_Structures.GetSize();
+	structures->SetTerrain(this);
+	m_StructureSet.Append(structures);
+
+	CreateStructures(structures);
+	return structures;
+}
+
+void vtTerrain::CreateStructures(vtStructureArray3d *structures)
+{
+	int num_structs = structures->GetSize();
 	int suceeded = 0;
 
-	m_Structures.SetHeightField(m_pHeightField);
 	for (int i = 0; i < num_structs; i++)
 	{
-		vtStructure *str = (vtStructure *) m_Structures.GetAt(i);
-		vtStructure3d *str3d = m_Structures.GetStructure3d(i);
-
-		// Construct
-		bool bSuccess = m_Structures.ConstructStructure(str3d);
-		if (!bSuccess)
-		{
-			VTLOG("Failed to create stucture %d\n", i);
-			continue;
-		}
-
-		bSuccess = false;
-		vtTransform *pTrans = str3d->GetTransform();
-		if (pTrans)
-			bSuccess = AddNodeToLodGrid(pTrans);
-		else
-		{
-			vtGeom *pGeom = str3d->GetGeom();
-			if (pGeom)
-				bSuccess = AddNodeToLodGrid(pGeom);
-		}
+		bool bSuccess = CreateStructure(structures, i);
 		if (bSuccess)
 			suceeded++;
 	}
@@ -678,21 +666,78 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 		suceeded, num_structs);
 }
 
+bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
+{
+	vtStructure *str = (vtStructure *) structures->GetAt(index);
+	vtStructure3d *str3d = structures->GetStructure3d(index);
+
+	// Construct
+	bool bSuccess = structures->ConstructStructure(str3d);
+	if (!bSuccess)
+	{
+		VTLOG("\tFailed to create stucture %d\n", index);
+		return false;
+	}
+
+	bSuccess = false;
+	vtTransform *pTrans = str3d->GetTransform();
+	if (pTrans)
+		bSuccess = AddNodeToLodGrid(pTrans);
+	else
+	{
+		vtGeom *pGeom = str3d->GetGeom();
+		if (pGeom)
+			bSuccess = AddNodeToLodGrid(pGeom);
+	}
+	return bSuccess;
+}
+
+/** 
+ * Get the currently active structure array for this terrain.
+ */
+vtStructureArray3d *vtTerrain::GetStructures()
+{
+	if (m_iStructSet < m_StructureSet.GetSize())
+		return m_StructureSet[m_iStructSet];
+	else
+		return NULL;
+}
+
+/** 
+ * Create a new structure array for this terrain, and return it.
+ */
+vtStructureArray3d *vtTerrain::NewStructureArray()
+{
+	vtStructureArray3d *sa = new vtStructureArray3d;
+
+	// these structures will use the heightfield and projection of this terrain
+	sa->SetTerrain(this);
+	sa->m_proj = m_proj;
+
+	m_StructureSet.Append(sa);
+	return sa;
+}
+
+/** 
+ * Delete all the selected structures in the terrain's active structure array.
+ */
 void vtTerrain::DeleteSelectedStructures()
 {
+	vtStructureArray3d *structures = GetStructures();
+
 	// first remove them from the terrain
-	for (int i = 0; i < m_Structures.GetSize(); i++)
+	for (int i = 0; i < structures->GetSize(); i++)
 	{
-		vtStructure *str = m_Structures.GetAt(i);
+		vtStructure *str = structures->GetAt(i);
 		if (str->IsSelected())
 		{
-			vtStructure3d *str3d = m_Structures.GetStructure3d(i);
+			vtStructure3d *str3d = structures->GetStructure3d(i);
 			RemoveNodeFromLodGrid(str3d->GetTransform());
 		}
 	}
 
 	// then do a normal delete-selected
-	m_Structures.DeleteSelected();
+	structures->DeleteSelected();
 }
 
 /**
@@ -857,7 +902,10 @@ void vtTerrain::create_culture(bool bSound)
 		}
 	}
 
-	// create built structures
+	// create built structures - there is always at least one structure array
+	vtStructureArray3d *structures = new vtStructureArray3d;
+	m_StructureSet.Append(structures);
+
 	if (m_Params.m_bBuildings)
 	{
 		vtString building_fname = "BuildingData/";
@@ -880,7 +928,7 @@ void vtTerrain::create_culture(bool bSound)
 	{
 		// No structures loaded, but the might create some later, so set
 		// the projection to match the terrain.
-		m_Structures.m_proj = m_proj;
+		GetStructures()->m_proj = m_proj;
 	}
 
 	// create utility structures (routes = towers and wires)

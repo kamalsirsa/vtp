@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 #include "Structure3d.h"
 #include "vtdata/FilePath.h"
 #include "Route.h"
+#include "Content3d.h"
 
 class vtTerrainGeom;
 class vtTextureCoverage;
@@ -49,7 +50,8 @@ enum TFType
 };
 
 
-/**  The vtTerrain class represents a rectangular area of terrain.
+/**
+ * The vtTerrain class represents a rectangular area of terrain.
  * \par
  * It is described by a set of parameters such as elevation, vegetation,
  * and time of day.  These terrain parameters are contained in the class TParams.
@@ -141,7 +143,11 @@ public:
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 
 	// structures
-	vtStructureArray3d &GetStructures() { return m_Structures; }
+	vtStructureArray3d *GetStructures();
+	vtStructureArray3d *NewStructureArray();
+	vtStructureArray3d *CreateStructuresFromXML(const vtString &strFilename);
+	void CreateStructures(vtStructureArray3d *structures);
+	bool CreateStructure(vtStructureArray3d *structures, int index);
 	void DeleteSelectedStructures();
 
 	// overridable by subclasses to extend culture
@@ -194,6 +200,7 @@ public:
 	// during creation, all data will be looked for on the data path
 	static void SetDataPath(const StringArray &paths) { m_DataPaths = paths; }
 	static StringArray m_DataPaths;
+	static vtContentManager3d s_Content;
 
 protected:
 	/********************** Protected Methods ******************/
@@ -207,7 +214,6 @@ protected:
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
-	void CreateStructuresFromXML(vtString strFilename);
 	void create_culture(bool bSound);
 	void create_floating_labels(const char *filename, const char *fontname);
 
@@ -247,7 +253,8 @@ protected:
 	vtMovGeom		*m_pOceanGeom;
 
 	// built structures, e.g. buildings and fences
-	vtStructureArray3d	m_Structures;
+	Array<vtStructureArray3d *> m_StructureSet;
+	int m_iStructSet;
 
 	vtMaterialArray		*m_pTerrApps1;	// for 'regular' terrain
 	vtMaterialArray		*m_pTerrApps2;	// for dynamic LOD terrain

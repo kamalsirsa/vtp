@@ -790,6 +790,7 @@ void Enviro::SetupScene1()
 	vtScene *pScene = vtGetScene();
 
 	vtTerrain::SetDataPath(g_Options.m_DataPaths);
+	vtTerrain::s_Content.SetDataPaths(&g_Options.m_DataPaths);
 
 	vtCamera *pCamera = pScene->GetCamera();
 	if (pCamera) pCamera->SetName2("Standard Camera");
@@ -1160,17 +1161,18 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 	if (m_bOnTerrain && m_mode == MM_SELECT)
 	{
-		// See if camera ray intersects a structure?  NO, it's simpler
-		//  to just test whether the ground cursor is near a structure
+		// See if camera ray intersects a structure?  NO, it's simpler and
+		//  easier for the user to just test whether the ground cursor is
+		//  near a structure's origin.
 		DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
 
 		double dist1, dist2, dist3;
-		vtStructureArray3d &structures = pTerr->GetStructures();
-		structures.VisualDeselectAll();
+		vtStructureArray3d *structures = pTerr->GetStructures();
+		structures->VisualDeselectAll();
 		m_bSelectedStruct = false;
 
 		int structure;		// index of closest structure
-		bool result1 = structures.FindClosestStructure(gpos, 10.0,
+		bool result1 = structures->FindClosestStructure(gpos, 10.0,
 			structure, dist1);
 
 		vtPlantInstanceArray3d &plants = GetCurrentTerrain()->GetPlantInstances();
@@ -1191,8 +1193,8 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 		if (click_struct)
 		{
-			vtStructure *str = structures.GetAt(structure);
-			vtStructure3d *str3d = structures.GetStructure3d(structure);
+			vtStructure *str = structures->GetAt(structure);
+			vtStructure3d *str3d = structures->GetStructure3d(structure);
 			str->Select(true);
 			str3d->ShowBounds(true);
 			m_bDragging = true;
@@ -1269,9 +1271,9 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 		if (m_mode == MM_SELECT)
 		{
 			vtTerrain *pTerr = GetCurrentTerrain();
-			vtStructureArray3d &structures = pTerr->GetStructures();
+			vtStructureArray3d *structures = pTerr->GetStructures();
 
-			if (structures.NumSelected() != 0)
+			if (structures->NumSelected() != 0)
 				ShowPopupMenu(event.pos);
 		}
 	}
@@ -1287,8 +1289,8 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (m_bSelectedStruct)
 		{
-			vtStructureArray3d &structures = pTerr->GetStructures();
-			structures.OffsetSelectedStructures(ground_delta);
+			vtStructureArray3d *structures = pTerr->GetStructures();
+			structures->OffsetSelectedStructures(ground_delta);
 		}
 		if (m_bSelectedPlant)
 		{
