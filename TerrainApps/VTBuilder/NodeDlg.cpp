@@ -167,7 +167,7 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		// Transfer state to control
 		if (viz == MULTIPLE)
-			GetIntType()->SetSelection(5);
+			GetIntType()->SetSelection(6);
 		else
 			GetIntType()->SetSelection(viz);
 	}
