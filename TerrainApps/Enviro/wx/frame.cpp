@@ -562,6 +562,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		break;
 
 	case 'z':
+#if 0
 		if (pTerr && g_App.m_bSelectedStruct)
 		{
 			vtStructureArray3d *sa = pTerr->GetStructures();
@@ -572,6 +573,22 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			// (Do something to the building as a test)
 			sa->ConstructStructure(bld);
 		}
+#else
+		{
+			vtTerrain *pTerr = GetCurrentTerrain();
+
+			static int hour = 6, min = 30;
+			vtTime time;
+			time.SetTimeOfDay(hour, min, 0);
+			pTerr->recreate_textures(time);
+			min += 30;
+			if (min == 60)
+			{
+				min = 0;
+				hour ++;
+			}
+		}
+#endif
 		break;
 
 	case 4:	// Ctrl-D
@@ -583,20 +600,6 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		// toggle logo
 		g_App.ToggleLogo();
 		break;
-
-	case 'y':
-		{
- vtTerrain *t = GetCurrentTerrain();
- vtHeightField3d *pHF = t->GetHeightField();
-
-  vtCamera *cam = vtGetScene()->GetCamera();
-  FPoint3 middle;
-  pHF->GetCenter(middle);
-  FPoint3 high = middle;
-  high.y += (pHF->m_WorldExtents.Width()/2);
-  cam->SetTrans(high);
-  cam->PointTowards(middle);
-		}
 
 	default:
 		event.Skip();
