@@ -218,6 +218,7 @@ wxFrame(parent, -1, title, pos, size, style)
 
 vtFrame::~vtFrame()
 {
+	VTLOG("Deleting Frame\n");
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
 	delete m_pPlantDlg;
@@ -487,12 +488,14 @@ void vtFrame::SetFullScreen(bool bFull)
 
 void vtFrame::OnExit(wxCommandEvent& event)
 {
+	VTLOG("Got Exit event.\n");
 	m_canvas->m_bRunning = false;
 	Destroy();
 }
 
 void vtFrame::OnClose(wxCloseEvent &event)
 {
+	VTLOG("Got Close event, shutting down.\n");
 	m_canvas->m_bRunning = false;
 	delete m_canvas;
 	m_canvas = NULL;

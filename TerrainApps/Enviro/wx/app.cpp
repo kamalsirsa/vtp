@@ -101,6 +101,7 @@ bool vtApp::OnInit()
 
 int vtApp::OnExit()
 {
+	VTLOG("App Exit\n");
 #ifdef VTLIB_PSM
 	PSWorld3D::Get()->Stop();
 	PSGetScene()->SetWindow(NULL);

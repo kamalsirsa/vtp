@@ -60,6 +60,7 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 
 vtGLCanvas::~vtGLCanvas(void)
 {
+	VTLOG("Deleting Canvas\n");
 }
 
 void EnableContinuousRendering(bool bTrue)
