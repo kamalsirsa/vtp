@@ -415,7 +415,8 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 
 void vtMaterialDescriptorArray3d::CreateMaterials()
 {
-	VTLOG("Creating Building Materials\n");
+	VTLOG("Creating Building Materials:\n");
+	clock_t clock1 = clock();
 
 	m_bMaterialsCreated = true;
 
@@ -427,6 +428,7 @@ void vtMaterialDescriptorArray3d::CreateMaterials()
 	for (j = 0; j < iSize; j++)
 	{
 		vtMaterialDescriptor *descriptor = GetAt(j);
+		VTLOG(" %s,", (const char *) descriptor->GetName());
 
 		switch (descriptor->GetColorable())
 		{
@@ -450,6 +452,8 @@ void vtMaterialDescriptorArray3d::CreateMaterials()
 			break;
 		}
 	}
+	clock_t clock2 = clock();
+	VTLOG(" done in %.3f seconds.\n", (float)(clock2-clock1)/CLOCKS_PER_SEC);
 }
 
 void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor)
