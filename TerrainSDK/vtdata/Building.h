@@ -3,7 +3,7 @@
 //
 // Implements the vtBuilding class which represents a single built structure.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -109,6 +109,7 @@ public:
 	// members
 	enum BldMaterial	 m_Material;
 	Array<vtEdgeFeature> m_Features;
+	vtString			 m_Facade;
 };
 
 #define MAX_WALLS	360	// the largest number of walls

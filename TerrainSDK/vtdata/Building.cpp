@@ -581,7 +581,6 @@ RoofType vtLevel::GuessRoofType()
 	return ROOF_UNKNOWN;
 }
 
-
 /////////////////////////////////////
 
 vtBuilding::vtBuilding() : vtStructure()
@@ -1080,6 +1079,9 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 
 			if (edge->m_fEaveLength != 0.0f)
 				fprintf(fp, " EaveLength=\"%f\"", edge->m_fEaveLength);
+
+			if (!edge->m_Facade.IsEmpty())
+				fprintf(fp, " Facade=\"%s\"", (pcchar)edge->m_Facade);
 
 			fprintf(fp, ">\n");
 
