@@ -221,7 +221,7 @@
 #define ID_FLYTO_SPACE                  32817
 #define ID_FLYTO_TERRAIN                32818
 #define ID_SPACE_SHOWTIME               32821
-#define ID_EARTH_SHOWTIME               32821
+#define ID_EARTH_SHOWSHADING               32821
 #define ID_EARTH_FLATUNFOLD             32822
 #define ID_EARTH_ADDPOINTDATA           32823
 #define ID_TOOLS_MOVE                   32825
