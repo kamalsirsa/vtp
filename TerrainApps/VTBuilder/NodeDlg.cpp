@@ -153,14 +153,14 @@ NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	GetIntType()->Append(_("Unknown"));
 	GetIntType()->Append(_("Uncontrolled"));
-	GetIntType()->Append(_("All Signal Light(s)"));
+	GetIntType()->Append(_("All Traffic Light(s)"));
 	GetIntType()->Append(_("All Stop Sign(s)"));
-	GetIntType()->Append(_("Signal Light(s)"));
+	GetIntType()->Append(_("Traffic Light(s)"));
 	GetIntType()->Append(_("Stop Sign(s)"));
 	GetIntType()->Append(_("(multiple)"));
 
 	GetBehavior()->Append(_("Uncontrolled"));	// IT_NONE
-	GetBehavior()->Append(_("Signal Light"));	// IT_LIGHT
+	GetBehavior()->Append(_("Traffic Light"));	// IT_LIGHT
 	GetBehavior()->Append(_("Stop Sign"));		// IT_STOPSIGN
 
 	m_pView = (NodeDlgView *) FindWindow( ID_SCROLLED );
@@ -175,7 +175,8 @@ void NodeDlg::SetNode(NodeEdit *pSingleNode, vtRoadLayer *pLayer)
 	m_pNode = pSingleNode;
 	m_pLayer = pLayer;
 	m_pView->m_pNode = m_pNode;
-	m_pView->ZoomToPoint(m_pNode->m_p);
+	if (NULL != m_pNode)
+		m_pView->ZoomToPoint(m_pNode->m_p);
 }
 
 // WDR: handler implementations for NodeDlg
@@ -236,21 +237,21 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 	{
 	case VIT_NONE:
 		//make all intersections uncontrolled
-		for (i = 0; i < m_pNode->m_iLinks; i++) {
+		for (i = 0; i < pNode->m_iLinks; i++) {
 			pNode->SetIntersectType(i, IT_NONE);
 		}
 		GetBehavior()->SetSelection(IT_NONE);
 		break;
 	case VIT_ALLSTOPS:
 		//make all intersections stop signs
-		for (i = 0; i < m_pNode->m_iLinks; i++) {
+		for (i = 0; i < pNode->m_iLinks; i++) {
 			pNode->SetIntersectType(i, IT_STOPSIGN);
 		}
 		GetBehavior()->SetSelection(IT_STOPSIGN);
 		break;
 	case VIT_ALLLIGHTS:
 		//make all intersections lights
-		for (i = 0; i < m_pNode->m_iLinks; i++) {
+		for (i = 0; i < pNode->m_iLinks; i++) {
 			pNode->SetIntersectType(i, IT_LIGHT);
 		}
 		GetBehavior()->SetSelection(IT_LIGHT);
