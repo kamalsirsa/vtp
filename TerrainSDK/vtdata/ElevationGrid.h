@@ -131,6 +131,7 @@ protected:
 	short	*m_pData;
 	float	*m_pFData;
 	float	m_fVMeters;	// scale factor to convert stored heights to meters
+	float	m_fVerticalScale;
 
 	void ComputeExtentsFromCorners();
 	void ComputeCornersFromExtents();

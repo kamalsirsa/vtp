@@ -27,8 +27,7 @@ class vtLocalConversion
 public:
 	vtLocalConversion();
 
-	void Setup(LinearUnits units, const DRECT &earth_extents);
-	void SetVerticalScale(float scale);
+	void Setup(LinearUnits units, const DPoint2 &origin);
 
 	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth);
 	void ConvertToEarth(float x, float z, DPoint2 &earth);
@@ -39,10 +38,10 @@ public:
 	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z);
 	void convert_local_xz_to_earth(float x, float z, double &ex, double &ey);
 
-	float	m_fVerticalScale;
-	enum LinearUnits m_units;
+	LinearUnits GetUnits() { return m_units; }
 
 protected:
+	LinearUnits m_units;
 	DPoint2	m_EarthOrigin;
 	DPoint2	m_scale;
 };

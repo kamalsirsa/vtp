@@ -41,6 +41,7 @@ vtElevationGrid::vtElevationGrid()
 
 	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
 	m_szOriginalDEMName[0] = 0;
+	m_fVerticalScale = 1.0f;
 }
 
 /**
@@ -70,6 +71,7 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
 	m_proj = proj;
 	m_szOriginalDEMName[0] = 0;
+	m_fVerticalScale = 1.0f;
 }
 
 /**
@@ -836,8 +838,8 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 
 void vtElevationGrid::SetupConversion(float fVerticalExag)
 {
-	m_Conversion.Setup(m_proj.GetUnits(), m_EarthExtents);
-	m_Conversion.m_fVerticalScale = fVerticalExag;
+	m_Conversion.Setup(m_proj.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	m_fVerticalScale = fVerticalExag;
 	Initialize(this);
 }
 
@@ -845,20 +847,20 @@ void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
 {
 	if (m_bFloatMode)
 		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				m_pFData[i*m_iRows+j] * m_Conversion.m_fVerticalScale,
+				m_pFData[i*m_iRows+j] * m_fVerticalScale,
 				m_WorldExtents.bottom - j * m_fZStep);
 	else
 		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				m_pData[i*m_iRows+j] * m_Conversion.m_fVerticalScale,
+				m_pData[i*m_iRows+j] * m_fVerticalScale,
 				m_WorldExtents.bottom - j * m_fZStep);
 }
 
 float vtElevationGrid::GetWorldValue(int i, int j)
 {
 	if (m_bFloatMode)
-		return m_pFData[i*m_iRows+j] * m_Conversion.m_fVerticalScale;
+		return m_pFData[i*m_iRows+j] * m_fVerticalScale;
 	else
-		return m_pData[i*m_iRows+j] * m_Conversion.m_fVerticalScale;
+		return m_pData[i*m_iRows+j] * m_fVerticalScale;
 }
 
 /**

@@ -26,37 +26,23 @@ vtLocalConversion g_Conv;
 vtLocalConversion::vtLocalConversion()
 {
 	m_EarthOrigin.Set(0, 0);
-	m_fVerticalScale = 1.0f;
 }
 
-void vtLocalConversion::Setup(LinearUnits units, const DRECT &earth_extents)
+void vtLocalConversion::Setup(LinearUnits units, const DPoint2 &origin)
 {
 	m_units = units;
 
-	m_EarthOrigin.Set(earth_extents.left, earth_extents.bottom);
+	m_EarthOrigin = origin;
 	if (units == LU_DEGREES)
 	{
-		double fMetersPerLongitude = EstimateDegreesToMeters(earth_extents.bottom);
+		double fMetersPerLongitude = EstimateDegreesToMeters(origin.y);
 		m_scale.x = fMetersPerLongitude;
 		m_scale.y = METERS_PER_LATITUDE;
 	}
-	else if (units == LU_METERS)
+	else
 	{
-		m_scale.x = m_scale.y = 1.0;
+		m_scale.x = m_scale.y = GetMetersPerUnit(units);
 	}
-	else if (units == LU_FEET_INT)
-	{
-		m_scale.x = m_scale.y = 0.3048;
-	}
-	else if (units == LU_FEET_US)
-	{
-		m_scale.x = m_scale.y = (1200.0/3937.0);
-	}
-}
-
-void vtLocalConversion::SetVerticalScale(float scale)
-{
-	m_fVerticalScale = scale;
 }
 
 void vtLocalConversion::convert_earth_to_local_xz(double ex, double ey,
@@ -80,13 +66,13 @@ void vtLocalConversion::convert_local_xz_to_earth(float x, float z,
 void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
 {
 	convert_local_xz_to_earth(world.x, world.z, earth.x, earth.y);
-	earth.z = world.y / m_fVerticalScale;
+	earth.z = world.y;
 }
 
 void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
 {
 	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.z);
-	world.y = (float) (earth.z * m_fVerticalScale);
+	world.y = (float) earth.z;
 }
 
 void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth)
