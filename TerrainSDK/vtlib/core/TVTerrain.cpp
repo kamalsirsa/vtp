@@ -26,10 +26,10 @@
 #define WEST	1
 #define NORTH	2
 #define EAST	3
-#define NW	4	/* important that low bits alternate SW,NE and NW,SE */
-#define SE	5
-#define NE	6
-#define SW	7
+#define NW		4	/* important that low bits alternate SW,NE and NW,SE */
+#define SE		5
+#define NE		6
+#define SW		7
 
 /* SOUTH,WEST,NORTH,EAST,NW,SE,NE,SW */
 static int lorient[8] = {SE,SW,NW,NE,WEST,EAST,NORTH,SOUTH};
@@ -360,9 +360,11 @@ int TVTerrain::calcErr(vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p
 	return ROUND(max_eps * errPerEm);
 }
 
-//#define MAKE_XYZ(point) fXLookup[point[0]], pGrid->GetFValue(point[0], point[1])*m_fZScale, -fYLookup[point[1]]
-#define MAKE_XYZ(point) m_fXLookup[point[0]], m_pVertex[offset(point[0], point[1])], m_fZLookup[point[1]]
-#define MAKE_XYZ2(x, y) m_fXLookup[x], m_pVertex[offset(x, y)], m_fZLookup[y]
+#define MAKE_XYZ(point) m_fXLookup[point[0]], m_pVertex[offset(point[0], point[1])] * m_fZScale, m_fZLookup[point[1]]
+#define MAKE_XYZ2(x, y) m_fXLookup[x], m_pVertex[offset(x, y)] * m_fZScale, m_fZLookup[y]
+
+#define emitVertex(p) glVertex3f(p[0], m_pVertex[offset(p[0], p[1])], p[1])
+
 
 /* A triangle is in FOV iff one of its 3 vertices is in FOV
  * or if the line of sight intersects one of its 3 segments.
@@ -375,34 +377,16 @@ int TVTerrain::inFOV(Coord2d p1, Coord2d p2, Coord2d p3)
 	FPoint3 v2(MAKE_XYZ(p2));
 	FPoint3 v3(MAKE_XYZ(p3));
 
-#if 0
-	// dumb slow way, just to test correctness of the rest of the code
-	// treat the triangle as a sphere for cull testing
-	FPoint3 center = v1;
-	center += v2;
-	center += v3;
-	center /= 3.0f;
-	float radius = (v1 - center).Length();
-	FSphere3 sph(center, radius);
-
-	if (IsVisible(sph))
-		return PARTINFOV;
-	else
-		return 0;
-#else
-	// slightly smarter way: test the triangle against the view volume
+	// test the triangle against the view volume
 	int ret = IsVisible(v1, v2, v3);
 	if (ret == VT_AllVisible) return ALLINFOV;
 	if (ret == VT_Visible) return PARTINFOV;
 	return 0;
-#endif
-
 #else
 	// no view culling (for simplified testing)
 	return ALLINFOV;
 #endif
 }
-
 
 
 /*  triInFOV(t) -- is triangle t in field of view?  */
@@ -414,7 +398,6 @@ int TVTerrain::triInFOV(TriIndex *t)
   getVerts(t, p1, p2, p3);
   return inFOV(p1, p2, p3);
 }
-
 
 
 int TVTerrain::inROD(Coord2d p1, Coord2d p2, Coord2d p3)
@@ -781,7 +764,7 @@ bool TVTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	// allocate height field
 	m_pVertex = (float *)calloc(m_iXPoints * m_iYPoints, sizeof(float));
-#if 1
+
 	float value;
 	int j;
 	for (i = 0; i < m_iXPoints; i++)
@@ -792,11 +775,9 @@ bool TVTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 		//add weight to shoreline only if the ocean depth is non-zero.
 		if (fOceanDepth < 0.0f && value == 0.0f)
 			value = fOceanDepth;
-		else
-			value *= fZScale;
+
 		m_pVertex[offset(i, j)] = value;
 	}
-#endif
 
 	//	Southwest point is origin
 	sw[0] = 0;
@@ -1151,10 +1132,6 @@ void TVTerrain::emitDFS(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 }
 
 
-
-//#define emitVertex(x,y,z) glVertex3f(fXLookup[x], z*m_fZScale, -fYLookup[y])
-//#define emitVertex(x,y) glVertex3f(MAKE_XYZ(x,y))
-#define emitVertex(p) glVertex3f(MAKE_XYZ(p))
 
 /*
  * emitTri(t, p1, p2, p3) -- emit one triangle

@@ -18,11 +18,8 @@
 // Macros used to generate vertex locations from a heightfield index
 // (You don't have to use them, especially for height)
 //
-#define LOCX(index) m_fXLookup[index % m_iDim]
-#define LOCY(index)	m_pData[index]*m_fZScale
-#define LOCZ(index) m_fZLookup[index / m_iDim]
-#define MAKE_XYZ(index) LOCX(index), LOCY(index), LOCZ(index)
-#define MAKE_XYZ2(x,y) m_fXLookup[x], m_pData[offset(x,y)]*m_fZScale, m_fZLookup[y]
+#define MAKE_XYZ1(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))]*m_fZScale, m_fZLookup[(y)]
+#define MAKE_XYZ2(x,y) (x), m_pData[offset((x),(y))], (y)
 
 
 //
@@ -118,7 +115,6 @@ void CustomTerrain::LoadSingleMaterial()
 	{
 		pMat->Apply();
 		SetupTexGen(1.0f);
-//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 }
 
@@ -174,7 +170,7 @@ void CustomTerrain::RenderPass()
 //
 void CustomTerrain::GetLocation(int iX, int iZ, FPoint3 &p)
 {
-	p.Set(MAKE_XYZ2(iX, iZ));
+	p.Set(MAKE_XYZ1(iX, iZ));
 }
 
 
