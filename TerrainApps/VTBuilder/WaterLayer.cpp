@@ -67,9 +67,6 @@ bool vtWaterLayer::ConvertProjection(vtProjection &proj_new)
 	return true;
 }
 
-#define MAXPOINTS 10000
-static wxPoint roadbuf[MAXPOINTS];
-
 void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	wxPen WaterPen(wxColor(0,40,160), 1, wxSOLID);
@@ -81,13 +78,13 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	{
 		int c;
 		int size = m_Lines[i]->GetSize();
-		for (c = 0; c < size && c < MAXPOINTS; c++)
-			pView->screen(m_Lines[i]->GetAt(c), roadbuf[c]);
+		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
+			pView->screen(m_Lines[i]->GetAt(c), g_screenbuf[c]);
 
 		if (m_bFill)
-			pDC->DrawPolygon(c, roadbuf);
+			pDC->DrawPolygon(c, g_screenbuf);
 		else
-			pDC->DrawLines(c, roadbuf);
+			pDC->DrawLines(c, g_screenbuf);
 	}
 }
 
@@ -146,7 +143,7 @@ void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 	// Initialize arrays
 	m_Lines.SetSize(nElem);
 
-	// Read Polys from SHP into Veg Poly
+	// Read Polys from SHP
 	for (int i = 0; i < nElem; i++)
 	{
 		// Get the i-th Poly in the SHP file
@@ -156,13 +153,12 @@ void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 		DLine2 *new_poly = new DLine2();
 		new_poly->SetSize(psShape->nVertices);
 
-		//Store each SHP Poly Coord in Veg Poly
+		// Copy each SHP Poly Coord
 		for (int j = 0; j < psShape->nVertices; j++)
 		{
 			new_poly->GetAt(j).x = psShape->padfX[j];
 			new_poly->GetAt(j).y = psShape->padfY[j];
 		}
-		//Store the number of coordinate point in the i-th poly
 		m_Lines.SetAt(i, new_poly);
 
 		SHPDestroyObject(psShape);

@@ -267,8 +267,6 @@ bool RoadEdit::PartiallyInBounds(DRECT bound)
 	return false;
 }
 
-#define MAXPOINTS 8000
-static wxPoint roadbuf[MAXPOINTS];
 
 bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	bool bShowWidth) 
@@ -283,25 +281,25 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	int c, size = GetSize();
 	if (bShowWidth)
 	{
-		for (c = 0; c < size && c < MAXPOINTS; c++)
-			pView->screen(m_Left.GetAt(c), roadbuf[c]);
-		pDC->DrawLines(c, roadbuf);
-		for (c = 0; c < size && c < MAXPOINTS; c++)
-			pView->screen(m_Right.GetAt(c), roadbuf[c]);
-		pDC->DrawLines(c, roadbuf);
+		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
+			pView->screen(m_Left.GetAt(c), g_screenbuf[c]);
+		pDC->DrawLines(c, g_screenbuf);
+		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
+			pView->screen(m_Right.GetAt(c), g_screenbuf[c]);
+		pDC->DrawLines(c, g_screenbuf);
 	}
 	else
 	{
-		for (c = 0; c < size && c < MAXPOINTS; c++)
-			pView->screen(GetAt(c), roadbuf[c]);
+		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
+			pView->screen(GetAt(c), g_screenbuf[c]);
 
-		pDC->DrawLines(c, roadbuf);
+		pDC->DrawLines(c, g_screenbuf);
 	}
 	if (m_bSelect)
 	{
 		pDC->SetLogicalFunction(wxINVERT);
 		pDC->SetPen(RoadPen[7]);
-		pDC->DrawLines(GetSize(), roadbuf);
+		pDC->DrawLines(GetSize(), g_screenbuf);
 	}
 	if (bShowDirection)
 	{
@@ -314,10 +312,10 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 		diff.x = diff.y = 0;
 		while (fabs(diff.x) < 2 && fabs(diff.y) < 2)
 		{
-			p0.x = roadbuf[mid-r].x;
-			p0.y = roadbuf[mid-r].y;
-			p1.x = roadbuf[mid+r+1].x;
-			p1.y = roadbuf[mid+r+1].y;
+			p0.x = g_screenbuf[mid-r].x;
+			p0.y = g_screenbuf[mid-r].y;
+			p1.x = g_screenbuf[mid+r+1].x;
+			p1.y = g_screenbuf[mid+r+1].y;
 			diff = p1 - p0;
 			r++;
 		}
@@ -355,12 +353,12 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	if (m_bDrawPoints)
 	{
 		pDC->SetPen(RoadPen[9]);
-		for (c = 0; c < size && c < MAXPOINTS; c++)
+		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
 		{
-			pDC->DrawLine(roadbuf[c].x-3, roadbuf[c].y,
-				roadbuf[c].x+3, roadbuf[c].y);
-			pDC->DrawLine(roadbuf[c].x, roadbuf[c].y-3,
-				roadbuf[c].x, roadbuf[c].y+3);
+			pDC->DrawLine(g_screenbuf[c].x-3, g_screenbuf[c].y,
+				g_screenbuf[c].x+3, g_screenbuf[c].y);
+			pDC->DrawLine(g_screenbuf[c].x, g_screenbuf[c].y-3,
+				g_screenbuf[c].x, g_screenbuf[c].y+3);
 		}
 	}
 	return true;

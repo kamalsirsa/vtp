@@ -72,4 +72,7 @@ protected:
 	wxRect	m_limits;	// allowed range of m_offset
 };
 
+#define SCREENBUF_SIZE 12000
+extern wxPoint g_screenbuf[SCREENBUF_SIZE];
+
 #endif
