@@ -32,6 +32,9 @@ void Enviro::FlyToSpace()
 	VTLOG("FlyToSpace\n");
 	if (m_state == AS_Terrain)
 	{
+		// Make sure the normal camera is active
+		SetTopDown(false);
+
 		// remember camera position
 		vtTerrain *pT = GetCurrentTerrain();
 		vtCamera *pCam = vtGetScene()->GetCamera();

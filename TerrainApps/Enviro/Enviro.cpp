@@ -810,11 +810,14 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	// Set the top-down viewpoint to a point over the center of the new
 	//  terrain, with near and far planes derived from the height extents.
+	m_pTopDownCamera->Identity();
 	FPoint3 middle;
 	pHF->GetCenter(middle);		// Gets XZ center
 
 	float fMin, fMax;
 	pHF->GetHeightExtents(fMin, fMax);
+	fMax *= param.GetValueFloat(STR_VERTICALEXAG);
+	fMax += 1;	// beware flat terrain: safety buffer of 1 meter
 	middle.y = fMax + ORTHO_HITHER;		// highest value + hither
 	m_pTopDownCamera->SetTrans(middle);
 
@@ -959,6 +962,9 @@ void Enviro::SetTopDown(bool bTopDown)
 
 	// set mode again, to put everything in the right state
 	SetMode(m_mode);
+
+	// inform the UI that we have a switched cameras
+	CameraChanged();
 }
 
 void Enviro::DumpCameraInfo()
