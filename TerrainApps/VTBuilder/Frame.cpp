@@ -1068,7 +1068,12 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 		if (!strncmp(buf, "PlantList ", 10))
 		{
 			trim_eol(buf);
-			LoadPlantFile(buf+10);
+			LoadSpeciesFile(buf+10);
+		}
+		if (!strncmp(buf, "BioTypes ", 9))
+		{
+			trim_eol(buf);
+			LoadBiotypesFile(buf+9);
 		}
 		if (!strncmp(buf, "area ", 5))
 		{
@@ -1152,9 +1157,14 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 	fprintf(fp, "Projection %s\n", wkt);
 	OGRFree(wkt);
 
-	if (m_strPlantListFilename != "")
+	if (m_strSpeciesFilename != "")
 	{
-		fprintf(fp, "PlantList %s\n", (const char *) m_strPlantListFilename);
+		fprintf(fp, "PlantList %s\n", (const char *) m_strSpeciesFilename);
+	}
+
+	if (m_strBiotypesFilename != "")
+	{
+		fprintf(fp, "BioTypes %s\n", (const char *) m_strBiotypesFilename);
 	}
 
 	// write list of layers
@@ -1186,14 +1196,25 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 	fclose(fp);
 }
 
-bool MainFrame::LoadPlantFile(const char *fname)
+bool MainFrame::LoadSpeciesFile(const char *fname)
 {
 	if (!GetPlantList()->ReadXML(fname))
 	{
-		DisplayAndLog("Couldn't read plant list from file '%s'", fname);
+		DisplayAndLog("Couldn't read plant list from file '%s'.", fname);
 		return false;
 	}
-	m_strPlantListFilename = fname;
+	m_strSpeciesFilename = fname;
+	return true;
+}
+
+bool MainFrame::LoadBiotypesFile(const char *fname)
+{
+	if (!m_BioRegions.Read(fname))
+	{
+		DisplayAndLog("Couldn't read bioregion list from file '%s'.", fname);
+		return false;
+	}
+	m_strBiotypesFilename = fname;
 	return true;
 }
 

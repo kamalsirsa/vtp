@@ -335,11 +335,13 @@ public:
 	LinStructOptions m_LSOptions;
 
 	// Vegetation
-	vtString m_strPlantListFilename;
+	vtString m_strSpeciesFilename;
+	vtString m_strBiotypesFilename;
 	vtPlantList m_PlantList;
 	vtPlantList *GetPlantList() { return &m_PlantList; }
 	SpeciesListDlg *m_SpeciesListDlg;
-	bool LoadPlantFile(const char *fname);
+	bool LoadSpeciesFile(const char *fname);
+	bool LoadBiotypesFile(const char *fname);
 
 	vtBioRegion m_BioRegions;
 	vtBioRegion *GetBioRegion() { return &m_BioRegions; }

@@ -2161,7 +2161,7 @@ void MainFrame::OnUpdateElevHide(wxUpdateUIEvent& event)
 void MainFrame::OnVegPlants(wxCommandEvent& event)
 {
 	// if PlantList has not previously been open, get the data from file first
-	if (m_strPlantListFilename == "")
+	if (m_strSpeciesFilename == "")
 	{
 		// Use file dialog to open plant list text file.
 		wxFileDialog loadFile(NULL, _T("Load Plant Info"), _T(""), _T(""),
@@ -2171,7 +2171,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 			return;
 
 		wxString2 str = loadFile.GetPath();
-		if (!LoadPlantFile(str.mb_str()))
+		if (!LoadSpeciesFile(str.mb_str()))
 			return;
 	}
 	if (!m_SpeciesListDlg)
@@ -2200,11 +2200,8 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 
 		// Read bioregions, data kept on frame with m_pBioRegion.
 		wxString2 str = loadFile.GetPath();
-		if (!m_BioRegions.Read(str.mb_str()))
-		{
-			DisplayAndLog("Couldn't read bioregion list from that file.");
+		if (!LoadBiotypesFile(str.mb_str()))
 			return;
-		}
 
 		// Create new Bioregion Dialog
 		m_BioRegionDlg = new BioRegionDlg(this, WID_BIOREGIONS, _T("BioRegions List"), 
@@ -2270,8 +2267,8 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 	FindVegLayers(&Density, &BioMap);
 
 	// density is now optional, defaults to 1 if there is no density layer
-	event.Enable(m_SpeciesListDlg && m_BioRegionDlg && BioMap &&
-			!m_area.IsEmpty());
+	event.Enable(m_strSpeciesFilename != "" && m_strBiotypesFilename != "" &&
+		BioMap != NULL && !m_area.IsEmpty());
 }
 
 
