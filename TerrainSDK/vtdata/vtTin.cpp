@@ -1,7 +1,7 @@
 //
 // vtTin.cpp
 //
-// Class which represents a Triangular Irregular Network.
+// Class which represents a Triangulated Irregular Network.
 //
 // Copyright (c) 2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -87,6 +87,10 @@ bool vtTin::_ReadTin(FILE *fp)
 	return true;
 }
 
+/**
+ * Read the TIN from a file.  This can either be an old-style or new-style
+ * .tin format (custom VTP format)
+ */
 bool vtTin::Read(const char *fname)
 {
 	// first read the point from the .tin file
@@ -117,6 +121,9 @@ bool vtTin::Read(const char *fname)
 	return true;
 }
 
+/**
+ * Write the TIN to a new-style .tin file (custom VTP format).
+ */
 bool vtTin::Write(const char *fname)
 {
 	FILE *fp = fopen(fname, "wb");

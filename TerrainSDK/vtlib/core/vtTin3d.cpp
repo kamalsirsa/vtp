@@ -1,7 +1,7 @@
 //
 // vtTin3d.cpp
 //
-// Class which represents a Triangular Irregular Network.
+// Class which represents a Triangulated Irregular Network.
 //
 // Copyright (c) 2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -17,6 +17,10 @@ vtTin3d::vtTin3d()
 	m_pDropGeom = NULL;
 }
 
+/**
+ * Read the TIN from a file.  This can either be an old-style or new-style
+ * .tin format (custom VTP format)
+ */
 bool vtTin3d::Read(const char *fname)
 {
 	if (!vtTin::Read(fname))

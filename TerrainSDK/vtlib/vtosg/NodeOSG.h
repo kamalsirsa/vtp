@@ -188,6 +188,7 @@ public:
 	~vtGeom();
 
 	/** Add a mesh to this geometry.
+		\param pMesh The mesh to add
 		\param iMatIdx The material index for this mesh, which is an index
 			into the material array of the geometry. */
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
@@ -291,6 +292,12 @@ protected:
 
 //////////////////////////////////////////////////
 
+/**
+ * An LOD node controls the visibility of its child nodes.
+ *
+ * You should set a distance value (range) for each child, which determines
+ * at what distance from the camera a node should be rendered.
+ */
 class vtLOD : public vtGroup
 {
 public:

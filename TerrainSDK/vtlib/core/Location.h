@@ -8,14 +8,14 @@
 #ifndef LOCATION_H
 #define LOCATION_H
 
-//
-// Currently, a location is represented as a world-coordinate
-// (not earth-coordinate) view matrix.  This should really be
-// improved to use separate:
-//	1. geographic location, potentially including datum etc.
-//  2. altitude
-//  3. orientation
-//
+/**
+ * Currently, a location is represented as a world-coordinate
+ * (not earth-coordinate) view matrix.  This should really be
+ * improved to use separate:
+ *	1. geographic location, potentially including datum etc.
+ *  2. altitude
+ *  3. orientation
+ */
 class vtLocation
 {
 public:
@@ -32,9 +32,15 @@ public:
 	FMatrix4 m_mat;
 };
 
+/**
+ * This class manages a set of named locations (position and orientation).
+ * It can save and load the locations to a file, and jump back to
+ * any stored location.
+ *
+ * \sa vtLocation
+ */
 class vtLocationSaver
 {
-// Construction
 public:
 	vtLocationSaver();
 	vtLocationSaver(const char* fname);

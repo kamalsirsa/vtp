@@ -75,6 +75,7 @@ and distributed under a completely free <a href="../../license.txt">open source 
       <p>Elevation</p>
       <ul>
         <li>vtElevationGrid</li>
+        <li>vtTin</li>
       </ul>
       <p>Bitmaps</p>
       <ul>

@@ -231,7 +231,7 @@ protected:
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
 
-	// triangular irregular network (TIN)
+	// triangulated irregular network (TIN)
 	vtTin3d		*m_pTin;
 
 	// construction parameters used to create this terrain

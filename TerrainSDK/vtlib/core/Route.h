@@ -12,20 +12,30 @@
 class vtHeightField;
 class vtTerrain;
 
+/**
+ * This class represents a single type of utility structure, such as a
+ * telephone power or transmission tower.
+ */
 class vtUtilStruct
 {
 public:
 	vtUtilStruct();
 
-	vtTransform*	m_pTower;		// The station may have a tower placed on it
+	vtTransform*	m_pTower;	// The station may have a tower placed on it
 	vtString m_sStructName;
 
-	FPoint3 m_fpWireAtt1[7];	 // where are the wires?
-	FPoint3 m_fpWireAtt2[7];	 // where are the wires?
+	// The points at which the wires attach, 
+	FPoint3 m_fpWireAtt1[7];
+	FPoint3 m_fpWireAtt2[7];
 
 	int m_iNumWires;
 };
 
+/**
+ * This class represents a 'node' in a network of utility structures.
+ * Generally this will have a physical structure associated with it,
+ * the type of which is described by the class vtUtilStruct.
+ */
 class vtUtilNode
 {
 public:
@@ -34,8 +44,8 @@ public:
 
 	DPoint2 m_dpOffsetElevations;	// x=Left, y=Right
 	DPoint2 m_dpOffsetDistances;	// x=Left, y=Right
-	double dRadAzimuth;				// azimuth.
-	vtUtilStruct *m_struct;		// Object to draw.
+	double dRadAzimuth;				// azimuth (orientation to next node)
+	vtUtilStruct *m_struct;			// Object to draw.
 	vtString m_sStructName;			// Structure Family
 
 	DPoint2 m_Point;
@@ -43,7 +53,10 @@ public:
 	vtTransform *m_pTrans;
 };
 
-
+/**
+ * A vtRoute is a set of nodes (vtUtilNode) describing the path of
+ * utility components (such as a power line).
+ */
 class vtRoute
 {
 public:
@@ -88,6 +101,9 @@ protected:
 	bool m_bDirty;
 };
 
+/** 
+ * vtRouteMap is a container for a set of vtRoute objects.
+ */
 class vtRouteMap : public Array<vtRoute *>
 {
 public:

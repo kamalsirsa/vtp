@@ -11,9 +11,19 @@
 #include "MathTypes.h"
 #include "Projections.h"
 
+// a type useful for the Merge algorithm
 typedef Array<int> Bin;
 
 
+/**
+ * This class represents a TIN, a 'triangulated irregular network'.  A TIN
+ * consists of a set of vertices connected by triangles with no regularity.
+ * However this class does expect to operate on a particular kind of
+ * TIN, specifically a heightfield TIN.
+ *
+ * The triangles are defined by indices into the vertex array, so this is
+ * an "indexed TIN".
+ */
 class vtTin
 {
 public:

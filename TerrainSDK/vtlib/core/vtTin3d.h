@@ -11,6 +11,11 @@
 #include "vtdata/vtTin.h"
 #include "HeightField.h"
 
+/**
+ * This class extends vtTin with the ability to call vtlib to create 3d
+ * geometry for the TIN.  It also subclasses vtHeightField so it provides
+ * the ability to do height-testing and ray-picking.
+ */
 class vtTin3d : public vtTin, public vtHeightField
 {
 public:
