@@ -27,7 +27,7 @@
 
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
-#define PLANETWORK			1
+#define PLANETWORK			0
 #define SPACE_DARKNESS		0.0f
 #define UNFOLD_SPEED		0.01f
 
@@ -705,6 +705,17 @@ void Enviro::DoPickers()
 	}
 }
 
+void GeomAddRectMesh(vtGeom *pGeom, const FRECT &rect, float z, int matidx)
+{
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
+	mesh->AddVertexUV(FPoint3(rect.left, rect.bottom, z), 0, 0);
+	mesh->AddVertexUV(FPoint3(rect.right, rect.bottom, z), 1, 0);
+	mesh->AddVertexUV(FPoint3(rect.right, rect.top, z), 1, 1);
+	mesh->AddVertexUV(FPoint3(rect.left, rect.top, z), 0, 1);
+	mesh->AddFan(0, 1, 2, 3);
+	pGeom->AddMesh(mesh, matidx);
+}
+
 
 //
 // Create the earth globe
@@ -743,13 +754,21 @@ void Enviro::MakeGlobe()
 	trans->Scale3(1.006f, 1.006f, 1.006f);
 	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
 
-//	m_pGlobeTime->SetSpeed(500);
-//	Globe2->DoSeasonalTilt(false);
-//	m_pIcoGlobe->DoSeasonalTilt(false);
-
 	// Planetwork globe is around 3 PM GMT, summer over the north atlantic
 	m_pGlobeTime->SetDate(2000, 6, 20);
 	m_pGlobeTime->SetGMT(15,0,0);
+
+	vtGeom *geom = new vtGeom();
+	vtMaterialArray *mats = new vtMaterialArray();
+	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
+	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
+	geom->SetMaterials(mats);
+	float width = 1.9, height = .22;
+	FRECT rect(-width/2, height/2, width/2, -height/2);
+	GeomAddRectMesh(geom, rect, 1.15, 0);
+	rect += FPoint2(0.01, -0.01);
+	GeomAddRectMesh(geom, rect, 1.14, 1);
+	m_pGlobeContainer->AddChild(geom);
 #endif
 
 	// pass the time along once to orient the earth
@@ -763,7 +782,7 @@ void Enviro::MakeGlobe()
 	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
 	vtGetScene()->AddEngine(m_pTrackball);
 #if PLANETWORK
-	m_pTrackball->SetDirection(0,0.185);
+//	m_pTrackball->SetDirection(0,0.185);
 	Globe2->SetTime(m_pGlobeTime->GetTime());
 #endif
 
@@ -1509,7 +1528,7 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 
 		// turn off globe shading and culling
 		m_pIcoGlobe->SetCulling(false);
-		m_pIcoGlobe->SetLighting(false);
+		SetEarthShading(false);
 
 		m_fFoldDir = UNFOLD_SPEED;
 	}
