@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2004.06.08
+AppVerName=VTP Software 2004.08.05
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -58,6 +58,7 @@ Source: "C:\VTP\TerrainApps\VTBuilder\Docs\images\*"; DestDir: "{app}\Docs\VTBui
 ; Translation files
 Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\de\Enviro.mo"; DestDir: "{app}\Apps\de"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\en_GB\Enviro.mo"; DestDir: "{app}\Apps\en_GB"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\hu\Enviro.mo"; DestDir: "{app}\Apps\hu"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\pt\Enviro.mo"; DestDir: "{app}\Apps\pt"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\ro\Enviro.mo"; DestDir: "{app}\Apps\ro"; Flags: ignoreversion; Components: main
@@ -74,7 +75,10 @@ Source: "C:\VTP\TerrainApps\Data\GeoTypical\*"; DestDir: "{app}\Data\GeoTypical"
 Source: "C:\VTP\TerrainApps\Data\PlantData\species.xml"; DestDir: "{app}\Data\PlantData"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\PlantModels\*.png"; DestDir: "{app}\Data\PlantModels"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\PointData\vtp-users-04*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Sky\*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\bsc.data"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\*.png"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\philo*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\skydome*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_1024_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_512_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 

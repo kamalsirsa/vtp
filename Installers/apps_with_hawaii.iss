@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2004.06.08
+AppVerName=VTP Software 2004.08.05
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -59,12 +59,13 @@ Source: "C:\VTP\TerrainApps\VTBuilder\Docs\images\*"; DestDir: "{app}\Docs\VTBui
 ; Translation files
 Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\de\Enviro.mo"; DestDir: "{app}\Apps\de"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\en_GB\Enviro.mo"; DestDir: "{app}\Apps\en_GB"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\hu\Enviro.mo"; DestDir: "{app}\Apps\hu"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\pt\Enviro.mo"; DestDir: "{app}\Apps\pt"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\ro\Enviro.mo"; DestDir: "{app}\Apps\ro"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\sv\Enviro.mo"; DestDir: "{app}\Apps\sv"; Flags: ignoreversion; Components: main
 
-; Standard Data
+; Core Data
 Source: "C:\VTP\TerrainApps\VTBuilder\WorldMap\gnv19.*"; DestDir: "{app}\Apps\WorldMap"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\common_content.vtco"; DestDir: "{app}\Data"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\BuildingModels\*.jpg"; DestDir: "{app}\Data\BuildingModels"; Flags: ignoreversion; Components: data
@@ -76,7 +77,10 @@ Source: "C:\VTP\TerrainApps\Data\PlantData\bioregion.txt"; DestDir: "{app}\Data\
 Source: "C:\VTP\TerrainApps\Data\PlantData\species.xml"; DestDir: "{app}\Data\PlantData"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\PlantModels\*.png"; DestDir: "{app}\Data\PlantModels"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\PointData\vtp-users-04*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Sky\*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\bsc.data"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\*.png"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\philo*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\Sky\skydome*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_1024_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_512_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 
@@ -88,11 +92,11 @@ Source: "E:\Data-USA\Elevation\honoka'a3_flat_2k.*"; DestDir: "{app}\Data\Elevat
 Source: "E:\Data-USA\Elevation\hawaii_q_1k.*"; DestDir: "{app}\Data\Elevation"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\Elevation\hawaii_q_2k.*"; DestDir: "{app}\Data\Elevation"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\Elevation\hawaii_q_4k.*"; DestDir: "{app}\Data\Elevation"; Flags: ignoreversion; Components: hawa
-Source: "E:\Data-USA\Elevation\kaho`olawe2k.*"; DestDir: "{app}\Data\Elevation"; Flags: ignoreversion; Components: hawa
+;Source: "E:\Data-USA\Elevation\kaho`olawe2k.*"; DestDir: "{app}\Data\Elevation"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\GeoSpecific\bigisland_ls_1024.jpg"; DestDir: "{app}\Data\GeoSpecific"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\GeoSpecific\bigisland_ls_2045.jpg"; DestDir: "{app}\Data\GeoSpecific"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\GeoSpecific\bigisland_ls_4093.jpg"; DestDir: "{app}\Data\GeoSpecific"; Flags: ignoreversion; Components: hawa
-Source: "E:\Data-USA\GeoSpecific\kaho_2048.jpg"; DestDir: "{app}\Data\GeoSpecific"; Flags: ignoreversion; Components: hawa
+;Source: "E:\Data-USA\GeoSpecific\kaho_2048.jpg"; DestDir: "{app}\Data\GeoSpecific"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\Locations\Hawai`i.loc"; DestDir: "{app}\Data\Locations"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\Locations\Honoka`a.loc"; DestDir: "{app}\Data\Locations"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\PlantData\bioregion-hawai'i.txt"; DestDir: "{app}\Data\PlantData"; Flags: ignoreversion; Components: hawa
@@ -100,7 +104,8 @@ Source: "E:\Data-USA\PlantData\honokaa4.vf"; DestDir: "{app}\Data\PlantData"; Fl
 Source: "E:\Data-USA\PointData\hawai'i.*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\RoadData\hawai`i_hwy_wgs84.rmf"; DestDir: "{app}\Data\RoadData"; Flags: ignoreversion; Components: hawa
 Source: "E:\Data-USA\RoadData\honoka`a4_wgs84.rmf"; DestDir: "{app}\Data\RoadData"; Flags: ignoreversion; Components: hawa
-Source: "E:\Data-USA\Terrains\Distrib\*.xml"; DestDir: "{app}\Data\Terrains"; Flags: ignoreversion; Components: hawa
+Source: "E:\Data-USA\Terrains\Distrib\Hawai'i.xml"; DestDir: "{app}\Data\Terrains"; Flags: ignoreversion; Components: hawa
+Source: "E:\Data-USA\Terrains\Distrib\Honoka'a.xml"; DestDir: "{app}\Data\Terrains"; Flags: ignoreversion; Components: hawa
 
 ; overview docs
 Source: "C:\VTP\Docs\*.html"; DestDir: "{app}\Docs"; Flags: ignoreversion; Components: docs
