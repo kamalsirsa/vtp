@@ -61,6 +61,9 @@ private:
 	float m_fHeightScale;
 	float m_fMaximumScale;
 	float m_fDrawScale;
+
+	int m_iLastDiff;
+	float m_fDamping;
 };
 
 #endif	// SRTerrain

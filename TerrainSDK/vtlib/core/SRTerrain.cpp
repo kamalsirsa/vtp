@@ -11,6 +11,7 @@
 
 #include "vtlib/vtlib.h"
 #include "SRTerrain.h"
+#include "vtdata/vtLog.h"
 
 #include "mini.h"
 #include "ministub.hpp"
@@ -29,6 +30,8 @@ SRTerrain::SRTerrain() : vtDynTerrainGeom()
 {
 	m_fResolution = 10000.0f;
 	m_pMini = NULL;
+	m_iLastDiff = 0;
+	m_fDamping = 0;
 }
 
 SRTerrain::~SRTerrain()
@@ -292,7 +295,7 @@ void SRTerrain::RenderSurface()
 }
 
 
-#define ADAPTION_SPEED	.0001f	// speed at which detail converges
+#define ADAPTION_SPEED	.0002f		// speed at which detail converges
 
 void SRTerrain::RenderPass()
 {
@@ -333,10 +336,33 @@ void SRTerrain::RenderPass()
 	// adaptively adjust resolution threshold up or down to attain
 	// the desired polygon (vertex) count target
 	int diff = m_iDrawnTriangles - m_iPolygonTarget;
-	int iRange = m_iPolygonTarget / 20;		// ensure within 5%
+	int iRange = m_iPolygonTarget / 10;		// ensure within 10%
 	float adjust = 1.0f;
-	if (diff < -iRange) adjust = 1.0f + (-diff * ADAPTION_SPEED);
-	if (diff > iRange) adjust = 1.0f + (-diff * ADAPTION_SPEED);
+
+	if (diff < -iRange || diff > iRange)
+	{
+		// the amount we change resolution is proportional to how much we
+		//  missed our triangle count target
+		float change_by = -diff * ADAPTION_SPEED;
+
+		// avoid hysteresis by using additional damping on direction change
+		if ((m_iLastDiff > 0 && diff < 0) ||
+			(m_iLastDiff < 0 && diff > 0))
+		{
+//			VTLOG("Changing dir, diff %d, previous %d\n", diff, previous_diff);
+			m_fDamping = -0.9;	// 90% damping
+		}
+		change_by *= (1.0 + m_fDamping);
+
+		// exponential response factor
+		adjust = pow(2.0, (double)change_by);
+
+		// clamp, to avoid extreme cases
+		if (adjust > 100.0f) adjust = 100.0f;
+		if (adjust < 0.01f) adjust = 0.01f;
+	}
+	m_iLastDiff = diff;	// remember for next frame
+	m_fDamping /= 2;	// damping falls off rapidly
 
 	m_fResolution *= adjust;
 
