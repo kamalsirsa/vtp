@@ -942,13 +942,13 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 	/* open input file */
 	if ((fpin = fopen(szFileName, "rb")) == NULL)
 	{
-		perror("Could not open input file ");
+		// "Could not open input file"
 		return false;
 	}
 
 	if (fread(sbuf, sizeof(char), 2, fpin) != 2)
 	{
-		perror("Could not read file");
+		// "Could not read file"
 		return false;
 	}
 
@@ -1024,6 +1024,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 			}
 		}
 	}
+	fclose(fpin);
 	return true;
 }
 
@@ -1076,7 +1077,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		// UTM zone
 		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
-		// 1.0 didn't support Datum, assume WGS84
+		// 1.0 didn't support Datum, so assume WGS84
 		datum = WGS_84;
 
 		// coordinate extents left-right
@@ -1105,7 +1106,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 		m_bFloatMode = (svalue == 1);
 
-		// Projection (0 = geo, 1 = utm, 2 = use external .prj file)
+		// Projection (0 = geo, 1 = utm, 2 = feet, 3 = u.s. feet)
 		FRead(&proj_type, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// UTM zone (ignore unless projection == 1)
@@ -1557,6 +1558,144 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	fclose(fp);
 
 	// Return success
+	return true;
+}
+
+
+/** Loads from a MicroDEM format file.
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_callback(int))
+{
+	FILE *fp;
+	int offset_to_header;
+	int offset_to_data;
+	char buf[40];
+	short xsize, ysize;
+	short max_elev, min_elev;
+	char xspacing, yspacing;
+	int utm_x_lowerleft;
+	int utm_y_lowerleft;
+	char elev_unit_type;
+	char utm_zone;
+	char dem_type;
+	char spacing_unit;
+	char hemi;
+	short elev;
+
+	/* open input file */
+	if ((fp = fopen(szFileName, "rb")) == NULL)
+	{
+		// "Could not open input file"
+		return false;
+	}
+
+	fread(buf, 9, 1, fp);
+	if (strncmp(buf, "*MICRODEM", 9))
+	{
+		// not MicroDEM format
+		fclose(fp);
+		return false;
+	}
+
+	// Find offsets to header and data
+	fseek(fp, 14, SEEK_SET);
+	fread(buf, 5, 1, fp);
+	buf[5] = '\0';
+	offset_to_header = atoi(buf);
+	fseek(fp, 36, SEEK_SET);
+	fread(buf, 5, 1, fp);
+	buf[5] = '\0';
+	offset_to_data = atoi(buf);
+
+	// Read header
+	fseek(fp, offset_to_header, SEEK_SET);
+	fread(&xsize, 2, 1, fp);
+	fread(&ysize, 2, 1, fp);
+	fread(buf, 3, 1, fp);			// "OSquareID"
+	fread(&max_elev, 2, 1, fp);
+	fread(&min_elev, 2, 1, fp);
+	fread(&xspacing, 1, 1, fp);		// x data point spacing, in sec, min, or m
+	fread(&yspacing, 1, 1, fp);		// y data point spacing, in sec, min, or m
+	fread(buf, 20, 1, fp);			// unused
+	fread(&utm_x_lowerleft, 4, 1, fp);
+	fread(&utm_y_lowerleft, 4, 1, fp);
+	fread(&elev_unit_type, 1, 1, fp);	// (Meters, Feet, TenthMgal,
+		// Milligal, TenthGamma, Decimeters, Gammas, HundredthMGal, DeciFeet,
+		// Centimeters, OtherElev, HundredthMa, HundredthPercentSlope,
+		// Undefined, zDegrees, UndefinedHundredth
+	fread(buf, 8, 1, fp);			// unused
+	fread(&utm_zone, 1, 1, fp);
+	fread(&dem_type, 1, 1, fp);		// 0 = UTM DEM, 1 = ArcSecond DEM
+	fread(&spacing_unit, 1, 1, fp);	// Meters,Seconds,Minutes,KM,100m,Feet
+		// KFeet,Degrees,HundredthSecond,MercProj100m,PolarStereo100m,100
+	fread(buf, 1, 1, fp);			// unused "USGS standard" = 1
+	fread(buf, 12, 1, fp);			// unused
+	fread(&hemi, 1, 1, fp);			// hemisphere 'N' or 'S'
+	// rest of header unused
+
+	// Read data
+	fseek(fp, offset_to_data, SEEK_SET);
+
+	// Set the projection - what is Datum? MicroDEM appears to convert
+	// everything to WGS84?
+	m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
+
+	switch (spacing_unit)
+	{
+	case 1:	// feet
+		SetScale(0.3084f);
+		break;
+	case 5:	// Decimeters
+		SetScale(0.1f);
+		break;
+	case 8:	// DeciFeet
+		SetScale(0.3084f / 10);
+		break;
+	case 9:	// Centimeters
+		SetScale(0.01f);
+		break;
+	}
+
+	// set the corresponding vtElevationGrid info
+	m_bFloatMode = false;
+	if (dem_type == 0)
+	{
+		m_area.left = utm_x_lowerleft;
+		m_area.top = utm_y_lowerleft + (ysize-1) * yspacing;
+		m_area.right = utm_x_lowerleft + (xsize-1) * xspacing;
+		m_area.bottom = utm_y_lowerleft;
+	}
+	else
+	{
+		// convert extents from arcminutes to degrees
+		m_area.left = utm_x_lowerleft / 3600.0;
+		m_area.top = (utm_y_lowerleft + (ysize-1) * yspacing) / 3600.0;
+		m_area.right = (utm_x_lowerleft + (xsize-1) * xspacing) / 3600.0;
+		m_area.bottom = utm_y_lowerleft / 3600.0;
+	}
+	ComputeCornersFromExtents();
+
+	m_iColumns = xsize;
+	m_iRows = ysize;
+
+	_AllocateArray();
+
+	int i, j;
+	for (i = 0; i < xsize; i++)
+	{
+		if (progress_callback != NULL) progress_callback(i * 100 / xsize);
+		for (j = 0; j < ysize; j++)
+		{
+			fread(&elev, 2, 1, fp);
+			if (elev == 32767)
+				SetValue(i, j, INVALID_ELEVATION);
+			else
+				SetValue(i, j, elev);
+		}
+	}
+	fclose(fp);
+
 	return true;
 }
 

@@ -48,6 +48,7 @@ public:
 	bool LoadFromPGM(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromRAW(const char *szFileName, int width,	int height,
 		int bytes_per_element, float vertical_units);
+	bool LoadFromMicroDEM(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromBT(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadBTHeader(const char *szFileName);
 
