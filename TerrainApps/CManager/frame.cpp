@@ -631,7 +631,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 	model->m_attempted_load = true;
 
-	vtNode *pNode = vtLoadModel(fname);
+	vtNodeBase *pNode = vtLoadModel(fname);
 	if (!pNode)
 	{
 		wxString str;

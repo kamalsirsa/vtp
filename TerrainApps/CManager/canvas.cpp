@@ -187,37 +187,28 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
 	wxEventType  ev = event1.GetEventType();
-	switch (ev)
-	{
-	case wxEVT_LEFT_DOWN:
+	if (ev == wxEVT_LEFT_DOWN) {
 		event.type = VT_DOWN;
 		event.button = VT_LEFT;
-		break;
-	case wxEVT_LEFT_UP:
+	} else if (ev == wxEVT_LEFT_UP) {
 		event.type = VT_UP;
 		event.button = VT_LEFT;
-		break;
-	case wxEVT_MIDDLE_DOWN:
+	} else if (ev == wxEVT_MIDDLE_DOWN) {
 		event.type = VT_DOWN;
 		event.button = VT_MIDDLE;
-		break;
-	case wxEVT_MIDDLE_UP:
+	} else if (ev == wxEVT_MIDDLE_UP) {
 		event.type = VT_UP;
 		event.button = VT_MIDDLE;
-		break;
-	case wxEVT_RIGHT_DOWN:
+	} else if (ev == wxEVT_RIGHT_DOWN) {
 		event.type = VT_DOWN;
 		event.button = VT_RIGHT;
-		break;
-	case wxEVT_RIGHT_UP:
+	} else if (ev == wxEVT_RIGHT_UP) {
 		event.type = VT_UP;
 		event.button = VT_RIGHT;
-		break;
-	case wxEVT_MOTION:
+	} else if (ev == wxEVT_MOTION) {
 		event.type = VT_MOVE;
 		event.button = VT_NONE;
-		break;
-	default:
+	} else {
 		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
 		return;
 	}

@@ -118,7 +118,7 @@ void SceneGraphDlg::RefreshTreeContents()
 
 	// Fill in the tree with nodes
 	vtNode *pRoot = scene->GetRoot();
-	if (pRoot) AddNodeItemsRecursively(NULL, pRoot, 0);
+	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
 	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, "Engines", 7, 7);
