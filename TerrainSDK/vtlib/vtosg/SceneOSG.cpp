@@ -155,7 +155,7 @@ void vtScene::DoUpdate()
 	}
 
 	// And apply the rotation and translation of the camera itself
-	osg::Matrix &mat2 = m_pCamera->m_pTransform->getMatrix();
+	const osg::Matrix &mat2 = m_pCamera->GetOsgTransform()->getMatrix();
 	osg::Matrix imat;
 	imat.invert(mat2);
 	m_pOsgSceneView->setViewMatrix(imat);
