@@ -49,18 +49,16 @@ vtElevationGrid::vtElevationGrid()
 vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 	bool bFloat, const vtProjection &proj)
 {
-	m_EarthExtents = area;			// raw extents
-	m_iColumns = iColumns;
-	m_iRows = iRows;
+	vtHeightFieldGrid3d::Initialize(proj.GetUnits(), area, INVALID_ELEVATION,
+		INVALID_ELEVATION, iColumns, iRows);
 
 	m_bFloatMode = bFloat;
 	_AllocateArray();
-	m_fVMeters = 1.0f;
 
 	ComputeCornersFromExtents();
 
-	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
 	m_proj = proj;
+	m_fVMeters = 1.0f;
 	m_fVerticalScale = 1.0f;
 }
 
@@ -280,7 +278,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 			// that the points will also transform without errors.
 			trans->Transform(1, &p.x, &p.y);
 
-			value = pOld->GetFilteredValue(p.x, p.y);
+			value = pOld->GetFilteredValue(p);
 			SetFValue(i, j, value);
 		}
 	}
@@ -595,10 +593,10 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
  * \param x, y	The coordinate to query.
  */
-float vtElevationGrid::GetClosestValue(double x, double y) const
+float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
 {
-	int ix = (int)((x - m_EarthExtents.left) / m_EarthExtents.Width() * m_iColumns);
-	int iy = (int)((y - m_EarthExtents.bottom) / m_EarthExtents.Height() * m_iRows);
+	int ix = (int)((p.x - m_EarthExtents.left) / m_EarthExtents.Width() * m_iColumns);
+	int iy = (int)((p.y - m_EarthExtents.bottom) / m_EarthExtents.Height() * m_iRows);
 	if (ix >= 0 && ix < m_iColumns && iy >= 0 && iy < m_iRows)
 		return GetFValue(ix, iy);
 	else
@@ -612,11 +610,11 @@ float vtElevationGrid::GetClosestValue(double x, double y) const
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
  * \param x, y	The coordinate to query.
  */
-float vtElevationGrid::GetFilteredValue(double x, double y) const
+float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
 	// what data point in t is closest to (x,y)?
-	double local_x = (x - m_EarthExtents.left) / (m_EarthExtents.right - m_EarthExtents.left);
-	double local_y = (y - m_EarthExtents.bottom) / (m_EarthExtents.top - m_EarthExtents.bottom);
+	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
+	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
 
 	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
 	if (index_x < 0 || index_x >= m_iColumns)
@@ -660,6 +658,11 @@ float vtElevationGrid::GetFilteredValue(double x, double y) const
 	{
 		double diff_x = findex_x - index_x;
 		double diff_y = findex_y - index_y;
+		// catch numerical roundoff, diff must be [0..1]
+		if (diff_x < 0)
+			diff_x = 0;
+		if (diff_y < 0)
+			diff_y = 0;
 		fDataBL = GetFValue(index_x, index_y);
 		fDataBR = GetFValue(index_x+1, index_y);
 		fDataTL = GetFValue(index_x, index_y+1);
@@ -692,21 +695,26 @@ float vtElevationGrid::GetFValueSafe(int i, int j) const
  * This method is more liberal in regards to finding a valid data point
  * among undefined data than GetFilteredValue()
  */
-float vtElevationGrid::GetFilteredValue2(double x, double y) const
+float vtElevationGrid::GetFilteredValue2(const DPoint2 &p) const
 {
 	float fData;
 
-	// simple case, within the
-	if (ContainsEarthPoint(DPoint2(x, y)))
+	// Quickly reject points well outside the greatest possible extents of
+	//  this grid, for speed.
+	if (GetAreaExtents().ContainsPoint(p) == false)
+		return INVALID_ELEVATION;
+
+	// simple case, within the precise extents
+	if (m_EarthExtents.ContainsPoint(p, true))
 	{
-		fData = GetFilteredValue(x, y);
+		fData = GetFilteredValue(p);
 		if (fData != INVALID_ELEVATION)
 			return fData;
 	}
 
 	// what data point in t is closest to (x,y)?
-	double local_x = (x - m_EarthExtents.left) / (m_EarthExtents.right - m_EarthExtents.left);
-	double local_y = (y - m_EarthExtents.bottom) / (m_EarthExtents.top - m_EarthExtents.bottom);
+	double local_x = (p.x - m_EarthExtents.left) / (m_EarthExtents.Width());
+	double local_y = (p.y - m_EarthExtents.bottom) / (m_EarthExtents.Height());
 
 	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
 	int index_x2 = (int) (local_x * (m_iColumns-1) + 0.5);
@@ -755,11 +763,16 @@ float vtElevationGrid::GetFilteredValue2(double x, double y) const
 		// do bilinear filtering
 		double diff_x = findex_x - index_x;
 		double diff_y = findex_y - index_y;
+		// catch numerical roundoff, diff must be [0..1]
+		if (diff_x < 0)
+			diff_x = 0;
+		if (diff_y < 0)
+			diff_y = 0;
 		fData = (float) (fDataBL + (fDataBR-fDataBL)*diff_x +
 				(fDataTL-fDataBL)*diff_y +
 				(fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
 	}
-	else if (valid == 3)
+	else if (valid == 3 || valid == 2)
 	{
 		// do average; it's better than nothing
 		fData = sum / valid;
@@ -772,11 +785,10 @@ float vtElevationGrid::GetFilteredValue2(double x, double y) const
 
 DRECT vtElevationGrid::GetAreaExtents() const
 {
-	DPoint2 sample_size = GetSpacing();
-	return DRECT(m_EarthExtents.left - (sample_size.x / 2.0f),
-		m_EarthExtents.top + (sample_size.y / 2.0f),
-		m_EarthExtents.right + (sample_size.x / 2.0f),
-		m_EarthExtents.bottom - (sample_size.y / 2.0f));
+	return DRECT(m_EarthExtents.left - (m_dXStep / 2.0f),
+		m_EarthExtents.top + (m_dYStep / 2.0f),
+		m_EarthExtents.right + (m_dXStep / 2.0f),
+		m_EarthExtents.bottom - (m_dYStep / 2.0f));
 }
 
 bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
