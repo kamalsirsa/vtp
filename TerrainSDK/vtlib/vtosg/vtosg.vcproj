@@ -403,6 +403,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\Contours.cpp">
+			</File>
+			<File
 				RelativePath="..\core\CoreMeshMat.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1568,6 +1571,9 @@
 			</File>
 			<File
 				RelativePath="..\core\Content3d.h">
+			</File>
+			<File
+				RelativePath="..\core\Contours.h">
 			</File>
 			<File
 				RelativePath="..\core\CustomTerrain.h">
