@@ -15,15 +15,15 @@ VTBuilder<br>
 <h2>Structure Layers</h2>
 <blockquote>
   <p>Built Structure data includes buildings, fences, and other artificial
-  structures not described by other layer types.&nbsp; Structure files can be loaded and saved from
-  VTST files.</p>
+  structures not described by other layer types.&nbsp; The native file format 
+  for Structure files is <a href="http://vterrain.org/Implementation/VTST.html">VTST files</a>.</p>
   <p>You can also import Structure data from Shapefiles.&nbsp; The Shapefile
   should contains arc (polygon) data, which will be interpreted as building footprints.</p>
   <p> If you have another source of building location/footprint data
   that you would like to import, <a href="mailto:feedback@vterrain.org">please
   let us know</a>.</p>
 </blockquote>
-<p><u><b>Structures <a name="Menu"> Menu</a></b></u></p>
+<h3>Structures Menu</h3>
         <ul>
           <li>Select Features
             <ul>
@@ -55,6 +55,35 @@ VTBuilder<br>
             </ul>
           </li>
         </ul>
+
+<h3>Importing Structures from Shapefiles</h3>
+<blockquote>
+  <p>This is the easiest way to populate your terrain with a lot of structures 
+  if you already have GIS data for their locations.</p>
+</blockquote>
+<ol>
+  <li>Use the &quot;Layer: Import Data&quot; command and select &quot;Structures&quot; as the layer 
+  type.</li>
+  <li>Select your Shapefile (*.shp)<br>
+  Shapefiles with polygon data can be turned into building footprints.<br>
+  Shapefiles with arc data can be turned into fence lines.<br>
+  Shapefiles with point data can be either building centers, or instance 
+  locations.</li>
+  <li>Indicate how to interpret the Shapefile (one of the above 3 meanings)</li>
+  <li>Optionally, you can restrict the import to only use features that lie 
+  within your Area tool.&nbsp; This is useful if you have a massive GIS data 
+  source and only care about a specific area.</li>
+  <li>If you are importing building footprints, you have the option of reversing 
+  the order of their points (clockwise vs. counter-clockwise).&nbsp;&nbsp; The 
+  VTP convention is counter-clockwise.&nbsp; If you find that your buildings 
+  look inside-out in 3D, or your know that your data source defines then 
+  clockwise, then say Yes.</li>
+</ol>
+<blockquote>
+  <p>The data will then import, so you can review it and save to VTST.</p>
+  <p>Remember that when you are ready to use VTST data with Enviro, you should 
+  put it in the &quot;BuildingData&quot; folder on your Data path.</p>
+</blockquote>
 
 </body>
 
