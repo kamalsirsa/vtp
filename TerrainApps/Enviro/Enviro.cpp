@@ -122,6 +122,7 @@ void Enviro::Shutdown()
 	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
 	delete m_pTerrainScene;
+	m_pCursorMGeom->Destroy();
 }
 
 void Enviro::StartupArgument(int i, const char *str)
