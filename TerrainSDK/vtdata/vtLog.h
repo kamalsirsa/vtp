@@ -1,13 +1,14 @@
 //
 // Log - simple message logging to a file.
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTLOG_H
 #define VTLOG_H
 
+#include "config_vtdata.h"
 #include <stdio.h>
 
 class vtLog

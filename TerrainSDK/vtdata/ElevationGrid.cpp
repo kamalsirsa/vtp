@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project.
+// Copyright (c) 2001-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -594,7 +594,7 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
  *
  * The value of the gridpoint closest to the specified location is returned.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
- * \param x, y	The coordinate to query.
+ * \param p	The point to query.
  */
 float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
 {
@@ -611,7 +611,7 @@ float vtElevationGrid::GetClosestValue(const DPoint2 &p) const
  *
  * The value is linearly interpolated between the surrounding gridpoints.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
- * \param x, y	The coordinate to query.
+ * \param p	The point to query.
  */
 float vtElevationGrid::GetFilteredValue(const DPoint2 &p) const
 {
