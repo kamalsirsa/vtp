@@ -1764,24 +1764,6 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	// set the corresponding vtElevationGrid info
 	m_bFloatMode = false;
 
-	switch (elev_unit_type)
-	{
-	case 0: // Meters
-		break;
-	case 1:	// Feet
-		SetScale(0.3084f);
-		break;
-	case 5:	// Decimeters
-		SetScale(0.1f);
-		break;
-	case 8:	// DeciFeet
-		SetScale(0.3084f / 10);
-		break;
-	case 9:	// Centimeters
-		SetScale(0.01f);
-		break;
-	}
-
 	m_iColumns = xsize;
 	m_iRows = ysize;
 
@@ -1800,6 +1782,26 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 		}
 	}
 	fclose(fp);
+
+	// Apply the vertical scaling factor *after* we have copied the raw
+	// elevation values, since they are not meter values.
+	switch (elev_unit_type)
+	{
+	case 0: // Meters
+		break;
+	case 1:	// Feet
+		SetScale(0.3084f);
+		break;
+	case 5:	// Decimeters
+		SetScale(0.1f);
+		break;
+	case 8:	// DeciFeet
+		SetScale(0.3084f / 10);
+		break;
+	case 9:	// Centimeters
+		SetScale(0.01f);
+		break;
+	}
 
 	return true;
 }
