@@ -214,6 +214,9 @@ bool TerrainPatch::FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
 	return true;
 }
 
+/////////////////////
+// helpers
+
 vtMovGeom *CreatePlaneMGeom(vtMaterialArray *pMats, int iMatIdx,
 							FPoint2 org, FPoint2 size,
 							float xTiling, float zTiling, int steps)
@@ -226,5 +229,19 @@ vtMovGeom *CreatePlaneMGeom(vtMaterialArray *pMats, int iMatIdx,
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(geo, iMatIdx);
 	return new vtMovGeom(pGeom);
+}
+
+vtGeom *CreatePlaneGeom(int iMatIdx, FPoint2 org, FPoint2 size,
+						   float xTiling, float zTiling, int steps)
+{
+	vtGeom *pGeom = new vtGeom();
+	TerrainPatch *geo = new TerrainPatch(VT_Normals | VT_TexCoords,
+		(steps+1)*(steps+1));
+	geo->MakeGrid(steps, steps,
+		size.x/steps, size.y/steps,
+		org.x, org.y,
+		xTiling, zTiling);		// tiling
+	pGeom->AddMesh(geo, iMatIdx);
+	return pGeom;
 }
 

@@ -31,9 +31,14 @@ public:
 protected:
 };
 
+/////////////////////
+// helpers
+
 vtMovGeom *CreatePlaneMGeom(vtMaterialArray *pMats, int iMatIdx,
 							FPoint2 org, FPoint2 size,
 							float xTiling, float zTiling, int steps);
+vtGeom *CreatePlaneGeom(FPoint2 org, FPoint2 size,
+						   float xTiling, float zTiling, int steps);
 
 #endif
 
