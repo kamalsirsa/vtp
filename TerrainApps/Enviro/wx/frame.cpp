@@ -300,21 +300,21 @@ void vtFrame::CreateMenus()
 
 	// Make menus
 	m_pFileMenu = new wxMenu;
-	m_pFileMenu->Append(ID_FILE_LAYERS, _T("Layers"), _T("Layers"));
+	m_pFileMenu->Append(ID_FILE_LAYERS, _("Layers"), _("Layers"));
 	m_pFileMenu->AppendSeparator();
-	m_pFileMenu->Append(wxID_EXIT, _T("E&xit (Esc)"), _T("Exit"));
-	m_pMenuBar->Append(m_pFileMenu, _T("&File"));
+	m_pFileMenu->Append(wxID_EXIT, _("E&xit (Esc)"), _("Exit"));
+	m_pMenuBar->Append(m_pFileMenu, _("&File"));
 
 	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _T("Select"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _T("Fences"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _T("Routes"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _T("Plants"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _T("Instances"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _T("Move Objects"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _T("Navigate"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _T("Measure Distances"));
-	m_pMenuBar->Append(toolsMenu, _T("&Tools"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _("Select"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances"));
+	m_pMenuBar->Append(toolsMenu, _("&Tools"));
 
 	if (m_bEnableEarth)
 	{
@@ -354,17 +354,17 @@ void vtFrame::CreateMenus()
 	m_pViewMenu = new wxMenu;
 	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
-	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _T("Top-Down Camera\tCtrl+T"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _("Top-Down Camera\tCtrl+T"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+R"));
 	m_pViewMenu->AppendSeparator();
-	m_pViewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings\tCtrl+S"));
-	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
+	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
+	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations"));
 	m_pViewMenu->AppendSeparator();
-	m_pViewMenu->Append(ID_VIEW_SNAPSHOT, _T("Save Window Snapshot"));
-	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _T("Save Numbered Snapshot\tCtrl+N"));
+	m_pViewMenu->Append(ID_VIEW_SNAPSHOT, _("Save Window Snapshot"));
+	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _("Save Numbered Snapshot\tCtrl+N"));
 	m_pViewMenu->AppendSeparator();
-	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _T("&Status Bar"));
-	m_pMenuBar->Append(m_pViewMenu, _T("&View"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _("&Status Bar"));
+	m_pMenuBar->Append(m_pViewMenu, _("&View"));
 
 	wxMenu *navMenu = new wxMenu;
 	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
@@ -374,33 +374,33 @@ void vtFrame::CreateMenus()
 
 		// submenu
 		wxMenu *navstyleMenu = new wxMenu;
-		navstyleMenu->AppendCheckItem(ID_NAV_NORMAL, _T("Normal Terrain Flyer"));
-		navstyleMenu->AppendCheckItem(ID_NAV_VELO, _T("Flyer with Velocity"));
-		navstyleMenu->AppendCheckItem(ID_NAV_GRAB_PIVOT, _T("Grab-Pivot"));
-		navstyleMenu->AppendCheckItem(ID_NAV_PANO, _T("Panoramic Flyer"));
+		navstyleMenu->AppendCheckItem(ID_NAV_NORMAL, _("Normal Terrain Flyer"));
+		navstyleMenu->AppendCheckItem(ID_NAV_VELO, _("Flyer with Velocity"));
+		navstyleMenu->AppendCheckItem(ID_NAV_GRAB_PIVOT, _("Grab-Pivot"));
+		navstyleMenu->AppendCheckItem(ID_NAV_PANO, _("Panoramic Flyer"));
 //		navstyleMenu->AppendCheckItem(ID_NAV_QUAKE, _T("Keyboard Walk"));
-		navMenu->Append(0, _T("Navigation Style"), navstyleMenu);
+		navMenu->Append(0, _("Navigation Style"), navstyleMenu);
 
 	m_pTerrainMenu = new wxMenu;
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("LOD Terrain Surface\tF3"));
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _T("Cull every frame\tCtrl+C"));
 	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _T("Cull once\tCtrl+K"));
 	m_pTerrainMenu->AppendSeparator();
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _T("Show Sky\tF4"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _T("Show Ocean\tF5"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _T("Show Plants\tF6"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _T("Show Structures\tF7"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF8"));
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF9"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _("Show Sky\tF4"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _("Show Ocean\tF5"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _("Show Plants\tF6"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _("Show Structures\tF7"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _("Show Roads\tF8"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _("Show Fog\tF9"));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->Append(ID_TERRAIN_INCREASE, _T("Increase Detail (+)"));
 	m_pTerrainMenu->Append(ID_TERRAIN_DECREASE, _T("Decrease Detail (-)"));
 	m_pTerrainMenu->AppendSeparator();
-	m_pTerrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
-	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
+	m_pTerrainMenu->Append(ID_TERRAIN_SAVEVEG, _("Save Vegetation As..."));
+	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _("Save Built Structures As..."));
 	m_pTerrainMenu->AppendSeparator();
-	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _T("Toggle Artificial Foundations"));
-	m_pMenuBar->Append(m_pTerrainMenu, _T("Te&rrain"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _("Toggle Artificial Foundations"));
+	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
 	{
@@ -415,8 +415,12 @@ void vtFrame::CreateMenus()
 	}
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(ID_HELP_ABOUT, _T("About ") WSTRING_APPORG _T("..."));
-	m_pMenuBar->Append(helpMenu, _T("&Help"));
+	wxString about = _("About");
+	about += _T(" ");
+	about += WSTRING_APPORG;
+	about += _T("...");
+	helpMenu->Append(ID_HELP_ABOUT, about);
+	m_pMenuBar->Append(helpMenu, _("&Help"));
 
 	SetMenuBar(m_pMenuBar);
 }
@@ -452,7 +456,7 @@ void vtFrame::CreateToolbar(bool bVertical)
 	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
 	ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
 	ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
-	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(navroute), _("Follow Route"), true);
+	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(navroute), _T("Follow Route"), true);
 	ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
 	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
@@ -462,19 +466,19 @@ void vtFrame::CreateToolbar(bool bVertical)
 	if (m_bEnableEarth)
 	{
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
-		ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
+		ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _T("Go to Space"), false);
+		ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _T("Go to Terrain"), false);
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Time of Day"), true);
-		ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
-		ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
-		ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
-		ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
+		ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _T("Time of Day"), true);
+		ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _T("Axes"), true);
+		ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _T("Tilt"), true);
+		ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _T("Add Point Data"), false);
+		ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _T("Unfold"), true);
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
-		ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
+		ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _T("Time Stop"), false);
+		ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _T("Time Faster"), false);
 		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
+		ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _T("Scene Graph"), false);
 	}
 
 //	m_pToolbar->SetRows(32);
