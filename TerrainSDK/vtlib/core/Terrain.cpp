@@ -369,7 +369,9 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 			// Load a DIB of the whole, large texture
 			clock_t r1 = clock();
 			bool result = m_pImage->Read(texture_path, false);
-			if (! result)
+			if (result)
+				VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
+			else
 			{
 				VTLOG("  Failed to load texture.\n");
 				m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
@@ -377,8 +379,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 											true, false);
 				eTex = TE_NONE;
 			}
-			if (result)
-				VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 			if (eTex == TE_SINGLE)
 			{
 				// TODO? check that DIB size is power of two, and warn if not.
@@ -408,33 +408,6 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		m_pImage->Create(tsize, tsize, 24, false);
 	}
 
-	if (eTex == TE_DERIVED)
-	{
-		// This method is virtual to allow subclasses to customize the Dib,
-		//  before we turn it into an vtImage
-		PaintDib();
-	}
-
-	// apply pre-lighting (darkening)
-	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pImage)
-	{
-		_ApplyPreLight(pHFGrid, m_pImage, light_dir);
-	}
-
-	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
-	{
-		// single texture
-		if (m_pImage != NULL)
-		{
-			// TODO: restore support for 16bit
-			bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
-
-			if (bFirstTime)
-				m_Images.Append(m_pImage);
-			else
-				m_pImage->dirty();
-		}
-	}
 	if (eTex == TE_NONE || m_pImage == NULL)	// none or failed to find texture
 	{
 		// no texture: create plain white material
@@ -442,6 +415,29 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 									RGBf(0.2f, 0.2f, 0.2f),
 									true, false);
 		return;
+	}
+	if (eTex == TE_DERIVED)
+	{
+		// This method is virtual to allow subclasses to customize the Dib,
+		//  before we turn it into an vtImage
+		PaintDib();
+	}
+	if (m_Params.GetValueBool(STR_PRELIGHT))
+	{
+		// apply pre-lighting (darkening)
+		_ApplyPreLight(pHFGrid, m_pImage, light_dir);
+	}
+	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
+	{
+		// single texture
+		if (bFirstTime)
+			m_Images.Append(m_pImage);
+		else
+			m_pImage->Modified();
+
+		// If the user has asked for 16-bit textures to be sent down to the
+		//  card (internal memory format), then tell this vtImage
+		m_pImage->Set16Bit(m_Params.GetValueBool(STR_REQUEST16BIT));
 	}
 	if (eTex == TE_TILED)
 	{
@@ -454,8 +450,13 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 				for (j = 0; j < iTiles; j++)
 				{
 					vtImage *pImage = new vtImage();
+
 					pImage->Create(iTileSize, iTileSize, 24);
 					m_Images.SetAt(i*iTiles+j, pImage);
+
+					// If the user has asked for 16-bit textures to be sent down to the
+					//  card (internal memory format), then tell this vtImage
+					m_pImage->Set16Bit(m_Params.GetValueBool(STR_REQUEST16BIT));
 				}
 			}
 		}
@@ -469,10 +470,11 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 		{
 			vtImage *pImage = m_Images[0];
+			bool bTransp = (pImage->GetDepth() == 32);
 			m_pTerrMats->AddTextureMaterial(pImage,
 				true,		// culling
 				false,		// lighting
-				false,		// transparent
+				bTransp,	// transparency blending
 				false,		// additive
 				ambient, diffuse,
 				1.0f,		// alpha
@@ -2356,7 +2358,7 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 						target->SetPixel24(x, y, rgb);
 					}
 			}
-			target->dirty();
+			target->Modified();
 		}
 	}
 	VTLOG("  Chop texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);

@@ -30,15 +30,20 @@ public:
 	vtString GetFilename() { return m_strFilename; }
 
 	// Provide vtBitmapBase methods
-	void GetPixel24(int x, int y, RGBi &rgb) const;
-	void SetPixel24(int x, int y, const RGBi &rgb);
-
 	unsigned char GetPixel8(int x, int y) const;
+	void GetPixel24(int x, int y, RGBi &rgb) const;
+	void GetPixel32(int x, int y, RGBAi &rgba) const;
+
 	void SetPixel8(int x, int y, unsigned char color);
+	void SetPixel24(int x, int y, const RGBi &rgb);
+	void SetPixel32(int x, int y, const RGBAi &rgba);
 
 	unsigned int GetWidth() const;
 	unsigned int GetHeight() const;
 	unsigned int GetDepth() const;
+
+	void Modified();
+	void Set16Bit(bool bFlag);
 
 protected:
 	void _CreateFromDIB(vtDIB *pDIB);

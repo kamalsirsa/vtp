@@ -226,6 +226,18 @@ void vtImage::Release()
 	unref();
 }
 
+unsigned char vtImage::GetPixel8(int x, int y) const
+{
+	unsigned char *buf = _data + x + (_t-1-y)*m_iRowSize;
+	return *buf;
+}
+
+void vtImage::SetPixel8(int x, int y, unsigned char color)
+{
+	unsigned char *buf = _data + x + (_t-1-y)*m_iRowSize;
+	*buf = color;
+}
+
 void vtImage::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	// OSG appears to reference y=0 as the bottom of the image
@@ -244,14 +256,24 @@ void vtImage::SetPixel24(int x, int y, const RGBi &rgb)
 	buf[2] = rgb.b;
 }
 
-unsigned char vtImage::GetPixel8(int x, int y) const
+void vtImage::GetPixel32(int x, int y, RGBAi &rgba) const
 {
-	return 0;	// we don't do 8-bit bitmaps
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = _data + x*4 + (_t-1-y)*m_iRowSize;
+	rgba.r = buf[0];
+	rgba.g = buf[1];
+	rgba.b = buf[2];
+	rgba.a = buf[3];
 }
 
-void vtImage::SetPixel8(int x, int y, unsigned char color)
+void vtImage::SetPixel32(int x, int y, const RGBAi &rgba)
 {
-	// we don't do 8-bit bitmaps
+	// OSG appears to reference y=0 as the bottom of the image
+	unsigned char *buf = _data + x*4 + (_t-1-y)*m_iRowSize;
+	buf[0] = rgba.r;
+	buf[1] = rgba.g;
+	buf[2] = rgba.b;
+	buf[3] = rgba.a;
 }
 
 unsigned int vtImage::GetWidth() const
@@ -267,6 +289,34 @@ unsigned int vtImage::GetHeight() const
 unsigned int vtImage::GetDepth() const
 {
 	return getPixelSizeInBits();
+}
+
+/**
+ * Call this method to tell vtlib that you have modified the contents of a
+ *  texture so it needs to be sent again to the graphics card.
+ */
+void vtImage::Modified()
+{
+	// OSG calls a modified texture 'dirty'
+	dirty();
+}
+
+/**
+ * Call this method to tell vtlib that you want it to use a 16-bit texture
+ * (internal memory format) to be sent to the graphics card.
+ */
+void vtImage::Set16Bit(bool bFlag)
+{
+	if (bFlag)
+	{
+		// use a 16-bit internal 
+		if (_pixelFormat == GL_RGB)
+			_internalTextureFormat = GL_RGB5;
+		if (_pixelFormat == GL_RGBA)
+			_internalTextureFormat = GL_RGB5_A1;
+	}
+	else
+		_internalTextureFormat = _pixelFormat;
 }
 
 void vtImage::_CreateFromDIB(vtDIB *pDIB)
