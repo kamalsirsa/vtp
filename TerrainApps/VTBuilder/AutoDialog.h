@@ -48,8 +48,6 @@ class AutoDialog : public wxDialog
 {
 public:
 	AutoDialog() {}
-//	AutoDialog(wxWindow *parent, const wxString& title, bool modal) :
-//	  wxDialog(parent, title, modal) {}
 	AutoDialog(wxWindow *parent, wxWindowID id,
              const wxString& title,
              const wxPoint& pos = wxDefaultPosition,
