@@ -6,7 +6,7 @@
 //
 
 #include "GEOnet.h"
-#include "vtdata/Shapelib/shapefil.h"
+#include "vtdata/shapelib/shapefil.h"
 #include <stdio.h>
 
 Country::Country()
