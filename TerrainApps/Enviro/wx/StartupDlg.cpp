@@ -255,6 +255,7 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 AutoDialog( parent, id, title, position, size, style )
 {
+	VTLOG("Constructing StartupDlg.\n");
 	StartupDialogFunc( this, TRUE ); 
 }
 
@@ -336,11 +337,14 @@ void StartupDlg::OnOpenGLInfo( wxCommandEvent &event )
 
 void StartupDlg::OnOK( wxCommandEvent &event )
 {
+	VTLOG("StartupDlg pressed OK.\n");
 	wxDialog::OnOK(event);
 }
 
 void StartupDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
+	VTLOG("StartupDlg Init.\n");
+
 	// display OpenGL info, including max texture size
 #ifdef WIN32
 	wxClientDC wdc(this);
