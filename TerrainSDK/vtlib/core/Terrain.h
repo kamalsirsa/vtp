@@ -158,8 +158,6 @@ public:
 	bool GetFeatureVisible(TFType ftype);
 
 	// query
-	vtString GetScriptFilename() { return m_strDataPath + m_Params.m_strMotionScript; }
-	vtString GetFenceFilename() { return m_strDataPath + "FenceData/test.fmf"; } // fix this
 	RGBf GetOceanColor() { return m_ocean_color; }
 	bool HasDynTerrain() { return m_pDynGeom != NULL; }
 

@@ -64,13 +64,10 @@ public:
     wxString    m_strRoadFile;
     float   m_fWidthExag;
     bool    m_bTexRoads;
-    bool    m_bFences;
     bool    m_bTrees;
     wxString    m_strTreeFile;
     int     m_iTreeDistance;
     int     m_iFogDistance;
-//  bool    m_bDoMotion;
-//  wxString    m_strMotionScript;
     bool    m_bVertexColors;
 //  bool    m_bOverlay;
     bool    m_bSuppressLand;

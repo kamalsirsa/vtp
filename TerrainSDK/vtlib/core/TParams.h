@@ -88,9 +88,6 @@ public:
 	bool		m_bAgriculture;
 	bool		m_bWildVeg;
 
-	bool		m_bDoMotion;
-	vtString	m_strMotionScript;
-
 	bool		m_bFog;
 	int			m_iFogDistance;
 
@@ -112,9 +109,6 @@ public:
 	bool		m_bOverlay;
 	bool		m_bSuppressLand;
 	bool		m_bLabels;
-
-	bool		m_bFences;
-	vtString	m_strFenceFile;
 
 	bool		m_bPreLight;
 	bool		m_bPreLit;

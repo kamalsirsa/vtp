@@ -97,9 +97,6 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_strTreeFile = Params.m_strTreeFile;
 	m_iTreeDistance = Params.m_iTreeDistance;
 
-//  m_bDoMotion = Params.m_bDoMotion;
-//  m_strMotionScript = Params.m_strMotionScript;
-
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
@@ -118,9 +115,6 @@ void TParamsDlg::SetParams(TParams &Params)
 //  m_bOverlay = Params.m_bOverlay;
 	m_bSuppressLand = Params.m_bSuppressLand;
 	m_bLabels = Params.m_bLabels;
-
-	m_bFences = Params.m_bFences;
-//  m_strFenceFile = Params.m_strFenceFile;
 
 	m_bPreLight = Params.m_bPreLight;
 	m_bPreLit = Params.m_bPreLit;
@@ -184,9 +178,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_strTreeFile = m_strTreeFile;
 	Params.m_iTreeDistance = m_iTreeDistance;
 
-//  Params.m_bDoMotion = m_bDoMotion;
-//  Params.m_strMotionScript = m_strMotionScript;
-
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
@@ -205,9 +196,6 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.m_bOverlay = m_bOverlay;
 	Params.m_bSuppressLand = m_bSuppressLand;
 	Params.m_bLabels = m_bLabels;
-
-	Params.m_bFences = m_bFences;
-//  Params.m_strFenceFile = m_strFenceFile;
 
 	Params.m_bPreLight = m_bPreLight;
 	Params.m_bPreLit = m_bPreLit;

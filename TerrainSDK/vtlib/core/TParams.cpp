@@ -88,9 +88,6 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bAgriculture = rhs.m_bAgriculture;
 	m_bWildVeg = rhs.m_bWildVeg;
 
-	m_bDoMotion = rhs.m_bDoMotion;
-	m_strMotionScript = rhs.m_strMotionScript;
-
 	m_bFog = rhs.m_bFog;
 	m_iFogDistance = rhs.m_iFogDistance;
 
@@ -112,9 +109,6 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bOverlay = rhs.m_bOverlay;
 	m_bSuppressLand = rhs.m_bSuppressLand;
 	m_bLabels = rhs.m_bLabels;
-
-	m_bFences = rhs.m_bFences;
-	m_strFenceFile = rhs.m_strFenceFile;
 
 	m_bPreLight = rhs.m_bPreLight;
 	m_bPreLit = rhs.m_bPreLit;
@@ -199,8 +193,6 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_ROADDISTANCE "Road_Distance"
 #define STR_TEXROADS "Road_Texture"
 #define STR_ROADCULTURE "Road_Culture"
-#define STR_FENCES "Fences"
-#define STR_FENCEFILE "Fence_File"
 #define STR_TREES "Trees"
 #define STR_TREEFILE "Tree_File"
 #define STR_TREEDISTANCE "Tree_Distance"
@@ -335,10 +327,6 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bTexRoads;
 		else if (strcmp(buf, STR_ROADCULTURE) == 0)
 			input >> m_bRoadCulture;
-		else if (strcmp(buf, STR_FENCES) == 0)
-			input >> m_bFences;
-		else if (strcmp(buf, STR_FENCEFILE) == 0)
-			m_strFenceFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_TREES) == 0)
 			input >> m_bTrees;
 		else if (strcmp(buf, STR_TREEFILE) == 0)
@@ -347,10 +335,6 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_iTreeDistance;
 		else if (strcmp(buf, STR_FOGDISTANCE) == 0)
 			input >> m_iFogDistance;
-		else if (strcmp(buf, STR_DOMOTION) == 0)
-			input >> m_bDoMotion;
-		else if (strcmp(buf, STR_MOTIONSCRIPT) == 0)
-			m_strMotionScript = get_line_from_stream(input);
 		else if (strcmp(buf, STR_VERTEXCOLORS) == 0)
 			input >> m_bVertexColors;
 		else if (strcmp(buf, STR_OVERLAY) == 0)
@@ -511,12 +495,6 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bWildVeg << endl;
 
 	output << "\n";
-	output << STR_DOMOTION << "\t\t";
-	output << m_bDoMotion << endl;
-	output << STR_MOTIONSCRIPT << "\t";
-	output << (const char *) m_strMotionScript << endl;
-
-	output << "\n";
 	output << STR_FOG << "\t\t\t\t";
 	output << m_bFog << endl;
 	output << STR_FOGDISTANCE << "\t";
@@ -557,11 +535,6 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bSuppressLand << endl;
 	output << STR_LABELS << "\t\t\t";
 	output << m_bLabels << endl;
-
-	output << STR_FENCES << "\t\t\t";
-	output << m_bFences << endl;
-	output << STR_FENCEFILE << "\t\t";
-	output << (const char *) m_strFenceFile << endl;
 
 	output << STR_AIRPORTS << "\t\t";
 	output << m_bAirports << endl;
