@@ -22,11 +22,13 @@
 void Romania::CreateCustomCulture(bool bDoSound)
 {
 	vtString fname = "PointData/";
-	fname += "RO.shp";
+//	fname += "RO.shp";
+	fname += "RO-subset.shp";
 	vtString path = FindFileOnPaths(m_DataPaths, fname);
 	if (path == "")
 		return;
 
+#if 1
 	vtFeatures feat;
 	if (!feat.LoadFrom(path))
 		return;
@@ -47,6 +49,7 @@ void Romania::CreateCustomCulture(bool bDoSound)
 	style.m_label_size = 3000;
 
 	CreateStyledFeatures(feat, "Fonts/Arial.ttf", style);
+#endif
 }
 
 ///////////////////////////////
