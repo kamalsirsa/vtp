@@ -6,27 +6,13 @@
 #include "vtlib/vtlib.h"
 
 #include <osg/PolygonMode>
-
 using namespace osg;
-
-//
-// Useful helper functions.
-//
-void makeVec4(Vec4 &col, float r, float g, float b)
-{
-	col.set(r, g, b, 1.0f);
-}
-
-void makeVec4(Vec4 &col, float r, float g, float b, float a)
-{
-	col.set(r, g, b, a);
-}
 
 ///////////////////////////////////
 
 #define FAB		Material::FRONT_AND_BACK
-#define GEO_ON	StateAttribute::ON
-#define GEO_OFF	StateAttribute::OFF
+#define SA_ON	StateAttribute::ON
+#define SA_OFF	StateAttribute::OFF
 
 vtMaterial::vtMaterial() : vtMaterialBase()
 {
@@ -35,11 +21,13 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	m_pStateSet->setAttributeAndModes(m_pMaterial.get());
 
 	// Not sure why this is required (should be the default!)
-	m_pStateSet->setMode(GL_DEPTH_TEST, StateAttribute::ON);
+	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
 }
 
 /**
  * Set the diffuse color of this material.
+ *
+ * \param r,g,b	The rgb value (0.0 to 1.0) of this material
  * \param a		For a material with transparency enabled, the alpha component
  * of the diffuse color determines the overall transparency of the material.
  * This value ranges from 0 (totally transparent) to 1 (totally opaque.)
@@ -50,7 +38,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 	m_pMaterial->setDiffuse(FAB, Vec4(r, g, b, a));
 
 	if (a < 1.0f)
-		m_pStateSet->setMode(GL_BLEND, GEO_ON);
+		m_pStateSet->setMode(GL_BLEND, SA_ON);
 }
 /**
  * Get the diffuse color of this material.
@@ -114,15 +102,16 @@ RGBf vtMaterial::GetEmission()
  */
 void vtMaterial::SetCulling(bool bCulling)
 {
-	m_pStateSet->setMode(GL_CULL_FACE, bCulling ? GEO_ON : GEO_OFF);
+	m_pStateSet->setMode(GL_CULL_FACE, bCulling ? SA_ON : SA_OFF);
 }
 /**
  * Get the backface culling property of this material.
  */
 bool vtMaterial::GetCulling()
 {
-	StateAttribute::GLModeValue m = m_pStateSet->getMode(StateAttribute::CULLFACE);
-	return (m == GEO_ON);
+	StateAttribute::GLModeValue m;
+	m = m_pStateSet->getMode(StateAttribute::CULLFACE);
+	return (m == SA_ON);
 }
 
 /**
@@ -130,15 +119,16 @@ bool vtMaterial::GetCulling()
  */
 void vtMaterial::SetLighting(bool bLighting)
 {
-	m_pStateSet->setMode(GL_LIGHTING, bLighting ? GEO_ON : GEO_OFF);
+	m_pStateSet->setMode(GL_LIGHTING, bLighting ? SA_ON : SA_OFF);
 }
 /**
  * Get the lighting property of this material.
  */
 bool vtMaterial::GetLighting()
 {
-	StateAttribute::GLModeValue m = m_pStateSet->getMode(StateAttribute::LIGHT);
-	return (m == GEO_ON);
+	StateAttribute::GLModeValue m;
+	m = m_pStateSet->getMode(StateAttribute::LIGHT);
+	return (m == SA_ON);
 }
 
 /**
@@ -149,20 +139,20 @@ bool vtMaterial::GetLighting()
  */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
-//	m_pStateSet->setMode(GL_BLEND, bOn ? GEO_ON : GEO_OFF);
+//	m_pStateSet->setMode(GL_BLEND, bOn ? SA_ON : SA_OFF);
 	if (bOn)
 	{
 		if (!m_pBlendFunc.valid())
 			m_pBlendFunc = new BlendFunc;
-	    m_pStateSet->setAttributeAndModes(m_pBlendFunc.get(), StateAttribute::ON );
+	    m_pStateSet->setAttributeAndModes(m_pBlendFunc.get(), SA_ON);
 		AlphaFunc* alphaFunc = new AlphaFunc;
 		alphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
-		m_pStateSet->setAttributeAndModes( alphaFunc, StateAttribute::ON );
-		m_pStateSet->setRenderingHint( StateSet::TRANSPARENT_BIN );
+		m_pStateSet->setAttributeAndModes( alphaFunc, SA_ON );
+		m_pStateSet->setRenderingHint(StateSet::TRANSPARENT_BIN);
 	}
 	else
 	{
-		m_pStateSet->setMode(GL_BLEND, StateAttribute::OFF);
+		m_pStateSet->setMode(GL_BLEND, SA_OFF);
 		m_pStateSet->setRenderingHint( StateSet::OPAQUE_BIN );
 	}
 
@@ -183,10 +173,10 @@ bool vtMaterial::GetTransparent()
 {
 	// OSG 0.8.45 and before
 //	StateAttribute::GLModeValue m = m_pStateSet->getMode(StateAttribute::TRANSPARENCY);
-	// OSG 0.9.0
+	// OSG 0.9.0 onwards
 	StateAttribute::GLModeValue m;
 	m = m_pStateSet->getMode(StateAttribute::BLENDFUNC);
-	return (m == GEO_ON);
+	return (m == SA_ON);
 }
 
 
@@ -201,7 +191,7 @@ void vtMaterial::SetWireframe(bool bOn)
 	{
 		PolygonMode *pm = new PolygonMode();
 		pm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
-		m_pStateSet->setAttributeAndModes(pm, StateAttribute::OVERRIDE | StateAttribute::ON);
+		m_pStateSet->setAttributeAndModes(pm, StateAttribute::OVERRIDE | SA_ON);
 	}
 	else
 	{
@@ -217,7 +207,7 @@ bool vtMaterial::GetWireframe()
 	// OSG 0.9.0
 	StateAttribute::GLModeValue m;
 	m = m_pStateSet->getMode(StateAttribute::POLYGONMODE);
-	return (m == GEO_ON);
+	return (m == SA_ON);
 }
 
 /**
@@ -231,7 +221,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	m_pTexture->setImage(pImage->m_pOsgImage);
 
 	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(),
-		StateAttribute::ON);
+		SA_ON);
 }
 
 /**
@@ -297,7 +287,9 @@ void vtMaterial::Apply()
 }
 
 
-//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// vtMaterialArray
+//
 
 /**
  * Adds a material to this material array.
@@ -311,25 +303,13 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 }
 
 
-//////////////////////////////////////////////////////////////
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-GeoSet2::GeoSet2()
-{
-	m_pMesh = NULL;
-}
-
-GeoSet2::~GeoSet2()
-{
-}
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-
-//////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+// vtMesh
+//
 
 /**
- * Construct a Mesh.  A Mesh is a container for a set of vertices and primitives.
+ * Construct a Mesh.
+ * A Mesh is a container for a set of vertices and primitives.
  *
  * \param PrimType The type of primitive this mesh will contain.  Allowed
  *		values are:
@@ -398,7 +378,7 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	case GL_POINTS:
 		m_pGeoSet->setPrimType(GeoSet::POINTS);
 		m_pGeoSet->setNumPrims(NumVertices);
-		m_bIndexedPrims = false;
+		m_bIndexedPrims = false;	// points are not indexed
 		break;
 	case GL_LINES:
 		m_pGeoSet->setPrimType(GeoSet::LINES);
@@ -435,25 +415,10 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	SendPointersToOSG();
 }
 
-void vtMesh::SendPointersToOSG()
-{
-	// in case they got reallocated, tell OSG again
-	if (m_bIndexedPrims)
-	{
-		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
-		m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
-	}
-	else
-		m_pGeoSet->setCoords(m_Vert.GetData());
-
-	if (m_iVtxType & VT_Normals)
-		m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
-	if (m_iVtxType & VT_Colors)
-		m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
-	if (m_iVtxType & VT_TexCoords)
-		m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
-}
-
+/**
+ * Add a triangle.
+ *  p0, p1, p2 are the indices of the vertices of the triangle.
+ */
 void vtMesh::AddTri(int p0, int p1, int p2)
 {
 	m_Index.Append(p0);
@@ -465,6 +430,11 @@ void vtMesh::AddTri(int p0, int p1, int p2)
 	SendPointersToOSG();
 }
 
+/**
+ * Add a triangle fan with up to 6 points (center + 5 points).  The first 3
+ * arguments are required, the rest are optional.  A fan will be created
+ * with as many point indices as you pass.
+ */
 void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 {
 	int len = 2;
@@ -483,6 +453,11 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 	SendPointersToOSG();
 }
 
+/**
+ * Add a triangle fan with any number of points.
+ *	\param idx An array of vertex indices for the fan.
+ *	\param iNVerts the number of vertices in the fan.
+ */
 void vtMesh::AddFan(int *idx, int iNVerts)
 {
 	for (int i = 0; i < iNVerts; i++)
@@ -494,6 +469,12 @@ void vtMesh::AddFan(int *idx, int iNVerts)
 	SendPointersToOSG();
 }
 
+/**
+ * Adds an indexed triangle strip to the mesh.
+ *
+ * \param iNVerts The number of vertices in the strip.
+ * \param pIndices An array of the indices of the vertices in the strip.
+ */
 void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 {
 	for (int i = 0; i < iNVerts; i++)
@@ -505,12 +486,10 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 	SendPointersToOSG();
 }
 
-void vtMesh::AddQuadStrip(int iNVerts, int iStartIndex)
-{
-	// for OSG, stored the same
-	AddStrip2(iNVerts, iStartIndex);
-}
-
+/**
+ * Add a single line primitive to a mesh.
+ *	\param p0, p1	The indices of the two vertices of the line.
+ */
 void vtMesh::AddLine(int p0, int p1)
 {
 	m_Index.Append(p0);
@@ -519,6 +498,11 @@ void vtMesh::AddLine(int p0, int p1)
 	SendPointersToOSG();
 }
 
+/**
+ * Set the position of a vertex.
+ *	\param i	Index of the vertex.
+ *	\param p	The position.
+ */
 void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 {
 	Vec3 s;
@@ -526,6 +510,9 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 	m_Vert.SetAt(i, s);
 }
 
+/**
+ * Get the position of a vertex.
+ */
 FPoint3 vtMesh::GetVtxPos(int i) const
 {
 	FPoint3 p;
@@ -533,13 +520,24 @@ FPoint3 vtMesh::GetVtxPos(int i) const
 	return p;
 }
 
-void vtMesh::SetVtxNormal(int i, const FPoint3 &p)
+/**
+ * Set the normal of a vertex.  This is used for lighting, if the mesh
+ *	is used with a material with lighting enabled.  Generally you will
+ *	want to use a vector of unit length.
+ *
+ *	\param i	Index of the vertex.
+ *	\param norm	The normal vector.
+ */
+void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
 {
 	Vec3 s;
-	v2s(p, s);
+	v2s(norm, s);
 	m_Norm.SetAt(i, s);
 }
 
+/**
+ * Get the normal of a vertex.
+ */
 FPoint3 vtMesh::GetVtxNormal(int i) const
 {
 	FPoint3 p;
@@ -547,13 +545,24 @@ FPoint3 vtMesh::GetVtxNormal(int i) const
 	return p;
 }
 
-void vtMesh::SetVtxColor(int i, const RGBf &p)
+/**
+ * Set the color of a vertex.  This color multiplies with the color of the
+ *	material used with the mesh, so if you want the vertex color to be
+ *	dominant, use a white material.
+ *
+ *	\param i		Index of the vertex.
+ *	\param color	The color.
+ */
+void vtMesh::SetVtxColor(int i, const RGBf &color)
 {
 	Vec4 s;
-	v2s(p, s);
+	v2s(color, s);
 	m_Color.SetAt(i, s);
 }
 
+/**
+ * Get the color of a vertex.
+ */
 RGBf vtMesh::GetVtxColor(int i) const
 {
 	RGBf p;
@@ -561,13 +570,25 @@ RGBf vtMesh::GetVtxColor(int i) const
 	return p;
 }
 
-void vtMesh::SetVtxTexCoord(int i, const FPoint2 &p)
+/**
+ * Set the texture coordinates of a vertex.  Generally these values are
+ *	in the range of 0 to 1, although you can use higher values if you want
+ *	repeating tiling.  The components of the texture coordinates are
+ *  usually called "u" and "v".
+ *
+ *	\param i	Index of the vertex.
+ *	\param uv	The texture coordinate.
+ */
+void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 {
 	Vec2 s;
-	v2s(p, s);
+	v2s(uv, s);
 	m_Tex.SetAt(i, s);
 }
 
+/**
+ * Get the texture coordinates of a vertex.
+ */
 FPoint2 vtMesh::GetVtxTexCoord(int i)
 {
 	FPoint2 p;
@@ -580,14 +601,49 @@ int vtMesh::GetNumPrims()
 	return m_pGeoSet->getNumPrims();
 }
 
+/**
+ * Set whether to allow rendering optimization of this mesh.  With OpenGL,
+ *	this optimization is called a "display list", which increases the speed
+ *	of rendering by creating a special representation of the mesh the first
+ *	time it is drawn.  The tradeoff is that subsequent changes to the mesh
+ *	are not applied unless you call ReOptimize().
+ *
+ *	\param bAllow	True to allow optimization.  The default is true.
+ */
+void vtMesh::AllowOptimize(bool bAllow)
+{
+	m_pGeoSet->setUseDisplayList(bAllow);
+}
+
+/**
+ * For a mesh with rendering optimization enabled, forces an update of the
+ *	optimized representation.
+ */
 void vtMesh::ReOptimize()
 {
 	m_pGeoSet->dirtyDisplayList();
 }
 
-void vtMesh::AllowOptimize(bool bAllow)
+//
+// Point OSG to the vertex and primitive data that we maintain
+//
+void vtMesh::SendPointersToOSG()
 {
-	m_pGeoSet->setUseDisplayList(bAllow);
+	// in case they got reallocated, tell OSG again
+	if (m_bIndexedPrims)
+	{
+		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
+		m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
+	}
+	else
+		m_pGeoSet->setCoords(m_Vert.GetData());
+
+	if (m_iVtxType & VT_Normals)
+		m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
+	if (m_iVtxType & VT_Colors)
+		m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
+	if (m_iVtxType & VT_TexCoords)
+		m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
 }
 
 

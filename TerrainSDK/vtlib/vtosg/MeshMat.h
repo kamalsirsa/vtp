@@ -81,45 +81,39 @@ public:
 class GeoSet2 : public osg::GeoSet
 {
 public:
-	GeoSet2();
-	~GeoSet2();
+	GeoSet2() { m_pMesh = NULL; }
+	~GeoSet2() {}
 	class vtMesh *m_pMesh;
 };
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /**
- * A Mesh is a set of graphical primitives (such as lines, triangles, or fans).
+ * A Mesh is a set of graphical primitives (such as lines, triangles,
+ *	or fans).
  * \par
  * The vtMesh class allows you to define and access a Mesh, including many
  * functions useful for creating and dynamically changing Meshes.
  * To add the vtMesh to the visible scene graph, add it to a vtGeom node.
  * \par
- * Most of the useful methods of this class are defined on its parent class, vtMeshBase.
+ * Most of the useful methods of this class are defined on its parent
+ *	class, vtMeshBase.
  */
 class vtMesh : public vtMeshBase
 {
+	friend class vtGeom;
+
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
 
-	/** Add a triangle.  p0, p1, p2 are the indices of the vertices of the triangle. */
+	// Adding primitives
 	void AddTri(int p0, int p1, int p2);
-
-	/** Add a triangle fan with up to 6 points (center + 5 points).  The
-	 first 3 arguments are required, the rest are optional.  A fan will be
-	 created with as many point indices as you pass. */
 	void AddFan(int p0, int p1, int p2 = -1, int p3 = -1, int p4 = -1, int p5 = -1);
-
-	/** Add a triangle fan with any number of points.
-	 \param idx An array of vertex indices for the fan.
-	 \param iNVerts the number of vertices in the fan.
-	*/
 	void AddFan(int *idx, int iNVerts);
-
 	void AddStrip(int iNVerts, unsigned short *pIndices);
-	void AddQuadStrip(int iNVerts, int iStartIndex);
 	void AddLine(int p0, int p1);
 
+	// Access vertex properties
 	void SetVtxPos(int, const FPoint3&);
 	FPoint3 GetVtxPos(int i) const;
 
@@ -132,14 +126,17 @@ public:
 	void SetVtxTexCoord(int, const FPoint2&);
 	FPoint2 GetVtxTexCoord(int i);
 
-	int GetNumPrims();
+	// Control rendering optimization ("display lists")
 	void ReOptimize();
 	void AllowOptimize(bool bAllow);
 
+	// Access values
+	int GetNumPrims();
 	int GetNumIndices() { return m_Index.GetSize(); }
 	short GetIndex(int i) { return m_Index.GetAt(i); }
 	int GetPrimLen(int i) { return m_PrimLen.GetAt(i); }
 
+protected:
 	// Implementation
 	osg::ref_ptr<GeoSet2> m_pGeoSet;
 
@@ -153,10 +150,11 @@ public:
 	Array<osg::Vec4>	m_Color;
 	Array<osg::Vec2>	m_Tex;
 
-protected:
+	// This flag is true if the primitives are indexed (generally
+	//	true except for point primitives)
 	bool	m_bIndexedPrims;
 
-	// keep track of the number of vertices ourselves
+	// Point OSG to the vertex and primitive data that we maintain
 	void	SendPointersToOSG();
 };
 
