@@ -67,6 +67,34 @@ void vtAnimPath::SetLoop(bool bFlag)
 		ProcessPoints();
 }
 
+void vtAnimPath::SetTimeFromLinearDistance()
+{
+	FPoint3 pos, last;
+	float fTime;
+
+	TimeControlPointMap newmap;
+
+	for (TimeControlPointMap::iterator it = m_TimeControlPointMap.begin();
+		it != m_TimeControlPointMap.end(); it++)
+	{
+		pos = it->second.m_Position;
+		if (it == m_TimeControlPointMap.begin())
+		{
+			fTime = 0;
+		}
+		else
+		{
+			float dist = (pos - last).Length();
+			fTime += dist;
+		}
+		last = pos;
+
+		newmap[fTime] = it->second;
+	}
+	// Now switch to the new map
+	m_TimeControlPointMap = newmap;
+}
+
 void vtAnimPath::ProcessPoints()
 {
 	m_Spline.Cleanup();

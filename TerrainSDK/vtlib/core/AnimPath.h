@@ -27,10 +27,6 @@ struct ControlPoint
 		m_Position(position),
 		m_Rotation(rotation) {}
 
-	ControlPoint(const FPoint3 &position, const FQuat &rotation, const FPoint3 &scale):
-		m_Position(position),
-		m_Rotation(rotation) {}
-
 	void Interpolate(float ratio,const ControlPoint &first, const ControlPoint &second);
 	void GetMatrix(FMatrix4 &matrix, bool bPosOnly) const;
 
@@ -78,6 +74,7 @@ public:
 	void Insert(double time, const ControlPoint &controlPoint);
 
 	unsigned int GetNumPoints() { return m_TimeControlPointMap.size(); }
+	void SetTimeFromLinearDistance();
 	void ProcessPoints();
 
 	double GetFirstTime() const;
