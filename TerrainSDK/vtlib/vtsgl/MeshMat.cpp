@@ -269,7 +269,7 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 
 void vtMesh::AddQuadStrip(int iNVerts, int iStartIndex)
 {
-	// for OSG, stored the same
+	// for SGL, stored the same
 	AddStrip2(iNVerts, iStartIndex);
 }
 
