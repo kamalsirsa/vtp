@@ -125,7 +125,7 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 	std::vector<vtString> layers;
 
 	DxfParser parser(fname, entities, layers);
-	bool bSuccess = parser.RetreiveEntities(progress_callback);
+	bool bSuccess = parser.RetrieveEntities(progress_callback);
 	if (!bSuccess)
 	{
 		VTLOG(parser.GetLastError());

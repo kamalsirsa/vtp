@@ -51,7 +51,7 @@ public:
 	std::vector<vtString> layers;
 
 	DxfParser parser(fname, entities, layers);
-	bool bSuccess = parser.RetreiveEntities();
+	bool bSuccess = parser.RetrieveEntities();
 	if (bSuccess)
 	{
 		// Look through the entities and take what is needed.
@@ -64,7 +64,7 @@ public:
 	DxfParser(const vtString &sFileName,
 		std::vector<DxfEntity> &entities,
 		std::vector<vtString> &layers);
-	bool RetreiveEntities(bool progress_callback(int) = NULL);
+	bool RetrieveEntities(bool progress_callback(int) = NULL);
 	vtString GetFileName() { return m_sFileName; }
 	void SetFileName(const vtString & sFileName) { m_sFileName = sFileName; }
 	vtString GetLastError() { return m_strMessage; }
