@@ -19,6 +19,7 @@ class LocationDlg;
 class BuildingDlg3d;
 class UtilDlg;
 class LayerDlg;
+class InstanceDlg;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -42,6 +43,7 @@ public:
 	void ShowPopupMenu(const IPoint2 &pos);
 	void SetTerrainToGUI(vtTerrain *pTerrain);
 	void Snapshot(bool bNumbered);
+	void EarthPosUpdated(const DPoint3 &pos);
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
@@ -90,6 +92,8 @@ public:
 	void OnUpdateToolsRoutes(wxUpdateUIEvent& event);
 	void OnToolsTrees(wxCommandEvent& event);
 	void OnUpdateToolsTrees(wxUpdateUIEvent& event);
+	void OnToolsInstances(wxCommandEvent& event);
+	void OnUpdateToolsInstances(wxUpdateUIEvent& event);
 	void OnToolsMove(wxCommandEvent& event);
 	void OnUpdateToolsMove(wxUpdateUIEvent& event);
 	void OnToolsNavigate(wxCommandEvent& event);
@@ -166,6 +170,7 @@ public:
 	LocationDlg			*m_pLocationDlg;
 	BuildingDlg3d		*m_pBuildingDlg;
 	LayerDlg			*m_pLayerDlg;
+	InstanceDlg			*m_pInstanceDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

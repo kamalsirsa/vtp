@@ -180,6 +180,8 @@ public:
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain) {}
 	virtual void ShowLayerView() {}
 	virtual void RefreshLayerView() {}
+	virtual void EarthPosUpdated() {}
+	virtual vtString GetPathFromGUI() { return ""; }
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;

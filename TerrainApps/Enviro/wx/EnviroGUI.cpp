@@ -18,14 +18,20 @@
 #include "app.h"
 #include "frame.h"
 #include "LayerDlg.h"
+#include "vtui/InstanceDlg.h"
 
 DECLARE_APP(vtApp);
-
 
 //
 // This is a 'singleton', the only instance of the global application object
 //
 EnviroGUI g_App;
+
+// helper
+vtFrame *GetFrame()
+{
+	return (vtFrame *) (wxGetApp().GetTopWindow());
+}
 
 EnviroGUI::EnviroGUI()
 {
@@ -37,27 +43,34 @@ EnviroGUI::~EnviroGUI()
 
 void EnviroGUI::ShowPopupMenu(const IPoint2 &pos)
 {
-	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
-	pFrame->ShowPopupMenu(pos);
+	GetFrame()->ShowPopupMenu(pos);
 }
 
 void EnviroGUI::SetTerrainToGUI(vtTerrain *pTerrain)
 {
-	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
-	pFrame->SetTerrainToGUI(pTerrain);
+	GetFrame()->SetTerrainToGUI(pTerrain);
 }
 
 void EnviroGUI::RefreshLayerView()
 {
-	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
-	LayerDlg *dlg = pFrame->m_pLayerDlg;
+	LayerDlg *dlg = GetFrame()->m_pLayerDlg;
 	dlg->RefreshTreeContents();
 }
 
 void EnviroGUI::ShowLayerView()
 {
-	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
-	LayerDlg *dlg = pFrame->m_pLayerDlg;
+	LayerDlg *dlg = GetFrame()->m_pLayerDlg;
 	dlg->Show(true);
+}
+
+void EnviroGUI::EarthPosUpdated()
+{
+	GetFrame()->EarthPosUpdated(m_EarthPos);
+}
+
+vtString EnviroGUI::GetPathFromGUI()
+{
+	wxString2 str = GetFrame()->m_pInstanceDlg->GetPath();
+	return str.mb_str();
 }
 

@@ -44,6 +44,7 @@
 #include "LocationDlg.h"
 #include "BuildingDlg3d.h"
 #include "LayerDlg.h"
+#include "vtui/InstanceDlg.h"
 
 #include "../Engines.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
@@ -57,6 +58,8 @@
 #  include "camera.xpm"
 #  include "faster.xpm"
 #  include "fence.xpm"
+#  include "instances.xpm"
+#  include "layers.xpm"
 #  include "loc.xpm"
 #  include "maintain.xpm"
 #  include "move.xpm"
@@ -92,18 +95,20 @@ EVT_MENU(ID_FILE_LAYERS,		vtFrame::OnFileLayers)
 EVT_MENU(wxID_EXIT, vtFrame::OnExit)
 EVT_CLOSE(vtFrame::OnClose)
 
-EVT_MENU(ID_TOOLS_SELECT,		vtFrame::OnToolsSelect)
-EVT_UPDATE_UI(ID_TOOLS_SELECT,	vtFrame::OnUpdateToolsSelect)
-EVT_MENU(ID_TOOLS_FENCES,		vtFrame::OnToolsFences)
-EVT_UPDATE_UI(ID_TOOLS_FENCES,	vtFrame::OnUpdateToolsFences)
-EVT_MENU(ID_TOOLS_ROUTES,		vtFrame::OnToolsRoutes)
-EVT_UPDATE_UI(ID_TOOLS_ROUTES,	vtFrame::OnUpdateToolsRoutes)
-EVT_MENU(ID_TOOLS_TREES,		vtFrame::OnToolsTrees)
-EVT_UPDATE_UI(ID_TOOLS_TREES,	vtFrame::OnUpdateToolsTrees)
-EVT_MENU(ID_TOOLS_MOVE,			vtFrame::OnToolsMove)
-EVT_UPDATE_UI(ID_TOOLS_MOVE,	vtFrame::OnUpdateToolsMove)
-EVT_MENU(ID_TOOLS_NAVIGATE,		vtFrame::OnToolsNavigate)
-EVT_UPDATE_UI(ID_TOOLS_NAVIGATE, vtFrame::OnUpdateToolsNavigate)
+EVT_MENU(ID_TOOLS_SELECT,			vtFrame::OnToolsSelect)
+EVT_UPDATE_UI(ID_TOOLS_SELECT,		vtFrame::OnUpdateToolsSelect)
+EVT_MENU(ID_TOOLS_FENCES,			vtFrame::OnToolsFences)
+EVT_UPDATE_UI(ID_TOOLS_FENCES,		vtFrame::OnUpdateToolsFences)
+EVT_MENU(ID_TOOLS_ROUTES,			vtFrame::OnToolsRoutes)
+EVT_UPDATE_UI(ID_TOOLS_ROUTES,		vtFrame::OnUpdateToolsRoutes)
+EVT_MENU(ID_TOOLS_TREES,			vtFrame::OnToolsTrees)
+EVT_UPDATE_UI(ID_TOOLS_TREES,		vtFrame::OnUpdateToolsTrees)
+EVT_MENU(ID_TOOLS_INSTANCES,		vtFrame::OnToolsInstances)
+EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	vtFrame::OnUpdateToolsInstances)
+EVT_MENU(ID_TOOLS_MOVE,				vtFrame::OnToolsMove)
+EVT_UPDATE_UI(ID_TOOLS_MOVE,		vtFrame::OnUpdateToolsMove)
+EVT_MENU(ID_TOOLS_NAVIGATE,			vtFrame::OnToolsNavigate)
+EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	vtFrame::OnUpdateToolsNavigate)
 
 EVT_MENU(ID_VIEW_MAINTAIN,			vtFrame::OnViewMaintain)
 EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		vtFrame::OnUpdateViewMaintain)
@@ -146,6 +151,9 @@ EVT_MENU(ID_SCENE_SAVE,			vtFrame::OnSceneSave)
 #endif
 EVT_MENU(ID_TIME_STOP,			vtFrame::OnTimeStop)
 EVT_MENU(ID_TIME_FASTER,		vtFrame::OnTimeFaster)
+
+EVT_UPDATE_UI(ID_TIME_STOP,		vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_TIME_FASTER,	vtFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_TERRAIN_DYNAMIC,	vtFrame::OnDynamic)
 EVT_MENU(ID_TERRAIN_CULLEVERY,	vtFrame::OnCullEvery)
@@ -240,6 +248,8 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_pLayerDlg = new LayerDlg(this, -1, _T("Layers"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pLayerDlg->SetSize(600, 250);
+	m_pInstanceDlg = new InstanceDlg(this, -1, _T("Instances"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 
 	m_canvas->SetCurrent();
 }
@@ -254,6 +264,7 @@ vtFrame::~vtFrame()
 	delete m_pUtilDlg;
 	delete m_pCameraDlg;
 	delete m_pLocationDlg;
+	delete m_pLayerDlg;
 }
 
 void vtFrame::CreateMenus()
@@ -269,6 +280,7 @@ void vtFrame::CreateMenus()
 	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _T("Fences"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _T("Routes"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_TREES, _T("Trees"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _T("Instances"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _T("Move Objects"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _T("Navigate"));
 
@@ -385,6 +397,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
 	ADD_TOOL(ID_TOOLS_TREES, wxBITMAP(tree), _("Create Plants"), true);
 //	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
+	ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
@@ -396,7 +409,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
+	ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Layers"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
 	ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
@@ -409,6 +422,8 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
 	ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
 
 	m_pToolbar->Realize();
 }
@@ -434,6 +449,9 @@ void vtFrame::SetMode(MouseMode mode)
 
 	// Show/hide fence dialog
 	m_pUtilDlg->Show(mode == MM_ROUTES);
+
+	// Show/hide instance dialog
+	m_pInstanceDlg->Show(mode == MM_INSTANCES);
 
 	g_App.SetMode(mode);
 }
@@ -952,6 +970,17 @@ void vtFrame::OnUpdateToolsTrees(wxUpdateUIEvent& event)
 	event.Check(g_App.m_mode == MM_PLANTS);
 }
 
+void vtFrame::OnToolsInstances(wxCommandEvent& event)
+{
+	SetMode(MM_INSTANCES);
+}
+
+void vtFrame::OnUpdateToolsInstances(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_INSTANCES);
+}
+
 void vtFrame::OnToolsMove(wxCommandEvent& event)
 {
 	SetMode(MM_MOVE);
@@ -1215,7 +1244,11 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 	wxString2 str = saveFile.GetPath();
 
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+	sa->SetFilename(str.mb_str());
 	sa->WriteXML(str.mb_str());
+
+	// update the displayed filename
+	m_pLayerDlg->RefreshTreeContents();
 }
 
 static bool s_bBuilt = false;
@@ -1333,12 +1366,8 @@ void vtFrame::OnEarthLinear(wxCommandEvent& event)
 //////////////////////////////////////////////////////
 
 //
-// Called by Enviro when the GUI needs to be informed of a new terrain
+// Called when the GUI needs to be informed of a new terrain
 //
-void SetTerrainToGUI(vtTerrain *pTerrain)
-{
-}
-
 void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
@@ -1352,6 +1381,14 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		m_pLocationDlg->SetLocFile((const char *)path);
 		m_pLocationDlg->RecallFrom(pTerrain->GetParams().m_strInitLocation);
 	}
+
+	m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
+	m_pInstanceDlg->SetDataPaths(pTerrain->s_DataPaths);
+}
+
+void vtFrame::EarthPosUpdated(const DPoint3 &pos)
+{
+	m_pInstanceDlg->SetLocation(DPoint2(pos.x, pos.y));
 }
 
 
@@ -1464,5 +1501,8 @@ void vtFrame::OnPopupDelete(wxCommandEvent& event)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->DeleteSelectedStructures();
 	pTerr->DeleteSelectedPlants();
+
+	// layer dialog needs to reflect the change
+	m_pLayerDlg->RefreshTreeContents();
 }
 

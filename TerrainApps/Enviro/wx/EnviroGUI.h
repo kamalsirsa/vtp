@@ -20,6 +20,8 @@ public:
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	virtual void ShowLayerView();
 	virtual void RefreshLayerView();
+	virtual void EarthPosUpdated();
+	virtual vtString GetPathFromGUI();
 };
 
 // global singleton

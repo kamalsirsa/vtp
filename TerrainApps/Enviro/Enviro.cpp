@@ -687,7 +687,7 @@ void Enviro::DescribeCLOD(vtString &str)
 }
 
 //
-// check whether there is terrain under either picker
+// Check the terrain under the picker (for both Terrain and Earth views).
 //
 void Enviro::DoPickers()
 {
@@ -734,6 +734,9 @@ void Enviro::DoPickers()
 			}
 			str.Format("Cursor %7d, %7d", (int) m_EarthPos.x, (int) m_EarthPos.y);
 			m_pSprite2->SetText(str);
+
+			// Inform GUI, in case it cares.
+			EarthPosUpdated();
 		}
 		else
 			m_pSprite2->SetText("Not on terrain");
@@ -1317,6 +1320,7 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_FENCES:
 		case MM_ROUTES:
 		case MM_PLANTS:
+		case MM_INSTANCES:
 		case MM_MOVE:
 		case MM_LINEAR:
 			m_pCursorMGeom->SetEnabled(true);
@@ -1419,10 +1423,13 @@ void Enviro::OnMouse(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 {
+	if (!m_bOnTerrain)
+		return;
+
 	vtTerrain *pTerr = GetCurrentTerrain();
 
 	// Build fences on click
-	if (m_bOnTerrain && m_mode == MM_FENCES)
+	if (m_mode == MM_FENCES)
 	{
 		if (!m_bActiveFence)
 		{
@@ -1431,7 +1438,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		}
 		pTerr->AddFencepoint(m_pCurFence, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
-	if (m_bOnTerrain && m_mode == MM_ROUTES)
+	if (m_mode == MM_ROUTES)
 	{
 		if (!m_bActiveRoute)
 		{
@@ -1441,14 +1448,40 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		pTerr->add_routepoint_earth(m_pCurRoute,
 			DPoint2(m_EarthPos.x, m_EarthPos.y), m_sStructType);
 	}
-	if (m_bOnTerrain && m_mode == MM_PLANTS)
+	if (m_mode == MM_PLANTS)
 	{
 		// try planting a tree there
 		VTLOG("Create a plant at %.2lf,%.2lf:", m_EarthPos.x, m_EarthPos.y);
 		bool success = PlantATree(DPoint2(m_EarthPos.x, m_EarthPos.y));
 		VTLOG(" %s.\n", success ? "yes" : "no");
 	}
-	if (m_bOnTerrain && m_mode == MM_SELECT)
+	if (m_mode == MM_INSTANCES)
+	{
+		vtString path = GetPathFromGUI();
+		if (path == "")
+			return;
+
+		// create a new Instance object
+		vtStructureArray3d *structs = pTerr->GetStructures();
+		vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
+		inst->SetValue("filename", path);
+		inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
+
+		int index = structs->Append(inst);
+		bool success = pTerr->CreateStructure(structs, index);
+		if (success)
+		{
+			RefreshLayerView();
+		}
+		else
+		{
+			// creation failed
+			inst->Select(true);
+			structs->DeleteSelected();
+			return;
+		}
+	}
+	if (m_mode == MM_SELECT)
 		OnMouseLeftDownTerrainSelect(event);
 }
 
