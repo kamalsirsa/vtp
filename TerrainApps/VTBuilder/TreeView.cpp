@@ -44,7 +44,7 @@ DECLARE_APP(MyApp)
 
 
 // MyTreeCtrl implementation
-	IMPLEMENT_DYNAMIC_CLASS(MyTreeCtrl, wxTreeCtrl)
+IMPLEMENT_DYNAMIC_CLASS(MyTreeCtrl, wxTreeCtrl)
 
 MyTreeCtrl::MyTreeCtrl(wxWindow *parent, const wxWindowID id,
 	const wxPoint& pos, const wxSize& size,
@@ -171,8 +171,8 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, "Transit");
 #endif
 	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, "Utilities");
-	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, "Raw");
 #endif
+	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, "Raw");
 
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;
@@ -212,10 +212,10 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 			case LT_UTILITY:
 				hItem = AppendItem(utilityId, str, image, imageSel);
 				break;
+#endif
 			case LT_RAW:
 				hItem = AppendItem(rawId, str, image, imageSel);
 				break;
-#endif
 		}
 		if (hItem != -1)
 		{
@@ -238,8 +238,8 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	Expand(transId);
 #endif
 	Expand(utilityId);
-	Expand(rawId);
 #endif
+	Expand(rawId);
 }
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
@@ -270,7 +270,6 @@ void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 #define TREE_EVENT_HANDLER(name)			\
 void MyTreeCtrl::name(wxTreeEvent& event)	\
 {											\
- /*	wxLogMessage(#name); */					\
 	event.Skip();							\
 }
 
