@@ -69,55 +69,76 @@ class vtRoot;
 class vtEngine;
 class vtGeom;
 
-/** Base class for Node implementation. */
+/** Virtual base class for vtNode implementation. */
 class vtNodeBase
 {
 public:
+	virtual vtNodeBase*	CreateClone() = 0;
+	virtual void		Destroy() = 0;
+
+	virtual void		SetEnabled(bool bOn) = 0;
+	virtual bool		GetEnabled() = 0;
+
+	virtual void		SetName2(const char *str) = 0;
+	virtual const char*	GetName2() = 0;
+
 	virtual void GetBoundBox(FBox3 &box) = 0;
 	virtual void GetBoundSphere(FSphere &sphere) = 0;
 
-	virtual void SetName2(const char *str) = 0;
-	virtual const char *GetName2() = 0;
-
-	/** Looks for a descendent node with a given name.  If not found, NULL
-	 is returned. */
-	vtNode *FindDescendantByName(const char *name);
+	static RGBf s_white;
+	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR) = 0;
 };
 
 //
 // Base class for a Group node (scene graph node that can have children).
 //
+#if VTLIB_PSM
+class vtGroupBase : public vtNodeBase
+#else
 class vtGroupBase
+#endif
 {
 public:
-	virtual void AddChild(class vtNode *pChild) = 0;
-	virtual void RemoveChild(class vtNode *pChild) = 0;
-	virtual vtNode *GetChild(int num) = 0;
-	virtual int GetNumChildren() = 0;
+	virtual void		AddChild(vtNodeBase* pChild) = 0;
+	virtual void		RemoveChild(vtNodeBase* pChild) = 0;
+	virtual vtNode*		GetChild(int num) = 0;
+	virtual int			GetNumChildren() = 0;
+	virtual bool		ContainsChild(vtNodeBase *pNode) = 0;
+	virtual vtNodeBase*	FindDescendantByName(const char *name) = 0;
 };
 
 //
-// A scene graph node that can move
+// Abstract base class for a scene graph node that can move.
 //
+#if VTLIB_PSM
+class vtTransformBase : public vtGroupBase
+#else
 class vtTransformBase
+#endif
 {
 public:
-	// dealing with the transform
 	virtual void Identity() = 0;
+
+	// translation
 	virtual FPoint3 GetTrans() = 0;
 	virtual void SetTrans(const FPoint3 &pos) = 0;
 	virtual void Translate1(const FPoint3 &pos) = 0;
+	virtual void TranslateLocal(const FPoint3 &pos) = 0;
+
+	// rotation
 	virtual void Rotate2(const FPoint3 &axis, float angle) = 0;
 	virtual void RotateLocal(const FPoint3 &axis, float angle) = 0;
 	virtual void RotateParent(const FPoint3 &axis, float angle) = 0;
-	virtual void Scale3(float x, float y, float z) = 0;
 
+	// other
+	virtual void Scale3(float x, float y, float z) = 0;
+	virtual void PointTowards(const FPoint3 &point) = 0;
 	virtual void SetTransform1(const FMatrix4 &mat) = 0;
 	virtual void GetTransform1(FMatrix4 &mat) = 0;
 };
 
 // global function
-class vtNode *vtLoadModel(const char *fname);
+class vtNodeBase *vtLoadModel(const char *fname);
 
 #define VT_Normals		1
 #define VT_Colors		2
@@ -314,7 +335,11 @@ public:
 	virtual int AppendMaterial(vtMaterial *pMat) = 0;
 };
 
+#if VTLIB_PSM
+class vtGeomBase : public vtNodeBase
+#else
 class vtGeomBase
+#endif
 {
 public:
 	vtGeomBase() { m_pMaterialArray = NULL; }

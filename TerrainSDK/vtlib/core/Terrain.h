@@ -102,12 +102,12 @@ public:
 	vtTransform *LoadModel(const char *filename);
 
 	/// add a model (or any node) to the terrain
-	void AddNode(vtNode *pNode);
+	void AddNode(vtNodeBase *pNode);
 
 	/// add a model (or any node) to the LOD grid of the terrain 
 	bool AddNodeToLodGrid(vtTransform *pTrans);
 	bool AddNodeToLodGrid(vtGeom *pGeom);
-	void RemoveNodeFromLodGrid(vtNode *pNode);
+	void RemoveNodeFromLodGrid(vtNodeBase *pNode);
 
 	/// place a model on the terrain
 	void PlantModel(vtTransform *model);

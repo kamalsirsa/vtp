@@ -32,7 +32,12 @@ void vtNode::Destroy()
 void vtNode::SetEnabled(bool bOn)
 {
 	m_pNode->setNodeMask(bOn ? 0xffffffff : 0);
-	vtEnabledBase::SetEnabled(bOn);
+}
+
+bool vtNode::GetEnabled()
+{
+	int mask = m_pNode->getNodeMask();
+	return (mask != 0);
 }
 
 void vtNode::GetBoundBox(FBox3 &box)
@@ -49,7 +54,7 @@ void vtNode::GetBoundSphere(FSphere &sphere)
 	s2v(bs, sphere);
 }
 
-vtNode *vtNode::CreateClone()
+vtNodeBase *vtNode::CreateClone()
 {
 	// TODO
 	return new vtNode();
@@ -67,6 +72,29 @@ const char *vtNode::GetName2()
 		return m_pNode->getName().c_str();
 	else
 		return NULL;
+}
+
+vtNodeBase *vtGroup::FindDescendantByName(const char *name)
+{
+	if (!strcmp(GetName2(), name))
+		return (dynamic_cast<vtNode *>(this));
+
+	vtGroupBase *pGroup = dynamic_cast<vtGroupBase *>(this);
+	if (pGroup)
+	{
+		for (int i = 0; i < pGroup->GetNumChildren(); i++)
+		{
+			vtNodeBase *pChild = pGroup->GetChild(i);
+			vtGroup *pGroupChild = dynamic_cast<vtGroup *>(pChild);
+			if (pGroupChild)
+			{
+				vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
+				if (pResult)
+					return pResult;
+			}
+		}
+	}
+	return NULL;
 }
 
 void vtNode::SetOsgNode(Node *n)
@@ -127,14 +155,18 @@ void vtGroup::SetOsgGroup(Group *g)
 	SetOsgNode(g);
 }
 
-void vtGroup::AddChild(vtNode *pChild)
+void vtGroup::AddChild(vtNodeBase *pChild)
 {
-	m_pGroup->addChild(pChild->GetOsgNode());
+	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
+	if (pChildNode)
+		m_pGroup->addChild(pChildNode->GetOsgNode());
 }
 
-void vtGroup::RemoveChild(vtNode *pChild)
+void vtGroup::RemoveChild(vtNodeBase *pChild)
 {
-	m_pGroup->removeChild(pChild->GetOsgNode());
+	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
+	if (pChildNode)
+		m_pGroup->removeChild(pChildNode->GetOsgNode());
 }
 
 vtNode *vtGroup::GetChild(int num)
@@ -148,7 +180,7 @@ int vtGroup::GetNumChildren()
 	return m_pGroup->getNumChildren();
 }
 
-bool vtGroup::ContainsChild(vtNode *pNode)
+bool vtGroup::ContainsChild(vtNodeBase *pNode)
 {
 	int i, children = GetNumChildren();
 	for (i = 0; i < children; i++)

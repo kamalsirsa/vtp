@@ -21,29 +21,27 @@ namespace osg
 /**
  * Represents a Node in the vtlib Scene Graph.
  */
-class vtNode : public vtNodeBase, public vtEnabledBase, public osg::Referenced
+class vtNode : public vtNodeBase, public osg::Referenced
 {
 public:
+	virtual vtNodeBase *CreateClone();
 	virtual void Destroy();
 
-	// implement vtEnabledBase methods
-	void SetEnabled(bool bOn);
-
 	// implement vtNodeBase methods
-	/** Get the Bounding Box of the node, in world coordinates */
-	void GetBoundBox(FBox3 &box);
-
-	/** Get the Bounding Sphere of the node, in world coordinates */
-	void GetBoundSphere(FSphere &sphere);
-
-	vtNode *CreateClone();
+	void SetEnabled(bool bOn);
+	bool GetEnabled();
 
 	/** Set the name of the node. */
 	void SetName2(const char *str);
 	/** Get the name of the node. */
 	const char *GetName2();
 
-	static RGBf s_white;
+	/** Get the Bounding Box of the node, in world coordinates */
+	void GetBoundBox(FBox3 &box);
+
+	/** Get the Bounding Sphere of the node, in world coordinates */
+	void GetBoundSphere(FSphere &sphere);
+
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
 
 	// implementation data
@@ -67,11 +65,11 @@ public:
 	// implement vtGroupBase methods
 
 	/** Add a node as a child of this Group. */
-	void AddChild(vtNode *pChild);
+	void AddChild(vtNodeBase *pChild);
 
 	/** Remove a node as a child of this Group.  If the indicated node is not
 	 a child, then this method has no effect. */
-	void RemoveChild(vtNode *pChild);
+	void RemoveChild(vtNodeBase *pChild);
 
 	/** Return a child node, by index. */
 	vtNode *GetChild(int num);
@@ -79,8 +77,12 @@ public:
 	/** Return the number of child nodes */
 	int GetNumChildren();
 
+	/** Looks for a descendent node with a given name.  If not found, NULL
+	 is returned. */
+	vtNodeBase *FindDescendantByName(const char *name);
+
 	/** Return true if the given node is a child of this group. */
-	bool ContainsChild(vtNode *pNode);
+	bool ContainsChild(vtNodeBase *pNode);
 
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup; }

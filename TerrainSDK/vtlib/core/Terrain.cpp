@@ -43,7 +43,7 @@ vtTerrain::vtTerrain()
 {
 	m_ocean_color.Set(40.0f/255, 75.0f/255, 124.0f/255);	// unshaded color
 
-	m_pTerrainGroup = NULL;
+	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pDIB = NULL;
 	m_pCoverage = NULL;
 	m_pTerrApps1 = NULL;
@@ -100,8 +100,6 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pRoadGroup);
 		m_pRoadGroup->Destroy();
 	}
-	delete m_pTerrApps1;
-	delete m_pTerrApps2;
 	if (m_pOceanGeom)
 	{
 		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
@@ -113,7 +111,6 @@ vtTerrain::~vtTerrain()
 		m_pLodGrid->Destroy();
 	}
 //	delete m_pInputGrid;	// don't delete, copied to m_pElevGrid
-	delete m_pTin;
 	if (m_pDynGeom)
 	{
 		m_pDynGeomScale->RemoveChild(m_pDynGeom);
@@ -129,7 +126,12 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
 		m_pDynGeomScale->Destroy();
 	}
-	if (m_pTerrainGroup)
+#ifndef VTLIB_PSM
+	delete m_pTerrApps1;
+	delete m_pTerrApps2;
+#endif
+	delete m_pTin;
+	if (m_pTerrainGroup != (vtGroup*) NULL)
 		m_pTerrainGroup->Destroy();
 }
 
@@ -329,7 +331,7 @@ void vtTerrain::create_textures()
 	// We're not going to use it anymore, so we're done with the DIB
 	if (m_pDIB != NULL)
 	{
-#ifndef VTLIB_PSM	// PSM deletes the DIB
+#if !VTLIB_PSM	// PSM deletes the DIB
 		delete m_pDIB;
 #endif
 		m_pDIB = NULL;
@@ -445,7 +447,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 //	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
 //	{
 //		m_pDynGeom = new LKTerrain();
-//		m_pDynGeom->SetName2("LK Shape");
+//		m_pDynGeom->SetName2("LK Geom");
 //	}
 	if (m_Params.m_eLodMethod == LM_TOPOVISTA)
 	{
@@ -775,13 +777,13 @@ MyTerrain::CreateCustomCulture(bool bSound)
  */
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
-	vtNode *node = vtLoadModel(filename);
+	vtNodeBase *node = vtLoadModel(filename);
 	if (!node)
 	{
 		vtString path = FindFileOnPaths(m_DataPaths, filename);
 		if (path != "")
 		{
-			vtNode *node = vtLoadModel(path);
+			vtNodeBase *node = vtLoadModel(path);
 		}
 	}
 	if (node)
@@ -1027,6 +1029,9 @@ bool vtTerrain::CreateStep1(int &iError)
 	// create terrain group - this holds all surfaces for the terrain
 	m_pTerrainGroup = new vtGroup();
 	m_pTerrainGroup->SetName2("Terrain Group");
+#ifdef VTLIB_PSM
+	m_pTerrainGroup->IncUse();
+#endif
 
 	if (m_pInputGrid)
 	{
@@ -1643,7 +1648,7 @@ void vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
  *
  * \sa AddNodeToLodGrid
  */
-void vtTerrain::AddNode(vtNode *pNode)
+void vtTerrain::AddNode(vtNodeBase *pNode)
 {
 	m_pTerrainGroup->AddChild(pNode);
 }
@@ -1685,7 +1690,7 @@ bool vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
 }
 
 
-void vtTerrain::RemoveNodeFromLodGrid(vtNode *pNode)
+void vtTerrain::RemoveNodeFromLodGrid(vtNodeBase *pNode)
 {
 	if (m_pLodGrid)
 		m_pLodGrid->RemoveNodeFromGrid(pNode);

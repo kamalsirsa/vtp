@@ -24,7 +24,7 @@ public:
 	bool AppendToGrid(vtGeom *pGeom);
 	void RemoveFromGrid(vtTransform *pTNode);
 	void RemoveFromGrid(vtGeom *pModel);
-	void RemoveNodeFromGrid(vtNode *pNode);
+	void RemoveNodeFromGrid(vtNodeBase *pNode);
 
 protected:
 	FPoint3 m_origin;

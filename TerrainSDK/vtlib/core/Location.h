@@ -70,7 +70,7 @@ public:
 	void Empty();
 
 	// you must call these 3 methods before this class is useful
-	void SetTransform(vtTransform *trans) { m_pTransform = trans; }
+	void SetTransform(vtTransformBase *trans) { m_pTransform = trans; }
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
 	void SetProjection(vtProjection proj) { m_proj = proj; }
 
@@ -81,7 +81,7 @@ public:
 	// to the 
 	vtLocalConversion	m_conv;
 	vtProjection		m_proj;
-	vtTransform			*m_pTransform;
+	vtTransformBase		*m_pTransform;
 
 // Implementation
 protected:

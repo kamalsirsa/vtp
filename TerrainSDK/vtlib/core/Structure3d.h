@@ -64,7 +64,7 @@ public:
 
 protected:
 	vtGeom		*m_pHighlight;	// The wireframe highlight
-	vtNode		*m_pModel; // the contained model
+	vtNodeBase	*m_pModel; // the contained model
 };
 
 

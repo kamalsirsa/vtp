@@ -101,10 +101,12 @@ bool vtScene::Init()
 //	mode &= ~(osgUtil::CullViewState::SMALL_FEATURE_CULLING);
 
 	// OSG 0.8.45
-	osgUtil::CullVisitor::CullingMode mode = cvis->getCullingMode();
-	mode &= ~(osgUtil::CullVisitor::SMALL_FEATURE_CULLING);
+//	osgUtil::CullVisitor::CullingMode mode = cvis->getCullingMode();
+//	mode &= ~(osgUtil::CullVisitor::SMALL_FEATURE_CULLING);
+//	cvis->setCullingMode(mode);
 
-	cvis->setCullingMode(mode);
+	// OSG 0.9.2
+	m_pOsgSceneView->setCullingMode( m_pOsgSceneView->getCullingMode() & ~osg::CullStack::SMALL_FEATURE_CULLING);
 
 	m_bInitialized = true;
 
@@ -240,7 +242,7 @@ bool vtScene::GetGlobalWireframe()
 
 ////////////////////////////////////////
 
-vtNode *vtLoadModel(const char *filename)
+vtNodeBase *vtLoadModel(const char *filename)
 {
 	// Temporary workaround for OSG OBJ-MTL reader which doesn't like
 	// backslashes in the version we're using
@@ -270,7 +272,7 @@ vtNode *vtLoadModel(const char *filename)
 		return NULL;
 }
 
-RGBf vtNode::s_white(1, 1, 1);
+RGBf vtNodeBase::s_white(1, 1, 1);
 
 /**
  * Set the Fog state for a node.
