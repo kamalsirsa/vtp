@@ -1,7 +1,7 @@
 //
 // GEOnet.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,156 +26,160 @@ vtString RemoveAccents(const vtString &strInput)
 		switch (ch)
 		{
 			// do conversion from "ANSI western europe" character set
-		case '¿':
-		case '¡':
-		case '¬':
-		case '√':
-		case 'ƒ':
-		case '≈':
+		case 0xc0:	// '¿'
+		case 0xc1:	// '¡':
+		case 0xc2:	// '¬':
+		case 0xc3:	// '√':
+		case 0xc4:	// 'ƒ':
+		case 0xc5:	// '≈':
 			strOutput += 'A';
 			break;
-		case '«':
+		case 0xc7:	// '«':
 			strOutput += 'C';
 			break;
-		case '»':
-		case '…':
-		case ' ':
-		case 'À':
+		case 0xc8:	// '»':
+		case 0xc9:	// '…':
+		case 0xca:	// ' ':
+		case 0xcb:	// 'À':
 			strOutput += 'E';
 			break;
-		case 'Ã':
-		case 'Õ':
-		case 'Œ':
-		case 'œ':
+		case 0xcc:	// 'Ã':
+		case 0xcd:	// 'Õ':
+		case 0xce:	// 'Œ':
+		case 0xcf:	// 'œ':
 			strOutput += 'I';
 			break;
-		case '–':
+		case 0xd0:	// '–':
 			strOutput += 'D';
 			break;
-		case '—':
+		case 0xd1:	// '—':
 			strOutput += 'N';
 			break;
-		case '“':
-		case '”':
-		case '‘':
-		case '’':
-		case '÷':
-		case 'ÿ':
+		case 0xd2:	// '“':
+		case 0xd3:	// '”':
+		case 0xd4:	// '‘':
+		case 0xd5:	// '’':
+		case 0xd6:	// '÷':
+		case 0xd8:	// 'ÿ':
 			strOutput += 'O';
 			break;
-		case 'Ÿ':
-		case '⁄':
-		case '€':
-		case '‹':
+		case 0xd9:	// 'Ÿ':
+		case 0xda:	// '⁄':
+		case 0xdb:	// '€':
+		case 0xdc:	// '‹':
 			strOutput += 'U';
 			break;
-		case '›':
+		case 0xdd:	// '›':
 			strOutput += 'Y';
 			break;
-		case 'ﬂ':
+		case 0xdf:	// 'ﬂ':
 			strOutput += 's';	// NOTE: converts to 'ss'
 			strOutput += 's';
 			break;
-		case '‡':
-		case '·':
-		case '‚':
-		case '„':
-		case '‰':
-		case 'Â':
+		case 0xe0:	// '‡':
+		case 0xe1:	// '·':
+		case 0xe2:	// '‚':
+		case 0xe3:	// '„':
+		case 0xe4:	// '‰':
+		case 0xe5:	// 'Â':
 			strOutput += 'a';
 			break;
-		case 'Á':
+		case 0xe7:	// 'Á':
 			strOutput += 'c';
 			break;
-		case 'Ë':
-		case 'È':
-		case 'Í':
-		case 'Î':
+		case 0xe8:	// 'Ë':
+		case 0xe9:	// 'È':
+		case 0xea:	// 'Í':
+		case 0xeb:	// 'Î':
 			strOutput += 'e';
 			break;
-		case 'Ï':
-		case 'Ì':
-		case 'Ó':
-		case 'Ô':
+		case 0xec:	// 'Ï':
+		case 0xed:	// 'Ì':
+		case 0xee:	// 'Ó':
+		case 0xef:	// 'Ô':
 			strOutput += 'i';
 			break;
-		case 'Ò':
+		case 0xf1:	// 'Ò':
 			strOutput += 'n';
 			break;
-		case 'Ú':
-		case 'Û':
-		case 'Ù':
-		case 'ı':
-		case 'ˆ':
-		case '¯':
+		case 0xf2:	// 'Ú':
+		case 0xf3:	// 'Û':
+		case 0xf4:	// 'Ù':
+		case 0xf5:	// 'ı':
+		case 0xf6:	// 'ˆ':
+		case 0xf8:	// '¯':
 			strOutput += 'o';
 			break;
-		case '˘':
-		case '˙':
-		case '˚':
-		case '¸':
+		case 0xf9:	// '˘':
+		case 0xfa:	// '˙':
+		case 0xfb:	// '˚':
+		case 0xfc:	// '¸':
 			strOutput += 'u';
 			break;
-		case '˝':
-		case 'ˇ':
+		case 0xfd:	// '˝':
+		case 0xff:	// 'ˇ':
 			strOutput += 'y';
 			break;
 
-		// also do conversion from old DOS character set
-		case 'É':
-		case 'Ñ':
-		case 'Ö':
-		case 'Ü':
-		case '†':
+		// Also do conversion from old DOS character set - fortunately, they
+		// (surprisingly) don't overlap with ANSI accented characters.
+		case 0x83:	// 'É' (ANSI '‚')
+		case 0x84:	// 'Ñ' (ANSI '‰')
+		case 0x85:	// 'Ö' (ANSI '‡')
+		case 0x86:	// 'Ü' (ANSI 'Â')
+		case 0xa0:	// '†' (ANSI '·')
 			strOutput += 'a';
 			break;
-		case 'ã':
-		case 'å':
-		case 'ç':
-		case '°':
+		case 0x8b:	// 'ã' (ANSI 'Ô')
+		case 0x8c:	// 'å' (ANSI 'Ó')
+		case 0x8d:	// 'ç' (ANSI 'Ï')
+		case 0xa1:	// '°' (ANSI 'Ì')
 			strOutput += 'i';
 			break;
-		case 'Å':
-		case 'ñ':
-		case 'ó':
-		case '£':
+		case 0x81:	// 'Å' (ANSI '¸')
+		case 0x96:	// 'ñ' (ANSI '˚')
+		case 0x97:	// 'ó' (ANSI '˘')
+		case 0xa3:	// '£' (ANSI '˙')
 			strOutput += 'u';
 			break;
-		case 'Ç':
-		case 'à':
-		case 'â':
-		case 'ä':
+		case 0x82:	// 'Ç' (ANSI 'È')
+		case 0x88:	// 'à' (ANSI 'Í')
+		case 0x89:	// 'â' (ANSI 'Î')
+		case 0x8a:	// 'ä' (ANSI 'Ë')
 			strOutput += 'e';
 			break;
-		case 'ì':
-		case 'î':
-		case 'ï':
-		case '¢':
+		case 0x93:	// 'ì' (ANSI 'Ù')
+		case 0x94:	// 'î' (ANSI 'ˆ')
+		case 0x95:	// 'ï' (ANSI 'Ú')
+		case 0xa2:	// '¢' (ANSI 'Û')
 			strOutput += 'o';
 			break;
-		case 'é':
-		case 'è':
+		case 0x8e:	// 'é' (ANSI 'ƒ')
+		case 0x8f:	// 'è' (ANSI '≈')
 			strOutput += 'A';
 			break;
-		case 'ö':
+		case 0x9a:	// 'ö' (ANSI '‹')
 			strOutput += 'U';
 			break;
-		case 'ê':
+		case 0x90:	// 'ê' (ANSI '…')
 			strOutput += 'E';
 			break;
-		case 'ô':
+		case 0x99:	// 'ô' (ANSI '÷')
 			strOutput += 'O';
 			break;
-		case 'á':
+		case 0x87:	// 'á' (ANSI 'Á')
 			strOutput += 'c';
 			break;
-		case 'ò':
+		case 0x80:	// 'Ä' (ANSI '«')
+			strOutput += 'C';
+			break;
+		case 0x98:	// 'ò' (ANSI 'ˇ')
 			strOutput += 'y';
 			break;
-		case '§':
+		case 0xa4:	// '§' (ANSI 'Ò')
 			strOutput += 'n';
 			break;
-		case '•':
+		case 0xa5:	// '•' (ANSI '—')
 			strOutput += 'N';
 			break;
 		default:
