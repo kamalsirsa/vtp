@@ -17,12 +17,14 @@
 
 #include "Frame.h"
 #include "StructLayer.h"
-#include "ScaledView.h"
+#include "BuilderView.h"
+//#include "ScaledView.h"
 #include "vtui/BuildingDlg.h"
 #include "Helper.h"
 
 wxPen orangePen;
 wxPen yellowPen;
+wxPen thickPen;
 static bool g_bInitializedPens = false;
 
 //////////////////////////////////////////////////////////////////////////
@@ -34,8 +36,12 @@ vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 	if (!g_bInitializedPens)
 	{
 		g_bInitializedPens = true;
+
 		orangePen.SetColour(255,128,0);
 		yellowPen.SetColour(255,255,0);
+
+		thickPen.SetColour(255,255,255);
+		thickPen.SetWidth(3);
 	}
 }
 
@@ -54,8 +60,6 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 
 	return true;
 }
-
-#define BLENGTH 5
 
 void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
@@ -113,6 +117,24 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
 			pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
 		}
+	}
+	DrawBuildingHighlight(pDC, pView);
+}
+
+void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)
+{
+	if (m_pEditBuilding)
+	{
+		pDC->SetLogicalFunction(wxINVERT);
+		pDC->SetPen(thickPen);
+
+		DLine2 &dl = m_pEditBuilding->GetFootprint(m_iEditLevel);
+		int sides = dl.GetSize();
+		int j = m_iEditEdge;
+		wxPoint p[2];
+		pView->screen(dl.GetAt(j), p[0]);
+		pView->screen(dl.GetAt((j+1)%sides), p[1]);
+		pDC->DrawLines(2, p);
 	}
 }
 
@@ -357,8 +379,10 @@ bool vtStructureLayer::EditBuildingProperties()
 	SetModified(true);
 
 	BuildingDlg dlg(NULL, -1, "Building Properties", wxDefaultPosition);
-		dlg.Setup(bld_selected);
-	return (dlg.ShowModal() == wxID_OK);
+	dlg.Setup(this, bld_selected);
+
+	dlg.ShowModal();
+	return true;
 }
 
 void vtStructureLayer::InvertSelection()
@@ -418,6 +442,25 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 		}
 	}
 	return affected;
+}
+
+
+void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
+{
+	vtScaledView *pView = GetMainFrame()->GetView();
+	wxClientDC dc(pView);
+	pView->PrepareDC(dc);
+
+	DrawBuildingHighlight(&dc, pView);
+
+	vtStructureArray::SetEditedEdge(bld, lev, edge);
+
+	DrawBuildingHighlight(&dc, pView);
+
+	// Trigger re-draw of the building
+//	bound = WorldToWindow(world_bounds[n]);
+//	IncreaseRect(bound, BOUNDADJUST);
+//	Refresh(TRUE, &bound);
 }
 
 

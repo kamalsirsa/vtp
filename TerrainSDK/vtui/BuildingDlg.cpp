@@ -50,6 +50,7 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_BUTTON( ID_FEAT_WALL, BuildingDlg::OnFeatWall )
 	EVT_BUTTON( ID_FEAT_WINDOW, BuildingDlg::OnFeatWindow )
 	EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
+	EVT_CLOSE(BuildingDlg::OnCloseWindow)
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -61,8 +62,9 @@ BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	BuildingDialogFunc( this, TRUE ); 
 }
 
-void BuildingDlg::Setup(vtBuilding *bld)
+void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld)
 {
+	m_pSA = pSA;
 	m_pBuilding = bld;
 }
 
@@ -229,7 +231,14 @@ void BuildingDlg::OnOK( wxCommandEvent &event )
 {
 	// All edits are live, so no need to do anything on OK other than
 	// close the window.
+	m_pSA->SetEditedEdge(NULL, 0, 0);
 	wxDialog::OnOK(event);
+}
+
+void BuildingDlg::OnCloseWindow(wxCloseEvent& event)
+{
+	m_pSA->SetEditedEdge(NULL, 0, 0);
+	wxDialog::OnCloseWindow(event);
 }
 
 void BuildingDlg::SetupControls()
@@ -348,6 +357,8 @@ void BuildingDlg::SetEdge(int iEdge)
 
 	// features
 	UpdateFeatures();
+
+	m_pSA->SetEditedEdge(m_pBuilding, m_iLevel, m_iEdge);
 }
 
 void BuildingDlg::OnLevel( wxCommandEvent &event )
@@ -585,9 +596,11 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 	{
 		DestroyChildren();
 		BuildingDialogFunc( this, TRUE ); 
+		m_pSA->SetEditedEdge(NULL, 0, 0);
 	}
 	SetupControls();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
 }
+

@@ -15,6 +15,7 @@
 #include "vtui_wdr.h"
 #include "vtui/AutoDialog.h"
 #include "vtdata/Building.h"
+#include "vtdata/StructArray.h"
 
 // WDR: class declarations
 
@@ -41,7 +42,7 @@ public:
 	wxStaticBitmap* GetColorBitmap2()  { return (wxStaticBitmap*) FindWindow( ID_COLOR2 ); }
 	wxListBox* GetLevelCtrl()  { return (wxListBox*) FindWindow( ID_LEVEL ); }
 	wxListBox* GetEdgeCtrl()  { return (wxListBox*) FindWindow( ID_EDGE ); }
-	void Setup(vtBuilding *bld);
+	void Setup(vtStructureArray *pSA, vtBuilding *bld);
 	void EditColor();
 	void SetLevel(int i);
 	void SetEdge(int i);
@@ -60,6 +61,7 @@ public:
 
 protected:
 	// WDR: member variable declarations for BuildingDlg
+	vtStructureArray *m_pSA;
 	vtBuilding  *m_pBuilding;
 	vtLevel	 *m_pLevel;
 	vtEdge	  *m_pEdge;
@@ -97,6 +99,7 @@ protected:
 	void OnSpinStories( wxCommandEvent &event );
 	void OnColor1( wxCommandEvent &event );
 	virtual void OnOK( wxCommandEvent &event );
+	void OnCloseWindow(wxCloseEvent& event);
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnLevel( wxCommandEvent &event );
 	void OnEdge( wxCommandEvent &event );

@@ -69,6 +69,13 @@ void vtStructureArray::DestructItems(int first, int last)
 		delete GetAt(i);
 }
 
+void vtStructureArray::SetEditedEdge(vtBuilding *bld, int lev, int edge)
+{
+	m_pEditBuilding = bld;
+	m_iEditLevel = lev;
+	m_iEditEdge = edge;
+}
+
 bool vtStructureArray::ReadBCF(const char* pathname)
 {
 	FILE* fp;

@@ -24,6 +24,7 @@
 class vtStructureArray : public Array<vtStructure*>
 {
 public:
+	vtStructureArray() { m_pEditBuilding = NULL; }
 	~vtStructureArray() { Empty(); }
 	virtual void DestructItems(int first, int last);	// override
 
@@ -64,8 +65,16 @@ public:
 	virtual vtFence *NewFence();
 	virtual vtStructInstance *NewInstance();
 
+	// override to catch edit hightlighting
+	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
+
 	vtProjection m_proj;
+
 protected:
+	// used to indicate which edge should be hightlighted during editing
+	vtBuilding *m_pEditBuilding;
+	int m_iEditLevel;
+	int m_iEditEdge;
 };
 
 // Helper

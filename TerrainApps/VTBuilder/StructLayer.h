@@ -30,6 +30,7 @@ public:
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
 
+	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
 	bool AddElementsFromSHP(const char *filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	// Import from SDTS via OGR
@@ -45,6 +46,9 @@ public:
 	void InvertSelection();
 	void DeselectAll();
 	int DoBoxSelect(const DRECT &rect, SelectionType st);
+
+	// override to catch edit hightlighting
+	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 
 protected:
 	int m_size;	// size in pixels of the small crosshair at building center
