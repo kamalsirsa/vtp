@@ -717,7 +717,8 @@ void vtMesh::ReOptimize()
  */
 void vtMesh::SetNormalsFromPrimitives()
 {
-	for (Vec3Array::iterator itr = m_Norm->begin(); itr != m_Norm->end(); itr++)
+	Vec3Array::iterator itr;
+	for (itr = m_Norm->begin(); itr != m_Norm->end(); itr++)
 		itr->set(0, 0, 0);
 
 	switch (m_ePrimType)
