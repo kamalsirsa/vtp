@@ -1450,7 +1450,8 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		m_bSelectedStruct = false;
 
 		int structure;		// index of closest structure
-		bool result1 = pTerr->FindClosestStructure(gpos, 10.0, structure, dist1);
+		bool result1 = pTerr->FindClosestStructure(gpos,
+			g_Options.m_fSelectionCutoff, structure, dist1);
 		structures = pTerr->GetStructures();
 
 		vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
@@ -1458,12 +1459,13 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		m_bSelectedPlant = false;
 
 		int plant;		// index of closest plant
-		bool result2 = plants.FindClosestPlant(gpos, 20.0, plant, dist2);
+		bool result2 = plants.FindClosestPlant(gpos,
+			g_Options.m_fSelectionCutoff, plant, dist2);
 
 		vtRouteMap &routes = pTerr->GetRouteMap();
 		m_bSelectedUtil = false;
-		bool result3 = routes.FindClosestUtilNode(gpos, 20.0, m_pSelRoute,
-			m_pSelUtilNode, dist3);
+		bool result3 = routes.FindClosestUtilNode(gpos,
+			g_Options.m_fSelectionCutoff, m_pSelRoute, m_pSelUtilNode, dist3);
 
 		bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
 		bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);

@@ -29,6 +29,7 @@ public:
 	bool	m_bSound;
 	bool	m_bSpeedTest;
 	float	m_fPlantScale;
+	float	m_fSelectionCutoff;
 	bool	m_bShadows;
 
 	// filename (with path) from which ini was read

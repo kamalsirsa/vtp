@@ -25,10 +25,12 @@ EnviroOptions g_Options;
 #define STR_SPEEDTEST "SpeedTest"
 #define STR_PLANTSIZE "PlantSize"
 #define STR_PLANTSHADOWS "PlantShadows"
+#define STR_SELECTIONCUTOFF "SelectionCutoff"
 
 EnviroOptions::EnviroOptions()
 {
-	m_strImage = "free_512";
+	m_strImage = "ev11656_512";
+	m_fSelectionCutoff = 15.0f;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -39,8 +41,6 @@ bool EnviroOptions::Read(const char *szFilename)
 {
 	m_strFilename = szFilename;
 
-//	ifstream input(m_strFilename, ios::nocreate | ios::binary);
-//	ifstream input(m_strFilename, ios_base::in | ios_base::binary);
 	ifstream input(m_strFilename, ios::in | ios::binary);
 	if (!input.is_open())
 		return false;
@@ -84,6 +84,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_fPlantScale;
 		else if (strcmp(buf, STR_PLANTSHADOWS) == 0)
 			input >> m_bShadows;
+		else if (strcmp(buf, STR_SELECTIONCUTOFF) == 0)
+			input >> m_fSelectionCutoff;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -135,6 +137,8 @@ bool EnviroOptions::Write()
 	output << m_fPlantScale << endl;
 	output << STR_PLANTSHADOWS << "\t";
 	output << m_bShadows << endl;
+	output << STR_SELECTIONCUTOFF << "\t";
+	output << m_fSelectionCutoff << endl;
 
 	return true;
 }
