@@ -110,7 +110,7 @@ public:
 	bool ContainsChild(vtNode *pNode) const;
 
 	// OSG-specific Implementation
-	osg::Group *GetOsgGroup() { return m_pGroup.get(); }
+	osg::Group *GetOsgGroup() { return m_pContainer; }
 	const osg::Group *GetOsgGroup() const { return m_pGroup.get(); }
 
 protected:
@@ -118,6 +118,7 @@ protected:
 	virtual ~vtGroup();
 
 	osg::ref_ptr<osg::Group> m_pGroup;
+	osg::Group *m_pContainer;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -487,6 +488,26 @@ protected:
 	osg::ref_ptr<osg::Projection> m_projection;
 
 	virtual ~vtSprite();
+};
+
+/**
+ * A HUD ("heads-up display") is a group whose whose children are transformed
+ * to be drawn in window coordinates, rather than world coordinates.
+ */
+class vtHUD : public vtGroup
+{
+public:
+	vtHUD();
+	vtNodeBase *Clone();
+	void CopyFrom(const vtHUD *rhs);
+	void Release();
+
+public:
+	// OSG-specific Implementation
+	osg::ref_ptr<osg::Projection> m_projection;
+
+protected:
+	virtual ~vtHUD();
 };
 
 /*@}*/	// Group sg

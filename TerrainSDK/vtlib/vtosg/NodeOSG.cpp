@@ -376,12 +376,20 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 	if (!suppress)
 	{
 		m_pGroup = new Group;
+		m_pContainer = m_pGroup.get();
 		SetOsgNode(m_pGroup.get());
 	}
 }
 
 vtGroup::~vtGroup()
 {
+}
+
+void vtGroup::SetOsgGroup(Group *g)
+{
+	m_pGroup = g;
+	m_pContainer = g;
+	SetOsgNode(g);
 }
 
 vtNodeBase *vtGroup::Clone()
@@ -407,7 +415,7 @@ void vtGroup::CopyFrom(const vtGroup *rhs)
 			const Group *rhsGroup = rhs->GetOsgGroup();
 			Node *pOsgChild = const_cast<Node *>( rhsGroup->getChild(i) );
 			if (pOsgChild)
-				m_pGroup->addChild(pOsgChild);
+				m_pContainer->addChild(pOsgChild);
 		}
 	}
 }
@@ -416,7 +424,7 @@ void vtGroup::Release()
 {
 	// Check if there are no more external references to this group node.
 	// If so, clean up the VTP side of the scene graph.
-	int count = m_pGroup.get()->referenceCount();
+	int count = m_pNode->referenceCount();
 	if (count == 2)
 	{
 		// it's over for this node, start the destruction process
@@ -429,18 +437,19 @@ void vtGroup::Release()
 			if (NULL == (pChild = GetChild(0)))
 			{
 				// Probably a raw osg node Group, access it directly.
-				Node *node = m_pGroup->getChild(0);
+				Node *node = m_pContainer->getChild(0);
 				// This deletes the node as well as there is no outer vtNode
 				// holding a reference.
-				m_pGroup->removeChild(node);
+				m_pContainer->removeChild(node);
 			}
 			else
 			{
-				m_pGroup->removeChild(pChild->GetOsgNode());
+				m_pContainer->removeChild(pChild->GetOsgNode());
 				pChild->Release();
 			}
 		}
 		m_pGroup = NULL;
+		m_pContainer = NULL;
 	}
 	// Now release itself
 	vtNode::Release();
@@ -470,30 +479,24 @@ const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
 	return FindNodeByName((vtNode *)this, name);
 }
 
-void vtGroup::SetOsgGroup(Group *g)
-{
-	m_pGroup = g;
-	SetOsgNode(g);
-}
-
 void vtGroup::AddChild(vtNode *pChild)
 {
 	if (pChild)
-		m_pGroup->addChild(pChild->GetOsgNode());
+		m_pContainer->addChild(pChild->GetOsgNode());
 }
 
 void vtGroup::RemoveChild(vtNode *pChild)
 {
 	if (pChild)
-		m_pGroup->removeChild(pChild->GetOsgNode());
+		m_pContainer->removeChild(pChild->GetOsgNode());
 }
 
 vtNode *vtGroup::GetChild(int num) const
 {
-	int children = m_pGroup->getNumChildren();
+	int children = m_pContainer->getNumChildren();
 	if (num >= 0 && num < children)
 	{
-		Node *pChild = (Node *) m_pGroup->getChild(num);
+		Node *pChild = (Node *) m_pContainer->getChild(num);
 		return (vtNode *) (pChild->getUserData());
 	}
 	else
@@ -503,9 +506,9 @@ vtNode *vtGroup::GetChild(int num) const
 int vtGroup::GetNumChildren() const
 {
 	// shoudln't happen but... safety check anyway
-	if (m_pGroup == NULL)
+	if (m_pContainer == NULL)
 		return 0;
-	return m_pGroup->getNumChildren();
+	return m_pContainer->getNumChildren();
 }
 
 bool vtGroup::ContainsChild(vtNode *pNode) const
@@ -1361,7 +1364,7 @@ void vtSprite::AddTextMesh(vtTextMesh *pTextMesh)
 
 vtNodeBase *vtSprite::Clone()
 {
-//	sprite->CopyFrom(this);
+//	sprite->CopyFrom(this);		// TODO
 	return new vtSprite;
 }
 
@@ -1377,11 +1380,6 @@ void vtSprite::SetImage(vtImage *pImage)
 	m_pMesh->AddVertexUV(FPoint3(0.5,1,0), FPoint2(1,1));
 	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
 	m_pMesh->AddQuad(0, 1, 2, 3);
-
-//	vtMaterial *pMat = new vtMaterial();
-//	pMat->SetTexture(pImage);
-//	StateSet *pState = pMat->m_pStateSet.get();
-//	m_geode->setStateSet(pState);
 
 	osg::StateSet* stateset = m_geode->getOrCreateStateSet();
 
@@ -1427,5 +1425,60 @@ void vtSprite::SetPosition(bool bPixels, float l, float t, float r, float b)
 void vtSprite::SetWindowSize(int x, int y)
 {
 	m_projection->setMatrix(osg::Matrix::ortho2D(0,x,0,y));
+}
+
+
+//////////////////////////////////////////////
+
+vtHUD::vtHUD() : vtGroup(true)
+{
+	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
+	modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+	modelview_abs->setMatrix(osg::Matrix::identity());
+
+	// We can set the projection to pixels (0,width,0,height) or
+	//	normalized (0,1,0,1)
+	vtScene *pScene = vtGetScene();
+	IPoint2 winsize = pScene->GetWindowSize();
+
+	m_projection = new osg::Projection;
+	m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
+	m_projection->addChild(modelview_abs);
+
+	// To ensure the sprite appears on top we can use osg::Depth to force
+	//  the depth fragments to be placed at the front of the screen.
+	osg::StateSet* stateset = m_projection->getOrCreateStateSet();
+	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
+
+	SetOsgGroup(m_projection.get());
+	// but!  the modelview node is the container
+	m_pContainer = modelview_abs;
+}
+
+vtHUD::~vtHUD()
+{
+}
+
+void vtHUD::Release()
+{
+	// Check if there are no more external references to this HUD node.
+	if (m_pNode->referenceCount() == 3)
+	{
+		// it's over for this node, start the destruction process
+		m_projection = NULL;
+	}
+	vtGroup::Release();
+}
+
+vtNodeBase *vtHUD::Clone()
+{
+	vtHUD *hud = new vtHUD();
+	hud->CopyFrom(this);
+	return hud;
+}
+
+void vtHUD::CopyFrom(const vtHUD *rhs)
+{
+	// TODO
 }
 
