@@ -128,6 +128,7 @@ public:
 	// event handlers
 	void OnMouse(vtMouseEvent &event);
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
+	void OnMouseLeftDownTerrainSelect(vtMouseEvent &event);
 	void OnMouseLeftDownOrbit(vtMouseEvent &event);
 	void OnMouseLeftUp(vtMouseEvent &event);
 	void OnMouseRightDown(vtMouseEvent &event);
@@ -169,6 +170,15 @@ public:
 	vtRoute		*m_pCurRoute;
 	vtUtilNode	*m_pSelUtilNode;
 	vtRoute		*m_pSelRoute;
+
+	// handle to the singleton
+	static Enviro *s_pApp;
+
+	// The following can be overridden by GUI code, to handle situations
+	//  in which the GUI must be informed of what happens in this object.
+	virtual void ShowPopupMenu(const IPoint2 &pos) {}
+	virtual void SetTerrainToGUI(vtTerrain *pTerrain) {}
+	virtual void StructureSetChanged() {}
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
@@ -237,9 +247,6 @@ protected:
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
 };
-
-// global singleton
-extern Enviro g_App;
 
 // global helper functions
 vtTerrain *GetCurrentTerrain();

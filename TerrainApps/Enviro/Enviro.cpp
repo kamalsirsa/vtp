@@ -33,17 +33,14 @@ int pwdemo = 0;
 vtGeom *tg = NULL;
 
 
-//
-// This is a 'singleton', the only instance of the global application object
-//
-Enviro g_App;
-
-extern void ShowPopupMenu(const IPoint2 &pos);
-
 ///////////////////////////////////////////////////////////
+
+Enviro *Enviro::s_pApp = NULL;
 
 Enviro::Enviro()
 {
+	s_pApp = this;
+
 	m_mode = MM_NONE;
 	m_state = AS_Initializing;
 	m_iInitStep = 0;
@@ -1179,7 +1176,6 @@ bool Enviro::GetMaintain()
 	return m_pCurrentFlyer->GetMaintain();
 }
 
-extern void SetTerrainToGUI(vtTerrain *pTerrain);
 
 void Enviro::SetTerrain(vtTerrain *pTerrain)
 {
@@ -1438,61 +1434,72 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		VTLOG(" %s.\n", success ? "yes" : "no");
 	}
 	if (m_bOnTerrain && m_mode == MM_SELECT)
+		OnMouseLeftDownTerrainSelect(event);
+}
+
+void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+
+	// See if camera ray intersects a structure?  NO, it's simpler and
+	//  easier for the user to just test whether the ground cursor is
+	//  near a structure's origin.
+	DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
+
+	double dist1, dist2, dist3;
+	vtStructureArray3d *structures = pTerr->GetStructures();
+	structures->VisualDeselectAll();
+	m_bSelectedStruct = false;
+
+	int structure;		// index of closest structure
+	bool result1 = pTerr->FindClosestStructure(gpos,
+		g_Options.m_fSelectionCutoff, structure, dist1);
+	vtStructureArray3d *structures_picked = pTerr->GetStructures();
+
+	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
+	plants.VisualDeselectAll();
+	m_bSelectedPlant = false;
+
+	int plant;		// index of closest plant
+	bool result2 = plants.FindClosestPlant(gpos,
+		g_Options.m_fSelectionCutoff, plant, dist2);
+
+	vtRouteMap &routes = pTerr->GetRouteMap();
+	m_bSelectedUtil = false;
+	bool result3 = routes.FindClosestUtilNode(gpos,
+		g_Options.m_fSelectionCutoff, m_pSelRoute, m_pSelUtilNode, dist3);
+
+	bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
+	bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);
+	bool click_route = (result3 && dist3 < dist1 && dist3 < dist2);
+
+	if (click_struct)
 	{
-		// See if camera ray intersects a structure?  NO, it's simpler and
-		//  easier for the user to just test whether the ground cursor is
-		//  near a structure's origin.
-		DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
+		vtStructure *str = structures_picked->GetAt(structure);
+		vtStructure3d *str3d = structures_picked->GetStructure3d(structure);
+		str->Select(true);
+		str3d->ShowBounds(true);
+		m_bDragging = true;
+		m_bSelectedStruct = true;
 
-		double dist1, dist2, dist3;
-		vtStructureArray3d *structures = pTerr->GetStructures();
-		structures->VisualDeselectAll();
-		m_bSelectedStruct = false;
-
-		int structure;		// index of closest structure
-		bool result1 = pTerr->FindClosestStructure(gpos,
-			g_Options.m_fSelectionCutoff, structure, dist1);
-		structures = pTerr->GetStructures();
-
-		vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
-		plants.VisualDeselectAll();
-		m_bSelectedPlant = false;
-
-		int plant;		// index of closest plant
-		bool result2 = plants.FindClosestPlant(gpos,
-			g_Options.m_fSelectionCutoff, plant, dist2);
-
-		vtRouteMap &routes = pTerr->GetRouteMap();
-		m_bSelectedUtil = false;
-		bool result3 = routes.FindClosestUtilNode(gpos,
-			g_Options.m_fSelectionCutoff, m_pSelRoute, m_pSelUtilNode, dist3);
-
-		bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
-		bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);
-		bool click_route = (result3 && dist3 < dist1 && dist3 < dist2);
-
-		if (click_struct)
+		if (structures_picked != structures)
 		{
-			vtStructure *str = structures->GetAt(structure);
-			vtStructure3d *str3d = structures->GetStructure3d(structure);
-			str->Select(true);
-			str3d->ShowBounds(true);
-			m_bDragging = true;
-			m_bSelectedStruct = true;
+			// active structure set (layer) has changed due to picking
+			StructureSetChanged();
 		}
-		if (click_plant)
-		{
-			plants.VisualSelect(plant);
-			m_bDragging = true;
-			m_bSelectedPlant = true;
-		}
-		if (click_route)
-		{
-			m_bDragging = true;
-			m_bSelectedUtil = true;
-		}
-		m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	}
+	if (click_plant)
+	{
+		plants.VisualSelect(plant);
+		m_bDragging = true;
+		m_bSelectedPlant = true;
+	}
+	if (click_route)
+	{
+		m_bDragging = true;
+		m_bSelectedUtil = true;
+	}
+	m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 }
 
 vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
@@ -1934,17 +1941,17 @@ void Enviro::GetStatusText(vtString &str)
 
 void ControlEngine::Eval()
 {
-	g_App.DoControl();
+	Enviro::s_pApp->DoControl();
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 vtTerrain *GetCurrentTerrain()
 {
-	return g_App.m_pTerrainScene->GetCurrentTerrain();
+	return Enviro::s_pApp->m_pTerrainScene->GetCurrentTerrain();
 }
 
 vtTerrainScene *GetTerrainScene()
 {
-	return g_App.m_pTerrainScene;
+	return Enviro::s_pApp->m_pTerrainScene;
 }
