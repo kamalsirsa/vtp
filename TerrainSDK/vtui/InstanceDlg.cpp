@@ -203,7 +203,7 @@ void InstanceDlg::OnRadio( wxCommandEvent &event )
 
 vtContentManager *InstanceDlg::Current()
 {
-	if (m_iManager < m_contents.size())
+	if (m_iManager < (int) m_contents.size())
 		return m_contents[m_iManager];
 	return NULL;
 }
