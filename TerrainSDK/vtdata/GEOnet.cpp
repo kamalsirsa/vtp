@@ -220,7 +220,7 @@ void GNS_to_wstring(int region, char *word, std::wstring &output)
 	unsigned char ch;
 	unsigned short unicode;
 
-	output.empty();
+	output.clear();
 
 	for (int i = 0; i < len; i++)
 	{
