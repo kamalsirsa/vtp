@@ -68,7 +68,7 @@ LIB32=link.exe -lib
 F90=df.exe
 MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /FR /YX /FD /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /FR /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -144,14 +144,6 @@ SOURCE=.\StructArray.cpp
 # Begin Source File
 
 SOURCE=.\Structure.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\Tower.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\TowerArray.cpp
 # End Source File
 # Begin Source File
 
@@ -240,14 +232,6 @@ SOURCE=.\StructArray.h
 # Begin Source File
 
 SOURCE=.\Structure.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Tower.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TowerArray.h
 # End Source File
 # Begin Source File
 

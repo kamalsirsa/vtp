@@ -11,13 +11,13 @@
 #include "ScaledView.h"
 #include "vtdata/Projections.h"
 #include "vtdata/Building.h"
-#include "vtdata/Tower.h"
+//#include "vtdata/Tower.h"
 
 class vtLayer;
 class vtRoadLayer;
 class vtElevLayer;
 class vtStructureLayer;
-class vtTowerLayer;
+class vtUtilityLayer;
 class RoadEdit;
 
 //
@@ -134,13 +134,13 @@ protected:
 	void OnLButtonClickDirection(vtRoadLayer *pRL);
 	void OnLButtonClickRoadEdit(vtRoadLayer *pRL);
 	void OnLButtonClickFeature(vtLayer *pL);
-	void OnLButtonClickTowerEdit(vtTowerLayer *TL);
-	void OnLButtonClickTowerAdd(vtTowerLayer *pTL, const DPoint2 &point);
+	void OnLButtonClickTowerEdit(vtUtilityLayer *TL);
+	void OnLButtonClickTowerAdd(vtUtilityLayer *pTL, const DPoint2 &point);
 	void OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point);
 	void OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point);
 	void OnRightUpRoad(vtRoadLayer *pRL);
 	void OnRightUpStructure(vtStructureLayer *pSL);
-	void OnRightUpUtility(vtTowerLayer *pTL);
+	void OnRightUpUtility(vtUtilityLayer *pTL);
 	void OnLeftDownRoadEdit();
 
 	void OnMouseMove(const wxMouseEvent& event);
@@ -186,7 +186,7 @@ protected:
 	bool	m_bRubber;
 
 	// Used while editing utilities
-	vtTower *m_pCurTower, m_EditTower;
+//	vtTower *m_pCurTower, m_EditTower;
 
 	// Used while editing roads
 	RoadEdit *m_pEditingRoad;
