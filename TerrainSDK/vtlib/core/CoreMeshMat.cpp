@@ -563,7 +563,11 @@ void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 /**
  * Adds an rectangular surface to this mesh.
  *
- * \param tip The top point of the cone.
+ * \param iXQuads The number of quads in the X direction.
+ * \param iZQuads The number of quads in the Z direction.
+ * \param base The lower-left-hand origin of the rectangle's position/
+ * \param size The size of the rectangle (only X and Z are used).
+ * \param fTiling UV tiling.  Set to 1 for UV coordinate of O..1.
  */
 void vtMeshBase::CreateRectangle(int iXQuads, int iZQuads,
 								 const FPoint3 &base, const FPoint3 &size,
