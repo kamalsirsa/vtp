@@ -539,10 +539,9 @@ bool vtProjection::ReadProjFile(const char *filename)
 	fclose(fp);
 
 	// Now read and parse the file
-	// Actually, importFromESRI() does the whole job for us, including
-	//  handling modern-style .prj files with WKT SRS in them.
 	OGRErr eErr;
 	char **papszPrj = CSLLoad( prj_name );
+#if 0
 	if (!strncmp(papszPrj[0], "GEOGCS", 6) ||
 		!strncmp(papszPrj[0], "PROJCS", 6) ||
 		!strncmp(papszPrj[0], "LOCAL_CS", 8))
@@ -551,9 +550,11 @@ bool vtProjection::ReadProjFile(const char *filename)
  		eErr = importFromWkt(&pszWKT);
 	}
 	else
-	{
-		eErr = importFromESRI(papszPrj);
-	}
+#endif
+	// Actually, importFromESRI() does the whole job for us, including
+	//  handling both normal .prj files, and weird ESRI variations.
+	eErr = importFromESRI(papszPrj);
+
 	CSLDestroy( papszPrj );
 
 	return (eErr == OGRERR_NONE);
@@ -1075,10 +1076,6 @@ static const char *papszDatumEquiv[] =
 	"WGS_1972",
 	"European_Terrestrial_Reference_System_89",
 	"European_Reference_System_1989",
-	"Old_Hawaiian",
-	"D_Old_Hawaiian",
-	"Pulkovo_1942",
-	"D_Pulkovo_1942",
 	NULL
 };
 
@@ -1145,6 +1142,11 @@ static void WKTMassageDatum(vtString &strDatum )
 //
 static void MassageDatumFromWKT(vtString &strDatum )
 {
+	// Sometimes, there is an extra "D_" in front of the datum name.
+	// This appears to come from ESRI software.  If it's there, skip it.
+	if (strDatum.Left(2) == "D_")
+		strDatum = strDatum.Right(strDatum.GetLength()-2);
+
 	int i;
 	for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
 	{
