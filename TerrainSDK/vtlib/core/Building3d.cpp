@@ -158,15 +158,6 @@ void vtBuilding3d::CreateSharedMaterials()
 		}
 	}
 
-#if 0
-	//  window-wall material
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	s_Materials->Append(pMat);
-#endif
-
 	int total = s_Materials->GetSize();
 	int expectedtotal = PLAIN_MATS + SIDING_MATS + WINDOWWALL_MATS + 1 + 1 + 1 + 1;	// window, door, wood, cement_block, windowwall
 	assert(total == expectedtotal);
@@ -560,8 +551,10 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 	FPoint3 dir2 = quad[3] - quad[2];
 	float total_length1 = dir1.Length();
 	float total_length2 = dir2.Length();
-	dir1.Normalize();
-	dir2.Normalize();
+	if (total_length1 > 0.0f)
+		dir1.Normalize();
+	if (total_length2 > 0.0f)
+		dir2.Normalize();
 
 	// How wide should each feature be?
 	// Determine how much space we have for the proportional features after
