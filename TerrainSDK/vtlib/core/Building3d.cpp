@@ -465,15 +465,23 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 vtMesh *vtBuilding3d::FindMatMesh(BldMaterial bm, RGBi color, int iPrimType)
 {
 	int mi;
+	int VertType;
+
+	// wireframe is a special case, used for highlight materials
 	if (iPrimType == GL_LINE_STRIP)
 	{
 		if (color == RGBi(255,255,255))
 			mi = HIGHLIGHT_MAT;
 		else
 			mi = HIGHLIGHT_MAT+1;
+		VertType = 0;
 	}
 	else
+	{
+		// otherwise, find normal stored material
 		mi = FindMatIndex(bm, color);
+		VertType = VT_Normals | VT_TexCoords;
+	}
 
 	int i, size = m_Mesh.GetSize();
 	for (i = 0; i < size; i++)
@@ -490,7 +498,7 @@ vtMesh *vtBuilding3d::FindMatMesh(BldMaterial bm, RGBi color, int iPrimType)
 	// will take.  Even the simplest building will use 20 vertices, for now
 	// just use 40 as a reasonable starting point for each mesh.
 
-	mm.m_pMesh = new vtMesh(iPrimType, VT_Normals | VT_TexCoords, 40);
+	mm.m_pMesh = new vtMesh(iPrimType, VertType, 40);
 	m_Mesh.Append(mm);
 	return mm.m_pMesh;
 }
@@ -630,7 +638,6 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	mesh->AddVertex(p3 + norm);
 	mesh->AddVertex(p0 + norm);
 	mesh->AddFan(start, start+1, start+2, start+3, start+4);
-
 }
 
 /**
