@@ -136,6 +136,19 @@ void vtItem3d::UpdateExtents()
 
 vtContentManager3d::vtContentManager3d()
 {
+	m_pGroup = new vtGroup();
+}
+
+void vtContentManager3d::ReleaseContents()
+{
+	if (m_pGroup)
+		m_pGroup->Release();
+	m_pGroup = NULL;
+}
+
+vtContentManager3d::~vtContentManager3d()
+{
+	ReleaseContents();
 }
 
 vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
@@ -144,9 +157,15 @@ vtNode *vtContentManager3d::CreateNodeFromItemname(const char *itemname)
 	if (!pItem)
 		return NULL;
 
-	if (pItem->LoadModels())
-		return pItem->m_pNode;
-	else
-		return NULL;
+	if (!pItem->m_pNode)
+	{
+		if (!pItem->LoadModels())
+			return NULL;
+
+		// Add to content container: must keep a reference to each item's
+		//  model node so it doesn't get deleted which the manager is alive.
+		m_pGroup->AddChild(pItem->m_pNode);
+	}
+	return pItem->m_pNode;
 }
 

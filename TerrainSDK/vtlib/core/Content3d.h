@@ -36,10 +36,14 @@ class vtContentManager3d : public vtContentManager
 {
 public:
 	vtContentManager3d();
+	~vtContentManager3d();
 
 	// implementation
 	vtNode *CreateNodeFromItemname(const char *itemname);
 	virtual vtItem *NewItem() { return new vtItem3d; }
+	void ReleaseContents();
+
+	vtGroup *m_pGroup;
 };
 
 #endif // VTLIB_CONTENT3DH
