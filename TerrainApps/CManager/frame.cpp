@@ -588,6 +588,7 @@ void vtFrame::OnItemRemoveModel(wxCommandEvent& event)
 	// free memory
 	vtNode *node = m_nodemap[previous];
 	node->Release();
+	m_nodemap.erase(previous);
 }
 
 void vtFrame::OnUpdateItemRemoveModel(wxUpdateUIEvent& event)
