@@ -73,8 +73,8 @@ class C2DPoint
 public:
 	C2DPoint (void) : m_x(0), m_y(0), m_z(0) { }
 	C2DPoint (CNumber X, CNumber Y) : m_x (X), m_y (Y), m_z(0) { }
-	operator == (const C2DPoint &p) const { return m_x == p.m_x && m_y == p.m_y; }
-	operator != (const C2DPoint &p) const { return m_x != p.m_x || m_y != p.m_y; }
+	bool operator == (const C2DPoint &p) const { return m_x == p.m_x && m_y == p.m_y; }
+	bool operator != (const C2DPoint &p) const { return m_x != p.m_x || m_y != p.m_y; }
 	C2DPoint operator - (const C2DPoint &p) const {return C2DPoint(m_x - p.m_x, m_y - p.m_y);}
 	C2DPoint operator * (const CNumber &n) const { return C2DPoint (n*m_x, n*m_y); }
 	bool IsInfinite (void) { return *this == C2DPoint (CN_INFINITY, CN_INFINITY) ? true : false; }
@@ -122,8 +122,8 @@ public:
 	CVertex (const C2DPoint &p, CVertex &left, CVertex &right);
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
-	operator == (const CVertex &v) const { return m_point == v.m_point; }
-	operator < (const CVertex &) const { assert (false); return false; }
+	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
+	bool operator < (const CVertex &) const { assert (false); return false; }
 //	bool IntersectionFromLeft (const CBisector &l);
 //	bool IntersectionFromRight (const CBisector &l);
 	C2DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
