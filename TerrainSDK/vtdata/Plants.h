@@ -53,15 +53,21 @@ public:
 	Array<vtBioType *> m_Types;
 };
 
+enum AppearType {
+	AT_XFROG,
+	AT_BILLBOARD,
+	AT_MODEL
+};
+
 class vtPlantAppearance
 {
 public:
 	vtPlantAppearance();
-	vtPlantAppearance(bool billboard, const char *filename, float width,
+	vtPlantAppearance(AppearType type, const char *filename, float width,
 		float height, float shadow_radius, float shadow_darkness);
 	virtual ~vtPlantAppearance();
 
-	bool		m_bBillboard;
+	AppearType	m_eType;
 	vtString	m_filename;
 	float		m_width;
 	float		m_height;
@@ -90,10 +96,10 @@ public:
 	void SetMaxHeight(float f) { m_fMaxHeight = f; }
 	float GetMaxHeight() const { return m_fMaxHeight; }
 
-	virtual void AddAppearance(bool billboard, const char *filename,
+	virtual void AddAppearance(AppearType type, const char *filename,
 		float width, float height, float shadow_radius, float shadow_darkness)
 	{
-		vtPlantAppearance *pApp = new vtPlantAppearance(billboard, filename,
+		vtPlantAppearance *pApp = new vtPlantAppearance(type, filename,
 			width, height, shadow_radius, shadow_darkness);
 		m_Apps.Append(pApp);
 	}
@@ -119,6 +125,9 @@ public:
 	bool Read(const char *fname);
 	bool Write(const char *fname);
 
+	bool ReadXML(const char *fname);
+	bool WriteXML(const char *fname);
+
 	void LookupPlantIndices(vtBioType *pvtBioType);
 	int NumSpecies() const { return m_Species.GetSize();  }
 	vtPlantSpecies *GetSpecies(int i) const
@@ -131,6 +140,10 @@ public:
 	int GetSpeciesIdByCommonName(const char *name);
 	virtual void AddSpecies(int SpecieID, const char *common_name,
 		const char *SciName, float max_height);
+	void Append(vtPlantSpecies *pSpecies)
+	{
+		m_Species.Append(pSpecies);
+	}
 
 protected:
 	Array<vtPlantSpecies*> m_Species;
