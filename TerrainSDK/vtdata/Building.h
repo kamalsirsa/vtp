@@ -134,6 +134,8 @@ public:
 	// assignment operator
 	vtLevel &operator=(const vtLevel &v);
 
+	void DeleteEdge(int iEdge);
+	bool AddEdge(int iEdge, DPoint2 &Point);
 	int GetNumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
@@ -160,7 +162,8 @@ public:
 
 	void SetFootprint(const DLine2 &dl);
 	void SetFootprint(const OGRPolygon *poly);
-	DLine2 &GetFootprint() { return m_Footprint; }
+	DLine2 GetFootprint() { return m_Footprint; }
+	const DLine2 &GetAtFootprint() { return m_Footprint; }
 
 	void DetermineLocalFootprint(float fHeight);
 	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
@@ -175,6 +178,7 @@ private:
 	DLine2		m_Footprint;
 
 	// alternate storage of earth-CS footprint, in development
+	void SynchToOGR();
 	OGRPolygon	m_Foot;
 
 	// footprint in the local CS of this building
@@ -192,7 +196,8 @@ public:
 
 	// footprint methods
 	void SetFootprint(int i, const DLine2 &dl);
-	DLine2 &GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
+	DLine2 GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
+	const DLine2 &GetAtFootprint(int i) { return m_Levels[i]->GetAtFootprint(); }
 	bool GetBaseLevelCenter(DPoint2 &p) const;
 
 	void SetRectangle(const DPoint2 &center, float fWidth, float fDepth,

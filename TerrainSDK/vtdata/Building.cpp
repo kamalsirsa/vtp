@@ -203,6 +203,38 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 	return *this;
 }
 
+void vtLevel::DeleteEdge(int iEdge)
+{
+	delete m_Edges.GetAt(iEdge);
+	m_Edges.RemoveAt(iEdge);
+	m_Footprint.RemovePoint(iEdge);
+	SetFootprint(m_Footprint);
+}
+
+// Split an edge at the indicated point and clone into two edges
+bool vtLevel::AddEdge(int iEdge, DPoint2 &Point)
+{
+	int iNumEdges = m_Edges.GetSize();
+	int iIndex;
+
+	vtEdge *pEdge = new vtEdge(*GetEdge(iEdge));
+
+	if (NULL == pEdge)
+		return false;
+
+	if (iEdge == iNumEdges - 1)
+		m_Edges.Append(pEdge);
+	else
+	{
+		for (iIndex = iNumEdges - 1; iIndex > iEdge ; iIndex--)
+			m_Edges.SetAt(iIndex + 1, m_Edges.GetAt(iIndex));
+		m_Edges.SetAt(iEdge + 1, pEdge);
+	}
+
+	m_Footprint.InsertPointAfter(iEdge, Point);
+	return true;
+}
+
 void vtLevel::SetFootprint(const DLine2 &dl)
 {
 	int prev = m_Footprint.GetSize();
@@ -213,18 +245,35 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 	if (curr != prev)
 		SetWalls(curr);
 
+	SynchToOGR();
+}
+
+void vtLevel::SynchToOGR()
+{
 	// keep OGR poly in synch
-	int size = dl.GetSize();
-	m_Foot.empty();
-	OGRLinearRing *pNewRing = new OGRLinearRing();
+	int i, size = m_Footprint.GetSize();
+	OGRLinearRing *pRing = m_Foot.getExteriorRing();
+	if (pRing == NULL && size != 0)
+	{
+		pRing = new OGRLinearRing();
+		pRing->setNumPoints(size);
+		m_Foot.addRingDirectly(pRing);
+	}
+	else
+	{
+		int oldsize = pRing->getNumPoints();
+		if (oldsize != size)
+		{
+			m_Foot.empty();
+			pRing = new OGRLinearRing();
+			pRing->setNumPoints(size);
+			m_Foot.addRingDirectly(pRing);
+		}
+	}
 
 	// for now, assume that there are no internal features
-	pNewRing->setNumPoints(size);
-	for (int i = 0; i < size; i++)
-	{
-		pNewRing->setPoint(i, dl[i].x, dl[i].y);
-	}
-	m_Foot.addRingDirectly(pNewRing);
+	for (i = 0; i < size; i++)
+		pRing->setPoint(i, m_Footprint[i].x, m_Footprint[i].y);
 }
 
 void vtLevel::SetFootprint(const OGRPolygon *poly)
@@ -656,7 +705,7 @@ void vtBuilding::FlipFootprintDirection()
  */
 float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
 {
-	DLine2 &Footprint = m_Levels[0]->GetFootprint();
+	const DLine2 &Footprint = m_Levels[0]->GetAtFootprint();
 	int iSize = Footprint.GetSize();
 	float fLowest = 1E9f;
 
@@ -683,7 +732,7 @@ void vtBuilding::TransformCoords(OCT *trans)
 	{
 		vtLevel *pLev = m_Levels[i];
 
-		DLine2 &foot = pLev->GetFootprint();
+		DLine2 foot = pLev->GetFootprint();
 		int iSize = foot.GetSize();
 
 		for (j = 0; j < iSize; j++)
@@ -692,13 +741,13 @@ void vtBuilding::TransformCoords(OCT *trans)
 			trans->Transform(1, &p.x, &p.y);
 			foot[j] = p;
 		}
+		pLev->SetFootprint(foot);
 	}
 }
 
 void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 {
-	DLine2 &fp = m_Levels[0]->GetFootprint();
-	fp.Empty();
+	DLine2 fp;
 	int i;
 	for (i = 0; i < 20; i++)
 	{
@@ -706,6 +755,7 @@ void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 		DPoint2 vec(cos(angle) * fRad, sin(angle) * fRad);
 		fp.Append(center + vec);
 	}
+	m_Levels[0]->SetFootprint(fp);
 }
 
 //sets colors of the walls
@@ -803,6 +853,10 @@ void vtBuilding::SetStories(int iStories)
 			levels--;
 		}
 	}
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
+
 }
 
 int vtBuilding::GetStories() const
@@ -906,11 +960,17 @@ void vtBuilding::Offset(const DPoint2 &p)
 {
 	int i;
 
+	DLine2 foot;
 	for (i = 0; i < m_Levels.GetSize(); i++)
 	{
 		vtLevel *lev = m_Levels[i];
-		lev->GetFootprint().Add(p);
+		foot = lev->GetFootprint();
+		foot.Add(p);
+		lev->SetFootprint(foot);
 	}
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
+
 }
 
 //
@@ -938,6 +998,10 @@ vtLevel *vtBuilding::CreateLevel()
 {
 	vtLevel *pLev = new vtLevel();
 	m_Levels.Append(pLev);
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
+
 	return pLev;
 }
 
@@ -963,6 +1027,9 @@ void vtBuilding::InsertLevel(int iLev, vtLevel *pLev)
 		m_Levels[i] = m_Levels[i-1];
 	}
 	m_Levels[iLev] = pLev;
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
 }
 
 void vtBuilding::DeleteLevel(int iLev)
@@ -973,6 +1040,9 @@ void vtBuilding::DeleteLevel(int iLev)
 		m_Levels[i] = m_Levels[i+1];
 	}
 	m_Levels.SetSize(levels-1);
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
 }
 
 void vtBuilding::SetRectangle(const DPoint2 &center, float fWidth,
@@ -1019,7 +1089,7 @@ void vtBuilding::SetRectangle(const DPoint2 &center, float fWidth,
 double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
 {
 	vtLevel *lev = m_Levels[0];
-	DLine2 &foot = lev->GetFootprint();
+	const DLine2 &foot = lev->GetAtFootprint();
 	if (foot.ContainsPoint(point))
 		return 0.0;
 
@@ -1057,7 +1127,7 @@ void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t\t<shapes>\n");
 
 	vtLevel *lev = m_Levels[0];
-	DLine2 &foot = lev->GetFootprint();
+	const DLine2 &foot = lev->GetAtFootprint();
 	int points = foot.GetSize();
 	fprintf(fp, "\t\t\t<poly num=\"%d\" coords=\"", points);
 	for (int i = 0; i < points; i++)
@@ -1110,7 +1180,7 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 		fprintf(fp, "\t\t<Level FloorHeight=\"%f\" StoryCount=\"%d\">\n",
 			lev->m_fStoryHeight, lev->m_iStories);
 
-		DLine2 &foot = lev->GetFootprint();
+		const DLine2 &foot = lev->GetAtFootprint();
 		int points = foot.GetSize();
 		fprintf(fp, "\t\t\t<Footprint>\n");
 		fprintf(fp, "\t\t\t\t<gml:MultiPolygon>\n");
@@ -1343,4 +1413,8 @@ void vtBuilding::SwapLevels(int lev1, int lev2)
 	vtLevel *pTemp = m_Levels[lev1];
 	m_Levels[lev1] = m_Levels[lev2];
 	m_Levels[lev2] = pTemp;
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
+
 }
