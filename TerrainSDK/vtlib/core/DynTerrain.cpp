@@ -4,7 +4,7 @@
 // This is the parent class for terrain which can redefine it's
 // surface at render time.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -109,13 +109,23 @@ bool vtDynTerrainGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, b
 }
 
 bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-									bool bTrue, FPoint3 *vNormal) const
+									bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
 {
+	// Look on culture first
+	if (bIncludeCulture && m_pCulture != NULL)
+	{
+		if (m_pCulture->FindAltitudeOnCulture(p, fAltitude))
+			return true;
+	}
+
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)(-(p.z - m_WorldExtents.bottom) / m_fZStep);
 
 	// safety check
-	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
+	bool bogus = false;
+	if (iX < 0 || iX > m_iColumns-1 || iZ < 0 || iZ > m_iRows-1)
+		bogus = true;
+	else if (iX == m_iColumns-1 || iZ == m_iRows-1)
 	{
 		if (p.x == m_WorldExtents.right || p.z == m_WorldExtents.top)
 		{
@@ -126,11 +136,13 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 			return true;
 		}
 		else
-		{
-			fAltitude = 0.0f;
-			if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
-			return false;
-		}
+			bogus = true;
+	}
+	if (bogus)
+	{
+		fAltitude = 0.0f;
+		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
+		return false;
 	}
 
 	if (vNormal != NULL)

@@ -1,7 +1,7 @@
 //
 // DynTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -62,7 +62,8 @@ public:
 
 	// overrides for HeightField3d
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, FPoint3 *vNormal = NULL) const;
+		bool bTrue = false, bool bIncludeCulture = false,
+		FPoint3 *vNormal = NULL) const;
 
 	// overridables
 	virtual void DoCulling(const vtCamera *pCam) = 0;
