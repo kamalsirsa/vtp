@@ -394,8 +394,8 @@ using namespace std;
 //
 vtString get_line_from_stream(ifstream &input)
 {
-	char buf[80];
-	input.getline(buf, 80);
+	char buf[256];
+	input.getline(buf, 256);
 	int len = strlen(buf);
 
 	// trim trailing CR and LF characters
