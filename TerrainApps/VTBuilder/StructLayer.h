@@ -11,6 +11,7 @@
 #include "vtdata/shapelib/shapefil.h"
 #include "vtdata/Features.h"
 #include "vtdata/StructArray.h"
+#include "vtdata/Features.h"
 #include "Layer.h"
 
 class vtDLGFile;

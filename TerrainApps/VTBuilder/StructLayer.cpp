@@ -184,10 +184,8 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 		pView->screen(dl.GetAt(0), g_screenbuf[j++]);
 
 		pDC->DrawLines(j, g_screenbuf);
-#ifdef ENVIRON
 		for (j = 0; j < sides; j++)
 			pDC->DrawCircle(g_screenbuf[j], 3);
-#endif
 	}
 }
 
@@ -541,8 +539,10 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 		// Find out the level to work on
 #if 0
 		CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
+
 		LevelSelectionDialog.SetBuilding(pBuilding);
-		if (LevelSelectionDialog.ShowModal() != wxID_OK)
+
+		if (LevelSelectionDialog.ShowModal()!= wxID_OK)
 		{
 			m_pEditBuilding = NULL;
 			pView->Refresh(TRUE, &Redraw);
@@ -561,7 +561,7 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 			return;
 		}
 #endif
-		
+
 		m_pEditBuilding = NULL;
 		pView->Refresh(TRUE, &Redraw);
 
@@ -646,7 +646,9 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 		// Find out the level to work on
 #if 0
 		CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
+
 		LevelSelectionDialog.SetBuilding(pBuilding);
+
 		if (LevelSelectionDialog.ShowModal()!= wxID_OK)
 		{
 			m_pEditBuilding = NULL;
@@ -948,7 +950,7 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 		bld->InsertLevel(0, pNewLev);
 //		pNewLev->SetFootprint(foot);
 		bld->SetFootprint(0, foot);
-		pNewLev->SetEdgeMaterial(BMAT_CEMENT);
+		pNewLev->SetEdgeMaterial(BMAT_NAME_CEMENT);
 		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
 		built++;
 	}
