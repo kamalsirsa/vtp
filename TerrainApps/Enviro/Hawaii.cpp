@@ -20,6 +20,9 @@
 
 ///////////////////////////////
 
+void dump_mat(const FMatrix4 &mat);
+void dump_mat(const FMatrix3 &mat);
+
 IslandTerrain::IslandTerrain() : PTerrain()
 {
 	// Points of Interest
@@ -473,6 +476,39 @@ void IslandTerrain::do_test_code()
 	if (result == true)
 		dib.WriteBMP("C:/APIs/jpeg-6b/8bit.bmp");
 #endif
+
+#if 0
+	// Matrix and Quaternion testing
+	FMatrix4 mat;
+	vtTransform *x = new vtTransform;
+	x->Identity();
+	x->Translate1(FPoint3(0, 2, 0));
+	x->RotateLocal(FPoint3(1,0,0), 45.0f/180.0f*PIf);
+	x->GetTransform1(mat);
+	dump_mat(mat);
+
+	x->Destroy();
+
+/*	FPoint3 pos(0,2,0);
+	FPoint3 forward(0, 1, -1);
+	FPoint3 up(0,1,1);
+
+	forward.Normalize();
+	up.Normalize();
+
+	mat.SetFromVectors(pos, forward, up);
+	dump_mat(mat);
+*/
+	FMatrix3 m3;
+	m3.AxisAngle(FPoint3(0,1,0), 45.0f/180.0f*PIf);
+	dump_mat(m3);
+
+	FQuat q;
+//	q.SetAxisAngle(FPoint3(0,1,0), 45.0f/180.0f*PIf);
+	q.SetFromMatrix(m3);
+	q.GetMatrix(m3);
+	dump_mat(m3);
+#endif
 }
 
 void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
@@ -515,4 +551,27 @@ void IslandTerrain::create_airplane(int i, float fSize, float fSpeed, bool bDoSo
 #endif
 	}
 }
+
+void dump_mat(const FMatrix4 &mat)
+{
+	VTLOG("\nMat: %f %f %f %f\n"
+		  "     %f %f %f %f\n"
+		  "     %f %f %f %f\n"
+		  "     %f %f %f %f\n",
+		  mat(0,0), mat(1,0), mat(2,0), mat(3,0),
+		  mat(0,1), mat(1,1), mat(2,1), mat(3,1),
+		  mat(0,2), mat(1,2), mat(2,2), mat(3,2),
+		  mat(0,3), mat(1,3), mat(2,3), mat(3,3));
+}
+
+void dump_mat(const FMatrix3 &mat)
+{
+	VTLOG("\nMat: %f %f %f\n"
+		  "     %f %f %f\n"
+		  "     %f %f %f\n",
+		  mat(0,0), mat(1,0), mat(2,0),
+		  mat(0,1), mat(1,1), mat(2,1),
+		  mat(0,2), mat(1,2), mat(2,2));
+}
+
 
