@@ -59,9 +59,10 @@ public:
 };
 
 enum AppearType {
-	AT_XFROG,
+	AT_UNKNOWN,
 	AT_BILLBOARD,
-	AT_MODEL
+	AT_MODEL,
+	AT_XFROG
 };
 
 class vtPlantAppearance
@@ -180,6 +181,7 @@ public:
 		int &plant, double &distance);
 	bool GetExtent(DRECT &rect);
 
+protected:
 	vtPlantList *m_pPlantList;
 	vtProjection m_proj;
 };
