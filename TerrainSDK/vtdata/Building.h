@@ -168,6 +168,15 @@ private:
 	FLine3		m_LocalFootprint;
 };
 
+/**
+ * This class contains a parametric representation of a building.
+ *
+ * The geometry is described by a series of levels, each of which contains
+ * a set of edges, which in turn are composed of edge features.
+ * These components can vary in color, material, size, and number, which
+ * gives a high-level representation of a building, which can be used to
+ * construct a reasonable (visually similar) model of the building.
+ */
 class vtBuilding : public vtStructure
 {
 public:

@@ -729,7 +729,9 @@ void vtLevel::FlipFootprintDirection()
 	}
 }
 
-/////////////////////////////////////
+
+/////////////////////////////////////////////////////////////////////////////
+// vtBuilding class implementation
 
 vtBuilding::vtBuilding() : vtStructure()
 {
@@ -741,6 +743,9 @@ vtBuilding::~vtBuilding()
 	DeleteStories();
 }
 
+/**
+ * Delete all the stories (all levels) for this building.
+ */
 void vtBuilding::DeleteStories()
 {
 	for (int i = 0; i < m_Levels.GetSize(); i++)
@@ -748,6 +753,10 @@ void vtBuilding::DeleteStories()
 	m_Levels.SetSize(0);
 }
 
+/**
+ * Asignment operator, which makes an explicit copy the entire building
+ * including each level.
+ */
 vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
 	DeleteStories();
@@ -761,6 +770,11 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	return *this;
 }
 
+/**
+ * Flips the direction of the footprint, which is either clockwise or
+ * counterclockwise when viewed from above.  This affects the footprints
+ * of all levels.
+ */
 void vtBuilding::FlipFootprintDirection()
 {
 	// Flip the direction (clockwisdom) of each level
@@ -814,6 +828,13 @@ void vtBuilding::TransformCoords(OCT *trans)
 	}
 }
 
+/**
+ * Sets the base footprint of the building to be a circle.  A circle
+ * is represented by a 20-sided polygonal footprint.
+ *
+ * \param center The location of the building's center.
+ * \param fRad The radius of the building.
+ */
 void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 {
 	DLine2 fp;
@@ -827,7 +848,13 @@ void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 	m_Levels[0]->SetFootprint(fp);
 }
 
-//sets colors of the walls
+/**
+ * Set the colors of the building.
+ *
+ * \param which Can be either BLD_BASIC (the overall color of the building)
+ *			or BLD_ROOF (the overall color of the roof).
+ * \param col The color to set.
+ */
 void vtBuilding::SetColor(BldColor which, RGBi col)
 {
 	int i, levs = m_Levels.GetSize();
@@ -852,6 +879,13 @@ void vtBuilding::SetColor(BldColor which, RGBi col)
 	}
 }
 
+/**
+ * Get the color of the building.  In the case of multi-colored buildings,
+ *  note that this method returns only the first color encountered.
+ *
+ * \param which Can be either BLD_BASIC (color of the building)	or BLD_ROOF
+ *		(color of the roof).
+ */
 RGBi vtBuilding::GetColor(BldColor which) const
 {
 	int i, levs = m_Levels.GetSize();
@@ -877,6 +911,15 @@ RGBi vtBuilding::GetColor(BldColor which) const
 	return RGBi(0,0,0);
 }
 
+/**
+ * Set the height of the building in stories.  If the building has no levels,
+ * two will be created: for the walls and the roof.  If the number of stories
+ * is greater than before, the additional stories are added to the top-most
+ * non-roof level.  If lesser, stories and levels are removed from the top
+ * down until the desired number is met.
+ *
+ * \param iStories Number of stories to set.
+ */
 void vtBuilding::SetStories(int iStories)
 {
 	vtLevel *pLev;
@@ -928,6 +971,10 @@ void vtBuilding::SetStories(int iStories)
 
 }
 
+/**
+ * Get the total number of stories of this building.  The top level is assumed
+ *  to be a roof and does not count toward the total.
+ */
 int vtBuilding::GetStories() const
 {
 	// this method assume each building must have at least two levels: one
@@ -938,18 +985,39 @@ int vtBuilding::GetStories() const
 	return stories;
 }
 
-void vtBuilding::SetFootprint(int lev, const DLine2 &dl)
+/**
+ * Set the footprintf of the given level of the building.
+ *
+ * \param lev The level, from 0 for the base level and up.
+ * \param foot The footprint.
+ */
+void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
 {
 	int levs = GetNumLevels();
 	if (lev >= levs)
 		CreateLevel();
 
-	m_Levels[lev]->SetFootprint(dl);
+	m_Levels[lev]->SetFootprint(foot);
 
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
 }
 
+/**
+ * Set the type of roof for this building.  In cases of ambiguity, such as
+ *  setting a gable roof, the method will try to make intelligent guesses
+ *  about where to put the roof angles based the length of the roof edges.
+ *
+ * \param rt Roof type, one of:
+ *		- ROOF_FLAT
+ *		- ROOF_SHED
+ *		- ROOF_GABLE
+ *		- ROOF_HIP
+ * \param iSlope For non-flat roof, the slope in degrees of the sloped edges.
+ *		This varies from 0 (horizontal) to 90 (vertical).
+ * \param iLev (optional) The number of the level to assume is the roof.
+ *		If omitted, the top level is assumed to be the roof.
+ */
 void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 {
 	int i, edges;
