@@ -75,6 +75,8 @@ vtTerrain::vtTerrain()
 	m_CamLocation.Identity();
 
 	m_CenterGeoLocation.Set(-999, -999);	// initially unknown
+
+	m_pOverlay = NULL;
 }
 
 vtTerrain::~vtTerrain()
@@ -1251,6 +1253,30 @@ void vtTerrain::_CreateCulture()
 	if (m_Params.GetValueBool(STR_ROUTEENABLE))
 	{
 		// TODO
+	}
+
+	// create HUD overlay geometry
+	vtString ovstring = m_Params.GetValueString(STR_HUD_OVERLAY);
+	if (ovstring != "")
+	{
+		char buf[256];
+		strcpy(buf, ovstring);
+		const char *fname = strtok(buf, ",");
+		const char *xstr = strtok(NULL, ",");
+		const char *ystr = strtok(NULL, ",");
+		if (fname && xstr && ystr)
+		{
+			int x = atof(xstr);
+			int y = atof(ystr);
+			vtImageSprite *pSprite = new vtImageSprite();
+			if (pSprite->Create(fname, true))	// blending true
+			{
+				m_pOverlay = new vtGroup;
+				IPoint2 size = pSprite->GetSize();
+				pSprite->SetPosition(x, y+size.y, x+size.x, y);
+				m_pOverlay->AddChild(pSprite->GetNode());
+			}
+		}
 	}
 
 	// Let any terrain subclasses provide their own culture

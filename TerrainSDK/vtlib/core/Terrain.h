@@ -245,6 +245,9 @@ public:
 	void TranslateFromGMT(vtTime &time);
 	DPoint2 GetCenterGeoLocation();
 
+	// Overlay
+	vtGroup *GetOverlay() { return m_pOverlay; }
+
 	/********************** Public Data ******************/
 
 	// polygon containing geo corners of terrain area
@@ -363,6 +366,8 @@ protected:
 
 	// hold an informative message in case anything goes wrong
 	vtString	m_strErrorMsg;
+
+	vtGroup		*m_pOverlay;
 
 	vtProjection	m_proj;
 };
