@@ -1,7 +1,7 @@
 //
 // Location classes
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,9 @@
 
 vtLocationSaver::vtLocationSaver()
 {
+	m_pTransform = NULL;
+	m_pConvertToWGS = NULL;
+	m_pConvertFromWGS = NULL;
 }
 
 vtLocationSaver::vtLocationSaver(const vtString &fname)
@@ -23,6 +26,8 @@ vtLocationSaver::vtLocationSaver(const vtString &fname)
 
 vtLocationSaver::~vtLocationSaver()
 {
+	delete m_pConvertToWGS;
+	delete m_pConvertFromWGS;
 	Empty();
 }
 
@@ -183,6 +188,21 @@ bool vtLocationSaver::Read(const vtString &fname)
 	return true;
 }
 
+void vtLocationSaver::SetProjection(const vtProjection &proj)
+{
+	m_proj = proj;
+
+	// convert from projected to global CS
+	vtProjection global_proj;
+	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+
+	delete m_pConvertToWGS;
+	delete m_pConvertFromWGS;
+
+	m_pConvertToWGS = CreateCoordTransform(&m_proj, &global_proj, true);
+	m_pConvertFromWGS = CreateCoordTransform(&global_proj, &m_proj, true);
+}
+
 bool vtLocationSaver::StoreTo(unsigned int num, const LocNameString &name)
 {
 	if (!m_pTransform)
@@ -211,20 +231,14 @@ bool vtLocationSaver::StoreTo(unsigned int num, const LocNameString &name)
 	m_conv.ConvertToEarth(pos1, epos1);
 	m_conv.ConvertToEarth(pos2, epos2);
 
-	// convert from projected to global CS
-	vtProjection global_proj;
-	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-
-	OCT *conversion = CreateCoordTransform(&m_proj, &global_proj, true);
-	if (!conversion)
+	if (!m_pConvertToWGS)
 	{
 		// fatal: can't convert between CS
 		return false;
 	}
 	int result = 0;
-	result += conversion->Transform(1, &epos1.x, &epos1.y);
-	result += conversion->Transform(1, &epos2.x, &epos2.y);
-	delete conversion;
+	result += m_pConvertToWGS->Transform(1, &epos1.x, &epos1.y);
+	result += m_pConvertToWGS->Transform(1, &epos2.x, &epos2.y);
 
 	if (result != 2)
 	{
@@ -256,24 +270,18 @@ bool vtLocationSaver::RecallFrom(int num)
 	epos1.Set(loc->m_pos1.x, loc->m_pos1.y, loc->m_fElevation1);
 	epos2.Set(loc->m_pos2.x, loc->m_pos2.y, loc->m_fElevation2);
 
-	// convert from global CS to projected
-	vtProjection global_proj;
-	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
-
-	OCT *conversion = CreateCoordTransform(&global_proj, &m_proj);
-	if (!conversion)
+	if (!m_pConvertFromWGS)
 	{
-		// fatal: can't convert between CS
+		// fatal: can't convert between CRS
 		return false;
 	}
 	int result = 0;
-	result += conversion->Transform(1, &epos1.x, &epos1.y);
-	result += conversion->Transform(1, &epos2.x, &epos2.y);
-	delete conversion;
+	result += m_pConvertFromWGS->Transform(1, &epos1.x, &epos1.y);
+	result += m_pConvertFromWGS->Transform(1, &epos2.x, &epos2.y);
 
 	if (result != 2)
 	{
-		// fatal: can't convert these points between CS
+		// fatal: can't convert these points between CRS
 		return false;
 	}
 

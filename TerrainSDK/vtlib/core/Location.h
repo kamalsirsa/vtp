@@ -1,7 +1,7 @@
 //
 // Location classes
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -82,20 +82,22 @@ public:
 	// you must call these 3 methods before this class is useful
 	void SetTransform(vtTransformBase *trans) { m_pTransform = trans; }
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
-	void SetProjection(const vtProjection &proj) { m_proj = proj; }
+	void SetProjection(const vtProjection &proj);
 
 	bool StoreTo(unsigned int num, const LocNameString &name = "");
 	bool RecallFrom(int num);
 
+protected:
+	// Implementation
 	// Store information necessary to convert from global earth CS
 	// to the local CS
 	vtLocalConversion	m_conv;
 	vtProjection		m_proj;
 	vtTransformBase		*m_pTransform;
 
-protected:
-	// Implementation
-	vtString m_strFilename;
+	vtString	m_strFilename;
+	OCT			*m_pConvertToWGS;
+	OCT			*m_pConvertFromWGS;
 
 	Array<vtLocation*> m_loc;
 };
