@@ -1,7 +1,7 @@
 //
 // vtDIB.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,6 @@
 
 // Headers for JPEG support, which uses the library "libjpeg"
 extern "C" {
-#include "jinclude.h"
 #include "jpeglib.h"
 }
 
