@@ -166,10 +166,19 @@ bool vtTerrain::SetParamFile(const char *fname)
 bool vtTerrain::LoadParams()
 {
 	TParams params;
-	bool success = params.LoadFromFile(m_strParamFile);
+	bool success = params.LoadFromIniFile(m_strParamFile);
 	if (success)
 		SetParams(params);
 	return success;
+}
+
+void vtTerrain::SetParams(const TParams &pParams)
+{
+	m_Params = pParams;
+	
+	RGBi color;
+	if (m_Params.GetValueRGBi(STR_FOGCOLOR, color))
+		m_fog_color = color;
 }
 
 /**
@@ -210,7 +219,9 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 	VTLOG("  Reading from file '%s'\n", (const char *) strRoadFile);
 	bool success = m_pRoadMap->ReadRMF(strRoadFile,
-		m_Params.m_bHwy != 0, m_Params.m_bPaved != 0, m_Params.m_bDirt != 0);
+		m_Params.GetValueBool(STR_HWY),
+		m_Params.GetValueBool(STR_PAVED),
+		m_Params.GetValueBool(STR_DIRT));
 	if (!success)
 	{
 		VTLOG("	read failed.\n");
@@ -224,16 +235,16 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 	m_pRoadMap->DetermineSurfaceAppearance();
 
-	m_pRoadMap->SetHeightOffGround(m_Params.m_fRoadHeight);
+	m_pRoadMap->SetHeightOffGround(m_Params.GetValueInt(STR_ROADHEIGHT));
 	m_pRoadMap->DrapeOnTerrain(m_pHeightField);
 	m_pRoadMap->BuildIntersections();
 
-	m_pRoadMap->SetLodDistance(m_Params.m_fRoadDistance * 1000);	// convert km to m
-	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.m_bTexRoads != 0,
+	m_pRoadMap->SetLodDistance(m_Params.GetValueInt(STR_ROADDISTANCE) * 1000);	// convert km to m
+	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.GetValueBool(STR_TEXROADS),
 		s_DataPaths);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 
-	if (m_Params.m_bRoadCulture)
+	if (m_Params.GetValueBool(STR_ROADCULTURE))
 		m_pRoadMap->GenerateSigns(m_pStructGrid);
 }
 
@@ -243,7 +254,7 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 void vtTerrain::_CreateTextures(const vtTime &time)
 {
 	int iTiles = 4;		// fixed for now
-	TextureEnum eTex = m_Params.m_eTexture;
+	TextureEnum eTex = m_Params.GetTextureEnum();
 
 	if (!m_pTerrMats)
 		m_pTerrMats = new vtMaterialArray();
@@ -256,10 +267,10 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
 	{
 		vtString texture_fname = "GeoSpecific/";
-		if (m_Params.m_eTexture == TE_SINGLE)
-			texture_fname += m_Params.m_strTextureSingle;	// single texture
+		if (eTex == TE_SINGLE)
+			texture_fname += m_Params.GetValueString(STR_TEXTURESINGLE);
 		else
-			texture_fname += m_Params.m_strTextureFilename;
+			texture_fname += m_Params.CookTextureFilename();
 
 		VTLOG("  Texture: %s\n", (const char *) texture_fname);
 		vtString texture_path = FindFileOnPaths(s_DataPaths, texture_fname);
@@ -280,11 +291,11 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 				m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 											RGBf(0.2f, 0.2f, 0.2f),
 											true, false);
-				m_Params.m_eTexture = TE_NONE;
+				eTex = TE_NONE;
 			}
 			if (eTex == TE_SINGLE)
 			{
-				// TODO: check that DIB size is power of two, and warn if not
+				// TODO? check that DIB size is power of two, and warn if not.
 			}
 		}
 	}
@@ -315,7 +326,7 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 	}
 
 	// apply pre-lighting (darkening)
-	if (m_Params.m_bPreLight && m_pDIB)
+	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pDIB)
 	{
 		_ApplyPreLight(pHFGrid, m_pDIB, time);
 	}
@@ -325,17 +336,18 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 		if (m_pDIB != NULL)
 		{
 			// single texture
+			bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
 			vtImage *pImage = new vtImage(m_pDIB,
-				(m_pDIB->GetDepth() > 8 && m_Params.m_b16bit) ? GL_RGB5 : -1);
+				(m_pDIB->GetDepth() > 8 && b16bit) ? GL_RGB5 : -1);
 			m_Images.Append(pImage);
 		}
 	}
 	if (eTex == TE_TILED && m_pDIB)
 	{
-		_CreateChoppedTextures(iTiles, m_Params.m_iTilesize);
-		_CreateTiledMaterials(m_pTerrMats,
-						 iTiles, m_Params.m_iTilesize, ambient, diffuse,
-						 emmisive);
+		int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
+		_CreateChoppedTextures(iTiles, iTileSize);
+		_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
+			diffuse, emmisive);
 	}
 	if (eTex == TE_NONE || m_pDIB == NULL)	// none or failed to find texture
 	{
@@ -364,7 +376,7 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 			emmisive,
 			true,		// texgen
 			false,		// clamp
-			m_Params.m_bMipmap);
+			m_Params.GetValueBool(STR_MIPMAP));
 	}
 	// All texture images have now been passed to their materials, so don't hold on to them.
 	int i, num = m_Images.GetSize();
@@ -387,45 +399,46 @@ void vtTerrain::recreate_textures(const vtTime &time)
 bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 {
 	int texture_patches;
-	if (m_Params.m_eTexture == TE_TILED)
+	if (m_Params.GetTextureEnum() == TE_TILED)
 		texture_patches = 4;	// tiled, which is always 4x4
 	else
 		texture_patches = 1;	// assume one texture
 
-	VTLOG(" LOD method %d\n", m_Params.m_eLodMethod);
+	LodMethodEnum method = m_Params.GetLodMethod();
+	VTLOG(" LOD method %d\n", method);
 //	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
 //	{
 //		m_pDynGeom = new LKTerrain();
 //		m_pDynGeom->SetName2("LK Geom");
 //	}
-	if (m_Params.m_eLodMethod == LM_TOPOVISTA)
+	if (method == LM_TOPOVISTA)
 	{
 		m_pDynGeom = new TVTerrain();
 		m_pDynGeom->SetName2("TV Geom");
 	}
-	else if (m_Params.m_eLodMethod == LM_MCNALLY)
+	else if (method == LM_MCNALLY)
 	{
 		m_pDynGeom = new SMTerrain();
 		m_pDynGeom->SetName2("Seumas Geom");
 	}
-	else if (m_Params.m_eLodMethod == LM_DEMETER)
+	else if (method == LM_DEMETER)
 	{
 #if 0	// disabled until its working
 		m_pDynGeom = new DemeterTerrain();
 		m_pDynGeom->SetName2("Demeter Geom");
 #endif
 	}
-	else if (m_Params.m_eLodMethod == LM_CUSTOM)
+	else if (method == LM_CUSTOM)
 	{
 		m_pDynGeom = new CustomTerrain();
 		m_pDynGeom->SetName2("CustomTerrain Geom");
 	}
-	else if (m_Params.m_eLodMethod == LM_BRYANQUAD)
+	else if (method == LM_BRYANQUAD)
 	{
 		m_pDynGeom = new BryanTerrain();
 		m_pDynGeom->SetName2("BryanQuad Geom");
 	}
-	else if (m_Params.m_eLodMethod == LM_ROETTGER)
+	else if (method == LM_ROETTGER)
 	{
 		m_pDynGeom = new SRTerrain();
 		m_pDynGeom->SetName2("Roettger Geom");
@@ -438,11 +451,11 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 	// add your own LOD method here!
 
-	m_pDynGeom->SetOptions(m_Params.m_bTriStrips != 0,
-		texture_patches, m_Params.m_iTilesize);
+	m_pDynGeom->SetOptions(m_Params.GetValueBool(STR_TRISTRIPS),
+		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
-	bool result = m_pDynGeom->Init(m_pElevGrid,
-				   m_Params.m_fVerticalExag, fOceanDepth, iError);
+	float fExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
+	bool result = m_pDynGeom->Init(m_pElevGrid, fExag, fOceanDepth, iError);
 	if (result == false)
 	{
 		m_pDynGeom->Release();
@@ -451,8 +464,8 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		return false;
 	}
 
-	m_pDynGeom->SetPixelError(m_Params.m_fPixelError);
-	m_pDynGeom->SetPolygonCount(m_Params.m_iTriCount);
+	m_pDynGeom->SetPixelError(m_Params.GetValueFloat(STR_PIXELERROR));
+	m_pDynGeom->SetPolygonCount(m_Params.GetValueInt(STR_TRICOUNT));
 	m_pDynGeom->SetMaterials(m_pTerrMats);
 
 	// build heirarchy (add terrain to scene graph)
@@ -460,7 +473,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	m_pDynGeomScale->SetName2("Dynamic Geometry Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
-	m_pDynGeomScale->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
+	m_pDynGeomScale->Scale3(spacing.x, fExag, -spacing.y);
 
 	m_pDynGeomScale->AddChild(m_pDynGeom);
 	m_pTerrainGroup->AddChild(m_pDynGeomScale);
@@ -618,7 +631,8 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 	// offset the ocean/horizon plane, to reduce z-buffer collision with near-sea-level
 	// areas of land near the ocean
-	m_pOceanGeom->Translate1(FPoint3(0.0f, m_Params.m_fOceanPlaneLevel, 0.0f));
+	FPoint3 down(0.0f, m_Params.GetValueFloat(STR_OCEANPLANELEVEL), 0.0f);
+	m_pOceanGeom->Translate1(down);
 
 	m_pTerrainGroup->AddChild(m_pOceanGeom);
 }
@@ -636,7 +650,7 @@ void vtTerrain::SetGlobalProjection()
 bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 {
 	vtString name = "Elevation/";
-	name += m_Params.m_strElevFile;
+	name += m_Params.GetValueString(STR_ELEVFILE);
 	vtString grid_fname = FindFileOnPaths(s_DataPaths, name);
 	if (grid_fname == "")
 	{
@@ -879,18 +893,18 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 void vtTerrain::_CreateCulture()
 {
 	// The LOD distances are in meters
-	_SetupStructGrid((float) m_Params.m_iStructDistance);
-	_SetupVegGrid((float) m_Params.m_iVegDistance);
+	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
+	_SetupVegGrid((float) m_Params.GetValueInt(STR_VEGDISTANCE));
 
 	// create roads
-	if (m_Params.m_bRoads)
+	if (m_Params.GetValueBool(STR_ROADS))
 	{
 		vtString road_fname = "RoadData/";
-		road_fname += m_Params.m_strRoadFile;
+		road_fname += m_Params.GetValueString(STR_ROADFILE);
 		vtString road_path = FindFileOnPaths(s_DataPaths, road_fname);
 		create_roads(road_path);
 
-		if (m_pRoadMap && m_Params.m_bRoadCulture)
+		if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
 		{
 			NodeGeom* node = m_pRoadMap->GetFirstNode();
 			IntersectionEngine* lightEngine;
@@ -923,11 +937,13 @@ void vtTerrain::_CreateCulture()
 	// of the terrain.
 	m_PIA.SetProjection(GetProjection());
 
-	if (m_Params.m_bPlants)
+	if (m_Params.GetValueBool(STR_TREES))
 	{
+		vtString fname = m_Params.GetValueString(STR_TREEFILE);
+
 		// Read the VF file
 		vtString plants_fname = "PlantData/";
-		plants_fname += m_Params.m_strVegFile;
+		plants_fname += fname;
 
 		VTLOG("\tLooking for plants file: %s\n", (const char *) plants_fname);
 
@@ -941,7 +957,7 @@ void vtTerrain::_CreateCulture()
 			VTLOG("\tFound: %s\n", (const char *) plants_path);
 
 			bool success;
-			if (!m_Params.m_strVegFile.Right(3).CompareNoCase("shp"))
+			if (!fname.Right(3).CompareNoCase("shp"))
 				success = m_PIA.ReadSHP(plants_path);
 			else
 				success = m_PIA.ReadVF(plants_path);
@@ -999,7 +1015,7 @@ void vtTerrain::_CreateCulture()
 	}
 
 	// create utility structures (routes = towers and wires)
-	if (m_Params.m_bRouteEnable && m_Params.m_strRouteFile[0] != '\0')
+	if (m_Params.GetValueBool(STR_ROUTEENABLE))
 	{
 		// TODO
 	}
@@ -1053,7 +1069,7 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 void vtTerrain::_CreateLabels()
 {
 	vtString fname = "PointData/";
-	fname += m_Params.m_strLabelFile;
+	fname += m_Params.GetValueString(STR_LABELFILE);
 	vtString labels_path = FindFileOnPaths(s_DataPaths, fname);
 	if (labels_path == "")
 	{
@@ -1071,7 +1087,7 @@ void vtTerrain::_CreateLabels()
 	}
 	VTLOG("Read features from file '%s'\n", (const char *) labels_path);
 
-	CreateStyledFeatures(*feat, "Fonts/Arial.ttf", m_Params.m_Style);
+	CreateStyledFeatures(*feat, "Fonts/Arial.ttf", m_Params.GetPointStyle());
 
 	delete feat;
 }
@@ -1242,7 +1258,7 @@ void vtTerrain::SetFog(bool fog)
 	m_bFog = fog;
 	if (m_bFog)
 	{
-		float dist = m_Params.m_fFogDistance * 1000;
+		float dist = m_Params.GetValueInt(STR_FOGDISTANCE) * 1000;
 
 		if (m_fog_color.r != -1)
 			m_pTerrainGroup->SetFog(true, 0, dist, m_fog_color);
@@ -1259,13 +1275,15 @@ void vtTerrain::SetFog(bool fog)
 void vtTerrain::SetFogColor(const RGBf &color)
 {
 	m_fog_color = color;
-	if (m_bFog) SetFog(true);
+	if (m_bFog)
+		SetFog(true);
 }
 
 void vtTerrain::SetFogDistance(float fMeters)
 {
-	m_Params.m_fFogDistance = fMeters / 1000;
-	if (m_bFog) SetFog(true);
+	m_Params.SetValueInt(STR_FOGDISTANCE, fMeters / 1000);
+	if (m_bFog)
+		SetFog(true);
 }
 
 /**
@@ -1342,7 +1360,7 @@ bool vtTerrain::CreateStep1(int &iError)
 		return true;
 	}
 	vtString fname = "Elevation/";
-	fname += m_Params.m_strElevFile;
+	fname += m_Params.GetValueString(STR_ELEVFILE);
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
 	vtString fullpath = FindFileOnPaths(s_DataPaths, fname);
@@ -1354,7 +1372,7 @@ bool vtTerrain::CreateStep1(int &iError)
 	}
 
 	VTLOG("\tFound: %s\n", (const char *) fullpath);
-	if (m_Params.m_bTin)
+	if (m_Params.GetValueBool(STR_TIN))
 	{
 		if (!m_pTin)
 		{
@@ -1380,7 +1398,7 @@ bool vtTerrain::CreateStep1(int &iError)
 			m_pElevGrid->GetDimensions(col, row);
 			VTLOG("\tGrid load succeeded, size %d x %d.\n", col, row);
 		}
-		m_pElevGrid->SetupConversion(m_Params.m_fVerticalExag);
+		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
 	}
 	return true;
 }
@@ -1390,7 +1408,7 @@ bool vtTerrain::CreateStep1(int &iError)
  */
 bool vtTerrain::CreateStep2(int &iError)
 {
-	if (m_Params.m_bTin)
+	if (m_Params.GetValueBool(STR_TIN))
 	{
 		m_proj = m_pTin->m_proj;
 		g_Conv = m_pTin->m_Conversion;
@@ -1402,7 +1420,7 @@ bool vtTerrain::CreateStep2(int &iError)
 		g_Conv = m_pElevGrid->m_Conversion;
 
 		vtTime terraintime;
-		terraintime.SetTimeOfDay(m_Params.m_iInitTime, 0, 0);
+		terraintime.SetTimeOfDay(m_Params.GetValueInt(STR_INITTIME), 0, 0);
 		_CreateTextures(terraintime);
 	}
 	char type[10], value[2048];
@@ -1416,7 +1434,7 @@ bool vtTerrain::CreateStep2(int &iError)
  */
 bool vtTerrain::CreateStep3(int &iError)
 {
-	if (m_Params.m_bTin)
+	if (m_Params.GetValueBool(STR_TIN))
 		return CreateFromTIN(iError);
 	else
 		return CreateFromGrid(iError);
@@ -1441,8 +1459,8 @@ bool vtTerrain::CreateFromGrid(int &iError)
 {
 	VTLOG(" CreateFromGrid\n");
 	float fOceanDepth;
-	if (m_Params.m_bDepressOcean)
-		fOceanDepth = m_Params.m_fDepressOceanLevel;
+	if (m_Params.GetValueBool(STR_DEPRESSOCEAN))
+		fOceanDepth = m_Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
 	else
 		fOceanDepth = 0.0f;
 
@@ -1499,15 +1517,16 @@ bool vtTerrain::CreateStep5(bool bDummy, int &iError)
 
 	_CreateCulture();
 
-	if (m_Params.m_bOceanPlane || m_Params.m_bHorizon)
+	bool bWater = m_Params.GetValueBool(STR_OCEANPLANE);
+	bool bHorizon = m_Params.GetValueBool(STR_HORIZON);
+
+	if (bWater || bHorizon)
 	{
-		bool bWater = m_Params.m_bOceanPlane;
-		bool bHorizon = m_Params.m_bHorizon;
-		bool bCenter = m_Params.m_bOceanPlane;
+		bool bCenter = bWater;
 		create_artificial_horizon(bWater, bHorizon, bCenter, 0.5f);
 	}
 
-	if (m_Params.m_bLabels)
+	if (m_Params.GetValueBool(STR_LABELS))
 		_CreateLabels();
 
 	// Engines will be activated later in vtTerrainScene::SetTerrain
@@ -1756,7 +1775,7 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 			}
 
 			int internalformat;
-			if (!mono && m_Params.m_b16bit)
+			if (!mono && m_Params.GetValueBool(STR_REQUEST16BIT))
 				internalformat = GL_RGB5;
 			else
 				internalformat = -1;
@@ -1797,7 +1816,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 				emmisive,
 				true,		// texgen
 				false,		// clamp
-				m_Params.m_bMipmap);
+				m_Params.GetValueBool(STR_MIPMAP));
 		}
 	}
 }
@@ -1833,8 +1852,8 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib,
 
 	clock_t c1 = clock();
 
-	float shade_factor = m_Params.m_fPreLightFactor;
-	if (m_Params.m_bCastShadows)
+	float shade_factor = m_Params.GetValueFloat(STR_PRELIGHTFACTOR);
+	if (m_Params.GetValueBool(STR_CAST_SHADOWS))
 	{
 		// A more accurate shading, still a little experimental
 		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor);

@@ -63,13 +63,13 @@ void NevadaTerrain::CreateCustomCulture()
 
 	m_pHeightField->ConvertEarthToSurfacePoint(MAN_LONLAT, man_location);
 
-	m_fGround = 1200 * m_Params.m_fVerticalExag;
+	m_fGround = 1200 * m_Params.GetValueFloat(STR_VERTICALEXAG);
 	m_fHigh = m_fGround + (50);
 	m_fLow = m_fGround - (50);
 
 	m_pMats = new vtMaterialArray();
 
-	if (m_Params.m_bDetailTexture)
+	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
 		CreateDetailTextures();
 
 	CreatePast();

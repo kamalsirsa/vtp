@@ -273,9 +273,9 @@ void StartupDlg::OnEditProp( wxCommandEvent &event )
 	{
 		// Name might have changed
 		TParams params;
-		if (params.LoadFromFile(path_to_ini))
+		if (params.LoadFromXML(path_to_ini))
 		{
-			vtString name_new = params.m_strName;
+			vtString name_new = params.GetValueString(STR_NAME);
 			if (name_new != name_old)
 				m_strTName.from_utf8(name_new);
 		}

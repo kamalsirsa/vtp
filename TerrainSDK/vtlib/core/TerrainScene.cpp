@@ -237,7 +237,8 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// if the new terrain wants a skydome, and we haven't created one yet,
 	// do so
-	if (param.m_bSky && !m_pSkyDome)
+	bool bDoSky = param.GetValueBool(STR_SKY);
+	if (bDoSky && !m_pSkyDome)
 		_CreateSkydome(vtTerrain::s_DataPaths);
 
 	// move the sky to fit the new current terrain
@@ -273,13 +274,13 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// Setup the time engine for the new terrain
 	vtTime localtime;
-	localtime.SetTimeOfDay(param.m_iInitTime, 0, 0);
+	localtime.SetTimeOfDay(param.GetValueInt(STR_INITTIME), 0, 0);
 
 //	pTerrain->TranslateToGMT(time);
 
 	m_pTime->SetTime(localtime);
-	m_pTime->SetSpeed(param.m_fTimeSpeed);
-	m_pTime->SetEnabled(param.m_bTimeOn);
+	m_pTime->SetSpeed(param.GetValueFloat(STR_TIMESPEED));
+	m_pTime->SetEnabled(param.GetValueBool(STR_TIMEON));
 
 	// set the time to the time of the new terrain
 	if (m_pSkyDome)
@@ -291,17 +292,21 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	// handle the atmosphere
 	if (m_pSkyDome)
 	{
-		m_pSkyDome->SetEnabled(param.m_bSky);
-		if (param.m_bSky && param.m_strSkyTexture != "")
+		m_pSkyDome->SetEnabled(bDoSky);
+		if (bDoSky)
 		{
-			vtString filename = "Sky/";
-			filename += param.m_strSkyTexture;
-			vtString skytex = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
-			if (skytex != "")
-				m_pSkyDome->SetTexture(skytex);
+			vtString fname = param.GetValueString(STR_SKYTEXTURE);
+			if (fname != "")
+			{
+				vtString filename = "Sky/";
+				filename += fname;
+				vtString skytex = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
+				if (skytex != "")
+					m_pSkyDome->SetTexture(skytex);
+			}
 		}
 	}
-	m_pCurrentTerrain->SetFog(param.m_bFog);
+	m_pCurrentTerrain->SetFog(param.GetValueBool(STR_FOG));
 }
 
 void vtTerrainScene::SetTime(const vtTime &time)

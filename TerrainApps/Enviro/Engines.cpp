@@ -304,7 +304,7 @@ void RouteFollowerEngine::Eval()
 	target->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), angle);
 
 	TParams &params = GetCurrentTerrain()->GetParams();
-	target->TranslateLocal(FPoint3(0.0f, params.m_iMinHeight*3, 0.0f));
+	target->TranslateLocal(FPoint3(0.0f, params.GetValueInt(STR_MINHEIGHT) * 3, 0.0f));
 
 	m_inc += 0.03f;
 

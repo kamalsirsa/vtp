@@ -24,7 +24,7 @@ void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
 						  char* name, int destination_index)
 {
 	// larger than real life
-	float scale = 0.01f * (m_Params.m_iMinHeight*0.33f);
+	float scale = 0.01f * (m_Params.GetValueInt(STR_MINHEIGHT) * 0.33f);
 	gateway->Scale3(scale, scale, scale);
 	gateway->SetName2(name);
 	AddNode(gateway);
@@ -120,12 +120,16 @@ void PTerrain::AddCarEngine(vtTransform *pVehicleModel,
 							float fSpeed, Node *pNode)
 {
 	CarEngine *pE1;
-	if (pNode == NULL) {
+	if (pNode == NULL)
+	{
 		pE1 = new CarEngine(pVehicleModel->GetTrans(),
 			m_pHeightField, fSpeed, .25f);
-	} else {
+	}
+	else
+	{
+		float height = m_Params.GetValueFloat(STR_ROADHEIGHT);
 		pE1 = new CarEngine(pVehicleModel->GetTrans(),
-			m_pHeightField, fSpeed, .25f, pNode, 1, m_Params.m_fRoadHeight);
+			m_pHeightField, fSpeed, .25f, pNode, 1, height);
 	}
 	pE1->SetName2("drive");
 	pE1->SetTarget(pVehicleModel);

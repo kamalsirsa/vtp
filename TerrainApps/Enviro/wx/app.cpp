@@ -183,17 +183,18 @@ void vtApp::RefreshTerrainList()
 			std::string name1 = it.filename();
 			vtString name = name1.c_str();
 
-			// only look for ".ini" files
-			if (name.GetLength() < 5 || name.Right(4).CompareNoCase(".ini"))
+			// only look for terrain parameters files
+			vtString ext = GetExtension(name);
+			if (ext != ".ini" && ext != ".xml")
 				continue;
 
 			TParams params;
 			vtString path = directory + "/" + name;
-			if (params.LoadFromFile(path))
+			if (params.LoadFrom(path))
 			{
 				terrain_files.push_back(name);
 				terrain_paths.push_back(path);
-				terrain_names.push_back(params.m_strName);
+				terrain_names.push_back(params.GetValueString(STR_NAME));
 			}
 		}
 	}
@@ -253,7 +254,7 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 	dlg.SetDataPaths(g_Options.m_DataPaths);
 
 	TParams Params;
-	if (Params.LoadFromFile(filename))
+	if (Params.LoadFrom(filename))
 		dlg.SetParams(Params);
 
 	dlg.CenterOnParent();
@@ -261,7 +262,7 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 	if (result == wxID_OK)
 	{
 		dlg.GetParams(Params);
-		if (!Params.SaveToFile(filename))
+		if (!Params.WriteToXML(filename, STR_TPARAMS_FORMAT_NAME))
 		{
 			wxString str;
 			str.Printf(_T("Couldn't save to file %hs.\n")

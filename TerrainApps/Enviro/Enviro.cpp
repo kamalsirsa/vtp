@@ -170,19 +170,31 @@ void Enviro::LoadTerrainDescriptions()
 			std::string name1 = it.filename();
 			vtString name = name1.c_str();
 
-			// only look for ".ini" files
-			if (name.GetLength() < 5 || name.Right(4).CompareNoCase(".ini"))
+			// only look ".ini" and ".xml" files
+			vtString ext = GetExtension(name);
+			if (ext.CompareNoCase(".ini") != 0 &&
+				ext.CompareNoCase(".xml") != 0)
 				continue;
 
 			// Some terrain .ini files want to use a different Terrain class
+			int dot = name.Find('.');
+			vtString before_dot;
+			if (dot == -1)
+				before_dot = name;
+			else
+				before_dot = name.Left(dot);
+
+			// This is where you can tell Enviro to contruct your own terrain
+			//  class, for a particular config file, rather than the default
+			//  vtTerrain.
 			vtTerrain *pTerr;
-			if (name == "Hawai`i.ini" || name == "Honoka`a.ini" || name == "Kealakekua.ini" )
+			if (name == "Hawai`i" || name == "Honoka`a" || name == "Kealakekua" )
 				pTerr = new IslandTerrain();
-			else if (name == "Nevada.ini")
+			else if (name == "Nevada")
 				pTerr = new NevadaTerrain();
-			else if (name == "TransitTerrain.ini")
+			else if (name == "TransitTerrain")
 				pTerr = new TransitTerrain();
-			else if (name == "Romania.ini")
+			else if (name == "Romania")
 				pTerr = new Romania();
 			else
 				pTerr = new vtTerrain();
@@ -190,6 +202,8 @@ void Enviro::LoadTerrainDescriptions()
 			if (pTerr->SetParamFile(directory + "/" + name))
 				m_pTerrainScene->AppendTerrain(pTerr);
 			count++;
+
+			// TEMP TEST
 		}
 		VTLOG(" %d terrains.\n", count);
 	}
@@ -547,7 +561,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		pHF->GetCenter(middle);
 		pHF->FindAltitudeAtPoint(middle, middle.y);
-		middle.y += pTerr->GetParams().m_iMinHeight;
+		middle.y += pTerr->GetParams().GetValueInt(STR_MINHEIGHT);
 		mat.Identity();
 		mat.SetTrans(middle);
 		pTerr->SetCamLocation(mat);
@@ -556,7 +570,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		SetMessage("Setting hither/yon");
 		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->SetHither(pTerr->GetParams().m_fHither);
+		pCam->SetHither(pTerr->GetParams().GetValueFloat(STR_HITHER));
 		pCam->SetYon(500000.0f);
 	}
 	if (m_iInitStep == 9)
@@ -1167,19 +1181,20 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	TParams &param = pTerrain->GetParams();
 
-	SetNavType((enum NavType) param.m_iNavStyle);
+	SetNavType((enum NavType) param.GetValueInt(STR_NAVSTYLE));
 
 	EnableFlyerEngine(true);
 
 	// inform the navigation engine of the new terrain
+	float speed = param.GetValueFloat(STR_NAVSPEED);
 	m_pCurrentFlyer->SetTarget(m_pNormalCamera);
-	m_pCurrentFlyer->SetHeight(param.m_iMinHeight);
-	m_pTFlyer->SetSpeed(param.m_fNavSpeed);
-	m_pVFlyer->SetSpeed(param.m_fNavSpeed);
-	m_pPanoFlyer->SetSpeed(param.m_fNavSpeed);
-	m_pOrthoFlyer->SetSpeed(param.m_fNavSpeed);
+	m_pCurrentFlyer->SetMinHeight(param.GetValueInt(STR_MINHEIGHT));
+	m_pTFlyer->SetSpeed(speed);
+	m_pVFlyer->SetSpeed(speed);
+	m_pPanoFlyer->SetSpeed(speed);
+	m_pOrthoFlyer->SetSpeed(speed);
 	m_pCurrentFlyer->SetEnabled(true);
-	m_pCurrentFlyer->SetExag(param.m_bAccel);
+	m_pCurrentFlyer->SetExag(param.GetValueBool(STR_ACCEL));
 
 	// TODO: a more elegant way of keeping all nav engines current
 	m_pQuakeFlyer->SetHeightField(pHF);
@@ -2118,8 +2133,8 @@ void Enviro::DescribeCLOD(vtString &str)
 	// McNally CLOD algo uses a triangle count target, all other current
 	// implementations use a floating point factor relating to error/detail
 	//
-	if (t->GetParams().m_eLodMethod == LM_MCNALLY ||
-		t->GetParams().m_eLodMethod == LM_ROETTGER)
+	if (t->GetParams().GetLodMethod() == LM_MCNALLY ||
+		t->GetParams().GetLodMethod() == LM_ROETTGER)
 	{
 		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
 			dtg->GetNumDrawnTriangles());

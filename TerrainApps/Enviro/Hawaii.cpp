@@ -96,15 +96,19 @@ void IslandTerrain::CreateCustomCulture()
 		PlantModelAtPoint(container, mauna_loa);
 	}
 
-	if (m_Params.m_bVehicles)
+	if (m_Params.GetValueBool(STR_VEHICLES))
 	{
 		SetupVehicles();
 //		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed);
-		create_airplanes(1, m_Params.m_fVehicleSpeed);
-		create_ground_vehicles(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed);
+
+		float size = m_Params.GetValueFloat(STR_VEHICLESIZE);
+		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
+
+		create_airplanes(1, speed);
+		create_ground_vehicles(size, speed);
 	}
 
-	if (m_Params.m_bDetailTexture)
+	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
 		set_detail_texture();
 }
 

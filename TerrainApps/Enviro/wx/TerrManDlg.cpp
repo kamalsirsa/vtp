@@ -13,6 +13,7 @@
 #include "wx/wxprec.h"
 
 #include "vtdata/TParams.h"
+#include "vtdata/FilePath.h"
 #include "vtui/wxString2.h"
 #include "TerrManDlg.h"
 #include "../Options.h"
@@ -84,16 +85,20 @@ void TerrainManagerDlg::RefreshTreeContents()
 			std::string name1 = it.filename();
 			vtString name = name1.c_str();
 
-			// only look for ".ini" files
-			if (name.GetLength() < 5 || name.Right(4).CompareNoCase(".ini"))
+			// only look terrain parameters files
+			vtString ext = GetExtension(name);
+			if (ext.CompareNoCase(".ini") != 0 &&
+				ext.CompareNoCase(".xml") != 0)
 				continue;
 
-			wstr = name;
 			TParams params;
-			if (params.LoadFromFile(directory + "/" + name))
+			bool success = params.LoadFrom(directory + "/" + name);
+
+			wstr = name;
+			if (success)
 			{
 				wstr += _T(" (");
-				wstr2.from_utf8(params.m_strName);
+				wstr2.from_utf8(params.GetValueString(STR_NAME));
 				wstr += wstr2;
 				wstr += _T(")");
 			}
@@ -102,7 +107,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 			TMTreeItemData *data = new TMTreeItemData;
 			data->m_strDir = directory;
 			data->m_strIniFile = name;
-			data->m_strName = params.m_strName;
+			data->m_strName = params.GetValueString(STR_NAME);
 			m_pTree->SetItemData(hItem, data);
 		}
 		m_pTree->Expand(hPath);
@@ -123,12 +128,12 @@ void TerrainManagerDlg::RefreshTreeText()
 		{
 			TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(i2);
 			wxString2 path = data->m_strDir + "/" + data->m_strIniFile;
-			if (params.LoadFromFile(path.mb_str()))
+			if (params.LoadFrom(path.mb_str()))
 			{
-				data->m_strName = params.m_strName;
+				data->m_strName = params.GetValueString(STR_NAME);
 				wstr = data->m_strIniFile;
 				wstr += _T(" (");
-				wstr2.from_utf8(params.m_strName);
+				wstr2.from_utf8(params.GetValueString(STR_NAME));
 				wstr += wstr2;
 				wstr += _T(")");
 				m_pTree->SetItemText(i2, wstr);
@@ -168,12 +173,12 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 		return;
 
 	TParams params;
-	params.LoadFromFile(GetCurrentTerrainPath().mb_str());
+	params.LoadFrom(GetCurrentTerrainPath().mb_str());
 
 	wxString2 newpath = GetCurrentPath();
 	newpath += "Terrains/";
 	newpath += str;
-	params.SaveToFile(newpath.mb_str());
+	params.WriteToXML(newpath.mb_str(), STR_TPARAMS_FORMAT_NAME);
 	RefreshTreeContents();
 }
 
@@ -222,13 +227,13 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 
 void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 {
-	wxString2 msg = "Please enter the name for a new terrain .ini file.";
+	wxString2 msg = "Please enter the name for a new terrain .xml file.";
 	wxString2 str = wxGetTextFromUser(msg, _T("Add Terrain"));
 	if (str == _T(""))
 		return;
 
-	if (str.Right(4).CmpNoCase(_T(".ini")))
-		str += ".ini";
+	if (str.Right(4).CmpNoCase(_T(".xml")))
+		str += ".xml";
 
 	wxString2 path = m_pTree->GetItemText(m_Selected);
 	path += "Terrains";
@@ -240,8 +245,8 @@ void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 	path += str;
 
 	TParams params;
-	params.m_strName = "Untitled";
-	params.SaveToFile(path.mb_str());
+	params.SetValueString(STR_NAME, "Untitled");
+	params.WriteToXML(path.mb_str(), STR_TPARAMS_FORMAT_NAME);
 
 	RefreshTreeContents();
 }

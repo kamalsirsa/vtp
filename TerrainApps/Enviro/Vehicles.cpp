@@ -92,7 +92,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 		vtTransform *car;
 		int num, col;
 		RGBf color;
-		for (int i = 0; i < m_Params.m_iNumCars; i++)
+		for (int i = 0; i < m_Params.GetValueInt(STR_NUMCARS); i++)
 		{
 			if (n == NULL) {
 				n = (NodeGeom*) m_pRoadMap->GetFirstNode();

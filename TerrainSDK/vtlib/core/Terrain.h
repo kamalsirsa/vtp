@@ -84,12 +84,12 @@ public:
 	bool SetParamFile(const char *fname);
 	bool LoadParams();
 	vtString GetParamFile()  { return m_strParamFile; }
-	void SetParams(const TParams &pParams) { m_Params = pParams; }
+	void SetParams(const TParams &pParams);
 	TParams &GetParams() { return m_Params; }
 
 	// each terrain can have a long descriptive name
-	void SetName(const vtString &str) { m_Params.m_strName = str; }
-	vtString GetName() { return m_Params.m_strName; }
+	void SetName(const vtString &str) { m_Params.SetValueString(STR_NAME, str); }
+	vtString GetName() { return m_Params.GetValueString(STR_NAME); }
 
 	// you can alternately give it a grid to use instead of loading a BT
 	void SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve);

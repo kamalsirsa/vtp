@@ -1448,12 +1448,12 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 			pTerrain->GetProjection(), g_Conv);
 
 		vtString loc = "Locations/";
-		loc += pTerrain->GetParams().m_strLocFile;
+		loc += pTerrain->GetParams().GetValueString(STR_LOCFILE);
 		vtString path = FindFileOnPaths(pTerrain->s_DataPaths, loc);
 		if (path != "")
 		{
 			m_pLocationDlg->SetLocFile((const char *)path);
-			m_pLocationDlg->RecallFrom(pTerrain->GetParams().m_strInitLocation);
+			m_pLocationDlg->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
 		}
 
 		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
