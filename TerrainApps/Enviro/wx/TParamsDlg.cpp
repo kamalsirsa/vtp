@@ -773,8 +773,6 @@ bool TParamsDlg::TransferDataFromWindow()
 	return wxDialog::TransferDataFromWindow();
 }
 
-extern wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
-
 void TParamsDlg::UpdateColorControl()
 {
 	wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_BgColor);
