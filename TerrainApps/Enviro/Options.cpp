@@ -57,6 +57,8 @@ EnviroOptions::~EnviroOptions()
 
 bool EnviroOptions::Read(const char *szFilename)
 {
+	VTLOG("Reading options from '%s'\n", szFilename);
+
 	m_strFilename = szFilename;
 
 	ifstream input(m_strFilename, ios::in | ios::binary);
@@ -136,6 +138,8 @@ bool EnviroOptions::Read(const char *szFilename)
 
 bool EnviroOptions::Write()
 {
+	VTLOG("Writing options to '%s'\n", (const char *) m_strFilename);
+
 	ofstream output(m_strFilename, ios::binary);
 	if (!output.is_open())
 	{
