@@ -138,7 +138,7 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
 			if ((len == 0) || (buffer.header.name[0]== 0)) break;
 
 			tartime = (time_t)getoct(buffer.header.mtime, 12);
-			strcpy(fname, buffer.header.name);
+			strncpy(fname, buffer.header.name, BLOCKSIZE);
 
 			strcpy(fullname, prepend_path);
 			strcat(fullname, fname);
