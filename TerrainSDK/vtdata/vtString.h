@@ -64,8 +64,6 @@ public:
 	vtString();
 	// copy constructor
 	vtString(const vtString& stringSrc);
-	// from a single character
-	vtString(char ch, int nRepeat = 1);
 	// from an ANSI string (converts to char)
 	vtString(pcchar lpsz);
 	// subset of characters from an ANSI string (converts to char)
