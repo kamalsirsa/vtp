@@ -192,10 +192,12 @@ public:
 	FPoint2 operator +(const FPoint2 &v) const { return FPoint2(x+v.x, y+v.y); }
 	FPoint2 operator -(const FPoint2 &v) const { return FPoint2(x-v.x, y-v.y); }
 	FPoint2 operator *(float s) const { return FPoint2(x*s, y*s); }
+	FPoint2 operator /(float s) const { return FPoint2(x/s, y/s); }
 
 	void operator +=(const FPoint2 &v) { x+=v.x; y+=v.y; }
 	void operator -=(const FPoint2 &v) { x-=v.x; y-=v.y; }
 	void operator *=(float s) { x*=s; y*=s; }
+	void operator /=(float s) { x/=s; y/=s; }
 
 	bool operator==(const FPoint2 &v) { return (x == v.x && y == v.y); }
 	bool operator!=(const FPoint2 &v) { return (x != v.x || y != v.y); }
