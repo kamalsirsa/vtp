@@ -93,7 +93,6 @@ void TimeEngine::_InformTarget()
 	for (int i = 0; i < NumTargets(); i++)
 	{
 		TimeTarget* pTarget = (TimeTarget *)GetTarget(i);
-//	m_pTerrainScene->SetTimeOfDay(TIME_TO_INT(m_tm.tm_hour, m_tm.tm_min, m_tm.tm_sec));
 		pTarget->SetTime(m_time);
 	}
 }

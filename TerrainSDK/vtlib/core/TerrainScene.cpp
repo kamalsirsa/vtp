@@ -131,8 +131,9 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 void vtTerrainScene::_CreateEngines(bool bDoSound)
 {
 	// Set Time in motion
-	m_pTime = new TimeEngine(this, 0);
-	m_pTime->SetName2("Time");
+	m_pTime = new TimeEngine(0);
+	m_pTime->SetTarget((TimeTarget *)this);
+	m_pTime->SetName2("Terrain Time");
 	m_pTime->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTime);
 }
@@ -260,12 +261,12 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pCurrentTerrain->ActivateEngines(true);
 
 	// set the time to the time of the new terrain
-	int time = param.m_iInitTime * 3600;
-	SetTimeOfDay(time, true);
+	m_pSkyDome->SetSunLight(GetSunLight());
+	m_pSkyDome->SetTimeOfDay(TIME_TO_INT(param.m_iInitTime, 0, 0), true);
 
 	// setup time engine
-	m_pTime->SetTime(time);
-	m_pTime->SetRealIncrement(param.m_fTimeSpeed);
+	m_pTime->SetTime(param.m_iInitTime, 0, 0);
+	m_pTime->SetSpeed(param.m_fTimeSpeed);
 	m_pTime->SetEnabled(param.m_bTimeOn);
 
 	// handle the atmosphere
@@ -304,13 +305,13 @@ void vtTerrainScene::SetFog(bool fog)
 	}
 }
 
-void vtTerrainScene::SetTimeOfDay(unsigned int time, bool fFullRefresh)
+void vtTerrainScene::SetTime(time_t time)
 {
 	if (m_pSkyDome)
 	{
-		m_pSkyDome->SetSunLight(GetSunLight());
-		m_pSkyDome->SetTimeOfDay(time, fFullRefresh);
+		m_pSkyDome->SetTimeOfDay(time);
 //		m_pSkyDome->ApplyDayColors();
+// TODO? Update the fog color to match the color of the horizon.
 	}
-	// TODO? Update the fog color to match the color of the horizon.
 }
+

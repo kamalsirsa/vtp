@@ -9,6 +9,7 @@
 #define TERRAINSCENEH
 
 #include "vtdata/FilePath.h"
+#include "TimeEngines.h"
 
 // Forward references
 class vtSkyDome;
@@ -24,7 +25,7 @@ class vtSkyTrackEngine;
  * surrounding environment (sunlight, skydome) which is common to all
  * of the terrains.
  */
-class vtTerrainScene
+class vtTerrainScene : public TimeTarget
 {
 public:
 	vtTerrainScene();
@@ -50,7 +51,7 @@ public:
 	void ToggleFog();
 	void SetFog(bool fog);
 	bool GetFog() { return m_bFog; }
-	void SetTimeOfDay(unsigned int time, bool bFullRefresh = false);
+	void SetTime(time_t time);
 
 	// main scene graph outline
 	vtRoot		*m_pTop;
