@@ -110,6 +110,7 @@ public:
 	bool LoadAttributesFromDBF();
 	bool LoadFromOGR(OGRDataSource *pDatasource, void progress_callback(int));
 	virtual void LoadGeomFromSHP(SHPHandle hSHP) = 0;
+	bool LoadFromSHP(const char *fname);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() const { return m_strFilename; }

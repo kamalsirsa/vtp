@@ -114,6 +114,31 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 	return true;
 }
 
+bool vtFeatureSet::LoadFromSHP(const char *fname)
+{
+	// Open the SHP File & Get Info from SHP:
+	SHPHandle hSHP = SHPOpen(fname, "rb");
+	if (hSHP == NULL)
+		return false;
+
+	SetFilename(fname);
+	LoadGeomFromSHP(hSHP);
+	SHPClose(hSHP);
+
+	if (!LoadInfoFromDBF(fname))
+	{
+		SHPClose(hSHP);
+		return false;
+	}
+	if (!LoadAttributesFromDBF())
+	{
+		SHPClose(hSHP);
+		return false;
+	}
+	return true;
+}
+
+
 vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
 {
 	vtString fname = filename;
