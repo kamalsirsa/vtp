@@ -23,32 +23,33 @@ DECLARE_APP(MyApp)
 // Under Windows, the icons are in the .rc file; on Unix, they are included
 // from .xpm files.
 #ifndef __WXMSW__
-	#include "building.xpm"
-	#include "file1.xpm"
-	#include "file2.xpm"
-	#include "folder1.xpm"
-	#include "folder2.xpm"
-	#include "folder3.xpm"
+#include "building.xpm"
+#include "file1.xpm"
+#include "file2.xpm"
+#include "folder1.xpm"
+#include "folder2.xpm"
+#include "folder3.xpm"
 
-	#include "grid.xpm"
-	#include "image.xpm"
-	#include "raw.xpm"
-	#include "road.xpm"
-	#include "veg1.xpm"
-	#include "water.xpm"
-	#include "util.xpm"
+#include "grid.xpm"
+#include "image.xpm"
+#include "raw.xpm"
+#include "road.xpm"
+#include "veg1.xpm"
+#include "water.xpm"
+#include "util.xpm"
+#include "transit.xpm"
 #endif
 
 /////////////////////////////////////////////////
 
 
 // MyTreeCtrl implementation
-IMPLEMENT_DYNAMIC_CLASS(MyTreeCtrl, wxTreeCtrl)
+	IMPLEMENT_DYNAMIC_CLASS(MyTreeCtrl, wxTreeCtrl)
 
 MyTreeCtrl::MyTreeCtrl(wxWindow *parent, const wxWindowID id,
-					   const wxPoint& pos, const wxSize& size,
-					   long style)
-		  : wxTreeCtrl(parent, id, pos, size, style)
+	const wxPoint& pos, const wxSize& size,
+	long style)
+: wxTreeCtrl(parent, id, pos, size, style)
 {
 	m_reverseSort = false;
 	m_imageListNormal = NULL;
@@ -97,7 +98,7 @@ void MyTreeCtrl::CreateImageList(int size)
 			m_imageListNormal->Add(icons[i]);
 		else
 			m_imageListNormal->Add(wxImage(icons[i]).Rescale(size, size).
-									ConvertToBitmap());
+				ConvertToBitmap());
 	}
 
 	SetImageList(m_imageListNormal);
@@ -109,7 +110,7 @@ MyTreeCtrl::~MyTreeCtrl()
 }
 
 int MyTreeCtrl::OnCompareItems(const wxTreeItemId& item1,
-							   const wxTreeItemId& item2)
+	const wxTreeItemId& item2)
 {
 	if ( m_reverseSort )
 	{
@@ -265,18 +266,18 @@ void MyTreeCtrl::name(wxTreeEvent& event)	\
 }
 
 TREE_EVENT_HANDLER(OnBeginRDrag)
-TREE_EVENT_HANDLER(OnDeleteItem)
-TREE_EVENT_HANDLER(OnGetInfo)
-TREE_EVENT_HANDLER(OnSetInfo)
-TREE_EVENT_HANDLER(OnItemExpanded)
-TREE_EVENT_HANDLER(OnItemExpanding)
-TREE_EVENT_HANDLER(OnItemCollapsed)
-TREE_EVENT_HANDLER(OnSelChanging)
-TREE_EVENT_HANDLER(OnTreeKeyDown)
+	TREE_EVENT_HANDLER(OnDeleteItem)
+	TREE_EVENT_HANDLER(OnGetInfo)
+	TREE_EVENT_HANDLER(OnSetInfo)
+	TREE_EVENT_HANDLER(OnItemExpanded)
+	TREE_EVENT_HANDLER(OnItemExpanding)
+	TREE_EVENT_HANDLER(OnItemCollapsed)
+	TREE_EVENT_HANDLER(OnSelChanging)
+	TREE_EVENT_HANDLER(OnTreeKeyDown)
 
 #undef TREE_EVENT_HANDLER
 
-void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
+	void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
 	wxTreeItemId item = event.GetItem();
 	MyTreeItemData *data = (MyTreeItemData *)GetItemData(item);
@@ -381,21 +382,20 @@ void MyTreeCtrl::OnRMouseDClick(wxMouseEvent& event)
 /////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(MyTreeCtrl, wxTreeCtrl)
-	EVT_TREE_BEGIN_DRAG(TreeTest_Ctrl, MyTreeCtrl::OnBeginDrag)
-	EVT_TREE_BEGIN_RDRAG(TreeTest_Ctrl, MyTreeCtrl::OnBeginRDrag)
-	EVT_TREE_END_DRAG(TreeTest_Ctrl, MyTreeCtrl::OnEndDrag)
-	EVT_TREE_BEGIN_LABEL_EDIT(TreeTest_Ctrl, MyTreeCtrl::OnBeginLabelEdit)
-	EVT_TREE_END_LABEL_EDIT(TreeTest_Ctrl, MyTreeCtrl::OnEndLabelEdit)
-	EVT_TREE_DELETE_ITEM(TreeTest_Ctrl, MyTreeCtrl::OnDeleteItem)
-	EVT_TREE_SET_INFO(TreeTest_Ctrl, MyTreeCtrl::OnSetInfo)
-	EVT_TREE_ITEM_EXPANDED(TreeTest_Ctrl, MyTreeCtrl::OnItemExpanded)
-	EVT_TREE_ITEM_EXPANDING(TreeTest_Ctrl, MyTreeCtrl::OnItemExpanding)
-	EVT_TREE_ITEM_COLLAPSED(TreeTest_Ctrl, MyTreeCtrl::OnItemCollapsed)
-	EVT_TREE_ITEM_COLLAPSING(TreeTest_Ctrl, MyTreeCtrl::OnItemCollapsing)
-	EVT_TREE_SEL_CHANGED(TreeTest_Ctrl, MyTreeCtrl::OnSelChanged)
-	EVT_TREE_SEL_CHANGING(TreeTest_Ctrl, MyTreeCtrl::OnSelChanging)
-	EVT_TREE_KEY_DOWN(TreeTest_Ctrl, MyTreeCtrl::OnTreeKeyDown)
-	EVT_TREE_ITEM_ACTIVATED(TreeTest_Ctrl, MyTreeCtrl::OnItemActivated)
-	EVT_RIGHT_DCLICK(MyTreeCtrl::OnRMouseDClick)
+EVT_TREE_BEGIN_DRAG(TreeTest_Ctrl, MyTreeCtrl::OnBeginDrag)
+EVT_TREE_BEGIN_RDRAG(TreeTest_Ctrl, MyTreeCtrl::OnBeginRDrag)
+EVT_TREE_END_DRAG(TreeTest_Ctrl, MyTreeCtrl::OnEndDrag)
+EVT_TREE_BEGIN_LABEL_EDIT(TreeTest_Ctrl, MyTreeCtrl::OnBeginLabelEdit)
+EVT_TREE_END_LABEL_EDIT(TreeTest_Ctrl, MyTreeCtrl::OnEndLabelEdit)
+EVT_TREE_DELETE_ITEM(TreeTest_Ctrl, MyTreeCtrl::OnDeleteItem)
+EVT_TREE_SET_INFO(TreeTest_Ctrl, MyTreeCtrl::OnSetInfo)
+EVT_TREE_ITEM_EXPANDED(TreeTest_Ctrl, MyTreeCtrl::OnItemExpanded)
+EVT_TREE_ITEM_EXPANDING(TreeTest_Ctrl, MyTreeCtrl::OnItemExpanding)
+EVT_TREE_ITEM_COLLAPSED(TreeTest_Ctrl, MyTreeCtrl::OnItemCollapsed)
+EVT_TREE_ITEM_COLLAPSING(TreeTest_Ctrl, MyTreeCtrl::OnItemCollapsing)
+EVT_TREE_SEL_CHANGED(TreeTest_Ctrl, MyTreeCtrl::OnSelChanged)
+EVT_TREE_SEL_CHANGING(TreeTest_Ctrl, MyTreeCtrl::OnSelChanging)
+EVT_TREE_KEY_DOWN(TreeTest_Ctrl, MyTreeCtrl::OnTreeKeyDown)
+EVT_TREE_ITEM_ACTIVATED(TreeTest_Ctrl, MyTreeCtrl::OnItemActivated)
+EVT_RIGHT_DCLICK(MyTreeCtrl::OnRMouseDClick)
 END_EVENT_TABLE()
-
