@@ -29,6 +29,7 @@
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TerrainSurface.h"
 #include "vtlib/core/SkyDome.h"
+#include "vtlib/core/Building3d.h"
 
 #include "frame.h"
 
@@ -381,6 +382,44 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		ChangeTerrainDetail(true);
 	if (key == '-')
 		ChangeTerrainDetail(false);
+	if (key == 'z')
+	{
+		vtTerrain *pTerr = GetCurrentTerrain();
+		if (pTerr && g_App.m_bSelectedStruct)
+		{
+			vtStructureArray3d &sa = pTerr->GetStructures();
+			int i = 0;
+			while (!sa.GetStructure(i)->IsSelected())
+				i++;
+			vtStructure3d *str = sa.GetStructure(i);
+			vtBuilding *bld = str->GetBuilding();
+			float width, depth;
+			bld->GetRectangle(width, depth);
+			width -= 1;
+//			depth -= 1;
+			bld->SetRectangle(width, depth);
+			sa.ReConstructStructure(str, "roof walls detail");
+		}
+	}
+	if (key == 'Z')
+	{
+		vtTerrain *pTerr = GetCurrentTerrain();
+		if (pTerr && g_App.m_bSelectedStruct)
+		{
+			vtStructureArray3d &sa = pTerr->GetStructures();
+			int i = 0;
+			while (!sa.GetStructure(i)->IsSelected())
+				i++;
+			vtStructure3d *str = sa.GetStructure(i);
+			vtBuilding *bld = str->GetBuilding();
+			float width, depth;
+			bld->GetRectangle(width, depth);
+			width += 1;
+//			depth += 1;
+			bld->SetRectangle(width, depth);
+			sa.ReConstructStructure(str, "roof walls detail");
+		}
+	}
 }
 
 void vtFrame::ChangeFlightSpeed(float factor)
@@ -419,11 +458,6 @@ void vtFrame::SetFullScreen(bool bFull)
 #ifdef __WXMSW__
 	if (m_bFullscreen)
 	{
-#if 0
-		int fx, fy, cx, cy;
-		GetSize(&fx, &fy);
-		m_canvas->GetSize(&cx, &cy);
-#endif
 		ShowFullScreen(true, wxFULLSCREEN_NOMENUBAR |
 //							 wxFULLSCREEN_NOTOOLBAR |	// leave toolbar visible
 							 wxFULLSCREEN_NOSTATUSBAR | 
