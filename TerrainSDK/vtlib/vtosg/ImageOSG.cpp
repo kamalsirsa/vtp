@@ -69,8 +69,6 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 
 	// try to load with OSG (osgPlugins libraries)
 	{
-//		std::string fname2 = "../Data/PlantModels/koahaole1_v2_256.png";
-//		fname2 = fname;
 		m_pOsgImage = osgDB::readImageFile(fname);
 		if (m_pOsgImage != NULL)
 			m_bLoaded = true;

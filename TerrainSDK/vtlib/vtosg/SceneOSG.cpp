@@ -129,17 +129,6 @@ void vtScene::DoUpdate()
 
 	DoEngines();
 
-#if 0
-	// Copy the camera transform position to camera.  With OSG 0.9.2, we
-	// used to be able to do this one call to Camera::attachTransform.
-	// With 0.9.3, we have to do it each frame:
-	static RefMatrix *cmat = NULL;
-	if (cmat == NULL) cmat = new RefMatrix;
-	Matrix &rcmat = *cmat;
-	rcmat = m_pCamera->m_pTransform->getMatrix();
-	pOsgCam->attachTransform(Camera::EYE_TO_MODEL, cmat);
-#endif
-
 	// As of OSG 0.9.5, we need to store our own camera params and recreate
 	//  the projection matrix each frame.
 	float aspect;
