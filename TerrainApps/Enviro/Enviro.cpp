@@ -1675,17 +1675,18 @@ void Enviro::CreateElevationLegend()
 		return;
 
 	// Define the size and shape of the legend: input values
-	const int ticks = 9;
+	const int ticks = 8;
 	const IPoint2 border(10, 18);
 	const IPoint2 base(10, 10);
-	const IPoint2 size(150, 320);
-	const int fontsize = 18;
+	const IPoint2 size(140, 230);
+	const int fontsize = 16;
 
 	// Derived values
+	const IPoint2 in_base = base + border;
 	const IPoint2 in_size(size.x - (border.x*2), size.y - (border.y*2));
 	const int vert_space = in_size.y / (ticks-1);
-	const int cbar_left = base.x + border.x + (in_size.x * 2 / 3);
-	const int cbar_right = base.x + border.x + in_size.x;
+	const int cbar_left = in_base.x + (in_size.x * 6 / 10);
+	const int cbar_right = in_base.x + in_size.x;
 
 	// This HUD group will contain all the geometry for the legend
 	m_pHUD = new vtHUD();
@@ -1712,8 +1713,8 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh1 = new vtMesh(GL_TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
-		FPoint3 p1(cbar_left,  base.y + border.y + i, 0);
-		FPoint3 p2(cbar_right, base.y + border.y + i, 0);
+		FPoint3 p1(cbar_left,  in_base.y + i, 0);
+		FPoint3 p2(cbar_right, in_base.y +  i, 0);
 		idx = mesh1->AddLine(p1, p2);
 		mesh1->SetVtxColor(idx, table[i]);
 		mesh1->SetVtxColor(idx+1, table[i]);
@@ -1726,8 +1727,8 @@ void Enviro::CreateElevationLegend()
 	vtMesh *mesh2 = new vtMesh(GL_LINES, 0, ticks*2);
 	for (i = 0; i < ticks; i++)
 	{
-		FPoint3 p1(cbar_left-border.x*2, base.y + border.y + i*vert_space, 0);
-		FPoint3 p2(cbar_left,			 base.y + border.y + i*vert_space, 0);
+		FPoint3 p1(cbar_left-border.x*2, in_base.y + i*vert_space, 0);
+		FPoint3 p2(cbar_left,			 in_base.y + i*vert_space, 0);
 		mesh2->AddLine(p1, p2);
 	}
 	geom->AddMesh(mesh2, 0);
@@ -1747,7 +1748,7 @@ void Enviro::CreateElevationLegend()
 		vtString str;
 		str.Format("%4.1f", fMin + (fMax - fMin) / 6 * i);
 		mesh3->SetText(str);
-		FPoint3 p1(base.x + border.x, base.y + border.y + i*vert_space - (fontsize*1/3), 0);
+		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0);
 		mesh3->SetPosition(p1);
 
 		geom->AddTextMesh(mesh3, 0);
