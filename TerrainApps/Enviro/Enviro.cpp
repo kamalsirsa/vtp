@@ -1290,7 +1290,6 @@ void Enviro::FreeArcMesh()
 	if (m_pArc && m_pArcMesh)
 	{
 		m_pArc->RemoveMesh(m_pArcMesh);
-		m_pArcMesh->Release();
 		m_pArcMesh = NULL;
 	}
 }
@@ -1308,7 +1307,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	m_fArcLength = pTerr->AddSurfaceLineToMesh(m_pArcMesh, dline, m_fDistToolHeight);
 
 	m_pArc->AddMesh(m_pArcMesh, 1);
-	m_pArcMesh->Release();
+	m_pArcMesh->Release();		// Pass ownership
 }
 
 

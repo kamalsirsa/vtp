@@ -310,7 +310,6 @@ void vtFence3d::DestroyGeometry()
 	{
 		vtMesh *pMesh = m_pFenceGeom->GetMesh(0);
 		m_pFenceGeom->RemoveMesh(pMesh);
-		pMesh->Release();
 	}
 
 	m_bBuilt = false;
