@@ -77,68 +77,71 @@ void CartesianToSpherical(double *lng, double *lat,
 }
 
 
-void latlon_to_xyz(double lat, double lon, DPoint3 &p)
+void geo_to_xyz(DPoint2 geo, DPoint3 &p)
 {
-	lat *= (PId / 180.0);
-	lon *= (PId / 180.0);
+	geo.x *= (PId / 180.0);
+	geo.y *= (PId / 180.0);
 
-	lat -= ( PId / 2.0f );
-	lon += ( PId );
+	geo.x += PId;
+	geo.y -= PID2d;
 
-	p.x = sin(lat) * cos(lon);
-	p.z = -sin(lat) * sin(lon);
-	p.y = cos(lat);
+	p.x = sin(geo.y) * cos(geo.x);
+	p.z = -sin(geo.y) * sin(geo.x);
+	p.y = cos(geo.y);
 }
 
 
 /**
  * Determine which part of which icosahedral face a point is on.
+ *
+ * \param p A 3D point.
+ * \param face Will receive the face number, from 0 to 19.
+ * \param subface Will receive the subface number, from 0 to 5.
  */
-void DymaxIcosa::FindFace(const DPoint3 &p, int &tri, int &lcd)
+void DymaxIcosa::FindFace(const DPoint3 &p, int &face, int &subface)
 {
-	// Determine which triangle and LCD triangle the point is in.
-	double  dist1, dist2, dist3;
+	double dist1, dist2, dist3;
 	int i;
 
-	tri = 0;
+	face = 0;
 	dist1 = 1E9;
 
-	// Which triangle face center is the closest to the given point
-	// is the triangle in which the given point is in.
+	// The face center closest to the given point is the face which the
+	//  point is in.
 	for (i = 0; i < 20; i++)
 	{
 		dist2 = (m_face[i].center - p).Length();
 		if (dist2 < dist1)
 		{
-			tri = i;
+			face = i;
 			dist1 = dist2;
 		}
 	}
 
-	// Now the LCD triangle is determined:
-	// determine the corner vertices of this face
-	int v0 = icosa_face_v[tri][0];
-	int v1 = icosa_face_v[tri][1];
-	int v2 = icosa_face_v[tri][2];
+	// Now the subface is determined:
+	// get the corner vertices of this face
+	int v0 = icosa_face_v[face][0];
+	int v1 = icosa_face_v[face][1];
+	int v2 = icosa_face_v[face][2];
 
-	// compute distance to each corner
+	// distance to each corner
 	dist1 = (p - m_verts[v0]).Length();
 	dist2 = (p - m_verts[v1]).Length();
 	dist3 = (p - m_verts[v2]).Length();
 
-	if ( (dist1 <= dist2) && (dist2 <= dist3) ) {lcd = 1; }
-	if ( (dist1 <= dist3) && (dist3 <= dist2) ) {lcd = 6; }
-	if ( (dist2 <= dist1) && (dist1 <= dist3) ) {lcd = 2; }
-	if ( (dist2 <= dist3) && (dist3 <= dist1) ) {lcd = 3; }
-	if ( (dist3 <= dist1) && (dist1 <= dist2) ) {lcd = 5; }
-	if ( (dist3 <= dist2) && (dist2 <= dist1) ) {lcd = 4; }
+	if ((dist1 <= dist2) && (dist2 <= dist3)) { subface = 0; }
+	if ((dist1 <= dist3) && (dist3 <= dist2)) { subface = 5; }
+	if ((dist2 <= dist1) && (dist1 <= dist3)) { subface = 1; }
+	if ((dist2 <= dist3) && (dist3 <= dist1)) { subface = 2; }
+	if ((dist3 <= dist1) && (dist1 <= dist2)) { subface = 4; }
+	if ((dist3 <= dist2) && (dist2 <= dist1)) { subface = 3; }
 }
 
 /**
  * Given a point and a face number, determine the u,v,w coordinates of
  * the point in the reference frame of the face triangle.
  */
-void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
+void DymaxIcosa::FindUV(const DPoint3 &p_in, int face, DPoint3 &uvw)
 {
 #if 0
 	//
@@ -146,7 +149,7 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 	//  projection).  If you use it, you need his permission.  Also, there is
 	//  no reverse projection known, and finally, i don't understand it :)
 	//
-	DPoint3 Pn = m_face[tri].vec_c;		// normal
+	DPoint3 Pn = m_face[face].vec_c;		// normal
 
 	// Rd = [Xd, Yd, Zd]
 	DPoint3 Rd = p_in;
@@ -155,7 +158,7 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 	double Vd = Pn * Rd;
 
 	// V0 = -(Pn * R0 + D)
-	double V0 = -m_face[tri].d;
+	double V0 = -m_face[face].d;
 
 	// t = V0 / Vd
 	double t = V0 / Vd;
@@ -164,33 +167,47 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 	DPoint3 Pi = Rd * t;
 #else
 	// We use simple Gnomonic
-	double t = -m_face[tri].d / (m_face[tri].vec_c * p_in);
+	double t = -m_face[face].d / (m_face[face].vec_c * p_in);
 	DPoint3 Pi = p_in * t;
 #endif
 
 	// compute point relative to triangle origin
-	DPoint3 p = Pi - m_face[tri].base;
+	DPoint3 p = Pi - m_face[face].base;
 
 	// transform to find u,v,w face coordinates
-	m_face[tri].trans.Transform(p, uvw);
+	m_face[face].trans.Transform(p, uvw);
+}
+
+/**
+ * Given a geographic coordinate (lon, lat), find the corresponding
+ * face, subface, and 
+ */
+void DymaxIcosa::FindFaceUV(const DPoint2 &p, int &face, int &subface,
+							DPoint3 &uvw)
+{
+	DPoint3 p3;
+
+	geo_to_xyz(p, p3);
+	FindFace(p3, face, subface);
+	FindUV(p3, face, uvw);
 }
 
 /**
  * Given a geographic coordinate (lon, lat), find the corresponding
  * point on the surface of the icosahedron.
  */
-void DymaxIcosa::GeoToFaceUV(double lon, double lat, DPoint3 &p_out)
+void DymaxIcosa::GeoToFaceUV(const DPoint2 &p, int &face, int &subface,
+							 DPoint3 &p_out)
 {
-	DPoint3 p, uvw;
-	int tri, lcd;
+	DPoint3 p3, uvw;
 
-	latlon_to_xyz(lat, lon, p);
-	FindFace(p, tri, lcd);
-	FindUV(p, tri, uvw);
+	geo_to_xyz(p, p3);
+	FindFace(p3, face, subface);
+	FindUV(p3, face, uvw);
 
-	p_out = m_face[tri].base +
-		(m_face[tri].vec_a * uvw.x) +
-		(m_face[tri].vec_b * uvw.y);
+	p_out = m_face[face].base +
+		   (m_face[face].vec_a * uvw.x) +
+		   (m_face[face].vec_b * uvw.y);
 }
 
 /**
@@ -198,11 +215,11 @@ void DymaxIcosa::GeoToFaceUV(double lon, double lat, DPoint3 &p_out)
  * face (tri, uvw), find the corresponding surface location in geographic
  * coordinate (lon, lat)
  */
-void DymaxIcosa::FaceUVToGeo(int tri, DPoint3 &uvw, double &lon, double &lat)
+void DymaxIcosa::FaceUVToGeo(int face, DPoint3 &uvw, double &lon, double &lat)
 {
-	DPoint3 p_out = m_face[tri].base +
-				(m_face[tri].vec_a * m_edge_length * uvw.x) +
-				(m_face[tri].vec_b * m_edge_length * uvw.y);
+	DPoint3 p_out = m_face[face].base +
+				   (m_face[face].vec_a * m_edge_length * uvw.x) +
+				   (m_face[face].vec_b * m_edge_length * uvw.y);
 	p_out.Normalize();
 	DPoint3 p2;
 	p2.x = p_out.x;

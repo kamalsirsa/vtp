@@ -44,11 +44,12 @@ class DymaxIcosa
 public:
 	void InitIcosa();
 
-	void FindFace(const DPoint3 &p, int &tri, int &lcd);
-	void FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw);
+	void FindFaceUV(const DPoint2 &p, int &face, int &subface, DPoint3 &uvw);
+	void FindFace(const DPoint3 &p, int &face, int &subface);
+	void FindUV(const DPoint3 &p_in, int face, DPoint3 &uvw);
 
-	void GeoToFaceUV(double lon, double lat, DPoint3 &p_out);
-	void FaceUVToGeo(int tri, DPoint3 &uvw, double &lon, double &lat);
+	void GeoToFaceUV(const DPoint2 &p, int &face, int &subface, DPoint3 &p_out);
+	void FaceUVToGeo(int face, DPoint3 &uvw, double &lon, double &lat);
 
 	double DihedralAngle();
 
