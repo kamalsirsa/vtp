@@ -26,13 +26,13 @@
 #include "vtlib/vtlib.h"	// mostly for gl.h
 
 #include "StartupDlg.h"
-#include "../Options.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
 
 #include "app.h"
 #include "TParamsDlg.h"
 #include "TerrManDlg.h"
+#include "OptionsDlg.h"
 
 DECLARE_APP(vtApp);
 
@@ -180,50 +180,13 @@ static void ShowOGLInfo(bool bLog)
 // StartupDlg
 //----------------------------------------------------------------------------
 
-void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
-{
-	m_bStartEarth = opt.m_bEarthView;
-	m_bStartTerrain = !opt.m_bEarthView;
-	m_strEarthImage = wxString::FromAscii((const char *)opt.m_strEarthImage);
-	m_strTName.from_utf8(opt.m_strInitTerrain);
-	m_bFullscreen = opt.m_bFullscreen;
-	m_bHtmlpane = opt.m_bHtmlpane;
-	m_bFloatingToolbar = opt.m_bFloatingToolbar;
-	m_bTextureCompression = opt.m_bTextureCompression;
-	m_bSpeedTest = opt.m_bSpeedTest;
-	m_fPlantScale = opt.m_fPlantScale;
-	m_bShadows = opt.m_bShadows;
-	m_strContentFile = opt.m_strContentFile;
-}
-
-void StartupDlg::PutOptionsTo(EnviroOptions &opt)
-{
-	opt.m_bEarthView = m_bStartEarth;
-	opt.m_strEarthImage = m_strEarthImage.mb_str();
-	opt.m_strInitTerrain = m_strTName.to_utf8();
-	opt.m_bFullscreen = m_bFullscreen;
-	opt.m_bHtmlpane = m_bHtmlpane;
-	opt.m_bFloatingToolbar = m_bFloatingToolbar;
-	opt.m_bTextureCompression = m_bTextureCompression;
-	opt.m_bSpeedTest = m_bSpeedTest;
-	opt.m_fPlantScale = m_fPlantScale;
-	opt.m_bShadows = m_bShadows;
-	opt.m_strContentFile = m_strContentFile.mb_str();
-}
-
-void StartupDlg::UpdateState()
-{
-	m_psImage->Enable(m_bStartEarth);
-	m_pImage->Enable(m_bStartEarth);
-	GetTname()->Enable(m_bStartTerrain);
-}
-
 // WDR: event table for StartupDlg
 
 BEGIN_EVENT_TABLE(StartupDlg,AutoDialog)
 	EVT_INIT_DIALOG (StartupDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
 	EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
+	EVT_BUTTON( ID_OPTIONS, StartupDlg::OnOptions )
 	EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
 	EVT_RADIOBUTTON( ID_TERRAIN, StartupDlg::OnTerrain )
 	EVT_BUTTON( ID_EDITPROP, StartupDlg::OnEditProp )
@@ -242,19 +205,35 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pImage = GetImage();
 
 	AddValidator(ID_EARTHVIEW, &m_bStartEarth);
-	AddValidator(ID_TERRAIN, &m_bStartTerrain);
-
-	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
-//	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
-//	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
-	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
-//	AddValidator(ID_SHADOWS, &m_bShadows);
-
-	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
-	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
-
 	AddValidator(ID_IMAGE, &m_strEarthImage);
-	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
+	AddValidator(ID_TERRAIN, &m_bStartTerrain);
+}
+
+void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
+{
+	m_bStartEarth = opt.m_bEarthView;
+	m_bStartTerrain = !opt.m_bEarthView;
+	m_strEarthImage = wxString::FromAscii((const char *)opt.m_strEarthImage);
+	m_strTName.from_utf8(opt.m_strInitTerrain);
+
+	// store a copy of all the options
+	m_opt = opt;
+}
+
+void StartupDlg::PutOptionsTo(EnviroOptions &opt)
+{
+	m_opt.m_bEarthView = m_bStartEarth;
+	m_opt.m_strEarthImage = m_strEarthImage.mb_str();
+	m_opt.m_strInitTerrain = m_strTName.to_utf8();
+
+	opt = m_opt;
+}
+
+void StartupDlg::UpdateState()
+{
+	m_psImage->Enable(m_bStartEarth);
+	m_pImage->Enable(m_bStartEarth);
+	GetTname()->Enable(m_bStartTerrain);
 }
 
 void StartupDlg::RefreshTerrainChoices()
@@ -273,6 +252,43 @@ void StartupDlg::RefreshTerrainChoices()
 
 
 // WDR: handler implementations for StartupDlg
+
+void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	VTLOG("StartupDlg Init.\n");
+
+	// log OpenGL info, including max texture size
+#ifdef WIN32
+	wxClientDC wdc(this);
+	HDC hdc = (HDC) wdc.GetHDC();
+	ShowOGLInfo(true, hdc);
+#else
+	ShowOGLInfo(true);
+#endif
+
+	// Populate Earth Image files choices
+	vtStringArray &paths = g_Options.m_DataPaths;
+	for (unsigned int i = 0; i < paths.size(); i++)
+	{
+		vtString path = paths[i];
+		path += "WholeEarth/";
+		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
+		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);
+	}
+	int sel = m_pImage->FindString(m_strEarthImage);
+	if (sel != -1)
+		m_pImage->SetSelection(sel);
+
+	UpdateState();
+
+	// Terrain choices
+	RefreshTerrainChoices();
+	sel = GetTname()->FindString(m_strTName);
+	if (sel != -1)
+		GetTname()->Select(sel);
+
+	wxWindow::OnInitDialog(event);
+}
 
 void StartupDlg::OnTnameChoice( wxCommandEvent &event )
 {
@@ -344,64 +360,19 @@ void StartupDlg::OnOpenGLInfo( wxCommandEvent &event )
 #endif
 }
 
+void StartupDlg::OnOptions( wxCommandEvent &event )
+{
+	OptionsDlg dlg(this, -1, _("Global Options"));
+	dlg.GetOptionsFrom(m_opt);
+
+	int result = dlg.ShowModal();
+	if (result == wxID_OK)
+		dlg.PutOptionsTo(m_opt);
+}
+
 void StartupDlg::OnOK( wxCommandEvent &event )
 {
 	VTLOG("StartupDlg pressed OK.\n");
 	wxDialog::OnOK(event);
-}
-
-void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
-{
-	VTLOG("StartupDlg Init.\n");
-
-	// log OpenGL info, including max texture size
-#ifdef WIN32
-	wxClientDC wdc(this);
-	HDC hdc = (HDC) wdc.GetHDC();
-	ShowOGLInfo(true, hdc);
-#else
-	ShowOGLInfo(true);
-#endif
-
-/*  vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName.to_utf8());
-	if (pTerr)
-		m_strTName = wxString::FromAscii(pTerr->GetName());
-	else
-		m_strTName = _T("none");
-*/
-	int sel;
-
-	// Populate Earth Image files choices
-	vtStringArray &paths = g_Options.m_DataPaths;
-	for (unsigned int i = 0; i < paths.size(); i++)
-	{
-		vtString path = paths[i];
-		path += "WholeEarth/";
-		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
-		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);
-	}
-	sel = m_pImage->FindString(m_strEarthImage);
-	if (sel != -1)
-		m_pImage->SetSelection(sel);
-
-	// Populate Content files choices
-	for (unsigned int i = 0; i < paths.size(); i++)
-	{
-		vtString path = paths[i];
-		AddFilenamesToChoice(GetContent(), path, "*.vtco");
-	}
-	m_iContentFile = GetContent()->FindString(m_strContentFile);
-	if (m_iContentFile != -1)
-		GetContent()->SetSelection(m_iContentFile);
-
-	UpdateState();
-
-	// Terrain choices
-	RefreshTerrainChoices();
-	sel = GetTname()->FindString(m_strTName);
-	if (sel != -1)
-		GetTname()->Select(sel);
-
-	wxWindow::OnInitDialog(event);
 }
 

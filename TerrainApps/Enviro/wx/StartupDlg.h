@@ -1,7 +1,7 @@
 //
 // Name: StartupDlg.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
+#include "../Options.h"
 
 class EnviroOptions;
 
@@ -33,14 +34,12 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
-	void OnInitDialog(wxInitDialogEvent& event);
 	void GetOptionsFrom(EnviroOptions &opt);
 	void PutOptionsTo(EnviroOptions &opt);
 	void UpdateState();
 	void RefreshTerrainChoices();
 
 	// WDR: method declarations for StartupDlg
-	wxChoice* GetContent()  { return (wxChoice*) FindWindow( ID_CHOICE_CONTENT ); }
 	wxButton* GetTerrMan()  { return (wxButton*) FindWindow( ID_TERRMAN ); }
 	wxButton* GetEditprop()  { return (wxButton*) FindWindow( ID_EDITPROP ); }
 	wxChoice* GetTname()  { return (wxChoice*) FindWindow( ID_TNAME ); }
@@ -49,32 +48,24 @@ public:
 
 private:
 	// WDR: member variable declarations for StartupDlg
-	bool	m_bFullscreen;
-	bool	m_bHtmlpane;
-	bool	m_bFloatingToolbar;
-	bool	m_bTextureCompression;
-	bool	m_bSpeedTest;
+	EnviroOptions	m_opt;
+
 	bool	m_bStartEarth;
 	bool	m_bStartTerrain;
 	wxString2   m_strTName;
 	wxString2   m_strEarthImage;
-	float		m_fPlantScale;
-	bool		m_bShadows;
-	int			m_iContentFile;
-	wxString2	m_strContentFile;
-
 	wxStaticText  *m_psImage;
 	wxComboBox  *m_pImage;
 
-	vtString	m_strFilename;
-
 private:
 	// WDR: handler declarations for StartupDlg
+	void OnInitDialog(wxInitDialogEvent& event);
 	void OnTnameChoice( wxCommandEvent &event );
 	void OnTerrMan( wxCommandEvent &event );
 	void OnTerrain( wxCommandEvent &event );
 	void OnEarthView( wxCommandEvent &event );
 	void OnOpenGLInfo( wxCommandEvent &event );
+	void OnOptions( wxCommandEvent &event );
 	void OnOK( wxCommandEvent &event );
 	void OnEditProp( wxCommandEvent &event );
 
