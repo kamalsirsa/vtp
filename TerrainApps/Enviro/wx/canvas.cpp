@@ -16,6 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TimeEngines.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 #include "../Enviro.h"			// for g_App, GetTerrainScene
 #include "canvas.h"
@@ -27,7 +28,7 @@ DECLARE_APP(vtApp)
 /*
  * vtGLCanvas implementation
  */
-	BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
+BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
 EVT_CLOSE(vtGLCanvas::OnClose)
 EVT_SIZE(vtGLCanvas::OnSize)
 EVT_PAINT(vtGLCanvas::OnPaint)
@@ -103,7 +104,7 @@ void StatusTimer::Notify()
 	vtScene *scene = vtGetScene();
 	if (!scene) return;
 
-	wxString str, str2;
+	wxString2 str, str2;
 
 	// get framerate
 	float fps = scene->GetFrameRate();
@@ -129,7 +130,13 @@ void StatusTimer::Notify()
 
 	vtString vs;
 	g_App.DescribeCoordinates(vs);
-	str += wxString::FromAscii((const char *)vs);
+#if SUPPORT_WSTRING && UNICODE
+	wstring2 ws;
+	ws.from_utf8(vs);
+	str += ws.c_str();;
+#else
+	str += vs;
+#endif
 
 	// get CLOD triangle counts, if appropriate
 	g_App.DescribeCLOD(vs);
