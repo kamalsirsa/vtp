@@ -14,6 +14,7 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "vtdata/Features.h"
 
 class vtTagArray;
@@ -53,7 +54,7 @@ private:
 	vtString m_strFilename, m_strResolved;
 
 	OGRwkbGeometryType m_type;
-	wxString m_strFeatureType;
+	wxString2 m_strFeatureType;
 
 	bool m_bGeometry;
 	RGBi m_GeomColor;
