@@ -399,28 +399,9 @@ private:
 };
 
 /**
- * StringArray class: an array of vtString objects.
+ * vtStringArray class: an array of vtString objects.
  */
 #define vtStringArray std::vector<vtString>
-/*
-class StringArray : public Array<vtString*>
-{
-public:
-	virtual ~StringArray() { Wipe(); }
-	virtual	void DestructItems(int first, int last)
-	{
-		for (int i = first; i <= last; ++i)
-		{
-			vtString *str = GetAt(i);
-			delete str;
-		}
-	}
-	void Wipe() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-
-	// assignment
-	StringArray &operator=(const class StringArray &v);
-};
-*/
 
 #endif	// VTSTRINGH
 
