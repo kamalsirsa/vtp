@@ -49,6 +49,7 @@ public:
 	void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 
 	// overrides for HeightField
+	void GetChecksum(unsigned char **ppChecksum) const {}
 	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
 
 	// overrides for HeightField3d
