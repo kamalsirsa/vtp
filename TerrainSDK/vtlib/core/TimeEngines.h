@@ -1,7 +1,7 @@
 //
 // TimeEngines.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,7 +9,7 @@
 #define TIMEENGINESH
 
 #include "Engine.h"
-#include <time.h>
+#include "vtdata/vtTime.h"
 
 /**
  * A TimeTarget is a kind of vtTarget which expects to be told what time
@@ -18,10 +18,8 @@
 class TimeTarget : public vtTarget
 {
 public:
-	virtual void SetTime(time_t time) {}
+	virtual void SetTime(const vtTime &time) {}
 };
-
-///////////////////////////////////////////////////
 
 /**
  * The TimeEngine class keeps track of time of day (hours, minutes, seconds
@@ -37,26 +35,21 @@ public:
 
 	void Eval();
 
-	void GetCurrentTime();
+	void SetTime(vtTime &time);
+	void GetTime(vtTime &time) const;
+	vtTime GetTime() const;
+
 	void SetSpeed(float factor);
 	float GetSpeed() { return m_fSpeed; }
-	void SetDate(int year, int month, int day);
-	void SetLocalTime(int hr, int min, int sec);
-	void SetGMT(int hr, int min, int sec);
-//	void SetTime(time_t time);
-	void GetTime(int &hr, int &min, int &sec);
-	time_t GetTime();
-	void Increment(int secs);
 
 protected:
-	void _UpdateTM();
 	void _InformTarget();
 
-	tm m_tm;			// always stores GMT
-	time_t m_time;		// always stores GMT
 	float m_fSeconds;
 	float m_fSpeed;
 	float m_last_time;
+
+	vtTime m_time;
 };
 
 #endif	// TIMEENGINESH
