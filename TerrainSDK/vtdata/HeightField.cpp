@@ -394,6 +394,10 @@ public:
 };
 
 
+inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j)
+{
+	return DPoint2(base.x + spacing.x * i, base.y + spacing.y * j);
+}
 /**
  * ShadowCastDib - method to create shadows over the terrain based on the
  * angle of the sun.
@@ -428,15 +432,15 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	float xFactor = (float)gw/(float)w;
 	float yFactor = (float)gh/(float)h;
 
-	bool b8bit = (pBM->GetDepth() == 8);
+	// Compute area that we will sample for shading, bounded by the texel
+	//  centers, which are 1/2 texel in from the grid extents.
+	DPoint2 texel_size(m_EarthExtents.Width() / w, m_EarthExtents.Height() / h);
+	DRECT texel_area = m_EarthExtents;
+	texel_area.Grow(-texel_size.x, -texel_size.y);
+	DPoint2 texel_base(texel_area.left, texel_area.bottom);
 
-	float shade, f, HScale;;
-	FPoint3 p1, p2, p3;
-	FPoint3 v1, v2, v3;
+	bool b8bit = (pBM->GetDepth() == 8);
 	int i, j;
-	int x, y, z;
-	int i_init, i_final, i_incr;
-	int j_init, j_final, j_incr;
 
 	// These values are hardcoded here but could be exposed in the GUI
 	float sun =  0.7f;
@@ -483,6 +487,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	// Code adapted from aaron_torpy:
 	// http://www.geocities.com/aaron_torpy/algorithms.htm
 	//
+	float f, HScale;
 	if ( fabs(grid_light_dir.x) > fabs(grid_light_dir.z) )
 	{
 		HScale = m_fXStep;
@@ -495,10 +500,12 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	}
 	grid_light_dir /= f;
 		
+	int i_init, i_final, i_incr;
+	int j_init, j_final, j_incr;
 	if (grid_light_dir.x > 0)
 	{
 		i_init=0;
-		i_final=w-1;
+		i_final=w;
 		i_incr=1;
 	}
 	else
@@ -510,7 +517,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	if (grid_light_dir.z > 0)
 	{
 		j_init=0;
-		j_final=h-1;
+		j_final=h;
 		j_incr=1;
 	}
 	else
@@ -521,7 +528,14 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	}
 
 	// First pass: find each point that it is in shadow.
-    for (j = j_init; j != j_final; j += j_incr) 
+	DPoint2 pos;
+	float shadowheight, elevation;
+	FPoint3 normal;
+	FPoint3 p3;
+	int x, z;
+	float shade;
+
+	for (j = j_init; j != j_final; j += j_incr) 
 	{
    		if (progress_callback != NULL)
 		{
@@ -530,7 +544,8 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		}
 		for (i = i_init; i != i_final; i += i_incr) 
 		{
-			float shadowheight = GetElevation(i,j);
+			pos = GridPos(texel_base, texel_size, i, j);
+			FindAltitudeAtPoint2(pos, shadowheight);
 
 			if (shadowheight == INVALID_ELEVATION)
 			{
@@ -539,21 +554,21 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				continue;
 			}
 
-			bool Under_Out;
-			int k;
-			for (k=1, Under_Out=false; Under_Out == false; k++) 
+			bool Under_Out = false;
+			for (int k = 1; Under_Out == false; k++) 
 			{
 				x = (int) (i + grid_light_dir.x*k + 0.5f);
 				z = (int) (j + grid_light_dir.z*k + 0.5f);
 				shadowheight += grid_light_dir.y * HScale;
 
-				if ((x<0) || (x>=w-1) || (z<0) || (z>=h-1)) 
+				if ((x<0) || (x>w-1) || (z<0) || (z>h-1)) 
 				{
-					Under_Out = true; //Out of the grid
+					Under_Out = true; // Out of the grid
 					break;
 				}
 
-				float elevation = GetElevation(x,z);
+				pos = GridPos(texel_base, texel_size, x, z);
+				FindAltitudeAtPoint2(pos, elevation);
 
 				// skip holes in the grid
 				if (elevation == INVALID_ELEVATION)
@@ -562,7 +577,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				if (elevation - shadowheight > 0) 
 				{ 	
 					if (k>1)
-						Under_Out = true; //Under the terrain 
+						Under_Out = true; // Under the terrain 
 					break;
 				} 
 
@@ -570,16 +585,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				// Only do shadow if we have not shaded this i,j before.
 				if (lightmap.Get(x,z) < 1)
 				{
-					int xx = (int) (x * xFactor);
-					int yy = (int) (z * yFactor);	
-					GetWorldLocation(xx, yy, p1);
-					GetWorldLocation(xx+1, yy, p2);
-					GetWorldLocation(xx, yy+1, p3);
-
-					v1 = p2 - p1;
-					v2 = p3 - p1;
-					v3 = v1.Cross(v2);
-					v3.Normalize();
+					// 3D elevation query to get slope
+					m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
+					FindAltitudeAtPoint(p3, p3.y, &normal);
 
 					//*****************************************
 					//*****************************************
@@ -592,8 +600,8 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					// Here the Sun(r, g, b) = 0 because we are in the shade
 					// therefore I(r, g, b) = Amb(r, g, b) * (0.5*N[z] + 0.5)
 
-				//	shade =  sun*v3.Dot(-light_direction) + amb * (0.5f*v3.y + 0.5f);
-					shade =  amb * (0.5f*v3.y + 0.5f);
+				//	shade =  sun*normal.Dot(-light_direction) + amb * (0.5f*normal.y + 0.5f);
+					shade =  amb * (0.5f*normal.y + 0.5f);
 					//*****************************************
 					//*****************************************
 					if (darkest_shadow > shade)
@@ -622,33 +630,29 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	// Second pass.  Now we are going to loop through the LightMap and apply
 	//  the full lighting formula to each texel that has not been shaded yet.
-	for (j = 0; j < h-1; j++)
+	for (j = 0; j < h; j++)
 	{
    		if (progress_callback != NULL)
 		{
 			if ((j&7) == 0)
 				progress_callback(j * 100 / h);
 		}
-		for (i = 0; i < w-1; i++)
+		for (i = 0; i < w; i++)
 		{
 			if (lightmap.Get(i, j) > 0)
 				continue;
 
-			if (GetElevation(i,j) == INVALID_ELEVATION)
+			pos = GridPos(texel_base, texel_size, i, j);
+
+			// 2D elevation query to check for holes in the grid
+			FindAltitudeAtPoint2(pos, elevation);
+			if (elevation == INVALID_ELEVATION)
 				continue;
 
-			x = (int) (i * xFactor);
-			y = (int) (j * yFactor);	
-			GetWorldLocation(x, y, p1);
-			GetWorldLocation(x+1, y, p2);
-			GetWorldLocation(x, y+1, p3);
+			// 3D elevation query to get slope
+			m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
+			FindAltitudeAtPoint(p3, p3.y, &normal);
 
-			v1 = p2 - p1;
-			v2 = p3 - p1;
-			v3 = v1.Cross(v2);
-			FPoint3 vn=v3;
-			v3.Normalize();
-			
 			//*****************************************
 			//*****************************************
 			//shade formula based on:
@@ -661,14 +665,14 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			// or give control to user since textures will differ
 
 			// I(r, g, b) = Sun(r, g, b) * scalarprod(N, v) + Amb(r, g, b) * (0.5*N[z] + 0.5)
-			shade = sun * v3.Dot(inv_light_dir);
+			shade = sun * normal.Dot(inv_light_dir);
 
 			// It's a reasonable assuption that an angle of 45 degrees is
 			//  sufficient to fully illuminate the ground.
 			shade /= .7071f;
 
 			// Now add ambient component
-			shade += amb * (0.5f*v3.y + 0.5f);
+			shade += amb * (0.5f*normal.y + 0.5f);
 
 			// Maybe clipping values can be exposed to the user as well.
 			// Clip - don't shade down below lowest ambient level
@@ -696,7 +700,5 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	}
 
 	// Possible TODO: Apply edge softening algorithm (?)
-
 }
-
 
