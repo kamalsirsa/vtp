@@ -146,13 +146,13 @@ void EnviroFrame::OnUpdateFlytoTerrain(CCmdUI* pCmdUI)
 void EnviroFrame::OnSpaceShowtime() 
 {
 	// TODO: Add your command handler code here
-	g_App.SetShowTime(!g_App.GetShowTime());
+	g_App.SetEarthShading(!g_App.GetEarthShading());
 }
 
 void EnviroFrame::OnUpdateSpaceShowtime(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(g_App.m_state == AS_Orbit);
-	pCmdUI->SetCheck(g_App.GetShowTime());
+	pCmdUI->SetCheck(g_App.GetEarthShading());
 }
 
 void EnviroFrame::OnEarthFlatunfold() 
