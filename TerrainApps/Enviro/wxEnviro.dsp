@@ -691,6 +691,10 @@ SOURCE=.\Wings.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=.\wx\bitmap\axes.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\wx\bitmap\camera.bmp
 # End Source File
 # Begin Source File
@@ -756,6 +760,10 @@ SOURCE=.\wx\bitmap\sun.bmp
 # Begin Source File
 
 SOURCE=.\wx\bitmap\terrain.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\bitmap\tilt.bmp
 # End Source File
 # Begin Source File
 
