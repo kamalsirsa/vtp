@@ -182,6 +182,9 @@ void vtStructInstance3d::DeleteNode()
 
 double vtStructInstance3d::DistanceToPoint(const DPoint2 &p, float fMaxRadius) const
 {
+	if (!m_pModel)
+		return 1E9;	// Ignore instances that have no model
+
 	if (m_pContainer && m_pModel)
 	{
 		// If we have the 3D model already loaded, we can return distance
