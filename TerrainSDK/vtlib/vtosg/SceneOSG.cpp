@@ -38,6 +38,7 @@ vtScene::vtScene() : vtSceneBase()
 
 vtScene::~vtScene()
 {
+	delete m_pCamera;
 }
 
 vtScene *vtGetScene()

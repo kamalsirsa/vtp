@@ -334,6 +334,7 @@ class vtCamera : public vtTransform
 {
 public:
 	vtCamera();
+	~vtCamera();
 
 	void SetHither(float f);
 	float GetHither();

@@ -363,6 +363,11 @@ vtCamera::vtCamera() : vtTransform()
 #endif
 }
 
+vtCamera::~vtCamera()
+{
+	m_pOsgCamera->unref();
+}
+
 void vtCamera::SetHither(float f)
 {
 	float fov1 = m_pOsgCamera->calc_fovx();
