@@ -55,8 +55,8 @@ void IslandTerrain::PaintDib()
 
 		FPoint3 campos = vtGetScene()->GetCamera()->GetTrans();
 
-		int width = m_pDIB->GetWidth();
-		int height = m_pDIB->GetHeight();
+		int width = m_pImage->GetWidth();
+		int height = m_pImage->GetHeight();
 
 		FPoint3 tpos;
 		int i, j;
@@ -67,9 +67,9 @@ void IslandTerrain::PaintDib()
 				pGrid->GetWorldLocation(i, height-1-j, tpos);
 				tpos.y += 1;
 				if (pGrid->LineOfSight(campos, tpos))
-					m_pDIB->SetPixel24(i, j, RGBi(255,128,128));
+					m_pImage->SetPixel24(i, j, RGBi(255,128,128));
 				else
-					m_pDIB->SetPixel24(i, j, RGBi(128,128,255));
+					m_pImage->SetPixel24(i, j, RGBi(128,128,255));
 			}
 		}
 	}

@@ -291,7 +291,7 @@ protected:
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
-	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtDIB *dib,
+	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtBitmapBase *dib,
 		const FPoint3 &light_dir);
 	void _ComputeCenterLocation();
 	void GetTerrainBounds();
@@ -351,7 +351,7 @@ protected:
 	vtRouteMap		m_Routes;
 
 	// ground texture
-	vtDIB			*m_pDIB;
+	vtImage			*m_pImage;
 	Array<vtImage*>	m_Images;
 	ColorMap		*m_pTextureColors;
 

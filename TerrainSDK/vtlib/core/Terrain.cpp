@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,7 +44,7 @@ vtTerrain::vtTerrain()
 	m_fog_color.Set(1.0f, 1.0f, 1.0f);
 
 	m_pTerrainGroup = (vtGroup*) NULL;
-	m_pDIB = NULL;
+	m_pImage = NULL;
 	m_pTerrMats = NULL;
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
@@ -110,7 +110,8 @@ vtTerrain::~vtTerrain()
 	{
 		delete m_pElevGrid;
 	}
-	delete m_pDIB;
+	if (m_pImage)
+		m_pImage->Release();
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
 	{
@@ -321,6 +322,9 @@ void vtTerrain::_CreateRoads()
 
 void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 {
+	// measure total texture processing time
+	clock_t c1 = clock();
+
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.GetTextureEnum();
 
@@ -360,8 +364,8 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		{
 			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
 			// Load a DIB of the whole, large texture
-			m_pDIB = new vtDIB();
-			bool result = m_pDIB->Read(texture_path);
+			m_pImage = new vtImage();
+			bool result = m_pImage->Read(texture_path);
 			if (! result)
 			{
 				VTLOG("  Failed to load texture.\n");
@@ -396,8 +400,8 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 			cols, tmax, tsize);
 
 		// derive color from elevation
-		m_pDIB = new vtDIB();
-		m_pDIB->Create(tsize, tsize, 24, false);
+		m_pImage = new vtImage();
+		m_pImage->Create(tsize, tsize, 24, false);
 
 		// This method is virtual to allow subclasses to customize the Dib,
 		//  before we turn it into an vtImage
@@ -405,42 +409,36 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 	}
 
 	// apply pre-lighting (darkening)
-	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pDIB)
+	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pImage)
 	{
-		_ApplyPreLight(pHFGrid, m_pDIB, light_dir);
+		_ApplyPreLight(pHFGrid, m_pImage, light_dir);
 	}
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
-		if (m_pDIB != NULL)
+		// single texture
+		if (m_pImage != NULL)
 		{
-			// single texture
+			// TODO: restore support for 16bit
 			bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
-			vtImage *pImage = new vtImage(m_pDIB,
-				(m_pDIB->GetDepth() > 8 && b16bit));
-			m_Images.Append(pImage);
+
+			m_Images.Append(m_pImage);
 		}
 	}
-	if (eTex == TE_TILED && m_pDIB)
+	if (eTex == TE_TILED && m_pImage)
 	{
 		int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
 		_CreateChoppedTextures(iTiles, iTileSize);
 		_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
 			diffuse, emmisive);
 	}
-	if (eTex == TE_NONE || m_pDIB == NULL)	// none or failed to find texture
+	if (eTex == TE_NONE || m_pImage == NULL)	// none or failed to find texture
 	{
 		// no texture: create plain white material
 		m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
 									 true, false);
 		return;
-	}
-	// We're not going to use it anymore, so we're done with the DIB
-	if (m_pDIB != NULL)
-	{
-		delete m_pDIB;
-		m_pDIB = NULL;
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
@@ -457,11 +455,9 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 			false,		// clamp
 			m_Params.GetValueBool(STR_MIPMAP));
 	}
-	// All texture images have now been passed to their materials, so don't hold on to them.
-	int i, num = m_Images.GetSize();
-	for (i = 0; i < num; i++)
-		m_Images[i]->Release();
-	m_Images.Empty();
+
+	clock_t c3 = clock() - c1;
+	VTLOG("Total texture tile: %.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
 }
 
 //
@@ -545,7 +541,7 @@ void vtTerrain::PaintDib()
 		}
 	}
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, 4000);
+	pHFGrid->ColorDibFromElevation(m_pImage, m_pTextureColors, 4000);
 }
 
 /**
@@ -677,8 +673,10 @@ bool vtTerrain::_CreateDynamicTerrain()
 	}
 	else if (method == LM_BRYANQUAD)
 	{
+#if 0	// disabled until its working
 		m_pDynGeom = new BryanTerrain();
 		m_pDynGeom->SetName2("BryanQuad Geom");
+#endif
 	}
 	else if (method == LM_ROETTGER)
 	{
@@ -2291,7 +2289,13 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 {
 	int size = patch_size;
-	bool mono = (m_pDIB->GetDepth() == 8);
+	bool mono = (m_pImage->GetDepth() == 8);
+
+	bool b16bit;
+	if (!mono && m_Params.GetValueBool(STR_REQUEST16BIT))
+		b16bit = true;
+	else
+		b16bit = false;
 
 	int x_off, y_off, x, y, i, j;
 
@@ -2304,15 +2308,16 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 
 			// make a tile
 			vtDIB *dib2 = new vtDIB();
-			dib2->Create(size, size, m_pDIB->GetDepth(), mono);
+			dib2->Create(size, size, m_pImage->GetDepth(), mono);
 
 			unsigned long pixel;
+			RGBi rgb;
 			if (mono)
 			{
 				for (x = 0; x < size; x++)
 					for (y = 0; y < size; y++)
 					{
-						pixel = m_pDIB->GetPixel8(x_off + x, y_off + y);
+						pixel = m_pImage->GetPixel8(x_off + x, y_off + y);
 						dib2->SetPixel8(x, y, pixel);
 					}
 			}
@@ -2321,16 +2326,11 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 				for (x = 0; x < size; x++)
 					for (y = 0; y < size; y++)
 					{
-						pixel = m_pDIB->GetPixel24(x_off + x, y_off + y);
-						dib2->SetPixel24(x, y, pixel);
+						m_pImage->GetPixel24(x_off + x, y_off + y, rgb);
+						dib2->SetPixel24(x, y, rgb);
 					}
 			}
 
-			bool b16bit;
-			if (!mono && m_Params.GetValueBool(STR_REQUEST16BIT))
-				b16bit = true;
-			else
-				b16bit = false;
 			vtImage *pImage = new vtImage(dib2, b16bit);
 
 			// Can we delete the internals DIBs here, or does the scene graph
@@ -2374,7 +2374,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 }
 
 
-void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib,
+void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib,
 							  const FPoint3 &light_dir)
 {
 	VTLOG("Prelighting terrain texture: ");
