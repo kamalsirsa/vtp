@@ -472,12 +472,18 @@ void BuildingDlg::SetLevel(int iLev)
 
 void BuildingDlg::UpdateMaterialControl()
 {
+
 	// In the case of a whole level, attempt to show the most
 	//  commonly occuring material.
 	if (m_bEdges == false)
 		m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
 	else
-		m_strMaterial = *m_pEdge->m_pMaterial;
+	{
+		if (m_pEdge->m_pMaterial == NULL)
+			m_strMaterial = "Unknown";
+		else
+			m_strMaterial = *m_pEdge->m_pMaterial;
+	}
 }
 
 void BuildingDlg::UpdateColorControl()

@@ -277,7 +277,10 @@ vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
 	else
 	{
 		// otherwise, find normal stored material
-		mi = FindMatIndex(Material, fcolor);
+		if (&Material == NULL)
+			mi = FindMatIndex(BMAT_NAME_PLAIN, fcolor);
+		else
+			mi = FindMatIndex(Material, fcolor);
 		VertType = VT_Normals | VT_TexCoords;
 	}
 

@@ -529,6 +529,9 @@ int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const vtString& MaterialName,
 																		  const RGBf &color)
 {
+	if (&MaterialName == NULL)
+		return NULL;
+
 	float bestError = 1E8;
 	int bestMatch = -1;
 	float error;
