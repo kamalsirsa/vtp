@@ -478,7 +478,15 @@ void IcoGlobe::BuildFlatPoint(vtFeatures *feat, int i, float fSize)
 	vtMovGeom *mgeom = new vtMovGeom(geom);
 	mgeom->SetName2("GlobeShape");
 
+//	mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
+	DPoint3 v0 = m_verts[icosa_face_v[face][0]];
+	DPoint3 v1 = m_verts[icosa_face_v[face][1]];
+	DPoint3 v2 = m_verts[icosa_face_v[face][2]];
+	DPoint3 facenorm = (v0 + v1 + v2).Normalize();
+
+	mgeom->PointTowards(facenorm);
 	mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
+
 	mgeom->SetTrans(p_out);
 
 	// scale just the radius of the cylinder
