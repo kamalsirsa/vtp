@@ -10,7 +10,10 @@
 #define VTOSG_MATHH
 
 #if OSG_USE_DOUBLE_MATRICES
-#pragma warning "Warning: you should build OSG to use float, not double, for matrices."
+#error "You should build OSG to use float, not double, for matrices.  If you REALLY want to, you can bypass this error, but it's not recommended."
+typedef double osg_matrix_value;
+#else
+typedef float osg_matrix_value;
 #endif
 
 ///////////////////////
@@ -46,7 +49,7 @@ inline void s2v(const osg::BoundingSphere &bs, FSphere &sph)
 
 inline void ConvertMatrix4(const osg::Matrix *mat_osg, FMatrix4 *mat)
 {
-	const float *ptr = mat_osg->ptr();
+	const osg_matrix_value *ptr = mat_osg->ptr();
 	int i, j;
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
@@ -57,7 +60,7 @@ inline void ConvertMatrix4(const osg::Matrix *mat_osg, FMatrix4 *mat)
 
 inline void ConvertMatrix4(const FMatrix4 *mat, osg::Matrix *mat_osg)
 {
-	float *ptr = mat_osg->ptr();
+	osg_matrix_value *ptr = mat_osg->ptr();
 	int i, j;
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
