@@ -2220,8 +2220,7 @@ bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(
 	//  a local coordinate system with 0,0 at the south-west corner.
 
 	fprintf(fp, "#VRML V2.0 utf8\n");
-	fprintf(fp, "# Written by Virtual Terrain Project software VTBuilder application,\n");
-	fprintf(fp, "#  build date %s\n", __DATE__);
+	fprintf(fp, "# Written by Virtual Terrain Project software, build date %s\n", __DATE__);
 	fprintf(fp, "# Conforms to ISO VRML 97 specification.\n");
 	fprintf(fp, "# Please report problems to formats@vterrain.org\n");
 	fprintf(fp, "\n");
