@@ -151,6 +151,14 @@ SOURCE=.\BuildingDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\HeightDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\HeightGrid.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\LinearStructDlg.cpp
 # End Source File
 # Begin Source File
@@ -177,6 +185,14 @@ SOURCE=.\AutoDialog.h
 # Begin Source File
 
 SOURCE=.\BuildingDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\HeightDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\HeightGrid.h
 # End Source File
 # Begin Source File
 

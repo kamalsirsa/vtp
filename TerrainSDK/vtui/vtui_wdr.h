@@ -34,7 +34,7 @@
 #define ID_LEVEL_DEL 10003
 #define ID_LEVEL_UP 10004
 #define ID_LEVEL_DOWN 10005
-#define ID_VERT_OFFSET 10006
+#define ID_EDITHEIGHTS 10006
 #define ID_STORIES 10007
 #define ID_STORY_HEIGHT 10008
 #define ID_MATERIAL1 10009
@@ -66,6 +66,12 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool s
 #define ID_SPACINGEDIT 10029
 #define ID_SPACINGSLIDER 10030
 wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_HEIGHTGRID 10031
+#define ID_SCALERADIOBOX 10032
+#define ID_RECALCULATEHEIGHTS 10033
+#define ID_BASELINEOFFSET 10034
+wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
