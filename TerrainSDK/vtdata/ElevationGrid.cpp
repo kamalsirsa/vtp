@@ -450,9 +450,11 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc)
 /** Use the height data in the grid to fill a bitmap with a shaded color image.
  * \param pDIB The bitmap to color.
  * \param color_ocean The color to use for areas at sea level.
+ * \param progress_callback If supplied, this function will be called by with a
+ *		value of 0 to 100 as the operation progresses.
  */
 void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
-											bool bZeroIsOcean)
+											bool bZeroIsOcean, void progress_callback(int))
 {
 	int w = pDIB->GetWidth();
 	int h = pDIB->GetHeight();
@@ -477,6 +479,11 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 	// iterate over the texels
 	for (i = 0; i < w; i++)
 	{
+		if (progress_callback != NULL)
+		{
+			if ((i&7) == 0)
+				progress_callback(i * 100 / w);
+		}
 		x = i * gw / w;			// find corresponding location in terrain
 
 		for (j = 0; j < h; j++)
