@@ -209,10 +209,10 @@ BOOL CCreateDlg::OnInitDialog()
 
 //	unsigned int iFlags = DDL_READWRITE | DDL_READONLY;
 
-	int i;
+	unsigned int i;
 	vtStringArray &paths = g_Options.m_DataPaths;
 
-	for (i = 0; i < paths.GetSize(); i++)
+	for (i = 0; i < paths.size(); i++)
 	{
 		// fill the "terrain filename" control with available terrain files
 		AddFilenamesToComboBox(&m_cbLODFilename, paths[i] + "Elevation/*.bt*");
@@ -295,7 +295,7 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
-	if (Params.m_strStructFiles.GetSize() > 0)
+	if (Params.m_strStructFiles.size() > 0)
 		m_strBuildingFile = (const char *) Params.m_strStructFiles[0];
 	else
 		m_strBuildingFile = "";
@@ -359,7 +359,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
-	Params.m_strStructFiles.Empty();
+	Params.m_strStructFiles.empty();
 	Params.m_strStructFiles.push_back(vtString((const char *) m_strBuildingFile));
 
 	Params.m_bVehicles = m_bVehicles;
