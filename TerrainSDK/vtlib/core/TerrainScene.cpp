@@ -80,12 +80,16 @@ vtTerrainScene::vtTerrainScene()
 
 vtTerrainScene::~vtTerrainScene()
 {
+	VTLOG("TerrainScene destructing\n");
+
 	for (unsigned int i = 0; i < m_StructObjs.GetSize(); i++)
 		delete m_StructObjs[i];
 }
 
 void vtTerrainScene::CleanupScene()
 {
+	VTLOG("vtTerrainScene::CleanupScene\n");
+
 	SetCurrentTerrain(NULL);
 
 	vtGetScene()->RemoveEngine(m_pTime);

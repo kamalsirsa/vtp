@@ -79,6 +79,8 @@ vtTerrain::vtTerrain()
 
 vtTerrain::~vtTerrain()
 {
+	VTLOG("Terrain destructing: '%s'\n", (const char *) GetName());
+
 	// some things need to be manually deleted
 	m_Content.ReleaseContents();
 
