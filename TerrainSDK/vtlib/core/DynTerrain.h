@@ -57,12 +57,12 @@ public:
 	void PreRender() const;
 	void PostRender() const;
 
+	int		m_iTPatchDim;
+	int		m_iTPatchSize;		// size of each texture patch in texels
+
 protected:
 	// tables for quick conversion from x,y index to output X,Z coordinates
 	float	*m_fXLookup, *m_fZLookup;
-
-	int		m_iTPatchDim;
-	int		m_iTPatchSize;		// size of each texture patch in texels
 
 	// these determine the global level of detail
 	// (implementation classes can choose which to obey)
