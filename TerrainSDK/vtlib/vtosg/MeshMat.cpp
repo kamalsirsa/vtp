@@ -401,76 +401,74 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	vtMeshBase(PrimType, VertType, NumVertices)
 {
-	m_pGeoSet = new GeoSet();
+	m_pGeometry = new Geometry();
 
 	// set backpointer so we can find ourselves later
 	// also increases our own refcount
-	m_pGeoSet->setUserData(this);
+	m_pGeometry->setUserData(this);
 
-	// We own the array allocation, so tell OSG not to try to free it
-	m_pGeoSet->setAttributeDeleteFunctor(NULL);
 
-	m_Vert.SetMaxSize(NumVertices);
+	m_Vert = new Vec3Array;
+	m_Vert->reserve(NumVertices);
+	m_pGeometry->setVertexArray(m_Vert.get());
 
-	// All the primitives except GL_POINTS are indexed, so it's fair to
-	//  assume that there will be at least as many indices as vertices.
-	if (PrimType != GL_POINTS)
-		m_Index.SetMaxSize(NumVertices);
+	m_Index = new UIntArray;
+	m_Index->reserve(NumVertices);
+	m_pGeometry->setVertexIndices(m_Index.get());
 
-	m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
-	m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
 
 	if (VertType & VT_Normals)
 	{
-		m_Norm.SetMaxSize(NumVertices);
-		m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
-		m_pGeoSet->setNormalBinding(GeoSet::BIND_PERVERTEX);
+		m_Norm = new Vec3Array;
+		m_Norm->reserve(NumVertices);
+		m_pGeometry->setNormalArray(m_Norm.get());
+		m_pGeometry->setNormalIndices(m_Index.get());
+		m_pGeometry->setNormalBinding(Geometry::BIND_PER_VERTEX);
 	}
 	if (VertType & VT_Colors)
 	{
-		m_Color.SetMaxSize(NumVertices);
-		m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
-		m_pGeoSet->setColorBinding(GeoSet::BIND_PERVERTEX);
+		m_Color = new Vec4Array;
+		m_Color->reserve(NumVertices);
+		m_pGeometry->setColorArray(m_Color.get());
+		m_pGeometry->setColorIndices(m_Index.get());
+		m_pGeometry->setColorBinding(Geometry::BIND_PER_VERTEX);
 	}
 	if (VertType & VT_TexCoords)
 	{
-		m_Tex.SetMaxSize(NumVertices);
-		m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
-		m_pGeoSet->setTextureBinding(GeoSet::BIND_PERVERTEX);
+		m_Tex = new Vec2Array;
+		m_Tex->reserve(NumVertices);
+		m_pGeometry->setTexCoordArray(0, m_Tex.get());
+		m_pGeometry->setTexCoordIndices(0, m_Index.get());
 	}
 
 	switch (PrimType)
 	{
 	case GL_POINTS:
-		m_pGeoSet->setPrimType(GeoSet::POINTS);
-		m_pGeoSet->setNumPrims(NumVertices);
+		m_pPrimSet = new DrawArrays(PrimitiveSet::POINTS, 0, NumVertices);
 		break;
 	case GL_LINES:
-		m_pGeoSet->setPrimType(GeoSet::LINES);
-		m_pGeoSet->setNumPrims(NumVertices/2);
-		break;
-	case GL_LINE_STRIP:
-		m_pGeoSet->setPrimType(GeoSet::LINE_STRIP);
+		m_pPrimSet = new DrawArrays(PrimitiveSet::LINES, 0, NumVertices);
 		break;
 	case GL_TRIANGLES:
-		m_PrimLen.SetMaxSize(NumVertices/3);
-		m_pGeoSet->setPrimType(GeoSet::TRIANGLES);
-		m_pGeoSet->setNumPrims(NumVertices/3);
-		break;
-	case GL_TRIANGLE_STRIP:
-		m_pGeoSet->setPrimType(GeoSet::TRIANGLE_STRIP);
-		break;
-	case GL_TRIANGLE_FAN:
-		m_pGeoSet->setPrimType(GeoSet::TRIANGLE_FAN);
+		m_pPrimSet = new DrawArrays(PrimitiveSet::TRIANGLES, 0, NumVertices);
 		break;
 	case GL_QUADS:
-		m_pGeoSet->setPrimType(GeoSet::QUADS);
+		m_pPrimSet = new DrawArrays(PrimitiveSet::QUADS, 0, NumVertices);
+		break;
+	case GL_LINE_STRIP:
+		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::LINE_STRIP);
+		break;
+	case GL_TRIANGLE_STRIP:
+		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_STRIP);
+		break;
+	case GL_TRIANGLE_FAN:
+		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_FAN);
 		break;
 	case GL_POLYGON:
-		m_pGeoSet->setPrimType(GeoSet::POLYGON);
+		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::POLYGON);
 		break;
 	}
-	SendPointersToOSG();
+	m_pGeometry->addPrimitiveSet(m_pPrimSet.get());
 }
 
 vtMesh::~vtMesh()
@@ -481,7 +479,7 @@ void vtMesh::Release()
 {
 	// explicit dereference. if Release is not called, this dereference should
 	//  also occur implicitly in the destructor
-	m_pGeoSet = NULL;
+	m_pGeometry = NULL;
 }
 
 /**
@@ -490,13 +488,11 @@ void vtMesh::Release()
  */
 void vtMesh::AddTri(int p0, int p1, int p2)
 {
-	m_Index.Append(p0);
-	m_Index.Append(p1);
-	m_Index.Append(p2);
-	m_PrimLen.Append(3);
-	m_pGeoSet->setNumPrims(m_Index.GetSize() / 3);
-
-	SendPointersToOSG();
+	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+	m_Index->push_back(p0);
+	m_Index->push_back(p1);
+	m_Index->push_back(p2);
+	pDrawArrays->setCount(m_Index->size());
 }
 
 /**
@@ -506,20 +502,18 @@ void vtMesh::AddTri(int p0, int p1, int p2)
  */
 void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 {
+	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
 	int len = 2;
 
-	m_Index.Append(p0);
-	m_Index.Append(p1);
+	m_Index->push_back(p0);
+	m_Index->push_back(p1);
 
-	if (p2 != -1) { m_Index.Append(p2); len = 3; }
-	if (p3 != -1) { m_Index.Append(p3); len = 4; }
-	if (p4 != -1) { m_Index.Append(p4); len = 5; }
-	if (p5 != -1) { m_Index.Append(p5); len = 6; }
+	if (p2 != -1) { m_Index->push_back(p2); len = 3; }
+	if (p3 != -1) { m_Index->push_back(p3); len = 4; }
+	if (p4 != -1) { m_Index->push_back(p4); len = 5; }
+	if (p5 != -1) { m_Index->push_back(p5); len = 6; }
 
-	m_PrimLen.Append(len);
-	m_pGeoSet->setNumPrims(m_pGeoSet->getNumPrims() + 1);
-
-	SendPointersToOSG();
+	pDrawArrayLengths->push_back(len);
 }
 
 /**
@@ -529,13 +523,11 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
  */
 void vtMesh::AddFan(int *idx, int iNVerts)
 {
+	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
 	for (int i = 0; i < iNVerts; i++)
-		m_Index.Append(idx[i]);
+		m_Index->push_back(idx[i]);
 
-	m_PrimLen.Append(iNVerts);
-	m_pGeoSet->setNumPrims(m_pGeoSet->getNumPrims() + 1);
-
-	SendPointersToOSG();
+	pDrawArrayLengths->push_back(iNVerts);
 }
 
 /**
@@ -546,13 +538,11 @@ void vtMesh::AddFan(int *idx, int iNVerts)
  */
 void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 {
+	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
 	for (int i = 0; i < iNVerts; i++)
-		m_Index.Append(pIndices[i]);
+		m_Index->push_back(pIndices[i]);
 
-	m_PrimLen.Append(iNVerts);
-	m_pGeoSet->setNumPrims(m_pGeoSet->getNumPrims() + 1);
-
-	SendPointersToOSG();
+	pDrawArrayLengths->push_back(iNVerts);
 }
 
 /**
@@ -561,10 +551,11 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
  */
 void vtMesh::AddLine(int p0, int p1)
 {
-	m_Index.Append(p0);
-	m_Index.Append(p1);
+	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+	m_Index->push_back(p0);
+	m_Index->push_back(p1);
 
-	SendPointersToOSG();
+	pDrawArrays->setCount(m_Index->size());
 }
 
 /**
@@ -574,12 +565,23 @@ void vtMesh::AddLine(int p0, int p1)
  */
 void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 {
+	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
 	Vec3 s;
 	v2s(p, s);
-	m_Vert.SetAt(i, s);
+
+	if (i >= (int)m_Vert->size())
+		m_Vert->resize(i + 1);
+
+	m_Vert->at(i) = s;
 
 	if (m_ePrimType == GL_POINTS)
-		m_pGeoSet->setNumPrims(m_Vert.GetSize());
+	{
+		if (i >= (int)m_Index->size())
+			m_Index->resize(i + 1);
+
+		m_Index->at(i) = i;
+		pDrawArrays->setCount(m_Vert->size());
+	}
 }
 
 /**
@@ -588,7 +590,7 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 FPoint3 vtMesh::GetVtxPos(int i) const
 {
 	FPoint3 p;
-	s2v( m_Vert.GetAt(i), p);
+	s2v( (Vec3)m_Vert->at(i), p);
 	return p;
 }
 
@@ -604,7 +606,11 @@ void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
 {
 	Vec3 s;
 	v2s(norm, s);
-	m_Norm.SetAt(i, s);
+
+	if (i >= (int)m_Norm->size())
+		m_Norm->resize(i + 1);
+
+	m_Norm->at(i) = s;
 }
 
 /**
@@ -613,7 +619,7 @@ void vtMesh::SetVtxNormal(int i, const FPoint3 &norm)
 FPoint3 vtMesh::GetVtxNormal(int i) const
 {
 	FPoint3 p;
-	s2v( m_Norm.GetAt(i), p);
+	s2v( (Vec3)m_Norm->at(i), p);
 	return p;
 }
 
@@ -629,7 +635,11 @@ void vtMesh::SetVtxColor(int i, const RGBf &color)
 {
 	Vec4 s;
 	v2s(color, s);
-	m_Color.SetAt(i, s);
+
+	if (i >= (int)m_Color->size())
+		m_Color->resize(i + 1);
+
+	m_Color->at(i) = s;
 }
 
 /**
@@ -638,7 +648,7 @@ void vtMesh::SetVtxColor(int i, const RGBf &color)
 RGBf vtMesh::GetVtxColor(int i) const
 {
 	RGBf p;
-	s2v( m_Color.GetAt(i), p);
+	s2v( (Vec4)m_Color->at(i), p);
 	return p;
 }
 
@@ -655,7 +665,11 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 {
 	Vec2 s;
 	v2s(uv, s);
-	m_Tex.SetAt(i, s);
+	// Not sure whether I need this
+	if (i >= (int)m_Tex->size())
+		m_Tex->resize(i + 1);
+
+	m_Tex->insert(m_Tex->begin() + i, s);
 }
 
 /**
@@ -664,13 +678,13 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 FPoint2 vtMesh::GetVtxTexCoord(int i)
 {
 	FPoint2 p;
-	s2v( m_Tex.GetAt(i), p);
+	s2v( (Vec2)m_Tex->at(i), p);
 	return p;
 }
 
 int vtMesh::GetNumPrims()
 {
-	return m_pGeoSet->getNumPrims();
+	return m_pPrimSet->getNumPrimitives();
 }
 
 /**
@@ -684,7 +698,7 @@ int vtMesh::GetNumPrims()
  */
 void vtMesh::AllowOptimize(bool bAllow)
 {
-	m_pGeoSet->setUseDisplayList(bAllow);
+	m_pGeometry->setUseDisplayList(bAllow);
 }
 
 /**
@@ -693,7 +707,7 @@ void vtMesh::AllowOptimize(bool bAllow)
  */
 void vtMesh::ReOptimize()
 {
-	m_pGeoSet->dirtyDisplayList();
+	m_pGeometry->dirtyDisplayList();
 }
 
 /**
@@ -703,11 +717,8 @@ void vtMesh::ReOptimize()
  */
 void vtMesh::SetNormalsFromPrimitives()
 {
-	int verts = GetNumVertices();
-	int i;
-
-	for (i = 0; i < verts; i++)
-		m_Norm[i].set(0,0,0);
+	for (Vec3Array::iterator itr = m_Norm->begin(); itr != m_Norm->end(); itr++)
+		itr->set(0, 0, 0);
 
 	switch (m_ePrimType)
 	{
@@ -725,12 +736,13 @@ void vtMesh::SetNormalsFromPrimitives()
 		break;
 	}
 
-	for (i = 0; i < verts; i++)
-		m_Norm[i].normalize();
+	for (itr = m_Norm->begin(); itr != m_Norm->end(); itr++)
+		itr->normalize();
 }
 
 void vtMesh::_AddStripNormals()
 {
+	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
 	int prims = GetNumPrims();
 	int i, j, len, idx;
 	unsigned short v0 = 0, v1 = 0, v2 = 0;
@@ -739,13 +751,13 @@ void vtMesh::_AddStripNormals()
 	idx = 0;
 	for (i = 0; i < prims; i++)
 	{
-		len = m_PrimLen[i];
+		len = pDrawArrayLengths->at(i);
 		for (j = 0; j < len; j++)
 		{
 			v0 = v1; p0 = p1;
 			v1 = v2; p1 = p2;
-			v2 = m_Index[idx];
-			p2 = m_Vert[v2];
+			v2 = m_Index->at(idx);
+			p2 = m_Vert->at(v2);
 			if (j >= 2)
 			{
 				d0 = (p1 - p0);
@@ -755,59 +767,15 @@ void vtMesh::_AddStripNormals()
 
 				norm = d0^d1;
 
-				m_Norm[v0] += norm;
-				m_Norm[v1] += norm;
-				m_Norm[v2] += norm;
+				m_Norm->at(v0) += norm;
+				m_Norm->at(v1) += norm;
+				m_Norm->at(v2) += norm;
 			}
 			idx++;
 		}
 	}
 }
 
-
-//
-// Point OSG to the vertex and primitive data that we maintain
-//
-void vtMesh::SendPointersToOSG()
-{
-	// in case they got reallocated, tell OSG again
-	if (m_ePrimType == GL_POINTS)
-	{
-		m_pGeoSet->setCoords(m_Vert.GetData());
-		if (m_iVtxType & VT_Colors)
-			m_pGeoSet->setColors(m_Color.GetData());
-	}
-	else
-	{
-		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
-		if (m_iVtxType & VT_Normals)
-			m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
-		if (m_iVtxType & VT_Colors)
-			m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
-		if (m_iVtxType & VT_TexCoords)
-			m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
-	}
-
-	// three geometry types don't use 'primitive lengths'
-	int NumVertices = m_Vert.GetSize();
-	int NumIndices = m_Index.GetSize();
-	switch (m_ePrimType)
-	{
-	case GL_POINTS:
-		m_pGeoSet->setNumPrims(NumVertices);
-		break;
-	case GL_LINES:
-		m_pGeoSet->setNumPrims(NumIndices/2);
-		break;
-	case GL_TRIANGLES:
-		m_pGeoSet->setNumPrims(NumIndices/3);
-		break;
-	default:
-		// all the other types do
-		m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
-		break;
-	}
-}
 
 
 /////////////////////////////////////////////////////////////////////////////

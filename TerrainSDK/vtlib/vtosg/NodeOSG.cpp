@@ -572,7 +572,7 @@ void vtGeom::Release()
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 {
-	m_pGeode->addDrawable(pMesh->m_pGeoSet.get());
+	m_pGeode->addDrawable(pMesh->m_pGeometry.get());
 
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
@@ -595,22 +595,24 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 	if (pMat)
 	{
 		StateSet *pState = pMat->m_pStateSet.get();
-		pMesh->m_pGeoSet->setStateSet(pState);
+		pMesh->m_pGeometry->setStateSet(pState);
 
 		// Try to provide color for un-lit meshes
 		if (!pMat->GetLighting())
 		{
 			// unless it's using vertex colors...
-			GeoSet::BindingType bd = pMesh->m_pGeoSet->getColorBinding();
-			if (bd != GeoSet::BIND_PERVERTEX)
+			Geometry::AttributeBinding bd = pMesh->m_pGeometry->getColorBinding();
+			if (bd != Geometry::BIND_PER_VERTEX)
 			{
 				// not lit, not vertex colors
 				// here is a sneaky way of forcing OSG to use the diffuse
 				// color for the unlit color
-				const Vec4 &color = pMat->m_pMaterial->getDiffuse(Material::FRONT_AND_BACK);
-				Vec4 &unconst = (Vec4 &) color;
-				pMesh->m_pGeoSet->setColors(&unconst);
-				pMesh->m_pGeoSet->setColorBinding(GeoSet::BIND_OVERALL);
+
+				// This will leave the original color array alllocated in the vtMesh
+				Vec4Array *pColors = new Vec4Array;
+				pColors->push_back(pMat->m_pMaterial->getDiffuse(Material::FRONT_AND_BACK));
+				pMesh->m_pGeometry->setColorArray(pColors);
+				pMesh->m_pGeometry->setColorBinding(Geometry::BIND_OVERALL);
 			}
 		}
 	}
@@ -619,7 +621,7 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 
 void vtGeom::RemoveMesh(vtMesh *pMesh)
 {
-	m_pGeode->removeDrawable(pMesh->m_pGeoSet.get());
+	m_pGeode->removeDrawable(pMesh->m_pGeometry.get());
 }
 
 int vtGeom::GetNumMeshes()

@@ -137,26 +137,32 @@ public:
 
 	// Access values
 	int GetNumPrims();
-	int GetNumIndices() { return m_Index.GetSize(); }
-	short GetIndex(int i) { return m_Index.GetAt(i); }
-	int GetPrimLen(int i) { return m_PrimLen.GetAt(i); }
+	int GetNumIndices() { return m_Index->size(); }
+	short GetIndex(int i) { return m_Index->at(i); }
+	int GetPrimLen(int i) { return dynamic_cast<osg::DrawArrayLengths*>(m_pPrimSet.get())->at(i); }
 
 	void SetNormalsFromPrimitives();
 
 protected:
 	// Implementation
 	void _AddStripNormals();
-	osg::ref_ptr<osg::GeoSet> m_pGeoSet;
 
-	// GeoSet doesn't actually know or care about how many vertices
-	// it contains - it just needs a pointer to the beginning of
-	// the vertex arrays:
-	Array<osg::Vec3>	m_Vert;
-	Array<unsigned short>	m_Index;
-	Array<int>			m_PrimLen;
-	Array<osg::Vec3>	m_Norm;
-	Array<osg::Vec4>	m_Color;
-	Array<osg::Vec2>	m_Tex;
+	// Holder for all osg geometry information
+	osg::ref_ptr<osg::Geometry> m_pGeometry;
+
+	// The vertex co-ordinates array
+	osg::ref_ptr<osg::Vec3Array>	m_Vert;
+	// The vertex normals array
+	osg::ref_ptr<osg::Vec3Array>	m_Norm;
+	// The vetex colors array
+	osg::ref_ptr<osg::Vec4Array>	m_Color;
+	//  The vertex texture co-ordinates array
+	osg::ref_ptr<osg::Vec2Array>	m_Tex;
+
+	// The vertex index array
+	osg::ref_ptr<osg::UIntArray>	m_Index;
+
+	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
 
 	// Point OSG to the vertex and primitive data that we maintain
 	void	SendPointersToOSG();
