@@ -1,313 +1,224 @@
-//
-// RoadDlg.cpp
-//
-// Copyright (c) 2001 Virtual Terrain Project
-// Free for all uses, see license.txt for details.
-//
+/////////////////////////////////////////////////////////////////////////////
+// Name:		RoadDlg.cpp
+// Author:	  XX
+// Created:	 XX/XX/XX
+// Copyright:   XX
+/////////////////////////////////////////////////////////////////////////////
 
+#ifdef __GNUG__
+	#pragma implementation "RoadDlg.cpp"
+#endif
+
+// For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
+#ifdef __BORLANDC__
+	#pragma hdrstop
 #endif
 
 #include "RoadDlg.h"
-#include "dialog5.h"
-#include "Frame.h"
+#include "RoadLayer.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CRoadDlg dialog
+#define MULTIPLE	5000
 
-CRoadDlg::CRoadDlg(class RoadEdit *road, vtLayer *pLayer, bool bMultiple)
+// WDR: class implementations
+
+//----------------------------------------------------------------------------
+// RoadDlg
+//----------------------------------------------------------------------------
+
+// WDR: event table for RoadDlg
+
+BEGIN_EVENT_TABLE(RoadDlg,AutoDialog)
+	EVT_BUTTON( wxID_OK, RoadDlg::OnOK )
+END_EVENT_TABLE()
+
+RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+	const wxPoint &position, const wxSize& size, long style ) :
+	AutoDialog( parent, id, title, position, size, style )
 {
-	assert(pLayer != NULL);
+	RoadPropDialogFunc( this, TRUE ); 
+}
 
-	m_iLanes = 1;
-	m_iHwyNum = 0;
-
-	m_pRoad = road;
-	m_bMultiple = bMultiple;
-	m_bSideWalkClicked = false;
-	m_bParkingClicked = false;
-	m_bMarginClicked = false;
+void RoadDlg::SetRoad(RoadEdit *pSingleRoad, vtRoadLayer *pLayer)
+{
+	m_pRoad = pSingleRoad;
 	m_pLayer = pLayer;
 }
 
-BEGIN_EVENT_TABLE(CRoadDlg, AutoDialog)
-EVT_CHECKBOX(IDC_ROAD_ENABLE_LANES, CRoadDlg::OnRoadEnableLanes)
-EVT_CHECKBOX(IDC_ROAD_ENABLE_HWYNUM, CRoadDlg::OnRoadEnableHwynum)
-EVT_CHECKBOX(IDC_ROAD_SIDEWALK, CRoadDlg::OnRoadSideWalk)
-EVT_CHECKBOX(IDC_ROAD_PARKING, CRoadDlg::OnRoadParking)
-EVT_CHECKBOX(IDC_ROAD_MARGIN, CRoadDlg::OnRoadMargin)
-EVT_BUTTON(wxID_OK, CRoadDlg::OnOK)
-END_EVENT_TABLE()
-
-/////////////////////////////////////////////////////////////////////////////
-// CRoadDlg message handlers
-
-void CRoadDlg::OnInitDialog(wxInitDialogEvent& event)
+void RoadDlg::ClearState()
 {
-	m_pcEnableLabel = (wxStaticText *)FindWindow(IDC_MODIFY_TEXT);
-	m_pcEnableHwyNum = (wxCheckBox *)FindWindow(IDC_ROAD_ENABLE_HWYNUM);
-	m_pcEnableLanes = (wxCheckBox	*)FindWindow(IDC_ROAD_ENABLE_LANES);
-	m_pcHwyNum = (wxTextCtrl *)FindWindow(IDC_ROAD_NUMBER);
-	m_pcLanes = (wxTextCtrl *)FindWindow(IDC_ROAD_LANES);
-	m_pcMargin = (wxCheckBox	*)FindWindow(IDC_ROAD_MARGIN);
-	m_pcParking = (wxCheckBox	*)FindWindow(IDC_ROAD_PARKING);
-	m_pcSideWalk = (wxCheckBox *)FindWindow(IDC_ROAD_SIDEWALK);
-	m_pcSurfaceChoice = (wxListBox *)FindWindow(IDC_ROAD_SURFACE);
-
-	AddNumValidator(IDC_ROAD_LANES, &m_iLanes);
-	AddNumValidator(IDC_ROAD_NUMBER, &m_iHwyNum);
-
-	if (m_bMultiple)
-	{
-		//road is first road in list for road network.
-		RoadEdit *curRoad = m_pRoad;
-		bool first = true;
-		SurfaceType s;
-		bool uniformSurface = true;
-
-		while (curRoad && uniformSurface)
-		{
-			if (curRoad->IsSelected())
-			{
-				if (!first)
-				{
-					if (s != curRoad->m_Surface)
-						uniformSurface = false;
-				}
-				else
-				{
-					s = curRoad->m_Surface;
-					uniformSurface = true;
-					first = false;
-				}
-			}
-			curRoad = (RoadEdit*) curRoad->m_pNext;
-		}
-		if (uniformSurface)
-			m_iSurfaceType = s;
-		else
-			m_iSurfaceType = (SurfaceType)7;
-	}
-	else
-	{
-		m_iHwyNum = m_pRoad->m_iHwy;
-		m_iLanes = m_pRoad->m_iLanes;
-		m_iSurfaceType = m_pRoad->m_Surface;
-	}
-
-	m_pcSurfaceChoice->Append("None");
-	m_pcSurfaceChoice->Append("Gravel");
-	m_pcSurfaceChoice->Append("Trail");
-	m_pcSurfaceChoice->Append("2 Track");
-	m_pcSurfaceChoice->Append("Dirt");
-	m_pcSurfaceChoice->Append("Paved");
-	m_pcSurfaceChoice->Append("Railroad");
-	m_pcSurfaceChoice->Append("(multiple types)");
-	m_pcSurfaceChoice->SetSelection(m_iSurfaceType);
-	
-	if (m_bMultiple)
-	{
-		//if we are editing multiple roads, we need to enable some windows.
-		//m_pcSurfaceChoice->SetCurSel(-1);
-
-		m_pcEnableLanes->Enable(true);
-		m_pcEnableLanes->SetValue(0);
-		m_pcEnableHwyNum->Enable(true);
-		m_pcEnableHwyNum->SetValue(0);
-
-		m_pcLanes->Enable(false);
-		m_pcHwyNum->Enable(false);
-
-		//see if all roads have sidewalks and other properties or not
-		//road is first road in list for road network.
-		RoadEdit *curRoad = m_pRoad;
-		bool bYesSideWalk = false, bNoSideWalk = false;
-		bool bYesParking = false, bNoParking = false;
-		bool bYesMargin = false, bNoMargin = false;
-		while (curRoad) {
-			if (curRoad->IsSelected()) {
-				if (curRoad->m_iFlags & RF_SIDEWALK) {
-					bYesSideWalk = true;
-				} else {
-					bNoSideWalk = true;
-				}
-				if (curRoad->m_iFlags & RF_PARKING) {
-					bYesParking = true;
-				} else {
-					bNoParking = true;
-				}
-				if (curRoad->m_iFlags & RF_MARGIN) {
-					bYesMargin = true;
-				} else {
-					bNoMargin = true;
-				}
-			}
-			curRoad = (RoadEdit*) curRoad->m_pNext;
-		}
-		//set the appropriate check marks for the properties.
-		if (bYesSideWalk && bNoSideWalk) {
-//			m_pcSideWalk->SetValue(2);	//there is a mix of roads with/without sidewalks
-		} else if (bYesSideWalk) {
-			m_pcSideWalk->SetValue(true);
-		} else {
-			m_pcSideWalk->SetValue(false);
-		}
-
-		if (bYesParking && bNoParking) {
-//			m_pcParking->SetValue(2);	//there is a mix of roads with/without parking
-		} else if (bYesParking) {
-			m_pcParking->SetValue(true);
-		} else {
-			m_pcParking->SetValue(false);
-		}
-
-		if (bYesMargin && bNoMargin) {
-//			m_pcMargin->SetValue(2);	//there is a mix of roads with/without margins
-		} else if (bYesMargin) {
-			m_pcMargin->SetValue(true);
-		} else {
-			m_pcMargin->SetValue(false);
-		}
-	
-	} else {
-		//hide features for editing a single road
-		m_pcEnableLanes->SetValue(true);
-		m_pcEnableHwyNum->SetValue(true);
-		m_pcEnableLabel->Show(true);
-
-		if (m_pRoad->m_iFlags & RF_SIDEWALK) {
-			m_pcSideWalk->SetValue(1);
-		} else {
-			m_pcSideWalk->SetValue(0);
-		}
-		if (m_pRoad->m_iFlags & RF_PARKING) {
-			m_pcParking->SetValue(1);
-		} else {
-			m_pcParking->SetValue(0);
-		}
-		if (m_pRoad->m_iFlags & RF_MARGIN) {
-			m_pcMargin->SetValue(1);
-		} else {
-			m_pcMargin->SetValue(0);
-		}
-
-	}
-	TransferDataToWindow();
-
-	wxDialog::OnInitDialog(event);
+	m_iLanes = -1;
+	m_iHwy = -1;
+	m_iSidewalk = -1;
+	m_iParking = -1;
+	m_iMargin = -1;
+	m_iSurf = -1;
 }
 
-void CRoadDlg::OnOK(wxCommandEvent& event)
+void RoadDlg::AccumulateState(RoadEdit *pRoad)
 {
-	TransferDataFromWindow();
+	if (m_iLanes == -1)
+		m_iLanes = pRoad->m_iLanes;
+	if (pRoad->m_iLanes != m_iLanes)
+		m_iLanes = MULTIPLE;
 
-	//modify pRoads info with new info	
-	m_iSurfaceType = (SurfaceType) m_pcSurfaceChoice->GetSelection();
+	if (m_iHwy == -1)
+		m_iHwy = pRoad->m_iHwy;
+	if (pRoad->m_iHwy != m_iHwy)
+		m_iHwy = MULTIPLE;
 
-	int flag = 0;
-	int filter =0xffffffff;
-	
-	if (m_bSideWalkClicked) {
-		filter &= ~RF_SIDEWALK; 
-		if (m_pcSideWalk->GetValue())
-			flag |= RF_SIDEWALK;
-		else
-			flag &= ~RF_SIDEWALK;
-	}
-	if (m_bParkingClicked) {
-		filter &= ~RF_PARKING;
-		if (m_pcParking->GetValue())
-			flag |= RF_PARKING;
-		else
-			flag &= ~RF_PARKING;
-	}
-	if (m_bMarginClicked) {
-		filter &= ~RF_MARGIN;
-		if (m_pcMargin->GetValue())
-			flag |= RF_MARGIN;
-		else
-			flag &= ~RF_MARGIN;
-	}
+	if (m_iSidewalk == -1)
+		m_iSidewalk = pRoad->GetFlag(RF_SIDEWALK);
+	if (pRoad->GetFlag(RF_SIDEWALK) != m_iSidewalk)
+		m_iSidewalk = MULTIPLE;
 
-	bool bMod = false;
-	if (m_bMultiple)
-	{
-		for (RoadEdit *r = m_pRoad; r; r = r->GetNext())
-		{
-			if (!r->IsSelected())
-				continue;
+	if (m_iParking == -1)
+		m_iParking = pRoad->GetFlag(RF_PARKING);
+	if (pRoad->GetFlag(RF_PARKING) != m_iParking)
+		m_iParking = MULTIPLE;
 
-			RoadEdit r2 = *r;
+	if (m_iMargin == -1)
+		m_iMargin = pRoad->GetFlag(RF_MARGIN);
+	if (pRoad->GetFlag(RF_MARGIN) != m_iMargin)
+		m_iMargin = MULTIPLE;
 
-			if (m_iSurfaceType != 7)
-				r->m_Surface = m_iSurfaceType;
+	if (m_iSurf == -1)
+		m_iSurf = pRoad->m_Surface;
+	if (pRoad->m_Surface != m_iSurf)
+		m_iSurf = MULTIPLE;
+}
 
-			if (m_pcEnableHwyNum->GetValue())
-				r->m_iHwy = m_iHwyNum;
+void RoadDlg::TransferStateToControls()
+{
+	wxString str;
 
-			if (m_pcEnableLanes->GetValue())
-				r->m_iLanes = m_iLanes;
+	if (m_iLanes == MULTIPLE)
+		str.Printf("(multiple)");
+	else
+		str.Printf("%d", m_iLanes);
+	GetNumLanes()->SetValue(str);
 
-			r->m_iFlags &= filter;
-			r->m_iFlags |= flag;
+	if (m_iHwy == MULTIPLE)
+		str.Printf("(multiple)");
+	else
+		str.Printf("%d", m_iHwy);
+	GetHwyName()->SetValue(str);
 
-			if (!(*r == r2))
-			{
-				bMod = true;
-				r->ComputeExtent();
-			}
-		}
-	}
+	if (m_iSidewalk == MULTIPLE)
+		GetSidewalk()->SetSelection(2);
+	else
+		GetSidewalk()->SetSelection(m_iSidewalk);
+
+	if (m_iParking == MULTIPLE)
+		GetParking()->SetSelection(2);
+	else
+		GetParking()->SetSelection(m_iParking);
+
+	if (m_iMargin == MULTIPLE)
+		GetMargin()->SetSelection(2);
+	else
+		GetMargin()->SetSelection(m_iMargin);
+
+	if (m_iSurf == MULTIPLE)
+		GetSurfType()->SetSelection(7);
+	else
+		GetSurfType()->SetSelection(m_iSurf);
+}
+
+void RoadDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	GetSurfType()->Append("None");
+	GetSurfType()->Append("Gravel");
+	GetSurfType()->Append("Trail");
+	GetSurfType()->Append("2 Track");
+	GetSurfType()->Append("Dirt");
+	GetSurfType()->Append("Paved");
+	GetSurfType()->Append("Railroad");
+	GetSurfType()->Append("(multiple types)");
+	GetSurfType()->SetSelection(0);
+
+	GetSidewalk()->Append("No");
+	GetSidewalk()->Append("Yes");
+	GetSidewalk()->Append("(multiple)");
+	GetSidewalk()->SetSelection(0);
+
+	GetParking()->Append("No");
+	GetParking()->Append("Yes");
+	GetParking()->Append("(multiple)");
+	GetParking()->SetSelection(0);
+
+	GetMargin()->Append("No");
+	GetMargin()->Append("Yes");
+	GetMargin()->Append("(multiple)");
+	GetMargin()->SetSelection(0);
+
+	ClearState();
+	if (m_pRoad)
+		AccumulateState(m_pRoad);
 	else
 	{
-		RoadEdit r2 = *m_pRoad;
-
-		// single road, assign new values
-		m_pRoad->m_iHwy = m_iHwyNum;
-		m_pRoad->m_iLanes = m_iLanes;
-		m_pRoad->m_Surface = m_iSurfaceType;
-
-		m_pRoad->m_iFlags &= filter;
-		m_pRoad->m_iFlags |= flag;
-
-		if (!(*m_pRoad == r2))
+		RoadEdit *pRoad;
+		for (pRoad = m_pLayer->GetFirstRoad(); pRoad; pRoad=pRoad->GetNext())
 		{
-			bMod = true;
-			m_pRoad->ComputeExtent();
+			if (pRoad->IsSelected())
+				AccumulateState(pRoad);
 		}
 	}
-	if (bMod)
-		m_pLayer->SetModified(true);
+	TransferStateToControls();
+}
 
+// WDR: handler implementations for RoadDlg
+
+void RoadDlg::OnOK( wxCommandEvent &event )
+{
+	if (m_pRoad)
+		ApplyState(m_pRoad);
+	else
+	{
+		RoadEdit *pRoad;
+		for (pRoad = m_pLayer->GetFirstRoad(); pRoad; pRoad=pRoad->GetNext())
+		{
+			if (pRoad->IsSelected())
+				ApplyState(pRoad);
+		}
+	}
 	wxDialog::OnOK(event);
 }
 
-void CRoadDlg::OnRoadEnableLanes(wxCommandEvent& event) 
+//
+// Apply the state directly from the controls to a given road.
+//
+void RoadDlg::ApplyState(RoadEdit *pRoad)
 {
-	m_pcLanes->Enable(m_pcEnableLanes->GetValue());
+	wxString str;
+	int val;
+
+	str = GetNumLanes()->GetValue();
+	val = atoi(str.c_str());
+	if (val != 0)
+		pRoad->m_iLanes = val;
+
+	str = GetHwyName()->GetValue();
+	val = atoi(str.c_str());
+		pRoad->m_iHwy = val;
+
+	val = GetSidewalk()->GetSelection();
+	if (val != 2)
+		pRoad->SetFlag(RF_SIDEWALK, val);
+
+	val = GetParking()->GetSelection();
+	if (val != 2)
+		pRoad->SetFlag(RF_PARKING, val);
+
+	val = GetMargin()->GetSelection();
+	if (val != 2)
+		pRoad->SetFlag(RF_MARGIN, val);
+
+	val = GetSurfType()->GetSelection();
+	if (val != 7)
+		pRoad->m_Surface = (SurfaceType) val;
 }
 
-void CRoadDlg::OnRoadEnableHwynum(wxCommandEvent& event) 
-{
-	m_pcHwyNum->Enable(m_pcEnableHwyNum->GetValue());
-}
-
-void CRoadDlg::OnRoadSideWalk(wxCommandEvent& event) 
-{
-	m_bSideWalkClicked = true;
-}
-
-void CRoadDlg::OnRoadParking(wxCommandEvent& event) 
-{
-	m_bParkingClicked = true;	
-}
-
-void CRoadDlg::OnRoadMargin(wxCommandEvent& event) 
-{
-	m_bMarginClicked = true;
-}
 
 

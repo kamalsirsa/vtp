@@ -1,55 +1,79 @@
-//
-// Copyright (c) 2001 Virtual Terrain Project
-// Free for all uses, see license.txt for details.
-//
+/////////////////////////////////////////////////////////////////////////////
+// Name:        RoadDlg.h
+// Author:      XX
+// Created:     XX/XX/XX
+// Copyright:   XX
+/////////////////////////////////////////////////////////////////////////////
 
-#ifndef ROADDLGH
-#define ROADDLGH
+#ifndef __RoadDlg_H__
+#define __RoadDlg_H__
 
-#include "Layer.h"
-#include "RoadMapEdit.h"
-#include "AutoDialog.h"
-
-class CRoadDlg : public AutoDialog
-{
-public:
-	CRoadDlg(class RoadEdit *road, vtLayer *pLayer, bool bMultiple=false);
-
-	wxStaticText	*m_pcEnableLabel;
-	wxCheckBox	*m_pcEnableHwyNum;
-	wxCheckBox	*m_pcEnableLanes;
-	wxTextCtrl 	*m_pcHwyNum;
-	wxTextCtrl 	*m_pcLanes;
-	wxCheckBox	*m_pcMargin;
-	wxCheckBox	*m_pcParking;
-	wxCheckBox	*m_pcSideWalk;
-	wxListBox	*m_pcSurfaceChoice;
-	int			m_iLanes;
-	int		m_iHwyNum;
-
-	void OnInitDialog(wxInitDialogEvent& event);
-	void OnOK(wxCommandEvent& event);
-	void OnRoadCheckLanes(wxCommandEvent& event);
-	void OnRoadEnableLanes(wxCommandEvent& event);
-	void OnRoadEnableHwynum(wxCommandEvent& event);
-	void OnUpdateRoadLanes(wxCommandEvent& event);
-	void OnRoadSideWalk(wxCommandEvent& event);
-	void OnRoadParking(wxCommandEvent& event);
-	void OnRoadMargin(wxCommandEvent& event);
-
-protected:
-	SurfaceType m_iSurfaceType;
-	bool m_bSideWalkClicked;
-	bool m_bParkingClicked;
-	bool m_bMarginClicked;
-
-	RoadEdit	*m_pRoad;
-	bool		m_bMultiple;  //true if we are editing multiple roads at once
-	vtLayer		*m_pLayer;
-
-	DECLARE_EVENT_TABLE()
-};
-
+#ifdef __GNUG__
+    #pragma interface "RoadDlg.cpp"
 #endif
 
+#ifndef WX_PRECOMP
+    #include "wx/wx.h"
+#endif
 
+#include "VTBuilder_wdr.h"
+#include "AutoDialog.h"
+
+class RoadEdit;
+class vtRoadLayer;
+
+// WDR: class declarations
+
+//----------------------------------------------------------------------------
+// RoadDlg
+//----------------------------------------------------------------------------
+
+class RoadDlg: public AutoDialog
+{
+public:
+    // constructors and destructors
+    RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxDEFAULT_DIALOG_STYLE );
+
+	void SetRoad(RoadEdit *pSingleRoad, vtRoadLayer *pLayer);
+	void ClearState();
+	void AccumulateState(RoadEdit *pRoad);
+	void TransferStateToControls();
+	void ApplyState(RoadEdit *pRoad);
+
+    // WDR: method declarations for RoadDlg
+    wxListBox* GetSurfType()  { return (wxListBox*) FindWindow( ID_SURFTYPE ); }
+    wxChoice* GetMargin()  { return (wxChoice*) FindWindow( ID_MARGIN ); }
+    wxChoice* GetParking()  { return (wxChoice*) FindWindow( ID_PARKING ); }
+    wxChoice* GetSidewalk()  { return (wxChoice*) FindWindow( ID_SIDEWALK ); }
+    wxTextCtrl* GetHwyName()  { return (wxTextCtrl*) FindWindow( ID_HWYNAME ); }
+    wxTextCtrl* GetNumLanes()  { return (wxTextCtrl*) FindWindow( ID_NUMLANES ); }
+    
+private:
+    // WDR: member variable declarations for RoadDlg
+	RoadEdit *m_pRoad;
+	vtRoadLayer *m_pLayer;
+
+	// State
+	int m_iLanes;
+	int m_iHwy;
+	int m_iSidewalk;
+	int m_iParking;
+	int m_iMargin;
+	int m_iSurf;
+
+private:
+    // WDR: handler declarations for RoadDlg
+    void OnOK( wxCommandEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
+
+private:
+    DECLARE_EVENT_TABLE()
+};
+
+
+
+
+#endif
