@@ -34,7 +34,6 @@ using namespace osg;
 class OsgMsgTrap : public std::streambuf
 {
 public:
-	void print(char c);
 	inline virtual int_type overflow(int_type c = traits_type::eof())
 	{
 		if (c == traits_type::eof()) return traits_type::not_eof(c);
