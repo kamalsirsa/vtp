@@ -16,6 +16,14 @@ using namespace std;
 
 #define meters_per_latitude	111300.0f
 
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 //////////////////////////////////////////////////
 
 /** Constructor: Creates an empty grid.
