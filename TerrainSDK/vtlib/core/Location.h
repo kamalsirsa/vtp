@@ -80,7 +80,7 @@ public:
 	void Empty();
 
 	// you must call these 3 methods before this class is useful
-	void SetTransform(vtTransformBase *trans) { m_pTransform = trans; }
+	void SetTransform(vtTransform *trans) { m_pTransform = trans; }
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
 	void SetProjection(const vtProjection &proj);
 
@@ -93,7 +93,7 @@ protected:
 	// to the local CS
 	vtLocalConversion	m_conv;
 	vtProjection		m_proj;
-	vtTransformBase		*m_pTransform;
+	vtTransform			*m_pTransform;
 
 	vtString	m_strFilename;
 	OCT			*m_pConvertToWGS;

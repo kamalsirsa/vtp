@@ -67,7 +67,7 @@ LocationDlg::~LocationDlg()
 	delete m_pSaver;
 }
 
-void LocationDlg::SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
+void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
 							const vtLocalConversion &conv)
 {
 	m_pSaver->SetTransform(pTarget);

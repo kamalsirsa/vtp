@@ -209,7 +209,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _T("LOD");
 		nImage = 5;
 	}
-	else if (dynamic_cast<vtTransformBase*>(pNode))
+	else if (dynamic_cast<vtTransform*>(pNode))
 	{
 		str = _T("XForm");
 		nImage = 9;

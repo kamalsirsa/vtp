@@ -124,7 +124,6 @@ public:
 
 	// other
 	virtual void Scale3(float x, float y, float z) = 0;
-	virtual void PointTowards(const FPoint3 &point) = 0;
 	virtual void SetTransform1(const FMatrix4 &mat) = 0;
 	virtual void GetTransform1(FMatrix4 &mat) = 0;
 };
