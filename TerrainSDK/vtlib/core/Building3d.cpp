@@ -851,6 +851,10 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 			VTLOG("Panel normal x %e y %e z %e\n", PanelNormal.x, PanelNormal.y, PanelNormal.z);
 #endif
 			// Build transform to rotate plane parallel to the xz plane.
+			// N.B. this only work with angles from the plane normal to the y axis
+			// in the rangle 0 to pi/2 (this is ok for roofs). If you want
+			// it to work over a greater range you will have to mess with the sign of the cosine
+			// of this angle.
 			float fHypot = sqrtf(PanelNormal.x * PanelNormal.x + PanelNormal.z * PanelNormal.z);
 			FMatrix3 Transform;
 			Transform.SetRow(0, PanelNormal.x * PanelNormal.y / fHypot, PanelNormal.x, -PanelNormal.z / fHypot);
