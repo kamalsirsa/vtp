@@ -14,6 +14,8 @@
 // global conversion factor
 #define WORLD_SCALE				1.0f	// 1 meter = 1.0 units
 
+#include "vtdata/Projections.h"		// for LinearUnits
+
 //
 // The following class represents a mapping between real earth coordinates
 // (geographic or projected, elevation in meters) and the OpenGL coordinates as
@@ -24,7 +26,7 @@ class vtLocalConversion
 public:
 	vtLocalConversion();
 
-	void Setup(enum LinearUnits units, const DRECT &earth_extents);
+	void Setup(LinearUnits units, const DRECT &earth_extents);
 	void SetVerticalScale(float scale);
 
 	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth);
