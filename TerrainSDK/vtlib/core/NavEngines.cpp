@@ -707,6 +707,12 @@ vtTrackball::vtTrackball(float fRadius)
 	m_Trans.Set(0, 0, 0);
 	m_Pivot.Set(0, 0, 0);
 
+	// initially no limits
+	m_pos_min.Set(-1E9,-1E9,-1E9);
+	m_pos_max.Set( 1E9, 1E9, 1E9);
+	m_trans_min.Set(-1E9,-1E9,-1E9);
+	m_trans_max.Set( 1E9, 1E9, 1E9);
+
 	m_bRotate = false;
 	m_bZoom = false;
 	m_fZoomScale = 1.0f;
@@ -853,6 +859,25 @@ bool vtTrackball::_IsTranslate()
 	return true;
 }
 
+void vtTrackball::_ApplyLimits()
+{
+	if (m_Pos.x < m_pos_min.x) m_Pos.x = m_pos_min.x;
+	if (m_Pos.y < m_pos_min.y) m_Pos.y = m_pos_min.y;
+	if (m_Pos.z < m_pos_min.z) m_Pos.z = m_pos_min.z;
+
+	if (m_Pos.x > m_pos_max.x) m_Pos.x = m_pos_max.x;
+	if (m_Pos.y > m_pos_max.y) m_Pos.y = m_pos_max.y;
+	if (m_Pos.z > m_pos_max.z) m_Pos.z = m_pos_max.z;
+
+	if (m_Trans.x < m_trans_min.x) m_Trans.x = m_trans_min.x;
+	if (m_Trans.y < m_trans_min.y) m_Trans.y = m_trans_min.y;
+	if (m_Trans.z < m_trans_min.z) m_Trans.z = m_trans_min.z;
+
+	if (m_Trans.x > m_trans_max.x) m_Trans.x = m_trans_max.x;
+	if (m_Trans.y > m_trans_max.y) m_Trans.y = m_trans_max.y;
+	if (m_Trans.z > m_trans_max.z) m_Trans.z = m_trans_max.z;
+}
+
 void vtTrackball::OnMouse(vtMouseEvent &event)
 {
 	vtLastMouse::OnMouse(event);
@@ -943,11 +968,25 @@ void vtTrackball::SetState(const FPoint3 *state)
 	m_Pivot = state[2];
 }
 
+void vtTrackball::LimitPos(const FPoint3 &min, const FPoint3 &max)
+{
+	m_pos_min = min;
+	m_pos_max = max;
+}
+
+void vtTrackball::LimitTrans(const FPoint3 &min, const FPoint3 &max)
+{
+	m_trans_min = min;
+	m_trans_max = max;
+}
+
 void vtTrackball::Eval()
 {
 	vtTransform *pTarget = (vtTransform *) GetTarget();
 	if (!pTarget)
 		return;
+
+	_ApplyLimits();
 
 	pTarget->Identity();
 	pTarget->Translate1(FPoint3(0.0, 0.0, m_Pos.z));

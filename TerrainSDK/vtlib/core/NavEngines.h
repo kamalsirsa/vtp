@@ -265,10 +265,14 @@ public:
 	void OnMouse(vtMouseEvent &event);
 	void Eval();
 
+	void LimitPos(const FPoint3 &min, const FPoint3 &max);
+	void LimitTrans(const FPoint3 &min, const FPoint3 &max);
+
 protected:
 	bool _IsRotate();
 	bool _IsZoom();
 	bool _IsTranslate();
+	void _ApplyLimits();
 
 	FPoint3	m_Pos, m_Start, m_Trans, m_Pivot;
 	bool	m_bRotate;
@@ -288,6 +292,10 @@ protected:
 	int		m_trans_button;
 	int		m_trans_modifier;
 	bool	m_trans_exact;
+
+	// Limits
+	FPoint3 m_pos_min, m_pos_max;
+	FPoint3 m_trans_min, m_trans_max;
 };
 
 /*@}*/	// Group nav
