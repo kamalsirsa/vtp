@@ -38,7 +38,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = wxSimple
 LIBS   = $(shell wx-config --libs) $(shell wx-config --gl-libs) \
          -lvtosg -lvtdata -lxmlhelper $(MINI_LIB)   \
-         -lgdal.1.1 -losgDB -losgText -losgUtil -losg -lnetcdf    \
+         -lgdal -losgDB -losgText -losgUtil -losg -lnetcdf    \
          $(GLU_LIB) -lGL -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)

@@ -38,7 +38,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = VTBuilder
 LIBS   = $(shell wx-config --libs)     \
 	  $(shell wx-config --gl-libs)     \
-	  -lgdal.1.1 -lvtdata -lvtui       \
+	  -lgdal -lvtdata -lvtui       \
 	  -lxmlhelper					   \
 	  -lnetcdf                         \
 	  -lGL -lX11 $(EXTRA_LIBS) -lm 

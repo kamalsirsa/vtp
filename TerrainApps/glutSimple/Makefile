@@ -37,7 +37,7 @@ CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = glutSimple
 LIBS   = -lvtosg -lvtdata \
-         -lgdal.1.1 -losgDB -losgUtil -losgText -losg -lnetcdf \
+         -lgdal -losgDB -losgUtil -losgText -losg -lnetcdf \
 		 -lxmlhelper $(MINI_LIB) \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 

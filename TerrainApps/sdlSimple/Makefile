@@ -35,7 +35,7 @@ CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = sdlSimple
 LIBS   = -lvtosg -lvtdata \
-         -lgdal.1.1 -losgDB -losgUtil -losg -lnetcdf \
+         -lgdal -losgDB -losgUtil -losg -lnetcdf \
 		 -lxmlhelper -lMini `sdl-config --libs` \
          $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
