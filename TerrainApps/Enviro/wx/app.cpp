@@ -120,6 +120,8 @@ int vtApp::OnExit()
 	PSGetScene()->SetWindow(NULL);
 #endif
 	g_App.Shutdown();
+	vtGetScene()->Shutdown();
+
 	return wxApp::OnExit();
 }
 
