@@ -15,9 +15,10 @@ IFLAGS = $(shell wx-config --cflags) \
 	  -I$(OSG_INC)               \
 	  -I$(X_INC)
 
-LDIRS  = $(OSG_LIB)            \
+LDIRS  = $(OSG_LIB)                \
 	 $(VTDATA_INST_DIR)        \
 	 $(VTOSG_INST_DIR)         \
+	 $(XMLHELPER_INST_DIR)     \
 	 $(PNG_LIB)                \
 	 $(SHAPE_LIB)              \
 	 $(NETCDF_LIB)             \
