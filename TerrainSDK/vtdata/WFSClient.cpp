@@ -206,7 +206,7 @@ bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layern
 	fclose(fp);
 	HT_FREE(string);
 
-	return LoadFromGML(temp_fname);
+	return LoadWithOGR(temp_fname);
 }
 
 ////////////////////////////////////////////////////////////////////////
