@@ -21,6 +21,9 @@
 
 using namespace osg;
 
+#define DEBUG_NODE_LOAD	0
+
+
 ///////////////////////////////////////////////////////////////////////
 // vtNode
 //
@@ -52,6 +55,10 @@ void vtNode::Release()
 
 	m_pFogStateSet = NULL;
 	m_pFog = NULL;
+
+#if DEBUG_NODE_LOAD
+	VTLOG("Deleting Node: %lx (\"%s\")\n", this, m_pNode->getName().c_str());
+#endif
 
 	// Tell OSG that we're through with this node
 	// The following statement calls unref() on m_pNode, which deletes
@@ -217,8 +224,9 @@ public:
 	}
 };
 
+// Our own cache of models loaded from OSG
+static std::map<vtString, osg::Node*> m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
-static vtStringArray m_ModelCache;
 
 vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
@@ -227,58 +235,59 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// Workaround for OSG's OBJ-MTL reader which doesn't like backslashes
-	char newname[500];
-	strcpy(newname, filename);
-	for (unsigned int i = 0; i < strlen(filename); i++)
+	vtString fname = filename;
+	for (int i = 0; i < fname.GetLength(); i++)
 	{
-		if (newname[i] == '\\') newname[i] = '/';
-	}
-
-	osgDB::Registry::instance()->setUseObjectCacheHint(bAllowCache);
-
-	Node *node = osgDB::readNodeFile(newname);
-	if (!node)
-		return NULL;
-
-	// We must insert a 'Normalize' state above the geometry objects
-	// that we load, otherwise when they are scaled, the vertex normals
-	// will cause strange lighting.  Fortunately, we only need to create
-	// a single State object which is shared by all loaded models.
-	static 	StateSet *normstate = NULL;
-	if (!normstate)
-	{
-		normstate = new StateSet;
-		normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
-	}
-	node->setStateSet(normstate);
-
-	if (bDisableMipmaps || s_bDisableMipmaps)
-	{
-		MipmapVisitor visitor;
-		node->accept(visitor);
+		if (fname.GetAt(i) == '\\') fname.SetAt(i, '/');
 	}
 
 	// We must track whether we have loaded this object already; that is, whether
 	//  it is in the OSG object cache.  If it is in the cache, then we musn't
 	//  apply the rotation below, because it's already been applied to the
 	//  one in the cache that we've gotten again.
-	bool bInCache = false;
-	if (bAllowCache)
-	{
-		for (unsigned int i = 0; i < m_ModelCache.size(); i++)
-		{
-			if (m_ModelCache[i] == newname)
-			{
-				bInCache = true;
-				break;
-			}
-		}
-	}
-	if (!bInCache)
-		m_ModelCache.push_back(vtString(newname));
+	Node *node, *existing_node = m_ModelCache[fname];
+	bool bInCache = (existing_node != NULL);
 
-	if (!bInCache)
+	bool bDoLoad = (!bInCache || !bAllowCache);
+	if (bDoLoad)
 	{
+		// In case of reloading a previously loaded model, we must empty
+		//  our own cache as well as disable OSG's cache.
+		osgDB::Registry::instance()->setUseObjectCacheHint(bAllowCache);
+		node = osgDB::readNodeFile((const char *)fname);
+		if (!node)
+			return NULL;
+	}
+	else
+	{
+		// Simple case: use cached node
+		node = existing_node;
+	}
+
+#if DEBUG_NODE_LOAD
+	VTLOG("LoadModel: osg node %lx (rc %d), ", node, node->referenceCount());
+#endif
+
+	if (bDoLoad)
+	{
+		// We must insert a 'Normalize' state above the geometry objects
+		// that we load, otherwise when they are scaled, the vertex normals
+		// will cause strange lighting.  Fortunately, we only need to create
+		// a single State object which is shared by all loaded models.
+		static 	StateSet *normstate = NULL;
+		if (!normstate)
+		{
+			normstate = new StateSet;
+			normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
+		}
+		node->setStateSet(normstate);
+
+		if (bDisableMipmaps || s_bDisableMipmaps)
+		{
+			MipmapVisitor visitor;
+			node->accept(visitor);
+		}
+
 		// We must insert a rotation transform above the model, because OSG's
 		//  file loaders (now mostly consistently) tweak the model to put Z
 		//  up, and the VTP uses OpenGL coordinates which has Y up.
@@ -299,21 +308,65 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		// Now do some OSG voodoo, which should spread the transform downward
 		//  through the loaded model, and delete the transform.
 		osg::Group *group = new osg::Group;
+		group->ref();
 		group->addChild(transform);
 
 		osgUtil::Optimizer optimizer;
 		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
 
 		node = group;
+
+#if DEBUG_NODE_LOAD
+	VTLOG("group %lx (rc %d), ", node, node->referenceCount());
+#endif
+
+		if (bInCache)
+		{
+			// Clean up by deleting previously cached node
+			existing_node->unref();
+		}
+
+		// Store the node in the cache by filename so we'll know next
+		//  time that we have already have it
+		m_ModelCache[fname] = node;
 	}
+
+	// Since there must be a 1-1 correspondence between VTP nodes
+	//  at OSG nodes, we can't have multiple VTP nodes sharing a
+	//  single OSG node.  So, we can't simply use the OSG node ptr
+	//  that we get: we must wrap it.
+	osg::Group *container_group = new osg::Group();
+	container_group->addChild(node);
+
+#if DEBUG_NODE_LOAD
+	VTLOG("container %lx (rc %d), ", container_group, container_group->referenceCount());
+#endif
 
 	// The final resulting node is the container of that operation
 	vtNode *pNode = new vtNode();
-	pNode->SetOsgNode(node);
-	pNode->SetName2(newname);
+	pNode->SetOsgNode(container_group);
+	pNode->SetName2(fname);
+
+#if DEBUG_NODE_LOAD
+	VTLOG("VTP node %lx\n", pNode);
+#endif
+
 	return pNode;
 }
 
+void vtNode::ClearOsgModelCache()
+{
+	int count = m_ModelCache.size();
+
+	std::map<vtString, osg::Node*>::iterator it;
+	for (it = m_ModelCache.begin(); it != m_ModelCache.end(); it++)
+	{
+		vtString fname = it->first;
+		osg::Node *node = it->second;
+		if (node)
+			node->unref();
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vtGroup

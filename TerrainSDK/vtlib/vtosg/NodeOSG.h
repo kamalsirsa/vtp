@@ -56,6 +56,7 @@ public:
 	vtNodeBase *Clone() { return NULL; }
 
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
+	static void ClearOsgModelCache();
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
 protected:
