@@ -59,14 +59,6 @@ enum LayerType
 	LAYER_TYPES
 };
 
-enum SelectionType
-{
-	ST_NORMAL,
-	ST_ADD,
-	ST_SUBTRACT,
-	ST_TOGGLE
-};
-
 class vtLayer
 {
 public:
