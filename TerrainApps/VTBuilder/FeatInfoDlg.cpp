@@ -194,8 +194,8 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 	OGRwkbGeometryType type = m_pFeatures->GetGeomType();
 	if (type == wkbPoint)
 	{
-		DPoint3 p2;
-		((vtFeatureSetPoint3D *)m_pFeatures)->GetPoint(iFeat, p2);
+		DPoint2 p2;
+		((vtFeatureSetPoint2D *)m_pFeatures)->GetPoint(iFeat, p2);
 
 		str.Printf(strFormat, p2.x);
 		GetList()->SetItem(iItem, field++, str);
