@@ -1669,7 +1669,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 		if (!fp)
 			return false;
 
-		gzwrite(fp, "binterr1.3", 10);
+		gzwrite(fp, (void *)"binterr1.3", 10);
 		gzwrite(fp, &w, 4);
 		gzwrite(fp, &h, 4);
 		gzwrite(fp, &datasize, 2);
