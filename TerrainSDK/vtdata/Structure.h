@@ -3,7 +3,7 @@
 //
 // Implements the vtStructure class which represents a single built structure.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Structure.h */
@@ -42,10 +42,10 @@ enum vtStructureType
  *  - Instances (vtStructInstance)
  * \par
  * For enclosed and linear structures which can be well-described
- * parametrically, vtBuilding and vtFence provide efficient data representation.
- * For other structures which are not easily reduced to parameters, the Instance
- * type allows you to reference any external model, such as a unique building
- * which has been created in a 3D Modelling Tool.
+ * parametrically, vtBuilding and vtFence provide efficient data
+ * representation.  For other structures which are not easily reduced to
+ * parameters, the Instance type allows you to reference any external model,
+ * such as a unique building which has been created in a 3D Modelling Tool.
  */
 class vtStructure : public Selectable, public vtTagArray
 {
@@ -90,7 +90,6 @@ protected:
 	// Original elevation information if any (meters)
 	float		m_fOriginalElevation;
 
-
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
@@ -109,7 +108,7 @@ private:
  *	 An example is filename="MyModels/GasStation.3ds"
  * - itemname, which contains the name of a content item which will be resolved
  *	 by a list maintained by a vtContentManager.  An example is
- *	 itemname="Gemini Observatory"
+ *	 itemname="stopsign"
  */
 class vtStructInstance : public vtStructure
 {

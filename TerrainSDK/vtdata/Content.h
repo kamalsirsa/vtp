@@ -3,7 +3,7 @@
 //
 // Header for the Content Management classes.
 //
-// Copyright (c) 2001 Virtual Terrain Project.
+// Copyright (c) 2001-2003 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -97,14 +97,15 @@ protected:
 	Array<vtModel*>	m_models;
 };
 
-/**  The vtContentManager class keeps a list of 3d models,
+/**
+ * The vtContentManager class keeps a list of 3d models,
  * along with information about what they are and how they should be loaded.
  * It consists of a set of Content Items (vtItem) which each represent a
  * particular object, which in turn consist of Models (vtModel) which are a
  * particular 3d geometry for that Item.  An Item can have several Models
  * which represent different levels of detail (LOD).
  * \par
- * To load a set of content  from a file, first create an empty
+ * To load a set of content  from a file, first create a
  * vtContentManager object, then call ReadXML() with the name of name of a
  * VT Content file (.vtco).
  */
