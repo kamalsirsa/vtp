@@ -704,7 +704,7 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 	}
 
 	bSuccess = false;
-	vtTransform *pTrans = str3d->GetTransform();
+	vtTransform *pTrans = str3d->GetContainer();
 	if (pTrans)
 		bSuccess = AddNodeToStructGrid(pTrans);
 	else
@@ -759,7 +759,7 @@ void vtTerrain::DeleteSelectedStructures()
 		if (str->IsSelected())
 		{
 			vtStructure3d *str3d = structures->GetStructure3d(i);
-			RemoveNodeFromStructGrid(str3d->GetTransform());
+			RemoveNodeFromStructGrid(str3d->GetContainer());
 		}
 	}
 
