@@ -256,123 +256,123 @@ BOOL CCreateDlg::OnInitDialog()
 void CCreateDlg::SetParams(TParams &Params)
 {
 	// set the values in the dialog from the supplied paramter structure
-	m_strFilename = Params.m_strElevFile;
+	m_strFilename =		Params.GetValueString(STR_ELEVFILE);
 	// LocationsFilename
-	m_fVerticalExag = Params.m_fVerticalExag;
-	m_iMinHeight = Params.m_iMinHeight;
-	m_fNavSpeed = Params.m_fNavSpeed;
+	m_fVerticalExag =	Params.GetValueFloat(STR_VERTICALEXAG);
+	m_iMinHeight =		Params.GetValueInt(STR_MINHEIGHT);
+	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
 
-	m_iLodMethod = Params.m_eLodMethod;
-	m_fPixelError = Params.m_fPixelError;
-	m_bTriStrips = Params.m_bTriStrips;
-	m_bDetailTexture = Params.m_bDetailTexture;
+	m_iLodMethod =		Params.GetLodMethod();
+	m_fPixelError =		Params.GetValueFloat(STR_PIXELERROR);
+	m_bTriStrips =		Params.GetValueBool(STR_TRISTRIPS);
+	m_bDetailTexture =	Params.GetValueBool(STR_DETAILTEXTURE);
 
-	m_bTimeOn = Params.m_bTimeOn;
-	m_tTime = Params.m_iInitTime - m_iTimeDiff;	// beware local/gmtime difference
+	m_bTimeOn =			Params.GetValueBool(STR_TIMEON);
+	m_tTime =			Params.GetValueInt(STR_INITTIME)
+		- m_iTimeDiff;	// beware local/gmtime difference
 
-	m_iTexture = Params.m_eTexture;
-	m_iTilesize = Params.m_iTilesize;
-	m_strTextureSingle = Params.m_strTextureSingle;
-	m_strTextureBase = Params.m_strTextureBase;
-	m_strTextureFilename = Params.m_strTextureFilename;
-	m_bMipmap = Params.m_bMipmap;
-	m_b16bit = Params.m_b16bit;
+	m_iTexture =		Params.GetTextureEnum();
+	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
+	m_strTextureSingle = Params.GetValueString(STR_TEXTURESINGLE);
+	m_strTextureBase =	Params.GetValueString(STR_TEXTUREBASE);
+	m_strTextureFilename = Params.CookTextureFilename();
+	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
+	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
+	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
+	m_fPreLightFactor =	Params.GetValueFloat(STR_PRELIGHTFACTOR);
 
-	m_bRoads = Params.m_bRoads;
-	m_strRoadFile = Params.m_strRoadFile;
-	m_bHwy = Params.m_bHwy;
-	m_bDirt = Params.m_bDirt;
-	m_bPaved = Params.m_bPaved;
-	m_fRoadHeight = Params.m_fRoadHeight;
-	m_fRoadDistance = Params.m_fRoadDistance;
-	m_bTexRoads = Params.m_bTexRoads;
-	m_bRoadCulture = Params.m_bRoadCulture;
+	m_bRoads =			Params.GetValueBool(STR_ROADS);
+	m_strRoadFile =		Params.GetValueString(STR_ROADFILE);
+	m_bHwy =			Params.GetValueBool(STR_HWY);
+	m_bPaved =			Params.GetValueBool(STR_PAVED);
+	m_bDirt =			Params.GetValueBool(STR_DIRT);
+	m_fRoadHeight =		Params.GetValueFloat(STR_ROADHEIGHT);
+	m_fRoadDistance =	Params.GetValueFloat(STR_ROADDISTANCE);
+	m_bTexRoads =		Params.GetValueBool(STR_TEXROADS);
+	m_bRoadCulture =	Params.GetValueBool(STR_ROADCULTURE);
 
-	m_bPlants = Params.m_bPlants;
-	m_strTreeFile = Params.m_strVegFile;
-	m_iVegDistance = Params.m_iVegDistance;
+	m_bPlants =			Params.GetValueBool(STR_TREES);
+	m_strTreeFile =		Params.GetValueString(STR_TREEFILE);
+	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
 
-	m_bFog = Params.m_bFog;
-	m_fFogDistance = Params.m_fFogDistance;
+	m_bFog =			Params.GetValueBool(STR_FOG);
+	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
 
 	if (Params.m_strStructFiles.size() > 0)
 		m_strBuildingFile = (const char *) Params.m_strStructFiles[0];
 	else
 		m_strBuildingFile = "";
 
-	m_bVehicles = Params.m_bVehicles;
-	m_fVehicleSize = Params.m_fVehicleSize;
-	m_fVehicleSpeed = Params.m_fVehicleSpeed;
-	m_iNumCars = Params.m_iNumCars;
+	m_bVehicles =		Params.GetValueBool(STR_VEHICLES);
+	m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
+	m_fVehicleSpeed =	Params.GetValueFloat(STR_VEHICLESPEED);
+	m_iNumCars =		Params.GetValueInt(STR_NUMCARS);
 
-	m_bSky = Params.m_bSky;
-	m_bOceanPlane = Params.m_bOceanPlane;
-	m_bOverlay = Params.m_bOverlay;
-	m_bLabels = Params.m_bLabels;
-
-	m_bPreLight = Params.m_bPreLight;
-	m_fPreLightFactor = Params.m_fPreLightFactor;
+	m_bSky =			Params.GetValueBool(STR_SKY);
+	m_bOceanPlane =		Params.GetValueBool(STR_OCEANPLANE);
+	m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
+	m_bLabels =			Params.GetValueBool(STR_LABELS);
 }
 
 void CCreateDlg::GetParams(TParams &Params)
 {
 	// get the values from the dialog into the supplied paramter structure
-	Params.m_strElevFile = m_strFilename;
+	Params.SetValueString(STR_NAME, (const char *) m_strFilename);
 	// LocationsFilename
-	Params.m_fVerticalExag = m_fVerticalExag;
-	Params.m_iMinHeight = m_iMinHeight;
-	Params.m_fNavSpeed = m_fNavSpeed;
+	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
+	Params.SetValueInt(STR_MINHEIGHT, m_iMinHeight);
+	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
 
-	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
-	Params.m_fPixelError = m_fPixelError;
-	Params.m_bTriStrips = m_bTriStrips;
-	Params.m_bDetailTexture = m_bDetailTexture;
+	Params.SetLodMethod((enum LodMethodEnum) m_iLodMethod);
+	Params.SetValueFloat(STR_PIXELERROR, m_fPixelError);
+	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
+	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
 
-	Params.m_bTimeOn = m_bTimeOn;
+	Params.SetValueBool(STR_TIMEON, m_bTimeOn);
 
-	Params.m_iInitTime = m_tTime.GetTime();
-	Params.m_iInitTime += m_iTimeDiff;	// beware local/gmtime difference
+	int time = m_tTime.GetTime();
+	time += m_iTimeDiff;	// beware local/gmtime difference
+	Params.SetValueInt(STR_INITTIME, time);
 
-	Params.m_eTexture = (enum TextureEnum)m_iTexture;
-	Params.m_iTilesize = m_iTilesize;
-	Params.m_strTextureSingle = m_strTextureSingle;
-	Params.m_strTextureBase = m_strTextureBase;
-	Params.m_strTextureFilename = m_strTextureFilename;
-	Params.m_bMipmap = m_bMipmap;
-	Params.m_b16bit = m_b16bit;
+	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
+	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
+	Params.SetValueString(STR_TEXTURESINGLE, (const char *) m_strTextureSingle);
+	Params.SetValueString(STR_TEXTUREBASE, (const char *) m_strTextureBase);
+	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
+	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
+	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
+	Params.SetValueFloat(STR_PRELIGHTFACTOR, m_fPreLightFactor);
 
-	Params.m_bRoads = m_bRoads;
-	Params.m_strRoadFile = m_strRoadFile;
-	Params.m_bHwy = m_bHwy;
-	Params.m_bPaved = m_bPaved;
-	Params.m_bDirt = m_bDirt;
-	Params.m_fRoadHeight = m_fRoadHeight;
-	Params.m_fRoadDistance = m_fRoadDistance;
-	Params.m_bTexRoads = m_bTexRoads;
-	Params.m_bRoadCulture = m_bRoadCulture;
+	Params.SetValueBool(STR_ROADS, m_bRoads);
+	Params.SetValueString(STR_ROADFILE, (const char *) m_strRoadFile);
+	Params.SetValueBool(STR_HWY, m_bHwy);
+	Params.SetValueBool(STR_PAVED, m_bPaved);
+	Params.SetValueBool(STR_DIRT, m_bDirt);
+	Params.SetValueFloat(STR_ROADHEIGHT, m_fRoadHeight);
+	Params.SetValueFloat(STR_ROADDISTANCE, m_fRoadDistance);
+	Params.SetValueBool(STR_TEXROADS, m_bTexRoads);
+	Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
 
-	Params.m_bPlants = m_bPlants;
-	Params.m_strVegFile = m_strTreeFile;
-	Params.m_iVegDistance = m_iVegDistance;
+	Params.SetValueBool(STR_TREES, m_bPlants);
+	Params.SetValueString(STR_TREEFILE, (const char *) m_strTreeFile);
+	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
 
-	Params.m_bFog = m_bFog;
-	Params.m_fFogDistance = m_fFogDistance;
+	Params.SetValueBool(STR_FOG, m_bFog);
+	Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
 
 	Params.m_strStructFiles.clear();
 	Params.m_strStructFiles.push_back(vtString((const char *) m_strBuildingFile));
 
-	Params.m_bVehicles = m_bVehicles;
-	Params.m_fVehicleSize = m_fVehicleSize;
-	Params.m_fVehicleSpeed = m_fVehicleSpeed;
-	Params.m_iNumCars = m_iNumCars;
+	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
+//	Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
+//	Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
+//	Params.SetValueInt(STR_NUMCARS, m_iNumCars);
 
-	Params.m_bSky = m_bSky;
-	Params.m_bOceanPlane = m_bOceanPlane;
-	Params.m_bOverlay = m_bOverlay;
-	Params.m_bLabels = m_bLabels;
+	Params.SetValueBool(STR_SKY, m_bSky);
 
-	Params.m_bPreLight = m_bPreLight;
-	Params.m_fPreLightFactor = m_fPreLightFactor;
+	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
+//	Params.SetValueBool(STR_OVERLAY, m_bOverlay);
+	Params.SetValueBool(STR_LABELS, m_bLabels);
 }
 
 

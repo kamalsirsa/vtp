@@ -245,22 +245,33 @@ void CStartupDlg::OnEditProp()
 	if (!pTerr)
 		return;
 
-	const char *filename = pTerr->GetParamFile();
+	vtString fname = pTerr->GetParamFile();
 
 	TParams Params;
 	CCreateDlg dlg;
 
-	if (Params.LoadFromFile(filename))
+	if (Params.LoadFrom(fname))
 		dlg.SetParams(Params);
 
 	int result = dlg.DoModal();
 	if (result == IDOK)
 	{
 		dlg.GetParams(Params);
-		if (!Params.SaveToFile(filename))
+
+		vtString ext = GetExtension(fname);
+		if (ext.CompareNoCase(".ini") == 0)
+		{
+			AfxMessageBox("Upgrading the .ini to a .xml file.\n"
+				"Please remember to remove the old .ini file.");
+			fname = fname.Left(fname.GetLength()-4) + ".xml";
+		}
+
+		if (!Params.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
 		{
 			CString str;
-			str.Format("Couldn't save to file %s\nPlease make sure the file is not read-only.", filename);
+			str.Format("Couldn't save to file %s\n"
+				"Please make sure the file is not read-only.",
+				(const char *)fname);
 			::AfxMessageBox(str);
 		}
 	}
