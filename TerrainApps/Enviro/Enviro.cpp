@@ -90,7 +90,7 @@ void Enviro::Startup()
 
 	g_Log._StartLog("debug.txt");
 	VTLOG("\nEnviro\nBuild:");
-#if _DEBUG
+#if _DEBUG || DEBUG
 	VTLOG(" Debug");
 #else
 	VTLOG(" Release");
