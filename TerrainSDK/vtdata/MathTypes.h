@@ -519,6 +519,12 @@ class DPolyArray2 : public Array<DLine2 *>
 {
 public:
 	DPolyArray2() { m_previous_poly = -1; }
+	virtual ~DPolyArray2() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; i++)
+			delete GetAt(i);
+	}
 
 	int FindPoly(const DPoint2 &p);
 

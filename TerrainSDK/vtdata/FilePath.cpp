@@ -41,7 +41,7 @@ StringArray &StringArray::operator=(const class StringArray &v)
 	int size = v.GetSize();
 	SetSize(size);
 	for (int i = 0; i < size; i++)
-		SetAt(i, v.GetAt(i));
+		SetAt(i, new vtString(*(v.GetAt(i))));
 
 	return *this;
 }

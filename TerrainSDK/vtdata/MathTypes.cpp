@@ -43,6 +43,7 @@ int DPolyArray2::FindPoly(const DPoint2 &p)
 	return -1;
 }
 
+
 //
 // DLine2 methods
 //

@@ -8,6 +8,13 @@
 class StringArray : public Array<vtString*>
 {
 public:
+	virtual ~StringArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual	void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; ++i)
+			delete GetAt(i);
+	}
+
 	// assignment
 	StringArray &operator=(const class StringArray &v);
 };
