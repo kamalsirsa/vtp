@@ -47,6 +47,7 @@ IslandTerrain::~IslandTerrain()
 
 void IslandTerrain::CreateCustomCulture(bool bDoSound)
 {
+	// create a container for the Hawai'i-specific structures
 	m_pSA = NewStructureArray();
 
 	do_test_code();
