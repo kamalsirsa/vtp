@@ -87,33 +87,33 @@ EVT_CHAR(vtFrame::OnChar)
 EVT_MENU(wxID_EXIT, vtFrame::OnExit)
 EVT_CLOSE(vtFrame::OnClose)
 
-EVT_MENU(ID_TOOLS_SELECT, vtFrame::OnToolsSelect)
-EVT_UPDATE_UI(ID_TOOLS_SELECT, vtFrame::OnUpdateToolsSelect)
-EVT_MENU(ID_TOOLS_FENCES, vtFrame::OnToolsFences)
-EVT_UPDATE_UI(ID_TOOLS_FENCES, vtFrame::OnUpdateToolsFences)
-EVT_MENU(ID_TOOLS_ROUTES, vtFrame::OnToolsRoutes)
-EVT_UPDATE_UI(ID_TOOLS_ROUTES, vtFrame::OnUpdateToolsRoutes)
-EVT_MENU(ID_TOOLS_TREES, vtFrame::OnToolsTrees)
-EVT_UPDATE_UI(ID_TOOLS_TREES, vtFrame::OnUpdateToolsTrees)
-EVT_MENU(ID_TOOLS_MOVE, vtFrame::OnToolsMove)
-EVT_UPDATE_UI(ID_TOOLS_MOVE, vtFrame::OnUpdateToolsMove)
-EVT_MENU(ID_TOOLS_NAVIGATE, vtFrame::OnToolsNavigate)
+EVT_MENU(ID_TOOLS_SELECT,		vtFrame::OnToolsSelect)
+EVT_UPDATE_UI(ID_TOOLS_SELECT,	vtFrame::OnUpdateToolsSelect)
+EVT_MENU(ID_TOOLS_FENCES,		vtFrame::OnToolsFences)
+EVT_UPDATE_UI(ID_TOOLS_FENCES,	vtFrame::OnUpdateToolsFences)
+EVT_MENU(ID_TOOLS_ROUTES,		vtFrame::OnToolsRoutes)
+EVT_UPDATE_UI(ID_TOOLS_ROUTES,	vtFrame::OnUpdateToolsRoutes)
+EVT_MENU(ID_TOOLS_TREES,		vtFrame::OnToolsTrees)
+EVT_UPDATE_UI(ID_TOOLS_TREES,	vtFrame::OnUpdateToolsTrees)
+EVT_MENU(ID_TOOLS_MOVE,			vtFrame::OnToolsMove)
+EVT_UPDATE_UI(ID_TOOLS_MOVE,	vtFrame::OnUpdateToolsMove)
+EVT_MENU(ID_TOOLS_NAVIGATE,		vtFrame::OnToolsNavigate)
 EVT_UPDATE_UI(ID_TOOLS_NAVIGATE, vtFrame::OnUpdateToolsNavigate)
 
-EVT_MENU(ID_VIEW_MAINTAIN, vtFrame::OnViewMaintain)
-EVT_UPDATE_UI(ID_VIEW_MAINTAIN,	vtFrame::OnUpdateViewMaintain)
-EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
+EVT_MENU(ID_VIEW_MAINTAIN,			vtFrame::OnViewMaintain)
+EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		vtFrame::OnUpdateViewMaintain)
+EVT_MENU(ID_VIEW_WIREFRAME,			vtFrame::OnViewWireframe)
 EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	vtFrame::OnUpdateViewWireframe)
-EVT_MENU(ID_VIEW_FULLSCREEN, vtFrame::OnViewFullscreen)
+EVT_MENU(ID_VIEW_FULLSCREEN,		vtFrame::OnViewFullscreen)
 EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	vtFrame::OnUpdateViewFullscreen)
-EVT_MENU(ID_VIEW_TOPDOWN, vtFrame::OnViewTopDown)
-EVT_UPDATE_UI(ID_VIEW_TOPDOWN,	vtFrame::OnUpdateViewTopDown)
-EVT_MENU(ID_VIEW_FRAMERATE, vtFrame::OnViewFramerate)
-EVT_MENU(ID_VIEW_SETTINGS, vtFrame::OnViewSettings)
-EVT_MENU(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnViewFollowRoute)
+EVT_MENU(ID_VIEW_TOPDOWN,			vtFrame::OnViewTopDown)
+EVT_UPDATE_UI(ID_VIEW_TOPDOWN,		vtFrame::OnUpdateViewTopDown)
+EVT_MENU(ID_VIEW_FRAMERATE,			vtFrame::OnViewFramerate)
+EVT_MENU(ID_VIEW_SETTINGS,			vtFrame::OnViewSettings)
+EVT_MENU(ID_VIEW_FOLLOW_ROUTE,		vtFrame::OnViewFollowRoute)
 EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
-EVT_MENU(ID_VIEW_LOCATIONS, vtFrame::OnViewLocations)
-EVT_UPDATE_UI(ID_VIEW_LOCATIONS, vtFrame::OnUpdateViewLocations)
+EVT_MENU(ID_VIEW_LOCATIONS,			vtFrame::OnViewLocations)
+EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	vtFrame::OnUpdateViewLocations)
 
 EVT_UPDATE_UI(ID_VIEW_FRAMERATE,vtFrame::OnUpdateViewFramerate)
 EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
@@ -129,55 +129,57 @@ EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,vtFrame::OnUpdateNavGrabPivot)
 EVT_MENU(ID_NAV_PANO,			vtFrame::OnNavPano)
 EVT_UPDATE_UI(ID_NAV_PANO,		vtFrame::OnUpdateNavPano)
 
-EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
-EVT_MENU(ID_SCENE_TERRAIN, vtFrame::OnSceneTerrain)
+EVT_MENU(ID_SCENE_SCENEGRAPH,	vtFrame::OnSceneGraph)
+EVT_MENU(ID_SCENE_TERRAIN,		vtFrame::OnSceneTerrain)
 EVT_UPDATE_UI(ID_SCENE_TERRAIN,	vtFrame::OnUpdateSceneTerrain)
-EVT_MENU(ID_SCENE_SPACE, vtFrame::OnSceneSpace)
-EVT_UPDATE_UI(ID_SCENE_SPACE, vtFrame::OnUpdateSceneSpace)
+EVT_MENU(ID_SCENE_SPACE,		vtFrame::OnSceneSpace)
+EVT_UPDATE_UI(ID_SCENE_SPACE,	vtFrame::OnUpdateSceneSpace)
 #if VTLIB_OSG
-EVT_MENU(ID_SCENE_SAVE, vtFrame::OnSceneSave)
+EVT_MENU(ID_SCENE_SAVE,			vtFrame::OnSceneSave)
 #endif
-EVT_MENU(ID_TIME_STOP, vtFrame::OnTimeStop)
-EVT_MENU(ID_TIME_FASTER, vtFrame::OnTimeFaster)
+EVT_MENU(ID_TIME_STOP,			vtFrame::OnTimeStop)
+EVT_MENU(ID_TIME_FASTER,		vtFrame::OnTimeFaster)
 
-EVT_MENU(ID_TERRAIN_DYNAMIC, vtFrame::OnDynamic)
-EVT_MENU(ID_TERRAIN_CULLEVERY, vtFrame::OnCullEvery)
-EVT_MENU(ID_TERRAIN_CULLONCE, vtFrame::OnCullOnce)
-EVT_MENU(ID_TERRAIN_SKY, vtFrame::OnSky)
-EVT_MENU(ID_TERRAIN_OCEAN, vtFrame::OnOcean)
-EVT_MENU(ID_TERRAIN_TREES, vtFrame::OnTrees)
-EVT_MENU(ID_TERRAIN_STRUCTURES, vtFrame::OnStructures)
-EVT_MENU(ID_TERRAIN_ROADS, vtFrame::OnRoads)
-EVT_MENU(ID_TERRAIN_FOG, vtFrame::OnFog)
-EVT_MENU(ID_TERRAIN_INCREASE, vtFrame::OnIncrease)
-EVT_MENU(ID_TERRAIN_DECREASE, vtFrame::OnDecrease)
-EVT_MENU(ID_TERRAIN_SAVEVEG, vtFrame::OnSaveVeg)
-EVT_MENU(ID_TERRAIN_SAVESTRUCT, vtFrame::OnSaveStruct)
+EVT_MENU(ID_TERRAIN_DYNAMIC,	vtFrame::OnDynamic)
+EVT_MENU(ID_TERRAIN_CULLEVERY,	vtFrame::OnCullEvery)
+EVT_MENU(ID_TERRAIN_CULLONCE,	vtFrame::OnCullOnce)
+EVT_MENU(ID_TERRAIN_SKY,		vtFrame::OnSky)
+EVT_MENU(ID_TERRAIN_OCEAN,		vtFrame::OnOcean)
+EVT_MENU(ID_TERRAIN_TREES,		vtFrame::OnTrees)
+EVT_MENU(ID_TERRAIN_STRUCTURES,	vtFrame::OnStructures)
+EVT_MENU(ID_TERRAIN_ROADS,		vtFrame::OnRoads)
+EVT_MENU(ID_TERRAIN_FOG,		vtFrame::OnFog)
+EVT_MENU(ID_TERRAIN_INCREASE,	vtFrame::OnIncrease)
+EVT_MENU(ID_TERRAIN_DECREASE,	vtFrame::OnDecrease)
+EVT_MENU(ID_TERRAIN_SAVEVEG,	vtFrame::OnSaveVeg)
+EVT_MENU(ID_TERRAIN_SAVESTRUCT,	vtFrame::OnSaveStruct)
+EVT_MENU(ID_TERRAIN_FOUNDATIONS, vtFrame::OnToggleFoundations)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC, vtFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
-EVT_UPDATE_UI(ID_TERRAIN_SKY, vtFrame::OnUpdateSky)
-EVT_UPDATE_UI(ID_TERRAIN_OCEAN, vtFrame::OnUpdateOcean)
-EVT_UPDATE_UI(ID_TERRAIN_TREES, vtFrame::OnUpdateTrees)
+EVT_UPDATE_UI(ID_TERRAIN_SKY,	vtFrame::OnUpdateSky)
+EVT_UPDATE_UI(ID_TERRAIN_OCEAN,	vtFrame::OnUpdateOcean)
+EVT_UPDATE_UI(ID_TERRAIN_TREES,	vtFrame::OnUpdateTrees)
 EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, vtFrame::OnUpdateStructures)
-EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
-EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
+EVT_UPDATE_UI(ID_TERRAIN_ROADS,	vtFrame::OnUpdateRoads)
+EVT_UPDATE_UI(ID_TERRAIN_FOG,	vtFrame::OnUpdateFog)
+EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS,	vtFrame::OnUpdateFoundations)
 
-EVT_MENU(ID_EARTH_SHOWSHADING, vtFrame::OnEarthShowShading)
-EVT_MENU(ID_EARTH_SHOWAXES, vtFrame::OnEarthShowAxes)
-EVT_MENU(ID_EARTH_TILT, vtFrame::OnEarthTilt)
-EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
-EVT_MENU(ID_EARTH_UNFOLD, vtFrame::OnEarthUnfold)
-EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
-EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
+EVT_MENU(ID_EARTH_SHOWSHADING,	vtFrame::OnEarthShowShading)
+EVT_MENU(ID_EARTH_SHOWAXES,		vtFrame::OnEarthShowAxes)
+EVT_MENU(ID_EARTH_TILT,			vtFrame::OnEarthTilt)
+EVT_MENU(ID_EARTH_FLATTEN,		vtFrame::OnEarthFlatten)
+EVT_MENU(ID_EARTH_UNFOLD,		vtFrame::OnEarthUnfold)
+EVT_MENU(ID_EARTH_POINTS,		vtFrame::OnEarthPoints)
+EVT_MENU(ID_EARTH_LINEAR,		vtFrame::OnEarthLinear)
 
 EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, vtFrame::OnUpdateEarthShowShading)
 EVT_UPDATE_UI(ID_EARTH_SHOWAXES, vtFrame::OnUpdateEarthShowAxes)
-EVT_UPDATE_UI(ID_EARTH_TILT, vtFrame::OnUpdateEarthTilt)
+EVT_UPDATE_UI(ID_EARTH_TILT,	vtFrame::OnUpdateEarthTilt)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
-EVT_UPDATE_UI(ID_EARTH_UNFOLD, vtFrame::OnUpdateInOrbit)
-EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
-EVT_UPDATE_UI(ID_EARTH_LINEAR, vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_UNFOLD,	vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_POINTS,	vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_LINEAR,	vtFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 
@@ -310,6 +312,8 @@ void vtFrame::CreateMenus()
 	terrainMenu->AppendSeparator();
 	terrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
 	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
+	terrainMenu->AppendSeparator();
+	terrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _T("Toggle Artificial Foundations"));
 
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
@@ -1076,6 +1080,35 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 
 	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
 	sa->WriteXML(str.mb_str());
+}
+
+static bool s_bBuilt = false;
+
+void vtFrame::OnToggleFoundations(wxCommandEvent& event)
+{
+	s_bBuilt = !s_bBuilt;
+
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *sa = pTerr->GetStructures();
+
+	if (s_bBuilt)
+	{
+		sa->AddFoundations(pTerr->GetHeightField());
+	}
+	else
+	{
+		sa->RemoveFoundations();
+	}
+	int i, size = sa->GetSize();
+	for (i = 0; i < size; i++)
+		sa->ConstructStructure(i);
+}
+
+void vtFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
+{
+	vtTerrain *t = GetCurrentTerrain();
+	event.Enable(t && t->GetStructures() && t->GetStructures()->GetSize() > 0);
+	event.Check(s_bBuilt);
 }
 
 

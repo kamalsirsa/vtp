@@ -111,6 +111,7 @@ public:
 	void OnDecrease(wxCommandEvent& event);
 	void OnSaveVeg(wxCommandEvent& event);
 	void OnSaveStruct(wxCommandEvent& event);
+	void OnToggleFoundations(wxCommandEvent& event);
 
 	void OnUpdateDynamic(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);
@@ -122,6 +123,7 @@ public:
 	void OnUpdateFog(wxUpdateUIEvent& event);
 	void OnUpdateSaveVeg(wxUpdateUIEvent& event);
 	void OnUpdateSaveStruct(wxUpdateUIEvent& event);
+	void OnUpdateFoundations(wxUpdateUIEvent& event);
 
 	void OnEarthShowShading(wxCommandEvent& event);
 	void OnEarthShowAxes(wxCommandEvent& event);
