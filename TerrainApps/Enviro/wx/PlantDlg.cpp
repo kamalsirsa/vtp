@@ -50,16 +50,17 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	PlantDialogFunc( this, TRUE );  
+	PlantDialogFunc( this, TRUE );
 
 	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
 	m_bSetting = false;
 	m_bCommonNames = true;
 	m_iLanguage = 0;
-	m_opt.m_iSpecies = -1;
+	m_iSpeciesChoice = -1;
+	m_strLang = "en";
 
-	AddValidator(ID_SPECIES, &m_opt.m_iSpecies);
+	AddValidator(ID_SPECIES, &m_iSpeciesChoice);
 	AddValidator(ID_COMMON_NAMES, &m_bCommonNames);
 	AddValidator(ID_LANGUAGE, &m_iLanguage);
 	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);
@@ -98,10 +99,12 @@ void PlantDlg::UpdatePlantNames()
 	// if we are changing, and the control is already populated, try to keep
 	//  the same plant selected, to avoid UI disruption
 	vtPlantSpecies *previous = NULL;
-	if (m_opt.m_iSpecies != -1)
-		previous = (vtPlantSpecies *) m_pSpecies->GetClientData(m_opt.m_iSpecies);
+	if (m_iSpeciesChoice != -1)
+		previous = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
 
 	m_pSpecies->Clear();
+	GetLanguage()->Clear();
+	GetLanguage()->Append(_T("en"));
 
 	if (!m_pPlantList)
 		return;
@@ -113,8 +116,22 @@ void PlantDlg::UpdatePlantNames()
 
 		if (m_bCommonNames)
 		{
-			str.from_utf8(plant->GetCommonName());
-			m_pSpecies->Append(str, plant);
+			for (unsigned int j = 0; j < plant->NumCommonNames(); j++)
+			{
+				vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
+
+				if ((const char *) cname.m_strLang == m_strLang)
+				{
+					str.from_utf8(cname.m_strName);
+					m_pSpecies->Append(str, plant);
+				}
+
+				str = cname.m_strLang;
+				if (GetLanguage()->FindString(str) == -1)
+				{
+					GetLanguage()->Append(str);
+				}
+			}
 		}
 		else
 		{
@@ -131,16 +148,25 @@ void PlantDlg::UpdatePlantNames()
 			void *data = m_pSpecies->GetClientData(j);
 			if (data == previous)
 			{
-				m_pSpecies->SetSelection(j);
+				m_iSpeciesChoice = j;
 				break;
 			}
 		}
 	}
+	if (m_bCommonNames)
+		m_iLanguage = GetLanguage()->FindString(m_strLang);
+}
+
+void PlantDlg::UpdateEnabling()
+{
+	GetLanguage()->Enable(m_bCommonNames);
 }
 
 void PlantDlg::SetPlantOptions(PlantingOptions &opt)
 {
 	m_opt = opt;
+
+	// safety check
 	if (m_opt.m_fHeight < 0)
 		m_opt.m_fHeight = 0;
 
@@ -151,6 +177,16 @@ void PlantDlg::SetPlantOptions(PlantingOptions &opt)
 		if (m_opt.m_fHeight > size)
 			m_opt.m_fHeight = size * 0.80f;
 	}
+
+	// look up corresponding species choice index
+	for (int i = 0; i < m_pSpecies->GetCount(); i++)
+	{
+		if (pSpecies == m_pSpecies->GetClientData(i))
+		{
+			m_iSpeciesChoice = i;
+			break;
+		}
+	}
 }
 
 
@@ -160,13 +196,17 @@ void PlantDlg::SetPlantOptions(PlantingOptions &opt)
 void PlantDlg::OnLanguage( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
+	m_strLang = GetLanguage()->GetStringSelection();
 	UpdatePlantNames();
+	TransferDataToWindow();
 }
 
 void PlantDlg::OnCommonNames( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	UpdatePlantNames();
+	UpdateEnabling();
+	TransferDataToWindow();
 }
 
 void PlantDlg::OnVarianceSlider( wxCommandEvent &event )
@@ -229,6 +269,10 @@ void PlantDlg::OnSelChangeSpecies( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
+
+	// convert displayed species index to a real species id
+	vtPlantSpecies *ps = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
+	m_opt.m_iSpecies = m_pPlantList->FindSpeciesId(ps);
 
 	// show a reasonable value for the height
 	m_opt.m_fHeight = m_PreferredSizes[m_opt.m_iSpecies];
@@ -305,6 +349,8 @@ void PlantDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
+
+	UpdateEnabling();
 
 	// also keep main Enviro object in synch
 	g_App.SetPlantOptions(m_opt);

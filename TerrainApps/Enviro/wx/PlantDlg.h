@@ -38,9 +38,6 @@ public:
 	void SetPlantList(vtSpeciesList3d *plants);
 	void SetPlantOptions(PlantingOptions &opt);
 
-	// planting options
-	PlantingOptions m_opt;
-
 	// WDR: method declarations for PlantDlg
 	wxChoice* GetLanguage()  { return (wxChoice*) FindWindow( ID_LANGUAGE ); }
 	wxCheckBox* GetCommonNames()  { return (wxCheckBox*) FindWindow( ID_COMMON_NAMES ); }
@@ -52,6 +49,7 @@ public:
 	wxChoice* GetSpecies()  { return (wxChoice*) FindWindow( ID_SPECIES ); }
 
 protected:
+	void UpdateEnabling();
 	void UpdatePlantSizes();
 	void UpdatePlantNames();
 	void HeightToSlider();
@@ -62,10 +60,15 @@ private:
 //  vtPlantInstance3d *m_pPlant;
 	bool m_bSetting;
 
+	// planting options
+	PlantingOptions m_opt;
+
 	bool m_bCommonNames;
 	int  m_iLanguage;
 	int  m_iHeightSlider;
 	int  m_iVarianceSlider;
+	int  m_iSpeciesChoice;
+	wxString m_strLang;
 
 	wxSlider		*m_pHeightSlider;
 	wxChoice		*m_pSpecies;
