@@ -1239,9 +1239,6 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		{
 			m_state = 21;
 		}
-		else if (!strcmp(name, "Rotation"))
-		{
-		}
 	}
 }
 
@@ -1337,6 +1334,11 @@ void StructVisitorGML::endElement(const char *name)
 			m_state = 1;
 			m_pSA->Append(m_pStructure);
 			m_pStructure = NULL;
+		}
+		else if (!strcmp(name, "Rotation"))
+		{
+			const char *data = m_data.c_str();
+			sscanf(data, "%f", &m_pInstance->m_fRotation);
 		}
 		else
 			bGrabAttribute = true;
