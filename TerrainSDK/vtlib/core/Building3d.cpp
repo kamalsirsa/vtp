@@ -543,10 +543,10 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 norm = Normal(p0, p1, p2);
 
 	int start =
-		mesh->AddVertexNUV(p0, norm, FPoint2(1.0f, 1.0f));
-	mesh->AddVertexNUV(p1, norm, FPoint2(0.0f, 1.0f));
-	mesh->AddVertexNUV(p2, norm, FPoint2(0.0f, 0.0f));
-	mesh->AddVertexNUV(p3, norm, FPoint2(1.0f, 0.0f));
+		mesh->AddVertexNUV(p0, norm, FPoint2(0.0f, 0.0f));
+	mesh->AddVertexNUV(p1, norm, FPoint2(1.0f, 0.0f));
+	mesh->AddVertexNUV(p2, norm, FPoint2(1.0f, 1.0f));
+	mesh->AddVertexNUV(p3, norm, FPoint2(0.0f, 1.0f));
 
 	mesh->AddFan(start, start+1, start+2, start+3);
 
@@ -581,10 +581,10 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 norm = Normal(p0,p1,p2);
 
 	int start =
-		mesh->AddVertexNUV(p0, norm, FPoint2(1.0f, 1.0f));
-	mesh->AddVertexNUV(p1, norm, FPoint2(0.0f, 1.0f));
-	mesh->AddVertexNUV(p2, norm, FPoint2(0.0f, 0.0f));
-	mesh->AddVertexNUV(p3, norm, FPoint2(1.0f, 0.0f));
+		mesh->AddVertexNUV(p0, norm, FPoint2(0.0f, 0.0f));
+	mesh->AddVertexNUV(p1, norm, FPoint2(1.0f, 0.0f));
+	mesh->AddVertexNUV(p2, norm, FPoint2(1.0f, 1.0f));
+	mesh->AddVertexNUV(p3, norm, FPoint2(0.0f, 1.0f));
 
 	mesh->AddFan(start, start+1, start+2, start+3);
 }
