@@ -123,7 +123,10 @@ public:
 	void		AddNewItem();
 	void		DisplayCurrentModel();
 	void		ZoomToCurrentModel();
+	void		ZoomToModel(vtModel *model);
+
 	void		DisplayCurrentItem();
+	void		ZoomToCurrentItem();
 
 	vtContentManager	m_Man;
 	vtItem				*m_pCurrentItem;

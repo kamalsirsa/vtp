@@ -20,6 +20,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/vtLog.h"
 
 #include "xmlhelper/easyxml.hpp"
 
@@ -289,6 +290,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 
 void vtFrame::OnClose(wxCloseEvent &event)
 {
+	VTLOG("Frame OnClose\n");
 	m_canvas->m_bRunning = false;
 	delete m_canvas;
 	m_canvas = NULL;
@@ -332,6 +334,7 @@ void vtFrame::OnSave(wxCommandEvent& event)
 
 void vtFrame::LoadContentsFile(const wxString2 &fname)
 {
+	VTLOG("LoadContentsFile '%s'\n", fname.mb_str());
 	m_Man.Empty();
 	try 
 	{
@@ -350,6 +353,7 @@ void vtFrame::LoadContentsFile(const wxString2 &fname)
 
 void vtFrame::SaveContentsFile(const wxString2 &fname)
 {
+	VTLOG("SaveContentsFile '%s'\n", fname.mb_str());
 	try 
 	{
 		m_Man.WriteXML(fname);
@@ -363,6 +367,7 @@ void vtFrame::SaveContentsFile(const wxString2 &fname)
 
 void vtFrame::AddModelFromFile(const wxString2 &fname)
 {
+	VTLOG("AddModelFromFile '%s'\n", fname.mb_str());
 	vtModel *nm = AddModel(fname);
 	if (nm)
 		SetCurrentItemAndModel(m_pCurrentItem, nm);
@@ -598,6 +603,7 @@ void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 		DisplayCurrentItem();
 		m_splitter2->SplitHorizontally( m_pTree, m_pPropDlg, m_splitter2->m_last);
 		m_pPropDlg->Show(TRUE);
+		ZoomToCurrentItem();
 	}
 	else if (item != NULL && model != NULL)
 	{
@@ -721,7 +727,12 @@ void vtFrame::DisplayCurrentModel()
 
 void vtFrame::ZoomToCurrentModel()
 {
-	vtTransform *trans = m_nodemap[m_pCurrentModel];
+	ZoomToModel(m_pCurrentModel);
+}
+
+void vtFrame::ZoomToModel(vtModel *model)
+{
+	vtTransform *trans = m_nodemap[model];
 	if (!trans)
 		return;
 
@@ -746,6 +757,13 @@ void vtFrame::ZoomToCurrentModel()
 void vtFrame::DisplayCurrentItem()
 {
 	ShowItemGroupLOD(true);
+}
+
+void vtFrame::ZoomToCurrentItem()
+{
+	vtModel *model = m_pCurrentItem->GetModel(0);
+	if (model)
+		ZoomToModel(model);
 }
 
 void vtFrame::RefreshTreeItems()
