@@ -40,14 +40,18 @@
 NevadaTerrain::NevadaTerrain() : PTerrain()
 {
 	m_pPast = m_pPresent = m_pFuture = NULL;
-	m_pWaterShape = m_pWaterShape2 = NULL;
-	m_pDetailMat = NULL;
-	m_pDetailMat2 = NULL;
+	m_pWaterShape =		m_pWaterShape2 = NULL;
+	m_pDetailTexture =	m_pDetailTexture2 = NULL;
+	m_pDetailMat =		m_pDetailMat2 = NULL;
 	m_pMats = NULL;
 }
 
 NevadaTerrain::~NevadaTerrain()
 {
+	if (m_pDetailTexture)
+		m_pDetailTexture->Release();
+	if (m_pDetailTexture2)
+		m_pDetailTexture2->Release();
 	if (m_pMats)
 		m_pMats->Release();
 }
@@ -163,12 +167,16 @@ void NevadaTerrain::CreateDetailTextures()
 	vtString str;
 
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/playa3.png");
-	vtImage *pDetailTexture = new vtImage(str);
+	if (str == "")
+		return;
+	m_pDetailTexture = new vtImage(str);
 	str = FindFileOnPaths(vtGetDataPath(), "Nevada/green3.png");
-	vtImage *pDetailTexture2 = new vtImage(str);
+	if (str == "")
+		return;
+	m_pDetailTexture2 = new vtImage(str);
 
 	int id;
-	id = m_pMats->AddTextureMaterial(pDetailTexture,
+	id = m_pMats->AddTextureMaterial(m_pDetailTexture,
 						 true,	// culling
 						 false,	// lighting
 						 true,	// transp: blend
@@ -180,7 +188,7 @@ void NevadaTerrain::CreateDetailTextures()
 	m_pDetailMat->SetMipMap(true);
 
 	//initally, make partly transparent
-	id = m_pMats->AddTextureMaterial(pDetailTexture2,
+	id = m_pMats->AddTextureMaterial(m_pDetailTexture2,
 					 true,	// culling
 					 false,	// lighting
 					 true,	// transp: blend

@@ -27,6 +27,7 @@ public:
 	vtGroup		*m_pPast, *m_pPresent, *m_pFuture;
 	vtLodGrid	*m_pTreeGrid;
 	vtMovGeom	*m_pWaterShape, *m_pWaterShape2;
+	vtImage		*m_pDetailTexture, *m_pDetailTexture2;
 	vtMaterial	*m_pDetailMat;
 	vtMaterial	*m_pDetailMat2;
 	vtMaterialArray *m_pMats;
