@@ -295,6 +295,7 @@ vtMaterialDescriptorArray3d::vtMaterialDescriptorArray3d()
 {
 	m_pMaterials = NULL;
 	m_pWindowWall = NULL;
+	m_bMaterialsCreated = false;
 }
 
 void vtMaterialDescriptorArray3d::InitializeMaterials()
@@ -302,16 +303,14 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 	if (m_pMaterials != NULL)	// already initialized
 		return;
 
-	VTLOG("Creating Building Materials\n");
+	VTLOG("Initializing Building Materials\n");
 
 	int i, j, k;
 	RGBf color;
-	vtMaterial *pMat;
 	int count = 0;
 	int divisions = 6;
 	float start = .25f;
 	float step = (1.0f-start)/(divisions-1);
-	int iSize;
 
 	// set up colour spread
 	for (i = 0; i < divisions; i++) {
@@ -386,13 +385,22 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 
 	m_pWindowWall = new vtMaterialDescriptor(BMAT_NAME_WINDOWWALL,
 		"BuildingModels/window_wall128.jpg", VT_MATERIAL_COLOURABLE_TEXTURE, 1.0f);
-	CreateColorableMaterial(m_pWindowWall);
 
 	// Now load external materials (user-modifiable, user-extendable)
 	if (!LoadExternalMaterials(vtTerrain::m_DataPaths))
 		return;
+}
 
-	iSize = GetSize();
+void vtMaterialDescriptorArray3d::CreateMaterials()
+{
+	VTLOG("Creating Building Materials\n");
+
+	m_bMaterialsCreated = true;
+
+	vtMaterial *pMat;
+	int i, j, iSize = GetSize();
+
+	CreateColorableMaterial(m_pWindowWall);
 
 	for (j = 0; j < iSize; j++)
 	{
@@ -461,6 +469,12 @@ void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *
 int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
 											  const RGBf &inputColor)
 {
+	if (!m_bMaterialsCreated)
+	{
+		// postpone material creation until the first time they're needed
+		CreateMaterials();
+	}
+
 	// handle special case of internal materials
 	if (Material == "Highlight")
 	{

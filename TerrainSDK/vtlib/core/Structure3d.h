@@ -35,6 +35,7 @@ public:
 	int FindMatIndex(const vtString & Material, const RGBf &inputColor);
 	vtMaterialDescriptor * FindMaterialDescriptor(const vtString& MaterialName, const RGBf &color);
 	void InitializeMaterials();
+	void CreateMaterials();
 	void ReleaseMaterials();
 
 public:
@@ -44,6 +45,8 @@ public:
 	vtMaterialArray *m_pMaterials;
 
 protected:
+	bool m_bMaterialsCreated;
+
 	void CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor);
 	void CreateColorableMaterial(vtMaterialDescriptor *descriptor);
 
