@@ -37,7 +37,10 @@ public:
 	bool ConvertProjection(vtElevationGrid *pOld, vtProjection &NewProj, void progress_callback(int) = NULL);
 	void Scale(float fScale, bool bDirect);
 
-	// Load
+    // Load from unknown file format
+	bool LoadFromFile( const char *szFileName, void progress_callback(int) = NULL );
+
+	// Load from a specific kind of file
 	bool LoadFromDEM(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromASC(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromTerragen(const char *szFileName, void progress_callback(int) = NULL);

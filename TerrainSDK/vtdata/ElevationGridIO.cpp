@@ -16,6 +16,7 @@ using namespace std;
 #include "config_vtdata.h"
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
+#include "vtString.h"
 
 #if SUPPORT_NETCDF
 extern "C" {
@@ -66,6 +67,99 @@ double DConvert(FILE *fp, int length)
 #ifndef min
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
+
+
+/**
+ * Load from a file whose type is not known a priori.  This will end up
+ * calling one of the Load* member functions.
+ *
+ * \return true if successful.
+ */
+bool vtElevationGrid::LoadFromFile(const char *szFileName,
+								   void progress_callback(int))
+{
+	vtString FileName(szFileName);
+	vtString FileExt = FileName.Right(3);
+
+	if (FileExt == "")
+		return false;
+
+	// The first character in the file is useful for telling which format
+	// the file really is.
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)
+		return false;
+	char FirstChar = fgetc(fp);
+	fclose(fp);
+
+	bool Success = false;
+
+	if (!FileExt.CompareNoCase(".bt"))
+	{
+		Success = LoadFromBT(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("dem"))
+	{
+		if (FirstChar == '*')
+			Success = LoadFromMicroDEM(szFileName, progress_callback);
+		else
+			Success = LoadFromDEM(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("asc"))
+	{
+		Success = LoadWithGDAL(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("bil"))
+	{
+		Success = LoadWithGDAL(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("ter"))
+	{
+		Success = LoadFromTerragen(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("cdf"))
+	{
+		Success = LoadFromCDF(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("hdr"))
+	{
+		Success = LoadFromGTOPO30(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("dte") ||
+			 !FileExt.CompareNoCase("dt0") ||
+			 !FileExt.CompareNoCase("dt1") ||
+			 !FileExt.CompareNoCase("dt2"))
+	{
+		Success = LoadFromDTED(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("pgm"))
+	{
+		Success = LoadFromPGM(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("grd"))
+	{
+		// might by CDF, might be GRD
+		if (FirstChar == 'D')
+			Success = LoadFromGRD(szFileName, progress_callback);
+		else
+			Success = LoadFromCDF(szFileName, progress_callback);
+
+		if (!Success)
+		{
+			// Might be 'Arc Binary Grid', try GDAL
+			Success = LoadWithGDAL(szFileName, progress_callback);
+		}
+	}
+	else if (!FileName.Right(8).CompareNoCase("catd.ddf") ||
+			 !FileExt.CompareNoCase("tif") ||
+			 !FileExt.CompareNoCase("png") ||
+			 !FileExt.CompareNoCase("adf"))
+	{	
+		Success = LoadWithGDAL(szFileName, progress_callback);
+	}
+	return Success;
+}
+
 
 /**
  * Loads elevation from a USGS DEM file.
@@ -772,11 +866,11 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	hdrFile >> strName >> gh.Layout;
 	// Read the number of rows
 	hdrFile >> strName >> strValue;
-	gh.NumRows = atol( strValue );
+	gh.NumRows = atol(strValue);
 
 	// Read the number of columns
 	hdrFile >> strName >> strValue;
-	gh.NumCols = atol( strValue );
+	gh.NumCols = atol(strValue);
 
 	// Read the number of bands
 	hdrFile >> strName >> gh.Bands;
@@ -795,23 +889,23 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 
 	// Read the no data value
 	hdrFile >> strName >> strValue;
-	gh.NoData = atoi( strValue );
+	gh.NoData = atoi(strValue);
 
 	// Read the upper left x coordinate
 	hdrFile >> strName >> strValue;
-	gh.ULXMap = atof( strValue );
+	gh.ULXMap = atof(strValue);
 
 	// Read the upper left y coordinate
 	hdrFile >> strName >> strValue;
-	gh.ULYMap = atof( strValue );
+	gh.ULYMap = atof(strValue);
 
 	// Read the x pixel spacing
 	hdrFile >> strName >> strValue;
-	gh.XDim = atof( strValue );
+	gh.XDim = atof(strValue);
 
 	// Read the y pixel spacing
 	hdrFile >> strName >> strValue;
-	gh.YDim = atof( strValue );
+	gh.YDim = atof(strValue);
 
 	// Close the file
 	hdrFile.close();
@@ -1036,7 +1130,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 			for (int i = 0; i < xsize; i++)
 			{
 				fscanf(fpin, "%s", sbuf);
-				a = strtod( sbuf, &junk);
+				a = strtod(sbuf, &junk);
 				SetFValue(i, ysize-1-j, (float)a);
 			}
 		}
@@ -1412,8 +1506,8 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 
 	GDALAllRegister();
 
-	poDataset = (GDALDataset *) GDALOpen( szFileName, GA_ReadOnly );
-	if( poDataset == NULL )
+	poDataset = (GDALDataset *) GDALOpen(szFileName, GA_ReadOnly);
+	if (poDataset == NULL)
 	{
 		// failed.
 		return false;
@@ -1428,12 +1522,12 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	if (err == OGRERR_CORRUPT_DATA)
 	{
 		// just assume that it's geographic
-		m_proj.SetWellKnownGeogCS( "WGS84" );
+		m_proj.SetWellKnownGeogCS("WGS84");
 	}
 
 	// Get spacing and extents
 	double		adfGeoTransform[6];
-	if( poDataset->GetGeoTransform( adfGeoTransform ) != CE_None )
+	if (poDataset->GetGeoTransform(adfGeoTransform) != CE_None)
 		return false;
 
 	// Upper left corner is adfGeoTransform[0], adfGeoTransform[3]
@@ -1446,11 +1540,11 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	// Raster count should be 1 for elevation datasets
 	int rc = poDataset->GetRasterCount();
 
-	GDALRasterBand *poBand = poDataset->GetRasterBand( 1 );
+	GDALRasterBand *poBand = poDataset->GetRasterBand(1);
 
 	// Assume block size will be one raster line
 //	int			 nBlockXSize, nBlockYSize;
-//	poBand->GetBlockSize( &nBlockXSize, &nBlockYSize );
+//	poBand->GetBlockSize(&nBlockXSize, &nBlockYSize);
 
 	// Check data type - it's either integer or float
 	GDALDataType rtype = poBand->GetRasterDataType();
@@ -1486,9 +1580,9 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	{
 		if (m_bFloatMode)
 		{
-			poBand->RasterIO( GF_Read, 0, j, nXSize, 1,
+			poBand->RasterIO(GF_Read, 0, j, nXSize, 1,
 							  pafScanline, nXSize, 1, GDT_Float32,
-							  0, 0 );
+							  0, 0);
 			for (i = 0; i < nXSize; i++)
 			{
 				fElev = pafScanline[i];
@@ -1503,9 +1597,9 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 		}
 		else
 		{
-			poBand->RasterIO( GF_Read, 0, j, nXSize, 1,
+			poBand->RasterIO(GF_Read, 0, j, nXSize, 1,
 							  pasScanline, nXSize, 1, GDT_Int16,
-							  0, 0 );
+							  0, 0);
 			for (i = 0; i < nXSize; i++)
 			{
 				elev = pasScanline[i];
@@ -1588,12 +1682,12 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 			}
 			if (bytes_per_element == 2)
 			{
-				FRead(data, DT_SHORT, 1, fp, BO_BIG_ENDIAN );
+				FRead(data, DT_SHORT, 1, fp, BO_BIG_ENDIAN);
 				SetFValue(i, m_iRows-1-j, *((short *)data) * vertical_units);
 			}
 			if (bytes_per_element == 4)
 			{
-				FRead(data, DT_INT, 1, fp, BO_BIG_ENDIAN );
+				FRead(data, DT_INT, 1, fp, BO_BIG_ENDIAN);
 				SetFValue(i, m_iRows-1-j, *((float *)data) * vertical_units);
 			}
 		}
