@@ -232,6 +232,9 @@ public:
 	/// Set the position (XYZ translation) of the text in its own frame
 	void SetPosition(const FPoint3 &pos);
 
+	/// Set the rotation (Quaternion) of the text in its own frame
+	void SetRotation(const FQuat &rot);
+
 	/// Set the text alignment: 0 for XY plane, 1 for XZ, 2 for YZ
 	void SetAlignment(int align);
 

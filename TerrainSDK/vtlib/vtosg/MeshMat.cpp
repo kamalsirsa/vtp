@@ -975,6 +975,12 @@ void vtTextMesh::SetPosition(const FPoint3 &pos)
 	m_pOsgText->setPosition(s);
 }
 
+void vtTextMesh::SetRotation(const FQuat &rot)
+{
+	Quat q(rot.x, rot.y, rot.z, rot.w);
+	m_pOsgText->setRotation(q);
+}
+
 void vtTextMesh::SetAlignment(int align)
 {
 	m_pOsgText->setAxisAlignment((osgText::Text::AxisAlignment) align);
