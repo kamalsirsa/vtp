@@ -889,6 +889,12 @@ double get_ssss(FILE *fp)
 	return f/36000;
 }
 
+
+// Macros for DTED reader
+#define SIGN_BIT 0x8000		// Position of 15th bit (high bit of 2 byte field)
+#define IS_NEGATIVE(x) (x & SIGN_BIT)	// Check if sign bit is turned on
+#define UNSET_SIGN_BIT(x) (x &= (~SIGN_BIT))	// Turn off sign bit
+
 /** Loads from a DTED file.
  * \par
  * Should support DTED0, DTED1 and DTED2 files, although it has only been
@@ -896,7 +902,6 @@ double get_ssss(FILE *fp)
  * is integer meters.
  * \returns \c true if the file was successfully opened and read.
  */
-//
 // DTED chunks/bytes:
 //  UHL 80
 //  DSI 648
@@ -994,39 +999,55 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 
 	_AllocateArray();
 
-	int line_length = 12 + 2 * m_iRows;
+	// REF: record header length + (2 * number of rows) + checksum length
+	int line_length = 8 + (2 * m_iRows) + 4;
 	unsigned char *linebuf = new unsigned char[line_length];
-	unsigned char swap[2];
-
+ 
+	// Skip DSI and ACC headers
 	fseek(fp, 648 + 2700, SEEK_CUR);
+
+	// each elevation, z, is stored in 2 bytes
+	const int z_len = 2;
+	short z = 0;
+	unsigned char swap[z_len];
+
 	int i, j, offset;
 	for (i = 0; i < m_iColumns; i++)
 	{
 		if (progress_callback != NULL)
 			progress_callback(i * 100 / m_iColumns);
 
-		/*  FIXME:  there be byte order issues here.  See below in this routine.  */
 		fread(linebuf, line_length, 1, fp);
-		if (*linebuf != 0xaa)
-		{
+		if (*linebuf != 0252)	// sentinel = 252 base 8
 			break;
-		}
-		offset = 8;
+
+		offset = 8;	// record header length
+
 		for (j = 0; j < m_iRows; j++)
 		{
-			swap[1] = *(linebuf + offset++);
-			swap[0] = *(linebuf + offset++);
+			// memcpy(z, linebuf + offset, z_len);
+			swap[1] = *(linebuf + offset);
+			swap[0] = *(linebuf + offset+1);
+
+			// z = ntohs(z);	// swap bytes
 			short z = *((short *)swap);
-			// DTED values are signed magnitude so convert to complement
-			if (z < 0)
-				z = (*((unsigned short *)swap) & ~0x8000) * -1;
+
+			// DTED values are signed magnitude, so convert to complement
+			if (IS_NEGATIVE(z))
+			{
+				UNSET_SIGN_BIT(z);
+				z *= -1;
+			}
+
 			if (-32767 == z)
 				SetValue(i, j, INVALID_ELEVATION);
 			else
 				SetValue(i, j, z);
+
+			offset += z_len;
 		}
 	}
-	delete linebuf;
+	delete [] linebuf;
 	fclose(fp);
 	ComputeHeightExtents();
 	return true;
