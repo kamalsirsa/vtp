@@ -1312,43 +1312,13 @@ bool vtStructureArray::WriteXML_Old(const char* filename)
 	fprintf(fp, "<structures-file file-format-version=\"1.0\">\n");
 
 	// Write projection
-	char type[20], value[2000], tempvalue[2000];
+	char type[20], tempvalue[2000];
 	//RFJ This need to be processed !!!!!!!
 	m_proj.GetTextDescription(type, tempvalue);
-	{
-		char *p1 = tempvalue;
-		char *p2 = value;
-		for (; ('\0' != *p1); p1++)
-		{
-			switch (*p1)
-			{
-			case '<':
-				strcpy(p2, "&lt;");
-				p2 += 4;
-				break;
-			case '&':
-				strcpy(p2, "&amp;");
-				p2 += 5;
-				break;
-			case '>':
-				strcpy(p2, "&gt;");
-				p2 += 4;
-				break;
-			case '"':
-				strcpy(p2, "&quot;");
-				p2 += 6;
-				break;
-			case '\'':
-				strcpy(p2, "&apos;");
-				p2 += 6;
-				break;
-			default:
-				*p2++ = *p1;
-			}
-		}
-		*p2 = '\0';
-	}
-	fprintf(fp, "<coordinates type=\"%s\" value=\"%s\" />\n", type, value);
+	vtString value = EscapeStringForXML(tempvalue);
+
+	fprintf(fp, "<coordinates type=\"%s\" value=\"%s\" />\n", type,
+		(const char *) value);
 
 	bool bDegrees = (m_proj.IsGeographic() == 1);
 
