@@ -21,6 +21,7 @@ class UtilDlg;
 class LayerDlg;
 class InstanceDlg;
 class DistanceDlg;
+class vtTerrain;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -44,7 +45,8 @@ public:
 	void ShowPopupMenu(const IPoint2 &pos);
 	void SetTerrainToGUI(vtTerrain *pTerrain);
 	void Snapshot(bool bNumbered);
-	void EarthPosUpdated(const DPoint3 &pos);
+	virtual void EarthPosUpdated(const DPoint3 &pos);
+	virtual void UpdateStatus();
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
@@ -163,6 +165,7 @@ public:
 public:
 	class vtGLCanvas	*m_canvas;
 	wxToolBar			*m_pToolbar;
+	wxMenuBar			*m_pMenuBar;
 
 	// Modeless dialogs
 	SceneGraphDlg		*m_pSceneGraphDlg;

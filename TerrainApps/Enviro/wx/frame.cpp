@@ -377,16 +377,16 @@ void vtFrame::CreateMenus()
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About ") WSTRING_APPORG _T("..."));
 
-	wxMenuBar *menuBar = new wxMenuBar;
-	menuBar->Append(fileMenu, _T("&File"));
-	menuBar->Append(toolsMenu, _T("&Tools"));
-	menuBar->Append(sceneMenu, _T("&Scene"));
-	menuBar->Append(viewMenu, _T("&View"));
-	menuBar->Append(navMenu, _T("&Navigate"));
-	menuBar->Append(terrainMenu, _T("Te&rrain"));
-	menuBar->Append(earthMenu, _T("&Earth"));
-	menuBar->Append(helpMenu, _T("&Help"));
-	SetMenuBar(menuBar);
+	m_pMenuBar = new wxMenuBar;
+	m_pMenuBar->Append(fileMenu, _T("&File"));
+	m_pMenuBar->Append(toolsMenu, _T("&Tools"));
+	m_pMenuBar->Append(sceneMenu, _T("&Scene"));
+	m_pMenuBar->Append(viewMenu, _T("&View"));
+	m_pMenuBar->Append(navMenu, _T("&Navigate"));
+	m_pMenuBar->Append(terrainMenu, _T("Te&rrain"));
+	m_pMenuBar->Append(earthMenu, _T("&Earth"));
+	m_pMenuBar->Append(helpMenu, _T("&Help"));
+	SetMenuBar(m_pMenuBar);
 }
 
 void vtFrame::CreateToolbar()
@@ -1408,6 +1408,25 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 void vtFrame::EarthPosUpdated(const DPoint3 &pos)
 {
 	m_pInstanceDlg->SetLocation(DPoint2(pos.x, pos.y));
+}
+
+void vtFrame::UpdateStatus()
+{
+	if (!GetStatusBar()) return;
+
+	vtString vs;
+	g_App.GetStatusText(vs);
+
+	wxString2 str;
+#if SUPPORT_WSTRING && UNICODE
+	wstring2 ws;
+	ws.from_utf8(vs);
+	str = ws.c_str();
+#else
+	str = vs;
+#endif
+
+	SetStatusText(str);
 }
 
 
