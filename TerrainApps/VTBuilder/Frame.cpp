@@ -218,7 +218,7 @@ void MainFrame::SetupUI()
 		DisplayAndLog("The building materials file (Culture/materials.xml) was not found\n"
 			" on your Data Path.  Without this file, materials will not be handled\n"
 			" correctly.  Please check your Data Paths to avoid this problem.");
-	SetupDefaultStructures();
+	SetupDefaultStructures(FindFileOnPaths(m_datapaths, "BuildingData/DefaultStructures.vtst"));
 
 	// Load content files, which might be referenced by structure layers
 	LookForContentFiles();
