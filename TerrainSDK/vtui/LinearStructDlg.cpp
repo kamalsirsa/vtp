@@ -63,8 +63,7 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	m_bSetting = false;
 
 	m_iStyle = 0;
-	m_param.m_fPostHeight = FENCE_DEFAULT_HEIGHT;
-	m_param.m_fPostSpacing = FENCE_DEFAULT_SPACING;
+	m_param.Defaults();
 
 	AddValidator(ID_LINEAR_STRUCTURE_STYLE, &m_iStyle);
 
