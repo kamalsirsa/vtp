@@ -547,8 +547,11 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPo
 	DPoint3 p1, p2;
 	geo_to_xyz(1.0, g1, p1);
 	geo_to_xyz(1.0, g2, p2);
-	double angle = acos(p1.Dot(p2));
+	double dot = p1.Dot(p2);
+	double angle = acos(dot);
 	int points = (int) (angle * 3000);
+	if (points == 0)
+		return 0.0f;
 	if (points < 3)
 		points = 3;
 
