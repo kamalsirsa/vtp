@@ -139,7 +139,8 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 		vtBuilding *bld = str->GetBuilding();
 		if (!bld)
 			continue;
-		loc = bld->GetLocation();
+
+		bld->GetBaseLevelCenter(loc);
 		dist = (loc - point).Length();
 		if (dist > epsilon)
 			continue;
@@ -587,7 +588,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			if (ref_point)
 			{
 				sscanf(ref_point, "%lf %lf", &loc.x, &loc.y);
-				bld->SetLocation(loc);
+				bld->SetRectangle(loc, 10, 10);
 			}
 			float fRotation = 0.0f;
 			const char *rot = atts.getValue("rot");
@@ -599,7 +600,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			if (size)
 			{
 				sscanf(size, "%f, %f", &size2.x, &size2.y);
-				bld->SetRectangle(size2.x, size2.y, fRotation);
+				bld->SetRectangle(loc, size2.x, size2.y, fRotation);
 			}
 		}
 		if (string(name) == (string)"circle")
@@ -609,12 +610,12 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			if (ref_point)
 			{
 				sscanf(ref_point, "%lf %lf", &loc.x, &loc.y);
-				bld->SetLocation(loc);
+				bld->SetCircle(loc, 10);
 			}
 			const char *radius = atts.getValue("radius");
 			if (radius)
 			{
-				bld->SetRadius((float)atof(radius));
+				bld->SetCircle(loc, (float)atof(radius));
 			}
 		}
 		if (string(name) == (string)"poly")

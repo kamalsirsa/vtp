@@ -180,21 +180,20 @@ public:
 	// copy
 	vtBuilding &operator=(const vtBuilding &v);
 
-	// center of the building
-	void SetLocation(double x, double y) { m_EarthPos.Set(x, y); }
-	void SetLocation(const DPoint2 &p) { m_EarthPos = p; }
-	DPoint2 GetLocation() const { return m_EarthPos; }
-
-	void SetRectangle(float fWidth, float fDepth, float fRotation = 0.0f);
-	void FlipFootprintDirection();
-	float CalculateBaseElevation(vtHeightField *pHeightField);
-
-	void SetRadius(float fRad);
-	float GetRadius() const;
-
+	// footprint methods
 	void SetFootprint(int i, const DLine2 &dl);
 	DLine2 &GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
+	bool GetBaseLevelCenter(DPoint2 &p) const;
 
+	void SetRectangle(const DPoint2 &center, float fWidth, float fDepth,
+		float fRotation = 0.0f);
+	void SetCircle(const DPoint2 &center, float fRad);
+
+	void FlipFootprintDirection();
+	float CalculateBaseElevation(vtHeightField *pHeightField);
+	void TransformCoords(OCT *trans);
+
+	// roof methods
 	void SetRoofType(RoofType rt, int iSlope = -1, int iLev = -1);
 	RoofType GetRoofType();
 
@@ -212,9 +211,7 @@ public:
 	void DeleteLevel(int iLev);
 
 	bool GetExtents(DRECT &rect) const;
-	void SetCenterFromPoly();
 	void Offset(const DPoint2 &delta);
-	void RectToPoly(float fWidth, float fDepth, float fRotation);
 	double GetDistanceToInterior(const DPoint2 &point) const;
 
 	void WriteXML(FILE *fp, bool bDegrees);

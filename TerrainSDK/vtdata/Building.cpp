@@ -627,11 +627,6 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	return *this;
 }
 
-void vtBuilding::SetRectangle(float fWidth, float fDepth, float fRotation)
-{
-	RectToPoly(fWidth, fDepth, fRotation);
-}
-
 void vtBuilding::FlipFootprintDirection()
 {
 	// Flip the direction (clockwisdom) of each level
@@ -659,7 +654,32 @@ float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
 	return fLowest + m_fElevationOffset;
 }
 
-void vtBuilding::SetRadius(float fRad)
+/**
+ * Transform the coodinates of this building (the footprints of
+ * each level) by the given coordinate transformation.
+ */
+void vtBuilding::TransformCoords(OCT *trans)
+{
+	int i, j;
+	DPoint2 p;
+
+	for (i = 0; i < m_Levels.GetSize(); i++)
+	{
+		vtLevel *pLev = m_Levels[i];
+
+		DLine2 &foot = pLev->GetFootprint();
+		int iSize = foot.GetSize();
+
+		for (j = 0; j < iSize; j++)
+		{
+			p = foot[j];
+			trans->Transform(1, &p.x, &p.y);
+			foot[j] = p;
+		}
+	}
+}
+
+void vtBuilding::SetCircle(const DPoint2 &center, float fRad)
 {
 	DLine2 &fp = m_Levels[0]->GetFootprint();
 	fp.Empty();
@@ -671,14 +691,6 @@ void vtBuilding::SetRadius(float fRad)
 		fp.Append(m_EarthPos + vec);
 	}
 }
-
-float vtBuilding::GetRadius() const
-{
-	DRECT rect;
-	GetExtents(rect);
-	return (float) rect.Width() / 2.0f;
-}
-
 
 //sets colors of the walls
 void vtBuilding::SetColor(BldColor which, RGBi col)
@@ -795,9 +807,6 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &dl)
 
 	m_Levels[lev]->SetFootprint(dl);
 
-	// this new footprint make have altered the center of the building
-	SetCenterFromPoly();
-
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
 }
@@ -862,13 +871,13 @@ RoofType vtBuilding::GetRoofType()
 	return pLev->GuessRoofType();
 }
 
-void vtBuilding::SetCenterFromPoly()
+bool vtBuilding::GetBaseLevelCenter(DPoint2 &p) const
 {
 	DRECT rect;
-	GetExtents(rect);
-	DPoint2 p;
+	if (!GetExtents(rect))
+		return false;
 	rect.GetCenter(p);
-	SetLocation(p);
+	return true;
 }
 
 void vtBuilding::Offset(const DPoint2 &p)
@@ -919,9 +928,6 @@ vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
 
 	m_Levels.Append(pLev);
 
-	// this new footprint may have altered the center of the building
-	SetCenterFromPoly();
-
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
 
@@ -949,7 +955,8 @@ void vtBuilding::DeleteLevel(int iLev)
 	m_Levels.SetSize(levels-1);
 }
 
-void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
+void vtBuilding::SetRectangle(const DPoint2 &center, float fWidth,
+							  float fDepth, float fRotation)
 {
 	// this function requires at least one level to exist
 	if (m_Levels.GetSize() == 0)
@@ -975,10 +982,10 @@ void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 	corner[3].Rotate(fRotation);
 
 	DLine2 dl;
-	dl.Append(m_EarthPos + corner[0]);
-	dl.Append(m_EarthPos + corner[1]);
-	dl.Append(m_EarthPos + corner[2]);
-	dl.Append(m_EarthPos + corner[3]);
+	dl.Append(center + corner[0]);
+	dl.Append(center + corner[1]);
+	dl.Append(center + corner[2]);
+	dl.Append(center + corner[3]);
 
 	vtLevel *lev = m_Levels[0];
 	lev->SetFootprint(dl);
@@ -1298,7 +1305,13 @@ int vtBuilding::GetEdgeFeatureValue(const char *value)
 
 bool vtBuilding::IsContainedBy(const DRECT &rect) const
 {
-	return rect.ContainsPoint(GetLocation());
+	// I find that it's easier to select building using their centers
+//	DRECT r;
+//	GetExtents(r);
+//	return rect.ContainsRect(r);
+	DPoint2 center;
+	GetBaseLevelCenter(center);
+	return rect.ContainsPoint(center);
 }
 
 void vtBuilding::SwapLevels(int lev1, int lev2)

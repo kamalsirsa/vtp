@@ -80,6 +80,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 		fscanf(fp, "type %d\n", &type);
 
 		int stories = 1;
+		DPoint2 loc;
 		fRotation = 0.0f;
 		while (1)
 		{
@@ -96,9 +97,8 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			}
 			if (!strcmp(key, "loc"))
 			{
-				DPoint2 loc;
 				fscanf(fp, "%lf %lf\n", &loc.x, &loc.y);
-				bld->SetLocation(loc);
+				bld->SetRectangle(loc, 10, 10);
 			}
 			else if (!strcmp(key, "rot"))
 			{
@@ -125,13 +125,13 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			{
 				float w, d;
 				fscanf(fp, "%f %f\n", &w, &d);
-				bld->SetRectangle(w, d, fRotation);
+				bld->SetRectangle(loc, w, d, fRotation);
 			}
 			else if (!strcmp(key, "radius"))
 			{
 				float rad;
 				fscanf(fp, "%f\n", &rad);
-				bld->SetRadius(rad);
+				bld->SetCircle(loc, rad);
 			}
 			else if (!strcmp(key, "footprint"))
 			{
@@ -177,7 +177,7 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 	{
 		fscanf(fp, "%lf %lf\n", &point.x, &point.y);
 		vtBuilding *bld = NewBuilding();
-		bld->SetLocation(point);
+		bld->SetRectangle(point, 10, 10);
 		Append(bld);
 	}
 
@@ -278,8 +278,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			{
 				point.x = psShape->padfX[0];
 				point.y = psShape->padfY[0];
-				bld->SetLocation(point);
-				bld->SetRectangle(10, 10);	// default size
+				bld->SetRectangle(point, 10, 10);	// default size
 			}
 			if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ ||
 				nShapeType == SHPT_ARC)
@@ -320,7 +319,6 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				// Give it a flat roof with the same footprint
 				bld->SetFootprint(1, foot);
 				bld->SetRoofType(ROOF_FLAT);
-				bld->SetCenterFromPoly();
 			}
 
 			// attempt to get height from the DBF
@@ -463,8 +461,7 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				point.x = pPoint->getX();
 				point.y = pPoint->getY();
-				pBld->SetLocation(point);
-				pBld->SetRectangle((float) point.x, (float) point.y);
+				pBld->SetRectangle(point, 10, 10);
 				pBld->SetStories(1);
 
 				Append(pBld);
@@ -546,7 +543,6 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 						ring->getY(j)));
 
 				pBld->SetFootprint(0, foot);
-				pBld->SetCenterFromPoly();
 
 				vtBuilding *pDefBld = GetClosestDefault(pBld);
 				if (!pDefBld)
@@ -639,7 +635,6 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 
 				pBld->SetFootprint(0, foot);
-				pBld->SetCenterFromPoly();
 
 				vtBuilding *pDefBld = GetClosestDefault(pBld);
 				if (!pDefBld)
