@@ -46,15 +46,13 @@
 	B.z = -A.rho * sinf(A.phi);\
 }
 
-#define TIME_TO_INT(hr, min, sec) ((hr * 60 + min) * 60 + sec)
-
 ///////////////////////////////////////////////////////////////////////////
 // SkyDome
 //
 
-//
-// creates a complete SkyDome, which includes a DayDome and a StarDome.
-//
+/**
+ * Creates a complete SkyDome, which includes a DayDome and a StarDome.
+ */
 void vtSkyDome::Create(const char *starfile, int depth, float radius,
 					 const char *sun_texture, const char *moon_texture)
 {
@@ -91,13 +89,22 @@ int sunrise = TIME_TO_INT(6, 0, 0);
 int sunset = TIME_TO_INT(18, 0, 0);
 int sunsize = TIME_TO_INT(0, 16, 0);
 
-//
-//
+/**
+ * Sets the time of day (or night).
+ * \param hr,min,sec	Time of day
+ */
 void vtSkyDome::SetTimeOfDay(int hr, int min, int sec)
 {
 	SetTimeOfDay(TIME_TO_INT(hr, min, sec));
 }
 
+/**
+ * Sets the time of day (or night).
+ * \param time			Time in seconds since midnight.
+ * \param bFullRefresh	Pass true to force the sky colors to be updated;
+ *	otherwise, they will only be updated when absolutely necessary, which
+ * is during dawn and dusk.
+ */
 void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 {
 	TimeOfDay = time;
@@ -196,30 +203,30 @@ void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 
 //
 //
-void vtSkyDome::SetDuskTimes(int start_hr, int start_min, int start_sec,
-						   int end_hr, int end_min, int end_sec)
+void vtSkyDome::SetDuskTimes(int start_hr, int start_min,
+							 int end_hr, int end_min)
 {
-	DuskStartTime = TIME_TO_INT(start_hr, start_min, start_sec);
-	DuskEndTime = TIME_TO_INT(end_hr, end_min, end_sec);
+	DuskStartTime = TIME_TO_INT(start_hr, start_min, 0);
+	DuskEndTime = TIME_TO_INT(end_hr, end_min, 0);
 
 	if (m_pDayDome)
-		m_pDayDome->SetDuskTimes(start_hr, start_min, start_sec, end_hr, end_min, end_sec);
+		m_pDayDome->SetDuskTimes(start_hr, start_min, end_hr, end_min);
 	if (m_pStarDome)
-		m_pStarDome->SetDuskTimes(start_hr, start_min, start_sec, end_hr, end_min, end_sec);
+		m_pStarDome->SetDuskTimes(start_hr, start_min, end_hr, end_min);
 }
 
 //
 //
-void vtSkyDome::SetDawnTimes(int start_hr, int start_min, int start_sec,
-						   int end_hr, int end_min, int end_sec)
+void vtSkyDome::SetDawnTimes(int start_hr, int start_min,
+							 int end_hr, int end_min)
 {
-	DawnStartTime = TIME_TO_INT(start_hr, start_min, start_sec);
-	DawnEndTime = TIME_TO_INT(end_hr, end_min, end_sec);
+	DawnStartTime = TIME_TO_INT(start_hr, start_min, 0);
+	DawnEndTime = TIME_TO_INT(end_hr, end_min, 0);
 
 	if (m_pDayDome)
-		m_pDayDome->SetDawnTimes(start_hr, start_min, start_sec, end_hr, end_min, end_sec);
+		m_pDayDome->SetDawnTimes(start_hr, start_min, end_hr, end_min);
 	if (m_pStarDome)
-		m_pStarDome->SetDawnTimes(start_hr, start_min, start_sec, end_hr, end_min, end_sec);
+		m_pStarDome->SetDawnTimes(start_hr, start_min, end_hr, end_min);
 }
 
 
@@ -232,7 +239,7 @@ vtSkyDome::vtSkyDome()
 
 //
 //
-void vtSkyDome::SetDayColors(RGBf& horizon, RGBf& azimuth)
+void vtSkyDome::SetDayColors(const RGBf &horizon, const RGBf &azimuth)
 {
 	if (m_pDayDome)
 	{
@@ -243,7 +250,7 @@ void vtSkyDome::SetDayColors(RGBf& horizon, RGBf& azimuth)
 
 //
 //
-void vtSkyDome::SetSunsetColor(RGBf& sunset)
+void vtSkyDome::SetSunsetColor(const RGBf &sunset)
 {
 	if (m_pDayDome)
 		m_pDayDome->SetSunsetColor(sunset);
@@ -279,6 +286,17 @@ void vtSkyDome::SetRadius(float radius)
 // DayDome
 //
 
+vtDayDome::vtDayDome()
+{
+	m_pMats = NULL;
+	m_pMat = NULL;
+	m_pDomeGeom = NULL;
+	m_pDomeMesh = NULL;
+	m_pSunShape = NULL;
+	m_SunApp = NULL;
+	SphVertices = NULL;
+}
+
 void vtDayDome::Create(int depth, float radius,
 					 const char *sun_texture)
 {
@@ -288,6 +306,8 @@ void vtDayDome::Create(int depth, float radius,
 
 	AddChild(m_pDomeGeom);
 
+	// Only a single material is needed for the dome, since vertex colors are
+	// used to change the color of the sky.
 	m_pMats = new vtMaterialArray();
 	m_pMat = new vtMaterial();
 	m_pMat->SetLighting(false);
@@ -321,8 +341,8 @@ void vtDayDome::Create(int depth, float radius,
 	// Set Maximum rotational change dependent only on hours, minutes and secs
 	MaxTimeOfDay = TIME_TO_INT(24, 0, 0);
 
-	SetDawnTimes(5, 0, 0, 7, 0, 0);
-	SetDuskTimes(17, 0, 0, 19, 0, 0);
+	SetDawnTimes(5, 0, 7, 0);
+	SetDuskTimes(17, 0, 19, 0);
 
 	if (sun_texture)
 	{
@@ -364,8 +384,48 @@ void vtDayDome::SetRadius(float radius)
 	Scale3(radius, radius, radius);
 }
 
-//
-//
+void vtDayDome::SetDayColors(const RGBf &horizon, const RGBf &azimuth)
+{
+	DayHorizonCol = horizon;
+	DayAzimuthCol = azimuth;
+}
+
+void vtDayDome::SetSunsetColor(const RGBf &sunset)
+{
+	SunsetCol = sunset;
+}
+
+/**
+ * Sunrise and sunset cause a warm-colored  circular glow at the point where
+ * the sun is touching the horizon.  This function sets the radius of that
+ * circle.
+ *
+ * \param sunset_angle The radius angle in radians.  A typical value is 0.5
+ * (around 28 degrees).
+ */
+void vtDayDome::SetMaxSunsetAngle(float sunset_angle)
+{
+	MaxSunsetAngle = sunset_angle;
+}
+
+void vtDayDome::SetInterpCutoff(float cutoff)
+{
+	Cutoff = cutoff;
+}
+
+void vtDayDome::SetSunModifier(float sunpct)
+{
+	SunTimePctMod = sunpct;
+}
+
+
+/**
+ * Sets the time of day (or night).
+ * \param time			Time in seconds since midnight.
+ * \param bFullRefresh	Pass true to force the sky colors to be updated;
+ *	otherwise, they will only be updated when absolutely necessary, which
+ * is during dawn and dusk.
+ */
 void vtDayDome::SetTimeOfDay(int time, bool bFullRefresh)
 {
 	TimeOfDay = time;
@@ -396,7 +456,7 @@ void vtDayDome::SetTimeOfDay(int time, bool bFullRefresh)
 
 //
 //
-void vtDayDome::SetSunColor(RGBf &color)
+void vtDayDome::SetSunColor(const RGBf &color)
 {
 	if (m_SunApp)
 		m_SunApp->vtMaterialBase::SetDiffuse1(color);
@@ -505,11 +565,11 @@ void vtDayDome::ApplyDayColors()
 
 //
 //
-void vtDayDome::SetDuskTimes(int start_hr, int start_min, int start_sec,
-						   int end_hr, int end_min, int end_sec)
+void vtDayDome::SetDuskTimes(int start_hr, int start_min,
+							 int end_hr, int end_min)
 {
-	DuskStartTime = TIME_TO_INT(start_hr, start_min, start_sec);
-	DuskEndTime = TIME_TO_INT(end_hr, end_min, end_sec);
+	DuskStartTime = TIME_TO_INT(start_hr, start_min, 0);
+	DuskEndTime = TIME_TO_INT(end_hr, end_min, 0);
 	DuskDuration = (float)(DuskEndTime - DuskStartTime);
 	DuskSeqEnd = (float)DuskEndTime - (DuskDuration * SunTimePctMod);
 	DuskMidSeq = (DuskSeqEnd - (float)DuskStartTime)/2.0f;
@@ -518,11 +578,11 @@ void vtDayDome::SetDuskTimes(int start_hr, int start_min, int start_sec,
 
 //
 //
-void vtDayDome::SetDawnTimes(int start_hr, int start_min, int start_sec,
-						   int end_hr, int end_min, int end_sec)
+void vtDayDome::SetDawnTimes(int start_hr, int start_min,
+							 int end_hr, int end_min)
 {
-	DawnStartTime = TIME_TO_INT(start_hr, start_min, start_sec);
-	DawnEndTime = TIME_TO_INT(end_hr, end_min, end_sec);
+	DawnStartTime = TIME_TO_INT(start_hr, start_min, 0);
+	DawnEndTime = TIME_TO_INT(end_hr, end_min, 0);
 	DawnDuration = (float)(DawnEndTime - DawnStartTime);
 	DawnSeqStart = (float)DawnStartTime + (DawnDuration * SunTimePctMod);
 	DawnMidSeq = (float)(DawnEndTime - DawnSeqStart)/2.0f;
@@ -531,7 +591,13 @@ void vtDayDome::SetDawnTimes(int start_hr, int start_min, int start_sec,
 
 
 //
+// vtStarDome
 //
+vtStarDome::vtStarDome()
+{
+	Starfield = NULL;
+}
+
 void vtStarDome::Create(const char *starfile, float radius, float brightness,
 					  const char *moon_texture)
 {
@@ -568,8 +634,8 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	// Set Maximum rotational change dependent only on hours, minutes and secs
 	MaxTimeOfDay = TIME_TO_INT(24, 0, 0);
 
-	SetDawnTimes(5, 0, 0, 7, 0, 0);
-	SetDuskTimes(17, 0, 0, 19, 0, 0);
+	SetDawnTimes(5, 0, 7, 0);
+	SetDuskTimes(17, 0, 19, 0);
 
 	if (moon_texture)
 	{
@@ -610,8 +676,10 @@ void vtStarDome::SetRadius(float radius)
 	Scale3(radius, radius, radius);
 }
 
-//
-//
+/**
+ * Sets the time of day (or night).
+ * \param time			Time in seconds since midnight.
+ */
 void vtStarDome::SetTimeOfDay(int time)
 {
 	TimeOfDay = time;
@@ -663,18 +731,18 @@ void vtStarDome::AddStars(vtMesh *mesh)
 }
 
 
-//
-// Add Constellations to GeoMesh Vertex List
-//
+/**
+ * Add Constellations to GeoMesh Vertex List
+ */
 void vtStarDome::AddConstellation(vtMesh *mesh)
 {
 	// to do
 }
 
-//
-// determines how many vertices need to be included in the mesh, based
-// on the time of day and when dawn and dusk are supposed to be
-//
+/**
+ * Determines how many vertices are need to be included in the mesh, based
+ * on the time of day and when dawn and dusk are supposed to be.
+ */
 void vtStarDome::FadeStars()
 {
 	int numvalidstars = 0;
@@ -710,10 +778,10 @@ void vtStarDome::SetStarFile(char *starpath)
 }
 
 
-//
-// Read the star data files and throw into array structures
-//
-void vtStarDome::ReadStarData(const char *starfile)
+/**
+ * Read the star data files and throw into array structures.
+ */
+bool vtStarDome::ReadStarData(const char *starfile)
 {
 	int n, numstars = 0, num_file_stars = 0;
 	float himag, lomag;
@@ -726,21 +794,17 @@ void vtStarDome::ReadStarData(const char *starfile)
 	if (!(starfp = fopen(starfile, "r")))
 	{
 //		TRACE("Couldn't open %s\n", fname);
-		return;
+		return false;
 	}
 
 	if ((n = fscanf(starfp, "%d %f %f\n", &num_file_stars,
 		              &himag, &lomag)) == EOF)
 	{
 //		TRACE("Couldn't read number of stars from %s\n", fname);
-		return;
+		return false;
 	}
 
-	if (!(Starfield = new Star[num_file_stars]))
-	{
-//		TRACE("Couldn't create space for stars\n");
-		return;
-	}
+	Starfield = new Star[num_file_stars];
 
 	while (numstars++ != num_file_stars)
 	{
@@ -752,7 +816,7 @@ void vtStarDome::ReadStarData(const char *starfile)
 		curstar->dec = (float)dec_d + (float)dec_m/60.0f + (float)dec_s/3600.0f;
 
 		if (n == EOF)
-			return;
+			return false;
 
 		ConvertStarCoord(curstar);
 
@@ -778,12 +842,13 @@ void vtStarDome::ReadStarData(const char *starfile)
 		Starfield[i].relmag = (MagRange - (Starfield[i].mag + fabsf(HighMag)))
 			/(MagRange/RelativeBrightness);
 	}
+	return true;
 }
 
 
-//
-// converts star coordinate information to x,y,z coordinates
-//
+/**
+ * Convert star coordinate information to x,y,z coordinates.
+ */
 void vtStarDome::ConvertStarCoord(Star *star)
 {
 	FPoint3 spherept;
@@ -801,25 +866,25 @@ void vtStarDome::ConvertStarCoord(Star *star)
 	PT_SPHERE_TO_CART(spherept, star->cartpt);
 }
 
-//
-// sets the beginning, end, and duration of dusk
-//
-void vtStarDome::SetDuskTimes(int start_hr, int start_min, int start_sec,
-						   int end_hr, int end_min, int end_sec)
+/**
+ * Sets the beginning, end, and duration of dusk.
+ */
+void vtStarDome::SetDuskTimes(int start_hr, int start_min,
+						   int end_hr, int end_min)
 {
-	DuskStartTime = TIME_TO_INT(start_hr, start_min, start_sec);
-	DuskEndTime = TIME_TO_INT(end_hr, end_min, end_sec);
+	DuskStartTime = TIME_TO_INT(start_hr, start_min, 0);
+	DuskEndTime = TIME_TO_INT(end_hr, end_min, 0);
 	DuskDuration = (float)(DuskEndTime - DuskStartTime);
 }
 
-//
-// sets the beginning, end, and duration of dawn
-//
-void vtStarDome::SetDawnTimes(int start_hr, int start_min, int start_sec,
-						   int end_hr, int end_min, int end_sec)
+/**
+ * Sets the beginning, end, and duration of dawn.
+ */
+void vtStarDome::SetDawnTimes(int start_hr, int start_min,
+						   int end_hr, int end_min)
 {
-	DawnStartTime = TIME_TO_INT(start_hr, start_min, start_sec);
-	DawnEndTime = TIME_TO_INT(end_hr, end_min, end_sec);
+	DawnStartTime = TIME_TO_INT(start_hr, start_min, 0);
+	DawnEndTime = TIME_TO_INT(end_hr, end_min, 0);
 	DawnDuration = (float)(DawnEndTime - DawnStartTime);
 }
 
