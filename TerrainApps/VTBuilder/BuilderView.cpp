@@ -93,6 +93,10 @@ vtScaledView(parent, id, pos, size, name )
 
 BuilderView::~BuilderView()
 {
+//	for (int i = 0; i < m_iEntities; i++)
+//		delete WMPolyDraw[i];
+//	m_iEntities = 0;
+	delete m_pCursorPan;
 }
 
 ////////////////////////////////////////////////////////////
@@ -372,6 +376,8 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	VTLOG(str1);
 	VTLOG("\n   To: ");
 	VTLOG(str2);
+	OGRFree(str1);
+	OGRFree(str2);
 
 	// Check texts in PROJ4
 	char *str3, *str4;
@@ -382,6 +388,8 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	VTLOG("\n   To: ");
 	VTLOG(str4);
 	VTLOG("\n");
+	OGRFree(str3);
+	OGRFree(str4);
 #endif
 
 	CPLPushErrorHandler(myErrorHandler);
@@ -405,6 +413,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 			WMPolyDraw[i]->SetAt(j, point);
 		}
 	}
+	delete trans;
 }
 
 
