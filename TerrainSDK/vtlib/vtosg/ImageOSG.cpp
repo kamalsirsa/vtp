@@ -5,6 +5,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtString.h"
+#include <osgDB/ReadFile>
 
 vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 {
@@ -22,13 +23,18 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 			m_bLoaded = true;
 		}
 	}
+#if IMPLEMENT_PNG_SUPPORT
 	else if (!stricmp(fname + strlen(fname) - 3, "png"))
 	{
-#if IMPLEMENT_PNG_SUPPORT
 		ReadPNG(fname);
-#else
-		// use osgPlugins library (potential TODO)
+	}
 #endif
+	else
+	{
+		// try to load with OSG (osgPlugins libraries)
+		m_pOsgImage = osgDB::readImageFile(fname);
+		if (m_pOsgImage)
+			m_bLoaded = true;
 	}
 }
 
@@ -153,9 +159,7 @@ bool vtImage::ReadPNG(const char *filename)
 	png_structp png;
 	png_infop   info;
 	png_infop   endinfo;
-//	png_bytep   data;//, data2;
 	png_bytep  *row_p;
-	double	fileGamma;
 
 	png_uint_32 width, height;
 	int depth, color;
@@ -200,9 +204,15 @@ bool vtImage::ReadPNG(const char *filename)
 	/*--GAMMA--*/
 //	checkForGammaEnv();
 	double screenGamma = 2.2 / 1.0;
+#if 0
+		// Getting the gamma from the PNG file is disabled here, since
+		// PhotoShop writes bizarre gamma values like .227 (PhotoShop 5.0)
+		// or .45 (newer versions)
+	double	fileGamma;
 	if (png_get_gAMA(png, info, &fileGamma))
 		png_set_gamma(png, screenGamma, fileGamma);
 	else
+#endif
 		png_set_gamma(png, screenGamma, 1.0/2.2);
 
 	png_read_update_info(png, info);
