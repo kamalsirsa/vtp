@@ -1,7 +1,7 @@
 //
 // TimeEngines.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,31 +9,40 @@
 #define TIMEENGINESH
 
 #include "Engine.h"
+#include <time.h>
 
-class vtTerrainScene;
+class TimeTarget : public vtTarget
+{
+public:
+	virtual void SetTime(time_t time) {}
+};
 
 ///////////////////////////////////////////////////
 
 class TimeEngine : public vtEngine
 {
 public:
-	TimeEngine(vtTerrainScene* pTerrainScene, int start_hour = 0);
+	TimeEngine(int start_hour = -1);
 
 	void Eval();
-	void SetFrameIncrement(int min, int sec);
-	void SetRealIncrement(float factor);
-	void SetTime(int hr, int min, float sec = 0.0f) { hours = hr; minutes = min; seconds = sec; }
-	void SetTime(unsigned int time);
-	void GetTime(int &hr, int &min, int &sec) { hr = hours; min = minutes; sec = (int) seconds; }
+
+	void GetCurrentTime();
+	void SetSpeed(float factor);
+	void SetTime(int hr, int min, int sec);
+//	void SetTime(time_t time);
+	void GetTime(int &hr, int &min, int &sec);
+	void Increment(int secs);
 
 protected:
-	vtTerrainScene* m_pTerrainScene;
-	int hours, minutes;
-	float seconds;
+	void _UpdateTM();
+	void _InformTarget();
 
-	bool m_bReal;
-	int min_per_frame, sec_per_frame;
-	float m_fIncFactor;
+	tm m_tm;
+	time_t m_time;
+	float m_fSeconds;
+	float m_fSpeed;
+	float m_last_time;
 };
 
-#endif
+#endif	// TIMEENGINESH
+

@@ -1,82 +1,100 @@
 //
 // TimeEngines.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "TimeEngines.h"
-#include "TerrainScene.h"
-#include "SkyDome.h"
 
 ///////////////////////////////////////////////////////
 
-TimeEngine::TimeEngine(vtTerrainScene* pTerrainScene, int start_hour) : vtEngine()
+TimeEngine::TimeEngine(int start_hour) : vtEngine()
 {
-	m_pTerrainScene = pTerrainScene;
-	hours = start_hour;
-	minutes = 0;
-	seconds = 0.0f;
-	SetFrameIncrement(0, 0);
+	// default to current time
+	GetCurrentTime();
+
+	m_last_time = -1.0f;
+	m_fSpeed = 0.0f;
+	m_fSeconds = 0.0f;
+
+	if (start_hour != -1)
+		SetTime(start_hour, 0, 0);
 }
 
-void TimeEngine::SetTime(unsigned int time)
+void TimeEngine::_UpdateTM()
 {
-	hours = time/3600;
-	time -= (hours * 3600);
-	minutes = time/60;
-	time -= (minutes * 60);
-	seconds = time;
+	struct tm *t = gmtime(&m_time);
+	m_tm = *t;
 }
 
-void TimeEngine::SetFrameIncrement(int min, int sec)
+void TimeEngine::GetCurrentTime()
 {
-	min_per_frame = min;
-	sec_per_frame = sec;
-	m_bReal = false;
+	time(&m_time);
+	_UpdateTM();
 }
 
-void TimeEngine::SetRealIncrement(float factor)
+/*void TimeEngine::SetTime(time_t time)
 {
-	m_fIncFactor = factor;
-	m_bReal = true;
+	m_time = time;
+	_UpdateTM();
+}*/
+
+void TimeEngine::SetTime(int hr, int min, int sec)
+{
+	m_tm.tm_hour = hr;
+	m_tm.tm_min = min;
+	m_tm.tm_sec = sec;
+	m_time = mktime(&m_tm);
+}
+
+void TimeEngine::GetTime(int &hr, int &min, int &sec)
+{
+	hr = m_tm.tm_hour;
+	min = m_tm.tm_min;
+	sec = m_tm.tm_sec;
+}
+
+void TimeEngine::SetSpeed(float factor)
+{
+	m_fSpeed = factor;
+}
+
+void TimeEngine::Increment(int secs)
+{
+	m_time += secs;
+	_UpdateTM();
 }
 
 void TimeEngine::Eval()
 {
-	static float last_time = -1.0f;
-
 	// increment
-	if (m_bReal)
-	{
-		float time = vtGetTime();
-		if (last_time == -1.0f)
-			last_time = time;
-		float elapsed = (time - last_time);
-		seconds += (elapsed * m_fIncFactor);
-		last_time = time;
-	}
-	else
-	{
-		seconds += sec_per_frame;
-		minutes += min_per_frame;
-	}
+	if (m_fSpeed == 0.0f)
+		return;
 
-	// rollover
-	if (seconds >= 60)
+	float time = vtGetTime();
+	if (m_last_time == -1.0f)
+		m_last_time = time;
+	float elapsed = (time - m_last_time);
+	m_fSeconds += (elapsed * m_fSpeed);
+	if (m_fSeconds > 1.0f)
 	{
-		int min_inc = (int)(seconds / 60);
-		minutes += min_inc;
-		seconds -= (min_inc * 60);
+		int full = (int) m_fSeconds;
+		Increment(full);
+		_InformTarget();
+		m_fSeconds -= full;
 	}
-	if (minutes >= 60)
-	{
-		hours += (minutes / 60);
-		minutes = (minutes % 60);
-	}
-	if (hours >= 24) hours -= 24;
+	m_last_time = time;
+}
 
-	m_pTerrainScene->SetTimeOfDay(TIME_TO_INT(hours, minutes, seconds));
+void TimeEngine::_InformTarget()
+{
+	for (int i = 0; i < NumTargets(); i++)
+	{
+		TimeTarget* pTarget = (TimeTarget *)GetTarget(i);
+//	m_pTerrainScene->SetTimeOfDay(TIME_TO_INT(m_tm.tm_hour, m_tm.tm_min, m_tm.tm_sec));
+		pTarget->SetTime(m_time);
+	}
 }
 
