@@ -63,10 +63,10 @@ public:
 
 	/** Test if a point is within the extents of the grid.
 	 */
-	bool ContainsPoint(float x, float y)
+	bool ContainsPoint(double x, double y)
 	{
-		return (m_area.left < x && x < m_area.right &&
-				m_area.bottom < y && y < m_area.top);
+		return (m_area.left <= x && x <= m_area.right &&
+				m_area.bottom <= y && y <= m_area.top);
 	}
 
 	// Set/Get height values
@@ -103,6 +103,9 @@ public:
 
 	bool GetCorners(DLine2 &line, bool bGeo);
 	void SetCorners(const DLine2 &line);
+
+	short *GetData() { return m_pData; }
+	float *GetFloatData() { return m_pFData; }
 
 protected:
 	DRECT	m_area;		// bounds in the original data space

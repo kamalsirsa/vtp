@@ -451,10 +451,28 @@ float vtElevationGrid::GetFilteredValue(double x, double y)
 
 	double fData;
 	float fDataBL, fDataTL, fDataTR, fDataBR;
-	if ((index_x == m_iColumns-1) || (index_y == m_iRows-1))
-		//on the edge, do what we normally do
-		fData = GetFValue(index_x, index_y);
-	else //do the filtering
+	if (index_x == m_iColumns-1)
+	{
+		if (index_y == m_iRows-1)
+		{
+			// far corner, no interpolation
+			fData = GetFValue(index_x, index_y);
+		}
+		// right edge - interpolate north-south
+		fDataBL = GetFValue(index_x, index_y);
+		fDataTL = GetFValue(index_x, index_y+1);
+		double diff_y = findex_y - index_y;
+		fData = fDataBL + (fDataTL - fDataBL) * diff_y;
+	}
+	else if (index_y == m_iRows-1)
+	{
+		// top edge - interpolate east-west
+		fDataBL = GetFValue(index_x, index_y);
+		fDataBR = GetFValue(index_x+1, index_y);
+		double diff_x = findex_x - index_x;
+		fData = fDataBL + (fDataBR - fDataBL) * diff_x;
+	}
+	else // do bilinear filtering
 	{
 		double diff_x = findex_x - index_x;
 		double diff_y = findex_y - index_y;
