@@ -130,13 +130,9 @@ void vtTerrainScene::_CreateSkydome(const vtStringArray &datapath)
  */
 vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 {
-	int len = strlen(name);
-	if (!len)
-		return NULL;
-
 	for (vtTerrain *pTerr = m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 	{
-		if (!strncmp(name, pTerr->GetName(), len))
+		if (pTerr->GetName() == name)
 			return pTerr;
 	}
 	return NULL;
