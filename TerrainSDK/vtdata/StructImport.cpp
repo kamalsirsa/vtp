@@ -1130,11 +1130,9 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 			pInstance->m_fRotation = pDefaultInstance->m_fRotation;
 			pInstance->m_fScale = pDefaultInstance->m_fScale;
 		}
-
 		pInstance->m_p = dPoint;
 
-
-		Append(pDefaultInstance);
+		Append(pInstance);
 	}
 }
 
