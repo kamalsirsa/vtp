@@ -1089,8 +1089,8 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 
 	double dist1, dist2, dist3;
 	vtStructureArray3d *structures = pTerr->GetStructures();
-	structures->VisualDeselectAll();
-	m_bSelectedStruct = false;
+	if (structures != NULL)
+		structures->VisualDeselectAll();
 
 	// SelectionCutoff is in meters, but the picking functions work in
 	//  Earth coordinates.  Try to convert it to earth horiz units.
@@ -1104,6 +1104,7 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1);
 	if (result1)
 		VTLOG("structure at dist %lf, ", dist1);
+	m_bSelectedStruct = false;
 
 	// Check Plants
 	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
@@ -1353,11 +1354,15 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 void Enviro::start_new_fence()
 {
 	vtFence3d *fence = new vtFence3d(m_CurFenceType, m_fFenceHeight, m_fFenceSpacing);
-	GetCurrentTerrain()->AddFence(fence);
-	m_pCurFence = fence;
+	if (GetCurrentTerrain()->AddFence(fence))
+	{
+		m_pCurFence = fence;
 
-	// update count shown in layer view
-	RefreshLayerView();
+		// update count shown in layer view
+		RefreshLayerView();
+	}
+	else
+		delete fence;
 }
 
 void Enviro::finish_fence()
