@@ -291,7 +291,7 @@ wxSizer *TParamsFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item3->Add( item13, 0, wxALIGN_CENTRE|wxLEFT|wxTOP|wxBOTTOM, 5 );
 
-    item2->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item2->Add( item3, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -383,7 +383,7 @@ wxSizer *TParamsFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item2->Add( item23, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    item1->Add( item2, 0, wxALIGN_CENTRE|wxALL, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxBoxSizer *item49 = new wxBoxSizer( wxVERTICAL );
 
@@ -1061,7 +1061,71 @@ wxSizer *TextDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
-// Implement menu bar functions
+wxSizer *TParamsTabFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxNotebook *item2 = new wxNotebook( parent, ID_NOTEBOOK, wxDefaultPosition, wxSize(200,160), 0 );
+    wxNotebookSizer *item1 = new wxNotebookSizer( item2 );
+
+    item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item4 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item5 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Structure Type:", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxString *strs3 = (wxString*) NULL;
+    wxChoice *item3 = new wxChoice( parent, ID_STRUCTTYPE, wxDefaultPosition, wxSize(150,-1), 0, strs3, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+// Implement menubar functions
+
+// Implement toolbar functions
 
 // Implement bitmap functions
 

@@ -159,7 +159,15 @@ wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 
 wxSizer *TextDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-// Declare menu bar functions
+#define ID_NOTEBOOK 10111
+wxSizer *TParamsTabFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_STRUCTTYPE 10112
+wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+// Declare menubar functions
+
+// Declare toolbar functions
 
 // Declare bitmap functions
 
