@@ -1254,53 +1254,6 @@ double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
 	return closest;
 }
 
-void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
-{
-	const char *coord_format = "%.9lg";	// up to 9 significant digits
-
-	fprintf(fp, "\t<structure type=\"building\">\n");
-
-	int stories = GetStories();
-	if (stories != 0)
-		fprintf(fp, "\t\t<height stories=\"%d\" />\n", stories);
-
-	RGBi color;
-	color = GetColor(BLD_BASIC);
-	fprintf(fp, "\t\t<walls color=\"%d %d %d\" />\n", color.r, color.g, color.b);
-
-	fprintf(fp, "\t\t<shapes>\n");
-
-	vtLevel *lev = m_Levels[0];
-	const DLine2 &foot = lev->GetAtFootprint();
-	int points = foot.GetSize();
-	fprintf(fp, "\t\t\t<poly num=\"%d\" coords=\"", points);
-	for (int i = 0; i < points; i++)
-	{
-		DPoint2 p = foot.GetAt(i);
-		fprintf(fp, coord_format, p.x);
-		fprintf(fp, " ");
-		fprintf(fp, coord_format, p.y);
-		if (i != points-1)
-			fprintf(fp, " ");
-	}
-	fprintf(fp, "\" />\n");
-	fprintf(fp, "\t\t</shapes>\n");
-
-	fprintf(fp, "\t\t<roof type=\"");
-	switch (GetRoofType())
-	{
-	case ROOF_FLAT: fprintf(fp, "flat"); break;
-	case ROOF_SHED: fprintf(fp, "shed"); break;
-	case ROOF_GABLE: fprintf(fp, "gable"); break;
-	case ROOF_HIP: fprintf(fp, "hip"); break;
-	case ROOF_UNKNOWN: fprintf(fp, "unknown"); break;
-	}
-	color = GetColor(BLD_ROOF);
-	fprintf(fp, "\" color=\"%d %d %d\" />\n", color.r, color.g, color.b);
-
-	fprintf(fp, "\t</structure>\n");
-}
-
 void vtBuilding::WriteXML(GZOutput &out, bool bDegrees)
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits

@@ -222,7 +222,6 @@ public:
 	double GetDistanceToInterior(const DPoint2 &point) const;
 
 	void WriteXML(GZOutput &out, bool bDegrees);
-	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
 	const FLine3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
