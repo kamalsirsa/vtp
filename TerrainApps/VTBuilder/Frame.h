@@ -147,7 +147,7 @@ public:
 	void OnUpdateRoadShowWidth(wxUpdateUIEvent& event);
 
 	void OnElevSelect(wxCommandEvent& event);
-	void OnRemoveAboveSea(wxCommandEvent& event);
+	void OnRemoveElevRange(wxCommandEvent& event);
 	void OnElevSetUnknown(wxCommandEvent& event);
 	void OnFillIn(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);

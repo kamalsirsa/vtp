@@ -117,7 +117,7 @@ EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
 EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
-EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
+EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnRemoveElevRange)
 EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
@@ -129,7 +129,7 @@ EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
-EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_REMOVERANGE,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
@@ -325,7 +325,7 @@ void MainFrame::CreateMenus()
 	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _T("Select Elevation Layer"));
 	elevMenu->Append(ID_ELEV_SCALE, _T("Scale Elevation"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_REMOVEABOVESEA, _T("Remove Terrain Above Sea"));
+	elevMenu->Append(ID_ELEV_REMOVERANGE, _T("Remove Elevation Range..."));
 	elevMenu->Append(ID_ELEV_FILLIN, _T("Fill In Unknown areas"));
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("Set Unknown Areas"));
 	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("Export to TerraGen"));            
@@ -1586,20 +1586,53 @@ void MainFrame::OnUpdateElevSelect(wxUpdateUIEvent& event)
 	event.Check(m_pView->GetMode() == LB_TSelect);
 }
 
-void MainFrame::OnRemoveAboveSea(wxCommandEvent &event)
+void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 {
 	vtElevLayer *t = GetActiveElevLayer();
-	if (!t)
+	if (!t && !t->m_pGrid)
 		return;
+
+	DRECT area;
+	t->GetExtent(area);
+	DPoint2 step = t->m_pGrid->GetSpacing();
+
+	wxString2 str;
+	str = wxGetTextFromUser(_T("Please specify the elevation range\n")
+		_T("(minimum and maximum in the form \"X Y\")\n")
+		_T("All values within this range (and within the area\n")
+		_T("tool, if it is defined) will be set to Unknown."));
+
+	float zmin, zmax;
+	const char *text = str.mb_str();
+	if (sscanf(text, "%f %f", &zmin, &zmax) != 2)
+	{
+		wxMessageBox(_T("Didn't get two numbers."));
+		return;
+	}
+
+	bool bUseArea = !m_area.IsEmpty();
 
 	vtElevationGrid *grid = t->m_pGrid;
 	int iColumns, iRows;
 	grid->GetDimensions(iColumns, iRows);
-	for (int i = 0; i < iColumns; i++)
+	float val;
+	DPoint2 p;
+	int i, j;
+
+	for (i = 0; i < iColumns; i++)
 	{
-		for (int j = 0; j < iRows; j++)
+		for (j = 0; j < iRows; j++)
 		{
-			if (grid->GetFValue(i, j) > 0.0f)
+			if (bUseArea)
+			{
+				p.x = area.left + (i * step.x);
+				p.y = area.bottom + (j * step.y);
+				if (!m_area.ContainsPoint(p))
+					continue;
+			}
+
+			val = grid->GetFValue(i, j);
+			if (val >= zmin && val <= zmax)
 				grid->SetFValue(i, j, INVALID_ELEVATION);
 		}
 	}
