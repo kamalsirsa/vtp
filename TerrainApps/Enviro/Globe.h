@@ -30,8 +30,8 @@ protected:
 	void set_face_verts(vtMesh *geom, int face, float f);
 	void add_face(vtMesh *geom, int face, int appidx, bool second);
 
-	vtMaterialArray	*m_apps;
-	vtMaterial	*m_app;
+	vtMaterialArray	*m_mats;
+	int		m_globe_mat[10];
 	vtMesh	*m_mesh[21];
 
 	double v_x[13], v_y[13], v_z[13];
