@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,8 @@
 #include <osg/Polytope>
 #include <osg/LightSource>
 #include <osg/Fog>
+#include <osg/Projection>
+#include <osg/Depth>
 
 using namespace osg;
 
@@ -598,13 +600,6 @@ float vtCamera::GetWidth()
 
 
 ///////////////////////////////////////////////////////////////////////
-// Sprite: TODO?
-void vtSprite::SetText(const char *msg)
-{
-}
-
-
-///////////////////////////////////////////////////////////////////////
 // vtGeom
 //
 
@@ -782,6 +777,7 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 	return m_pMaterialArray->GetAt(idx);
 }
 
+
 ///////////////////////////////////////////////////////////////////////
 // vtLOD
 //
@@ -825,6 +821,7 @@ void vtLOD::SetCenter(FPoint3 &center)
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 
 ///////////////////////////////////////////////////////////////////////
 // OsgDynMesh
@@ -894,13 +891,13 @@ vtDynGeom::vtDynGeom() : vtGeom()
 }
 
 
-//
-// Test a sphere against the view volume.
-//
-// Result: VT_AllVisible if entirely inside the volume,
-//			VT_Visible if partly inside,
-//			otherwise 0.
-//
+/**
+ * Test a sphere against the view volume.
+ *
+ * \return VT_AllVisible if entirely inside the volume,
+ *			VT_Visible if partly inside,
+ *			otherwise 0.
+ */
 int vtDynGeom::IsVisible(const FSphere &sphere) const
 {
 	unsigned int vis = 0;
@@ -925,11 +922,11 @@ int vtDynGeom::IsVisible(const FSphere &sphere) const
 }
 
 
-//
-// Test a single point against the view volume.
-//
-//  Result: true if inside, false if outside.
-//
+/**
+ * Test a single point against the view volume.
+ *
+ * \return true if inside, false if outside.
+ */
 bool vtDynGeom::IsVisible(const FPoint3& point) const
 {
 	unsigned int vis = 0;
@@ -946,13 +943,13 @@ bool vtDynGeom::IsVisible(const FPoint3& point) const
 }
 
 
-//
-// Test a 3d triangle against the view volume.
-//
-// Result: VT_AllVisible if entirely inside the volume,
-//			VT_Visible if partly intersecting,
-//			otherwise 0.
-//
+/**
+ * Test a 3d triangle against the view volume.
+ *
+ * \return VT_AllVisible if entirely inside the volume,
+ *			VT_Visible if partly intersecting,
+ *			otherwise 0.
+ */
 int vtDynGeom::IsVisible(const FPoint3& point0,
 							const FPoint3& point1,
 							const FPoint3& point2,
@@ -993,13 +990,13 @@ int vtDynGeom::IsVisible(const FPoint3& point0,
 	return VT_Visible;
 }
 
-//
-// Test a sphere against the view volume.
-//
-// Result: VT_AllVisible if entirely inside the volume,
-//			VT_Visible if partly intersecting,
-//			otherwise 0.
-//
+/**
+ * Test a sphere against the view volume.
+ *
+ * \return VT_AllVisible if entirely inside the volume,
+ *			VT_Visible if partly intersecting,
+ *			otherwise 0.
+ */
 int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 {
 	unsigned int incode = 0;
@@ -1017,5 +1014,110 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 		return VT_AllVisible;	// entirely inside all planes
 	else
 		return VT_Visible;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Sprite: TODO?
+
+vtSprite::vtSprite()
+{
+	m_pMesh = NULL;
+
+	m_geode = new osg::Geode();
+
+	// Turn lighting off for the sprite
+	osg::StateSet* stateset = m_geode->getOrCreateStateSet();
+	stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+
+	// To ensure the sprite appears on top we can use osg::Depth to force
+	//  the depth fragments to be placed at the front of the screen.
+	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
+
+	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
+	modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+	modelview_abs->setMatrix(osg::Matrix::identity());
+	modelview_abs->addChild(m_geode.get());
+
+	// We can set this to pixels (0,width,0,height) or normalized (0,1,0,1)
+	m_projection = new osg::Projection;
+	m_projection->setMatrix(osg::Matrix::ortho2D(0,1,0,1));
+	m_projection->addChild(modelview_abs);
+
+	SetOsgNode(m_projection.get());
+}
+
+vtSprite::~vtSprite()
+{
+}
+
+void vtSprite::Release()
+{
+	// Destroy itself
+	m_geode = NULL;			// decrease refcount
+	m_projection = NULL;	// decrease refcount
+	vtNode::Release();
+}
+
+void vtSprite::AddMesh(vtMesh *pMesh)
+{
+	m_geode->addDrawable(pMesh->m_pGeometry.get());
+}
+
+void vtSprite::AddTextMesh(vtTextMesh *pTextMesh)
+{
+	m_geode->addDrawable(pTextMesh->m_pOsgText.get());
+}
+
+vtNodeBase *vtSprite::Clone()
+{
+//	sprite->CopyFrom(this);
+	return new vtSprite;
+}
+
+void vtSprite::SetText(const char *szText)
+{
+}
+
+void vtSprite::SetImage(vtImage *pImage)
+{
+	m_pMesh = new vtMesh(GL_QUADS, VT_TexCoords, 4);
+	m_pMesh->AddVertexUV(FPoint3(0,0,0), FPoint2(0,0));
+	m_pMesh->AddVertexUV(FPoint3(1,0,0), FPoint2(1,0));
+	m_pMesh->AddVertexUV(FPoint3(1,1,0), FPoint2(1,1));
+	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
+	m_pMesh->AddQuad(0, 1, 2, 3);
+
+//	vtMaterial *pMat = new vtMaterial();
+//	pMat->SetTexture(pImage);
+//	StateSet *pState = pMat->m_pStateSet.get();
+//	m_geode->setStateSet(pState);
+
+	osg::StateSet* stateset = m_geode->getOrCreateStateSet();
+
+	osg::Texture2D *texture = new osg::Texture2D();
+	texture->setImage(pImage->m_pOsgImage.get());
+	stateset->setTextureAttributeAndModes(0, texture, StateAttribute::ON);
+
+	osg::BlendFunc *pBlendFunc = new BlendFunc;
+	stateset->setAttributeAndModes(pBlendFunc, StateAttribute::ON);
+
+	osg::AlphaFunc *pAlphaFunc = new AlphaFunc;
+	pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
+	stateset->setAttributeAndModes(pAlphaFunc, StateAttribute::ON );
+	stateset->setRenderingHint(StateSet::TRANSPARENT_BIN);
+
+	AddMesh(m_pMesh);
+}
+
+void vtSprite::SetWindowRect(float l, float t, float r, float b)
+{
+	if (m_pMesh)
+	{
+		m_pMesh->SetVtxPos(0, FPoint3(l, 1-b, 0));
+		m_pMesh->SetVtxPos(1, FPoint3(r, 1-b, 0));
+		m_pMesh->SetVtxPos(2, FPoint3(r, 1-t, 0));
+		m_pMesh->SetVtxPos(3, FPoint3(l, 1-t, 0));
+	}
 }
 

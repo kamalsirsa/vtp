@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -436,8 +436,25 @@ protected:
 class vtSprite : public vtNode
 {
 public:
-	void SetText(const char *msg);
-	void SetWindowRect(float l, float t, float r, float b) {}
+	vtSprite();
+
+	vtNodeBase *Clone();
+	void Release();
+
+	void SetText(const char *szText);
+	void SetImage(vtImage *pImage);
+	void SetWindowRect(float l, float t, float r, float b);
+
+	void AddMesh(vtMesh *pMesh);
+	void AddTextMesh(vtTextMesh *pTextMesh);
+
+protected:
+	vtMesh *m_pMesh;
+
+	osg::ref_ptr<osg::Geode> m_geode;
+	osg::ref_ptr<osg::Projection> m_projection;
+
+	virtual ~vtSprite();
 };
 
 /*@}*/	// Group sg
