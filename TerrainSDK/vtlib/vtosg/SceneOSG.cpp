@@ -58,7 +58,7 @@ vtScene::vtScene() : vtSceneBase()
 
 vtScene::~vtScene()
 {
-	// Do not release camera, that is left for the application.
+	// Do not release camera or window, that is left for the application.
 }
 
 vtScene *vtGetScene()
@@ -309,23 +309,10 @@ void vtScene::CalcCullPlanes()
 	m_cullPlanes[2].Set(center, norm_t);
 	m_cullPlanes[3].Set(center, norm_b);
 #else
-	// Get the view frustum clipping planes directly from OSG
-
-	// OSG 0.8.44
-//	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
-	// OSG 0.8.45
-//	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
-	// OSG 0.9.0
-	// clipvol1 is the global camera frustum (in world coordinates)
-//	const Polytope &clipvol1 = pCam->m_pOsgCamera->getViewFrustum();
-	// OSG 0.9.6
-	// clipvol2 is the camera's frustum after it's been transformed to the
-	//		local coordinates.
-//	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
-//	const Polytope::PlaneList &planes = clipvol2.getPlaneList();
-	// Actually no - we can't get the planes from the state, because
-	//  the state includes the funny modelview matrix used to scale
-	//  the heightfield.  We must get it from the 'scene' instead.
+	// Get the view frustum clipping planes directly from OSG.
+	// We can't get the planes from the state, because the state
+	//  includes the funny modelview matrix used to scale the
+	//  heightfield.  We must get it from the 'scene' instead.
 
 	const osg::Matrixd &_projection = m_pOsgSceneView->getProjectionMatrix();
 	const osg::Matrixd &_modelView = m_pOsgSceneView->getViewMatrix();
@@ -362,9 +349,6 @@ void vtScene::DrawFrameRateChart()
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
-//	glMatrixMode(GL_PROJECTION);
-//	glLoadIdentity();
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
@@ -410,19 +394,6 @@ void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 	vtSceneBase::SetWindowSize(w, h, pWindow);
 }
 
-
-void printnode(osg::Node *node, int tab) {
-	for (int i = 0; i < tab*2; i++) {
-	   osg::notify(osg::WARN) << " ";
-	}
-	osg::notify(osg::WARN) << node->className() << " - " << node->getName() << " @ " << node << std::endl;
-	osg::Group *group = node->asGroup();
-	if (group) {
-		for (unsigned int i = 0; i < group->getNumChildren(); i++) {
-			printnode(group->getChild(i), tab+1);
-		}
-	}
-}
 
 void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
 {
@@ -484,4 +455,19 @@ void vtScene::SetShadowDarkness(float fDarkness)
 }
 
 ////////////////////////////////////////
+
+// Helper fn for dumping an OSG scenegraph
+void printnode(osg::Node *node, int tab)
+{
+	for (int i = 0; i < tab*2; i++) {
+	   osg::notify(osg::WARN) << " ";
+	}
+	osg::notify(osg::WARN) << node->className() << " - " << node->getName() << " @ " << node << std::endl;
+	osg::Group *group = node->asGroup();
+	if (group) {
+		for (unsigned int i = 0; i < group->getNumChildren(); i++) {
+			printnode(group->getChild(i), tab+1);
+		}
+	}
+}
 
