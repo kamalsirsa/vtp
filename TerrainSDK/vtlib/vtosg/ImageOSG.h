@@ -14,24 +14,33 @@
  * file formats, and used as a texture map for a textured material, by
  * passing it to vtMaterial::SetTexture()
  */
-class vtImage: public vtImageBase, public osg::Referenced
+class vtImage: public osg::Image, public vtBitmapBase
 {
 public:
+	vtImage();
 	vtImage(const char *fname, bool b16bit = false);
 	vtImage(class vtDIB *pDIB, bool b16bit = false);
 	void Release();
 
-	int GetWidth() const;
-	int GetHeight() const;
-	int GetDepth() const;
+	bool Create(int width, int height, int bitdepth, bool create_palette = false);
+	bool Read(const char *fname, bool b16bit = false);
+	bool HasData() { return _data != NULL; }
 
-	// Implementation
-	osg::ref_ptr<osg::Image>	m_pOsgImage;
+	/// Return the name of the file, if any, from which the image was loaded.
+	vtString GetFilename() { return m_strFilename; }
+
+	// Provide vtBitmapBase methods
+	void GetPixel24(int x, int y, RGBi &rgb) const;
+	void SetPixel24(int x, int y, const RGBi &rgb);
+
+	unsigned char GetPixel8(int x, int y) const;
+	void SetPixel8(int x, int y, unsigned char color);
+
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
+	unsigned int GetDepth() const;
 
 protected:
-	bool m_b16bit;
-	unsigned char *m_pPngData;
-
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
 
@@ -40,7 +49,15 @@ protected:
 	//  to ensure that reference counting is respected.
 	// (Could be private, but that causes an annoying gcc warning.)
 	virtual ~vtImage();
+
+protected:
+	bool m_b16bit;
+	vtString m_strFilename;
+	int m_iRowSize;		// in bytes
 };
+
+vtImage *vtImageRead(const char *fname, bool b16bit = false);
+void vtImageCacheClear();
 
 #endif	// VTOSG_IMAGEH
 
