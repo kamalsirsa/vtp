@@ -239,7 +239,7 @@ public:
 	void operator *=(double s) { x*=s; y*=s; }
 	void operator /=(double s) { x/=s; y/=s; }
 
-	bool operator==(const DPoint2 &v) { return (x == v.x && y == v.y); }
+	bool operator==(const DPoint2 &v) const { return (x == v.x && y == v.y); }
 
 	double x, y;
 };
