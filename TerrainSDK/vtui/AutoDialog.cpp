@@ -77,7 +77,7 @@ bool wxNumericValidator::TransferToWindow()
 			str.Printf(format, *m_pValFloat);
 		}
 		else
-			str.Printf(_T("%.8g"), *m_pValFloat);
+			str.Printf(_T("%.8g"), *m_pValFloat);	// 8 significant digits
 	}
 	if (m_pValDouble)
 	{
@@ -87,7 +87,7 @@ bool wxNumericValidator::TransferToWindow()
 			str.Printf(format, *m_pValDouble);
 		}
 		else
-			str.Printf(_T("%.16lg"), *m_pValDouble);
+			str.Printf(_T("%.16lg"), *m_pValDouble);	// 16 significant digits
 	}
 
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
