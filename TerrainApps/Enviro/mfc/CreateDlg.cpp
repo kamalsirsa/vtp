@@ -360,7 +360,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_iFogDistance = m_iFogDistance;
 
 	Params.m_strStructFiles.Empty();
-	Params.m_strStructFiles.Append(new vtString((const char *) m_strBuildingFile));
+	Params.m_strStructFiles.push_back(vtString((const char *) m_strBuildingFile));
 
 	Params.m_bVehicles = m_bVehicles;
 	Params.m_fVehicleSize = m_fVehicleSize;

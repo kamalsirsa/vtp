@@ -141,7 +141,7 @@ bool CreateScene()
 
 	// Set the global data path
 	vtStringArray paths;
-	paths.Append(new vtString("Data/"));
+	paths.push_back(vtString("Data/"));
 	vtTerrain::SetDataPath(paths);
 
 	// Look up the camera
