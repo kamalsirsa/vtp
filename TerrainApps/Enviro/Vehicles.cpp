@@ -70,7 +70,7 @@ void ConvertPurpleToColor(vtGroup *pModel, RGBf replace)
 
 	for (i = 0; i < pModel->GetNumChildren(); i++)
 	{
-		vtMovable *pChild = (vtMovable *) pModel->GetChild(i);
+		vtTransform *pChild = (vtTransform *) pModel->GetChild(i);
 		ConvertPurpleToColor(pChild, replace);
 	}
 #endif
@@ -144,7 +144,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 
 /*	// try loading a car
 	CarEngine *cEng;
-	vtMovable *car;
+	vtTransform *car;
 
 	car = LoadModel("Vehicles/bronco_v2.DSM");
 	float fAltitude;
@@ -256,7 +256,7 @@ Vehicle *VehicleType::CreateVehicle(RGBf &cColor, float fSize)
 #if 0
 	for (int i = 0; i < m_iLods; i++)
 	{
-		vtMovable *pNewModel = (Vehicle *)m_pModels.GetAt(i)->CreateClone();
+		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->CreateClone();
 		pNewVehicle->AddChild(pNewModel);
 		distances[i+1] = m_fDistance.GetAt(i) * fSize;
 	}

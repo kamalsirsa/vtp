@@ -64,8 +64,8 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 	CreateWater();
 
 #if 0
-	vtMovable *gateway1 = LoadModel("Culture/portal1.dsm");
-	vtMovable *copy = (vtMovable *) gateway1->CreateClone();
+	vtTransform *gateway1 = LoadModel("Culture/portal1.dsm");
+	vtTransform *copy = (vtTransform *) gateway1->CreateClone();
 
 	vtTerrain *pIsland = GetTerrainScene().FindTerrainByName("Big Island");
 
@@ -86,7 +86,7 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 
 #if 0
 	// Buildings
-	vtMovable *dome = LoadModel("Nevada/bluedometent.dsm");
+	vtTransform *dome = LoadModel("Nevada/bluedometent.dsm");
 	if (dome)
 	{
 		dome->Scale2(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
@@ -279,8 +279,8 @@ void NevadaTerrain::CreatePast()
 #define MIKE_COUNT 5
 	for (int i = 0; i < MIKE_COUNT; i++)
 	{
-//		vtMovable *bigmike = LoadModel("Nevada/bigmikev2.dsm");
-		vtMovable *bigmike = LoadModel("Nevada/parameciummike.dsm");
+//		vtTransform *bigmike = LoadModel("Nevada/bigmikev2.dsm");
+		vtTransform *bigmike = LoadModel("Nevada/parameciummike.dsm");
 		float sc = WORLD_SCALE * 0.05f;	// abstract units, scale to taste
 		m_Past.AddChild(bigmike);
 		PlantModelLL(bigmike, MAN_LONLAT);
@@ -307,19 +307,19 @@ void NevadaTerrain::CreatePresent()
 	float overall_scale = 1.5f;	// 3x larger than real life
 	float sc = overall_scale * WORLD_SCALE;	// meters
 #if 0
-	vtMovable *man = LoadModel("Nevada/earlyman.dsm");
+	vtTransform *man = LoadModel("Nevada/earlyman.dsm");
 #else
-	vtMovable *man = LoadModel("Nevada/man_v7_e1.dsm");
+	vtTransform *man = LoadModel("Nevada/man_v7_e1.dsm");
 #endif
 	man->Scale2(sc, sc, sc);
 	m_Present.AddChild(man);
 	PlantModelLL(man, MAN_LONLAT);
 
 	sc = overall_scale * 0.01f * WORLD_SCALE;		// cm
-	vtMovable *lamppost = LoadModel("Nevada/lamppost_v2.dsm");
+	vtTransform *lamppost = LoadModel("Nevada/lamppost_v2.dsm");
 	lamppost->Scale2(sc, sc, sc);
 
-	vtMovable *lamppost2 = LoadModel("Nevada/lamppost72lod_v2.dsm");
+	vtTransform *lamppost2 = LoadModel("Nevada/lamppost72lod_v2.dsm");
 	lamppost2->Scale2(sc, sc, sc);
 
 	vtLOD *pLampLod = new vtLOD();
@@ -331,14 +331,14 @@ void NevadaTerrain::CreatePresent()
 	ranges[2] = 300.0f * WORLD_SCALE;
 	pLampLod->SetRanges(ranges, 3);
 
-	vtMovable *copy;
+	vtTransform *copy;
 	int i;
 
 	if (lamppost)
 	{
 		for (i = 0; i < 17; i++)
 		{
-			copy = (vtMovable *)pLampLod->CreateClone();
+			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelLL(copy, MAN_LONLAT);
 			m_Present.AddChild(copy);
 
@@ -352,7 +352,7 @@ void NevadaTerrain::CreatePresent()
 		}
 		for (i = 0; i < 17; i++)
 		{
-			copy = (vtMovable *)pLampLod->CreateClone();
+			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelLL(copy, MAN_LONLAT);
 			m_Present.AddChild(copy);
 
@@ -365,7 +365,7 @@ void NevadaTerrain::CreatePresent()
 			copy->Translate2(FPoint3(8.0f * WORLD_SCALE, 0.0f, 0.0f));
 			PlantModel(copy);
 
-			copy = (vtMovable *)pLampLod->CreateClone();
+			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelLL(copy, MAN_LONLAT);
 			m_Present.AddChild(copy);
 			copy->Translate2(FPoint3(x, 0.0f, -y));

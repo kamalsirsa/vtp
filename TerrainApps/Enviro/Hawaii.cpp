@@ -142,9 +142,9 @@ vtGeom *IslandTerrain::make_red_cube()
 void IslandTerrain::create_airports()
 {
 #if 0
-	vtMovable *ITO = LoadModel("Culture/ITO.dsm");
-	vtMovable *KOA = LoadModel("Culture/KOA.dsm");
-	vtMovable *MUE = LoadModel("Culture/MUE.dsm");
+	vtTransform *ITO = LoadModel("Culture/ITO.dsm");
+	vtTransform *KOA = LoadModel("Culture/KOA.dsm");
+	vtTransform *MUE = LoadModel("Culture/MUE.dsm");
 
 	float scale = WORLD_SCALE;
 
@@ -167,7 +167,7 @@ void IslandTerrain::create_airports()
  		m_pTerrainGroup->AddChild(MUE);
 	}
 
-	/*vtMovable *Marker1 = LoadModel("Culture/Marker.dsm");
+	/*vtTransform *Marker1 = LoadModel("Culture/Marker.dsm");
 	if (Marker1)
 	{
 		float scale = WORLD_SCALE;
@@ -179,8 +179,8 @@ void IslandTerrain::create_airports()
 /*
 // these are test markers for the plane...
 
-	vtMovable *Marker2 = LoadModel("Culture/Marker.dsm");
-	vtMovable *Marker3 = LoadModel("Culture/Marker.dsm");
+	vtTransform *Marker2 = LoadModel("Culture/Marker.dsm");
+	vtTransform *Marker3 = LoadModel("Culture/Marker.dsm");
 
 	if (Marker2)
 	{
@@ -203,7 +203,7 @@ void IslandTerrain::create_airports()
 
 	for (int i = 0; i < 3; i++)
 	{
-		vtMovable *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f));
+		vtTransform *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f));
 		m_pTerrainGroup->AddChild(copy);
 
 		PlaneEngine *pEng = new PlaneEngine(fSizeExag, fSpeedExag, ITO);
@@ -308,7 +308,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		if (PointIsInTerrainUTM(5, bound[7].x, bound[7].y)) // if area includes ben's house
 		{
 			// test ability to import a max model (a house)
-			vtMovable *house = LoadModel("BuildingModels/house3.dsm");
+			vtTransform *house = LoadModel("BuildingModels/house3.dsm");
 			if (house)
 			{
 				// scale was one unit = 1 i
@@ -327,7 +327,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		}
 #if 1
 		//import the lighthouses
-		vtMovable *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
+		vtTransform *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
 		if (lighthouse1)
 		{
 			// scale was one unit = 1 m
@@ -354,16 +354,15 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 			create_telescopes();
 	}
 
-#if 0
+#if 1
 	if (PointIsInTerrainUTM(5, 234900, 2185840)) // if area includes saddle
 	{
-		vtMovable *bench = LoadModel("Culture/parkbench_v2.dsm");
+		vtTransform *bench = LoadModel("Culture/parkbench.3ds");
 		if (bench)
 		{
 			float scale = 3.0f * 0.01f * WORLD_SCALE;
-			bench->Scale2(scale, scale*1.1f, scale);
+			bench->Scale3(scale, scale*1.1f, scale);
 			PlantModelUTM(bench, 234900, 2185840); 
-//			m_pTerrainGroup->AddChild(bench);
 			m_pLodGrid->AppendToGrid(bench);
 		}
 	}
@@ -428,7 +427,7 @@ void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 	// make x planes
 	for (int i = 0; i < 6; i++)
 	{
-		vtMovable *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f), fSize);
+		vtTransform *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f), fSize);
 		m_pTerrainGroup->AddChild(copy);
 
 		// make it bigger and faster than real life

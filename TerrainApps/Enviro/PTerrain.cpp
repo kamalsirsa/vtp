@@ -107,8 +107,8 @@ Vehicle *PTerrain::CreateVehicle(const char *szType, RGBf &cColor, float fSize)
 
 
 #if 0
-void PTerrain::AddCarEngine(vtMovable *pVehicleModel,
-								  float fSpeed, Node *pNode)
+void PTerrain::AddCarEngine(vtTransform *pVehicleModel,
+							float fSpeed, Node *pNode)
 {
 	CarEngine *pE1;
 	if (pNode == NULL) {
@@ -125,9 +125,8 @@ void PTerrain::AddCarEngine(vtMovable *pVehicleModel,
 }
 
 //engine that follows a path
-void PTerrain::AddCarEngine(vtMovable *pVehicleModel,
-								  float fSpeed, 
-								  const char *filename)
+void PTerrain::AddCarEngine(vtTransform *pVehicleModel,
+							float fSpeed, const char *filename)
 {
 	CarEngine *pE1;
 	pE1 = new CarEngine(pVehicleModel->GetTrans(), m_pHeightField, fSpeed, .25f);
