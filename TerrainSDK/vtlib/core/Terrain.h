@@ -136,7 +136,7 @@ public:
 	vtRouteMap &GetRouteMap() { return m_Routes; }
 
 	// plants
-	void AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
+	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void SetPlantList(vtPlantList3d *pPlantList) { m_pPlantList = pPlantList; }
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 

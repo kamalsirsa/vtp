@@ -1513,7 +1513,7 @@ For example, 513x513 and 1025x105 are supported sizes.";
 }
 
 
-void vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
+bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 {
 	vtPlantInstance pi;
 	pi.m_p = pos;
@@ -1521,12 +1521,14 @@ void vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 	pi.size = fSize;
 
 	int num = m_PIA.Append(pi);
-	m_PIA.CreatePlantNode(num);
+	if (!m_PIA.CreatePlantNode(num))
+		return false;
 
 	vtTransform *pTrans = m_PIA.GetPlantNode(num);
 
 	// add tree to scene graph
 	AddNodeToLodGrid(pTrans);
+	return true;
 }
 
 
