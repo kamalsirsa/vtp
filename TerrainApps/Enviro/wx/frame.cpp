@@ -258,19 +258,19 @@ wxFrame(parent, -1, title, pos, size, style)
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 
-	m_pPlantDlg = new PlantDlg(this, -1, _T("Plants"));
-	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _T("Linear Structures"));
-	m_pUtilDlg = new UtilDlg(this, -1, _T("Utility"));
-	m_pCameraDlg = new CameraDlg(this, -1, _T("Camera-View"));
-	m_pLocationDlg = new LocationDlg(this, -1, _T("Locations"),
+	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
+	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
+	m_pUtilDlg = new UtilDlg(this, -1, _("Utility"));
+	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
+	m_pLocationDlg = new LocationDlg(this, -1, _("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, _T("Building Properties"));
-	m_pLayerDlg = new LayerDlg(this, -1, _T("Layers"), wxDefaultPosition,
+	m_pLayerDlg = new LayerDlg(this, -1, _("Layers"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pLayerDlg->SetSize(600, 250);
-	m_pInstanceDlg = new InstanceDlg(this, -1, _T("Instances"), wxDefaultPosition,
+	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pDistanceDlg = new DistanceDlg(this, -1, _T("Distance"));
+	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
 
 	m_canvas->SetCurrent();
 }
