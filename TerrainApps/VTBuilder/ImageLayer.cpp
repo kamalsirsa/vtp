@@ -1,7 +1,7 @@
 //
 // ImageLayer.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -84,6 +84,8 @@ void vtImageLayer::SetDefaults()
 	for (int i = 0; i < BUF_SCANLINES; i++)
 		m_row[i].m_data = NULL;
 	m_use_next = 0;
+
+	m_wsFilename = _("Untitled");
 }
 
 bool vtImageLayer::GetExtent(DRECT &rect)
@@ -858,3 +860,221 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 		}
 	}
 }
+
+#if SUPPORT_HTTP
+#include "vtdata/TripDub.h"
+
+/*
+# some terraserver hints from http://mapper.acme.com/about.html...
+#
+# A Terraserver tile URL looks like this:
+# http://terraserver-usa.com/tile.ashx?S=10&T=1&X=2809&Y=20964&Z=10
+# The parameters are as follows:
+#   T: theme, 0=relief 1=image 2=topo
+#   S: scale, ranges are:
+#        T=0: 20-24
+#        T=1: 10-16
+#        T=2: 11-21
+#   X: UTM easting / pixels per tile / meters per pixel (@ SW corner)
+#   Y: UTM northing / pixels per tile / meters per pixel (@ SW corner)
+#   Z: UTM numeric zone
+# Pixels per tile is 200.  Meters per pixel is 2 ^ ( scale - 10 ).
+*/
+
+int PixelsPerTile =  200;	// terraserver tiles are 200x200 .jpg images.
+int MetersPerPixel;
+int MetersPerTile;
+
+int TerrainZone;
+int TerrainEastingW;
+int TerrainEastingE;
+int TerrainNorthingS;
+int TerrainNorthingN;
+
+int TileScaleId;
+vtString TileDownloadDir = "./terraserver_tiles";	// cache for downloaded tiles
+int TileThemeId = 1;	// 1 = aerial imagery
+
+// generate the local filename of a single terraserver image tile
+vtString TileNameLocal(int easting, int northing)
+{
+    int x = easting / MetersPerTile;
+    int y = northing / MetersPerTile;
+
+	vtString tilename;
+	tilename.Format("tile_S_%d_T_%d_X_%d_Y_%d_Z_%d.jpg",
+		TileScaleId, TileThemeId, x, y, TerrainZone);
+	return tilename;
+}
+
+// generate the URL to fetch an image tile from terraserver
+vtString TileURL(int easting, int northing)
+{
+	int x = easting / MetersPerTile;
+	int y = northing / MetersPerTile;
+
+	// "tile.ashx?S=${TileScaleId}&T=${TileThemeId}&X=${x}&Y=${y}&Z=${TerrainZone}"
+	vtString url;
+	url.Format("http://terraserver-usa.com/tile.ashx?S=%d&T=%d&X=%d&Y=%d&Z=%d",
+		TileScaleId, TileThemeId, x, y, TerrainZone);
+	return url;
+
+	return url;
+}
+
+// generate the filename of a locally-cached image tile
+vtString TileFileName(int easting, int northing)
+{
+	vtString fname = TileDownloadDir;
+	fname += "/";
+	fname += TileNameLocal(easting, northing);
+	return fname;
+}
+
+// if a tile is not already downloaded, generate the URL and wget it.
+bool DownloadATile(int easting, int northing)
+{
+    vtString filename = TileFileName(easting, northing);
+
+	// check if file exists
+	FILE *fp;
+	if (fp = fopen(filename, "rb"))
+	{
+		fclose(fp);
+		VTLOG("already have %s\n", (const char *) filename);
+    }
+	else
+	{
+		fp = fopen(filename, "wb");
+		if (!fp)
+			return false;
+
+		vtString url = TileURL(easting, northing);
+
+		vtBytes buffer;
+		ReqContext cl;
+		if (cl.GetURL(url, buffer) == false)
+			return false;
+
+		fwrite(buffer.Get(), 1, buffer.Len(), fp);
+		fclose(fp);
+	}
+	return true;
+}
+
+// ensure we have all the image tiles needed for our terrain coverage
+bool DownloadAllTiles()
+{
+	int startn = TerrainNorthingS / MetersPerTile * MetersPerTile;
+	int starte = TerrainEastingW / MetersPerTile * MetersPerTile;
+	int stopn = TerrainNorthingN;
+	int stope = TerrainEastingE;
+	int numn = ((stopn - startn) / MetersPerTile) + 1;
+	int nume = ((stope - starte) / MetersPerTile) + 1;
+	int count = 0, total = numn * nume;
+
+	for (int n = startn; n < stopn; n += MetersPerTile)
+	{
+		for (int e = starte; e < stope; e += MetersPerTile)
+		{
+			wxString2 msg;
+			msg = TileFileName(e, n);
+			UpdateProgressDialog(count * 100 / total, msg);
+
+			if (!DownloadATile(e, n))
+				return false;
+
+			count++;
+		}
+    }
+	return true;
+}
+
+// mosaic all the tiles into one image, then crop
+bool MosaicAllTiles(vtBitmapBase &output)
+{
+	vtString tilelist, cmd;
+	int firsttile = 1;
+
+	int startn = TerrainNorthingS / MetersPerTile * MetersPerTile;
+    for (int n = startn; n < TerrainNorthingN; n += MetersPerTile)
+	{
+		int y = (int) ((double)(TerrainNorthingN - n - MetersPerTile) / MetersPerPixel);
+
+		int starte = TerrainEastingW / MetersPerTile * MetersPerTile;
+		for (int e = starte; e < TerrainEastingE; e += MetersPerTile)
+		{
+			int x = (int) ((double)(e - TerrainEastingW) / MetersPerPixel);
+
+			vtString fname = TileFileName(e, n);
+			vtDIB tile;
+			if (tile.ReadJPEG(fname))
+				tile.BlitTo(output, x, y);
+		}
+	}
+	return true;
+}
+
+#endif
+
+bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
+											   int iMetersPerPixel, int iUTMZone,
+											   const char *filename)
+{
+#if SUPPORT_HTTP
+	// tsmosaic boulder.png 16 13 473000 479000 4425000 4434000
+#if 0
+	MetersPerPixel = 16;
+	TerrainZone = 13;
+	TerrainEastingW = 473000;
+	TerrainEastingE = 479000;
+	TerrainNorthingS = 4425000;
+	TerrainNorthingN = 4434000;
+#endif
+	MetersPerPixel = iMetersPerPixel;
+	TerrainZone = iUTMZone;
+	if (TerrainZone < 4 || TerrainZone > 19)
+		return false;
+
+	TerrainEastingW = area.left;
+	TerrainEastingE = area.right;
+	TerrainNorthingS = area.bottom;
+	TerrainNorthingN = area.top;
+	m_Extents = area;
+
+	// Datum is always WGS84
+	m_proj.SetWellKnownGeogCS("WGS84");
+	m_proj.SetUTMZone(iUTMZone);
+
+	if (MetersPerPixel == 1) TileScaleId = 10;
+	if (MetersPerPixel == 2) TileScaleId = 11;
+	if (MetersPerPixel == 4) TileScaleId = 12;
+	if (MetersPerPixel == 8) TileScaleId = 13;
+	if (MetersPerPixel == 16) TileScaleId = 14;
+	if (MetersPerPixel == 32) TileScaleId = 15;
+	if (MetersPerPixel == 64) TileScaleId = 16;
+
+    MetersPerTile = PixelsPerTile * MetersPerPixel;
+
+	if (!DownloadAllTiles())
+		return false;
+
+	m_iXSize = (TerrainEastingE - TerrainEastingW) / MetersPerPixel;
+	m_iYSize = (TerrainNorthingN - TerrainNorthingS) / MetersPerPixel;
+	m_pBitmap = new vtBitmap();
+	m_pBitmap->Allocate(m_iXSize, m_iYSize);
+
+	vtDIB dib;
+	dib.Create(m_iXSize, m_iYSize, 8, true);
+	if (!MosaicAllTiles(dib))
+		return false;
+
+	if (!dib.WriteJPEG(filename, 99))
+		return false;
+
+	return true;
+#else
+	return false;
+#endif
+}
+

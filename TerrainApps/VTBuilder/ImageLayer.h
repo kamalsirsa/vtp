@@ -61,6 +61,9 @@ public:
 	bool SaveToFile(const char *fname);
 	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 
+	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
+		int iMetersPerPixel, int iUTMZone, const char *filename);
+
 protected:
 	void SetDefaults();
 	bool LoadFromGDAL();
