@@ -183,6 +183,15 @@ wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set
 #define ID_QUERY 10114
 wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_SPLITTER1 10115
+wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_LISTCTRL_SPECIES 10116
+wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_LISTCTRL_APPEARANCES 10117
+wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

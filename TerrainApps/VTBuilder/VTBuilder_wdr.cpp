@@ -264,7 +264,7 @@ wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxComboBox *item3 = new wxComboBox( parent, ID_FIELD, wxT(""), wxDefaultPosition, wxSize(160,100), 0, strs3, wxCB_DROPDOWN|wxCB_READONLY );
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item4 = new wxBoxSizer( wxVERTICAL );
 
@@ -272,13 +272,13 @@ wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item4->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxRadioButton *item6 = new wxRadioButton( parent, ID_DENSITY, _("Density (0 to 1) (double)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item4->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+    item4->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxRadioButton *item7 = new wxRadioButton( parent, ID_BIOTYPE1, _("Biotype by name (string)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item4->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+    item4->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxRadioButton *item8 = new wxRadioButton( parent, ID_BIOTYPE2, _("Biotype by ID (integer)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item4->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+    item4->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
@@ -1511,6 +1511,87 @@ wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxSplitterWindow *item1 = new wxSplitterWindow( parent, ID_SPLITTER1, wxDefaultPosition, wxSize(850,400), 0 );
+    wxPanel *item2 = new wxPanel( item1, -1 );
+    Species1Func( item2, FALSE, TRUE );
+    wxPanel *item3 = new wxPanel( item1, -1 );
+    Species2Func( item3, FALSE, TRUE );
+    item1->SplitVertically( item2, item3 );
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item5 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item4, 0, wxALIGN_CENTER, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+wxSizer *Species1Func( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, _("Species"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxListCtrl *item2 = new wxListCtrl( parent, ID_LISTCTRL_SPECIES, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxSUNKEN_BORDER );
+    item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+wxSizer *Species2Func( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, _("Appearances"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxListCtrl *item2 = new wxListCtrl( parent, ID_LISTCTRL_APPEARANCES, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxSUNKEN_BORDER );
+    item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     if (set_sizer)
     {
