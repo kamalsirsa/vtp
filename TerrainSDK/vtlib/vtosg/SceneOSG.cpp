@@ -226,7 +226,8 @@ void vtScene::SetRoot(vtGroup *pRoot)
 
 /**
  * Convert window coordinates (in pixels) to a ray from the camera
- * in world coordinates.
+ * in world coordinates.  Pixel coordinates are measured from the
+ * top left corner of the window: X right, Y down.
  */
 bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow *pWindow)
 {
