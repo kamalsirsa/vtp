@@ -16,6 +16,7 @@
 #include "Frame.h"
 #include "BuilderView.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"
 #include "gdal_priv.h"
 
 IMPLEMENT_APP(MyApp)
@@ -38,6 +39,10 @@ bool MyApp::OnInit()
 	VTLOG(" Unicode");
 #endif
 	VTLOG("\n");
+#if WIN32
+	VTLOG(" Running on: ");
+	LogWindowsVersion();
+#endif
 
 	VTLOG("Testing ability to allocate a frame object.\n");
 	wxFrame *frametest = new wxFrame(NULL, -1, _T("Title"));

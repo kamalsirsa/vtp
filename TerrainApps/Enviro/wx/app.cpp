@@ -22,8 +22,9 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
-#include "EnviroGUI.h"		// for g_App, GetTerrainScene
 #include "../Options.h"
+#include "EnviroGUI.h"		// for g_App, GetTerrainScene
+#include "vtui/Helper.h"	// for LogWindowsVersion
 #include "vtdata/vtLog.h"
 
 #include "app.h"
@@ -73,6 +74,11 @@ bool vtApp::OnInit()
 	g_App.Startup();	// starts log
 
 	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
+#if WIN32
+	VTLOG(" Running on: ");
+	LogWindowsVersion();
+#endif
+
 	Args(argc, argv);
 
 	// Look for all terrains on all data paths
