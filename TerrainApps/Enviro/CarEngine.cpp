@@ -118,7 +118,7 @@ void CarEngine::SharedConstructor(FPoint3 pos, vtHeightField*  grid, float targe
 }
 
 //gets the path from given file.
-void CarEngine::GetPath(const char* filename, RoadMapGeom* roadmap) {
+void CarEngine::GetPath(const char* filename, vtRoadMap3d* roadmap) {
 	ifstream file(filename, ios::in);
 	if (!file) {
 		//error
@@ -428,12 +428,12 @@ bool CarEngine::SetTires()
 {
 	vtGroup *tires = FindTires((vtTransform *) GetTarget());
 	if (tires != NULL) {
-		vtMovable *tModel;
+		vtTransform *tModel;
 		const char* tName;
 		int numChild = tires->GetNumChildren();
 		int i = 0;
 		while (i < numChild) {
-			tModel = (vtMovable *) tires->GetChild(i);
+			tModel = (vtTransform *) tires->GetChild(i);
 			tName = tModel->GetName2();
 			if (strend (tName, "front left")) {
 				m_pFrontLeft = tModel;
@@ -444,13 +444,13 @@ bool CarEngine::SetTires()
 			} else if (strend  (tName, "rear right")) {
 				m_pRearRight = tModel;
 			} else {
-				TRACE("INVALID TIRE IN MODEL: %s!!!!!\n",((vtMovable *) GetTarget())->GetName2());
+				TRACE("INVALID TIRE IN MODEL: %s!!!!!\n",((vtTransform *) GetTarget())->GetName2());
 			}
 			i++;
 		}
 		return true;
 	} else {
-		TRACE("TIRES NOT FOUND IN MODEL: %s!!!!!\n", ((vtMovable *) GetTarget())->GetName2());
+		TRACE("TIRES NOT FOUND IN MODEL: %s!!!!!\n", ((vtTransform *) GetTarget())->GetName2());
 		return false;
 	}
 
@@ -733,7 +733,7 @@ int CarEngine::PickLane() {
 }
 
 void CarEngine::MoveCar(FPoint3 vNext) {
-	vtMovable *pTarget = (vtMovable *) GetTarget();
+	vtTransform *pTarget = (vtTransform *) GetTarget();
 
 	//move the car so that the wheels will be set at new location
 	pTarget->SetTrans(vNext);
@@ -851,7 +851,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 
 //turn toward coordinates, but there will be a limit on how much of a turn.
 void CarEngine::TurnToward(FPoint3 target, float time) {
-	vtMovable *car = (vtMovable *) GetTarget();
+	vtTransform *car = (vtTransform *) GetTarget();
 	float newangle,angle,deltax,deltaz;
 
 	UndoOrientation();
