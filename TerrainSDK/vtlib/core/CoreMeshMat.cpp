@@ -771,15 +771,13 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 	if (*fname == 0)
 		return -1;
 
-	vtImage *pImage = new vtImage(fname);
-	if (!pImage->LoadedOK())
-	{
-		pImage->Release();
+	vtImage *pImage = vtImageRead(fname);
+	if (!pImage)
 		return -1;
-	}
+
 	int index = AddTextureMaterial(pImage, bCulling, bLighting,
 		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen, bClamp);
-	pImage->Release();
+	pImage->Release();	// pass ownership to the material
 	return index;
 }
 
