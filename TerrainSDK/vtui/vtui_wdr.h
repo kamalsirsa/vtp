@@ -50,27 +50,28 @@ extern wxSizer *g_pTopGroup;
 #define ID_EDGE 10016
 extern wxSizer *g_pEdgeGroup;
 #define ID_MATERIAL2 10017
-#define ID_FACADE 10018
-#define ID_COLOR2 10019
-#define ID_EDGE_SLOPE 10020
-#define ID_FEATURES 10021
-#define ID_FEAT_CLEAR 10022
-#define ID_FEAT_WALL 10023
-#define ID_FEAT_WINDOW 10024
-#define ID_FEAT_DOOR 10025
+#define ID_MODIFY_FACADE 10018
+#define ID_FACADE 10019
+#define ID_COLOR2 10020
+#define ID_EDGE_SLOPE 10021
+#define ID_FEATURES 10022
+#define ID_FEAT_CLEAR 10023
+#define ID_FEAT_WALL 10024
+#define ID_FEAT_WINDOW 10025
+#define ID_FEAT_DOOR 10026
 wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TYPE 10026
-#define ID_HEIGHTEDIT 10027
-#define ID_HEIGHTSLIDER 10028
-#define ID_SPACINGEDIT 10029
-#define ID_SPACINGSLIDER 10030
+#define ID_TYPE 10027
+#define ID_HEIGHTEDIT 10028
+#define ID_HEIGHTSLIDER 10029
+#define ID_SPACINGEDIT 10030
+#define ID_SPACINGSLIDER 10031
 wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_HEIGHTGRID 10031
-#define ID_SCALERADIOBOX 10032
-#define ID_RECALCULATEHEIGHTS 10033
-#define ID_BASELINEOFFSET 10034
+#define ID_HEIGHTGRID 10032
+#define ID_SCALERADIOBOX 10033
+#define ID_RECALCULATEHEIGHTS 10034
+#define ID_BASELINEOFFSET 10035
 wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

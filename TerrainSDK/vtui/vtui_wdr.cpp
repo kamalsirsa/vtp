@@ -254,10 +254,10 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
 
     wxBoxSizer *item28 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("Facade:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item29 = new wxButton( parent, ID_MODIFY_FACADE, _("Facade"), wxDefaultPosition, wxDefaultSize, 0 );
     item28->Add( item29, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_FACADE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_PROCESS_ENTER );
+    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_FACADE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY|wxTE_PROCESS_ENTER );
     item28->Add( item30, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     item22->Add( item28, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -293,10 +293,10 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     wxButton *item40 = new wxButton( parent, ID_FEAT_CLEAR, _("Clear"), wxDefaultPosition, wxSize(40,-1), 0 );
     item39->Add( item40, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxButton *item41 = new wxButton( parent, ID_FEAT_WALL, _("Wall"), wxDefaultPosition, wxSize(32,-1), 0 );
+    wxButton *item41 = new wxButton( parent, ID_FEAT_WALL, _("Wall"), wxDefaultPosition, wxSize(34,-1), 0 );
     item39->Add( item41, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
-    wxButton *item42 = new wxButton( parent, ID_FEAT_WINDOW, _("Window"), wxDefaultPosition, wxSize(46,-1), 0 );
+    wxButton *item42 = new wxButton( parent, ID_FEAT_WINDOW, _("Window"), wxDefaultPosition, wxSize(50,-1), 0 );
     item39->Add( item42, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
     wxButton *item43 = new wxButton( parent, ID_FEAT_DOOR, _("Door"), wxDefaultPosition, wxSize(34,-1), 0 );
