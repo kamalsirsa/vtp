@@ -331,6 +331,8 @@ int vtApp::OnExit()
 //
 void vtApp::RefreshTerrainList()
 {
+	VTLOG("RefreshTerrainList:\n");
+
 	vtStringArray &paths = g_Options.m_DataPaths;
 
 	terrain_files.clear();
@@ -363,6 +365,7 @@ void vtApp::RefreshTerrainList()
 			}
 		}
 	}
+	VTLOG("RefreshTerrainList done.\n");
 }
 
 //
@@ -416,6 +419,8 @@ vtString vtApp::GetIniFileForTerrain(const vtString &name)
 
 int EditTerrainParameters(wxWindow *parent, const char *filename)
 {
+	VTLOG("EditTerrainParameters '%s'\n", filename);
+
 	vtString fname = filename;
 
 	TParamsDlg dlg(parent, -1, _("Terrain Creation Parameters"), wxDefaultPosition);

@@ -21,6 +21,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
 #include "vtdata/FilePath.h"		// for FindFileOnPaths()
+#include "vtdata/vtLog.h"
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"
 
@@ -103,6 +104,8 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	VTLOG("TParamsDlg: Constructing.\n");
+
 	TParamsFunc( this, TRUE );
 
 	m_bSetting = false;
@@ -246,6 +249,7 @@ TParamsDlg::~TParamsDlg()
 //
 void TParamsDlg::SetParams(const TParams &Params)
 {
+	VTLOG("TParamsDlg::SetParams\n");
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// overall name
@@ -355,6 +359,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 //
 void TParamsDlg::GetParams(TParams &Params)
 {
+	VTLOG("TParamsDlg::GetParams\n");
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// overall name
@@ -617,6 +622,8 @@ void TParamsDlg::OnTileSize( wxCommandEvent &event )
 
 void TParamsDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
+	VTLOG("TParamsDlg::OnInitDialog\n");
+
 	m_bReady = false;
 	m_bSetting = true;
 
