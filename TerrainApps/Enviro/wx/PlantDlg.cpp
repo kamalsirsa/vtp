@@ -243,5 +243,8 @@ void PlantDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
+
+	// also keep main Enviro object in synch
+	g_App.SetPlantOptions(m_opt);
 }
 
