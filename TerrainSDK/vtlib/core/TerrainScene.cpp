@@ -98,7 +98,7 @@ void vtTerrainScene::_CreateSkydome(const StringArray &datapath)
 	m_pSkyDome->SetDuskTimes(17, 0, 19, 0);
 
 	m_pSkyDome->Create(bsc, 3, 1.0f,	// initially unit radius
-					   sun, moon);
+		sun, moon);
 	m_pSkyDome->SetName2("The Sky");
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
 
@@ -268,6 +268,8 @@ void vtTerrainScene::ToggleFog()
 
 void vtTerrainScene::SetFog(bool fog)
 {
+	if (!m_pCurrentTerrain)
+		return;
 	m_bFog = fog;
 	if (m_bFog)
 	{
@@ -292,4 +294,3 @@ void vtTerrainScene::SetTimeOfDay(unsigned int time, bool fFullRefresh)
 	}
 	// TODO? Update the fog color to match the color of the horizon.
 }
-
