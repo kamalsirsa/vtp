@@ -21,39 +21,16 @@
 #define BUFFER_SIZE		8000
 #define MAX_SEGMENT_LENGTH	80.0						// in meters
 
-bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType &stype, int &priority)
+void RoadMapEdit::ApplyDLGAttributes(int road_type, int &lanes,
+									 SurfaceType &stype, int &priority)
 {
-	// check to see if there is an attribute for road type
-	int road_type = 0;
-	for (int j = 0; j < pLine->m_iAttribs; j++)
-	{
-		if (pLine->m_attr[j].m_iMajorAttr == 170 &&
-			((pLine->m_attr[j].m_iMinorAttr >= 201 && pLine->m_attr[j].m_iMinorAttr <= 213) ||
-			(pLine->m_attr[j].m_iMinorAttr >= 217 && pLine->m_attr[j].m_iMinorAttr <= 222) ||
-			(pLine->m_attr[j].m_iMinorAttr >= 401 && pLine->m_attr[j].m_iMinorAttr <= 405))
-			)
-		{
-			road_type = pLine->m_attr[j].m_iMinorAttr;
-			break;
-		}
-		if (pLine->m_attr[j].m_iMajorAttr == 180 && 
-			(pLine->m_attr[j].m_iMinorAttr == 201 ||
-			 pLine->m_attr[j].m_iMinorAttr == 202)
-			) {
-			road_type = -pLine->m_attr[j].m_iMinorAttr;
-		}
-	}
-	stype = SURFT_NONE;
-	priority = 0;
-
-	// consider only specific roads (highway)
 	switch (road_type)
 	{
 	case -201:
 	case -202:
 		stype = SURFT_RAILROAD;
 		lanes = 1;
-		priority=1;
+		priority = 1;
 		break;
 	case 201:	//	Primary route, class 1, symbol undivided
 	case 202:	//	Primary route, class 1, symbol divided by centerline
@@ -106,8 +83,36 @@ bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType
 		break;
 	case 213:	//	Footbridge
 		break;
-
 	}
+}
+
+bool RoadMapEdit::attribute_filter_roads(DLGLine *pLine, int &lanes,
+										 SurfaceType &stype, int &priority)
+{
+	// check to see if there is an attribute for road type
+	int road_type = 0;
+	for (int j = 0; j < pLine->m_iAttribs; j++)
+	{
+		if (pLine->m_attr[j].m_iMajorAttr == 170 &&
+			((pLine->m_attr[j].m_iMinorAttr >= 201 && pLine->m_attr[j].m_iMinorAttr <= 213) ||
+			(pLine->m_attr[j].m_iMinorAttr >= 217 && pLine->m_attr[j].m_iMinorAttr <= 222) ||
+			(pLine->m_attr[j].m_iMinorAttr >= 401 && pLine->m_attr[j].m_iMinorAttr <= 405))
+			)
+		{
+			road_type = pLine->m_attr[j].m_iMinorAttr;
+			break;
+		}
+		if (pLine->m_attr[j].m_iMajorAttr == 180 && 
+			(pLine->m_attr[j].m_iMinorAttr == 201 ||
+			 pLine->m_attr[j].m_iMinorAttr == 202)
+			) {
+			road_type = -pLine->m_attr[j].m_iMinorAttr;
+		}
+	}
+	stype = SURFT_NONE;
+	priority = 0;
+
+	ApplyDLGAttributes(road_type, lanes, stype, priority);
 	return (stype != SURFT_NONE);
 }
 
@@ -570,68 +575,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 	stype = SURFT_NONE;
 	priority = 0;
 
-	// consider only specific roads (highway)
-	switch (road_type)
-	{
-	case -201:
-	case -202:
-		stype = SURFT_RAILROAD;
-		lanes = 1;
-		priority=1;
-		break;
-	case 201:	//	Primary route, class 1, symbol undivided
-	case 202:	//	Primary route, class 1, symbol divided by centerline
-	case 203:	//	Primary route, class 1, divided, lanes separated
-	case 204:	//	Primary route, class 1, one way, other than divided highway
-		stype = SURFT_PAVED;
-		lanes = 4;
-		priority = 1;
-		break;
-	case 205:	//	Secondary route, class 2, symbol undivided
-	case 206:	//	Secondary route, class 2, symbol divided by centerline
-	case 207:	//	Secondary route, class 2, symbol divided, lanes separated
-	case 208:	//	Secondary route, class 2, one way, other then divided highway
-		stype = SURFT_PAVED;
-		lanes = 2;
-		priority = 2;
-		break;
-	case 209:	//	Road or street, class 3
-	case 217:	//	Road or street, class 3, symbol divided by centerline
-	case 218:	//	Road or street, class 3, divided lanes separated
-	case 221:	//	Road in street, class 3, one way
-	case 222:	//  Road in transition
-	case 223:	//  Road in service facility, rest area or viewpoint.
-	case 5:		//  cul-de-sac
-	case 405:	//  non-standard section of road...???
-		stype = SURFT_PAVED;
-		lanes = 2;
-		priority = 3;
-		break;
-	case 210:	//	Road or street, class 4
-	case 219:	//  Road or street, class 4, 1-way
-		stype = SURFT_DIRT;
-		lanes = 2;
-		priority = 5;
-		break;
-	case 402:	//	Ramp in interchange
-		stype = SURFT_PAVED;
-		lanes = 1;
-		priority = 4;
-		break;
-	case 211:	//	Trail, class 5, other than four-wheel drive vehicle
-		stype = SURFT_TRAIL;
-		lanes = 1;
-		priority = 10;
-		break;
-	case 212:	//	Trail, class 5, four-wheel-drive vehicle
-		stype = SURFT_2TRACK;
-		lanes = 1;
-		priority = 6;
-		break;
-	case 213:	//	Footbridge
-		break;
-
-	}
+	ApplyDLGAttributes(road_type, lanes, stype, priority);
 	return (stype != SURFT_NONE);
 }
 
@@ -645,31 +589,38 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 	OGRGeometry		*pGeom;
 	OGRPoint		*pPoint;
 	OGRLineString   *pLineString;
+	OGRFeatureDefn	*defn;
+	const char		*layer_name;
 
 	NodeEdit *pN;
 	LinkEdit *pR;
 	NodeEditPtr *pNodeLookup;
 
-	// Assume that this data source is a USGS SDTS DLG
+	// 
+	// Check if this data source is a USGS SDTS DLG
 	//
 	// Iterate through the layers looking for the ones we care about
 	//
+	bool bIsSDTS = false;
 	int num_layers = pDatasource->GetLayerCount();
 	for (i = 0; i < num_layers; i++)
 	{
 		pLayer = pDatasource->GetLayer(i);
-		if (!pLayer)
-			continue;
+		defn = pLayer->GetLayerDefn();
+		layer_name = defn->GetName();
+		if (!strcmp(layer_name, "NO01"))
+			bIsSDTS = true;
+	}
 
+	for (i = 0; i < num_layers; i++)
+	{
+		pLayer = pDatasource->GetLayer(i);
 		feature_count = pLayer->GetFeatureCount();
   		pLayer->ResetReading();
-		OGRFeatureDefn *defn = pLayer->GetLayerDefn();
-		if (!defn)
-			continue;
+		defn = pLayer->GetLayerDefn();
+		layer_name = defn->GetName();
 
-		const char *layer_name = defn->GetName();
-
-		// Nodes
+		// Nodes (from an SDTS DLG file)
 		if (!strcmp(layer_name, "NO01"))
 		{
 			// Get the projection (SpatialReference) from this layer
@@ -697,8 +648,8 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pNodeLookup[pN->m_id] = pN;
 			}
 		}
-		// Lines (Arcs, Roads)
-		if (!strcmp(layer_name, "LE01"))
+		// Lines (Arcs, Roads) (from an SDTS DLG file)
+		else if (!strcmp(layer_name, "LE01"))
 		{
 			// get field indices
 			int index_snid = defn->GetFieldIndex("SNID");
@@ -797,12 +748,26 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pR->GetNode(1)->AddLink(pR);
 			}
 		}
+		else if (!bIsSDTS)
+		{
+			// For OGR import from a file that isn't an SDTS-DLG, import what
+			// we can from the first layer, then stop.
+
+			int num_fields = defn->GetFieldCount();
+			OGRwkbGeometryType geom_type = defn->GetGeomType();
+			for (j = 0; j < num_fields; j++)
+			{
+				OGRFieldDefn *field_def = defn->GetFieldDefn(j);
+				const char *field_name = field_def->GetNameRef();
+			    OGRFieldType field_type = field_def->GetType();
+			}
+		}
 	}
 	GuessIntersectionTypes();
 }
 
 #if 0
-	// unused code; here in care is becomes useful in the future
+	// unused code; here in case is becomes useful in the future
 {
 	{
 		int field_count1 = defn->GetFieldCount();

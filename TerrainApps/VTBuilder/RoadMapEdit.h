@@ -200,6 +200,7 @@ public:
 	DRECT *DeSelectAll(int &numRegions);
 
 protected:
+	void ApplyDLGAttributes(int road_type, int &lanes, SurfaceType &stype, int &priority);
 	bool extract_road_attributes(const char *strEntity, int &lanes,
 								  SurfaceType &stype, int &priority);
 
