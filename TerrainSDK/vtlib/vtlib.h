@@ -14,8 +14,8 @@
 
 // OpenGL headers
 #if WIN32
-  #if VTLIB_PLIB
-	#include <windows.h>	// PLIB requires the full windows.h
+  #if VTLIB_PLIB || VTLIB_PSM
+	#include <windows.h>	// PLIB and PSM require the full windows.h
   #else
 	// these definitions let us include gl.h without the entire Windows headers
 	#include "core/winglue.h"
@@ -24,37 +24,46 @@
 
 #include <GL/gl.h>
 
-//
-// Base classes from which the API-specific implementation
-// classes are derived.
-//
-#include "core/Base.h"
+#ifdef VTLIB_PSM
+  #include "vtpsm/BasePSM.h"
+#else
+  //
+  // Base classes from which the API-specific implementation
+  // classes are derived.
+  //
+  #include "core/Base.h"
+#endif
 
 //
 // API-specific headers
 //
 
-////////////////////////////// DSM ///////////////////////////////
-#if VTLIB_DSM
+////////////////////////////// PSM ///////////////////////////////
+#if VTLIB_PSM
+
+	// the following symbols must be allowed to have PSM definitions
+	#undef DECLARE_CLASS
+	#undef IMPLEMENT_CLASS
+	#undef Ref
+
 	#define SUPPORT_XFROG 0
-	#define ISM_OGL
-	#ifdef _DEBUG
-	#define ISM_NOTHREAD 1
-	#else
-	#define ISM_NOTHREAD 0
-	#endif
+	#define PV_OGL
 
-	#include "ismcore.h"
-	#include "ismplugins.h"
-	#include "uiplugins.h"
-	#include "utils/VCursor.h"
-	#include "utils/flyer.h"
+	#include "psm.h"
+	#include "psutil.h"
 
-	#include "vtdsm/ImageDSM.h"
-	#include "vtdsm/MeshMat.h"
-	#include "vtdsm/Movable.h"
-	#include "vtdsm/SceneDSM.h"
-#endif	// DSM
+	#include "vtpsm/MathPSM.h"
+	#include "vtpsm/ImagePSM.h"
+	#include "vtpsm/MeshMat.h"
+	#include "vtpsm/NodePSM.h"
+	#include "vtpsm/ScenePSM.h"
+
+	// the following symbols must be allowed to have non-PSM meanings later
+	#undef DECLARE_CLASS
+	#undef IMPLEMENT_CLASS
+	#undef Ref
+
+#endif	// PSM
 
 ////////////////////////////// PLIB/SSG ////////////////////////////
 #if VTLIB_PLIB
@@ -127,4 +136,5 @@
 	#include "vtsgl/NodeSGL.h"
 	#include "vtsgl/SceneSGL.h"
 #endif	// SGL
+
 
