@@ -38,8 +38,8 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
-	if (m_pMats) delete m_pMats;
-	if (m_pMesh) delete m_pMesh;
+	// don't delete materials or meshes here, they are deleted when they're
+	//  removed or dereferenced elsewhere.
 #if SUPPORT_XFROG
 	if (m_pFrogModel) delete m_pFrogModel;
 #endif
