@@ -16,6 +16,7 @@ class FenceDlg;
 class CameraDlg;
 class LocationDlg;
 class BuildingDlg;
+class UtilDlg;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -124,6 +125,7 @@ public:
 	SceneGraphDlg		*m_pSceneGraphDlg;
 	PlantDlg			*m_pPlantDlg;
 	FenceDlg			*m_pFenceDlg;
+	UtilDlg				*m_pUtilDlg;
 	CameraDlg			*m_pCameraDlg;
 	LocationDlg			*m_pLocationDlg;
 	BuildingDlg			*m_pBuildingDlg;
