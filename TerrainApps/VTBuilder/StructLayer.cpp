@@ -176,6 +176,11 @@ void vtStructureLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
+void vtStructureLayer::SetProjection(vtProjection &proj)
+{
+	m_proj = proj;
+}
+
 bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 {
 	if (proj == m_proj)

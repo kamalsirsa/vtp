@@ -122,6 +122,11 @@ void vtVegLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
+void vtVegLayer::SetProjection(vtProjection &proj)
+{
+	m_proj = proj;
+}
+
 bool vtVegLayer::OnSave()
 {
 	// unimplemented

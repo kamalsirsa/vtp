@@ -33,6 +33,7 @@ public:
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
+	void SetProjection(vtProjection &proj);
 
 	// Importing data into veglayer
 	VegLayerType m_VLType;
