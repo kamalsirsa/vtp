@@ -1682,10 +1682,6 @@ void BuilderView::UpdateMove()
 		dl.Add(moved_by);
 		m_EditBuilding.SetFootprint(i, dl);
 	}
-
-	p = m_pCurBuilding->GetLocation();
-	p += moved_by;
-	m_EditBuilding.SetLocation(p);
 }
 
 void BuilderView::UpdateResizeScale()
