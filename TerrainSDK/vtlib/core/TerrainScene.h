@@ -37,6 +37,9 @@ public:
 	void Finish(const vtStringArray &datapath) {}	// dummy; obsolete method
 	void SetTerrain(vtTerrain *pTerrain);
 
+	vtRoot *GetTop() { return m_pTop; }
+	vtSkyDome *GetSkyDome() { return m_pSkyDome; }
+
 	/// Get the first terrain in the list.
 	vtTerrain *GetFirstTerrain() { return m_pFirstTerrain; }
 
@@ -50,14 +53,14 @@ public:
 
 	void SetTime(time_t time);
 
-	// main scene graph outline
-	vtRoot		*m_pTop;
-	vtSkyDome	*m_pSkyDome;
-
 	// skydome
 	RGBf		horizon_color, azimuth_color;
 
 protected:
+	// main scene graph outline
+	vtRoot		*m_pTop;
+	vtSkyDome	*m_pSkyDome;
+
 	void _CreateSkydome(const vtStringArray &datapath);
 	void _CreateEngines(bool bDoSound);
 
