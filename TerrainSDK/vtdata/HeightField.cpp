@@ -519,6 +519,13 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	float fMin, fMax;
 	GetHeightExtents(fMin, fMax);
 	float fRange = fMax - fMin;
+	bool bFlat = (fRange < 0.0001f);
+	if (bFlat)
+	{
+		// avoid numeric trouble with flat terrains by growing range
+		fMin -= 1;
+		fMax += 1;
+	}
 
 	// Rather than look through the color map for each pixel, pre-build
 	//  a color lookup table once - should be faster in nearly all cases.
