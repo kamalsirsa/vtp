@@ -439,6 +439,14 @@ void vtFrame::CreateToolbar()
 
 void vtFrame::SetMode(MouseMode mode)
 {
+	// Show/hide the modeless dialogs as appropriate
+	m_pFenceDlg->Show(mode == MM_FENCES);
+	m_pUtilDlg->Show(mode == MM_ROUTES);
+	m_pInstanceDlg->Show(mode == MM_INSTANCES);
+	m_pDistanceDlg->Show(mode == MM_MEASURE);
+
+	g_App.SetMode(mode);
+
 	// Show/hide plant dialog
 	if (mode == MM_PLANTS)
 	{
@@ -448,14 +456,6 @@ void vtFrame::SetMode(MouseMode mode)
 	}
 	else
 		m_pPlantDlg->Show(false);
-
-	// Show/hide the other modeless dialogs as appropriate
-	m_pFenceDlg->Show(mode == MM_FENCES);
-	m_pUtilDlg->Show(mode == MM_ROUTES);
-	m_pInstanceDlg->Show(mode == MM_INSTANCES);
-	m_pDistanceDlg->Show(mode == MM_MEASURE);
-
-	g_App.SetMode(mode);
 }
 
 void vtFrame::OnChar(wxKeyEvent& event)
