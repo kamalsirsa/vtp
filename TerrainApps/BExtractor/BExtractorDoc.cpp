@@ -67,6 +67,10 @@ BExtractorDoc::BExtractorDoc()
 	m_picLoaded = false;
 
 	m_hdd = DrawDibOpen();
+
+	SetupEPSGDatums();
+
+	m_proj.SetWellKnownGeogCS( "WGS84" );
 	m_proj.SetUTMZone(1);
 }
 
@@ -372,7 +376,8 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 	}
 
 	// we don't know projection unless we have read a geotiff
-	if (m_pImage->m_pSpatialReference == NULL)
+	OGRSpatialReference *srs = m_pImage->m_pSpatialReference;
+	if (srs == NULL || (srs != NULL && srs->GetRoot() == NULL))
 	{
 		VTLOG("no SRS, opening Projection dialog.\n");
 		// Assume that I have loaded from a world file
@@ -383,6 +388,7 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 		if (dlg.DoModal() != IDOK)
 			return;
 
+		m_proj.SetWellKnownGeogCS( "WGS84" );
 		switch (dlg.m_iProjection)
 		{
 		case 0: // UTM
