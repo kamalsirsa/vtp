@@ -159,6 +159,8 @@ void BExtractorView::OnDraw(CDC* pDC)
 
 	// now, draw
 
+	// try to do clipping in doubles, not ints, to minimize roundoff errors
+
 	// how big is the bitmap going to be on screen
 	CPoint dest_size;
 	dest_size.x = (long)(pImage->m_fImageWidth / m_fScale);
@@ -168,33 +170,40 @@ void BExtractorView::OnDraw(CDC* pDC)
 	dest_offset.x = UTM_sx(pImage->m_xUTMoffset);
 	dest_offset.y = UTM_sy(pImage->m_yUTMoffset);
 
-	// draw image it's original size (doesn't fill window)
-	CRect srcRect(0,0,pImage->m_PixelSize.x, pImage->m_PixelSize.y);
-	double ratio_x, ratio_y;
-	ratio_x = (double)pImage->m_PixelSize.x / dest_size.x;
-	ratio_y = (double)pImage->m_PixelSize.y / dest_size.y;
-	//clip stuff, so we only blit what we need
+	//get client window size
 	CRect r;
-	GetClientRect(r); //get client window size
+	GetClientRect(r);
+
+	//clip stuff, so we only blit what we need
 	if ((dest_offset.x + dest_size.x < r.left) ||
 		(dest_offset.y + dest_size.y < r.top) ||
 		(dest_offset.x > r.right) ||
 		(dest_offset.y > r.bottom))
 		//image completely off screen, return
 		return;
+
+	CRect srcRect(0, 0, pImage->m_PixelSize.x, pImage->m_PixelSize.y);
+	double ratio_x, ratio_y;
+	ratio_x = (double)pImage->m_PixelSize.x / dest_size.x;
+	ratio_y = (double)pImage->m_PixelSize.y / dest_size.y;
 	int diff;
+	int diff_source;
 
 	// clip left
 	diff = r.left - dest_offset.x;
+	diff_source = (long)(diff * ratio_x); // round to number of whole pixels
+	diff = diff_source / ratio_x;
 	if (diff > 0)
 	{
 		dest_offset.x += diff;
 		dest_size.x -= diff;
-		srcRect.left += (long)(diff * ratio_x);
+		srcRect.left += diff_source;
 	}
 
 	// clip top
 	diff = r.top - dest_offset.y;
+	diff_source = (long)(diff * ratio_y); // round to number of whole pixels
+	diff = diff_source / ratio_y;
 	if (diff > 0)
 	{
 		dest_offset.y += diff;
@@ -204,6 +213,8 @@ void BExtractorView::OnDraw(CDC* pDC)
 
 	// clip right
 	diff = (dest_offset.x + dest_size.x) - r.right;
+	diff_source = (long)(diff * ratio_x); // round to number of whole pixels
+	diff = diff_source / ratio_x;
 	if (diff > 0)
 	{
 		dest_size.x -= diff;
@@ -212,6 +223,8 @@ void BExtractorView::OnDraw(CDC* pDC)
 
 	// clip bottom
 	diff = (dest_offset.y + dest_size.y) - r.bottom;
+	diff_source = (long)(diff * ratio_y); // round to number of whole pixels
+	diff = diff_source / ratio_y;
 	if (diff > 0)
 	{
 		dest_size.y -= diff;
