@@ -131,7 +131,7 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 void vtTerrainScene::_CreateEngines(bool bDoSound)
 {
 	// Set Time in motion
-	m_pTime = new TimeEngine(0);
+	m_pTime = new TimeEngine();
 	m_pTime->SetTarget((TimeTarget *)this);
 	m_pTime->SetName2("Terrain Time");
 	m_pTime->SetEnabled(false);
@@ -307,9 +307,13 @@ void vtTerrainScene::SetFog(bool fog)
 
 void vtTerrainScene::SetTime(time_t time)
 {
+	// Convert to local time
+	struct tm *pTime = localtime(&time);
+
 	if (m_pSkyDome)
 	{
-		m_pSkyDome->SetTimeOfDay(time);
+//		m_pSkyDome->SetTimeOfDay(time);
+		m_pSkyDome->SetTimeOfDay(pTime->tm_hour * 3600 + pTime->tm_min * 60 + pTime->tm_sec);
 //		m_pSkyDome->ApplyDayColors();
 // TODO? Update the fog color to match the color of the horizon.
 	}
