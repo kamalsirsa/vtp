@@ -355,7 +355,7 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImagePrefix)
 {
 	m_mats = new vtMaterialArray();
-	bool bCulling = true;
+	bool bCulling = false;
 	bool bLighting = false;
 
 	m_red = m_mats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
@@ -421,7 +421,7 @@ struct dymax_info
 	int parent_mface;
 	int parentedge;
 }
-dymax_subfaces[22] = 
+dymax_subfaces[22] =
 {
 	{  0, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, -1, -1, -1 }, // 0
 
@@ -564,8 +564,21 @@ void IcoGlobe::SetUnfolding(float f)
 		m_xform[i]->SetTrans(pos);
 		m_xform[i]->RotateLocal(m_axis[i], -f * dih);
 	}
-	m_xform[0]->Identity();
-	m_xform[0]->RotateLocal(m_flat_axis, m_flat_angle * f);
+
+	// deflate as we unfold
+	SetInflation(1.0f-f);
+
+	// interpolate from No rotation to the desired rotation
+	FQuat qnull;
+	qnull.Set(0,0,0,1);
+	FQuat q;
+	q.Slerp(qnull, m_diff, f);
+
+	FMatrix3 m3;
+	q.GetMatrix(m3);
+
+	FMatrix4 m4 = m3;
+	m_xform[0]->SetTransform1(m4);
 }
 
 /**
@@ -664,9 +677,6 @@ void IcoGlobe::CreateUnfoldableDymax()
 
 		geom->SetMaterials(m_mats);
 		geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
-
-		// flatten mesh
-//		refresh_face_positions(m_mesh[i], i, 0);
 	}
 	m_top->AddChild(m_xform[0]);
 
@@ -675,16 +685,26 @@ void IcoGlobe::CreateUnfoldableDymax()
 	for (i = 1; i < 22; i++)
 		SetMeshConnect(i);
 
-	// Determine angle and offset to orient flat map toward viewer.
-	// When unfolded, the edge vector(2->0) of face 0 corresponds to
-	// (1,0,0) in world coords.
-	DPoint3 v0 = m_verts[icosa_face_v[0][0]];
-	DPoint3 v2 = m_verts[icosa_face_v[0][2]];
-	FPoint3 diff = v0 - v2;
-	diff.Normalize();
-	FPoint3 right(1, 0, 0);
-	m_flat_axis = right.Cross(diff);
-	m_flat_angle = (float) acos(right.Dot(m_flat_axis));
+	// Determine necessary rotation to orient flat map toward viewer.
+	FQuat q1, q2, q3;
+	FPoint3 v0 = m_verts[icosa_face_v[0][0]];
+	FPoint3 v1 = m_verts[icosa_face_v[0][1]];
+	FPoint3 v2 = m_verts[icosa_face_v[0][2]];
+
+	// First, a rotation to turn the globe so that the edge faces down Z
+	FPoint3 edge = v0 - v2;
+	FPoint3 fnorm = (v0 + v1 + v2).Normalize();
+	q1.SetFromVectors(edge, fnorm);
+	q1.Invert();
+
+	// then a rotation to turn it toward the user
+	q2.SetFromVectors(FPoint3(0,1,0), FPoint3(0,0,1));
+
+	// then a rotation to spin it PI/2
+	q3.SetFromVectors(FPoint3(0,0,-1), FPoint3(1,0,0));
+
+	// combine them
+	m_diff = q1 * q2 * q3;
 
 	// Create a geom to contain the surface mesh features
 	m_geom = new vtGeom();
