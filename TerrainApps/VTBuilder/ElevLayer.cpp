@@ -17,7 +17,7 @@
 #include "RawDlg.h"
 #include "vtdata/vtDIB.h"
 
-#define SHADING_BIAS	200.0f
+#define SHADING_BIAS	200
 
 ////////////////////////////////////////////////////////////////////
 
@@ -31,13 +31,12 @@ vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 	m_pGrid = NULL;
 }
 
-vtElevLayer::vtElevLayer(DRECT area, int iColumns, int iRows, bool bFloats,
-					   vtProjection proj) :
-		vtLayer(LT_ELEVATION)
+vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
+	bool bFloats, vtProjection proj) : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
 	m_pGrid = new vtElevationGrid(area, iColumns, iRows,
-		bFloats, proj);
+			bFloats, proj);
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 }
 
@@ -141,9 +140,9 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	int client_width, client_height;
 	pView->GetClientSize(&client_width, &client_height); //get client window size
 	if ((destRect.x + destRect.GetWidth() < 0) ||
-		(destRect.y + destRect.GetHeight() < 0) ||
-		(destRect.x > client_width) ||
-		(destRect.y > client_height))
+			(destRect.y + destRect.GetHeight() < 0) ||
+			(destRect.x > client_width) ||
+			(destRect.y > client_height))
 		//image completely off screen, return
 		return;
 	int diff;
@@ -189,7 +188,8 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 #if WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 #endif
-	pDC->DrawBitmap(*m_pBitmap, destRect.x/scale_x, destRect.y/scale_y, m_bHasMask);
+	pDC->DrawBitmap(*m_pBitmap, (int) (destRect.x/scale_x),
+		(int) (destRect.y/scale_y), m_bHasMask);
 
 	// restore
 	pDC->SetUserScale(1.0, 1.0);
@@ -580,17 +580,17 @@ void vtElevLayer::FillGaps()
 				sum = 0;
 				surrounding = 0;
 				for (ix = -1; ix <= 1; ix++)
-				for (jx = -1; jx <= 1; jx++)
-				{
-					if (ix == 0 && jx == 0) continue;
-					if (i+ix < 0 || i+ix >= m_iColumns) continue;
-					if (j+jx < 0 || j+jx >= m_iRows) continue;
+					for (jx = -1; jx <= 1; jx++)
+					{
+						if (ix == 0 && jx == 0) continue;
+						if (i+ix < 0 || i+ix >= m_iColumns) continue;
+						if (j+jx < 0 || j+jx >= m_iRows) continue;
 
-					value2 = m_pGrid->GetFValue(i+ix, j+jx);
-					if (value2 == INVALID_ELEVATION) continue;
-					sum += value2;
-					surrounding++;
-				}
+						value2 = m_pGrid->GetFValue(i+ix, j+jx);
+						if (value2 == INVALID_ELEVATION) continue;
+						sum += value2;
+						surrounding++;
+					}
 				if (surrounding != 0)
 					m_pGrid->SetFValue(i, j, sum / surrounding);
 			}
@@ -643,7 +643,7 @@ void vtElevLayer::GetProjection(vtProjection &proj)
 }
 
 bool vtElevLayer::ImportFromFile(wxString &strFileName,
-								 void progress_callback(int am))
+	void progress_callback(int am))
 {
 	wxString strExt = strFileName.AfterLast('.');
 
@@ -685,7 +685,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		success = m_pGrid->LoadFromGTOPO30(strFileName, progress_callback);
 	}
 	else if (!strExt.CmpNoCase("dte") ||
-			 !strExt.CmpNoCase("dt0"))
+			!strExt.CmpNoCase("dt0"))
 	{
 		success = m_pGrid->LoadFromDTED(strFileName, progress_callback);
 	}
@@ -707,9 +707,9 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		}
 	}
 	else if (!strFileName.Right(8).CmpNoCase("catd.ddf") ||
-			 !strExt.Left(3).CmpNoCase("tif") ||
-			 !strExt.Left(3).CmpNoCase("png") ||
-			 !strExt.CmpNoCase("adf"))
+			!strExt.Left(3).CmpNoCase("tif") ||
+			!strExt.Left(3).CmpNoCase("png") ||
+			!strExt.CmpNoCase("adf"))
 	{	
 		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
 	}
@@ -726,7 +726,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			success = m_pGrid->LoadFromRAW(strFileName, dlg.m_iWidth,
-				dlg.m_iHeight, dlg.m_iBytes, dlg.m_fVUnits);
+					dlg.m_iHeight, dlg.m_iBytes, dlg.m_fVUnits);
 		}
 	}
 	if (!success)
@@ -810,4 +810,3 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		strIn += str;
 	}
 }
-
