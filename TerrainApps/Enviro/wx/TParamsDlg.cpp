@@ -1,7 +1,7 @@
 //
 // Name: TParamsDlg.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -56,6 +56,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_LABELS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
 END_EVENT_TABLE()
 
@@ -294,6 +295,7 @@ void TParamsDlg::UpdateEnableState()
 	GetDepressOceanOffset()->Enable(m_bDepressOcean);
 	GetSkytexture()->Enable(m_bSky);
 	GetSkytexture()->Enable(m_bSky);
+	GetLabelFile()->Enable(m_bLabels);
 	GetFogDistance()->Enable(m_bFog);
 }
 
