@@ -710,6 +710,9 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
  */
 void vtContentManager::ReadXML(const char *filename)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	m_strFilename = filename;
 
 	ContentVisitor visitor(this);
