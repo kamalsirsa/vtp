@@ -42,6 +42,8 @@
 #define FSTRING_VTST	"Structure Files (*.vtst)|*.vtst|"
 #define FSTRING_XML		"XML Files (*.xml)|*.xml|"
 
+#define FSTRING_COMP	"Compressed Files (*.tar, *.gz, *.tgz)|*.tar;*.gz;*.tgz|"
+
 enum LayerType
 {
 	LT_UNKNOWN = -1,
