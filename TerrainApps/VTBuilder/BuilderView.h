@@ -197,7 +197,7 @@ protected:
 	DLine2	*WMPolyDraw; // This is WM that is drawn
 	BoolArray *m_NoLines;
 	int		m_iEntities;
-	bool	m_bHidden;
+	bool	m_bHidden;	// Set to true after the hidden line algo has run
 
 	void ImportWorldMap();
 	void DrawWorldMap(wxDC* pDC, vtScaledView *pView);
