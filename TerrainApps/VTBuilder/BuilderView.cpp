@@ -1388,13 +1388,14 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	}
 	else if (code == WXK_F10)
 	{
-		// a place to put quick hacks
+		// a place to put quick hacks and tests
 #if 0
 		vtRawLayer *pRaw = GetMainFrame()->GetActiveRawLayer();
 		if (!pRaw) return;
 		pRaw->ReadGeoURL();
 		Refresh();
 #endif
+#if 0
 		wxString str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
 
 		const char *from = str.mb_str();
@@ -1415,7 +1416,9 @@ void BuilderView::OnChar(wxKeyEvent& event)
 
 		utf8 = str3.to_utf8();
 		VTLOG("Twice converted: %s\n", utf8);
+#endif
 	}
 	else
 		event.Skip();
 }
+
