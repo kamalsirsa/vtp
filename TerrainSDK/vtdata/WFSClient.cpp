@@ -185,8 +185,8 @@ bool GetLayersFromWMS(const char *szServerURL, WFSLayerArray &layers)
 
 #else
 // no support for HTTP
-bool vtFeatures::ReadFeaturesFromWFS(const char *, const char *)
+vtFeatureSet *vtFeatureLoader::ReadFeaturesFromWFS(const char *szServerURL, const char *layername)
 {
-	return false;
+	return NULL;
 }
 #endif	// SUPPORT_HTTP
