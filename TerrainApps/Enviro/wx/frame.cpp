@@ -643,6 +643,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			vtGetTS()->GetSkyDome()->RefreshCelestialObjects();
 		}
 #endif
+#if SUPPORT_QUIKGRID
 		if (pTerr)
 		{
 			ContourConverter cc;
@@ -650,6 +651,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			cc.GenerateContours(500);
 			cc.Finish();
 		}
+#endif
 		break;
 
 	case 4:	// Ctrl-D
