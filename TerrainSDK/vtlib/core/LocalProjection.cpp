@@ -31,7 +31,7 @@ void vtLocalProjection::SetDegreeOrigin(const DPoint2 &degrees)
 	m_EarthOrigin = degrees;
 
 	// estimate meters per degree of longitude, using the terrain origin
-	m_fMetersPerLongitude = EstimateDegreesToMeters(degrees.y);
+	m_fMetersPerLongitude = (float) EstimateDegreesToMeters(degrees.y);
 }
 
 void vtLocalProjection::SetMeterOrigin(const DPoint2 &meters)
