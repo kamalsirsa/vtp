@@ -163,6 +163,9 @@ void vtRoute::_CreateStruct(int iNode)
 	if (!node->m_pTrans)
 	{
 		vtUtilStruct *sobj = node->m_struct;
+		if (!sobj)
+			return;
+
 		vtNode* tower = sobj->m_pTower;
 		if (tower)
 		{
@@ -219,6 +222,10 @@ void vtRoute::_StringWires(long ll, vtHeightField *pHeightField)
 	vtUtilStruct *st0 = n0->m_struct;
 	vtUtilStruct *st1 = n1->m_struct;
 
+	// safety check
+	if (!st0 || !st1)
+		return;
+
 	DPoint2 p0 = n0->m_Point;
 	DPoint2 p1 = n1->m_Point;
 
@@ -258,7 +265,7 @@ void vtRoute::_StringWires(long ll, vtHeightField *pHeightField)
 	}
 }
 
-#define NUM_STRUCT_NAMES 15
+#define NUM_STRUCT_NAMES 14
 
 UtilStructName s_Names[NUM_STRUCT_NAMES] =
 {
@@ -277,8 +284,7 @@ UtilStructName s_Names[NUM_STRUCT_NAMES] =
 	{ "H2", "H-Frame Guyed Tangent", "h2" },
 	{ "H3", "H-Frame Hold Down", "h3" },
 	{ "H4", "H-Frame Large Angle Deadend", "h4" },
-	{ "H5", "H-Frame Light Angle Deadend", "h5" },
-	{ "1U11EC3F", "Lattice Tower2", "LatticeTower" }
+	{ "H5", "H-Frame Light Angle Deadend", "h5" }
 };
 
 bool vtRoute::_LoadStructure(vtUtilNode *node)
