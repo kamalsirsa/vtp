@@ -64,6 +64,7 @@ class vtRoute
 {
 public:
 	vtRoute(vtTerrain* pT);
+	~vtRoute();
 
 	void AddPoint(const DPoint2 &epos, const char *structname);
 

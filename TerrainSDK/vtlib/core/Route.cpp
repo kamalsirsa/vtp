@@ -52,13 +52,21 @@ vtRoute::vtRoute(vtTerrain* pT)
 	m_pTheTerrain = pT;
 
 	m_pWireGeom = new vtGeom;
-	m_pWireGeom->SetName2("Route");
+	m_pWireGeom->SetName2("Route Wires");
 
 	if (m_pRouteMats == NULL)
 		_CreateMaterials();
 	m_pWireGeom->SetMaterials(m_pRouteMats);
 }
 
+vtRoute::~vtRoute()
+{
+	unsigned int i;
+	for (i = 0; i < m_Nodes.GetSize(); i++)
+		delete m_Nodes[i];
+	for (i = 0; i < m_StructObjs.GetSize(); i++)
+		delete m_StructObjs[i];
+}
 
 void vtRoute::AddPoint(const DPoint2 &epos, const char *structname)
 {
@@ -247,12 +255,13 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 	FPoint3 axisY(0, 1, 0);
 	FPoint3 offset, wire0, wire1;
 
+	vtMesh *pWireMesh;
 	for (int j = 0; j< 7; j++)	//7== max number of wires per structure.
 	{
 		if (j >= st1->m_iNumWires)
 			continue;	// skip if no wire.
 
-		vtMesh *pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
+		pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
 
 		offset = st0->m_fpWireAtt1[j];
 		rot.AxisAngle(axisY, n0->dRadAzimuth - PID2f);
@@ -272,6 +281,7 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 
 		pWireMesh->AddStrip2(numiterations+1, 0);
 		m_pWireGeom->AddMesh(pWireMesh, m_mi_wire);
+		pWireMesh->Release();		// pass ownership to geometry
 	}
 }
 
@@ -305,6 +315,7 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 	vtString sStructure = sStructureDataPath;
 	vtString sWires;
 
+	// Check to see if it's already loaded
 	unsigned int i;
 	for (i = 0; i < m_StructObjs.GetSize(); i++)
 	{
@@ -315,6 +326,7 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 		}
 	}
 
+	// If not, look for it in the list of known structure types
 	for (i = 0; i < NUM_STRUCT_NAMES; i++)
 	{
 		if (sname.CompareNoCase(s_Names[i].brief) == 0)
