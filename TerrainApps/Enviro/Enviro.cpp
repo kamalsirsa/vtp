@@ -422,13 +422,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		// make first terrain active
 		SetTerrain(pTerr);
 
-		//  see if there are some routes (profiles) and load them.
-		//	TODO: this should be part of pTerr->create_culture!!!
-		vtString sRouteFile = g_Options.m_strDataPath + "RouteData/test3D";
-		pTerr->LoadRoute(sRouteFile, m_fRouteHeight, m_fRouteSpacing,
-						m_fRouteOffL, m_fRouteOffR, m_fRouteStInc,
-						m_sRouteName);
-
 		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
 		if (g_Options.m_bGravity)
@@ -1248,9 +1241,8 @@ void Enviro::SetFenceOptions(FenceType type, float fHeight, float fSpacing)
 
 void Enviro::start_new_route()
 {
-	vtRoute *route = new vtRoute(m_fRouteHeight, m_fRouteSpacing,
-		m_fRouteOffL, m_fRouteOffR, m_fRouteStInc, m_sRouteName,
-		GetCurrentTerrain());
+	vtRoute *route = new vtRoute(m_fRouteOffL, m_fRouteOffR, m_fRouteStInc,
+		m_sRouteName, GetCurrentTerrain());
 	GetCurrentTerrain()->AddRoute(route);
 	m_pCurRoute = route;
 }
@@ -1269,13 +1261,6 @@ void Enviro::close_route()
 		GetCurrentTerrain()->SaveRoute();
 	}
 	m_bActiveRoute = false;
-}
-
-void Enviro::SetRouteOptions(float fHeight, float fSpacing)
-{
-	m_fRouteHeight = fHeight;
-	m_fRouteSpacing = fSpacing;
-	finish_route();
 }
 
 
