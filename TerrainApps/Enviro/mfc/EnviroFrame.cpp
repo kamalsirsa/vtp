@@ -137,8 +137,9 @@ BOOL EnviroFrame::OnCreateClient( LPCREATESTRUCT lpcs,
 
 void EnviroFrame::UpdateStatusBar()
 {
-	vtString vs;
-	g_App.GetStatusText(vs);
+	vtString vs = g_App.GetStatusString(0);
+	vs += g_App.GetStatusString(1);
+	vs += g_App.GetStatusString(2);
 
 	m_wndStatusBar.SetPaneText(0, (const char *) vs);
 }
