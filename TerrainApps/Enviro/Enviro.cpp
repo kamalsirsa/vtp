@@ -562,7 +562,11 @@ void Enviro::DoPickers()
 		{
 			m_EarthPos = earthpos;
 
-			// Attempt to scale the cursor for ease of use
+			// Attempt to scale the 3d cursor, for ease of use.
+			// Rather than keeping it the same size in world space (it would
+			// be too small in the distance) or the same size in screen space
+			// (would look confusing without the spatial distance cue) we
+			// compromise and scale it based on the square root of distance.
 			FPoint3 gpos;
 			if (m_pTerrainPicker->GetCurrentPoint(gpos))
 			{
@@ -1084,12 +1088,14 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 	if (m_bOnTerrain && m_mode == MM_SELECT)
 	{
-		// See if camera ray intersects a building?  NO, it's simpler
-		//  to just test whether the ground cursor is near a building
+		// See if camera ray intersects a structure?  NO, it's simpler
+		//  to just test whether the ground cursor is near a structure
 		DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
-		int building;
+
 		double distance;
 		vtStructureArray3d &structures = pTerr->GetStructures();
+#if 0
+		int building;		// index of closest building
 		bool result = structures.FindClosestBuildingCenter(gpos, 20.0,
 			building, distance);
 		if (result)
@@ -1109,8 +1115,21 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			str->Select(true);
 			bld->ShowBounds(true);
 			m_bDragging = true;
-	int sel = structures.NumSelected();	// TEMP
 		}
+#else
+		int structure;		// index of closest structure
+		bool result = structures.FindClosestStructure(gpos, 20.0,
+			structure, distance);
+		if (result)
+		{
+			structures.VisualDeselectAll();
+
+			vtStructure3d *str = structures.GetStructure(structure);
+			structures.VisualSelect(str);
+
+			m_bDragging = true;
+		}
+#endif
 		m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	}
 }
@@ -1165,7 +1184,7 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 
 		vtTerrain *pTerr = GetCurrentTerrain();
 		vtStructureArray3d &structures = pTerr->GetStructures();
-		structures.OffsetSelectedBuildings(ground_delta);
+		structures.OffsetSelectedStructures(ground_delta);
 
 		m_EarthPosLast = m_EarthPos;
 	}
