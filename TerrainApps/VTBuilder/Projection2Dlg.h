@@ -23,7 +23,8 @@ enum ProjType
 	PT_UTM,
 	PT_ALBERS,
 	PT_LAMBERT,
-	PT_TM
+	PT_TM,
+	PT_PS
 };
 #endif
 
