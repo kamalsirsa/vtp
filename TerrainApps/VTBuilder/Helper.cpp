@@ -11,73 +11,10 @@
 #include "wx/wx.h"
 #endif
 
-#include "wx/progdlg.h"
 #include "Frame.h"
 #include "BuilderView.h"
 #include "Helper.h"
 #include "vtdata/vtLog.h"
-
-//////////////////////////////////////////////////////
-
-static bool s_bOpen = false;
-wxProgressDialog *g_pProg = NULL;
-
-bool progress_callback(int amount)
-{
-	bool value = false;
-	// Update() returns false if the Cancel button has been pushed
-	// but this functions return _true_ if user wants to cancel
-	if (g_pProg)
-		value = (g_pProg->Update(amount) == false);
-	return value;
-}
-
-void OpenProgressDialog(const wxString &title, bool bCancellable)
-{
-	if (s_bOpen)
-		return;
-
-	BuilderView *pView = GetMainFrame()->GetView();
-
-	// force the window to be wider by giving a dummy string
-	wxString message = _T("___________________________________");
-	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL;
-	if (bCancellable)
-		style |= wxPD_CAN_ABORT;
-
-	s_bOpen = true;
-	g_pProg = new wxProgressDialog(title, message, 100, pView, style);
-	g_pProg->Show(true);
-	g_pProg->Update(0, _T(" "));
-}
-
-void CloseProgressDialog()
-{
-	if (g_pProg)
-	{
-		g_pProg->Destroy();
-		g_pProg = NULL;
-		s_bOpen = false;
-	}
-}
-
-void ResumeProgressDialog()
-{
-	if (g_pProg)
-		g_pProg->Resume();
-}
-
-//
-// returns true if the user pressed the "Cancel" button
-//
-bool UpdateProgressDialog(int amount, const wxString& newmsg)
-{
-	bool value = false;
-	if (g_pProg)
-		value = (g_pProg->Update(amount, newmsg) == false);
-	return value;
-}
-
 
 //////////////////////////////////
 

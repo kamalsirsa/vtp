@@ -1,7 +1,7 @@
 //
 // RoadLayer.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,6 +17,7 @@
 #include "Frame.h"
 #include "Helper.h"
 #include "BuilderView.h"
+#include "vtui/Helper.h"
 
 bool vtRoadLayer::m_bDrawNodes = false;
 bool vtRoadLayer::m_bShowDirection = false;

@@ -1,7 +1,7 @@
 //
 // RawLayer.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // A 'raw' layer is just abstract data, without any specific correspondence
@@ -11,15 +11,13 @@
 
 #include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
+#include "vtui/Helper.h"
+#include "xmlhelper/easyxml.hpp"
 
 #include "RawLayer.h"
 #include "BuilderView.h"
 #include "Helper.h"
 #include "Frame.h"
-#include "xmlhelper/easyxml.hpp"
 // Dialogs
 #include "FeatInfoDlg.h"
 

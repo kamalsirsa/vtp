@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,6 +23,7 @@
 #include "BuilderView.h"
 #include "vtui/BuildingDlg.h"
 #include "vtui/InstanceDlg.h"
+#include "vtui/Helper.h"
 #include "Helper.h"
 #include "ImportStructDlg.h"
 

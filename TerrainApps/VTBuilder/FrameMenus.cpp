@@ -21,6 +21,7 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/TripDub.h"
 #include "vtdata/WFSClient.h"
+#include "vtui/Helper.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"

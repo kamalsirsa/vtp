@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +18,7 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/Building.h"
+#include "vtui/Helper.h"
 
 #include "Frame.h"
 #include "Helper.h"

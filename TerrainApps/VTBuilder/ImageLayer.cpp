@@ -18,6 +18,7 @@
 #if ROGER
 #include "gdalwarper.h"
 #endif
+#include "vtui/Helper.h"
 #include "ogr_spatialref.h"
 #include "gdal_priv.h"
 #include "ScaledView.h"
