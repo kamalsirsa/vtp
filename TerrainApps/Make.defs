@@ -97,6 +97,7 @@ VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
 VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
 XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
+MINI_DIR         = $(VTP_ROOT)/../../mini
 
 #NETCDF_INC = $(APIS_DIR)/NetCDF/include
 #NETCDF_LIB = $(APIS_DIR)/NetCDF/lib
@@ -115,6 +116,9 @@ OSG_LIB = $(LOCALBASE)/lib
 
 GDAL_INC = $(LOCALBASE)/include
 GDAL_LIB = $(LOCALBASE)/lib
+
+MINI_INC = $(MINI_DIR)
+MINI_LIB = $(MINI_DIR)/libMini.a
 
 VTDATA_INST_DIR = $(VTDATA_DIR)
 VTOSG_INST_DIR  = $(VTOSG_DIR)
