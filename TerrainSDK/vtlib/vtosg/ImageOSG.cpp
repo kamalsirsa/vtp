@@ -120,11 +120,12 @@ void vtImage::CreateFromDIB(vtDIB *pDIB)
 	else
 		internalFormat = m_internalformat;	// use specific
 
-	m_pOsgImage->setImage(w, h, 1,
+	m_pOsgImage->setImage(w, h, 1,	// s, t, r
 	   internalFormat,		// int internalFormat,
 	   pixelFormat,			// unsigned int pixelFormat,
 	   GL_UNSIGNED_BYTE, 	// unsigned int dataType,
-	   image);
+	   image,
+	   osg::Image::USE_NEW_DELETE);
 }
 
 
@@ -287,7 +288,8 @@ bool vtImage::ReadPNG(const char *filename)
 	   internalFormat,		// int internalFormat,
 	   pixelFormat,			// unsigned int pixelFormat
 	   GL_UNSIGNED_BYTE,	// unsigned int dataType
-	   m_pPngData);
+	   m_pPngData,
+	   osg::Image::USE_MALLOC_FREE);
 
 	m_bLoaded = true;
 

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -584,11 +584,14 @@ vtFont::vtFont()
 
 bool vtFont::LoadFont(const char *filename)
 {
-	m_pOsgFont = new osgText::PolygonFont(filename, 24, 3);
+	// OSG 0.9.3
+//	m_pOsgFont = new osgText::Font(filename, 24, 3);
 
-	// TODO: is this the correct way to check for success?
-//	if (m_pOsgFont->getHeight() == -1)
-//		return false;
+	// OSG 0.9.4
+	m_pOsgFont = osgText::readFontFile(filename);
+
+	if (m_pOsgFont == NULL)
+		return false;
 
 	return true;
 }
@@ -597,7 +600,15 @@ bool vtFont::LoadFont(const char *filename)
 
 vtTextMesh::vtTextMesh(vtFont *font, bool bCenter)
 {
-	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
+	// OSG 0.9.3
+//	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
+
+	// OSG 0.9.4
+	m_pOsgText = new osgText::Text;
+	m_pOsgText->setFont(font->m_pOsgFont.get());
+	m_pOsgText->setFontSize(24,24);
+	m_pOsgText->setCharacterSize(24);
+
 	if (bCenter)
 		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
 }

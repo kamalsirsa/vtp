@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -103,9 +103,9 @@ public:
 	/** Add a triangle.  p0, p1, p2 are the indices of the vertices of the triangle. */
 	void AddTri(int p0, int p1, int p2);
 
-	/** Add a triangle fan with up to 6 points (center + 5 points).  The first 3
-	 arguments are required, the rest are optional.  A fan will be created with as
-	 many point indices as you pass. */
+	/** Add a triangle fan with up to 6 points (center + 5 points).  The
+	 first 3 arguments are required, the rest are optional.  A fan will be
+	 created with as many point indices as you pass. */
 	void AddFan(int p0, int p1, int p2 = -1, int p3 = -1, int p4 = -1, int p5 = -1);
 
 	/** Add a triangle fan with any number of points.
@@ -165,7 +165,7 @@ public:
 	bool LoadFont(const char *filename);
 
 	// Implementation
-	osg::ref_ptr<osgText::PolygonFont> m_pOsgFont;
+	osg::ref_ptr<osgText::Font> m_pOsgFont;
 };
 
 class vtTextMesh
