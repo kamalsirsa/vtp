@@ -127,6 +127,11 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	else if (!FileExt.CompareNoCase("hdr"))
 	{
 		Success = LoadFromGTOPO30(szFileName, progress_callback);
+		if (!Success)
+		{
+			// might be NOAA GLOBE header
+			Success = LoadFromGLOBE(szFileName, progress_callback);
+		}
 	}
 	else if (!FileExt.CompareNoCase("dte") ||
 			 !FileExt.CompareNoCase("dt0") ||
@@ -1007,6 +1012,108 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 			cp[0] = cp[1];
 			cp[1] = temp;
 			SetValue(i, m_iRows-1-j, (z == gh.NoData) ? 0 : z);
+		}
+	}
+	return true;
+}
+
+
+/** Loads from a NOAA GlOBE file.
+ * \par
+ * In fact, there is no "GLOBE format", GLOBE files are delivered as raw
+ * data, which can be intepreted using a variety of separate header files.
+ * Using the GLOBE server "Select Your Own Area" feature results in
+ * 2 files, a header with a .hdr extension and data with a .bin extension.
+ * This method reads those file.  Pass the filename of the .hdr file to this
+ * function, and it will automatically look for a corresponding .bin file in
+ * the same location.
+ * \par
+ * Projection is always geographic and elevation is integer meters.
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
+									void progress_callback(int))
+{
+	if (progress_callback != NULL) progress_callback(1);
+
+	// Open the header file
+	ifstream hdrFile(szFileName);
+	if (!hdrFile.is_open())
+	  return false;
+
+	// Parse the file
+	char strName[30];
+	char szEqual[30];
+	char strValue[30];
+	char file_title[80];
+
+	// Read file_title
+	hdrFile >> strName >> szEqual >> file_title;
+
+	if (strcmp(strName, "file_title"))
+		return false;	// not a GLOBE header
+
+	// skip a few
+	hdrFile >> strName >> szEqual >> strValue;	// data_type
+	hdrFile >> strName >> szEqual >> strValue;	// grid_cell_registration
+	hdrFile >> strName >> szEqual >> strValue;	// map_projection
+
+	// Read the left, right, upper, lower coordinates
+	hdrFile >> strName >> szEqual >> strValue;
+	m_EarthExtents.left = atof(strValue);
+	hdrFile >> strName >> szEqual >> strValue;
+	m_EarthExtents.right = atof(strValue);
+	hdrFile >> strName >> szEqual >> strValue;
+	m_EarthExtents.top = atof(strValue);
+	hdrFile >> strName >> szEqual >> strValue;
+	m_EarthExtents.bottom = atof(strValue);
+
+	// Read the number of rows
+	hdrFile >> strName >> szEqual >> strValue;
+	m_iRows = atol(strValue);
+
+	// Read the number of columns
+	hdrFile >> strName >> szEqual >> strValue;
+	m_iColumns = atol(strValue);
+
+	// OK to skip the rest of the file, parameters which we will assume
+
+	// Close the header file
+	hdrFile.close();
+
+	// make the corresponding filename for the DEM
+	char dem_fname[200];
+	strcpy(dem_fname, szFileName);
+	char *ext = strrchr(dem_fname, '.');
+	if (!ext)
+		return false;
+	strcpy(ext, ".bin");
+	FILE *fp = fopen(dem_fname, "rb");
+	if (!fp)
+		return false;
+
+	if (progress_callback != NULL) progress_callback(5);
+
+	// Projection is always geographic, integer
+	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
+	m_bFloatMode = false;
+
+	ComputeCornersFromExtents();
+
+	_AllocateArray();
+
+	// read the file
+	int i, j;
+	short z;
+	for (j = 0; j < m_iRows; j++)
+	{
+		if (progress_callback != NULL) progress_callback(10 + j * 90 / m_iRows);
+		for (i = 0; i < m_iColumns; i++)
+		{
+			fread(&z, sizeof(short), 1, fp);
+			if (z == -500)	// 'unknown' generally used for ocean surface
+				z = 0;
+			SetValue(i, m_iRows-1-j, z);
 		}
 	}
 	return true;

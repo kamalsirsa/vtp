@@ -52,6 +52,7 @@ public:
 	bool LoadFromCDF(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromDTED(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromGTOPO30(const char *szFileName, void progress_callback(int) = NULL);
+	bool LoadFromGLOBE(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromGRD(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromPGM(const char *szFileName, void progress_callback(int) = NULL);
 	bool LoadFromRAW(const char *szFileName, int width,	int height,
