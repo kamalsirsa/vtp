@@ -140,16 +140,22 @@ static void ShowOGLInfo(bool bLog)
 	}
 	else
 	{
-		wxString2 str;
-		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n")
-			_T("Maximum Texture Dimension: %d\nExtensions: %hs"),
-			glGetString(GL_VERSION), glGetString(GL_VENDOR),
-			glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
+		wxString msg;
 
-		wxDialog dlg(NULL, -1, _T("OpenGL Info"), wxDefaultPosition);
+		wxString2 str;
+		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n"),
+			glGetString(GL_VERSION), glGetString(GL_VENDOR),
+			glGetString(GL_RENDERER));
+		msg += str;
+		str.Printf(_("Maximum Texture Dimension: %d\n"), value);
+		msg += str;
+		str.Printf(_T("Extensions: %hs"), glGetString(GL_EXTENSIONS));
+		msg += str;
+
+		wxDialog dlg(NULL, -1, _("OpenGL Info"), wxDefaultPosition);
 		TextDialogFunc(&dlg, true);
 		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
-		pText->SetValue(str);
+		pText->SetValue(msg);
 
 		dlg.ShowModal();
 	}

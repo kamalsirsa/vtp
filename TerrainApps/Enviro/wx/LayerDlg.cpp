@@ -189,17 +189,17 @@ void LayerDlg::RefreshTreeTerrain()
 			}
 			if (bld)
 			{
-				str.Printf(_T("%d Building%s"), bld, bld != 1 ? "s" : "");
+				str.Printf(_("Buildings: %d"), bld);
 				m_pTree->AppendItem(hLayer, str, -1, -1);
 			}
 			if (fen)
 			{
-				str.Printf(_T("%d Fence%s"), fen, fen != 1 ? "s" : "");
+				str.Printf(_("Fences: %d"), fen);
 				m_pTree->AppendItem(hLayer, str, -1, -1);
 			}
 			if (inst)
 			{
-				str.Printf(_T("%d Instance%s"), inst, inst != 1 ? "s" : "");
+				str.Printf(_("Instances: %d"), inst);
 				m_pTree->AppendItem(hLayer, str, -1, -1);
 			}
 		}
@@ -217,7 +217,7 @@ void LayerDlg::RefreshTreeSpace()
 	if (!globe)
 		return;
 
-	wxTreeItemId hRoot = m_pTree->AddRoot(_T("Layers"));
+	wxTreeItemId hRoot = m_pTree->AddRoot(_("Layers"));
 
 	vtFeaturesSet &feats = globe->GetFeaturesSet();
 	for (unsigned int i = 0; i < feats.GetSize(); i++)

@@ -409,7 +409,7 @@ void TParamsDlg::RefreshLabelFields()
 void TParamsDlg::RefreshLocationFields()
 {
 	m_pLocField->Clear();
-	m_pLocField->Append(_T("(default)"));
+	m_pLocField->Append(_("(default)"));
 
 	vtString fname = "Locations/";
 	fname += m_strLocFile.mb_str();

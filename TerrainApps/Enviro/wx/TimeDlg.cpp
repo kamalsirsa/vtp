@@ -69,10 +69,10 @@ void TimeDlg::AddOkCancel()
 {
 	wxBoxSizer *item25 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item26 = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxButton *item26 = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
     item25->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item27 = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxSize(70,-1), 0 );
+    wxButton *item27 = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
     item25->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
     m_pTop->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );

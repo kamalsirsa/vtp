@@ -233,8 +233,8 @@ void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 
 void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 {
-	wxString2 msg = "Please enter the name for a new terrain .xml file.";
-	wxString2 str = wxGetTextFromUser(msg, _T("Add Terrain"));
+	wxString2 msg = _("Please enter the name for a new terrain .xml file.");
+	wxString2 str = wxGetTextFromUser(msg, _("Add Terrain"));
 	if (str == _T(""))
 		return;
 
@@ -261,13 +261,13 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 {
 #if 0
 	// This is nice in that it allows you to type a relative path
-	wxString2 msg = "Please enter an absolute or relative path.";
+	wxString2 msg = _T("Please enter an absolute or relative path.";
 	wxString2 str = wxGetTextFromUser(msg, _T("Add Path"));
 	if (str == _T(""))
 		return;
 #endif
 	// Ask the user for a directory (can only be absolute)
-	wxDirDialog getDir(NULL, _T("Specify Data Directory"));
+	wxDirDialog getDir(NULL, _("Specify Data Directory"));
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -337,9 +337,9 @@ void TerrainManagerDlg::UpdateEnabling()
 	GetCopy()->Enable(m_iSelect == 2);
 	GetDelete()->Enable(m_iSelect == 1 || m_iSelect == 2);
 	if (m_iSelect == 1)
-		GetDelete()->SetLabel(_T("Remove"));
+		GetDelete()->SetLabel(_("Remove"));
 	else if (m_iSelect == 2)
-		GetDelete()->SetLabel(_T("Delete"));
+		GetDelete()->SetLabel(_("Delete"));
 	GetEditParams()->Enable(m_iSelect == 2);
 }
 

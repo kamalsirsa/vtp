@@ -196,12 +196,12 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	if (dynamic_cast<vtLight*>(pNode))
 	{
-		str = _T("Light");
+		str = _("Light");
 		nImage = 4;
 	}
 	else if (dynamic_cast<vtGeom*>(pNode))
 	{
-		str = _T("Geom");
+		str = _("Geometry");
 		nImage = 2;
 	}
 	else if (dynamic_cast<vtLOD*>(pNode))
@@ -217,7 +217,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	else if (dynamic_cast<vtGroupBase*>(pNode))
 	{
 		// must be just a group for grouping's sake
-		str = _T("Group");
+		str = _("Group");
 		nImage = 3;
 	}
 	else
