@@ -52,30 +52,7 @@ vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 
 /////////////////////////////////////////////////////
 
-int icosa_face_v[21][3] =
-{
-	{ 0, 0, 0 },
-	{ 1, 2, 3 },	// 1
-	{ 1, 3, 4 },
-	{ 1, 4, 5 },
-	{ 1, 5, 6 },
-	{ 1, 6, 2 },	// 5
-	{ 8, 3, 2 },
-	{ 3, 8, 9 },
-	{ 9, 4, 3 },	// 8
-	{ 4, 9, 10 },
-	{ 10, 5, 4 },
-	{ 5, 10, 11 },
-	{ 11, 6, 5 },
-	{ 6, 11, 7 },	// 13
-	{ 7, 2, 6 },
-	{ 2, 7, 8 },
-	{ 12, 9, 8 },
-	{ 12, 10, 9 },	// 17
-	{ 12, 11, 10 },
-	{ 12, 7, 11 },
-	{ 12, 8, 7 }
-};
+extern int icosa_face_v[21][3];
 
 int icos_face_pairs[10][2] =
 {
@@ -282,102 +259,10 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 
 void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
 {
+	int i;
 	m_freq = freq;
 
-	/* Cartesian coordinates for the 12 vertices of icosahedron */
-	v_x[1] =	0.420152426708710003;
-	v_y[1] =	0.078145249402782959;
-	v_z[1] =	0.904082550615019298;
-	v_x[2] =	0.995009439436241649;
-	v_y[2] =   -0.091347795276427931;
-	v_z[2] =	0.040147175877166645;
-	v_x[3] =	0.518836730327364437;
-	v_y[3] =	0.835420380378235850;
-	v_z[3] =	0.181331837557262454;
-	v_x[4] =   -0.414682225320335218;
-	v_y[4] =	0.655962405434800777;
-	v_z[4] =	0.630675807891475371;
-	v_x[5] =   -0.515455959944041808;
-	v_y[5] =   -0.381716898287133011;
-	v_z[5] =	0.767200992517747538;
-	v_x[6] =	0.355781402532944713;
-	v_y[6] =   -0.843580002466178147;
-	v_z[6] =	0.402234226602925571;
-	v_x[7] =	0.414682225320335218;
-	v_y[7] =   -0.655962405434800777;
-	v_z[7] =   -0.630675807891475371;
-	v_x[8] =	0.515455959944041808;
-	v_y[8] =	0.381716898287133011;
-	v_z[8] =   -0.767200992517747538;
-	v_x[9] =   -0.355781402532944713;
-	v_y[9] =	0.843580002466178147;
-	v_z[9] =   -0.402234226602925571;
-	v_x[10] =   -0.995009439436241649;
-	v_y[10] =	0.091347795276427931;
-	v_z[10] =   -0.040147175877166645;
-	v_x[11] =   -0.518836730327364437;
-	v_y[11] =   -0.835420380378235850;
-	v_z[11] =   -0.181331837557262454;
-	v_x[12] =   -0.420152426708710003;
-	v_y[12] =   -0.078145249402782959;
-	v_z[12] =   -0.904082550615019298;
-
-	int i;
-	for (i = 1; i <= 12; i++)
-	{
-		m_verts[i].x = v_x[i];
-		m_verts[i].y = v_z[i];
-		m_verts[i].z = -v_y[i];
-	}
-	for (i = 1; i <= 20; i++)
-	{
-		// look up corners of the face
-		DPoint3 v1 = m_verts[icosa_face_v[i][0]];
-		DPoint3 v2 = m_verts[icosa_face_v[i][1]];
-		DPoint3 v3 = m_verts[icosa_face_v[i][2]];
-
-		m_face[i].center = (v1 + v2 + v3) / 3.0f;
-		m_face[i].center.Normalize();
-
-		m_face[i].base = v1;
-
-		// form edge vectors
-		DPoint3 vec_a = v2 - v1;
-		DPoint3 vec_b = v3 - v1;
-
-		// normalize and find orthogonal vector with cross product
-		vec_a.Normalize();
-		vec_b.Normalize();
-		DPoint3 vec_c = vec_a.Cross(vec_b);
-		vec_c.Normalize();
-
-		m_face[i].vec_a = vec_a;
-		m_face[i].vec_b = vec_b;
-		m_face[i].vec_c = vec_c;
-
-		// form a matrix expressing the tranformation from B->A
-		DMatrix4 forwards4, inverse4;
-		forwards4.Identity();
-		forwards4.Set(0, 0, vec_a.x);
-		forwards4.Set(1, 0, vec_a.y);
-		forwards4.Set(2, 0, vec_a.z);
-		forwards4.Set(0, 1, vec_b.x);
-		forwards4.Set(1, 1, vec_b.y);
-		forwards4.Set(2, 1, vec_b.z);
-		forwards4.Set(0, 2, vec_c.x);
-		forwards4.Set(1, 2, vec_c.y);
-		forwards4.Set(2, 2, vec_c.z);
-
-		// invert for the A->B transformation
-		inverse4.Invert(forwards4);
-
-		// extract a 3x3 matrix for simpler multiplication
-		m_face[i].trans.SetByMatrix4(inverse4);
-
-		// plane equation: ax + by + cz + d = 0
-		// so, d = -ax0 -by0 -cz0
-		m_face[i].d = -(vec_c.x * v1.x) -(vec_c.y * v1.y) -(vec_c.z * v1.z);
-	}
+	InitIcosa();
 
 	int numvtx = (freq + 1) * (freq + 2) / 2;
 	for (i = 1; i <= 20; i++)

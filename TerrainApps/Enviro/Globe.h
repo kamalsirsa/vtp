@@ -10,7 +10,7 @@
 
 #include "vtdata/Icosa.h"
 
-class IcoGlobe
+class IcoGlobe : public DymaxIcosa
 {
 public:
 	void Create(int freq, vtString strDataPath, vtString strImagePrefix);
@@ -34,12 +34,6 @@ protected:
 	int		m_globe_mat[10];
 	vtMesh	*m_mesh[21];
 
-	double v_x[13], v_y[13], v_z[13];
-
-	DPoint3 m_verts[13];
-	icoface m_face[21];
-
-//	int		m_vidx;	// index into vertex array
 	int		m_freq;	// tesselation frequency
 };
 
