@@ -500,6 +500,27 @@ void FMatrix3::AxisAngle(const FPoint3 &vec, double theta)
 	data[2][2] = (float) (c2 * mcos + cost);
 }
 
+/**
+ * Create a rotation matrix that represents an orientation that points
+ * along a given vector.
+ */
+void FMatrix3::MakeOrientation(const FPoint3 &vector, bool bPitch)
+{
+	float theta = atan2f(-vector.z, vector.x) - PID2f;
+	float phi = 0;
+	if (bPitch)
+		phi = asinf(vector.y / vector.Length());
+
+	Identity();
+
+	FMatrix3 tmp;
+	tmp.AxisAngle(FPoint3(0,1,0), theta);
+	PreMult(tmp);
+
+	tmp.AxisAngle(FPoint3(1,0,0), phi);
+	PreMult(tmp);
+}
+
 void FMatrix3::Transform(const FPoint3 &tmp, FPoint3 &dst) const
 {
 	dst.x = Dot3f(&tmp.x, data[0]);
@@ -525,6 +546,38 @@ void FMatrix3::SetFromMatrix4(const FMatrix4 &mat)
 	SetRow(1, mat(0,1), mat(1,1), mat(2,1));
 	SetRow(2, mat(0,2), mat(1,2), mat(2,2));
 }
+
+#define INNER_PRODUCT3(a, b, c, r) \
+	 ((a).data[0][r] * (b).data[c][0]) \
+	+((a).data[1][r] * (b).data[c][1]) \
+	+((a).data[2][r] * (b).data[c][2])
+
+void FMatrix3::PreMult(const FMatrix3 &mat)
+{
+	float t[3];
+	for (int col = 0; col < 3; ++col)
+	{
+		t[0] = INNER_PRODUCT3(mat, *this, col, 0);
+		t[1] = INNER_PRODUCT3(mat, *this, col, 1);
+		t[2] = INNER_PRODUCT3(mat, *this, col, 2);
+		data[col][0] = t[0];
+		data[col][1] = t[1];
+		data[col][2] = t[2];
+	}
+}
+
+void FMatrix3::PostMult(const FMatrix3 &mat)
+{
+	float t[3];
+	for (int row = 0; row < 3; ++row)
+	{
+		t[0] = INNER_PRODUCT3(*this, mat, 0, row);
+		t[1] = INNER_PRODUCT3(*this, mat, 1, row);
+		t[2] = INNER_PRODUCT3(*this, mat, 2, row);
+		SetRow(row, t[0], t[1], t[2]);
+	}
+}
+
 
 //////////////////////////////////////////////////////////////
 // FMatrix4

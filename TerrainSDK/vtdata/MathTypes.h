@@ -879,6 +879,10 @@ public:
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void SetFromMatrix4(const FMatrix4 &mat);
 
+	void MakeOrientation(const FPoint3 &vector, bool bPitch);
+	void PreMult(const FMatrix3 &mat);
+	void PostMult(const FMatrix3 &mat);
+
 	// operators
 	float operator()(int col, int row) const { return data[col][row]; }
 	FMatrix3 &operator=(const FMatrix4 &mat);
