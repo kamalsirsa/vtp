@@ -512,7 +512,8 @@ void vtBioType::AddPlant(int i, const char *common_name, float plant_per_m2)
 
 ///////////////////////////////////////////////////////////////////////
 
-void vtPlantInstanceArray::AddInstance(DPoint2 &pos, float size, short species_id)
+void vtPlantInstanceArray::AddInstance(DPoint2 &pos, float size,
+									   short species_id)
 {
 	vtPlantInstance pi;
 	pi.m_p = pos;
@@ -521,8 +522,14 @@ void vtPlantInstanceArray::AddInstance(DPoint2 &pos, float size, short species_i
 	Append(pi);
 }
 
-struct OldPlantInstance {
+struct PlantInstance10 {
 	float x, y;
+	float size;
+	short species_id;
+};
+
+struct PlantInstance11 {
+	DPoint2 m_p;
 	float size;
 	short species_id;
 };
@@ -544,7 +551,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	bool utm;
 	int zone, datum;
 	fread(&utm, 1, 1, fp);
-	/*  FIXME:  Ahoy, there be byte order issues here.  See below in this routine.  */
+	/* FIXME:  Ahoy, there be byte order issues here. See below in this routine. */
 	fread(&zone, 4, 1, fp);
 	fread(&datum, 4, 1, fp);
 	m_proj.SetUTM(utm, zone);
@@ -556,8 +563,8 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 
 	if (version == 1.0f)
 	{
-		OldPlantInstance *pOld = new OldPlantInstance[size];
-		fread(pOld, sizeof(OldPlantInstance), size, fp);
+		PlantInstance10 *pOld = new PlantInstance10[size];
+		fread(pOld, sizeof(PlantInstance10), size, fp);
 		vtPlantInstance pi;
 		for (int i = 0; i < size; i++)
 		{
@@ -571,8 +578,20 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	}
 	else if (version == 1.1f)
 	{
-		fread(m_Data, sizeof(vtPlantInstance), size, fp);
+		PlantInstance11 *pTemp = new PlantInstance11[size];
+		fread(pTemp, sizeof(PlantInstance11), size, fp);
+		vtPlantInstance pi;
+		for (int i = 0; i < size; i++)
+		{
+			pi.m_p = pTemp[i].m_p;
+			pi.size = pTemp[i].size;
+			pi.species_id = pTemp[i].species_id;
+			SetAt(i, pi);
+		}
+		delete pTemp;
 	}
+	else
+		return false;
 	fclose(fp);
 	return true;
 }
@@ -599,3 +618,30 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	return true;
 }
 
+bool vtPlantInstanceArray::FindClosestPlant(const DPoint2 &point, double error_meters,
+											int &plant, double &closest)
+{
+	plant = -1;
+	closest = 1E8;
+
+	if (IsEmpty())
+		return false;
+
+	DPoint2 loc;
+	double dist;
+
+	int i;
+	for (i = 0; i < GetSize(); i++)
+	{
+		vtPlantInstance &pi = GetAt(i);
+		dist = (pi.m_p - point).Length();
+		if (dist > error_meters)
+			continue;
+		if (dist < closest)
+		{
+			plant = i;
+			closest = dist;
+		}
+	}
+	return (plant != -1);
+}
