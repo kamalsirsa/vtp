@@ -259,11 +259,14 @@ int TestParser::IsNumber(InputToken &t)
 
 int TestParser::IsColor(int index)
 {
+	char color_string[64];
+
 	int i, j, k;
 	for (i = 0; i < (sizeof(ColorEntries) / sizeof(ColorEntry)); i++)
 	{
 		ColorEntry &col = ColorEntries[i];
-		char *word = strtok(col.name, " ");
+		strcpy(color_string, col.name);
+		char *word = strtok(color_string, " ");
 		for (j = 0; j < col.words && index+j < iWords; j++)
 		{
 			if (sen[index+j]->str != word)
@@ -296,11 +299,14 @@ int TestParser::IsColor(int index)
 
 int TestParser::IsMaterial(int index)
 {
+	char mat_string[64];
+
 	int i, j, k;
 	for (i = 0; i < (sizeof(MatEntries) / sizeof(MatEntry)); i++)
 	{
 		MatEntry &mat = MatEntries[i];
-		char *word = strtok(mat.name, " ");
+		strcpy(mat_string, mat.name);
+		char *word = strtok(mat_string, " ");
 		for (j = 0; j < mat.words && index+j < iWords; j++)
 		{
 			if (sen[index+j]->str != word)
