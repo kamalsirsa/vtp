@@ -1149,7 +1149,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			start_new_route();
 			m_bActiveRoute = true;
 		}
-		GetCurrentTerrain()->add_routepoint_earth(m_pCurRoute,
+		pTerr->add_routepoint_earth(m_pCurRoute,
 			DPoint2(m_EarthPos.x, m_EarthPos.y), m_sStructType);
 	}
 	if (m_bOnTerrain && m_mode == MM_PLANTS)
@@ -1172,17 +1172,17 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		m_bSelectedStruct = false;
 
 		int structure;		// index of closest structure
-		bool result1 = structures->FindClosestStructure(gpos, 10.0,
-			structure, dist1);
+		bool result1 = pTerr->FindClosestStructure(gpos, 10.0, structure, dist1);
+		structures = pTerr->GetStructures();
 
-		vtPlantInstanceArray3d &plants = GetCurrentTerrain()->GetPlantInstances();
+		vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 		plants.VisualDeselectAll();
 		m_bSelectedPlant = false;
 
 		int plant;		// index of closest plant
 		bool result2 = plants.FindClosestPlant(gpos, 20.0, plant, dist2);
 
-		vtRouteMap &routes = GetCurrentTerrain()->GetRouteMap();
+		vtRouteMap &routes = pTerr->GetRouteMap();
 		m_bSelectedUtil = false;
 		bool result3 = routes.FindClosestUtilNode(gpos, 20.0, m_pSelRoute,
 			m_pSelUtilNode, dist3);
@@ -1270,10 +1270,9 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 			close_route();
 		if (m_mode == MM_SELECT)
 		{
-			vtTerrain *pTerr = GetCurrentTerrain();
-			vtStructureArray3d *structures = pTerr->GetStructures();
+			vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
 
-			if (structures->NumSelected() != 0)
+			if (sa->NumSelected() != 0)
 				ShowPopupMenu(event.pos);
 		}
 	}
