@@ -122,7 +122,7 @@ bool EnviroApp::OnInit()
 	g_Options.Write();
 
 	vtGetScene()->Init();
-	g_App.StartControlEngine(NULL);
+	g_App.StartControlEngine();
 
 	return TRUE;
 }
