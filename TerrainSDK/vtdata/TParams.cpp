@@ -3,7 +3,7 @@
 //
 // Defines all the construction parameters for a terrain.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,8 +58,8 @@ TParams::TParams()
 	m_bMipmap = false;
 	m_b16bit = true;
 	m_bPreLight = true;
-	m_bPreLit = true;
 	m_fPreLightFactor = 1.0f;
+	m_bCastShadows = false;
 
 	m_bRoads = false;
 	m_bHwy = true;
@@ -196,8 +196,8 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_Style = rhs.m_Style;
 
 	m_bPreLight = rhs.m_bPreLight;
-	m_bPreLit = rhs.m_bPreLit;
 	m_fPreLightFactor = rhs.m_fPreLightFactor;
+	m_bCastShadows = rhs.m_bCastShadows;
 
 	m_strRouteFile = rhs.m_strRouteFile;
 	m_bRouteEnable = rhs.m_bRouteEnable;
@@ -239,8 +239,8 @@ const TParams &TParams::operator = (const TParams &rhs)
 #define STR_MIPMAP "MIP_Map"
 #define STR_16BIT "16_Bit"
 #define STR_PRELIGHT "Pre-Light"
-#define STR_PRELIT "Pre-Lit"
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
+#define STR_CAST_SHADOWS "Cast_Shadows"
 
 #define STR_ROADS "Roads"
 #define STR_ROADFILE "Road_File"
@@ -392,10 +392,10 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_b16bit;
 		else if (strcmp(buf, STR_PRELIGHT) == 0)
 			input >> m_bPreLight;
-		else if (strcmp(buf, STR_PRELIT) == 0)
-			input >> m_bPreLit;
 		else if (strcmp(buf, STR_PRELIGHTFACTOR) == 0)
 			input >> m_fPreLightFactor;
+		else if (strcmp(buf, STR_CAST_SHADOWS) == 0)
+			input >> m_bCastShadows;
 
 		// culture
 		else if (strcmp(buf, STR_ROADS) == 0)
@@ -590,10 +590,10 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_b16bit << endl;
 	output << STR_PRELIGHT << "\t\t";
 	output << m_bPreLight << endl;
-	output << STR_PRELIT << "\t\t\t";
-	output << m_bPreLit << endl;
 	output << STR_PRELIGHTFACTOR << "\t";
 	output << m_fPreLightFactor << endl;
+	output << STR_CAST_SHADOWS << "\t\t\t";
+	output << m_bCastShadows << endl;
 
 	output << "\n; Roads\n";
 	output << STR_ROADS << "\t\t\t";
