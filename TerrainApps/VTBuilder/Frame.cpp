@@ -263,6 +263,9 @@ void MainFrame::RefreshToolbar()
 			ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
 			ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
 			break;
+		case LT_RAW:
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
 	}
 	toolBar_main->Realize();
 
