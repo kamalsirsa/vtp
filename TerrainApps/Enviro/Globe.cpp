@@ -253,7 +253,7 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 
 		row_start += row_len;
 	}
-	delete indices;
+	delete [] indices;
 #endif
 }
 

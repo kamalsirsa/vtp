@@ -203,7 +203,7 @@ void vtMeshBase::AddStrip2(int iNVerts, int iStartIndex)
 		idx[i] = iStartIndex + i;
 
 	AddStrip(iNVerts, idx);
-	delete idx;
+	delete [] idx;
 }
 
 /**
