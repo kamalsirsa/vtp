@@ -1,5 +1,5 @@
 //
-// Name:        BuildingDlg.h
+// Name:		BuildingDlg.h
 //
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -9,7 +9,7 @@
 #define __BuildingDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "BuildingDlg.cpp"
+	#pragma interface "BuildingDlg.cpp"
 #endif
 
 #include "VTBuilder_wdr.h"
@@ -25,39 +25,51 @@
 class BuildingDlg: public AutoDialog
 {
 public:
-    // constructors and destructors
-    BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
-    
-    // WDR: method declarations for BuildingDlg
-    void Setup(vtBuilding *bld);
-    void BuildingDlg::EditColor(int i);
+	// constructors and destructors
+	BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
+	
+	// WDR: method declarations for BuildingDlg
+	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR ); }
+	wxListBox* GetLevelCtrl()  { return (wxListBox*) FindWindow( ID_LEVEL ); }
+	void Setup(vtBuilding *bld);
+	void EditColor();
+	void SetLevel(int i);
+	void UpdateSlopes();
 
 private:
-    // WDR: member variable declarations for BuildingDlg
-    vtBuilding  *m_pBuilding;
+	// WDR: member variable declarations for BuildingDlg
+	vtBuilding  *m_pBuilding;
+	vtLevel  *m_pLevel;
 
-    wxColour    m_Color[3];
-    int         m_iStories;
-    int         m_iRoofType;
-    bool        m_bTrim;
+	int		  m_iLevel;
+	int		  m_iStories;
+	float	  m_fStoryHeight;
+	wxString	m_strMaterial;
+	wxString	m_strEdgeSlopes;
+	wxColour	m_Color;
 	bool		m_bElevated;
 
-    wxBitmapButton  *m_pColorBitmapControl[3];
-    wxChoice        *m_pcRoofType;
+	wxStaticBitmap  *m_pColorBitmapControl;
+	wxListBox	  *m_pLevelListBox;
+
+	bool m_bSetting;
 
 private:
-    // WDR: handler declarations for BuildingDlg
-    void OnColor1( wxCommandEvent &event );
-    void OnColor2( wxCommandEvent &event );
-    void OnColor3( wxCommandEvent &event );
-    void OnOK( wxCommandEvent &event );
-    void OnInitDialog(wxInitDialogEvent& event);
+	// WDR: handler declarations for BuildingDlg
+	void OnStoryHeight( wxCommandEvent &event );
+	void OnSpinStories( wxCommandEvent &event );
+	void OnColor1( wxCommandEvent &event );
+	void OnOK( wxCommandEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
+	void OnLevel( wxCommandEvent &event );
+	void OnSetEdgeSlopes( wxCommandEvent &event );
+	void OnSetMaterial( wxCommandEvent &event );
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 
