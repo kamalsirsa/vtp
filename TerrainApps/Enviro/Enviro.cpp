@@ -11,6 +11,7 @@
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Fence3d.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtlib/core/Route.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtdata/boost/directory.h"
 
@@ -316,6 +317,9 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 		pCam->GetTransform1(mat);
 		pT->SetCamLocation(mat);
 	}
+	vtTerrain *pT = GetCurrentTerrain();
+	if (pT)
+		pT->SaveRoute();
 
 	m_state = AS_MovingIn;
 	m_pTargetTerrain = pTerr;
@@ -417,6 +421,15 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		// make first terrain active
 		SetTerrain(pTerr);
+
+		//  see if there are some routes (profiles) and load them.
+		//	TODO: this should be part of pTerr->create_culture!!!
+		vtString sRouteFile = g_Options.m_strDataPath + "RouteData/test3D";
+		pTerr->LoadRoute(sRouteFile, m_fRouteHeight, m_fRouteSpacing,
+						m_fRouteOffL, m_fRouteOffR, m_fRouteStInc,
+						m_sRouteName);
+
+		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
 		if (g_Options.m_bGravity)
 		{
@@ -730,6 +743,7 @@ void Enviro::SetupScene2()
 	m_pRoot->AddChild(m_pSprite2);
 
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
+	vtRoute::SetScale(g_Options.m_fPlantScale);
 
 	vtPlantList pl;
 	if (pl.Read(g_Options.m_strDataPath + "PlantData/plants.txt"))
@@ -900,11 +914,41 @@ void Enviro::SetupCameras()
 	}
 #endif
 
+	// Set up a camera for the route (if any)
+	if (m_pRouteFollowerCamera == NULL)
+	{
+		m_pRouteFollowerCamera = vtGetScene()->GetCamera();
+	}
+
 	if (m_pTFlyer != NULL)
 	{
 		m_pTFlyer->SetTarget(m_pNormalCamera);
 		m_pTFlyer->SetName2("Terrain Flyer");
 	}
+}
+
+
+void Enviro::SetFollowerCamera()
+{
+	// set the initial camera position
+	vtStation st = (*m_pCurRoute)[0L];
+	DPoint3 dp = st.m_dpStationPoint;
+	FPoint3 fp;
+	g_Proj.ConvertFromEarth(dp, fp);
+	GetCurrentTerrain()->GetHeightField()->FindAltitudeAtPoint(fp, fp.y);;
+	m_pRouteFollowerCamera->Identity();
+
+	//Go to the first route point
+	m_pRouteFollowerCamera->SetTrans(fp);
+
+	// Orient to the route azimuth
+	m_pRouteFollowerCamera->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), -st.dRadAzimuth);
+	TParams &params = GetCurrentTerrain()->GetParams();
+	m_pRouteFollowerCamera->TranslateLocal(FPoint3(-0.01f,
+		params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
+
+	if (!m_bRouteTranslationSet)
+		m_bRouteTranslationSet = true;
 }
 
 
@@ -1020,6 +1064,16 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		}
 		pTerr->AddFencepoint(m_pCurFence, DPoint2(m_EarthPos.x, m_EarthPos.y));
 	}
+	if (m_bOnTerrain && m_mode == MM_ROUTES)
+	{
+		if (!m_bActiveRoute)
+		{
+			start_new_route();
+			m_bActiveRoute = true;
+		}
+		GetCurrentTerrain()->add_routepoint_earth(m_pCurRoute,
+			DPoint2(m_EarthPos.x, m_EarthPos.y));
+	}
 	if (m_bOnTerrain && m_mode == MM_PLANTS)
 	{
 		// try planting a tree there
@@ -1033,7 +1087,8 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		int building;
 		double distance;
 		vtStructureArray3d &structures = pTerr->GetStructures();
-		bool result = structures.FindClosestBuildingCenter(gpos, 20.0, building, distance);
+		bool result = structures.FindClosestBuildingCenter(gpos, 20.0,
+			building, distance);
 		if (result)
 		{
 			vtBuilding3d *bld;
@@ -1085,6 +1140,8 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 		// close off the fence if we have one
 		if (m_mode == MM_FENCES)
 			close_fence();
+		if (m_mode == MM_ROUTES)
+			close_route();
 		if (m_mode == MM_SELECT)
 		{
 			vtTerrain *pTerr = GetCurrentTerrain();
@@ -1183,6 +1240,42 @@ void Enviro::SetFenceOptions(FenceType type, float fHeight, float fSpacing)
 	m_fFenceHeight = fHeight;
 	m_fFenceSpacing = fSpacing;
 	finish_fence();
+}
+
+
+////////////////////////////////////////////////////////////////
+// Route
+
+void Enviro::start_new_route()
+{
+	vtRoute *route = new vtRoute(m_fRouteHeight, m_fRouteSpacing,
+		m_fRouteOffL, m_fRouteOffR, m_fRouteStInc, m_sRouteName,
+		GetCurrentTerrain());
+	GetCurrentTerrain()->AddRoute(route);
+	m_pCurRoute = route;
+}
+
+void Enviro::finish_route()
+{
+	m_bActiveRoute = false;
+}
+
+void Enviro::close_route()
+{
+	if (m_bActiveRoute && m_pCurRoute)
+	{
+		if ( m_pCurRoute->close_route() )
+			GetCurrentTerrain()->RedrawRoute(m_pCurRoute);
+		GetCurrentTerrain()->SaveRoute();
+	}
+	m_bActiveRoute = false;
+}
+
+void Enviro::SetRouteOptions(float fHeight, float fSpacing)
+{
+	m_fRouteHeight = fHeight;
+	m_fRouteSpacing = fSpacing;
+	finish_route();
 }
 
 

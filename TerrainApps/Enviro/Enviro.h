@@ -10,9 +10,11 @@
 class vtTerrain;
 class TerrainPicker;
 class IcoGlobe;
+class vtRoute;
 
 // Engines
 class vtTerrainFlyer;
+class RouteFollowerEngine;
 class VFlyer;
 class QuakeFlyer;
 class vtTrackball;
@@ -85,6 +87,10 @@ public:
 	QuakeFlyer		*m_pQuakeFlyer;
 	vtTerrainFlyer	*m_pCurrentFlyer;
 
+	RouteFollowerEngine	*m_pRouteFollower;
+	bool			m_bRouteTranslationSet;
+	vtCamera		*m_pRouteFollowerCamera;
+
 	// event handlers
 	void OnMouse(vtMouseEvent &event);
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
@@ -98,6 +104,13 @@ public:
 	void finish_fence();
 	void close_fence();
 	void SetFenceOptions(FenceType type, float fHeight, float fSpacing);
+
+	// route methods
+	void start_new_route();
+	void finish_route();
+	void close_route();
+	void SetRouteOptions(float fHeight, float fSpacing);
+	void SetFollowerCamera();
 
 	// plants
 	vtPlantList3d	*GetPlantList() { return m_pPlantList; }
@@ -115,6 +128,7 @@ public:
 	bool		m_bDragging;
 	DPoint3		m_EarthPosDown;
 	DPoint3		m_EarthPosLast;
+	vtRoute		*m_pCurRoute;
 
 protected:
 	// methods
@@ -139,6 +153,13 @@ protected:
 	vtFence3d	*m_pCurFence;
 	FenceType	m_CurFenceType;
 	float		m_fFenceHeight, m_fFenceSpacing;
+
+	// route members
+	bool		m_bActiveRoute;
+	float		m_fRouteHeight, m_fRouteSpacing;
+	float		m_fRouteOffL, m_fRouteOffR;
+	float		m_fRouteStInc;
+	vtString	m_sRouteName;
 
 	// view and navigation
 	vtCamera	*m_pNormalCamera;
