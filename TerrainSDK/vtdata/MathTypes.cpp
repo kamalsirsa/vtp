@@ -47,6 +47,13 @@ int DPolyArray2::FindPoly(DPoint2 p)
 // DLine2 methods
 //
 
+void DLine2::Add(const DPoint2 &p)
+{
+	int size = GetSize();
+	for (int i=0; i < size; i++)
+		GetAt(i) += p;
+}
+
 void DLine2::RemovePoint(int i)
 {
 	int size = GetSize();

@@ -11,7 +11,6 @@
 
 #include <math.h>
 #include "Array.h"
-#include "Array.inl"
 
 #ifndef PId
  #define PId		3.141592653589793238
@@ -305,6 +304,8 @@ public:
 	// assignment
 	DLine2 &operator=(const class DLine2 &v);
 	DLine2 &operator=(const class FLine2 &v);
+
+	void Add(const DPoint2 &p);
 
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p);
