@@ -18,7 +18,23 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtui/wxString2.h"
-#include "EnviroGUI.h"	// for GetCurrentTerrain
+#include "EnviroGUI.h"  // for GetCurrentTerrain
+
+
+/////////////////////////////
+
+class LayerItemData : public wxTreeItemData
+{
+public:
+	LayerItemData(vtStructureArray3d *sa, int item)
+	{
+		m_sa = sa;
+		m_item = item;
+	}
+	vtStructureArray3d *m_sa;
+	int m_item;
+};
+
 
 // WDR: class implementations
 
@@ -31,6 +47,9 @@
 BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_INIT_DIALOG (LayerDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_LAYER_TREE, LayerDlg::OnSelChanged )
+	EVT_CHECKBOX( ID_SHOW_ALL, LayerDlg::OnShowAll )
+	EVT_CHECKBOX( ID_VISIBLE, LayerDlg::OnVisible )
+	EVT_BUTTON( ID_ZOOM_TO, LayerDlg::OnZoomTo )
 END_EVENT_TABLE()
 
 LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -38,9 +57,27 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxDialog( parent, id, title, position, size, style )
 {
 	m_pTree = NULL;
+	m_bShowAll = false;
 
 	// WDR: dialog function LayerDialogFunc for LayerDlg
 	LayerDialogFunc( this, TRUE ); 
+}
+
+//
+// For an item in the tree which corresponds to an actual structure,
+//  return the node associated with that structure.
+//
+vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item)
+{
+	if (!item.IsOk())
+		return NULL;
+
+	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
+	if (!data)
+		return NULL;
+
+	vtStructure3d *str3d = data->m_sa->GetStructure3d(data->m_item);
+	return str3d->GetContained();
 }
 
 void LayerDlg::OnInitDialog(wxInitDialogEvent& event) 
@@ -59,6 +96,8 @@ void LayerDlg::RefreshTreeContents()
 
 	// start with a blank slate
 	m_pTree->DeleteAllItems();
+	GetVisible()->Enable(false);
+	GetZoomTo()->Enable(false);
 
 	switch (g_App.m_state)
 	{
@@ -73,6 +112,9 @@ void LayerDlg::RefreshTreeContents()
 
 void LayerDlg::RefreshTreeTerrain()
 {
+	g_pLayerSizer1->Show(g_pLayerSizer2, true);
+	g_pLayerSizer1->Layout();
+
 	vtTerrain *terr = GetCurrentTerrain();
 	if (!terr)
 		return;
@@ -89,39 +131,73 @@ void LayerDlg::RefreshTreeTerrain()
 		sa = set[i];
 
 		str = sa->GetFilename();
-		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, -1, -1);
+		wxTreeItemId hLayer = m_pTree->AppendItem(hRoot, str, -1, -1);
 		if (sa == terr->GetStructures())
-			m_pTree->SetItemBold(hItem, true);
+			m_pTree->SetItemBold(hLayer, true);
 
-		int bld = 0, fen = 0, inst = 0;
-		for (j = 0; j < sa->GetSize(); j++)
+		wxTreeItemId hItem;
+		if (m_bShowAll)
 		{
-			if (sa->GetBuilding(j)) bld++;
-			if (sa->GetFence(j)) fen++;
-			if (sa->GetInstance(j)) inst++;
+			for (j = 0; j < sa->GetSize(); j++)
+			{
+				if (sa->GetBuilding(j))
+					hItem = m_pTree->AppendItem(hLayer, _T("Building"), -1, -1);
+				if (sa->GetFence(j))
+					hItem = m_pTree->AppendItem(hLayer, _T("Fence"), -1, -1);
+				if (vtStructInstance *inst = sa->GetInstance(j))
+				{
+					vtString vs = inst->GetValue("filename");
+					if (vs != "")
+					{
+						str = "File ";
+						str += vs;
+					}
+					else
+					{
+						vs = inst->GetValue("itemname");
+						str = "Item ";
+						str += vs;
+					}
+					hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
+				}
+				m_pTree->SetItemData(hItem, new LayerItemData(sa, j));
+			}
 		}
-		if (bld)
+		else
 		{
-			str.Printf(_T("%d Building%s"), bld, bld != 1 ? "s" : "");
-			m_pTree->AppendItem(hItem, str, -1, -1);
+			int bld = 0, fen = 0, inst = 0;
+			for (j = 0; j < sa->GetSize(); j++)
+			{
+				if (sa->GetBuilding(j)) bld++;
+				if (sa->GetFence(j)) fen++;
+				if (sa->GetInstance(j)) inst++;
+			}
+			if (bld)
+			{
+				str.Printf(_T("%d Building%s"), bld, bld != 1 ? "s" : "");
+				m_pTree->AppendItem(hLayer, str, -1, -1);
+			}
+			if (fen)
+			{
+				str.Printf(_T("%d Fence%s"), fen, fen != 1 ? "s" : "");
+				m_pTree->AppendItem(hLayer, str, -1, -1);
+			}
+			if (inst)
+			{
+				str.Printf(_T("%d Instance%s"), inst, inst != 1 ? "s" : "");
+				m_pTree->AppendItem(hLayer, str, -1, -1);
+			}
 		}
-		if (fen)
-		{
-			str.Printf(_T("%d Fence%s"), fen, fen != 1 ? "s" : "");
-			m_pTree->AppendItem(hItem, str, -1, -1);
-		}
-		if (inst)
-		{
-			str.Printf(_T("%d Instance%s"), inst, inst != 1 ? "s" : "");
-			m_pTree->AppendItem(hItem, str, -1, -1);
-		}
-		m_pTree->Expand(hItem);
+		m_pTree->Expand(hLayer);
 	}
 	m_pTree->Expand(hRoot);
 }
 
 void LayerDlg::RefreshTreeSpace()
 {
+	g_pLayerSizer1->Show(g_pLayerSizer2, false);
+	g_pLayerSizer1->Layout();
+
 	IcoGlobe *globe = g_App.GetGlobe();
 	if (!globe)
 		return;
@@ -157,7 +233,56 @@ void LayerDlg::RefreshTreeSpace()
 
 // WDR: handler implementations for LayerDlg
 
+void LayerDlg::OnZoomTo( wxCommandEvent &event )
+{
+	vtNodeBase *pThing = GetNodeFromItem(m_pTree->GetSelection());
+	if (pThing)
+	{
+		FSphere sphere;
+		pThing->GetBoundSphere(sphere, true);	// get global bounds
+		vtCamera *pCam = vtGetScene()->GetCamera();
+
+		// Put the camera a bit back from the sphere; sufficiently so that
+		//  the whole volume of the bounding sphere is visible.
+		float alpha = pCam->GetFOV() / 2.0f;
+		float distance = sphere.radius / sinf(alpha);
+		pCam->Identity();
+		pCam->Rotate2(FPoint3(1,0,0), -PID2f/2);	// tilt down a little
+		pCam->Translate1(sphere.center);
+		pCam->TranslateLocal(FPoint3(0.0f, 0.0f, distance));
+	}
+}
+
+void LayerDlg::OnVisible( wxCommandEvent &event )
+{
+	bool bVis = event.IsChecked();
+
+	vtNodeBase *pThing = GetNodeFromItem(m_pTree->GetSelection());
+	if (pThing)
+		pThing->SetEnabled(bVis);
+}
+
+void LayerDlg::OnShowAll( wxCommandEvent &event )
+{
+	m_bShowAll = event.IsChecked();
+	RefreshTreeContents();
+	if (!m_bShowAll)
+	{
+		GetVisible()->SetValue(false);
+		GetVisible()->Enable(false);
+		GetZoomTo()->Enable(false);
+	}
+}
+
 void LayerDlg::OnSelChanged( wxTreeEvent &event )
 {
+	wxTreeItemId item = event.GetItem();
+	vtNodeBase *pThing = GetNodeFromItem(item);
+
+	GetZoomTo()->Enable(pThing != NULL);
+	GetVisible()->Enable(pThing != NULL);
+
+	if (pThing)
+		GetVisible()->SetValue(pThing->GetEnabled());
 }
 

@@ -14,6 +14,8 @@
 
 #include "enviro_wdr.h"
 
+class vtNodeBase;
+
 // WDR: class declarations
 
 //----------------------------------------------------------------------------
@@ -30,6 +32,9 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for LayerDlg
+	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_ZOOM_TO ); }
+	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_VISIBLE ); }
+	wxCheckBox* GetShowAll()  { return (wxCheckBox*) FindWindow( ID_SHOW_ALL ); }
 	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
 	void RefreshTreeTerrain();
@@ -38,9 +43,15 @@ public:
 private:
 	// WDR: member variable declarations for LayerDlg
 	wxTreeCtrl *m_pTree;
-	
+	bool	m_bShowAll;
+
 private:
+	vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item);
+
 	// WDR: handler declarations for LayerDlg
+	void OnZoomTo( wxCommandEvent &event );
+	void OnVisible( wxCommandEvent &event );
+	void OnShowAll( wxCommandEvent &event );
 	void OnSelChanged( wxTreeEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
