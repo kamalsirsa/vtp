@@ -1090,9 +1090,11 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 		delete pUL;
 }
 
+//
+// Import from a Garmin MapSource GPS export file (.txt)
+//
 void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 {
-	// Use file dialog to open plant list text file.
 	wxFileDialog loadFile(NULL, _("Import MapSource File"), _T(""), _T(""),
 		_("MapSource Export Files (*.txt)|*.txt|"), wxOPEN);
 
@@ -1100,102 +1102,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 		return;
 
 	wxString2 str = loadFile.GetPath();
-
-	FILE *fp = fopen(str.mb_str(), "r");
-	if (!fp)
-		return;
-
-	Array<vtRawLayer *> layers;
-	char buf[200];
-	bool bUTM = false;
-	fscanf(fp, "Grid %s\n", buf);
-	if (!strcmp(buf, "UTM"))
-		bUTM = true;
-	fgets(buf, 200, fp); // assume "Datum   WGS 84" 
-
-	vtProjection proj;
-
-	bool bGotSRS = false;
-	char ch;
-	int i;
-	vtRawLayer *pRL=NULL;
-
-	while (fgets(buf, 200, fp))	// get a line
-	{
-		if (!strncmp(buf, "Track\t", 6))
-		{
-			pRL = new vtRawLayer();
-			pRL->SetGeomType(wkbPoint);
-			layers.Append(pRL);
-			bGotSRS = false;
-
-			// parse name
-			char name[40];
-			for (i = 6; ; i++)
-			{
-				ch = buf[i];
-				if (ch == '\t' || ch == 0)
-					break;
-				name[i-6] = ch;
-			}
-			name[i] = 0;
-			pRL->SetLayerFilename(vtString(name));
-		}
-		if (!strncmp(buf, "Trackpoint", 10))
-		{
-			int zone;
-			DPoint2 p;
-			sscanf(buf+10, "%d %c %lf %lf", &zone, &ch, &p.x, &p.y);
-
-			if (!bGotSRS)
-			{
-				proj.SetWellKnownGeogCS("WGS84");
-				if (bUTM)
-					proj.SetUTMZone(zone);
-				pRL->SetProjection(proj);
-				bGotSRS = true;
-			}
-			pRL->AddPoint(p);
-		}
-	}
-
-	// Display the list of imported tracks to the user
-	int n = layers.GetSize();
-	wxString2 *choices = new wxString2[n];
-	wxArrayInt selections;
-	for (i = 0; i < n; i++)
-	{
-		choices[i] = layers[i]->GetLayerFilename();
-
-		choices[i] += _T(" (");
-		if (bUTM)
-		{
-			layers[i]->GetProjection(proj);
-			str.Printf(_T("zone %d, "), proj.GetUTMZone());
-			choices[i] += str;
-		}
-		str.Printf(_T("points %d"), layers[i]->GetFeatureSet()->GetNumEntities());
-		choices[i] += str;
-		choices[i] += _T(")");
-	}
-
-	int nsel = wxGetMultipleChoices(selections, _("Which layers to import?"),
-		_("Import Tracks"), n, choices);
-
-	// for each of the layers the user wants, add them to our project
-	for (i = 0; i < nsel; i++)
-	{
-		int sel = selections[i];
-		AddLayerWithCheck(layers[sel]);
-		layers[sel]->SetModified(false);
-	}
-	// for all the rest, delete 'em
-	for (i = 0; i < n; i++)
-	{
-		if (layers[i]->GetModified())
-			delete layers[i];
-	}
-	delete [] choices;
+	ImportFromMapSource(str.mb_str());
 }
 
 void MainFrame::OnLayerProperties(wxCommandEvent &event)
