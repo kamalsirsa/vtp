@@ -139,10 +139,11 @@ public:
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
-	void ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
+	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
 		void progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 							   float light_factor, void progress_callback(int) = NULL);
+	void ShadeQuick(vtBitmapBase *pBM, float light_factor, void progress_callback(int) = NULL);
 	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,
 		float light_factor, void progress_callback(int) = NULL);
 

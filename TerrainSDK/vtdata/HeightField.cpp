@@ -479,8 +479,10 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  * \param cmap			The mapping of elevation values to colors.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
+ *
+ * \return true if any invalid elevation values were encountered.
  */
-void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
+bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	const ColorMap *cmap, void progress_callback(int))
 {
 	ColorMap defaults;
@@ -517,6 +519,7 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 
 	// now iterate over the texels
 	float elev;
+	bool has_invalid = false;
 	RGBi c3;
 	for (i = 0; i < w; i++)
 	{
@@ -532,11 +535,18 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 			y = j * gh / h;
 
 			elev = GetElevation(x, y, true);	// local units, true elevation
+			if (elev == INVALID_ELEVATION)
+			{
+				pBM->SetPixel24(i, h-1-j, RGBi(255,0,0));
+				has_invalid = true;
+				continue;
+			}
 			int table_entry = (int) ((elev - fMin) / fRange * TABLE_SIZE);
 			c3 = table[table_entry];
 			pBM->SetPixel24(i, h-1-j, c3);
 		}
 	}
+	return has_invalid;
 }
 
 
@@ -618,6 +628,77 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	}
 }
 
+/**
+ * Quickly produce a shading-like effect by scanning over the bitmap once,
+ * using the east-west slope to produce lightening/darkening.
+ * The bitmap must be the same size as the elevation grid, or a power of 2 smaller.
+ */
+void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
+									 void progress_callback(int))
+{
+	int w = pBM->GetWidth();
+	int h = pBM->GetHeight();
+
+	int stepx = m_iColumns / w;
+	int stepy = m_iRows / h;
+
+	int i, j;
+	int x, y;
+
+	RGBi rgb;
+
+	for (j = 0; j < h-1; j++)
+	{
+		if (progress_callback != NULL)
+		{
+			if ((j&7) == 0)
+				progress_callback(j * 100 / h);
+		}
+		// find corresponding location in terrain
+		y = j * stepy;
+		for (i = 0; i < w; i++)
+		{
+			pBM->GetPixel24(i, j, rgb);
+			x = i * stepx;
+
+			float value = GetElevation(i, m_iRows-1-j);
+			if (value == INVALID_ELEVATION)
+			{
+				pBM->SetPixel24(i, j, RGBi(255, 0, 0));
+				continue;
+			}
+			if (i == w-1)
+				continue;
+
+			float value2 = GetElevation(i+1, m_iRows-1-j);
+			if (value2 == INVALID_ELEVATION)
+				value2 = value;
+			int diff = (int) ((value2 - value) / m_dXStep * light_factor);
+
+			// clip to keep values under control
+			if (diff > 128)
+				diff = 128;
+			else if (diff < -128)
+				diff = -128;
+			rgb.r += diff;
+			rgb.g += diff;
+			rgb.b += diff;
+			if (rgb.r < 0) rgb.r = 0;
+			else if (rgb.r > 255) rgb.r = 255;
+			if (rgb.g < 0) rgb.g = 0;
+			else if (rgb.g > 255) rgb.g = 255;
+			if (rgb.b < 0) rgb.b = 0;
+			else if (rgb.b > 255) rgb.b = 255;
+			pBM->SetPixel24(i, j, rgb);
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Begin shadow-casting code.
+//
+
 class LightMap
 {
 public:
@@ -652,6 +733,7 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
 {
 	return DPoint2(base.x + spacing.x * i, base.y + spacing.y * j);
 }
+
 /**
  * ShadowCastDib - method to create shadows over the terrain based on the
  * angle of the sun.
