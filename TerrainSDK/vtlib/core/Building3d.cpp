@@ -287,35 +287,6 @@ float vtBuilding3d::GetHeightOfStories()
 }
 
 
-/**
- * Creates the geometry for the building.
- * Capable of several levels of detail (defaults to full detail).
- * If the geometry was already built previously, it is destroyed and re-created.
- *
- * \param pHeightField The heightfield on which to plant the building.
- * \param bDoRoof Construct a roof.
- * \param bDoWalls Construct the walls.
- * \param bDetails Construct all the little details, like mouding and windows.
- */
-void vtBuilding3d::CreateShape(vtHeightField *pHeightField, bool bDoRoof,
-							   bool bDoWalls, bool bDetails)
-{
-	if (m_pContainer)
-	{
-		// was build before; re-build geometry
-		DestroyGeometry();
-	}
-	else
-	{
-		// constructing for the first time
-		m_pContainer = new vtTransform();
-		m_pContainer->SetName2("building");
-	}
-	CreateGeometry(pHeightField, bDoRoof, bDoWalls, bDetails);
-	m_pContainer->AddChild(m_pGeom);
-	m_pContainer->SetTrans(m_center);
-}
-
 void vtBuilding3d::DestroyGeometry()
 {
 	m_pContainer->RemoveChild(m_pGeom);
@@ -460,7 +431,7 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 		m_pGeom->AddMesh(mesh, index);
 	}
 
-	// resize bounding box (TODO: more elegant implementation for this)
+	// resize bounding box
 	if (m_pHighlight)
 	{
 		m_pContainer->RemoveChild(m_pHighlight);
@@ -929,15 +900,38 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 }
 
 
-// implement vtStructure3d methods
-bool vtBuilding3d::CreateNode(vtHeightField *hf, const char *options)
+/**
+ * Creates the geometry for the building.
+ * Capable of several levels of detail (defaults to full detail).
+ * If the geometry was already built previously, it is destroyed and re-created.
+ *
+ * \param pHeightField The heightfield on which to plant the building.
+ * \param options Can contain the keywords "roof", "walls", or "details"
+ *   (construct all the little details, like mouding and windows)
+ */
+bool vtBuilding3d::CreateNode(vtHeightField *pHeightField, const char *options)
 {
-	bool roof = (strstr(options, "roof") != NULL);
-	bool walls = (strstr(options, "walls") != NULL);
-	bool details = (strstr(options, "detail") != NULL);
-	CreateShape(hf, roof, walls, details);
+	bool bDoRoof = (strstr(options, "roof") != NULL);
+	bool bDoWalls = (strstr(options, "walls") != NULL);
+	bool bDetails = (strstr(options, "detail") != NULL);
+
+	if (m_pContainer)
+	{
+		// was build before; re-build geometry
+		DestroyGeometry();
+	}
+	else
+	{
+		// constructing for the first time
+		m_pContainer = new vtTransform();
+		m_pContainer->SetName2("building");
+	}
+	CreateGeometry(pHeightField, bDoRoof, bDoWalls, bDetails);
+	m_pContainer->AddChild(m_pGeom);
+	m_pContainer->SetTrans(m_center);
 	return true;
 }
+
 
 vtGeom *vtBuilding3d::GetGeom()
 {

@@ -246,16 +246,11 @@ void vtFence3d::DestroyGeometry()
 	m_bBuilt = false;
 }
 
-bool vtFence3d::CreateShape(vtHeightField *pHeightField)
-{
-	BuildGeometry(pHeightField);
-	return true;
-}
-
 // implement vtStructure3d methods
 bool vtFence3d::CreateNode(vtHeightField *hf, const char *options)
 {
-	return CreateShape(hf);
+	BuildGeometry(hf);
+	return true;
 }
 
 vtGeom *vtFence3d::GetGeom()

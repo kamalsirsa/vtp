@@ -55,11 +55,9 @@ public:
 	vtStructInstance3d();
 
 	// implement vtStructure3d methods
+	/// Create the node(s) and position them on the indicated heightfield
 	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
 	virtual void ShowBounds(bool bShow);
-
-	/// Create the node(s) and position them on the indicated heightfield
-	bool CreateShape(vtHeightField *pHeightField);
 
 	/// (Re-)position the instance on the indicated heightfield
 	void UpdateTransform(vtHeightField *pHeightField);

@@ -25,7 +25,6 @@ public:
 
 	static void SetScale(float fScale) { m_fFenceScale = fScale; }
 
-	bool CreateShape(vtHeightField *pHeightField);
 	void BuildGeometry(vtHeightField *pHeightField);
 	void DestroyGeometry();
 

@@ -22,39 +22,6 @@ vtStructInstance3d::vtStructInstance3d() : vtStructInstance()
 	m_pModel = NULL;
 }
 
-bool vtStructInstance3d::CreateShape(vtHeightField *pHeightField)
-{
-	if (!m_pContainer)
-	{
-		// constructing for the first time
-		m_pContainer = new vtTransform();
-	}
-
-	const char *filename = GetValue("filename");
-	if (filename)
-	{
-		m_pModel = vtLoadModel(filename);
-		if (!m_pModel)
-			return false;
-		m_pContainer->AddChild(m_pModel);
-	}
-	const char *itemname = GetValue("itemname");
-	if (itemname)
-	{
-		// TODO: use ContentManager to create model
-	}
-	const char *scale = GetValue("scale");
-	if (scale)
-	{
-		double sc = atof(scale);
-		if (sc != 0.0)
-			m_fScale = sc;
-	}
-
-	UpdateTransform(pHeightField);
-	return true;
-}
-
 void vtStructInstance3d::UpdateTransform(vtHeightField *pHeightField)
 {
 	m_pContainer->Identity();
@@ -112,23 +79,47 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 // implement vtStructure3d methods
 bool vtStructInstance3d::CreateNode(vtHeightField *hf, const char *options)
 {
-	bool bSuccess = CreateShape(hf);
-	if (!bSuccess)
+	if (!m_pContainer)
+	{
+		// constructing for the first time
+		m_pContainer = new vtTransform();
+	}
+
+	vtTag *tag = FindTag("filename");
+	if (!tag)
+		return false;
+
+	m_pModel = vtLoadModel(tag->value);
+	if (!m_pModel)
 	{
 		// try again, looking on the standards data paths
-		vtTag *tag = FindTag("filename");
-		if (tag)
+		vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
+		if (fullpath != "")
 		{
-			vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
-			if (fullpath != "")
-			{
-				tag->value = fullpath;
-				// try again
-				bSuccess = CreateShape(hf);
-			}
+			// try again
+			tag->value = fullpath;
+			m_pModel = vtLoadModel(tag->value);
 		}
+		if (!m_pModel)
+			return false;
 	}
-	return bSuccess;
+	m_pContainer->AddChild(m_pModel);
+
+	const char *itemname = GetValue("itemname");
+	if (itemname)
+	{
+		// TODO: use ContentManager to create model
+	}
+	const char *scale = GetValue("scale");
+	if (scale)
+	{
+		double sc = atof(scale);
+		if (sc != 0.0)
+			m_fScale = sc;
+	}
+
+	UpdateTransform(hf);
+	return true;
 }
 
 

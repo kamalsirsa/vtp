@@ -53,9 +53,6 @@ public:
 	//looks up materials for the building
 	void FindMaterialIndices();
 
-	void CreateShape(vtHeightField *pHeightField, bool roof=true,
-		bool walls=true, bool details=true);
-
 	void DestroyGeometry();
 	void CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 						bool bDoWalls, bool details);
