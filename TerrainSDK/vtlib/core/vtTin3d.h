@@ -16,7 +16,7 @@
  * geometry for the TIN.  It also subclasses vtHeightField so it provides
  * the ability to do height-testing and ray-picking.
  */
-class vtTin3d : public vtTin, public vtHeightField
+class vtTin3d : public vtTin
 {
 public:
 	vtTin3d();
@@ -25,7 +25,7 @@ public:
 
 	vtGeom *CreateGeometry(bool bDropShadowMesh);
 
-	// implement heightfield virtual methods
+	// implement HeightField3d virtual methods
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const;
 	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
