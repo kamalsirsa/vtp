@@ -624,6 +624,75 @@ void vtMesh::ReOptimize()
 	m_pGeoSet->dirtyDisplayList();
 }
 
+/**
+ * Set the normals of the vertices by combining the normals of the
+ * surrounding faces.  This requires going through all the primitives
+ * to average their contribution to each vertex.
+ */
+void vtMesh::SetNormalsFromPrimitives()
+{
+	int verts = GetNumVertices();
+	int i;
+
+	for (i = 0; i < verts; i++)
+		m_Norm[i].set(0,0,0);
+
+	switch (m_ePrimType)
+	{
+	case GL_POINTS:
+	case GL_LINES:
+	case GL_LINE_STRIP:
+	case GL_TRIANGLES:
+		break;
+	case GL_TRIANGLE_STRIP:
+		_AddStripNormals();
+		break;
+	case GL_TRIANGLE_FAN:
+	case GL_QUADS:
+	case GL_POLYGON:
+		break;
+	}
+
+	for (i = 0; i < verts; i++)
+		m_Norm[i].normalize();
+}
+
+void vtMesh::_AddStripNormals()
+{
+	int prims = GetNumPrims();
+	int i, j, len, idx;
+	unsigned short v0, v1, v2;
+	osg::Vec3 p0, p1, p2, d0, d1, norm;
+
+	idx = 0;
+	for (i = 0; i < prims; i++)
+	{
+		len = m_PrimLen[i];
+		for (j = 0; j < len; j++)
+		{
+			v0 = v1; p0 = p1;
+			v1 = v2; p1 = p2;
+			v2 = m_Index[idx];
+			p2 = m_Vert[v2];
+			if (j >= 2)
+			{
+				d0 = (p1 - p0);
+				d1 = (p2 - p0);
+				d0.normalize();
+				d1.normalize();
+
+				norm = d0^d1;
+
+				m_Norm[v0] += norm;
+				m_Norm[v1] += norm;
+				m_Norm[v2] += norm;
+			}
+			idx++;
+		}
+	}
+}
+
+
 //
 // Point OSG to the vertex and primitive data that we maintain
 //

@@ -136,8 +136,11 @@ public:
 	short GetIndex(int i) { return m_Index.GetAt(i); }
 	int GetPrimLen(int i) { return m_PrimLen.GetAt(i); }
 
+	void SetNormalsFromPrimitives();
+
 protected:
 	// Implementation
+	void _AddStripNormals();
 	osg::ref_ptr<GeoSet2> m_pGeoSet;
 
 	// GeoSet doesn't actually know or care about how many vertices
