@@ -566,11 +566,12 @@ vtLayerPtr MainFrame::ImportFromDLG(const wxString2 &fname_in, LayerType ltype)
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
 		pSL->AddElementsFromDLG(pDLG);
 	}
-	if (ltype == LT_RAW)
+/*	if (ltype == LT_RAW)
 	{
 		vtRawLayer *pRL = (vtRawLayer *)pLayer;
 		pRL->AddElementsFromDLG(pDLG);
 	}
+*/
 	// now we no longer need the DLG object
 	delete pDLG;
 
@@ -592,9 +593,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	else
 	{
 		// Get type of data
-		int     nElem;
-		double  dummy[4];
-		SHPGetInfo(hSHP, &nElem, &nShapeType, dummy, dummy);
+		SHPGetInfo(hSHP, NULL, &nShapeType, NULL, NULL);
 
 		// Check Shape Type, Veg Layer should be Poly data
 		SHPClose(hSHP);
@@ -680,12 +679,13 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	if (ltype == LT_RAW)
 	{
 		pLayer->SetLayerFilename(strFileName);
-		if (!pLayer->OnLoad())
+		if (pLayer->OnLoad())
+			pLayer->SetProjection(proj);
+		else
 		{
 			delete pLayer;
 			pLayer = NULL;
 		}
-		pLayer->SetProjection(proj);
 	}
 	return pLayer;
 }
@@ -895,7 +895,6 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 //	OGRPoint		*pPoint;
 	OGRLineString   *pLineString;
 
-//	DPolyArray2		chain;
 //	DLine2			*dline;
 	vtWaterFeature	wfeat;
 

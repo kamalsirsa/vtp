@@ -442,10 +442,8 @@ void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjecti
 		return;
 
     int		nEntities, nShapeType;
-    double 	adfMinBound[4], adfMaxBound[4];
-	FPoint2 point;
 
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 	if (nShapeType != SHPT_ARC)
 		return;
 

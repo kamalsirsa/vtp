@@ -87,8 +87,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	// Get number of polys and type of data
-	double  adfMinBound[4], adfMaxBound[4];
-	SHPGetInfo(m_hSHP, &m_nElem, &m_nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(m_hSHP, &m_nElem, &m_nShapeType, NULL, NULL);
 
 	// Open DBF File
 	DBFHandle m_db = DBFOpen(m_filename.mb_str(), "rb");
