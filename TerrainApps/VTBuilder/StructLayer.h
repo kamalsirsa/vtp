@@ -28,6 +28,7 @@ public:
 	void SetProjection(vtProjection &proj);
 	bool AppendDataFrom(vtLayer *pL);
 	void Offset(const DPoint2 &p);
+	void GetPropertyText(wxString &str);
 
 	bool AddElementsFromSHP(const char *filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);

@@ -270,6 +270,35 @@ void vtStructureLayer::Offset(const DPoint2 &delta)
 	}
 }
 
+void vtStructureLayer::GetPropertyText(wxString &strIn)
+{
+	wxString str;
+
+	int i, size = GetSize();
+
+	str.Printf("Number of structures: %d\n", size);
+	strIn += str;
+
+	int bld = 0, lin = 0, ins = 0;
+	for (i = 0; i < size; i++)
+	{
+		vtStructure *sp = GetAt(i);
+		if (sp->GetBuilding()) bld++;
+		else if (sp->GetFence()) lin++;
+		else if (sp->GetInstance()) ins++;
+	}
+	str.Printf("\t%d Buildings (procedural)\n", bld);
+	strIn += str;
+	str.Printf("\t%d Linear (fences/walls)\n", lin);
+	strIn += str;
+	str.Printf("\t%d Instances (imported models)\n", ins);
+	strIn += str;
+
+	str.Printf("Number of selected structures: %d\n", NumSelected());
+	strIn += str;
+}
+
+
 //
 // Locate the closest building that is no more than epsilon units in either
 // dimension away from point.
