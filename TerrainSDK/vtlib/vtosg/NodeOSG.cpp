@@ -16,6 +16,10 @@ using namespace osg;
 // vtNode
 //
 
+vtNode::~vtNode()
+{
+}
+
 void vtNode::SetEnabled(bool bOn)
 {
 	m_pNode->setNodeMask(bOn ? 0xffffffff : 0);
@@ -60,7 +64,12 @@ void vtNode::SetOsgNode(Node *n, bool bGroup )
 {
 	m_pNode = n;
 	if (m_pNode.valid())
+	{
+		// artificially increment our own "reference count", so that OSG won't try
+		// to delete us
+		ref();
 		m_pNode->setUserData((vtNode *)this);
+	}
 	m_bGroup = bGroup;
 }
 
@@ -323,14 +332,13 @@ float vtCamera::GetYon()
 void vtCamera::SetFOV(float fov_x)
 {
 	float aspect = m_pOsgCamera->calc_aspectRatio();
+	float fov_y2 = atan(tan (fov_x/2) / aspect);
 
 	// osg 0.8.42
-//	float fov_y2 = atan(tan (fov_x/2) / aspect);
 //	m_pOsgCamera->setPerspective(fov_y2 * 2 * 180.0f / PIf,
 //		aspect, m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 
 	// osg 0.8.43
-	float fov_y2 = atan(tan (fov_x/2) / aspect);
 	m_pOsgCamera->setFOV(fov_x * 180.0f / PIf, fov_y2 * 2.0f * 180.0f / PIf,
 		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 }
@@ -339,10 +347,7 @@ float vtCamera::GetFOV()
 {
 	float fov_x = m_pOsgCamera->calc_fovx();
 
-	// osg 0.8.42
-//	return (fov_x / 180.0f * PIf);
-
-	// osg 0.8.43
+	// osg 0.8.42 and osg 0.8.43
 	return (fov_x / 180.0f * PIf);
 }
 
@@ -376,6 +381,10 @@ vtGeom::vtGeom() : vtGeomBase(), vtNode()
 {
 	m_pGeode = new Geode();
 	SetOsgNode(m_pGeode);
+}
+
+vtGeom::~vtGeom()
+{
 }
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)

@@ -26,6 +26,8 @@ namespace osg
 class vtNode : public vtNodeBase, public vtEnabledBase, public osg::Referenced
 {
 public:
+	~vtNode();
+
 	// implement vtEnabledBase methods
 	void SetEnabled(bool bOn);
 
@@ -183,6 +185,7 @@ class vtGeom : public vtGeomBase, public vtNode
 {
 public:
 	vtGeom();
+	~vtGeom();
 
 	/** Add a mesh to this geometry.
 		\param iMatIdx The material index for this mesh, which is an index
