@@ -11,4 +11,4 @@ struct PlantingOptions
 	float	m_fSpacing;
 };
 
-#endif __PlantingOptions_h__
+#endif // __PlantingOptions_h__
