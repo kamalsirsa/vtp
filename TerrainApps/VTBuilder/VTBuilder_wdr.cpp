@@ -1258,10 +1258,10 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item12 = new wxRadioButton( parent, ID_COMMON_NAME, "Common Name (string)", wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxRadioButton *item13 = new wxRadioButton( parent, ID_BIOTYPE_INT, "BioType (integer)", wxDefaultPosition, wxDefaultSize, 0 );
+    wxRadioButton *item13 = new wxRadioButton( parent, ID_BIOTYPE_INT, "BioType ID (integer)", wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxRadioButton *item14 = new wxRadioButton( parent, ID_BIOTYPE_STRING, "Biotype (string)", wxDefaultPosition, wxDefaultSize, 0 );
+    wxRadioButton *item14 = new wxRadioButton( parent, ID_BIOTYPE_STRING, "BioType Name (string)", wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item1->Add( item9, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
