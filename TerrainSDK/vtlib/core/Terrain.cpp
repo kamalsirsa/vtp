@@ -1096,6 +1096,9 @@ bool vtTerrain::CreateStep2(int &iError)
 
 		create_textures();
 	}
+	char type[10], value[2048];
+	m_proj.GetTextDescription(type, value);
+	VTLOG(" Projection of the terrain: %s, '%s'\n", type, value);
 	return true;
 }
 
