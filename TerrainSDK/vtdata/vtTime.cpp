@@ -183,7 +183,8 @@ vtTime::vtTime()
 void vtTime::_UpdateTM()
 {
 	struct tm *t = gmtime(&m_time);
-	m_tm = *t;
+	if (t != NULL)	// safety check: it can fail for <1970,>2038
+		m_tm = *t;
 }
 
 void vtTime::Increment(int secs)
@@ -234,8 +235,8 @@ void vtTime::SetDate(int year, int month, int day)
 	// safety checks
 	if (year > 2038)
 		year = 2038;
-	if (year < 1900)
-		year = 1900;
+	if (year < 1970)
+		year = 1970;
 
 	m_tm.tm_year = year - 1900;
 
