@@ -257,6 +257,8 @@ bool vtImageLayer::LoadFromGDAL()
 	int i;
 	bool bRet = true, bBitmap = true;
 
+	g_GDALWrapper.RequestGDALFormats();
+
 	pDataset = NULL;
 	pScanline = NULL;
 	pRedline = NULL;

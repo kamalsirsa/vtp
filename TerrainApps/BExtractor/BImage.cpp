@@ -72,7 +72,7 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	progImageLoad.SetRange(0, 100);
 	g_dlg = &progImageLoad;
 
-	GDALAllRegister();
+	g_GDALWrapper.RequestGDALFormats();
 
 	pDataset = (GDALDataset *) GDALOpen( szPathName, GA_ReadOnly );
 	if(pDataset == NULL )

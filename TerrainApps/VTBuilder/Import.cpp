@@ -749,7 +749,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 	vtProjection Projection;
 	wxString2 strFileName = fname_in;
 
-	OGRRegisterAll();
+	g_GDALWrapper.RequestOGRFormats();
 
 	OGRDataSource *datasource = OGRSFDriverRegistrar::Open(strFileName.mb_str());
 	if (!datasource)
@@ -834,7 +834,7 @@ void MainFrame::ImportDataFromTIGER(wxString &dirname_in)
 {
 	wxString2 strDirName = dirname_in;
 
-	OGRRegisterAll();
+	g_GDALWrapper.RequestOGRFormats();
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());
 	if (!pDatasource)

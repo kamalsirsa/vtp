@@ -47,10 +47,6 @@ bool MyApp::OnInit()
 
 	frame->GetView()->ZoomAll();
 
-	// prepare to call GDAL format functions
-	// only needs to be done once at startup
-	GDALAllRegister();
-
 	// Stuff for testing
 //	wxString str("E:/Earth Imagery/NASA BlueMarble/MOD09A1.E.interpol.cyl.retouched.topo.3x00054x00027-N.bmp");
 //	wxString str("E:/Data-USA/Elevation/crater_0513.bt");
@@ -63,8 +59,5 @@ bool MyApp::OnInit()
 
 int MyApp::OnExit()
 {
-	// only needs to be done once at exit
-	GDALDestroyDriverManager();
-
 	return wxApp::OnExit();
 }
