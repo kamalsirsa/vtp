@@ -391,11 +391,11 @@ void vtSkyDome::UpdateSunLight()
 	//  facing 'north', but alt-azi here assumes the default position is
 	//  _from_ the north at the horizon, facing us.
 	m_pSunLight->Rotate2(FPoint3(1,0,0), PId);
-	m_pSunLight->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(-m_fSunAlt));
-	m_pSunLight->RotateLocal(FPoint3(0,1,0), DEG_TO_RAD(m_fSunAzi));
+	m_pSunLight->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(m_fSunAlt));
+	m_pSunLight->Rotate2(FPoint3(0,1,0), DEG_TO_RAD(-m_fSunAzi));
 
 //	FPoint3 dir = m_pSunLight->GetDirection();
-//	VTLOG("  Light dir: %.3f %.3f %.3f\n", dir.x, dir.y, dir.z);
+//	VTLOG("  Alt-Azi %.3f %.3f, Light dir: %.3f %.3f %.3f\n", m_fSunAlt, m_fSunAzi, dir.x, dir.y, dir.z);
 
 	float ambient = 0.0f;
 
