@@ -6,6 +6,8 @@
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
+/** \file Structure.h */
+
 
 #ifndef STRUCTUREH
 #define STRUCTUREH
@@ -41,11 +43,14 @@ public:
 	float	m_fRotation;	// in radians
 };
 
+/**
+ * Structure type.
+ */
 enum vtStructureType
 {
-	ST_BUILDING,
-	ST_FENCE,
-	ST_INSTANCE
+	ST_BUILDING,	/**< A Building (vtBuilding) */
+	ST_FENCE,		/**< A Fence (vtFence) */
+	ST_INSTANCE		/**< A Structure Instance (vtStructInstance) */
 };
 
 /**
