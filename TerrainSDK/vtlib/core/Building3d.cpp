@@ -128,20 +128,20 @@ void vtBuilding3d::CreateSharedMaterials()
 	color.Set(1.0f,1.0f,1.0f);
 	pMat = makeMaterial(color, true);
 	pMat->SetTexture2("Data/BuildingModels/window.bmp");
+	pMat->SetClamp(false);
 	//window stays on at night
 	s_Materials->Append(pMat);
 
 	color.Set(1.0f,1.0f,1.0f);
 	pMat = makeMaterial(color, true);
 	pMat->SetTexture2("Data/BuildingModels/window.bmp");
-//	pMat->Set(APP_TextureOp, APP_Modulate); //windows goes dark at night
+	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// door material
 	color.Set(1.0f, 1.0f, 1.0f);
 	pMat = makeMaterial(color, true);
 	pMat->SetTexture2("Data/BuildingModels/door.bmp");
-//	pMat->Set(APP_TextureOp, APP_Modulate);
 	s_Materials->Append(pMat);
 
 	int total = s_Materials->GetSize();
@@ -159,7 +159,7 @@ void vtBuilding3d::FindMaterialIndices()
 	m_iMatIdx[BM_WALL] = FindMatIndex(BAP_PLAIN, m_Color);
 	m_iMatIdx[BM_ROOF] = FindMatIndex(BAP_ROOF, m_RoofColor);
 	m_iMatIdx[BM_TRIM] = FindMatIndex(BAP_PLAIN, m_MouldingColor);
-	m_iMatIdx[BM_WINDOW] = FindMatIndex(BAP_WINDOW);  //index to "on" light.  "off" light is 1 index higher.
+	m_iMatIdx[BM_WINDOW] = FindMatIndex(BAP_WINDOW);
 	m_iMatIdx[BM_DOOR] = FindMatIndex(BAP_DOOR);
 }
 
@@ -641,7 +641,7 @@ void vtBuilding3d::AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height)
 //builds a window section.  builds the wall below and above a window too.
 void vtBuilding3d::AddWindowSection(FPoint3 p0, FPoint3 p1, float height)
 {
-	//build wall to base of window.
+	// build wall to base of window.
 	AddWallSection(BM_WALL, p0, p1, WINDOW_BOTTOM*WORLD_SCALE, 0);
 	// determine 2 points at top of wall
 	p0.y += WINDOW_BOTTOM*WORLD_SCALE;
@@ -661,7 +661,7 @@ void vtBuilding3d::AddWindowSection(FPoint3 p0, FPoint3 p1, float height)
 
 	m_pMesh[BM_WINDOW]->AddFan(start, start+1, start+2, start+3);
 
-	//build wall above window
+	// build wall above window
 	AddWallSection(BM_WALL, p3, p2, (CEILING_HEIGHT - WINDOW_HEIGHT - WINDOW_BOTTOM)*WORLD_SCALE, (WINDOW_HEIGHT + WINDOW_BOTTOM)*WORLD_SCALE);
 }
 
