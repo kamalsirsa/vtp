@@ -18,13 +18,7 @@ class vtFence3d;
 class vtRoadMap3d;
 class vtLodGrid;
 class vtRoute;
-
-#include "LKTerrain.h"
-#include "TVTerrain.h"
-#include "SMTerrain.h"
-#include "CustomTerrain.h"
-#include "BryanTerrain.h"
-// add your own LOD method header here!
+class vtDynTerrainGeom;
 
 typedef vtImage *vtImagePtr;
 
