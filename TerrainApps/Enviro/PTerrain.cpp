@@ -23,7 +23,8 @@ void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
 	gateway->SetName2(name);
 	AddNode(gateway);
 
-	SimpleBBEngine *pSBBE = new SimpleBBEngine(gateway, vtGetScene()->GetCamera());
+	SimpleBillboardEngine *pSBBE = new SimpleBillboardEngine;
+	pSBBE->SetTarget(gateway);
 	pSBBE->SetName2("SimpleBB Engine");
 	AddEngine(pSBBE);
 }
