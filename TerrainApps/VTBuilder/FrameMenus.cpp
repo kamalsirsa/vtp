@@ -2029,12 +2029,19 @@ void MainFrame::ExportSTM()
 
 void MainFrame::ExportPlanet()
 {
-	vtString fname = GetExportFilename(FSTRING_Planet);
-	if (fname == "")
+	// ask the user for a directory
+	wxDirDialog getDir(this, _("Export Planet Data to Directory"),
+		wxEmptyString, wxDD_DEFAULT_STYLE);
+	getDir.SetWindowStyle(getDir.GetWindowStyle() | wxDD_NEW_DIR_BUTTON);
+	bool bResult = (getDir.ShowModal() == wxID_OK);
+	if (!bResult)
 		return;
-	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(fname);
+	wxString strDirName = getDir.GetPath();
+	if (strDirName == _T(""))
+		return;
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(strDirName.mb_str());
 	if (success)
-		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+		DisplayAndLog("Successfully wrote Planet dataset to '%s'", (const char *) strDirName.mb_str());
 	else
 		DisplayAndLog("Error writing file.");
 }
