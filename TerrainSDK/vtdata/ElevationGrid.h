@@ -40,6 +40,7 @@ public:
 	vtElevationGrid &operator=( const vtElevationGrid &rhs );
 
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, void progress_callback(int) = NULL);
+	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect);
 
 	// Load from unknown file format

@@ -255,6 +255,53 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	return true;
 }
 
+/**
+ * Reprojects an elevation grid by converting just the extents to a new
+ * projection.
+ *
+ * This is much faster than creating a new grid and reprojecting every
+ * heixel, but it only produces correct results when the difference
+ * between the projections is only a horizontal shift.  For example, this
+ * occurs when the only difference between the old and new projection
+ * is choice of Datum.
+ *
+ * \param proj_new	The new projection to convert to.
+ *
+ * \return True if successful.
+ */
+bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
+{
+	// Create conversion object
+	const OGRSpatialReference *pSource, *pDest;
+	pSource = &m_proj;
+	pDest = &proj_new;
+
+	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource, (OGRSpatialReference *)pDest);
+	if (!trans)
+	{
+		// inconvertible projections
+		return false;
+	}
+	int i, success;
+	for (i = 0; i < 4; i++)
+	{
+		DPoint2 point = m_Corners[i];
+		success = trans->Transform(1, &point.x, &point.y);
+		if (success == 0)
+		{
+			// inconvertible projections
+			delete trans;
+			return false;
+		}
+		m_Corners[i] = point;
+	}
+	ComputeExtentsFromCorners();
+	delete trans;
+
+	m_proj = proj_new;
+
+	return true;
+}
 
 /**
  * Scale all the valid elevation values in the grid by a given factor.
