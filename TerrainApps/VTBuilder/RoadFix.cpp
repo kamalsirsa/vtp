@@ -14,6 +14,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtLog.h"
+
 #include "RoadMapEdit.h"
 #include "assert.h"
 
@@ -74,7 +76,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
 	int nodes = NumNodes();
 	float total = nodes * nodes / 2;
 	int count1 = 0, count = 0, count_tick, count_last_tick = 0;
-	int tick_size = (int) (total / 100);
+	float tick_size = (float)total / 100;
 	double tolerance, tolerance_squared;
 
 	if (bDegrees)
@@ -131,7 +133,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
 		else
 			prev = pN;
 	}
-//	wxLogMessage("Removed %i nodes\n", removed);
+	VTLOG(" Removed %i nodes\n", removed);
 	return removed;
 }
 
@@ -172,7 +174,7 @@ int RoadMapEdit::RemoveDegenerateLinks()
 		else
 			prevR = pR;
 	}
-//	wxLogMessage("Removed %i degenerate roads.\n", count);
+	VTLOG(" Removed %i degenerate roads.\n", count);
 	return count;
 }
 
@@ -367,8 +369,8 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 		}
 	}
 
-//	wxLogMessage("Eliminated %i of %i nodes\n", count, total);
-//	wxLogMessage("There are now %i nodes and %i roads\n", NumNodes(),NumLinks());
+	VTLOG(" Eliminated %i of %i nodes\n", count, total);
+	VTLOG(" There are now %i nodes and %i roads\n", NumNodes(),NumLinks());
 	return count;
 }
 
