@@ -15,6 +15,7 @@
 #include "Route.h"
 #include "Content3d.h"
 
+class vtDIB;
 class vtTerrainGeom;
 class vtTextureCoverage;
 class vtFence3d;
