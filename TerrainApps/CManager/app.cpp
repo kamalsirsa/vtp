@@ -92,8 +92,11 @@ bool vtApp::OnInit(void)
 	vtMovLight *pMovLight = new vtMovLight(pLight);
 	pMovLight->SetName2("Movable Light");
 	pLight->SetAmbient(RGBf(1, 1, 1));
-	pMovLight->SetTrans(FPoint3(0.0f, 0.0f, 5.0f));
+	pLight->SetDiffuse(RGBf(1, 1, 1));
+	pMovLight->SetDirection(FPoint3(-0.2, -0.4, -0.9));
 	m_pRoot->AddChild(pMovLight);
+
+	frame->UseLight(pMovLight);
 
 	// SOG testing, currently disabled
 #if 0
