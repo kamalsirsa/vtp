@@ -14,7 +14,10 @@
 #include "LocalGrid.h"
 
 #if ENABLE_SRTERRAIN
-using namespace mini;
+  using namespace mini;
+  #ifdef _MSC_VER
+    #pragma comment( lib, "libMini.lib" )
+  #endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,7 +27,7 @@ using namespace mini;
 //
 SRTerrain::SRTerrain() : vtDynTerrainGeom()
 {
-	m_fResolution = 1000.0f;
+	m_fResolution = 10000.0f;
 }
 
 SRTerrain::~SRTerrain()
@@ -33,21 +36,13 @@ SRTerrain::~SRTerrain()
 
 /////////////////////////////////////////////////////////////////////////////
 
-#if 0
-	int i, j;
-	float elev;
-	for (i = 0; i<S; i++)
-	{
-		for (j = 0; j<S; j++)
-		{
-			elev = pGrid->GetFValue(i, j);
-			if (elev == 0.0f)
-				elev = fOceanDepth;
-			y[i][j] = elev;
-		}
-	}
-#endif
-
+//
+// Unfortunately the following statics are required because libMini only
+// supports some functionality by callback, and the callback is only a
+// simple C function which has no context to tell us which terrain.
+//
+static vtLocalGrid *s_pGrid;
+static SRTerrain *s_pSRTerrain;
 static int myfancnt, myvtxcnt;
 
 void beginfan_vtp()
@@ -55,22 +50,32 @@ void beginfan_vtp()
 	if (myfancnt++>0)
 		glEnd();
 	glBegin(GL_TRIANGLE_FAN);
+	myvtxcnt-=2;	// 2 vertices are needed to start each fan
 }
 
-void fanvertex_vtp(float x,float y,float z)
+void fanvertex_vtp(float x, float y, float z)
 {
    glVertex3f(x,y,z);
    myvtxcnt++;
 }
 
-static vtLocalGrid *s_pGrid;
+void notify_vtp(int i, int j, int size)
+{
+	// check to see if we need to switch texture
+	if (s_pSRTerrain->m_iTPatchDim > 1 && size == s_pSRTerrain->m_iBlockSize)
+	{
+		int a = i / size;
+		int b = j / size;
+		s_pSRTerrain->LoadBlockMaterial(a, b);
+	}
+}
 
-short int getelevation_vtp1(int i, int j, int S)
+short int getelevation_vtp1(int i, int j, int size)
 {
 	return s_pGrid->GetValue(i, j);
 }
 
-float getelevation_vtp2(int i, int j, int S)
+float getelevation_vtp2(int i, int j, int size)
 {
 	return s_pGrid->GetFValue(i, j);
 }
@@ -96,24 +101,23 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	if (pGrid->IsFloatMode())
 	{
-//		float *image = pGrid->GetFloatData();
 		float *image = NULL;
 		m_pMini = new ministub(image,
 				&size, &dim, fZScale, cellaspect,
-				beginfan_vtp, fanvertex_vtp, NULL,
+				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp2);
 	}
 	else
 	{
-//		short *image = pGrid->GetData();
 		short *image = NULL;
 		m_pMini = new ministub(image,
 				&size, &dim, fZScale, cellaspect,
-				beginfan_vtp, fanvertex_vtp, NULL,
+				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp1);
 	}
 
 	m_iDrawnTriangles = -1;
+	m_iBlockSize = m_iXPoints / 4;
 #endif
 	return true;
 }
@@ -122,11 +126,15 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 //
 // This will be called once per frame, during the culling pass.
 //
-// Visibility testing here.
-// (Compute which detail will actually gets drawn)
+// However, libMini does not allow you to call the culling pass
+// independently of the rendering pass, so we cannot do it here.
 //
 void SRTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
 {
+	// store for later
+	m_eyepos_ogl = eyepos_ogl;
+	m_window_size = window_size;
+	m_fFOVY = fov * window_size.y / window_size.x * 180 / PIf;
 }
 
 
@@ -155,8 +163,30 @@ void SRTerrain::LoadSingleMaterial()
 }
 
 
+void SRTerrain::LoadBlockMaterial(int a, int b)
+{
+	// we can't change the texture between glBegin/glEnd
+	if (myfancnt++>0)
+		glEnd();
+
+	// each block has it's own texture map
+	int appidx = a*m_iTPatchDim + (m_iTPatchDim-1-b);
+	vtMaterial *pMat = GetMaterial(appidx);
+	if (pMat)
+	{
+		pMat->Apply();
+		SetupBlockTexGen(a, b);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
+
+	glBegin(GL_TRIANGLE_FAN);
+}
+
+
 void SRTerrain::RenderSurface()
 {
+	s_pSRTerrain = this;
+
 	if (m_iTPatchDim == 1)
 		LoadSingleMaterial();
 
@@ -180,6 +210,7 @@ void SRTerrain::RenderSurface()
 	DisableTexGen();
 }
 
+
 #define ADAPTION_SPEED	.0001f	// speed at which detail converges
 
 void SRTerrain::RenderPass()
@@ -190,28 +221,14 @@ void SRTerrain::RenderPass()
 	vtCamera *pCamera = pScene->GetCamera();
 	float nearp = pCamera->GetHither();
 	float farp = pCamera->GetYon();
-	float fovy = pCamera->GetFOV();	// in radians
-	float fov = fovy * 180 / PIf;
 
-	FPoint3 eyepos_ogl = pCamera->GetTrans();
-	IPoint2 window_size = pScene->GetWindowSize();
-	float aspect = (float)window_size.x / window_size.y;
+	float aspect = (float)m_window_size.x / m_window_size.y;
 
-	float ex = eyepos_ogl.x;
-	float ey = eyepos_ogl.y;
-	float ez = eyepos_ogl.z;
+	float ex = m_eyepos_ogl.x;
+	float ey = m_eyepos_ogl.y;
+	float ez = m_eyepos_ogl.z;
 
-	// Focus point
-	// Stefan says: "Normally this should be indeed the same as eye point.
-	// I added the focus parameter to support the case of a fixed point
-	// of interest which should be rendered with highest accuracy
-	// independently from the actual eye point.  Up to now I did not need
-	// this functionality, but one never knows, so just assume fx/y/z to
-	// be equal to ex/y/z for now.
-	float fx = ex;
-	float fy = ey;
-	float fz = ez;
-
+	// Get up vector and direction vector from camera matrix
 	FMatrix4 mat;
 	pCamera->GetTransform1(mat);
 	FPoint3 up(0.0f, 1.0f, 0.0f), eye_up;
@@ -227,30 +244,24 @@ void SRTerrain::RenderPass()
 	float dz = eye_forward.z;
 
 	myfancnt = myvtxcnt = 0;
-
 	int size = m_iXPoints;
-//	glPushMatrix();
-//	glTranslatef(-size/2,0.0f,-size/2);
-//	ex += size/2;
-//	ez += size/2;
-//	ex += ((size-1)/2 * m_fXStep);
-//	ez += ((size-1)/2 * m_fZStep);
-	ex += m_fXStep/2;
-	ez += m_fZStep/2;
+
+	// Convert to the strange origin-centered coordinate scheme of libMini.
+	// This is what works best so far:
+	ex-=(m_iXPoints/2)*m_fXStep;
+	ez+=(m_iYPoints/2)*m_fZStep;
+
 	m_pMini->draw(m_fResolution, 
 				ex, ey, ez, 
-//				fx, fy, fz, 
 				dx, dy, dz, 
 				ux, uy, uz, 
-				fov, aspect, 
+				m_fFOVY * 1.05, aspect,		// exaggerate by 5%
 				nearp, farp);
-//	glPopMatrix();
 
 	if (myfancnt>0) glEnd();
 
 	// We are drawing fans, so the number of triangles is roughly equal to
 	// number of vertices
-//	m_iDrawnTriangles = mini::getvtxcnt();
 	m_iDrawnTriangles = myvtxcnt;
 
 	// adaptively adjust resolution threshold up or down to attain
@@ -266,8 +277,8 @@ void SRTerrain::RenderPass()
 	// keep the error within reasonable bounds
 	if (m_fResolution < 1.0f)
 		m_fResolution = 1.0f;
-	if (m_fResolution > 1E7)
-		m_fResolution = 1E7;
+	if (m_fResolution > 4E7)
+		m_fResolution = 4E7;
 #endif
 }
 

@@ -14,7 +14,7 @@
 
 #include "DynTerrain.h"
 
-#define ENABLE_SRTERRAIN 0
+#define ENABLE_SRTERRAIN 1
 
 #if ENABLE_SRTERRAIN
 #include "mini.h"
@@ -41,16 +41,23 @@ public:
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 	void GetLocation(int iX, int iZ, FPoint3 &p);
 
+	void LoadSingleMaterial();
+	void LoadBlockMaterial(int a, int b);
+
+	int		m_iBlockSize;
 protected:
 	// rendering
 	void RenderSurface();
 	void RenderPass();
-	void LoadSingleMaterial();
 
 private:
 #if ENABLE_SRTERRAIN
 	ministub *m_pMini;
 #endif
+
+	IPoint2 m_window_size;
+	FPoint3 m_eyepos_ogl;
+	float m_fFOVY;
 
 	float m_fResolution;
 	float m_fHeightScale;
