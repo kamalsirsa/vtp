@@ -512,7 +512,7 @@ wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit, bool set_sizer 
 
     wxString *strs2 = (wxString*) NULL;
     wxChoice *item2 = new wxChoice( parent, ID_PROJ, wxDefaultPosition, wxSize(170,-1), 0, strs2, 0 );
-    item0->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
 
