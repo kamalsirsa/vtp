@@ -82,6 +82,7 @@ public:
 	bool LoadFrom(const char *filename);
 	bool SaveToSHP(const char *filename) const;
 	bool LoadFromSHP(const char *filename);
+	bool LoadHeaderFromSHP(const char *filename);
 	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
 
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
@@ -150,11 +151,15 @@ public:
 	void GetValueAsString(int record, int field, vtString &str) const;
 	void SetValueFromString(int iRecord, int iField, const vtString &str);
 	void SetValueFromString(int iRecord, int iField, const char *str);
+	int GetIntegerValue(int iRecord, int iField) const;
+	double GetDoubleValue(int iRecord, int iField) const;
 
 	vtProjection &GetAtProjection() { return m_proj; }
 
 protected:
 	void _ShrinkGeomArraySize(int size);
+	vtString	m_dbfname;
+	int			m_iSHPElems, m_iSHPFields;
 
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
 	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON

@@ -183,7 +183,7 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 	return true;
 }
 
-bool vtFeatures::LoadFromSHP(const char *filename)
+bool vtFeatures::LoadHeaderFromSHP(const char *filename)
 {
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(filename, "rb");
@@ -191,11 +191,10 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		return false;
 
 	// Get number of entities (nElem) and type of data (nShapeType)
-	int		nElem;
 	int		nShapeType;
 	double	adfMinBound[4], adfMaxBound[4];
 
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &m_iSHPElems, &nShapeType, adfMinBound, adfMaxBound);
 
 	//  Check shape type, we only support a few types
 	switch (nShapeType)
@@ -210,46 +209,58 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		SHPClose(hSHP);
 		return false;
 	}
+	SHPClose(hSHP);
 
 	// Try loading DBF File as well
-	vtString dbfname = filename;
-	dbfname = dbfname.Left(dbfname.GetLength() - 4);
-	dbfname += ".dbf";
+	m_dbfname = filename;
+	m_dbfname = m_dbfname.Left(m_dbfname.GetLength() - 4);
+	m_dbfname += ".dbf";
 	DBFFieldType fieldtype;
-	DBFHandle db = DBFOpen(dbfname, "rb");
-	int iField, iFields;
+	DBFHandle db = DBFOpen(m_dbfname, "rb");
+	int iField;
 	if (db != NULL)
 	{
 		// Check for field of poly id, current default field in dbf is Id
-		iFields = DBFGetFieldCount(db);
+		m_iSHPFields = DBFGetFieldCount(db);
 		int pnWidth, pnDecimals;
 		char szFieldName[80];
 
-		for (iField = 0; iField < iFields; iField++)
+		for (iField = 0; iField < m_iSHPFields; iField++)
 		{
 			fieldtype = DBFGetFieldInfo(db, iField, szFieldName,
 				&pnWidth, &pnDecimals);
 			AddField(szFieldName, fieldtype, pnWidth);
 		}
+		DBFClose(db);
 	}
+	return true;
+}
+
+bool vtFeatures::LoadFromSHP(const char *filename)
+{
+	if (!LoadHeaderFromSHP(filename))
+		return false;
+
+	SHPHandle hSHP = SHPOpen(filename, "rb");
+	DBFHandle db = DBFOpen(m_dbfname, "rb");
 
 	// Initialize arrays
 	switch (m_nSHPType)
 	{
 	case SHPT_POINT:
-		m_Point2.SetSize(nElem);
+		m_Point2.SetSize(m_iSHPElems);
 		break;
 	case SHPT_POINTZ:
-		m_Point3.SetSize(nElem);
+		m_Point3.SetSize(m_iSHPElems);
 		break;
 	case SHPT_ARC:
 	case SHPT_POLYGON:
-		m_LinePoly.SetSize(nElem);
+		m_LinePoly.SetSize(m_iSHPElems);
 		break;
 	}
 
 	// Read Data from SHP into memory
-	for (int i = 0; i < nElem; i++)
+	for (int i = 0; i < m_iSHPElems; i++)
 	{
 		// Get the i-th Shape in the SHP file
 		SHPObject	*psShape;
@@ -289,10 +300,11 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		SHPDestroyObject(psShape);
 
 		// Read corresponding attributes (DBF record fields)
+		int iField;
 		if (db != NULL)
 		{
 			int rec = AddRecord();
-			for (iField = 0; iField < iFields; iField++)
+			for (iField = 0; iField < m_iSHPFields; iField++)
 			{
 				Field *field = m_fields[iField];
 				switch (field->m_type)
@@ -319,7 +331,7 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		DBFClose(db);
 
 	// allocate selection array
-	m_Flags.SetSize(nElem);
+	m_Flags.SetSize(m_iSHPElems);
 	return true;
 }
 
@@ -1209,6 +1221,18 @@ void vtFeatures::SetValueFromString(int iRecord, int iField, const char *str)
 {
 	Field *field = m_fields[iField];
 	field->SetValueFromString(iRecord, str);
+}
+
+int vtFeatures::GetIntegerValue(int iRecord, int iField) const
+{
+	Field *field = m_fields[iField];
+	return field->m_int[iRecord];
+}
+
+double vtFeatures::GetDoubleValue(int iRecord, int iField) const
+{
+	Field *field = m_fields[iField];
+	return field->m_double[iRecord];
 }
 
 /////////////////////////////////////////////////
