@@ -94,6 +94,8 @@ protected:
 	vtTransform *m_xform[22];
 	FPoint3 m_local_origin[22];
 	FPoint3 m_axis[22];
+	FPoint3 m_flat_axis;
+	float m_flat_angle;
 };
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath);

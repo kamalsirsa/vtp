@@ -516,8 +516,7 @@ void IcoGlobe::SetMeshConnect(int mface)
 	vtMesh *mesh = m_mesh[mface];
 
 	// attach heirarchy
-//	if (mface < 4)
-		m_xform[parent_mface]->AddChild(xform);
+	m_xform[parent_mface]->AddChild(xform);
 
 	// translate vertices to set origin of this mface
 	int i;
@@ -535,22 +534,14 @@ void IcoGlobe::SetMeshConnect(int mface)
 	if (parent_mface == 0)
 		xform->Translate1(edge_center);
 	else
-	{
 		xform->Translate1(edge_center - m_local_origin[parent_mface]);
-	}
-//	xform->RotateLocal(m_axis[mface], -DihedralAngle());
 }
 
 void IcoGlobe::DoTest(float f)
 {
-	int mface = 1;
-	for (int i = 1; i < 22; i++)
-	{
-		FPoint3 pos = m_xform[i]->GetTrans();
-		m_xform[i]->Identity();
-		m_xform[i]->SetTrans(pos);
-		m_xform[i]->RotateLocal(m_axis[i], f);
-	}
+//	SetUnfolding(f);
+//	m_xform[0]->Identity();
+//	m_xform[0]->RotateLocal(m_flat_axis, m_flat_angle * f);
 }
 
 void IcoGlobe::SetUnfolding(float f)
@@ -559,13 +550,16 @@ void IcoGlobe::SetUnfolding(float f)
 	if (m_style != DYMAX_UNFOLD)
 		return;
 
+	float dih = (float) DihedralAngle();
 	for (int i = 1; i < 22; i++)
 	{
 		FPoint3 pos = m_xform[i]->GetTrans();
 		m_xform[i]->Identity();
 		m_xform[i]->SetTrans(pos);
-		m_xform[i]->RotateLocal(m_axis[i], f);
+		m_xform[i]->RotateLocal(m_axis[i], -f * dih);
 	}
+	m_xform[0]->Identity();
+	m_xform[0]->RotateLocal(m_flat_axis, m_flat_angle * f);
 }
 
 /**
@@ -683,9 +677,8 @@ void IcoGlobe::CreateUnfoldableDymax()
 	FPoint3 diff = v0 - v2;
 	diff.Normalize();
 	FPoint3 right(1, 0, 0);
-	FPoint3 axis = right.Cross(diff);
-	float angle = (float) acos(right.Dot(axis));
-	m_xform[0]->RotateLocal(axis, angle);
+	m_flat_axis = right.Cross(diff);
+	m_flat_angle = (float) acos(right.Dot(m_flat_axis));
 
 	// Create a geom to contain the surface mesh features
 	m_geom = new vtGeom();
