@@ -11,17 +11,17 @@ EXEC = wxSimple
 include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
-         -I$(TERRAIN_SDK_DIR)       \
-	 -I$(OSG_INC)               \
-	 -I$(GDAL_INC)              \
+	 -I$(TERRAIN_SDK_DIR)  \
+	 -I$(OSG_INC)          \
+	 -I$(GDAL_INC)         \
 	 -I$(X_INC)
 
-LDIRS  = $(OSG_LIB)                     \
-         $(PNG_LIB)                     \
-	 $(SHAPE_LIB)                   \
-         $(NETCDF_LIB)                  \
-         $(GDAL_LIB)                    \
-	 $(X_LIB)                       \
+LDIRS  = $(OSG_LIB)        \
+	 $(PNG_LIB)            \
+	 $(SHAPE_LIB)          \
+	 $(NETCDF_LIB)         \
+	 $(GDAL_LIB)           \
+	 $(X_LIB)              \
 	 $(EXTRA_LDIRS)
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
@@ -35,22 +35,23 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 
 ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
-LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
+LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	-bind_at_load -F$(FRAMEWORKS) \
 	-framework vtosg -framework vtdata \
 	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lOpenThreads \
 	-L$(FINK_LIB) -lnetcdf \
 	-framework xmlhelper $(MINI_LIB) \
-        $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
+        $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
 	-framework Carbon -lobjc -lm 
 
 all : $(OSX_APP)
 
 else
-LIBS   = -lvtosg -lvtdata \
-         -lgdal -losgDB -losgUtil -losgText -losg -lnetcdf \
-		 -lxmlhelper $(MINI_LIB) \
-         $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
+LIBS = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
+	 -lvtosg -lvtdata \
+	 -lgdal -losgDB -losgUtil -losgText -losg -lnetcdf \
+	 -lxmlhelper $(MINI_LIB) \
+	 $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm
 
 LDIRS += \
 	 $(XMLHELPER_INST_DIR)          \
