@@ -556,6 +556,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	}
 
 	m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
+	m_pDomeMesh->ReOptimize();
 	m_bHasTexture = true;
 
 	return true;
