@@ -933,7 +933,7 @@ bool vtStructureLayer::EditBuildingProperties()
 	// the building (pessimistic)
 	SetModified(true);
 
-	BuildingDlg dlg(NULL, -1, _T("Building Properties"), wxDefaultPosition);
+	BuildingDlg dlg(NULL, -1, _T("Building Properties"));
 	dlg.Setup(this, bld_selected, pHeightField);
 
 	dlg.ShowModal();

@@ -612,7 +612,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	vtLayerPtr pLayer = vtLayer::CreateNewLayer(ltype);
 
 	// ask user for a projection
-	Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"), wxDefaultPosition);
+	Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
