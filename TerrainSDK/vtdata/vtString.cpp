@@ -802,6 +802,21 @@ int vtString::Find(pcchar szSub, int nStart) const
 }
 
 
+//////////////////////////////////////////////////////////////////////////////
+// Unicode / UTF8 support
+
+#if SUPPORT_WSTRING
+
+wstring2 vtString::ConvertFromUTF8()
+{
+	wstring2 ws;
+	ws.from_utf8(m_pchData);
+	return ws;
+}
+
+#endif
+
+
 /////////////////////////////////////////////////////////////////////////////
 
 vtString EscapeStringForXML(const char *input)

@@ -16,6 +16,8 @@
 #include "config_vtdata.h"
 #include "Array.h"
 
+class wstring2;
+
 #ifdef WIN32
 #  define WIN_UNIX_STDCALL __stdcall
 #  define WIN_UNIX_CDECL __cdecl
@@ -228,6 +230,10 @@ public:
 	pchar LockBuffer();
 	// turn refcounting off
 	void UnlockBuffer();
+
+#if SUPPORT_WSTRING
+	wstring2 ConvertFromUTF8();
+#endif
 
 // Implementation
 public:
