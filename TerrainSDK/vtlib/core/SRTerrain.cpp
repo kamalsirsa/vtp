@@ -394,6 +394,9 @@ float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
 	float height = m_pMini->getheight(iX, iZ);
 
+	if (iX<0 || iX>m_iColumns-1 || iZ<0 || iZ>m_iRows-1)
+		return 0.0f;
+
 	if (bTrue)
 		// convert stored value to true value
 		return height / m_fMaximumScale;
