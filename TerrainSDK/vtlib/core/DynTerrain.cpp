@@ -117,79 +117,91 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	// safety check
 	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
 	{
-		fAltitude = 0.0f;
-		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
-		return false;
+		if (p.x == m_WorldExtents.right || p.z == m_WorldExtents.top)
+		{
+			// right on the edge: allow this point, but don't interpolate
+			fAltitude = GetElevation(iX, iZ, bTrue);
+			if (vNormal != NULL)
+				vNormal->Set(0,1,0);
+			return true;
+		}
+		else
+		{
+			fAltitude = 0.0f;
+			if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
+			return false;
+		}
 	}
 
-	FPoint3 p0, p1, p2, p3;
-	GetWorldLocation(iX, iZ, p0, bTrue);
-	GetWorldLocation(iX+1, iZ, p1, bTrue);
-	GetWorldLocation(iX+1, iZ+1, p2, bTrue);
-	GetWorldLocation(iX, iZ+1, p3, bTrue);
-
-	// find fractional amount (0..1 across quad)
-	float fX = (float)  (p.x - p0.x) / m_fXStep;
-	float fZ = (float) -(p.z - p0.z) / m_fZStep;
-
-	// which way is this quad split?
-	if ((iX + iZ) & 1)
+	if (vNormal != NULL)
 	{
-		// which of the two triangles in the quad is it?
-		if (fX + fZ < 1)
-		{
-			fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p3.y - p0.y);
+		FPoint3 p0, p1, p2, p3;
+		GetWorldLocation(iX, iZ, p0, bTrue);
+		GetWorldLocation(iX+1, iZ, p1, bTrue);
+		GetWorldLocation(iX+1, iZ+1, p2, bTrue);
+		GetWorldLocation(iX, iZ+1, p3, bTrue);
 
-			if (vNormal)
+		// find fractional amount (0..1 across quad)
+		float fX = (float)  (p.x - p0.x) / m_fXStep;
+		float fZ = (float) -(p.z - p0.z) / m_fZStep;
+
+		// which way is this quad split?
+		if ((iX + iZ) & 1)
+		{
+			// which of the two triangles in the quad is it?
+			if (fX + fZ < 1)
 			{
-				// find normal also
-				FPoint3 edge0 = p1 - p0;
-				FPoint3 edge1 = p3 - p0;
-				*vNormal = edge0.Cross(edge1);
-				vNormal->Normalize();
+				fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p3.y - p0.y);
+				vNormal->UnitNormal(p0, p1, p3);
+			}
+			else
+			{
+				fAltitude = p2.y + (1.0f-fX) * (p3.y - p2.y) + (1.0f-fZ) * (p1.y - p2.y);
+				vNormal->UnitNormal(p2, p3, p1);
 			}
 		}
 		else
 		{
-			fAltitude = p2.y + (1.0f-fX) * (p3.y - p2.y) + (1.0f-fZ) * (p1.y - p2.y);
-
-			if (vNormal)
+			if (fX > fZ)
 			{
-				// find normal also
-				FPoint3 edge0 = p3 - p2;
-				FPoint3 edge1 = p1 - p2;
-				*vNormal = edge0.Cross(edge1);
-				vNormal->Normalize();
+				fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p2.y - p1.y);
+				vNormal->UnitNormal(p1, p2, p0);
+			}
+			else
+			{
+				fAltitude = p0.y + fX * (p2.y - p3.y) + fZ * (p3.y - p0.y);
+				vNormal->UnitNormal(p3, p0, p2);
 			}
 		}
 	}
 	else
 	{
-		if (fX > fZ)
-		{
-			fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p2.y - p1.y);
+		// It's faster to simpler to operate only the elevations, if we don't
+		//  need to compute a normal vector.
+		float alt0 = GetElevation(iX, iZ, bTrue);
+		float alt1 = GetElevation(iX+1, iZ, bTrue);
+		float alt2 = GetElevation(iX+1, iZ+1, bTrue);
+		float alt3 = GetElevation(iX, iZ+1, bTrue);
 
-			if (vNormal)
-			{
-				// find normal also
-				FPoint3 edge0 = p1 - p0;
-				FPoint3 edge1 = p2 - p1;
-				*vNormal = edge0.Cross(edge1);
-				vNormal->Normalize();
-			}
+		// find fractional amount (0..1 across quad)
+		float fX = (p.x - (m_WorldExtents.left + iX * m_fXStep)) / m_fXStep;
+		float fY = (p.z - (m_WorldExtents.bottom - iZ * m_fZStep)) / -m_fZStep;
+
+		// which way is this quad split?
+		if ((iX + iZ) & 1)
+		{
+			// which of the two triangles in the quad is it?
+			if (fX + fY < 1)
+				fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt3 - alt0));
+			else
+				fAltitude = (float) (alt2 + (1.0f-fX) * (alt3 - alt2) + (1.0f-fY) * (alt1 - alt2));
 		}
 		else
 		{
-			fAltitude = p0.y + fX * (p2.y - p3.y) + fZ * (p3.y - p0.y);
-
-			if (vNormal)
-			{
-				// find normal also
-				FPoint3 edge0 = p2 - p3;
-				FPoint3 edge1 = p3 - p0;
-				*vNormal = edge0.Cross(edge1);
-				vNormal->Normalize();
-			}
+			if (fX > fY)
+				fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt2 - alt1));
+			else
+				fAltitude = (float) (alt0 + fX * (alt2 - alt3) + fY * (alt3 - alt0));
 		}
 	}
 	return true;
