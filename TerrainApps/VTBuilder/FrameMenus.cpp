@@ -1416,12 +1416,12 @@ void MainFrame::OnUpdateViewSetArea(wxUpdateUIEvent& event)
 
 void MainFrame::OnViewZoomIn(wxCommandEvent &event)
 {
-	m_pView->SetScale(m_pView->GetScale() * sqrt(2));
+	m_pView->SetScale(m_pView->GetScale() * sqrt(2.0));
 }
 
 void MainFrame::OnViewZoomOut(wxCommandEvent &event)
 {
-	m_pView->SetScale(m_pView->GetScale() / sqrt(2));
+	m_pView->SetScale(m_pView->GetScale() / sqrt(2.0));
 }
 
 void MainFrame::OnViewZoomAll(wxCommandEvent &event)
