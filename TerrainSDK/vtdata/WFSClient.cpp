@@ -70,8 +70,6 @@ void AddCookie(const char *name, const char *value)
 }
 
 
-
-#if 1
 PRIVATE int printer (const char * fmt, va_list pArgs)
 {
 	char buf[20000];
@@ -87,16 +85,18 @@ PRIVATE int tracer (const char * fmt, va_list pArgs)
 	g_Log._Log(buf);
 	return ret;
 }
-#endif
 
 PRIVATE int term_handler (HTRequest * request, HTResponse * response,
 				   void * param, int status)
 {
+	ReqContext *context = (ReqContext *) HTRequest_context(request);
+
 	/* Check for status */
-	VTLOG("status %d\n", status);
+	if (context->m_iVerbosity > 0)
+		VTLOG("status %d\n", status);
 
 	s_last_status = status;
-    new_anchor = HTResponse_redirection(response);
+	new_anchor = HTResponse_redirection(response);
 
 	/* we're not handling other requests */
 	HTEventList_stopLoop ();
@@ -108,9 +108,13 @@ PRIVATE int term_handler (HTRequest * request, HTResponse * response,
 
 PRIVATE BOOL setCookie (HTRequest * request, HTCookie * cookie, void * param)
 {
-    if (cookie)
+	ReqContext *context = (ReqContext *) HTRequest_context(request);
+
+	if (!cookie)
+		return YES;
+
+	if (context->m_iVerbosity > 1)
 	{
-#if 0
 		char * addr = HTAnchor_address((HTAnchor *) HTRequest_anchor(request));
 		VTLOG("While accessing `%s\', we received a cookie with parameters:\n", addr);
 		if (HTCookie_name(cookie))
@@ -127,35 +131,38 @@ PRIVATE BOOL setCookie (HTRequest * request, HTCookie * cookie, void * param)
 		}
 		VTLOG("\tCookie is %ssecure\n\n", HTCookie_isSecure(cookie) ? "" : "not ");
 		HT_FREE(addr);
-#endif
+	}
 
-		// Work around bug in libwww cookie parsing: when it gets a line like this:
-		//		Set-Cookie: foo=;Expires=Thu. 01-Jan-1970...
-		// rather than give a blank string for the value it gives "Expires"
-		if (!strcmp(HTCookie_value(cookie), "Expires"))
-			return YES;
+	// Work around bug in libwww cookie parsing: when it gets a line like this:
+	//		Set-Cookie: foo=;Expires=Thu. 01-Jan-1970...
+	// rather than give a blank string for foo, it gives "Expires"
+	if (!strcmp(HTCookie_value(cookie), "Expires"))
+		return YES;
 
-		// add it to our own list
-		AddCookie(HTCookie_name(cookie), HTCookie_value(cookie));
-    }
+	// add it to our own list
+	AddCookie(HTCookie_name(cookie), HTCookie_value(cookie));
 
-    return YES;
+	return YES;
 }
 
 PRIVATE HTAssocList *findCookie(HTRequest * request, void * param)
 {
-//	VTLOG(" findCookie %s:\n", param);
+	ReqContext *context = (ReqContext *) HTRequest_context(request);
 
-    HTAssocList * alist = HTAssocList_new();	/* Is deleted by the cookie module */
+	if (context->m_iVerbosity > 1)
+		VTLOG(" findCookie %s:\n", param);
+
+	HTAssocList * alist = HTAssocList_new();	/* Is deleted by the cookie module */
 	unsigned int i;
 	for (i = 0; i < g_cookies.size(); i++)
 	{
-	    HTAssocList_addObject(alist, g_cookies[i].name, g_cookies[i].value);
-//		VTLOG("   adding (%d) %s=%s\n", i,
-//			(const char *)g_cookies[i].name,
-//			(const char *)g_cookies[i].value);
+		HTAssocList_addObject(alist, g_cookies[i].name, g_cookies[i].value);
+		if (context->m_iVerbosity > 1)
+			VTLOG("   adding (%d) %s=%s\n", i,
+				(const char *)g_cookies[i].name,
+				(const char *)g_cookies[i].value);
 	}
-    return alist;
+	return alist;
 }
 
 
@@ -169,6 +176,8 @@ bool ReqContext::s_bFirst = true;
 
 ReqContext::ReqContext()
 {
+	m_iVerbosity = 1;
+
 	if (s_bFirst)
 		InitializeLibrary();
 
@@ -201,8 +210,8 @@ void ReqContext::InitializeLibrary()
 	HTPrint_setCallback(printer);
 	HTTrace_setCallback(tracer);
 
-    HTAlertInit();
-    HTAlert_setInteractive(NO);
+	HTAlertInit();
+	HTAlert_setInteractive(NO);
 
 #ifdef WIN32
 	HTEventInit();
@@ -211,9 +220,9 @@ void ReqContext::InitializeLibrary()
 	/* Add our own filter to handle termination */
 	HTNet_addAfter(term_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
 
-    /* Setup cookies */
-    HTCookie_init();
-    HTCookie_setCallbacks(setCookie, NULL, findCookie, NULL);
+	/* Setup cookies */
+	HTCookie_init();
+	HTCookie_setCallbacks(setCookie, NULL, findCookie, NULL);
 
 	// Don't prompt for cookies - just accept them!
 	//	HTCookieMode mode = HTCookie_cookieMode();
@@ -239,7 +248,8 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 	const char *address;
 
 	address = HTAnchor_address(m_anchor);
-	VTLOG("  Opening: '%s' ... ", address);
+	if (m_iVerbosity > 0)
+		VTLOG("  Opening: '%s' ... ", address);
 
 	HTChunk *chunk = HTLoadAnchorToChunk(m_anchor, m_request);
 
@@ -255,8 +265,10 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 	if (s_last_status == HT_FOUND)	// also known as 302 Redirect
 	{
 		address = HTAnchor_address(new_anchor);
-//		VTLOG("  Redirected To: %s\n", address);
-		VTLOG("  (Redirected)");
+		if (m_iVerbosity == 2)
+			VTLOG("  Redirected To: %s\n", address);
+		if (m_iVerbosity == 1)
+			VTLOG("  (Redirected)");
 
 		m_anchor = new_anchor;
 
@@ -270,13 +282,12 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 	if (s_last_status == HT_TIMEOUT)
 	{
 		// too long, give up
-		VTLOG("  Timeout: more than %d seconds\n", DEFAULT_TIMEOUT);
+		if (m_iVerbosity > 0)
+			VTLOG("  Timeout: more than %d seconds\n", DEFAULT_TIMEOUT);
 		return;
 	}
 
 	string = HTChunk_toCString(chunk);
-//	if (string)
-//		g_Log._Log(string);
 	str = string;
 	HT_FREE(string);
 }
