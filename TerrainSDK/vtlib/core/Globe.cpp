@@ -591,6 +591,9 @@ void IcoGlobe::SetUnfolding(float f)
 		return;
 
 	m_bUnfolded = (f != 0.0f);
+
+	m_SurfaceGeom->SetEnabled(!m_bUnfolded);
+
 	float dih = (float) DihedralAngle();
 	for (int i = 1; i < 22; i++)
 	{
@@ -629,26 +632,26 @@ void IcoGlobe::SetTime(time_t time)
 	float rotation = fraction_of_day * PI2f;
 
 	// match with actual globe
-	rotation = PI2f + rotation;
-	rotation -= PID2f;
+	rotation += PID2f;
 
 	FMatrix4 tmp, m4;
 	m4.Identity();
 
 	if (m_bTilt)
 	{
+		FPoint3 xvector(1,0,0), seasonal_axis;
+		// Seasonal axis rotation (days since winter solstice)
+		float season = (gmt->tm_yday + 10) / 365.0f * PI2f;
+		tmp.AxisAngle(FPoint3(0,1,0), season);
+		tmp.Transform(xvector, seasonal_axis);
+
 		// The earth's axis is tilted with respect to the plane of its orbit
 		// at an angle of about 23.4 degrees.  Tilting the northern
 		// hemisphere away from the sun (-tilt) puts this at the winter
 		// solstice.
 		float tilt = 23.4 / 180.0f * PIf;
-		tmp.AxisAngle(FPoint3(1,0,0), -tilt);
+		tmp.AxisAngle(seasonal_axis, -tilt);
 		m4.PreMult(tmp);
-
-		// plus seasonal axis rotation (days since winter solstice)
-		float season = (gmt->tm_yday + 10) / 365.0f * PI2f;
-		tmp.AxisAngle(FPoint3(0,1,0), season);
-		m4.PostMult(tmp);
 	}
 
 	// rotation around axis
@@ -1243,4 +1246,3 @@ int IcoGlobe::AddGlobePoints(const char *fname)
 	return nEntities;
 }
 
- 
