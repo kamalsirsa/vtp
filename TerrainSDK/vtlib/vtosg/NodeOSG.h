@@ -10,16 +10,10 @@
 #ifndef VTOSG_NODEH
 #define VTOSG_NODEH
 
-#include <osg/Light>
+#include <osg/LightSource>
 #include <osg/MatrixTransform>
-
-namespace osg
-{
-	class Node;
-	class Referenced;
-	class Matrixf;
-	class Fog;
-}
+#include <osg/Fog>
+#include <osg/Geode>
 
 /** \addtogroup sg */
 /*@{*/
@@ -30,6 +24,7 @@ namespace osg
 class vtNode : public vtNodeBase, public osg::Referenced
 {
 public:
+	vtNodeBase *Clone() { return NULL; }
 	virtual void Release();
 
 	// implement vtNodeBase methods
@@ -53,10 +48,9 @@ public:
 
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
 
-	// implementation data
+	// OSG access
 	void SetOsgNode(osg::Node *n);
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
-	vtNodeBase *Clone() { return NULL; }
 
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
 	static void ClearOsgModelCache();
@@ -69,11 +63,11 @@ protected:
 
 	// Constructor is protected because vtNode is an abstract base class,
 	//  not to be instantiated directly.
-	vtNode();
+	vtNode() {}
 
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
-	virtual ~vtNode();
+	virtual ~vtNode() {}
 };
 
 /**
@@ -110,27 +104,17 @@ public:
 	bool ContainsChild(vtNode *pNode) const;
 
 	// OSG-specific Implementation
-	osg::Group *GetOsgGroup() { return m_pContainer; }
-	const osg::Group *GetOsgGroup() const { return m_pGroup.get(); }
+	osg::Group *GetOsgGroup() { return m_pGroup; }
+	const osg::Group *GetOsgGroup() const { return m_pGroup; }
 
 protected:
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtGroup() {}
+
 	void SetOsgGroup(osg::Group *g);
-	virtual ~vtGroup();
-
-	osg::ref_ptr<osg::Group> m_pGroup;
-	osg::Group *m_pContainer;
+	osg::Group *m_pGroup;
 };
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-class CustomTransform : public osg::MatrixTransform
-{
-public:
-	inline osg::Matrix& getMatrix() { return _matrix; }
-	inline const osg::Matrix& getMatrix() const { return _matrix; }
-};
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /**
  * A Transform node allows you to apply a transform (scale, rotate, translate)
@@ -197,12 +181,16 @@ public:
 		desired direction. */
 	void PointTowards(const FPoint3 &point, bool bPitch = true);
 
-	// OSG-specific Implementation
-public:
-	osg::ref_ptr<CustomTransform> m_pTransform;
+	// OSG access
+	osg::MatrixTransform *GetOsgTransform() { return m_pTransform; }
 
 protected:
-	virtual ~vtTransform();
+	// OSG-specific Implementation
+	osg::MatrixTransform *m_pTransform;
+
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtTransform() {}
 };
 
 /**
@@ -225,11 +213,15 @@ public:
 	// provide override to catch this state
 	virtual void SetEnabled(bool bOn);
 
-	osg::ref_ptr<osg::LightSource> m_pLightSource;
-	osg::ref_ptr<osg::Light> m_pLight;
+	osg::LightSource *m_pLightSource;
 
 protected:
-	virtual ~vtLight();
+	osg::Light *GetOsgLight() { return m_pLightSource->getLight(); }
+	const osg::Light *GetOsgLight() const { return m_pLightSource->getLight(); }
+
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtLight() {}
 };
 
 /**
@@ -300,11 +292,14 @@ public:
 
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
+	// OSG implementation
 	osg::ref_ptr<const vtMaterialArray> m_pMaterialArray;
-	osg::ref_ptr<osg::Geode> m_pGeode;	// the Geode is a container for Drawables
+	osg::Geode *m_pGeode;	// the Geode is a container for Drawables
 
 protected:
-	virtual ~vtGeom();
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtGeom() {}
 };
 
 /**
@@ -344,7 +339,7 @@ public:
 	class vtDynGeom		*m_pDynGeom;
 
 protected:
-	virtual ~OsgDynMesh();
+	virtual ~OsgDynMesh() {}
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -417,8 +412,8 @@ public:
 	void SetCenter(FPoint3 &center);
 
 protected:
-	osg::ref_ptr<osg::LOD>	m_pLOD;
-	virtual ~vtLOD();
+	osg::LOD *m_pLOD;
+	virtual ~vtLOD() {}
 };
 
 /**
@@ -433,7 +428,6 @@ public:
 	vtCamera();
 	vtNodeBase*	Clone();
 	void CopyFrom(const vtCamera *rhs);
-	void Release();
 
 	void SetHither(float f);
 	float GetHither() const;
@@ -458,7 +452,7 @@ protected:
 	bool m_bOrtho;
 	float m_fWidth;
 
-	virtual ~vtCamera();
+	virtual ~vtCamera() {}
 };
 
 /**
@@ -485,9 +479,9 @@ protected:
 	vtMesh *m_pMesh;
 
 	osg::ref_ptr<osg::Geode> m_geode;
-	osg::ref_ptr<osg::Projection> m_projection;
+	osg::Projection *m_projection;
 
-	virtual ~vtSprite();
+	virtual ~vtSprite() {}
 };
 
 /**
@@ -504,10 +498,10 @@ public:
 
 public:
 	// OSG-specific Implementation
-	osg::ref_ptr<osg::Projection> m_projection;
+	osg::Projection *m_projection;
 
 protected:
-	virtual ~vtHUD();
+	virtual ~vtHUD() {}
 };
 
 /*@}*/	// Group sg

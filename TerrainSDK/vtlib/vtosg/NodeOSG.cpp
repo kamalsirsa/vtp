@@ -9,9 +9,8 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
+
 #include <osg/Polytope>
-#include <osg/LightSource>
-#include <osg/Fog>
 #include <osg/Projection>
 #include <osg/Depth>
 #include <osgDB/Registry>
@@ -28,14 +27,6 @@ using namespace osg;
 // vtNode
 //
 
-vtNode::vtNode()
-{
-}
-
-vtNode::~vtNode()
-{
-}
-
 void vtNode::Release()
 {
 	// shouldn't happen but... safety check anyway
@@ -51,9 +42,8 @@ void vtNode::Release()
 		VTLOG("Deleting Node: %lx (\"%s\")\n", this, m_pNode->getName().c_str());
 #endif
 		// Tell OSG that we're through with this node.
-		// The following statement calls unref() on m_pNode, which deletes
-		//  the OSG node, which decrements its reference to us, which
-		//  deletes us.
+		// The following statement calls unref() on m_pNode, which deletes the
+		//  OSG node, which decrements its reference to us, which deletes us.
 		m_pNode = NULL;
 	}
 }
@@ -367,6 +357,7 @@ void vtNode::ClearOsgModelCache()
 	m_ModelCache.clear();
 }
 
+
 ///////////////////////////////////////////////////////////////////////
 // vtGroup
 //
@@ -376,19 +367,13 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 	if (!suppress)
 	{
 		m_pGroup = new Group;
-		m_pContainer = m_pGroup.get();
-		SetOsgNode(m_pGroup.get());
+		SetOsgNode(m_pGroup);
 	}
-}
-
-vtGroup::~vtGroup()
-{
 }
 
 void vtGroup::SetOsgGroup(Group *g)
 {
 	m_pGroup = g;
-	m_pContainer = g;
 	SetOsgNode(g);
 }
 
@@ -415,7 +400,7 @@ void vtGroup::CopyFrom(const vtGroup *rhs)
 			const Group *rhsGroup = rhs->GetOsgGroup();
 			Node *pOsgChild = const_cast<Node *>( rhsGroup->getChild(i) );
 			if (pOsgChild)
-				m_pContainer->addChild(pOsgChild);
+				m_pGroup->addChild(pOsgChild);
 		}
 	}
 }
@@ -424,8 +409,7 @@ void vtGroup::Release()
 {
 	// Check if there are no more external references to this group node.
 	// If so, clean up the VTP side of the scene graph.
-	int count = m_pNode->referenceCount();
-	if (count == 2)
+	if (m_pNode->referenceCount() == 1)
 	{
 		// it's over for this node, start the destruction process
 		// Release children depth-first
@@ -437,19 +421,18 @@ void vtGroup::Release()
 			if (NULL == (pChild = GetChild(0)))
 			{
 				// Probably a raw osg node Group, access it directly.
-				Node *node = m_pContainer->getChild(0);
+				Node *node = m_pGroup->getChild(0);
 				// This deletes the node as well as there is no outer vtNode
 				// holding a reference.
-				m_pContainer->removeChild(node);
+				m_pGroup->removeChild(node);
 			}
 			else
 			{
-				m_pContainer->removeChild(pChild->GetOsgNode());
+				m_pGroup->removeChild(pChild->GetOsgNode());
 				pChild->Release();
 			}
 		}
 		m_pGroup = NULL;
-		m_pContainer = NULL;
 	}
 	// Now release itself
 	vtNode::Release();
@@ -482,21 +465,21 @@ const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
 void vtGroup::AddChild(vtNode *pChild)
 {
 	if (pChild)
-		m_pContainer->addChild(pChild->GetOsgNode());
+		m_pGroup->addChild(pChild->GetOsgNode());
 }
 
 void vtGroup::RemoveChild(vtNode *pChild)
 {
 	if (pChild)
-		m_pContainer->removeChild(pChild->GetOsgNode());
+		m_pGroup->removeChild(pChild->GetOsgNode());
 }
 
 vtNode *vtGroup::GetChild(int num) const
 {
-	int children = m_pContainer->getNumChildren();
+	int children = m_pGroup->getNumChildren();
 	if (num >= 0 && num < children)
 	{
-		Node *pChild = (Node *) m_pContainer->getChild(num);
+		Node *pChild = (Node *) m_pGroup->getChild(num);
 		return (vtNode *) (pChild->getUserData());
 	}
 	else
@@ -506,9 +489,9 @@ vtNode *vtGroup::GetChild(int num) const
 int vtGroup::GetNumChildren() const
 {
 	// shoudln't happen but... safety check anyway
-	if (m_pContainer == NULL)
+	if (m_pGroup == NULL)
 		return 0;
-	return m_pContainer->getNumChildren();
+	return m_pGroup->getNumChildren();
 }
 
 bool vtGroup::ContainsChild(vtNode *pNode) const
@@ -529,12 +512,8 @@ bool vtGroup::ContainsChild(vtNode *pNode) const
 
 vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 {
-	m_pTransform = new CustomTransform;
-	SetOsgGroup(m_pTransform.get());
-}
-
-vtTransform::~vtTransform()
-{
+	m_pTransform = new osg::MatrixTransform;
+	SetOsgGroup(m_pTransform);
 }
 
 vtNodeBase *vtTransform::Clone()
@@ -547,7 +526,7 @@ vtNodeBase *vtTransform::Clone()
 void vtTransform::CopyFrom(const vtTransform *rhs)
 {
 	// copy the matrix
-	const osg::MatrixTransform *mt = rhs->m_pTransform.get();
+	const osg::MatrixTransform *mt = rhs->m_pTransform;
 	m_pTransform->setMatrix(mt->getMatrix());
 
 	// and the parent members
@@ -557,12 +536,8 @@ void vtTransform::CopyFrom(const vtTransform *rhs)
 void vtTransform::Release()
 {
 	// Check if there are no more external references to this transform node.
-	// If so, clean up the VTP side of the scene graph.
-	if (m_pNode->referenceCount() == 3)
-	{
-		// it's over for this node, start the destruction process
+	if (m_pNode->referenceCount() == 1)
 		m_pTransform = NULL;
-	}
 	vtGroup::Release();
 }
 
@@ -579,7 +554,10 @@ FPoint3 vtTransform::GetTrans() const
 
 void vtTransform::SetTrans(const FPoint3 &pos)
 {
-	m_pTransform->getMatrix().setTrans(pos.x, pos.y, pos.z);
+	osg::Matrix m = m_pTransform->getMatrix();
+	m.setTrans(pos.x, pos.y, pos.z);
+	m_pTransform->setMatrix(m);
+
 	m_pTransform->dirtyBound();
 }
 
@@ -679,6 +657,7 @@ void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 	SetDirection(point - GetTrans(), bPitch);
 }
 
+
 ///////////////////////////////////////////////////////////////////////
 // vtLight
 //
@@ -686,16 +665,9 @@ void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 vtLight::vtLight()
 {
 	// Lights can now go into the scene graph in OSG, with LightSource.
+	// A lightsource creates a light, which we can get with getLight().
 	m_pLightSource = new osg::LightSource;
-
-	// A lightsource creates a light, which we will need to get at.
-	m_pLight = (osg::Light *) m_pLightSource->getLight();
-
-	SetOsgNode(m_pLightSource.get());
-}
-
-vtLight::~vtLight()
-{
+	SetOsgNode(m_pLightSource);
 }
 
 vtNodeBase *vtLight::Clone()
@@ -714,42 +686,41 @@ void vtLight::CopyFrom(const vtLight *rhs)
 
 void vtLight::Release()
 {
-	if (m_pNode->referenceCount() == 2)
-	{
-		m_pLight = NULL;	// explicit refcount decrement
+	// Check if we are completely deferenced
+	if (m_pNode->referenceCount() == 1)
 		m_pLightSource = NULL;
-	}
 	vtNode::Release();
 }
 
 void vtLight::SetDiffuse(const RGBf &color)
 {
-	m_pLight->setDiffuse(v2s(color));
+	GetOsgLight()->setDiffuse(v2s(color));
 }
 
 RGBf vtLight::GetDiffuse() const
 {
-	return s2v(m_pLight->getDiffuse());
+	return s2v(GetOsgLight()->getDiffuse());
 }
 
 void vtLight::SetAmbient(const RGBf &color)
 {
-	m_pLight->setAmbient(v2s(color));
+	GetOsgLight()->setAmbient(v2s(color));
 }
 
 RGBf vtLight::GetAmbient() const
 {
-	return s2v(m_pLight->getAmbient());
+	return s2v(GetOsgLight()->getAmbient());
 }
 
 void vtLight::SetEnabled(bool bOn)
 {
 /*
+	// TODO - figure out the long discussion on the OSG list about how to
+	//  actually disable a light.
 	if (bOn)
 		m_pLightSource->setLocalStateSetModes(StateAttribute::ON);
 	else
 		m_pLightSource->setLocalStateSetModes(StateAttribute::OFF);
-
 */
 	vtNode::SetEnabled(bOn);
 }
@@ -766,15 +737,6 @@ vtCamera::vtCamera() : vtTransform()
 	m_fFOV = PIf/3.0f;
 	m_bOrtho = false;
 	m_fWidth = 1;
-}
-
-vtCamera::~vtCamera()
-{
-}
-
-void vtCamera::Release()
-{
-	vtTransform::Release();
 }
 
 vtNodeBase *vtCamera::Clone()
@@ -875,11 +837,7 @@ float vtCamera::GetWidth() const
 vtGeom::vtGeom() : vtNode()
 {
 	m_pGeode = new Geode();
-	SetOsgNode(m_pGeode.get());
-}
-
-vtGeom::~vtGeom()
-{
+	SetOsgNode(m_pGeode);
 }
 
 vtNodeBase *vtGeom::Clone()
@@ -917,7 +875,7 @@ void vtGeom::CopyFrom(const vtGeom *rhs)
 
 void vtGeom::Release()
 {
-	if (m_pNode->referenceCount() == 2)
+	if (m_pNode->referenceCount() == 1)
 	{
 		// Clean up this geom, it is going away.
 		// Release the meshes we contain, which will delete them if there
@@ -937,9 +895,8 @@ void vtGeom::Release()
 		}
 		m_pGeode->removeDrawable(0, num);
 
-		// dereference
 		m_pGeode = NULL;
-		m_pMaterialArray = NULL;
+		m_pMaterialArray = NULL;		// dereference
 	}
 	vtNode::Release();
 }
@@ -1065,20 +1022,14 @@ vtLOD::vtLOD() : vtGroup(true)
 {
 	m_pLOD = new osg::LOD();
 	m_pLOD->setCenter(osg::Vec3(0, 0, 0));
-	SetOsgGroup(m_pLOD.get());
-}
-
-vtLOD::~vtLOD()
-{
+	SetOsgGroup(m_pLOD);
 }
 
 void vtLOD::Release()
 {
-	if (m_pNode->referenceCount() == 3)
-	{
-		// Clean up this node, it is going away.
+	// Check if this node is no longer referenced.
+	if (m_pNode->referenceCount() == 1)
 		m_pLOD = NULL;
-	}
 	vtGroup::Release();
 }
 
@@ -1116,10 +1067,6 @@ OsgDynMesh::OsgDynMesh()
 	// create an empty stateset, to force the traversers
 	// to nest any state above it in the inheritance path.
 	setStateSet(new StateSet);
-}
-
-OsgDynMesh::~OsgDynMesh()
-{
 }
 
 bool OsgDynMesh::computeBound() const
@@ -1324,16 +1271,12 @@ vtSprite::vtSprite()
 	m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
 	m_projection->addChild(modelview_abs);
 
-	SetOsgNode(m_projection.get());
-}
-
-vtSprite::~vtSprite()
-{
+	SetOsgNode(m_projection);
 }
 
 void vtSprite::Release()
 {
-	if (m_pNode->referenceCount() == 2)
+	if (m_pNode->referenceCount() == 1)
 	{
 		// Release the meshes we contain, which will delete them if there
 		//  are no other references to them.
@@ -1343,7 +1286,7 @@ void vtSprite::Release()
 			m_geode->removeDrawable(0, 1);
 		}
 		m_geode = NULL;			// dereference
-		m_projection = NULL;	// dereference
+		m_projection = NULL;
 	}
 	// Check parent
 	vtNode::Release();
@@ -1450,23 +1393,16 @@ vtHUD::vtHUD() : vtGroup(true)
 	osg::StateSet* stateset = m_projection->getOrCreateStateSet();
 	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
 
-	SetOsgGroup(m_projection.get());
-	// but!  the modelview node is the container
-	m_pContainer = modelview_abs;
-}
-
-vtHUD::~vtHUD()
-{
+	SetOsgGroup(m_projection);
+	// but, HUD is special!  the modelview node is the container
+	m_pGroup = modelview_abs;
 }
 
 void vtHUD::Release()
 {
 	// Check if there are no more external references to this HUD node.
-	if (m_pNode->referenceCount() == 3)
-	{
-		// it's over for this node, start the destruction process
+	if (m_pNode->referenceCount() == 1)
 		m_projection = NULL;
-	}
 	vtGroup::Release();
 }
 
