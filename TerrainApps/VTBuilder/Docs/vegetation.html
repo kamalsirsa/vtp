@@ -39,12 +39,29 @@ VTBuilder<br>
     <li>export <b>Explicit</b> instances to a VF file, which can be read by VTP
       Enviro</li>
   </ul>
-  <p>Use these steps to generate a vegetation distribution.</p>
+  <p>If you have point data for each plant, use these steps to import explicit 
+  instances, :</p>
   <ol>
-    <li>Load your Plant List.&nbsp; An example file is is <code>VTP/Enviro/Data/PlantData/plants.txt</code></li>
-    <li>Load your Bioregion (list of Biotypes).&nbsp; An example file is in <code>VTP/Enviro/Data/PlantData/bioregion.txt</code></li>
-    <li>Import at least one layer with <b>Density</b></li>
+    <li>Make sure that you have a species file with the species you need.&nbsp; 
+    An example file is is <code>VTP/Enviro/Data/PlantData/species.xml</code></li>
+    <li>Load your species with the menu command &quot;Vegetation: Plants File&quot;.&nbsp; </li>
+    <li>Use the menu command &quot;Layer: Import Data&quot; and indicate Vegetation.</li>
+    <li>Indicate the file which contains the point locations of your instances.&nbsp; 
+    Generally this is a SHP file.</li>
+    <li>Save the resulting layer to a VF file, which can be used by Enviro.</li>
+  </ol>
+  <p>If you instead have polygon data which described the general area covered 
+  by a number of plants, use these steps to generate a vegetation distribution:</p>
+  <ol>
+    <li>Make sure that you have a species file with the species you need.&nbsp; 
+    An example file is is <code>VTP/Enviro/Data/PlantData/species.xml</code></li>
+    <li>Load your Species with the menu command &quot;Vegetation: Plants File&quot;.</li>
+    <li>Load your Bioregion (list of Biotypes) with the menu command 
+    &quot;Vegetation: BioRegions&quot;.&nbsp; An example file is in <code>VTP/Enviro/Data/PlantData/bioregion.txt</code></li>
     <li>Import at least one layer with <b>Biotype</b></li>
+    <li>If you have polygon data for planty density, import that layer as <b>Density</b>.&nbsp; 
+    This can be the same GIS file that contains the Biotype, or a separate file 
+    such as a LULC file.</li>
     <li>Use the Export Area tool to indicate the area in which to distribute the
       vegetation</li>
     <li>Give the command &quot;Export Area - Generate and Export
