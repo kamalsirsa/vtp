@@ -41,25 +41,40 @@ VTBuilder<br>
   format</a>.&nbsp; BT can be read by the VTP <b>Enviro</b> program and other
   virtual terrain software.</p>
 </blockquote>
-<p><u><b>Display of Elevation Layers</b></u></p>
+<h4>Display of Elevation Layers</h4>
 <blockquote>
   <p>The default is to display elevation as artificially shaded and
   false-colored by elevation.&nbsp; Elevation at sea level is shown in
   blue.&nbsp; Areas of unknown elevation are shown in red, unless hidden with
   the <b>View: Hide Unknown Areas</b> option</p>
 </blockquote>
-<p><u><b>How To Resample and Export Elevation</b></u></p>
+<h4>How To Resample and Export Elevation</h4>
 <ul>
   <li>Use the Area Tool to drag the black lines with the mouse to indicate the area
     of interest.&nbsp; You can also type in precise extents with the command <b>Export Area
     - Numeric Values</b></li>
-  <li>Use the command &quot;<b>Elevation - Merge and Export Elevation</b>&quot; to
-    create a BT file</li>
+  <li>Use the command &quot;<b>Export Area - <a href="export_area.html"> Merge and Export Elevation</a></b>&quot; to
+    create a BT file.&nbsp; There may also be a PRJ file created with the same
+    name as the BT file, which contains a full description of the projection.<br>
+    For example:
+    <div align="center">
+      <center>
+      <table border="1" cellspacing="0">
+        <tr>
+          <td width="100%"><code><font size="4">hawaii_1k.bt</font></code></td>
+        </tr>
+        <tr>
+          <td width="100%"><code><font size="4">hawaii_1k.prj</font></code></td>
+        </tr>
+      </table>
+      </center>
+    </div>
+  </li>
   <li>Important!&nbsp; If you will be using this for terrain LOD in Enviro
     (recommended), let VTBuilder enforce the size constraints in the &quot;Merge
     and Resample&quot; dialog.</li>
 </ul>
-<p><u><b>Elevation Menus</b></u></p>
+<h4>Elevation Menus</h4>
 <ul>
       <li><a name="Elevation"><b>Elevation</b></a>
         <ul>
