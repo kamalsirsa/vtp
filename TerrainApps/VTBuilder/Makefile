@@ -17,6 +17,7 @@ IFLAGS = $(shell wx-config --cflags) \
 
 LDIRS  = \
 	  $(VTDATA_INST_DIR)             \
+	  $(VTUI_INST_DIR)               \
  	  $(XMLHELPER_INST_DIR)          \
 	  $(SHAPE_LIB)                   \
 	  $(PNG_LIB)                     \
@@ -35,7 +36,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = VTBuilder
 LIBS   = $(shell wx-config --libs)     \
 	  $(shell wx-config --gl-libs)     \
-	  -lgdal.1.1 -lvtdata              \
+	  -lgdal.1.1 -lvtdata -lvtui       \
 	  -lxmlhelper					   \
 	  -lnetcdf                         \
 	  -lGL -lX11 $(EXTRA_LIBS) -lm 

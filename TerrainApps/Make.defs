@@ -95,9 +95,10 @@ TERRAIN_SDK_DIR  = $(VTP_ROOT)/TerrainSDK
 TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
 VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
 VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
+VTUI_DIR         = $(TERRAIN_SDK_DIR)/vtui
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
 XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
-MINI_DIR         = $(VTP_ROOT)/../../mini
+MINI_DIR         = $(VTP_ROOT)/../libmini-4.6
 
 #NETCDF_INC = $(APIS_DIR)/NetCDF/include
 #NETCDF_LIB = $(APIS_DIR)/NetCDF/lib
@@ -121,6 +122,7 @@ MINI_INC = $(MINI_DIR)
 MINI_LIB = $(MINI_DIR)/libMini.a
 
 VTDATA_INST_DIR = $(VTDATA_DIR)
+VTUI_INST_DIR = $(VTUI_DIR)
 VTOSG_INST_DIR  = $(VTOSG_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
 #VTDATA_INST_DIR = $(PREFIX)/lib
