@@ -14,7 +14,8 @@
 class vtApp: public wxApp
 {
 public:
-    bool OnInit(void);
+    bool OnInit();
+    int OnExit();
 };
 
 // helper

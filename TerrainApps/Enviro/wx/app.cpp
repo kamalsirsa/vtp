@@ -21,7 +21,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "../TerrainSceneWP.h"
-#include "../Enviro.h"		// for g_App
+#include "../Enviro.h"		// for g_App, GetTerrainScene
 #include "../Options.h"
 
 #include "app.h"
@@ -43,6 +43,8 @@ bool vtApp::OnInit()
 	Args(argc, argv);
 
 	g_Options.Read("Enviro.ini");
+
+	g_App.Startup();
 	g_App.LoadTerrainDescriptions();
 
 	//
@@ -75,12 +77,19 @@ bool vtApp::OnInit()
 		wxPoint(50, 50), wxSize(800, 600));
 
 	vtGetScene()->Init();
+
 	g_App.StartControlEngine(NULL);
 
 	if (g_Options.m_bFullscreen)
 		frame->SetFullScreen(true);
 
 	return TRUE;
+}
+
+int vtApp::OnExit()
+{
+	g_App.Shutdown();
+	return wxApp::OnExit();
 }
 
 //
@@ -92,14 +101,14 @@ bool AskForTerrainName(wxWindow *pParent, wxString &str)
 
 	// count them
 	int num = 0;
-    for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+    for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 		num++;
 
 	// get their names
 	wxString *choices = new wxString[num];
 	num = 0;
 	int first_idx = 0;
-	for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 	{
 		choices[num] = (const char *)(pTerr->GetName());
 		if (str == choices[num]) first_idx = num;
