@@ -19,6 +19,7 @@
 #include "vtBitmap.h"
 #include "vtui/Helper.h"	// for FormatCoord
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FilePath.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 
@@ -1256,44 +1257,33 @@ bool vtElevLayer::AskForSaveFilename()
 	if (m_pTin)
 		filter = FSTRING_TIN;
 	else
-	{
 		filter = _T("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz|");
-//		AddType(filter, _T(""));
-	}
 
 	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
-
-	if (m_pGrid && m_bPreferGZip)
-		saveFile.SetFilterIndex(1);
-	else
-		saveFile.SetFilterIndex(0);
+	saveFile.SetFilterIndex(m_pGrid && m_bPreferGZip ? 1 : 0);
 
 	VTLOG("Asking user for elevation file name\n");
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return false;
 
-	wxString2 name = saveFile.GetPath();
-	VTLOG("Got filename: '%s'\n", name.mb_str());
+	vtString fname = saveFile.GetPath().mb_str();
+	VTLOG("Got filename: '%s'\n", (const char *) fname);
 
 	if (m_pGrid)
 	{
 		m_bPreferGZip = (saveFile.GetFilterIndex() == 1);
 
 		// work around incorrect extension(s) that wxFileDialog added
-		if (!name.Right(3).CmpNoCase(_T(".gz")))
-			name = name.Left(name.Len()-3);
-		if (!name.Right(3).CmpNoCase(_T(".bt")))
-			name = name.Left(name.Len()-3);
-
+		RemoveFileExtensions(fname);
 		if (m_bPreferGZip)
-			name += _T(".bt.gz");
+			fname += ".bt.gz";
 		else
-			name += _T(".bt");
+			fname += ".bt";
 	}
 
-	SetLayerFilename(name);
+	SetLayerFilename(fname);
 	m_bNative = true;
 	return true;
 }
