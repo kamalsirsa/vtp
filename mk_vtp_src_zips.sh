@@ -34,6 +34,8 @@ zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtsgl/*
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/*
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/include/*
 
+zip $DIST_FILE1 VTP/TerrainSDK/vtui/*
+
 zip $DIST_FILE1 VTP/TerrainApps/configure
 zip $DIST_FILE1 VTP/TerrainApps/configure.in
 zip $DIST_FILE1 VTP/TerrainApps/install-sh
