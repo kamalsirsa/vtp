@@ -28,6 +28,8 @@
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
 #define PLANETWORK			0
+#define SPACE_DARKNESS		0.0f
+#define UNFOLD_SPEED		0.01f
 
 //
 // This is a 'singleton', the only instance of the global application object
@@ -60,6 +62,8 @@ Enviro::Enviro()
 	m_bGlobeUnfolded = false;
 	m_fFolding = 0.0f;
 	m_fFoldDir = 0.0f;
+	m_pIcoGlobe = NULL;
+	m_pSpaceAxes = NULL;
 
 	m_pTerrainPicker = NULL;
 	m_pGlobePicker = NULL;
@@ -245,6 +249,9 @@ void Enviro::DoControl()
 
 			// Leave Flat View
 			m_pTrackball->SetEnabled(true);
+
+			// Turn globe culling back on
+			m_pIcoGlobe->SetCulling(true);
 		}
 		m_pIcoGlobe->SetUnfolding(m_fFolding);
 	}
@@ -307,7 +314,7 @@ void Enviro::SetupGlobe()
 #endif
 		pSunLight->GetLight()->SetAmbient2(RGBf(0.5f, 0.5f, 0.5f));
 
-		vtGetScene()->SetBgColor(RGBf(0.05f, 0.05f, 0.05f));
+		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
 
 		m_pGlobeContainer->SetEnabled(true);
 		m_pRoot->AddChild(m_pGlobeContainer);
@@ -730,7 +737,12 @@ void Enviro::MakeGlobe()
 	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
 
 	m_pGlobeTime->SetSpeed(500);
+	Globe2->DoSeasonalTilt(false);
+	m_pIcoGlobe->DoSeasonalTilt(false);
 #endif
+
+	// pass the time along once to orient the earth
+	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
 
 	VTLOG("\tcreating Trackball\n");
 	// use a trackball engine for navigation
@@ -743,7 +755,8 @@ void Enviro::MakeGlobe()
 	// determine where the terrains are, and show them as red rectangles
 	//
 	LookUpTerrainLocations();
-	AddTerrainRectangles();
+	VTLOG("AddTerrainRectangles\n");
+	m_pIcoGlobe->AddTerrainRectangles(GetTerrainScene());
 
 	// create the GlobePicker engine for picking features on the earth
 	//
@@ -764,8 +777,61 @@ void Enviro::MakeGlobe()
 		pStars->Create(bsc_file, 20.0f, 5.0f);	// radius, brightness
 		m_pGlobeContainer->AddChild(pStars);
 	}
+
+	// create some geometry showing various astronomical axes
+	vtMaterialArray *pMats = new vtMaterialArray();
+	int yellow = pMats->AddRGBMaterial1(RGBf(1,1,0), false, false);
+	int red = pMats->AddRGBMaterial1(RGBf(1,0,0), false, false);
+	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
+
+	m_pSpaceAxes = new vtGeom();
+	m_pSpaceAxes->SetName2("Earth Axes");
+	m_pSpaceAxes->SetMaterials(pMats);
+	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh->AddVertex(FPoint3(0,0,200));
+	mesh->AddVertex(FPoint3(0,0,0));
+	mesh->AddLine(0,1);
+	mesh->AddVertex(FPoint3(0,0,1));
+	mesh->AddVertex(FPoint3(-.07f,0,1.1f));
+	mesh->AddVertex(FPoint3( .07f,0,1.1f));
+	mesh->AddLine(2,3);
+	mesh->AddLine(2,4);
+	m_pSpaceAxes->AddMesh(mesh, yellow);
+
+	mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh->AddVertex(FPoint3(1.5f,0,0));
+	mesh->AddVertex(FPoint3(-1.5f,0,0));
+	mesh->AddLine(0,1);
+	mesh->AddVertex(FPoint3(-1.4f,0.07f,0));
+	mesh->AddVertex(FPoint3(-1.4f,-0.07f,0));
+	mesh->AddLine(1,2);
+	mesh->AddLine(1,3);
+	m_pSpaceAxes->AddMesh(mesh, green);
+
+	mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh->AddVertex(FPoint3(0,2,0));
+	mesh->AddVertex(FPoint3(0,-2,0));
+	mesh->AddLine(0,1);
+	m_pSpaceAxes->AddMesh(mesh, red);
+
+	m_pGlobeContainer->AddChild(m_pSpaceAxes);
+	m_pSpaceAxes->SetEnabled(false);
 }
 
+void Enviro::SetSpaceAxes(bool bShow)
+{
+	if (m_pSpaceAxes)
+		m_pSpaceAxes->SetEnabled(bShow);
+	if (m_pIcoGlobe)
+		m_pIcoGlobe->ShowAxis(bShow);
+}
+
+bool Enviro::GetSpaceAxes()
+{
+	if (m_pSpaceAxes)
+		return m_pSpaceAxes->GetEnabled();
+	return false;
+}
 
 void Enviro::LookUpTerrainLocations()
 {
@@ -798,12 +864,6 @@ void Enviro::LookUpTerrainLocations()
 		VTLOG("\t\tGot terrain corners\n");
 	}
 	VTLOG("\tLookUpTerrainLocations: done\n");
-}
-
-void Enviro::AddTerrainRectangles()
-{
-	VTLOG("AddTerrainRectangles\n");
-	m_pIcoGlobe->AddTerrainRectangles(GetTerrainScene());
 }
 
 int Enviro::AddGlobePoints(const char *fname)
@@ -1404,15 +1464,22 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 	if (m_bGlobeUnfolded)
 	{
 		// Enter Flat View
-		m_pNormalCamera->SetTrans(FPoint3(0.7f,-0.75f,5.6));
-		m_pNormalCamera->PointTowards(FPoint3(0.9f,-0.75f,0));
+		m_pNormalCamera->SetTrans(FPoint3(0.85f,-0.75f,5.6));
+		m_pNormalCamera->PointTowards(FPoint3(0.85f,-0.75f,0));
 		m_pTrackball->SetEnabled(false);
 
-		m_fFoldDir = 0.01f;
+		// turn off axes
+		SetSpaceAxes(false);
+
+		// turn off globe shading and culling
+		m_pIcoGlobe->SetCulling(false);
+		m_pIcoGlobe->SetLighting(false);
+
+		m_fFoldDir = UNFOLD_SPEED;
 	}
 	else
 	{
-		m_fFoldDir = -0.01f;
+		m_fFoldDir = -UNFOLD_SPEED;
 	}
 }
 
