@@ -46,6 +46,13 @@ NevadaTerrain::NevadaTerrain() : PTerrain()
 	m_pWaterShape = m_pWaterShape2 = NULL;
 	m_pDetailMat = NULL;
 	m_pDetailMat2 = NULL;
+	m_pMats = NULL;
+}
+
+NevadaTerrain::~NevadaTerrain()
+{
+	if (m_pMats)
+		m_pMats->Release();
 }
 
 //
@@ -63,6 +70,8 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 	m_fGround = 1200 * m_Params.m_fVerticalExag;
 	m_fHigh = m_fGround + (50);
 	m_fLow = m_fGround - (50);
+
+	m_pMats = new vtMaterialArray();
 
 	if (m_Params.m_bDetailTexture)
 		CreateDetailTextures();
@@ -109,18 +118,6 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 
 void NevadaTerrain::CreateWater()
 {
-	// create water material: texture waves
-	vtMaterialArray *pMats = new vtMaterialArray();
-	vtString str = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
-	pMats->AddTextureMaterial2(str,
-		false, true,	// cull, light
-		false, false,	// transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
-	pMats->AddTextureMaterial2(str,
-		false, true,	// cull, light
-		true, false,	// transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
-
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 org, size;
 	org.x = (float) world_extents.left;
@@ -128,18 +125,31 @@ void NevadaTerrain::CreateWater()
 	size.x = (float) world_extents.Width();
 	size.y = (float) world_extents.Height();
 
+	// create water material: texture waves
+	vtString str = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
+
+	int id;
+
+	id = m_pMats->AddTextureMaterial2(str,
+		false, true,	// cull, light
+		false, false,	// transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
 	// create water plane
-	m_pWaterShape = CreatePlaneMGeom(pMats, 0, org, size, 125.0f, 125.0f, 10);	// matidx 0
+	m_pWaterShape = CreatePlaneMGeom(m_pMats, id, org, size, 125.0f, 125.0f, 10);	// matidx 0
 	m_pWaterShape->SetName2("WaterSurface");
 	AddNode(m_pWaterShape);
 
+	id = m_pMats->AddTextureMaterial2(str,
+		false, true,	// cull, light
+		true, false,	// transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
+
 	// and another plane
-	m_pWaterShape2 = CreatePlaneMGeom(pMats, 1, org, size, 260.3f, 260.3f, 10);	// matidx 1
+	m_pWaterShape2 = CreatePlaneMGeom(m_pMats, id, org, size, 260.3f, 260.3f, 10);	// matidx 1
 	m_pWaterShape2->SetName2("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
 	AddNode(m_pWaterShape2);
-
-	pMats->Release();
 }
 
 
@@ -154,8 +164,8 @@ void NevadaTerrain::CreateDetailTextures()
 	str = FindFileOnPaths(m_DataPaths, "Nevada/green3.png");
 	vtImage *pDetailTexture2 = new vtImage(str);
 
-	vtMaterialArray *pDetailApps = new vtMaterialArray();
-	pDetailApps->AddTextureMaterial(pDetailTexture,
+	int id;
+	id = m_pMats->AddTextureMaterial(pDetailTexture,
 						 true,	// culling
 						 false,	// lighting
 						 true,	// transp: blend
@@ -163,10 +173,11 @@ void NevadaTerrain::CreateDetailTextures()
 						 0.3f, 0.6f,	// ambient, diffuse
 						 1.0f, 0.1f,	// alpha, emmisive
 						 true);			// texgen
-	m_pDetailMat = pDetailApps->GetAt(0);
+	m_pDetailMat = m_pMats->GetAt(id);
+	m_pDetailMat->SetMipMap(true);
 
 	//initally, make partly transparent
-	pDetailApps->AddTextureMaterial(pDetailTexture2,
+	id = m_pMats->AddTextureMaterial(pDetailTexture2,
 					 true,	// culling
 					 false,	// lighting
 					 true,	// transp: blend
@@ -174,9 +185,8 @@ void NevadaTerrain::CreateDetailTextures()
 					 0.3f, 0.6f,	// ambient, diffuse
 					 1.0f, 0.1f,	// alpha, emmisive
 					 true);			// texgen
-	m_pDetailMat2 = pDetailApps->GetAt(1);
+	m_pDetailMat2 = m_pMats->GetAt(id);
 	m_pDynGeom->SetDetailMaterial(m_pDetailMat, DETAIL_TILING);
-	pDetailApps->Release();
 }
 
 

@@ -10,6 +10,7 @@ class NevadaTerrain : public PTerrain
 {
 public:
 	NevadaTerrain();
+	~NevadaTerrain();
 
 	void CreateCustomCulture(bool bDoSound);
 
@@ -26,9 +27,9 @@ public:
 	vtGroup		*m_pPast, *m_pPresent, *m_pFuture;
 	vtLodGrid	*m_pTreeGrid;
 	vtMovGeom	*m_pWaterShape, *m_pWaterShape2;
-//	vtFog		*m_pFog;
 	vtMaterial	*m_pDetailMat;
 	vtMaterial	*m_pDetailMat2;
+	vtMaterialArray *m_pMats;
 
 	FPoint3 man_location;
 	float	m_fGround, m_fHigh, m_fLow;
@@ -66,7 +67,6 @@ public:
 
 	class NevadaTerrain *m_pNevada;
 
-//	vtFog m_pFog1, m_pFog2;
 	float m_fLow;
 	float m_fHigh;
 	float m_fWaterHeight;
@@ -79,4 +79,5 @@ public:
 	vtGroup *m_pTrees;
 };
 
-#endif
+#endif	// NEVADAH
+
