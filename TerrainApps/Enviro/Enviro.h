@@ -190,9 +190,6 @@ protected:
 	bool		m_bSuppliedFilename;	// true if there was a command line
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
-
-	// Error logging.
-	vtString	m_msg;
 };
 
 // global singleton

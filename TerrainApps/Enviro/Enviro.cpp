@@ -366,9 +366,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 	if (m_iInitStep == 1)
 	{
-		m_msg = "Creating Terrain ";
-		m_msg += pTerr->GetName();
-		SetMessage(m_msg);
+		vtString str;
+		str.Format("Creating Terrain '%s'", pTerr->GetName());
+		SetMessage(str);
 	}
 	if (m_iInitStep == 2)
 	{
@@ -966,16 +966,8 @@ void Enviro::SetMode(MouseMode mode)
 
 void Enviro::SetupCameras()
 {
-	VTLOG("SetupCameras: Creating normal camera\n");
-
-	// create normal camera
+	VTLOG("SetupCameras: Setting up normal camera\n");
 	m_pNormalCamera = vtGetScene()->GetCamera();
-	float fov = m_pNormalCamera->GetFOV();
-
-	VTLOG("Setting hither and yon\n");
-	FPoint3 pos = m_pNormalCamera->GetTrans();
-	m_pNormalCamera->SetHither(10);		// 10 m
-	m_pNormalCamera->SetYon(500000);		// 500 km
 
 #if 1
 	// Create second camera (for Top-Down view)
