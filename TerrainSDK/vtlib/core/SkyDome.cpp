@@ -437,7 +437,7 @@ bool vtDayDome::SetTexture(const char *filename)
 	// Second way: use our special knowledge of how the sphere vertices are
 	// constructed to set the UV values evently from 0 to 1 without
 	// wraparound.
-	int ysize = sqrt(verts/4);
+	int ysize = (int) (sqrt(verts/4));
 	int xsize = ysize * 4;
 	for (i =0; i < xsize; i++)
 	{
