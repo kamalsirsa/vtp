@@ -767,16 +767,26 @@ int vtFeatures::NumEntities() const
 /**
  * Returns the type of geometry that each feature has.
  *
- * \return - SHPT_POINT for 2d points
- *		   - SHPT_POINTZ fpr 3d points
- *		   - SHPT_ARC for 2d polylines
- *		   - SHPT_POLYGON for 2d polygons
+ * \return
+ *		- SHPT_POINT for 2D points
+ *		- SHPT_POINTZ fpr 3D points
+ *		- SHPT_ARC for 2D polylines
+ *		- SHPT_POLYGON for 2D polygons
  */
 int vtFeatures::GetEntityType() const
 {
 	return m_nSHPType;
 }
 
+/**
+ * Set the type of geometry that each feature will have.
+ *
+ * \param type
+ *		- SHPT_POINT for 2D points
+ *		- SHPT_POINTZ fpr 3D points
+ *		- SHPT_ARC for 2D polylines
+ *		- SHPT_POLYGON for 2D polygons
+ */
 void vtFeatures::SetEntityType(int type)
 {
 	m_nSHPType = type;
