@@ -62,12 +62,23 @@ void DLine2::RemovePoint(int i)
 	SetSize(GetSize()-1);
 }
 
-bool DLine2::ContainsPoint(const DPoint2 &p)
+bool DLine2::ContainsPoint(const DPoint2 &p) const
 {
 	if (GetData() != NULL)
 		return CrossingsTest(GetData(), GetSize(), p);
 	else
 		return false;
+}
+
+/**
+ * Return the length of the N'th segment in the line, which is the distance
+ * between points N and N+1.  If the length of the last segment is requested,
+ * a closed polygon is assumed.
+ */
+double DLine2::SegmentLength(int i) const
+{
+	int j = (i < GetSize()-1) ? i+1 : 0;
+	return (GetAt(j) - GetAt(i)).Length();
 }
 
 //

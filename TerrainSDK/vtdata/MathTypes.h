@@ -308,7 +308,8 @@ public:
 	void Add(const DPoint2 &p);
 
 	void RemovePoint(int i);
-	bool ContainsPoint(const DPoint2 &p);
+	bool ContainsPoint(const DPoint2 &p) const;
+	double SegmentLength(int i) const;
 };
 
 /**
