@@ -27,8 +27,9 @@ SRTerrain::SRTerrain() : vtDynTerrainGeom()
 	m_fResolution = 10000.0f;
 }
 
-SRTerrain::~SRTerrain()
+void SRTerrain::Destroy()
 {
+	vtDynTerrainGeom::Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////

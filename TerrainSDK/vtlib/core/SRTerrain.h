@@ -26,11 +26,11 @@ class SRTerrain : public vtDynTerrainGeom
 {
 public:
 	SRTerrain();
-	~SRTerrain();
 
 	// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale, 
 				float fOceanDepth, int &iError);
+	void Destroy();
 
 	// overrides
 	void DoRender();

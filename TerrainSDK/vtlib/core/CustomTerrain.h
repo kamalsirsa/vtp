@@ -14,11 +14,11 @@ class CustomTerrain : public vtDynTerrainGeom
 {
 public:
 	CustomTerrain();
-	~CustomTerrain();
 
 	// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 			  float fOceanDepth, int &iError);
+	void Destroy();
 
 	// overrides
 	void DoRender();

@@ -119,11 +119,11 @@ class TVTerrain : public vtDynTerrainGeom
 {
 public:
 	TVTerrain();
-	~TVTerrain();
 
 	/// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError);
+	void Destroy();
 	static int MemoryRequired(int iDimension);
 
 	// overrides

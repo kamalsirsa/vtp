@@ -45,10 +45,10 @@ class vtDayDome : public vtTransform
 {
 public:
 	vtDayDome();
-	~vtDayDome() { if (SphVertices) delete[] SphVertices; }
 
 	void	Create(int depth, float radius,
 					const char *sun_texture = NULL);
+	void	Destroy();
 
 	void	ApplyDayColors();
 	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
@@ -109,9 +109,10 @@ class vtStarDome : public vtTransform
 {
 public:
 	vtStarDome();
-	~vtStarDome() { if (Starfield) delete[] Starfield; }
+
 	void	Create(const char *starfile, float radius, float brightness,
 					const char *moon_texture = NULL);
+	void	Destroy();
 
 	void	SetTimeOfDay(int time);
 	void	SetDawnTimes(int start_hr, int start_min, int end_hr, int end_min);
@@ -159,10 +160,11 @@ class vtSkyDome : public vtTransform
 {
 public:
 	vtSkyDome();
-	~vtSkyDome() { delete m_pDayDome; delete m_pStarDome; }
 
 	void	Create(const char *starfile, int depth, float radius,
 					const char *sun_texture = NULL, const char *moon_texture = NULL);
+	void	Destroy();
+
 	void	SetRadius(float radius);
 	void	SetTimeOfDay(int hrs, int mins, int secs);
 	void	SetTimeOfDay(int time, bool bFullRefresh = false);

@@ -36,10 +36,11 @@ BryanTerrain::BryanTerrain() : vtDynTerrainGeom()
 	m_pData = NULL;
 }
 
-BryanTerrain::~BryanTerrain()
+void BryanTerrain::Destroy()
 {
 	if (m_pData)
 		delete m_pData;
+	vtDynTerrainGeom::Destroy();
 }
 
 

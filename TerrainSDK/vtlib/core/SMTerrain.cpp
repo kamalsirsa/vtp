@@ -129,7 +129,7 @@ SMTerrain::SMTerrain() : vtDynTerrainGeom()
 	m_TriPool = NULL;
 }
 
-SMTerrain::~SMTerrain()
+void SMTerrain::Destroy()
 {
 	if (m_pData)
 		delete m_pData;
@@ -143,6 +143,8 @@ SMTerrain::~SMTerrain()
 	for (int i = 0; i < m_iBlockArrayDim; i++)
 		delete m_pBlockArray[i];
 	delete m_pBlockArray;
+
+	vtDynTerrainGeom::Destroy();
 }
 
 

@@ -74,8 +74,9 @@ TVTerrain::TVTerrain() : vtDynTerrainGeom()
 	distThresh = IDISTTHRESH;
 }
 
-TVTerrain::~TVTerrain()
+void TVTerrain::Destroy()
 {
+	vtDynTerrainGeom::Destroy();
 }
 
 

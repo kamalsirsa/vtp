@@ -74,6 +74,12 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	MaxTimeOfDay = TIME_TO_INT(24, 0, 0);
 }
 
+void vtSkyDome::Destroy()
+{
+	m_pDayDome->Destroy();
+	m_pStarDome->Destroy();
+	vtTransform::Destroy();
+}
 
 int dawn_start = TIME_TO_INT(4, 30, 0);
 int dawn_middle = TIME_TO_INT(5, 30, 0);
@@ -379,6 +385,12 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 
 		AddChild(m_pSunShape);
 	}
+}
+
+void vtDayDome::Destroy()
+{
+	if (SphVertices) delete[] SphVertices;
+	vtTransform::Destroy();
 }
 
 //
@@ -731,6 +743,13 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 		AddChild(m_pMoonGeom);
 	}
 	SetRadius(radius);
+}
+
+void vtStarDome::Destroy()
+{
+	if (Starfield)
+		delete[] Starfield;
+	vtTransform::Destroy();
 }
 
 //

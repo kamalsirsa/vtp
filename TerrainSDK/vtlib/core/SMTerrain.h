@@ -133,11 +133,11 @@ class SMTerrain : public vtDynTerrainGeom
 {
 public:
 	SMTerrain();
-	~SMTerrain();
 
 	/// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 				float fOceanDepth, int &iError);
+	void Destroy();
 	static int MemoryRequired(int iDimension);
 
 	// overrides

@@ -41,13 +41,13 @@ class vtTerrainGeom : public vtGeom, public vtHeightFieldGrid
 {
 public:
 	vtTerrainGeom();
-	~vtTerrainGeom();
 
 	bool CreateFromLocalGrid(vtElevationGrid *pGrid, int VtxType,
 		 int iEveryX = 1, int iEveryZ = 1,
 		 int largest_block_size = 16, int texture_patches = 2,
 		 bool bSuppressLand = false, float fOceanDepth = 0.0f,
 		 bool bLighting = true);
+	void Destroy();
 
 	// overrides for vtHeightField
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,

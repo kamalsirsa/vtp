@@ -16,7 +16,7 @@ vtTerrainGeom::vtTerrainGeom() : vtGeom(), vtHeightFieldGrid()
 	m_pPatches = NULL;
 }
 
-vtTerrainGeom::~vtTerrainGeom()
+void vtTerrainGeom::Destroy()
 {
 	if (m_pPatches)
 	{
@@ -32,6 +32,7 @@ vtTerrainGeom::~vtTerrainGeom()
 		free(m_pPatches);
 		m_pPatches = NULL;
 	}
+	vtGeom::Destroy();
 }
 
 
