@@ -274,6 +274,9 @@ if (pwdemo){
 	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
 	vtGetScene()->AddEngine(m_pTrackball);
 
+	// stop them from going in too far (they'd see through the earth)
+	m_pTrackball->LimitPos(FPoint3(-1E9,-1E9,1.1f), FPoint3(1E9,1E9,1E9));
+
 	// determine where the terrains are, and show them as red rectangles
 	//
 	LookUpTerrainLocations();
@@ -548,6 +551,11 @@ void Enviro::DoCursorOnEarth()
 
 		// Update Earth Lines
 		SetEarthLines(m_EarthPos.x, m_EarthPos.y);
+
+		// Attempt to scale the 3d cursor, rather than keeping it the
+		//  same size in world space (it would be too small in the distance)
+		float fAltitude = m_pTrackball->GetRadius() - 1;
+		m_pGlobePicker->SetTargetScale(fAltitude * 0.06f);
 	}
 	vtString str1, str2;
 	FormatCoordString(str1, m_EarthPos, LU_DEGREES);

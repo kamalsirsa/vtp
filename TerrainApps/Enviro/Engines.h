@@ -101,6 +101,7 @@ public:
 	void Eval();
 	void SetRadius(double fRadius) { m_fRadius = fRadius; }
 	void SetGlobe(IcoGlobe *pGlobe) { m_pGlobe = pGlobe; }
+	void SetTargetScale(float s) { m_fTargetScale = s; }
 
 	bool GetCurrentPoint(FPoint3 &p);
 	bool GetCurrentEarthPos(DPoint3 &p);
@@ -111,6 +112,7 @@ protected:
 	bool		m_bOnTerrain;
 	double		m_fRadius;
 	IcoGlobe	*m_pGlobe;
+	float		m_fTargetScale;
 };
 
 ///////////////////////////////////////////////////

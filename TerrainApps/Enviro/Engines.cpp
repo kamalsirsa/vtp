@@ -334,6 +334,7 @@ GlobePicker::GlobePicker() : vtLastMouse()
 	m_fRadius = 1.0;
 	m_bOnTerrain = false;
 	m_pGlobe = NULL;
+	m_fTargetScale = 0.01f;
 }
 
 void GlobePicker::Eval()
@@ -357,11 +358,10 @@ void GlobePicker::Eval()
 		vtTransform *pTarget = (vtTransform *) GetTarget();
 		if (pTarget)
 		{
-			float sc = 0.05f;
 			pTarget->Identity();
 			pTarget->SetTrans(m_GroundPoint);
 			pTarget->PointTowards(m_GroundPoint * 2);
-			pTarget->Scale3(sc, sc, sc);
+			pTarget->Scale3(m_fTargetScale, m_fTargetScale, m_fTargetScale);
 		}
 
 		if (m_pGlobe)
