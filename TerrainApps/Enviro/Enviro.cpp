@@ -645,6 +645,10 @@ void Enviro::LookUpTerrainLocations()
 		DPoint2 sw, nw, ne, se;
 		_Log("\t\tGetting terrain corners");
 		grid.GetCorners(pTerr->m_Corners_geo, true);
+		nw = pTerr->m_Corners_geo[1];
+		se = pTerr->m_Corners_geo[3];
+		m_msg.Format("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)", nw.x, nw.y, se.x, se.y);
+		_Log(m_msg);
 		_Log("\t\tGot terrain corners");
 	}
 	_Log("\tLookUpTerrainLocations: done");
