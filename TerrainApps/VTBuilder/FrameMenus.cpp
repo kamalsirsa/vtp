@@ -850,7 +850,7 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 		rect2.bottom = dlg.m_fBottom;
 		if (rect2 != rect)
 		{
-			pEL->m_pGrid->SetGridExtents(rect2);
+			pEL->m_pGrid->SetEarthExtents(rect2);
 			m_pView->Refresh();
 		}
 	}

@@ -364,7 +364,7 @@ bool vtElevLayer::GetExtent(DRECT &rect)
 {
 	if (m_pGrid)
 	{
-		rect = m_pGrid->GetGridExtents();
+		rect = m_pGrid->GetEarthExtents();
 		return true;
 	}
 	if (m_pTin)
@@ -757,7 +757,7 @@ void vtElevLayer::DetermineMeterSpacing()
 	vtProjection &proj = m_pGrid->GetProjection();
 	if (proj.IsGeographic())
 	{
-		DRECT area = m_pGrid->GetGridExtents();
+		DRECT area = m_pGrid->GetEarthExtents();
 
 		double fToMeters = EstimateDegreesToMeters(area.bottom);
 		m_fSpacing = (float) (area.Width()) * fToMeters / (m_iColumns - 1);
@@ -774,12 +774,12 @@ void vtElevLayer::Offset(const DPoint2 &p)
 {
 	if (m_pGrid)
 	{
-		DRECT area = m_pGrid->GetGridExtents();
+		DRECT area = m_pGrid->GetEarthExtents();
 		area.left += p.x;
 		area.right += p.x;
 		area.top += p.y;
 		area.bottom += p.y;
-		m_pGrid->SetGridExtents(area);
+		m_pGrid->SetEarthExtents(area);
 	}
 	if (m_pTin)
 	{
