@@ -175,10 +175,6 @@ bool wxNumericValidator::TransferFromWindow()
 /////////////////////////////////////////////////
 //
 
-BEGIN_EVENT_TABLE(AutoDialog, wxDialog)
-EVT_INIT_DIALOG (AutoDialog::OnInitDialog)
-END_EVENT_TABLE()
-
 void AutoDialog::AddValidator(long id, wxString *sptr)
 {
 	wxWindow *pWin = FindWindow(id);
@@ -233,10 +229,6 @@ wxNumericValidator *AutoDialog::AddNumValidator(long id, double *dptr, int digit
 
 /////////////////////////////////////////////////
 //
-
-BEGIN_EVENT_TABLE(AutoPanel, wxPanel)
-EVT_INIT_DIALOG (AutoPanel::OnInitDialog)
-END_EVENT_TABLE()
 
 void AutoPanel::AddValidator(long id, wxString *sptr)
 {

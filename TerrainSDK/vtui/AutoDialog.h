@@ -70,16 +70,12 @@ public:
 			 long style = wxDEFAULT_DIALOG_STYLE) :
 	  wxDialog(parent, id, title, pos, size, style) {}
 
-	virtual void OnInitDialog(wxInitDialogEvent& event) = 0;
-
 	void AddValidator(long id, wxString *sptr);
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
 	wxNumericValidator *AddNumValidator(long id, int *iptr);
 	wxNumericValidator *AddNumValidator(long id, float *fptr, int digits = -1);
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
-
-	DECLARE_EVENT_TABLE()
 };
 
 class AutoPanel : public wxPanel
@@ -92,16 +88,12 @@ public:
 			 long style = wxDEFAULT_DIALOG_STYLE) :
 	  wxPanel(parent, id, pos, size, style) {}
 
-	virtual void OnInitDialog(wxInitDialogEvent& event) = 0;
-
 	void AddValidator(long id, wxString *sptr);
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
 	wxNumericValidator *AddNumValidator(long id, int *iptr);
 	wxNumericValidator *AddNumValidator(long id, float *fptr, int digits = -1);
 	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
-
-	DECLARE_EVENT_TABLE()
 };
 
 #endif
