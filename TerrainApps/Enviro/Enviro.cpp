@@ -73,6 +73,7 @@ Enviro::Enviro()
 
 	m_pArc = NULL;
 	m_pArcMesh = NULL;
+	m_pArcMats = NULL;
 	m_fArcLength = 0.0;
 
 	m_fMessageTime = 0.0f;
@@ -119,6 +120,8 @@ void Enviro::Shutdown()
 {
 	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
+	if (m_pArcMats)
+		m_pArcMats->Release();
 	if (m_pNormalCamera)
 		m_pNormalCamera->Release();
 	if (m_pTopDownCamera)
@@ -310,6 +313,7 @@ void Enviro::FlyToSpace()
 
 	m_state = AS_MovingOut;
 	m_iInitStep = 0;
+	FreeArc();
 
 	// Layer view needs to stop showing terrain layers
 	RefreshLayerView();
@@ -445,6 +449,7 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	m_state = AS_MovingIn;
 	m_pTargetTerrain = pTerr;
 	m_iInitStep = 0;
+	FreeArc();
 
 	// Layer view needs to update
 	RefreshLayerView();
@@ -612,7 +617,7 @@ void Enviro::DescribeCoordinates(vtString &str)
 		m_pGlobePicker->GetCurrentEarthPos(epos);
 		FormatCoordString(str1, epos, LU_DEGREES);
 		str += str1;
-		if (m_fArcLength != 0.0)
+		if (m_mode == MM_MEASURE && (m_fArcLength != 0.0 || m_bDragging))
 		{
 			str1.Format(", arc = %.0lf meters", m_fArcLength);
 			str += str1;
@@ -1456,33 +1461,16 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		VTLOG(" %s.\n", success ? "yes" : "no");
 	}
 	if (m_mode == MM_INSTANCES)
-	{
-		vtString path = GetPathFromGUI();
-		if (path == "")
-			return;
+		PlantInstance();
 
-		// create a new Instance object
-		vtStructureArray3d *structs = pTerr->GetStructures();
-		vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
-		inst->SetValue("filename", path);
-		inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
-
-		int index = structs->Append(inst);
-		bool success = pTerr->CreateStructure(structs, index);
-		if (success)
-		{
-			RefreshLayerView();
-		}
-		else
-		{
-			// creation failed
-			inst->Select(true);
-			structs->DeleteSelected();
-			return;
-		}
-	}
 	if (m_mode == MM_SELECT)
 		OnMouseLeftDownTerrainSelect(event);
+
+	if (m_mode == MM_MEASURE)
+	{
+		m_EarthPosDown = m_EarthPos;
+		m_bDragging = true;
+	}
 }
 
 void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
@@ -1596,6 +1584,7 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 	{
 		m_EarthPosDown = m_EarthPos;
 		m_bDragging = true;
+		UpdateEarthArc();
 	}
 }
 
@@ -1604,11 +1593,7 @@ void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 	m_bDragging = m_bRotating = false;
 
 	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
-	{
-		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
-		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
-		SetDisplayedArc(epos1, epos2);
-	}
+		UpdateEarthArc();
 }
 
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
@@ -1638,8 +1623,16 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 
 void Enviro::OnMouseMove(vtMouseEvent &event)
 {
-	if (m_state == AS_Terrain && m_mode == MM_SELECT &&
-		(m_bDragging || m_bRotating))
+	if (m_state == AS_Terrain)
+		OnMouseMoveTerrain(event);
+
+	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
+		UpdateEarthArc();
+}
+
+void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
+{
+	if (m_mode == MM_SELECT && (m_bDragging || m_bRotating))
 	{
 		DPoint3 delta = m_EarthPos - m_EarthPosLast;
 		DPoint2 ground_delta(delta.x, delta.y);
@@ -1690,11 +1683,11 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 				ter->ShowPOI(poi, true);
 		}
 	}
-	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
+	if (m_mode == MM_MEASURE && m_bDragging && m_bOnTerrain)
 	{
-		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
-		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
-		SetDisplayedArc(epos1, epos2);
+		DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
+		DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
+		SetTerrainMeasure(g1, g2);
 	}
 }
 
@@ -1775,27 +1768,62 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 	}
 }
 
-void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
+void Enviro::UpdateEarthArc()
 {
-	// create geometry container
+	VTLOG("UpdateEarthArc %.1lf %.1lf,  %.1lf %.1lf\n", m_EarthPosDown.x, m_EarthPosDown.y, m_EarthPos.x, m_EarthPos.y);
+	DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
+	DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
+	SetDisplayedArc(epos1, epos2);
+}
+
+void Enviro::SetupArcMesh()
+{
+	if (!m_pArcMats)
+	{
+		m_pArcMats = new vtMaterialArray();
+		m_pArcMats->AddRGBMaterial1(RGBf(1, 1, 0), false, false); // yellow
+		m_pArcMats->AddRGBMaterial1(RGBf(1, 0, 0), false, false); // red
+	}
+	// create geometry container, if needed
 	if (!m_pArc)
 	{
 		m_pArc = new vtGeom();
-		m_pIcoGlobe->GetTop()->AddChild(m_pArc);
-		vtMaterialArray *pMats = new vtMaterialArray();
-		int yellow = pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
-						 false, false, false);
-		m_pArc->SetMaterials(pMats);
-		pMats->Release();
+		if (m_state == AS_Orbit)
+			m_pIcoGlobe->GetTop()->AddChild(m_pArc);
+		else if (m_state == AS_Terrain)
+			GetCurrentTerrain()->GetTopGroup()->AddChild(m_pArc);
+		m_pArc->SetMaterials(m_pArcMats);
 	}
+
 	// re-create mesh if not the first time
-	if (m_pArcMesh)
+	FreeArcMesh();
+	// set the points of the arc
+	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, 20);
+}
+
+void Enviro::FreeArc()
+{
+	FreeArcMesh();
+	if (m_pArc)
+	{
+		m_pArc->Release();
+		m_pArc = NULL;
+	}
+}
+
+void Enviro::FreeArcMesh()
+{
+	if (m_pArc && m_pArcMesh)
 	{
 		m_pArc->RemoveMesh(m_pArcMesh);
 		m_pArcMesh->Release();
+		m_pArcMesh = NULL;
 	}
-	// set the points of the arc
-	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, 12);
+}
+
+void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
+{
+	SetupArcMesh();
 
 	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(m_pArcMesh, g1, g2);
 
@@ -1805,6 +1833,23 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	m_pArc->AddMesh(m_pArcMesh, 0);
 	m_pArcMesh->Release();
 }
+
+void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
+{
+	// place the arc for the distance measuring tool on the terrain
+	SetupArcMesh();
+
+	DLine2 dline;
+	dline.Append(g1);
+	dline.Append(g2);
+
+	vtTerrain *pTerr = GetCurrentTerrain();
+	m_fArcLength = pTerr->AddSurfaceLineToMesh(m_pArcMesh, dline, 10.0f);
+
+	m_pArc->AddMesh(m_pArcMesh, 1);
+	m_pArcMesh->Release();
+}
+
 
 ////////////////////////////////////////////////////////////////
 // Fences
@@ -1943,6 +1988,37 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 		return false;
 
 	return true;
+}
+
+
+//// Instances
+
+void Enviro::PlantInstance()
+{
+	vtString path = GetPathFromGUI();
+	if (path == "")
+		return;
+
+	// create a new Instance object
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structs = pTerr->GetStructures();
+	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
+	inst->SetValue("filename", path);
+	inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
+
+	int index = structs->Append(inst);
+	bool success = pTerr->CreateStructure(structs, index);
+	if (success)
+	{
+		RefreshLayerView();
+	}
+	else
+	{
+		// creation failed
+		inst->Select(true);
+		structs->DeleteSelected();
+		return;
+	}
 }
 
 // this was a quick hack for the PW conference.  if we ever need a real

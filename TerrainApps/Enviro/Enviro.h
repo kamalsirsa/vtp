@@ -97,6 +97,7 @@ public:
 	void SetSpaceAxes(bool bShow);
 	bool GetSpaceAxes();
 	int AddGlobePoints(const char *fname);
+	void UpdateEarthArc();
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
 	vtTerrain *FindTerrainOnEarth(const DPoint2 &p);
 
@@ -134,6 +135,7 @@ public:
 	void OnMouseRightDown(vtMouseEvent &event);
 	void OnMouseRightUp(vtMouseEvent &event);
 	void OnMouseMove(vtMouseEvent &event);
+	void OnMouseMoveTerrain(vtMouseEvent &event);
 
 	// fence methods
 	void start_new_fence();
@@ -199,12 +201,17 @@ protected:
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);
-	bool m_bDoPlants;
+	void PlantInstance();
+	void SetupArcMesh();
+	void FreeArc();
+	void FreeArcMesh();
+	void SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2);
 
 	// plants
 	vtPlantList3d	*m_pPlantList;
 	PlantingOptions m_PlantOpt;
 	bool		m_bPlantsLoaded;
+	bool		m_bDoPlants;
 
 	// fence members
 	bool		m_bActiveFence, m_bFenceClosed;
@@ -217,10 +224,11 @@ protected:
 	vtString	m_sStructType;
 	RouteFollowerEngine	*m_pRouteFollower;
 
-	// linear arc on Earth
+	// linear arc on Earth (or Distance Tool on the Terrain)
 	vtGeom *m_pArc;
 	vtMesh *m_pArcMesh;
-	double m_fArcLength; 
+	vtMaterialArray *m_pArcMats;
+	double m_fArcLength;
 
 	// view and navigation
 	vtCamera	*m_pNormalCamera;
