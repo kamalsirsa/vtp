@@ -40,7 +40,6 @@ vtElevationGrid::vtElevationGrid()
 		m_Corners[i].Set(0, 0);
 
 	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
-	m_szOriginalDEMName[0] = 0;
 	m_fVerticalScale = 1.0f;
 }
 
@@ -70,7 +69,6 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 
 	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
 	m_proj = proj;
-	m_szOriginalDEMName[0] = 0;
 	m_fVerticalScale = 1.0f;
 }
 
@@ -146,7 +144,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// some fields are simple to set
 	m_proj = NewProj;
 	m_bFloatMode = pOld->m_bFloatMode;
-	strcpy(m_szOriginalDEMName, pOld->GetDEMName());
+	m_strOriginalDEMName = pOld->GetDEMName();
 
 	// Create conversion object
 	const OGRSpatialReference *pSource, *pDest;
@@ -852,7 +850,7 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 	m_fMinHeight = Other.m_fMinHeight;
 	m_fMaxHeight = Other.m_fMaxHeight;
 
-	strncpy(m_szOriginalDEMName, Other.m_szOriginalDEMName, sizeof(m_szOriginalDEMName));
+	m_strOriginalDEMName = Other.m_strOriginalDEMName;
 
 	if( m_bFloatMode )
 	{

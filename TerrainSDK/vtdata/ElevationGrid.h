@@ -12,6 +12,7 @@
 #include "Projections.h"
 #include "LocalConversion.h"
 #include "HeightField.h"
+#include "vtString.h"
 
 class vtDIB;
 
@@ -86,7 +87,7 @@ public:
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */
-	char *GetDEMName()	{ return m_szOriginalDEMName; }	
+	const char *GetDEMName()	{ return m_strOriginalDEMName; }	
 
 	/** Return geographic extents of the *area* covered by grid. */
 	DRECT GetAreaExtents() const;
@@ -144,7 +145,7 @@ protected:
 	vtProjection	m_proj;		// a grid always has some projection
 
 private:
-	char 	m_szOriginalDEMName[41];
+	vtString	m_strOriginalDEMName;
 
 	void	_AllocateArray();
 	void	_Copy( const vtElevationGrid &Other );
