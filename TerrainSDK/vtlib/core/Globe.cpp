@@ -28,7 +28,7 @@ IcoGlobe::IcoGlobe()
 	m_pAxisGeom = NULL;
 	m_mats = NULL;
 	m_bUnfolded = false;
-	m_bTilt = true;
+	m_bTilt = false;
 	m_cylinder = NULL;
 }
 
