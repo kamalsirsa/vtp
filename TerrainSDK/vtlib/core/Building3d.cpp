@@ -4,7 +4,7 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3D geometry of the buildings.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -176,6 +176,10 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		vtLevel *lev = m_Levels[i];
 		const FLine3 &foot = GetLocalFootprint(i);
 		unsigned int edges = lev->NumEdges();
+
+		// safety check
+		if (foot.GetSize() < 3)
+			return false;
 
 		if (lev->IsHorizontal())
 		{
