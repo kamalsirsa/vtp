@@ -611,7 +611,7 @@ FPoint3 vtTransform::GetDirection() const
 {
 	const Matrix &xform = m_pTransform->getMatrix();
 	const osg_matrix_value *ptr = xform.ptr();
-	return FPoint3(-ptr[2], -ptr[6], -ptr[10]);
+	return FPoint3(-ptr[8], -ptr[9], -ptr[10]);
 }
 
 void vtTransform::SetDirection(const FPoint3 &point, bool bPitch)
