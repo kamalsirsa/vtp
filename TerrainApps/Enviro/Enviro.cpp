@@ -1099,7 +1099,8 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 
 	// Check Structures
 	int structure;		// index of closest structure
-	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1, g_Options.m_fMaxPickableInstanceRadius);
+	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1,
+		g_Options.m_fMaxPickableInstanceRadius);
 	if (result1)
 		VTLOG("structure at dist %lf, ", dist1);
 	m_bSelectedStruct = false;
