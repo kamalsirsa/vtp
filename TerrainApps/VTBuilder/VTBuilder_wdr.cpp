@@ -775,7 +775,7 @@ wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item2->Add( item3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     wxString *strs4 = (wxString*) NULL;
-    wxListBox *item4 = new wxListBox( parent, ID_INTTYPE, wxDefaultPosition, wxSize(100,110), 0, strs4, wxLB_SINGLE );
+    wxListBox *item4 = new wxListBox( parent, ID_INTTYPE, wxDefaultPosition, wxSize(115,130), 0, strs4, wxLB_SINGLE );
     item2->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Road Number"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -789,7 +789,7 @@ wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item2->Add( item7, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     wxString *strs8 = (wxString*) NULL;
-    wxListBox *item8 = new wxListBox( parent, ID_BEHAVIOR, wxDefaultPosition, wxSize(100,50), 0, strs8, wxLB_SINGLE );
+    wxListBox *item8 = new wxListBox( parent, ID_BEHAVIOR, wxDefaultPosition, wxSize(120,55), 0, strs8, wxLB_SINGLE );
     item2->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
