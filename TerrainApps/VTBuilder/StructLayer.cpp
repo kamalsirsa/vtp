@@ -208,8 +208,11 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 		}
 	}
 
+	// set the projection
+	m_proj = proj;
+
 	delete trans;
-	return false;
+	return true;
 }
 
 bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
