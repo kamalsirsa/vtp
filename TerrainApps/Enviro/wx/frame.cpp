@@ -1190,7 +1190,7 @@ void vtFrame::OnSceneTerrain(wxCommandEvent& event)
 {
 	wxString2 str;
 	if (wxGetApp().AskForTerrainName(this, str))
-		g_App.SwitchToTerrain(str.mb_str());
+		g_App.SwitchToTerrain(str.to_utf8());
 }
 
 void vtFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
