@@ -475,7 +475,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 				}
 				uvw.x = u;
 				uvw.y = v;
-				ico.faceuv_to_latlon(face, uvw, lat, lon);
+				ico.FaceUVToGeo(face, uvw, lon, lat);
 
 				int source_x = (int) (lon / PI2d * input_x);
 				int source_y = (int) (lat / PId * input_y);
