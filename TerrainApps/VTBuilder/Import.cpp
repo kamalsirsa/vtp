@@ -26,8 +26,8 @@
 #include "VegLayer.h"
 #include "UtilityLayer.h"
 // Dialogs
-#include "ProjectionDlg.h"
 #include "ImportVegDlg.h"
+#include "Projection2Dlg.h"
 
 #include "ogrsf_frmts.h"
 
@@ -359,9 +359,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	vtLayerPtr pLayer = vtLayer::CreateNewLayer(ltype);
 
 	// ask user for a projection
-	ProjectionDlg dlg(NULL, -1, "Projection", wxDefaultPosition);
-	dlg.m_strCaption = "Shapefiles do not contain projection information.  "
-		"Please indicate the projection of this file:";
+	Projection2Dlg dlg(NULL, -1, "Please indicate projection", wxDefaultPosition);
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)

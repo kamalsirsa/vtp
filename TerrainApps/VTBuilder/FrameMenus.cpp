@@ -31,7 +31,6 @@
 // Dialogs
 #include "ExtentDlg.h"
 #include "LayerPropDlg.h"
-#include "ProjectionDlg.h"
 #include "Projection2Dlg.h"
 #include "DistribVegDlg.h"
 
@@ -763,7 +762,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 //	dlg.m_strCaption = "Shapefiles do not contain projection information.  "
 //		"Please indicate the projection of this file:";
 	// ask user for a projection
-	ProjectionDlg dlg(NULL, -1, "Indicate Projection", wxDefaultPosition);
+	Projection2Dlg dlg(NULL, -1, "Indicate Projection", wxDefaultPosition);
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
