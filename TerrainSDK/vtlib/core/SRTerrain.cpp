@@ -25,10 +25,16 @@ using namespace mini;
 SRTerrain::SRTerrain() : vtDynTerrainGeom()
 {
 	m_fResolution = 10000.0f;
+	m_pMini = NULL;
 }
 
 void SRTerrain::Destroy()
 {
+	if (m_pMini)
+	{
+		delete m_pMini;
+		m_pMini = NULL;
+	}
 	vtDynTerrainGeom::Destroy();
 }
 
