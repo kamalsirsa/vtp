@@ -140,7 +140,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	// convert post positions to world-coordinate ground locations
 	nposts = posts.GetSize();
 
-	Array<FPoint3> p3;
+	FLine3 p3;
 	p3.SetSize(nposts);
 	for (i = 0; i < nposts; i++)
 	{
