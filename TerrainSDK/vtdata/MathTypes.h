@@ -761,6 +761,11 @@ public:
 	RGBi operator *(float s) const { return RGBi((short)(r*s), (short)(g*s), (short)(b*s)); }
 	RGBi operator /(float s) const { return RGBi((short)(r/s), (short)(g/s), (short)(b/s)); }
 	void operator *=(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); }
+	void operator /=(float s) { r=(short)(r/s); g=(short)(g/s); b=(short)(b/s); }
+
+	void operator +=(const RGBi &v) { r+=v.r; g+=v.g; b+=v.b; }
+	void operator +=(const class RGBAi &v);
+
 	void Crop();
 
 	// assignment
@@ -772,6 +777,35 @@ public:
 
 	short r, g, b;
 };
+
+/**
+ * An RGBA class for handling color operations with alpha support.
+ *
+ * This one handles colors with integer components (0-255)
+ */
+class RGBAi
+{
+public:
+	RGBAi() {}
+	RGBAi(short _r, short _g, short _b, short _a = 255) { r = _r; g = _g; b = _b; a = _a; }
+	RGBAi(const class RGBi &v) { *this = v; }
+
+	void Set(short _r, short _g, short _b, short _a = 255) { r = _r; g = _g; b = _b; a = _a; }
+	RGBAi operator +(const RGBAi &v) const { return RGBAi(r+v.r, g+v.g, b+v.b, a+v.a); }
+	RGBAi operator -(const RGBAi &v) const { return RGBAi(r-v.r, g-v.g, b-v.b, a+v.a); }
+	RGBAi operator *(float s) const { return RGBAi((short)(r*s), (short)(g*s), (short)(b*s), (short)(a*s)); }
+	RGBAi operator /(float s) const { return RGBAi((short)(r/s), (short)(g/s), (short)(b/s), (short)(a/s)); }
+	void operator *=(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); a=(short)(a*s); }
+	void operator /=(float s) { r=(short)(r/s); g=(short)(g/s); b=(short)(b/s); a=(short)(a/s); }
+	void Crop();
+
+	// assignment
+	RGBAi &operator=(const RGBi &v) { r = v.r; g = v.g; b = v.b; a = 255; return *this; }
+
+	short r, g, b, a;
+};
+
+inline void RGBi::operator +=(const class RGBAi &v) { r+=v.r; g+=v.g; b+=v.b; }
 
 /**
  * An RGB class for handling color operations.
