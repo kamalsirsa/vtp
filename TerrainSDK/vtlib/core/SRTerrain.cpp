@@ -13,6 +13,18 @@
 #include "SRTerrain.h"
 #include "vtdata/vtLog.h"
 
+#if VTLIB_NI
+// stub
+SRTerrain::SRTerrain() {}
+SRTerrain::~SRTerrain() {}
+float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const { return 0; }
+void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const {}
+void SRTerrain::DoCulling(const vtCamera *pCam) {}
+void SRTerrain::DoRender() {}
+void SRTerrain::SetVerticalExag(float fExag) {}
+DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale) { return DTErr_NOMEM; }
+#else
+
 #include "mini.h"
 #include "ministub.hpp"
 
@@ -406,3 +418,4 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 		  m_fZLookup[j]);
 }
 
+#endif	// VTLIB_NI

@@ -293,6 +293,7 @@ void vtDynTerrainGeom::DoCull(const vtCamera *pCam)
 
 void vtDynTerrainGeom::SetupTexGen(float fTiling)
 {
+#if !VTLIB_NI
 	GLfloat sPlane[4] = { fTiling * 1.0f / (m_iColumns-1), 0.0f, 0.0f, 0.0f };
 	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / (m_iRows-1), 0.0f };
 
@@ -303,10 +304,12 @@ void vtDynTerrainGeom::SetupTexGen(float fTiling)
 	glEnable(GL_TEXTURE_GEN_S);
 	glEnable(GL_TEXTURE_GEN_T);
 	glEnable(GL_TEXTURE_2D);
+#endif
 }
 
 void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
 {
+#if !VTLIB_NI
 	// carefully determine the right u,v offset, leaving a
 	// half-texel of buffer at the edge of each patch
 	float uv_offset = 1.0f / m_iTPatchSize / 2.0f;
@@ -327,15 +330,18 @@ void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
 	glEnable(GL_TEXTURE_GEN_S);
 	glEnable(GL_TEXTURE_GEN_T);
 	glEnable(GL_TEXTURE_2D);
+#endif
 }
 
 void vtDynTerrainGeom::DisableTexGen()
 {
+#if !VTLIB_NI
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
+#endif
 }
 
-GLboolean ca, va, na, ia, ta;
+//GLboolean ca, va, na, ia, ta;
 
 void vtDynTerrainGeom::PreRender() const
 {
