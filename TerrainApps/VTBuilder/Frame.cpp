@@ -1013,68 +1013,71 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 		return;
 	}
 
-	// read projection info
-	char buf[900];
-	fgets(buf, 900, fp);
-	char *wkt = buf + 11;
-	OGRErr err = m_proj.importFromWkt(&wkt);
-	if (err != OGRERR_NONE)
-	{
-		DisplayAndLog("Had trouble parsing the projection information from that file.");
-		fclose(fp);
-		return;
-	}
-
 	// avoid trying to draw while we're loading the project
 	m_bDrawDisabled = true;
 
-	int count = 0;
-	LayerType ltype;
-
-	fscanf(fp, "layers: %d\n", &count);
-	for (int i = 0; i < count; i++)
-	{
-		char buf2[160];
-		fscanf(fp, "type %d, %s\n", &ltype, buf2);
-		fgets(buf, 160, fp);
-
-		// trim trailing LF character
-		int len = strlen(buf);
-		if (len && buf[len-1] == 10) buf[len-1] = 0;
-		len = strlen(buf);
-		if (len && buf[len-1] == 13) buf[len-1] = 0;
-		wxString2 fname = buf;
-
-		if (!strcmp(buf2, "import"))
-		{
-			ImportDataFromArchive(ltype, fname, false);
-		}
-		else
-		{
-			vtLayer *lp = vtLayer::CreateNewLayer(ltype);
-			if (lp->Load(fname))
-				AddLayer(lp);
-			else
-				delete lp;
-		}
-	}
-
-	fscanf(fp, "%s", buf);
-	if (!strcmp(buf, "area"))
-	{
-		fscanf(fp, "%lf %lf %lf %lf\n", &m_area.left, &m_area.top,
-			&m_area.right, &m_area.bottom);
-	}
-
+	char buf[2000];
 	bool bHasView = false;
-	fscanf(fp, "%s", buf);
-	if (!strcmp(buf, "view"))
+	while (fgets(buf, 2000, fp) != NULL)
 	{
-		DRECT rect;
-		fscanf(fp, "%lf %lf %lf %lf\n", &rect.left, &rect.top,
-			&rect.right, &rect.bottom);
-		m_pView->ZoomToRect(rect, 0.0f);
-		bHasView = true;
+		if (!strncmp(buf, "Projection ", 11))
+		{
+			// read projection info
+			char *wkt = buf + 11;
+			OGRErr err = m_proj.importFromWkt(&wkt);
+			if (err != OGRERR_NONE)
+			{
+				DisplayAndLog("Had trouble parsing the projection information from that file.");
+				fclose(fp);
+				return;
+			}
+		}
+		if (!strncmp(buf, "area ", 5))
+		{
+			sscanf(buf+5, "%lf %lf %lf %lf\n", &m_area.left, &m_area.top,
+				&m_area.right, &m_area.bottom);
+		}
+		if (!strncmp(buf, "view ", 5))
+		{
+			DRECT rect;
+			sscanf(buf+5, "%lf %lf %lf %lf\n", &rect.left, &rect.top,
+				&rect.right, &rect.bottom);
+			m_pView->ZoomToRect(rect, 0.0f);
+			bHasView = true;
+		}
+		if (!strncmp(buf, "layers", 6))
+		{
+			int count = 0;
+			LayerType ltype;
+
+			sscanf(buf+7, "%d\n", &count);
+			for (int i = 0; i < count; i++)
+			{
+				char buf2[160];
+				fscanf(fp, "type %d, %s\n", &ltype, buf2);
+				fgets(buf, 160, fp);
+
+				// trim trailing LF character
+				int len = strlen(buf);
+				if (len && buf[len-1] == 10) buf[len-1] = 0;
+				len = strlen(buf);
+				if (len && buf[len-1] == 13) buf[len-1] = 0;
+				wxString2 fname = buf;
+
+				if (!strcmp(buf2, "import"))
+				{
+					ImportDataFromArchive(ltype, fname, false);
+				}
+				else
+				{
+					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
+					if (lp->Load(fname))
+						AddLayer(lp);
+					else
+						delete lp;
+				}
+			}
+		}
 	}
 	fclose(fp);
 
