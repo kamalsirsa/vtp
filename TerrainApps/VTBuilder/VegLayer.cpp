@@ -155,14 +155,7 @@ bool vtVegLayer::OnLoad()
 				return false;
 		}
 		// OK, read the rest of the file
-		m_pSet->SetFilename(fname.mb_str());
-		m_pSet->LoadInfoFromDBF(dbfname.mb_str());
-		m_pSet->LoadAttributesFromDBF();
-
-		hSHP = SHPOpen(fname.mb_str(), "rb");
-		m_pSet->LoadGeomFromSHP(hSHP);
-		SHPClose(hSHP);
-		return true;
+		return m_pSet->LoadFromSHP(fname.mb_str());
 	}
 
 	// don't know this file
