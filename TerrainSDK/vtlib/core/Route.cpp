@@ -265,8 +265,6 @@ void vtRoute::_StringWires(long ll, vtHeightField *pHeightField)
 	}
 }
 
-#define NUM_STRUCT_NAMES 14
-
 UtilStructName s_Names[NUM_STRUCT_NAMES] =
 {
 	{ "A1", "Steel Poles Tangent", "a1" },

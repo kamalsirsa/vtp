@@ -9,6 +9,8 @@
 #ifndef ROUTEH
 #define ROUTEH
 
+#define NUM_STRUCT_NAMES 14
+
 class vtHeightField;
 class vtTerrain;
 
