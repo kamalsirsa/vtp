@@ -127,7 +127,7 @@ void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 	}
 }
 
-vtNode *vtNode::GetParent(int iParent)
+vtGroup *vtNode::GetParent(int iParent)
 {
 	int num = m_pNode->getNumParents();
 	if (iParent >= num)
@@ -135,7 +135,7 @@ vtNode *vtNode::GetParent(int iParent)
 	osg::Group *parent = m_pNode->getParent(iParent);
 	if (!parent)
 		return NULL;
-	return (vtNode *) (parent->getUserData());
+	return dynamic_cast<vtGroup *>(parent->getUserData());
 }
 
 RGBf vtNodeBase::s_white(1, 1, 1);
