@@ -1356,7 +1356,10 @@ vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true)
 	if (m_bPixelCoords)
 	{
 		IPoint2 winsize = vtGetScene()->GetWindowSize();
-		m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
+
+		// safety check first, avoid /0 crash
+		if (winsize.x != 0 && winsize.y != 0)
+			m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
 	}
 	else
 	{
@@ -1402,7 +1405,10 @@ void vtHUD::CopyFrom(const vtHUD *rhs)
 void vtHUD::SetWindowSize(int w, int h)
 {
 	if (m_bPixelCoords)
-		m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
+	{
+		if (w != 0 && h != 0)
+			m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
+	}
 }
 
 
