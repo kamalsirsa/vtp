@@ -455,47 +455,54 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item18, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticLine *item21 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
-    item0->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+    wxCheckBox *item22 = new wxCheckBox( parent, ID_ACCEL, _("Accelerate by height above ground"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Vegetation"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item21, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxTextCtrl *item24 = new wxTextCtrl( parent, ID_LOD_VEG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item22->Add( item24, 0, wxALIGN_CENTER, 5 );
+    wxStaticLine *item23 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item0->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxSlider *item25 = new wxSlider( parent, ID_SLIDER_VEG, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item22->Add( item25, 0, wxALIGN_CENTER, 0 );
+    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( item22, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Vegetation"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_LOD_VEG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item24->Add( item26, 0, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Structures"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxSlider *item27 = new wxSlider( parent, ID_SLIDER_VEG, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item24->Add( item27, 0, wxALIGN_CENTER, 0 );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_LOD_STRUCT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item26->Add( item28, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item24, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxSlider *item29 = new wxSlider( parent, ID_SLIDER_STRUCT, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item26->Add( item29, 0, wxALIGN_CENTER, 0 );
+    wxBoxSizer *item28 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( item26, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
+    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Structures"), wxDefaultPosition, wxDefaultSize, 0 );
+    item28->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
+    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_LOD_STRUCT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item28->Add( item30, 0, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Roads"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item31, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxSlider *item31 = new wxSlider( parent, ID_SLIDER_STRUCT, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item28->Add( item31, 0, wxALIGN_CENTER, 0 );
 
-    wxTextCtrl *item32 = new wxTextCtrl( parent, ID_LOD_ROAD, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item30->Add( item32, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item28, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
 
-    wxSlider *item33 = new wxSlider( parent, ID_SLIDER_ROAD, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
-    item30->Add( item33, 0, wxALIGN_CENTER, 0 );
+    wxBoxSizer *item32 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( item30, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM, 5 );
+    wxStaticText *item33 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Roads"), wxDefaultPosition, wxDefaultSize, 0 );
+    item32->Add( item33, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxTextCtrl *item34 = new wxTextCtrl( parent, ID_LOD_ROAD, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item32->Add( item34, 0, wxALIGN_CENTER, 5 );
+
+    wxSlider *item35 = new wxSlider( parent, ID_SLIDER_ROAD, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item32->Add( item35, 0, wxALIGN_CENTER, 0 );
+
+    item0->Add( item32, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
@@ -980,75 +987,82 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Default Locations File:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item15 = new wxCheckBox( parent, ID_ACCEL, _("Accelerate by height above ground"), wxDefaultPosition, wxDefaultSize, 0 );
     item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString *strs16 = (wxString*) NULL;
-    wxComboBox *item16 = new wxComboBox( parent, ID_LOCFILE, wxT(""), wxDefaultPosition, wxSize(140,-1), 0, strs16, wxCB_DROPDOWN|wxCB_SORT );
-    item14->Add( item16, 1, wxALIGN_CENTER|wxRIGHT|wxBOTTOM, 5 );
+    item1->Add( item14, 0, wxALIGN_CENTER, 5 );
 
-    item1->Add( item14, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("Default Locations File:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, _("Initial Camera Location"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs18 = (wxString*) NULL;
+    wxComboBox *item18 = new wxComboBox( parent, ID_LOCFILE, wxT(""), wxDefaultPosition, wxSize(140,-1), 0, strs18, wxCB_DROPDOWN|wxCB_SORT );
+    item16->Add( item18, 1, wxALIGN_CENTER|wxRIGHT|wxBOTTOM, 5 );
 
-    wxString *strs19 = (wxString*) NULL;
-    wxChoice *item19 = new wxChoice( parent, ID_INIT_LOCATION, wxDefaultPosition, wxSize(140,-1), 0, strs19, 0 );
-    item17->Add( item19, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    item1->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item1->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Initial Camera Location"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, _("Near clipping (\"Hither\") distance"), wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs21 = (wxString*) NULL;
+    wxChoice *item21 = new wxChoice( parent, ID_INIT_LOCATION, wxDefaultPosition, wxSize(140,-1), 0, strs21, 0 );
+    item19->Add( item21, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_HITHER, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item20->Add( item22, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+    item1->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
 
-    item1->Add( item20, 0, wxALIGN_CENTER, 5 );
+    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Near clipping (\"Hither\") distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item24 = new wxTextCtrl( parent, ID_HITHER, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item22->Add( item24, 0, wxALIGN_CENTER|wxBOTTOM, 5 );
+
+    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item22, 0, wxALIGN_CENTER, 5 );
 
     item0->Add( item1, 0, wxALL, 10 );
 
-    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Time") );
-    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
+    wxStaticBox *item27 = new wxStaticBox( parent, -1, _("Time") );
+    wxStaticBoxSizer *item26 = new wxStaticBoxSizer( item27, wxVERTICAL );
 
-    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item28 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Initial Time of Day: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("Initial Time of Day: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item28->Add( item29, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_INITTIME, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
-    item26->Add( item28, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_INITTIME, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    item28->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    item24->Add( item26, 0, wxALIGN_CENTER|wxALL, 0 );
-
-    wxBoxSizer *item29 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxCheckBox *item30 = new wxCheckBox( parent, ID_TIMEMOVES, _("Time Moves"), wxDefaultPosition, wxDefaultSize, 0 );
-    item29->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item24->Add( item29, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 0 );
 
     wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item32 = new wxStaticText( parent, ID_TEXT, _("Faster than real: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item32, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxCheckBox *item32 = new wxCheckBox( parent, ID_TIMEMOVES, _("Time Moves"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item33 = new wxTextCtrl( parent, ID_TIMESPEED, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item31->Add( item33, 0, wxALIGN_CENTER|wxALL, 0 );
+    item26->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticText *item34 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item34, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
 
-    item24->Add( item31, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticText *item34 = new wxStaticText( parent, ID_TEXT, _("Faster than real: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item0->Add( item24, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 10 );
+    wxTextCtrl *item35 = new wxTextCtrl( parent, ID_TIMESPEED, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item33->Add( item35, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxStaticText *item36 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item36, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item26->Add( item33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item0->Add( item26, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 10 );
 
     if (set_sizer)
     {

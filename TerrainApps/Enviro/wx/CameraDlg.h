@@ -1,7 +1,7 @@
 //
-// Name:	CameraDlg.h
+// Name: CameraDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -48,6 +48,7 @@ private:
 	int m_iDistStruct;
 	int m_iDistRoad;
 
+	bool m_bAccel;
 	int m_iSpeedUnits;
 
 	float m_fFov;
@@ -62,6 +63,7 @@ private:
 
 private:
 	// WDR: handler declarations for CameraDlg
+	void OnAccel( wxCommandEvent &event );
 	void OnSpeedUnits( wxCommandEvent &event );
 	void OnSpeedSlider( wxCommandEvent &event );
 	void OnFarSlider( wxCommandEvent &event );

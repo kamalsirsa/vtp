@@ -79,6 +79,7 @@ public:
 	int		m_iInitLocation;
 	wxString2	m_strInitLocation;
 	float	m_fHither;
+	bool	m_bAccel;
 
 	// LOD
 	int		m_iLodMethod;

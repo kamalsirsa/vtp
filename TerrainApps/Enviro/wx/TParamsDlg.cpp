@@ -133,6 +133,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
 	m_strInitLocation.from_utf8(Params.m_strInitLocation);
 	m_fHither = Params.m_fHither;
+	m_bAccel = Params.m_bAccel;
 
 	// LOD
 	m_iLodMethod = Params.m_eLodMethod;
@@ -232,6 +233,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_strLocFile = m_strLocFile.mb_str();
 	Params.m_strInitLocation = m_strInitLocation.to_utf8();
 	Params.m_fHither = m_fHither;
+	Params.m_bAccel = m_bAccel;
 
 	// LOD
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
@@ -569,6 +571,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_LOCFILE, &m_strLocFile);
 	AddValidator(ID_INIT_LOCATION, &m_iInitLocation);
 	AddNumValidator(ID_HITHER, &m_fHither);
+	AddValidator(ID_ACCEL, &m_bAccel);
 
 	// LOD
 	AddValidator(ID_LODMETHOD, &m_iLodMethod);

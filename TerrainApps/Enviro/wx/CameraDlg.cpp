@@ -1,7 +1,7 @@
 //
 // Name:		CameraDlg.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -50,6 +50,7 @@ BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
 	EVT_SLIDER( ID_SLIDER_STRUCT, CameraDlg::OnSliderStruct )
 	EVT_SLIDER( ID_SLIDER_ROAD, CameraDlg::OnSliderRoad )
 	EVT_CHOICE( ID_SPEED_UNITS, CameraDlg::OnSpeedUnits )
+	EVT_CHECKBOX( ID_ACCEL, CameraDlg::OnAccel )
 END_EVENT_TABLE()
 
 CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -61,17 +62,17 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bSet = true;
 }
 
-#define FOV_MIN	 2.0f
+#define FOV_MIN  2.0f
 #define FOV_RANGE   128.0f
 #define CLIP_MIN	0.0f
 #define CLIP_MAX	6.0f
-#define CLIP_RANGE  (CLIP_MAX-(CLIP_MIN))	   // 1.0 to 1000000 meters
+#define CLIP_RANGE  (CLIP_MAX-(CLIP_MIN)) // 1.0 to 1000000 meters
 #define SPEED_MIN   -1.0f
 #define SPEED_MAX   4.0f
 #define SPEED_RANGE (SPEED_MAX-(SPEED_MIN)) // 0.1 to 10000 meters/sec
 #define DIST_MIN	1.0f
 #define DIST_MAX	5.0f
-#define DIST_RANGE  (DIST_MAX-(DIST_MIN))	   // 10 to 100000 meters
+#define DIST_RANGE  (DIST_MAX-(DIST_MIN)) // 10 to 100000 meters
 
 void CameraDlg::SlidersToValues(int w)
 {
@@ -115,13 +116,14 @@ void CameraDlg::GetValues()
 		m_fSpeed = speed;
 		break;
 	case 1: // Km/h
-		m_fSpeed = speed / 1000 * (60*60);	// m -> km, sec -> hour
+		m_fSpeed = speed / 1000 * (60*60);  // m -> km, sec -> hour
 		break;
 	case 2: // Miles/h
-		m_fSpeed = speed / 1000 * (60*60);	// m -> km, sec -> hour
+		m_fSpeed = speed / 1000 * (60*60);  // m -> km, sec -> hour
 		m_fSpeed /= 1.609347;   // km -> miles
 		break;
 	}
+	m_bAccel = g_App.GetFlightAccel();
 
 	vtTerrain *t = GetCurrentTerrain();
 	if (t)
@@ -149,14 +151,15 @@ void CameraDlg::SetValues()
 		speed = m_fSpeed;
 		break;
 	case 1: // Km/h
-		speed = m_fSpeed * 1000 / (60*60);	// km -> m, hour -> sec
+		speed = m_fSpeed * 1000 / (60*60);  // km -> m, hour -> sec
 		break;
 	case 2: // Miles/h
-		speed = m_fSpeed * 1000 / (60*60);	// km -> m, hour -> sec
+		speed = m_fSpeed * 1000 / (60*60);  // km -> m, hour -> sec
 		speed *= 1.609347;   // miles -> km
 		break;
 	}
 	g_App.SetFlightSpeed(speed);
+	g_App.SetFlightAccel(m_bAccel);
 
 	vtTerrain *t = GetCurrentTerrain();
 	if (t)
@@ -175,6 +178,12 @@ void CameraDlg::TransferToWindow()
 }
 
 // WDR: handler implementations for CameraDlg
+
+void CameraDlg::OnAccel( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	SetValues();
+}
 
 void CameraDlg::OnSpeedUnits( wxCommandEvent &event )
 {
@@ -195,6 +204,7 @@ void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetSpeedUnits()->Append(_T("Km/hour"));
 	GetSpeedUnits()->Append(_T("Miles/hour"));
 	AddValidator(ID_SPEED_UNITS, &m_iSpeedUnits);
+	AddValidator(ID_ACCEL, &m_bAccel);
 
 	AddNumValidator(ID_LOD_VEG, &m_fDistVeg);
 	AddNumValidator(ID_LOD_STRUCT, &m_fDistStruct);
@@ -294,7 +304,5 @@ void CameraDlg::OnText( wxCommandEvent &event )
 	SetValues();
 	TransferToWindow();
 }
-
-
 
 
