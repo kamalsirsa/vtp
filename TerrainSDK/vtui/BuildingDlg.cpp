@@ -512,11 +512,7 @@ void BuildingDlg::UpdateColorControl()
 	else
 	{
 		// Case of a single edge, much simpler.
-		color = m_pEdge->m_Color;
-		m_Color.Set(color.r, color.g, color.b);
-		wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_Color);
-		m_pColorBitmapControl->SetBitmap(*pBitmap);
-		delete pBitmap;
+		FillWithColor(m_pColorBitmapControl, m_pEdge->m_Color);
 	}
 }
 
