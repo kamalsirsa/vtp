@@ -23,18 +23,22 @@
 /**
  *  This engine flies the viewpoint around using the mouse position.
  *
- *	Left button: forward-backward, yaw
- *  Right button: up-down, left-right
- *  Both buttons: pitch, roll
+ *	- Left button: forward-backward, yaw.
+ *  - Right button: up-down, left-right.
+ *  - Both buttons: pitch, roll.
  *
- *  Position is considered relative to the center of the window.
+ *  Mouse position is considered relative to the center of the window.
  */
 class vtFlyer : public vtLastMouse
 {
 public:
 	vtFlyer(float fSpeed = 1.0f, bool bAllowRoll = false);
 
+	/** Set the speed of navigation, in meters per second, at maximum mouse
+		displacement. */
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
+	/** Get the speed of navigation.  This is the speed at which the
+		target will more at maximum mouse displacement. */
 	float GetSpeed() { return m_fSpeed; }
 
 	void SetAlwaysMove(bool bMove);
@@ -63,8 +67,8 @@ protected:
  * This engine extends vtFlyer for navigation of an orthographic
  * camera (usually, top-down).
  *
- *	Left button: forward-backward (implemented as zoom), yaw
- *  Right button: up-down, left-right
+ *	- Left button: forward-backward (implemented as zoom), yaw
+ *  - Right button: up-down, left-right
  *
  *  Position is considered relative to the center of the window.
  */
@@ -105,9 +109,9 @@ protected:
  *  Movement is only done when left mouse button is pressed.
  *  Right mouse button is a holdover from vtFlyer.
  *
- *	No buttons: pitch, yaw
- *  Left button: forward
- *  Right button: up/dn, left/right
+ *	- No buttons: pitch, yaw
+ *  - Left button: forward
+ *  - Right button: up/dn, left/right
  *
  *  Position is considered relative to the center of the window.
  */
@@ -150,6 +154,8 @@ protected:
 };
 
 
+class vtHeightConstrain;
+
 /**
  * Similar to vtTerrainFlyer, but a velocity is maintained.
  * Viewpoint moves even after mouse button is released.
@@ -161,11 +167,29 @@ public:
 
 	void SetVerticalVelocity(float velocity);
 
+	/** Set the downward acceleration, in meter per second squared.
+		For example, a value of 9.81 would be normal gravity at the
+		earth's surface. */
+	void SetGravity(float grav) { m_fGravity = grav; }
+
+	/** In order for gravity to cease when the target is prevented
+		from falling, e.g. when it is sitting on the ground, supply
+		the engine you are using to keep the target above the ground. */
+	void SetGroundTester(vtHeightConstrain *pEng) { m_pConstrain = pEng; }
+
+	/** Set the damping of the velocity, per second. For example, a
+		value of 0.9 would reduce the velocity by 10% of its magnitude
+		per second. */
+	void SetDamping(float damp) { m_fDamping = damp; }
+
 	void Eval();	// overrides
 
 protected:
 	FPoint3	m_Velocity;
 	float	m_last_time;
+	float	m_fGravity;
+	float	m_fDamping;
+	vtHeightConstrain *m_pConstrain;
 };
 
 
@@ -213,6 +237,8 @@ public:
 	bool GetMaintain() { return m_bMaintain; }
 	void SetMaintainHeight(float fHeight) { m_fMaintainHeight = fHeight; }
 
+	bool IsVerticallyMobile();
+
 	void Eval();
 
 protected:
@@ -220,7 +246,9 @@ protected:
 	float	m_fMaintainHeight;
 	vtHeightField3d *m_pHF;
 	float m_fMinGroundOffset;
+	bool	m_bOnGround;
 };
+
 
 //////////////////////////////////////////////////
 

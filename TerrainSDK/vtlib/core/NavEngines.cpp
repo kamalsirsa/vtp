@@ -11,8 +11,6 @@
 #include "NavEngines.h"
 #include "Event.h"
 
-#define GRAVITY_CONSTANT 9.81	// g = 9.81 meters/sec^2
-
 //
 // vtFlyer: basic class, moves target based on mouse position
 //
@@ -425,11 +423,13 @@ void vtTinFlyer::Eval()
 // VFlyer
 //
 
-VFlyer::VFlyer(float scale)
- : vtTerrainFlyer(0.4f)	// hardcode scale override
+VFlyer::VFlyer(float fSpeed) : vtTerrainFlyer(fSpeed)
 {
 	m_Velocity.Set(0, 0, 0);
 	m_last_time = -1.0f;
+	m_fGravity = 0;
+	m_fDamping = 1;
+	m_pConstrain = NULL;
 }
 
 void VFlyer::Eval()
@@ -481,34 +481,35 @@ void VFlyer::Eval()
 			pTarget->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), -leftright);
 	}
 
-	// dampen velocity based on elapsed time
-	if (elapsed > 0)
+	// apply gravity
+	if (m_fGravity != 0.0)
+		m_Velocity.y -= (m_fGravity * elapsed);
+
+	// don't move vertically if prevented from doing so
+	if (m_pConstrain)
 	{
-		float damp = powf(0.5f, elapsed * 10);
+		if (! m_pConstrain->IsVerticallyMobile())
+		{
+			if (m_Velocity.y < 0)
+				m_Velocity.y = 0;
+		}
+	}
+
+	// dampen velocity based on elapsed time
+	if (m_fDamping != 1 && elapsed > 0)
+	{
+		float damp = powf(m_fDamping, elapsed);
 		m_Velocity *= damp;
 	}
 	pTarget->TranslateLocal(m_Velocity * elapsed);
 
-/*	static float temp = 0;
+	static float temp = 0;
 	temp += elapsed;
-	if (temp > 1)
+	if (temp > .2)
 	{
 		VTLOG("m_fSpeed %f, m_Velocity %.1f %.1f, %.1f\n", m_fSpeed, m_Velocity.x, m_Velocity.y, m_Velocity.z);
 		temp = 0;
-	}*/
-
-#if 0
-	// allow the user to move up-down even in maintain-height mode
-	bool bPreserveMaintain=false;
-	if (bUpDown)
-	{
-		bPreserveMaintain = m_bMaintain;
-		m_bMaintain = false;
 	}
-	KeepAboveGround();
-	if (bUpDown)
-		m_bMaintain = bPreserveMaintain;
-#endif
 }
 
 void VFlyer::SetVerticalVelocity(float velocity)
@@ -659,6 +660,7 @@ vtHeightConstrain::vtHeightConstrain(float fMinHeight)
 	m_fMinGroundOffset = fMinHeight;
 	m_bMaintain = false;
 	m_fMaintainHeight = 0;
+	m_bOnGround = false;
 }
 
 //
@@ -678,6 +680,7 @@ void vtHeightConstrain::Eval()
 	float fGroundAltitude;
 	bool bOverTerrain = m_pHF->FindAltitudeAtPoint(pos, fGroundAltitude);
 
+	m_bOnGround = false;
 	if (bOverTerrain)
 	{
 		// set y value based on location
@@ -690,12 +693,20 @@ void vtHeightConstrain::Eval()
 		else
 		{
 			if (pos.y <= fGroundAltitude + m_fMinGroundOffset)
+			{
 				pos.y = fGroundAltitude + m_fMinGroundOffset;
+				m_bOnGround = true;
+			}
 		}
 		pTarget->SetTrans(pos);
 	}
 }
 
+bool vtHeightConstrain::IsVerticallyMobile()
+{
+	// Is target free to move verically?
+	return !m_bOnGround && !m_bMaintain;
+}
 
 
 //////////////////////////////////////////////////////////////////////////
