@@ -137,7 +137,7 @@ bool vtLocationSaver::Read(const char *fname)
 	catch (xh_io_exception &exp)
 	{
 		// TODO: would be good to pass back the error message.
-		VTLOG("XML parsing error: %s\n", exp.getFormattedMessage());
+		VTLOG("XML parsing error: %s\n", exp.getFormattedMessage().c_str());
 		return false;
 	}
 	return true;
