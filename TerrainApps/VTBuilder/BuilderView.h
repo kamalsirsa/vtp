@@ -65,7 +65,7 @@ public:
 	// Mouse
 	void SetMode(LBMode m);
 	LBMode GetMode() { return m_mode; }
-	void GetMouseLocation(double &x, double &y);
+	void GetMouseLocation(DPoint2 &p);
 
 	// UTM zone boundary display
 	void DrawUTMBounds(wxDC *pDC);
