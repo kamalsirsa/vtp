@@ -24,24 +24,7 @@ public:
 
 	/// Return an MD5 checksum for this heightfield
 	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
-
-	/// Given a point in world coordinates, determine the elevation
-	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		FPoint3 *vNormal = NULL) const = 0;
-
-	/// Find the intersection point of a ray with the heightfield
-	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
-		FPoint3 &result) const = 0;
-
-	int PointIsAboveTerrain(const FPoint3 &p1) const;
-
-	void ConvertEarthToSurfacePoint(double ex, double ey, FPoint3 &p3);
-	void ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3)
-	{
-		ConvertEarthToSurfacePoint(epos.x, epos.y, p3);
-	}
-	bool ContainsWorldPoint(float x, float z);
-	void GetCenter(FPoint3 &center);
+	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const = 0;
 
 	/// Test if a point is within the extents of the grid.
 	bool ContainsEarthPoint(double x, double y) const
@@ -60,9 +43,40 @@ public:
 	// minimum and maximum height values for the whole grid
 	float	m_fMinHeight, m_fMaxHeight;
 
-	vtLocalConversion	m_Conversion;
 	DRECT	m_EarthExtents;		// raw extents (geographic or projected)
+};
+
+
+class vtHeightField3d : public vtHeightField
+{
+public:
+	/// Initialize this object from an Elevation Grid
+	void Initialize3d(vtElevationGrid *pGrid);
+
+	/// Initialize this object from a Tin
+	void Initialize3d(vtTin *pTin);
+
+	/// Given a point in world coordinates, determine the elevation
+	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		FPoint3 *vNormal = NULL) const = 0;
+
+	/// Find the intersection point of a ray with the heightfield
+	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
+		FPoint3 &result) const = 0;
+
+	int PointIsAboveTerrain(const FPoint3 &p) const;
+
+	void ConvertEarthToSurfacePoint(double ex, double ey, FPoint3 &p3);
+	void ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3)
+	{
+		ConvertEarthToSurfacePoint(epos.x, epos.y, p3);
+	}
+
+	bool ContainsWorldPoint(float x, float z);
+	void GetCenter(FPoint3 &center);
+
 	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
+	vtLocalConversion	m_Conversion;
 
 protected:
 	float	m_fDiagonalLength;
@@ -73,16 +87,17 @@ protected:
  * vtHeightFieldGrid extends vtHeightField with the knowledge of operating
  * on a regular grid of elevation values.
  */
-class vtHeightFieldGrid : public vtHeightField
+class vtHeightFieldGrid3d : public vtHeightField3d
 {
 public:
-	vtHeightFieldGrid();
+	vtHeightFieldGrid3d();
 
 	void Initialize(vtElevationGrid *pGrid);
-	void GetChecksum(unsigned char **ppChecksum) const;
+
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
-	DPoint2 GetWorldSpacing();
+	DPoint2 GetSpacing() const;
+	FPoint2 GetWorldSpacing() const;
 
 protected:
 	int		m_iColumns, m_iRows;

@@ -18,51 +18,31 @@ void vtHeightField::Initialize(vtElevationGrid *pGrid)
 {
 	m_EarthExtents = pGrid->GetEarthExtents();
 
-	m_Conversion = pGrid->m_Conversion;
-
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
-		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.right,
-		m_EarthExtents.top, m_WorldExtents.right, m_WorldExtents.top);
-
 	// minimum and maximum height values for the whole grid
 	pGrid->GetHeightExtents(m_fMinHeight, m_fMaxHeight);
 
 	if (m_fMinHeight == INVALID_ELEVATION ||
-		m_fMinHeight == INVALID_ELEVATION)
+		m_fMaxHeight == INVALID_ELEVATION)
 	{
 		// we need height extents, so force them to be computed
 		pGrid->ComputeHeightExtents();
 		pGrid->GetHeightExtents(m_fMinHeight, m_fMaxHeight);
 	}
-	FPoint2 hypo(m_WorldExtents.Width(),
-				 m_WorldExtents.Height());
-	m_fDiagonalLength = hypo.Length();
 }
 
 void vtHeightField::Initialize(vtTin *pTin)
 {
-	m_Conversion.Setup(pTin->m_proj.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
-
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
-		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.right,
-		m_EarthExtents.top, m_WorldExtents.right, m_WorldExtents.top);
-
-	FPoint2 hypo(m_WorldExtents.Width(),
-				 m_WorldExtents.Height());
-	m_fDiagonalLength = hypo.Length();
 }
 
 /**
  * \return 0 if below terrain, 1 if above terrain, -1 if off terrain.
  */
-int vtHeightField::PointIsAboveTerrain(const FPoint3 &p1) const
+int vtHeightField3d::PointIsAboveTerrain(const FPoint3 &p) const
 {
 	float alt;
-	if (!FindAltitudeAtPoint(p1, alt))
+	if (!FindAltitudeAtPoint(p, alt))
 		return -1;
-	if (alt < p1.y)
+	if (alt < p.y)
 		return 1;
 	else
 		return 0;
@@ -84,8 +64,8 @@ int vtHeightField::PointIsAboveTerrain(const FPoint3 &p1) const
  *
  * \return true if hit terrain.
  */
-bool vtHeightFieldGrid::CastRayToSurface(const FPoint3 &point,
-										 const FPoint3 &dir, FPoint3 &result) const
+bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
+										   const FPoint3 &dir, FPoint3 &result) const
 {
 	// cast a series of line segment along the ray
 	int i, above;
@@ -130,7 +110,7 @@ bool vtHeightFieldGrid::CastRayToSurface(const FPoint3 &point,
  * Converts a earth coordinate (project or geographic) to a world coordinate
  * on the surface of the heightfield.
  */
-void vtHeightField::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
+void vtHeightField3d::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
 {
 	// convert earth -> XZ
 	m_Conversion.ConvertFromEarth(DPoint2(x, y), p3.x, p3.z);
@@ -142,14 +122,14 @@ void vtHeightField::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
 /**
  * Tests whether a given point is within the current terrain
  */
-bool vtHeightField::ContainsWorldPoint(float x, float z)
+bool vtHeightField3d::ContainsWorldPoint(float x, float z)
 {
 	const FRECT &we = m_WorldExtents;
 	return (x > we.left && x < we.right && z < we.bottom && z > we.top);
 }
 
 
-void vtHeightField::GetCenter(FPoint3 &center)
+void vtHeightField3d::GetCenter(FPoint3 &center)
 {
 	FPoint2 c;
 	m_WorldExtents.Center(c);
@@ -161,7 +141,39 @@ void vtHeightField::GetCenter(FPoint3 &center)
 
 /////////////////////////////////////////////////////////////////////////////
 
-vtHeightFieldGrid::vtHeightFieldGrid()
+void vtHeightField3d::Initialize3d(vtElevationGrid *pGrid)
+{
+	m_Conversion = pGrid->m_Conversion;
+
+	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
+		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
+	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.right,
+		m_EarthExtents.top, m_WorldExtents.right, m_WorldExtents.top);
+
+	FPoint2 hypo(m_WorldExtents.Width(),
+				 m_WorldExtents.Height());
+	m_fDiagonalLength = hypo.Length();
+}
+
+void vtHeightField3d::Initialize3d(vtTin *pTin)
+{
+	m_Conversion.Setup(pTin->m_proj.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+
+	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
+		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
+	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.right,
+		m_EarthExtents.top, m_WorldExtents.right, m_WorldExtents.top);
+
+	FPoint2 hypo(m_WorldExtents.Width(),
+				 m_WorldExtents.Height());
+	m_fDiagonalLength = hypo.Length();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// vtHeightFieldGrid3d
+
+vtHeightFieldGrid3d::vtHeightFieldGrid3d()
 {
 	m_iColumns = 0;
 	m_iRows = 0;
@@ -169,23 +181,27 @@ vtHeightFieldGrid::vtHeightFieldGrid()
 	m_fZStep = 0.0f;
 }
 
-void vtHeightFieldGrid::Initialize(vtElevationGrid *pGrid)
+void vtHeightFieldGrid3d::Initialize(vtElevationGrid *pGrid)
 {
-	// first initialize parent
+	// first initialize parents
 	vtHeightField::Initialize(pGrid);
+	Initialize3d(pGrid);
 
 	pGrid->GetDimensions(m_iColumns, m_iRows);
 	m_fXStep = m_WorldExtents.Width() / (m_iColumns-1);
 	m_fZStep = -m_WorldExtents.Height() / (m_iRows-1);
 }
 
-void vtHeightFieldGrid::GetChecksum(unsigned char **ppChecksum) const
+/** Get the grid spacing, the width of each column and row.
+ */
+DPoint2 vtHeightFieldGrid3d::GetSpacing() const
 {
-	// TODO
+	return DPoint2(m_EarthExtents.Width() / (m_iColumns - 1),
+		m_EarthExtents.Height() / (m_iRows - 1));
 }
 
-DPoint2 vtHeightFieldGrid::GetWorldSpacing()
+FPoint2 vtHeightFieldGrid3d::GetWorldSpacing() const
 {
-	return DPoint2(m_fXStep, m_fZStep);
+	return FPoint2(m_fXStep, m_fZStep);
 }
 
