@@ -96,6 +96,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_BUTTON( ID_SET_INIT_TIME, TParamsDlg::OnSetInitTime )
 	EVT_BUTTON( ID_STYLE, TParamsDlg::OnStyle )
+	EVT_BUTTON( ID_OVERLAY_DOTDOTDOT, TParamsDlg::OnOverlay )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -134,6 +135,9 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pDerived = GetDerived();
 	m_pTiled = GetTiled();
 	m_pColorMap = GetColorMap();
+
+	m_iOverlayX = 0;
+	m_iOverlayY = 0;
 
 	// Create Validators To Attach C++ Members To WX Controls
 
@@ -216,6 +220,11 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_HORIZON, &m_bHorizon);
 	AddValidator(ID_FOG, &m_bFog);
 	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
+
+	// Abstract Layers page, overlay stuff
+	AddValidator(ID_OVERLAY_FILE, &m_strOverlayFile);
+	AddNumValidator(ID_OVERLAY_X, &m_iOverlayX);
+	AddNumValidator(ID_OVERLAY_Y, &m_iOverlayY);
 
 	// It's somewhat roundabout, but this lets us capture events on the
 	// listbox controls without having to subclass.
@@ -330,6 +339,10 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
 	m_strRouteFile.from_utf8(Params.GetValueString(STR_ROUTEFILE));
 
+	vtString fname;
+	if (Params.GetOverlay(fname, m_iOverlayX, m_iOverlayY))
+		m_strOverlayFile = fname;
+
 	// Safety check
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
 		m_iTriCount = 10000;
@@ -438,6 +451,8 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.SetValueBool(STR_ROUTEENABLE, m_bRouteEnable);
 	Params.SetValueString(STR_ROUTEFILE, m_strRouteFile.to_utf8());
+
+	Params.SetOverlay(m_strOverlayFile.vt_str(), m_iOverlayX, m_iOverlayY);
 }
 
 void TParamsDlg::UpdateTiledTextureFilename()
@@ -966,6 +981,24 @@ void TParamsDlg::OnStyle( wxCommandEvent &event )
 	{
 		dlg.GetOptions(m_Layers[idx]);
 	}
+}
+
+void TParamsDlg::OnOverlay( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+
+	wxFileDialog loadFile(NULL, _("Overlay Image File"), _T(""), _T(""),
+		_("Image Files (*.png,*.jpg,*.bmp)|*.png;*.jpg;*.bmp|"), wxOPEN);
+	if (m_strOverlayFile != _T(""))
+		loadFile.SetPath(m_strOverlayFile);
+	bool bResult = (loadFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	m_strOverlayFile = loadFile.GetPath();
+
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
 }
 
 void TParamsDlg::UpdateTimeString()

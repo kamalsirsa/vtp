@@ -139,7 +139,6 @@ public:
 	bool	m_bFog;
 	float   m_fFogDistance;
 
-//	wxStringArray   m_strStructFiles;
 	std::vector<vtTagArray> m_Layers;
 	int	   m_iStructDistance;
 	bool   m_bStructureShadows;
@@ -160,8 +159,12 @@ public:
 //  float   m_fVehicleSpeed;
 //  int	 m_iNumCars;
 
-	bool	m_bRouteEnable;
-	wxString2 m_strRouteFile;
+	bool	m_bRouteEnable;		// not yet used
+	wxString2 m_strRouteFile;	// not yet used
+
+	wxString2 m_strOverlayFile;
+	int		m_iOverlayX;
+	int		m_iOverlayY;
 
 	wxString2 m_strInitTime;
 //  wxString2   m_strMemRequired;
@@ -226,6 +229,7 @@ private:
 
 private:
 	// WDR: handler declarations for TParamsDlg
+	void OnOverlay( wxCommandEvent &event );
 	void OnBgColor( wxCommandEvent &event );
 	void OnTextureFileBase( wxCommandEvent &event );
 	void OnTileSize( wxCommandEvent &event );
