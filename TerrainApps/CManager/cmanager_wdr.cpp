@@ -140,7 +140,7 @@ wxSizer *ModelDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Visible at distance:"), wxDefaultPosition, wxDefaultSize, 0 );
     item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_PROCESS_ENTER );
     item6->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item1->Add( item6, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -150,7 +150,7 @@ wxSizer *ModelDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Scale:"), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_SCALE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_SCALE, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_PROCESS_ENTER );
     item9->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("(meters/unit)"), wxDefaultPosition, wxDefaultSize, 0 );

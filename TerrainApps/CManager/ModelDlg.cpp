@@ -30,8 +30,8 @@
 
 BEGIN_EVENT_TABLE(ModelDlg,AutoPanel)
 	EVT_TEXT( ID_FILENAME, ModelDlg::OnTextFilename )
-	EVT_TEXT( ID_DISTANCE, ModelDlg::OnTextVisible )
-	EVT_TEXT( ID_SCALE, ModelDlg::OnTextScale )
+	EVT_TEXT_ENTER( ID_DISTANCE, ModelDlg::OnTextVisible )
+	EVT_TEXT_ENTER( ID_SCALE, ModelDlg::OnTextScale )
 END_EVENT_TABLE()
 
 ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
