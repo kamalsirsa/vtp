@@ -906,9 +906,9 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	}
 	else if (!strExt.CmpNoCase(_T("asc")))
 	{
-//		success = m_pGrid->LoadFromASC(strFileName, progress_callback);
+		success = m_pGrid->LoadFromASC(strFileName.mb_str(), progress_callback);
 		// vtElevationGrid does have its own ASC reader, but use GDAL instead
-		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
+//		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("bil")))
 	{
