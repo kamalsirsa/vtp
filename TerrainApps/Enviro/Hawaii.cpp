@@ -351,6 +351,10 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		trans->SetName2("Test House");
 		AddNode(trans);
 		PlantModel(trans);
+
+		// TEMP test
+		//pSA->Append(bld);
+		//pSA->WriteXML("Ben's House.vtst");
 	}
 
 	if (m_Params.m_bAirports)
