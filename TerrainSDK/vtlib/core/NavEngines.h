@@ -1,7 +1,7 @@
 //
 // NavEngines.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,7 +32,7 @@
 class vtFlyer : public vtLastMouse
 {
 public:
-	vtFlyer(float fSpeed = 1.0f, bool bPreventRoll = false);
+	vtFlyer(float fSpeed = 1.0f, bool bAllowRoll = false);
 
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
 	float GetSpeed() { return m_fSpeed; }
@@ -82,7 +82,7 @@ public:
 class vtTerrainFlyer : public vtFlyer
 {
 public:
-	vtTerrainFlyer(float fSpeed);
+	vtTerrainFlyer(float fSpeed, bool bAllowRoll = false);
 
 	/// Set the heightfield on which to do the terrain following.
 	void SetHeightField(vtHeightField3d *pHF) { m_pHeightField = pHF; }

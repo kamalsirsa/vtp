@@ -105,6 +105,7 @@ protected:
 #define STR_INITLOCATION "Init_Location"
 #define STR_HITHER "Hither_Distance"
 #define STR_ACCEL "Accel"
+#define STR_ALLOW_ROLL "Allow_Roll"
 
 #define STR_LODMETHOD "LOD_Method"
 #define STR_PIXELERROR "Pixel_Error"

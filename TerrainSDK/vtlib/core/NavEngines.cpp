@@ -1,7 +1,7 @@
 //
 // NavEngines.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,7 @@
 //
 // vtFlyer: basic class, moves target based on mouse position
 //
-vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
+vtFlyer::vtFlyer(float fSpeed, bool bAllowRoll) : vtLastMouse()
 {
 	m_fSpeed = fSpeed;
 	m_bAlwaysMove = false;
@@ -26,7 +26,7 @@ vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
 	for (int i = 0; i < 6; i++)
 		m_bDOF[i] = true;
 
-	m_bDOF[DOF_ROLL] = !bPreventRoll;
+	m_bDOF[DOF_ROLL] = bAllowRoll;
 	m_fCurrentSpeed = 0;
 }
 
@@ -184,7 +184,7 @@ void vtFlyer::DoKeyNavigation()
 //
 // Fly engine specifically for an orthographic camera (e.g. top-down view)
 //
-vtOrthoFlyer::vtOrthoFlyer(float fSpeed) : vtFlyer(fSpeed, true)
+vtOrthoFlyer::vtOrthoFlyer(float fSpeed) : vtFlyer(fSpeed, false)
 {
 }
 
@@ -223,7 +223,8 @@ void vtOrthoFlyer::Eval()
 //
 // Fly engine specifically for following terrain
 //
-vtTerrainFlyer::vtTerrainFlyer(float fSpeed) : vtFlyer(fSpeed, true)
+vtTerrainFlyer::vtTerrainFlyer(float fSpeed, bool bAllowRoll) :
+	vtFlyer(fSpeed, bAllowRoll)
 {
 	m_pHeightField = NULL;
 	m_bExag = false;

@@ -42,6 +42,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_INITLOCATION, "");
 	AddTag(STR_HITHER, "5");
 	AddTag(STR_ACCEL, "false");
+	AddTag(STR_ALLOW_ROLL, "false");
 
 	AddTag(STR_LODMETHOD, "0");
 	AddTag(STR_PIXELERROR, "2.0");

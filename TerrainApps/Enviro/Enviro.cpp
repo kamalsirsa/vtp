@@ -806,6 +806,9 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pHeightEngine->SetHeightField(pHF);
 	m_pHeightEngine->SetMinGroundOffset(param.GetValueInt(STR_MINHEIGHT));
 
+	bool bAllowRoll = param.GetValueBool(STR_ALLOW_ROLL);
+	m_pTFlyer->SetDOF(vtFlyer::DOF_ROLL, bAllowRoll);
+
 	// Set the top-down viewpoint to a point over the center of the new
 	//  terrain, with near and far planes derived from the height extents.
 	FPoint3 middle;
