@@ -86,6 +86,8 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	WMPoly = NULL;
 	WMPolyDraw = NULL;
 	m_NoLines = NULL;
+	m_iEntities = 0;
+	m_bHidden = false;
 	ImportWorldMap();
 }
 
@@ -280,7 +282,6 @@ void BuilderView::ImportWorldMap()
 	WMPoly = new DLine2[m_iEntities];
 	WMPolyDraw = new DLine2[m_iEntities];
 	m_NoLines = new BoolArray[m_iEntities];
-	m_bHidden = false;
 
 	for (i = 0; i < m_iEntities; i++)
 	{
