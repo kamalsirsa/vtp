@@ -19,18 +19,19 @@ zip $DIST_FILE3 VTP/TerrainApps/BExtractor/BExtractor.exe
 zip $DIST_FILE3 VTP/TerrainApps/BExtractor/license.txt
 zip $DIST_FILE3 VTP/TerrainApps/BExtractor/Docs/*
 
-zip $DIST_FILE3 VTP/TerrainApps/CManager/CManager.exe
+zip $DIST_FILE3 VTP/TerrainApps/CManager/CManager_u.exe
+zip $DIST_FILE3 VTP/TerrainApps/CManager/CManager.ini
 zip $DIST_FILE3 VTP/TerrainApps/CManager/itemtypes.txt
 zip $DIST_FILE3 VTP/TerrainApps/CManager/Docs/*
 
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/Enviro.ini
-zip $DIST_FILE3 VTP/TerrainApps/Enviro/wxEnviro.exe
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/wxEnviro_u.exe
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/license.txt
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/Docs/*
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/Docs/Navigation/*
 
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/license.txt
-zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder.exe
+zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder_u.exe
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder.ini
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/*
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/images/*
