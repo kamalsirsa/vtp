@@ -630,7 +630,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	m_fArcLength = angle * EARTH_RADIUS;
 
 	m_pArc->AddMesh(m_pArcMesh, 0);
-	m_pArcMesh->Release();
+	m_pArcMesh->Release();		// Pass ownership
 }
 
 void Enviro::DescribeCoordinatesEarth(vtString &str)
