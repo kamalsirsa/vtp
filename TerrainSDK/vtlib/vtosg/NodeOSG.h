@@ -167,7 +167,7 @@ public:
 	void Scale3(float x, float y, float z);
 
 	void SetTransform1(const FMatrix4 &mat);
-	void GetTransform1(FMatrix4 &mat);
+	void GetTransform1(FMatrix4 &mat) const;
 	void PointTowards(const FPoint3 &point, bool bPitch = true);
 
 	// OSG-specific Implementation

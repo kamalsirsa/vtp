@@ -646,9 +646,9 @@ void vtTransform::SetTransform1(const FMatrix4 &mat)
 	m_pTransform->dirtyBound();
 }
 
-void vtTransform::GetTransform1(FMatrix4 &mat)
+void vtTransform::GetTransform1(FMatrix4 &mat) const
 {
-	Matrix &xform = m_pTransform->getMatrix();
+	const Matrix &xform = m_pTransform->getMatrix();
 	ConvertMatrix4(&xform, &mat);
 }
 
@@ -1127,12 +1127,6 @@ void OsgDynMesh::drawImplementation(State& state) const
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCam = pScene->GetCamera();
-
-#if 0
-	FPoint3 eyepos = pCam->GetTrans();
-	IPoint2 window_size = pScene->GetWindowSize();
-	double fov = pCam->GetFOV();
-#endif
 
 	// setup the culling planes
 	m_pDynGeom->m_pPlanes = pScene->GetCullPlanes();
