@@ -20,6 +20,8 @@ EnviroOptions g_Options;
 #define STR_EARTHIMAGE "EarthImage"
 #define STR_INITTERRAIN "InitialTerrain"
 #define STR_FULLSCREEN "FullScreen"
+#define STR_WINLOC "WindowLocation"
+#define STR_LOCINSIDE "LocationIsInside"
 #define STR_HTMLPANE "HTMLPane"
 #define STR_FLOATBAR "FloatingToolBar"
 #define STR_TEXTURE_COMPRESSION "TextureCompression"
@@ -38,6 +40,11 @@ EnviroOptions::EnviroOptions()
 	m_strEarthImage = "ev11656_512";
 
 	m_bStartInNeutral = false;
+	m_bFullscreen = false;
+	m_WinPos.Set(50, 50);
+	m_WinSize.Set(800, 600);
+	m_bLocationInside = false;
+
 	m_bDisableModelMipmaps = false;
 	m_bTextureCompression = true;
 
@@ -92,6 +99,10 @@ bool EnviroOptions::Read(const char *szFilename)
 			m_strInitTerrain = get_line_from_stream(input);
 		else if (strcmp(buf, STR_FULLSCREEN) == 0)
 			input >> m_bFullscreen;
+		else if (strcmp(buf, STR_WINLOC) == 0)
+			input >> m_WinPos.x >> m_WinPos.y >> m_WinSize.x >> m_WinSize.y;
+		else if (strcmp(buf, STR_LOCINSIDE) == 0)
+			input >> m_bLocationInside;
 		else if (strcmp(buf, STR_HTMLPANE) == 0)
 			input >> m_bHtmlpane;
 		else if (strcmp(buf, STR_FLOATBAR) == 0)
@@ -163,6 +174,10 @@ bool EnviroOptions::Write()
 
 	output << STR_FULLSCREEN << "\t\t";
 	output << m_bFullscreen << endl;
+	output << STR_WINLOC << "\t\t";
+	output << m_WinPos.x << " " << m_WinPos.y << " " << m_WinSize.x << " " << m_WinSize.y << endl;
+	output << STR_LOCINSIDE << "\t\t";
+	output << m_bLocationInside << endl;
 	output << STR_HTMLPANE << "\t\t";
 	output << m_bHtmlpane << endl;
 	output << STR_FLOATBAR << "\t";

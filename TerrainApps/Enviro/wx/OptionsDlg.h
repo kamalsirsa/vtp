@@ -41,6 +41,9 @@ public:
 private:
 	// WDR: member variable declarations for OptionsDlg
 	bool	m_bFullscreen;
+	IPoint2	m_WinPos, m_WinSize;
+	bool	m_bLocationInside;
+
 //	bool	m_bHtmlpane;
 //	bool	m_bFloatingToolbar;
 	bool	m_bTextureCompression;

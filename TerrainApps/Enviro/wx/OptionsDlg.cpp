@@ -39,6 +39,12 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	OptionsDialogFunc( this, TRUE ); 
 
 	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
+	AddNumValidator(ID_WINX, &m_WinPos.x);
+	AddNumValidator(ID_WINY, &m_WinPos.y);
+	AddNumValidator(ID_WIN_XSIZE, &m_WinSize.x);
+	AddNumValidator(ID_WIN_YSIZE, &m_WinSize.y);
+	AddValidator(ID_SIZE_INSIDE, &m_bLocationInside);
+
 //	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
 //	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
 	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
@@ -59,6 +65,10 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 {
 	m_bFullscreen = opt.m_bFullscreen;
+	m_WinPos = opt.m_WinPos;
+	m_WinSize = opt.m_WinSize;
+	m_bLocationInside = opt.m_bLocationInside;
+
 //	m_bHtmlpane = opt.m_bHtmlpane;
 //	m_bFloatingToolbar = opt.m_bFloatingToolbar;
 	m_bTextureCompression = opt.m_bTextureCompression;
@@ -77,7 +87,11 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	opt.m_bFullscreen = m_bFullscreen;
-//	opt.m_bHtmlpane = m_bHtmlpane;
+	opt.m_WinPos = m_WinPos;
+	opt.m_WinSize = m_WinSize;
+	opt.m_bLocationInside = m_bLocationInside;
+
+	//	opt.m_bHtmlpane = m_bHtmlpane;
 //	opt.m_bFloatingToolbar = m_bFloatingToolbar;
 	opt.m_bTextureCompression = m_bTextureCompression;
 	opt.m_bDisableModelMipmaps = m_bDisableMipmaps;

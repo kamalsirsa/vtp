@@ -293,8 +293,25 @@ bool EnviroApp::OnInit()
 	title += _T(" SSG");
 #endif
 	VTLOG("Creating the frame window.\n");
-	vtFrame *frame = new FRAME_NAME(NULL, title,
-		wxPoint(50, 50), wxSize(800, 600));
+	wxPoint pos(g_Options.m_WinPos.x, g_Options.m_WinPos.y);
+	wxSize size(g_Options.m_WinSize.x, g_Options.m_WinSize.y);
+	vtFrame *frame = new FRAME_NAME(NULL, title, pos, size);
+
+	// process some idle messages... let frame open a bit
+	bool go = true;
+	while (go)
+		go = ProcessIdle();
+
+	if (g_Options.m_bLocationInside)
+	{
+		// they specified the inside (client) location of the window
+		// so look at the difference between frame and client sizes
+		wxSize size1 = frame->GetSize();
+		wxSize size2 = frame->GetClientSize();
+		int dx = size1.x - size2.x;
+		int dy = size1.y - size2.y;
+		frame->SetSize(-1, -1, size1.x + dx, size1.y + dy);
+	}
 
 	// Also let the frame see the command-line arguments
 	for (int i = 0; i < argc; i++)
@@ -303,7 +320,7 @@ bool EnviroApp::OnInit()
 		frame->FrameArgument(i, str.mb_str());
 	}
 
-	bool go = true;
+	go = true;
 	while (go)
 		go = ProcessIdle();
 

@@ -26,7 +26,11 @@ public:
 
 	bool	m_bStartInNeutral;
 
+	// window location and size
 	bool	m_bFullscreen;
+	IPoint2	m_WinPos, m_WinSize;
+	bool	m_bLocationInside;
+
 	bool	m_bHtmlpane;
 	bool	m_bFloatingToolbar;
 	bool	m_bTextureCompression;
