@@ -40,8 +40,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /YX /FD /c
 # ADD BASE RSC /l 0x409
@@ -65,8 +65,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /FR /YX /FD /c
 # ADD BASE RSC /l 0x409
@@ -135,7 +135,15 @@ SOURCE=.\GEOnet.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\HeightField.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Icosa.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\LocalConversion.cpp
 # End Source File
 # Begin Source File
 
@@ -243,7 +251,15 @@ SOURCE=.\GEOnet.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\HeightField.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Icosa.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\LocalConversion.h
 # End Source File
 # Begin Source File
 
