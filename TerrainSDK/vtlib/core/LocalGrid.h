@@ -23,7 +23,8 @@ public:
 	float GetWorldValue(int i, int j);
 	void GetWorldLocation(int i, int j, FPoint3 &loc);
 
-	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,float light_adj);
+	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
+		float light_adj, void progress_callback(int) = NULL);
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude, FPoint3 *vNormal = NULL);
 	DPoint2 GetWorldSpacing();
 

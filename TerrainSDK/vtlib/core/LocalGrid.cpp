@@ -124,7 +124,7 @@ float vtLocalGrid::GetWorldValue(int i, int j)
 }
 
 void vtLocalGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-									float light_adj)
+									float light_adj, void progress_callback(int))
 {
 	FPoint3 p1, p2, p3;
 	FPoint3 v1, v2, v3;
@@ -149,6 +149,11 @@ void vtLocalGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 	// iterate over the texels
 	for (j = 0; j < h-1; j++)
 	{
+		if (progress_callback != NULL)
+		{
+			if ((j&7) == 0)
+				progress_callback(j * 100 / h);
+		}
 		// find corresponding location in terrain
 		y = (int) (j * yFactor);
 		for (i = 0; i < w-1; i++)
