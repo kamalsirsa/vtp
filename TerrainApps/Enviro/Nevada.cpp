@@ -167,9 +167,10 @@ void NevadaTerrain::CreateDetailTextures()
 
 void NevadaTerrain::CreatePast()
 {
-	AddNode(&m_Past);
-	m_Past.SetName2("Past");
-	m_Past.SetEnabled(false);
+	m_pPast = new vtGroup();
+	AddNode(m_pPast);
+	m_pPast->SetName2("Past");
+	m_pPast->SetEnabled(false);
 
 	float height = 80.0f;
 	FPoint3 center;
@@ -178,11 +179,11 @@ void NevadaTerrain::CreatePast()
 #if 0
 	//butterfly: circle radius, speed, height above ground, center, size_exag
 	vtGeom *bfly = new Butterfly(this, 0.2f, 50.0f, height, center, 200.0);
-	m_Past.AddChild(bfly);
+	m_pPast->AddChild(bfly);
 	vtGeom *bfly2 = new Butterfly(this, 0.3f, 50.0f, height, center, 200.0);
-	m_Past.AddChild(bfly2);
+	m_pPast->AddChild(bfly2);
 	vtGeom *bfly3 = new Butterfly(this, 0.4f, 50.0f, height, center, 200.0);
-	m_Past.AddChild(bfly3);
+	m_pPast->AddChild(bfly3);
 #endif
 
 	if (1)
@@ -197,7 +198,7 @@ void NevadaTerrain::CreatePast()
 			location.x = center.x - 8 + (x * 2.0f);
 			location.z = center.z - 8 + (y * 2.0f);
 			Butterfly *but = new Butterfly(this, 0.8f, 60 + random(40), height, location, 40);
-			m_Past.AddChild(but);
+			m_pPast->AddChild(but);
 		}
 	}
 
@@ -228,7 +229,7 @@ void NevadaTerrain::CreatePast()
 	// use a 12x12 grid of LOD cells
 	m_pTreeGrid = new vtLodGrid(origin, size, 12, fLODDistance);
 	m_pTreeGrid->SetName2("Tree Grid");
-	m_Past.AddChild(m_pTreeGrid);
+	m_pPast->AddChild(m_pTreeGrid);
 
 	//populate with trees.  set initial size to zero?
 	int tcount = 0, ccount = 0;
@@ -262,7 +263,7 @@ void NevadaTerrain::CreatePast()
 			tree->SetTrans(p3);
 			// add tree to scene graph
 			m_pTreeGrid->AppendToGrid(tree);
-			//m_Past.AddChild(tree);
+			//m_pPast->AddChild(tree);
 			tcount++;
 		}
 	}
@@ -276,7 +277,7 @@ void NevadaTerrain::CreatePast()
 //		vtTransform *bigmike = LoadModel("Nevada/bigmikev2.dsm");
 		vtTransform *bigmike = LoadModel("Nevada/parameciummike.dsm");
 		float sc = 0.05f;	// abstract units, scale to taste
-		m_Past.AddChild(bigmike);
+		m_pPast->AddChild(bigmike);
 		PlantModelAtPoint(bigmike, DPoint2(MAN_LONLAT), true);
 		bigmike->Translate2(FPoint3(0.0f, i * 800.0f, 0.0f));
 
@@ -293,9 +294,11 @@ void NevadaTerrain::CreatePast()
 
 void NevadaTerrain::CreatePresent()
 {
-	AddNode(&m_Present);
-	m_Present.SetName2("Present");
-	m_Present.SetEnabled(false);
+	m_pPresent = new vtGroup();
+
+	AddNode(m_pPresent);
+	m_pPresent->SetName2("Present");
+	m_pPresent->SetEnabled(false);
 
 #if 0
 	float overall_scale = 1.5f;	// 3x larger than real life
@@ -306,7 +309,7 @@ void NevadaTerrain::CreatePresent()
 	vtTransform *man = LoadModel("Nevada/man_v7_e1.dsm");
 #endif
 	man->Scale2(sc, sc, sc);
-	m_Present.AddChild(man);
+	m_pPresent->AddChild(man);
 	PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 
 	sc = overall_scale * 0.01f;		// cm
@@ -334,7 +337,7 @@ void NevadaTerrain::CreatePresent()
 		{
 			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
-			m_Present.AddChild(copy);
+			m_pPresent->AddChild(copy);
 
 			float radius = 638;
 			float deg = 30.0f - (i * 15.0f);
@@ -348,7 +351,7 @@ void NevadaTerrain::CreatePresent()
 		{
 			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
-			m_Present.AddChild(copy);
+			m_pPresent->AddChild(copy);
 
 			float radius = 78.0f + (i * (600.0f - 78.0f) / 17);
 			float deg = -90;
@@ -361,7 +364,7 @@ void NevadaTerrain::CreatePresent()
 
 			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
-			m_Present.AddChild(copy);
+			m_pPresent->AddChild(copy);
 			copy->Translate2(FPoint3(x, 0.0f, -y));
 			copy->Translate2(FPoint3(-8.0f, 0.0f, 0.0f));
 			PlantModel(copy);
@@ -375,9 +378,11 @@ void NevadaTerrain::CreatePresent()
 
 void NevadaTerrain::CreateFuture()
 {
-	AddNode(&m_Future);
-	m_Future.SetName2("Future");
-	m_Future.SetEnabled(false);
+	m_pFuture = new vtGroup();
+
+	AddNode(m_pFuture);
+	m_pFuture->SetName2("Future");
+	m_pFuture->SetEnabled(false);
 }
 
 ////////////////////////////////////////////
@@ -568,9 +573,9 @@ void EpochEngine::Eval()
 			m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentApp, DETAIL_TILING);
 		}
 	}
-	m_pNevada->m_Past.SetEnabled(m_iYear == PAST);
-	m_pNevada->m_Present.SetEnabled(m_iYear == PRESENT);
-	m_pNevada->m_Future.SetEnabled(m_iYear == FUTURE);
+	m_pNevada->m_pPast->SetEnabled(m_iYear == PAST);
+	m_pNevada->m_pPresent->SetEnabled(m_iYear == PRESENT);
+	m_pNevada->m_pFuture->SetEnabled(m_iYear == FUTURE);
 
 	// bounce test
 	if (m_iSpeed == 0)

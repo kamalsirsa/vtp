@@ -23,12 +23,12 @@ public:
 	void CreatePresent();
 	void CreateFuture();
 
-	vtGroup			m_Past, m_Present, m_Future;
-	vtLodGrid			*m_pTreeGrid;
-	vtMovGeom		*m_pWaterShape, *m_pWaterShape2;
-//	vtFog			*m_pFog;
-	vtMaterial		*m_pDetailMat;
-	vtMaterial		*m_pDetailMat2;
+	vtGroup		*m_pPast, *m_pPresent, *m_pFuture;
+	vtLodGrid	*m_pTreeGrid;
+	vtMovGeom	*m_pWaterShape, *m_pWaterShape2;
+//	vtFog		*m_pFog;
+	vtMaterial	*m_pDetailMat;
+	vtMaterial	*m_pDetailMat2;
 
 	FPoint3 man_location;
 	float	m_fGround, m_fHigh, m_fLow;
