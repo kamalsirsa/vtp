@@ -49,7 +49,7 @@ public:
 	~vtUtilityMap();
 
 	void GetPoleExtents(DRECT &rect);
-	bool ImportFromSHP(const char *filename, vtProjection &proj);
+	bool ImportFromSHP(const char *filename, const vtProjection &proj);
 
 protected:
 	bool ImportPolesFromSHP(const char *fname);

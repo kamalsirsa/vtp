@@ -24,7 +24,7 @@ vtProjection::vtProjection() : OGRSpatialReference()
 /**
  * Assignment operator.
  */
-vtProjection &vtProjection::operator=(vtProjection &ref)
+vtProjection &vtProjection::operator=(const vtProjection &ref)
 {
 	// copy new projection
 	if (ref.GetRoot() != NULL)
@@ -38,7 +38,7 @@ vtProjection &vtProjection::operator=(vtProjection &ref)
 	return *this;
 }
 
-bool vtProjection::operator==(vtProjection &ref)
+bool vtProjection::operator==(const vtProjection &ref)
 {
 	// Work around problem in IsSame, by detecting this type of difference
 	if( IsProjected() != ref.IsProjected() )
@@ -67,7 +67,7 @@ void vtProjection::SetUTMZone(int iZone)
  *  - -1 through -60 for the southern hemisphere
  *  - 0 if the projection is not UTM
  */
-int	vtProjection::GetUTMZone()
+int	vtProjection::GetUTMZone() const
 {
 	int north;
 	int zone = OGRSpatialReference::GetUTMZone(&north);
@@ -237,7 +237,7 @@ void vtProjection::SetSpatialReference(OGRSpatialReference *pRef)
  * \par Example:
  *	"Geographic", "Transverse_Mercator", "Albers_Conic_Equal_Area"
  */
-const char *vtProjection::GetProjectionName()
+const char *vtProjection::GetProjectionName() const
 {
 	const char *proj_string = GetAttrValue("PROJECTION");
 	if (!proj_string)
@@ -251,7 +251,7 @@ const char *vtProjection::GetProjectionName()
  * \par
  * Possible values are "Geo", "UTM", "TM", "Albers", "LCC", "Other", or "Unknown"
  */
-const char *vtProjection::GetProjectionNameShort()
+const char *vtProjection::GetProjectionNameShort() const
 {
 	if (IsGeographic())
 		return "Geo";
@@ -544,7 +544,7 @@ double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2,
  * Given a non-geographic projection, produce a geographic projection which
  * has the same datum/ellipsoid values.
  */
-void CreateSimilarGeographicProjection(vtProjection &source,
+void CreateSimilarGeographicProjection(const vtProjection &source,
 									   vtProjection &geo)
 {
 	geo.SetWellKnownGeogCS("WGS84");
@@ -722,7 +722,7 @@ double EstimateDegreesToMeters(double latitude)
  * Create a conversion between projections, making the assumption that
  * the Datum of the target is the same as the Datum of the source.
  */
-OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget)
+OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget)
 {
 	vtProjection DummyTarget = *pTarget;
 
@@ -732,7 +732,7 @@ OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget)
 	if (dnode)
 		dnode->GetChild(0)->SetValue(datum_string);
 
-	OGR_SRSNode *enode1 = pSource->GetAttrNode("SPHEROID");
+	const OGR_SRSNode *enode1 = pSource->GetAttrNode("SPHEROID");
 	OGR_SRSNode *enode2 = DummyTarget.GetAttrNode("SPHEROID");
 	if (enode1 && enode2)
 	{
@@ -748,7 +748,7 @@ OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget)
 	DummyTarget.exportToProj4(&str4);
 
 	char *wkt1, *wkt2;
-	OGRErr err = pSource->exportToWkt(&wkt1);
+	OGRErr err = ((vtProjection *)pSource)->exportToWkt(&wkt1);
 	err = DummyTarget.exportToWkt(&wkt2);
 
 	OGRFree(wkt1);

@@ -39,7 +39,7 @@ public:
 	bool GetExtents(DRECT &rect, float &minheight, float &maxheight);
 	void Offset(const DPoint2 &p);
 	bool FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude) const;
-	bool ConvertProjection(vtProjection &proj_new);
+	bool ConvertProjection(const vtProjection &proj_new);
 
 	double GetTriMaxEdgeLength(int iTri);
 	void MergeSharedVerts(void progress_callback(int) = NULL);

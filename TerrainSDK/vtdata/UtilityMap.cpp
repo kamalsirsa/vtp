@@ -117,7 +117,7 @@ bool vtUtilityMap::ImportLinesFromSHP(const char *fname)
 }
 
 
-bool vtUtilityMap::ImportFromSHP(const char *dirname, vtProjection &proj)
+bool vtUtilityMap::ImportFromSHP(const char *dirname, const vtProjection &proj)
 {
 	char	fname[256];
 

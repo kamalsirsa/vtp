@@ -65,13 +65,13 @@ public:
 	vtProjection();
 
 	// Assignment
-	vtProjection &vtProjection::operator=(vtProjection &ref);
+	vtProjection &vtProjection::operator=(const vtProjection &ref);
 
 	// Equality
-	bool operator==(vtProjection &ref);
+	bool operator==(const vtProjection &ref);
 
 	void	SetUTMZone(int iZone);
-	int		GetUTMZone();
+	int		GetUTMZone() const;
 	void	SetDatum(DATUM datum);
 	DATUM	GetDatum();
 	LinearUnits	GetUnits();
@@ -81,8 +81,8 @@ public:
 	void	SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum);
 	void	SetSpatialReference(OGRSpatialReference *pRef);
 
-	const char *GetProjectionName();
-	const char *GetProjectionNameShort();
+	const char *GetProjectionName() const;
+	const char *GetProjectionNameShort() const;
 
 	bool GetTextDescription(char *type, char *value);
 	bool SetTextDescription(const char *type, const char *value);
@@ -124,8 +124,8 @@ const char *datumToStringShort(DATUM d);
 
 StatePlaneInfo *GetStatePlaneTable();
 int GetNumStatePlanes();
-void CreateSimilarGeographicProjection(vtProjection &source, vtProjection &geo);
-OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget);
+void CreateSimilarGeographicProjection(const vtProjection &source, vtProjection &geo);
+OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pTarget);
 
 /**
  * Determine an approximate conversion from degrees of longitude to meters,
