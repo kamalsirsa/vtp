@@ -141,13 +141,18 @@ wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_COMBO_VALUE 10082
 wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LIST 10083
+#define ID_TEXT_SHOW 10083
+#define ID_CHOICE_SHOW 10084
+#define ID_TEXT_VERTICAL 10085
+#define ID_CHOICE_VERTICAL 10086
+#define ID_DEL_HIGH 10087
+#define ID_LIST 10088
 wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TOOLBAR 10084
-#define ID_MINUTES 10085
-#define ID_ELEVUNIT 10086
-#define ID_PATHNAMES 10087
+#define ID_TOOLBAR 10089
+#define ID_MINUTES 10090
+#define ID_ELEVUNIT 10091
+#define ID_PATHNAMES 10092
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
