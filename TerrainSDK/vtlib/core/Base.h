@@ -303,8 +303,19 @@ public:
 
 	virtual void Apply() = 0;
 
+	void SetName(const vtString &name)
+	{
+		m_Name = name;
+	}
+
+	const vtString& GetName()
+	{
+		return m_Name;
+	}
+
 protected:
 	vtImage	*m_pImage;
+	vtString m_Name;
 };
 
 /**
@@ -341,6 +352,10 @@ public:
 	void CopyFrom(vtMaterialArrayBase *pFromMats);
 
 	virtual int AppendMaterial(vtMaterial *pMat) = 0;
+
+	virtual bool Import(vtString &name) = 0;
+
+	virtual bool Export(vtString &name) = 0;
 };
 
 #if VTLIB_PSM
