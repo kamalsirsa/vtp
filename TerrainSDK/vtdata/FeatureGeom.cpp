@@ -592,6 +592,23 @@ int vtFeatureSetPolygon::AddPolygon(const DPolygon2 &poly)
 
 /**
  * Find the first polygon in this feature set which contains the given
+ * point.
+ *
+ * The index of the polygon is return, or -1 if no polygon was found.
+ */
+int vtFeatureSetPolygon::FindPolygon(const DPoint2 &p) const
+{
+	int num = m_Poly.size();
+	for (int i = 0; i < num; i++)
+	{
+		if (m_Poly[i].ContainsPoint(p))
+			return i;		// found
+	}
+	return -1;	// not found
+}
+
+/**
+ * Find the first polygon in this feature set which contains the given
  * point.  This method makes the simplification assumption that none of
  * the polygons have holes.
  *

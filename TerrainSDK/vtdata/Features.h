@@ -322,6 +322,7 @@ public:
 	const DPolygon2 &GetPolygon(unsigned int num) const { return m_Poly[num]; }
 	DPolygon2 &GetPolygon(unsigned int num) { return m_Poly[num]; }
 	int FindSimplePolygon(const DPoint2 &p) const;
+	int FindPolygon(const DPoint2 &p) const;
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
