@@ -383,11 +383,14 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	if (key == 'd')
 	{
 		// Toggle grab-pivot
+		if (g_App.m_mode == MM_NAVIGATE)
+			g_App.EnableFlyerEngine(false);
 		if (g_App.m_nav == NT_Normal)
 			g_App.m_nav = NT_Grab;
 		else
 			g_App.m_nav = NT_Normal;
-		g_App.EnableFlyerEngine(true);
+		if (g_App.m_mode == MM_NAVIGATE)
+			g_App.EnableFlyerEngine(true);
 	}
 	if (key == 'f')
 		ChangeFlightSpeed(1.8f);
