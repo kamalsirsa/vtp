@@ -799,6 +799,10 @@ void vtElevLayer::FillGaps()
 	}
 	delete line_gap;
 	delete patch_column;
+
+	// recompute what has likely changed
+	m_pGrid->ComputeHeightExtents();
+
 	CloseProgressDialog();
 }
 
