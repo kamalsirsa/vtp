@@ -153,10 +153,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="res\Enviro.ico">
+				RelativePath="mfc\res\Enviro.ico">
 			</File>
 			<File
-				RelativePath="mfc\res\Enviro.ico">
+				RelativePath="res\Enviro.ico">
 			</File>
 			<File
 				RelativePath="mfc\Enviro.rc">
@@ -185,10 +185,10 @@
 				RelativePath="res\EnviroDoc.ico">
 			</File>
 			<File
-				RelativePath="res\Toolbar.bmp">
+				RelativePath="mfc\res\Toolbar.bmp">
 			</File>
 			<File
-				RelativePath="mfc\res\Toolbar.bmp">
+				RelativePath="res\Toolbar.bmp">
 			</File>
 			<File
 				RelativePath="res\treeimag.bmp">
@@ -301,30 +301,6 @@
 			</File>
 			<File
 				RelativePath="Options.cpp">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="PTerrain.cpp">
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
@@ -756,9 +732,6 @@
 			</File>
 			<File
 				RelativePath="Options.h">
-			</File>
-			<File
-				RelativePath="PTerrain.h">
 			</File>
 			<File
 				RelativePath="SpecificTerrain.h">
