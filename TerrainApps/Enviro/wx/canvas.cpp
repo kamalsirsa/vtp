@@ -195,9 +195,11 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		// update the status bar every 1/10 of a second
 		static float last_stat = 0.0f;
+		static vtString last_msg;
 		float cur = vtGetTime();
-		if (cur - last_stat > 0.1f)
+		if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
 		{
+			last_msg = g_App.GetMessage();
 			last_stat = cur;
 			m_StatusTimer.Notify();
 		}
