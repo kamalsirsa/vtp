@@ -137,10 +137,6 @@ SOURCE=..\core\IntersectionEngine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\LKTerrain.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\LocalGrid.cpp
 # End Source File
 # Begin Source File
@@ -266,10 +262,6 @@ SOURCE=..\core\FrameTimer.h
 # Begin Source File
 
 SOURCE=..\core\IntersectionEngine.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LKTerrain.h
 # End Source File
 # Begin Source File
 
