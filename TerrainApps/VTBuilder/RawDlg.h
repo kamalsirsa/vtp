@@ -1,7 +1,7 @@
 //
-// Name:		RawDlg.h
+// Name: RawDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,7 +40,8 @@ public:
 	bool m_bFloating;
 	float m_fVUnits;
 	float m_fSpacing;
-	
+	bool m_bBigEndian;
+
 private:
 	// WDR: member variable declarations for RawDlg
 	

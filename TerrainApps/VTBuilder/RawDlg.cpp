@@ -1,9 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        RawDlg.cpp
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: RawDlg.cpp
+//
+// Copyright (c) 2001-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
     #pragma implementation "RawDlg.cpp"
@@ -51,6 +51,7 @@ void RawDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_FLOATING, &m_bFloating);
 	AddNumValidator(ID_VUNITS, &m_fVUnits);
 	AddNumValidator(ID_SPACING, &m_fSpacing);
+	AddValidator(ID_BIG_ENDIAN, &m_bBigEndian);
 
     wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
 }
