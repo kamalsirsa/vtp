@@ -313,6 +313,14 @@ int vtFeatures::NumEntities()
 		return -1;
 }
 
+/**
+ * Returns the type of geometry that each feature has.
+ *
+ * \return - SHPT_POINT for 2d points
+ *		   - SHPT_POINTZ fpr 3d points
+ *		   - SHPT_ARC for 2d polylines
+ *		   - SHPT_POLYGON for 2d polygons
+ */
 int vtFeatures::GetEntityType()
 {
 	return m_nSHPType;
