@@ -164,6 +164,9 @@ public:
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNodeBase *pNode);
 
+	// Terrain-specific content
+	vtContentManager3d m_Content;
+
 	// overridable by subclasses to extend culture
 	virtual void CreateCustomCulture();
 
@@ -231,7 +234,7 @@ public:
 
 	/********************** Statics ******************/
 
-	// during creation, all data will be looked for on the data path
+	// during creation, all data will be looked for on the global data path
 	static void SetDataPath(const vtStringArray &paths) { s_DataPaths = paths; }
 	static vtStringArray s_DataPaths;
 	static vtContentManager3d s_Content;

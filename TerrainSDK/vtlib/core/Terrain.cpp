@@ -9,6 +9,7 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
+#include "xmlhelper/exception.hpp"
 
 #include "Terrain.h"
 #include "Light.h"
@@ -720,15 +721,15 @@ bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 vtStructureArray3d *vtTerrain::CreateStructuresFromXML(const vtString &strFilename)
 {
 	VTLOG("CreateStructuresFromXML '%s'\n", (const char *) strFilename);
-	vtStructureArray3d *structures = new vtStructureArray3d;
+	vtStructureArray3d *structures = NewStructureArray();
 	if (!structures->ReadXML(strFilename))
 	{
 		VTLOG("\tCouldn't load file.\n");
 		delete structures;
+		m_StructureSet.RemoveAt(m_iStructSet);
+		m_iStructSet = m_StructureSet.GetSize() - 1;
 		return NULL;
 	}
-	structures->SetTerrain(this);
-	m_StructureSet.Append(structures);
 
 	CreateStructures(structures);
 	return structures;
@@ -801,6 +802,7 @@ vtStructureArray3d *vtTerrain::NewStructureArray()
 	sa->m_proj = m_proj;
 
 	m_StructureSet.Append(sa);
+	m_iStructSet = m_StructureSet.GetSize() - 1;
 	return sa;
 }
 
@@ -940,6 +942,28 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 
 void vtTerrain::_CreateCulture()
 {
+	// Read terrain-specific content file
+	vtString con_file = m_Params.GetValueString(STR_CONTENT_FILE);
+	VTLOG(" Looking for terrain-specific content file: '%s'\n", (const char *) con_file);
+	vtString fname = FindFileOnPaths(s_DataPaths, con_file);
+	if (fname != "")
+	{
+		VTLOG("  Found.\n");
+		try
+		{
+			m_Content.ReadXML(fname);
+		}
+		catch (xh_io_exception &ex)
+		{
+			// display (or a least log) error message here
+			VTLOG("  XML error:");
+			VTLOG(ex.getFormattedMessage().c_str());
+			return;
+		}
+	}
+	else
+		VTLOG("  Not found.\n");
+
 	// The LOD distances are in meters
 	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
 	_SetupVegGrid((float) m_Params.GetValueInt(STR_VEGDISTANCE));
@@ -1056,7 +1080,7 @@ void vtTerrain::_CreateCulture()
 	}
 	if (num == 0)
 	{
-		// No structures loaded, but the might create some later, so set
+		// No structures loaded, but the user might create some later, so set
 		// the projection to match the terrain.
 		GetStructures()->m_proj = m_proj;
 	}
