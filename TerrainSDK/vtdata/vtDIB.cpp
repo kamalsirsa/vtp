@@ -108,8 +108,8 @@ void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
 
 	unsigned int w = GetWidth();
 	unsigned int h = GetHeight();
-	unsigned int tw = target.GetWidth();
-	unsigned int th = target.GetHeight();
+	int tw = target.GetWidth();
+	int th = target.GetHeight();
 
 	unsigned int i, j;
 	RGBi rgb;
