@@ -15,9 +15,14 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/vtLog.h"
 #include "canvas.h"
 #include "frame.h"
 #include "app.h"
+
+#ifndef WIN32
+#define Sleep sleep
+#endif
 
 DECLARE_APP(vtApp)
 
@@ -92,6 +97,13 @@ void vtGLCanvas::UpdateStatusText()
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
+	static bool bFirst = true;
+
+	if (bFirst)
+	{
+		VTLOG("first OnPaint\n");
+		bFirst = false;
+	}
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
@@ -112,6 +124,13 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		vtGetScene()->DoUpdate();
 
 		SwapBuffers();
+
+		// Limit framerate (rough, but sufficient)
+		float curr = vtGetFrameTime();
+		float max = 1.0f / 60.0f;
+		float diff = max - curr;
+		if (diff > 0)
+			Sleep((int)(diff * 1000));
 
 #ifdef WIN32
 		// Call Refresh again for continuous rendering,
@@ -153,6 +172,7 @@ static void Reshape(int width, int height)
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
 {
+	VTLOG("Canvas OnClose\n");
 	m_bRunning = false;
 }
 
