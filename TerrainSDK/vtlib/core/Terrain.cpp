@@ -541,7 +541,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	if (bWater)
 	{
 		// create ocean material: texture waves
-		vtString fname = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.bmp");
+		vtString fname = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
 		pApp_Ocean->AddTextureMaterial2(fname,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha

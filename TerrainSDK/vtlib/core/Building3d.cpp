@@ -111,7 +111,7 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	// siding materials
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/siding64.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/siding64.jpg");
 	vtImage *pImageSiding = new vtImage(path);
 	divisions = 6;
 	start = .25f;
@@ -129,27 +129,27 @@ void vtBuilding3d::CreateSharedMaterials()
 
 	// window material
 	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.jpg");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// door material
 	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/door.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/door.jpg");
 	pMat->SetTexture2(path);
 	s_Materials->Append(pMat);
 
 	// wood material
 	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/wood1_256.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/wood1_256.jpg");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// cement block material
 	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/cement_block1_256.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/cement_block1_256.jpg");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
@@ -157,7 +157,7 @@ void vtBuilding3d::CreateSharedMaterials()
 	// brick material 1
 	// measured average brick color: 159, 100, 83 (reddish medium brown)
 	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick1_256.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick1_256.jpg");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
@@ -165,13 +165,13 @@ void vtBuilding3d::CreateSharedMaterials()
 	// brick material 2
 	// measured average brick color: 183, 178, 171 (slightly pinkish grey)
 	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick2_256.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick2_256.jpg");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// painted brick material: no brick color, can be colorized for any shade
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick_mono_256.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick_mono_256.jpg");
 	vtImage *pPaintedBrick = new vtImage(path);
 	for (i = 0; i < COLOR_SPREAD; i++)
 	{
@@ -182,7 +182,7 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	// rolled roofing material: no brick color, can be colorized for any shade
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/roofing1_256.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/roofing1_256.jpg");
 	vtImage *pRolledRoofing = new vtImage(path);
 	for (i = 0; i < COLOR_SPREAD; i++)
 	{
@@ -193,7 +193,7 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	// create window-wall materials
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.jpg");
 	vtImage *pImageWindowWall = new vtImage(path);
 	for (i = 0; i < COLOR_SPREAD; i++)
 	{

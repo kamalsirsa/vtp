@@ -42,7 +42,7 @@ vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 	bool bCulling = false;
 	bool bLighting = false;
 	bool bTransp = false;
-	apps->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.bmp",
+	apps->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
 						 bCulling, bLighting, bTransp);
 	geom->SetMaterials(apps);
 

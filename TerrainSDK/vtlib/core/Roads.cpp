@@ -798,37 +798,37 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 		m_mi_roadside = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
 #if 0
 		// 1
-		m_pMats->AddTextureMaterial2("GeoTypical/margin_32.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/margin_32.jpg",
 			TEXTURE_ARGS(false));
 		// 2
-		m_pMats->AddTextureMaterial2("GeoTypical/sidewalk1_v2_512.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/sidewalk1_v2_512.jpg",
 			TEXTURE_ARGS(false));
 		// 3
-		m_pMats->AddTextureMaterial2("GeoTypical/1lane_64.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/1lane_64.jpg",
 			TEXTURE_ARGS(false));
 		// 4
-		m_pMats->AddTextureMaterial2("GeoTypical/2lane1way_128.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/2lane1way_128.jpg",
 			TEXTURE_ARGS(false));
 		// 5
-		m_pMats->AddTextureMaterial2("GeoTypical/2lane2way_128.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/2lane2way_128.jpg",
 			TEXTURE_ARGS(false));
 		// 6
-		m_pMats->AddTextureMaterial2("GeoTypical/3lane1way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/3lane1way_256.jpg",
 			TEXTURE_ARGS(false));
 		// 7
-		m_pMats->AddTextureMaterial2("GeoTypical/3lane2way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/3lane2way_256.jpg",
 			TEXTURE_ARGS(false));
 		// 8
-		m_pMats->AddTextureMaterial2("GeoTypical/4lane1way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/4lane1way_256.jpg",
 			TEXTURE_ARGS(false));
 		// 9
-		m_pMats->AddTextureMaterial2("GeoTypical/4lane2way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/4lane2way_256.jpg",
 			TEXTURE_ARGS(true));
 		// 10
-		m_pMats->AddTextureMaterial2("GeoTypical/water.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/water.jpg",
 			TEXTURE_ARGS(false));
 #endif
-		path = FindFileOnPaths(paths, "GeoTypical/roadset_1k.bmp");
+		path = FindFileOnPaths(paths, "GeoTypical/roadset_1k.jpg");
 		m_mi_roads = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(false));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_4WD);

@@ -97,7 +97,7 @@ void NevadaTerrain::CreateWater()
 {
 	// create water material: texture waves
 	vtMaterialArray *pMats = new vtMaterialArray();
-	vtString str = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.bmp");
+	vtString str = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
 	pMats->AddTextureMaterial2(str,
 		false, true,	// cull, light
 		false, false,	// transp, add
