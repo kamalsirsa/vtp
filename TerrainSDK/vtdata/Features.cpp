@@ -868,6 +868,19 @@ void ParseQuotedCSV(const char *buf, vtStringArray &strings)
 	}
 }
 
+int charcount(const char *buf, char ch)
+{
+	int count = 0;
+	for (const char *c = buf; *c; c++)
+		if (*c == ch) count++;
+	return count;
+}
+
+bool isodd(int n)
+{
+	return (n&1) != 0;
+}
+
 bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(int))
 {
 	VTLOG(" LoadDataFromCSV\n");
@@ -900,8 +913,16 @@ bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(
 		AddField(words[f], FT_String, 1);
 	}
 	unsigned int iEntities = 0;
+	char buf2[4096];
 	while (fgets(buf, 4096, fp) != NULL)
 	{
+		// beware of LF in the middle of quoted strings
+		while (isodd(charcount(buf, '"')))
+		{
+			fgets(buf2, 4096, fp);
+			strcat(buf, buf2);
+		}
+
 		words.clear();
 		ParseQuotedCSV(buf, words);
 		if (words.size() != iFields)
