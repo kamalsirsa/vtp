@@ -1,6 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:		Projection2Dlg.cpp
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
 	#pragma implementation "Projection2Dlg.cpp"
@@ -69,7 +72,6 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl = GetProjchoice();
 
 	AddValidator(ID_PROJ, &m_iProj);
-//	AddValidator(ID_HORUNITS, &m_iUnits);
 	AddValidator(ID_ZONE, &m_iZone);
 
 	m_pProjCtrl->Append("Geographic");
@@ -297,21 +299,6 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 
 void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 {
-#if 0
-	int previous = m_iUnits;
-
-	TransferDataFromWindow();
-
-	// prevent illegal combinations
-	if (m_eProj == PT_GEO && m_iUnits != 0)
-		m_iUnits = 0;
-	if (m_eProj != PT_GEO && m_iUnits == 0)
-		m_iUnits = previous;
-
-	TransferDataToWindow();
-	if (m_iUnits == previous)
-		return;
-#endif
 	TransferDataFromWindow();
 
 	m_iUnits = m_pHorizCtrl->GetSelection();
@@ -407,7 +394,6 @@ void Projection2Dlg::AskStatePlane()
 	}
 	else
 	{
-//	  m_proj.SetLinearUnits(SRS_UL_FOOT, 0.3048);
 		SetUIFromProjection();
 	}
 }
