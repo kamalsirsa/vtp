@@ -239,7 +239,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, _T("Building Properties"));
 	m_pLayerDlg = new LayerDlg(this, -1, _T("Layers"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pLayerDlg->SetSize(400, 400);
+	m_pLayerDlg->SetSize(600, 250);
 
 	m_canvas->SetCurrent();
 }
