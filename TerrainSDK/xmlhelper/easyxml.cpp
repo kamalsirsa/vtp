@@ -233,29 +233,25 @@ void readXML (const string &path, XMLVisitor &visitor)
 {
 	gzFile fp = gzopen(path.c_str(), "rb");
 
-	if (fp)
-	{
-		try
-		{
-			readCompressedXML(fp, visitor, path);
-		}
-		catch (xh_io_exception &e)
-		{
-				gzclose(fp);
-				throw e;
-		}
-		catch (xh_throwable &t)
-		{
-				gzclose(fp);
-				throw t;
-		}
-		gzclose(fp);
-	}
-	else
-	{
+	if (!fp)
 		throw xh_io_exception("Failed to open file", xh_location(path),
 					"XML Parser");
+	try
+	{
+		readCompressedXML(fp, visitor, path);
 	}
+	catch (xh_io_exception &e)
+	{
+			gzclose(fp);
+			throw e;
+	}
+	catch (xh_throwable &t)
+	{
+			gzclose(fp);
+			throw t;
+	}
+	// If it gets here, it succeeded
+	gzclose(fp);
 }
 
 void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path)
@@ -297,12 +293,19 @@ void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path)
 	}
 
 	// Verify end of document.
-	if (!XML_Parse(parser, buf, 0, true)) {
+	if (!XML_Parse(parser, buf, 0, true))
+	{
+		XML_Error errcode = XML_GetErrorCode(parser);
+		const XML_LChar *errstr = XML_ErrorString(errcode);
+		int line = XML_GetCurrentLineNumber(parser);
+		int column = XML_GetCurrentColumnNumber(parser);
+
 		XML_ParserFree(parser);
-		throw xh_io_exception(XML_ErrorString(XML_GetErrorCode(parser)),
+
+		throw xh_io_exception(errstr,
 				xh_location(path,
-							XML_GetCurrentLineNumber(parser),
-							XML_GetCurrentColumnNumber(parser)),
+							line,
+							column),
 				"XML Parser");
 	}
 
