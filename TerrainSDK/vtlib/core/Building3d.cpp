@@ -47,7 +47,7 @@ vtMaterial *makeMaterial(RGBf &color, bool culling)
 
 //////////////////////////////////////////////////////////////////////////////////
 
-vtBuilding3d::vtBuilding3d()
+vtBuilding3d::vtBuilding3d() : vtBuilding()
 {
 	m_pContainer = NULL;
 	m_pGeom = NULL;
