@@ -514,7 +514,7 @@ void vtTerrain::PaintDib()
 	}
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
 
-	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors);
+	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, 4000);
 }
 
 /**
