@@ -696,13 +696,8 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	ReadStarData(starfile);
 
 	vtMaterialArray *pApps = new vtMaterialArray();
-	vtMaterial *pMat = new vtMaterial();
-	pMat->SetCulling(false);
-	pMat->SetLighting(false);
-	pMat->SetDiffuse(0.0f, 0.0f, 0.0f, 1.0f);
-	pMat->SetSpecular(0.0f, 0.0f, 0.0f);
-	pMat->SetAmbient(0.0f, 0.0f, 0.0f);
-	pMat->SetEmission(0.0f, 0.0f, 0.0f);
+	int index = pApps->AddRGBMaterial1(RGBf(0,0,0), false, false);
+	vtMaterial *pMat = pApps->GetAt(index);
 	pMat->SetTransparent(true, true);
 	int star_mat = pApps->Append(pMat);
 
