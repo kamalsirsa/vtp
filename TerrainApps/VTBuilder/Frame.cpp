@@ -36,7 +36,7 @@
 #include "ResampleDlg.h"
 #include "SampleImageDlg.h"
 #include "FeatInfoDlg.h"
-#include "DistanceDlg.h"
+#include "vtui/DistanceDlg.h"
 #include "vtui/LinearStructDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)

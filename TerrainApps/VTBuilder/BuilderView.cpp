@@ -28,7 +28,7 @@
 #include "StructLayer.h"
 #include "UtilityLayer.h"
 // Dialogs
-#include "DistanceDlg.h"
+#include "vtui/DistanceDlg.h"
 
 #include "cpl_error.h"
 

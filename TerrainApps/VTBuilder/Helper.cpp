@@ -75,31 +75,6 @@ bool UpdateProgressDialog(int amount, const wxString& newmsg)
 }
 
 
-/////////////////////////////////
-
-wxString FormatCoord(bool bGeo, double val, bool minsec)
-{
-	wxString str;
-	if (bGeo)
-	{
-		if (minsec)
-		{
-			// show minutes and seconds
-			double degree = val;
-			double min = (degree - (int)degree) * 60.0f;
-			double sec = (min - (int)min) * 60.0f;
-
-			str.Printf(_T("%d° %d' %.1f\""), (int)degree, (int)min, sec);
-		}
-		else
-			str.Printf(_T("%3.6lf"), val);	// decimal degrees
-	}
-	else
-		str.Printf(_T("%.2lf"), val);	// meters-based
-	return str;
-}
-
-
 //////////////////////////////////
 
 void IncreaseRect(wxRect &rect, int adjust)

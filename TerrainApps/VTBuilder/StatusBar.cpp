@@ -17,7 +17,7 @@
 
 #include "StatusBar.h"
 #include "BuilderView.h"
-#include "Helper.h"
+#include "vtui/Helper.h"	// for FormatCoord
 
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
@@ -54,7 +54,7 @@ void MyStatusBar::OnSize(wxSizeEvent& event)
 
 wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 {
-	wxString str;
+	wxString2 str;
 	if (bGeo)
 	{
 		str = ::FormatCoord(bGeo, coord, m_bShowMinutes);

@@ -17,6 +17,7 @@
 #include "Helper.h"
 #include "RawDlg.h"
 #include "vtBitmap.h"
+#include "vtui/Helper.h"	// for FormatCoord
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
@@ -388,8 +389,7 @@ bool vtElevLayer::GetExtent(DRECT &rect)
 	}
 	if (m_pTin)
 	{
-		float minh, maxh;
-		m_pTin->GetExtents(rect, minh, maxh);
+		rect = m_pTin->GetEarthExtents();
 		return true;
 	}
 	return false;
@@ -1139,42 +1139,42 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 
 void vtElevLayer::GetPropertyText(wxString &strIn)
 {
-	wxString str;
+	wxString2 result = strIn, str;
 
 	if (m_pGrid)
 	{
 		int cols, rows;
 		m_pGrid->GetDimensions(cols, rows);
 		str.Printf(_T("Grid size: %d x %d\n"), cols, rows);
-		strIn += str;
+		result += str;
 
 		bool bGeo = (m_pGrid->GetProjection().IsGeographic() != 0);
-		strIn += _T("Grid spacing: ");
+		result += _T("Grid spacing: ");
 		DPoint2 spacing = m_pGrid->GetSpacing();
-		strIn += FormatCoord(bGeo, spacing.x);
-		strIn += _T(" x ");
-		strIn += FormatCoord(bGeo, spacing.y);
-		strIn += _T("\n");
+		result += FormatCoord(bGeo, spacing.x);
+		result += _T(" x ");
+		result += FormatCoord(bGeo, spacing.y);
+		result += _T("\n");
 
 		str.Printf(_T("Floating point: %hs\n"), m_pGrid->IsFloatMode() ? "Yes" : "No");
-		strIn += str;
+		result += str;
 
 		m_pGrid->ComputeHeightExtents();
 		float fMin, fMax;
 		m_pGrid->GetHeightExtents(fMin, fMax);
 		str.Printf(_T("Minimum elevation: %.2f\n"), fMin);
-		strIn += str;
+		result += str;
 		str.Printf(_T("Maximum elevation: %.2f\n"), fMax);
-		strIn += str;
+		result += str;
 
 		str.Printf(_T("Height scale (meters per vertical unit): %f\n"), m_pGrid->GetScale());
-		strIn += str;
+		result += str;
 
 		const char *dem_name = m_pGrid->GetDEMName();
 		if (*dem_name)
 		{
 			str.Printf(_T("Original DEM name: \"%hs\"\n"), dem_name);
-			strIn += str;
+			result += str;
 		}
 	}
 	if (m_pTin)
@@ -1182,8 +1182,9 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		int verts = m_pTin->NumVerts();
 		int tris = m_pTin->NumTris();
 		str.Printf(_T("TIN\nVertices: %d\nTriangles: %d\n"), verts, tris);
-		strIn += str;
+		result += str;
 	}
+	strIn = result;
 }
 
 wxString vtElevLayer::GetFileExtension()
