@@ -361,7 +361,6 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 	m_pGeom->AddTextMesh(m_pLabel, 0);
 	m_pLabel->Release();
 
-	m_pLabel->SetText(message);
 	m_pLabel->SetColor(text_color);
 	m_pLabel->SetAlignment(2);	// YZ plane
 	m_pLabel->SetPosition(FPoint3(0, height*0.05f, -diff.Length()/2));
@@ -373,15 +372,21 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 	m_pGeom->AddTextMesh(m_pLabel2, 0);
 	m_pLabel2->Release();
 
-	m_pLabel2->SetText(message);
 	m_pLabel2->SetColor(text_color);
 	m_pLabel2->SetAlignment(2);	// YZ plane
 	m_pLabel2->SetPosition(FPoint3(0, height*0.05f, -diff.Length()/2));
 	FQuat rot2(FPoint3(0,1,0), -PID2f);
 	m_pLabel2->SetRotation(rot2);
 
+	SetText(message);
+
 	// Now, orient it into the desired location
 	PointTowards(diff);
 	SetTrans(p1);
 }
 
+void vtDimension::SetText(const char *text)
+{
+	m_pLabel->SetText(text);
+	m_pLabel2->SetText(text);
+}

@@ -58,6 +58,8 @@ public:
 		const RGBf &line_color, const RGBf &text_color,
 		vtFont *font, const char *message);
 
+	void SetText(const char *text);
+
 	vtGeom *m_pGeom;
 	vtMaterialArray *m_pMats;
 	vtMesh *m_pLines;
