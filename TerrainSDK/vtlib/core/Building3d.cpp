@@ -833,6 +833,13 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 }
 
 
+//
+// Walls which consist of regularly spaced windows and 'siding' material
+// can be modelled far more efficiently.  This is very useful for rendering
+// speed for large scenes in which the user doesn't have or doesn't care
+// about the exact material/windows of the buildings.  We create
+// optimized geometry in which each whole wall is a single quad.
+// 
 void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 									  int iHighlightEdge)
 {
@@ -840,22 +847,22 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 	FLine3 poly1 = *m_lfp[iLevel];
 	FLine3 poly2;
 
-	int j;
+	int i;
 	int edges = pLev->m_Edges.GetSize();
-	for (j = 0; j < edges; j++)
-		poly1[j].y = fHeight;
+	for (i = 0; i < edges; i++)
+		poly1[i].y = fHeight;
 
 	poly2 = poly1;
-	for (j = 0; j < edges; j++)
-		poly2[j].y += pLev->m_fStoryHeight;
+	for (i = 0; i < edges; i++)
+		poly2[i].y += pLev->m_fStoryHeight;
 
-	for (j = 0; j < edges; j++)
+	for (i = 0; i < edges; i++)
 	{
-		int a = j, b = (a+1)%edges;
+		int a = i, b = (a+1)%edges;
 
 		FLine3 quad(4);
 
-		vtEdge	*pEdge = pLev->m_Edges[j];
+		vtEdge	*pEdge = pLev->m_Edges[i];
 
 		// do the whole wall section
 		quad[0] = poly1[a];
@@ -868,8 +875,17 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 		AddWallSection(pEdge, BMAT_WINDOWWALL, quad, h1, h2,
 			pEdge->NumFeaturesOfCode(WFC_WINDOW));
 
-		if (j == iHighlightEdge)
-			AddHighlightSection(pEdge, quad);
+		if (i == iHighlightEdge)
+		{
+			for (int j = 0; j < pLev->m_iStories; j++)
+			{
+				AddHighlightSection(pEdge, quad);
+				quad[0].y += pLev->m_fStoryHeight;
+				quad[1].y += pLev->m_fStoryHeight;
+				quad[2].y += pLev->m_fStoryHeight;
+				quad[3].y += pLev->m_fStoryHeight;
+			}
+		}
 	}
 }
 
