@@ -225,9 +225,13 @@ bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
 		int iField = iColumn - m_iCoordColumns;
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeature, iField, vs);
+#if SUPPORT_WSTRING
 		wstring2 wide;
 		wide.from_utf8(vs);
 		wxString2 str = wide.c_str();
+#else
+		wxString2 str = vs;
+#endif
 
 		Field *pField = m_pFeatures->GetField(iField);
 

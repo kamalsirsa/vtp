@@ -874,10 +874,12 @@ void vtTextMesh::SetText(const wchar_t *text)
 	m_pOsgText->setText(text);
 }
 
+#if SUPPORT_WSTRING
 void vtTextMesh::SetText(const std::wstring &text)
 {
 	m_pOsgText->setText(text.c_str());
 }
+#endif
 
 void vtTextMesh::SetPosition(const FPoint3 &pos)
 {

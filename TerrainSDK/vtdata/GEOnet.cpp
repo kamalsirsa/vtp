@@ -9,6 +9,8 @@
 #include "vtdata/shapelib/shapefil.h"
 #include <stdio.h>
 
+#if SUPPORT_WSTRING
+
 Country::Country()
 {
 }
@@ -557,4 +559,6 @@ bool Countries::FindPlace(const char *country_val, const char *place_val,
 	}
 	return false;
 }
+
+#endif // SUPPORT_WSTRING
 

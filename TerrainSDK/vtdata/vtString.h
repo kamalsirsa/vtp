@@ -12,8 +12,8 @@
 #include <stdarg.h>
 #include <string>
 #include <vector>
-//using namespace std;
 
+#include "config_vtdata.h"
 #include "Array.h"
 
 #ifdef WIN32
@@ -358,12 +358,18 @@ inline bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2)
 // helpers
 vtString EscapeStringForXML(const char *input);
 void EscapeStringForXML(const std::string &input, std::string &output);
+
+#if SUPPORT_WSTRING
 void EscapeStringForXML(const std::wstring &input, std::string &output);
 void EscapeStringForXML(const std::wstring &input, std::wstring &output);
+#endif
+
 
 
 /////////////////////////////////////////////////////////////////////////////
 // wstring2
+
+#if SUPPORT_WSTRING
 
 #define MAX_WSTRING2_SIZE 2048
 
@@ -396,6 +402,10 @@ public:
 private:
 	static char s_buffer[MAX_WSTRING2_SIZE];
 };
+
+#endif // SUPPORT_WSTRING
+
+
 
 /**
  * vtStringArray class: an array of vtString objects.

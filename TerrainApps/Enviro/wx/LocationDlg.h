@@ -42,7 +42,7 @@ public:
 	void RefreshList();
 	void SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
 				   const vtLocalConversion &conv);
-	void SetLocFile(const wstring2 &fname);
+	void SetLocFile(const vtString &fname);
 	void RefreshButtons();
 
 private:

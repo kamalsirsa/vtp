@@ -1107,10 +1107,15 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		vtTextMesh *text = new vtTextMesh(font, style.m_label_size, true);	// center
 
 		feat.GetValueAsString(i, style.m_field_index, str);
+#if SUPPORT_WSTRING
 		// text might be UTF-8
 		wstring2 wide_string;
 		wide_string.from_utf8(str);
 		text->SetText(wide_string);
+#else
+		// hope it isn't
+		text->SetText(str);
+#endif
 
 		vtGeom *geom = new vtGeom();
 		geom->SetName2(str);

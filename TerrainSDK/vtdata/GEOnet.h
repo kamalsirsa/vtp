@@ -8,6 +8,8 @@
 #ifndef GEONET_H
 #define GEONET_H
 
+#if SUPPORT_WSTRING
+
 #include "MathTypes.h"
 #include "vtString.h"
 
@@ -76,6 +78,8 @@ protected:
 	Array<Country*> m_countries;
 	vtString m_path;
 };
+
+#endif // SUPPORT_WSTRING
 
 #endif // GEONET_H
 

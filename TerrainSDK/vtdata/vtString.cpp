@@ -863,6 +863,8 @@ void EscapeStringForXML(const std::string &input, std::string &output)
 	}
 }
 
+#if SUPPORT_WSTRING
+
 void EscapeStringForXML(const std::wstring &input, std::string &output)
 {
 	output = "";
@@ -922,6 +924,14 @@ void EscapeStringForXML(const std::wstring &input, std::wstring &output)
 		}
 	}
 }
+
+#endif // SUPPORT_WSTRING
+
+
+/////////////////////////////////////////////////////////////////////////////
+// wstring2
+
+#if SUPPORT_WSTRING
 
 using namespace std;
 
@@ -1108,4 +1118,6 @@ const char *wstring2::to_utf8() const
 	if (buf && (len<n)) *buf = 0;
 	return s_buffer;
 }
+
+#endif // SUPPORT_WSTRING
 

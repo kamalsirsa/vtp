@@ -67,25 +67,6 @@ void vtLog::_Log(const char *msg)
 	fputs(msg, stdout);
 }
 
-void vtLog::_Log(const wchar_t *msg)
-{
-#ifndef __DARWIN_OSX__
-	if (m_log)
-	{
-		// it is not so useful to write wide characters to the file, which
-		// otherwise contains 8-bit text, so convert back first
-//		fputws(msg, m_log);
-		wstring2 str = msg;
-		fputs(str.eb_str(), m_log);
-		fflush(m_log);
-	}
-#endif	// __DARWIN_OSX__
-
-#ifdef _MSC_VER
-	OutputDebugStringW(msg);
-#endif
-}
-
 void vtLog::Printf(const char *pFormat, ...)
 {
 	va_list va;
@@ -97,19 +78,31 @@ void vtLog::Printf(const char *pFormat, ...)
 	_Log(ach);
 }
 
+
+#if SUPPORT_WSTRING
+
+void vtLog::_Log(const wchar_t *msg)
+{
+	if (m_log)
+	{
+		// it is not so useful to write wide characters to the file, which
+		// otherwise contains 8-bit text, so convert back first
+//		fputws(msg, m_log);
+		wstring2 str = msg;
+		fputs(str.eb_str(), m_log);
+		fflush(m_log);
+	}
+
+#ifdef _MSC_VER
+	OutputDebugStringW(msg);
+#endif
+}
+
 void vtLog::Printf(const wchar_t *pFormat, ...)
 {
-#ifndef __DARWIN_OSX__
 	va_list va;
 	va_start(va, pFormat);
 
-#if defined (__DARWIN_OSX__) || defined (macintosh)
-	// Mac seems to not have all the ANSI functions like vswprintf, so
-	//  convert the format string to 8-bit and use vsprintf instead.
-	char ach[1024];
-	wstring2 strFormat = pFormat;
-	vsprintf(ach, strFormat.eb_str(), va);
-#else
 	// Use wide characters
 	wchar_t ach[1024];
 #ifdef _MSC_VER
@@ -118,8 +111,9 @@ void vtLog::Printf(const wchar_t *pFormat, ...)
 	// apparently on non-MSVC platforms this takes 4 arguments (safer)
 	vswprintf(ach, 1024, pFormat, va);
 #endif
-#endif
 
 	_Log(ach);
-#endif	// __DARWIN_OSX__
 }
+
+#endif // SUPPORT_WSTRING
+

@@ -426,9 +426,11 @@ void vtTextMesh::SetText(const wchar_t *text)
 {
 }
 
+#if SUPPORT_WSTRING
 void vtTextMesh::SetText(const std::wstring &text)
 {
 }
+#endif
 
 void vtTextMesh::SetPosition(const FPoint3 &pos)
 {

@@ -18,9 +18,12 @@ public:
 
 	void _StartLog(const char *fname);
 	void _Log(const char *str);
-	void _Log(const wchar_t *str);
 	void Printf(const char *pFormat, ...);
+
+#if SUPPORT_WSTRING
+	void _Log(const wchar_t *str);
 	void Printf(const wchar_t *pFormat, ...);
+#endif
 
 private:
 	FILE *m_log;

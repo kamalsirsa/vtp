@@ -10,6 +10,14 @@
 
 #include "vtdata/Projections.h"
 #include "vtdata/LocalConversion.h"
+#include "vtdata/config_vtdata.h"
+
+#if SUPPORT_WSTRING
+	#define LocNameString wstring2
+#else
+	#define LocNameString std::string
+#endif
+
 
 /**
  * A location is represented as a earth-coordinate point, an elevation,
@@ -32,7 +40,7 @@ public:
 		return *this;
 	}
 
-	wstring2 m_strName;
+	LocNameString m_strName;
 
 	// Location and view direction are encoded as two 3D points.  The first
 	//  is the location, the second is the "Look At" point.  Heading and
@@ -59,11 +67,11 @@ class vtLocationSaver
 	friend class LocationVisitor;
 public:
 	vtLocationSaver();
-	vtLocationSaver(const wstring2 &fname);
+	vtLocationSaver(const vtString &fname);
 	~vtLocationSaver();
 
-	bool Read(const wstring2 &fname);
-	bool Write(const wstring2 &fname = L"");
+	bool Read(const vtString &fname);
+	bool Write(const vtString &fname = "");
 	void Remove(int num);
 	int GetNumLocations() { return m_loc.GetSize(); }
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }
@@ -74,7 +82,11 @@ public:
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 
+#if SUPPORT_WSTRING
 	bool StoreTo(int num, const wstring2 &name = L"");
+#else
+	bool StoreTo(int num, const std::string &name = "");
+#endif
 	bool RecallFrom(int num);
 
 	// Store information necessary to convert from global earth CS
@@ -83,9 +95,9 @@ public:
 	vtProjection		m_proj;
 	vtTransformBase		*m_pTransform;
 
-// Implementation
 protected:
-	wstring2 m_strFilename;
+	// Implementation
+	vtString m_strFilename;
 
 	Array<vtLocation*> m_loc;
 };

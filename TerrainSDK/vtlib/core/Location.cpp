@@ -16,7 +16,7 @@ vtLocationSaver::vtLocationSaver()
 {
 }
 
-vtLocationSaver::vtLocationSaver(const wstring2 &fname)
+vtLocationSaver::vtLocationSaver(const vtString &fname)
 {
 	Read(fname);
 }
@@ -34,18 +34,17 @@ void vtLocationSaver::Empty()
 	m_loc.Empty();
 }
 
-bool vtLocationSaver::Write(const wstring2 &fname_in)
+bool vtLocationSaver::Write(const vtString &fname_in)
 {
-	wstring2 fname;
-	if (fname_in != L"")
+	vtString fname;
+	if (fname_in != "")
 		fname = fname_in;
 	else
 		fname = m_strFilename;
 
-	FILE *fp = fopen(fname.eb_str(), "wb");
+	FILE *fp = fopen(fname, "wb");
 	if (!fp) return false;
 
-	wstring2 xml;
 	int i, num = m_loc.GetSize();
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(fp, "<locations-file file-format-version=\"1.0\">\n");
@@ -55,10 +54,18 @@ bool vtLocationSaver::Write(const wstring2 &fname_in)
 		fprintf(fp, "  <location>\n");
 
 		// first, we must convert characters like <, >, and &
+#if SUPPORT_WSTRING
+		wstring2 xml;
 		EscapeStringForXML(loc->m_strName, xml);
 
 		// then, deal with 16-bit characters by using UTF-8
 		const char *utf8 = xml.to_utf8();
+#else
+		std::string xml;
+		EscapeStringForXML(loc->m_strName, xml);
+		// no wide string support
+		const char *utf8 = xml.c_str();
+#endif
 
 		fprintf(fp, "   <name>%s</name>\n", utf8);
 		fprintf(fp, "   <point1>%.12lf,%.12lf,%.2f</point1>\n",
@@ -128,7 +135,11 @@ void LocationVisitor::endElement(const char *name)
 		{
 			// the special "&" characters have already been un-escaped for
 			// us, but we still need to convert from UTF-8 to wide string
+#if SUPPORT_WSTRING
 			m_loc->m_strName.from_utf8(m_data.c_str());
+#else
+			m_loc->m_strName = m_data;
+#endif
 		}
 	}
 	if (m_level == 1 && !strcmp(name, "locations-file"))
@@ -147,12 +158,12 @@ void LocationVisitor::data(const char *s, int length)
 
 /////////////////////////////////////////////
 
-bool vtLocationSaver::Read(const wstring2 &fname)
+bool vtLocationSaver::Read(const vtString &fname)
 {
 	LocationVisitor visitor(this);
 	try
 	{
-		readXML(fname.eb_str(), visitor);
+		readXML((const char *)fname, visitor);
 	}
 	catch (xh_io_exception &exp)
 	{
@@ -163,7 +174,7 @@ bool vtLocationSaver::Read(const wstring2 &fname)
 	return true;
 }
 
-bool vtLocationSaver::StoreTo(int num, const wstring2 &name)
+bool vtLocationSaver::StoreTo(int num, const LocNameString &name)
 {
 	if (!m_pTransform)
 		return false;
@@ -218,7 +229,7 @@ bool vtLocationSaver::StoreTo(int num, const wstring2 &name)
 	loc->m_pos2.Set(epos2.x, epos2.y);
 	loc->m_fElevation2 = epos2.z;
 
-	if (name != L"")
+	if (!name.empty())
 		loc->m_strName = name;
 
 	m_loc.SetAt(num, loc);

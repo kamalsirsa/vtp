@@ -30,5 +30,13 @@
 //
 #define SUPPORT_UNZIP	1
 
+// Set to 1 if your C++ compiler supports wide strings (std::wstring)
+//
+// Apparently, there is some environment on the Macintosh without this.
+// If 0, then international characters in strings may not (will not)
+// be handled correctly.
+//
+#define SUPPORT_WSTRING	1
+
 #endif // CONFIG_VTDATA_H
 

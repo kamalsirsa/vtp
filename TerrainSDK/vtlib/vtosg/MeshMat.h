@@ -9,6 +9,7 @@
 #include <osgText/Font>
 #include <osgText/Text>
 #include <osg/BlendFunc>
+#include "vtdata/config_vtdata.h"
 
 class vtImage;
 
@@ -182,7 +183,9 @@ public:
 
 	void SetText(const char *text);
 	void SetText(const wchar_t *text);
+#if SUPPORT_WSTRING
 	void SetText(const std::wstring &text);
+#endif
 	void SetPosition(const FPoint3 &pos);
 	void SetAlignment(int align);
 

@@ -74,7 +74,7 @@ void LocationDlg::SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
 	m_pSaver->SetProjection(proj);
 }
 
-void LocationDlg::SetLocFile(const wstring2 &fname)
+void LocationDlg::SetLocFile(const vtString &fname)
 {
 	m_pSaver->Empty();
 	if (!m_pSaver->Read(fname))
