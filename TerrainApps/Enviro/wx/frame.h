@@ -169,8 +169,11 @@ protected:
 	bool m_bCulleveryframe;
 	bool m_bFullscreen;
 	bool m_bTopDown;
+
+	// snapshot members
 	wxString2 m_strSnapshotFilename;
 	int		m_iSnapshotNumber;
+	int		m_iFormat;
 
 DECLARE_EVENT_TABLE()
 };

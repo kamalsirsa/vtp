@@ -800,14 +800,19 @@ void vtFrame::Snapshot(bool bNumbered)
 	osg::ref_ptr<osg::Image> pImage = new osg::Image;
 	pImage->readPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE);
 
+	wxString2 use_name;
 	if (!bNumbered || (bNumbered && m_strSnapshotFilename == _T("")))
 	{
 		// save current directory
 		wxString path = wxGetCwd();
 
+		wxString filter = _T("JPEG Files (*.jpg)|*.jpg|")
+			_T("BMP Files (*.bmp)|*.bmp|")
+			_T("PNG Files (*.png)|*.png|")
+			_T("TIF Files (*.tif)|*.tif|");
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _T("Save View Snapshot"), _T(""), _T(""),
-			_T("JPEG Files (*.jpg)|*.jpg|"), wxSAVE);
+			filter, wxSAVE);
 		bool bResult = (saveFile.ShowModal() == wxID_OK);
 		EnableContinuousRendering(true);
 		if (!bResult)
@@ -815,10 +820,15 @@ void vtFrame::Snapshot(bool bNumbered)
 			wxSetWorkingDirectory(path);	// restore
 			return;
 		}
-		m_strSnapshotFilename = saveFile.GetPath();
-		m_iSnapshotNumber = 0;
+		m_iFormat = saveFile.GetFilterIndex();
+		if (bNumbered)
+		{
+			m_strSnapshotFilename = saveFile.GetPath();
+			m_iSnapshotNumber = 0;
+		}
+		else
+			use_name = saveFile.GetPath();;
 	}
-	wxString2 use_name;
 	if (bNumbered)
 	{
 		wxString start, number, extension;
@@ -828,8 +838,6 @@ void vtFrame::Snapshot(bool bNumbered)
 		m_iSnapshotNumber++;
 		use_name = start + number + extension;
 	}
-	else
-		use_name = m_strSnapshotFilename;
 
 	unsigned char *data;
 	vtDIB dib;
@@ -847,7 +855,21 @@ void vtFrame::Snapshot(bool bNumbered)
 			dib.SetPixel24(x, size.y-1-y, RGBi(r, g, b));
 		}
 	}
-	dib.WriteJPEG(use_name.mb_str(), 98);
+	switch (m_iFormat)
+	{
+	case 0:
+		dib.WriteJPEG(use_name.mb_str(), 98);
+		break;
+	case 1:
+		dib.WriteBMP(use_name.mb_str());
+		break;
+	case 2:
+		dib.WritePNG(use_name.mb_str());
+		break;
+	case 3:
+		dib.WriteTIF(use_name.mb_str());
+		break;
+	}
 }
 
 void vtFrame::OnViewSnapshot(wxCommandEvent& event)
