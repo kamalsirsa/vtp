@@ -378,29 +378,12 @@ void BExtractorView::DrawRoad(CDC *pDC, Link *pLink)
 bool BExtractorView::FindNearestRoadNode(CPoint &point, Node **pNearestNode)
 {
 	BExtractorDoc* pDoc = GetDocument();
-	Node *pNode;
-	Node *pNearest = NULL;
 	DPoint2 geoPoint;
-
 
 	s_UTM(point, geoPoint);
 
-	pNode = pDoc->m_Links.GetFirstNode();
-	
-	for (pNearest = pNode; NULL != pNode; pNode = pNode->m_pNext)
-	{
-		if (pNode->DistanceToPoint(geoPoint) < pNearest->DistanceToPoint(geoPoint))
-			pNearest = pNode;
-	}
-
-	if ((NULL != pNearest) && (pNearest->DistanceToPoint(geoPoint) <= NODE_CAPTURE_THRESHOLD))
-	{
-		UTM_s(pNearest->m_p, point);
-		*pNearestNode = pNearest;
-		return true;
-	}
-	else
-		return false;
+	*pNearestNode = pDoc->m_Links.FindNodeAtPoint(geoPoint, NODE_CAPTURE_THRESHOLD);
+	return (*pNearestNode != NULL);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
