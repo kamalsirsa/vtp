@@ -36,6 +36,7 @@ public:
 	virtual void Init2();
 	DTErr BasicInit(vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
+	virtual void SetVerticalExag(float fExag) {}
 
 	void SetPixelError(float fPixelError);
 	float GetPixelError();

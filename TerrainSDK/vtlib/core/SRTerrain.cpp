@@ -59,8 +59,8 @@ void beginfan_vtp()
 
 void fanvertex_vtp(float x, float y, float z)
 {
-   glVertex3f(x,y,z);
-   myvtxcnt++;
+	glVertex3f(x,y,z);
+	myvtxcnt++;
 }
 
 void notify_vtp(int i, int j, int size)
@@ -126,7 +126,7 @@ DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	if (pGrid->IsFloatMode())
 	{
 		float *image = NULL;
-		m_pMini = new ministub(image,
+		m_pMini = (myministub *) new ministub(image,
 				&size, &dim, fZScale, cellaspect,
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp2);
@@ -134,7 +134,7 @@ DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	else
 	{
 		short *image = NULL;
-		m_pMini = new ministub(image,
+		m_pMini = (myministub *) new ministub(image,
 				&size, &dim, fZScale, cellaspect,
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp1);
@@ -144,6 +144,11 @@ DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	m_iBlockSize = m_iColumns / 4;
 
 	return DTErr_OK;
+}
+
+void SRTerrain::SetVerticalExag(float fExag)
+{
+	m_pMini->SetScale(fExag);
 }
 
 

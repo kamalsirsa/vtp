@@ -17,6 +17,13 @@
 #include "mini.h"
 #include "ministub.hpp"
 
+class myministub : public ministub
+{
+public:
+	// work around access to protected 'SCALE' member
+	void SetScale(float fScale) { SCALE = fScale; }
+};
+
 /*!
 	The SRTerrain class implements Stefan Roettger's algorithm for
 	regular-grid terrain LOD.  It was adapted directly from his sample
@@ -35,6 +42,7 @@ public:
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 	float GetElevation(int iX, int iZ) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
+	void SetVerticalExag(float fExag);
 
 	void LoadSingleMaterial();
 	void LoadBlockMaterial(int a, int b);
@@ -50,7 +58,7 @@ protected:
 	virtual ~SRTerrain();
 
 private:
-	ministub *m_pMini;
+	myministub *m_pMini;
 
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
