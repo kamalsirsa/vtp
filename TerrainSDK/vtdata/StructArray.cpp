@@ -334,10 +334,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 					foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
 				}
 				bld->SetFootprint(0, foot);
+				// Give it a flat roof with the same footprint
+				bld->SetFootprint(1, foot);
+				bld->SetRoofType(ROOF_FLAT);
 				bld->SetCenterFromPoly();
 			}
 
-			int num_stories = 1;
+			int num_stories = -1;
 			if (field_stories != -1)
 			{
 				// attempt to get number of stories from the DBF
@@ -345,7 +348,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				if (num_stories < 1)
 					num_stories = 1;
 			}
-			bld->SetStories(num_stories);
+			if (num_stories != -1)
+				bld->SetStories(num_stories);
 			Append(bld);
 		}
 		if (type == ST_INSTANCE)

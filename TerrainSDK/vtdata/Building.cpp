@@ -167,7 +167,7 @@ float vtEdge::ProportionTotal()
 
 vtLevel::vtLevel()
 {
-	m_iStories = 0;
+	m_iStories = 1;
 	m_fStoryHeight = STORY_HEIGHT;
 }
 
@@ -690,9 +690,6 @@ void vtBuilding::SetStories(int iStories)
 	if (previous == iStories)
 		return;
 
-	if (previous == 0)
-		m_Levels.Append(new vtLevel());
-
 	int levels = m_Levels.GetSize();
 
 	// increase if necessary
@@ -726,9 +723,13 @@ int vtBuilding::GetStories() const
 	return stories;
 }
 
-void vtBuilding::SetFootprint(int i, const DLine2 &dl)
+void vtBuilding::SetFootprint(int lev, const DLine2 &dl)
 {
-	m_Levels[i]->SetFootprint(dl);
+	int levs = GetNumLevels();
+	if (lev >= levs)
+		CreateLevel();
+
+	m_Levels[lev]->SetFootprint(dl);
 
 	// this new footprint make have altered the center of the building
 	SetCenterFromPoly();
