@@ -87,6 +87,7 @@ void vtTerrainScene::_CreateSkydome(const StringArray &datapath)
 	if (m_pSkyDome != NULL)
 		return;
 
+	// 'bsc' is the Bright Star Catalog
 	vtString bsc = FindFileOnPaths(datapath, "Sky/bsc.data");
 	vtString sun = FindFileOnPaths(datapath, "Sky/glow2.png");
 	vtString moon = FindFileOnPaths(datapath, "Sky/moon5_256.png");
@@ -250,7 +251,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// handle the atmosphere
 	m_pSkyDome->SetEnabled(param.m_bSky);
-	if (param.m_strSkyTexture != "")
+	if (param.m_bSky && param.m_strSkyTexture != "")
 	{
 		vtString filename = "Sky/";
 		filename += param.m_strSkyTexture;
