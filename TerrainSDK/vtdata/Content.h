@@ -10,6 +10,7 @@
 #ifndef VTDATA_CONTENTH
 #define VTDATA_CONTENTH
 
+#include "xmlhelper/easyxml.hpp"
 #include "vtString.h"
 #include "MathTypes.h"
 
@@ -124,6 +125,25 @@ public:
 protected:
 	std::vector<vtTag>	m_tags;
 };
+
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class for XML parsing of TagArray files.
+
+class TagVisitor : public XMLVisitor
+{
+public:
+	TagVisitor(vtTagArray *pArray) : m_level(0), m_pArray(pArray) {}
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
+	void data(const char *s, int length);
+
+protected:
+	int m_level;
+	string m_data;
+	vtTagArray *m_pArray;
+};
+
 
 /**
  * Represents a "culture" item.  A vtItem has a name and any number of tags

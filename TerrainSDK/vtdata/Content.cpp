@@ -358,36 +358,7 @@ bool vtTagArray::WriteToXML(const char *fname, const char *title)
 }
 
 ////////////////////////////////////////////////////////////////////////
-// Visitor class, for XML parsing of Content files.
-////////////////////////////////////////////////////////////////////////
-
-class TagVisitor : public XMLVisitor
-{
-public:
-	TagVisitor(vtTagArray *pArray) :
-		m_level(0), _hasException(false), m_pArray(pArray) {}
-	virtual ~TagVisitor() {}
-
-	void startElement(const char *name, const XMLAttributes &atts);
-	void endElement(const char *name);
-	void data(const char *s, int length);
-
-	bool hasException() const { return _hasException; }
-	xh_io_exception &getException() { return _exception; }
-	void setException(const xh_io_exception &exception)
-	{
-		_exception = exception;
-		_hasException = true;
-	}
-
-private:
-	int m_level;
-	string m_data;
-	xh_io_exception _exception;
-	bool _hasException;
-
-	vtTagArray *m_pArray;
-};
+// class TagVisitor, for XML parsing of Content files.
 
 void TagVisitor::startElement(const char *name, const XMLAttributes &atts)
 {
@@ -399,7 +370,6 @@ void TagVisitor::endElement(const char *name)
 {
 	if (m_level == 2)
 		m_pArray->SetValueString(name, m_data.c_str());
-
 	m_level--;
 }
 
@@ -419,7 +389,6 @@ bool vtTagArray::LoadFromXML(const char *fname)
 	}
 	catch (xh_io_exception &ex)
 	{
-//		throw visitor.getException();
 		const string msg = ex.getFormattedMessage();
 		VTLOG(" XML problem: %s\n", msg.c_str());
 		return false;
@@ -467,7 +436,7 @@ class ContentVisitor : public XMLVisitor
 {
 public:
 	ContentVisitor(vtContentManager *man)
-	: _level(0), _hasException(false), m_pMan(man) {}
+	: _level(0), m_pMan(man) {}
 
 	virtual ~ContentVisitor() {}
 
@@ -476,14 +445,6 @@ public:
 	void startElement(const char * name, const XMLAttributes &atts);
 	void endElement(const char * name);
 	void data(const char * s, int length);
-
-	bool hasException() const { return _hasException; }
-	xh_io_exception &getException() { return _exception; }
-	void setException(const xh_io_exception &exception)
-	{
-		_exception = exception;
-		_hasException = true;
-	}
 
 private:
 	struct State
@@ -516,8 +477,6 @@ private:
 	string _data;
 	int _level;
 	vector<State> _state_stack;
-	xh_io_exception _exception;
-	bool _hasException;
 
 	vtContentManager *m_pMan;
 };
@@ -719,8 +678,6 @@ void vtContentManager::ReadXML(const char *filename)
 
 	ContentVisitor visitor(this);
 	readXML(filename, visitor);
-	if (visitor.hasException())
-		throw visitor.getException();
 }
 
 
