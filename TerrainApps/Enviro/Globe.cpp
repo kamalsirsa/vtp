@@ -402,22 +402,21 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 //
 // Ray-Sphere intersection
 //
-bool FindIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
-					  const FSphere& rkSphere,
-					  int& riQuantity, FPoint3 akPoint[2])
+bool FindIntersection(const FPoint3 &origin, const FPoint3 &dir,
+					  const FSphere &sphere, int &iQuantity, FPoint3 point[2])
 {
 	// set up quadratic Q(t) = a*t^2 + 2*b*t + c
-	FPoint3 kDiff = rkOrigin - rkSphere.center;
-	double fA = rkDirection.LengthSquared();
-	double fB = kDiff.Dot(rkDirection);
+	FPoint3 kDiff = origin - sphere.center;
+	double fA = dir.LengthSquared();
+	double fB = kDiff.Dot(dir);
 	double fC = kDiff.LengthSquared() -
-		rkSphere.radius*rkSphere.radius;
+		sphere.radius*sphere.radius;
 
 	double afT[2];
 	double fDiscr = fB*fB - fA*fC;
 	if ( fDiscr < 0.0 )
 	{
-		riQuantity = 0;
+		iQuantity = 0;
 	}
 	else if ( fDiscr > 0.0 )
 	{
@@ -427,22 +426,22 @@ bool FindIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
 		afT[1] = (-fB + fRoot)*fInvA;
 
 		if ( afT[0] >= 0.0 )
-			riQuantity = 2;
+			iQuantity = 2;
 		else if ( afT[1] >= 0.0 )
-			riQuantity = 1;
+			iQuantity = 1;
 		else
-			riQuantity = 0;
+			iQuantity = 0;
 	}
 	else
 	{
 		afT[0] = -fB/fA;
-		riQuantity = ( afT[0] >= 0.0 ? 1 : 0 );
+		iQuantity = ( afT[0] >= 0.0 ? 1 : 0 );
 	}
 
-	for (int i = 0; i < riQuantity; i++)
-		akPoint[i] = rkOrigin + rkDirection * afT[i];
+	for (int i = 0; i < iQuantity; i++)
+		point[i] = origin + dir * afT[i];
 
-	return riQuantity > 0;
+	return iQuantity > 0;
 }
 
 
@@ -528,7 +527,8 @@ void IcoGlobe::AddTerrainRectangles()
 		for (int i = 0; i < 5; i++)
 		{
 			int j = i % 4;
-			geo_to_xyz(1.001, pTerr->m_Corners_geo[j], p);
+			DPoint2 geo = pTerr->m_Corners_geo[j];
+			geo_to_xyz(1.001, geo, p);
 			mesh->AddVertex(p);
 		}
 
