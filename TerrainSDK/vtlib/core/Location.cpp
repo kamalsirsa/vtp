@@ -175,7 +175,7 @@ void vtLocationSaver::StoreTo(int num, const char *name)
 	vtProjection global_proj;
 	global_proj.SetGeogCSFromDatum(WGS_84);
 
-	OCT *conversion = OGRCreateCoordinateTransformation(&m_proj, &global_proj);
+	OCT *conversion = CreateCoordTransform(&m_proj, &global_proj, true);
 	if (!conversion)
 	{
 		// fatal: can't convert between CS
