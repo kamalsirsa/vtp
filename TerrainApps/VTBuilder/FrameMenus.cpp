@@ -930,7 +930,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 void MainFrame::OnLayerSave(wxCommandEvent &event)
 {
 	vtLayer *lp = GetActiveLayer();
-	if (lp->GetLayerFilename().Left(9).CmpNoCase(_T("untitled.")) == 0)
+	if (lp->GetLayerFilename().Left(8).CmpNoCase(_T("untitled")) == 0)
 	{
 		if (!lp->AskForSaveFilename())
 			return;
