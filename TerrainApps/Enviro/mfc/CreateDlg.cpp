@@ -311,7 +311,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bLabels = Params.m_bLabels;
 
 	m_bPreLight = Params.m_bPreLight;
-	m_bPreLit = Params.m_bPreLit;
 	m_fPreLightFactor = Params.m_fPreLightFactor;
 }
 
@@ -373,7 +372,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bLabels = m_bLabels;
 
 	Params.m_bPreLight = m_bPreLight;
-	Params.m_bPreLit = m_bPreLit;
 	Params.m_fPreLightFactor = m_fPreLightFactor;
 }
 
