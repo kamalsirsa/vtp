@@ -24,12 +24,12 @@ public:
 	bool	m_initialized;
 
 	CPoint	m_PixelSize;			// size of bitmap from the file
-	float	m_xUTMoffset;			//data obtained from image world file (.tfw)
-	float	m_yUTMoffset;
-	float	m_fImageWidth;		// in UTM meters
-	float	m_fImageHeight;		// same
-	float	m_xMetersPerPixel;
-	float	m_yMetersPerPixel;
+	double	m_xUTMoffset;			//data obtained from image world file (.tfw)
+	double	m_yUTMoffset;
+	double	m_fImageWidth;		// in UTM meters
+	double	m_fImageHeight;		// same
+	double	m_xMetersPerPixel;
+	double	m_yMetersPerPixel;
 };
 
 #endif CBIMAGE_H
