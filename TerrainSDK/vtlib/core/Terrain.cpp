@@ -718,7 +718,10 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 		// Construct
 		bool bSuccess = m_Structures.ConstructStructure(str3d);
 		if (!bSuccess)
+		{
+			VTLOG("Failed to create stucture %d\n", i);
 			continue;
+		}
 
 		bSuccess = false;
 		vtTransform *pTrans = str3d->GetTransform();
