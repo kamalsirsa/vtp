@@ -50,7 +50,6 @@
 #define IDC_FOGDISTANCE                 1029
 #define IDC_MOTIONSCRIPT                1030
 #define IDC_VERTEXCOLORS                1031
-#define IDC_SUPPRESSLAND                1032
 #define IDC_OVERLAY                     1033
 #define IDC_OCEANPLANE                  1034
 #define IDC_EDIT1                       1035

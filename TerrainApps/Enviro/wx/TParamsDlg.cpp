@@ -140,7 +140,6 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bHorizon = Params.m_bHorizon;
 	m_bVertexColors = Params.m_bVertexColors;
 //  m_bOverlay = Params.m_bOverlay;
-	m_bSuppressLand = Params.m_bSuppressLand;
 	m_bLabels = Params.m_bLabels;
 
 	m_bOceanPlane = Params.m_bOceanPlane;
@@ -232,7 +231,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bHorizon = m_bHorizon;
 	Params.m_bVertexColors = m_bVertexColors;
 //  Params.m_bOverlay = m_bOverlay;
-	Params.m_bSuppressLand = m_bSuppressLand;
 	Params.m_bLabels = m_bLabels;
 
 	Params.m_bOceanPlane = m_bOceanPlane;
@@ -263,7 +261,6 @@ void TParamsDlg::UpdateEnableState()
 	GetFilenameTin()->Enable(m_bTin);
 
 	FindWindow(ID_SUBSAMPLE)->Enable(m_bRegular);
-	FindWindow(ID_SUPPRESSLAND)->Enable(m_bRegular);
 	FindWindow(ID_VERTEXCOLORS)->Enable(m_bRegular);
 
 	FindWindow(ID_LODMETHOD)->Enable(m_bDynamic);
@@ -455,7 +452,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TREEFILE, &m_strTreeFile);
 	AddNumValidator(ID_TREEDISTANCE, &m_iTreeDistance);
 	AddValidator(ID_VERTEXCOLORS, &m_bVertexColors);
-	AddValidator(ID_SUPPRESSLAND, &m_bSuppressLand);
 	AddValidator(ID_HORIZON, &m_bHorizon);
 	AddValidator(ID_LABELS, &m_bLabels);
 	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);

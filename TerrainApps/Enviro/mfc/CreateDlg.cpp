@@ -46,7 +46,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_iFogDistance = 10;
 	m_bVertexColors = FALSE;
 	m_bOverlay = FALSE;
-	m_bSuppressLand = FALSE;
 	m_bOceanPlane = FALSE;
 	m_bLabels = FALSE;
 	m_iMinHeight = 10;
@@ -142,7 +141,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_FOGDISTANCE, m_iFogDistance);
 	DDX_Check(pDX, IDC_VERTEXCOLORS, m_bVertexColors);
 	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
-	DDX_Check(pDX, IDC_SUPPRESSLAND, m_bSuppressLand);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
 	DDX_Check(pDX, IDC_LABELS, m_bLabels);
 	DDX_Text(pDX, IDC_MINHEIGHT, m_iMinHeight);
@@ -327,7 +325,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bOceanPlane = Params.m_bOceanPlane;
 	m_bVertexColors = Params.m_bVertexColors;
 	m_bOverlay = Params.m_bOverlay;
-	m_bSuppressLand = Params.m_bSuppressLand;
 	m_bLabels = Params.m_bLabels;
 
 	m_bPreLight = Params.m_bPreLight;
@@ -398,7 +395,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_bVertexColors = m_bVertexColors;
 	Params.m_bOverlay = m_bOverlay;
-	Params.m_bSuppressLand = m_bSuppressLand;
 	Params.m_bLabels = m_bLabels;
 
 	Params.m_bPreLight = m_bPreLight;

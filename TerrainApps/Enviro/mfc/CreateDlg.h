@@ -62,7 +62,6 @@ public:
 	int		m_iFogDistance;
 	BOOL	m_bVertexColors;
 	BOOL	m_bOverlay;
-	BOOL	m_bSuppressLand;
 	BOOL	m_bOceanPlane;
 	BOOL	m_bLabels;
 	int		m_iMinHeight;

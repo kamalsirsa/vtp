@@ -117,7 +117,6 @@ public:
 	bool		m_bHorizon;
 	bool		m_bVertexColors;
 	bool		m_bOverlay;
-	bool		m_bSuppressLand;
 	bool		m_bLabels;
 
 	bool		m_bAirports;

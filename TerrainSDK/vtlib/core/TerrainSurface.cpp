@@ -110,8 +110,7 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 	float fXoffset = m_Conversion.m_WorldExtents.left;
 	float fZoffset = m_Conversion.m_WorldExtents.bottom;
 
-	// compute number of patches we'll have to break it into
-	// biggest patch allowed is 64x64 quads
+	// compute the number of patches we'll have to break it into
 	m_iXPatches = texture_patches;
 	m_iZPatches = texture_patches;
 	while (iXQuads / m_iXPatches >= largest_block_size) m_iXPatches += texture_patches;
@@ -178,12 +177,14 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 						bHasSeaLevel = true;
 				}
 			}
-			bool bSuppressPatch = bIsFlat || (!bHasSeaLevel && bSuppressLand);
+			bool bSuppressPatch = bIsFlat;
 			if (bSuppressPatch)
 			{
 				iNVerts = 4;
 				iStepX = m_iChopx[a+1] - m_iChopx[a];
 				iStepZ = m_iChopz[b+1] - m_iChopz[b];
+				iXVerts = 2;
+				iZVerts = 2;
 			}
 
 			// create Patch geometry

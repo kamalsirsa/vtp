@@ -368,7 +368,7 @@ bool  vtTerrain::create_regular_terrain(float fOceanDepth)
 	m_pTerrainGeom->CreateFromLocalGrid(m_pLocalGrid, VtxType,
 							m_Params.m_iSubsample, m_Params.m_iSubsample,
 							LARGEST_BLOCK_SIZE,	texture_patches,
-							m_Params.m_bSuppressLand,
+							false,
 							fOceanDepth, bLighting);
 
 	switch (m_Params.m_eTexture)

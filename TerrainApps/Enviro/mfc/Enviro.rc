@@ -290,8 +290,6 @@ BEGIN
     LTEXT           "km",IDC_STATIC,411,86,13,10
     CONTROL         "Apply vertex colors",IDC_VERTEXCOLORS,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,21,81,95,8
-    CONTROL         "Suppress land",IDC_SUPPRESSLAND,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,69,94,9
     CONTROL         "Create 2D Overlay",IDC_OVERLAY,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,271,8,74,10
     CONTROL         "Ocean plane",IDC_OCEANPLANE,"Button",BS_AUTOCHECKBOX | 

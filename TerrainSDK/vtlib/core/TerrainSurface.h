@@ -27,6 +27,17 @@ public:
 };
 
 
+/**
+ * This class implements rendering of a regular grid terrain, using a naive,
+ * brute-force approach.  It simply does a regular subsampling of the grid
+ * (using only the Nth point in each direction), then splits the result into
+ * a number of regular grid static patches which consist of triangle strips.
+ *
+ * Since there is no LOD, this is definitely not the fastest way to render
+ * a terrain.  The main use of this class is for when you either simply don't
+ * need LOD (very small grids) or as a stable reference image to compare your
+ * CLOD output against, at runtime.
+ */
 class vtTerrainGeom : public vtGeom, public vtHeightFieldGrid
 {
 public:

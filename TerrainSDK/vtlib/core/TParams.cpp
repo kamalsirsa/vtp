@@ -83,7 +83,6 @@ TParams::TParams()
 	m_bHorizon = false;
 	m_bVertexColors = false;
 	m_bOverlay = false;
-	m_bSuppressLand = false;
 	m_bLabels = false;
 
 	m_bAirports = false;
@@ -173,7 +172,6 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bHorizon = rhs.m_bHorizon;
 	m_bVertexColors = rhs.m_bVertexColors;
 	m_bOverlay = rhs.m_bOverlay;
-	m_bSuppressLand = rhs.m_bSuppressLand;
 	m_bLabels = rhs.m_bLabels;
 
 	m_bPreLight = rhs.m_bPreLight;
@@ -296,7 +294,6 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_HORIZON "Horizon"
 #define STR_VERTEXCOLORS "Vertex_Colors"
 #define STR_OVERLAY	"Overlay"
-#define STR_SUPPRESSLAND "Suppress_Land"
 #define STR_LABELS "Labels"
 
 #define STR_AIRPORTS "Airports"
@@ -422,8 +419,6 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bVertexColors;
 		else if (strcmp(buf, STR_OVERLAY) == 0)
 			input >> m_bOverlay;
-		else if (strcmp(buf, STR_SUPPRESSLAND) == 0)
-			input >> m_bSuppressLand;
 		else if (strcmp(buf, STR_OCEANPLANE) == 0)
 			input >> m_bOceanPlane;
 		else if (strcmp(buf, STR_OCEANPLANELEVEL) == 0)
@@ -634,8 +629,6 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bHorizon << endl;
 	output << STR_OVERLAY << "\t\t\t";
 	output << m_bOverlay << endl;
-	output << STR_SUPPRESSLAND << "\t";
-	output << m_bSuppressLand << endl;
 	output << STR_LABELS << "\t\t\t";
 	output << m_bLabels << endl;
 

@@ -73,7 +73,6 @@ public:
 	int		m_iFogDistance;
 	bool	m_bVertexColors;
 //  bool	m_bOverlay;
-	bool	m_bSuppressLand;
 
 	bool	m_bOceanPlane;
 	float	m_fOceanPlaneLevel;
