@@ -37,12 +37,12 @@ public:
     wxTreeCtrl  *m_pTree;
 
 	vtEngine *m_pSelectedEngine;
-	vtNode *m_pSelectedNode;
+	vtNodeBase *m_pSelectedNode;
 
     void CreateImageList(int size = 16);
 	void RefreshTreeContents();
     void AddNodeItemsRecursively(wxTreeItemId hParentItem,
-                                 vtNode *pNode, int depth);
+                                 vtNodeBase *pNode, int depth);
 
     // WDR: method declarations for SceneGraphDlg
     wxButton* GetZoomto()  { return (wxButton*) FindWindow( ID_ZOOMTO ); }
