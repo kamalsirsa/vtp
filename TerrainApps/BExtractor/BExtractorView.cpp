@@ -142,7 +142,7 @@ BExtractorView::BExtractorView()
 	vtStringArray paths;
 	ReadEnviroPaths(paths);
 	LoadGlobalMaterials(paths);
-	SetupDefaultStructures();
+	SetupDefaultStructures("");
 }
 
 BExtractorView::~BExtractorView()
@@ -1316,9 +1316,6 @@ void BExtractorView::UpdateResizeScale()
 {
 	DPoint2 moved_by = m_curLocation - m_downLocation;
 
-	if (m_bShift)
-		int foo = 1;
-
 	DPoint2 origin;
 	m_pCurBuilding->GetBaseLevelCenter(origin);
 
@@ -1326,12 +1323,13 @@ void BExtractorView::UpdateResizeScale()
 	DPoint2 diff2 = m_curLocation - origin;
 	double fScale = diff2.Length() / diff1.Length();
 
+	unsigned int i;
 	DPoint2 p;
 	DLine2 foot = m_pCurBuilding->GetFootprint(0);
 	if (m_bShift)
 	{
 		// Scale evenly
-		for (unsigned int i = 0; i < foot.GetSize(); i++)
+		for (i = 0; i < foot.GetSize(); i++)
 		{
 			p = foot.GetAt(i);
 			p -= origin;
@@ -1373,7 +1371,11 @@ void BExtractorView::UpdateResizeScale()
 			foot.SetAt(m_iCurCorner, p);
 		}
 	}
-	m_EditBuilding.SetFootprint(0, foot);
+	// Changing only the lowest level is near useless.  For the great
+	//  majority of cases, the user will want the footprints for all
+	//  levels to remain in sync.
+	for (i = 0; i < m_EditBuilding.GetNumLevels(); i++)
+		m_EditBuilding.SetFootprint(i, foot);
 }
 
 void BExtractorView::UpdateRotate()
