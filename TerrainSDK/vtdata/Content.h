@@ -1,7 +1,7 @@
 //
 // Content.h
 //
-// Header for the ContentManager class.
+// Header for the Content Management classes.
 //
 // Copyright (c) 2001 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
@@ -14,6 +14,10 @@
 #include "Array.h"
 #include "Array.inl"
 
+/**
+ * vtModel contains a reference to a 3d polygonal model: a filename, the
+ * scale of the model, and the distance at which this LOD should be used.
+ */
 class vtModel
 {
 public:
@@ -30,7 +34,50 @@ public:
 	bool		m_attempted_load;
 };
 
-class vtItem
+struct vtTag
+{
+	vtString name;
+	vtString value;
+};
+
+/**
+ * A simple set of tags.  If this gets used for something more
+ * performance-sensitive, we could replace the linear lookup with a hash map.
+ */
+class vtTagArray
+{
+public:
+	void AddTag(vtTag *tag)
+	{
+		m_tags.Append(tag);
+	}
+	vtTag *FindTag(const char *name);
+	vtTag *GetTag(int i)
+	{
+		return m_tags.GetAt(i);
+	}
+	int NumTags()
+	{
+		return m_tags.GetSize();
+	}
+	void RemoveTag(int i)
+	{
+		m_tags.RemoveAt(i);
+	}
+
+	void SetValue(const char *name, const char *value);
+	const char *GetValue(const char *name);
+
+protected:
+	Array<vtTag*>	m_tags;
+};
+
+/**
+ * Represents a "culture" item.  A vtItem has a name and any number of tags
+ * which provide description.  It also contains a set of models (vtModel)
+ * which are polygonal models of the item at various LOD.
+ */
+class vtItem : public vtTagArray
 {
 public:
 	~vtItem();
@@ -41,16 +88,13 @@ public:
 	int NumModels() { return m_models.GetSize(); }
 	vtModel *GetModel(int i) { return m_models.GetAt(i); }
 
-	vtString	m_name;
-	vtString	m_type;
-	vtString	m_subtype;
-	vtString	m_url;
+	vtString		m_name;
 
 protected:
 	Array<vtModel*>	m_models;
 };
 
-/**  The vtContentManager class is useful for keeping a list of 3d models,
+/**  The vtContentManager class keeps a list of 3d models,
  * along with information about what they are and how they should be loaded.
  * It consists of a set of Content Items (vtItem) which each represent a
  * particular object, which in turn consist of Models (vtModel) which are a
@@ -80,11 +124,6 @@ public:
 protected:
 	Array<vtItem*>	m_items;
 };
-
-#define NUM_ITEMTYPES	4
-#define NUM_SUBTYPES	15
-extern const char *ItemTypeNames[NUM_ITEMTYPES];
-extern const char *SubTypeNames[NUM_SUBTYPES];
 
 #endif // VTDATA_CONTENTH
 

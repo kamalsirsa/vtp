@@ -17,44 +17,39 @@
 #include "Content.h"
 
 
-//////////////////////////////////////////////////////////////////////////
-// Classification
-// (not yet used - we simply accept all strings rather than check)
+////////////////////////////////////////////////////////////////////////
+// Implementation of class vtTagArray
 //
 
-const char *ItemTypeNames[NUM_ITEMTYPES] =
+vtTag *vtTagArray::FindTag(const char *name)
 {
-	"unspecified",
-	"structure",
-	"transportation",
-	"vehicle"
-};
+	int size = m_tags.GetSize();
+	int i;
+	vtTag *tag;
+	for (i = 0; i < size; i++)
+	{
+		tag = m_tags[i];
+		if (!tag->name.CompareNoCase(name))
+			return tag;
+	}
+	return NULL;
+}
 
-const char *SubTypeNames[NUM_SUBTYPES] =
+void vtTagArray::SetValue(const char *name, const char *value)
 {
-	"unspecified",
+	vtTag *tag = FindTag(name);
+	if (tag)
+		tag->value = value;
+}
 
-	// structure subtypes
-	"observatory",
-	"lighthouse",
-	"commercial",
-	"residence",
-	"tent",
-
-	// transportation subtypes
-	"stopsign",
-	"yieldsign",
-	"signalpole",
-
-	// vehicle subtypes
-	"car",
-	"pickup",
-	"truck",
-	"suv",
-	"bus",
-	"aircraft"
-};
-
+const char *vtTagArray::GetValue(const char *name)
+{
+	vtTag *tag = FindTag(name);
+	if (tag)
+		return tag->value;
+	else
+		return NULL;
+}
 
 ////////////////////////////////////////////////////////////////////////
 // Implementation of class vtItem
@@ -92,18 +87,17 @@ public:
 	ContentVisitor(vtContentManager *man)
 	: m_pMan(man), _level(0), _hasException(false) {}
 
-	virtual ~ContentVisitor () {}
+	virtual ~ContentVisitor() {}
 
-	void startXML ();
-	void endXML ();
-	void startElement (const char * name, const XMLAttributes &atts);
-	void endElement (const char * name);
-	void data (const char * s, int length);
-	void warning (const char * message, int line, int column);
+	void startXML();
+	void endXML();
+	void startElement(const char * name, const XMLAttributes &atts);
+	void endElement(const char * name);
+	void data(const char * s, int length);
 
-	bool hasException () const { return _hasException; }
-	xh_io_exception &getException () { return _exception; }
-	void setException (const xh_io_exception &exception)
+	bool hasException() const { return _hasException; }
+	xh_io_exception &getException() { return _exception; }
+	void setException(const xh_io_exception &exception)
 	{
 		_exception = exception;
 		_hasException = true;
@@ -121,7 +115,7 @@ private:
 
 	State &state () { return _state_stack[_state_stack.size() - 1]; }
 
-	void push_state (vtItem * _item, const char * type)
+	void push_state(vtItem * _item, const char * type)
 	{
 		if (type == 0)
 			_state_stack.push_back(State(_item, "unspecified"));
@@ -131,9 +125,10 @@ private:
 		_data = "";
 	}
 
-	void pop_state () {
-	_state_stack.pop_back();
-	_level--;
+	void pop_state()
+	{
+		_state_stack.pop_back();
+		_level--;
 	}
 
 	string _data;
@@ -146,23 +141,20 @@ private:
 	vtContentManager *m_pMan;
 };
 
-void
-ContentVisitor::startXML ()
+void ContentVisitor::startXML ()
 {
   _level = 0;
   _state_stack.resize(0);
 }
 
-void
-ContentVisitor::endXML ()
+void ContentVisitor::endXML ()
 {
   _level = 0;
   _state_stack.resize(0);
 }
 
 
-void
-ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
+void ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 {
 	State &st = state();
 
@@ -182,10 +174,9 @@ ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 
 	if (_level == 1)
 	{
-		vtItem *pItem;
 		if (string(name) == (string)"item")
 		{
-			pItem = new vtItem();
+			vtItem *pItem = new vtItem();
 			// Get the name.
 			attval = atts.getValue("name");
 			if (attval != NULL) {
@@ -196,8 +187,7 @@ ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 		else
 		{
 			// Unknown field, ignore.
-			pItem = NULL;
-			push_state(pItem, "dummy");
+			push_state(NULL, "dummy");
 		}
 		return;
 	}
@@ -206,15 +196,6 @@ ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 	{
 		vtItem *pItem = st.item;
 
-		if (string(name) == (string)"classification")
-		{
-			pItem->m_type = atts.getValue("type");
-			pItem->m_subtype = atts.getValue("subtype");
-		}
-		if (string(name) == (string)"link")
-		{
-			pItem->m_url = atts.getValue("url");
-		}
 		if (string(name) == (string)"model")
 		{
 			vtModel *pModel = new vtModel();
@@ -228,11 +209,12 @@ ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 				pModel->m_distance = 0.0f;
 			pItem->AddModel(pModel);
 		}
+		else
+			_data = "";
 	}
 }
 
-void
-ContentVisitor::endElement (const char * name)
+void ContentVisitor::endElement(const char * name)
 {
 	State &st = state();
 
@@ -244,18 +226,25 @@ ContentVisitor::endElement (const char * name)
 		}
 		pop_state();
 	}
+	if (_level == 2)
+	{
+		if (string(name) != (string)"model")
+		{
+			// save all other tags as literal strings
+			vtTag *tag = new vtTag;
+			tag->name = name;
+			tag->value = _data.c_str();
+
+			vtItem *pItem = st.item;
+			pItem->AddTag(tag);
+		}
+	}
 }
 
-void
-ContentVisitor::data (const char * s, int length)
+void ContentVisitor::data(const char * s, int length)
 {
 	if (state().item != NULL)
 		_data.append(string(s, length));
-}
-
-void
-ContentVisitor::warning (const char * message, int line, int column)
-{
 }
 
 
@@ -302,9 +291,18 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 	for (int i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
-		if (!pItem->m_type.CompareNoCase(type) &&
-			(subtype == NULL || !pItem->m_subtype.CompareNoCase(subtype)))
-			return pItem;
+		vtTag *tag1 = pItem->FindTag("type");
+		if (tag1 && !tag1->value.CompareNoCase(type))
+		{
+			if (subtype)
+			{
+				vtTag *tag2 = pItem->FindTag("subtype");
+				if (tag2 && !tag2->value.CompareNoCase(subtype))
+					return pItem;
+			}
+			else
+				return pItem;
+		}
 	}
 	return NULL;
 }
@@ -340,12 +338,13 @@ void vtContentManager::WriteXML(const char *filename)
 
 	fprintf(fp, "<?xml version=\"1.0\"?>\n\n");
 
-	fprintf(fp, "<vtp-content file-format-version=\"1.0\">\n");
+	fprintf(fp, "<vtp-content file-format-version=\"1.1\">\n");
 	for (i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
 		const char *name = pItem->m_name;
 		fprintf(fp, "\t<item name=\"%s\">\n", name);
+#if 0
 		if (pItem->m_type != "")
 		{
 			const char *type = pItem->m_type;
@@ -361,6 +360,13 @@ void vtContentManager::WriteXML(const char *filename)
 		{
 			const char *url = pItem->m_url;
 			fprintf(fp, "\t\t<link utl=\"%s\" />\n", url);
+		}
+#endif
+		for (j = 0; j < pItem->NumTags(); j++)
+		{
+			vtTag *tag = pItem->GetTag(j);
+			fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
+				(const char *)tag->value, (const char *)tag->name);
 		}
 		for (j = 0; j < pItem->NumModels(); j++)
 		{
