@@ -148,6 +148,7 @@ private:
 	vtGeom		*m_pStarGeom;
 	vtMesh		*m_pStarMesh;
 	vtMovGeom	*m_pMoonGeom;
+	vtMaterialArray *m_pMats;
 };
 
 

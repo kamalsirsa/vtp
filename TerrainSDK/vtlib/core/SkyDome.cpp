@@ -392,6 +392,7 @@ void vtDayDome::Destroy()
 {
 	if (SphVertices) delete[] SphVertices;
 	vtTransform::Destroy();
+	delete m_pMats;
 }
 
 //
@@ -695,14 +696,14 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	// Read in the star data
 	ReadStarData(starfile);
 
-	vtMaterialArray *pApps = new vtMaterialArray();
-	int index = pApps->AddRGBMaterial1(RGBf(0,0,0), false, false);
-	vtMaterial *pMat = pApps->GetAt(index);
+	m_pMats = new vtMaterialArray();
+	int index = m_pMats->AddRGBMaterial1(RGBf(0,0,0), false, false);
+	vtMaterial *pMat = m_pMats->GetAt(index);
 	pMat->SetTransparent(true, true);
-	int star_mat = pApps->Append(pMat);
+	int star_mat = m_pMats->Append(pMat);
 
 	// Need a material?
-	m_pStarGeom->SetMaterials(pApps);
+	m_pStarGeom->SetMaterials(m_pMats);
 
 	m_pStarMesh = new vtMesh(GL_POINTS, VT_Colors, NumStars);
 	AddStars(m_pStarMesh);
@@ -717,7 +718,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 
 	if (moon_texture && *moon_texture)
 	{
-		int moon_mat = pApps->AddTextureMaterial2(moon_texture,
+		int moon_mat = m_pMats->AddTextureMaterial2(moon_texture,
 							 false, false,	// culling, lighting
 							 true, true,	// transparent, additive
 							 1.0f,			// diffuse
@@ -731,7 +732,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 		vtMesh *MoonMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
 		MoonMesh->CreateRectangle(0.1f, 0.1f);
-		pGeom->SetMaterials(pApps);
+		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(MoonMesh, moon_mat);
 
 		m_pMoonGeom->SetName2("Moon");
@@ -752,6 +753,7 @@ void vtStarDome::Destroy()
 	if (Starfield)
 		delete[] Starfield;
 	vtTransform::Destroy();
+	delete m_pMats;
 }
 
 //
