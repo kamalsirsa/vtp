@@ -478,7 +478,7 @@ bool vtImageLayer::LoadFromGDAL()
 		}
 		else
 		{
-			VTLOG("Dataset does not contain a valid affine transform.");
+			VTLOG("Dataset does not contain a valid affine transform.\n");
 			// No extents.
 			m_Extents.Empty();
 			wxString2 msg = "File lacks geographic location (extents).  "
@@ -492,7 +492,7 @@ bool vtImageLayer::LoadFromGDAL()
 #else
 				ext.Empty();
 #endif
-				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
+				ExtentDlg dlg(NULL, -1, _T("Extents"));
 				dlg.SetArea(ext, (m_proj.IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)
 					m_Extents = dlg.m_area;
