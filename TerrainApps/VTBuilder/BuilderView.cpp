@@ -1262,12 +1262,8 @@ void BuilderView::OnRightUp(wxMouseEvent& event)
 	// Dispatch to the layer
 	pL->OnRightUp(this, m_ui);
 
-	switch (pL->GetType())
-	{
-		case LT_STRUCTURE:
-			OnRightUpStructure((vtStructureLayer *)pL);
-			break;
-	}
+	if (pL->GetType() == LT_STRUCTURE)
+		OnRightUpStructure((vtStructureLayer *)pL);
 }
 
 void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 

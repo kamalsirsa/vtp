@@ -129,6 +129,8 @@ void LayerDlg::RefreshTreeContents()
 	case AS_Orbit:
 		RefreshTreeSpace();
 		break;
+	default:
+		break;
 	}
 }
 

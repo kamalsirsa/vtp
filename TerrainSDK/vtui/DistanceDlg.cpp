@@ -247,6 +247,10 @@ void DistanceDlg::UpdateAvailableUnits()
 		m_iUnits2 = 2;
 		m_iUnits3 = 2;
 		break;
+	case LU_UNITEDGE:
+		// TODO
+	case LU_UNKNOWN:
+		break;
 	}
 	m_iUnits4 = m_iUnits3;
 	m_iUnits5 = 0;

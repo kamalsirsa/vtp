@@ -139,7 +139,6 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 			int NumVerts = ent.m_points.size();
 			if (NumVerts == 3)
 			{
-				DPoint3 p3[3];
 				for (int j = 0; j < 3; j++)
 				{
 					DPoint2 p(ent.m_points[j].x, ent.m_points[j].y);

@@ -668,6 +668,11 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 				case FT_String:
 					SetValue(count, j, pFeature->GetFieldAsString(j));
 					break;
+				case FT_Short:
+				case FT_Float:
+				case FT_Unknown:
+					// we cannot get these, because we don't create them here
+					break;
 				}
 			}
 			count++;
@@ -796,6 +801,11 @@ void vtFeatureSet::ParseDBFRecords(DBFHandle db)
 				break;
 			case FT_Boolean:
 				SetValue(rec, iField, DBFReadLogicalAttribute(db, rec, iField));
+				break;
+			case FT_Short:
+			case FT_Float:
+			case FT_Unknown:
+				// we cannot get these, because we don't create them from DBF
 				break;
 			}
 		}

@@ -350,50 +350,57 @@ void MainFrame::RefreshToolbar()
 
 	switch (lt)
 	{
-		case LT_ROAD:
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), true);
-			ADD_TOOL(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), true);
-			ADD_TOOL(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), true);
-			ADD_TOOL(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), true);
-			ADD_TOOL(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), true);
-			ADD_TOOL(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), true);
-			ADD_TOOL(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), true);
-			break;
-		case LT_ELEVATION:
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), true);
-			ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
-			ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"), false);
-			break;
-		case LT_IMAGE:
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
-			break;
-		case LT_STRUCTURE:
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
-			ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
-			ADD_TOOL(ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), true);
-			ADD_TOOL(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), true);
-			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
-			ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
-			ADD_TOOL(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), true);
-			ADD_TOOL(ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), true);
-			break;
-		case LT_UTILITY:
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), true);
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
-			ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
-			break;
-		case LT_RAW:
-			toolBar_main->AddSeparator();
-			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
-			ADD_TOOL(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), true);
-			ADD_TOOL(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), true);
-			ADD_TOOL(ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), true);
+	case LT_UNKNOWN:
+		break;
+	case LT_RAW:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
+		ADD_TOOL(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), true);
+		ADD_TOOL(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), true);
+		ADD_TOOL(ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), true);
+		break;
+	case LT_ELEVATION:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), true);
+		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
+		ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"), false);
+		break;
+	case LT_IMAGE:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
+		break;
+	case LT_ROAD:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), true);
+		ADD_TOOL(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), true);
+		ADD_TOOL(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), true);
+		ADD_TOOL(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), true);
+		ADD_TOOL(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), true);
+		ADD_TOOL(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), true);
+		ADD_TOOL(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), true);
+		break;
+	case LT_STRUCTURE:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
+		ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
+		ADD_TOOL(ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), true);
+		ADD_TOOL(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), true);
+		ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
+		ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
+		ADD_TOOL(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), true);
+		ADD_TOOL(ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), true);
+		break;
+	case LT_WATER:
+	case LT_VEG:
+	case LT_TRANSIT:
+		break;
+	case LT_UTILITY:
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), true);
+		toolBar_main->AddSeparator();
+		ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
+		ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
+		break;
 	}
 	toolBar_main->Realize();
 

@@ -93,8 +93,6 @@ static void ShowOGLInfo(bool bLog)
 	Colormap cmap;
 	XSetWindowAttributes swa;
 	GLXContext cx;
-	XEvent event;
-	Bool needRedraw = False, recalcModelView = True;
 	int dummy;
 
 	dpy = XOpenDisplay(NULL);

@@ -299,6 +299,9 @@ void vtFence3d::CreateMeshesWithoutPosts(vtHeightField3d *pHeightField)
 	case FT_BEECH:
 		m_pFenceGeom->AddMesh(pMesh, m_mi_beech);
 		break;
+	case FT_WIRE:
+	case FT_CHAINLINK:
+		break;
 	}
 	pMesh->Release();	// pass ownership
 }

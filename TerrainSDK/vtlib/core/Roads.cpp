@@ -451,11 +451,16 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	bool do_roadside = true;
 	switch (m_Surface)
 	{
-	case SURFT_DIRT:
-	case SURFT_2TRACK:
-	case SURFT_TRAIL:
+	case SURFT_NONE:
+		break;
 	case SURFT_GRAVEL:
+	case SURFT_TRAIL:
+	case SURFT_2TRACK:
+	case SURFT_DIRT:
 		do_roadside = false;
+		break;
+	case SURFT_PAVED:
+	case SURFT_RAILROAD:
 		break;
 	}
 	do_roadside = false;	// temporary override

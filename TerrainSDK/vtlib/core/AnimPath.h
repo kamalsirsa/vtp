@@ -45,15 +45,15 @@ class vtAnimPath
 {
 public:
 	vtAnimPath():
+		m_InterpMode(LINEAR),
 		m_bLoop(false),
-		m_fLoopSegmentTime(0.0f),
-		m_InterpMode(LINEAR) {}
+		m_fLoopSegmentTime(0.0f) {}
 
 	vtAnimPath(const vtAnimPath &ap):
 		m_TimeControlPointMap(ap.m_TimeControlPointMap),
+		m_InterpMode(ap.m_InterpMode),
 		m_bLoop(ap.m_bLoop),
-		m_fLoopSegmentTime(0.0f),
-		m_InterpMode(ap.m_InterpMode) {}
+		m_fLoopSegmentTime(0.0f) {}
 
 	virtual ~vtAnimPath() {}
 
@@ -111,11 +111,11 @@ protected:
 								  TimeControlPointMap::const_iterator &b,
 								  double time,
 								  ControlPoint &c) const;
-	bool			m_bLoop;
 	TimeControlPointMap m_TimeControlPointMap;
-	InterpMode			m_InterpMode;
-	CubicSpline			m_Spline;
 
+	InterpMode		m_InterpMode;
+	CubicSpline		m_Spline;
+	bool			m_bLoop;
 	float			m_fLoopSegmentTime;
 	ControlPoint	m_LoopControlPoint;
 };

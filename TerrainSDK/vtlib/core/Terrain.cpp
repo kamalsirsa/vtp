@@ -2048,6 +2048,9 @@ void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
 {
 	switch (ftype)
 	{
+	case TFT_TERRAINSURFACE:
+	case TFT_OCEAN:
+		break;
 	case TFT_VEGETATION:
 		if (m_pVegGrid)
 			m_pVegGrid->SetDistance(fDistance);
@@ -2067,6 +2070,9 @@ float vtTerrain::GetLODDistance(TFType ftype)
 {
 	switch (ftype)
 	{
+	case TFT_TERRAINSURFACE:
+	case TFT_OCEAN:
+		break;
 	case TFT_VEGETATION:
 		if (m_pVegGrid)
 			return m_pVegGrid->GetDistance();

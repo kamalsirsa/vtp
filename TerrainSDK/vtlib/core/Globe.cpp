@@ -981,7 +981,7 @@ void IcoGlobe::add_face2(vtMesh *mesh, int face, int mface, int subfaces, bool s
 	e2.p = (v2.p + v0.p) / 2;
 	center.p = (v0.p + v1.p + v2.p) / 3;
 
-	FPoint2 uv[3], edge_uv[3], center_uv;
+	FPoint2 center_uv;
 	if (second == false)
 	{
 		v0.uv.Set(0, 0);

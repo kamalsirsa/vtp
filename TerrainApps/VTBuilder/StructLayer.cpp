@@ -399,6 +399,8 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		OnLeftDownEditLinear(pView, ui);
 		// TODO - find nearest point on nearest linear
 		break;
+	default:
+		break;
 	}
 }
 
