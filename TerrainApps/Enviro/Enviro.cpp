@@ -432,6 +432,19 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			SetMessage(pTerr->DescribeError(iError));
 			return;
 		}
+
+		// Initial default location for camera for this terrain: Try center
+		//  of heightfield, just above the ground
+		vtHeightField *pHF = pTerr->GetHeightField();
+		FPoint3 middle;
+		FMatrix4 mat;
+
+		pHF->GetCenter(middle);
+		pHF->FindAltitudeAtPoint(middle, middle.y);
+		middle.y += pTerr->GetParams().m_iMinHeight;
+		mat.Identity();
+		mat.SetTrans(middle);
+		pTerr->SetCamLocation(mat);
 	}
 	if (m_iInitStep == 8)
 	{
@@ -442,8 +455,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 9)
 	{
-		SetupCameras();
-
 		// "Finish" terrain scene
 		VTLOG("Finishing Terrain Scene\n");
 		m_pTerrainScene->Finish(g_Options.m_DataPaths);
@@ -823,6 +834,24 @@ void Enviro::SetupScene2()
 		m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
 			g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
 	}
+
+	VTLOG("Seting up Cameras\n");
+	m_pNormalCamera = vtGetScene()->GetCamera();
+#if 1
+	// Create second camera (for Top-Down view)
+	if (m_pTopDownCamera == NULL)
+	{
+		VTLOG("Creating Top-Down Camera\n");
+		m_pTopDownCamera = new vtCamera();
+		m_pTopDownCamera->SetOrtho(10000.0f);
+		m_pTopDownCamera->SetName2("Top-Down Camera");
+	}
+#endif
+
+	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
+	m_pVFlyer->SetTarget(m_pNormalCamera);
+	m_pTFlyer->SetTarget(m_pNormalCamera);
+	m_pGFlyer->SetTarget(m_pNormalCamera);
 }
 
 void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
@@ -903,6 +932,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	if (m_pTerrainPicker != NULL)
 		m_pTerrainPicker->SetHeightField(pHF);
 
+	// Inform the GUI that the terrain has changed
 	SetTerrainToGUI(pTerrain);
 }
 
@@ -985,32 +1015,23 @@ void Enviro::SetMode(MouseMode mode)
 	m_mode = mode;
 }
 
-void Enviro::SetupCameras()
+void Enviro::SetRouteFollower(bool bOn)
 {
-	VTLOG("SetupCameras: Setting up normal camera\n");
-	m_pNormalCamera = vtGetScene()->GetCamera();
-
-#if 1
-	// Create second camera (for Top-Down view)
-	if (m_pTopDownCamera == NULL)
+	if (!m_pRouteFollower)
 	{
-		VTLOG("Creating Top-Down Camera\n");
-		m_pTopDownCamera = new vtCamera();
-		m_pTopDownCamera->SetOrtho(10000.0f);
-		m_pTopDownCamera->SetName2("Top-Down Camera");
+		m_pRouteFollower = new RouteFollowerEngine(m_pCurRoute);
+		m_pRouteFollower->SetTarget(vtGetScene()->GetCamera());
+		vtGetScene()->AddEngine(m_pRouteFollower);
 	}
-#endif
+	m_pRouteFollower->SetEnabled(bOn);
+}
 
-	// Set up a camera for the route (if any)
-	if (m_pRouteFollowerCamera == NULL)
-	{
-		m_pRouteFollowerCamera = vtGetScene()->GetCamera();
-	}
-
-	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
-	m_pVFlyer->SetTarget(m_pNormalCamera);
-	m_pTFlyer->SetTarget(m_pNormalCamera);
-	m_pGFlyer->SetTarget(m_pNormalCamera);
+bool Enviro::GetRouteFollower()
+{
+	if (m_pRouteFollower)
+		return m_pRouteFollower->GetEnabled();
+	else
+		return false;
 }
 
 

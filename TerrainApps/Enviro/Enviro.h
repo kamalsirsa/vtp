@@ -55,6 +55,8 @@ public:
 	void EnableFlyerEngine(bool bEnable);
 	void SetCurrentNavigator(vtTerrainFlyer *pE);
 	void SetMode(MouseMode mode);
+	void SetRouteFollower(bool bOn);
+	bool GetRouteFollower();
 
 	// go to space or a terrain
 	void FlyToSpace();
@@ -91,8 +93,6 @@ public:
 	vtTerrainFlyer	*m_pCurrentFlyer;
 	GrabFlyer		*m_pGFlyer;
 
-	RouteFollowerEngine	*m_pRouteFollower;
-	vtCamera		*m_pRouteFollowerCamera;
 	vtTerrainScene	*m_pTerrainScene;
 
 	// event handlers
@@ -144,7 +144,6 @@ protected:
 	void SetupScene1();
 	void SetupScene2();
 	void DoPickers();
-	void SetupCameras();
 	void MakeGlobe();
 	void SetupGlobe();
 	void LookUpTerrainLocations();
@@ -164,6 +163,7 @@ protected:
 	// route members
 	bool		m_bActiveRoute;
 	vtString	m_sStructType;
+	RouteFollowerEngine	*m_pRouteFollower;
 
 	// linear arc on Earth
 	vtGeom *m_pArc;
