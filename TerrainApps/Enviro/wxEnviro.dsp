@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=wxEnviro - Win32 Debug
+CFG=wxEnviro - Win32 Debug Unicode
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,14 @@ CFG=wxEnviro - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "wxEnviro.mak" CFG="wxEnviro - Win32 Debug"
+!MESSAGE NMAKE /f "wxEnviro.mak" CFG="wxEnviro - Win32 Debug Unicode"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "wxEnviro - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "wxEnviro - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "wxEnviro - Win32 Release Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "wxEnviro - Win32 Debug Unicode" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -86,12 +88,72 @@ LINK32=link.exe
 # ADD BASE LINK32 wxdll.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib ssg.lib sg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /out:"ReleaseDLL/isosurf.exe" /libpath:"\wx2\lib"
 # ADD LINK32 wxmsw240.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "wxEnviro___Win32_Release_Unicode"
+# PROP BASE Intermediate_Dir "wxEnviro___Win32_Release_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release_Unicode"
+# PROP Intermediate_Dir "Release_Unicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GR /GX /Zd /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /FD /c
+# SUBTRACT BASE CPP /Fr /YX
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /D "_UNICODE" /D "UNICODE" /FD /c
+# SUBTRACT CPP /Fr /YX
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x809 /i "\APIs\wx2\include" /d "NDEBUG"
+# ADD RSC /l 0x809 /i "\APIs\wx2\include" /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 wxmsw240.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
+# ADD LINK32 wxmsw240u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib" /out:"Release_Unicode/wxEnviro_u.exe"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "wxEnviro___Win32_Debug_Unicode"
+# PROP BASE Intermediate_Dir "wxEnviro___Win32_Debug_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug_Unicode"
+# PROP Intermediate_Dir "Debug_Unicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /FR /FD /c
+# SUBTRACT BASE CPP /YX
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /D "_UNICODE" /D "UNICODE" /FR /FD /c
+# SUBTRACT CPP /YX
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x809 /i "\APIs\wx2\include" /d "_DEBUG"
+# ADD RSC /l 0x809 /i "\APIs\wx2\include" /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 wxmsw240d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /pdbtype:sept
+# ADD LINK32 wxmsw240ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /out:"Debug_Unicode/wxEnviro_u.exe" /pdbtype:sept
+
 !ENDIF 
 
 # Begin Target
 
 # Name "wxEnviro - Win32 Debug"
 # Name "wxEnviro - Win32 Release"
+# Name "wxEnviro - Win32 Release Unicode"
+# Name "wxEnviro - Win32 Debug Unicode"
 # Begin Group "Source-wx"
 
 # PROP Default_Filter ""
@@ -104,6 +166,13 @@ SOURCE=.\wx\app.cpp
 # ADD CPP /YX"wx/wxprec.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
 
 !ENDIF 
 
@@ -122,6 +191,13 @@ SOURCE=.\wx\CameraDlg.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
+
 !ENDIF 
 
 # End Source File
@@ -134,6 +210,13 @@ SOURCE=.\wx\canvas.cpp
 # ADD CPP /YX"wx/wxprec.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
 
 !ENDIF 
 
@@ -148,6 +231,13 @@ SOURCE=.\wx\ChooseDlg.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
+
 !ENDIF 
 
 # End Source File
@@ -161,6 +251,13 @@ SOURCE=.\wx\enviro_wdr.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
+
 !ENDIF 
 
 # End Source File
@@ -173,6 +270,13 @@ SOURCE=.\wx\frame.cpp
 # ADD CPP /YX"wx/wxprec.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
 
 !ENDIF 
 
@@ -191,6 +295,13 @@ SOURCE=.\wx\LocationDlg.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
+
 !ENDIF 
 
 # End Source File
@@ -203,6 +314,13 @@ SOURCE=.\wx\PlantDlg.cpp
 # ADD CPP /YX"wx/wxprec.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
 
 !ENDIF 
 
@@ -217,6 +335,13 @@ SOURCE=.\wx\SceneGraphDlg.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
+
 !ENDIF 
 
 # End Source File
@@ -230,6 +355,13 @@ SOURCE=.\wx\StartupDlg.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
+
 !ENDIF 
 
 # End Source File
@@ -242,6 +374,13 @@ SOURCE=.\wx\TParamsDlg.cpp
 # ADD CPP /YX"wx/wxprec.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"wx/wxprec.h"
+# ADD CPP /YX"wx/wxprec.h"
 
 !ENDIF 
 
@@ -328,6 +467,13 @@ SOURCE=.\Engines.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
+
 !ENDIF 
 
 # End Source File
@@ -340,6 +486,13 @@ SOURCE=.\Enviro.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
 
 !ENDIF 
 
@@ -354,6 +507,13 @@ SOURCE=.\Globe.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
+
 !ENDIF 
 
 # End Source File
@@ -366,6 +526,13 @@ SOURCE=.\Hawaii.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
 
 !ENDIF 
 
@@ -380,6 +547,13 @@ SOURCE=.\Nevada.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
+
 !ENDIF 
 
 # End Source File
@@ -392,6 +566,13 @@ SOURCE=.\Options.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
 
 !ENDIF 
 
@@ -406,6 +587,13 @@ SOURCE=.\PTerrain.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
+
 !ENDIF 
 
 # End Source File
@@ -418,6 +606,13 @@ SOURCE=.\TransitTerrain.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
 
 !ENDIF 
 
@@ -432,6 +627,13 @@ SOURCE=.\Vehicles.cpp
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
+
 !ENDIF 
 
 # End Source File
@@ -444,6 +646,13 @@ SOURCE=.\Wings.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
+
+!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
+
+# ADD BASE CPP /YX"vtlib/vtlib.h"
+# ADD CPP /YX"vtlib/vtlib.h"
 
 !ENDIF 
 
