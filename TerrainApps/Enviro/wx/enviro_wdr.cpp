@@ -413,57 +413,73 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item13, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Playback") );
-    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
+    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    wxSlider *item25 = new wxSlider( parent, ID_ANIM_POS, 0, 0, 1000, wxDefaultPosition, wxSize(-1,24), wxSL_HORIZONTAL );
+    item24->Add( item25, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item26 = new wxCheckBox( parent, ID_ACTIVE, _("Active"), wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxSlider *item28 = new wxSlider( parent, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(120,-1), wxSL_HORIZONTAL );
-    item26->Add( item28, 1, wxALIGN_CENTER, 5 );
+    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_SPEED, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item28 = new wxStaticBox( parent, -1, _("Playback") );
+    wxStaticBoxSizer *item27 = new wxStaticBoxSizer( item28, wxVERTICAL );
 
-    wxStaticText *item30 = new wxStaticText( parent, ID_TEXT, _("m/s"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item29 = new wxBoxSizer( wxHORIZONTAL );
 
-    item24->Add( item26, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText *item30 = new wxStaticText( parent, ID_TEXT, _("Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item29->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
+    wxSlider *item31 = new wxSlider( parent, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(-1,24), wxSL_HORIZONTAL );
+    item29->Add( item31, 1, wxALIGN_CENTER, 5 );
 
-    wxCheckBox *item32 = new wxCheckBox( parent, ID_LOOP, _("Loop"), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item32 = new wxTextCtrl( parent, ID_SPEED, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item29->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item33 = new wxCheckBox( parent, ID_SMOOTH, _("Smooth"), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item33 = new wxStaticText( parent, ID_TEXT, _("m/s"), wxDefaultPosition, wxDefaultSize, 0 );
+    item29->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item34 = new wxCheckBox( parent, ID_POS_ONLY, _("Position Only"), wxDefaultPosition, wxDefaultSize, 0 );
-    item31->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+    item27->Add( item29, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    item24->Add( item31, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
 
-    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item35 = new wxCheckBox( parent, ID_LOOP, _("Loop"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item35, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item36 = new wxStaticBox( parent, -1, _("Recording") );
-    wxStaticBoxSizer *item35 = new wxStaticBoxSizer( item36, wxVERTICAL );
+    wxCheckBox *item36 = new wxCheckBox( parent, ID_CONTINUOUS, _("Continuous"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item36, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item37 = new wxBoxSizer( wxHORIZONTAL );
+    wxCheckBox *item37 = new wxCheckBox( parent, ID_SMOOTH, _("Smooth"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item37, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item38 = new wxStaticText( parent, ID_TEXT, _("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item37->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item38 = new wxCheckBox( parent, ID_POS_ONLY, _("Position Only"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item39 = new wxTextCtrl( parent, ID_RECORD_SPACING, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item37->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+    item27->Add( item34, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
 
-    wxStaticText *item40 = new wxStaticText( parent, ID_TEXT, _("seconds"), wxDefaultPosition, wxDefaultSize, 0 );
-    item37->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item27, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item35->Add( item37, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticBox *item40 = new wxStaticBox( parent, -1, _("Recording") );
+    wxStaticBoxSizer *item39 = new wxStaticBoxSizer( item40, wxVERTICAL );
 
-    item0->Add( item35, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxRadioButton *item41 = new wxRadioButton( parent, ID_RECORD_LINEAR, _("Use linear distance"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item39->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item43 = new wxRadioButton( parent, ID_RECORD_INTERVAL, _("Time interval"), wxDefaultPosition, wxDefaultSize, 0 );
+    item42->Add( item43, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item44 = new wxTextCtrl( parent, ID_RECORD_SPACING, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item42->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item45 = new wxStaticText( parent, ID_TEXT, _("seconds"), wxDefaultPosition, wxDefaultSize, 0 );
+    item42->Add( item45, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item39->Add( item42, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item39, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
