@@ -92,7 +92,7 @@ public:
 	void FollowTerrain(bool bFollow);
 
 	/// Set the desired minimum height above the terrain.
-	void SetHeight(float fMinHeight) { m_fMinHeight = fMinHeight; }
+	void SetMinHeight(float fMinHeight) { m_fMinHeight = fMinHeight; }
 
 	/// Get the minimum height about the terrain.
 	float GetHeight() { return m_fMinHeight; }
@@ -171,7 +171,7 @@ public:
 	void SetTin(vtTin3d *pTin);
 
 	/// Set the desired minimum height above the terrain.
-	void SetHeight(float fMinHeight) { m_fMinHeight = fMinHeight; }
+	void SetMinHeight(float fMinHeight) { m_fMinHeight = fMinHeight; }
 
 	/// Get the minimum height about the terrain.
 	float GetHeight() { return m_fMinHeight; }
