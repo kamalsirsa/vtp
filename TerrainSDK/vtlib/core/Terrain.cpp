@@ -470,8 +470,8 @@ void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpa
 	if (!fpp3D)
 		return;
 
-	pRoute = new vtRoute(fRouteHeight, fRouteSpacing, fRouteOffL
-						, fRouteOffR, fRouteStInc, sRouteName, this);
+	pRoute = new vtRoute(fRouteHeight, fRouteSpacing, fRouteOffL,
+						 fRouteOffR, fRouteStInc, sRouteName, this);
 //	if (pRoute->TestReader(fp))
 	if (pRoute->logReader(fplog))
 	{
