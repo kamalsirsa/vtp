@@ -1814,9 +1814,9 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		for (i = 0; i < points; i++)
 		{
 			p.Set(line[i].x, line[i].y, 0);
-			spline.addPoint(p);
+			spline.AddPoint(p);
 		}
-		bool result = spline.generate();
+		bool result = spline.Generate();
 
 		// estimate how many steps to subdivide this line into
 		double dLinearLength = line.Length();
@@ -1830,7 +1830,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		double f;
 		for (f = 0; f <= full; f += dStep)
 		{
-			spline.interpolate(f, &p);
+			spline.Interpolate(f, &p);
 
 			g_Conv.convert_earth_to_local_xz(p.x, p.y, v.x, v.z);
 			m_pHeightField->FindAltitudeAtPoint(v, v.y);
@@ -1844,7 +1844,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 			last_v = v;
 		}
 
-		spline.cleanup();
+		spline.Cleanup();
 	}
 	else
 	{
