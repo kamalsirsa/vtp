@@ -202,7 +202,7 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 		return false;		// inconvertible projections
 
 	DPoint2 loc;
-	int i;
+	int i, j;
 	int count = GetSize();
 	for (i = 0; i < count; i++)
 	{
@@ -217,7 +217,20 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 		vtFence *fen = str->GetFence();
 		if (fen)
 		{
-			// TODO
+			DLine2 line = fen->GetFencePoints();
+			for (j = 0; j < line.GetSize(); j++)
+			{
+				loc = line[j];
+				trans->Transform(1, &loc.x, &loc.y);
+				line[j] = loc;
+			}
+		}
+		vtStructInstance *inst = str->GetInstance();
+		if (inst)
+		{
+			loc = inst->m_p;
+			trans->Transform(1, &loc.x, &loc.y);
+			inst->m_p = loc;
 		}
 	}
 
@@ -245,24 +258,30 @@ bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
 	return true;
 }
 
-void vtStructureLayer::Offset(const DPoint2 &p)
+void vtStructureLayer::Offset(const DPoint2 &delta)
 {
 	int npoints = GetSize();
 	if (!npoints)
 		return;
 
+	int i, j;
 	DPoint2 temp;
-	for (int i = 0; i < npoints; i++)
+	for (i = 0; i < npoints; i++)
 	{
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
-			bld->Offset(p);
+			bld->Offset(delta);
 		vtFence *fen = str->GetFence();
 		if (fen)
 		{
-			// TODO
+			DLine2 line = fen->GetFencePoints();
+			for (j = 0; j < line.GetSize(); j++)
+				line.GetAt(j) += delta;
 		}
+		vtStructInstance *inst = str->GetInstance();
+		if (inst)
+			inst->m_p += delta;
 	}
 }
 
