@@ -164,7 +164,7 @@ bool CreateScene()
 
 	// Create a new vtTerrain, read its parameters from a file
 	vtTerrain *pTerr = new vtTerrain();
-	pTerr->SetParamFile("Data/Simple.ini");
+	pTerr->SetParamFile("Data/Simple.xml");
 
 	// Add the terrain to the scene, and contruct it
 	ts->AppendTerrain(pTerr);
@@ -177,9 +177,11 @@ bool CreateScene()
 	ts->SetCurrentTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
-	// Flight speed is 400 m/frame
+	// Get flight speed from terrain parameters
 	// Height over terrain is 100 m
-	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(400, 100, true);
+	float fSpeed = pTerr->GetParams().GetValueFloat(STR_NAVSPEED);
+
+	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(fSpeed, 100, true);
 	pFlyer->SetTarget(pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);

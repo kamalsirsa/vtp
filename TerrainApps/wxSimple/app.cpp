@@ -54,9 +54,9 @@ bool vtApp::CreateScene()
 		return false;
 
 	// Look up the camera
-	vtCamera *pCamera = pScene->GetCamera();
-	pCamera->SetHither(10);
-	pCamera->SetYon(100000);
+	m_pCamera = pScene->GetCamera();
+	m_pCamera->SetHither(10);
+	m_pCamera->SetYon(100000);
 
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
@@ -73,7 +73,7 @@ bool vtApp::CreateScene()
 
 	// Create a new vtTerrain, read its paramters from a file
 	vtTerrain *pTerr = new vtTerrain();
-	pTerr->SetParamFile("Data/Simple.ini");
+	pTerr->SetParamFile("Data/Simple.xml");
 
 	// Add the terrain to the scene, and contruct it
 	m_pTerrainScene->AppendTerrain(pTerr);
@@ -87,10 +87,12 @@ bool vtApp::CreateScene()
 	m_pTerrainScene->SetCurrentTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
-	// Flight speed is 500 m/frame
+	// Get flight speed from terrain parameters
 	// Height over terrain is 100 m
-	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(400, 100, true);
-	pFlyer->SetTarget(pCamera);
+	float fSpeed = pTerr->GetParams().GetValueFloat(STR_NAVSPEED);
+
+	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(fSpeed, 100, true);
+	pFlyer->SetTarget(m_pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
 
@@ -100,6 +102,11 @@ bool vtApp::CreateScene()
 
 int vtApp::OnExit()
 {
-	delete m_pTerrainScene;
+	if (m_pTerrainScene)
+	{
+		m_pCamera->Release();
+		m_pTerrainScene->CleanupScene();
+		delete m_pTerrainScene;
+	}
 	return 0;
 }
