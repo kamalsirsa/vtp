@@ -12,12 +12,12 @@
 #include "wx/wx.h"
 #endif
 
-#include "App.h"
 #include "Frame.h"
 #include "BuilderView.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
 #include "gdal_priv.h"
+#include "App.h"
 
 #define HEAPBUSTER 0
 
@@ -25,10 +25,22 @@
 #include "../HeapBuster/HeapBuster.h"
 #endif
 
-IMPLEMENT_APP(MyApp)
+IMPLEMENT_APP(BuilderApp)
 
 
-bool MyApp::OnInit()
+void BuilderApp::Args(int argc, wxChar **argv)
+{
+	for (int i = 0; i < argc; i++)
+	{
+		wxString2 str = argv[i];
+		const char *cstr = str.mb_str();
+		if (!strncmp(cstr, "-locale=", 8))
+			m_locale_name = cstr+8;
+	}
+}
+
+
+bool BuilderApp::OnInit()
 {
 #if WIN32 && defined(_MSC_VER) && DEBUG
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
@@ -49,6 +61,10 @@ bool MyApp::OnInit()
 	VTLOG(" Running on: ");
 	LogWindowsVersion();
 #endif
+
+	Args(argc, argv);
+
+	SetupLocale();
 
 	// Fill list of layer type names
 	if (vtLayer::LayerTypeNames.IsEmpty())
@@ -133,8 +149,68 @@ bool MyApp::OnInit()
 	return TRUE;
 }
 
-int MyApp::OnExit()
+int BuilderApp::OnExit()
 {
 	VTLOG("App Exit\n");
 	return wxApp::OnExit();
 }
+
+void BuilderApp::SetupLocale()
+{
+	wxLog::SetVerbose(true);
+
+	// Locale stuff
+	int lang = wxLANGUAGE_DEFAULT;
+	int default_lang = m_locale.GetSystemLanguage();
+
+	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
+	VTLOG("Default language: %d (%s)\n",
+		default_lang, info->Description.mb_str());
+
+	bool bSuccess;
+	if (m_locale_name != "")
+	{
+		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);
+		lang = GetLangFromName(wxString2(m_locale_name));
+		if (lang == wxLANGUAGE_UNKNOWN)
+		{
+			VTLOG(" Unknown, falling back on default language.\n");
+			lang = wxLANGUAGE_DEFAULT;
+		}
+		else
+		{
+			info = m_locale.GetLanguageInfo(lang);
+			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
+				info->CanonicalName.mb_str(), info->Description.mb_str());
+			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
+		}
+	}
+	if (lang == wxLANGUAGE_DEFAULT)
+	{
+		VTLOG("Initializing locale to default language:\n");
+		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+		if (bSuccess)
+			lang = default_lang;
+	}
+	if (bSuccess)
+		VTLOG(" succeeded.\n");
+	else
+		VTLOG(" failed.\n");
+
+	if (lang != wxLANGUAGE_ENGLISH_US)
+	{
+		VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
+		bSuccess = m_locale.AddCatalog(wxT("Enviro"));
+		if (bSuccess)
+			VTLOG(" succeeded.\n");
+		else
+			VTLOG(" not found.\n");
+		VTLOG("\n");
+	}
+
+	// Test it
+//	wxString test = _("&File");
+
+	wxLog::SetVerbose(false);
+}
+

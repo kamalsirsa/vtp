@@ -95,7 +95,7 @@
 #	include "VTBuilder.xpm"
 #endif
 
-DECLARE_APP(MyApp)
+DECLARE_APP(BuilderApp)
 
 // Window ids
 #define WID_SPLITTER	100

@@ -21,7 +21,7 @@
 #include "Frame.h"
 #include "BuilderView.h"
 
-DECLARE_APP(MyApp)
+DECLARE_APP(BuilderApp)
 
 // Under Windows, the icons are in the .rc file; on Unix, they are included
 // from .xpm files.
