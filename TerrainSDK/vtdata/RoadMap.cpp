@@ -1324,10 +1324,10 @@ bool vtRoadMap::WriteRMF(const char *filename)
 
 	// Extents
 	int le, ri, to, bo;
-	le = m_extents.left;
-	ri = m_extents.right;
-	to = m_extents.top;
-	bo = m_extents.bottom;
+	le = (int) m_extents.left;
+	ri = (int) m_extents.right;
+	to = (int) m_extents.top;
+	bo = (int) m_extents.bottom;
 	FWrite(&ri, intSize);
 	FWrite(&to, intSize);
 	FWrite(&le, intSize);
