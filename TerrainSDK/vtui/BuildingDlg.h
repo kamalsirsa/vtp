@@ -1,7 +1,7 @@
 //
-// Name:		BuildingDlg.h
+// Name: BuildingDlg.h
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,9 +54,11 @@ public:
 	void UpdateMaterialControl();
 	void UpdateColorControl();
 	void UpdateFeatures();
+	void UpdateFacade();
 	void SetupControls();
 	void DeleteCurrentLevel();
 	void CopyCurrentLevel();
+	void SetEdgeFacade();
 
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
@@ -68,18 +70,19 @@ protected:
 	// WDR: member variable declarations for BuildingDlg
 	vtStructureArray *m_pSA;
 	vtBuilding  *m_pBuilding;
-	vtLevel	 *m_pLevel;
-	vtEdge	  *m_pEdge;
+	vtLevel  *m_pLevel;
+	vtEdge	*m_pEdge;
 
-	int		 m_iLevel;
-	int		 m_iEdge;
-	int		 m_iStories;
-	float	   m_fStoryHeight;
+	int	  m_iLevel;
+	int	  m_iEdge;
+	int	  m_iStories;
+	float	  m_fStoryHeight;
 	wxString	m_strMaterial;
 	wxString	m_strEdgeSlopes;
 	wxString	m_strFeatures;
+	wxString	m_strFacade;
 	wxColour	m_Color;
-	int		 m_iEdgeSlope;
+	int	  m_iEdgeSlope;
 
 	wxStaticBitmap  *m_pColorBitmapControl;
 	wxListBox   *m_pLevelListBox;
@@ -90,6 +93,7 @@ protected:
 
 protected:
 	// WDR: handler declarations for BuildingDlg
+	void OnFacadeEnter( wxCommandEvent &event );
 	void OnFeatDoor( wxCommandEvent &event );
 	void OnFeatWindow( wxCommandEvent &event );
 	void OnFeatWall( wxCommandEvent &event );

@@ -1,7 +1,7 @@
 //
-// Name:		BuildingDlg.cpp
+// Name: BuildingDlg.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -52,6 +52,7 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
 	EVT_CLOSE(BuildingDlg::OnCloseWindow)
 	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
+	EVT_TEXT_ENTER( ID_FACADE, BuildingDlg::OnFacadeEnter )
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -118,6 +119,12 @@ void BuildingDlg::HighlightSelectedEdge()
 }
 
 // WDR: handler implementations for BuildingDlg
+
+void BuildingDlg::OnFacadeEnter( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	SetEdgeFacade();
+}
 
 void BuildingDlg::OnFeatDoor( wxCommandEvent &event )
 {
@@ -254,8 +261,6 @@ void BuildingDlg::OnColor1( wxCommandEvent &event )
 
 void BuildingDlg::OnOK( wxCommandEvent &event )
 {
-	// All edits are live, so no need to do anything on OK other than
-	// close the window.
 	m_pSA->SetEditedEdge(NULL, 0, 0);
 	wxDialog::OnOK(event);
 }
@@ -285,6 +290,7 @@ void BuildingDlg::SetupControls()
 		AddValidator(ID_MATERIAL2, &m_strMaterial);
 		AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
 		AddValidator(ID_FEATURES, &m_strFeatures);
+		AddValidator(ID_FACADE, &m_strFacade);
 	}
 
 	m_pLevelListBox = GetLevelCtrl();
@@ -292,8 +298,8 @@ void BuildingDlg::SetupControls()
 		m_pEdgeListBox = GetEdgeCtrl();
 
 	RefreshLevelsBox();
-//	if (m_bEdges)
-//		RefreshEdgesBox();
+//  if (m_bEdges)
+//	  RefreshEdgesBox();
 
 	SetLevel(m_iLevel);
 	HighlightSelectedLevel();
@@ -367,9 +373,11 @@ void BuildingDlg::OnEdge( wxCommandEvent &event )
 
 void BuildingDlg::SetEdge(int iEdge)
 {
+	SetEdgeFacade();
 	m_iEdge = iEdge;
 	m_pEdge = m_pLevel->GetEdge(iEdge);
 	m_iEdgeSlope = m_pEdge->m_iSlope;
+	m_strFacade = m_pEdge->m_Facade;
 
 	// material
 	UpdateMaterialControl();
@@ -382,6 +390,8 @@ void BuildingDlg::SetEdge(int iEdge)
 
 	// features
 	UpdateFeatures();
+
+	UpdateFacade();
 
 	m_pSA->SetEditedEdge(m_pBuilding, m_iLevel, m_iEdge);
 }
@@ -575,6 +585,13 @@ void BuildingDlg::UpdateFeatures()
 	m_bSetting = false;
 }
 
+void BuildingDlg::UpdateFacade()
+{
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+}
+
 void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 {
 	int i;
@@ -622,6 +639,7 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 	}
 	else
 	{
+		SetEdgeFacade();
 		DestroyChildren();
 		BuildingDialogFunc( this, TRUE );
 		m_pSA->SetEditedEdge(NULL, 0, 0);
@@ -692,4 +710,17 @@ void BuildingDlg::OnCharHook( wxKeyEvent &event )
 		CopyCurrentLevel();
 }
 
+void BuildingDlg::SetEdgeFacade()
+{
+	if (m_bEdges && (NULL != m_pEdge))
+	{
+		// Store current facade
+		TransferDataFromWindow();
+		if (0 != m_pEdge->m_Facade.Compare(m_strFacade))
+		{
+			m_pEdge->m_Facade = m_strFacade;
+			Modified();
+		}
+	}
+}
 
