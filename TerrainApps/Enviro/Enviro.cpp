@@ -367,7 +367,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	if (m_iInitStep == 1)
 	{
 		vtString str;
-		str.Format("Creating Terrain '%s'", pTerr->GetName());
+		str.Format("Creating Terrain '%s'", (const char*) pTerr->GetName());
 		SetMessage(str);
 	}
 	if (m_iInitStep == 2)

@@ -64,7 +64,7 @@ void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
 	{
 		vtString name = "PlantModels/";
 		name += m_filename;
-		VTLOG("\tLoading plant texture '%s' ", name);
+		VTLOG("\tLoading plant texture '%s' ", (const char *) name);
 		vtString fname = FindFileOnPaths(paths, name);
 
 		m_pMats = new vtMaterialArray();

@@ -1218,7 +1218,8 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 		for (k = 0; k < bio->m_Densities.GetSize(); k++)
 		{
 			pd = bio->m_Densities[k];
-			str.Printf("    Plant %d: %s: %d generated.\n", k, pd->m_common_name, pd->m_iNumPlanted);
+			str.Printf("    Plant %d: %s: %d generated.\n", k,
+				(const char *) pd->m_common_name, pd->m_iNumPlanted);
 			msg += str;
 		}
 	}
