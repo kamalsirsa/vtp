@@ -307,7 +307,14 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
 }
 
 /**
- * Adds an ellipsoid to this mesh.
+ * Adds geometry for an ellipsoid to this mesh.
+ *
+ * The geometry is created with efficient triangle strips.  If the mesh
+ * has vertex normals, outward-pointing normals are created for lighting.
+ * If the mesh has vertex coordinates, then UVs are set as follows:
+ * U ranges from 0 to 1 around the circumference, and V ranges from 0
+ * to 1 from the top to the bottom.  For a hemisphere, V ranges from
+ * 0 at the top to 1 at the base.
  *
  * \param size The width, height and depth of the ellipsoid.
  * \param res The resolution (number of vertices used in the tesselation)
