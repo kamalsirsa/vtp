@@ -737,8 +737,7 @@ vtTransform *vtTerrain::LoadModel(const char *filename)
  */
 void vtTerrain::PlantModel(vtTransform *model)
 {
-	FPoint3 pos;
-
+	FPoint3 pos = model->GetTrans();
 	m_pHeightField->FindAltitudeAtPoint(pos, pos.y);
 	model->SetTrans(pos);
 }
@@ -1500,7 +1499,7 @@ void vtTerrain::HideAllPOI()
 	}
 }
 
-const char *vtTerrain::DesribeError(int iError)
+const char *vtTerrain::DescribeError(int iError)
 {
 	switch (iError)
 	{

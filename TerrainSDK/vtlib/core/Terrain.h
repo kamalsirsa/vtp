@@ -89,7 +89,7 @@ public:
 	bool CreateStep3(int &iError);
 	bool CreateStep4(int &iError);
 	bool CreateStep5(bool bSound, int &iError);
-	const char *DesribeError(int iError);
+	const char *DescribeError(int iError);
 
 	/// return true if the terrain has been created
 	bool IsCreated();
