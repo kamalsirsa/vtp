@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1224,19 +1224,25 @@ int vtFeatureSet::GetIntegerValue(unsigned int iRecord, unsigned int iField) con
 short vtFeatureSet::GetShortValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
-	return field->m_short[iRecord];
+	short val;
+	field->GetValue(iRecord, val);
+	return val;
 }
 
 float vtFeatureSet::GetFloatValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
-	return field->m_float[iRecord];
+	float val;
+	field->GetValue(iRecord, val);
+	return val;
 }
 
 double vtFeatureSet::GetDoubleValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
-	return field->m_double[iRecord];
+	double val;
+	field->GetValue(iRecord, val);
+	return val;
 }
 
 bool vtFeatureSet::GetBoolValue(unsigned int iRecord, unsigned int iField) const
@@ -1333,6 +1339,18 @@ void Field::GetValue(unsigned int record, vtString &string)
 	string = m_string[record];
 }
 
+void Field::GetValue(unsigned int record, short &value)
+{
+	if (m_type == FT_Short)
+		value = m_short[record];
+	else if (m_type == FT_Integer)
+		value = m_int[record];
+	else if (m_type == FT_Double)
+		value = (int) m_double[record];
+	else if (m_type == FT_Boolean)
+		value = (int) m_bool[record];
+}
+
 void Field::GetValue(unsigned int record, int &value)
 {
 	if (m_type == FT_Integer)
@@ -1345,11 +1363,25 @@ void Field::GetValue(unsigned int record, int &value)
 		value = (int) m_bool[record];
 }
 
+void Field::GetValue(unsigned int record, float &value)
+{
+	if (m_type == FT_Float)
+		value = m_float[record];
+	else if (m_type == FT_Double)
+		value = (float) m_double[record];
+	else if (m_type == FT_Integer)
+		value = (float) m_int[record];
+	else if (m_type == FT_Short)
+		value = (float) m_short[record];
+}
+
 void Field::GetValue(unsigned int record, double &value)
 {
-	 if (m_type == FT_Double)
+	if (m_type == FT_Double)
 		value = m_double[record];
-	 else if (m_type == FT_Integer)
+	else if (m_type == FT_Float)
+		value = m_float[record];
+	else if (m_type == FT_Integer)
 		value = (double) m_int[record];
 	else if (m_type == FT_Short)
 		value = (double) m_short[record];
