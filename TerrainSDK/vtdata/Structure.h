@@ -21,16 +21,13 @@ class vtFence;
 class vtStructInstance;
 
 // Well known material names
-#define BMAT_NAME_UNKNOWN		"Unknown"
 #define BMAT_NAME_PLAIN			"Plain"
 #define BMAT_NAME_WOOD			"Wood"
 #define BMAT_NAME_SIDING		"Siding"
-#define BMAT_NAME_GLASS			"Glass"
 #define BMAT_NAME_BRICK			"Brick"
 #define BMAT_NAME_PAINTED_BRICK	"Painted-Brick"
 #define BMAT_NAME_ROLLED_ROOFING "Rolled-Roofing"
 #define BMAT_NAME_CEMENT		"Cement"
-#define BMAT_NAME_STUCCO		"Stucco"
 #define BMAT_NAME_CORRUGATED	"Corrugated"
 #define BMAT_NAME_DOOR			"Door"
 #define BMAT_NAME_WINDOW		"Window"

@@ -193,17 +193,14 @@ struct MatEntry
 };
 
 MatEntry MatEntries[] = {
-	{ BMAT_NAME_UNKNOWN, 1, "unknown" },
 	{ BMAT_NAME_PLAIN, 1, "plain" },
 	{ BMAT_NAME_WOOD, 1, "wood" },
 	{ BMAT_NAME_SIDING, 1, "siding" },
-	{ BMAT_NAME_GLASS, 1, "glass" },
 	{ BMAT_NAME_BRICK, 1, "brick" },
 	{ BMAT_NAME_PAINTED_BRICK, 2, "painted brick" },
 	{ BMAT_NAME_ROLLED_ROOFING, 2, "rolled roofing" },
 	{ BMAT_NAME_ROLLED_ROOFING, 1, "roofing" },
 	{ BMAT_NAME_CEMENT, 1, "cement" },
-	{ BMAT_NAME_STUCCO, 1, "stucco" },
 	{ BMAT_NAME_CORRUGATED, 1, "corrugated" },
 };
 
