@@ -129,7 +129,7 @@ vtFeatureSet *vtFeatureLoader::LoadHeaderFromSHP(const char *filename)
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(filename, "rb");
 	if (hSHP == NULL)
-		return false;
+		return NULL;
 
 	// Get number of entities (nElem) and type of data (nShapeType)
 	int		nElems, nShapeType;
