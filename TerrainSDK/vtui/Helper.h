@@ -11,6 +11,8 @@
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color);
 void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color);
+void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color);
+void FillWithColor(wxBitmapButton *pBitmapButton, const wxColour &color);
 
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars = 0);

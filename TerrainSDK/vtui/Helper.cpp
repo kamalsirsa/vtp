@@ -31,24 +31,32 @@ wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 	return pBitmap;
 }
 
-void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color)
+void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color)
 {
-	wxColour Color(color.r, color.g, color.b);
 	wxBitmap &bm = pStaticBitmap->GetBitmap();
 
-	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), Color);
+	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), color);
 	pStaticBitmap->SetBitmap(*pNewBitmap);
 	delete pNewBitmap;
 }
 
-void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color)
+void FillWithColor(wxBitmapButton *pBitmapButton, const wxColour &color)
 {
-	wxColour Color(color.r, color.g, color.b);
 	wxBitmap &bm = pBitmapButton->GetBitmapLabel();
 
-	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), Color);
+	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), color);
 	pBitmapButton->SetBitmapLabel(*pNewBitmap);
 	delete pNewBitmap;
+}
+
+void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color)
+{
+	FillWithColor(pStaticBitmap, wxColour(color.r, color.g, color.b));
+}
+
+void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color)
+{
+	FillWithColor(pBitmapButton, wxColour(color.r, color.g, color.b));
 }
 
 /**
