@@ -48,6 +48,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "vtui"=..\..\TerrainSDK\vtui\vtui.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "wxEnviro"=.\wxEnviro.dsp - Package Owner=<4>
 
 Package=<5>
