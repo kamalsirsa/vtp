@@ -38,17 +38,16 @@ public:
 	bool WriteSHP(const char* pathname);
 	bool WriteXML(const char* pathname);
 
-	/** Find the building corner closest to the given point, if it is within
-	 * 'error' distance.  The building index, corner index, and distance from
-	 * the given point are all returned by reference.
-	 */
 	bool FindClosestBuildingCorner(const DPoint2 &point, double error,
 						   int &building, int &corner, double &distance);
-	/** Find the building center closest to the given point, if it is within
-	 * 'error' distance.  The building index, and distance from the given
-	 * point are returned by reference.
-	 */
 	bool FindClosestBuildingCenter(const DPoint2 &point, double error,
+						   int &building, double &distance);
+
+	/** Find the structure which is closest to the given point, if it is within
+	 * 'error' distance.  The structure index and distance are returned by
+	 * reference.
+	 */
+	bool FindClosestStructure(const DPoint2 &point, double error,
 						   int &building, double &distance);
 
 	bool IsEmpty() { return (GetSize() == 0); }

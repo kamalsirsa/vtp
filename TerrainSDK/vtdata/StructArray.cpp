@@ -413,11 +413,10 @@ bool vtStructureArray::WriteSHP(const char* pathname)
 }
 
 
-//
-// find the corner of a building closest to the given point
-//
-// return true if found
-//
+/** Find the building corner closest to the given point, if it is within
+ * 'error' distance.  The building index, corner index, and distance from
+ * the given point are all returned by reference.
+ */
 bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 			double error, int &building, int &corner, double &closest)
 {
@@ -476,11 +475,10 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 	return (building != -1);
 }
 
-//
-// find the corner of a building closest to the given point
-//
-// return true if found
-//
+/** Find the building center closest to the given point, if it is within
+ * 'error' distance.  The building index, and distance from the given
+ * point are returned by reference.
+ */
 bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 				double error, int &building, double &closest)
 {
@@ -510,6 +508,53 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 	}
 	return (building != -1);
 }
+
+/** Find the structure which is closest to the given point, if it is within
+ * 'error' distance.  The structure index and distance are returned by
+ * reference.
+ */
+bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double error,
+					   int &structure, double &closest)
+{
+	if (IsEmpty())
+		return false;
+
+	structure = -1;
+	DPoint2 loc;
+	double dist;
+	closest = 1E8;
+
+	for (int i = 0; i < GetSize(); i++)
+	{
+		vtStructure *str = GetAt(i);
+
+		// it might be a building
+		vtBuilding *bld = str->GetBuilding();
+		if (bld)
+			loc = bld->GetLocation();
+
+		// or a fence
+		vtFence *fen = str->GetFence();
+		if (fen)
+			fen->GetClosestPoint(point, loc);
+
+		// or an instance
+		vtStructInstance *inst = str->GetInstance();
+		if (inst)
+			loc = inst->m_p;
+
+		dist = (loc - point).Length();
+		if (dist > error)
+			continue;
+		if (dist < closest)
+		{
+			structure = i;
+			closest = dist;
+		}
+	}
+	return (structure != -1);
+}
+
 
 void vtStructureArray::GetExtents(DRECT &rect)
 {
