@@ -2,7 +2,7 @@
 // EnviroApp.cpp : Defines the class behaviors for the application.
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 #include "vtlib/vtlib.h"
 #include "EnviroApp.h"
 #include "SimpleDoc.h"

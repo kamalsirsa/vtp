@@ -1,7 +1,7 @@
 // MainFrm.cpp : implementation of the EnviroFrame class
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 #include "vtlib/vtlib.h"
 #include "EnviroApp.h"
 #include "EnviroFrame.h"

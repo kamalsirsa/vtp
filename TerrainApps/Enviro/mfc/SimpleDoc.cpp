@@ -4,7 +4,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 #include "SimpleDoc.h"
 
 #ifdef _DEBUG

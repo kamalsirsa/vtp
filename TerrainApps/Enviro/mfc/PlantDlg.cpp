@@ -1,7 +1,7 @@
 // PlantDlg.cpp : implementation file
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 
 #include "resource.h"
 

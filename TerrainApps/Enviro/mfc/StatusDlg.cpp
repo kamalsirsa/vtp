@@ -1,7 +1,7 @@
 // StatusDlg.cpp : implementation file
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 #include "vtlib/vtlib.h"
 #include "StatusDlg.h"
 

@@ -11,7 +11,7 @@
 // mfcieVw.cpp : implementation of the CMfcieView class
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 #include "vtlib/vtlib.h"
 #include "enviroapp.h"
 #include "EnviroFrame.h"

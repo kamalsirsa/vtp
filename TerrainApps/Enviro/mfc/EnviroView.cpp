@@ -2,7 +2,7 @@
 // EnviroView.cpp : The 3d view window of the Enviro application
 //
 
-#include "StdEnviro.h"
+#include "StdAfx.h"
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
@@ -109,7 +109,7 @@ BOOL EnviroView::PreCreateWindow(CREATESTRUCT& cs)
 // helper
 int WindowsMouseFlagsToVT(UINT nFlags)
 {
-	int flags;
+	int flags = 0;
 	if (nFlags & MK_SHIFT)
 		flags |= VT_SHIFT;
 	if (nFlags & MK_CONTROL)
