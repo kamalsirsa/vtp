@@ -925,14 +925,12 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
 
-	for (int i = -3; i < 4; i++)
+	for (int i = -5; i < 6; i++)
 	{
-		for (int j = -3; j < 4; j++)
+		for (int j = -5; j < 6; j++)
 		{
-			// don't need to do far corners
-			if ((i == -3 || i == 3) && (j == -3 || j == 3)) continue;
+			// skip center tile
 			if (i == 0 && j == 0) {
-				// center tile
 				if (!bCenter) continue;
 			}
 			else {
