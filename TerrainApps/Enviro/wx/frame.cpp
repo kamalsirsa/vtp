@@ -477,6 +477,20 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		g_App.ToggleLogo();
 		break;
 
+	case 'y':
+		{
+ vtTerrain *t = GetCurrentTerrain();  
+ vtHeightField3d *pHF = t->GetHeightField(); 
+
+  vtCamera *cam = vtGetScene()->GetCamera();
+  FPoint3 middle;
+  pHF->GetCenter(middle);
+  FPoint3 high = middle;
+  high.y += (pHF->m_WorldExtents.Width()/2);
+  cam->SetTrans(high);
+  cam->PointTowards(middle);
+		}
+
 	default:
 		event.Skip();
 		break;
