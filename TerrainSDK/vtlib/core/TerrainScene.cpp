@@ -116,8 +116,6 @@ void vtTerrainScene::_CreateSkydome(const vtStringArray &datapath)
 	// create a day-night dome
 	m_pSkyDome = new vtSkyDome();
 	m_pSkyDome->Create(bsc, 3, 1.0f, sun, moon);	// initially unit radius
-	m_pSkyDome->SetDawnTimes(5, 0, 7, 0);
-	m_pSkyDome->SetDuskTimes(17, 0, 19, 0);
 	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
 	m_pSkyDome->SetName2("The Sky");
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
@@ -264,7 +262,12 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 		float max_radius = 450000;
 		if (radius > max_radius)
 			radius = max_radius;
-		m_pSkyDome->SetRadius(radius);
+		m_pSkyDome->Identity();
+		m_pSkyDome->Scale3(radius, radius, radius);
+
+		// Tell the skydome where on the planet we are
+		DPoint2 geo = pTerrain->GetCenterGeoLocation();
+		m_pSkyDome->SetGeoLocation(geo);
 	}
 
 	// Set background color to match the ocean
@@ -290,7 +293,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	if (m_pSkyDome)
 	{
 		m_pSkyDome->SetSunLight(GetSunLight());
-		m_pSkyDome->SetTimeOfDay(localtime.GetSecondOfDay(), true);
+		m_pSkyDome->SetTime(localtime, true);
 	}
 
 	// handle the atmosphere
@@ -318,7 +321,7 @@ void vtTerrainScene::SetTime(const vtTime &time)
 	if (m_pSkyDome)
 	{
 		// TODO? Convert to local time?
-		m_pSkyDome->SetTimeOfDay(time.GetSecondOfDay());
+		m_pSkyDome->SetTime(time);
 //		m_pSkyDome->ApplyDayColors();
 // TODO? Update the fog color to match the color of the horizon.
 	}
