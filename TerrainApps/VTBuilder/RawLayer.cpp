@@ -149,7 +149,7 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	int i, j, pts;
+	int i, j, pts, success, good = 0, bad = 0;
 	if (m_nSHPType == SHPT_POINT)
 	{
 		for (i = 0; i < m_Point2.GetSize(); i++)
@@ -168,11 +168,20 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 			pts = dline->GetSize();
 			for (j = 0; j < pts; j++)
 			{
-				trans->Transform(1, &((*dline)[i]).x, &((*dline)[i]).y);
+				DPoint2 &p = dline->GetAt(j);
+				success = trans->Transform(1, &p.x, &p.y);
+				if (success == 1)
+					good++;
+				else
+					bad++;
 			}
 		}
 	}
 	delete trans;
+
+	if (bad)
+		DisplayAndLog("Warning: %d of %d coordinates did not project correctly.\n",
+			bad, bad+good);
 
 	m_proj = proj;
 	return true;
