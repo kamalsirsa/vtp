@@ -68,6 +68,7 @@ public:
 	void ScalePixel8(int x, int y, float fScale);
 
 	void SetColor(const RGBi &rgb);
+	void Invert();
 
 	unsigned int GetWidth() const { return m_iWidth; }
 	unsigned int GetHeight() const { return m_iHeight; }

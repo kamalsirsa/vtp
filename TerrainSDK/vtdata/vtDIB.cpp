@@ -1157,3 +1157,30 @@ void vtDIB::SetColor(const RGBi &rgb)
 			SetPixel24(i, j, rgb);
 		}
 }
+
+void vtDIB::Invert()
+{
+	unsigned int i, j;
+	if (m_iBitCount == 8)
+	{
+		for (i = 0; i < m_iWidth; i++)
+			for (j = 0; j < m_iHeight; j++)
+			{
+				SetPixel8(i, j, 8-GetPixel8(i, j));
+			}
+	}
+	if (m_iBitCount == 24)
+	{
+		RGBi rgb;
+		for (i = 0; i < m_iWidth; i++)
+			for (j = 0; j < m_iHeight; j++)
+			{
+				GetPixel24(i, j, rgb);
+				rgb.r = 255 - rgb.r;
+				rgb.g = 255 - rgb.g;
+				rgb.b = 255 - rgb.b;
+				SetPixel24(i, j, rgb);
+			}
+	}
+}
+
