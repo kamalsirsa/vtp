@@ -12,6 +12,8 @@
 #include "Layer.h"
 #include "vtdata/vtTin.h"
 
+#define SHADING_BIAS	200
+
 class vtHeightField;
 class vtElevationGrid;
 class vtDIB;
@@ -112,7 +114,6 @@ public:
 	void MergeSharedVerts(bool bSilent = false);
 
 	// drawing
-	void PaintDibFromElevation(vtDIB *dib, bool bShade);
 	void SetupBitmap(wxDC* pDC);
 	void RenderBitmap();
 	void SetupDefaultColors(ColorMap &cmap);
@@ -137,6 +138,9 @@ protected:
 	vtBitmap	*m_pBitmap;
 	wxMask		*m_pMask;
 };
+
+// Helper
+FPoint3 LightDirection(float angle, float direction);
 
 #endif	// ELEVLAYER_H
 

@@ -26,8 +26,6 @@
 #include "Projection2Dlg.h"
 #include "ExtentDlg.h"
 
-#define SHADING_BIAS	200
-
 ////////////////////////////////////////////////////////////////////
 
 vtTin2d::vtTin2d()
@@ -540,12 +538,7 @@ void vtElevLayer::RenderBitmap()
 	if (m_draw.m_bShading)
 	{
 		// Quick and simple sunlight vector
-		float phi = m_draw.m_iCastAngle / 180.0f * PIf;
-		float theta = m_draw.m_iCastDirection / 180.0f * PIf;
-		FPoint3 light_dir;
-		light_dir.x = (-sin(theta)*cos(phi));
-		light_dir.z = (-cos(theta)*cos(phi));
-		light_dir.y = -sin(phi);
+		FPoint3 light_dir = LightDirection(m_draw.m_iCastAngle, m_draw.m_iCastDirection);
 
 		if (m_draw.m_bCastShadows)
 			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
@@ -947,22 +940,6 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	return true;
 }
 
-void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
-{
-	// TODO: call ColorDibFromElevation etc. here
-#if 0
-	int percent, last = -1;
-	percent = i * 100 / w;
-	if (percent != last)
-	{
-		wxString str;
-		str.Printf(_T("%d%%"), percent);
-		UpdateProgressDialog(percent, str);
-		last = percent;
-	}
-#endif
-}
-
 void vtElevLayer::SetTin(vtTin2d *pTin)
 {
 	m_pTin = pTin;
@@ -1102,4 +1079,17 @@ bool vtElevLayer::AskForSaveFilename()
 	SetLayerFilename(fname);
 	m_bNative = true;
 	return true;
+}
+
+// Helper
+
+FPoint3 LightDirection(float angle, float direction)
+{
+	float phi = angle / 180.0f * PIf;
+	float theta = direction / 180.0f * PIf;
+	FPoint3 light_dir;
+	light_dir.x = (-sin(theta)*cos(phi));
+	light_dir.z = (-cos(theta)*cos(phi));
+	light_dir.y = -sin(phi);
+	return light_dir;
 }
