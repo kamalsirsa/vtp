@@ -139,182 +139,62 @@ SOURCE=.\res\treeimag.bmp
 # Begin Source File
 
 SOURCE=.\Engines.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Enviro.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Globe.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Hawaii.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Nevada.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Options.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\PTerrain.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\SwapEngine.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\TerrainSceneWP.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\TransitTerrain.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Vehicles.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\Wings.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # Begin Group "Source-mfc"
@@ -323,17 +203,7 @@ SOURCE=.\Wings.cpp
 # Begin Source File
 
 SOURCE=.\mfc\CameraDlg.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -343,161 +213,57 @@ SOURCE=.\mfc\ChooseDlg.cpp
 # Begin Source File
 
 SOURCE=".\mfc\CreateDlg.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\EnviroApp.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\EnviroFrame.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\EnviroView.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\FenceDlg.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\HtmlVw.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\PlantDlg.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=.\mfc\SimpleDoc.cpp
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\StartupDlg.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
 SOURCE=".\mfc\StatusDlg.cpp"
-
-!IF  "$(CFG)" == "mfcEnviro - Win32 Debug"
-
 # ADD CPP /YX"StdAfx.h"
-
-!ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
-
-# ADD CPP /YX"StdAfx.h"
-
-!ENDIF 
-
 # End Source File
 # End Group
 # Begin Group "Source-none"
 
 # PROP Default_Filter "cpp"
-# Begin Source File
-
-SOURCE=.\kludge.c
-# End Source File
 # End Group
 # Begin Group "Headers-mfc"
 
