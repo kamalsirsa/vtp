@@ -5,7 +5,7 @@ static char *terrain_xpm[] = {
 /* colors */
 "` c #000000",
 "a c #00BF00",
-"b c #C0C0C0",
+"b c None",
 "c c #808080",
 "d c #0000BF",
 "e c #0000FF",

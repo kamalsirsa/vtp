@@ -6,7 +6,7 @@ static char *tree_xpm[] = {
 "` c #00FF00",
 "a c #00BF00",
 "b c #BFBF00",
-"c c #C0C0C0",
+"c c None",
 /* pixels */
 "cccccccccccccccccccc",
 "ccccccccaaaaaaaacccc",

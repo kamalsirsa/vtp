@@ -9,7 +9,7 @@ static char *faster_xpm[] = {
 "O c #0000BF",
 "+ c #BF00BF",
 "@ c #00BFBF",
-"# c #C0C0C0",
+"# c None",
 "$ c #808080",
 "% c red",
 "& c green",

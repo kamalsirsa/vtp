@@ -4,7 +4,7 @@ static char *nav_fast_xpm[] = {
 "20 20 3 1",
 /* colors */
 "` c #000000",
-"a c #C0C0C0",
+"a c None",
 "b c #0000FF",
 /* pixels */
 "aaaaaaaaaaaaaaaaaaaa",

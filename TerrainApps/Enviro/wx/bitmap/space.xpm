@@ -5,7 +5,7 @@ static char *space_xpm[] = {
 /* colors */
 "` c #000000",
 "a c #00BF00",
-"b c #C0C0C0",
+"b c None",
 "c c #0000BF",
 "d c #0000FF",
 /* pixels */
