@@ -26,7 +26,7 @@ class vtStructInstance;
 enum vtStructureType
 {
 	ST_BUILDING,	/**< A Building (vtBuilding) */
-	ST_FENCE,		/**< A Fence (vtFence) */
+	ST_LINEAR,		/**< A Linear (vtFence) */
 	ST_INSTANCE,	/**< A Structure Instance (vtStructInstance) */
 	ST_NONE
 };
@@ -57,7 +57,7 @@ public:
 	vtStructureType GetType() { return m_type; }
 
 	vtBuilding *GetBuilding() { if (m_type == ST_BUILDING) return (vtBuilding *)this; else return NULL; }
-	vtFence *GetFence() { if (m_type == ST_FENCE) return (vtFence *)this; else return NULL; }
+	vtFence *GetFence() { if (m_type == ST_LINEAR) return (vtFence *)this; else return NULL; }
 	vtStructInstance *GetInstance() { if (m_type == ST_INSTANCE) return (vtStructInstance *)this; else return NULL; }
 
 	virtual bool GetExtents(DRECT &rect) const = 0;
