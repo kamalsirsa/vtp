@@ -99,13 +99,13 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (unsigned int i = 0; i < pl->NumSpecies(); i++)
 	{
 		// Display species and max height in left table.
-		wxString str;
+		wxString2 str;
 		long item;
 		vtPlantSpecies *spe = pl->GetSpecies(i);
 
 		str.Printf(_T("%d"), spe->GetSpecieID() );
 		item = m_PSTable->InsertItem(i+1, str, 0);
-		str.Printf(_T("%hs"), spe->GetCommonName() );
+		str.from_utf8(spe->GetCommonName());
 		item = m_PSTable->SetItem(i+1, 1, str);
 		str.Printf(_T("%hs"), spe->GetSciName() );
 		item = m_PSTable->SetItem(i+1, 2, str);

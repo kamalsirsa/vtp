@@ -246,7 +246,7 @@ vtPlantSpecies3d::vtPlantSpecies3d() : vtPlantSpecies()
 vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
 {
 	m_iSpecieID = v.GetSpecieID();
-	m_szCommonName = v.GetCommonName();
+	m_strCommonName = v.GetCommonName();
 	m_szSciName = v.GetSciName();
 	m_fMaxHeight = v.GetMaxHeight();
 

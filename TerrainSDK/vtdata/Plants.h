@@ -92,7 +92,7 @@ public:
 	short GetSpecieID() const { return m_iSpecieID; }
 
 	void SetCommonName(const char *CommonName);
-	const char *GetCommonName() const { return m_szCommonName; }
+	const char *GetCommonName() const { return m_strCommonName; }
 
 	void SetSciName(const char *SciName);
 	const char *GetSciName() const { return m_szSciName; }
@@ -113,7 +113,7 @@ public:
 
 protected:
 	short		m_iSpecieID;
-	vtString	m_szCommonName;
+	vtString	m_strCommonName;		// Stored in UTF-8
 	vtString	m_szSciName;
 	float		m_fMaxHeight;
 	Array<vtPlantAppearance*> m_Apps;

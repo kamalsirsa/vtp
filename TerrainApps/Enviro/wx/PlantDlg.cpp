@@ -73,7 +73,7 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	for (i = 0; i < num; i++)
 	{
 		plant = plants->GetSpecies(i);
-		str = plant->GetCommonName();
+		str.from_utf8(plant->GetCommonName());
 		m_pSpecies->Append(str);
 
 		// Default to 80% of the maximum height of each species

@@ -61,11 +61,20 @@ vtPlantSpecies::~vtPlantSpecies()
 }
 
 
+/**
+ * Set the common name for this species.  No language is assumed.
+ * The encoding may be ASCII or UTF-8.
+ */
 void vtPlantSpecies::SetCommonName(const char *CommonName)
 {
-	m_szCommonName = CommonName;
+	m_strCommonName = CommonName;
 }
 
+/**
+ * Set the scientific name for this species, as a plain ASCII string.
+ * It should have the standard form with the genus capitolized,
+ * e.g. "Cocos nucifera"
+ */
 void vtPlantSpecies::SetSciName(const char *SciName)
 {
 	m_szSciName = SciName;
@@ -166,7 +175,7 @@ bool vtSpeciesList::WriteXML(const char *fname)
 				"XML Writer");
 	}
 
-	fprintf(fp, "<?xml version=\"1.0\"?>\n\n");
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n");
 	fprintf(fp, "<species-file file-format-version=\"1.0\">\n");
 
 	for (unsigned int i = 0; i < NumSpecies(); i++)
