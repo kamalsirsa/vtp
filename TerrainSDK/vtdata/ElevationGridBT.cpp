@@ -149,7 +149,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
  * has been compressed with gzip.
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(int))
 {
 	// First load the header
 	if (!LoadBTHeader(szFileName))
@@ -225,7 +225,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
  *				If true, you should Use a filename ending with ".gz".
  */
 bool vtElevationGrid::SaveToBT(const char *szFileName,
-							   void progress_callback(int), bool bGZip)
+							   bool progress_callback(int), bool bGZip)
 {
 	int w = m_iColumns;
 	int h = m_iRows;

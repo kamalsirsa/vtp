@@ -117,7 +117,7 @@ bool vtTin::Read(const char *fname)
 /**
  * Attempt to read TIN data from a DXF file.
  */
-bool vtTin::ReadDXF(const char *fname, void progress_callback(int))
+bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 {
 	std::vector<DxfEntity> entities;
 	std::vector<vtString> layers;
@@ -370,7 +370,7 @@ double vtTin::GetTriMaxEdgeLength(int iTri) const
  * Combine all vertices which are at the same location.  By removing these
  * redundant vertices, the mesh will consume less space in memory and on disk.
  */
-void vtTin::MergeSharedVerts(void progress_callback(int))
+void vtTin::MergeSharedVerts(bool progress_callback(int))
 {
 	unsigned int verts = NumVerts();
 

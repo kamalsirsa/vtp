@@ -40,7 +40,7 @@ int IConvert(FILE *fp, int length)
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromDEM(const char *szFileName,
-								  void progress_callback(int))
+								  bool progress_callback(int))
 {
 	if (progress_callback != NULL) progress_callback(0);
 

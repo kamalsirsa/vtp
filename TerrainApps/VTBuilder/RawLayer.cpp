@@ -477,7 +477,7 @@ bool vtRawLayer::ReadFeaturesFromWFS(const char *szServerURL, const char *layern
 	return (pSet != NULL);
 }
 
-bool vtRawLayer::LoadWithOGR(const char *filename, void progress_callback(int))
+bool vtRawLayer::LoadWithOGR(const char *filename, bool progress_callback(int))
 {
 	vtFeatureLoader loader;
 

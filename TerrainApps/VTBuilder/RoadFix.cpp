@@ -67,7 +67,7 @@ void NodeEdit::EnforceLinkEndpoints()
 //
 // Return the number removed.
 //
-int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
+int RoadMapEdit::MergeRedundantNodes(bool bDegrees, bool progress_callback(int))
 {
 	NodeEdit *prev = NULL, *next;
 	DPoint2 diff;

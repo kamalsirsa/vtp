@@ -139,12 +139,12 @@ public:
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
 	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
-		int iGranularity, void progress_callback(int) = NULL);
+		int iGranularity, bool progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-							   float light_factor, void progress_callback(int) = NULL);
-	void ShadeQuick(vtBitmapBase *pBM, float light_factor, void progress_callback(int) = NULL);
+							   float light_factor, bool progress_callback(int) = NULL);
+	void ShadeQuick(vtBitmapBase *pBM, float light_factor, bool progress_callback(int) = NULL);
 	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,
-		float light_factor, void progress_callback(int) = NULL);
+		float light_factor, bool progress_callback(int) = NULL);
 
 protected:
 	int		m_iColumns, m_iRows;

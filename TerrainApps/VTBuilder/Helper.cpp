@@ -22,10 +22,12 @@
 static bool s_bOpen = false;
 wxProgressDialog *g_pProg = NULL;
 
-void progress_callback(int amount)
+bool progress_callback(int amount)
 {
+	bool value = false;
 	if (g_pProg)
-		g_pProg->Update(amount);
+		value = (g_pProg->Update(amount) == false);
+	return value;
 }
 
 void OpenProgressDialog(const wxString &title, bool bCancellable)

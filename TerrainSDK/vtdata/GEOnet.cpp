@@ -701,7 +701,7 @@ void Countries::WriteGCF(const char *fname)
 	fclose(fp);
 }
 
-void Countries::ReadGCF(const char *fname, void progress_callback(int))
+void Countries::ReadGCF(const char *fname, bool progress_callback(int))
 {
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)

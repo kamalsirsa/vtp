@@ -76,7 +76,7 @@ public:
 	vtDLGFile();	// constructor
 
 	/// Reads a file.  Pass it the name of a DLG-O (.opt) file.  Returns true if successful.
-	bool Read(const char *fname, void progress_callback(int) = NULL);
+	bool Read(const char *fname, bool progress_callback(int) = NULL);
 
 	// read a single record from the file
 	bool GetRecord(char *buf);

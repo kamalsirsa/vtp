@@ -38,7 +38,7 @@ public:
 
 	vtElevationGrid &operator=(const vtElevationGrid &rhs);
 
-	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, void progress_callback(int) = NULL);
+	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, bool progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
 	void ComputeHeightExtents();
@@ -46,41 +46,41 @@ public:
 	void ReplaceValue(float value1, float value2);
 
 	// Load from unknown file format
-	bool LoadFromFile( const char *szFileName, void progress_callback(int) = NULL );
+	bool LoadFromFile( const char *szFileName, bool progress_callback(int) = NULL );
 
 	// Load from a specific kind of file
-	bool LoadFromDEM(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromASC(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromTerragen(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromCDF(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromDTED(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromGTOPO30(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromGLOBE(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromGRD(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromPGM(const char *szFileName, void progress_callback(int) = NULL);
+	bool LoadFromDEM(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromASC(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromTerragen(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromCDF(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromDTED(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromGTOPO30(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromGLOBE(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromGRD(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromPGM(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadFromRAW(const char *szFileName, int width,	int height,
 		int bytes_per_element, float vertical_units, bool bBigEndian,
-		void progress_callback(int));
-	bool LoadFromMicroDEM(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromXYZ(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromHGT(const char *szFileName, void progress_callback(int) = NULL);
-	bool LoadFromBT(const char *szFileName, void progress_callback(int) = NULL);
+		bool progress_callback(int));
+	bool LoadFromMicroDEM(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromXYZ(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromHGT(const char *szFileName, bool progress_callback(int) = NULL);
+	bool LoadFromBT(const char *szFileName, bool progress_callback(int) = NULL);
 	bool LoadBTHeader(const char *szFileName);
 
 	// Use GDAL to read a file
-	bool LoadWithGDAL(const char *szFileName, void progress_callback(int) = NULL);
+	bool LoadWithGDAL(const char *szFileName, bool progress_callback(int) = NULL);
 
 	// Use OGR to read a file
-	bool LoadFromNTF5(const char *szFileName, void progress_callback(int) = NULL);
+	bool LoadFromNTF5(const char *szFileName, bool progress_callback(int) = NULL);
 
 	// Save
 	bool SaveToGeoTIFF(const char *szFileName);
 	bool SaveToBMP(const char *szFileName);
 	bool SaveToTerragen(const char *szFileName);
-	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
-	bool SaveToSTM(const char *szFileName, void progress_callback(int) = NULL);
-	bool SaveToPlanet(const char *szDirName, void progress_callback(int) = NULL);
-	bool SaveToASC(const char *szFileName, void progress_callback(int) = NULL);
+	bool SaveToBT(const char *szFileName, bool progress_callback(int) = NULL, bool bGZip = false);
+	bool SaveToSTM(const char *szFileName, bool progress_callback(int) = NULL);
+	bool SaveToPlanet(const char *szDirName, bool progress_callback(int) = NULL);
+	bool SaveToASC(const char *szFileName, bool progress_callback(int) = NULL);
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);

@@ -238,7 +238,7 @@ void vtWaterLayer::AddElementsFromSHP(const wxString2 &filename, const vtProject
 }
 
 void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
-									 void progress_callback(int))
+									 bool progress_callback(int))
 {
 	int i, j, feature_count, count;
 	OGRLayer		*pLayer;

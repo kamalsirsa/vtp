@@ -64,7 +64,7 @@ public:
 	DxfParser(const vtString &sFileName,
 		std::vector<DxfEntity> &entities,
 		std::vector<vtString> &layers);
-	bool RetreiveEntities(void progress_callback(int) = NULL);
+	bool RetreiveEntities(bool progress_callback(int) = NULL);
 	vtString GetFileName() { return m_sFileName; }
 	void SetFileName(const vtString & sFileName) { m_sFileName = sFileName; }
 	vtString GetLastError() { return m_strMessage; }
@@ -83,7 +83,7 @@ protected:
 	bool ParseSection();
 	bool ReadCodeValue(DxfCodeValue &);
 	void SkipSection();
-	void ReadEntitySection(void progress_callback(int));
+	void ReadEntitySection(bool progress_callback(int));
 	void ReadPoint();
 	void ReadPolyline();
 	void ReadLine();

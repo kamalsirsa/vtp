@@ -106,7 +106,7 @@ public:
 
 	// File IO
 	bool SaveToSHP(const char *filename) const;
-	bool LoadFromOGR(OGRDataSource *pDatasource, void progress_callback(int));
+	bool LoadFromOGR(OGRDataSource *pDatasource, bool progress_callback(int));
 	virtual void LoadGeomFromSHP(SHPHandle hSHP) = 0;
 	bool LoadFromSHP(const char *fname);
 	bool LoadDataFromDBF(const char *filename);
@@ -387,7 +387,7 @@ public:
 	vtFeatureSet *LoadFrom(const char *filename);
 	vtFeatureSet *LoadFromSHP(const char *filename);
 	vtFeatureSet *LoadHeaderFromSHP(const char *filename);
-	vtFeatureSet *LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
+	vtFeatureSet *LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
 
 	vtFeatureSet *ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 };

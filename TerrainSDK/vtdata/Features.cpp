@@ -341,7 +341,7 @@ bool vtFeatureSet::LoadFromGML(const char *filename)
 */
 
 vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
-							 void progress_callback(int))
+							 bool progress_callback(int))
 {
 	// try using OGR
 	g_GDALWrapper.RequestOGRFormats();
@@ -405,7 +405,7 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 }
 
 bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
-							 void progress_callback(int))
+							 bool progress_callback(int))
 {
 	VTLOG(" LoadFromOGR\n");
 

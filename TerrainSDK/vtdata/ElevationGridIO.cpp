@@ -66,7 +66,7 @@ typedef struct
  * \return true if successful.
  */
 bool vtElevationGrid::LoadFromFile(const char *szFileName,
-								   void progress_callback(int))
+								   bool progress_callback(int))
 {
 	vtString FileExt = GetExtension(szFileName);
 
@@ -169,7 +169,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromCDF(const char *szFileName,
-								void progress_callback(int))
+								bool progress_callback(int))
 {
 #if SUPPORT_NETCDF
 	int id;
@@ -268,7 +268,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromASC(const char *szFileName,
-								void progress_callback(int))
+								  bool progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
@@ -326,7 +326,15 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	float z;
 	for (i = 0; i < nrows; i++)
 	{
-		if (progress_callback != NULL) progress_callback(i*100/nrows);
+		if (progress_callback != NULL)
+		{
+			if (progress_callback(i*100/nrows))
+			{
+				// Cancel
+				fclose(fp);
+				return false;
+			}
+		}
 		for (j = 0; j < ncols; j++)
 		{
 			int num = fscanf(fp, "%f", &z);
@@ -346,7 +354,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
-								void progress_callback(int))
+								bool progress_callback(int))
 {
 	char buf[8];
 	FILE *fp = fopen(szFileName, "rb");
@@ -512,7 +520,7 @@ double get_ssss(FILE *fp)
 //  Data (variable)
 //
 bool vtElevationGrid::LoadFromDTED(const char *szFileName,
-								 void progress_callback(int))
+								 bool progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)	// Cannot Open File
@@ -668,7 +676,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
-									void progress_callback(int))
+									bool progress_callback(int))
 {
 	if (progress_callback != NULL) progress_callback(1);
 
@@ -815,7 +823,7 @@ void ParseExtent(DRECT &extents, const char *name, const char *value)
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
-									void progress_callback(int))
+									bool progress_callback(int))
 {
 	if (progress_callback != NULL)
 		progress_callback(1);
@@ -915,9 +923,10 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromGRD(const char *szFileName,
-								void progress_callback(int))
+								bool progress_callback(int))
 {
-	if (progress_callback != NULL) progress_callback(1);
+	if (progress_callback != NULL)
+		progress_callback(1);
 
 	// Open the header file
 	FILE *fp = fopen(szFileName, "rb");
@@ -967,7 +976,15 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	float z;
 	for (y = 0; y < ny; y++)
 	{
-		if (progress_callback != NULL) progress_callback(y * 100 / ny);
+		if (progress_callback != NULL)
+		{
+			if (progress_callback(y * 100 / ny))
+			{
+				// Cancel
+				fclose(fp);
+				return false;
+			}
+		}
 		for (x = 0; x < nx; x++)
 		{
 			fread(&z, 4, 1, fp);
@@ -987,7 +1004,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
  * origin at (0,0).
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback(int))
 {
 	// open input file
 	FILE *fp = fopen(szFileName, "rb");
@@ -1252,7 +1269,7 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName)
  * \returns True if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
-								   void progress_callback(int))
+								   bool progress_callback(int))
 {
 	GDALDataset  *poDataset;
 
@@ -1371,7 +1388,14 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 			}
 		}
 		if (progress_callback != NULL)
-			progress_callback(100*j/m_iRows);
+		{
+			if (progress_callback(100*j/m_iRows))
+			{
+				// Cancel
+				delete poDataset;
+				return false;
+			}
+		}
 	}
 
 	// Clean up
@@ -1394,7 +1418,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
  * \returns True if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
-								   void progress_callback(int))
+								   bool progress_callback(int))
 {
 	OGREnvelope Extent;
 	bool bRet = false;
@@ -1546,7 +1570,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
  */
 bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 								int bytes_per_element, float vertical_units,
-								bool bBigEndian, void progress_callback(int))
+								bool bBigEndian, bool progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
@@ -1582,7 +1606,14 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	for (j = 0; j < m_iRows; j++)
 	{
 		if (progress_callback != NULL)
-			progress_callback(100*j/m_iRows);
+		{
+			if (progress_callback(100*j/m_iRows))
+			{
+				// Cancel
+				fclose(fp);
+				return false;
+			}
+		}
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (bytes_per_element == 1)
@@ -1616,7 +1647,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 /** Loads from a MicroDEM format file.
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_callback(int))
 {
 	/* open input file */
 	FILE *fp = fopen(szFileName, "rb");
@@ -1812,7 +1843,7 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
  *
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::LoadFromXYZ(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
@@ -1897,7 +1928,7 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, void progress_callback
  *	25,934,402 bytes (for 1 arcsec, 3601*3601)
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::LoadFromHGT(const char *szFileName, bool progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
@@ -1978,7 +2009,7 @@ typedef union {
  *
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::SaveToSTM(const char *szFileName, bool progress_callback(int))
 {
 	FILE *outf = fopen(szFileName, "wb");
 	if (!outf)
@@ -2016,7 +2047,7 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(i
  *
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::SaveToPlanet(const char *szDirName, void progress_callback(int))
+bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback(int))
 {
 	DRECT area;
 
@@ -2095,7 +2126,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, void progress_callback
  * \returns \c true if the file was successfully opened and written.
  */
 bool vtElevationGrid::SaveToASC(const char *szFileName,
-								void progress_callback(int))
+								bool progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "wb");
 	if (!fp)

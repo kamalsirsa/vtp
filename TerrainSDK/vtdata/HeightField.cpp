@@ -492,7 +492,7 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
-	const ColorMap *cmap, int iGranularity, void progress_callback(int))
+	const ColorMap *cmap, int iGranularity, bool progress_callback(int))
 {
 	ColorMap defaults;
 	if (!cmap)
@@ -559,7 +559,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 
 
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float light_factor, void progress_callback(int))
+	float light_factor, bool progress_callback(int))
 {
 	// consider upward-pointing, rather than downward-pointing, normal
 	FPoint3 light_direction = -light_dir;
@@ -642,7 +642,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
  * The bitmap must be the same size as the elevation grid, or a power of 2 smaller.
  */
 void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
-									 void progress_callback(int))
+									 bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
@@ -765,7 +765,7 @@ inline DPoint2 GridPos(const DPoint2 &base, const DPoint2 &spacing, int i, int j
  *  Context, so that it could be re-used for quickly re-shading multiple times.
  */
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float light_factor, void progress_callback(int))
+	float light_factor, bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();

@@ -578,7 +578,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 }
 
 bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
-							 const RGBi &bg, void progress_callback(int) = NULL)
+							 const RGBi &bg, bool progress_callback(int) = NULL)
 {
 	float blend_factor;
 	vtDIB dib1, dib2, dib3;

@@ -35,7 +35,7 @@ DxfParser::DxfParser(const vtString &sFileName,
  * \returns Success.  If failure, then call GetLastError() to get an
  *		informative error message.
  */
-bool DxfParser::RetreiveEntities(void progress_callback(int))
+bool DxfParser::RetreiveEntities(bool progress_callback(int))
 {
 	try
 	{
@@ -150,7 +150,7 @@ void DxfParser::SkipSection()
 		throw "Unable to find end of section.";
 }
 
-void DxfParser::ReadEntitySection(void progress_callback(int))
+void DxfParser::ReadEntitySection(bool progress_callback(int))
 {
 	DxfCodeValue pair;
 	bool bFoundEnd = false;

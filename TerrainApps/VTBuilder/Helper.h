@@ -11,7 +11,7 @@
 #include "vtdata/Projections.h"
 #include "vtdata/MathTypes.h"
 
-extern void progress_callback(int amount);
+extern bool progress_callback(int amount);
 void OpenProgressDialog(const wxString &title, bool bCancellable = false);
 void CloseProgressDialog();
 bool UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));

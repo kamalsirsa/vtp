@@ -129,15 +129,15 @@ public:
 	// Import from SHP
 	bool ApplyCFCC(LinkEdit *pR, const char *str);
 	void AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj,
-		void progress_callback(int) = NULL);
+		bool progress_callback(int) = NULL);
 
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,
-		void progress_callback(int) = NULL);
+		bool progress_callback(int) = NULL);
 
 	//cleaning functions-------------------------
 	// merge nodes that are near each other
-	int MergeRedundantNodes(bool bDegrees, void progress_callback(int) = NULL);
+	int MergeRedundantNodes(bool bDegrees, bool progress_callback(int) = NULL);
 	// remove BAD roads
 	int RemoveDegenerateLinks();
 	// remove nodes and merge roads if 2 adjacent roads have the same properties and the node is uncontrolled.

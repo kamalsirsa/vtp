@@ -36,7 +36,7 @@ public:
 
 	bool Read(const char *fname);
 	bool Write(const char *fname);
-	bool ReadDXF(const char *fname, void progress_callback(int) = NULL);
+	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 
 	bool ComputeExtents();
 	void Offset(const DPoint2 &p);
@@ -54,7 +54,7 @@ public:
 
 	void CleanupClockwisdom();
 	double GetTriMaxEdgeLength(int iTri) const;
-	void MergeSharedVerts(void progress_callback(int) = NULL);
+	void MergeSharedVerts(bool progress_callback(int) = NULL);
 
 	vtProjection	m_proj;
 

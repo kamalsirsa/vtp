@@ -753,7 +753,7 @@ void vtElevLayer::SetProjection(const vtProjection &proj)
 }
 
 bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
-	void progress_callback(int am))
+	bool progress_callback(int am))
 {
 	// Avoid trouble with '.' and ',' in Europe - all the file readers assume
 	//  the default "C" locale.

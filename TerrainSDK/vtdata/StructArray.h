@@ -71,21 +71,21 @@ public:
 	virtual void DestroyStructure(int i) {}
 
 	bool ReadSHP(const char *pathname, StructImportOptions &opt,
-		void progress_callback(int) = NULL);
+		bool progress_callback(int) = NULL);
 	void AddElementsFromOGR(class OGRDataSource *datasource,
-		StructImportOptions &opt, void progress_callback(int) = NULL);
+		StructImportOptions &opt, bool progress_callback(int) = NULL);
 
 	void AddElementsFromOGR_SDTS(class OGRDataSource *datasource,
-		void progress_callback(int) = NULL);
+		bool progress_callback(int) = NULL);
 	void AddElementsFromOGR_RAW(class OGRDataSource *datasource,
-		StructImportOptions &opt, void progress_callback(int) = NULL);
+		StructImportOptions &opt, bool progress_callback(int) = NULL);
 
 	void AddBuildingsFromOGR(class OGRLayer *pLayer,
-		StructImportOptions &opt, void progress_callback(int) = NULL);
+		StructImportOptions &opt, bool progress_callback(int) = NULL);
 	void AddLinearsFromOGR(class OGRLayer *pLayer,
-		StructImportOptions &opt, void progress_callback(int) = NULL);
+		StructImportOptions &opt, bool progress_callback(int) = NULL);
 	void AddInstancesFromOGR(class OGRLayer *pLayer,
-		StructImportOptions &opt, void progress_callback(int) = NULL);
+		StructImportOptions &opt, bool progress_callback(int) = NULL);
 
 	bool ReadBCF(const char *pathname);		// read a .bcf file
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format

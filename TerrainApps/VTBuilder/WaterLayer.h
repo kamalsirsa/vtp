@@ -49,7 +49,7 @@ public:
 
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,
-		void progress_callback(int) = NULL);
+		bool progress_callback(int) = NULL);
 
 protected:
 	// data for rivers and water bodies

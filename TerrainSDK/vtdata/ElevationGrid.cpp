@@ -168,7 +168,7 @@ double MetersPerLongitude(double latitude)
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
-	const vtProjection &NewProj, void progress_callback(int))
+	const vtProjection &NewProj, bool progress_callback(int))
 {
 	int i, j;
 

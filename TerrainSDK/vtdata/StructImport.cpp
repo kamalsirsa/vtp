@@ -202,7 +202,7 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
  * \return True if successful.
  */
 bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
-							   void progress_callback(int))
+							   bool progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(pathname, "rb");
 	if (hSHP == NULL)
@@ -427,7 +427,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 }
 
 void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
-		StructImportOptions &opt, void progress_callback(int))
+		StructImportOptions &opt, bool progress_callback(int))
 {
 	if (opt.m_strLayerName == "")
 		AddElementsFromOGR_SDTS(pDatasource, progress_callback);
@@ -436,7 +436,7 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 }
 
 void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
-		void progress_callback(int))
+		bool progress_callback(int))
 {
 	int i, j, feature_count, count;
 	OGRLayer		*pLayer;
@@ -591,7 +591,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 // 3. Handle tags
 
 void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
-		StructImportOptions &opt, void progress_callback(int))
+		StructImportOptions &opt, bool progress_callback(int))
 {
 	OGRLayer		*pLayer;
 
@@ -621,7 +621,7 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 }
 
 void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
-		StructImportOptions &opt, void progress_callback(int))
+		StructImportOptions &opt, bool progress_callback(int))
 {
 	unsigned int	i, j;
 	int				count;
@@ -889,7 +889,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 }
 
 void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
-		StructImportOptions &opt, void progress_callback(int))
+		StructImportOptions &opt, bool progress_callback(int))
 {
 	int iFeatureCount;
 	OGRFeatureDefn *pLayerDefn;
@@ -1025,7 +1025,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 }
 
 void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
-		StructImportOptions &opt, void progress_callback(int))
+		StructImportOptions &opt, bool progress_callback(int))
 {
 	int			iCount, iFeatureCount;
 	SchemaType	eSchema = SCHEMA_UI;

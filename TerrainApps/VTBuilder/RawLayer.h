@@ -36,7 +36,7 @@ public:
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
 
 	void AddPoint(const DPoint2 &p2);
-	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
+	bool LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 
 	vtProjection *GetAtProjection()

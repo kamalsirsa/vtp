@@ -435,7 +435,7 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 }
 
 void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj,
-									 void progress_callback(int))
+									 bool progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
@@ -569,7 +569,7 @@ bool RoadMapEdit::extract_road_attributes(const char *strEntity, int &lanes,
 
 
 void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
-									 void progress_callback(int))
+									 bool progress_callback(int))
 {
 	int i, j, feature_count, count;
 	OGRLayer		*pLayer;

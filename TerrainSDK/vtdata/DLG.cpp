@@ -60,7 +60,7 @@ vtDLGFile::vtDLGFile()
 {
 }
 
-bool vtDLGFile::Read(const char *fname, void progress_callback(int))
+bool vtDLGFile::Read(const char *fname, bool progress_callback(int))
 {
 	char buf[80];
 	int i, j, iUTMZone;
