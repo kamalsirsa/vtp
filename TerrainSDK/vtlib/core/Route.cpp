@@ -20,7 +20,6 @@
 #include "Light.h"
 #include "Route.h"
 #include "Terrain.h"
-#include "Tower3d.h"
 
 #define LONGEST_ROUTE		2000   // in meters
 #define NUM_WIRE_SEGMENTS	100
