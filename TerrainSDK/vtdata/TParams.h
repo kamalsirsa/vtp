@@ -55,7 +55,6 @@ public:
 
 	// File IO
 	bool LoadFrom(const char *fname);
-	bool LoadFromIniFile(const char *fname);
 	bool LoadFromXML(const char *fname);
 
 	// this must be 
@@ -77,13 +76,15 @@ public:
 
 	// Combine the parameters to produce the texture name to use
 	vtString CookTextureFilename() const;
+
+private:
+	bool LoadFromIniFile(const char *fname);
 };
 
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
 
 #define STR_NAME "Name"
 #define STR_ELEVFILE "Filename"
-#define STR_LOCFILENAME "Locations_File"
 #define STR_VERTICALEXAG "Vertical_Exag"
 
 #define STR_MINHEIGHT "Min_Height"

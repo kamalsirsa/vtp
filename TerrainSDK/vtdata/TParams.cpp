@@ -42,7 +42,6 @@ TParams::TParams() : vtTagArray()
 	// Define tags and provide default values
 	AddTag(STR_NAME, "");
 	AddTag(STR_ELEVFILE, "");
-	AddTag(STR_LOCFILENAME, "");
 	AddTag(STR_VERTICALEXAG, "1.0");
 
 	AddTag(STR_MINHEIGHT, "20");
@@ -214,7 +213,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 		else if (strcmp(buf, STR_MINHEIGHT) == 0 ||
 				 strcmp(buf, STR_NAVSTYLE) == 0 ||
 				 strcmp(buf, STR_NAVSPEED) == 0 ||
-				 strcmp(buf, STR_LOCFILENAME) == 0 ||
+				 strcmp(buf, STR_LOCFILE) == 0 ||
 				 strcmp(buf, STR_INITLOCATION) == 0 ||
 				 strcmp(buf, STR_HITHER) == 0 ||
 				 strcmp(buf, STR_ACCEL) == 0)
