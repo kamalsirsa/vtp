@@ -170,6 +170,9 @@ public:
 	/// Deselect all structures including turning off their visual highlights
 	void VisualDeselectAll();
 
+	/// Enable (set visibility of) the structures
+	void SetEnabled(bool bTrue);
+
 	// Be informed of edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 

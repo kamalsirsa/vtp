@@ -281,6 +281,20 @@ void vtStructureArray3d::VisualDeselectAll()
 	}
 }
 
+void vtStructureArray3d::SetEnabled(bool bTrue)
+{
+	for (unsigned int j = 0; j < GetSize(); j++)
+	{
+		vtStructure3d *str3d = GetStructure3d(j);
+		if (str3d)
+		{
+			vtNode *pThing = str3d->GetContained();
+			if (pThing) 
+				pThing->SetEnabled(bTrue);
+		}
+	}
+}
+
 //
 // Be informed of edit hightlighting
 //
