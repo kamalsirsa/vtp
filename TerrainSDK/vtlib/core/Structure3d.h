@@ -2,7 +2,7 @@
 // Structure3d.h
 //
 // Implements the vtStructure3d class which extends vtStructure with the
-// ability to create 3d geometry.
+// ability to create 3D geometry.
 //
 // Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -26,6 +26,12 @@ class vtTransform;
 
 extern const vtString BMAT_NAME_HIGHLIGHT;
 
+/**
+ * This class extents vtMaterialDescriptorArray with the ability to construct
+ * real vtlib Materials.  You won't need to use this class directly, unless
+ * you wish to use the shared pool of materials used by the vtBuilding3d
+ * class.
+ */
 class vtMaterialDescriptorArray3d : public vtMaterialDescriptorArray
 {
 public:

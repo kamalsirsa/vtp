@@ -81,8 +81,11 @@ class vtMaterialArray : public vtMaterialArrayBase, public osg::Referenced
 {
 public:
 	vtMaterialArray();
+
+	/// Use this method instead of delete, when you are done with this object.
 	void Release();
 
+	/// Adds a material to this material array.
 	int AppendMaterial(vtMaterial *pMat);
 
 protected:
@@ -111,6 +114,8 @@ class vtMesh : public vtMeshBase, public osg::Referenced
 
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
+
+	/// Use this method instead of delete, when you are done with this object.
 	void Release();
 
 	// Adding primitives
@@ -195,14 +200,22 @@ class vtTextMesh : public osg::Referenced
 public:
 	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);
 
+	/// Use this method instead of delete, when you are done with this object.
 	void Release();
 
+	/// Set the text string that this TextMesh should display
 	void SetText(const char *text);
+
+	/// Set the (wide) text string that this TextMesh should display
 	void SetText(const wchar_t *text);
 #if SUPPORT_WSTRING
+	/// Set the (wide) text string that this TextMesh should display
 	void SetText(const std::wstring &text);
 #endif
+	/// Set the position (XYZ translation) of the text in its own frame
 	void SetPosition(const FPoint3 &pos);
+
+	/// Set the text alignment: 0 for XY plane, 1 for XZ, 2 for YZ
 	void SetAlignment(int align);
 
 	// Implementation

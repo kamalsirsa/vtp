@@ -15,15 +15,15 @@
 #define LT_SWITCH_TIME 10
 #define LT_SWITCH_TIME2 1  //for yellow lights.
 
-//
-// operates signal lights.  changes the lights at a node.
-// based on a state machine.
-// engine creates states and simply cycles through them.
-//
-// assumes that the initial color of lights at a road determines the relationship of lights
-// at that intersection.  for example, in a normal intersection, the non-perpendicular road
-// segments should have the same color - one pair green, the other red.
-//
+/**
+ * Operates signal lights.  changes the lights at a node.
+ * based on a state machine.
+ * engine creates states and simply cycles through them.
+ *
+ * Assumes that the initial color of lights at a road determines the relationship of lights
+ * at that intersection.  for example, in a normal intersection, the non-perpendicular road
+ * segments should have the same color - one pair green, the other red.
+ */
 class IntersectionEngine : public vtEngine
 {
 public:
@@ -42,4 +42,5 @@ protected:
 	bool m_bFirstTime;
 };
 
-#endif
+#endif	// INTERSECTIONENGINE
+

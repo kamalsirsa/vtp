@@ -87,6 +87,9 @@ bool vtLocationSaver::Write(const vtString &fname_in)
 
 /////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Internal class used by the vtLocationSaver class to read .loc XML files.
+ */
 class LocationVisitor : public XMLVisitor
 {
 public:

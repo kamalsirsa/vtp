@@ -35,6 +35,10 @@ enum vtMouseEventType
 #define VT_CONTROL	2
 #define VT_ALT		4
 
+/**
+ * A Mouse Event is used by the VTP event handling system to inform
+ * each Engine of mouse input.
+ */
 struct vtMouseEvent
 {
 	vtMouseEventType type;

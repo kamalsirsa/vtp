@@ -31,6 +31,11 @@ class SimpleBillboardEngine;
 typedef vtImage *vtImagePtr;
 typedef Array<vtStructureArray3d *> StructureSet;
 
+/**
+ * Defines a Point of Interest, which is a rectangular area of the terrain
+ * which can have addition attributes associated with it, such as a name
+ * and URL.
+ */
 class vtPointOfInterest
 {
 public:

@@ -11,6 +11,10 @@
 #include "Engine.h"
 #include <time.h>
 
+/**
+ * A TimeTarget is a kind of vtTarget which expects to be told what time
+ * it is.
+ */
 class TimeTarget : public vtTarget
 {
 public:
