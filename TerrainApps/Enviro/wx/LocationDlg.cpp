@@ -11,6 +11,7 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
+#include "wx/image.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -52,7 +53,7 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	RefreshButtons();
 }
 
-void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
+void LocationDlg::SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
 							const vtLocalConversion &conv)
 {
     m_pSaver->SetTransform(pTarget);

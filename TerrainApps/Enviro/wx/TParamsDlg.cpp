@@ -11,6 +11,7 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
+#include "wx/image.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"

@@ -11,6 +11,7 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
+#include "wx/image.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
@@ -41,12 +42,12 @@
 class MyTreeItemData : public wxTreeItemData
 {
 public:
-	MyTreeItemData(vtNode *pNode, vtEngine *pEngine)
+	MyTreeItemData(vtNodeBase *pNode, vtEngine *pEngine)
 	{
 		m_pNode = pNode;
 		m_pEngine = pEngine;
 	}
-	vtNode *m_pNode;
+	vtNodeBase *m_pNode;
 	vtEngine *m_pEngine;
 };
 
@@ -138,7 +139,7 @@ void SceneGraphDlg::RefreshTreeContents()
 	m_pTree->DeleteAllItems();
 
 	// Fill in the tree with nodes
-	vtNode *pRoot = scene->GetRoot();
+	vtNodeBase *pRoot = scene->GetRoot();
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
@@ -155,7 +156,7 @@ void SceneGraphDlg::RefreshTreeContents()
 		if (target)
 		{
 			str += " -> ";
-			vtNode *node = dynamic_cast<vtNode*>(target);
+			vtNodeBase *node = dynamic_cast<vtNodeBase*>(target);
 			if (node)
 			{
 				str += "\"";
@@ -176,7 +177,7 @@ void SceneGraphDlg::RefreshTreeContents()
 
 
 void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
-										vtNode *pNode, int depth)
+										vtNodeBase *pNode, int depth)
 {
 	wxString str;
 	int nImage;
@@ -204,12 +205,12 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = "LOD";
 		nImage = 5;
 	}
-	else if (dynamic_cast<vtTransform*>(pNode))
+	else if (dynamic_cast<vtTransformBase*>(pNode))
 	{
 		str = "XForm";
 		nImage = 9;
 	}
-	else if (dynamic_cast<vtGroup*>(pNode))
+	else if (dynamic_cast<vtGroupBase*>(pNode))
 	{
 		// must be just a group for grouping's sake
 		str = "Group";
@@ -272,7 +273,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
 
-	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
+	vtGroupBase *pGroup = dynamic_cast<vtGroupBase*>(pNode);
 	if (pGroup)
 	{
 		int num_children = pGroup->GetNumChildren();
