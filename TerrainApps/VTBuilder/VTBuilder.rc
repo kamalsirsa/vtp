@@ -1,11 +1,6 @@
+
 aaaaaaa ICON "icons/VTBuilder.ico"
 #include "wx/msw/wx.rc"
-
-dialog1 TEXT "dialog1.wxr"
-dialog2 TEXT "dialog2.wxr"
-dialog3 TEXT "dialog3.wxr"
-dialog4 TEXT "dialog4.wxr"
-dialog5 TEXT "dialog5.wxr"
 
 proj_new		BITMAP "bitmaps/proj_new.bmp"
 proj_open		BITMAP "bitmaps/proj_open.bmp"
