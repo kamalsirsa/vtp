@@ -18,7 +18,7 @@
  * contains common fuctionality used by each of the terrain CLOD
  * implementations.
  */
-class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid
+class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid3d
 {
 public:
 	vtDynTerrainGeom();
@@ -49,10 +49,14 @@ public:
 	void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 
 	// overrides for HeightField
+	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
+
+	// overrides for HeightField3d
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const;
 
 	// overridables
+	virtual float GetElevation(int iX, int iZ) const = 0;
 	virtual void GetLocation(int iX, int iZ, FPoint3 &p) const = 0;
 	virtual void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) = 0;
 

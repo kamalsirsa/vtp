@@ -61,6 +61,39 @@ void vtDynTerrainGeom::Destroy()
 	vtDynGeom::Destroy();
 }
 
+// overrides for HeightField
+bool vtDynTerrainGeom::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
+{
+	DPoint2 spacing = GetSpacing();
+	int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);
+	int iY = (int)((p.y - m_EarthExtents.bottom) / spacing.y);
+
+	// safety check
+	if (iX < 0 || iX >= m_iColumns-1 || iY < 0 || iY >= m_iRows-1)
+	{
+		fAltitude = 0.0f;
+		return false;
+	}
+
+	float alt0, alt1, alt2, alt3;
+	alt0 = GetElevation(iX, iY);
+	alt1 = GetElevation(iX+1, iY);
+	alt2 = GetElevation(iX+1, iY+1);
+	alt3 = GetElevation(iX, iY+1);
+
+	// find fractional amount (0..1 across quad)
+	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
+	double fY = (p.y - (m_EarthExtents.bottom + iY * spacing.y)) / spacing.y;
+
+	// which of the two triangles in the quad is it?
+	if (fX + fY < 1)
+		fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt3 - alt0));
+	else
+		fAltitude = (float) (alt2 + (1.0-fX) * (alt3 - alt2) + (1.0-fY) * (alt1 - alt2));
+
+	return true;
+}
+
 bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 									FPoint3 *vNormal) const
 {
