@@ -167,6 +167,44 @@ void MainFrame::SetupUI()
 	m_pView->Show(TRUE);
 	m_splitter->SplitVertically( m_pTree, m_pView, 200);
 
+	// check for correctly set up environment variables
+	bool warn = false;
+	const char *gdal = getenv("GEOTIFF_CSV");
+	if (!gdal)
+		warn = true;
+	else
+	{
+		vtString fname = gdal;
+		fname += "/pcs.csv";
+		FILE *fp = fopen((const char *)fname, "rb");
+		if (fp)
+			fclose(fp);
+		else
+			warn = true;
+	}
+	const char *proj4 = getenv("PROJ_LIB");
+	if (!proj4)
+		warn = true;
+	else
+	{
+		vtString fname = proj4;
+		fname += "/nad83";
+		FILE *fp = fopen((const char *)fname, "rb");
+		if (fp)
+			fclose(fp);
+		else
+			warn = true;
+	}
+	if (warn)
+	{
+		wxMessageBox("Unable to locate the necessary files for full coordinate"
+			" system support.  Check that the environment variables GEOTIFF_CSV"
+			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4"
+			" data files.  If you don't need full support for coordinate systems"
+			" including converting between different projections, you can ignore"
+			" this warning.", "VTBuilder Warning");
+	}
+
 	vtProjection proj;
 	proj.SetWellKnownGeogCS("WGS84");
 	SetProjection(proj);
