@@ -7,13 +7,13 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Building3d.h"
+#include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/Fence3d.h"
+#include "vtlib/core/Globe.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/Route.h"
 #include "vtlib/core/SkyDome.h"
-#include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TerrainScene.h"
-#include "vtlib/core/Globe.h"
 
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
@@ -588,115 +588,39 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 }
 
-void Enviro::FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units)
+void Enviro::FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units, bool seconds)
 {
+	DPoint3 pos = coord;
 	if (units == LU_DEGREES)
 	{
-		int deg1 = (int) coord.x;
-		int min1 = (int) ((coord.x - deg1) * 60);
+		int deg1 = (int) pos.x;
+		pos.x -= (deg1);
+		int min1 = (int) (pos.x * 60);
+		pos.x -= (min1 / 60.0);
+		int sec1 = (int) (pos.x * 3600);
 		if (deg1 < 0) deg1 = -deg1;
 		if (min1 < 0) min1 = -min1;
-		char ew = m_EarthPos.x > 0.0f ? 'E' : 'W';
+		if (sec1 < 0) sec1 = -sec1;
+		char ew = coord.x > 0.0f ? 'E' : 'W';
 
-		int deg2 = (int) coord.y;
-		int min2 = (int) ((coord.y - deg2) * 60);
+		int deg2 = (int) pos.y;
+		pos.y -= (deg2);
+		int min2 = (int) (pos.y * 60);
+		pos.y -= (min2 / 60.0);
+		int sec2 = (int) (pos.y * 3600);
 		if (deg2 < 0) deg2 = -deg2;
 		if (min2 < 0) min2 = -min2;
-		char ns = m_EarthPos.y > 0.0f ? 'N' : 'S';
+		if (sec2 < 0) sec2 = -sec2;
+		char ns = coord.y > 0.0f ? 'N' : 'S';
 
-		str.Format("%3d:%02d %c, %3d:%02d %c", deg1, min1, ew, deg2, min2, ns);
-	}
-	else
-	{
-		str.Format("%7d, %7d", (int) coord.x, (int) coord.y);
-	}
-}
-
-void Enviro::DescribeCoordinates(vtString &str)
-{
-	DPoint3 epos;
-	vtString str1;
-
-	str = "";
-
-	if (m_state == AS_Orbit)
-	{
-		// give location of cursor
-		str = "Cursor: ";
-		m_pGlobePicker->GetCurrentEarthPos(epos);
-		FormatCoordString(str1, epos, LU_DEGREES);
-		str += str1;
-		if (m_mode == MM_MEASURE && (m_fArcLength != 0.0 || m_bDragging))
-		{
-			str1.Format(", arc = %.0lf meters", m_fArcLength);
-			str += str1;
-		}
-		vtTerrain *pTerr = FindTerrainOnEarth(DPoint2(epos.x, epos.y));
-		if (pTerr)
-		{
-			str1.Format(", Terrain: %s", (const char *) pTerr->GetName());
-			str += str1;
-		}
-	}
-	if (m_state == AS_Terrain)
-	{
-		vtTerrain *pTerr = GetCurrentTerrain();
-
-		// give location of camera and cursor
-		str = "Camera: ";
-		// get camera pos
-		vtScene *scene = vtGetScene();
-		vtCamera *camera = scene->GetCamera();
-		FPoint3 campos = camera->GetTrans();
-
-		// Find corresponding earth coordinates
-		g_Conv.ConvertToEarth(campos, epos);
-
-		FormatCoordString(str1, epos, g_Conv.GetUnits());
-		str += str1;
-		str1.Format(" elev %.1f", epos.z);
-		str += str1;
-
-		// ground cursor
-		str += ", Cursor: ";
-		bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
-		if (bOn)
-		{
-			FormatCoordString(str1, epos, g_Conv.GetUnits());
-			str += str1;
-			str1.Format(" elev %.1f", epos.z);
-			str += str1;
-		}
+		if (seconds)
+            str.Format("%3d:%02d:%02d %c, %3d:%02d:%02d %c", deg1, min1, sec1, ew, deg2, min2, ns);
 		else
-			str += " Not on ground";
-	}
-	str += " ";
-}
-
-void Enviro::DescribeCLOD(vtString &str)
-{
-	str = "";
-
-	if (m_state != AS_Terrain) return;
-	vtTerrain *t = GetCurrentTerrain();
-	if (!t) return;
-	vtDynTerrainGeom *dtg = t->GetDynTerrain();
-	if (!dtg) return;
-
-	//
-	// McNally CLOD algo uses a triangle count target, all other current
-	// implementations use a floating point factor relating to error/detail
-	//
-	if (t->GetParams().m_eLodMethod == LM_MCNALLY ||
-		t->GetParams().m_eLodMethod == LM_ROETTGER)
-	{
-		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
-			dtg->GetNumDrawnTriangles());
+			str.Format("%3d:%02d %c, %3d:%02d %c", deg1, min1, ew, deg2, min2, ns);
 	}
 	else
 	{
-		str.Format("CLOD detail: %.1f, drawn %d", dtg->GetPixelError(),
-			dtg->GetNumDrawnTriangles());
+		str.Format("%7.1d, %7.1d", (int) coord.x, (int) coord.y);
 	}
 }
 
@@ -1235,7 +1159,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	TParams &param = pTerrain->GetParams();
 
-	SetNavType((enum NavType) param.m_iNavStyle);	// TODO: TEST THIS
+	SetNavType((enum NavType) param.m_iNavStyle);
 
 	EnableFlyerEngine(true);
 
@@ -1332,12 +1256,16 @@ float Enviro::GetFlightSpeed()
 
 void Enviro::SetFlightAccel(bool bAccel)
 {
-	m_pCurrentFlyer->SetExag(bAccel);
+	if (m_pCurrentFlyer)
+		m_pCurrentFlyer->SetExag(bAccel);
 }
 
 bool Enviro::GetFlightAccel()
 {
-	return m_pCurrentFlyer->GetExag();
+	if (m_pCurrentFlyer)
+		return m_pCurrentFlyer->GetExag();
+	else
+		return false;
 }
 
 void Enviro::SetMode(MouseMode mode)
@@ -2096,24 +2024,139 @@ void Enviro::ToggleLogo()
 	}
 }
 
-void Enviro::GetStatusText(vtString &str)
+void Enviro::DescribeCoordinates(vtString &str)
+{
+	DPoint3 epos;
+	vtString str1;
+
+	str = "";
+
+	if (m_state == AS_Orbit)
+	{
+		// give location of cursor
+		str = "Cursor: ";
+		m_pGlobePicker->GetCurrentEarthPos(epos);
+		FormatCoordString(str1, epos, LU_DEGREES);
+		str += str1;
+		if (m_mode == MM_MEASURE && (m_fArcLength != 0.0 || m_bDragging))
+		{
+			str1.Format(", arc = %.0lf meters", m_fArcLength);
+			str += str1;
+		}
+	}
+	else if (m_state == AS_Terrain)
+	{
+		vtTerrain *pTerr = GetCurrentTerrain();
+
+#if 0
+		// give location of camera and cursor
+		str = "Camera: ";
+		// get camera pos
+		vtScene *scene = vtGetScene();
+		vtCamera *camera = scene->GetCamera();
+		FPoint3 campos = camera->GetTrans();
+
+		// Find corresponding earth coordinates
+		g_Conv.ConvertToEarth(campos, epos);
+
+		FormatCoordString(str1, epos, g_Conv.GetUnits());
+		str += str1;
+		str1.Format(" elev %.1f", epos.z);
+		str += str1;
+		str += ", ";
+#endif
+
+		// ground cursor
+		str += "Cursor:";
+		bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
+		if (bOn)
+		{
+			vtString str1;
+			FormatCoordString(str1, epos, g_Conv.GetUnits(), true);
+			str += str1;
+		}
+		else
+			str += " Not on ground";
+	}
+}
+
+void Enviro::DescribeCLOD(vtString &str)
+{
+	str = "";
+
+	if (m_state != AS_Terrain) return;
+	vtTerrain *t = GetCurrentTerrain();
+	if (!t) return;
+	vtDynTerrainGeom *dtg = t->GetDynTerrain();
+	if (!dtg) return;
+
+	//
+	// McNally CLOD algo uses a triangle count target, all other current
+	// implementations use a floating point factor relating to error/detail
+	//
+	if (t->GetParams().m_eLodMethod == LM_MCNALLY ||
+		t->GetParams().m_eLodMethod == LM_ROETTGER)
+	{
+		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
+			dtg->GetNumDrawnTriangles());
+	}
+	else
+	{
+		str.Format("CLOD detail: %.1f, drawn %d", dtg->GetPixelError(),
+			dtg->GetNumDrawnTriangles());
+	}
+}
+
+vtString Enviro::GetStatusString(int which)
 {
 	vtScene *scene = vtGetScene();
-	if (!scene) return;
 
-	vtString str2;
+	vtString str;
+	if (which == 0)
+	{
+		// Fps: get framerate
+		float fps = scene->GetFrameRate();
 
-	// get framerate
-	float fps = scene->GetFrameRate();
+		// only show 3 significant digits
+		if (fps < 10)
+			str.Format("fps %1.2f", fps);
+		else if (fps < 80)
+			str.Format("fps %2.1f", fps);
+		else
+			str.Format("fps %3.0f", fps);
 
-	// only show 3 significant digits
-	if (fps < 10)
-		str.Format("fps %1.2f, ", fps);
-	else if (fps < 80)
-		str.Format("fps %2.1f, ", fps);
-	else
-		str.Format("fps %3.0f, ", fps);
+		return str;
+	}
+	if (which == 1)
+	{
+		DescribeCoordinates(str);
+	}
+	if (which == 2)
+	{
+		DPoint3 epos;
 
+		if (m_state == AS_Orbit)
+		{
+			m_pGlobePicker->GetCurrentEarthPos(epos);
+			vtTerrain *pTerr = FindTerrainOnEarth(DPoint2(epos.x, epos.y));
+			if (pTerr)
+				str = pTerr->GetName();
+		}
+		else if (m_state == AS_Terrain)
+		{
+			bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
+			if (bOn)
+				str.Format("Elev: %.1f", epos.z);
+			else
+				str += "Not on ground";
+		}
+	}
+	return str;
+}
+
+#if 0	// TODO: move the 'time' stuff to a new Time dialog
+void Enviro::GetStatusText(vtString &str)
+{
 	// get time of day
 	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
 	if (te && te->GetEnabled())
@@ -2121,20 +2164,13 @@ void Enviro::GetStatusText(vtString &str)
 		int hr, min, sec;
 		te->GetTime(hr, min, sec);
 
+		vtString str2;
 		str2.Format("time %02d:%02d:%02d, ", hr, min, sec);
 		str += str2;
 	}
-
-	vtString vs;
-	DescribeCoordinates(vs);
-	str += vs;
-
-	// get CLOD triangle counts, if appropriate
-	DescribeCLOD(vs);
-	str += vs;
-
 	str += m_strMessage;
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////
 
