@@ -134,7 +134,7 @@ public:
 	~vtPlantInstanceArray3d();
 
 	int CreatePlantNodes();
-	bool CreatePlantNode(int i);
+	bool CreatePlantNode(unsigned int i);
 
 	vtTransform *GetPlantNode(unsigned int i) const;
 	vtPlantInstance3d *GetInstance3d(unsigned int i) const;
