@@ -165,9 +165,8 @@ void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
 
 bool vtProjection::GetTextDescription(char *type, char *value)
 {
-	const char *datum_string = GetAttrValue("DATUM");
-	if (!datum_string)
-		datum_string = "WGS84";
+	DATUM datum = GetDatum();
+	const char *datum_string = datumToString(datum);
 
 	if (IsGeographic())
 	{
