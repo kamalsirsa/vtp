@@ -675,9 +675,12 @@ public:
 		p.x = (left + right) / 2.0;
 		p.y = (bottom + top) / 2.0;
 	}
-	bool ContainsPoint(const DPoint2 &p) const
+	bool ContainsPoint(const DPoint2 &p, bool bInclusive = false) const
 	{
-		return (p.x > left && p.x < right && p.y > bottom && p.y < top);
+		if (bInclusive)
+			return (p.x >= left && p.x <= right && p.y >= bottom && p.y <= top);
+		else
+			return (p.x > left && p.x < right && p.y > bottom && p.y < top);
 	}
 	bool ContainsPoint(const DPoint3 &p) const
 	{
