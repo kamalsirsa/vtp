@@ -8,7 +8,6 @@
 #ifndef VTBITMAP_H
 #define VTBITMAP_H
 
-#include "wxBitmapSection.h"
 #include "vtdata/MathTypes.h"
 
 /**
