@@ -2083,7 +2083,8 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	{
 		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
 			goto Exit;
-		if (wkbPoint25D != pPoint->getGeometryType())
+//		if (wkbPoint25D != pPoint->getGeometryType())
+		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
 			goto Exit;
 		if (0 == iRowCount)
 			dX = pPoint->getX();
