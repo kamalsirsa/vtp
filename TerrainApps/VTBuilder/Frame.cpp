@@ -1266,7 +1266,7 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 				else
 				{
 					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
-					if (lp->Load(fname))
+					if (lp && lp->Load(fname))
 						AddLayer(lp);
 					else
 						delete lp;
@@ -1715,6 +1715,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	CloseProgressDialog();
 
 	// display a useful message informing the user what was planted
+	int unplanted = 0;
 	wxString2 msg, str;
 	msg = _("Vegetation distribution results:\n");
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
@@ -1726,6 +1727,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 		{
 			pd = bio->m_Densities[k];
 			total_this_type += pd->m_iNumPlanted;
+			unplanted += (int) (pd->m_amount);
 		}
 		str.Printf(_("  BioType %d"), i);
 		msg += str;
@@ -1745,6 +1747,14 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 			msg += _(": None.\n");
 	}
 	DisplayAndLog(msg.mb_str());
+
+	if (unplanted > 0)
+	{
+		msg.Printf(_T("%d plants were generated that could not be placed.\n"), unplanted);
+		msg += _T("Try to decrease your spacing or scarcity, so that\n");
+		msg += _T("there are enough places to plant.");
+		wxMessageBox(msg, _("Warning"));
+	}
 }
 
 
