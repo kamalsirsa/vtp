@@ -291,8 +291,16 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 	m_time.GetDate(year, month, day);
 	m_time.GetTimeOfDay(hour, minute, second);
 
-	float timezone = (geo.x / 15.0);	// convert degrees to hours
-	float elevation = 0;				// sealevel for now
+	// Timezone: for now, just convert degrees to hours.  This gives 'correct'
+	//  results, but is actually "Local Time", as opposed to what most people
+	//  probably expect, which is "Standard Time", usually defined by an
+	//  integral number of hours offset from universal time.  We would have to
+	//  either ask the user for this, or guess it using a complicated political
+	//  map of time zones in the world.
+	float timezone = (geo.x / 15.0);
+
+	// sealevel for now
+	float elevation = 0;
 
 	spa_data spa;
 	SetCommonValues(spa, geo.x, geo.y,
