@@ -351,20 +351,20 @@ void vtFrame::CreateMenus()
 	// F Faster
 	// S Faster
 
-	wxMenu *viewMenu = new wxMenu;
-	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
-	viewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
-	viewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _T("Top-Down Camera\tCtrl+T"));
-	viewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+R"));
-	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings\tCtrl+S"));
-	viewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
-	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_SNAPSHOT, _T("Save Window Snapshot"));
-	viewMenu->Append(ID_VIEW_SNAP_AGAIN, _T("Save Numbered Snapshot\tCtrl+N"));
-	viewMenu->AppendSeparator();
-	viewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _T("&Status Bar"));
-	m_pMenuBar->Append(viewMenu, _T("&View"));
+	m_pViewMenu = new wxMenu;
+	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _T("Top-Down Camera\tCtrl+T"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+R"));
+	m_pViewMenu->AppendSeparator();
+	m_pViewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings\tCtrl+S"));
+	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
+	m_pViewMenu->AppendSeparator();
+	m_pViewMenu->Append(ID_VIEW_SNAPSHOT, _T("Save Window Snapshot"));
+	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _T("Save Numbered Snapshot\tCtrl+N"));
+	m_pViewMenu->AppendSeparator();
+	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _T("&Status Bar"));
+	m_pMenuBar->Append(m_pViewMenu, _T("&View"));
 
 	wxMenu *navMenu = new wxMenu;
 	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
@@ -381,26 +381,26 @@ void vtFrame::CreateMenus()
 //		navstyleMenu->AppendCheckItem(ID_NAV_QUAKE, _T("Keyboard Walk"));
 		navMenu->Append(0, _T("Navigation Style"), navstyleMenu);
 
-	wxMenu *terrainMenu = new wxMenu;
-	terrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("LOD Terrain Surface\tF3"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _T("Cull every frame\tCtrl+C"));
-	terrainMenu->Append(ID_TERRAIN_CULLONCE, _T("Cull once\tCtrl+K"));
-	terrainMenu->AppendSeparator();
-	terrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _T("Show Sky\tF4"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _T("Show Ocean\tF5"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _T("Show Plants\tF6"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _T("Show Structures\tF7"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF8"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF9"));
-	terrainMenu->AppendSeparator();
-	terrainMenu->Append(ID_TERRAIN_INCREASE, _T("Increase Detail (+)"));
-	terrainMenu->Append(ID_TERRAIN_DECREASE, _T("Decrease Detail (-)"));
-	terrainMenu->AppendSeparator();
-	terrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
-	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
-	terrainMenu->AppendSeparator();
-	terrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _T("Toggle Artificial Foundations"));
-	m_pMenuBar->Append(terrainMenu, _T("Te&rrain"));
+	m_pTerrainMenu = new wxMenu;
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("LOD Terrain Surface\tF3"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _T("Cull every frame\tCtrl+C"));
+	m_pTerrainMenu->Append(ID_TERRAIN_CULLONCE, _T("Cull once\tCtrl+K"));
+	m_pTerrainMenu->AppendSeparator();
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _T("Show Sky\tF4"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _T("Show Ocean\tF5"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _T("Show Plants\tF6"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _T("Show Structures\tF7"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF8"));
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF9"));
+	m_pTerrainMenu->AppendSeparator();
+	m_pTerrainMenu->Append(ID_TERRAIN_INCREASE, _T("Increase Detail (+)"));
+	m_pTerrainMenu->Append(ID_TERRAIN_DECREASE, _T("Decrease Detail (-)"));
+	m_pTerrainMenu->AppendSeparator();
+	m_pTerrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
+	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
+	m_pTerrainMenu->AppendSeparator();
+	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _T("Toggle Artificial Foundations"));
+	m_pMenuBar->Append(m_pTerrainMenu, _T("Te&rrain"));
 
 	if (m_bEnableEarth)
 	{

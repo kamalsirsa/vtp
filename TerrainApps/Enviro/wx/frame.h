@@ -174,7 +174,9 @@ public:
 	class MyStatusBar	*m_pStatusBar;
 
 	wxMenu				*m_pFileMenu;
+	wxMenu				*m_pViewMenu;
 	wxMenu				*m_pEarthMenu;
+	wxMenu				*m_pTerrainMenu;
 	wxMenu				*m_pSceneMenu;
 
 	// Modeless dialogs
