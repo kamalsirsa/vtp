@@ -338,12 +338,11 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		// derive color from elevation
 		m_pDIB = new vtDIB();
 		m_pDIB->Create(tsize, tsize, 24, false);
-		pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, RGBi(m_ocean_color));
-	}
 
-	// Allow subclasses to customize the Dib, before we turn it into an vtImage
-	if (m_pDIB)
-		CustomizeDib();
+		// This method is virtual to allow subclasses to customize the Dib,
+		//  before we turn it into an vtImage
+		PaintDib();
+	}
 
 	// apply pre-lighting (darkening)
 	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pDIB)
@@ -404,6 +403,17 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		m_Images[i]->Release();
 	m_Images.Empty();
 }
+
+//
+// This is the default implementation for PaintDib.  It colors from elevation.
+// Developer might override it.
+//
+void vtTerrain::PaintDib()
+{
+	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
+	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, RGBi(m_ocean_color));
+}
+
 
 /**
  * Experimental only!!!
@@ -912,7 +922,7 @@ MyTerrain::CreateCustomCulture()
 }
 	\endcode
  */
-vtTransform *vtTerrain::LoadModel(const char *filename)
+vtTransform *vtTerrain::LoadModel(const char *filename, bool bAllowCache)
 {
 	vtNode *node = NULL;
 	vtString path = FindFileOnPaths(vtGetDataPath(), filename);
@@ -921,7 +931,7 @@ vtTransform *vtTerrain::LoadModel(const char *filename)
 		VTLOG("Couldn't locate file '%s'\n", filename);
 	}
 	else
-		node = vtNode::LoadModel(path);
+		node = vtNode::LoadModel(path, bAllowCache);
 
 	if (node)
 	{

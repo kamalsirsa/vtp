@@ -109,7 +109,10 @@ public:
 		terrain texture from the elevation values.  The colors brackets go
 		from the lowest elevation value to the highest. */
 	void SetTextureColors(Array<RGBi> *brackets) { m_pTextureColors = brackets; }
-	virtual void CustomizeDib() {}
+
+	/** Override this method to customize the Dib, before it is turned into
+	 * a vtImage.  The default implementation colors from elevation. */
+	virtual void PaintDib();
 	void ApplyVerticalExag();
 
 	/// return true if the terrain has been created
@@ -119,7 +122,7 @@ public:
 	void Enable(bool bVisible);
 
 	/// load an external geometry file
-	vtTransform *LoadModel(const char *filename);
+	vtTransform *LoadModel(const char *filename, bool bAllowCache = true);
 
 	/// add a model (or any node) to the terrain
 	void AddNode(vtNode *pNode);
