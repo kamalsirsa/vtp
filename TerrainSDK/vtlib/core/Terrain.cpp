@@ -79,6 +79,8 @@ vtTerrain::vtTerrain()
 vtTerrain::~vtTerrain()
 {
 	// some things need to be manually deleted
+	m_Content.ReleaseContents();
+
 	int i, size = m_PointsOfInterest.GetSize();
 	for (i = 0; i < size; i++)
 	{
@@ -907,7 +909,7 @@ MyTerrain::CreateCustomCulture()
  */
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
-	vtNodeBase *node = NULL;
+	vtNode *node = NULL;
 	vtString path = FindFileOnPaths(vtGetDataPath(), filename);
 	if (path == "")
 	{
@@ -2187,7 +2189,7 @@ void vtTerrain::SetPlantList(vtSpeciesList3d *pPlantList)
  *
  * \sa AddNodeToLodGrid
  */
-void vtTerrain::AddNode(vtNodeBase *pNode)
+void vtTerrain::AddNode(vtNode *pNode)
 {
 	m_pTerrainGroup->AddChild(pNode);
 }
@@ -2244,7 +2246,7 @@ bool vtTerrain::AddNodeToStructGrid(vtGeom *pGeom)
 }
 
 
-void vtTerrain::RemoveNodeFromStructGrid(vtNodeBase *pNode)
+void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 {
 	if (m_pStructGrid)
 		m_pStructGrid->RemoveNodeFromGrid(pNode);

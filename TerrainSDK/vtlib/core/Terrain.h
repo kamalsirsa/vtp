@@ -115,7 +115,7 @@ public:
 	vtTransform *LoadModel(const char *filename);
 
 	/// add a model (or any node) to the terrain
-	void AddNode(vtNodeBase *pNode);
+	void AddNode(vtNode *pNode);
 
 	/// place a model on the terrain
 	void PlantModel(vtTransform *model);
@@ -165,7 +165,7 @@ public:
 							  int &structure, double &closest);
 	bool AddNodeToStructGrid(vtTransform *pTrans);
 	bool AddNodeToStructGrid(vtGeom *pGeom);
-	void RemoveNodeFromStructGrid(vtNodeBase *pNode);
+	void RemoveNodeFromStructGrid(vtNode *pNode);
 	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 
 	// Terrain-specific content
