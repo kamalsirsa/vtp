@@ -59,11 +59,27 @@ void vtVegLayer::GetPropertyText(wxString &str)
 	case VLT_None: str += _("None\n"); break;
 	case VLT_Density: str += _("Density\n"); break;
 	case VLT_BioMap: str += _("BioMap\n"); break;
-	case VLT_Instances:
-		str += _("Plant Instances\n");
-		s.Printf(_("Number of Instances: %d\n"), m_pSet->GetNumEntities());
+	case VLT_Instances: str += _("Plant Instances\n"); break;
+	}
+	if (m_VLType == VLT_Instances)
+	{
+		vtPlantInstanceArray *pPIA = (vtPlantInstanceArray*) m_pSet;
+
+		int ent = m_pSet->GetNumEntities();
+		s.Printf(_("Number of Instances: %d\n"), ent);
 		str += s;
-		break;
+
+		vtSpeciesList *list = GetMainFrame()->GetPlantList();
+		for (unsigned int i = 0; i < list->NumSpecies(); i++)
+		{
+			int num = pPIA->InstancesOfSpecies(i);
+			if (num != 0)
+			{
+				vtPlantSpecies *spe = list->GetSpecies(i);
+				s.Printf(_("  %d instances of species %hs\n"), num, spe->GetSciName());
+				str += s;
+			}
+		}
 	}
 }
 
