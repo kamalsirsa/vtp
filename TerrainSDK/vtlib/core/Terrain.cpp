@@ -711,9 +711,17 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 //
 // Load an external 3d model from the data path
 //
-vtNode *vtTerrain::LoadModel(const char *filename)
+vtTransform *vtTerrain::LoadModel(const char *filename)
 {
-	return vtLoadModel(m_strDataPath + filename);
+	vtNode *node = vtLoadModel(m_strDataPath + filename);
+	if (node)
+	{
+		vtTransform *trans = new vtTransform();
+		trans->AddChild(node);
+		return trans;
+	}
+	else
+		return NULL;
 }
 
 

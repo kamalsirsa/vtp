@@ -89,7 +89,7 @@ public:
 	const char *DesribeError(int iError);
 
 	// load an external geometry file
-	vtNode *LoadModel(const char *filename);
+	vtTransform *LoadModel(const char *filename);
 
 	// place a model on the terrain
 	void PlantModel(vtTransform *model);
