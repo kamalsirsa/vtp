@@ -243,25 +243,30 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		for (int i = 0; i < num_mesh; i++)
 		{
 			vtMesh *pMesh = pGeom->GetMesh(i);
-			int iNumPrim = pMesh->GetNumPrims();
-
-			GLenum pt = pMesh->GetPrimType();
-			const char *mtype;
-			switch (pt)
+			if (pMesh)
 			{
-			case GL_POINTS: mtype = "Points"; break;
-			case GL_LINES: mtype = "Lines"; break;
-			case GL_LINE_LOOP: mtype = "LineLoop"; break;
-			case GL_LINE_STRIP: mtype = "LineStrip"; break;
-			case GL_TRIANGLES: mtype = "Triangles"; break;
-			case GL_TRIANGLE_STRIP: mtype = "TriStrip"; break;
-			case GL_TRIANGLE_FAN: mtype = "TriFan"; break;
-			case GL_QUADS: mtype = "Quads"; break;
-			case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
-			case GL_POLYGON: mtype = "Polygon"; break;
+				int iNumPrim = pMesh->GetNumPrims();
+
+				GLenum pt = pMesh->GetPrimType();
+				const char *mtype;
+				switch (pt)
+				{
+				case GL_POINTS: mtype = "Points"; break;
+				case GL_LINES: mtype = "Lines"; break;
+				case GL_LINE_LOOP: mtype = "LineLoop"; break;
+				case GL_LINE_STRIP: mtype = "LineStrip"; break;
+				case GL_TRIANGLES: mtype = "Triangles"; break;
+				case GL_TRIANGLE_STRIP: mtype = "TriStrip"; break;
+				case GL_TRIANGLE_FAN: mtype = "TriFan"; break;
+				case GL_QUADS: mtype = "Quads"; break;
+				case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
+				case GL_POLYGON: mtype = "Polygon"; break;
+				}
+				str.Printf("Mesh %d, %s, %d prims", i, mtype, iNumPrim);
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 			}
-			str.Printf("Mesh %d, %s, %d prims", i, mtype, iNumPrim);
-			hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+			else
+				hGeomItem = m_pTree->AppendItem(hNewItem, "Text Mesh", 6, 6);
 		}
 	}
 
