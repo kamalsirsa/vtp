@@ -76,10 +76,8 @@ public:
 	void Update();
 
 	void RefreshList();
-	void SetTarget(vtTransform *pTarget, const vtProjection &proj,
-				   const vtLocalConversion &conv);
+	void SetLocSaver(vtLocationSaver *saver);
 	void SetEngineContainer(vtEngine *pContainer);
-	void SetLocFile(const vtString &fname);
 	void RefreshButtons();
 	void RecallFrom(const vtString &locname);
 

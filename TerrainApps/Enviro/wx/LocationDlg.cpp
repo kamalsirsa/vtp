@@ -1,7 +1,7 @@
 //
 // Name:		LocationDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -86,7 +86,8 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_bRecordInterval = false;
 
 	LocationDialogFunc( this, TRUE );
-	m_pSaver = new vtLocationSaver();
+
+	m_pSaver = NULL;
 	m_pLocList = GetLoclist();
 
 	AddValidator(ID_ACTIVE, &m_bActive);
@@ -108,8 +109,6 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 LocationDlg::~LocationDlg()
 {
-	delete m_pSaver;
-
 	unsigned int i;
 	for (i = 0; i < m_Entries.GetSize(); i++)
 	{
@@ -123,20 +122,9 @@ void LocationDlg::SetEngineContainer(vtEngine *pContainer)
 	m_pContainer = pContainer;
 }
 
-void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
-							const vtLocalConversion &conv)
+void LocationDlg::SetLocSaver(vtLocationSaver *saver)
 {
-	m_pSaver->SetTransform(pTarget);
-	m_pSaver->SetConversion(conv);
-	m_pSaver->SetProjection(proj);
-}
-
-void LocationDlg::SetLocFile(const vtString &fname)
-{
-	m_pSaver->Empty();
-	if (!m_pSaver->Read(fname))
-		return;  // couldn't read
-
+	m_pSaver = saver;
 	RefreshList();
 	RefreshButtons();
 }
@@ -525,7 +513,11 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 		return;
 
 	wxString2 path = loadFile.GetPath();
-	SetLocFile(path.mb_str());
+	if (m_pSaver->Read(path.mb_str()))
+	{
+		RefreshList();
+		RefreshButtons();
+	}
 }
 
 void LocationDlg::OnSave( wxCommandEvent &event )

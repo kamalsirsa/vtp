@@ -1518,17 +1518,12 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	if (pTerrain)
 	{
-		m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
-			pTerrain->GetProjection(), g_Conv);
+		m_pLocationDlg->SetLocSaver(pTerrain->GetLocSaver());
 
-		vtString loc = "Locations/";
-		loc += pTerrain->GetParams().GetValueString(STR_LOCFILE, true);
-		vtString path = FindFileOnPaths(vtGetDataPath(), loc);
-		if (path != "")
-		{
-			m_pLocationDlg->SetLocFile((const char *)path);
+		// Only do this the first time:
+		if (!pTerrain->IsVisited())
 			m_pLocationDlg->RecallFrom(pTerrain->GetParams().GetValueString(STR_INITLOCATION));
-		}
+		pTerrain->Visited(true);
 
 		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
 		m_pDistanceDlg->SetProjection(pTerrain->GetProjection());
@@ -1539,7 +1534,8 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		if (pTerrain->m_Content.NumItems() != 0)
 			m_pInstanceDlg->AddContent(&pTerrain->m_Content);
 
-		// Also switch to the time engine for the terrain, not the globe.
+		// Also switch the time dialog to the time engine of the terrain,
+		//  not the globe.
 		SetTimeEngine(vtGetTS()->GetTimeEngine());
 	}
 	else

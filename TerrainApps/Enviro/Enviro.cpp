@@ -780,6 +780,9 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	EnableFlyerEngine(true);
 
+	// Inform the terrain's location saver of the camera
+	pTerrain->GetLocSaver()->SetTransform(m_pNormalCamera);
+
 	// inform the navigation engine of the new terrain
 	float speed = param.GetValueFloat(STR_NAVSPEED);
 	if (m_pCurrentFlyer != NULL)
