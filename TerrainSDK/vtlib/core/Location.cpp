@@ -42,7 +42,7 @@ bool vtLocationSaver::Write(const char *fname)
 	if (!fp) return false;
 
 	int i, num = m_loc.GetSize();
-	fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"US-ASCII\"?>\n");
 	fprintf(fp, "<locations-file file-format-version=\"1.0\">\n");
 	for (i = 0; i < num; i++)
 	{
