@@ -245,6 +245,9 @@ void Enviro::DoControl()
 		{
 			m_fFolding = 0.0f;
 			m_fFoldDir = 0.0f;
+
+			// Leave Flat View
+			m_pTrackball->SetEnabled(true);
 		}
 		m_pIcoGlobe->SetUnfolding(m_fFolding);
 	}
@@ -1382,12 +1385,16 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 	m_bGlobeUnfolded = bUnfold;
 	if (m_bGlobeUnfolded)
 	{
-//		m_pNormalCamera->SetTrans(FPoint3(0,-1,0);
-		m_fFoldDir = 0.03f;
+		// Enter Flat View
+		m_pNormalCamera->SetTrans(FPoint3(0.7f,-0.75f,5.6));
+		m_pNormalCamera->PointTowards(FPoint3(0.9f,-0.75f,0));
+		m_pTrackball->SetEnabled(false);
+
+		m_fFoldDir = 0.01f;
 	}
 	else
 	{
-		m_fFoldDir = -0.03f;
+		m_fFoldDir = -0.01f;
 	}
 }
 
