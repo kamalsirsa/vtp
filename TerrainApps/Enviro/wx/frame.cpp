@@ -858,7 +858,7 @@ void vtFrame::OnUpdateTrees(wxUpdateUIEvent& event)
 void vtFrame::OnRoads(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(VEGETATION, !t->GetFeatureVisible(ROADS));
+	if (t) t->SetFeatureVisible(ROADS, !t->GetFeatureVisible(ROADS));
 }
 
 void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
