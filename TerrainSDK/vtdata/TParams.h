@@ -37,7 +37,7 @@ class PointStyle
 public:
 	PointStyle();
 
-	int m_field_index;
+	int m_field_index;			// index of field for Text to show
 	float m_label_elevation;
 	float m_label_size;
 	RGBi m_label_color;
