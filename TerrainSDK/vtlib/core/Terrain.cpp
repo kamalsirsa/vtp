@@ -810,12 +810,25 @@ void vtTerrain::create_culture(bool bSound)
 		// Read the VF file
 		vtString plants_fname = "PlantData/";
 		plants_fname += m_Params.m_strTreeFile;
+
+		VTLOG("\tLooking for plants file: %s\n", (const char *) plants_fname);
+
 		vtString plants_path = FindFileOnPaths(m_DataPaths, plants_fname);
+		if (plants_path == "")
+		{
+			VTLOG("\tNot found.\n");
+		}
+		else
+		{
+			VTLOG("\tFound: %s\n", (const char *) plants_path);
+		}
 		bool success = m_PIA.ReadVF(plants_path);
 		if (success)
 		{
 			// Create the 3d plants
-			m_PIA.CreatePlantNodes();
+			VTLOG("\tLoaded VF file.\n");
+			int created = m_PIA.CreatePlantNodes();
+			VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetSize());
 
 			int i, size = m_PIA.GetSize();
 			for (i = 0; i < size; i++)
@@ -827,6 +840,8 @@ void vtTerrain::create_culture(bool bSound)
 					AddNodeToLodGrid(pTrans);
 			}
 		}
+		else
+			VTLOG("\tCouldn't load VF file.\n");
 	}
 
 	// create built structures
