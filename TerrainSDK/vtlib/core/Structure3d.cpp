@@ -18,10 +18,9 @@
 
 const vtMaterialName BMAT_NAME_HIGHLIGHT = "Highlight";
 
-// Static memebers
-vtMaterialArray vtStructure3d::s_Materials;
+// Static members
+vtMaterialArray *vtStructure3d::s_pMaterials = NULL;
 vtMaterialDescriptorArray vtStructure3d::s_MaterialDescriptors;
-bool vtStructure3d::s_MaterialArraysInitialised = false;
 
 // There is a single array of materials, shared by all buildings.
 // This is done to save memory.  For a list of 16000+ buildings, this can
@@ -286,6 +285,9 @@ void vtStructureArray3d::DestroyStructure(int i)
 // Methods for vtStructure3d
 void vtStructure3d::InitializeMaterialArrays()
 {
+	if (s_pMaterials != NULL)	// already initialized
+		return;
+
 	vtString path;
 	int i, j, k;
 	RGBf color;
@@ -296,10 +298,6 @@ void vtStructure3d::InitializeMaterialArrays()
 	float step = (1.0f-start)/(divisions-1);
 	int iSize;
 	vtImage *pImage;
-	//
-	if (s_MaterialArraysInitialised)
-		return;
-
 
 	// set up colour spread
 	for (i = 0; i < divisions; i++) {
@@ -310,7 +308,8 @@ void vtStructure3d::InitializeMaterialArrays()
 		}
 	}
 
-	s_Materials.SetMaxSize(500);
+	s_pMaterials = new vtMaterialArray();
+	s_pMaterials->SetMaxSize(500);
 /*
 	// Uncooment this to make a default textures file
 	// remember to create an empty file in the correct place first (for FindFileOnPaths)
@@ -396,9 +395,9 @@ void vtStructure3d::InitializeMaterialArrays()
 				{
 					pMat = MakeMaterial(s_Colors[i], true);
 					if (i == 0)
-						Descriptor.SetMaterialIndex(s_Materials.AppendMaterial(pMat));
+						Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
 					else
-						s_Materials.AppendMaterial(pMat);
+						s_pMaterials->AppendMaterial(pMat);
 				}
 				break;
 
@@ -409,7 +408,7 @@ void vtStructure3d::InitializeMaterialArrays()
 				path = FindFileOnPaths(vtTerrain::m_DataPaths, Descriptor.GetSourceName());
 				pMat->SetTexture2(path);
 				pMat->SetClamp(false);
-				Descriptor.SetMaterialIndex(s_Materials.AppendMaterial(pMat));
+				Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
 				break;
 
 			case VT_MATERIAL_COLOURABLE_TEXTURE:
@@ -426,19 +425,19 @@ void vtStructure3d::InitializeMaterialArrays()
 					pMat->SetTexture(pImage);
 					pMat->SetClamp(false);
 					if (i == 0)
-						Descriptor.SetMaterialIndex(s_Materials.AppendMaterial(pMat));
+						Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
 					else
-						s_Materials.AppendMaterial(pMat);
+						s_pMaterials->AppendMaterial(pMat);
 				}
 				break;
 			case VT_MATERIAL_HIGHLIGHT:
-				Descriptor.SetMaterialIndex(s_Materials.AddRGBMaterial1(RGBf(1,1,1), false, false, true));
-				s_Materials.AddRGBMaterial1(RGBf(1,0,0), false, false, true);
+				Descriptor.SetMaterialIndex(s_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true));
+				s_pMaterials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
 				break;
 		}
 	}
 /*
-	int total = s_Materials.GetSize();
+	int total = s_pMaterials->GetSize();
 	// window, door, wood, cement_block, windowwall
 	int expectedtotal = COLOR_SPREAD + COLOR_SPREAD +	// plain, siding
 		1 + 1 + 1 + 1 +		// window, door, wood, cement
@@ -448,7 +447,6 @@ void vtStructure3d::InitializeMaterialArrays()
 		1 + 1;				// highlight colors
 	assert(total == expectedtotal);
 */
-	s_MaterialArraysInitialised = true;
 }
 
 //
@@ -457,7 +455,7 @@ void vtStructure3d::InitializeMaterialArrays()
 //
 int vtStructure3d::FindMatIndex(const vtMaterialName& Material, RGBi inputColor)
 {
-	if (!s_MaterialArraysInitialised)
+	if (s_pMaterials == NULL)
 		return -1;
 	
 	vtMaterialDescriptor const *pMaterialDescriptor = FindMaterialDescriptor(Material);

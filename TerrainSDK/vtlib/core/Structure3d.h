@@ -202,7 +202,7 @@ public:
 	// Get the material descriptors
 	const vtMaterialDescriptorArray& GetMaterialDescriptors()
 	{
-		if (!s_MaterialArraysInitialised)
+		if (s_pMaterials == NULL)
 			InitializeMaterialArrays();
 		return s_MaterialDescriptors;
 	}
@@ -214,7 +214,7 @@ protected:
 	vtMaterialDescriptor * FindMaterialDescriptor(const vtMaterialName& MaterialName);
 	vtMaterialArray *GetSharedMaterialArray() const
 	{
-		return &s_Materials;
+		return s_pMaterials;
 	}
 	vtTransform	*m_pContainer;	// The transform which is used to position the object
 
@@ -222,9 +222,8 @@ private:
 	vtMaterial *MakeMaterial(RGBf &color, bool culling);
 	float ColorDiff(const RGBi &c1, const RGBi &c2);
 	static RGBf s_Colors[COLOR_SPREAD];
-	static vtMaterialArray s_Materials;
+	static vtMaterialArray *s_pMaterials;
 	static vtMaterialDescriptorArray s_MaterialDescriptors;
-	static bool s_MaterialArraysInitialised;
 };
 
 
