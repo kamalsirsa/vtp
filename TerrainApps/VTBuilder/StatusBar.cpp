@@ -19,12 +19,13 @@
 
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
-	static const int widths[Field_Max] = { -1, 38, 50, 65, 170, 68 };
+	static const int widths[Field_Max] = { -1, 38, 50, 65, 170, 76 };
 
 	SetFieldsCount(Field_Max);
 	SetStatusWidths(Field_Max, widths);
 
 	m_bShowMinutes = false;
+	m_ShowVertUnits = LU_METERS;
 }
 
 MyStatusBar::~MyStatusBar()
@@ -84,7 +85,12 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		if (height == INVALID_ELEVATION)
 			str = "";
 		else
-			str.Printf( "%.2f m", height);
+		{
+			if (m_ShowVertUnits == LU_METERS)
+				str.Printf("%.2f m", height);
+			else
+				str.Printf("%.2f ft", height / GetMetersPerUnit(m_ShowVertUnits));
+		}
 		SetStatusText(str, Field_Height);
 	}
 	else

@@ -87,9 +87,7 @@ public:
 	void OnUpdateLayerConvert(wxUpdateUIEvent& event);
 	void OnUpdateLayerFlatten(wxUpdateUIEvent& event);
 
-	void OnViewToolbar(wxCommandEvent& event);
 	void OnLayerShow(wxCommandEvent& event);
-	void OnViewLayerPaths(wxCommandEvent& event);
 	void OnViewMagnifier(wxCommandEvent& event);
 	void OnViewPan(wxCommandEvent& event);
 	void OnViewDistance(wxCommandEvent& event);
@@ -98,13 +96,11 @@ public:
 	void OnViewZoomOut(wxCommandEvent& event);
 	void OnViewZoomAll(wxCommandEvent& event);
 	void OnViewFull(wxCommandEvent& event);
-	void OnViewWorldMap();
-	void OnViewUTMBounds();
-	void OnViewMinutes();
+	void OnViewWorldMap(wxUpdateUIEvent& event);
+	void OnViewUTMBounds(wxUpdateUIEvent& event);
+	void OnViewOptions(wxUpdateUIEvent& event);
 
-	void OnUpdateToolbar(wxUpdateUIEvent& event);
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
-	void OnUpdateLayerPaths(wxUpdateUIEvent& event);
 	void OnUpdateMagnifier(wxUpdateUIEvent& event);
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
@@ -112,7 +108,6 @@ public:
 	void OnUpdateCrossingSelection(wxUpdateUIEvent& event);
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
-	void OnUpdateMinutes(wxUpdateUIEvent& event);
 
 	void OnSelectRoad(wxCommandEvent& event);
 	void OnSelectNode(wxCommandEvent& event);
@@ -335,7 +330,6 @@ protected:
 	BuilderView	*m_pView;		// right child of splitter
 
 	vtProjection	m_proj;
-	bool			m_bShowMinutes;
 
 	// menu numbers, for each layer type that has a corresponding menu
 	int		m_iLayerMenu[LAYER_TYPES];

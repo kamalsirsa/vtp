@@ -31,6 +31,7 @@
 // Dialogs
 #include "ExtentDlg.h"
 #include "LayerPropDlg.h"
+#include "OptionsDlg.h"
 #include "Projection2Dlg.h"
 #include "DistribVegDlg.h"
 #include "SelectDlg.h"
@@ -69,9 +70,7 @@ EVT_UPDATE_UI(ID_LAYER_PROPS,	MainFrame::OnUpdateLayerProperties)
 EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
 EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
 
-EVT_MENU(ID_VIEW_TOOLBAR,		MainFrame::OnViewToolbar)
 EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
-EVT_MENU(ID_VIEW_LAYERPATHS,	MainFrame::OnViewLayerPaths)
 EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
 EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
 EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
@@ -82,11 +81,9 @@ EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
 EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnViewSetArea)
 EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
 EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
-EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
+EVT_MENU(ID_VIEW_OPTIONS,		MainFrame::OnViewOptions)
 
-EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateToolbar)
 EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
-EVT_UPDATE_UI(ID_VIEW_LAYERPATHS,	MainFrame::OnUpdateLayerPaths)
 EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
 EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
@@ -94,7 +91,6 @@ EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
 EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
-EVT_UPDATE_UI(ID_VIEW_SHOWMINUTES,	MainFrame::OnUpdateMinutes)
 
 EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectRoad)
 EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
@@ -246,9 +242,7 @@ void MainFrame::CreateMenus()
 
 	// View
 	viewMenu = new wxMenu;
-	viewMenu->Append(ID_VIEW_TOOLBAR, "Toolbar", "Show Toolbar", true);
 	viewMenu->Append(ID_VIEW_SHOWLAYER, "Current Layer Visible", "Toggle Visibility of the current Layer", true);
-	viewMenu->Append(ID_VIEW_LAYERPATHS, "Show Full Layer Pathnames", "Show the full path information for each Layer", true);
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_ZOOMIN, "Zoom In\tCtrl++");
 	viewMenu->Append(ID_VIEW_ZOOMOUT, "Zoom Out\tCtrl+-");
@@ -263,11 +257,12 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_WORLDMAP, "World Map", "Show/Hide World Map", true);
 	viewMenu->Append(ID_VIEW_SHOWUTM, "Show UTM Boundaries", "Show UTM Boundaries", true);
 //	viewMenu->Append(ID_VIEW_SHOWGRID, "Show 7.5\" Grid", "Show 7.5\" Grid", true);
-	viewMenu->Append(ID_VIEW_SHOWMINUTES, "Show minutes and seconds", "Show minutes and seconds", true);
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_ELEV_SHOW, "Show Terrain Elevation", "Show Terrain Elevation", true);
 	viewMenu->Append(ID_ELEV_SHADING, "Artificial Shading", "Artificial Shading", true);
 	viewMenu->Append(ID_ELEV_HIDE, "Hide Unknown Areas", "Hide Unknown Areas", true);
+	viewMenu->AppendSeparator();
+	viewMenu->Append(ID_VIEW_OPTIONS, "Options");
 	m_pMenuBar->Append(viewMenu, "&View");
 	menu_num++;
 
@@ -989,19 +984,6 @@ void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
 ////////////////////////////////////////////////////////////
 // View menu
 
-void MainFrame::OnViewToolbar(wxCommandEvent &event)
-{
-	toolBar_main->Show( !toolBar_main->IsShown() );
-
-	wxSizeEvent dummy;
-	wxFrame::OnSize(dummy);
-}
-
-void MainFrame::OnUpdateToolbar(wxUpdateUIEvent& event)
-{
-	event.Check( toolBar_main->IsShown() );
-}
-
 void MainFrame::OnLayerShow(wxCommandEvent &event)
 {
 	vtLayer *pLayer = GetActiveLayer();
@@ -1020,17 +1002,6 @@ void MainFrame::OnUpdateLayerShow(wxUpdateUIEvent& event)
 
 	event.Enable(pLayer != NULL);
 	event.Check(pLayer && pLayer->GetVisible());
-}
-
-void MainFrame::OnViewLayerPaths(wxCommandEvent &event)
-{
-	m_pTree->SetShowPaths(!m_pTree->GetShowPaths());
-	m_pTree->RefreshTreeItems(this);
-}
-
-void MainFrame::OnUpdateLayerPaths(wxUpdateUIEvent& event)
-{
-	event.Check(m_pTree->GetShowPaths());
 }
 
 void MainFrame::OnViewMagnifier(wxCommandEvent &event)
@@ -1105,7 +1076,7 @@ void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 			(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
 }
 
-void MainFrame::OnViewWorldMap()
+void MainFrame::OnViewWorldMap(wxUpdateUIEvent& event)
 {
 	m_pView->m_bShowMap = !m_pView->m_bShowMap;
 	m_pView->Refresh();
@@ -1116,7 +1087,7 @@ void MainFrame::OnUpdateWorldMap(wxUpdateUIEvent& event)
 	event.Check(m_pView->m_bShowMap);
 }
 
-void MainFrame::OnViewUTMBounds()
+void MainFrame::OnViewUTMBounds(wxUpdateUIEvent& event)
 {
 	m_pView->m_bShowUTMBounds = !m_pView->m_bShowUTMBounds;
 	m_pView->Refresh();
@@ -1127,16 +1098,32 @@ void MainFrame::OnUpdateUTMBounds(wxUpdateUIEvent& event)
 	event.Check(m_pView->m_bShowUTMBounds);
 }
 
-void MainFrame::OnViewMinutes()
+void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
 {
-	m_bShowMinutes = !m_bShowMinutes;
-	m_statbar->SetShowMinutes(m_bShowMinutes);
-}
+	OptionsDlg dlg(this, -1, "Options");
 
-void MainFrame::OnUpdateMinutes(wxUpdateUIEvent& event)
-{
-	event.Enable(m_proj.IsGeographic());
-	event.Check(m_bShowMinutes);
+	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
+	dlg.m_bShowPath = m_pTree->GetShowPaths();
+	dlg.m_bShowToolbar = toolBar_main->IsShown();
+	dlg.m_iElevUnits = (int)(m_statbar->m_ShowVertUnits) - 1;
+
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		m_statbar->m_bShowMinutes = dlg.m_bShowMinutes;
+		m_statbar->m_ShowVertUnits = (LinearUnits) (dlg.m_iElevUnits + 1);
+
+		if (dlg.m_bShowToolbar != toolBar_main->IsShown())
+		{
+			toolBar_main->Show(dlg.m_bShowToolbar);
+			wxSizeEvent dummy;
+			wxFrame::OnSize(dummy);
+		}
+		if (dlg.m_bShowPath != m_pTree->GetShowPaths())
+		{
+			m_pTree->SetShowPaths(dlg.m_bShowPath);
+			m_pTree->RefreshTreeItems(this);
+		}
+	}
 }
 
 

@@ -22,10 +22,10 @@ public:
 
     // event handlers
 	void OnSize(wxSizeEvent& event);
-
 	void SetTexts(MainFrame *frame);
 
-	void SetShowMinutes(bool bShow) { m_bShowMinutes = bShow; }
+	bool	m_bShowMinutes;
+	LinearUnits		m_ShowVertUnits;
 
 private:
 	wxString FormatCoord(bool bGeo, double coord);
@@ -40,8 +40,6 @@ private:
 		Field_Height,
 		Field_Max
 	};
-
-	bool	m_bShowMinutes;
 
 	DECLARE_EVENT_TABLE()
 };

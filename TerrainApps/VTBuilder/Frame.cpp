@@ -156,8 +156,6 @@ void MainFrame::SetupUI()
 	m_pView->Show(TRUE);
 	m_splitter->SplitVertically( m_pTree, m_pView, 200);
 
-	m_bShowMinutes = false;
-
 	vtProjection proj;
 	proj.SetWellKnownGeogCS("WGS84");
 	SetProjection(proj);
