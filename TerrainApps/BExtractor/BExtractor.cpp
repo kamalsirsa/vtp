@@ -11,6 +11,7 @@
 #include "MainFrm.h"
 #include "BExtractorDoc.h"
 #include "BExtractorView.h"
+#include "vtdata/vtLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -53,6 +54,15 @@ CBExtractorApp theApp;
 
 BOOL CBExtractorApp::InitInstance()
 {
+	g_Log._StartLog("debug.txt");
+	VTLOG("BExtractor\nBuild:");
+#if _DEBUG
+	VTLOG(" Debug");
+#else
+	VTLOG(" Release");
+#endif
+	VTLOG("\n");
+
 	AfxEnableControlContainer();
 
 	// Standard initialization

@@ -15,6 +15,7 @@
 #include "ProgDlg.h"
 #include "Dib.h"
 #include "xmlhelper/easyxml.hpp"
+#include "vtdata/vtLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -259,6 +260,7 @@ double BExtractorDoc::i_UTMy(int iy)
 
 BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 {
+	VTLOG("OnOpenDocument\n");
 	CString name = szPathName;
 	CString ext = name.Right(4);
 
@@ -352,6 +354,7 @@ void BExtractorDoc::OnImportimage()
 
 void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 {
+	VTLOG("OnImportimage2\n");
 	m_picLoaded = false;
 	m_pImage = new CBImage();
 
@@ -363,12 +366,16 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 		bool success = m_pImage->LoadFromFile(szPathName, pDC, m_hdd);
 		GetView()->ReleaseDC(pDC);
 		if (!success)
+		{
+			VTLOG("LoadFromFile failed\n");
 			return;
+		}
 	}
 
 	// we don't know projection unless we have read a geotiff
 	if (m_pImage->m_pSpatialReference == NULL)
 	{
+		VTLOG("no SRS, opening Projection dialog.\n");
 		// Assume that I have loaded from a world file
 		// and need some more info
 		// get utm zone from a dialog
@@ -430,6 +437,7 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 	m_Buildings.Empty(); //clear out any old buildings we have lying around
 	m_Links.DeleteElements();
 	GetView()->ZoomToImage(m_pImage);
+	VTLOG("OnImportimage2 finished\n");
 }
 
 

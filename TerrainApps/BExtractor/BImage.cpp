@@ -14,6 +14,7 @@
 #include "BExtractorDoc.h"
 #include "BExtractorView.h"
 #include "ProgDlg.h"
+#include "vtdata/vtLog.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CBImage commands
@@ -54,6 +55,7 @@ void progress_callback(int pos)
 
 bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 {
+	VTLOG("  LoadGDAL\n");
 	GDALDataset *pDataset = NULL;
 	OGRErr err;
 	const char *pProjectionString;
@@ -78,12 +80,14 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	if(pDataset == NULL )
 	{
 		// failed.
+		VTLOG("  No Dataset\n");
 		bRet = false;
 		goto Exit;
 	}
 
 	m_PixelSize.x = pDataset->GetRasterXSize();
 	m_PixelSize.y = pDataset->GetRasterYSize();
+	VTLOG("  Size: %d x %d pixels\n", m_PixelSize.x, m_PixelSize.y);
 
 	// compute size of image in meters
 	// try for an affine transform
@@ -97,6 +101,7 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	//
 	if (NULL == (pProjectionString = pDataset->GetProjectionRef()))
 	{
+		VTLOG("  No Projection\n");
 		bRet = false;
 		goto Exit;
 	}
@@ -111,6 +116,7 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 
 	if (CE_None != pDataset->GetGeoTransform(affineTransform))
 	{
+		VTLOG("  No GeoTransform\n");
 		bRet = false;
 		goto Exit;
 	}
@@ -136,6 +142,7 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		// Convert top left and bottom right to UTM
 		if (NULL == (pCoordTransform = OGRCreateCoordinateTransformation(&SpatialReference, &NewSpatialReference)))
 		{
+			VTLOG("  Can't create coordinate transform\n");
 			bRet = false;
 			goto Exit;
 		}
@@ -196,17 +203,20 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 
 	// Raster count should be 3 for colour images (assume RGB)
 	iRasterCount = pDataset->GetRasterCount();
+	VTLOG("  Rasters: %d\n", iRasterCount);
 	if (iRasterCount == 1)
 	{
 		pBand = pDataset->GetRasterBand(1);
 		// Check data type - it's either integer or float
 		if (GDT_Byte != pBand->GetRasterDataType())
 		{
+			VTLOG("  RasterDataType is not Byte\n");
 			bRet = false;
 			goto Exit;
 		}
 		if (GCI_PaletteIndex != pBand->GetColorInterpretation())
 		{
+			VTLOG("  ColorInterpretation is not PaletteIndex\n");
 			bRet = false;
 			goto Exit;
 		}
@@ -219,6 +229,7 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 			// Check data type - it's either integer or float
 			if (GDT_Byte != pBand->GetRasterDataType())
 			{
+				VTLOG("  RasterDataType is not Byte\n");
 				bRet = false;
 				goto Exit;
 			}
@@ -252,14 +263,17 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	}
 	else
 	{
+		VTLOG("  Don't know what to do with that number of Rasters\n");
 		bRet = false;
 		goto Exit;
 	}
 
+	VTLOG("  Creating CDib\n");
 	m_pSourceDIB = new CDib();
 	m_pSourceDIB->Setup(pDC, pDataset, hdd, progress_callback);
 
 	// create monochrome version
+	VTLOG("  Creating MonoDib\n");
 	m_pMonoDIB = CreateMonoDib(pDC, m_pSourceDIB, hdd, progress_callback);
 	m_pCurrentDIB = m_pMonoDIB;
 	m_initialized = true;

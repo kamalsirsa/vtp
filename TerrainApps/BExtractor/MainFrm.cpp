@@ -9,6 +9,7 @@
 #include "BExtractor.h"
 
 #include "MainFrm.h"
+#include "vtdata/vtLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,12 +41,12 @@ static UINT indicators[] =
 
 CMainFrame::CMainFrame()
 {
-	// TODO: add member initialization code here
-	
+	VTLOG("constructing CMainFrame\n");
 }
 
 CMainFrame::~CMainFrame()
 {
+	VTLOG("destructing CMainFrame\n");
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -56,7 +57,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!m_wndToolBar.Create(this) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
-		TRACE0("Failed to create toolbar\n");
+		VTLOG("Failed to create toolbar\n");
 		return -1;	// fail to create
 	}
 
@@ -64,7 +65,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		!m_wndStatusBar.SetIndicators(indicators,
 		  sizeof(indicators)/sizeof(UINT)))
 	{
-		TRACE0("Failed to create status bar\n");
+		VTLOG("Failed to create status bar\n");
 		return -1;	// fail to create
 	}
 
