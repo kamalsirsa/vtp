@@ -58,6 +58,18 @@ void DLine2::Add(const DPoint2 &p)
 		GetAt(i) += p;
 }
 
+void DLine2::From3D(const DLine3 &input)
+{
+	unsigned int size = input.GetSize();
+	SetSize(size);
+	for (unsigned int i = 0; i < size; i++)
+	{
+		const DPoint3 &p = input.GetAt(i);
+		m_Data[i].x = p.x;
+		m_Data[i].y = p.y;
+	}
+}
+
 void  DLine2::InsertPointAfter(int iInsertAfter, const DPoint2 &Point)
 {
 	int iNumPoints = GetSize();
@@ -78,8 +90,10 @@ void DLine2::RemovePoint(int i)
 }
 
 /**
- * With the assumption that this set of points defines a closed polygon, test
- * whether the polygon contains a given point.
+ * With the assumption that this set of points defines a closed polygon,
+ * test whether the polygon contains a given point.  Since a simple array
+ * of points being interpreted as a polygon, this means the data may be
+ * concave or convex, but not contains holes.
  */
 bool DLine2::ContainsPoint(const DPoint2 &p) const
 {
@@ -269,6 +283,21 @@ void DLine3::NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dClosest)
 			iIndex = i;
 		}
 	}
+}
+
+/**
+ * With the assumption that this set of points defines a closed polygon,
+ * test whether the polygon contains a given point.  Since a simple array
+ * of points being interpreted as a polygon, this means the data may be
+ * concave or convex, but not contains holes.  The third (Z) coordinate
+ * is ignored.
+ */
+bool DLine3::ContainsPoint2D(const DPoint2 &p) const
+{
+	if (GetData() != NULL)
+		return CrossingsTest(GetData(), GetSize(), p);
+	else
+		return false;
 }
 
 
@@ -890,6 +919,63 @@ bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point)
 	register double ty, tx;
 	register bool inside_flag, yflag0, yflag1, xflag0;
 	const DPoint2 *vertex0, *vertex1;
+
+	tx = point.x;
+	ty = point.y;
+
+	vertex0 = pgon + (numverts-1);
+	/* get test bit for above/below X axis */
+	yflag0 = (vertex0->y >= ty);
+	vertex1 = pgon;
+
+	inside_flag = false;
+	for (j = numverts+1; --j;)
+	{
+		yflag1 = (vertex1->y >= ty);
+		/* check if endpoints straddle (are on opposite sides) of X axis
+		 * (i.e. the Y's differ); if so, +X ray could intersect this edge.
+		 */
+		if (yflag0 != yflag1)
+		{
+			xflag0 = (vertex0->x >= tx);
+			/* check if endpoints are on same side of the Y axis (i.e. X's
+			 * are the same); if so, it's easy to test if edge hits or misses.
+			 */
+			if (xflag0 == (vertex1->x >= tx))
+			{
+				/* if edge's X values both right of the point, must hit */
+				if (xflag0) inside_flag = !inside_flag;
+			}
+			else
+			{
+				/* compute intersection of pgon segment with +X ray, note
+				 * if >= point's X; if so, the ray hits it.
+				 */
+				if ((vertex1->x - (vertex1->y-ty) *
+					 (vertex0->x - vertex1->x)/(vertex0->y - vertex1->y)) >= tx) {
+					inside_flag = !inside_flag;
+				}
+			}
+		}
+		/* move to next pair of vertices, retaining info as possible */
+		yflag0 = yflag1;
+		vertex0 = vertex1;
+		vertex1 += 1;
+	}
+
+	return inside_flag;
+}
+/**
+ * Another version of CrossingsTest that accepts 3D rather than 2D points.
+ * Only the first two components (X and Y) are tested, so this allows you to
+ * do a 2D test with a 3D polygon.
+ */
+bool CrossingsTest(const DPoint3 *pgon, int numverts, const DPoint2 &point)
+{
+	register int j;
+	register double ty, tx;
+	register bool inside_flag, yflag0, yflag1, xflag0;
+	const DPoint3 *vertex0, *vertex1;
 
 	tx = point.x;
 	ty = point.y;

@@ -374,8 +374,10 @@ public:
 	DLine2 &operator=(const class DLine2 &v);
 	DLine2 &operator=(const class FLine2 &v);
 
+	/// Add a given offset to all points
 	void Add(const DPoint2 &p);
 
+	void From3D(const class DLine3 &input);
 	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
@@ -477,6 +479,7 @@ public:
 
 	void Add(const DPoint2 &p);
 	void NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dist) const;
+	bool ContainsPoint2D(const DPoint2 &p) const;
 };
 
 /**
@@ -1277,6 +1280,7 @@ float random_offset(float x);
 float random(float x);
 int vt_log2(int n);
 bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point);
+bool CrossingsTest(const DPoint3 *pgon, int numverts, const DPoint2 &point);
 bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
 					 const FPoint2 &p3);
 bool PointInTriangle(const DPoint2 &p, const DPoint2 &p1, const DPoint2 &p2,
