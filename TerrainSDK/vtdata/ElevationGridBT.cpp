@@ -192,7 +192,15 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 	{
 		for (i = 0; i < m_iColumns; i++)
 		{
-			if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
+			if (progress_callback != NULL)
+			{
+				if (progress_callback(i * 100 / m_iColumns))
+				{
+					// Cancel
+					gzclose(fp);
+					return false;
+				}
+			}
 			GZFRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 		}
 	}
@@ -200,7 +208,15 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, bool progress_callback(
 	{
 		for (i = 0; i < m_iColumns; i++)
 		{
-			if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
+			if (progress_callback != NULL)
+			{
+				if (progress_callback(i * 100 / m_iColumns))
+				{
+					// Cancel
+					gzclose(fp);
+					return false;
+				}
+			}
 			GZFRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 		}
 	}
