@@ -329,7 +329,6 @@ void MainFrame::CreateMenus()
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, "Plants List", "View/Edit list of available plant species");
 	vegMenu->Append(ID_VEG_BIOREGIONS, "BioRegions", "View/Edit list of species & density for each BioRegion");
-//	vegMenu->Append(ID_AREA_GENERATE_VEG, "Generate");
 	m_pMenuBar->Append(vegMenu, "Veg&etation");
 	m_iLayerMenu[LT_VEG] = menu_num;
 	menu_num++;
@@ -604,17 +603,17 @@ void MainFrame::OnEditInvertSelection(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (pRL) {
 		pRL->InvertSelection();
-		m_pView->Refresh(FALSE);
+		m_pView->Refresh(false);
 	}	
 	vtStructureLayer *pSL = GetActiveStructureLayer();
 	if (pSL) {
 		pSL->InvertSelection();
-		m_pView->Refresh(FALSE);
+		m_pView->Refresh(false);
 	}	
 	vtRawLayer *pRawL = GetActiveRawLayer();
 	if (pRawL) {
 		pRawL->InvertSelection();
-		m_pView->Refresh(FALSE);
+		m_pView->Refresh(false);
 	}	
 }
 
@@ -1866,9 +1865,12 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 			dlg.m_strValue);
 
 		wxString msg;
-		msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
+		if (selected == -1)
+			msg = "Unable to select";
+		else
+			msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
 		SetStatusText(msg);
-		m_pView->Refresh(FALSE);
+		m_pView->Refresh(false);
 	}
 }
 
