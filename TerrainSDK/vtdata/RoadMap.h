@@ -10,8 +10,8 @@
 
 #include "DLG.h"
 
-#define RMFVERSION_STRING "RMFFile1.8"
-#define RMFVERSION_CURRENT 1.8f
+#define RMFVERSION_STRING "RMFFile1.9"
+#define RMFVERSION_CURRENT 1.9f
 #define RMFVERSION_SUPPORTED 1.7f	// oldest supported version
 
 enum SurfaceType {
@@ -41,13 +41,13 @@ enum LightStatus {
 };
 
 // road flags
-#define RF_SIDEWALK	0x8000000
-#define RF_PARKING	0x4000000
-#define RF_MARGIN	0x2000000
-#define RF_FORWARD	0x0800000	// true if traffic flows from node 0 to 1
-#define RF_REVERSE	0x0400000	// true if traffic flows from node 1 to 0
+#define RF_SIDEWALK	0x0800
+#define RF_PARKING	0x0400
+#define RF_MARGIN	0x0200
+#define RF_FORWARD	0x0080	// true if traffic flows from node 0 to 1
+#define RF_REVERSE	0x0040	// true if traffic flows from node 1 to 0
 // the following are for temporary, runtime use
-#define RF_HIT		0x0000001
+#define RF_HIT		0x0001
 
 // Typical, default values for widths, in meters
 #define SIDEWALK_WIDTH		1.5f
@@ -146,23 +146,17 @@ public:
 	virtual void SetFlag(int flag, bool value);
 	int GetFlag(int flag);
 
-	// Height (unused; these methods may be redesigned or removed)
-	float GetHeightAt(int i);		// height at node (0 or 1).
-	float GetHeightAt(Node *node);	// height at node
-	void SetHeightAt(int i, float height);	//set the height at a node (0 or 1)
-	void SetHeightAt(Node *node, float height);	//set the height at a node
-
 	// Return length of road centerline.
 	float Length();
 	float EstimateWidth(bool bIncludeSidewalk = true);
 
 	float	m_fWidth;		// road width in meters
-	int		m_iLanes;		// number of lanes
+	short	m_iLanes;		// number of lanes
 	SurfaceType m_Surface;
-	int		m_iHwy;			// highway number: -1 for normal roads
-	int		m_id;			// only used for reading from DLG
+	short	m_iHwy;			// highway number: -1 for normal roads
 	Link	*m_pNext;		// the next Link, if roads are maintained in link list form
-	int		m_iFlags;		// a flag to be used to holding any addition info.
+	short	m_iFlags;		// a flag to be used to holding any addition info.
+	int		m_id;			// only used during file reading
 
 protected:
 	Node	*m_pNode[2];	// "from" and "to" nodes
@@ -172,6 +166,7 @@ protected:
 typedef Link *LinkPtr;
 typedef Node *NodePtr;
 
+#define shortSize 4
 #define intSize 4
 #define floatSize 4
 #define doubleSize 8

@@ -542,43 +542,6 @@ double Link::GetLinearCoordinates(const DPoint2 &p, double &result_a,
 	return traversed;
 }
 
-float Link::GetHeightAt(int i)
-{
-	return m_fHeight[i];
-}
-
-float Link::GetHeightAt(Node *node)
-{
-	if (m_pNode[0] == node)
-		return m_fHeight[0];
-
-	if (m_pNode[1] == node)
-		return m_fHeight[1];
-
-	//error.
-	assert(false);
-	return 0;
-}
-
-void Link::SetHeightAt(int i, float height)
-{
-	m_fHeight[i] = height;
-}
-
-void Link::SetHeightAt(Node *node, float height)
-{
-	if (m_pNode[0] == node)
-	{
-		m_fHeight[0] = height;
-	} else if (m_pNode[1] == node)
-	{
-		m_fHeight[1] = height;
-	} else {
-		//error!!!!
-		assert(false);
-	}
-}
-
 float Link::Length()
 {
 	double dist = 0;
@@ -865,31 +828,54 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	DeleteElements();
 
 	// Projection
-	int proj_type, iUTMZone;
-	int iDatum = EPSG_DATUM_WGS84;
-	if (version >= 1.8f)
+	if (version < 1.9f)
 	{
-		int iUTM;
-		fread(&iUTM, intSize, 1, fp);
-		proj_type = (iUTM != 0);
+		int proj_type, iUTMZone;
+		int iDatum = EPSG_DATUM_WGS84;
+		if (version >= 1.8f)
+		{
+			int iUTM;
+			fread(&iUTM, intSize, 1, fp);
+			proj_type = (iUTM != 0);
+		}
+		fread(&iUTMZone, intSize, 1, fp);
+		if (version >= 1.8f)
+		{
+			fread(&iDatum, intSize, 1, fp);
+		}
+		m_proj.SetProjectionSimple(proj_type == 1, iUTMZone, iDatum);
 	}
-	fread(&iUTMZone, intSize, 1, fp);
-	if (version >= 1.8f)
+	else
 	{
-		fread(&iDatum, intSize, 1, fp);
+		short length;
+		fread(&length, shortSize, 1, fp);
+		char wkt_buf[2000], *wkt = wkt_buf;
+		fread(wkt_buf, length, 1, fp);
+		OGRErr err = m_proj.importFromWkt((char **) &wkt);
+		if (err != OGRERR_NONE)
+			return false;
 	}
-	m_proj.SetProjectionSimple(proj_type == 1, iUTMZone, iDatum);
 
 	// Extents
-	int le, ri, to, bo;
-	fread(&ri, intSize, 1, fp);
-	fread(&to, intSize, 1, fp);
-	fread(&le, intSize, 1, fp);
-	fread(&bo, intSize, 1, fp);
-	m_extents.left = le;
-	m_extents.right = ri;
-	m_extents.top = to;
-	m_extents.bottom = bo;
+	if (version < 1.9f)
+	{
+		int le, ri, to, bo;
+		fread(&ri, intSize, 1, fp);
+		fread(&to, intSize, 1, fp);
+		fread(&le, intSize, 1, fp);
+		fread(&bo, intSize, 1, fp);
+		m_extents.left = le;
+		m_extents.right = ri;
+		m_extents.top = to;
+		m_extents.bottom = bo;
+	}
+	else
+	{
+		fread(&m_extents.left, doubleSize, 1, fp);
+		fread(&m_extents.right, doubleSize, 1, fp);
+		fread(&m_extents.bottom, doubleSize, 1, fp);
+		fread(&m_extents.top, doubleSize, 1, fp);
+	}
 	m_bValidExtents = true;
 
 	//get number of nodes and roads
@@ -939,27 +925,47 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 
 	// Read the roads
+	float ftmp;
+	int itmp;
+	short stmp;
 	int reject1 = 0, reject2 = 0, reject3 = 0;
 	for (i = 1; i <= numLinks; i++)
 	{
 		tmpLink = NewLink();
-		float tmp;
-		fread(&(tmpLink->m_id), intSize, 1, fp);		//id
-		fread(&(tmpLink->m_iHwy), intSize, 1, fp);		//highway number
-		fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
-		fread(&(tmpLink->m_iLanes), intSize, 1, fp);	//number of lanes
-		fread(&(tmpLink->m_Surface), intSize, 1, fp);	//surface type
-		fread(&(tmpLink->m_iFlags), intSize, 1, fp);	//FLAG
-		fread(&tmp, floatSize, 1, fp);		//height of road at node 0
-		tmpLink->SetHeightAt(0, tmp);
-		fread(&tmp, floatSize, 1, fp);		//height of road at node 1
-		tmpLink->SetHeightAt(1, tmp);
+		fread(&(tmpLink->m_id), intSize, 1, fp);	//id
+		if (version < 1.89)
+		{
+			fread(&itmp, intSize, 1, fp);			//highway number
+			tmpLink->m_iHwy = itmp;
+			fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+			fread(&itmp, intSize, 1, fp);			//number of lanes
+			tmpLink->m_iLanes = itmp;
+			fread(&itmp, intSize, 1, fp);			//surface type
+			tmpLink->m_Surface =  (SurfaceType) itmp;
+			fread(&itmp, intSize, 1, fp);			//FLAG
+			tmpLink->m_iFlags = (itmp >> 16);
+		}
+		else
+		{
+			fread(&(tmpLink->m_iHwy), shortSize, 1, fp);	//highway number
+			fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+			fread(&(tmpLink->m_iLanes), shortSize, 1, fp);	//number of lanes
+			fread(&stmp, shortSize, 1, fp);					//surface type
+			tmpLink->m_Surface =  (SurfaceType) stmp;
+			fread(&(tmpLink->m_iFlags), shortSize, 1, fp);	//FLAG
+		}
+
+		if (version < 1.89)
+		{
+			fread(&ftmp, floatSize, 1, fp);		//height of road at node 0
+			fread(&ftmp, floatSize, 1, fp);		//height of road at node 1
+		}
 
 		int size;
 		fread(&size, intSize, 1, fp);	// number of coordinates making the road
 		tmpLink->SetSize(size);
 
-		for (j = 0; j < tmpLink->GetSize(); j++)
+		for (j = 0; j < size; j++)
 		{
 			if (version < 1.8f)
 			{
@@ -1114,56 +1120,48 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		curLink->m_id = i++;
 		curLink = curLink->m_pNext;
 	}
-	
+
 	curNode = GetFirstNode();
 	curLink = GetFirstLink();
 
 	FWrite(RMFVERSION_STRING, 11);
 
 	// Projection
-	int iZone = m_proj.GetUTMZone();
-	int iUTM = (iZone != 0);
-	int iDatum = (int) m_proj.GetDatum();
-	FWrite(&iUTM, intSize);
-	FWrite(&iZone, intSize);
-	FWrite(&iDatum, intSize);
+	char *wkt;
+	OGRErr err = m_proj.exportToWkt(&wkt);
+	if (err != OGRERR_NONE)
+		return false;
+	short len = strlen(wkt);
+	FWrite(&len, shortSize);
+	FWrite(wkt, len);
+	OGRFree(wkt);
 
 	// Extents
-	int le, ri, to, bo;
-	le = (int) m_extents.left;
-	ri = (int) m_extents.right;
-	to = (int) m_extents.top;
-	bo = (int) m_extents.bottom;
-	FWrite(&ri, intSize);
-	FWrite(&to, intSize);
-	FWrite(&le, intSize);
-	FWrite(&bo, intSize);
+	FWrite(&m_extents.left, doubleSize);
+	FWrite(&m_extents.right, doubleSize);
+	FWrite(&m_extents.bottom, doubleSize);
+	FWrite(&m_extents.top, doubleSize);
 	FWrite(&numNodes, intSize);  // number of nodes
 	FWrite(&numLinks, intSize);  // number of roads
-	FWrite("Nodes:",7);	
+	FWrite("Nodes:",7);
 	//write nodes
 	while (curNode)
 	{
 		FWrite(&(curNode->m_id), intSize);		// id
-		FWrite(&curNode->m_p.x, doubleSize);		// coordinate
+		FWrite(&curNode->m_p.x, doubleSize);	// coordinate
 		FWrite(&curNode->m_p.y, doubleSize);
 		curNode = curNode->m_pNext;
 	}
-	FWrite("Roads:",7);	
+	FWrite("Roads:",7);
 	//write roads
 	while (curLink)
 	{
-		float tmp;
-		FWrite(&(curLink->m_id), intSize);		//id
-		FWrite(&(curLink->m_iHwy), intSize);		//highway number
+		FWrite(&(curLink->m_id), intSize);			//id
+		FWrite(&(curLink->m_iHwy), shortSize);		//highway number
 		FWrite(&(curLink->m_fWidth), floatSize);	//width
-		FWrite(&(curLink->m_iLanes), intSize);	//number of lanes
-		FWrite(&(curLink->m_Surface), intSize);	//surface type
-		FWrite(&(curLink->m_iFlags), intSize);	//FLAG
-		tmp = curLink->GetHeightAt(0);
-		FWrite(&tmp, floatSize); //height of the road at node 0
-		tmp = curLink->GetHeightAt(1);
-		FWrite(&tmp, floatSize); //height of the road at node 1
+		FWrite(&(curLink->m_iLanes), shortSize);	//number of lanes
+		FWrite(&(curLink->m_Surface), shortSize);	//surface type
+		FWrite(&(curLink->m_iFlags), shortSize);	//FLAG
 
 		int size = curLink->GetSize();
 		FWrite(&size, intSize);//number of coordinates making the road
@@ -1176,14 +1174,14 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		//nodes (endpoints)
 		FWrite(&(curLink->GetNode(0)->m_id), intSize);	//what road is at the end point?
 		FWrite(&(curLink->GetNode(1)->m_id), intSize);
-		
+
 		curLink = curLink->m_pNext;
 	}
 
 	int dummy = 0;
 
 	//write traffic control information
-	FWrite("Traffic:",9);	
+	FWrite("Traffic:",9);
 	curNode = GetFirstNode();
 	while (curNode)
 	{
@@ -1197,13 +1195,13 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		for (i = 0; i < curNode->m_iLinks; i++) {
 			IntersectionType type = curNode->GetIntersectType(i);
 			LightStatus lStatus = curNode->GetLightStatus(i);
-			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //road ID	
+			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //road ID
 			FWrite(&type, intSize);  //get the intersection type associated with that road
 			FWrite(&lStatus,intSize);
 		}
 		curNode = curNode->m_pNext;
 	}
-	
+
 	//EOF
 	FWrite("End RMF", 8);
 	fclose(fp);
