@@ -44,6 +44,8 @@ void IslandTerrain::create_telescopes()
 #elif 1
 	vtStructureArray3d sa;
 	vtString fname = FindFileOnPaths(m_DataPaths, "BuildingData/tscope_loc.vtst");
+	if (fname == "")
+		return;
 	bool success = sa.ReadXML(fname);
 	if (!success)
 		return;
@@ -256,7 +258,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	XfrogModel_ptr tree = LoadXFrogTree(m_strDataPath + "PlantModels/papaya1.xfr");
 	vtGeom *pPlantShape = CreateShapeFromXfrogTree(tree, 1.0f);
 	pPlantShape->SetName2("Plant");
-	m_pTreeGroup->AddChild(pPlantShape);
 
 	for (int i = 0; i < m_br.m_Types.GetSize(); i++)
 		LookupPlantIndices(m_br.m_Types[i]);
