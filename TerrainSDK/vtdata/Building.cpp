@@ -790,6 +790,9 @@ void vtBuilding::FlipFootprintDirection()
 	// Flip the direction (clockwisdom) of each level
 	for (unsigned int i = 0; i < m_Levels.GetSize(); i++)
 		m_Levels[i]->FlipFootprintDirection();
+
+	// keep 2d and 3d in synch
+	DetermineLocalFootprints();
 }
 
 /**
@@ -980,7 +983,6 @@ void vtBuilding::SetStories(int iStories)
 
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
-
 }
 
 /**
@@ -1121,9 +1123,9 @@ void vtBuilding::Offset(const DPoint2 &p)
 		foot.Add(p);
 		lev->SetFootprint(foot);
 	}
+
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
-
 }
 
 //
@@ -1512,5 +1514,4 @@ void vtBuilding::SwapLevels(int lev1, int lev2)
 
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
-
 }
