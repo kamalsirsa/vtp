@@ -87,6 +87,8 @@ void vtSceneBase::RemoveEngine(vtEngine *ptr)
 
 ////////////////////////////////////////////////////////////////
 
+#ifndef VTLIB_PSM
+
 vtNode *vtNodeBase::FindDescendantByName(const char *name)
 {
 	if (!strcmp(GetName2(), name))
@@ -106,3 +108,4 @@ vtNode *vtNodeBase::FindDescendantByName(const char *name)
 	return NULL;
 }
 
+#endif
