@@ -448,6 +448,9 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		m_pDynGeom = new SRTerrain();
 		m_pDynGeom->SetName2("Roettger Geom");
 	}
+	if (!m_pDynGeom)
+		return false;
+
 	// add your own LOD method here!
 
 	m_pDynGeom->SetOptions(m_Params.m_bTriStrips != 0,
