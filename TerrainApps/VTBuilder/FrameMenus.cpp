@@ -1422,6 +1422,9 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)
 		return;
+	vtElevationGrid *grid = el->m_pGrid;
+	if (!grid)
+		return;
 
 	wxString str = wxGetTextFromUser("Please enter a scale factor",
 		"Scale Elevation", "1.0", this);
@@ -1438,7 +1441,6 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (fScale == 1.0f)
 		return;
 
-	vtElevationGrid *grid = el->m_pGrid;
 	grid->Scale(fScale, true);
 	el->SetModified(true);
 	el->ReRender();
