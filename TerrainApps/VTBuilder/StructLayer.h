@@ -19,6 +19,7 @@ class vtStructureLayer : public vtLayer, public vtStructureArray
 public:
 	vtStructureLayer();
 
+	// Implement vtLayer methods
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, vtScaledView *pView);
 	bool ConvertProjection(vtProjection &proj);
@@ -30,6 +31,18 @@ public:
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
 
+	// UI event handlers
+	void OnLeftDown(BuilderView *pView, UIContext &ui);
+	void OnLeftUp(BuilderView *pView, UIContext &ui);
+	void OnRightDown(BuilderView *pView, UIContext &ui);
+	void OnMouseMove(BuilderView *pView, UIContext &ui);
+
+	void OnLeftDownEditBuilding(BuilderView *pView, UIContext &ui);
+	void OnLeftDownEditLinear(BuilderView *pView, UIContext &ui);
+	void UpdateMove(UIContext &ui);
+	void UpdateRotate(UIContext &ui);
+	void UpdateResizeScale(UIContext &ui);
+
 	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
 	bool AddElementsFromSHP(const char *filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
@@ -37,10 +50,10 @@ public:
 	void AddElementsFromOGR(class OGRDataSource *datasource,
 		void progress_callback(int) = NULL);
 
-	vtStructure *FindBuilding(DPoint2 &point, double epsilon);
 	bool EditBuildingProperties();
 
 	void DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *bld);
+	void DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen);
 
 	// inverts selection values on all structures.
 	void InvertSelection();

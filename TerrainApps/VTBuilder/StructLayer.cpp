@@ -31,7 +31,7 @@ static bool g_bInitializedPens = false;
 
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
-	m_strFilename = "Untitled.xml";
+	m_strFilename = "Untitled.vtst";
 
 	if (!g_bInitializedPens)
 	{
@@ -75,7 +75,7 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	int i, j;
+	int i;
 	for (i = 0; i < structs; i++)
 	{
 		// draw each building
@@ -102,12 +102,8 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 		vtFence *fen = str->GetFence();
 		if (fen)
-		{
-			DLine2 &pts = fen->GetFencePoints();
-			for (j = 0; j < pts.GetSize(); j++)
-				pView->screen(pts.GetAt(j), g_screenbuf[j]);
-			pDC->DrawLines(j, g_screenbuf);
-		}
+			DrawLinear(pDC, pView, fen);
+
 		vtStructInstance *inst = str->GetInstance();
 		if (inst)
 		{
@@ -173,6 +169,22 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 		pView->screen(dl.GetAt(0), array[j++]);
 
 		pDC->DrawLines(j, array);
+	}
+}
+
+void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
+{
+	int j;
+	DLine2 &pts = fen->GetFencePoints();
+	for (j = 0; j < pts.GetSize(); j++)
+		pView->screen(pts.GetAt(j), g_screenbuf[j]);
+	pDC->DrawLines(j, g_screenbuf);
+	for (j = 0; j < pts.GetSize(); j++)
+	{
+		pDC->DrawLine(g_screenbuf[j].x-2, g_screenbuf[j].y,
+			g_screenbuf[j].x+2, g_screenbuf[j].y);
+		pDC->DrawLine(g_screenbuf[j].x, g_screenbuf[j].y-2,
+			g_screenbuf[j].x, g_screenbuf[j].y+2);
 	}
 }
 
@@ -262,6 +274,9 @@ bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
 		vtStructure *str = pFrom->GetAt(i);
 		Append(str);
 	}
+	// tell the source layer that it has no structures (we have taken them)
+	pFrom->SetSize(0);
+
 	return true;
 }
 
@@ -320,41 +335,301 @@ void vtStructureLayer::GetPropertyText(wxString &strIn)
 	strIn += str;
 }
 
-
-//
-// Locate the closest building that is no more than epsilon units in either
-// dimension away from point.
-//
-// Return NULL if there is no building.
-//
-vtStructure *vtStructureLayer::FindBuilding(DPoint2 &point, double epsilon)
+void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 {
-	int count = GetSize();
-	DPoint2 loc, diff;
-	double dist2, closest = 1.0E10f, eps2 = epsilon * epsilon;
-
-	vtStructure *best_bld = NULL;
-
-	for (int i = 0; i < count; i++)
+	switch (ui.mode)
 	{
-		vtStructure *str = GetAt(i);
-		vtBuilding *bld = str->GetBuilding();
-		if (!bld)
-			continue;
-		loc = bld->GetLocation();
-		diff = loc - point;
-		dist2 = diff.x*diff.x + diff.y*diff.y;
-		if (dist2 < eps2)
+	case LB_AddLinear:
+		if (ui.m_pCurLinear == NULL)
 		{
-			if (dist2 < closest)
+			ui.m_pCurLinear = NewFence();
+			ui.m_pCurLinear->SetOptions(GetMainFrame()->m_LSOptions);
+			Append(ui.m_pCurLinear);
+			ui.m_bRubber = true;
+		}
+		ui.m_pCurLinear->AddPoint(ui.m_CurLocation);
+		pView->Refresh(TRUE);
+		break;
+	case LB_BldEdit:
+		OnLeftDownEditBuilding(pView, ui);
+		break;
+	case LB_EditLinear:
+		OnLeftDownEditLinear(pView, ui);
+		// TODO - find nearest point on nearest linear
+		break;
+	}
+}
+
+void vtStructureLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_BldEdit && ui.m_bRubber)
+	{
+		DRECT extent_old, extent_new;
+		ui.m_pCurBuilding->GetExtents(extent_old);
+		ui.m_EditBuilding.GetExtents(extent_new);
+		wxRect screen_old = pView->WorldToWindow(extent_old);
+		wxRect screen_new = pView->WorldToWindow(extent_new);
+		screen_old.Inflate(1);
+		screen_new.Inflate(1);
+
+		pView->Refresh(TRUE, &screen_old);
+		pView->Refresh(TRUE, &screen_new);
+
+		// copy back from temp building to real building
+		*ui.m_pCurBuilding = ui.m_EditBuilding;
+		ui.m_bRubber = false;
+		GetMainFrame()->GetActiveLayer()->SetModified(true);
+		ui.m_pCurBuilding = NULL;
+	}
+	if (ui.mode == LB_EditLinear && ui.m_bRubber)
+	{
+		DRECT extent_old, extent_new;
+		ui.m_pCurLinear->GetExtents(extent_old);
+		ui.m_EditLinear.GetExtents(extent_new);
+		wxRect screen_old = pView->WorldToWindow(extent_old);
+		wxRect screen_new = pView->WorldToWindow(extent_new);
+
+		pView->Refresh(TRUE, &screen_old);
+		pView->Refresh(TRUE, &screen_new);
+
+		// copy back from temp building to real building
+		*ui.m_pCurLinear = ui.m_EditLinear;
+		ui.m_bRubber = false;
+		GetMainFrame()->GetActiveLayer()->SetModified(true);
+		ui.m_pCurLinear = NULL;
+	}
+}
+
+/*void ResolveClosest(bool &valid1, bool &valid2, bool &valid3,
+					double dist1, double dist2, double dist3)
+{
+	if (valid1 && valid2)
+	{
+		if (dist1 < dist2)
+			valid2 = false;
+		else
+			valid1 = false;
+	}
+	if (valid1 && valid3)
+	{
+		if (dist1 < dist3)
+			valid3 = false;
+		else
+			valid1 = false;
+	}
+	if (valid2 && valid3)
+	{
+		if (dist2 < dist3)
+			valid3 = false;
+		else
+			valid2 = false;
+	}
+}*/
+
+void vtStructureLayer::OnLeftDownEditBuilding(BuilderView *pView, UIContext &ui)
+{
+	double epsilon = pView->odx(6);  // 6 pixels as world coord
+
+	int building1, building2,  corner;
+	double dist1, dist2;
+
+	bool found1 = FindClosestBuildingCenter(ui.m_DownLocation, epsilon, building1, dist1);
+	bool found2 = FindClosestBuildingCorner(ui.m_DownLocation, epsilon, building2, corner, dist2);
+
+	if (found1 && found2)
+	{
+		// which was closer?
+		if (dist1 < dist2)
+			found2 = false;
+		else
+			found1 = false;
+	}
+	if (found1)
+	{
+		// closest point is a building center
+		ui.m_pCurBuilding = GetAt(building1)->GetBuilding();
+		ui.m_bDragCenter = true;
+	}
+	if (found2)
+	{
+		// closest point is a building corner
+		ui.m_pCurBuilding = GetAt(building2)->GetBuilding();
+		ui.m_bDragCenter = false;
+		ui.m_iCurCorner = corner;
+		ui.m_bRotate = ui.m_bControl;
+	}
+	if (found1 || found2)
+	{
+		ui.m_bRubber = true;
+
+		// make a copy of the building, to edit and display while dragging
+		ui.m_EditBuilding = *ui.m_pCurBuilding;
+	}
+}
+
+void vtStructureLayer::OnLeftDownEditLinear(BuilderView *pView, UIContext &ui)
+{
+	double epsilon = pView->odx(6);  // 6 pixels as world coord
+
+	int structure, corner;
+	double dist1;
+
+	bool found1 = FindClosestLinearCorner(ui.m_DownLocation, epsilon,
+		structure, corner, dist1);
+
+	if (found1)
+	{
+		// closest point is a building center
+		ui.m_pCurLinear = GetAt(structure)->GetFence();
+		ui.m_iCurCorner = corner;
+		ui.m_bRubber = true;
+
+		// make a copy of the linear, to edit and display while dragging
+		ui.m_EditLinear = *ui.m_pCurLinear;
+	}
+}
+
+void vtStructureLayer::OnRightDown(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_AddLinear && ui.m_pCurLinear != NULL)
+	{
+		ui.m_pCurLinear->AddPoint(ui.m_CurLocation);
+		pView->Refresh(TRUE);
+		ui.m_pCurLinear = NULL;
+		ui.m_bRubber = false;
+	}
+}
+
+void vtStructureLayer::OnMouseMove(BuilderView *pView, UIContext &ui)
+{
+	// create rubber (xor) pen
+	wxClientDC dc(pView);
+	pView->PrepareDC(dc);
+	wxPen pen(*wxBLACK_PEN);
+	dc.SetPen(pen);
+	dc.SetLogicalFunction(wxINVERT);
+
+	if (ui.m_bLMouseButton && ui.mode == LB_BldEdit && ui.m_bRubber)
+	{
+		// rubber-band a building
+		DrawBuilding(&dc, pView, &ui.m_EditBuilding);
+
+		if (ui.m_bDragCenter)
+			UpdateMove(ui);
+		else if (ui.m_bRotate)
+			UpdateRotate(ui);
+		else
+			UpdateResizeScale(ui);
+
+		DrawBuilding(&dc, pView, &ui.m_EditBuilding);
+	}
+	if (ui.mode == LB_AddLinear && ui.m_bRubber)
+	{
+		wxPoint p1, p2;
+		DLine2 &pts = ui.m_pCurLinear->GetFencePoints();
+		pView->screen(pts.GetAt(pts.GetSize()-1), p1);
+		dc.DrawLine(p1, ui.m_LastPoint);
+		dc.DrawLine(p1, ui.m_CurPoint);
+	}
+	if (ui.mode == LB_EditLinear && ui.m_bRubber)
+	{
+		// rubber-band a linear
+		DrawLinear(&dc, pView, &ui.m_EditLinear);
+
+		ui.m_EditLinear.GetFencePoints().SetAt(ui.m_iCurCorner, ui.m_CurLocation);
+
+		DrawLinear(&dc, pView, &ui.m_EditLinear);
+	}
+}
+
+void vtStructureLayer::UpdateMove(UIContext &ui)
+{
+	DPoint2 p;
+	DPoint2 moved_by = ui.m_CurLocation - ui.m_DownLocation;
+
+	int i, levs = ui.m_pCurBuilding->GetNumLevels();
+	for (i = 0; i < levs; i++)
+	{
+		DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
+		dl.Add(moved_by);
+		ui.m_EditBuilding.SetFootprint(i, dl);
+	}
+}
+
+void vtStructureLayer::UpdateRotate(UIContext &ui)
+{
+	DPoint2 origin = ui.m_pCurBuilding->GetLocation();
+	DPoint2 original_vector = ui.m_DownLocation - origin;
+	double length1 = original_vector.Length();
+	double angle1 = atan2(original_vector.y, original_vector.x);
+
+	DPoint2 cur_vector = ui.m_CurLocation - origin;
+	double length2 = cur_vector.Length();
+	double angle2 = atan2(cur_vector.y, cur_vector.x);
+
+	double angle_diff = angle2 - angle1;
+
+	DPoint2 p;
+	int i, j, levs = ui.m_pCurBuilding->GetNumLevels();
+	for (i = 0; i < levs; i++)
+	{
+		DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
+		for (j = 0; j < dl.GetSize(); j++)
+		{
+			p = dl.GetAt(j);
+			p -= origin;
+			p.Rotate(angle_diff);
+			p += origin;
+			dl.SetAt(j, p);
+		}
+		ui.m_EditBuilding.SetFootprint(i, dl);
+	}
+}
+
+void vtStructureLayer::UpdateResizeScale(UIContext &ui)
+{
+	DPoint2 moved_by = ui.m_CurLocation - ui.m_DownLocation;
+
+	if (ui.m_bShift)
+		int foo = 1;
+
+	DPoint2 origin = ui.m_pCurBuilding->GetLocation();
+	DPoint2 diff1 = ui.m_DownLocation - origin;
+	DPoint2 diff2 = ui.m_CurLocation - origin;
+	float fScale = diff2.Length() / diff1.Length();
+
+	DPoint2 p;
+	if (ui.m_bShift)
+	{
+		// Scale evenly
+		int i, j, levs = ui.m_pCurBuilding->GetNumLevels();
+		for (i = 0; i < levs; i++)
+		{
+			DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
+			for (j = 0; j < dl.GetSize(); j++)
 			{
-				closest = dist2;
-				best_bld = str;
+				p = dl.GetAt(j);
+				p -= origin;
+				p *= fScale;
+				p += origin;
+				dl.SetAt(j, p);
 			}
+			ui.m_EditBuilding.SetFootprint(i, dl);
 		}
 	}
-	return best_bld;
+	else
+	{
+		DLine2 dl = ui.m_pCurBuilding->GetFootprint(0);
+		// drag individual corner points
+		p = dl.GetAt(ui.m_iCurCorner);
+		p += moved_by;
+		dl.SetAt(ui.m_iCurCorner, p);
+		ui.m_EditBuilding.SetFootprint(0, dl);
+	}
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
 
 bool vtStructureLayer::EditBuildingProperties()
 {
@@ -375,7 +650,8 @@ bool vtStructureLayer::EditBuildingProperties()
 	if (count != 1)
 		return false;
 
-	// for now, assume they will change something (pessimistic)
+	// for now, assume they will use the dialog to change something about
+	// the building (pessimistic)
 	SetModified(true);
 
 	BuildingDlg dlg(NULL, -1, "Building Properties", wxDefaultPosition);
