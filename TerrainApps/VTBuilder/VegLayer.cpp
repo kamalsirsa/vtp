@@ -25,35 +25,24 @@ vtVegLayer::vtVegLayer() : vtRawLayer()
 {
 	m_type = LT_VEG;
 	m_VLType = VLT_None;
+
+	// default dark green
+	m_DrawStyle.m_LineColor.Set(0,128,0);
 }
 
 vtVegLayer::~vtVegLayer()
 {
 }
 
-/*bool vtVegLayer::GetExtent(DRECT &rect)
+bool vtVegLayer::GetExtent(DRECT &rect)
 {
-	int i, size;
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
-
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
-	{
-		size = m_Poly.size();
-		if (size == 0)
-			return false;
-		for (i = 0; i < size; i++)
-		{
-			DPolygon2 &dpoly = m_Poly[i];
-			rect.GrowToContainLine(dpoly[0]);
-		}
-	}
+		return vtRawLayer::GetExtent(rect);
 	else if (m_VLType == VLT_Instances)
-	{
 		return m_Pia.GetExtent(rect);
-	}
-
-	return true;
-}*/
+	else
+		return false;
+}
 
 void vtVegLayer::DrawInstances(wxDC *pDC, vtScaledView *pView)
 {
@@ -81,55 +70,7 @@ void vtVegLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 		DrawInstances(pDC, pView);
 	else
 		vtRawLayer::DrawLayer(pDC, pView);
-/*
-	//set the pen options
-	wxPen VegPen(wxColor(0,100,0), 1, wxSOLID);  //single pixel solid green pen
-	pDC->SetLogicalFunction(wxCOPY);
-	pDC->SetPen(VegPen);
-
-	if (m_VLType == VLT_Instances)
-		DrawInstances(pDC, pView);
-
-	if (m_VLType == VLT_BioMap || m_VLType == VLT_Density)
-		DrawPolys(pDC, pView);
-	*/
 }
-
-/*
-void vtVegLayer::GetProjection(vtProjection &proj)
-{
-	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
-		proj = m_proj;
-	else if (m_VLType == VLT_Instances)
-		m_Pia.GetProjection(proj);
-}
-
-void vtVegLayer::SetProjection(const vtProjection &proj)
-{
-	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
-		m_proj = proj;
-	else if (m_VLType == VLT_Instances)
-		m_Pia.SetProjection(proj);
-}
-
-void vtVegLayer::Offset(const DPoint2 &p)
-{
-	unsigned int i, size;
-
-	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
-	{
-		size = m_Poly.size();
-		for (i = 0; i < size; i++)
-			m_Poly[i].Add(p);
-	}
-	else if (m_VLType == VLT_Instances)
-	{
-		size = m_Pia.GetSize();
-		for (i = 0; i < size; i++)
-			m_Pia.GetAt(i).m_p += p;
-	}
-}
-*/
 
 void vtVegLayer::GetPropertyText(wxString &str)
 {
@@ -161,7 +102,8 @@ bool vtVegLayer::OnSave()
 	// currently we can load and save VF files (Plant Instances)
 	if (m_VLType == VLT_Instances)
 		return m_Pia.WriteVF(GetLayerFilename().mb_str());
-	return false;
+	else
+		return vtRawLayer::OnSave();
 }
 
 bool vtVegLayer::OnLoad()
@@ -185,67 +127,27 @@ bool vtVegLayer::OnLoad()
 		return false;
 }
 
-/*
-bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
-{
-	vtProjection proj_old;
-	GetProjection(proj_old);
-
-	// Create conversion object
-	OCT *trans = CreateCoordTransform(&proj_old, &proj_new);
-	if (!trans)
-		return false;		// inconvertible projections
-
-	unsigned int i, j;
-	for (i = 0; i < m_Poly.size(); i++)
-	{
-		DPolygon2 &dpoly = m_Poly[i];
-		unsigned int size = dpoly.GetSize();
-		for (j = 0; j < size; j++)
-		{
-			DPoint2 &p = poly.GetAt(j);
-			trans->Transform(1, &(p.x), &(p.y));
-		}
-	}
-	delete trans;
-
-	SetProjection(proj_new);
-	return true;
-} */
-
 bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 {
-	// TODO
-	/*
-	vtVegLayer *pVL = (vtVegLayer *)(pL);
-	if (!pVL)
+	if (pL->GetType() != LT_VEG)
 		return false;
 
-	// Must be of compatible types
-	if (m_VLType != pVL->m_VLType)
-		return false;
+	vtVegLayer *pVL = (vtVegLayer *)pL;
 
-	unsigned int i, count;
+	if (m_VLType == VLT_Instances)
+	{
+		m_Pia.AppendFrom(pVL->m_Pia);
+		return true;
+	}
+	else
+	{
+		// Must be of compatible types
+		if (m_VLType != pVL->m_VLType)
+			return false;
 
-	count = pVL->m_Poly.size();
-	for (i = 0; i < count; i++)
-		m_Poly.push_back(pVL->m_Poly[i]);
-
-	count = pVL->m_Biotype.GetSize();
-	for (i = 0; i < count; i++)
-		m_Biotype.Append(pVL->m_Biotype.GetAt(i));
-
-	count = pVL->m_Density.GetSize();
-	for (i = 0; i < count; i++)
-		m_Density.Append(pVL->m_Density.GetAt(i));
-
-	// We've stolen all the polygons from the old layer, so empty it
-	pVL->m_Poly.resize(0);
-
-	return true; */
-	return false;
+		return vtRawLayer::AppendDataFrom(pL);
+	}
 }
-
 
 void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 {
@@ -317,8 +219,6 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 			dpoly.push_back(dline);
 
 			pSet->SetPolygon(count, dpoly);
-
-/*			m_Poly[count] = dline; */	// TEMP
 			count++;
 		}
 	}
@@ -334,14 +234,14 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
  *		intepreted as a density value (double), the name of a biotype
  *		(string), or the ID of a biotype (int).
  */
-void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
+bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 										  const vtProjection &proj,
 										  int iField, VegImportFieldType datatype)
 {
 	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
-		return;
+		return false;
 
 	// Get number of polys and type of data
 	int		nElem;
@@ -350,12 +250,12 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 
 	// Check Shape Type, Veg Layer should be Poly data
 	if (nShapeType != SHPT_POLYGON)
-		return;
+		return false;
 
 	// Open DBF File
 	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
 	if (db == NULL)
-		return;
+		return false;
 
 	// Check for field of poly id, current default field in dbf is Id
 	int *pnWidth = 0, *pnDecimals = 0;
@@ -367,17 +267,29 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	if (datatype == VIFT_Density)
 	{
 		if (fieldtype != FTDouble)
-			return;
+		{
+			VTLOG(" Expected the DBF field '%s' to be of type 'Double', but found '%s' instead.\n",
+				pszFieldName, DescribeFieldType(fieldtype));
+			return false;
+		}
 	}
 	if (datatype == VIFT_BiotypeName)
 	{
 		if (fieldtype != FTString)
-			return;
+		{
+			VTLOG(" Expected the DBF field '%s' to be of type 'String', but found '%s' instead.\n",
+				pszFieldName, DescribeFieldType(fieldtype));
+			return false;
+		}
 	}
 	if (datatype == VIFT_BiotypeID)
 	{
 		if (fieldtype != FTInteger)
-			return;
+		{
+			VTLOG(" Expected the DBF field '%s' to be of type 'Integer', but found '%s' instead.\n",
+				pszFieldName, DescribeFieldType(fieldtype));
+			return false;
+		}
 	}
 
 	// OK, ready to allocate our featureset
@@ -397,9 +309,6 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 
 	SetProjection(proj);
 
-	// Initialize arrays
-	pSet->SetNumEntities(nElem);
-
 	// Read Polys from SHP into Veg Poly
 	pSet->LoadGeomFromSHP(hSHP);
 	SHPClose(hSHP);
@@ -407,25 +316,27 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	// Read fields
 	for (unsigned int i = 0; i < (unsigned int) nElem; i++)
 	{
+		int record = pSet->AddRecord();
 		// Read DBF Attributes per poly
 		if (datatype == VIFT_Density)
 		{
 			// density
-			pSet->SetValue(i, m_field_density, (float) DBFReadDoubleAttribute(db, i, iField));
+			pSet->SetValue(record, m_field_density, (float) DBFReadDoubleAttribute(db, i, iField));
 		}
 		if (datatype == VIFT_BiotypeName)
 		{
 			const char *str = DBFReadStringAttribute(db, i, iField);
 			// TODO
 //			m_pAttrib[i] = m_BioRegions.FindBiotypeIdByName(str);
-			pSet->SetValue(i, m_field_biotype, -1);
+			pSet->SetValue(record, m_field_biotype, -1);
 		}
 		if (datatype == VIFT_BiotypeID)
 		{
-			pSet->SetValue(i, m_field_biotype, DBFReadIntegerAttribute(db, i, iField));
+			pSet->SetValue(record, m_field_biotype, DBFReadIntegerAttribute(db, i, iField));
 		}
 	}
 	DBFClose(db);
+	return true;
 }
 
 /**
@@ -585,6 +496,9 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 
 float vtVegLayer::FindDensity(const DPoint2 &p)
 {
+	if (m_VLType != VLT_Density)
+		return -1;
+
 	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindSimplePolygon(p);
 	if (poly != -1)
 		return m_pSet->GetFloatValue(poly, m_field_density);
@@ -594,6 +508,9 @@ float vtVegLayer::FindDensity(const DPoint2 &p)
 
 int vtVegLayer::FindBiotype(const DPoint2 &p)
 {
+	if (m_VLType != VLT_BioMap)
+		return -1;
+
 	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindSimplePolygon(p);
 	if (poly != -1)
 		return m_pSet->GetIntegerValue(poly, m_field_biotype);

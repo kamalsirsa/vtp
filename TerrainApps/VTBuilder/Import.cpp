@@ -640,8 +640,10 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 			dlg.SetShapefileName(strFileName);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			pVL->AddElementsFromSHP_Polys(strFileName, proj,
+			success = pVL->AddElementsFromSHP_Polys(strFileName, proj,
 				dlg.m_fieldindex, dlg.m_datatype);
+			if (!success)
+				return NULL;
 		}
 		if (nShapeType == SHPT_POINT)
 		{

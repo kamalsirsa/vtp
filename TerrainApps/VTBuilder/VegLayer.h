@@ -39,22 +39,18 @@ public:
 	vtProjection m_proj;
 
 	// Basics to overwrite vtLayer 
-//	bool GetExtent(DRECT &rect);
+	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, vtScaledView *pView);
-//	bool ConvertProjection(vtProjection &proj_new);
 	bool OnSave();
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
-//	void GetProjection(vtProjection &proj);
-//	void SetProjection(const vtProjection &proj);
-//	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
 	bool CanBeSaved();
 
 	// Importing data into veglayer
 	VegLayerType m_VLType;
 	void AddElementsFromLULC(vtLULCFile *pLULC);
-	void AddElementsFromSHP_Polys(const wxString2 &filename, const vtProjection &proj,
+	bool AddElementsFromSHP_Polys(const wxString2 &filename, const vtProjection &proj,
 		int fieldindex, VegImportFieldType datatype);
 	bool AddElementsFromSHP_Points(const wxString2 &filename, const vtProjection &proj,
 		VegPointOptions &opt);
