@@ -37,7 +37,7 @@
 
 ///////////////////////////////////////
 
-NevadaTerrain::NevadaTerrain() : PTerrain()
+NevadaTerrain::NevadaTerrain()
 {
 	m_pPast = m_pPresent = m_pFuture = NULL;
 	m_pWaterShape =		m_pWaterShape2 = NULL;
@@ -81,19 +81,6 @@ void NevadaTerrain::CreateCustomCulture()
 	CreatePresent();
 	CreateFuture();
 	CreateWater();
-
-#if 0
-	vtTransform *gateway1 = LoadModel("Culture/portal1.dsm");
-	vtTransform *copy = (vtTransform *) gateway1->Clone();
-
-	vtTerrain *pIsland = vtGetTS()->FindTerrainByName("Big Island");
-
-	if (pIsland && gateway1)
-	{
-		MakePortal(pIsland, gateway1, "Gateway to Hawaii",
-			MAN_LONLAT + 0.002f, 1);
-	}
-#endif
 
 	// create Epoch engine
 	EpochEngine *pEE = new EpochEngine(this, m_fLow, m_fHigh,

@@ -37,9 +37,6 @@ public:
 	//drives from the given node.  ignores pos value.  takes position from given node.
 	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, Node *n, int lane=1, float roadheight=0);
 
-	//load a path from a file.  overides any previous modes.
-	void GetPath(const char* filename, vtRoadMap3d* roadmap);
-
 	/*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
 		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
 		location names: "front left" "front right" "rear left" "rear right"

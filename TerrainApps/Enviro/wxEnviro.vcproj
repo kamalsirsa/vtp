@@ -1550,51 +1550,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="PTerrain.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="vtlib/vtlib.h"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="SpecificTerrain.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1739,9 +1694,6 @@
 			</File>
 			<File
 				RelativePath="PlantingOptions.h">
-			</File>
-			<File
-				RelativePath="PTerrain.h">
 			</File>
 			<File
 				RelativePath="SpecificTerrain.h">

@@ -44,5 +44,23 @@ protected:
 	void AttemptModelLoad();
 };
 
+class VehicleManager
+{
+public:
+	VehicleManager();
+	~VehicleManager();
+
+	// vehicle stuff
+	void create_ground_vehicles(vtTerrain *pTerrain, float fSize, float fSpeed); // dunno what to do to speed yet
+
+	void SetupVehicles();
+	void ReleaseVehicles();
+	void AddVehicleType(VehicleType *vt);
+	Vehicle *CreateVehicle(const char *szType, const RGBf &cColor, float fSize);
+
+	VehicleType *m_pFirstVehicleType;
+	bool m_bAttemptedVehicleLoad;
+};
+
 #endif	// VEHICLEH
 

@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to the Big Island of Hawai`i.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,7 +23,7 @@
 ///////////////////////////////
 bool g_bLineOfSightTest = false;
 
-IslandTerrain::IslandTerrain() : PTerrain()
+IslandTerrain::IslandTerrain()
 {
 	m_pSA = NULL;
 	m_pTelescopes = NULL;
@@ -135,7 +135,7 @@ void IslandTerrain::CreateCustomCulture()
 		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
 
 		create_airplanes(1, speed);
-		create_ground_vehicles(size, speed);
+		m_Vehicles.create_ground_vehicles(this, size, speed);
 	}
 }
 
@@ -621,7 +621,7 @@ void IslandTerrain::create_airplanes(float fScale, float fSpeed)
 void IslandTerrain::create_airplane(int i, float fScale, float fSpeed)
 {
 	RGBf red(1.0f, 1.0f, 0.0f);
-	Vehicle *copy = CreateVehicle("747", red, fScale);
+	Vehicle *copy = m_Vehicles.CreateVehicle("747", red, fScale);
 	if (!copy)
 		return;
 

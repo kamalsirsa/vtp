@@ -1,12 +1,14 @@
 //
 // Vehicles.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Roads.h"
+#include "vtlib/core/TerrainScene.h"
+#include "CarEngine.h"
 #include "Engines.h"
 #include "Hawaii.h"
 
@@ -79,22 +81,119 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 
 /////////////////////////////////////////
 
-
-void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
+VehicleManager::VehicleManager()
 {
-	// add some cars!
-	if (!m_pRoadMap)
-		return;
+	m_pFirstVehicleType = NULL;
+	m_bAttemptedVehicleLoad = false;
+}
 
+VehicleManager::~VehicleManager()
+{
+	ReleaseVehicles();
+}
+
+void VehicleManager::AddVehicleType(VehicleType *vt)
+{
+	vt->m_pNext = m_pFirstVehicleType;
+	m_pFirstVehicleType = vt;
+}
+
+
+void VehicleManager::SetupVehicles()
+{
+	vtString fname;
+
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco.ive");
+	if (fname != "")
+	{
+		// the bronco is modeled in centimeters (0.01)
+		VehicleType *bronco = new VehicleType("bronco");
+		bronco->AddModel(fname, 0.01f, 500);
+		AddVehicleType(bronco);
+	}
+/*
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
+	if (fname != "")
+	{
+		// the discovery is modeled in centimeters (0.01)
+		VehicleType *discovery = new VehicleType("discovery");
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
+		discovery->AddModel(fname, 0.01f, 50);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD02.3ds");
+		discovery->AddModel(fname, 0.01f, 100);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD03.3ds");
+		discovery->AddModel(fname, 0.01f, 200);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD04.3ds");
+		discovery->AddModel(fname, 0.01f, 500);
+		AddVehicleType(discovery);
+	}
+*/
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/hele-on.ive");
+	if (fname != "")
+	{
+		// the bus is modeled in centimeters (0.01)
+		VehicleType *hele_on = new VehicleType("bus");
+		hele_on->AddModel(fname, 0.01f, 800);
+		AddVehicleType(hele_on);
+	}
+
+	// the 747 is modeled in meters (1.0)
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.ive");
+	if (fname != "")
+	{
+		VehicleType *b747 = new VehicleType("747");
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.ive");
+		b747->AddModel(fname, 1.0f, 200);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod01.ive");
+		b747->AddModel(fname, 1.0f, 2000);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod02.ive");
+		b747->AddModel(fname, 1.0f, 20000);
+		AddVehicleType(b747);
+	}
+}
+
+void VehicleManager::ReleaseVehicles()
+{
+	VehicleType *vt, *next;
+	for (vt = m_pFirstVehicleType; vt; vt=next)
+	{
+		next = vt->m_pNext;
+		delete vt;
+	}
+}
+
+Vehicle *VehicleManager::CreateVehicle(const char *szType, const RGBf &cColor, float fSize)
+{
+	//if vehicles haven't been created yet...
+	if (!m_bAttemptedVehicleLoad)
+	{
+		SetupVehicles();
+		m_bAttemptedVehicleLoad = true;
+	}
+
+	for (VehicleType *vt = m_pFirstVehicleType; vt; vt=vt->m_pNext)
+	{
+		if (!strcmp(szType, vt->m_strTypeName))
+			return vt->CreateVehicle(cColor, fSize);
+	}
+	return NULL;
+}
+
+
+void VehicleManager::create_ground_vehicles(vtTerrain *pTerrain, float fSize, float fSpeed)
+{
+	vtRoadMap3d *pRoadMap = pTerrain->GetRoadMap();
+
+	// add some test vehicles
 	NodeGeom *n = NULL;
 	FPoint3 vNormal, center;
 	FPoint3 start_point;
 	int num, col;
 	RGBf color;
-	for (int i = 0; i < m_Params.GetValueInt(STR_NUMCARS); i++)
+	for (int i = 0; i < 10; i++)
 	{
 		if (n == NULL) {
-			n = (NodeGeom*) m_pRoadMap->GetFirstNode();
+			n = pRoadMap->GetFirstNode();
 		}
 		num = i % 3;
 		col = i % 5;
@@ -131,9 +230,28 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 		}
 		if (car)
 		{
-			AddNode(car);
-			PlantModelAtPoint(car, n->m_p);
-			AddCarEngine(car, 60.0f, n);
+			pTerrain->AddNode(car);
+			pTerrain->PlantModelAtPoint(car, n->m_p);
+
+			float fSpeed = 60.0f;
+			Node *pNode = n;
+
+			CarEngine *pE1;
+			if (pNode == NULL)
+			{
+				pE1 = new CarEngine(car->GetTrans(),
+					pTerrain->GetHeightField(), fSpeed, .25f);
+			}
+			else
+			{
+				float height = pTerrain->GetParams().GetValueFloat(STR_ROADHEIGHT);
+				pE1 = new CarEngine(car->GetTrans(),
+					pTerrain->GetHeightField(), fSpeed, .25f, pNode, 1, height);
+			}
+			pE1->SetName2("drive");
+			pE1->SetTarget(car);
+			if (pE1->SetTires())
+				pTerrain->AddEngine(pE1);
 		}
 		n = (NodeGeom*) n->m_pNext;
 	}

@@ -6,7 +6,6 @@
 #define SPECIFICTERRAINH
 
 #include "vtlib/core/Terrain.h"
-#include "PTerrain.h"
 
 class Romania : public vtTerrain
 {
@@ -14,7 +13,7 @@ public:
 	void CreateCustomCulture();
 };
 
-class TransitTerrain : public PTerrain
+class TransitTerrain : public vtTerrain
 {
 public:
 	void CreateCustomCulture();

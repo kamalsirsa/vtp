@@ -124,30 +124,6 @@ void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid, fl
 	m_pNextRoad = NULL;
 }
 
-//gets the path from given file.
-void CarEngine::GetPath(const char* filename, vtRoadMap3d* roadmap)
-{
-	ifstream file(filename, ios::in);
-	if (!file) {
-		//error
-		return;
-	}
-	//read in path into array.
-	file >> m_iNumRoads;
-	file >> m_iStartNode;
-	m_iRoads = new int[m_iNumRoads];
-	for (int i = 0; i < m_iNumRoads; i++) {
-		file >> m_iRoads[i];
-	}
-	file >> m_iEndNode;
-	m_iNextRoad = 0;
-	//find the start node.
-	m_pCurNode = roadmap->FindNodeByID(m_iStartNode);
-	m_eMode = PATH;
-	m_bPathReverse = false;
-	PickFirstRoad();
-}
-
 //evaluate the car engine.
 void CarEngine::Eval()
 {
