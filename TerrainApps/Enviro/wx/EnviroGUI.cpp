@@ -14,6 +14,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtlib/core/TerrainScene.h"
 #include "EnviroGUI.h"
 #include "app.h"
 #include "frame.h"
@@ -90,5 +91,10 @@ bool EnviroGUI::OnMouseEvent(vtMouseEvent &event)
 void EnviroGUI::SetupScene3()
 {
 	GetFrame()->Setup3DScene();
+}
+
+void EnviroGUI::SetTimeEngineToGUI(class TimeEngine *pEngine)
+{
+	GetFrame()->SetTimeEngine(pEngine);
 }
 

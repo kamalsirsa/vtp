@@ -199,6 +199,7 @@ public:
 		float fGround, float fVertical) {}
 	virtual vtString GetPathFromGUI() { return ""; }
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
+	virtual void SetTimeEngineToGUI(TimeEngine *pEngine) {}
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;

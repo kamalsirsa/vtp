@@ -26,6 +26,8 @@ public:
 	virtual vtString GetPathFromGUI();
 	virtual bool OnMouseEvent(vtMouseEvent &event);
 	virtual void SetupScene3();
+
+	virtual void SetTimeEngineToGUI(class TimeEngine *pEngine);
 };
 
 // global singleton
