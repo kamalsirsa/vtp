@@ -706,6 +706,7 @@ void vtBuilding::SetStories(int iStories)
 		pLev->SetRoofType(ROOF_FLAT, 0);
 		levels++;
 	}
+	previous = GetStories(); // Just in case it changed
 
 	// increase if necessary
 	if (iStories > previous)
@@ -757,6 +758,8 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &dl)
 
 void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 {
+	int i, edges;
+
 	// if there is a roof level, attempt to set its edge angles to match
 	// the desired roof type
 	vtLevel *pLev, *below;
@@ -771,6 +774,14 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 		below = GetLevel(iLev-1);
 	}
 
+	// If roof level has no edges then give it some
+	edges = pLev->GetNumEdges();
+	if (0 == edges)
+	{
+		pLev->SetFootprint(below->GetFootprint());
+	}
+	edges = pLev->GetNumEdges();
+
 	// provide default slopes for the roof sections
 	if (iSlope == -1)
 	{
@@ -784,7 +795,6 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 
 	// all horizontal edges of the roof should default to the same material
 	// as the wall section below them
-	int i, edges = pLev->GetNumEdges();
 	for (i = 0; i < edges; i++)
 	{
 		vtEdge *edge0 = below->GetEdge(i);
@@ -1102,7 +1112,7 @@ void vtBuilding::AddDefaultDetails()
 	vtEdge *edge;
 	int i, j;
 	int levs = m_Levels.GetSize();
-	for (i = 0; i < levs; i++)
+	for (i = 0; i < levs - 1; i++)
 	{
 		lev = m_Levels[i];
 		int edges = lev->GetNumEdges();
@@ -1115,11 +1125,13 @@ void vtBuilding::AddDefaultDetails()
 		}
 	}
 
-	// add a roof level
-	vtLevel *ground = m_Levels[0];
-	vtLevel *roof = CreateLevel(ground->GetFootprint());
-	roof->m_iStories = 1;
+    // process roof level
+    vtLevel *roof = m_Levels[i];
 	int edges = roof->GetNumEdges();
+	if (0 == edges)
+		roof->SetFootprint(m_Levels[0]->GetFootprint());
+	edges = roof->GetNumEdges();
+
 	for (j = 0; j < edges; j++)
 	{
 		edge = roof->GetEdge(j);
