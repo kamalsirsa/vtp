@@ -169,6 +169,8 @@ void vtFeatureSetPoint2D::SaveGeomToSHP(SHPHandle hSHP) const
 
 void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP)
 {
+	VTLOG(" vtFeatureSetPoint2D::LoadGeomFromSHP\n");
+
 	int nElems;
 	SHPGetInfo(hSHP, &nElems, NULL, NULL, NULL);
 
@@ -190,6 +192,8 @@ void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP)
 
 		SHPDestroyObject(pObj);
 	}
+	// allocate flag array
+	m_Flags.resize(nElems, 0);
 }
 
 
@@ -319,6 +323,8 @@ void vtFeatureSetPoint3D::SaveGeomToSHP(SHPHandle hSHP) const
 
 void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP)
 {
+	VTLOG(" vtFeatureSetPoint3D::LoadGeomFromSHP\n");
+
 	int nElems;
 	SHPGetInfo(hSHP, &nElems, NULL, NULL, NULL);
 
@@ -339,6 +345,8 @@ void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP)
 		m_Point3.SetAt(i, p3);
 		SHPDestroyObject(pObj);
 	}
+	// allocate flag array
+	m_Flags.resize(nElems, 0);
 }
 
 
@@ -466,6 +474,8 @@ void vtFeatureSetLineString::SaveGeomToSHP(SHPHandle hSHP) const
 
 void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP)
 {
+	VTLOG(" vtFeatureSetLineString::LoadGeomFromSHP\n");
+
 	int nElems;
 	SHPGetInfo(hSHP, &nElems, NULL, NULL, NULL);
 
@@ -493,6 +503,8 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP)
 		}
 		SHPDestroyObject(pObj);
 	}
+	// allocate flag array
+	m_Flags.resize(nElems, 0);
 }
 
 
@@ -644,6 +656,8 @@ void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP) const
 
 void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
 {
+	VTLOG(" vtFeatureSetLineString3D::LoadGeomFromSHP\n");
+
 	int nElems;
 	SHPGetInfo(hSHP, &nElems, NULL, NULL, NULL);
 
@@ -671,6 +685,8 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
 		}
 		SHPDestroyObject(pObj);
 	}
+	// allocate flag array
+	m_Flags.resize(nElems, 0);
 }
 
 
@@ -878,6 +894,8 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP) const
 
 void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP)
 {
+	VTLOG(" vtFeatureSetPolygon::LoadGeomFromSHP\n");
+
 	int nElems;
 	SHPGetInfo(hSHP, &nElems, NULL, NULL, NULL);
 
@@ -922,5 +940,7 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP)
 		}
 		SHPDestroyObject(pObj);
 	}
+	// allocate flag array
+	m_Flags.resize(nElems, 0);
 }
 
