@@ -141,7 +141,7 @@ void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)
 		pDC->SetLogicalFunction(wxINVERT);
 		pDC->SetPen(thickPen);
 
-		DLine2 &dl = m_pEditBuilding->GetFootprint(m_iEditLevel);
+		const DLine2 &dl = m_pEditBuilding->GetFootprint(m_iEditLevel);
 		int sides = dl.GetSize();
 		int j = m_iEditEdge;
 		wxPoint p[2];
@@ -175,7 +175,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 
 	for (i = 0; i < levs; i++)
 	{
-		DLine2 &dl = bld->GetFootprint(i);
+		const DLine2 &dl = bld->GetFootprint(i);
 		int sides = dl.GetSize();
 		if (sides == 0)
 			return;
@@ -923,7 +923,7 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 
 		// Get the footprint of the lowest level
 		pLev = bld->GetLevel(0);
-		DLine2 &foot = pLev->GetFootprint();
+		const DLine2 &foot = pLev->GetFootprint();
 		pts = foot.GetSize();
 
 		float fMin = 1E9, fMax = -1E9;

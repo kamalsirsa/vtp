@@ -129,7 +129,12 @@ void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
 	GetLayername()->Enable(iNumLayers > 1);
 
 	GetLayername()->SetSelection(0);
-	OnChoiceLayerName(wxCommandEvent());
+
+	// Pete Willemsen - I'm not sure, but the gcc 3.2.X compilers
+	// don't like the form of this that creates a temporary???
+	// Replaced: OnChoiceFileField(wxCommandEvent());
+	wxCommandEvent wce = wxCommandEvent();
+	OnChoiceLayerName( wce );
 
 	UpdateFieldNames();
 
@@ -197,12 +202,16 @@ void ImportStructDlgOGR::UpdateFieldNames()
 			}
 		}
 	}
+
+	// TODO: get rid of this yucky hack of passing bogus command events!
+	wxCommandEvent wce = wxCommandEvent();
+
 	GetChoiceFileField()->SetSelection(0);
-	OnChoiceFileField(wxCommandEvent());
+	OnChoiceFileField(wce);
 	GetChoiceHeightField()->SetSelection(0);
-	OnChoiceHeightField(wxCommandEvent());
+	OnChoiceHeightField(wce);
 	GetElevationFieldname()->SetSelection(0);
-	OnChoiceElevationFieldname(wxCommandEvent());
+	OnChoiceElevationFieldname(wce);
 }
 
 void ImportStructDlgOGR::UpdateEnables()
