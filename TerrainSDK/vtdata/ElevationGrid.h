@@ -30,12 +30,12 @@ class vtElevationGrid : public vtHeightFieldGrid3d
 {
 public:
 	vtElevationGrid();
-	vtElevationGrid( const vtElevationGrid &Other );
+	vtElevationGrid(const vtElevationGrid &rhs);
 	vtElevationGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		const vtProjection &proj);
 	~vtElevationGrid();
 
-	vtElevationGrid &operator=( const vtElevationGrid &rhs );
+	vtElevationGrid &operator=(const vtElevationGrid &rhs);
 
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, void progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
