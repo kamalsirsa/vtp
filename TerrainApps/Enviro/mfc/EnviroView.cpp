@@ -404,14 +404,14 @@ void EnviroView::OnUpdateToolsNavigateQuakenavengine(CCmdUI* pCmdUI)
 
 void EnviroView::OnToolsNavigateVelocitygravity() 
 {
-	g_App.m_nav = NT_Gravity;
+	g_App.m_nav = NT_Velo;
 	g_App.EnableFlyerEngine(true);
 }
 
 void EnviroView::OnUpdateToolsNavigateVelocitygravity(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
-	pCmdUI->SetCheck(g_App.m_nav == NT_Gravity);
+	pCmdUI->SetCheck(g_App.m_nav == NT_Velo);
 }
 
 
