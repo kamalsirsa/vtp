@@ -10,9 +10,10 @@
 
 #include <string.h>
 #include <stdarg.h>
-
 #include <string>
 //using namespace std;
+
+#include "Array.h"
 
 #ifdef WIN32
 #  define WIN_UNIX_STDCALL __stdcall
@@ -396,5 +397,22 @@ private:
 	static char s_buffer[MAX_WSTRING2_SIZE];
 };
 
-#endif
+/**
+ * StringArray class: an array of vtString objects.
+ */
+class StringArray : public Array<vtString*>
+{
+public:
+	virtual ~StringArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual	void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; ++i)
+			delete GetAt(i);
+	}
+
+	// assignment
+	StringArray &operator=(const class StringArray &v);
+};
+
+#endif	// VTSTRINGH
 

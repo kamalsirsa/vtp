@@ -1058,3 +1058,21 @@ const char *wstring2::to_utf8() const
 	return s_buffer;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+// StringArray class
+
+//
+// assignment operator
+//
+StringArray &StringArray::operator=(const class StringArray &v)
+{
+	int size = v.GetSize();
+	SetSize(size);
+	for (int i = 0; i < size; i++)
+		SetAt(i, new vtString(*(v.GetAt(i))));
+
+	return *this;
+}
+
+

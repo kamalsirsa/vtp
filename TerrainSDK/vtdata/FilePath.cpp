@@ -33,20 +33,6 @@
 #  include <utime.h>
 #endif
 
-//
-// assignment operator
-//
-StringArray &StringArray::operator=(const class StringArray &v)
-{
-	int size = v.GetSize();
-	SetSize(size);
-	for (int i = 0; i < size; i++)
-		SetAt(i, new vtString(*(v.GetAt(i))));
-
-	return *this;
-}
-
-
 /**
  * This function will search for a given file on the given paths, returning
  * the full path to the first file which is found (file exists and can be
