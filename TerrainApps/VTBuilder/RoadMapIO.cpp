@@ -444,7 +444,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjecti
 	int nEntities, nShapeType;
 
 	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
-	if (nShapeType != SHPT_ARC)
+	if (nShapeType != SHPT_ARC && nShapeType != SHPT_ARCZ)
 		return;
 
 	// Open DBF File, if one exists
