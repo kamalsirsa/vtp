@@ -1581,12 +1581,9 @@ bool vtElevationGrid::SaveToTerragen(const char *szFileName)
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
  */
-bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::SaveToBT(const char *szFileName,
+							   void progress_callback(int), bool bGZip)
 {
-	FILE *fp = fopen(szFileName, "wb");
-	if (!fp)
-		return false;
-
 	int w = m_iColumns;
 	int h = m_iRows;
 	short zone = m_proj.GetUTMZone();
@@ -1600,70 +1597,129 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 	// Latest header, version 1.2
 	short datasize = m_bFloatMode ? 4 : 2;
 
-	fwrite("binterr1.3", 10, 1, fp);
-	fwrite(&w, 4, 1, fp);
-	fwrite(&h, 4, 1, fp);
-	fwrite(&datasize, 2, 1, fp);
-	fwrite(&isfloat, 2, 1, fp);
-	fwrite(&hunits, 2, 1, fp);		// Horizontal Units (0, 1, 2, 3)
-	fwrite(&zone, 2, 1, fp);		// UTM zone
-	fwrite(&datum, 2, 1, fp);		// Datum
+	if (bGZip == false)
+	{
+		// Use conventional IO
+		FILE *fp = fopen(szFileName, "wb");
+		if (!fp)
+			return false;
 
-	// coordinate extents
-	fwrite(&m_EarthExtents.left, 8, 1, fp);
-	fwrite(&m_EarthExtents.right, 8, 1, fp);
-	fwrite(&m_EarthExtents.bottom, 8, 1, fp);
-	fwrite(&m_EarthExtents.top, 8, 1, fp);
+		fwrite("binterr1.3", 10, 1, fp);
+		fwrite(&w, 4, 1, fp);
+		fwrite(&h, 4, 1, fp);
+		fwrite(&datasize, 2, 1, fp);
+		fwrite(&isfloat, 2, 1, fp);
+		fwrite(&hunits, 2, 1, fp);		// Horizontal Units (0, 1, 2, 3)
+		fwrite(&zone, 2, 1, fp);		// UTM zone
+		fwrite(&datum, 2, 1, fp);		// Datum
 
-	fwrite(&external, 2, 1, fp);	// External projection specification
-	fwrite(&m_fVMeters, 4, 1, fp);	// External projection specification
+		// coordinate extents
+		fwrite(&m_EarthExtents.left, 8, 1, fp);
+		fwrite(&m_EarthExtents.right, 8, 1, fp);
+		fwrite(&m_EarthExtents.bottom, 8, 1, fp);
+		fwrite(&m_EarthExtents.top, 8, 1, fp);
 
-	// now write the data: always starts at offset 256
-	fseek(fp, 256, SEEK_SET);
+		fwrite(&external, 2, 1, fp);	// External projection specification
+		fwrite(&m_fVMeters, 4, 1, fp);	// External projection specification
+
+		// now write the data: always starts at offset 256
+		fseek(fp, 256, SEEK_SET);
 
 #if 0
-	// slow way, one heixel at a time
-	for (int i = 0; i < w; i++)
-	{
-		if (progress_callback != NULL) progress_callback(i * 100 / w);
-		for (j = 0; j < h; j++)
-		{
-			if (m_bFloatMode) {
-				fvalue = GetFValue(i, j);
-				fwrite(&fvalue, datasize, 1, fp);
-			} else {
-				svalue = GetValue(i, j);
-				fwrite(&svalue, datasize, 1, fp);
-			}
-		}
-	}
-#else
-	// fast way, with the assumption that the data is stored column-first in memory
-	if (m_bFloatMode)
-	{
+		// slow way, one heixel at a time
 		for (int i = 0; i < w; i++)
 		{
 			if (progress_callback != NULL) progress_callback(i * 100 / w);
-			fwrite(m_pFData + (i * m_iRows), 4, m_iRows, fp);
+			for (j = 0; j < h; j++)
+			{
+				if (m_bFloatMode) {
+					fvalue = GetFValue(i, j);
+					fwrite(&fvalue, datasize, 1, fp);
+				} else {
+					svalue = GetValue(i, j);
+					fwrite(&svalue, datasize, 1, fp);
+				}
+			}
 		}
+#else
+		// fast way, with the assumption that the data is stored column-first in memory
+		if (m_bFloatMode)
+		{
+			for (int i = 0; i < w; i++)
+			{
+				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				fwrite(m_pFData + (i * m_iRows), 4, m_iRows, fp);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < w; i++)
+			{
+				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				fwrite(m_pData + (i * m_iRows), 2, m_iRows, fp);
+			}
+		}
+#endif
+		fclose(fp);
 	}
 	else
 	{
-		for (int i = 0; i < w; i++)
+		// Use GZip IO
+		gzFile fp = gzopen(szFileName, "wb");
+		if (!fp)
+			return false;
+
+		gzwrite(fp, "binterr1.3", 10);
+		gzwrite(fp, &w, 4);
+		gzwrite(fp, &h, 4);
+		gzwrite(fp, &datasize, 2);
+		gzwrite(fp, &isfloat, 2);
+		gzwrite(fp, &hunits, 2);		// Horizontal Units (0, 1, 2, 3)
+		gzwrite(fp, &zone, 2);		// UTM zone
+		gzwrite(fp, &datum, 2);		// Datum
+
+		// coordinate extents
+		gzwrite(fp, &m_EarthExtents.left, 8);
+		gzwrite(fp, &m_EarthExtents.right, 8);
+		gzwrite(fp, &m_EarthExtents.bottom, 8);
+		gzwrite(fp, &m_EarthExtents.top, 8);
+
+		gzwrite(fp, &external, 2);	// External projection specification
+		gzwrite(fp, &m_fVMeters, 4);	// External projection specification
+
+		// now write the data: always starts at offset 256
+		gzseek(fp, 256, SEEK_SET);
+
+		// fast way, with the assumption that the data is stored column-first in memory
+		if (m_bFloatMode)
 		{
-			if (progress_callback != NULL) progress_callback(i * 100 / w);
-			fwrite(m_pData + (i * m_iRows), 2, m_iRows, fp);
+			for (int i = 0; i < w; i++)
+			{
+				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				gzwrite(fp, m_pFData + (i * m_iRows), 4 * m_iRows);
+			}
 		}
+		else
+		{
+			for (int i = 0; i < w; i++)
+			{
+				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				gzwrite(fp, m_pData + (i * m_iRows), 2 * m_iRows);
+			}
+		}
+		gzclose(fp);
 	}
-#endif
-	fclose(fp);
 
 	if (external)
 	{
 		// Write external projection file (.prj)
 		char prj_name[256];
 		strcpy(prj_name, szFileName);
-		strcpy(prj_name + strlen(prj_name) - 3, ".prj");
+		int len = strlen(prj_name);
+		if (bGZip)
+			strcpy(prj_name + len - 6, ".prj"); // overwrite the .bt.gz
+		else
+			strcpy(prj_name + len - 3, ".prj"); // overwrite the .bt
 		m_proj.WriteProjFile(prj_name);
 	}
 

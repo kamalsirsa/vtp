@@ -71,7 +71,7 @@ public:
 
 	// Save
 	bool SaveToTerragen(const char *szFileName);
-	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL);
+	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
 
 	void ComputeHeightExtents();
 	void GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
