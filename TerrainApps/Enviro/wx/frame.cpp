@@ -400,7 +400,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			width -= 1;
 //			depth -= 1;
 			bld->SetRectangle(width, depth);
-			sa.ReConstructStructure(bld);
+			sa.ConstructStructure(bld);
 		}
 	}
 	if (key == 'Z')
@@ -418,7 +418,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			width += 1;
 //			depth += 1;
 			bld->SetRectangle(width, depth);
-			sa.ReConstructStructure(bld);
+			sa.ConstructStructure(bld);
 		}
 	}
 }
@@ -1041,7 +1041,6 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 	vtStructureArray3d &structures = pTerr->GetStructures();
 
 	int count = structures.GetSize();
-	int sel = structures.NumSelected();	// TEMP
 	vtStructure *str;
 	vtBuilding3d *bld;
 	vtFence3d *fen;
@@ -1069,8 +1068,9 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 
 void vtFrame::OnPopupDelete(wxCommandEvent& event)
 {
+	vtTerrain *pTerr = GetCurrentTerrain();
+	pTerr->DeleteSelectedStructures();
 }
-
 
 // Helper functions for directories
 
