@@ -108,7 +108,7 @@ public:
  * geometry for a plant instance.  An array of these objects are
  * maintained by vtPlantInstanceArray3d.
  */
-class vtPlantInstance3d : public Selectable
+class vtPlantInstance3d
 {
 public:
 	vtPlantInstance3d();
@@ -150,9 +150,6 @@ public:
 
 	/// Select a single plant, and visually highlight it
 	void VisualSelect(unsigned int i);
-
-	// return the number of selected plants
-	int NumSelected() const;
 
 	void OffsetSelectedPlants(const DPoint2 &offset);
 
