@@ -601,6 +601,7 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 	}
 	if (altered_heixels)
 	{
+		grid->ComputeHeightExtents();
 		pElev->SetModified(true);
 		pElev->ReRender();
 	}
