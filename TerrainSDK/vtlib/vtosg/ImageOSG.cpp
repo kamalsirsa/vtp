@@ -16,12 +16,12 @@
 #define USE_OSG_FOR_JPG		1
 
 
-vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
+vtImage::vtImage(const char *fname, bool b16bit) : vtImageBase(fname)
 {
 	ref();
 
 	m_pPngData = NULL;
-	m_internalformat = internalformat;
+	m_b16bit = b16bit;
 	m_strFilename = fname;
 
 #if !USE_OSG_FOR_BMP
@@ -88,12 +88,12 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 	}
 }
 
-vtImage::vtImage(vtDIB *pDIB, int internalformat)
+vtImage::vtImage(vtDIB *pDIB, bool b16bit)
 {
 	ref();
 
 	m_pPngData = NULL;
-	m_internalformat = internalformat;
+	m_b16bit = b16bit;
 
 	_CreateFromDIB(pDIB);
 }
@@ -191,12 +191,12 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	{
 		pixelFormat = GL_LUMINANCE;
 	}
-	int internalFormat;
 
-	if (m_internalformat == -1)
-		internalFormat = pixelFormat;	// use default
+	int internalFormat;
+	if (m_b16bit)
+		internalFormat = GL_RGB5;		// use specific
 	else
-		internalFormat = m_internalformat;	// use specific
+		internalFormat = pixelFormat;	// use default
 
 	m_pOsgImage->setImage(w, h, 1,	// s, t, r
 	   internalFormat,		// int internalFormat,

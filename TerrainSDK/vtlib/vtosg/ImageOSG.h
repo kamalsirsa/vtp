@@ -17,8 +17,8 @@
 class vtImage: public vtImageBase, public osg::Referenced
 {
 public:
-	vtImage(const char *fname, int internalformat = -1);
-	vtImage(class vtDIB *pDIB, int internalformat = -1);
+	vtImage(const char *fname, bool b16bit = false);
+	vtImage(class vtDIB *pDIB, bool b16bit = false);
 	void Release();
 
 	int GetWidth() const;
@@ -29,7 +29,7 @@ public:
 	osg::ref_ptr<osg::Image>	m_pOsgImage;
 
 protected:
-	int		m_internalformat;
+	bool m_b16bit;
 	unsigned char *m_pPngData;
 
 	void _CreateFromDIB(vtDIB *pDIB);
