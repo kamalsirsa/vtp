@@ -193,6 +193,7 @@ public:
 	void OnStructureAddLinear(wxCommandEvent& event);
 	void OnStructureEditLinear(wxCommandEvent& event);
 	void OnStructureAddFoundation(wxCommandEvent& event);
+	void OnStructureConstrain(wxCommandEvent& event);
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
 	void OnUpdateFeaturePick(wxUpdateUIEvent& event);
 	void OnUpdateFeatureTable(wxUpdateUIEvent& event);
@@ -202,6 +203,7 @@ public:
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureEditLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddFoundation(wxUpdateUIEvent& event);
+	void OnUpdateStructureConstrain(wxUpdateUIEvent& event);
 
 	void OnRawSetType(wxCommandEvent& event);
 	void OnRawAddPoints(wxCommandEvent& event);

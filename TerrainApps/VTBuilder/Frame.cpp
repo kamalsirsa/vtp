@@ -43,6 +43,7 @@
 #  include "bld_add_points.xpm"
 #  include "bld_delete_points.xpm"
 #  include "bld_edit.xpm"
+#  include "bld_corner.xpm"
 #  include "distance.xpm"
 #  include "edit_crossing.xpm"
 #  include "edit_delete.xpm"
@@ -355,6 +356,7 @@ void MainFrame::RefreshToolbar()
 			ADD_TOOL(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), true);
 			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
 			ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
+			ADD_TOOL(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), true);
 			break;
 		case LT_UTILITY:
 			toolBar_main->AddSeparator();

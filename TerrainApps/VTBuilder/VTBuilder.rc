@@ -38,6 +38,7 @@ raw_add_point	BITMAP "bitmaps/raw_add_point.bmp"
 bld_edit		BITMAP "bitmaps/bld_edit.bmp"
 bld_add_points	BITMAP "bitmaps/bld_add_points.bmp"
 bld_delete_points	BITMAP "bitmaps/bld_delete_points.bmp"
+bld_corner		BITMAP "bitmaps/bld_corner.bmp"
 str_add_linear	BITMAP "bitmaps/str_add_linear.bmp"
 str_edit_linear	BITMAP "bitmaps/str_edit_linear.bmp"
 

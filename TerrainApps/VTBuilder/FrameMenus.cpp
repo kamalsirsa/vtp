@@ -169,6 +169,7 @@ EVT_MENU(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnBuildingDeletePoints)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
 EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
+EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,		MainFrame::OnUpdateFeaturePick)
@@ -179,6 +180,7 @@ EVT_UPDATE_UI(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnUpdateBuildingDeletePoint
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnUpdateStructureEditLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_FOUNDATION,	MainFrame::OnUpdateStructureAddFoundation)
+EVT_UPDATE_UI(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnUpdateStructureConstrain)
 
 EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
@@ -367,6 +369,8 @@ void MainFrame::CreateMenus()
 	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _T("Edit Linear Features"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _T("Add Foundation Levels to Buildings"), _T(""));
+	bldMenu->AppendSeparator();
+	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _T("Constrain angles on footprint edit"));
 	m_pMenuBar->Append(bldMenu, _T("&Structures"));
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
@@ -2361,6 +2365,16 @@ void MainFrame::OnUpdateStructureAddFoundation(wxUpdateUIEvent& event)
 	vtStructureLayer *pSL = GetActiveStructureLayer();
 	vtElevLayer *pEL = (vtElevLayer *) FindLayerOfType(LT_ELEVATION);
 	event.Enable(pSL != NULL && pEL != NULL);
+}
+
+void MainFrame::OnStructureConstrain(wxCommandEvent &event)
+{
+	m_pView->m_bConstrain = !m_pView->m_bConstrain;
+}
+
+void MainFrame::OnUpdateStructureConstrain(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->m_bConstrain);
 }
 
 
