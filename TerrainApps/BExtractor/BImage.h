@@ -4,6 +4,7 @@
 
 class CGBM;
 class CDib;
+class OGRSpatialReference;
 
 class CBImage
 {
@@ -11,9 +12,14 @@ public:
 	CBImage();
 	~CBImage();
 
-	bool LoadFromFile(const char *szPathName);
+	bool LoadFromFile(const char *szPathName, CDC *pDC, HDRAWDIB hdd);
 	bool LoadTFW(const char *szPathName);
 
+private:
+	bool LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd);
+
+public:
+	OGRSpatialReference *m_pSpatialReference;
 	CGBM	*m_pSourceGBM;
 //	CGBM	*m_pMonoGBM;
 	CDib	*m_pSourceDIB, *m_pMonoDIB, *m_pCurrentDIB;

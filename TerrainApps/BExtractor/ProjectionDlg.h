@@ -26,8 +26,10 @@ public:
 // Dialog Data
 	//{{AFX_DATA(CProjectionDlg)
 	enum { IDD = IDD_ZONEDLG };
+	CComboBox	m_Projection;
 	CEdit	m_pcZone;
 	int		m_iZone;
+	int		m_iProjection;
 	//}}AFX_DATA
 
 
@@ -44,6 +46,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CProjectionDlg)
 	virtual BOOL OnInitDialog();
+	afx_msg void OnSelchangeProjection();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

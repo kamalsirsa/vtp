@@ -14,6 +14,7 @@
 #include "ConvolveDialog.h"
 #include "KernelDialog.h"
 #include "GBMWrapper.h"
+#include "gdal_priv.h"
 #include "BImage.h"
 #include "Dib.h"
 #include "ipl.h"			// Image Processing Library 2.1
@@ -84,6 +85,11 @@ BEGIN_MESSAGE_MAP(BExtractorView, CView)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, OnUpdateFileSave)
 	ON_COMMAND(ID_MODES_MOVERESIZE, OnModesMoveresize)
 	ON_UPDATE_COMMAND_UI(ID_MODES_MOVERESIZE, OnUpdateModesMoveresize)
+	ON_COMMAND(ID_MODES_ROADNODE, OnModesRoadnode)
+	ON_UPDATE_COMMAND_UI(ID_MODES_ROADNODE, OnUpdateModesRoadnode)
+	ON_COMMAND(ID_CHANGE_ROAD_COLOR, OnChangeRoadColor)
+	ON_COMMAND(ID_MODES_ROAD_EDIT, OnModesRoadEdit)
+	ON_UPDATE_COMMAND_UI(ID_MODES_ROAD_EDIT, OnUpdateModesRoadEdit)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -119,7 +125,11 @@ BExtractorView::BExtractorView()
 	DWORD blah = MAX_PATH;
 	GetCurrentDirectory(blah, m_directory);
 
-	if (!ReadINIFile())	m_buildingColor = 0x0000ffff;
+	if (!ReadINIFile())
+	{
+		m_buildingColor = 0x0000ffff;
+		m_roadColor = RGB(0xff, 0x00, 0x00);
+	}
 }
 
 BExtractorView::~BExtractorView()
@@ -146,18 +156,6 @@ void BExtractorView::OnDraw(CDC* pDC)
 		return;
 
 	CBImage *pImage = pDoc->m_pImage;
-
-	if (!pImage->m_initialized)
-	{
-		pImage->m_initialized = true;
-		if (pImage->m_pSourceGBM)
-		{
-			pImage->m_pSourceDIB = new CDib(pDC, pImage->m_pSourceGBM, pDoc->m_hdd); 
-			// create monochrome version
-			pImage->m_pMonoDIB = CreateMonoDib(pDC, pImage->m_pSourceDIB, pDoc->m_hdd);
-		}
-		pImage->m_pCurrentDIB = pImage->m_pMonoDIB;
-	}
 
 	// now, draw
 
@@ -226,6 +224,10 @@ void BExtractorView::OnDraw(CDC* pDC)
 
 	// now buildings
 	DrawBuildings(pDC);
+
+	// now roads
+	DrawRoadNodes(pDC);
+	DrawRoads(pDC);
 
 	// and any building polygons which may be in process
 	if (m_poly.GetSize() > 0)
@@ -296,6 +298,106 @@ void BExtractorView::DrawBuilding(CDC *pDC, vtBuilding *bld)
 		DrawCircle(pDC, origin, size2);
 		break;
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// BExtractorView : Draw Road Marks
+
+void BExtractorView::DrawRoadNodes(CDC *pDC)
+{
+
+	BExtractorDoc* pDoc = GetDocument();
+	Node *pNode;
+
+	COLORREF color;
+	color = m_roadColor;
+	CPen bgPen( PS_SOLID, 1, color); 
+	pDC->SelectObject(bgPen);
+
+	for (pNode = pDoc->m_Roads.GetFirstNode(); NULL != pNode; pNode = pNode->m_pNext)
+	{
+		DrawRoadNode(pDC, pNode);
+	}
+}
+
+void BExtractorView::DrawRoadNode(CDC *pDC, Node *pNode)
+{
+	CPoint origin;
+
+	UTM_s(pNode->m_p, origin);
+	pDC->MoveTo(origin.x-BLENGTH, origin.y);
+	pDC->LineTo(origin.x+BLENGTH+1, origin.y);
+	pDC->MoveTo(origin.x, origin.y-BLENGTH);
+	pDC->LineTo(origin.x, origin.y+BLENGTH+1);
+}
+
+void BExtractorView::DrawRoads(CDC *pDC)
+{
+
+	BExtractorDoc* pDoc = GetDocument();
+	Road *pRoad;
+
+	COLORREF color;
+	color = m_roadColor;
+	CPen bgPen( PS_SOLID, 1, color); 
+	pDC->SelectObject(bgPen);
+
+	for (pRoad = pDoc->m_Roads.GetFirstRoad(); NULL != pRoad; pRoad = pRoad->m_pNext)
+	{
+		DrawRoad(pDC, pRoad);
+	}
+}
+
+void BExtractorView::DrawRoad(CDC *pDC, Road *pRoad)
+{
+	CPoint point;
+	int i, size;
+	Node *pNode;
+
+	if (NULL != (pNode = pRoad->GetNode(0)))
+	{
+		UTM_s(pNode->m_p, point);
+		pDC->MoveTo(point);
+		size = pRoad->GetSize();
+		for (i = 0; i < size; i++)
+		{
+			UTM_s(pRoad->GetAt(i), point);
+			pDC->LineTo(point);
+		}
+		if (NULL != (pNode = pRoad->GetNode(1)))
+		{
+			UTM_s(pNode->m_p, point);
+			pDC->LineTo(point);
+		}
+	}
+}
+
+bool BExtractorView::FindNearestRoadNode(CPoint &point, Node **pNearestNode)
+{
+	BExtractorDoc* pDoc = GetDocument();
+	Node *pNode;
+	Node *pNearest = NULL;
+	DPoint2 geoPoint;
+
+
+	s_UTM(point, geoPoint);
+
+	pNode = pDoc->m_Roads.GetFirstNode();
+	
+	for (pNearest = pNode; NULL != pNode; pNode = pNode->m_pNext)
+	{
+		if (pNode->DistanceToPoint(geoPoint) < pNearest->DistanceToPoint(geoPoint))
+			pNearest = pNode;
+	}
+
+	if ((NULL != pNearest) && (pNearest->DistanceToPoint(geoPoint) <= NODE_CAPTURE_THRESHOLD))
+	{
+		UTM_s(pNearest->m_p, point);
+		*pNearestNode = pNearest;
+		return true;
+	}
+	else
+		return false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -398,6 +500,13 @@ void BExtractorView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	ClipOffset();	// keep within bounds
 	ScrollWindow(m_offset.x - last_offset, 0);
 	UpdateScrollPos();
+
+	// Update any stored screen positions
+	if (LB_EditRoad == m_mode)
+	{
+		m_p0.x -= delta;
+		m_p1.x -= delta;
+	}
 }
 
 void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
@@ -438,6 +547,13 @@ void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	ClipOffset();	// keep within bounds
 	ScrollWindow(0, m_offset.y - last_offset);
 	UpdateScrollPos();
+
+	// Update any stored screen positions
+	if (LB_EditRoad == m_mode)
+	{
+		m_p0.y -= delta;
+		m_p1.y -= delta;
+	}
 }
 
 void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point) 
@@ -487,6 +603,15 @@ void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point)
 	case LB_EditShape:
 		OnLButtonDownEditShape(nFlags, point);
 		break;
+
+	case LB_EditRoadNodes:
+		m_maybeRect = true;			//maybe they are mopping?
+		SetCapture();
+		break;
+
+	case LB_EditRoad:
+		OnLButtonDownEditRoad(nFlags, point);
+		break;
 	}
 }
 
@@ -535,6 +660,77 @@ void BExtractorView::OnLButtonDownEditShape(UINT nFlags, CPoint point)
 		m_EditBuilding = *m_pCurBuilding;
 	}
 }
+
+void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
+{
+	BExtractorDoc* pDoc = GetDocument();
+	Node *pNode;
+	DPoint2 geoPoint;
+	CPoint nodePoint = point;
+	CRect myRect;
+	CPoint rectPoint1, rectPoint2;
+	CRect roadSectionRect;
+
+	GetClientRect(myRect);
+
+	if (!myRect.PtInRect(point))
+		// Cull out scroll presses etc.
+		return;
+
+	if (!m_bRubber)
+	{
+		// Starting a road
+		if (FindNearestRoadNode(nodePoint, &pNode))
+		{
+			m_pCurrentRoad = pDoc->m_Roads.NewRoad();
+			m_pCurrentRoad->m_iLanes = 2;
+			m_pCurrentRoad->SetSize(1);
+			(*m_pCurrentRoad)[0] = pNode->m_p;
+			pDoc->m_Roads.AddRoad(m_pCurrentRoad);
+			m_pCurrentRoad->SetNode(0, pNode);
+			pNode->AddRoad(m_pCurrentRoad);
+			m_bRubber = true;
+			m_p1 = m_p0 = nodePoint;
+			OnMouseMove(nFlags, point);
+		}
+	}
+	else
+	{
+		// If near a node then finish the road
+		// But make sure loops have at least 2 intermediate points
+		if (FindNearestRoadNode(nodePoint, &pNode) && ((pNode != m_pCurrentRoad->GetNode(0)) || (m_pCurrentRoad->GetSize() > 3)))
+		{
+			m_pCurrentRoad->SetNode(1, pNode);
+			if (pNode != m_pCurrentRoad->GetNode(0))
+			{
+				pNode->AddRoad(m_pCurrentRoad);
+				m_pCurrentRoad->SetSize(m_pCurrentRoad->GetSize() + 1);
+				(*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1] = pNode->m_p;
+			}
+			OnMouseMove(nFlags, nodePoint);
+			m_bRubber = false;
+			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1], rectPoint1);
+			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 2], rectPoint2);
+			roadSectionRect.SetRect(rectPoint1.x, rectPoint1.y, rectPoint2.x, rectPoint2.y);
+			roadSectionRect.NormalizeRect();
+			InvalidateRect(roadSectionRect);
+			m_pCurrentRoad = NULL;
+		}
+		else
+		{
+			s_UTM(point, geoPoint);
+			m_pCurrentRoad->SetSize(m_pCurrentRoad->GetSize() + 1);
+			(*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1] = geoPoint;
+			m_p0 = m_p1 = point;
+			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1], rectPoint1);
+			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 2], rectPoint2);
+			roadSectionRect.SetRect(rectPoint1.x, rectPoint1.y, rectPoint2.x, rectPoint2.y);
+			roadSectionRect.NormalizeRect();
+			InvalidateRect(roadSectionRect);
+		}
+	}
+}
+
 
 void BExtractorView::OnMButtonDown(UINT nFlags, CPoint point) 
 {
@@ -601,6 +797,9 @@ void BExtractorView::OnLButtonUp(UINT nFlags, CPoint point)
 			*m_pCurBuilding = m_EditBuilding;
 			m_bRubber = false;
 		}
+		break;
+	case LB_EditRoadNodes:
+		OnLButtonUpEditRoadNodes(point);
 		break;
 	}
 	ReleaseCapture();		//release the mouse
@@ -762,6 +961,47 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 	}
 }
 
+void BExtractorView::OnLButtonUpEditRoadNodes(CPoint point)
+{
+	DPoint2 imagepoint;
+	s_UTM(point, imagepoint);
+
+	//check to see whether they dragged or not
+	if (!m_bRubber) // they clicked without dragging
+	{
+		m_maybeRect = false; //reset this guy
+
+		BExtractorDoc* pDoc = GetDocument();
+
+		// put one there if it is on the TIF
+		if (!SelectionOnPicture(imagepoint))
+			return;
+
+		// create and new road node
+		Node *pNode = pDoc->m_Roads.NewNode();
+		pDoc->m_Roads.AddNode(pNode);
+		pNode->m_p = imagepoint;
+
+		int size = UTM_sdx(15.0f);
+		RECT r;
+		r.top = point.y-size-1;
+		r.bottom = point.y+size+2;
+		r.left = point.x-size-1;
+		r.right = point.x+size+2;
+		InvalidateRect(&r);
+	}
+	else  //they're mopping
+	{
+		m_bRubber = false; //done drawing
+
+		//put starting and ending points in UTM coords
+		DPoint2 UTM_start, UTM_end;
+		UTM_start = m_downLocation;
+
+		//cycle through the current nodes/roads, removing any that are in the selected area
+		MopRemoveRoadNodes(UTM_start, imagepoint);
+	}
+}
 
 void BExtractorView::OnMButtonUp(UINT nFlags, CPoint point) 
 {
@@ -790,6 +1030,12 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 	if (m_bPanning == true)
 		DoPan(point);
 	else if ((m_mode == LB_AddRemove) && m_bRubber)
+	{
+		DrawRect(pDC, m_downPoint, m_oldPoint);
+		//draw the new rectangle
+		DrawRect(pDC, m_downPoint, point);
+	}
+	else if ((m_mode == LB_EditRoadNodes) && m_bRubber)
 	{
 		DrawRect(pDC, m_downPoint, m_oldPoint);
 		//draw the new rectangle
@@ -838,6 +1084,17 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 			else
 				UpdateResizeScale();
 			DrawCurrentBuilding(pDC);
+		}
+	}
+	else if (LB_EditRoad == m_mode)
+	{
+		if (m_bRubber)
+		{
+			pDC->MoveTo(m_p0);
+			pDC->LineTo(m_p1);
+			m_p1 = point;
+			pDC->MoveTo(m_p0);
+			pDC->LineTo(m_p1);
 		}
 	}
 
@@ -1209,6 +1466,50 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 	InvalidateRect(screen_rect);
 }
 
+void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
+{
+
+    BExtractorDoc* doc = GetDocument();
+	DRECT drect(start.x, start.y, end.x, end.y);
+	Node *pNode;
+	Node *pNext;
+	Node *pPreviousNode = NULL;
+	CRect screen_rect;
+	int size = UTM_sdx(15.0f);
+	CPoint screenPoint;
+	int numRoads;
+
+	drect.Sort();
+
+	pNode = doc->m_Roads.GetFirstNode();
+	
+	while (NULL != pNode)
+	{
+		pNext = pNode->m_pNext;
+		if (drect.ContainsPoint(pNode->m_p))
+		{
+			// Remove any roads starting or terminating at this node
+			numRoads = pNode->m_iRoads;
+			for (int i = 0; i < numRoads; i++)
+			{
+				Road *pRoad = pNode->GetRoad(0);
+				pNode->DetachRoad(pRoad);
+				if (pRoad->GetNode(0) == pNode)
+					pRoad->GetNode(1)->DetachRoad(pRoad);
+				else
+					pRoad->GetNode(0)->DetachRoad(pRoad);
+				doc->m_Roads.RemoveRoad(pRoad);
+			}
+			doc->m_Roads.RemoveNode(pNode);
+		}
+		else
+			pPreviousNode = pNode;
+		pNode = pNext;
+	}
+
+	Invalidate();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 // BExtractorView : Functions to do the REAL work
@@ -1402,7 +1703,8 @@ void BExtractorView::OnFunctionsConvolve()
 
 	CPaintDC cDC(this), *pDC = &cDC;
 	//convert IPLImage -> DIB 
-	CDib ResultDib(pDC, CSize(bm->GetWidth(), bm->GetHeight()), GetDocument()->m_hdd);
+	CDib ResultDib;
+	ResultDib.Setup(pDC, bm->GetWidth(), bm->GetHeight(), 8, GetDocument()->m_hdd);
 
     iplConvertToDIBSep(i1, ResultDib.GetDIBHeader(), (char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
 
@@ -1738,6 +2040,8 @@ bool BExtractorView::ReadINIFile()
 	if (!fp) return false;
 	fscanf(fp, "%d ", &tmp);
 	m_buildingColor = tmp;
+	fscanf(fp, "%d ", &tmp);
+	m_roadColor = tmp;
 	fclose(fp);
 	return true;
 }
@@ -1752,6 +2056,8 @@ bool BExtractorView::WriteINIFile()
 
 	FILE *fp = fopen(front, "w");
 	if (!fp) return false;
+	fprintf(fp, "%d ", tmp);
+	tmp = m_roadColor;
 	fprintf(fp, "%d ", tmp);
 	fclose(fp);
 	return true;
@@ -1868,3 +2174,39 @@ void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_mode == LB_EditShape);
 }
 
+
+void BExtractorView::OnModesRoadnode() 
+{
+	m_mode = LB_EditRoadNodes;
+	
+}
+
+void BExtractorView::OnUpdateModesRoadnode(CCmdUI* pCmdUI) 
+{
+	BExtractorDoc* pDoc = GetDocument();
+	pCmdUI->Enable(pDoc->m_picLoaded);
+	pCmdUI->SetCheck(m_mode == LB_EditRoadNodes);
+}
+
+void BExtractorView::OnChangeRoadColor() 
+{
+	CColorDialog dlgColor(m_roadColor);
+	if (dlgColor.DoModal() == IDOK)
+	{
+		m_roadColor = dlgColor.GetColor();
+		WriteINIFile();
+		Invalidate();
+	}
+}
+
+void BExtractorView::OnModesRoadEdit() 
+{
+	m_mode = LB_EditRoad;	
+}
+
+void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI) 
+{
+	BExtractorDoc* pDoc = GetDocument();
+	pCmdUI->Enable(pDoc->m_picLoaded);
+	pCmdUI->SetCheck(m_mode == LB_EditRoad);
+}

@@ -10,6 +10,7 @@
 #include "BExtractorDoc.h"
 #include "BExtractorView.h"
 #include "ProjectionDlg.h"
+#include "gdal_priv.h"
 #include "BImage.h"
 #include "ProgDlg.h"
 #include "Dib.h"
@@ -17,6 +18,7 @@
 
 // GBM
 #include "GBMWrapper.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -30,9 +32,9 @@ static char THIS_FILE[] = __FILE__;
 void ShowErrorMessage(int error)
 {
 	LPVOID lpMsgBuf;
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-				  FORMAT_MESSAGE_FROM_SYSTEM |	 
-				  FORMAT_MESSAGE_IGNORE_INSERTS,	
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				  FORMAT_MESSAGE_FROM_SYSTEM |	
+				  FORMAT_MESSAGE_IGNORE_INSERTS,
 				  NULL,
 				  error,
 				  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
@@ -83,6 +85,10 @@ BEGIN_MESSAGE_MAP(BExtractorDoc, CDocument)
 	ON_COMMAND(ID_FUNCTIONS_CLEARBUILDINGS, OnFunctionsClearbuildings)
 	ON_UPDATE_COMMAND_UI(ID_FILE_OPEN, OnUpdateFileOpen)
 	ON_UPDATE_COMMAND_UI(ID_FULLRES, OnUpdateFullres)
+	ON_COMMAND(ID_RMF_OPEN, OnRmfOpen)
+	ON_COMMAND(ID_RMF_SAVE, OnRmfSave)
+	ON_COMMAND(ID_RMF_SAVE_AS, OnRmfSaveAs)
+	ON_UPDATE_COMMAND_UI(ID_RMF_OPEN, OnUpdateRmfOpen)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -93,14 +99,14 @@ BExtractorDoc::BExtractorDoc()
 {
 	m_pImage = NULL;
 	m_picLoaded = false;
-	
+
 	m_hdd = DrawDibOpen();
 	m_proj.SetUTM(true);
 }
 
 BExtractorDoc::~BExtractorDoc()
 {
-	if (m_hdd) 
+	if (m_hdd)
 	{
 		DrawDibClose(m_hdd);
 		m_hdd = NULL;
@@ -127,6 +133,7 @@ void BExtractorDoc::DeleteContents()
 		m_pImage = NULL;
 	}
 	m_Buildings.Empty();
+	m_Roads.DeleteElements();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -162,7 +169,7 @@ void BExtractorDoc::Dump(CDumpContext& dc) const
 ///////////////////////////////////////////////////////////////
 // BExtractorDoc commands
 void BExtractorDoc::PreFloodFillDIB(CDib *bm)
-{	
+{
 	int width = bm->GetWidth();
 	int height = bm->GetHeight();
 	byte target = 0x00;
@@ -181,16 +188,16 @@ void BExtractorDoc::PreFloodFillDIB(CDib *bm)
 			{
 				result = Fill(bm, i, j, 0x00, 0x22, width, height, 0); //0x22=arbitrary value
 
-				if (result > 120)
+				if (result > 80)
 				{
-					// We have something too big to be a building. 
-					// The reason this # had to be 200 and not something
-					// slightly larger than building size is because sometimes
+					// We have something too big to be a building.
+					// The reason this # had to be 80 and not something
+					// slightly larger than building size (~30) is because sometimes
 					// the building pixels bleed into some thin lines made up
 					// of black pixels that get added to the overall count.
 					// So to avoid losing these buildings (or buildings whose
 					// black pixels bleed into each other), the number is
-					// bigger. 
+					// bigger.
 
 					// This is also why the Fill method takes the diag
 					// parameter, it tells it whether include pixels diagonal
@@ -226,7 +233,7 @@ void BExtractorDoc::FloodFillDIB(CDib *bm)
 				point.x = i_UTMx(i);
 				point.y = i_UTMy(j);
 
-				// rough heuristic: adjusts the coordinate more towards the  
+				// rough heuristic: adjusts the coordinate more towards the
 				//center of the original building
 				point.x += 5;
 
@@ -286,13 +293,21 @@ float BExtractorDoc::i_UTMy(int iy)
 		+ m_pImage->m_yUTMoffset);
 }
 
-BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName) 
+BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 {
 	CString name = szPathName;
 	CString ext = name.Right(4);
 
 	bool success = false;
-	if (!ext.CompareNoCase(".tif")) 
+	if (!ext.CompareNoCase(".tif"))
+	{
+		OnImportimage2(szPathName);
+		SetPathName(szPathName, true);
+		SetPathName("Untitled", false);
+		return false;
+	}
+	// RFJ !!!!!!!!!
+	else if (!ext.CompareNoCase(".bmp"))
 	{
 		OnImportimage2(szPathName);
 		SetPathName(szPathName, true);
@@ -346,9 +361,7 @@ BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 	}
 	if (success)
 	{
-		POSITION pos = GetFirstViewPosition();
-		BExtractorView* pFirstView = (BExtractorView*)GetNextView( pos );
-		pFirstView->Invalidate();
+		GetView()->Invalidate();
 	}
 	return success;
 }
@@ -361,13 +374,12 @@ BOOL BExtractorDoc::OnSaveDocument(LPCTSTR szPathName)
 
 
 //
-// TIF stuff 
+// TIF stuff
 //
 void BExtractorDoc::OnImportimage()
 {
-	CFileDialog openDialog(TRUE, "*.tif", "");
-
-	openDialog.m_ofn.lpstrFilter = "Image Files (*.tif, *.bmp)\0*.tif;*.bmp\0";
+	CFileDialog openDialog(TRUE, "tif", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+		"Image Files (*.bmp, *.tif)|*.bmp;*.tif||");
 
 	if (openDialog.DoModal() != IDOK)
 		return;
@@ -375,12 +387,12 @@ void BExtractorDoc::OnImportimage()
 	CString str = openDialog.GetPathName();
 	const char *szPathName = str;
 
-	if (m_pImage) delete m_pImage; 
+	if (m_pImage) delete m_pImage;
 
 	OnImportimage2(szPathName);
 }
 
-void BExtractorDoc::OnImportimage2(LPCTSTR szPathName) 
+void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 {
 	m_picLoaded = false;
 	m_pImage = new CBImage();
@@ -389,25 +401,53 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 	{
 		CProgressDlg prog(CG_IDS_PROGRESS_CAPTION3);
 		prog.Create(NULL);	// top level
-	//	prog.SetPos(0);
-	//	prog.SetPos(y*200/h);
-		bool success = m_pImage->LoadFromFile(szPathName);
+		CDC *pDC = GetView()->GetDC();
+		bool success = m_pImage->LoadFromFile(szPathName, pDC, m_hdd);
+		GetView()->ReleaseDC(pDC);
 		if (!success)
 			return;
 	}
 
-	// don't know projection unless (until) we read geotiff
+	// we don't know projection unless we have read a geotiff
+	if (m_pImage->m_pSpatialReference == NULL)
+	{
+		// Assume that I have loaded from a world file
+		// and need some more info
+		// get utm zone from a dialog
+		CProjectionDlg dlg;
+		dlg.m_iZone = 1;
+		if (dlg.DoModal() != IDOK)
+			return;
 
-	// get utm zone from a dialog
-	CProjectionDlg dlg;
-	dlg.m_iZone = -1;
-	if (dlg.DoModal() != IDOK)
-		return;
+		switch(dlg.m_iProjection)
+		{
+		case 0: // UTM
+			m_proj.SetUTMZone(dlg.m_iZone);
+			m_Buildings.m_proj.SetUTMZone(dlg.m_iZone);
+			m_Roads.GetProjection().SetUTMZone(dlg.m_iZone);
+			break;
+		case 1: // OSGB
+			m_proj.SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
+			m_Buildings.m_proj.SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
+			m_Roads.GetProjection().SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
+			break;
+		default: // default to UTM
+			m_proj.SetUTMZone(dlg.m_iZone);
+			m_Buildings.m_proj.SetUTMZone(dlg.m_iZone);
+			m_Roads.GetProjection().SetUTMZone(dlg.m_iZone);
+			break;
+		}
+	}
+	else
+	{
+		// Loaded from a GDAL dataset (Geotiff etc.)
+		// I should have a valid projection
+		m_proj.SetSpatialReference(m_pImage->m_pSpatialReference);
+		m_Buildings.m_proj.SetSpatialReference(m_pImage->m_pSpatialReference);
+		m_Roads.GetProjection().SetSpatialReference(m_pImage->m_pSpatialReference);
+	}
 
-	m_proj.SetUTMZone(dlg.m_iZone);
-	m_Buildings.m_proj.SetUTMZone(dlg.m_iZone);
-
-	// is image >50MB?
+	// is image >50 million pixels?
 	if (m_pImage->m_PixelSize.x * m_pImage->m_PixelSize.y > 50000000)
 	{
 		CString str;
@@ -418,35 +458,104 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 		int result = AfxMessageBox(str, MB_YESNO);
 		if (result == IDYES)
 		{
-			delete m_pImage->m_pSourceGBM;
-			m_pImage->m_pSourceGBM = NULL;
+			if (NULL != m_pImage->m_pSourceGBM)
+			{
+				delete m_pImage->m_pSourceGBM;
+				m_pImage->m_pSourceGBM = NULL;
+			}
 		}
 	}
 	m_picLoaded = true;
 
 	// Tell the view to zoom to the freshly loaded bitmap
-	POSITION pos = GetFirstViewPosition();
-	BExtractorView* pFirstView = (BExtractorView*)GetNextView( pos );
 	m_Buildings.Empty(); //clear out any old buildings we have lying around
-	pFirstView->ZoomToImage(m_pImage);
+	m_Roads.DeleteElements();
+	GetView()->ZoomToImage(m_pImage);
 }
 
 
-void BExtractorDoc::OnFunctionsClearbuildings() 
+void BExtractorDoc::OnFunctionsClearbuildings()
 {
 	m_Buildings.Empty();
-	POSITION pos = GetFirstViewPosition();
-	BExtractorView* pFirstView = (BExtractorView*)GetNextView( pos );
-	pFirstView->Invalidate();
+	GetView()->Invalidate();
 }
 
 
-void BExtractorDoc::OnUpdateFileOpen(CCmdUI* pCmdUI) 
+void BExtractorDoc::OnUpdateFileOpen(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_picLoaded);
 }
 
-void BExtractorDoc::OnUpdateFullres(CCmdUI* pCmdUI) 
+void BExtractorDoc::OnUpdateFullres(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(m_picLoaded);
 }
+
+void BExtractorDoc::OnRmfOpen()
+{
+	CFileDialog openDialog(TRUE, "rmf", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "RMF Files (*.rmf)|*.rmf||");
+
+	if (openDialog.DoModal() != IDOK)
+		return;
+
+	CString str = openDialog.GetPathName();
+	const char *szPathName = str;
+
+	if (!m_Roads.ReadRMF(szPathName, true, true, true))
+	{
+		string str = "Problem reading file: ";
+		AfxMessageBox(str.c_str());
+	}
+	else
+	{
+		m_roadFileName = szPathName;
+		GetView()->Invalidate();
+	}
+}
+
+void BExtractorDoc::OnRmfSave()
+{
+	if (m_roadFileName.IsEmpty())
+		OnRmfSaveAs();
+	else
+	{
+		m_Roads.ComputeExtents();
+		if (!m_Roads.WriteRMF(m_roadFileName))
+		{
+			string str = "Problem writing file: ";
+			AfxMessageBox(str.c_str());
+		}
+	}
+}
+
+void BExtractorDoc::OnRmfSaveAs()
+{
+	CFileDialog saveAsDialog(FALSE, "rmf", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "RMF Files (*.rmf)|*.rmf||");
+
+	if (saveAsDialog.DoModal() != IDOK)
+		return;
+
+	CString str = saveAsDialog.GetPathName();
+	const char *szPathName = str;
+	
+	m_Roads.ComputeExtents();
+	if (!m_Roads.WriteRMF(szPathName))
+	{
+		string str = "Problem writing file: ";
+		AfxMessageBox(str.c_str());
+	}
+	else
+		m_roadFileName = szPathName;
+}
+
+void BExtractorDoc::OnUpdateRmfOpen(CCmdUI* pCmdUI)
+{
+	pCmdUI->Enable(m_picLoaded);
+}
+
+BExtractorView *BExtractorDoc::GetView()
+{
+	POSITION  pos = GetFirstViewPosition();
+	return (BExtractorView*)GetNextView(pos);
+}
+

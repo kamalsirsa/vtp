@@ -11,13 +11,20 @@
 // Changes 8/99: added constructor to convert from DIB to CDib
 //
 #include "StdAfx.h"
+#include "BExtractor.h"
 #include "Dib.h"
 
 // GBM
 #include "GBMWrapper.h"
 
 // GDAL
+#include "ogr_spatialref.h"
 #include "gdal_priv.h"
+#include "bimage.h"
+#include "BExtractor.h"
+#include "BExtractorDoc.h"
+#include "BExtractorView.h"
+#include "ProgDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -25,7 +32,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-const  int		MAXPALCOLORS = 256;
+const int MAXPALCOLORS = 256;
 
 IMPLEMENT_DYNAMIC(CDib, CObject)
 
@@ -33,13 +40,18 @@ CDib::CDib()
 {
 	memset(&m_bm, 0, sizeof(m_bm));
 	m_hdd = NULL;
+	m_bmi = NULL;
 }
 
-// 203 0 23
-// 137 51 128
-// 218 179 214
+CDib::~CDib()
+{
+	DeleteObject();
+	if (m_bmi)
+		delete m_bmi;
+	m_bmi = NULL;
+}
 
-CDib::CDib(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd)
+bool CDib::Setup(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd)
 {
 	m_hdd = hdd;
 
@@ -47,7 +59,7 @@ CDib::CDib(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd)
 	m_colors = (RGBQUAD *) (m_bmi + 1);
 	m_stride = ( ((m_bmi->biWidth * m_bmi->biBitCount + 31)/32) * 4 );
 
-	HBITMAP hbm = CreateDIBSection(pDC->GetSafeHdc(),
+	m_hbm = CreateDIBSection(pDC->GetSafeHdc(),
 							(BITMAPINFO *) m_bmi, 
 							DIB_RGB_COLORS,
 							&m_data,
@@ -56,28 +68,35 @@ CDib::CDib(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd)
 	//copy the data to the new location
 	memcpy(m_data,pGBM->m_data, pGBM->m_datasize);
 
-	BOOL result = Attach(hbm);
+	BOOL result = Attach(m_hbm);
+	return true;
 }
 
-CDib::CDib(CDC* pDC, CSize &size, HDRAWDIB hdd)
+bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB hdd, RGBQUAD *colors)
 {
 	m_hdd = hdd;
 
-	int width = size.cx;
-	int height = size.cy;
-	int bpp = 8;
-	m_stride = ( ((width * bpp + 31)/32) * 4 );
-	int datasize = (size_t) (m_stride * height);
+	int bpp = bits_per_pixel;
+	m_stride = ((width * bpp + 31)/32) * 4;
+	int datasize = m_stride * height;
 
 	void *buf = malloc(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
 	m_bmi = (BITMAPINFOHEADER *)buf;
-	m_colors = (RGBQUAD *) (m_bmi + 1);
-	for (int i = 0; i < 256; i++)
+	if (bpp == 8)
 	{
-		m_colors[i].rgbBlue = i;
-		m_colors[i].rgbGreen = i;
-		m_colors[i].rgbRed = i;
-		m_colors[i].rgbReserved = 0;
+		m_colors = (RGBQUAD *) (m_bmi + 1);
+		for (int i = 0; i < 256; i++)
+		{
+			if (colors)
+				m_colors[i] = colors[i];
+			else
+			{
+				m_colors[i].rgbBlue = i*4;
+				m_colors[i].rgbGreen = i*4;
+				m_colors[i].rgbRed = i*4;
+				m_colors[i].rgbReserved = 0;
+			}
+		}
 	}
 
 	m_bmi->biSize = sizeof(BITMAPINFOHEADER);
@@ -92,79 +111,155 @@ CDib::CDib(CDC* pDC, CSize &size, HDRAWDIB hdd)
 	m_bmi->biClrUsed = (bpp == 8) ? 256 : 0;
 	m_bmi->biClrImportant = m_bmi->biClrUsed;
 
-	HBITMAP hbm = CreateDIBSection(pDC->GetSafeHdc(),
+	m_hbm = CreateDIBSection(pDC->GetSafeHdc(),
 							(BITMAPINFO *) m_bmi, 
 							DIB_RGB_COLORS,
 							&m_data,
 							NULL, 
 							0);
-	BOOL result = Attach(hbm);
+	BOOL result = Attach(m_hbm);
+	return true;
 }
 
-CDib::CDib(CDC* pDC, GDALRasterBand *poBand, HDRAWDIB hdd)
+bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 {
+	int iRasterCount = pDataset->GetRasterCount();
+
+	int width = pDataset->GetRasterXSize();
+	int height = pDataset->GetRasterYSize();
+	int xBlockSize, yBlockSize;
+	int nxBlocks, nyBlocks;
+	int ixBlock, iyBlock;
+	int nxValid, nyValid;
+	CPLErr Err;
+	CProgressDlg progBitmapCreate(CG_IDS_PROGRESS_CAPTION2);
 	m_hdd = hdd;
-
-	int width = poBand->GetXSize();
-	int height = poBand->GetYSize();
-	int bpp = 8;
-	m_stride = ( ((width * bpp + 31)/32) * 4 );
-	int datasize = (size_t) (m_stride * height);
-
-	void *buf = malloc(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
-	m_bmi = (BITMAPINFOHEADER *)buf;
-	m_colors = (RGBQUAD *) (m_bmi + 1);
-	for (int i = 0; i < 256; i++)
-	{
-		m_colors[i].rgbBlue = i;
-		m_colors[i].rgbGreen = i;
-		m_colors[i].rgbRed = i;
-		m_colors[i].rgbReserved = 0;
-	}
-
-	m_bmi->biSize = sizeof(BITMAPINFOHEADER);
-    m_bmi->biWidth = width;
-    m_bmi->biHeight = height;
-    m_bmi->biPlanes = 1;
-	m_bmi->biBitCount = bpp;
-	m_bmi->biCompression = BI_RGB;
-	m_bmi->biSizeImage = datasize;
-	m_bmi->biXPelsPerMeter = 1;
-	m_bmi->biYPelsPerMeter = 1;
-	m_bmi->biClrUsed = bpp == 8 ? 256 : 0;
-	m_bmi->biClrImportant = 0;
-
-	HBITMAP hbm = CreateDIBSection(pDC->GetSafeHdc(),
-							(BITMAPINFO *) m_bmi, 
-							DIB_RGB_COLORS,
-							&m_data,
-							NULL, 
-							0);
-
-	//copy the data to the new location
-	char *pasScanline;
-	pasScanline = (char *) CPLMalloc(sizeof(char)*width);
 	int j;
-	for (j = 0; j < height; j++)
-	{
-		poBand->RasterIO( GF_Read, 0, j, width, 1,
-						  pasScanline, width, 1, GDT_Byte,
-						  0, 0 );
 
-		char *line = ((char *)m_data) + (j * m_stride);
-		memcpy(line, pasScanline, width);
+	m_stride = ((width * 3 + 1) / 4) * 4;
+
+	progBitmapCreate.Create(NULL);
+	progBitmapCreate.SetStep(1);
+
+	if (iRasterCount == 1)
+	{
+		GDALRasterBand *pIndices = pDataset->GetRasterBand(1);
+
+		GDALColorTable *pTable = pIndices->GetColorTable();
+		RGBQUAD colors[256];
+		GDALColorEntry ent;
+		for (j = 0; j < 256; j++)
+		{
+			pTable->GetColorEntryAsRGB(j, &ent);
+			colors[j].rgbBlue = ent.c3;
+			colors[j].rgbGreen = ent.c2;
+			colors[j].rgbRed = ent.c1;
+			colors[j].rgbReserved = 0;
+		}
+		Setup(pDC, width, height, 8, hdd, colors);
+
+		progBitmapCreate.SetRange(0, height);
+
+		//copy the data to the new location
+		char *pasScanline;
+		pasScanline = (char *) CPLMalloc(sizeof(char)*width);
+		for (j = 0; j < height; j++)
+		{
+			Err = pIndices->RasterIO( GF_Read, 0, j, width, 1,
+							  pasScanline, width, 1, GDT_Byte,
+							  0, 0 );
+			if (Err != CE_None)
+				return false;
+
+			char *line = ((char *)m_data) + ((height-1-j) * m_stride);
+			memcpy(line, pasScanline, width);
+			progBitmapCreate.StepIt();
+		}
+
+		// Clean up
+		CPLFree(pasScanline);
+	}
+	if (iRasterCount == 3)
+	{
+		Setup(pDC, width, height, 24, hdd);
+
+		// I assume by this point that I have a 3 band dataset
+		// ordered red green and blue with each band being
+		// 8 bits ands they all have the same block size
+		GDALRasterBand *pRed = pDataset->GetRasterBand(1);
+		GDALRasterBand *pGreen = pDataset->GetRasterBand(2);
+		GDALRasterBand *pBlue = pDataset->GetRasterBand(3);
+		char *pRedline, *pGreenline, *pBlueline;
+
+		pRed->GetBlockSize(&xBlockSize, &yBlockSize);
+		nxBlocks = (width + xBlockSize - 1) / xBlockSize;
+		nyBlocks = (height + yBlockSize - 1) / yBlockSize;
+		progBitmapCreate.SetRange(0, nyBlocks);
+
+		// Need to do the following to ensure the internal InitBlockInfo function in gdal is called.
+		// Surely this must be a bug.
+		pRed->FlushBlock(0, 0);
+		pGreen->FlushBlock(0, 0);
+		pBlue->FlushBlock(0, 0);
+
+		//copy the data to the new location
+		pRedline = new char[xBlockSize * yBlockSize];
+		pGreenline = new char[xBlockSize * yBlockSize];
+		pBlueline = new char[xBlockSize * yBlockSize];
+
+		int x, y;
+		RGBQUAD rgb;
+
+		for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+		{
+			for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+			{
+				Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
+				if (Err != CE_None)
+					return false;
+				Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
+				if (Err != CE_None)
+					return false;
+				Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
+				if (Err != CE_None)
+					return false;
+
+				// Compute the portion of the block that is valid
+				// for partial edge blocks.
+				if ((ixBlock+1) * xBlockSize > width)
+					nxValid = width - ixBlock * xBlockSize;
+				else
+					nxValid = xBlockSize;
+
+				if( (iyBlock+1) * yBlockSize > height)
+					nyValid = height - iyBlock * yBlockSize;
+				else
+					nyValid = yBlockSize;
+
+				for( int iY = 0; iY < nyValid; iY++ )
+				{
+					y = (iyBlock * yBlockSize + iY);
+					for( int iX = 0; iX < nxValid; iX++ )
+					{
+						x = (ixBlock * xBlockSize) + iX;
+						rgb.rgbRed = pRedline[iY * xBlockSize + iX];
+						rgb.rgbGreen = pGreenline[iY * xBlockSize + iX];
+						rgb.rgbBlue = pBlueline[iY * xBlockSize + iX];
+						SetPixel24(x, height-1-y, rgb);
+					}
+				}
+			}
+			progBitmapCreate.StepIt();
+		}
+
+		delete pRedline;
+		delete pBlueline;
+		delete pGreenline;
 	}
 
-	// Clean up
-	CPLFree(pasScanline);
-
-	BOOL result = Attach(hbm);
+	return true;
 }
 
-CDib::~CDib()
-{
-	DeleteObject();
-}
 
 //////////////////
 // Delete Object. Delete DIB and palette.
@@ -206,7 +301,7 @@ BOOL CDib::Attach(HGDIOBJ hbm)
 		m_pal.DeleteObject();			// in case one is already there
 		return CreatePalette(m_pal);	// create palette
 	}
-	return FALSE;	
+	return FALSE;
 }
 
 //////////////////
@@ -307,8 +402,9 @@ BOOL CDib::Draw(CDC& dc, const CRect* rcDst, const CRect* rcSrc,
 			m_bm.bmBits,	// bits in memory
 			rcSrc->left, rcSrc->top, rcSrc->Width(), rcSrc->Height(),
 			bForeground ? 0 : DDF_BACKGROUNDPAL);
-
-	} else {
+	}
+	else
+	{
 		// use normal draw function
 		bRet = DrawBitmap(dc, this, rcDst, rcSrc);
 	}
@@ -346,7 +442,8 @@ BOOL CDib::CreatePalette(CPalette& pal)
 	BOOL bRet = FALSE;
 	RGBQUAD* colors = new RGBQUAD[MAXPALCOLORS];
 	UINT nColors = GetColorTable(colors, MAXPALCOLORS);
-	if (nColors > 0) {
+	if (nColors > 0)
+	{
 		// Allocate memory for logical palette 
 		int len = sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * nColors;
 		LOGPALETTE* pLogPal = (LOGPALETTE*)new char[len];
@@ -358,7 +455,8 @@ BOOL CDib::CreatePalette(CPalette& pal)
 		pLogPal->palNumEntries = nColors;
 
 		// copy color entries 
-		for (UINT i = 0; i < nColors; i++) {
+		for (UINT i = 0; i < nColors; i++)
+		{
 			pLogPal->palPalEntry[i].peRed   = colors[i].rgbRed;
 			pLogPal->palPalEntry[i].peGreen = colors[i].rgbGreen;
 			pLogPal->palPalEntry[i].peBlue  = colors[i].rgbBlue;
@@ -390,10 +488,34 @@ UINT CDib::GetColorTable(RGBQUAD* colorTab, UINT nColors)
 	return nColors;
 }
 
+void CDib::SetPixel24(int x, int y, const RGBQUAD &rgb)
+{
+	if (m_bmi->biBitCount == 24)
+	{
+		((char *)m_data)[y * m_stride + (x * 3)] = rgb.rgbBlue;
+		((char *)m_data)[y * m_stride + (x * 3) + 1] = rgb.rgbGreen;
+		((char *)m_data)[y * m_stride + (x * 3) + 2] = rgb.rgbRed;
+	}
+	else if (m_bmi->biBitCount == 8)
+	{
+		// TODO if necessary: look up closest value in m_colors
+	}
+}
+
 void CDib::GetPixel24(int x, int y, RGBQUAD &rgb)
 {
-	byte i = ((char *)m_data)[y * m_stride + x];
-	rgb = m_colors[i];
+	// This probably needs more work RFJ !!!!!
+	if (m_bmi->biBitCount == 24)
+	{
+		rgb.rgbBlue = ((char *)m_data)[y * m_stride + (x * 3)];
+		rgb.rgbGreen = ((char *)m_data)[y * m_stride + (x * 3) + 1];
+		rgb.rgbRed = ((char *)m_data)[y * m_stride + (x * 3) + 2];
+	}
+	else if (m_bmi->biBitCount == 8)
+	{
+		byte i = ((char *)m_data)[y * m_stride + x];
+		rgb = m_colors[i];
+	}
 }
 
 void CDib::SetPixel8(int x, int y, byte val)
@@ -413,7 +535,8 @@ CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd)
 	pDib->GetDIBFromSection();
 
 	CSize size = pDib->GetSize();
-	CDib *pNew = new CDib(pDC, size, hdd);
+	CDib *pNew = new CDib();
+	pNew->Setup(pDC, size.cx, size.cy, 8, hdd);
 
 	BITMAPINFOHEADER *header = pNew->GetDIBHeader();
 	RGBQUAD* colors = (RGBQUAD*) (header + 1);

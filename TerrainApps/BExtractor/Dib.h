@@ -4,12 +4,16 @@
 // If not, I don't know who wrote it.
 // See dib.cpp
 
+#ifndef BEXTRACTOR_DIB_H
+#define BEXTRACTOR_DIB_H
+
 #ifndef _INC_VFW
 #pragma message ("NOTE: You can speed compilation by including <vfw.h> in stdafx.h")
 #include <vfw.h>
 #endif
 
 class GDALRasterBand;
+class GDALDataset;
 class CGBM;
 
 // global functions for ordinary CBitmap too
@@ -21,13 +25,15 @@ extern BOOL  DrawBitmap(CDC& dc, CBitmap* pBitmap,
 ////////////////
 // CDib implements Device Independent Bitmaps as a form of CBitmap. 
 //
-class CDib : public CBitmap {
+class CDib : public CBitmap
+{
 protected:
 	DECLARE_DYNAMIC(CDib)
 	BITMAP	m_bm;		// stored for speed
 	CPalette m_pal;		// palette
 	HDRAWDIB m_hdd;		// for DrawDib	
 	void *m_data;
+	HBITMAP m_hbm;
 
 	BITMAPINFOHEADER *m_bmi;
 	RGBQUAD *m_colors;
@@ -35,10 +41,11 @@ protected:
 
 public:
 	CDib();
-	CDib(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd);
-	CDib(CDC* pDC, CSize &size, HDRAWDIB hdd);
-	CDib(CDC* pDC, GDALRasterBand *poBand, HDRAWDIB hdd);
 	~CDib();
+
+	bool Setup(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd);
+	bool Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB hdd, RGBQUAD *colors = NULL);
+	bool Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd);
 
 	CSize	GetSize() { return CSize(m_bm.bmWidth, m_bm.bmHeight); }
 	BOOL Attach(HGDIOBJ hbm);
@@ -58,6 +65,7 @@ public:
 
 	UINT GetColorTable(RGBQUAD* colorTab, UINT nColors);
 
+	void	SetPixel24(int x, int y, const RGBQUAD &rgb);
 	void	GetPixel24(int x, int y, RGBQUAD &rgb);
 	byte	GetPixel8(int x, int y);
 	void	SetPixel8(int x, int y, byte val);
@@ -69,3 +77,4 @@ public:
 
 CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd);
 
+#endif // BEXTRACTOR_DIB_H

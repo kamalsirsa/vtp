@@ -16,13 +16,17 @@
 
 #define BLENGTH 6
 
+#define NODE_CAPTURE_THRESHOLD 10.0  // Metres
+
 enum LBMode {
 	LB_AddRemove,	// click to add, drag to remove
 	LB_Hand,		// drag to pan
 	LB_Footprint,	// click to add footprints
 	LB_Rectangle,	// click to add rectangular footprints
 	LB_Circle,
-	LB_EditShape
+	LB_EditShape,
+	LB_EditRoadNodes,
+	LB_EditRoad
 };
 
 class BExtractorView : public CView
@@ -37,9 +41,14 @@ public:
 
 // Operations
 public:
+	void ZoomToImage(CBImage *pImage);
 	void DrawBuildings(CDC *pDC);
 	void DrawBuilding(CDC *pDC, vtBuilding *bld);
-	void ZoomToImage(CBImage *pImage);
+	void DrawRoadNodes(CDC *pDC);
+	void DrawRoadNode(CDC *pDC, Node *pNode);
+	void DrawRoads(CDC *pDC);
+	void DrawRoad(CDC *pDC, Road *pRoad);
+	bool FindNearestRoadNode(CPoint &point, Node **pNearestNode);
 	bool ReadINIFile();
 	bool WriteINIFile();
 	bool SelectionOnPicture(DPoint2 point);
@@ -86,6 +95,12 @@ protected:
 
 	// Color used to draw the buildings
 	COLORREF m_buildingColor;
+
+	// Color used to draw the roads
+	COLORREF m_roadColor;
+
+	// Current road when plotting roads
+	Road *m_pCurrentRoad;
 
 	// Directory path at startup, used to locate the .ini file
 	char m_directory[MAX_PATH];
@@ -152,16 +167,19 @@ protected:
 
 	void ChangeScale(double fFactor);
 	void MopRemove(DPoint2 start, DPoint2 end);
+	void MopRemoveRoadNodes(DPoint2 start, DPoint2 end);
 	void DrawRect(CDC *pDC, CPoint one, CPoint two);
 	void ZoomToBuilding();
 	void UpdateRanges();
 	void ClipOffset();
 	void UpdateScrollPos();
 	void OnLButtonDownEditShape(UINT nFlags, CPoint point);
+	void OnLButtonDownEditRoad(UINT nFlags, CPoint point);
 	void OnLButtonUpAddRemove(CPoint point);
 	void OnLButtonUpFootprint(CPoint point);
 	void OnLButtonUpRectangle(CPoint point);
 	void OnLButtonUpCircle(CPoint point);
+	void OnLButtonUpEditRoadNodes(CPoint point);
 	CDC *GetInvertDC();
 	void DoPan(CPoint point);
 	void DrawPoly(CDC *pDC);
@@ -214,6 +232,11 @@ protected:
 	afx_msg void OnUpdateFileSave(CCmdUI* pCmdUI);
 	afx_msg void OnModesMoveresize();
 	afx_msg void OnUpdateModesMoveresize(CCmdUI* pCmdUI);
+	afx_msg void OnModesRoadnode();
+	afx_msg void OnUpdateModesRoadnode(CCmdUI* pCmdUI);
+	afx_msg void OnChangeRoadColor();
+	afx_msg void OnModesRoadEdit();
+	afx_msg void OnUpdateModesRoadEdit(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

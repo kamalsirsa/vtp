@@ -13,9 +13,11 @@
 #endif // _MSC_VER >= 1000
 
 #include "vtdata/StructArray.h"
+#include "vtdata/Roadmap.h"
+#include "Dib.h"
 
 class CBImage;
-class CDib;
+class BExtractorView;
 
 class BExtractorDoc : public CDocument
 {
@@ -25,13 +27,16 @@ protected: // create from serialization only
 
 // Attributes
 public:
-
 	HDRAWDIB m_hdd;
 	CBImage *m_pImage;
 	bool m_picLoaded;
 	vtStructureArray	m_Buildings;
+	vtRoadMap m_Roads;
 
 	float m_fScale;
+
+private:
+	CString m_roadFileName;
 	
 public:
 	void OnImportimage2(LPCTSTR szPathName); 
@@ -62,6 +67,7 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+	BExtractorView *GetView();
 
 protected:
 	vtProjection m_proj;
@@ -75,6 +81,10 @@ protected:
 	afx_msg void OnUpdateBcfcombine(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateFileOpen(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateFullres(CCmdUI* pCmdUI);
+	afx_msg void OnRmfOpen();
+	afx_msg void OnRmfSave();
+	afx_msg void OnRmfSaveAs();
+	afx_msg void OnUpdateRmfOpen(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
