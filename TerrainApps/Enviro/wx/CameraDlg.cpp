@@ -32,6 +32,8 @@
 // WDR: event table for CameraDlg
 
 BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
+	EVT_INIT_DIALOG (CameraDlg::OnInitDialog)
+
 	EVT_TEXT_ENTER( ID_CAMX, CameraDlg::OnTextEnter )
 	EVT_TEXT_ENTER( ID_CAMY, CameraDlg::OnTextEnter )
 	EVT_TEXT_ENTER( ID_CAMZ, CameraDlg::OnTextEnter )
@@ -64,6 +66,34 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iSpeedUnits = 0;
 	CameraDialogFunc( this, TRUE );
 	m_bSet = true;
+
+	AddValidator(ID_CAMX, &m_camX);
+	AddValidator(ID_CAMY, &m_camY);
+	AddValidator(ID_CAMZ, &m_camZ);
+
+	AddNumValidator(ID_FOV, &m_fFov);
+	AddNumValidator(ID_NEAR, &m_fNear);
+	AddNumValidator(ID_FAR, &m_fFar);
+	AddNumValidator(ID_SPEED, &m_fSpeed);
+
+	GetSpeedUnits()->Append(_("Meters/sec"));
+	GetSpeedUnits()->Append(_("Km/hour"));
+	GetSpeedUnits()->Append(_("Miles/hour"));
+	AddValidator(ID_SPEED_UNITS, &m_iSpeedUnits);
+	AddValidator(ID_ACCEL, &m_bAccel);
+
+	AddNumValidator(ID_LOD_VEG, &m_fDistVeg);
+	AddNumValidator(ID_LOD_STRUCT, &m_fDistStruct);
+	AddNumValidator(ID_LOD_ROAD, &m_fDistRoad);
+
+	AddValidator(ID_FOVSLIDER, &m_iFov);
+	AddValidator(ID_NEARSLIDER, &m_iNear);
+	AddValidator(ID_FARSLIDER, &m_iFar);
+	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
+
+	AddValidator(ID_SLIDER_VEG, &m_iDistVeg);
+	AddValidator(ID_SLIDER_STRUCT, &m_iDistStruct);
+	AddValidator(ID_SLIDER_ROAD, &m_iDistRoad);
 }
 
 #define FOV_MIN  2.0f
@@ -218,37 +248,9 @@ void CameraDlg::OnSpeedUnits( wxCommandEvent &event )
 
 void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	AddValidator(ID_CAMX, &m_camX);
-	AddValidator(ID_CAMY, &m_camY);
-	AddValidator(ID_CAMZ, &m_camZ);
-
-	AddNumValidator(ID_FOV, &m_fFov);
-	AddNumValidator(ID_NEAR, &m_fNear);
-	AddNumValidator(ID_FAR, &m_fFar);
-	AddNumValidator(ID_SPEED, &m_fSpeed);
-
-	GetSpeedUnits()->Append(_("Meters/sec"));
-	GetSpeedUnits()->Append(_("Km/hour"));
-	GetSpeedUnits()->Append(_("Miles/hour"));
-	AddValidator(ID_SPEED_UNITS, &m_iSpeedUnits);
-	AddValidator(ID_ACCEL, &m_bAccel);
-
-	AddNumValidator(ID_LOD_VEG, &m_fDistVeg);
-	AddNumValidator(ID_LOD_STRUCT, &m_fDistStruct);
-	AddNumValidator(ID_LOD_ROAD, &m_fDistRoad);
-
-	AddValidator(ID_FOVSLIDER, &m_iFov);
-	AddValidator(ID_NEARSLIDER, &m_iNear);
-	AddValidator(ID_FARSLIDER, &m_iFar);
-	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
-
-	AddValidator(ID_SLIDER_VEG, &m_iDistVeg);
-	AddValidator(ID_SLIDER_STRUCT, &m_iDistStruct);
-	AddValidator(ID_SLIDER_ROAD, &m_iDistRoad);
-
 	GetValues();
 	ValuesToSliders();
-	TransferToWindow();
+	wxDialog::OnInitDialog(event);	// calls TransferDataToWindow
 }
 
 void CameraDlg::OnFovSlider( wxCommandEvent &event )

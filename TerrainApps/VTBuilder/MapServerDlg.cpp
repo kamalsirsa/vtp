@@ -29,7 +29,8 @@
 
 // WDR: event table for MapServerDlg.cpp
 
-BEGIN_EVENT_TABLE(MapServerDlg,AutoDialog)
+BEGIN_EVENT_TABLE(MapServerDlg, AutoDialog)
+	EVT_INIT_DIALOG (MapServerDlg::OnInitDialog)
 	EVT_COMBOBOX( ID_BASE_URL, MapServerDlg::OnBaseUrlText )
 	EVT_TEXT( ID_BASE_URL, MapServerDlg::OnBaseUrlText )
 	EVT_TEXT( ID_WIDTH, MapServerDlg::OnSize )
@@ -45,7 +46,16 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 {
 	m_iFormat = 0;
 	m_bSetting = false;
+	m_iXSize = 1024;
+	m_iYSize = 1024;
+
 	MapServerDialogFunc( this, TRUE ); 
+
+	AddNumValidator(ID_WIDTH, &m_iXSize);
+	AddNumValidator(ID_HEIGHT, &m_iYSize);
+
+	AddValidator(ID_QUERY, &m_query);
+	AddValidator(ID_CHOICE_FORMAT, &m_iFormat);
 }
 
 // WDR: handler implementations for MapServerDlg.cpp
@@ -121,15 +131,7 @@ void MapServerDlg::OnFormat( wxCommandEvent &event )
 
 void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_iXSize = 1024;
-	m_iYSize = 1024;
-
-	AddNumValidator(ID_WIDTH, &m_iXSize);
-	AddNumValidator(ID_HEIGHT, &m_iYSize);
-
-	AddValidator(ID_QUERY, &m_query);
-	AddValidator(ID_CHOICE_FORMAT, &m_iFormat);
-
+	GetBaseUrl()->Clear();
 	GetBaseUrl()->Append(_T("http://wmt.jpl.nasa.gov/cgi-bin/wmt.cgi"));
 	GetBaseUrl()->Append(_T("http://globe.digitalearth.gov/viz-bin/wmt.cgi"));
 	GetBaseUrl()->Append(_T("http://grid.cr.usgs.gov/cgi-bin/mapserver/elsalvador"));
@@ -137,9 +139,11 @@ void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetBaseUrl()->Append(_T("http://demo.cubewerx.com/demo/cubexplor/cubexplor.cgi"));
 	GetBaseUrl()->SetSelection(0);
 
+	GetLayers()->Clear();
 	GetLayers()->Append(_T("<none>"));
 	GetLayers()->SetSelection(0);
 
+	GetFormat()->Clear();
 	GetFormat()->Append(_T("JPEG"));
 	GetFormat()->Append(_T("PNG"));
 	GetFormat()->SetSelection(0);

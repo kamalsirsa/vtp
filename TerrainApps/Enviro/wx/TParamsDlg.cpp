@@ -109,6 +109,8 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	TParamsFunc( this, TRUE );
 
+	m_bSetting = false;
+
 	// make sure that validation gets down to the child windows
 	SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
@@ -230,6 +232,10 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddNumValidator(ID_LABEL_HEIGHT, &m_Style.m_label_elevation);
 	AddNumValidator(ID_LABEL_SIZE, &m_Style.m_label_size);
 
+	// It's somewhat roundabout, but this lets us capture events on the
+	// listbox control without having to subclass it.
+	m_pBoxHandler = new wxListBoxEventHandler(this, m_pStructFiles);
+	m_pStructFiles->PushEventHandler(m_pBoxHandler);
 }
 
 TParamsDlg::~TParamsDlg()
@@ -774,12 +780,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	UpdateEnableState();
 
 	m_bReady = true;
-	m_bSetting = false;
-
-	// It's somewhat roundabout, but this lets us capture events on the
-	// listbox control without having to subclass it.
-	m_pBoxHandler = new wxListBoxEventHandler(this, m_pStructFiles);
-	m_pStructFiles->PushEventHandler(m_pBoxHandler);
 }
 
 bool TParamsDlg::TransferDataToWindow()

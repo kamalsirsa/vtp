@@ -27,6 +27,7 @@
 // WDR: event table for FeatInfoDlg
 
 BEGIN_EVENT_TABLE(FeatInfoDlg,AutoDialog)
+	EVT_INIT_DIALOG (FeatInfoDlg::OnInitDialog)
 	EVT_LIST_ITEM_SELECTED( ID_LIST, FeatInfoDlg::OnItemSelected )
 	EVT_LIST_ITEM_DESELECTED( ID_LIST, FeatInfoDlg::OnItemSelected )
 	EVT_LIST_ITEM_RIGHT_CLICK( ID_LIST, FeatInfoDlg::OnListRightClick )
@@ -44,7 +45,11 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_iVUnits = 0;
 	m_pLayer = NULL;
 	m_pFeatures = NULL;
+
 	FeatInfoDialogFunc( this, TRUE ); 
+
+	AddValidator(ID_CHOICE_SHOW, &m_iShow);
+	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);
 }
 
 void FeatInfoDlg::SetFeatureSet(vtFeatureSet *pFeatures)
@@ -289,9 +294,6 @@ void FeatInfoDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetChoiceVertical()->Append(_("Meter"));
 	GetChoiceVertical()->Append(_("Foot"));
 	GetChoiceVertical()->Append(_("Foot (US)"));
-
-	AddValidator(ID_CHOICE_SHOW, &m_iShow);
-	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);
 
 	GetDelHigh()->Enable(false);
 

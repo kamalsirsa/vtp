@@ -1,7 +1,7 @@
 //
 // Name: LayerPropDlg.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,7 +39,6 @@ private:
 	
 private:
 	// WDR: handler declarations for LayerPropDlg
-	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()

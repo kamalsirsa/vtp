@@ -33,6 +33,7 @@
 // WDR: event table for DistribVegDlg
 
 BEGIN_EVENT_TABLE(DistribVegDlg,AutoDialog)
+	EVT_INIT_DIALOG (DistribVegDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, DistribVegDlg::OnOK )
 	EVT_RADIOBUTTON( ID_SPECIES1, DistribVegDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_SPECIES2, DistribVegDlg::OnRadio )
@@ -203,7 +204,6 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_bDensity2 = true;
 	else
 		m_bDensity1 = true;
-
 
 	// Size
 	m_bSize1 = false;

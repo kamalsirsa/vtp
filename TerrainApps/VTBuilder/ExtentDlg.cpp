@@ -31,6 +31,7 @@
 // WDR: event table for ExtentDlg
 
 BEGIN_EVENT_TABLE(ExtentDlg,AutoDialog)
+	EVT_INIT_DIALOG (ExtentDlg::OnInitDialog)
 	EVT_TEXT_ENTER( ID_EXTENT_N, ExtentDlg::OnExtentN )
 	EVT_TEXT_ENTER( ID_EXTENT_W, ExtentDlg::OnExtentW )
 	EVT_TEXT_ENTER( ID_EXTENT_E, ExtentDlg::OnExtentE )
@@ -45,7 +46,15 @@ ExtentDlg::ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	m_bSetting = false;
 	m_bDMS = false;
+
 	ExtentDialogFunc( this, TRUE ); 
+
+	AddValidator(ID_EXTENT_ALL, &m_strAll);
+	AddValidator(ID_EXTENT_E, &m_strEast);
+	AddValidator(ID_EXTENT_N, &m_strNorth);
+	AddValidator(ID_EXTENT_S, &m_strSouth);
+	AddValidator(ID_EXTENT_W, &m_strWest);
+	AddValidator(ID_DMS, &m_bDMS);
 }
 
 void ExtentDlg::SetArea(DRECT area, bool bDegrees)
@@ -120,13 +129,6 @@ void ExtentDlg::FormatStrings(int which)
 void ExtentDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
 	GetDMS()->Enable(m_bDegrees);
-
-	AddValidator(ID_EXTENT_ALL, &m_strAll);
-	AddValidator(ID_EXTENT_E, &m_strEast);
-	AddValidator(ID_EXTENT_N, &m_strNorth);
-	AddValidator(ID_EXTENT_S, &m_strSouth);
-	AddValidator(ID_EXTENT_W, &m_strWest);
-	AddValidator(ID_DMS, &m_bDMS);
 
 	FormatStrings(1);
 	FormatStrings(2);

@@ -238,6 +238,9 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	VTLOG("Constructing StartupDlg.\n");
 	StartupDialogFunc( this, TRUE );
 
+	m_psImage = GetImagetext();
+	m_pImage = GetImage();
+
 	AddValidator(ID_EARTHVIEW, &m_bStartEarth);
 	AddValidator(ID_TERRAIN, &m_bStartTerrain);
 
@@ -366,8 +369,6 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	else
 		m_strTName = _T("none");
 */
-	m_psImage = GetImagetext();
-	m_pImage = GetImage();
 	int sel;
 
 	// Populate Earth Image files choices

@@ -29,7 +29,8 @@
 
 // WDR: event table for ImportStructDlgOGR
 
-BEGIN_EVENT_TABLE(ImportStructDlgOGR,AutoDialog)
+BEGIN_EVENT_TABLE(ImportStructDlgOGR, AutoDialog)
+	EVT_INIT_DIALOG (ImportStructDlgOGR::OnInitDialog)
 	EVT_RADIOBUTTON( ID_TYPE_BUILDING, ImportStructDlgOGR::OnRadio )
 	EVT_RADIOBUTTON( ID_TYPE_LINEAR, ImportStructDlgOGR::OnRadio )
 	EVT_RADIOBUTTON( ID_TYPE_INSTANCE, ImportStructDlgOGR::OnRadio )
@@ -44,6 +45,20 @@ ImportStructDlgOGR::ImportStructDlgOGR( wxWindow *parent, wxWindowID id, const w
 	AutoDialog( parent, id, title, position, size, style )
 {
 	ImportStructFuncOGR( this, TRUE ); 
+
+	m_opt.m_HeightType = StructImportOptions::METERS;
+	m_opt.m_ElevationType = StructImportOptions::ETMETERS;
+	m_opt.bFlip = false;
+	m_opt.bInsideOnly = false;
+	m_opt.bBuildFoundations = false;;
+	m_opt.bUse25DForElevation = false;
+
+	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
+	AddValidator(ID_FLIP, &m_opt.bFlip);
+	AddValidator(ID_BUILD_FOUNDATIONS, &m_opt.bBuildFoundations);
+	AddValidator(ID_USE_25D, &m_opt.bUse25DForElevation);
+	AddValidator(ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
+	AddValidator(ID_ELEVATION_UNITS, (int *)&m_opt.m_ElevationType);
 }
 
 bool ImportStructDlgOGR::GetRadio(int id)
@@ -96,38 +111,19 @@ void ImportStructDlgOGR::OnRadio( wxCommandEvent &event )
 
 void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
 {
-	int i;
-	int iNumLayers;
-
-	m_opt.m_HeightType = StructImportOptions::METERS;
-	m_opt.m_ElevationType = StructImportOptions::ETMETERS;
-	m_opt.bFlip = false;
-	m_opt.bInsideOnly = false;
-	m_opt.bBuildFoundations = false;;
-	m_opt.bUse25DForElevation = false;
-
-	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
-	AddValidator(ID_FLIP, &m_opt.bFlip);
-	AddValidator(ID_BUILD_FOUNDATIONS, &m_opt.bBuildFoundations);
-	AddValidator(ID_USE_25D, &m_opt.bUse25DForElevation);
-	AddValidator(ID_CHOICE_HEIGHT_TYPE, (int *)&m_opt.m_HeightType);
-	AddValidator(ID_ELEVATION_UNITS, (int *)&m_opt.m_ElevationType);
-
 	// Select one of the radio buttons, whichever is enabled
 	m_iType = 1;
 	GetTypeBuilding()->SetValue(true);
 
 	UpdateEnables();
 
-	iNumLayers = m_pDatasource->GetLayerCount();
-	for (i = 0 ; i < iNumLayers; i++)
+	int iNumLayers = m_pDatasource->GetLayerCount();
+	for (int i = 0 ; i < iNumLayers; i++)
 	{
 		wxString2 str = m_pDatasource->GetLayer(i)->GetLayerDefn()->GetName();
 		GetLayername()->Append(str);
 	}
-
 	GetLayername()->Enable(iNumLayers > 1);
-
 	GetLayername()->SetSelection(0);
 
 	// Pete Willemsen - I'm not sure, but the gcc 3.2.X compilers
@@ -137,7 +133,6 @@ void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
 	OnChoiceLayerName( wce );
 
 	UpdateFieldNames();
-
 	UpdateEnables();
 
 	TransferDataToWindow();

@@ -28,6 +28,7 @@
 // WDR: event table for TimeDlg
 
 BEGIN_EVENT_TABLE(TimeDlg, AutoDialog)
+	EVT_INIT_DIALOG (TimeDlg::OnInitDialog)
 	EVT_BUTTON( ID_STOP, TimeDlg::OnStop )
 	EVT_TEXT( ID_TEXT_SPEED, TimeDlg::OnTextSpeed )
 	EVT_SLIDER( ID_SLIDER_SPEED, TimeDlg::OnSliderSpeed )
@@ -50,6 +51,7 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iSpeed = 0;
 	m_fSpeed = 0.0f;
 	m_bSetting = false;
+	m_pTimeEngine = NULL;
 
 	year = 2000;
 	month = 1;
@@ -58,11 +60,20 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	minute = 0;
 	second = 0;
 
+	AddValidator(ID_SPIN_YEAR, &year);
+	AddValidator(ID_SPIN_MONTH, &month);
+	AddValidator(ID_SPIN_DAY, &day);
+
+	AddValidator(ID_SPIN_HOUR, &hour);
+	AddValidator(ID_SPIN_MINUTE, &minute);
+	AddValidator(ID_SPIN_SECOND, &second);
+
+	AddNumValidator(ID_TEXT_SPEED, &m_fSpeed);
+	AddValidator(ID_SLIDER_SPEED, &m_iSpeed);
+
 	GetSliderSpeed()->Enable(false);
 	GetTextSpeed()->Enable(false);
 	GetStop()->Enable(false);
-
-	m_pTimeEngine = NULL;
 }
 
 void TimeDlg::AddOkCancel()
@@ -134,7 +145,7 @@ void TimeDlg::SetTimeEngine(TimeEngine *pEngine)
 
 	// If the engine is not yet connected to us, connect it.
 	bool bFound = false;
-	for (int i = 0; i < pEngine->NumTargets(); i++)
+	for (unsigned int i = 0; i < pEngine->NumTargets(); i++)
 	{
 		if (pEngine->GetTarget(i) == self)
 			bFound = true;
@@ -157,19 +168,7 @@ void TimeDlg::SetTimeControls(const vtTime &time)
 
 void TimeDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	AddValidator(ID_SPIN_YEAR, &year);
-	AddValidator(ID_SPIN_MONTH, &month);
-	AddValidator(ID_SPIN_DAY, &day);
-
-	AddValidator(ID_SPIN_HOUR, &hour);
-	AddValidator(ID_SPIN_MINUTE, &minute);
-	AddValidator(ID_SPIN_SECOND, &second);
-
-	AddNumValidator(ID_TEXT_SPEED, &m_fSpeed);
-	AddValidator(ID_SLIDER_SPEED, &m_iSpeed);
-
 	PullTime();
-
 	wxDialog::OnInitDialog(event);
 }
 

@@ -27,7 +27,8 @@
 
 // WDR: event table for ImportStructDlg
 
-BEGIN_EVENT_TABLE(ImportStructDlg,AutoDialog)
+BEGIN_EVENT_TABLE(ImportStructDlg, AutoDialog)
+	EVT_INIT_DIALOG (ImportStructDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_TYPE_CENTER, ImportStructDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_TYPE_FOOTPRINT, ImportStructDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_TYPE_LINEAR, ImportStructDlg::OnRadio )
@@ -42,7 +43,15 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 	AutoDialog( parent, id, title, position, size, style )
 {
 	ImportStructFunc( this, TRUE );
+
 	m_iType = 0;
+	m_iHeightType = 0;
+	m_opt.bFlip = false;
+	m_opt.bInsideOnly = false;
+
+	AddValidator(ID_FLIP, &m_opt.bFlip);
+	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
+	AddValidator(ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
 }
 
 bool ImportStructDlg::GetRadio(int id)
@@ -87,16 +96,6 @@ void ImportStructDlg::OnRadio( wxCommandEvent &event )
 
 void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	int i;
-
-	m_iHeightType = 0;
-	m_opt.bFlip = false;
-	m_opt.bInsideOnly = false;
-
-	AddValidator(ID_FLIP, &m_opt.bFlip);
-	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
-	AddValidator(ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
-
 	m_nShapeType = GetSHPType(m_filename.mb_str());
 	UpdateEnables();
 
@@ -132,6 +131,7 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 		char pszFieldName[20];
 		int iFields = DBFGetFieldCount(db);
 		wxString2 str;
+		int i;
 		for (i = 0; i < iFields; i++)
 		{
 			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,

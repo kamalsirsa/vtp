@@ -30,6 +30,7 @@
 // WDR: event table for UtilDlg
 
 BEGIN_EVENT_TABLE(UtilDlg,AutoDialog)
+	EVT_INIT_DIALOG (UtilDlg::OnInitDialog)
 	EVT_CHOICE( ID_STRUCTTYPE, UtilDlg::OnStructType )
 END_EVENT_TABLE()
 
@@ -40,6 +41,9 @@ UtilDlg::UtilDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	UtilDialogFunc( this, TRUE );
 
 	m_pChoice = GetStructtype();
+	m_iType = 0;
+
+	AddValidator(ID_STRUCTTYPE, &m_iType);
 }
 
 // WDR: handler implementations for UtilDlg
@@ -54,10 +58,6 @@ void UtilDlg::OnStructType( wxCommandEvent &event )
 
 void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	AddValidator(ID_STRUCTTYPE, &m_iType);
-
-	m_iType = 0;
-
 	vtContentManager &mng = vtGetContent();
 
 	m_pChoice->Clear();
@@ -71,7 +71,6 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 				m_pChoice->Append(wxString::FromAscii(item->m_name));
 		}
 	}
-
 	TransferDataToWindow();
 
 	wxString2 val = m_pChoice->GetStringSelection();
