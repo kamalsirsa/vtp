@@ -1,3 +1,9 @@
+//
+// CarEngine.cpp
+//
+// Copyright (c) 2001-2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #include "vtlib/vtlib.h"
 #include "CarEngine.h"

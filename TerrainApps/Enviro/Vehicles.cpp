@@ -82,58 +82,60 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 
 void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 {
+	// add some cars!
+	if (!m_pRoadMap)
+		return;
+
+	NodeGeom *n = NULL;
 	FPoint3 vNormal, center;
 	FPoint3 start_point;
-
-	// add some cars!
-	if (m_pRoadMap)
+	vtTransform *car;
+	int num, col;
+	RGBf color;
+	for (int i = 0; i < m_Params.GetValueInt(STR_NUMCARS); i++)
 	{
-		NodeGeom *n = (NodeGeom*) m_pRoadMap->GetFirstNode();
-		vtTransform *car;
-		int num, col;
-		RGBf color;
-		for (int i = 0; i < m_Params.GetValueInt(STR_NUMCARS); i++)
+		if (n == NULL) {
+			n = (NodeGeom*) m_pRoadMap->GetFirstNode();
+		}
+		num = i % 3;
+		col = i % 5;
+
+		switch (col) {
+		case 0:
+			color.Set(1.0f, 1.0f, 1.0f);
+			break;
+		case 1:
+			color.Set(1.0f, 1.0f, 0.0f);
+			break;
+		case 2:
+			color.Set(0.0f, 0.0f, .5f);
+			break;
+		case 3:
+			color.Set(1.0f, 0.0f, 0.0f);
+			break;
+		case 4:
+			color.Set(0.0f, .5f, 0.0f);
+			break;
+		}
+
+		switch (num) {
+		case 0:
+			car = CreateVehicle("discovery", color, fSize);
+			break;
+		case 1:
+			car = CreateVehicle("bronco", color, fSize);
+			break;
+		case 2:
+			car = CreateVehicle("bus", color, fSize);
+			break;
+		}
+		if (car)
 		{
-			if (n == NULL) {
-				n = (NodeGeom*) m_pRoadMap->GetFirstNode();
-			}
-			num = i % 3;
-			col = i % 5;
-
-			switch (col) {
-			case 0:
-				color.Set(1.0f, 1.0f, 1.0f);
-				break;
-			case 1:
-				color.Set(1.0f, 1.0f, 0.0f);
-				break;
-			case 2:
-				color.Set(0.0f, 0.0f, .5f);
-				break;
-			case 3:
-				color.Set(1.0f, 0.0f, 0.0f);
-				break;
-			case 4:
-				color.Set(0.0f, .5f, 0.0f);
-				break;
-			}
-
-			switch (num) {
-			case 0:
-				car = CreateVehicle("discovery", color, fSize);
-				break;
-			case 1:
-				car = CreateVehicle("bronco", color, fSize);
-				break;
-			case 2:
-				car = CreateVehicle("bus", color, fSize);
-				break;
-			}
 			AddNode(car);
 			PlantModelAtPoint(car, n->m_p);
 			AddCarEngine(car, 60.0f, n);
-			n = (NodeGeom*) n->m_pNext;
 		}
+		n = (NodeGeom*) n->m_pNext;
 	}
 }
 

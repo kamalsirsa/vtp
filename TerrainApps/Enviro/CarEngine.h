@@ -1,6 +1,9 @@
 //
-// Engines.h
-// header file for Engines.cpp
+// CarEngine.h
+// header file for CarEngine.cpp
+//
+// Copyright (c) 2001-2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
 //
 
 #ifndef ISLAND_CARENGINESH

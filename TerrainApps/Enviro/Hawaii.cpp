@@ -131,9 +131,6 @@ void IslandTerrain::CreateCustomCulture()
 
 	if (m_Params.GetValueBool(STR_VEHICLES))
 	{
-		SetupVehicles();
-//		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed);
-
 		float size = m_Params.GetValueFloat(STR_VEHICLESIZE);
 		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
 
@@ -624,7 +621,10 @@ void IslandTerrain::create_airplanes(float fScale, float fSpeed)
 void IslandTerrain::create_airplane(int i, float fScale, float fSpeed)
 {
 	RGBf red(1.0f, 1.0f, 0.0f);
-	vtTransform *copy = CreateVehicle("747", red, fScale);
+	Vehicle *copy = CreateVehicle("747", red, fScale);
+	if (!copy)
+		return;
+
 	AddNode(copy);
 
 	// make it bigger and faster than real life

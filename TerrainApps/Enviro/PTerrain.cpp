@@ -14,6 +14,7 @@
 PTerrain::PTerrain() : vtTerrain()
 {
 	m_pFirstVehicleType = NULL;
+	m_bAttemptedVehicleLoad = false;
 }
 
 PTerrain::~PTerrain()
@@ -52,38 +53,54 @@ void PTerrain::AddVehicleType(VehicleType *vt)
 
 void PTerrain::SetupVehicles()
 {
-	// the bronco is modeled in centimeters (0.01)
-	VehicleType *bronco = new VehicleType("bronco");
 	vtString fname;
+
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco_v2.3ds");
-	bronco->AddModel(fname, 0.01f, 500);
-	AddVehicleType(bronco);
+	if (fname != "")
+	{
+		// the bronco is modeled in centimeters (0.01)
+		VehicleType *bronco = new VehicleType("bronco");
+		bronco->AddModel(fname, 0.01f, 500);
+		AddVehicleType(bronco);
+	}
 
-	// the discovery is modeled in centimeters (0.01)
-	VehicleType *discovery = new VehicleType("discovery");
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
-	discovery->AddModel(fname, 0.01f, 50);
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD02.3ds");
-	discovery->AddModel(fname, 0.01f, 100);
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD03.3ds");
-	discovery->AddModel(fname, 0.01f, 200);
-	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD04.3ds");
-	discovery->AddModel(fname, 0.01f, 500);
-	AddVehicleType(discovery);
+	if (fname != "")
+	{
+		// the discovery is modeled in centimeters (0.01)
+		VehicleType *discovery = new VehicleType("discovery");
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
+		discovery->AddModel(fname, 0.01f, 50);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD02.3ds");
+		discovery->AddModel(fname, 0.01f, 100);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD03.3ds");
+		discovery->AddModel(fname, 0.01f, 200);
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD04.3ds");
+		discovery->AddModel(fname, 0.01f, 500);
+		AddVehicleType(discovery);
+	}
 
-	// the bus is modeled in centimeters (0.01)
-	VehicleType *hele_on = new VehicleType("bus");
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/bus020101.3ds");
-	hele_on->AddModel(fname, 0.01f, 800);
-	AddVehicleType(hele_on);
+	if (fname != "")
+	{
+		// the bus is modeled in centimeters (0.01)
+		VehicleType *hele_on = new VehicleType("bus");
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/bus020101.3ds");
+		hele_on->AddModel(fname, 0.01f, 800);
+		AddVehicleType(hele_on);
+	}
 
 	// the 747 is modeled in meters (1.0)
-	VehicleType *b747 = new VehicleType("747");
 	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.3ds");
-	b747->AddModel(fname, 1.0f, 200);
-//	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747-LOD01.3ds");
-//	b747->AddModelLod(1, fname, 1000);
-	AddVehicleType(b747);
+	if (fname != "")
+	{
+		VehicleType *b747 = new VehicleType("747");
+		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.3ds");
+		b747->AddModel(fname, 1.0f, 200);
+//		fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747-LOD01.3ds");
+//		b747->AddModelLod(1, fname, 1000);
+		AddVehicleType(b747);
+	}
 }
 
 void PTerrain::ReleaseVehicles()
@@ -99,20 +116,18 @@ void PTerrain::ReleaseVehicles()
 Vehicle *PTerrain::CreateVehicle(const char *szType, const RGBf &cColor, float fSize)
 {
 	//if vehicles haven't been created yet...
-	if (m_pFirstVehicleType == NULL) {
+	if (!m_bAttemptedVehicleLoad)
+	{
 		SetupVehicles();
+		m_bAttemptedVehicleLoad = true;
 	}
 
-	VehicleType *vt;
-	for (vt = m_pFirstVehicleType; vt; vt=vt->m_pNext)
+	for (VehicleType *vt = m_pFirstVehicleType; vt; vt=vt->m_pNext)
 	{
 		if (!strcmp(szType, vt->m_strTypeName))
-			break;
+			return vt->CreateVehicle(cColor, fSize);
 	}
-	if (!vt)
-		return NULL;
-
-	return vt->CreateVehicle(cColor, fSize);
+	return NULL;
 }
 
 

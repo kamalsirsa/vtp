@@ -3,7 +3,7 @@
 //
 // A terrain subclass that adds Portalling (and some other test code).
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,6 +39,7 @@ public:
 					  float fSpeed, const char *filename);
 #endif
 	VehicleType *m_pFirstVehicleType;
+	bool m_bAttemptedVehicleLoad;
 };
 
 #endif	// PTERRAINH
