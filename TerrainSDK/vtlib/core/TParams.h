@@ -72,6 +72,7 @@ public:
 	unint		m_iTilesize;
 	vtString	m_strTextureSingle;
 	vtString	m_strTextureBase;
+	bool		m_bJPEG;
 	vtString	m_strTextureFilename;
 	bool		m_bMipmap;
 	bool		m_b16bit;

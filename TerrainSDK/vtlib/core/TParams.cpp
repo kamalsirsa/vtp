@@ -42,6 +42,7 @@ TParams::TParams()
 
 	m_eTexture = TE_NONE;
 	m_iTilesize = 512;
+	m_bJPEG = false;
 	m_bMipmap = false;
 	m_b16bit = true;
 	m_bPreLight = true;
@@ -129,6 +130,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_iTilesize = rhs.m_iTilesize;
 	m_strTextureSingle = rhs.m_strTextureSingle;
 	m_strTextureBase = rhs.m_strTextureBase;
+	m_bJPEG = rhs.m_bJPEG;
 	m_strTextureFilename = rhs.m_strTextureFilename;
 	m_bMipmap = rhs.m_bMipmap;
 	m_b16bit = rhs.m_b16bit;
@@ -249,6 +251,7 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_TILESIZE "Tile_Size"
 #define STR_TEXTURESINGLE "Single_Texture"
 #define STR_TEXTUREBASE "Base_Texture"
+#define STR_TEXTUREFORMAT "Texture_Format"
 #define STR_MIPMAP "MIP_Map"
 #define STR_16BIT "16_Bit"
 #define STR_PRELIGHT "Pre-Light"
@@ -304,9 +307,6 @@ bool TParams::LoadFromFile(const char *filename)
 {
 	int iDummy;
 
-//	ifstream input(filename, ios::nocreate | ios::binary);
-//	ifstream input(filename, ios::binary);
-//	ifstream input(filename, ios_base::in | ios_base::binary);
 	ifstream input(filename, ios::in | ios::binary);
 	if (!input.is_open())
 		return false;
@@ -381,6 +381,8 @@ bool TParams::LoadFromFile(const char *filename)
 			m_strTextureSingle = get_line_from_stream(input);
 		else if (strcmp(buf, STR_TEXTUREBASE) == 0)
 			m_strTextureBase = get_line_from_stream(input);
+		else if (strcmp(buf, STR_TEXTUREFORMAT) == 0)
+			input >> m_bJPEG;
 		else if (strcmp(buf, STR_MIPMAP) == 0)
 			input >> m_bMipmap;
 		else if (strcmp(buf, STR_16BIT) == 0)
@@ -471,8 +473,12 @@ bool TParams::LoadFromFile(const char *filename)
 			get_line_from_stream(input);
 		}
 	}
-	m_strTextureFilename.Format("%s%d.bmp", (const char *) m_strTextureBase,
+	m_strTextureFilename.Format("%s%d", (const char *) m_strTextureBase,
 		NTILES * (m_iTilesize-1) + 1);
+	if (m_bJPEG)
+		m_strTextureFilename += ".jpg";
+	else
+		m_strTextureFilename += ".bmp";
 	return true;
 }
 
@@ -541,6 +547,8 @@ bool TParams::SaveToFile(const char *filename)
 	output << (const char *) m_strTextureSingle << endl;
 	output << STR_TEXTUREBASE << "\t";
 	output << (const char *) m_strTextureBase << endl;
+	output << STR_TEXTUREFORMAT << "\t";
+	output << m_bJPEG << endl;
 	output << STR_MIPMAP << "\t\t\t";
 	output << m_bMipmap << endl;
 	output << STR_16BIT << "\t\t\t";

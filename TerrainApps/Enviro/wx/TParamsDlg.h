@@ -60,6 +60,7 @@ public:
 	int		m_iTilesize;
 	wxString	m_strTextureSingle;
 	wxString	m_strTextureBase;
+	bool	m_bJPEG;
 	wxString	m_strTextureFilename;
 	bool	m_bMipmap;
 	bool	m_b16bit;

@@ -45,6 +45,8 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
 	EVT_RADIOBUTTON( ID_TILED, TParamsDlg::OnTextureTiled )
 
+	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
+
 	EVT_CHECKBOX( ID_REGULAR, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DYNAMIC, TParamsDlg::OnCheckBox )
 
@@ -106,6 +108,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_iTilesize = Params.m_iTilesize;
 	m_strTextureSingle = Params.m_strTextureSingle;
 	m_strTextureBase = Params.m_strTextureBase;
+	m_bJPEG = Params.m_bJPEG;
 	m_strTextureFilename = Params.m_strTextureFilename;
 	m_bMipmap = Params.m_bMipmap;
 	m_b16bit = Params.m_b16bit;
@@ -197,6 +200,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_iTilesize = m_iTilesize;
 	Params.m_strTextureSingle = m_strTextureSingle;
 	Params.m_strTextureBase = m_strTextureBase;
+	Params.m_bJPEG = m_bJPEG;
 	Params.m_strTextureFilename = m_strTextureFilename;
 	Params.m_bMipmap = m_bMipmap;
 	Params.m_b16bit = m_b16bit;
@@ -250,8 +254,12 @@ void TParamsDlg::GetParams(TParams &Params)
 
 void TParamsDlg::UpdateTiledTextureFilename()
 {
-	m_strTextureFilename.Printf("%s%d.bmp", (const char *)m_strTextureBase,
+	m_strTextureFilename.Printf("%s%d", (const char *)m_strTextureBase,
 		NTILES * (m_iTilesize-1) + 1);
+	if (m_bJPEG)
+		m_strTextureFilename += ".jpg";
+	else
+		m_strTextureFilename += ".bmp";
 	TransferDataToWindow();
 }
 
@@ -271,6 +279,7 @@ void TParamsDlg::UpdateEnableState()
 
 	FindWindow(ID_TILESIZE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILEBASE)->Enable(m_iTexture == TE_TILED);
+	FindWindow(ID_JPEG)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
 
 	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE);
@@ -357,6 +366,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		// fill the "single texture filename" control with available bitmap files
 		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.bmp");
+		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.jpg");
+		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.jpeg");
 		sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
 		if (sel != -1)
 			m_pTextureFileSingle->SetSelection(sel);
@@ -439,6 +450,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
 	AddNumValidator(ID_TILESIZE, &m_iTilesize);
 	AddValidator(ID_TFILEBASE, &m_strTextureBase);
+	AddValidator(ID_JPEG, &m_bJPEG);
 	AddValidator(ID_TFILENAME, &m_strTextureFilename);
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
@@ -557,5 +569,6 @@ void TParamsDlg::OnCheckBox( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	UpdateEnableState();
+	UpdateTiledTextureFilename();
 }
 

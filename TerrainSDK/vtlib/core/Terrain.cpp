@@ -252,8 +252,9 @@ void vtTerrain::create_textures()
 		else
 		{
 			// Load a DIB of the whole, large texture
-			m_pDIB = new vtDIB(texture_path);
-			if (! m_pDIB->m_bLoadedSuccessfully)
+			m_pDIB = new vtDIB();
+			bool result = m_pDIB->Read(texture_path);
+			if (! result)
 			{
 				m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 											 RGBf(0.2f, 0.2f, 0.2f),
@@ -284,7 +285,8 @@ void vtTerrain::create_textures()
 		if (tsize > tmax) tsize = tmax;
 
 		// derive color from elevation
-		m_pDIB = new vtDIB(tsize, tsize, 24, false);
+		m_pDIB = new vtDIB();
+		m_pDIB->Create(tsize, tsize, 24, false);
 		m_pElevGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
 	}
 
@@ -1352,7 +1354,8 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 			y_off = j * (size - 1);
 
 			// make a tile
-			vtDIB *dib2 = new vtDIB(size, size, dib1->GetDepth(), mono);
+			vtDIB *dib2 = new vtDIB();
+			dib2->Create(size, size, dib1->GetDepth(), mono);
 
 			unsigned long pixel;
 			if (mono)
@@ -1374,9 +1377,14 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 					}
 			}
 
-			vtImage *pImage = new vtImage(dib2, (!mono && m_Params.m_b16bit) ? GL_RGB5 : -1);
+			int internalformat;
+			if (!mono && m_Params.m_b16bit)
+				internalformat = GL_RGB5;
+			else
+				internalformat = -1;
+			vtImage *pImage = new vtImage(dib2, internalformat);
 
-			// Can't delete the internals DIBs here because the scene graph
+			// Can we delete the internals DIBs here, or does the scene graph
 			//   needs the data?  Actually no, the scene graph gets a copy of it.
 //			dib2->LeaveInternalDIB(true);
 			delete dib2;

@@ -744,47 +744,53 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxTextCtrl *item13 = new wxTextCtrl( parent, ID_TFILEBASE, "", wxDefaultPosition, wxSize(100,-1), 0 );
     item9->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, "Filename: ", wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, "File Format:", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_TFILENAME, "", wxDefaultPosition, wxSize(150,-1), 0 );
-    item9->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxCheckBox *item15 = new wxCheckBox( parent, ID_JPEG, "JPEG", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, "Filename: ", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item16, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_TFILENAME, "", wxDefaultPosition, wxSize(150,-1), 0 );
+    item9->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     item1->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item17 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item19 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item18 = new wxCheckBox( parent, ID_MIPMAP, "Mipmapping", wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item20 = new wxCheckBox( parent, ID_MIPMAP, "Mipmapping", wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item19 = new wxCheckBox( parent, ID_16BIT, "Request 16-bit", wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item21 = new wxCheckBox( parent, ID_16BIT, "Request 16-bit", wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item16->Add( item17, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    item18->Add( item19, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    wxBoxSizer *item20 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item22 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item21 = new wxCheckBox( parent, ID_PRELIGHT, "Precompute lighting", wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item21, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item23 = new wxCheckBox( parent, ID_PRELIGHT, "Precompute lighting", wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, "Lighting factor: ", wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTRE|wxALL, 0 );
+    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, "Lighting factor: ", wxDefaultPosition, wxDefaultSize, 0 );
+    item24->Add( item25, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxTextCtrl *item24 = new wxTextCtrl( parent, ID_LIGHT_FACTOR, "", wxDefaultPosition, wxSize(40,-1), 0 );
-    item22->Add( item24, 0, wxALIGN_CENTRE|wxALL, 0 );
+    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_LIGHT_FACTOR, "", wxDefaultPosition, wxSize(40,-1), 0 );
+    item24->Add( item26, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    item20->Add( item22, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item22->Add( item24, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxCheckBox *item25 = new wxCheckBox( parent, ID_PRELIT, "Pre-lit", wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item25, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item27 = new wxCheckBox( parent, ID_PRELIT, "Pre-lit", wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item16->Add( item20, 0, wxALIGN_CENTRE|wxALL, 0 );
+    item18->Add( item22, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    item1->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item1->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
 
