@@ -1079,7 +1079,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		m_bSelectedStruct = false;
 
 		int structure;		// index of closest structure
-		bool result1 = structures.FindClosestStructure(gpos, 20.0,
+		bool result1 = structures.FindClosestStructure(gpos, 10.0,
 			structure, dist1);
 
 		vtPlantInstanceArray3d &plants = GetCurrentTerrain()->GetPlantInstances();
