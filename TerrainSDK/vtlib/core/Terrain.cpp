@@ -26,6 +26,7 @@
 #include "CustomTerrain.h"
 #include "BryanTerrain.h"
 #include "SRTerrain.h"
+#include "DemeterTerrain.h"
 // add your own LOD method header here!
 
 #define LARGEST_BLOCK_SIZE	16
@@ -418,27 +419,34 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	if (m_Params.m_eLodMethod == LM_TOPOVISTA)
 	{
 		m_pDynGeom = new TVTerrain();
-		m_pDynGeom->SetName2("TV Shape");
+		m_pDynGeom->SetName2("TV Geom");
 	}
 	else if (m_Params.m_eLodMethod == LM_MCNALLY)
 	{
 		m_pDynGeom = new SMTerrain();
-		m_pDynGeom->SetName2("Seumas Shape");
+		m_pDynGeom->SetName2("Seumas Geom");
+	}
+	else if (m_Params.m_eLodMethod == LM_DEMETER)
+	{
+#if 0	// disabled until its working
+		m_pDynGeom = new DemeterTerrain();
+		m_pDynGeom->SetName2("Demeter Geom");
+#endif
 	}
 	else if (m_Params.m_eLodMethod == LM_CUSTOM)
 	{
 		m_pDynGeom = new CustomTerrain();
-		m_pDynGeom->SetName2("CustomTerrain Shape");
+		m_pDynGeom->SetName2("CustomTerrain Geom");
 	}
 	else if (m_Params.m_eLodMethod == LM_BRYANQUAD)
 	{
 		m_pDynGeom = new BryanTerrain();
-		m_pDynGeom->SetName2("BryanQuad Shape");
+		m_pDynGeom->SetName2("BryanQuad Geom");
 	}
 	else if (m_Params.m_eLodMethod == LM_ROETTGER)
 	{
 		m_pDynGeom = new SRTerrain();
-		m_pDynGeom->SetName2("Roettger Shape");
+		m_pDynGeom->SetName2("Roettger Geom");
 	}
 	// add your own LOD method here!
 

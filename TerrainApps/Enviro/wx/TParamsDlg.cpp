@@ -398,6 +398,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 //	m_pLodMethod->Append("Lindstrom-Koller");
 	m_pLodMethod->Append("TopoVista");
 	m_pLodMethod->Append("McNally");
+	m_pLodMethod->Append("Demeter");
 	m_pLodMethod->Append("Custom");
 	m_pLodMethod->Append("BryanQuad");
 	// add your own LOD method here!
