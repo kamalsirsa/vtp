@@ -171,24 +171,23 @@ bool vtTin::Write(const char *fname)
 	return true;
 }
 
-bool vtTin::GetExtents(DRECT &rect, float &minheight, float &maxheight)
+bool vtTin::ComputeExtents()
 {
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
-
-	minheight = 1E9;
-	maxheight = -1E9;
-
 	int size = NumVerts();
 	if (size == 0)
 		return false;
 
+	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
+	m_fMinHeight = 1E9;
+	m_fMaxHeight = -1E9;
+
 	for (int j = 0; j < size; j++)
 	{
-		rect.GrowToContainPoint(m_vert[j]);
+		m_EarthExtents.GrowToContainPoint(m_vert[j]);
 
 		float z = m_z[j];
-		if (z > maxheight) maxheight = z;
-		if (z < minheight) minheight = z;
+		if (z > m_fMaxHeight) m_fMaxHeight = z;
+		if (z < m_fMinHeight) m_fMinHeight = z;
 	}
 	return true;
 }
@@ -308,9 +307,8 @@ void vtTin::MergeSharedVerts(void progress_callback(int))
 	unsigned int i, j;
 	int bin;
 
-	DRECT rect;
-	float minh, maxh;
-	GetExtents(rect, minh, maxh);
+	DRECT rect = m_EarthExtents;
+	float minh = m_fMinHeight, maxh = m_fMaxHeight;
 	double width = rect.Width();
 
 	// make it slightly larger avoid edge condition

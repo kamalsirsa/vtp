@@ -37,7 +37,7 @@ public:
 	bool Read(const char *fname);
 	bool Write(const char *fname);
 
-	bool GetExtents(DRECT &rect, float &minheight, float &maxheight);
+	bool ComputeExtents();
 	void Offset(const DPoint2 &p);
 	bool ConvertProjection(const vtProjection &proj_new);
 
