@@ -590,7 +590,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 	float xFactor = (float)gw/(float)w;
 	float yFactor = (float)gh/(float)h;
 
-	bool b8bit = (pBM->GetDepth() == 8);
+	int depth = pBM->GetDepth();
 	FPoint3 p1, p2, p3;
 	FPoint3 v1, v2, v3;
 	int i, j;
@@ -647,10 +647,12 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 			if (shade < 0) shade = 0;
 
 			// combine color and shading
-			if (b8bit)
+			if (depth == 8)
 				pBM->ScalePixel8(i, h-1-j, shade);
-			else
+			else if (depth == 24)
 				pBM->ScalePixel24(i, h-1-j, shade);
+			else if (depth == 32)
+				pBM->ScalePixel32(i, h-1-j, shade);
 		}
 	}
 }
