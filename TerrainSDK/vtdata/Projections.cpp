@@ -13,6 +13,7 @@
 #include "vtString.h"	// for stricmp
 #include "vtLog.h"
 #include "Icosa.h"
+#include "FilePath.h"
 
 // GDAL
 #include "cpl_csv.h"
@@ -495,6 +496,31 @@ bool vtProjection::SetTextDescription(const char *type, const char *value)
 	return false;
 }
 
+//
+// Helper: open the .prj file associated with a filename
+//
+FILE *OpenCorrespondingPrjFile(vtString &filename, const char *mode)
+{
+	// check file extension
+	if (filename.Right(4).CompareNoCase(".prj") == 0)
+		return fopen(filename, mode);
+
+	// doesn't already ends in .prj
+	vtString base = filename;
+	RemoveFileExtensions(base, false);
+	filename = base + ".prj";
+	FILE *fp = fopen(filename, mode);
+
+	if (!fp)
+	{
+		// look backward one more extension, e.g. for .bt.gz
+		RemoveFileExtensions(base, false);
+		filename = base + ".prj";
+		fp = fopen(filename, mode);
+	}
+	return fp;
+}
+
 /**
  * Read the projection from a .prj file.
  *
@@ -506,39 +532,11 @@ bool vtProjection::SetTextDescription(const char *type, const char *value)
  */
 bool vtProjection::ReadProjFile(const char *filename)
 {
-	char prj_name[256];
-	int len = strlen(filename);
-
-	// check file extension
-	char *dot = NULL;
-	if (len >= 4 && !stricmp(filename + len - 4, ".prj"))
-	{
-		strcpy(prj_name, filename);
-	}
-	else
-	{
-		strcpy(prj_name, filename);
-		dot = strrchr(prj_name, '.');
-		if (dot)
-			strcpy(dot, ".prj");
-		else
-			strcat(prj_name, ".prj");
-	}
-
-	FILE *fp = fopen(prj_name, "rb");
-	if (!fp && dot)
-	{
-		// look backward one more extension, e.g. for .bt.gz
-		*dot = 0;
-		dot = strrchr(prj_name, '.');
-		if (dot)
-		{
-			strcpy(dot, ".prj");
-			fp = fopen(prj_name, "rb");
-		}
-	}
+	vtString prj_name = filename;
+	FILE *fp = OpenCorrespondingPrjFile(prj_name, "rb");
 	if (!fp)
 		return false;
+	fclose(fp);
 
 	// Now read and parse the file
 	// Actually, importFromESRI() does the whole job for us, including
@@ -569,7 +567,8 @@ bool vtProjection::ReadProjFile(const char *filename)
  */
 bool vtProjection::WriteProjFile(const char *filename) const
 {
-	FILE *fp2 = fopen(filename, "wb");
+	vtString fname = filename;
+	FILE *fp2 = OpenCorrespondingPrjFile(fname, "wb");
 	if (!fp2)
 		return false;
 
