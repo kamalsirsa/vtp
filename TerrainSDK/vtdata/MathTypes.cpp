@@ -644,31 +644,181 @@ void RGBAi::Crop()
 ///////////////////////////////////////////////////////////////////////
 // FPlane
 
+FPlane::FPlane(const FPoint3& p, const FPoint3& q, const FPoint3& r)
+{
+	// Construct from three points
+	float fpx = p.x - r.x;
+	float fpy = p.y - r.y;
+	float fpz = p.z - r.z;
+	float fqx = q.x - r.x;
+	float fqy = q.y - r.y;
+	float fqz = q.z - r.z;
+
+	x = fpy * fqz - fqy * fpz;
+	y = fpz * fqx - fqz * fpx;
+	z = fpx * fqy - fqx * fpy;
+	w = - x * r.x - y * r.y - z * r.z;
+}
+
+FPlane::FPlane(const FPoint3& Point, const FPoint3& Normal)
+{
+	// Construct from point and normal
+	x = Normal.x;
+	y = Normal.y;
+	z = Normal.z;
+	w = - x * Normal.x - y * Normal.y - z * Normal.z;
+}
+
+/** Construct from two 3D points and an angle from the
+	 intersection with the 2D (x,z) co-ordinate plane.
+	N.B. The y co-ordinates must be the same.
+	This produces a plane that is clockwise oriented in XZ.
+*/
+FPlane::FPlane(const FPoint3& PointA, const FPoint3& PointB, const float Theta)
+{
+	// Do this long handed for the time being
+	FPoint3 VectorAB = PointB - PointA;
+	assert(0.0 == VectorAB.y);
+	// Rotate clockwise 90 degrees in x z
+	FPoint3 VectorAC(VectorAB.z, 0.0, -VectorAB.x);
+	// Construct a rotation matrix around vectorAB
+	VectorAB.Normalize();
+	FMatrix3 Matrix;
+	Matrix.AxisAngle(VectorAB, Theta);
+	FPoint3 PointC;
+	Matrix.Transform(VectorAC, PointC);
+	PointC = PointC + PointA;
+	*this = FPlane(PointA, PointB, PointC);
+}
+
+const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint3& Origin, FPoint3& Direction, float fEpsilon) const
+{
+	double a = x;
+	double b = y;
+	double c = z;
+	double d = w;
+	double p = Plane.x;
+	double q = Plane.y;
+	double r = Plane.z;
+	double s = Plane.w;
+
+	double Determinant;
+	FPoint3 p1;
+	FPoint3 p2;
+	
+	Determinant = a * q - p * b;
+	if (fabs(Determinant - 0.0) > fEpsilon)
+	{
+		Origin = FPoint3((b * s - d * q) / Determinant, (p * d - a * s) / Determinant, 0.0);
+		Direction = FPoint3(b * r - c * q, p * c - a * r, Determinant);
+		return INTERSECTING;
+	}
+
+	Determinant = a * r - p * c;
+	if (fabs(Determinant - 0.0) > fEpsilon)
+	{
+		Origin = FPoint3((c * s - d * r) / Determinant, 0.0, (p * d - a * s) / Determinant);
+		Direction = FPoint3(c * q - b * r, Determinant, p * b - a * q);
+		return INTERSECTING;
+	}
+
+	Determinant = b * r - c * q;
+	if (fabs(Determinant - 0.0) > fEpsilon)
+	{
+		Origin = FPoint3(0.0, (c * s - d * r) / Determinant, (d * q - b * s) / Determinant);
+		Direction = FPoint3(Determinant, c * p - a * r, a * q - b * p);
+		return INTERSECTING;
+	}
+
+	if (a != 0.0 || p != 0.0)
+	{
+		if (fabs(a * s - p * d) <= fEpsilon)
+			return COPLANAR;
+		else
+			return PARALLEL;
+	}
+	if (b != 0.0 || q != 0.0)
+	{
+		if (fabs(b * s - q * d) <= fEpsilon)
+			return COPLANAR;
+		else
+			return PARALLEL;
+	}
+	if (c != 0.0 || r != 0.0)
+	{
+		if (fabs(c * s - r * d) <= fEpsilon)
+			return COPLANAR;
+		else
+			return PARALLEL;
+	}
+	return PARALLEL;
+}
+
 /**
  * Compute Ray-Plane intersection.
  *
- * \param pos, dir	The position and direction that define the ray.
- * \param dist		The distance along the ray to the intersection point.
- * \param result	The intersection point.
+ * \param Origin, Direction	The position and direction that define the ray.
+ * \param fDistance			The distance along the ray to the intersection point.
+ * \param Intersection		The intersection point.
+ * \param fEpsilon			Small value to test for numeric equivalenccy.
  *
- * \return true if there is an intersection point on the ray.
+ * \return The intersection result (PARALLEL, FACING_AWAY, or INTERSECTING)
  */
-bool FPlane::RayIntersection(const FPoint3 &pos, const FPoint3 &dir, float &dist, FPoint3 &result)
+const FPlane::IntersectionType FPlane::RayIntersection(const FPoint3& Origin,
+		const FPoint3& Direction, float &fDistance, FPoint3& Intersection,
+		float fEpsilon) const
 {
-	// Main formula: t = -(Pn· R0 + D) / (Pn· Rd)
-	float denom = Dot(dir);
+	// Intersection of ray with plane
+	float NdotV = Dot(Direction);
 
-	//If Pn· Rd = 0, the ray is parallel to the plane and there is no intersection.
-	if (fabs(denom) < 0.00001)
-		return false;
+	if (fabs(0.0 - NdotV) <= fEpsilon)
+		return PARALLEL;
 
-	float t = -(Dot(pos) + w) / denom;
-	dist = t;
-	result = pos + (dir * t);
+	fDistance = -(Dot(Origin) + w) / NdotV;
 
-	// if t < 0 then the intersection point is not on the ray
-	return (dist > 0);
+	if (fDistance < 0.0)
+		return FACING_AWAY;
+
+	Intersection = Origin + Direction * fDistance;
+
+	return INTERSECTING;
 }
+
+const FPlane::IntersectionType FPlane::LineIntersection(const FPoint3& Origin, const FPoint3& Direction, FPoint3& Intersection, float fEpsilon) const
+{
+	float Numerator = x * Origin.x + y * Origin.y + z * Origin.z + w;
+	float Denominator = x * Direction.x + y * Direction.y + z * Direction.z;
+
+	if (fabs(0.0 - Denominator) <= fEpsilon)
+	{
+		if (fabs(0.0 - Numerator) <= fEpsilon)
+			return COPLANAR;
+		else
+			return PARALLEL;
+	}
+	Intersection.x = (Denominator * Origin.x - Numerator * Direction.x) / Denominator;
+	Intersection.y = (Denominator * Origin.y - Numerator * Direction.y) / Denominator;
+	Intersection.z = (Denominator * Origin.z - Numerator * Direction.z) / Denominator;
+	return INTERSECTING;
+}
+
+const FPlane::IntersectionType FPlane::ThreePlanesIntersection(const FPlane& Plane1, const FPlane& Plane2, FPoint3& Intersection, float fEpsilon) const
+{
+	FPoint3 Origin;
+	FPoint3 Direction;
+
+	IntersectionType Type = Plane1.Intersection(Plane2, Origin, Direction, fEpsilon);
+
+	if (INTERSECTING == Type)
+	{
+		// Planes have an intersection line
+		Type = LineIntersection(Origin, Direction, Intersection, fEpsilon);
+		return Type;
+	}
+	else
+		return Type;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // LocaleWrap

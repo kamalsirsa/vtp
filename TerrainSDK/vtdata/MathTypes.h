@@ -204,41 +204,6 @@ inline DPoint3::DPoint3(const FPoint3 &v) { x = v.x; y = v.y; z = v.z; }
 inline FPoint3 &FPoint3::operator=(const DPoint3 &v) { x = (float) v.x; y = (float) v.y; z = (float) v.z; return *this; }
 inline DPoint3 &DPoint3::operator=(const FPoint3 &v) { x = v.x; y = v.y; z = v.z; return *this; }
 
-/////////////////////////////////////////////
-
-/**
- * A class representing an infinite plane, single-precision (float).
- */
-class FPlane : public FPoint3
-{
-public:
-	FPlane() {}
-	FPlane(float a, float b, float c, float d) { x = a; y = b; z = c; w = d; }
-	const FPlane &operator=(const FPlane &rhs)
-	{
-		x = rhs.x;
-		y = rhs.y;
-		z = rhs.z;
-		w = rhs.w;
-		return *this;
-	}
-	void Set(const FPoint3& p, const FPoint3& n)
-	{
-		x = n.x;
-		y = n.y;
-		z = n.z;
-		w = -n.Dot(p);
-	}
-	void Set(float a, float b, float c, float d) { x = a; y = b; z = c; w = d; }
-	float Distance(const FPoint3 &v) const
-	{
-		return Dot(v) + w;
-	}
-	bool RayIntersection(const FPoint3 &pos, const FPoint3 &dir, float &dist, FPoint3 &result);
-
-	float w;
-};
-
 ////////////////////////////////////////////////////////////////
 
 class FPoint2;
@@ -551,6 +516,65 @@ inline FLine3 &FLine3::operator=(const class FLine3 &v)
 	return *this;
 }
 
+
+/////////////////////////////////////////////
+
+/**
+ * A class representing an infinite plane, interface single-precision (float).
+ */
+class FPlane : public FPoint3
+{
+public:
+	typedef enum { COLINEAR, COPLANAR, PARALLEL, FACING_AWAY, INTERSECTING } IntersectionType;
+
+	// Default constructor
+	FPlane()
+	{
+		w = 0.0;
+	}
+	/// Construct from parametric coefficients
+	FPlane(float a, float b, float c, float d) { x = a; y = b; z = c; w = d; }
+	/// Construct from three points
+	FPlane(const FPoint3& p, const FPoint3& q, const FPoint3& r);
+	/// Construct from point and normal vector
+	FPlane(const FPoint3& Point, const FPoint3& Normal);
+	/// Construct from two 2D points and an angle
+	FPlane(const FPoint3& PointA, const FPoint3& PointB, const float Theta);
+
+	const FPlane &operator=(const FPlane &rhs)
+	{
+		x = rhs.x;
+		y = rhs.y;
+		z = rhs.z;
+		w = rhs.w;
+		return *this;
+	}
+	void Set(const FPoint3 &p, const FPoint3 &n)
+	{
+		x = n.x;
+		y = n.y;
+		z = n.z;
+		w = -n.Dot(p);
+	}
+	void Set(float a, float b, float c, float d) { x = a; y = b; z = c; w = d; }
+	float Distance(const FPoint3 &v) const
+	{
+		return Dot(v) + w;
+	}
+
+	/// Intersection of two planes
+	const IntersectionType Intersection(const FPlane &Plane, FPoint3 &Origin, FPoint3 &Direction, float fEpsilon = 0.0) const;
+	/// Intersection of ray with plane
+	const IntersectionType RayIntersection(const FPoint3 &Origin, const FPoint3 &Direction, float &fDistance, FPoint3 &Intersection, float fEpsilon = 0.0) const;
+	/// Intersection of line with plane
+	const IntersectionType LineIntersection(const FPoint3 &Origin, const FPoint3 &Direction, FPoint3 &Intersection, float fEpsilon = 0.0) const;
+	/// Intersection of three planes
+	const IntersectionType ThreePlanesIntersection(const FPlane &Plane1, const FPlane &Plane2, FPoint3 &Intersection, float fEpsilon = 0.0) const;
+
+	float w;
+};
+
+
 /////////////////////////////////////
 
 /**
@@ -606,7 +630,7 @@ public:
 		center = src.Center();
 		radius = (center - src.min).Length();
 	}
-	FSphere(const FPoint3& p, float fRadius)
+	FSphere(const FPoint3 &p, float fRadius)
 	{
 		Set(p, fRadius);
 	}
@@ -616,7 +640,7 @@ public:
 		radius = rhs.radius;
 		return *this;
 	}
-	void Set(const FPoint3& p, float fRadius)
+	void Set(const FPoint3 &p, float fRadius)
 	{
 		center = p;
 		radius = fRadius;
