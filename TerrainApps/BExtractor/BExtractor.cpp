@@ -5,7 +5,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "BExtractor.h"
 
 #include "MainFrm.h"
@@ -78,7 +78,7 @@ BOOL CBExtractorApp::InitInstance()
 
 	CSingleDocTemplate* pDocTemplate;
 	pDocTemplate = new CSingleDocTemplate(
-		IDR_MAINFRAME, 
+		IDR_MAINFRAME,
 		RUNTIME_CLASS(BExtractorDoc),
 		RUNTIME_CLASS(CMainFrame),       // main SDI frame window
 		RUNTIME_CLASS(BExtractorView));
