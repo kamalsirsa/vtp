@@ -110,6 +110,10 @@ void Enviro::LoadTerrainDescriptions()
 			std::string name1 = *it;
 			vtString name = name1.c_str();
 
+			// only look for ".ini" files
+			if (name.GetLength() < 5 || name.Right(4).CompareNoCase(".ini"))
+				continue;
+
 			// Some terrain .ini files want to use a different Terrain class
 			if (name == "Hawai`i.ini" || name == "Honoka`a.ini" || name == "Kealakekua.ini" )
 				pTerr = new IslandTerrain();
