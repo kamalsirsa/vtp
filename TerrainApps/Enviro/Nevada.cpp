@@ -482,22 +482,6 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_pSprite->SetTextFont("Data/Fonts/default.txf");
 #endif
 
-#if 0
-	// create overwater haze (fog)
-	m_pFog1 = new vtFog();
-	m_pFog1->SetStart(1.0f);	// 1 m
-	m_pFog1->SetEnd(5000.0f);	// 5 km
-//	m_pFog1->SetColor(RGBf(255.0f/255, 240.0f/255, 225.0f/255));	// tan
-	m_pFog1->SetColor(RGBf(176.0f/255, 215.0f/255, 255.0f/255));	// blue horizon color
-	m_pFog1->SetKind(FOG_Linear);
-
-	// create underwater murk (fog)
-	m_pFog2 = new vtFog();
-	m_pFog2->SetStart(1.0f);	// 1 m
-	m_pFog2->SetEnd(50.0f);	// 50 m
-	m_pFog2->SetColor(RGBf(70.0f/255, 70.0f/255, 145.0f/255));
-	m_pFog2->SetKind(FOG_Linear);
-#endif
 	m_pPastApp = pastApp;
 	m_pPresentApp = presentApp;
 }
@@ -508,14 +492,22 @@ void EpochEngine::Eval()
 	vtCamera *pCam = (vtCamera *)GetTarget();
 	FPoint3 campos = pCam->GetTrans();
 
-#if 0
+	static bool bAboveWater = false;
 	// turn on murkiness if we're under water?
 	if (campos.y < m_fWaterHeight)
-		vtGetScene()->SetFog(m_pFog2);
+	{
+		if (bAboveWater)
+			m_pNevada->GetTopGroup()->SetFog(true, 1, 500, RGBf(70.0f/255, 70.0f/255, 145.0f/255));
+		bAboveWater = false;
+	}
 	else
-		vtGetScene()->SetFog(m_pFog1);
-	vtGetScene()->GetFog()->SetChanged(true);
-#else
+	{
+		if (!bAboveWater)
+			m_pNevada->GetTopGroup()->SetFog(true, 1, 15000, RGBf(176.0f/255, 215.0f/255, 255.0f/255));
+		bAboveWater = true;
+	}
+
+#if 0
 	// keep head above water
 	float minimum = m_fWaterHeight + 15.0f;
 	if (campos.y < minimum)
