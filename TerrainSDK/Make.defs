@@ -2,6 +2,16 @@
 # GNU Makefile Variable Defs:  TerrainSDK
 #
 
+#----------------------------------------------------------------------------
+# In general Unix systems will use these values, but Cygwin overrides them.
+#----------------------------------------------------------------------------
+LOCALBASE = /usr/local
+X11BASE   = /usr/X11R6
+PREFIX    = $(X11BASE)
+X_INC = $(X11BASE)/include
+X_LIB = $(X11BASE)/lib
+OSG_BASE = $(LOCALBASE)
+
 #------------------------------------------------------------------------------
 # SGI IRIX with MIPSPro compilers  (tested with ver. 7.3.1.1m)
 #   (IRIX Folks:  Read TerrainApps/README.sgi!)
@@ -67,6 +77,37 @@ EXTRA_LIBS = -lXi
 LDIRFLAGS = $(LDIRS:%=-L%)
 
 #------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Cygwin with GCC (tested with ver. 2.95.3)
+#------------------------------------------------------------------------------
+#CC        = gcc-2
+#CXX       = c++-2
+#AR        = ar ruv
+#COPT      = -O2 -W -Wall -Wno-unused -g -DWIN32 -DNOMINMAX
+### -fvtable-thunks
+#SO_EXT	  = dll
+#SO_PREFIX = cyg
+#
+#LD        = $(CXX) $(COPT)
+#LD_SHARED = $(CXX) $(COPT) -shared \
+#	-Wl,--export-all-symbols \
+#	-Wl,--allow-multiple-definition \
+#	-W1,--enable-stdcall-fixup \
+#	-Wl,--output-def,$(VTP_ROOT)/lib/lib$(TARGET_BASENAME).def \
+#	-Wl,--out-implib,$(VTP_ROOT)/lib/lib$(TARGET_BASENAME).a 
+#PREFIX    = $(VTP_ROOT)
+#X_INC = 
+#X_LIB = 
+#OSG_BASE = $(VTP_ROOT)/OpenSceneGraph-0.9.2
+#
+#GLUT_LIB = -lglut32
+#GLU_LIB  = -lglu32
+#EXTRA_LIBS =
+#LDIRFLAGS = $(LDIRS:%=-L%)
+
+#------------------------------------------------------------------------------
+# End System specific defs
+#------------------------------------------------------------------------------
 
 colon:= :
 empty:=  
@@ -78,15 +119,6 @@ space:= $(empty) $(empty)
 #
 #==============================================================================
 
-LOCALBASE = /usr/local
-X11BASE   = /usr/X11R6
-PREFIX    = $(X11BASE)
-
-#X_INC = /usr/include
-#X_LIB = /usr/lib
-X_INC = $(X11BASE)/include
-X_LIB = $(X11BASE)/lib
-
 # NOTE: VTP_ROOT is set in each Makefile
 
 APIS_DIR         = $(VTP_ROOT)/APIs
@@ -95,30 +127,21 @@ TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
 VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
 VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
-MINI_DIR         = $(VTP_ROOT)/../libmini-4.6
 
-#NETCDF_INC = $(APIS_DIR)/NetCDF/include
-#NETCDF_LIB = $(APIS_DIR)/NetCDF/lib
 NETCDF_INC = $(LOCALBASE)/include
 NETCDF_LIB = $(LOCALBASE)/lib
 
-#PNG_INC = $(APIS_DIR)/libpng-1.0.8/include
-#PNG_LIB = $(APIS_DIR)/libpng-1.0.8/lib
 PNG_INC = $(LOCALBASE)/include
 PNG_LIB = $(LOCALBASE)/lib
 
-#OSG_INC = $(VTP_ROOT)/OpenSceneGraph-0.8/include
-#OSG_LIB = $(VTP_ROOT)/OpenSceneGraph-0.8/lib
-OSG_INC = $(LOCALBASE)/include
-OSG_LIB = $(LOCALBASE)/lib
+OSG_INC = $(OSG_BASE)/include
+OSG_LIB = $(OSG_BASE)/lib
 
 GDAL_INC = $(LOCALBASE)/include
 GDAL_LIB = $(LOCALBASE)/lib
 
-MINI_INC = $(MINI_DIR)
-MINI_LIB = $(MINI_DIR)/libMini.a
+MINI_INC = $(LOCALBASE)/include
+MINI_LIB = $(LOCALBASE)/lib/libMini.a
 
-#VTDATA_INST_DIR = $(VTDATA_DIR)
-#VTOSG_INST_DIR  = $(VTOSG_DIR)
 VTDATA_INST_DIR = $(PREFIX)/lib
 VTOSG_INST_DIR  = $(PREFIX)/lib
