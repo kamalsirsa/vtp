@@ -482,7 +482,8 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 			pLayer = pTL;
 	}
 #endif
-	if (ext.CmpNoCase(_T("vtst")) == 0)
+	if (ext.CmpNoCase(_T("vtst")) == 0 ||
+		fname.Right(8).CmpNoCase(_T(".vtst.gz")) == 0)
 	{
 		vtStructureLayer *pSL = new vtStructureLayer();
 		if (pSL->Load(fname))
