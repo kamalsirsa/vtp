@@ -1,7 +1,10 @@
 //
 // CoreMeshMat.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Mesh and Material classes and methods which are a core part of the vtlib
+// library.
+//
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -491,6 +494,63 @@ void vtMeshBase::CreateRectangle(float xsize, float ysize)
 	AddVertexUV( xsize/2, 0.0f,  ysize/2,	1.0f, 1.0f);
 	AddVertexUV(-xsize/2, 0.0f,  ysize/2,	0.0f, 1.0f);
 	AddFan(vidx, vidx+1, vidx+2, vidx+3);
+}
+
+/**
+ * Adds an conical surface to this mesh.  This is a subset of a full cone,
+ * bounded by start/end factors along the two degrees of freedom of the
+ * surface of the cone.  The default orientation of the cone is with the
+ * tip pointing up (radius increasing downward).
+ *
+ * \param tip The top point of the cone.
+ * \param radial_angle This is the angle between the cone's edge and its
+ *		center axis, in radians.  Expected range is 0 to PI/2.  Small values
+ *		indicate a sharp, pointed cone, large values indicate a blunt cone.
+ *		The slope of the cone's edge is tan(radial_angle).
+ * \param theta1, theta2 Start and end values for the theta value, which
+ *		ranges from 0 to 2*PI around the central axis of the cone.
+ * \param r1, r2 Start and end values for the cone's radius.  These range
+ *		from 0 (at the tip of the cone) and increase downward.
+ * \param res Resolution, number of polygons along each side of the
+ *		surface mesh.
+ */
+void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
+									double theta1, double theta2,
+									double r1, double r2, int res)
+{
+	int i, j, vidx;
+	double tan_cr = tan(radial_angle);
+	double theta, theta_step = (theta2 - theta1) / (res - 1);
+	double r, r_step = (r2 - r1) / (res - 1);
+
+	FPoint3 p, norm;
+
+	r = r1;
+	for (i = 0; i < res; i++)
+	{
+		theta = theta1;
+		for (j = 0; j < res; j++)
+		{
+			p.x = tip.x + cos(theta) * r;
+			p.z = tip.z - sin(theta) * r;
+			p.y = tip.y - (r / tan_cr);
+			vidx = AddVertex(p);
+
+			if (GetVtxType() & VT_Normals)
+			{
+				// compute vertex normal for lighting
+				norm.x = cos(theta) * r;
+				norm.y = 0.0f;
+				norm.z = sin(theta) * r;
+				norm.Normalize();
+				SetVtxNormal(vidx, norm);
+			}
+
+			theta += theta_step;
+		}
+		r += r_step;
+	}
+	CreateRectangularMesh(res, res);
 }
 
 /**

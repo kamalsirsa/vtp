@@ -202,6 +202,9 @@ public:
 	void CreateCylinder(float height, float radius, int res, bool bTop = true,
 						bool bBottom = true, bool bCentered = true);
 	void CreateRectangle(float xsize, float ysize);
+	void CreateConicalSurface(const FPoint3 &tip, double fConeRadius,
+							  double theta1, double theta2,
+							  double r1, double r2, int res = 40);
 
 protected:
 	GLenum m_ePrimType;
