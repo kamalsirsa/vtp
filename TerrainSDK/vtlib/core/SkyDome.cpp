@@ -7,6 +7,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
 #include "SkyDome.h"
 
 // minimum and maximum ambient light values
@@ -313,6 +314,8 @@ vtDayDome::~vtDayDome()
 
 void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 {
+	VTLOG("  Creating DayDome\n");
+
 	SetName2("DayDome");
 	m_pDomeGeom = new vtGeom();
 	m_pDomeGeom->SetName2("DayDomeGeom");
@@ -419,11 +422,18 @@ void vtDayDome::SetSunsetColor(const RGBf &sunset)
 
 bool vtDayDome::SetTexture(const char *filename)
 {
+	VTLOG("   DayDome: Set Texture to '%s'.. ", filename);
+
 	vtImage *pImage = new vtImage(filename);
-#ifndef VTLIB_PSM
 	if (!pImage->LoadedOK())
+	{
+		VTLOG("failed.\n");
 		return false;
-#endif
+	}
+	VTLOG("loaded OK.\n");
+
+	VTLOG("    Image is %d x %d, depth %d\n", pImage->GetWidth(),
+		pImage->GetHeight(), pImage->GetDepth());
 
 	// create and apply the texture material
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
@@ -701,6 +711,8 @@ vtStarDome::~vtStarDome()
 void vtStarDome::Create(const char *starfile, float radius, float brightness,
 					  const char *moon_texture)
 {
+	VTLOG("  Creating StarDome\n");
+
 	SetName2("StarDome");
 	m_pStarGeom = new vtGeom();
 	m_pStarGeom->SetName2("StarDomeGeom");
