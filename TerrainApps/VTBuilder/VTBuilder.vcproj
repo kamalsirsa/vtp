@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24ud.lib gdal_id.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib libjpeg.lib ZipArchive_u.lib"
+				AdditionalDependencies="wxmsw24ud.lib gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d.lib libjpeg.lib ZipArchive_u.lib"
 				OutputFile="Debug_Unicode/VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -109,7 +109,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24u.lib gdal_i.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib libjpeg.lib ZipArchive_u.lib"
+				AdditionalDependencies="wxmsw24u.lib gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1.lib libjpeg.lib ZipArchive_u.lib"
 				OutputFile="Release_Unicode/VTBuilder_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -178,7 +178,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24.lib gdal_i.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib libjpeg.lib ZipArchive.lib"
+				AdditionalDependencies="wxmsw24.lib gdal_i.lib ws2_32.lib netcdf.lib libpng13.lib zlib1.lib libjpeg.lib ZipArchive.lib"
 				OutputFile=".\Release/VTBuilder.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -246,7 +246,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24d.lib gdal_id.lib ws2_32.lib netcdf.lib libpng.lib zlib.lib libjpeg.lib ZipArchive.lib"
+				AdditionalDependencies="wxmsw24d.lib gdal_id.lib ws2_32.lib netcdf.lib libpng13d.lib zlib1d.lib libjpeg.lib ZipArchive.lib"
 				OutputFile=".\Debug/VTBuilder.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
