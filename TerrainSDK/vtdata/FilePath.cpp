@@ -28,6 +28,7 @@
 #	define strdup(str)			_strdup(str)
 #	define unlink(fname)		_unlink(fname)
 #	define access(path,mode)	_access(path,mode)
+#	define vsnprintf			_vsnprintf
 #  else
 #	define mkdir(dirname,mode) _mkdir(dirname)
 #  endif
@@ -448,7 +449,17 @@ int gfprintf(GZOutput &out, const char *pFormat, ...)
 	va_start(va, pFormat);
 
 	if (out.bGZip)
-		return gzprintf(out.gfp, pFormat, va);
+	{
+		// For unknown reasons, gzprintf sometimes fails to write strings,
+		//  instead writing a handful of bogus bytes.
+//		return gzprintf(out.gfp, pFormat, va);
+
+		// Work around the mysterious failure in gzprintf
+		char buf[4096];
+		int chars = vsnprintf(buf, 4096, pFormat, va);
+		gzwrite(out.gfp, buf, chars);
+		return chars;
+	}
 	else
 		return vfprintf(out.fp, pFormat, va);
 }
