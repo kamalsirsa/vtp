@@ -61,49 +61,35 @@ void vtLocalProjection::convert_latlon_to_local_xz(double lat, double lon,
 	convert_latlon_to_local_xz((float) lat, (float) lon, x, z);
 }
 
-void vtLocalProjection::convert_utm_to_xy(float utm_x, float utm_y,
-										  float &x, float &y)
-{
-	x = (float) (utm_x - m_EarthOrigin.x);
-	y = (float) (utm_y - m_EarthOrigin.y);
-}
-
-void vtLocalProjection::convert_utm_to_xy(double utm_x, double utm_y,
-										  float &x, float &y)
-{
-	x = (float) (utm_x - m_EarthOrigin.x);
-	y = (float) (utm_y - m_EarthOrigin.y);
-}
-
-void vtLocalProjection::convert_utm_to_local_xz(float utm_x, float utm_y,
+void vtLocalProjection::convert_meters_to_local_xz(float utm_x, float utm_y,
 												float &x, float &z)
 {
 	x = (float) (utm_x - m_EarthOrigin.x) * WORLD_SCALE;
 	z = (float) -(utm_y - m_EarthOrigin.y) * WORLD_SCALE;
 }
 
-void vtLocalProjection::convert_utm_to_local_xz(double utm_x, double utm_y,
+void vtLocalProjection::convert_meters_to_local_xz(double utm_x, double utm_y,
 												float &x, float &z)
 {
 	x = (float) (utm_x - m_EarthOrigin.x) * WORLD_SCALE;
 	z = (float) -(utm_y - m_EarthOrigin.y) * WORLD_SCALE;
 }
 
-void vtLocalProjection::convert_utm_vector_to_local_xz(float utm_x,
+void vtLocalProjection::convert_meters_vector_to_local_xz(float utm_x,
 													   float utm_y, float &x, float &z)
 {
 	x = (float) (utm_x * WORLD_SCALE);
 	z = (float) -(utm_y * WORLD_SCALE);
 }
 
-void vtLocalProjection::convert_local_xz_to_utm(float x, float z,
+void vtLocalProjection::convert_local_xz_to_meters(float x, float z,
 												float &utm_x, float &utm_y)
 {
 	utm_x = (float) (x / WORLD_SCALE + m_EarthOrigin.x);
 	utm_y = (float) -(z / WORLD_SCALE + m_EarthOrigin.y);
 }
 
-void vtLocalProjection::convert_local_xz_to_utm(float x, float z,
+void vtLocalProjection::convert_local_xz_to_meters(float x, float z,
 												double &utm_x, double &utm_y)
 {
 	utm_x = (x / WORLD_SCALE + m_EarthOrigin.x);
@@ -126,7 +112,7 @@ void vtLocalProjection::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
 	if (IsGeographic())
 		convert_local_xz_to_latlon(world.x, world.z, earth.y, earth.x);
 	else
-		convert_local_xz_to_utm(world.x, world.z, earth.x, earth.y);
+		convert_local_xz_to_meters(world.x, world.z, earth.x, earth.y);
 	earth.z = world.y / m_fVerticalScale;
 }
 
@@ -135,7 +121,7 @@ void vtLocalProjection::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
 	if (IsGeographic())
 		convert_latlon_to_local_xz(earth.y, earth.x, world.x, world.y);
 	else
-		convert_utm_to_local_xz(earth.x, earth.y, world.x, world.z);
+		convert_meters_to_local_xz(earth.x, earth.y, world.x, world.z);
 	world.y = (float) (earth.z * m_fVerticalScale);
 }
 
@@ -144,7 +130,7 @@ void vtLocalProjection::ConvertToEarth(float x, float z, DPoint2 &earth)
 	if (IsGeographic())
 		convert_local_xz_to_latlon(x, z, earth.y, earth.x);
 	else
-		convert_local_xz_to_utm(x, z, earth.x, earth.y);
+		convert_local_xz_to_meters(x, z, earth.x, earth.y);
 }
 
 void vtLocalProjection::ConvertFromEarth(const DPoint2 &earth, float &x, float &z)
@@ -152,6 +138,6 @@ void vtLocalProjection::ConvertFromEarth(const DPoint2 &earth, float &x, float &
 	if (IsGeographic())
 		convert_latlon_to_local_xz(earth.y, earth.x, x, z);
 	else
-		convert_utm_to_local_xz(earth.x, earth.y, x, z);
+		convert_meters_to_local_xz(earth.x, earth.y, x, z);
 }
 

@@ -69,30 +69,30 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 
 	// begin approach
 	y = 800.0f * WORLD_SCALE;
-	g_Proj.convert_utm_to_local_xz(utm_points[3][0], utm_points[3][1], x, z);
+	g_Proj.convert_meters_to_local_xz(utm_points[3][0], utm_points[3][1], x, z);
 	m_hoop_pos[1].Set(x, y, z);
 	m_hoop_speed[1] = 150.0f * WORLD_SCALE;
 
 	// touchdown
 	// center of plane is 15m above ground + 1.5m airport above ground + .5m of runway thickness
 	y = 17.0f * WORLD_SCALE;// * fSizeExag;
-	g_Proj.convert_utm_to_local_xz(utm_points[0][0], utm_points[0][1], x, z);
+	g_Proj.convert_meters_to_local_xz(utm_points[0][0], utm_points[0][1], x, z);
 	m_hoop_pos[2].Set(x, y, z);
 	m_hoop_speed[2] = 25.0f * WORLD_SCALE;
 
 	// speeding up to takeoff point
-	g_Proj.convert_utm_to_local_xz(utm_points[1][0], utm_points[1][1], x, z);
+	g_Proj.convert_meters_to_local_xz(utm_points[1][0], utm_points[1][1], x, z);
 	m_hoop_pos[3].Set(x, y, z);
 	m_hoop_speed[3] = 5.0f * WORLD_SCALE;
 
 	// takeoff to this point
-	g_Proj.convert_utm_to_local_xz(utm_points[2][0], utm_points[2][1], x, z);
+	g_Proj.convert_meters_to_local_xz(utm_points[2][0], utm_points[2][1], x, z);
 	m_hoop_pos[4].Set(x, y, z);
 	m_hoop_speed[4] = 35.0f * WORLD_SCALE;
 
 	// point to loop to
 	y = 800.0f * WORLD_SCALE;
-	g_Proj.convert_utm_to_local_xz(utm_points[4][0], utm_points[4][1], x, z);
+	g_Proj.convert_meters_to_local_xz(utm_points[4][0], utm_points[4][1], x, z);
 	m_hoop_pos[5].Set(x, y, z);
 	m_hoop_speed[5] = 150.0f * WORLD_SCALE;
 

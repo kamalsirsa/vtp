@@ -135,8 +135,8 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 				car = CreateVehicle("bus", color, fSize);
 				break;
 			}
-			m_pTerrainGroup->AddChild(car);
-			PlantModelUTM(car, n->m_p);
+			AddNode(car);
+			PlantModelAtPoint(car, n->m_p);
 //			AddCarEngine(car, 60.0f, n);
 			n = (NodeGeom*) n->m_pNext;
 		}
@@ -148,7 +148,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 
 	car = LoadModel("Vehicles/bronco_v2.DSM");
 	float fAltitude;
-	convert_utm_to_local_xz(192200, 2157700, start_point.x, start_point.z);
+	convert_meters_to_local_xz(192200, 2157700, start_point.x, start_point.z);
 	m_pLocalGrid->FindAltitudeAtPoint(start_point, fAltitude, vNormal);
 
 	if (car != NULL)
@@ -173,7 +173,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 			AddEngine(carnoise, pScene);
 		}
 
-		m_pTerrainGroup->AddChild(car);
+		AddNode(car);
 
 		if (m_pRoadMap != NULL) {
 			//follow a road

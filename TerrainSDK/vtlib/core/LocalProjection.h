@@ -39,13 +39,12 @@ public:
 	void convert_latlon_to_local_xz(float lat, float lon, float &x, float &z);
 	void convert_latlon_to_local_xz(double lat, double lon, float &x, float &z);
 
-	void convert_utm_to_xy(float utm_x, float utm_y, float &x, float &y);
-	void convert_utm_to_xy(double utm_x, double utm_y, float &x, float &y);
-	void convert_utm_to_local_xz(float utm_x, float utm_y, float &x, float &z);
-	void convert_utm_to_local_xz(double utm_x, double utm_y, float &x, float &z);
-	void convert_utm_vector_to_local_xz(float utm_x, float utm_y, float &x, float &z);
-	void convert_local_xz_to_utm(float x, float z, float &utm_x, float &utm_y);
-	void convert_local_xz_to_utm(float x, float z, double &utm_x, double &utm_y);
+	void convert_meters_to_local_xz(float utm_x, float utm_y, float &x, float &z);
+	void convert_meters_to_local_xz(double utm_x, double utm_y, float &x, float &z);
+	void convert_meters_vector_to_local_xz(float utm_x, float utm_y, float &x, float &z);
+
+	void convert_local_xz_to_meters(float x, float z, float &utm_x, float &utm_y);
+	void convert_local_xz_to_meters(float x, float z, double &utm_x, double &utm_y);
 	void convert_local_xz_to_latlon(float x, float y, double &lat, double &lon);
 
 protected:

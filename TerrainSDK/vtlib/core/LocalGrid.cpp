@@ -40,8 +40,8 @@ void vtLocalGrid::Setup(float fVerticalExag)
 	}
 	else
 	{
-		g_Proj.convert_utm_to_local_xz(m_area.left, m_area.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-		g_Proj.convert_utm_to_local_xz(m_area.right, m_area.top, m_WorldExtents.right, m_WorldExtents.top);
+		g_Proj.convert_meters_to_local_xz(m_area.left, m_area.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
+		g_Proj.convert_meters_to_local_xz(m_area.right, m_area.top, m_WorldExtents.right, m_WorldExtents.top);
 	}
 
 	// determine step size between each height sample
