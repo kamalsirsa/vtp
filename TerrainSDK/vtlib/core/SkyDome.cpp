@@ -332,6 +332,7 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 	m_pDomeMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
 	m_pDomeMesh->CreateEllipsoid(FPoint3(1.0f, 1.0f, 1.0f), res, true);
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
+	m_pDomeMesh->Release();	// pass ownership to Geometry
 
 	NumVertices = m_pDomeMesh->GetNumVertices();
 	SphVertices = new FPoint3[NumVertices];
@@ -383,6 +384,7 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 		SunMesh->CreateRectangle(0.50f, 0.50f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(SunMesh, idx);
+		SunMesh->Release();	// pass ownership to Geometry
 
 		m_pSunShape->SetName2("Sun");
 
@@ -720,6 +722,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	m_pStarMesh = new vtMesh(GL_POINTS, VT_Colors, NumStars);
 	AddStars(m_pStarMesh);
 	m_pStarGeom->AddMesh(m_pStarMesh, star_mat);
+	m_pStarMesh->Release();		// pass ownership to Geometry
 	AddChild(m_pStarGeom);
 
 	// Set Maximum rotational change dependent only on hours, minutes and secs
@@ -751,6 +754,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 		MoonMesh->CreateRectangle(0.1f, 0.1f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(MoonMesh, idx);
+		MoonMesh->Release();	// pass ownership to Geometry
 
 		m_pMoonGeom->SetName2("Moon");
 

@@ -893,7 +893,7 @@ if (pwdemo){
 	m_pSpaceAxes = new vtGeom();
 	m_pSpaceAxes->SetName2("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
-	pMats->Release();
+	pMats->Release();	// pass ownership to Geometry
 
 	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
 	mesh->AddVertex(FPoint3(0,0,200));
@@ -905,6 +905,7 @@ if (pwdemo){
 	mesh->AddLine(2,3);
 	mesh->AddLine(2,4);
 	m_pSpaceAxes->AddMesh(mesh, yellow);
+	mesh->Release();	// pass ownership to Geometry
 
 	mesh = new vtMesh(GL_LINES, 0, 6);
 	mesh->AddVertex(FPoint3(1.5f,0,0));
@@ -915,12 +916,14 @@ if (pwdemo){
 	mesh->AddLine(1,2);
 	mesh->AddLine(1,3);
 	m_pSpaceAxes->AddMesh(mesh, green);
+	mesh->Release();	// pass ownership to Geometry
 
 	mesh = new vtMesh(GL_LINES, 0, 6);
 	mesh->AddVertex(FPoint3(0,2,0));
 	mesh->AddVertex(FPoint3(0,-2,0));
 	mesh->AddLine(0,1);
 	m_pSpaceAxes->AddMesh(mesh, red);
+	mesh->Release();	// pass ownership to Geometry
 
 	m_pGlobeContainer->AddChild(m_pSpaceAxes);
 	m_pSpaceAxes->SetEnabled(false);
@@ -1048,7 +1051,7 @@ void Enviro::SetupScene2()
 	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/35));
 	m_pCursorMGeom->SetName2("Cursor");
 
-	m_pTerrainScene->m_pTop->AddChild(m_pCursorMGeom);
+	m_pTerrainScene->GetTop()->AddChild(m_pCursorMGeom);
 	m_pTerrainPicker = new TerrainPicker();
 	m_pTerrainPicker->SetName2("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);

@@ -37,6 +37,8 @@ IcoGlobe::~IcoGlobe()
 	m_mats->Release();
 	for (int i = 0; i < m_features.GetSize(); i++)
 		delete m_features[i];
+	if (m_cylinder)
+		m_cylinder->Release();
 }
 
 
@@ -420,6 +422,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 
 	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
 	geom->AddMesh(mesh, m_yellow);
+	mesh->Release();	// pass ownership to Geometry
 
 	int total = 0;
 
@@ -435,6 +438,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 			total += mesh->GetNumVertices();
 			mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
 			geom->AddMesh(mesh, m_yellow);
+			mesh->Release();	// pass ownership to Geometry
 		}
 	}
 	total += mesh->GetNumVertices();
@@ -533,6 +537,7 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 			AddSurfaceLineToMesh(mesh, p1, p2);
 		}
 		m_pRectangles->AddMesh(mesh, m_red);
+		mesh->Release();	// pass ownership to the Geometry
 	}
 }
 
@@ -1231,6 +1236,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 	sm->AddLine(0,2);
 	sm->AddLine(0,3);
 	m_geom[0]->AddMesh(sm, m_red);
+	sm->Release();
 #endif
 
 	// Show axis of rotation (north and south poles)
@@ -1290,6 +1296,8 @@ void IcoGlobe::CreateNormalSphere()
 		int f2 = icosa_face_pairs[pair][1];
 		m_GlobeGeom->AddMesh(m_mesh[f1], m_globe_mat[pair]);
 		m_GlobeGeom->AddMesh(m_mesh[f2], m_globe_mat[pair]);
+		m_mesh[f1]->Release();
+		m_mesh[f2]->Release();
 	}
 }
 
@@ -1428,6 +1436,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	mesh->AddLine(2,3);
 	mesh->AddLine(4,5);
 	geom->AddMesh(mesh, index);
+	mesh->Release();
 	vtTransform *trans = new vtTransform();
 	trans->AddChild(geom);
 	return trans;
@@ -1465,6 +1474,7 @@ vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 	pMats->Release();
 
 	geom->AddMesh(mesh, 0);
+	mesh->Release();	// pass ownership 
 
 	return mgeom;
 }
