@@ -85,8 +85,6 @@ void vtEdge::Set(int iDoors, int iWindows, const char *material)
 	door.m_vf1 = 0.0f;
 	door.m_vf2 = DOOR_TOP;
 
-	int num_Edgess = iDoors + iWindows + 1;
-
 	m_Features.clear();
 	m_Features.reserve((iDoors + iWindows) * 2 + 1);
 	m_Features.push_back(wall);
@@ -566,7 +564,7 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
 {
 	vtEdge *edge = m_Edges[i];
-	int edges = m_Edges.GetSize();
+	unsigned int edges = m_Edges.GetSize();
 
 	int islope = edge->m_iSlope;
 	float slope = (islope / 180.0f * PIf);

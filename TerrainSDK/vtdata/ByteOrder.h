@@ -57,10 +57,11 @@ inline long SwapLong( long data )
 }
 inline int SwapInt( int data )
 {
-	assert( sizeof(int) == sizeof(short) || sizeof(int) == sizeof(long) );
-	if ( sizeof(int) == sizeof(short) )
-		return SwapShort( (short)data );
-	else
+	// we don't need to support any ancient compilers where int==short
+//	assert( sizeof(int) == sizeof(short) || sizeof(int) == sizeof(long) );
+//	if ( sizeof(int) == sizeof(short) )
+//		return SwapShort( (short)data );
+//	else
 		return SwapLong( (long)data );
 }
 inline float SwapFloat( float data )
