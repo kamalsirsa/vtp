@@ -40,8 +40,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-F90=df.exe
 MTL=midl.exe
+F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /YX /FD /c
 # ADD BASE RSC /l 0x409
@@ -65,8 +65,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-F90=df.exe
 MTL=midl.exe
+F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /FR /YX /FD /c
 # ADD BASE RSC /l 0x409
@@ -191,6 +191,10 @@ SOURCE=.\vtDIB.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\vtLog.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\vtString.cpp
 # End Source File
 # Begin Source File
@@ -312,6 +316,10 @@ SOURCE=.\UtilityMap.h
 # Begin Source File
 
 SOURCE=.\vtDIB.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\vtLog.h
 # End Source File
 # Begin Source File
 
