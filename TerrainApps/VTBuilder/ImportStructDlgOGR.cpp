@@ -121,7 +121,10 @@ void ImportStructDlgOGR::OnInitDialog(wxInitDialogEvent& event)
 
 	iNumLayers = m_pDatasource->GetLayerCount();
 	for (i = 0 ; i < iNumLayers; i++)
-		GetLayername()->Append(m_pDatasource->GetLayer(i)->GetLayerDefn()->GetName());
+	{
+		wxString2 str = m_pDatasource->GetLayer(i)->GetLayerDefn()->GetName();
+		GetLayername()->Append(str);
+	}
 
 	GetLayername()->Enable(iNumLayers > 1);
 
@@ -144,6 +147,7 @@ void ImportStructDlgOGR::UpdateFieldNames()
 	int iNumFields;
 	int i;
 	int iCount;
+	wxString2 str;
 	
 	pLayer = m_pDatasource->GetLayer(GetLayername()->GetSelection());
 
@@ -179,11 +183,16 @@ void ImportStructDlgOGR::UpdateFieldNames()
 					FieldType = pFieldDefn->GetType();
 					if ((FieldType == OFTInteger) || (FieldType == OFTReal))
 					{
-						GetChoiceHeightField()->Append(pFieldDefn->GetNameRef());
-						GetElevationFieldname()->Append(pFieldDefn->GetNameRef());
+						str = pFieldDefn->GetNameRef();
+						GetChoiceHeightField()->Append(str);
+						str = pFieldDefn->GetNameRef();
+						GetElevationFieldname()->Append(str);
 					}
 					else if ((FieldType == OFTString) || (FieldType == OFTWideString))
-						GetChoiceFileField()->Append(pFieldDefn->GetNameRef());
+					{
+						str = pFieldDefn->GetNameRef();
+						GetChoiceFileField()->Append(str);
+					}
 				}
 			}
 		}

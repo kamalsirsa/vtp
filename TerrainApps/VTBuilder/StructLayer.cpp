@@ -553,7 +553,7 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 		int iLevels = pBuilding->GetNumLevels();
 		wxString msg;
 		msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-		iLevel = wxGetNumberFromUser(msg, "Level", "Enter Value", 0, 0, iLevels);
+		iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
 		if (iLevel == -1)
 		{
 			m_pEditBuilding = NULL;
@@ -658,7 +658,7 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 		int iLevels = pBuilding->GetNumLevels();
 		wxString msg;
 		msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-		iLevel = wxGetNumberFromUser(msg, "Level", "Enter Value", 0, 0, iLevels);
+		iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
 		if (iLevel == -1)
 		{
 			m_pEditBuilding = NULL;
