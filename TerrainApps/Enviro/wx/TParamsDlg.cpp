@@ -398,15 +398,14 @@ void TParamsDlg::RefreshLabelFields()
 	fname += m_strLabelFile.mb_str();
 	vtString fpath = FindFileOnPaths(m_datapaths, fname);
 
-	vtFeatureLoader loader;
-	vtFeatureSet *feat = loader.LoadHeaderFromSHP(fpath);
-	if (!feat)
+	vtFeatureSetPoint2D points;
+	if (!points.LoadFieldInfoFromDBF(fpath))
 		return;
 
-	int i, num = feat->GetNumFields();
+	int i, num = points.GetNumFields();
 	for (i = 0; i < num; i++)
 	{
-		Field *field = feat->GetField(i);
+		Field *field = points.GetField(i);
 		wxString2 field_name = field->m_name;
 		m_pLabelField->Append(field_name);
 	}
@@ -417,7 +416,6 @@ void TParamsDlg::RefreshLabelFields()
 		if (m_Style.m_field_index > num-1)
 			m_Style.m_field_index = num-1;
 	}
-	delete feat;
 }
 
 void TParamsDlg::RefreshLocationFields()

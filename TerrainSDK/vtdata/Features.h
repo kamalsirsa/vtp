@@ -106,11 +106,11 @@ public:
 
 	// File IO
 	bool SaveToSHP(const char *filename) const;
-	bool LoadInfoFromDBF(const char *filename);
-	bool LoadAttributesFromDBF();
 	bool LoadFromOGR(OGRDataSource *pDatasource, void progress_callback(int));
 	virtual void LoadGeomFromSHP(SHPHandle hSHP) = 0;
 	bool LoadFromSHP(const char *fname);
+	bool LoadDataFromDBF(const char *filename);
+	bool LoadFieldInfoFromDBF(const char *filename);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() const { return m_strFilename; }
@@ -203,9 +203,8 @@ protected:
 	virtual void SetNumGeometries(int iNum) = 0;
 
 	void CopyEntity(unsigned int from, unsigned int to);
-
-	vtString	m_dbfname;
-	int			m_iSHPElems, m_iSHPFields;
+	void ParseDBFFields(DBFHandle db);
+	void ParseDBFRecords(DBFHandle db);
 
 	OGRwkbGeometryType		m_eGeomType;
 	std::vector<unsigned char> m_Flags;
@@ -396,6 +395,7 @@ public:
 // Helpers
 OGRwkbGeometryType ShapelibToOGR(int nSHPType);
 int OGRToShapelib(OGRwkbGeometryType eGeomType);
+vtString MakeDBFName(const char *filename);
 
 #endif // VTDATA_FEATURES
 

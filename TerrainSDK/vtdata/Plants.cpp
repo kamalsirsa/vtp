@@ -829,9 +829,7 @@ bool vtPlantInstanceArray::ReadSHP(const char *fname)
 	LoadGeomFromSHP(hSHP);
 	SHPClose(hSHP);
 
-	if (!LoadInfoFromDBF(fname))
-		return false;
-	if (!LoadAttributesFromDBF())
+	if (!LoadDataFromDBF(fname))
 		return false;
 
 	m_SizeField = GetFieldIndex("Size");

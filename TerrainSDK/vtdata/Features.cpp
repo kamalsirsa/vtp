@@ -15,8 +15,6 @@
 //
 vtFeatureSet::vtFeatureSet()
 {
-	m_iSHPElems = 0;
-	m_iSHPFields = 0;
 	m_eGeomType = wkbNone;
 }
 
@@ -116,25 +114,21 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 
 bool vtFeatureSet::LoadFromSHP(const char *fname)
 {
+	VTLOG(" LoadFromSHP\n");
+
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(fname, "rb");
 	if (hSHP == NULL)
 		return false;
 
-	SetFilename(fname);
 	LoadGeomFromSHP(hSHP);
 	SHPClose(hSHP);
 
-	if (!LoadInfoFromDBF(fname))
-	{
-		SHPClose(hSHP);
-		return false;
-	}
-	if (!LoadAttributesFromDBF())
-	{
-		SHPClose(hSHP);
-		return false;
-	}
+	SetFilename(fname);
+
+	// Read corresponding attributes (DBF fields and records)
+	LoadDataFromDBF(fname);
+
 	return true;
 }
 
@@ -149,8 +143,10 @@ vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
 		return LoadWithOGR(filename);
 }
 
-vtFeatureSet *vtFeatureLoader::LoadHeaderFromSHP(const char *filename)
+vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 {
+	VTLOG(" FeatureLoader LoadFromSHP\n");
+
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(filename, "rb");
 	if (hSHP == NULL)
@@ -186,27 +182,8 @@ vtFeatureSet *vtFeatureLoader::LoadHeaderFromSHP(const char *filename)
 	}
 	SHPClose(hSHP);
 
-	pSet->SetFilename(filename);
-	pSet->LoadInfoFromDBF(filename);
-
-	return pSet;
-}
-
-vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
-{
-	vtFeatureSet *pSet = LoadHeaderFromSHP(filename);
-	if (!pSet)
-		return NULL;
-
-	// These are not going to fail, as the header info loaded fine.
-	SHPHandle hSHP = SHPOpen(filename, "rb");
-
-	// Read Geometry Data from SHP into memory
-	pSet->LoadGeomFromSHP(hSHP);
-	SHPClose(hSHP);
-
-	// Read corresponding attributes (DBF record fields)
-	pSet->LoadAttributesFromDBF();
+	// Read SHP header and geometry from SHP into memory
+	pSet->LoadFromSHP(filename);
 
 	return pSet;
 }
@@ -427,6 +404,8 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 							 void progress_callback(int))
 {
+	VTLOG(" LoadFromOGR\n");
+
 	// get informnation from the datasource
 	OGRLayer *pLayer = pDatasource->GetLayer(0);
 	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
@@ -722,49 +701,62 @@ vtFeatureSet *vtFeatureLoader::CreateFromDLG(class vtDLGFile *pDLG)
 	return true;
 }*/
 
-bool vtFeatureSet::LoadInfoFromDBF(const char *filename)
+bool vtFeatureSet::LoadDataFromDBF(const char *filename)
 {
+	VTLOG(" LoadDataFromDBF\n");
 	// Try loading DBF File as well
-	m_dbfname = filename;
-	m_dbfname = m_dbfname.Left(m_dbfname.GetLength() - 4);
-	m_dbfname += ".dbf";
-	DBFFieldType fieldtype;
-	DBFHandle db = DBFOpen(m_dbfname, "rb");
-	int iField;
-	if (db != NULL)
-	{
-		// Check for field of poly id, current default field in dbf is Id
-		m_iSHPFields = DBFGetFieldCount(db);
-		int pnWidth, pnDecimals;
-		char szFieldName[80];
+	vtString dbfname = MakeDBFName(filename);
+	DBFHandle db = DBFOpen(dbfname, "rb");
+	if (db == NULL)
+		return false;
 
-		for (iField = 0; iField < m_iSHPFields; iField++)
-		{
-			fieldtype = DBFGetFieldInfo(db, iField, szFieldName,
-				&pnWidth, &pnDecimals);
-
-			FieldType ftype = ConvertFieldType(fieldtype);
-
-			AddField(szFieldName, ftype, pnWidth);
-		}
-		DBFClose(db);
-	}
-
-	// Try loading projection from PRJ
-	m_proj.ReadProjFile(filename);
+	ParseDBFFields(db);
+	ParseDBFRecords(db);
+	DBFClose(db);
 
 	return true;
 }
 
-bool vtFeatureSet::LoadAttributesFromDBF()
+/**
+ * A lightweight alternative to LoadDataFromDBF, which simply reads the
+ * field descriptions from the DBF file.
+ */
+bool vtFeatureSet::LoadFieldInfoFromDBF(const char *filename)
 {
-	// Read attributes (DBF record fields)
-	DBFHandle db = DBFOpen(m_dbfname, "rb");
+	VTLOG(" LoadFieldInfoFromDBF\n");
+	vtString dbfname = MakeDBFName(filename);
+	DBFHandle db = DBFOpen(dbfname, "rb");
 	if (db == NULL)
 		return false;
 
-	int iRecords = DBFGetRecordCount(db);
+	ParseDBFFields(db);
+	DBFClose(db);
+	return true;
+}
 
+void vtFeatureSet::ParseDBFFields(DBFHandle db)
+{
+	// Check for field of poly id, current default field in dbf is Id
+	int iSHPFields = DBFGetFieldCount(db);
+	int pnWidth, pnDecimals;
+	DBFFieldType fieldtype;
+	char szFieldName[80];
+	int iField;
+
+	for (iField = 0; iField < iSHPFields; iField++)
+	{
+		fieldtype = DBFGetFieldInfo(db, iField, szFieldName,
+			&pnWidth, &pnDecimals);
+
+		FieldType ftype = ConvertFieldType(fieldtype);
+
+		AddField(szFieldName, ftype, pnWidth);
+	}
+}
+
+void vtFeatureSet::ParseDBFRecords(DBFHandle db)
+{
+	int iRecords = DBFGetRecordCount(db);
 	for (int i = 0; i < iRecords; i++)
 	{
 		unsigned int iField;
@@ -789,12 +781,6 @@ bool vtFeatureSet::LoadAttributesFromDBF()
 			}
 		}
 	}
-	DBFClose(db);
-
-	// allocate selection array
-	m_Flags.resize(m_iSHPElems, 0);
-
-	return true;
 }
 
 void vtFeatureSet::SetNumEntities(int iNum)
@@ -1667,5 +1653,13 @@ int OGRToShapelib(OGRwkbGeometryType eGeomType)
 	case wkbGeometryCollection25D: return SHPT_NULL;
 	}
 	return SHPT_NULL;
+}
+
+vtString MakeDBFName(const char *filename)
+{
+	vtString fname = filename;
+	fname = fname.Left(fname.GetLength() - 4);
+	fname += ".dbf";
+	return fname;
 }
 
