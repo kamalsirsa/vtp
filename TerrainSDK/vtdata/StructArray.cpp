@@ -4,7 +4,7 @@
 // It supports operations including loading and saving to a file
 // and picking of building elements.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -283,7 +283,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 			field_rotation = FindDBField(db, "rotation");
 		}
 	}
-	if (type == ST_FENCE)
+	if (type == ST_LINEAR)
 	{
 		if (nShapeType != SHPT_ARC && nShapeType != SHPT_POLYGON)
 			return false;
@@ -390,7 +390,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 			}
 			Append(inst);
 		}
-		if (type == ST_FENCE)
+		if (type == ST_LINEAR)
 		{
 			vtFence *fen = NewFence();
 			for (j = 0; j < num_points; j++)
@@ -429,11 +429,11 @@ bool vtStructureArray::WriteSHP(const char* pathname)
 
 
 /** Find the building corner closest to the given point, if it is within
- * 'error' distance.  The building index, corner index, and distance from
+ * 'epsilon' distance.  The building index, corner index, and distance from
  * the given point are all returned by reference.
  */
 bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
-			double error, int &building, int &corner, double &closest)
+			double epsilon, int &building, int &corner, double &closest)
 {
 	if (IsEmpty())
 		return false;
@@ -454,7 +454,7 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 		for (j = 0; j < dl.GetSize(); j++)
 		{
 			dist = (dl.GetAt(j) - point).Length();
-			if (dist > error)
+			if (dist > epsilon)
 				continue;
 			if (dist < closest)
 			{
@@ -468,11 +468,11 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 }
 
 /** Find the building center closest to the given point, if it is within
- * 'error' distance.  The building index, and distance from the given
+ * 'epsilon' distance.  The building index, and distance from the given
  * point are returned by reference.
  */
 bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
-				double error, int &building, double &closest)
+				double epsilon, int &building, double &closest)
 {
 	if (IsEmpty())
 		return false;
@@ -485,12 +485,12 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 	for (int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
-		if (str->GetType() != ST_BUILDING)
-			continue;
 		vtBuilding *bld = str->GetBuilding();
+		if (!bld)
+			continue;
 		loc = bld->GetLocation();
 		dist = (loc - point).Length();
-		if (dist > error)
+		if (dist > epsilon)
 			continue;
 		if (dist < closest)
 		{
@@ -501,12 +501,46 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 	return (building != -1);
 }
 
+bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsilon,
+					   int &structure, int &corner, double &closest)
+{
+	DPoint2 loc;
+	double dist;
+	int i, j;
+
+	structure = -1;
+	corner = -1;
+	closest = 1E8;
+
+	for (i = 0; i < GetSize(); i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtFence *fen = str->GetFence();
+		if (!fen)
+			continue;
+		DLine2 &dl = fen->GetFencePoints();
+		for (j = 0; j < dl.GetSize(); j++)
+		{
+			dist = (dl.GetAt(j) - point).Length();
+			if (dist > epsilon)
+				continue;
+			if (dist < closest)
+			{
+				structure = i;
+				corner = j;
+				closest = dist;
+			}
+		}
+	}
+	return (structure != -1);
+}
+
 /** Find the structure which is closest to the given point, if it is within
- * 'error' distance.  The structure index and distance are returned by
+ * 'epsilon' distance.  The structure index and distance are returned by
  * reference.
  */
-bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double error,
-					   int &structure, double &closest)
+bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon,
+					   int &structure, double &closest, bool bSkipBuildings)
 {
 	structure = -1;
 	closest = 1E8;
@@ -525,6 +559,8 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double error,
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
 		{
+			if (bSkipBuildings)
+				continue;
 			dist = bld->GetDistanceToInterior(point);
 		}
 
@@ -532,15 +568,15 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double error,
 		vtFence *fen = str->GetFence();
 		// or an instance
 		vtStructInstance *inst = str->GetInstance();
+
 		if (fen)
-			fen->GetClosestPoint(point, loc);
+			dist = fen->GetDistanceToLine(point);
 		if (inst)
-			loc = inst->m_p;
-		if (fen || inst)
 		{
+			loc = inst->m_p;
 			dist = (loc - point).Length();
 		}
-		if (dist > error)
+		if (dist > epsilon)
 			continue;
 
 		if (dist < closest)
@@ -1245,8 +1281,6 @@ void StructVisitorGML::endElement(const char *name)
 			m_pSA->Append(m_pStructure);
 			m_pStructure = NULL;
 		}
-		else
-			bGrabAttribute = true;
 	}
 	else if (m_state == 11)
 	{
