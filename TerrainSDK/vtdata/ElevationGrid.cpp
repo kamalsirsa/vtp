@@ -14,8 +14,6 @@ using namespace std;
 #include "ByteOrder.h"
 #include "vtDIB.h"
 
-const float meters_per_latitude = 111300.0f;
-
 //////////////////////////////////////////////////
 
 /**
@@ -152,7 +150,7 @@ vtElevationGrid::~vtElevationGrid()
 // helper
 double MetersPerLongitude(double latitude)
 {
-	return meters_per_latitude * cos(latitude / 180.0 * PId);
+	return METERS_PER_LATITUDE * cos(latitude / 180.0 * PId);
 }
 
 
@@ -216,14 +214,14 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		// convert degrees to meters (approximately)
 		meters_per_longitude = MetersPerLongitude(pOld->m_Corners[0].y);
 		new_step.x = old_step.x * meters_per_longitude;
-		new_step.y = old_step.y * meters_per_latitude;
+		new_step.y = old_step.y * METERS_PER_LATITUDE;
 	}
 	else if (!bOldGeo && bNewGeo)
 	{
 		// convert meters to degrees (approximately)
 		meters_per_longitude = MetersPerLongitude(m_Corners[0].y);
 		new_step.x = old_step.x / meters_per_longitude;
-		new_step.y = old_step.y / meters_per_latitude;	// convert degrees to meters (approximately)
+		new_step.y = old_step.y / METERS_PER_LATITUDE;	// convert degrees to meters (approximately)
 	}
 	else
 	{
