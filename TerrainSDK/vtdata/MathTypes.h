@@ -528,12 +528,13 @@ public:
 	void SetRect(double l, double t, double r, double b) { left = l; top = t; right = r; bottom = b; }
 	// retrieves the width
 	double Width() const { return right - left; }
-	// returns the height
+	// returns the height, assumes upward increasing coordinate system
 	double Height() const { return top - bottom; };
 	// return true if null (all 0)
 	bool IsNull() const { return (left == 0.0 && top == 0.0 && right == 0.0 && bottom == 0.0); }
 	// return true if empty
 	bool IsEmpty() const { return (left == right && top == bottom); }
+	void Empty() { left = top = right = bottom = 0.0; }
 	void Sort()
 	{
 		double tmp;
