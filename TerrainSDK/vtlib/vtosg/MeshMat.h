@@ -218,6 +218,9 @@ public:
 	/// Set the text alignment: 0 for XY plane, 1 for XZ, 2 for YZ
 	void SetAlignment(int align);
 
+	/// Set the color
+	void SetColor(const RGBAf &rgba);
+
 	// Implementation
 	osg::ref_ptr<osgText::Text> m_pOsgText;
 

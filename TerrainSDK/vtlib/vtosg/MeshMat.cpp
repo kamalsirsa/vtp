@@ -865,3 +865,9 @@ void vtTextMesh::SetAlignment(int align)
 {
 	m_pOsgText->setAxisAlignment((osgText::Text::AxisAlignment) align);
 }
+
+void vtTextMesh::SetColor(const RGBAf &rgba)
+{
+	osg::Vec4 color = v2s(rgba);
+	m_pOsgText->setColor(color);
+}
