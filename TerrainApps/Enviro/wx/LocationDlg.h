@@ -31,7 +31,7 @@ public:
 	AnimEntry() { m_pAnim = NULL; m_pEngine = NULL; }
 	~AnimEntry() {
 		vtGetScene()->RemoveEngine(m_pEngine);
-		delete m_pEngine; }	// engine owns path
+		delete m_pEngine; } // engine owns path
 	vtAnimPath *m_pAnim;
 	vtAnimPathEngine *m_pEngine;
 	vtString m_Name;
@@ -48,8 +48,17 @@ public:
 	~LocationDlg();
 
 	// WDR: method declarations for LocationDlg
+	wxTextCtrl* GetSpeed()  { return (wxTextCtrl*) FindWindow( ID_SPEED ); }
+	wxTextCtrl* GetRecordSpacing()  { return (wxTextCtrl*) FindWindow( ID_RECORD_SPACING ); }
+	wxRadioButton* GetRecordInterval()  { return (wxRadioButton*) FindWindow( ID_RECORD_INTERVAL ); }
+	wxRadioButton* GetRecordLinear()  { return (wxRadioButton*) FindWindow( ID_RECORD_LINEAR ); }
+	wxCheckBox* GetActive()  { return (wxCheckBox*) FindWindow( ID_ACTIVE ); }
+	wxSlider* GetAnimPos()  { return (wxSlider*) FindWindow( ID_ANIM_POS ); }
 	wxBitmapButton* GetReset()  { return (wxBitmapButton*) FindWindow( ID_RESET ); }
+	wxCheckBox* GetLoop()  { return (wxCheckBox*) FindWindow( ID_LOOP ); }
 	wxCheckBox* GetSmooth()  { return (wxCheckBox*) FindWindow( ID_SMOOTH ); }
+	wxCheckBox* GetContinuous()  { return (wxCheckBox*) FindWindow( ID_CONTINUOUS ); }
+	wxCheckBox* GetPosOnly()  { return (wxCheckBox*) FindWindow( ID_POS_ONLY ); }
 	wxButton* GetSaveAnim()  { return (wxButton*) FindWindow( ID_SAVE_ANIM ); }
 	wxButton* GetStop()  { return (wxButton*) FindWindow( ID_STOP ); }
 	wxButton* GetRecord1()  { return (wxButton*) FindWindow( ID_RECORD1 ); }
@@ -61,6 +70,8 @@ public:
 	wxListBox* GetLoclist()  { return (wxListBox*) FindWindow( ID_LOCLIST ); }
 	wxButton* GetRemove()  { return (wxButton*) FindWindow( ID_REMOVE ); }
 
+	void Update();
+
 	void RefreshList();
 	void SetTarget(vtTransform *pTarget, const vtProjection &proj,
 				   const vtLocalConversion &conv);
@@ -70,6 +81,7 @@ public:
 
 	void RefreshAnims();
 	void RefreshAnimsText();
+	void UpdateSlider();
 	void UpdateEnabling();
 	void SlidersToValues();
 	void ValuesToSliders();
@@ -83,28 +95,32 @@ private:
 	// WDR: member variable declarations for LocationDlg
 	vtLocationSaver *m_pSaver;
 
+	wxListBox* m_pLocList;
+
 	Array<AnimEntry *> m_Entries;
 
 	vtAnimPath *GetAnim(int i) { return m_Entries.GetAt(i)->m_pAnim; }
 	vtAnimPathEngine *GetEngine(int i) { return m_Entries.GetAt(i)->m_pEngine; }
 
-	wxButton* m_pStoreAs;
-	wxButton* m_pStore;
-	wxButton* m_pRecall;
-	wxButton* m_pRemove;
-	wxListBox* m_pLocList;
-
+	bool m_bActive;
 	bool m_bLoop;
+	bool m_bContinuous;
 	bool m_bSmooth;
 	bool m_bPosOnly;
 	int m_iAnim;
+	int m_iPos;
 	float m_fSpeed;
 	int m_iSpeed;
 	bool m_bSetting;
 	float m_fRecordSpacing;
+	bool m_bRecordLinear;
+	bool m_bRecordInterval;
 
 private:
 	// WDR: handler declarations for LocationDlg
+	void OnAnimPosSlider( wxCommandEvent &event );
+	void OnActive( wxCommandEvent &event );
+	void OnRadio( wxCommandEvent &event );
 	void OnText( wxCommandEvent &event );
 	void OnSpeedSlider( wxCommandEvent &event );
 	void OnReset( wxCommandEvent &event );

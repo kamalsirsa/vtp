@@ -46,6 +46,7 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_BUTTON( ID_LOAD, LocationDlg::OnLoad )
 	EVT_LISTBOX_DCLICK( ID_LOCLIST, LocationDlg::OnListDblClick )
 	EVT_BUTTON( ID_REMOVE, LocationDlg::OnRemove )
+
 	EVT_BUTTON( ID_NEW_ANIM, LocationDlg::OnNewAnim )
 	EVT_BUTTON( ID_SAVE_ANIM, LocationDlg::OnSaveAnim )
 	EVT_BUTTON( ID_LOAD_ANIM, LocationDlg::OnLoadAnim )
@@ -54,39 +55,51 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_BUTTON( ID_STOP, LocationDlg::OnStop )
 	EVT_LISTBOX( ID_ANIMS, LocationDlg::OnAnim )
 	EVT_CHECKBOX( ID_LOOP, LocationDlg::OnCheckbox )
+	EVT_CHECKBOX( ID_CONTINUOUS, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_SMOOTH, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_POS_ONLY, LocationDlg::OnCheckbox )
 	EVT_BUTTON( ID_RESET, LocationDlg::OnReset )
 	EVT_SLIDER( ID_SPEEDSLIDER, LocationDlg::OnSpeedSlider )
 	EVT_TEXT( ID_SPEED, LocationDlg::OnText )
+	EVT_RADIOBUTTON( ID_RECORD_LINEAR, LocationDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_RECORD_INTERVAL, LocationDlg::OnRadio )
+	EVT_CHECKBOX( ID_ACTIVE, LocationDlg::OnActive )
+	EVT_SLIDER( ID_ANIM_POS, LocationDlg::OnAnimPosSlider )
 END_EVENT_TABLE()
 
 LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	m_bActive = true;
 	m_bLoop = true;
+	m_bContinuous = false;
 	m_bSmooth = true;
 	m_bPosOnly = false;
 	m_iAnim = -1;
+	m_iPos = 0;
 	m_fSpeed = 1.0f;
 	m_bSetting = false;
 	m_fRecordSpacing = 1.0f;
+	m_bRecordLinear = true;
+	m_bRecordInterval = false;
 
 	LocationDialogFunc( this, TRUE );
 	m_pSaver = new vtLocationSaver();
-	m_pStoreAs = GetStoreas();
-	m_pStore = GetStore();
-	m_pRecall = GetRecall();
-	m_pRemove = GetRemove();
 	m_pLocList = GetLoclist();
 
+	AddValidator(ID_ACTIVE, &m_bActive);
 	AddValidator(ID_LOOP, &m_bLoop);
+	AddValidator(ID_CONTINUOUS, &m_bContinuous);
 	AddValidator(ID_SMOOTH, &m_bSmooth);
 	AddValidator(ID_POS_ONLY, &m_bPosOnly);
 	AddNumValidator(ID_SPEED, &m_fSpeed);
 	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
 	AddNumValidator(ID_RECORD_SPACING, &m_fRecordSpacing);
+	AddValidator(ID_ANIM_POS, &m_iPos);
+
+	AddValidator(ID_RECORD_LINEAR, &m_bRecordLinear);
+	AddValidator(ID_RECORD_INTERVAL, &m_bRecordInterval);
 
 	RefreshButtons();
 	UpdateEnabling();
@@ -117,6 +130,12 @@ void LocationDlg::SetLocFile(const vtString &fname)
 
 	RefreshList();
 	RefreshButtons();
+}
+
+void LocationDlg::Update()
+{
+	RefreshAnimsText();
+	UpdateSlider();
 }
 
 void LocationDlg::RefreshList()
@@ -156,18 +175,41 @@ void LocationDlg::RefreshAnimsText()
 		vtAnimPath *anim = GetAnim(i);
 		vtAnimPathEngine *eng = GetEngine(i);
 
-		str.Printf(_T("%hs (%.1f/%.1f)"), (const char *) entry->m_Name,
-			eng->GetTime(), (float) anim->GetLastTime());
+		str.Printf(_T("%hs (%.1f/%.1f, %d)"), (const char *) entry->m_Name,
+			eng->GetTime(), (float) anim->GetLastTime(), anim->GetNumPoints());
 		GetAnims()->SetString(i, str);
 	}
 }
+
+void LocationDlg::UpdateSlider()
+{
+	if (m_iAnim != -1)
+	{
+		// time slider
+		float fTotalTime = GetAnim(m_iAnim)->GetLastTime();
+		float fTime = GetEngine(m_iAnim)->GetTime();
+		m_iPos = (fTime / fTotalTime * 1000);
+		GetAnimPos()->SetValue(m_iPos);
+	}
+}
+
 void LocationDlg::UpdateEnabling()
 {
+	GetActive()->Enable(m_iAnim != -1);
+	GetSpeed()->Enable(m_iAnim != -1);
 	GetReset()->Enable(m_iAnim != -1);
 	GetPlay()->Enable(m_iAnim != -1);
 	GetRecord1()->Enable(m_iAnim != -1);
 	GetStop()->Enable(m_iAnim != -1);
-	GetSmooth()->Enable(m_iAnim != -1);
+	GetLoop()->Enable(m_iAnim != -1);
+	GetContinuous()->Enable(m_iAnim != -1);
+	GetSmooth()->Enable(m_iAnim != -1 && GetAnim(m_iAnim)->GetNumPoints() > 2);
+	GetPosOnly()->Enable(m_iAnim != -1);
+
+	GetRecordInterval()->Enable(m_iAnim != -1);
+	GetRecordLinear()->Enable(m_iAnim != -1);
+
+	GetRecordSpacing()->Enable(m_bRecordInterval);
 }
 
 void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
@@ -207,7 +249,9 @@ void LocationDlg::SetValues()
 	anim->SetLoop(m_bLoop);
 	anim->SetInterpMode(m_bSmooth ? vtAnimPath::CUBIC_SPLINE : vtAnimPath::LINEAR);
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
+	engine->SetContinuous(m_bContinuous);
 	engine->SetPosOnly(m_bPosOnly);
+//  engine->SetEnabled(m_bActive);
 	engine->SetSpeed(m_fSpeed);
 }
 
@@ -217,12 +261,14 @@ void LocationDlg::GetValues()
 		return;
 
 	vtAnimPath *anim = GetAnim(m_iAnim);
-	m_bLoop = anim->GetLoop();
 	m_bSmooth = (anim->GetInterpMode() == vtAnimPath::CUBIC_SPLINE);
+	m_bLoop = anim->GetLoop();
 
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
+	m_bContinuous = engine->GetContinuous();
 	m_bPosOnly = engine->GetPosOnly();
 	m_fSpeed = engine->GetSpeed();
+//  m_bActive = engine->GetEnabled();
 }
 
 void LocationDlg::TransferToWindow()
@@ -234,6 +280,28 @@ void LocationDlg::TransferToWindow()
 
 
 // WDR: handler implementations for LocationDlg
+
+void LocationDlg::OnAnimPosSlider( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+
+	float fTotalTime = GetAnim(m_iAnim)->GetLastTime();
+	vtAnimPathEngine *eng = GetEngine(m_iAnim);
+	eng->SetTime(m_iPos * fTotalTime / 1000);
+	if (m_bActive)
+		eng->UpdateTargets();
+}
+
+void LocationDlg::OnActive( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+}
+
+void LocationDlg::OnRadio( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	UpdateEnabling();
+}
 
 void LocationDlg::OnText( wxCommandEvent &event )
 {
@@ -259,6 +327,8 @@ void LocationDlg::OnReset( wxCommandEvent &event )
 {
 	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	engine->Reset();
+	if (m_bActive)
+		engine->UpdateTargets();
 }
 
 void LocationDlg::OnCheckbox( wxCommandEvent &event )
@@ -266,7 +336,8 @@ void LocationDlg::OnCheckbox( wxCommandEvent &event )
 	if (m_bSetting)
 		return;
 	TransferDataFromWindow();
- 	SetValues();
+	SetValues();
+	RefreshAnimsText();
 }
 
 void LocationDlg::OnAnim( wxCommandEvent &event )
@@ -275,6 +346,8 @@ void LocationDlg::OnAnim( wxCommandEvent &event )
 
 	UpdateEnabling();
 	GetValues();
+	UpdateSlider();
+	ValuesToSliders();
 	TransferToWindow();
 }
 
@@ -295,10 +368,35 @@ void LocationDlg::OnRecord1( wxCommandEvent &event )
 	FPoint3 pos = xform->GetTrans();
 	FQuat rot = xform->GetOrient();
 	ControlPoint cp(pos, rot);
-	path->Insert(path->GetLastTime() + m_fRecordSpacing, cp);
+
+	float fTime;
+	if (path->GetNumPoints() == 0)
+		fTime = 0;
+	else
+	{
+		if (m_bRecordInterval)
+		{
+			// Record Interval: Append an element whose time is the desired number
+			//  of seconds after the last point.
+			fTime = path->GetLastTime() + m_fRecordSpacing;
+		}
+		else
+		{
+			// RecordLinear: Append an element whose time is derived from the linear
+			//  distance from the last point.
+			ControlPoint &prev_cp =
+			path->GetTimeControlPointMap().rbegin()->second;
+			float dist = (pos - prev_cp.m_Position).Length();
+
+			// convert directly at 1 meter/second
+			fTime = path->GetLastTime() + dist;
+		}
+	}
+	path->Insert(fTime, cp);
 	path->ProcessPoints();
 
 	RefreshAnimsText();
+	UpdateEnabling();	// Smooth might be allowed now
 }
 
 void LocationDlg::OnPlay( wxCommandEvent &event )
@@ -438,9 +536,9 @@ void LocationDlg::OnLocList( wxCommandEvent &event )
 void LocationDlg::RefreshButtons()
 {
 	int num = m_pLocList->GetSelection();
-	m_pStore->Enable(num != -1);
-	m_pRecall->Enable(num != -1);
-	m_pRemove->Enable(num != -1);
+	GetStore()->Enable(num != -1);
+	GetRecall()->Enable(num != -1);
+	GetRemove()->Enable(num != -1);
 }
 
 void LocationDlg::RecallFrom(const vtString &locname)
