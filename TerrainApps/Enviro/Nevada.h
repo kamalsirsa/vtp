@@ -73,8 +73,8 @@ public:
 
 	vtSprite *m_pSprite;
 
-	vtMaterial *m_pPastApp;
-	vtMaterial *m_pPresentApp;
+	vtMaterial *m_pPastMat;
+	vtMaterial *m_pPresentMat;
 
 	vtGroup *m_pTrees;
 };

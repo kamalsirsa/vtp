@@ -25,15 +25,15 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 	else if (number == 2)	fname = "Nevada/butterfly3_v2.png";
 
 	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, fname);
-	m_pApps = new vtMaterialArray();
-	m_pApps->AddTextureMaterial2(path,
+	m_pMats = new vtMaterialArray();
+	m_pMats->AddTextureMaterial2(path,
 		false, true,	// cull, light
 		true, false,	// transp: blend, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE,
 		1.0f, TERRAIN_EMISSIVE);
-	m_pApps->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), false, false);	// blue
-	m_pApps->AddRGBMaterial1(RGBf(0.0f, 0.7f, 0.0f), false, false);	// dk. green
-	m_pApps->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false);  // red
+	m_pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), false, false);	// blue
+	m_pMats->AddRGBMaterial1(RGBf(0.0f, 0.7f, 0.0f), false, false);	// dk. green
+	m_pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false);  // red
 
 	FPoint2 org, siz;
 	org.x = 0;
@@ -41,18 +41,18 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 	siz.x = 0.001f * size_exag;	//"real" butterfly size * size_exaggeration
 	siz.y = 0.0005f * size_exag;
 
-	m_pWing1 = CreatePlaneMGeom(m_pApps, 0, org, siz, 1.0f, 1.0f, 1);
+	m_pWing1 = CreatePlaneMGeom(m_pMats, 0, org, siz, 1.0f, 1.0f, 1);
 	m_pWing1->SetName2("wing1");
 	SetName2("ButterflyWing1");
 	m_pWing1->Rotate2(FPoint3(0.0f, 0.0f, 1.0f), PIf); 
 	AddChild(m_pWing1);
 
-	m_pWing2 = CreatePlaneMGeom(m_pApps, 0, org, siz, 1.0f, 1.0f, 1);
+	m_pWing2 = CreatePlaneMGeom(m_pMats, 0, org, siz, 1.0f, 1.0f, 1);
 	m_pWing2->SetName2("wing2");
 	SetName2("ButterflyWing2");
 	AddChild(m_pWing2);
 
-	m_pApps->Release();
+	m_pMats->Release();
 
 	//make the FlyingCritter engine
 	FlyingCritterEngine *pFCE;

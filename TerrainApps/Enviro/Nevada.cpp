@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to Black Rock City, Nevada.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,13 +11,16 @@
 #include "vtlib/core/Light.h"
 #include "vtlib/core/TerrainPatch.h"
 #include "vtlib/core/DynTerrain.h"
+#include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/SkyDome.h"
 
 #include "Nevada.h"
 #include "Engines.h"
 #include "Wings.h"
 #include "Hawaii.h"
+#include "Enviro.h"
 
-vtMaterialArray *Butterfly::m_pApps;
+vtMaterialArray *Butterfly::m_pMats;
 
 // measured with GPS in 1999:
 // man location
@@ -32,11 +35,17 @@ vtMaterialArray *Butterfly::m_pApps;
 
 #define ENABLE_TREES 1
 
+#define HORIZON_FOG		RGBi(200, 227, 255)
+
 
 ///////////////////////////////////////
 
 NevadaTerrain::NevadaTerrain() : PTerrain()
 {
+	m_pPast = m_pPresent = m_pFuture = NULL;
+	m_pWaterShape = m_pWaterShape2 = NULL;
+	m_pDetailMat = NULL;
+	m_pDetailMat2 = NULL;
 }
 
 //
@@ -44,6 +53,11 @@ NevadaTerrain::NevadaTerrain() : PTerrain()
 //
 void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 {
+	// We use a different horizon color
+	vtTerrainScene *scene = GetTerrainScene();
+	scene->horizon_color = HORIZON_FOG;
+	scene->azimuth_color = RGBi(30, 70, 255);
+
 	m_pHeightField->ConvertEarthToSurfacePoint(MAN_LONLAT, man_location);
 
 	m_fGround = 1200 * m_Params.m_fVerticalExag;
@@ -486,8 +500,8 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 	m_pSprite->SetTextFont("Data/Fonts/default.txf");
 #endif
 
-	m_pPastApp = pastApp;
-	m_pPresentApp = presentApp;
+	m_pPastMat = pastApp;
+	m_pPresentMat = presentApp;
 }
 
 void EpochEngine::Eval()
@@ -501,13 +515,22 @@ void EpochEngine::Eval()
 	if (campos.y < m_fWaterHeight)
 	{
 		if (bAboveWater)
-			m_pNevada->GetTopGroup()->SetFog(true, 1, 500, RGBf(70.0f/255, 70.0f/255, 145.0f/255));
+		{
+			RGBf color(70.0f/255, 70.0f/255, 145.0f/255);
+			m_pNevada->SetFogDistance(500);
+			m_pNevada->SetFogColor(color);
+			vtGetScene()->SetBgColor(color);
+		}
 		bAboveWater = false;
 	}
 	else
 	{
 		if (!bAboveWater)
-			m_pNevada->GetTopGroup()->SetFog(true, 1, 15000, RGBf(176.0f/255, 215.0f/255, 255.0f/255));
+		{
+			m_pNevada->SetFogDistance(25000);
+			m_pNevada->SetFogColor(HORIZON_FOG);
+			vtGetScene()->SetBgColor(HORIZON_FOG);
+		}
 		bAboveWater = true;
 	}
 
@@ -551,29 +574,32 @@ void EpochEngine::Eval()
 		else
 			m_pNevada->SetWaterOn(false);
 
-		// try to fade green onto land
-		float alpha;
-		vtMaterial *pMaterial;
-		RGBAf diffuse;
-		if (m_iYear < PAST_PRESENT_SWITCH)
+		if (m_pPastMat && m_pPresentMat)
 		{
-			// green
-			alpha = 0.7f * (1.0f - ((float)(PAST - m_iYear))/(float)(PAST - PAST_PRESENT_SWITCH));
-			pMaterial = m_pPastApp;
-			diffuse = pMaterial->GetDiffuse();
-			diffuse.a = alpha;
-			pMaterial->SetDiffuse1(diffuse);
-			m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastApp, DETAIL_TILING);
-		}
-		else
-		{
-			// dry
-			alpha = 1 - ((float)(PRESENT - m_iYear))/(float)(PRESENT - PAST_PRESENT_SWITCH);
-			pMaterial = m_pPresentApp;
-			diffuse = pMaterial->GetDiffuse();
-			diffuse.a = alpha;
-			pMaterial->SetDiffuse1(diffuse);
-			m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentApp, DETAIL_TILING);
+			// try to fade green onto land
+			float alpha;
+			vtMaterial *pMaterial;
+			RGBAf diffuse;
+			if (m_iYear < PAST_PRESENT_SWITCH)
+			{
+				// green
+				alpha = 0.7f * (1.0f - ((float)(PAST - m_iYear))/(float)(PAST - PAST_PRESENT_SWITCH));
+				pMaterial = m_pPastMat;
+				diffuse = pMaterial->GetDiffuse();
+				diffuse.a = alpha;
+				pMaterial->SetDiffuse1(diffuse);
+				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastMat, DETAIL_TILING);
+			}
+			else
+			{
+				// dry
+				alpha = 1 - ((float)(PRESENT - m_iYear))/(float)(PRESENT - PAST_PRESENT_SWITCH);
+				pMaterial = m_pPresentMat;
+				diffuse = pMaterial->GetDiffuse();
+				diffuse.a = alpha;
+				pMaterial->SetDiffuse1(diffuse);
+				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentMat, DETAIL_TILING);
+			}
 		}
 	}
 	m_pNevada->m_pPast->SetEnabled(m_iYear == PAST);
@@ -586,14 +612,14 @@ void EpochEngine::Eval()
 		if (m_iYear == PRESENT)
 		{
 			m_iTargetYear = PAST;
-			m_iSpeed = -178;
+			m_iSpeed = -48;
 			pause = 460;
 		}
 		if (m_iYear == PAST)
 		{
 			m_iTargetYear = PRESENT;
-			m_iSpeed = 178;
-			pause = 460;
+			m_iSpeed = 48;
+			pause = 40;
 		}
 	}
 

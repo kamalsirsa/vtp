@@ -11,7 +11,7 @@ public:
 	Butterfly(vtTerrain *terrain, float radius, float speed, 
 			  float height, FPoint3 center, float size_exag);
 
-	static vtMaterialArray *m_pApps;
+	static vtMaterialArray *m_pMats;
 	vtMovGeom *m_pWing1, *m_pWing2;
 };
 
