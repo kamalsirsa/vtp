@@ -1897,7 +1897,8 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName)
 	{
 		for (y = 0; y < m_iRows; y++)
 		{
-			value = GetFValue(x, y);
+			// flip as we copy
+			value = GetFValue(x, m_iRows-1-y);
 			raster[y*m_iColumns + x] = (short) value;
 		}
 	}
