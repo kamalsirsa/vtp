@@ -1185,7 +1185,7 @@ void MainFrame::ExportElevation()
 	bool floatmode = false;
 
 	// sample spacing in meters/heixel or degrees/heixel
-	DPoint2 spacing(1.0f, 1.0f);
+	DPoint2 spacing(0, 0);
 	for (int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
@@ -1200,10 +1200,10 @@ void MainFrame::ExportElevation()
 			}
 		}
 	}
-	if (spacing == DPoint2(1.0f, 1.0f))
+	if (spacing == DPoint2(0, 0))
 	{
-		DisplayAndLog("Sorry, you must have some elevation grid layers to\n"
-					  "perform a sampling operation on them.");
+		DisplayAndLog("Sorry, you must have some elevation grid layers\n"
+					  "to perform a sampling operation on them.");
 		return;
 	}
 
@@ -1236,9 +1236,7 @@ void MainFrame::ExportElevation()
 
 	// fill in the value for pBig by merging samples from all other terrain
 	SampleCurrentTerrains(pOutput);
-#if 1
 	pOutput->FillGaps();
-#endif
 
 	bool success = pOutput->m_pGrid->SaveToBT(strPathName.mb_str());
 	if (success)
@@ -1256,7 +1254,7 @@ void MainFrame::ExportElevation()
 void MainFrame::ExportImage()
 {
 	// sample spacing in meters/heixel or degrees/heixel
-	DPoint2 spacing(1.0f, 1.0f);
+	DPoint2 spacing(0, 0);
 	for (int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
@@ -1266,9 +1264,9 @@ void MainFrame::ExportImage()
 			spacing = im->GetSpacing();
 		}
 	}
-	if (spacing == DPoint2(0.0f, 0.0f))
+	if (spacing == DPoint2(0, 0))
 	{
-		DisplayAndLog("Sorry, you must have some image layers to"
+		DisplayAndLog("Sorry, you must have some image layers to\n"
 					  "perform a sampling operation on them.");
 		return;
 	}
@@ -1466,12 +1464,16 @@ using namespace std;
 
 void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 {
+	wxString IniPath = wxGetCwd();
+
 	ifstream input;
-	input.open("Enviro.ini", ios::in | ios::binary);
+	IniPath += "Enviro.ini";
+	input.open(IniPath, ios::in | ios::binary);
 	if (!input.is_open())
 	{
 		input.clear();
-		input.open("../Enviro/Enviro.ini", ios::in | ios::binary);
+		IniPath = wxGetCwd() + "/../Enviro/Enviro.ini";
+		input.open(IniPath, ios::in | ios::binary);
 	}
 	if (!input.is_open())
 		return;
