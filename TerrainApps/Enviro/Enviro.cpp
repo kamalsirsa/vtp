@@ -1541,8 +1541,6 @@ void Enviro::DescribeCoordinatesTerrain(vtString &str)
 
 	str = "";
 
-	vtTerrain *pTerr = GetCurrentTerrain();
-
 #if 0
 	// give location of camera and cursor
 	str = "Camera: ";

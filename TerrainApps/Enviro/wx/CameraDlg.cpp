@@ -178,7 +178,7 @@ void CameraDlg::SetValues()
 	pCam->SetHither(m_fNear);
 	pCam->SetYon(m_fFar);
 
-	float speed;
+	float speed=0;
 	switch (m_iSpeedUnits)
 	{
 	case 0: // m/s

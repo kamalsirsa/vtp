@@ -933,8 +933,6 @@ void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 	for (i = 0; i < m_datapaths.size(); i++)
 		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst*");
 
-	int num = strings.Count();
-
 	// int num = m_pLocList->GetSelection();  // no care
 	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
 		strings, this);

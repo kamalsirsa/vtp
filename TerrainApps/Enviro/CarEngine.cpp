@@ -187,7 +187,6 @@ void CarEngine::Eval()
 				//iterate simulation over 10ms periods.
 				for (; m_fPrevTime < t; m_fPrevTime +=.01f) {
 					//find where the road is
-					bool newroad = false;
 					FPoint3 target = GetNextTarget(t);
 					//adjust vehicle speed.
 					AdjustSpeed(.01f);
@@ -525,8 +524,6 @@ void CarEngine::PickFirstRoad()
 //we have to look one road ahead so that we know if we are going to make a turn later.
 void CarEngine::PickRoad()
 {
-	int i = 0;
-
 	// safety check
 	if (!m_pCurNode)
 	{
@@ -569,7 +566,7 @@ void CarEngine::PickRoad()
 
 //picks the next road.
 void CarEngine::PickNextRoad() {
-	int i;
+	int i=0;
 	if (m_eMode == PATH) {
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
@@ -618,7 +615,7 @@ void CarEngine::PickNextRoad() {
 			if (i == m_pNextNode->m_iLinks)
 			{
 				//find index for current road
-				int r_index;
+				int r_index=0;
 				for (i = 0; i < m_pNextNode->m_iLinks; i++)
 				{
 					if (m_pNextNode->GetLink(i) == m_pCurRoad)
@@ -648,11 +645,11 @@ void CarEngine::PickNextRoad() {
 			}
 		}
 	}
-	if (i < m_pNextNode->m_iLinks) {
+	if (i < m_pNextNode->m_iLinks)
 		m_pNextRoad = m_pNextNode->GetLink(i);
-	} else {
+	else
 		m_pNextRoad = m_pCurRoad;
-	}
+
 	/*
 	now that we know the next road, how sharp of an angle do we have to turn to
 	transition from the current road to the next road?
@@ -782,7 +779,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 		bool newroad = false;
 		if (m_bForwards) {
 			m_iRCoord++;
-			if (m_iRCoord == m_pCurRoad->GetSize()) {
+			if (m_iRCoord == (int) m_pCurRoad->GetSize()) {
 				newroad = true;
 			}
 		} else {

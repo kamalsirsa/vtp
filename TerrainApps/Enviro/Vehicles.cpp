@@ -89,7 +89,6 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 	NodeGeom *n = NULL;
 	FPoint3 vNormal, center;
 	FPoint3 start_point;
-	vtTransform *car;
 	int num, col;
 	RGBf color;
 	for (int i = 0; i < m_Params.GetValueInt(STR_NUMCARS); i++)
@@ -118,6 +117,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 			break;
 		}
 
+		vtTransform *car=NULL;
 		switch (num) {
 		case 0:
 			car = CreateVehicle("discovery", color, fSize);

@@ -211,12 +211,13 @@ void NevadaTerrain::CreatePast()
 	m_pPast->SetName2("Past");
 	m_pPast->SetEnabled(false);
 
-	float height = 80.0f;
 	FPoint3 center;
 	g_Conv.convert_earth_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
 
 #if 0
 	//butterfly: circle radius, speed, height above ground, center, size_exag
+	float height = 80.0f;
+
 	vtGeom *bfly = new Butterfly(this, 0.2f, 50.0f, height, center, 200.0);
 	m_pPast->AddChild(bfly);
 	vtGeom *bfly2 = new Butterfly(this, 0.3f, 50.0f, height, center, 200.0);
@@ -575,7 +576,6 @@ void EpochEngine::Eval()
 	}
 
 	bool set_water = (m_iSpeed != 0);
-	int lastYear = m_iYear;
 	m_iYear += m_iSpeed;
 	if (m_iSpeed > 0 && m_iYear > m_iTargetYear)	// got there?
 	{

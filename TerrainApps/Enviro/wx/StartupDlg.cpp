@@ -77,7 +77,9 @@ static void ShowOGLInfo(bool bLog)
 	if (device == NULL)
 	{
 		DWORD lasterror = GetLastError();
+		VTLOG(" failed with error %d\n", lasterror);
 		// 2000 The pixel format is invalid.  ERROR_INVALID_PIXEL_FORMAT
+		return;
 	}
 	VTLOG("wglMakeCurrent.\n");
 	wglMakeCurrent(hdc, device);

@@ -228,7 +228,7 @@ void IslandTerrain::create_state_park()
 	vtStructInstance *inst = m_pSA->AddNewInstance();
 	inst->SetValueString("itemname", "Riesenbuehl");
 	inst->m_p = park_location;
-	bool bSuccess = CreateStructure(m_pSA, index);
+	CreateStructure(m_pSA, index);
 
 #if 0
 	// Here is an example of how to directly create a content item and
@@ -370,7 +370,7 @@ void IslandTerrain::create_building_manually()
 	pEdge = pLev->GetEdge(0);
 	pLev->SetEdgeColor(RGBi(128, 128, 128));
 	pEdge->m_Features.clear();
-	int feat1 = pEdge->NumFeatures();
+	//int feat1 = pEdge->NumFeatures();
 	pEdge->AddFeature(WFC_GAP);
 
 	pEdge = pLev->GetEdge(1);

@@ -257,7 +257,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				int iNumVert = pMesh->GetNumVertices();
 
 				GLenum pt = pMesh->GetPrimType();
-				const char *mtype;
+				const char *mtype="";
 				switch (pt)
 				{
 				case GL_POINTS: mtype = "Points"; break;
