@@ -435,7 +435,7 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 					else if (a == 1)	// second pass, top/bottom normals
 					{
 						norm.x = 0;
-						norm.y = b ? 1 : -1;
+						norm.y = b ? 1.0f : -1.0f;
 						norm.z = 0;
 					}
 					SetVtxNormal(vidx, norm);
@@ -761,7 +761,7 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 	vtGeom *pGeom = new vtGeom();
 	vtMesh *geo = new vtMesh(GL_LINES, 0, (steps+1)*4);
 
-	FPoint3 p, diff = max1 - min1, step = diff/steps;
+	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
 	p.y = diff.y;
 	int i, idx = 0;
 	for (i = 0; i < steps+1; i++)

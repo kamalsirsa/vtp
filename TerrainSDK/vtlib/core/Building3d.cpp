@@ -892,9 +892,9 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 		quad[3] = poly2[b];
 
 		float h1 = 0.0f;
-		float h2 = pLev->m_iStories;
-		AddWallSection(pEdge, BMAT_NAME_WINDOWWALL, quad, h1, h2,
-			pEdge->NumFeaturesOfCode(WFC_WINDOW));
+		float h2 = (float) pLev->m_iStories;
+		float hf1 = (float) pEdge->NumFeaturesOfCode(WFC_WINDOW);
+		AddWallSection(pEdge, BMAT_NAME_WINDOWWALL, quad, h1, h2, hf1);
 
 		if (i == iHighlightEdge)
 		{
@@ -930,11 +930,13 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 			TERRAIN_DIFFUSE,
 			1.0f,		// alpha
 			TERRAIN_EMISSIVE);
+
 	// Create a mesh for the new material and add this to the mesh array
 	mm.m_pMesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
 	m_Mesh.Append(mm);
+
 	// Calculate the vertices and add them to the mesh
-	float v = stories;
+	float v = (float) stories;
 	int start = mm.m_pMesh->AddVertexNUV(quad[0], norm, FPoint2(0.0f, 0.0f));
 	mm.m_pMesh->AddVertexNUV(quad[1], norm, FPoint2(1.0f, 0.0f));
 	mm.m_pMesh->AddVertexNUV(quad[3], norm, FPoint2(1.0f, v));
