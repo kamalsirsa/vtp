@@ -72,8 +72,8 @@ bool ColorMap::Load(const char *fname)
 			for (int i = 0; i < size; i++)
 			{
 				float f;
-				int r, g, b;
-				fscanf(fp, "\telev %f color %d %d %d\n", &f, &r, &g, &b);
+				short r, g, b;
+				fscanf(fp, "\telev %f color %hd %hd %hd\n", &f, &r, &g, &b);
 				m_elev[i] = f;
 				m_color[i].Set(r, g, b);
 			}
@@ -132,7 +132,7 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 	int current = 0;
 	int num = Num();
 	RGBi c1, c2;
-	float base, next, bracket_size, fraction;
+	float base=0, next, bracket_size=0, fraction;
 
 	if (m_bRelative == true)
 	{
@@ -703,16 +703,16 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			float value2 = GetElevation(x+1, y);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
-			int diff = (int) ((value2 - value) / m_fXStep * light_factor);
+			short diff = (short) ((value2 - value) / m_fXStep * light_factor);
 
 			// clip to keep values under control
 			if (diff > 128)
 				diff = 128;
 			else if (diff < -128)
 				diff = -128;
-			rgb.r += diff;
-			rgb.g += diff;
-			rgb.b += diff;
+			rgb.r = rgb.r + diff;
+			rgb.g = rgb.g + diff;
+			rgb.b = rgb.b + diff;
 			if (rgb.r < 0) rgb.r = 0;
 			else if (rgb.r > 255) rgb.r = 255;
 			if (rgb.g < 0) rgb.g = 0;
@@ -794,9 +794,6 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	int gw, gh;
 	GetDimensions(gw, gh);
-
-	float xFactor = (float)gw/(float)w;
-	float yFactor = (float)gh/(float)h;
 
 	// Compute area that we will sample for shading, bounded by the texel
 	//  centers, which are 1/2 texel in from the grid extents.

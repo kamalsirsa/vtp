@@ -62,7 +62,7 @@ int icosa_face_pairs[10][2] =
 void CartesianToSpherical(double *lng, double *lat,
 						  double x, double y, double z)
 {
-	double a;
+	double a=0.0;
 
 	if (x>0.0 && y>0.0){a = 0;}
 	if (x<0.0 && y>0.0){a = PId;}
@@ -363,10 +363,8 @@ bool DymaxIcosa::GeoToDymax(const DPoint2 &geo, DPoint2 &dymax)
 	FindUV(p3, face, uvw);
 
 	DPoint2 uv(uvw.x, uvw.y);
-	if (uv.x > 1 || uv.y > 1)
-	{
-		int foo = 1;
-	}
+	assert(uv.x <= 1 && uv.y <= 1);
+
 	// Not exactly sure why we need to do this - apparently the UV are
 	//  assuming a unit-radius, rather than unit-edge icosahedron
 	uv /= m_edge_length;

@@ -510,16 +510,16 @@ void Countries::ParseRawCountry(int which, bool bNativeNames)
 	}
 
 	DPoint2 point;
-	char fc;	// feature classification, P = populated palce
-	char pc;	// Populated Place Classification
-	char nt;	// Name Type
+	char fc=0;	// feature classification, P = populated palce
+	char pc=0;	// Populated Place Classification
+	char nt=0;	// Name Type
 	char *p, *w;
 	vtString fullname, fullname_nd;
 	char buf[4000];
 	char word[200];	// some place names in Russia are more than 100 chars!
 	int line_number = 0;
 	Place *place;
-	int region;
+	int region=0;
 	bool bSkip;
 
 	while (fgets(buf, 4000, fp) != NULL)
@@ -588,7 +588,7 @@ void Countries::ParseRawCountry(int which, bool bNativeNames)
 
 void WriteString(FILE *fp, const vtString &str)
 {
-	short len = str.GetLength();
+	short len = (short) str.GetLength();
 	fwrite(&len, 2, 1, fp);
 	const char *buf = (const char *)str;
 	fwrite(buf, len, 1, fp);
