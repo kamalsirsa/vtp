@@ -80,7 +80,7 @@ public:
 	const char *GetProjectionName() const;
 	const char *GetProjectionNameShort() const;
 
-	bool GetTextDescription(char *type, char *value);
+	bool GetTextDescription(char *type, char *value) const;
 	bool SetTextDescription(const char *type, const char *value);
 
 	bool ReadProjFile(const char *filename);

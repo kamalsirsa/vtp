@@ -414,7 +414,7 @@ bool vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
  * This buffer should be at least 2048 characters long to contain either
  * a simple or WKT description.
  */
-bool vtProjection::GetTextDescription(char *type, char *value)
+bool vtProjection::GetTextDescription(char *type, char *value) const
 {
 	int datum = GetDatum();
 	const char *datum_string = DatumToStringShort(datum);
@@ -436,7 +436,7 @@ bool vtProjection::GetTextDescription(char *type, char *value)
 		strcpy(type, "wkt");
 
 		char *wkt;
-		OGRErr err = exportToWkt(&wkt);
+		OGRErr err = ((OGRSpatialReference*)this)->exportToWkt(&wkt);
 		if (err != OGRERR_NONE)
 			return false;
 		strcpy(value, wkt);
