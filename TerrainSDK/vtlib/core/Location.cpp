@@ -36,13 +36,13 @@ void vtLocationSaver::Empty()
 
 bool vtLocationSaver::Write(const wstring2 &fname_in)
 {
-	std::wstring fname;
+	wstring2 fname;
 	if (fname_in != L"")
 		fname = fname_in;
 	else
 		fname = m_strFilename;
 
-	FILE *fp = _wfopen(fname.c_str(), L"wb");
+	FILE *fp = fopen(fname.eb_str(), "wb");
 	if (!fp) return false;
 
 	wstring2 xml;
@@ -115,10 +115,10 @@ void LocationVisitor::endElement(const char *name)
 	{
 		if (!strcmp(name, "point1"))
 			sscanf(m_data.c_str(), "%lf,%lf,%f",
-				&m_loc->m_pos1.x, &m_loc->m_pos1.y, &m_loc->m_fElevation1);
+			&m_loc->m_pos1.x, &m_loc->m_pos1.y, &m_loc->m_fElevation1);
 		if (!strcmp(name, "point2"))
 			sscanf(m_data.c_str(), "%lf,%lf,%f",
-				&m_loc->m_pos2.x, &m_loc->m_pos2.y, &m_loc->m_fElevation2);
+			&m_loc->m_pos2.x, &m_loc->m_pos2.y, &m_loc->m_fElevation2);
 		if (!strcmp(name, "name"))
 		{
 			// the special "&" characters have already been un-escaped for
@@ -268,4 +268,3 @@ void vtLocationSaver::Remove(int num)
 	delete loc;
 	m_loc.RemoveAt(num);
 }
-
