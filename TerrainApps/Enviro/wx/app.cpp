@@ -154,7 +154,13 @@ bool AskForTerrainName(wxWindow *pParent, wxString &str)
 	int first_idx = 0;
 	for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
 	{
+#if SUPPORT_WSTRING
+		wstring2 ws;
+		ws.from_utf8(pTerr->GetName());
+		choices[num] = wxString2(ws.c_str());
+#else
 		choices[num] = wxString2(pTerr->GetName());
+#endif
 		if (str == choices[num]) first_idx = num;
 		num++;
 	}

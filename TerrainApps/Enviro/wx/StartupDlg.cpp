@@ -261,6 +261,7 @@ AutoDialog( parent, id, title, position, size, style )
 void StartupDlg::EditParameters(const char *filename) 
 {
 	TParamsDlg dlg(this, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
+	dlg.SetDataPaths(g_Options.m_DataPaths);
 
 	TParams Params;
 	if (Params.LoadFromFile(filename))
@@ -303,7 +304,8 @@ void StartupDlg::OnSelectDataPath( wxCommandEvent &event )
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.mb_str());
+	const char *name = m_strTName.mb_str();
+	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(name);
 	if (pTerr)
 		EditParameters(pTerr->GetParamFile());
 }
