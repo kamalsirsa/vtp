@@ -69,6 +69,9 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 
 	// try to load with OSG (osgPlugins libraries)
 	{
+		// important for efficiency: use OSG's cache
+		osgDB::Registry::instance()->setUseObjectCacheHint(true);
+
 		m_pOsgImage = osgDB::readImageFile(fname);
 		if (m_pOsgImage != NULL)
 			m_bLoaded = true;
