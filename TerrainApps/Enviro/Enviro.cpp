@@ -1278,7 +1278,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	geo_to_xyz(1.0, g1, p1);
 	geo_to_xyz(1.0, g2, p2);
 	double angle = acos(p1.Dot(p2));
-	int points = angle * 3000;
+	int points = (int) (angle * 3000);
 	if (points < 3)
 		points = 3;
 
