@@ -9,6 +9,7 @@
 #include "xmlhelper/easyxml.hpp"
 #include "vtLog.h"
 #include "DLG.h"
+#include "DxfParser.h"
 
 //
 // Construct / Destruct
@@ -257,6 +258,69 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 
 	return pSet;
 }
+
+/////////////////////////////////////////////////////////////////////
+
+vtFeatureSet *vtFeatureLoader::LoadFromDXF(const char *filename, bool progress_callback(int))
+{
+	VTLOG("vtFeatureLoader::LoadFromDXF():\n");
+
+	std::vector<DxfEntity> entities;
+	std::vector<vtString> layers;
+
+	DxfParser parser(filename, entities, layers);
+	bool bSuccess = parser.RetrieveEntities(progress_callback);
+	if (!bSuccess)
+	{
+		VTLOG(parser.GetLastError());
+		return NULL;
+	}
+	unsigned int iNumEntities = entities.size();
+	if (iNumEntities == 0)
+		return NULL;
+
+	// Look at first entity
+	vtFeatureSetLineString *pSetP2;
+	const DxfEntity &ent = entities[0];
+	if (ent.m_iType == DET_Polyline)
+		pSetP2 = new vtFeatureSetLineString();
+//	else if (ent.m_iType == DET_Polygon)	// TODO? Other types.
+//		pSetP2 = new vtFeatureSetPolygon();
+	else
+		return false;
+
+	int vtx = 0;
+	int polylines = 0;
+	for (unsigned int i = 0; i < iNumEntities; i++)
+	{
+		const DxfEntity &ent = entities[i];
+		if (ent.m_iType == DET_Polyline)
+		{
+			DLine2 dline;
+			int iNumVerts = ent.m_points.size();
+			for (int j = 0; j < iNumVerts; j++)
+			{
+				DPoint2 p(ent.m_points[j].x, ent.m_points[j].y);
+				float z = (float) ent.m_points[j].z;
+
+				// AddVert(p, z);
+				dline.Append(p);
+			}
+			pSetP2->AddPolyLine(dline);
+			polylines ++;
+		}
+	}
+	VTLOG("  Found %d entities of type Polyline.\n", polylines);
+
+	// If we didn't find any polylines, we haven't got a featureset
+	if (polylines == 0)
+		return false;
+
+	return pSetP2;
+}
+
+
+///////////////////////////////////////////////////////////////////////
 
 // helpers
 double GetMinutes(const char *buf)
