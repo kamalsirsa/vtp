@@ -8,6 +8,10 @@
 #ifndef __EASYXML_HPP
 #define __EASYXML_HPP
 
+#ifdef _MSC_VER
+  #pragma warning(disable: 4100)	// Avoid picky compiler warning about unused params
+#endif
+
 #include "exception.hpp"
 
 #include <iostream>
