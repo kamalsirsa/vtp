@@ -1346,6 +1346,8 @@ void vtTerrain::_CreateVegetation()
 
 	if (m_Params.GetValueBool(STR_TREES))
 	{
+		clock_t r1 = clock();	// start timing
+
 		vtString fname = m_Params.GetValueString(STR_TREEFILE, true);
 
 		// Read the VF file
@@ -1390,6 +1392,7 @@ void vtTerrain::_CreateVegetation()
 			else
 				VTLOG("\tCouldn't load VF file.\n");
 		}
+		VTLOG(" Vegetation: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 	}
 }
 
