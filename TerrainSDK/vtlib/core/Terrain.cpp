@@ -905,16 +905,7 @@ void vtTerrain::create_floating_labels(const char *filename)
 		if (!ret) break;
 
 		vtTransform *bb = new vtTransform();
-#if 0
-		vtBillBoard *bb = new vtBillBoard();
-		bb->SetName2(string);
-		bb->SetText(string);
-		bb->SetForeColor(RGBf(1.0f, 1.0f, 0.0f));
-		bb->SetTextFont("Data/Fonts/default.txf");
-		bb->SetKind(BB_Axial);
-		FPoint3 yvec(0.0f, 1.0f, 0.0f);
-		bb->SetAxis(yvec);
-#endif
+
 		vtTextMesh *text = new vtTextMesh(font, true);	// center
 		text->SetText(string);
 		vtGeom *geom = new vtGeom();
@@ -922,11 +913,12 @@ void vtTerrain::create_floating_labels(const char *filename)
 		geom->SetMaterials(pMats);
 		geom->AddText(text, index);
 
+		// TODO: add a billboarding transform so that the labels turn
+		// toward the viewer
 		bb->AddChild(geom);
 
 		float width = 250.0f;
 		float height = 250.0f;
-//		float scale_x = width;
 		bb->Scale3(width/20, height/20, 1.0f);
 
 		m_pHeightField->ConvertEarthToSurfacePoint(utm_x, utm_y, p3);
