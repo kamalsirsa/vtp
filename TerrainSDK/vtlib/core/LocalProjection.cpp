@@ -17,17 +17,9 @@
 #include "LocalProjection.h"
 
 //
-// The global current projection is stored here.
+// The global current projection for the current terrain is stored here.
 //
 vtLocalProjection g_Proj;
-
-//
-// Earth's diameter: 12756 km
-// approximate circumference: 40074 km
-// each degree of latitude: 111.3 km
-//
-#define earth_radius	6378000.0f		// in meters
-#define meters_per_latitude	111300.0f
 
 vtLocalProjection::vtLocalProjection() : vtProjection()
 {
@@ -39,11 +31,7 @@ void vtLocalProjection::SetDegreeOrigin(const DPoint2 &degrees)
 	m_EarthOrigin = degrees;
 
 	// estimate meters per degree of longitude, using the terrain origin
-	double r0, circ;
-
-	r0 = earth_radius * cos(degrees.y / 180.0 * PI);
-	circ = 2.0 * r0 * PI;
-	m_fMetersPerLongitude = (float) (circ / 360.0);
+	m_fMetersPerLongitude = EstimateDegreesToMeters(degrees.y);
 }
 
 void vtLocalProjection::SetMeterOrigin(const DPoint2 &meters)
@@ -62,7 +50,7 @@ void vtLocalProjection::convert_latlon_to_local_xz(float lat, float lon,
 	if (IsGeographic())
 	{
 		x = (float) ((lon - m_EarthOrigin.x) * m_fMetersPerLongitude * WORLD_SCALE);
-		z = (float) -((lat - m_EarthOrigin.y) * meters_per_latitude * WORLD_SCALE);
+		z = (float) -((lat - m_EarthOrigin.y) * METERS_PER_LATITUDE * WORLD_SCALE);
 	}
 	// TODO: what if not geographic?
 }
@@ -126,7 +114,7 @@ void vtLocalProjection::convert_local_xz_to_latlon(float x, float z,
 												   double &lat, double &lon)
 {
 	lon = m_EarthOrigin.x + (x / m_fMetersPerLongitude / WORLD_SCALE);
-	lat = m_EarthOrigin.y + (-z / meters_per_latitude / WORLD_SCALE);
+	lat = m_EarthOrigin.y + (-z / METERS_PER_LATITUDE / WORLD_SCALE);
 }
 
 //
