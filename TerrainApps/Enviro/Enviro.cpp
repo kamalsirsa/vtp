@@ -73,7 +73,7 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pPlantList = NULL;
 	m_bPlantsLoaded = false;
 	m_PlantOpt.m_iMode = 0;
-	m_PlantOpt.m_iSpecies = 0;
+	m_PlantOpt.m_iSpecies = -1;
 	m_PlantOpt.m_fHeight = 100.0f;
 	m_PlantOpt.m_iVariance = 20;
 	m_PlantOpt.m_fSpacing = 2.0f;
