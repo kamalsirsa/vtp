@@ -1,5 +1,5 @@
 //
-// Name:		StartupDlg.cpp
+// Name: StartupDlg.cpp
 //
 // Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -23,17 +23,17 @@
 #  include <GL/glx.h>
 #endif
 
-#include "vtlib/vtlib.h"
-#include "vtlib/core/Terrain.h"
-#include "vtlib/core/TerrainScene.h"
+#include "vtlib/vtlib.h"	// mostly for gl.h
 
 #include "StartupDlg.h"
-#include "../Enviro.h"	// for GetCurrentTerrain
 #include "../Options.h"
 #include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "TParamsDlg.h"
+#include "TerrManDlg.h"
+
+DECLARE_APP(vtApp);
 
 //
 // This function is used to find all files in a given directory,
@@ -42,7 +42,7 @@
 void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars)
 {
-//	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
+//  VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
 
 	int entries = 0, matches = 0;
 
@@ -51,7 +51,7 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	{
 		entries++;
 		std::string name1 = it.filename();
-		//		VTLOG("   entry: '%s'", name1.c_str());
+		//	VTLOG("   entry: '%s'", name1.c_str());
 		if (it.is_hidden() || it.is_directory())
 			continue;
 
@@ -65,7 +65,7 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 			matches++;
 		}
 	}
-//	VTLOG(" %d entries, %d matches\n", entries, matches);
+//  VTLOG(" %d entries, %d matches\n", entries, matches);
 }
 
 //
@@ -81,18 +81,18 @@ static void ShowOGLInfo(bool bLog)
 	PIXELFORMATDESCRIPTOR pfd =
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd 
-		1,						// version number 
+		1,					// version number 
 		PFD_DRAW_TO_WINDOW |	// support window 
 		PFD_SUPPORT_OPENGL |	// support OpenGL 
-		PFD_DOUBLEBUFFER,		// double buffered 
-		PFD_TYPE_RGBA,			// RGBA type 
-		24,						// 24-bit color depth 
-		0, 0, 0, 0, 0, 0,		// color bits ignored 
+		PFD_DOUBLEBUFFER,	  // double buffered 
+		PFD_TYPE_RGBA,		// RGBA type 
+		24,				  // 24-bit color depth 
+		0, 0, 0, 0, 0, 0,	  // color bits ignored 
 		0, 0, 0,				// no alpha buffer 
-		0, 0, 0, 0,				// accum bits ignored 
-		32, 0, 0,				// 32-bit z-buffer 
-		PFD_MAIN_PLANE,			// main layer
-		0, 0, 0, 0				// reserved, layer masks ignored
+		0, 0, 0, 0,		  // accum bits ignored 
+		32, 0, 0,			  // 32-bit z-buffer 
+		PFD_MAIN_PLANE,	  // main layer
+		0, 0, 0, 0			// reserved, layer masks ignored
 	};
 	int  iPixelFormat;
 
@@ -234,79 +234,68 @@ void StartupDlg::UpdateState()
 {
 	m_psImage->Enable(m_bStartEarth);
 	m_pImage->Enable(m_bStartEarth);
-	m_pTName->Enable(m_bStartTerrain);
-	m_pTSelect->Enable(m_bStartTerrain);
+	GetTname()->Enable(m_bStartTerrain);
 }
 
 // WDR: event table for StartupDlg
 
 BEGIN_EVENT_TABLE(StartupDlg,AutoDialog)
-EVT_BUTTON( ID_TSELECT, StartupDlg::OnSelectTerrain )
-EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
-EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
-EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
-EVT_RADIOBUTTON( ID_TERRAIN, StartupDlg::OnTerrain )
-EVT_BUTTON( ID_EDITPROP, StartupDlg::OnEditProp )
+	EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
+	EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
+	EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
+	EVT_RADIOBUTTON( ID_TERRAIN, StartupDlg::OnTerrain )
+	EVT_BUTTON( ID_EDITPROP, StartupDlg::OnEditProp )
+	EVT_BUTTON( ID_TERRMAN, StartupDlg::OnTerrMan )
+	EVT_CHOICE( ID_TNAME, StartupDlg::OnTnameChoice )
 END_EVENT_TABLE()
 
 StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-AutoDialog( parent, id, title, position, size, style )
+		AutoDialog( parent, id, title, position, size, style )
 {
 	VTLOG("Constructing StartupDlg.\n");
 	StartupDialogFunc( this, TRUE ); 
 }
 
-void StartupDlg::EditParameters(const char *filename) 
+void StartupDlg::RefreshTerrainChoices()
 {
-	TParamsDlg dlg(this, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
-	dlg.SetDataPaths(g_Options.m_DataPaths);
+	GetTname()->Clear();
 
-	TParams Params;
-	if (Params.LoadFromFile(filename))
-		dlg.SetParams(Params);
-
-	dlg.CenterOnParent();
-	int result = dlg.ShowModal();
-	if (result == wxID_OK)
+	vtApp &app = wxGetApp();
+	for (unsigned int i = 0; i < app.terrain_files.size(); i++)
 	{
-		dlg.GetParams(Params);
-		if (!Params.SaveToFile(filename))
-		{
-			wxString str;
-			str.Printf(_T("Couldn't save to file %hs.\n")
-				_T("Please make sure the file is not read-only."), filename);
-			wxMessageBox(str);
-		}
+		GetTname()->Append(wxString2(app.terrain_names[i]));
 	}
 }
+
 
 // WDR: handler implementations for StartupDlg
 
-#if 0
-void StartupDlg::OnSelectDataPath( wxCommandEvent &event )
+void StartupDlg::OnTnameChoice( wxCommandEvent &event )
 {
-	wxDirDialog dlg(this, _T("Please indicate your data directory"), m_strDataPath);
+	m_strTName = GetTname()->GetStringSelection();
+}
+
+void StartupDlg::OnTerrMan( wxCommandEvent &event )
+{
+	TerrainManagerDlg dlg(this, -1, _T("Terrain Manager"), wxDefaultPosition);
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		m_strDataPath = dlg.GetPath();
-#if WIN32
-		wxString path_separator = "\\";
-#else
-		wxString path_separator = "/";
-#endif
-		m_strDataPath += path_separator;
-		TransferDataToWindow();
+		g_Options.Write();
+		wxGetApp().RefreshTerrainList();
+		RefreshTerrainChoices();
+		int sel = GetTname()->FindString(m_strTName);
+		if (sel != -1)
+			GetTname()->Select(sel);
 	}
 }
-#endif
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
 	const char *name = m_strTName.to_utf8();
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(name);
-	if (pTerr)
-		EditParameters(pTerr->GetParamFile());
+	vtString path_to_ini = wxGetApp().GetIniFileForTerrain(name);
+	if (path_to_ini != "")
+		EditTerrainParameters(this, path_to_ini);
 }
 
 void StartupDlg::OnTerrain( wxCommandEvent &event )
@@ -341,6 +330,8 @@ void StartupDlg::OnOK( wxCommandEvent &event )
 
 void StartupDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
+	int sel;
+
 	VTLOG("StartupDlg Init.\n");
 
 	// display OpenGL info, including max texture size
@@ -352,14 +343,12 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	ShowOGLInfo(true);
 #endif
 
-/*	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.to_utf8());
+/*  vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.to_utf8());
 	if (pTerr)
 		m_strTName = wxString::FromAscii(pTerr->GetName());
 	else
 		m_strTName = _T("none");
 */
-	m_pTName = GetTname();
-	m_pTSelect = GetTselect();
 	m_psImage = GetImagetext();
 	m_pImage = GetImage();
 
@@ -371,7 +360,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);
 	}
-	int sel = m_pImage->FindString(m_strImage);
+	sel = m_pImage->FindString(m_strImage);
 	if (sel != -1)
 		m_pImage->SetSelection(sel);
 
@@ -386,19 +375,15 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_SOUND, &m_bSound);
 	AddValidator(ID_SHADOWS, &m_bShadows);
 
-	AddValidator(ID_TNAME, &m_strTName);
+	// Terrain choices
+	RefreshTerrainChoices();
+	sel = GetTname()->FindString(m_strTName);
+	if (sel != -1)
+		GetTname()->Select(sel);
+
 	AddValidator(ID_IMAGE, &m_strImage);
 	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
 
 	wxWindow::OnInitDialog(event);
-}
-
-void StartupDlg::OnSelectTerrain( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-
-	AskForTerrainName(this, m_strTName);
-
-	TransferDataToWindow();
 }
 
