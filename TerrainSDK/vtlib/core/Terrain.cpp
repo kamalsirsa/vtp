@@ -972,7 +972,8 @@ void vtTerrain::_CreateCulture(bool bSound)
 
 	// create built structures - there is always at least one structure array
 	vtStructure3d::InitializeMaterialArrays();
-	NewStructureArray();
+	vtStructureArray3d *sa = NewStructureArray();
+	sa->SetFilename("default.vtst");
 
 	unsigned int i, num = m_Params.m_strStructFiles.size();
 	for (i = 0; i < num; i++)
