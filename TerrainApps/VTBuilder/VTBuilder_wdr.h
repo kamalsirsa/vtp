@@ -219,6 +219,10 @@ wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_LISTCTRL_APPEARANCES 10144
 wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_THEME 10145
+#define ID_MPP 10146
+wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

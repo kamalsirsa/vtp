@@ -1789,6 +1789,79 @@ wxSizer *Species2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Theme:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs3 = (wxString*) NULL;
+    wxChoice *item3 = new wxChoice( parent, ID_THEME, wxDefaultPosition, wxSize(100,-1), 0, strs3, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Meters per pixel:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs6 = (wxString*) NULL;
+    wxChoice *item6 = new wxChoice( parent, ID_MPP, wxDefaultPosition, wxSize(100,-1), 0, strs6, 0 );
+    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item4, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxStaticBox *item8 = new wxStaticBox( parent, -1, _("Output") );
+    wxStaticBoxSizer *item7 = new wxStaticBoxSizer( item8, wxVERTICAL );
+
+    wxRadioButton *item9 = new wxRadioButton( parent, ID_RADIO_CREATE_NEW, _("Create new layer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item9->Enable( FALSE );
+    item7->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item11 = new wxRadioButton( parent, ID_RADIO_TO_FILE, _("To file"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item12 = new wxTextCtrl( parent, ID_TEXT_TO_FILE, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item10->Add( item12, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item13 = new wxButton( parent, ID_DOTDOTDOT, _("..."), wxDefaultPosition, wxSize(24,-1), 0 );
+    item13->SetFont( wxFont( 11, wxROMAN, wxNORMAL, wxNORMAL ) );
+    item10->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item7->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item7, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item15 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item16 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
