@@ -130,7 +130,7 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 
 vtElevLayer::~vtElevLayer()
 {
-	if (m_bHasBitmap)
+	if (m_bHasImage)
 	{
 		delete m_pImage;
 		m_pImage = NULL;
@@ -213,6 +213,15 @@ bool vtElevLayer::ConvertProjection(vtProjection &proj_new)
 	return success;
 }
 
+bool vtElevLayer::NeedsDraw()
+{
+	if (m_bNeedsDraw)
+		return true;
+	if (m_bHasImage && m_bShowElevation && !m_bBitmapRendered)
+		return true;
+	return false;
+}
+
 void vtElevLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	if (m_pGrid)
@@ -233,14 +242,8 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	if (!m_pGrid)
 		return;
 
-	int iColumns, iRows;
-	m_pGrid->GetDimensions(iColumns, iRows);
-
-	if (!m_bHasBitmap)
+	if (!m_bHasImage)
 		SetupBitmap(pDC);
-
-	if (!m_bBitmapRendered && m_pImage->Ok())
-		RenderBitmap();
 
 	if (!m_pImage || !m_pImage->Ok())
 	{
@@ -252,6 +255,12 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 		DrawLayerOutline(pDC, pView);
 		return;
 	}
+
+	if (!m_bBitmapRendered)
+		return;
+
+	int iColumns, iRows;
+	m_pGrid->GetDimensions(iColumns, iRows);
 
 	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
 	wxRect destRect = screenrect;
@@ -383,7 +392,8 @@ bool vtElevLayer::AppendDataFrom(vtLayer *pL)
 
 void vtElevLayer::SetupDefaults()
 {
-	m_bHasBitmap = false;
+	m_bNeedsDraw = false;
+	m_bHasImage = false;
 	m_bBitmapRendered = false;
 	m_strFilename = _T("Untitled");
 
@@ -396,7 +406,7 @@ void vtElevLayer::SetupDefaults()
 void vtElevLayer::SetupBitmap(wxDC* pDC)
 {
 	// flag as having a bitmap
-	m_bHasBitmap = true;
+	m_bHasImage = true;
 
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 
@@ -413,12 +423,13 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 	}
 
 	m_pImage = new wxImage(m_iImageWidth, m_iImageHeight);
+	m_bNeedsDraw = true;
 }
 
 void vtElevLayer::RenderBitmap()
 {
 	// flag as being rendered
-	m_bBitmapRendered = true;
+	m_bNeedsDraw = false;
 
 	// only show a progress dialog for large terrain (>300 points tall)
 	bool bProg = (m_iRows > 300);
@@ -427,7 +438,7 @@ void vtElevLayer::RenderBitmap()
 	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,
 	// so just disable for now. (wxGTK 2.2.9 on Linux Mandrake 8.1)
 	if (bProg)
-		OpenProgressDialog(_T("Rendering Bitmap"));
+		OpenProgressDialog(_T("Rendering Bitmap"), true);
 #endif
 
 	UpdateProgressDialog(0, _T("Generating colors..."));
@@ -443,7 +454,19 @@ void vtElevLayer::RenderBitmap()
 	for (j = 0; j < m_iImageHeight; j++)
 	{
 		if (bProg)
-			UpdateProgressDialog(j*80/m_iImageHeight);
+		{
+			if (UpdateProgressDialog(j*80/m_iImageHeight))
+			{
+				if (wxMessageBox(_T("Turn off displayed elevation for elevation layers?"), _T(""), wxYES_NO) == wxYES)
+				{
+					m_bShowElevation = false;
+					CloseProgressDialog();
+					return;
+				}
+				else
+					ResumeProgressDialog();
+			}
+		}
 		y = m_iRows - 1 - (j * stepy);
 		for (i = 0; i < m_iImageWidth; i++)
 		{
@@ -474,6 +497,8 @@ void vtElevLayer::RenderBitmap()
 	else
 		m_bHasMask = false;
 
+	m_bBitmapRendered = true;
+
 	if (bProg)
 		CloseProgressDialog();
 }
@@ -485,7 +510,7 @@ void vtElevLayer::ReImage()
 		delete m_pImage;
 		m_pImage = NULL;
 	}
-	m_bHasBitmap = m_bBitmapRendered = false;
+	m_bHasImage = m_bBitmapRendered = false;
 }
 
 #define LEVELS 14
