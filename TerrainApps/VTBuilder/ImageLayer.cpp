@@ -388,7 +388,8 @@ bool vtImageLayer::LoadFromGDAL()
 
 	try
 	{
-		pDataset = (GDALDataset *) GDALOpen(GetLayerFilename().mb_str(), GA_ReadOnly);
+		const char *fname = GetLayerFilename().mb_str();
+		pDataset = (GDALDataset *) GDALOpen(fname, GA_ReadOnly);
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
