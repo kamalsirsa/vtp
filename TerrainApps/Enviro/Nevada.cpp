@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Light.h"
 #include "vtlib/core/TerrainPatch.h"
+#include "vtlib/core/DynTerrain.h"
 
 #include "Nevada.h"
 #include "Engines.h"

@@ -9,11 +9,11 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Building3d.h"
+#include "vtlib/core/DynTerrain.h"
 #include "Hawaii.h"
 #include "Nevada.h"
 #include "SwapEngine.h"
 #include "TerrainSceneWP.h"
-#include "vtdata/shapelib/shapefil.h"
 
 
 ///////////////////////////////
