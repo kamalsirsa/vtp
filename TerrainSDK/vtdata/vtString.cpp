@@ -586,7 +586,7 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 		case 'c':
 		case 'C':
 			nItemLen = 2;
-			va_arg(argList, char);
+			va_arg(argList, int);
 			break;
 		// strings
 		  case 's':
