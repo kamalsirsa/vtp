@@ -283,7 +283,7 @@ void BuildingDlg::OnStoryHeight( wxCommandEvent &event )
 	Modified();
 }
 
-void BuildingDlg::OnSpinStories( wxCommandEvent &event )
+void BuildingDlg::OnSpinStories( wxSpinEvent &event )
 {
 	if (m_bSetting)
 		return;
@@ -541,7 +541,7 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 	if (sel == 1 || sel == 2 || sel == 3)
 	{
 		// need slope
-		int slope;
+		int slope=0;	// set to 0 to avoid compiler warning
 		if (sel == 1) slope = 4;
 		if (sel == 2) slope = 15;
 		if (sel == 3) slope = 15;

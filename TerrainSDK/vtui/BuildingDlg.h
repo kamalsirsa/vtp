@@ -111,7 +111,7 @@ protected:
 	void OnLevelUp( wxCommandEvent &event );
 	void OnLevelCopy( wxCommandEvent &event );
 	void OnStoryHeight( wxCommandEvent &event );
-	void OnSpinStories( wxCommandEvent &event );
+	void OnSpinStories( wxSpinEvent &event );
 	void OnColor1( wxCommandEvent &event );
 	virtual void OnOK( wxCommandEvent &event );
 	void OnCloseWindow(wxCloseEvent& event);
