@@ -40,10 +40,13 @@ public:
 	void SetLighting(bool bLighting);
 	bool GetLighting();
 
-	void SetTexture(class vtImage *pImage);
-
 	void SetTransparent(bool bOn, bool bAdd = false);
 	bool GetTransparent();
+
+	void SetWireframe(bool bOn);
+	bool GetWireframe();
+
+	void SetTexture(class vtImage *pImage);
 
 	void SetClamp(bool bClamp);
 	bool GetClamp();

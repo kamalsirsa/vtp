@@ -864,6 +864,7 @@ int vtMaterialArrayBase::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient
 	vtMaterial *pMat = new vtMaterial();
 	pMat->SetCulling(bCulling);
 	pMat->SetLighting(bLighting);
+	pMat->SetWireframe(bWireframe);
 	pMat->SetDiffuse(diffuse.r, diffuse.g, diffuse.b, fAlpha);
 	pMat->SetSpecular(0.0f, 0.0f, 0.0f);
 	pMat->SetAmbient(ambient.r, ambient.g, ambient.b);

@@ -5,6 +5,8 @@
 
 #include "vtlib/vtlib.h"
 
+#include <osg/PolygonMode>
+
 //
 // Useful helper functions.
 //
@@ -36,6 +38,10 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 
 /**
  * Set the diffuse color of this material.
+ * \param a		For a material with transparency enabled, the alpha component
+ * of the diffuse color determines the overall transparency of the material.
+ * This value ranges from 0 (totally transparent) to 1 (totally opaque.)
+ *
  */
 void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 {
@@ -161,6 +167,37 @@ bool vtMaterial::GetTransparent()
 	// OSG 0.9.0
 	osg::StateAttribute::GLModeValue m;
 	m = m_pStateSet->getMode(osg::StateAttribute::BLENDFUNC);
+	return (m == GEO_ON);
+}
+
+
+/**
+ * Set the wireframe property of this material.
+ *
+ * \param bOn True to turn on wireframe.
+ */
+void vtMaterial::SetWireframe(bool bOn)
+{
+	if (bOn)
+	{
+		osg::PolygonMode *pm = new osg::PolygonMode();
+		pm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+		m_pStateSet->setAttributeAndModes(pm, osg::StateAttribute::OVERRIDE_ON);
+	}
+	else
+	{
+		// turn wireframe off
+		m_pStateSet->setModeToInherit(GL_POLYGON_MODE);
+	}
+}
+/**
+ * Get the wireframe property of this material.
+ */
+bool vtMaterial::GetWireframe()
+{
+	// OSG 0.9.0
+	osg::StateAttribute::GLModeValue m;
+	m = m_pStateSet->getMode(osg::StateAttribute::POLYGONMODE);
 	return (m == GEO_ON);
 }
 
@@ -308,6 +345,10 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	m_pGeoSet->setAttributeDeleteFunctor(NULL);
 
 	m_Vert.SetMaxSize(NumVertices);
+	// all the primitives we do are indexed, so it's fair to assume that
+	// there will probably be at least as many indices as vertices
+	m_Index.SetMaxSize(NumVertices);
+
 	m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
 	m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
 
@@ -347,6 +388,7 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 		m_pGeoSet->setPrimType(osg::GeoSet::LINE_STRIP);
 		break;
 	case GL_TRIANGLES:
+		m_PrimLen.SetMaxSize(NumVertices/3);
 		m_pGeoSet->setPrimType(osg::GeoSet::TRIANGLES);
 		m_pGeoSet->setNumPrims(NumVertices/3);
 		break;
