@@ -22,7 +22,29 @@
 #  include <sys/resource.h>
 #endif
 
+#include <streambuf>
+#include "vtdata/vtLog.h"
+
 using namespace osg;
+
+///////////////////////////////////////////////////////////////
+// Trap for OSG messages
+//
+
+class OsgMsgTrap : public std::streambuf
+{
+public:
+	void print(char c);
+	inline virtual int_type overflow(int_type c = traits_type::eof())
+	{
+		if (c == traits_type::eof()) return traits_type::not_eof(c);
+		char str[2];
+		str[0] = c;
+		str[1] = 0;
+		g_Log._Log(str);
+		return c;
+	}
+} g_Trap;
 
 ///////////////////////////////////////////////////////////////
 
@@ -86,6 +108,10 @@ float vtScene::GetFrameRate()
 
 bool vtScene::Init()
 {
+	// Redirect cout messages (where OSG sends its messages) to our own log
+	std::cout.rdbuf(&g_Trap);
+	std::cerr.rdbuf(&g_Trap);
+
 	SetCamera(new vtCamera());
 
 	m_pOsgSceneView = new osgUtil::SceneView();
@@ -312,6 +338,5 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 		set->setModeToInherit(GL_FOG);
 	}
 }
-
 
 
