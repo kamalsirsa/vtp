@@ -99,7 +99,7 @@ void ColorMapDlg::UpdateItems()
 	wxString2 str;
 	for (i = 0; i < num; i++)
 	{
-		str.Printf("%.2f meters", m_cmap.m_elev[i]);
+		str.Printf(_("%.2f meters"), m_cmap.m_elev[i]);
 		int item = GetList()->InsertItem(i, str, i);
 	}
 }
@@ -163,6 +163,8 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 bool ColorMapDlg::AskColor(RGBi &rgb)
 {
 	m_ColorData.SetColour(wxColour(rgb.r, rgb.g, rgb.b));
+	m_ColorData.SetChooseFull(true);
+
 	wxColourDialog dlg(this, &m_ColorData);
 	if (dlg.ShowModal() == wxID_OK)
 	{
