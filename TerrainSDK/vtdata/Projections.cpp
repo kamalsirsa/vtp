@@ -447,7 +447,7 @@ bool vtProjection::GetTextDescription(char *type, char *value) const
 		strcpy(type, "wkt");
 
 		char *wkt;
-		OGRErr err = ((OGRSpatialReference*)this)->exportToWkt(&wkt);
+		OGRErr err = exportToWkt(&wkt);
 		if (err != OGRERR_NONE)
 			return false;
 		strcpy(value, wkt);
@@ -591,7 +591,7 @@ bool vtProjection::WriteProjFile(const char *filename) const
 		return false;
 
 	char *wkt;
-	OGRErr err = ((vtProjection*)this)->exportToWkt(&wkt);
+	OGRErr err = exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
 	fprintf(fp2, "%s\n", wkt);
@@ -649,7 +649,7 @@ void vtProjection::LogDescription() const
 	VTLOG("WTK: ");
 
 	char *wkt;
-	OGRErr err = ((vtProjection*)this)->exportToWkt(&wkt);
+	OGRErr err = exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		VTLOG("Error\n");
 	else
@@ -1023,8 +1023,8 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 	{
 		// display debugging information to the log
 		char *wkt1, *wkt2;
-		OGRErr err = ((vtProjection*)pSource)->exportToWkt(&wkt1);
-		err = ((vtProjection*)pTarget)->exportToWkt(&wkt2);
+		OGRErr err = pSource->exportToWkt(&wkt1);
+		err = pTarget->exportToWkt(&wkt2);
 		VTLOG(" Converting from: %s\n", wkt1);
 		VTLOG("   Converting to: %s\n", wkt2);
 		OGRFree(wkt1);

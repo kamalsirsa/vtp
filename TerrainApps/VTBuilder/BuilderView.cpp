@@ -395,7 +395,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	// Check projection text
 	char *str1, *str2;
 	Source.exportToWkt(&str1);
-	((vtProjection &)proj).exportToWkt(&str2);
+	proj.exportToWkt(&str2);
 	VTLOG("World Map projection, converting:\n");
 	VTLOG(" From: ");
 	VTLOG(str1);

@@ -1263,8 +1263,7 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 
 	// Write projection
 	char *wkt;
-	vtProjection *hack = const_cast<vtProjection *>(&m_proj);
-	OGRErr err = hack->exportToWkt(&wkt);
+	OGRErr err = m_proj.exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
 	gfprintf(out, "\t<SRS>%s</SRS>\n", wkt);

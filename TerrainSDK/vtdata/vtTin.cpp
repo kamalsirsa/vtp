@@ -172,7 +172,7 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 /**
  * Write the TIN to a new-style .tin file (custom VTP format).
  */
-bool vtTin::Write(const char *fname)
+bool vtTin::Write(const char *fname) const
 {
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)

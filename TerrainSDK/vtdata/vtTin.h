@@ -37,7 +37,7 @@ public:
 	void AddTri(int i1, int i2, int i3);
 
 	bool Read(const char *fname);
-	bool Write(const char *fname);
+	bool Write(const char *fname) const;
 	bool ReadDXF(const char *fname, bool progress_callback(int) = NULL);
 
 	bool ComputeExtents();

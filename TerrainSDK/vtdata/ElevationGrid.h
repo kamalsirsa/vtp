@@ -76,14 +76,14 @@ public:
 	bool LoadFromNTF5(const char *szFileName, bool progress_callback(int) = NULL);
 
 	// Save
-	bool SaveToGeoTIFF(const char *szFileName);
-	bool SaveToBMP(const char *szFileName);
-	bool SaveToTerragen(const char *szFileName);
+	bool SaveToGeoTIFF(const char *szFileName) const;
+	bool SaveToBMP(const char *szFileName) const;
+	bool SaveToTerragen(const char *szFileName) const;
 	bool SaveToBT(const char *szFileName, bool progress_callback(int) = NULL, bool bGZip = false);
 	bool SaveToSTM(const char *szFileName, bool progress_callback(int) = NULL);
 	bool SaveToPlanet(const char *szDirName, bool progress_callback(int) = NULL);
-	bool SaveToASC(const char *szFileName, bool progress_callback(int) = NULL);
-	bool SaveToVRML(const char *szFileName, bool progress_callback(int) = NULL);
+	bool SaveToASC(const char *szFileName, bool progress_callback(int) = NULL) const;
+	bool SaveToVRML(const char *szFileName, bool progress_callback(int) = NULL) const;
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);

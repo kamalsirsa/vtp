@@ -551,7 +551,7 @@ void vtPlantInstanceArray::SetPlant(int iNum, float size, short species_id)
 	SetValue(iNum, m_SpeciesField, species_id);
 }
 
-void vtPlantInstanceArray::GetPlant(int iNum, float &size, short &species_id)
+void vtPlantInstanceArray::GetPlant(int iNum, float &size, short &species_id) const
 {
 	size = GetFloatValue(iNum, m_SizeField);
 	species_id = GetShortValue(iNum, m_SpeciesField);
@@ -771,7 +771,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	return true;
 }
 
-bool vtPlantInstanceArray::WriteVF(const char *fname)
+bool vtPlantInstanceArray::WriteVF(const char *fname) const
 {
 	int i, numinstances = GetNumEntities();
 	if (numinstances == 0)

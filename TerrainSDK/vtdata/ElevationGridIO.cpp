@@ -1102,7 +1102,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
  * Writes the grid to a TerraGen Terrain file.
  * \param szFileName The filename to write to.
  */
-bool vtElevationGrid::SaveToTerragen(const char *szFileName)
+bool vtElevationGrid::SaveToTerragen(const char *szFileName) const
 {
 	FILE *fp = fopen(szFileName, "wb");
 	if (!fp)
@@ -1168,7 +1168,7 @@ bool vtElevationGrid::SaveToTerragen(const char *szFileName)
 /**
  * Write the elevation grid to a 16-bit greyscale GeoTIFF.
  */
-bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName)
+bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName) const
 {
 	g_GDALWrapper.RequestGDALFormats();
 
@@ -1227,7 +1227,7 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName)
  * Write the elevation grid to a 8-bit BMP file.  Much information is lost,
  * including precision, sign, and geographic location.
  */
-bool vtElevationGrid::SaveToBMP(const char *szFileName)
+bool vtElevationGrid::SaveToBMP(const char *szFileName) const
 {
 	// We must scale from our actual range down to 8 bits
 	float fMin = m_fMinHeight;
@@ -2159,7 +2159,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback
  * \returns \c true if the file was successfully opened and written.
  */
 bool vtElevationGrid::SaveToASC(const char *szFileName,
-								bool progress_callback(int))
+								bool progress_callback(int)) const
 {
 	FILE *fp = fopen(szFileName, "wb");
 	if (!fp)
@@ -2244,7 +2244,7 @@ bool vtElevationGrid::SaveToASC(const char *szFileName,
  *
  * \returns \c true if the file was successfully opened and written.
  */
-bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(int))
+bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(int)) const
 {
 	FILE *fp = fopen(szFileName, "wb");
 	if (!fp)

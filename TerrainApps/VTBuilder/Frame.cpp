@@ -1314,7 +1314,7 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 	RefreshToolbar();
 }
 
-void MainFrame::SaveProject(const wxString2 &strPathName)
+void MainFrame::SaveProject(const wxString2 &strPathName) const
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");

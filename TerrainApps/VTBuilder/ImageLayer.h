@@ -52,7 +52,7 @@ public:
 	bool SetExtent(const DRECT &rect);
 	void GetPropertyText(wxString &str);
 
-	DPoint2 GetSpacing();
+	DPoint2 GetSpacing() const;
 	vtBitmap *GetBitmap() { return m_pBitmap; }
 
 	void GetDimensions(int &xsize, int &ysize)
@@ -61,7 +61,7 @@ public:
 		ysize = m_iYSize;
 	}
 	bool GetFilteredColor(double x, double y, RGBi &rgb);
-	bool SaveToFile(const char *fname);
+	bool SaveToFile(const char *fname) const;
 	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 
 	bool ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,

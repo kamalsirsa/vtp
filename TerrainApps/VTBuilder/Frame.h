@@ -255,7 +255,7 @@ protected:
 public:
 	// project
 	void LoadProject(const wxString2 &strPathName);
-	void SaveProject(const wxString2 &strPathName);
+	void SaveProject(const wxString2 &strPathName) const;
 
 	// Layer methods
 	int NumLayers() const { return m_Layers.GetSize(); }

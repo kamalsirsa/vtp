@@ -284,7 +284,7 @@ void vtImageLayer::GetPropertyText(wxString &str)
 	str.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
 }
 
-DPoint2 vtImageLayer::GetSpacing()
+DPoint2 vtImageLayer::GetSpacing() const
 {
 	return DPoint2(m_Extents.Width() / (m_iXSize),
 		m_Extents.Height() / (m_iYSize));
@@ -320,7 +320,7 @@ bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
 	return true;
 }
 
-bool vtImageLayer::SaveToFile(const char *fname)
+bool vtImageLayer::SaveToFile(const char *fname) const
 {
 	if (!m_pBitmap)
 		return false;

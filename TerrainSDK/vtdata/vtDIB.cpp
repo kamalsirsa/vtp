@@ -999,8 +999,7 @@ bool vtDIB::WriteTIF(const char *fname, const DRECT *area, const vtProjection *p
 	if (proj != NULL)
 	{
 		char *pszSRS_WKT = NULL;
-		vtProjection *hack = const_cast<vtProjection *>(proj);
-		hack->exportToWkt( &pszSRS_WKT );
+		proj->exportToWkt( &pszSRS_WKT );
 		pDataset->SetProjection(pszSRS_WKT);
 		CPLFree( pszSRS_WKT );
 	}

@@ -195,13 +195,13 @@ public:
 	int AddPlant(const DPoint2 &pos, float size, short species_id);
 	int AddPlant(const DPoint2 &pos, float size, vtPlantSpecies *ps);
 	void SetPlant(int iNum, float size, short species_id);
-	void GetPlant(int iNum, float &size, short &species_id);
+	void GetPlant(int iNum, float &size, short &species_id) const;
 	unsigned int InstancesOfSpecies(short species_id);
 
 	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);
 	bool ReadSHP(const char *fname);
-	bool WriteVF(const char *fname);
+	bool WriteVF(const char *fname) const;
 
 protected:
 	vtSpeciesList *m_pPlantList;
