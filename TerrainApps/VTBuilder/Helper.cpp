@@ -53,21 +53,23 @@ void UpdateProgressDialog(int amount, const wxString& newmsg)
 
 /////////////////////////////////
 
-wxString DegreeToString(double degree)
-{
-	float min = (degree - (int)degree) * 60.0f;
-	float sec = (min - (int)min) * 60.0f;
-
-	wxString str;
-	str = wxString::Format("%d° %.1f' ", (int)degree, (int)min, (int)sec);
-	return str;
-}
-
-wxString FormatCoord(bool bGeo, double val)
+wxString FormatCoord(bool bGeo, double val, bool minsec)
 {
 	wxString str;
 	if (bGeo)
-		str.Printf("%3.12lf", val);
+	{
+		if (minsec)
+		{
+			// show minutes and seconds
+			double degree = val;
+			double min = (degree - (int)degree) * 60.0f;
+			double sec = (min - (int)min) * 60.0f;
+
+			str.Printf("%d° %d' %.1f\"", (int)degree, (int)min, sec);
+		}
+		else
+			str.Printf("%3.6lf", val);	// decimal degrees
+	}
 	else
 		str.Printf("%8.2lf", val);	// meters-based
 	return str;

@@ -18,8 +18,7 @@ void UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));
 
 /////
 
-wxString DegreeToString(double degree);
-wxString FormatCoord(bool bGeo, double val);
+wxString FormatCoord(bool bGeo, double val, bool minsec = false);
 
 /////
 
