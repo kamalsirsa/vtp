@@ -50,8 +50,10 @@
 #include "canvas.h"
 #include "menu_id.h"
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "axes.xpm"
 #  include "camera.xpm"
+#  include "faster.xpm"
 #  include "fence.xpm"
 #  include "loc.xpm"
 #  include "maintain.xpm"
@@ -66,9 +68,12 @@
 #  include "select.xpm"
 #  include "sgraph.xpm"
 #  include "space.xpm"
+#  include "stop.xpm"
 #  include "sun.xpm"
 #  include "terrain.xpm"
+#  include "tilt.xpm"
 #  include "tree.xpm"
+#  include "unfold.xpm"
 #endif
 
 #if VTLIB_OSG
