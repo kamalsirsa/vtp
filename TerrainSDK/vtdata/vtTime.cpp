@@ -13,6 +13,19 @@ time_t vtTime::s_DifferenceFromGMT = (time_t) -1;
 
 vtTime::vtTime()
 {
+	if (s_DifferenceFromGMT == (time_t) -1)
+	{
+		// Determine the offset between local (meaning the timezome of the
+		//  computer which is running this software) and Greenwich Mean time,
+		//  and use it to compensate for the fact mktime always tries to
+		//  factor in the "local time zone".
+		time_t dummy = 20000;
+		struct tm tm_gm, tm_local;
+		tm_gm = *gmtime(&dummy);
+		tm_local = *localtime(&dummy);
+		s_DifferenceFromGMT = mktime(&tm_local) - mktime(&tm_gm);
+	}
+
 	// default to "current" time
 	GetSystemTime();
 }
@@ -44,6 +57,7 @@ void vtTime::SetDate(int year, int month, int day)
 
 	m_tm.tm_mday = day;
 	m_time = mktime(&m_tm);
+	m_time += s_DifferenceFromGMT;
 	_UpdateTM();
 }
 
@@ -59,19 +73,6 @@ void vtTime::GetDate(int &year, int &month, int &day) const
 
 void vtTime::SetTimeOfDay(int hr, int min, int sec)
 {
-	if (s_DifferenceFromGMT == (time_t) -1)
-	{
-		// Determine the offset between local (meaning the timezome of the
-		//  computer which is running this software) and Greenwich Mean time,
-		//  and use it to compensate for the fact mktime always tries to
-		//  factor in the "local time zone".
-		time_t dummy = 20000;
-		struct tm tm_gm, tm_local;
-		tm_gm = *gmtime(&dummy);
-		tm_local = *localtime(&dummy);
-		s_DifferenceFromGMT = mktime(&tm_local) - mktime(&tm_gm);
-	}
-
 	m_tm.tm_hour = hr;
 	m_tm.tm_min = min;
 	m_tm.tm_sec = sec;
