@@ -18,6 +18,18 @@ class vtFence3d;
 class vtNode;
 class vtHeightField;
 
+class vtStructInstance3d : public vtStructInstance
+{
+public:
+	vtStructInstance3d();
+
+	bool CreateShape(vtHeightField *pHeightField);
+	vtTransform *GetTransform() { return m_pTransform; }
+
+protected:
+	vtTransform *m_pTransform;
+};
+
 class vtStructure3d : public vtStructure
 {
 public:
@@ -38,6 +50,7 @@ public:
 	virtual vtStructure *NewStructure() { return new vtStructure3d; }
 	virtual vtBuilding *NewBuilding();
 	virtual vtFence *NewFence();
+	virtual vtStructInstance *NewInstance();
 
 	vtBuilding3d *GetBuilding(int i) { return (vtBuilding3d *) GetAt(i)->GetBuilding(); }
 	vtFence3d *GetFence(int i) { return (vtFence3d *) GetAt(i)->GetFence(); }

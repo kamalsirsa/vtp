@@ -671,7 +671,6 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 	{
 		vtStructure3d *str = (vtStructure3d *) m_Structures.GetAt(i);
 		vtBuilding3d *bld = m_Structures.GetBuilding(i);
-		vtFence3d *fen = m_Structures.GetFence(i);
 		if (bld)
 		{
 			if (bld->GetStories() == 0)
@@ -688,8 +687,9 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 			m_Structures.ConstructStructure(str,
 				"roof walls detail");
 		}
-		else if (fen)
+		else
 		{
+			// fence, instance, etc. simply construct
 			m_Structures.ConstructStructure(str);
 		}
 		vtTransform *pTrans = str->GetTransform();
