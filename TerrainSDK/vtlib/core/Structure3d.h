@@ -122,6 +122,9 @@ class vtStructInstance3d : public vtStructInstance, public vtStructure3d
 public:
 	vtStructInstance3d();
 
+	// implement vtStructInstance methods
+	virtual double DistanceToPoint(const DPoint2 &p) const;
+
 	// implement vtStructure3d methods
 	/// Create the node(s) and position them on the indicated heightfield
 	virtual bool CreateNode(vtTerrain *pTerr);

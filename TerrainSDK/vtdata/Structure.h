@@ -275,6 +275,8 @@ public:
 	bool GetExtents(DRECT &rect) const;
 	bool IsContainedBy(const DRECT &rect) const;
 
+	virtual double DistanceToPoint(const DPoint2 &p) const;
+
 	DPoint2	m_p;			// earth position
 	float	m_fRotation;	// in radians
 	float	m_fScale;		// meters per unit

@@ -249,19 +249,16 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 
 		// or a fence
 		vtFence *fen = str->GetFence();
-		// or an instance
-		vtStructInstance *inst = str->GetInstance();
-
 		if (fen)
 			dist = fen->GetDistanceToLine(point);
+
+		// or an instance
+		vtStructInstance *inst = str->GetInstance();
 		if (inst)
-		{
-			loc = inst->m_p;
-			dist = (loc - point).Length();
-		}
+			dist = inst->DistanceToPoint(point);
+
 		if (dist > epsilon)
 			continue;
-
 		if (dist < closest)
 		{
 			structure = i;

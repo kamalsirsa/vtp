@@ -174,6 +174,27 @@ void vtStructInstance3d::DeleteNode()
 	}
 }
 
+double vtStructInstance3d::DistanceToPoint(const DPoint2 &p) const
+{
+	if (m_pModel)
+	{
+		// If we have the 3D model already loaded, we can return distance
+		//  from the given point to the edge of the bounding sphere.  This
+		//  makes objects easier to select, because their selectable zone
+		//  is larger for larger objects.  This is a little messy, because
+		//  it's a world-coord operation applied to a earth-coord result.
+		FSphere sphere;
+		m_pModel->GetBoundSphere(sphere);
+		DPoint2 evector;
+		g_Conv.ConvertVectorToEarth(sphere.radius, 0, evector);
+		return (m_p - p).Length() - evector.x;
+	}
+	else
+	{
+		// simple distance from the origin of this instance to the given point
+		return (m_p - p).Length();
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 //
