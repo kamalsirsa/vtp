@@ -330,11 +330,14 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 
 	if (!m_pTerrMats)
 		m_pTerrMats = new vtMaterialArray();
-	m_pTerrMats->Empty();
 
 	float ambient, diffuse, emmisive;
 	diffuse = 1.0f;
 	ambient = emmisive = 0.0f;
+
+	bool bFirstTime = (m_pImage == NULL);
+	if (bFirstTime)
+		m_pImage = new vtImage();
 
 	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
 	{
@@ -364,8 +367,8 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		{
 			VTLOG("  Found texture, path is: %s\n", (const char *) texture_path);
 			// Load a DIB of the whole, large texture
-			m_pImage = new vtImage();
-			bool result = m_pImage->Read(texture_path);
+			clock_t r1 = clock();
+			bool result = m_pImage->Read(texture_path, false);
 			if (! result)
 			{
 				VTLOG("  Failed to load texture.\n");
@@ -374,6 +377,8 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 											true, false);
 				eTex = TE_NONE;
 			}
+			if (result)
+				VTLOG("  Load texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 			if (eTex == TE_SINGLE)
 			{
 				// TODO? check that DIB size is power of two, and warn if not.
@@ -383,8 +388,9 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
 
-	if (eTex == TE_DERIVED)
+	if (eTex == TE_DERIVED && bFirstTime)
 	{
+		// Derive color from elevation.
 		// Determine the correct size for the derived texture: ideally
 		// as large as the input grid, but not larger than the hardware
 		// texture size limit.
@@ -399,10 +405,11 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		VTLOG("\t grid width is %d, texture max is %d, creating artificial texture of dimension %d\n",
 			cols, tmax, tsize);
 
-		// derive color from elevation
-		m_pImage = new vtImage();
 		m_pImage->Create(tsize, tsize, 24, false);
+	}
 
+	if (eTex == TE_DERIVED)
+	{
 		// This method is virtual to allow subclasses to customize the Dib,
 		//  before we turn it into an vtImage
 		PaintDib();
@@ -422,42 +429,60 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 			// TODO: restore support for 16bit
 			bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
 
-			m_Images.Append(m_pImage);
+			if (bFirstTime)
+				m_Images.Append(m_pImage);
+			else
+				m_pImage->dirty();
 		}
-	}
-	if (eTex == TE_TILED && m_pImage)
-	{
-		int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
-		_CreateChoppedTextures(iTiles, iTileSize);
-		_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
-			diffuse, emmisive);
 	}
 	if (eTex == TE_NONE || m_pImage == NULL)	// none or failed to find texture
 	{
 		// no texture: create plain white material
 		m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, false);
+									RGBf(0.2f, 0.2f, 0.2f),
+									true, false);
 		return;
 	}
-	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
+	if (eTex == TE_TILED)
 	{
-		vtImage *pImage = m_Images[0];
-		m_pTerrMats->AddTextureMaterial(pImage,
-			true,		// culling
-			false,		// lighting
-			false,		// transparent
-			false,		// additive
-			ambient, diffuse,
-			1.0f,		// alpha
-			emmisive,
-			true,		// texgen
-			false,		// clamp
-			m_Params.GetValueBool(STR_MIPMAP));
+		int iTileSize = m_Params.GetValueInt(STR_TILESIZE);
+		if (bFirstTime)
+		{
+			int i, j;
+			for (i = 0; i < iTiles; i++)
+			{
+				for (j = 0; j < iTiles; j++)
+				{
+					vtImage *pImage = new vtImage();
+					pImage->Create(iTileSize, iTileSize, 24);
+					m_Images.SetAt(i*iTiles+j, pImage);
+				}
+			}
+		}
+		_CreateChoppedTextures(iTiles, iTileSize);
+		if (bFirstTime)
+			_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
+				diffuse, emmisive);
 	}
-
-	clock_t c3 = clock() - c1;
-	VTLOG("Total texture tile: %.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
+	if (bFirstTime)
+	{
+		if (eTex == TE_SINGLE || eTex == TE_DERIVED)
+		{
+			vtImage *pImage = m_Images[0];
+			m_pTerrMats->AddTextureMaterial(pImage,
+				true,		// culling
+				false,		// lighting
+				false,		// transparent
+				false,		// additive
+				ambient, diffuse,
+				1.0f,		// alpha
+				emmisive,
+				true,		// texgen
+				false,		// clamp
+				m_Params.GetValueBool(STR_MIPMAP));
+		}
+	}
+	VTLOG("  Total CreateTextures: %.3f seconds.\n", (float)(clock() - c1) / CLOCKS_PER_SEC);
 }
 
 //
@@ -2288,6 +2313,9 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 
 void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 {
+	clock_t r1 = clock();
+
+	int iTiles = 4;		// fixed for now
 	int size = patch_size;
 	bool mono = (m_pImage->GetDepth() == 8);
 
@@ -2306,9 +2334,7 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 		{
 			y_off = j * (size - 1);
 
-			// make a tile
-			vtDIB *dib2 = new vtDIB();
-			dib2->Create(size, size, m_pImage->GetDepth(), mono);
+			vtImage *target = m_Images[i*iTiles+j];
 
 			unsigned long pixel;
 			RGBi rgb;
@@ -2318,7 +2344,7 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 					for (y = 0; y < size; y++)
 					{
 						pixel = m_pImage->GetPixel8(x_off + x, y_off + y);
-						dib2->SetPixel8(x, y, pixel);
+						target->SetPixel8(x, y, pixel);
 					}
 			}
 			else
@@ -2327,20 +2353,13 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 					for (y = 0; y < size; y++)
 					{
 						m_pImage->GetPixel24(x_off + x, y_off + y, rgb);
-						dib2->SetPixel24(x, y, rgb);
+						target->SetPixel24(x, y, rgb);
 					}
 			}
-
-			vtImage *pImage = new vtImage(dib2, b16bit);
-
-			// Can we delete the internals DIBs here, or does the scene graph
-			//   needs the data?  Actually no, the scene graph gets a copy of it.
-//			dib2->LeaveInternalDIB(true);
-			delete dib2;
-
-			m_Images.SetAt(i*patches+j, pImage);
+			target->dirty();
 		}
 	}
+	VTLOG("  Chop texture: %.3f seconds.\n", (float)(clock() - r1) / CLOCKS_PER_SEC);
 }
 
 
@@ -2377,7 +2396,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib,
 							  const FPoint3 &light_dir)
 {
-	VTLOG("Prelighting terrain texture: ");
+	VTLOG("  Prelighting texture: ");
 
 	clock_t c1 = clock();
 
