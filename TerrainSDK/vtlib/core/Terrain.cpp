@@ -484,41 +484,35 @@ void vtTerrain::PaintDib()
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
 
 	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors);
+}
 
-#if 0
-	// TEMP TEST
-	ColorMap cmap;
-	cmap.m_bBlend = true;
-	cmap.m_bRelative = false;
+void vtTerrain::SetTextureContours(float fInterval, float fSize)
+{
+	// Create a color map and fill it with contour strip bands
+	ColorMap *cmap = new ColorMap;
+	cmap->m_bBlend = true;
+	cmap->m_bRelative = false;
 
 	RGBi white(255,255,255);
 	RGBi black(0,0,0);
 
-	float fMin, fMax, fRange;
-	pHFGrid->GetHeightExtents(fMin, fMax);
-	fRange = fMax - fMin;
-	float fInc = 10;
-	float fSize = 0.5;
-	int start = (int) (fMin / fInc);
-	int stop = (int) (fMax / fInc);
+	float fMin, fMax;
+	m_pHeightField->GetHeightExtents(fMin, fMax);
+	int start = (int) (fMin / fInterval);
+	int stop = (int) (fMax / fInterval);
 
-	cmap.Add(fMin, white);
+	cmap->Add(fMin, white);
 	for (int i = start; i < stop; i++)
 	{
-//		cmap.Add(i * fInc, black);
-//		cmap.Add(i * fInc + fSize, white);
-
-#if 1
-		cmap.Add(i * fInc - fSize, white);
-		cmap.Add(i * fInc - fSize/2, black);
-		cmap.Add(i * fInc + fSize/2, black);
-		cmap.Add(i * fInc + fSize, white);
-#endif
-//		cmap.Add(i * fInc, white);
-//		cmap.Add(i * fInc + (fInc/2), black);
+		// create a black stripe of the desired vertical thickness
+		cmap->Add(i * fInterval - fSize*0.8f, white);
+		cmap->Add(i * fInterval - fSize*0.5f, black);
+		cmap->Add(i * fInterval + fSize*0.5f, black);
+		cmap->Add(i * fInterval + fSize*0.8f, white);
 	}
-	pHFGrid->ColorDibFromElevation(m_pDIB, &cmap);
-#endif
+
+	// Set these as the desired color bands for the next PainDib
+	m_pTextureColors = cmap;
 }
 
 

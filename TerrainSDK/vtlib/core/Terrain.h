@@ -110,6 +110,9 @@ public:
 		from the lowest elevation value to the highest. */
 	void SetTextureColors(ColorMap *colors) { m_pTextureColors = colors; }
 
+	/// Sets the texture colors to be a set of black contour stripes
+	void SetTextureContours(float fInterval, float fSize);
+
 	/** Override this method to customize the Dib, before it is turned into
 	 * a vtImage.  The default implementation colors from elevation. */
 	virtual void PaintDib();
