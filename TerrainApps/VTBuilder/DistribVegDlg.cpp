@@ -33,6 +33,15 @@
 // WDR: event table for DistribVegDlg
 
 BEGIN_EVENT_TABLE(DistribVegDlg,AutoDialog)
+	EVT_BUTTON( wxID_OK, DistribVegDlg::OnOK )
+	EVT_RADIOBUTTON( ID_SPECIES1, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_SPECIES2, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_SPECIES3, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_DENSITY1, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_DENSITY2, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_DENSITY3, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_SIZE1, DistribVegDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_SIZE2, DistribVegDlg::OnRadio )
 END_EVENT_TABLE()
 
 DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -40,44 +49,54 @@ DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	AutoDialog( parent, id, title, position, size, style )
 {
 	DistribVegFunc( this, TRUE ); 
-}
 
-// WDR: handler implementations for DistribVegDlg
-
-void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
-{
 	m_iChoiceSpecies = 0;
 	m_iChoiceBiotype = 0;
 	m_iChoiceBiotypeLayer = 0;
 	m_iChoiceDensityLayer = 0;
 
-	m_fFixedSize = 5.0f;
 	m_iRandomFrom = 1;
 	m_iRandomTo = 100;
 
-	AddNumValidator(IDC_SAMPLING, &m_fSampling);
-	AddNumValidator(IDC_SCARCITY, &m_fScarcity);
+	AddNumValidator(IDC_SAMPLING, &m_opt.m_fSampling);
+	AddNumValidator(IDC_SCARCITY, &m_opt.m_fScarcity);
 
+	// species
+	AddValidator(ID_SPECIES1, &m_bSpecies1);
+	AddValidator(ID_SPECIES2, &m_bSpecies2);
+	AddValidator(ID_SPECIES3, &m_bSpecies3);
 	AddValidator(ID_CHOICE_SPECIES, &m_iChoiceSpecies);
 	AddValidator(ID_CHOICE_BIOTYPE, &m_iChoiceBiotype);
 	AddValidator(ID_CHOICE_BIOTYPE_LAYER, &m_iChoiceBiotypeLayer);
 
+	// density
+	AddValidator(ID_DENSITY1, &m_bDensity1);
+	AddNumValidator(ID_TEXT_FIXED_DENSITY, &m_opt.m_fFixedDensity);
+	AddValidator(ID_DENSITY2, &m_bDensity2);
+	AddValidator(ID_DENSITY3, &m_bDensity3);
 	AddValidator(ID_CHOICE_DENSITY_LAYER, &m_iChoiceDensityLayer);
 
-	AddNumValidator(ID_TEXT_FIXED_SIZE, &m_fFixedSize);
+	// size
+	AddValidator(ID_SIZE1, &m_bSize1);
+	AddValidator(ID_SIZE2, &m_bSize2);
+	AddNumValidator(ID_TEXT_FIXED_SIZE, &m_opt.m_fFixedSize);
 	AddValidator(ID_SPIN_RANDOM_FROM, &m_iRandomFrom);
 	AddValidator(ID_SPIN_RANDOM_TO, &m_iRandomTo);
+}
 
-	//
+
+// WDR: handler implementations for DistribVegDlg
+
+void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
+{
 	// Populate the Choice controls with necessary values
-	//
 	MainFrame *frame = GetMainFrame();
 	wxString2 str, str2;
 	unsigned int i;
 
 	// Single species
 	GetChoiceSpecies()->Clear();
-	vtSpeciesList* pl = GetMainFrame()->GetPlantList();
+	vtSpeciesList* pl = frame->GetPlantList();
 	if (pl != NULL)
 	{
 		for (i = 0; i < pl->NumSpecies(); i++)
@@ -91,7 +110,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Single biotype
 	GetChoiceBiotype()->Clear();
-	vtBioRegion *br = GetMainFrame()->GetBioRegion();
+	vtBioRegion *br = frame->GetBioRegion();
 	if (br != NULL)
 	{
 		for (i = 0; i < br->m_Types.GetSize(); i++)
@@ -106,6 +125,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetChoiceBiotype()->SetSelection(0);
 
 	// Biotype layers
+	GetChoiceBiotypeLayer()->Clear();
 	for (int i = 0; i < frame->NumLayers(); i++)
 	{
 		vtLayer *lp = frame->GetLayer(i);
@@ -113,13 +133,13 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 		{
 			vtVegLayer *vl = (vtVegLayer *) lp;
 			if (vl->GetVegType() == VLT_BioMap)
-				GetChoiceBiotypeLayer()->Append(vl->GetLayerFilename());
+				GetChoiceBiotypeLayer()->Append(vl->GetLayerFilename(), vl);
 		}
 	}
 	GetChoiceBiotypeLayer()->SetSelection(0);
 
 	// Density layers
-	int iDensityLayers = 0;
+	GetChoiceDensityLayer()->Clear();
 	for (int i = 0; i < frame->NumLayers(); i++)
 	{
 		vtLayer *lp = frame->GetLayer(i);
@@ -128,40 +148,135 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 			vtVegLayer *vl = (vtVegLayer *) lp;
 			if (vl->GetVegType() == VLT_Density)
 			{
-				GetChoiceDensityLayer()->Append(vl->GetLayerFilename());
-				iDensityLayers ++;
+				GetChoiceDensityLayer()->Append(vl->GetLayerFilename(), vl);
 			}
 		}
 	}
 	GetChoiceDensityLayer()->SetSelection(0);
 
-	// Species
-	GetSpecies1()->SetValue(false);
-	GetSpecies2()->SetValue(false);
-	GetSpecies3()->SetValue(true);
-
-	// not yet
-	GetSpecies1()->Enable(false);
-	GetChoiceSpecies()->Enable(false);
-	GetSpecies2()->Enable(false);
-	GetChoiceBiotype()->Enable(false);
-
-	// Density
+	// Count layers of each type
+	int iDensityLayers = 0, iBiotypeLayers = 0;
+	for (int i = 0; i < frame->NumLayers(); i++)
+	{
+		vtLayer *lp = frame->GetLayer(i);
+		if (lp->GetType() == LT_VEG)
+		{
+			vtVegLayer *vl = (vtVegLayer *) lp;
+			if (vl->GetVegType() == VLT_Density)
+				iDensityLayers ++;
+			else
+			if (vl->GetVegType() == VLT_BioMap)
+				iBiotypeLayers ++;
+		}
+	}
 	bool bHaveDensityLayer = (iDensityLayers != 0);
-	GetDensity1()->SetValue(!bHaveDensityLayer);
-	GetDensity2()->SetValue(bHaveDensityLayer);
-	GetDensity1()->Enable(!bHaveDensityLayer);
-	GetDensity2()->Enable(bHaveDensityLayer);
-	GetChoiceDensityLayer()->Enable(bHaveDensityLayer);
+	bool bHaveBiotypeLayer = (iBiotypeLayers != 0);
+	bool bHaveBiotypes = (frame->GetBioRegion()->NumTypes() != 0);
+
+	// Species enabling
+	GetSpecies2()->Enable(bHaveBiotypes);
+	GetSpecies3()->Enable(bHaveBiotypeLayer);
+
+	// Species default values
+	m_bSpecies1 = false;
+	m_bSpecies2 = false;
+	m_bSpecies3 = false;
+
+	if (bHaveBiotypeLayer)
+		m_bSpecies3 = true;
+	else if (bHaveBiotypes)
+		m_bSpecies2 = true;
+	else
+		m_bSpecies1 = true;
+
+	// Density enabling
+	GetDensity3()->Enable(bHaveDensityLayer);
+
+	// Density default values
+	m_bDensity1 = false;
+	m_bDensity2 = false;
+	m_bDensity3 = false;
+
+	if (bHaveDensityLayer)
+		m_bDensity3 = true;
+	else if (bHaveBiotypes)
+		m_bDensity2 = true;
+	else
+		m_bDensity1 = true;
+
 
 	// Size
-	GetSize1()->SetValue(false);
-	GetSize2()->SetValue(true);
-	GetSize1()->Enable(false);
-	GetTextFixedSize()->Enable(false);
-	GetSpinRandomFrom()->Enable(false);
-	GetSpinRandomTo()->Enable(false);
+	m_bSize1 = false;
+	m_bSize2 = true;
+
+	UpdateEnabling();
 
 	wxDialog::OnInitDialog(event);  // transfers data to window
+}
+
+void DistribVegDlg::UpdateEnabling()
+{
+	GetChoiceSpecies()->Enable(m_bSpecies1);
+	GetChoiceBiotype()->Enable(m_bSpecies2);
+	GetChoiceBiotypeLayer()->Enable(m_bSpecies3);
+
+	// they can inherit density from biotype only if they are using a biotype
+	GetTextFixedDensity()->Enable(m_bDensity1);
+	GetDensity2()->Enable(m_bSpecies2 || m_bSpecies3);
+	GetChoiceDensityLayer()->Enable(m_bDensity3);
+
+	GetTextFixedSize()->Enable(m_bSize1);
+	GetSpinRandomFrom()->Enable(m_bSize2);
+	GetSpinRandomTo()->Enable(m_bSize2);
+}
+
+void DistribVegDlg::OnRadio( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	UpdateEnabling();
+}
+
+void DistribVegDlg::OnOK( wxCommandEvent &event )
+{
+	// pass through
+	wxDialog::OnOK(event);
+
+	// species
+	if (m_bSpecies1)
+		m_opt.m_iSingleSpecies = m_iChoiceSpecies;
+	else if (m_bSpecies2)
+		m_opt.m_iSingleBiotype = m_iChoiceBiotype;
+	else if (m_bSpecies3)
+	{
+		void *ptr = GetChoiceBiotypeLayer()->GetClientData(m_iChoiceBiotypeLayer);
+		m_opt.m_pBiotypeLayer = (vtVegLayer *) ptr;
+	}
+
+	// density
+	if (m_bDensity1)
+	{
+		// allow m_opt.m_fFixedDensity to keep its value
+	}
+	else if (m_bDensity2)
+	{
+		m_opt.m_fFixedDensity = -1.0f;
+	}
+	if (m_bDensity3)
+	{
+		void *ptr = GetChoiceDensityLayer()->GetClientData(m_iChoiceDensityLayer);
+		m_opt.m_pDensityLayer = (vtVegLayer *) ptr;
+	}
+
+	// size
+	if (m_bSize1)
+	{
+		// allow m_opt.m_fFixedSize to keep its value
+	}
+	else
+	{
+		m_opt.m_fFixedSize = -1.0f;
+		m_opt.m_fRandomFrom = m_iRandomFrom / 100.0f;
+		m_opt.m_fRandomTo = m_iRandomTo / 100.0f;
+	}
 }
 

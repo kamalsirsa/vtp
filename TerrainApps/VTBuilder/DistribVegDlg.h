@@ -14,6 +14,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "VegGenOptions.h"
 
 // WDR: class declarations
 
@@ -30,15 +31,20 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	float m_fSampling, m_fScarcity;
 	int m_iChoiceSpecies;
 	int m_iChoiceBiotype;
 	int m_iChoiceBiotypeLayer;
 	int m_iChoiceDensityLayer;
-	float m_fFixedSize;
 	int m_iRandomFrom, m_iRandomTo;
 
+	bool m_bSpecies1, m_bSpecies2, m_bSpecies3;
+	bool m_bDensity1, m_bDensity2, m_bDensity3;
+	bool m_bSize1, m_bSize2;
+
+	VegGenOptions	m_opt;
+
 	// WDR: method declarations for DistribVegDlg
+	wxTextCtrl* GetTextFixedDensity()  { return (wxTextCtrl*) FindWindow( ID_TEXT_FIXED_DENSITY ); }
 	wxTextCtrl* GetTextFixedSize()  { return (wxTextCtrl*) FindWindow( ID_TEXT_FIXED_SIZE ); }
 	wxSpinCtrl* GetSpinRandomTo()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_RANDOM_TO ); }
 	wxSpinCtrl* GetSpinRandomFrom()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_RANDOM_FROM ); }
@@ -48,6 +54,7 @@ public:
 	wxChoice* GetChoiceSpecies()  { return (wxChoice*) FindWindow( ID_CHOICE_SPECIES ); }
 	wxRadioButton* GetSize2()  { return (wxRadioButton*) FindWindow( ID_SIZE2 ); }
 	wxRadioButton* GetSize1()  { return (wxRadioButton*) FindWindow( ID_SIZE1 ); }
+	wxRadioButton* GetDensity3()  { return (wxRadioButton*) FindWindow( ID_DENSITY3 ); }
 	wxRadioButton* GetDensity2()  { return (wxRadioButton*) FindWindow( ID_DENSITY2 ); }
 	wxRadioButton* GetDensity1()  { return (wxRadioButton*) FindWindow( ID_DENSITY1 ); }
 	wxRadioButton* GetSpecies3()  { return (wxRadioButton*) FindWindow( ID_SPECIES3 ); }
@@ -56,10 +63,13 @@ public:
 
 private:
 	// WDR: member variable declarations for DistribVegDlg
+	void UpdateEnabling();
 
 private:
 	// WDR: handler declarations for DistribVegDlg
 	void OnInitDialog(wxInitDialogEvent& event);
+	void OnRadio( wxCommandEvent &event );
+	void OnOK( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()
