@@ -123,13 +123,15 @@ protected:
 
 ///////////////////////////////////////////////////
 
+class IcoGlobe;
+
 class GlobePicker : public vtLastMouse
 {
 public:
 	GlobePicker();
 	void Eval();
 	void SetRadius(double fRadius) { m_fRadius = fRadius; }
-	void SetGlobeMGeom(vtTransform *pMG) { m_pGlobeXForm = pMG; }
+	void SetGlobe(IcoGlobe *pGlobe) { m_pGlobe = pGlobe; }
 
 	bool GetCurrentPoint(FPoint3 &p);
 	bool GetCurrentEarthPos(DPoint3 &p);
@@ -139,7 +141,7 @@ protected:
 	DPoint3		m_EarthPos;
 	bool		m_bOnTerrain;
 	double		m_fRadius;
-	vtTransform	*m_pGlobeXForm;
+	IcoGlobe	*m_pGlobe;
 };
 
 ///////////////////////////////////////////////////

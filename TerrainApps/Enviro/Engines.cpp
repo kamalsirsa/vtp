@@ -393,7 +393,7 @@ GlobePicker::GlobePicker() : vtLastMouse()
 {
 	m_fRadius = 1.0;
 	m_bOnTerrain = false;
-	m_pGlobeXForm = NULL;
+	m_pGlobe = NULL;
 }
 
 void GlobePicker::Eval()
@@ -413,11 +413,23 @@ void GlobePicker::Eval()
 		// save result
 		m_GroundPoint = akPoint[0];
 
-		if (m_pGlobeXForm)
+		// apply global position to target (which is not a child of the globe)
+		vtTransform *pTarget = (vtTransform *) GetTarget();
+		if (pTarget)
+		{
+			float sc = 0.05f;
+			pTarget->Identity();
+			pTarget->SetTrans(m_GroundPoint);
+			pTarget->PointTowards(m_GroundPoint * 2);
+			pTarget->Scale3(sc, sc, sc);
+		}
+
+		if (m_pGlobe)
 		{
 			// rotate to find position relative to globe's rotation
+			vtTransform *xform = m_pGlobe->GetTop();
 			FMatrix4 rot;
-			m_pGlobeXForm->GetTransform1(rot);
+			xform->GetTransform1(rot);
 			FMatrix4 inverse;
 			inverse.Invert(rot);
 			FPoint3 newpoint;
@@ -429,17 +441,6 @@ void GlobePicker::Eval()
 				inverse.Transform(m_GroundPoint, newpoint);
 				m_GroundPoint = newpoint;
 			}
-		}
-
-		// apply global position to target (which is not a child of the globe)
-		vtTransform *pTarget = (vtTransform *) GetTarget();
-		if (pTarget)
-		{
-			float sc = 0.01f;
-			pTarget->Identity();
-			pTarget->SetTrans(m_GroundPoint);
-			pTarget->PointTowards(m_GroundPoint * 2);
-			pTarget->Scale3(sc, sc, sc);
 		}
 
 		// Find corresponding geographic coordinates
