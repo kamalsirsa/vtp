@@ -7,6 +7,7 @@
 
 #include "Features.h"
 #include "xmlhelper/easyxml.hpp"
+#include "vtLog.h"
 
 //
 // Construct / Destruct
@@ -1143,15 +1144,19 @@ int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length
 		f->m_width = 11;
 		f->m_decimals = 0;
 	}
-	if (ftype == FTDouble)
+	else if (ftype == FTDouble)
 	{
 		f->m_width = 12;
 		f->m_decimals = 12;
 	}
-	if (ftype == FTString)
+	else if (ftype == FTString)
 	{
 		f->m_width = string_length;
 		f->m_decimals = 0;
+	}
+	else
+	{
+		VTLOG("Attempting to add field '%s' of invalid type '%d'\n", name, ftype);
 	}
 	return m_fields.Append(f);
 }
