@@ -39,7 +39,7 @@ public:
 	vtContentManager3d();
 
 	void SetDataPaths(StringArray *pDataPaths) { m_pDataPaths = pDataPaths; }
-	vtTransform *CreateInstanceOfItem(vtItem *item);
+	vtGroup *CreateInstanceOfItem(vtItem *item);
 
 	// implementation
 	virtual vtItem *NewItem() { return new vtItem3d; }

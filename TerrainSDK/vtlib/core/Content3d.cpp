@@ -24,6 +24,10 @@ vtItem3d::~vtItem3d()
 	m_pGroup = NULL;
 }
 
+/**
+ * Load the model(s) associated with an item.  If there are several models,
+ * generally these are different levels of detail (LOD) for the item.
+ */
 bool vtItem3d::LoadModels(StringArray *pDataPaths)
 {
 	if (m_pGroup)
@@ -98,18 +102,13 @@ vtContentManager3d::vtContentManager3d()
 	m_pDataPaths = NULL;
 }
 
-vtTransform *vtContentManager3d::CreateInstanceOfItem(vtItem *item)
+vtGroup *vtContentManager3d::CreateInstanceOfItem(vtItem *item)
 {
 	vtItem3d *pItem = (vtItem3d *) item;
 
-	pItem->LoadModels(m_pDataPaths);
-
-	if (pItem->m_pGroup)
-	{
-		vtTransform *xform = new vtTransform();
-		xform->AddChild(pItem->m_pGroup);
-		return xform;
-	}
-	return NULL;
+	if (pItem->LoadModels(m_pDataPaths))
+		return pItem->m_pGroup;
+	else
+		return NULL;
 }
 
