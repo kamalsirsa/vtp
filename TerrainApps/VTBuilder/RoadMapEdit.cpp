@@ -21,13 +21,17 @@
 #define NODE_RADIUS 5
 
 wxPen RoadPen[10];
-wxPen NodePen[6];
+wxPen NodePen[VIT_TOTAL];
 static bool g_bInitializedPens = false;
 
 
 NodeEdit::NodeEdit() : Node()
 {
 	m_bSelect = false;
+	m_iPathIndex = 0;
+	m_pPrevPathNode = NULL;
+	m_pPrevPathRoad = NULL;
+	m_iVisual = VIT_UNKNOWN;
 }
 
 //
@@ -54,7 +58,7 @@ void NodeEdit::Copy(NodeEdit* node)
 bool NodeEdit::Draw(wxDC* pDC, vtScaledView *pView)
 {
 	pDC->SetLogicalFunction(wxCOPY);
-	assert(m_iVisual >= 0 && m_iVisual < 6);
+	assert(m_iVisual >= VIT_UNKNOWN && m_iVisual <= VIT_STOPSIGN);
 	pDC->SetPen(NodePen[m_iVisual]);
 	pDC->SetBrush(wxBrush(wxColour(0,0,0), wxTRANSPARENT));
 	wxRect box;
@@ -408,6 +412,8 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 
 		RoadPen[9].SetColour(128,0,128);	// for edit crosses
 
+		NodePen[VIT_UNKNOWN].SetColour(255,0,255);
+
 		NodePen[VIT_NONE].SetColour(0,128,255);
 
 		NodePen[VIT_STOPSIGN].SetColour(128,0,0);
@@ -420,8 +426,8 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 
 		NodePen[VIT_ALLLIGHTS].SetColour(0,128,0);
 
-		NodePen[5].SetColour(255,255,255);  //for selection
-		NodePen[5].SetWidth(3);
+		NodePen[VIT_SELECTED].SetColour(255,255,255);  //for selection
+		NodePen[VIT_SELECTED].SetWidth(3);
 	}
 }
 

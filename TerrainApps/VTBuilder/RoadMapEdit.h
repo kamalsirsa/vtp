@@ -18,11 +18,14 @@ class vtDLGFile;
 
 
 enum VisualIntersectionType {
-	VIT_NONE,	//uncontrolled, default to stopsign
+	VIT_UNKNOWN,	//uncontrolled, default to stopsign
+	VIT_NONE,		//uncontrolled, default to stopsign
 	VIT_ALLLIGHTS,	//controlled intersection with all lights
 	VIT_ALLSTOPS,	//controlled intersection with all stop signs
-	VIT_LIGHTS,	//controlled intersection with at least one, but not all, traffic light
-	VIT_STOPSIGN,  //controlled intersection with at least one, but not all, stop sign
+	VIT_LIGHTS,		//controlled intersection with at least one, but not all, traffic light
+	VIT_STOPSIGN,	//controlled intersection with at least one, but not all, stop sign
+	VIT_SELECTED,
+	VIT_TOTAL
 };
 
 
