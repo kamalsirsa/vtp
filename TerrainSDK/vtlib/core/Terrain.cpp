@@ -1095,12 +1095,15 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 	vtString str;
 	for (int i = 0; i < features; i++)
 	{
-		vtTransform *bb = new vtTransform();
+		feat.GetPoint(i, p);
+		if (!m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3))
+			continue;
+		p3.y += (style.m_label_elevation + p.z);
 
+		vtTransform *bb = new vtTransform();
 		vtTextMesh *text = new vtTextMesh(font, style.m_label_size, true);	// center
 
 		feat.GetValueAsString(i, style.m_field_index, str);
-		feat.GetPoint(i, p);
 		// text might be UTF-8
 		wstring2 wide_string;
 		wide_string.from_utf8(str);
@@ -1118,8 +1121,6 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		m_pBBEngine->AddTarget(bb);
 //		bb->Scale3(style.m_label_size, style.m_label_size, 1.0f);
 
-		m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3);
-		p3.y += (style.m_label_elevation + p.z);
 		bb->SetTrans(p3);
 		pPlaceNames->AddChild(bb);
 	}
