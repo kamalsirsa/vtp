@@ -155,6 +155,8 @@ public:
 	void OnFillIn(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);
 	void OnExportTerragen(wxCommandEvent& event);
+	void OnExportGeoTIFF(wxCommandEvent& event);
+	void OnExportBMP(wxCommandEvent& event);
 	void OnElevShow(wxCommandEvent& event);
 	void OnElevShading(wxCommandEvent& event);
 	void OnElevHide(wxCommandEvent& event);

@@ -128,6 +128,8 @@ EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
+EVT_MENU(ID_ELEV_EXPORT_GEOTIFF,	MainFrame::OnExportGeoTIFF)
+EVT_MENU(ID_ELEV_EXPORT_BMP,		MainFrame::OnExportBMP)
 EVT_MENU(ID_ELEV_SHOW,				MainFrame::OnElevShow)
 EVT_MENU(ID_ELEV_SHADING,			MainFrame::OnElevShading)
 EVT_MENU(ID_ELEV_HIDE,				MainFrame::OnElevHide)
@@ -140,6 +142,8 @@ EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_EXPORT_GEOTIFF, MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_EXPORT_BMP,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
 EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
 EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
@@ -339,10 +343,13 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SCALE, _T("Sc&ale Elevation"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_REMOVERANGE, _T("&Remove Elevation Range..."));
-	elevMenu->Append(ID_ELEV_FILLIN, _T("&Fill In Unknown areas"));
+	elevMenu->Append(ID_ELEV_FILLIN, _T("&Fill In Unknown Areas"));
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("&Set Unknown Areas"));
-	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("&Export to TerraGen"));            
-	elevMenu->Append(ID_ELEV_BITMAP, _T("&Generate && Export Bitmap"));
+	elevMenu->AppendSeparator();
+	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("E&xport to TerraGen"));            
+	elevMenu->Append(ID_ELEV_EXPORT_GEOTIFF, _T("Export to &GeoTIFF"));            
+	elevMenu->Append(ID_ELEV_EXPORT_BMP, _T("Export to &BMP"));
+	elevMenu->Append(ID_ELEV_BITMAP, _T("Re&nder and Save Bitmap"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _T("&Merge shared TIN vertices"));
 	m_pMenuBar->Append(elevMenu, _T("Elev&ation"));
@@ -1884,6 +1891,7 @@ void MainFrame::OnUpdateScaleElevation(wxUpdateUIEvent& event)
 	event.Enable(GetActiveElevLayer() != NULL);
 }
 
+
 void MainFrame::OnExportTerragen(wxCommandEvent &event)
 {
 	vtElevLayer *el = GetActiveElevLayer();
@@ -1895,19 +1903,59 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 
 	// ask the user for a filename
 	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	if (!bResult)
+	if (saveFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
 
 	bool success = el->m_pGrid->SaveToTerragen(strPathName.mb_str());
-	if (!success)
-	{
-		DisplayAndLog("Couldn't open file for writing.");
-		return;
-	}
+	if (success)
+		DisplayAndLog("Successfully wrote TerraGen file '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog("Error writing file.");
+}
 
-	DisplayAndLog("Successfully wrote TerraGen file '%s'", strPathName.mb_str());
+void MainFrame::OnExportGeoTIFF(wxCommandEvent &event)
+{
+	vtElevLayer *el = GetActiveElevLayer();
+	if (!el)
+		return;
+
+	wxString filter = _T("All Files|*.*|");
+	AddType(filter, FSTRING_TIF);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	if (saveFile.ShowModal() != wxID_OK)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+
+	bool success = el->m_pGrid->SaveToGeoTIFF(strPathName.mb_str());
+	if (success)
+		DisplayAndLog("Successfully wrote GeoTIFF file '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::OnExportBMP(wxCommandEvent &event)
+{
+	vtElevLayer *el = GetActiveElevLayer();
+	if (!el)
+		return;
+
+	wxString filter = _T("All Files|*.*|");
+	AddType(filter, FSTRING_BMP);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	if (saveFile.ShowModal() != wxID_OK)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+
+	bool success = el->m_pGrid->SaveToBMP(strPathName.mb_str());
+	if (success)
+		DisplayAndLog("Successfully wrote BMP file '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
