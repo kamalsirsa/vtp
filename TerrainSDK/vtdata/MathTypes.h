@@ -1149,9 +1149,10 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
  * This handy class encapsulates overriding the locale.  Use it like this
  * for 'standard' numbers:
  *
- * \example
- *		LocaleWrap normal_numbers(LC_NUMERIC, "C");
- *
+ * \par Example:
+\code
+		LocaleWrap normal_numbers(LC_NUMERIC, "C");
+\endcode
  * The locale will be restored when the LocaleWrap object goes out of scope.
  */
 class LocaleWrap

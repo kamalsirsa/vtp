@@ -45,8 +45,8 @@ public:
  * This class parses the entire contents of a DXF file.  It is up to the
  * caller to go through the resulting entities and use what is desired.
  *
- * To use:
- * \example
+ * \par Example:
+\code
 	std::vector<DxfEntity> entities;
 	std::vector<vtString> layers;
 
@@ -56,7 +56,8 @@ public:
 	{
 		// Look through the entities and take what is needed.
 	}
- */
+\endcode
+*/
 class DxfParser
 {
 public:
