@@ -19,6 +19,12 @@
 #include "vtui/Helper.h"
 #include "gdal_priv.h"
 
+#define HEAPBUSTER 0
+
+#if HEAPBUSTER
+#include "../HeapBuster/HeapBuster.h"
+#endif
+
 IMPLEMENT_APP(MyApp)
 
 
@@ -85,6 +91,11 @@ bool MyApp::OnInit()
 //	frame->LoadProject("E:/Locations-USA/Hawai`i Island Content/Honoka`a/latest_temp.vtb");
 
 	frame->GetView()->ZoomAll();
+
+#if HEAPBUSTER
+	// Pull in the heap buster
+	g_HeapBusterDummy = -1;
+#endif
 
 	return TRUE;
 }
