@@ -106,13 +106,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	wxString2 fname = fname_in;
 	wxString2 ext = fname.AfterLast('.');
 
-	using namespace boost::filesystem;
-
 	// check if it's an archive
-	bool bExpandedArchive = false;
-	wxString2 prepend_path;
-	prepend_path = GetTempFolderName(fname_in.mb_str());
-
 	bool bGZip = false;
 	bool bZip = false;
 
@@ -125,7 +119,11 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 
 	if (bGZip || bZip)
 	{
+		using namespace boost::filesystem;
+
 		// try to uncompress
+		wxString2 prepend_path;
+		prepend_path = GetTempFolderName(fname_in.mb_str());
 		int result;
 		result = vtCreateDir(prepend_path.mb_str());
 		if (result == 0 && errno != EEXIST)
