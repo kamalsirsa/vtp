@@ -1072,7 +1072,8 @@ void TVTerrain::errSurface()
 {
 	baseSurface();
 
-	// borrow this value from DynTerrain: 1 pixel error roughly equals .002 TV error
+	// borrow this value from DynTerrain: it appears that 1 pixel error
+	// roughly equals .002 TopoVista error
 	errThresh = m_fPixelError / 500.0;
 
 	etGrid = errThresh / err2grid;	/* set error parameters */
