@@ -14,23 +14,24 @@
 
 // OpenGL headers
 #if WIN32
-  #if VTLIB_PLIB || VTLIB_PSM
+  #if VTLIB_PLIB
 	#include <windows.h>	// PLIB and PSM require the full windows.h
-  #else
+  #endif
+  #if !VTLIB_PSM
 	// these definitions let us include gl.h without the entire Windows headers
 	#include "core/winglue.h"
   #endif
 #endif
 
-#include <GL/gl.h>
+#if !VTLIB_PSM
+  #include <GL/gl.h>
+#endif
 
+//
+// Base classes from which the API-specific implementation
+// classes are derived.
+//
 #ifdef VTLIB_PSM
-  #include "vtpsm/BasePSM.h"
-#else
-  //
-  // Base classes from which the API-specific implementation
-  // classes are derived.
-  //
   #include "core/Base.h"
 #endif
 
@@ -40,29 +41,31 @@
 
 ////////////////////////////// PSM ///////////////////////////////
 #if VTLIB_PSM
-
-	// the following symbols must be allowed to have PSM definitions
-	#undef DECLARE_CLASS
-	#undef IMPLEMENT_CLASS
-	#undef Ref
-
 	#define SUPPORT_XFROG 0
 	#define PV_OGL
 
 	#include "psm.h"
 	#include "psutil.h"
 
+	#include <GL/gl.h>
+
+	#include "vtpsm/BasePSM.h"
 	#include "vtpsm/MathPSM.h"
 	#include "vtpsm/ImagePSM.h"
 	#include "vtpsm/MeshMat.h"
 	#include "vtpsm/NodePSM.h"
 	#include "vtpsm/ScenePSM.h"
 
-	// the following symbols must be allowed to have non-PSM meanings later
-	#undef DECLARE_CLASS
-	#undef IMPLEMENT_CLASS
-	#undef Ref
-
+  #ifdef _MSC_VER
+	#if _DEBUG
+		#pragma comment(lib, "freeimaged.lib")
+	#else
+		#pragma comment(lib, "freeimage.lib")
+	#endif
+	#pragma comment(lib, "winmm.lib")
+	#pragma comment(lib, "wininet.lib")
+	#pragma comment(lib, "user32.lib")
+  #endif
 #endif	// PSM
 
 ////////////////////////////// PLIB/SSG ////////////////////////////
