@@ -14,7 +14,7 @@ bool ColorMap::Save(const char *fname)
 	if (!fp)
 		return false;
 	fprintf(fp, "colormap1\n");
-	fprintf(fp, "relative: %d\n", m_bRelative);
+//	fprintf(fp, "relative: %d\n", m_bRelative);
 	int size = m_elev.size();
 	fprintf(fp, "size %d\n", size);
 	for (int i = 0; i < size; i++)
@@ -32,7 +32,7 @@ bool ColorMap::Load(const char *fname)
 	if (!fp)
 		return false;
 	fscanf(fp, "colormap1\n");
-	fscanf(fp, "relative: %d\n", &m_bRelative);
+//	fscanf(fp, "relative: %d\n", &m_bRelative);
 	int size;
 	fscanf(fp, "size %d\n", &size);
 	m_elev.resize(size);
@@ -276,8 +276,9 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	ColorMap defaults;
 	if (!cmap)
 	{
+#if 0
 		defaults.m_bRelative = false;
-		defaults.Add(-7000,	RGBi(60, 60, 60));		// dark grey
+		defaults.Add(-8000,	RGBi(60, 60, 60));		// dark grey
 		defaults.Add(-6000,	RGBi(160, 80, 0));		// dark orange
 		defaults.Add(-5000,	RGBi(128, 128, 0));		// dark yellow
 		defaults.Add(-4500,	RGBi(160, 0, 160));		// purplish
@@ -298,6 +299,19 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 		defaults.Add(3000,	RGBi(0xDD, 0x80, 0x22));	// orange
 		defaults.Add(4000,	RGBi(0xDD, 0xDD, 0xDD));	// light grey
 		defaults.Add(5000,	RGBi(0xCC, 0xCC, 0xFF));	// pale blue
+		defaults.Add(6000,	RGBi(0xDD, 0xCC, 0xBB));	// tan
+		defaults.Add(8000,	RGBi(0xDD, 0xDD, 0xDD));	// light grey again
+		defaults.Save("C:/VTP/TerrainApps/Data/GeoTypical/default_absolute.cmt");
+#endif
+#if 1
+		defaults.m_bRelative = true;
+		defaults.Add(0, RGBi(0x20, 0xB0, 0x20));
+		defaults.Add(0, RGBi(0x40, 0xE0, 0x40));
+		defaults.Add(0, RGBi(0xE0, 0xC0, 0xA0));
+		defaults.Add(0, RGBi(0xE0, 0x80, 0x10));
+		defaults.Add(0, RGBi(0xE0, 0xE0, 0xE0));
+		defaults.Save("C:/VTP/TerrainApps/Data/GeoTypical/default_relative.cmt");
+#endif
 		cmap = &defaults;
 	}
 
@@ -328,7 +342,10 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	if (cmap->m_bRelative == true)
 	{
 		bracket_size = fRange / (num - 1);
+		current = -1;
 	}
+
+	RGBi c3;
 
 	for (i = 0; i < TABLE_SIZE; i++)
 	{
@@ -343,13 +360,21 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 				next = cmap->m_elev[current+1];
 				bracket_size = next - base;
 			}
-			fraction = (elev - base) / bracket_size;
-			table.push_back(c1 * (1-fraction) + c2 * fraction);
 		}
 		else
 		{
-			// TODO: relative is simpler
+			int bracket = (elev-fMin) / fRange * (num-1);
+			if (bracket != current)
+			{
+				current = bracket;
+				base = fMin + bracket * bracket_size;
+				c1 = cmap->m_color[current];
+				c2 = cmap->m_color[current+1];
+			}
 		}
+		fraction = (elev - base) / bracket_size;
+		c3 = c1 * (1-fraction) + c2 * fraction;
+		table.push_back(c3);
 		elev += step;
 	}
 
@@ -369,7 +394,8 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 
 			elev = GetElevation(x, y, true);	// local units, true elevation
 			int table_entry = (int) ((elev - fMin) / fRange * TABLE_SIZE);
-			pBM->SetPixel24(i, h-1-j, table[table_entry]);
+			c3 = table[table_entry];
+			pBM->SetPixel24(i, h-1-j, c3);
 		}
 	}
 }
