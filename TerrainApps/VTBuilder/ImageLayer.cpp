@@ -278,7 +278,7 @@ bool vtImageLayer::SaveToFile(const char *fname)
 static int WarpProgress(double dfComplete, const char *pszMessage, void *pProgressArg)
 {
 	int amount = (int)(99.0 * dfComplete);
-	return !UpdateProgressDialog(amount, wxString(pszMessage));
+	return !UpdateProgressDialog(amount, wxString2(pszMessage));
 }
 
 
