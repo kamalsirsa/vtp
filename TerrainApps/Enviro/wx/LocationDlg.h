@@ -13,6 +13,7 @@
 #endif
 
 #include "enviro_wdr.h"
+#include "vtlib/core/Location.h"
 
 class vtLocationSaver;
 
@@ -38,14 +39,14 @@ public:
     wxListBox* GetLoclist()  { return (wxListBox*) FindWindow( ID_LOCLIST ); }
     wxButton* GetRemove()  { return (wxButton*) FindWindow( ID_REMOVE ); }
 	void RefreshList();
-    void SetTarget(vtTransform *pTarget);
+    void SetTarget(vtTransform *pTarget, vtProjection &proj,
+				   vtLocalConversion &conv);
     void SetLocFile(const char *fname);
 	void RefreshButtons();
 
 private:
     // WDR: member variable declarations for LocationDlg
     vtLocationSaver *m_pSaver;
-    vtTransform *m_pTarget;
 
     wxButton* m_pStoreAs;
     wxButton* m_pStore;

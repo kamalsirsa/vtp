@@ -18,7 +18,6 @@
 
 #include "vtlib/vtlib.h"
 #include "LocationDlg.h"
-#include "vtlib/core/Location.h"
 
 // WDR: class implementations
 
@@ -43,7 +42,6 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
     const wxPoint &position, const wxSize& size, long style ) :
     wxDialog( parent, id, title, position, size, style )
 {
-	m_pTarget = NULL;
     LocationDialogFunc( this, TRUE );
     m_pSaver = new vtLocationSaver();
     m_pStoreAs = GetStoreas();
@@ -54,22 +52,19 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	RefreshButtons();
 }
 
-void LocationDlg::SetTarget(vtTransform *pTarget)
+void LocationDlg::SetTarget(vtTransform *pTarget, vtProjection &proj,
+							vtLocalConversion &conv)
 {
-    m_pTarget = pTarget;
-    m_pSaver->SetTarget(pTarget);
+    m_pSaver->SetTransform(pTarget);
+	m_pSaver->SetConversion(conv);
+	m_pSaver->SetProjection(proj);
 }
 
 void LocationDlg::SetLocFile(const char *fname)
 {
-    vtLocationSaver *saver = new vtLocationSaver();
-    if (!saver->Read(fname))
+	m_pSaver->Empty();
+    if (!m_pSaver->Read(fname))
         return;  // couldn't read
-
-    if (m_pSaver)
-        delete m_pSaver;
-    m_pSaver = saver;
-    m_pSaver->SetTarget(m_pTarget);
 
     RefreshList();
 	RefreshButtons();

@@ -622,7 +622,8 @@ void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
 
 void vtFrame::OnViewLocations(wxCommandEvent& event)
 {
-	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera());
+	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
+		GetCurrentTerrain()->GetProjection(), g_Conv);
 	m_pLocationDlg->Show(true);
 }
 
