@@ -481,13 +481,17 @@ bool vtProjection::ReadProjFile(const char *filename)
  *
  * \return true if successful.
  */
-bool vtProjection::WriteProjFile(const char *filename)
+bool vtProjection::WriteProjFile(const char *filename) const
 {
 	FILE *fp2 = fopen(filename, "wb");
 	if (!fp2)
 		return false;
+
+	// work around GDAL problem: exportToWkt is not yet const
+	OGRSpatialReference *self = (OGRSpatialReference *)this;
+
 	char *wkt;
-	OGRErr err = exportToWkt(&wkt);
+	OGRErr err = self->exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
 	fprintf(fp2, "%s\n", wkt);

@@ -80,7 +80,7 @@ public:
 	bool SetTextDescription(const char *type, const char *value);
 
 	bool ReadProjFile(const char *filename);
-	bool WriteProjFile(const char *filename);
+	bool WriteProjFile(const char *filename) const;
 
 	double GeodesicDistance(const DPoint2 &in, DPoint2 &out, bool bQuick = false);
 };
