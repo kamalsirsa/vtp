@@ -169,6 +169,8 @@ bool vtFeatures::LoadHeaderFromSHP(const char *filename)
 	if (hSHP == NULL)
 		return false;
 
+	m_strFilename = filename;
+
 	// Get number of entities (nElem) and type of data (nShapeType)
 	int		nShapeType;
 	double	adfMinBound[4], adfMaxBound[4];
@@ -564,6 +566,9 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 			return false;	// don't know what to do with this geom type
 		}
 	}
+
+	// We're going to read the file now, so take it's name
+	m_strFilename = filename;
 
 	for (j = 0; j < num_fields; j++)
 	{

@@ -94,6 +94,9 @@ public:
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 	bool AddElementsFromDLG(class vtDLGFile *pDLG);
 
+	void SetFilename(const vtString &str) { m_strFilename = str; }
+	vtString GetFilename() { return m_strFilename; }
+
 	// feature (entity) operations
 	int NumEntities() const;
 	int GetEntityType() const;
@@ -186,6 +189,9 @@ protected:
 	Array<Field*> m_fields;
 
 	vtProjection	m_proj;
+
+	// remember the filename these feature were loaded from or saved to
+	vtString	m_strFilename;
 };
 
 #endif // VTDATA_FEATURES
