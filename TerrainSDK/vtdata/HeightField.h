@@ -41,7 +41,7 @@ public:
 	void GetCenter(FPoint3 &center);
 
 	/// Test if a point is within the extents of the grid.
-	bool ContainsEarthPoint(double x, double y)
+	bool ContainsEarthPoint(double x, double y) const
 	{
 		return (m_EarthExtents.left <= x && x <= m_EarthExtents.right &&
 				m_EarthExtents.bottom <= y && y <= m_EarthExtents.top);

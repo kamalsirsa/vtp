@@ -56,7 +56,7 @@ vtElevationGrid::vtElevationGrid()
  * The grid will initially have no data in it (all values are INVALID_ELEVATION).
  */
 vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
-								 bool bFloat, vtProjection &proj)
+								 bool bFloat, const vtProjection &proj)
 {
 	m_EarthExtents = area;			// raw extents
 	m_iColumns = iColumns;
@@ -135,7 +135,7 @@ double MetersPerLongitude(double latitude)
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
-										vtProjection &NewProj,
+										const vtProjection &NewProj,
 										void progress_callback(int))
 {
 	int i, j;
@@ -146,7 +146,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	strcpy(m_szOriginalDEMName, pOld->GetDEMName());
 
 	// Create conversion object
-	OGRSpatialReference *pSource, *pDest;
+	const OGRSpatialReference *pSource, *pDest;
 	pSource = &pOld->GetProjection();
 	pDest = &NewProj;
 
@@ -371,7 +371,7 @@ void vtElevationGrid::SetFValue(int i, int j, float value)
  * \param i, j Column and row location in the grid.
  * \return The value in (integer) meters.
  */
-int vtElevationGrid::GetValue(int i, int j)
+int vtElevationGrid::GetValue(int i, int j) const
 {
 	if (m_bFloatMode)
 	{
@@ -392,7 +392,7 @@ int vtElevationGrid::GetValue(int i, int j)
  * \param i, j Column and row location in the grid.
  * \return The value in (float) meters.
  */
-float vtElevationGrid::GetFValue(int i, int j)
+float vtElevationGrid::GetFValue(int i, int j) const
 {
 	if (m_bFloatMode)
 	{
@@ -469,7 +469,7 @@ void vtElevationGrid::_AllocateArray()
 }
 
 
-void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc)
+void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 {
 	DPoint2 spacing = GetSpacing();
 	loc.Set(m_EarthExtents.left + i * spacing.x,
@@ -559,7 +559,7 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
  * \param x, y	The coordinate to query.
  */
-float vtElevationGrid::GetClosestValue(double x, double y)
+float vtElevationGrid::GetClosestValue(double x, double y) const
 {
 	int ix = (int)((x - m_EarthExtents.left) / m_EarthExtents.Width() * m_iColumns);
 	int iy = (int)((y - m_EarthExtents.bottom) / m_EarthExtents.Height() * m_iRows);
@@ -576,7 +576,7 @@ float vtElevationGrid::GetClosestValue(double x, double y)
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
  * \param x, y	The coordinate to query.
  */
-float vtElevationGrid::GetFilteredValue(double x, double y)
+float vtElevationGrid::GetFilteredValue(double x, double y) const
 {
 	// what data point in t is closest to (x,y)?
 	double local_x = (x - m_EarthExtents.left) / (m_EarthExtents.right - m_EarthExtents.left);
@@ -643,7 +643,7 @@ float vtElevationGrid::GetFilteredValue(double x, double y)
 	return (float) fData;
 }
 
-float vtElevationGrid::GetFValueSafe(int i, int j)
+float vtElevationGrid::GetFValueSafe(int i, int j) const
 {
 	if (i < 0 || i > m_iColumns-1 || j < 0 || j > m_iRows-1)
 		return INVALID_ELEVATION;
@@ -656,7 +656,7 @@ float vtElevationGrid::GetFValueSafe(int i, int j)
  * This method is more liberal in regards to finding a valid data point
  * among undefined data than GetFilteredValue()
  */
-float vtElevationGrid::GetFilteredValue2(double x, double y)
+float vtElevationGrid::GetFilteredValue2(double x, double y) const
 {
 	float fData;
 
@@ -743,7 +743,7 @@ DRECT vtElevationGrid::GetAreaExtents() const
 				 m_EarthExtents.bottom - (sample_size.y / 2.0f));
 }
 
-bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo)
+bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 {
 	int i;
 
@@ -796,8 +796,7 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 	for (unsigned ii = 0; ii < sizeof( m_Corners ) / sizeof( *m_Corners ); ++ii)
 		m_Corners[ii] = Other.m_Corners[ii];
 
-	// FIX - Deal with const issues in Projections.
-	m_proj = const_cast< vtProjection & >( Other.m_proj );
+	m_proj = Other.m_proj;
 
 	m_fMinHeight = Other.m_fMinHeight;
 	m_fMaxHeight = Other.m_fMaxHeight;
@@ -847,20 +846,17 @@ void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
 {
 	if (m_bFloatMode)
 		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				m_pFData[i*m_iRows+j] * m_fVerticalScale,
+				GetFValue(i,j) * m_fVerticalScale,
 				m_WorldExtents.bottom - j * m_fZStep);
 	else
 		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				m_pData[i*m_iRows+j] * m_fVerticalScale,
+				GetValue(i,j) * m_fVerticalScale,
 				m_WorldExtents.bottom - j * m_fZStep);
 }
 
-float vtElevationGrid::GetWorldValue(int i, int j)
+float vtElevationGrid::GetWorldValue(int i, int j) const
 {
-	if (m_bFloatMode)
-		return m_pFData[i*m_iRows+j] * m_fVerticalScale;
-	else
-		return m_pData[i*m_iRows+j] * m_fVerticalScale;
+	return GetFValue(i, j) * m_fVerticalScale;
 }
 
 /**

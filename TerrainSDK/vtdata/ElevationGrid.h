@@ -34,12 +34,12 @@ public:
 	vtElevationGrid();
 	vtElevationGrid( const vtElevationGrid &Other );
 	vtElevationGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
-		vtProjection &proj);
+		const vtProjection &proj);
 	~vtElevationGrid();
 
 	vtElevationGrid &operator=( const vtElevationGrid &rhs );
 
-	bool ConvertProjection(vtElevationGrid *pOld, vtProjection &NewProj, void progress_callback(int) = NULL);
+	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, void progress_callback(int) = NULL);
 	void Scale(float fScale, bool bDirect);
 
 	// Load from unknown file format
@@ -75,13 +75,13 @@ public:
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);
 	void  SetValue(int i, int j, short value);
-	int   GetValue(int i, int j);	// returns height value as a integer
-	float GetFValue(int i, int j);	// returns height value as a float
-	float GetFValueSafe(int i, int j);
+	int   GetValue(int i, int j) const;	// returns height value as a integer
+	float GetFValue(int i, int j) const;	// returns height value as a float
+	float GetFValueSafe(int i, int j) const;
 
-	float GetClosestValue(double x, double y);
-	float GetFilteredValue(double x, double y);
-	float GetFilteredValue2(double x, double y);
+	float GetClosestValue(double x, double y) const;
+	float GetFilteredValue(double x, double y) const;
+	float GetFilteredValue2(double x, double y) const;
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */
@@ -95,17 +95,17 @@ public:
 	 */
 	bool  IsFloatMode()	const { return m_bFloatMode; }
 
-	void GetEarthLocation(int i, int j, DPoint3 &loc);
-	void GetEarthLocation(int i, int j, FPoint3 &loc);
+	void GetEarthLocation(int i, int j, DPoint3 &loc) const;
+	void GetEarthLocation(int i, int j, FPoint3 &loc) const;
 
 	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
 
 	vtProjection &GetProjection() { return m_proj; }
 	const vtProjection &GetProjection() const { return m_proj; }
-	void SetProjection(vtProjection &proj) { m_proj = proj; }
+	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 
-	bool GetCorners(DLine2 &line, bool bGeo);
+	bool GetCorners(DLine2 &line, bool bGeo) const;
 	void SetCorners(const DLine2 &line);
 
 	short *GetData() { return m_pData; }
@@ -120,7 +120,7 @@ public:
 	// methods that deal with world coordinates
 	void SetupConversion(float fVerticalExag);
 	void GetWorldLocation(int i, int j, FPoint3 &loc) const;
-	float GetWorldValue(int i, int j);
+	float GetWorldValue(int i, int j) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const;
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
@@ -147,31 +147,6 @@ private:
 	void	_AllocateArray();
 	void	_Copy( const vtElevationGrid &Other );
 };
-
-
-/*
-class vtLocalGrid : public vtElevationGrid
-{
-public:
-	vtLocalGrid();
-	vtLocalGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
-		vtProjection &proj, float fVerticalExag = 1.0f);
-
-	void SetGlobalProjection();
-	float GetWorldValue(int i, int j);
-
-	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-		float light_adj, void progress_callback(int) = NULL);
-	DPoint2 GetWorldSpacing();
-
-	void SetupConversion(float fVerticalExag);
-	vtLocalConversion	m_Conversion;
-	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
-
-protected:
-	float	m_fXStep, m_fZStep;
-}
-*/
 
 #endif	// ELEVATIONGRIDH
 
