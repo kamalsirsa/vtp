@@ -63,6 +63,7 @@ public:
 
 	// TIN operations
 	void SetTin(vtTin2d *pTin);
+	vtTin2d *GetTin() { return m_pTin; }
 	void MergeSharedVerts(bool bSilent = false);
 
 	// drawing
