@@ -194,7 +194,7 @@ class LogCatcher : public wxLog
 //
 bool EnviroApp::OnInit()
 {
-#if WIN32 && defined(_MSC_VER) && DEBUG
+#if WIN32 && defined(_MSC_VER) && defined(_DEBUG) && IF_NEEDED
 	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -209,7 +209,9 @@ bool EnviroApp::OnInit()
 	VTLOG(" Running on: ");
 	LogWindowsVersion();
 #endif
-	VTLOG("\n");
+	VTLOG("Build date: ");
+	VTLOG(__DATE__);
+	VTLOG("\n\n");
 
 	// Redirect the wxWindows log messages to our own logging stream
 	wxLog *logger = new LogCatcher();
