@@ -26,7 +26,7 @@ class vtEngine : public vtEnabledBase
 {
 public:
 	vtEngine();
-	virtual ~vtEngine();
+	virtual ~vtEngine() {}
 
 	/**
 	 * Get a target from the engine.  Most engines will have only a single
