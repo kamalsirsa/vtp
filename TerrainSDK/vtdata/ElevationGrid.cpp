@@ -214,7 +214,10 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	m_iColumns = (int)(fColumns + 0.999);
 	m_iRows = (int)(fRows + 0.999);
 
-	// do safety check
+	// do safety checks
+	if (m_iColumns < 1 || m_iRows < 1)
+		return false;
+
 	if (m_iColumns > 40000 || m_iRows > 40000)
 		return false;
 
