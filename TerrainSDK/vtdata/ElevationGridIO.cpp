@@ -1159,6 +1159,19 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 }
 
 
+// helper
+void ParseExtent(DRECT &extents, const char *name, const char *value)
+{
+	if (!strcmp(name, "upper_map_y"))
+		extents.top = atof(value);
+	if (!strcmp(name, "lower_map_y"))
+		extents.bottom = atof(value);
+	if (!strcmp(name, "left_map_x"))
+		extents.left = atof(value);
+	if (!strcmp(name, "right_map_x"))
+		extents.right = atof(value);
+}
+
 /** Loads from a NOAA GlOBE file.
  * \par
  * In fact, there is no "GLOBE format", GLOBE files are delivered as raw
@@ -1187,28 +1200,33 @@ bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 	char strName[30];
 	char szEqual[30];
 	char strValue[30];
-	char file_title[80];
+	vtString file_title;
+	vtString str;
 
 	// Read file_title
-	hdrFile >> strName >> szEqual >> file_title;
+	hdrFile >> strName >> szEqual;
+	file_title = get_line_from_stream(hdrFile);	// file title
 
 	if (strcmp(strName, "file_title"))
 		return false;	// not a GLOBE header
 
 	// skip a few
-	hdrFile >> strName >> szEqual >> strValue;	// data_type
-	hdrFile >> strName >> szEqual >> strValue;	// grid_cell_registration
-	hdrFile >> strName >> szEqual >> strValue;	// map_projection
+	hdrFile >> strName >> szEqual;
+	str = get_line_from_stream(hdrFile);	// data_type
+	hdrFile >> strName >> szEqual;
+	str = get_line_from_stream(hdrFile);	// grid_cell_registration
+	hdrFile >> strName >> szEqual;
+	str = get_line_from_stream(hdrFile);	// map_projection
 
 	// Read the left, right, upper, lower coordinates
 	hdrFile >> strName >> szEqual >> strValue;
-	m_EarthExtents.left = atof(strValue);
+	ParseExtent(m_EarthExtents, strName, strValue);
 	hdrFile >> strName >> szEqual >> strValue;
-	m_EarthExtents.right = atof(strValue);
+	ParseExtent(m_EarthExtents, strName, strValue);
 	hdrFile >> strName >> szEqual >> strValue;
-	m_EarthExtents.top = atof(strValue);
+	ParseExtent(m_EarthExtents, strName, strValue);
 	hdrFile >> strName >> szEqual >> strValue;
-	m_EarthExtents.bottom = atof(strValue);
+	ParseExtent(m_EarthExtents, strName, strValue);
 
 	// Read the number of rows
 	hdrFile >> strName >> szEqual >> strValue;
@@ -1445,6 +1463,9 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
  */
 bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// The gz functions (gzopen etc.) behave exactly like the stdlib
 	//  functions (fopen etc.) in the case where the input file is not in
 	//  gzip format, so we can simply use them without worry.
