@@ -1284,7 +1284,7 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
  * \param options Can contain the keywords "roof", "walls", or "details"
  *   (construct all the little details, like mouding and windows)
  */
-bool vtBuilding3d::CreateNode(vtHeightField3d *pHeightField, const vtTagArray &options)
+bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 {
 	if (m_pContainer)
 	{
@@ -1297,7 +1297,7 @@ bool vtBuilding3d::CreateNode(vtHeightField3d *pHeightField, const vtTagArray &o
 		m_pContainer = new vtTransform();
 		m_pContainer->SetName2("building");
 	}
-	if (!CreateGeometry(pHeightField))
+	if (!CreateGeometry(pTerr->GetHeightField()))
 		return false;
 	m_pContainer->AddChild(m_pGeom);
 	m_pContainer->SetTrans(m_center);

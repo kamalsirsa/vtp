@@ -30,7 +30,7 @@ public:
 	~vtBuilding3d();
 
 	// implement vtStructure3d methods
-	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options);
+	virtual bool CreateNode(vtTerrain *pTerr);
 	vtGeom *GetGeom();
 	virtual void DeleteNode();
 	// display a bounding box around to object to highlight it

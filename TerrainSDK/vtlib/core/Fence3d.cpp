@@ -308,7 +308,7 @@ void vtFence3d::DestroyGeometry()
 /**
  * Build (or rebuild) the geometry for a fence.
  */
-bool vtFence3d::CreateNode(vtHeightField3d *hf, const vtTagArray &options)
+bool vtFence3d::CreateNode(vtTerrain *pTerr)
 {
 	if (!m_pFenceGeom)
 	{
@@ -324,7 +324,7 @@ bool vtFence3d::CreateNode(vtHeightField3d *hf, const vtTagArray &options)
 		DestroyGeometry();
 
 	// create surface and shape
-	AddFenceMeshes(hf);
+	AddFenceMeshes(pTerr->GetHeightField());
 
 	m_bBuilt = true;
 	return true;
