@@ -14,6 +14,10 @@
     #pragma hdrstop
 #endif
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 // Include private header
 #include "enviro_wdr.h"
 
@@ -313,7 +317,7 @@ void TParamsFunc( wxPanel *parent, bool call_fit )
 
     wxSizer *item34 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item35 = new wxCheckBox( parent, ID_DYNAMIC, "Dynamic LOD Tterrain", wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item35 = new wxCheckBox( parent, ID_DYNAMIC, "Dynamic LOD Terrain", wxDefaultPosition, wxDefaultSize, 0 );
     item34->Add( item35, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxStaticBox *item37 = new wxStaticBox( parent, -1, "" );
