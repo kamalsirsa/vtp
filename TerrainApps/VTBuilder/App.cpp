@@ -199,8 +199,8 @@ void BuilderApp::SetupLocale()
 
 	if (lang != wxLANGUAGE_ENGLISH_US)
 	{
-		VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
-		bSuccess = m_locale.AddCatalog(wxT("Enviro"));
+		VTLOG("Attempting to load the 'VTBuilder.mo' catalog for the current locale.\n");
+		bSuccess = m_locale.AddCatalog(wxT("VTBuilder"));
 		if (bSuccess)
 			VTLOG(" succeeded.\n");
 		else
