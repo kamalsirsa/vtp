@@ -108,7 +108,7 @@ void CProgressDlg::SetRange(int nLower,int nUpper)
 {
     m_nLower = nLower;
     m_nUpper = nUpper;
-    m_Progress.SetRange(nLower,nUpper);
+    m_Progress.SetRange32(nLower,nUpper);
 }
   
 int CProgressDlg::SetPos(int nPos)
