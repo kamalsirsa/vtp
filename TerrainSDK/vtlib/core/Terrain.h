@@ -267,8 +267,7 @@ protected:
 	int				m_iStructSet;
 	vtLodGrid		*m_pStructGrid;
 
-	vtMaterialArray	*m_pTerrMats1;	// for 'regular' terrain
-	vtMaterialArray	*m_pTerrMats2;	// for dynamic LOD terrain
+	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
 
 	// roads
 	vtGroup			*m_pRoadGroup;
@@ -301,8 +300,9 @@ protected:
 
 	Array<POIPtr>	m_PointsOfInterest;
 	bool			m_bShowPOI;
-
 	vtGroup			*m_pPOIGroup;
+
+	vtMaterialArray *m_pLabelMats;
 
 	// only used during initialization
 	vtElevationGrid	*m_pElevGrid;

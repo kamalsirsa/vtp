@@ -57,12 +57,14 @@ vtTerrainScene::vtTerrainScene()
 	horizon_color.Set(0.70f, 0.85f, 1.0f);
 	azimuth_color.Set(0.12f, 0.32f, 0.70f);
 
+	m_pTop = NULL;
 	m_pSkyDome = NULL;
 	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
 	m_pTime = NULL;
 	m_pSkyTrack = NULL;
 	m_pSunLight = NULL;
+	m_pAtmosphereGroup = NULL;
 }
 
 vtTerrainScene::~vtTerrainScene()
@@ -83,6 +85,13 @@ vtTerrainScene::~vtTerrainScene()
 	}
 	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
+
+	// get anything left at the top of the scene graph
+	if (m_pTop)
+		m_pTop->Destroy();
+
+	// free some statics
+	vtTerrain::m_DataPaths.Wipe();
 }
 
 void vtTerrainScene::_CreateSkydome(const StringArray &datapath)

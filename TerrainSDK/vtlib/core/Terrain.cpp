@@ -57,8 +57,7 @@ vtTerrain::vtTerrain()
 
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pDIB = NULL;
-	m_pTerrMats1 = NULL;
-	m_pTerrMats2 = NULL;
+	m_pTerrMats = NULL;
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
@@ -73,6 +72,9 @@ vtTerrain::vtTerrain()
 	m_pVegGrid = NULL;
 
 	m_bShowPOI = true;
+	m_pPOIGroup = NULL;
+	m_pLabelMats = NULL;
+
 	m_pPlantList = NULL;
 
 	m_pDynGeom = NULL;
@@ -146,11 +148,9 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
 		m_pDynGeomScale->Destroy();
 	}
-#ifndef VTLIB_PSM
-	delete m_pTerrMats1;
-	delete m_pTerrMats2;
-#endif
+
 	delete m_pTin;
+
 	if (m_pTerrainGroup != (vtGroup*) NULL)
 		m_pTerrainGroup->Destroy();
 }
@@ -243,8 +243,7 @@ void vtTerrain::create_textures()
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.m_eTexture;
 
-	m_pTerrMats1 = new vtMaterialArray();
-	m_pTerrMats2 = new vtMaterialArray();
+	m_pTerrMats = new vtMaterialArray();
 
 	float ambient, diffuse, emmisive;
 	if (m_Params.m_bPreLit)
@@ -279,12 +278,9 @@ void vtTerrain::create_textures()
 			bool result = m_pDIB->Read(texture_path);
 			if (! result)
 			{
-				m_pTerrMats1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-											 RGBf(0.2f, 0.2f, 0.2f),
-											 true, !m_Params.m_bPreLit);	// for shaded white
-				m_pTerrMats2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-											 RGBf(0.2f, 0.2f, 0.2f),
-											 true, !m_Params.m_bPreLit);	// for shaded white
+				m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+											RGBf(0.2f, 0.2f, 0.2f),
+											true, !m_Params.m_bPreLit);	// for shaded white
 				m_Params.m_eTexture = TE_NONE;
 			}
 			if (eTex == TE_SINGLE)
@@ -332,17 +328,14 @@ void vtTerrain::create_textures()
 	if (eTex == TE_TILED && m_pDIB)
 	{
 		CreateChoppedTextures(m_pElevGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
-		_CreateTiledMaterials2(m_pTerrMats2,
+		_CreateTiledMaterials2(m_pTerrMats,
 						 iTiles, m_Params.m_iTilesize, ambient, diffuse,
 						 emmisive);
 	}
 	if (eTex == TE_NONE || m_pDIB == NULL)	// none or failed to find texture
 	{
 		// no texture: create plain white material
-		m_pTerrMats1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
-									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, !m_Params.m_bPreLit);
-		m_pTerrMats2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+		m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
 									 true, !m_Params.m_bPreLit);
 		return;
@@ -357,18 +350,7 @@ void vtTerrain::create_textures()
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
-		m_pTerrMats1->AddTextureMaterial(m_pImage,
-			true,		// culling
-			!m_Params.m_bPreLit,	// lighting
-			false,		// transparent
-			false,		// additive
-			ambient, diffuse,
-			1.0f,		// alpha
-			emmisive,
-			false,		// texgen
-			false,		// clamp
-			m_Params.m_bMipmap);
-		m_pTerrMats2->AddTextureMaterial(m_pImage,
+		m_pTerrMats->AddTextureMaterial(m_pImage,
 			true,		// culling
 			!m_Params.m_bPreLit,	// lighting
 			false,		// transparent
@@ -466,7 +448,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 	m_pDynGeom->SetPixelError(m_Params.m_fPixelError);
 	m_pDynGeom->SetPolygonCount(m_Params.m_iTriCount);
-	m_pDynGeom->SetMaterials(m_pTerrMats2);
+	m_pDynGeom->SetMaterials(m_pTerrMats);
 
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform();
@@ -1076,8 +1058,12 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		return;
 	}
 
-	vtMaterialArray *pMats = new vtMaterialArray();
-	int index = pMats->AddRGBMaterial1(style.m_label_color, false, false);
+	if (!m_pLabelMats)
+		m_pLabelMats = new vtMaterialArray();
+
+	// TODO: it would be smarter to share materials of the same color
+	int index = m_pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
+
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
 	if (success)
@@ -1104,8 +1090,8 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 
 		vtGeom *geom = new vtGeom();
 		geom->SetName2(str);
-		geom->SetMaterials(pMats);
-		geom->AddText(text, index);
+		geom->SetMaterials(m_pLabelMats);
+		geom->AddTextMesh(text, index);
 
 		// TODO: add a billboarding transform so that the labels turn
 		// toward the viewer
@@ -1118,6 +1104,8 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		bb->SetTrans(p3);
 		pPlaceNames->AddChild(bb);
 	}
+	delete font;
+
 	VTLOG("Created %d text labels\n", features);
 }
 
