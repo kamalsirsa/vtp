@@ -1498,7 +1498,8 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 	// We support geometry for 2D and 3D polylines
 	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(&feat);
 	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(&feat);
-	if (!pSetLS2 && !pSetLS3)
+	const vtFeatureSetPolygon *pSetPoly = dynamic_cast<const vtFeatureSetPolygon*>(&feat);
+	if (!pSetLS2 && !pSetLS3 && !pSetPoly)
 		return;
 
 	// create container group
@@ -1517,16 +1518,16 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 	geom->SetMaterials(pMats);
 	pMats->Release();
 
-	int total = feat.NumTotalVertices();
+	int start, total = feat.NumTotalVertices();
 	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, total);
 
 	FPoint3 f3;
 	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
 	{
-		int start = mesh->GetNumVertices();
 		unsigned int size;
 		if (pSetLS2)
 		{
+			start = mesh->GetNumVertices();
 			const DLine2 &dline = pSetLS2->GetPolyLine(i);
 			size = dline.GetSize();
 			for (unsigned int j = 0; j < size; j++)
@@ -1534,9 +1535,11 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 				m_pHeightField->ConvertEarthToSurfacePoint(dline[j], f3);
 				mesh->AddVertex(f3);
 			}
+			mesh->AddStrip2(size, start);
 		}
 		else if (pSetLS3)
 		{
+			start = mesh->GetNumVertices();
 			const DLine3 &dline = pSetLS3->GetPolyLine(i);
 			size = dline.GetSize();
 			for (unsigned int j = 0; j < size; j++)
@@ -1544,8 +1547,24 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 				m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], f3);
 				mesh->AddVertex(f3);
 			}
+			mesh->AddStrip2(size, start);
 		}
-		mesh->AddStrip2(size, start);
+		else if (pSetPoly)
+		{
+			const DPolygon2 &dpoly = pSetPoly->GetPolygon(i);
+			for (unsigned int k = 0; k < dpoly.size(); k++)
+			{
+				start = mesh->GetNumVertices();
+				const DLine2 &dline = dpoly[k];
+				size = dline.GetSize();
+				for (unsigned int j = 0; j < size; j++)
+				{
+					m_pHeightField->ConvertEarthToSurfacePoint(dline[j], f3);
+					mesh->AddVertex(f3);
+				}
+				mesh->AddStrip2(size, start);
+			}
+		}
 	}
 	geom->AddMesh(mesh, 0);
 	mesh->Release();
