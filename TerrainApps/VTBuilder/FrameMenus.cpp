@@ -7,12 +7,13 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
+#include <wx/progdlg.h>
 
 #include "vtdata/vtDIB.h"
+#include "vtdata/Icosa.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"
@@ -37,6 +38,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
 	EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 	EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
+	EVT_MENU(ID_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
 	EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
 
 	EVT_MENU(ID_EDIT_DELETE, MainFrame::OnEditDelete)
@@ -176,11 +178,13 @@ END_EVENT_TABLE()
 
 void MainFrame::CreateMenus()
 {
-	// File (project) menu
+	// Project menu
 	fileMenu = new wxMenu;
 	fileMenu->Append(ID_FILE_NEW, "&New\tCtrl+N", "New Project");
 	fileMenu->Append(ID_FILE_OPEN, "Open Project\tCtrl+O", "Open Project");
 	fileMenu->Append(ID_FILE_SAVE, "Save Project\tCtrl+S", "Save Project As");
+	fileMenu->AppendSeparator();
+	fileMenu->Append(ID_DYMAX_TEXTURES, "Create Dymaxion Textures");
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_EXIT, "E&xit\tAlt-X", "Exit");
 
@@ -374,6 +378,116 @@ void MainFrame::OnProjectSave(wxCommandEvent &event)
 	wxString strPathName = saveFile.GetPath();
 
 	SaveProject(strPathName);
+}
+
+void MainFrame::OnDymaxTexture(wxCommandEvent &event)
+{
+	int i, x, y, face;
+	DPoint3 uvw;
+	uvw.z = 0.0f;
+	double u, v;
+	double lat, lon;
+
+	wxFileDialog dlg(this, "Choose input file", "", "", "*.bmp;*.png");
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxString choices[6];
+	choices[0] = "128";
+	choices[1] = "256";
+	choices[2] = "512";
+	choices[3] = "1024";
+	choices[4] = "2048";
+	choices[5] = "4096";
+	wxSingleChoiceDialog dlg2(this, "Size of each output tile?",
+		"Query", 6, choices);
+	if (dlg2.ShowModal() == wxID_CANCEL)
+		return;
+	int sel = dlg2.GetSelection();
+	int output_size = 1 << (7+sel);
+
+	wxTextEntryDialog dlg3(this, "Prefix for output filenames?", "Query");
+	if (dlg3.ShowModal() == wxID_CANCEL)
+		return;
+	wxString prefix = dlg3.GetValue();
+
+	wxImage::AddHandler(new wxPNGHandler);
+
+	wxProgressDialog prog("Processing", "Loading source bitmap..", 100);
+	prog.Show(TRUE);
+
+	// read texture
+	int input_x, input_y;
+	unsigned char r, g, b;
+	wxImage img;
+	if (!img.LoadFile(dlg.GetPath()))
+	{
+		wxMessageBox("File open failed");
+		return;
+	}
+	input_x = img.GetWidth();
+	input_y = img.GetHeight();
+
+	DymaxIcosa ico;
+	ico.InitIcosa();
+
+	int face_pairs[10][2] =
+	{
+		{ 1, 6 },
+		{ 2, 8 },
+		{ 3, 10 },
+		{ 4, 12 },
+		{ 5, 14 },
+		{ 7, 16 },
+		{ 9, 17 },
+		{ 11, 18 },
+		{ 13, 19 },
+		{ 15, 20 }
+	};
+
+	wxImage out[10];
+	for (i = 0; i < 10; i++)
+	{
+		out[i].Create(output_size, output_size);
+
+		wxString msg;
+		msg.Printf("Creating tile %d..", i+1);
+		prog.Update((i+1)*10, msg);
+
+		for (x = 0; x < output_size; x++)
+		{
+			for (y = 0; y < output_size; y++)
+			{
+				if (y < output_size-1-x)
+				{
+					face = face_pairs[i][0];
+					u = (double)x / output_size;
+					v = (double)y / output_size;
+				}
+				else
+				{
+					face = face_pairs[i][1];
+					u = (double)(output_size-1-x) / output_size;
+					v = (double)(output_size-1-y) / output_size;
+				}
+				uvw.x = u;
+				uvw.y = v;
+				ico.faceuv_to_latlon(face, uvw, lat, lon);
+
+				int source_x = lon / PI2 * input_x;
+				int source_y = lat / PI * input_y;
+
+				r = img.GetRed(source_x, source_y);
+				g = img.GetGreen(source_x, source_y);
+				b = img.GetBlue(source_x, source_y);
+
+				out[i].SetRGB(x, output_size-1-y, r, g, b);
+			}
+		}
+		wxString name;
+		name.Printf("%s%02d%02d.png", prefix, face_pairs[i][0], face_pairs[i][1]);
+		bool success = out[i].SaveFile(name, wxBITMAP_TYPE_PNG);
+	}
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event)
@@ -1483,7 +1597,7 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 
 
 //////////////////////////////
-// Utility Menu
+// Utilities Menu
 
 void MainFrame::OnTowerSelect(wxCommandEvent& event)
 {

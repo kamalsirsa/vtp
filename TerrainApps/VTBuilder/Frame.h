@@ -51,7 +51,7 @@ public:
 	void OnProjectNew(wxCommandEvent& event);
 	void OnProjectOpen(wxCommandEvent& event);
 	void OnProjectSave(wxCommandEvent& event);
-	
+	void OnDymaxTexture(wxCommandEvent &event);
 	void OnQuit(wxCommandEvent& event);
 
 	void OnEditDelete(wxCommandEvent& event);
