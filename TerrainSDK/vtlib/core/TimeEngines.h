@@ -41,8 +41,8 @@ protected:
 	void _UpdateTM();
 	void _InformTarget();
 
-	tm m_tm;
-	time_t m_time;
+	tm m_tm;			// always stores GMT
+	time_t m_time;		// always stores GMT
 	float m_fSeconds;
 	float m_fSpeed;
 	float m_last_time;
