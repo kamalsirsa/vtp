@@ -164,7 +164,17 @@ void vtGroup::CopyFrom(const vtGroup *rhs)
 	//  to the existing children.
 	for (int i = 0; i < rhs->GetNumChildren(); i++)
 	{
-		AddChild(rhs->GetChild(i));
+		vtNode *child = rhs->GetChild(i);
+		if (child)
+			AddChild(child);
+		else
+		{
+			// Might be an internal (native OSG) node - try to cope with that
+			const Group *rhsGroup = rhs->GetOsgGroup();
+			Node *pOsgChild = const_cast<Node *>( rhsGroup->getChild(i) );
+			if (pOsgChild)
+				m_pGroup->addChild(pOsgChild);
+		}
 	}
 }
 
