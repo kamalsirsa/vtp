@@ -52,7 +52,8 @@ bool vtBitmap::Allocate(int iXSize, int iYSize)
 	ScanlineFormat.bmiHeader.biWidth = iXSize;
 	ScanlineFormat.bmiHeader.biHeight = -iYSize;
 	ScanlineFormat.bmiHeader.biSizeImage = iXSize * iYSize;
-	m_iScanlineWidth = iXSize * 3;
+
+	m_iScanlineWidth = (((iXSize)*(24) + 31) / 32 * 4);
 
 	// The following sets the m_pScanline pointer, which points to a giant
 	// block of directly accesible image data!
