@@ -12,7 +12,8 @@
 #include "vtdata/shapelib/shapefil.h"
 
 #include "Globe.h"
-#include "Enviro.h"		// for logging debug message
+#include "vtdata/vtLog.h"	// for logging debug message
+#include "Enviro.h"			// for GetTerrainScene
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 {
@@ -309,7 +310,7 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 
 		vtString msg;
 		msg.Format("\t texture: %s\n", (const char *)fname);
-		g_App._Log(msg);
+		g_Log._Log(msg);
 
 		vtString fullpath = FindFileOnPaths(paths, (const char *)fname);
 
@@ -319,7 +320,7 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 						 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
 						 false, true, false);		// texgen, clamp, mipmap
 		msg.Format("\t\tindex: %d\n", index);
-		g_App._Log(msg);
+		g_Log._Log(msg);
 
 		if (index == -1)
 			m_globe_mat[pair] = m_red;
