@@ -18,8 +18,7 @@
 // This is done to save memory.  For a list of 16000+ buildings, this can
 //  save about 200MB of RAM.
 vtMaterialArray *vtBuilding3d::s_Materials = NULL;
-
-#define COLOR_SPREAD	216		// 216 color variations
+RGBf vtBuilding3d::s_Colors[COLOR_SPREAD];
 
 #define PLAIN_MAT_START		0	// start index for plain colors
 #define PLAIN_MAT_END		PLAIN_MAT_START + COLOR_SPREAD - 1
@@ -75,25 +74,29 @@ vtBuilding3d &vtBuilding3d::operator=(const vtBuilding &v)
 void vtBuilding3d::CreateSharedMaterials()
 {
 	vtString path;
-	int i, j, k, divisions;
-	float start, step;
+	int i, j, k;
 	RGBf color;
 	vtMaterial *pMat;
 	s_Materials = new vtMaterialArray();
 	s_Materials->SetMaxSize(500);
 
-	// create plain materials
-	divisions = 6;
-	start = .25f;
-	step = (1.0f-start)/(divisions-1);
+	int count = 0;
+	int divisions = 6;
+	float start = .25f;
+	float step = (1.0f-start)/(divisions-1);
 	for (i = 0; i < divisions; i++) {
 		for (j = 0; j < divisions; j++) {
 			for (k = 0; k < divisions; k++) {
-				color.Set(start+i*step, start+j*step, start+k*step);
-				pMat = makeMaterial(color, false);
-				s_Materials->AppendMaterial(pMat);
+				s_Colors[count++].Set(start+i*step, start+j*step, start+k*step);
 			}
 		}
+	}
+
+	// create plain materials
+	for (i = 0; i < COLOR_SPREAD; i++)
+	{
+		pMat = makeMaterial(s_Colors[i], false);
+		s_Materials->AppendMaterial(pMat);
 	}
 
 	//create siding materials (bright colors only)
@@ -102,16 +105,12 @@ void vtBuilding3d::CreateSharedMaterials()
 	divisions = 6;
 	start = .25f;
 	step = (1.0f-start)/(divisions-1);
-	for (i = 0; i < divisions; i++) {
-		for (j = 0; j < divisions; j++) {
-			for (k = 0; k < divisions; k++) {
-				color.Set(start+i*step, start+j*step, start+k*step);
-				pMat = makeMaterial(color, true);
-				pMat->SetTexture(pImageSiding);
-				pMat->SetClamp(false);
-				s_Materials->AppendMaterial(pMat);
-			}
-		}
+	for (i = 0; i < COLOR_SPREAD; i++)
+	{
+		pMat = makeMaterial(s_Colors[i], true);
+		pMat->SetTexture(pImageSiding);
+		pMat->SetClamp(false);
+		s_Materials->AppendMaterial(pMat);
 	}
 
 	// others are literal textures - use white for diffuse
@@ -163,37 +162,23 @@ void vtBuilding3d::CreateSharedMaterials()
 	// painted brick material: no brick color, can be colorized for any shade
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick_mono_256.bmp");
 	vtImage *pPaintedBrick = new vtImage(path);
-	divisions = 6;
-	start = .25f;
-	step = (1.0f-start)/(divisions-1);
-	for (i = 0; i < divisions; i++) {
-		for (j = 0; j < divisions; j++) {
-			for (k = 0; k < divisions; k++) {
-				color.Set(start+i*step, start+j*step, start+k*step);
-				pMat = makeMaterial(color, false);
-				pMat->SetTexture(pPaintedBrick);
-				pMat->SetClamp(false);
-				s_Materials->Append(pMat);
-			}
-		}
+	for (i = 0; i < COLOR_SPREAD; i++)
+	{
+		pMat = makeMaterial(s_Colors[i], false);
+		pMat->SetTexture(pPaintedBrick);
+		pMat->SetClamp(false);
+		s_Materials->Append(pMat);
 	}
 
 	// create window-wall materials (bright colors only)
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
 	vtImage *pImageWindowWall = new vtImage(path);
-	divisions = 6;
-	start = .25f;
-	step = (1.0f-start)/(divisions-1);
-	for (i = 0; i < divisions; i++) {
-		for (j = 0; j < divisions; j++) {
-			for (k = 0; k < divisions; k++) {
-				color.Set(start+i*step, start+j*step, start+k*step);
-				pMat = makeMaterial(color, true);
-				pMat->SetTexture(pImageWindowWall);
-				pMat->SetClamp(false);
-				s_Materials->AppendMaterial(pMat);
-			}
-		}
+	for (i = 0; i < COLOR_SPREAD; i++)
+	{
+		pMat = makeMaterial(s_Colors[i], true);
+		pMat->SetTexture(pImageWindowWall);
+		pMat->SetClamp(false);
+		s_Materials->AppendMaterial(pMat);
 	}
 
 	int total = s_Materials->GetSize();
@@ -927,22 +912,16 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 	}
 
 	// match the closest color.
-	vtMaterial *mat;
-	RGBf color;
-
 	float bestError = 1E8;
 	int bestMatch = -1;
 	float error;
 
-	for (int i = start; i <= end; i++)
+	for (int i = 0; i < COLOR_SPREAD; i++)
 	{
-		mat = s_Materials->GetAt(i);
-		color = mat->GetDiffuse();
-		error = ColorDiff(color, inputColor);
-
+		error = ColorDiff(s_Colors[i], inputColor);
 		if (error < bestError)
 		{
-			bestMatch  = i;
+			bestMatch  = start + i;
 			bestError = error;
 		}
 	}

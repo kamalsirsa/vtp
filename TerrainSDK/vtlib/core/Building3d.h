@@ -14,6 +14,8 @@
 
 class vtHeightField;
 
+#define COLOR_SPREAD	216		// 216 color variations
+
 typedef Array<FLine3 *> Footprints3d;
 // Overrides DestructItems to call constructors
 inline void Footprints3d::DestructItems(int first, int last)
@@ -69,6 +71,7 @@ protected:
 protected:
 	// material
 	static vtMaterialArray *s_Materials;
+	static RGBf s_Colors[COLOR_SPREAD];
 
 	// the geometry is composed of several meshes, one for each potential material used
 	Array<MatMesh>	m_Mesh;
