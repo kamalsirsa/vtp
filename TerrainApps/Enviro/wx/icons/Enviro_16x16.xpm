@@ -1,31 +1,28 @@
 /* XPM */
-static char *Enviro_16x16[] = {
-/* width height ncolors chars_per_pixel */
-"16 16 8 1",
-/* colors */
-"` c #00FF00",
-"a c #C0C0C0",
-"b c #008080",
-"c c #808080",
-"d c #800080",
-"e c #008000",
-"f c #808000",
-"g c #0000FF",
+static char *Enviro_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 6 1",
+"  c navy",
+". c blue",
+"X c #008000",
+"o c #008080",
+"O c #808080",
+"+ c #C0C0C0",
 /* pixels */
-"ggccbggggggggggg",
-"ggcaccgggggggggg",
-"gggaacaccggggggg",
-"gggaaaaaaccggggg",
-"ggcaaaaaacecgggg",
-"gcaaaaaaacb`cggg",
-"caaacacaacbccbgg",
-"gacaccccccccccgg",
-"gbcccccccccbcccb",
-"ggc`cceccccbcc`c",
-"ggbfcecccccccccg",
-"ggbffcc`cccccdgg",
-"ggcccc`cccgggggg",
-"ggccc`ccgggggggg",
-"ggdccccggggggggg",
-"ggggcagggggggggg"
+"..XXo...........",
+"..+XXXoo........",
+"...++XXXX.......",
+"..O+++++XX+.....",
+"..++++OOOXO+....",
+"+++OOOOO+OX+....",
+"++OOO+O++OX++o..",
+".+++OOOOOOXXXX..",
+".++OOO OXXXXX+Xo",
+".OOOO O+O+XXXXXo",
+"..OOOOOO++OXOO..",
+"..OOOOo+++O+....",
+"..OOOo++o.o.....",
+"..OOOOO.........",
+"...O+O..........",
+"....O .........."
 };
