@@ -467,6 +467,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_CDF);
 		AddType(filter, FSTRING_DEM);
 		AddType(filter, FSTRING_DTED);
+		AddType(filter, FSTRING_DXF);
 		AddType(filter, FSTRING_GTOPO);
 		AddType(filter, FSTRING_IMG);
 		AddType(filter, FSTRING_MEM);

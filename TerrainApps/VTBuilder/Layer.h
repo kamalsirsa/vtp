@@ -30,6 +30,7 @@
 #define FSTRING_DLG		_T("USGS DLG Files (*.dlg, *.opt)|*.dlg;*.opt|")
 #define FSTRING_DOQ		_T("USGS DOQ Files (*.jpg, *.doq, *.coq)|*.doq;*.coq;*.jpg|")
 #define FSTRING_DTED	_T("DTED Files (*.dte, *.dt0, *.dt1, *.dt2)|*.dte;*.dt0;*.dt1;*.dt2|")
+#define FSTRING_DXF		_T("DXF Files (*.dxf)|*.dxf|")
 #define FSTRING_GML		_T("GML Files (*.gml, *.xml)|*.gml;*.xml|")
 #define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr|")	
 #define FSTRING_HGT		_T("HGT SRTM Files (*.hgt)|*.hgt|")
