@@ -41,10 +41,8 @@ public:
 	// OSG-specific implementation
 	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
 
-#if WIN32
-	bool vtScene::HasWinInfo() { return m_bWinInfo; }
-	void vtScene::SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
-#endif
+	bool HasWinInfo() { return m_bWinInfo; }
+	void SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
 
 protected:
 	osg::ref_ptr<osg::Group>	m_pOsgSceneRoot;
