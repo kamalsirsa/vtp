@@ -77,9 +77,9 @@ bool ColorMap::Load(const char *fname)
 	return true;
 }
 
-//
-// Add a color entry, keeping the elevation values sorted.
-//
+/**
+ * Add a color entry, keeping the elevation values sorted.
+ */
 void ColorMap::Add(float elev, const RGBi &color)
 {
 	float next, previous = -1E9;
@@ -110,6 +110,13 @@ int ColorMap::Num() const
 	return m_elev.size();
 }
 
+/**
+ * Generate an array of interpolated colors from this ColorMap.
+ *
+ * \param table An empty table ready to fill with the interpolated colors.
+ * \param iTableSize The desired number of elements in the resulting table.
+ * \param fMin, fMax The elevation range to interpolate over.
+ */
 void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 							  float fMin, float fMax) const
 {
