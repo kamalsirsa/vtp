@@ -17,6 +17,7 @@
 #include "RawDlg.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtDIB.h"
+#include "vtdata/vtLog.h"
 
 #define SHADING_BIAS	200
 
@@ -461,7 +462,7 @@ void vtElevLayer::RenderBitmap()
 	m_pBitmap = new wxBitmap(m_pImage);
 	int ok = m_pBitmap->Ok();
 	if (!ok)
-		wxMessageBox(_T("Couldn't create bitmap, probably too large."));
+		DisplayAndLog("Couldn't create bitmap, probably too large.");
 
 	if (ok && has_invalid && m_bDoMask)
 	{
@@ -829,9 +830,11 @@ void vtElevLayer::SetProjection(const vtProjection &proj)
 		m_pTin->m_proj = proj;
 }
 
-bool vtElevLayer::ImportFromFile(wxString &strFileName,
+bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	void progress_callback(int am))
 {
+	VTLOG("ImportFromFile '%s'\n", strFileName.mb_str());
+
 	wxString strExt = strFileName.AfterLast('.');
 
 	// The first character in the file is useful for telling which format
@@ -940,7 +943,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	}
 	if (!success)
 	{
-		wxMessageBox(_T("Couldn't import data from that file."));
+		DisplayAndLog("Couldn't import data from that file.");
 	}
 
 	return success;
@@ -1009,12 +1012,10 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 
 	if (!bSilent)
 	{
-		wxString str;
 		if (after < before)
-			str.Printf(_T("Reduced vertices from %d to %d"), before, after);
+			DisplayAndLog("Reduced vertices from %d to %d", before, after);
 		else
-			str.Printf(_T("There are %d vertices, unable to merge any."), before);
-		wxMessageBox(str, _T("Merge Vertices"));
+			DisplayAndLog("There are %d vertices, unable to merge any.", before);
 	}
 }
 
