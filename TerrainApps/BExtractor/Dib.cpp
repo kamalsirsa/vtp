@@ -1,7 +1,6 @@
-////////////////////////////////////////////////////////////////
-// Copyright 1996 Microsoft Systems Journal. 
-// If this program works, it was written by Paul DiLascia.
-// If not, I don't know who wrote it.
+//
+// Parts of this module were derived from example code in the
+// 1996 Microsoft Systems Journal, by Paul DiLascia.
 //
 // CDib - Device Independent Bitmap.
 // This implementation draws bitmaps using normal Win32 API functions,
@@ -10,12 +9,10 @@
 //
 // Changes 8/99: added constructor to convert from DIB to CDib
 //
+
 #include "StdAfx.h"
 #include "BExtractor.h"
 #include "Dib.h"
-
-// GBM
-#include "GBMWrapper.h"
 
 // GDAL
 #include "ogr_spatialref.h"
@@ -41,6 +38,9 @@ CDib::CDib()
 	memset(&m_bm, 0, sizeof(m_bm));
 	m_hdd = NULL;
 	m_bmi = NULL;
+	m_data = NULL;
+	m_colors = NULL;
+	m_hbm = NULL;
 }
 
 CDib::~CDib()
@@ -51,28 +51,8 @@ CDib::~CDib()
 	m_bmi = NULL;
 }
 
-bool CDib::Setup(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd)
-{
-	m_hdd = hdd;
-
-	m_bmi = pGBM->GetDIBHeader();
-	m_colors = (RGBQUAD *) (m_bmi + 1);
-	m_stride = ( ((m_bmi->biWidth * m_bmi->biBitCount + 31)/32) * 4 );
-
-	m_hbm = CreateDIBSection(pDC->GetSafeHdc(),
-							(BITMAPINFO *) m_bmi, 
-							DIB_RGB_COLORS,
-							&m_data,
-							NULL, 
-							0);
-	//copy the data to the new location
-	memcpy(m_data,pGBM->m_data, pGBM->m_datasize);
-
-	BOOL result = Attach(m_hbm);
-	return true;
-}
-
-bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB hdd, RGBQUAD *colors)
+bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel,
+				 HDRAWDIB hdd, RGBQUAD *colors)
 {
 	m_hdd = hdd;
 
@@ -91,9 +71,9 @@ bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB h
 				m_colors[i] = colors[i];
 			else
 			{
-				m_colors[i].rgbBlue = i*4;
-				m_colors[i].rgbGreen = i*4;
-				m_colors[i].rgbRed = i*4;
+				m_colors[i].rgbBlue = i;
+				m_colors[i].rgbGreen = i;
+				m_colors[i].rgbRed = i;
 				m_colors[i].rgbReserved = 0;
 			}
 		}
@@ -112,16 +92,17 @@ bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB h
 	m_bmi->biClrImportant = m_bmi->biClrUsed;
 
 	m_hbm = CreateDIBSection(pDC->GetSafeHdc(),
-							(BITMAPINFO *) m_bmi, 
+							(BITMAPINFO *) m_bmi,
 							DIB_RGB_COLORS,
 							&m_data,
-							NULL, 
+							NULL,
 							0);
 	BOOL result = Attach(m_hbm);
 	return true;
 }
 
-bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
+bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
+				 void progress_callback(int))
 {
 	GDALColorEntry Ent;
 	int x, y, i;
@@ -135,15 +116,19 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 	int iRasterCount;
 	GDALRasterBand *pBand;
 	GDALColorTable *pTable;
-	char *pScanline = NULL;
-	int iScanlineWidth;
 	GDALRasterBand *pRed = NULL;
 	GDALRasterBand *pGreen = NULL;
 	GDALRasterBand *pBlue = NULL;
 	char *pRedline = NULL;
 	char *pGreenline = NULL;
 	char *pBlueline = NULL;
-	BITMAPINFO ScanlineFormat =
+	int iX, iY, flipY;
+	unsigned char *pGdalBuffer = NULL;
+	RGBQUAD q;
+
+	m_hdd = hdd;
+
+	BITMAPINFO BitmapInfo =
 	{
 		{
 			sizeof(BITMAPINFOHEADER), // Sizeof structure
@@ -164,21 +149,21 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 	// This all assumes MM_TEXT
 	try
 	{
-
 		iPixelWidth = pDataset->GetRasterXSize();
 		iPixelHeight = pDataset->GetRasterYSize();
 
-		ScanlineFormat.bmiHeader.biWidth = iPixelWidth;
-		// GDAL image data is top down i.e. it has its origin at the top left corner
-//		ScanlineFormat.bmiHeader.biHeight = -iPixelHeight;
-		// But this code want to use DrawDIB later on abd that cannot handle then
-		// so I swap it round
-		ScanlineFormat.bmiHeader.biHeight = iPixelHeight;
-		iScanlineWidth = ((iPixelWidth * ScanlineFormat.bmiHeader.biBitCount + 31)/32) * 4;
-		m_stride = iScanlineWidth;
-		ScanlineFormat.bmiHeader.biSizeImage = iScanlineWidth * iPixelHeight;
+		BitmapInfo.bmiHeader.biWidth = iPixelWidth;
+		BitmapInfo.bmiHeader.biHeight = iPixelHeight;
+		m_stride = ((iPixelWidth * BitmapInfo.bmiHeader.biBitCount + 31)/32) * 4;
+		BitmapInfo.bmiHeader.biSizeImage = m_stride * iPixelHeight;
 
-		if (NULL == (m_hbm = CreateDIBSection(pDC->GetSafeHdc(), &ScanlineFormat, DIB_RGB_COLORS, (void**)&pScanline, NULL, 0)))
+		m_hbm = CreateDIBSection(pDC->GetSafeHdc(), &BitmapInfo,
+			DIB_RGB_COLORS, &m_data, NULL, 0);
+
+		// temporarily point to the BMI header of the drawdib
+		m_bmi = &BitmapInfo.bmiHeader;
+
+		if (NULL == m_hbm)
 			throw "Cannot create bitmap section";
 		if (!Attach(m_hbm))
 			throw "Cannot attach bitmap section";
@@ -202,25 +187,26 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
 
-#ifdef DONTUSESECTION
-			if (NULL == (pScanline = new char[iScanlineWidth * yBlockSize]))
-				throw "Couldnt allocate scan line.";
-#endif
+			if (NULL == (pGdalBuffer = new unsigned char[xBlockSize * yBlockSize]))
+				throw "Couldnt allocate buffer for GDAL.";
 
 			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
 			// Read the data
 			// Convert to rgb and write to image
 			pBand->FlushBlock(0, 0); // Bug in gdal
-			for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+			for (iyBlock = 0; iyBlock < nyBlocks; iyBlock++)
 			{
+				if (progress_callback != NULL)
+					progress_callback(iyBlock * 100 / nyBlocks);
+
 				y = iyBlock * yBlockSize;
-				for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+				for (ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
 				{
 					x = ixBlock * xBlockSize;
-					Err = pBand->ReadBlock(ixBlock, iyBlock, pScanline);
+					Err = pBand->ReadBlock(ixBlock, iyBlock, pGdalBuffer);
 					if (Err != CE_None)
-						throw "Cannot read data.";
+						throw "Problem reading the image data.";
 
 					// Compute the portion of the block that is valid
 					// for partial edge blocks.
@@ -234,36 +220,35 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 					else
 						nyValid = yBlockSize;
 
-					for( int iY = 0; iY < nyValid; iY++ )
+					for( iY = 0; iY < nyValid; iY++ )
 					{
-						for( int iX = 0; iX < nxValid; iX++ )
+						flipY = iPixelHeight - 1 - iY;
+						for( iX = 0; iX < nxValid; iX++ )
 						{
-							pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
-#ifdef DONTUSESECTION
-							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3)) = (char)Ent.c3;
-							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 1) = (char)Ent.c2;
-							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 2) = (char)Ent.c1;
-#else
-							// Reverse the order for DrawDIB
-							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3)) = (char)Ent.c3;
-							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 1) = (char)Ent.c2;
-							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 2) = (char)Ent.c1;
-#endif
+							pTable->GetColorEntryAsRGB(pGdalBuffer[iY * xBlockSize + iX], &Ent);
+							// DIBs are bottom-up, not top-down
+							q.rgbRed = (unsigned char) Ent.c1;
+							q.rgbGreen = (unsigned char) Ent.c2;
+							q.rgbBlue = (unsigned char) Ent.c3;
+							SetPixel24(x + iX, flipY - y, q);
 						}
 					}
 				}
-				// There really is no such thing as a Device Independant Bitmap (DIB)!!!!
-				// Only a device independant data format
-				// This function takes data from a buffer in which the data is stored in DIB format
-				// as specified by the BITMAPINFO structure and copies it into a device dependant bitmap (DDB)
-				// in whatever internal format that is using.
-				// The third parameter is the starting scanline in the TARGET DDB!!! that the data is to be written
-				// to, this is always a bottom up co-ordinate (0 = bottom). The fourth parameter is the number of scanlines
-				// contained in the SOURCE buffer and to be written to the target. The source buffer maybe organised top
-				// down or bottom up depending on the setting in the BITMAPINFO structure. This function will sort it out.
-				// This means that you can select which whole scanlines to set in the target but not parts of scanlines
 #ifdef DONTUSESECTION
-				if (!SetDIBits(m_MemoryDC, m_Bitmap, m_iPixelHeight - y - 1, nyValid, pScanline, &ScanlineFormat, DIB_RGB_COLORS))
+				// This function takes data from a buffer in which the data is
+				// stored in DIB format as specified by the BITMAPINFO structure
+				// and copies it into a device dependant bitmap (DDB) in
+				// whatever internal format that is using.
+				// The third parameter is the starting scanline in the TARGET
+				// DDB!!! that the data is to be written to, this is always a
+				// bottom up co-ordinate (0 = bottom). The fourth parameter is
+				// the number of scanlines contained in the SOURCE buffer and
+				// to be written to the target. The source buffer maybe organised
+				// top down or bottom up depending on the setting in the
+				// BITMAPINFO structure. This function will sort it out. This
+				// means that you can select which whole scanlines to set in the target but not parts of scanlines
+				if (!SetDIBits(m_MemoryDC, m_Bitmap, m_iPixelHeight - y - 1,
+							   nyValid, m_data, &BitmapInfo, DIB_RGB_COLORS))
 					throw "SetDIBits failed.";
 #endif
 			}
@@ -297,11 +282,6 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 			if (xBlockSize % iPixelWidth != 0)
 				throw "Cannot handle this block size."; // TODO Handle odd block sizes
 
-#ifdef DONTUSESECTION
-			if (NULL == (pScanline = new char[iScanlineWidth * yBlockSize]))
-				throw "Couldnt allocate scan line.";
-#endif
-
 			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
 
@@ -316,11 +296,10 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 			if (NULL == (pBlueline = new char[xBlockSize * yBlockSize]))
 				throw "Cannot allocate Blue Scanline buffer.";
 
-
-			for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+			for (iyBlock = 0; iyBlock < nyBlocks; iyBlock++)
 			{
 				y = iyBlock * yBlockSize;
-				for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+				for (ixBlock = 0; ixBlock < nxBlocks; ixBlock++)
 				{
 					x = ixBlock * xBlockSize;
 					Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
@@ -350,20 +329,23 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 						for( int iX = 0; iX < nxValid; iX++ )
 						{
 #ifdef DONTUSESECTION
-							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
-							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
-							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
+							*(m_data + (iY * m_stride) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
+							*(m_data + (iY * m_stride) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
+							*(m_data + (iY * m_stride) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
 #else
-							// Reverse the order for DrawDIB
-							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
-							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
-							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
+							// Reverse the order for a DIB
+							q.rgbRed = pRedline[iY * xBlockSize + iX];
+							q.rgbGreen = pGreenline[iY * xBlockSize + iX];
+							q.rgbBlue = pBlueline[iY * xBlockSize + iX];
+							SetPixel24(x + iX, iPixelHeight - 1 - iY - y, q);
+//							*(m_data + ((iPixelHeight - 1 - iY - y) * m_stride) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
+//							*(m_data + ((iPixelHeight - 1 - iY - y) * m_stride) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
+//							*(m_data + ((iPixelHeight - 1 - iY - y) * m_stride) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
 #endif
 						}
 					}
 				}
-				// There really is no such thing as a Device Independant Bitmap (DIB)!!!!
-				// Only a device independant data format
+#ifdef DONTUSESECTION
 				// This function takes data from a buffer in which the data is stored in DIB format
 				// as specified by the BITMAPINFO structure and copies it into a device dependant bitmap (DDB)
 				// in whatever internal format that is using.
@@ -372,8 +354,7 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 				// contained in the SOURCE buffer and to be written to the target. The source buffer maybe organised top
 				// down or bottom up depending on the setting in the BITMAPINFO structure. This function will sort it out.
 				// This means that you can select which whole scanlines to set in the target but not parts of scanlines
-#ifdef DONTUSESECTION
-				if (!SetDIBits(m_MemoryDC, m_Bitmap, iPixelHeight - y - 1, nyValid, pScanline, &ScanlineFormat, DIB_RGB_COLORS))
+				if (!SetDIBits(m_MemoryDC, m_Bitmap, iPixelHeight - y - 1, nyValid, m_data, &BitmapInfo, DIB_RGB_COLORS))
 					throw "SetDIBits failed.";
 #endif
 			}
@@ -398,17 +379,13 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 		return false;
 	}
 
-	m_data = pScanline;
-
 	// Ugly !!
 	void *buf = malloc(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
 	m_bmi = (BITMAPINFOHEADER *)buf;
-	*m_bmi = ScanlineFormat.bmiHeader;
+	*m_bmi = BitmapInfo.bmiHeader;
 
-#ifdef DONTUSESECTION
-	if (NULL != pScanline)
-		delete pScanline;
-#endif
+	if (NULL != pGdalBuffer)
+		delete pGdalBuffer;
 	if (NULL != pRedline)
 		delete pRedline;
 	if (NULL != pGreenline)
@@ -501,11 +478,14 @@ BOOL DrawBitmap(CDC& dc, CBitmap* pBitmap,
 	// Use StretchBlt if size is different.
 	//
 	BOOL bRet = FALSE;
-	if (rcDst->Size()==rcSrc->Size()) {
-		bRet = dc.BitBlt(rcDst->left, rcDst->top, 
+	if (rcDst->Size()==rcSrc->Size())
+	{
+		bRet = dc.BitBlt(rcDst->left, rcDst->top,
 			rcDst->Width(), rcDst->Height(),
 			&memdc, rcSrc->left, rcSrc->top, SRCCOPY);
-	} else {
+	}
+	else
+	{
 		dc.SetStretchBltMode(COLORONCOLOR);
 		bRet = dc.StretchBlt(rcDst->left, rcDst->top, rcDst->Width(),
 			rcDst->Height(), &memdc, rcSrc->left, rcSrc->top, rcSrc->Width(),
@@ -539,9 +519,9 @@ BOOL CDib::Draw(CDC& dc, const CRect* rcDst, const CRect* rcSrc,
 	CPalette* pOldPal = dc.SelectPalette(pPal, !bForeground);
 	dc.RealizePalette();
 
-
 	BOOL bRet = FALSE;
-	if (bUseDrawDib) {
+	if (bUseDrawDib)
+	{
 		// Compute rectangles where NULL specified
 		//
 		CRect rc(0,0,-1,-1);	// default for DrawDibDraw
@@ -584,11 +564,12 @@ void CDib::GetDIBFromSection()
 	char buf[sizeof(BITMAPINFOHEADER) + MAXPALCOLORS*sizeof(RGBQUAD)];
 	BITMAPINFOHEADER& bmih = *(BITMAPINFOHEADER*)buf;
 	RGBQUAD* colors = (RGBQUAD*)(m_bmi+1);
-	// N.B. There is a known bug in GetObject it always returns a positive bitmap height
-	// even if the bitmap is top down see MSKB article Q186586
-	// but because drawdib cannot handle negatives it doesnt matter
+	// N.B. There is a known bug in GetObject it always returns a positive
+	// bitmap height, even if the bitmap is top down see MSKB article Q186586
+	// but because drawdib cannot handle negatives it doesn't matter
 	memcpy(m_bmi, &ds.dsBmih, sizeof(BITMAPINFOHEADER));
-	GetColorTable(m_colors, MAXPALCOLORS);
+	if (m_bmi->biBitCount == 8)
+		GetColorTable(m_colors, MAXPALCOLORS);
 }
 
 #define PALVERSION 0x300	// magic number for LOGPALETTE
@@ -597,7 +578,7 @@ void CDib::GetDIBFromSection()
 // Create the palette. Use halftone palette for hi-color bitmaps.
 //
 BOOL CDib::CreatePalette(CPalette& pal)
-{ 
+{
 	// should not already have palette
 	ASSERT(pal.m_hObject==NULL);
 
@@ -606,7 +587,7 @@ BOOL CDib::CreatePalette(CPalette& pal)
 	UINT nColors = GetColorTable(colors, MAXPALCOLORS);
 	if (nColors > 0)
 	{
-		// Allocate memory for logical palette 
+		// Allocate memory for logical palette
 		int len = sizeof(LOGPALETTE) + sizeof(PALETTEENTRY) * nColors;
 		LOGPALETTE* pLogPal = (LOGPALETTE*)new char[len];
 		if (!pLogPal)
@@ -616,7 +597,7 @@ BOOL CDib::CreatePalette(CPalette& pal)
 		pLogPal->palVersion = PALVERSION;
 		pLogPal->palNumEntries = nColors;
 
-		// copy color entries 
+		// copy color entries
 		for (UINT i = 0; i < nColors; i++)
 		{
 			pLogPal->palPalEntry[i].peRed   = colors[i].rgbRed;
@@ -692,7 +673,7 @@ byte CDib::GetPixel8(int x, int y)
 
 ///////////////////////////////////////////
 
-CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd)
+CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, void progress_callback(int))
 {
 	pDib->GetDIBFromSection();
 
@@ -717,6 +698,8 @@ CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd)
 
 	for (y = 0; y < size.cy; y++)
 	{
+		if (progress_callback != NULL)
+			progress_callback(y * 100 / size.cy);
 		for (x = 0; x < size.cx; x++)
 		{
 			pDib->GetPixel24(x, y, rgb);
