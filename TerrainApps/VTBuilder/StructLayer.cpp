@@ -54,11 +54,26 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 
 	GetExtents(rect);
 
-	// expand by 10 meters (TODO: is this correct if units are degrees? No!)
-	rect.left -= 10.0f;
-	rect.right += 10.0f;
-	rect.bottom -= 10.0f;
-	rect.top += 10.0f;
+	// expand by 10 meters (converted to appropriate units)
+	DPoint2 offset(10, 10);
+	if (m_proj.IsGeographic())
+	{
+		DPoint2 center;
+		rect.GetCenter(center);
+		double fMetersPerLongitude = EstimateDegreesToMeters(center.y);
+		offset.x /= fMetersPerLongitude;
+		offset.y /= METERS_PER_LATITUDE;
+	}
+	else
+	{
+		double fMetersPerUnit = GetMetersPerUnit(m_proj.GetUnits());
+		offset.x /= fMetersPerUnit;
+		offset.y /= fMetersPerUnit;
+	}
+	rect.left -= offset.x;
+	rect.right += offset.x;
+	rect.bottom -= offset.y;
+	rect.top += offset.y;
 
 	return true;
 }
