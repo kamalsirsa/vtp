@@ -260,6 +260,9 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
 								   bool bRefresh, bool bWarn)
 {
+	VTLOG("ImportDataFromFile '%s', type '%s'\n", strFileName.mb_str(),
+		GetLayerTypeName(ltype).mb_str());
+
 	// check to see if the file is readable
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
 	if (!fp)

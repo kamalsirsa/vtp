@@ -441,9 +441,11 @@ bool vtImageLayer::LoadFromGDAL()
 			wxString2 msg = _("File lacks a projection.  Would you like to specify one?\n");
 			msg += _("Yes - specify projection\n");
 			msg += _("No - use current projection\n");
+			VTLOG(msg.mb_str());
 			int res = wxMessageBox(msg, _("Image Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
+				VTLOG("Yes.\n");
 				GetMainFrame()->GetProjection(m_proj);
 				Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
 				dlg.SetProjection(m_proj);
@@ -454,6 +456,7 @@ bool vtImageLayer::LoadFromGDAL()
 			}
 			if (res == wxNO)
 			{
+				VTLOG("No.\n");
 				GetMainFrame()->GetProjection(m_proj);
 			}
 			if (res == wxCANCEL)
@@ -487,14 +490,15 @@ bool vtImageLayer::LoadFromGDAL()
 		}
 		else
 		{
-			VTLOG("Dataset does not contain a valid affine transform.\n");
 			// No extents.
 			m_Extents.Empty();
 			wxString2 msg = _("File lacks geographic location (extents).  ");
 			msg += _("Would you like to specify extents?\n");
+			VTLOG(msg.mb_str());
 			int res = wxMessageBox(msg, _("Image Import"), wxYES | wxCANCEL);
 			if (res == wxYES)
 			{
+				VTLOG("Yes.\n");
 				DRECT ext;
 #ifdef ENVIRON
 				ext = GetMainFrame()->m_area;
