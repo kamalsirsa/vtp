@@ -208,7 +208,7 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bStartEarth = (opt.m_bEarthView == TRUE);
 	m_bStartTerrain = !opt.m_bEarthView;
 	m_strImage = wxString::FromAscii((const char *)opt.m_strImage);
-	m_strTName = wxString::FromAscii((const char *)opt.m_strInitTerrain);
+	m_strTName.from_utf8(opt.m_strInitTerrain);
 	m_bFullscreen = (opt.m_bFullscreen == TRUE);
 	m_bHtmlpane = (opt.m_bHtmlpane == TRUE);
 	m_bFloatingToolbar = (opt.m_bFloatingToolbar == TRUE);
@@ -222,7 +222,7 @@ void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	opt.m_bEarthView = (m_bStartEarth == 1);
 	opt.m_strImage = m_strImage.mb_str();
-	opt.m_strInitTerrain = m_strTName.mb_str();
+	opt.m_strInitTerrain = m_strTName.to_utf8();
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
@@ -304,7 +304,7 @@ void StartupDlg::OnSelectDataPath( wxCommandEvent &event )
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
-	const char *name = m_strTName.mb_str();
+	const char *name = m_strTName.to_utf8();
 	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(name);
 	if (pTerr)
 		EditParameters(pTerr->GetParamFile());
@@ -350,12 +350,12 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	ShowOGLInfo(true);
 #endif
 
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.mb_str());
+/*	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.to_utf8());
 	if (pTerr)
 		m_strTName = wxString::FromAscii(pTerr->GetName());
 	else
 		m_strTName = _T("none");
-
+*/
 	m_pTName = GetTname();
 	m_pTSelect = GetTselect();
 	m_psImage = GetImagetext();
