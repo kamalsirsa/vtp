@@ -1156,7 +1156,7 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 			vtStructInstance *inst = str->GetInstance();
 			if (inst != NULL && (event.flags & VT_SHIFT) != 0)
 			{
-				m_StartRotation = inst->m_fRotation;
+				m_StartRotation = inst->GetRotation();
 				m_bRotating = true;
 			}
 			else
@@ -1250,7 +1250,7 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 				vtStructInstance *inst = structures->GetAt(sel)->GetInstance();
 				vtStructInstance3d *str3d = structures->GetInstance(sel);
 
-				inst->m_fRotation = m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f;
+				inst->SetRotation(m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f);
 				str3d->UpdateTransform(pTerr->GetHeightField());
 			}
 		}
@@ -1511,7 +1511,7 @@ void Enviro::PlantInstance()
 	vtStructureArray3d *structs = pTerr->GetStructures();
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
 	inst->CopyTagsFrom(*tags);
-	inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
+	inst->SetPoint(DPoint2(m_EarthPos.x, m_EarthPos.y));
 	VTLOG("  at %.7g, %.7g: ", m_EarthPos.x, m_EarthPos.y);
 
 	int index = structs->Append(inst);
@@ -1645,7 +1645,7 @@ vtString Enviro::GetStatusString(int which)
 					// Avoid trouble with '.' and ',' in Europe
 					LocaleWrap normal_numbers(LC_NUMERIC, "C");
 					// Report true elevation, without vertical exaggeration
-					exag = GetCurrentTerrain()->GetParams().GetValueFloat(STR_VERTICALEXAG);
+					exag = GetCurrentTerrain()->GetVerticalExag();
 				}
 				epos.z /= exag;
 				str.Format("Elev: %.1f", epos.z);

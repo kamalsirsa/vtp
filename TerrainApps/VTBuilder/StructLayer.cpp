@@ -131,17 +131,17 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		if (inst)
 		{
 			wxPoint origin;
-			pView->screen(inst->m_p, origin);
+			pView->screen(inst->GetPoint(), origin);
 
 			pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
 			pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
 
-			if (inst->m_pItem)
+			if (inst->GetItem())
 			{
-				FRECT ext = inst->m_pItem->m_extents;
+				FRECT ext = inst->GetItem()->m_extents;
 				if (!ext.IsEmpty())
 				{
-					pView->screen(inst->m_p + ext.Center(), origin);
+					pView->screen(inst->GetPoint() + ext.Center(), origin);
 					int radius = pView->sdx(ext.Width() / 2);
 					pDC->DrawCircle(origin, radius);
 				}
@@ -302,9 +302,9 @@ bool vtStructureLayer::TransformCoords(vtProjection &proj)
 		vtStructInstance *inst = str->GetInstance();
 		if (inst)
 		{
-			loc = inst->m_p;
+			loc = inst->GetPoint();
 			trans->Transform(1, &loc.x, &loc.y);
-			inst->m_p = loc;
+			inst->SetPoint(loc);
 		}
 	}
 
@@ -724,7 +724,7 @@ void vtStructureLayer::OnLeftDownAddInstance(BuilderView *pView, UIContext &ui)
 
 	vtStructInstance *inst = AddNewInstance();
 
-	inst->m_p = ui.m_DownLocation;
+	inst->SetPoint(ui.m_DownLocation);
 
 	vtTagArray *tags = dlg->GetTagArray();
 	inst->CopyTagsFrom(*tags);

@@ -991,7 +991,7 @@ void MainFrame::ResolveInstanceItem(vtStructInstance *inst)
 		vtItem *item = m_contents[j]->FindItemByName(name);
 		if (item)
 		{
-			inst->m_pItem = item;
+			inst->SetItem(item);
 			break;
 		}
 	}
