@@ -20,14 +20,6 @@ enum RoofType
 	ROOF_FLAT, ROOF_SHED, ROOF_GABLE, ROOF_HIP, NUM_ROOFTYPES
 };
 
-enum BldShape
-{
-	SHAPE_RECTANGLE,
-	SHAPE_CIRCLE,
-	SHAPE_POLY,
-	NUM_BLDSHAPES
-};
-
 enum BldColor
 {
 	BLD_BASIC,
@@ -67,11 +59,9 @@ public:
 	void SetWalls(int n);
 
 	Array<vtWall *> m_Wall;
-	int		m_iStories;
-	float	m_fHeightPerStory;
 
-	// footprint of these stories
-	DLine2		m_Footprint;
+	int		m_iStories;
+	float	m_fStoryHeight;
 };
 
 class vtBuilding
@@ -84,39 +74,29 @@ public:
 	vtBuilding &operator=(const vtBuilding &v);
 
 	// center of the building
-	void SetLocation(double x, double y);
+	void SetLocation(double x, double y) { m_EarthPos.Set(x, y); }
 	void SetLocation(const DPoint2 &p) { m_EarthPos = p; }
 	DPoint2 GetLocation() const { return m_EarthPos; }
 
-	//depth will be set to the greater of the 2 values.
-	void SetRectangle(float fWidth, float fDepth);
-	void GetRectangle(float &fWidth, float &fDepth) const
-	{
-		fWidth = m_fWidth;
-		fDepth = m_fDepth;
-	}
-	void SetRadius(float fRad) { m_fRadius = fRad; }
+	void SetRectangle(float fWidth, float fDepth, float fRotation = 0.0f);
+	bool GetRectangle(float &fWidth, float &fDepth) const;
+
+	void SetRadius(float fRad);
 	float GetRadius() const;
 
 	void SetFootprint(DLine2 &dl);
 	DLine2 &GetFootprint() { return m_Footprint; }
 
 	void SetColor(BldColor which, RGBi col);
-	RGBi GetColor(BldColor which);
-
-	void SetRotation(float fRadians);
-	void GetRotation(float &fRadians) const { fRadians = m_fRotation; }
-
-	void SetShape(BldShape s) { m_BldShape = s; }
-	BldShape GetShape() { return m_BldShape; }
+	RGBi GetColor(BldColor which) const;
 
 	void SetStories(int i);
-	int GetStories() const { return m_Story.GetSize(); }
+	int GetStories() const;
 
-	bool GetExtents(DRECT &rect);
+	bool GetExtents(DRECT &rect) const;
 	void SetCenterFromPoly();
 	void Offset(const DPoint2 &delta);
-	void RectToPoly();
+	void RectToPoly(float fWidth, float fDepth, float fRotation);
 
 	void WriteXML(FILE *fp, bool bDegrees);
 
@@ -133,20 +113,10 @@ protected:
 	RGBi		m_MouldingColor;	// color of trim
 
 	// information about each story
-	Array<vtLevel *> m_Story;
+	Array<vtLevel *> m_Levels;
 
 	// fields that affect placement
 	DPoint2		m_EarthPos;			// location of building center
-	float		m_fRotation;		// in Radians
-
-	// fields that affect size
-	BldShape	m_BldShape;
-
-	// size of base (for rectanguloid buildings)
-	float		m_fWidth, m_fDepth;	// in meters
-
-	// radius (for cylindroid buildings)
-	float		m_fRadius;
 
 	// footprint (for polygonal buildings)
 	DLine2		m_Footprint;

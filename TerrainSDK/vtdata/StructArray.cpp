@@ -106,17 +106,18 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	int points;
 	char key[80];
 	RGBi color;
+	float fRotation;
 
 	fscanf(fp, "buildings %d\n", &count);
 	for (i = 0; i < count; i++)	//for each building
 	{
 		vtBuilding *bld = NewBuilding();
 
-		BldShape type;
+		int type;
 		fscanf(fp, "type %d\n", &type);
-		bld->SetShape((BldShape) type);
 
 		int stories = 1;
+		fRotation = 0.0f;
 		while (1)
 		{
 			long start = ftell(fp);
@@ -138,9 +139,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			}
 			else if (!strcmp(key, "rot"))
 			{
-				float rot;
-				fscanf(fp, "%f\n", &rot);
-				bld->SetRotation(rot);
+				fscanf(fp, "%f\n", &fRotation);
 			}
 			else if (!strcmp(key, "stories"))
 			{
@@ -168,7 +167,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			{
 				float w, d;
 				fscanf(fp, "%f %f\n", &w, &d);
-				bld->SetRectangle(w, d);
+				bld->SetRectangle(w, d, fRotation);
 			}
 			else if (!strcmp(key, "radius"))
 			{
@@ -320,14 +319,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 			vtBuilding *bld = NewBuilding();
 			if (nShapeType == SHPT_POINT)
 			{
-				bld->SetShape(SHAPE_RECTANGLE);
 				point.x = psShape->padfX[0];
 				point.y = psShape->padfY[0];
 				bld->SetLocation(point);
+				bld->SetRectangle(10, 10);	// default size
 			}
 			if (nShapeType == SHPT_POLYGON)
 			{
-				bld->SetShape(SHAPE_POLY);
 				DLine2 foot;
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
@@ -459,41 +457,19 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 		if (str->GetType() != ST_BUILDING)
 			continue;
 		vtBuilding *bld = str->GetBuilding();
-		switch (bld->GetShape())
-		{
-		case SHAPE_RECTANGLE:
-			if (bld->GetFootprint().GetSize() == 0)
-				bld->RectToPoly();
 
-		case SHAPE_POLY:
-			{
-				DLine2 &dl = bld->GetFootprint();
-				for (j = 0; j < dl.GetSize(); j++)
-				{
-					dist = (dl.GetAt(j) - point).Length();
-					if (dist > error)
-						continue;
-					if (dist < closest)
-					{
-						building = i;
-						corner = j;
-						closest = dist;
-					}
-				}
-			}
-			break;
-		case SHAPE_CIRCLE:
-			loc = bld->GetLocation();
-			dist = fabs((point - loc).Length() - bld->GetRadius());
+		DLine2 &dl = bld->GetFootprint();
+		for (j = 0; j < dl.GetSize(); j++)
+		{
+			dist = (dl.GetAt(j) - point).Length();
 			if (dist > error)
 				continue;
 			if (dist < closest)
 			{
 				building = i;
-				corner = 0;
+				corner = j;
 				closest = dist;
 			}
-			break;
 		}
 	}
 	return (building != -1);
@@ -915,8 +891,6 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 	{
 		if (string(name) == (string)"rect")
 		{
-			bld->SetShape(SHAPE_RECTANGLE);
-
 			DPoint2 loc;
 			FPoint2 size2;
 			const char *ref_point = atts.getValue("ref_point");
@@ -925,22 +899,21 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				sscanf(ref_point, "%lf %lf", &loc.x, &loc.y);
 				bld->SetLocation(loc);
 			}
+			float fRotation = 0.0f;
+			const char *rot = atts.getValue("rot");
+			if (rot)
+			{
+				fRotation = (float)atof(rot);
+			}
 			const char *size = atts.getValue("size");
 			if (size)
 			{
 				sscanf(size, "%f, %f", &size2.x, &size2.y);
-				bld->SetRectangle(size2.x, size2.y);
-			}
-			const char *rot = atts.getValue("rot");
-			if (rot)
-			{
-				bld->SetRotation((float)atof(rot));
+				bld->SetRectangle(size2.x, size2.y, fRotation);
 			}
 		}
 		if (string(name) == (string)"circle")
 		{
-			bld->SetShape(SHAPE_CIRCLE);
-
 			DPoint2 loc;
 			const char *ref_point = atts.getValue("ref_point");
 			if (ref_point)
@@ -960,7 +933,6 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *num = atts.getValue("num");
 			points = atoi(num);
 
-			bld->SetShape(SHAPE_POLY);
 			DLine2 &foot = bld->GetFootprint();
 
 			DPoint2 loc;

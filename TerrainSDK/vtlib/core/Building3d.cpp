@@ -38,8 +38,8 @@ vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 vtMaterial *makeMaterial(RGBf &color, bool culling)
 {
 	vtMaterial *pMat = new vtMaterial();
-	pMat->SetDiffuse1(color);
-	pMat->SetAmbient1(color/4.0f);
+	pMat->SetDiffuse1(color * 0.7f);
+	pMat->SetAmbient1(color * 0.4f);
 	pMat->SetSpecular2(0.0f);
 	pMat->SetCulling(culling);
 	pMat->SetLighting(true);
@@ -108,6 +108,7 @@ void vtBuilding3d::CreateSharedMaterials()
 				color.Set(start+i*step, start+j*step, start+k*step);
 				pMat = makeMaterial(color, true);
 				pMat->SetTexture(pImageSiding);
+				pMat->SetClamp(false);
 				s_Materials->AppendMaterial(pMat);
 			}
 		}
@@ -174,7 +175,6 @@ void vtBuilding3d::FindMaterialIndices()
 #define DOOR_WIDTH		1.0f
 #define WINDOW_WIDTH	1.3f
 #define MOULDING_WIDTH	0.2f
-#define CEILING_HEIGHT	2.8f
 #define DOOR_HEIGHT		2.3f
 #define WINDOW_HEIGHT	1.3f
 #define WINDOW_BOTTOM	1.0f
@@ -184,12 +184,6 @@ void vtBuilding3d::DetermineBaseCorners(vtHeightField *pHeightField,
 {
 	int i;
 
-	switch (m_BldShape)
-	{
-	case SHAPE_RECTANGLE:
-		RectToPoly();
-		break;
-	}
 	int corners = m_Footprint.GetSize();
 
 	// find where the corner points are on the ground
@@ -249,6 +243,17 @@ void vtBuilding3d::DetermineBaseCorners(vtHeightField *pHeightField,
 	}
 }
 
+float vtBuilding3d::GetHeightOfStories()
+{
+	float height = 0.0f;
+
+	int levs = m_Levels.GetSize();
+	for (int i = 0; i < levs; i++)
+		height += m_Levels[i]->m_iStories * m_Levels[i]->m_fStoryHeight;
+
+	return height;
+}
+
 
 /**
  * Creates the geometry for the building.
@@ -300,7 +305,7 @@ void vtBuilding3d::AdjustHeight(vtHeightField *pHeightField)
 void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 								   bool bDoWalls, bool details)
 {
-	int i, j;
+	int i, j, k;
 
 	// make sure we've got materials first
 	FindMaterialIndices();
@@ -319,11 +324,7 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 	m_pMesh[BM_DOOR] = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 40);
 	m_pMesh[BM_WINDOW] = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 40);
 
-	m_bPolyRoof = false;
-	if (m_BldShape == SHAPE_POLY && m_Footprint.GetSize() > 4)
-		m_bPolyRoof = true;
-
-	if (m_bPolyRoof)
+	if (m_Footprint.GetSize() > 4)
 		m_pMesh[BM_ROOF] = new vtMesh(GL_TRIANGLES, VT_Normals | VT_TexCoords, 40);
 	else
 		m_pMesh[BM_ROOF] = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 40);
@@ -331,14 +332,20 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 	// create the walls
 	if (bDoWalls)
 	{
-		for (i = 0; i < m_Story.GetSize(); i++)
+		float fBase = 0.0f;
+		for (i = 0; i < m_Levels.GetSize(); i++)
 		{
-			for (j = 0; j < corners; j++)
-				CreateWallGeometry(base_corner, i, j, details);
+			vtLevel *lev = m_Levels[i];
+			for (j = 0; j < lev->m_iStories; j++)
+			{
+				for (k = 0; k < corners; k++)
+					CreateWallGeometry(base_corner, lev, fBase, k, details);
+				fBase += lev->m_fStoryHeight;
+			}
 		}
 	}
 
-	float roof_height = CEILING_HEIGHT * m_Story.GetSize();
+	float roof_height = GetHeightOfStories();
 
 	// create the roof
 	if (bDoRoof)
@@ -417,19 +424,16 @@ void vtBuilding3d::ShowBounds(bool bShow)
 ////////////////////////////////////////////////////////////////////////////
 
 //walls are created in panels (sections)
-void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
-									  int iWall, bool details)
+void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
+									  float fBase, int iWall, bool details)
 {
-	float fFloor = iStory * CEILING_HEIGHT;
-	float fCeiling = (iStory+1) * CEILING_HEIGHT;
-
-	int num_walls = m_Story[iStory]->m_Wall.GetSize();
+	int num_walls = pLev->m_Wall.GetSize();
 
 	int i = iWall, j = (i+1)%num_walls;
 
 	FPoint3 point[30];
 
-	vtWall	*pWall = m_Story[iStory]->m_Wall[iWall];
+	vtWall	*pWall = pLev->m_Wall[iWall];
 
 	int numDoors = 0;
 	int numWindows = 0;
@@ -441,9 +445,9 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 	}
 	// start with the simple wall
 	point[0] = corners[i];
-	point[0].y = fFloor;
+	point[0].y = fBase;
 	point[1] = corners[j];
-	point[1].y = fFloor;
+	point[1].y = fBase;
 
 	//choose wall material
 	switch (pWall->m_Type)
@@ -512,7 +516,8 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 		if (bMoulding && (i == 0 || i == totalsections - 1))
 		{
 			point[1] = point[0] + direction*MOULDING_WIDTH;
-			AddWallSection(BM_TRIM, point[0], point[1], CEILING_HEIGHT, 0);
+			AddWallSection(BM_TRIM, point[0], point[1], pLev->m_fStoryHeight, 0);
+			point[0] = point[1];
 			continue;
 		}
 
@@ -521,7 +526,7 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 			(i%2 == 1 && bMoulding))
 		{
 			point[1] = point[0] + direction*sectionLength;
-			AddWallSection(BM_WALL, point[0], point[1], CEILING_HEIGHT, 0);
+			AddWallSection(BM_WALL, point[0], point[1], pLev->m_fStoryHeight, 0);
 		}
 		else
 		{
@@ -542,13 +547,13 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 			if (makedoor)
 			{
 				point[1] = point[0] + direction*DOOR_WIDTH;
-				AddDoorSection(point[0], point[1], CEILING_HEIGHT);
+				AddDoorSection(point[0], point[1], pLev->m_fStoryHeight);
 				doorcount++;
 				//made a door.  door should not be next
 				door = false;
 			} else {
 				point[1] = point[0] + direction*WINDOW_WIDTH;
-				AddWindowSection(point[0], point[1], CEILING_HEIGHT);
+				AddWindowSection(point[0], point[1], pLev->m_fStoryHeight);
 				windowcount++;
 				//made a window.  door should be next
 				door = true;
@@ -562,26 +567,26 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
  * Builds a wall, given material index, starting and end points, height, and
  * starting height.
  */
-void vtBuilding3d::AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1, float height, float base_height)
+void vtBuilding3d::AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1,
+								  float height, float base_height)
 {
-	// determine 2 points at top of door
+	// determine 2 points at top of wall
 	FPoint3 p2 = p1, p3 = p0;
 	p2.y += height;
 	p3.y += height;
 
 	// determine normal (flat shading, all vertices have the same normal)
-	FPoint3 norm = Normal(p0,p1,p2);
+	FPoint3 norm = Normal(p0, p1, p2);
 
 	//make the texture map look right.  adjust it so it matches other walls.
-	base_height = CEILING_HEIGHT - (base_height + height);
-	float f1 = base_height / CEILING_HEIGHT;
-	float f2 = (base_height + height) / CEILING_HEIGHT;
+	float f1 = base_height;
+	float f2 = base_height + height;
 
 	int start =
-	m_pMesh[bm]->AddVertexNUV(p0, norm, FPoint2(1.0f, f2));
-	m_pMesh[bm]->AddVertexNUV(p1, norm, FPoint2(0.0f, f2));
-	m_pMesh[bm]->AddVertexNUV(p2, norm, FPoint2(0.0f, f1));
-	m_pMesh[bm]->AddVertexNUV(p3, norm, FPoint2(1.0f, f1));
+	m_pMesh[bm]->AddVertexNUV(p0, norm, FPoint2(1.0f, f1));
+	m_pMesh[bm]->AddVertexNUV(p1, norm, FPoint2(0.0f, f1));
+	m_pMesh[bm]->AddVertexNUV(p2, norm, FPoint2(0.0f, f2));
+	m_pMesh[bm]->AddVertexNUV(p3, norm, FPoint2(1.0f, f2));
 
 	m_pMesh[bm]->AddFan(start, start+1, start+2, start+3);
 }
@@ -609,7 +614,7 @@ void vtBuilding3d::AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height)
 	m_pMesh[BM_DOOR]->AddFan(start, start+1, start+2, start+3);
 
 	//add wall above door
-	AddWallSection(BM_WALL, p3, p2, CEILING_HEIGHT - DOOR_HEIGHT, DOOR_HEIGHT);
+	AddWallSection(BM_WALL, p3, p2, height - DOOR_HEIGHT, DOOR_HEIGHT);
 }
 
 //builds a window section.  builds the wall below and above a window too.
@@ -617,6 +622,7 @@ void vtBuilding3d::AddWindowSection(FPoint3 p0, FPoint3 p1, float height)
 {
 	// build wall to base of window.
 	AddWallSection(BM_WALL, p0, p1, WINDOW_BOTTOM, 0);
+
 	// determine 2 points at top of wall
 	p0.y += WINDOW_BOTTOM;
 	p1.y += WINDOW_BOTTOM;
@@ -636,9 +642,8 @@ void vtBuilding3d::AddWindowSection(FPoint3 p0, FPoint3 p1, float height)
 	m_pMesh[BM_WINDOW]->AddFan(start, start+1, start+2, start+3);
 
 	// build wall above window
-	AddWallSection(BM_WALL, p3, p2,
-		(CEILING_HEIGHT - WINDOW_HEIGHT - WINDOW_BOTTOM),
-		(WINDOW_HEIGHT + WINDOW_BOTTOM));
+	float top = WINDOW_HEIGHT + WINDOW_BOTTOM;
+	AddWallSection(BM_WALL, p3, p2, height - top, top);
 }
 
 
@@ -648,7 +653,7 @@ void vtBuilding3d::AddFlatRoof(Array<FPoint3> &pp, float height)
 	int corners = pp.GetSize();
 	int i, j;
 
-	if (m_bPolyRoof)
+	if (m_Footprint.GetSize() > 4)
 	{
 		// roof consists of a polygon which must be split into triangles
 		FLine2 roof;
@@ -679,9 +684,8 @@ void vtBuilding3d::AddFlatRoof(Array<FPoint3> &pp, float height)
 			}
 			m_pMesh[BM_ROOF]->AddTri(ind[0], ind[1], ind[2]);
 		}
-		return;
 	}
-	if (m_BldShape == SHAPE_RECTANGLE || m_BldShape == SHAPE_POLY)
+	else
 	{
 		int idx[MAX_WALLS];
 		for (i = 0; i < corners; i++)
@@ -692,15 +696,15 @@ void vtBuilding3d::AddFlatRoof(Array<FPoint3> &pp, float height)
 		}
 		m_pMesh[BM_ROOF]->AddFan(idx, corners);
 	}
-	if (m_BldShape == SHAPE_CIRCLE)
-	{
-	}
 }
 
 void vtBuilding3d::AddShedRoof(Array<FPoint3> &pp, float height)
 {
-	if (m_BldShape != SHAPE_RECTANGLE)
+	if (m_Footprint.GetSize() != 4)
+	{
+		AddFlatRoof(pp, height);
 		return;
+	}
 
 	FPoint3 norm;
 	int corners = pp.GetSize();
@@ -726,29 +730,35 @@ void vtBuilding3d::AddShedRoof(Array<FPoint3> &pp, float height)
 
 	// Add front
 	norm = Normal(p[0], p[1], p[5]);
-	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(p[0], norm, FPoint2(0.0f, 0.0f));
-	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(p[1], norm, FPoint2(1.0f, 0.0f));
-	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(p[5], norm, FPoint2(1.0f, 1.0f));
-	idx[3] = m_pMesh[BM_WALL]->AddVertexNUV(p[4], norm, FPoint2(0.0f, 1.0f));
+	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(p[0], norm, FPoint2(0.0f, p[0].y));
+	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(p[1], norm, FPoint2(1.0f, p[1].y));
+	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(p[5], norm, FPoint2(1.0f, p[5].y));
+	idx[3] = m_pMesh[BM_WALL]->AddVertexNUV(p[4], norm, FPoint2(0.0f, p[4].y));
 	m_pMesh[BM_WALL]->AddFan(idx, 4);
 
 	// Add left
 	norm = Normal(p[3], p[0], p[4]);
-	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(p[3], norm, FPoint2(0.0f, 0.0f));
-	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(p[0], norm, FPoint2(1.0f, 0.0f));
-	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(p[4], norm, FPoint2(1.0f, 1.0f));
+	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(p[3], norm, FPoint2(0.0f, p[3].y));
+	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(p[0], norm, FPoint2(1.0f, p[0].y));
+	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(p[4], norm, FPoint2(1.0f, p[4].y));
 	m_pMesh[BM_WALL]->AddFan(idx, 3);
 
 	// Add right
 	norm = Normal(p[1], p[2], p[5]);
-	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(p[1], norm, FPoint2(0.0f, 0.0f));
-	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(p[2], norm, FPoint2(1.0f, 0.0f));
-	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(p[5], norm, FPoint2(0.0f, 1.0f));
+	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(p[1], norm, FPoint2(0.0f, p[1].y));
+	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(p[2], norm, FPoint2(1.0f, p[2].y));
+	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(p[5], norm, FPoint2(0.0f, p[5].y));
 	m_pMesh[BM_WALL]->AddFan(idx, 3);
 }
 
 void vtBuilding3d::AddHipRoof(Array<FPoint3> &pp, float height)
 {
+	if (m_Footprint.GetSize() != 4)
+	{
+		AddFlatRoof(pp, height);
+		return;
+	}
+
 	FPoint3 v[10];
 	float roofheight;
 	float adjust;
@@ -763,99 +773,99 @@ void vtBuilding3d::AddHipRoof(Array<FPoint3> &pp, float height)
 		v[i].y += height;
 	}
 
-	switch (m_BldShape) {
-	case SHAPE_RECTANGLE:
-		{
-			//assume 4 points:
-			//the longer side is either 0->1 or 0->3
-			//points arranged:
-			//	3.----2. 3.------2.
-			//	| \5./|  | \    /|
-			//  |  |  |  |  4.-5.|
-			//  | /4.\|  | /    \|
-			//	0.----1. 0.------1.
+	//assume 4 points:
+	//the longer side is either 0->1 or 0->3
+	//points arranged:
+	//	3.----2. 3.------2.
+	//	| \5./|  | \    /|
+	//  |  |  |  |  4.-5.|
+	//  | /4.\|  | /    \|
+	//	0.----1. 0.------1.
 
-			int bottom_left;
-			int top_left;
-			int top_right;
-			int bottom_right;
-			int bottom_middle = 4;
-			int top_middle = 5;
+	int bottom_left;
+	int top_left;
+	int top_right;
+	int bottom_right;
+	int bottom_middle = 4;
+	int top_middle = 5;
 
-			FPoint3 long_edge, short_edge;
-			FPoint3 edge1 = v[1] - v[0];
-			FPoint3 edge2 = v[3] - v[0];
-			float len1 = edge1.Length();
-			float len2 = edge2.Length();
+	FPoint3 long_edge, short_edge;
+	FPoint3 edge1 = v[1] - v[0];
+	FPoint3 edge2 = v[3] - v[0];
+	float len1 = edge1.Length();
+	float len2 = edge2.Length();
 
-			if (len1 > len2)
-			{
-				bottom_left = 3;
-				bottom_right = 0;
-				top_right = 1;
-				top_left = 2;
-			}
-			else
-			{
-				bottom_left = 0;
-				bottom_right = 1;
-				top_right = 2;
-				top_left = 3;
-			}
-			long_edge = v[top_left] - v[bottom_left];
-			short_edge = v[bottom_right] - v[bottom_left];
-			float short_len = short_edge.Length();
-			long_edge.Normalize();
-			short_edge.Normalize();
-			roofheight = short_len/4;
+	if (len1 > len2)
+	{
+		bottom_left = 3;
+		bottom_right = 0;
+		top_right = 1;
+		top_left = 2;
+	}
+	else
+	{
+		bottom_left = 0;
+		bottom_right = 1;
+		top_right = 2;
+		top_left = 3;
+	}
+	long_edge = v[top_left] - v[bottom_left];
+	short_edge = v[bottom_right] - v[bottom_left];
+	float short_len = short_edge.Length();
+	long_edge.Normalize();
+	short_edge.Normalize();
+	roofheight = short_len/4;
 
-			//add top points of roof.
-			adjust = short_len/2;
+	//add top points of roof.
+	adjust = short_len/2;
 
-			v[bottom_middle] = (v[bottom_left] + v[bottom_right])/2;
-			v[bottom_middle].y += roofheight;
-			v[bottom_middle] += (long_edge * adjust);
-			v[top_middle] = (v[top_left] + v[top_right])/2;
-			v[top_middle].y += roofheight;
-			v[top_middle] -= (long_edge * adjust);
+	v[bottom_middle] = (v[bottom_left] + v[bottom_right])/2;
+	v[bottom_middle].y += roofheight;
+	v[bottom_middle] += (long_edge * adjust);
+	v[top_middle] = (v[top_left] + v[top_right])/2;
+	v[top_middle].y += roofheight;
+	v[top_middle] -= (long_edge * adjust);
 
 #if 1
-			//adjust points for roof overhang
-			adjust = .6f;
-			FPoint3 offset;
+	//adjust points for roof overhang
+	adjust = .6f;
+	FPoint3 offset;
 
-			offset = - (short_edge * adjust) - (long_edge * adjust);
-			v[bottom_left] += offset;
+	offset = - (short_edge * adjust) - (long_edge * adjust);
+	v[bottom_left] += offset;
 
-			offset =   (short_edge * adjust) - (long_edge * adjust);
-			v[bottom_right] += offset;
+	offset =   (short_edge * adjust) - (long_edge * adjust);
+	v[bottom_right] += offset;
 
-			offset = - (short_edge * adjust) + (long_edge * adjust);
-			v[top_left] += offset;
+	offset = - (short_edge * adjust) + (long_edge * adjust);
+	v[top_left] += offset;
 
-			offset =   (short_edge * adjust) + (long_edge * adjust);
-			v[top_right] += offset;
+	offset =   (short_edge * adjust) + (long_edge * adjust);
+	v[top_right] += offset;
 
-			//subtract from y:
-			adjust = adjust / 2;
-			v[bottom_left].y -= adjust;
-			v[bottom_right].y -= adjust;
-			v[top_left].y -= adjust;
-			v[top_right].y -= adjust;
+	//subtract from y:
+	adjust = adjust / 2;
+	v[bottom_left].y -= adjust;
+	v[bottom_right].y -= adjust;
+	v[top_left].y -= adjust;
+	v[top_right].y -= adjust;
 #endif
 
-			//construct the roof
-			BuildRoofPanel(v, 3, bottom_left, bottom_right, bottom_middle);
-			BuildRoofPanel(v, 3, top_middle, top_right, top_left);
-			BuildRoofPanel(v, 4, top_middle, top_left, bottom_left, bottom_middle);
-			BuildRoofPanel(v, 4, bottom_middle, bottom_right, top_right, top_middle);
-			break;
-		}
-	}
+	//construct the roof
+	BuildRoofPanel(v, 3, bottom_left, bottom_right, bottom_middle);
+	BuildRoofPanel(v, 3, top_middle, top_right, top_left);
+	BuildRoofPanel(v, 4, top_middle, top_left, bottom_left, bottom_middle);
+	BuildRoofPanel(v, 4, bottom_middle, bottom_right, top_right, top_middle);
 }
 
 void vtBuilding3d::AddGableRoof(Array<FPoint3> &pp, float height)
 {
+	if (m_Footprint.GetSize() != 4)
+	{
+		AddFlatRoof(pp, height);
+		return;
+	}
+
 	FPoint3 v[MAX_WALLS];
 	int idx[MAX_WALLS];
 	float roofheight;
@@ -876,79 +886,79 @@ void vtBuilding3d::AddGableRoof(Array<FPoint3> &pp, float height)
 	axis2 = v[3] - v[0];
 	axis2.Normalize();
 
-	switch (m_BldShape) {
-	case SHAPE_RECTANGLE:
-		{
-			roofheight = m_fWidth/4;
-			//the longer side is 0->1, 2->3
-			//the shorter side is 0->3, 1->2
-			//add top points of roof.
-			int bottom_left = 0;
-			int top_left = 3;
-			int top_right = 2;
-			int bottom_right = 1;
-			int bottom_middle = 4;
-			int top_middle = 5;
-			//points arranged:
-			//	3.-5.-2.
-			//	|  |  |
-			//  |  |  |
-			//  |  |  |
-			//	0.-4.-1.
+	float fWidth, fDepth;
+	GetRectangle(fWidth, fDepth);
 
-			v[bottom_middle] = (v[bottom_left] + v[bottom_right])/2;
-			v[bottom_middle].y += roofheight;
-			v[top_middle] = (v[top_left] + v[top_right])/2;
-			v[top_middle].y += roofheight;
+	roofheight = fWidth/4;
+	//the longer side is 0->1, 2->3
+	//the shorter side is 0->3, 1->2
+	//add top points of roof.
+	int bottom_left = 0;
+	int top_left = 3;
+	int top_right = 2;
+	int bottom_right = 1;
+	int bottom_middle = 4;
+	int top_middle = 5;
+	//points arranged:
+	//	3.-5.-2.
+	//	|  |  |
+	//  |  |  |
+	//  |  |  |
+	//	0.-4.-1.
 
-			//construct wall extensions.
-			norm = Normal(v[bottom_left],v[bottom_right],v[bottom_middle]);
-			idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(v[bottom_left], norm, FPoint2(0.0f, 0.0f));
-			idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(v[bottom_right], norm, FPoint2(1.0f, 0.0f));
-			idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(v[bottom_middle], norm, FPoint2(0.0f, 1.0f));
-			m_pMesh[BM_WALL]->AddFan(idx, 3);
+	v[bottom_middle] = (v[bottom_left] + v[bottom_right])/2;
+	v[bottom_middle].y += roofheight;
+	v[top_middle] = (v[top_left] + v[top_right])/2;
+	v[top_middle].y += roofheight;
 
-			norm = Normal(v[top_right],v[top_left],v[top_middle]);
-			idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(v[top_right], norm, FPoint2(0.0f, 0.0f));
-			idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(v[top_left], norm, FPoint2(1.0f, 0.0f));
-			idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(v[top_middle], norm, FPoint2(0.0f, 1.0f));
-			m_pMesh[BM_WALL]->AddFan(idx, 3);
+	//construct wall extensions.
+	norm = Normal(v[bottom_left],v[bottom_right],v[bottom_middle]);
+	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(v[bottom_left], norm, FPoint2(0.0f, v[bottom_left].y));
+	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(v[bottom_right], norm, FPoint2(1.0f, v[bottom_right].y));
+	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(v[bottom_middle], norm, FPoint2(0.0f, v[bottom_middle].y));
+	m_pMesh[BM_WALL]->AddFan(idx, 3);
+
+	norm = Normal(v[top_right],v[top_left],v[top_middle]);
+	idx[0] = m_pMesh[BM_WALL]->AddVertexNUV(v[top_right], norm, FPoint2(0.0f, v[top_right].y));
+	idx[1] = m_pMesh[BM_WALL]->AddVertexNUV(v[top_left], norm, FPoint2(1.0f, v[top_left].y));
+	idx[2] = m_pMesh[BM_WALL]->AddVertexNUV(v[top_middle], norm, FPoint2(0.0f, v[top_middle].y));
+	m_pMesh[BM_WALL]->AddFan(idx, 3);
 
 #if 1
-			//adjust points for roof overhang
-			//add to right;
-			adjust = .6f;
-			v[top_right] += (axis1 * adjust);
-			v[bottom_right] += (axis1 * adjust);
-			//subtract from left;
-			v[bottom_left] -= (axis1 * adjust);
-			v[top_left] -= (axis1 * adjust);
-			//add to top;
-			v[top_left] += (axis2 * adjust);
-			v[top_right] += (axis2 * adjust);
-			v[top_middle] += (axis2 * adjust);
-			//subtract from bottom;
-			v[bottom_left] -= (axis2 * adjust);
-			v[bottom_right] -= (axis2 * adjust);
-			v[bottom_middle] -= (axis2 * adjust);
-			//subtract from y:
-			adjust = .6f * roofheight/(m_fWidth/2);
-			v[bottom_left].y -= adjust;
-			v[top_left].y -= adjust;
-			v[top_right].y -= adjust;
-			v[bottom_right].y -= adjust;
+	//adjust points for roof overhang
+	//add to right;
+	adjust = .6f;
+	v[top_right] += (axis1 * adjust);
+	v[bottom_right] += (axis1 * adjust);
+	//subtract from left;
+	v[bottom_left] -= (axis1 * adjust);
+	v[top_left] -= (axis1 * adjust);
+	//add to top;
+	v[top_left] += (axis2 * adjust);
+	v[top_right] += (axis2 * adjust);
+	v[top_middle] += (axis2 * adjust);
+	//subtract from bottom;
+	v[bottom_left] -= (axis2 * adjust);
+	v[bottom_right] -= (axis2 * adjust);
+	v[bottom_middle] -= (axis2 * adjust);
+	//subtract from y:
+	adjust = .6f * roofheight/(fWidth/2);
+	v[bottom_left].y -= adjust;
+	v[top_left].y -= adjust;
+	v[top_right].y -= adjust;
+	v[bottom_right].y -= adjust;
 #endif
 
-			//construct the roof
-			BuildRoofPanel(v, 4, top_middle, top_left, bottom_left, bottom_middle);
-			BuildRoofPanel(v, 4, bottom_middle, bottom_right, top_right, top_middle);
-			break;
-		}
-	}
+	//construct the roof
+	BuildRoofPanel(v, 4, top_middle, top_left, bottom_left, bottom_middle);
+	BuildRoofPanel(v, 4, bottom_middle, bottom_right, top_right, top_middle);
 }
 
 //
-// given points, constructs a panel for the roof
+// Given points, constructs a panel for the roof.
+// n is how many points are to be used.
+// indices to the array should follow (...)
+// points should be given in a counter clockwise order.
 //
 void vtBuilding3d::BuildRoofPanel(FPoint3 *v, int n, ...)
 {
@@ -985,30 +995,13 @@ FPoint3 vtBuilding3d::Normal(FPoint3 &p0, FPoint3 &p1, FPoint3 &p2)
 	return norm;
 }
 
-//randomize buildings characteristics
-void vtBuilding3d::Randomize(int iStories, bool bRotation)
+//
+// Randomize buildings characteristics
+//
+void vtBuilding3d::Randomize(int iStories)
 {
-	float angle;
-
-	if (m_BldShape == SHAPE_RECTANGLE)
+	if (m_Footprint.GetSize() == 4)
 	{
-		if (bRotation)
-		{
-			GetRotation(angle);
-			if (angle == -1.0f)	// unset rotation
-			{
-				int r = rand() % 4;
-				switch (r) {
-				case 0:		angle = 0; break;
-				case 1:		angle = PID2f; break;
-				case 2:		angle = PI2f; break;
-				case 3:		angle = -PID2f; break;
-				}
-				angle += random(.2f);
-				SetRotation(angle);  // messes up lighting?
-			}
-		}
-
 		m_RoofType = (RoofType) (rand() % NUM_ROOFTYPES);
 		if (m_RoofType != ROOF_FLAT && m_RoofType != ROOF_GABLE && m_RoofType != ROOF_HIP) {
 			m_RoofType = ROOF_GABLE;
@@ -1021,12 +1014,12 @@ void vtBuilding3d::Randomize(int iStories, bool bRotation)
 	vtWall::WallMaterial walltype = rand() %4 ? vtWall::SIDING : vtWall::UNKNOWN;
 	for (s = 0; s < iStories; s++)
 	{
-		for (w = 0; w < m_Story[s]->m_Wall.GetSize(); w++) {
-			m_Story[s]->m_Wall[w]->Set(0, 3, walltype);
+		for (w = 0; w < m_Levels[s]->m_Wall.GetSize(); w++) {
+			m_Levels[s]->m_Wall[w]->Set(0, 3, walltype);
 		}
 	}
 
-	if (m_Story[0]->m_Wall.GetSize() > 3)
+	if (m_Levels[0]->m_Wall.GetSize() > 3)
 	{
 		// put a door on the front and back of the first floor
 		if (rand()%2) {
@@ -1036,10 +1029,10 @@ void vtBuilding3d::Randomize(int iStories, bool bRotation)
 			w = 1;
 			s = 3;
 		}
-		m_Story[0]->m_Wall[w]->m_iDoors = 1;
-		m_Story[0]->m_Wall[s]->m_iDoors = 1;
-		m_Story[0]->m_Wall[w]->m_iWindows -= 1;
-		m_Story[0]->m_Wall[s]->m_iWindows -= 1;
+		m_Levels[0]->m_Wall[w]->m_iDoors = 1;
+		m_Levels[0]->m_Wall[s]->m_iDoors = 1;
+		m_Levels[0]->m_Wall[w]->m_iWindows -= 1;
+		m_Levels[0]->m_Wall[s]->m_iWindows -= 1;
 	}
 
 	if (rand()%3)

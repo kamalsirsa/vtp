@@ -11,6 +11,9 @@
 
 #include "Building.h"
 
+// Defaults
+#define STORY_HEIGHT	3.0f
+
 /////////////////////////////////////
 
 void vtWall::Set(int iDoors, int iWindows, WallMaterial Type)
@@ -24,8 +27,8 @@ void vtWall::Set(int iDoors, int iWindows, WallMaterial Type)
 
 vtLevel::vtLevel()
 {
-	m_iStories = 1;
-	m_fHeightPerStory = 3.5f;
+	m_iStories = 0;
+	m_fStoryHeight = STORY_HEIGHT;
 }
 
 vtLevel::~vtLevel()
@@ -67,7 +70,6 @@ void vtLevel::SetWalls(int n)
 
 vtBuilding::vtBuilding()
 {
-	m_BldShape = SHAPE_RECTANGLE;	// default shape
 	m_RoofType = ROOF_FLAT;			// default roof
 	m_bMoulding = false;
 	m_bElevated = false;			// default placement
@@ -79,8 +81,6 @@ vtBuilding::vtBuilding()
 
 	// size / position
 	SetRectangle(10.0f, 10.0f);
-	m_fRadius = 10.0f;
-	m_fRotation = -1.0f;	// unknown rotation
 }
 
 vtBuilding::~vtBuilding()
@@ -89,23 +89,15 @@ vtBuilding::~vtBuilding()
 	//m_Footprint.Empty(); don't need to do this, it happens automatically
 }
 
-float vtBuilding::GetRadius() const
-{
-	// determine radius from the polyline
-	// TODO
-	return 0.0f;
-}
-
 void vtBuilding::DeleteStories()
 {
-	for (int i = 0; i < m_Story.GetSize(); i++)
-		delete m_Story.GetAt(i);
-	m_Story.SetSize(0);
+	for (int i = 0; i < m_Levels.GetSize(); i++)
+		delete m_Levels.GetAt(i);
+	m_Levels.SetSize(0);
 }
 
 vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
-	m_BldShape = v.m_BldShape;
 	m_RoofType = v.m_RoofType;
 	m_bMoulding = v.m_bMoulding;
 	m_bElevated = v.m_bElevated;
@@ -115,10 +107,6 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	m_MouldingColor = v.m_MouldingColor;
 
 	m_EarthPos = v.m_EarthPos;
-	m_fRotation = v.m_fRotation;
-	m_fWidth = v.m_fWidth;
-	m_fDepth = v.m_fDepth;
-	m_fRadius = v.m_fRadius;
 
 	m_Footprint.SetSize(v.m_Footprint.GetSize());
 	int i;
@@ -130,17 +118,41 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	return *this;
 }
 
-void vtBuilding::SetLocation(double utm_x, double utm_y)
+void vtBuilding::SetRectangle(float fWidth, float fDepth, float fRotation)
 {
-	m_EarthPos.x = utm_x;
-	m_EarthPos.y = utm_y;
+	RectToPoly(fWidth, fDepth, fRotation);
 }
 
-void vtBuilding::SetRectangle(float fWidth, float fDepth)
+bool vtBuilding::GetRectangle(float &fWidth, float &fDepth) const
 {
-	m_fWidth = fWidth;
-	m_fDepth = fDepth;
+	if (m_Footprint.GetSize() == 4)
+	{
+		fWidth = (float) m_Footprint.SegmentLength(0);
+		fDepth = (float) m_Footprint.SegmentLength(1);
+		return true;
+	}
+	return false;
 }
+
+void vtBuilding::SetRadius(float fRad)
+{
+	m_Footprint.Empty();
+	int i;
+	for (i = 0; i < 20; i++)
+	{
+		double angle = i * PI2d / 20;
+		DPoint2 vec(cos(angle) * fRad, sin(angle) * fRad);
+		m_Footprint.Append(m_EarthPos + vec);
+	}
+}
+
+float vtBuilding::GetRadius() const
+{
+	DRECT rect;
+	GetExtents(rect);
+	return (float) rect.Width() / 2.0f;
+}
+
 
 //sets colors of the walls
 void vtBuilding::SetColor(BldColor which, RGBi col)
@@ -152,7 +164,8 @@ void vtBuilding::SetColor(BldColor which, RGBi col)
 	case BLD_MOULDING: m_MouldingColor = col; break;
 	}
 }
-RGBi vtBuilding::GetColor(BldColor which)
+
+RGBi vtBuilding::GetColor(BldColor which) const
 {
 	switch (which)
 	{
@@ -163,34 +176,46 @@ RGBi vtBuilding::GetColor(BldColor which)
 	return RGBi(0,0,0);
 }
 
-//sets rotation of the building.  (may break the lighting of the building!)
-void vtBuilding::SetRotation(float fRadians)
-{
-	m_fRotation = fRadians;
-}
-
 void vtBuilding::SetStories(int iStories)
 {
-	int s;
-
-	int previous = m_Story.GetSize();
+	int previous = GetStories();
 	if (previous == iStories)
 		return;
 
-	m_Story.SetSize(iStories);
+	if (previous == 0)
+		m_Levels.Append(new vtLevel());
+
+	int levels = m_Levels.GetSize();
+
+	// increase if necessary
 	if (iStories > previous)
 	{
+		// get top level
+		vtLevel *pTopLev = m_Levels[levels-1];
 		// added some stories
-		for (s = previous; s < iStories; s++)
-			m_Story[s] = new vtLevel();
+		pTopLev->m_iStories += (iStories - previous);
 	}
-	if (previous)
+	// decrease if necessary
+	while (GetStories() > iStories)
 	{
-		for (s = previous; s < iStories; s++)
-			*m_Story[s] = *m_Story[previous-1];
+		// get top level
+		vtLevel *pTopLev = m_Levels[levels-1];
+		pTopLev->m_iStories--;
+		if (pTopLev->m_iStories == 0)
+		{
+			delete pTopLev;
+			m_Levels.SetSize(levels-1);
+			levels--;
+		}
 	}
-	else
-		RebuildWalls();
+}
+
+int vtBuilding::GetStories() const
+{
+	int stories = 0;
+	for (int i = 0; i < m_Levels.GetSize(); i++)
+		stories += m_Levels[i]->m_iStories;
+	return stories;
 }
 
 void vtBuilding::SetFootprint(DLine2 &dl)
@@ -211,24 +236,13 @@ void vtBuilding::SetFootprint(DLine2 &dl)
 
 void vtBuilding::RebuildWalls()
 {
-	for (int s = 0; s < m_Story.GetSize(); s++)
+	for (int s = 0; s < m_Levels.GetSize(); s++)
 	{
-		switch (m_BldShape)
+		m_Levels[s]->SetWalls(m_Footprint.GetSize());
+		for (int w = 0; w < m_Levels[s]->m_Wall.GetSize(); w++)
 		{
-		case SHAPE_RECTANGLE:
-			m_Story[s]->SetWalls(4);
-			break;
-		case SHAPE_CIRCLE:
-			m_Story[s]->SetWalls(1);
-			break;
-		case SHAPE_POLY:
-			m_Story[s]->SetWalls(m_Footprint.GetSize());
-			break;
-		}
-		for (int w = 0; w < m_Story[s]->m_Wall.GetSize(); w++)
-		{
-			// Doors, Windows, WallMaterial, Awning
-			m_Story[s]->m_Wall[w]->Set(0, 2, vtWall::SIDING);
+			// Doors, Windows, WallType
+			m_Levels[s]->m_Wall[w]->Set(0, 2, vtWall::SIDING);
 		}
 	}
 }
@@ -250,59 +264,36 @@ void vtBuilding::Offset(const DPoint2 &p)
 {
 	m_EarthPos += p;
 
-	if (m_BldShape == SHAPE_POLY)
-	{
-		for (int j = 0; j < m_Footprint.GetSize(); j++)
-		{
-			m_Footprint[j] += p;
-		}
-	}
+	for (int j = 0; j < m_Footprint.GetSize(); j++)
+		m_Footprint[j] += p;
 }
 
 //
 // Get an extent rectangle around the building.
 // It doesn't need to be exact.
 //
-bool vtBuilding::GetExtents(DRECT &rect)
+bool vtBuilding::GetExtents(DRECT &rect) const
 {
-	if (m_BldShape == SHAPE_RECTANGLE)
-	{
-		float greater = m_fWidth > m_fDepth ? m_fWidth : m_fDepth;
-		rect.SetRect(m_EarthPos.x - greater, m_EarthPos.y + greater,
-					 m_EarthPos.x + greater, m_EarthPos.y - greater);
-		return true;
-	}
+	int size = m_Footprint.GetSize();
+	if (size == 0)
+		return false;
+	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 
-	if (m_BldShape == SHAPE_CIRCLE)
-	{
-		rect.SetRect(m_EarthPos.x - m_fRadius, m_EarthPos.y + m_fRadius,
-					 m_EarthPos.x + m_fRadius, m_EarthPos.y - m_fRadius);
-		return true;
-	}
-
-	if (m_BldShape == SHAPE_POLY)
-	{
-		rect.SetRect(1E9, -1E9, -1E9, 1E9);
-
-		for (int j = 0; j < m_Footprint.GetSize(); j++)
-			rect.GrowToContainPoint(m_Footprint[j]);
-		return true;
-	}
-	return false;
+	for (int j = 0; j < size; j++)
+		rect.GrowToContainPoint(m_Footprint[j]);
+	return true;
 }
 
 
-void vtBuilding::RectToPoly()
+void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 {
-	if (m_BldShape != SHAPE_RECTANGLE)
-		return;
-
 	DPoint2 corner[4];
 
 	// if rotation is unset, default to none
-	float fRotation = m_fRotation == -1.0f ? 0.0f : m_fRotation;
+	if (fRotation == -1.0f)
+		fRotation = 0.0f;
 
-	DPoint2 pt(m_fWidth / 2.0, m_fDepth / 2.0);
+	DPoint2 pt(fWidth / 2.0, fDepth / 2.0);
 	corner[0].Set(-pt.x, -pt.y);
 	corner[1].Set(pt.x, -pt.y);
 	corner[2].Set(pt.x, pt.y);
@@ -311,10 +302,12 @@ void vtBuilding::RectToPoly()
 	corner[1].Rotate(fRotation);
 	corner[2].Rotate(fRotation);
 	corner[3].Rotate(fRotation);
-	m_Footprint.SetAt(0, m_EarthPos + corner[0]);
-	m_Footprint.SetAt(1, m_EarthPos + corner[1]);
-	m_Footprint.SetAt(2, m_EarthPos + corner[2]);
-	m_Footprint.SetAt(3, m_EarthPos + corner[3]);
+
+	m_Footprint.Empty();
+	m_Footprint.Append(m_EarthPos + corner[0]);
+	m_Footprint.Append(m_EarthPos + corner[1]);
+	m_Footprint.Append(m_EarthPos + corner[2]);
+	m_Footprint.Append(m_EarthPos + corner[3]);
 }
 
 
@@ -343,42 +336,18 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	}
 	fprintf(fp, "\t\t<shapes>\n");
 
-	if (GetShape() == SHAPE_RECTANGLE)
+	int points = m_Footprint.GetSize();
+	fprintf(fp, "\t\t\t<poly num=\"%d\" coords=\"", points);
+	for (int i = 0; i < points; i++)
 	{
-		fprintf(fp, "\t\t\t<rect ref_point=\"");
-		fprintf(fp, coord_format, m_EarthPos.x);
+		DPoint2 p = m_Footprint.GetAt(i);
+		fprintf(fp, coord_format, p.x);
 		fprintf(fp, " ");
-		fprintf(fp, coord_format, m_EarthPos.y);
-		fprintf(fp, "\" size=\"%g, %g\"", m_fWidth, m_fDepth);
-		if (m_fRotation != -1.0f)
-			fprintf(fp, " rot=\"%f\"", m_fRotation);
-		fprintf(fp, " />\n");
-	}
-
-	if (GetShape() == SHAPE_CIRCLE)
-	{
-		fprintf(fp, "\t\t\t<circle ref_point=\"");
-		fprintf(fp, coord_format, m_EarthPos.x);
-		fprintf(fp, " ");
-		fprintf(fp, coord_format, m_EarthPos.y);
-		fprintf(fp, "\" radius=\"%f\" />\n", m_fRadius);
-	}
-
-	if (GetShape() == SHAPE_POLY)
-	{
-		int points = m_Footprint.GetSize();
-		fprintf(fp, "\t\t\t<poly num=\"%d\" coords=\"", points);
-		for (int i = 0; i < points; i++)
-		{
-			DPoint2 p = m_Footprint.GetAt(i);
-			fprintf(fp, coord_format, p.x);
+		fprintf(fp, coord_format, p.y);
+		if (i != points-1)
 			fprintf(fp, " ");
-			fprintf(fp, coord_format, p.y);
-			if (i != points-1)
-				fprintf(fp, " ");
-		}
-		fprintf(fp, "\" />\n");
 	}
+	fprintf(fp, "\" />\n");
 	fprintf(fp, "\t\t</shapes>\n");
 
 	fprintf(fp, "\t\t<roof type=\"");

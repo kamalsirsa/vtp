@@ -49,7 +49,7 @@ public:
 	void AdjustHeight(vtHeightField *pHeightField);
 
 	// randomize building properties
-	void Randomize(int iStories, bool bRotation);
+	void Randomize(int iStories);
 
 	// display a bounding box around to object to highlight it
 	void ShowBounds(bool bShow);
@@ -62,11 +62,6 @@ protected:
 	// material
 	static vtMaterialArray *s_Materials;
 	int m_iMatIdx[BM_TOTAL];
-/*	int	m_iMat;			// material index for walls
-	int	m_iRoofMat;		// material index for roof
-	int	m_iMouldingMat;	// material index for trim
-	int	m_iWindowMat;	// material index for window texture
-	int	m_iDoorMat;		// please step on this field */
 
 	// center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
@@ -74,10 +69,15 @@ protected:
 
 	// internal methods
 	void DetermineBaseCorners(vtHeightField *pHeightField, FLine3 &base_corner);
+	float GetHeightOfStories();
 
-	void CreateWallGeometry(Array<FPoint3> &corners, int iStory, int iWall, bool details);
-	//creates a wall.  base_height is height from base of floor (to make siding texture match up right.)
-	void AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1, float height, float base_height);
+	void CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
+		float fBase, int iWall, bool details);
+
+	// creates a wall.  base_height is height from base of floor
+	// (to make siding texture match up right.)
+	void AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1,
+		float height, float base_height);
 	//adds a wall section with a door
 	void AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height);
 	//adds a wall section with a window
@@ -94,16 +94,13 @@ protected:
 		| / \ |				|  |  |
 		|/___\|				|__|__|
 		Side view:
-		 ________			___________
+		  ______			___________
+		 /      \           |         |
 		/________\			|_________| 
 		(triangular from the other side.)
 	*/
 	void	AddHipRoof(Array<FPoint3> &pp, float height);
 	void	AddGableRoof(Array<FPoint3> &pp, float height);
-	//builds a roof panel from given point array v.
-	//n is how many points are to be used.
-	//indices to the array should follow (...)
-	//points should be given in a counter clockwise order.
 	void	BuildRoofPanel(FPoint3 *v, int n, ...);
 	FPoint3	Normal(FPoint3 &p0, FPoint3 &p1, FPoint3 &p2);
 	//normal slightly tilted up.
@@ -115,9 +112,6 @@ protected:
 
 	// the geometry is composed of several meshes, one for each potential material used
 	vtMesh		*m_pMesh[BM_TOTAL];
-
-	// true if the roof requires a polygon (more than 4 sides)
-	bool	m_bPolyRoof;
 };
 
 #endif
