@@ -761,6 +761,7 @@ public:
 	RGBi operator *(float s) const { return RGBi((short)(r*s), (short)(g*s), (short)(b*s)); }
 	RGBi operator /(float s) const { return RGBi((short)(r/s), (short)(g/s), (short)(b/s)); }
 	void operator *=(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); }
+	void Crop();
 
 	// assignment
 	RGBi &operator=(const RGBi &v) { r = v.r; g = v.g; b = v.b; return *this; }
