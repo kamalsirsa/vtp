@@ -48,6 +48,8 @@ void vtEdgeFeature::SetDefaults()
 vtEdge::vtEdge()
 {
 	m_Material = BMAT_PLAIN;
+	m_iSlope = 180;		// vertical
+	m_fEaveLength = 0.0f;
 }
 
 vtEdge::~vtEdge()
@@ -75,8 +77,8 @@ void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 	door.m_vf1 = 0.0f;
 	door.m_vf2 = DOOR_TOP;
 
-	int num_walls = iDoors + iWindows + 1;
-	int num_feat = iDoors + iWindows + num_walls;
+	int num_Edgess = iDoors + iWindows + 1;
+	int num_feat = iDoors + iWindows + num_Edgess;
 
 	m_Features.Empty();
 	m_Features.Append(wall);
@@ -143,6 +145,9 @@ vtLevel::vtLevel()
 {
 	m_iStories = 0;
 	m_fStoryHeight = STORY_HEIGHT;
+
+	// default color
+	m_Color.Set(255,0,0);	// red
 }
 
 vtLevel::~vtLevel()
@@ -152,21 +157,22 @@ vtLevel::~vtLevel()
 
 void vtLevel::DeleteWalls()
 {
-	for (int i = 0; i < m_Wall.GetSize(); i++)
-		delete m_Wall.GetAt(i);
-	m_Wall.SetSize(0);
+	for (int i = 0; i < m_Edges.GetSize(); i++)
+		delete m_Edges.GetAt(i);
+	m_Edges.SetSize(0);
 }
 
 vtLevel &vtLevel::operator=(const vtLevel &v)
 {
 	DeleteWalls();
-	m_Wall.SetSize(v.m_Wall.GetSize());
-	for (int i = 0; i < v.m_Wall.GetSize(); i++)
+	m_Edges.SetSize(v.m_Edges.GetSize());
+	for (int i = 0; i < v.m_Edges.GetSize(); i++)
 	{
-		vtEdge *pnew = new vtEdge(*v.m_Wall[i]);
-		m_Wall.SetAt(i, pnew);
+		vtEdge *pnew = new vtEdge(*v.m_Edges[i]);
+		m_Edges.SetAt(i, pnew);
 	}
 	m_Footprint = v.m_Footprint;
+	m_Color = v.m_Color;
 	return *this;
 }
 
@@ -183,8 +189,8 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 
 void vtLevel::SetWallMaterial(BldMaterial bm)
 {
-	for (int i = 0; i < m_Wall.GetSize(); i++)
-		m_Wall[i]->m_Material = bm;
+	for (int i = 0; i < m_Edges.GetSize(); i++)
+		m_Edges[i]->m_Material = bm;
 }
 
 void vtLevel::SetWalls(int n)
@@ -194,9 +200,30 @@ void vtLevel::SetWalls(int n)
 	{
 		vtEdge *pnew = new vtEdge;
 		pnew->Set(0, 0, BMAT_PLAIN);
-		m_Wall.Append(pnew);
+		m_Edges.Append(pnew);
 	}
 }
+
+bool vtLevel::HasSlopedEdges()
+{
+	for (int i = 0; i < m_Edges.GetSize(); i++)
+	{
+		if (m_Edges[i]->m_iSlope != 180)
+			return true;
+	}
+	return false;
+}
+
+bool vtLevel::IsHorizontal()
+{
+	for (int i = 0; i < m_Edges.GetSize(); i++)
+	{
+		if (m_Edges[i]->m_iSlope == 0)
+			return true;
+	}
+	return false;
+}
+
 
 /////////////////////////////////////
 
@@ -205,11 +232,6 @@ vtBuilding::vtBuilding()
 	m_RoofType = ROOF_FLAT;			// default roof
 	m_bMoulding = false;
 	m_bElevated = false;			// default placement
-
-	// default colors
-	m_Color.Set(255,0,0);			// red
-	m_RoofColor.Set(160,255,160);	// lime green
-	m_MouldingColor.Set(255,255,255);	// white
 }
 
 vtBuilding::~vtBuilding()
@@ -229,11 +251,6 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 	m_RoofType = v.m_RoofType;
 	m_bMoulding = v.m_bMoulding;
 	m_bElevated = v.m_bElevated;
-
-	m_Color = v.m_Color;
-	m_RoofColor = v.m_RoofColor;
-	m_MouldingColor = v.m_MouldingColor;
-
 	m_EarthPos = v.m_EarthPos;
 
 	int i;
@@ -284,21 +301,39 @@ float vtBuilding::GetRadius() const
 //sets colors of the walls
 void vtBuilding::SetColor(BldColor which, RGBi col)
 {
-	switch (which)
+	int i, levs = m_Levels.GetSize();
+	for (i = 0; i < levs; i++)
 	{
-	case BLD_BASIC: m_Color = col; break;
-	case BLD_ROOF: m_RoofColor = col; break;
-	case BLD_MOULDING: m_MouldingColor = col; break;
+		vtLevel *pLev = m_Levels[i];
+		if (pLev->HasSlopedEdges())
+		{
+			if (which == BLD_ROOF)
+				pLev->m_Color = col;
+		}
+		else
+		{
+			if (which == BLD_BASIC)
+				pLev->m_Color = col;
+		}
 	}
 }
 
 RGBi vtBuilding::GetColor(BldColor which) const
 {
-	switch (which)
+	int i, levs = m_Levels.GetSize();
+	for (i = 0; i < levs; i++)
 	{
-	case BLD_BASIC: return m_Color; break;
-	case BLD_ROOF: return m_RoofColor; break;
-	case BLD_MOULDING: return m_MouldingColor; break;
+		vtLevel *pLev = m_Levels[i];
+		if (pLev->HasSlopedEdges())
+		{
+			if (which == BLD_ROOF)
+				return pLev->m_Color;
+		}
+		else
+		{
+			if (which == BLD_BASIC)
+				return pLev->m_Color;
+		}
 	}
 	return RGBi(0,0,0);
 }

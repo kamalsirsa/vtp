@@ -71,7 +71,7 @@ protected:
 	void DetermineWorldFootprints(vtHeightField *pHeightField);
 	float GetHeightOfStories();
 
-	void CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
+	void CreateEdgeGeometry(Array<FPoint3> &corners, vtLevel *pLev,
 		float fBase, int iWall, bool details);
 
 	// creates a wall.  base_height is height from base of floor
@@ -90,8 +90,8 @@ protected:
 	void AddWallNormal(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
 			const FPoint3 &p0, const FPoint3 &p1);
 
-	void AddFlatRoof(Array<FPoint3> &pp, float height);
-	void AddShedRoof(Array<FPoint3> &pp, float height);
+	void AddFlatRoof(Array<FPoint3> &pp, vtLevel *pLev);
+	void AddShedRoof(Array<FPoint3> &pp, vtLevel *pLev, float height);
 	/*	Top view:
 		Hip Roof:			Gable Roof:
 		_______				_______
@@ -107,8 +107,8 @@ protected:
 		/________\			|_________| 
 		(triangular from the other side.)
 	*/
-	void	AddHipRoof(Array<FPoint3> &pp, float height);
-	void	AddGableRoof(Array<FPoint3> &pp, float height);
+	void	AddHipRoof(Array<FPoint3> &pp, vtLevel *pLev, float height);
+	void	AddGableRoof(Array<FPoint3> &pp, vtLevel *pLev, float height);
 	void	BuildRoofPanel(FPoint3 *v, int n, ...);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 

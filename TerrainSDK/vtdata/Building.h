@@ -90,12 +90,15 @@ public:
 
 	// color
 
-	// slope
+	// slope in degrees: 180 is vertical, 0 is horizontal
+	int	m_iSlope;
+
 	// eave_length
+	float m_fEaveLength;
 
 	// members
-	enum BldMaterial	m_Material;
-	Array<vtEdgeFeature>	m_Features;
+	enum BldMaterial	 m_Material;
+	Array<vtEdgeFeature> m_Features;
 };
 
 #define MAX_WALLS	24	// the largest number of walls
@@ -117,10 +120,14 @@ public:
 	DLine2 &GetFootprint() { return m_Footprint; }
 	void SetWallMaterial(BldMaterial bm);
 
-	Array<vtEdge *> m_Wall;
+	bool HasSlopedEdges();
+	bool IsHorizontal();
+
+	Array<vtEdge *> m_Edges;
 
 	int		m_iStories;
 	float	m_fStoryHeight;
+	RGBi	m_Color;			// overall level color
 
 	// footprint of the stories in this level
 protected:
@@ -172,12 +179,6 @@ public:
 	bool		m_bElevated;
 
 protected:
-	//colors
-	RGBi		m_Color;			// overall building color
-	RGBi		m_RoofColor;		// roof color
-	RGBi		m_MouldingColor;	// color of trim
-	BldMaterial	m_RoofMaterial;
-
 	// information about each story
 	Array<vtLevel *> m_Levels;
 
