@@ -266,7 +266,7 @@ int ExpandZip(const char *archive_fname, const char *prepend_path)
 		{
 //			if (zip.GetFileInfo(fh, i))
 //				printf("%d: %s\n", i, fh.GetFileName());
-			zip.ExtractFile(i, path.c_str());
+			zip.ExtractFile((WORD)i, path.c_str());
 		}
 	}
 	catch(...)

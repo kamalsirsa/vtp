@@ -360,16 +360,20 @@ void TestParser::ParseInput(const char *string)
 		// compare words from word n onwards
 		t = sen[i];
 
-		if (words = IsCounter(*t))
+		words = IsCounter(*t);
+		if (words != 0)
 			continue;
 
-		if (words = IsNumber(*t))
+		words = IsNumber(*t);
+		if (words != 0)
 			continue;
 
-		if (words = IsColor(i))
+		words = IsColor(i);
+		if (words != 0)
 			continue;
 
-		if (words = IsMaterial(i))
+		words = IsMaterial(i);
+		if (words != 0)
 			continue;
 	}
 }
