@@ -16,9 +16,14 @@ class vtTerrain;
 class TimeEngine;
 class vtSkyTrackEngine;
 
-//
-// Container class for all of the terrains loaded
-//
+/**
+ * vtTerrainScene provides a container for all of your vtTerrain objects.
+ *
+ * It keeps track of which terrain is active, and allows you to switch
+ * between terrains if you have more than one.  It also creates some of the
+ * surrounding environment (sunlight, skydome) which is common to all
+ * of the terrains.
+ */
 class vtTerrainScene
 {
 public:
