@@ -101,8 +101,8 @@ wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 #define ID_USE_GRID 10054
 #define ID_FILENAME 10055
 #define ID_LODMETHOD 10056
-#define ID_PIXELERROR 10057
-#define ID_TRICOUNT 10058
+#define ID_TRICOUNT 10057
+#define ID_PIXELERROR 10058
 #define ID_TRISTRIPS 10059
 #define ID_DETAILTEXTURE 10060
 #define ID_USE_TIN 10061
