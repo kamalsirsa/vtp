@@ -166,6 +166,13 @@ bool vtImage::ReadPNG(const char *filename)
 
 	png_uint_32 i;
 	png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png)
+	{
+		// We compiled against the headers of one version of libpng, but
+		// linked against the libraries from another version.  If you get
+		// this, fix the paths in your development environment.
+		return false;
+	}
 	info = png_create_info_struct(png);
 	endinfo = png_create_info_struct(png);
 
