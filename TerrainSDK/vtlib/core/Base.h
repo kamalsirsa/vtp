@@ -295,7 +295,6 @@ public:
 	virtual bool GetLighting() = 0;
 
 	virtual void SetTexture(class vtImage *pImage) = 0;
-	virtual vtImage *GetTexture();
 	virtual void SetTexture2(const char *szFilename);
 
 	virtual void SetTransparent(bool bOn, bool bAdd = false) = 0;
@@ -303,18 +302,10 @@ public:
 
 	virtual void Apply() = 0;
 
-	void SetName(const vtString &name)
-	{
-		m_Name = name;
-	}
-
-	const vtString& GetName()
-	{
-		return m_Name;
-	}
+	void SetName(const vtString &name) { m_Name = name; }
+	const vtString& GetName() { return m_Name; }
 
 protected:
-	vtImage	*m_pImage;
 	vtString m_Name;
 };
 
@@ -327,7 +318,8 @@ protected:
 class vtMaterialArrayBase : public Array<vtMaterial *>
 {
 public:
-	virtual ~vtMaterialArrayBase() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	~vtMaterialArrayBase();
+
 	void DestructItems(int first, int last);
 
 	int AddTextureMaterial(class vtImage *pImage,
@@ -364,14 +356,8 @@ class vtGeomBase
 #endif
 {
 public:
-	vtGeomBase() { m_pMaterialArray = NULL; }
-
-	virtual void SetMaterials(class vtMaterialArray *mats);
-	vtMaterialArray	*GetMaterials() { return m_pMaterialArray; }
-	vtMaterial *GetMaterial(int idx);
-
-protected:
-	vtMaterialArray	*m_pMaterialArray;
+	virtual void SetMaterials(class vtMaterialArray *mats) = 0;
+	virtual vtMaterialArray	*GetMaterials() = 0; //{ return m_pMaterialArray; }
 };
 
 class vtSceneBase
