@@ -80,9 +80,9 @@ bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel,
 	}
 
 	m_bmi->biSize = sizeof(BITMAPINFOHEADER);
-    m_bmi->biWidth = width;
-    m_bmi->biHeight = height;
-    m_bmi->biPlanes = 1;
+	m_bmi->biWidth = width;
+	m_bmi->biHeight = height;
+	m_bmi->biPlanes = 1;
 	m_bmi->biBitCount = bpp;
 	m_bmi->biCompression = BI_RGB;
 	m_bmi->biSizeImage = datasize;
@@ -492,7 +492,7 @@ BOOL DrawBitmap(CDC& dc, CBitmap* pBitmap,
 // rectangles. Generally, you can let the following default to zero/NULL:
 //
 //		bUseDrawDib = whether to use use DrawDib, default TRUE
-//		pPal	      = palette, default=NULL, (use DIB's palette)
+//		pPal		  = palette, default=NULL, (use DIB's palette)
 //		bForeground = realize in foreground (default FALSE)
 //
 // If you are handling palette messages, you should use bForeground=FALSE,

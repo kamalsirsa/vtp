@@ -5,7 +5,7 @@
 #ifndef ENVIROAPPH
 #define ENVIROAPPH
 
-#include "resource.h"       // main symbols
+#include "resource.h"	// main symbols
 #include "StartupDlg.h"
 #include "HtmlVw.h"
 

@@ -62,7 +62,7 @@ int EnviroFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
 		TRACE0("Failed to create toolbar\n");
-		return -1;      // fail to create
+		return -1;	// fail to create
 	}
 
 	// TODO: Remove this if you don't want tool tips or a resizeable toolbar

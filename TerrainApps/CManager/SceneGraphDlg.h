@@ -1,5 +1,5 @@
 //
-// Name:        SceneGraphDlg.h
+// Name:	SceneGraphDlg.h
 //
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -9,7 +9,7 @@
 #define __SceneGraphDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "SceneGraphDlg.cpp"
+	#pragma interface "SceneGraphDlg.cpp"
 #endif
 
 #include "wx/imaglist.h"
@@ -27,44 +27,44 @@ class vtNode;
 class SceneGraphDlg: public wxDialog
 {
 public:
-    // constructors and destructors
-    SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
+	// constructors and destructors
+	SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
 	~SceneGraphDlg();
 
-    void OnInitDialog(wxInitDialogEvent& event);
-    wxButton    *m_pZoomTo;
-    wxCheckBox  *m_pEnabled;
-    wxTreeCtrl  *m_pTree;
+	void OnInitDialog(wxInitDialogEvent& event);
+	wxButton	*m_pZoomTo;
+	wxCheckBox  *m_pEnabled;
+	wxTreeCtrl  *m_pTree;
 
 	vtEngine *m_pSelectedEngine;
 	vtNode *m_pSelectedNode;
 
-    void CreateImageList(int size = 16);
+	void CreateImageList(int size = 16);
 	void RefreshTreeContents();
-    void AddNodeItemsRecursively(wxTreeItemId hParentItem,
-                                 vtNode *pNode, int depth);
+	void AddNodeItemsRecursively(wxTreeItemId hParentItem,
+								 vtNode *pNode, int depth);
 
-    // WDR: method declarations for SceneGraphDlg
-    wxButton* GetZoomto()  { return (wxButton*) FindWindow( ID_ZOOMTO ); }
-    wxCheckBox* GetEnabled()  { return (wxCheckBox*) FindWindow( ID_ENABLED ); }
-    wxTreeCtrl* GetScenetree()  { return (wxTreeCtrl*) FindWindow( ID_SCENETREE ); }
-
-private:
-    // WDR: member variable declarations for SceneGraphDlg
-    wxImageList *m_imageListNormal;
+	// WDR: method declarations for SceneGraphDlg
+	wxButton* GetZoomto()  { return (wxButton*) FindWindow( ID_ZOOMTO ); }
+	wxCheckBox* GetEnabled()  { return (wxCheckBox*) FindWindow( ID_ENABLED ); }
+	wxTreeCtrl* GetScenetree()  { return (wxTreeCtrl*) FindWindow( ID_SCENETREE ); }
 
 private:
-    // WDR: handler declarations for SceneGraphDlg
-    void OnRefresh( wxCommandEvent &event );
-    void OnZoomTo( wxCommandEvent &event );
-    void OnEnabled( wxCommandEvent &event );
-    void OnTreeSelChanged( wxTreeEvent &event );
+	// WDR: member variable declarations for SceneGraphDlg
+	wxImageList *m_imageListNormal;
 
 private:
-    DECLARE_EVENT_TABLE()
+	// WDR: handler declarations for SceneGraphDlg
+	void OnRefresh( wxCommandEvent &event );
+	void OnZoomTo( wxCommandEvent &event );
+	void OnEnabled( wxCommandEvent &event );
+	void OnTreeSelChanged( wxTreeEvent &event );
+
+private:
+	DECLARE_EVENT_TABLE()
 };
 
 

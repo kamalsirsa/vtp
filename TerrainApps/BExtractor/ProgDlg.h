@@ -17,53 +17,53 @@ class CProgressDlg : public CDialog
 {
 // Construction / Destruction
 public:
-    CProgressDlg(UINT nCaptionID = 0);   // standard constructor
-    ~CProgressDlg();
+	CProgressDlg(UINT nCaptionID = 0);   // standard constructor
+	~CProgressDlg();
 
-    BOOL Create(CWnd *pParent=NULL);
+	BOOL Create(CWnd *pParent=NULL);
 
-    // Progress Dialog manipulation
-    void SetStatus(LPCTSTR szMessage);
-    void SetRange(int nLower,int nUpper);
-    int  SetStep(int nStep);
-    int  SetPos(int nPos);
-    int  OffsetPos(int nPos);
-    int  StepIt();
+	// Progress Dialog manipulation
+	void SetStatus(LPCTSTR szMessage);
+	void SetRange(int nLower,int nUpper);
+	int  SetStep(int nStep);
+	int  SetPos(int nPos);
+	int  OffsetPos(int nPos);
+	int  StepIt();
 
 // Dialog Data
-    //{{AFX_DATA(CProgressDlg)
-    enum { IDD = CG_IDD_PROGRESS };
-    CProgressCtrl	m_Progress;
-    //}}AFX_DATA
+	//{{AFX_DATA(CProgressDlg)
+	enum { IDD = CG_IDD_PROGRESS };
+	CProgressCtrl	m_Progress;
+	//}}AFX_DATA
 
 // Overrides
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CProgressDlg)
-    public:
-    virtual BOOL DestroyWindow();
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    //}}AFX_VIRTUAL
+	// ClassWizard generated virtual function overrides
+	//{{AFX_VIRTUAL(CProgressDlg)
+	public:
+	virtual BOOL DestroyWindow();
+	protected:
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	//}}AFX_VIRTUAL
 
 // Implementation
 protected:
 	UINT m_nCaptionID;
-    int m_nLower;
-    int m_nUpper;
-    int m_nStep;
-    BOOL m_bParentDisabled;
+	int m_nLower;
+	int m_nUpper;
+	int m_nStep;
+	BOOL m_bParentDisabled;
 
-    void ReEnableParent();
+	void ReEnableParent();
 
-    virtual void OnCancel();
-    virtual void OnOK() {};
-    void PumpMessages();
+	virtual void OnCancel();
+	virtual void OnOK() {};
+	void PumpMessages();
 
-    // Generated message map functions
-    //{{AFX_MSG(CProgressDlg)
-    virtual BOOL OnInitDialog();
-    //}}AFX_MSG
-    DECLARE_MESSAGE_MAP()
+	// Generated message map functions
+	//{{AFX_MSG(CProgressDlg)
+	virtual BOOL OnInitDialog();
+	//}}AFX_MSG
+	DECLARE_MESSAGE_MAP()
 };
 
 #endif // __PROGDLG_H__

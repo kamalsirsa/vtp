@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP(EnviroApp, CWinApp)
 	//{{AFX_MSG_MAP(EnviroApp)
 	ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
 		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
+		//	DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -72,7 +72,7 @@ BOOL EnviroApp::InitInstance()
 	pDocTemplate = new CSingleDocTemplate(
 		IDR_MAINFRAME,
 		RUNTIME_CLASS(CSimpleDoc),
-		RUNTIME_CLASS(EnviroFrame),       // main SDI frame window
+		RUNTIME_CLASS(EnviroFrame),	// main SDI frame window
 		RUNTIME_CLASS(EnviroView));
 	AddDocTemplate(pDocTemplate);
 
@@ -173,7 +173,7 @@ public:
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CAboutDlg)
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation

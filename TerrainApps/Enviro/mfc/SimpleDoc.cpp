@@ -21,7 +21,7 @@ IMPLEMENT_DYNCREATE(CSimpleDoc, CDocument)
 BEGIN_MESSAGE_MAP(CSimpleDoc, CDocument)
 	//{{AFX_MSG_MAP(CSimpleDoc)
 		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
+		//	DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 

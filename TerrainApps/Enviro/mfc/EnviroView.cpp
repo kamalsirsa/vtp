@@ -633,9 +633,9 @@ void EnviroView::OnSize(UINT nType, int cx, int cy)
 
 void EnviroView::OnPaint() 
 {
-    // try to let MFC do some of its idle processing
-    LONG lIdle = 0;
-    while ( AfxGetApp()->OnIdle(lIdle++ ) );
+	// try to let MFC do some of its idle processing
+	LONG lIdle = 0;
+	while ( AfxGetApp()->OnIdle(lIdle++ ) );
 
 	if (1)
 	{
@@ -647,16 +647,16 @@ void EnviroView::OnPaint()
 		SwapBuffers(dc.m_ps.hdc);
 	}
 
-    // try to let MFC do some of its idle processing
-    lIdle = 0;
-    while ( AfxGetApp()->OnIdle(lIdle++ ) );
+	// try to let MFC do some of its idle processing
+	lIdle = 0;
+	while ( AfxGetApp()->OnIdle(lIdle++ ) );
 
 	if (m_bRunning)
 		InvalidateRect(NULL,FALSE);	//for Continuous Rendering
 
-    // try to let MFC do some of its idle processing
+	// try to let MFC do some of its idle processing
 	lIdle = 0;
-    while ( AfxGetApp()->OnIdle(lIdle++ ) );
+	while ( AfxGetApp()->OnIdle(lIdle++ ) );
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -544,37 +544,37 @@ void CCreateDlg::DetermineTerrainSizeFromBT()
 void CCreateDlg::DetermineSizeFromBMP()
 {
 	BITMAPINFOHEADER	Hdr;
-    HFILE				fileHandle;
-    OFSTRUCT            openFileStruct;
-    BITMAPFILEHEADER    bitmapHdr;
+	HFILE				fileHandle;
+	OFSTRUCT			openFileStruct;
+	BITMAPFILEHEADER	bitmapHdr;
 
 	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, "GeoSpecific/" + m_strTextureSingle);
 	if (fname == "")
 		goto ErrExit;
 
-    fileHandle = OpenFile(fname, &openFileStruct, OF_READ);
-    if (fileHandle == HFILE_ERROR) {
-        return;
-    }
+	fileHandle = OpenFile(fname, &openFileStruct, OF_READ);
+	if (fileHandle == HFILE_ERROR) {
+		return;
+	}
 
-    if (sizeof (bitmapHdr) !=
-        _lread (fileHandle, (LPSTR)&bitmapHdr, sizeof (bitmapHdr))) {
-        goto ErrExit;
-    }
+	if (sizeof (bitmapHdr) !=
+		_lread (fileHandle, (LPSTR)&bitmapHdr, sizeof (bitmapHdr))) {
+		goto ErrExit;
+	}
 
-    if (bitmapHdr.bfType != 0x4d42) {
-        goto ErrExit;
-    }
+	if (bitmapHdr.bfType != 0x4d42) {
+		goto ErrExit;
+	}
 
-    if (sizeof(BITMAPINFOHEADER) !=
-        _lread (fileHandle, (LPSTR)&Hdr, sizeof(BITMAPINFOHEADER))) {
-        goto ErrExit;
-    }
-    _lclose(fileHandle);
+	if (sizeof(BITMAPINFOHEADER) !=
+		_lread (fileHandle, (LPSTR)&Hdr, sizeof(BITMAPINFOHEADER))) {
+		goto ErrExit;
+	}
+	_lclose(fileHandle);
 
-    if (Hdr.biSize == sizeof(BITMAPCOREHEADER)) {
-        goto ErrExit;
-    }
+	if (Hdr.biSize == sizeof(BITMAPCOREHEADER)) {
+		goto ErrExit;
+	}
 	m_iTextureSize = Hdr.biWidth;
 	return;
 

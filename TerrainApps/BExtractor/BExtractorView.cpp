@@ -150,7 +150,7 @@ void BExtractorView::OnDraw(CDC* pDC)
 	BExtractorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 
-    if (!pDoc->m_picLoaded)
+	if (!pDoc->m_picLoaded)
 		return;
 
 	CBImage *pImage = pDoc->m_pImage;
@@ -1337,7 +1337,7 @@ bool BExtractorView::SelectionOnPicture(DPoint2 point)
 
 void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 {
-    BExtractorDoc* doc = GetDocument();
+	BExtractorDoc* doc = GetDocument();
 
 	DRECT drect(start.x, start.y, end.x, end.y);
 	drect.Sort();
@@ -1384,7 +1384,7 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 {
 
-    BExtractorDoc* doc = GetDocument();
+	BExtractorDoc* doc = GetDocument();
 	DRECT drect(start.x, start.y, end.x, end.y);
 	Node *pNode;
 	Node *pNext;
@@ -1433,7 +1433,7 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 
 void BExtractorView::OnFunctionsConvolve()
 {
-    BExtractorDoc* doc = GetDocument();
+	BExtractorDoc* doc = GetDocument();
 	if (!doc->m_picLoaded)
 		return;
 
@@ -1605,7 +1605,7 @@ void BExtractorView::OnFunctionsConvolve()
 	CDib ResultDib;
 	ResultDib.Setup(pDC, bm->GetWidth(), bm->GetHeight(), 8, GetDocument()->m_hdd);
 
-    iplConvertToDIBSep(i1, ResultDib.GetDIBHeader(), (char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
+	iplConvertToDIBSep(i1, ResultDib.GetDIBHeader(), (char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
 
 	//distinguish individual buildings and label them
 	doc->FloodFillDIB(&ResultDib);

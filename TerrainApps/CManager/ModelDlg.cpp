@@ -1,12 +1,12 @@
 //
-// Name:        ModelDlg.cpp
+// Name:	ModelDlg.cpp
 //
 // Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifdef __GNUG__
-    #pragma implementation "ModelDlg.cpp"
+	#pragma implementation "ModelDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -29,18 +29,18 @@
 // WDR: event table for ModelDlg
 
 BEGIN_EVENT_TABLE(ModelDlg,AutoPanel)
-    EVT_TEXT( ID_FILENAME, ModelDlg::OnTextFilename )
-    EVT_TEXT( ID_DISTANCE, ModelDlg::OnTextVisible )
-    EVT_TEXT( ID_SCALE, ModelDlg::OnTextScale )
+	EVT_TEXT( ID_FILENAME, ModelDlg::OnTextFilename )
+	EVT_TEXT( ID_DISTANCE, ModelDlg::OnTextVisible )
+	EVT_TEXT( ID_SCALE, ModelDlg::OnTextScale )
 END_EVENT_TABLE()
 
 ModelDlg::ModelDlg( wxWindow *parent, wxWindowID id,
-    const wxPoint &position, const wxSize& size, long style ) :
-    AutoPanel( parent, id, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	AutoPanel( parent, id, position, size, style )
 {
 	m_bUpdating = false;
 	m_pCurrentModel = NULL;
-    ModelDialogFunc( this, TRUE ); 
+	ModelDialogFunc( this, TRUE ); 
 }
 
 // WDR: handler implementations for ModelDlg

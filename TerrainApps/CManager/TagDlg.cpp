@@ -1,19 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        TagDlg.cpp
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
+// Name:	TagDlg.cpp
 /////////////////////////////////////////////////////////////////////////////
 
 #ifdef __GNUG__
-    #pragma implementation "TagDlg.cpp"
+	#pragma implementation "TagDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+	#pragma hdrstop
 #endif
 
 #include "TagDlg.h"
@@ -32,10 +29,10 @@ EVT_INIT_DIALOG (TagDlg::OnInitDialog)
 END_EVENT_TABLE()
 
 TagDlg::TagDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    wxDialog( parent, id, title, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	wxDialog( parent, id, title, position, size, style )
 {
-    TagDialogFunc( this, TRUE ); 
+	TagDialogFunc( this, TRUE ); 
 }
 
 void TagDlg::OnInitDialog(wxInitDialogEvent& event)

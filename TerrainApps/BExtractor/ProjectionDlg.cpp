@@ -62,7 +62,6 @@ BOOL CProjectionDlg::OnInitDialog()
 	m_Projection.SetCurSel(0);
 	
 	return FALSE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CProjectionDlg::OnSelchangeProjection()

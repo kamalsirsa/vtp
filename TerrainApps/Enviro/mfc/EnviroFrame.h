@@ -23,7 +23,7 @@ protected: // create from serialization only
 // Attributes
 protected:
 	CSplitterWnd m_wndSplitter;
-	CToolBar    m_wndToolBar;
+	CToolBar	m_wndToolBar;
 	CPlantDlg	m_wndPlants;
 	CFenceDlg	m_wndFences;
 
