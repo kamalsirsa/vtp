@@ -122,7 +122,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 
 #ifdef EPS
 	extern ostream *epsStream;
-	
+
 	*epsStream << "%Hranice" << endl;
 	for (i = m_vl.begin (); i != m_vl.end (); i++)
 	{
@@ -165,9 +165,9 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		assert(i.m_leftVertex->m_prevVertex != i.m_rightVertex);
 		assert(i.m_rightVertex->m_nextVertex != i.m_leftVertex);
 		if (i.m_type == CIntersection::CONVEX)
-		if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
-			i.ApplyLast3(m_skeleton, m_vl);
-		else i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
+			if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
+				i.ApplyLast3(m_skeleton, m_vl);
+			else i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
 		if (i.m_type == CIntersection :: NONCONVEX)
 			i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq);
 	}
@@ -274,9 +274,12 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 		C2DPoint& p1 = points[pi];
 		C2DPoint& p2 = points[(pi+1)%points.size()];
 
-		for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
+		CSkeleton::iterator s1;
+		for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
+		{
 			if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
 				break;
+		}
 		pNextEdge = &(*s1);
 		// Circumnavigate the right face
 		do
@@ -346,7 +349,7 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 	C2DPoint NewEdgeVector;
 	CNumber CosTheta;
 	CNumber HighestCosTheta = 0;
-	
+
 	if(*bReversed)
 	{
 		OldPoint = pEdge->m_lower.m_vertex->m_point;
@@ -449,9 +452,12 @@ CSkeleton& CStraightSkeleton::MakeRoof(ContourVector &contours, double dSlopeRad
 			C2DPoint& p1 = points[pi];
 			C2DPoint& p2 = points[(pi+1)%points.size()];
 			// Find the starting edge
-			for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
+			CSkeleton::iterator s1;
+			for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
+			{
 				if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
 					break;
+			}
 			if (s1 == m_skeleton.end())
 				goto ErrorExit;
 			pStartEdge = &(*s1);
@@ -531,7 +537,7 @@ CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C2DP
 	CNumber U;
 
 	U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_y - p1.m_y) * (p2.m_y - p1.m_y))) /
-					(SegmentLength * SegmentLength);
+		(SegmentLength * SegmentLength);
 
 	pIntersection.m_x = p1.m_x + U * (p2.m_x - p1.m_x);
 	pIntersection.m_y = p1.m_y + U * (p2.m_y - p1.m_y);
@@ -555,17 +561,16 @@ void CStraightSkeleton::Dump()
 	{
 		CSkeletonLine& db = (*s1);
 		sprintf(DebugString, "ID: %d\tlwr lID %d rID %d vID %d (%f %f %f)\n\t\thgr lID %d rID %d vID %d (%f %f %f)\n",
-							db.m_ID,
-							db.m_lower.LeftID(),
-							db.m_lower.RightID(),
-							db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
-							db.m_higher.LeftID(),
-							db.m_higher.RightID(),
-							db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
+			db.m_ID,
+			db.m_lower.LeftID(),
+			db.m_lower.RightID(),
+			db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
+			db.m_higher.LeftID(),
+			db.m_higher.RightID(),
+			db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
 		OutputDebugString(DebugString);
 	}
 }
 #endif
-
 
 

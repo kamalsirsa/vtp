@@ -18,14 +18,14 @@
 //
 
 CBisector::CBisector(const C2DPoint &p, const C2DPoint &q)
-		  : m_Origin(p)
+: m_Origin(p)
 {
 	double d = atan2 (q.m_y - p.m_y, q.m_x - p.m_x);
 	m_Angle = d;
 }
 
 CBisector CBisector::AngleAxis (const C2DPoint &b, const C2DPoint &a,
-								const C2DPoint &c)
+	const C2DPoint &c)
 {
 	CBisector ba (b, a);
 	CBisector bc (b, c);
@@ -150,9 +150,9 @@ CNumber CNumber::NormalizedAngle()
 // Constructor
 //
 CVertex::CVertex (const C2DPoint &p, CVertex &left, CVertex &right)
-			: m_point (p), m_done (false), m_higher (NULL), m_ID (-1),
-			  m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
-			  m_advancingSkeletonLine (NULL)
+: m_point (p), m_done (false), m_higher (NULL), m_ID (-1),
+m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
+m_advancingSkeletonLine (NULL)
 {
 	m_leftLine = left.m_leftLine;
 	m_rightLine = right.m_rightLine;
@@ -262,7 +262,8 @@ CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex *
 {
 	CNumber minDist = CN_INFINITY;
 	CVertexList::iterator minI = vl.end ();
-	for (CVertexList :: iterator i = vl.begin (); i != vl.end (); i++)
+	CVertexList :: iterator i;
+	for (i = vl.begin (); i != vl.end (); i++)
 	{
 		if ((*i).m_done) continue;
 		if ((*i).m_nextVertex == NULL || (*i).m_prevVertex == NULL) continue;
@@ -274,7 +275,8 @@ CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex *
 		CNumber d = poi.Dist(m_point);
 		if (d < minDist) { minDist = d; minI = i; }
 	}
-	if (minDist == CN_INFINITY) return CN_INFINITY;
+	if (minDist == CN_INFINITY)
+		return CN_INFINITY;
 
 	i = minI;
 	C2DPoint poi = CoordinatesOfAnyIntersectionOfTypeB((*i), *(*i).m_nextVertex);
@@ -316,4 +318,3 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 	}
 	return false;
 }
-

@@ -116,9 +116,9 @@ class CVertex
 public:
 	CVertex (void) : m_ID (-1) { };
 	CVertex (const C2DPoint &p, const C2DPoint &prev = C2DPoint (), const C2DPoint &next = C2DPoint ())
-		: m_point (p), m_axis (CBisector::AngleAxis (p, prev, next)), m_leftLine (p, prev), m_rightLine (p, next), m_higher (NULL),
-		m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
-		m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
+	: m_point (p), m_axis (CBisector::AngleAxis (p, prev, next)), m_leftLine (p, prev), m_rightLine (p, next), m_higher (NULL),
+	m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
+	m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
 	CVertex (const C2DPoint &p, CVertex &left, CVertex &right);
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
@@ -185,11 +185,11 @@ public:
 		int RightID (void) const { if (!m_right) return -1; return m_right -> m_ID; }
 		int VertexID (void) const { if (!m_vertex) return -1; return m_vertex -> m_ID; }
 	} m_lower, m_higher;
-	operator == (const CSkeletonLine &s) const
+	bool operator == (const CSkeletonLine &s) const
 	{
 		return m_higher.m_vertex -> m_ID == s.m_higher.m_vertex -> m_ID  && m_lower.m_vertex -> m_ID  == s.m_lower.m_vertex -> m_ID ;
 	}
-	operator < (const CSkeletonLine &) const { assert (false); return false; }
+	bool operator < (const CSkeletonLine &) const { assert (false); return false; }
 	int m_ID;
 };
 
@@ -211,4 +211,3 @@ public:
 };
 
 #endif // FELKELCOMPONENTSH
-
