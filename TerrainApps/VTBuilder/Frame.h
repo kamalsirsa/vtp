@@ -240,6 +240,8 @@ public:
 	void SaveProject(const wxString2 &strPathName);
 
 	// Layer methods
+	int NumLayers() const { return m_Layers.GetSize(); }
+	vtLayer *GetLayer(int i) const { return m_Layers[i]; }
 	void LoadLayer(const wxString &fname);
 	void AddLayer(vtLayer *lp);
 	bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh = true);
@@ -365,7 +367,6 @@ public:
 	void ExportImage();
 
 	// Application Data
-	LayerArray	m_Layers;
 	DRECT		m_area;
 
 protected:
@@ -376,6 +377,7 @@ protected:
 	const char *m_szIniFilename;
 
 	// Application Data
+	LayerArray	m_Layers;
 	vtLayerPtr	m_pActiveLayer;
 
 	// UI members

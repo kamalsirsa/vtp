@@ -108,7 +108,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		return;
 
 	vtLayerPtr lp;
-	int i, iLayers = pFrame->m_Layers.GetSize();
+	int i, iLayers = pFrame->NumLayers();
 
 	// Draw the world map SHP file of country outline polys in latlon
 	if (m_bShowMap)
@@ -117,7 +117,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	// Draw the solid layers first
 	for (i = 0; i < iLayers; i++)
 	{
-		lp = pFrame->m_Layers.GetAt(i);
+		lp = pFrame->GetLayer(i);
 		if (lp->GetType() != LT_IMAGE && lp->GetType() != LT_ELEVATION)
 			continue;
 		if (lp->GetVisible())
@@ -126,7 +126,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	// Then the poly/vector/point layers
 	for (i = 0; i < iLayers; i++)
 	{
-		lp = pFrame->m_Layers.GetAt(i);
+		lp = pFrame->GetLayer(i);
 		if (lp->GetType() == LT_IMAGE || lp->GetType() == LT_ELEVATION)
 			continue;
 		if (lp->GetVisible())
@@ -664,9 +664,9 @@ void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 	// perhaps the user clicked on a terrain
 	bool bFound = false;
 	DRECT rect;
-	for (int l = 0; l < pFrame->m_Layers.GetSize(); l++)
+	for (int l = 0; l < pFrame->NumLayers(); l++)
 	{
-		vtLayerPtr lp = pFrame->m_Layers.GetAt(l);
+		vtLayerPtr lp = pFrame->GetLayer(l);
 		if (lp->GetType() != LT_ELEVATION) continue;
 		vtElevLayer *t = (vtElevLayer *)lp;
 
@@ -1311,13 +1311,13 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 void BuilderView::OnIdle(wxIdleEvent& event)
 {
 	MainFrame *pFrame = GetMainFrame();
-	int i, iLayers = pFrame->m_Layers.GetSize();
+	int i, iLayers = pFrame->NumLayers();
 
 	// Check to see if any elevation layers needs drawing
 	bool bDrew = false;
 	for (i = 0; i < iLayers; i++)
 	{
-		vtLayer *lp = pFrame->m_Layers.GetAt(i);
+		vtLayer *lp = pFrame->GetLayer(i);
 		if (lp->GetType() == LT_ELEVATION)
 		{
 			vtElevLayer *pEL = (vtElevLayer *)lp;
@@ -1364,11 +1364,11 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	}
 	else if (code == WXK_ADD && ctrl)
 	{
-		SetScale(GetScale() * sqrt(2));
+		SetScale(GetScale() * sqrt(2.0));
 	}
 	else if (code == WXK_SUBTRACT && ctrl)
 	{
-		SetScale(GetScale() / sqrt(2));
+		SetScale(GetScale() / sqrt(2.0));
 	}
 	else if (code == WXK_F10)
 	{
