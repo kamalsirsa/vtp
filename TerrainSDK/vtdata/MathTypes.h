@@ -51,6 +51,10 @@
 	#define logf (float)log
 	#endif
 
+	#ifndef log10f
+	#define log10f (float)log10
+	#endif
+
 	#ifndef powf
 	#define powf (float)pow
 	#endif
