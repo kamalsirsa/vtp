@@ -29,8 +29,8 @@ MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 		55,		// Zone
 		65,		// Datum
 		58,		// Units
-		170,	// Coordinates of cursor
-		76		// Elevation under cursor
+		190,	// Coordinates of cursor
+		86		// Elevation under cursor
 	};
 
 	SetFieldsCount(Field_Max);
