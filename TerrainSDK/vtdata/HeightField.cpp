@@ -467,10 +467,21 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	}
 
 	RGBi c3;
-
 	for (i = 0; i < TABLE_SIZE; i++)
 	{
-		if (cmap->m_bRelative == false)
+		if (cmap->m_bRelative)
+		{
+			// use regular divisions
+			int bracket = (int) ((elev-fMin) / fRange * (num-1));
+			if (bracket != current)
+			{
+				current = bracket;
+				base = fMin + bracket * bracket_size;
+				c1 = cmap->m_color[current];
+				c2 = cmap->m_color[current+1];
+			}
+		}
+		else
 		{
 			// use absolute elevations
 			while (current < num-1 && elev >= cmap->m_elev[current+1])
@@ -483,18 +494,6 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 				bracket_size = next - base;
 			}
 		}
-		else
-		{
-			// use regular divisions
-			int bracket = (int) ((elev-fMin) / fRange * (num-1));
-			if (bracket != current)
-			{
-				current = bracket;
-				base = fMin + bracket * bracket_size;
-				c1 = cmap->m_color[current];
-				c2 = cmap->m_color[current+1];
-			}
-		}
 		if (cmap->m_bBlend)
 		{
 			fraction = (elev - base) / bracket_size;
@@ -505,6 +504,9 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 		table.push_back(c3);
 		elev += step;
 	}
+
+	// Add one to catch top data
+	table.push_back(table[TABLE_SIZE-1]);
 
 	// now iterate over the texels
 	for (i = 0; i < w; i++)
