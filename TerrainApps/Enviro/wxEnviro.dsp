@@ -55,7 +55,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxdlld.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib ssg.lib sg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /out:"DebugDLL/isosurf.exe" /pdbtype:sept /libpath:"\wx2\lib" /libpath:"\plib-1.2.0\src\ssg\Debug" /libpath:"\plib-1.2.0\src\sg\Debug" /libpath:"\TerrainSDK\NetCDF"
-# ADD LINK32 osg.lib osgDB.lib osgUtil.lib wx22_9d.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib gdi32.lib libMini.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /pdbtype:sept
+# ADD LINK32 osg.lib osgDB.lib osgUtil.lib wx22_9d.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib gdi32.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /pdbtype:sept
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
@@ -73,7 +73,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "../../../include" /I "../../../contrib/include" /I "\wx2\include" /I "\plib-1.2.0\src\ssg" /I "\plib-1.2.0\src\sg" /I "\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /MD /W3 /GR /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D VTLIB_OSG=1 /FD /c
 # SUBTRACT CPP /Fr /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxdll.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib ssg.lib sg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /out:"ReleaseDLL/isosurf.exe" /libpath:"\wx2\lib"
-# ADD LINK32 osg.lib osgDB.lib osgUtil.lib wx22_9.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib libMini.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
+# ADD LINK32 osg.lib osgDB.lib osgUtil.lib wx22_9.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
 
 !ENDIF 
 
@@ -277,6 +277,14 @@ SOURCE=.\wx\TParamsDlg.cpp
 !ENDIF 
 
 # End Source File
+# Begin Source File
+
+SOURCE=.\wx\TParamsTabDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\UtilDlg.cpp
+# End Source File
 # End Group
 # Begin Group "Headers-wx"
 
@@ -340,6 +348,14 @@ SOURCE=.\wx\StartupDlg.h
 # Begin Source File
 
 SOURCE=.\wx\TParamsDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\TParamsTabDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\UtilDlg.h
 # End Source File
 # End Group
 # Begin Group "Source-vtlib"
@@ -438,32 +454,6 @@ SOURCE=.\PTerrain.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\SwapEngine.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\TerrainSceneWP.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\TransitTerrain.cpp
 
 !IF  "$(CFG)" == "wxEnviro - Win32 Debug"
@@ -536,14 +526,6 @@ SOURCE=.\Options.h
 # Begin Source File
 
 SOURCE=.\PTerrain.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SwapEngine.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TerrainSceneWP.h
 # End Source File
 # Begin Source File
 
