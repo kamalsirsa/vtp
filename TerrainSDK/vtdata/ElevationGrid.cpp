@@ -343,24 +343,28 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
  * \param bDirect	If true, scale the stored height values directly.
  *		Otherwise, only the height scale (vertical meters per unit) is scaled.
  */
-void vtElevationGrid::Scale(float fScale, bool bDirect)
+void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
 {
 	if (!bDirect)
 	{
 		m_fVMeters *= fScale;
-		return;
 	}
-	int i, j;
-	float f;
-	for (i = 0; i < m_iColumns; i++)
+	else
 	{
-		for (j = 0; j < m_iRows; j++)
+		int i, j;
+		float f;
+		for (i = 0; i < m_iColumns; i++)
 		{
-			f = GetFValue(i, j);
-			if (f != INVALID_ELEVATION)
-				SetFValue(i, j, f * fScale);
+			for (j = 0; j < m_iRows; j++)
+			{
+				f = GetFValue(i, j);
+				if (f != INVALID_ELEVATION)
+					SetFValue(i, j, f * fScale);
+			}
 		}
 	}
+	if (bRecomputeExtents)
+		ComputeHeightExtents();
 }
 
 

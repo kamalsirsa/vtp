@@ -39,7 +39,7 @@ public:
 
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, void progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
-	void Scale(float fScale, bool bDirect);
+	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
 
 	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, void progress_callback(int) = NULL );
