@@ -79,7 +79,7 @@ void vtScene::SetBgColor(RGBf color)
 {
 	Vec4 color2;
 	v2s(color, color2);
-	m_pOsgSceneView->setBackgroundColor(color2);
+	m_pOsgSceneView->setClearColor(color2);
 }
 
 bool vtScene::Init()
