@@ -1,5 +1,6 @@
 (none)
 bench
+bollard
 bridge
 building
 apartment building
@@ -9,20 +10,31 @@ barracks
 castle
 commercial
 control tower
+cooling tower
 factory
+fire station
 greenhouse
+hangar
 hospital
 hotel
 house
 igloo
+library
+lighthouse
 motel
+museum
 observatory
+office building
 palace
+police station
 post office
 power plant
+prison building
+refinery
 restaurant
 service station
 shed
+shopping center
 warehouse
 yurt
 crane
