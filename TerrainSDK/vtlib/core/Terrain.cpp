@@ -10,6 +10,7 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
 #include "vtdata/StructArray.h"
+#include "vtdata/CubicSpline.h"
 #include "xmlhelper/exception.hpp"
 
 #include "Terrain.h"
@@ -2437,7 +2438,6 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
 }
 
-#include "vtdata/CubicSpline.h"
 
 float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 									 float fOffset, bool bCurve, bool bTrue)
@@ -2549,6 +2549,73 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		}
 	}
 	pMesh->AddStrip2(iVerts, iStart);
+	return fTotalLength;
+}
+
+float vtTerrain::AddSurfaceLineToMesh2(vtMeshFactory *pMF, const DLine2 &line,
+									 float fOffset, bool bCurve, bool bTrue)
+{
+	unsigned int i, j;
+	FPoint3 v1, v2, v;
+
+	// try to guess how finely to tesselate our line
+	float fSpacing=0;
+	if (m_pDynGeom)
+	{
+		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
+		fSpacing = std::min(spacing.x, spacing.y) / 2;
+	}
+	else if (m_pTin)
+	{
+		// TINs don't have a grid spacing.  In lieu of using a completely
+		//  different (more correct) algorithm for draping, just estimate.
+		DRECT ext = m_pTin->GetEarthExtents();
+		FPoint2 p1, p2;
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
+		fSpacing = (p2 - p1).Length() / 1000.0f;
+	}
+
+	float fTotalLength = 0.0f;
+	pMF->PrimStart();
+	int iVerts = 0;
+	unsigned int points = line.GetSize();
+	if (bCurve)
+	{
+	}
+	else
+	{
+		for (i = 0; i < points; i++)
+		{
+			v1 = v2;
+			m_pHeightField->m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
+			if (i == 0)
+				continue;
+
+			// estimate how many steps to subdivide this segment into
+			FPoint3 diff = v2 - v1;
+			float fLen = diff.Length();
+			unsigned int iSteps = (unsigned int) (fLen / fSpacing);
+			if (iSteps < 1) iSteps = 1;
+
+			FPoint3 last_v;
+			for (j = (i == 1 ? 0:1); j <= iSteps; j++)
+			{
+				// simple linear interpolation of the ground coordinate
+				v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+				m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
+				v.y += fOffset;
+				pMF->AddVertex(v);
+				iVerts++;
+
+				// keep a running toal of approximate ground length
+				if (j > 0)
+					fTotalLength += (v - last_v).Length();
+				last_v = v;
+			}
+		}
+	}
+	pMF->PrimEnd();
 	return fTotalLength;
 }
 

@@ -17,6 +17,7 @@
 #include "Route.h"
 #include "DynTerrain.h"
 #include "Content3d.h"
+#include "GeomUtil.h"	// for MeshFactory
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -59,7 +60,6 @@ enum TFType
 	TFT_STRUCTURES,
 	TFT_ROADS
 };
-
 
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
@@ -224,6 +224,8 @@ public:
 
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
+		float fOffset, bool bCurve = false, bool bTrue = false);
+	float AddSurfaceLineToMesh2(vtMeshFactory *pMF, const DLine2 &line,
 		float fOffset, bool bCurve = false, bool bTrue = false);
 	void CreateStyledFeatures(const vtFeatureSet &feat,  const vtTagArray &style);
 	void CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style);
