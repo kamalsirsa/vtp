@@ -172,7 +172,6 @@ public:
 	// OSG-specific Implementation
 public:
 	osg::ref_ptr<CustomTransform> m_pTransform;
-	FPoint3			m_Scale;
 
 protected:
 	virtual ~vtTransform();
