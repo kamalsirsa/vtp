@@ -157,12 +157,9 @@ void IslandTerrain::create_state_park()
 #if 0
 	// Here is an example of how to directly create a content item and
 	//	plant it manually on the terrain.
-	vtItem *item = s_Content.FindItemByName("Riesenbuehl");
-	if (item)
+	vtGroup *group = s_Content.CreateGroupFromItemname("Riesenbuehl");
+	if (group)
 	{
-		// create it
-		vtGroup *group = s_Content.CreateInstanceOfItem(item);
-
 		// plant it
 		vtTransform *xform = new vtTransform();
 		xform->AddChild(group);
