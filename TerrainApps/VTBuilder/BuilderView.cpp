@@ -1103,6 +1103,13 @@ void BuilderView::OnDragDistance()
 
 	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
 	pDlg->SetPoints(p1, p2, true);
+
+	float h1 = GetMainFrame()->GetHeightFromTerrain(p1);
+	float h2 = GetMainFrame()->GetHeightFromTerrain(p2);
+	float diff = FLT_MIN;
+	if (h1 != INVALID_ELEVATION && h2 != INVALID_ELEVATION)
+		diff = h2 - h1;
+	pDlg->SetGroundAndVertical(FLT_MIN, diff, false);
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
