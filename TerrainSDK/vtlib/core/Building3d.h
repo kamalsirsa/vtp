@@ -38,10 +38,9 @@ public:
 
 	//looks up materials for the building
 	void FindMaterialIndices();
-	//returns different LOD Models
-	//creates the shape of the building.
-	//details can be variable.  defaults to full detail.
-	bool CreateShape(vtHeightField *pHeightField, bool roof=true, bool walls=true, bool details=true);
+
+	void CreateShape(vtHeightField *pHeightField, bool roof=true,
+		bool walls=true, bool details=true);
 
 	void DestroyGeometry();
 	void CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
@@ -49,7 +48,7 @@ public:
 	vtTransform *GetTransform();
 	void AdjustHeight(vtHeightField *pHeightField);
 
-	//randomize building properties
+	// randomize building properties
 	void Randomize(int iStories, bool bRotation);
 
 	// display a bounding box around to object to highlight it

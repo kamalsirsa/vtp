@@ -252,8 +252,18 @@ void vtBuilding3d::DetermineBaseCorners(vtHeightField *pHeightField,
 }
 
 
-bool vtBuilding3d::CreateShape(vtHeightField *pHeightField, bool bDoRoof,
-								   bool bDoWalls, bool details)
+/**
+ * Creates the geometry for the building.
+ * Capable of several levels of detail (defaults to full detail).
+ * If the geometry was already built previously, it is destroyed and re-created.
+ *
+ * \param pHeightField The heightfield on which to plant the building.
+ * \param bDoRoof Construct a roof.
+ * \param bDoWalls Construct the walls.
+ * \param bDetails Construct all the little details, like mouding and windows.
+ */
+void vtBuilding3d::CreateShape(vtHeightField *pHeightField, bool bDoRoof,
+							   bool bDoWalls, bool bDetails)
 {
 	if (m_pContainer)
 	{
@@ -265,16 +275,10 @@ bool vtBuilding3d::CreateShape(vtHeightField *pHeightField, bool bDoRoof,
 		// constructing for the first time
 		m_pContainer = new vtTransform();
 		m_pContainer->SetName2("building");
-#if 0
-		vtGeom *pSphere = CreateSphereGeom(s_Materials, 0, -0.1f, 16);
-		m_pContainer->AddChild(pSphere);
-#endif
 	}
-	CreateGeometry(pHeightField, bDoRoof, bDoWalls, details);
+	CreateGeometry(pHeightField, bDoRoof, bDoWalls, bDetails);
 	m_pContainer->AddChild(m_pGeom);
 	m_pContainer->SetTrans(m_center);
-
-	return true;
 }
 
 void vtBuilding3d::DestroyGeometry()
@@ -375,62 +379,9 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 	}
 }
 
-#define SPHERE_STEPS 24
-
-vtGeom *CreateBoundSphereGeom(vtGeom *pOfGeom)
-{
-	vtGeom *pGeom = new vtGeom();
-	vtMaterialArray *pMats = new vtMaterialArray();
-	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
-	pGeom->SetMaterials(pMats);
-
-	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, (SPHERE_STEPS+1)*3*2);
-
-	// get bounding sphere
-	FSphere sphere;
-	pOfGeom->GetBoundSphere(sphere);
-	float radius = sphere.radius * 0.9f;
-
-	FPoint3 p;
-	int i, j;
-	float a;
-
-	for (i = 0; i < 2; i++)
-	{
-		for (j = 0; j <= SPHERE_STEPS; j++)
-		{
-			a = j * PI2f / SPHERE_STEPS;
-			p.x = sin(a) * radius;
-			p.y = cos(a) * radius;
-			p.z = i ? radius * 0.05f : radius * -0.05f;
-			pMesh->AddVertex(p + sphere.center);
-		}
-		for (j = 0; j <= SPHERE_STEPS; j++)
-		{
-			a = j * PI2f / SPHERE_STEPS;
-			p.y = sin(a) * radius;
-			p.z = cos(a) * radius;
-			p.x = i ? radius * 0.05f : radius * -0.05f;
-			pMesh->AddVertex(p + sphere.center);
-		}
-		for (j = 0; j <= SPHERE_STEPS; j++)
-		{
-			a = j * PI2f / SPHERE_STEPS;
-			p.z = sin(a) * radius;
-			p.x = cos(a) * radius;
-			p.y = i ? radius * 0.08f : radius * -0.08f;
-			pMesh->AddVertex(p + sphere.center);
-		}
-	}
-	for (i = 0; i < 6; i++)
-		pMesh->AddStrip2((SPHERE_STEPS+1), (SPHERE_STEPS+1) * i);
-
-	pGeom->AddMesh(pMesh, 0);
-	return pGeom;
-}
-
-
-// display some bounding wires around the object to highlight it
+/**
+ * Display some bounding wires around the object to highlight it.
+ */
 void vtBuilding3d::ShowBounds(bool bShow)
 {
 	if (bShow)
@@ -438,7 +389,11 @@ void vtBuilding3d::ShowBounds(bool bShow)
 		if (!m_pHighlight)
 		{
 			// the highlight geometry doesn't exist, so create it
-			m_pHighlight = CreateBoundSphereGeom(m_pGeom);
+			// get bounding sphere
+			FSphere sphere;
+			m_pGeom->GetBoundSphere(sphere);
+
+			m_pHighlight = CreateBoundSphereGeom(sphere);
 			m_pContainer->AddChild(m_pHighlight);
 		}
 		m_pHighlight->SetEnabled(true);
@@ -454,7 +409,8 @@ void vtBuilding3d::ShowBounds(bool bShow)
 ////////////////////////////////////////////////////////////////////////////
 
 //walls are created in panels (sections)
-void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory, int iWall, bool details)
+void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
+									  int iWall, bool details)
 {
 	float fFloor = (iStory * CEILING_HEIGHT) * WORLD_SCALE;
 	float fCeiling = ((iStory+1) * CEILING_HEIGHT) * WORLD_SCALE;
@@ -484,20 +440,25 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory, int i
 	//choose wall material
 	switch (pWall->m_Type)
 	{
-	case WALL_FLAT:		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_PLAIN, m_Color); break;
-	case WALL_SIDING:	m_iMatIdx[BM_WALL] = FindMatIndex(BAP_SIDING, m_Color); break;
-	case WALL_GLASS:	m_iMatIdx[BM_WALL] = FindMatIndex(BAP_SIDING, m_Color); break;  //unsupported for now
+	case WALL_FLAT:
+		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_PLAIN, m_Color); break;
+	case WALL_SIDING:
+		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_SIDING, m_Color); break;
+	case WALL_GLASS:
+		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_SIDING, m_Color); break;  //unsupported for now
 	}
 
-	//figure out how many panels we have (walls sections, windows sections, doors, moulding)
+	// figure out how many panels we have (walls sections, windows sections,
+	// doors, moulding)
 	int totalfeatures = numDoors + numWindows;
 	FPoint3 direction = point[1] - point[0];
-	//length of the wall
+	// length of the wall
 	float dist = direction.Length();
 	direction.Normalize();
 
-	//how wide should each wall section be?
-	//this is how much space we have for the walls after accounting for doors and windows
+	// how wide should each wall section be?
+	// this is how much space we have for the walls after accounting for
+	// doors and windows
 	float sectionLength = dist - (numDoors * DOOR_WIDTH * WORLD_SCALE +
 								numWindows * WINDOW_WIDTH * WORLD_SCALE);
 
@@ -527,70 +488,72 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory, int i
 		}
 	}
 
-	//boolean used within loop to say whether the next panel should be a door or not.
+	// boolean used within loop to say whether the next panel should be a
+	// door or not.
 	bool door;
-	//second boolean used to actually signal whether to build a door or not, looking at the variable door and other factors.
+	// second boolean used to actually signal whether to build a door or not,
+	// looking at the variable door and other factors.
 	bool makedoor;
 	int doorcount = 0;
 	int windowcount = 0;
 	bool madefirstfeature = false;
-	//build the wall.  point[0] is the first starting point of a panel.
-	for (i = 0; i < totalsections; i++) {
+	// build the wall.  point[0] is the first starting point of a panel.
+	for (i = 0; i < totalsections; i++)
+	{
 		//add moulding if necessary (only at beginning or end)
 		if (bMoulding && (i == 0 || i == totalsections - 1))
 		{
-				point[1] = point[0] + direction*MOULDING_WIDTH*WORLD_SCALE;
-				AddWallSection(BM_TRIM, point[0], point[1], CEILING_HEIGHT * WORLD_SCALE, 0);
+			point[1] = point[0] + direction*MOULDING_WIDTH*WORLD_SCALE;
+			AddWallSection(BM_TRIM, point[0], point[1], CEILING_HEIGHT * WORLD_SCALE, 0);
+			continue;
+		}
+
+		// alternate between wall panel and a feature (window or door)
+		if ((i%2 == 0 && !bMoulding) ||
+			(i%2 == 1 && bMoulding))
+		{
+			point[1] = point[0] + direction*sectionLength;
+			AddWallSection(BM_WALL, point[0], point[1], CEILING_HEIGHT * WORLD_SCALE, 0);
 		}
 		else
 		{
-			//alternate between wall panel and a feature (window or door)
-			if ((i%2 == 0 && !bMoulding) ||
-				(i%2 == 1 && bMoulding))
+			// figure out whether to make a door or a window.
+			if (madefirstfeature) {
+				//make a door IF:
+				//	it's the turn to make a door and we have doors left
+				//  to build OR out of windows to build.
+				makedoor = ((door && doorcount < numDoors) ||
+					windowcount > numWindows);
+			}
+			else
 			{
-				point[1] = point[0] + direction*sectionLength;
-				AddWallSection(BM_WALL, point[0], point[1], CEILING_HEIGHT * WORLD_SCALE, 0);
-			} else {
-				//figure out whether to make a door or a window.
-				if (madefirstfeature) {
-					//make a door IF:
-					//	it's the turn to make a door and we have doors left to build OR
-					//  out of windows to build.
-					if ((door && doorcount < numDoors) ||
-							windowcount > numWindows) {
-						makedoor = true;
-					} else {
-						makedoor = false;
-					}
-				} else {
-					if (pWall->m_iDoors > numWindows) {
-						makedoor = true;
-					} else {
-						makedoor = false;
-					}
-					madefirstfeature = true;
-				}
+				makedoor = (pWall->m_iDoors > numWindows);
+				madefirstfeature = true;
+			}
 
-				if (makedoor) {
-					point[1] = point[0] + direction*DOOR_WIDTH*WORLD_SCALE;
-					AddDoorSection(point[0], point[1], CEILING_HEIGHT * WORLD_SCALE);
-					doorcount++;
-					//made a door.  door should not be next
-					door = false;
-				} else {
-					point[1] = point[0] + direction*WINDOW_WIDTH*WORLD_SCALE;
-					AddWindowSection(point[0], point[1], CEILING_HEIGHT * WORLD_SCALE);
-					windowcount++;
-					//made a window.  door should be next
-					door = true;
-				}
+			if (makedoor)
+			{
+				point[1] = point[0] + direction*DOOR_WIDTH*WORLD_SCALE;
+				AddDoorSection(point[0], point[1], CEILING_HEIGHT * WORLD_SCALE);
+				doorcount++;
+				//made a door.  door should not be next
+				door = false;
+			} else {
+				point[1] = point[0] + direction*WINDOW_WIDTH*WORLD_SCALE;
+				AddWindowSection(point[0], point[1], CEILING_HEIGHT * WORLD_SCALE);
+				windowcount++;
+				//made a window.  door should be next
+				door = true;
 			}
 		}
-	point[0] = point[1];
+		point[0] = point[1];
 	}
 }
 
-//builds a wall, given material index, starting and end points, height, and starting height.
+/**
+ * Builds a wall, given material index, starting and end points, height, and
+ * starting height.
+ */
 void vtBuilding3d::AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1, float height, float base_height)
 {
 	// determine 2 points at top of door
@@ -615,7 +578,10 @@ void vtBuilding3d::AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1, flo
 	m_pMesh[bm]->AddFan(start, start+1, start+2, start+3);
 }
 
-//builds a door section.  will also build the wall above the door to ceiling height.
+/**
+ * Builds a door section.  will also build the wall above the door to ceiling
+ * height.
+ */
 void vtBuilding3d::AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height)
 {
 	// determine 2 points at top of wall
