@@ -35,6 +35,7 @@
 #include "VegFieldsDlg.h"
 #include "Projection2Dlg.h"
 #include "ImportStructDlgOGR.h"
+#include "ImportPointDlg.h"
 
 #include "ogrsf_frmts.h"
 
@@ -934,6 +935,130 @@ void MainFrame::ImportFromMapSource(const char *fname)
 			delete layers[i];
 	}
 	delete [] choices;
+}
+
+// Helper for following method
+double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
+					int iStyle, bool bEasting, bool bFlipEasting)
+{
+	const char *string;
+	switch (ftype)
+	{
+	case FTString:
+		string = DBFReadStringAttribute(db, iRec, iField);
+		if (iStyle == 0)	// decimal
+		{
+			return atof(string);
+		}
+		else if (iStyle == 1)	// packed DMS
+		{
+			int deg, min, sec, frac;
+			if (bEasting)
+			{
+				deg  = GetIntFromString(string, 3);
+				min  = GetIntFromString(string+3, 2);
+				sec  = GetIntFromString(string+5, 2);
+				frac = GetIntFromString(string+7, 2);
+				if (deg > 180)
+				{
+					deg  = GetIntFromString(string, 2);
+					min  = GetIntFromString(string+2, 2);
+					sec  = GetIntFromString(string+4, 2);
+					frac = 0;
+				}
+			}
+			else
+			{
+				deg  = GetIntFromString(string, 2);
+				min  = GetIntFromString(string+2, 2);
+				sec  = GetIntFromString(string+4, 2);
+				frac = GetIntFromString(string+6, 2);
+			}
+			if (bFlipEasting)
+				deg = -deg;
+			double secs = sec + (frac/100.0);
+			double val = deg + (min/60.0) + (secs/3600.0);
+			return val;
+		}
+		break;
+	case FTInteger:
+		return DBFReadIntegerAttribute(db, iRec, iField);
+	case FTDouble:
+		return DBFReadDoubleAttribute(db, iRec, iField);
+	default:
+		return 0.0;
+	}
+	return 0.0;
+}
+
+//
+// Import point data from a tabular data source such as a .dbf or .csv
+//  (Currently, only handles DBF)
+//
+void MainFrame::ImportDataPointsFromTable(const char *fname)
+{
+	// Open DBF File
+	DBFHandle db = DBFOpen(fname, "rb");
+	if (db == NULL)
+		return;
+
+	ImportPointDlg dlg(this, -1, _("Point Data Import"));
+
+	// default to the current CRS
+	dlg.SetCRS(m_proj);
+
+	// Fill the DBF field names into the "Use Field" controls
+	int *pnWidth = 0, *pnDecimals = 0;
+	char pszFieldName[32];
+	int iFields = DBFGetFieldCount(db);
+	wxString2 str;
+	int i;
+	Array<DBFFieldType> m_fieldtypes;
+	for (i = 0; i < iFields; i++)
+	{
+		DBFFieldType fieldtype = DBFGetFieldInfo(db, i, pszFieldName,
+			pnWidth, pnDecimals );
+		str = pszFieldName;
+
+		dlg.GetEasting()->Append(str);
+		dlg.GetNorthing()->Append(str);
+
+		m_fieldtypes.Append(fieldtype);
+		//if (fieldtype == FTString)
+		//	GetChoiceFileField()->Append(str);
+		//if (fieldtype == FTInteger || fieldtype == FTDouble)
+		//	GetChoiceHeightField()->Append(str);
+	}
+	if (dlg.ShowModal() != wxID_OK)
+	{
+		DBFClose(db);
+		return;
+	}
+	int iEast = dlg.m_iEasting;
+	int iNorth = dlg.m_iNorthing;
+	int iStyle = dlg.m_bFormat2 ? 1 : 0;
+
+	// Now import
+	vtFeatureSetPoint2D *pSet = new vtFeatureSetPoint2D();
+	pSet->SetProjection(dlg.m_proj);
+
+	int iRecords = DBFGetRecordCount(db);
+	for (i = 0; i < iRecords; i++)
+	{
+		DPoint2 p;
+		p.x = ExtractValue(db, i, iEast, m_fieldtypes[iEast], iStyle, true, dlg.m_bLongitudeWest);
+		p.y = ExtractValue(db, i, iNorth, m_fieldtypes[iNorth], iStyle, false, false);
+		pSet->AddPoint(p);
+	}
+	DBFClose(db);
+
+	// Also copy along the corresponding DBF data into the new featureset
+	pSet->SetFilename(fname);
+	pSet->LoadDataFromDBF(fname);
+
+	vtRawLayer *pRaw = new vtRawLayer();
+	pRaw->SetFeatureSet(pSet);
+	AddLayerWithCheck(pRaw);
 }
 
 vtLayerPtr MainFrame::ImportRawFromOGR(const wxString2 &strFileName)

@@ -72,6 +72,7 @@ EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
 EVT_MENU(ID_LAYER_IMPORTNTF,	MainFrame::OnLayerImportNTF)
 EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
+EVT_MENU(ID_LAYER_IMPORT_POINT,	MainFrame::OnLayerImportPoint)
 EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
@@ -273,7 +274,8 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Data From NTF"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilites From SHP"), _("Import Utilites From SHP"));
-	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import from MapSource file"));
+	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import From MapSource File"));
+	layerMenu->Append(ID_LAYER_IMPORT_POINT, _("Import Point Data From Table"));
 #endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, _("Layer Properties"), _("Layer Properties"));
@@ -1103,6 +1105,18 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 
 	wxString2 str = loadFile.GetPath();
 	ImportFromMapSource(str.mb_str());
+}
+
+void MainFrame::OnLayerImportPoint(wxCommandEvent &event)
+{
+	wxFileDialog loadFile(NULL, _("Import Point Data"), _T(""), _T(""),
+		_("Tabular Data Files (*.dbf)|*.dbf|"), wxOPEN);
+
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	wxString2 str = loadFile.GetPath();
+	ImportDataPointsFromTable(str.mb_str());
 }
 
 void MainFrame::OnLayerProperties(wxCommandEvent &event)
