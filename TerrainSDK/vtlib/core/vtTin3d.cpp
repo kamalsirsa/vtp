@@ -368,6 +368,8 @@ bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	{
 		vtMesh *mesh = m_Meshes[m];
 
+		// Try to quickly avoid some meshes by testing against their bounding
+		// spheres.
 		FBox3 box;
 		mesh->GetBoundBox(box);
 		FSphere sph(box);
