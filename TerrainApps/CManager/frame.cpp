@@ -242,7 +242,7 @@ vtFrame::~vtFrame()
 	delete m_pLightDlg;
 }
 
-void vtFrame::UseLight(vtMovLight *pLight)
+void vtFrame::UseLight(vtTransform *pLight)
 {
 	m_pLightDlg->UseLight(pLight);
 }

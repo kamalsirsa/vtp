@@ -84,7 +84,8 @@ bool vtApp::OnInit(void)
 	VTLOG(" creating light\n");
 	vtLight *pLight = new vtLight();
 	pLight->SetName2("Light");
-	vtMovLight *pMovLight = new vtMovLight(pLight);
+	vtTransform *pMovLight = new vtTransform;
+	pMovLight->AddChild(pLight);
 	pMovLight->SetName2("Movable Light");
 	pLight->SetAmbient(RGBf(1, 1, 1));
 	pLight->SetDiffuse(RGBf(1, 1, 1));

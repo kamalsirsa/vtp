@@ -30,7 +30,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	void UseLight(vtMovLight *pLight);
+	void UseLight(vtTransform *pLight);
 	void UpdateColorBitmaps();
 
 	// WDR: method declarations for LightDlg
@@ -43,7 +43,7 @@ public:
 	
 private:
 	// WDR: member variable declarations for LightDlg
-	vtMovLight *m_pMovLight;
+	vtTransform *m_pMovLight;
 	vtLight *m_pLight;
 	FPoint3 m_dir;
 

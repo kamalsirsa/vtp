@@ -26,7 +26,7 @@ class LightDlg;
 class vtGroup;
 class vtLOD;
 class vtGeom;
-class vtMovLight;
+class vtTransform;
 class ItemGroup;
 class vtFont;
 
@@ -119,7 +119,7 @@ public:
 	void AddModelFromFile(const wxString2 &fname);
 	int GetModelTriCount(vtModel *model);
 	void OnChar(wxKeyEvent& event);
-	void UseLight(vtMovLight *pLight);
+	void UseLight(vtTransform *pLight);
 
 public:
 	void		UpdateCurrentModelLOD();
