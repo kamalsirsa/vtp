@@ -597,9 +597,10 @@ void vtFeatures::_SetupFromOGCType(OGRwkbGeometryType type)
 	case wkbLineString25D:
 	case wkbPolygon25D:
 	case wkbMultiPoint25D:
-	case wkbMultiLineString25D:
+/*	case wkbMultiLineString25D:
 	case wkbMultiPolygon25D:
 	case wkbGeometryCollection25D:
+	*/
 		break;
 	}
 }
