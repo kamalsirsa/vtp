@@ -137,12 +137,12 @@ void vtLinearParams::WriteXML(GZOutput &out)
 	if (m_PostType != "none")
 	{
 		gfprintf(out, "\t\t<Posts Type=\"%s\" Spacing=\"%.2f\" Height=\"%.2f\" Size=\"%.2f,%.2f\"",
-			m_PostType, m_fPostSpacing, m_fPostHeight, m_fPostWidth, m_fPostDepth);
+			(const char *)m_PostType, m_fPostSpacing, m_fPostHeight, m_fPostWidth, m_fPostDepth);
 		gfprintf(out, " />\n");
 	}
 	if (m_ConnectType != "none")
 	{
-		gfprintf(out, "\t\t<Connect Type=\"%s\"", m_ConnectType);
+		gfprintf(out, "\t\t<Connect Type=\"%s\"", (const char *)m_ConnectType);
 		gfprintf(out, " Top=\"%.2f\"", m_fConnectTop);
 		if (m_fConnectBottom != 0.0f)
 			gfprintf(out, " Bottom=\"%.2f\"", m_fConnectBottom);
