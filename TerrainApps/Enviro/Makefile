@@ -78,6 +78,13 @@ update-pot:
 update-af:
 	msgmerge --no-fuzzy-matching af/Enviro.po Enviro.pot -o af/Enviro.pox
 
+publish-zh:
+	cp zh/Enviro.pox zh/Enviro.po
+	msgfmt zh/Enviro.po -o zh/Enviro.mo
+
+update-zh:
+	msgmerge --no-fuzzy-matching zh/Enviro.po Enviro.pot -o zh/Enviro.pox
+
 publish-de:
 	cp de/Enviro.pox de/Enviro.po
 	msgfmt de/Enviro.po -o de/Enviro.mo
