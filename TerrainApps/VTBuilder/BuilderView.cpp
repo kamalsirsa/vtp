@@ -27,6 +27,7 @@
 #include "UtilityLayer.h"
 // Dialogs
 #include "FeatInfoDlg.h"
+#include "DistanceDlg.h"
 
 #include "cpl_error.h"
 
@@ -1337,62 +1338,16 @@ void BuilderView::OnLButtonDragRelease(const wxMouseEvent& event)
 
 void BuilderView::OnDragDistance()
 {
-	vtProjection proj;
+	static vtProjection proj;
 	GetMainFrame()->GetProjection(proj);
 
 	DPoint2 p1, p2;
-	p1.x = ox(m_DownPoint.x);
-	p1.y = oy(m_DownPoint.y);
-	p2.x = ox(m_LastPoint.x);
-	p2.y = oy(m_LastPoint.y);
-	DPoint2 diff_projected;
-	DPoint2 diff_degrees;
-	DPoint2 diff_meters;
+	object(m_DownPoint, p1);
+	object(m_LastPoint, p2);
 
-	if (proj.IsGeographic())
-	{
-		diff_degrees = p2 - p1;
-		diff_meters.Set(0, 0);		// TODO: expand this assumption
-	}
-	else
-	{
-		diff_projected = p2 - p1;
-		diff_meters = diff_projected;	// TODO: expand this assumption
-
-		vtProjection geo;
-		CreateSimilarGeographicProjection(proj, geo);
-
-		OCT *trans = OGRCreateCoordinateTransformation(&proj, &geo);
-
-		DPoint2 geo1 = p1, geo2 = p2;
-		trans->Transform(1, &geo1.x, &geo1.y);
-		trans->Transform(1, &geo2.x, &geo2.y);
-
-		diff_degrees = geo2 - geo1;
-
-		delete trans;
-	}
-
-	wxString str1, str2, str3;
-	str1.Printf("%s, %s",
-		(const char *)FormatCoord(false, diff_meters.x),
-		(const char *)FormatCoord(false, diff_meters.y));
-	str2.Printf("%s, %s",
-		(const char *)FormatCoord(true, diff_degrees.x), 
-		(const char *)FormatCoord(true, diff_degrees.y));
-	str3.Printf("%s",
-		(const char *)FormatCoord(false, diff_meters.Length()));
-
-	wxDialog dlg(NULL, -1, "Distance", wxDefaultPosition);
-	DistanceDialogFunc(&dlg, TRUE ); 
-	wxTextCtrl *ctr1 = (wxTextCtrl *) dlg.FindWindow(ID_XY);
-	ctr1->SetValue(str1);
-
-	wxTextCtrl *ctr2 = (wxTextCtrl *) dlg.FindWindow(ID_DUMMY);
-	ctr2->SetValue(str2);
-
-	wxTextCtrl *ctr3 = (wxTextCtrl *) dlg.FindWindow(ID_DIST);
-	ctr3->SetValue(str3);
+	DistanceDlg dlg(NULL, -1, "Distance", wxDefaultPosition);
+	dlg.SetProjection(&proj);
+	dlg.SetPoints(p1, p2);
 
 	dlg.ShowModal();
 }
