@@ -1150,11 +1150,13 @@ void TVTerrain::emitTri(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 	{
 		numDisplayTri++;
 
+#ifndef VTLIB_NI
 		glBegin(GL_POLYGON);
 		emitVertex(p1);
 		emitVertex(p2);
 		emitVertex(p3);
 		glEnd();
+#endif
 
 		m_iDrawnTriangles++;
 	}
