@@ -980,11 +980,14 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 			C2DPoint& p2 = points[(pi+1)%points.size()];
 			// Find the starting edge
 			for (CSkeleton::iterator s1 = Skeleton.begin(); s1 != Skeleton.end(); s1++)
-				if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
+			{
+				if (((*s1).m_lower.m_vertex->m_point == p1) &&
+					((*s1).m_higher.m_vertex->m_point == p2))
 					break;
+			}
 			if (s1 == Skeleton.end())
 				break;
-			
+
 			pStartEdge = &(*s1);
 			pEdge = pStartEdge;
 			bEdgeReversed = false;
@@ -1057,17 +1060,20 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 		}
 	}
 
-	return fMaxHeight;	
+	return fMaxHeight;
 }
 
-int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D, Array<int> &iaVertices)
+int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D,
+							 Array<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
 
-	for (int i = 0; i < iSize; i++)
+	int i;
+	for (i = 0; i < iSize; i++)
+	{
 		if ((Point.x == RoofSection3D[i].x) && (Point.y == RoofSection3D[i].z))
 			break;
-
+	}
 	if (i < iSize)
 		return iaVertices[i];
 	else
