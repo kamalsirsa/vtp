@@ -83,107 +83,108 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_LINE 10042
 #define ID_SPEED 10043
 #define ID_SPEEDSLIDER 10044
-#define ID_LOD_VEG 10045
-#define ID_SLIDER_VEG 10046
-#define ID_LOD_STRUCT 10047
-#define ID_SLIDER_STRUCT 10048
-#define ID_LOD_ROAD 10049
-#define ID_SLIDER_ROAD 10050
+#define ID_SPEED_UNITS 10045
+#define ID_LOD_VEG 10046
+#define ID_SLIDER_VEG 10047
+#define ID_LOD_STRUCT 10048
+#define ID_SLIDER_STRUCT 10049
+#define ID_LOD_ROAD 10050
+#define ID_SLIDER_ROAD 10051
 wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 wxSizer *TextDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_STRUCTTYPE 10051
+#define ID_STRUCTTYPE 10052
 wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_USE_GRID 10052
-#define ID_FILENAME 10053
-#define ID_LODMETHOD 10054
-#define ID_PIXELERROR 10055
-#define ID_TRICOUNT 10056
-#define ID_TRISTRIPS 10057
-#define ID_DETAILTEXTURE 10058
-#define ID_USE_TIN 10059
-#define ID_FILENAME_TIN 10060
-#define ID_VERTEXAG 10061
+#define ID_USE_GRID 10053
+#define ID_FILENAME 10054
+#define ID_LODMETHOD 10055
+#define ID_PIXELERROR 10056
+#define ID_TRICOUNT 10057
+#define ID_TRISTRIPS 10058
+#define ID_DETAILTEXTURE 10059
+#define ID_USE_TIN 10060
+#define ID_FILENAME_TIN 10061
+#define ID_VERTEXAG 10062
 wxSizer *TParams1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_NONE 10062
-#define ID_SINGLE 10063
-#define ID_TFILESINGLE 10064
-#define ID_DERIVED 10065
-#define ID_TILED 10066
-#define ID_TILESIZE 10067
-#define ID_TFILEBASE 10068
-#define ID_JPEG 10069
-#define ID_TFILENAME 10070
-#define ID_MIPMAP 10071
-#define ID_16BIT 10072
-#define ID_PRELIGHT 10073
-#define ID_LIGHT_FACTOR 10074
-#define ID_PRELIT 10075
+#define ID_NONE 10063
+#define ID_SINGLE 10064
+#define ID_TFILESINGLE 10065
+#define ID_DERIVED 10066
+#define ID_TILED 10067
+#define ID_TILESIZE 10068
+#define ID_TFILEBASE 10069
+#define ID_JPEG 10070
+#define ID_TFILENAME 10071
+#define ID_MIPMAP 10072
+#define ID_16BIT 10073
+#define ID_PRELIGHT 10074
+#define ID_LIGHT_FACTOR 10075
+#define ID_PRELIT 10076
 wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TREES 10076
-#define ID_TREEFILE 10077
-#define ID_VEGDISTANCE 10078
-#define ID_ROADS 10079
-#define ID_ROADFILE 10080
-#define ID_ROADHEIGHT 10081
-#define ID_ROADDISTANCE 10082
-#define ID_TEXROADS 10083
-#define ID_ROADCULTURE 10084
-#define ID_HIGHWAYS 10085
-#define ID_PAVED 10086
-#define ID_DIRT 10087
-#define ID_STRUCTFILES 10088
-#define ID_STRUCT_DISTANCE 10089
-#define ID_VEHICLES 10090
+#define ID_TREES 10077
+#define ID_TREEFILE 10078
+#define ID_VEGDISTANCE 10079
+#define ID_ROADS 10080
+#define ID_ROADFILE 10081
+#define ID_ROADHEIGHT 10082
+#define ID_ROADDISTANCE 10083
+#define ID_TEXROADS 10084
+#define ID_ROADCULTURE 10085
+#define ID_HIGHWAYS 10086
+#define ID_PAVED 10087
+#define ID_DIRT 10088
+#define ID_STRUCTFILES 10089
+#define ID_STRUCT_DISTANCE 10090
+#define ID_VEHICLES 10091
 wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_NAV_STYLE 10091
-#define ID_MINHEIGHT 10092
-#define ID_NAVSPEED 10093
-#define ID_LOCFILE 10094
-#define ID_INIT_LOCATION 10095
-#define ID_HITHER 10096
-#define ID_INITTIME 10097
-#define ID_TIMEMOVES 10098
-#define ID_TIMESPEED 10099
+#define ID_NAV_STYLE 10092
+#define ID_MINHEIGHT 10093
+#define ID_NAVSPEED 10094
+#define ID_LOCFILE 10095
+#define ID_INIT_LOCATION 10096
+#define ID_HITHER 10097
+#define ID_INITTIME 10098
+#define ID_TIMEMOVES 10099
+#define ID_TIMESPEED 10100
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TREECTRL 10100
-#define ID_ADD_PATH 10101
-#define ID_ADD_TERRAIN 10102
-#define ID_COPY 10103
-#define ID_DELETE 10104
-#define ID_EDIT_PARAMS 10105
+#define ID_TREECTRL 10101
+#define ID_ADD_PATH 10102
+#define ID_ADD_TERRAIN 10103
+#define ID_COPY 10104
+#define ID_DELETE 10105
+#define ID_EDIT_PARAMS 10106
 wxSizer *TerrManFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_OCEANPLANE 10106
-#define ID_OCEANPLANEOFFSET 10107
-#define ID_DEPRESSOCEAN 10108
-#define ID_DEPRESSOCEANOFFSET 10109
-#define ID_SKY 10110
-#define ID_SKYTEXTURE 10111
-#define ID_HORIZON 10112
-#define ID_FOG 10113
-#define ID_FOG_DISTANCE 10114
+#define ID_OCEANPLANE 10107
+#define ID_OCEANPLANEOFFSET 10108
+#define ID_DEPRESSOCEAN 10109
+#define ID_DEPRESSOCEANOFFSET 10110
+#define ID_SKY 10111
+#define ID_SKYTEXTURE 10112
+#define ID_HORIZON 10113
+#define ID_FOG 10114
+#define ID_FOG_DISTANCE 10115
 wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LABELS 10115
-#define ID_LABEL_FILE 10116
-#define ID_LABEL_FIELD 10117
-#define ID_LABEL_HEIGHT 10118
-#define ID_LABEL_SIZE 10119
+#define ID_LABELS 10116
+#define ID_LABEL_FILE 10117
+#define ID_LABEL_FIELD 10118
+#define ID_LABEL_HEIGHT 10119
+#define ID_LABEL_SIZE 10120
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 extern wxSizer *g_pLayerSizer1;
-#define ID_LAYER_TREE 10120
+#define ID_LAYER_TREE 10121
 extern wxSizer *g_pLayerSizer2;
-#define ID_SHOW_ALL 10121
-#define ID_VISIBLE 10122
-#define ID_ZOOM_TO 10123
+#define ID_SHOW_ALL 10122
+#define ID_VISIBLE 10123
+#define ID_ZOOM_TO 10124
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
