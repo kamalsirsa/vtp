@@ -421,8 +421,8 @@ void DxfParser::ReadVertex(vector<DPoint3> & points)
 
 int DxfParser::GetLayerIndex(const vtString & sLayer)
 {
-	size_t iLayers = m_layers.size();
-	for (size_t i = 0; i < iLayers; ++i)
+	unsigned int iLayers = m_layers.size();
+	for (unsigned int i = 0; i < iLayers; ++i)
 	{
 		if (sLayer == m_layers[i])
 			return i;
@@ -444,7 +444,7 @@ void DxfParser::ReadLWPolyline()
 	bool bFoundEnd = false;
 	bool bFoundLayer = false;
 	bool bFoundType = false;
-	size_t iCurrIndex = 0;
+	int iCurrIndex = 0;
 
 	while (ReadCodeValue(pair))
 	{
@@ -455,7 +455,7 @@ void DxfParser::ReadLWPolyline()
 			// save the entity off if it has everything.
 			if (bFoundElevation && bFoundLayer && bFoundType && entity.m_points.size() > 0)
 			{
-				for (size_t i = 0; i < iCurrIndex; ++i)
+				for (int i = 0; i < iCurrIndex; ++i)
 					entity.m_points[i].z = dElevation;
 				m_entities.push_back(entity);
 			}
