@@ -498,6 +498,15 @@ void vtMesh::Release()
 		m_pGeometry = NULL;
 }
 
+
+// Override with ability to get OSG bounding box
+void vtMesh::GetBoundBox(FBox3 &box)
+{
+    const BoundingBox &osg_box = m_pGeometry->getBound();
+	s2v(osg_box, box);
+}
+
+
 /**
  * Add a triangle.
  *  p0, p1, p2 are the indices of the vertices of the triangle.

@@ -122,6 +122,9 @@ class vtMesh : public vtMeshBase, public osg::Referenced
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
 
+	// Override with ability to get OSG bounding box
+	void GetBoundBox(FBox3 &box);
+
 	/// Use this method instead of delete, when you are done with this object.
 	void Release();
 
