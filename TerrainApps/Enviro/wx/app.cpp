@@ -30,13 +30,18 @@
 #include "frame.h"
 #include "StartupDlg.h"
 
-int pwdemo = 0;
+static bShowStartupDialog = true;
 
 static void Args(int argc, wxChar **argv)
 {
-	if (argc > 1 && argv[1][1] == _T('p'))
-		pwdemo = 1;
-	return;
+	for (int i = 0; i < argc; i++)
+	{
+		wxString2 str = argv[i];
+		const char *cstr = str.mb_str();
+		g_App.StartupArgument(i, cstr);
+		if (!strcmp(cstr, "-no_startup_dialog"))
+			bShowStartupDialog = false;
+	}
 }
 
 IMPLEMENT_APP(vtApp)
@@ -46,11 +51,12 @@ IMPLEMENT_APP(vtApp)
 //
 bool vtApp::OnInit()
 {
-	Args(argc, argv);
-
 	g_Options.Read("Enviro.ini");
 
 	g_App.Startup();	// starts log
+
+	Args(argc, argv);
+
 	g_App.LoadTerrainDescriptions();
 
 /*	class AA { public: virtual void func() {} };
@@ -64,17 +70,20 @@ bool vtApp::OnInit()
 	//
 	// Create and show the Startup Dialog
 	//
-	VTLOG("Opening the Startup dialog.\n");
-	StartupDlg StartDlg(NULL, -1, _T("Enviro Startup"), wxDefaultPosition);
-	StartDlg.GetOptionsFrom(g_Options);
-	StartDlg.CenterOnParent();
-	int result = StartDlg.ShowModal();
-	if (result == wxID_CANCEL)
-		return FALSE;
+	if (bShowStartupDialog)
+	{
+		VTLOG("Opening the Startup dialog.\n");
+		StartupDlg StartDlg(NULL, -1, _T("Enviro Startup"), wxDefaultPosition);
+		StartDlg.GetOptionsFrom(g_Options);
+		StartDlg.CenterOnParent();
+		int result = StartDlg.ShowModal();
+		if (result == wxID_CANCEL)
+			return FALSE;
 
-	VTLOG("Writing options to Enviro.ini\n");
-	StartDlg.PutOptionsTo(g_Options);
-	g_Options.Write();
+		VTLOG("Writing options to Enviro.ini\n");
+		StartDlg.PutOptionsTo(g_Options);
+		g_Options.Write();
+	}
 
 	//
 	// Create the main frame window
