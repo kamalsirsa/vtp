@@ -45,7 +45,7 @@ void MyStatusBar::UpdateText()
 	str = g_App.GetMessage();
 	if (str != "")
 	{
-		ws = str;
+		ws.from_utf8(str);
 		SetStatusText(ws, Field_Text);
 	}
 
