@@ -1,7 +1,7 @@
 //
 // AutoDialog.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,6 +38,8 @@ public:
 	// Called to transfer data to the window
 	virtual bool TransferFromWindow();
 
+	void Enable(bool bTrue) { m_bEnabled = bTrue; }
+
 protected:
 	void Initialize();
 
@@ -49,6 +51,9 @@ protected:
 	// A value of -1 means to use printf's default (6 digits for floats,
 	//	more digits for doubles)
 	int		m_iDigits;
+
+	// You can disable these validators
+	bool	m_bEnabled;
 };
 
 #endif // NUMERIC_VALIDATOR
@@ -70,9 +75,9 @@ public:
 	void AddValidator(long id, wxString *sptr);
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
-	void AddNumValidator(long id, int *iptr);
-	void AddNumValidator(long id, float *fptr, int digits = -1);
-	void AddNumValidator(long id, double *dptr, int digits = -1);
+	wxNumericValidator *AddNumValidator(long id, int *iptr);
+	wxNumericValidator *AddNumValidator(long id, float *fptr, int digits = -1);
+	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -92,9 +97,9 @@ public:
 	void AddValidator(long id, wxString *sptr);
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
-	void AddNumValidator(long id, int *iptr);
-	void AddNumValidator(long id, float *fptr, int digits = -1);
-	void AddNumValidator(long id, double *dptr, int digits = -1);
+	wxNumericValidator *AddNumValidator(long id, int *iptr);
+	wxNumericValidator *AddNumValidator(long id, float *fptr, int digits = -1);
+	wxNumericValidator *AddNumValidator(long id, double *dptr, int digits = -1);
 
 	DECLARE_EVENT_TABLE()
 };
