@@ -1015,9 +1015,11 @@ void vtFrame::OnSaveVeg(wxCommandEvent& event)
 	// save current directory
 	wxString path = wxGetCwd();
 
+	EnableContinuousRendering(false);
 	wxFileDialog saveFile(NULL, _T("Save Vegetation Data"), _T(""), _T(""),
 		_T("Vegetation Files (*.vf)|*.vf|"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
 	if (!bResult)
 	{
 		wxSetWorkingDirectory(path);	// restore
@@ -1034,9 +1036,11 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 	// save current directory
 	wxString path = wxGetCwd();
 
-	wxFileDialog saveFile(NULL, _T("Save Built Structures Data"), _T(""),
-		_T(""), _T("Structure Files (*.vtst)|*.vtst|"), wxSAVE);
+	EnableContinuousRendering(false);
+	wxFileDialog saveFile(this, _T("Save Built Structures Data"), _T(""),
+		_T(""), _T("Structure Files (*.vtst)|*.vtst|"), wxSAVE | wxOVERWRITE_PROMPT);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
 	if (!bResult)
 	{
 		wxSetWorkingDirectory(path);	// restore
