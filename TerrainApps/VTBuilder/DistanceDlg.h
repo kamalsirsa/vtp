@@ -8,7 +8,7 @@
 #ifndef __DistanceDlg_H__
 #define __DistanceDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "DistanceDlg.cpp"
 #endif
 

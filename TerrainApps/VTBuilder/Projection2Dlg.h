@@ -8,7 +8,7 @@
 #ifndef __Projection2Dlg_H__
 #define __Projection2Dlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "Projection2Dlg.cpp"
 #endif
 

@@ -8,7 +8,7 @@
 #ifndef __RawDlg_H__
 #define __RawDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "RawDlg.cpp"
 #endif
 

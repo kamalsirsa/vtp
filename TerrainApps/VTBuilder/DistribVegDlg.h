@@ -8,7 +8,7 @@
 #ifndef __DistribVegDlg_H__
 #define __DistribVegDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "DistribVegDlg.cpp"
 #endif
 

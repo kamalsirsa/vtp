@@ -5,7 +5,7 @@
 #ifndef __PropDlg_H__
 #define __PropDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "PropDlg.cpp"
 #endif
 

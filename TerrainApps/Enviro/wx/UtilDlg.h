@@ -8,7 +8,7 @@
 #ifndef __UtilDlg_H__
 #define __UtilDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "UtilDlg.cpp"
 #endif
 

@@ -8,7 +8,7 @@
 #ifndef __SampleImageDlg_H__
 #define __SampleImageDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "SampleImageDlg.cpp"
 #endif
 

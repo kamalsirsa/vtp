@@ -8,7 +8,7 @@
 #ifndef __OptionsDlg_H__
 #define __OptionsDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "OptionsDlg.cpp"
 #endif
 

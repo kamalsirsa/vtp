@@ -8,7 +8,7 @@
 #ifndef __FeatInfoDlg_H__
 #define __FeatInfoDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "FeatInfoDlg.cpp"
 #endif
 

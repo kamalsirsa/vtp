@@ -8,7 +8,7 @@
 #ifndef __TParamsDlg_H__
 #define __TParamsDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "TParamsDlg.cpp"
 #endif
 

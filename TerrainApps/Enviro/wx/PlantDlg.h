@@ -8,7 +8,7 @@
 #ifndef __PlantDlg_H__
 #define __PlantDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "PlantDlg.cpp"
 #endif
 

@@ -8,7 +8,7 @@
 #ifndef __StatePlaneDlg_H__
 #define __StatePlaneDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "StatePlaneDlg.cpp"
 #endif
 

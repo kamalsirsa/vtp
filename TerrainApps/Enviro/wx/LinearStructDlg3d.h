@@ -8,7 +8,7 @@
 #ifndef __LinearStructureDlg3d_H__
 #define __LinearStructureDlg3d_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "LinearStructureDlg3d.cpp"
 #endif
 

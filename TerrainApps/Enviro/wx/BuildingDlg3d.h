@@ -8,7 +8,7 @@
 #ifndef __BuildingDlg3d_H__
 #define __BuildingDlg3d_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "BuildingDlg3d.cpp"
 #endif
 

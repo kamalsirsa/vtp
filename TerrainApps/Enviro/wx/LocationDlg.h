@@ -8,7 +8,7 @@
 #ifndef __LocationDlg_H__
 #define __LocationDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "LocationDlg.cpp"
 #endif
 

@@ -8,7 +8,7 @@
 #ifndef __ImportVegDlg_H__
 #define __ImportVegDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "ImportVegDlg.cpp"
 #endif
 

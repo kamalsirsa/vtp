@@ -8,7 +8,7 @@
 #ifndef __ResampleDlg_H__
 #define __ResampleDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "ResampleDlg.cpp"
 #endif
 

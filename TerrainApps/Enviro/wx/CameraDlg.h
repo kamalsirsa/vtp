@@ -8,7 +8,7 @@
 #ifndef __CameraDlg_H__
 #define __CameraDlg_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "CameraDlg.cpp"
 #endif
 

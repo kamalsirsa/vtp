@@ -6,7 +6,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
 #pragma implementation
 #pragma interface
 #endif
