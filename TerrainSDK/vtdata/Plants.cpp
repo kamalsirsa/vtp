@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "vtLog.h"
 #include "Plants.h"
 #include "MathTypes.h"
 #include "xmlhelper/easyxml.hpp"
@@ -544,6 +545,8 @@ vtPlantInstanceArray::vtPlantInstanceArray()
 int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 									   short species_id)
 {
+	if (size < 0.0001f || size > 100.0f)
+		VTLOG(" Warning: Plant with unusual height of %f\n", size);
 	int index = AddPoint(pos);
 	SetValue(index, m_SizeField, size);
 	SetValue(index, m_SpeciesField, species_id);
@@ -716,10 +719,17 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 
 		// species id
 		fread(&local_species_id, sizeof(short), 1, fp);
-		// convert from file-local id to new id
-		short species_id = temp_ids[local_species_id];
 
-		AddPlant(pos, size, species_id);
+		// convert from file-local id to new id
+		if (local_species_id < 0 || local_species_id > numspecies-1)
+		{
+			VTLOG(" Warning: species index %d out of range [0..%d]\n", local_species_id, numspecies-1);
+		}
+		else
+		{
+			short species_id = temp_ids[local_species_id];
+			AddPlant(pos, size, species_id);
+		}
 	}
 
 	delete [] temp_ids;
