@@ -1460,6 +1460,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\vtTime.cpp">
+			</File>
+			<File
 				RelativePath="vtTin.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -1638,6 +1641,9 @@
 			</File>
 			<File
 				RelativePath="vtString.h">
+			</File>
+			<File
+				RelativePath=".\vtTime.h">
 			</File>
 			<File
 				RelativePath="vtTin.h">
