@@ -24,7 +24,7 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "VegLayer.h"
-#include "TowerLayer.h"
+#include "UtilityLayer.h"
 // Dialogs
 #include "ProjectionDlg.h"
 #include "ImportVegDlg.h"
@@ -124,7 +124,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 		{
 			pLayer = ImportFromLULC(strFileName, ltype);
 		}
-		if (!strExt.CmpNoCase("bcf"))
+		else if (!strExt.CmpNoCase("bcf"))
 		{
 			pLayer = ImportFromBCF(strFileName);
 		}
@@ -166,6 +166,10 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 		else if (!strExt.CmpNoCase("shp"))
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
+		}
+		else if (!strExt.CmpNoCase("bcf"))
+		{
+			pLayer = ImportFromBCF(strFileName);
 		}
 		else
 		{
@@ -400,8 +404,8 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 
 	if (ltype ==LT_UTILITY)
 	{
-		vtTowerLayer *pTL = (vtTowerLayer *)pLayer;
-		pTL->AddElementsFromSHP(strFileName, proj);
+		vtUtilityLayer *pUL = (vtUtilityLayer *)pLayer;
+		pUL->AddElementsFromSHP(strFileName, proj);
 	}
 
 	if (ltype == LT_RAW)
@@ -492,7 +496,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltyp
 	if (ltype == LT_UNKNOWN)
 	{
 		// TODO: Try to guess the layer type from the file
-		// FOr now, just assume it's transportation
+		// For now, just assume it's transportation
 		ltype = LT_ROAD;
 	}
 
@@ -516,4 +520,153 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltyp
 
 	return pLayer;
 }
+
+
+void MainFrame::ImportDataFromTIGER(wxString &strDirName)
+{
+	OGRRegisterAll();
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( strDirName );
+	if (!pDatasource)
+		return;
+
+	// create the new layers
+	vtWaterLayer *pWL = new vtWaterLayer;
+	pWL->SetFilename(strDirName + "/water");
+	pWL->SetModified(true);
+
+	vtRoadLayer *pRL = new vtRoadLayer;
+	pRL->SetFilename(strDirName + "/roads");
+	pRL->SetModified(true);
+
+	int i, j, feature_count;
+	OGRLayer		*pOGRLayer;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+//	OGRPoint		*pPoint;
+	OGRLineString   *pLineString;
+
+//	DPolyArray2		chain;
+	DLine2			*dline;
+
+	// Assume that this data source is a TIGER/Line file
+	//
+	// Iterate through the layers looking for the ones we care about
+	//
+	int num_layers = pDatasource->GetLayerCount();
+	for (i = 0; i < num_layers; i++)
+	{
+		pOGRLayer = pDatasource->GetLayer(i);
+		if (!pOGRLayer)
+			continue;
+
+		feature_count = pOGRLayer->GetFeatureCount();
+  		pOGRLayer->ResetReading();
+		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
+		if (!defn)
+			continue;
+
+		const char *layer_name = defn->GetName();
+
+//Debug:
+		int field_count1 = defn->GetFieldCount();
+		for (j = 0; j < field_count1; j++)
+		{
+			OGRFieldDefn *field_def1 = defn->GetFieldDefn(j);
+			if (field_def1)
+			{
+				const char *fnameref = field_def1->GetNameRef();
+				OGRFieldType ftype = field_def1->GetType();
+			}
+		}
+
+		if (!strcmp(layer_name, "CompleteChain"))
+		{
+			// Get the projection (SpatialReference) from this layer
+			OGRSpatialReference *pSpatialRef = pOGRLayer->GetSpatialRef();
+			if (pSpatialRef)
+			{
+				vtProjection proj;
+				proj.SetSpatialReference(pSpatialRef);
+				pWL->SetProjection(proj);
+				pRL->SetProjection(proj);
+			}
+
+			int index_cfcc = defn->GetFieldIndex("CFCC");
+			int fcount = 0;
+			while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
+			{
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom) continue;
+
+				if (!pFeature->IsFieldSet(index_cfcc))
+					continue;
+
+				const char *cfcc = pFeature->GetFieldAsString(index_cfcc);
+
+				pLineString = (OGRLineString *) pGeom;
+				int num_points = pLineString->getNumPoints();
+
+				if (!strncmp(cfcc, "A", 1))
+				{
+					// Road
+					Road *r = pRL->NewRoad();
+					for (j = 0; j < num_points; j++)
+					{
+						r->Append(DPoint2(pLineString->getX(j),
+							pLineString->getY(j)));
+					}
+					bool bReject = pRL->ApplyCFCC((RoadEdit *)r, cfcc);
+					if (!bReject)
+						pRL->AddRoad(r);
+				}
+
+				if (!strncmp(cfcc, "H", 1))
+				{
+					// Hydrography
+					int num = atoi(cfcc+1);
+					switch (num)
+					{
+					case 1:		// Shoreline of perennial water feature
+					case 2:		// Shoreline of intermittent water feature
+					case 11:	// Perennial stream or river
+					case 12:	// Intermittent stream, river, or wash
+					case 13:	// Braided stream or river
+					case 30:	// Lake or pond
+					case 31:	// Perennial lake or pond
+					case 32:	// Intermittent lake or pond
+					case 40:	// Reservoir
+					case 41:	// Perennial reservoir
+					case 42:	// Intermittent reservoir
+					case 50:	// Bay, estuary, gulf, sound, sea, or ocean
+					case 51:	// Bay, estuary, gulf, or sound
+					case 52:	// Sea or ocean
+						dline = new DLine2();
+						dline->SetSize(num_points);
+						for (j = 0; j < num_points; j++)
+						{
+							dline->SetAt(j, DPoint2(pLineString->getX(j),
+								pLineString->getY(j)));
+						}
+						pWL->AddLine(dline);
+					}
+				}
+
+				fcount++;
+			}
+		}
+	}
+
+	delete pDatasource;
+
+	bool success;
+	success = AddLayerWithCheck(pWL, true);
+	if (!success)
+		delete pWL;
+
+	success = AddLayerWithCheck(pRL, true);
+	if (!success)
+		delete pRL;
+}
+
 
