@@ -65,9 +65,6 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-#define MAXPOINTS 32000
-static wxPoint pbuf[MAXPOINTS];
-
 void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	//set the pen options
@@ -112,12 +109,12 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			DLine2 *dl = m_LinePoly.GetAt(i);
 			size2 = dl->GetSize();
 
-			for (j = 0; j < size2 && j < MAXPOINTS-1; j++)
-				pView->screen(dl->GetAt(j), pbuf[j]);
+			for (j = 0; j < size2 && j < SCREENBUF_SIZE-1; j++)
+				pView->screen(dl->GetAt(j), g_screenbuf[j]);
 			if (m_nSHPType == SHPT_POLYGON)
-				pView->screen(dl->GetAt(0), pbuf[j++]);
+				pView->screen(dl->GetAt(0), g_screenbuf[j++]);
 
-			pDC->DrawLines(j, pbuf);
+			pDC->DrawLines(j, g_screenbuf);
 		}
 	}
 }
@@ -205,7 +202,7 @@ bool vtRawLayer::OnSave()
 
 	// Save DBF File also
 	wxString dbfname = m_strFilename;
-	dbfname.Truncate(dbfname.Len() - 3);
+	dbfname.Truncate(dbfname.Len() - 4);
 	dbfname += ".dbf";
 	DBFHandle db = DBFCreate(dbfname);
 	if (db == NULL)
@@ -228,18 +225,20 @@ bool vtRawLayer::OnSave()
 	for (i = 0; i < entities; i++)
 	{
 		for (j = 0; j < m_fields.GetSize(); j++)
-		field = m_fields[j];
-		switch (field->m_type)
 		{
-		case FTInteger:
-			DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
-			break;
-		case FTDouble:
-			DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
-			break;
-		case FTString:
-			DBFWriteStringAttribute(db, i, j, (const char *) field->m_string[i]);
-			break;
+			field = m_fields[j];
+			switch (field->m_type)
+			{
+			case FTInteger:
+				DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
+				break;
+			case FTDouble:
+				DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
+				break;
+			case FTString:
+				DBFWriteStringAttribute(db, i, j, (const char *) field->m_string[i]);
+				break;
+			}
 		}
 	}
 	DBFClose(db);
@@ -275,24 +274,27 @@ bool vtRawLayer::OnLoad()
 		return false;
 	}
 
-#if 0
-	// Open DBF File & Get DBF Info:
-	DBFHandle db = DBFOpen(filename, "rb");
-	if (db == NULL)
-		return false;
+	// Try loading DBF File as well
+	wxString dbfname = m_strFilename;
+	dbfname.Truncate(dbfname.Len() - 4);
+	dbfname += ".dbf";
+	DBFFieldType fieldtype;
+	DBFHandle db = DBFOpen(dbfname, "rb");
+	int iField, iFields;
+	if (db != NULL)
+	{
+		// Check for field of poly id, current default field in dbf is Id
+		iFields = DBFGetFieldCount(db);
+		int pnWidth, pnDecimals;
+		char szFieldName[80];
 
-	// Check for field of poly id, current default field in dbf is Id
-	int iField = 0, *pnWidth = 0, *pnDecimals = 0;
-	char *pszFieldName = NULL;
-
-	DBFFieldType fieldtype = DBFGetFieldInfo(db, iField,
-		pszFieldName, pnWidth, pnDecimals );
-	if (fieldtype != FTInteger)
-		return false;
-		//Read DBF Attributes per poly
-		m_pAttrib[i] = DBFReadIntegerAttribute(db, i, iField);
-	DBFClose(db);
-#endif
+		for (iField = 0; iField < iFields; iField++)
+		{
+			fieldtype = DBFGetFieldInfo(db, iField, szFieldName,
+				&pnWidth, &pnDecimals);
+			AddField(szFieldName, fieldtype, pnWidth);
+		}
+	}
 
 	// Initialize arrays
 	switch (m_nSHPType)
@@ -312,8 +314,7 @@ bool vtRawLayer::OnLoad()
 	// Read Data from SHP into memory
 	for (int i = 0; i < nElem; i++)
 	{
-
-		//Get the i-th Poly in the SHP file
+		// Get the i-th Shape in the SHP file
 		SHPObject	*psShape;
 		psShape = SHPReadObject(hSHP, i);
 
@@ -337,11 +338,9 @@ bool vtRawLayer::OnLoad()
 		case SHPT_POLYGON:
 			new_poly = new DLine2();
 			new_poly->SetSize(psShape->nVertices);
-
-			//Store the number of coordinate point in the i-th poly
 			m_LinePoly.SetAt(i, new_poly);
 
-			//Store each SHP Poly Coord in Veg Poly
+			// Store each coordinate
 			for (int j = 0; j < psShape->nVertices; j++)
 			{
 				p2.x = psShape->padfX[j];
@@ -351,9 +350,33 @@ bool vtRawLayer::OnLoad()
 			break;
 		}
 		SHPDestroyObject(psShape);
+
+		// Read corresponding attributes (DBF record fields)
+		if (db != NULL)
+		{
+			int rec = AddRecord();
+			for (iField = 0; iField < iFields; iField++)
+			{
+				Field *field = m_fields[iField];
+				switch (field->m_type)
+				{
+				case FTString:
+					SetValue(rec, iField, DBFReadStringAttribute(db, rec, iField));
+					break;
+				case FTInteger:
+					SetValue(rec, iField, DBFReadIntegerAttribute(db, rec, iField));
+					break;
+				case FTDouble:
+					SetValue(rec, iField, DBFReadDoubleAttribute(db, rec, iField));
+					break;
+				}
+			}
+		}
 	}
 
 	SHPClose(hSHP);
+	if (db != NULL)
+		DBFClose(db);
 	return true;
 }
 
@@ -426,24 +449,28 @@ void vtRawLayer::SetEntityType(int type)
 	m_nSHPType = type;
 }
 
-void vtRawLayer::AddPoint(const DPoint2 &p)
+int vtRawLayer::AddPoint(const DPoint2 &p)
 {
+	int rec = -1;
 	if (m_nSHPType == SHPT_POINT)
 	{
 		m_Point2.Append(p);
+		AddRecord();
 		SetModified(true);
 	}
-	AddRecord();
+	return rec;
 }
 
-void vtRawLayer::AddPoint(const DPoint3 &p)
+int vtRawLayer::AddPoint(const DPoint3 &p)
 {
+	int rec = -1;
 	if (m_nSHPType == SHPT_POINTZ)
 	{
-		m_Point3.Append(p);
+		rec = m_Point3.Append(p);
+		AddRecord();
 		SetModified(true);
 	}
-	AddRecord();
+	return rec;
 }
 
 int vtRawLayer::AddField(const char *name, DBFFieldType ftype, int string_length)
