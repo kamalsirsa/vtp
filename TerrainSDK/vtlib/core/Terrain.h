@@ -108,7 +108,7 @@ public:
 	/** Set the array of colors to be used when automatically generating the
 		terrain texture from the elevation values.  The colors brackets go
 		from the lowest elevation value to the highest. */
-	void SetTextureColors(Array<RGBi> *brackets) { m_pTextureColors = brackets; }
+	void SetTextureColors(ColorMap *colors) { m_pTextureColors = colors; }
 
 	/** Override this method to customize the Dib, before it is turned into
 	 * a vtImage.  The default implementation colors from elevation. */
@@ -261,7 +261,7 @@ protected:
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateLabels();
 	void _CreateTextures(const FPoint3 &light_dir);
-	bool _CreateDynamicTerrain(float fOceanDepth);
+	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
@@ -330,7 +330,7 @@ protected:
 	// ground texture
 	vtDIB			*m_pDIB;
 	Array<vtImage*>	m_Images;
-	Array<RGBi>		*m_pTextureColors;
+	ColorMap		*m_pTextureColors;
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)

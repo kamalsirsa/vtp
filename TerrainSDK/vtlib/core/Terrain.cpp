@@ -411,7 +411,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 void vtTerrain::PaintDib()
 {
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, RGBi(m_ocean_color));
+	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors);
 }
 
 
@@ -426,7 +426,7 @@ void vtTerrain::recreate_textures(vtTransform *pSunLight)
 
 /////////////////////
 
-bool vtTerrain::_CreateDynamicTerrain(float fOceanDepth)
+bool vtTerrain::_CreateDynamicTerrain()
 {
 	int texture_patches;
 	if (m_Params.GetTextureEnum() == TE_TILED)
@@ -485,7 +485,7 @@ bool vtTerrain::_CreateDynamicTerrain(float fOceanDepth)
 		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
 	float fExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
-	DTErr result = m_pDynGeom->Init(m_pElevGrid, fExag, fOceanDepth);
+	DTErr result = m_pDynGeom->Init(m_pElevGrid, fExag);
 	if (result != DTErr_OK)
 	{
 		m_pDynGeom->Release();
@@ -1580,6 +1580,13 @@ bool vtTerrain::CreateStep1()
 			frect.left, frect.right, frect.top, frect.bottom);
 
 		m_pHeightField = m_pElevGrid;
+
+		// Apply ocean depth
+		if (m_Params.GetValueBool(STR_DEPRESSOCEAN))
+		{
+			float fOceanDepth = m_Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
+			m_pElevGrid->ReplaceValue(0, fOceanDepth);
+		}
 	}
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
@@ -1626,16 +1633,10 @@ clock_t tm1;
 bool vtTerrain::CreateFromGrid()
 {
 	VTLOG(" CreateFromGrid\n");
-	float fOceanDepth;
-	if (m_Params.GetValueBool(STR_DEPRESSOCEAN))
-		fOceanDepth = m_Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
-	else
-		fOceanDepth = 0.0f;
-
 	tm1 = clock();
 
 	// create elegant dynamic LOD terrain
-	if (!_CreateDynamicTerrain(fOceanDepth))
+	if (!_CreateDynamicTerrain())
 	{
 		return false;
 	}
