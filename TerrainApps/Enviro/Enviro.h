@@ -1,3 +1,9 @@
+//
+// class Enviro: Main functionality of the Enviro application
+//
+// Copyright (c) 2001-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef ENVIROH
 #define ENVIROH
@@ -57,6 +63,7 @@ public:
 	void SetMode(MouseMode mode);
 	void SetRouteFollower(bool bOn);
 	bool GetRouteFollower();
+	void DumpCameraInfo();
 
 	// go to space or a terrain
 	void FlyToSpace();
@@ -69,6 +76,8 @@ public:
 	void SetGlobeTime(struct tm *gmt);
 	void SetEarthShape(bool Flat);
 	bool GetEarthShape() { return m_bGlobeFlat; }
+	void SetEarthUnfold(bool Flat);
+	bool GetEarthUnfold() { return m_bGlobeUnfolded; }
 	int AddGlobePoints(const char *fname);
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
 	vtTerrain *FindTerrainOnEarth(const DPoint2 &p);
@@ -179,7 +188,9 @@ protected:
 	IcoGlobe	*m_pIcoGlobe;
 	bool		m_bShowTime;
 	bool		m_bGlobeFlat;
-	float		m_fGlobeFac, m_fGlobeDir;
+	float		m_fFlattening, m_fFlattenDir;
+	bool		m_bGlobeUnfolded;
+	float		m_fFolding, m_fFoldDir;
 	vtTrackball	*m_pTrackball;
 
 	vtSprite	*m_pMessageSprite;
@@ -198,4 +209,5 @@ extern Enviro g_App;
 vtTerrain *GetCurrentTerrain();
 vtTerrainScene *GetTerrainScene();
 
-#endif
+#endif	// ENVIROH
+

@@ -1,9 +1,7 @@
 //
-// class Enviro implementation
+// class Enviro: Main functionality of the Enviro application
 //
-// Main functionality of the Enviro application
-//
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -53,9 +51,14 @@ Enviro::Enviro()
 
 	m_bOnTerrain = false;
 	m_bShowTime = false;
+
 	m_bGlobeFlat = false;
-	m_fGlobeFac = 1.0f;
-	m_fGlobeDir = 0.0f;
+	m_fFlattening = 1.0f;
+	m_fFlattenDir = 0.0f;
+
+	m_bGlobeUnfolded = false;
+	m_fFolding = 0.0f;
+	m_fFoldDir = 0.0f;
 
 	m_pTerrainPicker = NULL;
 	m_pGlobePicker = NULL;
@@ -207,20 +210,35 @@ void Enviro::DoControl()
 		m_iInitStep++;
 		SetupGlobe();
 	}
-	if (m_state == AS_Orbit && m_fGlobeDir != 0.0f)
+	if (m_state == AS_Orbit && m_fFlattenDir != 0.0f)
 	{
-		m_fGlobeFac += m_fGlobeDir;
-		if (m_fGlobeDir > 0.0f && m_fGlobeFac > 1.0f)
+		m_fFlattening += m_fFlattenDir;
+		if (m_fFlattenDir > 0.0f && m_fFlattening > 1.0f)
 		{
-			m_fGlobeFac = 1.0f;
-			m_fGlobeDir = 0.0f;
+			m_fFlattening = 1.0f;
+			m_fFlattenDir = 0.0f;
 		}
-		if (m_fGlobeDir < 0.0f && m_fGlobeFac < 0.0f)
+		if (m_fFlattenDir < 0.0f && m_fFlattening < 0.0f)
 		{
-			m_fGlobeFac = 0.0f;
-			m_fGlobeDir = 0.0f;
+			m_fFlattening = 0.0f;
+			m_fFlattenDir = 0.0f;
 		}
-		m_pIcoGlobe->SetInflation(m_fGlobeFac);
+		m_pIcoGlobe->SetInflation(m_fFlattening);
+	}
+	if (m_state == AS_Orbit && m_fFoldDir != 0.0f)
+	{
+		m_fFolding += m_fFoldDir;
+		if (m_fFoldDir > 0.0f && m_fFolding > 1.0f)
+		{
+			m_fFolding = 1.0f;
+			m_fFoldDir = 0.0f;
+		}
+		if (m_fFoldDir < 0.0f && m_fFolding < 0.0f)
+		{
+			m_fFolding = 0.0f;
+			m_fFoldDir = 0.0f;
+		}
+		m_pIcoGlobe->SetUnfolding(m_fFolding);
 	}
 }
 
@@ -679,7 +697,9 @@ void Enviro::MakeGlobe()
 	// fancy icosahedral globe
 	m_pIcoGlobe = new IcoGlobe();
 	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strImage,
-		IcoGlobe::RIGHT_TRIANGLE);
+//		IcoGlobe::GEODESIC);
+//		IcoGlobe::RIGHT_TRIANGLE);
+		IcoGlobe::DYMAX_UNFOLD);
 	m_pGlobeXForm = m_pIcoGlobe->GetTop();
 #endif
 
@@ -1069,6 +1089,16 @@ void Enviro::SetTopDown(bool bTopDown)
 	}
 }
 
+void Enviro::DumpCameraInfo()
+{
+	vtCamera *cam = g_App.m_pNormalCamera;
+	FPoint3 pos = cam->GetTrans();
+	FPoint3 dir;
+	cam->GetDirection(dir);
+	VTLOG("Camera: pos %f %f %f, dir %f %f %f\n",
+		pos.x, pos.y, pos.z, dir.x, dir.y, dir.z);
+}
+
 void Enviro::OnMouse(vtMouseEvent &event)
 {
 	// check for what is under the pickers
@@ -1314,9 +1344,23 @@ void Enviro::SetEarthShape(bool bFlat)
 {
 	m_bGlobeFlat = bFlat;
 	if (m_bGlobeFlat)
-		m_fGlobeDir = -0.03f;
+		m_fFlattenDir = -0.03f;
 	else
-		m_fGlobeDir = 0.03f;
+		m_fFlattenDir = 0.03f;
+}
+
+void Enviro::SetEarthUnfold(bool bUnfold)
+{
+	m_bGlobeUnfolded = bUnfold;
+	if (m_bGlobeUnfolded)
+	{
+//		m_pNormalCamera->SetTrans(FPoint3(0,-1,0);
+		m_fFoldDir = 0.03f;
+	}
+	else
+	{
+		m_fFoldDir = -0.03f;
+	}
 }
 
 void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
