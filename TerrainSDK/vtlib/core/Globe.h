@@ -9,6 +9,7 @@
 #define GLOBEH
 
 #include "vtdata/Icosa.h"
+#include "vtdata/Features.h"
 #include "vtdata/FilePath.h"
 #include "vtlib/core/TimeEngines.h"
 
@@ -18,6 +19,17 @@ struct IcoVert
 {
 	DPoint3 p;
 	FPoint2 uv;
+};
+
+// Each movable face, composed of 1 to 6 subfaces of an original
+//  icosahedron face.
+struct MFace
+{
+	vtTransform *xform;
+	vtGeom *geom;
+	vtGroup *surfgroup;
+	FPoint3 local_origin;
+	FPoint3 axis;		// axis of rotation ("hinge") for each face
 };
 
 /**
@@ -53,11 +65,14 @@ public:
 
 	// surface features
 	int AddGlobePoints(const char *fname, float fSize);
-	void AddPoints(DLine2 &points, float fSize);
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
 
 protected:
+	int GetMFace(int face, int subface);
+	void BuildSphericalFeatures(float fSize);
+	void BuildFlatFeatures(float fSize);
+	void BuildFlatPoint(int i, float fSize);
 	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);
@@ -80,7 +95,7 @@ protected:
 
 	// Common to all globe styles
 	vtTransform	*m_top;
-	vtGeom		*m_SurfaceGeom;
+	vtGroup		*m_SurfaceGroup;
 	vtGeom		*m_pAxisGeom;
 	vtMaterialArray	*m_mats;
 	int			m_globe_mat[10];
@@ -88,12 +103,18 @@ protected:
 	int			m_yellow;
 	int			m_white;
 	vtMesh		*m_mesh[22];
-	int			m_mfaces;	// either 20 or 22
+	int			m_meshes;	// either 20 or 22
 	bool		m_bUnfolded;
 	bool		m_bTilt;
 	FQuat		m_Rotation;
 
+	vtMesh		*m_cylinder;
+
+	// TEMP- replace with feature layer soon
+	vtGeom *m_pRectangles;
+
 	// for GEODESIC
+	vtGeom	*m_GlobeGeom;
 	int		m_freq;		// tesselation frequency
 
 	// for RIGHT_TRIANGLE
@@ -102,15 +123,11 @@ protected:
 	int		m_depth;	// tesselation depth
 
 	// for DYMAX_UNFOLD
-	vtTransform *m_xform[22];
-	vtGeom *m_geom[22];
-	FPoint3 m_local_origin[22];
-	FPoint3 m_axis[22];
+	MFace	m_mface[22];
+	FQuat	m_diff;
 
-	FPoint3 m_flat_axis;
-	float m_flat_angle;
-
-	FQuat m_diff;
+	// Features (point, line, polygon..) draped on the globe
+	vtFeatures	m_features;
 };
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath);
