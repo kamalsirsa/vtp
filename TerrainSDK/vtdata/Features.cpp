@@ -32,7 +32,7 @@ vtFeatures::~vtFeatures()
 bool vtFeatures::LoadFrom(const char *filename)
 {
 	vtString fname = filename;
-	vtString ext = fname.Left(3);
+	vtString ext = fname.Right(3);
 	if (!ext.CompareNoCase("shp"))
 		return LoadFromSHP(filename);
 	else
@@ -316,7 +316,7 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 bool vtFeatures::LoadFromGML(const char *filename)
 {
 	// try using OGR
-	OGRRegisterAll();
+	g_GDALWrapper.RequestOGRFormats();
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
 	if (!pDatasource)
@@ -462,7 +462,7 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 							 void progress_callback(int))
 {
 	// try using OGR
-	OGRRegisterAll();
+	g_GDALWrapper.RequestOGRFormats();
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
 	if (!pDatasource)
@@ -705,6 +705,9 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		}
 		// track total features
 		feature_count += (num_geoms-1);
+
+		// features returned from OGRLayer::GetNextFeature are our responsibility to delete!
+		delete pFeature;
 	}
 	delete pDatasource;
 	return true;
