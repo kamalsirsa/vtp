@@ -791,9 +791,10 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 		return;
 	}
 	vtRawLayer *pRawL = GetActiveRawLayer();
-	if (pRawL && pRawL->NumSelected() != 0)
+	vtFeatureSet *pSet = pRawL->GetFeatureSet();
+	if (pRawL && pSet->NumSelected() != 0)
 	{
-		pRawL->DeleteSelected();
+		pSet->DeleteSelected();
 		pRawL->SetModified(true);
 		m_pView->Refresh();
 		OnSelectionChanged();
@@ -834,7 +835,7 @@ void MainFrame::OnEditInvertSelection(wxCommandEvent &event)
 	}
 	vtRawLayer *pRawL = GetActiveRawLayer();
 	if (pRawL) {
-		pRawL->InvertSelection();
+		pRawL->GetFeatureSet()->InvertSelection();
 		m_pView->Refresh(false);
 		OnSelectionChanged();
 	}
@@ -1099,7 +1100,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 				name[i-6] = ch;
 			}
 			name[i] = 0;
-			pRL->SetFilename(vtString(name));
+			pRL->SetLayerFilename(vtString(name));
 		}
 		if (!strncmp(buf, "Trackpoint", 10))
 		{
@@ -1125,7 +1126,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 	wxArrayInt selections;
 	for (i = 0; i < n; i++)
 	{
-		choices[i] = layers[i]->GetFilename();
+		choices[i] = layers[i]->GetLayerFilename();
 
 		choices[i] += _T(" (");
 		if (bUTM)
@@ -1134,7 +1135,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 			str.Printf(_T("zone %d, "), proj.GetUTMZone());
 			choices[i] += str;
 		}
-		str.Printf(_T("points %d"), layers[i]->GetNumEntities());
+		str.Printf(_T("points %d"), layers[i]->GetFeatureSet()->GetNumEntities());
 		choices[i] += str;
 		choices[i] += _T(")");
 	}
@@ -1172,7 +1173,7 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 	wxString title;
 	title += vtLayer::LayerTypeName[ltype];
 	title += _T(" Layer Properties");
-	LayerPropDlg dlg(NULL, -1, title, wxDefaultPosition);
+	LayerPropDlg dlg(NULL, -1, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 
 	// Fill in initial values for the dialog
 	DRECT rect, rect2;
@@ -2327,7 +2328,8 @@ void MainFrame::OnFeatureTable(wxCommandEvent &event)
 	else
 	{
 		ShowFeatInfoDlg();
-		m_pFeatInfoDlg->SetFeatureSet(GetActiveRawLayer());
+		m_pFeatInfoDlg->SetLayer(GetActiveLayer());
+		m_pFeatInfoDlg->SetFeatureSet(GetActiveRawLayer()->GetFeatureSet());
 	}
 }
 
@@ -2480,9 +2482,9 @@ void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 	if (num != 2)
 		return;
 	DPoint2 p(x, y);
+
 	vtRawLayer *pRL = GetActiveRawLayer();
 	pRL->AddPoint(p);
-	pRL->SetModified(true);
 	m_pView->Refresh();
 }
 
@@ -2507,7 +2509,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
 
-	if (pRL->GetNumFields() == 0)
+	if (pRL->GetFeatureSet()->GetNumFields() == 0)
 	{
 		DisplayAndLog("Can't select by condition because the current\n"
 					  "layer has no fields defined.");
@@ -2518,7 +2520,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		wxString2 str = dlg.m_strValue;
-		int selected = pRL->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
+		int selected = pRL->GetFeatureSet()->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
 			str.mb_str());
 
 		wxString2 msg;
