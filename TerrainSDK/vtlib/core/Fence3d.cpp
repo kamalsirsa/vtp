@@ -14,7 +14,7 @@
 #include "TerrainScene.h"
 
 // statics
-vtMaterialDescriptorArray3d *vtFence3d::s_pFenceMats = NULL;
+vtMaterialDescriptorArray3d vtFence3d::s_FenceMats;
 int vtFence3d::s_mi_wire;
 
 
@@ -31,54 +31,53 @@ void vtFence3d::Init()
 
 void vtFence3d::CreateMaterials()
 {
-	s_pFenceMats = new vtMaterialDescriptorArray3d();
-	s_pFenceMats->InitializeMaterials();
+	s_FenceMats.InitializeMaterials();
 
 	// Materials for Posts
 
 	// wood fence post
-	s_pFenceMats->Append(new vtMaterialDescriptor("wood",
+	s_FenceMats.Append(new vtMaterialDescriptor("wood",
 		"Culture/fencepost_64.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
 	// create wirefence post textured material (0)
-	s_pFenceMats->Append(new vtMaterialDescriptor("steel",
+	s_FenceMats.Append(new vtMaterialDescriptor("steel",
 		"Culture/chainpost32.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
 	// Materials for Connections
 
 	// manually add wire material
-	s_mi_wire = s_pFenceMats->GetMatArray()->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+	s_mi_wire = s_FenceMats.GetMatArray()->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
 		RGBf(0.5f, 0.5f, 0.5f),	// ambient
 		false, true, false,		// culling, lighting, wireframe
 		0.6f);					// alpha
 
 	// chainlink material: twosided, ambient, and alpha-blended
-	s_pFenceMats->Append(new vtMaterialDescriptor("chain-link",
+	s_FenceMats.Append(new vtMaterialDescriptor("chain-link",
 		"Culture/chain128-4.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 0.5f, 0.5f, true, true, true));
 
 	// create drystone textured material
-	s_pFenceMats->Append(new vtMaterialDescriptor("drystone",
+	s_FenceMats.Append(new vtMaterialDescriptor("drystone",
 		"Culture/drystone_wall_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.4f, 1.2f));
-	s_pFenceMats->Append(new vtMaterialDescriptor("stone",
+	s_FenceMats.Append(new vtMaterialDescriptor("stone",
 		"Culture/stone256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.5f, -1));
 
 	// create privet textured material
-	s_pFenceMats->Append(new vtMaterialDescriptor("privet",
+	s_FenceMats.Append(new vtMaterialDescriptor("privet",
 		"Culture/privet_256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.2f, 1.2f, true));
 
 	// create railing textured materials: twosided, ambient, and alpha-blended
-	s_pFenceMats->Append(new vtMaterialDescriptor("railing_pipe",
+	s_FenceMats.Append(new vtMaterialDescriptor("railing_pipe",
 		"Culture/railing_pipe.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-	s_pFenceMats->Append(new vtMaterialDescriptor("railing_wire",
+	s_FenceMats.Append(new vtMaterialDescriptor("railing_wire",
 		"Culture/railing_wire.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
-	s_pFenceMats->Append(new vtMaterialDescriptor("railing_eu",
+	s_FenceMats.Append(new vtMaterialDescriptor("railing_eu",
 		"Culture/railing_eu.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
 
 	// add red material for display of unknown material
-	s_pFenceMats->Append(new vtMaterialDescriptor("unknown", "",
+	s_FenceMats.Append(new vtMaterialDescriptor("unknown", "",
 		VT_MATERIAL_COLOURED, 1, 1, true, true, false, RGBi(255,0,0)));
 
-	s_pFenceMats->CreateMaterials();
+	s_FenceMats.CreateMaterials();
 }
 
 void vtFence3d::AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc)
@@ -102,9 +101,9 @@ void vtFence3d::AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc)
 vtMaterialDescriptor *vtFence3d::FindDescriptor(const vtString &type)
 {
 	RGBf dummy;
-	vtMaterialDescriptor *desc = s_pFenceMats->FindMaterialDescriptor(type, dummy);
+	vtMaterialDescriptor *desc = s_FenceMats.FindMaterialDescriptor(type, dummy);
 	if (!desc)
-		desc = s_pFenceMats->FindMaterialDescriptor("unknown", dummy);
+		desc = s_FenceMats.FindMaterialDescriptor("unknown", dummy);
 	return desc;
 }
 
@@ -419,19 +418,19 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 {
 	if (!m_pFenceGeom)
 	{
-		bool bFirstTime = false;
-		if (s_pFenceMats == NULL)
+		static bool bFirstTime = true;
+		if (bFirstTime == true)
 		{
-			bFirstTime = true;
+			bFirstTime = false;
 			CreateMaterials();
 		}
 
 		m_pFenceGeom = new vtGeom;
 		m_pFenceGeom->SetName2("Fence");
-		m_pFenceGeom->SetMaterials(s_pFenceMats->GetMatArray());
+		m_pFenceGeom->SetMaterials(s_FenceMats.GetMatArray());
 
 		if (bFirstTime)
-			s_pFenceMats->GetMatArray()->Release();
+			s_FenceMats.GetMatArray()->Release();
 	}
 
 	if (m_bBuilt)

@@ -29,14 +29,15 @@ public:
 
 	void DestroyGeometry();
 
+	// all fences share the same set of materials
+	static vtMaterialDescriptorArray3d s_FenceMats;
+
 protected:
 	void	Init();
 	void	AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc);
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 	vtMaterialDescriptor *FindDescriptor(const vtString &type);
 
-	// all fences share the same set of materials
-	static vtMaterialDescriptorArray3d *s_pFenceMats;
 	static void CreateMaterials();
 	static int s_mi_wire;
 
