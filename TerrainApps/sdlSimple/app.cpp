@@ -170,12 +170,13 @@ bool App::CreateScene()
 
 void App::display()
 {
+#if !VTLIB_PSM
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	vtGetScene()->DoUpdate();
 
-	glFinish();
 	SDL_GL_SwapBuffers();
+#endif
 }
 
 void App::process_mouse_button(const SDL_Event &sdle)
