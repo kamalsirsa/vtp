@@ -7,6 +7,7 @@
 #define ENVIRO_ENGINESH
 
 #include "vtlib/core/Engine.h"
+#include "vtlib/core/NavEngines.h"
 
 class NodeGeom;
 class LinkGeom;
@@ -139,6 +140,31 @@ protected:
 	bool		m_bOnTerrain;
 	double		m_fRadius;
 	vtMovGeom	*m_pGlobeMGeom;
+};
+
+///////////////////////////////////////////////////
+
+class GrabFlyer : public vtTerrainFlyer
+{
+public:
+	GrabFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin);
+	void Eval();
+	void OnMouse(vtMouseEvent &event);
+
+	void SetTerrainPicker(TerrainPicker *pTP) { m_pTP = pTP; }
+
+protected:
+	bool m_bDrag;
+	bool m_bPivot;
+	bool m_bZoom;
+	IPoint2 m_startpos;
+
+	TerrainPicker *m_pTP;
+	FPoint3 m_start_wp;
+	FMatrix4 m_start_eye;
+
+	// for dragging
+	float m_fHeight;
 };
 
 #endif	// ENVIRO_ENGINESH

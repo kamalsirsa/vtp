@@ -15,7 +15,8 @@ enum AppState {
 enum NavType {
 	NT_Normal,
 	NT_Gravity,
-	NT_Quake
+	NT_Quake,
+	NT_Grab
 };
 
 enum MouseMode

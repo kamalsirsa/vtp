@@ -21,6 +21,7 @@ class vtTerrainFlyer;
 class RouteFollowerEngine;
 class VFlyer;
 class QuakeFlyer;
+class GrabFlyer;
 class vtTrackball;
 class GlobePicker;
 
@@ -87,6 +88,7 @@ public:
 	VFlyer			*m_pVFlyer;
 	QuakeFlyer		*m_pQuakeFlyer;
 	vtTerrainFlyer	*m_pCurrentFlyer;
+	GrabFlyer		*m_pGFlyer;
 
 	RouteFollowerEngine	*m_pRouteFollower;
 	vtCamera		*m_pRouteFollowerCamera;

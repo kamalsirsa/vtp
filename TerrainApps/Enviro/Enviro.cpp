@@ -773,6 +773,11 @@ void Enviro::SetupScene2()
 	m_pTFlyer->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTFlyer);
 
+	m_pGFlyer = new GrabFlyer(1.0f, 1.0f, true);
+	m_pGFlyer->SetName2("Grab-Pivot Flyer");
+	m_pGFlyer->SetEnabled(false);
+	vtGetScene()->AddEngine(m_pGFlyer);
+
 	if (g_Options.m_bQuakeNavigation)
 		m_nav = NT_Quake;
 	else if (g_Options.m_bGravity)
@@ -792,6 +797,9 @@ void Enviro::SetupScene2()
 
 	m_pTerrainPicker->SetTarget(m_pCursorMGeom);
 	m_pTerrainPicker->SetEnabled(false); // turn off at startup
+
+	// Connect to the GrabFlyer
+	m_pGFlyer->SetTerrainPicker(m_pTerrainPicker);
 
 	m_pSprite2 = new vtSprite();
 	m_pSprite2->SetName2("Sprite2");
@@ -836,6 +844,8 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 			SetCurrentNavigator(m_pVFlyer);
 		if (m_nav == NT_Normal)
 			SetCurrentNavigator(m_pTFlyer);
+		if (m_nav == NT_Grab)
+			SetCurrentNavigator(m_pGFlyer);
 	}
 	else
 		SetCurrentNavigator(NULL);
@@ -862,10 +872,15 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	// inform the navigation engine of the new terrain
 	m_pCurrentFlyer->SetTarget(m_pNormalCamera);
-	m_pCurrentFlyer->SetHeightField(pHF);
 	m_pCurrentFlyer->SetHeight(param.m_iMinHeight);
 	m_pCurrentFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pCurrentFlyer->SetEnabled(true);
+
+	// TODO: a more elegant way of keeping all nav engines current
+	m_pQuakeFlyer->SetHeightField(pHF);
+	m_pVFlyer->SetHeightField(pHF);
+	m_pTFlyer->SetHeightField(pHF);
+	m_pGFlyer->SetHeightField(pHF);
 
 #if 1
 	// set the top-down viewpoint to a point over
@@ -985,11 +1000,10 @@ void Enviro::SetupCameras()
 		m_pRouteFollowerCamera = vtGetScene()->GetCamera();
 	}
 
-	if (m_pTFlyer != NULL)
-	{
-		m_pTFlyer->SetTarget(m_pNormalCamera);
-		m_pTFlyer->SetName2("Terrain Flyer");
-	}
+	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
+	m_pVFlyer->SetTarget(m_pNormalCamera);
+	m_pTFlyer->SetTarget(m_pNormalCamera);
+	m_pGFlyer->SetTarget(m_pNormalCamera);
 }
 
 
