@@ -1035,7 +1035,8 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 			OGRErr err = m_proj.importFromWkt(&wkt);
 			if (err != OGRERR_NONE)
 			{
-				DisplayAndLog("Had trouble parsing the projection information from that file.");
+				DisplayAndLog("Had trouble parsing the projection information"
+					"from that file.");
 				fclose(fp);
 				return;
 			}
@@ -1066,18 +1067,27 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 			sscanf(buf+7, "%d\n", &count);
 			for (int i = 0; i < count; i++)
 			{
-				char buf2[160];
-				fscanf(fp, "type %d, %s\n", &ltype, buf2);
-				fgets(buf, 160, fp);
+				bool bShow = true, bImport = false;
+
+				char buf2[200], buf3[200];
+				fgets(buf, 200, fp);
+				int num = sscanf(buf, "type %d, %s %s", &ltype, buf2, buf3);
+
+				if (!strcmp(buf2, "import"))
+					bImport = true;
+				if (num > 2 && !strcmp(buf3, "hidden"))
+					bShow = false;
+
+				// next line is the path
+				fgets(buf, 200, fp);
 
 				// trim trailing LF character
 				trim_eol(buf);
 				wxString2 fname = buf;
 
-				if (!strcmp(buf2, "import"))
-				{
+				int numlayers = NumLayers();
+				if (bImport)
 					ImportDataFromArchive(ltype, fname, false);
-				}
 				else
 				{
 					vtLayer *lp = vtLayer::CreateNewLayer(ltype);
@@ -1086,6 +1096,11 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 					else
 						delete lp;
 				}
+
+				// Hide any layers created, if desired
+				int newlayers = NumLayers();
+				for (int j = numlayers; j < newlayers; j++)
+					GetLayer(j)->SetVisible(bShow);
 			}
 		}
 	}
@@ -1127,7 +1142,10 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 	{
 		lp = m_Layers.GetAt(i);
 
-		fprintf(fp, "type %d, %s\n", lp->GetType(), lp->IsNative() ? "native" : "import");
+		fprintf(fp, "type %d, %s", lp->GetType(), lp->IsNative() ? "native" : "import");
+		if (!lp->GetVisible())
+			fprintf(fp, " hidden");
+		fprintf(fp, "\n");
 		fprintf(fp, "%s\n", lp->GetFilename().mb_str());
 	}
 
