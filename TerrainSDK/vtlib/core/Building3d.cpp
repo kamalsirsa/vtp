@@ -1018,7 +1018,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	// Paint a facade on this edge
 	// Add the facade image to the materials array
 	// Assume quad is ordered 0,1,3,2
-	vtString fname = "BuildingModels\\";
+	vtString fname = "BuildingModels/";
 	MatMesh mm;
 	FPoint3 norm = Normal(quad[0],quad[1],quad[3]);
 
