@@ -8,6 +8,7 @@
 #ifndef TERRAINTREESH
 #define TERRAINTREESH
 
+#include "vtdata/Selectable.h"
 #include "vtdata/Plants.h"
 #include "vtdata/LULC.h"
 #include "vtdata/FilePath.h"
@@ -15,7 +16,7 @@
 #include "vtlib/core/LodGrid.h"
 
 #if SUPPORT_XFROG
-+/*  Greenworks Xfrog:  See http://www.xfrog.com for details,  */
+/*  Greenworks Xfrog:  See http://www.xfrog.com for details,  */
 #include "\dism\xfrog2dism\xfrog2dism.h"
 #endif
 
@@ -82,4 +83,54 @@ public:
 //	vtGeom *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
 };
 
-#endif
+class vtPlantInstance3d : public Selectable
+{
+public:
+	vtPlantInstance3d();
+
+	void ShowBounds(bool bShow);
+
+	vtTransform *m_pTransform;
+	vtGeom		*m_pGeom;
+	vtGeom		*m_pHighlight;	// The wireframe highlight
+};
+
+/**
+ * This class extends vtPlantInstanceArray with the ability to construct and
+ * manage 3d representations of the plants.
+ */
+class vtPlantInstanceArray3d : public vtPlantInstanceArray
+{
+public:
+	vtPlantInstanceArray3d();
+
+	void CreatePlantNodes();
+	void CreatePlantNode(int i);
+
+	vtTransform *GetPlantNode(int i);
+	vtPlantInstance3d *GetInstance3d(int i);
+
+	/// Indicate the heightfield which will be used for the structures in this array
+	void SetHeightField(vtHeightField *hf) { m_pHeightField = hf; }
+
+	/// Indicate the Plant List to use
+	void SetPlantList(vtPlantList3d *pl) { m_pPlantList = pl; }
+
+	/// Deselect all structures including turning off their visual highlights
+	void VisualDeselectAll();
+
+	/// Select a single structure, and visually highlight it
+	void VisualSelect(int i);
+
+	void OffsetSelectedPlants(const DPoint2 &offset);
+
+	void UpdateTransform(int i);
+
+protected:
+	Array<vtPlantInstance3d*>	m_Instances3d;
+	vtHeightField		*m_pHeightField;
+	vtPlantList3d		*m_pPlantList;
+};
+
+#endif	// TERRAINTREESH
+

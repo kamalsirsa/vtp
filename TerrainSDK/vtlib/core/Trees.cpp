@@ -429,3 +429,162 @@ vtPlantAppearance3d *vtPlantList3d::GetAppearanceByName(const char *szName, floa
 	}
 	return NULL;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+vtPlantInstance3d::vtPlantInstance3d()
+{
+	m_pTransform = NULL;
+	m_pGeom = NULL;
+	m_pHighlight = NULL;
+}
+
+void vtPlantInstance3d::ShowBounds(bool bShow)
+{
+	if (bShow)
+	{
+		if (!m_pHighlight)
+		{
+			// the highlight geometry doesn't exist, so create it
+			// get bounding sphere
+			FSphere sphere;
+			m_pGeom->GetBoundSphere(sphere);
+
+			m_pHighlight = CreateBoundSphereGeom(sphere);
+			m_pTransform->AddChild(m_pHighlight);
+		}
+		m_pHighlight->SetEnabled(true);
+	}
+	else
+	{
+		if (m_pHighlight)
+			m_pHighlight->SetEnabled(false);
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+vtPlantInstanceArray3d::vtPlantInstanceArray3d()
+{
+	m_pHeightField = NULL;
+	m_pPlantList = NULL;
+}
+
+vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(int i)
+{
+	if (i < 0 || i >= m_Instances3d.GetSize())
+		return NULL;
+	return m_Instances3d.GetAt(i);
+}
+
+void vtPlantInstanceArray3d::CreatePlantNodes()
+{
+	int size = GetSize();
+
+	for (int i = 0; i < size; i++)
+		CreatePlantNode(i);
+}
+
+void vtPlantInstanceArray3d::CreatePlantNode(int i)
+{
+	if (!m_pPlantList)
+		return;
+
+	vtPlantInstance3d *inst3d = GetInstance3d(i);
+	if (!inst3d)
+	{
+		inst3d = new vtPlantInstance3d();
+		m_Instances3d.SetAt(i, inst3d);
+	}
+
+	vtPlantInstance &pi = GetAt(i);
+
+	vtPlantSpecies3d *ps = m_pPlantList->GetSpecies(pi.species_id);
+	if (!ps)
+		return;
+
+	vtPlantAppearance3d *pApp = ps->GetAppearanceByHeight(pi.size);
+	if (!pApp)
+		return;
+
+	inst3d->m_pTransform = pApp->GenerateGeom();
+	inst3d->m_pGeom = (vtGeom *) inst3d->m_pTransform->GetChild(0);
+
+	UpdateTransform(i);
+
+#if 1
+	float size_variability = 0.3f;
+	float random_scale = 1.0f + random_offset(size_variability);
+	inst3d->m_pTransform->Scale3(random_scale, random_scale, random_scale);
+	float random_rotation = random(PI2f);
+	inst3d->m_pTransform->RotateLocal(FPoint3(0,1,0), random_rotation);
+#endif
+}
+
+vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i)
+{
+	if (i < 0 || i >= m_Instances3d.GetSize())
+		return NULL;
+
+	return m_Instances3d.GetAt(i)->m_pTransform;
+}
+
+void vtPlantInstanceArray3d::VisualDeselectAll()
+{
+	int size = GetSize();
+
+	for (int i = 0; i < size; i++)
+	{
+		vtPlantInstance3d *inst3d = GetInstance3d(i);
+		if (inst3d)
+		{
+			inst3d->Select(false);
+			inst3d->ShowBounds(false);
+		}
+	}
+}
+
+void vtPlantInstanceArray3d::VisualSelect(int i)
+{
+	vtPlantInstance3d *inst3d = GetInstance3d(i);
+	if (inst3d)
+	{
+		inst3d->Select(true);
+		inst3d->ShowBounds(true);
+	}
+}
+
+
+void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
+{
+	int size = GetSize();
+	for (int i = 0; i < GetSize(); i++)
+	{
+		vtPlantInstance &pi = GetAt(i);
+		vtPlantInstance3d *inst3d = GetInstance3d(i);
+
+		if (!inst3d || !inst3d->IsSelected())
+			continue;
+
+		pi.m_p += offset;
+		UpdateTransform(i);
+	}
+}
+
+void vtPlantInstanceArray3d::UpdateTransform(int i)
+{
+	vtPlantInstance &pi = GetAt(i);
+	vtPlantInstance3d *inst3d = GetInstance3d(i);
+	FPoint3 p3;
+
+	m_pHeightField->ConvertEarthToSurfacePoint(pi.m_p, p3);
+
+	// Should really move the plant to a new cell in the LOD
+	// Grid, but unless it's moving really far we don't need to
+	// worry about this.
+
+	inst3d->m_pTransform->SetTrans(p3);
+}
+
