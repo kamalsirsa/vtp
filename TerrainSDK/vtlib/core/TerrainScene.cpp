@@ -297,6 +297,16 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	else
 		m_pTime->SetSpeed(0.0f);
 	m_pTime->SetEnabled(true);
+
+#if VTLIB_OSG && 0
+	// Experimental OSG-specific code!
+
+	// Set up cull callback on the dynamic geometry transform node
+	vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
+	vtTransform *pTransform = dynamic_cast<vtTransform*>(m_pCurrentTerrain->GetTopGroup()->GetOsgGroup()->getChild(0)->getUserData());
+	if (NULL != pTransform)
+		vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pTransform);
+#endif
 }
 
 void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
@@ -354,8 +364,12 @@ void vtTerrainScene::SetTime(const vtTime &time)
 	{
 		// TODO? Convert to local time?
 		m_pSkyDome->SetTime(time);
-//		m_pSkyDome->ApplyDayColors();
-// TODO? Update the fog color to match the color of the horizon.
+		// TODO? Update the fog color to match the color of the horizon.
+
+#if VTLIB_OSG
+		// Experimental OSG-specific code!
+		vtGetScene()->UpdateShadowLightDirection(m_pSunLight);
+#endif
 	}
 }
 

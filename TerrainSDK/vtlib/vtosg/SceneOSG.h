@@ -62,15 +62,16 @@ public:
 	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir);
 	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
-	// Object shadow casting, only for OSG
+	// Experimental:
+	// Object-terrain shadow casting, only for OSG
 	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform);
 	void UnsetShadowedNode(vtTransform *pTransform);
+	void UpdateShadowLightDirection(vtTransform *pLight);
+	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 
 protected:
 	// OSG-specific implementation
 	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
-
-	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 
 	// for culling
 	void CalcCullPlanes();

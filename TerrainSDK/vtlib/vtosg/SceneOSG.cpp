@@ -386,5 +386,13 @@ void vtScene::UnsetShadowedNode(vtTransform *pTransform)
 #endif
 }
 
+void vtScene::UpdateShadowLightDirection(vtTransform *pLight)
+{
+	if (m_pShadowVisitor.valid())
+	{
+		m_pShadowVisitor.get()->SetLightPosition(v2s(-(pLight->GetDirection()) * 10000));
+	}
+}
+
 ////////////////////////////////////////
 
