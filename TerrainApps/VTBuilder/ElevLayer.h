@@ -94,8 +94,11 @@ public:
 	vtElevationGrid	*m_pGrid;
 	vtTin2d *m_pTin;
 
+	bool NeedsDraw();
+
 protected:
-	bool	m_bHasBitmap;
+	bool	m_bNeedsDraw;
+	bool	m_bHasImage;
 	bool	m_bBitmapRendered;
 	bool	m_bHasMask;
 	float	m_fSpacing;
