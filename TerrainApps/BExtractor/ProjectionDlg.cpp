@@ -5,7 +5,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "BExtractor.h"
 #include "ProjectionDlg.h"
 
@@ -51,7 +51,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CProjectionDlg message handlers
 
-BOOL CProjectionDlg::OnInitDialog() 
+BOOL CProjectionDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
@@ -65,7 +65,7 @@ BOOL CProjectionDlg::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CProjectionDlg::OnSelchangeProjection() 
+void CProjectionDlg::OnSelchangeProjection()
 {
 	int iCurSel = m_Projection.GetCurSel();
 

@@ -6,7 +6,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "resource.h"
 #include "ProgDlg.h"
 
@@ -110,7 +110,7 @@ void CProgressDlg::SetRange(int nLower,int nUpper)
     m_nUpper = nUpper;
     m_Progress.SetRange32(nLower,nUpper);
 }
-  
+
 int CProgressDlg::SetPos(int nPos)
 {
     PumpMessages();
@@ -147,17 +147,16 @@ void CProgressDlg::PumpMessages()
       if(!IsDialogMessage(&msg))
       {
         TranslateMessage(&msg);
-        DispatchMessage(&msg);  
+        DispatchMessage(&msg);
       }
     }
 }
 
 
-    
 /////////////////////////////////////////////////////////////////////////////
 // CProgressDlg message handlers
 
-BOOL CProgressDlg::OnInitDialog() 
+BOOL CProgressDlg::OnInitDialog()
 {
     CDialog::OnInitDialog();
     m_Progress.SetRange(m_nLower,m_nUpper);
@@ -168,5 +167,5 @@ BOOL CProgressDlg::OnInitDialog()
 	VERIFY(strCaption.LoadString(m_nCaptionID));
     SetWindowText(strCaption);
 
-    return TRUE;  
+    return TRUE;
 }

@@ -5,7 +5,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "BExtractor.h"
 #include "KernelDialog.h"
 
