@@ -1121,7 +1121,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	vtVegLayer *pLandUse, vtVegLayer *pVegType,
 	float fTreeSpacing, float fTreeScarcity)
 {
-	int i, j;
+	int i, j, k;
 	DPoint2 p, p2;
 
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
@@ -1140,7 +1140,11 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	float density_scale;
 
 	vtPlantInstanceArray pia;
+	vtPlantDensity *pd;
+	vtBioType *bio;
 //	pia.m_proj.SetUTM(true);
+
+	m_BioRegions.ResetAmounts();
 
 	// all vegetation
 	for (i = 0; i < x_trees; i ++)
@@ -1171,21 +1175,20 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			float square_meters = fTreeSpacing * fTreeSpacing;
 
 			// look at veg_type to decide which BioType to use
-			vtBioType *bio = m_BioRegions.m_Types[bio_type];
+			bio = m_BioRegions.m_Types[bio_type];
 
 			float factor = density_scale * square_meters * fTreeScarcity;
 
-			int i;
-			for (i = 0; i < bio->m_Densities.GetSize(); i++)
+			for (k = 0; k < bio->m_Densities.GetSize(); k++)
 			{
-				vtPlantDensity *pd = bio->m_Densities[i];
+				pd = bio->m_Densities[k];
 
 				pd->m_amount += (pd->m_plant_per_m2 * factor);
 			}
 			int species_num = -1;
-			for (i = 0; i < bio->m_Densities.GetSize(); i++)
+			for (k = 0; k < bio->m_Densities.GetSize(); k++)
 			{
-				vtPlantDensity *pd = bio->m_Densities[i];
+				pd = bio->m_Densities[k];
 				if (pd->m_amount > 1.0f)	// time to plant
 				{
 					pd->m_amount -= 1.0f;
@@ -1203,6 +1206,23 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	}
 	pia.WriteVF(vf_file);
 	CloseProgressDialog();
+
+	// display a useful message informing the user what was planted
+	wxString msg, str;
+	msg = "Vegetation distribution results:\n";
+	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
+	{
+		bio = m_BioRegions.m_Types[i];
+		str.Printf("  BioType %d\n", i);
+		msg += str;
+		for (k = 0; k < bio->m_Densities.GetSize(); k++)
+		{
+			pd = bio->m_Densities[k];
+			str.Printf("    Plant %d: %s: %d generated.\n", k, pd->m_common_name, pd->m_iNumPlanted);
+			msg += str;
+		}
+	}
+	wxMessageBox(msg, "Results");
 }
 
 
