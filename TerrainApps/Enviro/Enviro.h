@@ -282,6 +282,9 @@ protected:
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
+
+	vtGeom		*m_pLegendGeom;
+	bool		m_bCreatedLegend;
 };
 
 // global helper functions

@@ -82,6 +82,9 @@ Enviro::Enviro() : vtTerrainScene()
 	m_bDragging = false;
 	m_bSelectedStruct = false;
 	m_bSelectedPlant = false;
+
+	m_pLegendGeom = NULL;
+	m_bCreatedLegend = false;
 }
 
 Enviro::~Enviro()
@@ -650,6 +653,10 @@ void Enviro::SetupScene2()
 	m_pHeightEngine->SetName2("Height Constrain Engine");
 	m_pHeightEngine->SetTarget(m_pNormalCamera);
 	vtGetScene()->GetRootEngine()->AddChild(m_pHeightEngine);
+
+	// This HUD group will contain geometry such as the legend
+	m_pHUD = new vtHUD();
+	m_pRoot->AddChild(m_pHUD);
 }
 
 //
@@ -758,6 +765,13 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 {
 	VTLOG("Enviro::SetTerrain '%s'\n", (const char *) pTerrain->GetName());
 
+	if (m_pCurrentTerrain)
+	{
+		vtGroup *pOverlay = m_pCurrentTerrain->GetOverlay();
+		if (pOverlay)
+			m_pHUD->RemoveChild(pOverlay);
+	}
+
 	// safety check
 	if (!pTerrain)
 		return;
@@ -821,6 +835,10 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 		m_pTerrainPicker->SetHeightField(pHF);
 
 	m_fDistToolHeight = param.GetValueFloat(STR_DIST_TOOL_HEIGHT);
+
+	vtGroup *pOverlay = pTerrain->GetOverlay();
+	if (pOverlay)
+		m_pHUD->AddChild(pOverlay);
 
 	// Inform the GUI that the terrain has changed
 	SetTerrainToGUI(pTerrain);
@@ -1656,16 +1674,16 @@ vtString Enviro::GetStatusString(int which)
 
 void Enviro::ShowElevationLegend(bool bShow)
 {
-	if (!m_pHUD)
+	if (bShow && !m_bCreatedLegend)
 		CreateElevationLegend();
-	if (m_pHUD)
-		m_pHUD->SetEnabled(bShow);
+	if (m_pLegendGeom)
+		m_pLegendGeom->SetEnabled(bShow);
 }
 
 bool Enviro::GetShowElevationLegend()
 {
-	if (m_pHUD)
-		return m_pHUD->GetEnabled();
+	if (m_pLegendGeom)
+		return m_pLegendGeom->GetEnabled();
 	return false;
 }
 
@@ -1690,23 +1708,19 @@ void Enviro::CreateElevationLegend()
 	const int cbar_left = in_base.x + (in_size.x * 6 / 10);
 	const int cbar_right = in_base.x + in_size.x;
 
-	// This HUD group will contain all the geometry for the legend
-	m_pHUD = new vtHUD();
-	m_pRoot->AddChild(m_pHUD);
-
 	int i, idx;
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial1(RGBf(1, 1, 1), false, false); // white
 	pMats->AddRGBMaterial1(RGBf(.2, .2, .2), false, false); // dark grey
 
-	vtGeom *geom = new vtGeom();
-	geom->SetMaterials(pMats);
+	m_pLegendGeom = new vtGeom();
+	m_pLegendGeom->SetMaterials(pMats);
 	pMats->Release();
 
 	// Solid rectangle behind it
 	vtMesh *mesh4 = new vtMesh(GL_QUADS, 0, 4);
 	mesh4->AddRectangleXY(base.x, base.y, size.x, size.y, -1);
-	geom->AddMesh(mesh4, 1);
+	m_pLegendGeom->AddMesh(mesh4, 1);
 	mesh4->Release();
 
 	// Big band of color
@@ -1722,7 +1736,7 @@ void Enviro::CreateElevationLegend()
 		mesh1->SetVtxColor(idx+1, table[i]);
 	}
 	mesh1->AddStrip2((in_size.y + 1)*2, 0);
-	geom->AddMesh(mesh1, 0);
+	m_pLegendGeom->AddMesh(mesh1, 0);
 	mesh1->Release();
 
 	// Small white tick marks
@@ -1733,7 +1747,7 @@ void Enviro::CreateElevationLegend()
 		FPoint3 p2(cbar_left,			 in_base.y + i*vert_space, 0);
 		mesh2->AddLine(p1, p2);
 	}
-	geom->AddMesh(mesh2, 0);
+	m_pLegendGeom->AddMesh(mesh2, 0);
 	mesh2->Release();
 
 	float fMin, fMax;
@@ -1753,12 +1767,13 @@ void Enviro::CreateElevationLegend()
 		FPoint3 p1(in_base.x, in_base.y + i*vert_space - (fontsize*1/3), 0);
 		mesh3->SetPosition(p1);
 
-		geom->AddTextMesh(mesh3, 0);
+		m_pLegendGeom->AddTextMesh(mesh3, 0);
 		mesh3->Release();
 	}
 	delete font;
 
-	m_pHUD->AddChild(geom);
+	m_pHUD->AddChild(m_pLegendGeom);
+	m_bCreatedLegend = true;
 }
 
 
