@@ -87,7 +87,7 @@ void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
 
 void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
 {
-	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.y);
+	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.z);
 	world.y = (float) (earth.z * m_fVerticalScale);
 }
 
