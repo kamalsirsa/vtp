@@ -41,8 +41,7 @@ CustomTerrain::~CustomTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-DTErr CustomTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth)
+DTErr CustomTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 {
 	// Initializes necessary field of the parent class
 	DTErr err = BasicInit(pGrid);
@@ -171,9 +170,12 @@ void CustomTerrain::RenderPass()
 // position of the terrain at a given grid point.  Supply the height
 // value from your own data structures.
 //
-float CustomTerrain::GetElevation(int iX, int iZ) const
+float CustomTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	return m_pData[offset(iX,iZ)];
+	float f = m_pData[offset(iX,iZ)];
+	if (bTrue)
+		f /= m_fZScale;
+	return f;
 }
 
 void CustomTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const

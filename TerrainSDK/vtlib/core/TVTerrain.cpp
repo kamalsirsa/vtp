@@ -135,7 +135,7 @@ static int next2Power(int x)
 	return m;
 }
 
-int TVTerrain::calcErr(vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p3)
+int TVTerrain::calcErr(const vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p3)
 {
 	int x1, x2, x3, y1, y2, y3;
 	double z1, z2, z3;
@@ -429,14 +429,14 @@ int TVTerrain::inROD(Coord2d p1, Coord2d p2, Coord2d p3)
 
 /*  midpoint(p1, p2, m) -- set m to midpoint of segment between p1 and p2  */
 
-void midpoint(Coord2d p1, Coord2d p2, Coord2d m)
+void midpoint(const Coord2d p1, const Coord2d p2, Coord2d m)
 {
-  m[0] = (p1[0] + p2[0]) / 2;
-  m[1] = (p1[1] + p2[1]) / 2;
-  /*  m[2] = pGrid->GetFValue(m[0], m[1]); */
+	m[0] = (p1[0] + p2[0]) / 2;
+	m[1] = (p1[1] + p2[1]) / 2;
+/*  m[2] = pGrid->GetFValue(m[0], m[1]); */
 }
 
-void TVTerrain::makeDFS(vtElevationGrid *pGrid, TriIndex *t,
+void TVTerrain::makeDFS(const vtElevationGrid *pGrid, TriIndex *t,
 						Coord2d p1, Coord2d p2, Coord2d p3)
 {
 	TriIndex lt,rt;
@@ -692,7 +692,7 @@ void TVTerrain::getVerts(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 /*  sets xmeters, ymeters, xscale, yscale, m2grid */
 /*  err2grid  */
 
-void TVTerrain::mkscale(vtElevationGrid *pGrid)
+void TVTerrain::mkscale(const vtElevationGrid *pGrid)
 {
 	/* get dimensions in meters */
 	DRECT area = pGrid->GetEarthExtents();
@@ -721,8 +721,7 @@ void TVTerrain::mkscale(vtElevationGrid *pGrid)
 //
 // fZScale converts from height values (meters) to world coordinates
 //
-DTErr TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-			  float fOceanDepth)
+DTErr TVTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 {
 	DTErr err = BasicInit(pGrid);
 	if (err != DTErr_OK)
@@ -765,19 +764,12 @@ DTErr TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	// allocate height field
 	m_pVertex = (float *)calloc(m_iColumns * m_iRows, sizeof(float));
 
-	float value;
 	int j;
 	for (i = 0; i < m_iColumns; i++)
-	for (j = 0; j < m_iRows; j++)
-	{
-		value = pGrid->GetFValue(i, j);
-
-		//add weight to shoreline only if the ocean depth is non-zero.
-		if (fOceanDepth < 0.0f && value == 0.0f)
-			value = fOceanDepth;
-
-		m_pVertex[offset(i, j)] = value;
-	}
+		for (j = 0; j < m_iRows; j++)
+		{
+			m_pVertex[offset(i, j)] = pGrid->GetFValue(i, j);
+		}
 
 	//	Southwest point is origin
 	sw[0] = 0;
@@ -800,9 +792,12 @@ DTErr TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	return DTErr_OK;
 }
 
-float TVTerrain::GetElevation(int iX, int iZ) const
+float TVTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	return m_pVertex[offset(iX, iZ)];
+	if (bTrue)
+		return m_pVertex[offset(iX, iZ)] / m_fZScale;
+	else
+		return m_pVertex[offset(iX, iZ)];
 }
 
 void TVTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const

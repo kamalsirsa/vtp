@@ -121,22 +121,22 @@ public:
 	TVTerrain();
 
 	/// initialization
-	DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth);
+	DTErr Init(const vtElevationGrid *pGrid, float fZScale);
 	static int MemoryRequired(int iDimension);
 
 	// overrides
 	void DoRender();
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
-	float GetElevation(int iX, int iZ) const;
+	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
 
 protected:
-	void mkscale(vtElevationGrid *pGrid);
-	int calcErr(vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p3);
+	void mkscale(const vtElevationGrid *pGrid);
+	int calcErr(const vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p3);
 	int inFOV(Coord2d p1, Coord2d p2, Coord2d p3);
 	int triInFOV(TriIndex *t);
 	int inROD(Coord2d p1, Coord2d p2, Coord2d p3);
-	void makeDFS(vtElevationGrid *pGrid, TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
+	void makeDFS(const vtElevationGrid *pGrid, TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
 	int init_ntriabove(int depth);
 	void getVerts(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
 

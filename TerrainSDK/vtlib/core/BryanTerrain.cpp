@@ -49,8 +49,7 @@ BryanTerrain::~BryanTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-DTErr BryanTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth)
+DTErr BryanTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 {
 	// Initializes necessary field of the parent class
 	DTErr err = BasicInit(pGrid);
@@ -198,9 +197,12 @@ void BryanTerrain::RenderPass()
 */
 }
 
-float BryanTerrain::GetElevation(int iX, int iZ) const
+float BryanTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	return m_pData[offset(iX,iZ)];
+	float f = m_pData[offset(iX,iZ)];
+	if (bTrue)
+		f /= m_fZScale;
+	return f;
 }
 
 void BryanTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const

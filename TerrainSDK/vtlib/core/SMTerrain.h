@@ -139,13 +139,13 @@ public:
 	SMTerrain();
 
 	/// initialization
-	DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth);
+	DTErr Init(const vtElevationGrid *pGrid, float fZScale);
 	static int MemoryRequired(int iDimension);
 
 	// overrides
 	void DoRender();
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
-	float GetElevation(int iX, int iZ) const;
+	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
 
 protected:

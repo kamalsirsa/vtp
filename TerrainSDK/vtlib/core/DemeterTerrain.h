@@ -24,7 +24,7 @@ public:
 	~DemeterTerrain();
 
 	// initialization
-	DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth);
+	DTErr Init(const vtElevationGrid *pGrid, float fZScale);
 
 	// overrides
 	void DoRender();

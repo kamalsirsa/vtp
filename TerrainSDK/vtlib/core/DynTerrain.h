@@ -32,9 +32,9 @@ class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid3d
 public:
 	vtDynTerrainGeom();
 
-	virtual DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth) = 0;
+	virtual DTErr Init(const vtElevationGrid *pGrid, float fZScale) = 0;
 	virtual void Init2();
-	DTErr BasicInit(vtElevationGrid *pGrid);
+	DTErr BasicInit(const vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 	virtual void SetVerticalExag(float fExag) {}
 
@@ -58,7 +58,7 @@ public:
 
 	// overrides for HeightField
 	void GetChecksum(unsigned char **ppChecksum) const {}
-	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
+	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// overrides for HeightField3d
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,

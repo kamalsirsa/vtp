@@ -157,8 +157,7 @@ SMTerrain::~SMTerrain()
 //
 // fZScale converts from height values (meters) to world coordinates
 //
-DTErr SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth)
+DTErr SMTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 {
 	DTErr err = BasicInit(pGrid);
 	if (err != DTErr_OK)
@@ -239,8 +238,6 @@ DTErr SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 		for (j = 0; j < m_iRows; j++)
 		{
 			elev = pGrid->GetFValue(i, j);
-			if (elev == 0.0f)
-				elev = fOceanDepth;
 			m_pData[offset(i,j)] = (HeightType)(PACK_SCALE * elev);
 		}
 	}
@@ -1130,9 +1127,12 @@ void SMTerrain::RenderSurface()
 }
 
 
-float SMTerrain::GetElevation(int iX, int iZ) const
+float SMTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	return m_pData[offset(iX,iZ)]*m_fZScale;
+	if (bTrue)
+		return m_pData[offset(iX,iZ)];
+	else
+		return m_pData[offset(iX,iZ)]*m_fZScale;
 }
 
 void SMTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const

@@ -44,10 +44,9 @@ SRTerrain::~SRTerrain()
 // supports some functionality by callback, and the callback is only a
 // simple C function which has no context to tell us which terrain.
 //
-static vtElevationGrid *s_pGrid;
+static const vtElevationGrid *s_pGrid;
 static SRTerrain *s_pSRTerrain;
 static int myfancnt, myvtxcnt;
-static float s_fOceanDepth;
 
 void beginfan_vtp()
 {
@@ -76,28 +75,19 @@ void notify_vtp(int i, int j, int size)
 
 short int getelevation_vtp1(int i, int j, int size)
 {
-	short elev = s_pGrid->GetValue(i, j);
-	if (elev == 0)
-		return (short) s_fOceanDepth;
-	else
-		return elev;
+	return s_pGrid->GetValue(i, j);
 }
 
 float getelevation_vtp2(int i, int j, int size)
 {
-	float elev = s_pGrid->GetFValue(i, j);
-	if (elev == 0.0f)
-		return s_fOceanDepth;
-	else
-		return elev;
+	return s_pGrid->GetFValue(i, j);
 }
 
 //
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth)
+DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 {
 	// Initializes necessary field of the parent class
 	DTErr err = BasicInit(pGrid);
@@ -121,7 +111,6 @@ DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	float cellaspect = m_fZStep / m_fXStep;
 
 	s_pGrid = pGrid;
-	s_fOceanDepth = fOceanDepth;
 
 	if (pGrid->IsFloatMode())
 	{
@@ -327,9 +316,12 @@ void SRTerrain::RenderPass()
 // position of the terrain at a given grid point.  Supply the height
 // value from our own data structures.
 //
-float SRTerrain::GetElevation(int iX, int iZ) const
+float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
-	return m_pMini->getheight(iX, iZ);
+	if (bTrue)
+		return m_pMini->getheight(iX, iZ) / m_fHeightScale;
+	else
+		return m_pMini->getheight(iX, iZ);
 }
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p) const

@@ -35,7 +35,7 @@ void vtDynTerrainGeom::Init2()
 {
 }
 
-DTErr vtDynTerrainGeom::BasicInit(vtElevationGrid *pGrid)
+DTErr vtDynTerrainGeom::BasicInit(const vtElevationGrid *pGrid)
 {
 	// initialize the HeightFieldGrid3D
 	const LinearUnits units = pGrid->GetProjection().GetUnits();
@@ -76,7 +76,7 @@ void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatc
 }
 
 // overrides for HeightField
-bool vtDynTerrainGeom::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
+bool vtDynTerrainGeom::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
 	DPoint2 spacing = GetSpacing();
 	int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);
@@ -90,10 +90,10 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) 
 	}
 
 	float alt0, alt1, alt2, alt3;
-	alt0 = GetElevation(iX, iY);
-	alt1 = GetElevation(iX+1, iY);
-	alt2 = GetElevation(iX+1, iY+1);
-	alt3 = GetElevation(iX, iY+1);
+	alt0 = GetElevation(iX, iY, bTrue);
+	alt1 = GetElevation(iX+1, iY, bTrue);
+	alt2 = GetElevation(iX+1, iY+1, bTrue);
+	alt3 = GetElevation(iX, iY+1, bTrue);
 
 	// find fractional amount (0..1 across quad)
 	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
