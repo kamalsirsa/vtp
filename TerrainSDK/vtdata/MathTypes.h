@@ -137,7 +137,12 @@ public:
 	DPoint3(const FPoint3 &p);
 
 	double Length() const { return sqrt(x*x+y*y+z*z); }
-	DPoint3 &Normalize() { double s = 1.0f/Length(); x*=s; y*=s; z*=s; return (*this); }
+	DPoint3 &Normalize()
+	{
+		double s = 1.0/Length();
+		x*=s; y*=s; z*=s;
+		return (*this);
+	}
 	void Set(double fx, double fy, double fz) { x=fx; y=fy; z=fz; }
 	double Dot(const DPoint3 &rhs) const
 	{
@@ -331,6 +336,9 @@ public:
 	void operator -=(const IPoint2 &v) { x-=v.x; y-=v.y; }
 	void operator *=(int s) { x*=s; y*=s; }
 	void operator *=(float f) { x=(int)(x*f); y=(int)(y*f); }
+
+	bool operator==(const IPoint2 &v) const { return (x == v.x && y == v.y); }
+	bool operator!=(const IPoint2 &v) const { return (x != v.x || y != v.y); }
 
 	int x, y;
 };
