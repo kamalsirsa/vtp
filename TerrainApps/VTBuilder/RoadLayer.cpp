@@ -19,6 +19,7 @@
 
 bool vtRoadLayer::m_bDrawNodes = false;
 bool vtRoadLayer::m_bShowDirection = false;
+bool vtRoadLayer::m_bDrawWidth = false;
 
 //////////////////////////////////////////////////////////////////////
 

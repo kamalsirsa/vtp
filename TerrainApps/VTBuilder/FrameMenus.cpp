@@ -92,7 +92,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_ROAD_SELECTWHOLE,	MainFrame::OnSelectWhole)
 	EVT_MENU(ID_ROAD_DIRECTION,		MainFrame::OnDirection)
 	EVT_MENU(ID_ROAD_EDIT,			MainFrame::OnRoadEdit)
-	EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnShowNodes)
+	EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnRoadShowNodes)
+	EVT_MENU(ID_ROAD_SHOWWIDTH,		MainFrame::OnRoadShowWidth)
 	EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
 	EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
 
@@ -101,7 +102,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ROAD_SELECTWHOLE,	MainFrame::OnUpdateSelectWhole)
 	EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
 	EVT_UPDATE_UI(ID_ROAD_EDIT,			MainFrame::OnUpdateRoadEdit)
-	EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateShowNodes)
+	EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
+	EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
 
 	EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 	EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
@@ -227,6 +229,7 @@ void MainFrame::CreateMenus()
 	roadMenu->Append(ID_ROAD_EDIT, "Edit Road Points", "Edit Road Points", true);
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_SHOWNODES, "Show Nodes", "Show Nodes", true);
+	roadMenu->Append(ID_ROAD_SHOWWIDTH, "Show Width", "Show the width of each road", true);
 	roadMenu->Append(ID_ROAD_SELECTHWY, "Select by Highway Number", "Select Highway", true);
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, "Clean RoadMap", "Clean");
@@ -895,16 +898,28 @@ void MainFrame::OnUpdateRoadEdit(wxUpdateUIEvent& event)
 	event.Check( m_pView->GetMode() == LB_RoadEdit );
 }
 
-void MainFrame::OnShowNodes(wxCommandEvent &event)
+void MainFrame::OnRoadShowNodes(wxCommandEvent &event)
 {
 	bool state = vtRoadLayer::GetDrawNodes();
 	vtRoadLayer::SetDrawNodes(!state);
 	m_pView->Refresh(state);
 }
 
-void MainFrame::OnUpdateShowNodes(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateRoadShowNodes(wxUpdateUIEvent& event)
 {
 	event.Check(vtRoadLayer::GetDrawNodes());
+}
+
+void MainFrame::OnRoadShowWidth(wxCommandEvent &event)
+{
+	bool state = vtRoadLayer::GetDrawWidth();
+	vtRoadLayer::SetDrawWidth(!state);
+	m_pView->Refresh();
+}
+
+void MainFrame::OnUpdateRoadShowWidth(wxUpdateUIEvent& event)
+{
+	event.Check(vtRoadLayer::GetDrawWidth());
 }
 
 void MainFrame::OnSelectHwy(wxCommandEvent &event)

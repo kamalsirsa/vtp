@@ -32,6 +32,8 @@ public:
 	static void SetDrawNodes(bool d) { m_bDrawNodes = d; }
 	static bool GetShowDirection() { return m_bShowDirection; }
 	static void SetShowDirection(bool d) { m_bShowDirection = d; }
+	static bool GetDrawWidth() { return m_bDrawWidth; }
+	static void SetDrawWidth(bool d) { m_bDrawWidth = d; }
 
 	int GetSelectedNodes();
 	int GetSelectedRoads();
@@ -51,6 +53,7 @@ public:
 protected:
 	static bool	m_bDrawNodes;
 	static bool	m_bShowDirection;
+	static bool	m_bDrawWidth;
 };
 
 #endif
