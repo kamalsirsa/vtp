@@ -29,15 +29,18 @@ public:
 #else
 	wxString2(const wchar_t *psz);
 #endif
+	wxString2(const std::string &in);
 	wxString2(const wxString &in) : wxString(in) {}
 	wxString2(const vtString &vtstr);
 
 	// Assignment
 	wxString2& operator=(const wxChar *psz);
-#if wxUSE_UNICODE	// supply the conversion that wxChar doesn't
+#if wxUSE_UNICODE	// supply the conversions that wxChar doesn't
 	wxString2& operator=(const char *psz);
+//	void operator+=(const char *psz);
 #else
 	wxString2& operator=(const wchar_t *psz);
+//	void operator+=(const wchar_t *psz);
 #endif
 	wxString2& operator=(const wxString &str);
 	wxString2& operator=(const vtString &vtstr);
