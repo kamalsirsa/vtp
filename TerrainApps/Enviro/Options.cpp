@@ -29,6 +29,7 @@ EnviroOptions g_Options;
 #define STR_SELECTIONCUTOFF "SelectionCutoff"
 #define STR_DISABLE_MODEL_MIPMAPS "DisableModelMipmaps"
 #define STR_CURSOR_THICKNESS "CursorThickness"
+#define STR_CONTENT_FILE "ContentFile"
 
 EnviroOptions::EnviroOptions()
 {
@@ -97,6 +98,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_bDisableModelMipmaps;
 		else if (strcmp(buf, STR_CURSOR_THICKNESS) == 0)
 			input >> m_fCursorThickness;
+		else if (strcmp(buf, STR_CONTENT_FILE) == 0)
+			m_strContentFile = get_line_from_stream(input);
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -153,6 +156,8 @@ bool EnviroOptions::Write()
 	output << m_bDisableModelMipmaps << endl;
 	output << STR_CURSOR_THICKNESS << "\t";
 	output << m_fCursorThickness << endl;
+	output << STR_CONTENT_FILE << "\t\t";
+	output << (const char *)m_strContentFile << endl;
 
 	return true;
 }
