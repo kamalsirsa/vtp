@@ -47,18 +47,8 @@ wxString ImportDirectory[LAYER_TYPES];
 // Helper
 wxString GetTempFolderName(const char *base)
 {
+	// first determine where to put our temporary directory
 	wxString2 path;
-
-	const char *tmp = base;
-	const char *tmp1 = strrchr(base, '/');
-	if (tmp1)
-		tmp = tmp1+1;
-	const char *tmp2 = strrchr(base, '\\');
-	if (tmp2 && tmp2 > tmp)
-		tmp = tmp2+1;
-	const char *tmp3 = strrchr(base, ':');
-	if (tmp3 && tmp3 > tmp)
-		tmp = tmp3+1;
 
 	const char *temp = getenv("TEMP");
 	if (temp)
@@ -71,10 +61,13 @@ wxString GetTempFolderName(const char *base)
 #endif
 	path += _T("/");
 
-	wxString2 base2 = tmp;
+	// the create a folder named after the file in the full path "base"
+	wxString2 base2 = StartOfFilename(base);
 	path += base2;
 
+	// appended with the word _temp
 	path += _T("_temp");
+
 	return path;
 }
 
