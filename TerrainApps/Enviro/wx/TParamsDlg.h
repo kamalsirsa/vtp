@@ -128,6 +128,7 @@ public:
 
 	wxStringArray	m_strStructFiles;
 	int		m_iStructDistance;
+	wxString2 m_strContent;
 
 	bool	m_bSky;
 	wxString2	m_strSkyTexture;
@@ -154,6 +155,7 @@ public:
 //  wxString2	m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxChoice* GetContentFile()  { return (wxChoice*) FindWindow( ID_CHOICE_CONTENT ); }
 	wxChoice* GetNavStyle()  { return (wxChoice*) FindWindow( ID_NAV_STYLE ); }
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
 	wxRadioButton* GetUseTin()  { return (wxRadioButton*) FindWindow( ID_USE_TIN ); }

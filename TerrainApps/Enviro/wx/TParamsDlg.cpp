@@ -193,6 +193,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 		m_strStructFiles.Append(ws);
 	}
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
+	m_strContent =		Params.GetValueString(STR_CONTENT_FILE);
 
 	m_bVehicles =		Params.GetValueBool(STR_VEHICLES);
 //  m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
@@ -294,6 +295,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	for (i = 0; i < num; i++)
 		Params.m_strStructFiles.push_back(vtString(m_strStructFiles[i]->mb_str()));
 	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
+	Params.SetValueString(STR_CONTENT_FILE, m_strContent.to_utf8());
 
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //  Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
@@ -525,6 +527,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
 
+		// fill in Content file
+		AddFilenamesToChoice(GetContentFile(), m_datapaths[i], "*.vtco");
+		sel = GetContentFile()->FindString(m_strContent);
+		if (sel != -1)
+			GetContentFile()->SetSelection(sel);
+
 		// fill in Sky files
 		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.bmp");
 		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.png");
@@ -629,6 +637,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TEXROADS, &m_bTexRoads);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
 
+	AddValidator(ID_CHOICE_CONTENT, &m_strContent);
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
 	AddValidator(ID_VEHICLES, &m_bVehicles);
 
