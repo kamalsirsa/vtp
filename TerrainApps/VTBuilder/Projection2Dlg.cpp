@@ -23,6 +23,7 @@
 #include "Projection2Dlg.h"
 #include "StatePlaneDlg.h"
 #include "vtui/wxString2.h"
+#include "vtdata/vtLog.h"
 
 //
 // Must offset the values we use for Datum because a Choice
@@ -335,9 +336,26 @@ void Projection2Dlg::OnProjLoad( wxCommandEvent &event )
 
 void Projection2Dlg::OnDatum( wxCommandEvent &event )
 {
+	// operate on a copy for safety
+	vtProjection copy = m_proj;
 	int sel = event.GetInt();
-	m_iDatum = ((int) m_pDatumCtrl->GetClientData(sel)) - CHOICE_OFFSET;
-	m_proj.SetDatum(m_iDatum);
+	int datum_new = ((int) m_pDatumCtrl->GetClientData(sel)) - CHOICE_OFFSET;
+	OGRErr err = copy.SetDatum(datum_new);
+	if (err == OGRERR_NONE)
+	{
+		// succeeded
+		m_proj = copy;
+		m_iDatum = datum_new;
+	}
+	else
+	{
+		// Failed.  The OGR error message has already gone to the debug log
+		//  via CPL.  We just need to inform the user via the GUI.
+		wxMessageBox(_T("Couldn't set that Datum.  Perhaps the EPSG\n")
+			_T("tables could not be located.  Check that your\n")
+			_T("GEOTIFF_CSV environment variable is set."));
+		SetUIFromProjection();
+	}
 }
 
 void Projection2Dlg::OnItemRightClick( wxListEvent &event )
