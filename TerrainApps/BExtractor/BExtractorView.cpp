@@ -480,7 +480,7 @@ BExtractorDoc* BExtractorView::GetDocument() // non-debug version is inline
 
 void BExtractorView::OnInitialUpdate()
 {
-	CView::OnInitialUpdate();	
+	CView::OnInitialUpdate();
 }
 
 void BExtractorView::ContrainLocationForPoly()
@@ -539,16 +539,16 @@ void BExtractorView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	int delta = 0;
 	switch (nSBCode)
 	{
-		case SB_LINELEFT:	
+		case SB_LINELEFT:
 			delta = -SCROLL_MULT;
 			break;
-		case SB_LINERIGHT:	
+		case SB_LINERIGHT:
 			delta = SCROLL_MULT;
 			break;
-		case SB_PAGELEFT:	
+		case SB_PAGELEFT:
 			delta = -window_width;
 			break;
-		case SB_PAGERIGHT:	
+		case SB_PAGERIGHT:
 			delta = window_width;
 			break;
 		case SB_THUMBPOSITION:
@@ -587,16 +587,16 @@ void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	int delta = 0;
 	switch (nSBCode)
 	{
-		case SB_LINEUP:		
+		case SB_LINEUP:
 			delta = -SCROLL_MULT;
 			break;
-		case SB_LINEDOWN:	
+		case SB_LINEDOWN:
 			delta = SCROLL_MULT;
 			break;
-		case SB_PAGEUP:		
+		case SB_PAGEUP:
 			delta = -screen_height;
 			break;
-		case SB_PAGEDOWN:	
+		case SB_PAGEDOWN:
 			delta = screen_height;
 			break;
 		case SB_THUMBPOSITION:
@@ -1092,7 +1092,7 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 			(abs(point.y - m_downPoint.y) > 2))
 		{
 			m_bRubber = true; //definitely mopping
-			m_maybeRect = false;  //reset this	
+			m_maybeRect = false;  //reset this
 		}
 	}
 	if (m_bPanning == true)
@@ -1194,7 +1194,7 @@ void BExtractorView::DoPan(CPoint point)
 	// calculate how far user has dragged since they began
 	// update the offset to account for this movement
 	m_offset.x = m_old_offset.x + (point.x - m_downPoint.x);
-	m_offset.y = m_old_offset.y + (point.y - m_downPoint.y);			
+	m_offset.y = m_old_offset.y + (point.y - m_downPoint.y);
 
 	// keep it in bounds
 	ClipOffset();
@@ -1488,7 +1488,7 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 	drect.Sort();
 
 	pNode = doc->m_Links.GetFirstNode();
-	
+
 	while (NULL != pNode)
 	{
 		pNext = pNode->m_pNext;
@@ -1634,16 +1634,16 @@ void BExtractorView::OnFunctionsConvolve()
 		//	If you have a data file that has very closely-packed
 		//	buildings, you should use a lower threshold (finds more
 		//	buildings, but also more false hits)
-		case 0:	
+		case 0:
 			{
 				iplThreshold(i1, i2, 46155);
-				// (181/255 on an 8-bit scale)	
+				// (181/255 on an 8-bit scale)
 				break;
 			}
 		case 1:
 			{
 				iplThreshold(i1, i2, 47175);
-				// (185/255 on an 8-bit scale)	
+				// (185/255 on an 8-bit scale)
 				break;
 			}
 		case 2:
@@ -1658,10 +1658,10 @@ void BExtractorView::OnFunctionsConvolve()
 				// (193/255 on an 8-bit scale)
 				break;
 			}
-		case 4:	
+		case 4:
 			{
 				iplThreshold(i1, i2, 50235);
-				// (197/255 on an 8-bit scale)	
+				// (197/255 on an 8-bit scale)
 				break;
 			}
 		case 5:
@@ -1714,7 +1714,7 @@ void BExtractorView::OnFunctionsConvolve()
 		vtBuilding *bld = doc->m_Buildings.GetAt(k)->GetBuilding();
 
 		DPoint2 point, point2;
-		
+
 		bld->GetBaseLevelCenter(point);
 		for (l = 0; (!match)&&(l < num); l++)
 		{
@@ -1911,7 +1911,7 @@ void BExtractorView::ZoomToBuilding()
 		if (m_zoomed) //user wants to zoom back out (restore original view)
 		{
 			m_zoomed = false;
-			
+
 			m_fScale = m_fSavedScale;
 			m_offset = m_SavedOffset;
 
@@ -1921,7 +1921,7 @@ void BExtractorView::ZoomToBuilding()
 		else //user wants to zoom in to mark a building
 		{
 			m_zoomed = true;
-			
+
 			m_fSavedScale = m_fScale;	//save scale
 			m_SavedOffset = m_offset;		//save offset
 
@@ -2108,7 +2108,7 @@ void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI)
 void BExtractorView::OnModesRoadnode()
 {
 	m_mode = LB_EditRoadNodes;
-	
+
 }
 
 void BExtractorView::OnUpdateModesRoadnode(CCmdUI* pCmdUI)
@@ -2131,7 +2131,7 @@ void BExtractorView::OnChangeRoadColor()
 
 void BExtractorView::OnModesRoadEdit()
 {
-	m_mode = LB_EditRoad;	
+	m_mode = LB_EditRoad;
 }
 
 void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI)
@@ -2141,12 +2141,13 @@ void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_mode == LB_EditRoad);
 }
 
-void BExtractorView::OnConstrain() 
+void BExtractorView::OnConstrain()
 {
 	m_bConstrain = !m_bConstrain;
 }
 
-void BExtractorView::OnUpdateConstrain(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateConstrain(CCmdUI* pCmdUI)
 {
 	pCmdUI->SetCheck(m_bConstrain);
 }
+
