@@ -161,6 +161,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	int	image, imageSel;
 
 	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, "Elevation");
+#ifndef ELEVATION_ONLY
 //	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, "Images");
 	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, "Structures");
 	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, "Roads");
@@ -171,6 +172,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 #endif
 	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, "Utilities");
 	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, "Raw");
+#endif
 
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;
@@ -183,12 +185,13 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 		wxString str = MakeItemName(lp);
 
-		wxTreeItemId hItem;
+		wxTreeItemId hItem = -1;
 		switch (lp->GetType())
 		{
 			case LT_ELEVATION:
 				hItem = AppendItem(elevId, str, image, imageSel);
 				break;
+#ifndef ELEVATION_ONLY
 			case LT_ROAD:
 				hItem = AppendItem(roadId, str, image, imageSel);
 				break;
@@ -212,15 +215,20 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 			case LT_RAW:
 				hItem = AppendItem(rawId, str, image, imageSel);
 				break;
+#endif
 		}
-		SetItemData(hItem, new MyTreeItemData(lp));
+		if (hItem != -1)
+		{
+			SetItemData(hItem, new MyTreeItemData(lp));
 
-		if (lp == pFrame->GetActiveLayer())
-			SelectItem(hItem);
+			if (lp == pFrame->GetActiveLayer())
+				SelectItem(hItem);
+		}
 	}
 
 	Expand(rootId);
 	Expand(elevId);
+#ifndef ELEVATION_ONLY
 //	Expand(imageId);
 	Expand(roadId);
 	Expand(buildId);
@@ -231,6 +239,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 #endif
 	Expand(utilityId);
 	Expand(rawId);
+#endif
 }
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
