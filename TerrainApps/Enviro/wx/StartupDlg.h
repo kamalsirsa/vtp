@@ -52,7 +52,7 @@ private:
 	bool	m_bFullscreen;
 	bool	m_bHtmlpane;
 	bool	m_bFloatingToolbar;
-	bool	m_bSound;
+	bool	m_bTextureCompression;
 	bool	m_bSpeedTest;
 	bool	m_bStartEarth;
 	bool	m_bStartTerrain;

@@ -1,7 +1,7 @@
 //
 // Name: StartupDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -171,28 +171,28 @@ static void ShowOGLInfo(bool bLog)
 
 void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
-	m_bStartEarth = (opt.m_bEarthView == TRUE);
+	m_bStartEarth = opt.m_bEarthView;
 	m_bStartTerrain = !opt.m_bEarthView;
 	m_strImage = wxString::FromAscii((const char *)opt.m_strImage);
 	m_strTName.from_utf8(opt.m_strInitTerrain);
-	m_bFullscreen = (opt.m_bFullscreen == TRUE);
-	m_bHtmlpane = (opt.m_bHtmlpane == TRUE);
-	m_bFloatingToolbar = (opt.m_bFloatingToolbar == TRUE);
-	m_bSound = (opt.m_bSound == TRUE);
-	m_bSpeedTest = (opt.m_bSpeedTest == TRUE);
+	m_bFullscreen = opt.m_bFullscreen;
+	m_bHtmlpane = opt.m_bHtmlpane;
+	m_bFloatingToolbar = opt.m_bFloatingToolbar;
+	m_bTextureCompression = opt.m_bTextureCompression;
+	m_bSpeedTest = opt.m_bSpeedTest;
 	m_fPlantScale = opt.m_fPlantScale;
-	m_bShadows = (opt.m_bShadows == TRUE);
+	m_bShadows = opt.m_bShadows;
 }
 
 void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
-	opt.m_bEarthView = (m_bStartEarth == 1);
+	opt.m_bEarthView = m_bStartEarth;
 	opt.m_strImage = m_strImage.mb_str();
 	opt.m_strInitTerrain = m_strTName.to_utf8();
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
-	opt.m_bSound = m_bSound;
+	opt.m_bTextureCompression = m_bTextureCompression;
 	opt.m_bSpeedTest = m_bSpeedTest;
 	opt.m_fPlantScale = m_fPlantScale;
 	opt.m_bShadows = m_bShadows;
@@ -362,7 +362,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
 	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
 	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
-	AddValidator(ID_SOUND, &m_bSound);
+	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
 	AddValidator(ID_SHADOWS, &m_bShadows);
 
 	// Terrain choices

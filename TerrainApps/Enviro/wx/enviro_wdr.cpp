@@ -82,8 +82,7 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item18->Enable( FALSE );
     item16->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item19 = new wxCheckBox( parent, ID_SOUND, _("Sound"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Enable( FALSE );
+    wxCheckBox *item19 = new wxCheckBox( parent, ID_TEXTURE_COMPRESSION, _("Texture Compression"), wxDefaultPosition, wxDefaultSize, 0 );
     item16->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxCheckBox *item20 = new wxCheckBox( parent, ID_HTML_PANE, _("HTML Pane"), wxDefaultPosition, wxDefaultSize, 0 );
