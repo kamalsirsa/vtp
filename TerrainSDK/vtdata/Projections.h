@@ -66,8 +66,8 @@ public:
 	void	SetUTMZone(int iZone);
 	int		GetUTMZone() const;
 	void	SetDatum(int iDatum);
-	int		GetDatum();
-	LinearUnits	GetUnits();
+	int		GetDatum() const;
+	LinearUnits	GetUnits() const;
 
 	void	SetGeogCSFromDatum(int iDatum);
 
@@ -84,6 +84,9 @@ public:
 	bool WriteProjFile(const char *filename) const;
 
 	double GeodesicDistance(const DPoint2 &in, DPoint2 &out, bool bQuick = false);
+
+	// Useful for debugging
+	void LogDescription() const;
 };
 
 struct StatePlaneInfo
@@ -138,6 +141,11 @@ double EstimateDegreesToMeters(double latitude);
  * Return the number of meters for a given type of linear units
  */
 double GetMetersPerUnit(LinearUnits lu);
+
+/**
+ * Return a string describing the units.
+ */
+const char *GetLinearUnitName(LinearUnits lu);
 
 ///////////////////////////
 
