@@ -566,11 +566,11 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLodMethod->SetSelection(m_iLodMethod);
 
 	m_pShadowRez->Clear();
-	m_pShadowRez->Append("256");
-	m_pShadowRez->Append("512");
-	m_pShadowRez->Append("1024");
-	m_pShadowRez->Append("2048");
-	m_pShadowRez->Append("4096");
+	m_pShadowRez->Append(_T("256"));
+	m_pShadowRez->Append(_T("512"));
+	m_pShadowRez->Append(_T("1024"));
+	m_pShadowRez->Append(_T("2048"));
+	m_pShadowRez->Append(_T("4096"));
 
 	m_pNavStyle->Clear();
 	m_pNavStyle->Append(_("Normal Terrain Flyer"));
