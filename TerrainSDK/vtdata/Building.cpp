@@ -599,6 +599,7 @@ void vtLevel::FlipFootprintDirection()
 vtBuilding::vtBuilding() : vtStructure()
 {
 	SetType(ST_BUILDING);
+	m_fBaseElevation = 0.0f;
 }
 
 vtBuilding::~vtBuilding()
@@ -1046,7 +1047,10 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	else
 		coord_format = "%.2lf";
 
-	fprintf(fp, "\t<Building>\n");
+	fprintf(fp, "\t<Building");
+	if (m_fBaseElevation != 0.0f)
+		fprintf(fp, " Elevation=\"%.2f\"", m_fBaseElevation);
+	fprintf(fp, ">\n");
 
 	int i, j, k;
 	int levels = GetNumLevels();

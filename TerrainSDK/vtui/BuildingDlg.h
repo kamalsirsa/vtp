@@ -72,18 +72,19 @@ protected:
 	vtStructureArray *m_pSA;
 	vtBuilding  *m_pBuilding;
 	vtLevel  *m_pLevel;
-	vtEdge	*m_pEdge;
+	vtEdge  *m_pEdge;
 
-	int	  m_iLevel;
-	int	  m_iEdge;
-	int	  m_iStories;
-	float	  m_fStoryHeight;
-	wxString2	m_strMaterial;
-	wxString2	m_strEdgeSlopes;
-	wxString2	m_strFeatures;
-	wxString2	m_strFacade;
+	int	 m_iLevel;
+	int	 m_iEdge;
+	float   m_fVertOffset;
+	int	 m_iStories;
+	float   m_fStoryHeight;
+	wxString2   m_strMaterial;
+	wxString2   m_strEdgeSlopes;
+	wxString2   m_strFeatures;
+	wxString2   m_strFacade;
 	wxColour	m_Color;
-	int	  m_iEdgeSlope;
+	int   m_iEdgeSlope;
 
 	wxStaticBitmap  *m_pColorBitmapControl;
 	wxListBox   *m_pLevelListBox;
@@ -94,6 +95,7 @@ protected:
 
 protected:
 	// WDR: handler declarations for BuildingDlg
+	void OnVertOffset( wxCommandEvent &event );
 	void OnFacadeEnter( wxCommandEvent &event );
 	void OnFeatDoor( wxCommandEvent &event );
 	void OnFeatWindow( wxCommandEvent &event );

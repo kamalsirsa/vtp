@@ -53,6 +53,7 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_CLOSE(BuildingDlg::OnCloseWindow)
 	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
 	EVT_TEXT_ENTER( ID_FACADE, BuildingDlg::OnFacadeEnter )
+	EVT_TEXT_ENTER( ID_VERT_OFFSET, BuildingDlg::OnVertOffset )
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -68,6 +69,8 @@ void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld)
 {
 	m_pSA = pSA;
 	m_pBuilding = bld;
+	if (bld)
+		m_fVertOffset = bld->GetBaseElevation();
 }
 
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
@@ -119,6 +122,13 @@ void BuildingDlg::HighlightSelectedEdge()
 }
 
 // WDR: handler implementations for BuildingDlg
+
+void BuildingDlg::OnVertOffset( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_pBuilding->SetBaseElevation(m_fVertOffset);
+	Modified();
+}
 
 void BuildingDlg::OnFacadeEnter( wxCommandEvent &event )
 {
@@ -273,6 +283,7 @@ void BuildingDlg::OnCloseWindow(wxCloseEvent& event)
 
 void BuildingDlg::SetupControls()
 {
+	AddNumValidator(ID_VERT_OFFSET, &m_fVertOffset, 2);
 	AddValidator(ID_STORIES, &m_iStories);
 	AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
 
@@ -299,7 +310,7 @@ void BuildingDlg::SetupControls()
 
 	RefreshLevelsBox();
 //  if (m_bEdges)
-//	  RefreshEdgesBox();
+//	RefreshEdgesBox();
 
 	SetLevel(m_iLevel);
 	HighlightSelectedLevel();

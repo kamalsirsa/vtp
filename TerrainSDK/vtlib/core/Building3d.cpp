@@ -288,7 +288,8 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField *pHeightField)
 	if ((ymax - ymin) > 1.0f)	// it's on a slope
 	{
 		// Could do something about it - like deform the ground or build
-		//  some posts on which to set the building?
+		//  some posts on which to set the building?  Not here at
+		//  construction time, should occur earlier.
 	}
 	// Embed the building in the ground such that the lowest corner of its
 	// lowest level is at ground level.
@@ -298,6 +299,10 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField *pHeightField)
 	// the building's local coordinate system)
 	pHeightField->ConvertEarthToSurfacePoint(m_EarthPos, m_center);
 	m_center.y = base_level;
+
+	// The user is allowed to shift the building up or down by an
+	// arbitrary amount.
+	m_center.y += m_fBaseElevation;
 
 	//
 	// The final footprints are expressed relative to the origin of the

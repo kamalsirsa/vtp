@@ -228,12 +228,19 @@ public:
 	bool IsContainedBy(const DRECT &rect) const;
 	void SwapLevels(int lev1, int lev2);
 
+	void SetBaseElevation(float fElev) { m_fBaseElevation = fElev; }
+	double GetBaseElevation() const { return m_fBaseElevation; }
+
 protected:
 	// information about each story
 	Array<vtLevel *> m_Levels;
 
 	// fields that affect placement
 	DPoint2		m_EarthPos;			// location of building center
+
+	// geo z co-ordinate (elevation) of bottom of this building relative
+	//	to the lowest corner of its base footprint
+	float		m_fBaseElevation;
 
 private:
 	void DeleteStories();

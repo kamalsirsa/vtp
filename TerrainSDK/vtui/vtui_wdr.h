@@ -34,36 +34,37 @@
 #define ID_LEVEL_DEL 10003
 #define ID_LEVEL_UP 10004
 #define ID_LEVEL_DOWN 10005
-#define ID_STORIES 10006
-#define ID_STORY_HEIGHT 10007
-#define ID_MATERIAL1 10008
-#define ID_SET_MATERIAL 10009
-#define ID_COLOR1 10010
-#define ID_SET_COLOR 10011
-#define ID_EDGE_SLOPES 10012
-#define ID_SET_EDGE_SLOPES 10013
-#define ID_EDGES 10014
+#define ID_VERT_OFFSET 10006
+#define ID_STORIES 10007
+#define ID_STORY_HEIGHT 10008
+#define ID_MATERIAL1 10009
+#define ID_SET_MATERIAL 10010
+#define ID_COLOR1 10011
+#define ID_SET_COLOR 10012
+#define ID_EDGE_SLOPES 10013
+#define ID_SET_EDGE_SLOPES 10014
+#define ID_EDGES 10015
 wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 extern wxSizer *g_pTopGroup;
-#define ID_EDGE 10015
+#define ID_EDGE 10016
 extern wxSizer *g_pEdgeGroup;
-#define ID_MATERIAL2 10016
-#define ID_FACADE 10017
-#define ID_COLOR2 10018
-#define ID_EDGE_SLOPE 10019
-#define ID_FEATURES 10020
-#define ID_FEAT_CLEAR 10021
-#define ID_FEAT_WALL 10022
-#define ID_FEAT_WINDOW 10023
-#define ID_FEAT_DOOR 10024
+#define ID_MATERIAL2 10017
+#define ID_FACADE 10018
+#define ID_COLOR2 10019
+#define ID_EDGE_SLOPE 10020
+#define ID_FEATURES 10021
+#define ID_FEAT_CLEAR 10022
+#define ID_FEAT_WALL 10023
+#define ID_FEAT_WINDOW 10024
+#define ID_FEAT_DOOR 10025
 wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TYPE 10025
-#define ID_HEIGHTEDIT 10026
-#define ID_HEIGHTSLIDER 10027
-#define ID_SPACINGEDIT 10028
-#define ID_SPACINGSLIDER 10029
+#define ID_TYPE 10026
+#define ID_HEIGHTEDIT 10027
+#define ID_HEIGHTSLIDER 10028
+#define ID_SPACINGEDIT 10029
+#define ID_SPACINGSLIDER 10030
 wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
