@@ -1471,6 +1471,63 @@ wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer 
     return item0;
 }
 
+wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, _("WMS base URL:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString *strs2 = (wxString*) NULL;
+    wxComboBox *item2 = new wxComboBox( parent, ID_BASE_URL, wxT(""), wxDefaultPosition, wxSize(400,-1), 0, strs2, wxCB_DROPDOWN );
+    item0->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxFlexGridSizer *item3 = new wxFlexGridSizer( 2, 0, 0 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_WIDTH, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item3->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item7 = new wxTextCtrl( parent, ID_HEIGHT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item3->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Query URL:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_QUERY, wxT(""), wxDefaultPosition, wxSize(80,60), wxTE_MULTILINE );
+    item0->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item11 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item12 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item12, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions

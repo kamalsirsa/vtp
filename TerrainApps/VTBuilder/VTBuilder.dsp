@@ -317,6 +317,10 @@ SOURCE=.\LayerPropDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\MapServerDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\MenuEnum.h
 # End Source File
 # Begin Source File
@@ -648,6 +652,10 @@ SOURCE=.\ImportVegDlg.cpp
 # Begin Source File
 
 SOURCE=.\LayerPropDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MapServerDlg.cpp
 # End Source File
 # Begin Source File
 

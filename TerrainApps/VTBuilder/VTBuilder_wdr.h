@@ -178,6 +178,10 @@ wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool 
 #define ID_TILING 10109
 wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_BASE_URL 10110
+#define ID_QUERY 10111
+wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
