@@ -499,6 +499,8 @@ const bool vtDynMesh::computeBound() const
 	return true;
 }
 
+State *hack_global_state = NULL;
+
 void vtDynGeom::CalcCullPlanes()
 {
 	vtScene *pScene = vtGetScene();
@@ -561,7 +563,12 @@ void vtDynGeom::CalcCullPlanes()
 #else
 	// "get the view frustum clipping in model coordinates"
 	// directly from OSG
+
+	// OSG 0.8.44
 	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
+	// OSG 0.8.45
+//	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
+
 	const ClippingVolume::PlaneList &planes = clipvol.getPlaneList();
 
 	int i = 0;
@@ -577,8 +584,6 @@ void vtDynGeom::CalcCullPlanes()
 	}
 #endif
 }
-
-State *hack_global_state = NULL;
 
 void vtDynMesh::drawImmediateMode(State& state)
 {
