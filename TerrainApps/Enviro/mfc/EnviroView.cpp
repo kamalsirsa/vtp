@@ -249,7 +249,7 @@ void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroShowsky() 
 {
-	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	sky->SetEnabled(!on);
@@ -257,7 +257,7 @@ void EnviroView::OnEnviroShowsky()
 
 void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI) 
 {
-	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	pCmdUI->SetCheck(on);
