@@ -327,16 +327,16 @@ void MainFrame::CreateMenus()
 
 	// Elevation
 	elevMenu = new wxMenu;
-	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _T("Select Elevation Layer"));
-	elevMenu->Append(ID_ELEV_SCALE, _T("Scale Elevation"));
+	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _T("Se&lect Elevation Layer"));
+	elevMenu->Append(ID_ELEV_SCALE, _T("Sc&ale Elevation"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_REMOVERANGE, _T("Remove Elevation Range..."));
-	elevMenu->Append(ID_ELEV_FILLIN, _T("Fill In Unknown areas"));
-	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("Set Unknown Areas"));
-	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("Export to TerraGen"));            
-	elevMenu->Append(ID_ELEV_BITMAP, _T("Generate && Export Bitmap"));
+	elevMenu->Append(ID_ELEV_REMOVERANGE, _T("&Remove Elevation Range..."));
+	elevMenu->Append(ID_ELEV_FILLIN, _T("&Fill In Unknown areas"));
+	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("&Set Unknown Areas"));
+	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("&Export to TerraGen"));            
+	elevMenu->Append(ID_ELEV_BITMAP, _T("&Generate && Export Bitmap"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_MERGETIN, _T("Merge shared TIN vertices"));
+	elevMenu->Append(ID_ELEV_MERGETIN, _T("&Merge shared TIN vertices"));
 	m_pMenuBar->Append(elevMenu, _T("Elev&ation"));
 	m_iLayerMenu[LT_ELEVATION] = menu_num;
 	menu_num++;
@@ -1654,12 +1654,14 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 	if (!t)	return;
 	vtElevationGrid *grid = t->m_pGrid;
 
-	wxString2 str = wxGetTextFromUser(_T("Set unknown areas to what value?"),
-		_T("Set Unknown Areas"), _T("1.0"), this);
+	static float fValue = 1.0f;
+	wxString2 str;
+	str.Printf(_("%g"), fValue);
+	str = wxGetTextFromUser(_T("Set unknown areas to what value?"),
+		_T("Set Unknown Areas"), str, this);
 	if (str == _T(""))
 		return;
 
-	float fValue;
 	fValue = atof(str.mb_str());
 
 	// If the Area tool defines an area, restrict ourselves to use it
