@@ -642,6 +642,61 @@ wxSizer *TowerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, "Projection:", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString *strs2 = (wxString*) NULL;
+    wxChoice *item2 = new wxChoice( parent, ID_PROJCHOICE, wxDefaultPosition, wxSize(160,-1), 0, strs2, 0 );
+    item0->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, "Datum:", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString *strs4 = (wxString*) NULL;
+    wxChoice *item4 = new wxChoice( parent, ID_DATUMCHOICE, wxDefaultPosition, wxSize(100,-1), 0, strs4, 0 );
+    item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "Zone:", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString *strs6 = (wxString*) NULL;
+    wxChoice *item6 = new wxChoice( parent, ID_ZONECHOICE, wxDefaultPosition, wxSize(100,-1), 0, strs6, 0 );
+    item0->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, "Parameters:", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxListCtrl *item8 = new wxListCtrl( parent, ID_PROJPARAM, wxDefaultPosition, wxSize(320,120), wxLC_REPORT|wxSUNKEN_BORDER );
+    item0->Add( item8, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item10 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item11 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menu bar functions
 
 // Implement bitmap functions

@@ -95,6 +95,12 @@ wxSizer *DistribVegFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 #define ID_TOWER_ELEV 10048
 wxSizer *TowerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_PROJCHOICE 10049
+#define ID_DATUMCHOICE 10050
+#define ID_ZONECHOICE 10051
+#define ID_PROJPARAM 10052
+wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menu bar functions
 
 // Declare bitmap functions

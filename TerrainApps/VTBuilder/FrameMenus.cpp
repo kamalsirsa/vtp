@@ -32,6 +32,7 @@
 #include "ExtentDlg.h"
 #include "LayerPropDlg.h"
 #include "ProjectionDlg.h"
+#include "Projection2Dlg.h"
 #include "DistribVegDlg.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)

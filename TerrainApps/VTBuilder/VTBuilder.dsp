@@ -184,6 +184,10 @@ SOURCE=.\pre.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Projection2Dlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ProjectionDlg.cpp
 # End Source File
 # Begin Source File
@@ -337,6 +341,10 @@ SOURCE=.\MenuEnum.h
 # Begin Source File
 
 SOURCE=.\NodeDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Projection2Dlg.h
 # End Source File
 # Begin Source File
 
