@@ -1639,6 +1639,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	if (count)
 	{
 		DisplayAndLog("Removed %i nodes", count);
+		pRL->SetModified(true);
 	}
 
 	UpdateProgressDialog(20, _("Merging redundant nodes"));
@@ -1647,24 +1648,27 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	if (count)
 	{
 		DisplayAndLog("Merged %d redundant roads", count);
+		pRL->SetModified(true);
 	}
 
-	UpdateProgressDialog(50, _("Cleaning link points"));
+	UpdateProgressDialog(30, _("Cleaning link points"));
 	count = pRL->CleanLinkPoints();
 	if (count)
 	{
 		DisplayAndLog("Cleaned %d link points", count);
+		pRL->SetModified(true);
+	}
+
+	UpdateProgressDialog(40, _T("Removing degenerate links"));
+	count = pRL->RemoveDegenerateLinks();
+	if (count)
+	{
+		DisplayAndLog("Removed %d degenerate links", count);
+		pRL->SetModified(true);
 	}
 
 #if 0
 	// The following cleanup operations are disabled until they are proven safe!
-
-	UpdateProgressDialog(30, _T("Removing degenerate links"));
-	count = pRL->RemoveDegenerateRoads();
-	if (count)
-	{
-		DisplayAndLog("Removed %d degenerate links", count);
-	}
 
 	UpdateProgressDialog(40, _T("Removing unnecessary nodes"));
 	count = pRL->RemoveUnnecessaryNodes();
@@ -1703,7 +1707,6 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 #endif
 
 	CloseProgressDialog();
-	pRL->SetModified(true);
 	pRL->ComputeExtents();
 
 	m_pView->Refresh();
