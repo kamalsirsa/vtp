@@ -71,12 +71,12 @@ public:
 	int m_width, m_decimals;	// these are for remembering SHP limitations
 	vtString m_name;
 
-	Array<int> m_int;
+	Array<bool> m_bool;
 	Array<int> m_short;
+	Array<int> m_int;
 	Array<float> m_float;
 	Array<double> m_double;
 	vtStringArray m_string;
-	Array<bool> m_bool;
 };
 
 // Helpers
