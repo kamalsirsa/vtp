@@ -280,9 +280,9 @@ bool vtTagArray::GetValueRGBi(const char *szTagName, RGBi &color) const
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 	{
-		RGBi cval;
-		if (sscanf(tag->value, "%d %d %d", &cval.r, &cval.g, &cval.b) == 3)
-			color = cval;
+		int r, g, b;
+		if (sscanf(tag->value, "%d %d %d", &r, &g, &b) == 3)
+			color.Set(r, g, b);
 		else
 			return false;
 	}
