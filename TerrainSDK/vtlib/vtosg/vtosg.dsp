@@ -129,19 +129,7 @@ SOURCE=..\core\FrameTimer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\HeightField.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\IntersectionEngine.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalGrid.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalProjection.cpp
 # End Source File
 # Begin Source File
 
@@ -265,19 +253,7 @@ SOURCE=..\core\FrameTimer.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\HeightField.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\IntersectionEngine.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalGrid.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalProjection.h
 # End Source File
 # Begin Source File
 
