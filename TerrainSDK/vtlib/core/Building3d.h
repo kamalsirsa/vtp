@@ -100,7 +100,8 @@ protected:
 
 	// Felkel straight skeleton
 	float MakeFelkelRoof(const FLine3 &pp, vtLevel *pLev);
-	int FindVertex(FPoint2 Point, FLine3 &RoofSection3D, Array<int> &iaVertices);
+	bool Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoint3& p3);
+	int FindVertex(FPoint3 Point, FLine3 &RoofSection3D, Array<int> &iaVertices);
 
 	vtGeom		*m_pGeom;		// The geometry node which contains the building geometry
 	vtGeom		*m_pHighlight;	// The wireframe highlight
