@@ -340,7 +340,9 @@ void vtRawLayer::SetProjection(const vtProjection &proj)
 
 void vtRawLayer::Offset(const DPoint2 &p)
 {
-	if (m_pSet)
+	if (m_pSet->NumSelected())
+		m_pSet->Offset(p, true);
+	else
 		m_pSet->Offset(p);
 }
 

@@ -40,6 +40,9 @@ public:
 	bool CreateFromOGRLayer(OGRLayer *pOGRLayer);
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 
+	void SetDrawStyle(const DrawStyle &style) { m_DrawStyle = style; }
+	DrawStyle GetDrawStyle() { return m_DrawStyle; }
+
 	vtProjection *GetAtProjection()
 	{
 		if (m_pSet)
