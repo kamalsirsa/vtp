@@ -35,3 +35,4 @@ vtMovGeom *CreatePlaneMGeom(vtMaterialArray *pMats, int iMatIdx,
 							float xTiling, float zTiling, int steps);
 
 #endif
+
