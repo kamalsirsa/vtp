@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -105,11 +105,11 @@ public:
 	virtual ~vtFeatureSet();
 
 	// File IO
-	bool SaveToSHP(const char *filename) const;
-	bool LoadFromOGR(OGRLayer *pLayer, bool progress_callback(int));
-	virtual void LoadGeomFromSHP(SHPHandle hSHP) = 0;
-	bool LoadFromSHP(const char *fname);
-	bool LoadDataFromDBF(const char *filename);
+	bool SaveToSHP(const char *filename, bool progress_callback(int)=0) const;
+	bool LoadFromOGR(OGRLayer *pLayer, bool progress_callback(int)=0);
+	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0) = 0;
+	bool LoadFromSHP(const char *fname, bool progress_callback(int)=0);
+	bool LoadDataFromDBF(const char *filename, bool progress_callback(int)=0);
 	bool LoadFieldInfoFromDBF(const char *filename);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
@@ -200,12 +200,12 @@ protected:
 	// these must be implemented for each type of geometry
 	virtual bool IsInsideRect(int iElem, const DRECT &rect) = 0;
 	virtual void CopyGeometry(unsigned int from, unsigned int to) = 0;
-	virtual void SaveGeomToSHP(SHPHandle hSHP) const = 0;
+	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const = 0;
 	virtual void SetNumGeometries(int iNum) = 0;
 
 	void CopyEntity(unsigned int from, unsigned int to);
 	void ParseDBFFields(DBFHandle db);
-	void ParseDBFRecords(DBFHandle db);
+	void ParseDBFRecords(DBFHandle db, bool progress_callback(int)=0);
 
 	OGRwkbGeometryType		m_eGeomType;
 	std::vector<unsigned char> m_Flags;
@@ -245,8 +245,8 @@ public:
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(unsigned int from, unsigned int to);
-	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
-	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
 protected:
 	DLine2	m_Point2;	// wkbPoint
@@ -277,8 +277,8 @@ public:
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(unsigned int from, unsigned int to);
-	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
-	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
 protected:
 	DLine3	m_Point3;	// wkbPoint25D
@@ -309,8 +309,8 @@ public:
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(unsigned int from, unsigned int to);
-	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
-	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
 protected:
 	DLine2Array	m_Line;		// wkbLineString
@@ -342,8 +342,8 @@ public:
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(unsigned int from, unsigned int to);
-	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
-	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
 protected:
 	std::vector<DLine3>	m_Line;		// wkbLineString25D
@@ -404,8 +404,8 @@ public:
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(unsigned int from, unsigned int to);
-	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
-	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+	virtual void SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)=0) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int)=0);
 
 protected:
 	DPolyArray	m_Poly;		// wkbPolygon

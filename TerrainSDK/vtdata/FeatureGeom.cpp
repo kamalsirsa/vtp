@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -158,11 +158,14 @@ void vtFeatureSetPoint2D::CopyGeometry(unsigned int from, unsigned int to)
 	m_Point2[to] = m_Point2[from];
 }
 
-void vtFeatureSetPoint2D::SaveGeomToSHP(SHPHandle hSHP) const
+void vtFeatureSetPoint2D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
 	unsigned int size = m_Point2.GetSize();
 	for (unsigned int i = 0; i < size; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/size);
+
 		// Save to SHP
 		DPoint2 p2 = m_Point2[i];
 		SHPObject *obj = SHPCreateSimpleObject(SHPT_POINT, 1, &p2.x, &p2.y, NULL);
@@ -171,7 +174,7 @@ void vtFeatureSetPoint2D::SaveGeomToSHP(SHPHandle hSHP) const
 	}
 }
 
-void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP)
+void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int))
 {
 	VTLOG(" vtFeatureSetPoint2D::LoadGeomFromSHP\n");
 
@@ -184,6 +187,9 @@ void vtFeatureSetPoint2D::LoadGeomFromSHP(SHPHandle hSHP)
 	DPoint2 p2;
 	for (int i = 0; i < nElems; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/nElems);
+
 		// Get the i-th Shape in the SHP file
 		SHPObject *pObj = SHPReadObject(hSHP, i);
 
@@ -316,11 +322,14 @@ void vtFeatureSetPoint3D::CopyGeometry(unsigned int from, unsigned int to)
 	m_Point3[to] = m_Point3[from];
 }
 
-void vtFeatureSetPoint3D::SaveGeomToSHP(SHPHandle hSHP) const
+void vtFeatureSetPoint3D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
 	unsigned int size = m_Point3.GetSize();
 	for (unsigned int i = 0; i < size; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/size);
+
 		// Save to SHP
 		DPoint3 p3 = m_Point3[i];
 		SHPObject *obj = SHPCreateSimpleObject(SHPT_POINTZ, 1, &p3.x, &p3.y, &p3.z);
@@ -329,7 +338,7 @@ void vtFeatureSetPoint3D::SaveGeomToSHP(SHPHandle hSHP) const
 	}
 }
 
-void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP)
+void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int))
 {
 	VTLOG(" vtFeatureSetPoint3D::LoadGeomFromSHP\n");
 
@@ -342,6 +351,9 @@ void vtFeatureSetPoint3D::LoadGeomFromSHP(SHPHandle hSHP)
 	DPoint3 p3;
 	for (int i = 0; i < nElems; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/nElems);
+
 		// Get the i-th Shape in the SHP file
 		SHPObject *pObj = SHPReadObject(hSHP, i);
 
@@ -464,11 +476,14 @@ void vtFeatureSetLineString::CopyGeometry(unsigned int from, unsigned int to)
 	m_Line[to] = m_Line[from];
 }
 
-void vtFeatureSetLineString::SaveGeomToSHP(SHPHandle hSHP) const
+void vtFeatureSetLineString::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
 	unsigned int i, j, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/size);
+
 		const DLine2 &dl = m_Line[i];
 		double* dX = new double[dl.GetSize()];
 		double* dY = new double[dl.GetSize()];
@@ -492,7 +507,7 @@ void vtFeatureSetLineString::SaveGeomToSHP(SHPHandle hSHP) const
 	}
 }
 
-void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP)
+void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int))
 {
 	VTLOG(" vtFeatureSetLineString::LoadGeomFromSHP\n");
 
@@ -504,6 +519,9 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP)
 	// Read Data from SHP into memory
 	for (int i = 0; i < nElems; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/nElems);
+
 		DLine2 dline;
 
 		// Get the i-th Shape in the SHP file
@@ -656,11 +674,14 @@ void vtFeatureSetLineString3D::CopyGeometry(unsigned int from, unsigned int to)
 	m_Line[to] = m_Line[from];
 }
 
-void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP) const
+void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
 	unsigned int i, j, size = m_Line.size();
 	for (i = 0; i < size; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/size);
+
 		const DLine3 &dl = m_Line[i];
 		double* dX = new double[dl.GetSize()];
 		double* dY = new double[dl.GetSize()];
@@ -686,7 +707,7 @@ void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP) const
 	}
 }
 
-void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
+void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int))
 {
 	VTLOG(" vtFeatureSetLineString3D::LoadGeomFromSHP\n");
 
@@ -698,6 +719,9 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
 	// Read Data from SHP into memory
 	for (int i = 0; i < nElems; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/nElems);
+
 		DLine3 dline;
 
 		// Get the i-th Shape in the SHP file
@@ -987,12 +1011,15 @@ void vtFeatureSetPolygon::CopyGeometry(unsigned int from, unsigned int to)
 	m_Poly[to] = m_Poly[from];
 }
 
-void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP) const
+void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP, bool progress_callback(int)) const
 {
 	unsigned int i, j, size = m_Poly.size();
 	int part;
 	for (i = 0; i < size; i++)		// for each polyline
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/size);
+
 		const DPolygon2 &poly = m_Poly[i];
 		int parts = poly.size();
 
@@ -1041,7 +1068,7 @@ void vtFeatureSetPolygon::SaveGeomToSHP(SHPHandle hSHP) const
 	}
 }
 
-void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP)
+void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP, bool progress_callback(int))
 {
 	VTLOG(" vtFeatureSetPolygon::LoadGeomFromSHP\n");
 
@@ -1053,6 +1080,9 @@ void vtFeatureSetPolygon::LoadGeomFromSHP(SHPHandle hSHP)
 	// Read Data from SHP into memory
 	for (int i = 0; i < nElems; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/nElems);
+
 		DLine2 dline;
 		DPolygon2 dpoly;
 

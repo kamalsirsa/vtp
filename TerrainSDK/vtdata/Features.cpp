@@ -38,7 +38,7 @@ void vtFeatureSet::DeleteFields()
 //
 // File IO
 //
-bool vtFeatureSet::SaveToSHP(const char *filename) const
+bool vtFeatureSet::SaveToSHP(const char *filename, bool progress_callback(int)) const
 {
 	// Must use "C" locale in case we write any floating-point fields
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -50,7 +50,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 
 	unsigned int i, j;
 
-	SaveGeomToSHP(hSHP);
+	SaveGeomToSHP(hSHP, progress_callback);
 	SHPClose(hSHP);
 
 	if (m_fields.GetSize() > 0)
@@ -77,6 +77,9 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 		unsigned int entities = GetNumEntities();
 		for (i = 0; i < entities; i++)
 		{
+			if (progress_callback && ((i%16)==0))
+				progress_callback(i * 100 / entities);
+
 			for (j = 0; j < m_fields.GetSize(); j++)
 			{
 				field = m_fields[j];
@@ -116,7 +119,7 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 	return true;
 }
 
-bool vtFeatureSet::LoadFromSHP(const char *fname)
+bool vtFeatureSet::LoadFromSHP(const char *fname, bool progress_callback(int))
 {
 	VTLOG(" LoadFromSHP '%s': ", fname);
 
@@ -129,7 +132,7 @@ bool vtFeatureSet::LoadFromSHP(const char *fname)
 	}
 
 	VTLOG("Opened.\n");
-	LoadGeomFromSHP(hSHP);
+	LoadGeomFromSHP(hSHP, progress_callback);
 	SHPClose(hSHP);
 
 	SetFilename(fname);
@@ -138,7 +141,7 @@ bool vtFeatureSet::LoadFromSHP(const char *fname)
 	m_proj.ReadProjFile(fname);
 
 	// Read corresponding attributes (DBF fields and records)
-	LoadDataFromDBF(fname);
+	LoadDataFromDBF(fname, progress_callback);
 
 	return true;
 }
@@ -457,7 +460,7 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 
 	// Take the contents of the first layer only.
 	OGRLayer *pLayer = pDatasource->GetLayer(0);
-	vtFeatureSet *pSet = LoadWithOGR(pLayer);
+	vtFeatureSet *pSet = LoadWithOGR(pLayer, progress_callback);
 	if (pSet)
 		// We've read the file now, so take it's name
 		pSet->SetFilename(filename);
@@ -769,7 +772,7 @@ vtFeatureSet *vtFeatureLoader::CreateFromDLG(class vtDLGFile *pDLG)
 	return true;
 }*/
 
-bool vtFeatureSet::LoadDataFromDBF(const char *filename)
+bool vtFeatureSet::LoadDataFromDBF(const char *filename, bool progress_callback(int))
 {
 	// Must use "C" locale in case we read any floating-point fields
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -782,7 +785,7 @@ bool vtFeatureSet::LoadDataFromDBF(const char *filename)
 		return false;
 
 	ParseDBFFields(db);
-	ParseDBFRecords(db);
+	ParseDBFRecords(db, progress_callback);
 	DBFClose(db);
 
 	return true;
@@ -825,11 +828,13 @@ void vtFeatureSet::ParseDBFFields(DBFHandle db)
 	}
 }
 
-void vtFeatureSet::ParseDBFRecords(DBFHandle db)
+void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 {
 	int iRecords = DBFGetRecordCount(db);
 	for (int i = 0; i < iRecords; i++)
 	{
+		if (progress_callback && ((i%16)==0))
+			progress_callback(i*100/iRecords);
 		unsigned int iField;
 		int rec = AddRecord();
 		for (iField = 0; iField < GetNumFields(); iField++)
