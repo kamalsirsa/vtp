@@ -572,22 +572,22 @@ void Enviro::SetupScene2()
 	m_pOrthoFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pOrthoFlyer);
 
-	m_pQuakeFlyer = new QuakeFlyer(1.0f, 1.0f, true);
+	m_pQuakeFlyer = new QuakeFlyer(1.0f);
 	m_pQuakeFlyer->SetName2("Quake-Style Flyer");
 	m_pQuakeFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pQuakeFlyer);
 
-	m_pVFlyer = new VFlyer(1.0f, 1.0f, true);
+	m_pVFlyer = new VFlyer(1.0f);
 	m_pVFlyer->SetName2("Velocity-Gravity Flyer");
 	m_pVFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pVFlyer);
 
-	m_pTFlyer = new vtTerrainFlyer(1.0f, 1.0f, true);
+	m_pTFlyer = new vtTerrainFlyer(1.0f);
 	m_pTFlyer->SetName2("Terrain-following Flyer");
 	m_pTFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pTFlyer);
 
-	m_pGFlyer = new GrabFlyer(1.0f, 1.0f, true);
+	m_pGFlyer = new GrabFlyer(1.0f);
 	m_pGFlyer->SetName2("Grab-Pivot Flyer");
 	m_pGFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pGFlyer);
@@ -597,7 +597,7 @@ void Enviro::SetupScene2()
 	m_pFlatFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pFlatFlyer);
 
-	m_pPanoFlyer = new vtPanoFlyer(1.0f, 1.0f, true);
+	m_pPanoFlyer = new vtPanoFlyer(1.0f);
 	m_pPanoFlyer->SetName2("Panoramic Flyer");
 	m_pPanoFlyer->SetEnabled(false);
 	m_pNavEngines->AddChild(m_pPanoFlyer);
@@ -643,6 +643,13 @@ void Enviro::SetupScene2()
 	m_pLocEngines = new vtEngine();
 	m_pLocEngines->SetName2("Location Engines");
 	vtGetScene()->GetRootEngine()->AddChild(m_pLocEngines);
+
+	// An engine to keep the camera above the terrain, comes after the other
+	//  engines which could move the camera.
+	m_pHeightEngine = new vtHeightConstrain(1.0f);
+	m_pHeightEngine->SetName2("Height Constrain Engine");
+	m_pHeightEngine->SetTarget(m_pNormalCamera);
+	vtGetScene()->GetRootEngine()->AddChild(m_pHeightEngine);
 }
 
 //
@@ -735,18 +742,15 @@ void Enviro::SetNavType(NavType nav)
 
 void Enviro::SetMaintain(bool bOn)
 {
-	if (m_pCurrentFlyer != NULL)
-	{
-		m_pCurrentFlyer->SetMaintain(bOn);
-		m_pCurrentFlyer->SetMaintainHeight(0);
-	}
+	m_pHeightEngine->SetMaintain(bOn);
+	m_pHeightEngine->SetMaintainHeight(0);
 }
 
 bool Enviro::GetMaintain()
 {
-	if (m_pCurrentFlyer == NULL)
+	if (m_pHeightEngine == NULL)
 		return false;
-	return m_pCurrentFlyer->GetMaintain();
+	return m_pHeightEngine->GetMaintain();
 }
 
 
@@ -775,7 +779,6 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	if (m_pCurrentFlyer != NULL)
 	{
 		m_pCurrentFlyer->SetTarget(m_pNormalCamera);
-		m_pCurrentFlyer->SetMinHeight(param.GetValueInt(STR_MINHEIGHT));
 		m_pCurrentFlyer->SetEnabled(true);
 		m_pCurrentFlyer->SetExag(param.GetValueBool(STR_ACCEL));
 	}
@@ -790,6 +793,9 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pTFlyer->SetHeightField(pHF);
 	m_pGFlyer->SetHeightField(pHF);
 	m_pPanoFlyer->SetHeightField(pHF);
+	// also the height constraint engine
+	m_pHeightEngine->SetHeightField(pHF);
+	m_pHeightEngine->SetMinGroundOffset(param.GetValueInt(STR_MINHEIGHT));
 
 	// Set the top-down viewpoint to a point over the center of the new
 	//  terrain, with near and far planes derived from the height extents.

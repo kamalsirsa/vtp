@@ -12,7 +12,7 @@
 
 #include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
-#include "vtlib/core/Engine.h"
+#include "vtlib/core/NavEngines.h"
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
 
@@ -28,16 +28,10 @@ class vtUtilNode;
 class vtFence3d;
 
 // Engines
-class vtTerrainFlyer;
 class RouteFollowerEngine;
-class VFlyer;
-class QuakeFlyer;
-class vtOrthoFlyer;
+class GlobePicker;
 class GrabFlyer;
 class FlatFlyer;
-class vtTrackball;
-class GlobePicker;
-class vtPanoFlyer;
 
 // Plants
 class vtSpeciesList3d;
@@ -137,6 +131,8 @@ public:
 	GrabFlyer		*m_pGFlyer;
 	FlatFlyer		*m_pFlatFlyer;
 	vtPanoFlyer		*m_pPanoFlyer;
+	// related engine to keep the camera above the terrain
+	vtHeightConstrain *m_pHeightEngine;
 
 	// event handlers
 	void OnMouse(vtMouseEvent &event);

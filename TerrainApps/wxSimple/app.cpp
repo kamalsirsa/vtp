@@ -90,10 +90,14 @@ bool vtApp::CreateScene()
 	// Height over terrain is 100 m
 	float fSpeed = pTerr->GetParams().GetValueFloat(STR_NAVSPEED);
 
-	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(fSpeed, 100, true);
+	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(fSpeed);
 	pFlyer->SetTarget(m_pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
+	vtHeightConstrain *pConstrain = new vtHeightConstrain(100);
+	pConstrain->SetTarget(m_pCamera);
+	pConstrain->SetHeightField(pTerr->GetHeightField());
+	pScene->AddEngine(pConstrain);
 
 	printf("Done creating scene.\n");
 	return true;
