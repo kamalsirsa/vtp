@@ -303,10 +303,10 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	{
 		defaults.m_bRelative = true;
 		defaults.Add(0, RGBi(0x20, 0x90, 0x20));	// medium green
-		defaults.Add(0, RGBi(0x40, 0xE0, 0x40));	// light green
-		defaults.Add(0, RGBi(0xE0, 0xD0, 0xC0));	// tan
-		defaults.Add(0, RGBi(0xE0, 0x80, 0x10));	// orange
-		defaults.Add(0, RGBi(0xE0, 0xE0, 0xE0));	// light grey
+		defaults.Add(1, RGBi(0x40, 0xE0, 0x40));	// light green
+		defaults.Add(2, RGBi(0xE0, 0xD0, 0xC0));	// tan
+		defaults.Add(3, RGBi(0xE0, 0x80, 0x10));	// orange
+		defaults.Add(4, RGBi(0xE0, 0xE0, 0xE0));	// light grey
 		cmap = &defaults;
 	}
 
