@@ -44,7 +44,7 @@ public:
 
 	// Implement required vtHeightField methods
 	virtual void GetChecksum(unsigned char **ppChecksum) const;
-	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
+	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// Avoid implementing HeightField3d virtual methods
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
