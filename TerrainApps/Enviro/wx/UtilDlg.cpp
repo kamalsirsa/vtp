@@ -1,7 +1,7 @@
 //
-// Name:		UtilDlg.cpp
+// Name: UtilDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,14 +13,10 @@
 #include "wx/wxprec.h"
 #include "wx/image.h"
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
-
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Route.h"
 #include "UtilDlg.h"
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 
 extern UtilStructName s_Names[];
 

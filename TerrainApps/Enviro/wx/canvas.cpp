@@ -18,7 +18,7 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
-#include "../Enviro.h"			// for g_App, GetTerrainScene
+#include "EnviroGUI.h"			// for g_App, GetTerrainScene
 #include "canvas.h"
 #include "frame.h"
 #include "app.h"

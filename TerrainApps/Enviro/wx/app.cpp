@@ -22,7 +22,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
-#include "../Enviro.h"		// for g_App, GetTerrainScene
+#include "EnviroGUI.h"		// for g_App, GetTerrainScene
 #include "../Options.h"
 #include "vtdata/vtLog.h"
 

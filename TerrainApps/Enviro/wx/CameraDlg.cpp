@@ -20,7 +20,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "CameraDlg.h"
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 #include "vtdata/LocalConversion.h"
 
 // WDR: class implementations

@@ -21,7 +21,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Trees.h"
 #include "vtui/wxString2.h"
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 
 // WDR: class implementations
 

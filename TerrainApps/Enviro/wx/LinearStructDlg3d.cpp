@@ -19,7 +19,7 @@
 
 #include "vtlib/vtlib.h"
 #include "LinearStructDlg3d.h"
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 
 // WDR: class implementations
 
