@@ -35,14 +35,6 @@ void PTerrain::MakePortalUTM(vtTerrain* pTargetTerrain, vtTransform* gateway,
 	PlantModelAtPoint(gateway, DPoint2(utm_x, utm_y));
 }
 
-void PTerrain::MakePortalLL(vtTerrain* pTargetTerrain, vtTransform* gateway, 
-							 char* name, float lat, float lon, int destination_index)
-{
-	MakePortal(pTargetTerrain, gateway, name, destination_index);
-	PlantModelAtPoint(gateway, DPoint2(lon, lat), true);
-}
-
-
 void PTerrain::AddVehicleType(VehicleType *vt)
 {
 	vt->m_pNext = m_pFirstVehicleType;

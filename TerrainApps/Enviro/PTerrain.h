@@ -14,8 +14,6 @@ public:
 		char* name, int destination_index);
 	void MakePortalUTM(vtTerrain* pTargetTerrain, vtTransform* gateway,
 		char* name, float utm_x, float utm_y, int destination_index);
-	void MakePortalLL(vtTerrain* pTargetTerrain, vtTransform* gateway,
-		char* name, float lat, float lon, int destination_index);
 
 	// vehicle stuff
 	void create_ground_vehicles(float fSize, float fSpeed); // dunno what to do to speed yet
