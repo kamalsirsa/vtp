@@ -10,12 +10,36 @@
 
 #include "vtdata/FilePath.h"
 #include "TimeEngines.h"
+#include "Content3d.h"
 
 // Forward references
 class vtSkyDome;
 class vtTerrain;
 class TimeEngine;
 class vtSkyTrackEngine;
+
+/**
+ * This class represents a single type of utility structure, such as a
+ * telephone pole, power or transmission tower.
+ */
+class vtUtilStruct
+{
+public:
+	vtUtilStruct()
+	{
+		m_pTower = NULL;
+		m_iNumWires = 0;
+	}
+
+	vtNode	*m_pTower;	// The station may have a tower placed on it
+	vtString m_sStructName;
+
+	// The points at which the wires attach
+	FLine3 m_fpWireAtt1;
+	FLine3 m_fpWireAtt2;
+
+	int m_iNumWires;
+};
 
 /**
  * vtTerrainScene provides a container for all of your vtTerrain objects.
@@ -58,6 +82,20 @@ public:
 	// skydome
 	RGBf		horizon_color, azimuth_color;
 
+	// utility structures, shared between all terrains
+	vtUtilStruct *LoadUtilStructure(const vtString &name);
+
+	// Statics
+	// handle to the singleton
+	static vtTerrainScene *s_pTerrainScene;
+
+	// during creation, all data will be looked for on the global data path
+	void SetDataPath(const vtStringArray &paths) { m_DataPaths = paths; }
+	vtStringArray m_DataPaths;
+
+	// Global content manager for content shared between all terrains
+	vtContentManager3d m_Content;
+
 protected:
 	void _UpdateSkydomeForTerrain(vtTerrain *pTerrain);
 
@@ -65,7 +103,7 @@ protected:
 	vtGroup		*m_pTop;
 	vtSkyDome	*m_pSkyDome;
 
-	void _CreateSky(const vtStringArray &datapath);
+	void _CreateSky();
 	void _CreateEngines();
 
 	vtGroup		*m_pAtmosphereGroup;
@@ -80,8 +118,16 @@ protected:
 	TimeEngine		 *m_pTime;
 	vtSkyTrackEngine *m_pSkyTrack;
 
+	// Utility structures, created on demand from global content file
+	Array<vtUtilStruct*>	m_StructObjs;
+
 	vtMovLight	*m_pSunLight;
 };
+
+// global helper function
+vtTerrainScene *vtGetTS();
+const vtStringArray &vtGetDataPath();
+vtContentManager3d &vtGetContent();
 
 #endif	// TERRAINSCENEH
 

@@ -15,6 +15,13 @@
 
 
 ///////////////////////////////////////////////////////////////////////
+
+// All terrains share a static data path and content manager
+//vtStringArray vtGetDataPath();
+//vtContentManager3d vtGetContent;
+vtTerrainScene *vtTerrainScene::s_pTerrainScene;
+
+///////////////////////////////////////////////////////////////////////
 /**
  * A small engine that allows the SkyDome to stay around the Camera.
  */
@@ -54,6 +61,8 @@ void vtSkyTrackEngine::Eval()
 
 vtTerrainScene::vtTerrainScene()
 {
+	s_pTerrainScene = this;
+
 	horizon_color.Set(0.70f, 0.85f, 1.0f);
 	azimuth_color.Set(0.12f, 0.32f, 0.70f);
 
@@ -69,6 +78,8 @@ vtTerrainScene::vtTerrainScene()
 
 vtTerrainScene::~vtTerrainScene()
 {
+	for (unsigned int i = 0; i < m_StructObjs.GetSize(); i++)
+		delete m_StructObjs[i];
 }
 
 void vtTerrainScene::CleanupScene()
@@ -101,7 +112,7 @@ void vtTerrainScene::CleanupScene()
 	vtRoute::ReleaseMaterials();
 }
 
-void vtTerrainScene::_CreateSky(const vtStringArray &datapath)
+void vtTerrainScene::_CreateSky()
 {
 	// create the sun
 	VTLOG(" Creating Main Light\n");
@@ -117,9 +128,9 @@ void vtTerrainScene::_CreateSky(const vtStringArray &datapath)
 	m_pTop->AddChild(m_pAtmosphereGroup);
 
 	// 'bsc' is the Bright Star Catalog
-	vtString bsc = FindFileOnPaths(datapath, "Sky/bsc.data");
-	vtString sun = FindFileOnPaths(datapath, "Sky/glow2.png");
-	vtString moon = FindFileOnPaths(datapath, "Sky/moon5_256.png");
+	vtString bsc = FindFileOnPaths(m_DataPaths, "Sky/bsc.data");
+	vtString sun = FindFileOnPaths(m_DataPaths, "Sky/glow2.png");
+	vtString moon = FindFileOnPaths(m_DataPaths, "Sky/moon5_256.png");
 
 	VTLOG("  Stars: '%s'\n", (const char *) bsc);
 	VTLOG("    Sun: '%s'\n", (const char *) sun);
@@ -179,7 +190,7 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
 	m_pTop->SetName2("All Terrain");
 
 	// create sky group - this holds all celestial objects
-	_CreateSky(vtTerrain::s_DataPaths);
+	_CreateSky();
 
 	return m_pTop;
 }
@@ -328,7 +339,7 @@ void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 		{
 			vtString filename = "Sky/";
 			filename += fname;
-			vtString skytex = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
+			vtString skytex = FindFileOnPaths(m_DataPaths, filename);
 			if (skytex != "")
 				m_pSkyDome->SetTexture(skytex);
 		}
@@ -344,5 +355,67 @@ void vtTerrainScene::SetTime(const vtTime &time)
 //		m_pSkyDome->ApplyDayColors();
 // TODO? Update the fog color to match the color of the horizon.
 	}
+}
+
+vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
+{
+	// Check to see if it's already loaded
+	unsigned int i;
+	for (i = 0; i < m_StructObjs.GetSize(); i++)
+	{
+		if (m_StructObjs[i]->m_sStructName == name)
+			return m_StructObjs[i];
+	}
+
+	// If not, look for it in the global content manager
+	vtItem *item = m_Content.FindItemByName(name);
+	vtNode *node = m_Content.CreateNodeFromItemname(name);
+
+	if (node == NULL)
+		return NULL;
+
+	// create new util structure
+	vtUtilStruct *stnew = new vtUtilStruct;
+	stnew->m_pTower = node;
+	stnew->m_pTower->SetName2(name);
+	stnew->m_sStructName = name;
+
+	// get wire info
+	for (i = 0; i < item->NumTags(); i++)
+	{
+		vtTag *tag = item->GetTag(i);
+		if (tag->name == "wire_info")
+		{
+			// parse wire locations
+			FPoint3 p1, p2;
+			sscanf(tag->value, "%f, %f, %f, %f, %f, %f",
+				&p1.x, &p1.y, &p1.z, &p2.x, &p2.y, &p2.z);
+			stnew->m_fpWireAtt1.Append(p1);
+			stnew->m_fpWireAtt2.Append(p2);
+			stnew->m_iNumWires ++;
+		}
+	}
+
+	m_StructObjs.Append(stnew);
+	return stnew;
+}
+
+
+//
+// Global helper function
+//
+vtTerrainScene *vtGetTS()
+{
+	return vtTerrainScene::s_pTerrainScene;
+}
+
+const vtStringArray &vtGetDataPath()
+{
+	return vtTerrainScene::s_pTerrainScene->m_DataPaths;
+}
+
+vtContentManager3d &vtGetContent()
+{
+	return vtTerrainScene::s_pTerrainScene->m_Content;
 }
 
