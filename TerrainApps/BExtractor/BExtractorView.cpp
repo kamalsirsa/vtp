@@ -8,8 +8,10 @@
 #include "StdAfx.h"
 #include "BExtractor.h"
 
+#include "MainFrm.h"
 #include "BExtractorDoc.h"
 #include "BExtractorView.h"
+
 #include "FloodDialog.h"
 #include "ConvolveDialog.h"
 #include "KernelDialog.h"
@@ -1176,6 +1178,10 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 
 	//update old point
 	m_oldPoint = point;
+
+	// update status bar
+	CMainFrame *pFrame = (CMainFrame *)AfxGetMainWnd();
+	pFrame->RefreshStatusBar(this);
 }
 
 CDC *BExtractorView::GetInvertDC()
@@ -2177,3 +2183,12 @@ void BExtractorView::OnUpdateConstrain(CCmdUI* pCmdUI)
 	pCmdUI->SetCheck(m_bConstrain);
 }
 
+
+void BExtractorView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
+{
+	// update status bar
+	CMainFrame *pFrame = (CMainFrame *)AfxGetMainWnd();
+	pFrame->RefreshStatusBar(this);
+	
+	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
+}

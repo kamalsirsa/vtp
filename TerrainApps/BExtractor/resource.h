@@ -8,6 +8,11 @@
 #define CG_IDS_PROGRESS_CAPTION2        104
 #define CG_IDS_PROGRESS_CAPTION3        105
 #define CG_IDS_PROGRESS_CAPTION4        106
+#define ID_COORDSYS                     107
+#define ID_ZONE                         108
+#define ID_DATUM                        109
+#define ID_UNITS                        110
+#define ID_CURSOR                       111
 #define IDR_MAINFRAME                   128
 #define IDR_B_EXTRTYPE                  129
 #define IDD_THRESH_DIALOG               130

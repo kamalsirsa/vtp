@@ -1,7 +1,7 @@
 //
 // BExtractorView.h : interface of the BExtractorView class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,6 +29,11 @@ enum LBMode {
 	LB_EditRoad
 };
 
+class BExtractorDoc;
+class CBImage;
+class Node;
+class Link;
+
 class BExtractorView : public CView
 {
 protected: // create from serialization only
@@ -38,6 +43,7 @@ protected: // create from serialization only
 // Attributes
 public:
 	BExtractorDoc* GetDocument();
+	DPoint2 GetCurLocation() { return m_curLocation; }
 
 // Operations
 public:
@@ -63,6 +69,7 @@ public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual void OnInitialUpdate();
 	protected:
+	virtual void OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView);
 	//}}AFX_VIRTUAL
 
 // Implementation

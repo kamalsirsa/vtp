@@ -567,6 +567,11 @@ BEGIN
     CG_IDS_PROGRESS_CAPTION2 "Creating View Bitmap..."
     CG_IDS_PROGRESS_CAPTION3 "Loading Image..."
     CG_IDS_PROGRESS_CAPTION4 "Convolving Image..."
+    ID_COORDSYS             "XXXXXXX"
+    ID_ZONE                 "XXXXXXXX"
+    ID_DATUM                "XXXXXXXXX"
+    ID_UNITS                "XXXXXXXX"
+    ID_CURSOR               "XXXXXXXXXXXXXXXXXXXXXXXXXX"
 END
 
 STRINGTABLE DISCARDABLE 

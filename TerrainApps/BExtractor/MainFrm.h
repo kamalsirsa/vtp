@@ -1,16 +1,18 @@
 //
 // MainFrm.h : interface of the CMainFrame class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#if !defined(AFX_MAINFRM_H__5C7EF033_1F80_11D3_8172_00A0C96173FD__INCLUDED_)
-#define AFX_MAINFRM_H__5C7EF033_1F80_11D3_8172_00A0C96173FD__INCLUDED_
+#ifndef _MAINFRM_H_INCLUDED_
+#define _MAINFRM_H_INCLUDED_
 
 #if _MSC_VER >= 1000
 #pragma once
 #endif // _MSC_VER >= 1000
+
+class BExtractorView;
 
 class CMainFrame : public CFrameWnd
 {
@@ -23,6 +25,7 @@ public:
 
 // Operations
 public:
+	void RefreshStatusBar(BExtractorView *pView);
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -55,4 +58,5 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_MAINFRM_H__5C7EF033_1F80_11D3_8172_00A0C96173FD__INCLUDED_)
+#endif // _MAINFRM_H_INCLUDED_
+

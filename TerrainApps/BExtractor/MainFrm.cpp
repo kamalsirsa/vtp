@@ -1,7 +1,7 @@
 //
 // MainFrm.cpp : implementation of the CMainFrame class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,8 @@
 #include "BExtractor.h"
 
 #include "MainFrm.h"
+#include "BExtractorView.h"
+#include "BExtractorDoc.h"
 #include "vtdata/vtLog.h"
 
 #ifdef _DEBUG
@@ -31,10 +33,41 @@ END_MESSAGE_MAP()
 static UINT indicators[] =
 {
 	ID_SEPARATOR,	// status line indicator
+
+	ID_COORDSYS,	// 1
+	ID_ZONE,		// 2
+	ID_DATUM,		// 3
+	ID_UNITS,		// 4
+	ID_CURSOR,		// 5
+
 	ID_INDICATOR_CAPS,
 	ID_INDICATOR_NUM,
 	ID_INDICATOR_SCRL,
 };
+
+// helper
+vtString FormatCoord(bool bGeo, double val, bool minsec = false)
+{
+	vtString str;
+	if (bGeo)
+	{
+		if (minsec)
+		{
+			// show minutes and seconds
+			double degree = val;
+			double min = (degree - (int)degree) * 60.0f;
+			double sec = (min - (int)min) * 60.0f;
+
+			str.Format("%d° %d' %.1f\"", (int)degree, (int)min, sec);
+		}
+		else
+			str.Format("%3.6lf", val);	// decimal degrees
+	}
+	else
+		str.Format("%.2lf", val);	// meters-based
+	return str;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame construction/destruction
@@ -89,6 +122,45 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 
 	return CFrameWnd::PreCreateWindow(cs);
 }
+
+void CMainFrame::RefreshStatusBar(BExtractorView *pView)
+{
+	BExtractorDoc *pDoc = pView->GetDocument();
+	const vtProjection &proj = pDoc->GetProjection();
+	bool bGeo = (proj.IsGeographic() != 0);
+	vtString str;
+
+	// Coordinate system
+	str = proj.GetProjectionNameShort();
+	m_wndStatusBar.SetPaneText(1, str);
+
+	// Zone
+	int zone = proj.GetUTMZone();
+	if (zone != 0)
+		str.Format("Zone %d", zone);
+	else
+		str = "";
+	m_wndStatusBar.SetPaneText(2, str);
+
+	// Datum
+	str = DatumToStringShort(proj.GetDatum());
+	m_wndStatusBar.SetPaneText(3, str);
+
+	// Units
+	LinearUnits lu = proj.GetUnits();
+	str = GetLinearUnitName(lu);
+	m_wndStatusBar.SetPaneText(4, str);
+
+	// Mouse location
+	DPoint2 p = pView->GetCurLocation();
+	str = "Mouse: ";
+	str += FormatCoord(bGeo, p.x);
+	str += ", ";
+	str += FormatCoord(bGeo, p.y);
+
+	m_wndStatusBar.SetPaneText(5, str);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainFrame diagnostics

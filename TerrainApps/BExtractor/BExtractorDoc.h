@@ -27,18 +27,18 @@ protected: // create from serialization only
 
 // Attributes
 public:
-	HDRAWDIB m_hdd;
-	CBImage *m_pImage;
-	bool m_picLoaded;
+	HDRAWDIB	m_hdd;
+	CBImage		*m_pImage;
+	bool		m_picLoaded;
 	vtStructureArray	m_Buildings;
-	vtRoadMap m_Links;
-
-	float m_fScale;
+	vtRoadMap	m_Links;
+	float		m_fScale;
 
 private:
-	CString m_roadFileName;
+	CString		m_roadFileName;
 	
 public:
+	const vtProjection &GetProjection() { return m_proj; }
 	void OnImportimage2(LPCTSTR szPathName);
 
 	void PreFloodFillDIB(CDib *bm);
