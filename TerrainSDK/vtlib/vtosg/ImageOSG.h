@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -7,8 +7,6 @@
 #define VTOSG_IMAGEH
 
 #include "vtdata/vtDIB.h"
-
-#define IMPLEMENT_PNG_SUPPORT	1
 
 class vtImage: public vtImageBase
 {
@@ -24,10 +22,8 @@ protected:
 	int		m_internalformat;
 	unsigned char *m_pPngData;
 
-	void CreateFromDIB(vtDIB *pDIB);
-#if IMPLEMENT_PNG_SUPPORT
-	bool ReadPNG(const char *filename);
-#endif
+	void _CreateFromDIB(vtDIB *pDIB);
+	bool _ReadPNG(const char *filename);
 };
 
 #endif

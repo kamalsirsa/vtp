@@ -1,11 +1,20 @@
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtdata/vtString.h"
 #include <osgDB/ReadFile>
+
+//
+// Change any of these definitions to use OSG's own support for the various
+// image file formats instead of our own.
+//
+#define USE_OSG_FOR_PNG		0
+#define USE_OSG_FOR_BMP		0
+#define USE_OSG_FOR_JPG		0
+
 
 vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 {
@@ -14,24 +23,42 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 	m_internalformat = internalformat;
 	m_strFilename = fname;
 
+	vtDIB pDIB;
+
+#if !USE_OSG_FOR_BMP
 	if (!stricmp(fname + strlen(fname) - 3, "bmp"))
 	{
-		vtDIB pDIB;
 		if (pDIB.ReadBMP(fname))
 		{
-			CreateFromDIB(&pDIB);
+			_CreateFromDIB(&pDIB);
 			m_bLoaded = true;
 		}
 	}
-#if IMPLEMENT_PNG_SUPPORT
-	else if (!stricmp(fname + strlen(fname) - 3, "png"))
-	{
-		ReadPNG(fname);
-	}
-#endif
 	else
+#endif
+
+#if !USE_OSG_FOR_JPG
+	if (!stricmp(fname + strlen(fname) - 3, "jpg"))
 	{
-		// try to load with OSG (osgPlugins libraries)
+		if (pDIB.ReadJPEG(fname))
+		{
+			_CreateFromDIB(&pDIB);
+			m_bLoaded = true;
+		}
+	}
+	else
+#endif
+
+#if !USE_OSG_FOR_PNG
+	if (!stricmp(fname + strlen(fname) - 3, "png"))
+	{
+		_ReadPNG(fname);
+	}
+	else
+#endif
+
+	// try to load with OSG (osgPlugins libraries)
+	{
 		m_pOsgImage = osgDB::readImageFile(fname);
 		if (m_pOsgImage)
 			m_bLoaded = true;
@@ -43,7 +70,7 @@ vtImage::vtImage(vtDIB *pDIB, int internalformat)
 	m_pPngData = NULL;
 	m_internalformat = internalformat;
 
-	CreateFromDIB(pDIB);
+	_CreateFromDIB(pDIB);
 }
 
 vtImage::~vtImage()
@@ -51,7 +78,7 @@ vtImage::~vtImage()
 	if (m_pPngData) free(m_pPngData);
 }
 
-void vtImage::CreateFromDIB(vtDIB *pDIB)
+void vtImage::_CreateFromDIB(vtDIB *pDIB)
 {
 	m_pOsgImage = new osg::Image();
 
@@ -131,7 +158,14 @@ void vtImage::CreateFromDIB(vtDIB *pDIB)
 
 //////////////////////////
 
-#if IMPLEMENT_PNG_SUPPORT
+#if USE_OSG_FOR_PNG
+
+bool vtImage::_ReadPNG()
+{
+	return false;
+}
+
+#else
 
 #include "png.h"
 
@@ -147,7 +181,7 @@ typedef struct {
 	unsigned int Alpha;
 } pngInfo;
 
-bool vtImage::ReadPNG(const char *filename)
+bool vtImage::_ReadPNG(const char *filename)
 {
 	m_pOsgImage = new osg::Image();
 
@@ -296,4 +330,5 @@ bool vtImage::ReadPNG(const char *filename)
 	return true;
 }
 
-#endif	// IMPLEMENT_PNG_SUPPORT
+#endif	// USE_OSG_FOR_PNG
+
