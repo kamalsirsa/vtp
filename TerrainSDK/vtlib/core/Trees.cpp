@@ -569,6 +569,7 @@ int vtPlantInstanceArray3d::CreatePlantNodes()
 {
 	unsigned int i, size = GetNumEntities();
 	int created = 0;
+	m_iOffTerrain = 0;
 
 	m_Instances3d.SetSize(size);
 	for (i = 0; i < size; i++)
@@ -596,7 +597,10 @@ bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 	GetPlant(i, size, species_id);
 
 	if (!m_pHeightField->ContainsEarthPoint(pos))
+	{
+		m_iOffTerrain++;
 		return false;
+	}
 
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (!inst3d)

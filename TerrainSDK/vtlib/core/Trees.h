@@ -141,6 +141,7 @@ public:
 
 	int CreatePlantNodes();
 	bool CreatePlantNode(unsigned int i);
+	int NumOffTerrain() { return m_iOffTerrain; }
 
 	vtTransform *GetPlantNode(unsigned int i) const;
 	vtPlantInstance3d *GetInstance3d(unsigned int i) const;
@@ -167,6 +168,7 @@ public:
 protected:
 	Array<vtPlantInstance3d*>	m_Instances3d;
 	vtHeightField3d		*m_pHeightField;
+	int					m_iOffTerrain;
 };
 
 /*@}*/	// Group veg

@@ -1338,6 +1338,8 @@ void vtTerrain::_CreateVegetation()
 				VTLOG("\tLoaded plants file.  Creating Plant geometry..\n");
 				int created = m_PIA.CreatePlantNodes();
 				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
+				if (m_PIA.NumOffTerrain())
+					VTLOG("\t%d were off the terrain.\n", m_PIA.NumOffTerrain());
 
 				int i, size = m_PIA.GetNumEntities();
 				for (i = 0; i < size; i++)
