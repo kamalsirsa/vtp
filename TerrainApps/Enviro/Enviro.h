@@ -156,7 +156,6 @@ protected:
 
 	// route members
 	bool		m_bActiveRoute;
-	float		m_fRouteHeight, m_fRouteSpacing;
 	float		m_fRouteOffL, m_fRouteOffR;
 	float		m_fRouteStInc;
 	vtString	m_sRouteName;

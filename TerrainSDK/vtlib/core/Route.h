@@ -86,13 +86,11 @@ typedef struct _profilerecord
 class vtRoute
 {
 public:
-	vtRoute(float fHeight, float fSpacing, float fOffR, float fOffL,
-		float fStInc, vtString sName, vtTerrain* pT);
+	vtRoute(float fOffR, float fOffL, float fStInc, vtString sName,
+		vtTerrain* pT);
 
 	void add_point(const DPoint2 &epos);
 	bool close_route(); // return true if redraw necessary
-
-	void set_post_size(FPoint3 size ) { m_PostSize = size; }
 
 	void save(FILE *fp);
 	bool load(FILE *fp);
@@ -135,12 +133,8 @@ protected:
 	vtGeom		*m_pRouteGeom;
 //	DLine2		m_pRoutePts;	// in earth coordinates
 	Array<PolePlacement>  m_aRoutePlaces;
-	FPoint3		m_PostSize;
 	vtTerrain*	m_pTheTerrain;
 	vtStructureObj* structObjList;
-
-	float	m_fHeight;
-	float	m_fSpacing;
 
 	bool m_bClosed;
 	bool m_bBuilt;

@@ -30,24 +30,17 @@ float vtRoute::m_fRouteScale;	// route size is exaggerated by this amount
 
 ///////////////////
 
-vtRoute::vtRoute(float fHeight, float fSpacing, float fOffR, float fOffL,
+vtRoute::vtRoute(float fOffR, float fOffL,
 				 float fStInc, vtString sName, vtTerrain* pT)
 {
 	m_bClosed = false;
 	m_bBuilt = false;
-	m_fHeight = fHeight;
-	m_fSpacing = fSpacing;
 
 	m_sBranchName = sName;
 	m_fOffsetLeft = fOffL;
 	m_fOffsetRight = fOffR;
 	m_fStationIncrement = fStInc;
 	m_pTheTerrain = pT;
-
-	m_PostSize.Set(0.13f, m_fHeight, 0.13f);
-
-	// convert to world coordinates
-	m_PostSize *= (WORLD_SCALE * m_fRouteScale);
 
 	m_pRouteGeom = new vtGeom;
 	m_pRouteGeom->SetName2("Route");
@@ -184,7 +177,6 @@ void vtRoute::AddRouteMeshes(vtHeightField *pHeightField)
 	int numiterations = 300;	//for catenary spans
 
 	int numroutepts = m_aRoutePlaces.GetSize();
-	float fCurrentSpacing = m_fSpacing * m_fRouteScale;
 
 	// first determine where the poles go, for this whole line
 	for (i = 0; i < numroutepts; i++)
