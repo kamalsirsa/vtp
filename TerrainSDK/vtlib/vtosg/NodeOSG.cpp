@@ -1356,12 +1356,10 @@ vtImageSprite::vtImageSprite()
  */
 bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 {
-	vtImage *pImage = new vtImage(szTextureName);
-	if (!pImage->LoadedOK())
-	{
-		pImage->Release();
+	vtImage *pImage = vtImageRead(szTextureName);
+	if (!pImage)
 		return false;
-	}
+
 	m_Size.x = pImage->GetWidth();
 	m_Size.y = pImage->GetHeight();
 
