@@ -1079,9 +1079,6 @@ void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
 		GetMainFrame()->m_area.Sort();
 		m_iDragSide = 0;
 	}
-
-	if (m_ui.mode == LB_LinkEdit)
-		OnDragLinkEdit();
 }
 
 void BuilderView::OnDragDistance()
@@ -1092,20 +1089,6 @@ void BuilderView::OnDragDistance()
 
 	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
 	pDlg->SetPoints(p1, p2);
-}
-
-void BuilderView::OnDragLinkEdit()
-{
-	if (m_ui.m_pEditingRoad != NULL && m_ui.m_iEditingPoint >= 0)
-	{
-		RefreshRoad(m_ui.m_pEditingRoad);
-		DPoint2 p = m_ui.m_pEditingRoad->GetAt(m_ui.m_iEditingPoint);
-		p += (m_ui.m_CurLocation - m_ui.m_DownLocation);
-		m_ui.m_pEditingRoad->SetAt(m_ui.m_iEditingPoint, p);
-		m_ui.m_pEditingRoad->ComputeExtent();
-		RefreshRoad(m_ui.m_pEditingRoad);
-	}
-	m_ui.m_iEditingPoint = -1;
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)

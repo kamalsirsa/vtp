@@ -130,13 +130,13 @@ public:
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;
+	bool	m_bConstrain;
 
 protected:
 	// Edit
 	void UpdateResizeScale();
 	void UpdateRotate();
 	void OnDragDistance();
-	void OnDragLinkEdit();
 
 	// Elevation
 	void CheckForTerrainSelect(const DPoint2 &loc);
