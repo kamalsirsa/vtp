@@ -342,17 +342,19 @@ void vtDayDome::Create(int depth, float radius,
 
 	if (sun_texture)
 	{
-		// Create sun
-		vtGeom *pGeom = new vtGeom();
-		m_pSunShape = new vtMovGeom(pGeom);
-		vtMesh *SunMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
-
 //		vtImage *pImage = new vtImage(sun_texture, GL_RGBA4);
 		int idx = m_pMats->AddTextureMaterial2(sun_texture,
 							 false, false,	// culling, lighting
 							 true, true,	// transp, additive
 							 1.0f,			// diffuse
 							 1.0f, 1.0f);	// alpha, emmisive
+		if (idx == -1)
+			return;		// could not load texture, cannot have sun
+
+		// Create sun
+		vtGeom *pGeom = new vtGeom();
+		m_pSunShape = new vtMovGeom(pGeom);
+		vtMesh *SunMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
 		m_SunApp = m_pMats->GetAt(idx);
 
@@ -635,16 +637,18 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 
 	if (moon_texture)
 	{
-		// Create moon
-		vtGeom *pGeom = new vtGeom();
-		m_pMoonGeom = new vtMovGeom(pGeom);
-		vtMesh *MoonMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
-
 		int moon_mat = pApps->AddTextureMaterial2(moon_texture,
 							 false, false,	// culling, lighting
 							 true, true,	// transparent, additive
 							 1.0f,			// diffuse
 							 1.0f, 1.0f);	// alpha, emmisive
+		if (moon_mat == -1)
+			return;		// could not load texture, cannot have sun
+
+		// Create moon
+		vtGeom *pGeom = new vtGeom();
+		m_pMoonGeom = new vtMovGeom(pGeom);
+		vtMesh *MoonMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
 		MoonMesh->CreateRectangle(0.1f, 0.1f);
 		pGeom->SetMaterials(pApps);
