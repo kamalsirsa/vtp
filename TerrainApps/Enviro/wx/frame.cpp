@@ -226,7 +226,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_bAlwaysMove = false;
 	m_bFullscreen = false;
 	m_bTopDown = false;
-	m_ToggledMode = MM_NONE;
+	m_ToggledMode = MM_SELECT;
 	m_bEnableEarth = bEnableEarth;
 
 	m_pStatusBar = NULL;
