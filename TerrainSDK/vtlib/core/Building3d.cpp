@@ -947,7 +947,7 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 		fSlope = 97.0;
 	if (fSlope < 3.0)
 		fSlope = 3.0;
-	fSlope = fSlope * M_PI / 180.0;
+	fSlope = fSlope * PId / 180.0;
 
 	// Fill in the height values of the interior nodes
 	Skeleton = StraightSkeleton.MakeRoof(RoofEaves, fSlope);
