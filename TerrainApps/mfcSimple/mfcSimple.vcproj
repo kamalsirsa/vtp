@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="mfcSimple"
+	ProjectGUID="{A1E5E34C-C2D7-48EC-A3F9-A1FF4CBA5149}"
 	SccProjectName=""
 	SccLocalPath=""
 	Keyword="MFCProj">

@@ -2,7 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="CManager">
+	Name="CManager"
+	ProjectGUID="{620C6FB1-C94C-459D-AF5F-DCBB765F69CF}">
 	<Platforms>
 		<Platform
 			Name="Win32"/>

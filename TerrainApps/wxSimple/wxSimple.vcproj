@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="wxSimple"
+	ProjectGUID="{3595B8FF-523B-4DD4-AFF2-BB738C8A6C6C}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

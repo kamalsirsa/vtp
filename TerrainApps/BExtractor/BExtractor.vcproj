@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="BExtractor"
+	ProjectGUID="{0D556784-31AF-4143-91F1-881E06F31DBB}"
 	SccProjectName="&quot;$/TerrainApps/BExtractor&quot;, UCRAAAAA"
 	SccLocalPath="."
 	Keyword="MFCProj">
