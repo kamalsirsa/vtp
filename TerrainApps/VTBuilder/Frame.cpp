@@ -752,6 +752,7 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 		// Create new Bioregion Dialog
 		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, "Feature Info",
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+		m_pFeatInfoDlg->SetView(GetView());
 	}
 	m_pFeatInfoDlg->Show(true);
 	return m_pFeatInfoDlg;
