@@ -284,6 +284,10 @@ void IslandTerrain::create_building_manually()
 	bound[6] = bound[5] + DPoint2(0.0, 96.64f - 30.48);
 	c1 = bound[2] + DPoint2(0.0, 12.2);
 
+	// only if this house would be on the terrain
+	if (!GetHeightField()->ContainsEarthPoint(bound[0]))
+		return;
+
 	//  8' =  2.4385 m
 	// 12' =  3.6576 m
 	// 28' =  8.5344 m
