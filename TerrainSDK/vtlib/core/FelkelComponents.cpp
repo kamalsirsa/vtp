@@ -28,11 +28,13 @@ CRidgeLine::CRidgeLine(const C3DPoint &p, const C3DPoint &q, const CNumber &Slop
 
 CRidgeLine CRidgeLine::AngleAxis (const C3DPoint &b, const C3DPoint &a, const CNumber &sa, const C3DPoint &c, const CNumber &sc)
 {
-	CNumber theta;
-	CNumber theta1;
-	CNumber theta2;
+	CNumber theta; // rotation from ba to bc
+	CNumber theta1; // rotation from bx to ridgeline
+	CNumber theta2; // slope of roof panel from edge ba
 	CRidgeLine ba (b, a, -1);
 	CRidgeLine bc (b, c, -1);
+	CNumber d1;
+	CNumber d2;
 
 
 	theta = bc.m_Angle - ba.m_Angle;
@@ -41,15 +43,23 @@ CRidgeLine CRidgeLine::AngleAxis (const C3DPoint &b, const C3DPoint &a, const CN
 	theta1 = atan(sin(theta)/(cos(theta) + tan(sa)/tan(sc)));
 	theta1 += ba.m_Angle;
 
-	if (ba.m_Angle > bc.m_Angle)
-		ba.m_Angle = ba.m_Angle - 2*CN_PI;
-
-	if (fabs(bc.m_Angle - ba.m_Angle) > CN_PI)
-		// Reflex angle flip the angle
-		theta1 += CN_PI;
-
 	theta2 = theta1 - ba.m_Angle;
 	theta2 = atan(sin(theta2) * tan(sa));
+
+
+	theta1.NormalizeAngle();
+
+	if (ba.m_Angle > bc.m_Angle)
+		ba.m_Angle -= 2*CN_PI;
+	d1 = bc.m_Angle - ba.m_Angle;
+
+	if (theta1 > bc.m_Angle)
+		theta1 -= 2*CN_PI;
+	d2 = bc.m_Angle - theta1;
+
+	if (d2 > d1)
+		theta1 += CN_PI;
+
 
 	return CRidgeLine (b, theta1, theta2, true);
 }
@@ -370,12 +380,15 @@ C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, cons
 
 #ifdef FELKELDEBUG
 	{
-		CNumber db1 = m_rightLine.Dist(poi) * tan(m_rightLine.m_Slope);
-		CNumber db2 = left.m_rightLine.Dist(poi) * tan(left.m_rightLine.m_Slope);
-		CNumber db3 = left.m_nextVertex->m_leftLine.Dist(poi) * tan(left.m_nextVertex->m_leftLine.m_Slope);
-		assert (SIMILAR(poi.m_y, db1));
-		assert (SIMILAR(poi.m_y, db2));
-		assert (SIMILAR(poi.m_y, db3));
+		if (poi.m_y < 10000.0)
+		{
+			CNumber db1 = m_rightLine.Dist(poi) * tan(m_rightLine.m_Slope);
+			CNumber db2 = left.m_rightLine.Dist(poi) * tan(left.m_rightLine.m_Slope);
+			CNumber db3 = left.m_nextVertex->m_leftLine.Dist(poi) * tan(left.m_nextVertex->m_leftLine.m_Slope);
+			assert (SIMILAR(poi.m_y, db1));
+			assert (SIMILAR(poi.m_y, db2));
+			assert (SIMILAR(poi.m_y, db3));
+		}
 	}
 #endif
 	return poi;

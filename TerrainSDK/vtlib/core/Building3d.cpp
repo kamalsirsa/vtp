@@ -455,7 +455,10 @@ bool vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 				// For complicated roofs with sloped edges which meet at a
 				// roofline of uneven height, we need a sophisticated
 				// straight-skeleton solution like Petr Felkel's
-				fHeight += MakeFelkelRoof(*m_lfp[i], lev);
+				float fRoofHeight = MakeFelkelRoof(*m_lfp[i], lev);
+				if (fRoofHeight < 0.0)
+					return false;
+				fHeight += fRoofHeight;
 			}
 			else
 			{
@@ -933,12 +936,26 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 	if (PolyChecker.IsClockwisePolygon(EavePolygon))
 	{
 		for (i = 0; i < iVertices; i++)
-			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, pLev->m_Edges[i]->m_iSlope / 180.0f * PIf));
+		{
+			int iSlope = pLev->m_Edges[i]->m_iSlope;
+			if (iSlope > 89)
+				iSlope = 89;
+			else if (iSlope < 1)
+				iSlope = 1;
+			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, iSlope / 180.0f * PIf));
+		}
 	}
 	else
 	{
 		for (i = iVertices - 1; i >= 0; i--)
-			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, pLev->m_Edges[i]->m_iSlope / 180.0f * PIf));
+		{
+			int iSlope = pLev->m_Edges[i]->m_iSlope;
+			if (iSlope > 89)
+				iSlope = 89;
+			else if (iSlope < 1)
+				iSlope = 1;
+			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, iSlope / 180.0f * PIf));
+		}
 	}
 
 	// Now build the skeleton
@@ -948,7 +965,7 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 	Skeleton = StraightSkeleton.CompleteWingedEdgeStructure(RoofEaves);
 
 	if (0 == Skeleton.size())
-		return 0.0;
+		return -1.0;
 
 	// TODO - texture co-ordinates
 	// Build the geometry

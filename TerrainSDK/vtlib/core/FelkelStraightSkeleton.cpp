@@ -252,7 +252,8 @@ CSkeleton CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours
 #endif
 
 	for (size_t ci = 0; ci < contours.size(); ci++)
-		FixSkeleton(contours[ci]);
+		if (!FixSkeleton(contours[ci]))
+			return CSkeleton();
 
 #ifdef FELKELDEBUG
 	Dump();
@@ -261,7 +262,7 @@ CSkeleton CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours
 	return m_skeleton;
 }
 
-void CStraightSkeleton::FixSkeleton(Contour& points)
+bool CStraightSkeleton::FixSkeleton(Contour& points)
 {
 	CSkeletonLine* pNextEdge;
 	CSkeletonLine* pPrevEdge;
@@ -293,6 +294,9 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 					// Joining lower to higher
 #ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left));
+#else
+					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_higher.m_left))
+						return false;
 #endif
 					pPrevEdge->m_lower.m_left = pNextEdge;
 					pNextEdge->m_higher.m_left = pPrevEdge;
@@ -302,6 +306,9 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 					// Joing higher to higher
 #ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left));
+#else
+					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_higher.m_left))
+						return false;
 #endif
 					pPrevEdge->m_higher.m_right = pNextEdge;
 					pNextEdge->m_higher.m_left = pPrevEdge;
@@ -314,6 +321,9 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 					// Joining lower to lower
 #ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right));
+#else
+					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_lower.m_right))
+						return false;
 #endif
 					pPrevEdge->m_lower.m_left = pNextEdge;
 					pNextEdge->m_lower.m_right = pPrevEdge;
@@ -323,6 +333,9 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 					// Joining higher to lower
 #ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right));
+#else
+					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_lower.m_right))
+						return false;
 #endif
 					pPrevEdge->m_higher.m_right = pNextEdge;
 					pNextEdge->m_lower.m_right = pPrevEdge;
@@ -331,6 +344,7 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 		}
 		while (bReversed ? p2 != pNextEdge->m_lower.m_vertex->m_point : p2 != pNextEdge->m_higher.m_vertex->m_point);
 	}
+	return true;
 }
 
 CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed)

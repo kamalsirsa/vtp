@@ -36,7 +36,7 @@ public:
 	int m_NumberOfBoundaryVertices;
 private:
 	bool IsClockwise(Contour& points);
-	void FixSkeleton(Contour& points);
+	bool FixSkeleton(Contour& points);
 	CSkeletonLine* FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed);
 	CNumber CalculateNormal(const CSkeletonLine& Edge, const C3DPoint& Point);
 };
