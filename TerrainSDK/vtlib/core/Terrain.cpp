@@ -244,7 +244,9 @@ void vtTerrain::create_textures()
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.m_eTexture;
 
-	m_pTerrMats = new vtMaterialArray();
+	if (!m_pTerrMats)
+		m_pTerrMats = new vtMaterialArray();
+	m_pTerrMats->Empty();
 
 	float ambient, diffuse, emmisive;
 	if (m_Params.m_bPreLit)
@@ -294,6 +296,9 @@ void vtTerrain::create_textures()
 			}
 		}
 	}
+
+	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
+
 	if (eTex == TE_DERIVED)
 	{
 		// Determine the correct size for the derived texture: ideally
@@ -303,7 +308,7 @@ void vtTerrain::create_textures()
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
 
 		int cols, rows;
-		m_pElevGrid->GetDimensions(cols, rows);
+		pHFGrid->GetDimensions(cols, rows);
 
 		int tsize = cols-1;
 		if ((tmax > 0) && (tsize > tmax))
@@ -314,12 +319,18 @@ void vtTerrain::create_textures()
 		// derive color from elevation
 		m_pDIB = new vtDIB();
 		m_pDIB->Create(tsize, tsize, 24, false);
-		m_pElevGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
+		pHFGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
+
+		// TEST
+		if (m_pDynGeom != NULL)
+			m_pDIB->Invert();
 	}
 
 	// apply pre-lighting (darkening)
 	if (m_Params.m_bPreLight && m_pDIB)
-		ApplyPreLight(m_pElevGrid, m_pDIB);
+	{
+		ApplyPreLight(pHFGrid, m_pDIB);
+	}
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
@@ -349,9 +360,7 @@ void vtTerrain::create_textures()
 	// We're not going to use it anymore, so we're done with the DIB
 	if (m_pDIB != NULL)
 	{
-#if !VTLIB_PSM	// PSM deletes the DIB
 		delete m_pDIB;
-#endif
 		m_pDIB = NULL;
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
@@ -373,6 +382,15 @@ void vtTerrain::create_textures()
 	int i, num = m_Images.GetSize();
 	for (i = 0; i < num; i++)
 		m_Images[i]->Release();
+	m_Images.Empty();
+}
+
+/**
+ * Experimental only!!!
+ */
+void vtTerrain::recreate_textures()
+{
+	create_textures();
 }
 
 
@@ -1638,6 +1656,19 @@ float vtTerrain::GetLODDistance(TFType ftype)
 	return 0.0f;
 }
 
+vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
+{
+	// if we still have the source elevation, use it
+	if (m_pElevGrid)
+		return m_pElevGrid;
+
+	// otherwise, later on, we might only have the runtime (CLOD) grid
+	else if (m_pDynGeom)
+		return m_pDynGeom;
+
+	return NULL;	// no grid to return, possible because it's a TIN
+}
+
 void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 {
 	int size = patch_size;
@@ -1724,7 +1755,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 }
 
 
-void vtTerrain::ApplyPreLight(vtElevationGrid *pElevGrid, vtDIB *dib)
+void vtTerrain::ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib)
 {
 	VTLOG("Prelighting terrain texture: ");
 	FPoint3 light_dir;

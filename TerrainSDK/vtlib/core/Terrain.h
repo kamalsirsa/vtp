@@ -188,6 +188,7 @@ public:
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField() { return m_pHeightField; }
+	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
 
 	// Points of interest
@@ -229,6 +230,9 @@ public:
 	static vtStringArray s_DataPaths;
 	static vtContentManager3d s_Content;
 
+	// Experimental!
+	void recreate_textures();
+
 protected:
 	/********************** Protected Methods ******************/
 
@@ -249,7 +253,7 @@ protected:
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
-	void ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib);
+	void ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtDIB *dib);
 
 	/********************** Protected Data ******************/
 
