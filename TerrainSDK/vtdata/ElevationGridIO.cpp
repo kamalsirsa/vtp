@@ -4,7 +4,7 @@
 // This modules contains the implementations of the file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001 Virtual Terrain Project.
+// Copyright (c) 2001-2003 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -821,6 +821,9 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		return false;
 	}
 
+	m_Corners[0].x = get_dms8(fp);
+	m_Corners[0].y = get_dms8(fp);
+
 	float xInterval = get_ssss(fp);
 	float yInterval = get_ssss(fp);
 
@@ -828,9 +831,6 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	fseek(fp, 47, 0);
 	m_iColumns = get_dddd(fp);
 	m_iRows = get_dddd(fp);
-
-	m_Corners[0].x = get_dms8(fp);
-	m_Corners[0].y = get_dms8(fp);
 
 	// imply other corners
 	m_Corners[1].x = m_Corners[0].x;
