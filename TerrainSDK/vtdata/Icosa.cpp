@@ -91,6 +91,12 @@ void geo_to_xyz(const DPoint2 &geo, DPoint3 &p)
 }
 
 
+DymaxIcosa::DymaxIcosa()
+{
+	InitIcosa();
+}
+
+
 /**
  * Determine which part of which icosahedral face a point is on.
  *
@@ -196,7 +202,7 @@ void DymaxIcosa::FindFaceUV(const DPoint2 &p, int &face, int &subface,
  * Given a geographic coordinate (lon, lat), find the corresponding
  * point on the surface of the icosahedron.
  */
-void DymaxIcosa::GeoToFaceUV(const DPoint2 &p, int &face, int &subface,
+void DymaxIcosa::GeoToFacePoint(const DPoint2 &p, int &face, int &subface,
 							 DPoint3 &p_out)
 {
 	DPoint3 p3, uvw;
@@ -310,6 +316,7 @@ void DymaxIcosa::InitIcosa()
 #define TRI_DE	(1/(2*SR3))	// distance center to edge
 #define TRI_DC	(1/SR3)		// distance center to corner
 
+	// The 2D vertices of the projected map faces
 	m_flatverts[0].Set(0.5, 0);
 	m_flatverts[1].Set(1.5, 0);
 	m_flatverts[2].Set(2.5, 0);
@@ -329,13 +336,14 @@ void DymaxIcosa::InitIcosa()
 	m_flatverts[16].Set(1.5, TRI_H*2);
 	m_flatverts[17].Set(2.5, TRI_H*2);
 	m_flatverts[18].Set(3.5, TRI_H*2);
-	m_flatverts[29].Set(4.5, TRI_H*2);
+	m_flatverts[19].Set(4.5, TRI_H*2);
 	m_flatverts[20].Set(5.5, TRI_H*2);
 	m_flatverts[21].Set(1, TRI_H*3);
 	m_flatverts[22].Set(2, TRI_H*3);
 	m_flatverts[23].Set(3, TRI_H*3);
 	m_flatverts[24].Set(4, TRI_H*3);
 	m_flatverts[25].Set(5, TRI_H*3);
+	m_flatverts[26].Set(6, TRI_H);
 }
 
 double DymaxIcosa::DihedralAngle()
@@ -347,22 +355,120 @@ double DymaxIcosa::DihedralAngle()
 
 bool DymaxIcosa::GeoToDymax(const DPoint2 &geo, DPoint2 &dymax)
 {
+	DPoint3 p3, uvw;
 	int face, subface;
-	DPoint3 p_out;
-	GeoToFaceUV(geo, face, subface, p_out);
-	DPoint2 uv(p_out.x, p_out.y);
 
-	DPoint2 base;
-	double dRot;
+	geo_to_xyz(geo, p3);
+	FindFace(p3, face, subface);
+	FindUV(p3, face, uvw);
+
+	DPoint2 uv(uvw.x, uvw.y);
+	if (uv.x > 1 || uv.y > 1)
+	{
+		int foo = 1;
+	}
+	// Not exactly sure why we need to do this - apparently the UV are
+	//  assuming a unit-radius, rather than unit-edge icosahedron
+	uv /= m_edge_length;
+
+	int a, b, c;
 	switch (face)
 	{
 	case 0:
-		base = m_flatverts[17]; dRot = PID3d * 2;
+		a = 17; b = 22; c = 16; break;
+	case 1:
+		a = 17; b = 16; c = 10; break;
+	case 2:
+		a = 17; b = 10; c = 11; break;
+	case 3:
+		a = 17; b = 11; c = 18; break;
+	case 4:
+		a = 17; b = 23; c = 22; break;
+	case 5:
+		a = 21; b = 16; c = 22; break;
+	case 6:
+		a = 16; b = 15; c = 9; break;
+	case 7:
+		a = 9; b = 10; c = 16; break;
+	case 8:
+		if (subface == 4 || subface == 5)
+			{ a = 10; b = 1; c = 2; }
+		else
+			{ a = 10; b = 9; c = 1; }
 		break;
-	default: return false;
+	case 9:
+		a = 2; b = 11; c = 10; break;
+	case 10:
+		a = 11; b = 3; c = 12; break;
+	case 11:
+		a = 12; b = 18; c = 11; break;
+	case 12:
+		a = 18; b = 12; c = 19; break;
+	case 13:
+		a = 19; b = 24; c = 18; break;
+	case 14:
+		a = 25; b = 19; c = 20; break;
+	case 15:
+		if (subface == 0 || subface == 4 || subface == 5)
+			{ a = 13; b = 26; c = 20; }
+		else
+			{ a = 0; b = 9; c = 8; }
+		break;
+	case 16:
+		a = 0; b = 1; c = 9; break;
+	case 17:
+		a = 4; b = 12; c = 3; break;
+	case 18:
+		a = 13; b = 19; c = 12; break;
+	case 19:
+		a = 13; b = 20; c = 19; break;
+	default:
+		return false;
 	}
-	uv.Rotate(dRot);
-	dymax = base + uv;
+	DPoint2 base = m_flatverts[a];
+	DPoint2 vec1 = m_flatverts[b] - base;
+	DPoint2 vec2 = m_flatverts[c] - base;
+
+	dymax = base + (vec1 * uv.x) + (vec2 * uv.y);
 	return true;
+}
+
+void DymaxIcosa::AddFlatTri(DPolyArray2 &polys, int a, int b, int c, int d)
+{
+	DLine2 poly;
+	poly.Append(m_flatverts[a]);
+	poly.Append(m_flatverts[b]);
+	poly.Append(m_flatverts[c]);
+	if (d != -1)
+		poly.Append(m_flatverts[d]);
+	polys.push_back(poly);
+}
+
+void DymaxIcosa::GetDymaxEdges(DPolyArray2 &polys)
+{
+	AddFlatTri(polys, 5, 9, 8);
+	AddFlatTri(polys, 0, 1, 9);
+	AddFlatTri(polys, 1, 6, 10, 9);
+	AddFlatTri(polys, 7, 2, 10);
+	AddFlatTri(polys, 2, 11, 10);
+	AddFlatTri(polys, 11, 3, 12);
+	AddFlatTri(polys, 3, 4, 12);
+
+	AddFlatTri(polys, 15, 9, 16);
+	AddFlatTri(polys, 9, 10, 16);
+	AddFlatTri(polys, 16, 10, 17);
+	AddFlatTri(polys, 10, 11, 17);
+	AddFlatTri(polys, 17, 11, 18);
+	AddFlatTri(polys, 11, 12, 18);
+	AddFlatTri(polys, 18, 12, 19);
+	AddFlatTri(polys, 12, 13, 19);
+	AddFlatTri(polys, 19, 13, 20);
+	AddFlatTri(polys, 13, 14, 20);
+
+	AddFlatTri(polys, 21, 16, 22);
+	AddFlatTri(polys, 16, 17, 22);
+	AddFlatTri(polys, 22, 17, 23);
+	AddFlatTri(polys, 18, 19, 24);
+	AddFlatTri(polys, 19, 20, 25);
 }
 

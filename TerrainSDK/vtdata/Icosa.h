@@ -42,23 +42,29 @@ struct icoface
 class DymaxIcosa
 {
 public:
+	DymaxIcosa();
+
 	void InitIcosa();
 
 	void FindFaceUV(const DPoint2 &p, int &face, int &subface, DPoint3 &uvw);
 	void FindFace(const DPoint3 &p, int &face, int &subface);
 	void FindUV(const DPoint3 &p_in, int face, DPoint3 &uvw);
 
-	void GeoToFaceUV(const DPoint2 &p, int &face, int &subface, DPoint3 &p_out);
+	void GeoToFacePoint(const DPoint2 &p, int &face, int &subface, DPoint3 &p_out);
 	void FaceUVToGeo(int face, DPoint3 &uvw, double &lon, double &lat);
 	bool GeoToDymax(const DPoint2 &geo, DPoint2 &dymax);
 
 	double DihedralAngle();
 
+	void GetDymaxEdges(DPolyArray2 &polys);
+
 protected:
+	void AddFlatTri(DPolyArray2 &polys, int a, int b, int c, int d=-1);
+
 	// icosahedron data
 	DPoint3 m_verts[12];
 	icoface m_face[20];
-	DPoint2 m_flatverts[26];
+	DPoint2 m_flatverts[27];
 	double m_edge_length;	// edge length of icosahedron (~1.05 for unit radius)
 };
 
