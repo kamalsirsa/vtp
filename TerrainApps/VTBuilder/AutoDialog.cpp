@@ -62,11 +62,11 @@ bool wxNumericValidator::TransferToWindow()
 
 	wxString str;
 	if (m_pValInt)
-		str = wxString::Format("%d", *m_pValInt);
+		str.Printf("%d", *m_pValInt);
 	if (m_pValFloat)
-		str = wxString::Format("%f", *m_pValFloat);
+		str.Printf("%f", *m_pValFloat);
 	if (m_pValDouble)
-		str = wxString::Format("%lf", *m_pValDouble);
+		str.Printf("%lf", *m_pValDouble);
 
     if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
     {
