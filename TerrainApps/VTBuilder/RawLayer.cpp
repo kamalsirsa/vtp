@@ -29,6 +29,9 @@ vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 {
 	m_pSet = NULL;
 	SetLayerFilename("Untitled.shp");
+
+	// default dark red
+	m_DrawStyle.m_LineColor.Set(128,0,0);
 }
 
 vtRawLayer::~vtRawLayer()
@@ -90,10 +93,16 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 
 void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	// single pixel solid pen
-	wxPen DefPen(wxColor(128,0,0), 1, wxSOLID);
+	if (!m_pSet)
+		return;
+
+	wxColor linecolor(m_DrawStyle.m_LineColor.r, m_DrawStyle.m_LineColor.g, m_DrawStyle.m_LineColor.b);
+	bool bFill = m_DrawStyle.m_bFill;
+
+	// single pixel solid pens
+	wxPen DefPen(linecolor, 1, wxSOLID);
 	wxPen SelPen(wxColor(255,255,0), 1, wxSOLID);
-	wxPen NoPen(wxColor(255,255,0), 1, wxTRANSPARENT);
+	wxPen NoPen(wxColor(0,0,0), 1, wxTRANSPARENT);
 	int pen = 0;
 
 	pDC->SetLogicalFunction(wxCOPY);
@@ -162,8 +171,6 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (type == wkbPolygon)
 	{
 		vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon *>(m_pSet);
-
-		bool bFill = true;
 
 		if (bFill)
 			pDC->SetPen(NoPen);

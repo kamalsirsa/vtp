@@ -268,3 +268,12 @@ void LayerArray::DestructItems(unsigned int first, unsigned int last)
 }
 
 
+///////////////////////////////////////////////////////////////////////
+
+DrawStyle::DrawStyle()
+{
+	m_LineColor.Set(0,0,0);
+	m_FillColor.Set(255,255,255);
+	m_bFill = false;
+}
+

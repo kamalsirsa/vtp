@@ -149,8 +149,18 @@ public:
 	virtual void DestructItems(unsigned int first, unsigned int last);
 };
 
+class DrawStyle
+{
+public:
+	DrawStyle();
+
+	RGBi m_LineColor;
+	RGBi m_FillColor;
+	bool m_bFill;
+};
+
 ////////////////////
-// helpers
+// Helpers
 
 void AddType(wxString &str, const wxString &filter);
 
