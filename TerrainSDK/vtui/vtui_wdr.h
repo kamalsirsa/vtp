@@ -89,6 +89,10 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_UNITS2 10046
 #define ID_GEOD_DIST 10047
 #define ID_UNITS3 10048
+#define ID_GROUND_DIST 10049
+#define ID_UNITS4 10050
+#define ID_VERTICAL 10051
+#define ID_UNITS5 10052
 wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

@@ -14,7 +14,8 @@
 
 #include "wxString2.h"
 #include "DistanceDlg.h"
-#include "Helper.h"	// for FormatCoord
+#include "Helper.h" // for FormatCoord
+#include <float.h>	// for FLT_MIN
 
 // WDR: class implementations
 
@@ -28,30 +29,53 @@ BEGIN_EVENT_TABLE(DistanceDlg,AutoDialog)
 	EVT_CHOICE( ID_UNITS1, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS2, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS3, DistanceDlg::OnUnits )
+	EVT_CHOICE( ID_UNITS4, DistanceDlg::OnUnits )
+	EVT_CHOICE( ID_UNITS5, DistanceDlg::OnUnits )
 END_EVENT_TABLE()
 
 DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	m_pProj = NULL;
 	DistanceDialogFunc( this, TRUE ); 
 }
 
-void DistanceDlg::SetProjection(vtProjection *proj)
+void DistanceDlg::SetProjection(const vtProjection &proj)
 {
-	m_pProj = proj;
+	m_proj = proj;
 	GetMapOffset()->SetValue(_T(""));
 	GetMapDist()->SetValue(_T(""));
 	GetGeodDist()->SetValue(_T(""));
-	SetAvailableUnits();
+	UpdateAvailableUnits();
 }
 
-void DistanceDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2)
+void DistanceDlg::SetPoints(const DPoint2 &p1, const DPoint2 &p2, bool bUpdate)
 {
 	m_p1 = p1;
 	m_p2 = p2;
-	ShowValues();
+	if (bUpdate)
+		ShowValues();
+}
+
+void DistanceDlg::SetGroundAndVertical(float fGround, float fVertical, bool bUpdate)
+{
+	m_fGround = fGround;
+	m_fVertical = fVertical;
+	if (bUpdate)
+		ShowValues();
+}
+
+double GetScaleFromUnits(int units)
+{
+	switch (units)
+	{
+	case 3:
+		return 1.0 / 1000;	// km
+	case 4:
+		return 1.0 / (5280 * GetMetersPerUnit(LU_FEET_INT)); // miles
+	}
+	// otherwise, normal linear units
+	return 1.0 / GetMetersPerUnit((LinearUnits)(units+1));
 }
 
 void DistanceDlg::ShowValues()
@@ -59,7 +83,7 @@ void DistanceDlg::ShowValues()
 	DPoint2 diff_degrees;
 	DPoint2 diff_map = m_p2 - m_p1;
 
-	bool bIsGeo = (m_pProj->IsGeographic() != FALSE);
+	bool bIsGeo = (m_proj.IsGeographic() != FALSE);
 	DPoint2 geo1, geo2;
 	if (bIsGeo)
 	{
@@ -69,10 +93,11 @@ void DistanceDlg::ShowValues()
 	}
 	else
 	{
+		// We need degrees, but don't have them, so compute them.
 		vtProjection geo;
-		CreateSimilarGeographicProjection(*m_pProj, geo);
+		CreateSimilarGeographicProjection(m_proj, geo);
 
-		OCT *trans = OGRCreateCoordinateTransformation(m_pProj, &geo);
+		OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &geo);
 
 		geo1 = m_p1;
 		geo2 = m_p2;
@@ -84,15 +109,15 @@ void DistanceDlg::ShowValues()
 		delete trans;
 	}
 	// find geodesic distance
-	double geodesic_meters = m_pProj->GeodesicDistance(geo1, geo2);
+	double geodesic_meters = m_proj.GeodesicDistance(geo1, geo2);
 
-	LinearUnits lu = m_pProj->GetUnits();
+	LinearUnits lu = m_proj.GetUnits();
 
 	// Map Offset
 	wxString2 str;
 	double scale;
 
-	if (m_iUnits1 == 0)	// degrees
+	if (m_iUnits1 == 0) // degrees
 	{
 		str.Printf(_T("%s, %s"),
 			(const char *) FormatCoord(true, diff_degrees.x),
@@ -103,9 +128,9 @@ void DistanceDlg::ShowValues()
 		scale = GetMetersPerUnit(lu) /
 			GetMetersPerUnit((LinearUnits)m_iUnits1);
 		DPoint2 diff_show = diff_map * scale;
-		str.Printf(_T("%s, %s"),
-			(const char *) FormatCoord(bIsGeo, diff_show.x),
-			(const char *) FormatCoord(bIsGeo, diff_show.y));
+		str = FormatCoord(bIsGeo, diff_show.x);
+		str += ", ";
+		str += FormatCoord(bIsGeo, diff_show.y);
 	}
 	GetMapOffset()->SetValue(str);
 
@@ -121,27 +146,38 @@ void DistanceDlg::ShowValues()
 	GetMapDist()->SetValue(str);
 
 	// Geodesic Distance
-	switch (m_iUnits3)
-	{
-	case 0:
-	case 1:
-	case 2:
-		scale = 1.0 / GetMetersPerUnit((LinearUnits)(m_iUnits3+1));
-		break;
-	case 3:
-		scale = 1.0 / 1000;
-		break;
-	case 4:
-		scale = 1.0 / (5280 * GetMetersPerUnit(LU_FEET_INT));
-		break;
-	}
+	scale = GetScaleFromUnits(m_iUnits3);
 	str = FormatCoord(false, geodesic_meters * scale);
 	GetGeodDist()->SetValue(str);
+
+	// Approximate Ground Distance
+	bool bShowGround = (m_fGround != FLT_MIN);
+	GetGroundDist()->Enable(bShowGround);
+	if (bShowGround)
+	{
+		scale = GetScaleFromUnits(m_iUnits4);
+		str = FormatCoord(false, m_fGround * scale);
+		GetGroundDist()->SetValue(str);
+	}
+	else
+		GetGroundDist()->SetValue(_T("N/A"));
+
+	// Vertical Difference
+	bool bShowVertical = (m_fVertical != FLT_MIN);
+	GetVertical()->Enable(bShowVertical);
+	if (bShowVertical)
+	{
+		scale = GetScaleFromUnits(m_iUnits5);
+		str = FormatCoord(false, m_fVertical * scale);
+		GetVertical()->SetValue(str);
+	}
+	else
+		GetVertical()->SetValue(_T("N/A"));
 }
 
-void DistanceDlg::SetAvailableUnits()
+void DistanceDlg::UpdateAvailableUnits()
 {
-	bool bIsGeo = (m_pProj->IsGeographic() != FALSE);
+	bool bIsGeo = (m_proj.IsGeographic() != FALSE);
 	GetUnits2()->Enable(!bIsGeo);
 	GetMapDist()->Enable(!bIsGeo);
 
@@ -154,7 +190,7 @@ void DistanceDlg::SetAvailableUnits()
 		GetUnits1()->Append(_T("US Survey Feet"));
 	}
 
-	switch (m_pProj->GetUnits())
+	switch (m_proj.GetUnits())
 	{
 	case LU_DEGREES:
 		m_iUnits1 = 0;
@@ -176,6 +212,8 @@ void DistanceDlg::SetAvailableUnits()
 		m_iUnits3 = 2;
 		break;
 	}
+	m_iUnits4 = m_iUnits3;
+	m_iUnits5 = 0;
 	TransferDataToWindow();
 }
 
@@ -195,11 +233,25 @@ void DistanceDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUnits3()->Append(_T("Kilometers"));
 	GetUnits3()->Append(_T("Miles"));
 
+	GetUnits4()->Clear();
+	GetUnits4()->Append(_T("Meters"));
+	GetUnits4()->Append(_T("Feet"));
+	GetUnits4()->Append(_T("US Survey Feet"));
+	GetUnits4()->Append(_T("Kilometers"));
+	GetUnits4()->Append(_T("Miles"));
+
+	GetUnits5()->Clear();
+	GetUnits5()->Append(_T("Meters"));
+	GetUnits5()->Append(_T("Feet"));
+	GetUnits5()->Append(_T("US Survey Feet"));
+
 	AddValidator(ID_UNITS1, &m_iUnits1);
 	AddValidator(ID_UNITS2, &m_iUnits2);
 	AddValidator(ID_UNITS3, &m_iUnits3);
+	AddValidator(ID_UNITS4, &m_iUnits4);
+	AddValidator(ID_UNITS5, &m_iUnits5);
 
-	SetAvailableUnits();
+	UpdateAvailableUnits();
 
 	wxDialog::OnInitDialog(event);
 }

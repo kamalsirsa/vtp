@@ -556,25 +556,29 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxTextCtrl *item8 = new wxTextCtrl( parent, ID_GEOD_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
     item0->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString strs9[] = 
-    {
-        _("ChoiceItem")
-    };
-    wxChoice *item9 = new wxChoice( parent, ID_UNITS3, wxDefaultPosition, wxSize(100,-1), 1, strs9, 0 );
+    wxString *strs9 = (wxString*) NULL;
+    wxChoice *item9 = new wxChoice( parent, ID_UNITS3, wxDefaultPosition, wxSize(100,-1), 0, strs9, 0 );
     item0->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Geodesic Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Approximate Ground"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_GEOD_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_GROUND_DIST, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
     item0->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString strs12[] = 
-    {
-        _("ChoiceItem")
-    };
-    wxChoice *item12 = new wxChoice( parent, ID_UNITS3, wxDefaultPosition, wxSize(100,-1), 1, strs12, 0 );
+    wxString *strs12 = (wxString*) NULL;
+    wxChoice *item12 = new wxChoice( parent, ID_UNITS4, wxDefaultPosition, wxSize(100,-1), 0, strs12, 0 );
     item0->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Vertical Difference"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_VERTICAL, wxT(""), wxDefaultPosition, wxSize(180,-1), 0 );
+    item0->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs15 = (wxString*) NULL;
+    wxChoice *item15 = new wxChoice( parent, ID_UNITS5, wxDefaultPosition, wxSize(100,-1), 0, strs15, 0 );
+    item0->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
