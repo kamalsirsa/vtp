@@ -151,6 +151,10 @@ SOURCE=.\Triangulate.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\UtilityMap.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\vtDIB.cpp
 # End Source File
 # Begin Source File
@@ -236,6 +240,10 @@ SOURCE=.\Structure.h
 # Begin Source File
 
 SOURCE=.\Triangulate.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UtilityMap.h
 # End Source File
 # Begin Source File
 
