@@ -1,0 +1,745 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\Enviro.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\Enviro.ico"
+IDR_ENVIROTYPE          ICON    DISCARDABLE     "res\\EnviroDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE  20, 20
+BEGIN
+    BUTTON      ID_TOOLS_SELECT
+    BUTTON      ID_TOOLS_FENCES
+    BUTTON      ID_TOOLS_TREES
+    BUTTON      ID_TOOLS_MOVE
+    BUTTON      ID_TOOLS_NAVIGATE
+    SEPARATOR
+    BUTTON      ID_VIEW_MAINTAINHEIGHT
+    BUTTON      ID_VIEW_FLYFASTER
+    BUTTON      ID_VIEW_FLYSLOWER
+    BUTTON      ID_TEST_CAMDIALOG
+    SEPARATOR
+    BUTTON      ID_VIEW_SCENEGRAPH
+    SEPARATOR
+    BUTTON      ID_FLYTO_SPACE
+    BUTTON      ID_FLYTO_TERRAIN
+    SEPARATOR
+    BUTTON      ID_EARTH_SHOWTIME
+    BUTTON      ID_EARTH_ADDPOINTDATA
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "Tools"
+    BEGIN
+        MENUITEM "Select",                      ID_TOOLS_SELECT
+        MENUITEM "Fences",                      ID_TOOLS_FENCES
+        MENUITEM "Trees",                       ID_TOOLS_TREES
+        MENUITEM "Move Objects",                ID_TOOLS_MOVE, GRAYED
+        MENUITEM "Navigate",                    ID_TOOLS_NAVIGATE
+    END
+    POPUP "Navigation"
+    BEGIN
+        MENUITEM "Original",                    ID_TOOLS_NAVIGATE_ORIGINALNAVENGIN
+
+        MENUITEM "Velocity-Gravity",            ID_TOOLS_NAVIGATE_VELOCITYGRAVITY
+
+        MENUITEM "Quake-style",                 ID_TOOLS_NAVIGATE_QUAKENAVENGINE
+
+        MENUITEM SEPARATOR
+        MENUITEM "Go to Terrain...",            ID_FLYTO_TERRAIN
+        MENUITEM "Go to Space",                 ID_FLYTO_SPACE
+    END
+    POPUP "View"
+    BEGIN
+        MENUITEM "Fly Slower\tS",               ID_VIEW_FLYSLOWER
+        MENUITEM "Fly Faster\tF",               ID_VIEW_FLYFASTER
+        MENUITEM "Maintain height above ground", ID_VIEW_MAINTAINHEIGHT
+        MENUITEM SEPARATOR
+        MENUITEM "Top-&Down View\tCtrl+D",      ID_VIEW_TOPDOWN
+    END
+    POPUP "&Terrain"
+    BEGIN
+        MENUITEM "Time On\tCtrl+T",             ID_ENVIRO_TIMEON
+        MENUITEM "Regular Terrain\tF2",         ID_ENVIRO_REGULARTERRAIN
+        MENUITEM "Dynamic LOD Terrain\tF3",     ID_ENVIRO_LODTERRAIN
+        MENUITEM "Cull every frame\tCtrl+C",    ID_ENVIRO_CULLEVERYFRAME
+        MENUITEM "Cull once\tCtrl+K",           ID_ENVIRO_CULLONCE
+        MENUITEM SEPARATOR
+        MENUITEM "Show Sky\tF4",                ID_ENVIRO_SHOWSKY
+        MENUITEM "Show Ocean\tF5",              ID_ENVIRO_SHOWOCEAN
+        MENUITEM "Show Fog\tF6",                ID_ENVIRO_SHOWFOG
+        MENUITEM "Show Trees &&  Buildings\tF7", ID_ENVIRO_SHOWTREES
+        MENUITEM "Show Roads\tF8",              ID_ENVIRO_SHOWROADS
+        MENUITEM "Show Detail Texture\tF9",     ID_ENVIRO_SHOWDETAILTEXTURE
+        MENUITEM "Drive on the Roads",          ID_ENVIRO_DRIVEROADS, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Increase Detail\t+ (plus)",   ID_ENVIRO_INCREASE
+        MENUITEM "Decrease Detail\t- (minus)",  ID_ENVIRO_DECREASE
+    END
+    POPUP "&Earth"
+    BEGIN
+        MENUITEM "&Show Time of Day\tCtrl+I",   ID_EARTH_SHOWTIME
+        MENUITEM "&Flatten\tCtrl+F",            ID_EARTH_FLATUNFOLD
+        MENUITEM "&Add Point Data...\tCtrl+P",  ID_EARTH_ADDPOINTDATA
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About VTP Enviro...",        ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    "+",            ID_ENVIRO_INCREASE,     ASCII,  NOINVERT
+    "-",            ID_ENVIRO_DECREASE,     ASCII,  NOINVERT
+    "C",            ID_ENVIRO_CULLEVERYFRAME, VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_VIEW_TOPDOWN,        VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_VIEW_FLYFASTER,      VIRTKEY, NOINVERT
+    "F",            ID_EARTH_FLATUNFOLD,    VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_EARTH_SHOWTIME,      VIRTKEY, CONTROL, NOINVERT
+    "K",            ID_ENVIRO_CULLONCE,     VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_EARTH_ADDPOINTDATA,  VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_VIEW_FLYSLOWER,      VIRTKEY, NOINVERT
+    "T",            ID_ENVIRO_TIMEON,       VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 244, 70
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Enviro"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,14,21,20,SS_REALSIZEIMAGE
+    LTEXT           "Enviro:\nThe Virtual Terrain Project Runtime Environment",
+                    IDC_STATIC,41,6,156,16,SS_NOPREFIX
+    DEFPUSHBUTTON   "OK",IDOK,205,7,32,14,WS_GROUP
+    LTEXT           "Static Date",IDC_STATICDATE,42,26,149,8
+    LTEXT           "Thsi program and its source code are fully public domain.\nSee the accompanying HTML files for disclaimer and documentation.",
+                    IDC_STATIC,43,38,179,24
+END
+
+CG_IDD_PROGRESS DIALOG DISCARDABLE  0, 0, 257, 36
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Progress1",CG_IDC_PROGDLG_PROGRESS,"msctls_progress32",
+                    WS_BORDER,7,21,243,8
+    LTEXT           "",CG_IDC_PROGDLG_STATUS,13,7,158,8
+END
+
+IDD_TPARAMS DIALOG DISCARDABLE  0, 0, 445, 329
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Terrain Construction Parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,368,13,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,368,33,50,14
+    GROUPBOX        "",IDC_STATIC,10,43,119,52
+    CONTROL         "Regular terrain",IDC_REGULAR,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,41,62,12
+    RTEXT           "Subsample ratio",IDC_STATIC,21,55,50,10
+    EDITTEXT        IDC_SUBSAMPLE,78,53,37,12,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,137,27,120,69
+    CONTROL         "Dynamic LOD terrain",IDC_DYNAMIC,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,142,26,78,12
+    RTEXT           "Pixel error bound",IDC_STATIC,142,56,56,10
+    EDITTEXT        IDC_PIXELERROR,204,54,37,12,ES_AUTOHSCROLL
+    GROUPBOX        "Texture",IDC_STATIC,10,161,203,151
+    COMBOBOX        IDC_FILENAME,92,8,102,132,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    RTEXT           "Terrain Filename: ",IDC_STATIC,27,11,63,10
+    GROUPBOX        "",IDC_STATIC,20,201,184,60
+    RTEXT           "Tile size:",IDC_STATIC,38,215,40,10
+    EDITTEXT        IDC_TILESIZE,84,214,40,12,ES_AUTOHSCROLL
+    RTEXT           "Filename:",IDC_STATIC,30,247,47,10
+    EDITTEXT        IDC_TFILENAME,84,245,108,12,ES_AUTOHSCROLL | ES_READONLY
+    CONTROL         "Mipmap terrain",IDC_MIPMAP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,21,278,63,10
+    CONTROL         "Request 16-bit",IDC_16BIT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,21,288,62,10
+    CONTROL         "Texture-map roads",IDC_TEXROADS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,239,206,73,10
+    CONTROL         "Sky dome",IDC_SKY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    271,33,46,10
+    CONTROL         "No texture",IDC_NONE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,25,174,49,10
+    CONTROL         "Single texture:",IDC_SINGLE,"Button",BS_AUTORADIOBUTTON,
+                    25,187,58,10
+    CONTROL         "4x4 Tiled texture",IDC_TILED,"Button",
+                    BS_AUTORADIOBUTTON,25,200,66,10
+    CONTROL         "Derive texture from elevation",IDC_DERIVED,"Button",
+                    BS_AUTORADIOBUTTON,25,264,178,10
+    CONTROL         "Fog",IDC_FOG,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
+                    WS_TABSTOP,271,85,28,10
+    RTEXT           "Filename Base:",IDC_STATIC,28,231,50,10
+    EDITTEXT        IDC_TFILEBASE,84,229,76,12,ES_AUTOHSCROLL
+    RTEXT           "Vertical exaggeration: ",IDC_STATIC,20,27,70,10
+    EDITTEXT        IDC_VERTEXAG,92,25,31,12,ES_AUTOHSCROLL
+    GROUPBOX        "",IDC_STATIC,221,149,209,82
+    RTEXT           "Height above ground: ",IDC_STATIC,227,179,75,10
+    EDITTEXT        IDC_ROADHEIGHT,303,177,28,12,ES_AUTOHSCROLL
+    CONTROL         "Roads",IDC_ROADS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    229,148,34,10
+    EDITTEXT        IDC_TREEDISTANCE,303,125,29,12,ES_AUTOHSCROLL
+    LTEXT           "km",IDC_STATIC,335,127,18,10
+    GROUPBOX        "",IDC_STATIC,221,99,209,45
+    CONTROL         "Trees",IDC_TREES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    233,98,31,10
+    RTEXT           "Visibility distance:",IDC_STATIC,237,128,61,10
+    CONTROL         "Time Goes By",IDC_TIMEOFDAY,"Button",BS_AUTOCHECKBOX | 
+                    WS_DISABLED | WS_TABSTOP,271,59,62,10
+    LTEXT           "Time of Day:",IDC_STATIC,333,59,43,10,WS_DISABLED
+    LTEXT           "Visibility Distance:",IDC_STATIC,315,85,59,10
+    EDITTEXT        IDC_FOGDISTANCE,376,83,33,12,ES_AUTOHSCROLL
+    LTEXT           "km",IDC_STATIC,411,86,13,10
+    CONTROL         "Apply vertex colors",IDC_VERTEXCOLORS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,21,81,95,8
+    CONTROL         "Suppress land",IDC_SUPPRESSLAND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,21,69,94,9
+    CONTROL         "Create 2D Overlay",IDC_OVERLAY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,271,8,74,10
+    CONTROL         "Ocean plane",IDC_OCEANPLANE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,271,46,58,10
+    CONTROL         "Floating Labels",IDC_LABELS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,271,20,60,10
+    RTEXT           "Minimum height above ground:",IDC_STATIC,17,111,100,10
+    EDITTEXT        IDC_MINHEIGHT,123,109,32,12,ES_AUTOHSCROLL
+    RTEXT           "Include:",IDC_STATIC,356,177,32,10
+    CONTROL         "Buildings:",IDC_BUILDINGS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,227,238,43,10
+    CONTROL         "Vehicles",IDC_VEHICLES,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,227,257,43,10
+    LTEXT           "Size exag:",IDC_STATIC,273,257,37,9
+    EDITTEXT        IDC_VEHICLESIZE,311,255,28,12,ES_AUTOHSCROLL
+    LTEXT           "Speed exag:",IDC_STATIC,344,257,42,9
+    COMBOBOX        IDC_TFILESINGLE,88,185,115,116,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Estimated Memory Required:",IDC_STATIC,225,290,91,9
+    EDITTEXT        IDC_MEMREQUIRED,320,288,92,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY
+    CONTROL         "Use Triangle Strips/Fans",IDC_TRISTRIPS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,146,70,94,9
+    CONTROL         "Detail Texture",IDC_DETAILTEXTURE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,146,82,84,8
+    CONTROL         "Precompute lighting",IDC_PRELIGHT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,97,277,84,10
+    CONTROL         "Highways",IDC_HWY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    363,187,44,10
+    CONTROL         "Paved",IDC_PAVED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    363,198,35,10
+    CONTROL         "Dirt",IDC_DIRT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    363,209,28,10
+    COMBOBOX        IDC_MOTIONSCRIPT,102,138,86,106,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_TREEFILE,269,108,86,106,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Source file:",IDC_STATIC,227,110,38,10
+    COMBOBOX        IDC_ROADFILE,269,159,125,106,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           " Source file:",IDC_STATIC,227,163,38,10
+    CONTROL         "DateTimePicker1",IDC_INITTIME,"SysDateTimePick32",
+                    DTS_RIGHTALIGN | DTS_UPDOWN | WS_DISABLED | WS_TABSTOP | 
+                    0x8,376,57,59,13
+    COMBOBOX        IDC_BUILDINGFILE,275,235,110,106,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_ROADDISTANCE,303,191,28,12,ES_AUTOHSCROLL
+    LTEXT           "km",IDC_STATIC,334,193,18,10
+    RTEXT           "Visibility distance:",IDC_STATIC,237,193,61,10
+    GROUPBOX        "Navigation",IDC_STATIC,10,99,203,58
+    LTEXT           "meters",IDC_STATIC,157,111,22,10
+    RTEXT           "Navigation Speed:",IDC_STATIC,34,124,83,10
+    EDITTEXT        IDC_NAVSPEED,123,123,32,12,ES_AUTOHSCROLL
+    LTEXT           "Lighting Factor",IDC_STATIC,109,288,50,9
+    EDITTEXT        IDC_LIGHT_FACTOR,161,287,34,12,ES_AUTOHSCROLL
+    LTEXT           "meters",IDC_STATIC,334,180,21,10
+    LTEXT           "Number of Cars:",IDC_STATIC,255,272,53,9
+    EDITTEXT        IDC_CARNUMBER,311,270,29,12,ES_AUTOHSCROLL
+    CONTROL         "Road culture (stoplights, etc.)",IDC_ROADCULTURE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,239,217,113,10
+    RTEXT           "Method: ",IDC_STATIC,143,40,30,10
+    COMBOBOX        IDC_LODMETHOD,174,38,79,59,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    EDITTEXT        IDC_VEHICLESPEED,387,255,28,12,ES_AUTOHSCROLL
+    CONTROL         "Pre-lit",IDC_PRELIT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,97,298,45,10
+    CONTROL         "Airports",IDC_AIRPORTS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,271,72,43,10
+    LTEXT           "meters/frame",IDC_STATIC,157,125,47,10
+END
+
+IDD_STATDLG DIALOG DISCARDABLE  0, 0, 295, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT1,0,0,295,95,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL
+END
+
+IDD_STARTUP DIALOG DISCARDABLE  0, 0, 219, 225
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enviro Startup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,13,202,52,16
+    PUSHBUTTON      "Cancel",IDCANCEL,75,202,52,16
+    PUSHBUTTON      "OpenGL Info...",IDC_OPENGL_INFO,137,202,66,16
+    GROUPBOX        "Global options",IDC_STATIC,8,85,203,111
+    CONTROL         "Full Screen",IDC_FULLSCREEN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,43,116,51,9
+    CONTROL         "Floating Toolbar",IDC_TOOLBAR,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,43,128,66,9
+    CONTROL         "HTML Pane",IDC_HTMLPANE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,43,140,51,9
+    CONTROL         "Gravity",IDC_GRAVITY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,117,117,43,9
+    CONTROL         "Sound",IDC_SOUND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    117,128,58,9
+    CONTROL         "Virtual Cursor",IDC_VCURSOR,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,117,140,57,9
+    CONTROL         "Do Speed Test",IDC_SPEEDTEST,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,43,152,64,10
+    CONTROL         "Quake Engine",IDC_QUAKEENGINE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,117,152,57,9
+    CONTROL         "Earth View",IDC_LAUNCH1,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,15,18,50,10
+    CONTROL         "Terrain:",IDC_LAUNCH2,"Button",BS_AUTORADIOBUTTON,15,47,
+                    40,10
+    EDITTEXT        IDC_TNAME,30,60,116,13,ES_AUTOHSCROLL | ES_READONLY | 
+                    WS_GROUP
+    PUSHBUTTON      "Select...",IDC_TSELECT,153,59,48,14
+    GROUPBOX        "Launch with: ",IDC_STATIC,8,6,203,75
+    LTEXT           "Data Path:",IDC_STATIC,16,99,35,8
+    EDITTEXT        IDC_DATAPATH,54,97,129,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_PICKPATH,189,97,16,14
+    LTEXT           "Size Exaggeration for Plants and Fences:",IDC_STATIC,17,
+                    168,130,8
+    EDITTEXT        IDC_PLANTSIZE,154,166,45,14,ES_AUTOHSCROLL
+    CONTROL         "Plant Shadows",IDC_SHADOWS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,45,180,63,10
+    LTEXT           "Image:",IDC_STATICIMAGE,29,32,22,8
+    COMBOBOX        IDC_IMAGE,57,30,104,83,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_TERRAIN DIALOG DISCARDABLE  0, 0, 229, 81
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Choose Terrain"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,172,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,172,24,50,14
+    LISTBOX         IDC_TLIST,7,7,155,48,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "New",IDC_NEW,8,61,36,14,WS_DISABLED
+    PUSHBUTTON      "Delete",IDC_DELETE,53,61,40,14,WS_DISABLED
+    PUSHBUTTON      "Edit Properties",IDC_EDIT,102,61,59,14
+END
+
+IDD_PLANTDLG DIALOG DISCARDABLE  0, 0, 154, 60
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Plants"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Species:",IDC_STATIC,9,8,28,8
+    COMBOBOX        IDC_SPECIES,42,7,105,153,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Size:",IDC_STATIC,18,26,16,8
+    CONTROL         "Slider1",IDC_SIZESLIDER,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,69,25,78,12
+    EDITTEXT        IDC_SIZEEDIT,41,24,28,13,ES_AUTOHSCROLL
+    LTEXT           "Spacing:",IDC_STATIC,7,41,29,8
+    EDITTEXT        IDC_SPACINGEDIT,41,40,28,13,ES_AUTOHSCROLL
+END
+
+IDD_FENCEDLG DIALOG DISCARDABLE  0, 0, 154, 60
+STYLE DS_MODALFRAME | DS_3DLOOK | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Fences"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Type:",IDC_STATIC,18,9,19,8
+    COMBOBOX        IDC_FENCETYPE,42,7,105,70,CBS_DROPDOWNLIST | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Height:",IDC_STATIC,12,26,24,8
+    CONTROL         "Slider1",IDC_HEIGHTSLIDER,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,69,25,78,12
+    EDITTEXT        IDC_HEIGHTEDIT,41,24,28,13,ES_AUTOHSCROLL
+    LTEXT           "Spacing:",IDC_STATIC,7,41,29,8
+    EDITTEXT        IDC_SPACINGEDIT,41,40,28,13,ES_AUTOHSCROLL
+    CONTROL         "Slider1",IDC_SPACINGSLIDER,"msctls_trackbar32",TBS_BOTH | 
+                    TBS_NOTICKS | WS_TABSTOP,69,41,78,12
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Enviro MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "Enviro\0"
+            VALUE "LegalCopyright", "Copyright (C) 1998\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Enviro.EXE\0"
+            VALUE "ProductName", "Enviro Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 237
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 63
+    END
+
+    CG_IDD_PROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 250
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 29
+    END
+
+    IDD_TPARAMS, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 436
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 318
+    END
+
+    IDD_STATDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 288
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_STARTUP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 212
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
+
+    IDD_TERRAIN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 74
+    END
+
+    IDD_PLANTDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 53
+    END
+
+    IDD_FENCEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 53
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "Enviro\n\nEnviro\n\n\nEnviro.Document\nEnviro Document"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "Enviro"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    CG_IDS_PROGRESS_CAPTION "Testing Progress Dialog.."
+    CG_IDS_PROGRESS_CAPTION2 "Creating View Bitmap..."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_FLYFASTER       "Faster\nFaster"
+    ID_VIEW_FLYSLOWER       "Slower\nSlower"
+    ID_VIEW_MAINTAINHEIGHT  "Maintain height above ground\nMaintain height"
+    ID_VIEW_TOPDOWN         "Top-Down View"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_TOOLS_FENCES         "Build Fences\nBuild Fences"
+    ID_TOOLS_TREES          "Plant Trees\nPlant Trees"
+    ID_TOOLS_NAVIGATE       "Navigate\nNavigate"
+    ID_TOOLS_SELECT         "Select\nSelect"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\Enviro.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
