@@ -146,7 +146,7 @@ public:
 	// plants
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void DeleteSelectedPlants();
-	void SetPlantList(vtSpeciesList3d *pPlantList) { m_pPlantList = pPlantList; }
+	void SetPlantList(vtSpeciesList3d *pPlantList);
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 	bool AddNodeToVegGrid(vtTransform *pTrans);
 

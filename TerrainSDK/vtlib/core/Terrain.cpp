@@ -166,7 +166,7 @@ bool vtTerrain::SetParamFile(const char *fname)
 bool vtTerrain::LoadParams()
 {
 	TParams params;
-	bool success = params.LoadFromIniFile(m_strParamFile);
+	bool success = params.LoadFrom(m_strParamFile);
 	if (success)
 		SetParams(params);
 	return success;
@@ -178,7 +178,10 @@ void vtTerrain::SetParams(const TParams &pParams)
 	
 	RGBi color;
 	if (m_Params.GetValueRGBi(STR_FOGCOLOR, color))
-		m_fog_color = color;
+	{
+		if (color.r != -1)
+			m_fog_color = color;
+	}
 }
 
 /**
@@ -930,7 +933,6 @@ void vtTerrain::_CreateCulture()
 
 	// create trees
 	m_PIA.SetHeightField(m_pHeightField);
-	m_PIA.SetPlantList(m_pPlantList);
 
 	// In case we don't load any plants, or fail to load, we will start with
 	// an empty plant array, which needs to match the projection of the rest
@@ -2095,6 +2097,11 @@ void vtTerrain::DeleteSelectedPlants()
 	}
 }
 
+void vtTerrain::SetPlantList(vtSpeciesList3d *pPlantList)
+{
+	m_pPlantList = pPlantList;
+	m_PIA.SetPlantList(m_pPlantList);
+}
 
 /**
  * Adds a node to the terrain.
