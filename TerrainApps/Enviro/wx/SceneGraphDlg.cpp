@@ -322,7 +322,15 @@ void SceneGraphDlg::OnZoomTo( wxCommandEvent &event )
 	{
 		FSphere sph;
 		m_pSelectedNode->GetBoundSphere(sph, true);	// global bounds
-		vtGetScene()->GetCamera()->ZoomToSphere(sph);
+
+		// a bit back to make sure whole volume of bounding sphere is in view
+		vtCamera *pCam = vtGetScene()->GetCamera();
+		float smallest = min(pCam->GetFOV(), pCam->GetVertFOV());
+		float alpha = smallest / 2.0f;
+		float distance = sph.radius / tanf(alpha);
+		sph.radius = distance;
+
+		pCam->ZoomToSphere(sph);
 	}
 }
 
