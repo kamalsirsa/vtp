@@ -24,7 +24,7 @@
 // vtFeatures methods
 //
 
-bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layername)
+vtFeatureSet *vtFeatureLoader::ReadFeaturesFromWFS(const char *szServerURL, const char *layername)
 {
 	vtString url = szServerURL;
 	url += "GetFeature?typeName=";
