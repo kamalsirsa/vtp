@@ -93,7 +93,7 @@ void PlaceMarker(vtTransform *trans, float alt, float azi)
 
 vtSkyDome::vtSkyDome()
 {
-//	m_pStarDome = NULL;
+	m_pStarDome = NULL;
 	m_pSunLight = NULL;
 
 	m_pMats = NULL;
@@ -105,6 +105,8 @@ vtSkyDome::vtSkyDome()
 	m_pSunImage = NULL;
 	SphVertices = NULL;
 	m_bHasTexture = false;
+
+	m_fStarAltitude = -5;	// sun is well below the horizon
 }
 
 vtSkyDome::~vtSkyDome()
@@ -149,47 +151,9 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
 	m_pDomeMesh->Release();	// pass ownership to Geometry
 
-#if 1
 	// Extra graphics on the dome, to help with development and testing.
-	// First create some 5-degree tic marks.
-	m_pMats->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
-	FPoint3 p;
-	vtMesh *extra = new vtMesh(GL_LINES, 0, 500);
-	int idx;
-	double t;
-	for (t = 0; t < PId; t += (PId / 36))		// 5 degree increment
-	{
-		p.x = -0.05;
-		p.y = sin(t) * 0.95;
-		p.z = cos(t) * 0.95;
-		idx = extra->AddVertex(p);
-		p.x =  0.05;
-		extra->AddVertex(p);
-		extra->AddLine(idx, idx+1);
-	}
-	for (t = 0; t < PId; t += (PId / 36))		// 5 degree increment
-	{
-		p.z = -0.05;
-		p.y = sin(t) * 0.95;
-		p.x = cos(t) * 0.95;
-		idx = extra->AddVertex(p);
-		p.z =  0.05;
-		extra->AddVertex(p);
-		extra->AddLine(idx, idx+1);
-	}
-	m_pDomeGeom->AddMesh(extra, 1);
-	extra->Release();	// pass ownership to Geometry
-
-	// Put green marker on alt-axi location of sun.
-	m_pGreenMarker = CreateMarker(m_pMats, RGBf(0,1,0));
-	m_pGreenMarker->SetName2("Green Marker");
-	AddChild(m_pGreenMarker);
-
-	// Put red marker on the sun's position on the celestial sphere.
-	m_pRedMarker = CreateMarker(m_pMats, RGBf(1,0,0));
-	m_pRedMarker->SetName2("Red Marker");
-	m_pCelestial->AddChild(m_pRedMarker);
-#endif
+	CreateMarkers();
+	ShowMarkers(false);
 
 	NumVertices = m_pDomeMesh->GetNumVertices();
 	SphVertices = new FPoint3[NumVertices];
@@ -248,14 +212,6 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pCelestial->AddChild(m_pSunGeom);
 	}
 
-#if 1
-	// Create celestial sphere wifreframe, to aid in development and testing
-	FSphere sph(FPoint3(0,0,0), 0.99);
-	vtGeom *pSphere = CreateBoundSphereGeom(sph, 60);
-	pSphere->SetName2("Celestial Sphere wireframe");
-	m_pCelestial->AddChild(pSphere);
-#endif
-
 	// Create the vtStarDome
 	if (starfile && *starfile)
 	{
@@ -266,20 +222,75 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	}
 }
 
+void vtSkyDome::CreateMarkers()
+{
+	// First create some 5-degree tic marks.
+	int yellow = m_pMats->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
+	FPoint3 p;
+	vtMesh *tics = new vtMesh(GL_LINES, 0, (36+1)*2*2);
+	for (double t = 0; t < PId; t += (PId / 36))	// 5 degree increment
+	{
+		float sint = sin(t) * 0.95;
+		float cost = cos(t) * 0.95;
+		tics->AddLine(FPoint3(-0.05, sint, cost), FPoint3(0.05, sint, cost));
+		tics->AddLine(FPoint3(cost, sint, -0.05), FPoint3(cost, sint, 0.05));
+	}
+	m_pTicks = new vtGeom();
+	m_pTicks->SetName2("Ticks");
+	m_pTicks->SetMaterials(m_pMats);
+	m_pTicks->AddMesh(tics, yellow);
+	tics->Release();	// pass ownership to Geometry
+	AddChild(m_pTicks);
+
+	// Put green marker on alt-axi location of sun.
+	m_pGreenMarker = CreateMarker(m_pMats, RGBf(0,1,0));
+	m_pGreenMarker->SetName2("Green Marker");
+	AddChild(m_pGreenMarker);
+
+	// Put red marker on the sun's position on the celestial sphere.
+	m_pRedMarker = CreateMarker(m_pMats, RGBf(1,0,0));
+	m_pRedMarker->SetName2("Red Marker");
+	m_pCelestial->AddChild(m_pRedMarker);
+
+	// Create celestial sphere wifreframe, to aid in development and testing
+	FSphere sph(FPoint3(0,0,0), 0.99);
+	m_pWireSphere = CreateBoundSphereGeom(sph, 60);
+	m_pWireSphere->SetName2("Celestial Sphere wireframe");
+	m_pCelestial->AddChild(m_pWireSphere);
+}
+
+void vtSkyDome::ShowMarkers(bool bShow)
+{
+	m_pTicks->SetEnabled(bShow);
+	m_pGreenMarker->SetEnabled(bShow);
+	m_pRedMarker->SetEnabled(bShow);
+	m_pWireSphere->SetEnabled(bShow);
+}
+
+bool vtSkyDome::MarkersShown()
+{
+	return m_pTicks->GetEnabled();
+}
+
+
 /**
  * Sets the time of day (or night).
  * \param time			Time in seconds since midnight.
- * \param bFullRefresh	Pass true to force the sky colors to be updated;
- *	otherwise, they will only be updated when absolutely necessary, which
- * is during dawn and dusk.
  */
-void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
+void vtSkyDome::SetTime(const vtTime &time)
 {
 	m_time = time;
-	DPoint2 geo = m_geo;
 
 	// Pass along time to the vtStarDome, for it to position the moon
-	if (m_pStarDome) m_pStarDome->SetTime(time);
+	if (m_pStarDome)
+		m_pStarDome->SetTime(time);
+
+	RefreshCelestialObjects();
+}
+
+void vtSkyDome::RefreshCelestialObjects()
+{
+	DPoint2 geo = m_geo;
 
 #if 0
 	// TEST with fake time and place
@@ -313,17 +324,9 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 	m_fSunAlt = (float) spa.altitude;
 	m_fSunAzi = (float) spa.azimuth;
 
-	// Put green marker where SPA tells us the alt-azi sun should go
-	PlaceMarker(m_pGreenMarker, m_fSunAlt, m_fSunAzi);
-
 	// Sun location in the celestial sphere ("geocentric")
 	float ra = (float) spa.alpha;
 	float dec = (float) spa.delta;
-
-	// Put red marker where SPA tells us the ra-dec sun should go
-	m_pRedMarker->Identity();
-	m_pRedMarker->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
-	m_pRedMarker->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
 
 	// Set the correct transformation of the celestial sphere for the
 	//  location on earth and current time.
@@ -337,18 +340,22 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 
 //	VTLOG("YMD %d %d %d, HMS %02d:%02d:%02d, RA/DEC %.0f %.0f, GST %.0f, LST %.0f\n",
 //		year, month, day, hour, minute, second, ra, dec, gst, lst);
+
 	float dec_of_sphere = DEG_TO_RAD(lst);
 	m_pCelestial->RotateLocal(FPoint3(0,0,1), dec_of_sphere);
 
 	// Place the sun geometry on the celestial sphere
-	m_pSunGeom->Identity();
-	m_pSunGeom->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
-	m_pSunGeom->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
+	if (m_pSunGeom)
+	{
+		m_pSunGeom->Identity();
+		m_pSunGeom->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
+		m_pSunGeom->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
+	}
 
 	// Determine if the stardome is active according to time of day
 	if (m_pStarDome)
 	{
-		if (m_fSunAlt < -5)	// sun is well below the horizon
+		if (m_fSunAlt < m_fStarAltitude)
 			m_pStarDome->SetEnabled(true);
 		else
 			m_pStarDome->SetEnabled(false);
@@ -359,6 +366,15 @@ void vtSkyDome::SetTime(const vtTime &time, bool bFullRefresh)
 		UpdateSunLight();
 
 	ApplyDomeColors();
+
+	// Markers:
+	// Put green marker where SPA tells us the alt-azi sun should go
+	PlaceMarker(m_pGreenMarker, m_fSunAlt, m_fSunAzi);
+
+	// Put red marker where SPA tells us the ra-dec sun should go
+	m_pRedMarker->Identity();
+	m_pRedMarker->Rotate2(FPoint3(1,0,0), DEG_TO_RAD(90 - dec));
+	m_pRedMarker->RotateParent(FPoint3(0,0,1), DEG_TO_RAD(-ra));
 }
 
 
@@ -555,21 +571,22 @@ void vtSkyDome::ApplyDomeColors()
 	FPoint3 psph;
 	float phipct, phipct_cut, thetapct;
 	float sunpct;
+	float fademod;
 
 	float midseqpct;
 
 	if (m_fSunAlt >= -5 && m_fSunAlt <= 5)
 	{
 		// dawn
-		m_fademod = NITE_GLO + (1.0f - NITE_GLO) * (float)(m_fSunAlt + 5)/10;
+		fademod = NITE_GLO + (1.0f - NITE_GLO) * (float)(m_fSunAlt + 5)/10;
 		midseqpct = fabsf(m_fSunAlt)/5;
 	}
 	else if (m_fSunAlt < -5)
 	{
-		m_fademod = NITE_GLO;	// night
+		fademod = NITE_GLO;	// night
 	}
 	else
-		m_fademod = 1.0f;	// day
+		fademod = 1.0f;	// day
 
 	// Don't actually change the dome color if it already has a texture
 	if (m_bHasTexture)
@@ -595,7 +612,7 @@ void vtSkyDome::ApplyDomeColors()
 		{
 			vtxcol = DayAzimuthCol;
 		}
-		vtxcol *= m_fademod;
+		vtxcol *= fademod;
 #if 1
 		// Sunrise/sunset glow
 		if (m_fSunAlt >= -5 && m_fSunAlt <= 5)

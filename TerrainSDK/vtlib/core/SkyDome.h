@@ -86,14 +86,20 @@ public:
 					const char *sun_texture = NULL, const char *moon_texture = NULL);
 
 	void	SetGeoLocation(const DPoint2 &geo) { m_geo = geo; }
-	void	SetTime(const vtTime &time, bool bFullRefresh = false);
+	void	SetTime(const vtTime &time);
 	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
 	void 	SetSunsetColor(const RGBf &sunset);
 	void	SetInterpCutoff(float cutoff);
 	void	SetSunLight(vtMovLight *light) { m_pSunLight = light; }
 	bool	SetTexture(const char *filename);
+	void	SetStarAltitude(float fDegrees) { m_fStarAltitude = fDegrees; }
+	void	RefreshCelestialObjects();
+
+	void	ShowMarkers(bool bShow);
+	bool	MarkersShown();
 
 protected:
+	void	CreateMarkers();
 	void	UpdateSunLight();
 	void	ApplyDomeColors();
 	void	ConvertVertices();
@@ -101,7 +107,8 @@ protected:
 	DPoint2		m_geo;		// The earth location in lon-lat
 	vtTime		m_time;		// Local time at this location
 
-	float		m_fSunAlt, m_fSunAzi;	// in Degrees
+	float	m_fSunAlt, m_fSunAzi;	// in Degrees
+	float	m_fStarAltitude;	// Cutoff for when stars should be displayed
 
 	vtStarDome	*m_pStarDome;
 	vtMovLight	*m_pSunLight;
@@ -111,8 +118,6 @@ protected:
 
 	int		NumVertices;
 	FPoint3	*SphVertices;
-
-	float	m_fademod;
 
 	vtTransform		*m_pCelestial;
 	vtGeom			*m_pDomeGeom;
@@ -128,6 +133,8 @@ protected:
 	bool		m_bHasTexture;
 
 	// Test markers:
+	vtGeom			*m_pTicks;
+	vtGeom			*m_pWireSphere;
 	vtTransform		*m_pGreenMarker;
 	vtTransform		*m_pRedMarker;
 };
