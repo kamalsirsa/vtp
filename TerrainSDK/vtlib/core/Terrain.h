@@ -80,7 +80,7 @@ public:
 	TParams &GetParams() { return m_Params; }
 
 	// each terrain can have a long descriptive name
-	void SetName(vtString str) { m_Params.m_strName = str; }
+	void SetName(const vtString &str) { m_Params.m_strName = str; }
 	vtString GetName() { return m_Params.m_strName; }
 
 	// you can alternately give it a grid to use instead of loading a BT
@@ -225,7 +225,7 @@ protected:
 	// internal creation functions
 	bool CreateFromTIN(int &iError);
 	bool CreateFromGrid(int &iError);
-	void create_roads(vtString strRoadFile);
+	void create_roads(const vtString &strRoadFile);
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateLabels();

@@ -1432,7 +1432,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	return trans;
 }
 
-vtMovGeom *CreateSimpleEarth(vtString strDataPath)
+vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 {
 	// create simple texture-mapped sphere
 	vtMesh *mesh = new vtMesh(GL_QUADS, VT_Normals | VT_TexCoords, 20*20*2);

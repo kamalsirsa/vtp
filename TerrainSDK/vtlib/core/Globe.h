@@ -135,7 +135,7 @@ protected:
 	Array<vtFeatures*>	m_features;
 };
 
-vtMovGeom *CreateSimpleEarth(vtString strDataPath);
+vtMovGeom *CreateSimpleEarth(const vtString &strDataPath);
 
 bool FindIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
 					  const FSphere& rkSphere,

@@ -203,7 +203,7 @@ void vtTerrain::SetTin(vtTin3d *pTin)
 
 ///////////////////////////////////////////////////////////////////////
 
-void vtTerrain::create_roads(vtString strRoadFile)
+void vtTerrain::create_roads(const vtString &strRoadFile)
 {
 	VTLOG("Creating Roads: ");
 	m_pRoadMap = new vtRoadMap3d();
