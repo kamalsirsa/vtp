@@ -27,7 +27,7 @@
 #include <typeinfo>
 using namespace std;
 
-#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "icon1.xpm"
 #  include "icon2.xpm"
 #  include "icon3.xpm"
