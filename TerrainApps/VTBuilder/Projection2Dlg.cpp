@@ -197,7 +197,7 @@ void Projection2Dlg::UpdateControlStatus()
 		m_pHorizCtrl->Append(_T("Feet (U.S. Survey)"), (void *) 3);
 	}
 	// manually transfer value
-	for (i = 0; i < m_pHorizCtrl->Number(); i++)
+	for (i = 0; i < m_pHorizCtrl->GetCount(); i++)
 	{
 		if ((int) m_pHorizCtrl->GetClientData(i) == m_proj.GetUnits())
 			m_pHorizCtrl->SetSelection(i);
