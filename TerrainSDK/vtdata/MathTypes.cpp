@@ -709,24 +709,24 @@ const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint
 	Determinant = a * q - p * b;
 	if (fabs(Determinant - 0.0) > fEpsilon)
 	{
-		Origin = FPoint3((b * s - d * q) / Determinant, (p * d - a * s) / Determinant, 0.0f);
-		Direction = FPoint3(b * r - c * q, p * c - a * r, Determinant);
+		Origin.Set((b * s - d * q) / Determinant, (p * d - a * s) / Determinant, 0.0f);
+		Direction.Set(b * r - c * q, p * c - a * r, Determinant);
 		return INTERSECTING;
 	}
 
 	Determinant = a * r - p * c;
 	if (fabs(Determinant - 0.0) > fEpsilon)
 	{
-		Origin = FPoint3((c * s - d * r) / Determinant, 0.0f, (p * d - a * s) / Determinant);
-		Direction = FPoint3(c * q - b * r, Determinant, p * b - a * q);
+		Origin.Set((c * s - d * r) / Determinant, 0.0f, (p * d - a * s) / Determinant);
+		Direction.Set(c * q - b * r, Determinant, p * b - a * q);
 		return INTERSECTING;
 	}
 
 	Determinant = b * r - c * q;
 	if (fabs(Determinant - 0.0) > fEpsilon)
 	{
-		Origin = FPoint3(0.0f, (c * s - d * r) / Determinant, (d * q - b * s) / Determinant);
-		Direction = FPoint3(Determinant, c * p - a * r, a * q - b * p);
+		Origin.Set(0.0f, (c * s - d * r) / Determinant, (d * q - b * s) / Determinant);
+		Direction.Set(Determinant, c * p - a * r, a * q - b * p);
 		return INTERSECTING;
 	}
 
