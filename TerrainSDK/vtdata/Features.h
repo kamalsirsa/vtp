@@ -73,6 +73,8 @@ public:
 	bool LoadFromSHP(const char *filename);
 	bool LoadFromGML(const char *filename);
 
+	bool ReadFeaturesFromWFS(const char *url);
+
 	// feature (entity) operations
 	int NumEntities();
 	int GetEntityType();

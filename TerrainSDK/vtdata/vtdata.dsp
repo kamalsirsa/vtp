@@ -43,7 +43,7 @@ RSC=rc.exe
 MTL=midl.exe
 F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /D SUPPORT_SDTS=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -68,7 +68,7 @@ LIB32=link.exe -lib
 MTL=midl.exe
 F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /FR /YX /FD /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /FR /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -189,6 +189,10 @@ SOURCE=.\vtString.cpp
 
 SOURCE=.\vtTin.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\WFSClient.cpp
+# End Source File
 # End Group
 # Begin Group "Headers"
 
@@ -199,15 +203,15 @@ SOURCE=.\Array.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\Array.inl
-# End Source File
-# Begin Source File
-
 SOURCE=.\Building.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\ByteOrder.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\config_vtdata.h
 # End Source File
 # Begin Source File
 
@@ -288,10 +292,6 @@ SOURCE=.\Unarchive.h
 # Begin Source File
 
 SOURCE=.\UtilityMap.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\utm_cproj.h
 # End Source File
 # Begin Source File
 
