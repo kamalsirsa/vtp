@@ -297,8 +297,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -307,7 +308,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -316,8 +320,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -326,7 +331,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -338,6 +346,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -346,7 +357,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -355,6 +369,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -363,7 +380,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -375,8 +395,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -385,7 +406,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -394,8 +418,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -404,7 +429,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -416,8 +444,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -426,7 +455,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -435,8 +467,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -445,7 +478,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -457,8 +493,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -467,7 +504,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -476,8 +516,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -486,11 +527,46 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\wx\EnviroGUI.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="wx\frame.cpp">
@@ -501,8 +577,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -511,7 +588,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -520,8 +600,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -530,11 +611,46 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\wx\LayerDlg.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="wx\LinearStructDlg3d.cpp">
@@ -545,6 +661,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -553,7 +672,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -562,6 +684,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -570,7 +695,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -582,8 +710,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -592,7 +721,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -601,8 +733,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -611,7 +744,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -623,8 +759,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -633,7 +770,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -642,8 +782,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -652,7 +793,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -664,8 +808,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -674,7 +819,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -683,8 +831,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -693,7 +842,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -705,8 +857,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -715,7 +868,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -724,8 +880,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -734,14 +891,81 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\wx\StatusBar.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\wx\TerrManDlg.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="wx\TParamsDlg.cpp">
@@ -752,8 +976,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -762,7 +987,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -771,8 +999,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -781,7 +1010,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -793,6 +1025,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -801,7 +1036,10 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -810,6 +1048,9 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -818,7 +1059,45 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\wx\wx_headers.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
 				</FileConfiguration>
 			</File>
 		</Filter>
@@ -885,6 +1164,65 @@
 			Filter="">
 			<File
 				RelativePath=".\CarEngine.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\EarthView.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Engines.cpp">
@@ -895,7 +1233,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -905,7 +1243,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -914,7 +1254,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -924,7 +1264,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -936,7 +1278,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -946,7 +1288,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -955,7 +1299,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -965,7 +1309,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -977,7 +1323,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -987,7 +1333,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -996,7 +1344,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1006,7 +1354,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -1018,7 +1368,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1028,7 +1378,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1037,7 +1389,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1047,7 +1399,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -1059,7 +1413,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1069,7 +1423,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1078,7 +1434,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1088,7 +1444,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -1100,7 +1458,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1110,7 +1468,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1119,7 +1479,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1129,7 +1489,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -1141,6 +1503,8 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -1149,7 +1513,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1158,6 +1524,8 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -1166,7 +1534,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -1178,7 +1548,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1188,7 +1558,9 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1197,7 +1569,7 @@
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="vtlib/vtlib.h"
 						BrowseInformation="1"/>
 				</FileConfiguration>
@@ -1207,7 +1579,40 @@
 						Name="VCCLCompilerTool"
 						Optimization="1"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\vtlib_headers.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="vtlib/vtlib.h"/>
 				</FileConfiguration>
 			</File>
 		</Filter>
