@@ -5,7 +5,6 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include "vtlib/vtlib.h"
 #include "HeightField.h"
 #include "ElevationGrid.h"
 #include "vtTin.h"
