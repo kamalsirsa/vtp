@@ -45,6 +45,7 @@ RSC=rc.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O1 /Ob2 /I "\wx2\include" /I "\TerrainSDK\vtdata" /I "\TerrainSDK\ProjectionLib" /I "\TerrainSDK\shapelib" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /Yu"wx/wxprec.h" /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /Yu"wx/wxprec.h" /FD /c
+# SUBTRACT CPP /Z<none>
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -55,6 +56,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 gdi32.lib wxdll.lib netcdfs.lib vtdata.lib ProjectionLib.lib gctpc.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /libpath:"\TerrainSDK\vtdata\Release" /libpath:"\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Release" /libpath:"\TerrainSDK\gctpc\Release" /libpath:"\TerrainSDK\shapelib\Release" /libpath:"\TerrainSDK\sdtsxx\builder\Release" /libpath:"\TerrainSDK\sdtsxx\container\Release" /libpath:"\TerrainSDK\sdtsxx\io\Release"
 # ADD LINK32 wx22_9.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# SUBTRACT LINK32 /debug
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug"
 
@@ -95,16 +97,6 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=.\App.cpp
-
-!IF  "$(CFG)" == "VTBuilder - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug"
-
-# ADD BASE CPP /Yu"wx/wxprec.h"
-# ADD CPP /Yu"wx/wxprec.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -117,16 +109,6 @@ SOURCE=.\ElevLayer.cpp
 # Begin Source File
 
 SOURCE=.\Frame.cpp
-
-!IF  "$(CFG)" == "VTBuilder - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug"
-
-# ADD BASE CPP /Yu"wx/wxprec.h"
-# ADD CPP /Yu"wx/wxprec.h"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
