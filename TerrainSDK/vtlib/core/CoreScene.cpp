@@ -5,6 +5,25 @@
 // Free for all uses, see license.txt for details.
 //
 
+/**
+\mainpage vtlib library documentation
+
+\section overview Overview
+The <b>vtlib</b> library is built on top of the <b>vtdata</b> library which
+handles many kinds of geospatial data.  It extends <b>vtdata</b> with the
+ability to create 3d geometry of the data for interactive visualization.
+
+It is part of the <a href="http://vterrain.org/">Virtual Terrain Project</a>
+and distributed under a completely free <a href="../../license.txt">open
+source license</a>.
+
+<b>vtlib</b> contains an abstraction of a Scene Graph API, built on top of
+OpenGL and other lower-level APIs such as OSG and SGL.
+Because it is higher-level, <b>vtlib</b> lets you construct 3d geometry
+and simulations much faster and easier than using the lower-level libraries
+directly.
+*/
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
 
