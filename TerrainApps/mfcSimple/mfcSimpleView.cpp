@@ -92,21 +92,21 @@ void CSimpleView::OnDraw(CDC* pDC)
 {
 	CSimpleDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	
 }
+
 /////////////////////////////////////////////////////////////////////////////
 // CSimpleView message handlers
 // set Windows Pixel Format
 BOOL CSimpleView::SetWindowPixelFormat(HDC hDC)
 {
 	PIXELFORMATDESCRIPTOR pixelDesc;
-	
+
 	pixelDesc.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 	pixelDesc.nVersion = 1;
-	
+
 	pixelDesc.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL |
 		PFD_DOUBLEBUFFER | PFD_STEREO_DONTCARE;
-	
+
 	pixelDesc.iPixelType = PFD_TYPE_RGBA;
 	pixelDesc.cColorBits = 32;
 	pixelDesc.cRedBits = 8;
@@ -130,7 +130,7 @@ BOOL CSimpleView::SetWindowPixelFormat(HDC hDC)
 	pixelDesc.dwLayerMask = 0;
 	pixelDesc.dwVisibleMask = 0;
 	pixelDesc.dwDamageMask = 0;
-	
+
 	m_GLPixelIndex = ChoosePixelFormat(hDC,&pixelDesc);
 	if (m_GLPixelIndex == 0) // Choose default
 	{
@@ -139,10 +139,10 @@ BOOL CSimpleView::SetWindowPixelFormat(HDC hDC)
 			sizeof(PIXELFORMATDESCRIPTOR),&pixelDesc)==0)
 			return FALSE;
 	}
-	
+
 	if (!SetPixelFormat(hDC,m_GLPixelIndex,&pixelDesc))
 		return FALSE;
-	
+
 	return TRUE;
 }
 
@@ -153,13 +153,13 @@ BOOL CSimpleView::SetWindowPixelFormat(HDC hDC)
 BOOL CSimpleView::CreateViewGLContext(HDC hDC)
 {
 	m_hGLContext = wglCreateContext(hDC);
-	
+
 	if (m_hGLContext==NULL)
 		return FALSE;
-	
+
 	if (wglMakeCurrent(hDC,m_hGLContext)==FALSE)
 		return FALSE;
-	
+
 	return TRUE;
 }
 
@@ -169,7 +169,7 @@ void CSimpleView::OnDestroy()
 	CleanupScene();
 
 	if (wglGetCurrentContext() != NULL)
-		wglMakeCurrent(NULL,NULL);	
+		wglMakeCurrent(NULL,NULL);
 	if (m_hGLContext != NULL)
 	{
 		wglDeleteContext(m_hGLContext);
@@ -184,10 +184,10 @@ int CSimpleView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	HWND hWnd = GetSafeHwnd();
 	HDC hDC = ::GetDC(hWnd);
-	
+
 	if (SetWindowPixelFormat(hDC)==FALSE)
 		return 0;
-	
+
 	if (CreateViewGLContext(hDC)==FALSE)
 		return 0;
 	return CreateScene();
@@ -203,7 +203,7 @@ void CSimpleView::OnSize(UINT nType, int cx, int cy)
 void CSimpleView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
-	
+
 	// Render the scene
 	vtGetScene()->DoUpdate();
 	//this would occur, for example, after your call to glClear() and before calling SwapBuffers() 

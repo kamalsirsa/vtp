@@ -359,7 +359,7 @@ bool vtString::Matches(pcchar lpsz) const
 	const char *wild = lpsz;
 
 	const char *cp=0, *mp=0;	// set to 0 to avoid compiler warning
-	
+
 	while ((*string) && (*wild != '*'))
 	{
 		if ((*wild != *string) && (*wild != '?'))
@@ -389,7 +389,7 @@ bool vtString::Matches(pcchar lpsz) const
 			string = cp++;
 		}
 	}
-		
+	
 	while (*wild == '*')
 		wild++;
 
@@ -935,7 +935,7 @@ int vtString::Delete(int iIndex, int nCount)
 	// check bounds first
 	if (iIndex < 0)
 		iIndex = 0;
-	
+
 	if (nCount < 0)
 		nCount = 0;
 

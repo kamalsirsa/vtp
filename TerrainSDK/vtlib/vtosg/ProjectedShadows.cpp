@@ -162,7 +162,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	// Set up the view matrix
 	osg::RefMatrix* ViewMatrix = new osg::RefMatrix;
 	ViewMatrix->makeLookAt(m_position,bsShadower.center(),osg::Vec3(0.0f,1.0f,0.0f));
-	
+
 	// create the render to texture stage.
 	if (!m_pRtts.valid())
 	{
@@ -253,7 +253,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	if (m_position.y() > 0.0f)
 	{
 		osg::Node::NodeMask  NodeMask;
-		
+	
 		if (!m_bDepthShadow)
 		{
 			// Stop the shadowed node being included in the shadow cull
@@ -294,7 +294,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 			n->setNodeMask(nodemasks[i]);
 		}
 #endif
-		
+	
  		if (NULL != pGrid)
 			pGrid->SetDistance(fOldDistance);
 
@@ -328,7 +328,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	osg::Viewport* new_viewport = new osg::Viewport;
 	new_viewport->setViewport(center_x-width/2,center_y-height/2,width,height);
 	m_pRtts->setViewport(new_viewport);
-	
+
 	m_shadowState->setAttribute(new_viewport);
 
 	// add the render to texture stage to the current stages
