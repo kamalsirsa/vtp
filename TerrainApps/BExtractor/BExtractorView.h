@@ -41,6 +41,8 @@ public:
 
 // Operations
 public:
+	void ReadEnviroPaths(vtStringArray &paths);
+
 	void ZoomToImage(CBImage *pImage);
 	void DrawBuildings(CDC *pDC);
 	void DrawBuilding(CDC *pDC, vtBuilding *bld);
