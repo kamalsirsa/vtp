@@ -27,9 +27,6 @@ namespace osg
 class vtNode : public vtNodeBase, public osg::Referenced
 {
 public:
-	vtNode();
-
-	virtual vtNodeBase *CreateClone();
 	virtual void Release();
 
 	// implement vtNodeBase methods
@@ -58,9 +55,14 @@ public:
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
 
 protected:
+
 	osg::ref_ptr<osg::Node> m_pNode;
 	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
 	osg::ref_ptr<osg::Fog> m_pFog;
+
+	// Constructor is protected because vtNode is an abstract base class,
+	//  not to be instantiated directly.
+	vtNode();
 
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
@@ -74,7 +76,8 @@ class vtGroup : public vtNode, public vtGroupBase
 {
 public:
 	vtGroup(bool suppress = false);
-
+	vtNodeBase *Clone();
+	void CopyFrom(const vtGroup *rhs);
 	virtual void Release();
 
 	// implement vtGroupBase methods
@@ -127,6 +130,8 @@ class vtTransform : public vtGroup, public vtTransformBase
 {
 public:
 	vtTransform();
+	vtNodeBase *Clone();
+	void CopyFrom(const vtTransform *rhs);
 	void Release();
 
 	// implement vtTransformBase methods
@@ -174,11 +179,14 @@ class vtLight : public vtNode
 {
 public:
 	vtLight();
-
+	vtNodeBase *Clone();
+	void CopyFrom(const vtLight *rhs);
 	void Release();
 
 	void SetColor(const RGBf &color);
+	RGBf GetColor() const;
 	void SetAmbient(const RGBf &color);
+	RGBf GetAmbient() const;
 
 	// provide override to catch this state
 	virtual void SetEnabled(bool bOn);
@@ -222,6 +230,8 @@ class vtGeom : public vtNode
 {
 public:
 	vtGeom();
+	vtNodeBase *Clone();
+	void CopyFrom(const vtGeom *rhs);
 	void Release();
 
 	/** Add a mesh to this geometry.
@@ -247,7 +257,7 @@ public:
 	vtMesh *GetMesh(int i) const;
 
 	/** Return a contained vtTextMesh by index. */
-	vtTextMesh *GetTextMesh(int i);
+	vtTextMesh *GetTextMesh(int i) const;
 
 	virtual void SetMaterials(const class vtMaterialArray *mats);
 	const vtMaterialArray	*GetMaterials() const;
@@ -387,6 +397,8 @@ class vtCamera : public vtTransform
 {
 public:
 	vtCamera();
+	vtNodeBase*	Clone();
+	void CopyFrom(const vtCamera *rhs);
 	void Release();
 
 	void SetHither(float f);

@@ -49,17 +49,9 @@ void vtNode::Release()
 
 	// Tell OSG that we're through with this node
 	// The following statement calls unref() on m_pNode, which deletes
-	//  the OSG node, which decrements its reference to us, which would
-	//  delete us, except for the fact that we artificially increase our
-	//  own count.
+	//  the OSG node, which decrements its reference to us, which
+	//  deletes us.
 	m_pNode = NULL;
-
-	// Artificially decrement our own "reference count", should trigger
-	// self-deletion
-//	unref();
-
-	// This allows us to control deletion
-//	delete this;
 }
 
 void vtNode::SetEnabled(bool bOn)
@@ -119,12 +111,6 @@ vtNode *vtNode::GetParent(int iParent)
 	return (vtNode *) (parent->getUserData());
 }
 
-vtNodeBase *vtNode::CreateClone()
-{
-	// TODO
-	return new vtNode();
-}
-
 void vtNode::SetName2(const char *name)
 {
 	if (m_pNode != NULL)
@@ -164,27 +150,22 @@ vtGroup::~vtGroup()
 {
 }
 
-const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
+vtNodeBase *vtGroup::Clone()
 {
-	if (!strcmp(GetName2(), name))
-		return (dynamic_cast<const vtNode *>(this));
+	vtGroup *group = new vtGroup;
+	group->CopyFrom(this);
+	return group;
+}
 
-	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(this);
-	if (pGroup)
+void vtGroup::CopyFrom(const vtGroup *rhs)
+{
+	// Deep copy or shallow copy?
+	// Assume shallow copy: duplicate this node and add another reference
+	//  to the existing children.
+	for (int i = 0; i < rhs->GetNumChildren(); i++)
 	{
-		for (int i = 0; i < pGroup->GetNumChildren(); i++)
-		{
-			vtNodeBase *pChild = pGroup->GetChild(i);
-			vtGroup *pGroupChild = dynamic_cast<vtGroup *>(pChild);
-			if (pGroupChild)
-			{
-				const vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
-				if (pResult)
-					return pResult;
-			}
-		}
+		AddChild(rhs->GetChild(i));
 	}
-	return NULL;
 }
 
 void vtGroup::Release()
@@ -212,6 +193,29 @@ void vtGroup::Release()
 	// Now destroy itself
 	m_pGroup = NULL;	// decrease refcount
 	vtNode::Release();
+}
+
+const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
+{
+	if (!strcmp(GetName2(), name))
+		return (dynamic_cast<const vtNode *>(this));
+
+	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(this);
+	if (pGroup)
+	{
+		for (int i = 0; i < pGroup->GetNumChildren(); i++)
+		{
+			vtNodeBase *pChild = pGroup->GetChild(i);
+			vtGroup *pGroupChild = dynamic_cast<vtGroup *>(pChild);
+			if (pGroupChild)
+			{
+				const vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
+				if (pResult)
+					return pResult;
+			}
+		}
+	}
+	return NULL;
 }
 
 void vtGroup::SetOsgGroup(Group *g)
@@ -277,6 +281,23 @@ vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 
 vtTransform::~vtTransform()
 {
+}
+
+vtNodeBase *vtTransform::Clone()
+{
+	vtTransform *trans = new vtTransform();
+	trans->CopyFrom(this);
+	return trans;
+}
+
+void vtTransform::CopyFrom(const vtTransform *rhs)
+{
+	// copy the matrix
+	const osg::MatrixTransform *mt = rhs->m_pTransform.get();
+	m_pTransform->setMatrix(mt->getMatrix());
+
+	// and the parent members
+	vtGroup::CopyFrom(rhs);
 }
 
 void vtTransform::Release()
@@ -401,6 +422,20 @@ vtLight::~vtLight()
 {
 }
 
+vtNodeBase *vtLight::Clone()
+{
+	vtLight *light = new vtLight();
+	light->CopyFrom(this);
+	return light;
+}
+
+void vtLight::CopyFrom(const vtLight *rhs)
+{
+	// copy attributes
+	SetColor(rhs->GetColor());
+	SetAmbient(rhs->GetAmbient());
+}
+
 void vtLight::Release()
 {
 	m_pLight = NULL;	// explicit refcount decrement
@@ -413,9 +448,19 @@ void vtLight::SetColor(const RGBf &color)
 	m_pLight->setDiffuse(v2s(color));
 }
 
+RGBf vtLight::GetColor() const
+{
+	return s2v(m_pLight->getDiffuse());
+}
+
 void vtLight::SetAmbient(const RGBf &color)
 {
 	m_pLight->setAmbient(v2s(color));
+}
+
+RGBf vtLight::GetAmbient() const
+{
+	return s2v(m_pLight->getAmbient());
 }
 
 void vtLight::SetEnabled(bool bOn)
@@ -451,6 +496,23 @@ vtCamera::~vtCamera()
 void vtCamera::Release()
 {
 	vtTransform::Release();
+}
+
+vtNodeBase *vtCamera::Clone()
+{
+	vtCamera *newcam = new vtCamera();
+	newcam->CopyFrom(this);
+	return newcam;
+}
+
+void vtCamera::CopyFrom(const vtCamera *rhs)
+{
+	m_fFOV = rhs->m_fFOV;
+	m_fHither = rhs->m_fHither;
+	m_fYon = rhs->m_fYon;
+	m_bOrtho = rhs->m_bOrtho;
+	m_fWidth = rhs->m_fWidth;
+	vtTransform::CopyFrom(rhs);
 }
 
 void vtCamera::SetHither(float f)
@@ -546,6 +608,39 @@ vtGeom::~vtGeom()
 {
 }
 
+vtNodeBase *vtGeom::Clone()
+{
+	vtGeom *geom = new vtGeom();
+	geom->CopyFrom(this);
+	return geom;
+}
+
+void vtGeom::CopyFrom(const vtGeom *rhs)
+{
+	// Shallow copy: just reference the meshes and materials of the
+	//  geometry that we are copying from.
+	SetMaterials(rhs->GetMaterials());
+	int idx;
+	for (int i = 0; i < rhs->GetNumMeshes(); i++)
+	{
+		vtMesh *mesh = rhs->GetMesh(i);
+		if (mesh)
+		{
+			idx = mesh->GetMatIndex();
+			AddMesh(mesh, idx);
+		}
+		else
+		{
+			vtTextMesh *tm = rhs->GetTextMesh(i);
+			if (tm)
+			{
+				idx = tm->GetMatIndex();
+				AddTextMesh(tm, idx);
+			}
+		}
+	}
+}
+
 void vtGeom::Release()
 {
 	// Release the meshes we contain, which will delete them if there are no
@@ -584,8 +679,10 @@ void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 
 void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 {
+	// connect the underlying OSG objects
 	m_pGeode->addDrawable(pTextMesh->m_pOsgText.get());
 
+	pTextMesh->SetMatIndex(iMatIdx);
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
 	{
@@ -645,9 +742,11 @@ vtMesh *vtGeom::GetMesh(int i) const
 	return mesh;
 }
 
-vtTextMesh *vtGeom::GetTextMesh(int i)
+vtTextMesh *vtGeom::GetTextMesh(int i) const
 {
-	Drawable *draw = m_pGeode->getDrawable(i);
+	// It is valid to return a non-const pointer to the mesh, since the mesh
+	//  can be modified entirely independently of the geometry.
+	Drawable *draw = const_cast<Drawable *>( m_pGeode->getDrawable(i) );
 	osg::Referenced *ref = draw->getUserData();
 
 	vtTextMesh *mesh = dynamic_cast<vtTextMesh*>(ref);
