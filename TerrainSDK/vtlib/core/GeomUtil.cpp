@@ -119,18 +119,17 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 }
 
 vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
-						const FPoint2 &base, const FPoint2 &size,
+						int Axis1, int Axis2, int Axis3,
+						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
 	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
 
-	mesh->CreateRectangle(steps, steps, FPoint3(base.x, 0, base.y),
-		FPoint3(size.x / steps, 0, size.y / steps), fTiling);
+	mesh->CreateRectangle(steps, steps, Axis1, Axis2, Axis3, min1, max1, fTiling);
 
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
-
 	mesh->Release();	// pass ownership
 	return pGeom;
 }

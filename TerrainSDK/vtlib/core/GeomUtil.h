@@ -76,9 +76,9 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 					   const FPoint3 &min1, const FPoint3 &max1, int steps);
 vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
-						const FPoint2 &base, const FPoint2 &size,
+						int Axis1, int Axis2, int Axis3,
+						const FPoint2 &min1, const FPoint2 &max1,
 						float fTiling, int steps);
-
 
 /*@}*/	// Group sg
 
