@@ -170,24 +170,43 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 			if (fname.Contains(_T(".ms")) || fname.Contains(_T(".MS")))
 				ltype = LT_STRUCTURE;
 
-			// look for the catalog file
-			bool found = false;
+			// look for an SDTS catalog file
+			bool found_something = false;
+			bool found_cat = false;
+			wxString2 fname2;
 			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 			{
-				std::string name1 = it.filename();
-				wxString2 fname2 = name1.c_str();
-				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0 ||
-				    fname2.Right(4).CmpNoCase(_T(".dem")) == 0)
+				if (it.is_directory()) continue;
+				fname2 = it.filename();
+				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 				{
 					fname = prepend_path;
 					fname += fname2;
-					found= true;
+					found_cat = true;
+					found_something = true;
 					break;
 				}
 			}
-			if (found)
+			if (found_cat)
 				ImportDataFromFile(ltype, fname, bRefresh);
 			else
+			{
+				// Look through archive for individual files (like .dem)
+				for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
+				{
+					if (it.is_directory()) continue;
+					fname2 = it.filename();
+
+					fname = prepend_path;
+					fname += fname2;
+
+					// Try importing w/o warning on failure, since it could just
+					// be some harmless files in there.
+					if (ImportDataFromFile(ltype, fname, bRefresh, false))
+						found_something = true;
+				}
+			}
+			if (!found_something)
 				DisplayAndLog("Don't know what to do with contents of archive.");
 		}
 
@@ -202,8 +221,19 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	}
 }
 
-void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
-								   bool bRefresh)
+/**
+ * ImportDataFromFile: the main import method.
+ *
+ * \param ltype			The Layer type suspected.
+ * \param strFileName	The filename.
+ * \param bRefresh		True if the GUI should be refreshed after import.
+ * \param bWarn			True if the GUI should be warned on failure.
+ *
+ * \return	True if a layer was created from the given file, or false if
+ *			nothing importable was found in the file.
+ */
+bool MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
+								   bool bRefresh, bool bWarn)
 {
 	// check to see if the file is readable
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
@@ -211,7 +241,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 	{
 		// Cannot Open File
 		VTLOG("Couldn't open file %s\n", strFileName.mb_str());
-		return;
+		return false;
 	}
 	fclose(fp);
 
@@ -229,7 +259,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 	switch (ltype)
 	{
 	case LT_ELEVATION:
-		pLayer = ImportElevation(strFileName);
+		pLayer = ImportElevation(strFileName, bWarn);
 		break;
 	case LT_IMAGE:
 		pLayer = ImportImage(strFileName);
@@ -326,7 +356,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 			}
 		
 			if (bRaster)
-				pLayer = ImportElevation(strFileName);
+				pLayer = ImportElevation(strFileName, bWarn);
 			else
 				pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
@@ -341,7 +371,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 		else
 		{
 			// Many other Elevation formats are supported
-			pLayer = ImportElevation(strFileName);
+			pLayer = ImportElevation(strFileName, bWarn);
 		}
 		break;
 	case LT_UTILITY:
@@ -365,8 +395,9 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 	{
 		// import failed
 		VTLOG("  import failed/cancelled.\n");
-		wxMessageBox(_T("Did not import any data from that file."));
-		return;
+		if (bWarn)
+			wxMessageBox(_T("Did not import any data from that file."));
+		return false;
 	}
 	VTLOG("  import succeeded.\n");
 
@@ -377,6 +408,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 	bool success = AddLayerWithCheck(pLayer, true);
 	if (!success)
 		delete pLayer;
+	return true;
 }
 
 //
@@ -657,7 +689,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 }
 
 
-vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName)
+vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 {
 	bool bFirst = (m_Layers.GetSize() == 0);
 	wxString strExt = strFileName.AfterLast('.');
@@ -670,6 +702,8 @@ vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName)
 		return pElev;
 	else
 	{
+		if (bWarn)
+			DisplayAndLog("Couldn't import data from that file.");
 		delete pElev;
 		return NULL;
 	}
