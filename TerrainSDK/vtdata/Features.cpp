@@ -154,6 +154,10 @@ vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
 	if (!ext.CompareNoCase("igc"))
 		return LoadFromIGC(filename);
 	else
+	if (!ext.CompareNoCase("dxf"))
+		return LoadFromDXF(filename);
+	else
+		// Try OGR for any other vector format it might be
 		return LoadWithOGR(filename);
 }
 
