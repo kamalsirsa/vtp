@@ -24,6 +24,7 @@
 #include <wx/listctrl.h>
 #include <wx/treectrl.h>
 #include <wx/notebook.h>
+#include <wx/grid.h>
 
 // Declare window functions
 
@@ -44,18 +45,18 @@
 #define ID_PLANTSIZE 10014
 #define ID_SHADOWS 10015
 #define ID_OPENGL 10016
-void StartupDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_TLIST 10017
 #define ID_NEW 10018
 #define ID_DELETE 10019
-void TerrainDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+wxSizer *TerrainDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_SCENETREE 10020
 #define ID_ENABLED 10021
 #define ID_ZOOMTO 10022
 #define ID_REFRESH 10023
-void SceneGraphFunc( wxPanel *parent, bool call_fit = TRUE );
+wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_FILENAME 10024
 #define ID_VERTEXAG 10025
@@ -109,49 +110,53 @@ void SceneGraphFunc( wxPanel *parent, bool call_fit = TRUE );
 #define ID_DIRT 10073
 #define ID_BUILDINGS 10074
 #define ID_BUILDINGFILE 10075
-void TParamsFunc( wxPanel *parent, bool call_fit = TRUE );
+#define ID_ROUTEENABLE 10076
+#define ID_ROUTEFILE 10077
+wxSizer *TParamsFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPECIES 10076
-#define ID_SIZEEDIT 10077
-#define ID_SIZESLIDER 10078
-#define ID_SPACINGEDIT 10079
-void PlantDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+#define ID_SPECIES 10078
+#define ID_SIZEEDIT 10079
+#define ID_SIZESLIDER 10080
+#define ID_SPACINGEDIT 10081
+wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FENCETYPE 10080
-#define ID_HEIGHTEDIT 10081
-#define ID_HEIGHTSLIDER 10082
-#define ID_SPACINGSLIDER 10083
-void FenceDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+#define ID_FENCETYPE 10082
+#define ID_HEIGHTEDIT 10083
+#define ID_HEIGHTSLIDER 10084
+#define ID_SPACINGSLIDER 10085
+wxSizer *FenceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LOCLIST 10084
-#define ID_SAVE 10085
-#define ID_LOAD 10086
-#define ID_RECALL 10087
-#define ID_STORE 10088
-#define ID_STOREAS 10089
-#define ID_REMOVE 10090
-void LocationDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+#define ID_LOCLIST 10086
+#define ID_SAVE 10087
+#define ID_LOAD 10088
+#define ID_RECALL 10089
+#define ID_STORE 10090
+#define ID_STOREAS 10091
+#define ID_REMOVE 10092
+wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FOV 10091
-#define ID_FOVSLIDER 10092
-#define ID_NEAR 10093
-#define ID_NEARSLIDER 10094
-#define ID_FAR 10095
-#define ID_FARSLIDER 10096
-#define ID_SPEED 10097
-#define ID_SPEEDSLIDER 10098
-void CameraDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+#define ID_FOV 10093
+#define ID_FOVSLIDER 10094
+#define ID_NEAR 10095
+#define ID_NEARSLIDER 10096
+#define ID_FAR 10097
+#define ID_FARSLIDER 10098
+#define ID_SPEED 10099
+#define ID_SPEEDSLIDER 10100
+wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_COLOR1 10099
-#define ID_COLOR2 10100
-#define ID_TRIM 10101
-#define ID_COLOR3 10102
-#define ID_ELEVATED 10103
-#define ID_STORIES 10104
-#define ID_ROOF 10105
-void BuildingDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+#define ID_COLOR1 10101
+#define ID_COLOR2 10102
+#define ID_TRIM 10103
+#define ID_COLOR3 10104
+#define ID_ELEVATED 10105
+#define ID_STORIES 10106
+#define ID_ROOF 10107
+wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-void TextDialogFunc( wxPanel *parent, bool call_fit = TRUE );
+wxSizer *TextDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+// Declare menu bar functions
 
 // Declare bitmap functions
 

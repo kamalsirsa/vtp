@@ -128,6 +128,9 @@ void TParamsDlg::SetParams(TParams &Params)
 
 	m_bAirports = Params.m_bAirports;
 
+	m_strRouteFile = Params.m_strRouteFile;
+	m_bRouteEnable = Params.m_bRouteEnable;
+
 	// Safety check
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
 		m_iTriCount = 10000;
@@ -211,6 +214,9 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_fPreLightFactor = m_fPreLightFactor;
 
 	Params.m_bAirports = m_bAirports;
+
+	Params.m_strRouteFile = m_strRouteFile;
+	Params.m_bRouteEnable = m_bRouteEnable;
 }
 
 void TParamsDlg::UpdateTiledTextureFilename()
@@ -249,6 +255,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLodMethod = GetLodmethod();
 	m_pFilename = GetFilename();
 	m_pLocFile = GetLocfile();
+	m_pRouteFile = GetRoutefile();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
@@ -292,6 +299,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	sel = m_pTreeFile->FindString(m_strTreeFile);
 	if (sel != -1)
 		m_pTreeFile->SetSelection(sel);
+
+	// fill in Routes files
+	AddFilenamesToComboBox(m_pRouteFile, m_strDatapath + "RouteData", "*.p3D");
+	sel = m_pRouteFile->FindString(m_strRouteFile);
+	if (sel != -1)
+		m_pRouteFile->SetSelection(sel);
 
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append("Lindstrom-Koller");
@@ -358,6 +371,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
 	AddValidator(ID_PRELIT, &m_bPreLit);
 	AddValidator(ID_AIRPORTS, &m_bAirports);
+	AddValidator(ID_ROUTEFILE, &m_strRouteFile);
+	AddValidator(ID_ROUTEENABLE, &m_bRouteEnable);
 
 	wxWindow::OnInitDialog(event);
 

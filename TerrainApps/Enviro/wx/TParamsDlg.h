@@ -101,6 +101,8 @@ public:
 //  wxString m_strFenceFile;
     bool    m_bPreLit;
     bool    m_bAirports;
+	bool	m_bRouteEnable;
+	wxString m_strRouteFile;
 
     wxString m_strDatapath;
     wxString m_strInitTime;
@@ -118,8 +120,9 @@ public:
     wxComboBox* GetTfilesingle()  { return (wxComboBox*) FindWindow( ID_TFILESINGLE ); }
     wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
     wxComboBox* GetFilename()  { return (wxComboBox*) FindWindow( ID_FILENAME ); }
-    
-//  CButton m_PreLight;
+    wxComboBox* GetRoutefile()  { return (wxComboBox*) FindWindow( ID_ROUTEFILE ); }
+
+	//  CButton m_PreLight;
 //  CButton m_TriStrips;
 	bool	m_bReady;
 
@@ -137,6 +140,7 @@ private:
     wxRadioButton* m_pDerived;
     wxRadioButton* m_pTiled;
     wxComboBox* m_pLocFile;
+    wxComboBox* m_pRouteFile;
 
 private:
     // WDR: handler declarations for TParamsDlg
