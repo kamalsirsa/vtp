@@ -263,6 +263,39 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 }
 
 
+/**
+ * Find the building which is closest to the given point, if it is within
+ * 'epsilon' distance.  The structure index and distance are returned by
+ * reference.
+ */
+bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
+						double epsilon, int &structure, double &closest)
+{
+	structure = -1;
+	closest = 1E8;
+
+	DPoint2 loc;
+	double dist;
+
+	for (int i = 0; i < GetSize(); i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtBuilding *bld = str->GetBuilding();
+		if (!bld) continue;
+
+		dist = bld->GetDistanceToInterior(point);
+		if (dist > epsilon)
+			continue;
+		if (dist < closest)
+		{
+			structure = i;
+			closest = dist;
+		}
+	}
+	return (structure != -1);
+}
+
+
 void vtStructureArray::GetExtents(DRECT &rect)
 {
 	if (GetSize() == 0)
@@ -993,6 +1026,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 void StructVisitorGML::endElement(const char *name)
 {
 	bool bGrabAttribute = false;
+	const char *data = m_data.c_str();
 
 	if (m_state == 5 && !strcmp(name, "Edge"))
 	{
@@ -1005,7 +1039,6 @@ void StructVisitorGML::endElement(const char *name)
 		if (!strcmp(name, "gml:coordinates"))
 		{
 			DLine2 line;
-			const char *data = m_data.c_str();
 			double x, y;
 			while (sscanf(data, "%lf,%lf", &x, &y) == 2)
 			{
@@ -1042,7 +1075,7 @@ void StructVisitorGML::endElement(const char *name)
 	}
 	else if (m_state == 1 && (!strcmp(name, "SRS")))
 	{
-		m_pSA->m_proj.SetTextDescription("wkt", m_data.c_str());
+		m_pSA->m_proj.SetTextDescription("wkt", data);
 
 		// This seems wrong - why would each .vtst file reset the global projection?
 		// g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
@@ -1062,7 +1095,6 @@ void StructVisitorGML::endElement(const char *name)
 		if (!strcmp(name, "gml:coordinates"))
 		{
 			DLine2 &fencepts = m_pFence->GetFencePoints();
-			const char *data = m_data.c_str();
 			double x, y;
 			while (sscanf(data, "%lf,%lf", &x, &y) == 2)
 			{
@@ -1087,8 +1119,11 @@ void StructVisitorGML::endElement(const char *name)
 		}
 		else if (!strcmp(name, "Rotation"))
 		{
-			const char *data = m_data.c_str();
 			sscanf(data, "%f", &m_pInstance->m_fRotation);
+		}
+		else if (!strcmp(name, "Scale"))
+		{
+			sscanf(data, "%f", &m_pInstance->m_fScale);
 		}
 		else
 			bGrabAttribute = true;
@@ -1097,7 +1132,6 @@ void StructVisitorGML::endElement(const char *name)
 	{
 		if (!strcmp(name, "gml:coordinates"))
 		{
-			const char *data = m_data.c_str();
 			double x, y;
 			sscanf(data, "%lf,%lf", &x, &y);
 			m_pInstance->m_p.Set(x,y);
@@ -1112,7 +1146,7 @@ void StructVisitorGML::endElement(const char *name)
 		// save these elements as literal strings
 		vtTag *tag = new vtTag;
 		tag->name = name;
-		tag->value = m_data.c_str();
+		tag->value = data;
 		m_pStructure->AddTag(tag);		// where does the tag go?
 	}
 }
