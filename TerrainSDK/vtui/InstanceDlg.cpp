@@ -152,6 +152,7 @@ void InstanceDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	GetChoiceFile()->Select(0);
 
+	GetChoiceType()->Clear();
 	GetChoiceType()->Append(_T("(All)"));
 	GetChoiceType()->Select(0);
 
