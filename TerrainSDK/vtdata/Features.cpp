@@ -198,7 +198,88 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 	return pSet;
 }
 
+// helpers
+int GetInt(const char *buf, int len)
+{
+	char copy[20];
+	strncpy(copy, buf, len);
+	copy[len] = 0;
+	return atoi(copy);
+}
 
+double GetMinutes(const char *buf)
+{
+	char copy[20];
+	strncpy(copy, buf, 2);
+	copy[2] = '.';
+	strncpy(copy+3, buf+2, 3);
+	copy[6] = 0;
+	return atof(copy);
+}
+
+vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
+{
+	VTLOG(" FeatureLoader LoadFromIGC\n");
+
+	FILE *fp = fopen(filename, "rb");
+	if (!fp)
+		return false;
+
+	//  IGC is lat-lon with altitude
+	vtFeatureSetLineString3D *pSet = new vtFeatureSetLineString3D();
+
+	// Geographic WGS-84 can be assumed
+	vtProjection proj;
+	proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
+	pSet->SetProjection(proj);
+
+	DLine3 dline;
+
+	char buf[80];
+	while (fgets(buf, 80, fp) != NULL)
+	{
+		if (buf[0] == 'B')	// 'Fix' record which contains elevation
+		{
+			// 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3
+			// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 
+			// B H H M M S S D D M M M M M N D D D M M M M M E V P P P P P G G G G G CR LF
+			DPoint3 p;
+			int deg;
+			double min;
+
+			deg = GetInt(buf+7, 2);
+			min = GetMinutes(buf+9);
+			if (buf[14] == 'N')
+				p.y = deg + (min / 60.0);
+			else if (buf[14] == 'S')
+				p.y = -(deg + (min / 60.0));
+
+			deg = GetInt(buf+15, 3);
+			min = GetMinutes(buf+18);
+			if (buf[23] == 'E')
+				p.x = deg + (min / 60.0);
+			else if (buf[14] == 'W')
+				p.x = -(deg + (min / 60.0));
+
+			// Pressure altitude
+			// "to the ICAO ISA above the 1013.25 HPa sea level datum, valid characters 0-9"
+			int alt_pressure = GetInt(buf+25, 5);
+
+			// GPS altitude
+			// "Altitude above the WGS84 ellipsoid, valid characters 0-9"
+			int alt_gnss = GetInt(buf+30, 5);
+
+			p.z = alt_pressure;
+
+			dline.Append(p);
+		}
+	}
+	pSet->AddPolyLine(dline);
+	fclose(fp);
+	pSet->SetFilename(filename);
+
+	return pSet;
+}
 /////////////////////////////////////////////////////////////////////////////
 
 /*

@@ -419,6 +419,7 @@ public:
 	vtFeatureSet *LoadHeaderFromSHP(const char *filename);
 	vtFeatureSet *LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
 	vtFeatureSet *LoadWithOGR(OGRLayer *pLayer, bool progress_callback(int) = NULL);
+	vtFeatureSet *LoadFromIGC(const char *filename);
 
 	vtFeatureSet *ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 };
