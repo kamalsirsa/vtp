@@ -245,6 +245,8 @@ public:
 	void SetRotateButton(int button, int modifier = 0, bool bExact = true);
 	void SetZoomButton(int button, int modifier = 0, bool bExact = true);
 	void SetTranslateButton(int button, int modifier = 0, bool bExact = true);
+
+	void SetPivotPoint(const FPoint3 &pos) { m_Pivot = pos; }
 	void SetDirection(float fTheta, float fPhi);
 
 	void OnMouse(vtMouseEvent &event);
@@ -255,7 +257,7 @@ protected:
 	bool _IsZoom();
 	bool _IsTranslate();
 
-	FPoint3	m_Pos, m_Start, m_Trans;
+	FPoint3	m_Pos, m_Start, m_Trans, m_Pivot;
 	bool	m_bRotate;
 	bool	m_bZoom;
 	bool	m_bTrans;

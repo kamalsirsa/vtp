@@ -719,6 +719,8 @@ vtTrackball::vtTrackball(float fRadius)
 {
 	m_Pos.Set(0, 0, fRadius);
 	m_Trans.Set(0, 0, 0);
+	m_Pivot.Set(0, 0, 0);
+
 	m_bRotate = false;
 	m_bZoom = false;
 	m_fZoomScale = 1.0f;
@@ -887,6 +889,7 @@ void vtTrackball::Eval()
 	pTarget->Translate1(FPoint3(0.0, 0.0, m_Pos.z));
 	pTarget->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -m_Pos.y);
 	pTarget->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -m_Pos.x);
+	pTarget->Translate1(m_Pivot);
 
 	pTarget->TranslateLocal(m_Trans);
 }
