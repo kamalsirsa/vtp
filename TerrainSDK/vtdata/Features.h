@@ -72,7 +72,7 @@ public:
 	// File IO
 	bool SaveToSHP(const char *filename);
 	bool LoadFromSHP(const char *filename);
-	bool LoadFromGML(const char *filename);
+	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
 
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 
@@ -139,7 +139,6 @@ public:
 
 protected:
 	void _ShrinkGeomArraySize(int size);
-	void _SetupFromOGCType(OGRwkbGeometryType type);
 
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
 	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON
