@@ -12,6 +12,8 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtLog.h"
+
 #include "App.h"
 #include "TreeView.h"
 #include "MenuEnum.h"	// for LayerTree_Ctrl
@@ -153,6 +155,8 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 
 void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 {
+	VTLOG("Refreshing Tree Items\n");
+
 	DeleteAllItems();
 
 	rootId = AddRoot("Layers");
@@ -247,6 +251,8 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 {
+	VTLOG("Refreshing Tree Status\n");
+
 	wxTreeItemId root = GetRootItem();
 	wxTreeItemId parent, item;
 	long cookie = 0, cookie2 = 1;

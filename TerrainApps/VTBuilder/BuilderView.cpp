@@ -13,6 +13,7 @@
 
 #include "vtdata/shapelib/shapefil.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/vtLog.h"
 
 #include "BuilderView.h"
 #include "Frame.h"
@@ -53,6 +54,7 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 						 const wxSize& size, const wxString& name) :
 	vtScaledView(parent, id, pos, size, name )
 {
+	VTLOG(" Constructing BuilderView\n");
 	m_bPanning = false;
 	m_bBoxing = false;
 	m_iDragSide = 0;
@@ -431,12 +433,14 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 
 	if (!m_bHidden)
 	{
+		VTLOG("Preparing World Map...");
 	    wxDialog dialog(this, -1, "Preparing World Map...", wxDefaultPosition,
 			wxSize(400, 50), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODELESS);
 		dialog.Show(true);
 		HideWorldMapEdges();
 		dialog.Show(false);
 		Refresh();
+		VTLOG(" Done.\n");
 	}
 
 	// Draw each poly in WMPolyDraw
@@ -1224,6 +1228,8 @@ void BuilderView::OnRightUpStructure(vtStructureLayer *pSL)
 
 void BuilderView::OnMouseMove(const wxMouseEvent& event)
 {
+//	VTLOG("MouseMove\n");
+
 	wxPoint point = event.GetPosition();
 	static wxPoint lastpoint;
 

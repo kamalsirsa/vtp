@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtLog.h"
 #include "ScaledView.h"
 #include "Frame.h"
 
@@ -31,6 +32,7 @@ vtScaledView::vtScaledView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 
 void vtScaledView::ZoomAll()
 {
+	VTLOG("Zoom All\n");
 	DRECT extents = GetMainFrame()->GetExtents();
 	ZoomToRect(extents, 0.1f);
 }

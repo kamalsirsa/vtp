@@ -13,12 +13,15 @@
 #endif
 
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/vtLog.h"
+
 #include "StatusBar.h"
 #include "BuilderView.h"
 #include "Helper.h"
 
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
+	VTLOG(" Creating Status Bar.\n");
 	static const int widths[Field_Max] = { -1, 38, 50, 65, 52, 170, 76 };
 
 	SetFieldsCount(Field_Max);
@@ -56,6 +59,8 @@ wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 
 void MyStatusBar::SetTexts(MainFrame *frame)
 {
+//	VTLOG(" StatusBar SetTexts: ");
+
 	vtProjection &proj = frame->GetAtProjection();
 	bool bGeo = (proj.IsGeographic() != 0);
 
@@ -91,6 +96,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 				(const char *) FormatCoord(bGeo, p.x),
 				(const char *) FormatCoord(bGeo, p.y));
 		SetStatusText(str, Field_Mouse);
+//		VTLOG(" '%s' ", (const char *)str);
 
 		float height = frame->GetHeightFromTerrain(p);
 		if (height == INVALID_ELEVATION)
@@ -109,6 +115,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		SetStatusText("Mouse", Field_Mouse);
 		SetStatusText("", Field_Height);
 	}
+//	VTLOG(" Done.\n");
 }
 
 //

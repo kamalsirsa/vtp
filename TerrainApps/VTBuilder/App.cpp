@@ -15,17 +15,22 @@
 #include "App.h"
 #include "Frame.h"
 #include "BuilderView.h"
+#include "vtdata/vtLog.h"
 
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
+	g_Log._StartLog("debug.txt");
+	VTLOG("VTBuilder\n");
+
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, "VTBuilder",
 							   wxPoint(50, 50), wxSize(700, 500));
 
+	VTLOG(" Setting up the UI.\n");
 	frame->SetupUI();
 
-	// Show the frame
+	VTLOG(" Showing the frame.\n");
 	frame->Show(TRUE);
 
 	SetTopWindow(frame);
