@@ -50,6 +50,7 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 
 void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 {
+#if SUPPORT_HTTP
 	WFSLayerArray layers;
 	wxString2 val = GetBaseUrl()->GetValue();
 	vtString url = val.mb_str();
@@ -95,6 +96,7 @@ void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 		}
 	}
 	GetLayers()->SetSelection(0);
+#endif // SUPPORT_HTTP
 }
 
 void MapServerDlg::OnLayer( wxCommandEvent &event )
