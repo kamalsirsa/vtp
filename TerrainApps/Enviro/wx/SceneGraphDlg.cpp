@@ -299,7 +299,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				if (pChild)
 					AddNodeItemsRecursively(hNewItem, pChild, depth+1);
 				else
-					hSubItem = m_pTree->AppendItem(hNewItem, "(internal node)", 8, 8);
+					hSubItem = m_pTree->AppendItem(hNewItem, _T("(internal node)"), 8, 8);
 			}
 		}
 	}
