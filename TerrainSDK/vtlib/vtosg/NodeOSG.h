@@ -224,21 +224,6 @@ protected:
 	virtual ~vtLight() {}
 };
 
-/**
- * A utility class which simply wraps a light (vtLight) inside a
- * transform (vtTransform) so that you can move it.
- */
-class vtMovLight : public vtTransform
-{
-public:
-	vtMovLight(vtLight *pContained)
-	{
-		m_pLight = pContained;
-		AddChild(pContained);
-	}
-	vtLight	*m_pLight;
-};
-
 class vtTextMesh;
 
 /** The vtGeom class represents a Geometry Node which can contain any number
