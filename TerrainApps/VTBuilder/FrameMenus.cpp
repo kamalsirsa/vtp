@@ -422,9 +422,11 @@ void MainFrame::CreateMenus()
 		_("Sample imagery within the Area Tool to produce a single, new image."));
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
 		_("Generate Vegetation File (*.vf) containg plant distribution."));
+#if SUPPORT_HTTP
 	areaMenu->Append(ID_AREA_REQUEST_LAYER, _("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
 	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
+#endif // SUPPORT_HTTP
 #endif
 	m_pMenuBar->Append(areaMenu, _("&Area Tool"));
 	menu_num++;
