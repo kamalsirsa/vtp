@@ -56,6 +56,11 @@ void TimeEngine::GetTime(int &hr, int &min, int &sec)
 	sec = m_tm.tm_sec;
 }
 
+time_t TimeEngine::GetTime()
+{
+	return m_time;
+}
+
 void TimeEngine::SetSpeed(float factor)
 {
 	m_fSpeed = factor;

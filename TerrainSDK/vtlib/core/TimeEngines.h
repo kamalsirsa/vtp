@@ -31,6 +31,7 @@ public:
 	void SetTime(int hr, int min, int sec);
 //	void SetTime(time_t time);
 	void GetTime(int &hr, int &min, int &sec);
+	time_t GetTime();
 	void Increment(int secs);
 
 protected:
