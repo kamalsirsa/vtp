@@ -85,6 +85,9 @@ public:
 	void OnUpdateSceneSpace(wxUpdateUIEvent& event);
 	void OnSceneSave(wxCommandEvent& event);
 
+	void OnTimeStop(wxCommandEvent& event);
+	void OnTimeFaster(wxCommandEvent& event);
+
 	void OnDynamic(wxCommandEvent& event);
 	void OnCullEvery(wxCommandEvent& event);
 	void OnCullOnce(wxCommandEvent& event);

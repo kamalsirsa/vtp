@@ -124,6 +124,8 @@ EVT_UPDATE_UI(ID_SCENE_SPACE, vtFrame::OnUpdateSceneSpace)
 #if VTLIB_OSG
 EVT_MENU(ID_SCENE_SAVE, vtFrame::OnSceneSave)
 #endif
+EVT_MENU(ID_TIME_STOP, vtFrame::OnTimeStop)
+EVT_MENU(ID_TIME_FASTER, vtFrame::OnTimeFaster)
 
 EVT_MENU(ID_TERRAIN_DYNAMIC, vtFrame::OnDynamic)
 EVT_MENU(ID_TERRAIN_CULLEVERY, vtFrame::OnCullEvery)
@@ -249,6 +251,9 @@ void vtFrame::CreateMenus()
 	sceneMenu->AppendSeparator();
 	sceneMenu->Append(ID_SCENE_SAVE, _T("Save scene graph to .osg"));
 #endif
+	sceneMenu->AppendSeparator();
+	sceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
+	sceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
 
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
@@ -330,6 +335,10 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Time of Day"), true);
 	ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
+	ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
+	ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
 
 	m_pToolbar->Realize();
 }
@@ -787,6 +796,20 @@ void vtFrame::OnSceneSave(wxCommandEvent& event)
 	vtRoot *pRoot = GetTerrainScene()->m_pTop;
 	osgDB::Registry::instance()->writeNode(*pRoot->m_pOsgRoot, "scene.osg");
 #endif
+}
+
+void vtFrame::OnTimeStop(wxCommandEvent& event)
+{
+	g_App.SetSpeed(0.0f);
+}
+
+void vtFrame::OnTimeFaster(wxCommandEvent& event)
+{
+	float x = g_App.GetSpeed();
+	if (x == 0.0f)
+		g_App.SetSpeed(150.0f);
+	else
+		g_App.SetSpeed(x*1.5f);
 }
 
 /////////////////////// Terrain menu ///////////////////////////
