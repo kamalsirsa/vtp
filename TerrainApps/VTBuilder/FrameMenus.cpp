@@ -438,6 +438,12 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	m_pView->Refresh();
 	Refresh();
 
+	// reset veg too
+	m_strSpeciesFilename = "";
+	m_strBiotypesFilename = "";
+	m_PlantList.Clear();
+	m_BioRegions.Clear();
+
 	RefreshTreeView();
 	RefreshToolbar();
 
@@ -2460,8 +2466,6 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 {
 	vtVegLayer *Density = NULL, *BioMap = NULL;
-
-//	FindVegLayers(&Density, &BioMap);
 
 	// density is now optional, defaults to 1 if there is no density layer
 	event.Enable(m_strSpeciesFilename != "" && !m_area.IsEmpty());
