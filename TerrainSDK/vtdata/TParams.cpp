@@ -62,7 +62,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TIN, "false");
 
 	AddTag(STR_TIMEON, "false");
-	AddTag(STR_INITTIME, "2004 4 4 12 0 0");
+	AddTag(STR_INITTIME, "104 2 21 10 0 0");	// 2004, spring, 10am
 	AddTag(STR_TIMESPEED, "1");
 
 	AddTag(STR_TEXTURE, "0");
