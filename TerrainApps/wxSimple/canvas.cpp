@@ -15,6 +15,7 @@
 
 // Header for the vtlib library
 #include "vtlib/vtlib.h"
+#include "vtlib/core/Event.h"
 
 #include "canvas.h"
 #include "frame.h"
