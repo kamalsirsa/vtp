@@ -1140,7 +1140,7 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item12->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
     wxString *strs13 = (wxString*) NULL;
-    wxComboBox *item13 = new wxComboBox( parent, ID_SKYTEXTURE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs13, wxCB_DROPDOWN );
+    wxComboBox *item13 = new wxComboBox( parent, ID_SKYTEXTURE, wxT(""), wxDefaultPosition, wxSize(200,-1), 0, strs13, wxCB_DROPDOWN );
     item12->Add( item13, 1, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item1->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 0 );
