@@ -147,7 +147,7 @@ bool DLine2::NearestSegment(const DPoint2 &Point, int &iIndex,
  *
  * \param Point The input point.
  * \param iIndex Index of the first point of the nearest line segment.
- * \param dist Distance from the DLine2 to the input point.
+ * \param dClosest Distance from the DLine2 to the input point.
  */
 void DLine2::NearestPoint(const DPoint2 &Point, int &iIndex, double &dClosest) const
 {
@@ -237,7 +237,7 @@ void DLine3::Add(const DPoint2 &p)
  *
  * \param Point The input point.
  * \param iIndex Index of the first point of the nearest line segment.
- * \param dist Distance from the DLine2 to the input point.
+ * \param dClosest Distance from the DLine2 to the input point.
  */
 void DLine3::NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dClosest) const
 {
