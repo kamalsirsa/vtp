@@ -188,7 +188,7 @@ void vtApp::RefreshTerrainList()
 			vtString name = name1.c_str();
 
 			// only look for terrain parameters files
-			vtString ext = GetExtension(name);
+			vtString ext = GetExtension(name, false);
 			if (ext != ".ini" && ext != ".xml")
 				continue;
 
@@ -272,11 +272,17 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 	{
 		dlg.GetParams(Params);
 
-		vtString ext = GetExtension(fname);
+		vtString ext = GetExtension(fname, false);
 		if (ext.CompareNoCase(".ini") == 0)
 		{
-			wxMessageBox(_T("Upgrading the .ini to a .xml file.\n")
-				_T("Please remember to remove the old .ini file."));
+			wxString2 str = _T("Upgrading the .ini to a .xml file.\n")
+				_T("Deleting old file: ");
+			str += fname;
+			wxMessageBox(str);
+
+			// Try to get rid of it.  Hope they aren't on read-only FS.
+			vtDeleteFile(fname);
+
 			fname = fname.Left(fname.GetLength()-4) + ".xml";
 		}
 
