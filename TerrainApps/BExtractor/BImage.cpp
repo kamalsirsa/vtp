@@ -110,7 +110,8 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	err = SpatialReference.importFromWkt((char**)&pProjectionString);
 	if (err != OGRERR_NONE)
 	{
-		VTLOG("  No projection, but proceeding anyway..\n");
+		VTLOG("  No valid projection, but proceeding anyway..\n");
+		SpatialReference.Clear();
 		/* bRet = false;
 		goto Exit; */
 		// allow images without projection?
@@ -191,9 +192,9 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		m_fImageWidth = (dRight - dLeft) * linearConversionFactor;
 		m_fImageHeight = (dTop - dBottom) * linearConversionFactor;
 
-		// This is the bottom left corner
-		m_xUTMoffset = (affineTransform[0] + affineTransform[2] *  m_PixelSize.y) * linearConversionFactor;
-		m_yUTMoffset = (affineTransform[3] + affineTransform[5] *  m_PixelSize.y) * linearConversionFactor;
+		// This is the upper left corner
+		m_xUTMoffset = affineTransform[0] * linearConversionFactor;
+		m_yUTMoffset = affineTransform[3] * linearConversionFactor;
 
 		if (NULL == (m_pSpatialReference = SpatialReference.Clone()))
 		{
