@@ -237,8 +237,8 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
  * \param pathname A resolvable filename of a Shapefile (.shp)
  * \param type The type of structure to expect (Buildings, Fences, or Instances)
  */
-bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
-	   const DRECT &rect, bool bFlip, void progress_callback(int))
+bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
+							   void progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(pathname, "rb");
 	if (hSHP == NULL)
@@ -249,7 +249,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 	DPoint2 point;
 	DLine2	line;
 	int		i, j, k;
-	int		field_stories = -1;
+	int		field_height = -1;
 	int		field_filename = -1;
 	int		field_itemname = -1;
 	int		field_scale = -1;
@@ -261,32 +261,30 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 	DBFHandle db = DBFOpen(pathname, "rb");
 
 	// Make sure that entities are of the expected type
-	if (type == ST_BUILDING)
+	if (opt.type == ST_BUILDING)
 	{
 		if (nShapeType != SHPT_POINT && nShapeType != SHPT_POLYGON)
 			return false;
 		// Check for field with number of stories
 		if (db != NULL)
-			field_stories = FindDBField(db, "stories");
+			field_height = FindDBField(db, (const char *)opt.m_strFieldNameHeight);
 	}
-	if (type == ST_INSTANCE)
+	if (opt.type == ST_INSTANCE)
 	{
 		if (nShapeType != SHPT_POINT)
 			return false;
 		if (db == NULL)
 			return false;
 
-		field_filename = FindDBField(db, "filename");
-		if (field_filename == -1)
-			field_filename = FindDBField(db, "modelfile");
-		if (field_filename == -1)
+		field_filename = FindDBField(db, (const char *)opt.m_strFieldNameFile);
+		field_itemname = FindDBField(db, "itemname");
+		if (field_filename == -1 && field_itemname == -1)
 			return false;
 
-		field_itemname = FindDBField(db, "itemname");
 		field_scale = FindDBField(db, "scale");
 		field_rotation = FindDBField(db, "rotation");
 	}
-	if (type == ST_LINEAR)
+	if (opt.type == ST_LINEAR)
 	{
 		if (nShapeType != SHPT_ARC && nShapeType != SHPT_POLYGON)
 			return false;
@@ -299,13 +297,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 
 		SHPObject *psShape = SHPReadObject(hSHP, i);
 
-		if (!rect.IsEmpty())
+		if (opt.bInsideOnly)
 		{
 			// do exclusion of shapes outside the indicated extents
-			if (psShape->dfXMax < rect.left ||
-				psShape->dfXMin > rect.right ||
-				psShape->dfYMax < rect.bottom ||
-				psShape->dfYMin > rect.top)
+			if (psShape->dfXMax < opt.rect.left ||
+				psShape->dfXMin > opt.rect.right ||
+				psShape->dfYMax < opt.rect.bottom ||
+				psShape->dfYMin > opt.rect.top)
 			{
 				SHPDestroyObject(psShape);
 				continue;
@@ -314,7 +312,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 
 		int num_points = psShape->nVertices-1;
 
-		if (type == ST_BUILDING)
+		if (opt.type == ST_BUILDING)
 		{
 			vtBuilding *bld = NewBuilding();
 			if (nShapeType == SHPT_POINT)
@@ -330,7 +328,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
 				{
-					if (bFlip)
+					if (opt.bFlip)
 						k = num_points - 1 - j;
 					else
 						k = j;
@@ -343,19 +341,32 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				bld->SetCenterFromPoly();
 			}
 
-			int num_stories = -1;
-			if (field_stories != -1)
+			// attempt to get height from the DBF
+			int stories;
+			if (field_height != -1)
 			{
-				// attempt to get number of stories from the DBF
-				num_stories = DBFReadIntegerAttribute(db, i, field_stories);
-				if (num_stories < 1)
-					num_stories = 1;
+				double height = DBFReadDoubleAttribute(db, i, field_height);
+				switch (opt.m_HeightType)
+				{
+				case StructImportOptions::STORIES:
+					stories = (int) height;
+					if (stories >= 1)
+						bld->SetStories(stories);
+					break;
+				case StructImportOptions::FEET:
+					height = height * 0.3048;
+				case StructImportOptions::METERS:
+					stories = (int) (height / 3.2);
+					if (stories < 1)
+						stories = 1;
+					bld->SetStories((int) height);
+					bld->GetLevel(0)->m_fStoryHeight = (float) (height / stories);
+					break;
+				}
 			}
-			if (num_stories != -1)
-				bld->SetStories(num_stories);
 			Append(bld);
 		}
-		if (type == ST_INSTANCE)
+		if (opt.type == ST_INSTANCE)
 		{
 			vtStructInstance *inst = NewInstance();
 			inst->m_p.x = psShape->padfX[0];
@@ -397,7 +408,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 			}
 			Append(inst);
 		}
-		if (type == ST_LINEAR)
+		if (opt.type == ST_LINEAR)
 		{
 			vtFence *fen = NewFence();
 			for (j = 0; j < num_points; j++)

@@ -14,6 +14,23 @@
 #include <stdio.h>
 
 
+/** This structure stores a description of how an imported file should be
+   intepreted as built structure data. */
+class StructImportOptions
+{
+public:
+	vtStructureType type;
+	DRECT			rect;
+	bool			bInsideOnly;
+	bool			bFlip;
+
+	vtString		m_strFieldNameHeight;
+	enum HeightType { STORIES, METERS, FEET } m_HeightType;
+
+	vtString		m_strFieldNameFile;
+};
+
+
 /**  The vtStructureArray class contains a list of Built Structures
  * (vtStructure objects).  It can be loaded and saved to VTST files
  * with the ReadXML and WriteXML methods.
@@ -29,8 +46,8 @@ public:
 	void DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 
-	bool ReadSHP(const char* pathname, vtStructureType type,
-		const DRECT &rect, bool bFlip, void progress_callback(int) = NULL);
+	bool ReadSHP(const char* pathname, StructImportOptions &opt,
+		void progress_callback(int) = NULL);
 	bool ReadBCF(const char* pathname);		// read a .bcf file
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format
 	bool ReadXML(const char* pathname);
