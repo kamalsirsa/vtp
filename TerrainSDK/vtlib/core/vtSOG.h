@@ -10,6 +10,12 @@
 #include <stdio.h>
 #include "vtdata/SOG.h"
 
+/**
+ * A class to support reading vtlib scene graphs from .sog files.
+ *
+ * The .sog format is a tentative, preliminary implementation of an
+ * efficient binary format for geometry (and nested geometry) nodes.
+ */
 class InputSOG
 {
 public:
@@ -24,12 +30,18 @@ private:
 	vtGeom *ReadGeometry(FILE *fp, vtMaterialArray *pMats);
 };
 
+/**
+ * A class to support writing vtlib scene graphs from .sog files.
+ *
+ * The .sog format is a tentative, preliminary implementation of an
+ * efficient binary format for geometry (and nested geometry) nodes.
+ */
 class OutputSOG
 {
 public:
 	void WriteHeader(FILE *fp);
-	void WriteSingleGeometry(FILE *fp, vtGeom *pGeom);
-	void WriteMultiGeometry(FILE *fp, vtGroup *pParent);
+	void WriteSingleGeometry(FILE *fp, const vtGeom *pGeom);
+	void WriteMultiGeometry(FILE *fp, const vtGroup *pParent);
 
 private:
 	void Write(FILE *fp, FileToken ft, RGBf &rgb);
@@ -41,10 +53,10 @@ private:
 	void Write(FILE *fp, FileToken ft, FPoint2 &p);
 	void WriteToken(FILE *fp, FileToken ft, short length);
 
-	void WriteGeometry(FILE *fp, vtGeom *pGeom, short id);
-	void WriteMaterials(FILE *fp, vtMaterialArray *pMats);
-	void WriteMaterial(FILE *fp, vtMaterial *pMat);
-	void WriteMesh(FILE *fp, vtMesh *pMesh);
+	void WriteGeometry(FILE *fp, const vtGeom *pGeom, short id);
+	void WriteMaterials(FILE *fp, const vtMaterialArray *pMats);
+	void WriteMaterial(FILE *fp, const vtMaterial *pMat);
+	void WriteMesh(FILE *fp, const vtMesh *pMesh);
 };
 
 #endif // VTSOGH
