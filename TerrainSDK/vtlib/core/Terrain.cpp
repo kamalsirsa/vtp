@@ -1005,6 +1005,9 @@ bool vtTerrain::CreateFromTIN(int &iError)
 	return true;
 }
 
+// for timing how long the CLOD takes to initialize
+clock_t tm;
+
 bool vtTerrain::CreateFromGrid(int &iError)
 {
 	float fOceanDepth;
@@ -1029,6 +1032,7 @@ bool vtTerrain::CreateFromGrid(int &iError)
 		}
 	}
 
+	tm = clock();
 	//
 	if (m_Params.m_bDynamic)
 	{
@@ -1059,6 +1063,12 @@ bool vtTerrain::CreateStep4(int &iError)
 	// some algorithms need an additional stage of initialization
 	if (m_pDynGeom != NULL)
 		m_pDynGeom->Init2();
+
+	clock_t tm2 = clock();
+	float time = ((float)tm2 - tm)/CLOCKS_PER_SEC;
+//	FILE *fp = fopen("time.txt", "wb");
+//	fprintf(fp, "time %.2f\n", time);
+//	fclose(fp);
 	return true;
 }
 
