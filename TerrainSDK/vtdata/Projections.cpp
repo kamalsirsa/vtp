@@ -565,6 +565,9 @@ bool vtProjection::ReadProjFile(const char *filename)
 	else
 #endif
 
+	// Must clear any old info before attempting to import the new info.
+	Clear();
+
 	// Actually, importFromESRI() does the whole job for us, including
 	//  handling both normal .prj files, and weird ESRI variations.
 	eErr = importFromESRI(papszPrj);
