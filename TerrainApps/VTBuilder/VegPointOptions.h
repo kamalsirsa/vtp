@@ -1,5 +1,5 @@
 //
-// Name: VegFieldsDlg.h
+// Name: VegPointOptions.h
 //
 // Copyright (c) 2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
