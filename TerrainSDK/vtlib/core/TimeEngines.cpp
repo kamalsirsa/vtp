@@ -20,7 +20,7 @@ TimeEngine::TimeEngine(int start_hour) : vtEngine()
 	m_fSeconds = 0.0f;
 
 	if (start_hour != -1)
-		SetTime(start_hour, 0, 0);
+		SetGMT(start_hour, 0, 0);
 }
 
 void TimeEngine::_UpdateTM()
@@ -41,12 +41,32 @@ void TimeEngine::GetCurrentTime()
 	_UpdateTM();
 }*/
 
-void TimeEngine::SetTime(int hr, int min, int sec)
+void TimeEngine::SetLocalTime(int hr, int min, int sec)
 {
 	m_tm.tm_hour = hr;
 	m_tm.tm_min = min;
 	m_tm.tm_sec = sec;
 	m_time = mktime(&m_tm);
+	_UpdateTM();
+}
+
+void TimeEngine::SetGMT(int hr, int min, int sec)
+{
+	// Determine the offset between local and Greenwich Mean time, and
+	// use it to compensate for the fact mktime only does local.
+	time_t dummy = 20000;
+	struct tm tm_gm, tm_local;
+	tm_gm = *gmtime(&dummy);
+	tm_local = *localtime(&dummy);
+	time_t diff = mktime(&tm_local) - mktime(&tm_gm);
+
+	m_tm.tm_hour = hr;
+	m_tm.tm_min = min;
+	m_tm.tm_sec = sec;
+	m_time = mktime(&m_tm);
+
+	m_time += diff;
+	_UpdateTM();
 }
 
 void TimeEngine::GetTime(int &hr, int &min, int &sec)
@@ -74,21 +94,22 @@ void TimeEngine::Increment(int secs)
 
 void TimeEngine::Eval()
 {
-	// increment
-	if (m_fSpeed == 0.0f)
-		return;
-
 	float time = vtGetTime();
+
 	if (m_last_time == -1.0f)
 		m_last_time = time;
-	float elapsed = (time - m_last_time);
-	m_fSeconds += (elapsed * m_fSpeed);
-	if (m_fSeconds > 1.0f)
+
+	if (m_fSpeed != 0.0f)
 	{
-		int full = (int) m_fSeconds;
-		Increment(full);
-		_InformTarget();
-		m_fSeconds -= full;
+		float elapsed = (time - m_last_time);
+		m_fSeconds += (elapsed * m_fSpeed);
+		if (m_fSeconds > 1.0f)
+		{
+			int full = (int) m_fSeconds;
+			Increment(full);
+			_InformTarget();
+			m_fSeconds -= full;
+		}
 	}
 	m_last_time = time;
 }
