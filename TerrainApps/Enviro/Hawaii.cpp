@@ -368,13 +368,17 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 #if 1
 	if (PointIsInTerrain(DPoint2(234900, 2185840))) // if area includes saddle
 	{
-		vtTransform *bench = LoadModel("Culture/parkbench.3ds");
-		if (bench)
+		vtTransform *table = LoadModel("Culture/picnictable.3ds");
+		if (table)
 		{
-			float scale = 3.0f * 0.01f;
-			bench->Scale3(scale, scale*1.1f, scale);
-			PlantModelAtPoint(bench, DPoint2(234900, 2185840));
-			m_pLodGrid->AppendToGrid(bench);
+			// model is at .1 inch per unit
+			float scale = .1f * 2.54f / 100;
+			scale *= 100;	// Make it temporarily larger for testing purposes
+			table->Scale3(scale, scale, scale);
+			// Must rotate by 90 degrees for 3DS MAX -> OpenGL
+			table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
+			PlantModelAtPoint(table, DPoint2(234900, 2185840));
+			m_pLodGrid->AppendToGrid(table);
 		}
 	}
 #endif
