@@ -111,13 +111,13 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 		vtPlantSpecies *spe = pl->GetSpecies(i);
 
 		str.Printf(_T("%d"), spe->GetSpecieID() );
-        item = m_PSTable->InsertItem(i, str, 0);
+		item = m_PSTable->InsertItem(i, str, 0);
 		str.Printf(_T("%hs"), spe->GetCommonName() );
-        item = m_PSTable->SetItem(i, 1, str);
+		item = m_PSTable->SetItem(i, 1, str);
 		str.Printf(_T("%hs"), spe->GetSciName() );
-        item = m_PSTable->SetItem(i, 2, str);
+		item = m_PSTable->SetItem(i, 2, str);
 		str.Printf(_T("%4.2f m"), spe->GetMaxHeight() );
-        item = m_PSTable->SetItem(i, 3, str);
+		item = m_PSTable->SetItem(i, 3, str);
 		
 		// Display plant appearances per species in right table.
 		for (int j = 0; j < pl->GetSpecies(i)->NumAppearances(); j++)

@@ -1,12 +1,12 @@
 //
-// Name:        ExtentDlg.cpp
+// Name: ExtentDlg.cpp
 //
 // Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifdef __GNUG__
-    #pragma implementation "ExtentDlg.cpp"
+	#pragma implementation "ExtentDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -17,7 +17,7 @@
 #endif
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+	#pragma hdrstop
 #endif
 
 #include "ExtentDlg.h"
@@ -31,19 +31,19 @@
 // WDR: event table for ExtentDlg
 
 BEGIN_EVENT_TABLE(ExtentDlg,AutoDialog)
-    EVT_TEXT( ID_EXTENT_N, ExtentDlg::OnExtentN )
-    EVT_TEXT( ID_EXTENT_W, ExtentDlg::OnExtentW )
-    EVT_TEXT( ID_EXTENT_E, ExtentDlg::OnExtentE )
-    EVT_TEXT( ID_EXTENT_S, ExtentDlg::OnExtentS )
-    EVT_TEXT( ID_EXTENT_ALL, ExtentDlg::OnExtentAll )
+	EVT_TEXT( ID_EXTENT_N, ExtentDlg::OnExtentN )
+	EVT_TEXT( ID_EXTENT_W, ExtentDlg::OnExtentW )
+	EVT_TEXT( ID_EXTENT_E, ExtentDlg::OnExtentE )
+	EVT_TEXT( ID_EXTENT_S, ExtentDlg::OnExtentS )
+	EVT_TEXT( ID_EXTENT_ALL, ExtentDlg::OnExtentAll )
 END_EVENT_TABLE()
 
 ExtentDlg::ExtentDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    AutoDialog( parent, id, title, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	AutoDialog( parent, id, title, position, size, style )
 {
 	m_bSetting = false;
-    ExtentDialogFunc( this, TRUE ); 
+	ExtentDialogFunc( this, TRUE ); 
 }
 
 void ExtentDlg::SetArea(DRECT area, bool bMeters)

@@ -137,33 +137,33 @@ int GuessZoneFromLongitude(double longitude)
 void wxDC2::StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
 						wxCoord width, wxCoord height)
 {
-    wxCHECK_RET( bmp.Ok(), _T("invalid bitmap in wxDC::DrawBitmap") );
+	wxCHECK_RET( bmp.Ok(), _T("invalid bitmap in wxDC::DrawBitmap") );
 
 	HDC cdc = ((HDC)GetHDC());
-    HDC memdc = ::CreateCompatibleDC( cdc );
-    HBITMAP hbitmap = (HBITMAP) bmp.GetHBITMAP( );
+	HDC memdc = ::CreateCompatibleDC( cdc );
+	HBITMAP hbitmap = (HBITMAP) bmp.GetHBITMAP( );
 
-    COLORREF old_textground = ::GetTextColor(cdc);
-    COLORREF old_background = ::GetBkColor(cdc);
-    if (m_textForegroundColour.Ok())
-    {
-        ::SetTextColor(cdc, m_textForegroundColour.GetPixel() );
-    }
-    if (m_textBackgroundColour.Ok())
-    {
-        ::SetBkColor(cdc, m_textBackgroundColour.GetPixel() );
-    }
+	COLORREF old_textground = ::GetTextColor(cdc);
+	COLORREF old_background = ::GetBkColor(cdc);
+	if (m_textForegroundColour.Ok())
+	{
+		::SetTextColor(cdc, m_textForegroundColour.GetPixel() );
+	}
+	if (m_textBackgroundColour.Ok())
+	{
+		::SetBkColor(cdc, m_textBackgroundColour.GetPixel() );
+	}
 
-    HGDIOBJ hOldBitmap = ::SelectObject( memdc, hbitmap );
+	HGDIOBJ hOldBitmap = ::SelectObject( memdc, hbitmap );
 
 	int bwidth = bmp.GetWidth(), bheight = bmp.GetHeight();
-    ::StretchBlt( cdc, x, y, width, height, memdc, 0, 0, bwidth, bheight, SRCCOPY);
+	::StretchBlt( cdc, x, y, width, height, memdc, 0, 0, bwidth, bheight, SRCCOPY);
 
-    ::SelectObject( memdc, hOldBitmap );
-    ::DeleteDC( memdc );
+	::SelectObject( memdc, hOldBitmap );
+	::DeleteDC( memdc );
 
-    ::SetTextColor(cdc, old_textground);
-    ::SetBkColor(cdc, old_background);
+	::SetTextColor(cdc, old_textground);
+	::SetBkColor(cdc, old_background);
 }
 
 #endif // WIN32

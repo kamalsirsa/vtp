@@ -1,19 +1,19 @@
 //
-// Name:        DistribVegDlg.cpp
+// Name: DistribVegDlg.cpp
 //
 // Copyright (c) 2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifdef __GNUG__
-    #pragma implementation "DistribVegDlg.cpp"
+	#pragma implementation "DistribVegDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+	#pragma hdrstop
 #endif
 
 #ifndef WX_PRECOMP
@@ -34,10 +34,10 @@ BEGIN_EVENT_TABLE(DistribVegDlg,AutoDialog)
 END_EVENT_TABLE()
 
 DistribVegDlg::DistribVegDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    AutoDialog( parent, id, title, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	AutoDialog( parent, id, title, position, size, style )
 {
-    DistribVegFunc( this, TRUE ); 
+	DistribVegFunc( this, TRUE ); 
 }
 
 // WDR: handler implementations for DistribVegDlg

@@ -30,7 +30,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ResampleDlg
 	wxRadioButton* GetShorts()  { return (wxRadioButton*) FindWindow( ID_SHORTS ); }
 	wxTextCtrl* GetVUnits()  { return (wxTextCtrl*) FindWindow( ID_VUNITS ); }
@@ -58,7 +58,7 @@ public:
 	float   m_fVUnits;
 
 	DRECT   m_area;
-	int	 m_power;
+	int		m_power;
 	bool	m_bSetting;
 
 private:

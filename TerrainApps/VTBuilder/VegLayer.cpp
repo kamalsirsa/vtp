@@ -358,7 +358,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	// Get number of polys and type of data
 	int		nElem;
 	int		nShapeType;
-    double	adfMinBound[4], adfMaxBound[4];
+	double	adfMinBound[4], adfMaxBound[4];
 	FPoint2 point;
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
@@ -475,7 +475,7 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	// Get number of points and type of data
 	int		nElem;
 	int		nShapeType;
-    double	adfMinBound[4], adfMaxBound[4];
+	double	adfMinBound[4], adfMaxBound[4];
 	FPoint2 point;
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
