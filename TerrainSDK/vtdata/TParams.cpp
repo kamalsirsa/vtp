@@ -467,6 +467,30 @@ vtString TParams::CookTextureFilename() const
 	return str;
 }
 
+void TParams::SetOverlay(const vtString &fname, int x, int y)
+{
+	vtString str;
+	str.Format("%s,%d,%d", (const char *)fname, x, y);
+	SetValueString(STR_HUD_OVERLAY, str, true);
+}
+
+bool TParams::GetOverlay(vtString &fname, int &x, int &y) const
+{
+	vtString ovstring = GetValueString(STR_HUD_OVERLAY);
+	if (ovstring == "") return false;
+	char buf[256];
+	strcpy(buf, ovstring);
+	const char *name = strtok(buf, ",");
+	const char *xstr = strtok(NULL, ",");
+	const char *ystr = strtok(NULL, ",");
+	if (!fname || !xstr || !ystr)
+		return false;
+	fname = name; 
+	x = atoi(xstr);
+	y = atoi(ystr);
+	return true;
+}
+
 void TParams::WriteOverridesToXML(FILE *fp) const
 {
 	for (unsigned int i = 0; i < m_Layers.size(); i++)

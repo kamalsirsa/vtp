@@ -60,6 +60,10 @@ public:
 	// Combine the parameters to produce the texture name to use
 	vtString CookTextureFilename() const;
 
+	// Convenience method
+	void SetOverlay(const vtString &fname, int x, int y);
+	bool GetOverlay(vtString &fname, int &x, int &y) const;
+
 public:
 	// this must be a public member (currently..)
 	std::vector<vtTagArray> m_Layers;
