@@ -243,6 +243,10 @@ const char *vtProjection::GetProjectionNameShort() const
 		else
 			return "TM";
 	}
+	// Although supposedly Gauss-Kruger is just a form of Transverse Mercator.
+	//  give it its own name which the user will probably expect to see.
+	if (!strcmp(proj_string, "Gauss_Kruger"))
+		return "GK";
 	if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 		return "Albers";
 	if (!strncmp(proj_string, "Lambert_Conformal_Conic", 23))
@@ -934,6 +938,8 @@ static const char *papszDatumEquiv[] =
 	"European_Reference_System_1989",
 	"Old_Hawaiian",
 	"D_Old_Hawaiian",
+	"Pulkovo_1942",
+	"D_Pulkovo_1942",
 	NULL
 };
 
