@@ -148,11 +148,6 @@ SOURCE=.\Enviro.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Globe.cpp
-# ADD CPP /YX"vtlib/vtlib.h"
-# End Source File
-# Begin Source File
-
 SOURCE=.\Hawaii.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 # End Source File
@@ -329,10 +324,6 @@ SOURCE=.\Engines.h
 # Begin Source File
 
 SOURCE=.\Enviro.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Globe.h
 # End Source File
 # Begin Source File
 
