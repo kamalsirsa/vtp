@@ -201,7 +201,7 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_FULLVIEW, "Zoom to Full Res (1:1)");
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_MAGNIFIER, "Magnifier\tZ", "Magnifier", true);
-	viewMenu->Append(ID_VIEW_PAN, "Pan\tCtrl+<Space>", "Pan", true);
+	viewMenu->Append(ID_VIEW_PAN, "Pan\t<Space>", "Pan", true);
 	viewMenu->Append(ID_VIEW_DISTANCE, "Obtain Distance", "Obtain Distance", true);
 	viewMenu->Append(ID_VIEW_SETAREA, "Set Export Area", "Set Export Area", true);
 	viewMenu->AppendSeparator();
