@@ -37,8 +37,12 @@
  ******************************************************************************
  *
  * $Log$
- * Revision 1.1  2001/10/12 18:22:25  jlargent
- * Initial revision
+ * Revision 1.2  2003/03/22 22:57:05  bdiscoe
+ * whitespace cleanup
+ *
+ * Revision 1.1.1.1  2001/10/12 18:22:25  jlargent
+ * initial import
+ * jl
  *
  * Revision 1.15  2000/02/16 16:03:51  warmerda
  * added null shape support
@@ -95,7 +99,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-   
+
 /************************************************************************/
 /*                        Configuration options.                        */
 /************************************************************************/
@@ -122,7 +126,7 @@ typedef	struct
     FILE	*fpSHX;
 
     int		nShapeType;				/* SHPT_* */
-   
+
     int		nFileSize;				/* SHP file */
 
     int         nRecords;
@@ -182,7 +186,7 @@ typedef struct
     int		nParts;
     int		*panPartStart;
     int		*panPartType;
-   
+
     int		nVertices;
     double	*padfX;
     double	*padfY;
@@ -246,16 +250,16 @@ typedef struct shape_tree_node
 
     int		nSubNodes;
     struct shape_tree_node *apsSubNode[MAX_SUBNODE];
-   
+
 } SHPTreeNode;
 
 typedef struct
 {
     SHPHandle   hSHP;
-   
+
     int		nMaxDepth;
     int		nDimension;
-   
+
     SHPTreeNode	*psRoot;
 } SHPTree;
 
@@ -300,7 +304,7 @@ typedef	struct
     int		nCurrentRecord;
     int		bCurrentRecordModified;
     char	*pszCurrentRecord;
-   
+
     int		bNoHeader;
     int		bUpdated;
 } DBFInfo;

@@ -60,7 +60,7 @@ BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title
 {
 	m_bSetting = false;
 	m_bEdges = false;
-	BuildingDialogFunc( this, TRUE ); 
+	BuildingDialogFunc( this, TRUE );
 }
 
 void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld)
@@ -618,12 +618,12 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 	if (m_bEdges)
 	{
 		DestroyChildren();
-		BuildingEdgesDialogFunc( this, TRUE ); 
+		BuildingEdgesDialogFunc( this, TRUE );
 	}
 	else
 	{
 		DestroyChildren();
-		BuildingDialogFunc( this, TRUE ); 
+		BuildingDialogFunc( this, TRUE );
 		m_pSA->SetEditedEdge(NULL, 0, 0);
 	}
 	SetupControls();

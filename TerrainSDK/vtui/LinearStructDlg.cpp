@@ -1,12 +1,12 @@
 //
-// Name:        LinearStructDlg.cpp
+// Name: LinearStructDlg.cpp
 //
 // Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifdef __GNUG__
-    #pragma implementation "LinearStructDlg.cpp"
+	#pragma implementation "LinearStructDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -40,10 +40,10 @@ BEGIN_EVENT_TABLE(LinearStructureDlg,AutoDialog)
 END_EVENT_TABLE()
 
 LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-    const wxPoint &position, const wxSize& size, long style ) :
-    AutoDialog( parent, id, title, position, size, style )
+	const wxPoint &position, const wxSize& size, long style ) :
+	AutoDialog( parent, id, title, position, size, style )
 {
-    LinearStructDialogFunc( this, TRUE ); 
+	LinearStructDialogFunc( this, TRUE );
 
 	m_pSpacingSlider = GetSpacingslider();
 	m_pHeightSlider = GetHeightslider();
@@ -85,7 +85,7 @@ void LinearStructureDlg::OnFenceType( wxCommandEvent &event )
 	OnSetOptions(m_opts);
 }
 
-void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event) 
+void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	AddValidator(ID_TYPE, &m_iType);
 
