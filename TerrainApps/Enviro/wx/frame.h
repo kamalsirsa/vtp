@@ -164,7 +164,7 @@ public:
 	void OnUpdateEarthTilt(wxUpdateUIEvent& event);
 	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 
-	void OnHelpAbout(wxCommandEvent& event);
+	virtual void OnHelpAbout(wxCommandEvent& event);
 
 	void OnPopupProperties(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
