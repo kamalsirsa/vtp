@@ -1279,10 +1279,11 @@ void Field::SetNumRecords(int iNum)
 	switch (m_type)
 	{
 	case FT_Boolean: m_bool.SetSize(iNum);	break;
-	case FT_Integer: m_int.SetSize(iNum);	break;
 	case FT_Short: m_short.SetSize(iNum);	break;
+	case FT_Integer: m_int.SetSize(iNum);	break;
+	case FT_Float:	m_float.SetSize(iNum);	break;
 	case FT_Double:	m_double.SetSize(iNum);	break;
-	case FT_String: m_string.resize(iNum); break;
+	case FT_String: m_string.resize(iNum);	break;
 	}
 }
 
@@ -1292,8 +1293,9 @@ int Field::AddRecord()
 	switch (m_type)
 	{
 	case FT_Boolean: return	m_bool.Append(false);	break;
-	case FT_Integer: return	m_int.Append(0);		break;
 	case FT_Short:	return	m_short.Append(0);		break;
+	case FT_Integer: return	m_int.Append(0);		break;
+	case FT_Float:	return	m_float.Append(0.0f);	break;
 	case FT_Double:	return	m_double.Append(0.0);	break;
 	case FT_String:
 		index = m_string.size();
@@ -1318,12 +1320,16 @@ void Field::SetValue(unsigned int record, int value)
 		m_short[record] = value;
 	else if (m_type == FT_Double)
 		m_double[record] = value;
+	else if (m_type == FT_Float)
+		m_float[record] = (float) value;
 }
 
 void Field::SetValue(unsigned int record, double value)
 {
 	if (m_type == FT_Double)
 		m_double[record] = value;
+	else if (m_type == FT_Float)
+		m_float[record] = (float) value;
 	else if (m_type == FT_Integer)
 		m_int[record] = (int) value;
 	else if (m_type == FT_Short)
