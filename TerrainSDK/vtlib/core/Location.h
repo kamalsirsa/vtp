@@ -1,7 +1,7 @@
 //
 // Location classes
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -82,7 +82,7 @@ public:
 	void SetTransform(vtTransform *trans) { m_pTransform = trans; }
 	vtTransform *GetTransform() { return m_pTransform; }
 
-	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
+	void SetConversion(const vtLocalConversion &conv) { m_conv = conv; }
 
 	void SetProjection(const vtProjection &proj);
 	const vtProjection &GetAtProjection() const { return m_proj; }
