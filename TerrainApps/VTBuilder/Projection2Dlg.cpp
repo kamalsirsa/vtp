@@ -293,32 +293,49 @@ void Projection2Dlg::SetUIFromProjection()
 		}
 
 		// Supposedly, Gauss-Kruger is just a form of Transverse Mercator
-		if (!strcmp(proj_string, "Gauss_Kruger"))
+		else if (!strcmp(proj_string, "Gauss_Kruger"))
 			SetProjectionUI(PT_TM);
 
-		if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
+		else if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 			SetProjectionUI(PT_ALBERS);
 
-		if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
+		else if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
 			SetProjectionUI(PT_LCC);
 
-		if (!strcmp(proj_string, SRS_PT_LAMBERT_AZIMUTHAL_EQUAL_AREA))
+		else if (!strcmp(proj_string, SRS_PT_LAMBERT_AZIMUTHAL_EQUAL_AREA))
 			SetProjectionUI(PT_LAEA);
 
-		if (!strcmp(proj_string, SRS_PT_NEW_ZEALAND_MAP_GRID))
+		else if (!strcmp(proj_string, SRS_PT_NEW_ZEALAND_MAP_GRID))
 			SetProjectionUI(PT_NZMG);
 
-		if (!strcmp(proj_string, SRS_PT_SINUSOIDAL))
+		else if (!strcmp(proj_string, SRS_PT_SINUSOIDAL))
 			SetProjectionUI(PT_SINUS);
 
-		if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
+		else if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
 			SetProjectionUI(PT_STEREO);
 
-		if (!strcmp(proj_string, SRS_PT_OBLIQUE_STEREOGRAPHIC))
+		else if (!strcmp(proj_string, SRS_PT_OBLIQUE_STEREOGRAPHIC))
 			SetProjectionUI(PT_OS);
 
-		if (!strcmp(proj_string, SRS_PT_POLAR_STEREOGRAPHIC))
+		else if (!strcmp(proj_string, SRS_PT_POLAR_STEREOGRAPHIC))
 			SetProjectionUI(PT_PS);
+
+		// I've seen a .prj file for Stereo70 which refers to the projection
+		//  as "Double_Stereographic", but this is unknown by OGR.  We do know
+		//  about Oblique Stereographic, which is what i believe is meant.
+		else if (!strcmp(proj_string, "Double_Stereographic"))
+		{
+		    OGR_SRSNode *node = m_proj.GetAttrNode("PROJECTION");
+			node = node->GetChild(0);
+			node->SetValue(SRS_PT_OBLIQUE_STEREOGRAPHIC);
+			SetProjectionUI(PT_OS);
+		}
+		else
+		{
+			wxString2 str = _T("Unknown projection: ");
+			str += proj_string;
+			wxMessageBox(str);
+		}
 	}
 }
 
