@@ -621,13 +621,9 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 {
 	model->m_attempted_load = true;
 
-	vtNodeBase *pNode = vtLoadModel(model->m_filename);
-	if (!pNode)
-	{
-		// perhaps it's a relative path
-		vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
-		pNode = vtLoadModel(fullpath);
-	}
+	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
+	vtNodeBase *pNode = vtLoadModel(fullpath);
+
 	if (!pNode)
 	{
 		wxString2 str;
@@ -820,6 +816,11 @@ void vtFrame::DisplayCurrentItem()
 
 void vtFrame::ZoomToCurrentItem()
 {
+	if (!m_pCurrentItem)
+		return;
+	if (m_pCurrentItem->NumModels() < 1)
+		return;
+
 	vtModel *model = m_pCurrentItem->GetModel(0);
 	if (model)
 		ZoomToModel(model);
