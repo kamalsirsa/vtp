@@ -87,6 +87,8 @@ public:
 
 		const wxChar *result2 = GetString(_T("Key2"));
 		VTLOG(result2 == NULL? "test2: bad\n" : "test2: good\n");
+
+		delete csConv;
 	}
 	const wxChar *GetString(const wxChar *sz) const
 	{
