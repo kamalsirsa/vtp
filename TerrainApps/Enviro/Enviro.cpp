@@ -1455,7 +1455,10 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	if (m_mode == MM_PLANTS)
 	{
 		// try planting a tree there
-		VTLOG("Create a plant at %.2lf,%.2lf:", m_EarthPos.x, m_EarthPos.y);
+		if (pTerr->GetProjection().IsGeographic())
+			VTLOG("Create a plant at %.8lf,%.8lf:", m_EarthPos.x, m_EarthPos.y);
+		else
+			VTLOG("Create a plant at %.2lf,%.2lf:", m_EarthPos.x, m_EarthPos.y);
 		bool success = PlantATree(DPoint2(m_EarthPos.x, m_EarthPos.y));
 		VTLOG(" %s.\n", success ? "yes" : "no");
 	}
@@ -1992,6 +1995,12 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	bool bPlant = true;
 	if (m_PlantOpt.m_fSpacing > 0.0f)
 	{
+		// Spacing is in meters, but the picking functions work in
+		//  Earth coordinates.  Try to convert it to earth horiz units.
+		DPoint2 eoffset;
+		g_Conv.ConvertVectorToEarth(m_PlantOpt.m_fSpacing, 0, eoffset);
+		double epsilon = eoffset.x;
+
 		for (int i = 0; i < size; i++)
 		{
 			diff = epos - pia.GetPoint(i);
@@ -1999,7 +2008,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 			if (len < closest) closest = len;
 		}
-		if (closest < m_PlantOpt.m_fSpacing)
+		if (closest < epsilon)
 			bPlant = false;
 		VTLOG(" closest plant %.2fm,%s planting..", closest, bPlant ? "" : " not");
 	}
