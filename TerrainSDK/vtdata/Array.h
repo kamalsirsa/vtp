@@ -306,7 +306,7 @@ template <class E> bool Array<E>::SetAt(int i, E val)
 		if (!Grow(n))			// extend failure
 			return false;
 	   }
-	m_Data[i] = p;
+	m_Data[i] = val;
 	if (i >= m_Size)			// enlarge array size if at end
 		m_Size = i + 1;
 	return true;
