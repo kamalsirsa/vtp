@@ -12,7 +12,7 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#include "Vtdata/TParams.h"
+#include "vtdata/TParams.h"
 #include "vtui/wxString2.h"
 #include "TerrManDlg.h"
 #include "../Options.h"

@@ -36,7 +36,7 @@ CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 LDFLAGS  = $(LDIRFLAGS) \
 	   $(EXTRA_LDFLAGS)
 
-CXXSRC = $(filter-out CarEngine.cpp, $(wildcard *.cpp)) \
+CXXSRC = $(wildcard *.cpp) \
 	 $(filter-out wx/StartupDlg0.cpp, $(wildcard wx/*.cpp))
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = wxEnviro

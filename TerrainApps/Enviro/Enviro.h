@@ -1,14 +1,14 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef ENVIROH
 #define ENVIROH
 
-//#include "vtdata/Fence.h"
+#include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
 #include "vtlib/core/Engine.h"
 #include "vtlib/core/TimeEngines.h"
@@ -23,7 +23,6 @@ class IcoGlobe;
 class vtRoute;
 class vtUtilNode;
 class vtFence3d;
-enum FenceType;
 
 // Engines
 class vtTerrainFlyer;

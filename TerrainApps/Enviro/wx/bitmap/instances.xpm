@@ -1,5 +1,5 @@
 /* XPM */
-static char *instances_spm[] = {
+static char *instances_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "20 20 16 1",
 "  c black",
