@@ -166,23 +166,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 #if 0
 	if (m_Params.m_bBuildings)
 	{
-		if (PointIsInTerrain(c1)) // if area includes ben's house
-		{
-			// test ability to import a max model (a house)
-			vtTransform *house = LoadModel("BuildingModels/house3.dsm");
-			if (house)
-			{
-				// scale was one unit = 1 inch
-				// 1 inch = 2.54 centimeters = .0254 meters
-				float scale = .0254f;
-				house->Scale3(scale, scale, scale);
-
-				// plant it on the ground
-				PlantModelAtPoint(house, bound[7]);
-
-				AddNodeToLodGrid(house);
-			}
-		}
 		//import the lighthouses
 		vtTransform *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
 		if (lighthouse1)
@@ -433,7 +416,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 
 void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 {
-#if 0
+#if 1
 	// make some planes
 	for (int i = 0; i < 6; i++)
 	{
