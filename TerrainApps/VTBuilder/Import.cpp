@@ -1169,7 +1169,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerTy
 			ImportDialog.m_opt.pHeightField = ((vtElevLayer*)FindLayerOfType(LT_ELEVATION))->GetHeightField();
 		else
 			ImportDialog.m_opt.pHeightField = NULL;
-		pSL->AddElementsFromOGR_RAW(datasource, ImportDialog.m_opt, progress_callback);
+		pSL->AddElementsFromOGR(datasource, ImportDialog.m_opt, progress_callback);
 
 		pSL->GetProjection(Projection);
 		if (OGRERR_NONE != Projection.Validate())
