@@ -289,55 +289,6 @@
 			Name="Source-wx"
 			Filter="">
 			<File
-				RelativePath="wx\app.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						UsePrecompiledHeader="3"
-						PrecompiledHeaderThrough="wx/wxprec.h"
-						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="wx\BuildingDlg3d.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -528,6 +479,41 @@
 						Optimization="1"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\wx\EnviroApp.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug-wx/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Release_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Unicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="3"
+						PrecompiledHeaderThrough="wx/wxprec.h"
+						PrecompiledHeaderFile=".\Debug_Unicode/wxEnviroWX.pch"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="3"
 						PrecompiledHeaderThrough="wx/wxprec.h"
 						PrecompiledHeaderFile=".\Release-wx/wxEnviroWX.pch"/>
@@ -1210,9 +1196,6 @@
 			Name="Headers-wx"
 			Filter="">
 			<File
-				RelativePath="wx\app.h">
-			</File>
-			<File
 				RelativePath="wx\BuildingDlg3d.h">
 			</File>
 			<File
@@ -1223,6 +1206,9 @@
 			</File>
 			<File
 				RelativePath="wx\enviro_wdr.h">
+			</File>
+			<File
+				RelativePath=".\wx\EnviroApp.h">
 			</File>
 			<File
 				RelativePath=".\wx\EnviroGUI.h">
