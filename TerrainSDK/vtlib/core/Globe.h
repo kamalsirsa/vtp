@@ -61,7 +61,8 @@ public:
 	void SetLighting(bool bLight);
 	void SetTime(time_t time);
 	void ShowAxis(bool bShow);
-	void DoSeasonalTilt(bool bTilt) { m_bTilt = bTilt; }
+	void SetSeasonalTilt(bool bTilt) { m_bTilt = bTilt; }
+	bool GetSeasonalTilt() { return m_bTilt; }
 
 	// surface features
 	int AddGlobePoints(const char *fname, float fSize);
