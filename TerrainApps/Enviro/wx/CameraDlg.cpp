@@ -49,38 +49,40 @@ BEGIN_EVENT_TABLE(CameraDlg,AutoDialog)
 	EVT_SLIDER( ID_SLIDER_VEG, CameraDlg::OnSliderVeg )
 	EVT_SLIDER( ID_SLIDER_STRUCT, CameraDlg::OnSliderStruct )
 	EVT_SLIDER( ID_SLIDER_ROAD, CameraDlg::OnSliderRoad )
+	EVT_CHOICE( ID_SPEED_UNITS, CameraDlg::OnSpeedUnits )
 END_EVENT_TABLE()
 
 CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	m_iSpeedUnits = 0;
 	CameraDialogFunc( this, TRUE );
 	m_bSet = true;
 }
 
-#define FOV_MIN		2.0f
-#define FOV_RANGE	128.0f
+#define FOV_MIN	 2.0f
+#define FOV_RANGE   128.0f
 #define CLIP_MIN	0.0f
 #define CLIP_MAX	6.0f
-#define CLIP_RANGE	(CLIP_MAX-(CLIP_MIN))		// 1.0 to 1000000 meters
-#define SPEED_MIN	-1.0f
-#define SPEED_MAX	4.0f
-#define SPEED_RANGE	(SPEED_MAX-(SPEED_MIN))	// 0.1 to 10000 meters/sec
+#define CLIP_RANGE  (CLIP_MAX-(CLIP_MIN))	   // 1.0 to 1000000 meters
+#define SPEED_MIN   -1.0f
+#define SPEED_MAX   4.0f
+#define SPEED_RANGE (SPEED_MAX-(SPEED_MIN)) // 0.1 to 10000 meters/sec
 #define DIST_MIN	1.0f
 #define DIST_MAX	5.0f
-#define DIST_RANGE	(DIST_MAX-(DIST_MIN))		// 10 to 100000 meters
+#define DIST_RANGE  (DIST_MAX-(DIST_MIN))	   // 10 to 100000 meters
 
 void CameraDlg::SlidersToValues(int w)
 {
-	if (w == 1)	m_fFov =	FOV_MIN + (m_iFov * FOV_RANGE / 100);
-	if (w == 2)	m_fNear =	powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
-	if (w == 3)	m_fFar =	powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
-	if (w == 4)	m_fSpeed =	powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
+	if (w == 1) m_fFov =	FOV_MIN + (m_iFov * FOV_RANGE / 100);
+	if (w == 2) m_fNear =   powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
+	if (w == 3) m_fFar =	powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
+	if (w == 4) m_fSpeed =  powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
 
-	if (w == 5)	m_fDistVeg =	powf(10, (DIST_MIN + m_iDistVeg * DIST_RANGE / 100));
-	if (w == 6)	m_fDistStruct =	powf(10, (DIST_MIN + m_iDistStruct * DIST_RANGE / 100));
-	if (w == 7)	m_fDistRoad =	powf(10, (DIST_MIN + m_iDistRoad * DIST_RANGE / 100));
+	if (w == 5) m_fDistVeg =	powf(10, (DIST_MIN + m_iDistVeg * DIST_RANGE / 100));
+	if (w == 6) m_fDistStruct = powf(10, (DIST_MIN + m_iDistStruct * DIST_RANGE / 100));
+	if (w == 7) m_fDistRoad =   powf(10, (DIST_MIN + m_iDistRoad * DIST_RANGE / 100));
 
 	// safety check to prevent user from putting Near > Far
 	if (m_fNear >= m_fFar)
@@ -90,13 +92,13 @@ void CameraDlg::SlidersToValues(int w)
 void CameraDlg::ValuesToSliders()
 {
 	m_iFov =	(int) ((m_fFov - FOV_MIN) / FOV_RANGE * 100);
-	m_iNear =	(int) ((log10f(m_fNear) - CLIP_MIN) / CLIP_RANGE * 100);
+	m_iNear =   (int) ((log10f(m_fNear) - CLIP_MIN) / CLIP_RANGE * 100);
 	m_iFar =	(int) ((log10f(m_fFar) - CLIP_MIN) / CLIP_RANGE * 100);
-	m_iSpeed =	(int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
+	m_iSpeed =  (int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
 
 	m_iDistVeg =	(int) ((log10f(m_fDistVeg) - DIST_MIN) / DIST_RANGE * 100);
-	m_iDistStruct =	(int) ((log10f(m_fDistStruct) - DIST_MIN) / DIST_RANGE * 100);
-	m_iDistRoad =	(int) ((log10f(m_fDistRoad) - DIST_MIN) / DIST_RANGE * 100);
+	m_iDistStruct = (int) ((log10f(m_fDistStruct) - DIST_MIN) / DIST_RANGE * 100);
+	m_iDistRoad =   (int) ((log10f(m_fDistRoad) - DIST_MIN) / DIST_RANGE * 100);
 }
 
 void CameraDlg::GetValues()
@@ -106,13 +108,27 @@ void CameraDlg::GetValues()
 	m_fNear = pCam->GetHither();
 	m_fFar = pCam->GetYon();
 
-	m_fSpeed = g_App.GetFlightSpeed();
+	float speed = g_App.GetFlightSpeed();
+	switch (m_iSpeedUnits)
+	{
+	case 0: // m/s
+		m_fSpeed = speed;
+		break;
+	case 1: // Km/h
+		m_fSpeed = speed / 1000 * (60*60);	// m -> km, sec -> hour
+		break;
+	case 2: // Miles/h
+		m_fSpeed = speed / 1000 * (60*60);	// m -> km, sec -> hour
+		m_fSpeed /= 1.609347;   // km -> miles
+		break;
+	}
+
 	vtTerrain *t = GetCurrentTerrain();
 	if (t)
 	{
 		m_fDistVeg =	t->GetLODDistance(TFT_VEGETATION);
-		m_fDistStruct =	t->GetLODDistance(TFT_STRUCTURES);
-		m_fDistRoad =	t->GetLODDistance(TFT_ROADS);
+		m_fDistStruct = t->GetLODDistance(TFT_STRUCTURES);
+		m_fDistRoad =   t->GetLODDistance(TFT_ROADS);
 	}
 }
 
@@ -126,7 +142,22 @@ void CameraDlg::SetValues()
 	pCam->SetHither(m_fNear);
 	pCam->SetYon(m_fFar);
 
-	g_App.SetFlightSpeed(m_fSpeed);
+	float speed;
+	switch (m_iSpeedUnits)
+	{
+	case 0: // m/s
+		speed = m_fSpeed;
+		break;
+	case 1: // Km/h
+		speed = m_fSpeed * 1000 / (60*60);	// km -> m, hour -> sec
+		break;
+	case 2: // Miles/h
+		speed = m_fSpeed * 1000 / (60*60);	// km -> m, hour -> sec
+		speed *= 1.609347;   // miles -> km
+		break;
+	}
+	g_App.SetFlightSpeed(speed);
+
 	vtTerrain *t = GetCurrentTerrain();
 	if (t)
 	{
@@ -145,12 +176,25 @@ void CameraDlg::TransferToWindow()
 
 // WDR: handler implementations for CameraDlg
 
+void CameraDlg::OnSpeedUnits( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	GetValues();
+	ValuesToSliders();
+	TransferToWindow();
+}
+
 void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	AddNumValidator(ID_FOV, &m_fFov);
 	AddNumValidator(ID_NEAR, &m_fNear);
 	AddNumValidator(ID_FAR, &m_fFar);
 	AddNumValidator(ID_SPEED, &m_fSpeed);
+
+	GetSpeedUnits()->Append(_T("Meters/sec"));
+	GetSpeedUnits()->Append(_T("Km/hour"));
+	GetSpeedUnits()->Append(_T("Miles/hour"));
+	AddValidator(ID_SPEED_UNITS, &m_iSpeedUnits);
 
 	AddNumValidator(ID_LOD_VEG, &m_fDistVeg);
 	AddNumValidator(ID_LOD_STRUCT, &m_fDistStruct);

@@ -31,6 +31,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for CameraDlg
+	wxChoice* GetSpeedUnits()  { return (wxChoice*) FindWindow( ID_SPEED_UNITS ); }
 	void SlidersToValues(int w);
 	void ValuesToSliders();
 	void GetValues();
@@ -47,6 +48,8 @@ private:
 	int m_iDistStruct;
 	int m_iDistRoad;
 
+	int m_iSpeedUnits;
+
 	float m_fFov;
 	float m_fNear;
 	float m_fFar;
@@ -59,6 +62,7 @@ private:
 
 private:
 	// WDR: handler declarations for CameraDlg
+	void OnSpeedUnits( wxCommandEvent &event );
 	void OnSpeedSlider( wxCommandEvent &event );
 	void OnFarSlider( wxCommandEvent &event );
 	void OnNearSlider( wxCommandEvent &event );
