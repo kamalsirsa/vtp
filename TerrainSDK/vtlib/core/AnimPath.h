@@ -44,18 +44,12 @@ struct ControlPoint
 class vtAnimPath
 {
 public:
-	vtAnimPath():
-		m_InterpMode(LINEAR),
-		m_bLoop(false),
-		m_fLoopSegmentTime(0.0f) {}
+	vtAnimPath();
+	vtAnimPath(const vtAnimPath &ap);
+	virtual ~vtAnimPath();
 
-	vtAnimPath(const vtAnimPath &ap):
-		m_TimeControlPointMap(ap.m_TimeControlPointMap),
-		m_InterpMode(ap.m_InterpMode),
-		m_bLoop(ap.m_bLoop),
-		m_fLoopSegmentTime(0.0f) {}
-
-	virtual ~vtAnimPath() {}
+	/// Must tell the AnimPath what projection its points are in, for serialization.
+	void SetProjection(const vtProjection &proj);
 
 	/// get the transformation matrix for a point in time.
 	bool GetMatrix(double time, FMatrix4 &matrix, bool bPosOnly) const
@@ -98,11 +92,11 @@ public:
 
 	bool IsEmpty() const { return m_TimeControlPointMap.empty(); }
 
-/*	void Read(std::istream &in);
-	void Write(std::ostream &out) const; */
-
 	void SetLoop(bool bFlag);
 	bool GetLoop() const { return m_bLoop; }
+
+	bool Write(const char *fname);
+	bool Read(const char *fname);
 
 	bool CreateFromLineString(const vtProjection &proj, vtFeatureSet *pSet);
 
@@ -118,6 +112,12 @@ protected:
 	bool			m_bLoop;
 	float			m_fLoopSegmentTime;
 	ControlPoint	m_LoopControlPoint;
+
+	// For dealing with global projection
+	vtProjection	m_proj;
+	OCT			*m_pConvertToWGS;
+	OCT			*m_pConvertFromWGS;
+	friend class AnimPathVisitor;
 };
 
 /**

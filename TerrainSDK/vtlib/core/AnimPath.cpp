@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "AnimPath.h"
 #include "vtdata/LocalConversion.h"
+#include "vtdata/vtLOg.h"
 
 
 void ControlPoint::Interpolate(float ratio, const ControlPoint &first, const ControlPoint &second)
@@ -34,6 +35,49 @@ void ControlPoint::GetMatrix(FMatrix4 &matrix, bool bPosOnly) const
 	}
 
 	matrix.Translate(m_Position);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+vtAnimPath::vtAnimPath() :
+	m_InterpMode(LINEAR),
+	m_bLoop(false),
+	m_fLoopSegmentTime(0.0f)
+{
+	m_pConvertToWGS = NULL;
+	m_pConvertFromWGS = NULL;
+}
+
+vtAnimPath::vtAnimPath(const vtAnimPath &ap) :
+	m_TimeControlPointMap(ap.m_TimeControlPointMap),
+	m_InterpMode(ap.m_InterpMode),
+	m_bLoop(ap.m_bLoop),
+	m_fLoopSegmentTime(0.0f)
+{
+	m_pConvertToWGS = NULL;
+	m_pConvertFromWGS = NULL;
+}
+
+vtAnimPath::~vtAnimPath()
+{
+	delete m_pConvertToWGS;
+	delete m_pConvertFromWGS;
+}
+
+void vtAnimPath::SetProjection(const vtProjection &proj)
+{
+	m_proj = proj;
+
+	// convert from projected to global CS
+	vtProjection global_proj;
+	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+
+	delete m_pConvertToWGS;
+	delete m_pConvertFromWGS;
+
+	m_pConvertToWGS = CreateCoordTransform(&m_proj, &global_proj, true);
+	m_pConvertFromWGS = CreateCoordTransform(&global_proj, &m_proj, true);
 }
 
 void vtAnimPath::Insert(double time,const ControlPoint &controlPoint)
@@ -230,36 +274,6 @@ float vtAnimPath::GetTotalTime()
 }
 
 
-/*void vtAnimPath::Read(std::istream &in)
-{
-	while (!in.eof())
-	{
-		double time;
-		FPoint3 position;
-		FQuat rotation;
-		in >> time >> position.x >> position.y >> position.z >> rotation.x >> rotation.y >> rotation.z >> rotation.w;
-		if(!in.eof())
-			insert(time,ControlPoint(position,rotation));
-	}
-}
-
-void vtAnimPath::Write(std::ostream &fout) const
-{
-	int prec = fout.precision();
-	fout.precision(15);
-
-	const TimeControlPointMap &tcpm = getTimeControlPointMap();
-	for(TimeControlPointMap::const_iterator tcpmitr=tcpm.begin();
-		tcpmitr!=tcpm.end();
-		++tcpmitr)
-	{
-		const ControlPoint &cp = tcpmitr->second;
-		fout<<tcpmitr->first<<" "<<cp._position.x<<" "<<cp._position.y<<" "<<cp._position.z<<" "<<cp._rotation<<std::endl;
-	}
-
-	fout.precision(prec);
-}*/
-
 void vtAnimPathEngine::SetEnabled(bool bOn)
 {
 	bool bWas = m_bEnabled;
@@ -332,6 +346,137 @@ void vtAnimPathEngine::UpdateTargets()
 void vtAnimPathEngine::Reset()
 {
 	m_fTime = 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+bool vtAnimPath::Write(const char *fname)
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	FILE *fp = fopen(fname, "wb");
+	if (!fp) return false;
+
+	fprintf(fp, "<?xml version=\"1.0\"?>\n");
+	fprintf(fp, "<animation-path file-format-version=\"1.0\">\n");
+
+	FMatrix3 m3;
+	FPoint3 vector;
+	FPoint3 world_p1, world_p2;
+	DPoint3 earth_p1, earth_p2;
+
+	TimeControlPointMap::iterator it = m_TimeControlPointMap.begin();
+	while (it != m_TimeControlPointMap.end())
+	{
+		const ControlPoint &point = it->second;
+
+		point.m_Rotation.GetMatrix(m3);
+		m3.Transform(FPoint3(0,0,-1), vector);
+
+		world_p1 = point.m_Position;
+		world_p2 = world_p1 + vector;
+		g_Conv.ConvertToEarth(world_p1, earth_p1);
+		g_Conv.ConvertToEarth(world_p2, earth_p2);
+
+		int result = 0;
+		result += m_pConvertToWGS->Transform(1, &earth_p1.x, &earth_p1.y);
+		result += m_pConvertToWGS->Transform(1, &earth_p2.x, &earth_p2.y);
+
+		fprintf(fp, "\t<location");
+
+		fprintf(fp, " p1=\"%.12lf,%.12lf,%.2lf\"",
+			earth_p1.x, earth_p1.y, earth_p1.z);
+		fprintf(fp, " p2=\"%.12lf,%.12lf,%.2lf\"",
+			earth_p2.x, earth_p2.y, earth_p2.z);
+		fprintf(fp, " time=\"%.2f\"", it->first);
+
+		// Attributes that might be added later include:
+		// 1. roll
+		// 2. camera parameters (fov, orthographic, etc.) although those
+		// don't apply to the locations of non-camera objects.
+
+		fprintf(fp, " />\n");
+		it++;
+	}
+	fprintf(fp, "</animation-path>\n");
+	fclose(fp);
+	return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/**
+ * Internal class used by the vtAnimPath class to read .vtap XML files.
+ */
+class AnimPathVisitor : public XMLVisitor
+{
+public:
+	AnimPathVisitor(vtAnimPath *path) { m_path = path; }
+	void startXML() {}
+	void endXML() {}
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name) {}
+	void data(const char *s, int length) {}
+private:
+	vtAnimPath *m_path;
+};
+
+void AnimPathVisitor::startElement(const char *name, const XMLAttributes &atts)
+{
+	const char *attval;
+
+	if (!strcmp(name, "location"))
+	{
+		DPoint3 earth_p1, earth_p2;
+		FPoint3 world_p1, world_p2, vector;
+		float time;
+
+		attval = atts.getValue("p1");
+		if (attval)
+			sscanf(attval, "%lf,%lf,%lf", &earth_p1.x, &earth_p1.y, &earth_p1.z);
+		attval = atts.getValue("p2");
+		if (attval)
+			sscanf(attval, "%lf,%lf,%lf", &earth_p2.x, &earth_p2.y, &earth_p2.z);
+		attval = atts.getValue("time");
+		if (attval)
+			sscanf(attval, "%f", &time);
+
+		int result = 0;
+		result += m_path->m_pConvertFromWGS->Transform(1, &earth_p1.x, &earth_p1.y);
+		result += m_path->m_pConvertFromWGS->Transform(1, &earth_p2.x, &earth_p2.y);
+
+		g_Conv.ConvertFromEarth(earth_p1, world_p1);
+		g_Conv.ConvertFromEarth(earth_p2, world_p2);
+
+		ControlPoint point;
+		point.m_Position = world_p1;
+		vector = world_p2 - world_p1;
+		point.m_Rotation.SetFromVector(vector);
+
+		m_path->Insert(time, point);
+	}
+}
+
+/////////////////////////////////////////////
+
+bool vtAnimPath::Read(const char *fname)
+{
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
+	AnimPathVisitor visitor(this);
+	try
+	{
+		readXML(fname, visitor);
+	}
+	catch (xh_io_exception &exp)
+	{
+		// TODO: would be good to pass back the error message.
+		VTLOG("XML parsing error: %s\n", exp.getFormattedMessage().c_str());
+		return false;
+	}
+	return true;
 }
 
 
