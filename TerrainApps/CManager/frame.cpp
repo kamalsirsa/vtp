@@ -772,7 +772,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	model->m_attempted_load = true;
 
 	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
-	vtNodeBase *pNode = vtNode::LoadModel(fullpath);
+	vtNode *pNode = vtNode::LoadModel(fullpath);
 
 	if (!pNode)
 	{
