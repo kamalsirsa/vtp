@@ -31,7 +31,8 @@
 
 // WDR: event table for LinearStructureDlg
 
-BEGIN_EVENT_TABLE(LinearStructureDlg,AutoDialog)
+BEGIN_EVENT_TABLE(LinearStructureDlg, AutoDialog)
+	EVT_INIT_DIALOG (LinearStructureDlg::OnInitDialog)
 	EVT_CHOICE( ID_TYPE, LinearStructureDlg::OnFenceType )
 	EVT_TEXT( ID_HEIGHTEDIT, LinearStructureDlg::OnHeightEdit )
 	EVT_TEXT( ID_SPACINGEDIT, LinearStructureDlg::OnSpacingEdit )
@@ -48,6 +49,28 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	m_pSpacingSlider = GetSpacingslider();
 	m_pHeightSlider = GetHeightslider();
 	m_pFenceChoice = GetFencetype();
+
+	m_iType = 0;
+	m_opts.fHeight = FENCE_DEFAULT_HEIGHT;
+	m_opts.fSpacing = FENCE_DEFAULT_SPACING;
+
+	AddValidator(ID_TYPE, &m_iType);
+
+	AddValidator(ID_HEIGHTSLIDER, &m_iHeight);
+	AddValidator(ID_SPACINGSLIDER, &m_iSpacing);
+
+	AddNumValidator(ID_HEIGHTEDIT, &m_opts.fHeight);
+	AddNumValidator(ID_SPACINGEDIT, &m_opts.fSpacing);
+
+	// NB -- these must match the FT_ enum in order
+	m_pFenceChoice->Clear();
+	m_pFenceChoice->Append(_T("Wooden posts, 3 wires"));
+	m_pFenceChoice->Append(_T("Metal poles, chain-link"));
+	m_pFenceChoice->Append(_T("English Hedgerow"));
+	m_pFenceChoice->Append(_T("English Drystone"));
+	m_pFenceChoice->Append(_T("English Privet"));
+	m_pFenceChoice->Append(_T("English Beech"));
+	m_pFenceChoice->Append(_T("Coursed Stone"));
 }
 
 // WDR: handler implementations for LinearStructureDlg
@@ -87,30 +110,7 @@ void LinearStructureDlg::OnFenceType( wxCommandEvent &event )
 
 void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	AddValidator(ID_TYPE, &m_iType);
-
-	AddValidator(ID_HEIGHTSLIDER, &m_iHeight);
-	AddValidator(ID_SPACINGSLIDER, &m_iSpacing);
-
-	AddNumValidator(ID_HEIGHTEDIT, &m_opts.fHeight);
-	AddNumValidator(ID_SPACINGEDIT, &m_opts.fSpacing);
-
-	m_iType = 0;
-	m_opts.fHeight = FENCE_DEFAULT_HEIGHT;
-	m_opts.fSpacing = FENCE_DEFAULT_SPACING;
-
 	ValuesToSliders();
-
-	// NB -- these must match the FT_ enum in order
-	m_pFenceChoice->Clear();
-	m_pFenceChoice->Append(_T("Wooden posts, 3 wires"));
-	m_pFenceChoice->Append(_T("Metal poles, chain-link"));
-	m_pFenceChoice->Append(_T("English Hedgerow"));
-	m_pFenceChoice->Append(_T("English Drystone"));
-	m_pFenceChoice->Append(_T("English Privet"));
-	m_pFenceChoice->Append(_T("English Beech"));
-	m_pFenceChoice->Append(_T("Coursed Stone"));
-
 	TransferDataToWindow();
 
 	m_opts.eType = (FenceType) m_iType;

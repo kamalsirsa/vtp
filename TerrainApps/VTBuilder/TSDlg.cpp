@@ -27,7 +27,7 @@
 
 // WDR: event table for TSDialog
 
-BEGIN_EVENT_TABLE(TSDialog,AutoDialog)
+BEGIN_EVENT_TABLE(TSDialog, AutoDialog)
 	EVT_CHOICE( ID_MPP, TSDialog::OnMpp )
 	EVT_CHOICE( ID_THEME, TSDialog::OnTheme )
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, TSDialog::OnRadioOutput )
@@ -41,6 +41,26 @@ TSDialog::TSDialog( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	// WDR: dialog function TSDialogFunc for TSDialog
 	TSDialogFunc( this, TRUE ); 
+
+	AddValidator(ID_THEME, &m_iTheme);
+	AddValidator(ID_MPP, &m_iMpp);
+
+	// output options
+	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
+	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
+
+	GetTheme()->Append(_("Relief"));
+	GetTheme()->Append(_("Image"));
+	GetTheme()->Append(_("Topo"));
+
+	m_bNewLayer = false;
+	m_bToFile = true;
+
+	m_iTheme = 1;
+	m_iMpp = 0;
+	UpdateMpp();
+	UpdateMetersPerPixel();
 }
 
 void TSDialog::UpdateMpp()
@@ -105,31 +125,6 @@ void TSDialog::OnRadioOutput( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	EnableBasedOnConstraint();
-}
-
-void TSDialog::OnInitDialog(wxInitDialogEvent& event)
-{
-	AddValidator(ID_THEME, &m_iTheme);
-	AddValidator(ID_MPP, &m_iMpp);
-
-	// output options
-	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
-	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
-	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
-
-	GetTheme()->Append(_("Relief"));
-	GetTheme()->Append(_("Image"));
-	GetTheme()->Append(_("Topo"));
-
-	m_bNewLayer = false;
-	m_bToFile = true;
-
-	m_iTheme = 1;
-	m_iMpp = 0;
-	UpdateMpp();
-	UpdateMetersPerPixel();
-
-	wxDialog::OnInitDialog(event);
 }
 
 void TSDialog::OnDotDotDot( wxCommandEvent &event )

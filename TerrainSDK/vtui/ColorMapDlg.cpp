@@ -29,7 +29,8 @@
 
 // WDR: event table for ColorMapDlg
 
-BEGIN_EVENT_TABLE(ColorMapDlg,AutoDialog)
+BEGIN_EVENT_TABLE(ColorMapDlg, AutoDialog)
+	EVT_INIT_DIALOG (ColorMapDlg::OnInitDialog)
 	EVT_LIST_ITEM_SELECTED( ID_COLORLIST, ColorMapDlg::OnItemSelected )
 	EVT_LIST_ITEM_DESELECTED( ID_COLORLIST, ColorMapDlg::OnItemSelected )
 	EVT_BUTTON( ID_CHANGE_COLOR, ColorMapDlg::OnChangeColor )

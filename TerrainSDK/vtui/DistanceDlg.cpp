@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,7 +25,7 @@
 
 // WDR: event table for DistanceDlg
 
-BEGIN_EVENT_TABLE(DistanceDlg,AutoDialog)
+BEGIN_EVENT_TABLE(DistanceDlg, AutoDialog)
 	EVT_INIT_DIALOG (DistanceDlg::OnInitDialog)
 	EVT_CHOICE( ID_UNITS1, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS2, DistanceDlg::OnUnits )
@@ -39,6 +39,26 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	AutoDialog( parent, id, title, position, size, style )
 {
 	DistanceDialogFunc( this, TRUE );
+
+	GetUnits2()->Append(_T("Meters"));
+	GetUnits2()->Append(_T("Feet"));
+	GetUnits2()->Append(_T("US Survey Feet"));
+
+	GetUnits3()->Append(_T("Meters"));
+	GetUnits3()->Append(_T("Feet"));
+	GetUnits3()->Append(_T("US Survey Feet"));
+	GetUnits3()->Append(_T("Kilometers"));
+	GetUnits3()->Append(_T("Miles"));
+
+	GetUnits4()->Append(_T("Meters"));
+	GetUnits4()->Append(_T("Feet"));
+	GetUnits4()->Append(_T("US Survey Feet"));
+	GetUnits4()->Append(_T("Kilometers"));
+	GetUnits4()->Append(_T("Miles"));
+
+	GetUnits5()->Append(_T("Meters"));
+	GetUnits5()->Append(_T("Feet"));
+	GetUnits5()->Append(_T("US Survey Feet"));
 
 	AddValidator(ID_UNITS1, &m_iUnits1);
 	AddValidator(ID_UNITS2, &m_iUnits2);
@@ -237,32 +257,7 @@ void DistanceDlg::UpdateAvailableUnits()
 
 void DistanceDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetUnits2()->Clear();
-	GetUnits2()->Append(_T("Meters"));
-	GetUnits2()->Append(_T("Feet"));
-	GetUnits2()->Append(_T("US Survey Feet"));
-
-	GetUnits3()->Clear();
-	GetUnits3()->Append(_T("Meters"));
-	GetUnits3()->Append(_T("Feet"));
-	GetUnits3()->Append(_T("US Survey Feet"));
-	GetUnits3()->Append(_T("Kilometers"));
-	GetUnits3()->Append(_T("Miles"));
-
-	GetUnits4()->Clear();
-	GetUnits4()->Append(_T("Meters"));
-	GetUnits4()->Append(_T("Feet"));
-	GetUnits4()->Append(_T("US Survey Feet"));
-	GetUnits4()->Append(_T("Kilometers"));
-	GetUnits4()->Append(_T("Miles"));
-
-	GetUnits5()->Clear();
-	GetUnits5()->Append(_T("Meters"));
-	GetUnits5()->Append(_T("Feet"));
-	GetUnits5()->Append(_T("US Survey Feet"));
-
 	UpdateAvailableUnits();
-
 	wxDialog::OnInitDialog(event);
 }
 

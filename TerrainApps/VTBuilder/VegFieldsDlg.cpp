@@ -27,7 +27,8 @@
 
 // WDR: event table for VegFieldsDlg
 
-BEGIN_EVENT_TABLE(VegFieldsDlg,AutoDialog)
+BEGIN_EVENT_TABLE(VegFieldsDlg, AutoDialog)
+	EVT_INIT_DIALOG (VegFieldsDlg::OnInitDialog)
 	EVT_CHOICE( ID_SPECIES_FIELD, VegFieldsDlg::OnChoice1 )
 	EVT_CHOICE( ID_HEIGHT_FIELD, VegFieldsDlg::OnChoice2 )
 	EVT_BUTTON( wxID_OK, VegFieldsDlg::OnOK )
@@ -42,6 +43,18 @@ VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	AutoDialog( parent, id, title, position, size, style )
 {
 	VegFieldsDialogFunc( this, TRUE ); 
+
+	m_bUseSpecies = true;
+	m_bSpeciesUseField = false;
+
+	AddValidator(ID_USE_SPECIES, &m_bUseSpecies);
+	AddValidator(ID_SPECIES_USE_FIELD, &m_bSpeciesUseField);
+
+	m_bHeightRandomize = true;
+	m_bHeightUseField = false;
+
+	AddValidator(ID_HEIGHT_RANDOM, &m_bHeightRandomize);
+	AddValidator(ID_HEIGHT_USE_FIELD, &m_bHeightUseField);
 }
 
 void VegFieldsDlg::SetShapefileName(const wxString &filename)
@@ -126,32 +139,16 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (fieldtype == FTInteger || fieldtype == FTDouble)
 			GetHeightField()->Append(str, clientdata);
 	}
-
-	m_bUseSpecies = true;
-	m_bSpeciesUseField = false;
-
-	AddValidator(ID_USE_SPECIES, &m_bUseSpecies);
-	AddValidator(ID_SPECIES_USE_FIELD, &m_bSpeciesUseField);
-
-	m_bHeightRandomize = true;
-	m_bHeightUseField = false;
-
-	AddValidator(ID_HEIGHT_RANDOM, &m_bHeightRandomize);
-	AddValidator(ID_HEIGHT_USE_FIELD, &m_bHeightUseField);
-
 	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
-
 	RefreshEnabled();
 }
 
 void VegFieldsDlg::OnChoice1( wxCommandEvent &event )
 {
-	
 }
 
 void VegFieldsDlg::OnChoice2( wxCommandEvent &event )
 {
-	
 }
 
 void VegFieldsDlg::OnOK( wxCommandEvent &event )
@@ -180,5 +177,4 @@ void VegFieldsDlg::OnOK( wxCommandEvent &event )
 
 	wxDialog::OnOK(event);
 }
-
 

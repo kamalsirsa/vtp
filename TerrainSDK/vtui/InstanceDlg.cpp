@@ -12,10 +12,6 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
-
 #include "InstanceDlg.h"
 #include "wxString2.h"
 #include "vtdata/Content.h"
@@ -32,7 +28,8 @@
 
 // WDR: event table for InstanceDlg
 
-BEGIN_EVENT_TABLE(InstanceDlg,AutoDialog)
+BEGIN_EVENT_TABLE(InstanceDlg, AutoDialog)
+	EVT_INIT_DIALOG (InstanceDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_RADIO_CONTENT, InstanceDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_MODEL, InstanceDlg::OnRadio )
 	EVT_CHOICE( ID_CHOICE_FILE, InstanceDlg::OnChoice )
@@ -48,9 +45,14 @@ InstanceDlg::InstanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 {
 	// WDR: dialog function InstanceDialogFunc for InstanceDlg
 	InstanceDialogFunc( this, TRUE );
+
 	m_bContent = true;
 	m_iManager = 0;
 	m_iItem = 0;
+
+	AddValidator(ID_RADIO_CONTENT, &m_bContent);
+	AddValidator(ID_CHOICE_FILE, &m_iManager);
+	AddValidator(ID_CHOICE_ITEM, &m_iItem);
 }
 
 void InstanceDlg::UpdateLoc()
@@ -155,10 +157,6 @@ void InstanceDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetChoiceType()->Clear();
 	GetChoiceType()->Append(_T("(All)"));
 	GetChoiceType()->Select(0);
-
-	AddValidator(ID_RADIO_CONTENT, &m_bContent);
-	AddValidator(ID_CHOICE_FILE, &m_iManager);
-	AddValidator(ID_CHOICE_ITEM, &m_iItem);
 
 	UpdateLoc();
 	UpdateEnabling();

@@ -58,7 +58,6 @@ private:
 	void OnRadioOutput( wxCommandEvent &event );
 	void OnTheme( wxCommandEvent &event );
 	void OnMpp( wxCommandEvent &event );
-	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()
