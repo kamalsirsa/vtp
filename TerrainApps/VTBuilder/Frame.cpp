@@ -196,11 +196,11 @@ void MainFrame::SetupUI()
 	}
 	if (warn)
 	{
-		wxMessageBox("Unable to locate the necessary files for full coordinate"
-			" system support.  Check that the environment variables GEOTIFF_CSV"
-			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4"
-			" data files.  If you don't need full support for coordinate systems"
-			" including converting between different projections, you can ignore"
+		wxMessageBox("Unable to locate the necessary files for full coordinate\n"
+			" system support.  Check that the environment variables GEOTIFF_CSV\n"
+			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n"
+			" data files.  If you don't need full support for coordinate systems\n"
+			" including converting between different projections, you can ignore\n"
 			" this warning.", "VTBuilder Warning");
 	}
 
