@@ -228,6 +228,11 @@ protected:
  * A Trackball is a navigation engine which can move a Camera (or any
  * other Transform target) and move it around a center point based on
  * mouse input.
+ *
+ * You can set which combinations of mouse buttons and modifier keys
+ * will rotate, zoom and translate the target.  The default is:
+ *	- Middle button: Rotate.
+ *  - Middle button with shift key: Zoom.
  */
 class vtTrackball : public vtLastMouse
 {

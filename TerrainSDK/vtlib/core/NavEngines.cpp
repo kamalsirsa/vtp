@@ -719,29 +719,53 @@ vtTrackball::vtTrackball(float fRadius)
 	m_zoom_modifier = VT_SHIFT;
 	// default to no translation
 	m_trans_button = -1;
-	m_zoom_modifier = -1;
+	m_trans_modifier = -1;
 }
 
+/**
+ * Set the radius, the distance from the pivot point that the Trackball
+ * rotates around.
+ */
 void vtTrackball::SetRadius(float fRadius)
 {
 	m_Pos.z = fRadius;
 }
 
+/**
+ * Get the radius, the distance from the pivot point that the Trackball
+ * rotates around.
+ */
 float vtTrackball::GetRadius()
 {
 	return m_Pos.z;
 }
 
+/**
+ * Set the scale factor for zoom, which controls how fast the Trackball will
+ * zoom in/out.
+ */
 void vtTrackball::SetZoomScale(float s)
 {
 	m_fZoomScale = s;
 }
 
+/**
+ * Set the scale factor for translation, which controls how fast the Trackball
+ * will translate its target.
+ */
 void vtTrackball::SetTransScale(float s)
 {
 	m_fTransScale = s;
 }
 
+/**
+ * Set the buttons and modifier keys that will cause the Trackball to rotate.
+ *
+ * \param button	The button state (VT_LEFT, VT_RIGHT, and/or VT_MIDDLE)
+ * \param modifier	The modifier state (VT_SHIFT, VT_CONTROL, and/or VT_ALT)
+ * \param bExact	If true, then exactly this button must occur.  Otherwise,
+ *		any button state that includes this state will suffice.
+ */
 void vtTrackball::SetRotateButton(int button, int modifier, bool bExact)
 {
 	m_rotate_button = button;
@@ -749,6 +773,14 @@ void vtTrackball::SetRotateButton(int button, int modifier, bool bExact)
 	m_rotate_exact = bExact;
 }
 
+/**
+ * Set the buttons and modifier keys that will cause the Trackball to zoom.
+ *
+ * \param button	The button state (VT_LEFT, VT_RIGHT, and/or VT_MIDDLE)
+ * \param modifier	The modifier state (VT_SHIFT, VT_CONTROL, and/or VT_ALT)
+ * \param bExact	If true, then exactly this button must occur.  Otherwise,
+ *		any button state that includes this state will suffice.
+ */
 void vtTrackball::SetZoomButton(int button, int modifier, bool bExact)
 {
 	m_zoom_button = button;
@@ -756,6 +788,14 @@ void vtTrackball::SetZoomButton(int button, int modifier, bool bExact)
 	m_zoom_exact = bExact;
 }
 
+/**
+ * Set the buttons and modifier keys that will cause the Trackball to translate.
+ *
+ * \param button	The button state (VT_LEFT, VT_RIGHT, and/or VT_MIDDLE)
+ * \param modifier	The modifier state (VT_SHIFT, VT_CONTROL, and/or VT_ALT)
+ * \param bExact	If true, then exactly this button must occur.  Otherwise,
+ *		any button state that includes this state will suffice.
+ */
 void vtTrackball::SetTranslateButton(int button, int modifier, bool bExact)
 {
 	m_trans_button = button;
@@ -865,12 +905,24 @@ void vtTrackball::OnMouse(vtMouseEvent &event)
 	}
 }
 
+/**
+ * Set the direction the trackball is facing.
+ *
+ * \param fTheta, fPhi Polar coordinates for the target relative to the
+ *		pivot point.
+ */
 void vtTrackball::SetDirection(float fTheta, float fPhi)
 {
 	m_Pos.x = fTheta;
 	m_Pos.y = fPhi;
 }
 
+/**
+ * Shift the direction the trackball is facing, by a given offset.
+ *
+ * \param fTheta, fPhi Polar coordinates for the target relative to the
+ *		pivot point.
+ */
 void vtTrackball::MoveDirection(float fTheta, float fPhi)
 {
 	m_Pos.x += fTheta;
