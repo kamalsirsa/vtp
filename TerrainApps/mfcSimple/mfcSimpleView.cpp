@@ -271,11 +271,13 @@ bool CreateScene()
 
 void CleanupScene()
 {
+	vtGetScene()->SetRoot(NULL);
 	if (ts)
 	{
 		ts->CleanupScene();
 		delete ts;
 	}
+	vtGetScene()->Shutdown();
 }
 
 //--------------Mouse EVENTS-----------------

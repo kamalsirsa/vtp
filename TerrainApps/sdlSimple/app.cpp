@@ -182,6 +182,36 @@ bool App::CreateScene()
 	trans2->AddChild(ball);
 #endif
 
+#if 0
+	vtTransform *E = new vtTransform();
+	E->Release();
+
+	vtNode *D = vtNode::LoadModel("testblk2.3DS");
+	vtGroup *C = new vtGroup();
+	vtGroup *A = new vtGroup();
+	vtGroup *B = new vtGroup();
+
+	A->AddChild(C);
+	B->AddChild(C);
+	C->AddChild(D);
+
+	A->Release();
+	B->Release();
+#endif
+
+#if 0
+	// create a new Instance object
+	vtStructureArray3d *structs = pTerr->GetStructures();
+	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
+	inst->SetValueString("filename", "testblk2.3DS");
+	inst->m_p.Set(569770, 4754215);
+
+	int index = structs->Append(inst);
+	bool success = pTerr->CreateStructure(structs, index);
+	if (success)
+		printf("  succeeded.\n");
+#endif
+
 	return true;
 }
 
@@ -304,9 +334,11 @@ int App::main()
 	run();
 
 	printf("Cleaning up..\n");
+	vtGetScene()->SetRoot(NULL);
 	m_ts->CleanupScene();
 	m_pCamera->Release();
 	delete m_ts;
+	vtGetScene()->Shutdown();
 
 	return 0;
 }

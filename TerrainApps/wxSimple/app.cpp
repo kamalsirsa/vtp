@@ -105,8 +105,12 @@ int vtApp::OnExit()
 	if (m_pTerrainScene)
 	{
 		m_pCamera->Release();
+
+		// Clean up the scene
+		vtGetScene()->SetRoot(NULL);
 		m_pTerrainScene->CleanupScene();
 		delete m_pTerrainScene;
+		vtGetScene()->Shutdown();
 	}
 	return 0;
 }
