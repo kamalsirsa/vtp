@@ -1,0 +1,200 @@
+//
+// Name: ColorMapDlg.cpp
+//
+// Copyright (c) 2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
+#ifdef __GNUG__
+	#pragma implementation "ColorMapDlg.cpp"
+#endif
+
+// For compilers that support precompilation, includes "wx/wx.h".
+#include "wx/wxprec.h"
+
+#ifdef __BORLANDC__
+	#pragma hdrstop
+#endif
+
+#include <wx/colordlg.h>
+#include "ColorMapDlg.h"
+#include "vtdata/FilePath.h"
+
+// WDR: class implementations
+
+//----------------------------------------------------------------------------
+// ColorMapDlg
+//----------------------------------------------------------------------------
+
+// WDR: event table for ColorMapDlg
+
+BEGIN_EVENT_TABLE(ColorMapDlg,AutoDialog)
+	EVT_LIST_ITEM_SELECTED( ID_COLORLIST, ColorMapDlg::OnItemSelected )
+	EVT_LIST_ITEM_DESELECTED( ID_COLORLIST, ColorMapDlg::OnItemSelected )
+	EVT_BUTTON( ID_CHANGE_COLOR, ColorMapDlg::OnChangeColor )
+	EVT_BUTTON( ID_DELETE_ELEVATION, ColorMapDlg::OnDeleteColor )
+	EVT_BUTTON( ID_ADD, ColorMapDlg::OnAdd )
+	EVT_BUTTON( ID_SAVE_CMAP, ColorMapDlg::OnSave )
+	EVT_BUTTON( ID_SAVE_AS_CMAP, ColorMapDlg::OnSaveAs )
+	EVT_BUTTON( ID_LOAD_CMAP, ColorMapDlg::OnLoad )
+END_EVENT_TABLE()
+
+ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
+	const wxString& title, const wxPoint &position, const wxSize& size, long style ) :
+	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
+{
+	// WDR: dialog function ColorMapDialogFunc for ColorMapDlg
+	ColorMapDialogFunc( this, TRUE ); 
+
+	AddValidator(ID_CMAP_FILE, &m_strFile);
+	AddNumValidator(ID_HEIGHT_TO_ADD, &m_fHeight);
+	AddValidator(ID_RELATIVE, &m_bRelative);
+
+	GetList()->InsertColumn(0, _T("Color"));
+	GetList()->InsertColumn(1, _T("Elevation"));
+
+	m_iItem = -1;
+	m_fHeight = 0.0f;
+}
+
+// WDR: handler implementations for ColorMapDlg
+
+void ColorMapDlg::SetFile(const char *fname)
+{
+	GetList()->DeleteAllItems();
+	m_strFile = "";
+
+	if (!m_cmap.Load(fname))
+		return;
+
+	m_strFile = fname;
+	m_bRelative = m_cmap.m_bRelative;
+
+	TransferDataToWindow();
+	UpdateItems();
+}
+
+void ColorMapDlg::UpdateItems()
+{
+	GetList()->DeleteAllItems();
+
+	wxString2 str;
+	int num = m_cmap.Num();
+	for (int i = 0; i < num; i++)
+	{
+		GetList()->InsertItem(i, "", 0);
+
+		RGBi c = m_cmap.m_color[i];
+		str.Printf("%d.%d.%d", c.r, c.g, c.b);
+		GetList()->SetItem(i, 0, str);
+
+		str.Printf("%.2f meters", m_cmap.m_elev[i]);
+		GetList()->SetItem(i, 1, str);
+	}
+}
+
+void ColorMapDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	UpdateEnabling();
+}
+
+void ColorMapDlg::UpdateEnabling()
+{
+	GetChangeColor()->Enable(m_iItem != -1);
+	GetDeleteColor()->Enable(m_iItem != -1);
+}
+
+void ColorMapDlg::OnLoad( wxCommandEvent &event )
+{
+	wxFileDialog loadFile(NULL, _("Load ColorMap"), _T(""), _T(""),
+		_("ColorMap Files (*.cmt)|*.cmt|"), wxOPEN);
+	bool bResult = (loadFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString2 str = loadFile.GetPath();
+	vtString fname = str.vt_str();
+	if (m_cmap.Load(fname))
+	{
+		m_strFile = fname;
+		TransferDataToWindow();
+		UpdateItems();
+	}
+}
+
+void ColorMapDlg::OnSave( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_cmap.m_bRelative = m_bRelative;
+
+	vtString fname = m_strFile.vt_str();
+	m_cmap.Save(fname);
+}
+
+void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_cmap.m_bRelative = m_bRelative;
+
+	wxFileDialog saveFile(NULL, _("Save ColorMap"), _T(""), _T(""),
+		_("ColorMap Files (*.cmt)|*.cmt|"), wxSAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString2 str = saveFile.GetPath();
+	vtString fname = str.vt_str();
+	if (m_cmap.Save(fname))
+	{
+		m_strFile = fname;
+		TransferDataToWindow();
+	}
+}
+
+bool ColorMapDlg::AskColor(RGBi &rgb)
+{
+	wxColourData data;
+	wxColourDialog dlg(this, &data);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		data = dlg.GetColourData();
+		wxColour c1 = data.GetColour();
+		rgb.Set(c1.Red(), c1.Green(), c1.Blue());
+		return true;
+	}
+	return false;
+}
+
+void ColorMapDlg::OnAdd( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+
+	RGBi result;
+	if (AskColor(result))
+	{
+		m_cmap.Add(m_fHeight, result);
+		UpdateItems();
+	}
+}
+
+void ColorMapDlg::OnDeleteColor( wxCommandEvent &event )
+{
+	m_cmap.RemoveAt(m_iItem);
+	UpdateItems();
+}
+
+void ColorMapDlg::OnChangeColor( wxCommandEvent &event )
+{
+	RGBi result;
+	if (AskColor(result))
+	{
+		m_cmap.m_color[m_iItem] = result;
+		UpdateItems();
+	}
+}
+
+void ColorMapDlg::OnItemSelected( wxListEvent &event )
+{
+	m_iItem = GetList()->GetNextItem(-1, wxLIST_NEXT_ALL,
+									 wxLIST_STATE_SELECTED);
+	UpdateEnabling();
+}
+
