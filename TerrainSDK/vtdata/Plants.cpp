@@ -197,17 +197,28 @@ void vtPlantList::AddSpecies(int SpecieID, const char *CommonName,
 	m_Species.Append(pSpecie);
 }
 
+vtString RemSpaces(const vtString &str)
+{
+	vtString out;
+	for (int i = 0; i < str.GetLength(); i++)
+	{
+		if (str[i] != ' ')
+			out += str[i];
+	}
+	return out;
+}
+
 void vtPlantList::LookupPlantIndices(vtBioType *bt)
 {
 	for (unsigned int i = 0; i < bt->m_Densities.GetSize(); i++)
 	{
-		const char *common_name = bt->m_Densities[i]->m_common_name;
+		vtString common_name = RemSpaces(bt->m_Densities[i]->m_common_name);
 
 		bt->m_Densities[i]->m_list_index = -1;
 		for (int j = 0; j < NumSpecies(); j++)
 		{
 			vtPlantSpecies *ps = GetSpecies(j);
-			if (!strcmp(common_name, ps->GetCommonName()))
+			if (common_name == RemSpaces(ps->GetCommonName()))
 			{
 				bt->m_Densities[i]->m_list_index = j;
 				break;
