@@ -181,7 +181,7 @@ static void ShowOGLInfo(bool bLog)
 			glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
 
 		wxDialog dlg(NULL, -1, _T("OpenGL Info"), wxDefaultPosition);
-		TextDialogFunc(&dlg, TRUE);
+		TextDialogFunc(&dlg, true);
 		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
 		pText->SetValue(str);
 

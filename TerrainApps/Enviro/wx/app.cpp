@@ -96,7 +96,7 @@ bool vtApp::OnInit()
 	if (g_Options.m_bFullscreen)
 		frame->SetFullScreen(true);
 
-	return TRUE;
+	return true;
 }
 
 int vtApp::OnExit()
