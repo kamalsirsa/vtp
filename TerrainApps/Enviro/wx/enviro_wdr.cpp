@@ -1468,7 +1468,7 @@ wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item2->Enable( FALSE );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxSpinCtrl *item3 = new wxSpinCtrl( parent, ID_SPIN_YEAR, wxT("2000"), wxDefaultPosition, wxSize(60,-1), 0, 1900, 2100, 2000 );
+    wxSpinCtrl *item3 = new wxSpinCtrl( parent, ID_SPIN_YEAR, wxT("2000"), wxDefaultPosition, wxSize(60,-1), 0, 1970, 2038, 2000 );
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Month"), wxDefaultPosition, wxDefaultSize, 0 );
