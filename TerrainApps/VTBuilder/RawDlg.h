@@ -1,7 +1,7 @@
 //
 // Name: RawDlg.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,9 @@
 #if defined(__GNUG__) && !defined(__APPLE__)
 	#pragma interface "RawDlg.cpp"
 #endif
+
+#include "vtdata/MathTypes.h"
+#include "vtdata/Projections.h"
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
@@ -31,22 +34,39 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for RawDlg
+	wxButton* GetCrs()  { return (wxButton*) FindWindow( ID_CRS ); }
+	wxButton* GetExtents()  { return (wxButton*) FindWindow( ID_EXTENTS ); }
+	wxTextCtrl* GetSpacing()  { return (wxTextCtrl*) FindWindow( ID_SPACING ); }
 	void OnInitDialog(wxInitDialogEvent& event);
 
 	int m_iBytes;
 	int m_iWidth;
 	int m_iHeight;
-	bool m_bUTM;
-	bool m_bFloating;
 	float m_fVUnits;
 	float m_fSpacing;
 	bool m_bBigEndian;
 
+	bool m_bExtSpacing;
+	bool m_bExtExact;
+	bool m_bCrsSimple;
+	bool m_bCrsCurrent;
+	bool m_bCrsExact;
+
+	DRECT m_extents;
+	vtProjection m_proj;
+	vtProjection m_original;
+
 private:
 	// WDR: member variable declarations for RawDlg
+	void UpdateEnabling();
+	void UpdateExtents();
+	void UpdateProjection();
 	
 private:
 	// WDR: handler declarations for RawDlg
+	void OnCRS( wxCommandEvent &event );
+	void OnExtents( wxCommandEvent &event );
+	void OnRadio( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -829,7 +829,7 @@ void vtElevLayer::DetermineMeterSpacing()
 	{
 		DRECT area = m_pGrid->GetEarthExtents();
 
-		double fToMeters = EstimateDegreesToMeters(area.bottom);
+		double fToMeters = EstimateDegreesToMeters((area.bottom + area.top)/2);
 		m_fSpacing = (float) (area.Width()) * fToMeters / (m_iColumns - 1);
 	}
 	else
@@ -985,15 +985,17 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	}
 	else if (!strExt.CmpNoCase(_T("raw")))
 	{
-		RawDlg dlg(NULL, -1, _T("Raw Elevation File"), wxDefaultPosition);
-		dlg.m_bUTM = true;
-		dlg.m_bFloating = false;
+		RawDlg dlg(NULL, -1, _T("Raw Elevation File"));
+
 		dlg.m_iBytes = 2;
 		dlg.m_iWidth = 100;
 		dlg.m_iHeight = 100;
 		dlg.m_fVUnits = 1.0f;
 		dlg.m_fSpacing = 30.0f;
 		dlg.m_bBigEndian = false;
+		dlg.m_extents.Empty();
+		GetMainFrame()->GetProjection(dlg.m_original);
+
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			success = m_pGrid->LoadFromRAW(strFileName.mb_str(), dlg.m_iWidth,
@@ -1002,9 +1004,8 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		}
 		if (success)
 		{
-			DRECT ext = m_pGrid->GetEarthExtents();
-			ext.top = dlg.m_iHeight * dlg.m_fSpacing;
-			ext.right = dlg.m_iWidth * dlg.m_fSpacing;
+			m_pGrid->SetEarthExtents(dlg.m_extents);
+			m_pGrid->SetProjection(dlg.m_proj);
 		}
 	}
 	else if (!strExt.CmpNoCase(_T("ntf")))
@@ -1068,7 +1069,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 			{
 				DRECT ext;
 				ext.Empty();
-				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
+				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"));
 				dlg.SetArea(ext, (pProj->IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)
 					m_pGrid->SetEarthExtents(dlg.m_area);
