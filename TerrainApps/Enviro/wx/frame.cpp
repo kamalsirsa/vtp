@@ -1560,6 +1560,9 @@ void vtFrame::UpdateStatus()
 	if (m_pCameraDlg && m_pCameraDlg->IsShown())
 		m_pCameraDlg->CheckAndUpdatePos();
 
+	if (m_pLocationDlg && m_pLocationDlg->IsShown())
+		m_pLocationDlg->Update();
+
 #if 0
 	vtString vs;
 	g_App.GetStatusText(vs);
