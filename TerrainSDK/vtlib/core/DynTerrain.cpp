@@ -35,7 +35,7 @@ void vtDynTerrainGeom::Init2()
 {
 }
 
-void vtDynTerrainGeom::BasicInit(vtElevationGrid *pGrid)
+DTErr vtDynTerrainGeom::BasicInit(vtElevationGrid *pGrid)
 {
 	// initialize the HeightFieldGrid3D
 	const LinearUnits units = pGrid->GetProjection().GetUnits();
@@ -46,9 +46,14 @@ void vtDynTerrainGeom::BasicInit(vtElevationGrid *pGrid)
 	int cols, rows;
 	pGrid->GetDimensions(cols, rows);
 
+	// Set up HeightFieldGrid
 	Initialize(units, pGrid->GetEarthExtents(), fMinHeight, fMaxHeight, cols, rows);
 
-	// allocate and set the xz lookup tables
+	if (fabs(m_WorldExtents.Width()) < 0.000001 ||
+		fabs(m_WorldExtents.Height()) < 0.000001)
+		return DTErr_EMPTY_EXTENTS;
+
+	// Allocate and set the xz lookup tables
 	m_fXLookup = new float[m_iColumns];
 	m_fZLookup = new float[m_iRows];
 	int i;
@@ -58,6 +63,8 @@ void vtDynTerrainGeom::BasicInit(vtElevationGrid *pGrid)
 		m_fZLookup[i] = m_WorldExtents.bottom - i * m_fZStep;
 
 	m_iTotalTriangles = m_iColumns * m_iRows * 2;
+
+	return DTErr_OK;
 }
 
 

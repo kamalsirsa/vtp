@@ -15,6 +15,7 @@
 enum DTErr
 {
 	DTErr_OK,
+	DTErr_EMPTY_EXTENTS,
 	DTErr_NOTSQUARE,
 	DTErr_NOTPOWER2,
 	DTErr_NOMEM
@@ -33,7 +34,7 @@ public:
 
 	virtual DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth) = 0;
 	virtual void Init2();
-	void BasicInit(vtElevationGrid *pGrid);
+	DTErr BasicInit(vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 
 	void SetPixelError(float fPixelError);

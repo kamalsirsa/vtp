@@ -724,12 +724,12 @@ void TVTerrain::mkscale(vtElevationGrid *pGrid)
 DTErr TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 			  float fOceanDepth)
 {
-	int i;
-
-	BasicInit(pGrid);
+	DTErr err = BasicInit(pGrid);
+	if (err != DTErr_OK)
+		return err;
 
 	// determine how many levels deep
-	int temp = m_iColumns - 1;
+	int i, temp = m_iColumns - 1;
 	for (i = 0; temp > 1; i++)
 		temp >>= 1;
 	m_iLevels = i;

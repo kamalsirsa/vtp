@@ -45,7 +45,9 @@ DTErr CustomTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth)
 {
 	// Initializes necessary field of the parent class
-	BasicInit(pGrid);
+	DTErr err = BasicInit(pGrid);
+	if (err != DTErr_OK)
+		return err;
 
 	//
 	// allocate array, copy data from supplied elevation grid

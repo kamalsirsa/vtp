@@ -158,10 +158,12 @@ SMTerrain::~SMTerrain()
 DTErr SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth)
 {
+	DTErr err = BasicInit(pGrid);
+	if (err != DTErr_OK)
+		return err;
+
 	if (m_iColumns != m_iRows)
 		return DTErr_NOTSQUARE;
-
-	BasicInit(pGrid);
 
 	// get size of array
 	m_iDim = m_iColumns;
