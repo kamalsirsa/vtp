@@ -310,7 +310,7 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 /**
  * Read content items from an XML file.
  *
- * @param file A string containing the file path.
+ * \param filename A string containing the file path.
  */
 void vtContentManager::ReadXML(const char *filename)
 {
@@ -324,7 +324,7 @@ void vtContentManager::ReadXML(const char *filename)
 /**
  * Write content items to an XML file.
  *
- * @param file A string containing the file path.
+ * \param filename A string containing the file path.
  */
 void vtContentManager::WriteXML(const char *filename)
 {
