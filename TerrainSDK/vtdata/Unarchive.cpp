@@ -242,56 +242,6 @@ int ExpandTGZ(const char *archive_fname, const char *prepend_path)
  */
 int ExpandZip(const char *archive_fname, const char *prepend_path)
 {
-#if 0
-	// This is how to call Info-Zip's unzip32.dll, but it's horribly non-portable.
-	DCL dcl;
-
-	dcl.C_flag = true;	// case insensitive
-	dcl.ExtractOnlyNewer = false;
-	dcl.fPrivilege = 0;	// restore ACL's if > 0, use privileges if 2
-	dcl.fQuiet = 0;	// We want all messages.
-	dcl.lpszExtractDir = NULL;
-	dcl.lpszZipFN = archive_fname;	// The ZIP-file to extract
-	dcl.naflag = 0;	// Do not convert CR to CRLF
-	dcl.ncflag = 0;	// Write to stdout if true
-	dcl.ndflag = 1;	// Recreate directories if true
-	dcl.nfflag = 0;	// "freshen" (replace existing files by newer versions)
-	dcl.noflag = 1; // Over-write all files if true
-	dcl.ntflag = 0;	// test zip file if true
-	dcl.nvflag = 0;	// give a verbose listing if true
-	dcl.nzflag = 0;	// display a zip file comment if true
-	dcl.nZIflag = 0;	// get zip info if true
-	dcl.PromptToOverwrite = 0; // true if prompt to overwrite is wanted
-	dcl.SpaceToUnderscore = 0; // true if convert space to underscore
-
-	int nExtract = 1;	// I think this is the number of files to extract from
-	int nDontExtract = 0;
-
-	char ** ppExFilter = NULL;
-	char ** ppDontExFilter = NULL;
-
-	int nRet = Wiz_SingleEntryUnzip(nExtract, ppExFilter, nDontExtract, ppDontExFilter, &dcl, NULL);
-
-	// This is how to call Info-Zip's UnZip without all of the DLL weirdness.
-	UzpVer *pVersion = UzpVersion();
-	int argc = 1;
-	char *argv[1] = { "C:/TEMP/test2.zip" };
-
-	UzpInit init;
-	init.inputfn = NULL;
-	init.msgfn = NULL;
-	init.pausefn = NULL;
-	init.userfn = NULL;
-	init.structlen = sizeof(UzpInit);
-
-	retcode = UzpMain(argc, argv);
-
-	// Here is an attempt to call Info-Zip's UnZip really directly.
-	CONSTRUCTGLOBALS();
-	int r = unzip(__G__ argc, argv);
-	DESTROYGLOBALS();
-#endif
-
 #if SUPPORT_UNZIP
 	int iVolumeSize = 0;
 	int iCount = 0;
