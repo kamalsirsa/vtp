@@ -377,6 +377,7 @@ void SRTerrain::RenderPass()
 				m_fLResolution = 0;
 			}
 		}
+
 		m_fResolution = m_fLResolution + (m_fHResolution - m_fLResolution) / 2;
 //		VTLOG("rez: [%.1f, %.1f, %.1f] (%d/%d)\n", m_fLResolution, m_fResolution, m_fHResolution, m_iDrawnTriangles, m_iPolygonTarget);
 
@@ -423,7 +424,6 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 		  height,
 		  m_fZLookup[j]);
 }
-
 void SRTerrain::SetPolygonCount(int iPolygonCount)
 {
 	vtDynTerrainGeom::SetPolygonCount(iPolygonCount);

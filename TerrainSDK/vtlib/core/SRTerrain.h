@@ -42,9 +42,7 @@ public:
 	void LoadBlockMaterial(int a, int b);
 
 	int		m_iBlockSize;
-
-	static float s_fAdaptationSpeed;
-
+	
 protected:
 	// rendering
 	void RenderSurface();
@@ -70,8 +68,6 @@ private:
 	float m_fMaximumScale;
 	float m_fDrawScale;
 
-	int m_iLastDiff;
-	float m_fDamping;
 };
 
 /*@}*/	// Group dynterr
