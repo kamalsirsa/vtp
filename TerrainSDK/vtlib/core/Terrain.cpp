@@ -2449,20 +2449,29 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 	unsigned int points = line.GetSize();
 	if (bCurve)
 	{
-		DPoint3 p;
+		DPoint2 p2, last(1E9,1E9);
+		DPoint3 p3;
 
+		int spline_points = 0;
 		CubicSpline spline;
 		for (i = 0; i < points; i++)
 		{
-			p.Set(line[i].x, line[i].y, 0);
-			spline.AddPoint(p);
+			p2 = line[i];
+			if (i > 1 && p2 == last)
+				continue;
+			p3.Set(p2.x, p2.y, 0);
+			spline.AddPoint(p3);
+			spline_points++;
+			last = p2;
 		}
 		spline.Generate();
 
 		// estimate how many steps to subdivide this line into
 		double dLinearLength = line.Length();
-		double full = (double) (points-1);
-		int iSteps = (unsigned int) (dLinearLength / fSpacing);
+		float fLinearLength, dummy;
+		m_pHeightField->m_Conversion.ConvertVectorFromEarth(DPoint2(dLinearLength,0.0), fLinearLength, dummy);
+		double full = (double) (spline_points-1);
+		int iSteps = (unsigned int) (fLinearLength / fSpacing);
 		if (iSteps < 3)
 			iSteps = 3;
 		double dStep = full / iSteps;
@@ -2471,9 +2480,9 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		double f;
 		for (f = 0; f <= full; f += dStep)
 		{
-			spline.Interpolate(f, &p);
+			spline.Interpolate(f, &p3);
 
-			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p.x, p.y, v.x, v.z);
+			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p3.x, p3.y, v.x, v.z);
 			m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 			v.y += fOffset;
 			pMesh->AddVertex(v);
