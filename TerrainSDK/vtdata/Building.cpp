@@ -873,7 +873,7 @@ vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
 
 	m_Levels.Append(pLev);
 
-	// this new footprint make have altered the center of the building
+	// this new footprint may have altered the center of the building
 	SetCenterFromPoly();
 
 	// keep 2d and 3d in synch
