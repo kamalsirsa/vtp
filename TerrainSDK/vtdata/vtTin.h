@@ -28,6 +28,8 @@ typedef Array<int> Bin;
 class vtTin : public vtHeightField3d
 {
 public:
+	virtual ~vtTin() {}
+
 	unsigned int NumVerts() const { return m_vert.GetSize(); }
 	unsigned int NumTris() const { return m_tri.GetSize()/3; }
 

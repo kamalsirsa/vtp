@@ -38,6 +38,7 @@ class vtHeightField
 {
 public:
 	vtHeightField();
+	virtual ~vtHeightField() {}
 
 	// Initialize the vtHeightField
 	void Initialize(const DRECT &extents, float fMinHeight, float fMaxHeight);
@@ -77,6 +78,8 @@ protected:
 class vtHeightField3d : public vtHeightField
 {
 public:
+	virtual ~vtHeightField3d() {}
+
 	void Initialize(const LinearUnits units, const DRECT &earthextents,
 		float fMinHeight, float fMaxHeight);
 
@@ -120,6 +123,7 @@ class vtHeightFieldGrid3d : public vtHeightField3d
 {
 public:
 	vtHeightFieldGrid3d();
+	virtual ~vtHeightFieldGrid3d() {}
 
 	void Initialize(const LinearUnits units, const DRECT &earthextents,
 		float fMinHeight, float fMaxHeight, int cols, int rows);

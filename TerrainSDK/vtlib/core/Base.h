@@ -255,6 +255,7 @@ class vtMaterialBase
 {
 public:
 	vtMaterialBase();
+	virtual ~vtMaterialBase() {}
 
 	void CopyFrom(vtMaterial *pFrom);
 
@@ -349,7 +350,7 @@ class vtSceneBase
 {
 public:
 	vtSceneBase();
-	~vtSceneBase();
+	virtual ~vtSceneBase();
 
 	virtual void SetBgColor(RGBf color) = 0;
 

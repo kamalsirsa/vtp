@@ -53,7 +53,7 @@ class vtTerrainScene : public TimeTarget
 {
 public:
 	vtTerrainScene();
-	~vtTerrainScene();
+	virtual ~vtTerrainScene();
 
 	// scene setup
 	vtGroup *BeginTerrainScene();

@@ -64,6 +64,8 @@ public:
 class vtTagArray
 {
 public:
+	virtual ~vtTagArray() {}
+
 	void AddTag(const vtTag &pTag);
 	void AddTag(const char *name, const char *value);
 
@@ -154,7 +156,7 @@ class vtItem : public vtTagArray
 {
 public:
 	vtItem();
-	~vtItem();
+	virtual ~vtItem();
 
 	void Empty();
 	void AddModel(vtModel *item) { m_models.Append(item); }
@@ -184,7 +186,7 @@ protected:
 class vtContentManager
 {
 public:
-	~vtContentManager();
+	virtual ~vtContentManager();
 
 	void ReadXML(const char *filename);
 	void WriteXML(const char *filename);

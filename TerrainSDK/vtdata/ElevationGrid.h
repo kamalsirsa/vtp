@@ -34,7 +34,7 @@ public:
 	vtElevationGrid(const vtElevationGrid &rhs);
 	vtElevationGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		const vtProjection &proj);
-	~vtElevationGrid();
+	virtual ~vtElevationGrid();
 
 	vtElevationGrid &operator=(const vtElevationGrid &rhs);
 

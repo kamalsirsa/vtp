@@ -20,7 +20,7 @@ class vtBitmap : public vtBitmapBase
 {
 public:
 	vtBitmap();
-	~vtBitmap();
+	virtual ~vtBitmap();
 
 	bool Allocate(int iXSize, int iYSize, int iDepth = 24);
 	void SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b);

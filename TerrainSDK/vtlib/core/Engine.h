@@ -26,6 +26,7 @@ class vtEngine : public vtEnabledBase
 {
 public:
 	vtEngine();
+	virtual ~vtEngine();
 
 	/**
 	 * Get a target from the engine.  Most engines will have only a single
@@ -84,6 +85,7 @@ class vtLastMouse : public vtEngine
 {
 public:
 	vtLastMouse();
+	virtual ~vtLastMouse() {}
 
 	void OnMouse(vtMouseEvent &event);
 
@@ -107,6 +109,8 @@ class SimpleBillboardEngine : public vtEngine
 {
 public:
 	SimpleBillboardEngine(float fAngleOffset = 0.0f);
+	virtual ~SimpleBillboardEngine() {}
+
 	void Eval();
 
 	float m_fAngleOffset;

@@ -36,7 +36,8 @@ public:
 
 	// construction
 	IcoGlobe();
-	~IcoGlobe();
+	virtual ~IcoGlobe();
+
 	void Create(int iTriangleCount, const vtStringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
 	vtTransform *GetTop() { return m_top; }

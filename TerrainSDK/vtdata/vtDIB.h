@@ -19,6 +19,8 @@ class vtProjection;
 class vtBitmapBase
 {
 public:
+	virtual ~vtBitmapBase() {}
+
 	virtual void GetPixel24(int x, int y, RGBi &rgb) const = 0;
 	virtual void SetPixel24(int x, int y, const RGBi &rgb) = 0;
 
@@ -61,7 +63,7 @@ class vtDIB : public vtBitmapBase
 public:
 	vtDIB();
 	vtDIB(void *pDIB);	// wrap an existing DIB
-	~vtDIB();
+	virtual ~vtDIB();
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
 	bool Create24From8bit(const vtDIB &from);
