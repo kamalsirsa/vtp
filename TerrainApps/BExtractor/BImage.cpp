@@ -1,5 +1,11 @@
+//
+// BImage.cpp : implementation of the CBImage class
+//
+// Copyright (c) 2001-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "ogr_spatialref.h"
 #include "gdal_priv.h"
 #include "BImage.h"
@@ -9,18 +15,12 @@
 #include "BExtractorView.h"
 #include "ProgDlg.h"
 
-// GBM
-#include "GBMWrapper.h"
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CBImage commands
 
 CBImage::CBImage()
 {
-	m_pSourceGBM = NULL;
 	m_pSpatialReference = NULL;
-//	m_pMonoGBM = NULL;
 
 	m_pSourceDIB = NULL;
 	m_pMonoDIB = NULL;
@@ -29,29 +29,27 @@ CBImage::CBImage()
 
 CBImage::~CBImage()
 {
-	if (m_pSourceGBM)
+	if (m_pSourceDIB)
 	{
-		delete m_pSourceGBM;
-		m_pSourceGBM = NULL;
-	}
-	else if (m_pSourceDIB)
-	{
-		// Don't try to delete both if they exist.  SourceGBM
-		// and SourceDIB point to the same data.
 		delete m_pSourceDIB;
 		m_pSourceDIB = NULL;
+	}
+	if (m_pMonoDIB)
+	{
+		delete m_pMonoDIB;
+		m_pMonoDIB = NULL;
 	}
 
 	if (m_pSpatialReference)
 		delete m_pSpatialReference;
 	m_pSpatialReference = NULL;
+}
 
-//	if (m_pMonoGBM)
-//		delete m_pMonoGBM;
-
-	if (m_pMonoDIB)
-		delete m_pMonoDIB;
-	m_pMonoDIB = NULL;
+CProgressDlg *g_dlg = NULL;
+void progress_callback(int pos)
+{
+	if (g_dlg)
+		g_dlg->SetPos(pos);
 }
 
 bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
@@ -68,10 +66,11 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	bool bRet = true;
 
 	CProgressDlg progImageLoad(CG_IDS_PROGRESS_CAPTION3);
-	
+
 	progImageLoad.Create(NULL);
 	progImageLoad.SetStep(1);
-	progImageLoad.SetRange(0, 5);
+	progImageLoad.SetRange(0, 100);
+	g_dlg = &progImageLoad;
 
 	GDALAllRegister();
 
@@ -82,20 +81,18 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		bRet = false;
 		goto Exit;
 	}
-	progImageLoad.StepIt();
 
 	m_PixelSize.x = pDataset->GetRasterXSize();
 	m_PixelSize.y = pDataset->GetRasterYSize();
-	progImageLoad.StepIt();
 
 	// compute size of image in meters
 	// try for an affine transform
 	// (Xp,Yp) from (P, L);
 	// Xp = padfTransform[0] + P*padfTransform[1] + L*padfTransform[2];
-	// Yp = padfTransform[3] + P*padfTransform[4] + L*padfTransform[5]; 
+	// Yp = padfTransform[3] + P*padfTransform[4] + L*padfTransform[5];
 	// In a north up image, padfTransform[1] is the pixel width,
 	// and padfTransform[5] is the pixel height.
-	// The upper left corner of the upper left pixel is at position (padfTransform[0],padfTransform[3]). 
+	// The upper left corner of the upper left pixel is at position (padfTransform[0],padfTransform[3]).
 	// Hope for a linear co-ordinate space
 	//
 	if (NULL == (pProjectionString = pDataset->GetProjectionRef()))
@@ -103,7 +100,6 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		bRet = false;
 		goto Exit;
 	}
-	progImageLoad.StepIt();
 
 	err = SpatialReference.importFromWkt((char**)&pProjectionString);
 	if (err != OGRERR_NONE)
@@ -112,14 +108,12 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		goto Exit; */
 		// allow images without projection?
 	}
-	progImageLoad.StepIt();
 
 	if (CE_None != pDataset->GetGeoTransform(affineTransform))
 	{
 		bRet = false;
 		goto Exit;
 	}
-	progImageLoad.StepIt();
 
 	if (SpatialReference.IsGeographic())
 	{
@@ -178,9 +172,8 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		// being metres elsewhere
 		linearConversionFactor = SpatialReference.GetLinearUnits();
 
-
-		// Compute sizes in metres along NW/SE axis for compatibility with world files
-		// i.e. xright - xleft and ytop - ybottom
+		// Compute sizes in metres along NW/SE axis for compatibility with
+		// world files  i.e. xright - xleft and ytop - ybottom
 		m_fImageWidth = (float)((m_PixelSize.x * affineTransform[1] + m_PixelSize.y * affineTransform[2]) * linearConversionFactor);
 		m_fImageHeight = (float)( - (m_PixelSize.x * affineTransform[4] + m_PixelSize.y * affineTransform[5]) * linearConversionFactor);
 		m_xUTMoffset = (float)(affineTransform[0] * linearConversionFactor);
@@ -257,15 +250,15 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		goto Exit;
 	}
 
-	progImageLoad.DestroyWindow();
-
 	m_pSourceDIB = new CDib();
-	m_pSourceDIB->Setup(pDC, pDataset, hdd); 
+	m_pSourceDIB->Setup(pDC, pDataset, hdd, progress_callback);
 
 	// create monochrome version
-	m_pMonoDIB = CreateMonoDib(pDC, m_pSourceDIB, hdd);
+	m_pMonoDIB = CreateMonoDib(pDC, m_pSourceDIB, hdd, progress_callback);
 	m_pCurrentDIB = m_pMonoDIB;
 	m_initialized = true;
+
+	progImageLoad.DestroyWindow();
 
 Exit:
 	if (pDataset != NULL)
@@ -308,8 +301,8 @@ bool CBImage::LoadTFW(const char *szPathName)
 	{
 		fscanf(tfwstream, "%f\n", &m_xMetersPerPixel);
 		fscanf(tfwstream, "%f\n", &dummy); //don't want these two
-		fscanf(tfwstream, "%f\n", &dummy); 
-		fscanf(tfwstream, "%f\n", &m_yMetersPerPixel); 
+		fscanf(tfwstream, "%f\n", &dummy);
+		fscanf(tfwstream, "%f\n", &m_yMetersPerPixel);
 		fscanf(tfwstream, "%f\n", &m_xUTMoffset);
 		fscanf(tfwstream, "%f\n", &m_yUTMoffset);
 		fclose(tfwstream);
@@ -327,52 +320,12 @@ bool CBImage::LoadTFW(const char *szPathName)
 bool CBImage::LoadFromFile(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 {
 	// Try to load via the GDAL library first
-	if (LoadGDAL(szPathName, pDC, hdd))
-		return true;
-
-	if (!LoadTFW(szPathName))
+	if (!LoadGDAL(szPathName, pDC, hdd))
 		return false;
 
-	// Original GBM-using code
-	char *pPtr = strrchr(szPathName, '.');
-	pPtr++;
-	char  szExt[4];
-	strncpy (szExt, pPtr, 3);
-	szExt[3] = '\0';
-	_strupr(szExt);
+//	if (!LoadTFW(szPathName))
+//		return false;
 
-	// RFJ !!!!! Allow bmp files
-	if ((strcmp(szExt, "TIF") == 0) || (strcmp(szExt, "BMP") == 0))
-	{
-		m_pSourceGBM = new CGBM(szPathName);
-		m_initialized = false;
-	}
-	else
-		return false;
-	
-	// Look up the actual pixel size of the bitmap
-	m_PixelSize.x = m_pSourceGBM->GetWidth();
-	m_PixelSize.y = m_pSourceGBM->GetHeight();
-
-	// compute size of image in meters
-	m_fImageWidth = m_xMetersPerPixel * m_PixelSize.x;
-	m_fImageHeight = -(m_yMetersPerPixel * m_PixelSize.y);
-
-	//check color depth
-	if 	(m_pSourceGBM->GetDepth()!=8)
-	{
-		AfxMessageBox("Sorry, you cannot load a .tif or a .bmp whose color depth does not equal 8 bits!");
-		return false;
-	}
-	else
-	{
-		m_pSourceDIB = new CDib();
-		m_pSourceDIB->Setup(pDC, m_pSourceGBM, hdd); 
-		// create monochrome version
-		m_pMonoDIB = CreateMonoDib(pDC, m_pSourceDIB, hdd);
-		m_pCurrentDIB = m_pMonoDIB;
-		m_initialized = true;
-		return true;
-	}
+	return true;
 }
 
