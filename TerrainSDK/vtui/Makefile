@@ -18,7 +18,7 @@ CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
 CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 
 CSRC   = $(wildcard *.c)
-CXXSRC = $(wildcard *.cpp) $(wildcard boost/*.cpp)
+CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
 LIB    = libvtui.so
 
