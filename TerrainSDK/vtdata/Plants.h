@@ -133,7 +133,7 @@ public:
 	bool WriteXML(const char *fname);
 
 	void LookupPlantIndices(vtBioType *pvtBioType);
-	int NumSpecies() const { return m_Species.GetSize();  }
+	unsigned int NumSpecies() const { return m_Species.GetSize();  }
 	vtPlantSpecies *GetSpecies(unsigned int i) const
 	{
 		if (i < m_Species.GetSize())

@@ -128,7 +128,7 @@ bool vtPlantList::Write(const char *fname)
 
 	fprintf(fp, "plantlist1.0\n");
 	fprintf(fp, "total species: %d\n", NumSpecies());
-	for (int i = 0; i < NumSpecies(); i++)
+	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
 		fprintf(fp, "species %d: %s %s\n",
 			GetSpecies(i)->GetSpecieID(),
@@ -162,7 +162,7 @@ bool vtPlantList::WriteXML(const char *fname)
 	fprintf(fp, "<?xml version=\"1.0\"?>\n\n");
 	fprintf(fp, "<species-file file-format-version=\"1.0\">\n");
 
-	for (int i = 0; i < NumSpecies(); i++)
+	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
 		fprintf(fp, "\t<species id=\"%d\" name=\"%s\" max_height=\"%.2f\">\n",
 			GetSpecies(i)->GetSpecieID(),
@@ -215,7 +215,7 @@ void vtPlantList::LookupPlantIndices(vtBioType *bt)
 		vtString common_name = RemSpaces(bt->m_Densities[i]->m_common_name);
 
 		bt->m_Densities[i]->m_list_index = -1;
-		for (int j = 0; j < NumSpecies(); j++)
+		for (unsigned int j = 0; j < NumSpecies(); j++)
 		{
 			vtPlantSpecies *ps = GetSpecies(j);
 			if (common_name == RemSpaces(ps->GetCommonName()))
@@ -229,7 +229,7 @@ void vtPlantList::LookupPlantIndices(vtBioType *bt)
 
 int vtPlantList::GetSpeciesIdByName(const char *name)
 {
-	for (int j = 0; j < NumSpecies(); j++)
+	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
 		if (!strcmp(name, m_Species[j]->GetSciName()))
 			return j;
@@ -239,7 +239,7 @@ int vtPlantList::GetSpeciesIdByName(const char *name)
 
 int vtPlantList::GetSpeciesIdByCommonName(const char *name)
 {
-	for (int j = 0; j < NumSpecies(); j++)
+	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
 		if (!strcmp(name, m_Species[j]->GetCommonName()))
 			return j;
