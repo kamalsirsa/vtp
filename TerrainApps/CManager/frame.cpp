@@ -574,13 +574,20 @@ void vtFrame::OnUpdateItemAddModel(wxUpdateUIEvent& event)
 
 void vtFrame::OnItemRemoveModel(wxCommandEvent& event)
 {
+	vtModel *previous = m_pCurrentModel;
+
 	m_pCurrentItem->RemoveModel(m_pCurrentModel);
+	SetCurrentItemAndModel(m_pCurrentItem, NULL);
 
 	// update tree view
 	m_pTree->RefreshTreeItems(this);
 
 	// update 3d scene graph
 	UpdateItemGroup(m_pCurrentItem);
+
+	// free memory
+	vtNode *node = m_nodemap[previous];
+	node->Release();
 }
 
 void vtFrame::OnUpdateItemRemoveModel(wxUpdateUIEvent& event)
