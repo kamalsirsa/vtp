@@ -522,6 +522,7 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 		for (i = 0; i < edges; i++)
 			m_pLevel->GetEdge(i)->m_iSlope = 90;
 	}
+	m_fStoryHeight = m_pLevel->m_fStoryHeight;
 	UpdateSlopes();
 	RefreshLevelsBox();
 	HighlightSelectedLevel();
