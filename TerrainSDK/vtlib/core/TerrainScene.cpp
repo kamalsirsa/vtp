@@ -265,7 +265,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pSkyDome->SetTimeOfDay(TIME_TO_INT(param.m_iInitTime, 0, 0), true);
 
 	// setup time engine
-	m_pTime->SetTime(param.m_iInitTime, 0, 0);
+	m_pTime->SetLocalTime(param.m_iInitTime, 0, 0);
 	m_pTime->SetSpeed(param.m_fTimeSpeed);
 	m_pTime->SetEnabled(param.m_bTimeOn);
 
