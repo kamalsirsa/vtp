@@ -1,7 +1,7 @@
 //
 // Trees.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,7 +16,8 @@
 #include "vtlib/core/LodGrid.h"
 
 #if SUPPORT_XFROG
-/*  Greenworks Xfrog:  See http://www.xfrog.com for details,  */
+// Greenworks Xfrog:  See http://www.xfrog.com for details.  Not currently
+//  supported as we don't currently have a way to interface to their engine.
 #include "\dism\xfrog2dism\xfrog2dism.h"
 #endif
 
@@ -31,7 +32,7 @@ public:
 
 	void LoadAndCreate(const vtStringArray &paths, float fTreeScale,
 					   bool bShadows, bool bBillboards);
-	vtTransform *GenerateGeom();
+	bool GenerateGeom(vtTransform *container);
 
 protected:
 	vtMesh *CreateTreeMesh(float fTreeScale, bool bShadows,
@@ -90,9 +91,9 @@ public:
 	~vtPlantInstance3d();
 
 	void ShowBounds(bool bShow);
+	void ReleaseContents();
 
-	vtTransform *m_pTransform;
-	vtGeom		*m_pGeom;
+	vtTransform *m_pContainer;
 	vtGeom		*m_pHighlight;	// The wireframe highlight
 };
 
@@ -128,6 +129,8 @@ public:
 	int NumSelected() const;
 
 	void OffsetSelectedPlants(const DPoint2 &offset);
+
+	void ReleasePlantGeometry(int i);
 	void DeletePlant(int i);
 
 	void UpdateTransform(int i);

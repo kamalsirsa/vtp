@@ -182,15 +182,15 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 }
 
 
-vtTransform *vtPlantAppearance3d::GenerateGeom()
+bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 {
-	vtTransform *pTrans = NULL;
 	if (m_eType == AT_BILLBOARD)
 	{
 		vtGeom *pGeom = new vtGeom();
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(m_pMesh, m_iMatIdx);
-		pTrans = new vtMovGeom(pGeom);
+		container->AddChild(pGeom);
+		return true;
 	}
 	else if (m_eType == AT_XFROG)
 	{
@@ -200,7 +200,16 @@ vtTransform *vtPlantAppearance3d::GenerateGeom()
 		pGeom->Scale(factor, factor, factor);
 #endif
 	}
-	return pTrans;
+	else if (m_eType == AT_MODEL)
+	{
+		vtNodeBase *node = vtLoadModel(m_filename);
+		if (node)
+		{
+			container->AddChild(node);
+			return true;
+		}
+	}
+	return false;
 }
 
 
@@ -223,7 +232,6 @@ vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
 	for (int i = 0; i < apps; i++)
 	{
 		vtPlantAppearance3d *pa3d = new vtPlantAppearance3d(*(v.GetAppearance(i)));
-//		*pa3d = ;
 		m_Apps.Append(pa3d);
 	}
 	return *this;
@@ -285,7 +293,7 @@ vtPlantList3d::vtPlantList3d()
 {
 }
 
-// copy
+// copy operator
 vtPlantList3d &vtPlantList3d::operator=(const vtPlantList &v)
 {
 	int sp = v.NumSpecies();
@@ -397,14 +405,13 @@ vtPlantAppearance3d *vtPlantList3d::GetAppearanceByName(const char *szName, floa
 
 vtPlantInstance3d::vtPlantInstance3d()
 {
-	m_pTransform = NULL;
-	m_pGeom = NULL;
+	m_pContainer = NULL;
 	m_pHighlight = NULL;
 }
 
 vtPlantInstance3d::~vtPlantInstance3d()
 {
-	// Dont release the instance's nodes here.  They will either be released
+	// Don't release the instance's nodes here.  They will either be released
 	//  by DeletePlant(), or automatically as the whole scene graph is
 	//  destructed at the time the terrain is destructed.
 }
@@ -417,11 +424,15 @@ void vtPlantInstance3d::ShowBounds(bool bShow)
 		{
 			// the highlight geometry doesn't exist, so create it
 			// get bounding sphere
-			FSphere sphere;
-			m_pGeom->GetBoundSphere(sphere);
+			vtNode *contents = m_pContainer->GetChild(0);
+			if (contents)
+			{
+				FSphere sphere;
+				contents->GetBoundSphere(sphere);
 
-			m_pHighlight = CreateBoundSphereGeom(sphere);
-			m_pTransform->AddChild(m_pHighlight);
+				m_pHighlight = CreateBoundSphereGeom(sphere);
+				m_pContainer->AddChild(m_pHighlight);
+			}
 		}
 		m_pHighlight->SetEnabled(true);
 	}
@@ -430,6 +441,20 @@ void vtPlantInstance3d::ShowBounds(bool bShow)
 		if (m_pHighlight)
 			m_pHighlight->SetEnabled(false);
 	}
+}
+
+void vtPlantInstance3d::ReleaseContents()
+{
+	if (!m_pContainer)	// safety check
+		return;
+	vtNode *node;
+	while (node = m_pContainer->GetChild(0))
+	{
+		m_pContainer->RemoveChild(node);
+		node->Release();
+	}
+	m_pHighlight = NULL;
+	m_pContainer->Identity();
 }
 
 
@@ -475,8 +500,8 @@ int vtPlantInstanceArray3d::CreatePlantNodes()
 
 bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 {
-	// initially NULL until we successfully construct the instance
-	m_Instances3d.SetAt(i, NULL);
+	// If it was already constructed, destruct so we can build again
+	ReleasePlantGeometry(i);
 
 	if (!m_pPlantList)
 		return false;
@@ -501,26 +526,33 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 	if (!pApp)
 		return false;
 
-	inst3d->m_pTransform = pApp->GenerateGeom();
-	inst3d->m_pGeom = (vtGeom *) inst3d->m_pTransform->GetChild(0);
+	if (!inst3d->m_pContainer)
+		inst3d->m_pContainer = new vtTransform();
+
+	pApp->GenerateGeom(inst3d->m_pContainer);
 
 	UpdateTransform(i);
 
 	// We need to scale the model to produce the desired size, not the
 	//  size of the appearance but of the instance.
 	float scale = pi.size / pApp->m_height;
-	inst3d->m_pTransform->Scale3(scale, scale, scale);
-
-//	float size_variability = 0.3f;
-//	float random_scale = 1.0f + random_offset(size_variability);
-//	inst3d->m_pTransform->Scale3(random_scale, random_scale, random_scale);
+	inst3d->m_pContainer->Scale3(scale, scale, scale);
 
 	// Since the billboard are symmetric, a small rotation helps provide
 	//  a more natural look.
 	float random_rotation = random(PI2f);
-	inst3d->m_pTransform->RotateLocal(FPoint3(0,1,0), random_rotation);
+	inst3d->m_pContainer->RotateLocal(FPoint3(0,1,0), random_rotation);
 
 	return true;
+}
+
+void vtPlantInstanceArray3d::ReleasePlantGeometry(int i)
+{
+	vtPlantInstance3d *inst3d = GetInstance3d(i);
+	if (inst3d)
+	{
+		inst3d->ReleaseContents();
+	}
 }
 
 vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i) const
@@ -530,7 +562,7 @@ vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i) const
 
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d)
-		return inst3d->m_pTransform;
+		return inst3d->m_pContainer;
 	return NULL;
 }
 
@@ -600,7 +632,7 @@ void vtPlantInstanceArray3d::UpdateTransform(int i)
 	// Grid, but unless it's moving really far we don't need to
 	// worry about this.
 
-	inst3d->m_pTransform->SetTrans(p3);
+	inst3d->m_pContainer->SetTrans(p3);
 }
 
 
@@ -616,7 +648,7 @@ void vtPlantInstanceArray3d::DeletePlant(int i)
 	RemoveAt(i);
 
 	// Since it has been removed from the scene graph, we must release its nodes
-	inst3d->m_pTransform->Release();
+	inst3d->m_pContainer->Release();
 
 	// and its 3D component
 	m_Instances3d.RemoveAt(i);
