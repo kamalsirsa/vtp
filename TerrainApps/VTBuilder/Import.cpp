@@ -776,8 +776,9 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 	}
 	if (ltype == LT_STRUCTURE)
 	{
+		StructImportOptions dummy;
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
-		pSL->AddElementsFromOGR(datasource, progress_callback);
+		pSL->AddElementsFromOGR(datasource, dummy, progress_callback);
 	}
 
 	delete datasource;
