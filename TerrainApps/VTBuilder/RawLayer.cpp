@@ -34,7 +34,7 @@ vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 	m_DrawStyle.m_LineColor.Set(128,0,0);
 
 	m_DrawStyle.m_MarkerShape = 0;
-	m_DrawStyle.m_MarkerSize = 1;
+	m_DrawStyle.m_MarkerSize = 2;
 }
 
 vtRawLayer::~vtRawLayer()
@@ -131,11 +131,21 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			pView->screen(p2, p);
 			if (m_DrawStyle.m_MarkerShape == 0)	// dot
 			{
-				pDC->DrawPoint(p);
-				pDC->DrawPoint(p.x+1, p.y);
-				pDC->DrawPoint(p.x, p.y+1);
-				pDC->DrawPoint(p.x-1, p.y);
-				pDC->DrawPoint(p.x, p.y-1);
+				if (m_DrawStyle.m_MarkerSize < 2)
+				{
+					pDC->DrawPoint(p);
+					pDC->DrawPoint(p.x+1, p.y);
+					pDC->DrawPoint(p.x, p.y+1);
+					pDC->DrawPoint(p.x-1, p.y);
+					pDC->DrawPoint(p.x, p.y-1);
+				}
+				else
+				{
+					pDC->DrawLine(p.x, p.y-1, p.x+2, p.y-1);
+					pDC->DrawLine(p.x-1, p.y, p.x+3, p.y);
+					pDC->DrawLine(p.x-1, p.y+1, p.x+3, p.y+1);
+					pDC->DrawLine(p.x, p.y+2, p.x+2, p.y+2);
+				}
 			}
 			if (m_DrawStyle.m_MarkerShape == 1)	// crosshair
 			{
