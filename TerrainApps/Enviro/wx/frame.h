@@ -9,6 +9,7 @@
 #define FRAMEH
 
 #include "../EnviroEnum.h"
+#include "vtui/wxString2.h"
 
 class SceneGraphDlg;
 class PlantDlg;
@@ -39,6 +40,7 @@ public:
 	void SetFullScreen(bool bFull);
 	void ShowPopupMenu(const IPoint2 &pos);
 	void SetTerrainToGUI(vtTerrain *pTerrain);
+	void Snapshot(bool bNumbered);
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
@@ -52,6 +54,8 @@ public:
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewFollowRoute(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
+	void OnViewSnapshot(wxCommandEvent& event);
+	void OnViewSnapAgain(wxCommandEvent& event);
 
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
@@ -165,6 +169,8 @@ protected:
 	bool m_bCulleveryframe;
 	bool m_bFullscreen;
 	bool m_bTopDown;
+	wxString2 m_strSnapshotFilename;
+	int		m_iSnapshotNumber;
 
 DECLARE_EVENT_TABLE()
 };

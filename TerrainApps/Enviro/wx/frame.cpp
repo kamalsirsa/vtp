@@ -114,6 +114,8 @@ EVT_MENU(ID_VIEW_FOLLOW_ROUTE,		vtFrame::OnViewFollowRoute)
 EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
 EVT_MENU(ID_VIEW_LOCATIONS,			vtFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	vtFrame::OnUpdateViewLocations)
+EVT_MENU(ID_VIEW_SNAPSHOT,			vtFrame::OnViewSnapshot)
+EVT_MENU(ID_VIEW_SNAP_AGAIN,		vtFrame::OnViewSnapAgain)
 
 EVT_UPDATE_UI(ID_VIEW_FRAMERATE,vtFrame::OnUpdateViewFramerate)
 EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
@@ -273,6 +275,24 @@ void vtFrame::CreateMenus()
 	sceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
 	sceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
 
+	// shortcuts:
+	// Ctrl+A Show Axes
+	// Ctrl+C Cull Every Frame
+	// Ctrl+E Flatten
+	// Ctrl+F Fullscreen
+	// Ctrl+K Cull Once
+	// Ctrl+L Add Linear Features
+	// Ctrl+N Save Numbered Snapshot
+	// Ctrl+P Load Point Data
+	// Ctrl+R Framerate Chart
+	// Ctrl+S Camera - View Settings
+	// Ctrl+T Top-Down
+	// Ctrl+U Unfold
+	// Ctrl+W Wireframe
+	// A Maintain height above ground
+	// F Faster
+	// S Faster
+
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
 	viewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
@@ -281,12 +301,16 @@ void vtFrame::CreateMenus()
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings\tCtrl+S"));
 	viewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
+	viewMenu->AppendSeparator();
+	viewMenu->Append(ID_VIEW_SNAPSHOT, _T("Save Window Snapshot"));
+	viewMenu->Append(ID_VIEW_SNAP_AGAIN, _T("Save Numbered Snapshot\tCtrl+N"));
 
 	wxMenu *navMenu = new wxMenu;
 	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
 	navMenu->Append(ID_VIEW_FASTER, _T("Fly Faster (F)"));
 	navMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _T("Maintain height above ground (A)"));
 
+		// submenu
 		wxMenu *navstyleMenu = new wxMenu;
 		navstyleMenu->AppendCheckItem(ID_NAV_NORMAL, _T("Normal Terrain Flyer"));
 		navstyleMenu->AppendCheckItem(ID_NAV_VELO, _T("Flyer with Velocity"));
@@ -767,6 +791,73 @@ void vtFrame::OnViewLocations(wxCommandEvent& event)
 void vtFrame::OnUpdateViewLocations(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
+}
+
+void vtFrame::Snapshot(bool bNumbered)
+{
+	vtScene *scene = vtGetScene();
+	IPoint2 size = scene->GetWindowSize();
+	osg::ref_ptr<osg::Image> pImage = new osg::Image;
+	pImage->readPixels(0, 0, size.x, size.y, GL_RGB, GL_UNSIGNED_BYTE);
+
+	if (!bNumbered || (bNumbered && m_strSnapshotFilename == _T("")))
+	{
+		// save current directory
+		wxString path = wxGetCwd();
+
+		EnableContinuousRendering(false);
+		wxFileDialog saveFile(NULL, _T("Save View Snapshot"), _T(""), _T(""),
+			_T("JPEG Files (*.jpg)|*.jpg|"), wxSAVE);
+		bool bResult = (saveFile.ShowModal() == wxID_OK);
+		EnableContinuousRendering(true);
+		if (!bResult)
+		{
+			wxSetWorkingDirectory(path);	// restore
+			return;
+		}
+		m_strSnapshotFilename = saveFile.GetPath();
+		m_iSnapshotNumber = 0;
+	}
+	wxString2 use_name;
+	if (bNumbered)
+	{
+		wxString start, number, extension;
+		start = m_strSnapshotFilename.BeforeLast(_T('.'));
+		extension = m_strSnapshotFilename.AfterLast(_T('.'));
+		number.Printf("_%03d.", m_iSnapshotNumber);
+		m_iSnapshotNumber++;
+		use_name = start + number + extension;
+	}
+	else
+		use_name = m_strSnapshotFilename;
+
+	unsigned char *data;
+	vtDIB dib;
+	dib.Create(size.x, size.y, 24);
+	int x, y;
+	short r, g, b;
+	for (y = 0; y < size.y; y++)
+	{
+		data = pImage->data(0, y);
+		for (x = 0; x < size.x; x++)
+		{
+			r = *data++;
+			g = *data++;
+			b = *data++;
+			dib.SetPixel24(x, size.y-1-y, RGBi(r, g, b));
+		}
+	}
+	dib.WriteJPEG(use_name.mb_str(), 98);
+}
+
+void vtFrame::OnViewSnapshot(wxCommandEvent& event)
+{
+	Snapshot(false); // do ask for explicit filename always
+}
+
+void vtFrame::OnViewSnapAgain(wxCommandEvent& event)
+{
+	Snapshot(true); // number, and don't ask for filename if we already have one
 }
 
 
