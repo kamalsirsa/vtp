@@ -180,7 +180,7 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 	else
 	{
 		// turn fog off
-		set->setModeToInherit(GL_FOG);
+		set->setMode(GL_FOG, StateAttribute::OFF);
 	}
 }
 
@@ -239,16 +239,21 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 	bool bDoLoad = (!bInCache || !bAllowCache);
 	if (bDoLoad)
 	{
-#define HINT osgDB::Registry::CacheHintOptions
+#define HINT osgDB::ReaderWriter::Options::CacheHintOptions
 		// In case of reloading a previously loaded model, we must empty
 		//  our own cache as well as disable OSG's cache.
 		osgDB::Registry *reg = osgDB::Registry::instance();
-		HINT hint = reg->getUseObjectCacheHint();
-		if (bAllowCache)
-			hint = (HINT) (hint | (osgDB::Registry::CACHE_NODES));
+		osgDB::ReaderWriter::Options *opts;
+
+		opts = reg->getOptions();
+		if (!opts) opts = new osgDB::ReaderWriter::Options;
+
+	    if (bAllowCache)
+			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() | (osgDB::ReaderWriter::Options::CacheHintOptions::CACHE_NODES))));
 		else
-			hint = (HINT) (hint & ~(osgDB::Registry::CACHE_NODES));
-		reg->setUseObjectCacheHint(hint);
+			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CacheHintOptions::CACHE_NODES))));
+
+		reg->setOptions(opts);
 
 		// Now actually request the node from OSG
 #if _DEBUG
@@ -1269,7 +1274,7 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true)
 {
 	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
-	modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
+	modelview_abs->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
 	modelview_abs->setMatrix(osg::Matrix::identity());
 
 	m_projection = new osg::Projection;

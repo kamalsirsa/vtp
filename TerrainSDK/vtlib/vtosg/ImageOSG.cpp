@@ -70,11 +70,16 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 	// try to load with OSG (osgPlugins libraries)
 	{
 		// important for efficiency: use OSG's cache
-#define HINT osgDB::Registry::CacheHintOptions
+#define HINT osgDB::ReaderWriter::Options::CacheHintOptions
+		// In case of reloading a previously loaded model, we must empty
+		//  our own cache as well as disable OSG's cache.
 		osgDB::Registry *reg = osgDB::Registry::instance();
-		HINT hint = reg->getUseObjectCacheHint();
-		hint = (HINT) (hint | (osgDB::Registry::CACHE_IMAGES));
-		reg->setUseObjectCacheHint(hint);
+		osgDB::ReaderWriter::Options *opts;
+
+		opts = reg->getOptions();
+		if (!opts) opts = new osgDB::ReaderWriter::Options;
+		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) | osgDB::ReaderWriter::Options::CacheHintOptions::CACHE_IMAGES));
+		reg->setOptions(opts);
 
 		m_pOsgImage = osgDB::readImageFile(fname);
 		if (m_pOsgImage != NULL)
