@@ -29,14 +29,14 @@
 // The Libwww library is available from:
 //		http://www.w3.org/Library/
 //
-#define SUPPORT_HTTP	1
+#define SUPPORT_HTTP	0
 
 // Use the ZipArchive library, which adds support for reading from .zip files
 //
 // The library is GPL and available from:
 // http://www.artpol-software.com/index_zip.html
 //
-#define SUPPORT_UNZIP	1
+#define SUPPORT_UNZIP	0
 
 // Set to 1 if your C++ compiler supports wide strings (std::wstring)
 //
