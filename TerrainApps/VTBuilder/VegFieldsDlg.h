@@ -63,7 +63,6 @@ private:
 	SHPHandle m_hSHP;
 	int	   m_nElem, m_nShapeType;
 	wxString  m_filename;
-	DBFHandle m_db;
 	int	   m_iFields;
 
 	bool	m_bUseSpecies;
