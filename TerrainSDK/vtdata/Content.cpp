@@ -169,6 +169,7 @@ const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, 
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 	{
+#if SUPPORT_WSTRING
 		if (bUTF8ToAnsi)
 		{
 			// The internal string is UTF8, but we want it as Ansi (iso-8859-1)
@@ -176,6 +177,7 @@ const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, 
 			wide_string.from_utf8(tag->value);
 			return wide_string.eb_str();
 		}
+#endif
 		return tag->value;
 	}
 	else
