@@ -162,6 +162,7 @@ public:
 
 	// used for mouse interaction
 	bool		m_bDragging;
+	bool		m_bRotating;
 	bool		m_bSelectedStruct;
 	bool		m_bSelectedPlant;
 	bool		m_bSelectedUtil;
@@ -170,6 +171,8 @@ public:
 	vtRoute		*m_pCurRoute;
 	vtUtilNode	*m_pSelUtilNode;
 	vtRoute		*m_pSelRoute;
+	IPoint2		m_MouseDown;
+	float		m_StartRotation;
 
 	// handle to the singleton
 	static Enviro *s_pApp;

@@ -1527,7 +1527,14 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 		vtStructure3d *str3d = structures_picked->GetStructure3d(structure);
 		str->Select(true);
 		str3d->ShowBounds(true);
-		m_bDragging = true;
+		vtStructInstance *inst = str->GetInstance();
+		if (inst != NULL && (event.flags & VT_SHIFT) != 0)
+		{
+			m_StartRotation = inst->m_fRotation;
+			m_bRotating = true;
+		}
+		else
+			m_bDragging = true;
 		m_bSelectedStruct = true;
 
 		if (structures_picked != structures)
@@ -1549,6 +1556,7 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 		m_bSelectedUtil = true;
 	}
 	m_EarthPosDown = m_EarthPosLast = m_EarthPos;
+	m_MouseDown = event.pos;
 }
 
 vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
@@ -1593,7 +1601,7 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 {
-	m_bDragging = false;
+	m_bDragging = m_bRotating = false;
 
 	if (m_state == AS_Orbit && m_mode == MM_LINEAR && m_bDragging)
 	{
@@ -1630,7 +1638,8 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 
 void Enviro::OnMouseMove(vtMouseEvent &event)
 {
-	if (m_state == AS_Terrain && m_mode == MM_SELECT && m_bDragging)
+	if (m_state == AS_Terrain && m_mode == MM_SELECT &&
+		(m_bDragging || m_bRotating))
 	{
 		DPoint3 delta = m_EarthPos - m_EarthPosLast;
 		DPoint2 ground_delta(delta.x, delta.y);
@@ -1639,19 +1648,32 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 		if (m_bSelectedStruct)
 		{
 			vtStructureArray3d *structures = pTerr->GetStructures();
-			structures->OffsetSelectedStructures(ground_delta);
+			if (m_bDragging)
+				structures->OffsetSelectedStructures(ground_delta);
+			else if (m_bRotating)
+			{
+				int sel = structures->GetFirstSelected();
+				vtStructInstance *inst = structures->GetAt(sel)->GetInstance();
+				vtStructInstance3d *str3d = structures->GetInstance(sel);
+
+				inst->m_fRotation = m_StartRotation + (event.pos.x - m_MouseDown.x) / 100.0f;
+				str3d->UpdateTransform(pTerr->GetHeightField());
+			}
 		}
-		if (m_bSelectedPlant)
+		if (m_bDragging)
 		{
-			vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
-			plants.OffsetSelectedPlants(ground_delta);
-		}
-		if (m_bSelectedUtil)
-		{
-			vtRouteMap &routemap = pTerr->GetRouteMap();
-			m_pSelUtilNode->Offset(ground_delta);
-			m_pSelRoute->Dirty();
-			routemap.BuildGeometry(pTerr->GetHeightField());
+			if (m_bSelectedPlant)
+			{
+				vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
+				plants.OffsetSelectedPlants(ground_delta);
+			}
+			if (m_bSelectedUtil)
+			{
+				vtRouteMap &routemap = pTerr->GetRouteMap();
+				m_pSelUtilNode->Offset(ground_delta);
+				m_pSelRoute->Dirty();
+				routemap.BuildGeometry(pTerr->GetHeightField());
+			}
 		}
 
 		m_EarthPosLast = m_EarthPos;
