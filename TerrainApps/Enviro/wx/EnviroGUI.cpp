@@ -67,6 +67,11 @@ void EnviroGUI::ShowLayerView()
 	dlg->Show(true);
 }
 
+void EnviroGUI::CameraChanged()
+{
+	GetFrame()->CameraChanged();
+}
+
 void EnviroGUI::EarthPosUpdated()
 {
 	GetFrame()->EarthPosUpdated(m_EarthPos);

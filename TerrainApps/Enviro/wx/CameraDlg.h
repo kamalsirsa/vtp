@@ -28,6 +28,10 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for CameraDlg
+	wxStaticText* GetFovText()  { return (wxStaticText*) FindWindow( ID_FOV_TEXT ); }
+	wxCheckBox* GetAccel()  { return (wxCheckBox*) FindWindow( ID_ACCEL ); }
+	wxSlider* GetFovSlider()  { return (wxSlider*) FindWindow( ID_FOVSLIDER ); }
+	wxTextCtrl* GetFov()  { return (wxTextCtrl*) FindWindow( ID_FOV ); }
 	wxChoice* GetSpeedUnits()  { return (wxChoice*) FindWindow( ID_SPEED_UNITS ); }
 	void SlidersToValues(int w);
 	void ValuesToSliders();
@@ -35,11 +39,12 @@ public:
 	void SetValues();
 	void TransferToWindow();
 
+	void CameraChanged();
 	void CheckAndUpdatePos();
 
 private:
 	// WDR: member variable declarations for CameraDlg
-	wxString2 m_camX, m_camY, m_camZ;
+	wxString2 m_camX, m_camY, m_camZ, m_camWidth;
 
 	int m_iFov;
 	int m_iNear;
@@ -62,6 +67,7 @@ private:
 
 	bool m_bSet;
 	DPoint3 m_pos;
+	bool m_bOrtho;
 
 private:
 	// WDR: handler declarations for CameraDlg
@@ -84,7 +90,4 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-
-
-
-#endif
+#endif // __CameraDlg_H__

@@ -1,7 +1,7 @@
 //
-// Name:		CameraDlg.cpp
+// Name: CameraDlg.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -96,21 +96,31 @@ CameraDlg::CameraDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_SLIDER_ROAD, &m_iDistRoad);
 }
 
-#define FOV_MIN  2.0f
-#define FOV_RANGE   128.0f
+#define FOV_MIN	2.0f
+#define FOV_RANGE	128.0f
+#define WIDTH_MIN	0.0f
+#define WIDTH_MAX	6.0f
+#define WIDTH_RANGE	(WIDTH_MAX-(WIDTH_MIN))
 #define CLIP_MIN	0.0f
 #define CLIP_MAX	6.0f
-#define CLIP_RANGE  (CLIP_MAX-(CLIP_MIN)) // 1.0 to 1000000 meters
-#define SPEED_MIN   -1.0f
-#define SPEED_MAX   4.0f
-#define SPEED_RANGE (SPEED_MAX-(SPEED_MIN)) // 0.1 to 10000 meters/sec
+#define CLIP_RANGE	(CLIP_MAX-(CLIP_MIN)) // 1.0 to 1000000 meters
+#define SPEED_MIN	-1.0f
+#define SPEED_MAX	4.0f
+#define SPEED_RANGE	(SPEED_MAX-(SPEED_MIN)) // 0.1 to 10000 meters/sec
 #define DIST_MIN	1.0f
 #define DIST_MAX	5.0f
-#define DIST_RANGE  (DIST_MAX-(DIST_MIN)) // 10 to 100000 meters
+#define DIST_RANGE	(DIST_MAX-(DIST_MIN)) // 10 to 100000 meters
 
 void CameraDlg::SlidersToValues(int w)
 {
-	if (w == 1) m_fFov =	FOV_MIN + (m_iFov * FOV_RANGE / 100);
+	if (m_bOrtho)
+	{
+		if (w == 1) m_fFov = powf(10, (WIDTH_MIN + m_iFov * WIDTH_RANGE / 100));
+	}
+	else
+	{
+		if (w == 1) m_fFov = FOV_MIN + (m_iFov * FOV_RANGE / 100);
+	}
 	if (w == 2) m_fNear =   powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
 	if (w == 3) m_fFar =	powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
 	if (w == 4) m_fSpeed =  powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
@@ -126,7 +136,14 @@ void CameraDlg::SlidersToValues(int w)
 
 void CameraDlg::ValuesToSliders()
 {
-	m_iFov =	(int) ((m_fFov - FOV_MIN) / FOV_RANGE * 100);
+	if (m_bOrtho)
+	{
+		m_iFov =	(int) ((log10f(m_fFov) - WIDTH_MIN) / WIDTH_RANGE * 100);
+	}
+	else
+	{
+		m_iFov =	(int) ((m_fFov - FOV_MIN) / FOV_RANGE * 100);
+	}
 	m_iNear =   (int) ((log10f(m_fNear) - CLIP_MIN) / CLIP_RANGE * 100);
 	m_iFar =	(int) ((log10f(m_fFar) - CLIP_MIN) / CLIP_RANGE * 100);
 	m_iSpeed =  (int) ((log10f(m_fSpeed) - SPEED_MIN) / SPEED_RANGE * 100);
@@ -139,7 +156,8 @@ void CameraDlg::ValuesToSliders()
 void CameraDlg::GetValues()
 {
 	vtCamera *pCam = vtGetScene()->GetCamera();
-	m_fFov = pCam->GetFOV() * 180.0f / PIf;
+
+	m_bOrtho = pCam->IsOrtho();
 	m_fNear = pCam->GetHither();
 	m_fFar = pCam->GetYon();
 
@@ -166,6 +184,18 @@ void CameraDlg::GetValues()
 		m_fDistStruct = t->GetLODDistance(TFT_STRUCTURES);
 		m_fDistRoad =   t->GetLODDistance(TFT_ROADS);
 	}
+	if (m_bOrtho)
+	{
+		m_fFov = pCam->GetWidth();
+		GetFovText()->SetLabel(_("View Width (meters)"));
+		GetAccel()->Enable(false);
+	}
+	else
+	{
+		m_fFov = pCam->GetFOV() * 180.0f / PIf;
+		GetFovText()->SetLabel(_("Horizontal FOV (degrees)"));
+		GetAccel()->Enable(true);
+	}
 }
 
 void CameraDlg::SetValues()
@@ -174,10 +204,13 @@ void CameraDlg::SetValues()
 		return;
 
 	vtCamera *pCam = vtGetScene()->GetCamera();
-	pCam->SetFOV(m_fFov / 180.0f * PIf);
 	pCam->SetHither(m_fNear);
 	pCam->SetYon(m_fFar);
 
+	if (m_bOrtho)
+		pCam->SetWidth(m_fFov);
+	else
+		pCam->SetFOV(m_fFov / 180.0f * PIf);
 	float speed=0;
 	switch (m_iSpeedUnits)
 	{
@@ -204,11 +237,21 @@ void CameraDlg::SetValues()
 	}
 }
 
+void CameraDlg::CameraChanged()
+{
+	// we are dealing with a new camera, so update with its values
+	GetValues();
+	ValuesToSliders();
+	TransferToWindow();
+}
+
 void CameraDlg::CheckAndUpdatePos()
 {
-	FPoint3 fpos = vtGetScene()->GetCamera()->GetTrans();
+	vtCamera *cam = vtGetScene()->GetCamera();
+	FPoint3 fpos = cam->GetTrans();
 	g_Conv.ConvertToEarth(fpos, m_pos);
 
+	bool bTransfer = false;
 	wxString2 newx, newy, newz;
 	newx.Printf(_T("%.7g"), m_pos.x);
 	newy.Printf(_T("%.7g"), m_pos.y);
@@ -219,8 +262,20 @@ void CameraDlg::CheckAndUpdatePos()
 		m_camX = newx;
 		m_camY = newy;
 		m_camZ = newz;
-		TransferDataToWindow();
+		bTransfer = true;
 	}
+	if (m_bOrtho)
+	{
+		float newWidth = cam->GetWidth();
+		if (newWidth != m_fFov)
+		{
+			m_fFov = newWidth;
+			ValuesToSliders();
+			bTransfer = true;
+		}
+	}
+	if (bTransfer)
+		TransferDataToWindow();
 }
 
 void CameraDlg::TransferToWindow()
@@ -250,7 +305,7 @@ void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetValues();
 	ValuesToSliders();
-	wxDialog::OnInitDialog(event);	// calls TransferDataToWindow
+	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow
 }
 
 void CameraDlg::OnFovSlider( wxCommandEvent &event )

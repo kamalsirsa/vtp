@@ -500,7 +500,7 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Horizontal FOV (degrees)"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item9 = new wxStaticText( parent, ID_FOV_TEXT, _("Horizontal FOV (degrees)"), wxDefaultPosition, wxDefaultSize, 0 );
     item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item10 = new wxTextCtrl( parent, ID_FOV, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
