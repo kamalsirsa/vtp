@@ -95,7 +95,7 @@ void Enviro::Shutdown()
 
 void Enviro::LoadTerrainDescriptions()
 {
-	VTLOG("LoadTerrainDescriptions\n");
+	VTLOG("LoadTerrainDescriptions...");
 
 	using namespace boost::filesystem;
 
@@ -129,6 +129,7 @@ void Enviro::LoadTerrainDescriptions()
 				m_pTerrainScene->AppendTerrain(pTerr);
 		}
 	}
+	VTLOG("Done.\n");
 }
 
 void Enviro::StartControlEngine(const char *filename)
@@ -805,7 +806,7 @@ void Enviro::SetupScene2()
 	m_pSprite2->SetName2("Sprite2");
 	m_pSprite2->SetWindowRect(0.73f, 0.90f, 1.00f, 1.00f);
 	m_pSprite2->SetText("...");
-	m_pRoot->AddChild(m_pSprite2);
+//	m_pRoot->AddChild(m_pSprite2);
 
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
@@ -914,6 +915,7 @@ void Enviro::SetMessage(const char *msg, float fTime)
 
 	vtString str = msg;
 
+#if 0
 	if (m_pMessageSprite == NULL)
 	{
 		m_pMessageSprite = new vtSprite();
@@ -929,11 +931,12 @@ void Enviro::SetMessage(const char *msg, float fTime)
 		int len = str.GetLength();
 		m_pMessageSprite->SetWindowRect(0.5f - (len * 0.01f), 0.45f, 
 										0.5f + (len * 0.01f), 0.55f);
-		if (fTime != 0.0f)
-		{
-			m_fMessageStart = vtGetTime();
-			m_fMessageTime = fTime;
-		}
+	}
+#endif
+	if (str != "" && fTime != 0.0f)
+	{
+		m_fMessageStart = vtGetTime();
+		m_fMessageTime = fTime;
 	}
 	m_strMessage = str;
 }
