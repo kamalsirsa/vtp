@@ -17,7 +17,6 @@
 #endif
 
 #include "HeightDlg.h"
-#include "HeightGrid.h"
 #include "BuildingDlg.h"
 
 // WDR: class implementations
