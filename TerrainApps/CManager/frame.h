@@ -1,7 +1,7 @@
 //
 // Name:		frame.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,7 @@
 #include <wx/dnd.h>
 #include <wx/splitter.h>
 #include "vtdata/Content.h"
+#include "vtui/wxString2.h"
 #include <map>
 
 class vtGLCanvas;
@@ -31,7 +32,7 @@ public:
 			  const wxPoint& pos = wxDefaultPosition,
 			  const wxSize& size = wxDefaultSize,
 			  long style = wxSP_3D|wxCLIP_CHILDREN,
-			  const wxString& name = "splitter") :
+			  const wxString& name = _T("splitter")) :
 		wxSplitterWindow(parent, id, pos, size, style, name) {}
 	virtual void SizeWindows();
 
@@ -96,10 +97,10 @@ protected:
 	void OnUpdateItemRemoveModel(wxUpdateUIEvent& event);
 	void OnUpdateItemSaveSOG(wxUpdateUIEvent& event);
 
-	void LoadContentsFile(wxString &fname);
-	void SaveContentsFile(wxString &fname);
+	void LoadContentsFile(const wxString2 &fname);
+	void SaveContentsFile(const wxString2 &fname);
 
-	void DisplayMessageBox(const char *string);
+	void DisplayMessageBox(const wxString2 &str);
 
 public:
 	vtGLCanvas		*m_canvas;
@@ -117,7 +118,7 @@ public:
 public:
 	void RenderingPause();
 	void RenderingResume();
-	void AddModelFromFile(wxString &fname);
+	void AddModelFromFile(const wxString2 &fname);
 	void OnChar(wxKeyEvent& event);
 
 public:
@@ -130,7 +131,7 @@ public:
 	void		SetCurrentItemAndModel(vtItem *item, vtModel *model);
 	void		SetCurrentItem(vtItem *item);
 	void		SetCurrentModel(vtModel *mod);
-	vtModel		*AddModel(wxString &fname);
+	vtModel		*AddModel(const wxString2 &fname);
 	vtTransform	*AttemptLoad(vtModel *model);
 	ItemGroup	*GetItemGroup(vtItem *item);
 	void		UpdateItemGroup(vtItem *item);
@@ -146,7 +147,7 @@ public:
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;
 
-	vtString	m_strDataPath;
+	wxString2	m_strDataPath;
 
 	DECLARE_EVENT_TABLE()
 };

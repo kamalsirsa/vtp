@@ -84,10 +84,10 @@ void vtGLCanvas::UpdateStatusText()
 	// get camera distance
 	float dist = wxGetApp().m_pTrackball->GetRadius();
 
-	vtString str;
-	str.Format("fps %.3g, camera distance %.2f meters", fps, dist);
+	wxString str;
+	str.Printf(_T("fps %.3g, camera distance %.2f meters"), fps, dist);
 
-	frame->SetStatusText((const char *)str);
+	frame->SetStatusText(str);
 }
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )

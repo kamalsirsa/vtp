@@ -51,12 +51,12 @@ PropDlg::PropDlg( wxWindow *parent, wxWindowID id,
 void PropDlg::OnAddTag( wxCommandEvent &event )
 {
 	GetMainFrame()->RenderingPause();
-	TagDlg dlg(GetMainFrame(), -1, "Add New Tag");
+	TagDlg dlg(GetMainFrame(), -1, _T("Add New Tag"));
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		vtTag *tag = new vtTag();
-		tag->name = dlg.m_strName;
-		tag->value = dlg.m_strValue;
+		tag->name = dlg.m_strName.mb_str();
+		tag->value = dlg.m_strValue.mb_str();
 		m_pCurrentItem->AddTag(tag);
 		UpdateTagList();
 	}
@@ -88,13 +88,13 @@ void PropDlg::OnTagEdit( wxCommandEvent &event )
 		int tagnum = m_pTagList->GetItemData(sel);
 		vtTag *tag = m_pCurrentItem->GetTag(tagnum);
 
-		TagDlg dlg(GetMainFrame(), -1, "Edit Tag");
+		TagDlg dlg(GetMainFrame(), -1, _T("Edit Tag"));
 		dlg.m_strName = tag->name;
 		dlg.m_strValue = tag->value;
 		if (dlg.ShowModal() == wxID_OK)
 		{
-			tag->name = dlg.m_strName;
-			tag->value = dlg.m_strValue;
+			tag->name = dlg.m_strName.mb_str();
+			tag->value = dlg.m_strValue.mb_str();
 			UpdateTagList();
 		}
 	}
@@ -114,7 +114,8 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 		{
 			if (buf[strlen(buf)-1] == 10) buf[strlen(buf)-1] = 0;
 			if (buf[strlen(buf)-1] == 13) buf[strlen(buf)-1] = 0;
-			m_pTypeChoice->Append(buf);
+			wxString2 str = buf;
+			m_pTypeChoice->Append(str);
 		}
 		fclose(fp);
 	}
@@ -122,9 +123,9 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_pTagList->ClearAll();
 	m_pTagList->SetSingleStyle(wxLC_REPORT);
-	m_pTagList->InsertColumn(0, "Tag");
+	m_pTagList->InsertColumn(0, _T("Tag"));
 	m_pTagList->SetColumnWidth(0, 100);
-	m_pTagList->InsertColumn(1, "Value");
+	m_pTagList->InsertColumn(1, _T("Value"));
 	m_pTagList->SetColumnWidth(1, 120);
 
 	AddValidator(ID_ITEM, &m_strItem);
@@ -158,8 +159,8 @@ void PropDlg::UpdateTagList()
 		tag = m_pCurrentItem->GetTag(i);
 		if (!tag->name.Compare("type"))
 			continue;
-		item = m_pTagList->InsertItem(i, (const char *) tag->name);
-		m_pTagList->SetItem(item, 1, (const char *) tag->value);
+		item = m_pTagList->InsertItem(i, (wxString2) tag->name);
+		m_pTagList->SetItem(item, 1, (wxString2) tag->value);
 		m_pTagList->SetItemData(item, i);
 	}
 }
@@ -169,7 +170,11 @@ void PropDlg::SetCurrentItem(vtItem *item)
 	if (item)
 	{
 		m_strItem = item->m_name;
-		m_strType = item->GetValue("type");
+		const char *type = item->GetValue("type");
+		if (type)
+			m_strType = type;
+		else
+			m_strType = _T("unknown");
 	}
 	else
 	{
@@ -180,7 +185,7 @@ void PropDlg::SetCurrentItem(vtItem *item)
 
 	m_bUpdating = true;
 	TransferDataToWindow();
-	int sel = m_pTypeChoice->FindString(item->GetValue("type"));
+	int sel = m_pTypeChoice->FindString(m_strType);
 	if (sel != -1)
 		m_pTypeChoice->SetSelection(sel);
 	else
@@ -197,7 +202,7 @@ void PropDlg::UpdateFromControls()
 	TransferDataFromWindow();
 	if (m_pCurrentItem)
 	{
-		m_pCurrentItem->m_name = m_strItem;
+		m_pCurrentItem->m_name = m_strItem.mb_str();
 		m_pCurrentItem->SetValue("type", m_strType);
 	}
 }

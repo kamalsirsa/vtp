@@ -10,7 +10,8 @@
 #endif
 
 #include "cmanager_wdr.h"
-#include "AutoPanel.h"
+#include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 
 class vtItem;
 class vtModel;
@@ -39,8 +40,8 @@ public:
 
 private:
 	// WDR: member variable declarations for PropDlg
-	wxString	m_strItem;
-	wxString	m_strType;
+	wxString2	m_strItem;
+	wxString2	m_strType;
 	vtItem	  *m_pCurrentItem;
 	wxListCtrl  *m_pTagList;
 	wxChoice	*m_pTypeChoice;

@@ -10,7 +10,8 @@
 #endif
 
 #include "cmanager_wdr.h"
-#include "AutoPanel.h"
+#include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 
 class vtModel;
 
@@ -36,10 +37,10 @@ public:
 
 private:
 	// WDR: member variable declarations for ModelDlg
-	wxString	m_strFilename;
+	wxString2	m_strFilename;
 	float		m_fDistance;
 	float		m_fScale;
-	wxString	m_strStatus;
+	wxString2	m_strStatus;
 	vtModel		*m_pCurrentModel;
 	bool		m_bUpdating;
 

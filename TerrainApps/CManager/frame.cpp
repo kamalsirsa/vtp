@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for the wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -204,7 +204,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 {
 	// Give it an icon
 	{
-		wxString name = "cmanager";
+		wxString name = _T("cmanager");
 		wxIcon icon(name);
 		SetIcon(icon);
 	}
@@ -248,9 +248,9 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
 	m_canvas = new vtGLCanvas(m_splitter, WID_MAINVIEW, wxPoint(0, 0), wxSize(-1, -1),
-		0, "vtGLCanvas", gl_attrib);
+		0, _T("vtGLCanvas"), gl_attrib);
 
-	m_pSceneGraphDlg = new SceneGraphDlg(this, WID_SCENEGRAPH, "Scene Graph",
+	m_pSceneGraphDlg = new SceneGraphDlg(this, WID_SCENEGRAPH, _T("Scene Graph"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 	m_canvas->SetCurrent();
@@ -311,33 +311,33 @@ void vtFrame::CreateMenus()
 {
 	// Make menus
 	wxMenu *fileMenu = new wxMenu;
-	fileMenu->Append(wxID_OPEN, "Open Content File", "Open");
-	fileMenu->Append(wxID_SAVE, "&Save Content File");
+	fileMenu->Append(wxID_OPEN, _T("Open Content File"), _T("Open"));
+	fileMenu->Append(wxID_SAVE, _T("&Save Content File"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(ID_SCENE_SCENEGRAPH, "Scene Graph");
+	fileMenu->Append(ID_SCENE_SCENEGRAPH, _T("Scene Graph"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(ID_TEST_XML, "Test XML", "Test XML");
+	fileMenu->Append(ID_TEST_XML, _T("Test XML"), _T("Test XML"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(ID_SET_DATA_PATH, "Set Data Path");
+	fileMenu->Append(ID_SET_DATA_PATH, _T("Set Data Path"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, "E&xit\tEsc", "Exit");
+	fileMenu->Append(wxID_EXIT, _T("E&xit\tEsc"), _T("Exit"));
 
 	wxMenu *itemMenu = new wxMenu;
-	itemMenu->Append(ID_ITEM_NEW, "New Item", "New Item");
-	itemMenu->Append(ID_ITEM_DEL, "Delete Item", "Delete Item");
+	itemMenu->Append(ID_ITEM_NEW, _T("New Item"), _T("New Item"));
+	itemMenu->Append(ID_ITEM_DEL, _T("Delete Item"), _T("Delete Item"));
 	itemMenu->AppendSeparator();
-	itemMenu->Append(ID_ITEM_ADDMODEL, "Add Model", "Add Model");
-	itemMenu->Append(ID_ITEM_REMOVEMODEL, "Remove Model", "Remove Model");
+	itemMenu->Append(ID_ITEM_ADDMODEL, _T("Add Model"), _T("Add Model"));
+	itemMenu->Append(ID_ITEM_REMOVEMODEL, _T("Remove Model"), _T("Remove Model"));
 	itemMenu->AppendSeparator();
-	itemMenu->Append(ID_ITEM_SAVESOG, "Save Model as SOG", "Save Model as SOG");
+	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"), _T("Save Model as SOG"));
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(ID_HELP_ABOUT, "About VTP Content Manager...");
+	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Content Manager..."));
 
 	wxMenuBar *menuBar = new wxMenuBar;
-	menuBar->Append(fileMenu, "&File");
-	menuBar->Append(itemMenu, "&Item");
-	menuBar->Append(helpMenu, "&Help");
+	menuBar->Append(fileMenu, _T("&File"));
+	menuBar->Append(itemMenu, _T("&Item"));
+	menuBar->Append(helpMenu, _T("&Help"));
 	SetMenuBar(menuBar);
 }
 
@@ -391,12 +391,12 @@ void vtFrame::OnClose(wxCloseEvent &event)
 void vtFrame::OnOpen(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
-	wxFileDialog loadFile(NULL, "Load Content File", "", "",
-		"Content XML Files (*.vtco)|*.vtco|", wxOPEN);
+	wxFileDialog loadFile(NULL, _T("Load Content File"), _T(""), _T(""),
+		_T("Content XML Files (*.vtco)|*.vtco|"), wxOPEN);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 	{
-		wxString fname = loadFile.GetPath();
+		wxString2 fname = loadFile.GetPath();
 		LoadContentsFile(fname);
 	}
 	m_canvas->m_bRunning = true;
@@ -406,19 +406,19 @@ void vtFrame::OnOpen(wxCommandEvent& event)
 void vtFrame::OnSave(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
-	wxFileDialog loadFile(NULL, "Save Content File", "", "",
-		"Content XML Files (*.vtco)|*.vtco|", wxSAVE);
+	wxFileDialog loadFile(NULL, _T("Save Content File"), _T(""), _T(""),
+		_T("Content XML Files (*.vtco)|*.vtco|"), wxSAVE);
 	loadFile.SetFilterIndex(1);
 	if (loadFile.ShowModal() == wxID_OK)
 	{
-		wxString fname = loadFile.GetPath();
+		wxString2 fname = loadFile.GetPath();
 		SaveContentsFile(fname);
 	}
 	m_canvas->m_bRunning = true;
 }
 
 
-void vtFrame::LoadContentsFile(wxString &fname)
+void vtFrame::LoadContentsFile(const wxString2 &fname)
 {
 	m_Man.Empty();
 	try 
@@ -428,7 +428,7 @@ void vtFrame::LoadContentsFile(wxString &fname)
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		DisplayMessageBox(str.c_str());
+		DisplayMessageBox(str);
 		return;
 	}
 	SetCurrentItem(NULL);
@@ -436,7 +436,7 @@ void vtFrame::LoadContentsFile(wxString &fname)
 	m_pTree->RefreshTreeItems(this);
 }
 
-void vtFrame::SaveContentsFile(wxString &fname)
+void vtFrame::SaveContentsFile(const wxString2 &fname)
 {
 	try 
 	{
@@ -445,11 +445,11 @@ void vtFrame::SaveContentsFile(wxString &fname)
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		DisplayMessageBox(str.c_str());
+		DisplayMessageBox(str);
 	}
 }
 
-void vtFrame::AddModelFromFile(wxString &fname)
+void vtFrame::AddModelFromFile(const wxString2 &fname)
 {
 	vtModel *nm = AddModel(fname);
 	if (nm)
@@ -486,15 +486,15 @@ void vtFrame::OnItemDelete(wxCommandEvent& event)
 
 void vtFrame::OnItemAddModel(wxCommandEvent& event)
 {
-	wxFileDialog loadFile(NULL, "Load 3d Model", "", "",
-		"3DS Files (*.3ds)|*.3ds|"
-		"FLT Files (*.flt)|*.flt|"
-		"All Files (*.*)|*.*|", wxOPEN);
+	wxFileDialog loadFile(NULL, _T("Load 3d Model"), _T(""), _T(""),
+		_T("3DS Files (*.3ds)|*.3ds|")
+		_T("FLT Files (*.flt)|*.flt|")
+		_T("All Files (*.*)|*.*|"), wxOPEN);
 	loadFile.SetFilterIndex(0);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	wxString fname = loadFile.GetPath();
+	wxString2 fname = loadFile.GetPath();
 	AddModelFromFile(fname);
 }
 
@@ -556,24 +556,24 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;	// stop rendering
 
-	wxString str = "VTP Content Manager\n\n";
-	str += "Manages sources of 3d models for the Virtual Terrain Project software.\n\n";
-	str += "Please read the HTML documentation and license.\n";
-	str += "Send feedback to: ben@vterrain.org\n\n";
-	str += "This version was built with the ";
+	wxString str = _T("VTP Content Manager\n\n");
+	str += _T("Manages sources of 3d models for the Virtual Terrain Project software.\n\n");
+	str += _T("Please read the HTML documentation and license.\n");
+	str += _T("Send feedback to: ben@vterrain.org\n\n");
+	str += _T("This version was built with the ");
 #if VTLIB_DSM
-	str += "DSM";
+	str += _T("DSM");
 #elif VTLIB_OSG
-	str += "OSG";
+	str += _T("OSG");
 #elif VTLIB_SGL
-	str += "SGL";
+	str += _T("SGL");
 #elif VTLIB_SSG
-	str += "SSG";
+	str += _T("SSG");
 #endif
-	str += " Library.\n";
-	str += "Build date: ";
-	str += __DATE__;
-	wxMessageBox(str, "About CManager");
+	str += _T(" Library.\n");
+	str += _T("Build date: ");
+	str += _T(__DATE__);
+	wxMessageBox(str, _T("About CManager"));
 
 	m_canvas->m_bRunning = true;	// start rendering again
 	m_canvas->Refresh(FALSE);
@@ -589,10 +589,12 @@ void vtFrame::AddNewItem()
 	SetCurrentItemAndModel(pItem, NULL);
 }
 
-vtModel *vtFrame::AddModel(wxString &fname)
+vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 {
-	int pathlen = strlen((const char *) m_strDataPath);
-	if (!strncmp((const char *) fname, (const char *) m_strDataPath, pathlen))
+	wxString2 fname = fname_in;
+
+	int pathlen = m_strDataPath.Len();
+	if (!strncmp(fname.mb_str(), (const char *) m_strDataPath, pathlen))
 	{
 		// Remove the data path
 		fname = fname.Mid(pathlen);
@@ -600,11 +602,9 @@ vtModel *vtFrame::AddModel(wxString &fname)
 	else
 	{
 		// Warning!  May not be on the data path.
-		wxString str;
-		str = "That file:\n";
-		str += fname;
-		str += "\ndoes not appear to be on the data path:\n";
-		str += m_strDataPath;
+		wxString2 str;
+		str.Printf(_T("That file:\n%s\ndoes not appear to be on the data")
+			_T(" path:\n%s"), fname.mb_str(), (const char *) m_strDataPath);
 		DisplayMessageBox(str);
 		return NULL;
 	}
@@ -637,15 +637,16 @@ vtModel *vtFrame::AddModel(wxString &fname)
 
 vtTransform *vtFrame::AttemptLoad(vtModel *model)
 {
-	wxString fname = (const char *) (m_strDataPath + model->m_filename);
+	wxString2 path = m_strDataPath, name = model->m_filename;
+	wxString2 fname = path + name;
 
 	model->m_attempted_load = true;
 
 	vtNodeBase *pNode = vtLoadModel(fname);
 	if (!pNode)
 	{
-		wxString str;
-		str.Printf("Sorry, couldn't load model from %hs", fname);
+		wxString2 str;
+		str.Printf(_T("Sorry, couldn't load model from %hs"), fname.mb_str());
 		DisplayMessageBox(str);
 		return NULL;
 	}
@@ -830,7 +831,7 @@ void vtFrame::OnTestXML(wxCommandEvent& event)
 	catch (xh_io_exception &e)
 	{
 		string str = e.getFormattedMessage();
-		DisplayMessageBox(str.c_str());
+		DisplayMessageBox(str);
 		return;
 	}
 }
@@ -839,14 +840,14 @@ void vtFrame::OnSetDataPath(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 
-	wxDirDialog dlg(this, "Please indicate your data directory", (const char *) m_strDataPath);
+	wxDirDialog dlg(this, _T("Please indicate your data directory"), m_strDataPath);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		m_strDataPath = dlg.GetPath();
 #if WIN32
-		wxString path_separator = "\\";
+		wxString path_separator = _T("\\");
 #else
-		wxString path_separator = "/";
+		wxString path_separator = _T("/");
 #endif
 		m_strDataPath += path_separator;
 		WriteINI();
@@ -856,10 +857,10 @@ void vtFrame::OnSetDataPath(wxCommandEvent& event)
 	m_canvas->Refresh(FALSE);
 }
 
-void vtFrame::DisplayMessageBox(const char *string)
+void vtFrame::DisplayMessageBox(const wxString2 &str)
 {
 	m_canvas->m_bRunning = false;
-	wxMessageBox(string);
+	wxMessageBox(str);
 	m_canvas->m_bRunning = true;
 	m_canvas->Refresh(FALSE);
 }
@@ -896,8 +897,8 @@ void vtFrame::UpdateTransform(vtModel *model)
 
 	trans->Identity();
 
-	wxString fname = (const char *) (m_strDataPath + model->m_filename);
-	if (fname.AfterLast('.').CmpNoCase("3ds") == 0)
+	wxString2 fname = model->m_filename;
+	if (fname.AfterLast('.').CmpNoCase(_T("3ds")) == 0)
 	{
 		// Must rotate by 90 degrees for 3DS MAX -> OpenGL
 		trans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);

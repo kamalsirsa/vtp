@@ -7,7 +7,7 @@
 #define __WDR_cmanager_H__
 
 #ifdef __GNUG__
-    #pragma interface "cmanager_wdr.cpp"
+    #pragma interface "cmanager_wdr.h"
 #endif
 
 // Include wxWindows' headers
@@ -53,7 +53,9 @@ wxSizer *ModelDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 #define ID_TAGTEXT 10016
 wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-// Declare menu bar functions
+// Declare menubar functions
+
+// Declare toolbar functions
 
 // Declare bitmap functions
 

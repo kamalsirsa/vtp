@@ -1,7 +1,7 @@
 //
 // Name:		SceneGraphDlg.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
+#include "vtui/wxString2.h"
 #include "SceneGraphDlg.h"
 
 
@@ -121,28 +122,30 @@ void SceneGraphDlg::RefreshTreeContents()
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
-	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, "Engines", 7, 7);
+	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, _T("Engines"), 7, 7);
 
 	// Fill in the tree with engines
+	wxString2 str, str2;
 	int num = scene->GetNumEngines();
 	for (int i = 0; i < num; i++)
 	{
 		vtEngine *pEng = scene->GetEngine(i);
-		wxString str;
-		str += pEng->GetName2();
+		str2 = pEng->GetName2();
+		str += str2;
 		vtNode *target = (vtNode *) pEng->GetTarget();
 		if (target)
 		{
-			str += " -> ";
+			str += _T(" -> ");
 			vtNode *node = dynamic_cast<vtNode*>(target);
 			if (node)
 			{
-				str += "\"";
-				str += node->GetName2();
-				str += "\"";
+				str += _T("\"");
+				str2 = node->GetName2();
+				str += str2;
+				str += _T("\"");
 			}
 			else
-				str += "(non-node)";
+				str += _T("(non-node)");
 		}
 		wxTreeItemId hEng = m_pTree->AppendItem(hEngRoot, str, 1, 1);
 		m_pTree->SetItemData(hEng, new MyTreeItemData(NULL, pEng));
@@ -165,46 +168,46 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	if (dynamic_cast<vtRoot*>(pNode))
 	{
-		str = "Root";
+		str = _T("Root");
 		nImage = 7;
 	}
 	else if (dynamic_cast<vtLight*>(pNode))
 	{
-		str = "Light";
+		str = _T("Light");
 		nImage = 4;
 	}
 	else if (dynamic_cast<vtGeom*>(pNode))
 	{
-		str = "Geom";
+		str = _T("Geom");
 		nImage = 2;
 	}
 	else if (dynamic_cast<vtLOD*>(pNode))
 	{
-		str = "LOD";
+		str = _T("LOD");
 		nImage = 5;
 	}
 	else if (dynamic_cast<vtTransform*>(pNode))
 	{
-		str = "XForm";
+		str = _T("XForm");
 		nImage = 9;
 	}
 	else if (dynamic_cast<vtGroup*>(pNode))
 	{
 		// must be just a group for grouping's sake
-		str = "Group";
+		str = _T("Group");
 		nImage = 3;
 	}
 	else
 	{
 		// must be something else
-		str = "Other";
+		str = _T("Other");
 		nImage = 8;
 	}
 	if (pNode->GetName2())
 	{
-		str += " \"";
-		str += pNode->GetName2();
-		str += "\"";
+		str += _T(" \"");
+		str += (wxString2) pNode->GetName2();
+		str += _T("\"");
 	}
 
 	if (dynamic_cast<vtRoot*>(pNode))
@@ -239,7 +242,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 			case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
 			case GL_POLYGON: mtype = "Polygon"; break;
 			}
-			str.Printf("Mesh %d, %hs, %d prims", i, mtype, iNumPrim);
+			str.Printf(_T("Mesh %d, %hs, %d prims"), i, mtype, iNumPrim);
 			hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 		}
 	}
@@ -253,7 +256,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		if (num_children > 200)
 		{
 			wxTreeItemId	hSubItem;
-			str.Format("(%d children)", num_children);
+			str.Format(_T("(%d children)"), num_children);
 			hSubItem = m_pTree->AppendItem(hNewItem, str, 8, 8);
 		}
 		else

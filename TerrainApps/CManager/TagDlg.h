@@ -10,6 +10,7 @@
 #endif
 
 #include "cmanager_wdr.h"
+#include "vtui/wxString2.h"
 
 // WDR: class declarations
 
@@ -27,8 +28,8 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for TagDlg
-	wxString m_strName;
-	wxString m_strValue;
+	wxString2 m_strName;
+	wxString2 m_strValue;
 	
 private:
 	// WDR: member variable declarations for TagDlg

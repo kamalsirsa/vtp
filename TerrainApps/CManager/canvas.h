@@ -1,7 +1,7 @@
 //
 // Name:        canvas.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,9 +21,9 @@ class vtGLCanvas;
 class vtGLCanvas: public wxGLCanvas
 {
 public:
-	vtGLCanvas(wxWindow *parent, const wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-	  const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = "vtGLCanvas",
-	  int* gl_attrib = NULL);
+	vtGLCanvas(wxWindow *parent, const wxWindowID id = -1,
+		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+		long style = 0, const wxString& name = _T("vtGLCanvas"), int* gl_attrib = NULL);
 	~vtGLCanvas(void);
 
 	void QueueRefresh(bool eraseBackground);

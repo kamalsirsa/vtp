@@ -25,7 +25,7 @@
 #include "frame.h"
 #include "vtlib/core/vtSOG.h"
 
-static void Args(int argc, char **argv)
+static void Args(int argc, wxChar **argv)
 {
    return;
 }
@@ -42,7 +42,7 @@ bool vtApp::OnInit(void)
 	//
 	// Create the main frame window
 	//
-	wxString title = "Content Manager";
+	wxString title = _T("Content Manager");
 	vtFrame *frame = new vtFrame(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 

@@ -97,7 +97,7 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 
 	DeleteAllItems();
 
-	rootId = AddRoot("Content", MyTreeCtrl::TreeCtrlIcon_Content);
+	rootId = AddRoot(_T("Content"), MyTreeCtrl::TreeCtrlIcon_Content);
 	SetItemBold(rootId);
 
 	if (!pFrame)
@@ -109,14 +109,14 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 	vtContentManager *pMan = &(pFrame->m_Man);
 
 	int i, j;
-	wxString str;
+	wxString2 str;
 
 	int iItems = pMan->NumItems();
 	for (i = 0; i < iItems; i++)
 	{
 		vtItem *pItem = pMan->GetItem(i);
 
-		str = (const char *) pItem->m_name;
+		str = pItem->m_name;
 
 		wxTreeItemId hItem;
 		hItem = AppendItem(rootId, str, TreeCtrlIcon_Item, TreeCtrlIcon_ItemSelected);

@@ -105,7 +105,7 @@ void ModelDlg::UpdateFromControls()
 	TransferDataFromWindow();
 	if (m_pCurrentModel)
 	{
-		m_pCurrentModel->m_filename = m_strFilename;
+		m_pCurrentModel->m_filename = m_strFilename.mb_str();
 		m_pCurrentModel->m_distance = m_fDistance;
 		m_pCurrentModel->m_scale = m_fScale;
 	}
