@@ -86,13 +86,14 @@ public:
 class RouteFollowerEngine : public vtEngine
 {
 public:
-	RouteFollowerEngine(vtRoute* route);
+	RouteFollowerEngine(vtRoute *route);
 	void Eval();
 
-	vtHeightField* m_pHeightField;
-	vtRoute* m_pRoute;
-	bool m_bFirstTime;
-	long m_lnext;
+	vtHeightField *m_pHeightField;
+	vtRoute *m_pRoute;
+
+	int m_cur, m_next;
+	float m_inc;
 };
 
 //////////////////////////////////////////////////

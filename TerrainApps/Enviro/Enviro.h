@@ -111,7 +111,6 @@ public:
 	void finish_route();
 	void close_route();
 	void SetRouteOptions(const vtString &sStructType);
-	void SetFollowerCamera();
 
 	// plants
 	vtPlantList3d	*GetPlantList() { return m_pPlantList; }

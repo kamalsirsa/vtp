@@ -1402,24 +1402,6 @@ void Enviro::SetRouteOptions(const vtString &sStructType)
 	m_sStructType = sStructType;
 }
 
-void Enviro::SetFollowerCamera()
-{
-	// set the initial camera position
-	vtUtilNode *st = m_pCurRoute->GetAt(0);
-	FPoint3 fp;
-	GetCurrentTerrain()->GetHeightField()->ConvertEarthToSurfacePoint(st->m_Point, fp);;
-	m_pRouteFollowerCamera->Identity();
-
-	//Go to the first route point
-	m_pRouteFollowerCamera->SetTrans(fp);
-
-	// Orient to the route azimuth
-	m_pRouteFollowerCamera->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), -st->dRadAzimuth);
-	TParams &params = GetCurrentTerrain()->GetParams();
-	m_pRouteFollowerCamera->TranslateLocal(FPoint3(-0.01f,
-		params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
-}
-
 
 ////////////////////////////////////////////////
 // Plants

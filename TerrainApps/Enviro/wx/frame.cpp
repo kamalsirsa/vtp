@@ -563,31 +563,18 @@ void vtFrame::OnViewSettings(wxCommandEvent& event)
 
 void vtFrame::OnViewFollowRoute(wxCommandEvent& event)
 {
-	if (g_App.m_pCurRoute)
+	if (!g_App.m_pCurRoute)
+		return;
+
+	if (!g_App.m_pRouteFollower)
 	{
-		if (!g_App.m_pRouteFollower)
-		{
-			g_App.SetFollowerCamera();
-			g_App.m_pRouteFollower = new RouteFollowerEngine(g_App.m_pCurRoute);
-			g_App.m_pRouteFollower->SetTarget(vtGetScene()->GetCamera());
-			vtGetScene()->AddEngine(g_App.m_pRouteFollower);
-	//		vtGetScene()->DoUpdate();
-			// did it work?
-			if (!g_App.m_pRouteFollower) return;
-		}
-		if (!g_App.m_pRouteFollower->GetEnabled())
-		{
-			// Control the follower camera.
-			g_App.m_pRouteFollower->Eval();
-			g_App.m_pRouteFollower->SetEnabled(true);
-		}
-		else
-		{
-			g_App.m_pRouteFollower->SetEnabled(false);
-			g_App.m_nav=NT_Normal;
-			SetMode(MM_NAVIGATE);
-		}
+		g_App.m_pRouteFollower = new RouteFollowerEngine(g_App.m_pCurRoute);
+		g_App.m_pRouteFollower->SetTarget(vtGetScene()->GetCamera());
+		vtGetScene()->AddEngine(g_App.m_pRouteFollower);
+		return;
 	}
+	bool on = g_App.m_pRouteFollower->GetEnabled();
+	g_App.m_pRouteFollower->SetEnabled(!on);
 }
 
 void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
@@ -638,8 +625,6 @@ void vtFrame::OnToolsRoutes(wxCommandEvent& event)
 {
 	SetMode(MM_ROUTES);
 	g_App.EnableFlyerEngine(false);
-//	if (g_App.m_pCurRoute)
-//		g_App.SetFollowerCamera();
 }
 
 void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
