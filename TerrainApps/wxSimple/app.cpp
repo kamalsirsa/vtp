@@ -2,7 +2,7 @@
 // Name:     app.cpp
 // Purpose:  The application class for a wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -27,8 +27,6 @@
 #include "app.h"
 #include "frame.h"
 
-bool CreateScene();
-
 IMPLEMENT_APP(vtApp);
 
 //
@@ -47,7 +45,7 @@ bool vtApp::OnInit(void)
 //
 // Create the 3d scene
 //
-bool CreateScene()
+bool vtApp::CreateScene()
 {
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
@@ -67,8 +65,8 @@ bool CreateScene()
 
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
-	vtTerrainScene *ts = new vtTerrainScene();
-	vtRoot *pTopGroup = ts->BeginTerrainScene(false);
+	m_pTerrainScene = new vtTerrainScene();
+	vtRoot *pTopGroup = m_pTerrainScene->BeginTerrainScene(false);
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
@@ -78,15 +76,15 @@ bool CreateScene()
 	pTerr->SetParamFile("Data/Simple.ini");
 
 	// Add the terrain to the scene, and contruct it
-	ts->AppendTerrain(pTerr);
+	m_pTerrainScene->AppendTerrain(pTerr);
 	int iError;
 	if (!pTerr->CreateScene(false, iError))
 	{
 		wxMessageBox("Terrain creation failed.");
 		return false;
 	}
-	ts->Finish(paths);
-	ts->SetTerrain(pTerr);
+	m_pTerrainScene->Finish(paths);
+	m_pTerrainScene->SetTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
 	// Flight speed is 500 m/frame
@@ -97,4 +95,10 @@ bool CreateScene()
 	pScene->AddEngine(pFlyer);
 
 	return true;
+}
+
+int vtApp::OnExit()
+{
+	delete m_pTerrainScene;
+	return 0;
 }
