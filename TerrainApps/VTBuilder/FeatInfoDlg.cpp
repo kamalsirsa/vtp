@@ -37,7 +37,20 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 {
+	if (m_pFeatures == pFeatures)
+		return;
+
 	m_pFeatures = pFeatures;
+
+	GetList()->ClearAll();		// clears all items and columns
+
+	int i;
+	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
+	{
+		Field *field = m_pFeatures->GetField(i);
+		const char *name = field->m_name;
+		GetList()->InsertColumn(i, name, wxLIST_FORMAT_LEFT, 80);
+	}
 }
 
 void FeatInfoDlg::Clear()
@@ -45,8 +58,20 @@ void FeatInfoDlg::Clear()
 	GetList()->DeleteAllItems();
 }
 
-void FeatInfoDlg::AddFeature()
+void FeatInfoDlg::ShowFeature(int iFeat)
 {
+	vtString str;
+	int i, next;
+
+	next = GetList()->GetItemCount();
+	GetList()->InsertItem(next, "temp");
+
+	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
+	{
+		Field *field = m_pFeatures->GetField(i);
+		m_pFeatures->GetValueAsString(iFeat, i, str);
+		GetList()->SetItem(next, i, (const char *) str);
+	}
 }
 
 

@@ -37,7 +37,7 @@ public:
 
 	void SetFeatureSet(vtFeatures *pFeatures);
 	void Clear();
-	void AddFeature();
+	void ShowFeature(int iFeat);
 
 	// WDR: method declarations for FeatInfoDlg
 	wxListCtrl* GetList()  { return (wxListCtrl*) FindWindow( ID_LIST ); }
