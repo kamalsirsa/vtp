@@ -57,7 +57,7 @@ private:
 	bool	m_bStartEarth;
 	bool	m_bStartTerrain;
 	wxString2   m_strTName;
-	wxString2   m_strImage;
+	wxString2   m_strEarthImage;
 	float		m_fPlantScale;
 	bool		m_bShadows;
 	int			m_iContentFile;

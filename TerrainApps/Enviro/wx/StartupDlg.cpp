@@ -184,7 +184,7 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
 	m_bStartEarth = opt.m_bEarthView;
 	m_bStartTerrain = !opt.m_bEarthView;
-	m_strImage = wxString::FromAscii((const char *)opt.m_strImage);
+	m_strEarthImage = wxString::FromAscii((const char *)opt.m_strEarthImage);
 	m_strTName.from_utf8(opt.m_strInitTerrain);
 	m_bFullscreen = opt.m_bFullscreen;
 	m_bHtmlpane = opt.m_bHtmlpane;
@@ -199,7 +199,7 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	opt.m_bEarthView = m_bStartEarth;
-	opt.m_strImage = m_strImage.mb_str();
+	opt.m_strEarthImage = m_strEarthImage.mb_str();
 	opt.m_strInitTerrain = m_strTName.to_utf8();
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
@@ -253,7 +253,7 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
 	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
 
-	AddValidator(ID_IMAGE, &m_strImage);
+	AddValidator(ID_IMAGE, &m_strEarthImage);
 	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
 }
 
@@ -380,7 +380,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);
 	}
-	sel = m_pImage->FindString(m_strImage);
+	sel = m_pImage->FindString(m_strEarthImage);
 	if (sel != -1)
 		m_pImage->SetSelection(sel);
 

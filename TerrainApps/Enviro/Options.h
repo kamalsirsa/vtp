@@ -21,7 +21,7 @@ public:
 
 	vtStringArray m_DataPaths;
 	bool		m_bEarthView;
-	vtString	m_strImage;
+	vtString	m_strEarthImage;
 	vtString	m_strInitTerrain;
 	bool	m_bFullscreen;
 	bool	m_bHtmlpane;

@@ -122,7 +122,7 @@ if (pwdemo){
 	{
 		m_state = AS_Orbit;
 		SetMode(MM_SELECT);
-		if (!strncmp((const char *) g_Options.m_strImage, "geosphere", 9))
+		if (!strncmp((const char *) g_Options.m_strEarthImage, "geosphere", 9))
 			SetMessage("Earth image (c) The GeoSphere Project", 3);
 		else
 			SetMessage("Earth View", 10);
@@ -168,7 +168,7 @@ void Enviro::MakeGlobe()
 
 	// fancy icosahedral globe
 	m_pIcoGlobe = new IcoGlobe();
-	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strImage,
+	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strEarthImage,
 //		IcoGlobe::GEODESIC);
 //		IcoGlobe::RIGHT_TRIANGLE);
 		IcoGlobe::DYMAX_UNFOLD);

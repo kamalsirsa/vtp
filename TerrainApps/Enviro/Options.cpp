@@ -35,7 +35,7 @@ EnviroOptions g_Options;
 
 EnviroOptions::EnviroOptions()
 {
-	m_strImage = "ev11656_512";
+	m_strEarthImage = "ev11656_512";
 	m_fSelectionCutoff = 15.0f;
 	m_bStartInNeutral = false;
 	m_bDisableModelMipmaps = false;
@@ -80,7 +80,7 @@ bool EnviroOptions::Read(const char *szFilename)
 		else if (strcmp(buf, STR_EARTHVIEW) == 0)
 			input >> m_bEarthView;
 		else if (strcmp(buf, STR_EARTHIMAGE) == 0)
-			m_strImage = get_line_from_stream(input);
+			m_strEarthImage = get_line_from_stream(input);
 		else if (strcmp(buf, STR_INITTERRAIN) == 0)
 			m_strInitTerrain = get_line_from_stream(input);
 		else if (strcmp(buf, STR_FULLSCREEN) == 0)
@@ -148,7 +148,7 @@ bool EnviroOptions::Write()
 	output << STR_EARTHVIEW << "\t\t";
 	output << m_bEarthView << endl;
 	output << STR_EARTHIMAGE << "\t\t";
-	output << (const char *)m_strImage << endl;
+	output << (const char *)m_strEarthImage << endl;
 	output << STR_INITTERRAIN << "\t";
 	output << (const char *)m_strInitTerrain << endl;
 
