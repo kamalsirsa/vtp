@@ -1106,7 +1106,7 @@ bool vtStructureLayer::AskForSaveFilename()
 	if (m_bPreferGZip)
 		fname += ".vtst.gz";
 	else
-		fname += ".bt";
+		fname += ".vtst";
 
 	SetLayerFilename(fname);
 	m_bNative = true;
