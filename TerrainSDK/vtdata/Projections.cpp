@@ -35,7 +35,6 @@ enum DATUM { ADINDAN = 0, ARC1950, ARC1960, AUSTRALIAN_GEODETIC_1966,
 
 const char *datumToString(DATUM d);	// old function
 const char *datumToStringShort(DATUM d); // old function
-static void WKTMassageDatum(vtString &strDatum );
 static void MassageDatumFromWKT(vtString &strDatum );
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1086,64 +1085,6 @@ static const char *papszDatumEquiv[] =
 	"European_Reference_System_1989",
 	NULL
 };
-
-/**
- * WKTMassageDatum()
- *
- * Massage an EPSG datum name into WKT format.  Also transform specific
- * exception cases into WKT versions.
- *
- * Origin of this function: GDAL/OGR, ogr_fromepsg.cpp, Revision 1.23
- */
-static void WKTMassageDatum(vtString &strDatum )
-{
-	char		szDatum[80];
-	strcpy(szDatum, (const char *)strDatum);
-	char		*pszDatum = szDatum;
-	int		 i, j;
-
-/* -------------------------------------------------------------------- */
-/*	  Translate non-alphanumeric values to underscores.			   */
-/* -------------------------------------------------------------------- */
-	for( i = 0; pszDatum[i] != '\0'; i++ )
-	{
-		if( !(pszDatum[i] >= 'A' && pszDatum[i] <= 'Z')
-			&& !(pszDatum[i] >= 'a' && pszDatum[i] <= 'z')
-			&& !(pszDatum[i] >= '0' && pszDatum[i] <= '9') )
-		{
-			pszDatum[i] = '_';
-		}
-	}
-
-/* -------------------------------------------------------------------- */
-/*	  Remove repeated and trailing underscores.					   */
-/* -------------------------------------------------------------------- */
-	for( i = 1, j = 0; pszDatum[i] != '\0'; i++ )
-	{
-		if( pszDatum[j] == '_' && pszDatum[i] == '_' )
-			continue;
-
-		pszDatum[++j] = pszDatum[i];
-	}
-	if( pszDatum[j] == '_' )
-		pszDatum[j] = '\0';
-	else
-		pszDatum[j+1] = '\0';
-	strDatum = pszDatum;
-
-/* -------------------------------------------------------------------- */
-/*	  Search for datum equivelences.  Specific massaged names get	 */
-/*	  mapped to OpenGIS specified names.							  */
-/* -------------------------------------------------------------------- */
-	for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
-	{
-		if( !strcmp(pszDatum,papszDatumEquiv[i]) )
-		{
-			strDatum = papszDatumEquiv[i+1];
-			break;
-		}
-	}
-}
 
 //
 // A limited implementation of reversing the effect of WKTMassageDatum
