@@ -127,7 +127,7 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 							  float fMin, float fMax) const
 {
 	float fRange = fMax - fMin;
-	float elev = fMin, step = fRange/iTableSize;
+	float step = fRange/iTableSize;
 
 	int current = 0;
 	int num = Num();
@@ -143,6 +143,7 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 	RGBi c3;
 	for (int i = 0; i < iTableSize; i++)
 	{
+		float elev = fMin + (step * i);
 		if (m_bRelative)
 		{
 			// use regular divisions
@@ -176,11 +177,11 @@ void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
 		else
 			c3 = c1;
 		table.push_back(c3);
-		elev += step;
 	}
 
 	// Add one to catch top data
-	table.push_back(table[iTableSize-1]);
+	c3 = table[iTableSize-1];
+	table.push_back(c3);
 }
 
 /////////////////////
