@@ -99,6 +99,8 @@ public:
 	void GetValueAsString(int record, int field, vtString &str);
 	void SetValueFromString(int iRecord, int iField, vtString &str);
 
+	vtProjection &GetAtProjection() { return m_proj; }
+
 protected:
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
 	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON
