@@ -106,6 +106,12 @@ bool AskForTerrainName(wxWindow *pParent, wxString &str)
 		num++;
 	}
 
+	if (!num)
+	{
+		wxMessageBox("No terrains found (datapath/Terrains/*.ini)");
+		return false;
+	}
+
 	wxSingleChoiceDialog dlg(pParent, "Please choose a terrain",
 		"Select Terrain", num, choices);
 	dlg.SetSelection(first_idx);
