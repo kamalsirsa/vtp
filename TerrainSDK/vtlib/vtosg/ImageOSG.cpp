@@ -201,7 +201,10 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 			_pixelFormat = pOsgImage->getPixelFormat();
 			_dataType = pOsgImage->getDataType();
 			_packing = pOsgImage->getPacking();
-			_modifiedTag = pOsgImage->getModifiedTag();
+// OSG 0.9.8-2 has a tag:
+//			_modifiedTag = pOsgImage->getModifiedTag();
+// OSG 0.9.8-3 (Feb. 12) has a count:
+			_modifiedCount = pOsgImage->getModifiedCount();
 			for (unsigned int k = 0; k < pOsgImage->getNumMipmapLevels()-1; k++)
 				_mipmapData.push_back(pOsgImage->getMipmapData(k) - pOsgImage->data());
 			if (pOsgImage->data())
