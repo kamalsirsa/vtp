@@ -102,7 +102,7 @@ class vtFeatureSet
 {
 public:
 	vtFeatureSet();
-	~vtFeatureSet();
+	virtual ~vtFeatureSet();
 
 	// File IO
 	bool SaveToSHP(const char *filename) const;
@@ -146,7 +146,7 @@ public:
 	{
 		return ((m_Flags[iEnt] & FF_SELECTED) != 0);
 	}
-	int NumSelected();
+	unsigned int NumSelected() const;
 	void DeselectAll();
 	void InvertSelection();
 	int SelectByCondition(int iField, int iCondition, const char *szValue);
@@ -207,7 +207,7 @@ protected:
 	int			m_iSHPElems, m_iSHPFields;
 
 	OGRwkbGeometryType		m_eGeomType;
-	Array<unsigned char> m_Flags;
+	std::vector<unsigned char> m_Flags;
 	Array<Field*> m_fields;
 
 	vtProjection	m_proj;

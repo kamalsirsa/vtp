@@ -326,7 +326,7 @@ bool vtFeatureSet::LoadFromGML(const char *filename)
 	delete pDatasource;
 
 	// allocate selection array
-	m_Flags.SetSize(fcount);
+	m_Flags.resize(fcount, 0);
 
 	return true;
 }
@@ -744,7 +744,7 @@ bool vtFeatureSet::LoadAttributesFromDBF()
 	DBFClose(db);
 
 	// allocate selection array
-	m_Flags.SetSize(m_iSHPElems);
+	m_Flags.resize(m_iSHPElems, 0);
 
 	return true;
 }
@@ -757,6 +757,9 @@ void vtFeatureSet::SetNumEntities(int iNum)
 	// Then set the number of records for each field
 	for (unsigned int iField = 0; iField < GetNumFields(); iField++)
 		m_fields[iField]->SetNumRecords(iNum);
+
+	// Also keep size of flag array in synch
+	m_Flags.resize(iNum, 0);
 }
 
 
@@ -815,7 +818,7 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 			field1->GetValueAsString(i, str);
 			field2->SetValueFromString(first_appended_ent+i, str);
 		}
-		m_Flags.Append(pFromSet->m_Flags[i]);
+		m_Flags.push_back(pFromSet->m_Flags[i]);
 	}
 
 	// empty the source layer
@@ -828,11 +831,11 @@ bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 /////////////////////////////////////////////////////////////////////////////
 // Selection of Entities
 
-int vtFeatureSet::NumSelected()
+unsigned int vtFeatureSet::NumSelected() const
 {
-	int count = 0;
-	int size = m_Flags.GetSize();
-	for (int i = 0; i < size; i++)
+	unsigned int count = 0;
+	unsigned int size = m_Flags.size();
+	for (unsigned int i = 0; i < size; i++)
 		if (m_Flags[i] & FF_SELECTED)
 			count++;
 	return count;
@@ -840,13 +843,13 @@ int vtFeatureSet::NumSelected()
 
 void vtFeatureSet::DeselectAll()
 {
-	for (unsigned int i = 0; i < m_Flags.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Flags.size(); i++)
 		m_Flags[i] &= ~FF_SELECTED;
 }
 
 void vtFeatureSet::InvertSelection()
 {
-	for (unsigned int i = 0; i < m_Flags.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Flags.size(); i++)
 		m_Flags[i] ^= FF_SELECTED;
 }
 
@@ -1173,7 +1176,7 @@ int vtFeatureSet::AddRecord()
 	{
 		recs = m_fields[i]->AddRecord();
 	}
-	m_Flags.Append(0);
+	m_Flags.push_back(0);
 	return recs;
 }
 
