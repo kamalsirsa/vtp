@@ -226,11 +226,12 @@ int vtDynTerrainGeom::GetPolygonCount()
 	return m_iPolygonTarget;
 }
 
-void vtDynTerrainGeom::SetDetailMaterial(vtMaterial *pApp, float fTiling)
+void vtDynTerrainGeom::SetDetailMaterial(vtMaterial *pMat, float fTiling, float fDistance)
 {
-	m_pDetailMat = pApp;
+	m_pDetailMat = pMat;
 	m_bDetailTexture = (m_pDetailMat != NULL);
 	m_fDetailTiling = fTiling;
+	m_fDetailDistance = fDistance;
 }
 
 void vtDynTerrainGeom::EnableDetail(bool bOn)

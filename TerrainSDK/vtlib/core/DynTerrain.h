@@ -45,7 +45,7 @@ public:
 
 	int GetNumDrawnTriangles();
 
-	void SetDetailMaterial(vtMaterial *pApp, float fTiling);
+	void SetDetailMaterial(vtMaterial *pApp, float fTiling, float fDistance);
 	void EnableDetail(bool bOn);
 	bool GetDetail() { return m_bDetailTexture; }
 	void SetupTexGen(float fTiling);
@@ -97,6 +97,7 @@ protected:
 
 	// detail texture
 	float m_fDetailTiling;
+	float m_fDetailDistance;
 	bool m_bDetailTexture;
 	vtMaterial *m_pDetailMat;
 
