@@ -440,6 +440,7 @@ public:
 	float GetYon() const;
 	void SetFOV(float f);
 	float GetFOV() const;
+	float GetVertFOV() const;
 
 	void SetOrtho(bool bOrtho);
 	bool IsOrtho() const;
