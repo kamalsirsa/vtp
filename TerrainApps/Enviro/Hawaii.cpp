@@ -36,46 +36,30 @@ IslandTerrain::~IslandTerrain()
 
 void IslandTerrain::create_telescopes()
 {
-#if 1
-#define TSCOPES	10
-	int tscope_utm[TSCOPES][2] = {
-		{ 240855, 2193839 },	// UH0.6
-		{ 240935, 2193940 },	// UKIRT
-		{ 240977, 2193970 },	// UH2.2
-		{ 241028, 2194073 },	// Gemini
-		{ 241101, 2194267 },	// CFHT
-		{ 240749, 2194370 },	// IRTF
-//		{ 240478, 2194349 },	// Keck2
-//		{ 240425, 2194296 },	// Keck1
-		{ 240451, 2194322 },	// center of both Kecks
-		{ 240288, 2194247 },	// Subaru
-		{ 240199, 2193950 },	// JCMT
-		{ 240367, 2193941 },	// CSO
-	};
-	char *tscope_filename[TSCOPES] = {
-		"UH06.3ds",
-		"UKIRT.3ds",
-		"UH22.3ds",
-		"Gemini1.3ds",
-		"CFHT1.3ds",
-		"IRTF.3ds",
-		"Kecks.3ds",
-		"Subaru.3ds",
-		"JCMT.3ds",
-		NULL
-	};
-	for (int t= 0; t < TSCOPES; t++)
+#if 0
+	// this works, but overrides the structures indicates in TParams
+	// we can do something like this once we have support for multiple
+	// structure layers
+	CreateStructuresFromXML(m_strDataPath + "BuildingData/tscope_loc.vtst");
+#elif 1
+	vtStructureArray3d sa;
+	bool success = sa.ReadXML(m_strDataPath + "BuildingData/tscope_loc.vtst");
+	if (!success)
+		return;
+
+	int num_structs = sa.GetSize();
+	sa.SetHeightField(m_pHeightField);
+	for (int i = 0; i < num_structs; i++)
 	{
-		vtString str("BuildingModels/");
-		str += tscope_filename[t];
-		vtTransform *tscope = LoadModel(str);
-		if (tscope)
-		{
-			tscope->RotateLocal(FPoint3(1,0,0), -PID2f);
-			tscope->Scale3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
-			PlantModelAtPoint(tscope, DPoint2(tscope_utm[t][0], tscope_utm[t][1]));
-			m_pLodGrid->AppendToGrid(tscope);
-		}
+		vtStructure3d *str = sa.GetStructure(i);
+
+		success = sa.ConstructStructure(str, m_strDataPath);
+		if (!success)
+			continue;
+
+		vtTransform *pTrans = str->GetTransform();
+		if (pTrans)
+			m_pLodGrid->AppendToGrid(pTrans);
 	}
 #endif
 }
