@@ -51,6 +51,12 @@ enum LinearUnits
 	LU_UNKNOWN
 };
 
+/**
+ * Return the number of meters for a given type of linear units
+ */
+double GetMetersPerUnit(LinearUnits lu);
+
+
 #include "ogr_spatialref.h"
 
 ///////////////////////////

@@ -714,3 +714,18 @@ OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget)
 }
 
 
+double GetMetersPerUnit(LinearUnits lu)
+{
+	switch (lu)
+	{
+	case LU_DEGREES:
+		return 1.0;		// actually no definition for degrees -> meters
+	case LU_METERS:
+		return 1.0;		// meters per meter
+	case LU_FEET_INT:
+		return 0.3048;		// international foot
+	case LU_FEET_US:
+		return (1200.0/3937.0);	// U.S. survey foot
+	}
+	return 1.0;
+};
