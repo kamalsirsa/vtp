@@ -273,15 +273,18 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 	{
 		if (nShapeType != SHPT_POINT)
 			return false;
-		if (db != NULL)
-		{
-			field_filename = FindDBField(db, "filename");
-			if (field_filename == -1)
-				field_filename = FindDBField(db, "modelfile");
-			field_itemname = FindDBField(db, "itemname");
-			field_scale = FindDBField(db, "scale");
-			field_rotation = FindDBField(db, "rotation");
-		}
+		if (db == NULL)
+			return false;
+
+		field_filename = FindDBField(db, "filename");
+		if (field_filename == -1)
+			field_filename = FindDBField(db, "modelfile");
+		if (field_filename == -1)
+			return false;
+
+		field_itemname = FindDBField(db, "itemname");
+		field_scale = FindDBField(db, "scale");
+		field_rotation = FindDBField(db, "rotation");
 	}
 	if (type == ST_LINEAR)
 	{
