@@ -14,6 +14,9 @@
 #include "vtLog.h"
 #include "Icosa.h"
 
+// GDAL
+#include "cpl_csv.h"
+
 /**
  * Enumeration of the Datum types
  *
@@ -496,8 +499,8 @@ bool vtProjection::ReadProjFile(const char *filename)
 			strcat(prj_name, ".prj");
 	}
 
-	FILE *fp2 = fopen(prj_name, "rb");
-	if (!fp2 && dot)
+	FILE *fp = fopen(prj_name, "rb");
+	if (!fp && dot)
 	{
 		// look backward one more extension, e.g. for .bt.gz
 		*dot = 0;
@@ -505,18 +508,21 @@ bool vtProjection::ReadProjFile(const char *filename)
 		if (dot)
 		{
 			strcpy(dot, ".prj");
-			fp2 = fopen(prj_name, "rb");
+			fp = fopen(prj_name, "rb");
 		}
 	}
-	if (!fp2)
+	if (!fp)
 		return false;
-	char wkt_buf[2000], *wkt = wkt_buf;
-	fgets(wkt, 2000, fp2);
-	fclose(fp2);
-	OGRErr err = importFromWkt((char **) &wkt);
-	if (err != OGRERR_NONE)
-		return false;
-	return true;
+	fclose(fp);
+
+	// Now read and parse the file
+	// Actually, importFromESRI() does the whole job for us, including
+	//  handling modern-style .prj files with WKT SRS in them.
+	char **papszPrj = CSLLoad( prj_name );
+	OGRErr err = importFromESRI(papszPrj);
+	CSLDestroy( papszPrj );
+
+	return (err == OGRERR_NONE);
 }
 
 
@@ -1102,7 +1108,6 @@ static void MassageDatumFromWKT(vtString &strDatum )
 
 // GDAL
 #include "gdal_priv.h"
-#include "cpl_csv.h"
 
 // OGR
 #include <ogrsf_frmts.h>
