@@ -9,6 +9,7 @@
 #include "vtdata/vtLog.h"
 
 #include <osg/PolygonMode>
+#include <osg/LineWidth>
 using namespace osg;
 
 ///////////////////////////////////
@@ -781,6 +782,20 @@ void vtMesh::AllowOptimize(bool bAllow)
 void vtMesh::ReOptimize()
 {
 	m_pGeometry->dirtyDisplayList();
+}
+
+	osg::ref_ptr<osg::LineWidth> lws;
+	osg::ref_ptr<osg::StateSet> ss;
+
+void vtMesh::SetLineWidth(float fWidth)
+{
+	lws = new osg::LineWidth;
+	ss = new osg::StateSet;
+
+	lws->setWidth(fWidth);
+	ss->setAttributeAndModes(lws.get(),
+		osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
+	m_pGeometry->setStateSet(ss.get());
 }
 
 /**

@@ -150,6 +150,8 @@ public:
 	void SetVtxTexCoord(int, const FPoint2&);
 	FPoint2 GetVtxTexCoord(int i) const;
 
+	void SetLineWidth(float fWidth);
+
 	// Control rendering optimization ("display lists")
 	void ReOptimize();
 	void AllowOptimize(bool bAllow);
