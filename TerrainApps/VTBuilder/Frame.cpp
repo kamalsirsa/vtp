@@ -701,14 +701,15 @@ bool MainFrame::ReadINI()
 
 	if (m_fpIni)
 	{
-		int ShowMap, ShowElev, Shading, DoMask, DoUTM, ShowPaths, DrawWidth;
-		fscanf(m_fpIni, "%d %d %d %d %d %d %d", &ShowMap, &ShowElev, &Shading,
-			&DoMask, &DoUTM, &ShowPaths, &DrawWidth);
+		int ShowMap, ShowElev, Shading, DoMask, DoUTM, ShowPaths, DrawWidth, CastShadows;
+		fscanf(m_fpIni, "%d %d %d %d %d %d %d %d", &ShowMap, &ShowElev, &Shading,
+			&DoMask, &DoUTM, &ShowPaths, &DrawWidth, &CastShadows);
 
 		m_pView->SetShowMap(ShowMap != 0);
-		vtElevLayer::m_bShowElevation = (ShowElev != 0);
-		vtElevLayer::m_bShading = (Shading != 0);
-		vtElevLayer::m_bDoMask = (DoMask != 0);
+		vtElevLayer::m_draw.m_bShowElevation = (ShowElev != 0);
+		vtElevLayer::m_draw.m_bShading = (Shading != 0);
+		vtElevLayer::m_draw.m_bDoMask = (DoMask != 0);
+		vtElevLayer::m_draw.m_bCastShadows = (CastShadows != 0);
 		m_pView->m_bShowUTMBounds = (DoUTM != 0);
 		m_pTree->SetShowPaths(ShowPaths != 0);
 		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
@@ -724,11 +725,11 @@ bool MainFrame::WriteINI()
 	if (m_fpIni)
 	{
 		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d %d %d", m_pView->GetShowMap(),
-			vtElevLayer::m_bShowElevation,
-			vtElevLayer::m_bShading, vtElevLayer::m_bDoMask,
+		fprintf(m_fpIni, "%d %d %d %d %d %d %d %d", m_pView->GetShowMap(),
+			vtElevLayer::m_draw.m_bShowElevation,
+			vtElevLayer::m_draw.m_bShading, vtElevLayer::m_draw.m_bDoMask,
 			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
-			vtRoadLayer::GetDrawWidth());
+			vtRoadLayer::GetDrawWidth(), vtElevLayer::m_draw.m_bCastShadows);
 		fclose(m_fpIni);
 		m_fpIni = NULL;
 		return true;
