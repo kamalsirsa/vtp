@@ -47,10 +47,17 @@ void EnviroGUI::SetTerrainToGUI(vtTerrain *pTerrain)
 	pFrame->SetTerrainToGUI(pTerrain);
 }
 
-void EnviroGUI::StructureSetChanged()
+void EnviroGUI::RefreshLayerView()
 {
 	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
 	LayerDlg *dlg = pFrame->m_pLayerDlg;
 	dlg->RefreshTreeContents();
+}
+
+void EnviroGUI::ShowLayerView()
+{
+	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
+	LayerDlg *dlg = pFrame->m_pLayerDlg;
+	dlg->Show(true);
 }
 

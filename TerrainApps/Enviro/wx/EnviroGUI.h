@@ -18,7 +18,8 @@ public:
 	//  GUI must be informed of what happens in the Enviro object.
 	virtual void ShowPopupMenu(const IPoint2 &pos);
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
-	virtual void StructureSetChanged();
+	virtual void ShowLayerView();
+	virtual void RefreshLayerView();
 };
 
 // global singleton
