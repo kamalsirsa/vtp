@@ -2,7 +2,7 @@
 // Name:	 canvas.cpp
 // Purpose:	 Implements the canvas class for the wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,8 +33,8 @@ BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
 	EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
 END_EVENT_TABLE()
 
-vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
-	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
+vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id, const wxPoint& pos,
+	const wxSize& size, long style, const wxString& name, int* gl_attrib) :
   wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	parent->Show(TRUE);
@@ -184,6 +184,8 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
+	static bool bCapture = false;
+
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
 	wxEventType  ev = event1.GetEventType();
@@ -213,10 +215,26 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 		return;
 	}
 
-	if (ev == wxEVT_LEFT_DOWN || ev == wxEVT_MIDDLE_DOWN || ev == wxEVT_RIGHT_DOWN)
-		CaptureMouse();
-	if (ev == wxEVT_LEFT_UP || ev == wxEVT_MIDDLE_UP || ev == wxEVT_RIGHT_UP)
-		ReleaseMouse();
+	if (ev == wxEVT_LEFT_DOWN ||
+		ev == wxEVT_MIDDLE_DOWN ||
+		ev == wxEVT_RIGHT_DOWN)
+	{
+		if (!bCapture)
+		{
+			CaptureMouse();
+			bCapture = true;
+		}
+	}
+	if (ev == wxEVT_LEFT_UP ||
+		ev == wxEVT_MIDDLE_UP ||
+		ev == wxEVT_RIGHT_UP)
+	{
+		if (bCapture)
+		{
+			ReleaseMouse();
+			bCapture = false;
+		}
+	}
 
 	event.flags = 0;
 	wxCoord xpos, ypos;
