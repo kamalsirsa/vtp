@@ -1675,7 +1675,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 {
 	GDALDataset  *poDataset;
 
-	GDALAllRegister();
+	g_GDALWrapper.RequestGDALFormats();
 
 	poDataset = (GDALDataset *) GDALOpen(szFileName, GA_ReadOnly);
 	if (poDataset == NULL)
@@ -1824,7 +1824,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	int				iTotalCells;
 	bool			bRet = false;
 
-	OGRRegisterAll();
+	g_GDALWrapper.RequestOGRFormats();
 
 	if (NULL == (pDatasource = OGRSFDriverRegistrar::Open(szFileName)))
 		goto Exit;
