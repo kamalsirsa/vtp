@@ -66,7 +66,7 @@ BExtractorDoc::BExtractorDoc()
 	m_picLoaded = false;
 
 	m_hdd = DrawDibOpen();
-	m_proj.SetUTM(true);
+	m_proj.SetUTMZone(1);
 }
 
 BExtractorDoc::~BExtractorDoc()

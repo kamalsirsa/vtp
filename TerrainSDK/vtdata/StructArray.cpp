@@ -108,7 +108,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	{
 		fscanf(fp, "utm_zone %d\n", &zone);
 	}
-	m_proj.SetUTM(zone);
+	m_proj.SetUTMZone(zone);
 
 	int i, j, count;
 	DPoint2 p;

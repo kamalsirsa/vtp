@@ -562,7 +562,8 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	/* FIXME:  Ahoy, there be byte order issues here. See below in this routine. */
 	fread(&zone, 4, 1, fp);
 	fread(&datum, 4, 1, fp);
-	m_proj.SetUTM(utm, zone);
+	if (utm)
+		m_proj.SetUTMZone(zone);
 	m_proj.SetDatum((DATUM) datum);
 
 	int size;

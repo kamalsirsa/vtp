@@ -329,10 +329,7 @@ void Projection2Dlg::OnZone( wxCommandEvent &event )
 
 	void *vval = m_pZoneCtrl->GetClientData(m_iZone);
 	int val = (int) vval - 100;
-	if (val < 0)
-		m_proj.SetUTM( -val, FALSE );   // southern hemisphere
-	else
-		m_proj.SetUTM( val, TRUE );  // northern hemisphere
+	m_proj.SetUTMZone(val);
 
 	UpdateControlStatus();
 }
@@ -355,7 +352,7 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		// nothing more to do
 		break;
 	case PT_UTM:
-		m_proj.SetUTM( 1, TRUE );
+		m_proj.SetUTMZone(1);
 		break;
 	case PT_ALBERS:
 		m_proj.SetACEA( 60.0, 68.0, 59.0, -132.5, 500000, 500000 );
