@@ -54,6 +54,7 @@ public:
 	void OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui);
 	void OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &ui);
 	void OnLeftDownEditLinear(BuilderView *pView, UIContext &ui);
+	void OnLeftDownAddInstance(BuilderView *pView, UIContext &ui);
 	void UpdateMove(UIContext &ui);
 	void UpdateRotate(UIContext &ui);
 	void UpdateResizeScale(BuilderView *pView, UIContext &ui);
@@ -75,6 +76,8 @@ public:
 
 	// override to catch edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
+
+	void ResolveInstancesOfItems();
 
 protected:
 	int m_size;	// size in pixels of the small crosshair at building center

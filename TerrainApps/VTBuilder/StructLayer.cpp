@@ -22,6 +22,7 @@
 #include "ElevLayer.h"
 #include "BuilderView.h"
 #include "vtui/BuildingDlg.h"
+#include "vtui/InstanceDlg.h"
 #include "Helper.h"
 #include "ImportStructDlg.h"
 
@@ -131,6 +132,17 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 			pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
 			pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
+
+			if (inst->m_pItem)
+			{
+				FRECT ext = inst->m_pItem->m_extents;
+				if (!ext.IsEmpty())
+				{
+					pView->screen(inst->m_p + ext.Center(), origin);
+					int radius = pView->sdx(ext.Width() / 2);
+					pDC->DrawCircle(origin, radius);
+				}
+			}
 		}
 	}
 	DrawBuildingHighlight(pDC, pView);
@@ -217,7 +229,27 @@ bool vtStructureLayer::OnLoad()
 	if (GetExtension(fname, true).CompareNoCase(".vtst.gz") == 0)
 		m_bPreferGZip = true;
 
-	return ReadXML(fname);
+	bool success = ReadXML(fname);
+	if (!success)
+		return false;
+
+	ResolveInstancesOfItems();
+	return true;
+}
+
+void vtStructureLayer::ResolveInstancesOfItems()
+{
+	MainFrame *frame = GetMainFrame();
+
+	unsigned int structs = GetSize();
+	for (unsigned int i = 0; i < structs; i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtStructInstance *inst = str->GetInstance();
+		if (!inst)
+			continue;
+		frame->ResolveInstanceItem(inst);
+	}
 }
 
 void vtStructureLayer::GetProjection(vtProjection &proj)
@@ -302,29 +334,7 @@ bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
 
 void vtStructureLayer::Offset(const DPoint2 &delta)
 {
-	unsigned int npoints = GetSize();
-	if (!npoints)
-		return;
-
-	unsigned int i, j;
-	DPoint2 temp;
-	for (i = 0; i < npoints; i++)
-	{
-		vtStructure *str = GetAt(i);
-		vtBuilding *bld = str->GetBuilding();
-		if (bld)
-			bld->Offset(delta);
-		vtFence *fen = str->GetFence();
-		if (fen)
-		{
-			DLine2 line = fen->GetFencePoints();
-			for (j = 0; j < line.GetSize(); j++)
-				line.GetAt(j) += delta;
-		}
-		vtStructInstance *inst = str->GetInstance();
-		if (inst)
-			inst->m_p += delta;
-	}
+	vtStructureArray::Offset(delta);
 }
 
 void vtStructureLayer::GetPropertyText(wxString &strIn)
@@ -359,6 +369,9 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 {
 	switch (ui.mode)
 	{
+	case LB_AddInstance:
+		OnLeftDownAddInstance(pView, ui);
+		break;
 	case LB_AddLinear:
 		if (ui.m_pCurLinear == NULL)
 		{
@@ -691,6 +704,24 @@ void vtStructureLayer::OnLeftDownEditLinear(BuilderView *pView, UIContext &ui)
 		// make a copy of the linear, to edit and display while dragging
 		ui.m_EditLinear = *ui.m_pCurLinear;
 	}
+}
+
+void vtStructureLayer::OnLeftDownAddInstance(BuilderView *pView, UIContext &ui)
+{
+	MainFrame *frame = GetMainFrame();
+	InstanceDlg *dlg = frame->m_pInstanceDlg;
+
+	vtStructInstance *inst = AddNewInstance();
+
+	inst->m_p = ui.m_DownLocation;
+
+	vtTagArray *tags = dlg->GetTagArray();
+	inst->CopyTagsFrom(*tags);
+
+	frame->ResolveInstanceItem(inst);
+
+	SetModified(true);
+	pView->Refresh();
 }
 
 void vtStructureLayer::OnRightDown(BuilderView *pView, UIContext &ui)
