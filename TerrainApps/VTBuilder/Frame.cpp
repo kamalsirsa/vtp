@@ -1032,7 +1032,7 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 //
 // sample all image data into this one
 //
-void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
+bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 {
 	DRECT area;
 	pTarget->GetExtent(area);
@@ -1044,7 +1044,7 @@ void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	pTarget->GetDimensions(iColumns, iRows);
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_T("Merging and Resampling Image Layers"));
+	OpenProgressDialog(_T("Merging and Resampling Image Layers"), true);
 
 	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
 	int g, num_image = 0;
@@ -1060,7 +1060,11 @@ void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	bool bHit;
 	for (j = 0; j < iRows; j++)
 	{
-		UpdateProgressDialog(j*100/iRows);
+		if (UpdateProgressDialog(j*100/iRows))
+		{
+			// Cancel
+			return false;
+		}
 		y = area.bottom + (j * step.y);
 
 		for (i = 0; i < iColumns; i++)
@@ -1082,6 +1086,7 @@ void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	}
 	CloseProgressDialog();
 	delete images;
+	return true;
 }
 
 
@@ -1104,6 +1109,10 @@ double MainFrame::GetHeightFromTerrain(DPoint2 &p)
 
 void MainFrame::SetProjection(const vtProjection &p)
 {
+	char type[7], value[4000];
+	p.GetTextDescription(type, value);
+	VTLOG("Setting main projection to: %s, %s\n", type, value);
+
 	m_proj = p;
 	GetView()->SetWMProj(p);
 	if (m_pDistanceDlg)
@@ -1132,9 +1141,10 @@ void trim_eol(char *buf)
 
 void MainFrame::LoadProject(const wxString2 &strPathName)
 {
+	VTLOG("Loading project: '%s'\n", strPathName.mb_str());
+
 	// read project file
-	wxString2 str = strPathName;
-	FILE *fp = fopen(str.mb_str(), "rb");
+	FILE *fp = fopen(strPathName.mb_str(), "rb");
 	if (!fp)
 	{
 		DisplayAndLog("Couldn't open project file: '%s'", strPathName.mb_str());
@@ -1451,13 +1461,15 @@ void MainFrame::ExportImage()
 	pOutput->SetLayerFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
-	SampleCurrentImages(pOutput);
-
-	bool success = pOutput->SaveToFile(strPathName.mb_str());
+	bool success = SampleCurrentImages(pOutput);
 	if (success)
-		DisplayAndLog("Successfully wrote image file '%s'", strPathName.mb_str());
-	else
-		DisplayAndLog(("Couldn't write image file."));
+	{
+		success = pOutput->SaveToFile(strPathName.mb_str());
+		if (success)
+			DisplayAndLog("Successfully wrote image file '%s'", strPathName.mb_str());
+		else
+			DisplayAndLog(("Couldn't write image file."));
+	}
 	delete pOutput;
 }
 

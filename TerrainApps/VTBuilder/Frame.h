@@ -330,7 +330,7 @@ public:
 	double GetHeightFromTerrain(DPoint2 &p);
 
 	// Images
-	void SampleCurrentImages(vtImageLayer *pTarget);
+	bool SampleCurrentImages(vtImageLayer *pTarget);
 
 	// Structures
 	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);
