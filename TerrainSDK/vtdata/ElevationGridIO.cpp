@@ -1371,16 +1371,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 		char prj_name[256];
 		strcpy(prj_name, szFileName);
 		strcpy(prj_name + strlen(prj_name) - 3, ".prj");
-		FILE *fp2 = fopen(prj_name, "wb");
-		if (!fp2)
-			return false;
-		char *wkt;
-		OGRErr err = m_proj.exportToWkt(&wkt);
-		if (err != OGRERR_NONE)
-			return false;
-		fprintf(fp2, "%s\n", wkt);
-		fclose(fp2);
-		OGRFree(wkt);
+		m_proj.WriteProjFile(prj_name);
 	}
 
 	return true;
