@@ -46,6 +46,13 @@ wxString2::wxString2(const vtString *vtstrp)
 	*this = (const char *) (*vtstrp);
 }
 
+#if SUPPORT_WSTRING
+wxString2::wxString2(const wstring2 &ws2)
+{
+	*this = ws2.c_str();
+}
+#endif
+
 // Assignment
 wxString2& wxString2::operator=(const wxChar *psz)
 {
@@ -114,6 +121,15 @@ wxString2& wxString2::operator=(const vtString *vtstrp)
 	*this = (const char *) (*vtstrp);
 	return *this;
 }
+
+#if SUPPORT_WSTRING
+wxString2 &wxString2::operator=(const wstring2 &ws2)
+{
+	*this = ws2.c_str();
+	return *this;
+}
+#endif
+
 
 wxString2::operator vtString() const
 {

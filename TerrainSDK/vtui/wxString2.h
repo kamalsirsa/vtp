@@ -33,6 +33,9 @@ public:
 	wxString2(const wxString &in) : wxString(in) {}
 	wxString2(const vtString &vtstr);
 	wxString2(const vtString *vtstrp);
+#if SUPPORT_WSTRING
+	wxString2(const wstring2 &ws2);
+#endif
 
 	// Assignment
 	wxString2& operator=(const wxChar *psz);
@@ -46,6 +49,9 @@ public:
 	wxString2& operator=(const wxString &str);
 	wxString2& operator=(const vtString &vtstr);
 	wxString2& operator=(const vtString *vtstrp);
+#if SUPPORT_WSTRING
+	wxString2& operator=(const wstring2 &ws2);
+#endif
 
 	// implicit conversion to vtString
 	operator vtString() const;
