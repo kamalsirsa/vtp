@@ -12,7 +12,7 @@
 #include "wx/dialog.h"
 #include "AutoDialog.h"
 
-#define PLANTS_FILTER "Plant List Files (*.txt)|*.txt|"
+#define PLANTS_FILTER "Plant Species List Files (*.xml)|*.xml|"
 #define BIOREGIONS_FILTER "Plant List Files (*.txt)|*.txt|"
 #define WID_PLANTS 200
 #define WID_PSPLITTER 201
