@@ -310,7 +310,7 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 		fog->setEnd(end);
 		fog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
 
-		set->setAttributeAndModes(fog, StateAttribute::OVERRIDE_ON);
+		set->setAttributeAndModes(fog, StateAttribute::OVERRIDE | StateAttribute::ON);
 	}
 	else
 	{

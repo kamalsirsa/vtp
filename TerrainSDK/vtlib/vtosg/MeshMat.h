@@ -58,7 +58,7 @@ public:
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>	m_pMaterial;
-	osg::ref_ptr<osg::Texture>	m_pTexture;
+	osg::ref_ptr<osg::Texture2D>	m_pTexture;
 	osg::ref_ptr<osg::StateSet>	m_pStateSet;
 };
 

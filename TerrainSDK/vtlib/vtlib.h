@@ -79,8 +79,7 @@
 	#include <osg/Image>
 	#include <osg/LOD>
 	#include <osg/Material>
-	#include <osg/Texture>
-	#include <osg/Transparency>
+	#include <osg/Texture2D>
 	#include <osg/MatrixTransform>
 	#include <osg/Vec2>
 
