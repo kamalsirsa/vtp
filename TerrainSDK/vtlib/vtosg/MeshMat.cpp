@@ -893,6 +893,14 @@ bool vtFont::LoadFont(const char *filename)
 
 ////
 
+/**
+ * Construct a TextMesh object.
+ *
+ * \param font The font that will be used to draw the text.
+ * \param fSize Size (height) in world units of the text rectangle.
+ * \param bCenter If true, the origin of the text rectangle is at
+ *			it's bottom center.  Otherwise, bottom left.
+ */
 vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 {
 	// OSG 0.9.3
