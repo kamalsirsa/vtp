@@ -1,10 +1,13 @@
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 
+//
+// Useful helper functions.
+//
 void makeVec4(osg::Vec4 &col, float r, float g, float b)
 {
 	col.set(r, g, b, 1.0f);
@@ -297,9 +300,6 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	// We own the array allocation, so tell OSG not to try to free it
 	m_pGeoSet->setAttributeDeleteFunctor(NULL);
 
-	// TEMPORARY FOR TESTING!
-//	m_pGeoSet->setUseDisplayList(false);
-
 	m_Vert.SetMaxSize(NumVertices);
 	m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
 	m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
@@ -378,7 +378,6 @@ void vtMesh::AddTri(int p0, int p1, int p2)
 	m_Index.Append(p1);
 	m_Index.Append(p2);
 	m_PrimLen.Append(3);
-//	m_pGeoSet->setNumPrims(m_pGeoSet->getNumPrims() + 1);
 	m_pGeoSet->setNumPrims(m_Index.GetSize() / 3);
 
 	SendPointersToOSG();
