@@ -9,7 +9,7 @@
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -518,7 +518,7 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(unsigned int i) const
 
 int vtPlantInstanceArray3d::CreatePlantNodes()
 {
-	int size = GetSize();
+	int size = GetNumEntities();
 	int created = 0;
 
 	for (int i = 0; i < size; i++)
@@ -537,9 +537,12 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 	if (!m_pPlantList)
 		return false;
 
-	vtPlantInstance &pi = GetAt(i);
+	DPoint2 pos = GetPoint(i);
+	float size;
+	short species_id;
+	GetPlant(i, size, species_id);
 
-	if (!m_pHeightField->ContainsEarthPoint(pi.m_p))
+	if (!m_pHeightField->ContainsEarthPoint(pos))
 		return false;
 
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
@@ -549,11 +552,11 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 		m_Instances3d.SetAt(i, inst3d);
 	}
 
-	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(pi.species_id);
+	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(species_id);
 	if (!ps)
 		return false;
 
-	vtPlantAppearance3d *pApp = ps->GetAppearanceByHeight(pi.size);
+	vtPlantAppearance3d *pApp = ps->GetAppearanceByHeight(size);
 	if (!pApp)
 		return false;
 
@@ -566,7 +569,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 
 	// We need to scale the model to produce the desired size, not the
 	//  size of the appearance but of the instance.
-	float scale = pi.size / pApp->m_height;
+	float scale = size / pApp->m_height;
 	inst3d->m_pContainer->Scale3(scale, scale, scale);
 
 	if (pApp->m_eType == AT_BILLBOARD)
@@ -602,14 +605,14 @@ vtTransform *vtPlantInstanceArray3d::GetPlantNode(unsigned int i) const
 
 void vtPlantInstanceArray3d::VisualDeselectAll()
 {
-	unsigned int size = GetSize();
+	unsigned int size = GetNumEntities();
 
 	for (unsigned int i = 0; i < size; i++)
 	{
 		vtPlantInstance3d *inst3d = GetInstance3d(i);
 		if (inst3d)
 		{
-			inst3d->Select(false);
+			Select(i, false);
 			inst3d->ShowBounds(false);
 		}
 	}
@@ -620,49 +623,32 @@ void vtPlantInstanceArray3d::VisualSelect(unsigned int i)
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d)
 	{
-		inst3d->Select(true);
+		Select(i, true);
 		inst3d->ShowBounds(true);
 	}
 }
 
-int vtPlantInstanceArray3d::NumSelected() const
-{
-	int count = 0, size = GetSize();
-	for (unsigned int i = 0; i < GetSize(); i++)
-	{
-		vtPlantInstance3d *inst3d = GetInstance3d(i);
-		if (!inst3d || !inst3d->IsSelected())
-			continue;
-		count++;
-	}
-	return count;
-}
-
 void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 {
-	int size = GetSize();
-	for (unsigned int i = 0; i < GetSize(); i++)
+	unsigned int size = GetNumEntities();
+	for (unsigned int i = 0; i < size; i++)
 	{
-		vtPlantInstance &pi = GetAt(i);
-		vtPlantInstance3d *inst3d = GetInstance3d(i);
-
-		if (!inst3d || !inst3d->IsSelected())
+		if (!IsSelected(i))
 			continue;
 
-		pi.m_p += offset;
+		SetPoint(i, GetPoint(i) + offset);
 		UpdateTransform(i);
 	}
 }
 
 void vtPlantInstanceArray3d::UpdateTransform(unsigned int i)
 {
-	vtPlantInstance &pi = GetAt(i);
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
+
 	FPoint3 p3;
+	m_pHeightField->ConvertEarthToSurfacePoint(GetPoint(i), p3);
 
-	m_pHeightField->ConvertEarthToSurfacePoint(pi.m_p, p3);
-
-	// Should really move the plant to a new cell in the LOD
+	// We should really move the plant to a new cell in the LOD
 	// Grid, but unless it's moving really far we don't need to
 	// worry about this.
 
@@ -675,11 +661,11 @@ void vtPlantInstanceArray3d::UpdateTransform(unsigned int i)
 //
 void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
 {
-	vtPlantInstance &pi = GetAt(i);
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 
 	// get rid of the instance
-	RemoveAt(i);
+	SetToDelete(i);
+	ApplyDeletion();
 
 	// Since it has been removed from the scene graph, we must release its nodes
 	inst3d->m_pContainer->Release();
