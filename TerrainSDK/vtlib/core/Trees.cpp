@@ -402,6 +402,13 @@ vtPlantInstance3d::vtPlantInstance3d()
 	m_pHighlight = NULL;
 }
 
+vtPlantInstance3d::~vtPlantInstance3d()
+{
+	// Dont release the instance's nodes here.  They will either be released
+	//  by DeletePlant(), or automatically as the whole scene graph is
+	//  destructed at the time the terrain is destructed.
+}
+
 void vtPlantInstance3d::ShowBounds(bool bShow)
 {
 	if (bShow)
@@ -446,7 +453,7 @@ vtPlantInstanceArray3d::~vtPlantInstanceArray3d()
 	}
 }
 
-vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(int i)
+vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(int i) const
 {
 	if (i < 0 || i >= m_Instances3d.GetSize())
 		return NULL;
@@ -516,7 +523,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 	return true;
 }
 
-vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i)
+vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i) const
 {
 	if (i < 0 || i >= m_Instances3d.GetSize())
 		return NULL;
@@ -552,6 +559,18 @@ void vtPlantInstanceArray3d::VisualSelect(int i)
 	}
 }
 
+int vtPlantInstanceArray3d::NumSelected() const
+{
+	int count = 0, size = GetSize();
+	for (int i = 0; i < GetSize(); i++)
+	{
+		vtPlantInstance3d *inst3d = GetInstance3d(i);
+		if (!inst3d || !inst3d->IsSelected())
+			continue;
+		count++;
+	}
+	return count;
+}
 
 void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 {
@@ -582,5 +601,25 @@ void vtPlantInstanceArray3d::UpdateTransform(int i)
 	// worry about this.
 
 	inst3d->m_pTransform->SetTrans(p3);
+}
+
+
+//
+// Note you must remove the plant from the scene graph before deleting it!
+//
+void vtPlantInstanceArray3d::DeletePlant(int i)
+{
+	vtPlantInstance &pi = GetAt(i);
+	vtPlantInstance3d *inst3d = GetInstance3d(i);
+
+	// get rid of the instance
+	RemoveAt(i);
+
+	// Since it has been removed from the scene graph, we must release its nodes
+	inst3d->m_pTransform->Release();
+
+	// and its 3D component
+	m_Instances3d.RemoveAt(i);
+	delete inst3d;
 }
 

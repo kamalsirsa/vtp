@@ -87,6 +87,7 @@ class vtPlantInstance3d : public Selectable
 {
 public:
 	vtPlantInstance3d();
+	~vtPlantInstance3d();
 
 	void ShowBounds(bool bShow);
 
@@ -108,8 +109,8 @@ public:
 	int CreatePlantNodes();
 	bool CreatePlantNode(int i);
 
-	vtTransform *GetPlantNode(int i);
-	vtPlantInstance3d *GetInstance3d(int i);
+	vtTransform *GetPlantNode(int i) const;
+	vtPlantInstance3d *GetInstance3d(int i) const;
 
 	/// Indicate the heightfield which will be used for the structures in this array
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
@@ -117,13 +118,17 @@ public:
 	/// Indicate the Plant List to use
 	vtPlantList3d *GetPlantList() { return (vtPlantList3d *) m_pPlantList; }
 
-	/// Deselect all structures including turning off their visual highlights
+	/// Deselect all plants including turning off their visual highlights
 	void VisualDeselectAll();
 
-	/// Select a single structure, and visually highlight it
+	/// Select a single plant, and visually highlight it
 	void VisualSelect(int i);
 
+	// return the number of selected plants
+	int NumSelected() const;
+
 	void OffsetSelectedPlants(const DPoint2 &offset);
+	void DeletePlant(int i);
 
 	void UpdateTransform(int i);
 
