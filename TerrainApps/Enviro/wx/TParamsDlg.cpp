@@ -119,28 +119,36 @@ TParamsDlg::~TParamsDlg()
 //
 void TParamsDlg::SetParams(const TParams &Params)
 {
+	// overall name
+	m_strTerrainName.from_utf8(Params.m_strName);
+
+	// elevation
 	m_strFilename = wxString::FromAscii((const char *)Params.m_strElevFile);
 	m_strFilenameTin = wxString::FromAscii((const char *)Params.m_strElevFile);
 	m_fVerticalExag = Params.m_fVerticalExag;
+	m_bTin = Params.m_bTin;
+
+	/// navigation
 	m_iMinHeight = Params.m_iMinHeight;
-	m_fNavSpeed = Params.m_fNavSpeed;
 	m_iNavStyle = Params.m_iNavStyle;
+	m_fNavSpeed = Params.m_fNavSpeed;
 	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
 	m_strInitLocation.from_utf8(Params.m_strInitLocation);
 	m_fHither = Params.m_fHither;
 
+	// LOD
 	m_iLodMethod = Params.m_eLodMethod;
 	m_fPixelError = Params.m_fPixelError;
 	m_iTriCount = Params.m_iTriCount;
 	m_bTriStrips = Params.m_bTriStrips;
 	m_bDetailTexture = Params.m_bDetailTexture;
 
-	m_bTin = Params.m_bTin;
-
+	// time
 	m_bTimeOn = Params.m_bTimeOn;
 	m_iInitTime = Params.m_iInitTime;
 	m_fTimeSpeed = Params.m_fTimeSpeed;
 
+	// texture
 	m_iTexture = Params.m_eTexture;
 	m_iTilesize = Params.m_iTilesize;
 	m_strTextureSingle = wxString::FromAscii((const char *)Params.m_strTextureSingle);
@@ -150,6 +158,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bMipmap = Params.m_bMipmap;
 	m_b16bit = Params.m_b16bit;
 
+	// culture
 	m_bRoads = Params.m_bRoads;
 	m_strRoadFile = wxString::FromAscii((const char *)Params.m_strRoadFile);
 	m_bHwy = Params.m_bHwy;
@@ -207,13 +216,18 @@ void TParamsDlg::SetParams(const TParams &Params)
 //
 void TParamsDlg::GetParams(TParams &Params)
 {
+	// overall name
+	Params.m_strName = m_strTerrainName.to_utf8();
+
+	// elevation
 	if (m_bTin)
 		Params.m_strElevFile = m_strFilenameTin.mb_str();
 	else
 		Params.m_strElevFile = m_strFilename.mb_str();
-
-	// LocationsFilename
 	Params.m_fVerticalExag = m_fVerticalExag;
+	Params.m_bTin = m_bTin;
+
+	// navigation
 	Params.m_iMinHeight = m_iMinHeight;
 	Params.m_fNavSpeed = m_fNavSpeed;
 	Params.m_iNavStyle = m_iNavStyle;
@@ -221,18 +235,19 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_strInitLocation = m_strInitLocation.to_utf8();
 	Params.m_fHither = m_fHither;
 
+	// LOD
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
 	Params.m_fPixelError = m_fPixelError;
 	Params.m_iTriCount = m_iTriCount;
 	Params.m_bTriStrips = m_bTriStrips;
 	Params.m_bDetailTexture = m_bDetailTexture;
 
-	Params.m_bTin = m_bTin;
-
+	// time
 	Params.m_bTimeOn = m_bTimeOn;
 	Params.m_iInitTime = m_iInitTime;
 	Params.m_fTimeSpeed = m_fTimeSpeed;
 
+	// texture
 	Params.m_eTexture = (enum TextureEnum)m_iTexture;
 	Params.m_iTilesize = m_iTilesize;
 	Params.m_strTextureSingle = m_strTextureSingle.mb_str();
@@ -540,6 +555,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUseGrid()->SetValue(!m_bTin);
 	GetUseTin()->SetValue(m_bTin);
 
+	// overall name
+	AddValidator(ID_TNAME, &m_strTerrainName);
+
+	// elevation
 	AddValidator(ID_FILENAME, &m_strFilename);
 
 	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);

@@ -62,6 +62,10 @@ public:
 	void RefreshLabelFields();
 	void RefreshLocationFields();
 
+	// overall name
+	wxString2	m_strTerrainName;
+
+	// elevation
 	wxString2	m_strFilename;
 	wxString2	m_strFilenameTin;
 	float   m_fVerticalExag;
@@ -72,7 +76,8 @@ public:
 	int		m_iNavStyle;
 	float	m_fNavSpeed;
 	wxString2	m_strLocFile;
-	int		m_iInitLocation;	wxString2	m_strInitLocation;
+	int		m_iInitLocation;
+	wxString2	m_strInitLocation;
 	float	m_fHither;
 
 	// LOD
