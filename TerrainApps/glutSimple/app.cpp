@@ -15,6 +15,7 @@
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtdata/vtLog.h"
 
 void redraw();
 void reshape(int w, int h);
@@ -134,6 +135,10 @@ bool CreateScene()
 	vtScene *pScene = vtGetScene();
 	pScene->Init();
 
+	// Log messages to make troubleshooting easier
+	g_Log._StartLog("debug.txt");
+	VTLOG("glutSimple\n");
+
 	// Set the global data path
 	StringArray paths;
 	paths.Append(new vtString("Data/"));
@@ -152,7 +157,7 @@ bool CreateScene()
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
 
-	// Create a new vtTerrain, read its paramters from a file
+	// Create a new vtTerrain, read its parameters from a file
 	vtTerrain *pTerr = new vtTerrain();
 	pTerr->SetParamFile("Data/Simple.ini");
 
@@ -161,7 +166,7 @@ bool CreateScene()
 	int iError;
 	if (!pTerr->CreateScene(false, iError))
 	{
-		printf("Terrain creation failed.");
+		printf("Terrain creation failed, error %d.\n", iError);
 		return false;
 	}
 	ts->Finish(paths);
@@ -203,4 +208,3 @@ int main(int, char ** )
 
 	return 0;
 }
-
