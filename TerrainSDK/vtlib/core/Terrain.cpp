@@ -2418,8 +2418,15 @@ void vtTerrain::DeleteSelectedPlants()
 		if (m_PIA.IsSelected(i))
 		{
 			vtTransform *pTrans = m_PIA.GetPlantNode(i);
-			m_pVegGrid->RemoveFromGrid(pTrans);
-			m_PIA.DeletePlant(i);
+			if (pTrans != NULL)
+			{
+				vtGroup *pParent = pTrans->GetParent();
+				if (pParent)
+				{
+					pParent->RemoveChild(pTrans);
+					m_PIA.DeletePlant(i);
+				}
+			}
 		}
 	}
 }
