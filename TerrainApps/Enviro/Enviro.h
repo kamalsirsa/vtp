@@ -67,6 +67,7 @@ public:
 	void SetEarthShape(bool Flat);
 	bool GetEarthShape() { return m_bGlobeFlat; }
 	int AddGlobePoints(const char *fname);
+	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
 
 	vtString GetMessage() { return m_strMessage; }
 	void SetMessage(const char *msg, float time = 0.0f);
@@ -126,6 +127,8 @@ public:
 
 	// used for mouse interaction
 	bool		m_bDragging;
+	bool		m_bSelectedStruct;
+	bool		m_bSelectedPlant;
 	DPoint3		m_EarthPosDown;
 	DPoint3		m_EarthPosLast;
 	vtRoute		*m_pCurRoute;
@@ -159,6 +162,11 @@ protected:
 	float		m_fRouteOffL, m_fRouteOffR;
 	float		m_fRouteStInc;
 	vtString	m_sRouteName;
+
+	// linear arc on Earth
+	vtGeom *m_pArc;
+	vtMesh *m_pArcMesh;
+	double m_fArcLength; 
 
 	// view and navigation
 	vtCamera	*m_pNormalCamera;

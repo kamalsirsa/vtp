@@ -60,10 +60,18 @@ Enviro::Enviro()
 	m_pGlobePicker = NULL;
 	m_pCursorMGeom = NULL;
 
+	m_pArc = NULL;
+	m_pArcMesh = NULL;
+	m_fArcLength = 0.0;
+
 	m_fMessageTime = 0.0f;
 	m_pPlantList = NULL;
 
 	SetPlantOptions(0, 3.0f, 3.0f);
+
+	m_bDragging = false;
+	m_bSelectedStruct = false;
+	m_bSelectedPlant = false;
 
 	_StartLog("debug.txt");
 	_Log("\nEnviro\n\n");
@@ -490,6 +498,11 @@ void Enviro::DescribeCoordinates(vtString &str)
 		m_pGlobePicker->GetCurrentEarthPos(epos);
 		FormatCoordString(str1, epos, false);
 		str += str1;
+		if (m_fArcLength != 0.0)
+		{
+			str1.Format(", arc = %.0lf meters", m_fArcLength);
+			str += str1;
+		}
 	}
 	if (m_state == AS_Terrain)
 	{
@@ -773,7 +786,7 @@ void Enviro::SetupScene2()
 
 	vtPlantList pl;
 	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
-	if (pl.ReadXML(species_path))
+	if (species_path != "" && pl.ReadXML(species_path))
 	{
 		m_pPlantList = new vtPlantList3d();
 		*m_pPlantList = pl;
@@ -1058,7 +1071,8 @@ void Enviro::OnMouse(vtMouseEvent &event)
 		OnMouseMove(event);
 	if (event.type == VT_UP)
 	{
-		m_bDragging = false;
+		if (event.button == VT_LEFT)
+			m_bDragging = false;
 		if (event.button == VT_RIGHT)
 			OnMouseRightUp(event);
 	}
@@ -1118,6 +1132,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		double distance1, distance2;
 		vtStructureArray3d &structures = pTerr->GetStructures();
 		structures.VisualDeselectAll();
+		m_bSelectedStruct = false;
 
 		int structure;		// index of closest structure
 		bool result1 = structures.FindClosestStructure(gpos, 20.0,
@@ -1125,6 +1140,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 		vtPlantInstanceArray3d &plants = GetCurrentTerrain()->GetPlantInstances();
 		plants.VisualDeselectAll();
+		m_bSelectedPlant = false;
 
 		int plant;		// index of closest plant
 		bool result2 = plants.FindClosestPlant(gpos, 20.0, plant, distance2);
@@ -1137,11 +1153,13 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			vtStructure3d *str = structures.GetStructure(structure);
 			structures.VisualSelect(str);
 			m_bDragging = true;
+			m_bSelectedStruct = true;
 		}
 		if (click_plant)
 		{
 			plants.VisualSelect(plant);
 			m_bDragging = true;
+			m_bSelectedPlant = true;
 		}
 		m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	}
@@ -1150,7 +1168,9 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 {
 	// from orbit, check if we've clicked on a terrain
-	if (m_bOnTerrain && m_mode == MM_SELECT)
+	if (!m_bOnTerrain)
+		return;
+	if (m_mode == MM_SELECT)
 	{
 		vtTerrain *pTerr;
 		for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
@@ -1161,6 +1181,11 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 				break;
 			}
 		}
+	}
+	if (m_mode == MM_LINEAR)
+	{
+		m_EarthPosDown = m_EarthPos;
+		m_bDragging = true;
 	}
 }
 
@@ -1196,8 +1221,16 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 		DPoint2 ground_delta(delta.x, delta.y);
 
 		vtTerrain *pTerr = GetCurrentTerrain();
-		vtStructureArray3d &structures = pTerr->GetStructures();
-		structures.OffsetSelectedStructures(ground_delta);
+		if (m_bSelectedStruct)
+		{
+			vtStructureArray3d &structures = pTerr->GetStructures();
+			structures.OffsetSelectedStructures(ground_delta);
+		}
+		if (m_bSelectedPlant)
+		{
+			vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
+			plants.OffsetSelectedPlants(ground_delta);
+		}
 
 		m_EarthPosLast = m_EarthPos;
 	}
@@ -1212,6 +1245,12 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 			if (poi)
 				ter->ShowPOI(poi, true);
 		}
+	}
+	if (m_state == AS_Orbit && m_mode == MM_LINEAR && m_bDragging)
+	{
+		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
+		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
+		SetDisplayedArc(epos1, epos2);
 	}
 }
 
@@ -1237,6 +1276,58 @@ void Enviro::SetEarthShape(bool bFlat)
 		m_fGlobeDir = -0.03f;
 	else
 		m_fGlobeDir = 0.03f;
+}
+
+void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
+{
+	// first determine how many points we should use for a smooth arc
+	DPoint3 p1, p2;
+	geo_to_xyz(1.0, g1, p1);
+	geo_to_xyz(1.0, g2, p2);
+	double angle = acos(p1.Dot(p2));
+	int points = angle * 3000;
+	if (points < 3)
+		points = 3;
+
+	// calculate the axis of rotation
+	DPoint3 cross = p1.Cross(p2);
+	cross.Normalize();
+	double angle_spacing = angle / (points-1);
+	DMatrix4 rot4;
+	rot4.AxisAngle(cross, angle_spacing);
+	DMatrix3 rot3;
+	rot3.SetByMatrix4(rot4);
+
+	// estimate horizontal distance (angle * radius)
+	m_fArcLength = angle * EARTH_RADIUS;
+
+	// create geometry container
+	if (!m_pArc)
+	{
+		m_pArc = new vtGeom();
+		m_pGlobeMGeom->AddChild(m_pArc);
+		vtMaterialArray *pMats = new vtMaterialArray();
+		int yellow = pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
+						 false, false, false);
+		m_pArc->SetMaterials(pMats);
+	}
+	// re-create mesh if not the first time
+	if (m_pArcMesh)
+	{
+		m_pArc->RemoveMesh(m_pArcMesh);
+		delete m_pArcMesh;
+	}
+	// set the points of the arc
+	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, points);
+	for (int i = 0; i < points; i++)
+	{
+		FPoint3 fp = p1 * 1.0002;
+		m_pArcMesh->AddVertex(fp);
+		rot3.Transform(p1, p2);
+		p1 = p2;
+	}
+	m_pArcMesh->AddStrip2(points, 0);
+	m_pArc->AddMesh(m_pArcMesh, 0);
 }
 
 ////////////////////////////////////////////////////////////////
