@@ -260,7 +260,7 @@ double BExtractorDoc::i_UTMy(int iy)
 
 BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 {
-	VTLOG("OnOpenDocument\n");
+	VTLOG("OnOpenDocument %s\n", szPathName);
 	CString name = szPathName;
 	CString ext = name.Right(4);
 
@@ -354,7 +354,7 @@ void BExtractorDoc::OnImportimage()
 
 void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 {
-	VTLOG("OnImportimage2\n");
+	VTLOG("OnImportimage2 %s\n", szPathName);
 	m_picLoaded = false;
 	m_pImage = new CBImage();
 
