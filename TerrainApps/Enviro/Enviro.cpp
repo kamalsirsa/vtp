@@ -233,12 +233,12 @@ void Enviro::FlyToSpace()
 
 void Enviro::SetupGlobe()
 {
-	m_msg.Format("SetupGlobe step %d", m_iInitStep);
+	m_msg.Format("SetupGlobe step %d\n", m_iInitStep);
 	_Log(m_msg);
-	_Log("\n");
 
 	if (m_iInitStep == 1)
 	{
+		m_pTerrainPicker->SetEnabled(false);
 		SetMessage("Creating Globe");
 	}
 	if (m_iInitStep == 2)
@@ -288,9 +288,9 @@ void Enviro::SetupGlobe()
 		m_state = AS_Orbit;
 		SetMode(MM_SELECT);
 		if (!strncmp((const char *) g_Options.m_strImage, "geosphere", 9))
-			SetMessage("Earth image (c) The GeoSphere Project", 3.0f);
+			SetMessage("Earth image (c) The GeoSphere Project", 3);
 		else
-			SetMessage("Earth View");
+			SetMessage("Earth View", 10);
 		m_pGlobePicker->SetEnabled(true);
 	}
 }
@@ -462,6 +462,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
+		m_pTerrainPicker->SetEnabled(true);
 		SetMode(MM_NAVIGATE);
 	}
 	if (m_iInitStep == 11)
@@ -473,13 +474,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 }
 
-void Enviro::FormatCoordString(vtString &str, const DPoint3 &coord, bool bUTM)
+void Enviro::FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units)
 {
-	if (bUTM)
-	{
-		str.Format("%7d, %7d", (int) coord.x, (int) coord.y);
-	}
-	else
+	if (units == LU_DEGREES)
 	{
 		int deg1 = (int) coord.x;
 		int min1 = (int) ((coord.x - deg1) * 60);
@@ -495,6 +492,10 @@ void Enviro::FormatCoordString(vtString &str, const DPoint3 &coord, bool bUTM)
 
 		str.Format("%3d:%02d %c, %3d:%02d %c", deg1, min1, ew, deg2, min2, ns);
 	}
+	else
+	{
+		str.Format("%7d, %7d", (int) coord.x, (int) coord.y);
+	}
 }
 
 void Enviro::DescribeCoordinates(vtString &str)
@@ -509,16 +510,24 @@ void Enviro::DescribeCoordinates(vtString &str)
 		// give location of cursor
 		str = "Cursor: ";
 		m_pGlobePicker->GetCurrentEarthPos(epos);
-		FormatCoordString(str1, epos, false);
+		FormatCoordString(str1, epos, LU_DEGREES);
 		str += str1;
 		if (m_fArcLength != 0.0)
 		{
 			str1.Format(", arc = %.0lf meters", m_fArcLength);
 			str += str1;
 		}
+		vtTerrain *pTerr = FindTerrainOnEarth(DPoint2(epos.x, epos.y));
+		if (pTerr)
+		{
+			str1.Format(", Terrain: %s", (const char *) pTerr->GetName());
+			str += str1;
+		}
 	}
 	if (m_state == AS_Terrain)
 	{
+		vtTerrain *pTerr = GetCurrentTerrain();
+
 		// give location of camera and cursor
 		str = "Camera: ";
 		// get camera pos
@@ -529,7 +538,7 @@ void Enviro::DescribeCoordinates(vtString &str)
 		// Find corresponding UTM coordinates
 		g_Conv.ConvertToEarth(campos, epos);
 
-		FormatCoordString(str1, epos, !g_Conv.m_bGeographic);
+		FormatCoordString(str1, epos, g_Conv.m_units);
 		str += str1;
 		str1.Format(" elev %.1f", epos.z);
 		str += str1;
@@ -539,7 +548,7 @@ void Enviro::DescribeCoordinates(vtString &str)
 		bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 		if (bOn)
 		{
-			FormatCoordString(str1, epos, !g_Conv.m_bGeographic);
+			FormatCoordString(str1, epos, g_Conv.m_units);
 			str += str1;
 			str1.Format(" elev %.1f", epos.z);
 			str += str1;
@@ -594,7 +603,7 @@ void Enviro::DoPickers()
 			m_EarthPos = earthpos;
 
 		vtString str1, str2;
-		FormatCoordString(str1, m_EarthPos, false);
+		FormatCoordString(str1, m_EarthPos, LU_DEGREES);
 		str2 = "Cursor ";
 		str2 += str1;
 		m_pSprite2->SetText(str2);
@@ -616,8 +625,8 @@ void Enviro::DoPickers()
 			if (m_pTerrainPicker->GetCurrentPoint(gpos))
 			{
 				FPoint3 campos = vtGetScene()->GetCamera()->GetTrans();
-				float distance = (gpos - campos).Length();
-				float sc = (float) sqrt(distance);
+				float distance = (gpos - campos).Length() / WORLD_SCALE;
+				float sc = (float) sqrt(distance) / 1.0f;
 				FPoint3 pos = m_pCursorMGeom->GetTrans();
 				m_pCursorMGeom->Identity();
 				m_pCursorMGeom->Scale3(sc, sc, sc);
@@ -776,8 +785,8 @@ void Enviro::SetupScene2()
 		m_nav = NT_Normal;
 
 	// create picker object and picker engine
-	float size = 50 * WORLD_SCALE;
-	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/20));
+	float size = 1.0 * WORLD_SCALE;
+	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/30));
 	m_pCursorMGeom->SetName2("Cursor");
 
 	m_pTerrainScene->m_pTop->AddChild(m_pCursorMGeom);
@@ -785,8 +794,8 @@ void Enviro::SetupScene2()
 	m_pTerrainPicker->SetName2("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
 
-	m_pTerrainPicker->SetTarget((vtTransform *)m_pCursorMGeom);
-	m_pTerrainPicker->SetEnabled(true); // turn on at startup
+	m_pTerrainPicker->SetTarget(m_pCursorMGeom);
+	m_pTerrainPicker->SetEnabled(false); // turn off at startup
 
 	m_pSprite2 = new vtSprite();
 	m_pSprite2->SetName2("Sprite2");
@@ -1017,45 +1026,6 @@ void Enviro::SetTopDown(bool bTopDown)
 	}
 }
 
-static char msg[80];
-
-const char *Enviro::GetStatusText()
-{
-	char buf[80];
-
-	// empty string;
-	msg[0] = 0;
-
-#if 0
-	// won't need this until we have dynamic time-of-day on the standard terrain
-	if (m_pTerrainScene->m_pTime != NULL)
-		sprintf(msg, " Time %02d:%02d - ",
-			m_pTerrainScene->m_pTime->hours,
-			m_pTerrainScene->m_pTime->minutes);
-#endif
-
-	vtTerrain *pTerrain = GetCurrentTerrain();
-	if (pTerrain && pTerrain->GetDynTerrain())
-	{
-		if (pTerrain->GetParams().m_eLodMethod == LM_MCNALLY)
-			sprintf(buf, " - Terrain: target %d", pTerrain->GetDynTerrain()->GetPolygonCount());
-		else
-			sprintf(buf, " - Terrain: err %.1f", pTerrain->GetDynTerrain()->GetPixelError());
-		strcat(msg, buf);
-		sprintf(buf, ", drawn %d", pTerrain->GetDynTerrain()->GetNumDrawnTriangles());
-		strcat(msg, buf);
-	}
-
-#if 0
-	// don't need this if drawing earth position with a sprite
-	sprintf(buf, ", earth (%.0f, %.0f)", m_EarthPos.x, m_EarthPos.y);
-	strcat(msg, buf);
-#endif
-
-	return msg;
-}
-
-
 void Enviro::OnMouse(vtMouseEvent &event)
 {
 	// check for what is under the pickers
@@ -1166,6 +1136,28 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	}
 }
 
+vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
+{
+	vtTerrain *t, *smallest = NULL;
+	float diag, smallest_diag = 1E7;
+	for (t = m_pTerrainScene->m_pFirstTerrain; t; t=t->GetNext())
+	{
+		if (t->m_Corners_geo.ContainsPoint(p))
+		{
+			// normally, doing comparison on latlon coordinates wouldn't be
+			// meaningful, but in this case we know that the two areas compared
+			// are overlapping and therefore numerically similar
+			diag = (t->m_Corners_geo[2] - t->m_Corners_geo[0]).Length();
+			if (diag < smallest_diag)
+			{
+				smallest_diag = diag;
+				smallest = t;
+			}
+		}
+	}
+	return smallest;
+}
+
 void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 {
 	// from orbit, check if we've clicked on a terrain
@@ -1173,15 +1165,9 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 		return;
 	if (m_mode == MM_SELECT)
 	{
-		vtTerrain *pTerr;
-		for (pTerr = m_pTerrainScene->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
-		{
-			if (pTerr->m_Corners_geo.ContainsPoint(DPoint2(m_EarthPos.x, m_EarthPos.y)))
-			{
-				SwitchToTerrain(pTerr);
-				break;
-			}
-		}
+		vtTerrain *pTerr = FindTerrainOnEarth(DPoint2(m_EarthPos.x, m_EarthPos.y));
+		if (pTerr)
+			SwitchToTerrain(pTerr);
 	}
 	if (m_mode == MM_LINEAR)
 	{
