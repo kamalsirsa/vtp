@@ -3,7 +3,7 @@
 //
 // Defines all the construction parameters for a terrain.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -55,14 +55,14 @@ TParams::TParams()
 	m_bRoadCulture = false;
 
 	m_bTrees = false;
-	m_iTreeDistance = 2;
+	m_iVegDistance = 2000;	// 2 km
 	m_bAgriculture = false;
 	m_bWildVeg = false;
 
 	m_bFog = false;
 	m_iFogDistance = 50;	// 50 km
 
-	m_bBuildings = false;
+	m_iStructDistance = 2000;	// 2 km
 
 	m_bTransTowers = false;
 
@@ -82,7 +82,6 @@ TParams::TParams()
 	m_bLabels = false;
 	m_strLabelFile = "";
 
-	m_bAirports = false;
 	m_bRouteEnable = false;
 }
 
@@ -138,16 +137,16 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bRoadCulture = rhs.m_bRoadCulture;
 
 	m_bTrees = rhs.m_bTrees;
-	m_strTreeFile = rhs.m_strTreeFile;
-	m_iTreeDistance = rhs.m_iTreeDistance;
+	m_strVegFile = rhs.m_strVegFile;
+	m_iVegDistance = rhs.m_iVegDistance;
 	m_bAgriculture = rhs.m_bAgriculture;
 	m_bWildVeg = rhs.m_bWildVeg;
 
 	m_bFog = rhs.m_bFog;
 	m_iFogDistance = rhs.m_iFogDistance;
 
-	m_bBuildings = rhs.m_bBuildings;
-	m_strBuildingFile = rhs.m_strBuildingFile;
+	m_strStructFiles = rhs.m_strStructFiles;
+	m_iStructDistance = rhs.m_iStructDistance;
 
 	m_bTransTowers = rhs.m_bTransTowers;
 	m_strTowerFile = rhs.m_strTowerFile;
@@ -171,8 +170,6 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bPreLight = rhs.m_bPreLight;
 	m_bPreLit = rhs.m_bPreLit;
 	m_fPreLightFactor = rhs.m_fPreLightFactor;
-
-	m_bAirports = rhs.m_bAirports;
 
 	m_strRouteFile = rhs.m_strRouteFile;
 	m_bRouteEnable = rhs.m_bRouteEnable;
@@ -258,15 +255,16 @@ vtString get_line_from_stream(ifstream &input)
 
 #define STR_TREES "Trees"
 #define STR_TREEFILE "Tree_File"
-#define STR_TREEDISTANCE "Tree_Distance"
+#define STR_VEGDISTANCE "Tree_Distance"
 #define STR_AGRICULTURE "Agriculture"
 #define STR_WILDVEG	"Wild_Vegetation"
 
 #define STR_FOG "Fog"
 #define STR_FOGDISTANCE "Fog_Distance"
 
-#define STR_BUILDINGS "Buildings"
-#define STR_BUILDINGFILE "Building_File"
+#define STR_BUILDINGFILE "Building_File"	// for backward compatibility
+#define STR_STRUCTFILE	 "Structure_File"
+#define STR_STRUCTDIST	 "Structure_Distance"
 
 #define STR_TOWERS "Trans_Towers"
 #define	STR_TOWERFILE "Tower File"
@@ -288,7 +286,6 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_LABELS "Labels"
 #define STR_LABELFILE "LabelFile"
 
-#define STR_AIRPORTS "Airports"
 #define STR_ROUTEFILE "Route_File"
 #define STR_ROUTEENABLE "Route_Enable"
 
@@ -395,9 +392,9 @@ bool TParams::LoadFromFile(const char *filename)
 		else if (strcmp(buf, STR_TREES) == 0)
 			input >> m_bTrees;
 		else if (strcmp(buf, STR_TREEFILE) == 0)
-			m_strTreeFile = get_line_from_stream(input);
-		else if (strcmp(buf, STR_TREEDISTANCE) == 0)
-			input >> m_iTreeDistance;
+			m_strVegFile = get_line_from_stream(input);
+		else if (strcmp(buf, STR_VEGDISTANCE) == 0)
+			input >> m_iVegDistance;
 		else if (strcmp(buf, STR_FOGDISTANCE) == 0)
 			input >> m_iFogDistance;
 		else if (strcmp(buf, STR_OVERLAY) == 0)
@@ -416,10 +413,13 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bLabels;
 		else if (strcmp(buf, STR_LABELFILE) == 0)
 			m_strLabelFile = get_line_from_stream(input);
-		else if (strcmp(buf, STR_BUILDINGS) == 0)
-			input >> m_bBuildings;
-		else if (strcmp(buf, STR_BUILDINGFILE) == 0)
-			m_strBuildingFile = get_line_from_stream(input);
+		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
+		{
+			vtString *strFile = new vtString(get_line_from_stream(input));
+			m_strStructFiles.Append(strFile);
+		}
+		else if (strcmp(buf, STR_STRUCTDIST) == 0)
+			input >> m_iStructDistance;
 		else if (strcmp(buf, STR_TOWERS)==0)
 			input>>m_bTransTowers;
 		else if (strcmp(buf,STR_TOWERFILE)==0)
@@ -444,8 +444,6 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bTin;
 		else if (strcmp(buf, STR_PRELIGHTFACTOR) == 0)
 			input >> m_fPreLightFactor;
-		else if (strcmp(buf, STR_AIRPORTS) == 0)
-			input >> m_bAirports;
 		else if (strcmp(buf, STR_ROUTEFILE) == 0)
 			 m_strRouteFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_ROUTEENABLE) == 0)
@@ -470,6 +468,8 @@ bool TParams::LoadFromFile(const char *filename)
 
 bool TParams::SaveToFile(const char *filename)
 {
+	int i;
+
 	ofstream output(filename, ios::binary);
 	if (!output.is_open())
 		return false;
@@ -560,9 +560,9 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_TREES << "\t\t\t";
 	output << m_bTrees << endl;
 	output << STR_TREEFILE << "\t\t";
-	output << (const char *) m_strTreeFile << endl;
-	output << STR_TREEDISTANCE << "\t";
-	output << m_iTreeDistance << endl;
+	output << (const char *) m_strVegFile << endl;
+	output << STR_VEGDISTANCE << "\t";
+	output << m_iVegDistance << endl;
 	output << STR_AGRICULTURE << "\t\t";
 	output << m_bAgriculture << endl;
 	output << STR_WILDVEG << "\t";
@@ -575,10 +575,13 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_iFogDistance << endl;
 
 	output << "\n";
-	output << STR_BUILDINGS << "\t\t";
-	output << m_bBuildings << endl;
-	output << STR_BUILDINGFILE << "\t";
-	output << (const char *) m_strBuildingFile << endl;
+	for (i = 0; i < m_strStructFiles.GetSize(); i++)
+	{
+		output << STR_STRUCTFILE << "\t";
+		output << (const char *) (*m_strStructFiles[i]) << endl;
+	}
+	output << STR_STRUCTDIST << "\t";
+	output << m_iStructDistance << endl;
 
 	output << "\n";
 	output << STR_TOWERS << "\t";
@@ -617,9 +620,6 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bLabels << endl;
 	output << STR_LABELFILE << "\t\t";
 	output << (const char *) m_strLabelFile << endl;
-
-	output << STR_AIRPORTS << "\t\t";
-	output << m_bAirports << endl;
 
 	output << STR_ROUTEFILE << "\t\t";
 	output << (const char *) m_strRouteFile << endl;

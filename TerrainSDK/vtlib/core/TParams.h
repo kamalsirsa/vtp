@@ -86,16 +86,16 @@ public:
 	bool		m_bRoadCulture;
 
 	bool		m_bTrees;
-	vtString	m_strTreeFile;
-	unint		m_iTreeDistance;
+	vtString	m_strVegFile;
+	unint		m_iVegDistance;
 	bool		m_bAgriculture;
 	bool		m_bWildVeg;
 
 	bool		m_bFog;
 	int			m_iFogDistance;
 
-	bool		m_bBuildings;
-	vtString	m_strBuildingFile;
+	StringArray	m_strStructFiles;
+	unint		m_iStructDistance;
 
 	bool		m_bTransTowers;
 	vtString	m_strTowerFile;
@@ -117,10 +117,9 @@ public:
 	bool		m_bLabels;
 	vtString	m_strLabelFile;
 
-	bool		m_bAirports;
 	vtString	m_strRouteFile;
 	bool		m_bRouteEnable;
 };
 
-#endif
+#endif	// TPARAMSH
 

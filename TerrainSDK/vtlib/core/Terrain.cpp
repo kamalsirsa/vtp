@@ -55,11 +55,12 @@ vtTerrain::vtTerrain()
 	m_bPreserveInputGrid = false;
 	m_pImage = NULL;
 	m_pElevGrid = NULL;
-	m_pLodGrid = NULL;
 
 	m_pOceanGeom = NULL;
 	m_pRoadGroup = NULL;
-	m_pTreeGroup = NULL;
+
+	// vegetation
+	m_pVegGrid = NULL;
 
 	m_bShowPOI = true;
 	m_pPlantList = NULL;
@@ -68,7 +69,10 @@ vtTerrain::vtTerrain()
 	m_pDynGeomScale = NULL;
 	m_pTin = NULL;
 	m_pNext = NULL;
+
+	// structures
 	m_iStructSet = 0;
+	m_pStructGrid = NULL;
 
 	m_CamLocation.Identity();
 }
@@ -93,7 +97,6 @@ vtTerrain::~vtTerrain()
 	}
 	delete m_pImage;
 	delete m_pDIB;
-//	delete m_pTreeGroup;	// don't delete, same as m_pLodGrid
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
 	{
@@ -105,10 +108,15 @@ vtTerrain::~vtTerrain()
 		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
 		m_pOceanGeom->Destroy();
 	}
-	if (m_pLodGrid)
+	if (m_pStructGrid)
 	{
-		m_pTerrainGroup->RemoveChild(m_pLodGrid);
-		m_pLodGrid->Destroy();
+		m_pTerrainGroup->RemoveChild(m_pStructGrid);
+		m_pStructGrid->Destroy();
+	}
+	if (m_pVegGrid)
+	{
+		m_pTerrainGroup->RemoveChild(m_pVegGrid);
+		m_pVegGrid->Destroy();
 	}
 //	delete m_pInputGrid;	// don't delete, copied to m_pElevGrid
 	if (m_pDynGeom)
@@ -205,8 +213,9 @@ void vtTerrain::create_roads(vtString strRoadFile)
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.m_bTexRoads != 0,
 		m_DataPaths);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
+
 	if (m_Params.m_bRoadCulture)
-		m_pRoadMap->GenerateSigns(m_pLodGrid);
+		m_pRoadMap->GenerateSigns(m_pStructGrid);
 }
 
 
@@ -465,7 +474,7 @@ void vtTerrain::AddFence(vtFence3d *fen)
 	fen->CreateNode(this);
 
 	// Add to LOD grid
-	AddNodeToLodGrid(fen->GetGeom());
+	AddNodeToStructGrid(fen->GetGeom());
 }
 
 void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
@@ -473,13 +482,13 @@ void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
 	// Adding a fence point might change the fence extents such that it moves
 	// to a new LOD cell.  So, remove it from the LOD grid, add the point,
 	// then add it back.
-	m_pLodGrid->RemoveFromGrid(f->GetGeom());
+	m_pStructGrid->RemoveFromGrid(f->GetGeom());
 
 	f->AddPoint(epos);
 
 	f->CreateNode(this);
 
-	AddNodeToLodGrid(f->GetGeom());
+	AddNodeToStructGrid(f->GetGeom());
 }
 
 void vtTerrain::RedrawFence(vtFence3d *f)
@@ -687,12 +696,12 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 	bSuccess = false;
 	vtTransform *pTrans = str3d->GetTransform();
 	if (pTrans)
-		bSuccess = AddNodeToLodGrid(pTrans);
+		bSuccess = AddNodeToStructGrid(pTrans);
 	else
 	{
 		vtGeom *pGeom = str3d->GetGeom();
 		if (pGeom)
-			bSuccess = AddNodeToLodGrid(pGeom);
+			bSuccess = AddNodeToStructGrid(pGeom);
 	}
 	return bSuccess;
 }
@@ -737,7 +746,7 @@ void vtTerrain::DeleteSelectedStructures()
 		if (str->IsSelected())
 		{
 			vtStructure3d *str3d = structures->GetStructure3d(i);
-			RemoveNodeFromLodGrid(str3d->GetTransform());
+			RemoveNodeFromStructGrid(str3d->GetTransform());
 		}
 	}
 
@@ -860,7 +869,8 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 void vtTerrain::create_culture(bool bSound)
 {
 	// m_iTreeDistance is in kilometers, so multiply to get meters
-	setup_LodGrid(m_Params.m_iTreeDistance * 1000.0f);
+	_SetupStructGrid(m_Params.m_iStructDistance);
+	_SetupVegGrid(m_Params.m_iVegDistance);
 
 	// create roads
 	if (m_Params.m_bRoads)
@@ -897,7 +907,7 @@ void vtTerrain::create_culture(bool bSound)
 	{
 		// Read the VF file
 		vtString plants_fname = "PlantData/";
-		plants_fname += m_Params.m_strTreeFile;
+		plants_fname += m_Params.m_strVegFile;
 
 		VTLOG("\tLooking for plants file: %s\n", (const char *) plants_fname);
 
@@ -924,7 +934,7 @@ void vtTerrain::create_culture(bool bSound)
 
 					// add tree to scene graph
 					if (pTrans)
-						AddNodeToLodGrid(pTrans);
+						AddNodeToVegGrid(pTrans);
 				}
 			}
 			else
@@ -936,10 +946,11 @@ void vtTerrain::create_culture(bool bSound)
 	vtStructureArray3d *structures = new vtStructureArray3d;
 	m_StructureSet.Append(structures);
 
-	if (m_Params.m_bBuildings)
+	int i, num = m_Params.m_strStructFiles.GetSize();
+	for (i = 0; i < num; i++)
 	{
 		vtString building_fname = "BuildingData/";
-		building_fname += m_Params.m_strBuildingFile;
+		building_fname += *(m_Params.m_strStructFiles[i]);
 
 		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
 
@@ -954,7 +965,7 @@ void vtTerrain::create_culture(bool bSound)
 			CreateStructuresFromXML(building_path);
 		}
 	}
-	else
+	if (num == 0)
 	{
 		// No structures loaded, but the might create some later, so set
 		// the projection to match the terrain.
@@ -972,10 +983,9 @@ void vtTerrain::create_culture(bool bSound)
 
 
 //
-// Create an LOD grid to contain and efficiently hide the culture
-//  (trees, buildings) far away from the camera
+// Create an LOD grid to contain and efficiently hide stuff that's far away
 //
-void vtTerrain::setup_LodGrid(float fLODDistance)
+void vtTerrain::_SetupVegGrid(float fLODDistance)
 {
 	// must have a terrain with some size
 	if (!m_pHeightField)
@@ -987,12 +997,30 @@ void vtTerrain::setup_LodGrid(float fLODDistance)
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
-	m_pLodGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
-	m_pLodGrid->SetName2("LOD Grid");
-	m_pTerrainGroup->AddChild(m_pLodGrid);
-	m_pTreeGroup = m_pLodGrid;
+	m_pVegGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
+	m_pVegGrid->SetName2("Vegetation LOD Grid");
+	m_pTerrainGroup->AddChild(m_pVegGrid);
 }
 
+//
+// Create an LOD grid to contain and efficiently hide stuff that's far away
+//
+void vtTerrain::_SetupStructGrid(float fLODDistance)
+{
+	// must have a terrain with some size
+	if (!m_pHeightField)
+		return;
+
+	FRECT world_extents;
+	world_extents = m_pHeightField->m_WorldExtents;
+
+	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
+	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
+
+	m_pStructGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
+	m_pStructGrid->SetName2("Structures LOD Grid");
+	m_pTerrainGroup->AddChild(m_pStructGrid);
+}
 
 /////////////////////////
 
@@ -1350,8 +1378,8 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 			m_pOceanGeom->SetEnabled(bOn);
 		break;
 	case TFT_VEGETATION:
-		if (m_pTreeGroup)
-			m_pTreeGroup->SetEnabled(bOn);
+		if (m_pVegGrid)
+			m_pVegGrid->SetEnabled(bOn);
 		break;
 	case TFT_ROADS:
 		if (m_pRoadGroup)
@@ -1373,8 +1401,8 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 			return m_pOceanGeom->GetEnabled();
 		break;
 	case TFT_VEGETATION:
-		if (m_pTreeGroup)
-			return m_pTreeGroup->GetEnabled();
+		if (m_pVegGrid)
+			return m_pVegGrid->GetEnabled();
 		break;
 	case TFT_ROADS:
 		if (m_pRoadGroup)
@@ -1625,7 +1653,7 @@ bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 	vtTransform *pTrans = m_PIA.GetPlantNode(num);
 
 	// add tree to scene graph
-	AddNodeToLodGrid(pTrans);
+	AddNodeToVegGrid(pTrans);
 	return true;
 }
 
@@ -1652,12 +1680,28 @@ void vtTerrain::AddNode(vtNodeBase *pNode)
  *
  * \sa AddNode
  */
-bool vtTerrain::AddNodeToLodGrid(vtTransform *pTrans)
+bool vtTerrain::AddNodeToVegGrid(vtTransform *pTrans)
 {
-	if (m_pLodGrid)
-		return m_pLodGrid->AppendToGrid(pTrans);
-	else
+	if (!m_pVegGrid)
 		return false;
+	return m_pVegGrid->AppendToGrid(pTrans);
+}
+
+/**
+ * Adds a node to the terrain.
+ * The node will be added to the LOD Grid of the terrain, so it will be
+ * culled when it is far from the viewer.  This is usually desirable when
+ * the models are complicated or there are lot of them.
+ *
+ * There is another form of this method which takes a vtGeom node instead.
+ *
+ * \sa AddNode
+ */
+bool vtTerrain::AddNodeToStructGrid(vtTransform *pTrans)
+{
+	if (!m_pStructGrid)
+		return false;
+	return m_pStructGrid->AppendToGrid(pTrans);
 }
 
 /**
@@ -1670,17 +1714,16 @@ bool vtTerrain::AddNodeToLodGrid(vtTransform *pTrans)
  *
  * \sa AddNode
  */
-bool vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
+bool vtTerrain::AddNodeToStructGrid(vtGeom *pGeom)
 {
-	if (m_pLodGrid)
-		return m_pLodGrid->AppendToGrid(pGeom);
-	else
+	if (!m_pStructGrid)
 		return false;
+	return m_pStructGrid->AppendToGrid(pGeom);
 }
 
 
-void vtTerrain::RemoveNodeFromLodGrid(vtNodeBase *pNode)
+void vtTerrain::RemoveNodeFromStructGrid(vtNodeBase *pNode)
 {
-	if (m_pLodGrid)
-		m_pLodGrid->RemoveNodeFromGrid(pNode);
+	if (m_pStructGrid)
+		m_pStructGrid->RemoveNodeFromGrid(pNode);
 }

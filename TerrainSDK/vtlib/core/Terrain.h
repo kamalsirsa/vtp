@@ -106,11 +106,6 @@ public:
 	/// add a model (or any node) to the terrain
 	void AddNode(vtNodeBase *pNode);
 
-	/// add a model (or any node) to the LOD grid of the terrain
-	bool AddNodeToLodGrid(vtTransform *pTrans);
-	bool AddNodeToLodGrid(vtGeom *pGeom);
-	void RemoveNodeFromLodGrid(vtNodeBase *pNode);
-
 	/// place a model on the terrain
 	void PlantModel(vtTransform *model);
 	/// place a model on the terrain at a specific point
@@ -141,6 +136,7 @@ public:
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void SetPlantList(vtPlantList3d *pPlantList) { m_pPlantList = pPlantList; }
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
+	bool AddNodeToVegGrid(vtTransform *pTrans);
 
 	// structures
 	vtStructureArray3d *GetStructures();
@@ -151,6 +147,9 @@ public:
 	void DeleteSelectedStructures();
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest);
+	bool AddNodeToStructGrid(vtTransform *pTrans);
+	bool AddNodeToStructGrid(vtGeom *pGeom);
+	void RemoveNodeFromStructGrid(vtNodeBase *pNode);
 
 	// overridable by subclasses to extend culture
 	virtual void CreateCustomCulture(bool bDoSound);
@@ -211,7 +210,8 @@ protected:
 	bool CreateFromTIN(int &iError);
 	bool CreateFromGrid(int &iError);
 	void create_roads(vtString strRoadFile);
-	void setup_LodGrid(float fLODDistance);
+	void _SetupVegGrid(float fLODDistance);
+	void _SetupStructGrid(float fLODDistance);
 	void create_textures();
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
@@ -244,7 +244,6 @@ protected:
 	// data grids
 	vtElevationGrid	*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField3d	*m_pHeightField;
-	vtLodGrid		*m_pLodGrid;
 	bool			m_bPreserveInputGrid;
 
 	// if we're switching between multiple terrains, we can remember where
@@ -256,10 +255,11 @@ protected:
 
 	// built structures, e.g. buildings and fences
 	Array<vtStructureArray3d *> m_StructureSet;
-	int m_iStructSet;
+	int				m_iStructSet;
+	vtLodGrid		*m_pStructGrid;
 
-	vtMaterialArray		*m_pTerrApps1;	// for 'regular' terrain
-	vtMaterialArray		*m_pTerrApps2;	// for dynamic LOD terrain
+	vtMaterialArray	*m_pTerrApps1;	// for 'regular' terrain
+	vtMaterialArray	*m_pTerrApps2;	// for dynamic LOD terrain
 
 	// roads
 	vtGroup			*m_pRoadGroup;
@@ -267,18 +267,19 @@ protected:
 
 	// plants
 	vtPlantInstanceArray3d	m_PIA;
-	vtGroup				*m_pTreeGroup;
-	vtPlantList3d		*m_pPlantList;
+	vtPlantList3d	*m_pPlantList;
+	vtGroup			*m_pVegGroup;
+	vtLodGrid		*m_pVegGrid;
 
 	// routes
 	vtRouteMap		m_Routes;
 
 	// ground texture
-	vtDIB				*m_pDIB;
-	Array<vtImagePtr>	m_Images;
-	vtImage				*m_pImage;
+	vtDIB			*m_pDIB;
+	Array<vtImage*>	m_Images;
+	vtImage			*m_pImage;
 
-	FSphere			m_bound_sphere;		// bounding sphere of terrain
+	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)
 	RGBf			m_ocean_color;
 	vtString		m_strParamFile;
