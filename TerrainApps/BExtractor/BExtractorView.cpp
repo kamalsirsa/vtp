@@ -782,7 +782,8 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 			m_bRubber = false;
 			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1], rectPoint1);
 			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 2], rectPoint2);
-			roadSectionRect.SetRect(rectPoint1.x, rectPoint1.y, rectPoint2.x, rectPoint2.y);
+			roadSectionRect.SetRect(rectPoint1.x, rectPoint1.y,
+				rectPoint2.x, rectPoint2.y);
 			roadSectionRect.NormalizeRect();
 			InvalidateRect(roadSectionRect);
 			m_pCurrentRoad = NULL;
@@ -795,7 +796,8 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 			m_p0 = m_p1 = point;
 			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1], rectPoint1);
 			UTM_s((*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 2], rectPoint2);
-			roadSectionRect.SetRect(rectPoint1.x, rectPoint1.y, rectPoint2.x, rectPoint2.y);
+			roadSectionRect.SetRect(rectPoint1.x, rectPoint1.y,
+				rectPoint2.x, rectPoint2.y);
 			roadSectionRect.NormalizeRect();
 			InvalidateRect(roadSectionRect);
 		}
@@ -1018,7 +1020,8 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 		DPoint2 UTM_start, UTM_end;
 		UTM_start = m_downLocation;
 
-		//cycle through the current buildings, removing any that are in the selected area
+		// cycle through the current buildings, removing any that are in the
+		// selected area
 		MopRemove(UTM_start, imagepoint);
 	}
 }
@@ -1691,14 +1694,17 @@ void BExtractorView::OnFunctionsConvolve()
 	CPaintDC cDC(this), *pDC = &cDC;
 	//convert IPLImage -> DIB
 	CDib ResultDib;
-	ResultDib.Setup(pDC, bm->GetWidth(), bm->GetHeight(), 8, GetDocument()->m_hdd);
+	ResultDib.Setup(pDC, bm->GetWidth(), bm->GetHeight(), 8,
+		GetDocument()->m_hdd);
 
-	iplConvertToDIBSep(i1, ResultDib.GetDIBHeader(), (char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
+	iplConvertToDIBSep(i1, ResultDib.GetDIBHeader(),
+		(char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
 
-	//distinguish individual buildings and label them
+	// Distinguish individual buildings and label them
 	doc->FloodFillDIB(&ResultDib);
 
-	//loop through the building coordinates, remove any that are too close to one another
+	// Loop through the building coordinates, remove any that are too close
+	// to one another
 	int l;
 	int num = doc->m_Buildings.GetSize();
 	bool match = false;
@@ -1717,7 +1723,8 @@ void BExtractorView::OnFunctionsConvolve()
 				vtBuilding *bld2 = doc->m_Buildings.GetAt(l)->GetBuilding();
 				bld2->GetBaseLevelCenter(point2);
 
-				if ( (fabs(point.x - point2.x) < 11) && (fabs(point.y - point2.y) < 7))
+				if ((fabs(point.x - point2.x) < 11) &&
+					(fabs(point.y - point2.y) < 7))
 					match = true;
 			}
 		}
