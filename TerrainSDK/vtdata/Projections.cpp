@@ -514,11 +514,8 @@ bool vtProjection::WriteProjFile(const char *filename) const
 	if (!fp2)
 		return false;
 
-	// work around GDAL problem: exportToWkt is not yet const
-	OGRSpatialReference *self = (OGRSpatialReference *)this;
-
 	char *wkt;
-	OGRErr err = self->exportToWkt(&wkt);
+	OGRErr err = ((vtProjection*)this)->exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
 	fprintf(fp2, "%s\n", wkt);
@@ -575,11 +572,8 @@ void vtProjection::LogDescription() const
 	VTLOG("Units: %s\n", GetLinearUnitName(lu));
 	VTLOG("WTK: ");
 
-	// work around GDAL problem: exportToWkt is not yet const
-	OGRSpatialReference *self = (OGRSpatialReference *)this;
-
 	char *wkt;
-	OGRErr err = self->exportToWkt(&wkt);
+	OGRErr err = ((vtProjection*)this)->exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		VTLOG("Error\n");
 	else
@@ -861,7 +855,7 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
 	DummyTarget.exportToProj4(&str4);
 
 	char *wkt1, *wkt2;
-	OGRErr err = ((vtProjection *)pSource)->exportToWkt(&wkt1);
+	OGRErr err = pSource->exportToWkt(&wkt1);
 	err = DummyTarget.exportToWkt(&wkt2);
 
 	OGRFree(wkt1);
@@ -879,8 +873,8 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 	{
 		// display debugging information to the log
 		char *wkt1, *wkt2;
-		OGRErr err = ((vtProjection *)pSource)->exportToWkt(&wkt1);
-		err = ((vtProjection *)pTarget)->exportToWkt(&wkt2);
+		OGRErr err = ((vtProjection*)pSource)->exportToWkt(&wkt1);
+		err = ((vtProjection*)pTarget)->exportToWkt(&wkt2);
 		VTLOG(" Converting from: %s\n", wkt1);
 		VTLOG("   Converting to: %s\n", wkt2);
 		OGRFree(wkt1);

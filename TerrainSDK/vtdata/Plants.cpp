@@ -711,12 +711,9 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 
 	fwrite("vf2.0", 6, 1, fp);
 
-	// work around GDAL problem: exportToWkt is not yet const
-	OGRSpatialReference *notconst = (OGRSpatialReference *)(&m_proj);
-
 	// write SRS as WKT
 	char *wkt;
-	OGRErr err = notconst->exportToWkt(&wkt);
+	OGRErr err = m_proj.exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
 	len = strlen(wkt);
