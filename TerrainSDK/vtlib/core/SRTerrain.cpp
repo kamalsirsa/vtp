@@ -179,8 +179,8 @@ void SRTerrain::LoadBlockMaterial(int a, int b)
 		glEnd();
 
 	// each block has it's own texture map
-	int appidx = a*m_iTPatchDim + (m_iTPatchDim-1-b);
-	vtMaterial *pMat = GetMaterial(appidx);
+	int matidx = a*m_iTPatchDim + (m_iTPatchDim-1-b);
+	vtMaterial *pMat = GetMaterial(matidx);
 	if (pMat)
 	{
 		pMat->Apply();

@@ -1061,9 +1061,9 @@ void SMTerrain::LoadSingleMaterial()
 void SMTerrain::LoadBlockMaterial(int a, int b)
 {
 	// each block has it's own texture map
-	int appidx = a*m_iBlockArrayDim + (m_iBlockArrayDim-1-b);
-//	int appidx = a*m_iBlockArrayDim + (b);
-	vtMaterial *pMat = GetMaterial(appidx);
+	int matidx = a*m_iBlockArrayDim + (m_iBlockArrayDim-1-b);
+//	int matidx = a*m_iBlockArrayDim + (b);
+	vtMaterial *pMat = GetMaterial(matidx);
 	if (pMat)
 	{
 		pMat->Apply();

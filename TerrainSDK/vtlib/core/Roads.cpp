@@ -615,7 +615,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 					offset, offset+ROADSIDE_WIDTH,
 					(m_iFlags & RF_SIDEWALK) ? CURB_HEIGHT : 0.0f,
 					ROADSIDE_DEPTH,
-					APPIDX_ROADSIDE,
+					MATIDX_ROADSIDE,
 					0.98f, 0.02f, UV_SCALE_ROAD,
 					ND_UP);
 	}
@@ -1013,16 +1013,16 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 			pR->m_vti = 0;
 			break;
 		case SURFT_GRAVEL:
-//			pR->m_vti = APPIDX_GRAVEL;
+//			pR->m_vti = MATIDX_GRAVEL;
 			pR->m_vti = 0;
 			break;
 		case SURFT_TRAIL:
-//			pR->m_vti = APPIDX_TRAIL;
+//			pR->m_vti = MATIDX_TRAIL;
 			pR->m_vti = 0;
 			break;
 		case SURFT_2TRACK:
 		case SURFT_DIRT:
-//			pR->m_vti = APPIDX_4WD;
+//			pR->m_vti = MATIDX_4WD;
 			pR->m_vti = 0;
 			break;
 		case SURFT_PAVED:
