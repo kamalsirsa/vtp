@@ -39,18 +39,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wxvc_dll"=..\..\APIs\wx2.2.7\src\wxvc_dll.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "xmlhelper"=..\..\TerrainSDK\xmlhelper\xmlhelper.dsp - Package Owner=<4>
 
 Package=<5>
