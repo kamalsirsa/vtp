@@ -192,13 +192,11 @@ bool vtImageLayer::LoadFromGDAL()
 			// being metres elsewhere
 			linearConversionFactor = SpatialReference.GetLinearUnits();
 
-			// Compute sizes in metres along NW/SE axis for compatibility with world files
-			// i.e. xright - xleft and ytop - ybottom
-			m_Area.bottom = (float)(affineTransform[3] * linearConversionFactor);
-			m_Area.top = m_Area.bottom - (float)( - (iPixelWidth * affineTransform[4] + iPixelHeight * affineTransform[5]) * linearConversionFactor);
-			m_Area.left = (float)(affineTransform[0] * linearConversionFactor);
-			m_Area.right = m_Area.left + (float)((iPixelWidth * affineTransform[1] + iPixelHeight * affineTransform[2]) * linearConversionFactor);
-			m_Proj.SetSpatialReference(&SpatialReference);
+			// Compute extent ujsing the top left and bottom right image co-ordinates
+			m_Area.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * iPixelHeight) * linearConversionFactor;
+			m_Area.right = (affineTransform[0] + affineTransform[1] * iPixelWidth /*+ affineTransform[2] * 0*/) * linearConversionFactor;
+			m_Area.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * iPixelHeight) * linearConversionFactor;
+			m_Area.bottom = (affineTransform[3] + affineTransform[4] * iPixelWidth /*+ affineTransform[5] * 0*/) * linearConversionFactor;
 		}
 
 		// Set up bitmap
