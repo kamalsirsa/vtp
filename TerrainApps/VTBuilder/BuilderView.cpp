@@ -818,42 +818,46 @@ void BuilderView::BeginArea()	// in canvas coordinates
 	m_iDragSide = 0;
 	int eps = 10;	// epsilon in pixels
 	wxRect r = WorldToCanvas(area);
-	int diff;
-	diff = abs(m_ui.m_CurPoint.x - r.x);
-	if (diff < eps)
-		m_iDragSide |= 1;
-	diff = abs(m_ui.m_CurPoint.x - (r.x+r.width));
-	if (diff < eps)
-		m_iDragSide |= 2;
-	diff = abs(m_ui.m_CurPoint.y - r.y);
-	if (diff < eps)
-		m_iDragSide |= 4;
-	diff = abs(m_ui.m_CurPoint.y - (r.y+r.height));
-	if (diff < eps)
-		m_iDragSide |= 8;
 
-	// if they didn't click near the box, start a new one
+	int d0 = abs(m_ui.m_CurPoint.x - r.x);
+	int d1 = abs(m_ui.m_CurPoint.x - (r.x+r.width));
+	int d2 = abs(m_ui.m_CurPoint.y - r.y);
+	int d3 = abs(m_ui.m_CurPoint.y - (r.y+r.height));
+
+	if (d0 < eps) m_iDragSide |= 1;
+	if (d1 < eps) m_iDragSide |= 2;
+	if (d2 < eps) m_iDragSide |= 4;
+	if (d3 < eps) m_iDragSide |= 8;
+
 	if (!m_iDragSide)
-		BeginBox();
+	{
+		// if they click inside the box, drag it
+		if (r.Inside(m_ui.m_CurPoint.x, m_ui.m_CurPoint.y))
+			m_iDragSide = 15;
+
+		// if they didn't click near the box, start a new one
+		else
+			BeginBox();
+	}
 }
 
-void BuilderView::DoArea(wxPoint point)	// in canvas coordinates
+void BuilderView::DoArea(wxPoint delta)	// in canvas coordinates
 {
 	wxClientDC dc(this);
 	PrepareDC(dc);
 
 	MainFrame *frame = GetMainFrame();
 
-	DrawAreaTool(&dc, frame->m_area);
+	DrawAreaTool(&dc, frame->m_area);	// erase
 	if (m_iDragSide & 1)
-		frame->m_area.left = ox(point.x);
+		frame->m_area.left += odx(delta.x);
 	if (m_iDragSide & 2)
-		frame->m_area.right = ox(point.x);
+		frame->m_area.right += odx(delta.x);
 	if (m_iDragSide & 4)
-		frame->m_area.top = oy(point.y);
+		frame->m_area.top += ody(delta.y);
 	if (m_iDragSide & 8)
-		frame->m_area.bottom = oy(point.y);
-	DrawAreaTool(&dc, frame->m_area);
+		frame->m_area.bottom += ody(delta.y);
+	DrawAreaTool(&dc, frame->m_area);	// redraw
 }
 
 void BuilderView::InvertAreaTool(const DRECT &rect)
@@ -1279,14 +1283,12 @@ void BuilderView::OnRightUpStructure(vtStructureLayer *pSL)
 
 void BuilderView::OnMouseMove(wxMouseEvent& event)
 {
-//	VTLOG("MouseMove\n");
-
 	wxPoint point = event.GetPosition();
+//	VTLOG("MouseMove(%d %d)\n", point.x, point.y);
 	static wxPoint lastpoint;
 
 	if (point == lastpoint)
 		return;
-	lastpoint = point;
 
 	GetCanvasPosition(event, m_ui.m_CurPoint);
 	object(m_ui.m_CurPoint, m_ui.m_CurLocation);
@@ -1308,7 +1310,7 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 		if (m_bBoxing)
 			DoBox(m_ui.m_CurPoint);
 		if (m_iDragSide)
-			DoArea(m_ui.m_CurPoint);
+			DoArea(point - lastpoint);
 		if (m_ui.mode == LB_Dist)
 		{
 			wxClientDC dc(this);
@@ -1337,6 +1339,8 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 
 	m_ui.m_LastPoint = m_ui.m_CurPoint;
 	m_ui.m_PrevLocation = m_ui.m_CurLocation;
+
+	lastpoint = point;
 }
 
 void BuilderView::OnMouseWheel(wxMouseEvent& event)

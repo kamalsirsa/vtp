@@ -157,7 +157,7 @@ protected:
 	void EndBoxFeatureSelect(const wxMouseEvent& event);
 	void DoBox(wxPoint point);
 	void BeginArea();
-	void DoArea(wxPoint point);
+	void DoArea(wxPoint delta);
 
 	// Line handlers
 	void BeginLine();
