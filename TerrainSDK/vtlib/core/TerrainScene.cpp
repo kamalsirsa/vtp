@@ -361,17 +361,24 @@ void vtTerrainScene::SetTime(const vtTime &time)
 
 vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 {
+	VTLOG("LoadUtilStructure '%s'\n", (const char *)name);
+
 	// Check to see if it's already loaded
 	unsigned int i;
 	for (i = 0; i < m_StructObjs.GetSize(); i++)
 	{
 		if (m_StructObjs[i]->m_sStructName == name)
+		{
+			VTLOG("  already loaded.\n");
 			return m_StructObjs[i];
+		}
 	}
 
 	// If not, look for it in the global content manager
 	vtItem *item = m_Content.FindItemByName(name);
+	VTLOG(item != NULL ? " Item Found.\n" : "Item not found.\n");
 	vtNode *node = m_Content.CreateNodeFromItemname(name);
+	VTLOG(node != NULL ? " Node Loaded.\n" : "Node not Loaded.\n");
 
 	if (node == NULL)
 		return NULL;
@@ -381,6 +388,9 @@ vtUtilStruct *vtTerrainScene::LoadUtilStructure(const vtString &name)
 	stnew->m_pTower = node;
 	stnew->m_pTower->SetName2(name);
 	stnew->m_sStructName = name;
+
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// get wire info
 	for (i = 0; i < item->NumTags(); i++)
