@@ -67,7 +67,6 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 	VTLOG("IcoGlobe::Create\n");
 
 	m_style = style;
-	InitIcosa();
 
 	CreateMaterials(paths, strImagePrefix);
 	EstimateTesselation(iTriangleCount);
@@ -478,7 +477,7 @@ void IcoGlobe::BuildFlatPoint(vtFeatures *feat, int i, float fSize)
 		return;
 
 	FPoint3 offset;
-	GeoToFaceUV(p, face, subface, p_out);
+	GeoToFacePoint(p, face, subface, p_out);
 
 	int mface = GetMFace(face, subface);
 
