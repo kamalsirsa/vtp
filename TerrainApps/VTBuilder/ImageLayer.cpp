@@ -119,8 +119,71 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	wxRect destRect = screenrect;
 	wxRect srcRect(0, 0, m_iXSize, m_iYSize);
 
+	double ratio_x = (double) srcRect.width / destRect.width;
+	double ratio_y = (double) srcRect.height / destRect.height;
+
+	//clip stuff, so we only blit what we need
+	int client_width, client_height;
+	wxPoint client1, client2;
+
+	pView->GetClientSize(&client_width, &client_height); //get client window size
+	pView->CalcUnscrolledPosition(0, 0, &client1.x, &client1.y);
+	pView->CalcUnscrolledPosition(client_width, client_height, &client2.x, &client2.y);
+
+	if ((destRect.x + destRect.width < client1.x) ||
+		(destRect.y + destRect.height < client1.y) ||
+		(destRect.x > client2.x) ||
+		(destRect.y > client2.y))
+		return;		//image completely off screen
+
 	if (bDrawImage)
 	{
+		int diff, diff_source;
+
+		// clip left
+		diff = client1.x - destRect.x;
+		diff_source = (int)(diff * ratio_x); // round to number of whole pixels
+		diff = (int) (diff_source / ratio_x);
+		if (diff > 0)
+		{
+			destRect.x += diff;
+			destRect.width -= diff;
+			srcRect.x += diff_source;
+			srcRect.width -= diff_source;
+		}
+
+		// clip top
+		diff = client1.y - destRect.y;
+		diff_source = (int)(diff * ratio_y); // round to number of whole pixels
+		diff = (int) (diff_source / ratio_y);
+		if (diff > 0)
+		{
+			destRect.y += diff;
+			destRect.height -= diff;
+			srcRect.y += diff_source;
+			srcRect.height -= diff_source;
+		}
+
+		// clip right
+		diff = destRect.x + destRect.width - client2.x;
+		diff_source = (int)(diff * ratio_x); // round to number of whole pixels
+		diff = (int) (diff_source / ratio_x);
+		if (diff > 0)
+		{
+			destRect.width -= diff;
+			srcRect.width -= diff_source;
+		}
+
+		// clip bottom
+		diff = destRect.y + destRect.height - client2.y;
+		diff_source = (int)(diff * ratio_y); // round to number of whole pixels
+		diff = (int) (diff_source / ratio_y);
+		if (diff > 0)
+		{
+			destRect.height -= diff;
+			srcRect.height -= diff_source;
+		}
+		
 #if WIN32
 		// Using StretchBlit is much faster and has less scaling/roundoff
 		//  problems than using the wx method DrawBitmap
@@ -128,13 +191,11 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 		wxDC2 *pDC2 = (wxDC2 *) pDC;
 		pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
-			destRect.width, destRect.height);
+			destRect.width, destRect.height, srcRect.x, srcRect.y,
+			srcRect.width, srcRect.height);
 #else
 		// scale and draw the bitmap
 		// must use SetUserScale since StretchBlt is not available
-		double ratio_x = (double) srcRect.GetWidth() / destRect.GetWidth();
-		double ratio_y = (double) srcRect.GetHeight() / destRect.GetHeight();
-
 		double scale_x = 1.0/ratio_x;
 		double scale_y = 1.0/ratio_y;
 		pDC->SetUserScale(scale_x, scale_y);
