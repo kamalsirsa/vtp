@@ -936,11 +936,16 @@ void vtTerrain::_CreateCulture(bool bSound)
 		else
 		{
 			VTLOG("\tFound: %s\n", (const char *) plants_path);
-			bool success = m_PIA.ReadVF(plants_path);
+
+			bool success;
+			if (!m_Params.m_strVegFile.Right(3).CompareNoCase("shp"))
+				success = m_PIA.ReadSHP(plants_path);
+			else
+				success = m_PIA.ReadVF(plants_path);
 			if (success)
 			{
 				// Create the 3d plants
-				VTLOG("\tLoaded VF file.\n");
+				VTLOG("\tLoaded plants file.\n");
 				int created = m_PIA.CreatePlantNodes();
 				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetSize());
 
