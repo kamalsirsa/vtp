@@ -149,7 +149,7 @@ public:
 	void SetTrans(const FPoint3 &pos);
 
 	/** Get the translation component of the transform */
-	FPoint3 GetTrans();
+	FPoint3 GetTrans() const;
 
 	/** Apply a relative offset (translation) to the transform, in the frame
 		of its parent. */
@@ -363,7 +363,7 @@ public:
 	// vt methods (must be overriden)
 	virtual void DoRender() = 0;
 	virtual void DoCalcBoundBox(FBox3 &box) = 0;
-	virtual void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) = 0;
+	virtual void DoCull(const vtCamera *pCam) = 0;
 
 	// A handy shortcut to the current clipping planes
 	FPlane		*m_pPlanes;
@@ -409,16 +409,16 @@ public:
 	void Release();
 
 	void SetHither(float f);
-	float GetHither();
+	float GetHither() const;
 	void SetYon(float f);
-	float GetYon();
+	float GetYon() const;
 	void SetFOV(float f);
-	float GetFOV();
+	float GetFOV() const;
 
 	void SetOrtho(bool bOrtho);
-	bool IsOrtho();
+	bool IsOrtho() const;
 	void SetWidth(float f);
-	float GetWidth();
+	float GetWidth() const;
 
 	void ZoomToSphere(const FSphere &sphere);
 

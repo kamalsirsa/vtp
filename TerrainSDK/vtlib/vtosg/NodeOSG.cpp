@@ -578,7 +578,7 @@ void vtTransform::Identity()
 	m_pTransform->setMatrix(Matrix::identity());
 }
 
-FPoint3 vtTransform::GetTrans()
+FPoint3 vtTransform::GetTrans() const
 {
 	Vec3 v = m_pTransform->getMatrix().getTrans();
 	return FPoint3(v[0], v[1], v[2]);
@@ -798,7 +798,7 @@ void vtCamera::SetHither(float f)
 	m_fHither = f;
 }
 
-float vtCamera::GetHither()
+float vtCamera::GetHither() const
 {
 	return m_fHither;
 }
@@ -808,7 +808,7 @@ void vtCamera::SetYon(float f)
 	m_fYon = f;
 }
 
-float vtCamera::GetYon()
+float vtCamera::GetYon() const
 {
 	return m_fYon;
 }
@@ -824,7 +824,7 @@ void vtCamera::SetFOV(float fov_x)
 /**
  * Return the camera's horizontal field of view (FOV) in radians.
  */
-float vtCamera::GetFOV()
+float vtCamera::GetFOV() const
 {
 	return m_fFOV;
 }
@@ -841,7 +841,7 @@ void vtCamera::SetOrtho(bool bOrtho)
 	m_bOrtho = bOrtho;
 }
 
-bool vtCamera::IsOrtho()
+bool vtCamera::IsOrtho() const
 {
 	return m_bOrtho;
 }
@@ -851,7 +851,7 @@ void vtCamera::SetWidth(float fWidth)
 	m_fWidth = fWidth;
 }
 
-float vtCamera::GetWidth()
+float vtCamera::GetWidth() const
 {
 	return m_fWidth;
 }
@@ -1128,14 +1128,16 @@ void OsgDynMesh::drawImplementation(State& state) const
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCam = pScene->GetCamera();
 
+#if 0
 	FPoint3 eyepos = pCam->GetTrans();
 	IPoint2 window_size = pScene->GetWindowSize();
 	double fov = pCam->GetFOV();
+#endif
 
 	// setup the culling planes
 	m_pDynGeom->m_pPlanes = pScene->GetCullPlanes();
 
-	m_pDynGeom->DoCull(eyepos, window_size, fov);
+	m_pDynGeom->DoCull(pCam);
 	m_pDynGeom->DoRender();
 
 #if 0
