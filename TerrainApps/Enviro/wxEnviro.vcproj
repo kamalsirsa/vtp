@@ -751,6 +751,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\OptionsDlg.cpp">
+			</File>
+			<File
 				RelativePath="wx\PlantDlg.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1171,6 +1174,9 @@
 			</File>
 			<File
 				RelativePath="wx\menu_id.h">
+			</File>
+			<File
+				RelativePath=".\wx\OptionsDlg.h">
 			</File>
 			<File
 				RelativePath="wx\PlantDlg.h">
