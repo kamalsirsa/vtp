@@ -1159,12 +1159,19 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 
 void vtBuilding::AddDefaultDetails()
 {
+	// requires at least 2 levels to operate
+	int numlevels = GetNumLevels();
+	while (numlevels < 2)
+	{
+		CreateLevel();
+		numlevels = GetNumLevels();
+	}
+
 	// add some default windows/doors
 	vtLevel *lev;
 	vtEdge *edge;
 	int i, j;
-	int levs = m_Levels.GetSize();
-	for (i = 0; i < levs - 1; i++)
+	for (i = 0; i < numlevels - 1; i++)
 	{
 		lev = m_Levels[i];
 		int edges = lev->GetNumEdges();
