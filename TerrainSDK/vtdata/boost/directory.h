@@ -22,6 +22,10 @@
 
 // --------------------------------------------------------------------------
 
+#if _MSC_VER
+#pragma warning( disable : 4786 )
+#endif
+
 #include <iterator>
 #include <string>
 #if defined(sgi) && !defined(__GNUG__)
