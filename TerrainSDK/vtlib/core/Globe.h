@@ -10,6 +10,7 @@
 
 #include "vtdata/Icosa.h"
 #include "vtdata/FilePath.h"
+#include "vtlib/core/TimeEngines.h"
 
 class vtTerrainScene;
 
@@ -27,7 +28,7 @@ struct IcoVert
  *
  * The globe has unit radius.
  */
-class IcoGlobe : public DymaxIcosa
+class IcoGlobe : public DymaxIcosa, public TimeTarget
 {
 public:
 	IcoGlobe();
@@ -50,6 +51,8 @@ public:
 
 	void DoTest(float f);
 	void SetUnfolding(float f);
+	void SetTime(time_t time);
+	void SetCulling(bool bCull);
 
 protected:
 	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
@@ -70,17 +73,18 @@ protected:
 								   bool flip, int depth);
 	void refresh_face_positions(vtMesh *mesh, int mface, float f);
 
-	int		m_red;
-	int		m_yellow;
-
-	vtTransform	*m_top;
-	vtGeom		*m_geom;
-	vtMaterialArray	*m_mats;
-	int		m_globe_mat[10];
-	vtMesh	*m_mesh[22];
-	int		m_mfaces;	// either 20 or 22
-
 	IcoGlobe::Style m_style;
+
+	// Common to all globe styles
+	vtTransform	*m_top;
+	vtGeom		*m_SurfaceGeom;
+	vtMaterialArray	*m_mats;
+	int			m_globe_mat[10];
+	int			m_red;
+	int			m_yellow;
+	int			m_white;
+	vtMesh		*m_mesh[22];
+	int			m_mfaces;	// either 20 or 22
 
 	// for GEODESIC
 	int		m_freq;		// tesselation frequency
@@ -111,4 +115,5 @@ void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p);
 void geo_to_xyz(double radius, const DPoint2 &geo, DPoint3 &p);
 void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo);
 
-#endif
+#endif	// GLOBEH
+

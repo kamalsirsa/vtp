@@ -54,6 +54,9 @@ vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 
 IcoGlobe::IcoGlobe()
 {
+	m_top = NULL;
+	m_SurfaceGeom = NULL;
+	m_mats = NULL;
 }
 
 //
@@ -355,13 +358,17 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImagePrefix)
 {
 	m_mats = new vtMaterialArray();
-	bool bCulling = false;
+	bool bCulling = true;
 	bool bLighting = false;
 
 	m_red = m_mats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
 					 false, false, true);
 	m_yellow = m_mats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
-					 true, false, false);
+					 false, false, false);
+	m_white = m_mats->AddRGBMaterial1(RGBf(0.2f, 0.2f, 0.2f),
+					 true, true, true, 1);
+	vtMaterial *mat = m_mats->GetAt(m_white);
+	mat->SetTransparent(true, true);
 
 	vtString base;
 	vtString fname;
@@ -370,6 +377,11 @@ void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImag
 	int pair, index;
 	for (pair = 0; pair < 10; pair++)
 	{
+		if (strImagePrefix == "")
+		{
+			m_globe_mat[pair] = m_white;
+			continue;
+		}
 		int f1 = icosa_face_pairs[pair][0];
 		int f2 = icosa_face_pairs[pair][1];
 
@@ -393,13 +405,11 @@ void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImag
 			VTLOG("\t\tnot found on data paths.\n");
 			index = -1;
 		}
-
 		index = m_mats->AddTextureMaterial2(fullpath,
 					 bCulling, bLighting,
 					 false, false,				// transp, additive
 					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
 					 false, true, false);		// texgen, clamp, mipmap
-//		g_Log.Printf("\t\tindex: %d\n", index);
 
 		if (index == -1)
 		{
@@ -408,6 +418,16 @@ void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImag
 		}
 		else
 			m_globe_mat[pair] = index;
+	}
+}
+
+void IcoGlobe::SetCulling(bool bCull)
+{
+	int pair;
+	for (pair = 0; pair < 10; pair++)
+	{
+		vtMaterial *mat = m_mats->GetAt(m_globe_mat[pair]);
+		mat->SetCulling(bCull);
 	}
 }
 
@@ -581,6 +601,27 @@ void IcoGlobe::SetUnfolding(float f)
 	m_xform[0]->SetTransform1(m4);
 }
 
+void IcoGlobe::SetTime(time_t time)
+{
+	tm *gmt = gmtime(&time);
+
+	float second_of_day = (gmt->tm_hour * 60 + gmt->tm_min) * 60 + gmt->tm_sec;
+	float fraction_of_day = second_of_day / (24 * 60 * 60);
+	float rotation = fraction_of_day * PI2f;
+
+	// match with actual globe
+	rotation = PI2f + rotation;
+	rotation -= PID2f;
+
+	m_top->Identity();
+
+	// seasonal axis tilt (TODO)
+//	m_top->RotateLocal(FPoint3(1,0,0), tilt);
+
+	// rotation around axis
+	m_top->RotateLocal(FPoint3(0,1,0), rotation);
+}
+
 /**
  * Create the globe's geometry and nodes.
  */
@@ -612,7 +653,10 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 	for (i = 0; i < m_mfaces; i++)
 	{
 		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
-		m_mesh[i]->AllowOptimize(false);
+		if (strImagePrefix == "")
+			m_mesh[i]->AllowOptimize(true);
+		else
+			m_mesh[i]->AllowOptimize(false);
 	}
 
 	m_top = new vtTransform;
@@ -667,6 +711,10 @@ void IcoGlobe::CreateUnfoldableDymax()
 		vtGeom *geom = new vtGeom;
 		m_xform[i]->AddChild(geom);
 
+		vtString str;
+		str.Format("IcoFace %d", i);
+		m_xform[i]->SetName2(str);
+
 		int face = dymax_subfaces[i].face;
 		int subfaces = dymax_subfaces[i].subfaces;
 
@@ -707,14 +755,15 @@ void IcoGlobe::CreateUnfoldableDymax()
 	m_diff = q1 * q2 * q3;
 
 	// Create a geom to contain the surface mesh features
-	m_geom = new vtGeom();
-	m_geom->SetName2("SurfaceGeom");
-	m_geom->SetMaterials(m_mats);
-	m_top->AddChild(m_geom);
+	m_SurfaceGeom = new vtGeom();
+	m_SurfaceGeom->SetName2("SurfaceGeom");
+	m_SurfaceGeom->SetMaterials(m_mats);
+	m_top->AddChild(m_SurfaceGeom);
 
-	TestEngine *test = new TestEngine();
-	test->globe = this;
-	vtGetScene()->AddEngine(test);
+//	TestEngine *test = new TestEngine();
+//	test->SetName2("Globe Test Engine");
+//	test->globe = this;
+//	vtGetScene()->AddEngine(test);
 }
 
 void IcoGlobe::CreateNormalSphere()
@@ -740,18 +789,18 @@ void IcoGlobe::CreateNormalSphere()
 	}
 
 	// Create a geom to contain the meshes
-	m_geom = new vtGeom();
-	m_geom->SetName2("GlobeGeom");
-	m_geom->SetMaterials(m_mats);
+	m_SurfaceGeom = new vtGeom();
+	m_SurfaceGeom->SetName2("GlobeGeom");
+	m_SurfaceGeom->SetMaterials(m_mats);
 
-	m_top->AddChild(m_geom);
+	m_top->AddChild(m_SurfaceGeom);
 
 	for (pair = 0; pair < 10; pair++)
 	{
 		int f1 = icosa_face_pairs[pair][0];
 		int f2 = icosa_face_pairs[pair][1];
-		m_geom->AddMesh(m_mesh[f1], m_globe_mat[pair]);
-		m_geom->AddMesh(m_mesh[f2], m_globe_mat[pair]);
+		m_SurfaceGeom->AddMesh(m_mesh[f1], m_globe_mat[pair]);
+		m_SurfaceGeom->AddMesh(m_mesh[f2], m_globe_mat[pair]);
 	}
 }
 
@@ -1079,7 +1128,7 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 			p2 = pTerr->m_Corners_geo[j];
 			AddSurfaceLineToMesh(mesh, p1, p2);
 		}
-		m_geom->AddMesh(mesh, m_red);
+		m_SurfaceGeom->AddMesh(mesh, m_red);
 	}
 }
 
@@ -1118,5 +1167,4 @@ int IcoGlobe::AddGlobePoints(const char *fname)
 	SHPClose(hSHP);
 	return nEntities;
 }
-
 
