@@ -22,7 +22,7 @@
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
 	VTLOG(" Creating Status Bar.\n");
-	static const int widths[Field_Max] = { -1, 38, 50, 65, 52, 170, 76 };
+	static const int widths[Field_Max] = { -1, 38, 55, 65, 52, 170, 76 };
 
 	SetFieldsCount(Field_Max);
 	SetStatusWidths(Field_Max, widths);
