@@ -1,8 +1,8 @@
 //
 // SRTerrain class : a subclass of vtDynTerrainGeom which exposes
-//  Stephan Roettger's CLOD algorithm.
+//  Stefan Roettger's CLOD algorithm.
 //
-// utilizes: Roettger's MINI library implementation, version 1.7
+// utilizes: Roettger's MINI library implementation
 // http://wwwvis.informatik.uni-stuttgart.de/~roettger
 //
 // Copyright (c) 2002 Virtual Terrain Project
@@ -272,7 +272,7 @@ void SRTerrain::RenderPass()
 	if (diff < -iRange) adjust = 1.0f + (-diff * ADAPTION_SPEED);
 	if (diff > iRange) adjust = 1.0f + (-diff * ADAPTION_SPEED);
 
-	m_fResolution  *=  adjust;
+	m_fResolution *= adjust;
 
 	// keep the error within reasonable bounds
 	if (m_fResolution < 1.0f)
