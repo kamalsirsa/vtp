@@ -6,8 +6,8 @@
 //
 /** \file MathTypes.h */
 
-#ifndef VTDATATYPESH
-#define VTDATATYPESH
+#ifndef VTMATHTYPESH
+#define VTMATHTYPESH
 
 #ifdef _MSC_VER
 #pragma warning( disable : 4786 )
@@ -917,6 +917,7 @@ enum SelectionType
 //
 float random_offset(float x);
 float random(float x);
+int vt_log2(int n);
 bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point);
 bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
 					 const FPoint2 &p3);
@@ -930,4 +931,5 @@ bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
 					   const FPlane &plane3, FPoint3 &result);
 double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &p3);
 
-#endif
+#endif	// VTMATHTYPESH
+
