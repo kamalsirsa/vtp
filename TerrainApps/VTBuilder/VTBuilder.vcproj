@@ -1289,6 +1289,9 @@
 				RelativePath="RawLayer.h">
 			</File>
 			<File
+				RelativePath=".\RenderDlg.h">
+			</File>
+			<File
 				RelativePath="ResampleDlg.h">
 			</File>
 			<File
@@ -1992,6 +1995,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\RenderDlg.cpp">
 			</File>
 			<File
 				RelativePath="ResampleDlg.cpp">
