@@ -1,7 +1,7 @@
 //
 // vtString.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,14 +9,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
-
-#ifndef MIN
-#define	MIN(a, b)	((a) < (b) ? (a) : (b))
-#endif
-
-#ifndef MAX
-#define	MAX(a, b)	((a) > (b) ? (a) : (b))
-#endif
 
 #define InterlockInc(i) (*(i))++
 #define InterlockDec(i) --(*(i))
@@ -52,6 +44,16 @@ vtString::vtString(const vtString& stringSrc)
 	}
 }
 
+// construct from subset of characters from an ANSI string (converts to char)
+vtString::vtString(pcchar lpch, int nLength)
+{
+	Init();
+	if (nLength != 0)
+	{
+		AllocBuffer(nLength);
+		memcpy(m_pchData, lpch, nLength*sizeof(char));
+	}
+}
 
 void vtString::AllocBuffer(int nLen)
 // always allocate one extra character for '\0' termination
@@ -248,21 +250,21 @@ void vtString::ConcatCopy(int nSrc1Len, pcchar szSrc1Data,
 	}
 }
 
-vtString WIN_UNIX_STDCALL operator+(const vtString& string1, const vtString& string2) {
+vtString operator+(const vtString& string1, const vtString& string2) {
 	vtString s;
 	s.ConcatCopy(string1.GetData()->nDataLength, string1.m_pchData,
 		string2.GetData()->nDataLength, string2.m_pchData);
 	return s;
 }
 
-vtString WIN_UNIX_STDCALL operator+(const vtString& string, pcchar lpsz) {
+vtString operator+(const vtString& string, pcchar lpsz) {
 	vtString s;
 	s.ConcatCopy(string.GetData()->nDataLength, string.m_pchData,
 		vtString::SafeStrlen(lpsz), lpsz);
 	return s;
 }
 
-vtString WIN_UNIX_STDCALL operator+(pcchar lpsz, const vtString& string) {
+vtString operator+(pcchar lpsz, const vtString& string) {
 	vtString s;
 	s.ConcatCopy(vtString::SafeStrlen(lpsz), lpsz, string.GetData()->nDataLength,
 		string.m_pchData);
@@ -319,14 +321,14 @@ const vtString& vtString::operator+=(char ch)
 //////////////////////////////////////////////////////////////////////////////
 // less common string expressions
 
-vtString WIN_UNIX_STDCALL operator+(const vtString& string1, char ch)
+vtString operator+(const vtString& string1, char ch)
 {
 	vtString s;
 	s.ConcatCopy(string1.GetData()->nDataLength, string1.m_pchData, 1, &ch);
 	return s;
 }
 
-vtString WIN_UNIX_STDCALL operator+(char ch, const vtString& string)
+vtString operator+(char ch, const vtString& string)
 {
 	vtString s;
 	s.ConcatCopy(1, &ch, string.GetData()->nDataLength, string.m_pchData);
@@ -650,7 +652,7 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 				else
 				{
 				   nItemLen = strlen(pstrNextArg);
-				   nItemLen = MAX(1, nItemLen);
+				   nItemLen = std::max(1, nItemLen);
 				}
 			}
 			break;
@@ -662,7 +664,7 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 				else
 				{
 				   nItemLen = strlen(pstrNextArg);
-				   nItemLen = MAX(1, nItemLen);
+				   nItemLen = std::max(1, nItemLen);
 				}
 			break;
 		}
@@ -670,8 +672,8 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 		// adjust nItemLen for strings
 		if (nItemLen != 0) {
 			if (nPrecision != 0)
-				nItemLen = MIN(nItemLen, nPrecision);
-			nItemLen = MAX(nItemLen, nWidth);
+				nItemLen = std::min(nItemLen, nPrecision);
+			nItemLen = std::max(nItemLen, nWidth);
 		}
 		else
 		{
@@ -686,7 +688,7 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 			case 'o':
 				va_arg(argList, int);
 				nItemLen = 32;
-				nItemLen = MAX(nItemLen, nWidth+nPrecision);
+				nItemLen = std::max(nItemLen, nWidth+nPrecision);
 				break;
 
 			case 'e':
@@ -694,7 +696,7 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 			case 'G':
 				va_arg(argList, double);
 				nItemLen = 128;
-				nItemLen = MAX(nItemLen, nWidth+nPrecision);
+				nItemLen = std::max(nItemLen, nWidth+nPrecision);
 				break;
 
 			case 'f':
@@ -702,13 +704,13 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 				nItemLen = 128; // width isn't truncated
 				// 312 == strlen("-1+(309 zeroes).")
 				// 309 zeroes == max precision of a double
-				nItemLen = MAX(nItemLen, 312+nPrecision);
+				nItemLen = std::max(nItemLen, 312+nPrecision);
 				break;
 
 			case 'p':
 				va_arg(argList, void*);
 				nItemLen = 32;
-				nItemLen = MAX(nItemLen, nWidth+nPrecision);
+				nItemLen = std::max(nItemLen, nWidth+nPrecision);
 				break;
 
 			// no output

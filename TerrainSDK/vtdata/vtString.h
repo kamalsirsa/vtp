@@ -14,16 +14,13 @@
 #include <vector>
 
 #include "config_vtdata.h"
-#include "Array.h"
 
 class wstring2;
 
 #ifdef WIN32
-#  define WIN_UNIX_STDCALL __stdcall
 #  define WIN_UNIX_CDECL __cdecl
 #else
    /*  UNIX doesn't have competing calling conventions to deal with  */
-#  define WIN_UNIX_STDCALL
 #  define WIN_UNIX_CDECL
 #endif
 
@@ -31,12 +28,6 @@ class wstring2;
 #  define stricmp _stricmp   // MBCS/Unicode aware
 #else
 #  define stricmp strcasecmp
-#endif
-
-#ifdef WIN32
-#  define stricoll _stricoll
-#else
-#  define stricoll strcoll	/*  Doesn't exist on UNIX  */
 #endif
 
 // pointer to const char
@@ -70,10 +61,10 @@ public:
 	vtString(const vtString& stringSrc);
 	// from an ANSI string (converts to char)
 	vtString(pcchar lpsz);
-	// subset of characters from an ANSI string (converts to char)
-	vtString(pcchar lpch, int nLength);
 	// from unsigned characters
 	vtString(const unsigned char* psz);
+	// subset of characters from an ANSI string (converts to char)
+	vtString(pcchar lpch, int nLength);
 
 	// Attributes & Operations
 
@@ -113,11 +104,11 @@ public:
 	// concatenate a single character
 	const vtString& operator+=(char ch);
 
-	friend vtString WIN_UNIX_STDCALL operator+(const vtString& string1, const vtString& string2);
-	friend vtString WIN_UNIX_STDCALL operator+(const vtString& string, char ch);
-	friend vtString WIN_UNIX_STDCALL operator+(char ch, const vtString& string);
-	friend vtString WIN_UNIX_STDCALL operator+(const vtString& string, pcchar lpsz);
-	friend vtString WIN_UNIX_STDCALL operator+(pcchar lpsz, const vtString& string);
+	friend vtString operator+(const vtString& string1, const vtString& string2);
+	friend vtString operator+(const vtString& string, char ch);
+	friend vtString operator+(char ch, const vtString& string);
+	friend vtString operator+(const vtString& string, pcchar lpsz);
+	friend vtString operator+(pcchar lpsz, const vtString& string);
 
 	// string comparison
 
@@ -237,30 +228,30 @@ protected:
 	void CopyBeforeWrite();
 	void AllocBeforeWrite(int nLen);
 	void Release();
-	static void WIN_UNIX_STDCALL Release(vtStringData* pData);
-	static size_t WIN_UNIX_STDCALL SafeStrlen(pcchar lpsz);
+	static void Release(vtStringData* pData);
+	static size_t SafeStrlen(pcchar lpsz);
 	static void FreeData(vtStringData* pData);
 	};
 
 // Compare helpers
-bool WIN_UNIX_STDCALL operator==(const vtString& s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator==(const vtString& s1, pcchar s2);
-bool WIN_UNIX_STDCALL operator==(pcchar s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator!=(const vtString& s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator!=(const vtString& s1, pcchar s2);
-bool WIN_UNIX_STDCALL operator!=(pcchar s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator<(const vtString& s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator<(const vtString& s1, pcchar s2);
-bool WIN_UNIX_STDCALL operator<(pcchar s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator>(const vtString& s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator>(const vtString& s1, pcchar s2);
-bool WIN_UNIX_STDCALL operator>(pcchar s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator<=(const vtString& s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator<=(const vtString& s1, pcchar s2);
-bool WIN_UNIX_STDCALL operator<=(pcchar s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator>=(const vtString& s1, const vtString& s2);
-bool WIN_UNIX_STDCALL operator>=(const vtString& s1, pcchar s2);
-bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2);
+bool operator==(const vtString& s1, const vtString& s2);
+bool operator==(const vtString& s1, pcchar s2);
+bool operator==(pcchar s1, const vtString& s2);
+bool operator!=(const vtString& s1, const vtString& s2);
+bool operator!=(const vtString& s1, pcchar s2);
+bool operator!=(pcchar s1, const vtString& s2);
+bool operator<(const vtString& s1, const vtString& s2);
+bool operator<(const vtString& s1, pcchar s2);
+bool operator<(pcchar s1, const vtString& s2);
+bool operator>(const vtString& s1, const vtString& s2);
+bool operator>(const vtString& s1, pcchar s2);
+bool operator>(pcchar s1, const vtString& s2);
+bool operator<=(const vtString& s1, const vtString& s2);
+bool operator<=(const vtString& s1, pcchar s2);
+bool operator<=(pcchar s1, const vtString& s2);
+bool operator>=(const vtString& s1, const vtString& s2);
+bool operator>=(const vtString& s1, pcchar s2);
+bool operator>=(pcchar s1, const vtString& s2);
 
 // Globals
 extern pcchar _vtPchNil;
@@ -290,7 +281,7 @@ inline bool vtString::IsEmpty() const
 	{ return GetData()->nDataLength == 0; }
 inline vtString::operator pcchar() const
 	{ return m_pchData; }
-inline size_t WIN_UNIX_STDCALL vtString::SafeStrlen(pcchar lpsz)
+inline size_t vtString::SafeStrlen(pcchar lpsz)
 	{ return (lpsz == NULL) ? 0 : strlen(lpsz); }
 
 // string comparison
@@ -308,41 +299,41 @@ inline char vtString::operator[](int nIndex) const
 	// same as GetAt
 	return m_pchData[nIndex];
 }
-inline bool WIN_UNIX_STDCALL operator==(const vtString& s1, const vtString& s2)
+inline bool operator==(const vtString& s1, const vtString& s2)
 	{ return s1.Compare(s2) == 0; }
-inline bool WIN_UNIX_STDCALL operator==(const vtString& s1, pcchar s2)
+inline bool operator==(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) == 0; }
-inline bool WIN_UNIX_STDCALL operator==(pcchar s1, const vtString& s2)
+inline bool operator==(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) == 0; }
-inline bool WIN_UNIX_STDCALL operator!=(const vtString& s1, const vtString& s2)
+inline bool operator!=(const vtString& s1, const vtString& s2)
 	{ return s1.Compare(s2) != 0; }
-inline bool WIN_UNIX_STDCALL operator!=(const vtString& s1, pcchar s2)
+inline bool operator!=(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) != 0; }
-inline bool WIN_UNIX_STDCALL operator!=(pcchar s1, const vtString& s2)
+inline bool operator!=(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) != 0; }
-inline bool WIN_UNIX_STDCALL operator<(const vtString& s1, const vtString& s2)
+inline bool operator<(const vtString& s1, const vtString& s2)
 	{ return s1.Compare(s2) < 0; }
-inline bool WIN_UNIX_STDCALL operator<(const vtString& s1, pcchar s2)
+inline bool operator<(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) < 0; }
-inline bool WIN_UNIX_STDCALL operator<(pcchar s1, const vtString& s2)
+inline bool operator<(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) > 0; }
-inline bool WIN_UNIX_STDCALL operator>(const vtString& s1, const vtString& s2)
+inline bool operator>(const vtString& s1, const vtString& s2)
 	{ return s1.Compare(s2) > 0; }
-inline bool WIN_UNIX_STDCALL operator>(const vtString& s1, pcchar s2)
+inline bool operator>(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) > 0; }
-inline bool WIN_UNIX_STDCALL operator>(pcchar s1, const vtString& s2)
+inline bool operator>(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) < 0; }
-inline bool WIN_UNIX_STDCALL operator<=(const vtString& s1, const vtString& s2)
+inline bool operator<=(const vtString& s1, const vtString& s2)
 	{ return s1.Compare(s2) <= 0; }
-inline bool WIN_UNIX_STDCALL operator<=(const vtString& s1, pcchar s2)
+inline bool operator<=(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) <= 0; }
-inline bool WIN_UNIX_STDCALL operator<=(pcchar s1, const vtString& s2)
+inline bool operator<=(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) >= 0; }
-inline bool WIN_UNIX_STDCALL operator>=(const vtString& s1, const vtString& s2)
+inline bool operator>=(const vtString& s1, const vtString& s2)
 	{ return s1.Compare(s2) >= 0; }
-inline bool WIN_UNIX_STDCALL operator>=(const vtString& s1, pcchar s2)
+inline bool operator>=(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) >= 0; }
-inline bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2)
+inline bool operator>=(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) <= 0; }
 
 // helpers
