@@ -1468,21 +1468,31 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	DPoint2 eoffset;
 	g_Conv.ConvertVectorToEarth(g_Options.m_fSelectionCutoff, 0, eoffset);
 	double epsilon = eoffset.x;
+	VTLOG("Click, epsilon %lf, ", epsilon);
 
+	// Check Structures
 	int structure;		// index of closest structure
 	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1);
-	vtStructureArray3d *structures_picked = pTerr->GetStructures();
+	if (result1)
+		VTLOG("structure at dist %lf, ", dist1);
 
+	// Check Plants
 	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 	plants.VisualDeselectAll();
 	m_bSelectedPlant = false;
 
-	int plant;		// index of closest plant
-	plant = plants.FindClosestPoint(gpos, epsilon);
+	// find index of closest plant
+	int plant = plants.FindClosestPoint(gpos, epsilon);
 	bool result2 = (plant != -1);
 	if (result2)
+	{
 		dist2 = (gpos - plants.GetPoint(plant)).Length();
+		VTLOG("plant at dist %lf, ", dist2);
+	}
+	else
+		dist2 = 1E9;
 
+	// Check Routes
 	vtRouteMap &routes = pTerr->GetRouteMap();
 	m_bSelectedUtil = false;
 	bool result3 = routes.FindClosestUtilNode(gpos, epsilon, m_pSelRoute,
@@ -1494,6 +1504,8 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 
 	if (click_struct)
 	{
+		VTLOG(" struct is closest.\n");
+		vtStructureArray3d *structures_picked = pTerr->GetStructures();
 		vtStructure *str = structures_picked->GetAt(structure);
 		vtStructure3d *str3d = structures_picked->GetStructure3d(structure);
 		str->Select(true);
@@ -1515,17 +1527,21 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 			RefreshLayerView();
 		}
 	}
-	if (click_plant)
+	else if (click_plant)
 	{
+		VTLOG(" plant is closest.\n");
 		plants.VisualSelect(plant);
 		m_bDragging = true;
 		m_bSelectedPlant = true;
 	}
-	if (click_route)
+	else if (click_route)
 	{
 		m_bDragging = true;
 		m_bSelectedUtil = true;
 	}
+	else
+		VTLOG(" nothing.\n");
+
 	m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	m_MouseDown = event.pos;
 }
