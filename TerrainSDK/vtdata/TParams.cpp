@@ -96,6 +96,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_FOGCOLOR, "-1 -1 -1");	// unset
 
 	AddTag(STR_STRUCTDIST, "2000");		// 2 km
+	AddTag(STR_CONTENT_FILE, "");
 
 	AddTag(STR_TOWERS, "false");
 	AddTag(STR_TOWERFILE, "");
@@ -281,6 +282,8 @@ bool TParams::LoadFromIniFile(const char *filename)
 		}
 		else if (strcmp(buf, STR_STRUCTDIST) == 0)
 			SetValueString(buf, get_line_from_stream(input));
+		else if (strcmp(buf, STR_CONTENT_FILE) == 0)
+			SetValueString(buf, get_line_from_stream(input));
 
 		// sky and ocean
 		else if (strcmp(buf, STR_SKY) == 0 ||
@@ -332,18 +335,15 @@ bool TParams::LoadFromIniFile(const char *filename)
 	int iVegDistance = GetValueInt(STR_VEGDISTANCE);
 	if (iVegDistance > 0 && iVegDistance < 20)	// surely an old km value
 		SetValueInt(STR_VEGDISTANCE, iVegDistance * 1000);
+	ConvertOldTimeValue();
 
 	SetValueRGBi(STR_FOGCOLOR, fog_color);
 
 	return true;
 }
 
-bool TParams::LoadFromXML(const char *fname)
+void TParams::ConvertOldTimeValue()
 {
-	VTLOG("\tReading TParams from '%s'\n", fname);
-
-	bool success = vtTagArray::LoadFromXML(fname);
-
 	// Convert old time values to new values
 	const char *str = GetValueString(STR_INITTIME);
 	if (str)
@@ -357,6 +357,16 @@ bool TParams::LoadFromXML(const char *fname)
 			SetValueString(STR_INITTIME, time.GetAsString());
 		}
 	}
+}
+
+bool TParams::LoadFromXML(const char *fname)
+{
+	VTLOG("\tReading TParams from '%s'\n", fname);
+
+	bool success = vtTagArray::LoadFromXML(fname);
+
+	// Convert old time values to new values
+	ConvertOldTimeValue();
 
 	return success;
 }

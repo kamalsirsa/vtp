@@ -78,6 +78,7 @@ public:
 
 private:
 	bool LoadFromIniFile(const char *fname);
+	void ConvertOldTimeValue();
 };
 
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
@@ -138,6 +139,7 @@ private:
 
 #define STR_STRUCTFILE	 "Structure_File"
 #define STR_STRUCTDIST	 "Structure_Distance"
+#define STR_CONTENT_FILE "Content_File"
 
 #define STR_TOWERS "Trans_Towers"
 #define	STR_TOWERFILE "Tower_File"
