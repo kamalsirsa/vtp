@@ -58,7 +58,6 @@ bool vtTransitLayer::OnLoad()
 
 	KludgeRefPosApply(true);
 
-	m_proj.SetUTM(true);
 	m_proj.SetUTMZone(10);
 
 	CloseProgressDialog();
