@@ -4,7 +4,7 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3d geometry of the buildings.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,7 @@
 #include "Building3d.h"
 #include "Terrain.h"
 
-// An array of materials, shared by all buildings.
+// There is a single array of materials, shared by all buildings.
 // This is done to save memory.  For a list of 16000+ buildings, this can
 //  save about 200MB of RAM.
 vtMaterialArray *vtBuilding3d::s_Materials = NULL;
@@ -32,9 +32,16 @@ RGBf vtBuilding3d::s_Colors[COLOR_SPREAD];
 #define BRICK_MAT2			BRICK_MAT1 + 1
 #define PBRICK_MAT_START	BRICK_MAT2 + 1
 #define PBRICK_MAT_END		PBRICK_MAT_START + COLOR_SPREAD - 1
-#define WINDOWWALL_MAT_START PBRICK_MAT_END + 1
+#define RROOFING_MAT_START	PBRICK_MAT_END + 1
+#define RROOFING_MAT_END	RROOFING_MAT_START + COLOR_SPREAD - 1
+#define WINDOWWALL_MAT_START RROOFING_MAT_END + 1
 #define WINDOWWALL_MAT_END	WINDOWWALL_MAT_START + COLOR_SPREAD - 1
 #define HIGHLIGHT_MAT		WINDOWWALL_MAT_END + 1
+
+//
+// Each textured material has a different scale (ratio of texels to meters)
+//
+static float s_MatScaleUV[TOTAL_BUILDING_MATS];
 
 //
 // Helper to make a material
@@ -171,7 +178,18 @@ void vtBuilding3d::CreateSharedMaterials()
 		s_Materials->Append(pMat);
 	}
 
-	// create window-wall materials (bright colors only)
+	// rolled roofing material: no brick color, can be colorized for any shade
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/roofing1_256.bmp");
+	vtImage *pRolledRoofing = new vtImage(path);
+	for (i = 0; i < COLOR_SPREAD; i++)
+	{
+		pMat = makeMaterial(s_Colors[i], true);
+		pMat->SetTexture(pRolledRoofing);
+		pMat->SetClamp(false);
+		s_Materials->Append(pMat);
+	}
+
+	// create window-wall materials
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
 	vtImage *pImageWindowWall = new vtImage(path);
 	for (i = 0; i < COLOR_SPREAD; i++)
@@ -191,8 +209,24 @@ void vtBuilding3d::CreateSharedMaterials()
 		1 + 1 + 1 + 1 +		// window, door, wood, cement
 		1 + 1 +				// brick1, brick2
 		COLOR_SPREAD + COLOR_SPREAD +	// painted brick, window-wall
+		COLOR_SPREAD +		// rolled roofing
 		1 + 1;				// highlight colors
 	assert(total == expectedtotal);
+
+	// Set material UV scales
+	s_MatScaleUV[BMAT_PLAIN] = 1.0f;
+	s_MatScaleUV[BMAT_WOOD] = 0.6f;
+	s_MatScaleUV[BMAT_SIDING] = 1.0f;
+	s_MatScaleUV[BMAT_GLASS] = 1.0f;
+	s_MatScaleUV[BMAT_BRICK] = 0.8f;
+	s_MatScaleUV[BMAT_PAINTED_BRICK] = 0.8f;
+	s_MatScaleUV[BMAT_ROLLED_ROOFING] = 0.1f;
+	s_MatScaleUV[BMAT_CEMENT] = 1.0f;
+	s_MatScaleUV[BMAT_STUCCO] = 1.0f;
+	s_MatScaleUV[BMAT_CORRUGATED] = 1.0f;
+	s_MatScaleUV[BMAT_DOOR] = 1.0f;
+	s_MatScaleUV[BMAT_WINDOW] = 1.0f;
+	s_MatScaleUV[BMAT_WINDOWWALL] = 1.0f;
 }
 
 void vtBuilding3d::FindMaterialIndices()
@@ -685,6 +719,10 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 		uv1.Set(u1, 0);
 		uv2.Set(u2, v2);
 		uv3.Set(u3, v2);
+		uv0 *= s_MatScaleUV[bmat];
+		uv1 *= s_MatScaleUV[bmat];
+		uv2 *= s_MatScaleUV[bmat];
+		uv3 *= s_MatScaleUV[bmat];
 	}
 
 	int start =
@@ -780,9 +818,10 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 	FPoint3 up(0.0f, 1.0f, 0.0f);	// vector pointing up
 	int corners = pp.GetSize();
 	int i, j;
+	FPoint2 uv;
 
-	vtMesh *mesh = FindMatMesh(pLev->m_Edges[0]->m_Material,
-		pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
+	BldMaterial bmat = pLev->m_Edges[0]->m_Material;
+	vtMesh *mesh = FindMatMesh(bmat, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
 
 	if (corners > 4)
 	{
@@ -812,7 +851,9 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 			{
 				gp = result[i*3+j];
 				p.Set(gp.x, roof_y, gp.y);
-				ind[j] = mesh->AddVertexN(p, up);
+				uv.Set(gp.x, gp.y);
+				uv *= s_MatScaleUV[bmat];
+				ind[j] = mesh->AddVertexNUV(p, up, uv);
 			}
 			mesh->AddTri(ind[0], ind[2], ind[1]);
 		}
@@ -823,7 +864,9 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 		for (i = 0; i < corners; i++)
 		{
 			FPoint3 p = pp[i];
-			idx[i] = mesh->AddVertexN(p, up);
+			uv.Set(p.x, p.z);
+			uv *= s_MatScaleUV[bmat];
+			idx[i] = mesh->AddVertexNUV(p, up, uv);
 		}
 		if (corners > 2)
 			mesh->AddTri(idx[0], idx[1], idx[2]);
@@ -994,6 +1037,10 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 	case BMAT_PAINTED_BRICK:
 		start = PBRICK_MAT_START;
 		end = PBRICK_MAT_END;
+		break;
+	case BMAT_ROLLED_ROOFING:
+		start = RROOFING_MAT_START;
+		end = RROOFING_MAT_END;
 		break;
 	}
 
