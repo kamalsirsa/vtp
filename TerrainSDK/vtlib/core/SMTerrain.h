@@ -11,10 +11,29 @@
 #include <limits.h>
 #include "DynTerrain.h"
 
+// Configure the implementation with the following definitions:
+
+// Converts all elevation values to signed short integers, such that each
+// unit = 0.25 meters.  The range of a short (*/-32768) allows an elevation
+// range of +/- 8000 meters, which is enough for all the topography on Earth.
 #define INTEGER_HEIGHT		1
+
+// Store the frustum state (out, part in, all in) which each triangle so
+// that they can be drawn with special colors to aid in debugging.
 #define STORE_FRUSTUM		0
+
+// Store the distance to each triangle during the culling pass, so that it
+// can used later for such things as doing an alpha-fade of a detail texture. 
 #define STORE_DISTANCE		1
-#define FAST_ALLOC			0	// use quick (macro, no assert) triangle stack
+
+// Use quick (macro, no assert) triangle stack, may give performance increase
+// (not compatible with STORE_FRUSTUM)
+#define FAST_ALLOC			0
+
+// Pack the variable values into a single byte, using the FP8 macros.
+// This saved memory by 1 byte per heixel.
+#define USE_FP8				1
+
 
 /*
 Seumas says:
@@ -29,20 +48,24 @@ Seumas says:
 */
 
 #if INTEGER_HEIGHT
-typedef short HeightType;
-typedef unsigned char VarianceType;
-typedef int MathType;		// use this type to perform arithmetic on
+  typedef short HeightType;
+  #if USE_FP8
+    typedef unsigned char VarianceType;
+  #else
+    typedef unsigned short VarianceType;
+  #endif
+  typedef int MathType;		// use this type to perform arithmetic on
 							// the heights and variances
 #else
-typedef float HeightType;
-typedef float VarianceType;
-typedef float MathType;
+  typedef float HeightType;
+  typedef float VarianceType;
+  typedef float MathType;
 #endif
 
 #if STORE_FRUSTUM
-#define SetFrust(t, i) (t)->m_frust = i
+  #define SetFrust(t, i) (t)->m_frust = i
 #else
-#define SetFrust(t, i)
+  #define SetFrust(t, i)
 #endif
 
 #define FRUST_OUT		0
