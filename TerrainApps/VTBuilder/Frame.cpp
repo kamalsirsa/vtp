@@ -150,7 +150,7 @@ void MainFrame::SetupUI()
 			wxTR_HAS_VARIABLE_ROW_HEIGHT |
 #endif
 			wxNO_BORDER);
-	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
+//	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
 	CreateView();
 	m_pView->SetBackgroundColour(*wxLIGHT_GREY);
