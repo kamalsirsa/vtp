@@ -169,7 +169,7 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 
 void vtGLCanvas::OnChar(wxKeyEvent& event)
 {
-	long key = event.KeyCode();
+	long key = event.GetKeyCode();
 
 	if ( key == WXK_ESCAPE || key == 'q' || key == 'Q' )
 		wxGetApp().GetTopWindow()->Close();
