@@ -248,13 +248,13 @@ bool CreateScene()
 
 	// Add the terrain to the scene, and contruct it
 	ts->AppendTerrain(pTerr);
-	if (!pTerr->CreateScene())
+	if (!ts->BuildTerrain(pTerr))
 	{
 		AfxMessageBox("Terrain creation failed.");
 		return false;
 	}
 
-	ts->SetTerrain(pTerr);
+	ts->SetCurrentTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
 	// Flight speed is 500 m/frame

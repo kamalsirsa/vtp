@@ -78,14 +78,14 @@ bool vtApp::CreateScene()
 	// Add the terrain to the scene, and contruct it
 	m_pTerrainScene->AppendTerrain(pTerr);
 	int iError;
-	if (!pTerr->CreateScene())
+	if (!m_pTerrainScene->BuildTerrain(pTerr))
 	{
 		m_frame->m_canvas->m_bRunning = false;
 		wxMessageBox("Couldn't create the terrain.  Perhaps the elevation\n"
 			"data file isn't in the expected location?");
 		return false;
 	}
-	m_pTerrainScene->SetTerrain(pTerr);
+	m_pTerrainScene->SetCurrentTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
 	// Flight speed is 500 m/frame
