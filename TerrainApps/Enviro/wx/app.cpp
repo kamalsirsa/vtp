@@ -258,7 +258,7 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 	TParams Params;
 	if (!Params.LoadFrom(fname))
 	{
-		wxMessageBox("Couldn't load from that file.");
+		wxMessageBox(_T("Couldn't load from that file."));
 		return wxID_CANCEL;
 	}
 	dlg.SetParams(Params);
@@ -271,8 +271,8 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 		vtString ext = GetExtension(fname);
 		if (ext.CompareNoCase(".ini") == 0)
 		{
-			wxMessageBox("Upgrading the .ini to a .xml file.\n"
-				"Please remember to remove the old .ini file.");
+			wxMessageBox(_T("Upgrading the .ini to a .xml file.\n")
+				_T("Please remember to remove the old .ini file."));
 			fname = fname.Left(fname.GetLength()-4) + ".xml";
 		}
 
