@@ -1,5 +1,5 @@
 
-enviro ICON "Enviro.ico"
+enviro ICON "wx/icons/Enviro.ico"
 #include "wx/msw/wx.rc"
 
 camera		BITMAP "bitmap/camera.bmp"
