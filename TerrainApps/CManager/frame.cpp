@@ -237,15 +237,6 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	// frame icon
 	SetIcon(wxICON(cmanager));
 
-	// Make a vtGLCanvas
-#ifdef __WXMSW__	// JACS
-	int *gl_attrib = NULL;
-#else
-	int gl_attrib[20] = { GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
-			GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
-			GLX_DOUBLEBUFFER, None };
-#endif
-
 	// splitter
 	m_splitter = new wxSplitterWindow(this, WID_SPLITTER, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D /*| wxSP_LIVE_UPDATE*/);
@@ -259,6 +250,11 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		wxNO_BORDER);
 	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
+	// We definitely want full color and a 24-bit Z-buffer!
+	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
+		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
+
+	// Make a vtGLCanvas
 	m_canvas = new vtGLCanvas(m_splitter, WID_MAINVIEW, wxPoint(0, 0), wxSize(-1, -1),
 		0, _T("vtGLCanvas"), gl_attrib);
 
@@ -687,7 +683,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	{
 		// perhaps it's a relative path
 		vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
-		vtNodeBase *pNode = vtLoadModel(fullpath);
+		pNode = vtLoadModel(fullpath);
 	}
 	if (!pNode)
 	{
@@ -697,7 +693,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 		return NULL;
 	}
 
-	// Wrap in a transform nodeso that we can scale/rotate the node
+	// Wrap in a transform node so that we can scale/rotate the node
 	vtTransform *pTrans = new vtTransform();
 	pTrans->AddChild(pNode);
 
