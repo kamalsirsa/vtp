@@ -32,68 +32,76 @@ wxSizer *ExtentDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("North:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("North"), wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_EXTENT_N, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
-    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+    item2->Add( item4, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 0 );
 
-    item2->Add( item4, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+    wxTextCtrl *item7 = new wxTextCtrl( parent, ID_EXTENT_N, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
+    item6->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("West:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item7->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+    item2->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_EXTENT_W, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
-    item7->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
 
-    item7->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("West"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("East:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item7->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_EXTENT_W, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
+    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item8->Add( 10, 10, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item11 = new wxTextCtrl( parent, ID_EXTENT_E, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
-    item7->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    item8->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item2->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("East"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
+    item2->Add( item8, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("South:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
 
     wxTextCtrl *item14 = new wxTextCtrl( parent, ID_EXTENT_S, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER );
-    item12->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+    item13->Add( item14, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    item2->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    item2->Add( item13, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxCheckBox *item15 = new wxCheckBox( parent, ID_DMS, _("Display coordinates as Degrees-Minutes-Seconds"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("South"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item2->Add( item15, 0, wxALIGN_CENTER, 5 );
+
+    wxCheckBox *item17 = new wxCheckBox( parent, ID_DMS, _("Display coordinates as Degrees-Minutes-Seconds"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item2, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxBoxSizer *item16 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item18 = new wxBoxSizer( wxVERTICAL );
 
-    wxButton *item17 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item19 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item18 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item20 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+    item1->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Origin and Size:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item22 = new wxStaticText( parent, ID_TEXT, _("Origin and Size:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_EXTENT_ALL, wxT(""), wxDefaultPosition, wxSize(310,-1), 0 );
-    item19->Add( item21, 1, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item23 = new wxTextCtrl( parent, ID_EXTENT_ALL, wxT(""), wxDefaultPosition, wxSize(310,-1), 0 );
+    item21->Add( item23, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
