@@ -13,6 +13,9 @@
 
 class vtImage;
 
+/** \addtogroup sg */
+/*@{*/
+
 /**
  * A material is a description of how a surface should be rendered.  For a
  * good description of how Materials work, see the opengl.org website or
@@ -234,6 +237,8 @@ protected:
 	//  to ensure that reference counting is respected.
 	~vtTextMesh();
 };
+
+/*@}*/	// Group sg
 
 #endif	// VTOSG_MESHMATH
 
