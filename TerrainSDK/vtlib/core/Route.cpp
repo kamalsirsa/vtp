@@ -4,7 +4,7 @@
 // Creates a route (a series of utility structures, e.g. an electrical
 // transmission line), creates geometry, drapes on a terrain
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -13,20 +13,13 @@
 #include "Light.h"
 #include "Route.h"
 #include "Terrain.h"
+#include "TerrainScene.h"
 
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
 #define CATENARY_FACTOR		140.0
 
 vtMaterialArray *vtRoute::m_pRouteMats = NULL;
-
-///////////////////
-
-vtUtilStruct::vtUtilStruct()
-{
-	m_pTower = NULL;
-	m_iNumWires = 0;
-}
 
 ///////////////////
 
@@ -64,20 +57,22 @@ vtRoute::~vtRoute()
 	unsigned int i;
 	for (i = 0; i < m_Nodes.GetSize(); i++)
 		delete m_Nodes[i];
-	for (i = 0; i < m_StructObjs.GetSize(); i++)
-		delete m_StructObjs[i];
 }
 
 void vtRoute::AddPoint(const DPoint2 &epos, const char *structname)
 {
-	vtUtilNode *st =  new vtUtilNode;
-	st->m_Point = epos;
-	st->m_sStructName = structname;
+	vtUtilNode *node =  new vtUtilNode;
+	node->m_Point = epos;
+	node->m_sStructName = structname;
 
-	m_Nodes.Append(st);
+	m_Nodes.Append(node);
 	Dirty();
 
-	_LoadStructure(st);
+	// Load structure for the indicated node.
+	// sPath identifies the path to the Route data
+	vtUtilStruct *struc = vtGetTS()->LoadUtilStructure(node->m_sStructName);
+	if (struc)
+		node->m_struct = struc;
 }
 
 //
@@ -264,14 +259,14 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 		pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
 
 		offset = st0->m_fpWireAtt1[j];
-		rot.AxisAngle(axisY, n0->dRadAzimuth - PID2f);
+		rot.AxisAngle(axisY, n0->dRadAzimuth);
 		rot.Transform(offset, wire0);
 		FPoint3 wire_start = fp0 + wire0;
 
 		pWireMesh->AddVertex(wire_start);
 
 		offset = st1->m_fpWireAtt2[j];
-		rot.AxisAngle(axisY, n1->dRadAzimuth - PID2f);
+		rot.AxisAngle(axisY, n1->dRadAzimuth);
 		rot.Transform(offset, wire1);
 		FPoint3 wire_end = fp1 + wire1;
 
@@ -285,99 +280,7 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 	}
 }
 
-UtilStructName s_Names[NUM_STRUCT_NAMES] =
-{
-	// brief name, full name, filename
-	{ "A1", "Steel Poles Tangent", "a1" },
-	{ "A2", "Guyed Tangent", "a2" },
-	{ "A3", "Light Angle", "a3" },
-	{ "A4", "Medium Angle", "a4" },
-
-	{ "A5", "Heavy Angle", "a5" },
-	{ "A6", "Large Angle Deadend", "a6" },
-	{ "A7", "Light Angle Deadend", "a7" },
-	{ "L1", "Lattice Tower", "l1" },
-	{ "L2", "Lattice Deadend", "l2" },
-
-	{ "H1", "H-Frame Tangent", "h1" },
-	{ "H2", "H-Frame Guyed Tangent", "h2" },
-	{ "H3", "H-Frame Hold Down", "h3" },
-	{ "H4", "H-Frame Large Angle Deadend", "h4" },
-	{ "H5", "H-Frame Light Angle Deadend", "h5" }
-};
-
-bool vtRoute::_LoadStructure(vtUtilNode *node)
-{
-	// Load structure for the indicated node.
-	// sPath identifies the path to the Route data
-	vtString sname = node->m_sStructName;
-
-	vtString sStructureDataPath = "Culture/UtilityStructures/";
-	vtString sStructure = sStructureDataPath;
-	vtString sWires;
-
-	// Check to see if it's already loaded
-	unsigned int i;
-	for (i = 0; i < m_StructObjs.GetSize(); i++)
-	{
-		if (m_StructObjs[i]->m_sStructName == sname)
-		{
-			node->m_struct = m_StructObjs[i];
-			return true;
-		}
-	}
-
-	// If not, look for it in the list of known structure types
-	for (i = 0; i < NUM_STRUCT_NAMES; i++)
-	{
-		if (sname.CompareNoCase(s_Names[i].brief) == 0)
-		{
-			sStructure = s_Names[i].filename;
-			sStructure += ".obj";
-			sWires = s_Names[i].filename;
-			sWires += ".wire";
-			break;
-		}
-	}
-	if (i == NUM_STRUCT_NAMES)
-	{
-		// No such structure
-//		return false;
-		sStructure = "test.obj";
-		sWires = "test.wire";
-	}
-	vtString struct_file = FindFileOnPaths(vtTerrain::s_DataPaths,
-		sStructureDataPath + sStructure);
-
-	if (struct_file == "")
-		return false;
-
-	vtUtilStruct *stnew = new vtUtilStruct;
-	stnew->m_pTower = m_pTheTerrain->LoadModel(struct_file);
-	if (!stnew->m_pTower)
-	{
-		delete stnew;
-		return false;
-	}
-	stnew->m_pTower->SetName2(sname);
-
-	// scale to match world units
-	float sc = (float) METERS_PER_FOOT;
-	stnew->m_pTower->Scale3(sc, sc, sc);
-
-	stnew->m_sStructName = sname;
-	int j = m_StructObjs.Append(stnew);
-	node->m_struct = m_StructObjs[j];
-
-	vtString wire_file = FindFileOnPaths(vtTerrain::s_DataPaths,
-		sStructureDataPath + sWires);
-	if (wire_file != "")
-		_WireReader(wire_file, stnew);
-
-	return true;
-}
-
-
+#if 0
 bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
 {
 	// Avoid trouble with '.' and ',' in Europe
@@ -389,6 +292,10 @@ bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
 	if (!f)
 		return false;
 
+	vtString hack = filename;
+	hack += ".txt";
+	FILE *fp =fopen(hack, "wb");
+
 	float height=0;
 	int inumwires=0;
 	if (!feof(f))
@@ -398,27 +305,36 @@ bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
 		fscanf(f, "%d", &inumwires);
 	st->m_iNumWires = inumwires;
 
-	while (!feof(f))
+	for (int i = 0; i < inumwires; i++)
+//	while (!feof(f))
 	{	// read wire positions relative to the tower
+		fprintf(fp, "<wire_info>");
+
 		float a1,a2,a3;
 		FPoint3 fpTemp;
 		fscanf(f, "%f", &a1);
 		fscanf(f, "%f", &a2);
 		fscanf(f, "%f", &a3);
-		fpTemp.Set(-a2, a3, a1);
+		fpTemp.Set(-a1, a3, -a2);
 		fpTemp *= METERS_PER_FOOT;
+		fprintf(fp, "%g, %g, %g", fpTemp.x, fpTemp.y, fpTemp.z);
 		st->m_fpWireAtt1[icount] = fpTemp;
 		fscanf(f, "%f", &a1);
 		fscanf(f, "%f", &a2);
 		fscanf(f, "%f", &a3);
-		fpTemp.Set(-a2, a3, a1);
+		fpTemp.Set(-a1, a3, -a2);
 		fpTemp *= METERS_PER_FOOT;
+		fprintf(fp, ", %g, %g, %g", fpTemp.x, fpTemp.y, fpTemp.z);
 		st->m_fpWireAtt2[icount++] = fpTemp;
+		fprintf(fp, "</wire_info>\n");
 	}
 
+	fclose(fp);
 	fclose(f);
 	return true;
 }
+#endif
+
 
 //
 // Draw catenary curve between conductor attachment points

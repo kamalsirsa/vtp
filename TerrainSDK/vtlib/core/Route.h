@@ -1,7 +1,7 @@
 //
 // Route.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
@@ -9,30 +9,10 @@
 #ifndef ROUTEH
 #define ROUTEH
 
-#define NUM_STRUCT_NAMES 14
-
 class vtHeightField3d;
 class vtTerrain;
 class vtMesh;
-
-/**
- * This class represents a single type of utility structure, such as a
- * telephone power or transmission tower.
- */
-class vtUtilStruct
-{
-public:
-	vtUtilStruct();
-
-	vtTransform*	m_pTower;	// The station may have a tower placed on it
-	vtString m_sStructName;
-
-	// The points at which the wires attach
-	FPoint3 m_fpWireAtt1[7];
-	FPoint3 m_fpWireAtt2[7];
-
-	int m_iNumWires;
-};
+class vtUtilStruct;
 
 /**
  * This class represents a 'node' in a network of utility structures.
@@ -84,7 +64,7 @@ public:
 
 protected:
 	bool _LoadStructure(vtUtilNode *node);
-	bool _WireReader(const char *filename, vtUtilStruct *st);
+	// bool _WireReader(const char *filename, vtUtilStruct *st);
 	void _ComputeStructureRotations();
 	void _CreateStruct(int iNode);
 	void _AddRouteMeshes(vtHeightField3d *pHeightField);
@@ -100,7 +80,6 @@ protected:
 	vtGeom		*m_pWireGeom;
 	vtTerrain	*m_pTheTerrain;
 	Array<vtUtilNode*>		m_Nodes;
-	Array<vtUtilStruct*>	m_StructObjs;
 
 	bool m_bBuilt;
 	bool m_bDirty;
@@ -123,16 +102,5 @@ public:
 					   vtRoute* &route, vtUtilNode* &node, double &closest);
 	void BuildGeometry(vtHeightField3d *pHeightField);
 };
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-struct UtilStructName
-{
-	char *brief;
-	char *full;
-	char *filename;
-};
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 #endif //ROUTEH
