@@ -17,8 +17,11 @@
 #endif
 
 #include "RawLayer.h"
-#include "ScaledView.h"
+#include "BuilderView.h"
 #include "Helper.h"
+#include "Frame.h"
+// Dialogs
+#include "FeatInfoDlg.h"
 
 ////////////////////////////////////////////////////////////////////
 
@@ -309,4 +312,38 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 	}
 }
 
+void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
+{
+	int etype, iEnt;
+	double epsilon = pView->odx(6);  // calculate what 6 pixels is as world coord
 
+	switch (ui.mode)
+	{
+	case LB_AddPoints:
+		AddPoint(ui.m_DownLocation);
+		SetModified(true);
+		pView->Refresh();
+		break;
+	case LB_FeatInfo:
+		etype = GetEntityType();
+		if (etype != SHPT_POINT && etype != SHPT_POINTZ)
+			return;
+
+		iEnt = FindClosestPoint(ui.m_DownLocation, epsilon);
+		if (iEnt != -1)
+		{
+			DPoint2 loc;
+			GetPoint(iEnt, loc);
+			Array<int> found;
+			FindAllPointsAtLocation(loc, found);
+
+			FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
+			fdlg->SetFeatureSet(this);
+			DePickAll();
+			for (int i = 0; i < found.GetSize(); i++)
+				Pick(found[i]);
+			fdlg->ShowPicked();
+		}
+		break;
+	}
+}

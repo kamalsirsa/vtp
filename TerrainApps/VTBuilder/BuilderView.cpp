@@ -26,14 +26,13 @@
 #include "StructLayer.h"
 #include "UtilityLayer.h"
 // Dialogs
-#include "FeatInfoDlg.h"
 #include "DistanceDlg.h"
 
 #include "cpl_error.h"
 
-////////////////////////////////////////////////////////////////
-
 #define BOUNDADJUST 5
+
+////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(BuilderView, vtScaledView)
 	EVT_LEFT_DOWN(BuilderView::OnLeftDown)	
@@ -56,18 +55,19 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 {
 	m_bPanning = false;
 	m_bBoxing = false;
-	m_mode = LB_None;
 	m_iDragSide = 0;
 	m_bCrossSelect = false;
 	m_bMouseMoved = false;
-	m_bLMouseButton = m_bMMouseButton = m_bRMouseButton = false;
 	m_bShowMap = true;
 	m_bShowUTMBounds = false;
-	m_bRubber = false;
 
-	// road point editing
-	m_pEditingRoad = NULL;
-	m_iEditingPoint = -1;
+	m_ui.m_bRubber = false;
+	m_ui.mode = LB_None;
+	m_ui.m_bLMouseButton = m_ui.m_bMMouseButton = m_ui.m_bRMouseButton = false;
+	m_ui.m_pEditingRoad = NULL;
+	m_ui.m_iEditingPoint = -1;
+	m_ui.m_pCurBuilding = NULL;
+	m_ui.m_pCurLinear = NULL;
 
 	// Cursors are a little messy, since support is not even across platforms
 #if __WXMSW__
@@ -136,48 +136,47 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 
 void BuilderView::GetMouseLocation(DPoint2 &p)
 {
-	p.x = ox(m_CurPoint.x);
-	p.y = oy(m_CurPoint.y);
+	p.x = ox(m_ui.m_CurPoint.x);
+	p.y = oy(m_ui.m_CurPoint.y);
 }
 
 void BuilderView::SetMode(LBMode m)
 {
-	if (m_mode == LB_Dir && m != LB_Dir)
+	if (m_ui.mode == LB_Dir && m != LB_Dir)
 	{
 		vtRoadLayer::SetShowDirection(false);
 		Refresh();
 	}
 
-	m_mode = m;
+	m_ui.mode = m;
 	SetCorrectCursor();
 
-	switch (m_mode)
+	switch (m_ui.mode)
 	{
-		case LB_Dir:
-			vtRoadLayer::SetShowDirection(true);
+	case LB_Dir:
+		vtRoadLayer::SetShowDirection(true);
+		Refresh();
+		break;
+	case LB_Node:
+		if (!vtRoadLayer::GetDrawNodes()) {
+			vtRoadLayer::SetDrawNodes(true);
 			Refresh();
-			break;
-		case LB_Node:
-			if (!vtRoadLayer::GetDrawNodes()) {
-				vtRoadLayer::SetDrawNodes(true);
-				Refresh();
-			}
-			break;
-	}
-	if (m_mode != LB_LinkEdit)
-	{
-		if (m_pEditingRoad)
-		{
-			m_pEditingRoad->m_bDrawPoints = false;
-			RefreshRoad(m_pEditingRoad);
 		}
-		m_pEditingRoad = NULL;
+		break;
 	}
-}
 
-float BuilderView::BoundaryPixels()
-{
-	return (float) odx(BOUNDADJUST);
+	// Show this dialog only in AddLinear mode
+	GetMainFrame()->ShowLinearStructureDlg(m_ui.mode == LB_AddLinear);
+
+	if (m_ui.mode != LB_LinkEdit)
+	{
+		if (m_ui.m_pEditingRoad)
+		{
+			m_ui.m_pEditingRoad->m_bDrawPoints = false;
+			RefreshRoad(m_ui.m_pEditingRoad);
+		}
+		m_ui.m_pEditingRoad = NULL;
+	}
 }
 
 void BuilderView::DrawUTMBounds(wxDC *pDC)
@@ -539,11 +538,11 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	wxClientDC dc(this);
 	PrepareDC(dc);
 
-	InvertRect(&dc, m_DownPoint, m_LastPoint);
+	InvertRect(&dc, m_ui.m_DownPoint, m_ui.m_LastPoint);
 
-	wxRect rect = PointsToRect(m_DownPoint, m_LastPoint);
+	wxRect rect = PointsToRect(m_ui.m_DownPoint, m_ui.m_LastPoint);
 	m_world_rect = CanvasToWorld(rect);
-	switch (m_mode)
+	switch (m_ui.mode)
 	{
 	case LB_Mag:
 		if (event.AltDown())
@@ -556,37 +555,27 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 		GetMainFrame()->m_area = m_world_rect;
 		DrawArea(&dc);
 		break;
-	case LB_Path:
-		//do not allow click and drag selection.
-		//ignore action
-		break;
 	case LB_Node:
-	case LB_Road:
+	case LB_Link:
 		{
 			// select everything in the highlighted box.
 			vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
-			if (pRL->SelectArea(m_world_rect, (m_mode == LB_Node),
+			if (pRL->SelectArea(m_world_rect, (m_ui.mode == LB_Node),
 				m_bCrossSelect))
 			{
 				rect = WorldToWindow(m_world_rect);
-				IncreaseRect(rect, BOUNDADJUST);
+				IncreaseRect(rect, 5);
 				if (m_bCrossSelect)
 					Refresh();
 				else
 					Refresh(TRUE, &rect);
-			} else {
-				DeselectAll();
 			}
+			else
+				DeselectAll();
 		}
 		break;
 	case LB_Move:
 		Refresh();
-		break;
-	case LB_TowerSelect:
-		{
-			vtUtilityLayer *pTR = GetMainFrame()->GetActiveUtilityLayer();
-			// TODO
-		}
 		break;
 	case LB_FSelect:
 		EndBoxFeatureSelect(event);
@@ -647,8 +636,8 @@ void BuilderView::DoBox(wxPoint point)
 {
 	wxClientDC dc(this);
 	PrepareDC(dc);
-	InvertRect(&dc, m_DownPoint, m_LastPoint);
-	InvertRect(&dc, m_DownPoint, point);
+	InvertRect(&dc, m_ui.m_DownPoint, m_ui.m_LastPoint);
+	InvertRect(&dc, m_ui.m_DownPoint, point);
 }
 
 void BuilderView::DrawArea(wxDC *pDC)
@@ -694,17 +683,11 @@ void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 			break;
 		}
 	}
-
-#if 0
-	// deselect if no terrain selected (questionable logic)
-	if (!bFound)
-		SetActiveLayer(NULL);
-#endif
 }
 
 //
 // The view needs to be notified of the new active layer to update
-// the selection marks drawn around the active layer.
+// the selection marks drawn around the active elevation layer.
 //
 void BuilderView::SetActiveLayer(vtLayerPtr lp)
 {
@@ -774,10 +757,10 @@ void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
 
 void BuilderView::SetCorrectCursor()
 {
-	switch (m_mode)
+	switch (m_ui.mode)
 	{
 	case LB_None:	// none
-	case LB_Road:	// select/edit roads
+	case LB_Link:	// select/edit roads
 	case LB_Node:	// select/edit nodes
 	case LB_Move:	// move selected nodes
 		SetCursor(wxCURSOR_ARROW); break;
@@ -789,10 +772,9 @@ void BuilderView::SetCorrectCursor()
 		SetCursor(wxCURSOR_MAGNIFIER); break;
 	case LB_TowerAdd:
 		SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
-	case LB_Path:	// pick points on a path
 	case LB_Dir:		// show/change road direction
 	case LB_LinkEdit:	// edit road points
-	case LB_RoadExtend: //extend a road selection
+	case LB_LinkExtend: //extend a road selection
 	case LB_TSelect:
 	case LB_Box:
 	default:
@@ -817,16 +799,16 @@ void BuilderView::BeginArea()	// in canvas coordinates
 	int eps = 10;	// epsilon in pixels
 	wxRect r = WorldToCanvas(area);
 	int diff;
-	diff = abs(m_CurPoint.x - r.x);
+	diff = abs(m_ui.m_CurPoint.x - r.x);
 	if (diff < eps)
 		m_iDragSide |= 1;
-	diff = abs(m_CurPoint.x - (r.x+r.width));
+	diff = abs(m_ui.m_CurPoint.x - (r.x+r.width));
 	if (diff < eps)
 		m_iDragSide |= 2;
-	diff = abs(m_CurPoint.y - r.y);
+	diff = abs(m_ui.m_CurPoint.y - r.y);
 	if (diff < eps)
 		m_iDragSide |= 4;
-	diff = abs(m_CurPoint.y - (r.y+r.height));
+	diff = abs(m_ui.m_CurPoint.y - (r.y+r.height));
 	if (diff < eps)
 		m_iDragSide |= 8;
 
@@ -905,24 +887,24 @@ void BuilderView::DeselectAll()
 
 void BuilderView::DeleteSelected(vtRoadLayer *pRL)
 {
-	int n;
+	int nDeleted;
 
 	// delete the items, which returns an array of extents,
 	// one for each deleted item
-	DRECT *world_bounds = pRL->DeleteSelected(n);
+	DRECT *world_bounds = pRL->DeleteSelected(nDeleted);
 
 	if (pRL->RemoveUnusedNodes() != 0)
 		pRL->ComputeExtents();
 
-	if (n > 100)
+	if (nDeleted > 100)
 	{
 		// too many deleted for quick refresh
 		Refresh(TRUE);
 	}
-	else if (n > 0  && world_bounds != NULL)
+	else if (nDeleted > 0  && world_bounds != NULL)
 	{
 		wxRect bound;
-		for (n = n - 1; n >= 0; n--)
+		for (int n = nDeleted - 1; n >= 0; n--)
 		{
 			bound = WorldToWindow(world_bounds[n]);
 			IncreaseRect(bound, BOUNDADJUST);
@@ -956,25 +938,33 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 
 void BuilderView::OnLeftDown(const wxMouseEvent& event)
 {
-	m_bLMouseButton = true;
+	m_ui.m_bLMouseButton = true;
 	m_bMouseMoved = false;	
 
 	// save the point where the user clicked
 	m_DownClient = event.GetPosition();
-	GetCanvasPosition(event, m_DownPoint);
+	GetCanvasPosition(event, m_ui.m_DownPoint);
 
-	m_CurPoint = m_DownPoint;
-	m_LastPoint = m_DownPoint;
+	m_ui.m_CurPoint = m_ui.m_DownPoint;
+	m_ui.m_LastPoint = m_ui.m_DownPoint;
 
 	// "points" are in window pixels, "locations" are in current projection
-	object(m_DownPoint, m_DownLocation);
+	object(m_ui.m_DownPoint, m_ui.m_DownLocation);
 
-	CaptureMouse();			// capture mouse
+	// Remember modifier key state
+	m_ui.m_bShift = event.ShiftDown();
+	m_ui.m_bControl = event.ControlDown();
+	m_ui.m_bAlt = event.AltDown();
 
-	switch (m_mode)
+	// We must 'capture' the mouse in order to receive button-up events
+	// in the case where the cursor leaves the window.
+	CaptureMouse();
+
+	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	switch (m_ui.mode)
 	{
 	case LB_TSelect:
-		CheckForTerrainSelect(m_DownLocation);
+		CheckForTerrainSelect(m_ui.m_DownLocation);
 		break;
 
 	case LB_Pan:
@@ -983,13 +973,9 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 
 	case LB_Mag:
 	case LB_Node:
-	case LB_Road:
+	case LB_Link:
 	case LB_FSelect:
 		BeginBox();
-		break;
-
-	case LB_Info:
-		OnLButtonClickInfo();
 		break;
 
 	case LB_Box:
@@ -999,325 +985,60 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 	case LB_Dist:
 		BeginLine();
 		break;
-
-	case LB_LinkEdit:
-		OnLeftDownLinkEdit();
-		break;
-
-	case LB_BldEdit:
-		OnLeftDownEditShape(event);
-		break;
-
-	case LB_AddPoints:
-		OnLeftDownAddPoint(event);
-		break;
-
-	case LB_AddLinear:
-		OnLeftDownAddLinear(event);
-		break;
-
-/*	case LB_TowerAdd:
-		OnLeftDownAddTower(event,m_DownLocation);
-		break;*/
-/*	case LB_TowerSelect:
-		OnLeftDownTowerSelect(event,m_DownLocation);
-		break;*/
-	case LB_TowerEdit:
-		OnLeftDownTowerEdit(event);
-		break;
 	}
-}
-
-void BuilderView::OnLeftDownLinkEdit()
-{
-	vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
-	if (!pRL)
-		return;
-	if (!m_pEditingRoad)
-		return;
-
-	double closest = 1E8;
-	int closest_i;
-	for (int i = 0; i < m_pEditingRoad->GetSize(); i++)
-	{
-		DPoint2 diff = m_DownLocation - m_pEditingRoad->GetAt(i);
-		double dist = diff.Length();
-		if (dist < closest)
-		{
-			closest = dist;
-			closest_i = i;
-		}
-	}
-	int pixels = sdx(closest);
-	if (pixels < 8)
-	{
-		// begin dragging point
-		m_iEditingPoint = closest_i;
-	}
-	else
-		m_iEditingPoint = -1;
-}
-
-void BuilderView::OnLeftDownEditShape(const wxMouseEvent& event)
-{
-	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
-	if (!pSL)
-		return;
-
-	double error = odx(6);  //calculate what 6 pixels is as world coord
-
-	int building1, building2, corner;
-	double dist1, dist2;
-
-	bool found1 = pSL->FindClosestBuildingCenter(m_DownLocation, error, building1, dist1);
-	bool found2 = pSL->FindClosestBuildingCorner(m_DownLocation, error, building2, corner, dist2);
-
-	if (found1 && found2)
-	{
-		// which was closer?
-		if (dist1 < dist2)
-			found2 = false;
-		else
-			found1 = false;
-	}
-	if (found1)
-	{
-		// closest point is a building center
-		m_pCurBuilding = pSL->GetAt(building1)->GetBuilding();
-		m_bDragCenter = true;
-	}
-	if (found2)
-	{
-		// closest point is a building corner
-		m_pCurBuilding = pSL->GetAt(building2)->GetBuilding();
-		m_bDragCenter = false;
-		m_iCurCorner = corner;
-
-		m_bShift = event.ShiftDown();
-		m_bControl = event.ControlDown();
-
-		m_bRotate = m_bControl;
-	}
-	if (found1 || found2)
-	{
-		m_bRubber = true;
-
-		// make a copy of the building, to edit and diplay while dragging
-		m_EditBuilding = *m_pCurBuilding;
-	}
-}
-
-void BuilderView::OnLeftDownAddPoint(const wxMouseEvent &event)
-{
-	vtRawLayer *pRL = GetMainFrame()->GetActiveRawLayer();
-	pRL->AddPoint(m_DownLocation);
-	pRL->SetModified(true);
-	Refresh();
-}
-
-void BuilderView::OnLeftDownAddLinear(const wxMouseEvent &event)
-{
-	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
-//	pRL->AddPoint(m_DownLocation); // TODO
-//	pRL->SetModified(true);
-	Refresh();
-}
-
-void BuilderView::OnLeftDownTowerEdit(const wxMouseEvent &event)
-{	
-	vtUtilityLayer *pTL = GetMainFrame()->GetActiveUtilityLayer();
-	if (!pTL)
-		return;
-/*
-	double error = odx(6);  //calculate what 6 pixels is as world coord
-
-	int tower1;
-	double dist1;
-
-	bool found1 = pTL->FindClosestCenter(m_DownLocation, error, tower1, dist1);
-
-	if (found1)
-	{
-		// closest point is a building center
-		m_pCurTower = pTL->GetAt(tower1);
-		m_bDragCenter = true;
-	}
-	if (found2)
-	{
-		// closest point is a building corner
-		m_pCurTower= pTL->GetAt(tower2)->GetTower();
-		m_bDragCenter = false;
-		m_iCurCorner = corner;
-
-		m_bShift = event.ShiftDown();
-		m_bControl = event.ControlDown();
-
-		m_bRotate = m_bControl;
-	}
-	if (found1)// || found2)
-	{
-		m_bRubber = true;
-
-		// make a copy of the tower, to edit and diplay while dragging
-		m_EditTower = *m_pCurTower;
-	}*/
+	// Dispatch for layer-specific handling
+	if (pL)
+		pL->OnLeftDown(this, m_ui);
 }
 
 void BuilderView::OnLeftUp(const wxMouseEvent& event)
 {
 	ReleaseMouse();
 
-	if (m_mode == LB_BldEdit)
-	{
-		if (m_bRubber)
-		{
-			DRECT extent_old, extent_new;
-			m_pCurBuilding->GetExtents(extent_old);
-			m_EditBuilding.GetExtents(extent_new);
-			wxRect screen_old = WorldToWindow(extent_old);
-			wxRect screen_new = WorldToWindow(extent_new);
-//			screen_old.InflateRect(1, 1);
-//			screen_new.InflateRect(1, 1);
+	if (!m_bMouseMoved)
+		OnLButtonClick(event);
 
-			Refresh(TRUE, &screen_old);
-			Refresh(TRUE, &screen_new);
+	OnLButtonDragRelease(event);
 
-			// copy back from temp building to real building
-			*m_pCurBuilding = m_EditBuilding;
-			m_bRubber = false;
-			GetMainFrame()->GetActiveLayer()->SetModified(true);
-		}
-	}
-	else if (m_mode == LB_TowerEdit)
-	{
-	/*	if(m_bRubber)
-		{
-			DRECT extent_old, extent_new;
-			extent_old = m_pCurTower->GetExtents();
-			extent_new = m_EditTower.GetExtents();
-			wxRect screen_old = WorldToWindow(extent_old);
-			wxRect screen_new = WorldToWindow(extent_new);
+	// Dispatch for layer-specific handling
+	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	if (pL)
+		pL->OnLeftUp(this, m_ui);
 
-			Refresh(TRUE, &screen_old);
-			Refresh(TRUE, &screen_new);
-
-			// copy back from temp tower to real tower
-			*m_pCurTower = m_EditTower;
-			m_bRubber = false;
-			GetMainFrame()->GetActiveLayer()->SetModified(true);
-		} */
-	}
-	else
-	{
-		if (!m_bMouseMoved)
-			OnLButtonClick(event);
-		OnLButtonDragRelease(event);
-	}
-
-	m_bLMouseButton = false;	// left mouse button no longer down
+	m_ui.m_bLMouseButton = false;	// left mouse button no longer down
 }
 
 void BuilderView::OnLeftDoubleClick(const wxMouseEvent& event)
 {
-	GetCanvasPosition(event, m_DownPoint);
-	m_CurPoint = m_LastPoint = m_DownPoint;
-	DPoint2 point(ox(m_CurPoint.x), oy(m_CurPoint.y));
+	GetCanvasPosition(event, m_ui.m_DownPoint);
+	m_ui.m_CurPoint = m_ui.m_LastPoint = m_ui.m_DownPoint;
+	object(m_ui.m_DownPoint, m_ui.m_DownLocation);
 
-	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
-	if (!pL) return;
-
-	switch (pL->GetType())
-	{
-	case LT_ROAD:
-		{
-			if (m_mode == LB_Road || m_mode == LB_Node)
-			{
-				vtRoadLayer *pRL = (vtRoadLayer *)pL;
-				OnDblClickElement(pRL, point);
-			}
-			else
-				OnLeftDown(event);
-		}
-		break;
-	case LT_STRUCTURE:
-		{
-			vtStructureLayer *pSL = (vtStructureLayer *)pL;
-			OnDblClickElement(pSL, point);
-		}
-		break;
-	}
+	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	if (pL)
+		pL->OnLeftDoubleClick(this, m_ui);
 }
-
-void BuilderView::OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point)
-{
-	DRECT world_bound, bound2;
-
-	//error is how close to the road/node can we be off by?
-	float error = BoundaryPixels();
-
-	//undo the select caused by double clicking
-	if (m_mode == LB_Node)
-	{
-		pRL->SelectNode(point, error, bound2);
-		pRL->EditNodeProperties(point, error, world_bound);
-	}
-	else
-	{
-		pRL->SelectLink(point, error, bound2);
-		pRL->EditLinkProperties(point, error, world_bound);
-	}
-	wxRect screen_bound = WorldToWindow(world_bound);
-	IncreaseRect(screen_bound, BOUNDADJUST);
-	Refresh(TRUE, &screen_bound);
-}
-
-void BuilderView::OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point)
-{
-}
-
 
 void BuilderView::OnLButtonClick(const wxMouseEvent& event)
 {
 	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
 	if (!pL) return;
 
-	GetCanvasPosition(event, m_DownPoint);
-	m_CurPoint = m_LastPoint = m_DownPoint;
-	DPoint2 point(ox(m_CurPoint.x), oy(m_CurPoint.y));
+	GetCanvasPosition(event, m_ui.m_DownPoint);
+	m_ui.m_CurPoint = m_ui.m_LastPoint = m_ui.m_DownPoint;
+	DPoint2 point(ox(m_ui.m_CurPoint.x), oy(m_ui.m_CurPoint.y));
 
 	if (pL->GetType() == LT_ROAD)
 	{
-		switch (m_mode)
+		switch (m_ui.mode)
 		{
-		case LB_Path:
-//			OnLButtonClickPath();
-			break;
-		case LB_Road:
+		case LB_Link:
 		case LB_Node:
-		case LB_RoadExtend:
 			OnLButtonClickElement((vtRoadLayer *)pL);
 			break;
-		case LB_Dir:
-			OnLButtonClickDirection((vtRoadLayer *)pL);
-			break;
-		case LB_LinkEdit:
-			OnLButtonClickLinkEdit((vtRoadLayer *)pL);
-			break;
 		}
 	}
-	if (pL->GetType() == LT_UTILITY)
-	{
-		switch (m_mode)
-		{
-		case LB_TowerAdd:
-			OnLButtonClickTowerAdd((vtUtilityLayer*)pL, point);
-			break;
-	/*	case LB_TowerEdit:
-			OnLButtonClickTowerEdit((vtUtilityLayer*)pL);
-			break;*/
-		}
-	}
-	if (m_mode == LB_FSelect)
+	if (m_ui.mode == LB_FSelect)
 		OnLButtonClickFeature(pL);
 }
 
@@ -1334,17 +1055,15 @@ void BuilderView::OnLButtonDragRelease(const wxMouseEvent& event)
 		m_iDragSide = 0;
 	}
 
-	if (m_mode == LB_Dist)
-		OnDragDistance();
-	if (m_mode == LB_LinkEdit)
+	if (m_ui.mode == LB_LinkEdit)
 		OnDragLinkEdit();
 }
 
 void BuilderView::OnDragDistance()
 {
 	DPoint2 p1, p2;
-	object(m_DownPoint, p1);
-	object(m_LastPoint, p2);
+	object(m_ui.m_DownPoint, p1);
+	object(m_ui.m_LastPoint, p2);
 
 	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
 	pDlg->SetPoints(p1, p2);
@@ -1352,25 +1071,16 @@ void BuilderView::OnDragDistance()
 
 void BuilderView::OnDragLinkEdit()
 {
-	if (m_pEditingRoad != NULL && m_iEditingPoint >= 0)
+	if (m_ui.m_pEditingRoad != NULL && m_ui.m_iEditingPoint >= 0)
 	{
-		RefreshRoad(m_pEditingRoad);
-		DPoint2 p = m_pEditingRoad->GetAt(m_iEditingPoint);
-		p += (m_CurLocation - m_DownLocation);
-		m_pEditingRoad->SetAt(m_iEditingPoint, p);
-		m_pEditingRoad->ComputeExtent();
-		RefreshRoad(m_pEditingRoad);
+		RefreshRoad(m_ui.m_pEditingRoad);
+		DPoint2 p = m_ui.m_pEditingRoad->GetAt(m_ui.m_iEditingPoint);
+		p += (m_ui.m_CurLocation - m_ui.m_DownLocation);
+		m_ui.m_pEditingRoad->SetAt(m_ui.m_iEditingPoint, p);
+		m_ui.m_pEditingRoad->ComputeExtent();
+		RefreshRoad(m_ui.m_pEditingRoad);
 	}
-	m_iEditingPoint = -1;
-}
-
-void BuilderView::OnLButtonClickTowerAdd(vtUtilityLayer *pTL,
-										 const DPoint2 &m_DownLocation)
-{
-/*	pTL = GetMainFrame()->GetActiveUtilityLayer();
-	pTL->AddNewTower(m_DownLocation); //Make sure to call edit box for rest of tower info
-*/
-	Refresh();
+	m_ui.m_iEditingPoint = -1;
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
@@ -1378,15 +1088,15 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 	DRECT world_bound;
 
 	// error is how close to the road/node can we be off by?
-	float error = BoundaryPixels();
+	float error = odx(5);
 
 	bool returnVal = false;
-	if (m_mode == LB_Node)
-		returnVal = pRL->SelectNode(m_DownLocation, error, world_bound);
-	else if (m_mode == LB_Road)
-		returnVal = pRL->SelectLink(m_DownLocation, error, world_bound);
-	else if (m_mode == LB_RoadExtend)
-		returnVal = pRL->SelectAndExtendLink(m_DownLocation, error, world_bound);
+	if (m_ui.mode == LB_Node)
+		returnVal = pRL->SelectNode(m_ui.m_DownLocation, error, world_bound);
+	else if (m_ui.mode == LB_Link)
+		returnVal = pRL->SelectLink(m_ui.m_DownLocation, error, world_bound);
+	else if (m_ui.mode == LB_LinkExtend)
+		returnVal = pRL->SelectAndExtendLink(m_ui.m_DownLocation, error, world_bound);
 
 	if (returnVal)
 	{
@@ -1394,8 +1104,8 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 		IncreaseRect(screen_bound, BOUNDADJUST);
 		Refresh(TRUE, &screen_bound);
 		wxString str = wxString::Format("Selected 1 %s (%d total)",
-			m_mode == LB_Node ? "Node" : "Road",
-			m_mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
+			m_ui.mode == LB_Node ? "Node" : "Road",
+			m_ui.mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
 		GetMainFrame()->SetStatusText(str);
 	}
 	else
@@ -1406,41 +1116,8 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 }
 
 
-void BuilderView::OnLButtonClickDirection(vtRoadLayer *pRL)
-{
-	// see if there is a road or node at m_DownPoint
-	// error is how close to the road can we be off by?
-	float error = BoundaryPixels();
-
-	LinkEdit *pRoad = pRL->FindLink(m_DownLocation, error);
-	if (pRoad)
-	{
-		pRL->ToggleLinkDirection(pRoad);
-		RefreshRoad(pRoad);
-	}
-}
-
 void BuilderView::OnLButtonClickLinkEdit(vtRoadLayer *pRL)
 {
-	// see if there is a road or node at m_DownPoint
-	float error = BoundaryPixels();
-	bool redraw = false;
-
-	LinkEdit *pRoad = pRL->FindLink(m_DownLocation, error);
-	if (pRoad != m_pEditingRoad)
-	{
-		if (m_pEditingRoad)
-		{
-			RefreshRoad(m_pEditingRoad);
-			m_pEditingRoad->m_bDrawPoints = false;
-		}
-		m_pEditingRoad = pRoad;
-		if (m_pEditingRoad)
-		{
-			RefreshRoad(m_pEditingRoad);
-			m_pEditingRoad->m_bDrawPoints = true;
-		}
-	}
 }
 
 void BuilderView::RefreshRoad(LinkEdit *pRoad)
@@ -1460,23 +1137,22 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 		// first do a deselect-all
 		pSL->DeselectAll();
 
-		// see if there is a building at m_DownPoint
-		vtStructure *str = pSL->FindBuilding(m_DownLocation, odx(12)); // 12 pixel margin
-		if (str)
+		// see if there is a building at m_ui.m_DownPoint
+		int building;
+		double distance;
+		bool found = pSL->FindClosestStructure(m_ui.m_DownLocation, odx(5),
+						   building, distance);
+		if (found)
+		{
+			vtStructure *str = pSL->GetAt(building);
 			str->Select(!str->IsSelected());
-
+		}
 		Refresh(false);
 	}
 	else if (pL->GetType() == LT_UTILITY)
 	{
 		vtUtilityLayer *pTL = (vtUtilityLayer *)pL;
-
-		pTL->DeselectAll();
-
-/*		vtTower *twr = pTL->FindTower(m_DownLocation, odx(12));
-		if(twr)
-			twr->Select(!twr->IsSelected()); */
-		Refresh(false);
+		// TODO? single click selection of utility features
 	}
 	else if (pL->GetType() == LT_RAW)
 	{
@@ -1485,46 +1161,18 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 	}
 }
 
-void BuilderView::OnLButtonClickInfo()
-{
-	vtRawLayer *pRL = GetMainFrame()->GetActiveRawLayer();
-	if (!pRL)
-		return;
-	int etype = pRL->GetEntityType();
-	if (etype != SHPT_POINT && etype != SHPT_POINTZ)
-		return;
-
-	double epsilon = odx(6);  // calculate what 6 pixels is as world coord
-
-	int iEnt = pRL->FindClosestPoint(m_DownLocation, epsilon);
-	if (iEnt != -1)
-	{
-		DPoint2 loc;
-		pRL->GetPoint(iEnt, loc);
-		Array<int> found;
-		pRL->FindAllPointsAtLocation(loc, found);
-
-		FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
-		fdlg->SetFeatureSet(pRL);
-		pRL->DePickAll();
-		for (int i = 0; i < found.GetSize(); i++)
-			pRL->Pick(found[i]);
-		fdlg->ShowPicked();
-	}
-}
-
 ////////////////
 
 void BuilderView::OnMiddleDown(const wxMouseEvent& event)
 {
-	m_bMMouseButton = true;
+	m_ui.m_bMMouseButton = true;
 	m_bMouseMoved = false;	
 
 	// save the point where the user clicked
 	m_DownClient = event.GetPosition();
 
-	GetCanvasPosition(event, m_DownPoint);
-	m_CurPoint = m_DownPoint;
+	GetCanvasPosition(event, m_ui.m_DownPoint);
+	m_ui.m_CurPoint = m_ui.m_DownPoint;
 	CaptureMouse();			// capture mouse
 
 	BeginPan();
@@ -1540,59 +1188,38 @@ void BuilderView::OnMiddleUp(const wxMouseEvent& event)
 
 void BuilderView::OnRightDown(const wxMouseEvent& event)
 {
-	m_bRMouseButton = true;
+	m_ui.m_bRMouseButton = true;
 	CaptureMouse();			// capture mouse
+
+	// Dispatch to the layer
+	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	if (pL)
+		pL->OnRightDown(this, m_ui);
 }
 
 void BuilderView::OnRightUp(const wxMouseEvent& event)
 {
-	m_bRMouseButton = false;	//right mouse button no longer down
+	m_ui.m_bRMouseButton = false;	//right mouse button no longer down
 	ReleaseMouse();
 
-	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	vtLayer *pL = GetMainFrame()->GetActiveLayer();
 	if (!pL)
 		return;
 
+	// Dispatch to the layer
+	pL->OnRightUp(this, m_ui);
+
 	switch (pL->GetType())
 	{
-	case LT_ROAD:
-		OnRightUpRoad((vtRoadLayer *)pL);
-		break;
 	case LT_STRUCTURE:
 		OnRightUpStructure((vtStructureLayer *)pL);
 		break;
-	case LT_UTILITY:
-		OnRightUpUtility((vtUtilityLayer *)pL);
-		break;
-	}
-}
-
-void BuilderView::OnRightUpRoad(vtRoadLayer *pRL) 
-{
-	//if we are not clicked close to a single item, edit all selected items.
-	bool status;
-	if (m_mode == LB_Node)
-		status = pRL->EditNodesProperties();
-	else
-		status = pRL->EditLinksProperties();
-	if (status)
-	{
-		pRL->SetModified(true);
-		Refresh();
-		GetMainFrame()->RefreshTreeStatus();
 	}
 }
 
 void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 
 {
 	pSL->EditBuildingProperties();
-}
-
-void BuilderView::OnRightUpUtility(vtUtilityLayer *pTL)
-{
-/*	bool status =pTL->EditTowerProperties();
-	if (status)
-		Refresh(); */
 }
 
 void BuilderView::OnMouseMove(const wxMouseEvent& event)
@@ -1602,31 +1229,30 @@ void BuilderView::OnMouseMove(const wxMouseEvent& event)
 
 	if (point == lastpoint)
 		return;
-	GetMainFrame()->SetStatusText("Ready");
 	lastpoint = point;
 
-	GetCanvasPosition(event, m_CurPoint);
-	object(m_CurPoint, m_CurLocation);
+	GetCanvasPosition(event, m_ui.m_CurPoint);
+	object(m_ui.m_CurPoint, m_ui.m_CurLocation);
 
-	if (m_bLMouseButton || m_bMMouseButton || m_bRMouseButton)
+	if (m_ui.m_bLMouseButton || m_ui.m_bMMouseButton || m_ui.m_bRMouseButton)
 	{
-		wxPoint diff = m_CurPoint - m_DownPoint;
+		wxPoint diff = m_ui.m_CurPoint - m_ui.m_DownPoint;
 		int mag = abs(diff.x) + abs(diff.y);
-		if (mag > 5 && !m_bMouseMoved)
+		if (mag > 2 && !m_bMouseMoved)
 			m_bMouseMoved = true;
 	}
 
 	if (m_bPanning)
 		DoPan(point);
 
-	// left button click and drag selects/deselects multiple (or zooms)
-	if (m_bLMouseButton)
+	// left button click and drag
+	if (m_ui.m_bLMouseButton)
 	{
 		if (m_bBoxing)
-			DoBox(m_CurPoint);
+			DoBox(m_ui.m_CurPoint);
 		if (m_iDragSide)
-			DoArea(m_CurPoint);
-		if (m_mode == LB_Dist)
+			DoArea(m_ui.m_CurPoint);
+		if (m_ui.mode == LB_Dist)
 		{
 			wxClientDC dc(this);
 			PrepareDC(dc);
@@ -1634,126 +1260,26 @@ void BuilderView::OnMouseMove(const wxMouseEvent& event)
 			dc.SetPen(pen);
 			dc.SetLogicalFunction(wxINVERT);
 
-			dc.DrawLine(m_DownPoint, m_LastPoint);
-			dc.DrawLine(m_DownPoint, m_CurPoint);
+			dc.DrawLine(m_ui.m_DownPoint, m_ui.m_LastPoint);
+			dc.DrawLine(m_ui.m_DownPoint, m_ui.m_CurPoint);
+
+			OnDragDistance();
 		}
-		else if (m_mode == LB_BldEdit && m_bRubber)
+		else if (m_ui.mode == LB_BldEdit && m_ui.m_bRubber)
 		{
-			wxClientDC dc(this);
-			PrepareDC(dc);
-			wxPen pen(*wxBLACK_PEN);
-			dc.SetPen(pen);
-			dc.SetLogicalFunction(wxINVERT);
-
-			vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
-			pSL->DrawBuilding(&dc, this, &m_EditBuilding);
-
-			if (m_bDragCenter)
-				UpdateMove();
-			else if (m_bRotate)
-				UpdateRotate();
-			else
-				UpdateResizeScale();
-
-			pSL->DrawBuilding(&dc, this, &m_EditBuilding);
 		}
 	}
 
-	// middle button click and drag moves viewpoint
-	else if (m_bMMouseButton)
-	{
-		if (m_bPanning)
-			DoPan(point);
-	}
+	// Dispatch for layer-specific handling
+	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
+	if (pL)
+		pL->OnMouseMove(this, m_ui);
+
+	// update new mouse coordinates, etc. in status bar
 	GetMainFrame()->RefreshStatusBar();
 
-	m_LastPoint = m_CurPoint;
-}
-
-void BuilderView::UpdateMove()
-{
-	DPoint2 p;
-	DPoint2 moved_by = m_CurLocation - m_DownLocation;
-
-	int i, levs = m_pCurBuilding->GetNumLevels();
-	for (i = 0; i < levs; i++)
-	{
-		DLine2 dl = m_pCurBuilding->GetFootprint(i);
-		dl.Add(moved_by);
-		m_EditBuilding.SetFootprint(i, dl);
-	}
-}
-
-void BuilderView::UpdateResizeScale()
-{
-	DPoint2 moved_by = m_CurLocation - m_DownLocation;
-
-	if (m_bShift)
-		int foo = 1;
-
-	DPoint2 origin = m_pCurBuilding->GetLocation();
-	DPoint2 diff1 = m_DownLocation - origin;
-	DPoint2 diff2 = m_CurLocation - origin;
-	float fScale = diff2.Length() / diff1.Length();
-
-	DPoint2 p;
-	if (m_bShift)
-	{
-		// Scale evenly
-		int i, j, levs = m_pCurBuilding->GetNumLevels();
-		for (i = 0; i < levs; i++)
-		{
-			DLine2 dl = m_pCurBuilding->GetFootprint(i);
-			for (j = 0; j < dl.GetSize(); j++)
-			{
-				p = dl.GetAt(j);
-				p -= origin;
-				p *= fScale;
-				p += origin;
-				dl.SetAt(j, p);
-			}
-			m_EditBuilding.SetFootprint(i, dl);
-		}
-	}
-	else
-	{
-		DLine2 dl = m_pCurBuilding->GetFootprint(0);
-		// drag individual corner points
-		p = dl.GetAt(m_iCurCorner);
-		p += moved_by;
-		dl.SetAt(m_iCurCorner, p);
-		m_EditBuilding.SetFootprint(0, dl);
-	}
-}
-
-void BuilderView::UpdateRotate()
-{
-	DPoint2 origin = m_pCurBuilding->GetLocation();
-	DPoint2 original_vector = m_DownLocation - origin;
-	double length1 = original_vector.Length();
-	double angle1 = atan2(original_vector.y, original_vector.x);
-
-	DPoint2 cur_vector = m_CurLocation - origin;
-	double length2 = cur_vector.Length();
-	double angle2 = atan2(cur_vector.y, cur_vector.x);
-
-	double angle_diff = angle2 - angle1;
-
-	DPoint2 p;
-	int i, j, levs = m_pCurBuilding->GetNumLevels();
-	for (i = 0; i < levs; i++)
-	{
-		DLine2 dl = m_pCurBuilding->GetFootprint(i);
-		for (j = 0; j < dl.GetSize(); j++)
-		{
-			p = dl.GetAt(j);
-			p -= origin;
-			p.Rotate(angle_diff);
-			p += origin;
-			dl.SetAt(j, p);
-		}
-		m_EditBuilding.SetFootprint(i, dl);
-	}
+	m_ui.m_LastPoint = m_ui.m_CurPoint;
+	m_ui.m_PrevLocation = m_ui.m_CurLocation;
 }
 
 //////////////////

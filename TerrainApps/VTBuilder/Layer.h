@@ -62,6 +62,10 @@ enum LayerType
 	LAYER_TYPES
 };
 
+class BuilderView;
+class vtScaledView;
+struct UIContext;
+
 class vtLayer
 {
 public:
@@ -85,7 +89,7 @@ public:
 
 	// these must be implemented
 	virtual bool GetExtent(DRECT &rect) = 0;
-	virtual void DrawLayer(wxDC* pDC, class vtScaledView *pView) = 0;
+	virtual void DrawLayer(wxDC* pDC, vtScaledView *pView) = 0;
 	virtual bool ConvertProjection(vtProjection &proj) = 0;
 	virtual bool OnSave() = 0;
 	virtual bool OnLoad() = 0;
@@ -93,10 +97,18 @@ public:
 	virtual void GetProjection(vtProjection &proj) = 0;
 	virtual void SetProjection(const vtProjection &proj) = 0;
 	virtual void Offset(const DPoint2 &p);
-	virtual void GetPropertyText(wxString &str) {}
 
 	// these may be optionally implemented
+	virtual void GetPropertyText(wxString &str) {}
 	virtual char *GetFileExtension();
+
+	// UI event handlers which can be implemented if desired
+	virtual void OnLeftDown(BuilderView *pView, UIContext &ui) {}
+	virtual void OnLeftUp(BuilderView *pView, UIContext &ui) {}
+	virtual void OnRightDown(BuilderView *pView, UIContext &ui) {}
+	virtual void OnRightUp(BuilderView *pView, UIContext &ui) {}
+	virtual void OnLeftDoubleClick(BuilderView *pView, UIContext &ui) {}
+	virtual void OnMouseMove(BuilderView *pView, UIContext &ui) {}
 
 	static char *LayerTypeName[];
 	static char *LayerFileExtension[];

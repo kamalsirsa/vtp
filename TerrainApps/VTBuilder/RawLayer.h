@@ -18,7 +18,7 @@ public:
 	vtRawLayer();
 	virtual ~vtRawLayer();
 
-	// overrides for vtLayer methods
+	// implementation of vtLayer methods
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, class vtScaledView *pView);
 	bool ConvertProjection(vtProjection &proj);
@@ -29,6 +29,7 @@ public:
 	void SetProjection(const vtProjection &proj);
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &strIn);
+	void OnLeftDown(BuilderView *pView, UIContext &ui);
 };
 
 #endif	// RAWLAYERH

@@ -16,6 +16,7 @@
 #include "RoadDlg.h"
 #include "Frame.h"
 #include "Helper.h"
+#include "BuilderView.h"
 
 bool vtRoadLayer::m_bDrawNodes = false;
 bool vtRoadLayer::m_bShowDirection = false;
@@ -222,29 +223,132 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 	m_bValidExtents = false;
 }
 
-bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float error,
-									 DRECT &bound)
+void vtRoadLayer::GetPropertyText(wxString &strIn)
 {
-	NodeEdit* bestNSoFar = NULL;
-	float dist = (float)error;
-	float result;
-	bool NFound = false;
+	strIn += "Network of links.\n";
 
-	for (NodeEdit* curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
+	wxString str;
+	str.Printf("Nodes: %d\n", NumNodes());
+	strIn += str;
+	str.Printf("Links: %d\n", NumLinks());
+	strIn += str;
+}
+
+void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode == LB_LinkEdit && ui.m_pEditingRoad)
 	{
-		result = curNode->DistanceToPoint(point);
-		if (result < dist && result >= 0) {
-			bestNSoFar = curNode;
-			dist = result;
-			NFound = true;
+		double closest = 1E8;
+		int closest_i;
+		for (int i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
+		{
+			DPoint2 diff = ui.m_DownLocation - ui.m_pEditingRoad->GetAt(i);
+			double dist = diff.Length();
+			if (dist < closest)
+			{
+				closest = dist;
+				closest_i = i;
+			}
+		}
+		int pixels = pView->sdx(closest);
+		if (pixels < 8)
+		{
+			// begin dragging point
+			ui.m_iEditingPoint = closest_i;
+		}
+		else
+			ui.m_iEditingPoint = -1;
+	}
+	if (ui.mode == LB_Dir)
+	{
+		LinkEdit *pLink = FindLink(ui.m_DownLocation, pView->odx(5));
+		if (pLink)
+		{
+			ToggleLinkDirection(pLink);
+			pView->RefreshRoad(pLink);
 		}
 	}
+	if (ui.mode == LB_LinkEdit)
+	{
+		// see if there is a road or node at m_DownPoint
+		float error = pView->odx(5);
+		bool redraw = false;
 
-	if (NFound) {
-		//wxLogMessage("FOUND A ROAD %i AT DISTANCE %f\n", bestSoFar->m_id, dist);
-		DPoint2 p = bestNSoFar->m_p;
-		bound.SetRect(p.x-error, p.y+error, p.x+error, p.y-error);
-		return bestNSoFar->EditProperties(this);
+		LinkEdit *pRoad = FindLink(ui.m_DownLocation, error);
+		if (pRoad != ui.m_pEditingRoad)
+		{
+			if (ui.m_pEditingRoad)
+			{
+				pView->RefreshRoad(ui.m_pEditingRoad);
+				ui.m_pEditingRoad->m_bDrawPoints = false;
+			}
+			ui.m_pEditingRoad = pRoad;
+			if (ui.m_pEditingRoad)
+			{
+				pView->RefreshRoad(ui.m_pEditingRoad);
+				ui.m_pEditingRoad->m_bDrawPoints = true;
+			}
+		}
+	}
+	if (ui.mode == LB_LinkExtend)
+	{
+		pView->OnLButtonClickElement(this);
+	}
+}
+
+void vtRoadLayer::OnRightUp(BuilderView *pView, UIContext &ui)
+{
+	//if we are not clicked close to a single item, edit all selected items.
+	bool status;
+	if (ui.mode == LB_Node)
+		status = EditNodesProperties();
+	else
+		status = EditLinksProperties();
+	if (status)
+	{
+		SetModified(true);
+		pView->Refresh();
+		GetMainFrame()->RefreshTreeStatus();
+	}
+}
+
+void vtRoadLayer::OnLeftDoubleClick(BuilderView *pView, UIContext &ui)
+{
+	DRECT world_bound, bound2;
+
+	// epsilon is how close to the link/node can we be off by?
+	float epsilon = pView->odx(5);
+	bool bRefresh = false;
+
+	if (ui.mode == LB_Node)
+	{
+		SelectNode(ui.m_DownLocation, epsilon, bound2);
+		EditNodeProperties(ui.m_DownLocation, epsilon, world_bound);
+		bRefresh = true;
+	}
+	else if (ui.mode == LB_Link)
+	{
+		SelectLink(ui.m_DownLocation, epsilon, bound2);
+		EditLinkProperties(ui.m_DownLocation, epsilon, world_bound);
+		bRefresh = true;
+	}
+	if (bRefresh)
+	{
+		wxRect screen_bound = pView->WorldToWindow(world_bound);
+		IncreaseRect(screen_bound, 5);
+		pView->Refresh(TRUE, &screen_bound);
+	}
+}
+
+bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float epsilon,
+									 DRECT &bound)
+{
+	NodeEdit *node = (NodeEdit *) FindNodeAtPoint(point, epsilon);
+	if (node)
+	{
+		DPoint2 p = node->m_p;
+		bound.SetRect(p.x-epsilon, p.y+epsilon, p.x+epsilon, p.y-epsilon);
+		return node->EditProperties(this);
 	}
 	return false; 
 }

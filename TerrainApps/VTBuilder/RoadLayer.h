@@ -19,15 +19,20 @@ public:
 	vtRoadLayer();
 	~vtRoadLayer();
 
+	// implementation of vtLayer methods
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, vtScaledView *pView);
 	bool ConvertProjection(vtProjection &proj);
-	void SetProjection(const vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
-	void GetProjection(vtProjection &proj);
 	bool AppendDataFrom(vtLayer *pL);
+	void GetProjection(vtProjection &proj);
+	void SetProjection(const vtProjection &proj);
 	void Offset(const DPoint2 &p);
+	void GetPropertyText(wxString &strIn);
+	void OnLeftDown(BuilderView *pView, UIContext &ui);
+	void OnRightUp(BuilderView *pView, UIContext &ui);
+	void OnLeftDoubleClick(BuilderView *pView, UIContext &ui);
 
 	static bool GetDrawNodes() { return m_bDrawNodes; }
 	static void SetDrawNodes(bool d) { m_bDrawNodes = d; }

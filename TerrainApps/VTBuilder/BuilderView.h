@@ -11,6 +11,7 @@
 #include "ScaledView.h"
 #include "vtdata/Projections.h"
 #include "vtdata/Building.h"
+#include "vtdata/Fence.h"
 
 class vtLayer;
 class vtRoadLayer;
@@ -24,34 +25,72 @@ class LinkEdit;
 //
 enum LBMode {
 	LB_None,	// none
-	LB_Road,	// select/edit roads
+	LB_Link,	// select/edit links
 	LB_Node,	// select/edit nodes
 	LB_Move,	// move selected nodes
 	LB_Pan,		// pan the view
 	LB_Dist,	// measure distance
 	LB_Mag,		// zoom into rectangle
-	LB_Path,	// pick points on a path
 	LB_Dir,		// show/change road direction
 	LB_LinkEdit,	// edit the points of a road centerline
-	LB_RoadExtend,  //extend a road selection,
+	LB_LinkExtend,  //extend a link selection,
 	LB_TSelect,		// select elevation layer
 	LB_Box,			// set area box
 	LB_FSelect,		// select feature
-	LB_BldEdit,		// edit building
+	LB_BldEdit,		// edit built structures
 	LB_AddLinear,	// structures: add linear features
+	LB_EditLinear,	// structures: add linear features
 	LB_AddPoints,	// add raw points
 	LB_TowerSelect,	// selectTowers
-	LB_TowerEdit,	// edit towers
 	LB_TowerAdd,	// Add Tower to layer
-	LB_Info			// Get info about features by picking them
+	LB_FeatInfo		// Get info about features by picking them
 };
 
 // A useful class to contain an array of bools
 class BoolArray : public Array<bool> {};
 
+struct UIContext
+{
+	bool	m_bLMouseButton;
+	bool	m_bMMouseButton;
+	bool	m_bRMouseButton;
+
+	bool	m_bRubber;
+
+	// Used while editing buildings
+	vtBuilding	*m_pCurBuilding, m_EditBuilding;
+	int		m_iCurCorner;
+	bool	m_bDragCenter;
+	bool	m_bRotate;
+	bool	m_bControl;
+	bool	m_bShift;
+	bool	m_bAlt;
+
+	// Used for linear structures
+	vtFence *m_pCurLinear, m_EditLinear;
+
+	// Used while editing roads
+	LinkEdit *m_pEditingRoad;
+	int		m_iEditingPoint;
+
+	// Left Mouse Button Mode
+	LBMode	mode;
+
+	// Mouse in world coordinates
+	DPoint2 m_DownLocation;
+	DPoint2 m_CurLocation;
+	DPoint2 m_PrevLocation;
+
+	// Mouse in canvas coords
+	wxPoint	m_DownPoint;
+	wxPoint m_CurPoint;		// current position of mouse
+	wxPoint m_LastPoint;	// last position of mouse
+};
 
 class BuilderView : public vtScaledView
 {
+	friend class vtRoadLayer;
+
 public:
 	BuilderView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, const wxString& name = "");
@@ -64,7 +103,7 @@ public:
 
 	// Mouse
 	void SetMode(LBMode m);
-	LBMode GetMode() { return m_mode; }
+	LBMode GetMode() { return m_ui.mode; }
 	void GetMouseLocation(DPoint2 &p);
 
 	// UTM zone boundary display
@@ -89,12 +128,6 @@ public:
 
 protected:
 	// Edit
-	void OnLeftDownEditShape(const wxMouseEvent& event);
-	void OnLeftDownAddPoint(const wxMouseEvent& event);
-	void OnLeftDownAddLinear(const wxMouseEvent& event);
-	void OnLeftDownTowerEdit(const wxMouseEvent& event);
-
-	void UpdateMove();
 	void UpdateResizeScale();
 	void UpdateRotate();
 	void OnDragDistance();
@@ -132,18 +165,9 @@ protected:
 	void OnLButtonClick(const wxMouseEvent& event);
 	void OnLButtonDragRelease(const wxMouseEvent& event);
 	void OnLButtonClickElement(vtRoadLayer *pRL);
-	void OnLButtonClickDirection(vtRoadLayer *pRL);
 	void OnLButtonClickLinkEdit(vtRoadLayer *pRL);
 	void OnLButtonClickFeature(vtLayer *pL);
-	void OnLButtonClickTowerEdit(vtUtilityLayer *TL);
-	void OnLButtonClickTowerAdd(vtUtilityLayer *pTL, const DPoint2 &point);
-	void OnLButtonClickInfo();
-	void OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point);
-	void OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point);
-	void OnRightUpRoad(vtRoadLayer *pRL);
 	void OnRightUpStructure(vtStructureLayer *pSL);
-	void OnRightUpUtility(vtUtilityLayer *pTL);
-	void OnLeftDownLinkEdit();
 
 	void OnMouseMove(const wxMouseEvent& event);
 	void OnMouseMoveLButton(const wxPoint &point);
@@ -151,23 +175,11 @@ protected:
 	void InvertRect(wxDC *pDC, const wxRect &r, bool bDashed = false);
 	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
 	void DrawArea(wxDC *pDC);
-	float BoundaryPixels();
 
-	// in canvas coords
-	wxPoint	m_DownPoint;
-	wxPoint m_CurPoint;		// current position of mouse
-	wxPoint m_LastPoint;	// last position of mouse
 	DRECT m_world_rect;		// rectangle box drawn by mouse
 
-	// in widow coords
+	// Mouse in window coords
 	wxPoint m_DownClient;
-
-	// in world coordinates
-	DPoint2 m_DownLocation;
-	DPoint2 m_CurLocation;
-
-	// Left Mouse Button Mode
-	LBMode	m_mode;
 
 	// Used while mouse button is down
 	bool	m_bMouseMoved;
@@ -175,26 +187,8 @@ protected:
 	bool	m_bBoxing;		// currently drawing a rubber box
 	int		m_iDragSide;	// which side of the area box being dragged
 
-	bool	m_bLMouseButton;
-	bool	m_bMMouseButton;
-	bool	m_bRMouseButton;
-
-	// Used while editing buildings
-	vtBuilding	*m_pCurBuilding, m_EditBuilding;
-	int		m_iCurCorner;
-	bool	m_bDragCenter;
-	bool	m_bRotate;
-	bool	m_bControl;
-	bool	m_bShift;
-	bool	m_bRubber;
-
-	// Used while editing utilities
-//	vtTower *m_pCurTower, m_EditTower;
-
 	// Used while editing roads
-	LinkEdit *m_pEditingRoad;
 	void RefreshRoad(LinkEdit *pRoad);
-	int		m_iEditingPoint;
 
 	wxCursor	*m_pCursorPan;
 
@@ -208,6 +202,8 @@ protected:
 	void ImportWorldMap();
 	void DrawWorldMap(wxDC* pDC, vtScaledView *pView);
 	void HideWorldMapEdges();
+
+	UIContext m_ui;
 
 	DECLARE_EVENT_TABLE()
 };
