@@ -35,7 +35,7 @@ DxfParser::DxfParser(const vtString &sFileName,
  * \returns Success.  If failure, then call GetLastError() to get an
  *		informative error message.
  */
-bool DxfParser::RetreiveEntities(bool progress_callback(int))
+bool DxfParser::RetrieveEntities(bool progress_callback(int))
 {
 	try
 	{
@@ -187,7 +187,11 @@ void DxfParser::ReadEntitySection(bool progress_callback(int))
 		{
 			long current = ftell(m_pFile);
 			int iProgress =  (int) ((double)current / m_iEndPosition * 100);
-			progress_callback(iProgress);
+			if (progress_callback(iProgress))
+			{
+				// user cancelled
+				throw "Cancelled by user.";
+			}
 			m_iCounter = 0;
 		}
 	}
