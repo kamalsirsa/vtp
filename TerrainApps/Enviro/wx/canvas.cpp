@@ -316,10 +316,11 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	if (event1.AltDown())
 		event.flags |= VT_ALT;
 
+	// inform vtlib scene, which informs the engines
+	vtGetScene()->OnMouse(event);
+
 	// inform Enviro app
 	g_App.OnMouse(event);
-
-	vtGetScene()->OnMouse(event);
 }
 
 void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
