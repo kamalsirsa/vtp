@@ -33,7 +33,7 @@ enum LodMethodEnum {
 
 // TParam Layer Types
 #define TERR_LTYPE_STRUCTURE	"Structure"
-#define TERR_LTYPE_RAW			"Raw"
+#define TERR_LTYPE_ABSTRACT		"Abstract"
 
 class RawStyle
 {
