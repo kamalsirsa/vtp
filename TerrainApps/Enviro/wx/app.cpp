@@ -109,6 +109,24 @@ void TestLocale()
 	catfile.TestHash(true);
 }
 
+int GetLangFromName(const wxString &name)
+{
+	int lang;
+	for (lang = wxLANGUAGE_ABKHAZIAN; lang < wxLANGUAGE_USER_DEFINED; lang++)
+	{
+		const wxLanguageInfo *info = wxLocale::GetLanguageInfo(lang);
+		if (name.CmpNoCase(info->Description) == 0)
+			return lang;
+		if (name.Length() == 2)
+		{
+			wxString shortname = info->CanonicalName.Left(2);
+			if (name.CmpNoCase(shortname) == 0)
+				return lang;
+		}
+	}
+	return wxLANGUAGE_UNKNOWN;
+}
+
 void vtApp::SetupLocale()
 {
 	wxLog::SetVerbose(true);
@@ -119,18 +137,22 @@ void vtApp::SetupLocale()
 	// Locale stuff
 	VTLOG("\n");
 	int lang = wxLANGUAGE_DEFAULT;
+	int default_lang = m_locale.GetSystemLanguage();
+
 	if (m_locale_name != "")
 	{
-		VTLOG("Initializing locale to language: %s\n", (const char *) m_locale_name);
-		if (m_locale_name == "swedish")
-			lang = wxLANGUAGE_SWEDISH;
-		else
+		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);
+		lang = GetLangFromName(wxString2(m_locale_name));
+		if (lang == wxLANGUAGE_UNKNOWN)
 		{
 			VTLOG(" Unknown, falling back on default language.\n");
 			lang = wxLANGUAGE_DEFAULT;
 		}
-		if (lang != wxLANGUAGE_DEFAULT)
+		else
+		{
+			VTLOG("Initializing locale to language %d\n", lang);
 			m_locale.Init(lang);
+		}
 	}
 	if (lang == wxLANGUAGE_DEFAULT)
 	{
