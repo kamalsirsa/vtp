@@ -12,6 +12,7 @@
 
 #include "vtdata/Projections.h"
 #include "vtdata/Plants.h"	// for vtPlantList
+#include "vtdata/Fence.h"	// for LinStructOptions
 
 #include "StatusBar.h"
 #include "Layer.h"
@@ -40,6 +41,8 @@ class PlantListDlg;
 class BioRegionDlg;
 class FeatInfoDlg;
 class DistanceDlg;
+class LinearStructureDlg;
+class LinearStructureDlg2d;
 
 class MainFrame: public wxFrame
 {
@@ -56,6 +59,7 @@ public:
 	virtual void AddMainToolbars();
 
 	void OnSize(wxSizeEvent& event);
+	void OnClose(wxCloseEvent &event);
 	void DeleteContents();
 
 	// Menu commands
@@ -172,11 +176,13 @@ public:
 	void OnFeatureTable(wxCommandEvent& event);
 	void OnBuildingEdit(wxCommandEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
+	void OnStructureEditLinear(wxCommandEvent& event);
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
 	void OnUpdateFeaturePick(wxUpdateUIEvent& event);
 	void OnUpdateFeatureTable(wxUpdateUIEvent& event);
 	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
+	void OnUpdateStructureEditLinear(wxUpdateUIEvent& event);
 
 	void OnRawSetType(wxCommandEvent& event);
 	void OnRawAddPoints(wxCommandEvent& event);
@@ -249,6 +255,7 @@ public:
 	}
 	int LayersOfType(LayerType lt);
 	vtLayer *FindLayerOfType(LayerType lt);
+	int NumModifiedLayers();
 	DRECT GetExtents();
 	LayerType AskLayerType();
 
@@ -275,6 +282,11 @@ public:
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);
 	double GetHeightFromTerrain(DPoint2 &p);
+
+	// Structures
+	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);
+	LinearStructureDlg2d *m_pLinearStructureDlg;
+	LinStructOptions m_LSOptions;
 
 	// Vegetation
 	vtPlantList m_PlantList;
