@@ -1303,7 +1303,8 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 	short isfloat = (short) IsFloatMode();
 	short external = 1;		// always true: we always write an external .prj file
 
-	short hunits = m_proj.GetUnits();
+	LinearUnits units = m_proj.GetUnits();
+	int hunits = (int) units;
 
 	// Latest header, version 1.2
 	short datasize = m_bFloatMode ? 4 : 2;
@@ -1548,7 +1549,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	ComputeCornersFromExtents();
 
 	m_proj.SetProjectionSimple(true, 1, WGS_84);
-	if (bytes_per_element == 4 || vertical_units != 1.0f)
+	if (bytes_per_element == 4)
 		m_bFloatMode = true;
 	else
 		m_bFloatMode = false;
@@ -1559,6 +1560,8 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	void *data = &z;
 	for (j = 0; j < m_iRows; j++)
 	{
+//		if (progress_callback != NULL)
+//			progress_callback(100*j/m_iRows);
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (bytes_per_element == 1)
@@ -1577,12 +1580,12 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 				SetFValue(i, m_iRows-1-j, *((float *)data) * vertical_units);
 			}
 		}
-//		if (progress_callback != NULL)
-//			progress_callback(100*j/m_iRows);
 	}
 
 	// Clean up
 	fclose(fp);
+
+	SetScale(vertical_units);
 
 	// Return success
 	return true;
