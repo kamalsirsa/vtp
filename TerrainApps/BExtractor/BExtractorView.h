@@ -129,6 +129,7 @@ protected:
 	bool	m_bRotate;
 	bool	m_bControl;
 	bool	m_bShift;
+	bool	m_bConstrain;
 
 	// transform screen space -> UTM space
 	double s_UTMx(int sx) { return ((sx - m_offset.x) * m_fScale); }
@@ -197,6 +198,7 @@ protected:
 	void UpdateResizeScale();
 	void UpdateRotate();
 	void DrawCurrentBuilding(CDC *pDC);
+	void ContrainLocationForPoly();
 
 // Generated message map functions
 protected:
@@ -239,6 +241,8 @@ protected:
 	afx_msg void OnChangeRoadColor();
 	afx_msg void OnModesRoadEdit();
 	afx_msg void OnUpdateModesRoadEdit(CCmdUI* pCmdUI);
+	afx_msg void OnConstrain();
+	afx_msg void OnUpdateConstrain(CCmdUI* pCmdUI);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

@@ -103,6 +103,7 @@ BEGIN
     BUTTON      ID_ZOOM_OUT
     BUTTON      ID_FULLRES
     BUTTON      ID_VIEW_VIEWFULLCOLORIMAGE
+    BUTTON      ID_CONSTRAIN
 END
 
 
@@ -133,6 +134,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Delete All",                  ID_FUNCTIONS_CLEARBUILDINGS
         MENUITEM "Delete All On Screen\tCtrl+L", ID_CLEARSCREEN
+        MENUITEM SEPARATOR
+        MENUITEM "Constrain Angles to 90 degrees\tV", ID_CONSTRAIN
     END
     POPUP "Functions"
     BEGIN
@@ -198,6 +201,7 @@ BEGIN
     "R",            ID_MODES_RECTANGLE,     VIRTKEY, NOINVERT
     "R",            ID_RMF_OPEN,            VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_CONSTRAIN,           VIRTKEY, NOINVERT
     "V",            ID_VIEW_CURRENT,        VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
@@ -596,6 +600,7 @@ BEGIN
     ID_RMF_SAVE             "Save the current roads to a RMF file\nSave RMF"
     ID_RMF_SAVE_AS          "Save current roads\nSave RMF As"
     ID_MODES_ROAD_EDIT      "Click on two nodes to add a road\nAdd road"
+    ID_CONSTRAIN            "Constrain Angles to 90 degrees"
 END
 
 #endif    // English (U.S.) resources

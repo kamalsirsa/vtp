@@ -91,6 +91,8 @@ BEGIN_MESSAGE_MAP(BExtractorView, CView)
 	ON_COMMAND(ID_CHANGE_ROAD_COLOR, OnChangeRoadColor)
 	ON_COMMAND(ID_MODES_ROAD_EDIT, OnModesRoadEdit)
 	ON_UPDATE_COMMAND_UI(ID_MODES_ROAD_EDIT, OnUpdateModesRoadEdit)
+	ON_COMMAND(ID_CONSTRAIN, OnConstrain)
+	ON_UPDATE_COMMAND_UI(ID_CONSTRAIN, OnUpdateConstrain)
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, CView::OnFilePrint)
@@ -98,11 +100,11 @@ BEGIN_MESSAGE_MAP(BExtractorView, CView)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, CView::OnFilePrintPreview)
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // BExtractorView construction/destruction
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 BExtractorView::BExtractorView()
 {
@@ -122,6 +124,8 @@ BExtractorView::BExtractorView()
 
 	m_scrollposH = SCROLL_MULT;
 	m_scrollposV = SCROLL_MULT;
+
+	m_bConstrain = false;
 
 	DWORD blah = MAX_PATH;
 	GetCurrentDirectory(blah, m_directory);
@@ -197,11 +201,11 @@ void BExtractorView::ReadEnviroPaths(vtStringArray &paths)
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // BExtractorView drawing
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 void BExtractorView::OnDraw(CDC* pDC)
 {
@@ -444,11 +448,11 @@ bool BExtractorView::FindNearestRoadNode(CPoint &point, Node **pNearestNode)
 	return (*pNearestNode != NULL);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // BExtractorView diagnostics
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 #ifdef _DEBUG
 void BExtractorView::AssertValid() const
@@ -468,15 +472,36 @@ BExtractorDoc* BExtractorView::GetDocument() // non-debug version is inline
 }
 #endif //_DEBUG
 
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // BExtractorView scroll, mouse handlers
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 void BExtractorView::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();	
+}
+
+void BExtractorView::ContrainLocationForPoly()
+{
+	int points = m_poly.GetSize();
+	DPoint2 p1 = m_poly[points-1];
+	DPoint2 p0 = m_poly[points-2];
+	DPoint2 vec = p1 - p0;	// Vector along last edge
+
+	vec.Normalize();
+	DPoint2 vec2 = m_curLocation - p0;	// Vector to new point
+
+	double a = vec2.Dot(vec);	// Distance along edge
+	DPoint2 result = p0 + (vec * a);
+	m_poly[points-1] = result;
+
+	vec.Rotate(PID2d);
+	double b = vec2.Dot(vec);	// Distance perpendicular to edge
+	result += (vec * b);
+
+	m_curLocation = result;
 }
 
 // keep the view offset within bounds
@@ -743,7 +768,8 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 	{
 		// If near a node then finish the road
 		// But make sure loops have at least 2 intermediate points
-		if (FindNearestRoadNode(nodePoint, &pNode) && ((pNode != m_pCurrentRoad->GetNode(0)) || (m_pCurrentRoad->GetSize() > 3)))
+		if (FindNearestRoadNode(nodePoint, &pNode) &&
+			((pNode != m_pCurrentRoad->GetNode(0)) || (m_pCurrentRoad->GetSize() > 3)))
 		{
 			m_pCurrentRoad->SetNode(1, pNode);
 			if (pNode != m_pCurrentRoad->GetNode(0))
@@ -790,6 +816,7 @@ void BExtractorView::OnRButtonDown(UINT nFlags, CPoint point)
 	m_bPanning = false;
 	if (m_mode == LB_Footprint)
 	{
+		// Cancel a polygonal footprint in progress
 		DPoint2 p;
 		s_UTM(point, p);
 		m_poly.Append(p);
@@ -807,6 +834,8 @@ void BExtractorView::OnRButtonDown(UINT nFlags, CPoint point)
 
 void BExtractorView::OnLButtonUp(UINT nFlags, CPoint point)
 {
+	s_UTM(point, m_curLocation);
+
 	switch (m_mode)
 	{
 	case LB_AddRemove: //we're selecting buildings
@@ -854,9 +883,6 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 {
 	BExtractorDoc* pDoc = GetDocument();
 
-	DPoint2 imagepoint;
-	s_UTM(point, imagepoint);
-
 	int points = m_poly.GetSize();
 	if (points > 2)
 	{
@@ -865,7 +891,7 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 		CPoint screenpoint;
 		UTM_s(m_poly[0], screenpoint);
 		CPoint diff = screenpoint - point;
-		if (abs(diff.x) + abs(diff.y) < 8)
+		if (abs(diff.x) + abs(diff.y) < 6)
 		{
 			// yes, done
 			vtBuilding *bld = new vtBuilding();
@@ -879,9 +905,11 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 			return;
 		}
 	}
+	if (points > 1 && m_bConstrain)
+		ContrainLocationForPoly();
 
 	// add points to poly
-	m_poly.Append(imagepoint);
+	m_poly.Append(m_curLocation);
 }
 
 void BExtractorView::OnLButtonUpRectangle(CPoint point)
@@ -1047,6 +1075,7 @@ void BExtractorView::OnMButtonUp(UINT nFlags, CPoint point)
 void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	m_lastMousePoint = point;
+	s_UTM(point, m_curLocation);
 
 	BExtractorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -1084,6 +1113,14 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 		{
 			DrawPoly(pDC);
 			pDC->LineTo(m_oldPoint.x, m_oldPoint.y);
+		}
+		if (points > 1 && m_bConstrain)
+		{
+			ContrainLocationForPoly();
+			UTM_s(m_curLocation, point);
+		}
+		if (points > 0)
+		{
 			DrawPoly(pDC);
 			pDC->LineTo(point.x, point.y);
 		}
@@ -1110,8 +1147,6 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		if (m_bRubber)
 		{
-			s_UTM(point, m_curLocation);
-
 			DrawCurrentBuilding(pDC);
 			if (m_bDragCenter)
 				UpdateMove();
@@ -2097,4 +2132,14 @@ void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI)
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 	pCmdUI->SetCheck(m_mode == LB_EditRoad);
+}
+
+void BExtractorView::OnConstrain() 
+{
+	m_bConstrain = !m_bConstrain;
+}
+
+void BExtractorView::OnUpdateConstrain(CCmdUI* pCmdUI) 
+{
+	pCmdUI->SetCheck(m_bConstrain);
 }

@@ -63,6 +63,7 @@
 #define ID_RMF_SAVE                     32823
 #define ID_RMF_SAVE_AS                  32824
 #define ID_MODES_ROAD_EDIT              32825
+#define ID_CONSTRAIN                    32830
 #define CGS_KERNEL                      61446
 
 // Next default values for new objects
@@ -71,7 +72,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        136
-#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_COMMAND_VALUE         32831
 #define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
