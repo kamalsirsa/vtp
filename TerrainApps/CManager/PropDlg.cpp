@@ -54,9 +54,9 @@ void PropDlg::OnAddTag( wxCommandEvent &event )
 	TagDlg dlg(GetMainFrame(), -1, _T("Add New Tag"));
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		vtTag *tag = new vtTag();
-		tag->name = dlg.m_strName.mb_str();
-		tag->value = dlg.m_strValue.mb_str();
+		vtTag tag;
+		tag.name = dlg.m_strName.mb_str();
+		tag.value = dlg.m_strValue.mb_str();
 		m_pCurrentItem->AddTag(tag);
 		UpdateTagList();
 	}
