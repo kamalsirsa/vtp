@@ -120,8 +120,7 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 	bool bFloats, float fScale, vtProjection proj) : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
-	m_pGrid = new vtElevationGrid(area, iColumns, iRows,
-			bFloats, proj);
+	m_pGrid = new vtElevationGrid(area, iColumns, iRows, bFloats, proj);
 	m_pGrid->SetScale(fScale);
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 
@@ -792,6 +791,15 @@ void vtElevLayer::Offset(const DPoint2 &p)
 	}
 }
 
+vtHeightField *vtElevLayer::GetHeightField()
+{
+	if (m_pGrid)
+		return m_pGrid;
+	if (m_pTin)
+		return m_pTin;
+	return NULL;
+}
+
 float vtElevLayer::GetElevation(DPoint2 &p)
 {
 	if (m_pGrid)
@@ -799,7 +807,7 @@ float vtElevLayer::GetElevation(DPoint2 &p)
 	if (m_pTin)
 	{
 		float fAltitude;
-		if (m_pTin->FindAltitudeAtPoint(p, fAltitude))
+		if (m_pTin->FindAltitudeAtPoint2(p, fAltitude))
 			return fAltitude;
 	}
 	return INVALID_ELEVATION;

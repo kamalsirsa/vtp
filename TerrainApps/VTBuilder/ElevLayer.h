@@ -12,6 +12,7 @@
 #include "Layer.h"
 #include "vtdata/vtTin.h"
 
+class vtHeightField;
 class vtElevationGrid;
 class vtDIB;
 
@@ -62,6 +63,7 @@ public:
 	void SetupDefaults();
 
 	// heightfield operations
+	vtHeightField *GetHeightField();
 	void Offset(const DPoint2 &p);
 	float GetElevation(DPoint2 &p);
 	bool ImportFromFile(wxString &strFileName, void progress_callback(int am));
