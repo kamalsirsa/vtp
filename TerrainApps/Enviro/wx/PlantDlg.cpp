@@ -53,6 +53,13 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
 	m_bSetting = false;
+
+	AddValidator(ID_SPECIES, &m_opt.m_iSpecies);
+	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);
+	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing);
+
+	AddNumValidator(ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
+	AddValidator(ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
 }
 
 void PlantDlg::SetPlantList(vtSpeciesList3d *plants)	
@@ -73,7 +80,15 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	for (i = 0; i < num; i++)
 	{
 		plant = plants->GetSpecies(i);
+#if 1
 		str.from_utf8(plant->GetCommonName());
+#else
+		// ZLF says this is required for Chinese locale, otherwise it crashes?
+		// However, we don't have wstring2 on every platform.
+		wstring2 ws;
+		ws.from_utf8(plant->GetCommonName());
+		str = ws._Myptr();
+#endif
 		m_pSpecies->Append(str);
 
 		// Default to 80% of the maximum height of each species
@@ -229,13 +244,6 @@ void PlantDlg::ModeToRadio()
 
 void PlantDlg::OnInitDialog(wxInitDialogEvent& event)	
 {
-	AddValidator(ID_SPECIES, &m_opt.m_iSpecies);
-	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);
-	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing);
-
-	AddNumValidator(ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
-	AddValidator(ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
-
 	HeightToSlider();
 	ModeToRadio();
 	m_iVarianceSlider = m_opt.m_iVariance;
