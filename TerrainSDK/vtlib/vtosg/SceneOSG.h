@@ -1,7 +1,7 @@
 //
 // SceneOSG.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,7 +46,7 @@ public:
 
 	void UpdateBegin();
 	void UpdateEngines();
-	void UpdateWindow(vtWindow *window = NULL);
+	void UpdateWindow(vtWindow *window);
 
 	// backward compatibility
 	void DoUpdate();
@@ -89,6 +89,9 @@ public:
 		if (GetWindow(0))
 			GetWindow(0)->SetBgColor(color);
 	}
+
+	// OSG access
+	osgUtil::SceneView *getSceneView() { return m_pOsgSceneView.get(); }
 
 protected:
 	// OSG-specific implementation

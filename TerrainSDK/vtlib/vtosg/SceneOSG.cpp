@@ -3,7 +3,7 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -198,6 +198,7 @@ void vtScene::UpdateWindow(vtWindow *pWindow)
 #if USE_OSG_UPDATE
 	m_pOsgSceneView->update();
 #endif
+
 	m_pOsgSceneView->cull();
 	m_pOsgSceneView->draw();
 }
