@@ -85,7 +85,7 @@ zip $DIST_FILE1 VTP/TerrainApps/glutSimple/glutSimple-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/README.txt
-zip $DIST_FILE1 VTP/TerrainApps/glutSimple/Data/Simple.ini
+zip $DIST_FILE1 VTP/TerrainApps/glutSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/Data/Elevation/README.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/*.cpp
@@ -93,7 +93,7 @@ zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/*.h
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.sln
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.rc
-zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Simple.ini
+zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Elevation/README.txt
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/res/*
 
@@ -102,7 +102,7 @@ zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.sln
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Makefile
-zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Data/Simple.ini
+zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Data/Elevation/README.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/*.cpp
@@ -124,7 +124,7 @@ zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/README.txt
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple.vcproj
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple-OSG.sln
-zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Simple.ini
+zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Elevation/README.txt
 
 
