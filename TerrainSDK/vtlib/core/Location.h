@@ -84,11 +84,7 @@ public:
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 
-#if SUPPORT_WSTRING
-	bool StoreTo(unsigned int num, const wstring2 &name = L"");
-#else
-	bool StoreTo(unsigned int num, const std::string &name = "");
-#endif
+	bool StoreTo(unsigned int num, const LocNameString &name = "");
 	bool RecallFrom(int num);
 
 	// Store information necessary to convert from global earth CS
