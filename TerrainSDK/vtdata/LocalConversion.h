@@ -30,16 +30,16 @@ public:
 	void Setup(LinearUnits units, const DPoint2 &origin);
 	void SetOrigin(const DPoint2 &origin);
 
-	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth);
-	void ConvertToEarth(float x, float z, DPoint2 &earth);
+	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth) const;
+	void ConvertToEarth(float x, float z, DPoint2 &earth) const;
 
-	void ConvertFromEarth(const DPoint2 &earth, float &x, float &z);
-	void ConvertFromEarth(const DPoint3 &earth, FPoint3 &world);
+	void ConvertFromEarth(const DPoint2 &earth, float &x, float &z) const;
+	void ConvertFromEarth(const DPoint3 &earth, FPoint3 &world) const;
 
-	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z);
-	void convert_local_xz_to_earth(float x, float z, double &ex, double &ey);
+	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z) const;
+	void convert_local_xz_to_earth(float x, float z, double &ex, double &ey) const;
 
-	LinearUnits GetUnits() { return m_units; }
+	LinearUnits GetUnits() const { return m_units; }
 
 protected:
 	LinearUnits m_units;

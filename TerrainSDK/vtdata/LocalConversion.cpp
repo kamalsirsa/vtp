@@ -25,14 +25,14 @@ vtLocalConversion g_Conv;
 
 vtLocalConversion::vtLocalConversion()
 {
-	m_EarthOrigin.Set(0, 0);
+	SetOrigin(DPoint2(0, 0));
 }
 
 void vtLocalConversion::Setup(LinearUnits units, const DPoint2 &origin)
 {
 	m_units = units;
 
-	m_EarthOrigin = origin;
+	SetOrigin(origin);
 	if (units == LU_DEGREES)
 	{
 		double fMetersPerLongitude = EstimateDegreesToMeters(origin.y);
@@ -51,14 +51,14 @@ void vtLocalConversion::SetOrigin(const DPoint2 &origin)
 }
 
 void vtLocalConversion::convert_earth_to_local_xz(double ex, double ey,
-												  float &x, float &z)
+												  float &x, float &z) const
 {
 	x = (float) ((ex - m_EarthOrigin.x) * m_scale.x);
 	z = (float) -((ey - m_EarthOrigin.y) * m_scale.y);
 }
 
 void vtLocalConversion::convert_local_xz_to_earth(float x, float z,
-												  double &ex, double &ey)
+												  double &ex, double &ey) const
 {
 	ex = m_EarthOrigin.x + (x / m_scale.x);
 	ey = m_EarthOrigin.y + (-z / m_scale.y);
@@ -68,7 +68,7 @@ void vtLocalConversion::convert_local_xz_to_earth(float x, float z,
  * Convert from the coordinate system of the virtual world (x,y,z) to actual
  * earth coodinates (map coordinates, altitude in meters)
  */
-void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
+void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth) const
 {
 	convert_local_xz_to_earth(world.x, world.z, earth.x, earth.y);
 	earth.z = world.y;
@@ -78,7 +78,7 @@ void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
  * Convert from earth coodinates (map coordinates, altitude in meters) to
  * the coordinate system of the virtual world (x,y,z)
  */
-void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
+void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world) const
 {
 	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.z);
 	world.y = (float) earth.z;
@@ -88,7 +88,7 @@ void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
  * Convert from the coordinate system of the virtual world (x,y,z) to actual
  * earth coodinates (map coordinates, altitude in meters)
  */
-void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth)
+void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth) const
 {
 	convert_local_xz_to_earth(x, z, earth.x, earth.y);
 }
@@ -97,7 +97,7 @@ void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth)
  * Convert from earth coodinates (map coordinates, altitude in meters) to
  * the coordinate system of the virtual world (x,y,z)
  */
-void vtLocalConversion::ConvertFromEarth(const DPoint2 &earth, float &x, float &z)
+void vtLocalConversion::ConvertFromEarth(const DPoint2 &earth, float &x, float &z) const
 {
 	convert_earth_to_local_xz(earth.x, earth.y, x, z);
 }
