@@ -109,7 +109,6 @@ EVT_MENU(ID_ROAD_SELECTWHOLE,	MainFrame::OnSelectWhole)
 EVT_MENU(ID_ROAD_DIRECTION,		MainFrame::OnDirection)
 EVT_MENU(ID_ROAD_EDIT,			MainFrame::OnRoadEdit)
 EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnRoadShowNodes)
-EVT_MENU(ID_ROAD_SHOWWIDTH,		MainFrame::OnRoadShowWidth)
 EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
 EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
 EVT_MENU(ID_ROAD_GUESS,			MainFrame::OnRoadGuess)
@@ -121,7 +120,6 @@ EVT_UPDATE_UI(ID_ROAD_SELECTWHOLE,	MainFrame::OnUpdateSelectWhole)
 EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
 EVT_UPDATE_UI(ID_ROAD_EDIT,			MainFrame::OnUpdateRoadEdit)
 EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
-EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
 EVT_UPDATE_UI(ID_ROAD_FLATTEN,		MainFrame::OnUpdateRoadFlatten)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
@@ -132,9 +130,6 @@ EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
 EVT_MENU(ID_ELEV_EXPORT_GEOTIFF,	MainFrame::OnExportGeoTIFF)
 EVT_MENU(ID_ELEV_EXPORT_BMP,		MainFrame::OnExportBMP)
-EVT_MENU(ID_ELEV_SHOW,				MainFrame::OnElevShow)
-EVT_MENU(ID_ELEV_SHADING,			MainFrame::OnElevShading)
-EVT_MENU(ID_ELEV_HIDE,				MainFrame::OnElevHide)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
@@ -146,9 +141,6 @@ EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_EXPORT_GEOTIFF, MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_EXPORT_BMP,	MainFrame::OnUpdateIsGrid)
-EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
-EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
-EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
@@ -301,10 +293,6 @@ void MainFrame::CreateMenus()
 	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _T("Show UTM Boundaries"));
 //	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, _T("Show 7.5\" Grid"), _T("Show 7.5\" Grid"), true);
 	viewMenu->AppendSeparator();
-	viewMenu->AppendCheckItem(ID_ELEV_SHOW, _T("Show Terrain Elevation"));
-	viewMenu->AppendCheckItem(ID_ELEV_SHADING, _T("Artificial Shading"));
-	viewMenu->AppendCheckItem(ID_ELEV_HIDE, _T("Hide Unknown Areas"));
-	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_OPTIONS, _T("Options"));
 	m_pMenuBar->Append(viewMenu, _T("&View"));
 	menu_num++;
@@ -319,7 +307,6 @@ void MainFrame::CreateMenus()
 	roadMenu->AppendCheckItem(ID_ROAD_EDIT, _T("Edit Road Points"));
 	roadMenu->AppendSeparator();
 	roadMenu->AppendCheckItem(ID_ROAD_SHOWNODES, _T("Show Nodes"));
-	roadMenu->AppendCheckItem(ID_ROAD_SHOWWIDTH, _T("Show Width"), _T("Show the width of each road"));
 	roadMenu->AppendCheckItem(ID_ROAD_SELECTHWY, _T("Select by Highway Number"));
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, _T("Clean RoadMap"), _T("Clean"));
@@ -433,13 +420,13 @@ void MainFrame::CreateMenus()
 	SetMenuBar(m_pMenuBar);
 
 #if 0
-    // Accelerators
+	// Accelerators
 	wxAcceleratorEntry entries[5];
 	entries[0].Set(wxACCEL_CTRL, (int) 'O', ID_FILE_OPEN);
 	entries[1].Set(wxACCEL_CTRL, (int) 'S', ID_FILE_SAVE);
 	entries[2].Set(wxACCEL_CTRL, (int) '+', ID_VIEW_ZOOMIN);
 	entries[3].Set(wxACCEL_CTRL, (int) '-', ID_VIEW_ZOOMOUT);
-	entries[4].Set(wxACCEL_NORMAL,  WXK_DELETE,    ID_EDIT_DELETE);
+	entries[4].Set(wxACCEL_NORMAL,  WXK_DELETE, ID_EDIT_DELETE);
 	wxAcceleratorTable accel(5, entries);
 	SetAcceleratorTable(accel);
 #endif
@@ -1491,29 +1478,63 @@ void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
 {
 	OptionsDlg dlg(this, -1, _T("Options"));
 
-	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
-	dlg.m_bShowPath = m_pTree->GetShowPaths();
 	dlg.m_bShowToolbar = toolBar_main->IsShown();
+	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
 	dlg.m_iElevUnits = (int)(m_statbar->m_ShowVertUnits) - 1;
 
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		m_statbar->m_bShowMinutes = dlg.m_bShowMinutes;
-		m_statbar->m_ShowVertUnits = (LinearUnits) (dlg.m_iElevUnits + 1);
+	dlg.SetElevDrawOptions(vtElevLayer::m_draw);
 
-		if (dlg.m_bShowToolbar != toolBar_main->IsShown())
+	dlg.m_bShowRoadWidth = vtRoadLayer::GetDrawWidth();
+	dlg.m_bShowPath = m_pTree->GetShowPaths();
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	bool bNeedRefresh = false;
+
+	if (dlg.m_bShowToolbar != toolBar_main->IsShown())
+	{
+		toolBar_main->Show(dlg.m_bShowToolbar);
+		// send a fake OnSize event so the frame will draw itself correctly
+		wxSizeEvent dummy;
+		wxFrame::OnSize(dummy);
+	}
+	m_statbar->m_bShowMinutes = dlg.m_bShowMinutes;
+	m_statbar->m_ShowVertUnits = (LinearUnits) (dlg.m_iElevUnits + 1);
+
+	ElevDrawOptions opt;
+	dlg.GetElevDrawOptions(opt);
+
+	if (vtElevLayer::m_draw != opt)
+	{
+		vtElevLayer::m_draw = opt;
+
+		// tell them to redraw themselves
+		for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 		{
-			toolBar_main->Show(dlg.m_bShowToolbar);
-			// send a fake OnSize event so the frame will draw itself correctly
-			wxSizeEvent dummy;
-			wxFrame::OnSize(dummy);
-		}
-		if (dlg.m_bShowPath != m_pTree->GetShowPaths())
-		{
-			m_pTree->SetShowPaths(dlg.m_bShowPath);
-			m_pTree->RefreshTreeItems(this);
+			vtLayer *lp = m_Layers.GetAt(i);
+			if (lp->GetType() == LT_ELEVATION)
+			{
+				vtElevLayer *elp = (vtElevLayer *)lp;
+				elp->ReRender();
+				bNeedRefresh = true;
+			}
 		}
 	}
+
+	bool bWidth = dlg.m_bShowRoadWidth;
+	if (vtRoadLayer::GetDrawWidth() != bWidth && LayersOfType(LT_ROAD) > 0)
+		bNeedRefresh = true;
+	vtRoadLayer::SetDrawWidth(bWidth);
+
+	if (dlg.m_bShowPath != m_pTree->GetShowPaths())
+	{
+		m_pTree->SetShowPaths(dlg.m_bShowPath);
+		m_pTree->RefreshTreeItems(this);
+	}
+
+	if (bNeedRefresh)
+		m_pView->Refresh();
 }
 
 
@@ -1580,18 +1601,6 @@ void MainFrame::OnRoadShowNodes(wxCommandEvent &event)
 void MainFrame::OnUpdateRoadShowNodes(wxUpdateUIEvent& event)
 {
 	event.Check(vtRoadLayer::GetDrawNodes());
-}
-
-void MainFrame::OnRoadShowWidth(wxCommandEvent &event)
-{
-	bool state = vtRoadLayer::GetDrawWidth();
-	vtRoadLayer::SetDrawWidth(!state);
-	m_pView->Refresh();
-}
-
-void MainFrame::OnUpdateRoadShowWidth(wxUpdateUIEvent& event)
-{
-	event.Check(vtRoadLayer::GetDrawWidth());
 }
 
 void MainFrame::OnSelectHwy(wxCommandEvent &event)
@@ -2110,67 +2119,6 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 		delete pRL;
 */
 #endif
-}
-
-void MainFrame::OnElevShow(wxCommandEvent &event)
-{
-	vtElevLayer::m_bShowElevation = !vtElevLayer::m_bShowElevation;
-	m_pView->Refresh();
-}
-
-void MainFrame::OnUpdateElevShow(wxUpdateUIEvent& event)
-{
-	event.Check(vtElevLayer::m_bShowElevation);
-}
-
-void MainFrame::OnElevShading(wxCommandEvent &event)
-{
-	vtElevLayer::m_bShading = !vtElevLayer::m_bShading;
-
-	if (!LayersOfType(LT_ELEVATION))
-		return;
-
-	// refresh the display
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
-	{
-		vtLayer *lp = m_Layers.GetAt(i);
-		if (lp->GetType() == LT_ELEVATION)
-		{
-			vtElevLayer *elp = (vtElevLayer *)lp;
-			elp->ReRender();
-		}
-	}
-	m_pView->Refresh();
-}
-
-void MainFrame::OnUpdateElevShading(wxUpdateUIEvent& event)
-{
-	event.Check(vtElevLayer::m_bShading);
-}
-
-void MainFrame::OnElevHide(wxCommandEvent &event)
-{
-	vtElevLayer::m_bDoMask = !vtElevLayer::m_bDoMask;
-
-	if (!LayersOfType(LT_ELEVATION))
-		return;
-
-	// refresh the display
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
-	{
-		vtLayer *lp = m_Layers.GetAt(i);
-		if (lp->GetType() == LT_ELEVATION)
-		{
-			vtElevLayer *elp = (vtElevLayer *)lp;
-			elp->ReRender();
-		}
-	}
-	m_pView->Refresh();
-}
-
-void MainFrame::OnUpdateElevHide(wxUpdateUIEvent& event)
-{
-	event.Check(vtElevLayer::m_bDoMask);
 }
 
 
