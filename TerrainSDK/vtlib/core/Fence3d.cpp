@@ -146,7 +146,6 @@ void vtFence3d::CreateMeshesWithPosts(vtHeightField3d *pHeightField)
 	DPoint2 diff, dp;
 	float fCurrentSpacing = m_fSpacing * s_fFenceScale;
 	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
-	float fFenceHeightScaled = m_fHeight * s_fFenceScale;
 
 	// first determine where the fence posts go, for this whole array
 	// of fences

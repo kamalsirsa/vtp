@@ -965,7 +965,6 @@ void vtTerrain::CreateStructures(vtStructureArray3d *structures)
 
 bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 {
-	vtStructure *str = (vtStructure *) structures->GetAt(index);
 	vtStructure3d *str3d = structures->GetStructure3d(index);
 
 	// Construct
@@ -1051,7 +1050,7 @@ void vtTerrain::DeleteSelectedStructures()
 	structures->DeleteSelected();
 }
 
-void vtTerrain::DeleteStructureSet(int index)
+void vtTerrain::DeleteStructureSet(unsigned int index)
 {
 	vtStructureArray3d *sa = m_StructureSet[index];
 
@@ -2283,7 +2282,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 	FPoint3 v1, v2, v;
 
 	// try to guess how finely to tesselate our line
-	float fSpacing;
+	float fSpacing=0;
 	if (m_pDynGeom)
 	{
 		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
@@ -2314,7 +2313,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 			p.Set(line[i].x, line[i].y, 0);
 			spline.AddPoint(p);
 		}
-		bool result = spline.Generate();
+		spline.Generate();
 
 		// estimate how many steps to subdivide this line into
 		double dLinearLength = line.Length();

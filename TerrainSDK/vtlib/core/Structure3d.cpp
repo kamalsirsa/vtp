@@ -285,7 +285,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 		}
 		if (str->GetType() == ST_LINEAR)
 		{
-			vtFence3d *fen = GetFence(i);
+			// vtFence3d *fen = GetFence(i);
 			// TODO: implement moving of fences?
 		}
 		if (str->GetType() == ST_INSTANCE)
@@ -521,9 +521,6 @@ void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *
 	if (path == "")
 		return;
 
-	int divisions = 6;
-	float start = .25f;
-	int step = (int) ((1.0f-start)/(divisions-1));
 	for (int i = 0; i < COLOR_SPREAD; i++)
 	{
 		vtMaterial *pMat = MakeMaterial(m_Colors[i], true);

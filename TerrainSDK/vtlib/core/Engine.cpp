@@ -40,8 +40,6 @@ vtLastMouse::vtLastMouse() : vtEngine()
 
 void vtLastMouse::OnMouse(vtMouseEvent &event)
 {
-	const char *name = GetName2();
-
 	switch (event.type)
 	{
 	case VT_UP:

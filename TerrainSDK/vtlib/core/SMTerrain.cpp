@@ -1106,11 +1106,9 @@ void SMTerrain::RenderSurface()
 		}
 	}
 
-	if (m_bUseTriStrips)
-	{
-		// statistics
-		float ratio = (float) m_iDrawnTriangles / (float) fan_count;
-	}
+	// statistics
+//	if (m_bUseTriStrips)
+//		float ratio = (float) m_iDrawnTriangles / (float) fan_count;
 
 	DisableTexGen();
 	glPopMatrix();

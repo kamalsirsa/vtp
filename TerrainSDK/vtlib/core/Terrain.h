@@ -171,7 +171,7 @@ public:
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	void DeleteSelectedStructures();
-	void DeleteStructureSet(int index);
+	void DeleteStructureSet(unsigned int index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest, float fMaxInstRadius);
 	bool AddNodeToStructGrid(vtTransform *pTrans);

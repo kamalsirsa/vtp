@@ -39,7 +39,7 @@ bool vtItem3d::LoadModels()
 	int i, models = NumModels();
 
 	// attempt to instantiate the item
-	vtLOD *pLod;
+	vtLOD *pLod=NULL;
 
 	if (models > 1)
 	{

@@ -55,9 +55,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	m_pGeom->SetMaterials(pMats);
 	pMats->Release();	// Pass ownership to geometry
 
-	int i, j, k;
-	int verts = NumVerts();
-
 	// Break it up into a series of meshes - this is good for both
 	// culling and memory management
 
@@ -81,12 +78,13 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	sizey += 0.000002;
 
 	int divx, divy;		// number of x and y divisions
-	int dsize;
+	int dsize=0;
 	Bin *bins = NULL;
 	int tris = NumTris();
 	int bx, by;
 	DPoint2 gp;
 
+	int i, j, k;
 	int divs = 4;
 	bool acceptable = false;
 	while (!acceptable)

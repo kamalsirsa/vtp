@@ -574,13 +574,10 @@ void vtSkyDome::ApplyDomeColors()
 	float sunpct;
 	float fademod;
 
-	float midseqpct;
-
 	if (m_fSunAlt >= -5 && m_fSunAlt <= 5)
 	{
 		// dawn
 		fademod = NITE_GLO + (1.0f - NITE_GLO) * (float)(m_fSunAlt + 5)/10;
-		midseqpct = fabsf(m_fSunAlt)/5;
 	}
 	else if (m_fSunAlt < -5)
 	{
@@ -618,6 +615,8 @@ void vtSkyDome::ApplyDomeColors()
 		// Sunrise/sunset glow
 		if (m_fSunAlt >= -5 && m_fSunAlt <= 5)
 		{
+			float midseqpct = fabsf(m_fSunAlt)/5;
+
 			// Hack
 			if (m_fSunAzi > 180)
 			{
@@ -846,7 +845,8 @@ bool vtStarDome::ReadStarData(const char *starfile)
 	FILE *starfp = NULL;
 	Star *curstar;
 
-	if (!(starfp = fopen(starfile, "r")))
+	starfp = fopen(starfile, "r");
+	if (!starfp)
 	{
 		VTLOG("Couldn't open %s\n", starfile);
 		return false;

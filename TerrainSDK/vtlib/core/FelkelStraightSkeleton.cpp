@@ -354,9 +354,9 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 	return true;
 }
 
-CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed)
+CSkeletonLine *CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed)
 {
-	CSkeletonLine* pNextEdge;
+	CSkeletonLine *pNextEdge=NULL;
 	C3DPoint OldPoint;
 	CRidgeLine OldEdge;
 	CRidgeLine NewEdge;

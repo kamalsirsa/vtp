@@ -168,7 +168,7 @@ public:
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
 	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
-	bool operator < (const CVertex &) const { if (true) VTLOG("%s %d Assert failed\n", __FILE__, __LINE__); return false; }
+	bool operator < (const CVertex &) const { VTLOG("%s %d Assert failed\n", __FILE__, __LINE__); return false; }
 	C3DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
@@ -244,7 +244,7 @@ public:
 	{
 		return m_higher.m_vertex -> m_ID == s.m_higher.m_vertex -> m_ID  && m_lower.m_vertex -> m_ID  == s.m_lower.m_vertex -> m_ID ;
 	}
-	bool operator < (const CSkeletonLine &) const { if (true) VTLOG("%s %d Assert failed\n", __FILE__, __LINE__); return false; }
+	bool operator < (const CSkeletonLine &) const { VTLOG("%s %d Assert failed\n", __FILE__, __LINE__); return false; }
 	int m_ID;
 };
 

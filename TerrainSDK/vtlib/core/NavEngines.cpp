@@ -545,7 +545,7 @@ void VFlyer::Eval()
 	}*/
 
 	// allow the user to move up-down even in maintain-height mode
-	bool bPreserveMaintain;
+	bool bPreserveMaintain=false;
 	if (bUpDown)
 	{
 		bPreserveMaintain = m_bMaintain;

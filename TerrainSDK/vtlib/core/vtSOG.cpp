@@ -225,7 +225,7 @@ void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 	RGBf rgb;
 	FPoint2 uv;
 
-	bool need_prim_lengths;
+	bool need_prim_lengths = false;
 	switch (pMesh->GetPrimType())
 	{
 	case GL_POINTS:
@@ -255,7 +255,7 @@ void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 
 	// write primitive type (line, triangles, strip..)
 	short ptype = pMesh->GetPrimType();
-	Write(fp, FT_PRIM_TYPE, vtype);
+	Write(fp, FT_PRIM_TYPE, ptype);
 
 	// write material index
 	short matidx = pMesh->GetMatIndex();
@@ -563,7 +563,7 @@ vtGeom *InputSOG::ReadGeometry(FILE *fp, vtMaterialArray *pMats)
 {
 	short num_mesh, components;
 	short token, len, i, j;
-	bool eof = false;
+//	bool eof = false;
 
 	Read(fp, token, len);
 	assert(token == FT_GEOMETRY);

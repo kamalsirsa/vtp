@@ -296,14 +296,15 @@ vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
  */
 vtPlantAppearance3d *vtPlantSpecies3d::GetAppearanceByHeight(float fHeight)
 {
+	unsigned int i, size = m_Apps.GetSize();
+
 	// simple case: if only one appearance, nothing random is possible
-	if (m_Apps.GetSize() == 1)
+	if (size == 1)
 		return (vtPlantAppearance3d *) m_Apps[0];
 
 	// find the appearance closest to that height
 	float closest_diff = m_fMaxHeight;
-	float closest_value;
-	unsigned int i, size = m_Apps.GetSize();
+	float closest_value=0;
 	for (i = 0; i < size; i++)
 	{
 		vtPlantAppearance *pa = m_Apps[i];

@@ -183,7 +183,7 @@ void NodeGeom::BuildIntersection()
 			// get info about the roads
 			Link *pR = GetRoad(i);
 			Link *pR_next = GetRoad(i_next);
-			Link *pR_prev = GetRoad(i_prev);
+			//Link *pR_prev = GetRoad(i_prev);
 			w = pR->m_fWidth;
 			float w_next = pR_next->m_fWidth;
 
@@ -735,16 +735,10 @@ void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 	a = (int)((center.x - m_extents.min.x) / m_extent_range.x * ROAD_CLUSTER);
 	b = (int)((center.z - m_extents.min.z) / m_extent_range.z * ROAD_CLUSTER);
 
-	// safety check
-	if (a < 0 || a >= ROAD_CLUSTER || b < 0 || b >= ROAD_CLUSTER)
-	{
-		// the geometry has somehow gotten mangled, so it's producing extents
-		// outside of what they should be
-		// go no further
-		return;
-		int c = 0;
-		int d = 1 / c;	// boom
-	}
+	// safety check: if the following is true, then the geometry
+	// has somehow gotten mangled, so it's producing extents
+	// outside of what they should be, go no further
+	assert(a >= 0 && a < ROAD_CLUSTER && b >= 0 && b < ROAD_CLUSTER);
 
 	vtGeom *pGeom;
 	if (m_pRoads[a][b])

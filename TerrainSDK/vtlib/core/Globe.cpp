@@ -72,7 +72,7 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 	EstimateTesselation(iTriangleCount);
 
 	// Estimate number of meshes, and number of vertices per mesh
-	int i, numvtx;
+	int numvtx=0;
 	if (m_style == GEODESIC)
 	{
 		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
@@ -84,7 +84,7 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 		m_meshes = (style == RIGHT_TRIANGLE) ? 20 : 22;
 	}
 
-	for (i = 0; i < m_meshes; i++)
+	for (int i = 0; i < m_meshes; i++)
 	{
 		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
 		if (strImagePrefix == "")
@@ -353,7 +353,6 @@ void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 				}
 			}
 		}
-		int got = merges;
 	}
 	while (merges != 0);
 
@@ -944,7 +943,7 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 		}
 	}
 	// Next pass: the strips
-	int row_start = 0;
+	int row_start = 0, count = 0;
 	unsigned short *indices = new unsigned short[m_freq * 2 + 2];
 
 	for (j = 0; j < m_freq; j++)
@@ -952,8 +951,7 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 		int row_len = (m_freq-j) + 1;
 
 		// Number of vertices in this strip:
-		int size = row_len * 2 - 1;
-		int count = 0;
+		// int size = row_len * 2 - 1;
 
 		indices[count++] = vtx_base + row_start + row_len-1;
 		for (i = row_len-2; i >= 0; i--)
@@ -1168,7 +1166,6 @@ void IcoGlobe::CreateMaterials(const vtStringArray &paths, const vtString &strIm
 
 void IcoGlobe::FindLocalOrigin(int mface)
 {
-	int face = dymax_subfaces[mface].face;
 	int parent_face = dymax_subfaces[mface].parent_face;
 	int edge = dymax_subfaces[mface].parentedge;
 
@@ -1192,7 +1189,6 @@ void IcoGlobe::FindLocalOrigin(int mface)
 
 void IcoGlobe::SetMeshConnect(int mface)
 {
-	int parent_face = dymax_subfaces[mface].parent_face;
 	int parent_mface = dymax_subfaces[mface].parent_mface;
 
 	vtTransform *xform = m_mface[mface].xform;
@@ -1396,7 +1392,7 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 	double y = p.z / radius;
 	double z = -p.y / radius;
 
-	double a, lat, lng;
+	double a=0, lat, lng=0;
 	lat = acos(z);
 	if (x>0.0 && y>0.0) a = radians(0.0);
 	if (x<0.0 && y>0.0) a = radians(180.0);

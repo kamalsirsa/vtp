@@ -397,7 +397,7 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 
 	int		a, b, passes;
 	int		i, j, k;
-	int		vidx, first = GetNumVertices();
+	int		vidx;
 	FPoint3 p, norm;
 
 	float	theta_step = PI2f / res;

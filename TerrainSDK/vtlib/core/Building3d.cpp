@@ -155,7 +155,8 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 {
 	PolyChecker PolyChecker;
-	unsigned int i, j, k;
+	int i;
+	unsigned int j, k;
 
 	UpdateWorldLocation(pHeightField);
 
@@ -164,7 +165,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;
-	unsigned int iLevels = GetNumLevels();
+	int iLevels = GetNumLevels();
 
 	int level_show = -1, edge_show = -1;
 	GetValueInt("level", level_show);
@@ -214,7 +215,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 				CreateUpperPolygon(lev, poly, poly2);
 				for (k = 0; k < edges; k++)
 				{
-					bool bShowEdge = (level_show == i && edge_show == k);
+					bool bShowEdge = (level_show == i && edge_show == (int) k);
 					CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
 				}
 				fHeight += lev->m_fStoryHeight;
@@ -222,7 +223,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		}
 	}
 
-#if 1 // testing
+#if 0 // testing
 	const FLine3 &roof = GetLocalFootprint(iLevels-1);	// roof: top level
 	vtLevel *roof_lev = m_Levels[iLevels-1];
 	float roof_height = (roof_lev->m_fStoryHeight * roof_lev->m_iStories);
@@ -234,10 +235,10 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	vtMaterialArray *pShared = GetSharedMaterialArray();
 	m_pGeom->SetMaterials(pShared);
 
-	for (i = 0; i < m_Mesh.GetSize(); i++)
+	for (j = 0; j < m_Mesh.GetSize(); j++)
 	{
-		vtMesh *mesh = m_Mesh[i].m_pMesh;
-		int index = m_Mesh[i].m_iMatIdx;
+		vtMesh *mesh = m_Mesh[j].m_pMesh;
+		int index = m_Mesh[j].m_iMatIdx;
 		m_pGeom->AddMesh(mesh, index);
 		mesh->Release();	// pass ownership
 	}
@@ -361,7 +362,6 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1,
 
 	// build the edge features.
 	// point[0] is the first starting point of a panel.
-	int features = pEdge->NumFeatures();
 	for (i = 0; i < pEdge->NumFeatures(); i++)
 	{
 		vtEdgeFeature &feat = pEdge->m_Features[i];
@@ -901,7 +901,7 @@ bool vtBuilding3d::Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoin
 	const FPoint3 l1 = p2 - p1;
 	const FPoint3 l2 = p3 - p1;
 	float fDet = l1.x * l2.z - l1.z * l2.x;
-	float fDet2 = p1.x * (p2.z - p3.z) + p2.x * (p3.z - p1.z) + p3.x * (p1.z - p2.z);
+//	float fDet2 = p1.x * (p2.z - p3.z) + p2.x * (p3.z - p1.z) + p3.x * (p1.z - p2.z);
 
 	// If determinant is zero then collinear
 	// Maybe I should check for epsilon * x here, I don't like equalities on floats
