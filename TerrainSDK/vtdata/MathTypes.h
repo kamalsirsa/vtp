@@ -691,6 +691,8 @@ public:
 	double Get(int i, int j) const { return data[i][j]; }
 	double operator()(int i, int j) const { return data[i][j]; }
 
+	void Identity();
+	void AxisAngle(const DPoint3 &vec, double theta);
 	void Transform(const DPoint3 &src, DPoint3 &dst) const;
 	void SetByMatrix4(const DMatrix4 &m);
 

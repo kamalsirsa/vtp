@@ -16,6 +16,46 @@ static double Dot3f(const double *d1, const double *d2)
 	return d1[0]*d2[0]+d1[1]*d2[1]+d1[2]*d2[2];
 }
 
+void DMatrix3::Identity()
+{
+	data[0][0] = 1.0;
+	data[0][1] = 0.0;
+	data[0][2] = 0.0;
+	data[1][0] = 0.0;
+	data[1][1] = 1.0;
+	data[1][2] = 0.0;
+	data[2][0] = 0.0;
+	data[2][1] = 0.0;
+	data[2][2] = 1.0;
+}
+
+void DMatrix3::AxisAngle(const DPoint3 &vec, double theta)
+{
+	double cost = cos(theta), sint = sin(theta);
+
+	double a2, b2, c2, abm, acm, bcm;
+	double mcos, asin, bsin, csin;
+	mcos = 1.0f - cost;
+	a2 = vec.x * vec.x;
+	b2 = vec.y * vec.y;
+	c2 = vec.z * vec.z;
+	abm = vec.x * vec.y * mcos;
+	acm = vec.x * vec.z * mcos;
+	bcm = vec.y * vec.z * mcos;
+	asin = vec.x * sint;
+	bsin = vec.y * sint;
+	csin = vec.z * sint;
+	data[0][0] = a2 * mcos + cost;
+	data[0][1] = abm - csin;
+	data[0][2] = acm + bsin;
+	data[1][0] = abm + csin;
+	data[1][1] = b2 * mcos + cost;
+	data[1][2] = bcm - asin;
+	data[2][0] = acm - bsin;
+	data[2][1] = bcm + asin;
+	data[2][2] = c2 * mcos + cost;
+}
+
 void DMatrix3::Transform(const DPoint3 &tmp, DPoint3 &dst) const
 {
 	dst.x = Dot3f(&tmp.x, data[0]);
@@ -69,15 +109,26 @@ void DMatrix4::AxisAngle(const DPoint3 &vec, double theta)
 	asin = vec.x * sint;
 	bsin = vec.y * sint;
 	csin = vec.z * sint;
+
 	data[0][0] = a2 * mcos + cost;
 	data[0][1] = abm - csin;
 	data[0][2] = acm + bsin;
+	data[0][3] = 0;
+
 	data[1][0] = abm + csin;
 	data[1][1] = b2 * mcos + cost;
 	data[1][2] = bcm - asin;
+	data[1][3] = 0;
+
 	data[2][0] = acm - bsin;
 	data[2][1] = bcm + asin;
 	data[2][2] = c2 * mcos + cost;
+	data[2][3] = 0;
+
+	data[3][0] = 0;
+	data[3][1] = 0;
+	data[3][2] = 0;
+	data[3][3] = 1;
 }
 
 static void Full_Inverse_Xform3(const double b[4][4], double a[4][4])
