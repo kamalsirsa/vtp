@@ -253,11 +253,9 @@ void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 
 	for (parent = GetFirstChild(root, cookie); parent; parent = GetNextChild(root, cookie))
 	{
-//		wxString str = GetItemText(parent);
 		for (item = GetFirstChild(parent, cookie2); item; item = GetNextChild(parent, cookie2))
 		{
 			MyTreeItemData *data = (MyTreeItemData *)GetItemData(item);
-//			wxString str2 = GetItemText(item);
 			if (data)
 			{
 				SetItemText(item, MakeItemName(data->m_pLayer));
@@ -288,7 +286,7 @@ TREE_EVENT_HANDLER(OnBeginRDrag)
 
 #undef TREE_EVENT_HANDLER
 
-	void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
+void MyTreeCtrl::OnSelChanged(wxTreeEvent& event)
 {
 	wxTreeItemId item = event.GetItem();
 	MyTreeItemData *data = (MyTreeItemData *)GetItemData(item);
