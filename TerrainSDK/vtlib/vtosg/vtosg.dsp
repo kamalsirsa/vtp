@@ -43,7 +43,7 @@ RSC=rc.exe
 F90=df.exe
 MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /YX"vtlib/vtlib.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
