@@ -8,7 +8,7 @@
 
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC = glutSimple
-include $(VTP_ROOT)/TerrainApps/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 IFLAGS = -I$(X_INC)                 \
          -I$(TERRAIN_SDK_DIR)       \
@@ -70,4 +70,4 @@ clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files
 
 clobber :
-	rm -rf $(OBJS) $(EXEC).core core ii_files $(EXEC) $(EXEC).pure
+	rm -rf $(OBJS) $(EXEC).core core ii_files $(EXEC) $(EXEC).pure $(OSX_APPS)/$(EXEC).app

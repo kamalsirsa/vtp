@@ -1,5 +1,5 @@
 #
-# GNU Makefile:  TerrainApps/glutSimple
+# GNU Makefile:  TerrainApps/prSimple
 #
 
 #------------------------------------------------------------------------------
@@ -8,7 +8,7 @@
 
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC = prSimple
-include $(VTP_ROOT)/TerrainApps/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 IFLAGS = -I$(X_INC)                 \
          -I$(TERRAIN_SDK_DIR)       \
