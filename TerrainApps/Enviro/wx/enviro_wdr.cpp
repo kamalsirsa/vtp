@@ -1041,28 +1041,42 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item48 = new wxCheckBox( parent, ID_SKY, "Sky dome", wxDefaultPosition, wxDefaultSize, 0 );
     item46->Add( item48, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item49 = new wxCheckBox( parent, ID_HORIZON, "Artificial Horizon", wxDefaultPosition, wxDefaultSize, 0 );
-    item46->Add( item49, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxCheckBox *item50 = new wxCheckBox( parent, ID_AIRPORTS, "Airports", wxDefaultPosition, wxDefaultSize, 0 );
-    item46->Add( item50, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxCheckBox *item51 = new wxCheckBox( parent, ID_FOG, "Fog", wxDefaultPosition, wxDefaultSize, 0 );
-    item51->Enable( FALSE );
-    item46->Add( item51, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
     item34->Add( item46, 1, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP, 5 );
 
-    wxBoxSizer *item52 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item49 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxCheckBox *item53 = new wxCheckBox( parent, ID_ROUTEENABLE, "Route:", wxDefaultPosition, wxDefaultSize, 0 );
-    item52->Add( item53, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+    item49->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxString *strs54 = (wxString*) NULL;
-    wxComboBox *item54 = new wxComboBox( parent, ID_ROUTEFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs54, wxCB_DROPDOWN );
-    item52->Add( item54, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
+    wxString *strs50 = (wxString*) NULL;
+    wxComboBox *item50 = new wxComboBox( parent, ID_SKYTEXTURE, "", wxDefaultPosition, wxSize(100,-1), 0, strs50, wxCB_DROPDOWN );
+    item49->Add( item50, 1, wxALIGN_CENTRE|wxALL, 5 );
 
-    item34->Add( item52, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    item34->Add( item49, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item51 = new wxBoxSizer( wxVERTICAL );
+
+    wxCheckBox *item52 = new wxCheckBox( parent, ID_HORIZON, "Artificial Horizon", wxDefaultPosition, wxDefaultSize, 0 );
+    item51->Add( item52, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item53 = new wxCheckBox( parent, ID_AIRPORTS, "Airports", wxDefaultPosition, wxDefaultSize, 0 );
+    item51->Add( item53, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item54 = new wxCheckBox( parent, ID_FOG, "Fog", wxDefaultPosition, wxDefaultSize, 0 );
+    item54->Enable( FALSE );
+    item51->Add( item54, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item34->Add( item51, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item55 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item56 = new wxCheckBox( parent, ID_ROUTEENABLE, "Route:", wxDefaultPosition, wxDefaultSize, 0 );
+    item55->Add( item56, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxString *strs57 = (wxString*) NULL;
+    wxComboBox *item57 = new wxComboBox( parent, ID_ROUTEFILE, "", wxDefaultPosition, wxSize(140,-1), 0, strs57, wxCB_DROPDOWN );
+    item55->Add( item57, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
+
+    item34->Add( item55, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item34, 0, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
