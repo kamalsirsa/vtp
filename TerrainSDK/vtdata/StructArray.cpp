@@ -1416,15 +1416,42 @@ bool vtStructureArray::WriteXML(const char* filename)
 
 bool vtStructureArray::ReadXML(const char* pathname)
 {
-	StructVisitorGML visitor(this);
-	try
+	// check to see if it's old or new format
+	bool bOldFormat = false;
+	FILE *fp = fopen(pathname, "r");
+	if (!fp) return false;
+	fseek(fp, 24, 0);
+	char buf[10];
+	fread(buf, 10, 1, fp);
+	if (!strncmp(buf, "structures", 10))
+		bOldFormat = true;
+	fclose(fp);
+
+	if (bOldFormat)
 	{
-		readXML(pathname, visitor);
+		StructureVisitor visitor(this);
+		try
+		{
+			readXML(pathname, visitor);
+		}
+		catch (xh_exception &)
+		{
+			// TODO: would be good to pass back the error message.
+			return false;
+		}
 	}
-	catch (xh_exception &)
+	else
 	{
-		// TODO: would be good to pass back the error message.
-		return false;
+		StructVisitorGML visitor(this);
+		try
+		{
+			readXML(pathname, visitor);
+		}
+		catch (xh_exception &)
+		{
+			// TODO: would be good to pass back the error message.
+			return false;
+		}
 	}
 	return true;
 }
