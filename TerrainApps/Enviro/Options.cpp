@@ -6,6 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
 #include <string.h>
 #include "Options.h"
 
@@ -114,8 +115,6 @@ bool EnviroOptions::Write()
 		msg = "Couldn't write settings to file \"";
 		msg += m_strFilename;
 		msg += "\"\nPlease make sure it's writable.\n";
-//		AfxMessageBox(msg);
-//		MessageBox(NULL, msg, "Note", MB_OK);
 		VTLOG(msg);
 		return false;
 	}
