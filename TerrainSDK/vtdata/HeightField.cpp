@@ -416,8 +416,6 @@ public:
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float light_factor, void progress_callback(int))
 {
-	FPoint3 light_direction = light_dir;
-
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
 
@@ -439,7 +437,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 	// These values are hardcoded here but could be exposed in the GUI
 	float sun =  0.7f;
-	float amb =  0.4f;
+	float amb =  0.45f;
 
 	// Create array to hold flags 
 	LightMap lightmap(w, h);
@@ -451,7 +449,20 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	//  (such as at noon) we still need a reasonable value.
 	float darkest_shadow = 1.0;
 
-	if ( fabs(light_dir.x) > fabs(light_dir.z) )
+	// For the vector used to cast shadows, we need it in grid coordinates,
+	//  which are (Column,Row) where Row is north.  But the direction passed
+	//  in uses OpenGL coordinates where Z is south.  So flip Z.
+	FPoint3 grid_light_dir = light_dir;
+	grid_light_dir.z = -grid_light_dir.z;
+
+	// Scale the light vector such that the X or Z component (whichever is
+	//  larger) is 1.  This is will serve as our direction vector in grid
+	//  coordinates, when drawing a line across the grid to cast the shadow.
+	//
+	// Code adapted from aaron_torpy:
+	// http://www.geocities.com/aaron_torpy/algorithms.htm
+	//
+	if ( fabs(grid_light_dir.x) > fabs(grid_light_dir.z) )
 	{
 		HScale = m_fXStep;
 		f = fabs(light_dir.x);
@@ -461,11 +472,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		HScale = m_fZStep;
 		f = fabs(light_dir.z);
 	}
-	//Code adapted from aaron_torpy:
-	//http://www.geocities.com/aaron_torpy/algorithms.htm
-	light_direction /= f;
+	grid_light_dir /= f;
 		
-	if (light_direction.x > 0)
+	if (grid_light_dir.x > 0)
 	{
 		i_init=0;
 		i_final=w-1;
@@ -477,7 +486,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		i_final=-1;
 		i_incr=-1;
 	}
-	if (light_direction.z > 0)
+	if (grid_light_dir.z > 0)
 	{
 		j_init=0;
 		j_final=h-1;
@@ -495,7 +504,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	{
    		if (progress_callback != NULL)
 		{
-			if ((j&3) == 0)
+			if ((j&7) == 0)
 				progress_callback(abs(j-j_init) * 100 / h);
 		}
 		for (i = i_init; i != i_final; i += i_incr) 
@@ -513,9 +522,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			int k;
 			for (k=1, Under_Out=false; Under_Out == false; k++) 
 			{
-				x = (int)(i+light_direction.x*k+0.5f);
-				z = (int)(j+light_direction.z*k+0.5f);
-				shadowheight+=light_direction.y*HScale;
+				x = (int) (i + grid_light_dir.x*k + 0.5f);
+				z = (int) (j + grid_light_dir.z*k + 0.5f);
+				shadowheight += grid_light_dir.y * HScale;
 
 				if ((x<0) || (x>=w-1) || (z<0) || (z>=h-1)) 
 				{
@@ -586,12 +595,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		} //for i
 	} //for j
 
-	// BD: Kevin, why do we flip the Z coordinate here?
-	FPoint3 mod_light_dir;
-	mod_light_dir = light_direction;
-	mod_light_dir.Normalize();
-	mod_light_dir.z = -mod_light_dir.z;
-	FPoint3 inv_mod_light_dir = -mod_light_dir;
+	// For dot-product lighting, we use the normal 3D vector, only inverted
+	//  so that we can compare it to the upward-pointing ground normals.
+	FPoint3 inv_light_dir = -light_dir;
 
 	// Second pass.  Now we are going to loop through the LightMap and apply
 	//  the full lighting formula to each texel that has not been shaded yet.
@@ -599,7 +605,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	{
    		if (progress_callback != NULL)
 		{
-			if ((j&3) == 0)
+			if ((j&7) == 0)
 				progress_callback(j * 100 / h);
 		}
 		for (i = 0; i < w-1; i++)
@@ -634,7 +640,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			// or give control to user since textures will differ
 
 			// I(r, g, b) = Sun(r, g, b) * scalarprod(N, v) + Amb(r, g, b) * (0.5*N[z] + 0.5)
-			shade = sun * v3.Dot(inv_mod_light_dir);
+			shade = sun * v3.Dot(inv_light_dir);
 
 			// It's a reasonable assuption that an angle of 45 degrees is
 			//  sufficient to fully illuminate the ground.
