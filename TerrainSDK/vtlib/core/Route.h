@@ -5,165 +5,105 @@
 // Free for all uses, see license.txt for details.
 //
 //////////////////////////////////////////////////////////////////////
-// 
-// Define a route on a terrain given (at minimum) an inorder list of 
-//	2D corner points.
-//
-// 2001.09.30 JD - cloned from Fence.h
-// 2001.10.05 JD - added station points
-//
-//////////////////////////////////////////////////////////////////////
 
 #ifndef ROUTEH
 #define ROUTEH
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-#include "HeightField.h"
+class vtHeightField;
 class vtTerrain;
-class vtTower3D;
 
-typedef DPoint3 RoutePoint;
-
-
-struct vtStructureObj;
-
-class vtStation
+class vtUtilStruct
 {
 public:
-	long lRoutePointIndex;
-	DPoint3 m_dpStationPoint;		// x,y,z in World Coord on the ground
-	DPoint2 m_dpOffsetElevations;	// x=Left, y=Right
-	DPoint2 m_dpOffsetDistances;	// x=Left, y=Right
-	double dRadAzimuth;			// azimuth.
-	double dRadLineAngle;		// diff from last azimuth.
-	int m_iRoutePointNumber;	// if the station point is also
-								//	a route point. -1 otherewise
-//	vtNode*	m_pTower;			// The station may have a tower placed on it
-	vtStructureObj* ObjList;	// Objs to draw.
-	char sStructure[30];		// Structure Family
-	float m_fTowerHeight;
-	int m_iNumWires;
+	vtUtilStruct();
+
+	vtTransform*	m_pTower;		// The station may have a tower placed on it
+	vtString m_sStructName;
+
 	FPoint3 m_fpWireAtt1[7];	 // where are the wires?
 	FPoint3 m_fpWireAtt2[7];	 // where are the wires?
 
-//	vtStation();
+	int m_iNumWires;
 };
 
-struct vtStructureObj
+class vtUtilNode
 {
-	vtNode*	m_pTower;		// The station may have a tower placed on it
-	char sStructName[3];
-	vtStructureObj* next;
-};
+public:
+	vtUtilNode();
+	void Offset(const DPoint2 &delta);
 
-struct PolePlacement
-{
+	DPoint2 m_dpOffsetElevations;	// x=Left, y=Right
+	DPoint2 m_dpOffsetDistances;	// x=Left, y=Right
+	double dRadAzimuth;				// azimuth.
+	vtUtilStruct *m_struct;		// Object to draw.
+	vtString m_sStructName;			// Structure Family
+
 	DPoint2 m_Point;
-	long m_StationIndex;
 
+	vtTransform *m_pTrans;
 };
-
-typedef struct _profileheader
-{
-	DPoint2 dp2Station0UTM;
-	double dStation0Azimuth;
-} ProfileHeader;
-
-typedef struct _profilerecord
-{
-	double dStationNumber;
-	double dElevationLeft;
-	double dElevationCenter;
-	double dElevationRight;
-	double OffsetLeft;
-	double OffsetRight;
-	double LineAngleDeg;
-	double LineAngleMin;
-	double LineAngleSec;
-	char strStructureFamily[80];
-} ProfileRecord;
 
 
 class vtRoute
 {
 public:
-	vtRoute(float fOffR, float fOffL, float fStInc, vtString sName,
-		vtTerrain* pT);
+	vtRoute(vtTerrain* pT);
 
-	void add_point(const DPoint2 &epos);
-	bool close_route(); // return true if redraw necessary
-
-	void save(FILE *fp);
-	bool load(FILE *fp);
+	void AddPoint(const DPoint2 &epos, const char *structname);
 
 	void BuildGeometry(vtHeightField *pHeightField);
 	void DestroyGeometry();
+	void Dirty();
 
-	vtGeom *GetGeom() { return m_pRouteGeom; }
+	vtGeom *GetGeom() { return m_pWireGeom; }
 
-	static void SetScale(float fScale) { m_fRouteScale = fScale; }
 	// Station set readers.
-	bool TestReader(FILE* f);		// Read in the output test route file
-	bool logReader(FILE* f);
-	bool p3DReader(FILE* f);
-	bool StructureReader(vtString sPath);
-	bool WireReader(vtString s, long st);
-	vtStation& operator[](long iter) 
+	vtUtilNode *GetAt(int iter) 
 	{
-		return (iter < m_StationArray.GetSize()
-			? m_StationArray[iter] : m_StationArray[0]); 
+		return (iter < m_Nodes.GetSize() ? m_Nodes[iter] : m_Nodes[0]);
 	}
-	long GetSize() { return m_StationArray.GetSize(); }
+	long GetSize() { return m_Nodes.GetSize(); }
 
 protected:
-	void add_Pole(DPoint3 &p1, long lStationIndex);	// Mine
-
-	// route size is exaggerated by this amount
-	static float m_fRouteScale;
+	bool _LoadStructure(vtUtilNode *node);
+	bool _WireReader(const char *filename, vtUtilStruct *st);
+	void _ComputeStructureRotations();
+	void _CreateStruct(int iNode);
+	void _AddRouteMeshes(vtHeightField *pHeightField);
+	void _StringWires(long lTowerIndex, vtHeightField *pHeightField);	
+	void _DrawCat(FPoint3 p0, FPoint3 p1,
+		double catenary, int iNumSegs, vtMesh *pWireMesh);
 
 	// all routes share the same set of materials
 	static vtMaterialArray *m_pRouteMats;
-	static void CreateMaterials();
-	static int m_mi_woodpost;
+	static void _CreateMaterials();
 	static int m_mi_wire;
-	static int m_mi_metalpost;
 
-	void  AddRouteMeshes(vtHeightField *pHeightField);
+	vtGeom		*m_pWireGeom;
+	vtTerrain	*m_pTheTerrain;
+	Array<vtUtilNode*>		m_Nodes;
+	Array<vtUtilStruct*>	m_StructObjs;
 
-	vtLOD		*m_pLOD;
-	vtGeom		*m_pRouteGeom;
-	Array<PolePlacement>  m_aRoutePlaces;
-	vtTerrain*	m_pTheTerrain;
-	vtStructureObj* structObjList;
-
-	bool m_bClosed;
 	bool m_bBuilt;
-
-	// "User defined" attributes of the route
-	vtString m_sBranchName;
-	float m_fOffsetLeft;	// default values overridden at the 
-	float m_fOffsetRight;	//	Station
-	float m_fStationIncrement;
-
-	// An array of station points
-	Array<vtStation> m_StationArray;
-	Array<ProfileRecord> m_StationRefArray;	//read-in reference numbers 
-
-	ProfileHeader m_phTheHeader;
-
-	// Add a station
-	bool AddStation(vtHeightField *pHeightField, vtStation &sp);
-	// Add a list of stations
-	bool AddStations(vtHeightField *pHeightField, RoutePoint rp);
-	double isangle(DLine3 L);
-	double isangle(DPoint3 P0, DPoint3 P1, DPoint3 P2);
-	void StringWires(long lTowerIndex, vtHeightField *pHeightField);	
-	void DrawCat(FPoint3 p0, FPoint3 p1, double Azimuth,
-		double catenary, int iNumSegs, vtMesh *pWireMesh);
+	bool m_bDirty;
 };
 
-typedef class vtRoute *vtRoutePtr;
+class vtRouteMap : public Array<vtRoute *>
+{
+public:
+	bool FindClosestUtilNode(const DPoint2 &point, double error,
+					   vtRoute* &route, vtUtilNode* &node, double &closest);
+	void BuildGeometry(vtHeightField *pHeightField);
+};
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
+struct UtilStructName
+{
+	char *brief;
+	char *full;
+	char *filename;
+};
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 

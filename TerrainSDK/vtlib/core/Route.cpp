@@ -1,18 +1,11 @@
 //
 // Route.cpp
 //
-// Creates route geometry, drapes on a terrain
+// Creates a route (a series of utility structures, e.g. an electrical
+// transmission line), creates geometry, drapes on a terrain
 //
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
-//
-//////////////////////////////////////////////////////////////////////
-// 
-// Define a route on a terrain given (at minimum) an inorder list of 
-//	2D corner points.
-//
-// 2001.09.30 JD - cloned from Fence.cpp
-// 2001.10.03 JD - added point capture
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -21,834 +14,357 @@
 #include "Route.h"
 #include "Terrain.h"
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-#define LONGEST_ROUTE		2000   // in meters
-#define NUM_WIRE_SEGMENTS	100
-
-#ifndef PI
-#define PI PIf
-#endif
+#define NUM_WIRE_SEGMENTS	160
+#define METERS_PER_FOOT		0.3048f	// meters per foot
 
 vtMaterialArray *vtRoute::m_pRouteMats;
-float vtRoute::m_fRouteScale;	// route size is exaggerated by this amount
 
 ///////////////////
 
-vtRoute::vtRoute(float fOffR, float fOffL,
-				 float fStInc, vtString sName, vtTerrain* pT)
+vtUtilStruct::vtUtilStruct()
 {
-	m_bClosed = false;
-	m_bBuilt = false;
+	m_pTower = NULL;
+	m_iNumWires = 0;
+}
 
-	m_sBranchName = sName;
-	m_fOffsetLeft = fOffL;
-	m_fOffsetRight = fOffR;
-	m_fStationIncrement = fStInc;
+///////////////////
+
+vtUtilNode::vtUtilNode()
+{
+	m_struct = NULL;
+	dRadAzimuth = 0.0f;
+	m_pTrans = NULL;
+}
+
+void vtUtilNode::Offset(const DPoint2 &delta)
+{
+	m_Point += delta;
+}
+
+///////////////////
+
+vtRoute::vtRoute(vtTerrain* pT)
+{
+	m_bBuilt = false;
+	m_bDirty = true;
+
 	m_pTheTerrain = pT;
 
-	m_pRouteGeom = new vtGeom;
-	m_pRouteGeom->SetName2("Route");
+	m_pWireGeom = new vtGeom;
+	m_pWireGeom->SetName2("Route");
 
 	if (m_pRouteMats == NULL)
-		CreateMaterials();
-	m_pRouteGeom->SetMaterials(m_pRouteMats);
-	structObjList=0;
-
-#if 0
-	// wrap each route in a LOD node so that it is not drawn from far away
-	m_pLOD = new vtLOD();
-	float range = 2000.0f * WORLD_SCALE;
-	m_pLOD->SetRanges(&range, 1);
-
-	m_pLOD->AddChild(m_pRouteGroup);
-#else
-	m_pLOD = NULL;
-#endif
+		_CreateMaterials();
+	m_pWireGeom->SetMaterials(m_pRouteMats);
 }
 
 
-void vtRoute::add_point(const DPoint2 &epos)
+void vtRoute::AddPoint(const DPoint2 &epos, const char *structname)
 {
-	PolePlacement place;
-	place.m_Point = epos;
-	place.m_StationIndex = -1;
+	vtUtilNode *st =  new vtUtilNode;
+	st->m_Point = epos;
+	st->m_sStructName = structname;
 
-	int numroutepts = m_aRoutePlaces.GetSize();
+	m_Nodes.Append(st);
+	Dirty();
 
-	// check distance
-	if (numroutepts > 0)
-	{
-		DPoint2 LastPt = m_aRoutePlaces.GetAt(numroutepts - 1).m_Point;
-
-		double distance = (LastPt - epos).Length();
-
-		if (distance <= LONGEST_ROUTE)
-			m_aRoutePlaces.Append(place);
-	}
-	else
-		m_aRoutePlaces.Append(place);
+	_LoadStructure(st);
 }
-
-int vtRoute::m_mi_woodpost;
-int vtRoute::m_mi_wire;
-int vtRoute::m_mi_metalpost;
-
-void vtRoute::CreateMaterials()
-{
-	m_pRouteMats = new vtMaterialArray();
-
-	// create wirefence post textured material (0)
-	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/fencepost_64.bmp");
-	m_mi_woodpost = m_pRouteMats->AddTextureMaterial2(path,
-		true, true, false, false,
-		TERRAIN_AMBIENT,
-		TERRAIN_DIFFUSE,
-		1.0f,		// alpha
-		TERRAIN_EMISSIVE);
-
-	// add wire material (1)
-	m_mi_wire = m_pRouteMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
-		RGBf(0.5f, 0.5f, 0.5f),	// ambient
-		false, true, false,		// culling, lighting, wireframe
-		0.6f);					// alpha
-}
-
 
 //
 // Builds (or rebuilds) the geometry for a fence.
 //
 void vtRoute::BuildGeometry(vtHeightField *pHeightField)
 {
+	if (!m_bDirty)
+		return;
+
 	if (m_bBuilt)
 		DestroyGeometry();
 
 	// create surface and shape
-	AddRouteMeshes(pHeightField);
+	_AddRouteMeshes(pHeightField);
 
 	m_bBuilt = true;
+	m_bDirty = false;
 }
 
 void vtRoute::DestroyGeometry()
 {
-#if 1
-	// Destroy the meshes so they can be re-made?
-	while (m_pRouteGeom->GetNumMeshes())
+	// Destroy the meshes so they can be re-made
+	while (m_pWireGeom->GetNumMeshes())
 	{
-		vtMesh *pMesh = m_pRouteGeom->GetMesh(0);
-		m_pRouteGeom->RemoveMesh(pMesh);
+		vtMesh *pMesh = m_pWireGeom->GetMesh(0);
+		m_pWireGeom->RemoveMesh(pMesh);
 	}
-#endif
 
 	m_bBuilt = false;
 }
 
-
-void vtRoute::add_Pole(DPoint3 &p1, long lStationIndex)
+void vtRoute::Dirty()
 {
-	if (lStationIndex<0)
-	{
-		// Add the profile without showing any structures
-		return;	// no tower point here
-	}
-	if (!(m_StationArray.GetAt(lStationIndex).ObjList))
+	_ComputeStructureRotations();
+	m_bDirty = true;
+}
+
+void vtRoute::_ComputeStructureRotations()
+{
+	int i, nodes = m_Nodes.GetSize();
+	DPoint2 curr, diff_last, diff_next, diff_use;
+
+	if (nodes < 2)
 		return;
 
-	vtNode* tower = m_StationArray.GetAt(lStationIndex).ObjList->m_pTower;
-	if (tower)
+	for (i = 0; i < nodes; i++)
 	{
-		vtTransform* xform = new vtTransform;
-		xform->AddChild(tower);
-		xform->Scale3(WORLD_SCALE/3.25f/4, WORLD_SCALE/3.25f, WORLD_SCALE/3.25f);
-		// invert
-		xform->RotateLocal(FPoint3(1,0,0), -PIf);
-		// orient
-		xform->RotateLocal(FPoint3(0,1,0), m_StationArray.GetAt(lStationIndex).dRadAzimuth+PID2f);
-		m_pTheTerrain->PlantModelAtPoint(xform, DPoint2(p1.x,p1.y));
-		tower->SetEnabled(true);
-		m_pTheTerrain->AddNodeToLodGrid(xform);
+		curr = m_Nodes[i]->m_Point;
+		if (i > 0)
+		{
+			diff_last = curr - m_Nodes[i-1]->m_Point;
+			diff_last.Normalize();
+			diff_use = diff_last;
+		}
+		if (i < nodes-1)
+		{
+			diff_next = m_Nodes[i+1]->m_Point - curr;
+			diff_next.Normalize();
+			diff_use = diff_next;
+		}
+		if (i > 0 && i < nodes-1)
+		{
+			// has a node before and after, average the angles
+			diff_use = diff_last + diff_next;
+		}
+		diff_use.Normalize();
+		double angle = atan2(diff_use.y, diff_use.x);
+		m_Nodes[i]->dRadAzimuth = angle;
 	}
 }
 
+int vtRoute::m_mi_wire;
 
-void vtRoute::AddRouteMeshes(vtHeightField *pHeightField)
+void vtRoute::_CreateMaterials()
 {
-	Array<DPoint2> posts;
-	DPoint2 diff, dp;
-	int i, nposts;
-	vtStation stp;
-	int numiterations = 300;	//for catenary spans
+	m_pRouteMats = new vtMaterialArray();
 
-	int numroutepts = m_aRoutePlaces.GetSize();
+	// add wire material (0)
+	m_mi_wire = m_pRouteMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+//		RGBf(0.5f, 0.5f, 0.5f),	// ambient grey
+		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
+		false, true, false,		// culling, lighting, wireframe
+		1.0f);					// alpha
+}
 
-	// first determine where the poles go, for this whole line
-	for (i = 0; i < numroutepts; i++)
+void vtRoute::_CreateStruct(int iNode)
+{
+	vtUtilNode *node =  m_Nodes.GetAt(iNode);
+
+	bool add = false;
+	if (!node->m_pTrans)
 	{
-		posts.Append(m_aRoutePlaces[i].m_Point);
+		vtUtilStruct *sobj = node->m_struct;
+		vtNode* tower = sobj->m_pTower;
+		if (tower)
+		{
+			node->m_pTrans = new vtTransform;
+			vtString name;
+			name.Format("RouteNode %d", iNode);
+			node->m_pTrans->SetName2(name);
+			node->m_pTrans->AddChild(tower);
+			add = true;
+		}
 	}
 
-	// convert post positions to world-coordinate ground locations
-	nposts = posts.GetSize();
+	// set orientation
+	node->m_pTrans->Identity();
+	node->m_pTrans->RotateLocal(FPoint3(0,1,0), node->dRadAzimuth);
 
-	Array<FPoint3> p3;	// poles
-	Array<FPoint3> wireAtt;
+	m_pTheTerrain->PlantModelAtPoint(node->m_pTrans, node->m_Point);
 
-	FPoint3 fp;
-	p3.SetSize(nposts);
-	for (i = 0; i < nposts; i++)
+	if (add)
+		m_pTheTerrain->AddNodeToLodGrid(node->m_pTrans);
+}
+
+
+void vtRoute::_AddRouteMeshes(vtHeightField *pHeightField)
+{
+	int i, numnodes = m_Nodes.GetSize();
+
+	// generate the structures (poles/towers/etc.)
+	for (i = 0; i < numnodes; i++)
 	{
-		float x, z;
-		dp = posts[i];
-		g_Conv.ConvertFromEarth(dp, x, z);
-
-		// plant the pole on the terrain
-		p3[i].x = x;
-		p3[i].z = z;
-		pHeightField->FindAltitudeAtPoint(p3[i], p3[i].y);
-	}
-
-	// generate the poles
-	for (i = 0; i < nposts; i++)
-	{
-		DPoint3 dp3; 
-		dp3.x = posts[i].x; dp3.y = posts[i].y;
-		add_Pole(dp3, m_aRoutePlaces[i].m_StationIndex);
+		_CreateStruct(i);
 	}
 
 	// and the wires
-	if (nposts > 1)
+	if (numnodes > 1)
 	{
-		for (i=1; i<nposts; i++)
+		for (i=1; i<numnodes; i++)
 		{
-			StringWires(i, pHeightField);
+			_StringWires(i, pHeightField);
 		}
 	}
 }
 
-void vtRoute::StringWires(long ll, vtHeightField *pHeightField)
+void vtRoute::_StringWires(long ll, vtHeightField *pHeightField)
 {
 	// pick pole numbers i and i-1 and string a wire between them
 	long numiterations = NUM_WIRE_SEGMENTS;
-	
+
 	FPoint3 fp0, fp1;
 
-	long lInd0 = m_aRoutePlaces[ll-1].m_StationIndex;
-	long lInd1 = m_aRoutePlaces[ll].m_StationIndex;
+	vtUtilNode *n0 = m_Nodes[ll-1];
+	vtUtilNode *n1 = m_Nodes[ll];
 
-	vtStation st0 = m_StationArray[lInd0];
-	vtStation st1 = m_StationArray[lInd1];
-//	g_Proj.ConvertFromEarth(st0.m_dpStationPoint, fp0);
-//	g_Proj.ConvertFromEarth(st1.m_dpStationPoint, fp1);
-		
-	FPoint2 p0 = m_aRoutePlaces[ll-1].m_Point;
-	
-	FPoint2 p1 = m_aRoutePlaces[ll].m_Point;
+	vtUtilStruct *st0 = n0->m_struct;
+	vtUtilStruct *st1 = n1->m_struct;
+
+	DPoint2 p0 = n0->m_Point;
+	DPoint2 p1 = n1->m_Point;
+
+	pHeightField->ConvertEarthToSurfacePoint(p0, fp0);
+	pHeightField->ConvertEarthToSurfacePoint(p1, fp1);
+
+	FMatrix4 rot;
+	rot.Identity();
+	FPoint3 axisY(0, 1, 0);
+	FPoint3 offset, wire0, wire1;
 
 	for (int j = 0; j< 7; j++)	//7== max number of wires per structure.
 	{
-		if (j>=st1.m_iNumWires) continue;	// skip if no wire.
-		// catenary calcs go here.  got to get world coords
+		if (j >= st1->m_iNumWires)
+			continue;	// skip if no wire.
 
 		vtMesh *pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
 
-		g_Conv.ConvertFromEarth(p0, fp0.x, fp0.z);
-		pHeightField->FindAltitudeAtPoint(fp0, fp0.y);
-		fp0 = fp0 + FPoint3(st0.m_fpWireAtt1[j].y*WORLD_SCALE/3.25,
-			(st0.m_fpWireAtt1[j].z)*WORLD_SCALE/3.25,
-			st0.m_fpWireAtt1[j].x*WORLD_SCALE/3.25);
-		pWireMesh->AddVertex(fp0);
+		offset = st0->m_fpWireAtt1[j];
+		rot.AxisAngle(axisY, n0->dRadAzimuth - PID2f);
+		rot.Transform(offset, wire0);
+		FPoint3 wire_start = fp0 + wire0;
 
-		g_Conv.ConvertFromEarth(p1, fp1.x, fp1.z);
-		pHeightField->FindAltitudeAtPoint(fp1, fp1.y);
-		fp1 = fp1 + FPoint3(st1.m_fpWireAtt2[j].y*WORLD_SCALE/3.25,
-			(st1.m_fpWireAtt2[j].z)*WORLD_SCALE/3.25,
-			st1.m_fpWireAtt2[j].x*WORLD_SCALE/3.25);
+		pWireMesh->AddVertex(wire_start);
 
-		DrawCat(fp0, fp1, st0.dRadAzimuth, 30.0, numiterations, pWireMesh);
-		pWireMesh->AddVertex(fp1);
+		offset = st1->m_fpWireAtt2[j];
+		rot.AxisAngle(axisY, n1->dRadAzimuth - PID2f);
+		rot.Transform(offset, wire1);
+		FPoint3 wire_end = fp1 + wire1;
+
+		_DrawCat(wire_start, wire_end, 1.00, numiterations, pWireMesh);
+
+		pWireMesh->AddVertex(wire_end);
+
 		pWireMesh->AddStrip2(numiterations+1, 0);
-		m_pRouteGeom->AddMesh(pWireMesh, m_mi_wire);
+		m_pWireGeom->AddMesh(pWireMesh, m_mi_wire);
 	}
 }
 
-bool vtRoute::close_route()
+#define NUM_STRUCT_NAMES 15
+
+UtilStructName s_Names[NUM_STRUCT_NAMES] =
 {
-	if (m_aRoutePlaces.GetSize() > 2 && !m_bClosed)
-	{
-		DPoint2 FirstRoutePoint = m_aRoutePlaces.GetAt(0).m_Point;
-		add_point(FirstRoutePoint);
-		m_bClosed = true;
-		return true; // redraw = true
-	}
-	else
-		return false;
-}
+	{ "A1", "Steel Poles Tangent", "a1" },
+	{ "A2", "Guyed Tangent", "a2" },
+	{ "A3", "Light Angle", "a3" },
+	{ "A4", "Medium Angle", "a4" },
 
-bool vtRoute::load(FILE *fp)
+	{ "A5", "Heavy Angle", "a5" },
+	{ "A6", "Large Angle Deadend", "a6" },
+	{ "A7", "Light Angle Deadend", "a7" },
+	{ "L1", "Lattice Tower", "l1" },
+	{ "L2", "Lattice Deadend", "l2" },
+
+	{ "H1", "H-Frame Tangent", "h1" },
+	{ "H2", "H-Frame Guyed Tangent", "h2" },
+	{ "H3", "H-Frame Hold Down", "h3" },
+	{ "H4", "H-Frame Large Angle Deadend", "h4" },
+	{ "H5", "H-Frame Light Angle Deadend", "h5" },
+	{ "1U11EC3F", "Lattice Tower2", "LatticeTower" }
+};
+
+bool vtRoute::_LoadStructure(vtUtilNode *node)
 {
-	// Unimplemented.
-
-	return false;
-}
-
-void vtRoute::save(FILE *fp)
-{
-	// Print routes using TLCADD ground interface file.
-	if (fp)
-	{
-		//first header line
-//		fprintf(fp, "!  Branch  !            Location             !   Elevation    !   Elevation    !   Elevation    !\n");
-//		fprintf(fp, "!  Name    !      X         !       Y        !      Left      !    Center      !     Right      !\n");
-
-		for (long ll = 0; ll < m_StationArray.GetSize(); ll++)
-		{
-			fprintf(fp, "! %s   !  %12.2f  !  %12.2f  !  %12.2f  !  %12.2f  !  %12.2f  ! %d \n",
-				(const char *) m_sBranchName,
-				m_StationArray[ll].m_dpStationPoint.x,
-				m_StationArray[ll].m_dpStationPoint.y,
-				m_StationArray[ll].m_dpOffsetElevations.x,
-				m_StationArray[ll].m_dpStationPoint.z,
-				m_StationArray[ll].m_dpOffsetElevations.y,
-				m_StationArray[ll].m_iRoutePointNumber);
-		}
-	}
-}
-
-bool vtRoute::AddStation(vtHeightField* pHeightField, vtStation &sp)
-{
-	// Get and add Station data
-	return true;
-}
-
-bool vtRoute::AddStations(vtHeightField* pHeightField, RoutePoint rp)
-{
-	// Get and add Station data
-	return true;
-}
-
-bool vtRoute::TestReader(FILE* f)
-{	// Read the testload.txt file
-	DPoint2 dpTemp;
-	PolePlacement place;
-	long lStationNumber=0;
-	long lDeadEndOrAngle=0;	// for debugging
-	float fTemp;
-	int iTemp=0;
-	char sBang[2]; 
-	char sTemp[18];
-	vtStation NewStation;
-
-	if (!f)
-		return false;
-
-	while (!feof(f))
-	{
-		fTemp=0;iTemp=-1;
-		// read the record.
-		fscanf(f, "%s", sBang);
-		if (strcmp("!", sBang)!=0)break;	//bad data. Go away.
-		fscanf(f, "%s", sTemp);
-			m_sBranchName = sTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpStationPoint.x=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpStationPoint.y=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpOffsetElevations.x=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpStationPoint.z=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpOffsetElevations.y=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%d", &iTemp);
-			NewStation.m_iRoutePointNumber=iTemp;
-
-		m_StationArray.Append(NewStation);
-
-		// Figure out the "corner" points
-		if (NewStation.m_iRoutePointNumber>=0)
-		{
-			dpTemp.Set(NewStation.m_dpStationPoint.x
-				, NewStation.m_dpStationPoint.y);
-			place.m_Point = dpTemp;
-			place.m_StationIndex = m_StationArray.GetSize()-1;
-			m_aRoutePlaces.Append(place);
-			lDeadEndOrAngle++;
-		}
-	}
-	return true;
-}
-
-bool vtRoute::logReader(FILE* f)
-{	// Read the .log file's first two entries
-	char header[180];  //We need to skip it.  two lines
-	DPoint2 dpTemp;
-	long lStationNumber=0;
-	long lDeadEndOrAngle=0;	// for debugging
-	float fTemp;
-	int iTemp=0;
-	char sBang[2]; 
-	char sTemp[18];
-	vtStation NewStation;
-	Array<vtStation> TempStation;
-
-	if (!f)
-		return false;
-
-	//skip the header
-	if (fgets(header, 179, f)!=0)
-	{
-		if (fgets(header, 179, f)==0)
-			return false;
-	}
-	else return false;
-
-	while (!feof(f) && lStationNumber++ <2)
-	{
-		fTemp=0;iTemp=-1;
-
-		// read the record.
-		fscanf(f, "%s", sBang);
-		if (strcmp("!", sBang)!=0)break;	//bad data. Go away.
-		fscanf(f, "%s", sTemp);
-			m_sBranchName = sTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpStationPoint.x=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpStationPoint.y=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpOffsetElevations.x=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpStationPoint.z=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%f", &fTemp);
-			NewStation.m_dpOffsetElevations.y=fTemp;
-		fscanf(f, "%s", sBang);
-		fscanf(f, "%d", &iTemp);
-			NewStation.m_iRoutePointNumber=iTemp;
-		NewStation.ObjList = 0;
-		NewStation.sStructure[0] = '\0';
-		TempStation.Append(NewStation);
-	}
-
-	// Figure out the header contents.
-	m_phTheHeader.dp2Station0UTM.x = TempStation[0].m_dpStationPoint.x;
-	m_phTheHeader.dp2Station0UTM.y = TempStation[0].m_dpStationPoint.y;
-	DPoint2 dpDiff;
-	dpTemp.x =  TempStation[1].m_dpStationPoint.x;
-	dpTemp.y =  TempStation[1].m_dpStationPoint.y;
-	dpDiff = dpTemp-m_phTheHeader.dp2Station0UTM;
-//	m_phTheHeader.dStation0Azimuth = atan2(dpDiff.y,dpDiff.x);
-	m_phTheHeader.dStation0Azimuth = atan2(dpDiff.x,dpDiff.y);
-
-	return true;
-}
-
-bool vtRoute::p3DReader(FILE* fp3D)
-{	// Read the .log to get the coords of the 1st two stations.
-	//	then read the p3D to get the rest of the stations.
-	DPoint2 dpTemp;
-	PolePlacement place;
-	long lStationNumber=0;
-	long lRoutePoint=0;	
-	double fTemp;
-	int iTemp=0;
-	char sTemp[80];
-	ProfileRecord NewPoint, LastPoint;
-	vtStation NewStation;
-	char sline[200], *s,*end;
-	int i,icomma =0;
-
-	if (!fp3D)
-		return false;
-
-	while (!feof(fp3D))
-	{
-		s=sline;
-		icomma=i=0;
-
-		fgets(s, 200, fp3D);
-		fTemp=0;iTemp=-1;
-		// check for empty line
-		if (sline[icomma]=='\0')break;
-		// read the record.
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[i]='\0'; 
-		end = &sTemp[i];
-		i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.dStationNumber = fTemp;
-
-		// Elevation Data
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.dElevationLeft = fTemp;
-
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.dElevationCenter = fTemp;
-
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.dElevationRight = fTemp;
-
-		// Offset Data
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.OffsetLeft = fTemp;
-
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.OffsetRight = fTemp;
-
-		// Line Angle Data
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.LineAngleDeg = fTemp;
-
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.LineAngleMin = fTemp;
-
-		while((sTemp[i++] = sline[icomma++])!=',') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		fTemp = strtod(sTemp, &end);
-			NewPoint.LineAngleSec = fTemp;
-
-		while((sTemp[i++] = sline[icomma++])!=',' && sline[icomma]!= '\0') ;
-		sTemp[--i]='\0'; end = &sTemp[--i];i=0;
-		if (strlen(sTemp)>1)
-			strcpy(NewPoint.strStructureFamily, sTemp);
-		else
-			memset(NewPoint.strStructureFamily,0,80);
-
-		m_StationRefArray.Append(NewPoint);
-		lStationNumber++;
-		sline[0] = '\0';
-	}
-
-	// First station is built using the header
-	NewPoint = m_StationRefArray.GetAt(0);
-	NewStation.ObjList = 0;
-
-	NewStation.m_dpStationPoint.x = m_phTheHeader.dp2Station0UTM.x;
-	NewStation.m_dpStationPoint.x += NewPoint.dStationNumber
-									*sin(m_phTheHeader.dStation0Azimuth)
-									*WORLD_SCALE/3.25;
-
-	NewStation.m_dpStationPoint.y = m_phTheHeader.dp2Station0UTM.y;
-	NewStation.m_dpStationPoint.y += NewPoint.dStationNumber
-									*cos(m_phTheHeader.dStation0Azimuth)
-									*WORLD_SCALE/3.25;
-	
-	NewStation.m_dpStationPoint.z = NewPoint.dElevationCenter;
-
-	//Elevation at offset
-	NewStation.m_dpOffsetElevations.x = NewPoint.dElevationLeft;
-	NewStation.m_dpOffsetElevations.y = NewPoint.dElevationRight;
-
-	//Offset Distance
-	NewStation.m_dpOffsetDistances.x = NewPoint.OffsetLeft;
-	NewStation.m_dpOffsetDistances.y = NewPoint.OffsetRight;
-
-	// Line Angle
-	if (NewPoint.LineAngleDeg==0 && NewPoint.LineAngleMin==0 && NewPoint.LineAngleSec==0)
-		NewStation.dRadLineAngle = 0;
-	else
-		NewStation.dRadLineAngle = PI/180*(NewPoint.LineAngleDeg + 1/60*(NewPoint.LineAngleMin + 1/60*NewPoint.LineAngleSec));
-	NewStation.dRadAzimuth = m_phTheHeader.dStation0Azimuth + NewStation.dRadLineAngle;
-	NewStation.lRoutePointIndex=-1;
-
-	if (NewPoint.strStructureFamily[0]!='\0')
-	{
-		dpTemp.Set(NewStation.m_dpStationPoint.x
-			, NewStation.m_dpStationPoint.y);
-		place.m_Point = dpTemp;
-		place.m_StationIndex = m_StationArray.GetSize();
-		m_aRoutePlaces.Append(place);
-		NewStation.lRoutePointIndex=lRoutePoint++;
-		strcpy(NewStation.sStructure, NewPoint.strStructureFamily);
-		NewStation.ObjList = 0;
-	}
-
-	m_StationArray.Append(NewStation);
-
-	// Use the previous station to build each element of the Station Array
-	for (long ll=1; ll<m_StationRefArray.GetSize(); ll++)
-	{
-		// Get the previous station point for reference coords
-		vtStation LastStation = m_StationArray.GetAt(ll-1);
-		LastPoint = m_StationRefArray.GetAt(ll-1);
-		NewPoint = m_StationRefArray.GetAt(ll);
-
-		NewStation.ObjList=0;
-		// absolute coordinates
-		NewStation.m_dpStationPoint.x = LastStation.m_dpStationPoint.x;
-		NewStation.m_dpStationPoint.x += (NewPoint.dStationNumber-LastPoint.dStationNumber)
-										*sin(LastStation.dRadAzimuth)
-										/3.25;
-
-		NewStation.m_dpStationPoint.y = LastStation.m_dpStationPoint.y;
-		NewStation.m_dpStationPoint.y += (NewPoint.dStationNumber-LastPoint.dStationNumber)
-										*cos(LastStation.dRadAzimuth)
-										/3.25;
-		
-		NewStation.m_dpStationPoint.z = NewPoint.dElevationCenter;
-
-		//Elevation at offset
-		NewStation.m_dpOffsetElevations.x = NewPoint.dElevationLeft;
-		NewStation.m_dpOffsetElevations.y = NewPoint.dElevationRight;
-
-		//Offset Distance
-		NewStation.m_dpOffsetDistances.x = NewPoint.OffsetLeft;
-		NewStation.m_dpOffsetDistances.y = NewPoint.OffsetRight;
-
-		// Line Angle
-		if (NewPoint.LineAngleDeg==0 && NewPoint.LineAngleMin==0 && NewPoint.LineAngleSec==0)
-			NewStation.dRadLineAngle = 0;
-		else
-			NewStation.dRadLineAngle = PI/180*(NewPoint.LineAngleDeg + 1/60*(NewPoint.LineAngleMin + 1/60*NewPoint.LineAngleSec));
-		NewStation.dRadAzimuth = LastStation.dRadAzimuth + NewStation.dRadLineAngle;
-		NewStation.lRoutePointIndex=-1;
-
-		if (NewPoint.strStructureFamily[0]!='\0')
-		{
-			dpTemp.Set(NewStation.m_dpStationPoint.x
-				, NewStation.m_dpStationPoint.y);
-			place.m_Point = dpTemp;
-			place.m_StationIndex = m_StationArray.GetSize();
-			m_aRoutePlaces.Append(place);
-			NewStation.lRoutePointIndex=lRoutePoint++;
-			strcpy(NewStation.sStructure, NewPoint.strStructureFamily);
-			NewStation.ObjList=0;
-		}
-		m_StationArray.Append(NewStation);
-	}
-	return true;
-}
-
-double vtRoute::isangle(DLine3 L)
-{
-	// Given three points in a line, are they colinear or do they 
-	//	contain an angle? Preserve orientation.
-	DPoint3 P0, P1, P2;
-	DPoint3 diff1, diff2;
-	double a1,a2;
-	if (L.GetSize()<3)
-		return 0.0F;
-
-	P0=L.GetAt(0);
-	P1=L.GetAt(1);
-	diff1 = P1-P0;
-	P2=L.GetAt(2);
-	diff2 = P2-P1;
-
-	if (diff2.x== diff1.x && diff2.y== diff1.y)
-		return 0.0F;
-	
-	a1=atan2(diff1.y, diff1.x); // this calculates the quadrant correctly
-	a2=atan2(diff2.y, diff2.y); // unlike vb's atn.
-	return a2-a1;
-}
-
-double vtRoute::isangle(DPoint3 P0, DPoint3 P1, DPoint3 P2)
-{
-	DLine3 L;
-	L.Append(P0);
-	L.Append(P1);
-	L.Append(P2);
-	return isangle(L);
-}
-
-bool vtRoute::StructureReader(vtString sPath)
-{
-	// Read through the station array, find stations with structures,
-	//	Load structures.
-
+	// Load structure for the indicated node.
 	// sPath identifies the path to the Route data
+	vtString sname = node->m_sStructName;
 
-	vtString sStructureDataPath = "RouteData/Towers/";
+	vtString sStructureDataPath = "Culture/UtilityStructures/";
 	vtString sStructure = sStructureDataPath;
-	vtString sWires = sPath + sStructureDataPath;
+	vtString sWires;
 
-	//Read the Station array
-	for (long ll=0; ll<m_StationArray.GetSize();ll++)
+	int i;
+	for (i = 0; i < m_StructObjs.GetSize(); i++)
 	{
-		if (m_StationArray.GetAt(ll).lRoutePointIndex>=0)
+		if (m_StructObjs[i]->m_sStructName == sname)
 		{
-			vtStation& WithStructure = m_StationArray.GetAt(ll);
-//			if (strcmp(WithStructure.sStructure, "1U11EC3F-1000-120-LD9") == 0)
-			if (strncmp(WithStructure.sStructure, "1U11EC3F", 8) == 0)
-			{
-				sStructure = sStructureDataPath + "LatticeTower.obj";
-				sWires = sStructureDataPath + "LatticeTower.wire";
-			}
-			//Steel Poles Tangent
-			else if (( strncmp(WithStructure.sStructure, "A1", 2) == 0)
-				||(strncmp(WithStructure.sStructure, "a1", 2) == 0))
-			{
-				sStructure = sStructureDataPath + "a1.obj";
-				sWires = sStructureDataPath + "a1.wire";
-			}
-			// Light Angle
-			else if ((strncmp(WithStructure.sStructure, "A3", 2) == 0)||
-				(strncmp(WithStructure.sStructure, "a3", 2) == 0))
-			{
-				sStructure = sStructureDataPath + "a3.obj";
-				sWires = sStructureDataPath + "a3.wire";
-			}
-			// Guyed Tangent
-			else if ((strncmp(WithStructure.sStructure,"A2",2)==0) ||
-				(strncmp(WithStructure.sStructure,"a2",2)==0))
-			{
-				sStructure =sStructureDataPath + "a2.obj";
-				sWires = sStructureDataPath + "a2.wire";
-			}
-			//Medium Angle
-			else if ((strncmp(WithStructure.sStructure,"A4",2)==0) ||
-				(strncmp(WithStructure.sStructure,"a4",2)==0))
-			{
-				sStructure =sStructureDataPath + "a4.obj";
-				sWires = sStructureDataPath + "a4.wire";
-			}
-			//Heavy Angle
-			else if ((strncmp(WithStructure.sStructure,"A5",2)==0) ||
-				(strncmp(WithStructure.sStructure,"a5",2)==0))
-			{
-				sStructure =sStructureDataPath + "a5.obj";
-				sWires = sStructureDataPath + "a5.wire";
-			}
-			//Large Angle Deadend
-			else if ((strncmp(WithStructure.sStructure,"A6",2)==0) ||
-				(strncmp(WithStructure.sStructure,"a6",2)==0))
-			{
-				sStructure =sStructureDataPath + "a6.obj";
-				sWires = sStructureDataPath + "a6.wire";
-			}
-			//Light Angle Deadend
-			else if ((strncmp(WithStructure.sStructure,"A7",2)==0) ||
-				(strncmp(WithStructure.sStructure,"a7",2)==0))
-			{
-				sStructure =sStructureDataPath + "a7.obj";
-				sWires = sStructureDataPath + "a7.wire";
-			}
-			//Lattice Towers
-			else if ((strncmp(WithStructure.sStructure,"L1",2)==0) ||
-				(strncmp(WithStructure.sStructure,"l1",2)==0))
-			{
-				sStructure =sStructureDataPath + "l1.obj";
-				sWires = sStructureDataPath + "l1.wire";
-			}
-			//Lattice Deadend
-			else if ((strncmp(WithStructure.sStructure,"L2",2)==0) ||
-				(strncmp(WithStructure.sStructure,"l2",2)==0))
-			{
-				sStructure =sStructureDataPath + "l2.obj";
-				sWires = sStructureDataPath + "l2.wire";
-			}
-			// H-Frame Tangent
-			else if ((strncmp(WithStructure.sStructure,"H1",2)==0) ||
-				(strncmp(WithStructure.sStructure,"h1",2)==0))
-			{
-				sStructure =sStructureDataPath + "h1.obj";
-				sWires = sStructureDataPath + "h1.wire";
-			}
-			// H-Frame Guyed Tangent
-			else if ((strncmp(WithStructure.sStructure,"H2",2)==0) ||
-				(strncmp(WithStructure.sStructure,"h2",2)==0))
-			{
-				sStructure =sStructureDataPath + "h2.obj";
-				sWires = sStructureDataPath + "h2.wire";
-			}
-			// H-Frame Hold Down
-			else if ((strncmp(WithStructure.sStructure,"H3",2)==0) ||
-				(strncmp(WithStructure.sStructure,"h3",2)==0))
-			{
-				sStructure =sStructureDataPath + "h3.obj";
-				sWires = sStructureDataPath + "h3.wire";
-			}
-			// Large Angle Deadend
-			else if ((strncmp(WithStructure.sStructure,"H4",2)==0) ||
-				(strncmp(WithStructure.sStructure,"h4",2)==0))
-			{
-				sStructure =sStructureDataPath + "h4.obj";
-				sWires = sStructureDataPath + "h4.wire";
-			}
-			// Ligth Angle deadend
-			else if ((strncmp(WithStructure.sStructure,"H5",2)==0) ||
-				(strncmp(WithStructure.sStructure,"h5",2)==0))
-			{
-				sStructure =sStructureDataPath + "h5.obj";
-				sWires = sStructureDataPath + "h5.wire";
-			}
-			else // default tower type
-			{
-				sStructure = sStructureDataPath + "test.obj";
-				sWires = sStructureDataPath + "test.wire";
-//				return false;	// No such structure
-			}
-			char str[3];
-			strncpy(str, WithStructure.sStructure,2); str[2] = '\0';
-			vtStructureObj* s;
-			for (s = structObjList; s !=NULL; s=s->next)
-			{
-				if ((strcmp(str,s->sStructName)==0) || (strcmp(str,s->sStructName)==0))
-				{
-					WithStructure.ObjList = s;
-					break;
-				}
-			}
-			if (s== 0)
-			{
-				vtStructureObj* sStructNew = new vtStructureObj;
-				sStructNew->m_pTower = 0;
-				sStructNew->next = 0;
-				sStructNew->m_pTower = m_pTheTerrain->LoadModel(sStructure);
-				strcpy(sStructNew->sStructName, str);
-				sStructNew->next = structObjList;
-				structObjList = sStructNew;
-				WithStructure.ObjList = sStructNew;
-			}
-			WireReader("Data/" + sWires, ll);
+			node->m_struct = m_StructObjs[i];
+			return true;
 		}
 	}
+
+	for (i = 0; i < NUM_STRUCT_NAMES; i++)
+	{
+		if (sname.CompareNoCase(s_Names[i].brief) == 0)
+		{
+			sStructure = s_Names[i].filename;
+			sStructure += ".obj";
+			sWires = s_Names[i].filename;
+			sWires += ".wire";
+			break;
+		}
+	}
+	if (i == NUM_STRUCT_NAMES)
+	{
+		// No such structure
+//		return false;
+		sStructure = "test.obj";
+		sWires = "test.wire";
+	}
+	vtString struct_file = FindFileOnPaths(vtTerrain::m_DataPaths,
+		sStructureDataPath + sStructure);
+
+	if (struct_file == "")
+		return false;
+
+	vtUtilStruct *stnew = new vtUtilStruct;
+	stnew->m_pTower = m_pTheTerrain->LoadModel(struct_file);
+	stnew->m_pTower->SetName2(sname);
+
+	// scale to match world units
+	float sc = (float) (WORLD_SCALE*METERS_PER_FOOT);
+	stnew->m_pTower->Scale3(sc, sc, sc);
+
+	// rotate it until it's upright
+	stnew->m_pTower->RotateLocal(FPoint3(1,0,0), -PIf);
+
+	stnew->m_sStructName = sname;
+	int j = m_StructObjs.Append(stnew);
+	node->m_struct = m_StructObjs[j];
+
+	vtString wire_file = FindFileOnPaths(vtTerrain::m_DataPaths,
+		sStructureDataPath + sWires);
+	if (wire_file != "")
+		_WireReader(wire_file, stnew);
+
 	return true;
 }
 
 
-bool vtRoute::WireReader(vtString s, long lStation)
+bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
 {
 	// Read wire locations from a .wire file into the station record
 	int icount = 0;
-	vtStation& st = m_StationArray.GetAt(lStation);
-	FILE* f = fopen(s, "r");
+	FILE* f = fopen(filename, "r");
 	if (!f)
 		return false;
 
 	float height=0;
 	int inumwires=0;
 	if (!feof(f))
-		fscanf(f, "%f", &(height));
-	st.m_fTowerHeight = height;
+		fscanf(f, "%f", &height);
+//	node->m_fTowerHeight = height;
 	if (!feof(f))
-		fscanf(f, "%d", &(inumwires));
-	st.m_iNumWires = inumwires;
+		fscanf(f, "%d", &inumwires);
+	st->m_iNumWires = inumwires;
 
 	while (!feof(f))
 	{	// read wire positions relative to the tower
@@ -857,55 +373,112 @@ bool vtRoute::WireReader(vtString s, long lStation)
 		fscanf(f, "%f", &a1);
 		fscanf(f, "%f", &a2);
 		fscanf(f, "%f", &a3);
-		fpTemp.Set(a1, a2, a3);
-		st.m_fpWireAtt1[icount] = fpTemp;
+		fpTemp.Set(-a2, a3, a1);
+		fpTemp *= (WORLD_SCALE * METERS_PER_FOOT);
+		st->m_fpWireAtt1[icount] = fpTemp;
 		fscanf(f, "%f", &a1);
 		fscanf(f, "%f", &a2);
 		fscanf(f, "%f", &a3);
-		fpTemp.Set(a1, a2, a3);
-		st.m_fpWireAtt2[icount++] = fpTemp;
-
+		fpTemp.Set(-a2, a3, a1);
+		fpTemp *= (WORLD_SCALE * METERS_PER_FOOT);
+		st->m_fpWireAtt2[icount++] = fpTemp;
 	}
-//	st.m_iNumWires=icount;
 
 	fclose(f);
 	return true;
 }
 
 //
-// Draw catenary curve between condutor attachment points
+// Draw catenary curve between conductor attachment points
 //	from the current tower to the previous tower.
 //
-void vtRoute::DrawCat(FPoint3 pt0, FPoint3 pt1, double Az, double catenary,
+void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 					  int iNumSegs, vtMesh *pWireMesh)
 {
 	FPoint3 diff = pt1-pt0;
 	FPoint3 ptNew;
 	int i;
-	double pt0xz = sqrt(pt0.z*pt0.z+pt0.x*pt0.x);	// project pt0
 	double xz = sqrt(diff.z*diff.z+diff.x*diff.x);	// distance in the xz plane
 	double y = diff.y;
-	double dLengths = xz/iNumSegs;
+	FPoint3 step = diff / iNumSegs;
 
-    // Calculate the parabolic constants.
-    double parabolicConst = (xz / 2) - (y * (catenary / xz));
-    
+	// Calculate the parabolic constants.
+	double parabolicConst = (xz / 2) - (y * (catenary / xz));
+
 	FPoint3 ptCur(0,0,0);
 	double dist=0;
-	
+
+	vtHeightField *pHeightField = m_pTheTerrain->GetHeightField();
+	float ground;
+
 	// Iterate along the xz-plane
 	for (i = 0; i < iNumSegs-1; i++)
 	{
-		ptCur.x += dLengths*sin(Az);
-		ptCur.z += dLengths*(-cos(Az));
+		ptCur.x += step.x;
+		ptCur.z += step.z;
 		dist = sqrt(ptCur.x*ptCur.x + ptCur.z*ptCur.z);
-		
+
 		ptCur.y = (dist / (2*catenary)) * (dist - (2*parabolicConst));
 
 		ptNew = pt0 + ptCur;
+		pHeightField->FindAltitudeAtPoint(ptNew, ground);
+		ground += (0.5 * WORLD_SCALE);
+		if (ptNew.y < ground)
+			ptNew.y = ground;
+
 		pWireMesh->AddVertex(ptNew);
 	}
 }
 
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+/** Find the util node which is closest to the given point, if it is within
+ * 'error' distance.  The node and distance are returned by reference.
+ */
+bool vtRouteMap::FindClosestUtilNode(const DPoint2 &point, double error,
+					   vtRoute* &found_route, vtUtilNode* &found_node, double &closest)
+{
+	found_node = NULL;
+	closest = 1E8;
+
+	if (IsEmpty())
+		return false;
+
+	DPoint2 loc;
+	double dist;
+
+	int i, j, routes = GetSize();
+	for (i = 0; i < routes; i++)
+	{
+		vtRoute *pRoute = GetAt(i);
+		int nodes = pRoute->GetSize();
+
+		for (j = 0; j < nodes; j++)
+		{
+			vtUtilNode *pNode = pRoute->GetAt(j);
+
+			loc = pNode->m_Point;
+
+			dist = (loc - point).Length();
+			if (dist > error)
+				continue;
+			if (dist < closest)
+			{
+				found_route = pRoute;
+				found_node = pNode;
+				closest = dist;
+			}
+		}
+	}
+	return (found_node != NULL);
+}
+
+void vtRouteMap::BuildGeometry(vtHeightField *pHeightField)
+{
+	int routes = GetSize();
+	for (int i = 0; i < routes; i++)
+	{
+		GetAt(i)->BuildGeometry(pHeightField);
+	}
+}
+
 
