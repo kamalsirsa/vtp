@@ -14,43 +14,34 @@
 
 <table border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="3">Elevation</th>
+    <th width="170" valign="top" bgcolor="#B7CCB8">Elevation Grid</th>
     <td width="180" valign="top" bgcolor="#B7CCB8">Grid Filename</td>
     <td bgcolor="#B7CCB8">The BT file to use for elevation.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">TIN Filename</td>
-    <td bgcolor="#B7CCB8">The TIN file to use for elevation.</td>
-  </tr>
-  <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Vertical Exaggeration</td>
-    <td bgcolor="#B7CCB8">1.0 draws the terrain with real-world proportions, 1.5
-      to exaggerate by 50%, etc.</td>
-  </tr>
-  <tr>
-    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="5">Terrain LOD</th>
-    <td width="180" valign="top" bgcolor="#D2C8B5">Method</td>
-    <td bgcolor="#D2C8B5">Choose from several implementations of published Continuous
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="5">Terrain LOD</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Method</td>
+    <td bgcolor="#B7CCB8">Choose from several implementations of published Continuous
       LOD algorithms.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#D2C8B5">Pixel Error Bound</td>
-    <td bgcolor="#D2C8B5"><i>(not currently used)</i></td>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Pixel Error Bound</td>
+    <td bgcolor="#B7CCB8"><i>(not currently used)</i></td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#D2C8B5">Triangle Count</td>
-    <td bgcolor="#D2C8B5">Algorithms will adaptively
+    <td width="180" valign="top" bgcolor="#B7CCB8">Triangle Count</td>
+    <td bgcolor="#B7CCB8">Algorithms will adaptively
       adjust detail to meet this indicated triangle count.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#D2C8B5">Use strips/fans</td>
-    <td bgcolor="#D2C8B5">Allows the LOD algorithm to use triangle strips and 
+    <td width="180" valign="top" bgcolor="#B7CCB8">Use strips/fans</td>
+    <td bgcolor="#B7CCB8">Allows the LOD algorithm to use triangle strips and 
     fans while rendering.&nbsp; With some algorithms, this may increase 
     rendering speed significantly, and also may also introduce some limitations.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#D2C8B5">Detail texture</td>
-    <td bgcolor="#D2C8B5">For some terrain types, will attempt to put a second,
+    <td width="180" valign="top" bgcolor="#B7CCB8">Detail texture</td>
+    <td bgcolor="#B7CCB8">For some terrain types, will attempt to put a second,
       high-frequency detail texture over the whole terrain, faded by distance so
       that it is only visible close to the viewer.&nbsp; Currently this can only
       be a single texture, although eventually it should be multiple textures
@@ -58,30 +49,42 @@
       Note that the current McNally implementation may produce artifacts if both
       Strips/fans and Detail texture are enabled.</td>
   </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#D2C8B5">Elevation TIN</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">TIN Filename</td>
+    <td bgcolor="#D2C8B5">The TIN file to use for elevation, instead of an 
+    elevation grid.</td>
+  </tr>
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8">&nbsp;</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Vertical Exaggeration</td>
+    <td bgcolor="#B7CCB8">A value of 1.0 draws the terrain with real-world proportions.&nbsp; 
+    A value of 1.5 exaggerates height by 50%, and so forth.</td>
+  </tr>
 </table>
 
 <h2>Texture</h2>
 
 <table border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="9">Texture</th>
-    <td width="180" valign="top" bgcolor="#B7CCB8">No texture</td>
-    <td bgcolor="#B7CCB8">Your texture will be white and featureless.</td>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="9">Texture</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">No texture</td>
+    <td bgcolor="#D2C8B5">Your texture will be white and featureless.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Single texture</td>
-    <td bgcolor="#B7CCB8">The indicated texture will be placed over the
+    <td width="180" valign="top" bgcolor="#D2C8B5">Single texture</td>
+    <td bgcolor="#D2C8B5">The indicated texture will be placed over the
       terrain.&nbsp; It must be a power of two in dimension, and be within the
       limit of your 3d hardware's maximum texture size.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Derive texture from elevation</td>
-    <td bgcolor="#B7CCB8">Enviro will create a texture for you, and fill it
+    <td width="180" valign="top" bgcolor="#D2C8B5">Derive texture from elevation</td>
+    <td bgcolor="#D2C8B5">Enviro will create a texture for you, and fill it
       with false colors based on elevation.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">4x4 Tiled Texture</td>
-    <td bgcolor="#B7CCB8">You provide a single large square image file, and Enviro will break
+    <td width="180" valign="top" bgcolor="#D2C8B5">4x4 Tiled Texture</td>
+    <td bgcolor="#D2C8B5">You provide a single large square image file, and Enviro will break
           it up for you, at runtime, into a set of 16 tiles (4x4).&nbsp; The filename is made up of 
     three parts: the prefix (e.g. &quot;hawaii_&quot;), the image size (e.g. &quot;4093&quot;) 
     and the format (either BMP or JPG). The dialog lets you
@@ -89,31 +92,31 @@
       size.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Mipmapping</td>
-    <td bgcolor="#B7CCB8">This will reduce aliasing, at the expense of using
+    <td width="180" valign="top" bgcolor="#D2C8B5">Mipmapping</td>
+    <td bgcolor="#D2C8B5">This will reduce aliasing, at the expense of using
       more texture RAM.&nbsp; There might also be an impact on rendering speed,
       depending on your graphics hardware.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Request 16-bit</td>
-    <td bgcolor="#B7CCB8">Normally, textures are processed as 24-bit
+    <td width="180" valign="top" bgcolor="#D2C8B5">Request 16-bit</td>
+    <td bgcolor="#D2C8B5">Normally, textures are processed as 24-bit
       images.&nbsp; This options tells the 3d hardware that it is OK to use only
       16-bits, which can save significant texture RAM.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Precompute lighting</td>
-    <td bgcolor="#B7CCB8">At runtime, Enviro will make the terrain texture
+    <td width="180" valign="top" bgcolor="#D2C8B5">Precompute lighting</td>
+    <td bgcolor="#D2C8B5">At runtime, Enviro will make the terrain texture
       darker/lighter to simulate the sun's light.&nbsp; This is not necessary if
       you are using a Geospecific texture which already contains shadows.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Lighting factor</td>
-    <td bgcolor="#B7CCB8">Use this scaling factor to make the precomputed
+    <td width="180" valign="top" bgcolor="#D2C8B5">Lighting factor</td>
+    <td bgcolor="#D2C8B5">Use this scaling factor to make the precomputed
       lighting more pronounced or more subtle.&nbsp; 1.0 is the standard value.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Pre-lit</td>
-    <td bgcolor="#B7CCB8">Set this option if the texture contains the lighting
+    <td width="180" valign="top" bgcolor="#D2C8B5">Pre-lit</td>
+    <td bgcolor="#D2C8B5">Set this option if the texture contains the lighting
       (shadows).&nbsp; This option is automatically set when you request
       Precomputed lighting.</td>
   </tr>
@@ -123,14 +126,14 @@
 
 <table border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Trees</th>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Plants</th>
     <td width="180" valign="top" bgcolor="#B7CCB8">Source file</td>
     <td bgcolor="#B7CCB8">The name of a VF (Vegetation Format) file which
       contains the plant instances for this terrain.</td>
   </tr>
   <tr>
     <td width="180" valign="top" bgcolor="#B7CCB8">Visibility distance</td>
-    <td bgcolor="#B7CCB8">Distance at which trees are visible.</td>
+    <td bgcolor="#B7CCB8">Distance at which plants are visible.</td>
   </tr>
   <tr>
     <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="6">Roads</th>
@@ -163,7 +166,7 @@
     <td bgcolor="#D2C8B5">You can indicate a subset of the roads to create.</td>
   </tr>
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Structures</th>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Structure Files</th>
     <td width="180" valign="top" bgcolor="#B7CCB8">(Source files)</td>
     <td bgcolor="#B7CCB8">Any number of VTST (Built Structures) files,
       containing the Buildings, Fences etc. for this terrain.</td>
@@ -173,6 +176,11 @@
     <td bgcolor="#B7CCB8">Distance at which structures are visible.&nbsp; 
     Structures further than this distance from the camera will not be rendered.</td>
   </tr>
+  </table>
+
+<h2>Sky &amp; Ocean</h2>
+
+<table border="1" cellspacing="0" cellpadding="2">
   <tr>
     <th width="180" valign="top" bgcolor="#D2C8B5" rowspan="4">Ocean</th>
     <td bgcolor="#D2C8B5" valign="top">Ocean Plane</td>
@@ -222,11 +230,45 @@
   </tr>
 </table>
 
-<h2>Navigation</h2>
+<h2>Features &amp; Labels</h2>
 
 <table border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="4">Navigation</th>
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="5">Features labels</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">File</td>
+    <td bgcolor="#D2C8B5">The file to read features from.&nbsp; This can be any 
+    SHP or GML file that is in a &quot;PointData&quot; folder on your data path.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Field to Use</td>
+    <td bgcolor="#D2C8B5">Select the name of the field which contains the text 
+    you want to display in the visualization.&nbsp; This must be a text field.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Height</td>
+    <td bgcolor="#D2C8B5">Each label will appear this distance above the ground, 
+    in meters.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Label Size</td>
+    <td bgcolor="#D2C8B5">Each label will be this size in meters.&nbsp; This 
+    size refers to the height, since width depends proportionally on the length 
+    of the text being displayed.</td>
+  </tr>
+  <tr>
+    <td valign="top" bgcolor="#D2C8B5" colspan="2"><i>Note: </i>you can also 
+    control the color of each label individually.&nbsp; To do this, create a 
+    text field called &quot;Color&quot;.&nbsp; Its value will be interpreted as as &quot;R G B&quot; 
+    as floats.&nbsp; For example, &quot;0 0 1&quot; for blue, or &quot;1 0.5 0&quot; for orange.&nbsp; 
+    The default label color is white.</td>
+  </tr>
+</table>
+
+<h2>Miscellaneous</h2>
+
+<table border="1" cellspacing="0" cellpadding="2">
+  <tr>
+    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="6">Navigation</th>
     <td width="180" valign="top" bgcolor="#B7CCB8">Style</td>
     <td bgcolor="#B7CCB8">See <a href="Navigation/index.html">mouse navigation</a> 
     for a description of the various styles.</td>
@@ -249,6 +291,21 @@
       file.&nbsp; This option lets you associate a specific file with a terrain.</td>
   </tr>
   <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Initial Camera Location</td>
+    <td bgcolor="#B7CCB8">If you have a location file, you can select one of its 
+    locations as the starting point for the camera, the first time the terrain 
+    is loaded.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Near Clipping Distance</td>
+    <td bgcolor="#B7CCB8">Otherwise known as &quot;Hither&quot;, everything closer than 
+    the Near Clipping Distance will not be drawn.&nbsp; Be careful not to make 
+    this value too small, or you may see Z-buffer problems, depending on your 
+    graphics card.&nbsp; If you do see Z-buffer problems, try increasing your 
+    Hither distance at runtime.&nbsp; If that fixes the problem, you can make 
+    the change permanent using this startup property.</td>
+  </tr>
+  <tr>
     <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="3">Time</th>
     <td width="180" valign="top" bgcolor="#D2C8B5">Initial Time of Day</td>
     <td bgcolor="#D2C8B5">Hour, from 0 to 24, for the time of day when Enviro
@@ -267,29 +324,7 @@
       speed may require too much patience.&nbsp; Try setting this value higher
       than 1 (e.g. 1000) to see time move rapidly.</td>
   </tr>
-  <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="4">Feature Labels</th>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Read features from file</td>
-    <td bgcolor="#B7CCB8">The filename should be a SHP or GML file with point 
-    data, whose first field is a text string, which will appear floating in 3D 
-    over the point.</td>
-  </tr>
-  <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Field to use</td>
-    <td bgcolor="#B7CCB8">This is the field in the indicate SHP file which will 
-    be displayed.</td>
-  </tr>
-  <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Height</td>
-    <td bgcolor="#B7CCB8">Each label will appear this distance above the ground.</td>
-  </tr>
-  <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Label size</td>
-    <td bgcolor="#B7CCB8">Each label will be this size in meters.&nbsp; This 
-    size refers to the height, since width depends proportionally on the length 
-    of the text being displayed.</td>
-  </tr>
-</table>
+  </table>
 
 <p>&nbsp;</p>
 
