@@ -357,8 +357,10 @@ void MainFrame::CreateMenus()
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge && Export Elevation",
 		"Sample all elevation data within the Export Area to produce a single, new elevation.");
+#ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_GENERATE_VEG, "Generate && Export Vegetation",
 		"Generate Vegetation File (*.vf) containg plant distribution.");
+#endif
 	m_pMenuBar->Append(areaMenu, "Export &Area");
 	menu_num++;
 
