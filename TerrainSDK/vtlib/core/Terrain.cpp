@@ -878,8 +878,8 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 void vtTerrain::_CreateCulture(bool bSound)
 {
 	// The LOD distances are in meters
-	_SetupStructGrid(m_Params.m_iStructDistance);
-	_SetupVegGrid(m_Params.m_iVegDistance);
+	_SetupStructGrid((float) m_Params.m_iStructDistance);
+	_SetupVegGrid((float) m_Params.m_iVegDistance);
 
 	// create roads
 	if (m_Params.m_bRoads)
@@ -956,8 +956,7 @@ void vtTerrain::_CreateCulture(bool bSound)
 	}
 
 	// create built structures - there is always at least one structure array
-	vtStructureArray3d *structures = new vtStructureArray3d;
-	m_StructureSet.Append(structures);
+	NewStructureArray();
 
 	unsigned int i, num = m_Params.m_strStructFiles.size();
 	for (i = 0; i < num; i++)
