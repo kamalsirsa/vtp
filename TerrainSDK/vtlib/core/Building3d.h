@@ -54,7 +54,7 @@ public:
 	void FindMaterialIndices();
 
 	void DestroyGeometry();
-	void CreateGeometry(vtHeightField *pHeightField);
+	bool CreateGeometry(vtHeightField *pHeightField);
 	void AdjustHeight(vtHeightField *pHeightField);
 
 	// randomize building properties
@@ -112,6 +112,10 @@ protected:
 
 	void AddFlatRoof(FLine3 &pp, vtLevel *pLev);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
+
+	// Felkel straight skeleton
+	float MakeFelkelRoof(FLine3 &pp, vtLevel *pLev);
+	int FindVertex(FPoint2 Point, FLine3 &RoofSection3D, Array<int> &iaVertices);
 
 	vtGeom		*m_pGeom;		// The geometry node which contains the building geometry
 	vtGeom		*m_pHighlight;	// The wireframe highlight
