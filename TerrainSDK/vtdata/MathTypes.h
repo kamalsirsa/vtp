@@ -328,8 +328,8 @@ public:
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
 	double SegmentLength(int i) const;
-	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection); 
-	double NearestPoint(const DPoint2 &Point, int &iIndex); 
+	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection);
+	double NearestPoint(const DPoint2 &Point, int &iIndex);
 };
 
 /**
@@ -680,8 +680,9 @@ class DMatrix4;
 class DMatrix3
 {
 public:
-	void  Set(int i1, int i2, double v) { data[i1][i2] = v; }
-	double Get(int i1, int i2) const { return data[i1][i2]; }
+	void  Set(int i, int j, double v) { data[i][j] = v; }
+	double Get(int i, int j) const { return data[i][j]; }
+    double operator()(int i, int j) const { return data[i][j]; }
 
 	void Transform(const DPoint3 &src, DPoint3 &dst) const;
 	void SetByMatrix4(const DMatrix4 &m);
@@ -696,8 +697,9 @@ protected:
 class DMatrix4
 {
 public:
-	void  Set(int i1, int i2, double v) { data[i1][i2] = v; }
-	double Get(int i1, int i2) const { return data[i1][i2]; }
+	void  Set(int i, int j, double v) { data[i][j] = v; }
+	double Get(int i, int j) const { return data[i][j]; }
+    double operator()(int i, int j) const { return data[i][j]; }
 
 	void Identity();
 	void AxisAngle(const DPoint3 &vec, double theta);
@@ -715,8 +717,9 @@ protected:
 class FMatrix3
 {
 public:
-	void  Set(int i1, int i2, float v) { data[i1][i2] = v; }
-	float Get(int i1, int i2) const { return data[i1][i2]; }
+	void  Set(int i, int j, float v) { data[i][j] = v; }
+	float Get(int i, int j) const { return data[i][j]; }
+    float operator()(int i, int j) const { return data[i][j]; }
 
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void SetByMatrix4(const class FMatrix4 &m);
@@ -733,8 +736,9 @@ typedef float FMatrix4Data[4][4];
 class FMatrix4
 {
 public:
-	void  Set(int i1, int i2, float v) { data[i1][i2] = v; }
-	float Get(int i1, int i2) const { return data[i1][i2]; }
+	void  Set(int i, int j, float v) { data[i][j] = v; }
+	float Get(int i, int j) const { return data[i][j]; }
+    float operator()(int i, int j) const { return data[i][j]; }
 
 	void  SetData(FMatrix4Data data_in) { memcpy(data, data_in, 64); }
 	const FMatrix4Data &GetData() const { return data; }
@@ -762,9 +766,17 @@ protected:
 class FQuat
 {
 public:
-	FQuat(const FPoint3 &axis, float angle) { makeRotate(axis,angle); }
+	FQuat(const FQuat &q) { x = q.x; y = q.y; z = q.z; w = q.w; }
+	FQuat(const FPoint3 &axis, float angle) { SetAxisAngle(axis, angle); }
 
-	void makeRotate(const FPoint3 &axis, float angle);
+	void Set(float qx, float qy, float qz, float qw) { x = qx; y = qy; z = qz; w = qw; }
+	void SetAxisAngle(const FPoint3 &axis, float angle);
+    void SetMatrix(const FMatrix3 &matrix);
+    void GetMatrix(FMatrix3 &matrix) const;
+
+	void Slerp(const FQuat &from, const FQuat &to, float y);
+
+	FQuat &operator=(const FQuat &q) { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
 
 	float x, y, z, w;
 };

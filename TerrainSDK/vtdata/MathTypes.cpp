@@ -182,8 +182,160 @@ bool DRECT::ContainsLine(const DLine2 &line) const
 /////////////////////////////////////////////////////////////////////////////
 // FQuat
 
-void FQuat::makeRotate(const FPoint3 &axis, float angle)
+void FQuat::SetAxisAngle(const FPoint3 &axis, float angle)
 {
+	float inversenorm  = 1.0f/axis.Length();
+	float coshalfangle = cosf( 0.5f*angle );
+	float sinhalfangle = sinf( 0.5f*angle );
+
+	x = axis.x * sinhalfangle * inversenorm;
+	y = axis.y * sinhalfangle * inversenorm;
+	z = axis.z * sinhalfangle * inversenorm;
+	w = coshalfangle;
+}
+
+/**
+ * Set quaternion to be equivalent to specified matrix.
+ */
+void FQuat::SetMatrix(const FMatrix3 &mat)
+{
+	// Source: Gamasutra, Rotating Objects Using Quaternions
+	//http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+	float  tr, s;
+	float  tq[4];
+	int	i, j, k;
+
+	int nxt[3] = {1, 2, 0};
+
+	tr = mat(0,0) + mat(1,1) + mat(2,2);
+
+	// check the diagonal
+	if (tr > 0.0)
+	{
+		s = (float)sqrt (tr + 1.0);
+		w = s / 2.0f;
+		s = 0.5f / s;
+		x = (mat(1,2) - mat(2,1)) * s;
+		y = (mat(2,0) - mat(0,2)) * s;
+		z = (mat(0,1) - mat(1,0)) * s;
+	}
+	else
+	{
+		// diagonal is negative
+		i = 0;
+		if (mat(1,1) > mat(0,0))
+			i = 1;
+		if (mat(2,2) > mat(i,i))
+			i = 2;
+		j = nxt[i];
+		k = nxt[j];
+
+		s = (float)sqrt ((mat(i,i) - (mat(j,j) + mat(k,k))) + 1.0);
+
+		tq[i] = s * 0.5f;
+
+		if (s != 0.0f)
+			s = 0.5f / s;
+
+		tq[3] = (mat(j,k) - mat(k,j)) * s;
+		tq[j] = (mat(i,j) + mat(j,i)) * s;
+		tq[k] = (mat(i,k) + mat(k,i)) * s;
+
+		x = tq[0];
+		y = tq[1];
+		z = tq[2];
+		w = tq[3];
+	}
+}
+
+/**
+ * Get the equivalent matrix for this quaternion.
+ */
+void FQuat::GetMatrix(FMatrix3 &mat) const
+{
+	// Source: Gamasutra, Rotating Objects Using Quaternions
+	//http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+	float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
+
+	// calculate coefficients
+	x2 = x + x;
+	y2 = y + y;
+	z2 = z + z;
+
+	xx = x * x2;
+	xy = x * y2;
+	xz = x * z2;
+
+	yy = y * y2;
+	yz = y * z2;
+	zz = z * z2;
+
+	wx = w * x2;
+	wy = w * y2;
+	wz = w * z2;
+
+	mat.Set(0, 0, 1.0f - (yy + zz));
+	mat.Set(1, 0, xy - wz);
+	mat.Set(2, 0, xz + wy);
+	mat.Set(3, 0, 0.0f);
+
+	mat.Set(0, 1, xy + wz);
+	mat.Set(1, 1, 1.0f - (xx + zz));
+	mat.Set(2, 1, yz - wx);
+	mat.Set(3, 1, 0.0f);
+
+	mat.Set(0, 2, xz - wy);
+	mat.Set(1, 2, yz + wx);
+	mat.Set(2, 2, 1.0f - (xx + yy));
+	mat.Set(3, 2, 0.0f);
+
+	mat.Set(0, 3, 0);
+	mat.Set(1, 3, 0);
+	mat.Set(2, 3, 0);
+	mat.Set(3, 3, 1);
+}
+
+/**
+ * Spherical Linear Interpolation.
+ * As f goes from 0 to 1, the quaternion goes from "from" to "to".
+ */
+void FQuat::Slerp(const FQuat &from, const FQuat &to, float f)
+{
+	/// Reference: Shoemake at SIGGRAPH 89, See also:
+	/// http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+
+	const double epsilon = 0.00001;
+	double omega, cosomega, sinomega, scale_from, scale_to;
+
+	FQuat quatTo(to);
+
+	// this is a dot product
+	cosomega = from.x*to.x + from.y*to.y + from.z*to.z + from.w*to.w;
+
+	if (cosomega < 0.0)
+	{
+		cosomega = -cosomega;
+		quatTo.Set(-to.x, -to.y, -to.z, -to.w);
+	}
+
+	if ((1.0 - cosomega) > epsilon)
+	{
+		omega = acos(cosomega);		// 0 <= omega <= Pi (for acos)
+		sinomega = sin(omega);
+		scale_from = sin((1.0-f)*omega)/sinomega;
+		scale_to = sin(f*omega)/sinomega;
+	}
+	else
+	{
+		// The ends of the vectors are very close, we can use simple linear
+		// interpolation - no need to worry about "spherical" interpolation
+		scale_from = 1.0 - f;
+		scale_to = f;
+	}
+	x = (float) (from.x * scale_from + quatTo.x * scale_to);
+	y = (float) (from.y * scale_from + quatTo.y * scale_to);
+	z = (float) (from.z * scale_from + quatTo.z * scale_to);
+	w = (float) (from.w * scale_from + quatTo.w * scale_to);
 }
 
 
