@@ -150,7 +150,7 @@ void Enviro::LoadTerrainDescriptions()
 	for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
 	{
 		int count = 0;
-		VTLOG("  On path '%s':", (const char *) g_Options.m_DataPaths[i]);
+		VTLOG("  On path '%s':\n", (const char *) g_Options.m_DataPaths[i]);
 
 		vtString directory = g_Options.m_DataPaths[i] + "Terrains";
 		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
@@ -196,7 +196,7 @@ void Enviro::LoadTerrainDescriptions()
 
 			// TEMP TEST
 		}
-		VTLOG(" %d terrains.\n", count);
+		VTLOG("\t%d terrains.\n", count);
 	}
 	VTLOG(" Done.\n");
 }
