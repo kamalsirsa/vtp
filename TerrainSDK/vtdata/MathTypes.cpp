@@ -65,6 +65,20 @@ bool DLine2::ContainsPoint(const DPoint2 &p)
 }
 
 //
+// DRECT methods
+//
+
+bool DRECT::ContainsLine(const DLine2 &line) const
+{
+	for (int i = 0; i < line.GetSize(); i++)
+	{
+		if (!ContainsPoint(line[i]))
+			return false;
+	}
+	return true;
+}
+
+//
 // DMatrix methods
 //
 
