@@ -1063,7 +1063,7 @@ public:
 	void operator *=(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); }
 	void operator /=(float s) { r=(short)(r/s); g=(short)(g/s); b=(short)(b/s); }
 
-	void operator +=(const RGBi &v) { r+=v.r; g+=v.g; b+=v.b; }
+	void operator +=(const RGBi &v) { r=r+v.r; g=g+v.g; b=b+v.b; }
 	void operator +=(const class RGBAi &v);
 
 	void Crop();
@@ -1105,7 +1105,7 @@ public:
 	short r, g, b, a;
 };
 
-inline void RGBi::operator +=(const class RGBAi &v) { r+=v.r; g+=v.g; b+=v.b; }
+inline void RGBi::operator +=(const class RGBAi &v) { r=r+v.r; g=g+v.g; b=b+v.b; }
 inline RGBi RGBi::operator +(const class RGBAi &v) const { return RGBi(r+v.r, g+v.g, b+v.b); }
 
 /**
@@ -1143,9 +1143,9 @@ public:
 
 inline RGBi &RGBi::operator=(const class RGBf &v)
 {
-	r = (int) (v.r * 255.999f);
-	g = (int) (v.g * 255.999f);
-	b = (int) (v.b * 255.999f);
+	r = (short) (v.r * 255.999f);
+	g = (short) (v.g * 255.999f);
+	b = (short) (v.b * 255.999f);
 	return *this;
 }
 
