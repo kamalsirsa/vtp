@@ -49,10 +49,14 @@ bool vtFeatureSetPoint2D::ComputeExtent(DRECT &rect) const
 	return true;
 }
 
-void vtFeatureSetPoint2D::Offset(const DPoint2 &p)
+void vtFeatureSetPoint2D::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
 	for (unsigned int i = 0; i < m_Point2.GetSize(); i++)
+	{
+		if (bSelectedOnly && !IsSelected(i))
+			continue;
 		m_Point2[i] += p;
+	}
 }
 
 bool vtFeatureSetPoint2D::TransformCoords(OCT *pTransform)
@@ -239,10 +243,14 @@ bool vtFeatureSetPoint3D::ComputeExtent(DRECT &rect) const
 	return true;
 }
 
-void vtFeatureSetPoint3D::Offset(const DPoint2 &p)
+void vtFeatureSetPoint3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
 	for (unsigned int i = 0; i < m_Point3.GetSize(); i++)
+	{
+		if (bSelectedOnly && !IsSelected(i))
+			continue;
 		m_Point3[i] += DPoint3(p.x, p.y, 0);
+	}
 }
 
 bool vtFeatureSetPoint3D::TransformCoords(OCT *pTransform)
@@ -388,10 +396,14 @@ bool vtFeatureSetLineString::ComputeExtent(DRECT &rect) const
 	return true;
 }
 
-void vtFeatureSetLineString::Offset(const DPoint2 &p)
+void vtFeatureSetLineString::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
 	for (unsigned int i = 0; i < m_Line.size(); i++)
+	{
+		if (bSelectedOnly && !IsSelected(i))
+			continue;
 		m_Line[i].Add(p);
+	}
 }
 
 bool vtFeatureSetLineString::TransformCoords(OCT *pTransform)
@@ -546,10 +558,14 @@ bool vtFeatureSetLineString3D::ComputeExtent(DRECT &rect) const
 	return true;
 }
 
-void vtFeatureSetLineString3D::Offset(const DPoint2 &p)
+void vtFeatureSetLineString3D::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
 	for (unsigned int i = 0; i < m_Line.size(); i++)
+	{
+		if (bSelectedOnly && !IsSelected(i))
+			continue;
 		m_Line[i].Add(p);
+	}
 }
 
 bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform)
@@ -736,10 +752,14 @@ bool vtFeatureSetPolygon::ComputeExtent(DRECT &rect) const
 	return true;
 }
 
-void vtFeatureSetPolygon::Offset(const DPoint2 &p)
+void vtFeatureSetPolygon::Offset(const DPoint2 &p, bool bSelectedOnly)
 {
 	for (unsigned int i = 0; i < m_Poly.size(); i++)
+	{
+		if (bSelectedOnly && !IsSelected(i))
+			continue;
 		m_Poly[i].Add(p);
+	}
 }
 
 bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform)

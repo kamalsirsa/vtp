@@ -127,7 +127,7 @@ public:
 	 */
 	virtual void Reserve(int iNum) = 0;
 	virtual bool ComputeExtent(DRECT &rect) const = 0;
-	virtual void Offset(const DPoint2 &p) = 0;
+	virtual void Offset(const DPoint2 &p, bool bSelectedOnly = false) = 0;
 	virtual bool TransformCoords(OCT *pTransform) = 0;
 	virtual bool AppendGeometryFrom(vtFeatureSet *pFromSet) = 0;
 
@@ -228,7 +228,7 @@ public:
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
-	void Offset(const DPoint2 &p);
+	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
 	bool TransformCoords(OCT *pTransform);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
@@ -263,7 +263,7 @@ public:
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
-	void Offset(const DPoint2 &p);
+	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
 	bool TransformCoords(OCT *pTransform);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
@@ -296,7 +296,7 @@ public:
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
-	void Offset(const DPoint2 &p);
+	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
 	bool TransformCoords(OCT *pTransform);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
@@ -327,7 +327,7 @@ public:
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
-	void Offset(const DPoint2 &p);
+	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
 	bool TransformCoords(OCT *pTransform);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
@@ -383,7 +383,7 @@ public:
 	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
-	void Offset(const DPoint2 &p);
+	void Offset(const DPoint2 &p, bool bSelectedOnly = false);
 	bool TransformCoords(OCT *pTransform);
 	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
 
