@@ -27,6 +27,7 @@ enum SelectionType
 enum FieldType
 {
 	FT_Boolean,
+	FT_Short,
 	FT_Integer,
 	FT_Float,
 	FT_Double,
@@ -55,6 +56,7 @@ public:
 	void SetValue(unsigned int iRecord, bool value);
 
 	void GetValue(unsigned int iRecord, vtString &string);
+	void GetValue(unsigned int iRecord, short &value);
 	void GetValue(unsigned int iRecord, int &value);
 	void GetValue(unsigned int iRecord, float &value);
 	void GetValue(unsigned int iRecord, double &value);
@@ -70,6 +72,7 @@ public:
 	vtString m_name;
 
 	Array<int> m_int;
+	Array<int> m_short;
 	Array<float> m_float;
 	Array<double> m_double;
 	vtStringArray m_string;
@@ -183,6 +186,7 @@ public:
 	void SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str);
 
 	int GetIntegerValue(unsigned int iRecord, unsigned int iField) const;
+	short GetShortValue(unsigned int iRecord, unsigned int iField) const;
 	float GetFloatValue(unsigned int iRecord, unsigned int iField) const;
 	double GetDoubleValue(unsigned int iRecord, unsigned int iField) const;
 	bool GetBoolValue(unsigned int iRecord, unsigned int iField) const;

@@ -86,6 +86,9 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 				case FT_Integer:
 					DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
 					break;
+				case FT_Short:
+					DBFWriteIntegerAttribute(db, i, j, field->m_short[i]);
+					break;
 				case FT_Float:
 					// SHP does do floats, only doubles
 					DBFWriteDoubleAttribute(db, i, j, field->m_float[i]);
@@ -892,6 +895,7 @@ int vtFeatureSet::SelectByCondition(int iField, int iCondition,
 {
 	bool bval, btest;
 	int i, ival, itest;
+	short sval;
 	double dval, dtest;
 	int entities = GetNumEntities(), selected = 0;
 	int con = iCondition;
@@ -968,6 +972,24 @@ int vtFeatureSet::SelectByCondition(int iField, int iCondition,
 			if (con == 3) result = (itest >= ival);
 			if (con == 4) result = (itest <= ival);
 			if (con == 5) result = (itest != ival);
+			if (result)
+			{
+				Select(i);
+				selected++;
+			}
+		}
+		break;
+	case FT_Short:
+		sval = (short) atoi(szValue);
+		for (i = 0; i < entities; i++)
+		{
+			itest = field->m_short[i];
+			if (con == 0) result = (itest == sval);
+			if (con == 1) result = (itest > sval);
+			if (con == 2) result = (itest < sval);
+			if (con == 3) result = (itest >= sval);
+			if (con == 4) result = (itest <= sval);
+			if (con == 5) result = (itest != sval);
 			if (result)
 			{
 				Select(i);
@@ -1114,6 +1136,11 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 		f->m_width = 11;
 		f->m_decimals = 0;
 	}
+	if (ftype == FT_Short)
+	{
+		f->m_width = 6;
+		f->m_decimals = 0;
+	}
 	else if (ftype == FT_Double)
 	{
 		f->m_width = 12;
@@ -1194,6 +1221,12 @@ int vtFeatureSet::GetIntegerValue(unsigned int iRecord, unsigned int iField) con
 	return field->m_int[iRecord];
 }
 
+short vtFeatureSet::GetShortValue(unsigned int iRecord, unsigned int iField) const
+{
+	Field *field = m_fields[iField];
+	return field->m_short[iRecord];
+}
+
 float vtFeatureSet::GetFloatValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
@@ -1233,6 +1266,7 @@ void Field::SetNumRecords(int iNum)
 	{
 	case FT_Boolean: m_bool.SetSize(iNum);	break;
 	case FT_Integer: m_int.SetSize(iNum);	break;
+	case FT_Short: m_short.SetSize(iNum);	break;
 	case FT_Double:	m_double.SetSize(iNum);	break;
 	case FT_String: m_string.resize(iNum); break;
 	}
@@ -1245,6 +1279,7 @@ int Field::AddRecord()
 	{
 	case FT_Boolean: return	m_bool.Append(false);	break;
 	case FT_Integer: return	m_int.Append(0);		break;
+	case FT_Short:	return	m_short.Append(0);		break;
 	case FT_Double:	return	m_double.Append(0.0);	break;
 	case FT_String:
 		index = m_string.size();
@@ -1265,24 +1300,30 @@ void Field::SetValue(unsigned int record, int value)
 {
 	if (m_type == FT_Integer)
 		m_int[record] = value;
+	else if (m_type == FT_Short)
+		m_short[record] = value;
 	else if (m_type == FT_Double)
 		m_double[record] = value;
 }
 
 void Field::SetValue(unsigned int record, double value)
 {
-	if (m_type == FT_Integer)
-		m_int[record] = (int) value;
-	else if (m_type == FT_Double)
+	if (m_type == FT_Double)
 		m_double[record] = value;
+	else if (m_type == FT_Integer)
+		m_int[record] = (int) value;
+	else if (m_type == FT_Short)
+		m_short[record] = (int) value;
 }
 
 void Field::SetValue(unsigned int record, bool value)
 {
-	if (m_type == FT_Integer)
-		m_int[record] = (int) value;
-	else if (m_type == FT_Boolean)
+	if (m_type == FT_Boolean)
 		m_bool[record] = value;
+	else if (m_type == FT_Integer)
+		m_int[record] = (int) value;
+	else if (m_type == FT_Short)
+		m_short[record] = (int) value;
 }
 
 void Field::GetValue(unsigned int record, vtString &string)
@@ -1296,6 +1337,8 @@ void Field::GetValue(unsigned int record, int &value)
 {
 	if (m_type == FT_Integer)
 		value = m_int[record];
+	else if (m_type == FT_Short)
+		value = m_short[record];
 	else if (m_type == FT_Double)
 		value = (int) m_double[record];
 	else if (m_type == FT_Boolean)
@@ -1304,31 +1347,40 @@ void Field::GetValue(unsigned int record, int &value)
 
 void Field::GetValue(unsigned int record, double &value)
 {
-	if (m_type == FT_Integer)
-		value = (double) m_int[record];
-	else if (m_type == FT_Double)
+	 if (m_type == FT_Double)
 		value = m_double[record];
+	 else if (m_type == FT_Integer)
+		value = (double) m_int[record];
+	else if (m_type == FT_Short)
+		value = (double) m_short[record];
 }
 
 void Field::GetValue(unsigned int record, bool &value)
 {
-	if (m_type == FT_Integer)
-		value = (m_int[record] != 0);
-	else if (m_type == FT_Boolean)
+	if (m_type == FT_Boolean)
 		value = m_bool[record];
+	else if (m_type == FT_Integer)
+		value = (m_int[record] != 0);
+	else if (m_type == FT_Short)
+		value = (m_short[record] != 0);
 }
 
 void Field::CopyValue(unsigned int FromRecord, int ToRecord)
 {
 	if (m_type == FT_Integer)
 		m_int[ToRecord] = m_int[FromRecord];
-	if (m_type == FT_Double)
+	else if (m_type == FT_Short)
+		m_short[ToRecord] = m_short[FromRecord];
+	else if (m_type == FT_Double)
 		m_double[ToRecord] = m_double[FromRecord];
 
 	// when dealing with strings, copy by value not reference, to
 	// avoid memory tracking issues
-	if (m_type == FT_String)
+	else if (m_type == FT_String)
 		m_string[ToRecord] = m_string[FromRecord];
+
+	else if (m_type == FT_Boolean)
+		m_bool[ToRecord] = m_bool[FromRecord];
 }
 
 void Field::GetValueAsString(unsigned int iRecord, vtString &str)
@@ -1341,8 +1393,14 @@ void Field::GetValueAsString(unsigned int iRecord, vtString &str)
 	case FT_Integer:
 		str.Format("%d", m_int[iRecord]);
 		break;
+	case FT_Short:
+		str.Format("%d", m_short[iRecord]);
+		break;
 	case FT_Double:
 		str.Format("%lf", m_double[iRecord]);
+		break;
+	case FT_Boolean:
+		str = m_bool[iRecord] ? "true" : "false";
 		break;
 	}
 }
@@ -1373,12 +1431,25 @@ void Field::SetValueFromString(unsigned int iRecord, const char *str)
 		else
 			m_int.Append(i);
 		break;
+	case FT_Short:
+		i = atoi(str);
+		if (iRecord < m_short.GetSize())
+			m_short[iRecord] = (short) i;
+		else
+			m_short.Append((short) i);
+		break;
 	case FT_Double:
 		d = atof(str);
 		if (iRecord < m_double.GetSize())
 			m_double[iRecord] = d;
 		else
 			m_double.Append(d);
+		break;
+	case FT_Boolean:
+		if (!strcmp(str, "true"))
+			m_bool[iRecord] = true;
+		else
+			m_bool[iRecord] = false;
 		break;
 	}
 }
@@ -1393,6 +1464,7 @@ const char *DescribeFieldType(FieldType type)
 	{
 	case FT_Boolean: return "Boolean";
 	case FT_Integer: return "Integer";
+	case FT_Short: return "Short";
 	case FT_Float: return "Float";
 	case FT_Double: return "Double";
 	case FT_String: return "String";
@@ -1422,6 +1494,7 @@ DBFFieldType ConvertFieldType(FieldType type)
 	{
 	case FT_Boolean: return FTLogical;
 	case FT_Integer: return FTInteger;
+	case FT_Short: return FTInteger;
 	case FT_Float: return FTDouble;
 	case FT_Double: return FTDouble;
 	case FT_String: return FTString;
@@ -1460,14 +1533,14 @@ OGRwkbGeometryType ShapelibToOGR(int nSHPType)
 	case SHPT_POINTZ: return wkbPoint25D;
 	case SHPT_ARCZ: return wkbLineString25D;
 	case SHPT_POLYGONZ: return wkbPolygon25D;
-
-	// the following are guesses
 	case SHPT_MULTIPOINTZ: return wkbMultiPoint25D;
-	case SHPT_POINTM: return wkbMultiPoint;
-	case SHPT_ARCM: return wkbMultiLineString;
-	case SHPT_POLYGONM: return wkbMultiPolygon;
-	case SHPT_MULTIPOINTM: return wkbUnknown;
+
+	// the following are unknown
 	case SHPT_MULTIPATCH: return wkbUnknown;
+	case SHPT_POINTM: return wkbUnknown;
+	case SHPT_ARCM: return wkbUnknown;
+	case SHPT_POLYGONM: return wkbUnknown;
+	case SHPT_MULTIPOINTM: return wkbUnknown;
 	}
 	return wkbUnknown;
 }
