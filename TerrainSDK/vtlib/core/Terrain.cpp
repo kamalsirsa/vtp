@@ -272,7 +272,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		vtString texname;
 		if (eTex == TE_SINGLE)
 		{
-			texname = m_Params.GetValueString(STR_TEXTURESINGLE);
+			texname = m_Params.GetValueString(STR_TEXTURESINGLE, true);
 			VTLOG("  Single Texture: '%s'\n", (const char *) texname);
 		}
 		else
@@ -697,7 +697,7 @@ void vtTerrain::SetGlobalProjection()
 bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 {
 	vtString name = "Elevation/";
-	name += m_Params.GetValueString(STR_ELEVFILE);
+	name += m_Params.GetValueString(STR_ELEVFILE, true);
 	vtString grid_fname = FindFileOnPaths(s_DataPaths, name);
 	if (grid_fname == "")
 	{
@@ -947,7 +947,7 @@ void vtTerrain::_CreateCulture()
 	if (m_Params.GetValueBool(STR_ROADS))
 	{
 		vtString road_fname = "RoadData/";
-		road_fname += m_Params.GetValueString(STR_ROADFILE);
+		road_fname += m_Params.GetValueString(STR_ROADFILE, true);
 		vtString road_path = FindFileOnPaths(s_DataPaths, road_fname);
 		create_roads(road_path);
 
@@ -985,7 +985,7 @@ void vtTerrain::_CreateCulture()
 
 	if (m_Params.GetValueBool(STR_TREES))
 	{
-		vtString fname = m_Params.GetValueString(STR_TREEFILE);
+		vtString fname = m_Params.GetValueString(STR_TREEFILE, true);
 
 		// Read the VF file
 		vtString plants_fname = "PlantData/";
@@ -1115,7 +1115,7 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 void vtTerrain::_CreateLabels()
 {
 	vtString fname = "PointData/";
-	fname += m_Params.GetValueString(STR_LABELFILE);
+	fname += m_Params.GetValueString(STR_LABELFILE, true);
 	vtString labels_path = FindFileOnPaths(s_DataPaths, fname);
 	if (labels_path == "")
 	{
@@ -1388,8 +1388,8 @@ DPoint2 vtTerrain::GetCenterGeoLocation()
 
 void vtTerrain::_ComputeCenterLocation()
 {
-	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-	DRECT drect = pHFGrid->GetEarthExtents();
+	vtHeightField3d *pHF = GetHeightField();
+	DRECT drect = pHF->GetEarthExtents();
 	drect.GetCenter(m_CenterGeoLocation);
 
 	// must convert from whatever we CRS are, to Geographic
@@ -1424,14 +1424,19 @@ bool vtTerrain::CreateStep1()
 		m_pElevGrid = m_pInputGrid;
 		return true;
 	}
+	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE, true);
 	vtString fname = "Elevation/";
-	fname += m_Params.GetValueString(STR_ELEVFILE);
+	fname += elev_file;
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
 	vtString fullpath = FindFileOnPaths(s_DataPaths, fname);
 	if (fullpath == "")
 	{
 		VTLOG("\t\tNot found.\n");
+
+		vtString msg;
+		msg.Format("Couldn't find elevation '%s'", elev_file);
+		_SetErrorMessage(msg);
 		return false;
 	}
 
@@ -1453,6 +1458,8 @@ bool vtTerrain::CreateStep1()
 
 			m_proj = m_pTin->m_proj;
 			g_Conv = m_pTin->m_Conversion;
+
+			m_pHeightField = m_pTin;
 		}
 	}
 	else
@@ -1483,6 +1490,8 @@ bool vtTerrain::CreateStep1()
 		FRECT frect = m_pElevGrid->m_WorldExtents;
 		VTLOG("\t\tWorld Extents LRTB: %f %f %f %f\n",
 			frect.left, frect.right, frect.top, frect.bottom);
+
+		m_pHeightField = m_pElevGrid;
 	}
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
@@ -1515,8 +1524,6 @@ bool vtTerrain::CreateStep3()
 
 bool vtTerrain::CreateFromTIN()
 {
-	m_pHeightField = m_pTin;
-
 	bool bDropShadow = true;
 
 	// build heirarchy (add terrain to scene graph)
@@ -1764,6 +1771,11 @@ float vtTerrain::GetLODDistance(TFType ftype)
 		break;
 	}
 	return 0.0f;
+}
+
+vtHeightField3d *vtTerrain::GetHeightField()
+{
+	return m_pHeightField;
 }
 
 vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()

@@ -187,7 +187,7 @@ public:
 	RGBf GetOceanColor() { return m_ocean_color; }
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
-	vtHeightField3d *GetHeightField() { return m_pHeightField; }
+	vtHeightField3d *GetHeightField();
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
 
