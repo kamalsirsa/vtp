@@ -1230,7 +1230,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	// check projection
 	vtProjection proj;
 	pRL->GetProjection(proj);
-	bool bDegrees = proj.IsGeographic();
+	bool bDegrees = (proj.IsGeographic() != 0);
 
 	int count;
 	wxString str;
