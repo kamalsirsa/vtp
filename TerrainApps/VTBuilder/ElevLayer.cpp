@@ -667,7 +667,7 @@ bool vtElevLayer::FillGaps()
 		if (lines_with_gaps < 50)	// too few to bother showing the user
 			bShowProgress = false;
 
-		msg.Printf(_T("Gaps: %d"), gaps);
+		msg.Printf(_T("Gaps: %d, lines %d"), gaps, lines_with_gaps);
 		UpdateProgressDialog(99, msg);
 	}
 	delete line_gap;
