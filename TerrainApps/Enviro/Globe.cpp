@@ -379,7 +379,7 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 	FPoint3 scale(1.0f, 1.0f, 1.0f);
 	mesh->CreateEllipsoid(scale, res);
 
-	int i, j, k, size;
+	int i, j, size;
 	Array<FSphere> spheres;
 
 	size = points.GetSize();
@@ -411,6 +411,7 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 		// To consider: do we combine the blobs based on their 2d radius,
 		// their 2d area, their 3d radius, or their 3d volume?  See
 		// Tufte, http://www.edwardtufte.com/
+		// Implemented here: preserve 2d area
 		for (i = 0; i < size-1; i++)
 		{
 			for (j = i+1; j < size; j++)
