@@ -99,11 +99,11 @@ float getelevation_vtp2(int i, int j, int size)
 DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth)
 {
-	if (m_iColumns != m_iRows)
-		return DTErr_NOTSQUARE;
-
 	// Initializes necessary field of the parent class
 	BasicInit(pGrid);
+
+	if (m_iColumns != m_iRows)
+		return DTErr_NOTSQUARE;
 
 	m_fHeightScale = fZScale;
 
