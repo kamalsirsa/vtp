@@ -1,7 +1,7 @@
 //
 // Projections.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Parts of the code are derived from public-domain USGS software.
@@ -12,6 +12,26 @@
 #include "MathTypes.h"
 #include "vtString.h"	// for stricmp
 #include "vtLog.h"
+
+/**
+ * Enumeration of the Datum types
+ *
+ * This list of Datums was originally from the USGS "ProjectionLib" library
+ * and provides a more concise way to represent a Datum than the string
+ * values used by OGRSpatialReference.
+ */
+enum DATUM { ADINDAN = 0, ARC1950, ARC1960, AUSTRALIAN_GEODETIC_1966,
+			 AUSTRALIAN_GEODETIC_1984, CAMP_AREA_ASTRO, CAPE,
+			 EUROPEAN_DATUM_1950, EUROPEAN_DATUM_1979, GEODETIC_DATUM_1949,
+			 HONG_KONG_1963, HU_TZU_SHAN, INDIAN, NAD27, NAD83,
+			 OLD_HAWAIIAN_MEAN, OMAN, ORDNANCE_SURVEY_1936, PUERTO_RICO,
+			 PULKOVO_1942, PROVISIONAL_S_AMERICAN_1956, TOKYO, WGS_72, WGS_84,
+			 UNKNOWN_DATUM = -1, NO_DATUM = -2, DEFAULT_DATUM = -3 };
+
+const char *datumToString(DATUM d);	// old function
+const char *datumToStringShort(DATUM d); // old function
+static void WKTMassageDatum(vtString &strDatum );
+static void MassageDatumFromWKT(vtString &strDatum );
 
 /////////////////////////////////////////////////////////////////////////////
 // Implementation of class vtProjection
@@ -57,7 +77,7 @@ bool vtProjection::operator==(const vtProjection &ref)
 void vtProjection::SetUTMZone(int iZone)
 {
 	// reset the name of the projection so that SetUTM() will set it
-	SetNode("PROJCS","unnamed");
+	SetProjCS("unnamed");
 
 	// Northern Hemisphere for positive zone numbers
 	if (iZone > 0)
@@ -86,25 +106,26 @@ int	vtProjection::GetUTMZone() const
 
 
 /**
- * Set the datum as an enumeration (see DATUM)
+ * Set the datum to an EPSG Datum code, a value in the range (6120 - 6904).
  */
-void vtProjection::SetDatum(DATUM datum)
+void vtProjection::SetDatum(int iDatum)
 {
+	// OGR does not have functionality to change the Datum of an
+	// existing coordinate system.
+	//
+	// Try to fake it by just changing the DATUM node.  This is not
+	// good enough for all purposes, since it doesn't change the
+	// underlying properties such as spheroid, but it appears to suffice
+	// to make coordinate transformations work (which use PROJ.4)
+
 	if (IsGeographic())
 	{
 		// re-create the object with the new datum
-		SetGeogCSFromDatum(datum);
+		SetGeogCSFromDatum(iDatum);
 	}
-	else
+	else if (iDatum < 24)
 	{
-		// OGR does not have functionality to change the Datum of an
-		// existing coordinate system.
-		//
-		// Try to fake it by just changing the DATUM node.  This is not
-		// good enough for all purposes, since it doesn't change the
-		// underlying properties such as spheroid, but it appears to suffice
-		// to make coordinate transformations work (which use PROJ.4)
-
+		DATUM datum = (DATUM) iDatum;
 		// Convert the DATUM enumeration to a Datum string
 		OGR_SRSNode *dnode = GetAttrNode("DATUM");
 		if (!dnode)
@@ -134,65 +155,39 @@ void vtProjection::SetDatum(DATUM datum)
 				dnode->GetChild(0)->SetValue("WGS_1984"); break;
 		}
 	}
-	// TODO: also change SPHEROID to match desired DATUM
+	else
+	{
+		OGR_SRSNode *dnode = GetAttrNode("DATUM");
+		if (!dnode)
+			return;
+		vtString str = DatumToString(iDatum);
+		WKTMassageDatum(str);
+		dnode->GetChild(0)->SetValue((const char *)str);
+	}
+	// TODO: also change SPHEROID node to match desired DATUM?
 //	OGR_SRSNode *enode1 = pSource->GetAttrNode("SPHEROID");
 }
 
 /**
- * Return the datum as an enumeration (see DATUM)
+ * Return the datum as an EPSG code (an integer in the range of 6120 - 6904),
+ * or -1 if the datum could not be determined.
  */
-DATUM vtProjection::GetDatum()
+int vtProjection::GetDatum()
 {
 	// Convert new DATUM string to old Datum enum
 	const char *datum_string = GetAttrValue("DATUM");
 	if (!datum_string)
-		return NO_DATUM;
+		return -1;
 
-	if (!strcmp(datum_string, "Adindan"))
-		return ADINDAN;
-	if (!strcmp(datum_string, "Arc_1950"))
-		return ARC1950;
-	if (!strcmp(datum_string, "Arc_1960"))
-		return ARC1960;
-	if (!strcmp(datum_string, "Australian_Geodetic_Datum_1966"))
-		return AUSTRALIAN_GEODETIC_1966;
-	if (!strcmp(datum_string, "Australian_Geodetic_Datum_1984"))
-		return AUSTRALIAN_GEODETIC_1984;
-	if (!strcmp(datum_string, "Cape"))
-		return CAPE;
-	if (!strcmp(datum_string, "European_Datum_1950"))
-		return EUROPEAN_DATUM_1950;
-	if (!strcmp(datum_string, "New_Zealand_Geodetic_Datum_1949"))
-		return GEODETIC_DATUM_1949;
-	if (!strcmp(datum_string, "Hu_Tzu_Shan"))
-		return HU_TZU_SHAN;
+	vtString strDatum = datum_string;
+	MassageDatumFromWKT(strDatum);	// Convert WKT name to EPSG name
 
-	if (!strcmp(datum_string, "North_American_Datum_1927"))
-		return NAD27;
-	if (!strcmp(datum_string, "North_American_Datum_1983"))
-		return NAD83;
-
-	if (!strcmp(datum_string, "Old_Hawaiian"))
-		return OLD_HAWAIIAN_MEAN;
-	if (!strcmp(datum_string, "Fahud"))
-		return OMAN;
-	if (!strcmp(datum_string, "OSGB_1936"))
-		return ORDNANCE_SURVEY_1936;
-	if (!strcmp(datum_string, "Puerto_Rico"))
-		return PUERTO_RICO;
-	if (!strcmp(datum_string, "Pulkovo_1942"))
-		return PULKOVO_1942;
-	if (!strcmp(datum_string, "Provisional_South_American_Datum_1956"))
-		return PROVISIONAL_S_AMERICAN_1956;
-	if (!strcmp(datum_string, "Tokyo"))
-		return TOKYO;
-
-	if (!strcmp(datum_string, "WGS_1972"))
-		return WGS_72;
-	if (!strcmp(datum_string, "WGS_1984"))
-		return WGS_84;
-
-	return UNKNOWN_DATUM;
+	for (int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	{
+		if (!strcmp((const char *)strDatum, g_EPSGDatums[i].szName))
+			return g_EPSGDatums[i].iCode;
+	}
+	return -1;
 }
 
 /**
@@ -284,41 +279,49 @@ const char *vtProjection::GetProjectionNameShort() const
  * Set the projection to a fresh, new geographical coordinate system
  * based on the indicated Datum.
  */
-void vtProjection::SetGeogCSFromDatum(DATUM eDatum)
+void vtProjection::SetGeogCSFromDatum(int iDatum)
 {
 	Clear();
-	switch (eDatum)
+
+	// support old USGS datums for backward compatibility
+	if (iDatum < 24)
 	{
-		case ADINDAN:			SetWellKnownGeogCS( "EPSG:4201" ); break;
-		case ARC1950:			SetWellKnownGeogCS( "EPSG:4209" ); break;
-		case ARC1960:			SetWellKnownGeogCS( "EPSG:4210" ); break;
-		case AUSTRALIAN_GEODETIC_1966: SetWellKnownGeogCS( "EPSG:4202" ); break;
-		case AUSTRALIAN_GEODETIC_1984: SetWellKnownGeogCS( "EPSG:4203" ); break;
-//	case CAMP_AREA_ASTRO:	SetWellKnownGeogCS( "EPSG:" ); break;
-		case CAPE:				SetWellKnownGeogCS( "EPSG:4222" ); break;
-		case EUROPEAN_DATUM_1950: SetWellKnownGeogCS( "EPSG:4230" ); break;
-//	case EUROPEAN_DATUM_1979: SetWellKnownGeogCS( "EPSG:" ); break;
-		case GEODETIC_DATUM_1949: SetWellKnownGeogCS( "EPSG:4272" ); break;
-//	case HONG_KONG_1963:	SetWellKnownGeogCS( "EPSG:" ); break;
-		case HU_TZU_SHAN:		SetWellKnownGeogCS( "EPSG:4236" ); break;
-//	case INDIAN:			SetWellKnownGeogCS( "EPSG:" ); break;	// there are 2 Indian Datum
+		DATUM eDatum = (DATUM) iDatum;
+		switch (eDatum)
+		{
+			case ADINDAN:			SetWellKnownGeogCS( "EPSG:4201" ); break;
+			case ARC1950:			SetWellKnownGeogCS( "EPSG:4209" ); break;
+			case ARC1960:			SetWellKnownGeogCS( "EPSG:4210" ); break;
+			case AUSTRALIAN_GEODETIC_1966: SetWellKnownGeogCS( "EPSG:4202" ); break;
+			case AUSTRALIAN_GEODETIC_1984: SetWellKnownGeogCS( "EPSG:4203" ); break;
+			case CAPE:				SetWellKnownGeogCS( "EPSG:4222" ); break;
+			case EUROPEAN_DATUM_1950: SetWellKnownGeogCS( "EPSG:4230" ); break;
+			case GEODETIC_DATUM_1949: SetWellKnownGeogCS( "EPSG:4272" ); break;
+			case HU_TZU_SHAN:		SetWellKnownGeogCS( "EPSG:4236" ); break;
+		//	case INDIAN:			SetWellKnownGeogCS( "EPSG:" ); break;	// there are 3 Indian Datum
+			case NAD27:				SetWellKnownGeogCS( "NAD27" ); break;
+			case NAD83:				SetWellKnownGeogCS( "NAD83" ); break;
 
-		case NAD27:				SetWellKnownGeogCS( "NAD27" ); break;
-		case NAD83:				SetWellKnownGeogCS( "NAD83" ); break;
+			case OLD_HAWAIIAN_MEAN: SetWellKnownGeogCS( "EPSG:4135" ); break;
+			case OMAN:				SetWellKnownGeogCS( "EPSG:4232" ); break;	// Fahud
+			case ORDNANCE_SURVEY_1936: SetWellKnownGeogCS( "EPSG:4277" ); break;
+			case PUERTO_RICO:		SetWellKnownGeogCS( "EPSG:4139" ); break;
+			case PULKOVO_1942:		SetWellKnownGeogCS( "EPSG:4284" ); break;
+			case PROVISIONAL_S_AMERICAN_1956: SetWellKnownGeogCS( "EPSG:4248" ); break;
+			case TOKYO:				SetWellKnownGeogCS( "EPSG:4301" ); break;
 
-		case OLD_HAWAIIAN_MEAN: SetWellKnownGeogCS( "EPSG:4135" ); break;
-		case OMAN:				SetWellKnownGeogCS( "EPSG:4232" ); break;	// Fahud
-		case ORDNANCE_SURVEY_1936: SetWellKnownGeogCS( "EPSG:4277" ); break;
-		case PUERTO_RICO:		SetWellKnownGeogCS( "EPSG:4139" ); break;
-		case PULKOVO_1942:		SetWellKnownGeogCS( "EPSG:4284" ); break;
-		case PROVISIONAL_S_AMERICAN_1956: SetWellKnownGeogCS( "EPSG:4248" ); break;
-		case TOKYO:				SetWellKnownGeogCS( "EPSG:4301" ); break;
-
-		case WGS_72:			SetWellKnownGeogCS( "WGS72" ); break;
-		case WGS_84:			SetWellKnownGeogCS( "WGS84" ); break;
-
-		default:				SetWellKnownGeogCS( "WGS84" ); break;
+			case WGS_72:			SetWellKnownGeogCS( "WGS72" ); break;
+			case WGS_84:			SetWellKnownGeogCS( "WGS84" ); break;
+		}
+		SetWellKnownGeogCS( "WGS84" );
+		return;
 	}
+
+	// Turn the datum into a coord system
+	int iCoordSystem = iDatum - 2000;
+	char name[12];
+	sprintf(name, "EPSG:%d", iCoordSystem);
+	SetWellKnownGeogCS(name);
 }
 
 
@@ -330,9 +333,9 @@ void vtProjection::SetGeogCSFromDatum(DATUM eDatum)
  *		hemisphere, -1 through -60 for the southern hemisphere.
  * \param eDatum The Datum as an enumeration (see DATUM)
  */
-void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
+void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
 {
-	SetGeogCSFromDatum(eDatum);
+	SetGeogCSFromDatum(iDatum);
 	if (bUTM)
 		SetUTMZone(iUTMZone);
 }
@@ -352,8 +355,8 @@ void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
  */
 bool vtProjection::GetTextDescription(char *type, char *value)
 {
-	DATUM datum = GetDatum();
-	const char *datum_string = datumToString(datum);
+	int datum = GetDatum();
+	const char *datum_string = DatumToStringShort(datum);
 	int zone = GetUTMZone();
 
 	if (IsGeographic())
@@ -505,7 +508,7 @@ double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2,
 	{
 		// when the user cares more about speed than accuracy, just do
 		// the quick calculation assuming the earth is a sphere
-//		DPoint3
+		// (TODO if performance of full calculation ever proves a bottleneck)
 	}
 
 	// We don't have direct access to the PROJ.4 library from this module,
@@ -569,9 +572,7 @@ int GetNumStatePlanes()
 	return sizeof(g_StatePlaneInfo) /  sizeof(StatePlaneInfo);
 }
 
-/**
- * Convert an enumerated DATUM to a string of the Datum Name.
- */
+
 const char *datumToString(DATUM d)
 {
 	switch ( d )
@@ -634,11 +635,23 @@ const char *datumToString(DATUM d)
 			return "Bad";
 	}
 }
-
-
 /**
- * Convert an enumerated DATUM to a (short) string of the Datum Name.
+ * Convert an a Datum Code to a string of the Datum Name.
  */
+const char *DatumToString(int d)
+{
+	if (d < 24)
+		return datumToString((DATUM)d);	// allow backward compatibility
+
+	for (int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	{
+		if (g_EPSGDatums[i].iCode == d)
+			return g_EPSGDatums[i].szName;
+	}
+	return "Bad";
+}
+
+
 const char *datumToStringShort(DATUM d)
 {
 	switch ( d )
@@ -700,9 +713,51 @@ const char *datumToStringShort(DATUM d)
 		default:
 			return "Bad";
 	}
+}
+/**
+ * Convert a Datum Code to a (short) string of the Datum Name.
+ */
+const char *DatumToStringShort(int d)
+{
+	if (d < 24)
+		return datumToStringShort((DATUM)d); // allow backward compatibility
 
+	for (int i = 0; i < g_EPSGDatums.GetSize(); i++)
+	{
+		if (g_EPSGDatums[i].iCode == d)
+		{
+			const char *name = g_EPSGDatums[i].szShortName;
+			if (*name == '\0')
+				name = g_EPSGDatums[i].szName;
+			return name;
+		}
+	}
+	return "Bad";
 }
 
+#include "EPSG_Datums.h"
+
+Array<EPSGDatum> g_EPSGDatums;
+
+/**
+ * Setup the global array of EPSG Datums, accessible as g_EPSGDatums.
+ */
+void SetupEPSGDatums()
+{
+	// Copy from the statically initialized C array into our more
+	//  robust C++ array.
+	int count = sizeof(epsg_datums) / sizeof(epsg_datum);
+	EPSGDatum dat;
+
+	for (int i = 0; i < count; i++)
+	{
+		dat.bCommon = epsg_datums[i].common != 0;
+		dat.iCode = epsg_datums[i].code;
+		dat.szName = epsg_datums[i].name;
+		dat.szShortName = epsg_datums[i].shortname;
+		g_EPSGDatums.Append(dat);
+	}
+}
 
 /**
  * Determine an approximate conversion from degrees of longitude to meters,
@@ -796,3 +851,101 @@ double GetMetersPerUnit(LinearUnits lu)
 	}
 	return 1.0;
 };
+
+
+static const char *papszDatumEquiv[] =
+{
+    "Militar_Geographische_Institut",
+    "Militar_Geographische_Institute",
+    "World_Geodetic_System_1984",
+    "WGS_1984",
+    "WGS_72_Transit_Broadcast_Ephemeris",
+    "WGS_1972_Transit_Broadcast_Ephemeris",
+    "World_Geodetic_System_1972",
+    "WGS_1972",
+    "European_Terrestrial_Reference_System_89",
+    "European_Reference_System_1989",
+    NULL
+};
+
+/**
+ * WKTMassageDatum()
+ *
+ * Massage an EPSG datum name into WKT format.  Also transform specific
+ * exception cases into WKT versions.
+ *
+ * Origin of this function: GDAL/OGR, ogr_fromepsg.cpp, Revision 1.23
+ */
+static void WKTMassageDatum(vtString &strDatum )
+{
+	char		szDatum[80];
+	strcpy(szDatum, (const char *)strDatum);
+	char        *pszDatum = szDatum;
+    int         i, j;
+
+/* -------------------------------------------------------------------- */
+/*      Translate non-alphanumeric values to underscores.               */
+/* -------------------------------------------------------------------- */
+    for( i = 0; pszDatum[i] != '\0'; i++ )
+    {
+        if( !(pszDatum[i] >= 'A' && pszDatum[i] <= 'Z')
+            && !(pszDatum[i] >= 'a' && pszDatum[i] <= 'z')
+            && !(pszDatum[i] >= '0' && pszDatum[i] <= '9') )
+        {
+            pszDatum[i] = '_';
+        }
+    }
+
+/* -------------------------------------------------------------------- */
+/*      Remove repeated and trailing underscores.                       */
+/* -------------------------------------------------------------------- */
+    for( i = 1, j = 0; pszDatum[i] != '\0'; i++ )
+    {
+        if( pszDatum[j] == '_' && pszDatum[i] == '_' )
+            continue;
+
+        pszDatum[++j] = pszDatum[i];
+    }
+    if( pszDatum[j] == '_' )
+        pszDatum[j] = '\0';
+    else
+        pszDatum[j+1] = '\0';
+	strDatum = pszDatum;
+
+/* -------------------------------------------------------------------- */
+/*      Search for datum equivelences.  Specific massaged names get     */
+/*      mapped to OpenGIS specified names.                              */
+/* -------------------------------------------------------------------- */
+    for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
+    {
+        if( !strcmp(pszDatum,papszDatumEquiv[i]) )
+        {
+			strDatum = papszDatumEquiv[i+1];
+            break;
+        }
+    }
+}
+
+//
+// A limited implementation of reversing the effect of WKTMassageDatum
+// 
+static void MassageDatumFromWKT(vtString &strDatum )
+{
+	int i;
+    for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
+    {
+        if( !strcmp((const char *)strDatum,papszDatumEquiv[i+1]) )
+        {
+			strDatum = papszDatumEquiv[i];
+            break;
+        }
+    }
+	int len = strDatum.GetLength();
+	for (i = 0; i < len; i++)
+	{
+		if (strDatum.GetAt(i) == '_')
+			strDatum.SetAt(i, ' ');
+	}
+}
+
+

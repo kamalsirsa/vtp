@@ -1,7 +1,7 @@
 //
 // Projections.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Derived from public-domain USGS software.
@@ -16,26 +16,11 @@
 // approximate circumference: 40074 km
 // each degree of latitude: 111.3 km
 //
-#define EARTH_RADIUS		6378000.0f		// in meters
+#define EARTH_RADIUS		6378000.0f	// in meters
 #define METERS_PER_LATITUDE	111317.1f
 
 // Some class names are just too long!
 #define OCT OGRCoordinateTransformation
-
-/**
- * Enumeration of the Datum types
- *
- * This list of Datums was originally from the USGS "ProjectionLib" library
- * and provides a more concise way to represent a Datum than the string
- * values used by OGRSpatialReference.
- */
-enum DATUM { ADINDAN = 0, ARC1950, ARC1960, AUSTRALIAN_GEODETIC_1966,
-			 AUSTRALIAN_GEODETIC_1984, CAMP_AREA_ASTRO, CAPE,
-			 EUROPEAN_DATUM_1950, EUROPEAN_DATUM_1979, GEODETIC_DATUM_1949,
-			 HONG_KONG_1963, HU_TZU_SHAN, INDIAN, NAD27, NAD83,
-			 OLD_HAWAIIAN_MEAN, OMAN, ORDNANCE_SURVEY_1936, PUERTO_RICO,
-			 PULKOVO_1942, PROVISIONAL_S_AMERICAN_1956, TOKYO, WGS_72, WGS_84,
-			 UNKNOWN_DATUM = -1, NO_DATUM = -2, DEFAULT_DATUM = -3 };
 
 // Do not change the order of this enumeration
 enum LinearUnits
@@ -47,6 +32,13 @@ enum LinearUnits
 	LU_UNKNOWN
 };
 
+// Define a few common datums for convenience
+#define EPSG_DATUM_OLD_HAWAIIAN	6135
+#define EPSG_DATUM_PUERTO_RICO	6139
+#define EPSG_DATUM_NAD27		6267
+#define EPSG_DATUM_NAD83		6269
+#define EPSG_DATUM_WGS72		6322
+#define EPSG_DATUM_WGS84		6326
 
 #include "ogr_spatialref.h"
 #include "MathTypes.h"
@@ -72,13 +64,13 @@ public:
 
 	void	SetUTMZone(int iZone);
 	int		GetUTMZone() const;
-	void	SetDatum(DATUM datum);
-	DATUM	GetDatum();
+	void	SetDatum(int iDatum);
+	int		GetDatum();
 	LinearUnits	GetUnits();
 
-	void	SetGeogCSFromDatum(DATUM eDatum);
+	void	SetGeogCSFromDatum(int iDatum);
 
-	void	SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum);
+	void	SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum);
 	void	SetSpatialReference(OGRSpatialReference *pRef);
 
 	const char *GetProjectionName() const;
@@ -116,8 +108,17 @@ public:
 //////////////////////////////
 // Helper functions
 
-const char *datumToString(DATUM d);
-const char *datumToStringShort(DATUM d);
+const char *DatumToString(int d);
+const char *DatumToStringShort(int d);
+struct EPSGDatum
+{
+	bool bCommon;
+	int iCode;
+	const char *szName;
+	const char *szShortName;
+};
+extern Array<EPSGDatum> g_EPSGDatums;
+void SetupEPSGDatums();
 
 StatePlaneInfo *GetStatePlaneTable();
 int GetNumStatePlanes();
