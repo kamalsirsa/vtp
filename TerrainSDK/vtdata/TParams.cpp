@@ -102,7 +102,6 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_VEHICLES, "false");
 	AddTag(STR_VEHICLESIZE, "1");
 	AddTag(STR_VEHICLESPEED, "1");
-	AddTag(STR_NUMCARS, "0");
 
 	AddTag(STR_SKY, "true");
 	AddTag(STR_SKYTEXTURE, "");
@@ -306,8 +305,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 		// vehicles
 		else if (strcmp(buf, STR_VEHICLES) == 0 ||
 				 strcmp(buf, STR_VEHICLESIZE) == 0 ||
-				 strcmp(buf, STR_VEHICLESPEED) == 0 ||
-				 strcmp(buf, STR_NUMCARS) == 0)
+				 strcmp(buf, STR_VEHICLESPEED) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 
 		// utilities

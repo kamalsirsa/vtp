@@ -166,7 +166,6 @@ protected:
 #define STR_VEHICLES "Vehicles"
 #define STR_VEHICLESIZE "Vehicle_Size"
 #define STR_VEHICLESPEED "Vehicle_Speed"
-#define STR_NUMCARS "Number_of_Cars"
 
 #define STR_SKY "Sky"
 #define STR_SKYTEXTURE "Sky_Texture"
