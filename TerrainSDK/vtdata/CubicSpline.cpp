@@ -12,6 +12,7 @@
 CubicSpline::CubicSpline()
 {
 	m_pCoeff0 = m_pCoeff1 = m_pCoeff2 = m_pCoeff3 = NULL;
+	m_iPoints = 0;
 }
 
 CubicSpline::~CubicSpline()
