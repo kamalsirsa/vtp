@@ -458,10 +458,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
-		if (g_Options.m_bGravity)
-		{
-			// create "jump" sprite
-		}
 		SetMode(MM_NAVIGATE);
 	}
 	if (m_iInitStep == 11)
@@ -1086,22 +1082,6 @@ void Enviro::OnMouse(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 {
-	// Jump button
-	IPoint2 winsize = vtGetScene()->GetWindowSize();
-	float x_max = LOWER_RIGHT_X * winsize.x;
-	float y_min = UPPER_LEFT_Y * winsize.y;
-	if ((event.pos.x < x_max) &&
-		(event.pos.y > y_min))
-	{
-		// Jump
-		// todo: check if current flyer is VFlyer
-//			if (g_Options.m_bQuakeNavigation)
-//				((VFlyer *) (QuakeFlyer *)m_pQuakeFlyer)->AdjustUpwardVelocity(-2.0f);
-//			else
-//				((VFlyer *) (TFlyer *)m_pTFlyer)->AdjustUpwardVelocity(-2.0f);
-//			TRACE("x: %3d, y: %3d\n", event.pos.x, event.pos.y);
-	}
-
 	vtTerrain *pTerr = GetCurrentTerrain();
 
 	// Build fences on click

@@ -27,12 +27,6 @@ class GlobePicker;
 // Plants
 class vtPlantList3d;
 
-// jump sprite: location in window
-#define UPPER_LEFT_X		0.0f
-#define UPPER_LEFT_Y		0.87f
-#define LOWER_RIGHT_X		0.075f
-#define LOWER_RIGHT_Y		1.0f
-
 class ControlEngine : public vtEngine
 {
 public:
