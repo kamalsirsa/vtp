@@ -59,15 +59,16 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	m_pDayDome->Create(depth, Radius, sun_texture);
 	m_pDayDome->ApplyDayColors();
 	m_pDayDome->SetName2("DayDome");
+	AddChild(m_pDayDome);
 
 	// Create the vtStarDome
-	m_pStarDome = new vtStarDome();
-	m_pStarDome->Create(starfile, Radius, 2.0f, moon_texture);
-	m_pStarDome->SetName2("StarDome");
-
-	// build heirarchy
-	this->AddChild(m_pDayDome);
-	this->AddChild(m_pStarDome);
+	if (starfile && *starfile)
+	{
+		m_pStarDome = new vtStarDome();
+		m_pStarDome->Create(starfile, Radius, 2.0f, moon_texture);
+		m_pStarDome->SetName2("StarDome");
+		AddChild(m_pStarDome);
+	}
 
 	// Set Maximum rotational change dependent only on hours, minutes and secs
 	MaxTimeOfDay = TIME_TO_INT(24, 0, 0);
@@ -293,8 +294,7 @@ vtDayDome::vtDayDome()
 	SphVertices = NULL;
 }
 
-void vtDayDome::Create(int depth, float radius,
-					 const char *sun_texture)
+void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 {
 	SetName2("DayDome");
 	m_pDomeGeom = new vtGeom();
@@ -340,7 +340,7 @@ void vtDayDome::Create(int depth, float radius,
 	SetDawnTimes(5, 0, 7, 0);
 	SetDuskTimes(17, 0, 19, 0);
 
-	if (sun_texture)
+	if (sun_texture && *sun_texture)
 	{
 //		vtImage *pImage = new vtImage(sun_texture, GL_RGBA4);
 		int idx = m_pMats->AddTextureMaterial2(sun_texture,
@@ -635,7 +635,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	SetDawnTimes(5, 0, 7, 0);
 	SetDuskTimes(17, 0, 19, 0);
 
-	if (moon_texture)
+	if (moon_texture && *moon_texture)
 	{
 		int moon_mat = pApps->AddTextureMaterial2(moon_texture,
 							 false, false,	// culling, lighting
