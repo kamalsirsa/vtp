@@ -101,22 +101,26 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	//
 	if (NULL == (pProjectionString = pDataset->GetProjectionRef()))
 	{
-		VTLOG("  No Projection\n");
+		VTLOG("  No Projection at all.\n");
 		bRet = false;
 		goto Exit;
 	}
+	VTLOG("  Got Projection: '%s'\n", pProjectionString);
 
 	err = SpatialReference.importFromWkt((char**)&pProjectionString);
 	if (err != OGRERR_NONE)
 	{
+		VTLOG("  No projection, but proceeding anyway..\n");
 		/* bRet = false;
 		goto Exit; */
 		// allow images without projection?
 	}
 
-	if (CE_None != pDataset->GetGeoTransform(affineTransform))
+	CPLErr cerr;
+	cerr = pDataset->GetGeoTransform(affineTransform);
+	if (cerr != CE_None)
 	{
-		VTLOG("  No GeoTransform\n");
+		VTLOG("  No GeoTransform: error %d\n", cerr);
 		bRet = false;
 		goto Exit;
 	}
