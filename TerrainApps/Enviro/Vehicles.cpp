@@ -141,65 +141,6 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 			n = (NodeGeom*) n->m_pNext;
 		}
 	}
-
-/*	// try loading a car
-	CarEngine *cEng;
-	vtTransform *car;
-
-	car = LoadModel("Vehicles/bronco_v2.DSM");
-	float fAltitude;
-	convert_meters_to_local_xz(192200, 2157700, start_point.x, start_point.z);
-	m_pLocalGrid->FindAltitudeAtPoint(start_point, fAltitude, vNormal);
-
-	if (car != NULL)
-	{
-		car->Size(.01f*sc,.01f*sc,.01f*sc);
-		car->RotateLocal(YAXIS, PID2f); //adjust for MAX model
-#if CAR_VIEW
-		FollowerEngine* follower = new FollowerEngine(car, pScene->GetCamera());
-		follower->SetName2("Follower Engine");
-		AddEngine(follower, pScene);
-#endif
-		if (m_Params.m_bDoSound)
-		{
-			// sound
-			vtSound3D* carnoise = new vtSound3D("Data/Vehicles/loud01.wav");
-			carnoise->Initialize();
-			carnoise->SetName2("Corvette Sound");
-			carnoise->SetModel(1,1,30,30);	//set limit of how far away sound can be heard
-			carnoise->SetTarget(car);		//set target
-			carnoise->SetMute(true);		//mute the sound until later
-			carnoise->Play(0, 0.0f);		//play the sound (muted)
-			AddEngine(carnoise, pScene);
-		}
-
-		AddNode(car);
-
-		if (m_pRoadMap != NULL) {
-			//follow a road
-			cEng = new CarEngine(start_point, m_pLocalGrid, 60.0f*fSize, .25f*fSize, m_pRoadMap->GetFirstNode(), 1, m_Params.m_fRoadHeight);
-			cEng->SetName2("Car Engine");
-//			cEng->GetPath("Data/test2.pf", m_pRoadMap);
-		} else {
-			//simple test: drive in a circle
-			center = start_point;
-			//for moving in a circle
-			center.z -=4;
-			cEng = new CarEngine(start_point, m_pLocalGrid, 60.0f*fSize, .25f*fSize, center);
-			cEng->SetName2("Car Engine");
-			//or drive in a straight line
-			//cEng = new CarEngine(start_point, pLocalGrid, 60*fSize, .25*fSize);
-		}
-
-		cEng->SetTarget(car);
-		if (cEng->SetTires()) {
-			AddEngine(cEng, pScene);
-		} else {
-			//uh oh!
-			delete cEng;
-		}
-	}
-*/
 }
 
 VehicleType::VehicleType(const char *szName)
