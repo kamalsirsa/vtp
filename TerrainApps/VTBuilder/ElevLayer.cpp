@@ -425,8 +425,12 @@ void vtElevLayer::RenderBitmap()
 
 	// only show a progress dialog for large terrain (>300 points tall)
 	bool bProg = (m_iRows > 300);
+#if WIN32
+	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,
+	// so just disable for now. (wxGTK 2.2.9 on Linux Mandrake 8.1)
 	if (bProg)
 		OpenProgressDialog("Rendering Bitmap");
+#endif
 
 	UpdateProgressDialog(0, "Generating colors...");
 	DetermineMeterSpacing();

@@ -39,7 +39,7 @@ void CloseProgressDialog()
 {
 	if (g_pProg)
 	{
-		delete g_pProg;
+		g_pProg->Destroy();
 		g_pProg = NULL;
 	}
 }

@@ -75,6 +75,8 @@
 #  include "view_plus.xpm"
 #  include "view_zoomall.xpm"
 #  include "view_zoomexact.xpm"
+#  include "info.xpm"
+#  include "table.xpm"
 
 #	include "VTBuilder.xpm"
 #endif

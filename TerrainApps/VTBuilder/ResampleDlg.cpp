@@ -123,8 +123,8 @@ void ResampleDlg::OnSpacingXY( wxCommandEvent &event )
         return;
 
     TransferDataFromWindow();
-    m_iSizeX = (m_fAreaX / m_fSpacingX)+1;
-    m_iSizeY = (m_fAreaY / m_fSpacingY)+1;
+    m_iSizeX = (int) (m_fAreaX / m_fSpacingX)+1;
+    m_iSizeY = (int) (m_fAreaY / m_fSpacingY)+1;
 
     m_bSetting = true;
     TransferDataToWindow();

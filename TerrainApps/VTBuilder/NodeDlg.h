@@ -14,10 +14,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "AutoDialog.h"
-
-class NodeEdit;
-class vtRoadLayer;
-enum VisualIntersectionType;
+#include "RoadMapEdit.h"
 
 // WDR: class declarations
 
