@@ -635,7 +635,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	if (!pNode)
 	{
 		wxString str;
-		str.Printf("Sorry, couldn't load model from %s", fname);
+		str.Printf("Sorry, couldn't load model from %hs", fname);
 		DisplayMessageBox(str);
 		return NULL;
 	}

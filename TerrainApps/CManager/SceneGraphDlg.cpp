@@ -239,7 +239,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 			case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
 			case GL_POLYGON: mtype = "Polygon"; break;
 			}
-			str.Printf("Mesh %d, %s, %d prims", i, mtype, iNumPrim);
+			str.Printf("Mesh %d, %hs, %d prims", i, mtype, iNumPrim);
 			hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 		}
 	}
