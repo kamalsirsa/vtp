@@ -65,7 +65,6 @@ public:
 	virtual void AddMainToolbars();
 	bool DrawDisabled() { return m_bDrawDisabled; }
 
-	void OnSize(wxSizeEvent& event);
 	void OnClose(wxCloseEvent &event);
 	void DeleteContents();
 

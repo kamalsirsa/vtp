@@ -232,11 +232,6 @@ void MainFrame::DeleteContents()
 	m_pActiveLayer = NULL;
 }
 
-void MainFrame::OnSize(wxSizeEvent& event)
-{
-	wxFrame::OnSize(event);
-}
-
 void MainFrame::OnClose(wxCloseEvent &event)
 {
 	int num = NumModifiedLayers();

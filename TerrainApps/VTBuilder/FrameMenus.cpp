@@ -198,7 +198,6 @@ EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 
-EVT_SIZE(MainFrame::OnSize)
 EVT_CHAR(MainFrame::OnChar)
 EVT_CLOSE(MainFrame::OnClose)
 
@@ -1358,6 +1357,7 @@ void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
 		if (dlg.m_bShowToolbar != toolBar_main->IsShown())
 		{
 			toolBar_main->Show(dlg.m_bShowToolbar);
+			// send a fake OnSize event so the frame will draw itself correctly
 			wxSizeEvent dummy;
 			wxFrame::OnSize(dummy);
 		}
