@@ -1,7 +1,7 @@
 //
 // Options.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,7 +26,7 @@ public:
 	bool	m_bFullscreen;
 	bool	m_bHtmlpane;
 	bool	m_bFloatingToolbar;
-	bool	m_bSound;
+	bool	m_bTextureCompression;
 	bool	m_bSpeedTest;
 	float	m_fPlantScale;
 	float	m_fSelectionCutoff;
@@ -41,4 +41,5 @@ public:
 
 extern EnviroOptions g_Options;
 
-#endif
+#endif	// OPTIONSH
+

@@ -532,7 +532,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 7)
 	{
-		if (!pTerr->CreateStep5(g_Options.m_bSound != 0, iError))
+		if (!pTerr->CreateStep5(false, iError))
 		{
 			m_state = AS_Error;
 			SetMessage(pTerr->DescribeError(iError));
@@ -965,18 +965,17 @@ void Enviro::SetupScene1()
 {
 	VTLOG("SetupScene1\n");
 
-	vtScene *pScene = vtGetScene();
-
+	// Set some global peroperties
 	vtTerrain::SetDataPath(g_Options.m_DataPaths);
 	vtTerrain::s_Content.SetDataPaths(&g_Options.m_DataPaths);
+	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 
+	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
 	if (pCamera) pCamera->SetName2("Standard Camera");
 
-	m_pRoot = m_pTerrainScene->BeginTerrainScene(g_Options.m_bSound != 0);
+	m_pRoot = m_pTerrainScene->BeginTerrainScene();
 	pScene->SetRoot(m_pRoot);
-
-//	m_pTerrainScene->SetupEngines();
 }
 
 void Enviro::SetupScene2()

@@ -1,7 +1,7 @@
 //
 // Options.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,7 +21,7 @@ EnviroOptions g_Options;
 #define STR_FULLSCREEN "FullScreen"
 #define STR_HTMLPANE "HTMLPane"
 #define STR_FLOATBAR "FloatingToolBar"
-#define STR_SOUND "Sound"
+#define STR_TEXTURE_COMPRESSION "TextureCompression"
 #define STR_SPEEDTEST "SpeedTest"
 #define STR_PLANTSIZE "PlantSize"
 #define STR_PLANTSHADOWS "PlantShadows"
@@ -32,6 +32,7 @@ EnviroOptions::EnviroOptions()
 	m_strImage = "ev11656_512";
 	m_fSelectionCutoff = 15.0f;
 	m_bStartInNeutral = false;
+	m_bTextureCompression = true;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -77,8 +78,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_bHtmlpane;
 		else if (strcmp(buf, STR_FLOATBAR) == 0)
 			input >> m_bFloatingToolbar;
-		else if (strcmp(buf, STR_SOUND) == 0)
-			input >> m_bSound;
+		else if (strcmp(buf, STR_TEXTURE_COMPRESSION) == 0)
+			input >> m_bTextureCompression;
 		else if (strcmp(buf, STR_SPEEDTEST) == 0)
 			input >> m_bSpeedTest;
 		else if (strcmp(buf, STR_PLANTSIZE) == 0)
@@ -130,8 +131,8 @@ bool EnviroOptions::Write()
 	output << STR_FLOATBAR << "\t";
 	output << m_bFloatingToolbar << endl;
 
-	output << STR_SOUND << "\t\t\t";
-	output << m_bSound << endl;
+	output << STR_TEXTURE_COMPRESSION << "\t";
+	output << m_bTextureCompression << endl;
 	output << STR_SPEEDTEST << "\t\t";
 	output << m_bSpeedTest << endl;
 	output << STR_PLANTSIZE << "\t\t";
