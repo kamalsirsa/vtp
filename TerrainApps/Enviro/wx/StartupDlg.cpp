@@ -292,10 +292,29 @@ void StartupDlg::OnTerrMan( wxCommandEvent &event )
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
-	const char *name = m_strTName.to_utf8();
-	vtString path_to_ini = wxGetApp().GetIniFileForTerrain(name);
-	if (path_to_ini != "")
-		EditTerrainParameters(this, path_to_ini);
+	vtString name_old = m_strTName.to_utf8();
+	vtString path_to_ini = wxGetApp().GetIniFileForTerrain(name_old);
+	if (path_to_ini == "")
+		return;
+
+	int res = EditTerrainParameters(this, path_to_ini);
+	if (res == wxID_OK)
+	{
+		// Name might have changed
+		TParams params;
+		if (params.LoadFromFile(path_to_ini))
+		{
+			vtString name_new = params.m_strName;
+			if (name_new != name_old)
+				m_strTName.from_utf8(name_new);
+		}
+
+		wxGetApp().RefreshTerrainList();
+		RefreshTerrainChoices();
+		int sel = GetTname()->FindString(m_strTName);
+		if (sel != -1)
+			GetTname()->Select(sel);
+	}
 }
 
 void StartupDlg::OnTerrain( wxCommandEvent &event )
