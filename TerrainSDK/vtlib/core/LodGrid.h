@@ -20,8 +20,8 @@ public:
 	~vtLodGrid();
 
 	// methods
-	void AppendToGrid(vtTransform *pModel);
-	void AppendToGrid(vtGeom *pModel);
+	void AppendToGrid(vtTransform *pTrans);
+	void AppendToGrid(vtGeom *pGeom);
 	void RemoveFromGrid(vtTransform *pTNode);
 	void RemoveFromGrid(vtGeom *pModel);
 
