@@ -38,6 +38,7 @@ TParams::TParams()
 	m_iNavStyle = 0;
 	m_fNavSpeed = 100;
 	m_fHither = 5;
+	m_bAccel = false;
 
 	m_eLodMethod = LM_ROETTGER;
 	m_fPixelError = 2.0f;
@@ -128,6 +129,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_strLocFile = rhs.m_strLocFile;
 	m_strInitLocation = rhs.m_strInitLocation;
 	m_fHither = rhs.m_fHither;
+	m_bAccel = rhs.m_bAccel;
 
 	m_eLodMethod = rhs.m_eLodMethod;
 	m_fPixelError = rhs.m_fPixelError;
@@ -207,12 +209,14 @@ const TParams &TParams::operator = (const TParams &rhs)
 #define STR_ELEVFILE "Filename"
 #define STR_LOCFILENAME "Locations_File"
 #define STR_VERTICALEXAG "Vertical_Exag"
+
 #define STR_MINHEIGHT "Min_Height"
 #define STR_NAVSTYLE "Nav_Style"
 #define STR_NAVSPEED "Nav_Speed"
 #define STR_LOCFILE "Locations_File"
 #define STR_INITLOCATION "Init_Location"
 #define STR_HITHER "Hither_Distance"
+#define STR_ACCEL "Accel"
 
 #define STR_LODMETHOD "LOD_Method"
 #define STR_PIXELERROR "Pixel_Error"
@@ -338,6 +342,8 @@ bool TParams::LoadFromFile(const char *filename)
 			m_strInitLocation = get_line_from_stream(input);
 		else if (strcmp(buf, STR_HITHER) == 0)
 			input >> m_fHither;
+		else if (strcmp(buf, STR_ACCEL) == 0)
+			input >> m_bAccel;
 
 		// LOD
 		else if (strcmp(buf, STR_LODMETHOD) == 0)
@@ -542,6 +548,8 @@ bool TParams::SaveToFile(const char *filename)
 	output << (const char *) m_strInitLocation << endl;
 	output << STR_HITHER << "\t\t";
 	output << m_fHither << endl;
+	output << STR_ACCEL << "\t\t";
+	output << m_bAccel << endl;
 
 	output << "\n; LOD\n";
 	output << STR_LODMETHOD << "\t\t";

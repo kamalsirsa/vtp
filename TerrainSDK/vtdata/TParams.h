@@ -72,6 +72,7 @@ public:
 	vtString	m_strLocFile;
 	vtString	m_strInitLocation;
 	float		m_fHither;
+	bool		m_bAccel;
 
 	// LOD
 	LodMethodEnum m_eLodMethod;
