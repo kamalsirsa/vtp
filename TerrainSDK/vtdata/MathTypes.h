@@ -759,14 +759,21 @@ public:
 	float Width() const { return right - left; }
 	// returns the height
 	float Height() const { return top - bottom; };
-	bool ContainsPoint(float x, float y)
+	// return true if empty
+	bool IsEmpty() const { return (left == right && top == bottom); }
+	void Empty() { left = top = right = bottom = 0.0; }
+	bool ContainsPoint(float x, float y) const
 	{
 		return (x > left && x < right && y > bottom && y < top);
 	}
-	void Center(FPoint2 &center)
+	void Center(FPoint2 &center) const
 	{
 		center.x = (left + right)/2;
 		center.y = (bottom + top)/2;
+	}
+	FPoint2 Center() const
+	{
+		return FPoint2((left + right)/2, (bottom + top)/2);
 	}
 	void operator+=(const FPoint2 &delta)
 	{
