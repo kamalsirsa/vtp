@@ -488,11 +488,12 @@ bool vtLevel::DetermineHeightFromSlopes()
 		bool valid = PlaneIntersection(planes[i0], planes[i1], planes[i2], point);
 		if (valid)
 		{
-			if (point.y < 0)	// shouldn't happen, but just a safety check
-				continue;
-
 			// take this point as the height of the roof
 			float fHeight = (point.y - m_LocalFootprint[0].y);
+
+			if (fHeight < 0)	// shouldn't happen, but just a safety check
+				continue;
+
 			if (fHeight < fMinHeight)
 				fMinHeight = fHeight;
 			bFoundASolution = true;
@@ -942,7 +943,7 @@ void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 	lev->SetFootprint(dl);
 }
 
-/** 
+/**
  * Find the closest distance from a given point to the interior of a
  * building's lowest footprint.  If the point is inside the footprint,
  * the value 0.0 is returned.
@@ -1129,8 +1130,8 @@ void vtBuilding::AddDefaultDetails()
 		}
 	}
 
-    // process roof level
-    vtLevel *roof = m_Levels[i];
+	// process roof level
+	vtLevel *roof = m_Levels[i];
 	int edges = roof->GetNumEdges();
 	if (0 == edges)
 		roof->SetFootprint(m_Levels[0]->GetFootprint());
