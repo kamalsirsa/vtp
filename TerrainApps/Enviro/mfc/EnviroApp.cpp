@@ -4,6 +4,8 @@
 
 #include "StdAfx.h"
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
+
 #include "EnviroApp.h"
 #include "SimpleDoc.h"
 #include "CameraDlg.h"
@@ -106,7 +108,9 @@ bool EnviroApp::OnInit()
 {
 	g_Options.Read("Enviro.ini");
 
-	g_App.Startup();
+	g_App.Startup();	// starts log
+
+	VTLOG("Application framework: MFC\n");
 	g_App.LoadTerrainDescriptions();
 
 	//

@@ -66,6 +66,7 @@ bool vtApp::OnInit()
 
 	g_App.Startup();	// starts log
 
+	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
 	Args(argc, argv);
 
 	g_App.LoadTerrainDescriptions();
