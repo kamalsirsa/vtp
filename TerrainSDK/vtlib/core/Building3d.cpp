@@ -14,8 +14,9 @@
 #include "Building3d.h"
 #include "Terrain.h"
 
-//an array of materials.  buildings pull their colors from a common list of materials.
-//this is done to save memory.  for a list of 16000+ buildings, this can save about 200MB of RAM.
+// An array of materials, shared by all buildings.
+// This is done to save memory.  For a list of 16000+ buildings, this can
+//  save about 200MB of RAM.
 vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 
 #define PLAIN_MATS	216		//216 plain colors
@@ -30,10 +31,13 @@ vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 #define DOOR_MAT			WINDOW_MAT + 1
 #define WOOD_MAT			DOOR_MAT + 1
 #define CEMENT_MAT			WOOD_MAT + 1
-#define WINDOWWALL_MAT_START CEMENT_MAT + 1
+#define BRICK_MAT			CEMENT_MAT + 1
+#define WINDOWWALL_MAT_START BRICK_MAT + 1
 #define WINDOWWALL_MAT_END WINDOWWALL_MAT_START + WINDOWWALL_MATS - 1
 
-//helper to make a material
+//
+// Helper to make a material
+//
 vtMaterial *makeMaterial(RGBf &color, bool culling)
 {
 	vtMaterial *pMat = new vtMaterial();
@@ -45,7 +49,7 @@ vtMaterial *makeMaterial(RGBf &color, bool culling)
 	return pMat;
 }
 
-//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 vtBuilding3d::vtBuilding3d() : vtBuilding()
 {
@@ -69,7 +73,6 @@ vtBuilding3d &vtBuilding3d::operator=(const vtBuilding &v)
 
 void vtBuilding3d::CreateSharedMaterials()
 {
-	//create the shared materials if they haven't been already.
 	vtString path;
 	int i, j, k, divisions;
 	float start, step;
@@ -140,6 +143,13 @@ void vtBuilding3d::CreateSharedMaterials()
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
+	// brick material
+	pMat = makeMaterial(color, false);
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick1_256.bmp");
+	pMat->SetTexture2(path);
+	pMat->SetClamp(false);
+	s_Materials->Append(pMat);
+
 	// create window-wall materials (bright colors only)
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
 	vtImage *pImageWindowWall = new vtImage(path);
@@ -159,7 +169,8 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	int total = s_Materials->GetSize();
-	int expectedtotal = PLAIN_MATS + SIDING_MATS + WINDOWWALL_MATS + 1 + 1 + 1 + 1;	// window, door, wood, cement_block, windowwall
+	// window, door, wood, cement_block, windowwall
+	int expectedtotal = PLAIN_MATS + SIDING_MATS + WINDOWWALL_MATS + 1 + 1 + 1 + 1 + 1;
 	assert(total == expectedtotal);
 }
 
@@ -840,6 +851,8 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 		return WOOD_MAT;
 	if (bldMat == BMAT_CEMENT)	// only one cement
 		return CEMENT_MAT;
+	if (bldMat == BMAT_BRICK)	// only one brick
+		return BRICK_MAT;
 
 	int start = 0;
 	int end = 0;
