@@ -295,7 +295,7 @@ float vtBuilding3d::GetHeightOfStories()
 void vtBuilding3d::DestroyGeometry()
 {
 	m_pContainer->RemoveChild(m_pGeom);
-	delete m_pGeom;
+	m_pGeom->Destroy();
 	m_pGeom = NULL;
 	int i, size = m_Mesh.GetSize();
 	for (i = 0; i < size; i++)
@@ -1035,7 +1035,12 @@ vtGeom *vtBuilding3d::GetGeom()
 
 void vtBuilding3d::DeleteNode()
 {
-	// not needed for buildings - those are automatically deleted when needed
+	if (m_pContainer)
+	{
+		DestroyGeometry();
+		m_pContainer->Destroy();
+		m_pContainer = NULL;
+	}
 }
 
 /**
