@@ -83,6 +83,8 @@ protected:
 	vtString		 m_strName;
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 class vtEngineArray : public Array<vtEngine*>
 {
 public:
@@ -92,6 +94,8 @@ public:
 			pTop->AddChildrenToList(*this);
 	}
 };
+
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * This simple engine extends the base class vtEngine with the ability to
