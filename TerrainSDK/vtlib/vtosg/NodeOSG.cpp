@@ -450,27 +450,28 @@ void vtGroup::Release()
 	}
 }
 
-const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
+vtNode *FindNodeByName(vtNode *node, const char *name)
 {
-	if (!strcmp(GetName2(), name))
-		return (dynamic_cast<const vtNode *>(this));
+	if (!strcmp(node->GetName2(), name))
+		return node;
 
-	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(this);
+	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(node);
 	if (pGroup)
 	{
 		for (int i = 0; i < pGroup->GetNumChildren(); i++)
 		{
-			vtNodeBase *pChild = pGroup->GetChild(i);
-			vtGroup *pGroupChild = dynamic_cast<vtGroup *>(pChild);
-			if (pGroupChild)
-			{
-				const vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
-				if (pResult)
-					return pResult;
-			}
+			vtNode *pChild = pGroup->GetChild(i);
+			vtNode *pResult = FindNodeByName(pChild, name);
+			if (pResult)
+				return pResult;
 		}
 	}
 	return NULL;
+}
+
+const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
+{
+	return FindNodeByName((vtNode *)this, name);
 }
 
 void vtGroup::SetOsgGroup(Group *g)
