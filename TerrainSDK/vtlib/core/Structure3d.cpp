@@ -77,7 +77,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 }
 
 // implement vtStructure3d methods
-bool vtStructInstance3d::CreateNode(vtHeightField3d *hf, const vtTagArray &options)
+bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 {
 	if (!m_pContainer)
 	{
@@ -85,31 +85,46 @@ bool vtStructInstance3d::CreateNode(vtHeightField3d *hf, const vtTagArray &optio
 		m_pContainer = new vtTransform();
 	}
 
-	vtTag *tag = FindTag("filename");
-	if (!tag)
-		return false;
-
-	m_pModel = vtLoadModel(tag->value);
-	if (!m_pModel)
+	// if previously created, destroy to re-create
+	if (m_pModel)
 	{
-		// try again, looking on the standards data paths
-		vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
-		if (fullpath != "")
+		m_pModel->Destroy();
+		m_pModel = NULL;
+	}
+
+	const char *filename = GetValue("filename");
+	if (filename)
+	{
+		m_pModel = vtLoadModel(filename);
+		if (!m_pModel)
 		{
-			// try again
-			tag->value = fullpath;
-			m_pModel = vtLoadModel(tag->value);
+			// try again, looking on the standards data paths
+			vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
+			if (fullpath != "")
+			{
+				// try again
+				m_pModel = vtLoadModel(fullpath);
+				if (m_pModel)
+					SetValue("filename", fullpath);
+			}
+			if (!m_pModel)
+				return false;
+		}
+	}
+	const char *itemname = GetValue("itemname");
+	if (itemname)
+	{
+		// Use ContentManager to create the structure
+		vtItem *pItem = vtTerrain::s_Content.FindItemByName(itemname);
+		if (pItem)
+		{
+			m_pModel = vtTerrain::s_Content.CreateInstanceOfItem(pItem);
 		}
 		if (!m_pModel)
 			return false;
 	}
 	m_pContainer->AddChild(m_pModel);
 
-	const char *itemname = GetValue("itemname");
-	if (itemname)
-	{
-		// TODO: use ContentManager to create model
-	}
 	const char *scale = GetValue("scale");
 	if (scale)
 	{
@@ -118,7 +133,7 @@ bool vtStructInstance3d::CreateNode(vtHeightField3d *hf, const vtTagArray &optio
 			m_fScale = sc;
 	}
 
-	UpdateTransform(hf);
+	UpdateTransform(pTerr->GetHeightField());
 	return true;
 }
 
@@ -169,8 +184,15 @@ vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 
 bool vtStructureArray3d::ConstructStructure(vtStructure3d *str)
 {
-	vtTagArray options;
-	return str->CreateNode(m_pHeightField, options);
+	return str->CreateNode(m_pTerrain);
+}
+
+bool vtStructureArray3d::ConstructStructure(int index)
+{
+	vtStructure3d *str = GetStructure3d(index);
+	if (str)
+		return str->CreateNode(m_pTerrain);
+	return NULL;
 }
 
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
@@ -185,7 +207,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 		{
 			vtBuilding3d *bld = GetBuilding(i);
 			bld->Offset(offset);
-			bld->AdjustHeight(m_pHeightField);
+			bld->AdjustHeight(m_pTerrain->GetHeightField());
 
 			// Should really move the building to a new cell in the LOD
 			// Grid, but unless it's moving really far we don't need to
@@ -200,7 +222,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 		{
 			vtStructInstance3d *inst = GetInstance(i);
 			inst->Offset(offset);
-			inst->UpdateTransform(m_pHeightField);
+			inst->UpdateTransform(m_pTerrain->GetHeightField());
 		}
 	}
 }

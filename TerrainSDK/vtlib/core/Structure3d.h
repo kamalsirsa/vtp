@@ -16,7 +16,7 @@
 class vtBuilding3d;
 class vtFence3d;
 class vtNode;
-class vtHeightField3d;
+class vtTerrain;
 class vtTransform;
 
 /**
@@ -31,7 +31,7 @@ public:
 	vtTransform *GetTransform() { return m_pContainer; }
 
 	/// Create the node(s) and position them on the indicated heightfield
-	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options) { return false; }
+	virtual bool CreateNode(vtTerrain *pTerr) { return false; }
 
 	/// Access the Geometry node for this structure, if it has one
 	virtual vtGeom *GetGeom() { return NULL; }
@@ -56,7 +56,7 @@ public:
 
 	// implement vtStructure3d methods
 	/// Create the node(s) and position them on the indicated heightfield
-	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options);
+	virtual bool CreateNode(vtTerrain *pTerr);
 	virtual void ShowBounds(bool bShow);
 
 	/// (Re-)position the instance on the indicated heightfield
@@ -85,10 +85,11 @@ public:
 	vtStructInstance3d *GetInstance(int i) { return (vtStructInstance3d *) GetAt(i)->GetInstance(); }
 
 	/// Indicate the heightfield which will be used for the structures in this array
-	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
+	void SetTerrain(vtTerrain *pTerr) { m_pTerrain = pTerr; }
 
 	/// Construct an individual structure, return true if successful
 	bool ConstructStructure(vtStructure3d *str);
+	bool ConstructStructure(int index);
 	void OffsetSelectedStructures(const DPoint2 &offset);
 
 	/// Deselect all structures including turning off their visual highlights
@@ -101,7 +102,7 @@ public:
 	virtual void DestroyStructure(int i);
 
 protected:
-	vtHeightField3d *m_pHeightField;
+	vtTerrain *m_pTerrain;
 };
 
 #endif // STRUCTURE3DH
