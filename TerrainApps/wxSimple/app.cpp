@@ -36,8 +36,7 @@ IMPLEMENT_APP(vtApp);
 bool vtApp::OnInit(void)
 {
 	// Create the main frame window
-	wxString title = "Simple vtlib example";
-	m_frame = new vtFrame(NULL, title, wxPoint(50, 50), wxSize(800, 600));
+	m_frame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
 
 	return CreateScene();
 }
