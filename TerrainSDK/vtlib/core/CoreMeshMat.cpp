@@ -307,7 +307,7 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
  * Adds an ellipsoid to this mesh.
  *
  * \param size The width, height and depth of the ellipsoid.
- * \param res The resolution (number of vertices used in the tesselation
+ * \param res The resolution (number of vertices used in the tesselation)
  *		from top to bottom.
  * \param hemi Create only the top of the ellipsoid (e.g. a hemisphere).
  */
@@ -358,6 +358,127 @@ void vtMeshBase::CreateEllipsoid(FPoint3 size, int res, bool hemi)
 	}
 	CreateRectangularMesh(theta_res, phi_res);
 }
+
+/**
+ * Adds an cylinder to this mesh.
+ *
+ * \param height The height of the cylinder.
+ * \param radius The radius of the cylinder.
+ * \param res The resolution (number of side of the cylinder).
+ * \param bTop True to create the top of the cylinder.
+ * \param bBottom True to create the bottom of the cylinder.  You could set
+ *		this to false, for example, if the cylinder is going to sit on a
+ *		flat surface where you will never see its bottom.
+ * \param bCentered True to create a cylinder centered around its original,
+ *		false for a cylinder which begins at Y=0 and extends upward.
+ */
+void vtMeshBase::CreateCylinder(float height, float radius, int res,
+								bool bTop, bool bBottom, bool bCentered)
+{
+	// One way to model a cylinder is as a triangle/quad strip and
+	// a pair of triangle fans for the top and bottom, although that
+	// requires 2 kinds of primitive, so we would need 2 vtMesh objects.
+	// Instead, we use triangle strips for both the sides and top/bottom.
+
+	// In order to do vertex-based shading, we will have to provide correct
+	// vertex normals for the sides and top/bottom separately.  Unfortunately
+	// this doubles the number of vertices, since each vertex can only
+	// have a single normal.  So we may have to make 2 passes through vertex
+	// construction.
+
+	int		a, b, passes;
+	int		i, j, k;
+	int		vidx, first = GetNumVertices();
+	FPoint3 p, norm;
+
+	float	theta_step = PI2f / res;
+	int		verts_per_pass = res * 2;
+
+	if ((bTop || bBottom) && (GetVtxType() & VT_Normals))
+		passes = 2;
+	else
+		passes = 1;
+
+	for (a = 0; a < passes; a++)
+	{
+		for (b = 0; b < 2; b++)
+		{
+			if (bCentered)
+				p.y = b ? height/2 : -height/2;
+			else
+				p.y = b ? height : 0;
+
+			for (i = 0; i < res; i++)
+			{
+				float theta = i * theta_step;
+				p.x = cosf(theta) * radius;
+				p.z = sinf(theta) * radius;
+				vidx = AddVertex(p);
+
+				if (GetVtxType() & VT_Normals)	/* compute normals */
+				{
+					if (a == 0)		// first pass, outward normals for sides
+					{
+						norm.x = cosf(theta);
+						norm.y = 0;
+						norm.z = sinf(theta);
+					}
+					else if (a == 1)	// second pass, top/bottom normals
+					{
+						norm.x = 0;
+						norm.y = b ? 1 : -1;
+						norm.z = 0;
+					}
+					SetVtxNormal(vidx, norm);
+				}
+			}
+		}
+	}
+	// Create sides
+	unsigned short *indices = new unsigned short[res * 2];
+	j = 0;
+	k = 0;
+	for (i = 0; i < res+1; i++)
+	{
+		indices[j++] = k;
+		indices[j++] = k+res;
+		k++;
+		if (k == res)
+			k = 0;
+	}
+	AddStrip(j, indices);
+
+	// create top and bottom
+	int offset = (passes == 2 ? verts_per_pass : 0);
+	if (bBottom)
+	{
+		j = 0;
+		for (i = 0; i < res/2; i++)
+		{
+			indices[j++] = offset + i;
+			k = res - 1 - i;
+			if (i >= k)
+				break;
+			indices[j++] = offset + k;
+		}
+		AddStrip(j, indices);
+	}
+
+	if (bTop)
+	{
+		j = 0;
+		for (i = 0; i < res/2; i++)
+		{
+			indices[j++] = offset + res + i;
+			k = res - 1 - i;
+			if (i >= k)
+				break;
+			indices[j++] = offset + res + k;
+		}
+		AddStrip(j, indices);
+	}
+}
+
 
 /**
  * Adds the vertices and a fan primitive for a single flat rectangle.
@@ -441,16 +562,18 @@ vtGeom *Create3DCursor(float fSize, float fSmall)
 	return pGeom;
 }
 
-#define SPHERE_STEPS 24
-
-vtGeom *CreateBoundSphereGeom(const FSphere &sphere)
+/**
+ * Create a wireframe sphere which is very useful for visually representing
+ * the bounding sphere of an object in the scene.
+ */
+vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 {
 	vtGeom *pGeom = new vtGeom();
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
 	pGeom->SetMaterials(pMats);
 
-	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, (SPHERE_STEPS+1)*3*2);
+	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, (res+1)*3*2);
 
 	float radius = sphere.radius * 0.9f;
 
@@ -460,25 +583,25 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere)
 
 	for (i = 0; i < 2; i++)
 	{
-		for (j = 0; j <= SPHERE_STEPS; j++)
+		for (j = 0; j <= res; j++)
 		{
-			a = j * PI2f / SPHERE_STEPS;
+			a = j * PI2f / res;
 			p.x = sin(a) * radius;
 			p.y = cos(a) * radius;
 			p.z = i ? radius * 0.05f : radius * -0.05f;
 			pMesh->AddVertex(p + sphere.center);
 		}
-		for (j = 0; j <= SPHERE_STEPS; j++)
+		for (j = 0; j <= res; j++)
 		{
-			a = j * PI2f / SPHERE_STEPS;
+			a = j * PI2f / res;
 			p.y = sin(a) * radius;
 			p.z = cos(a) * radius;
 			p.x = i ? radius * 0.05f : radius * -0.05f;
 			pMesh->AddVertex(p + sphere.center);
 		}
-		for (j = 0; j <= SPHERE_STEPS; j++)
+		for (j = 0; j <= res; j++)
 		{
-			a = j * PI2f / SPHERE_STEPS;
+			a = j * PI2f / res;
 			p.z = sin(a) * radius;
 			p.x = cos(a) * radius;
 			p.y = i ? radius * 0.08f : radius * -0.08f;
@@ -486,18 +609,73 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere)
 		}
 	}
 	for (i = 0; i < 6; i++)
-		pMesh->AddStrip2((SPHERE_STEPS+1), (SPHERE_STEPS+1) * i);
+		pMesh->AddStrip2((res+1), (res+1) * i);
 
 	pGeom->AddMesh(pMesh, 0);
 	return pGeom;
 }
 
 
-vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res)
+/**
+ * Create a sphere geometry with the indicated material, radius and resolution.
+ *
+ * \param pMats   The array of materials to use.
+ * \param iMatIdx The index of the material to use.
+ * \param iVertType Flags which indicate what type of information is stored with each
+ *		vertex.  This can be any combination of the following bit flags:
+ *		- VT_Normals - a normal per vertex.
+ *		- VT_Colors - a color per vertex.
+ *		- VT_TexCoords - a texture coordinate (UV) per vertex.
+ * \param fRadius The radius of the sphere.
+ * \param res     The resolution (tesselation) of the sphere.  The number of
+ *		vertices in the result will be res*res*2.
+ */
+vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+						 float fRadius, int res)
 {
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, res*res*2);
+	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*res*2);
 	geo->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
+	pGeom->SetMaterials(pMats);
+	pGeom->AddMesh(geo, iMatIdx);
+	return pGeom;
+}
+
+/**
+ * Create a cylinder geometry with the indicated attributes.
+ *
+ * \param pMats   The array of materials to use.
+ * \param iMatIdx The index of the material to use.
+ * \param iVertType Flags which indicate what type of information is stored with each
+ *		vertex.  This can be any combination of the following bit flags:
+ *		- VT_Normals - a normal per vertex.
+ *		- VT_Colors - a color per vertex.
+ *		- VT_TexCoords - a texture coordinate (UV) per vertex.
+ * \param fHeight The height of the cylinder.
+ * \param fRadius The radius of the cylinder.
+ * \param res     The resolution (number of sides) of the cylinder.
+ * \param bTop    True to create the top of the cylinder.
+ * \param bBottom True to create the bottom of the cylinder.  You could set
+ *		this to false, for example, if the cylinder is going to sit on a
+ *		flat surface where you will never see its bottom.
+ * \param bCentered True to create a cylinder centered around its original,
+ *		false for a cylinder which begins at Y=0 and extends upward.
+ */
+vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+						   float fHeight, float fRadius, int res, bool bTop,
+						   bool bBottom, bool bCentered)
+{
+	// Vertex shading of both the sides and top/bottom requires twice as
+	// many vertices.
+	int verts;
+	if ((bTop || bBottom) && (iVertType & VT_Normals))
+		verts = res * 2 * 2;
+	else
+		verts = res * 2;
+
+	vtGeom *pGeom = new vtGeom();
+	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*2);
+	geo->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(geo, iMatIdx);
 	return pGeom;

@@ -199,6 +199,8 @@ public:
 	void CreateBlock(const FPoint3& size);
 	void CreateOptimizedBlock(const FPoint3& size);
 	void CreateRectangularMesh(int xsize, int ysize);
+	void CreateCylinder(float height, float radius, int res, bool bTop = true,
+						bool bBottom = true, bool bCentered = true);
 	void CreateRectangle(float xsize, float ysize);
 
 protected:
@@ -359,8 +361,12 @@ protected:
 
 // helper functions
 vtGeom *Create3DCursor(float fSize, float fSmall);
-vtGeom *CreateBoundSphereGeom(const FSphere &sphere);
-vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res);
+vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
+vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+						 float fRadius, int res);
+vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+						   float hHeight, float fRadius, int res, bool bTop = true,
+						   bool bBottom = true, bool bCentered = true);
 vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 					   FPoint3 min1, FPoint3 max1, int steps);
 
