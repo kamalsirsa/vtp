@@ -58,6 +58,7 @@ public:
 	virtual ~MainFrame();
 
 	virtual void CreateView();
+	void ReadEnviroPaths(vtStringArray &paths);
 	void SetupUI();
 	void CheckForGDALAndWarn();
 	virtual void CreateMenus();
