@@ -31,7 +31,7 @@
 // Base classes from which the API-specific implementation
 // classes are derived.
 //
-#ifdef VTLIB_PSM
+#if !VTLIB_PSM
   #include "core/Base.h"
 #endif
 
