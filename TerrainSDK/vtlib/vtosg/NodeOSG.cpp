@@ -1008,6 +1008,8 @@ void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 	//  own StateSet, so we can't set it there.  We set it here.
 	StateSet *sset = m_pGeode->getOrCreateStateSet();
 	sset->setMode(GL_LIGHTING, StateAttribute::OFF);
+	// also not useful to see the back of text (mirror writing)
+	sset->setMode(GL_CULL_FACE, StateAttribute::ON);
 }
 
 void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
