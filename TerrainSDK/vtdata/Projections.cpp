@@ -12,6 +12,7 @@
 #include "MathTypes.h"
 #include "vtString.h"	// for stricmp
 #include "vtLog.h"
+#include "Icosa.h"
 
 /**
  * Enumeration of the Datum types
@@ -39,6 +40,7 @@ static void MassageDatumFromWKT(vtString &strDatum );
 
 vtProjection::vtProjection() : OGRSpatialReference()
 {
+	m_bDymaxion = false;
 }
 
 vtProjection::~vtProjection()
@@ -56,6 +58,7 @@ vtProjection &vtProjection::operator=(const vtProjection &ref)
 		const OGRSpatialReference &ref_as_osr = ref;
 		(*(OGRSpatialReference *)this) = ref_as_osr;
 	}
+	m_bDymaxion = ref.m_bDymaxion;
 	return *this;
 }
 
@@ -67,7 +70,13 @@ bool vtProjection::operator==(const vtProjection &ref)
 	// Work around problem in IsSame, by detecting this type of difference
 	if( IsProjected() != ref.IsProjected() )
 		return false;
-	return (IsSame( (OGRSpatialReference *) &ref ) != 0);
+	bool same = IsSame( (OGRSpatialReference *) &ref ) != 0;
+	if (!same)
+		return false;
+	if (m_bDymaxion != ref.m_bDymaxion)
+		return false;
+
+	return true;
 }
 
 /**
@@ -178,7 +187,10 @@ int vtProjection::GetDatum() const
  */
 LinearUnits vtProjection::GetUnits() const
 {
-	if( IsGeographic() )
+	if (IsDymaxion())
+		return LU_UNITEDGE;
+
+	if (IsGeographic())
 		return LU_DEGREES;  // degrees
 
 	// Get horizontal units ("linear units")
@@ -217,6 +229,9 @@ void vtProjection::SetSpatialReference(OGRSpatialReference *pRef)
  */
 const char *vtProjection::GetProjectionName() const
 {
+	if (IsDymaxion())
+		return "Dymax";
+
 	const char *proj_string = GetAttrValue("PROJECTION");
 	if (!proj_string)
 		return "Geographic";
@@ -231,6 +246,8 @@ const char *vtProjection::GetProjectionName() const
  */
 const char *vtProjection::GetProjectionNameShort() const
 {
+	if (IsDymaxion())
+		return "Dymax";
 	if (IsGeographic())
 		return "Geo";
 	const char *proj_string = GetAttrValue("PROJECTION");
@@ -867,10 +884,18 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
 class DymaxOCT : public OCT
 {
 public:
+	DymaxOCT()
+	{
+		m_pStandardConversion = NULL;
+	}
 	DymaxOCT(OCT *pStandard, bool bDirection)
 	{
 		m_pStandardConversion = pStandard;
 		m_bDirection = bDirection;
+	}
+	~DymaxOCT()
+	{
+		delete m_pStandardConversion;
 	}
 
 	OGRSpatialReference *GetSourceCS() { return m_pStandardConversion->GetSourceCS(); }
@@ -880,6 +905,7 @@ public:
 
 	OCT *m_pStandardConversion;
 	bool m_bDirection;		// true: to dymax, false: from dymax
+	DymaxIcosa m_ico;
 };
 
 int DymaxOCT::Transform(int nCount, double *x, double *y, double *z)
@@ -887,12 +913,14 @@ int DymaxOCT::Transform(int nCount, double *x, double *y, double *z)
 	int iConverted = 0;
 	for (int i = 0; i < nCount; i++)
 	{
-		DPoint2 p(x[i], y[i]);
+		DPoint2 pin(x[i], y[i]), pout;
 
-		// TOD0: call conversion
+		bool success = m_ico.GeoToDymax(pin, pout);
+		if (!success)
+			return i;	// stop right here
 
-		x[i] = p.x;
-		y[i] = p.y;
+		x[i] = pout.x;
+		y[i] = pout.y;
 		iConverted++;
 	}
 	return iConverted;
@@ -945,6 +973,7 @@ double GetMetersPerUnit(LinearUnits lu)
 	switch (lu)
 	{
 		case LU_DEGREES:
+		case LU_UNITEDGE:
 			return 1.0;		// actually no definition for degrees -> meters
 		case LU_METERS:
 			return 1.0;		// meters per meter
@@ -964,6 +993,7 @@ const char *GetLinearUnitName(LinearUnits lu)
 	case LU_METERS:	  return "Meters";
 	case LU_FEET_INT: return "Feet";
 	case LU_FEET_US:  return "Feet (US)";
+	case LU_UNITEDGE:  return "UnitEdge";
 	}
 	return "Unknown";
 }

@@ -1,7 +1,7 @@
 //
 // Projections.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Derived from public-domain USGS software.
@@ -29,6 +29,7 @@ enum LinearUnits
 	LU_METERS,
 	LU_FEET_INT,	// International Foot
 	LU_FEET_US,		// U.S. Survey Foot
+	LU_UNITEDGE,	// Unit Edges: Dymaxion Projection
 	LU_UNKNOWN
 };
 
