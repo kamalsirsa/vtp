@@ -332,10 +332,8 @@ public:
 	virtual void DoCalcBoundBox(FBox3 &box) = 0;
 	virtual void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) = 0;
 
-	void CalcCullPlanes();
-
-	// for culling
-	FPlane		m_cullPlanes[6];
+	// A handy shortcut to the current clipping planes
+	FPlane		*m_pPlanes;
 
 protected:
 	vtDynMesh	*m_pDynMesh;

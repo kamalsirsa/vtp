@@ -28,7 +28,6 @@ public:
 	void SetBgColor(RGBf color);
 	void SetAmbient(RGBf color);
 	void SetRoot(vtRoot *pRoot);
-	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir);
 
 	void SetGlobalWireframe(bool bWire);
 	bool GetGlobalWireframe();
@@ -43,9 +42,6 @@ public:
 	}
 	void DrawFrameRateChart();
 
-	// OSG-specific implementation
-	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
-
 	bool HasWinInfo() { return m_bWinInfo; }
 	void SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
 
@@ -58,7 +54,18 @@ public:
 		return _timer.delta_s(_lastFrameTick,_frameTick);
 	}
 
+	// View methods
+	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir);
+	FPlane *GetCullPlanes() { return m_cullPlanes; }
+
 protected:
+	// OSG-specific implementation
+	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
+
+	// for culling
+	void CalcCullPlanes();
+	FPlane		m_cullPlanes[6];
+
 	osg::ref_ptr<osg::Group>	m_pOsgSceneRoot;
 
 	osg::Timer   _timer;

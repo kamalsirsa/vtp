@@ -162,7 +162,9 @@ void vtScene::DoUpdate()
 	else
 	{
 		float fov_x = m_pCamera->GetFOV();
-		float fov_y_div2 = atan(tan (fov_x/2) / aspect);
+		float a = tan (fov_x/2);
+		float b = a / aspect;
+		float fov_y_div2 = atan(b);
 		float fov_y_deg = RadiansToDegrees(fov_y_div2 * 2);
 
 		m_pOsgSceneView->setProjectionMatrixAsPerspective(fov_y_deg,
@@ -174,6 +176,8 @@ void vtScene::DoUpdate()
 	osg::Matrix imat;
 	imat.invert(mat2);
 	m_pOsgSceneView->setViewMatrix(imat);
+
+	CalcCullPlanes();
 
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
 	m_pOsgSceneView->cull();
@@ -206,6 +210,115 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir)
 
 	return true;
 }
+
+// Debugging helper
+void LogCullPlanes(FPlane *planes)
+{
+	for (int i = 0; i < 4; i++)
+		VTLOG(" plane %d: %.3f %.3f %.3f %.3f\n", i, planes[i].x, planes[i].y, planes[i].z, planes[i].w);
+	VTLOG("\n");
+}
+
+void vtScene::CalcCullPlanes()
+{
+#if 0
+	// Non-API-Specific code - will work correctly as long as the Camera
+	// methods are fully functional.
+	FMatrix4 mat;
+	m_pCamera->GetTransform1(mat);
+
+	assert(( m_WindowSize.x > 0 ) && ( m_WindowSize.y > 0 ));
+
+	double fov = m_pCamera->GetFOV();
+
+	double aspect = (float)m_WindowSize.y / m_WindowSize.x;
+	double hither = m_pCamera->GetHither();
+
+	double a = hither * tan(fov / 2);
+	double b = a * aspect;
+
+	FPoint3 vec_l(-a, 0, -hither);
+	FPoint3 vec_r(a, 0, -hither);
+	FPoint3 vec_t(0, b, -hither);
+	FPoint3 vec_b(0, -b, -hither);
+
+	vec_l.Normalize();
+	vec_r.Normalize();
+	vec_t.Normalize();
+	vec_b.Normalize();
+
+	FPoint3 up(0.0f, 1.0f, 0.0f);
+	FPoint3 right(1.0f, 0.0f, 0.0f);
+
+	FPoint3 temp;
+
+	FPoint3 center;
+	FPoint3 norm_l, norm_r, norm_t, norm_b;
+
+	temp = up.Cross(vec_l);
+	mat.TransformVector(temp, norm_l);
+
+	temp = vec_r.Cross(up);
+	mat.TransformVector(temp, norm_r);
+
+	temp = right.Cross(vec_t);
+	mat.TransformVector(temp, norm_t);
+
+	temp = vec_b.Cross(right);
+	mat.TransformVector(temp, norm_b);
+
+	mat.Transform(FPoint3(0.0f, 0.0f, 0.0f), center);
+
+	// set up m_cullPlanes in world coordinates!
+	m_cullPlanes[0].Set(center, norm_l);
+	m_cullPlanes[1].Set(center, norm_r);
+	m_cullPlanes[2].Set(center, norm_t);
+	m_cullPlanes[3].Set(center, norm_b);
+#else
+	// Get the view frustum clipping planes directly from OSG
+
+	// OSG 0.8.44
+//	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
+	// OSG 0.8.45
+//	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
+	// OSG 0.9.0
+	// clipvol1 is the global camera frustum (in world coordinates)
+//	const Polytope &clipvol1 = pCam->m_pOsgCamera->getViewFrustum();
+	// OSG 0.9.6
+	// clipvol2 is the camera's frustum after it's been transformed to the
+	//		local coordinates.
+//	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
+//	const Polytope::PlaneList &planes = clipvol2.getPlaneList();
+	// Actually no - we can't get the planes from the state, because
+	//  the state includes the funny modelview matrix used to scale
+	//  the heightfield.  We must get it from the 'scene' instead.
+
+	osg::Matrix &_projection = m_pOsgSceneView->getProjectionMatrix();
+	osg::Matrix &_modelView = m_pOsgSceneView->getViewMatrix();
+
+    Polytope tope;
+    tope.setToUnitFrustum();
+    tope.transformProvidingInverse((_modelView)*(_projection));
+
+	const Polytope::PlaneList &planes = tope.getPlaneList();
+
+	int i = 0;
+	for (Polytope::PlaneList::const_iterator itr=planes.begin();
+		itr!=planes.end(); ++itr)
+	{
+		// make a copy of the clipping plane
+		Plane plane = *itr;
+
+		// extract the OSG plane to our own structure
+		Vec4 pvec = plane.asVec4();
+		m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
+	}
+#endif
+
+	// For debugging
+//	LogCullPlanes(m_cullPlanes);
+}
+
 
 void vtScene::DrawFrameRateChart()
 {
