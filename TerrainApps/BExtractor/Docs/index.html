@@ -2,18 +2,18 @@
 
 <head>
 <meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
-<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 4.0">
+<meta NAME="GENERATOR" CONTENT="Microsoft FrontPage 5.0">
 <meta NAME="Template" CONTENT="C:\Program Files\Microsoft Office\Office\html.dot">
 <title>Building Extractor README</title>
 </head>
 
 <body LINK="#0000ff" VLINK="#800080">
 
-<p><big><strong>Building Extractor README</strong></big></p>
+<h2>Building Extractor</h2>
 
-<p><strong><small>Last Updated: 2001/10/07</small></strong></p>
+<p><strong><small>Last Updated: 2003/6/16</small></strong></p>
 
-<p><strong><u>Purpose</u></strong></p>
+<h3>Purpose</h3>
 
 <blockquote>
   <p>This software extracts building locations from USGS DRG (Digital Raster Graph) files.
@@ -22,27 +22,26 @@
   output is a VTST (Structures File).</p>
 </blockquote>
 
-<p><strong><u>Required Software</u></strong></p>
+<h3>Required Software</h3>
 
 <blockquote>
   <p>The Image Processing Library (IPL) must be installed for you to compile or run
-  this program. This can be obtained from <a HREF="http://developer.intel.com/software/products/perflib/ipl/index.htm">http://developer.intel.com/software/products/perflib/ipl/index.htm</a></p>
+  this program. This can be obtained from the VTP CD.&nbsp; Unfortunately it is 
+  no longer available directly from its creator.</p>
   <p>You may also need to copy the IPL DLLs&nbsp;from the directory in which
   they were installed (usually <b>C:/Program Files/Intel/plsuite/bin</b>) to a
   directory on your path (for example, <b>C:/winnt</b>)</p>
 </blockquote>
 
-<p><strong><u>Required RAM</u></strong></p>
+<h3>Required RAM</h3>
 
 <blockquote>
   <p>If you are going to process a full-size DRG, be aware that you should have at
   <b> least</b> 128
   MB of RAM on your machine - more is better.</p>
 </blockquote>
-<u>
 
-<p><strong>Controls</strong></p>
-</u>
+<h3>Controls</h3>
 
 <blockquote>
   <p>Once an image is loaded, user can do the following: <ul>
@@ -68,10 +67,8 @@
     </li>
   </ul>
 </blockquote>
-<u>
 
-<p><strong>Functions</strong></p>
-</u>
+<h3>Functions</h3>
 
 <blockquote>
   <p><em><strong>Extract Buildings</strong></em> -- This function is the meat of the
@@ -147,15 +144,14 @@
   <i><b><p>TestIPL</b></i> -- This function is of no use for building recognition. It was
   used to test certain aspects of the Intel Image Processing Library during development.</p>
 </blockquote>
-<p><u><strong>Use of VTST Files</strong>
-</u>
+<h3>Use of VTST Files
 
-</p>
+</h3>
 <blockquote>
   <p>In order to use the VTST files you have generated, copy them to the VTP
   Enviro data directory <b>Enviro/Data/BuildingData.</b>&nbsp; The next time
-  you run Enviro, they will appear on the &quot;Building Filename&quot;
-  drop-down control of the Terrain Properties dialog.</p>
+  you run Enviro, they will appear on the &quot;Structures Filename&quot;
+  drop-down control of the Terrain Parameters dialog.</p>
 </blockquote>
 </body>
 </html>

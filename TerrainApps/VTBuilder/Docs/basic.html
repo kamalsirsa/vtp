@@ -7,10 +7,10 @@
 
 <body bgcolor="#CCCCCC">
 
-<h3 align="center">
+<h2 align="center">
 VTBuilder<br>
 <a href="index.html">back to top</a>
-</h3>
+</h2>
 <h3>Basic Menu Commands</h3>
 <ul>
   <li><b><a name="Project">Project</a></b>
@@ -174,7 +174,8 @@ VTBuilder<br>
       <li>Zoom to Full Res (1:1)
         <ul>
           <li>If the current terrain is grid data (Elevation or Image), sets the
-            view to match (1 pixel per grid point)</li>
+            view to match (1 screen pixel per heixel, or 1 screen pixel per 
+          image pixel)</li>
         </ul>
       </li>
       <li>Magnifier
@@ -230,11 +231,15 @@ VTBuilder<br>
       </li>
       <li>Artificial Shading
         <ul>
-          <li>Produces much more attractive images, but adds a little time to
-            load each file.</li>
+          <li>Produces much more attractive images, but takes some additional time to 
+          process.</li>
         </ul>
       </li>
-      <li>Hide Unknown Areas</li>
+      <li>Hide Unknown Areas<ul>
+      <li>Area of the elevation layer will be not drawn at all (transparent), 
+      rather than shown in red.</li>
+    </ul>
+      </li>
     </ul>
   </li>
 </ul>
