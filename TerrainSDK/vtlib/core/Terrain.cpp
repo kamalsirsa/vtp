@@ -17,8 +17,15 @@
 #include "Fence3d.h"
 #include "Route.h"
 
+//#include "LKTerrain.h"
+#include "TVTerrain.h"
+#include "SMTerrain.h"
+#include "CustomTerrain.h"
+#include "BryanTerrain.h"
+#include "SRTerrain.h"
+// add your own LOD method header here!
+
 #define LARGEST_BLOCK_SIZE	16
-#define OCEAN_DEPTH			40.0f	// in meters
 
 // use a grid of LOD cells of size LOD_GRIDSIZE x LOD_GRIDSIZE
 #define LOD_GRIDSIZE		192
@@ -339,12 +346,12 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	_CrtSetDbgFlag(tmpDbgFlag);
 #endif
 
-	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
-	{
-		m_pDynGeom = new LKTerrain();
-		m_pDynGeom->SetName2("LK Shape");
-	}
-	else if (m_Params.m_eLodMethod == LM_TOPOVISTA)
+//	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
+//	{
+//		m_pDynGeom = new LKTerrain();
+//		m_pDynGeom->SetName2("LK Shape");
+//	}
+	if (m_Params.m_eLodMethod == LM_TOPOVISTA)
 	{
 		m_pDynGeom = new TVTerrain();
 		m_pDynGeom->SetName2("TV Shape");
@@ -364,6 +371,11 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		m_pDynGeom = new BryanTerrain();
 		m_pDynGeom->SetName2("BryanQuad Shape");
 	}
+	else if (m_Params.m_eLodMethod == LM_ROETTGER)
+	{
+		m_pDynGeom = new SRTerrain();
+		m_pDynGeom->SetName2("Roettger Shape");
+	}
 	// add your own LOD method here!
 
 	m_pDynGeom->SetOptions(m_Params.m_bTriStrips != 0,
@@ -382,7 +394,13 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	m_pDynGeom->SetMaterials(m_pTerrApps2);
 
 	// build heirarchy (add terrain to scene graph)
-	m_pTerrainGroup->AddChild(m_pDynGeom);
+	vtTransform *trans = new vtTransform();
+
+	DPoint2 spacing = m_pLocalGrid->GetWorldSpacing();
+	trans->Scale3(spacing.x, WORLD_SCALE * m_Params.m_fVerticalExag, -spacing.y);
+
+	trans->AddChild(m_pDynGeom);
+	m_pTerrainGroup->AddChild(trans);
 
 	return true;
 }
@@ -530,7 +548,7 @@ void vtTerrain::SaveRoute()
 }
 
 /**
- * Create an "ocean plane" at sea level.
+ * Create a horizontal plane at sea level.
  *
  * If the terrain has a large body of water on 1 or more sides, this method
  * is useful for extending the water to the horizon by creating additional
@@ -556,8 +574,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 		vtString str = m_strDataPath + "GeoTypical/ocean1_256.bmp";
 		pApp_Ocean->AddTextureMaterial2(str,
 			false, false,		// culling, lighting
-//			(fTransparency != 1.0f),	// transparent true/false
-			false,				// the texture itself is not transparent
+			false,				// the texture itself has no alpha
 			false,				// additive
 			TERRAIN_AMBIENT,	// ambient
 			1.0f,				// diffuse
@@ -565,14 +582,13 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 			TERRAIN_EMISSIVE,	// emissive
 			false,				// texgen
 			false,				// clamp
-//			m_Params.m_bMipmap,
-			false);				// mipmap: allowing texture aliasing to occur
-								// gives a good appearance to an ocean surface
+			false);				// don't mipmap: allowing texture aliasing to
+								// occur, it actually looks more water-like
 		VtxType = VT_Normals | VT_TexCoords;
 	}
 	else
 	{
-		pApp_Ocean->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),
+		pApp_Ocean->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),	// tan ground
 			false, true, false);		// cull, light, wire
 		VtxType = VT_Normals;
 	}
@@ -608,19 +624,20 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 			geo = new TerrainPatch(VtxType, 4);
 			geo->MakeGrid(1, 1, width/1, depth/1,
 				world_extents.left + (i * width),
-				world_extents.bottom - (j * depth), 15.0f, 15.0f);
+				world_extents.bottom - (j * depth), 5.0f, 5.0f);
 
 			pGeom->AddMesh(geo, 0);	// actually add
 		}
 	}
 
-	pGeom->SetName2("Ocean");
+	pGeom->SetName2("Horizon Plane");
 
 	m_pOceanGeom = new vtMovGeom(pGeom);
 
-	// fudge ocean downward, to reduce z-buffer collisiong with near-sea-level
+	// fudge ocean downward, to reduce z-buffer collision with near-sea-level
 	// areas of land near the ocean
-	m_pOceanGeom->Translate1(FPoint3(0.0f, -OCEAN_DEPTH*WORLD_SCALE/2, 0.0f));
+	float level = m_Params.m_fOceanPlaneLevel * WORLD_SCALE;
+	m_pOceanGeom->Translate1(FPoint3(0.0f, level, 0.0f));
 
 	m_pTerrainGroup->AddChild(m_pOceanGeom);
 }
@@ -972,8 +989,8 @@ bool vtTerrain::CreateStep2(int &iError)
 bool vtTerrain::CreateStep3(int &iError)
 {
 	float fOceanDepth;
-	if (m_Params.m_bOceanPlane)
-		fOceanDepth = -OCEAN_DEPTH;	// OCEAN_DEPTH is in Meters
+	if (m_Params.m_bDepressOcean)
+		fOceanDepth = m_Params.m_fDepressOceanLevel;
 	else
 		fOceanDepth = 0.0f;
 
@@ -1048,10 +1065,13 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 	if (m_pHeightField)
 		create_culture(bSound);
 
-	if (m_Params.m_bOceanPlane)
-		create_artificial_horizon(true, m_Params.m_bHorizon, true, 0.5f);	// water, center
-	else if (m_Params.m_bHorizon)
-		create_artificial_horizon(false, true, false, 1.0f);	// no water, yes horizon, no center
+	if (m_Params.m_bOceanPlane || m_Params.m_bHorizon)
+	{
+		bool bWater = m_Params.m_bOceanPlane;
+		bool bHorizon = m_Params.m_bHorizon;
+		bool bCenter = m_Params.m_bOceanPlane;
+		create_artificial_horizon(bWater, bHorizon, bCenter, 0.5f);
+	}
 
 	if (m_Params.m_bLabels)
 		create_floating_labels(m_strDataPath + "places.txt");
