@@ -26,13 +26,13 @@ DECLARE_APP(vtApp)
 /*
  * vtGLCanvas implementation
  */
-BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
-	EVT_CLOSE(vtGLCanvas::OnClose)
-	EVT_SIZE(vtGLCanvas::OnSize)
-	EVT_PAINT(vtGLCanvas::OnPaint)
-	EVT_CHAR(vtGLCanvas::OnChar)
-	EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
-	EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+	BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
+EVT_CLOSE(vtGLCanvas::OnClose)
+EVT_SIZE(vtGLCanvas::OnSize)
+EVT_PAINT(vtGLCanvas::OnPaint)
+EVT_CHAR(vtGLCanvas::OnChar)
+EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
+EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
 END_EVENT_TABLE()
 
 static vtGLCanvas *s_canvas = NULL;
@@ -40,7 +40,7 @@ static vtGLCanvas *s_canvas = NULL;
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
-  wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	parent->Show(TRUE);
 	SetCurrent();
@@ -200,7 +200,11 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 	// Must allow some idle processing to occur - or the toolbars will not
 	// update, and the close box will not respond!
-	wxGetApp().ProcessIdle();
+	bool go = true;
+	while (go)
+	{
+		go = wxGetApp().ProcessIdle();
+	}
 }
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
@@ -289,7 +293,7 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	event.flags = 0;
 	wxCoord xpos, ypos;
-    event1.GetPosition(&xpos, &ypos);
+	event1.GetPosition(&xpos, &ypos);
 	event.pos.Set(xpos, ypos);
 
 	if (event1.ControlDown())
@@ -311,4 +315,3 @@ void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 {
 	// Do nothing, to avoid flashing.
 }
-
