@@ -58,7 +58,10 @@ void DLine2::RemovePoint(int i)
 
 bool DLine2::ContainsPoint(const DPoint2 &p)
 {
-	return CrossingsTest(GetData(), GetSize(), p);
+	if (GetData() != NULL)
+		return CrossingsTest(GetData(), GetSize(), p);
+	else
+		return false;
 }
 
 //
