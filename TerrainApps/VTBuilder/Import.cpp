@@ -92,11 +92,14 @@ void MainFrame::ImportData(LayerType ltype)
 
 	// ask the user for a filename
 	// default the same directory they used last time for a layer of this type
-	wxFileDialog loadFile(NULL, _("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN);
+	wxFileDialog loadFile(NULL, _("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN | wxMULTIPLE);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString2 strFileName = loadFile.GetPath();
+
+	//multiple selection
+	wxArrayString strFileNameArray;
+	loadFile.GetPaths(strFileNameArray);
 
 	// remember the directory they used
 	ImportDirectory[ltype] = loadFile.GetDirectory();
@@ -104,7 +107,8 @@ void MainFrame::ImportData(LayerType ltype)
 	// TESTING code here
 //	ImportDataFromS57(strFileName);
 
-	ImportDataFromArchive(ltype, strFileName, true);
+	for (unsigned int i=0; i<strFileNameArray.GetCount(); ++i)
+		ImportDataFromArchive(ltype, strFileNameArray.Item(i), true);
 }
 
 /**
