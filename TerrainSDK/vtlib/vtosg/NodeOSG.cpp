@@ -916,6 +916,11 @@ void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 	// connect the underlying OSG objects
 	m_pGeode->addDrawable(pTextMesh->m_pOsgText.get());
 
+	// Normally, we would assign the material state to the drawable.
+	// However, OSG treats Text specially, it cannot be affected by normal
+	//  material statesets.  For example, it always sets its own color,
+	//  ignore any State settings.  So, disabled the following.
+#if 0
 	pTextMesh->SetMatIndex(iMatIdx);
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
@@ -923,6 +928,7 @@ void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 		StateSet *pState = pMat->m_pStateSet.get();
 		pTextMesh->m_pOsgText->setStateSet(pState);
 	}
+#endif
 }
 
 void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
