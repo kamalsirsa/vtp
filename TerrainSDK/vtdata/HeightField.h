@@ -152,8 +152,9 @@ public:
 	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
 		int iGranularity, bool progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-							   float light_factor, bool progress_callback(int) = NULL);
-	void ShadeQuick(vtBitmapBase *pBM, float light_factor, bool progress_callback(int) = NULL);
+		float light_factor, bool bTrue = false, bool progress_callback(int) = NULL);
+	void ShadeQuick(vtBitmapBase *pBM, float light_factor, bool bTrue = false,
+		bool progress_callback(int) = NULL);
 	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,
 		float light_factor, bool progress_callback(int) = NULL);
 

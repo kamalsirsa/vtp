@@ -2443,13 +2443,17 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib
 	clock_t c1 = clock();
 
 	float shade_factor = m_Params.GetValueFloat(STR_PRELIGHTFACTOR);
+	bool bTrue = m_Params.GetValueBool("ShadeTrue");
+	bool bQuick = m_Params.GetValueBool("ShadeQuick");
 	if (m_Params.GetValueBool(STR_CAST_SHADOWS))
 	{
 		// A more accurate shading, still a little experimental
 		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor);
 	}
+	else if (bQuick)
+		pElevGrid->ShadeQuick(dib, shade_factor, bTrue);
 	else
-		pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor);
+		pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor, bTrue);
 
 	clock_t c2 = clock();
 

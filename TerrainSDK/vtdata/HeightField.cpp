@@ -583,7 +583,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 
 
 void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
-	float light_factor, bool progress_callback(int))
+	float light_factor, bool bTrue, bool progress_callback(int))
 {
 	// consider upward-pointing, rather than downward-pointing, normal
 	FPoint3 light_direction = -light_dir;
@@ -620,11 +620,15 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 			if (x < gw-1 && y < gh-1)
 			{
 				// compute surface normal
-				GetWorldLocation(x, y, p1);
-				GetWorldLocation(x+1, y, p2);
-				GetWorldLocation(x, y+1, p3);
+				GetWorldLocation(x, y, p1, bTrue);
+				GetWorldLocation(x+1, y, p2, bTrue);
+				GetWorldLocation(x, y+1, p3, bTrue);
 				v1 = p2 - p1;
 				v2 = p3 - p1;
+#if 1
+				v1.y *= light_factor;
+				v2.y *= light_factor;
+#endif
 				v3 = v1.Cross(v2);
 				v3.Normalize();
 
@@ -642,14 +646,16 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 			else
 				shade = 1.0f;
 
+#if 0
 			// Push the value of 'shade' toward 1.0 by the light_factor factor.
 			// This means that light_factor=0 means no lighting, 1 means full lighting.
 			float diff = 1 - shade;
 			diff = diff * (1 - light_factor);
 			shade += diff;
+#endif
 
 			// don't over-darken
-			if (shade < 0) shade = 0;
+			if (shade < 0.05f) shade = 0.05f;
 
 			// combine color and shading
 			if (depth == 8)
@@ -668,7 +674,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
  * The bitmap must be the same size as the elevation grid, or a power of 2 smaller.
  */
 void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
-									 bool progress_callback(int))
+									 bool bTrue, bool progress_callback(int))
 {
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
@@ -695,7 +701,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			pBM->GetPixel24(i, j, rgb);
 
 			x = i * stepx;
-			float value = GetElevation(x, y);
+			float value = GetElevation(x, y, bTrue);
 			if (value == INVALID_ELEVATION)
 			{
 				pBM->SetPixel24(i, j, RGBi(255, 0, 0));
@@ -704,7 +710,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			if (i == w-1)
 				continue;
 
-			float value2 = GetElevation(x+1, y);
+			float value2 = GetElevation(x+1, y, bTrue);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
 			short diff = (short) ((value2 - value) / m_fXStep * light_factor);
