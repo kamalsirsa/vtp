@@ -1,7 +1,7 @@
 //
 // wxString2.h
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,7 @@
 #define __wxString2_h__
 
 #include "vtdata/vtString.h"
+#include "wx/string.h"
 
 /**
  * The purpose of this class is that wxString does not seem to always return

@@ -3,7 +3,7 @@
 //
 // also shorelines and rivers
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -82,7 +82,6 @@ FPoint3 CreateUnitRoadVector(FPoint3 p1, FPoint3 p2)
 NodeGeom::NodeGeom()
 {
 	m_iVerts = 0;
-	m_v = NULL;
 	m_Lights = NULL;
 }
 
