@@ -3,7 +3,7 @@
 //
 // 3D Content Management class.
 //
-// Copyright (c) 2003 Virtual Terrain Project.
+// Copyright (c) 2003-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -46,7 +46,7 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 	}
 	else
 	{
-		pGroup = new vtLOD;
+		pGroup = new vtGroup;
 		m_pGroup = pGroup;
 	}
 	float ranges[20];
@@ -55,7 +55,7 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 	for (i = 0; i < models; i++)
 	{
 		vtModel *model = GetModel(i);
-		vtNodeBase *pNode;
+		vtNode *pNode = NULL;
 
 		// if there are some data path(s) to search, use them
 		if (pDataPaths != NULL)
@@ -82,13 +82,6 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 		vtString ext = GetExtension(model->m_filename, false);
 
 		pTrans->Identity();
-		if (ext.CompareNoCase(".3ds") == 0 ||
-//			ext.CompareNoCase(".lwo") == 0 ||
-			ext.CompareNoCase(".flt") == 0)
-		{
-			// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO)
-			pTrans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-		}
 		pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
 
 		m_pGroup->AddChild(pTrans);
@@ -102,6 +95,39 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 	return true;
 }
 
+//
+// An item can store some extents, which give a rough indication of
+//  the 2D area taken up by the model, useful for drawing it in traditional
+//  2D GIS environments like VTBuilder.
+//
+//  Whenever a model is added, or the scale factor changes, the extents
+//   should be updated.
+//
+void vtItem3d::UpdateExtents()
+{
+	m_extents.Empty();
+
+	if (m_pGroup == NULL)
+		return;
+
+	// A good way to do it would be to try to get a tight bounding box,
+	//  but that's non-trivial to compute with OSG.  For now, settle for
+	//  making a rectangle from the loose bounding sphere.
+
+	// Both the 3D model and the extents are in approximate meters and
+	//  centered on the item's local origin.
+	FSphere sph;
+	m_pGroup->GetBoundSphere(sph);
+	m_extents.left = sph.center.x - sph.radius;
+	m_extents.right = sph.center.x + sph.radius;
+
+	// However, the XY extents of the extents have Y pointing up, whereas
+	//  the world coords have Z pointing down.
+	m_extents.top = -sph.center.z + sph.radius;
+	m_extents.bottom = -sph.center.z - sph.radius;
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 
 vtContentManager3d::vtContentManager3d()
@@ -109,9 +135,11 @@ vtContentManager3d::vtContentManager3d()
 	m_pDataPaths = NULL;
 }
 
-vtGroup *vtContentManager3d::CreateInstanceOfItem(vtItem *item)
+vtGroup *vtContentManager3d::CreateGroupFromItemname(const char *itemname)
 {
-	vtItem3d *pItem = (vtItem3d *) item;
+	vtItem3d *pItem = (vtItem3d *) FindItemByName(itemname);
+	if (!pItem)
+		return NULL;
 
 	if (pItem->LoadModels(m_pDataPaths))
 		return pItem->m_pGroup;

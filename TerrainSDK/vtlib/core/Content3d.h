@@ -23,6 +23,7 @@ public:
 	~vtItem3d();
 
 	bool LoadModels(vtStringArray *pDataPaths);
+	void UpdateExtents();
 
 	vtGroup *m_pGroup;
 };
@@ -37,7 +38,7 @@ public:
 	vtContentManager3d();
 
 	void SetDataPaths(vtStringArray *pDataPaths) { m_pDataPaths = pDataPaths; }
-	vtGroup *CreateInstanceOfItem(vtItem *item);
+	vtGroup *CreateGroupFromItemname(const char *itemname);
 
 	// implementation
 	virtual vtItem *NewItem() { return new vtItem3d; }
