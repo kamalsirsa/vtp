@@ -247,7 +247,7 @@ void vtFence3d::DestroyGeometry()
 }
 
 // implement vtStructure3d methods
-bool vtFence3d::CreateNode(vtHeightField *hf, const char *options)
+bool vtFence3d::CreateNode(vtHeightField *hf, const vtTagArray &options)
 {
 	BuildGeometry(hf);
 	return true;

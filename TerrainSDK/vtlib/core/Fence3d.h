@@ -19,7 +19,7 @@ public:
 	vtFence3d(FenceType type, float fHeight, float fSpacing);
 
 	// implement vtStructure3d methods
-	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
+	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options);
 	vtGeom *GetGeom();
 	virtual void DeleteNode();
 
