@@ -47,10 +47,11 @@ CBImage::~CBImage()
 }
 
 CProgressDlg *g_dlg = NULL;
-void progress_callback(int pos)
+bool progress_callback(int pos)
 {
 	if (g_dlg)
 		g_dlg->SetPos(pos);
+	return false;
 }
 
 bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)

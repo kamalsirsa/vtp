@@ -102,7 +102,7 @@ bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel,
 }
 
 bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
-				 void progress_callback(int))
+				 bool progress_callback(int))
 {
 	GDALColorEntry Ent;
 	int x, y, i;
@@ -664,7 +664,7 @@ byte CDib::GetPixel8(int x, int y)
 
 ///////////////////////////////////////////
 
-CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, void progress_callback(int))
+CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, bool progress_callback(int))
 {
 	pDib->GetDIBFromSection();
 

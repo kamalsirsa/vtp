@@ -45,7 +45,7 @@ public:
 		HDRAWDIB hdd, RGBQUAD *colors = NULL);
 
 	bool Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
-		void progress_callback(int) = NULL);
+		bool progress_callback(int) = NULL);
 
 	CSize	GetSize() { return CSize(m_bm.bmWidth, m_bm.bmHeight); }
 	BOOL Attach(HGDIOBJ hbm);
@@ -75,6 +75,6 @@ public:
 	char	*GetData() { return (char *) m_data; }
 };
 
-CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, void progress_callback(int) = NULL);
+CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, bool progress_callback(int) = NULL);
 
 #endif // BEXTRACTOR_DIB_H
