@@ -57,7 +57,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	bool bOldFormat = (strncmp(buffer, "     1     1", 12) == 0);
 	bool bNewFormat = false;
 	bool bFixedLength = true;
-	int  iDataStartOffset;
+	int  iDataStartOffset = 1024;	// set here to avoid compiler warning
 	int  i, j;
 
 	if (bOldFormat)
