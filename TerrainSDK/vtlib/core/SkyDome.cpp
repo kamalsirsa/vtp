@@ -111,7 +111,7 @@ void vtSkyDome::SetTimeOfDay(int hr, int min, int sec)
  */
 void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 {
-	TimeOfDay = time;
+	m_iTimeOfDay = time;
 
 	// Pass along time of day information to the vtStarDome and vtDayDome
 	if (m_pStarDome) m_pStarDome->SetTimeOfDay(time);
@@ -120,7 +120,7 @@ void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 	// Determine which of the two domes are active according to time of day
 	if (m_pStarDome)
 	{
-		if (TimeOfDay >= DuskStartTime || TimeOfDay <= DawnEndTime)
+		if (m_iTimeOfDay >= DuskStartTime || m_iTimeOfDay <= DawnEndTime)
 			m_pStarDome->SetEnabled(true);
 		else
 			m_pStarDome->SetEnabled(false);
@@ -129,7 +129,7 @@ void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 	// set the direction and intensity of the sunlight
 	if (m_pSunLight != NULL)
 	{
-		float angle = 2.0f * PIf * ((float)TimeOfDay / (24 * 60 * 60));
+		float angle = 2.0f * PIf * ((float)m_iTimeOfDay / (24 * 60 * 60));
 		m_pSunLight->Identity();
 		m_pSunLight->Rotate2(FPoint3(0,1,0), -PIf/2.0f);
 		m_pSunLight->Rotate2(FPoint3(0,0,1), angle + PIf/2.0f);
@@ -137,25 +137,25 @@ void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 		float ambient = 0.0f;
 
 		// set intensity of ambient light based on time of day
-		if (TimeOfDay > dusk_end || TimeOfDay < dawn_start)
+		if (m_iTimeOfDay > dusk_end || m_iTimeOfDay < dawn_start)
 		{
 			// night
 			ambient = MIN_AMB;
 		}
-		else if (TimeOfDay >= dawn_start && TimeOfDay <= dawn_end)
+		else if (m_iTimeOfDay >= dawn_start && m_iTimeOfDay <= dawn_end)
 		{
 			// dawn
-			ambient = MIN_AMB + AMB_RANGE * (float)(TimeOfDay - dawn_start) / (dawn_end - dawn_start);
+			ambient = MIN_AMB + AMB_RANGE * (float)(m_iTimeOfDay - dawn_start) / (dawn_end - dawn_start);
 		}
-		else if (TimeOfDay >= dawn_end && TimeOfDay <= dusk_start)
+		else if (m_iTimeOfDay >= dawn_end && m_iTimeOfDay <= dusk_start)
 		{
 			// day
 			ambient = MAX_AMB;
 		}
-		else if (TimeOfDay >= dusk_start && TimeOfDay <= dusk_end)
+		else if (m_iTimeOfDay >= dusk_start && m_iTimeOfDay <= dusk_end)
 		{
 			// dusk
-			ambient = MIN_AMB + AMB_RANGE * (float)(dusk_end - TimeOfDay) / (dawn_end - dawn_start);
+			ambient = MIN_AMB + AMB_RANGE * (float)(dusk_end - m_iTimeOfDay) / (dawn_end - dawn_start);
 		}
 
 		vtGetScene()->SetAmbient(RGBf(ambient, ambient, ambient));
@@ -168,29 +168,29 @@ void vtSkyDome::SetTimeOfDay(int time, bool bFullRefresh)
 		float fraction;
 
 		// set intensity of sunlight based on time of day
-		if (TimeOfDay > sunset+sunsize || TimeOfDay < sunrise-sunsize)
+		if (m_iTimeOfDay > sunset+sunsize || m_iTimeOfDay < sunrise-sunsize)
 		{
 			// night
 			color = yellow;
 			intensity = 0.0f;
 		}
-		else if (TimeOfDay >= sunrise-sunsize && TimeOfDay <= sunrise+sunsize)
+		else if (m_iTimeOfDay >= sunrise-sunsize && m_iTimeOfDay <= sunrise+sunsize)
 		{
 			// dawn
-			fraction = (float)(TimeOfDay - (sunrise-sunsize)) / (sunsize*2.0f);
+			fraction = (float)(m_iTimeOfDay - (sunrise-sunsize)) / (sunsize*2.0f);
 			color = yellow + ((white - yellow) * fraction);
 			intensity = MAX_INT * fraction;
 		}
-		else if (TimeOfDay >= sunrise+sunsize && TimeOfDay <= sunset-sunsize)
+		else if (m_iTimeOfDay >= sunrise+sunsize && m_iTimeOfDay <= sunset-sunsize)
 		{
 			// day
 			color = white;
 			intensity = MAX_INT;
 		}
-		else if (TimeOfDay >= sunset-sunsize && TimeOfDay <= sunset+sunsize)
+		else if (m_iTimeOfDay >= sunset-sunsize && m_iTimeOfDay <= sunset+sunsize)
 		{
 			// dusk
-			fraction = (float)(sunset+sunsize - TimeOfDay) / (sunsize*2.0f);
+			fraction = (float)(sunset+sunsize - m_iTimeOfDay) / (sunsize*2.0f);
 			color = yellow + ((white - yellow) * fraction);
 			intensity = MAX_INT * fraction;
 		}
@@ -341,7 +341,7 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 	SphVertices = new FPoint3[NumVertices];
 	ConvertVertices();
 
-	TimeOfDay = 0;
+	m_iTimeOfDay = 0;
 	Radius = radius;
 	Scale3(Radius, Radius, Radius);
 
@@ -517,12 +517,16 @@ void vtDayDome::SetSunModifier(float sunpct)
  */
 void vtDayDome::SetTimeOfDay(int time, bool bFullRefresh)
 {
-	TimeOfDay = time;
+	int iPrevious = m_iTimeOfDay;
+
+	m_iTimeOfDay = time;
 
 	// recolor vertices during dusk and dawn sequences
 	if (bFullRefresh ||
-		(TimeOfDay >= DawnStartTime && TimeOfDay <= DawnEndTime) ||
-		(TimeOfDay >= DuskStartTime && TimeOfDay <= DuskEndTime))
+		(m_iTimeOfDay >= DawnStartTime && m_iTimeOfDay <= DawnEndTime) ||
+		(m_iTimeOfDay >= DuskStartTime && m_iTimeOfDay <= DuskEndTime) ||
+		(iPrevious >= DawnStartTime && iPrevious <= DawnEndTime) ||
+		(iPrevious >= DuskStartTime && iPrevious <= DuskEndTime))
 		ApplyDayColors();
 
 	// determine sun color
@@ -539,7 +543,7 @@ void vtDayDome::SetTimeOfDay(int time, bool bFullRefresh)
 		m_pSunShape->RotateLocal(FPoint3(1,0,0), 0.1f * PIf);
 
 		// rotate to move across sky
-		m_pSunShape->RotateLocal(FPoint3(0,0,1), ((float)TimeOfDay/MaxTimeOfDay) * PI2f - PIf);
+		m_pSunShape->RotateLocal(FPoint3(0,0,1), ((float)m_iTimeOfDay/MaxTimeOfDay) * PI2f - PIf);
 	}
 }
 
@@ -584,27 +588,27 @@ void vtDayDome::ApplyDayColors()
 
 	vtMesh *mesh = m_pDomeMesh;
 
-	float duskpct = NITE_GLO + (1.0f - NITE_GLO) * (float)(DuskEndTime - TimeOfDay)/DuskDuration;
-	float dawnpct = NITE_GLO + (1.0f - NITE_GLO) * (float)(TimeOfDay - DawnStartTime)/DawnDuration;
+	float duskpct = NITE_GLO + (1.0f - NITE_GLO) * (float)(DuskEndTime - m_iTimeOfDay)/DuskDuration;
+	float dawnpct = NITE_GLO + (1.0f - NITE_GLO) * (float)(m_iTimeOfDay - DawnStartTime)/DawnDuration;
 	float midseq, midseqtime, midseqpct;
 
-	if (TimeOfDay >= DuskStartTime && TimeOfDay <= DuskEndTime)
+	if (m_iTimeOfDay >= DuskStartTime && m_iTimeOfDay <= DuskEndTime)
 	{
 		// dusk
 		m_fademod = duskpct;
 		midseq = DuskMidSeq;
 		midseqtime = DuskMidSeqTime;
-		midseqpct = fabsf(midseqtime - (float)TimeOfDay)/midseq;
+		midseqpct = fabsf(midseqtime - (float)m_iTimeOfDay)/midseq;
 	}
-	else if (TimeOfDay >= DawnStartTime && TimeOfDay <= DawnEndTime)
+	else if (m_iTimeOfDay >= DawnStartTime && m_iTimeOfDay <= DawnEndTime)
 	{
 		// dawn
 		m_fademod = dawnpct;
 		midseq = DawnMidSeq;
 		midseqtime = DawnMidSeqTime;
-		midseqpct = fabsf(midseqtime - (float)TimeOfDay)/midseq;
+		midseqpct = fabsf(midseqtime - (float)m_iTimeOfDay)/midseq;
 	}
-	else if (TimeOfDay <= DawnStartTime || TimeOfDay >= DuskEndTime)
+	else if (m_iTimeOfDay <= DawnStartTime || m_iTimeOfDay >= DuskEndTime)
 	{
 		m_fademod = NITE_GLO;
 	}
@@ -638,7 +642,7 @@ void vtDayDome::ApplyDayColors()
 		}
 		vtxcol *= m_fademod;
 
-		if (TimeOfDay >= DuskStartTime && TimeOfDay <= DuskSeqEnd)
+		if (m_iTimeOfDay >= DuskStartTime && m_iTimeOfDay <= DuskSeqEnd)
 		{
 			if (((1.0f - phipct) <= MaxSunsetAngle) && (fabsf(psph.theta) > PID2f))
 			{
@@ -647,7 +651,7 @@ void vtDayDome::ApplyDayColors()
 				vtxcol = (vtxcol * (1.0f - sunpct)) + (SunsetCol * sunpct);
 			}
 		}
-		else if (TimeOfDay >= DawnSeqStart && TimeOfDay <= DawnEndTime)
+		else if (m_iTimeOfDay >= DawnSeqStart && m_iTimeOfDay <= DawnEndTime)
 		{
 			if (((1.0f - phipct) <= MaxSunsetAngle) && (fabsf(psph.theta) <= PID2f))
 			{
@@ -717,7 +721,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	m_pStarGeom = new vtGeom();
 	m_pStarGeom->SetName2("StarDomeGeom");
 
-	TimeOfDay = 0;
+	m_iTimeOfDay = 0;
 	NumStars = 0;
 	RelativeBrightness = brightness;
 
@@ -797,7 +801,7 @@ void vtStarDome::SetRadius(float radius)
  */
 void vtStarDome::SetTimeOfDay(int time)
 {
-	TimeOfDay = time;
+	m_iTimeOfDay = time;
 
 	// Set the right transformation for the time of night
 	Identity();
@@ -806,7 +810,7 @@ void vtStarDome::SetTimeOfDay(int time)
 	// Set the north star around 20 degrees above the horizon
 	RotateLocal(FPoint3(1,0,0), 0.1f * PIf);
 
-	RotateLocal(FPoint3(0,0,1), ((float)TimeOfDay/MaxTimeOfDay) * PIf * 2.0f);
+	RotateLocal(FPoint3(0,0,1), ((float)m_iTimeOfDay/MaxTimeOfDay) * PIf * 2.0f);
 
 	FadeStars();
 }
@@ -867,11 +871,11 @@ void vtStarDome::FadeStars()
 	float duskpct, dawnpct;
 	float magmod;
 
-	duskpct = (float)(TimeOfDay - DuskStartTime)/DuskDuration;
-	dawnpct = (float)(DawnEndTime - TimeOfDay)/DawnDuration;
-	if (TimeOfDay >= DuskStartTime && TimeOfDay <= DuskEndTime)
+	duskpct = (float)(m_iTimeOfDay - DuskStartTime)/DuskDuration;
+	dawnpct = (float)(DawnEndTime - m_iTimeOfDay)/DawnDuration;
+	if (m_iTimeOfDay >= DuskStartTime && m_iTimeOfDay <= DuskEndTime)
 		magmod = duskpct;
-	else if (TimeOfDay >= DawnStartTime && TimeOfDay <= DawnEndTime)
+	else if (m_iTimeOfDay >= DawnStartTime && m_iTimeOfDay <= DawnEndTime)
 		magmod = dawnpct;
 	else magmod = 1.00f;
 
