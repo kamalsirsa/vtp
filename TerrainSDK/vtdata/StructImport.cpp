@@ -775,6 +775,10 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		if (!PolyChecker.IsSimplePolygon(footprint))
 			continue;
 
+		// Ensure footprint is not degenerate
+		if (footprint.GetSize() < 3)
+			continue;
+
 		if (opt.bInsideOnly)
 		{
 			// Exclude footprints outside the indicated extents
