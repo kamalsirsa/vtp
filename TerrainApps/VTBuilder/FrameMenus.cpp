@@ -8,12 +8,16 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "vtdata/vtDIB.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"
 #include "BuilderView.h"
-#include "Treeview.h"
+#include "TreeView.h"
 #include "Helper.h"
 // Layers
 #include "ElevLayer.h"
@@ -52,11 +56,13 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 
 	EVT_UPDATE_UI(ID_LAYER_SAVE,	MainFrame::OnUpdateLayerSave)
 	EVT_UPDATE_UI(ID_LAYER_SAVE_AS,	MainFrame::OnUpdateLayerSaveAs)
+	EVT_UPDATE_UI(ID_LAYER_PROPS,	MainFrame::OnUpdateLayerProperties)
 	EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
 	EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
 
 	EVT_MENU(ID_VIEW_TOOLBAR,		MainFrame::OnViewToolbar)
 	EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
+	EVT_MENU(ID_VIEW_LAYERPATHS,	MainFrame::OnViewLayerPaths)
 	EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
 	EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
 	EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
@@ -70,7 +76,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
 
 	EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateToolbar)
-	EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,		MainFrame::OnUpdateLayerShow)
+	EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
+	EVT_UPDATE_UI(ID_VIEW_LAYERPATHS,	MainFrame::OnUpdateLayerPaths)
 	EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
 	EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 	EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
@@ -186,6 +193,7 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_TOOLBAR, "Toolbar", "Show Toolbar", true);
 	viewMenu->Append(ID_VIEW_STATUSBAR, "Status Bar", "Show Status Bar", true);
 	viewMenu->Append(ID_VIEW_SHOWLAYER, "Current Layer Visible", "Toggle Visibility of the current Layer", true);
+	viewMenu->Append(ID_VIEW_LAYERPATHS, "Show Full Layer Pathnames", "Show the full path information for each Layer", true);
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_ZOOMIN, "Zoom In\tCtrl++");
 	viewMenu->Append(ID_VIEW_ZOOMOUT, "Zoom Out\tCtrl+-");
@@ -501,6 +509,11 @@ void MainFrame::OnUpdateLayerSaveAs(wxUpdateUIEvent& event)
 	event.Enable(GetActiveLayer() != NULL);
 }
 
+void MainFrame::OnUpdateLayerProperties(wxUpdateUIEvent& event)
+{
+	event.Enable(GetActiveLayer() != NULL);
+}
+
 void MainFrame::OnLayerImport(wxCommandEvent &event)
 {
 	// first ask what kind of data layer
@@ -715,6 +728,17 @@ void MainFrame::OnUpdateLayerShow(wxUpdateUIEvent& event)
 
 	event.Enable(pLayer != NULL);
 	event.Check(pLayer && pLayer->GetVisible());
+}
+
+void MainFrame::OnViewLayerPaths(wxCommandEvent &event)
+{
+	m_pTree->SetShowPaths(!m_pTree->GetShowPaths());
+	m_pTree->RefreshTreeItems(this);
+}
+
+void MainFrame::OnUpdateLayerPaths(wxUpdateUIEvent& event)
+{
+	event.Check(m_pTree->GetShowPaths());
 }
 
 void MainFrame::OnViewMagnifier(wxCommandEvent &event)
@@ -1111,7 +1135,8 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 		return;
 	}
 
-	wxString str = wxString::Format("Successfully wrote TerraGen file %s", strPathName);
+	wxString str = "Successfully wrote TerraGen file ";
+	str += strPathName;
 	wxMessageBox(str);
 }
 
