@@ -13,6 +13,7 @@
 
 class vtHeightField3d;
 class vtTerrain;
+class vtMesh;
 
 /**
  * This class represents a single type of utility structure, such as a
