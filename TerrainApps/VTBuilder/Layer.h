@@ -37,6 +37,7 @@
 #define FSTRING_TER		"Terragen terrain (*.ter)|*.ter|"
 #define FSTRING_TIF		"GeoTIFF Files (*.tif)|*.tif|"
 #define FSTRING_UTL		"Utility Files (*.utl)|*.utl|"
+#define FSTRING_VF		"Vegetation Files (*.vf)|*.vf|"
 #define FSTRING_VTST	"Structure Files (*.vtst)|*.vtst|"
 #define FSTRING_XML		"XML Files (*.xml)|*.xml|"
 

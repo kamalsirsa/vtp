@@ -5,15 +5,16 @@
 #ifndef VEGLAYER_H
 #define VEGLAYER_H
 
-#include "vtdata/shapelib/shapefil.h"
 #include "vtdata/LULC.h"
 #include "vtdata/RoadMap.h"
+#include "vtdata/Plants.h"
 #include "Layer.h"
 
 enum VegLayerType {
 	VLT_Unknown,
 	VLT_Density,
-	VLT_BioMap
+	VLT_BioMap,
+	VLT_Instances
 };
 
 class vtVegLayer : public vtLayer
@@ -46,13 +47,14 @@ public:
 	int   FindBiotype(const DPoint2 &p);
 
 protected:
+	void DrawInstances(wxDC* pDC, vtScaledView *pView);
+	void DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView);
+
 	// Array of vegpolys made from poly attrib and array of utm points points
 	DPolyArray2		m_Poly;
 	Array<float>	m_Density;
 	Array<short>	m_Biotype;
-
-	//six control points outline starting at SW clockwise
-//	FPoint2 m_VCtrlPts[6];
+	vtPlantInstanceArray *m_pPia;
 };
 
 #endif

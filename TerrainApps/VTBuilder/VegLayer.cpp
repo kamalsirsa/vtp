@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/shapelib/shapefil.h"
 #include "ScaledView.h"
 #include "VegLayer.h"
 #include "Helper.h"
@@ -20,6 +21,7 @@
 vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
 {
 	m_VLType = VLT_Unknown;
+	m_pPia = NULL;
 }
 
 vtVegLayer::~vtVegLayer()
@@ -43,35 +45,13 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 #define MAXPOINTS 8000
 static wxPoint vegbuf[MAXPOINTS];
 
-void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 {
-	int i, j, k;
-
-	//set the pen options
-	wxPen VegPen(wxColor(0,100,0), 1, wxSOLID);  //single pixel solid green pen
-	pDC->SetLogicalFunction(wxCOPY);
-	pDC->SetPen(VegPen);
-
-#if 0
-	for (i = 0; i < m_Poly.GetSize(); i++)
-	{
-		int vbuflength = 0;
-		for (int c = 0; c < m_Poly[i].GetSize() && c < MAXPOINTS; c++)
-		{
-			pView->screen(m_Poly[i].GetAt(c), vegbuf[vbuflength]);
-			vbuflength += 1;
-
-			if (m_Poly[i].m_pbNoLine[c] == true)
-			{
-				if (vbuflength > 1) pDC->DrawLines(vbuflength, vegbuf);
-				vbuflength = 0;
-			}
-		}
-#else
 	// draw each polygon in m_Poly
 	bool pbNoLine[30000];
 
 	int num_polys = m_Poly.GetSize();
+	int i, j, k;
 	for (i = 0; i < num_polys; i++)
 	{
 		int vbuflength = 0;
@@ -113,8 +93,43 @@ void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 				vbuflength = 0;
 			}
 		}
-#endif
 	}
+}
+
+void vtVegLayer::DrawInstances(wxDC* pDC, vtScaledView *pView)
+{
+	int i, size;
+	wxPoint origin;
+
+	int m_size = pView->sdx(20);
+	if (m_size > 5) m_size = 5;
+	if (m_size < 1) m_size = 1;
+
+	size = m_pPia->GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtPlantInstance &plant = m_pPia->GetAt(i);
+
+		pView->screen(plant.m_p, origin);
+
+		pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
+		pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
+
+	}
+}
+
+void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+{
+	//set the pen options
+	wxPen VegPen(wxColor(0,100,0), 1, wxSOLID);  //single pixel solid green pen
+	pDC->SetLogicalFunction(wxCOPY);
+	pDC->SetPen(VegPen);
+
+	if (m_VLType == VLT_Instances)
+		DrawInstances(pDC, pView);
+
+	if (m_VLType == VLT_BioMap || m_VLType == VLT_Density)
+		DrawPolysHiddenLines(pDC, pView);
 }
 
 void vtVegLayer::GetProjection(vtProjection &proj)
@@ -129,14 +144,23 @@ void vtVegLayer::SetProjection(vtProjection &proj)
 
 bool vtVegLayer::OnSave()
 {
-	// unimplemented
-	return true;
+	// currently we can load and save VF files (Plant Instances)
+	if (m_VLType == VLT_Instances)
+		return m_pPia->WriteVF(m_strFilename);
+	return false;
 }
 
 bool vtVegLayer::OnLoad()
 {
-	// unimplemented
-	return true;
+	// currently we can load and save VF files (Plant Instances)
+	m_pPia = new vtPlantInstanceArray();
+	if (m_pPia->ReadVF(m_strFilename))
+	{
+		m_VLType = VLT_Instances;
+		return true;
+	}
+	else
+		return false;
 }
 
 bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
