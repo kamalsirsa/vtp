@@ -2,7 +2,7 @@
 // Name:     app.cpp
 // Purpose:  Example GLUT/vtlib application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -193,7 +193,7 @@ int main(int, char ** )
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is doing  */
 	/*    silly things sqrt(Inf) (computing lengths of MAXFLOAT and NaN     */
 	/*    Vec3's).   This turns off FP bug core dumps, ignoring the error   */
-  /*    like most platforms do by default.                                */
+	/*    like most platforms do by default.                                */
 	fpsetmask(0);
 #endif
 
@@ -208,3 +208,4 @@ int main(int, char ** )
 
 	return 0;
 }
+
