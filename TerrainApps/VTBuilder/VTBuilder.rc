@@ -19,6 +19,7 @@ view_mag		BITMAP "bitmaps/view_mag.bmp"
 view_plus		BITMAP "bitmaps/view_plus.bmp"
 view_minus		BITMAP "bitmaps/view_minus.bmp"
 view_zoomall	BITMAP "bitmaps/view_zoomall.bmp"
+view_zoom_Layer	BITMAP "bitmaps/view_zoom_Layer.bmp"
 view_zoomexact	BITMAP "bitmaps/view_zoomexact.bmp"
 distance		BITMAP "bitmaps/distance.bmp"
 
