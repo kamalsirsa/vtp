@@ -179,6 +179,7 @@ private:
 
 	// alternate storage of earth-CS footprint, in development
 	void SynchToOGR();
+	void SynchFromOGR();
 	OGRPolygon	m_Foot;
 
 	// footprint in the local CS of this building

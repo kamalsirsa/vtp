@@ -248,6 +248,12 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 	SynchToOGR();
 }
 
+void vtLevel::SetFootprint(const OGRPolygon *poly)
+{
+	m_Foot = *poly;
+	SynchFromOGR();
+}
+
 void vtLevel::SynchToOGR()
 {
 	// keep OGR poly in synch
@@ -276,9 +282,57 @@ void vtLevel::SynchToOGR()
 		pRing->setPoint(i, m_Footprint[i].x, m_Footprint[i].y);
 }
 
-void vtLevel::SetFootprint(const OGRPolygon *poly)
+void vtLevel::SynchFromOGR()
 {
-	// TODO
+	OGRLinearRing *pRing = m_Foot.getExteriorRing();
+	if (!pRing)
+		return;
+
+	int total = 0;
+
+	// first, count how many points our polygon will have
+	int num = pRing->getNumPoints();
+	total += num;
+
+    int inside = m_Foot.getNumInteriorRings();
+	int i, j;
+	for (i = 0; i < inside; i++)
+	{
+		total += 1;	// to close off the previous poly
+		total += m_Foot.getInteriorRing(i)->getNumPoints();
+	}
+	int count = 0;
+	m_Footprint.SetSize(total);
+
+	// copy points from the external ring
+	for (j = 0; j < num; j++)
+	{
+		m_Footprint[count].Set(pRing->getX(j), pRing->getY(j));
+		count++;
+	}
+	// close it if there are internal rings
+	if (inside > 0)
+	{
+		m_Footprint[count].Set(pRing->getX(0), pRing->getY(0));
+		count++;
+	}
+	// now copy points from the internal rings
+	for (i = 0; i < inside; i++)
+	{
+		pRing = m_Foot.getInteriorRing(i);
+		num = pRing->getNumPoints();
+		for (j = 0; j < num; j++)
+		{
+			m_Footprint[count].Set(pRing->getX(j), pRing->getY(j));
+			count++;
+		}
+		if (i < inside-1)	// there's more rings to come
+		{
+			m_Footprint[count].Set(pRing->getX(0), pRing->getY(0));
+			count++;
+		}
+	}
+	assert(count == total);
 }
 
 void vtLevel::SetEdgeMaterial(BldMaterial bm)
