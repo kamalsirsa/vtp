@@ -7,6 +7,8 @@ item_new		BITMAP "bitmaps/item_new.bmp"
 item_addmodel	BITMAP "bitmaps/item_addmodel.bmp"
 item_remmodel	BITMAP "bitmaps/item_remmodel.bmp"
 item_rem		BITMAP "bitmaps/item_rem.bmp"
+show_axes		BITMAP "bitmaps/axes.bmp"
+show_rulers		BITMAP "bitmaps/rulers.bmp"
 
 icon1   ICON "icons/camera.ico"
 icon2   ICON "icons/engine.ico"
