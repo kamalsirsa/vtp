@@ -819,7 +819,7 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 		// Create new Distance Dialog
 		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, _T("Distance Tool"),
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-		m_pDistanceDlg->SetProjection(&m_proj);
+		m_pDistanceDlg->SetProjection(m_proj);
 	}
 	m_pDistanceDlg->Show(true);
 	return m_pDistanceDlg;
@@ -996,7 +996,7 @@ void MainFrame::SetProjection(const vtProjection &p)
 	m_proj = p;
 	GetView()->SetWMProj(p);
 	if (m_pDistanceDlg)
-		m_pDistanceDlg->SetProjection(&m_proj);
+		m_pDistanceDlg->SetProjection(m_proj);
 }
 
 void MainFrame::OnSelectionChanged()

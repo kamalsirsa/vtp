@@ -31,6 +31,7 @@
 #include "vtui/DistanceDlg.h"
 
 #include "cpl_error.h"
+#include <float.h>
 
 #define BOUNDADJUST 5
 
@@ -1089,7 +1090,7 @@ void BuilderView::OnDragDistance()
 	object(m_ui.m_LastPoint, p2);
 
 	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
-	pDlg->SetPoints(p1, p2);
+	pDlg->SetPoints(p1, p2, true);
 }
 
 void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
