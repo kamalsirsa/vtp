@@ -229,6 +229,8 @@ void vtPanoFlyer::Eval()
 	if (!pTarget)
 		return;
 
+	FPoint3 previous_pos = pTarget->GetTrans();
+
 	float mx, my;
 	GetNormalizedMouseCoords(mx, my);
 
@@ -279,6 +281,9 @@ void vtPanoFlyer::Eval()
 	}
 
 	KeepAboveGround();
+
+	FPoint3 current_pos = pTarget->GetTrans();
+	m_fCurrentSpeed = (current_pos - previous_pos).Length() / elapsed;
 }
 
 
