@@ -50,7 +50,7 @@ void CPlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	m_pPlantList = plants;
 
 	m_cbSpecies.ResetContent();
-	for (int i = 0; i <	plants->NumSpecies(); i++)
+	for (unsigned int i = 0; i < plants->NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *plant = plants->GetSpecies(i);
 		int index = m_cbSpecies.AddString(plant->GetCommonName());
