@@ -28,6 +28,7 @@
 #include "UtilityLayer.h"
 // Dialogs
 #include "ImportVegDlg.h"
+#include "VegFieldsDlg.h"
 #include "Projection2Dlg.h"
 
 #include "ogrsf_frmts.h"
@@ -368,6 +369,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 {
 	bool success;
 
+	int nShapeType;
 	SHPHandle hSHP = SHPOpen(strFileName, "rb");
 	if (hSHP == NULL)
 	{
@@ -376,7 +378,15 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 		return NULL;
 	}
 	else
+	{
+		// Get type of data
+		int     nElem;
+		double  dummy[4];
+		SHPGetInfo(hSHP, &nElem, &nShapeType, dummy, dummy);
+
+		// Check Shape Type, Veg Layer should be Poly data
 		SHPClose(hSHP);
+	}
 
 	// if layer type unknow, ask user input
 	if (ltype == LT_UNKNOWN)
@@ -402,15 +412,33 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 		pRL->RemoveUnusedNodes();
 	}
 
-	// read vegtype SHP data into the layer
+	// read vegetation SHP data into the layer
 	if (ltype == LT_VEG)
 	{
-		ImportVegDlg dlg(this, -1, "Import Vegetation Information");
-		dlg.SetShapefileName(strFileName);
-		if (dlg.ShowModal() == wxID_CANCEL)
+		if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
+		{
+			wxMessageBox("The Shapefile must have either point features (for individual\n"
+				"plants) or polygon features (for plant distribution areas).");
 			return NULL;
+		}
+
 		vtVegLayer *pVL = (vtVegLayer *)pLayer;
-		pVL->AddElementsFromSHP(strFileName, proj, dlg.m_fieldindex, dlg.m_datatype);
+		if (nShapeType == SHPT_POLYGON)
+		{
+			ImportVegDlg dlg(this, -1, "Import Vegetation Information");
+			dlg.SetShapefileName(strFileName);
+			if (dlg.ShowModal() == wxID_CANCEL)
+				return NULL;
+			pVL->AddElementsFromSHP(strFileName, proj, dlg.m_fieldindex, dlg.m_datatype);
+		}
+		if (nShapeType == SHPT_POINT)
+		{
+			VegFieldsDlg dlg(this, -1, "Map fields to attributes");
+			dlg.SetShapefileName(strFileName);
+			dlg.SetVegLayer(pVL);
+			if (dlg.ShowModal() == wxID_CANCEL)
+				return NULL;
+		}
 	}
 
 	if (ltype == LT_WATER)

@@ -70,9 +70,10 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
     SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
     // Check Shape Type, Veg Layer should be Poly data
-    if (nShapeType != SHPT_POLYGON)
+    if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
     {
-        wxMessageBox("Shapefile must have polygon features.");
+        wxMessageBox("Shapefile must have either point features (for individual\n"
+			"plants) or polygon features (for plant distribution areas).");
         return;
     }
 
