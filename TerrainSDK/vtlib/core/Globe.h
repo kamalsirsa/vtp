@@ -32,6 +32,9 @@ struct MFace
 	FPoint3 axis;		// axis of rotation ("hinge") for each face
 };
 
+typedef Array<vtFeatures*> vtFeaturesSet;
+
+
 /**
  * IcoGlobe is an icosahedral globe.  To use it:
  *  - call Create() with the desired parameters to construct the object
@@ -66,6 +69,7 @@ public:
 	bool GetSeasonalTilt() { return m_bTilt; }
 
 	// surface features
+	vtFeaturesSet &GetFeaturesSet() { return m_features; }
 	int AddGlobePoints(const char *fname, float fSize);
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
@@ -132,7 +136,7 @@ protected:
 	FQuat	m_diff;
 
 	// Features (point, line, polygon..) draped on the globe
-	Array<vtFeatures*>	m_features;
+	vtFeaturesSet	m_features;
 };
 
 vtMovGeom *CreateSimpleEarth(const vtString &strDataPath);
