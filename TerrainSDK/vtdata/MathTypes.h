@@ -639,6 +639,13 @@ public:
 		return (r2.left >= left && r2.right <= right &&
 				r2.bottom >= bottom && r2.top <= top);
 	}
+	void Grow(double x, double y)
+	{
+		left -= x;
+		right += x;
+		bottom -= y;
+		top += y;
+	}
 	void GrowToContainPoint(const DPoint2 &p)
 	{
 		if (p.x < left)		left = p.x;
