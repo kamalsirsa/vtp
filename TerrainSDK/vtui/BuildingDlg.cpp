@@ -478,10 +478,7 @@ void BuildingDlg::UpdateColorControl()
 		if (edges == 0)
 		{
 			// badly formed building; don't crash
-			m_Color.Set(0, 0, 0);
-			wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_Color);
-			m_pColorBitmapControl->SetBitmap(*pBitmap);
-			delete pBitmap;
+			FillWithColor(m_pColorBitmapControl, RGBi(0,0,0));
 			return;
 		}
 		// color

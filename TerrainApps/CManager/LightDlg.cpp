@@ -17,7 +17,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
-#include "vtui/Helper.h"	// for MakeColorBitmap
+#include "vtui/Helper.h"	// for FillWithColor
 #include "LightDlg.h"
 #include <wx/colordlg.h>
 
@@ -80,16 +80,9 @@ void LightDlg::UseLight(vtMovLight *pMovLight)
 
 void LightDlg::UpdateColorBitmaps()
 {
-	wxBitmap *pBitmap;
-
 	// Case of a single color, simple
-	pBitmap = MakeColorBitmap(26, 14, m_ambient);
-	GetAmbient()->SetBitmapLabel(*pBitmap);
-	delete pBitmap;
-
-	pBitmap = MakeColorBitmap(26, 14, m_diffuse);
-	GetDiffuse()->SetBitmapLabel(*pBitmap);
-	delete pBitmap;
+	FillWithColor(GetAmbient(), m_ambient);
+	FillWithColor(GetDiffuse(), m_diffuse);
 }
 
 
