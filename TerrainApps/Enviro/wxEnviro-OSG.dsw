@@ -87,45 +87,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "wxSimple"=..\wxSimple\wxSimple.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-    Begin Project Dependency
-    Project_Dep_Name vtdata
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name vtosg
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name wxvc_dll
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name osgDB
-    End Project Dependency
-    Begin Project Dependency
-    Project_Dep_Name xmlhelper
-    End Project Dependency
-}}}
-
-###############################################################################
-
-Project: "wxvc_dll"=..\..\APIs\wx2.2.7\src\wxvc_dll.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "xmlhelper"=..\..\TerrainSDK\xmlhelper\xmlhelper.dsp - Package Owner=<4>
 
 Package=<5>
