@@ -1189,7 +1189,7 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item6 = new wxTextCtrl( parent, ID_OCEANPLANEOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 0 );
+    item4->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item1->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
@@ -1204,9 +1204,9 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item10 = new wxTextCtrl( parent, ID_DEPRESSOCEANOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 0 );
+    item8->Add( item10, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item1->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item1->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 0 );
 
     wxCheckBox *item11 = new wxCheckBox( parent, ID_SKY, _("Sky dome"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
@@ -1233,9 +1233,22 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item15->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item18 = new wxTextCtrl( parent, ID_FOG_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item15->Add( item18, 0, wxALIGN_CENTER, 5 );
+    item15->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxBOTTOM, 5 );
+    item1->Add( item15, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Scene background color:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticBitmap *item21 = new wxStaticBitmap( parent, ID_COLOR3, MyBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
+    item19->Add( item21, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxButton *item22 = new wxButton( parent, ID_BGCOLOR, _("Set"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 

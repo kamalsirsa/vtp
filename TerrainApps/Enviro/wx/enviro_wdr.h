@@ -172,36 +172,38 @@ wxSizer *TerrManFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = T
 #define ID_HORIZON 10115
 #define ID_FOG 10116
 #define ID_FOG_DISTANCE 10117
+#define ID_COLOR3 10118
+#define ID_BGCOLOR 10119
 wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LABELS 10118
-#define ID_LABEL_FILE 10119
-#define ID_LABEL_FIELD 10120
-#define ID_LABEL_HEIGHT 10121
-#define ID_LABEL_SIZE 10122
+#define ID_LABELS 10120
+#define ID_LABEL_FILE 10121
+#define ID_LABEL_FIELD 10122
+#define ID_LABEL_HEIGHT 10123
+#define ID_LABEL_SIZE 10124
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 extern wxSizer *g_pLayerSizer1;
 extern wxSizer *g_pLayerSizer2;
-#define ID_LAYER_ACTIVE 10123
-#define ID_LAYER_VISIBLE 10124
-#define ID_LAYER_ZOOM_TO 10125
-#define ID_LAYER_SAVE 10126
-#define ID_LAYER_CREATE 10127
-#define ID_LAYER_REMOVE 10128
-#define ID_SHOW_ALL 10129
-#define ID_LAYER_TREE 10130
+#define ID_LAYER_ACTIVE 10125
+#define ID_LAYER_VISIBLE 10126
+#define ID_LAYER_ZOOM_TO 10127
+#define ID_LAYER_SAVE 10128
+#define ID_LAYER_CREATE 10129
+#define ID_LAYER_REMOVE 10130
+#define ID_SHOW_ALL 10131
+#define ID_LAYER_TREE 10132
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPIN_YEAR 10131
-#define ID_SPIN_MONTH 10132
-#define ID_SPIN_DAY 10133
-#define ID_SPIN_HOUR 10134
-#define ID_SPIN_MINUTE 10135
-#define ID_SPIN_SECOND 10136
-#define ID_TEXT_SPEED 10137
-#define ID_SLIDER_SPEED 10138
-#define ID_STOP 10139
+#define ID_SPIN_YEAR 10133
+#define ID_SPIN_MONTH 10134
+#define ID_SPIN_DAY 10135
+#define ID_SPIN_HOUR 10136
+#define ID_SPIN_MINUTE 10137
+#define ID_SPIN_SECOND 10138
+#define ID_TEXT_SPEED 10139
+#define ID_SLIDER_SPEED 10140
+#define ID_STOP 10141
 wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

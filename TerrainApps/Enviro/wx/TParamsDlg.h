@@ -63,6 +63,7 @@ public:
 	void RefreshLabelFields();
 	void RefreshLocationFields();
 	void UpdateTimeString();
+	void UpdateColorControl();
 
 	// overall name
 	wxString2   m_strTerrainName;
@@ -140,6 +141,7 @@ public:
 	float   m_fDepressOceanLevel;
 	bool	m_bHorizon;
 //  bool	m_bOverlay;
+	wxColor	m_BgColor;
 
 	bool	m_bLabels;
 	wxString2   m_strLabelFile;
@@ -157,6 +159,7 @@ public:
 //  wxString2   m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 	wxChoice* GetChoiceShadowRez()  { return (wxChoice*) FindWindow( ID_CHOICE_SHADOW_REZ ); }
 	wxCheckBox* GetCheckStructureShadows()  { return (wxCheckBox*) FindWindow( ID_CHECK_STRUCTURE_SHADOWS ); }
 	wxChoice* GetContentFile()  { return (wxChoice*) FindWindow( ID_CHOICE_CONTENT ); }
@@ -213,6 +216,7 @@ private:
 
 private:
 	// WDR: handler declarations for TParamsDlg
+	void OnBgColor( wxCommandEvent &event );
 	void OnTextureFileBase( wxCommandEvent &event );
 	void OnTileSize( wxCommandEvent &event );
 	void OnTextureNone( wxCommandEvent &event );

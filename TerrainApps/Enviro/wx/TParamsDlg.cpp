@@ -17,6 +17,7 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/colordlg.h>
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
 #include "vtdata/Features.h"		// for RefreshLabelFields()
@@ -85,6 +86,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_LABELS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
+	EVT_BUTTON( ID_BGCOLOR, TParamsDlg::OnBgColor )
 
 	EVT_TEXT( ID_LABEL_FILE, TParamsDlg::OnChoiceLabelFile )
 	EVT_TEXT( ID_LOCFILE, TParamsDlg::OnChoiceLocFile )
@@ -210,6 +212,9 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fDepressOceanLevel = Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
 	m_bHorizon =		Params.GetValueBool(STR_HORIZON);
 //  m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
+	RGBi col = 			Params.GetValueRGBi(STR_BGCOLOR);
+	m_BgColor.Set(col.r, col.g, col.b);
+
 	m_bLabels =		 Params.GetValueBool(STR_LABELS);
 	m_strLabelFile.from_utf8(Params.GetValueString(STR_LABELFILE));
 	m_Style =		   Params.GetPointStyle();
@@ -316,6 +321,8 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_DEPRESSOCEANLEVEL, m_fDepressOceanLevel);
 	Params.SetValueBool(STR_HORIZON, m_bHorizon);
 //  Params.SetValueBool(STR_OVERLAY, m_bOverlay);
+	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
+	Params.SetValueRGBi(STR_BGCOLOR, col);
 
 	Params.SetValueBool(STR_LABELS, m_bLabels);
 	Params.SetValueString(STR_LABELFILE, m_strLabelFile.to_utf8());
@@ -445,6 +452,21 @@ void TParamsDlg::RefreshLocationFields()
 }
 
 // WDR: handler implementations for TParamsDlg
+
+void TParamsDlg::OnBgColor( wxCommandEvent &event )
+{
+	wxColourData data;
+	data.SetChooseFull(true);
+	data.SetColour(m_BgColor);
+
+	wxColourDialog dlg(this, &data);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		wxColourData data2 = dlg.GetColourData();
+		m_BgColor = data2.GetColour();
+		UpdateColorControl();
+	}
+}
 
 void TParamsDlg::OnTextureFileBase( wxCommandEvent &event )
 {
@@ -678,6 +700,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	if (m_iInitLocation == -1)
 		m_iInitLocation = 0;
 
+	UpdateColorControl();
+
 	wxWindow::OnInitDialog(event);
 
 	UpdateEnableState();
@@ -725,6 +749,15 @@ bool TParamsDlg::TransferDataFromWindow()
 		m_strStructFiles.Append(new wxString2(m_pStructFiles->GetString(i)));
 
 	return wxDialog::TransferDataFromWindow();
+}
+
+extern wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
+
+void TParamsDlg::UpdateColorControl()
+{
+	wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_BgColor);
+	GetColorBitmap()->SetBitmap(*pBitmap);
+	delete pBitmap;
 }
 
 void TParamsDlg::OnTextureNone( wxCommandEvent &event )
