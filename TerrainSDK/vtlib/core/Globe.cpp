@@ -68,7 +68,6 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 	InitIcosa();
 
 	CreateMaterials(paths, strImagePrefix);
-
 	EstimateTesselation(iTriangleCount);
 
 	// Estimate number of meshes, and number of vertices per mesh
@@ -1185,6 +1184,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 
 		m_mface[i].geom->SetMaterials(m_mats);
 		m_mface[i].geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
+		m_mesh[i]->Release();	// pass ownership to the Geometry
 	}
 	m_top->AddChild(m_mface[0].xform);
 
@@ -1247,6 +1247,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 	pMesh->AddVertex(FPoint3(0,-2,0));
 	pMesh->AddLine(0,1);
 	m_pAxisGeom->AddMesh(pMesh, green);
+	pMesh->Release();		// pass ownership to Geometry
 	m_top->AddChild(m_pAxisGeom);
 
 #if 0
