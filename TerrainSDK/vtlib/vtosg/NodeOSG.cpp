@@ -499,15 +499,19 @@ void vtCamera::ZoomToSphere(const FSphere &sphere)
 	Translate1(FPoint3(0.0f, 0.0f, sphere.radius));
 }
 
-void vtCamera::SetOrtho(bool bOrtho, float fWidth)
+void vtCamera::SetOrtho(bool bOrtho)
 {
 	m_bOrtho = bOrtho;
-	m_fWidth = fWidth;
 }
 
 bool vtCamera::IsOrtho()
 {
 	return m_bOrtho;
+}
+
+void vtCamera::SetWidth(float fWidth)
+{
+	m_fWidth = fWidth;
 }
 
 float vtCamera::GetWidth()

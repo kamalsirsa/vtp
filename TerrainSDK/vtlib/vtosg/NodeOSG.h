@@ -376,8 +376,9 @@ public:
 	void SetFOV(float f);
 	float GetFOV();
 
-	void SetOrtho(bool bOrtho, float fWidth = 1.0f);
+	void SetOrtho(bool bOrtho);
 	bool IsOrtho();
+	void SetWidth(float f);
 	float GetWidth();
 
 	void GetDirection(FPoint3 &dir);
