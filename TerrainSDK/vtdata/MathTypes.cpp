@@ -641,6 +641,34 @@ void RGBAi::Crop()
 	else if (a > 255) a = 255;
 }
 
+///////////////////////////////////////////////////////////////////////
+// FPlane
+
+/**
+ * Compute Ray-Plane intersection.
+ *
+ * \param pos, dir	The position and direction that define the ray.
+ * \param dist		The distance along the ray to the intersection point.
+ * \param result	The intersection point.
+ *
+ * \return true if there is an intersection point on the ray.
+ */
+bool FPlane::RayIntersection(const FPoint3 &pos, const FPoint3 &dir, float &dist, FPoint3 &result)
+{
+	// Main formula: t = -(Pn· R0 + D) / (Pn· Rd)
+	float denom = Dot(dir);
+
+	//If Pn· Rd = 0, the ray is parallel to the plane and there is no intersection.
+	if (fabs(denom) < 0.00001)
+		return false;
+
+	float t = -(Dot(pos) + w) / denom;
+	dist = t;
+	result = pos + (dir * t);
+
+	// if t < 0 then the intersection point is not on the ray
+	return (dist > 0);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // LocaleWrap

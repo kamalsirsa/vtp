@@ -234,6 +234,7 @@ public:
 	{
 		return Dot(v) + w;
 	}
+	bool RayIntersection(const FPoint3 &pos, const FPoint3 &dir, float &dist, FPoint3 &result);
 
 	float w;
 };
