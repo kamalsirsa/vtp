@@ -1,0 +1,110 @@
+//
+// Name:     app.cpp
+// Purpose:  The application class for a wxWindows application.
+//
+// Copyright (c) 2001 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
+#ifdef __GNUG__
+#pragma implementation
+#pragma interface
+#endif
+
+// For compilers that support precompilation, includes "wx.h".
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
+#include "vtlib/vtlib.h"
+#include "vtlib/core/NavEngines.h"
+
+#include "app.h"
+#include "frame.h"
+#include "vtlib/core/vtSOG.h"
+
+static void Args(int argc, char **argv)
+{
+   return;
+}
+
+IMPLEMENT_APP(vtApp)
+
+//
+// Initialize the app object
+//
+bool vtApp::OnInit(void)
+{
+	Args(argc, argv);
+
+	//
+	// Create the main frame window
+	//
+	wxString title = "Content Manager";
+	vtFrame *frame = new vtFrame(NULL, title,
+		wxPoint(50, 50), wxSize(800, 600));
+
+	vtScene *pScene = vtGetScene();
+	pScene->Init();
+	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));
+
+	vtCamera *pCamera = pScene->GetCamera();
+	pCamera->SetName2("Default Camera");
+
+	vtRoot *pRoot = new vtRoot();
+	pScene->SetRoot(pRoot);
+
+#if VTLIB_SGL
+	CreateTestSGLScene();
+#endif
+
+	// make a simple directional light
+	vtLight *pLight = new vtLight();
+	pLight->SetName2("Light");
+	vtMovLight *pMovLight = new vtMovLight(pLight);
+	pMovLight->SetName2("Movable Light");
+	pLight->SetAmbient2(RGBf(0.2f, 0.2f, 0.2f));
+	pMovLight->SetTrans(FPoint3(0.0f, 0.0f, 5.0f));
+	pRoot->AddChild(pMovLight);
+
+#if 0
+#if 0
+	// make a yellow sphere
+	vtMaterialArray *pMats = new vtMaterialArray();
+	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
+	vtGeom *pGeom = CreateSphereGeom(pMats, 0, 0.5, 16);
+	pGeom->SetName2("Yellow Sphere");
+
+	OutputSOG osog;
+
+	FILE *fp = fopen("output.sog", "wb");
+	osog.WriteHeader(fp);
+	osog.WriteSingleGeometry(fp, pGeom);
+	fclose(fp);
+	pRoot->AddChild(pGeom);
+#else
+	InputSOG isog;
+
+	FILE *fp = fopen("output.sog", "rb");
+	vtGroup *pGroup = new vtGroup;
+	bool success = isog.ReadContents(fp, pGroup);
+	fclose(fp);
+	pRoot->AddChild(pGroup);
+#endif
+#endif
+
+	// make a trackball controller for the camera
+	m_pTrackball = new vtTrackball(3.0f);
+	m_pTrackball->SetTarget(pScene->GetCamera());
+	m_pTrackball->SetName2("Trackball");
+	m_pTrackball->SetRotateButton(VT_LEFT, 0);
+	m_pTrackball->SetZoomButton(VT_RIGHT, 0);
+	m_pTrackball->SetZoomScale(3000.0f);
+	pScene->AddEngine(m_pTrackball);
+
+	return TRUE;
+}
+
+

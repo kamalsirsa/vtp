@@ -1,0 +1,158 @@
+(none)
+bench
+bridge
+building
+apartment building
+bank
+barn
+barracks
+castle
+commercial
+control tower
+factory
+greenhouse
+hospital
+hotel
+house
+igloo
+motel
+observatory
+palace
+post office
+power plant
+restaurant
+service station
+shed
+warehouse
+yurt
+crane
+fence
+gate
+gantry crane
+gasoline pump
+hangar
+haystack
+lighthouse
+mailbox
+parking meter
+picnic table
+post
+pylon
+radio telescope
+rail
+reflector
+satellite dish
+sign
+stop sign
+yield sign
+speed limit sign
+route marker
+elevation sign
+silo
+solar panels
+storage tank
+streetlight
+tent
+telephone booth
+tombstone
+tower
+utility pole
+wall
+water tower
+well
+wellhead
+windmill
+windmotor, wind turbine, wind generator
+amphibious vehicle
+air
+airplane
+Boeing 747
+DC-10
+fighter jet
+bomber
+balloon
+hang glider
+helicopter
+missile
+paraglider
+rocket
+land
+bicycle
+car, automobile
+convertible
+hatchback
+limousine
+minivan
+sedan, four-door
+sedan, two-door
+sports car
+station wagon
+combine harvester
+earthmover
+bulldozer
+grader
+hydraulic shovel
+scraper
+wheel loader
+fire engine
+forklift
+lawnmower
+mobile home
+mobile passenger stairs
+motor home
+motorcycle
+snowmobile
+sports utility vehicle
+tank
+tractor
+train car
+engine
+coach car
+sleeping car
+dining car
+box car
+tank car
+livestock car
+hopper car
+flat car
+caboose
+trolley, streetcar, light rail car
+truck
+pickup
+dump truck
+flatbed trailer
+semi trailer
+truck tractor
+truck trailer
+truck crane
+wheelbarrow
+water
+boat
+aircraft carrier
+canoe (types)
+container ship
+catamaran
+dinghy
+ferry
+frigate
+hovercraft
+hydrofoil
+kayak
+passenger liner
+raft
+rowboat
+sailboat
+schooner
+speedboat
+tanker
+tugboat
+yacht
+buoy
+jet ski
+submarine
+space
+satellite
+communications satellite
+weather satellite
+space shuttle
+space station
