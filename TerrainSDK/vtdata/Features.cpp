@@ -134,6 +134,9 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 				field = m_fields[j];
 				switch (field->m_type)
 				{
+				case FTLogical:
+					DBFWriteLogicalAttribute(db, i, j, field->m_bool[i]);
+					break;
 				case FTInteger:
 					DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
 					break;
@@ -316,6 +319,9 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 					break;
 				case FTDouble:
 					SetValue(rec, iField, DBFReadDoubleAttribute(db, rec, iField));
+					break;
+				case FTLogical:
+					SetValue(rec, iField, DBFReadLogicalAttribute(db, rec, iField));
 					break;
 				}
 			}
@@ -715,6 +721,9 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 				Field *pField = GetField(j);
 				switch (pField->m_type)
 				{
+				case FTLogical:
+					SetValue(count, j, pFeature->GetFieldAsInteger(j) != 0);
+					break;
 				case FTInteger:
 					SetValue(count, j, pFeature->GetFieldAsInteger(j));
 					break;
@@ -961,6 +970,7 @@ int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 int vtFeatures::SelectByCondition(int iField, int iCondition,
 								  const char *szValue)
 {
+	bool bval, btest;
 	int i, ival, itest;
 	double dval, dtest;
 	int entities = NumEntities(), selected = 0;
@@ -1051,6 +1061,26 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 			if (con == 3) result = (dtest >= dval);
 			if (con == 4) result = (dtest <= dval);
 			if (con == 5) result = (dtest != dval);
+			if (result)
+			{
+				Select(i);
+				selected++;
+			}
+		}
+		break;
+	case FTLogical:
+		bval = (atoi(szValue) != 0);
+		for (i = 0; i < entities; i++)
+		{
+			btest = field->m_bool[i];
+			if (con == 0) result = (btest == bval);
+//			if (con == 1) result = (btest > ival);
+//			if (con == 2) result = (btest < ival);
+//			if (con == 3) result = (btest >= ival);
+//			if (con == 4) result = (btest <= ival);
+			if (con > 0 && con < 5)
+				continue;
+			if (con == 5) result = (btest != bval);
 			if (result)
 			{
 				Select(i);
@@ -1173,6 +1203,11 @@ int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length
 		f->m_width = 12;
 		f->m_decimals = 12;
 	}
+	else if (ftype == FTLogical)
+	{
+		f->m_width = 1;
+		f->m_decimals = 0;
+	}
 	else if (ftype == FTString)
 	{
 		f->m_width = string_length;
@@ -1214,6 +1249,11 @@ void vtFeatures::SetValue(int record, int field, double value)
 	m_fields[field]->SetValue(record, value);
 }
 
+void vtFeatures::SetValue(int record, int field, bool value)
+{
+	m_fields[field]->SetValue(record, value);
+}
+
 void vtFeatures::GetValueAsString(int iRecord, int iField, vtString &str) const
 {
 	Field *field = m_fields[iField];
@@ -1242,6 +1282,12 @@ double vtFeatures::GetDoubleValue(int iRecord, int iField) const
 {
 	Field *field = m_fields[iField];
 	return field->m_double[iRecord];
+}
+
+bool vtFeatures::GetBoolValue(int iRecord, int iField) const
+{
+	Field *field = m_fields[iField];
+	return field->m_bool[iRecord];
 }
 
 /////////////////////////////////////////////////
@@ -1273,6 +1319,7 @@ int Field::AddRecord()
 {
 	switch (m_type)
 	{
+	case FTLogical: return	m_bool.Append(false); break;
 	case FTInteger: return	m_int.Append(0); break;
 	case FTDouble: return m_double.Append(0.0); break;
 	case FTString: return m_string.Append(new vtString); break;
@@ -1303,6 +1350,14 @@ void Field::SetValue(int record, double value)
 		m_double[record] = value;
 }
 
+void Field::SetValue(int record, bool value)
+{
+	if (m_type == FTInteger)
+		m_int[record] = (int) value;
+	else if (m_type == FTLogical)
+		m_bool[record] = value;
+}
+
 void Field::GetValue(int record, vtString &string)
 {
 	if (m_type != FTString)
@@ -1316,6 +1371,8 @@ void Field::GetValue(int record, int &value)
 		value = m_int[record];
 	else if (m_type == FTDouble)
 		value = (int) m_double[record];
+	else if (m_type == FTLogical)
+		value = (int) m_bool[record];
 }
 
 void Field::GetValue(int record, double &value)
@@ -1324,6 +1381,14 @@ void Field::GetValue(int record, double &value)
 		value = (double) m_int[record];
 	else if (m_type == FTDouble)
 		value = m_double[record];
+}
+
+void Field::GetValue(int record, bool &value)
+{
+	if (m_type == FTInteger)
+		value = (m_int[record] != 0);
+	else if (m_type == FTLogical)
+		value = m_bool[record];
 }
 
 void Field::CopyValue(int FromRecord, int ToRecord)

@@ -37,12 +37,17 @@ public:
 	~Field();
 
 	int AddRecord();
+
 	void SetValue(int record, const char *string);
 	void SetValue(int record, int value);
 	void SetValue(int record, double value);
+	void SetValue(int record, bool value);
+
 	void GetValue(int record, vtString &string);
 	void GetValue(int record, int &value);
 	void GetValue(int record, double &value);
+	void GetValue(int record, bool &value);
+
 	void CopyValue(int FromRecord, int ToRecord);
 	void GetValueAsString(int iRecord, vtString &str);
 	void SetValueFromString(int iRecord, const vtString &str);
@@ -55,6 +60,7 @@ public:
 	Array<int> m_int;
 	Array<double> m_double;
 	Array<vtString*> m_string;
+	Array<bool> m_bool;
 };
 
 // feature flags (bit flags)
@@ -145,14 +151,19 @@ public:
 	Field *GetField(const char *name);
 	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
 	int AddRecord();
+
 	void SetValue(int record, int field, const char *string);
 	void SetValue(int record, int field, int value);
 	void SetValue(int record, int field, double value);
+	void SetValue(int record, int field, bool value);
+
 	void GetValueAsString(int record, int field, vtString &str) const;
 	void SetValueFromString(int iRecord, int iField, const vtString &str);
 	void SetValueFromString(int iRecord, int iField, const char *str);
+
 	int GetIntegerValue(int iRecord, int iField) const;
 	double GetDoubleValue(int iRecord, int iField) const;
+	bool GetBoolValue(int iRecord, int iField) const;
 
 	vtProjection &GetAtProjection() { return m_proj; }
 
