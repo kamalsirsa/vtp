@@ -2,7 +2,7 @@
 // Building3d.cpp
 //
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
-// create 3d geometry of the buildings.
+// create 3D geometry of the buildings.
 //
 // Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.

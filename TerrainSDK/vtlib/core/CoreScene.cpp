@@ -11,7 +11,7 @@
 \section overview Overview
 The <b>vtlib</b> library is built on top of the <b>vtdata</b> library which
 handles many kinds of geospatial data.  It extends <b>vtdata</b> with the
-ability to create 3d geometry of the data for interactive visualization.
+ability to create 3D geometry of the data for interactive visualization.
 
 It is part of the <a href="http://vterrain.org/">Virtual Terrain Project</a>
 and distributed under a completely free <a href="../../license.txt">open
