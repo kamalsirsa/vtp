@@ -6,7 +6,7 @@
 //
 
 #ifdef __GNUG__
-	#pragma implementation "BuildingDlg.cpp"
+    #pragma implementation "BuildingDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -17,11 +17,12 @@
 #endif
 
 #ifdef __BORLANDC__
-	#pragma hdrstop
+    #pragma hdrstop
 #endif
 
 #include <wx/colordlg.h>
 #include "BuildingDlg.h"
+#include "HeightDlg.h"
 
 // WDR: class implementations
 
@@ -32,344 +33,344 @@
 // WDR: event table for BuildingDlg
 
 BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
-	EVT_BUTTON( wxID_OK, BuildingDlg::OnOK )
-	EVT_BUTTON( ID_SET_COLOR, BuildingDlg::OnColor1 )
-	EVT_LISTBOX( ID_LEVEL, BuildingDlg::OnLevel )
-	EVT_LISTBOX( ID_EDGE, BuildingDlg::OnEdge )
-	EVT_BUTTON( ID_SET_EDGE_SLOPES, BuildingDlg::OnSetEdgeSlopes )
-	EVT_BUTTON( ID_SET_MATERIAL, BuildingDlg::OnSetMaterial )
-	EVT_SPINCTRL( ID_STORIES, BuildingDlg::OnSpinStories )
-	EVT_TEXT( ID_STORY_HEIGHT, BuildingDlg::OnStoryHeight )
-	EVT_BUTTON( ID_LEVEL_COPY, BuildingDlg::OnLevelCopy )
-	EVT_BUTTON( ID_LEVEL_UP, BuildingDlg::OnLevelUp )
-	EVT_BUTTON( ID_LEVEL_DEL, BuildingDlg::OnLevelDelete )
-	EVT_BUTTON( ID_LEVEL_DOWN, BuildingDlg::OnLevelDown )
-	EVT_BUTTON( ID_EDGES, BuildingDlg::OnEdges )
-	EVT_TEXT( ID_EDGE_SLOPE, BuildingDlg::OnEdgeSlope )
-	EVT_BUTTON( ID_FEAT_CLEAR, BuildingDlg::OnFeatClear )
-	EVT_BUTTON( ID_FEAT_WALL, BuildingDlg::OnFeatWall )
-	EVT_BUTTON( ID_FEAT_WINDOW, BuildingDlg::OnFeatWindow )
-	EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
-	EVT_CLOSE(BuildingDlg::OnCloseWindow)
-	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
-	EVT_TEXT_ENTER( ID_FACADE, BuildingDlg::OnFacadeEnter )
-	EVT_TEXT_ENTER( ID_VERT_OFFSET, BuildingDlg::OnVertOffset )
+    EVT_BUTTON( wxID_OK, BuildingDlg::OnOK )
+    EVT_BUTTON( ID_SET_COLOR, BuildingDlg::OnColor1 )
+    EVT_LISTBOX( ID_LEVEL, BuildingDlg::OnLevel )
+    EVT_LISTBOX( ID_EDGE, BuildingDlg::OnEdge )
+    EVT_BUTTON( ID_SET_EDGE_SLOPES, BuildingDlg::OnSetEdgeSlopes )
+    EVT_BUTTON( ID_SET_MATERIAL, BuildingDlg::OnSetMaterial )
+    EVT_SPINCTRL( ID_STORIES, BuildingDlg::OnSpinStories )
+    EVT_TEXT( ID_STORY_HEIGHT, BuildingDlg::OnStoryHeight )
+    EVT_BUTTON( ID_LEVEL_COPY, BuildingDlg::OnLevelCopy )
+    EVT_BUTTON( ID_LEVEL_UP, BuildingDlg::OnLevelUp )
+    EVT_BUTTON( ID_LEVEL_DEL, BuildingDlg::OnLevelDelete )
+    EVT_BUTTON( ID_LEVEL_DOWN, BuildingDlg::OnLevelDown )
+    EVT_BUTTON( ID_EDGES, BuildingDlg::OnEdges )
+    EVT_TEXT( ID_EDGE_SLOPE, BuildingDlg::OnEdgeSlope )
+    EVT_BUTTON( ID_FEAT_CLEAR, BuildingDlg::OnFeatClear )
+    EVT_BUTTON( ID_FEAT_WALL, BuildingDlg::OnFeatWall )
+    EVT_BUTTON( ID_FEAT_WINDOW, BuildingDlg::OnFeatWindow )
+    EVT_BUTTON( ID_FEAT_DOOR, BuildingDlg::OnFeatDoor )
+    EVT_CLOSE(BuildingDlg::OnCloseWindow)
+    EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
+    EVT_TEXT_ENTER( ID_FACADE, BuildingDlg::OnFacadeEnter )
+    EVT_BUTTON( ID_EDITHEIGHTS, BuildingDlg::OnEditHeights )
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+    const wxPoint &position, const wxSize& size, long style ) :
+    AutoDialog( parent, id, title, position, size, style )
 {
-	m_bSetting = false;
-	m_bEdges = false;
-	BuildingDialogFunc( this, TRUE );
+    m_bSetting = false;
+    m_bEdges = false;
+    BuildingDialogFunc( this, TRUE );
 }
 
-void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld)
+void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *pHeightField)
 {
-	m_pSA = pSA;
-	m_pBuilding = bld;
-	if (bld)
-		m_fVertOffset = bld->GetBaseElevation();
+    m_pSA = pSA;
+    m_pBuilding = bld;
+	m_pHeightField = pHeightField;
 }
 
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 {
-	wxImage pImage(xsize, ysize);
-	int i, j;
-	for (i = 0; i < xsize; i++)
-		for (j = 0; j < ysize; j++)
-		{
-			pImage.SetRGB(i, j, color.Red(), color.Green(), color.Blue());
-		}
+    wxImage pImage(xsize, ysize);
+    int i, j;
+    for (i = 0; i < xsize; i++)
+        for (j = 0; j < ysize; j++)
+        {
+            pImage.SetRGB(i, j, color.Red(), color.Green(), color.Blue());
+        }
 
-	wxBitmap *pBitmap = new wxBitmap(pImage.ConvertToBitmap());
-	return pBitmap;
+    wxBitmap *pBitmap = new wxBitmap(pImage.ConvertToBitmap());
+    return pBitmap;
 }
 
 void BuildingDlg::EditColor()
 {
-	wxColourData data;
-	data.SetChooseFull(true);
-	data.SetColour(m_Color);
+    wxColourData data;
+    data.SetChooseFull(true);
+    data.SetColour(m_Color);
 
-	EnableRendering(false);
-	wxColourDialog dlg(this, &data);
-	if (dlg.ShowModal() == wxID_OK)
-	{
-		wxColourData data2 = dlg.GetColourData();
-		m_Color = data2.GetColour();
+    EnableRendering(false);
+    wxColourDialog dlg(this, &data);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        wxColourData data2 = dlg.GetColourData();
+        m_Color = data2.GetColour();
 
-		RGBi result(m_Color.Red(), m_Color.Green(), m_Color.Blue());
-		if (m_bEdges)
-			m_pEdge->m_Color = result;
-		else
-			m_pLevel->SetEdgeColor(result);
+        RGBi result(m_Color.Red(), m_Color.Green(), m_Color.Blue());
+        if (m_bEdges)
+            m_pEdge->m_Color = result;
+        else
+            m_pLevel->SetEdgeColor(result);
 
-		UpdateColorControl();
-	}
-	EnableRendering(true);
+        UpdateColorControl();
+    }
+    EnableRendering(true);
 }
 
 void BuildingDlg::HighlightSelectedLevel()
 {
-	m_pLevelListBox->SetSelection(m_iLevel);
+    m_pLevelListBox->SetSelection(m_iLevel);
 }
 
 void BuildingDlg::HighlightSelectedEdge()
 {
-	m_pEdgeListBox->SetSelection(m_iEdge);
+    m_pEdgeListBox->SetSelection(m_iEdge);
 }
 
 // WDR: handler implementations for BuildingDlg
 
-void BuildingDlg::OnVertOffset( wxCommandEvent &event )
+void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 {
-	TransferDataFromWindow();
-	m_pBuilding->SetBaseElevation(m_fVertOffset);
-	Modified();
+    CHeightDialog HeightDialog(this, -1, _T("Baseline Editor"));
+
+	HeightDialog.Setup(m_pBuilding, m_pHeightField);
+    
+    HeightDialog.ShowModal();
 }
 
 void BuildingDlg::OnFacadeEnter( wxCommandEvent &event )
 {
-	TransferDataFromWindow();
-	SetEdgeFacade();
+    TransferDataFromWindow();
+    SetEdgeFacade();
 }
 
 void BuildingDlg::OnFeatDoor( wxCommandEvent &event )
 {
-	vtEdgeFeature f;
-	f.m_code = WFC_DOOR;
-	f.m_width = -1.0f;
-	f.m_vf1 = 0.0f;
-	f.m_vf2 = 0.8f;
-	m_pEdge->m_Features.Append(f);
-	UpdateFeatures();
-	Modified();
+    vtEdgeFeature f;
+    f.m_code = WFC_DOOR;
+    f.m_width = -1.0f;
+    f.m_vf1 = 0.0f;
+    f.m_vf2 = 0.8f;
+    m_pEdge->m_Features.Append(f);
+    UpdateFeatures();
+    Modified();
 }
 
 void BuildingDlg::OnFeatWindow( wxCommandEvent &event )
 {
-	vtEdgeFeature f;
-	f.m_code = WFC_WINDOW;
-	f.m_width = -1.0f;
-	f.m_vf1 = 0.3f;
-	f.m_vf2 = 0.8f;
-	m_pEdge->m_Features.Append(f);
-	UpdateFeatures();
-	Modified();
+    vtEdgeFeature f;
+    f.m_code = WFC_WINDOW;
+    f.m_width = -1.0f;
+    f.m_vf1 = 0.3f;
+    f.m_vf2 = 0.8f;
+    m_pEdge->m_Features.Append(f);
+    UpdateFeatures();
+    Modified();
 }
 
 void BuildingDlg::OnFeatWall( wxCommandEvent &event )
 {
-	vtEdgeFeature f;
-	f.m_code = WFC_WALL;
-	f.m_width = -1.0f;
-	f.m_vf1 = 0;
-	f.m_vf2 = 1;
-	m_pEdge->m_Features.Append(f);
-	UpdateFeatures();
-	Modified();
+    vtEdgeFeature f;
+    f.m_code = WFC_WALL;
+    f.m_width = -1.0f;
+    f.m_vf1 = 0;
+    f.m_vf2 = 1;
+    m_pEdge->m_Features.Append(f);
+    UpdateFeatures();
+    Modified();
 }
 
 void BuildingDlg::OnFeatClear( wxCommandEvent &event )
 {
-	m_pEdge->m_Features.Empty();
-	UpdateFeatures();
-	Modified();
+    m_pEdge->m_Features.Empty();
+    UpdateFeatures();
+    Modified();
 }
 
 void BuildingDlg::OnEdgeSlope( wxCommandEvent &event )
 {
-	if (m_bSetting)
-		return;
-	TransferDataFromWindow();
-	m_pEdge->m_iSlope = m_iEdgeSlope;
-	Modified();
+    if (m_bSetting)
+        return;
+    TransferDataFromWindow();
+    m_pEdge->m_iSlope = m_iEdgeSlope;
+    Modified();
 }
 
 void BuildingDlg::OnLevelUp( wxCommandEvent &event )
 {
-	if (m_iLevel > 0)
-	{
-		m_pBuilding->SwapLevels(m_iLevel-1, m_iLevel);
-		RefreshLevelsBox();
-		SetLevel(m_iLevel-1);
-		HighlightSelectedLevel();
-		Modified();
-	}
+    if (m_iLevel > 0)
+    {
+        m_pBuilding->SwapLevels(m_iLevel-1, m_iLevel);
+        RefreshLevelsBox();
+        SetLevel(m_iLevel-1);
+        HighlightSelectedLevel();
+        Modified();
+    }
 }
 
 void BuildingDlg::OnLevelDown( wxCommandEvent &event )
 {
-	if (m_iLevel < m_pBuilding->GetNumLevels() - 1)
-	{
-		m_pBuilding->SwapLevels(m_iLevel, m_iLevel+1);
-		RefreshLevelsBox();
-		SetLevel(m_iLevel+1);
-		HighlightSelectedLevel();
-		Modified();
-	}
+    if (m_iLevel < m_pBuilding->GetNumLevels() - 1)
+    {
+        m_pBuilding->SwapLevels(m_iLevel, m_iLevel+1);
+        RefreshLevelsBox();
+        SetLevel(m_iLevel+1);
+        HighlightSelectedLevel();
+        Modified();
+    }
 }
 
 void BuildingDlg::CopyCurrentLevel()
 {
-	vtLevel *pNewLevel = new vtLevel(*m_pLevel);
-	m_pBuilding->InsertLevel(m_iLevel, pNewLevel);
-	RefreshLevelsBox();
-	SetLevel(m_iLevel);
-	HighlightSelectedLevel();
-	Modified();
+    vtLevel *pNewLevel = new vtLevel(*m_pLevel);
+    m_pBuilding->InsertLevel(m_iLevel, pNewLevel);
+    RefreshLevelsBox();
+    SetLevel(m_iLevel);
+    HighlightSelectedLevel();
+    Modified();
 }
 
 void BuildingDlg::OnLevelCopy( wxCommandEvent &event )
 {
-	CopyCurrentLevel();
+    CopyCurrentLevel();
 }
 
 void BuildingDlg::DeleteCurrentLevel()
 {
-	m_pBuilding->DeleteLevel(m_iLevel);
-	if (m_iLevel == m_pBuilding->GetNumLevels())
-		m_iLevel--;
-	RefreshLevelsBox();
-	SetLevel(m_iLevel);
-	HighlightSelectedLevel();
-	Modified();
+    m_pBuilding->DeleteLevel(m_iLevel);
+    if (m_iLevel == m_pBuilding->GetNumLevels())
+        m_iLevel--;
+    RefreshLevelsBox();
+    SetLevel(m_iLevel);
+    HighlightSelectedLevel();
+    Modified();
 }
 
 void BuildingDlg::OnLevelDelete( wxCommandEvent &event )
 {
-	DeleteCurrentLevel();
+    DeleteCurrentLevel();
 }
 
 void BuildingDlg::OnStoryHeight( wxCommandEvent &event )
 {
-	if (m_bSetting)
-		return;
-	TransferDataFromWindow();
-	m_pLevel->m_fStoryHeight = m_fStoryHeight;
-	Modified();
+    if (m_bSetting)
+        return;
+    TransferDataFromWindow();
+    m_pLevel->m_fStoryHeight = m_fStoryHeight;
+    Modified();
 }
 
 void BuildingDlg::OnSpinStories( wxCommandEvent &event )
 {
-	if (m_bSetting)
-		return;
-	TransferDataFromWindow();
-	m_pLevel->m_iStories = m_iStories;
-	RefreshLevelsBox();
-	HighlightSelectedLevel();
-	Modified();
+    if (m_bSetting)
+        return;
+    TransferDataFromWindow();
+    m_pLevel->m_iStories = m_iStories;
+    RefreshLevelsBox();
+    HighlightSelectedLevel();
+    Modified();
 }
 
 void BuildingDlg::OnColor1( wxCommandEvent &event )
 {
-	EditColor();
-	Modified();
+    EditColor();
+    Modified();
 }
 
 void BuildingDlg::OnOK( wxCommandEvent &event )
 {
-	m_pSA->SetEditedEdge(NULL, 0, 0);
-	wxDialog::OnOK(event);
+    m_pSA->SetEditedEdge(NULL, 0, 0);
+    wxDialog::OnOK(event);
 }
 
 void BuildingDlg::OnCloseWindow(wxCloseEvent& event)
 {
-	m_pSA->SetEditedEdge(NULL, 0, 0);
-	wxDialog::OnCloseWindow(event);
+    m_pSA->SetEditedEdge(NULL, 0, 0);
+    wxDialog::OnCloseWindow(event);
 }
 
 void BuildingDlg::SetupControls()
 {
-	AddNumValidator(ID_VERT_OFFSET, &m_fVertOffset, 2);
-	AddValidator(ID_STORIES, &m_iStories);
-	AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
+    AddValidator(ID_STORIES, &m_iStories);
+    AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
 
-	if (m_bEdges == false)
-	{
-		m_pColorBitmapControl = GetColorBitmap1();
+    if (m_bEdges == false)
+    {
+        m_pColorBitmapControl = GetColorBitmap1();
 
-		AddValidator(ID_MATERIAL1, &m_strMaterial);
-		AddValidator(ID_EDGE_SLOPES, &m_strEdgeSlopes);
-	}
-	else
-	{
-		m_pColorBitmapControl = GetColorBitmap2();
+        AddValidator(ID_MATERIAL1, &m_strMaterial);
+        AddValidator(ID_EDGE_SLOPES, &m_strEdgeSlopes);
+    }
+    else
+    {
+        m_pColorBitmapControl = GetColorBitmap2();
 
-		AddValidator(ID_MATERIAL2, &m_strMaterial);
-		AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
-		AddValidator(ID_FEATURES, &m_strFeatures);
-		AddValidator(ID_FACADE, &m_strFacade);
-	}
+        AddValidator(ID_MATERIAL2, &m_strMaterial);
+        AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
+        AddValidator(ID_FEATURES, &m_strFeatures);
+        AddValidator(ID_FACADE, &m_strFacade);
+    }
 
-	m_pLevelListBox = GetLevelCtrl();
-	if (m_bEdges)
-		m_pEdgeListBox = GetEdgeCtrl();
+    m_pLevelListBox = GetLevelCtrl();
+    if (m_bEdges)
+        m_pEdgeListBox = GetEdgeCtrl();
 
-	RefreshLevelsBox();
+    RefreshLevelsBox();
 //  if (m_bEdges)
-//	RefreshEdgesBox();
+//  RefreshEdgesBox();
 
-	SetLevel(m_iLevel);
-	HighlightSelectedLevel();
+    SetLevel(m_iLevel);
+    HighlightSelectedLevel();
 }
 
 void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_iLevel = 0;
-	m_pLevel = NULL;
-	m_pEdge = NULL;
-	m_fStoryHeight = 0.0f;
-	m_strMaterial = _T("");
+    m_iLevel = 0;
+    m_pLevel = NULL;
+    m_pEdge = NULL;
+    m_fStoryHeight = 0.0f;
+    m_strMaterial = _T("");
 
-	SetupControls();
+    SetupControls();
 
-	m_bSetting = true;
-	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
-	m_bSetting = false;
+    m_bSetting = true;
+    wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
+    m_bSetting = false;
 }
 
 void BuildingDlg::RefreshLevelsBox()
 {
-	m_pLevelListBox->Clear();
-	wxString str;
-	int i, levels = m_pBuilding->GetNumLevels();
-	for (i = 0; i < levels; i++)
-	{
-		vtLevel *pLev = m_pBuilding->GetLevel(i);
-		str.Printf(_T("%d"), i);
-		RoofType rt = pLev->GuessRoofType();
-		if (rt == ROOF_FLAT)
-			str += _T(" (flat roof)");
-		else if (rt == ROOF_SHED)
-			str += _T(" (shed roof)");
-		else if (rt == ROOF_GABLE)
-			str += _T(" (gable roof)");
-		else if (rt == ROOF_HIP)
-			str += _T(" (hip roof)");
-		else
-		{
-			wxString str2;
-			str2.Printf(_T(" (%d stor%hs)"), pLev->m_iStories,
-				pLev->m_iStories == 1 ? "y" : "ies");
-			str += str2;
-		}
-		m_pLevelListBox->Append(str);
-	}
+    m_pLevelListBox->Clear();
+    wxString str;
+    int i, levels = m_pBuilding->GetNumLevels();
+    for (i = 0; i < levels; i++)
+    {
+        vtLevel *pLev = m_pBuilding->GetLevel(i);
+        str.Printf(_T("%d"), i);
+        RoofType rt = pLev->GuessRoofType();
+        if (rt == ROOF_FLAT)
+            str += _T(" (flat roof)");
+        else if (rt == ROOF_SHED)
+            str += _T(" (shed roof)");
+        else if (rt == ROOF_GABLE)
+            str += _T(" (gable roof)");
+        else if (rt == ROOF_HIP)
+            str += _T(" (hip roof)");
+        else
+        {
+            wxString str2;
+            str2.Printf(_T(" (%d stor%hs)"), pLev->m_iStories,
+                pLev->m_iStories == 1 ? "y" : "ies");
+            str += str2;
+        }
+        m_pLevelListBox->Append(str);
+    }
 }
 
 void BuildingDlg::RefreshEdgesBox()
 {
-	m_pEdgeListBox->Clear();
-	wxString str;
-	int i, edges = m_pLevel->GetNumEdges();
-	for (i = 0; i < edges; i++)
-	{
-		str.Printf(_T("%d"), i);
-		m_pEdgeListBox->Append(str);
-	}
+    m_pEdgeListBox->Clear();
+    wxString str;
+    int i, edges = m_pLevel->GetNumEdges();
+    for (i = 0; i < edges; i++)
+    {
+        str.Printf(_T("%d"), i);
+        m_pEdgeListBox->Append(str);
+    }
 }
 
 
@@ -377,361 +378,361 @@ void BuildingDlg::RefreshEdgesBox()
 
 void BuildingDlg::OnEdge( wxCommandEvent &event )
 {
-	int sel = m_pEdgeListBox->GetSelection();
+    int sel = m_pEdgeListBox->GetSelection();
 
-	SetEdge(sel);
+    SetEdge(sel);
 }
 
 void BuildingDlg::SetEdge(int iEdge)
 {
-	SetEdgeFacade();
-	m_iEdge = iEdge;
-	m_pEdge = m_pLevel->GetEdge(iEdge);
-	m_iEdgeSlope = m_pEdge->m_iSlope;
-	m_strFacade = wxString::FromAscii((const char *) m_pEdge->m_Facade);
+    SetEdgeFacade();
+    m_iEdge = iEdge;
+    m_pEdge = m_pLevel->GetEdge(iEdge);
+    m_iEdgeSlope = m_pEdge->m_iSlope;
+    m_strFacade = wxString::FromAscii((const char *) m_pEdge->m_Facade);
 
-	// material
-	UpdateMaterialControl();
+    // material
+    UpdateMaterialControl();
 
-	// color
-	UpdateColorControl();
+    // color
+    UpdateColorControl();
 
-	// slopes
-	UpdateSlopes();
+    // slopes
+    UpdateSlopes();
 
-	// features
-	UpdateFeatures();
+    // features
+    UpdateFeatures();
 
-	UpdateFacade();
+    UpdateFacade();
 
-	m_pSA->SetEditedEdge(m_pBuilding, m_iLevel, m_iEdge);
+    m_pSA->SetEditedEdge(m_pBuilding, m_iLevel, m_iEdge);
 }
 
 void BuildingDlg::OnLevel( wxCommandEvent &event )
 {
-	int sel = m_pLevelListBox->GetSelection();
+    int sel = m_pLevelListBox->GetSelection();
 
-	SetLevel(sel);
+    SetLevel(sel);
 }
 
 void BuildingDlg::SetLevel(int iLev)
 {
-	m_iLevel = iLev;
-	m_pLevel = m_pBuilding->GetLevel(iLev);
+    m_iLevel = iLev;
+    m_pLevel = m_pBuilding->GetLevel(iLev);
 
-	m_iStories = m_pLevel->m_iStories;
-	m_fStoryHeight = m_pLevel->m_fStoryHeight;
+    m_iStories = m_pLevel->m_iStories;
+    m_fStoryHeight = m_pLevel->m_fStoryHeight;
 
-	if (m_bEdges)
-	{
-		RefreshEdgesBox();
-		SetEdge(0);
-		HighlightSelectedEdge();
-	}
-	else
-	{
-		// material
-		UpdateMaterialControl();
+    if (m_bEdges)
+    {
+        RefreshEdgesBox();
+        SetEdge(0);
+        HighlightSelectedEdge();
+    }
+    else
+    {
+        // material
+        UpdateMaterialControl();
 
-		// color
-		UpdateColorControl();
+        // color
+        UpdateColorControl();
 
-		// slopes
-		UpdateSlopes();
-	}
+        // slopes
+        UpdateSlopes();
+    }
 
-	// enable up/down
-	GetLevelUp()->Enable(m_iLevel > 0);
-	GetLevelDown()->Enable(m_iLevel < m_pBuilding->GetNumLevels()-1);
-	GetLevelDel()->Enable(m_pBuilding->GetNumLevels() > 1);
-	GetLevelCopy()->Enable(true);
+    // enable up/down
+    GetLevelUp()->Enable(m_iLevel > 0);
+    GetLevelDown()->Enable(m_iLevel < m_pBuilding->GetNumLevels()-1);
+    GetLevelDel()->Enable(m_pBuilding->GetNumLevels() > 1);
+    GetLevelCopy()->Enable(true);
 }
 
 void BuildingDlg::UpdateMaterialControl()
 {
-	BldMaterial mat;
+    BldMaterial mat;
 
-	// In the case of a whole level, attempt to show the most
-	//  commonly occuring material.
-	if (m_bEdges == false)
-		mat = m_pLevel->GetOverallEdgeMaterial();
-	else
-		mat = m_pEdge->m_Material;
+    // In the case of a whole level, attempt to show the most
+    //  commonly occuring material.
+    if (m_bEdges == false)
+        mat = m_pLevel->GetOverallEdgeMaterial();
+    else
+        mat = m_pEdge->m_Material;
 
-	m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(mat));
+    m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(mat));
 }
 
 void BuildingDlg::UpdateColorControl()
 {
-	RGBi color;
+    RGBi color;
 
-	// In the case of a whole level, attempt to show the most
-	//  commonly occuring material.
-	if (m_bEdges == false)
-	{
-		// color
-		bool uniform = m_pLevel->GetOverallEdgeColor(color);
-		if (uniform)
-			m_Color.Set(color.r, color.g, color.b);
-		else
-			m_Color.Set(0, 0, 0);
+    // In the case of a whole level, attempt to show the most
+    //  commonly occuring material.
+    if (m_bEdges == false)
+    {
+        // color
+        bool uniform = m_pLevel->GetOverallEdgeColor(color);
+        if (uniform)
+            m_Color.Set(color.r, color.g, color.b);
+        else
+            m_Color.Set(0, 0, 0);
 
-		// Draw the image with vertical bands corresponding to all the edges
-		int xsize = 32, ysize = 18;
-		int edges = m_pLevel->GetNumEdges();
-		float factor = (float) edges / (float) xsize * .9999f;
-		wxImage pImage(xsize, ysize);
-		int i, j;
-		for (i = 0; i < xsize; i++)
-		{
-			vtEdge *pEdge = m_pLevel->GetEdge((int) (i * factor));
-			RGBi col = pEdge->m_Color;
-			for (j = 0; j < ysize; j++)
-			{
-				pImage.SetRGB(i, j, col.r, col.g, col.b);
-			}
-		}
-		wxBitmap *pBitmap = new wxBitmap(pImage.ConvertToBitmap());
-		m_pColorBitmapControl->SetBitmap(*pBitmap);
-	}
-	else
-	{
-		// Case of a single edge, much simpler.
-		color = m_pEdge->m_Color;
-		m_Color.Set(color.r, color.g, color.b);
-		wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_Color);
-		m_pColorBitmapControl->SetBitmap(*pBitmap);
-	}
+        // Draw the image with vertical bands corresponding to all the edges
+        int xsize = 32, ysize = 18;
+        int edges = m_pLevel->GetNumEdges();
+        float factor = (float) edges / (float) xsize * .9999f;
+        wxImage pImage(xsize, ysize);
+        int i, j;
+        for (i = 0; i < xsize; i++)
+        {
+            vtEdge *pEdge = m_pLevel->GetEdge((int) (i * factor));
+            RGBi col = pEdge->m_Color;
+            for (j = 0; j < ysize; j++)
+            {
+                pImage.SetRGB(i, j, col.r, col.g, col.b);
+            }
+        }
+        wxBitmap *pBitmap = new wxBitmap(pImage.ConvertToBitmap());
+        m_pColorBitmapControl->SetBitmap(*pBitmap);
+    }
+    else
+    {
+        // Case of a single edge, much simpler.
+        color = m_pEdge->m_Color;
+        m_Color.Set(color.r, color.g, color.b);
+        wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_Color);
+        m_pColorBitmapControl->SetBitmap(*pBitmap);
+    }
 }
 
 void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 {
-	wxString choices[5];
-	choices[0] = _T("Flat (all edges 0°)");
-	choices[1] = _T("Shed");
-	choices[2] = _T("Gable");
-	choices[3] = _T("Hip");
-	choices[4] = _T("Vertical (all edges 90°)");
+    wxString choices[5];
+    choices[0] = _T("Flat (all edges 0°)");
+    choices[1] = _T("Shed");
+    choices[2] = _T("Gable");
+    choices[3] = _T("Hip");
+    choices[4] = _T("Vertical (all edges 90°)");
 
-	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_T("Please indicate edge slopes"), 5, (const wxString *)choices);
+    wxSingleChoiceDialog dialog(this, _T("Choice"),
+        _T("Please indicate edge slopes"), 5, (const wxString *)choices);
 
-	dialog.SetSelection(0);
+    dialog.SetSelection(0);
 
-	if (dialog.ShowModal() != wxID_OK)
-		return;
+    if (dialog.ShowModal() != wxID_OK)
+        return;
 
-	int sel = dialog.GetSelection();
-	if (sel == 1 || sel == 2 || sel == 3)
-	{
-		// need slope
-		int slope;
-		if (sel == 1) slope = 4;
-		if (sel == 2) slope = 15;
-		if (sel == 3) slope = 15;
-		slope = wxGetNumberFromUser(_T("Sloped edges"), _T("Degrees"),
-			_T("Slope"), slope, 0, 90);
-		if (slope == -1)
-			return;
-		m_pLevel->SetRoofType((RoofType)sel, slope);
-	}
-	else if (sel == 0)
-		m_pLevel->SetRoofType(ROOF_FLAT, 0);
-	else if (sel == 4)
-	{
-		int i, edges = m_pLevel->GetNumEdges();
-		for (i = 0; i < edges; i++)
-			m_pLevel->GetEdge(i)->m_iSlope = 90;
-	}
-	m_fStoryHeight = m_pLevel->m_fStoryHeight;
-	UpdateSlopes();
-	RefreshLevelsBox();
-	HighlightSelectedLevel();
-	Modified();
+    int sel = dialog.GetSelection();
+    if (sel == 1 || sel == 2 || sel == 3)
+    {
+        // need slope
+        int slope;
+        if (sel == 1) slope = 4;
+        if (sel == 2) slope = 15;
+        if (sel == 3) slope = 15;
+        slope = wxGetNumberFromUser(_T("Sloped edges"), _T("Degrees"),
+            _T("Slope"), slope, 0, 90);
+        if (slope == -1)
+            return;
+        m_pLevel->SetRoofType((RoofType)sel, slope);
+    }
+    else if (sel == 0)
+        m_pLevel->SetRoofType(ROOF_FLAT, 0);
+    else if (sel == 4)
+    {
+        int i, edges = m_pLevel->GetNumEdges();
+        for (i = 0; i < edges; i++)
+            m_pLevel->GetEdge(i)->m_iSlope = 90;
+    }
+    m_fStoryHeight = m_pLevel->m_fStoryHeight;
+    UpdateSlopes();
+    RefreshLevelsBox();
+    HighlightSelectedLevel();
+    Modified();
 }
 
 void BuildingDlg::UpdateSlopes()
 {
-	if (m_bEdges == false)
-	{
-		wxString str;
-		m_strEdgeSlopes = _T("");
-		int i, edges = m_pLevel->GetNumEdges();
-		for (i = 0; i < edges; i++)
-		{
-			vtEdge *edge = m_pLevel->GetEdge(i);
-			str.Printf(_T(" %d"), edge->m_iSlope);
-			m_strEdgeSlopes += str;
-		}
-	}
-	else
-	{
-		// nothing special, m_iEdgeSlope is passed with Transfer
-	}
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
+    if (m_bEdges == false)
+    {
+        wxString str;
+        m_strEdgeSlopes = _T("");
+        int i, edges = m_pLevel->GetNumEdges();
+        for (i = 0; i < edges; i++)
+        {
+            vtEdge *edge = m_pLevel->GetEdge(i);
+            str.Printf(_T(" %d"), edge->m_iSlope);
+            m_strEdgeSlopes += str;
+        }
+    }
+    else
+    {
+        // nothing special, m_iEdgeSlope is passed with Transfer
+    }
+    m_bSetting = true;
+    TransferDataToWindow();
+    m_bSetting = false;
 }
 
 void BuildingDlg::UpdateFeatures()
 {
-	m_strFeatures = _T("");
-	int feats = m_pEdge->NumFeatures();
-	for (int i = 0; i < feats; i++)
-	{
-		vtEdgeFeature &feat = m_pEdge->m_Features[i];
-		if (feat.m_code == WFC_WALL)
-			m_strFeatures += _T("[W] ");
-		else if (feat.m_code == WFC_GAP)
-			m_strFeatures += _T("[Gap] ");
-		else if (feat.m_code == WFC_POST)
-			m_strFeatures += _T("[Post] ");
-		else if (feat.m_code == WFC_WINDOW)
-			m_strFeatures += _T("[Win] ");
-		else if (feat.m_code == WFC_DOOR)
-			m_strFeatures += _T("[Door] ");
-	}
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
+    m_strFeatures = _T("");
+    int feats = m_pEdge->NumFeatures();
+    for (int i = 0; i < feats; i++)
+    {
+        vtEdgeFeature &feat = m_pEdge->m_Features[i];
+        if (feat.m_code == WFC_WALL)
+            m_strFeatures += _T("[W] ");
+        else if (feat.m_code == WFC_GAP)
+            m_strFeatures += _T("[Gap] ");
+        else if (feat.m_code == WFC_POST)
+            m_strFeatures += _T("[Post] ");
+        else if (feat.m_code == WFC_WINDOW)
+            m_strFeatures += _T("[Win] ");
+        else if (feat.m_code == WFC_DOOR)
+            m_strFeatures += _T("[Door] ");
+    }
+    m_bSetting = true;
+    TransferDataToWindow();
+    m_bSetting = false;
 }
 
 void BuildingDlg::UpdateFacade()
 {
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
+    m_bSetting = true;
+    TransferDataToWindow();
+    m_bSetting = false;
 }
 
 void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 {
-	int i;
-	BldMaterial bm;
-	wxString choices[EXPOSED_BUILDING_MATS];
+    int i;
+    BldMaterial bm;
+    wxString choices[EXPOSED_BUILDING_MATS];
 
-	for (i = BMAT_PLAIN; i < BMAT_DOOR; i++)
-	{
-		bm = (BldMaterial) i;
-		choices[i-1] = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
-	}
+    for (i = BMAT_PLAIN; i < BMAT_DOOR; i++)
+    {
+        bm = (BldMaterial) i;
+        choices[i-1] = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
+    }
 
-	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_T("Set Building Material for All Edges"), 8, (const wxString *)choices);
+    wxSingleChoiceDialog dialog(this, _T("Choice"),
+        _T("Set Building Material for All Edges"), 8, (const wxString *)choices);
 
-	bm = m_pLevel->GetOverallEdgeMaterial();
-	if (bm != BMAT_UNKNOWN)
-		dialog.SetSelection((int) (bm - 1));
+    bm = m_pLevel->GetOverallEdgeMaterial();
+    if (bm != BMAT_UNKNOWN)
+        dialog.SetSelection((int) (bm - 1));
 
-	if (dialog.ShowModal() != wxID_OK)
-		return;
+    if (dialog.ShowModal() != wxID_OK)
+        return;
 
-	int sel = dialog.GetSelection();
-	bm = (BldMaterial) (sel + 1);
-	if (m_bEdges)
-		m_pEdge->m_Material = bm;
-	else
-		m_pLevel->SetEdgeMaterial(bm);
+    int sel = dialog.GetSelection();
+    bm = (BldMaterial) (sel + 1);
+    if (m_bEdges)
+        m_pEdge->m_Material = bm;
+    else
+        m_pLevel->SetEdgeMaterial(bm);
 
-	m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
-	Modified();
+    m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
+    m_bSetting = true;
+    TransferDataToWindow();
+    m_bSetting = false;
+    Modified();
 }
 
 
 void BuildingDlg::OnEdges( wxCommandEvent &event )
 {
-	m_bEdges = !m_bEdges;
-	if (m_bEdges)
-	{
-		DestroyChildren();
-		BuildingEdgesDialogFunc( this, TRUE );
-	}
-	else
-	{
-		SetEdgeFacade();
-		DestroyChildren();
-		BuildingDialogFunc( this, TRUE );
-		m_pSA->SetEditedEdge(NULL, 0, 0);
-	}
-	SetupControls();
-	m_bSetting = true;
-	TransferDataToWindow();
-	m_bSetting = false;
+    m_bEdges = !m_bEdges;
+    if (m_bEdges)
+    {
+        DestroyChildren();
+        BuildingEdgesDialogFunc( this, TRUE );
+    }
+    else
+    {
+        SetEdgeFacade();
+        DestroyChildren();
+        BuildingDialogFunc( this, TRUE );
+        m_pSA->SetEditedEdge(NULL, 0, 0);
+    }
+    SetupControls();
+    m_bSetting = true;
+    TransferDataToWindow();
+    m_bSetting = false;
 }
 
 #include <vtdata/Vocab.h>
 
 void BuildingDlg::OnCharHook( wxKeyEvent &event )
 {
-	int foo = event.GetKeyCode();
-	if (foo != WXK_F2)
-	{
-		event.Skip();
-		return;
-	}
+    int foo = event.GetKeyCode();
+    if (foo != WXK_F2)
+    {
+        event.Skip();
+        return;
+    }
 
-	// Test text input
-	wxString2 str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
-	TestParser par;
-	par.ParseInput(str.mb_str());
+    // Test text input
+    wxString2 str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
+    TestParser par;
+    par.ParseInput(str.mb_str());
 
-	MatchToken *tok;
+    MatchToken *tok;
 
-	// Pattern sentence: "Select floor/level <number>"
-	SentenceMatch sen1;
-	sen1.AddLiteral(true, "select");
-	sen1.AddLiteral(true, "floor", "level");
-	tok = sen1.AddToken(true, NUMBER);
+    // Pattern sentence: "Select floor/level <number>"
+    SentenceMatch sen1;
+    sen1.AddLiteral(true, "select");
+    sen1.AddLiteral(true, "floor", "level");
+    tok = sen1.AddToken(true, NUMBER);
 
-	if (par.Matches(sen1))
-	{
-		SetLevel( (int) tok->number);
-		HighlightSelectedLevel();
-	}
+    if (par.Matches(sen1))
+    {
+        SetLevel( (int) tok->number);
+        HighlightSelectedLevel();
+    }
 
-	// Pattern sentence: "Select [the] <counter> floor/level"
-	SentenceMatch sen2;
-	sen2.AddLiteral(true, "select");
-	sen2.AddLiteral(false, "the");
-	tok = sen2.AddToken(true, COUNTER);
-	sen2.AddLiteral(true, "floor", "level");
+    // Pattern sentence: "Select [the] <counter> floor/level"
+    SentenceMatch sen2;
+    sen2.AddLiteral(true, "select");
+    sen2.AddLiteral(false, "the");
+    tok = sen2.AddToken(true, COUNTER);
+    sen2.AddLiteral(true, "floor", "level");
 
-	if (par.Matches(sen2))
-	{
-		SetLevel( tok->counter);
-		HighlightSelectedLevel();
-	}
+    if (par.Matches(sen2))
+    {
+        SetLevel( tok->counter);
+        HighlightSelectedLevel();
+    }
 
-	// Pattern sentence: "Delete/remove [it]"
-	SentenceMatch sen3;
-	sen3.AddLiteral(true, "delete", "remove");
-	sen3.AddLiteral(false, "it");
+    // Pattern sentence: "Delete/remove [it]"
+    SentenceMatch sen3;
+    sen3.AddLiteral(true, "delete", "remove");
+    sen3.AddLiteral(false, "it");
 
-	if (par.Matches(sen3))
-		DeleteCurrentLevel();
+    if (par.Matches(sen3))
+        DeleteCurrentLevel();
 
-	// Pattern sentence: "Copy/duplicate [it]"
-	SentenceMatch sen4;
-	sen4.AddLiteral(true, "copy", "duplicate");
-	sen4.AddLiteral(false, "it");
+    // Pattern sentence: "Copy/duplicate [it]"
+    SentenceMatch sen4;
+    sen4.AddLiteral(true, "copy", "duplicate");
+    sen4.AddLiteral(false, "it");
 
-	if (par.Matches(sen4))
-		CopyCurrentLevel();
+    if (par.Matches(sen4))
+        CopyCurrentLevel();
 }
 
 void BuildingDlg::SetEdgeFacade()
 {
-	if (m_bEdges && (NULL != m_pEdge))
-	{
-		// Store current facade
-		TransferDataFromWindow();
-		if (0 != m_pEdge->m_Facade.Compare(m_strFacade.mb_str()))
-		{
-			m_pEdge->m_Facade = m_strFacade.mb_str();
-			Modified();
-		}
-	}
+    if (m_bEdges && (NULL != m_pEdge))
+    {
+        // Store current facade
+        TransferDataFromWindow();
+        if (0 != m_pEdge->m_Facade.Compare(m_strFacade.mb_str()))
+        {
+            m_pEdge->m_Facade = m_strFacade.mb_str();
+            Modified();
+        }
+    }
 }
 
