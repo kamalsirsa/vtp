@@ -49,7 +49,7 @@ void BuildingDlg3d::OnOK( wxCommandEvent &event )
 	BuildingDlg::OnOK(event);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->GetStructures().ReConstructStructure(m_pStructure3d);
+	pTerr->GetStructures().ConstructStructure(m_pStructure3d);
 }
 
 void BuildingDlg3d::EnableRendering(bool bEnable)
@@ -60,5 +60,5 @@ void BuildingDlg3d::EnableRendering(bool bEnable)
 void BuildingDlg3d::Modified()
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->GetStructures().ReConstructStructure(m_pStructure3d);
+	pTerr->GetStructures().ConstructStructure(m_pStructure3d);
 }
