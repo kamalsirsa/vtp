@@ -98,6 +98,13 @@ void DistanceDlg::ShowValues()
 		CreateSimilarGeographicProjection(m_proj, geo);
 
 		OCT *trans = CreateCoordTransform(&m_proj, &geo);
+		if (!trans)
+		{
+			// This should never happen, unless something is majorly wrong,
+			//  like proj.dll is not found.
+			GetMapOffset()->SetValue(_("<Projection failure>"));
+			return;
+		}
 
 		geo1 = m_p1;
 		geo2 = m_p2;
