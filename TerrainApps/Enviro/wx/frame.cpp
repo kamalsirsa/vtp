@@ -110,8 +110,8 @@ EVT_MENU(ID_TOOLS_PLANTS,			vtFrame::OnToolsPlants)
 EVT_UPDATE_UI(ID_TOOLS_PLANTS,		vtFrame::OnUpdateToolsPlants)
 EVT_MENU(ID_TOOLS_INSTANCES,		vtFrame::OnToolsInstances)
 EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	vtFrame::OnUpdateToolsInstances)
-EVT_MENU(ID_TOOLS_MOVE,				vtFrame::OnToolsMove)
-EVT_UPDATE_UI(ID_TOOLS_MOVE,		vtFrame::OnUpdateToolsMove)
+//EVT_MENU(ID_TOOLS_MOVE,			vtFrame::OnToolsMove)
+//EVT_UPDATE_UI(ID_TOOLS_MOVE,		vtFrame::OnUpdateToolsMove)
 EVT_MENU(ID_TOOLS_NAVIGATE,			vtFrame::OnToolsNavigate)
 EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	vtFrame::OnUpdateToolsNavigate)
 EVT_MENU(ID_TOOLS_MEASURE,			vtFrame::OnToolsMeasure)
@@ -311,7 +311,7 @@ void vtFrame::CreateMenus()
 	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
+//	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances"));
 	m_pMenuBar->Append(toolsMenu, _("&Tools"));
@@ -367,10 +367,10 @@ void vtFrame::CreateMenus()
 	m_pMenuBar->Append(m_pViewMenu, _("&View"));
 
 	wxMenu *navMenu = new wxMenu;
-	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
-	navMenu->Append(ID_VIEW_FASTER, _T("Fly Faster (F)"));
-	navMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _T("Maintain height above ground (A)"));
-	m_pMenuBar->Append(navMenu, _T("&Navigate"));
+	navMenu->Append(ID_VIEW_SLOWER, _("Fly Slower (S)"));
+	navMenu->Append(ID_VIEW_FASTER, _("Fly Faster (F)"));
+	navMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _("Maintain height above ground (A)"));
+	m_pMenuBar->Append(navMenu, _("&Navigate"));
 
 		// submenu
 		wxMenu *navstyleMenu = new wxMenu;
@@ -713,6 +713,8 @@ void vtFrame::OnIdle(wxIdleEvent& event)
 	// Check if we were requested to close on the next Idle event.
 	if (m_bCloseOnIdle)
 		Close();
+	else
+		event.Skip();
 }
 
 void vtFrame::OnHelpAbout(wxCommandEvent& event)
