@@ -163,6 +163,11 @@ vtTerrain::~vtTerrain()
 
 ///////////////////////////////////////////////////////////////////////
 
+/**
+ * Tells the terrain what file contains the parameters to use.
+ *
+ * \param fname The name of a terrain parameters file, e.g. "Simple.xml".
+ */
 bool vtTerrain::SetParamFile(const char *fname)
 {
 	m_strParamFile = fname;
@@ -178,9 +183,20 @@ bool vtTerrain::LoadParams()
 	return success;
 }
 
-void vtTerrain::SetParams(const TParams &pParams)
+/**
+ * Set all of the parameters for this terrain.
+ *
+ * \param Params An object which contains all the parameters for the terrain.
+ *
+ * \par Note that you can set individual parameters like this:
+\code
+	TParams &par = pTerrain->GetParams();
+	par.SetBoolValue(STR_SKY, false);
+\endcode
+ */
+void vtTerrain::SetParams(const TParams &Params)
 {
-	m_Params = pParams;
+	m_Params = Params;
 	
 	RGBi color;
 	if (m_Params.GetValueRGBi(STR_FOGCOLOR, color))
@@ -193,6 +209,21 @@ void vtTerrain::SetParams(const TParams &pParams)
 		if (color.r != -1)
 			m_background_color = color;
 	}
+}
+
+/**
+ * Returns a direct reference to the parameters object for this terrain, so
+ * that you can get and set the parameters.
+ *
+ * \par Example:
+\code
+	TParams &par = pTerrain->GetParams();
+	par.SetBoolValue(STR_SKY, false);
+\endcode
+ */
+TParams &vtTerrain::GetParams()
+{
+	return m_Params;
 }
 
 /**
@@ -486,6 +517,52 @@ void vtTerrain::PaintDib()
 	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors);
 }
 
+/**
+ * Set the array of colors to be used when automatically generating the
+ * terrain texture from the elevation values.  This is the color map which
+ * is used for automatic generation of texture from elevation, when the
+ * terrain is built normally with the "Derived" texture option.
+ * The colors brackets go from the lowest elevation value to the highest.
+ *
+ * \param colors A pointer to a colormap.  The terrain takes ownership of
+ *		the ColorMap object so it will be deleted when the terrain is deleted.
+ *
+ * \par Example:
+	\code
+	ColorMap *colors = new ColorMap();
+	colors->m_bRelative = false;
+	colors->Add(100, RGBi(0,255,0));
+	colors->Add(200, RGBi(255,200,150));
+	pTerr->SetTextureColors(colors);
+	\endcode
+ */
+void vtTerrain::SetTextureColors(ColorMap *colors)
+{
+	m_pTextureColors = colors;
+}
+
+/**
+ * This method sets the terrain's color map to a series of white and black
+ * bands which indicate elevation contour lines.  This is the color map
+ * which is used for automatic generation of texture from elevation, when
+ * the terrain is built normally with the "Derived" texture option.
+ *
+ * You can use this function either before the terrain is built, or
+ * afterwards if you intend to re-build the textures.
+ *
+ * \par Example:
+	\code
+	vtTerrain *pTerr = new vtTerrain();
+	pTerr->SetTextureColors(100, 4);
+	\endcode
+ *
+ * \param fInterval  The vertical spacing between the contours.  For example,
+ *		if the elevation range of your data is from 50 to 350 meters, then
+ *		an fIterval of 100 will place contour bands at 100,200,300 meters.
+ * \param fSize  The vertical thickness of each contour band, generally a
+ *		few meters.  A band of this thickness will be centered on each contour
+ *		line of the desired elevation.
+ */
 void vtTerrain::SetTextureContours(float fInterval, float fSize)
 {
 	// Create a color map and fill it with contour strip bands
@@ -1607,6 +1684,8 @@ void vtTerrain::_ComputeCenterLocation()
 
 /**
  * First step in terrain creation: load elevation.
+ * You can use these methods to build a terrain step by step, or simply
+ * use the method vtTerrainScene::BuildTerrain, which calls them all.
  */
 bool vtTerrain::CreateStep1()
 {

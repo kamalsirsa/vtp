@@ -11,6 +11,31 @@
 #include "Terrain.h"
 class SurfaceGrid;
 
+/**
+ * This class provides the ability to easily construct contour lines
+ * on a terrain.  It does so by calling the QuikGrid library to generate
+ * contour vectors, then converts those vectors into 3D line geometry
+ * draped on the terrain.
+ *
+ * \par Here is an example of how to use it:
+	\code
+	ContourConverter cc;
+	cc.Setup(pTerrain, RGBf(1,1,0), 10);
+	cc.GenerateContours(100);
+	cc.Finish();
+	\endcode
+ *
+ * \par Or, you can generate specific contour lines:
+	\code
+	ContourConverter cc;
+	cc.Setup(pTerrain, RGBf(1,1,0), 10);
+	cc.GenerateContour(75);
+	cc.GenerateContour(125);
+	cc.GenerateContour(250);
+	cc.Finish();
+	\endcode
+ *
+ */
 class ContourConverter
 {
 public:
@@ -20,11 +45,11 @@ public:
 	void Setup(vtTerrain *pTerr, const RGBf &color, float fHeight);
 	void GenerateContour(float fAlt);
 	void GenerateContours(float fAInterval);
-	void NewMesh();
-	void Coord(float x, float y, bool bStart);
 	void Finish();
+	void Coord(float x, float y, bool bStart);
 
 protected:
+	void NewMesh();
 	void Flush();
 
 	SurfaceGrid *m_pGrid;

@@ -63,15 +63,16 @@ enum TFType
 
 
 /**
- * The vtTerrain class represents a rectangular area of terrain.
- * \par
+ * The vtTerrain class represents a terrain, which is a part of the surface
+ *  of the earth.
+ *
  * It is described by a set of parameters such as elevation, vegetation,
  * and time of day.  These terrain parameters are contained in the class TParams.
- * \par
+ *
  * To create a new terrain, first construct a vtTerrain and set its
- * parameters with SetParams() or SetParamFile().  Then call CreateScene()
- * to build the visual representation, which returns a vtGroup which can be
- * added to a scene graph.
+ * parameters with SetParams() or SetParamFile().  You can then build the
+ * terrain using the CreateStep methods, or add it to a vtTerrainScene
+ * and use vtTerrainScene::BuildTerrain.
  */
 class vtTerrain
 {
@@ -85,8 +86,8 @@ public:
 	bool SetParamFile(const char *fname);
 	bool LoadParams();
 	vtString GetParamFile()  { return m_strParamFile; }
-	void SetParams(const TParams &pParams);
-	TParams &GetParams() { return m_Params; }
+	void SetParams(const TParams &Params);
+	TParams &GetParams();
 
 	// each terrain can have a long descriptive name
 	void SetName(const vtString &str) { m_Params.SetValueString(STR_NAME, str); }
@@ -97,7 +98,8 @@ public:
 	void SetTin(vtTin3d *pTin);
 	vtTin3d *GetTin() { return m_pTin; }
 
-	/// primary creation function
+	// You can use these methods to build a terrain step by step,
+	// or simply use the method vtTerrainScene::BuildTerrain.
 	bool CreateStep1();
 	bool CreateStep2(vtTransform *pSunLight);
 	bool CreateStep3();
@@ -105,36 +107,34 @@ public:
 	bool CreateStep5();
 	vtString GetLastError() { return m_strErrorMsg; }
 
-	/** Set the array of colors to be used when automatically generating the
-		terrain texture from the elevation values.  The colors brackets go
-		from the lowest elevation value to the highest. */
-	void SetTextureColors(ColorMap *colors) { m_pTextureColors = colors; }
+	/// Set the colors to be used in a derived texture.
+	void SetTextureColors(ColorMap *colors);
 
-	/// Sets the texture colors to be a set of black contour stripes
+	/// Sets the texture colors to be a set of black contour stripes.
 	void SetTextureContours(float fInterval, float fSize);
 
 	/** Override this method to customize the Dib, before it is turned into
 	 * a vtImage.  The default implementation colors from elevation. */
 	virtual void PaintDib();
 
-	/// return true if the terrain has been created
+	/// Return true if the terrain has been created.
 	bool IsCreated();
 
-	/// set the enabled state of the terrain (whether it is shown or not)
+	/// Set the enabled state of the terrain (whether it is shown or not).
 	void Enable(bool bVisible);
 
-	/// load an external geometry file
+	/// Load an external geometry file.
 	vtTransform *LoadModel(const char *filename, bool bAllowCache = true);
 
-	/// add a model (or any node) to the terrain
+	/// Add a model (or any node) to the terrain.
 	void AddNode(vtNode *pNode);
 
-	/// place a model on the terrain
+	/// Place a model on the terrain.
 	void PlantModel(vtTransform *model);
-	/// place a model on the terrain at a specific point
+	/// Place a model on the terrain at a specific point.
 	void PlantModelAtPoint(vtTransform *model, const DPoint2 &pos);
 
-	// test whether a given point is within the current terrain
+	/// Test whether a given point is within the current terrain.
 	bool PointIsInTerrain(const DPoint2 &p);
 
 	// set global projection based on this terrain

@@ -45,6 +45,15 @@ ContourConverter::~ContourConverter()
 	delete m_pGrid;
 }
 
+/** 
+ * Set up the class to do draping on a terrain.
+ *
+ * \param pTerr The terrain you will generate the contour lines on.
+ * \param color The colors of the generated lines.
+ * \param fHeight The height above the terrain to drape the lines.  Generally
+ *		you will want to use a small offset value here, to keep the lines from
+ *		colliding with the terrain itself.
+ */
 void ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 {
 	// Make a note of this terrain and its attributes
@@ -90,12 +99,24 @@ void ContourConverter::NewMesh()
 	m_pMesh = new vtMesh(GL_LINE_STRIP, 0, 2000);
 }
 
+/**
+ * Generate a contour line to be draped on the terrain.
+ *
+ * \param fAlt The altitude (elevation) of the line to be generated.
+ */
 void ContourConverter::GenerateContour(float fAlt)
 {
 	NewMesh();
 	Contour(*m_pGrid, fAlt);
 }
 
+/**
+ * Generate a set of contour lines to be draped on the terrain.
+ *
+ * \param fInterval  The vertical spacing between the contours.  For example,
+ *		if the elevation range of your data is from 50 to 350 meters, then
+ *		an fIterval of 100 will place contour bands at 100,200,300 meters.
+ */
 void ContourConverter::GenerateContours(float fInterval)
 {
 	float fMin, fMax;
@@ -122,6 +143,10 @@ void ContourConverter::Coord(float x, float y, bool bStart)
 	m_line.Append(p2);
 }
 
+/**
+ * Finishes the contour generation process.  Call once when you are done
+ * using the class to generate contours.
+ */
 void ContourConverter::Finish()
 {
 	Flush();
