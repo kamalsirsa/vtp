@@ -1320,27 +1320,6 @@ void Enviro::SetEarthShape(bool bFlat)
 
 void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 {
-	// first determine how many points we should use for a smooth arc
-	DPoint3 p1, p2;
-	geo_to_xyz(1.0, g1, p1);
-	geo_to_xyz(1.0, g2, p2);
-	double angle = acos(p1.Dot(p2));
-	int points = (int) (angle * 3000);
-	if (points < 3)
-		points = 3;
-
-	// calculate the axis of rotation
-	DPoint3 cross = p1.Cross(p2);
-	cross.Normalize();
-	double angle_spacing = angle / (points-1);
-	DMatrix4 rot4;
-	rot4.AxisAngle(cross, angle_spacing);
-	DMatrix3 rot3;
-	rot3.SetByMatrix4(rot4);
-
-	// estimate horizontal distance (angle * radius)
-	m_fArcLength = angle * EARTH_RADIUS;
-
 	// create geometry container
 	if (!m_pArc)
 	{
@@ -1358,15 +1337,13 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 		delete m_pArcMesh;
 	}
 	// set the points of the arc
-	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, points);
-	for (int i = 0; i < points; i++)
-	{
-		FPoint3 fp = p1 * 1.0002;
-		m_pArcMesh->AddVertex(fp);
-		rot3.Transform(p1, p2);
-		p1 = p2;
-	}
-	m_pArcMesh->AddStrip2(points, 0);
+	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, 12);
+
+	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(m_pArcMesh, g1, g2);
+
+	// estimate horizontal distance (angle * radius)
+	m_fArcLength = angle * EARTH_RADIUS;
+
 	m_pArc->AddMesh(m_pArcMesh, 0);
 }
 
