@@ -16,19 +16,6 @@
 class vtGLCanvas;
 
 //
-// A timer used to refresh the status bar at a constant rate,
-// asynchronously with framerate.
-//
-class StatusTimer : public wxTimer
-{
-public:
-	StatusTimer() { m_pFrame = NULL; }
-	void SetFrame(wxFrame *pFrame) { m_pFrame = pFrame; }
-	void Notify();
-	class wxFrame *m_pFrame;
-};
-
-//
 // A Canvas for the main view area.
 //
 class vtGLCanvas: public wxGLCanvas
@@ -52,8 +39,6 @@ public:
 	bool m_bShowFrameRateChart;
 
 protected:
-	StatusTimer	m_StatusTimer;
-
 	DECLARE_EVENT_TABLE()
 };
 

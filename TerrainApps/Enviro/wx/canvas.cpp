@@ -48,12 +48,6 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 	parent->Show(TRUE);
 	SetCurrent();
 
-	m_StatusTimer.SetFrame((wxFrame *)parent);
-
-	// Note we don't actually have to start this timer, because it is driven
-	// direct calls from OnPaint()
-//	m_StatusTimer.Start(1000);
-
 	m_bPainting = false;
 	m_bRunning = true;
 	m_bShowFrameRateChart = false;
@@ -99,26 +93,6 @@ void vtGLCanvas::QueueRefresh(bool eraseBackground)
 	event.SetEventObject( this );
 	wxPostEvent( GetEventHandler(), event );
 }
-
-void StatusTimer::Notify()
-{
-	if (!m_pFrame || !m_pFrame->GetStatusBar()) return;
-
-	vtString vs;
-	g_App.GetStatusText(vs);
-
-	wxString2 str;
-#if SUPPORT_WSTRING && UNICODE
-	wstring2 ws;
-	ws.from_utf8(vs);
-	str = ws.c_str();
-#else
-	str = vs;
-#endif
-
-	m_pFrame->SetStatusText(str);
-}
-
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
@@ -182,7 +156,8 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		{
 			last_msg = g_App.GetMessage();
 			last_stat = cur;
-			m_StatusTimer.Notify();
+			vtFrame *frame = (vtFrame*) GetParent();
+			frame->UpdateStatus();
 		}
 
 		m_bPainting = false;
