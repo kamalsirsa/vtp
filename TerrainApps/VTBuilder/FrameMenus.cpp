@@ -234,12 +234,9 @@ void MainFrame::CreateMenus()
 #endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, "Layer Properties", "Layer Properties");
-	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_EDIT_OFFSET, "Offset Coordinates", "Offset");
-#ifndef ELEVATION_ONLY
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_FLATTEN, "&Flatten Layers", "Flatten");
-#endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_CONVERTPROJ, "Convert Projection", "Convert");
 	layerMenu->Append(ID_LAYER_SETPROJ, "Set Projection", "Set Projection");
