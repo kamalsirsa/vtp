@@ -152,7 +152,7 @@ EVT_MENU(ID_EARTH_UNFOLD, vtFrame::OnEarthUnfold)
 EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
 EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
 
-EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateEarthShowTime)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_UNFOLD, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
@@ -960,7 +960,13 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 
 void vtFrame::OnEarthShowTime(wxCommandEvent& event)
 {
-	g_App.SetShowTime(!g_App.GetShowTime());
+	g_App.SetEarthShading(!g_App.GetEarthShading());
+}
+
+void vtFrame::OnUpdateEarthShowTime(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit);
+	event.Check(g_App.GetEarthShading());
 }
 
 void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
