@@ -160,7 +160,7 @@ void SceneGraphDlg::RefreshTreeContents()
 void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 										vtNode *pNode, int depth)
 {
-	wxString str;
+	wxString2 str;
 	int nImage;
 	wxTreeItemId hNewItem;
 
@@ -225,6 +225,13 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		for (int i = 0; i < num_mesh; i++)
 		{
 			vtMesh *pMesh = pGeom->GetMesh(i);
+			if (!pMesh)
+			{
+				// probably a text mesh
+				str = "(TextMesh)";
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+				continue;
+			}
 			int iNumPrim = pMesh->GetNumPrims();
 
 			GLenum pt = pMesh->GetPrimType();
