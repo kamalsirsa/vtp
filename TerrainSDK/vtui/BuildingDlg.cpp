@@ -1,7 +1,7 @@
 //
 // Name: BuildingDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,6 +34,7 @@
 // WDR: event table for BuildingDlg
 
 BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
+	EVT_INIT_DIALOG (BuildingDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, BuildingDlg::OnOK )
 	EVT_BUTTON( ID_SET_COLOR, BuildingDlg::OnColor1 )
 	EVT_LISTBOX( ID_LEVEL, BuildingDlg::OnLevel )
@@ -66,7 +67,28 @@ BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_pHeightField = NULL;
 	m_bSetting = false;
 	m_bEdges = false;
+
 	BuildingDialogFunc( this, TRUE );
+	SetupValidators();
+}
+
+void BuildingDlg::SetupValidators()
+{
+	AddValidator(ID_STORIES, &m_iStories);
+	AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
+
+	if (m_bEdges)
+	{
+		AddValidator(ID_MATERIAL2, &m_strMaterial);
+		AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
+		AddValidator(ID_FEATURES, &m_strFeatures);
+		AddValidator(ID_FACADE, &m_strFacade);
+	}
+	else
+	{
+		AddValidator(ID_MATERIAL1, &m_strMaterial);
+		AddValidator(ID_EDGE_SLOPES, &m_strEdgeSlopes);
+	}
 }
 
 void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *pHeightField)
@@ -124,11 +146,8 @@ void BuildingDlg::OnModifyFacade( wxCommandEvent &event )
 		return;
 
 	m_strFacade = SelectFile.GetFilename();
-
 	UpdateFacade();
-
 	SetEdgeFacade();
-
 }
 
 void BuildingDlg::OnEditHeights( wxCommandEvent &event )
@@ -137,9 +156,7 @@ void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 		return;
 
 	CHeightDialog HeightDialog(this, -1, _("Baseline Editor"));
-
 	HeightDialog.Setup(m_pBuilding, m_pHeightField);
-
 	HeightDialog.ShowModal();
 }
 
@@ -298,25 +315,10 @@ void BuildingDlg::OnCloseWindow(wxCloseEvent& event)
 
 void BuildingDlg::SetupControls()
 {
-	AddValidator(ID_STORIES, &m_iStories);
-	AddNumValidator(ID_STORY_HEIGHT, &m_fStoryHeight);
-
 	if (m_bEdges == false)
-	{
 		m_pColorBitmapControl = GetColorBitmap1();
-
-		AddValidator(ID_MATERIAL1, &m_strMaterial);
-		AddValidator(ID_EDGE_SLOPES, &m_strEdgeSlopes);
-	}
 	else
-	{
 		m_pColorBitmapControl = GetColorBitmap2();
-
-		AddValidator(ID_MATERIAL2, &m_strMaterial);
-		AddNumValidator(ID_EDGE_SLOPE, &m_iEdgeSlope);
-		AddValidator(ID_FEATURES, &m_strFeatures);
-		AddValidator(ID_FACADE, &m_strFacade);
-	}
 
 	m_pLevelListBox = GetLevelCtrl();
 	if (m_bEdges)
@@ -397,24 +399,17 @@ void BuildingDlg::OnEdge( wxCommandEvent &event )
 
 void BuildingDlg::SetEdge(int iEdge)
 {
+	TransferDataFromWindow();
 	SetEdgeFacade();
 	m_iEdge = iEdge;
 	m_pEdge = m_pLevel->GetEdge(iEdge);
 	m_iEdgeSlope = m_pEdge->m_iSlope;
 	m_strFacade = wxString::FromAscii((const char *) m_pEdge->m_Facade);
 
-	// material
-	UpdateMaterialControl();
-
-	// color
-	UpdateColorControl();
-
-	// slopes
-	UpdateSlopes();
-
-	// features
-	UpdateFeatures();
-
+	UpdateMaterialControl();	// material
+	UpdateColorControl();		// color
+	UpdateSlopes();				// slopes
+	UpdateFeatures();			// features
 	UpdateFacade();
 
 	m_pSA->SetEditedEdge(m_pBuilding, m_iLevel, m_iEdge);
@@ -443,14 +438,9 @@ void BuildingDlg::SetLevel(int iLev)
 	}
 	else
 	{
-		// material
-		UpdateMaterialControl();
-
-		// color
-		UpdateColorControl();
-
-		// slopes
-		UpdateSlopes();
+		UpdateMaterialControl();	// material
+		UpdateColorControl();		// color
+		UpdateSlopes();				// slopes
 	}
 
 	// enable up/down
@@ -692,6 +682,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 
 void BuildingDlg::OnEdges( wxCommandEvent &event )
 {
+	TransferDataFromWindow();
 	m_bEdges = !m_bEdges;
 	if (m_bEdges)
 	{
@@ -705,10 +696,11 @@ void BuildingDlg::OnEdges( wxCommandEvent &event )
 		BuildingDialogFunc( this, TRUE );
 		m_pSA->SetEditedEdge(NULL, 0, 0);
 	}
-	SetupControls();
+	SetupValidators();
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
+	SetupControls();
 }
 
 void BuildingDlg::SetEdgeFacade()
@@ -716,7 +708,6 @@ void BuildingDlg::SetEdgeFacade()
 	if (m_bEdges && (NULL != m_pEdge))
 	{
 		// Store current facade
-		TransferDataFromWindow();
 		if (0 != m_pEdge->m_Facade.Compare(m_strFacade.mb_str()))
 		{
 			m_pEdge->m_Facade = m_strFacade.mb_str();

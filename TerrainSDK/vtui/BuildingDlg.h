@@ -60,6 +60,7 @@ public:
 	void DeleteCurrentLevel();
 	void CopyCurrentLevel();
 	void SetEdgeFacade();
+	void SetupValidators();
 
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
