@@ -225,8 +225,8 @@ bool vtTin::FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude) const
 
 		// compute barycentric combination of function values at vertices
 		val = bary[0] * m_z[v0] +
-			  bary[1] * m_z[v1] +
-			  bary[2] * m_z[v2];
+			bary[1] * m_z[v1] +
+			bary[2] * m_z[v2];
 		fAltitude = (float) val;
 		return true;
 	}
@@ -237,7 +237,7 @@ bool vtTin::FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude) const
 bool vtTin::ConvertProjection(const vtProjection &proj_new)
 {
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &proj_new);
+	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)&m_proj, (OGRSpatialReference *)&proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 
@@ -278,7 +278,7 @@ double vtTin::GetTriMaxEdgeLength(int iTri)
 	double len3 = (p1 - p3).Length();
 	return len1 > len2 ?
 		(len1 > len3 ? len1 : len3) :
-		(len2 > len3 ? len2 : len3);
+	(len2 > len3 ? len2 : len3);
 }
 
 // Number of bins used by the merge algorithm.  Time is roughly proportional
@@ -522,5 +522,4 @@ void vtTin::_RemoveVert(int kill)
 	m_z.SetSize(verts-1);
 }
 */
-
 
