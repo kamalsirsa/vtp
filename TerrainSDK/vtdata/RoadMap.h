@@ -63,7 +63,7 @@ class Node
 {
 public:
 	Node();
-	~Node();
+	virtual ~Node();
 
 	// comparison
 	bool operator==(Node &ref);
@@ -126,7 +126,7 @@ class Link : public DLine2
 public:
 	Link();
 	Link(Link &ref);
-	~Link();
+	virtual ~Link();
 
 	// comparison
 	bool operator==(Link &ref);
