@@ -67,6 +67,7 @@ public:
 public:
 	// this must be a public member (currently..)
 	std::vector<vtTagArray> m_Layers;
+	vtStringArray m_AnimPaths;
 
 private:
 	bool LoadFromIniFile(const char *fname);

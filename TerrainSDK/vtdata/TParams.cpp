@@ -136,8 +136,9 @@ TParams &TParams::operator = (const TParams &rhs)
 	// copy parent class first
 	*((vtTagArray*)this) = rhs;
 
-	// this the elements of this class
+	// copy the elements of this class
 	m_Layers = rhs.m_Layers;
+	m_AnimPaths = rhs.m_AnimPaths;
 
 	return *this;
 }
@@ -423,6 +424,11 @@ void TParamsVisitor::endElement(const char *name)
 		m_pParams->m_Layers.push_back(m_layer);
 		m_level--;
 	}
+	else if (m_level == 2 && !strcmp(name, "AnimPath"))
+	{
+		m_pParams->m_AnimPaths.push_back(m_data.c_str());
+		m_level--;
+	}
 	else if (m_level == 3)
 	{
 		// Layer properties
@@ -493,13 +499,20 @@ bool TParams::GetOverlay(vtString &fname, int &x, int &y) const
 
 void TParams::WriteOverridesToXML(FILE *fp) const
 {
-	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	unsigned int i;
+	for (i = 0; i < m_Layers.size(); i++)
 	{
 		const vtTagArray &lay = m_Layers[i];
-
 		fprintf(fp, "\t<Layer>\n");
 		lay.WriteToXMLBody(fp, 2);
 		fprintf(fp, "\t</Layer>\n");
+	}
+	for (i = 0; i < m_AnimPaths.size(); i++)
+	{
+		const vtString &str = m_AnimPaths[i];
+		fprintf(fp, "\t<AnimPath>");
+		fprintf(fp, (const char*) str);
+		fprintf(fp, "</AnimPath>\n");
 	}
 }
 
