@@ -179,13 +179,13 @@ void Enviro::LoadTerrainDescriptions()
 			//  class, for a particular config file, rather than the default
 			//  vtTerrain.
 			vtTerrain *pTerr;
-			if (name == "Hawai`i" || name == "Honoka`a" || name == "Kealakekua" )
+			if (before_dot == "Hawai`i" || before_dot == "Honoka`a" || before_dot == "Kealakekua" )
 				pTerr = new IslandTerrain();
-			else if (name == "Nevada")
+			else if (before_dot == "Nevada")
 				pTerr = new NevadaTerrain();
-			else if (name == "TransitTerrain")
+			else if (before_dot == "TransitTerrain")
 				pTerr = new TransitTerrain();
-			else if (name == "Romania")
+			else if (before_dot == "Romania")
 				pTerr = new Romania();
 			else
 				pTerr = new vtTerrain();
@@ -704,8 +704,8 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 			SetCurrentNavigator(m_pVFlyer);
 		if (m_nav == NT_Grab)
 			SetCurrentNavigator(m_pGFlyer);
-		if (m_nav == NT_Quake)
-			SetCurrentNavigator(m_pQuakeFlyer);
+//		if (m_nav == NT_Quake)
+//			SetCurrentNavigator(m_pQuakeFlyer);
 		if (m_nav == NT_Pano)
 			SetCurrentNavigator(m_pPanoFlyer);
 	}
