@@ -88,6 +88,11 @@ void vtScene::Init()
 	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::SKY_LIGHT);
 //	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
+	osgUtil::CullVisitor *cvis = m_pOsgSceneView->getCullVisitor();
+	osgUtil::CullViewState::CullingMode mode = cvis->getCullingMode();
+	mode &= ~(osgUtil::CullViewState::SMALL_FEATURE_CULLING);
+	cvis->setCullingMode(mode);
+
 	m_bInitialized = true;
 
     _initialTick = _timer.tick();
