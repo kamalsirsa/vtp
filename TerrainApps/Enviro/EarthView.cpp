@@ -477,11 +477,13 @@ void Enviro::DoControlOrbit()
 		{
 			m_fFlattening = 1.0f;
 			m_fFlattenDir = 0.0f;
+			m_bGlobeFlat = false;
 		}
 		if (m_fFlattenDir < 0.0f && m_fFlattening < 0.0f)
 		{
 			m_fFlattening = 0.0f;
 			m_fFlattenDir = 0.0f;
+			m_bGlobeFlat = true;
 		}
 		m_pIcoGlobe->SetInflation(m_fFlattening);
 	}
@@ -495,11 +497,15 @@ void Enviro::DoControlOrbit()
 
 			m_fFolding = 1.0f;
 			m_fFoldDir = 0.0f;
+			m_bGlobeUnfolded = true;
+			m_bGlobeFlat = true;
 		}
 		if (m_fFoldDir < 0.0f && m_fFolding < 0.0f)
 		{
 			m_fFolding = 0.0f;
 			m_fFoldDir = 0.0f;
+			m_bGlobeUnfolded = false;
+			m_bGlobeFlat = false;
 
 			// Leave Flat View
 			m_pTrackball->SetEnabled(true);
@@ -508,6 +514,10 @@ void Enviro::DoControlOrbit()
 			m_pIcoGlobe->SetCulling(true);
 		}
 		m_pIcoGlobe->SetUnfolding(m_fFolding);
+
+		// deflate as we unfold
+		m_fFlattening = 1.0f - m_fFolding;
+		m_pIcoGlobe->SetInflation(m_fFlattening);
 
 		FPQ pq;
 		pq.Interpolate(m_SpaceLoc, m_FlatLoc, m_fFolding);
@@ -603,11 +613,10 @@ void Enviro::SetEarthShading(bool bShade)
 
 void Enviro::SetEarthShape(bool bFlat)
 {
-	m_bGlobeFlat = bFlat;
 	if (m_bGlobeFlat)
-		m_fFlattenDir = -0.03f;
-	else
 		m_fFlattenDir = 0.03f;
+	else
+		m_fFlattenDir = -0.03f;
 }
 
 void Enviro::SetEarthTilt(bool bTilt)
@@ -629,8 +638,7 @@ bool Enviro::GetEarthTilt()
 
 void Enviro::SetEarthUnfold(bool bUnfold)
 {
-	m_bGlobeUnfolded = bUnfold;
-	if (m_bGlobeUnfolded)
+	if (!m_bGlobeUnfolded)
 	{
 		// Enter Flat View
 		FMatrix4 m4;
