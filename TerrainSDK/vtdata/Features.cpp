@@ -1454,6 +1454,8 @@ void Field::CopyValue(unsigned int FromRecord, int ToRecord)
 		m_int[ToRecord] = m_int[FromRecord];
 	else if (m_type == FT_Short)
 		m_short[ToRecord] = m_short[FromRecord];
+	else if (m_type == FT_Float)
+		m_float[ToRecord] = m_float[FromRecord];
 	else if (m_type == FT_Double)
 		m_double[ToRecord] = m_double[FromRecord];
 
@@ -1479,6 +1481,9 @@ void Field::GetValueAsString(unsigned int iRecord, vtString &str)
 	case FT_Short:
 		str.Format("%d", m_short[iRecord]);
 		break;
+	case FT_Float:
+		str.Format("%f", m_float[iRecord]);
+		break;
 	case FT_Double:
 		str.Format("%lf", m_double[iRecord]);
 		break;
@@ -1498,6 +1503,7 @@ void Field::SetValueFromString(unsigned int iRecord, const char *str)
 {
 	int i;
 	double d;
+	float f;
 
 	switch (m_type)
 	{
@@ -1520,6 +1526,13 @@ void Field::SetValueFromString(unsigned int iRecord, const char *str)
 			m_short[iRecord] = (short) i;
 		else
 			m_short.Append((short) i);
+		break;
+	case FT_Float:
+		f = (float) atof(str);
+		if (iRecord < m_float.GetSize())
+			m_float[iRecord] = f;
+		else
+			m_float.Append(f);
 		break;
 	case FT_Double:
 		d = atof(str);
