@@ -309,7 +309,7 @@ void vtTerrainScene::SetFog(bool fog)
 	if (m_bFog)
 	{
 		TParams &param = m_pCurrentTerrain->GetParams();
-		m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, param.m_iFogDistance * 1000);
+		m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, param.m_iFogDistance * 1000.0f);
 		vtGetScene()->SetBgColor(horizon_color);
 	}
 	else

@@ -419,7 +419,7 @@ void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 	int i;
 	double xz = sqrt(diff.z*diff.z+diff.x*diff.x);	// distance in the xz plane
 	double y = diff.y;
-	FPoint3 step = diff / iNumSegs;
+	FPoint3 step = diff / (float) iNumSegs;
 
 	// Calculate the parabolic constants.
 	double parabolicConst = (xz / 2) - (y * (catenary / xz));

@@ -872,7 +872,7 @@ void SMTerrain::flush_buffer(int type)
 	#define Begin(x)
 	#define End()
 #else		// send each vertex individually
-	#define send_vertex(index) glVertex3f((index%m_iDim), m_pData[index], (index / m_iDim))
+	#define send_vertex(index) glVertex3f((float)(index%m_iDim), m_pData[index], (float)(index / m_iDim))
 	#define Begin(x) glBegin(x)
 	#define End() glEnd()
 #endif

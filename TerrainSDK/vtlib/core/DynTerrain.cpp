@@ -237,8 +237,8 @@ void vtDynTerrainGeom::DoCalcBoundBox(FBox3 &box)
 	// derive bounding box from known terrain origin and size
 
 	// units are those of the coordinate space below the transform
-	box.Set(0,			m_fMinHeight, 0,
-			m_iColumns, m_fMaxHeight, m_iRows);
+	box.Set(0,				   m_fMinHeight, 0,
+			(float)m_iColumns, m_fMaxHeight, (float)m_iRows);
 }
 
 void vtDynTerrainGeom::DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)

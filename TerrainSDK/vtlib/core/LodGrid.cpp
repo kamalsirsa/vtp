@@ -19,7 +19,7 @@ vtLodGrid::vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
 	m_size = size;
 	m_dim = iDimension;
 	m_fLODDistance = fLODDistance;
-	m_step = m_size / m_dim;
+	m_step = m_size / (float)m_dim;
 
 	// wrap with an array of simple LOD nodes
 	m_pCells = (vtLOD **)malloc(m_dim * m_dim * sizeof(vtLOD *));

@@ -547,9 +547,9 @@ vtMaterial *vtStructure3d::MakeMaterial(RGBf &color, bool culling)
 float vtStructure3d::ColorDiff(const RGBi &c1, const RGBi &c2)
 {
 	FPoint3 diff;
-	diff.x = (c1.r - c2.r);
-	diff.y = (c1.g - c2.g);
-	diff.z = (c1.b - c2.b);
+	diff.x = (float) (c1.r - c2.r);
+	diff.y = (float) (c1.g - c2.g);
+	diff.z = (float) (c1.b - c2.b);
 	return diff.Length();
 }
 

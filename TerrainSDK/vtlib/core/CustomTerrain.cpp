@@ -19,7 +19,7 @@
 // (You don't have to use them, especially for height)
 //
 #define MAKE_XYZ1(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))]*m_fZScale, m_fZLookup[(y)]
-#define MAKE_XYZ2(x,y) (x), m_pData[offset((x),(y))], (y)
+#define MAKE_XYZ2(x,y) (float)(x), m_pData[offset((x),(y))], (float)(y)
 
 
 //
