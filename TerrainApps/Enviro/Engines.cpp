@@ -366,7 +366,7 @@ void TerrainPicker::Eval()
 		// save result
 		m_GroundPoint = result;
 
-		// Find corresponding UTM coordinates
+		// Find corresponding earth coordinates
 		g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos); 
 	}
 }
