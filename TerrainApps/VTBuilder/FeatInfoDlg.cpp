@@ -191,10 +191,16 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
-		wstring2 wide;
-		wide.from_utf8(vs);
-		str = wide.c_str();
-		GetList()->SetItem(iItem, field++, str);
+
+		// Using wstring2 here works, but leaks a little memory for some
+		//  reason.  I cannot understand why, it is buried deep in insanely
+		//  convoluted STL templates.  We'll just use wxString instead.
+//		wstring2 wide;
+//		wide.from_utf8(vs);
+//		str = wide.c_str();
+		wxString wide((const char *)vs, wxConvUTF8);
+
+		GetList()->SetItem(iItem, field++, wide);
 	}
 }
 
