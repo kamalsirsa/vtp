@@ -45,11 +45,7 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 	}
 	else if (m_VLType == VLT_Instances)
 	{
-		size = m_Pia.GetSize();
-		if (size == 0)
-			return false;
-		for (i = 0; i < size; i++)
-			rect.GrowToContainPoint(m_Pia.GetAt(i).m_p);
+		return m_Pia.GetExtent(rect);
 	}
 
 	return true;
@@ -215,7 +211,16 @@ bool vtVegLayer::OnSave()
 
 bool vtVegLayer::OnLoad()
 {
-	// currently we can load and save VF files (Plant Instances)
+	vtPlantList *plants = GetMainFrame()->GetPlantList();
+	if (plants->NumSpecies() == 0)
+	{
+		wxMessageBox(_T("You must specify a species file (plant list) to use\n")
+			_T("before working with vegetation files.\n"));
+		return false;
+	}
+	// currently we can load and save VF files (Plant Instances), so if they
+	//  are loading, we can assume it is from a plant instance file
+	m_Pia.SetPlantList(plants);
 	if (m_Pia.ReadVF(m_strFilename.mb_str()))
 	{
 		m_VLType = VLT_Instances;
@@ -480,6 +485,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 
 	vtPlantList *pPlantList = GetMainFrame()->GetPlantList();
 	vtBioRegion *pBioRegion = GetMainFrame()->GetBioRegion();
+	m_Pia.SetPlantList(pPlantList);
 
 	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
