@@ -162,6 +162,7 @@ RoadEdit::RoadEdit() : Road()
 	m_extent.SetRect(0,0,0,0);
 	m_bSelect = false;
 	m_bDrawPoints = false;
+	m_bSidesComputed = false;
 }
 
 //
@@ -178,21 +179,22 @@ bool RoadEdit::operator==(RoadEdit &ref)
 
 void RoadEdit::ComputeExtent()
 {
-	int i, size = GetSize();
+	int size = GetSize();
 
 	DPoint2 p;
 	p = GetAt(0);
 	m_extent.SetRect(p.x, p.y, p.x, p.y);
-	for (i = 1; i < size; i++)
-	{
+	for (int i = 1; i < size; i++)
 		m_extent.GrowToContainPoint(GetAt(i));
-//		p = GetAt(i);
-	}
+}
 
+void RoadEdit::ComputeDisplayedRoadWidth(const DPoint2 &ToMeters)
+{
 	// also refresh the parallel left and right road edges
-	DPoint2 p2, vec, norm, p3;
+	DPoint2 p, p2, vec, norm, p3;
 	m_fWidth = EstimateWidth();
-	float half_width = m_fWidth / 2;	// Warning: assumes meters-based
+	double half_width = (m_fWidth / 2);
+	int i, size = GetSize();
 	for (i = 0; i < size; i++)
 	{
 		p = GetAt(i);
@@ -204,10 +206,11 @@ void RoadEdit::ComputeExtent()
 			norm.y = vec.x;
 			norm.Normalize();
 		}
-		p3 = p + (norm * half_width);
-		m_Left.SetAt(i, p3);
-		p3 = p - (norm * half_width);
-		m_Right.SetAt(i, p3);
+		p3 = (norm * half_width);	// offset in meters
+		p3.x /= ToMeters.x;			// convert (potentially) to degrees
+		p3.y /= ToMeters.y;
+		m_Left.SetAt(i, p + p3);
+		m_Right.SetAt(i, p - p3);
 	}
 }
 
@@ -267,7 +270,8 @@ bool RoadEdit::PartiallyInBounds(DRECT bound)
 #define MAXPOINTS 8000
 static wxPoint roadbuf[MAXPOINTS];
 
-bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection) 
+bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
+					bool bShowWidth) 
 {
 	// base road color on type of road
 	pDC->SetLogicalFunction(wxCOPY);
@@ -277,20 +281,20 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection)
 		pDC->SetPen(RoadPen[m_Surface]);
 
 	int c, size = GetSize();
-	if (pView->sdx(m_fWidth) < 3)
-	{
-		for (c = 0; c < size && c < MAXPOINTS; c++)
-			pView->screen(GetAt(c), roadbuf[c]);
-
-		pDC->DrawLines(c, roadbuf);
-	}
-	else
+	if (bShowWidth)
 	{
 		for (c = 0; c < size && c < MAXPOINTS; c++)
 			pView->screen(m_Left.GetAt(c), roadbuf[c]);
 		pDC->DrawLines(c, roadbuf);
 		for (c = 0; c < size && c < MAXPOINTS; c++)
 			pView->screen(m_Right.GetAt(c), roadbuf[c]);
+		pDC->DrawLines(c, roadbuf);
+	}
+	else
+	{
+		for (c = 0; c < size && c < MAXPOINTS; c++)
+			pView->screen(GetAt(c), roadbuf[c]);
+
 		pDC->DrawLines(c, roadbuf);
 	}
 	if (m_bSelect)
@@ -478,8 +482,28 @@ void RoadMapEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bNodes)
 			curNode->Draw(pDC, pView);
 	}
 
+	DPoint2 center;
+	DPoint2 ToMeters(1.0, 1.0);	// convert (estimate) width to meters
+	bool bGeo = (m_proj.IsGeographic() != 0);
+
+	bool bShowWidth = vtRoadLayer::GetDrawWidth();
+	bool bShowDir = vtRoadLayer::GetShowDirection();
+
 	for (RoadEdit *curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
-		curRoad->Draw(pDC, pView, vtRoadLayer::GetShowDirection());
+	{
+		if (!curRoad->m_bSidesComputed)
+		{
+			if (bGeo)
+			{
+				curRoad->m_extent.GetCenter(center);
+				ToMeters.x = EstimateDegreesToMeters(center.y);
+				ToMeters.y = METERS_PER_LATITUDE;
+			}
+			curRoad->ComputeDisplayedRoadWidth(ToMeters);
+			curRoad->m_bSidesComputed = true;
+		}
+		curRoad->Draw(pDC, pView, bShowDir, bShowWidth);
+	}
 }
 
 //

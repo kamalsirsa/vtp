@@ -86,7 +86,10 @@ public:
 	bool PartiallyInBounds(DRECT bound);
 
 	//draw the road
-	bool Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection = false);
+	bool Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection = false,
+		bool bShowWidth = false);
+	// prepare to draw the road (estimate the left and right edges)
+	void ComputeDisplayedRoadWidth(const DPoint2 &ToMeters);
 	//edit the road - brings up a road dialog box
 	bool EditProperties(vtLayer *pLayer);
 
@@ -99,6 +102,7 @@ public:
 	bool	m_bDrawPoints;	// draw each point in the road individually
 
 	DLine2	m_Left, m_Right;
+	bool	m_bSidesComputed;	// true when m_Left and m_Right are up-to-date
 };
 
 class RoadMapEdit : public vtRoadMap
@@ -116,7 +120,8 @@ public:
 	// Import from DLG
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	// Import from DLG
-	void AddElementsFromSHP(const char *filename, vtProjection &proj);
+	void AddElementsFromSHP(const char *filename, vtProjection &proj,
+		void progress_callback(int) = NULL);
 
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,
