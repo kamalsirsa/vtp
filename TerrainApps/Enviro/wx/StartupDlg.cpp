@@ -341,7 +341,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	ShowOGLInfo(true);
 #endif
 
-/*  vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.to_utf8());
+/*  vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName.to_utf8());
 	if (pTerr)
 		m_strTName = wxString::FromAscii(pTerr->GetName());
 	else

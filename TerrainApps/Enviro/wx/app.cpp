@@ -289,7 +289,7 @@ bool vtApp::OnInit()
 	{
 		VTLOG("  Loading content file.\n");
 		try {
-			vtTerrain::s_Content.ReadXML(fname);
+			vtGetContent().ReadXML(fname);
 		}
 		catch (xh_io_exception &e) {
 			string str = e.getFormattedMessage();
@@ -387,7 +387,7 @@ void vtApp::RefreshTerrainList()
 //
 bool vtApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 {
-	vtTerrainScene *ts = GetTerrainScene();
+	vtTerrainScene *ts = vtGetTS();
 	int num = 0, first_idx = 0;
 	std::vector<wxString> choices;
 

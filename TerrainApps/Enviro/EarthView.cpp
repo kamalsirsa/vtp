@@ -270,7 +270,7 @@ if (pwdemo){
 	//
 	LookUpTerrainLocations();
 	VTLOG("AddTerrainRectangles\n");
-	m_pIcoGlobe->AddTerrainRectangles(GetTerrainScene());
+	m_pIcoGlobe->AddTerrainRectangles(vtGetTS());
 
 	// create the GlobePicker engine for picking features on the earth
 	//
@@ -352,7 +352,7 @@ void Enviro::SetSpaceAxes(bool bShow)
 	}
 	else if (m_state == AS_Terrain)
 	{
-		GetTerrainScene()->GetSkyDome()->ShowMarkers(bShow);
+		vtGetTS()->GetSkyDome()->ShowMarkers(bShow);
 	}
 }
 
@@ -365,7 +365,7 @@ bool Enviro::GetSpaceAxes()
 	}
 	else if (m_state == AS_Terrain)
 	{
-		return GetTerrainScene()->GetSkyDome()->MarkersShown();
+		return vtGetTS()->GetSkyDome()->MarkersShown();
 	}
 	return false;
 }
