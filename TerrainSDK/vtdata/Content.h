@@ -72,12 +72,13 @@ public:
 	vtTag *GetTag(int index);
 	const vtTag *GetTag(int index) const;
 
-	unsigned int NumTags();
+	unsigned int NumTags() const;
 	void RemoveTag(int index);
 	void RemoveTag(const char *szTagName);
+	void Clear();
 
 	// Set value
-	void SetValueString(const char *szTagName, const vtString &string);
+	void SetValueString(const char *szTagName, const vtString &string, bool bSuppressWarning = false);
 	void SetValueBool(const char *szTagName, bool value);
 	void SetValueInt(const char *szTagName, int value);
 	void SetValueFloat(const char *szTagName, float value);
@@ -85,7 +86,8 @@ public:
 	void SetValueRGBi(const char *szTagName, const RGBi &value);
 
 	// Get value directly
-	const char *GetValueString(const char *szTagName, bool bUTF8ToAnsi = false) const;
+	const char *GetValueString(const char *szTagName, bool bUTF8ToAnsi = false,
+		bool bSuppressWarning = false) const;
 	bool GetValueBool(const char *szTagName) const;
 	int GetValueInt(const char *szTagName) const;
 	float GetValueFloat(const char *szTagName) const;
@@ -104,6 +106,9 @@ public:
 	vtTagArray &operator=(const vtTagArray &v);
 	bool operator==(const vtTagArray &v) const;
 	bool operator!=(const vtTagArray &v) const;
+
+	// Copy each tag from one array to another
+	void CopyTagsFrom(const vtTagArray &v);
 
 	// File IO
 	bool WriteToXML(const char *fname, const char *title);
@@ -128,6 +133,7 @@ protected:
 class vtItem : public vtTagArray
 {
 public:
+	vtItem();
 	~vtItem();
 
 	void Empty();
@@ -136,15 +142,16 @@ public:
 	unsigned int NumModels() { return m_models.GetSize(); }
 	vtModel *GetModel(int i) { return m_models.GetAt(i); }
 
-	vtString		m_name;
+	vtString	m_name;
+	FRECT		m_extents;
 
 protected:
 	Array<vtModel*>	m_models;
 };
 
 /**
- * The vtContentManager class keeps a list of 3d models,
- * along with information about what they are and how they should be loaded.
+ * The vtContentManager class keeps a list of 3d models, along with
+ * information about what they are and how they should be loaded.
  * It consists of a set of Content Items (vtItem) which each represent a
  * particular object, which in turn consist of Models (vtModel) which are a
  * particular 3D geometry for that Item.  An Item can have several Models
@@ -170,9 +177,11 @@ public:
 	vtItem *GetItem(int i) { return m_items.GetAt(i); }
 	vtItem *FindItemByName(const char *name);
 	vtItem *FindItemByType(const char *type, const char *subtype);
+	vtString GetFilename() { return m_strFilename; }
 
 protected:
 	Array<vtItem*>	m_items;
+	vtString m_strFilename;
 };
 
 #endif // VTDATA_CONTENTH

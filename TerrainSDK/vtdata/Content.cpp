@@ -69,7 +69,7 @@ const vtTag *vtTagArray::GetTag(int index) const
 	return &m_tags[index];
 }
 
-unsigned int vtTagArray::NumTags()
+unsigned int vtTagArray::NumTags() const
 {
 	return m_tags.size();
 }
@@ -94,11 +94,17 @@ void vtTagArray::RemoveTag(const char *szTagName)
 	}
 }
 
+void vtTagArray::Clear()
+{
+	m_tags.clear();
+}
+
 //
 // Set
 //
 
-void vtTagArray::SetValueString(const char *szTagName, const vtString &string)
+void vtTagArray::SetValueString(const char *szTagName, const vtString &string,
+								bool bSuppressWarning)
 {
 	vtTag *tag = FindTag(szTagName);
 	if (tag)
@@ -110,7 +116,8 @@ void vtTagArray::SetValueString(const char *szTagName, const vtString &string)
 			return;
 
 		// if not, add it as a new tag
-		VTLOG("\tWarning: tag %s was not found, creating.\n", szTagName);
+		if (!bSuppressWarning)
+			VTLOG("\tWarning: tag %s was not found, creating.\n", szTagName);
 		AddTag(szTagName, string);
 	}
 }
@@ -157,7 +164,7 @@ void vtTagArray::SetValueRGBi(const char *szTagName, const RGBi &color)
 //  if the tag doesn't exist.
 //
 
-const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi) const
+const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, bool bSuppressWarning) const
 {
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
@@ -173,7 +180,8 @@ const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi) 
 	}
 	else
 	{
-		VTLOG("\tWarning: could not get tag %s, not found.\n", szTagName);
+		if (!bSuppressWarning)
+			VTLOG("\tWarning: could not get tag %s, not found.\n", szTagName);
 		return NULL;
 	}
 }
@@ -313,6 +321,14 @@ bool vtTagArray::operator!=(const vtTagArray &v) const
 	return true;
 }
 
+void vtTagArray::CopyTagsFrom(const vtTagArray &v)
+{
+	for (unsigned int i = 0; i < v.NumTags(); i++)
+	{
+		const vtTag *tag = v.GetTag(i);
+		SetValueString(tag->name, tag->value, true);	// suppress warn
+	}
+}
 
 // File IO
 bool vtTagArray::WriteToXML(const char *fname, const char *title)
@@ -413,6 +429,11 @@ bool vtTagArray::LoadFromXML(const char *fname)
 ////////////////////////////////////////////////////////////////////////
 // Implementation of class vtItem
 //
+
+vtItem::vtItem()
+{
+	m_extents.Empty();
+}
 
 vtItem::~vtItem()
 {
@@ -590,14 +611,24 @@ void ContentVisitor::endElement(const char * name)
 	}
 	if (_level == 2)
 	{
-		if (string(name) != (string)"model")
+		vtItem *pItem = st.item;
+		if (string(name) == (string)"model")
+		{
+		}
+		else if (string(name) == (string)"extents")
+		{
+			FRECT ext;
+			int result = sscanf(_data.c_str(), "%f, %f, %f, %f", &ext.left,
+				&ext.top, &ext.right, &ext.bottom);
+			if (result == 4)
+				pItem->m_extents = ext;
+		}
+		else
 		{
 			// save all other tags as literal strings
 			vtTag tag;
 			tag.name = name;
 			tag.value = _data.c_str();
-
-			vtItem *pItem = st.item;
 			pItem->AddTag(tag);
 		}
 	}
@@ -679,6 +710,8 @@ vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
  */
 void vtContentManager::ReadXML(const char *filename)
 {
+	m_strFilename = filename;
+
 	ContentVisitor visitor(this);
 	readXML(filename, visitor);
 	if (visitor.hasException())
@@ -713,32 +746,28 @@ void vtContentManager::WriteXML(const char *filename)
 	for (i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
+
+		// Write name
 		const char *name = pItem->m_name;
 		fprintf(fp, "\t<item name=\"%s\">\n", name);
-#if 0
-		if (pItem->m_type != "")
-		{
-			const char *type = pItem->m_type;
-			fprintf(fp, "\t\t<classification type=\"%s\"", type);
-			if (pItem->m_subtype != "")
-			{
-				const char *subtype = pItem->m_subtype;
-				fprintf(fp, " subtype=\"%s\"", subtype);
-			}
-			fprintf(fp, " />\n");
-		}
-		if (pItem->m_url != "")
-		{
-			const char *url = pItem->m_url;
-			fprintf(fp, "\t\t<link utl=\"%s\" />\n", url);
-		}
-#endif
+
+		// Write tags
 		for (j = 0; j < pItem->NumTags(); j++)
 		{
 			vtTag *tag = pItem->GetTag(j);
 			fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
 				(const char *)tag->value, (const char *)tag->name);
 		}
+
+		// Write extents
+		FRECT ext = pItem->m_extents;
+		if (!ext.IsEmpty())
+		{
+			fprintf(fp, "\t\t<extents>%.2f, %.2f, %.2f, %.2f</extents>\n",
+				ext.left, ext.top, ext.right, ext.bottom);
+		}
+
+		// Write models
 		for (j = 0; j < pItem->NumModels(); j++)
 		{
 			vtModel *pMod = pItem->GetModel(j);
