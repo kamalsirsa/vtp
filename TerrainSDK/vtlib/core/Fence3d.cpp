@@ -36,6 +36,11 @@ int vtFence3d::m_mi_woodpost;
 int vtFence3d::m_mi_wire;
 int vtFence3d::m_mi_chainlink;
 int vtFence3d::m_mi_metalpost;
+int vtFence3d::m_mi_hedgerow;
+int vtFence3d::m_mi_drystone;
+int vtFence3d::m_mi_privet;
+int vtFence3d::m_mi_stone;
+int vtFence3d::m_mi_beech;
 
 void vtFence3d::CreateMaterials()
 {
@@ -71,10 +76,37 @@ void vtFence3d::CreateMaterials()
 	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/chainpost32.bmp");
 	m_mi_metalpost = s_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT,
-		TERRAIN_DIFFUSE,
-		1.0f,		// alpha
-		TERRAIN_EMISSIVE);
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
+	// create hedgerow textured material
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/hedgerow256.png");
+	m_mi_hedgerow = s_pFenceMats->AddTextureMaterial2(fname,
+		false, true, true, false,	// cull, light, transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
+	// create drystone textured material
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/drystone256.png");
+	m_mi_drystone = s_pFenceMats->AddTextureMaterial2(fname,
+		false, true, true, false,	// cull, light, transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
+	// create privet textured material
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/privet256.png");
+	m_mi_privet = s_pFenceMats->AddTextureMaterial2(fname,
+		false, true, true, false,	// cull, light, transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
+	// create stone textured material
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/stone256.png");
+	m_mi_stone = s_pFenceMats->AddTextureMaterial2(fname,
+		false, true, true, false,	// cull, light, transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+
+	// create beech textured material
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/beech256.png");
+	m_mi_beech = s_pFenceMats->AddTextureMaterial2(fname,
+		false, true, true, false,	// cull, light, transp, add
+		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 }
 
 void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
@@ -104,6 +136,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	int numfencepts = m_pFencePts.GetSize();
 	float fCurrentSpacing = m_fSpacing * s_fFenceScale;
 	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
+	float fFenceHeightScaled = m_fHeight * s_fFenceScale;
 
 	// first determine where the fence posts go, for this whole array
 	// of fences

@@ -39,6 +39,11 @@ protected:
 	static int m_mi_wire;
 	static int m_mi_chainlink;
 	static int m_mi_metalpost;
+	static int m_mi_hedgerow;
+	static int m_mi_drystone;
+	static int m_mi_privet;
+	static int m_mi_stone;
+	static int m_mi_beech;
 
 	// fence size is exaggerated by this amount
 	static float s_fFenceScale;
