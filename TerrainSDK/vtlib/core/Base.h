@@ -339,7 +339,7 @@ public:
 	void SetBgColor(const RGBf &color) { m_BgColor = color; }
 	RGBf GetBgColor() { return m_BgColor; }
 
-	void SetSize(int w, int h) { m_Size.Set(w,h); }
+	void SetSize(int w, int h);
 	IPoint2 GetSize() { return m_Size; }
 
 protected:

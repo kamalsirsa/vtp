@@ -42,6 +42,14 @@ vtWindow::vtWindow()
 	m_Size.Set(0, 0);
 }
 
+void vtWindow::SetSize(int w, int h)
+{
+	m_Size.Set(w,h);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
 vtSceneBase::vtSceneBase()
 {
 	m_pCamera = NULL;
