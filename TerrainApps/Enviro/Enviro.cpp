@@ -545,6 +545,7 @@ void Enviro::SetupScene1()
 	vtTerrain::SetDataPath(g_Options.m_DataPaths);
 	vtTerrain::s_Content.SetDataPaths(&g_Options.m_DataPaths);
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
+	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();

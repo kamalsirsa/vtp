@@ -32,6 +32,7 @@ public:
 	float	m_fSelectionCutoff;
 	bool	m_bShadows;
 	bool	m_bStartInNeutral;
+	bool	m_bDisableModelMipmaps;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;

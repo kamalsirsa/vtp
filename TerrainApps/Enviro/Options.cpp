@@ -26,12 +26,14 @@ EnviroOptions g_Options;
 #define STR_PLANTSIZE "PlantSize"
 #define STR_PLANTSHADOWS "PlantShadows"
 #define STR_SELECTIONCUTOFF "SelectionCutoff"
+#define STR_DISABLE_MODEL_MIPMAPS "DisableModelMipmaps"
 
 EnviroOptions::EnviroOptions()
 {
 	m_strImage = "ev11656_512";
 	m_fSelectionCutoff = 15.0f;
 	m_bStartInNeutral = false;
+	m_bDisableModelMipmaps = false;
 	m_bTextureCompression = true;
 }
 
@@ -88,6 +90,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_bShadows;
 		else if (strcmp(buf, STR_SELECTIONCUTOFF) == 0)
 			input >> m_fSelectionCutoff;
+		else if (strcmp(buf, STR_DISABLE_MODEL_MIPMAPS) == 0)
+			input >> m_bDisableModelMipmaps;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -141,6 +145,8 @@ bool EnviroOptions::Write()
 	output << m_bShadows << endl;
 	output << STR_SELECTIONCUTOFF << "\t";
 	output << m_fSelectionCutoff << endl;
+	output << STR_DISABLE_MODEL_MIPMAPS << "\t";
+	output << m_bDisableModelMipmaps << endl;
 
 	return true;
 }
