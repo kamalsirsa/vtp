@@ -1,0 +1,43 @@
+########################################################################
+#
+# TerrainSDK/xmlhelper/Makefile.in
+#
+# Copyright (c) 2002 Darren Erik Vengroff.  All rights reserved.
+#
+# $Id$
+#
+########################################################################
+
+# What we need to compile.
+
+CFILES   =	hashtable.c xmlparse.c xmlrole.c xmltok.c
+CXXFILES = 	easyxml.cpp exception.cpp
+
+OBJS   		= $(CFILES:%.c=%.o) $(CXXFILES:%.cpp=%.o)
+TARGET_LIB    	= libxmlhelper.so
+
+# Headers to install
+
+TARGET_HDRS 	= asciitab.h			\
+		  hashtable.h			\
+		  iasciitab.h			\
+		  latin1tab.h			\
+		  nametab.h			\
+		  utf8tab.h			\
+		  xmldef.h			\
+		  xmlparse.h			\
+		  xmlrole.h			\
+		  xmltok.h			\
+		  xmltok_impl.h
+
+TARGET_HDR_SUBDIR = xmlhelper
+
+
+ # FIX - Get rid of the -DUNIX in favor of a config.h methodology that
+# will look for features.  Do this once the basic autoconf works
+# across the project.
+CPPFLAGS = @CPPFLAGS@ -I.. -I$(includedir) -DUNIX
+
+# Include all the rules to tell us how to make it:
+
+include ../Makedefs

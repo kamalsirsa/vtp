@@ -1,0 +1,60 @@
+########################################################################
+#
+# TerrainSDK/vtlib/core/Makefile.in
+#
+# Copyright (c) 2002 Darren Erik Vengroff.  All rights reserved.
+#
+# $Id$
+#
+########################################################################
+
+# We only install headers.  Compilation is done in e.g. vtosg.  Might
+# want to change this a bit so this subdir builds its own core lib.
+
+# Headers to install
+
+TARGET_HDRS 	= AttribMap.h			\
+		  Base.h			\
+		  BryanTerrain.h		\
+		  Building3d.h			\
+		  CustomTerrain.h		\
+		  DynTerrain.h			\
+		  Engine.h			\
+		  Fence3d.h			\
+		  FP8.h				\
+		  FrameTimer.h			\
+		  HeightField.h			\
+		  IntersectionEngine.h		\
+		  Light.h			\
+		  LKTerrain.h			\
+		  LocalGrid.h			\
+		  LocalProjection.h		\
+		  Location.h			\
+		  LodGrid.h			\
+		  NavEngines.h			\
+		  Roads.h			\
+		  Route.h			\
+		  SkyDome.h			\
+		  SMTerrain.h			\
+		  SRTerrain.h			\
+		  Structure3d.h			\
+		  TerrainErr.h			\
+		  Terrain.h			\
+		  TerrainPatch.h		\
+		  TerrainScene.h		\
+		  TerrainSurface.h		\
+		  TimeEngines.h			\
+		  TParams.h			\
+		  Trees.h			\
+		  TVTerrain.h			\
+		  vtSOG.h			\
+		  vtTin3d.h			\
+		  winglue.h
+
+
+TARGET_HDR_SUBDIR = vtlib/core
+
+# Include all the rules to tell us how to make it:
+
+include ../../Makedefs
+

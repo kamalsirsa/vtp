@@ -1,0 +1,75 @@
+########################################################################
+#
+# TerrainSDK/Makedefs.in
+#
+# Copyright (c) 2002 Darren Erik Vengroff.  All rights reserved.
+#
+# $Id$
+#
+########################################################################
+
+# This makefile contains definitions to build and install a library.
+# The idea is that a makefile should define $(OBJS) and $(TARGET_LIB),
+# then include this file to do all the real work.
+
+
+# Where to install, and to find other things that we may want to
+# include/link with.
+
+prefix 		= @prefix@
+exec_prefix 	= @exec_prefix@
+includedir 	= @includedir@
+libdir  	= @libdir@
+
+
+# Compiler info:
+
+CC 	 = @CC@
+CXX 	 = @CXX@
+
+CFLAGS   = @CFLAGS@ @X_CFLAGS@
+CXXFLAGS = @CXXFLAGS@ @X_CFLAGS@
+
+# Install info:
+
+INSTALL = @INSTALL@
+
+# We expect the makefile that includes us to define a target library
+# to install, and optionally some headers, and a subdir to put the the
+# headers in.
+
+INSTALLED_LIB 	= $(libdir)/$(TARGET_LIB)
+
+INSTALLED_HDRS  = $(TARGET_HDRS:%=$(includedir)/$(TARGET_HDR_SUBDIR)/%)
+
+# How to compile it.  Mostly implicit.  GNU Make knows what to do to
+# compile the .o's and then link them.
+
+all: $(TARGET_LIB)
+
+$(TARGET_LIB): $(OBJS)
+	$(LINK.cc) -shared $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+# How to install:
+
+install: $(INSTALLED_LIB) $(INSTALLED_HDRS)
+
+$(INSTALLED_LIB): $(TARGET_LIB)
+	$(INSTALL) -D $^ $@
+
+$(includedir)/$(TARGET_HDR_SUBDIR)/%.h: %.h
+	$(INSTALL) -D $^ $@
+
+# How to clean up after ourselves:
+
+clean:
+	$(RM) $(OBJS) $(TARGET_LIB)
+
+clobber: clean
+
+uninstall:
+	$(RM) $(INSTALLED_LIB)
+
+
+
+.PHONY: all install uninstall clean clobber
