@@ -111,7 +111,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 			data->m_strName = params.GetValueString(STR_NAME);
 			m_pTree->SetItemData(hItem, data);
 		}
-		m_pTree->Expand(hPath);
+		// m_pTree->Expand(hPath);
 	}
 	m_pTree->Expand(m_Root);
 }
