@@ -45,14 +45,17 @@ bool MyApp::OnInit()
 
 	SetTopWindow(frame);
 
-	frame->GetView()->ZoomAll();
-
 	// Stuff for testing
 //	wxString str("E:/Earth Imagery/NASA BlueMarble/MOD09A1.E.interpol.cyl.retouched.topo.3x00054x00027-N.bmp");
 //	wxString str("E:/Data-USA/Elevation/crater_0513.bt");
-//	vtLayer *pLayer = frame->ImportImage(str);
-//	bool success = frame->AddLayerWithCheck(pLayer, true);
-//	frame->LoadLayer(str);
+/*	vtLayer *pLayer = frame->ImportImage(str);
+	bool success = frame->AddLayerWithCheck(pLayer, true);
+	frame->LoadLayer(str);
+*/
+//	frame->LoadProject("E:/Locations/Romania/giurgiu.vtb");
+//	frame->ImportDataFromFile(LT_ELEVATION, "E:/Earth/NOAA Globe/g10g.hdr", false);
+
+	frame->GetView()->ZoomAll();
 
 	return TRUE;
 }
