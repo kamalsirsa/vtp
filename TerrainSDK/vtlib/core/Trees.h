@@ -21,7 +21,7 @@
 class vtPlantAppearance3d : public vtPlantAppearance
 {
 public:
-	vtPlantAppearance3d(bool billboard, const char *filename,
+	vtPlantAppearance3d(AppearType type, const char *filename,
 		float width, float height,
 		float shadow_radius, float shadow_darkness);
 	~vtPlantAppearance3d();
@@ -55,7 +55,7 @@ public:
 	vtPlantAppearance3d *GetRandomAppearance();
 	vtPlantAppearance3d *GetAppearance(int i) const { return (vtPlantAppearance3d *)m_Apps[i]; };
 
-	virtual void AddAppearance(bool billboard, const char *filename, float width, float height,
+	virtual void AddAppearance(AppearType type, const char *filename, float width, float height,
 		float shadow_radius, float shadow_darkness);
 };
 

@@ -18,9 +18,9 @@
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
 
-vtPlantAppearance3d::vtPlantAppearance3d(bool billboard, const char *filename,
+vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 	 float width, float height, float shadow_radius, float shadow_darkness)
-	: vtPlantAppearance(billboard, filename, width, height, shadow_radius, shadow_darkness)
+	: vtPlantAppearance(type, filename, width, height, shadow_radius, shadow_darkness)
 {
 	m_pMats = NULL;
 	m_pMesh = NULL;
@@ -46,7 +46,7 @@ vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 	m_pFrogModel = NULL;
 #endif
 
-	m_bBillboard = v.m_bBillboard;
+	m_eType = v.m_eType;
 	m_filename = v.m_filename;
 	m_width	= v.m_width;
 	m_height = v.m_height;
@@ -59,7 +59,7 @@ void vtPlantAppearance3d::LoadAndCreate(const char *datapath, float fTreeScale,
 {
 	s_fTreeScale = fTreeScale;
 
-	if (m_bBillboard)
+	if (m_eType == AT_BILLBOARD)
 	{
 		char fname[160];
 		strcpy(fname, datapath);
@@ -173,14 +173,14 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 vtTransform *vtPlantAppearance3d::GenerateGeom()
 {
 	vtTransform *pTrans = NULL;
-	if (m_bBillboard)
+	if (m_eType == AT_BILLBOARD)
 	{
 		vtGeom *pGeom = new vtGeom();
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(m_pMesh, m_iMatIdx);
 		pTrans = new vtMovGeom(pGeom);
 	}
-	else
+	else if (m_eType == AT_XFROG)
 	{
 #if SUPPORT_XFROG
 		pGeom = m_pFrogModel->CreateShape(1.0f);
@@ -254,11 +254,11 @@ vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
 	return *this;
 }
 
-void vtPlantSpecies3d::AddAppearance(bool billboard, const char *filename, float width, float height,
-	float shadow_radius, float shadow_darkness)
+void vtPlantSpecies3d::AddAppearance(AppearType type, const char *filename,
+	float width, float height, float shadow_radius, float shadow_darkness)
 {
-	vtPlantAppearance3d *pApp = new vtPlantAppearance3d(billboard, filename, width, height,
-		shadow_radius, shadow_darkness);
+	vtPlantAppearance3d *pApp = new vtPlantAppearance3d(type, filename,
+		width, height, shadow_radius, shadow_darkness);
 	m_Apps.Append(pApp);
 }
 
