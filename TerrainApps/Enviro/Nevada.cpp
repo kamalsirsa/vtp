@@ -9,18 +9,14 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Light.h"
-#include "vtlib/core/TerrainPatch.h"
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/SkyDome.h"
 
 #include "Nevada.h"
 #include "Engines.h"
-#include "Wings.h"
 #include "Hawaii.h"
 #include "Enviro.h"
-
-vtMaterialArray *Butterfly::m_pMats;
 
 // measured with GPS in 1999:
 // man location
@@ -135,8 +131,12 @@ void NevadaTerrain::CreateWater()
 		false, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
+	vtGeom *geom;
+
 	// create water plane
-	m_pWaterShape = CreatePlaneMGeom(m_pMats, id, org, size, 125.0f, 125.0f, 10);	// matidx 0
+//	m_pWaterShape = CreatePlaneMGeom(m_pMats, id, org, size, 125.0f, 125.0f, 10);	// matidx 0
+	geom = CreatePlaneGeom(m_pMats, id, org, size, 125.0f, 10);
+	m_pWaterShape = new vtMovGeom(geom);
 	m_pWaterShape->SetName2("WaterSurface");
 	AddNode(m_pWaterShape);
 
@@ -146,7 +146,9 @@ void NevadaTerrain::CreateWater()
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
 
 	// and another plane
-	m_pWaterShape2 = CreatePlaneMGeom(m_pMats, id, org, size, 260.3f, 260.3f, 10);	// matidx 1
+//	m_pWaterShape2 = CreatePlaneMGeom(m_pMats, id, org, size, 260.3f, 260.3f, 10);	// matidx 1
+	geom = CreatePlaneGeom(m_pMats, id, org, size, 260.3f, 10);
+	m_pWaterShape2 = new vtMovGeom(geom);
 	m_pWaterShape2->SetName2("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
 	AddNode(m_pWaterShape2);
@@ -213,7 +215,7 @@ void NevadaTerrain::CreatePast()
 	m_pPast->AddChild(bfly3);
 #endif
 
-	if (1)
+#if 0
 	{
 		typedef vtGeom *shapeptr;
 		int x, y;
@@ -228,6 +230,7 @@ void NevadaTerrain::CreatePast()
 			m_pPast->AddChild(but);
 		}
 	}
+#endif
 
 #if ENABLE_TREES	// enable/disable trees
 	//tree generation
