@@ -12,6 +12,7 @@
 
 #include <time.h>	// for time_t
 #include "MathTypes.h"
+#include "vtString.h"
 
 typedef unsigned int unint;
 
