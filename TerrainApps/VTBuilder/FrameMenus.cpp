@@ -932,7 +932,7 @@ void MainFrame::OnLayerShow(wxCommandEvent &event)
 	DRECT r;
 	pLayer->GetExtent(r);
 	wxRect sr = m_pView->WorldToWindow(r);
-	IncreaseRect(sr, 1);
+	IncreaseRect(sr, 5);
 	m_pView->Refresh(TRUE, &sr);
 }
 
