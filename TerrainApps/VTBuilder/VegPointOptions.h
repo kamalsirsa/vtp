@@ -7,7 +7,7 @@
 
 #include "vtdata/vtString.h"
 
-/* This structure stores a description of how an imported file should be
+/** This structure stores a description of how an imported file should be
    intepreted as vegetation point data. */
 class VegPointOptions
 {
