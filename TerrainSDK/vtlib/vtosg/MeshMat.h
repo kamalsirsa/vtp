@@ -8,6 +8,7 @@
 
 #include <osgText/Font>
 #include <osgText/Text>
+#include <osg/BlendFunc>
 
 /**
  * A material is a description of how a surface should be rendered.  For a
@@ -57,9 +58,10 @@ public:
 	void Apply();
 
 	// the VT material object includes texture
-	osg::ref_ptr<osg::Material>	m_pMaterial;
+	osg::ref_ptr<osg::Material>		m_pMaterial;
 	osg::ref_ptr<osg::Texture2D>	m_pTexture;
-	osg::ref_ptr<osg::StateSet>	m_pStateSet;
+	osg::ref_ptr<osg::StateSet>		m_pStateSet;
+	osg::ref_ptr<osg::BlendFunc>	m_pBlendFunc;
 };
 
 /**

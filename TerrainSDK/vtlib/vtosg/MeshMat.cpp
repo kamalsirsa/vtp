@@ -5,7 +5,6 @@
 
 #include "vtlib/vtlib.h"
 
-#include <osg/BlendFunc>
 #include <osg/PolygonMode>
 
 using namespace osg;
@@ -150,14 +149,31 @@ bool vtMaterial::GetLighting()
  */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
-	m_pStateSet->setMode(GL_BLEND, bOn ? GEO_ON : GEO_OFF);
+//	m_pStateSet->setMode(GL_BLEND, bOn ? GEO_ON : GEO_OFF);
+	if (bOn)
+	{
+		if (!m_pBlendFunc.valid())
+			m_pBlendFunc = new BlendFunc;
+	    m_pStateSet->setAttributeAndModes(m_pBlendFunc.get(), StateAttribute::ON );
+		AlphaFunc* alphaFunc = new AlphaFunc;
+		alphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
+		m_pStateSet->setAttributeAndModes( alphaFunc, StateAttribute::ON );
+		m_pStateSet->setRenderingHint( StateSet::TRANSPARENT_BIN );
+	}
+	else
+	{
+		m_pStateSet->setMode(GL_BLEND, StateAttribute::OFF);
+		m_pStateSet->setRenderingHint( StateSet::OPAQUE_BIN );
+	}
+
 	if (bAdd)
 	{
-		BlendFunc *trans = new BlendFunc();
-//		trans->setFunction(GL_ONE, GL_ONE);
-//		trans->setFunction(GL_SRC_COLOR, GL_DST_COLOR);
-		trans->setFunction(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-		m_pStateSet->setAttribute(trans);
+		if (!m_pBlendFunc.valid())
+			m_pBlendFunc = new BlendFunc;
+//		m_pBlendFunc->setFunction(GL_ONE, GL_ONE);
+//		m_pBlendFunc->setFunction(GL_SRC_COLOR, GL_DST_COLOR);
+		m_pBlendFunc->setFunction(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+		m_pStateSet->setAttribute(m_pBlendFunc.get());
 	}
 }
 /**
