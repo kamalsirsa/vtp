@@ -271,6 +271,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_DEM);
 		AddType(filter, FSTRING_DTED);
 		AddType(filter, FSTRING_GTOPO);
+		AddType(filter, FSTRING_MEM);
 		AddType(filter, FSTRING_PNG);
 		AddType(filter, FSTRING_PGM);
 		AddType(filter, FSTRING_RAW);
@@ -429,7 +430,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 			dlg.SetShapefileName(strFileName);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			pVL->AddElementsFromSHP(strFileName, proj, dlg.m_fieldindex, dlg.m_datatype);
+			pVL->AddElementsFromSHP_Polys(strFileName, proj, dlg.m_fieldindex, dlg.m_datatype);
 		}
 		if (nShapeType == SHPT_POINT)
 		{
@@ -438,6 +439,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 			dlg.SetVegLayer(pVL);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
+			pVL->AddElementsFromSHP_Points(strFileName, proj, dlg.m_options);
 		}
 	}
 
