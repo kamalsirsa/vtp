@@ -69,6 +69,7 @@ public:
 	int			m_iNavStyle;
 	float		m_fNavSpeed;
 	vtString	m_strLocFile;
+	vtString	m_strInitLocation;
 	float		m_fHither;
 
 	// LOD
