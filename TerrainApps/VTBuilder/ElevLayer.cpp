@@ -746,7 +746,18 @@ void vtElevLayer::GetProjection(vtProjection &proj)
 void vtElevLayer::SetProjection(const vtProjection &proj)
 {
 	if (m_pGrid)
+	{
+		const vtProjection &current = m_pGrid->GetProjection();
+		if (proj != current)
+			SetModified(true);
+
+		// if units change, meter extents of grid (and the shading which is
+		//  derived from them) need to be recomputed
+		LinearUnits oldunits = current.GetUnits();
 		m_pGrid->SetProjection(proj);
+		if (proj.GetUnits() != oldunits)
+			ReRender();
+	}
 	if (m_pTin)
 		m_pTin->m_proj = proj;
 }

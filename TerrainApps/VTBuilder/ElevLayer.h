@@ -94,7 +94,7 @@ public:
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
 	bool AppendDataFrom(vtLayer *pL);
-	void ReRender() { m_bBitmapRendered = false; }
+	void ReRender() { m_bBitmapRendered = false; m_bNeedsDraw = true; }
 	void ReImage();
 	bool IsGrid() { return m_pGrid != NULL; }
 
