@@ -92,6 +92,33 @@ void IncreaseRect(wxRect &rect, int adjust)
 	rect.width += (adjust<<1);
 }
 
+void DrawRectangle(wxDC* pDC, const wxRect &rect)
+{
+	int left = rect.x;
+	int right = rect.x + rect.GetWidth();
+	int top = rect.y;
+	int bottom = rect.y + rect.GetHeight();
+	wxPoint p[5];
+	p[0].x = left;
+	p[0].y = bottom;
+
+	p[1].x = left;
+	p[1].y = top;
+
+	p[2].x = right;
+	p[2].y = top;
+
+	p[3].x = right;
+	p[3].y = bottom;
+
+	p[4].x = left;
+	p[4].y = bottom;
+	pDC->DrawLines(5, p);
+
+	pDC->DrawLine(left, bottom, right, top);
+	pDC->DrawLine(left, top, right, bottom);
+}
+
 //////////////////////////////////////
 
 int GuessZoneFromLongitude(double longitude)

@@ -23,6 +23,7 @@ wxString FormatCoord(bool bGeo, double val, bool minsec = false);
 /////
 
 void IncreaseRect(wxRect &rect, int adjust);
+void DrawRectangle(wxDC* pDC, const wxRect &rect);
 
 /////
 
