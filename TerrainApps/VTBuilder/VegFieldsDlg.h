@@ -18,7 +18,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtdata/shapelib/shapefil.h"
-#include "AutoDialog.h"
+#include "vtui/AutoDialog.h"
 
 class vtVegLayer;
 

@@ -13,7 +13,7 @@
 #endif
 
 #include "VTBuilder_wdr.h"
-#include "AutoDialog.h"
+#include "vtui/AutoDialog.h"
 #include "vtdata/Building.h"
 
 // WDR: class declarations

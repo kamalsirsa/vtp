@@ -110,19 +110,6 @@ SOURCE=.\wx\app.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\AutoDialog.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"wx/wxprec.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\wx\BuildingDlg.cpp
 
 !IF  "$(CFG)" == "wxEnviro - Win32 Debug"
@@ -288,10 +275,6 @@ SOURCE=.\wx\UtilDlg.cpp
 # Begin Source File
 
 SOURCE=.\wx\app.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\AutoDialog.h
 # End Source File
 # Begin Source File
 

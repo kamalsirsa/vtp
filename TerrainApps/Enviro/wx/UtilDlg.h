@@ -13,7 +13,7 @@
 #endif
 
 #include "enviro_wdr.h"
-#include "AutoDialog.h"
+#include "vtui/AutoDialog.h"
 
 // WDR: class declarations
 

@@ -10,7 +10,7 @@
 #include "wx/treectrl.h"
 #include "wx/listctrl.h"
 #include "wx/dialog.h"
-#include "AutoDialog.h"
+#include "vtui/AutoDialog.h"
 
 #define PLANTS_FILTER "Plant Species List Files (*.xml)|*.xml|"
 #define BIOREGIONS_FILTER "Plant List Files (*.txt)|*.txt|"
