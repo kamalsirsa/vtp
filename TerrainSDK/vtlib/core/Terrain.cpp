@@ -1298,7 +1298,8 @@ void vtTerrain::_CreateCulture()
 	for (i = 0; i < num; i++)
 	{
 		vtString building_fname = "BuildingData/";
-		building_fname += m_Params.m_strStructFiles[i];
+		const ParamStructLayer &psl = m_Params.m_strStructFiles[i];
+		building_fname += psl.m_strStructFile;
 
 		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
 
@@ -1310,8 +1311,15 @@ void vtTerrain::_CreateCulture()
 		else
 		{
 			VTLOG("\tFound: %s\n", (const char *) building_path);
-			if (CreateStructuresFromXML(building_path))
+			vtStructureArray3d *sa = CreateStructuresFromXML(building_path);
+			if (sa)
+			{
 				created++;
+
+				// If the user wants it to start hidden, hide it
+				if (psl.m_bVisible == false)
+					sa->SetEnabled(false);
+			}
 		}
 	}
 	if (created == 0)

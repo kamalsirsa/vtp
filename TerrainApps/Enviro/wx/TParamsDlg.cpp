@@ -202,7 +202,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	for (i = 0; i < num; i++)
 	{
 		wxString2 *ws = new wxString2();
-		ws->from_utf8(Params.m_strStructFiles[i]);
+		const ParamStructLayer &psl = Params.m_strStructFiles[i];
+		ws->from_utf8(psl.m_strStructFile);
 		m_strStructFiles.Append(ws);
 	}
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
@@ -318,7 +319,11 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_strStructFiles.clear();
 	int i, num = m_strStructFiles.GetSize();
 	for (i = 0; i < num; i++)
-		Params.m_strStructFiles.push_back(vtString(m_strStructFiles[i]->mb_str()));
+	{
+		ParamStructLayer psl;
+		psl.m_strStructFile = m_strStructFiles[i]->to_utf8();
+		Params.m_strStructFiles.push_back(psl);
+	}
 	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
 	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
 	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_bStructureRez+8));
