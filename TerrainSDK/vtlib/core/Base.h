@@ -313,10 +313,14 @@ protected:
 class vtSceneBase
 {
 public:
+	vtSceneBase();
+	~vtSceneBase();
+
 	virtual void SetBgColor(RGBf color) = 0;
 	virtual void SetAmbient(RGBf color) = 0;
 
-	void AddEngine(vtEngine *ptr) { m_Engines.Append(ptr); }
+	void AddEngine(vtEngine *ptr);
+	void RemoveEngine(vtEngine *ptr);
 	int GetNumEngines() { return m_Engines.GetSize(); }
 	vtEngine *GetEngine(int i) { return m_Engines.GetAt(i); }
 

@@ -27,6 +27,18 @@ directly.
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
 
+
+vtSceneBase::vtSceneBase()
+{
+	m_pCamera = NULL;
+	m_WindowSize.Set(0, 0);
+	m_pRoot = NULL;
+}
+
+vtSceneBase::~vtSceneBase()
+{
+}
+
 void vtSceneBase::OnMouse(vtMouseEvent &event)
 {
 	// Pass event to Engines
@@ -57,6 +69,19 @@ void vtSceneBase::DoEngines()
 			pEng->Eval();
 	}
 }
+
+void vtSceneBase::AddEngine(vtEngine *ptr)
+{
+	m_Engines.Append(ptr);
+}
+
+void vtSceneBase::RemoveEngine(vtEngine *ptr)
+{
+	int index = m_Engines.Find(ptr);
+	if (index != -1)
+		m_Engines.RemoveAt(index);
+}
+
 
 ////////////////////////////////////////////////////////////////
 
