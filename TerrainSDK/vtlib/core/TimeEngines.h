@@ -29,6 +29,7 @@ public:
 	void GetCurrentTime();
 	void SetSpeed(float factor);
 	float GetSpeed() { return m_fSpeed; }
+	void SetDate(int year, int month, int day);
 	void SetLocalTime(int hr, int min, int sec);
 	void SetGMT(int hr, int min, int sec);
 //	void SetTime(time_t time);

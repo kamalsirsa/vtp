@@ -41,6 +41,15 @@ void TimeEngine::GetCurrentTime()
 	_UpdateTM();
 }*/
 
+void TimeEngine::SetDate(int year, int month, int day)
+{
+	m_tm.tm_year = year - 1900;
+	m_tm.tm_mon = month;
+	m_tm.tm_mday = day;
+	m_time = mktime(&m_tm);
+	_UpdateTM();
+}
+
 void TimeEngine::SetLocalTime(int hr, int min, int sec)
 {
 	m_tm.tm_hour = hr;
