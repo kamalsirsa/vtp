@@ -1780,10 +1780,11 @@ void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 {
 	VTLOG("Getting data paths from Enviro.\n");
 	wxString2 IniPath = wxGetCwd();
+	VTLOG("  Current directory: '%s'\n", IniPath.mb_str());
 
-	ifstream input;
 	IniPath += _T("/Enviro.ini");
 	VTLOG("  Looking for '%s'\n", IniPath.mb_str());
+	ifstream input;
 	input.open(IniPath.mb_str(), ios::in | ios::binary);
 	if (!input.is_open())
 	{

@@ -238,13 +238,16 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	m_bFloatMode = false;
 
 	// Read the coordinates of the 4 corners
+	VTLOG("DEM corners:");
 	DPoint2	corners[4];			// SW, NW, NE, SE
 	fseek(fp, 546, 0);
 	for (i = 0; i < 4; i++)
 	{
 		corners[i].x = DConvert(fp, 24);
 		corners[i].y = DConvert(fp, 24);
+		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
 	}
+	VTLOG("\n");
 
 	if (bGeographic)
 	{
@@ -268,6 +271,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fseek(fp, 852, 0);
 	IConvert(fp, 6);	// This "Rows" value will always be 1
 	int iProfiles = IConvert(fp, 6);
+	VTLOG("DEM profiles: %d\n", iProfiles);
 
 	m_iColumns = iProfiles;
 
@@ -288,6 +292,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 	else
 	{
+		VTLOG("DEM scanning to compute extents\n");
 		m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
 
 		if (!bFixedLength)
@@ -340,6 +345,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		}
 		dMinY = m_EarthExtents.bottom;
 	}
+	VTLOG("DEM extents LRTB: %lf, %lf, %lf, %lf\n", m_EarthExtents.left,
+		m_EarthExtents.right, m_EarthExtents.top, m_EarthExtents.bottom);
 
 	// Compute number of rows
 	double	fRows;
