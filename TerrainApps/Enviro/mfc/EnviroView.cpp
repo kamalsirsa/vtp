@@ -126,7 +126,7 @@ void EnviroView::OnDraw(CDC* pDC)
 void EnviroView::OnEnviroTimeon() 
 {
 	m_bTimeOn = !m_bTimeOn;
-	GetTerrainScene()->GetTimeEngine()->SetEnabled(m_bTimeOn);
+	vtGetTS()->GetTimeEngine()->SetEnabled(m_bTimeOn);
 }
 
 void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI) 
@@ -249,7 +249,7 @@ void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroShowsky() 
 {
-	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
+	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	sky->SetEnabled(!on);
@@ -257,7 +257,7 @@ void EnviroView::OnEnviroShowsky()
 
 void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI) 
 {
-	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
+	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	pCmdUI->SetCheck(on);

@@ -53,7 +53,7 @@ BOOL CChooseDlg::OnInitDialog()
 
 	// list each known terrain
 	vtTerrain *pTerr;
-	for (pTerr = GetTerrainScene()->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = vtGetTS()->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
 	{
 		vtString str = pTerr->GetName();
 		m_lbList.AddString((const char *)str);

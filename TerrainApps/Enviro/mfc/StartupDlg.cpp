@@ -132,7 +132,7 @@ void AddFilesToComboBox(CComboBox *box, CString wildcard)
 
 BOOL CStartupDlg::OnInitDialog() 
 {
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
+	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName);
 	if (pTerr)
 		m_strTName = pTerr->GetName();
 	else
@@ -241,7 +241,7 @@ void CStartupDlg::UpdateState()
 
 void CStartupDlg::OnEditProp() 
 {
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
+	vtTerrain *pTerr = vtGetTS()->FindTerrainByName(m_strTName);
 	if (!pTerr)
 		return;
 
