@@ -963,6 +963,7 @@ void Enviro::SetTopDown(bool bTopDown)
 	{
 		vtGetScene()->SetCamera(m_pNormalCamera);
 		m_pSkyDome->SetEnabled(bWas);
+		m_pOrthoFlyer->SetEnabled(false);
 	}
 
 	// set mode again, to put everything in the right state
