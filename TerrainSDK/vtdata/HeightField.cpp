@@ -7,7 +7,7 @@
 
 #include "HeightField.h"
 #include "vtDIB.h"
-
+#include "vtLog.h"
 
 //
 // Class implementation: ColorMap
@@ -20,6 +20,9 @@ ColorMap::ColorMap()
 
 bool ColorMap::Save(const char *fname)
 {
+	// watch out for %f
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
 		return false;
@@ -39,6 +42,9 @@ bool ColorMap::Save(const char *fname)
 
 bool ColorMap::Load(const char *fname)
 {
+	// watch out for %f
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)
 		return false;
@@ -494,6 +500,8 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	const ColorMap *cmap, int iGranularity, bool progress_callback(int))
 {
+	VTLOG("ColorDibFromElevation: ");
+
 	ColorMap defaults;
 	if (!cmap)
 	{
@@ -526,6 +534,11 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 		fMin -= 1;
 		fMax += 1;
 	}
+
+	VTLOG("color table with %d values, first color [%d %d %d],\n",
+		cmap->Num(), cmap->m_color[0].r, cmap->m_color[0].g, cmap->m_color[0].b);
+	VTLOG("\tmin %f, max %f, range %f, granularity %d, ",
+		fMin, fMax, fRange, iGranularity);
 
 	// Rather than look through the color map for each pixel, pre-build
 	//  a color lookup table once - should be faster in nearly all cases.
@@ -561,6 +574,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 			pBM->SetPixel24(i, h-1-j, c3);
 		}
 	}
+	VTLOG("Done.\n");
 	return has_invalid;
 }
 
