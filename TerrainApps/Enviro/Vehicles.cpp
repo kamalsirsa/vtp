@@ -252,6 +252,8 @@ void VehicleManager::create_ground_vehicles(vtTerrain *pTerrain, float fSize, fl
 			pE1->SetTarget(car);
 			if (pE1->SetTires())
 				pTerrain->AddEngine(pE1);
+			else
+				delete pE1;
 		}
 		n = (NodeGeom*) n->m_pNext;
 	}
