@@ -114,11 +114,11 @@ public:
 	// Operator  overloads
 	bool operator == (const vtMaterialDescriptor& rhs) const
 	{
-		return(*this->m_pName == *rhs.m_pName);
+		return (*m_pName == *rhs.m_pName);
 	}
 	bool operator == (const vtMaterialDescriptor& rhs)
 	{
-		return(*this->m_pName == *rhs.m_pName);
+		return (*m_pName == *rhs.m_pName);
 	}
 	friend std::ostream &operator << (std::ostream & Output, const vtMaterialDescriptor &Input)
 	{
