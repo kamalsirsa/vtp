@@ -1087,6 +1087,10 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 	NodeGeom *pN;
 
 #if 0
+	// This code attempts to identify cases where a node actually
+	// represents something like an overpass: two roads that don't
+	// actually connect.  However, it's better to take care of this
+	// as a preprocess, rather than at runtime.
 	float height;
 	for (pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
 	{
