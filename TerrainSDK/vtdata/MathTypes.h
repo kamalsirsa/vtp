@@ -31,6 +31,7 @@ class FPoint3 {
 public:
 	FPoint3() { x = y = z = 0.0f; }
 	FPoint3(float fx, float fy, float fz) { x=fx; y=fy; z=fz; }
+	FPoint3(const DPoint3 &p);
 
 	float Length() const { return sqrtf(x*x+y*y+z*z); }
 	float LengthSquared() const { return x*x+y*y+z*z; }
@@ -76,10 +77,15 @@ class DPoint3 {
 public:
 	DPoint3() { x = y = z = 0.0f; }
 	DPoint3(double fx, double fy, double fz) { x=fx; y=fy; z=fz; }
+	DPoint3(const FPoint3 &p);
 
 	double Length() const { return sqrt(x*x+y*y+z*z); }
 	void Normalize() { double s = 1.0f/Length(); x*=s; y*=s; z*=s; }
 	void Set(double fx, double fy, double fz) { x=fx; y=fy; z=fz; }
+	double Dot(const DPoint3 &rhs) const
+	{
+		return x*rhs.x+y*rhs.y+z*rhs.z;
+	}
 	DPoint3 Cross(const DPoint3 &v)
 	{
 		return DPoint3(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x);
@@ -106,6 +112,8 @@ public:
 };
 
 // Conversion
+inline FPoint3::FPoint3(const DPoint3 &v) { x = (float) v.x; y = (float) v.y; z = (float) v.z; }
+inline DPoint3::DPoint3(const FPoint3 &v) { x = v.x; y = v.y; z = v.z; }
 inline FPoint3 &FPoint3::operator=(const DPoint3 &v) { x = (float) v.x; y = (float) v.y; z = (float) v.z; return *this; }
 inline DPoint3 &DPoint3::operator=(const FPoint3 &v) { x = v.x; y = v.y; z = v.z; return *this; }
 
