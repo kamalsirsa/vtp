@@ -708,7 +708,8 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	}
 	else if (!strFileName.Right(8).CmpNoCase("catd.ddf") ||
 			 !strExt.Left(3).CmpNoCase("tif") ||
-			 !strExt.Left(3).CmpNoCase("png"))
+			 !strExt.Left(3).CmpNoCase("png") ||
+			 !strExt.CmpNoCase("adf"))
 	{	
 		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
 	}
