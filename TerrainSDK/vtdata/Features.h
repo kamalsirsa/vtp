@@ -80,22 +80,22 @@ public:
 
 	// File IO
 	bool LoadFrom(const char *filename);
-	bool SaveToSHP(const char *filename);
+	bool SaveToSHP(const char *filename) const;
 	bool LoadFromSHP(const char *filename);
 	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
 
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 
 	// feature (entity) operations
-	int NumEntities();
-	int GetEntityType();
+	int NumEntities() const;
+	int GetEntityType() const;
 	void SetEntityType(int type);
 
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
 	int AddPolyLine(DLine2* pl);
-	void GetPoint(int num, DPoint3 &p);
-	void GetPoint(int num, DPoint2 &p);
+	void GetPoint(int num, DPoint3 &p) const;
+	void GetPoint(int num, DPoint2 &p) const;
 	void CopyEntity(int from, int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
 	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
@@ -147,7 +147,7 @@ public:
 	void SetValue(int record, int field, const char *string);
 	void SetValue(int record, int field, int value);
 	void SetValue(int record, int field, double value);
-	void GetValueAsString(int record, int field, vtString &str);
+	void GetValueAsString(int record, int field, vtString &str) const;
 	void SetValueFromString(int iRecord, int iField, const vtString &str);
 	void SetValueFromString(int iRecord, int iField, const char *str);
 

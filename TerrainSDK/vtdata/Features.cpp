@@ -65,7 +65,7 @@ bool vtFeatures::LoadFrom(const char *filename)
 		return LoadWithOGR(filename);
 }
 
-bool vtFeatures::SaveToSHP(const char *filename)
+bool vtFeatures::SaveToSHP(const char *filename) const
 {
 	SHPHandle hSHP = SHPCreate(filename, m_nSHPType);
 	if (!hSHP)
@@ -73,14 +73,16 @@ bool vtFeatures::SaveToSHP(const char *filename)
 
 	int i, j, size;
 	SHPObject *obj;
+	DPoint2 p2;
+	DPoint3 p3;
 	if (m_nSHPType == SHPT_POINT)
 	{
 		size = m_Point2.GetSize();
 		for (i = 0; i < size; i++)
 		{
 			// Save to SHP
-			obj = SHPCreateSimpleObject(m_nSHPType, 1,
-				&m_Point2[i].x, &m_Point2[i].y, NULL);
+			p2 = m_Point2[i];
+			obj = SHPCreateSimpleObject(m_nSHPType, 1, &p2.x, &p2.y, NULL);
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}
@@ -91,8 +93,8 @@ bool vtFeatures::SaveToSHP(const char *filename)
 		for (i = 0; i < size; i++)
 		{
 			// Save to SHP
-			obj = SHPCreateSimpleObject(m_nSHPType, 1,
-				&m_Point3[i].x, &m_Point3[i].y, &m_Point3[i].z);
+			p3 = m_Point3[i];
+			obj = SHPCreateSimpleObject(m_nSHPType, 1, &p3.x, &p3.y, &p3.z);
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}
@@ -727,7 +729,7 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 // feature (entity) operations
 //
 
-int vtFeatures::NumEntities()
+int vtFeatures::NumEntities() const
 {
 	if (m_nSHPType == SHPT_POINT)
 		return m_Point2.GetSize();
@@ -747,7 +749,7 @@ int vtFeatures::NumEntities()
  *		   - SHPT_ARC for 2d polylines
  *		   - SHPT_POLYGON for 2d polygons
  */
-int vtFeatures::GetEntityType()
+int vtFeatures::GetEntityType() const
 {
 	return m_nSHPType;
 }
@@ -790,7 +792,7 @@ int vtFeatures::AddPolyLine(DLine2* pl)
 	return rec;
 }
 
-void vtFeatures::GetPoint(int num, DPoint3 &p)
+void vtFeatures::GetPoint(int num, DPoint3 &p) const
 {
 	if (m_nSHPType == SHPT_POINT)
 	{
@@ -805,7 +807,7 @@ void vtFeatures::GetPoint(int num, DPoint3 &p)
 	}
 }
 
-void vtFeatures::GetPoint(int num, DPoint2 &p)
+void vtFeatures::GetPoint(int num, DPoint2 &p) const
 {
 	if (m_nSHPType == SHPT_POINTZ)
 	{
@@ -1191,7 +1193,7 @@ void vtFeatures::SetValue(int record, int field, double value)
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatures::GetValueAsString(int iRecord, int iField, vtString &str)
+void vtFeatures::GetValueAsString(int iRecord, int iField, vtString &str) const
 {
 	Field *field = m_fields[iField];
 	field->GetValueAsString(iRecord, str);
