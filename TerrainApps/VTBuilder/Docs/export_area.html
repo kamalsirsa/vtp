@@ -12,51 +12,66 @@ VTBuilder<br>
 <a href="index.html"><font size="3">back to index</font></a><font size="3">
 </font>
 </h1>
-<h3>Export Area Tool</h3>
-The export area is a tool you can use to indicate a rectangular area of
-interest.&nbsp; You can then use this area to indicate where you want to
-generate and export elevation or vegetation.
-<p>Menus:</p>
+<h2>Area Tool</h2>
+This tool lets you indicate a rectangular area of
+interest.&nbsp; It's useful for indicating <i>where</i> you want to operate on 
+other layers, such as elevation, imagery, and vegetation.
+<h3>Menus:</h3>
 
 <ul>
-  <li><b>Export Area</b>
-    <ul>
-      <li>Set to Extents
-        <ul>
-          <li>Moves the black lines to surround all of the currently loaded
-            terrains.</li>
+  <li><b>Area Tool</b><ul>
+      <li>Set to Extents<ul>
+          <li>Resized the area tool to surround all of the currently loaded 
+          layers.</li>
         </ul>
       </li>
       <li>Numeric Values
         <ul>
-          <li>Allows you to examine and manually enter the range of the export
-            area.</li>
+          <li>Allows you to examine and manually enter the range of the  area 
+          tool.</li>
         </ul>
       </li>
-      <li>Merge &amp; Export Elevation
+      <li>Merge &amp; Resample Elevation
         <ul>
-          <li>Displays the <b>Merge and Resample</b> dialog (see below) and then
-            asks for a filename to export elevation to.</li>
+          <li>Displays the <b>Merge and Resample Elevation</b> dialog (see 
+          below)</li>
         </ul>
       </li>
-      <li>Generate &amp; Export Vegetation
+      <li>Extract and Export Image<ul>
+      <li>Allows you to merge, resample and export your Image layers, just like 
+      Elevation layers.</li>
+    </ul>
+      </li>
+      <li>Generate  Vegetation
         <ul>
-          <li>see <a href="vegetation.html">Vegetation</a> for an description of
-            how to use this command</li>
+          <li>See <a href="vegetation.html">Vegetation</a> for an description of
+            how to use this command.</li>
         </ul>
+      </li>
+      <li>Request Layer from WFS</li>
+      <li>Request Layer from WMS<ul>
+      <li>These are experimental commands.&nbsp; If you know how to use a WFS or 
+      WMS, give them a try!</li>
+    </ul>
       </li>
     </ul>
   </li>
 </ul>
 
-<p><b>Merge and Resample Dialog</b></p>
+<h3>Toolbar:</h3>
+<ul>
+  <li>The Area Tool (<img border="0" src="images/tb_area.png" align="top" width="39" height="37">) 
+  can be used to set the desired area directly with the mouse.</li>
+</ul>
+
+<h3><b>Merge and Resample Elevation Dialog</b></h3>
 <blockquote>
   <p>This dialog displays:</p>
   <ul>
     <li>The size of the <b>Save Area</b>, in either meters or degrees</li>
     <li>An estimated <b>Sample factor</b>, which is a guess based on looking at
       the X spacing of the first elevation layer.</li>
-    <li>The projected <b>Size at that density</b>, which is the size of a grid
+    <li>The projected <b>Size at that density</b>, which shows you the size of a grid
       that would result from sampling the area at the indicated sample
       factor.&nbsp; Assuming that your input layers are of the same density
       (spacing), this indicates the approximate grid size of the indicated area.</li>

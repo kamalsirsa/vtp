@@ -9,9 +9,7 @@
 
 <h1 align="center">
 VTBuilder<br>
-<a href="index.html"><font size="3">back to index</font></a><font size="3">
-</font>
-</h1>
+<a href="index.html"><font size="3">back to index</font></a></h1>
 
 <h3>Vegetation Layers</h3>
 <blockquote>
@@ -34,9 +32,9 @@ VTBuilder<br>
   </ol>
   <p>Currently you can:</p>
   <ul>
-    <li>import <b>Density</b> from LULC and Shapefiles.</li>
-    <li>import <b>Biotype</b> from Shapefiles</li>
-    <li>export <b>Explicit</b> instances to a VF file, which can be read by VTP
+    <li>Import <b>Density</b> from LULC and Shapefiles.</li>
+    <li>Import <b>Biotype</b> from Shapefiles.</li>
+    <li>Read and write <b>Explicit</b> instances with VF files, which can also be read by VTP
       Enviro</li>
   </ul>
   <p>If you have point data for each plant, use these steps to import explicit 
@@ -59,13 +57,13 @@ VTBuilder<br>
     <li>Load your Bioregion (list of Biotypes) with the menu command 
     &quot;Vegetation: BioRegions&quot;.&nbsp; An example file is in <code>VTP/Enviro/Data/PlantData/bioregion.txt</code></li>
     <li>Import at least one layer with <b>Biotype</b></li>
-    <li>If you have polygon data for planty density, import that layer as <b>Density</b>.&nbsp; 
+    <li>If you have polygon data for plant density, import that layer as <b>Density</b>.&nbsp; 
     This can be the same GIS file that contains the Biotype, or a separate file 
-    such as a LULC file.</li>
-    <li>Use the Export Area tool to indicate the area in which to distribute the
+    such as a LULC file.&nbsp; If you don't have a data file, the default of 
+    &quot;Normal Density&quot; will be assumed.</li>
+    <li>Use the <a href="export_area.html">Area Tool</a> to indicate the area in which to distribute the
       vegetation</li>
-    <li>Give the command &quot;Export Area - Generate and Export
-      Vegetation&quot;&nbsp; A dialog will ask for :
+    <li>Give the menu command &quot;Area Tool - Generate  Vegetation&quot;&nbsp; A dialog will ask for :
       <ul>
         <li>Grid Spacing of Sampling, in meters.&nbsp; The distribution will
           occur on a regular grid.&nbsp; At each point, it will test to see what
