@@ -1842,7 +1842,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	}
 	else
 	{
-		// No projections.
+		// No extents
 		m_EarthExtents.Empty();
 	}
 
