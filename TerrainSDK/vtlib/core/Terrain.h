@@ -149,6 +149,8 @@ public:
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	void DeleteSelectedStructures();
+	bool FindClosestStructure(const DPoint2 &point, double epsilon,
+							  int &structure, double &closest);
 
 	// overridable by subclasses to extend culture
 	virtual void CreateCustomCulture(bool bDoSound);

@@ -740,6 +740,31 @@ void vtTerrain::DeleteSelectedStructures()
 	structures->DeleteSelected();
 }
 
+bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
+					   int &structure, double &closest)
+{
+	structure = -1;
+	closest = 1E8;
+
+	double dist;
+	int i, index, sets = m_StructureSet.GetSize();
+	for (i = 0; i < sets; i++)
+	{
+		vtStructureArray *sa = m_StructureSet[i];
+
+		if (sa->FindClosestStructure(point, epsilon, index, dist))
+		{
+			if (dist < closest)
+			{
+				structure = index;
+				closest = dist;
+				m_iStructSet = i;
+			}
+		}
+	}
+	return (structure != -1);
+}
+
 /**
  * Loads an external 3d model as a movable node.  The file will be looked for
  * on the Terrain's data path, and wrapped with a vtTransform so that it can
@@ -976,15 +1001,18 @@ void vtTerrain::create_floating_labels(const char *filename, const char *fontnam
 	vtString font_path = FindFileOnPaths(m_DataPaths, fontname);
 	if (font_path == "")
 	{
-		VTLOG("Couldn't read font from file '%s'\n", fontname);
+		VTLOG("Couldn't find font file '%s'\n", fontname);
 		return;
 	}
-	VTLOG("Read font from file '%s'\n", fontname);
 
 	vtMaterialArray *pMats = new vtMaterialArray();
 	int index = pMats->AddRGBMaterial1(RGBf(1,1,1), false, false);
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
+	if (success)
+		VTLOG("Read font from file '%s'\n", fontname);
+	else
+		VTLOG("Couldn't read font from file '%s'\n", fontname);
 
 	vtFeatures feat;
 	if (!feat.LoadFrom(filename))
