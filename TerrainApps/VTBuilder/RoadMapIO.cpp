@@ -679,8 +679,6 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pR->m_fWidth = 1.0f;	// defaults
 				pR->m_Surface = stype;
 				pR->m_iLanes = lanes;		// defaults
-				pR->SetHeightAt(0,0);
-				pR->SetHeightAt(1,0);
 				pR->m_iPriority = priority;
 
 				if (pFeature->IsFieldSet(index_lanes))
