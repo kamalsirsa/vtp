@@ -955,7 +955,8 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	int x_trees = (int)(x_size / fTreeSpacing);
 	int y_trees = (int)(y_size / fTreeSpacing);
 
-	int attrib, veg_type;
+	int bio_type;
+	float density_scale;
 
 	vtPlantInstanceArray pia;
 //	pia.m_proj.SetUTM(true);
@@ -977,58 +978,23 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			p2.y = p.y + random_offset(fTreeSpacing * 0.5f);
 
 			// Get Land Use Attribute
-			attrib = pLandUse->FindAttribute(p2);
+			density_scale = pLandUse->FindDensity(p2);
 
-			if (attrib < 0 || attrib > 76)
-				continue;	// off the map, or ocean
-
-			veg_type = pVegType->FindAttribute(p2);
-			if (veg_type == -1)
+			if (density_scale == 0.0f)
 				continue;
 
-			int i;
-			bool wild = false;
-			float density_scale;
+			bio_type = pVegType->FindBiotype(p2);
+			if (bio_type == -1)
+				continue;
 
 			float square_meters = fTreeSpacing * fTreeSpacing;
 
-			switch (attrib)
-			{
-				case 42:	// forest
-					wild = true;
-					density_scale = 1.0f;
-					break;
-				case 32:
-				case 33:
-					wild = true;
-					density_scale = 0.5;
-					break;
-				case 22:	// orchards
-#if 0
-					// kludge crops based on ugly hard-coded areas
-					if (utm_y > 2204500 || utm_y < 2133000)
-					{
-						return GetSpeciesIdByCommonName("MacNut");
-					}
-					else if (utm_x > 235000)
-					{
-						return GetSpeciesIdByCommonName("Papaya");
-					}
-					else
-					{
-						return GetSpeciesIdByCommonName("Coffee");
-					}
-#else
-					continue;	// no crops for now
-#endif
-					break;
-			}
-
 			// look at veg_type to decide which BioType to use
-			vtBioType *bio = m_BioRegions.m_Types[veg_type];
+			vtBioType *bio = m_BioRegions.m_Types[bio_type];
 
 			float factor = density_scale * square_meters * fTreeScarcity;
 
+			int i;
 			for (i = 0; i < bio->m_Densities.GetSize(); i++)
 			{
 				vtPlantDensity *pd = bio->m_Densities[i];

@@ -16,7 +16,6 @@
 #include "vtdata/LULC.h"
 
 #include "Frame.h"
-#include "ProjectionDlg.h"
 #include "Helper.h"
 // Layers
 #include "StructLayer.h"
@@ -25,6 +24,9 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "VegLayer.h"
+// Dialogs
+#include "ProjectionDlg.h"
+#include "ImportVegDlg.h"
 
 #include "ogrsf_frmts.h"
 
@@ -367,8 +369,12 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	// read vegtype SHP data into the layer
 	if (ltype == LT_VEG)
 	{
+		ImportVegDlg dlg(this, -1, "Import Vegetation Information");
+		dlg.SetShapefileName(strFileName);
+		if (dlg.ShowModal() == wxID_CANCEL)
+			return NULL;
 		vtVegLayer *pVL = (vtVegLayer *)pLayer;
-		pVL->AddElementsFromSHP(strFileName, proj);
+		pVL->AddElementsFromSHP(strFileName, proj, dlg.m_fieldindex, dlg.m_datatype);
 	}
 
 	if (ltype == LT_WATER)

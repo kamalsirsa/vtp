@@ -19,7 +19,6 @@
 
 vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
 {
-//	m_strFilename = "Untitled.vf";
 	m_VLType = VLT_Unknown;
 }
 
@@ -154,31 +153,35 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 	return true;
 }
 
-void vtVegLayer::AppendDataFrom(vtLayer *pL)
+bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 {
-//	vtVegLayer *pVL = dynamic_cast<vtVegLayer *>(pL);
 	vtVegLayer *pVL = (vtVegLayer *)(pL);
 	if (!pVL)
-		return;
+		return false;
 
 	// Must be of compatible types
 	if (m_VLType != pVL->m_VLType)
-		return;
+		return false;
 
-	int size1 = m_Poly.GetSize();
-	int size2 = pVL->m_Poly.GetSize();
-//	m_Poly.SetSize(size1 + size2);
+	int i, count;
 
-	int i;
-	for (i = 0; i < size2; i++)
-	{
+	count = pVL->m_Poly.GetSize();
+	for (i = 0; i < count; i++)
 		m_Poly.Append(pVL->m_Poly.GetAt(i));
-	}
+
+	count = pVL->m_Biotype.GetSize();
+	for (i = 0; i < count; i++)
+		m_Biotype.Append(pVL->m_Biotype.GetAt(i));
+
+	count = pVL->m_Density.GetSize();
+	for (i = 0; i < count; i++)
+		m_Density.Append(pVL->m_Density.GetAt(i));
 
 	// We've stolen all the polygons from the old layer, so empty it
 	pVL->m_Poly.SetSize(0);
-}
 
+	return true;
+}
 
 
 void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
@@ -199,38 +202,39 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 		size = size + section->m_iNumPolys;
 	}
 	m_Poly.SetSize(size);
-	m_pAttrib = new int[size];
-
-// Not storing control points any more, used for testing.
-/*	// get the 6 control points and convert them from latlon to utm
-	for (int j = 0; j < 6; j++)
-	{
-		if (bConvertToUTM)
-		{
-			float cplon, cplat;
-			cplon = pLULC->m_Corners[j].x;
-			cplat = pLULC->m_Corners[j].y;
-			(convert)
-			m_VCtrlPts[j].x = (float) cpx;
-			m_VCtrlPts[j].y = (float) cpy;
-		}
-		else
-		{
-			m_VCtrlPts[j].x = pLULC->m_Corners[j].x;
-			m_VCtrlPts[j].y = pLULC->m_Corners[j].y;
-		}
-	}
-*/
+	m_Density.SetSize(size);
 
 	// get each poly from LULC file
 	int i, s, p, count = 0;
+	float density;
 	for (s = 0; s < pLULC->NumSections(); s++)
 	{
 		section = pLULC->GetSection(s);
 		for (p = 0; p < section->m_iNumPolys; p++)
 		{
 			poly = section->m_pPoly + p;
-			m_pAttrib[count] = poly->Attribute;
+
+			bool wild = false;
+			switch (poly->Attribute)
+			{
+				case 42:	// forest
+					wild = true;
+					density = 1.0f;
+					break;
+				case 32:
+				case 33:
+					wild = true;
+					density = 0.5;
+					break;
+				case 22:	// orchards
+					wild = false;
+					// no crops for now
+					break;
+				default:
+					density = 0.0f;
+					break;
+			}
+			m_Density.SetAt(count, density);
 
 			DLine2 *new_poly = new DLine2();
 			new_poly->SetSize(poly->m_iCoords);
@@ -246,52 +250,85 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 }
 
 
-void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
+void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj,
+									int iField, int datatype)
 {
-	//Open the SHP File & Get Info from SHP:
+	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename, "rb");
 	if (hSHP == NULL)
 		return;
 
-	//  Get number of polys (m_iNumPolys) and type of data (nShapeType)
+	// Get number of polys and type of data
 	int		nElem;
 	int		nShapeType;
     double	adfMinBound[4], adfMaxBound[4];
 	FPoint2 point;
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
-	//  Check Shape Type, Veg Layer should be Poly data
+	// Check Shape Type, Veg Layer should be Poly data
 	if (nShapeType != SHPT_POLYGON)
 		return;
 
-	// Open DBF File & Get DBF Info:
+	// Open DBF File
 	DBFHandle db = DBFOpen(filename, "rb");
 	if (db == NULL)
 		return;
 
 	// Check for field of poly id, current default field in dbf is Id
-	int iField = 0, *pnWidth = 0, *pnDecimals = 0;
+	int *pnWidth = 0, *pnDecimals = 0;
 	char *pszFieldName = NULL;
 
 	DBFFieldType fieldtype = DBFGetFieldInfo(db, iField,
 		pszFieldName, pnWidth, pnDecimals );
-	if (fieldtype != FTInteger)
-		return;
-//	if (pszFieldName != "Id")
-//		return;
 
 	m_proj = proj;	// Set projection
-	m_VLType = VLT_BioMap;
+
+	if (datatype == 0)
+	{
+		if (fieldtype != FTDouble)
+			return;
+		m_VLType = VLT_Density;
+		m_Density.SetSize(nElem);
+	}
+	if (datatype == 1)
+	{
+		if (fieldtype != FTString)
+			return;
+	}
+	if (datatype == 2)
+	{
+		if (fieldtype != FTInteger)
+			return;
+	}
+	if (datatype == 1 || datatype == 2)
+	{
+		m_VLType = VLT_BioMap;
+		m_Biotype.SetSize(nElem);
+	}
 
 	// Initialize arrays
 	m_Poly.SetSize(nElem);
-	m_pAttrib = new int [nElem];
 
 	// Read Polys from SHP into Veg Poly
 	for (int i = 0; i < nElem; i++)
 	{
 		// Read DBF Attributes per poly
-		m_pAttrib[i] = DBFReadIntegerAttribute(db, i, iField);
+		if (datatype == 0)
+		{
+			// density
+			m_Density.SetAt(i, (float) DBFReadDoubleAttribute(db, i, iField));
+		}
+		if (datatype == 1)
+		{
+			const char *str = DBFReadStringAttribute(db, i, iField);
+//			m_pAttrib[i] = m_BioRegions.FindBiotypeIdByName(str);
+			// TODO
+			m_Biotype.SetAt(i, -1);
+		}
+		if (datatype == 2)
+		{
+			m_Biotype.SetAt(i, DBFReadIntegerAttribute(db, i, iField));
+		}
 
 		// Get the i-th Poly in the SHP file
 		SHPObject	*psShape;
@@ -300,10 +337,10 @@ void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 		DLine2 *new_poly = new DLine2();
 		new_poly->SetSize(psShape->nVertices);
 
-		//Store the number of coordinate point in the i-th poly
+		// Store the number of coordinate point in the i-th poly
 		m_Poly.SetAt(i, new_poly);
 
-		//Store each SHP Poly Coord in Veg Poly
+		// Store each SHP Poly Coord in Veg Poly
 		for (int j = 0; j < m_Poly[i]->GetSize(); j++)
 		{
 			new_poly->GetAt(j).x = psShape->padfX[j];
@@ -316,12 +353,20 @@ void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 	SHPClose(hSHP);
 }
 
-int vtVegLayer::FindAttribute(DPoint2 p)
+float vtVegLayer::FindDensity(const DPoint2 &p)
 {
 	int poly = m_Poly.FindPoly(p);
 	if (poly != -1)
-		return m_pAttrib[poly];
+		return m_Density.GetAt(poly);
 	else
 		return -1;
 }
 
+int vtVegLayer::FindBiotype(const DPoint2 &p)
+{
+	int poly = m_Poly.FindPoly(p);
+	if (poly != -1)
+		return m_Biotype.GetAt(poly);
+	else
+		return -1;
+}

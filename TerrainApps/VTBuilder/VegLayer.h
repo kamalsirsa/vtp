@@ -19,34 +19,36 @@ enum VegLayerType {
 class vtVegLayer : public vtLayer
 {
 public:
-	//constructor & destructor
 	vtVegLayer();
 	~vtVegLayer();
 
-	//Projections, includes IsUTM(), GetUTMZone(), and GetDatum()
+	// Projection
 	vtProjection m_proj;
 
-	//Basics to overwrite vtLayer 
+	// Basics to overwrite vtLayer 
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, vtScaledView *pView);
 	bool ConvertProjection(vtProjection &proj_new);
 	bool OnSave();
 	bool OnLoad();
-	void AppendDataFrom(vtLayer *pL);
+	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
 
-	//Importing data into veglayer
+	// Importing data into veglayer
 	VegLayerType m_VLType;
 	void AddElementsFromLULC(vtLULCFile *pLULC);
-	void AddElementsFromSHP(const char *filename, vtProjection &proj);
+	void AddElementsFromSHP(const char *filename, vtProjection &proj,
+		int fieldindex, int datatype);
 
-	//Search functionality
-	int FindAttribute(DPoint2 p);
+	// Search functionality
+	float FindDensity(const DPoint2 &p);
+	int   FindBiotype(const DPoint2 &p);
 
 protected:
-	//Array of vegpolys made from poly attrib and array of utm points points
-	DPolyArray2	m_Poly;
-	int			*m_pAttrib;
+	// Array of vegpolys made from poly attrib and array of utm points points
+	DPolyArray2		m_Poly;
+	Array<float>	m_Density;
+	Array<short>	m_Biotype;
 
 	//six control points outline starting at SW clockwise
 //	FPoint2 m_VCtrlPts[6];
