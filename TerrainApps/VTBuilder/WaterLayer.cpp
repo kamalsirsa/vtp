@@ -14,6 +14,7 @@
 #include "WaterLayer.h"
 #include "ScaledView.h"
 #include "Helper.h"
+#include "ogrsf_frmts.h"
 
 bool vtWaterLayer::m_bFill = false;
 
@@ -70,16 +71,20 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	wxPen WaterPen(wxColor(0,40,160), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(WaterPen);
+	wxBrush WaterBrush(wxColor(0,200,200), wxSOLID);
+	pDC->SetBrush(WaterBrush);
 
+	vtWaterFeature *feat;
 	int num_lines = m_Lines.GetSize();
 	for (int i = 0; i < num_lines; i++)
 	{
+		feat = GetFeature(i);
 		int c;
-		int size = m_Lines[i]->GetSize();
+		int size = feat->GetSize();
 		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
-			pView->screen(m_Lines[i]->GetAt(c), g_screenbuf[c]);
+			pView->screen(feat->GetAt(c), g_screenbuf[c]);
 
-		if (m_bFill)
+		if (m_bFill && feat->m_bIsBody)
 			pDC->DrawPolygon(c, g_screenbuf);
 		else
 			pDC->DrawLines(c, g_screenbuf);
@@ -96,6 +101,52 @@ bool vtWaterLayer::GetExtent(DRECT &rect)
 	for (int i = 0; i < size; i++)
 		rect.GrowToContainLine(*m_Lines[i]);
 	return true;
+}
+
+void vtWaterLayer::AddFeature(vtWaterFeature *pFeat)
+{
+	m_Lines.Append(pFeat);
+}
+
+bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
+{
+	// safety check
+	if (pL->GetType() != LT_WATER)
+		return false;
+
+	vtWaterLayer *pFrom = (vtWaterLayer *)pL;
+
+	int from_size = pFrom->m_Lines.GetSize();
+	for (int i = 0; i < from_size; i++)
+		m_Lines.Append(pFrom->m_Lines[i]);
+
+	pFrom->m_Lines.SetSize(0);
+	return true;
+}
+
+void vtWaterLayer::GetProjection(vtProjection &proj)
+{
+	proj = m_proj;
+}
+
+void vtWaterLayer::SetProjection(vtProjection &proj)
+{
+	m_proj = proj;
+}
+
+void vtWaterLayer::Offset(const DPoint2 &p)
+{
+	int size = m_Lines.GetSize();
+	for (int i = 0; i < size; i++)
+	{
+		for (int c = 0; c < m_Lines[i]->GetSize(); c++)
+			m_Lines[i]->GetAt(c) += p;
+	}
+}
+
+void vtWaterLayer::PaintDibWithWater(vtDIB *dib)
+{
+	// TODO - need extents of DIB, create DIB subclass?
 }
 
 void vtWaterLayer::AddElementsFromDLG(vtDLGFile *pDlg)
@@ -164,43 +215,142 @@ void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 	SHPClose(hSHP);
 }
 
-void vtWaterLayer::AddLine(DLine2 *pDLine)
+void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
+									 void progress_callback(int))
 {
-	m_Lines.Append(pDLine);
-}
+	int i, j, feature_count, count;
+	OGRLayer		*pLayer;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+//	OGRPoint		*pPoint;
+	OGRLineString   *pLineString;
+	OGRPolygon		*pPolygon;
+	vtWaterFeature	*pFeat;
 
-bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
-{
-	// safety check
-	if (pL->GetType() != LT_WATER)
-		return false;
-
-	vtWaterLayer *pFrom = (vtWaterLayer *)pL;
-
-	int from_size = pFrom->m_Lines.GetSize();
-	for (int i = 0; i < from_size; i++)
-		m_Lines.Append(pFrom->m_Lines[i]);
-
-	pFrom->m_Lines.SetSize(0);
-	return true;
-}
-
-void vtWaterLayer::GetProjection(vtProjection &proj)
-{
-	proj = m_proj;
-}
-
-void vtWaterLayer::SetProjection(vtProjection &proj)
-{
-	m_proj = proj;
-}
-
-void vtWaterLayer::Offset(const DPoint2 &p)
-{
-	int size = m_Lines.GetSize();
-	for (int i = 0; i < size; i++)
+	// Assume that this data source is a USGS SDTS DLG
+	//
+	// Iterate through the layers looking for the ones we care about
+	//
+	int num_layers = pDatasource->GetLayerCount();
+	for (i = 0; i < num_layers; i++)
 	{
-		for (int c = 0; c < m_Lines[i]->GetSize(); c++)
-			m_Lines[i]->GetAt(c) += p;
+		pLayer = pDatasource->GetLayer(i);
+		if (!pLayer)
+			continue;
+
+		feature_count = pLayer->GetFeatureCount();
+  		pLayer->ResetReading();
+		OGRFeatureDefn *defn = pLayer->GetLayerDefn();
+		if (!defn)
+			continue;
+
+		const char *layer_name = defn->GetName();
+
+		// Lines (streams, shoreline)
+		if (!strcmp(layer_name, "LE01"))
+		{
+			// Get the projection (SpatialReference) from this layer
+			OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+			if (pSpatialRef)
+				m_proj.SetSpatialReference(pSpatialRef);
+
+			// get field indices
+			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+
+			count = 0;
+			while( (pFeature = pLayer->GetNextFeature()) != NULL )
+			{
+				count++;
+				progress_callback(count * 100 / feature_count);
+
+				// Ignore non-entities
+				if (!pFeature->IsFieldSet(index_entity))
+					continue;
+
+				// The "ENTITY_LABEL" contains the same information as the old
+				// DLG classification.  First, try to use this field to guess
+				// values such as number of lanes, etc.
+				const char *str_entity = pFeature->GetFieldAsString(index_entity);
+				int numEntity = atoi(str_entity);
+				int iMajorAttr = numEntity / 10000;
+				int iMinorAttr = numEntity % 10000;
+
+				pFeat = NULL;
+				switch (iMinorAttr)
+				{
+				case 412:	// stream
+				case 413:	// braided stream
+					pFeat = new vtWaterFeature;
+					pFeat->m_bIsBody = false;
+					break;
+				}
+				if (!pFeat)
+					continue;
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom) continue;
+				pLineString = (OGRLineString *) pGeom;
+
+				int num_points = pLineString->getNumPoints();
+				pFeat->SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+					pFeat->SetAt(j, DPoint2(pLineString->getX(j),
+						pLineString->getY(j)));
+
+				AddFeature(pFeat);
+			}
+		}
+		// Areas (water bodies)
+		if (!strcmp(layer_name, "PC01"))
+		{
+			// get field indices
+			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+
+			count = 0;
+			while( (pFeature = pLayer->GetNextFeature()) != NULL )
+			{
+				count++;
+				progress_callback(count * 100 / feature_count);
+
+				// Ignore non-entities
+				if (!pFeature->IsFieldSet(index_entity))
+					continue;
+
+				// The "ENTITY_LABEL" contains the same information as the old
+				// DLG classification.  First, try to use this field to guess
+				// values such as number of lanes, etc.
+				const char *str_entity = pFeature->GetFieldAsString(index_entity);
+				int numEntity = atoi(str_entity);
+				int iMajorAttr = numEntity / 10000;
+				int iMinorAttr = numEntity % 10000;
+
+				pFeat = NULL;
+				switch (iMinorAttr)
+				{
+				case 101:	// reservoir
+				case 111:	// marsh, wetland, swamp, or bog
+				case 116:	// bay, estuary, gulf, ocean, or sea
+				case 412:	// stream
+				case 413:	// braided stream
+				case 421:	// lake or pond
+					pFeat = new vtWaterFeature;
+					pFeat->m_bIsBody = true;
+					break;
+				}
+				if (!pFeat)
+					continue;
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom) continue;
+				pPolygon = (OGRPolygon *) pGeom;
+
+				OGRLinearRing *ring = pPolygon->getExteriorRing();
+				int num_points = ring->getNumPoints();
+				pFeat->SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+					pFeat->SetAt(j, DPoint2(ring->getX(j),
+						ring->getY(j)));
+
+				AddFeature(pFeat);
+			}
+		}
 	}
 }
