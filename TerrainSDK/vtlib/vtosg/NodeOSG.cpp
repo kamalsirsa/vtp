@@ -471,25 +471,32 @@ void vtTransform::TranslateLocal(const FPoint3 &pos)
 	m_pTransform->preMult(Matrix::translate(pos.x, pos.y, pos.z));
 }
 
-void vtTransform::Rotate2(const FPoint3 &axis, float angle)
+void vtTransform::Rotate2(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
 	m_pTransform->postMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
-void vtTransform::RotateLocal(const FPoint3 &axis, float angle)
+void vtTransform::RotateLocal(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
 	m_pTransform->preMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
-void vtTransform::RotateParent(const FPoint3 &axis, float angle)
+void vtTransform::RotateParent(const FPoint3 &axis, double angle)
 {
 	// OSG 0.8.43 and later
 	Vec3 trans = m_pTransform->getMatrix().getTrans();
 	m_pTransform->postMult(Matrix::translate(-trans)*
 			  Matrix::rotate(angle, axis.x, axis.y, axis.z)*
 			  Matrix::translate(trans));
+}
+
+FPoint3 vtTransform::GetDirection() const
+{
+	const Matrix &xform = m_pTransform->getMatrix();
+	const osg_matrix_value *ptr = xform.ptr();
+	return FPoint3(-ptr[2], -ptr[6], -ptr[10]);
 }
 
 void vtTransform::Scale3(float x, float y, float z)
@@ -685,14 +692,6 @@ void vtCamera::SetFOV(float fov_x)
 float vtCamera::GetFOV()
 {
 	return m_fFOV;
-}
-
-void vtCamera::GetDirection(FPoint3 &dir)
-{
-	FMatrix4 mat;
-	GetTransform1(mat);
-	FPoint3 forward(0, 0, -1);
-	mat.TransformVector(forward, dir);
 }
 
 void vtCamera::ZoomToSphere(const FSphere &sphere)

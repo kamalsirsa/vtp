@@ -122,6 +122,7 @@ class CustomTransform : public osg::MatrixTransform
 {
 public:
 	inline osg::Matrix& getMatrix() { return _matrix; }
+	inline const osg::Matrix& getMatrix() const { return _matrix; }
 };
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
@@ -157,9 +158,11 @@ public:
 		frame of reference. */
 	void TranslateLocal(const FPoint3 &pos);
 
-	void Rotate2(const FPoint3 &axis, float angle);
-	void RotateLocal(const FPoint3 &axis, float angle);
-	void RotateParent(const FPoint3 &axis, float angle);
+	void Rotate2(const FPoint3 &axis, double angle);
+	void RotateLocal(const FPoint3 &axis, double angle);
+	void RotateParent(const FPoint3 &axis, double angle);
+	FPoint3 GetDirection() const;
+
 	void Scale3(float x, float y, float z);
 
 	void SetTransform1(const FMatrix4 &mat);
@@ -417,7 +420,6 @@ public:
 	void SetWidth(float f);
 	float GetWidth();
 
-	void GetDirection(FPoint3 &dir);
 	void ZoomToSphere(const FSphere &sphere);
 
 protected:
