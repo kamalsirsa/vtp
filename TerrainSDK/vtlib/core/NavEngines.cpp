@@ -10,6 +10,7 @@
 #include "vtdata/vtLog.h"
 #include "NavEngines.h"
 
+
 #define GRAVITY_CONSTANT 9.81	// g = 9.81 meters/sec^2
 
 //
@@ -63,8 +64,6 @@ void vtFlyer::Eval()
 	//  Right button: up-down, left-right
 	if ((m_buttons & VT_RIGHT) && !(m_buttons & VT_LEFT))
 	{
-		FPoint3 pos = pTarget->GetTrans();
-
 		float updown = -my * m_fSpeed * elapsed;
 		float leftright = mx * m_fSpeed * elapsed;
 
@@ -144,6 +143,76 @@ void vtTerrainFlyer::KeepAboveGround()
 		}
 		pTarget->SetTrans(pos);
 	}
+}
+
+
+//
+// vtPanoFlyer: moves target based on mouse position, like a QTVR or other panorama viewer
+//
+vtPanoFlyer::vtPanoFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin)
+ : vtTerrainFlyer(fSpeed, fHeightAboveTerrain, bMin)
+{
+	m_Velocity = 0.0f;
+}
+
+void vtPanoFlyer::Eval()
+{
+	float elapsed = vtGetFrameTime();
+
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (!pTarget)
+		return;
+
+	float mx, my;
+	GetNormalizedMouseCoords(mx, my);
+
+	//	No button: pitch, yaw
+	if (!(m_buttons & VT_RIGHT))
+	{
+		float rotate = -mx * elapsed;
+		float updown = -my * elapsed;
+
+		pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
+		pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+	}
+
+	//  left button: Accelerate forward
+	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
+	{
+		// speed up
+		m_Velocity += (m_fSpeed * elapsed * .25);
+
+		if (m_Velocity > m_fSpeed) m_Velocity = m_fSpeed; // clamp at m_fSpeed
+
+		float trans = -m_Velocity * elapsed;
+
+		pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, trans));
+	}
+	else
+	{
+		// slow down
+		if (m_Velocity > 0.0)
+		{
+			m_Velocity -= (m_fSpeed * elapsed * .05);
+			if (m_Velocity < 0) m_Velocity = 0.0f; // clamp at 0
+		}
+	}
+
+	//  Right button: up-down, left-right
+	if (!(m_buttons & VT_LEFT) && (m_buttons & VT_RIGHT))
+	{
+		float updown = -my * m_fSpeed * elapsed;
+		float leftright = mx * m_fSpeed * elapsed;
+
+		pTarget->TranslateLocal(FPoint3(leftright, updown, 0.0f));
+	}
+
+	//  Both buttons: nothing
+	if ((m_buttons & VT_LEFT) && (m_buttons & VT_RIGHT))
+	{
+	}
+
+	KeepAboveGround();
 }
 
 
