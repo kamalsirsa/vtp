@@ -8,7 +8,7 @@
 #include "vtlib/vtlib.h"
 
 #include <fstream>
-#include "vtdata/vtlog.h"
+#include "vtdata/vtLog.h"
 
 #include "Structure3d.h"
 #include "Building3d.h"
@@ -205,7 +205,7 @@ bool vtStructureArray3d::ConstructStructure(int index)
 	vtStructure3d *str = GetStructure3d(index);
 	if (str)
 		return str->CreateNode(m_pTerrain);
-	return NULL;
+	return false;
 }
 
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
