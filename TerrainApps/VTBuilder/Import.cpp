@@ -1011,10 +1011,10 @@ double ExtractValue(DBFHandle db, int iRec, int iField, DBFFieldType ftype,
 				sec  = GetIntFromString(string+4, 2);
 				frac = GetIntFromString(string+6, 2);
 			}
-			if (bFlipEasting)
-				deg = -deg;
 			double secs = sec + (frac/100.0);
 			double val = deg + (min/60.0) + (secs/3600.0);
+			if (bFlipEasting)
+				val = -val;
 			return val;
 		}
 		break;
