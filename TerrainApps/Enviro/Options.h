@@ -36,6 +36,7 @@ public:
 	float	m_fCursorThickness;
 	float	m_fCatenaryFactor;
 	vtString	m_strContentFile;
+	float	m_fMaxPickableInstanceRadius;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;

@@ -31,6 +31,7 @@ EnviroOptions g_Options;
 #define STR_CURSOR_THICKNESS "CursorThickness"
 #define STR_CONTENT_FILE "ContentFile"
 #define STR_CATENARY_FACTOR "CatenaryFactor"
+#define STR_MAX_INST_RADIUS "MaxPickableInstanceRadius"
 
 EnviroOptions::EnviroOptions()
 {
@@ -41,6 +42,7 @@ EnviroOptions::EnviroOptions()
 	m_bTextureCompression = true;
 	m_fCursorThickness = 0.025;
 	m_fCatenaryFactor = 140.0f;
+	m_fMaxPickableInstanceRadius = 200;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -108,6 +110,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			m_strContentFile = get_line_from_stream(input);
 			bFoundContentFile = true;
 		}
+		else if (strcmp(buf, STR_MAX_INST_RADIUS) == 0)
+			input >> m_fMaxPickableInstanceRadius;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -173,6 +177,8 @@ bool EnviroOptions::Write()
 	output << m_fCatenaryFactor << endl;
 	output << STR_CONTENT_FILE << "\t\t";
 	output << (const char *)m_strContentFile << endl;
+	output << STR_MAX_INST_RADIUS << "\t";
+	output << m_fMaxPickableInstanceRadius << endl;
 
 	return true;
 }
