@@ -198,9 +198,8 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 /**
  * BuildTerrain constructs all geometry, textures and objects for a given terrain.
  *
- * \param bDummy : Ignore this parameter.
- * \param iError : Returns by reference an error value, or 0 for no error.
- * \returns A vtGroup which is the top of the terrain scene graph.
+ * \param pTerrain	The terrain to build.
+ * \returns			A vtGroup which is the top of the terrain's scene graph.
  */
 vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 {
