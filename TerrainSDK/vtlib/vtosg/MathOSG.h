@@ -9,6 +9,10 @@
 #ifndef VTOSG_MATHH
 #define VTOSG_MATHH
 
+#if OSG_USE_DOUBLE_MATRICES
+#pragma warning "Warning: you should build OSG to use float, not double, for matrices.
+#endif
+
 ///////////////////////
 // math helpers
 
