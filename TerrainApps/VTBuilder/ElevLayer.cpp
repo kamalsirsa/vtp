@@ -226,6 +226,7 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 	{
 		success = m_pTin->ConvertProjection(proj_new);
 	}
+	SetModified(true);
 
 	CloseProgressDialog();
 	return success;
