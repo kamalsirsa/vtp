@@ -8,6 +8,11 @@
 
 #include "vtdata/vtDIB.h"
 
+/**
+ * This class represents an Image.  It can be loaded from a number of
+ * file formats, and used as a texture map for a textured material, by
+ * passing it to vtMaterial::SetTexture()
+ */
 class vtImage: public vtImageBase, public osg::Referenced
 {
 public:
@@ -25,7 +30,10 @@ protected:
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
 
-protected:	// should be private, but that causes an annoying gcc warning
+protected:
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	// (Could be private, but that causes an annoying gcc warning.)
 	virtual ~vtImage();
 };
 
