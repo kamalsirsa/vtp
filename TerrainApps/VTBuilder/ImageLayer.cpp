@@ -102,7 +102,7 @@ bool vtImageLayer::LoadFromGDAL()
 	OGRErr err;
 	const char *pProjectionString;
 	double affineTransform[6];
-	OGRSpatialReference SpatialReference;
+	vtProjection SpatialReference;
 	double linearConversionFactor;
 	GDALRasterBand *pBand;
 	GDALColorTable *pTable;
@@ -140,11 +140,23 @@ bool vtImageLayer::LoadFromGDAL()
 		iPixelHeight = pDataset->GetRasterYSize();
 
 		if (NULL == (pProjectionString = pDataset->GetProjectionRef()))
-			throw "Unknown coordinate system.";
+		{
+			// check for existence of .prj file
+			bool bSuccess = SpatialReference.ReadProjFile(m_strFilename.mb_str());
+
+			if (!bSuccess)
+				throw "Unknown coordinate system.";
+		}
 
 		err = SpatialReference.importFromWkt((char**)&pProjectionString);
 		if (err != OGRERR_NONE)
-			throw "Unknown coordinate system.";
+		{
+			// check for existence of .prj file
+			bool bSuccess = SpatialReference.ReadProjFile(m_strFilename.mb_str());
+
+			if (!bSuccess)
+				throw "Unknown coordinate system.";
+		}
 
 		if (CE_None != pDataset->GetGeoTransform(affineTransform))
 			throw "Dataset does not contain a valid affine transform.";
