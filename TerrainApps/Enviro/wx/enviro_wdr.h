@@ -34,8 +34,8 @@
 #define ID_IMAGE 10003
 #define ID_TERRAIN 10004
 #define ID_TNAME 10005
-#define ID_TSELECT 10006
-#define ID_EDITPROP 10007
+#define ID_EDITPROP 10006
+#define ID_TERRMAN 10007
 #define ID_FULLSCREEN 10008
 #define ID_FLOATING 10009
 #define ID_SOUND 10010
@@ -164,6 +164,14 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_LABEL_HEIGHT 10111
 #define ID_LABEL_SIZE 10112
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_TREECTRL 10113
+#define ID_ADD_PATH 10114
+#define ID_ADD_TERRAIN 10115
+#define ID_COPY 10116
+#define ID_DELETE 10117
+#define ID_EDIT_PARAMS 10118
+wxSizer *TerrManFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 

@@ -26,13 +26,13 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
     wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, wxT(""), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item1, 0, wxALIGN_CENTER, 5 );
+    item0->Add( item1, 0, wxALIGN_CENTER, 0 );
 
     wxStaticBox *item3 = new wxStaticBox( parent, -1, _("Launch with:") );
     wxStaticBoxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
 
     wxRadioButton *item4 = new wxRadioButton( parent, ID_EARTHVIEW, _("Earth View"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP, 5 );
+    item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP, 10 );
 
     wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -52,18 +52,21 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_TNAME, wxT(""), wxDefaultPosition, wxSize(140,-1), wxTE_READONLY );
+    item9->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs10 = (wxString*) NULL;
+    wxChoice *item10 = new wxChoice( parent, ID_TNAME, wxDefaultPosition, wxSize(190,-1), 0, strs10, 0 );
     item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item11 = new wxButton( parent, ID_TSELECT, _("Select..."), wxDefaultPosition, wxSize(55,-1), 0 );
-    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 0 );
-
-    wxButton *item12 = new wxButton( parent, ID_EDITPROP, _("Edit Properties"), wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item11 = new wxButton( parent, ID_EDITPROP, _("Edit Properties"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item2->Add( item9, 0, wxALIGN_CENTER|wxALL, 0 );
 
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 10 );
+
+    wxButton *item12 = new wxButton( parent, ID_TERRMAN, _("Terrain Manager..."), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxStaticBox *item14 = new wxStaticBox( parent, -1, _("Global options") );
     wxStaticBoxSizer *item13 = new wxStaticBoxSizer( item14, wxVERTICAL );
@@ -102,7 +105,7 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxCheckBox *item24 = new wxCheckBox( parent, ID_SHADOWS, _("Plant Shadows"), wxDefaultPosition, wxDefaultSize, 0 );
     item15->Add( item24, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item13->Add( item15, 0, wxALIGN_CENTER|wxALL, 0 );
+    item13->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 10 );
 
@@ -1133,6 +1136,61 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item36->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item0->Add( item36, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
+wxSizer *TerrManFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxTreeCtrl *item2 = new wxTreeCtrl( parent, ID_TREECTRL, wxDefaultPosition, wxSize(380,240), wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
+    item1->Add( item2, 1, wxGROW|wxALL, 5 );
+
+    wxBoxSizer *item3 = new wxBoxSizer( wxVERTICAL );
+
+    wxButton *item4 = new wxButton( parent, ID_ADD_PATH, _("Add Path"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item5 = new wxButton( parent, ID_ADD_TERRAIN, _("Add Terrain"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticLine *item6 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item3->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item7 = new wxButton( parent, ID_COPY, _("Add Copy"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item8 = new wxButton( parent, ID_DELETE, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticLine *item9 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item3->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item10 = new wxButton( parent, ID_EDIT_PARAMS, _("Edit Parameters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item3->Add( 20, 10, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item11 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+
+    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
