@@ -223,6 +223,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	{
 		if (m_pSkyDome != NULL)
 			m_pSkyDome->SetEnabled(false);
+		m_pTime->SetEnabled(false);
 		return;
 	}
 
@@ -279,8 +280,11 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 //	pTerrain->TranslateToGMT(time);
 
 	m_pTime->SetTime(localtime);
-	m_pTime->SetSpeed(param.GetValueFloat(STR_TIMESPEED));
-	m_pTime->SetEnabled(param.GetValueBool(STR_TIMEON));
+	if (param.GetValueBool(STR_TIMEON))
+		m_pTime->SetSpeed(param.GetValueFloat(STR_TIMESPEED));
+	else
+		m_pTime->SetSpeed(0.0f);
+	m_pTime->SetEnabled(true);
 
 	// set the time to the time of the new terrain
 	if (m_pSkyDome)
