@@ -321,7 +321,7 @@ bool vtImageLayer::LoadFromGDAL()
 			wxString2 msg = "File lacks a projection.  Would you like to specify one?\n"
 				"Yes - specify projection\n"
 				"No - use current projection\n";
-			int res = wxMessageBox(msg, "Image Import", wxYES_NO | wxCANCEL);
+			int res = wxMessageBox(msg, _T("Image Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
 				GetMainFrame()->GetProjection(m_proj);
