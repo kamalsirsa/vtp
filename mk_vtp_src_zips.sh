@@ -15,13 +15,13 @@ DIST_FILE2=${TARGETDIR}/vtp-srcdocs-${DATE}.zip
 # Create the archive containing the Source
 rm -f $DIST_FILE1
 
+zip $DIST_FILE1 VTP/Make.defs
+zip $DIST_FILE1 VTP/Makefile
+
 # zip $DIST_FILE1 VTP/TerrainSDK/configure
 # zip $DIST_FILE1 VTP/TerrainSDK/configure.in
 zip $DIST_FILE1 VTP/TerrainSDK/install-sh
-zip $DIST_FILE1 VTP/TerrainSDK/Make.defs
-zip $DIST_FILE1 VTP/TerrainSDK/Makedefs.in
 zip $DIST_FILE1 VTP/TerrainSDK/Makefile
-zip $DIST_FILE1 VTP/TerrainSDK/Makefile.in
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/shapelib/*
 
@@ -38,10 +38,7 @@ zip $DIST_FILE1 VTP/TerrainSDK/vtui/*
 # zip $DIST_FILE1 VTP/TerrainApps/configure
 # zip $DIST_FILE1 VTP/TerrainApps/configure.in
 zip $DIST_FILE1 VTP/TerrainApps/install-sh
-zip $DIST_FILE1 VTP/TerrainApps/Make.defs
-zip $DIST_FILE1 VTP/TerrainApps/Makedefs.in
 zip $DIST_FILE1 VTP/TerrainApps/Makefile
-zip $DIST_FILE1 VTP/TerrainApps/Makefile.in
 zip $DIST_FILE1 VTP/TerrainApps/README.sgi
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.cpp
@@ -108,6 +105,13 @@ zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.rc
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Elevation/README.txt
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/res/*
+
+zip $DIST_FILE1 VTP/TerrainApps/prSimple/prSimple.cpp
+zip $DIST_FILE1 VTP/TerrainApps/prSimple/prSimple.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/prSimple/prSimple.sln
+zip $DIST_FILE1 VTP/TerrainApps/prSimple/Makefile
+zip $DIST_FILE1 VTP/TerrainApps/prSimple/Data/Simple.xml
+zip $DIST_FILE1 VTP/TerrainApps/prSimple/Data/Elevation/README.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/app.cpp
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.vcproj
