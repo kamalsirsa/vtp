@@ -18,20 +18,24 @@
 
 // OpenGL headers
 #if WIN32
-  #if VTLIB_PLIB
+  #if VTLIB_PLIB || VTLIB_NI
 	#include <windows.h>	// PLIB and PSM require the full windows.h
-  #endif
-  #if !VTLIB_PSM
+	#undef min
+	#undef max
+#endif
+  #if !VTLIB_PSM && !VTLIB_NI
 	// these definitions let us include gl.h without the entire Windows headers
 	#include "core/winglue.h"
   #endif
 #endif
 
 #if !VTLIB_PSM
-  #ifdef __DARWIN_OSX__
-	#include <OpenGL/gl.h>
-  #else
-    #include <GL/gl.h>
+  #if !VTLIB_NI
+	#ifdef __DARWIN_OSX__
+	  #include <OpenGL/gl.h>
+	#else
+	  #include <GL/gl.h>
+	#endif
   #endif
 //
 // Base classes from which the API-specific implementation
@@ -98,6 +102,34 @@
 	#include "vtosg/MeshMat.h"
 	#include "vtosg/NodeOSG.h"
 	#include "vtosg/SceneOSG.h"
+#endif // OSG
+
+///////////////////////////////// NI //////////////////////////////
+#if VTLIB_NI
+	#ifdef _MSC_VER
+//	  #pragma warning(disable: 4511) // turn off warning
+	#endif
+	#include "vtni/ImageNI.h"
+	#include "vtni/MathNI.h"
+	#include "vtni/MeshMatNI.h"
+	#include "vtni/NodeNI.h"
+	#include "vtni/SceneNI.h"
+
+	#include <limits>
+	#include <map>
+
+	#define glBegin(x)
+	#define glEnd()
+	#define glVertex3f(x,y,z)
+	#define glTexParameteri(a,b,c)
+	#define glPolygonOffset(x,y)
+	#define glEnable(x)
+	#define glDisable(x)
+	#define glColor4f(a,b,c,d)
+	#define glPushMatrix()
+	#define glScalef(x,y,z)
+	#define glPopMatrix()
+	#define glFrontFace(x)
 #endif // OSG
 
 /////////////////////////////// SGL ////////////////////////////
