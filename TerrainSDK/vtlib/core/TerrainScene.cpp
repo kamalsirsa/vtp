@@ -151,8 +151,6 @@ void vtTerrainScene::_CreateSky()
 	m_pSkyTrack->m_pCamera = vtGetScene()->GetCamera();
 	m_pSkyTrack->SetTarget(m_pSkyDome);
 	vtGetScene()->AddEngine(m_pSkyTrack);
-
-	vtGetScene()->SetBgColor(horizon_color);
 }
 
 /**
@@ -277,7 +275,7 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	m_pCurrentTerrain->SetGlobalProjection();
 
 	// Set background color to match the ocean
-	vtGetScene()->SetBgColor(m_pCurrentTerrain->GetOceanColor());
+	vtGetScene()->SetBgColor(m_pCurrentTerrain->GetBgColor());
 
 	// Turn on the engines specific to the new terrain
 	m_pCurrentTerrain->ActivateEngines(true);
