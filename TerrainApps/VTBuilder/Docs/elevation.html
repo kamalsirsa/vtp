@@ -114,12 +114,15 @@ VTBuilder<br>
           </li>
       <li>Generate and Export Bitmap
         <ul>
-          <li>Creates and saves a bitmap (BMP) of the currently selected
+          <li>Creates and saves a square bitmap (BMP) of the currently selected
             Elevation Layer.&nbsp; The elevation will be used to provide artificial color and
             shading for the bitmap.&nbsp; When you don't have any imagery for
             your area, only elevation, this can give you a visually useful image
             - similar to the &quot;Texture: Derive from Elevation&quot; option
-            in Enviro, but better because the image is generated before runtime.</li>
+            in Enviro, but better because the image is generated before runtime.<br>
+          VTBuilder will ask for a size in pixels (N) and make a square image (N 
+          x N).&nbsp; The reason for squareness is that 3D hardware, for any 3D 
+          runtime, prefers square images.</li>
         </ul>
       </li>
         </ul>
