@@ -106,6 +106,7 @@ EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnRoadShowNodes)
 EVT_MENU(ID_ROAD_SHOWWIDTH,		MainFrame::OnRoadShowWidth)
 EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
 EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
+EVT_MENU(ID_ROAD_GUESS,			MainFrame::OnRoadGuess)
 
 EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectRoad)
 EVT_UPDATE_UI(ID_ROAD_SELECTNODE,	MainFrame::OnUpdateSelectNode)
@@ -257,6 +258,7 @@ void MainFrame::CreateMenus()
 	roadMenu->Append(ID_ROAD_SELECTHWY, "Select by Highway Number", "Select Highway", true);
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, "Clean RoadMap", "Clean");
+	roadMenu->Append(ID_ROAD_GUESS, "Guess Intersection Types");
 
 	// Utilities(5)
 	utilityMenu = new wxMenu;
@@ -655,10 +657,17 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	wxString msg = "Saving layer to file as " + lp->GetFilename();
 	SetStatusText(msg);
 
-	lp->Save();
-	lp->SetModified(false);
-
-	msg = "Saved layer to file as " + lp->GetFilename();
+	bool success = lp->Save();
+	if (success)
+	{
+		lp->SetModified(false);
+		msg = "Saved layer to file as " + lp->GetFilename();
+	}
+	else
+	{
+		msg = "Failed to save layer to " + lp->GetFilename();
+		wxMessageBox(msg, "Problem");
+	}
 	SetStatusText(msg);
 }
 
@@ -1149,6 +1158,11 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (!pRL) return;
 
+	// check projection
+	vtProjection proj;
+	pRL->GetProjection(proj);
+	bool bDegrees = proj.IsGeographic();
+
 	int count;
 	wxString str;
 	OpenProgressDialog("Cleaning RoadMap");
@@ -1163,12 +1177,15 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 
 	UpdateProgressDialog(20, "Merging redundant nodes");
 	// potentially takes a long time...
-	count = pRL->MergeRedundantNodes(progress_callback);
+	count = pRL->MergeRedundantNodes(bDegrees, progress_callback);
 	if (count)
 	{
 		str = wxString::Format("Merged %d redundant roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
+
+#if 0
+	// The following cleanup operations are disabled until they are proven safe!
 
 	UpdateProgressDialog(30, "Removing degenerate roads");
 	count = pRL->RemoveDegenerateRoads();
@@ -1203,7 +1220,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	}
 
 	UpdateProgressDialog(70, "Fixing overlapped roads");
-	count = pRL->FixOverlappedRoads();
+	count = pRL->FixOverlappedRoads(bDegrees);
 	if (count)
 	{
 		str = wxString::Format("Fixed %i overlapped roads", count);
@@ -1225,10 +1242,25 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 		str = wxString::Format("Split %d looping roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
+#endif
 
 	CloseProgressDialog();
 	pRL->SetModified(true);
 	pRL->ComputeExtents();
+
+	m_pView->Refresh();
+}
+
+void MainFrame::OnRoadGuess(wxCommandEvent &event)
+{
+	vtRoadLayer *pRL = GetActiveRoadLayer();
+	if (!pRL) return;
+
+	// Set visual properties
+	pRL->GuessIntersectionTypes();
+
+	for (NodeEdit *pN = pRL->GetFirstNode(); pN; pN = pN->GetNext())
+		pN->DetermineVisualFromRoads();
 
 	m_pView->Refresh();
 }

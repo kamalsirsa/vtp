@@ -118,6 +118,7 @@ public:
 	void OnRoadShowWidth(wxCommandEvent& event);
 	void OnSelectHwy(wxCommandEvent& event);
 	void OnRoadClean(wxCommandEvent& event);
+	void OnRoadGuess(wxCommandEvent& event);
 
 	void OnUpdateSelectRoad(wxUpdateUIEvent& event);
 	void OnUpdateSelectNode(wxUpdateUIEvent& event);
@@ -247,6 +248,7 @@ public:
 	// Projection
 	void SetProjection(vtProjection &p);
 	void GetProjection(vtProjection &p) { p = m_proj; }
+	vtProjection &GetAtProjection() { return m_proj; }
 
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);

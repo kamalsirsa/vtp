@@ -234,7 +234,17 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 	//delete the lookup array.
 	delete pNodeLookup;
 
-	//guess and add some intersection behaviors
+	GuessIntersectionTypes();
+}
+
+//
+// Guess and add some intersection behaviors
+//
+void RoadMapEdit::GuessIntersectionTypes()
+{
+	int i;
+	NodeEdit *pN;
+
 	pN = GetFirstNode();
 	RoadEdit* curRoad;
 	while (pN)
