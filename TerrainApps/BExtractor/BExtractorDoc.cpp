@@ -238,8 +238,8 @@ void BExtractorDoc::FloodFillDIB(CDib *bm)
 				point.x += 5;
 
 				vtBuilding *bld = new vtBuilding();
-				bld->SetRectangle(10, 10);
 				bld->SetLocation(point);
+				bld->SetRectangle(10, 10);
 				m_Buildings.Append(bld);
 			}
 		}
