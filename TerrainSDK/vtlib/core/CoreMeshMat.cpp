@@ -9,14 +9,14 @@
 
 static FPoint3 c[8] =
 {
-	FPoint3(-1.0, -1.0, 1.0),		  /* 0 */
-	FPoint3(-1.0, 1.0, 1.0),		   /* 1 */
-	FPoint3(1.0, 1.0, 1.0),			/* 2 */
-	FPoint3(1.0, -1.0, 1.0),		   /* 3 */
-	FPoint3(-1.0, -1.0, -1.0),		 /* 4 */
-	FPoint3(-1.0, 1.0, -1.0),		  /* 5 */
-	FPoint3(1.0, 1.0, -1.0),		   /* 6 */
-	FPoint3(1.0, -1.0, -1.0),		  /* 7 */
+	FPoint3(-1.0, -1.0, 1.0),	/* 0 */
+	FPoint3(-1.0, 1.0, 1.0),	/* 1 */
+	FPoint3(1.0, 1.0, 1.0),		/* 2 */
+	FPoint3(1.0, -1.0, 1.0),	/* 3 */
+	FPoint3(-1.0, -1.0, -1.0),	/* 4 */
+	FPoint3(-1.0, 1.0, -1.0),	/* 5 */
+	FPoint3(1.0, 1.0, -1.0),	/* 6 */
+	FPoint3(1.0, -1.0, -1.0),	/* 7 */
 };
 
 static FPoint3 n[6] =
@@ -30,12 +30,12 @@ static FPoint3 n[6] =
 };
 
 static int v_list[6][4] = {
-	7, 4, 5, 6,				 /* back */
-	3, 7, 6, 2,				 /* right */
-	0, 3, 2, 1,				 /* front */
-	4, 0, 1, 5,				 /* left */
-	6, 5, 1, 2,				 /* top */
-	4, 7, 3, 0,				 /* bottom */
+	7, 4, 5, 6,		 /* back */
+	3, 7, 6, 2,		 /* right */
+	0, 3, 2, 1,		 /* front */
+	4, 0, 1, 5,		 /* left */
+	6, 5, 1, 2,		 /* top */
+	4, 7, 3, 0,		 /* bottom */
 };
 
 static FPoint2 t[4] =
@@ -47,6 +47,11 @@ static FPoint2 t[4] =
 };
 
 
+/**
+ * Computes the bounding box of the mesh, based on the extent of its
+ * vertices.  Result is placed in the 'box' parameter.  If there
+ * are no vertices, then 'box' is unchanged.
+ */
 void vtMeshBase::GetBoundBox(FBox3 &box)
 {
 	int num = GetNumVertices();
@@ -70,6 +75,11 @@ void vtMeshBase::GetBoundBox(FBox3 &box)
 	}
 }
 
+/**
+ * Adds a vertex to the mesh.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertex(float x, float y, float z)
 {
 	int i = m_iNumVertsUsed;
@@ -78,6 +88,11 @@ int vtMeshBase::AddVertex(float x, float y, float z)
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh, with a vertex normal.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertexN(float x, float y, float z, float nx, float ny, float nz)
 {
 	int i = m_iNumVertsUsed;
@@ -87,6 +102,11 @@ int vtMeshBase::AddVertexN(float x, float y, float z, float nx, float ny, float 
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh, with UV coordinates.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertexUV(float x, float y, float z, float u, float v)
 {
 	int i = m_iNumVertsUsed;
@@ -96,6 +116,11 @@ int vtMeshBase::AddVertexUV(float x, float y, float z, float u, float v)
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertex(const FPoint3 &p)
 {
 	int i = m_iNumVertsUsed;
@@ -104,6 +129,11 @@ int vtMeshBase::AddVertex(const FPoint3 &p)
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh, with a vertex normal.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertexN(const FPoint3 &p, const FPoint3 &n)
 {
 	int i = m_iNumVertsUsed;
@@ -113,6 +143,11 @@ int vtMeshBase::AddVertexN(const FPoint3 &p, const FPoint3 &n)
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh, with UV coordinates.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertexUV(const FPoint3 &p, float u, float v)
 {
 	int i = m_iNumVertsUsed;
@@ -122,6 +157,11 @@ int vtMeshBase::AddVertexUV(const FPoint3 &p, float u, float v)
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh, with UV coordinates.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertexUV(const FPoint3 &p, const FPoint2 &uv)
 {
 	int i = m_iNumVertsUsed;
@@ -131,6 +171,11 @@ int vtMeshBase::AddVertexUV(const FPoint3 &p, const FPoint2 &uv)
 	return i;
 }
 
+/**
+ * Adds a vertex to the mesh, with a vertex normal and UV coordinates.
+ *
+ * \return The index of the vertex that was added.
+ */
 int vtMeshBase::AddVertexNUV(const FPoint3 &p, const FPoint3 &n, const FPoint2 &uv)
 {
 	int i = m_iNumVertsUsed;
@@ -141,6 +186,15 @@ int vtMeshBase::AddVertexNUV(const FPoint3 &p, const FPoint3 &n, const FPoint2 &
 	return i;
 }
 
+/**
+ * Adds an indexed strip to the mesh, with the assumption that the indices
+ * are in linear order.
+ *
+ * \param iNVerts The number of vertices in the strip.
+ * \param iStartIndex The index that starts the linear sequence.
+ *
+ * \return The index of the vertex that was added.
+ */
 void vtMeshBase::AddStrip2(int iNVerts, int iStartIndex)
 {
 	unsigned short *idx = new unsigned short[iNVerts];
@@ -152,6 +206,10 @@ void vtMeshBase::AddStrip2(int iNVerts, int iStartIndex)
 	delete idx;
 }
 
+/**
+ * Add a block (rectangular 3d box) to this mesh.  The width, height and
+ * depth are specified with the 'size' parameter.
+ */
 void vtMeshBase::CreateBlock(const FPoint3& size)
 {
 	int i, j;
@@ -181,14 +239,14 @@ void vtMeshBase::CreateBlock(const FPoint3& size)
 	}
 }
 
-//
-// OptimizedBlock
-//
-//	Adds a 3D block to a vtMesh as a series of 5 triangle fan primitives.
-//  The bottom face is omitted, the base is placed at y=0, and texture
-//  coordinates are provided such that texture bitmaps appear right-side-up
-//  on the side faces.
-//
+/**
+ * OptimizedBlock
+ *
+ *	Adds a 3D block to a vtMesh as a series of 5 triangle fan primitives.
+ *  The bottom face is omitted, the base is placed at y=0, and texture
+ *  coordinates are provided such that texture bitmaps appear right-side-up
+ *  on the side faces.
+ */
 void vtMeshBase::CreateOptimizedBlock(const FPoint3& size)
 {
 	int i, j;
@@ -219,9 +277,13 @@ void vtMeshBase::CreateOptimizedBlock(const FPoint3& size)
 	}
 }
 
-//
-// Add triangle/quad strips to a mesh suitable for a n*m grid
-//
+/**
+ * Adds triangle/quad strips to this mesh, suitable for a (topologically)
+ * rectangular grid.
+ *
+ * \param xsize Number of vertices in the first dimension.
+ * \param ysize Number of vertices in the second dimension.
+ */
 void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
 {
 	int i, j;
@@ -241,6 +303,14 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
 	delete strip;
 }
 
+/**
+ * Adds an ellipsoid to this mesh.
+ *
+ * \param size The width, height and depth of the ellipsoid.
+ * \param res The resolution (number of vertices used in the tesselation
+ *		from top to bottom.
+ * \param hemi Create only the top of the ellipsoid (e.g. a hemisphere).
+ */
 void vtMeshBase::CreateEllipsoid(FPoint3 size, int res, bool hemi)
 {
 	int		i, j;
@@ -289,9 +359,9 @@ void vtMeshBase::CreateEllipsoid(FPoint3 size, int res, bool hemi)
 	CreateRectangularMesh(theta_res, phi_res);
 }
 
-//
-// Create the vertices and a fan for a single flat rectangle
-//
+/**
+ * Adds the vertices and a fan primitive for a single flat rectangle.
+ */
 void vtMeshBase::CreateRectangle(float xsize, float ysize)
 {
 	int vidx =
@@ -302,6 +372,9 @@ void vtMeshBase::CreateRectangle(float xsize, float ysize)
 	AddFan(vidx, vidx+1, vidx+2, vidx+3);
 }
 
+/**
+ * Transform all the vertices of the mesh by the indicated matrix.
+ */
 void vtMeshBase::TransformVertices(FMatrix4 &mat)
 {
 	int i, num = GetNumVertices();
@@ -324,6 +397,13 @@ void vtMeshBase::TransformVertices(FMatrix4 &mat)
 	}
 }
 
+/**
+ * Create a "3d Cursor" geometry, which consists of 3 blocks (red, green, blue)
+ * along the XYZ axes.
+ *
+ * \param fSize The overall width, height, and depth of the geometry
+ * \param fSmall The width of the blocks (generally much smaller than fSize)
+ */
 vtGeom *Create3DCursor(float fSize, float fSmall)
 {
 	int i, j;
@@ -414,6 +494,66 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere)
 
 ////////////////////////////////////////////////////////////////////
 
+/**
+ * Create and add a simple textured material.  This method takes a vtImage
+ * and let you control many other aspects of the material.  Only the first
+ * three parameters are required, the rest will be assumed with default
+ * values if desired.
+ *
+ * \param pImage  A valid image (bitmap) which you have created.
+ *
+ * \param bCulling  true to cull backfaces (only the front side
+ *		of each polygon is rendered.)
+ *
+ * \param bLighting  true to "light" the material.  This means it will
+ *		use the material's color values, and any active lights to
+ *		determine the color of the drawn geometry.  If false, then
+ *		only the material's diffuse color is used, and it is not affected
+ *		by any lights.
+ *
+ * \param bTransp  true for a material with some transparency (default
+ *		is false).
+ *
+ * \param bAdditive  true for an additive material (default is false).
+ *		This means that the rendered color will be added to, rather than
+ *		replace, the rendering surface.  This is useful for some effects
+ *		such as drawing stars against a twilight sky, in which the light
+ *		of a dim star should be added to the background sky.
+ *
+ * \param fAmbient  Ambient material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this determines how this material is affected
+ *		by the Ambient component of each existing light.
+ *
+ * \param fDiffuse  Diffuse material value, ranges from 0 to 1 (default 1).
+ *		If lighting is enabled, this determines how this material is affected
+ *		by the Diffuse component of each existing light.  If lighting is
+ *		not enabled, this indicates the exact lighting value to use for the
+ *		material.
+ *
+ * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
+ *		transparent) to 1 (opaque).  Default is 1.  If transparency is
+ *		not enabled, this value is ignored.
+ *
+ * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this value is added to the combined
+ *		effect of each existing light.  This is useful for geometry which
+ *		is brighter than the existing light level, such as illuminated
+ *		objects at night.
+ *
+ * \param bTexGen	true for materials whose texture mapping will be generated
+ *		automatically.  false if you will provide explicit UV values to
+ *		drape your texture.  Default is false.
+ *
+ * \param bClamp	true for Texture Clamping, which prevents sub-texel
+ *		interpolation at the edge of the texture.  Default is false.
+ *
+ * \param bMipMap	true for Mip-mapping, which provided smoother interpolation
+ *		of the textured geometry when it is under-sampled (generally when it
+ *		is in the distance.)  Useful for avoiding unpleasant aliasing artifacts,
+ *		but costs 1/3 more texture memory.
+ *
+ * \return The index of the added material.
+ */
 int vtMaterialArrayBase::AddTextureMaterial(vtImage *pImage,
 						 bool bCulling, bool bLighting,
 						 bool bTransp, bool bAdditive,
@@ -436,6 +576,15 @@ int vtMaterialArrayBase::AddTextureMaterial(vtImage *pImage,
 	return AppendMaterial(pMat);
 }
 
+/**
+ * Create and add a simple textured material.  This method takes a a filename
+ * of the texture image to use.
+ * 
+ * See AddTextureMaterial() for a description of the parameters, which
+ * lets you control many other aspects of the material.
+ *
+ * \return The index of the added material if successful, or -1 on failure.
+ */
 int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 						 bool bCulling, bool bLighting,
 						 bool bTransp, bool bAdditive,
@@ -452,6 +601,38 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen, bClamp);
 }
 
+/**
+ * Create and add a simple colored material.  This method takes diffuse
+ * and ambient color and let you control several other aspects of the material.
+ *
+ * \param diffuse The Diffuse color component of the material.
+ *
+ * \param ambient The Ambient color component of the material.
+ *
+ * \param bCulling  true to cull backfaces (only the front side
+ *		of each polygon is rendered.)
+ *
+ * \param bLighting  true to "light" the material.  This means it will
+ *		use the material's color values, and any active lights to
+ *		determine the color of the drawn geometry.  If false, then
+ *		only the material's diffuse color is used, and it is not affected
+ *		by any lights.
+ *
+ * \param bWireframe True for a material which will render only the edges
+ *		of polygons.
+ *
+ * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
+ *		transparent) to 1 (opaque).  Default is 1.  If transparency is
+ *		not enabled, this value is ignored.
+ *
+ * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this value is added to the combined
+ *		effect of each existing light.  This is useful for geometry which
+ *		is brighter than the existing light level, such as illuminated
+ *		objects at night.
+ *
+ * \return The index of the added material.
+ */
 int vtMaterialArrayBase::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient,
 					 bool bCulling, bool bLighting, bool bWireframe,
 					 float fAlpha, float fEmissive)
@@ -466,6 +647,38 @@ int vtMaterialArrayBase::AddRGBMaterial(const RGBf &diffuse, const RGBf &ambient
 	return AppendMaterial(pMat);
 }
 
+/**
+ * Create and add a simple colored material.  This method takes diffuse
+ * color and let you control several other aspects of the material.
+ * Ambient color will be assumed to a be a dimmer shade of the supplied
+ * diffuse color (diffuse / 4).
+ *
+ * \param diffuse The Diffuse color component of the material.
+ *
+ * \param bCulling  true to cull backfaces (only the front side
+ *		of each polygon is rendered.)
+ *
+ * \param bLighting  true to "light" the material.  This means it will
+ *		use the material's color values, and any active lights to
+ *		determine the color of the drawn geometry.  If false, then
+ *		only the material's diffuse color is used, and it is not affected
+ *		by any lights.
+ *
+ * \param bWireframe True for a material which will render only the edges
+ *		of polygons.
+ *
+ * \param fAlpha	Alpha value (opacity), ranges from 0 (completely
+ *		transparent) to 1 (opaque).  Default is 1.  If transparency is
+ *		not enabled, this value is ignored.
+ *
+ * \param fEmissive  Emmisive material value, ranges from 0 to 1 (default 0).
+ *		If lighting is enabled, this value is added to the combined
+ *		effect of each existing light.  This is useful for geometry which
+ *		is brighter than the existing light level, such as illuminated
+ *		objects at night.
+ *
+ * \return The index of the added material.
+ */
 int vtMaterialArrayBase::AddRGBMaterial1(const RGBf &diffuse,
 				 bool bCulling, bool bLighting, bool bWireframe,
 				 float fAlpha, float fEmissive)
@@ -474,6 +687,12 @@ int vtMaterialArrayBase::AddRGBMaterial1(const RGBf &diffuse,
 		fAlpha, fEmissive);
 }
 
+/**
+ * Create and add a "shadow" material, which is a black material with
+ * transparency, suitable for drawing a shadow under an object.
+ *
+ * \param fOpacity Ranges from 0 (fully transparent) to 1 (fully opaque).
+ */
 void vtMaterialArrayBase::AddShadowMaterial(float fOpacity)
 {
 	vtMaterial *pMat = new vtMaterial();
@@ -484,6 +703,12 @@ void vtMaterialArrayBase::AddShadowMaterial(float fOpacity)
 	AppendMaterial(pMat);
 }
 
+/**
+ * Copies all the materials from one vtMaterialArray to another.
+ *
+ * The materials copied from the source are simply appending to this
+ * array.
+ */
 void vtMaterialArrayBase::CopyFrom(vtMaterialArrayBase *pFrom)
 {
 	int num = pFrom->GetSize();
@@ -503,16 +728,25 @@ vtMaterialBase::vtMaterialBase()
 	m_pImage = NULL;
 }
 
+/**
+ * Loads and sets the texture for a material.
+ */
 void vtMaterialBase::SetTexture2(const char *szFilename)
 {
 	SetTexture(new vtImage(szFilename));
 }
 
+/**
+ * Returns the texture (image) associated with a material.
+ */
 vtImage *vtMaterialBase::GetTexture()
 {
 	return m_pImage;
 }
 
+/**
+ * Copy this material from another.
+ */
 void vtMaterialBase::CopyFrom(vtMaterial *pFrom)
 {
 	SetDiffuse1(pFrom->GetDiffuse());
