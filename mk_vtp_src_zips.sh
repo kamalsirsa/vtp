@@ -15,8 +15,13 @@ DIST_FILE2=${TARGETDIR}/vtp-srcdocs-${DATE}.zip
 # Create the archive containing the Source
 rm -f $DIST_FILE1
 
+zip $DIST_FILE1 VTP/TerrainSDK/configure
+zip $DIST_FILE1 VTP/TerrainSDK/configure.in
+zip $DIST_FILE1 VTP/TerrainSDK/install-sh
 zip $DIST_FILE1 VTP/TerrainSDK/Make.defs
+zip $DIST_FILE1 VTP/TerrainSDK/Makedefs.in
 zip $DIST_FILE1 VTP/TerrainSDK/Makefile
+zip $DIST_FILE1 VTP/TerrainSDK/Makefile.in
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/boost/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/shapelib/*
@@ -29,8 +34,14 @@ zip $DIST_FILE1 VTP/TerrainSDK/vtlib/vtsgl/*
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/*
 zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/include/*
 
+zip $DIST_FILE1 VTP/TerrainApps/configure
+zip $DIST_FILE1 VTP/TerrainApps/configure.in
+zip $DIST_FILE1 VTP/TerrainApps/install-sh
 zip $DIST_FILE1 VTP/TerrainApps/Make.defs
+zip $DIST_FILE1 VTP/TerrainApps/Makedefs.in
 zip $DIST_FILE1 VTP/TerrainApps/Makefile
+zip $DIST_FILE1 VTP/TerrainApps/Makefile.in
+zip $DIST_FILE1 VTP/TerrainApps/README.sgi
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.h
