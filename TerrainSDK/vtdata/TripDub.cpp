@@ -243,7 +243,7 @@ void ReqContext::AddHeader(const char *token, const char *value)
 	HTRequest_addExtraHeader(m_request, (char *) token, (char *) value);
 }
 
-void ReqContext::DoQuery(vtString &str, int redirects)
+bool ReqContext::DoQuery(vtBytes &data, int redirects)
 {
 	const char *address;
 
@@ -255,7 +255,7 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 
 	// chunk had better not be NULL, that's where the data will go
 	if (!chunk)
-		return;
+		return false;
 
 	// wait until the request is over
 	HTEventList_loop(m_request);
@@ -275,33 +275,52 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 		HTRequest_deleteCredentialsAll(m_request);
 		HTRequest_deleteExtraHeaderAll(m_request);
 
-		DoQuery(str, redirects + 1);
-		return;
+		return DoQuery(data, redirects + 1);
 	}
 	if (s_last_status == HT_TIMEOUT)
 	{
 		// too long, give up
 		if (m_iVerbosity > 0)
 			VTLOG("  Timeout: more than %d seconds\n", DEFAULT_TIMEOUT);
-		return;
+		return false;
 	}
 
-	char *string = HTChunk_toCString(chunk);
-	str = string;
-	HT_FREE(string);
+	char *dataptr = HTChunk_data(chunk);
+	int len = HTChunk_size(chunk);
+
+	data.Put((unsigned char *)dataptr, len);
+	return true;
 }
 
-void ReqContext::GetURL(const char *url, vtString &str)
+bool ReqContext::GetURL(const char *url, vtString &str)
 {
-	str = "";
 	char *absolute_url = HTParse(url, m_cwd, PARSE_ALL);
 	if (!absolute_url)
-		return;
+		return false;
 
 	m_anchor = HTAnchor_findAddress(absolute_url);
 	HT_FREE(absolute_url);
 
-	DoQuery(str, 0);
+	vtBytes bytes;
+	if (DoQuery(bytes, 0))
+	{
+		str = bytes.Get();
+		return true;
+	}
+	else
+		return false;
+}
+
+bool ReqContext::GetURL(const char *url, vtBytes &data)
+{
+	char *absolute_url = HTParse(url, m_cwd, PARSE_ALL);
+	if (!absolute_url)
+		return false;
+
+	m_anchor = HTAnchor_findAddress(absolute_url);
+	HT_FREE(absolute_url);
+
+	return DoQuery(data, 0);
 }
 
 #endif	// SUPPORT_HTTP
