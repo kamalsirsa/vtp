@@ -104,10 +104,10 @@ void vtOrthoFlyer::Eval()
 	//	Left button: forward-backward (zoom), yaw
 	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
 	{
-		float trans = my * m_fSpeed * elapsed;
+		float trans = my * elapsed;
 		float rotate = -mx * elapsed;
 
-		pCamera->SetWidth(pCamera->GetWidth() * (1.0 + trans/2000.0));
+		pCamera->SetWidth(pCamera->GetWidth() * (1.0 + trans));
 		pCamera->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), rotate);
 	}
 
