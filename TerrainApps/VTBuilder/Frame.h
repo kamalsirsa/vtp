@@ -42,6 +42,7 @@ class vtStructureLayer;
 class vtUtilityLayer;
 class BuilderView;
 class vtFeatureSet;
+class VegGenOptions;
 
 // dialogs
 class SpeciesListDlg;
@@ -364,11 +365,9 @@ public:
 	vtBioRegion *GetBioRegion() { return &m_BioRegions; }
 	BioRegionDlg *m_BioRegionDlg;
 
-	void GenerateVegetation(const char *vf_file, DRECT area,
-		vtVegLayer *pLandUse, vtVegLayer *pVegType,
-		float fTreeSpacing, float fTreeScarcity);
-
 	void FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap);
+	void GenerateVegetation(const char *vf_file, DRECT area, VegGenOptions &opt);
+	void GenerateVegetationPhase2(const char *vf_file, DRECT area, VegGenOptions &opt);
 
 	// import
 	void ImportData(LayerType ltype);

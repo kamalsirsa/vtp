@@ -25,6 +25,7 @@
 #include "App.h"
 #include "Helper.h"
 #include "BuilderView.h"
+#include "VegGenOptions.h"
 #include "vtui/Helper.h"
 // Layers
 #include "ElevLayer.h"
@@ -623,6 +624,14 @@ void MainFrame::RemoveLayer(vtLayer *lp)
 		vtLayer *lp_new = FindLayerOfType(lt);
 		SetActiveLayer(lp_new, true);
 	}
+
+	// if it was being shown in the feature info dialog, reset that dialog
+	if (m_pFeatInfoDlg && m_pFeatInfoDlg->GetLayer() == lp)
+	{
+		m_pFeatInfoDlg->SetLayer(NULL);
+		m_pFeatInfoDlg->SetFeatureSet(NULL);
+	}
+
 	DeleteLayer(lp);
 	m_pView->Refresh();
 	m_pTree->RefreshTreeItems(this);
@@ -1360,7 +1369,7 @@ bool MainFrame::LoadSpeciesFile(const char *fname)
 
 bool MainFrame::LoadBiotypesFile(const char *fname)
 {
-	if (!m_BioRegions.Read(fname))
+	if (!m_BioRegions.Read(fname, m_PlantList))
 	{
 		DisplayAndLog("Couldn't read bioregion list from file '%s'.", fname);
 		return false;
@@ -1548,35 +1557,45 @@ void MainFrame::FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap)
 }
 
 /**
- * Generate vegetation in a given area, given input layers for biotypes
- * and density.
- * Density is now optional, defaults to 1 if there is no density layer.
+ * Generate vegetation in a given area, and writes it to a VF file.
+ * All options are given in the VegGenOptions object passed in.
+ *
  */
 void MainFrame::GenerateVegetation(const char *vf_file, DRECT area, 
-	vtVegLayer *pDensity, vtVegLayer *pVegType,
-	float fTreeSpacing, float fTreeScarcity)
+	VegGenOptions &opt)
+{
+	OpenProgressDialog(_("Generating Vegetation"), true);
+
+	vtBioType SingleBiotype;
+	if (opt.m_iSingleSpecies != -1)
+	{
+		// simply use a single species
+		vtPlantSpecies *ps = m_PlantList.GetSpecies(opt.m_iSingleSpecies);
+		SingleBiotype.AddPlant(ps, opt.m_fFixedDensity);
+		opt.m_iSingleBiotype = m_BioRegions.AddType(&SingleBiotype);
+	}
+
+	GenerateVegetationPhase2(vf_file, area, opt);
+
+	// clean up temporary biotype
+	if (opt.m_iSingleSpecies != -1)
+	{
+		m_BioRegions.m_Types.RemoveAt(opt.m_iSingleBiotype);
+	}
+}
+
+void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area, 
+	VegGenOptions &opt)
 {
 	unsigned int i, j, k;
 	DPoint2 p, p2;
-
-	vtSpeciesList *pl = GetPlantList();
-	if (!pl)
-	{
-		wxMessageBox(_("No plant list."));
-		return;
-	}
-
-	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
-		m_PlantList.LookupPlantIndices(m_BioRegions.m_Types[i]);
-
-	OpenProgressDialog(_("Generating Vegetation"), true);
 
 	int tree_count = 0;
 
 	float x_size = (area.right - area.left);
 	float y_size = (area.top - area.bottom);
-	unsigned int x_trees = (unsigned int)(x_size / fTreeSpacing);
-	unsigned int y_trees = (unsigned int)(y_size / fTreeSpacing);
+	unsigned int x_trees = (unsigned int)(x_size / opt.m_fSampling);
+	unsigned int y_trees = (unsigned int)(y_size / opt.m_fSampling);
 
 	int bio_type;
 	float density_scale;
@@ -1584,20 +1603,21 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	vtPlantInstanceArray pia;
 	vtPlantDensity *pd;
 	vtBioType *bio;
-
-	m_BioRegions.ResetAmounts();
-	pia.SetPlantList(pl);
+	vtPlantSpecies *ps;
 
 	// inherit projection from the main frame
 	vtProjection proj;
 	GetProjection(proj);
 	pia.SetProjection(proj);
 
-	// all vegetation
+	m_BioRegions.ResetAmounts();
+	pia.SetPlantList(&m_PlantList);
+
+	// Iterate over the whole area, creating plant instances
 	for (i = 0; i < x_trees; i ++)
 	{
 		wxString str;
-		str.Printf(_("plants: %d"), pia.GetNumEntities());
+		str.Printf(_("column %d/%d, plants: %d"), i, x_trees, pia.GetNumEntities());
 		if (UpdateProgressDialog(i * 100 / x_trees, str))
 		{
 			// user cancel
@@ -1605,35 +1625,49 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			return;
 		}
 
-		p.x = area.left + (i * fTreeSpacing);
+		p.x = area.left + (i * opt.m_fSampling);
 		for (j = 0; j < y_trees; j ++)
 		{
-			p.y = area.bottom + (j * fTreeSpacing);
+			p.y = area.bottom + (j * opt.m_fSampling);
 
 			// randomize the position slightly
-			p2.x = p.x + random_offset(fTreeSpacing * 0.5f);
-			p2.y = p.y + random_offset(fTreeSpacing * 0.5f);
+			p2.x = p.x + random_offset(opt.m_fSampling * 0.5f);
+			p2.y = p.y + random_offset(opt.m_fSampling * 0.5f);
 
-			// Get Land Use Attribute
-			if (pDensity)
+			// Density
+			if (opt.m_pDensityLayer)
 			{
-				density_scale = pDensity->FindDensity(p2);
+				density_scale = opt.m_pDensityLayer->FindDensity(p2);
 				if (density_scale == 0.0f)
 					continue;
 			}
 			else
 				density_scale = 1.0f;
 
-			bio_type = pVegType->FindBiotype(p2);
-			if (bio_type == -1)
-				continue;
-
-			float square_meters = fTreeSpacing * fTreeSpacing;
-
+			// Species
+			if (opt.m_iSingleSpecies != -1)
+			{
+				// use our single species biotype
+				bio_type = opt.m_iSingleBiotype;
+			}
+			else
+			{
+				if (opt.m_iSingleBiotype != -1)
+				{
+					bio_type = opt.m_iSingleBiotype;
+				}
+				else if (opt.m_pBiotypeLayer != NULL)
+				{
+					bio_type = opt.m_pBiotypeLayer->FindBiotype(p2);
+					if (bio_type == -1)
+						continue;
+				}
+			}
 			// look at veg_type to decide which BioType to use
 			bio = m_BioRegions.m_Types[bio_type];
 
-			float factor = density_scale * square_meters * fTreeScarcity;
+			float square_meters = opt.m_fSampling * opt.m_fSampling;
+			float factor = density_scale * square_meters * opt.m_fScarcity;
 
 			for (k = 0; k < bio->m_Densities.GetSize(); k++)
 			{
@@ -1641,7 +1675,8 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 
 				pd->m_amount += (pd->m_plant_per_m2 * factor);
 			}
-			int species_num = -1;
+
+			ps = NULL;
 			for (k = 0; k < bio->m_Densities.GetSize(); k++)
 			{
 				pd = bio->m_Densities[k];
@@ -1649,15 +1684,27 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 				{
 					pd->m_amount -= 1.0f;
 					pd->m_iNumPlanted++;
-					species_num = pd->m_list_index;
+					ps = pd->m_pSpecies;
 					break;
 				}
 			}
-			if (species_num != -1)
+			if (ps == NULL)
+				continue;
+
+			// Now determine size
+			float size;
+			if (opt.m_fFixedSize != -1.0f)
 			{
-				vtPlantSpecies *ps = GetPlantList()->GetSpecies(species_num);
-				pia.AddPlant(p2, random(ps->GetMaxHeight()), species_num);
+				size = opt.m_fFixedSize;
 			}
+			else
+			{
+				float range = opt.m_fRandomTo - opt.m_fRandomFrom;
+				size = (opt.m_fRandomFrom + random(range)) * ps->GetMaxHeight();
+			}
+
+			// Finally, add the plant
+			pia.AddPlant(p2, size, ps);
 		}
 	}
 	pia.WriteVF(vf_file);
@@ -1686,7 +1733,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			{
 				pd = bio->m_Densities[k];
 				str.Printf(_("    Plant %d: %hs: %d generated.\n"), k,
-					(const char *) pd->m_common_name, pd->m_iNumPlanted);
+					(const char *) pd->m_pSpecies->GetCommonName(), pd->m_iNumPlanted);
 				msg += str;
 			}
 		}
