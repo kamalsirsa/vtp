@@ -1,7 +1,7 @@
 //
 // NavEngines.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,6 +20,7 @@ vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
 {
 	m_fSpeed = fSpeed;
 	m_bAlwaysMove = false;
+	m_fMult = 1.0f;
 
 	// by default, all degrees of freedom are allowed
 	for (int i = 0; i < 6; i++)
@@ -48,7 +49,7 @@ void vtFlyer::Eval()
 	if (m_bAlwaysMove ||
 		((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT)))
 	{
-		float trans = my * m_fSpeed * elapsed;
+		float trans = my * m_fSpeed * elapsed * m_fMult;
 		float rotate = -mx * elapsed;
 
 		if (m_bDOF[DOF_Z])
@@ -62,11 +63,12 @@ void vtFlyer::Eval()
 				pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
 		}
 
-/*		static float temp = 0;
+/* TEST CODE
+		static float temp = 0;
 		temp += elapsed;
 		if (temp > 1)
 		{
-			VTLOG("m_fSpeed %f, trans w/o elapsed %.1f\n", m_fSpeed, my * m_fSpeed);
+			VTLOG("m_fSpeed %f, translation w/o elapsed %.1f\n", m_fSpeed, my * m_fSpeed);
 			temp = 0;
 		}*/
 	}
@@ -74,8 +76,8 @@ void vtFlyer::Eval()
 	//  Right button: up-down, left-right
 	if ((m_buttons & VT_RIGHT) && !(m_buttons & VT_LEFT))
 	{
-		float updown = -my * m_fSpeed * elapsed;
-		float leftright = mx * m_fSpeed * elapsed;
+		float updown = -my * m_fSpeed * elapsed * m_fMult;
+		float leftright = mx * m_fSpeed * elapsed * m_fMult;
 
 		if (m_bDOF[DOF_X])
 			pTarget->TranslateLocal(FPoint3(leftright, 0, 0.0f));
@@ -215,16 +217,17 @@ void vtOrthoFlyer::Eval()
 //
 // Fly engine specifically for following terrain
 //
-vtTerrainFlyer::vtTerrainFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin)
+vtTerrainFlyer::vtTerrainFlyer(float fSpeed, float fMinHeight, bool bMin)
  : vtFlyer(fSpeed, true)
 {
-	m_fHeightAboveTerrain = fHeightAboveTerrain;
+	m_fMinHeight = fMinHeight;
 	m_bMin = bMin;
 	m_bFollow = true;
 	m_pHeightField = NULL;
 	m_bMaintain = false;
 	m_fMaintainHeight = 0;
 	m_fCurrentSpeed = 0;
+	m_bExag = false;
 }
 
 void vtTerrainFlyer::FollowTerrain(bool bFollow)
@@ -241,6 +244,15 @@ void vtTerrainFlyer::Eval()
 		return;
 
 	FPoint3 previous_pos = pTarget->GetTrans();
+
+	if (m_bExag)
+	{
+		// Linear scaling
+		SetMultiplier(1.0 + (m_fAboveGround / 100));
+
+		// Exponential scaling - didn't like it as well
+//		SetMultiplier(pow(2.0, (double) (m_fAboveGround / 1000)));
+	}
 
 	vtFlyer::Eval();
 	KeepAboveGround();
@@ -263,8 +275,8 @@ void vtTerrainFlyer::KeepAboveGround()
 
 	FPoint3 pos = pTarget->GetTrans();
 
-	float fAltitude;
-	bool bOverTerrain = m_pHeightField->FindAltitudeAtPoint(pos, fAltitude);
+	float fGroundAltitude;
+	bool bOverTerrain = m_pHeightField->FindAltitudeAtPoint(pos, fGroundAltitude);
 
 	if (bOverTerrain)
 	{
@@ -272,26 +284,27 @@ void vtTerrainFlyer::KeepAboveGround()
 		if (m_bMaintain)
 		{
 			if (m_fMaintainHeight == 0)
-				m_fMaintainHeight = pos.y - fAltitude;
-			pos.y = fAltitude + m_fMaintainHeight;
+				m_fMaintainHeight = pos.y - fGroundAltitude;
+			pos.y = fGroundAltitude + m_fMaintainHeight;
 		}
 		else if (!m_bMin)
-			pos.y = fAltitude + m_fHeightAboveTerrain;
+			pos.y = fGroundAltitude + m_fMinHeight;
 		else
 		{
-			if (pos.y <= fAltitude + m_fHeightAboveTerrain)
-				pos.y = fAltitude + m_fHeightAboveTerrain;
+			if (pos.y <= fGroundAltitude + m_fMinHeight)
+				pos.y = fGroundAltitude + m_fMinHeight;
 		}
 		pTarget->SetTrans(pos);
 	}
+	m_fAboveGround = pos.y - fGroundAltitude;
 }
 
 
 //
 // vtPanoFlyer: moves target based on mouse position, like a QTVR or other panorama viewer
 //
-vtPanoFlyer::vtPanoFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin)
- : vtTerrainFlyer(fSpeed, fHeightAboveTerrain, bMin)
+vtPanoFlyer::vtPanoFlyer(float fSpeed, float fMinHeight, bool bMin)
+ : vtTerrainFlyer(fSpeed, fMinHeight, bMin)
 {
 	m_Velocity = 0.0f;
 }
@@ -371,7 +384,7 @@ vtTinFlyer::vtTinFlyer(float fSpeed) : vtLastMouse()
 {
 	m_pTin = NULL;
 	m_fSpeed = fSpeed;
-	m_fHeightAboveTerrain = 1.0f;
+	m_fMinHeight = 1.0f;
 	m_fPitch = 0.0f;
 }
 
@@ -460,8 +473,8 @@ void vtTinFlyer::Eval()
 // VFlyer
 //
 
-VFlyer::VFlyer(float scale, float fHeightAboveTerrain, bool bMin)
- : vtTerrainFlyer(0.4f, fHeightAboveTerrain, bMin)	// hardcode scale override
+VFlyer::VFlyer(float scale, float fMinHeight, bool bMin)
+ : vtTerrainFlyer(0.4f, fMinHeight, bMin)	// hardcode scale override
 {
 	m_Velocity.Set(0, 0, 0);
 	m_last_time = -1.0f;
@@ -553,8 +566,8 @@ void VFlyer::SetVerticalVelocity(float velocity)
 ///////////////////////////////////////////////
 // Quake-style navigation
 //
-QuakeFlyer::QuakeFlyer(float scale, float fHeightAboveTerrain, bool bMin)
- : vtTerrainFlyer(0.4f, fHeightAboveTerrain, bMin)	// hardcode scale override
+QuakeFlyer::QuakeFlyer(float scale, float fMinHeight, bool bMin)
+ : vtTerrainFlyer(0.4f, fMinHeight, bMin)	// hardcode scale override
 {
 	m_sWrap = 0;
 	m_bNavEnable = true;
