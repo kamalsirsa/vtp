@@ -1480,6 +1480,9 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 		double dX;
 		while ( (pFeature = pLayer->GetNextFeature()) != NULL )
 		{
+			// make sure we delete the feature no matter how the loop exits
+			std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 			if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
 				throw "Couldn't get point feature";
 	//		if (wkbPoint25D != pPoint->getGeometryType())
@@ -1487,15 +1490,12 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 				throw "Couldn't flatten point feature";
 			if (0 == iRowCount)
 				dX = pPoint->getX();
-			else
-				if (pPoint->getX() != dX)
-				{
-					delete pFeature;
-					pFeature = NULL;
-					break;
-				}
-			delete pFeature;
-			pFeature = NULL;
+			else if (pPoint->getX() != dX)
+			{
+				delete pFeature;
+				pFeature = NULL;
+				break;
+			}
 			iRowCount++;
 		}
 

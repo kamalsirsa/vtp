@@ -281,6 +281,9 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
 			{
+				// make sure we delete the feature no matter how the loop exits
+				std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 				count++;
 				progress_callback(count * 100 / feature_count);
 
@@ -329,6 +332,9 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
 			{
+				// make sure we delete the feature no matter how the loop exits
+				std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 				count++;
 				progress_callback(count * 100 / feature_count);
 
