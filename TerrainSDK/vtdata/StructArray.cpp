@@ -701,11 +701,11 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			// this linear structure has posts
 			const char *type = atts.getValue("type");
 			if (0 == strcmp(type, "wood"))
-				fen->ApplyFenceStyle(FS_WOOD_POSTS_WIRE);
+				fen->ApplyStyle(FS_WOOD_POSTS_WIRE);
 			else if (0 == strcmp(type, "steel"))
-				fen->ApplyFenceStyle(FS_CHAINLINK);
+				fen->ApplyStyle(FS_CHAINLINK);
 			else
-				fen->ApplyFenceStyle(FS_METAL_POSTS_WIRE);
+				fen->ApplyStyle(FS_METAL_POSTS_WIRE);
 
 			const char *size = atts.getValue("size");
 			FPoint3 postsize;

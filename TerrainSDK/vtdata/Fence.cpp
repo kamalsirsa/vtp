@@ -15,10 +15,10 @@
 
 void vtLinearParams::Defaults()
 {
-	ApplyFenceStyle(FS_WOOD_POSTS_WIRE);
+	ApplyStyle(FS_WOOD_POSTS_WIRE);
 }
 
-void vtLinearParams::ApplyFenceStyle(FenceStyle style)
+void vtLinearParams::ApplyStyle(vtLinearStyle style)
 {
 	switch (style)
 	{
@@ -66,6 +66,15 @@ void vtLinearParams::ApplyFenceStyle(FenceStyle style)
 		m_PostType = "none";
 		//
 		m_ConnectType = "drystone";
+		m_fConnectTop = 1.5f;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.3f;
+		break;
+	case FS_STONE:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "stone";
 		m_fConnectTop = 1.5f;
 		m_fConnectBottom = 0.0f;
 		m_fConnectWidth = 0.3f;
@@ -167,9 +176,9 @@ void vtFence::AddPoint(const DPoint2 &epos)
 		m_pFencePts.Append(epos);
 }
 
-void vtFence::ApplyFenceStyle(FenceStyle style)
+void vtFence::ApplyStyle(vtLinearStyle style)
 {
-	m_Params.ApplyFenceStyle(style);
+	m_Params.ApplyStyle(style);
 }
 
 bool vtFence::GetExtents(DRECT &rect) const

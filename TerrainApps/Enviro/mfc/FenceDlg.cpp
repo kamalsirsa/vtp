@@ -83,8 +83,8 @@ BOOL CFenceDlg::OnInitDialog()
 
 	UpdateData(FALSE);
 
-	enum FenceStyle style = (FenceStyle) m_cbType.GetItemData(m_iType);
-	m_linearparams.ApplyFenceStyle(style);
+	vtLinearStyle style = (vtLinearStyle) m_cbType.GetItemData(m_iType);
+	m_linearparams.ApplyStyle(style);
 	g_App.SetFenceOptions(m_linearparams);
 
 	ValuesToSliders();
@@ -95,8 +95,8 @@ BOOL CFenceDlg::OnInitDialog()
 void CFenceDlg::OnSelchangeFencetype() 
 {
 	UpdateData(TRUE);
-	enum FenceStyle style = (FenceStyle) m_cbType.GetItemData(m_iType);
-	m_linearparams.ApplyFenceStyle(style);
+	vtLinearStyle style = (vtLinearStyle) m_cbType.GetItemData(m_iType);
+	m_linearparams.ApplyStyle(style);
 	g_App.SetFenceOptions(m_linearparams);
 }
 

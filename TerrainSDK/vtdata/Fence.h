@@ -12,12 +12,13 @@
 #include "MathTypes.h"
 #include "Structure.h"
 
-enum FenceStyle
+enum vtLinearStyle
 {
 	FS_WOOD_POSTS_WIRE,
 	FS_METAL_POSTS_WIRE,
 	FS_CHAINLINK,
 	FS_DRYSTONE,
+	FS_STONE,
 	FS_PRIVET,
 	FS_RAILING_ROW,
 	FS_RAILING_CABLE,
@@ -32,7 +33,7 @@ class vtLinearParams
 {
 public:
 	void Defaults();
-	void ApplyFenceStyle(FenceStyle style);
+	void ApplyStyle(vtLinearStyle style);
 	void WriteXML(GZOutput &out);
 
 	// Posts
@@ -70,7 +71,7 @@ public:
 	void WriteXML(GZOutput &out, bool bDegrees);
 
 	// style
-	void ApplyFenceStyle(FenceStyle style);
+	void ApplyStyle(vtLinearStyle style);
 	vtLinearParams &GetParams() { return m_Params; }
 	void SetParams(const vtLinearParams &params) { m_Params = params; }
 
