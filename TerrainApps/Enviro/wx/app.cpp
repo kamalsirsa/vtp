@@ -26,6 +26,7 @@
 #include "EnviroGUI.h"		// for g_App, GetTerrainScene
 #include "vtui/Helper.h"	// for LogWindowsVersion
 #include "vtdata/vtLog.h"
+#include "xmlhelper/easyxml.hpp"
 
 #include "app.h"
 #include "frame.h"
@@ -280,6 +281,23 @@ bool vtApp::OnInit()
 
 	// Now we can create vtTerrain objects for each terrain
 	g_App.LoadTerrainDescriptions();
+
+	// Load the global content file, if there is one
+	VTLOG("Looking for global content file '%s'\n", (const char *)g_Options.m_strContentFile);
+	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, g_Options.m_strContentFile);
+	if (fname != "")
+	{
+		VTLOG("  Loading content file.\n");
+		try {
+			vtTerrain::s_Content.ReadXML(fname);
+		}
+		catch (xh_io_exception &e) {
+			string str = e.getFormattedMessage();
+			VTLOG("  Error: %s\n", str.c_str());
+		}
+	}
+	else
+		VTLOG("  Couldn't find it.\n");
 
 	//
 	// Create the main frame window
