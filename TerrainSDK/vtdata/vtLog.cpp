@@ -8,6 +8,7 @@
 #include "cpl_error.h"	// From GDAL/include
 #include "vtLog.h"
 #include <stdarg.h>
+#include <wchar.h>		// for fputws()
 
 #ifdef _MSC_VER
 #include <windows.h>	// for OutputDebugString, unfortunately
@@ -79,8 +80,12 @@ void vtLog::Printf(const wchar_t *pFormat, ...)
 	va_start(va, pFormat);
 
 	wchar_t ach[1024];
+#ifdef _MSC_VER
 	vswprintf(ach, pFormat, va);
+#else
+	// apparently on non-MSVC platforms this takes 4 arguments
+	vswprintf(ach, 1024, pFormat, va);
+#endif
 
 	_Log(ach);
 }
-
