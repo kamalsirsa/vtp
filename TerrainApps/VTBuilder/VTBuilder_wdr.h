@@ -241,6 +241,14 @@ wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool se
 #define ID_LINK_FIELD 10159
 wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_EASTING 10160
+#define ID_NORTHING 10161
+#define ID_SET_CRS 10162
+#define ID_FORMAT_DECIMAL 10163
+#define ID_FORMAT_DMS 10164
+#define ID_LONGITUDE_WEST 10165
+wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

@@ -1256,6 +1256,9 @@
 				RelativePath=".\ImageMapDlg.h">
 			</File>
 			<File
+				RelativePath=".\ImportPointDlg.h">
+			</File>
+			<File
 				RelativePath="ImportStructDlg.h">
 			</File>
 			<File
@@ -1668,6 +1671,9 @@
 			</File>
 			<File
 				RelativePath=".\ImageMapDlg.cpp">
+			</File>
+			<File
+				RelativePath=".\ImportPointDlg.cpp">
 			</File>
 			<File
 				RelativePath="ImportStructDlg.cpp">
