@@ -790,11 +790,11 @@ int get_dddd(FILE *fp)
 // form SSSS, decimal seconds
 // return as decimal degree
 //
-float get_ssss(FILE *fp)
+double get_ssss(FILE *fp)
 {
-	float f;
+	double f;
 
-	f = (float)get_dddd(fp);
+	f = get_dddd(fp);
 	f = f/36000;
 
 	return f;
@@ -832,33 +832,80 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	m_bFloatMode = false;
 
 	// check for correct format
+	int header = 0;
 	fread(buf, 4, 1, fp);
-	if (strncmp(buf, "UHL1", 4))
+	buf[4] = 0;
+	if (!strncmp(buf, "HDR1", 4))
+		header = 1;
+	if (!strncmp(buf, "UHL1", 4))
+		header = 2;
+
+	if (!header)
 	{
 		// Not a DTED file
 		fclose(fp);
 		return false;
 	}
 
-	m_Corners[0].x = get_dms8(fp);
-	m_Corners[0].y = get_dms8(fp);
+	fseek(fp, 0, SEEK_SET);
+	if (header == 1)
+	{
+		// 4 bytes for 'HDR1'
+		fread(buf, 4, 1, fp);
 
-	float xInterval = get_ssss(fp);
-	float yInterval = get_ssss(fp);
+		// 17 bytes for 'Filename'
+		fread(buf, 17, 1, fp);
+		buf[17] = 0;
 
-	// get dimensions
-	fseek(fp, 47, 0);
-	m_iColumns = get_dddd(fp);
-	m_iRows = get_dddd(fp);
+		// 6 bytes always 'UNIVAC'
+		// 4 bytes 'Reel Sequence Number'
+		// 4 bytes 'File Sequence Number'
+		// 6 bytes version numbers
+		// 6 bytes Creation Date
+		// 6 bytes Expiration Date
+		// 1 byte 'Accessibility'
+		// 6 bytes 'Block Count'
+		// 13 bytes 'Qualifier'
+		// 7 bytes blank
+		fseek(fp, 80, SEEK_SET);
+		header = 2;
+	}
 
-	// imply other corners
-	m_Corners[1].x = m_Corners[0].x;
-	m_Corners[1].y = m_Corners[0].y + yInterval * (m_iRows - 1);
-	m_Corners[2].x = m_Corners[0].x + xInterval * (m_iColumns - 1);
-	m_Corners[2].y = m_Corners[0].y + yInterval * (m_iRows - 1);
-	m_Corners[3].x = m_Corners[0].x + xInterval * (m_iColumns - 1);
-	m_Corners[3].y = m_Corners[0].y;
-	ComputeExtentsFromCorners();
+	if (header == 2)
+	{
+		// 4 bytes for 'UHL1'
+		fread(buf, 4, 1, fp);
+
+		m_Corners[0].x = get_dms8(fp);
+		m_Corners[0].y = get_dms8(fp);
+
+		double xInterval = get_ssss(fp);
+		double yInterval = get_ssss(fp);
+
+		// Skip over:
+		// 4 bytes Absolute Vertical Accuracy
+		// 3 bytes Security Code
+		// 12 bytes Unique Reference
+		fseek(fp, 4+3+12, SEEK_CUR);
+
+		// get dimensions
+		m_iColumns = get_dddd(fp);
+		m_iRows = get_dddd(fp);
+
+		// imply other corners
+		m_Corners[1].x = m_Corners[0].x;
+		m_Corners[1].y = m_Corners[0].y + yInterval * (m_iRows - 1);
+		m_Corners[2].x = m_Corners[0].x + xInterval * (m_iColumns - 1);
+		m_Corners[2].y = m_Corners[0].y + yInterval * (m_iRows - 1);
+		m_Corners[3].x = m_Corners[0].x + xInterval * (m_iColumns - 1);
+		m_Corners[3].y = m_Corners[0].y;
+		ComputeExtentsFromCorners();
+
+		// Skip over:
+		// 1 byte Multiple Accuracy
+		// 24 bytes Reserved
+		fseek(fp, 1+24, SEEK_CUR);
+	}
 
 	_AllocateArray();
 
@@ -866,7 +913,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	unsigned char *linebuf = new unsigned char[line_length];
 	unsigned char swap[2];
 
-	fseek(fp, 80 + 648 + 2700, 0);
+	fseek(fp, 648 + 2700, SEEK_CUR);
 	int i, j, offset;
 	for (i = 0; i < m_iColumns; i++)
 	{
