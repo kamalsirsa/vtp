@@ -97,7 +97,7 @@ void DistanceDlg::ShowValues()
 		vtProjection geo;
 		CreateSimilarGeographicProjection(m_proj, geo);
 
-		OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &geo);
+		OCT *trans = CreateCoordTransform(&m_proj, &geo);
 
 		geo1 = m_p1;
 		geo2 = m_p2;

@@ -247,7 +247,7 @@ bool vtTin::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
 bool vtTin::ConvertProjection(const vtProjection &proj_new)
 {
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)&m_proj, (OGRSpatialReference *)&proj_new);
+	OCT *trans = CreateCoordTransform(&m_proj, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 
