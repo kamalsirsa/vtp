@@ -1464,15 +1464,15 @@ using namespace std;
 
 void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 {
-	wxString IniPath = wxGetCwd();
+	wxString2 IniPath = wxGetCwd();
 
 	ifstream input;
-	IniPath += "Enviro.ini";
+	IniPath += _T("Enviro.ini");
 	input.open(IniPath, ios::in | ios::binary);
 	if (!input.is_open())
 	{
 		input.clear();
-		IniPath = wxGetCwd() + "/../Enviro/Enviro.ini";
+		IniPath = wxGetCwd() + _T("/../Enviro/Enviro.ini");
 		input.open(IniPath, ios::in | ios::binary);
 	}
 	if (!input.is_open())
