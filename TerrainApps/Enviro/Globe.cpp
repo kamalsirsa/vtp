@@ -1,7 +1,7 @@
 //
 // Globe.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -220,12 +220,12 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 			if (second)
 			{
 				coord.x = 1.0f - (float)i / m_freq;
-				coord.y = (float)j / m_freq;
+				coord.y = 1.0f - (float)j / m_freq;
 			}
 			else
 			{
 				coord.x = (float)i / m_freq;
-				coord.y = 1.0f - (float)j / m_freq;
+				coord.y = (float)j / m_freq;
 			}
 			mesh->SetVtxTexCoord(idx, coord);
 
