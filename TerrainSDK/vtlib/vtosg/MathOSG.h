@@ -47,6 +47,20 @@ inline void s2v(const osg::BoundingSphere &bs, FSphere &sph)
 	sph.radius = bs._radius;
 }
 
+inline FPoint3 s2v(const osg::Vec3 &s)
+{
+	FPoint3 f;
+	f.x = s[0]; f.y = s[1]; f.z = s[2];
+	return f;
+}
+
+inline RGBf s2v(const osg::Vec4 &s)
+{
+	RGBf f;
+	f.r = s[0]; f.g = s[1]; f.b = s[2];
+	return f;
+}
+
 inline void ConvertMatrix4(const osg::Matrix *mat_osg, FMatrix4 *mat)
 {
 	const osg_matrix_value *ptr = mat_osg->ptr();
