@@ -1253,9 +1253,9 @@ void MainFrame::ExportImage()
 
 	bool success = pOutput->SaveToFile(strPathName.mb_str());
 	if (success)
-		DisplayAndLog(("Couldn't write image file."));
-	else
 		DisplayAndLog("Successfully wrote image file '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog(("Couldn't write image file."));
 	delete pOutput;
 }
 
