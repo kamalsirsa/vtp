@@ -37,33 +37,48 @@ vtImageLayer::vtImageLayer(const DRECT &area, int xsize, int ysize,
 	m_proj = proj;
 
 	// yes, we could use some error-checking here
-	m_pImage = new wxImage(m_iXSize, m_iYSize);
-	m_pBitmap = new wxBitmap(m_pImage);
+	m_pBitmap = new vtBitmap();
+	m_pBitmap->Allocate(m_iXSize, m_iYSize);
 }
 
 vtImageLayer::~vtImageLayer()
 {
-	if (NULL != m_pImage)
-		delete m_pImage;
 	if (NULL != m_pBitmap)
 		delete m_pBitmap;
 	CleanupGDALUsage();
+
+	for (int i = 0; i < BUF_SCANLINES; i++)
+	{
+		if (m_row[i].m_data)
+			delete m_row[i].m_data;
+	}
+}
+
+void vtImageLayer::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+{
+	// this method clearly only works for in-memory images
+	if (m_pBitmap)
+		m_pBitmap->SetRGB(x, y, r, g, b);
 }
 
 void vtImageLayer::SetDefaults()
 {
-	m_pImage = NULL;
+	m_iXSize = 0;
+	m_iYSize = 0;
 	m_pBitmap = NULL;
-	m_bInMemory = false;
+
+	// GDAL stuff
 	pScanline = NULL;
 	pRedline = NULL;
 	pGreenline = NULL;
 	pBlueline = NULL;
 	pDataset = NULL;
 	pTable = NULL;
-	m_iXSize = 0;
-	m_iYSize = 0;
 	iRasterCount = 0;
+
+	// scanline buffers
+	for (int i = 0; i < BUF_SCANLINES; i++)
+		m_row[i].m_data = NULL;
 	m_use_next = 0;
 }
 
@@ -93,9 +108,7 @@ bool vtImageLayer::GetAreaExtent(DRECT &rect)
 void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	bool bDrawImage = true;
-	if (m_pImage == NULL)
-		bDrawImage = false;
-	else if (!m_pImage->Ok())
+	if (m_pBitmap == NULL)
 		bDrawImage = false;
 
 	DRECT area;
@@ -108,10 +121,12 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (bDrawImage)
 	{
 #if WIN32
+		// Using StretchBlit is much faster and has less scaling/roundoff
+		//  problems than using the wx method DrawBitmap
 		::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 
 		wxDC2 *pDC2 = (wxDC2 *) pDC;
-		pDC2->StretchBlit(*m_pBitmap, destRect.x, destRect.y,
+		pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
 			destRect.width, destRect.height);
 #else
 		// scale and draw the bitmap
@@ -131,6 +146,7 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 	else
 	{
+		// Draw placeholder yellow frame
 		wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
 		pDC->SetLogicalFunction(wxCOPY);
 		pDC->SetPen(yellow);
@@ -196,7 +212,7 @@ bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
 
-	if (!m_pImage)
+	if (!m_pBitmap)
 	{
 		// support for out-of-memory image here
 		RGBi *data = GetScanlineFromBuffer(iy);
@@ -206,16 +222,14 @@ bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
 	{
 		// TODO: real filtering (interpolation)
 		// for now, just grab closest pixel
-		rgb.r = m_pImage->GetRed(ix, iy);
-		rgb.g = m_pImage->GetGreen(ix, iy);
-		rgb.b = m_pImage->GetBlue(ix, iy);
+		m_pBitmap->GetRGB(ix, iy, rgb);
 	}
 	return true;
 }
 
 bool vtImageLayer::SaveToFile(const char *fname)
 {
-	if (!m_pImage)
+	if (!m_pBitmap)
 		return false;
 
 	// Save with GDAL
@@ -247,6 +261,9 @@ bool vtImageLayer::SaveToFile(const char *fname)
 	pDataset->SetProjection(pszSRS_WKT);
 	CPLFree( pszSRS_WKT );
 
+	// TODO: ask Frank if there is a way to gave GDAL write the file without
+	// having to make another entire copy in memory, as it does now:
+	RGBi rgb;
 	GDALRasterBand *pBand;
 	int i, x, y;
 	for (i = 1; i <= 3; i++)
@@ -257,12 +274,10 @@ bool vtImageLayer::SaveToFile(const char *fname)
 		{
 			for (y = 0; y < m_iYSize; y++)
 			{
-				if (i == 1)
-					raster[y*m_iXSize + x] = m_pImage->GetRed(x, y);
-				if (i == 2)
-					raster[y*m_iXSize + x] = m_pImage->GetGreen(x, y);
-				if (i == 3)
-					raster[y*m_iXSize + x] = m_pImage->GetBlue(x, y);
+				m_pBitmap->GetRGB(x, y, rgb);
+				if (i == 1) raster[y*m_iXSize + x] = rgb.r;
+				if (i == 2) raster[y*m_iXSize + x] = rgb.g;
+				if (i == 3) raster[y*m_iXSize + x] = rgb.b;
 			}
 		}
 		pBand->RasterIO( GF_Write, 0, 0, m_iXSize, m_iYSize, 
@@ -284,12 +299,14 @@ static int WarpProgress(double dfComplete, const char *pszMessage, void *pProgre
 
 bool vtImageLayer::LoadFromGDAL()
 {
-	OGRErr err;
-	const char *pProjectionString;
 	double affineTransform[6];
+	const char *pProjectionString;
+	OGRErr err;
 	double linearConversionFactor;
+	bool bRet = true;
+	bool bDefer = false;
 	int i;
-	bool bRet = true, bBitmap = true;
+	vtString message;
 
 	g_GDALWrapper.RequestGDALFormats();
 
@@ -311,6 +328,15 @@ bool vtImageLayer::LoadFromGDAL()
 
 		m_iXSize = pDataset->GetRasterXSize();
 		m_iYSize = pDataset->GetRasterYSize();
+
+		IPoint2 OriginalSize;
+		OriginalSize.x = m_iXSize;
+		OriginalSize.y = m_iYSize;
+
+		// adjust raster X for wxImage and ImageMagick compatibility
+		// the same adjustment is done in CwxBitmapSection::CreateSectionFromGDAL
+		// where the image is padded out to the right with junk
+		m_iXSize = (m_iXSize + 11)/12 * 12;
 
 		if (CE_None != pDataset->GetGeoTransform(affineTransform))
 			throw "Dataset does not contain a valid affine transform.";
@@ -510,8 +536,8 @@ bool vtImageLayer::LoadFromGDAL()
 				throw "Unsupported color interpretation.";
 
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
-			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
-			nyBlocks = (m_iYSize + yBlockSize - 1) / yBlockSize;
+			nxBlocks = (OriginalSize.x + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (OriginalSize.y + yBlockSize - 1) / yBlockSize;
 			if (NULL == (pScanline = new unsigned char[xBlockSize * yBlockSize]))
 				throw "Couldnt allocate scan line.";
 		}
@@ -543,75 +569,68 @@ bool vtImageLayer::LoadFromGDAL()
 				throw "Couldn't find bands for Red, Green, Blue.";
 
 			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
-			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
-			nyBlocks = (m_iYSize + yBlockSize - 1) / yBlockSize;
+			nxBlocks = (OriginalSize.x + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (OriginalSize.y + yBlockSize - 1) / yBlockSize;
 
 			pRedline = new unsigned char[xBlockSize * yBlockSize];
 			pGreenline = new unsigned char[xBlockSize * yBlockSize];
 			pBlueline = new unsigned char[xBlockSize * yBlockSize];
 		}
 
-		if (m_iXSize * m_iYSize > (4096 * 4096))
-		{
-			// don't try to load giant image
-			throw "Deferring load of large image";
-		}
+		// don't try to load giant image?
+//		if (m_iXSize * m_iYSize > (4096 * 4096))
+//		{
+//			bDefer = true;
+//			throw "Deferring load of large image";
+//		}
 
-		// Set up wxWindows image
-		if (NULL == (m_pImage = new wxImage(m_iXSize, m_iYSize)))
-			throw "Couldn't create image.";
-
-		// Read the data
-		for(int iy = 0; iy < m_iYSize; iy++ )
+		m_pBitmap = new vtBitmap();
+		if (!m_pBitmap->Allocate(m_iXSize, m_iYSize) || 1)	// TEMP!
 		{
-			ReadScanline(iy, 0);
-			progress_callback(iy * 99 / m_iYSize);
-			for(int iX = 0; iX < m_iXSize; iX++ )
-			{
-				RGBi rgb = m_row[0].m_data[iX];
-				m_pImage->SetRGB(iX, iy, rgb.r, rgb.g, rgb.b);
-			}
-		}
-	}
-	
-	catch (const char *msg)
-	{
-		wxString2 str = msg;
-		if (!str.CmpNoCase(_T("Deferring load of large image")))
-		{
-			wxMessageBox(str);
-			bBitmap = false;
-		}
-		else
-		{
-			bRet = false;
-			wxString2 str2 = "Can't load Image layer: ";
-			wxMessageBox(str2+str);
-		}
-	}
-
-	if (bRet == true && bBitmap == true)
-	{
-		m_pBitmap = new wxBitmap(m_pImage);
-		if (!m_pBitmap || (m_pBitmap && !m_pBitmap->Ok()))
-		{
-			DisplayAndLog("Couldn't create bitmap of size %d x %d", m_iXSize, m_iYSize);
-			bRet = false;
 			delete m_pBitmap;
 			m_pBitmap = NULL;
+			wxString2 msg;
+			msg.Printf(_T("Couldn't allocate bitmap of size %d x %d.  Would you like\n")
+				_T("to create the layer using out-of-memory access to the image?"),
+				m_iXSize, m_iYSize);
+			int result = wxMessageBox(msg, _T("Question"), wxYES_NO);
+			if (result == wxYES)
+				bDefer = true;
+			else
+				throw "Couldn't allocate bitmap";
 		}
-		else
-			m_bInMemory = true;
-	}
-	if (bRet == false)
-	{
-		// Tidy up on failure
-		if (NULL != m_pImage)
+
+		if (!bDefer)
 		{
-			delete m_pImage;
-			m_pImage = NULL;
+			// Read the data
+			for (int iy = 0; iy < m_iYSize; iy++ )
+			{
+				ReadScanline(iy, 0);
+				progress_callback(iy * 99 / m_iYSize);
+				for(int iX = 0; iX < m_iXSize; iX++ )
+				{
+					RGBi rgb = m_row[0].m_data[iX];
+					m_pBitmap->SetRGB(iX, iy, rgb);
+				}
+			}
+			m_pBitmap->ContentsChanged();
 		}
 	}
+
+	catch (const char *msg)
+	{
+		if (!bDefer)
+		{
+			wxString2 str = msg;
+			bRet = false;
+			wxString2 str2 = "Couldn't load Image layer: ";
+			DisplayAndLog(str2+str);
+		}
+	}
+
+	// Don't close the GDAL Dataset; leave it open just in case we need it.
+//	GDALClose(pDataset);
+
 	return bRet;
 }
 
@@ -648,7 +667,7 @@ RGBi *vtImageLayer::GetScanlineFromBuffer(int y)
 	m_row[m_use_next].m_y = y;
 	data = m_row[m_use_next].m_data;
 
-	// increment which row we'll use next
+	// increment which buffer row we'll use next
 	m_use_next++;
 	if (m_use_next == BUF_SCANLINES)
 		m_use_next = 0;
@@ -730,3 +749,4 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 		}
 	}
 }
+

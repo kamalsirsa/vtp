@@ -10,11 +10,15 @@
 
 #include "wx/image.h"
 #include "Layer.h"
+#include "vtBitmap.h"
 
 class GDALDataset;
 class GDALRasterBand;
 class GDALColorTable;
 
+// The following mechanism is for a small buffer, consisting of a small
+//  number of scanlines, to cache the results of accessing large image
+//  files out of memory (direct from disk).
 struct Scanline
 {
 	RGBi *m_data;
@@ -55,7 +59,7 @@ public:
 	}
 	bool GetFilteredColor(double x, double y, RGBi &rgb);
 	bool SaveToFile(const char *fname);
-	wxImage *GetImage() { return m_pImage; }
+	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 
 protected:
 	void SetDefaults();
@@ -63,13 +67,11 @@ protected:
 	void CleanupGDALUsage();
 	vtProjection	m_proj;
 
-	bool	m_bInMemory;
 	DRECT   m_Extents;
 	int		m_iXSize;
 	int		m_iYSize;
 
-	wxImage		*m_pImage;
-	wxBitmap	*m_pBitmap;
+	vtBitmap	*m_pBitmap;
 
 	// used when reading from a file with GDAL
 	int iRasterCount;
@@ -89,8 +91,8 @@ protected:
 	Scanline m_row[BUF_SCANLINES];
 	int m_use_next;
 
-	RGBi *GetScanlineFromBuffer(int y);
 	void ReadScanline(int y, int bufrow);
+	RGBi *GetScanlineFromBuffer(int y);
 };
 
 #endif
