@@ -14,7 +14,7 @@ namespace osg
 {
 	class Node;
 	class Referenced;
-	class Matrix;
+	class Matrixf;
 	class Fog;
 }
 
@@ -376,15 +376,21 @@ public:
 	void SetFOV(float f);
 	float GetFOV();
 
-	void GetDirection(FPoint3 &dir);
+	void SetOrtho(bool bOrtho, float fWidth = 1.0f);
+	bool IsOrtho();
+	float GetWidth();
 
+	void GetDirection(FPoint3 &dir);
 	void ZoomToSphere(const FSphere &sphere);
 
-	void SetOrtho(float fWidth);
-
-	osg::ref_ptr<osg::Camera> m_pOsgCamera;
-
 protected:
+	float m_fFOV;
+	float m_fHither;
+	float m_fYon;
+
+	bool m_bOrtho;
+	float m_fWidth;
+
 	virtual ~vtCamera();
 };
 

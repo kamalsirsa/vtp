@@ -432,17 +432,11 @@ vtMovLight::vtMovLight(vtLight *pContained) : vtTransform()
 
 vtCamera::vtCamera() : vtTransform()
 {
-	m_pOsgCamera = new Camera();
-
-	// Increase reference count so it won't get undesirably deleted later?
-//	m_pOsgCamera->ref();
-
-#if 0
-	// Tell OSG to use our transform as the location of the camera
-	// (This is no longer possible as of OSG 0.9.3?)
-	m_pOsgCamera->attachTransform(Camera::EYE_TO_MODEL,
-		&m_pTransform->getMatrix());
-#endif
+	m_fHither = 1;
+	m_fYon = 100;
+	m_fFOV = PIf/3.0f;
+	m_bOrtho = false;
+	m_fWidth = 1;
 }
 
 vtCamera::~vtCamera()
@@ -451,32 +445,27 @@ vtCamera::~vtCamera()
 
 void vtCamera::Release()
 {
-	m_pOsgCamera = NULL;
 	vtTransform::Release();
 }
 
 void vtCamera::SetHither(float f)
 {
-	float fov1 = m_pOsgCamera->calc_fovx();
-
-	m_pOsgCamera->setNearFar(f, m_pOsgCamera->zFar());
-
-	float fov2 = m_pOsgCamera->calc_fovx();
+	m_fHither = f;
 }
 
 float vtCamera::GetHither()
 {
-	return m_pOsgCamera->zNear();
+	return m_fHither;
 }
 
 void vtCamera::SetYon(float f)
 {
-	m_pOsgCamera->setNearFar(m_pOsgCamera->zNear(), f);
+	m_fYon = f;
 }
 
 float vtCamera::GetYon()
 {
-	return m_pOsgCamera->zFar();
+	return m_fYon;
 }
 
 /**
@@ -484,16 +473,7 @@ float vtCamera::GetYon()
  */
 void vtCamera::SetFOV(float fov_x)
 {
-	float aspect = m_pOsgCamera->calc_aspectRatio();
-	float fov_y2 = atan(tan (fov_x/2) / aspect);
-
-	// osg 0.8.42
-//	m_pOsgCamera->setPerspective(fov_y2 * 2 * 180.0f / PIf,
-//		aspect, m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
-
-	// OSG 0.8.43 and later
-	m_pOsgCamera->setFOV(fov_x * 180.0f / PIf, fov_y2 * 2.0f * 180.0f / PIf,
-		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
+	m_fFOV = fov_x;
 }
 
 /**
@@ -501,10 +481,7 @@ void vtCamera::SetFOV(float fov_x)
  */
 float vtCamera::GetFOV()
 {
-	float fov_x = m_pOsgCamera->calc_fovx();
-
-	// osg 0.8.42 and osg 0.8.43
-	return (fov_x / 180.0f * PIf);
+	return m_fFOV;
 }
 
 void vtCamera::GetDirection(FPoint3 &dir)
@@ -522,12 +499,20 @@ void vtCamera::ZoomToSphere(const FSphere &sphere)
 	Translate1(FPoint3(0.0f, 0.0f, sphere.radius));
 }
 
-void vtCamera::SetOrtho(float fWidth)
+void vtCamera::SetOrtho(bool bOrtho, float fWidth)
 {
-	float fAspect = m_pOsgCamera->calc_aspectRatio();	// width/height
-	float fHeight = fWidth / fAspect;
-	m_pOsgCamera->setOrtho(-fWidth/2, fWidth, -fHeight/2, fHeight,
-		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
+	m_bOrtho = bOrtho;
+	m_fWidth = fWidth;
+}
+
+bool vtCamera::IsOrtho()
+{
+	return m_bOrtho;
+}
+
+float vtCamera::GetWidth()
+{
+	return m_fWidth;
 }
 
 
@@ -813,13 +798,13 @@ void vtDynGeom::CalcCullPlanes()
 	// OSG 0.8.45
 //	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
 	// OSG 0.9.0
-	const Polytope &clipvol1 = pCam->m_pOsgCamera->getViewFrustum();
-//	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
+//	const Polytope &clipvol1 = pCam->m_pOsgCamera->getViewFrustum();
+	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
 
 	// clipvol1 is the global camera frustum (in world coordinates)
 	// clipvol2 is the camera's frustum after it's been transformed to the
 	//		local coordinates.
-	const Polytope::PlaneList &planes = clipvol1.getPlaneList();
+	const Polytope::PlaneList &planes = clipvol2.getPlaneList();
 
 	int i = 0;
 	for (Polytope::PlaneList::const_iterator itr=planes.begin();

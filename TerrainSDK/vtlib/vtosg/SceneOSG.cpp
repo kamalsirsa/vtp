@@ -59,8 +59,7 @@ vtScene::vtScene() : vtSceneBase()
 
 vtScene::~vtScene()
 {
-	if (m_pCamera)
-		m_pCamera->Release();
+	// Do not release camera, that is left for the application.
 }
 
 vtScene *vtGetScene()
@@ -102,22 +101,12 @@ bool vtScene::Init()
 	m_pOsgSceneView = new osgUtil::SceneView();
 	m_pOsgSceneView->setDefaults();
 
-	// OSG 0.8.45 and before
-//	m_pOsgSceneView->setCalcNearFar(false);
-
 	// OSG 0.9.0 and newer
 	m_pOsgSceneView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 
-//	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::SKY_LIGHT);
 	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
-	// OSG 0.8.45
-//	osgUtil::CullVisitor *cvis = m_pOsgSceneView->getCullVisitor();
-//	osgUtil::CullVisitor::CullingMode mode = cvis->getCullingMode();
-//	mode &= ~(osgUtil::CullVisitor::SMALL_FEATURE_CULLING);
-//	cvis->setCullingMode(mode);
-
-	// OSG 0.9.2
+	// OSG 0.9.2 and newer
 	m_pOsgSceneView->setCullingMode( m_pOsgSceneView->getCullingMode() & ~osg::CullStack::SMALL_FEATURE_CULLING);
 
 	m_bInitialized = true;
@@ -143,12 +132,7 @@ void vtScene::DoUpdate()
 
 	DoEngines();
 
-	Camera *pOsgCam = m_pCamera->m_pOsgCamera.get();
-
-	// let the OSG Camera know that its transform has (probably) changed
-	// apparently no longer needed as of OSG 0.8.45
-//	pOsgCam->dirtyTransform();
-
+#if 0
 	// Copy the camera transform position to camera.  With OSG 0.9.2, we
 	// used to be able to do this one call to Camera::attachTransform.
 	// With 0.9.3, we have to do it each frame:
@@ -157,8 +141,40 @@ void vtScene::DoUpdate()
 	Matrix &rcmat = *cmat;
 	rcmat = m_pCamera->m_pTransform->getMatrix();
 	pOsgCam->attachTransform(Camera::EYE_TO_MODEL, cmat);
+#endif
 
-	m_pOsgSceneView->setCamera(pOsgCam);
+	// As of OSG 0.9.5, we need to store our own camera params and recreate
+	//  the projection matrix each frame.
+	float aspect;
+	if (m_WindowSize.x == 0 || m_WindowSize.y == 0)		// safety
+		aspect = 1.0;
+	else
+		aspect = (float) m_WindowSize.x / m_WindowSize.y;
+
+	if (m_pCamera->IsOrtho())
+	{
+		// Arguments are left, right, bottom, top, zNear, zFar
+		float w2 = m_pCamera->GetWidth() /2;
+		float h2 = w2 / aspect;
+		m_pOsgSceneView->setProjectionMatrixAsOrtho(-w2, w2, -h2, h2,
+			m_pCamera->GetHither(), m_pCamera->GetYon());
+	}
+	else
+	{
+		float fov_x = m_pCamera->GetFOV();
+		float fov_y_div2 = atan(tan (fov_x/2) / aspect);
+		float fov_y_deg = RadiansToDegrees(fov_y_div2 * 2);
+
+		m_pOsgSceneView->setProjectionMatrixAsPerspective(fov_y_deg,
+			aspect, m_pCamera->GetHither(), m_pCamera->GetYon());
+	}
+
+	// And apply the rotation and translation of the camera itself
+	osg::Matrix &mat2 = m_pCamera->m_pTransform->getMatrix();
+	osg::Matrix imat;
+	imat.invert(mat2);
+	m_pOsgSceneView->setViewMatrix(imat);
+
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
 	m_pOsgSceneView->cull();
 	m_pOsgSceneView->draw();
