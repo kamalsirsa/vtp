@@ -25,6 +25,7 @@ class vtElevationGrid;
 class vtTin;
 class vtTin3d;
 class vtFeatures;
+class SimpleBillboardEngine;
 
 typedef vtImage *vtImagePtr;
 
@@ -226,7 +227,7 @@ protected:
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
-	void create_culture(bool bSound);
+	void _CreateCulture(bool bSound);
 
 	void _CreateChoppedTextures(int patches, int patch_size);
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,
@@ -292,8 +293,9 @@ protected:
 
 	// keep a list of all the engines specific to this terrain
 	Array<vtEngine*>  m_Engines;
+	SimpleBillboardEngine	*m_pBBEngine;
 
-	// maintain a linked list
+	// maintain a linked list of vtTerrain objects
 	vtTerrain		*m_pNext;
 
 	Array<POIPtr>	m_PointsOfInterest;

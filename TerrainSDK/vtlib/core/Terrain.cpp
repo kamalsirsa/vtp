@@ -69,11 +69,11 @@ vtTerrain::vtTerrain()
 
 	// vegetation
 	m_pVegGrid = NULL;
+	m_pPlantList = NULL;
+	m_pBBEngine = NULL;
 
 	m_bShowPOI = true;
 	m_pPOIGroup = NULL;
-
-	m_pPlantList = NULL;
 
 	m_pDynGeom = NULL;
 	m_pDynGeomScale = NULL;
@@ -153,6 +153,12 @@ vtTerrain::~vtTerrain()
 
 	if (m_pTerrMats)
 		m_pTerrMats->Release();
+
+	if (m_pBBEngine)
+	{
+		vtGetScene()->RemoveEngine(m_pBBEngine);
+		delete m_pBBEngine;
+	}
 }
 
 
@@ -446,7 +452,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 				   m_Params.m_fVerticalExag, fOceanDepth, iError);
 	if (result == false)
 	{
-		delete m_pDynGeom;
+		m_pDynGeom->Release();
 		m_pDynGeom = NULL;
 		VTLOG(" Could not initialize CLOD\n");
 		return false;
@@ -869,7 +875,7 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 }
 
 
-void vtTerrain::create_culture(bool bSound)
+void vtTerrain::_CreateCulture(bool bSound)
 {
 	// The LOD distances are in meters
 	_SetupStructGrid(m_Params.m_iStructDistance);
@@ -902,6 +908,10 @@ void vtTerrain::create_culture(bool bSound)
 			}
 		}
 	}
+
+	m_pBBEngine = new SimpleBillboardEngine(PID2f);
+	m_pBBEngine->SetName2("Billboard Engine");
+	AddEngine(m_pBBEngine);
 
 	// create trees
 	m_PIA.SetHeightField(m_pHeightField);
@@ -1105,6 +1115,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		// toward the viewer
 		bb->AddChild(geom);
 
+		m_pBBEngine->AddTarget(bb);
 //		bb->Scale3(style.m_label_size, style.m_label_size, 1.0f);
 
 		m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3);
@@ -1273,7 +1284,7 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 	if (!m_pHeightField)
 		return false;
 
-	create_culture(bSound);
+	_CreateCulture(bSound);
 
 	if (m_Params.m_bOceanPlane || m_Params.m_bHorizon)
 	{
