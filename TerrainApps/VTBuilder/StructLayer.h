@@ -49,5 +49,8 @@ protected:
 	int m_size;	// size in pixels of the small crosshair at building center
 };
 
+// Helper
+int GetSHPType(const char *filename);
+
 #endif
 
