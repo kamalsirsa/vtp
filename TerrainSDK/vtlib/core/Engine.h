@@ -64,6 +64,8 @@ public:
 
 	void OnMouse(vtMouseEvent &event);
 
+	void GetNormalizedMouseCoords(float &mx, float &my);
+
 	/** The state of the mouse buttons */
 	int m_buttons;
 

@@ -24,9 +24,9 @@ void vtEngine::OnKey(int key, int flags)
 {
 }
 
+
 //
-// vtLastMouse is a simple engine which remembers the state of
-// the mouse buttons.
+// vtLastMouse
 //
 vtLastMouse::vtLastMouse() : vtEngine()
 {
@@ -49,3 +49,34 @@ void vtLastMouse::OnMouse(vtMouseEvent &event)
 	}
 	m_pos = event.pos;
 }
+
+// Helper for GetNormalizedMouseCoords
+void apply_dead_zone(float amount, float &val)
+{
+	if (val > 0) {
+		val -= amount;
+		if (val < 0)
+			val = 0;
+	}
+	else {
+		val += amount;
+		if (val > 0) val = 0;
+	}
+	val *= (1.0 / (1.0 - amount));
+}
+
+#define DEAD_ZONE_SIZE 0.07f
+
+/** 
+ * Returns the mouse coordinates in the window, normalized such that X and Y
+ * range from -1 to 1 (left to right, top to bottom across the window.
+ */
+void vtLastMouse::GetNormalizedMouseCoords(float &mx, float &my)
+{
+	IPoint2	WinSize = vtGetScene()->GetWindowSize();
+	mx = (((float) m_pos.x / WinSize.x) - 0.5f) * 2;
+	my = (((float) m_pos.y / WinSize.y) - 0.5f) * 2;
+	apply_dead_zone(DEAD_ZONE_SIZE, mx);
+	apply_dead_zone(DEAD_ZONE_SIZE, my);
+}
+
