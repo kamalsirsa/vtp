@@ -95,6 +95,18 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_UNITS5 10052
 wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_CMAP_FILE 10053
+#define ID_COLORLIST 10054
+#define ID_CHANGE_COLOR 10055
+#define ID_DELETE_ELEVATION 10056
+#define ID_RELATIVE 10057
+#define ID_HEIGHT 10058
+#define ID_ADD 10059
+#define ID_SAVE_CMAP 10060
+#define ID_LOAD_CMAP 10061
+#define ID_LINE1 10062
+wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
