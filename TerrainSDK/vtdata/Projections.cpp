@@ -513,16 +513,26 @@ bool vtProjection::ReadProjFile(const char *filename)
 	}
 	if (!fp)
 		return false;
-	fclose(fp);
 
 	// Now read and parse the file
 	// Actually, importFromESRI() does the whole job for us, including
 	//  handling modern-style .prj files with WKT SRS in them.
+	OGRErr eErr;
 	char **papszPrj = CSLLoad( prj_name );
-	OGRErr err = importFromESRI(papszPrj);
+/*	if (!strncmp(papszPrj[0], "GEOGCS", 6) ||
+		!strncmp(papszPrj[0], "PROJCS", 6) ||
+		!strncmp(papszPrj[0], "LOCAL_CS", 8))
+	{
+		char  *pszWKT = papszPrj[0];
+ 		eErr = importFromWkt(&pszWKT);
+	}
+	else
+	{ */
+		eErr = importFromESRI(papszPrj);
+//	}
 	CSLDestroy( papszPrj );
 
-	return (err == OGRERR_NONE);
+	return (eErr == OGRERR_NONE);
 }
 
 
@@ -908,6 +918,7 @@ public:
 	OGRSpatialReference *GetTargetCS() { return m_pStandardConversion->GetTargetCS(); }
 
 	int Transform(int nCount, double *x, double *y, double *z = NULL);
+    int TransformEx(int nCount, double *x, double *y, double *z = NULL, int *pabSuccess = NULL );
 
 	OCT *m_pStandardConversion;
 	bool m_bDirection;		// true: to dymax, false: from dymax
@@ -929,7 +940,26 @@ int DymaxOCT::Transform(int nCount, double *x, double *y, double *z)
 		y[i] = pout.y;
 		iConverted++;
 	}
-	return iConverted;
+	return iConverted != 0;
+}
+
+int DymaxOCT::TransformEx(int nCount, double *x, double *y, double *z, int *pabSuccess)
+{
+	int iConverted = 0;
+	for (int i = 0; i < nCount; i++)
+	{
+		DPoint2 pin(x[i], y[i]), pout;
+
+		bool success = m_ico.GeoToDymax(pin, pout);
+		if (pabSuccess != NULL)
+			pabSuccess[i] = (int) success;
+
+		x[i] = pout.x;
+		y[i] = pout.y;
+		if (success)
+			iConverted++;
+	}
+	return iConverted != 0;
 }
 
 /**
