@@ -1,0 +1,31 @@
+/* XPM */
+static char *raw_add_point_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"20 20 5 1",
+"  c opaque",
+". c yellow",
+"X c #808080",
+"o c #c0c0c0",
+"O c white",
+/* pixels */
+"oooooooooooooooooooo",
+"oooooooooooooooooooo",
+"ooo.Xoo.ooXooooooooo",
+"oooX.XoOoX.ooooooooo",
+"ooooX.X.X.oooooooooo",
+"oooo.X.O.XXXoooooooo",
+"oooXXXO.XOOooooooooo",
+"oooooO.O.Xoooooooooo",
+"ooooX.X.X.oooooooooo",
+"oooX.XXOoXXooooooooo",
+"ooooXoo.ooooo oooooo",
+"ooooooooooooo oooooo",
+"ooooooooooooo oooooo",
+"oooooooooo       ooo",
+"ooooooooooooo oooooo",
+"ooooooooooooo oooooo",
+"ooooooooooooo oooooo",
+"oooooooooooooooooooo",
+"oooooooooooooooooooo",
+"oooooooooooooooooooo"
+};
