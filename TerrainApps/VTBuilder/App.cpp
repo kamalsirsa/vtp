@@ -90,7 +90,7 @@ bool MyApp::OnInit()
 //	frame->ImportDataFromFile(LT_IMAGE, fname, true);
 //	frame->LoadProject("E:/Locations-USA/Hawai`i Island Content/Honoka`a/latest_temp.vtb");
 
-	frame->GetView()->ZoomAll();
+	frame->ZoomAll();
 
 #if HEAPBUSTER
 	// Pull in the heap buster
