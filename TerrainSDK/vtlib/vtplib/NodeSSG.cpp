@@ -377,7 +377,7 @@ void DynLeaf::recalcBSphere()
 void DynLeaf::print(FILE *fd, char *indent)
 {
 	// do nothing
-    fprintf(fd, "DynLeaf\n");
+	fprintf(fd, "DynLeaf\n");
 }
 
 void DynLeaf::cull(sgFrustum *f, sgMat4 m, int test_needed)

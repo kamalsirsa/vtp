@@ -22,7 +22,7 @@
 #if !DO_BOUNDS_CHECK
 //#define offset(i,j) ((j)*m_iDim+(i))
 // probably faster:
-#define offset(x, y)     (((y) << (m_iLevels)) + (y) + (x))
+#define offset(x, y)	(((y) << (m_iLevels)) + (y) + (x))
 #endif
 
 // how to generate OpenGL vertex locations from a heightfield index

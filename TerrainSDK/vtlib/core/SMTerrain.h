@@ -50,9 +50,9 @@ Seumas says:
 #if INTEGER_HEIGHT
   typedef short HeightType;
   #if USE_FP8
-    typedef unsigned char VarianceType;
+	typedef unsigned char VarianceType;
   #else
-    typedef unsigned short VarianceType;
+	typedef unsigned short VarianceType;
   #endif
   typedef int MathType;		// use this type to perform arithmetic on
 							// the heights and variances

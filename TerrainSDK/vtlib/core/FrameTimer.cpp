@@ -80,20 +80,20 @@ TLONG FrameTimer::_tick()
 {
 	volatile unsigned __int64 ts;
 
-    volatile unsigned int HighPart;
-    volatile unsigned int LowPart;
-    _asm
-    {
-        xor eax, eax        //  Used when QueryPerformanceCounter()
-        xor edx, edx        //  not supported or minimal overhead
-        _emit 0x0f          //  desired
-        _emit 0x31          //
-        mov HighPart,edx
-        mov LowPart,eax
-    }
-    //ts = LowPart | HighPart >> 32;
-    *((unsigned int*)&ts) = LowPart;
-    *((unsigned int*)&ts+1) = HighPart;
+	volatile unsigned int HighPart;
+	volatile unsigned int LowPart;
+	_asm
+	{
+		xor eax, eax	//  Used when QueryPerformanceCounter()
+		xor edx, edx	//  not supported or minimal overhead
+		_emit 0x0f		//  desired
+		_emit 0x31		//
+		mov HighPart,edx
+		mov LowPart,eax
+	}
+	//ts = LowPart | HighPart >> 32;
+	*((unsigned int*)&ts) = LowPart;
+	*((unsigned int*)&ts+1) = HighPart;
 
 	return ts;
 }

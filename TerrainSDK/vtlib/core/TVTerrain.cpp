@@ -21,7 +21,7 @@
 #include "LocalGrid.h"
 
 // this is how to produce an offset into the vertex array
-#define offset(x, y)     (((y) << m_iLevels) + (y) + (x))
+#define offset(x, y)	(((y) << m_iLevels) + (y) + (x))
 
 #define SOUTH	0	/* important that these 4 come before NE,SW,NW,SE */
 #define WEST	1
@@ -82,58 +82,58 @@ TVTerrain::~TVTerrain()
 
 void leftChild(TriIndex *t, TriIndex *lt)
 {
-  lt->depth = t->depth+1;
-  lt->orient = lorient[t->orient];
-  if (t->depth&1) {
-    lt->x = t->x;
-    lt->y = t->y;
-    lt->s = S0(lt);
-  } else {
-    lt->x = t->x<<1 | lxinc[t->orient];
-    lt->y = t->y<<1 | lyinc[t->orient];
-    if (lt->x > xmax[lt->depth] || lt->y > ymax[lt->depth])
-      lt->s = 0;
-    else
-      lt->s = S1(lt);
-  }
+	lt->depth = t->depth+1;
+	lt->orient = lorient[t->orient];
+	if (t->depth&1) {
+		lt->x = t->x;
+		lt->y = t->y;
+		lt->s = S0(lt);
+	} else {
+		lt->x = t->x<<1 | lxinc[t->orient];
+		lt->y = t->y<<1 | lyinc[t->orient];
+		if (lt->x > xmax[lt->depth] || lt->y > ymax[lt->depth])
+		  lt->s = 0;
+		else
+		  lt->s = S1(lt);
+	}
 }
 
 void rightChild(TriIndex *t, TriIndex *rt)
 {
-  rt->depth = t->depth+1;
-  rt->orient = rorient[t->orient];
-  if (t->depth&1) {
-    rt->x = t->x;
-    rt->y = t->y;
-    rt->s = S0(rt);
-  } else {
-    rt->x = t->x<<1 | rxinc[t->orient];
-    rt->y = t->y<<1 | ryinc[t->orient];
-    if (rt->x > xmax[rt->depth] || rt->y > ymax[rt->depth])
-      rt->s = 0;
-    else
-      rt->s = S1(rt);
-  }
+	rt->depth = t->depth+1;
+	rt->orient = rorient[t->orient];
+	if (t->depth&1) {
+		rt->x = t->x;
+		rt->y = t->y;
+		rt->s = S0(rt);
+	} else {
+		rt->x = t->x<<1 | rxinc[t->orient];
+		rt->y = t->y<<1 | ryinc[t->orient];
+		if (rt->x > xmax[rt->depth] || rt->y > ymax[rt->depth])
+		  rt->s = 0;
+		else
+		  rt->s = S1(rt);
+	}
 }
 
 static int ceilingLog2(int x)
 {
-  int m = 1;
-  int i = 0;
+	int m = 1;
+	int i = 0;
 
-  while (m < x && m < INT_MAX) {
-    m <<= 1;
-    ++i;
-  }
-  return i;
+	while (m < x && m < INT_MAX) {
+		m <<= 1;
+		++i;
+	}
+	return i;
 }
 
 static int next2Power(int x)
 {
-  int m = 1;
-  while (m < x && m < INT_MAX)
-    m <<= 1;
-  return m;
+	int m = 1;
+	while (m < x && m < INT_MAX)
+		m <<= 1;
+	return m;
 }
 
 int TVTerrain::calcErr(vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p3)
@@ -536,41 +536,41 @@ void TVTerrain::bro3(TriIndex *t, TriIndex *b3)
 
 void TVTerrain::nbr1(TriIndex *t, TriIndex *n1)
 {
-  TriIndex b1;
+	TriIndex b1;
 
-  bro1(t,&b1);
+	bro1(t,&b1);
 
-  if (b1.s && SMALLN1(t)) {
-    leftChild(&b1,n1);
-  } else {
-    TRIEQUATE(n1,&b1);
-  }
+	if (b1.s && SMALLN1(t)) {
+		leftChild(&b1,n1);
+	} else {
+		TRIEQUATE(n1,&b1);
+	}
 }
 
 void TVTerrain::nbr2(TriIndex *t, TriIndex *n2)
 {
-  TriIndex b2;
+	TriIndex b2;
 
-  bro2(t,&b2);
+	bro2(t,&b2);
 
-  if (b2.s && SMALLN2(t)) {
-    rightChild(&b2,n2);
-  } else {
-    TRIEQUATE(n2,&b2);
-  }
+	if (b2.s && SMALLN2(t)) {
+		rightChild(&b2,n2);
+	} else {
+		TRIEQUATE(n2,&b2);
+	}
 }
 
 void TVTerrain::nbr3(TriIndex *t, TriIndex *n3)
 {
-  TriIndex b3;
+	TriIndex b3;
 
-  bro3(t,&b3);
+	bro3(t,&b3);
 
-  if (b3.s && BIGN3(t)) {
-    parent(&b3,n3);
-  } else {
-    TRIEQUATE(n3,&b3);
-  }
+	if (b3.s && BIGN3(t)) {
+		parent(&b3,n3);
+	} else {
+		TRIEQUATE(n3,&b3);
+	}
 }
 
 

@@ -42,14 +42,14 @@ protected:
 	osg::Group			*m_pOsgSceneRoot;
 	Array<vtMovLight*>	m_Lights;
 
-    osg::Timer   _timer;
-    osg::Timer_t _initialTick;
-    osg::Timer_t _lastFrameTick;
-    osg::Timer_t _frameTick;
+	osg::Timer   _timer;
+	osg::Timer_t _initialTick;
+	osg::Timer_t _lastFrameTick;
+	osg::Timer_t _frameTick;
 
-    // time from the current frame update and the previous one in seconds.
-    double frameSeconds() { return _timer.delta_s(_lastFrameTick,_frameTick); }
-    double frameRate() { return 1.0/frameSeconds(); }
+	// time from the current frame update and the previous one in seconds.
+	double frameSeconds() { return _timer.delta_s(_lastFrameTick,_frameTick); }
+	double frameRate() { return 1.0/frameSeconds(); }
 
 	bool	m_bInitialized;
 	bool	m_bWireframe;

@@ -851,7 +851,7 @@ bool vtStarDome::ReadStarData(const char *starfile)
 {
 	int n, numstars = 0, num_file_stars = 0;
 	float himag, lomag;
-    int ra_h, ra_m, dec_d, dec_m, dec_s;
+	int ra_h, ra_m, dec_d, dec_m, dec_s;
 	float ra_s;
 
 	FILE *starfp = NULL;
@@ -864,7 +864,7 @@ bool vtStarDome::ReadStarData(const char *starfile)
 	}
 
 	if ((n = fscanf(starfp, "%d %f %f\n", &num_file_stars,
-		              &himag, &lomag)) == EOF)
+					  &himag, &lomag)) == EOF)
 	{
 //		TRACE("Couldn't read number of stars from %s\n", fname);
 		return false;

@@ -72,7 +72,7 @@ private:
 	float	Radius;
 	float	Cutoff, MaxSunsetAngle, SunTimePctMod;
 
-	int     TimeOfDay, MaxTimeOfDay;
+	int		TimeOfDay, MaxTimeOfDay;
 	int		DuskStartTime, DuskEndTime, DawnStartTime, DawnEndTime;
 	float	DawnDuration, DuskDuration;
 
@@ -123,7 +123,7 @@ private:
 	float	Radius;
 	float	RelativeBrightness;
 
-	int     TimeOfDay, MaxTimeOfDay;
+	int		TimeOfDay, MaxTimeOfDay;
 	int		DuskStartTime, DuskEndTime;
 	int		DawnStartTime, DawnEndTime;
 	float	DawnPct, DuskPct;
@@ -183,7 +183,7 @@ protected:
 private:
 	float	Radius;
 
-	int     TimeOfDay, MaxTimeOfDay;
+	int		TimeOfDay, MaxTimeOfDay;
 	int		DuskStartTime, DuskEndTime;
 	int		DawnStartTime, DawnEndTime;
 	float	HighMag, LowMag, MagRange;

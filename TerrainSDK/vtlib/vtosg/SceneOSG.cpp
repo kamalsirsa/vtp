@@ -107,8 +107,8 @@ void vtScene::Init()
 
 	m_bInitialized = true;
 
-    _initialTick = _timer.tick();
-    _frameTick = _initialTick;
+	_initialTick = _timer.tick();
+	_frameTick = _initialTick;
 }
 
 void vtScene::AddMovLight(vtMovLight *pML)
@@ -122,8 +122,8 @@ void vtScene::DoUpdate()
 	if (!m_bInitialized)
 		return;
 
-    _lastFrameTick = _frameTick;
-    _frameTick = _timer.tick();
+	_lastFrameTick = _frameTick;
+	_frameTick = _timer.tick();
 
 	DoEngines();
 

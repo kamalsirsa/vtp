@@ -257,9 +257,9 @@ public:
 	void SetOrtho(float fWidth);
 
 //  context:
-//	  void getCameraPosition ( sgVec3 pos ) ;
-//    void setCamera ( sgMat4 mat ) ;
-//    void setCamera ( sgCoord *coord ) ;
+//	void getCameraPosition ( sgVec3 pos ) ;
+//	void setCamera ( sgMat4 mat ) ;
+//	void setCamera ( sgCoord *coord ) ;
 };
 
 

@@ -627,7 +627,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
  *		- VT_Colors - a color per vertex.
  *		- VT_TexCoords - a texture coordinate (UV) per vertex.
  * \param fRadius The radius of the sphere.
- * \param res     The resolution (tesselation) of the sphere.  The number of
+ * \param res	  The resolution (tesselation) of the sphere.  The number of
  *		vertices in the result will be res*res*2.
  */
 vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
@@ -653,8 +653,8 @@ vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
  *		- VT_TexCoords - a texture coordinate (UV) per vertex.
  * \param fHeight The height of the cylinder.
  * \param fRadius The radius of the cylinder.
- * \param res     The resolution (number of sides) of the cylinder.
- * \param bTop    True to create the top of the cylinder.
+ * \param res	  The resolution (number of sides) of the cylinder.
+ * \param bTop	  True to create the top of the cylinder.
  * \param bBottom True to create the bottom of the cylinder.  You could set
  *		this to false, for example, if the cylinder is going to sit on a
  *		flat surface where you will never see its bottom.

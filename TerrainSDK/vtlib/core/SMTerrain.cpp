@@ -429,7 +429,7 @@ inline BinTri *SMTerrain::AllocateBinTri()
 /*
 	Seumas says:
 
-    "In my engine, "resetting the state" entails setting the NextBinTriPool
+	"In my engine, "resetting the state" entails setting the NextBinTriPool
 	index variable to zero, and deleting the handful of heap allocated "patch"
 	structures which contain worldspace coordinates for their location, and
 	pointers to the root nodes of two pool-allocated binary triangle trees.
@@ -765,13 +765,13 @@ void SMTerrain::Split(BinTri *tri)
 		tri->LeftChild->RightNeighbor = tri->BottomNeighbor->RightChild;
 		tri->RightChild->LeftNeighbor = tri->BottomNeighbor->LeftChild;
 		tri->BottomNeighbor->LeftChild->RightNeighbor = tri->RightChild;
-	    tri->BottomNeighbor->RightChild->LeftNeighbor = tri->LeftChild;
+		tri->BottomNeighbor->RightChild->LeftNeighbor = tri->LeftChild;
 	}
 	else
 	{
 		Split2(tri);
 		tri->LeftChild->RightNeighbor = NULL;
-	    tri->RightChild->LeftNeighbor = NULL;
+		tri->RightChild->LeftNeighbor = NULL;
 	}
 }
 

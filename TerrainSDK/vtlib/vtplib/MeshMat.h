@@ -139,7 +139,7 @@ public:
 	ssgNormalArray   *m_normals;
 	ssgTexCoordArray *m_texcoords;
 	ssgColourArray   *m_colours;
-	ssgIndexArray     *m_indices;
+	ssgIndexArray	 *m_indices;
 };
 
 #endif

@@ -12,17 +12,17 @@
 
 xh_location::xh_location ()
   : _path(""),
-    _line(-1),
-    _column(-1),
-    _byte(-1)
+	_line(-1),
+	_column(-1),
+	_byte(-1)
 {
 }
 
 xh_location::xh_location (const string &path, int line, int column)
   : _path(path),
-    _line(line),
-    _column(column),
-    _byte(-1)
+	_line(line),
+	_column(column),
+	_byte(-1)
 {
 }
 
@@ -75,22 +75,22 @@ string xh_location::asString () const
   char buf[128];
   string out = "";
   if (_path != "") {
-    out += _path;
-    if (_line != -1 || _column != -1)
-      out += ",\n";
+	out += _path;
+	if (_line != -1 || _column != -1)
+	  out += ",\n";
   }
   if (_line != -1) {
-    sprintf(buf, "line %d", _line);
-    out += buf;
-    if (_column != -1)
-      out += ", ";
+	sprintf(buf, "line %d", _line);
+	out += buf;
+	if (_column != -1)
+	  out += ", ";
   }
   if (_column != -1) {
-    sprintf(buf, "column %d", _column);
-    out += buf;
+	sprintf(buf, "column %d", _column);
+	out += buf;
   }
   return out;
-    
+	
 }
 
 
@@ -100,13 +100,13 @@ string xh_location::asString () const
 
 xh_throwable::xh_throwable ()
   : _message(""),
-    _origin("")
+	_origin("")
 {
 }
 
 xh_throwable::xh_throwable (const string &message, const string &origin)
   : _message(message),
-    _origin(origin)
+	_origin(origin)
 {
 }
 
@@ -196,7 +196,7 @@ xh_io_exception::xh_io_exception (const string &message,
 				  const xh_location &location,
 				  const string &origin)
   : xh_exception(message, origin),
-    _location(location)
+	_location(location)
 {
 }
 
@@ -229,7 +229,7 @@ void xh_io_exception::setLocation (const xh_location &location)
 
 xh_format_exception::xh_format_exception ()
   : xh_exception(),
-    _text("")
+	_text("")
 {
 }
 
@@ -237,7 +237,7 @@ xh_format_exception::xh_format_exception (const string &message,
 					  const string &text,
 					  const string &origin)
   : xh_exception(message, origin),
-    _text(text)
+	_text(text)
 {
 }
 

@@ -74,13 +74,13 @@ void vtScene::DoUpdate()
 
 	sglViewPlatform *view_platform  = m_pCamera->m_psglViewPlatform;
 #if 0
-	sglMat4f  view_matrix;    // could be single or double precision
+	sglMat4f  view_matrix;	// could be single or double precision
 	sglFrustumf  frustum;
 
 	glClearColor(0.3f, 0.4f, 0.5f, 1.0f);
 	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	int    state_mask = 0;
+	int state_mask = 0;
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
