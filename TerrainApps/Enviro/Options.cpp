@@ -36,6 +36,10 @@ EnviroOptions::EnviroOptions()
 	m_strImage = "free_512";
 }
 
+EnviroOptions::~EnviroOptions()
+{
+}
+
 bool EnviroOptions::Read(const char *szFilename)
 {
 	m_strFilename = szFilename;

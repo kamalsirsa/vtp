@@ -14,6 +14,7 @@ class EnviroOptions
 {
 public:
 	EnviroOptions();
+	~EnviroOptions();
 
 	bool Read(const char *szFilename);
 	bool Write();
