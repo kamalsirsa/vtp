@@ -630,6 +630,10 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	for (i = 0; i < 3; i++)
 		pGeom->AddMesh(mesh[i], i);
 
+	// Pass ownership of the meshes to the geometry
+	for (i = 0; i < 3; i++)
+		mesh[i]->Release();
+
 	return pGeom;
 }
 
@@ -684,6 +688,8 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 		pMesh->AddStrip2((res+1), (res+1) * i);
 
 	pGeom->AddMesh(pMesh, 0);
+	pMesh->Release();	// pass ownership to the geometry
+
 	return pGeom;
 }
 

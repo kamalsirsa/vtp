@@ -216,9 +216,9 @@ vtGeom *IslandTerrain::make_test_cone()
 
 	vtGeom *pGeom = new vtGeom();
 	pGeom->SetMaterials(looks);
-	looks->Release();
+	looks->Release();	// pass ownership
 	pGeom->AddMesh(pMesh, 0);
-	/////////////
+	pMesh->Release();	// pass ownership
 
 	return pGeom;
 }
@@ -237,8 +237,9 @@ vtGeom *IslandTerrain::make_red_cube()
 	vtMaterialArray *looks = new vtMaterialArray();
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true);
 	thebox->SetMaterials(looks);
-	looks->Release();
+	looks->Release();	// pass ownership
 	thebox->AddMesh(mesh, 0);
+	mesh->Release();	// pass ownership
 
 	return thebox;
 }

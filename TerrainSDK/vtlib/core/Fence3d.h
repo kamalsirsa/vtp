@@ -31,6 +31,8 @@ protected:
 	void	Init();
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 	void	AddFencepost(FPoint3 &p1, int iMatIdx);
+	void	CreateMeshesWithPosts(vtHeightField3d *pHeightField);
+	void	CreateMeshesWithoutPosts(vtHeightField3d *pHeightField);
 
 	// all fences share the same set of materials
 	static vtMaterialArray *s_pFenceMats;

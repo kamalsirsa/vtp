@@ -77,11 +77,6 @@ void vtBuilding3d::DestroyGeometry()
 	m_pContainer->RemoveChild(m_pGeom);
 	m_pGeom->Release();
 	m_pGeom = NULL;
-//	int i, size = m_Mesh.GetSize();
-//	for (i = 0; i < size; i++)
-//	{
-//		m_Mesh[i].m_pMesh->Release();
-//	}
 	m_Mesh.Empty();
 }
 
@@ -242,6 +237,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		vtMesh *mesh = m_Mesh[i].m_pMesh;
 		int index = m_Mesh[i].m_iMatIdx;
 		m_pGeom->AddMesh(mesh, index);
+		mesh->Release();	// pass ownership
 	}
 
 	// resize bounding box

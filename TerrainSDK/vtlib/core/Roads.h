@@ -141,7 +141,7 @@ public:
 
 	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
-	void AddMesh(vtMesh *pMesh, int iMatIdx);
+	void AddMeshToGrid(vtMesh *pMesh, int iMatIdx);
 	void GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max);
 	vtGroup *GenerateGeometry(bool do_texture, const vtStringArray &paths);
 	void GenerateSigns(vtLodGrid *pLodGrid);

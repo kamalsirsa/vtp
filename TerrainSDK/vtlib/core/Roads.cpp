@@ -643,7 +643,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	}
 
 	assert(total_vertices == bi.verts);
-	rmgeom->AddMesh(pMesh, rmgeom->m_mi_roads);
+	rmgeom->AddMeshToGrid(pMesh, rmgeom->m_mi_roads);
 }
 
 
@@ -732,7 +732,7 @@ void vtRoadMap3d::BuildIntersections()
 
 int clusters_used = 0;	// for statistical purposes
 
-void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
+void vtRoadMap3d::AddMeshToGrid(vtMesh *pMesh, int iMatIdx)
 {
 	// which cluster does it belong to?
 	int a, b;
@@ -789,7 +789,8 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 
 		clusters_used++;
 	}
-	pGeom->AddMesh(pMesh, iMatIdx);	// Add, not set
+	pGeom->AddMesh(pMesh, iMatIdx);
+	pMesh->Release();	// pass ownership
 }
 
 
@@ -908,12 +909,12 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	for (LinkGeom *pR = GetFirstLink(); pR; pR=(LinkGeom *)pR->m_pNext)
 	{
 		pR->GenerateGeometry(this);
-//		if (pMesh) AddMesh(pMesh, 0);	// TODO: correct matidx
+//		if (pMesh) AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
 	}
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
 	{
 		pMesh = pN->GenerateGeometry();
-		if (pMesh) AddMesh(pMesh, 0);	// TODO: correct matidx
+		if (pMesh) AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
 	}
 
 	// return top road group, ready to be added to scene graph
