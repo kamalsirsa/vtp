@@ -7,7 +7,7 @@
 #define __WDR_enviro_H__
 
 #ifdef __GNUG__
-    #pragma interface "enviro_wdr.cpp"
+    #pragma interface "enviro_wdr.h"
 #endif
 
 // Include wxWindows' headers

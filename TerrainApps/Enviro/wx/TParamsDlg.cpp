@@ -82,12 +82,12 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 //
 void TParamsDlg::SetParams(TParams &Params)
 {
-	m_strFilename = Params.m_strElevFile;
-	m_strFilenameTin = Params.m_strElevFile;
+	m_strFilename = wxString::FromAscii((const char *)Params.m_strElevFile);
+	m_strFilenameTin = wxString::FromAscii((const char *)Params.m_strElevFile);
 	m_fVerticalExag = Params.m_fVerticalExag;
 	m_iMinHeight = Params.m_iMinHeight;
 	m_fNavSpeed = Params.m_fNavSpeed;
-	m_strLocFile = Params.m_strLocFile;
+	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
 
 	m_bRegular = Params.m_bRegular;
 	m_iSubsample = Params.m_iSubsample;
@@ -107,15 +107,15 @@ void TParamsDlg::SetParams(TParams &Params)
 
 	m_iTexture = Params.m_eTexture;
 	m_iTilesize = Params.m_iTilesize;
-	m_strTextureSingle = Params.m_strTextureSingle;
-	m_strTextureBase = Params.m_strTextureBase;
+	m_strTextureSingle = wxString::FromAscii((const char *)Params.m_strTextureSingle);
+	m_strTextureBase = wxString::FromAscii((const char *)Params.m_strTextureBase);
 	m_bJPEG = Params.m_bJPEG;
-	m_strTextureFilename = Params.m_strTextureFilename;
+	m_strTextureFilename = wxString::FromAscii((const char *)Params.m_strTextureFilename);
 	m_bMipmap = Params.m_bMipmap;
 	m_b16bit = Params.m_b16bit;
 
 	m_bRoads = Params.m_bRoads;
-	m_strRoadFile = Params.m_strRoadFile;
+	m_strRoadFile = wxString::FromAscii((const char *)Params.m_strRoadFile);
 	m_bHwy = Params.m_bHwy;
 	m_bDirt = Params.m_bDirt;
 	m_bPaved = Params.m_bPaved;
@@ -125,14 +125,14 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bRoadCulture = Params.m_bRoadCulture;
 
 	m_bTrees = Params.m_bTrees;
-	m_strTreeFile = Params.m_strTreeFile;
+	m_strTreeFile = wxString::FromAscii((const char *)Params.m_strTreeFile);
 	m_iTreeDistance = Params.m_iTreeDistance;
 
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
 	m_bBuildings = Params.m_bBuildings;
-	m_strBuildingFile = Params.m_strBuildingFile;
+	m_strBuildingFile = wxString::FromAscii((const char *)Params.m_strBuildingFile);
 
 //  m_bVehicles = Params.m_bVehicles;
 //  m_fVehicleSize = Params.m_fVehicleSize;
@@ -140,7 +140,7 @@ void TParamsDlg::SetParams(TParams &Params)
 //  m_iNumCars = Params.m_iNumCars;
 
 	m_bSky = Params.m_bSky;
-	m_strSkyTexture = Params.m_strSkyTexture;
+	m_strSkyTexture = wxString::FromAscii((const char *)Params.m_strSkyTexture);
 	m_bHorizon = Params.m_bHorizon;
 	m_bVertexColors = Params.m_bVertexColors;
 //  m_bOverlay = Params.m_bOverlay;
@@ -157,7 +157,7 @@ void TParamsDlg::SetParams(TParams &Params)
 
 	m_bAirports = Params.m_bAirports;
 
-	m_strRouteFile = Params.m_strRouteFile;
+	m_strRouteFile = wxString::FromAscii((const char *)Params.m_strRouteFile);
 	m_bRouteEnable = Params.m_bRouteEnable;
 
 	// Safety check
@@ -171,15 +171,15 @@ void TParamsDlg::SetParams(TParams &Params)
 void TParamsDlg::GetParams(TParams &Params)
 {
 	if (m_bTin)
-		Params.m_strElevFile = m_strFilenameTin;
+		Params.m_strElevFile = m_strFilenameTin.mb_str();
 	else
-		Params.m_strElevFile = m_strFilename;
+		Params.m_strElevFile = m_strFilename.mb_str();
 
 	// LocationsFilename
 	Params.m_fVerticalExag = m_fVerticalExag;
 	Params.m_iMinHeight = m_iMinHeight;
 	Params.m_fNavSpeed = m_fNavSpeed;
-	Params.m_strLocFile = m_strLocFile;
+	Params.m_strLocFile = m_strLocFile.mb_str();
 
 	Params.m_bRegular = m_bRegular;
 	Params.m_iSubsample = m_iSubsample;
@@ -199,15 +199,15 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.m_eTexture = (enum TextureEnum)m_iTexture;
 	Params.m_iTilesize = m_iTilesize;
-	Params.m_strTextureSingle = m_strTextureSingle;
-	Params.m_strTextureBase = m_strTextureBase;
+	Params.m_strTextureSingle = m_strTextureSingle.mb_str();
+	Params.m_strTextureBase = m_strTextureBase.mb_str();
 	Params.m_bJPEG = m_bJPEG;
-	Params.m_strTextureFilename = m_strTextureFilename;
+	Params.m_strTextureFilename = m_strTextureFilename.mb_str();
 	Params.m_bMipmap = m_bMipmap;
 	Params.m_b16bit = m_b16bit;
 
 	Params.m_bRoads = m_bRoads;
-	Params.m_strRoadFile = m_strRoadFile;
+	Params.m_strRoadFile = m_strRoadFile.mb_str();
 	Params.m_bHwy = m_bHwy;
 	Params.m_bPaved = m_bPaved;
 	Params.m_bDirt = m_bDirt;
@@ -217,14 +217,14 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bRoadCulture = m_bRoadCulture;
 
 	Params.m_bTrees = m_bTrees;
-	Params.m_strTreeFile = m_strTreeFile;
+	Params.m_strTreeFile = m_strTreeFile.mb_str();
 	Params.m_iTreeDistance = m_iTreeDistance;
 
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
 	Params.m_bBuildings = m_bBuildings;
-	Params.m_strBuildingFile = m_strBuildingFile;
+	Params.m_strBuildingFile = m_strBuildingFile.mb_str();
 
 //  Params.m_bVehicles = m_bVehicles;
 //  Params.m_fVehicleSize = m_fVehicleSize;
@@ -232,7 +232,7 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.m_iNumCars = m_iNumCars;
 
 	Params.m_bSky = m_bSky;
-	Params.m_strSkyTexture = m_strSkyTexture;
+	Params.m_strSkyTexture = m_strSkyTexture.mb_str();
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_bHorizon = m_bHorizon;
 	Params.m_bVertexColors = m_bVertexColors;
@@ -250,18 +250,18 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.m_bAirports = m_bAirports;
 
-	Params.m_strRouteFile = m_strRouteFile;
+	Params.m_strRouteFile = m_strRouteFile.mb_str();
 	Params.m_bRouteEnable = m_bRouteEnable;
 }
 
 void TParamsDlg::UpdateTiledTextureFilename()
 {
-	m_strTextureFilename.Printf("%s%d", (const char *)m_strTextureBase,
+	m_strTextureFilename.Printf(_T("%s%d"), m_strTextureBase.mb_str(),
 		NTILES * (m_iTilesize-1) + 1);
 	if (m_bJPEG)
-		m_strTextureFilename += ".jpg";
+		m_strTextureFilename += _T(".jpg");
 	else
-		m_strTextureFilename += ".bmp";
+		m_strTextureFilename += _T(".bmp");
 	TransferDataToWindow();
 }
 
@@ -408,13 +408,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	m_pLodMethod->Clear();
-	m_pLodMethod->Append("Roettger");
-//	m_pLodMethod->Append("Lindstrom-Koller");
-	m_pLodMethod->Append("TopoVista");
-	m_pLodMethod->Append("McNally");
-	m_pLodMethod->Append("Demeter");
-	m_pLodMethod->Append("Custom");
-	m_pLodMethod->Append("BryanQuad");
+	m_pLodMethod->Append(_T("Roettger"));
+//	m_pLodMethod->Append(_T("Lindstrom-Koller"));
+	m_pLodMethod->Append(_T("TopoVista"));
+	m_pLodMethod->Append(_T("McNally"));
+	m_pLodMethod->Append(_T("Demeter"));
+	m_pLodMethod->Append(_T("Custom"));
+	m_pLodMethod->Append(_T("BryanQuad"));
 	// add your own LOD method here!
 
 	m_pLodMethod->SetSelection(m_iLodMethod);

@@ -30,7 +30,7 @@
 #include "frame.h"
 #include "StartupDlg.h"
 
-static void Args(int argc, char **argv)
+static void Args(int argc, wxChar **argv)
 {
    return;
 }
@@ -53,7 +53,7 @@ bool vtApp::OnInit()
 	// Create and show the Startup Dialog
 	//
 	VTLOG("Opening the Startup dialog.\n");
-	StartupDlg StartDlg(NULL, -1, "Enviro Startup", wxDefaultPosition);
+	StartupDlg StartDlg(NULL, -1, _T("Enviro Startup"), wxDefaultPosition);
 	StartDlg.GetOptionsFrom(g_Options);
 	StartDlg.CenterOnParent();
 	int result = StartDlg.ShowModal();
@@ -67,15 +67,15 @@ bool vtApp::OnInit()
 	//
 	// Create the main frame window
 	//
-	wxString title = "VTP Enviro";
+	wxString title = _T("VTP Enviro");
 #if VTLIB_PSM
-	title += " PSM";
+	title += _T(" PSM");
 #elif VTLIB_OSG
-	title += " OSG";
+	title += _T(" OSG");
 #elif VTLIB_SGL
-	title += " SGL";
+	title += _T(" SGL");
 #elif VTLIB_SSG
-	title += " SSG";
+	title += _T(" SSG");
 #endif
 	VTLOG("Creating the frame window.\n");
 	vtFrame *frame = new vtFrame(NULL, title,
@@ -119,19 +119,19 @@ bool AskForTerrainName(wxWindow *pParent, wxString &str)
 	int first_idx = 0;
 	for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
 	{
-		choices[num] = (const char *)(pTerr->GetName());
+		choices[num] = wxString::FromAscii((const char *)(pTerr->GetName()));
 		if (str == choices[num]) first_idx = num;
 		num++;
 	}
 
 	if (!num)
 	{
-		wxMessageBox("No terrains found (datapath/Terrains/*.ini)");
+		wxMessageBox(_T("No terrains found (datapath/Terrains/*.ini)"));
 		return false;
 	}
 
-	wxSingleChoiceDialog dlg(pParent, "Please choose a terrain",
-		"Select Terrain", num, choices);
+	wxSingleChoiceDialog dlg(pParent, _T("Please choose a terrain"),
+		_T("Select Terrain"), num, choices);
 	dlg.SetSelection(first_idx);
 	delete [] choices;
 	if (dlg.ShowModal() == wxID_OK)

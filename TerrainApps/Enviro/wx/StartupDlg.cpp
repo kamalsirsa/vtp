@@ -44,14 +44,15 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 {
 	using namespace boost::filesystem;
 
+	wxString wildstr = wxString::FromAscii(wildcard);
 	for (dir_it it((const char *)directory); it != dir_it(); ++it)
 	{
 		if (get<is_hidden>(it) || get<is_directory>(it))
 			continue;
 
 		std::string name1 = *it;
-		wxString name = name1.c_str();
-		if (name.Matches(wildcard))
+		wxString name = wxString::FromAscii(name1.c_str());
+		if (name.Matches(wildstr))
 		{
 			if (omit_chars)
 				box->Append(name.Left(name.Length()-omit_chars));
@@ -158,12 +159,12 @@ static void ShowOGLInfo()
 		value = 0;
 
 	wxString str;
-	str.Printf("OpenGL Version: %s\nVendor: %s\nRenderer: %s\n"
-		"Maximum Texture Dimension: %d\nExtensions: %s",
+	str.Printf(_T("OpenGL Version: %s\nVendor: %s\nRenderer: %s\n")
+		_T("Maximum Texture Dimension: %d\nExtensions: %s"),
 		glGetString(GL_VERSION), glGetString(GL_VENDOR),
 		glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
 
-	wxDialog dlg(NULL, -1, "OpenGL Info", wxDefaultPosition);
+	wxDialog dlg(NULL, -1, _T("OpenGL Info"), wxDefaultPosition);
 	TextDialogFunc(&dlg, TRUE);
 	wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
 	pText->SetValue(str);
@@ -189,8 +190,8 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
 	m_bStartEarth = (opt.m_bEarthView == TRUE);
 	m_bStartTerrain = !opt.m_bEarthView;
-	m_strImage = opt.m_strImage;
-	m_strTName = opt.m_strInitTerrain;
+	m_strImage = wxString::FromAscii((const char *)opt.m_strImage);
+	m_strTName = wxString::FromAscii((const char *)opt.m_strInitTerrain);
 	m_bFullscreen = (opt.m_bFullscreen == TRUE);
 	m_bGravity = (opt.m_bGravity == TRUE);
 	m_bHtmlpane = (opt.m_bHtmlpane == TRUE);
@@ -206,8 +207,8 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	opt.m_bEarthView = (m_bStartEarth == 1);
-	opt.m_strImage = m_strImage;
-	opt.m_strInitTerrain = m_strTName;
+	opt.m_strImage = m_strImage.mb_str();
+	opt.m_strInitTerrain = m_strTName.mb_str();
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bGravity = m_bGravity;
 	opt.m_bHtmlpane = m_bHtmlpane;
@@ -224,8 +225,8 @@ void StartupDlg::UpdateState()
 {
 	m_psImage->Enable(m_bStartEarth);
 	m_pImage->Enable(m_bStartEarth);
-	m_pTName->Enable(!m_bStartEarth);
-	m_pTSelect->Enable(!m_bStartEarth);
+	m_pTName->Enable(m_bStartTerrain);
+	m_pTSelect->Enable(m_bStartTerrain);
 }
 
 // WDR: event table for StartupDlg
@@ -248,7 +249,7 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void StartupDlg::EditParameters(const char *filename) 
 {
-	TParamsDlg dlg(this, -1, "Terrain Creation Parameters", wxDefaultPosition);
+	TParamsDlg dlg(this, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
 
 	TParams Params;
 	if (Params.LoadFromFile(filename))
@@ -262,8 +263,8 @@ void StartupDlg::EditParameters(const char *filename)
 		if (!Params.SaveToFile(filename))
 		{
 			wxString str;
-			str.Printf("Couldn't save to file %s.\n"
-					   "Please make sure the file is not read-only.", filename);
+			str.Printf(_T("Couldn't save to file %s.\n")
+					   _T("Please make sure the file is not read-only."), filename);
 			wxMessageBox(str);
 		}
 	}
@@ -274,7 +275,7 @@ void StartupDlg::EditParameters(const char *filename)
 #if 0
 void StartupDlg::OnSelectDataPath( wxCommandEvent &event )
 {
-	wxDirDialog dlg(this, "Please indicate your data directory", m_strDataPath);
+	wxDirDialog dlg(this, _T("Please indicate your data directory"), m_strDataPath);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		m_strDataPath = dlg.GetPath();
@@ -291,7 +292,7 @@ void StartupDlg::OnSelectDataPath( wxCommandEvent &event )
 
 void StartupDlg::OnEditProp( wxCommandEvent &event )
 {
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
+	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.mb_str());
 	if (pTerr)
 		EditParameters(pTerr->GetParamFile());
 }
@@ -327,11 +328,11 @@ void StartupDlg::OnOK( wxCommandEvent &event )
 
 void StartupDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
-	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
+	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.mb_str());
 	if (pTerr)
-		m_strTName = pTerr->GetName();
+		m_strTName = wxString::FromAscii(pTerr->GetName());
 	else
-		m_strTName = "none";
+		m_strTName = _T("none");
 
 	m_pTName = GetTname();
 	m_pTSelect = GetTselect();

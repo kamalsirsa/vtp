@@ -172,7 +172,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 wxFrame(parent, -1, title, pos, size, style)
 {
 	// Give it an icon
-	SetIcon(wxIcon("enviro"));
+	SetIcon(wxIcon(_T("enviro")));
 
 	m_bCulleveryframe = true;
 	m_bMaintainHeight = false;
@@ -199,22 +199,22 @@ wxFrame(parent, -1, title, pos, size, style)
 
 	VTLOG("Frame window: creating view canvas.\n");
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
-			"vtGLCanvas", gl_attrib);
+			_T("vtGLCanvas"), gl_attrib);
 
 	// Show the frame
 	Show(TRUE);
 
-	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, "Scene Graph",
+	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, _T("Scene Graph"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 
-	m_pPlantDlg = new PlantDlg(this, -1, "Plants", wxDefaultPosition);
-	m_pFenceDlg = new LinearStructureDlg3d(this, -1, "Linear Structures", wxDefaultPosition);
-	m_pUtilDlg = new UtilDlg(this, -1, "Utility", wxDefaultPosition);
-	m_pCameraDlg = new CameraDlg(this, -1, "Camera-View", wxDefaultPosition);
-	m_pLocationDlg = new LocationDlg(this, -1, "Locations",
+	m_pPlantDlg = new PlantDlg(this, -1, _T("Plants"), wxDefaultPosition);
+	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _T("Linear Structures"), wxDefaultPosition);
+	m_pUtilDlg = new UtilDlg(this, -1, _T("Utility"), wxDefaultPosition);
+	m_pCameraDlg = new CameraDlg(this, -1, _T("Camera-View"), wxDefaultPosition);
+	m_pLocationDlg = new LocationDlg(this, -1, _T("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pBuildingDlg = new BuildingDlg3d(this, -1, "Building Properties", wxDefaultPosition);
+	m_pBuildingDlg = new BuildingDlg3d(this, -1, _T("Building Properties"), wxDefaultPosition);
 
 	m_canvas->SetCurrent();
 }
@@ -234,74 +234,74 @@ void vtFrame::CreateMenus()
 {
 	// Make menus
 	wxMenu *fileMenu = new wxMenu;
-	fileMenu->Append(wxID_EXIT, "E&xit\tEsc", "Exit");
+	fileMenu->Append(wxID_EXIT, _T("E&xit\tEsc"), _T("Exit"));
 
 	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->Append(ID_TOOLS_SELECT, "Select", "Select", true);
-	toolsMenu->Append(ID_TOOLS_FENCES, "Fences", "Fences", true);
-	toolsMenu->Append(ID_TOOLS_ROUTES, "Routes", "Routes", true);
-	toolsMenu->Append(ID_TOOLS_TREES, "Trees", "Trees", true);
-	toolsMenu->Append(ID_TOOLS_MOVE, "Move Objects", "Move Objects", true);
-	toolsMenu->Append(ID_TOOLS_NAVIGATE, "Navigate", "Navigate", true);
+	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _T("Select"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _T("Fences"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _T("Routes"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_TREES, _T("Trees"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _T("Move Objects"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _T("Navigate"));
 
 	wxMenu *sceneMenu = new wxMenu;
-	sceneMenu->Append(ID_SCENE_SCENEGRAPH, "Scene Graph");
+	sceneMenu->Append(ID_SCENE_SCENEGRAPH, _T("Scene Graph"));
 	sceneMenu->AppendSeparator();
-	sceneMenu->Append(ID_SCENE_TERRAIN, "Go to Terrain...");
-	sceneMenu->Append(ID_SCENE_SPACE, "Go to Space");
+	sceneMenu->Append(ID_SCENE_TERRAIN, _T("Go to Terrain..."));
+	sceneMenu->Append(ID_SCENE_SPACE, _T("Go to Space"));
 #if VTLIB_OSG
 	sceneMenu->AppendSeparator();
-	sceneMenu->Append(ID_SCENE_SAVE, "Save scene graph to .osg");
+	sceneMenu->Append(ID_SCENE_SAVE, _T("Save scene graph to .osg"));
 #endif
 
 	wxMenu *viewMenu = new wxMenu;
-	viewMenu->Append(ID_VIEW_SLOWER, "Fly Slower (S)");
-	viewMenu->Append(ID_VIEW_FASTER, "Fly Faster (F)");
-	viewMenu->Append(ID_VIEW_MAINTAIN, "Maintain height above ground (A)", "Maintain height above ground", true);
-	viewMenu->Append(ID_VIEW_GRAB_PIVOT, "Use Grab-Pivot Navigation (D)", "Maintain height above ground", true);
-	viewMenu->Append(ID_VIEW_WIREFRAME, "Wireframe\tCtrl+W", "Wireframe", true);
-	viewMenu->Append(ID_VIEW_FULLSCREEN, "Fullscreen\tCtrl+F", "Fullscreen", true);
-	viewMenu->Append(ID_VIEW_TOPDOWN, "Top-Down Camera\tCtrl+T", "Top-Down", true);
-	viewMenu->Append(ID_VIEW_FRAMERATE, "Framerate Chart\tCtrl+R", "Framerate Chart", true);
+	viewMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
+	viewMenu->Append(ID_VIEW_FASTER, _T("Fly Faster (F)"));
+	viewMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _T("Maintain height above ground (A)"));
+	viewMenu->AppendCheckItem(ID_VIEW_GRAB_PIVOT, _T("Use Grab-Pivot Navigation (D)"));
+	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
+	viewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
+	viewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _T("Top-Down Camera\tCtrl+T"));
+	viewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+R"));
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_SETTINGS, "Camera - View Settings", "View Settings");
-	viewMenu->Append(ID_VIEW_LOCATIONS, "Store/Recall Locations", "View Locations");
+	viewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings"));
+	viewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
 
 	wxMenu *terrainMenu = new wxMenu;
-	terrainMenu->Append(ID_TERRAIN_REGULAR, "Regular Terrain\tF2", "Regular Terrain", true);
-	terrainMenu->Append(ID_TERRAIN_DYNAMIC, "Dynamic LOD Terrain\tF3", "Dynamic LOD Terrain", true);
-	terrainMenu->Append(ID_TERRAIN_CULLEVERY, "Cull every frame\tCtrl+C", "Cull every frame", true);
-	terrainMenu->Append(ID_TERRAIN_CULLONCE, "Cull once\tCtrl+K");
+	terrainMenu->AppendCheckItem(ID_TERRAIN_REGULAR, _T("Regular Terrain\tF2"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("Dynamic LOD Terrain\tF3"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _T("Cull every frame\tCtrl+C"));
+	terrainMenu->Append(ID_TERRAIN_CULLONCE, _T("Cull once\tCtrl+K"));
 	terrainMenu->AppendSeparator();
-	terrainMenu->Append(ID_TERRAIN_SKY, "Show Sky\tF4", "Show Sky", true);
-	terrainMenu->Append(ID_TERRAIN_OCEAN, "Show Ocean\tF5", "Show Ocean", true);
-	terrainMenu->Append(ID_TERRAIN_TREES, "Show Trees and Buildings\tF6", "Show Trees and Buildings", true);
-	terrainMenu->Append(ID_TERRAIN_ROADS, "Show Roads\tF7", "Show Roads", true);
-	terrainMenu->Append(ID_TERRAIN_FOG, "Show Fog\tF8", "Show Fog", true);
+	terrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _T("Show Sky\tF4"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _T("Show Ocean\tF5"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_TREES, _T("Show Trees and Buildings\tF6"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF7"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF8"));
 	terrainMenu->AppendSeparator();
-	terrainMenu->Append(ID_TERRAIN_INCREASE, "Increase Detail (+)");
-	terrainMenu->Append(ID_TERRAIN_DECREASE, "Decrease Detail (-)");
+	terrainMenu->Append(ID_TERRAIN_INCREASE, _T("Increase Detail (+)"));
+	terrainMenu->Append(ID_TERRAIN_DECREASE, _T("Decrease Detail (-)"));
 	terrainMenu->AppendSeparator();
-	terrainMenu->Append(ID_TERRAIN_SAVEVEG, "Save Vegetation As...");
-	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, "Save Built Structures As...");
+	terrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
+	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
 
 	wxMenu *earthMenu = new wxMenu;
-	earthMenu->Append(ID_EARTH_SHOWTIME, "&Show Time of Day\tCtrl+I", "Show Time of Day", true);
-	earthMenu->Append(ID_EARTH_FLATTEN, "&Flatten\tCtrl+E", "Flatten", true);
-	earthMenu->Append(ID_EARTH_POINTS, "&Load Point Data...\tCtrl+P");
-	earthMenu->Append(ID_EARTH_LINEAR, "Add &Linear Features...\tCtrl+L");
+	earthMenu->AppendCheckItem(ID_EARTH_SHOWTIME, _T("&Show Time of Day\tCtrl+I"));
+	earthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
+	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
+	earthMenu->Append(ID_EARTH_LINEAR, _T("Add &Linear Features...\tCtrl+L"));
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(ID_HELP_ABOUT, "About VTP Enviro...");
+	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Enviro..."));
 
 	wxMenuBar *menuBar = new wxMenuBar;
-	menuBar->Append(fileMenu, "&File");
-	menuBar->Append(toolsMenu, "&Tools");
-	menuBar->Append(sceneMenu, "&Scene");
-	menuBar->Append(viewMenu, "&View");
-	menuBar->Append(terrainMenu, "Te&rrain");
-	menuBar->Append(earthMenu, "&Earth");
-	menuBar->Append(helpMenu, "&Help");
+	menuBar->Append(fileMenu, _T("&File"));
+	menuBar->Append(toolsMenu, _T("&Tools"));
+	menuBar->Append(sceneMenu, _T("&Scene"));
+	menuBar->Append(viewMenu, _T("&View"));
+	menuBar->Append(terrainMenu, _T("Te&rrain"));
+	menuBar->Append(earthMenu, _T("&Earth"));
+	menuBar->Append(helpMenu, _T("&Help"));
 	SetMenuBar(menuBar);
 }
 
@@ -507,24 +507,24 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;	// stop rendering
 
-	wxString str = "VTP Enviro\n";
-	str += "The runtime environment for the Virtual Terrain Project\n\n";
-	str += "Please read the HTML documentation and license.\n\n";
-	str += "Send feedback to: ben@vterrain.org\n\n";
-	str += "This version was built with the ";
+	wxString str = _T("VTP Enviro\n");
+	str += _T("The runtime environment for the Virtual Terrain Project\n\n");
+	str += _T("Please read the HTML documentation and license.\n\n");
+	str += _T("Send feedback to: ben@vterrain.org\n\n");
+	str += _T("This version was built with the ");
 #if VTLIB_DSM
-	str += "DSM";
+	str += _T("DSM");
 #elif VTLIB_OSG
-	str += "OSG";
+	str += _T("OSG");
 #elif VTLIB_SGL
-	str += "SGL";
+	str += _T("SGL");
 #elif VTLIB_SSG
-	str += "SSG";
+	str += _T("SSG");
 #endif
-	str += " Library.\n\n";
-	str += "Build date: ";
-	str += __DATE__;
-	wxMessageBox(str, "About VTP Enviro");
+	str += _T(" Library.\n\n");
+	str += _T("Build date: ");
+	str += _T(__DATE__);
+	wxMessageBox(str, _T("About VTP Enviro"));
 
 	m_canvas->m_bRunning = true;	// start rendering again
 	m_canvas->QueueRefresh(FALSE);
@@ -757,7 +757,7 @@ void vtFrame::OnSceneTerrain(wxCommandEvent& event)
 #else
 	wxString str;
 	if (AskForTerrainName(this, str))
-		g_App.SwitchToTerrain(str);
+		g_App.SwitchToTerrain(str.mb_str());
 #endif
 }
 
@@ -940,42 +940,40 @@ void vtFrame::OnDecrease(wxCommandEvent& event)
 
 void vtFrame::OnSaveVeg(wxCommandEvent& event)
 {
-	char path[256];
 	// save current directory
-	GetCwd( path, sizeof(path) );
+	wxString path = wxGetCwd();
 
-	wxFileDialog saveFile(NULL, "Save Vegetation Data", "", "",
-		"Vegetation Files (*.vf)|*.vf|", wxSAVE);
+	wxFileDialog saveFile(NULL, _T("Save Vegetation Data"), _T(""), _T(""),
+		_T("Vegetation Files (*.vf)|*.vf|"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{
-		SetCwd(path);	// restore
+		wxSetWorkingDirectory(path);	// restore
 		return;
 	}
 	wxString str = saveFile.GetPath();
 
 	vtPlantInstanceArray &pia = GetCurrentTerrain()->GetPlantInstances();
-	pia.WriteVF(str);
+	pia.WriteVF(str.mb_str());
 }
 
 void vtFrame::OnSaveStruct(wxCommandEvent& event)
 {
-	char path[256];
 	// save current directory
-	GetCwd( path, sizeof(path) );
+	wxString path = wxGetCwd();
 
-	wxFileDialog saveFile(NULL, "Save Built Structures Data", "", "",
-		"Structure Files (*.vtst)|*.vtst|", wxSAVE);
+	wxFileDialog saveFile(NULL, _T("Save Built Structures Data"), _T(""),
+		_T(""), _T("Structure Files (*.vtst)|*.vtst|"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{
-		SetCwd(path);	// restore
+		wxSetWorkingDirectory(path);	// restore
 		return;
 	}
 	wxString str = saveFile.GetPath();
 
 	vtStructureArray3d &SA = GetCurrentTerrain()->GetStructures();
-	SA.WriteXML(str);
+	SA.WriteXML(str.mb_str());
 }
 
 
@@ -998,30 +996,29 @@ void vtFrame::OnEarthFlatten(wxCommandEvent& event)
 
 void vtFrame::OnEarthPoints(wxCommandEvent& event)
 {
-	char path[256];
 	// save current directory
-	GetCwd( path, sizeof(path) );
+	wxString path = wxGetCwd();
 
-	wxFileDialog loadFile(NULL, "Load Point Data", "", "",
-		"Point Data Sources (*.shp)|*.shp|", wxOPEN);
+	wxFileDialog loadFile(NULL, _T("Load Point Data"), _T(""), _T(""),
+		_T("Point Data Sources (*.shp)|*.shp|"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{
 		// restore
-		SetCwd(path);
+		wxSetWorkingDirectory(path);
 		return;
 	}
 
 	wxString str = loadFile.GetPath();
 
-	int ret = g_App.AddGlobePoints(str);
+	int ret = g_App.AddGlobePoints(str.mb_str());
 	if (ret == -1)
-		wxMessageBox("Couldn't Open");
+		wxMessageBox(_T("Couldn't Open"));
 	if (ret == -2)
-		wxMessageBox("That file isn't point data.");
+		wxMessageBox(_T("That file isn't point data."));
 
 	// restore
-	SetCwd(path);
+	wxSetWorkingDirectory(path);
 }
 
 void vtFrame::OnEarthLinear(wxCommandEvent& event)
@@ -1057,10 +1054,10 @@ void ShowPopupMenu(const IPoint2 &pos)
 void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 {
 	wxMenu *popmenu = new wxMenu;
-	popmenu->Append(ID_POPUP_PROPERTIES, "Properties");
-	popmenu->Append(ID_POPUP_FLIP, "Flip Footprint Direction");
+	popmenu->Append(ID_POPUP_PROPERTIES, _T("Properties"));
+	popmenu->Append(ID_POPUP_FLIP, _T("Flip Footprint Direction"));
 	popmenu->AppendSeparator();
-	popmenu->Append(ID_POPUP_DELETE, "Delete");
+	popmenu->Append(ID_POPUP_DELETE, _T("Delete"));
 
 	m_canvas->PopupMenu(popmenu, pos.x, pos.y);
 }
@@ -1124,30 +1121,3 @@ void vtFrame::OnPopupDelete(wxCommandEvent& event)
 	pTerr->DeleteSelectedStructures();
 }
 
-// Helper functions for directories
-
-// Get the current working directory
-void GetCwd( char path[], int path_size )
-{
-#if defined(WIN32)
-	GetCurrentDirectory(path_size, path);
-#elif defined(UNIX)
-	if ( getcwd(path, path_size) == NULL ) 
-		wxFatalError( "Cannot determine current working directory" );
-#else
-#  error "I dont know this platform"
-#endif
-}
-
-// Set the current working directory
-void SetCwd( const char path[] )
-{
-#if defined(WIN32)
-	SetCurrentDirectory(path);
-#elif defined(UNIX)
-	if ( chdir(path) < 0 )
-		wxFatalError( "Cannot set current working directory" );
-#else
-#  error "I dont know this platform"
-#endif
-}

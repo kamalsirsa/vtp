@@ -25,7 +25,7 @@
 void BlockingMessageBox(const char *msg)
 {
 	EnableContinuousRendering(false);
-	wxMessageBox(msg);
+	wxMessageBox(wxString::FromAscii(msg));
 	EnableContinuousRendering(true);
 }
 
@@ -86,12 +86,29 @@ void LocationDlg::RefreshList()
 	if (!m_pSaver)
 		return;
 
+	wxString str;
 	int num = m_pSaver->GetNumLocations();
 	for (int i = 0; i < num; i++)
 	{
+		const char *tmp;
+
 		vtLocation *loc = m_pSaver->GetLocation(i);
-		wxString str;
-		str.Printf("%d. %s", i+1, (const char *)loc->m_name);
+
+		str = _T("Simple Literal");
+		tmp = str.mb_str();
+
+		str.Printf(_T("Printf Literal"));
+		tmp = str.mb_str();
+
+		str.Printf(_T("%d. %s"), i+1, (const char *)loc->m_name);
+		tmp = str.mb_str();
+
+		str.Printf(_T("%d"), i+1);
+		tmp = str.mb_str();
+
+		str.Printf(_T("%s"), (const char *)loc->m_name);
+		tmp = str.mb_str();
+
 		m_pLocList->Append(str);
 	}
 }
@@ -120,25 +137,25 @@ void LocationDlg::OnListDblClick( wxCommandEvent &event )
 
 void LocationDlg::OnLoad( wxCommandEvent &event )
 {
-	wxFileDialog loadFile(NULL, "Load Locations", "", "",
-		"Location Files (*.loc)|*.loc|", wxOPEN);
+	wxFileDialog loadFile(NULL, _T("Load Locations"), _T(""), _T(""),
+		_T("Location Files (*.loc)|*.loc|"), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
 
-	SetLocFile(loadFile.GetPath());
+	SetLocFile(loadFile.GetPath().mb_str());
 }
 
 void LocationDlg::OnSave( wxCommandEvent &event )
 {
-	wxFileDialog saveFile(NULL, "Save Locations", "", "",
-		"Location Files (*.loc)|*.loc|", wxSAVE);
+	wxFileDialog saveFile(NULL, _T("Save Locations"), _T(""), _T(""),
+		_T("Location Files (*.loc)|*.loc|"), wxSAVE);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
 
 	wxString str = saveFile.GetPath();
-	if (!m_pSaver->Write(str))
+	if (!m_pSaver->Write(str.mb_str()))
 		return;  // couldn't write
 }
 
@@ -147,14 +164,14 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 	int num = m_pSaver->GetNumLocations();
 
 	wxString str;
-	str.Printf("Location %d", num+1);
-	wxTextEntryDialog dlg(NULL, "Type a name for the new location:",
-		"Location Name", str);
+	str.Printf(_T("Location %d"), num+1);
+	wxTextEntryDialog dlg(NULL, _T("Type a name for the new location:"),
+		_T("Location Name"), str);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
 	str = dlg.GetValue();
-	bool success = m_pSaver->StoreTo(num, str);
+	bool success = m_pSaver->StoreTo(num, str.mb_str());
 	if (success)
 	{
 		RefreshList();

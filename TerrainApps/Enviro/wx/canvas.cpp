@@ -102,18 +102,18 @@ void StatusTimer::Notify()
 	vtScene *scene = vtGetScene();
 	if (!scene) return;
 
-	vtString str, str2;
+	wxString str, str2;
 
 	// get framerate
 	float fps = scene->GetFrameRate();
 
 	// only show 3 significant digits
 	if (fps < 10)
-		str.Format("fps %1.2f, ", fps);
+		str.Printf(_T("fps %1.2f, "), fps);
 	else if (fps < 80)
-		str.Format("fps %2.1f, ", fps);
+		str.Printf(_T("fps %2.1f, "), fps);
 	else
-		str.Format("fps %3.0f, ", fps);
+		str.Printf(_T("fps %3.0f, "), fps);
 
 	// get time of day
 	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
@@ -122,20 +122,21 @@ void StatusTimer::Notify()
 		int hr, min, sec;
 		te->GetTime(hr, min, sec);
 
-		str2.Format("time %02d:%02d:%02d, ", hr, min, sec);
+		str2.Printf(_T("time %02d:%02d:%02d, "), hr, min, sec);
 		str += str2;
 	}
 
-	g_App.DescribeCoordinates(str2);
-	str += str2;
+	vtString vs;
+	g_App.DescribeCoordinates(vs);
+	str += wxString::FromAscii((const char *)vs);
 
 	// get CLOD triangle counts, if appropriate
-	g_App.DescribeCLOD(str2);
-	str += str2;
+	g_App.DescribeCLOD(vs);
+	str += wxString::FromAscii((const char *)vs);
 
-	str += g_App.m_strMessage;
+	str += wxString::FromAscii((const char *)g_App.m_strMessage);
 
-	m_pFrame->SetStatusText((const char *)str);
+	m_pFrame->SetStatusText(str);
 }
 
 

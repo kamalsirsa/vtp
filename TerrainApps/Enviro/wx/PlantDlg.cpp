@@ -62,7 +62,7 @@ void PlantDlg::SetPlantList(vtPlantList3d *plants)
 	for (int i = 0; i < plants->NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *plant = plants->GetSpecies(i);
-		m_pSpecies->Append(plant->GetCommonName());
+		m_pSpecies->Append(wxString::FromAscii(plant->GetCommonName()));
 	}
 }
 

@@ -146,9 +146,5 @@ protected:
 DECLARE_EVENT_TABLE()
 };
 
-// Helper functions
-void GetCwd( char path[], int path_size );
-void SetCwd( const char path[] );
-
 #endif
 

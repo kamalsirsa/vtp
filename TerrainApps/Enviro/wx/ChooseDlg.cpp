@@ -58,7 +58,7 @@ void ChooseTerrainDlg::OnInitDialog(wxInitDialogEvent& event)
     vtTerrain *pTerr;
     for (pTerr = GetTerrainScene()->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
     {
-        m_pTList->Append((const char *)(pTerr->GetName()));
+        m_pTList->Append(wxString::FromAscii((const char *)(pTerr->GetName())));
     }
     int sel = m_pTList->FindString(m_strTName);
     if (sel != -1)
