@@ -10,7 +10,7 @@ static char *proj_new_xpm[] = {
 "b c #0000bf",
 "c c #bf00bf",
 "d c #00bfbf",
-"e c #c0c0c0",
+"e c None",
 "f c #808080",
 "g c #ff0000",
 "h c #00ff00",
