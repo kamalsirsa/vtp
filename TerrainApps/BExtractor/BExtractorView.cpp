@@ -917,6 +917,7 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 		// create and add building
 		vtBuilding *bld = new vtBuilding();
 		bld->SetLocation(imagepoint);
+		bld->SetRectangle(10, 10);
 		bld->SetStories(1);
 		pDoc->m_Buildings.Append(bld);
 
