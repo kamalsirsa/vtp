@@ -21,7 +21,6 @@
 #include "UtilDlg.h"
 #include "../Enviro.h"
 
-#define NUM_STRUCT_NAMES 15
 extern UtilStructName s_Names[];
 
 // WDR: class implementations
