@@ -103,8 +103,10 @@ void vtTerrainScene::CleanupScene()
 
 	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{
-		vtGroup *group = GetTerrain(i)->GetTopGroup();
+		vtTerrain *curr = GetTerrain(i);
+		vtGroup *group = curr->GetTopGroup();
 		m_pTop->RemoveChild(group);
+		delete curr;
 	}
 	m_Terrains.clear();
 	m_pCurrentTerrain = NULL;
