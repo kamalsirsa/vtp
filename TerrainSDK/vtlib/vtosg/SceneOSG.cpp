@@ -34,13 +34,10 @@ using namespace osg;
 class OsgMsgTrap : public std::streambuf
 {
 public:
-	inline virtual int_type overflow(int_type c = traits_type::eof())
+	inline virtual int_type overflow(int_type c = std::streambuf::traits_type::eof())
 	{
-		if (c == traits_type::eof()) return traits_type::not_eof(c);
-		char str[2];
-		str[0] = c;
-		str[1] = 0;
-		g_Log._Log(str);
+		if (c == std::streambuf::traits_type::eof()) return std::streambuf::traits_type::not_eof(c);
+		g_Log._Log((char) c);
 		return c;
 	}
 } g_Trap;
