@@ -2111,7 +2111,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 		pBitmap = pOutput->GetBitmap();
 	}
 
-	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, progress_callback);
+	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, 8000, progress_callback);
 	if (dlg.m_bShading)
 	{
 		// Quick and simple sunlight vector
