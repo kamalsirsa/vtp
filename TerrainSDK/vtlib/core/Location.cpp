@@ -84,6 +84,7 @@ class LocationVisitor : public XMLVisitor
 {
 public:
 	LocationVisitor(vtLocationSaver *saver) { m_saver = saver; m_level = 0; }
+	~LocationVisitor();
 	void startXML() { m_level = 0; }
 	void endXML() { m_level = 0; }
 	void startElement(const char *name, const XMLAttributes &atts);
@@ -96,6 +97,10 @@ private:
 	vtLocation *m_loc;
 	vtLocationSaver *m_saver;
 };
+
+LocationVisitor::~LocationVisitor()
+{
+}
 
 void LocationVisitor::startElement(const char *name, const XMLAttributes &atts)
 {

@@ -72,7 +72,7 @@ public:
 	// you must call these 3 methods before this class is useful
 	void SetTransform(vtTransformBase *trans) { m_pTransform = trans; }
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
-	void SetProjection(vtProjection proj) { m_proj = proj; }
+	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 
 	bool StoreTo(int num, const wstring2 &name = L"");
 	bool RecallFrom(int num);
