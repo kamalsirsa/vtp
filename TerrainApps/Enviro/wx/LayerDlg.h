@@ -63,7 +63,7 @@ private:
 	bool	m_bShowAll;
 
 private:
-	vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item);
+	vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item);
 	vtStructureArray3d *LayerDlg::GetStructureArray3dFromItem(wxTreeItemId item);
 	LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item);
 	void ToggleVisible(bool bVis, wxTreeItemId id);

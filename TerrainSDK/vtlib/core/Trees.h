@@ -53,7 +53,7 @@ protected:
 	vtMaterialArray	*m_pMats;
 	vtMesh			*m_pMesh;
 	int				m_iMatIdx;
-	vtNodeBase		*m_pExternal;
+	vtNode			*m_pExternal;
 #if SUPPORT_XFROG
 	CFrogModel		*m_pFrogModel;
 #endif

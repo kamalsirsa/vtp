@@ -59,7 +59,7 @@ void LayerDlg::SetShowAll(bool bTrue)
 // For an item in the tree which corresponds to an actual structure,
 //  return the node associated with that structure.
 //
-vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item)
+vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item)
 {
 	if (!item.IsOk())
 		return NULL;
@@ -275,7 +275,7 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 	bool bVis = event.IsChecked();
 	wxTreeItemId item = m_pTree->GetSelection();
 
-	vtNodeBase *pThing = GetNodeFromItem(item);
+	vtNode *pThing = GetNodeFromItem(item);
 	if (pThing) {
 		pThing->SetEnabled(bVis);
 		return;

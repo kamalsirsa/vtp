@@ -74,7 +74,7 @@ public:
 	vtStructure3d() { m_pContainer = NULL; }
 
 	vtTransform *GetContainer() { return m_pContainer; }
-	virtual vtNodeBase *GetContained() = 0;
+	virtual vtNode *GetContained() = 0;
 
 	/// Create the node(s) and position them on the indicated heightfield
 	virtual bool CreateNode(vtTerrain *pTerr) = 0;
@@ -127,7 +127,7 @@ public:
 	virtual bool CreateNode(vtTerrain *pTerr);
 	virtual void DeleteNode();
 	virtual void ShowBounds(bool bShow);
-	virtual vtNodeBase *GetContained() { return m_pModel; }
+	virtual vtNode *GetContained() { return m_pModel; }
 
 	/// (Re-)position the instance on the indicated heightfield
 	void UpdateTransform(vtHeightField3d *pHeightField);
@@ -137,7 +137,7 @@ public:
 
 protected:
 	vtGeom		*m_pHighlight;	// The wireframe highlight
-	vtNodeBase	*m_pModel; // the contained model
+	vtNode		*m_pModel; // the contained model
 };
 
 
