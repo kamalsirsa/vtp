@@ -900,6 +900,7 @@ float vtElevationGrid::GetWorldValue(int i, int j) const
 	return GetFValue(i, j) * m_fVerticalScale;
 }
 
+
 /**
  * Quick n' dirty special-case raycast for perfectly regular grid terrain
  * Find altitude (y) and surface normal, given (x,z) local coordinates
@@ -911,7 +912,7 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
-	int iZ = (int)((p.z - m_WorldExtents.bottom) / m_fZStep);
+	int iZ = -(int)((p.z - m_WorldExtents.bottom) / m_fZStep);
 
 	// safety check
 	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
