@@ -69,6 +69,7 @@ Enviro::Enviro()
 	m_pIcoGlobe = NULL;
 	m_pSpaceAxes = NULL;
 
+	m_bTopDown = false;
 	m_pTopDownCamera = NULL;
 	m_pTerrainPicker = NULL;
 	m_pGlobePicker = NULL;
@@ -1010,6 +1011,11 @@ void Enviro::SetupScene2()
 	VTLOG("SetupScene2\n");
 
 	// Make navigation engines
+	m_pOrthoFlyer = new vtOrthoFlyer(1.0f);
+	m_pOrthoFlyer->SetName2("Orthographic View Flyer");
+	m_pOrthoFlyer->SetEnabled(false);
+	vtGetScene()->AddEngine(m_pOrthoFlyer);
+
 	m_pQuakeFlyer = new QuakeFlyer(1.0f, 1.0f, true);
 	m_pQuakeFlyer->SetName2("Quake-Style Flyer");
 	m_pQuakeFlyer->SetEnabled(false);
@@ -1075,8 +1081,10 @@ void Enviro::SetupScene2()
 	{
 		VTLOG("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera();
-		m_pTopDownCamera->SetOrtho(true, 10000.0f);
+		m_pTopDownCamera->SetOrtho(true);
+		m_pTopDownCamera->SetWidth(10000.0f);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
+		m_pOrthoFlyer->SetTarget(m_pTopDownCamera);
 	}
 
 	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
@@ -1198,6 +1206,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pTFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pVFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pPanoFlyer->SetSpeed(param.m_fNavSpeed);
+	m_pOrthoFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pCurrentFlyer->SetEnabled(true);
 
 	// TODO: a more elegant way of keeping all nav engines current
@@ -1265,13 +1274,17 @@ void Enviro::SetMessage(const char *msg, float fTime)
 
 void Enviro::SetFlightSpeed(float speed)
 {
-	if (m_pCurrentFlyer != NULL)
+	if (m_bTopDown && m_pOrthoFlyer != NULL)
+		m_pOrthoFlyer->SetSpeed(speed);
+	else if (m_pCurrentFlyer != NULL)
 		m_pCurrentFlyer->SetSpeed(speed);
 }
 
 float Enviro::GetFlightSpeed()
 {
-	if (m_pCurrentFlyer != NULL)
+	if (m_bTopDown && m_pOrthoFlyer != NULL)
+		return m_pOrthoFlyer->GetSpeed();
+	else if (m_pCurrentFlyer != NULL)
 		return m_pCurrentFlyer->GetSpeed();
 	else
 		return 0.0f;
@@ -1330,18 +1343,15 @@ bool Enviro::GetRouteFollower()
 
 void Enviro::SetTopDown(bool bTopDown)
 {
+	m_bTopDown = bTopDown;
+
 	if (bTopDown)
-	{
 		vtGetScene()->SetCamera(m_pTopDownCamera);
-		m_pCurrentFlyer->SetTarget(m_pTopDownCamera);
-		m_pCurrentFlyer->FollowTerrain(false);
-	}
 	else
-	{
 		vtGetScene()->SetCamera(m_pNormalCamera);
-		m_pCurrentFlyer->SetTarget(m_pNormalCamera);
-		m_pCurrentFlyer->FollowTerrain(true);
-	}
+
+	m_pOrthoFlyer->SetEnabled(bTopDown);
+	EnableFlyerEngine(!bTopDown);
 }
 
 void Enviro::DumpCameraInfo()

@@ -29,6 +29,7 @@ class vtTerrainFlyer;
 class RouteFollowerEngine;
 class VFlyer;
 class QuakeFlyer;
+class vtOrthoFlyer;
 class GrabFlyer;
 class FlatFlyer;
 class vtTrackball;
@@ -114,6 +115,7 @@ public:
 	// navigation engines
 	vtTerrainFlyer	*m_pTFlyer;
 	VFlyer			*m_pVFlyer;
+	vtOrthoFlyer	*m_pOrthoFlyer;
 	QuakeFlyer		*m_pQuakeFlyer;
 	vtTerrainFlyer	*m_pCurrentFlyer;
 	GrabFlyer		*m_pGFlyer;
@@ -206,6 +208,7 @@ protected:
 	// view and navigation
 	vtCamera	*m_pNormalCamera;
 	vtCamera	*m_pTopDownCamera;
+	bool		m_bTopDown;
 
 	vtRoot		*m_pRoot;		// top of the scene graph
 
