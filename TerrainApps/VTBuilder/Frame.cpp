@@ -62,6 +62,7 @@
 #  include "layer_open.xpm"
 #  include "layer_save.xpm"
 #  include "layer_show.xpm"
+#  include "layer_up.xpm"
 
 #  include "loadimage.xpm"
 
@@ -423,6 +424,7 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL(ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"), false);
 	ADD_TOOL(ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"), false);
 	ADD_TOOL(ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), true);
+	ADD_TOOL(ID_VIEW_LAYER_UP, wxBITMAP(layer_up), _("Layer Up"), false);
 	toolBar_main->AddSeparator();
 	ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"), false);
 	ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"), false);
@@ -701,6 +703,23 @@ vtLayer *MainFrame::FindLayerOfType(LayerType lt)
 			return lp;
 	}
 	return NULL;
+}
+
+int MainFrame::LayerNum(vtLayer *lp)
+{
+	int layers = m_Layers.GetSize();
+	for (int i = 0; i < layers; i++)
+		if (lp == m_Layers[i])
+			return i;
+	return -1;
+}
+
+void MainFrame::SwapLayerOrder(int n0, int n1)
+{
+	vtLayer *lp0 = m_Layers[n0];
+	vtLayer *lp1 = m_Layers[n1];
+	m_Layers[n0] = lp1;
+	m_Layers[n1] = lp0;
 }
 
 //

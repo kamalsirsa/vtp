@@ -83,6 +83,7 @@ EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
 EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
 
 EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
+EVT_MENU(ID_VIEW_LAYER_UP,		MainFrame::OnLayerUp)
 EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
 EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
 EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
@@ -97,6 +98,7 @@ EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
 EVT_MENU(ID_VIEW_OPTIONS,		MainFrame::OnViewOptions)
 
 EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
+EVT_UPDATE_UI(ID_VIEW_LAYER_UP,		MainFrame::OnUpdateLayerUp)
 EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
 EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
@@ -279,6 +281,7 @@ void MainFrame::CreateMenus()
 	viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_SHOWLAYER, _("Current Layer &Visible"),
 		_("Toggle Visibility of the current Layer"));
+	viewMenu->Append(ID_VIEW_LAYER_UP, _("Move Layer &Up"));
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_ZOOMIN, _("Zoom &In\tCtrl++"));
 	viewMenu->Append(ID_VIEW_ZOOMOUT, _("Zoom Out\tCtrl+-"));
@@ -1361,6 +1364,29 @@ void MainFrame::OnUpdateLayerShow(wxUpdateUIEvent& event)
 
 	event.Enable(pLayer != NULL);
 	event.Check(pLayer && pLayer->GetVisible());
+}
+
+void MainFrame::OnLayerUp(wxCommandEvent &event)
+{
+	vtLayer *pLayer = GetActiveLayer();
+	if (!pLayer)
+		return;
+	int num = LayerNum(pLayer);
+	if (num < NumLayers()-1)
+		SwapLayerOrder(num, num+1);
+
+	DRECT r;
+	pLayer->GetExtent(r);
+	wxRect sr = m_pView->WorldToWindow(r);
+	IncreaseRect(sr, 5);
+	m_pView->Refresh(TRUE, &sr);
+}
+
+void MainFrame::OnUpdateLayerUp(wxUpdateUIEvent& event)
+{
+	vtLayer *pLayer = GetActiveLayer();
+
+	event.Enable(pLayer != NULL && LayerNum(pLayer) < NumLayers()-1);
 }
 
 void MainFrame::OnViewMagnifier(wxCommandEvent &event)

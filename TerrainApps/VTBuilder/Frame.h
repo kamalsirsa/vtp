@@ -114,6 +114,7 @@ protected:
 	void OnUpdateLayerFlatten(wxUpdateUIEvent& event);
 
 	void OnLayerShow(wxCommandEvent& event);
+	void OnLayerUp(wxCommandEvent& event);
 	void OnViewMagnifier(wxCommandEvent& event);
 	void OnViewPan(wxCommandEvent& event);
 	void OnViewDistance(wxCommandEvent& event);
@@ -130,6 +131,7 @@ protected:
 	void OnViewOptions(wxUpdateUIEvent& event);
 
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
+	void OnUpdateLayerUp(wxUpdateUIEvent& event);
 	void OnUpdateMagnifier(wxUpdateUIEvent& event);
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
@@ -303,6 +305,8 @@ public:
 	int NumModifiedLayers();
 	DRECT GetExtents();
 	LayerType AskLayerType();
+	int LayerNum(vtLayer *lp);
+	void SwapLayerOrder(int n0, int n1);
 
 	vtFeatureSet *GetActiveFeatureSet();
 
