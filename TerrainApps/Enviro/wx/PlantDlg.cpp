@@ -48,14 +48,14 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	PlantDialogFunc( this, TRUE ); 
+	PlantDialogFunc( this, TRUE );	
 
 	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
 	m_bSetting = false;
 }
 
-void PlantDlg::SetPlantList(vtPlantList3d *plants) 
+void PlantDlg::SetPlantList(vtPlantList3d *plants)	
 {
 	if (m_pPlantList == plants)
 		return;
@@ -140,7 +140,7 @@ void PlantDlg::OnRadio( wxCommandEvent &event )
 	if (GetPlantIndividual()->GetValue()) m_opt.m_iMode = 0;
 	if (GetPlantLinear()->GetValue()) m_opt.m_iMode = 1;
 	if (GetPlantContinuous()->GetValue()) m_opt.m_iMode = 2;
- 
+	
 	g_App.SetPlantOptions(m_opt);
 }
 
@@ -227,7 +227,7 @@ void PlantDlg::ModeToRadio()
 	if (m_opt.m_iMode == 2) GetPlantContinuous()->SetValue(true);
 }
 
-void PlantDlg::OnInitDialog(wxInitDialogEvent& event) 
+void PlantDlg::OnInitDialog(wxInitDialogEvent& event)	
 {
 	AddValidator(ID_SPECIES, &m_opt.m_iSpecies);
 	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);

@@ -30,7 +30,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for DistanceDlg
 	wxTextCtrl* GetVertical()  { return (wxTextCtrl*) FindWindow( ID_VERTICAL ); }
 	wxTextCtrl* GetGroundDist()  { return (wxTextCtrl*) FindWindow( ID_GROUND_DIST ); }

@@ -539,8 +539,8 @@ void vtFrame::OnChar(wxKeyEvent& event)
 
 	case 'y':
 		{
- vtTerrain *t = GetCurrentTerrain();  
- vtHeightField3d *pHF = t->GetHeightField(); 
+ vtTerrain *t = GetCurrentTerrain();
+ vtHeightField3d *pHF = t->GetHeightField();
 
   vtCamera *cam = vtGetScene()->GetCamera();
   FPoint3 middle;
@@ -609,7 +609,7 @@ void vtFrame::SetFullScreen(bool bFull)
 	{
 		ShowFullScreen(true, wxFULLSCREEN_NOMENUBAR |
 //							 wxFULLSCREEN_NOTOOLBAR |	// leave toolbar visible
-			wxFULLSCREEN_NOSTATUSBAR | 
+			wxFULLSCREEN_NOSTATUSBAR |
 			wxFULLSCREEN_NOBORDER |
 			wxFULLSCREEN_NOCAPTION );
 	}

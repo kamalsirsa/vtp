@@ -14,7 +14,7 @@ class vtHeightField;
 
 /**
  * An LOD Grid is a useful way of grouping objects in your scene graph.
- * 
+ *
  * It implements a sparse 2D array of LOD nodes, which divide an area into
  * a set of Cells.  When objects (geometry, or other node types) are added
  * to the LOD Grid, they are placed in the appropriate Cell.  Each Cell has

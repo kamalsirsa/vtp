@@ -398,7 +398,7 @@ void Countries::ParseRawCountry(int which, bool bNativeNames)
 		country->m_places.Append(place);
 
 		GNS_to_wstring(region, fullname, place->m_fullname);
-		place->m_fullname_nd = fullname_nd; 
+		place->m_fullname_nd = fullname_nd;
 	}
 	fclose(fp);
 	int size = country->m_places.GetSize();

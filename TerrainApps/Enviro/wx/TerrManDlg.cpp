@@ -54,7 +54,7 @@ TerrainManagerDlg::TerrainManagerDlg( wxWindow *parent, wxWindowID id, const wxS
 	wxDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
 	// WDR: dialog function TerrManFunc for TerrainManagerDlg
-	TerrManFunc( this, TRUE ); 
+	TerrManFunc( this, TRUE );
 	m_iSelect = 0;
 }
 
@@ -265,7 +265,7 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 	RefreshTreeContents();
 }
 
-void TerrainManagerDlg::OnInitDialog(wxInitDialogEvent& event) 
+void TerrainManagerDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	m_pTree = GetTree();
 

@@ -13,7 +13,7 @@
 
 // extents of the island landmass
 #define WEST_EXTENT		-156.064270f
-#define EAST_EXTENT		-154.8093872f 
+#define EAST_EXTENT		-154.8093872f
 #define SOUTH_EXTENT	 18.9136925f
 #define NORTH_EXTENT	 20.2712955f
 

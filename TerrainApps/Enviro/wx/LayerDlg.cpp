@@ -60,7 +60,7 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bShowAll = false;
 
 	// WDR: dialog function LayerDialogFunc for LayerDlg
-	LayerDialogFunc( this, TRUE ); 
+	LayerDialogFunc( this, TRUE );
 }
 
 //
@@ -80,7 +80,7 @@ vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item)
 	return str3d->GetContained();
 }
 
-void LayerDlg::OnInitDialog(wxInitDialogEvent& event) 
+void LayerDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	m_pTree = GetTree();
 

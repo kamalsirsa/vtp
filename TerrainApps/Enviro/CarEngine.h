@@ -38,7 +38,7 @@ public:
 	void GetPath(const char* filename, vtRoadMap3d* roadmap);
 
 	/*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
-		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their 
+		in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
 		location names: "front left" "front right" "rear left" "rear right"
 	*/
 	bool SetTires();
@@ -114,7 +114,7 @@ private:
 	//a setup flag - first eval doesn't run right...
 	bool m_bFirstTime;
 
-	//road following 
+	//road following
 	Node* m_pCurNode;	//the last node the we visited.
 	Node* m_pNextNode;	//the next node we're going to visit
 	Link* m_pCurRoad;	//current road we're driving on (from m_pCurNode to m_pNextNode)

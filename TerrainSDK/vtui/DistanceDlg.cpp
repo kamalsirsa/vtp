@@ -37,7 +37,7 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	DistanceDialogFunc( this, TRUE ); 
+	DistanceDialogFunc( this, TRUE );
 }
 
 void DistanceDlg::SetProjection(const vtProjection &proj)

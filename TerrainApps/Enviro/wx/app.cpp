@@ -243,7 +243,7 @@ vtString vtApp::GetIniFileForTerrain(const vtString &name)
 	return vtString("");
 }
 
-int EditTerrainParameters(wxWindow *parent, const char *filename) 
+int EditTerrainParameters(wxWindow *parent, const char *filename)
 {
 	TParamsDlg dlg(parent, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
 	dlg.SetDataPaths(g_Options.m_DataPaths);

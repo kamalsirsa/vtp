@@ -75,7 +75,7 @@ SceneGraphDlg::SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxDialog( parent, id, title, position, size, style )
 {
-	SceneGraphFunc( this, TRUE ); 
+	SceneGraphFunc( this, TRUE );
 
 	m_pZoomTo = GetZoomto();
 	m_pEnabled = GetEnabled();
@@ -359,7 +359,7 @@ void SceneGraphDlg::OnTreeSelChanged( wxTreeEvent &event )
 		m_pZoomTo->Enable(false);
 }
 
-void SceneGraphDlg::OnInitDialog(wxInitDialogEvent& event) 
+void SceneGraphDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	RefreshTreeContents();
 

@@ -20,8 +20,8 @@ PTerrain::~PTerrain()
 	ReleaseVehicles();
 }
 
-void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway, 
-						   char* name, int destination_index)
+void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
+						  char* name, int destination_index)
 {
 	// larger than real life
 	float scale = 0.01f * (m_Params.m_iMinHeight*0.33f);
@@ -35,8 +35,8 @@ void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
 	AddEngine(pSBBE);
 }
 
-void PTerrain::MakePortalUTM(vtTerrain* pTargetTerrain, vtTransform* gateway, 
-						   char* name, float utm_x, float utm_y, int destination_index)
+void PTerrain::MakePortalUTM(vtTerrain* pTargetTerrain, vtTransform* gateway,
+							 char* name, float utm_x, float utm_y, int destination_index)
 {
 	MakePortal(pTargetTerrain, gateway, name, destination_index);
 	PlantModelAtPoint(gateway, DPoint2(utm_x, utm_y));

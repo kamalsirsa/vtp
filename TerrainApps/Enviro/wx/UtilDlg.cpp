@@ -36,7 +36,7 @@ UtilDlg::UtilDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	UtilDialogFunc( this, TRUE ); 
+	UtilDialogFunc( this, TRUE );
 
 	m_pChoice = GetStructtype();
 }
@@ -50,7 +50,7 @@ void UtilDlg::OnStructType( wxCommandEvent &event )
 	g_App.start_new_fence();
 }
 
-void UtilDlg::OnInitDialog(wxInitDialogEvent& event) 
+void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	AddValidator(ID_STRUCTTYPE, &m_iType);
 

@@ -41,7 +41,7 @@ float angleNormal(float val) {
 
 //setup engine to drive in a straight line.
 //target speed in kilometers per hour
-CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius) 
+CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius)
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
 	m_pCurNode = NULL;
@@ -52,7 +52,7 @@ CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_spe
 //setup engine to drive in circles
 //target speed in kilometers per hour
 CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed,
-					 float wRadius, FPoint3 center) 
+					 float wRadius, FPoint3 center)
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
 	m_vCenterPos = center;
@@ -223,11 +223,11 @@ void CarEngine::Eval()
 			}
 	}
 	// spin the wheels, adjusted for speed.
-	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);  
+	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius); 
 	m_fPrevTime = t;
 }
 
-void CarEngine::Circle(FPoint3 &vNext, float t) 
+void CarEngine::Circle(FPoint3 &vNext, float t)
 {
 	//calculate position
 	float time = t * m_fSpeed / m_fCircleRadius;
@@ -286,7 +286,7 @@ float CarEngine::SetOrientation()
 
 // assume that the car is ALWAYS going forward.
 //sets orientation of car.  next_pos is modified to be new location.
-void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos) 
+void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos)
 {
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
@@ -373,12 +373,12 @@ bool strend (const char* first, const char* second)
 }
 
 /*	finds and sets the tire variables in the model.  assumes that the tires are under a group name ending
-	in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their 
+	in "tires" and the 4 tires are the children of the group.  the 4 tire names should end with their
 	location names: "front left" "front right" "rear left" "rear right"
 
   RUN BEFORE EVAL!!!!
 	*/
-bool CarEngine::SetTires() 
+bool CarEngine::SetTires()
 {
 	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
 	if (!car)
@@ -415,10 +415,10 @@ bool CarEngine::SetTires()
 
 }
 
-/*	find the tire group	done rem_Cursively - might want to change it to an interative version 
+/*	find the tire group	done rem_Cursively - might want to change it to an interative version
 	for performance boost with more complex models.
 */
-vtGroup* CarEngine::FindTires(vtGroup *model) 
+vtGroup* CarEngine::FindTires(vtGroup *model)
 {
 #if 0
 	vtGroup *tModel;
@@ -436,7 +436,7 @@ vtGroup* CarEngine::FindTires(vtGroup *model)
 	while (i < numChild) {
 		if (tModel = FindTires((vtGroup *) model->GetChild(i))) {
 			return tModel;
-		} else { 
+		} else {
 			i++;
 		}
 	}
@@ -473,7 +473,7 @@ void CarEngine::PickFirstRoad()
 				} else {
 					if (m_iNextRoad > 1)
 						m_iNextRoad--;
-					else 
+					else
 						m_bPathReverse = false;
 				}
 				break;
@@ -580,7 +580,7 @@ void CarEngine::PickNextRoad() {
 				} else {
 					if (m_iNextRoad > 1)
 						m_iNextRoad--;
-					else 
+					else
 						m_bPathReverse = false;
 				}
 				break;
@@ -602,7 +602,7 @@ void CarEngine::PickNextRoad() {
 						&&
 						((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
 							||
-						(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode))) 
+						(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode)))
 					{
 						break;
 					}
@@ -648,12 +648,12 @@ void CarEngine::PickNextRoad() {
 		m_pNextRoad = m_pCurRoad;
 	}
 	/*
-	now that we know the next road, how sharp of an angle do we have to turn to 
+	now that we know the next road, how sharp of an angle do we have to turn to
 	transition from the current road to the next road?
 	we only look at the 2D case.
 	*/
 
-	FPoint3 center(((NodeGeom*)m_pNextNode)->m_p3.x, 
+	FPoint3 center(((NodeGeom*)m_pNextNode)->m_p3.x,
 					0,
 					((NodeGeom*)m_pNextNode)->m_p3.z);
 	int index;
@@ -787,7 +787,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime)
 		}
 		if(newroad) {
 			//out of coords, need to look at next road.
-			if (m_iNextIntersect == IT_STOPSIGN || 
+			if (m_iNextIntersect == IT_STOPSIGN ||
 				(m_iNextIntersect == IT_LIGHT &&
 				m_pNextNode->GetLightStatus(m_pCurRoad) == LT_RED)) {
 				m_bStopped = true;
@@ -885,7 +885,7 @@ void CarEngine::AdjustSpeed(float fDeltaTime) {
 	float distToGo = deltaPoint.Length();
 	switch (m_iNextIntersect) {
 	case IT_NONE:
-		//if the turn up ahead is too steep, slow down 
+		//if the turn up ahead is too steep, slow down
 		if (m_fAngle < ANGLETOLERANCE && distToGo < (m_fSpeed * m_fSpeed) / (ACCEL)) {
 				//getting to close.  slow down.
 				m_fSpeed -= (m_fSpeed*m_fSpeed)/distToGo*fDeltaTime;
@@ -924,7 +924,7 @@ void CarEngine::AdjustSpeed(float fDeltaTime) {
 			break;
 		case LT_GREEN:
 			//ism_printf("GREEN");
-			//if the turn up ahead is too much, slow down 
+			//if the turn up ahead is too much, slow down
 			if (m_fAngle < ANGLETOLERANCE && distToGo < (m_fSpeed * m_fSpeed) / (ACCEL)) {
 				//getting to close.  slow down.
 				m_fSpeed -= (m_fSpeed*m_fSpeed)/distToGo*fDeltaTime;

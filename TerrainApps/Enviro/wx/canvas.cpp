@@ -82,7 +82,7 @@ void vtGLCanvas::QueueRefresh(bool eraseBackground)
 	//   (processes) the underlying events immediately via ProcessEvent
 	//   (read, recursive call).  See the wxPostEvent docs and Refresh code
 	//   for more details.
-	if ( eraseBackground ) 
+	if (eraseBackground)
 	{
 		wxEraseEvent eevent( GetId() );
 		eevent.SetEventObject( this );
@@ -180,7 +180,7 @@ void vtGLCanvas::OnClose(wxCloseEvent& event)
 
 void vtGLCanvas::OnSize(wxSizeEvent& event)
 {
-  // Presumably this is a wxMSWism.  
+  // Presumably this is a wxMSWism.
   // For wxGTK & wxMotif, all canvas resize events occur before the context
   //   is set.  So ignore this context check and grab the window width/height
   //   when we get it so it (and derived values such as aspect ratio and
