@@ -59,7 +59,7 @@ public:
 	bool GetWireframe() const;
 
 	void SetTexture(vtImage *pImage);
-	void SetTexture2(const char *szFilename);
+	bool SetTexture2(const char *szFilename);
 	vtImage	*GetTexture() const;
 
 	void SetClamp(bool bClamp);
@@ -74,7 +74,7 @@ public:
 	static bool s_bTextureCompression;
 
 	// remember this for convenience
-	osg::ref_ptr<vtImage>	m_pImage;
+	vtImage *m_pImage;
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;

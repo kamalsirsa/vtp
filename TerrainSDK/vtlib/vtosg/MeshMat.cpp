@@ -237,9 +237,10 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	if (!m_pTexture)
 		m_pTexture = new Texture2D();
 
-	m_pTexture->setImage(pImage->m_pOsgImage.get());
+	// this stores a reference so that it won't get deleted without this material's permission
+	m_pTexture->setImage(pImage);
 
-	// store a reference so that it won't get deleted without this material's permission
+	// also store a convenience pointer
 	m_pImage = pImage;
 
 	/** "Note, If the mode is set USE_IMAGE_DATA_FORMAT, USE_ARB_COMPRESSION,
@@ -266,14 +267,15 @@ void vtMaterial::SetTexture(vtImage *pImage)
 /**
  * Loads and sets the texture for a material.
  */
-void vtMaterial::SetTexture2(const char *szFilename)
+bool vtMaterial::SetTexture2(const char *szFilename)
 {
-	vtImage *image = new vtImage(szFilename);
-	if (image->LoadedOK())
+	vtImage *image = vtImageRead(szFilename);
+	if (image)
 	{
 		SetTexture(image);
+		image->Release();	// don't hold on to it; pass ownership to the material
 	}
-	image->Release();	// don't hold on to it; it will either be owned by this material, or deleted
+	return (image != NULL);
 }
 
 
@@ -284,7 +286,7 @@ vtImage	*vtMaterial::GetTexture() const
 {
 	// It is valid to return a non-const pointer to the image, since the image
 	//  can be modified entirely independently of the material.
-	return const_cast<vtImage*>( m_pImage.get() );
+	return const_cast<vtImage*>(m_pImage);
 }
 
 
