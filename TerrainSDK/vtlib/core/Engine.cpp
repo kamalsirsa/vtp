@@ -48,6 +48,7 @@ void vtLastMouse::OnMouse(vtMouseEvent &event)
 		break;
 	}
 	m_pos = event.pos;
+	m_flags = event.flags;
 }
 
 // Helper for GetNormalizedMouseCoords

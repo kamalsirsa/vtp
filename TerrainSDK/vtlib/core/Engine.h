@@ -71,6 +71,9 @@ public:
 
 	/** The location of the mouse cursor */
 	IPoint2 m_pos;
+
+	/** Last known state of the modifier flags */
+	int m_flags;
 };
 
 /**
