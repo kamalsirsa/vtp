@@ -49,5 +49,6 @@ enum
 
 	// popup
 	ID_POPUP_PROPERTIES,
+	ID_POPUP_FLIP,
 	ID_POPUP_DELETE
 };

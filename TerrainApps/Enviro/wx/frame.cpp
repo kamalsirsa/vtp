@@ -162,6 +162,7 @@ EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 
 	// Popup
 EVT_MENU(ID_POPUP_PROPERTIES, vtFrame::OnPopupProperties)
+EVT_MENU(ID_POPUP_FLIP, vtFrame::OnPopupFlip)
 EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
 END_EVENT_TABLE()
 
@@ -1062,6 +1063,7 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 {
 	wxMenu *popmenu = new wxMenu;
 	popmenu->Append(ID_POPUP_PROPERTIES, "Properties");
+	popmenu->Append(ID_POPUP_FLIP, "Flip Footprint Direction");
 	popmenu->AppendSeparator();
 	popmenu->Append(ID_POPUP_DELETE, "Delete");
 
@@ -1096,6 +1098,28 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 			m_pFenceDlg->Show(true);
 			return;
 		}
+	}
+}
+
+void vtFrame::OnPopupFlip(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d &structures = pTerr->GetStructures();
+
+	int count = structures.GetSize();
+	vtStructure *str;
+	vtBuilding3d *bld;
+	for (int i = 0; i < count; i++)
+	{
+		str = structures.GetAt(i);
+		if (!str->IsSelected())
+			continue;
+
+		bld = structures.GetBuilding(i);
+		if (!bld)
+			continue;
+		bld->FlipFootprintDirection();
+		structures.ConstructStructure(structures.GetStructure3d(i));
 	}
 }
 

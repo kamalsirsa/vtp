@@ -118,6 +118,7 @@ public:
 	void OnHelpAbout(wxCommandEvent& event);
 
 	void OnPopupProperties(wxCommandEvent& event);
+	void OnPopupFlip(wxCommandEvent& event);
 	void OnPopupDelete(wxCommandEvent& event);
 
 	void OnChar(wxKeyEvent& event);
