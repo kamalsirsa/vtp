@@ -159,7 +159,11 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		OPTS *opts;
 
 		opts = reg->getOptions();
-		if (!opts) opts = new OPTS;
+		if (!opts)
+		{
+			opts = new OPTS;
+			opts->ref();	// workaround!
+		}
 		int before = (int) opts->getObjectCacheHint();
 		if (bAllowCache)
 		{
