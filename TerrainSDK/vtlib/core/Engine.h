@@ -1,7 +1,7 @@
 //
 // Engine.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,7 +35,6 @@ public:
 
 	virtual void OnMouse(vtMouseEvent &event);
 	virtual void OnKey(int key, int flags);
-
 	virtual void Eval();
 
 protected:
@@ -64,4 +63,5 @@ public:
 	IPoint2 m_pos;
 };
 
-#endif
+#endif	// VTENGINEH
+
