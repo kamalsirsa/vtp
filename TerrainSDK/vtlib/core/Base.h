@@ -77,7 +77,7 @@ public:
 	virtual void	GetBoundBox(FBox3 &box) = 0;
 	virtual void	GetBoundSphere(FSphere &sphere, bool bGlobal = false) = 0;
 
-	virtual vtNode*	GetParent(int iParent = 0) = 0;
+	virtual vtGroup* GetParent(int iParent = 0) = 0;
 	virtual int		GetTriCount() = 0;
 
 	static RGBf s_white;
@@ -337,6 +337,7 @@ public:
 	void CopyFrom(vtMaterialArrayBase *pFromMats);
 
 	virtual int AppendMaterial(vtMaterial *pMat) = 0;
+	void RemoveMaterial(vtMaterial *pMat);
 };
 
 /**
