@@ -284,16 +284,18 @@ GeoSet2::~GeoSet2()
  *		- GL_QUADS
  *		- GL_POLYGON
  *
- * \param VertType Flags which indicate what type of information is stored with each
- *		vertex.  This can be any combination of the following bit flags:
+ * \param VertType Flags which indicate what type of information is stored
+ *		with each vertex.  This can be any combination of the following bit
+ *		flags:
  *		- VT_Normals - a normal per vertex.
  *		- VT_Colors - a color per vertex.
  *		- VT_TexCoords - a texture coordinate (UV) per vertex.
  *
- * \param NumVertices The expected number of vertices that the mesh will contain.  If
- *		more than this number of vertices are added, the mesh will automatically grow
- *		to contain them.  However it is more efficient if you know the number at
- *		creation time and pass it in this argument.
+ * \param NumVertices The expected number of vertices that the mesh will
+ *		contain.  If more than this number of vertices are added, the mesh
+ *		will automatically grow to contain them.  However it is more
+ *		efficient if you know the number at creation time and pass it in
+ *		this parameter.
  */
 vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	vtMeshBase(PrimType, VertType, NumVertices)
