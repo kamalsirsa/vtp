@@ -129,7 +129,7 @@ void DisplayAndLog(const char *pFormat, ...)
 	va_list va;
 	va_start(va, pFormat);
 
-	char ach[1024];
+	char ach[2048];
 	vsprintf(ach, pFormat, va);
 
 	wxString2 msg = ach;
