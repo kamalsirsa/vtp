@@ -20,10 +20,10 @@
 
 /////////////////////////////
 
-class MyTreeItemData : public wxTreeItemData
+class SGTreeItemData : public wxTreeItemData
 {
 public:
-	MyTreeItemData(vtNode *pNode, vtEngine *pEngine)
+	SGTreeItemData(vtNode *pNode, vtEngine *pEngine)
 	{
 		m_pNode = pNode;
 		m_pEngine = pEngine;
@@ -147,7 +147,7 @@ void SceneGraphDlg::RefreshTreeContents()
 				str += _T("(non-node)");
 		}
 		wxTreeItemId hEng = m_pTree->AppendItem(hEngRoot, str, 1, 1);
-		m_pTree->SetItemData(hEng, new MyTreeItemData(NULL, pEng));
+		m_pTree->SetItemData(hEng, new SGTreeItemData(NULL, pEng));
 	}
 	m_pTree->Expand(hEngRoot);
 
@@ -251,7 +251,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		}
 	}
 
-	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
+	m_pTree->SetItemData(hNewItem, new SGTreeItemData(pNode, NULL));
 
 	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
 	if (pGroup)
@@ -308,7 +308,7 @@ void SceneGraphDlg::OnEnabled( wxCommandEvent &event )
 void SceneGraphDlg::OnTreeSelChanged( wxTreeEvent &event )
 {
 	wxTreeItemId item = event.GetItem();
-	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(item);
+	SGTreeItemData *data = (SGTreeItemData *)m_pTree->GetItemData(item);
 
 	m_pEnabled->Enable(data != NULL);
 
