@@ -47,6 +47,7 @@ ResampleDlg::ResampleDlg(bool bMeters, float fSampleFactor) : AutoDialog()
 		m_fSampleFactor = fSampleFactor;
 	else
 		m_fSampleFactor = 1.0f / fSampleFactor;
+	m_bSetting = false;
 }
 
 void ResampleDlg::RecomputeSamples()
@@ -86,8 +87,8 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 	else
 	{
 		m_strSaveArea = wxString::Format("%s x %s",
-			(const char *) DegreeToString(m_area.Width()),
-			(const char *) DegreeToString(m_area.Height()));
+			(const char *) FormatCoord(true, m_area.Width()),
+			(const char *) FormatCoord(true, m_area.Height()));
 	}
 	RecomputeSamples();
 	RecomputeSize();
@@ -108,9 +109,12 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void ResampleDlg::OnChangeSamplefactor(wxCommandEvent &event) 
 {
+	if (m_bSetting) return;
 	TransferDataFromWindow();
 	RecomputeSize();
+	m_bSetting = true;
 	TransferDataToWindow();
+	m_bSetting = false;
 }
 
 void ResampleDlg::OnButtonLess(wxCommandEvent &event) 
