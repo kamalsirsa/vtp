@@ -132,6 +132,10 @@ void vtProjection::SetUTMZone(int iZone)
  */
 int	vtProjection::GetUTMZone() const
 {
+	// It appears that even lightweight tasks like getting UTM zone
+	//  runs into trouble with the Locale ./, issue.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	int north;
 	int zone = OGRSpatialReference::GetUTMZone(&north);
 	if (north)
