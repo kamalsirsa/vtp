@@ -10,7 +10,6 @@
 #include "Terrain.h"
 #include "Light.h"
 #include "Building3d.h"
-#include "Tower3d.h"
 #include "Building3d.h"
 #include "vtdata/StructArray.h"
 #include "IntersectionEngine.h"
@@ -708,14 +707,6 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 
 ///////////////////////////////////////////////////////////////////
 //// Tranmission towers
-
-void vtTerrain::create_towers_from_UTL(vtString strTowerFile)
-{
-	if(!m_pTower.ReadUTL(strTowerFile))
-	{
-	cerr<<"UTL file not found"<<endl;;
-	}
-}
 
 //
 // Load an external 3d model from the data path

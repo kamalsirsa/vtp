@@ -201,10 +201,6 @@ SOURCE=..\core\TimeEngines.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\Tower3d.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\TParams.cpp
 # End Source File
 # Begin Source File
@@ -330,10 +326,6 @@ SOURCE=..\core\TerrainSurface.h
 # Begin Source File
 
 SOURCE=..\core\TimeEngines.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\Tower3d.h
 # End Source File
 # Begin Source File
 

@@ -11,7 +11,6 @@
 #include "TParams.h"
 #include "Trees.h"
 #include "Structure3d.h"
-#include "Tower3d.h"
 
 class vtTerrainGeom;
 class vtTextureCoverage;
@@ -209,7 +208,6 @@ protected:
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 	void CreateStructuresFromXML(vtString strFilename);
-	void create_towers_from_UTL(vtString strTowerFile);
 	void create_culture(bool bSound);
 	void create_floating_labels(const char *filename);
 
@@ -241,9 +239,6 @@ protected:
 
 	// built structures, e.g. buildings and fences
 	vtStructureArray3d	m_Structures;
-
-	// Transmission Towers
-	vtTowerArray3d		m_pTower;
 
 	vtMaterialArray		*m_pTerrApps1;	// for 'regular' terrain
 	vtMaterialArray		*m_pTerrApps2;	// for dynamic LOD terrain
