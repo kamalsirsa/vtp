@@ -69,6 +69,7 @@ Enviro::Enviro()
 	m_pIcoGlobe = NULL;
 	m_pSpaceAxes = NULL;
 
+	m_pTopDownCamera = NULL;
 	m_pTerrainPicker = NULL;
 	m_pGlobePicker = NULL;
 	m_pCursorMGeom = NULL;
@@ -121,6 +122,8 @@ void Enviro::Shutdown()
 {
 	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
+	if (m_pTopDownCamera)
+		m_pTopDownCamera->Destroy();
 	if (m_pCursorMGeom)
 		m_pCursorMGeom->Destroy();
 	delete m_pTerrainScene;
