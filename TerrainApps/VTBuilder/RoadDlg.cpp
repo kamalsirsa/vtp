@@ -205,15 +205,15 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 
 	val = GetSidewalk()->GetSelection();
 	if (val != 2)
-		pRoad->SetFlag(RF_SIDEWALK, val);
+		pRoad->SetFlag(RF_SIDEWALK, (val != 0));
 
 	val = GetParking()->GetSelection();
 	if (val != 2)
-		pRoad->SetFlag(RF_PARKING, val);
+		pRoad->SetFlag(RF_PARKING, (val != 0));
 
 	val = GetMargin()->GetSelection();
 	if (val != 2)
-		pRoad->SetFlag(RF_MARGIN, val);
+		pRoad->SetFlag(RF_MARGIN, (val != 0));
 
 	val = GetSurfType()->GetSelection();
 	if (val != 7)
