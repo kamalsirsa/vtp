@@ -84,6 +84,7 @@
 #  include "sun.xpm"
 #  include "terrain.xpm"
 #  include "tilt.xpm"
+#  include "time.xpm"
 #  include "tree.xpm"
 #  include "unfold.xpm"
 #endif
@@ -163,8 +164,9 @@ EVT_MENU(ID_TIME_DIALOG,		vtFrame::OnTimeDialog)
 EVT_MENU(ID_TIME_STOP,			vtFrame::OnTimeStop)
 EVT_MENU(ID_TIME_FASTER,		vtFrame::OnTimeFaster)
 
-EVT_UPDATE_UI(ID_TIME_STOP,		vtFrame::OnUpdateInOrbit)
-EVT_UPDATE_UI(ID_TIME_FASTER,	vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_TIME_DIALOG,	vtFrame::OnUpdateInOrbitOrTerrain)
+EVT_UPDATE_UI(ID_TIME_STOP,		vtFrame::OnUpdateInOrbitOrTerrain)
+EVT_UPDATE_UI(ID_TIME_FASTER,	vtFrame::OnUpdateInOrbitOrTerrain)
 
 EVT_MENU(ID_TERRAIN_DYNAMIC,	vtFrame::OnDynamic)
 EVT_MENU(ID_TERRAIN_CULLEVERY,	vtFrame::OnCullEvery)
@@ -484,9 +486,14 @@ void vtFrame::CreateToolbar(bool bVertical)
 		ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _T("Tilt"), true);
 		ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _T("Add Point Data"), false);
 		ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _T("Unfold"), true);
-		m_pToolbar->AddSeparator();
-		ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _T("Time Stop"), false);
-		ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _T("Time Faster"), false);
+	}
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(ID_TIME_DIALOG, wxBITMAP(time), _T("Time"), false);
+	ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _T("Time Faster"), false);
+	ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _T("Time Stop"), false);
+
+	if (m_bEnableEarth)
+	{
 		m_pToolbar->AddSeparator();
 		ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _T("Scene Graph"), false);
 	}
@@ -1428,6 +1435,11 @@ void vtFrame::OnUpdateEarthTilt(wxUpdateUIEvent& event)
 void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
+}
+
+void vtFrame::OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit || g_App.m_state == AS_Terrain);
 }
 
 void vtFrame::OnEarthFlatten(wxCommandEvent& event)

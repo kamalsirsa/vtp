@@ -163,6 +163,7 @@ public:
 	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);
 	void OnUpdateEarthTilt(wxUpdateUIEvent& event);
 	void OnUpdateInOrbit(wxUpdateUIEvent& event);
+	void OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event);
 
 	virtual void OnHelpAbout(wxCommandEvent& event);
 
