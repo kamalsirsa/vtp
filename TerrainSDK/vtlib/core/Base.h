@@ -92,6 +92,8 @@ public:
 	virtual void GetBoundBox(FBox3 &box) = 0;
 	virtual void GetBoundSphere(FSphere &sphere) = 0;
 
+	virtual int GetTriCount() = 0;
+
 	static RGBf s_white;
 	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR) = 0;
 };

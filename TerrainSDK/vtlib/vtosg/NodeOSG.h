@@ -45,6 +45,8 @@ public:
 	/** Get the Bounding Sphere of the node, in world coordinates */
 	void GetBoundSphere(FSphere &sphere);
 
+	int GetTriCount() { return 0; }
+
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
 
 	// implementation data
