@@ -8,6 +8,7 @@
 #ifndef LOCATION_H
 #define LOCATION_H
 
+#include "vtdata/vtString.h"
 #include "vtdata/Projections.h"
 #include "vtdata/LocalConversion.h"
 #include "vtdata/config_vtdata.h"
@@ -75,6 +76,7 @@ public:
 	void Remove(int num);
 	int GetNumLocations() { return m_loc.GetSize(); }
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }
+	int FindLocation(const vtString &locname);
 	void Empty();
 
 	// you must call these 3 methods before this class is useful

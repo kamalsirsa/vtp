@@ -278,9 +278,29 @@ bool vtLocationSaver::RecallFrom(int num)
 	return true;
 }
 
+int vtLocationSaver::FindLocation(const vtString &locname)
+{
+	LocNameString name;
+#if SUPPORT_WSTRING
+	name.from_utf8(locname);
+#else
+	name = locname;
+#endif
+
+	int i, num = m_loc.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtLocation *loc = m_loc[i];
+		if (name == loc->m_strName)
+			return i;
+	}
+	return -1;
+}
+
 void vtLocationSaver::Remove(int num)
 {
 	vtLocation *loc = m_loc.GetAt(num);
 	delete loc;
 	m_loc.RemoveAt(num);
 }
+
