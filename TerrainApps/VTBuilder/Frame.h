@@ -57,6 +57,7 @@ public:
 	void CreateToolbar();
 	void RefreshToolbar();
 	virtual void AddMainToolbars();
+	bool DrawDisabled() { return m_bDrawDisabled; }
 
 	void OnSize(wxSizeEvent& event);
 	void OnClose(wxCloseEvent &event);
@@ -359,6 +360,7 @@ protected:
 	MySplitterWindow *m_splitter;
 	MyTreeCtrl	*m_pTree;		// left child of splitter
 	BuilderView	*m_pView;		// right child of splitter
+	bool	m_bDrawDisabled;
 
 	vtProjection	m_proj;
 

@@ -107,6 +107,9 @@ BuilderView::~BuilderView()
 void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 {
 	MainFrame *pFrame = GetMainFrame();
+	if (pFrame->DrawDisabled())
+		return;
+
 	vtLayerPtr lp;
 	int i, iLayers = pFrame->m_Layers.GetSize();
 
@@ -241,7 +244,8 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 
 		delete trans;
 
-		// Now convert the longitude lines between the UTM zones to the current projection
+		// Now convert the longitude lines (boundaries between the UTM zones)
+		// to the current projection
 		trans = OGRCreateCoordinateTransformation(&geo, &proj);
 
 		for (zone = zone_start; zone < zone_end; zone++)
