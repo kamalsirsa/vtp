@@ -216,13 +216,19 @@ public:
 	void Set(double fx, double fy) { x=fx; y=fy; }
 	double Dot(const DPoint2 &rhs) const
 	{
-		return x*rhs.x+y*rhs.y;
+		return x*rhs.x + y*rhs.y;
 	}
 	void Rotate(double radians)
 	{
 		double tempx = x;
 		x = x * cos(radians) - y * sin(radians);
 		y = tempx * sin(radians) + y * cos(radians);
+	}
+	// so-called "2D cross product" is really the dot-product with the
+	// perpendicular vector
+	double Cross(const DPoint2 &rhs)
+	{
+		return (x*rhs.y - y*rhs.x);
 	}
 
 	// assignment
@@ -408,6 +414,7 @@ class FLine3 : public Array<FPoint3>
 {
 public:
 	FLine3() {}
+	FLine3(int size) { SetSize(size); }
 	// copy constructor
 	FLine3(FLine3 &ref) : Array<FPoint3>() { *this = ref; }
 
