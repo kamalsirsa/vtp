@@ -135,12 +135,13 @@ public:
 	}
 	friend inline std::ostream &operator << (std::ostream & Output, const vtMaterialDescriptor &Input)
 	{
+		const RGBi &rgb = Input.m_RGB;
 		Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
 				<< " Type=\"" << Input.m_Type << "\""
 				<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
 				<< " Scale=\"" << Input.m_fUVScale << "\""
 				<< " UIVisible=\"" << Input.m_pName->GetUIVisible() << "\""
-				<< " RGB=\"" << Input.m_RGB << "\""
+				<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
 				<< "/>" << std::endl;
 		return Output;
 	}
