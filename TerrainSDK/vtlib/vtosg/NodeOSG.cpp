@@ -219,6 +219,10 @@ bool vtNode::s_bDisableMipmaps = false;
 
 vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
 {
+	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
+	//  sensitivity to stdio issues with '.' and ',' in European locales.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// Workaround for OSG's OBJ-MTL reader which doesn't like backslashes
 	//  in the version we're using.
 	char newname[500];
@@ -852,6 +856,13 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 void vtGeom::RemoveMesh(vtMesh *pMesh)
 {
 	m_pGeode->removeDrawable(pMesh->m_pGeometry.get());
+
+	if (pMesh->_refCount == 2)
+	{
+		// no more references except its default
+		// self-reference and the reflexive reference from its m_pGeometry.
+		pMesh->Release();
+	}
 }
 
 int vtGeom::GetNumMeshes() const
