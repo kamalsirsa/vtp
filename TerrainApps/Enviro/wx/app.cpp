@@ -251,7 +251,6 @@ bool vtApp::OnInit()
 		if (result == wxID_CANCEL)
 			return FALSE;
 
-		VTLOG("Writing options to " STRING_APPNAME ".ini\n");
 		StartDlg.PutOptionsTo(g_Options);
 		g_Options.Write();
 	}
