@@ -13,6 +13,8 @@
 #include "FelkelComponents.h"
 #include "FelkelIntersection.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 //
 // Implementation of the CRidgeLine class.
 //
@@ -512,3 +514,6 @@ bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 	}
 	return false;
 }
+
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
+

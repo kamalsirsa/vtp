@@ -13,6 +13,8 @@
 #ifndef FELKELCOMPONENTSH
 #define FELKELCOMPONENTSH
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include <math.h>
 #include <assert.h>
 #include <vector>
@@ -253,4 +255,5 @@ public:
 	}
 };
 
-#endif // FELKELCOMPONENTSH
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
+#endif	// FELKELCOMPONENTSH
