@@ -115,12 +115,12 @@ void NevadaTerrain::CreateWater()
 	size.y = (float) world_extents.Height();
 
 	// create water plane
-	m_pWaterShape = CreatePlaneMGeom(pMats, 0, org, size, 125.0f, 125.0f, 10);	// appidx 0
+	m_pWaterShape = CreatePlaneMGeom(pMats, 0, org, size, 125.0f, 125.0f, 10);	// matidx 0
 	m_pWaterShape->SetName2("WaterSurface");
 	AddNode(m_pWaterShape);
 
 	// and another plane
-	m_pWaterShape2 = CreatePlaneMGeom(pMats, 1, org, size, 260.3f, 260.3f, 10);	// appidx 1
+	m_pWaterShape2 = CreatePlaneMGeom(pMats, 1, org, size, 260.3f, 260.3f, 10);	// matidx 1
 	m_pWaterShape2->SetName2("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
 	AddNode(m_pWaterShape2);
