@@ -166,6 +166,20 @@ bool App::CreateScene()
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
 
+#if 0
+	// Test code - you can ignore it.
+	vtMaterialArray *pMats = new vtMaterialArray();
+	pMats->AddRGBMaterial1(RGBf(1, 1, 0), false, false); // yellow
+	vtGeom *ball = CreateSphereGeom(pMats, 0, VT_Normals, 100, 16);
+	pMats->Release();
+	vtTransform *trans1 = new vtTransform();
+	vtTransform *trans2 = new vtTransform();
+	pTopGroup->AddChild(trans1);
+	pTopGroup->AddChild(trans2);
+	trans1->AddChild(ball);
+	trans2->AddChild(ball);
+#endif
+
 	return true;
 }
 
