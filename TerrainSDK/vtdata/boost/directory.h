@@ -58,7 +58,7 @@ namespace boost
 		template <class Property> class set;
 #endif
 
-#if defined(__GNUG__)
+#if defined(__GNUG__) && (__GNUC__ < 3)
 		class BOOST_DECL dir_it: public input_iterator<std::string, ptrdiff_t>
 #else
 		class BOOST_DECL dir_it: public std::iterator<std::input_iterator_tag, std::string>
@@ -81,7 +81,7 @@ namespace boost
 
 			class proxy
 			{
-				friend dir_it;
+				friend class dir_it;
 				proxy(std::string const &ent): entry(ent) {}
 			public:
 				std::string operator*() const { return entry; }
@@ -304,6 +304,7 @@ namespace boost
 		{
 		public:
 			unknown_uname(std::string u): std::invalid_argument("unknown user name"), m_uname(u) {}
+ 			~unknown_uname() throw () {}
 			std::string uname() const { return m_uname; }
 		private:
 			std::string m_uname;
@@ -330,6 +331,7 @@ namespace boost
 		{
 		public:
 			unknown_gname(std::string g): std::invalid_argument("unknown group name"), m_gname(g) {}
+ 			~unknown_gname() throw () {}
 			std::string gname() const { return m_gname; }
 		private:
 			std::string m_gname;
@@ -345,21 +347,5 @@ namespace boost
 
 	} // namespace filesystem
 } // namespace boost
-
-namespace std
-{
-	template<>
-	class iterator_traits<boost::filesystem::dir_it>
-	{
-	public:
-		typedef ptrdiff_t          difference_type;
-		typedef string             value_type;
-		typedef string             *pointer;
-		typedef string             &reference;
-		typedef input_iterator_tag iterator_category;
-	};
-} // namespace std
-
-// --------------------------------------------------------------------------
 
 #endif /* BOOST_DIRECTORY_H */
