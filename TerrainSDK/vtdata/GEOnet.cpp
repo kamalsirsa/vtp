@@ -6,26 +6,39 @@
 //
 
 #include "GEOnet.h"
+#include "vtdata/Shapelib/shapefil.h"
 #include <stdio.h>
 
+Country::Country()
+{
+}
 
-bool Country::FindPlace(const char *place_val, DPoint2 &point, bool bFullLength)
+Country::~Country()
+{
+	// manually free memory
+	int j, num_places = m_places.GetSize();
+	for (j = 0; j < num_places; j++)
+		delete m_places[j];
+	m_places.Empty();
+}
+
+bool Country::FindPlace(const char *name_nd, DPoint2 &point, bool bFullLength)
 {
 	int j, num_places = m_places.GetSize();
 
-	bool success = false;
+	bool match = false;
 	for (j = 0; j < num_places; j++)
 	{
 		Place *place = m_places[j];
 		if (bFullLength)
-			success = (place->m_fullname_nd.CompareNoCase(place_val) == 0);
+			match = (place->m_fullname_nd.CompareNoCase(name_nd) == 0);
 		else
 		{
-			int len = strlen(place_val);
+			int len = strlen(name_nd);
 			if (len > 2)
-				success = (place->m_fullname_nd.Left(len).CompareNoCase(place_val) == 0);
+				match = (place->m_fullname_nd.Left(len).CompareNoCase(name_nd) == 0);
 		}
-		if (success)
+		if (match)
 		{
 			point = place->m_pos;
 			return true;
@@ -33,6 +46,128 @@ bool Country::FindPlace(const char *place_val, DPoint2 &point, bool bFullLength)
 	}
 	return false;
 }
+
+bool Country::FindPlace(const std::wstring &name, DPoint2 &point, bool bFullLength)
+{
+	int j, num_places = m_places.GetSize();
+
+	bool match;
+	for (j = 0; j < num_places; j++)
+	{
+		match = false;
+		Place *place = m_places[j];
+
+		if (bFullLength)
+			match = (place->m_fullname.compare(name) == 0);
+		else
+		{
+			int len = name.length();
+			if (len > 2)
+				match = (place->m_fullname.compare(0, len, name) == 0);
+		}
+		if (match)
+		{
+			point = place->m_pos;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Country::FindAllMatchingPlaces(const char *name_nd, bool bFullLength, PlaceArray &places)
+{
+	int j, num_places = m_places.GetSize();
+
+	bool match = false;
+	places.Empty();
+
+	for (j = 0; j < num_places; j++)
+	{
+		Place *place = m_places[j];
+		if (bFullLength)
+			match = (place->m_fullname_nd.CompareNoCase(name_nd) == 0);
+		else
+		{
+			int len = strlen(name_nd);
+			if (len > 2)
+				match = (place->m_fullname_nd.Left(len).CompareNoCase(name_nd) == 0);
+		}
+		if (match)
+		{
+			places.Append(place);
+		}
+	}
+	if (places.GetSize() > 0)
+		return true;
+	else
+		return false;
+}
+
+bool Country::WriteSHP(const char *fname)
+{
+	SHPHandle hSHP = SHPCreate(fname, SHPT_POINT);
+	if (!hSHP)
+		return false;
+
+	SHPObject *obj;
+
+	int j, num_places;
+	int longest_place_name = 0;
+
+	num_places = m_places.GetSize();
+
+	for (j = 0; j < num_places; j++)
+	{
+		Place *place = m_places[j];
+
+		obj = SHPCreateSimpleObject(SHPT_POINT, 1,
+			&place->m_pos.x, &place->m_pos.y, NULL);
+
+		SHPWriteObject(hSHP, -1, obj);
+		SHPDestroyObject(obj);
+
+		const char *utf8 = place->m_fullname.to_utf8();
+		int len = strlen(utf8);
+		if (len > longest_place_name)
+			longest_place_name = len;
+	}
+	SHPClose(hSHP);
+
+	// Save DBF File also
+	vtString dbfname = fname;
+	dbfname = dbfname.Left(dbfname.GetLength() - 4);
+	dbfname += ".dbf";
+	DBFHandle db = DBFCreate(dbfname);
+	if (db == NULL)
+		return false;
+
+	DBFAddField(db, "Country", FTString, 2, 0);
+	DBFAddField(db, "PPC", FTInteger, 2, 0);
+	DBFAddField(db, "Name", FTString, longest_place_name, 0);
+
+	int entity = 0;
+
+	for (j = 0; j < num_places; j++)
+	{
+		Place *place = m_places[j];
+
+		DBFWriteStringAttribute(db, entity, 0, (const char *) m_abb);
+
+		DBFWriteIntegerAttribute(db, entity, 1, place->m_ppc);
+
+		const char *utf8 = place->m_fullname.to_utf8();
+		DBFWriteStringAttribute(db, entity, 2, utf8);
+
+		entity++;
+	}
+	DBFClose(db);
+
+	return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 
 void Countries::ReadCountryList(const char *fname)
 {
@@ -59,10 +194,103 @@ void Countries::ParseRawCountryFiles(const char *path_prefix)
 
 	int num = m_countries.GetSize();
 	for (int i = 0; i < num; i++)
+//	for (int i = 184; i < 190; i++)	// TEMP TEST
 	{
 		ParseRawCountry(i);
+
+		Country *country = m_countries[i];
+
+		if (country->m_places.GetSize() > 0)
+		{
+			vtString outpath = "shp/";
+			outpath += country->m_abb;
+			outpath += ".shp";
+			country->WriteSHP(outpath);
+		}
+
+		delete country;
 	}
 }
+
+#include "GnsCodes.h"
+
+void GNS_to_wstring(int region, char *word, std::wstring &output)
+{
+	int len = strlen(word);
+	unsigned char ch;
+	unsigned short unicode;
+
+	output.empty();
+
+	for (int i = 0; i < len; i++)
+	{
+		ch = (unsigned char) word[i];
+		if (ch < 128)
+			unicode = ch;
+		else
+		{
+			if (region == 1)
+				unicode = region1[ch-128];
+			else if (region == 2)
+				unicode = region2[ch-128];
+			else if (region == 3)
+				unicode = region3[ch-128];
+			else // TODO: other 3 regions
+				unicode = region3[ch-128];
+			if (unicode == 0x0000)
+				unicode = '?';
+		}
+		output += unicode;
+	}
+}
+
+/*
+	Fields:
+	 0 RC Region Code
+		1 = Western Europe/Americas;
+		2 = Eastern Europe;
+		3 = Africa/Middle East;
+		4 = Central Asia;
+		5 = Asia/Pacific;
+		6 = Vietnam
+	 1 UFI Unique Feature Identifier
+	 2 UNI Unique Name Identifier
+	 3 DD_LAT Latitude  
+	 4 DD_LONG Longitude
+	 5 DMS_LAT Latitude  
+	 6 DMS_LONG Longitude  
+	 7 UTM Universal Transverse Mercator  
+	 8 JOG Joint Operations Graphic  
+	 9 FC Feature Classification
+		A = Administrative region;
+		P = Populated place;
+		V = Vegetation;
+		L = Locality or area;
+		U = Undersea;
+		R = Streets, highways, roads, or railroad;
+		T = Hypsographic;
+		H = Hydrographic;
+		S = Spot feature.
+	10 DSG Feature Designation Code 
+	11 PC Populated Place Classification (1 high, 5 low)
+	12 CC1 Primary Country Code
+	13 ADM1 First-order administrative division 
+	14 ADM2 Second-order administrative division 
+	15 DIM Dimension 
+	16 CC2 Secondary Country Code 
+	17 NT Name Type
+		C = Conventional;
+		D = Not verified;
+		N = Native;
+		V = Variant or alternate.
+	18 LC Language Code
+	19 SHORT_FORM
+	20 GENERIC (does not apply to populated place names)
+	21 SORT_NAME Upper-case form of the full name for easy sorting of the name
+	22 FULL_NAME specific name, generic name, and any articles or prepositions
+	23 FULL_NAME_ND Diacritics/special characters substituted with Roman characters
+	24 MODIFY_DATE
+*/
 
 void Countries::ParseRawCountry(int which)
 {
@@ -74,15 +302,14 @@ void Countries::ParseRawCountry(int which)
 	char pc;	// Populated Place Classification
 	DPoint2 point;
 	char *p, *w;
-	int i, j;
+	int i;
 	char buf[4000];
-	char word[100];
+	char word[200];	// some place names in Russia are more than 100 chars!
 	Place *place;
+	int region;
 
-	Array<char> importance;
 	int num_important[7];
 	int line_number = 0;
-	int duplicates = 0;
 
 	for (i = 0; i < 7; i++)
 		num_important[i] = 0;
@@ -104,6 +331,8 @@ void Countries::ParseRawCountry(int which)
 			{
 				*w = '\0';
 				// handle word
+				if (i == 0)
+					region = atoi(word); // RC region code
 				if (i == 3)
 					point.y = atof(word); // lat
 				if (i == 4)
@@ -114,49 +343,25 @@ void Countries::ParseRawCountry(int which)
 				{
 					pc = word[0] ? word[0] - '0' : 6;	// "importance" 1-5, 1 most
 				}
-				if (i == 23)
+				if (fc == 'P')	// populated place
 				{
-					if (fc == 'P')	// populated place
+					if (i == 22)	// FULL_NAME
 					{
-						// count hhow many of each importance
+						// count how many of each importance
 						if (pc >= 1 && pc <= 6) num_important[pc] ++;
 
-						bool bReplace = false;
-						if (pc < 5)	// might be more important than existing
-						{
-							int size = country->m_places.GetSize();
-							for (j = 0; j < size; j++)
-							{
-								place = country->m_places.GetAt(j);
-								if (!place->m_fullname_nd.Compare(word))
-								{
-									duplicates++;
-									// if name already exists, replace the existing
-									// place if this one is more important
-									if (pc < importance[j])
-									{
-										bReplace = true;
-										break;
-									}
-								}
-							}
-						}
 						place = new Place();
 						place->m_pos = point;
+						place->m_ppc = pc;
+						country->m_places.Append(place);
+
+						GNS_to_wstring(region, word, place->m_fullname);
+					}
+					if (i == 23)	// FULL_NAME_ND
+					{
 						place->m_fullname_nd = word;
-						if (bReplace)
-						{
-							country->m_places[j] = place;
-							importance[j] = pc;
-						}
-						else
-						{
-							country->m_places.Append(place);
-							importance.Append(pc);
-						}
 					}
 				}
-				//printf("i=%d word=%s\n", i, word);
 				i++;
 				w = word;
 			}
@@ -169,9 +374,9 @@ void Countries::ParseRawCountry(int which)
 	}
 	fclose(fp);
 	int size = country->m_places.GetSize();
-	printf("%d places. Imps: %d %d %d %d %d %d. Dupes: %d\n",
+	printf("\n  %d places. Importances: %d %d %d %d %d (%d)\n",
 		size, num_important[1], num_important[2], num_important[3],
-		num_important[4], num_important[5], num_important[6], duplicates);
+		num_important[4], num_important[5], num_important[6]);
 }
 
 void WriteString(FILE *fp, const vtString &str)
@@ -190,6 +395,77 @@ void ReadString(FILE *fp, vtString &str)
 	fread(buf, len, 1, fp);
 	buf[len] = '\0';
 	str = buf;
+}
+
+bool Countries::WriteSHP(const char *fname)
+{
+	SHPHandle hSHP = SHPCreate(fname, SHPT_POINT);
+	if (!hSHP)
+		return false;
+
+	SHPObject *obj;
+
+	int i, j, num_places;
+	int longest_place_name = 0;
+	int num_countries = m_countries.GetSize();
+
+	for (i = 0; i < num_countries; i++)
+	{
+		Country *country = m_countries[i];
+		num_places = country->m_places.GetSize();
+
+		for (j = 0; j < num_places; j++)
+		{
+			Place *place = country->m_places[j];
+
+			obj = SHPCreateSimpleObject(SHPT_POINT, 1,
+				&place->m_pos.x, &place->m_pos.y, NULL);
+
+			SHPWriteObject(hSHP, -1, obj);
+			SHPDestroyObject(obj);
+
+			const char *utf8 = place->m_fullname.to_utf8();
+			int len = strlen(utf8);
+			if (len > longest_place_name)
+				longest_place_name = len;
+		}
+	}
+	SHPClose(hSHP);
+
+	// Save DBF File also
+	vtString dbfname = fname;
+	dbfname = dbfname.Left(dbfname.GetLength() - 4);
+	dbfname += ".dbf";
+	DBFHandle db = DBFCreate(dbfname);
+	if (db == NULL)
+		return false;
+
+	DBFAddField(db, "Country", FTString, 2, 0);
+	DBFAddField(db, "PPC", FTInteger, 2, 0);
+	DBFAddField(db, "Name", FTString, longest_place_name, 0);
+
+	int entity = 0;
+	for (i = 0; i < num_countries; i++)
+	{
+		Country *country = m_countries[i];
+		num_places = country->m_places.GetSize();
+		for (j = 0; j < num_places; j++)
+		{
+			Place *place = country->m_places[j];
+
+			DBFWriteStringAttribute(db, entity, 0, (const char *) country->m_abb);
+
+			DBFWriteIntegerAttribute(db, entity, 1, place->m_ppc);
+
+			const char *utf8 = place->m_fullname.to_utf8();
+			DBFWriteStringAttribute(db, entity, 2, utf8);
+
+			entity++;
+		}
+	}
+	DBFClose(db);
+
+	return true;
 }
 
 void Countries::WriteGCF(const char *fname)

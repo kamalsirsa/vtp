@@ -15,13 +15,29 @@ class Place
 {
 public:
 	DPoint2 m_pos;
+	wstring2 m_fullname;
 	vtString m_fullname_nd;
+	short m_ppc; // Populated Place Classification (1 high to 5 low, 6=unknown)
+};
+
+class PlaceArray : public Array<Place *>
+{
+public:
+	// this class is used for reference purposes only, it does not own the
+	// objects it contains so it does not and should not delete them
 };
 
 class Country
 {
 public:
-	bool FindPlace(const char *place_val, DPoint2 &point, bool bFullLength);
+	Country();
+	~Country();
+
+	bool FindPlace(const char *name_nd, DPoint2 &point, bool bFullLength);
+	bool FindPlace(const std::wstring &name, DPoint2 &point, bool bFullLength);
+	bool FindAllMatchingPlaces(const char *name_nd, bool bFullLength, PlaceArray &places);
+
+	bool WriteSHP(const char *fname);
 
 	vtString m_abb;
 	vtString m_full;
@@ -50,6 +66,7 @@ public:
 	void ParseRawCountryFiles(const char *path_prefix);
 	void ParseRawCountry(int i);
 	void WriteGCF(const char *fname);
+	bool WriteSHP(const char *fname);
 
 	// load and use GCF
 	void ReadGCF(const char *fname, void progress_callback(int) = NULL);
