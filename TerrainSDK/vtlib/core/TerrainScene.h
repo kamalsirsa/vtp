@@ -50,6 +50,7 @@ public:
 
 	void ToggleFog();
 	void SetFog(bool fog);
+	void SetFogColor(const RGBf &color);
 	bool GetFog() { return m_bFog; }
 	void SetTime(time_t time);
 
@@ -64,7 +65,7 @@ protected:
 	vtGroup		*m_pAtmosphereGroup;
 
 	// atmospherics
-	RGBf		horizon_color, azimuth_color;
+	RGBf		horizon_color, azimuth_color, fog_color;
 
 	// start of a linked list
 	vtTerrain	*m_pFirstTerrain;

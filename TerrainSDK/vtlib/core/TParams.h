@@ -113,9 +113,7 @@ public:
 
 	bool		m_bFog;
 	float		m_fFogDistance;
-	float		m_fFogR;
-	float		m_fFogG;
-	float		m_fFogB;
+	RGBf		m_FogColor;
 
 	vtStringArray	m_strStructFiles;
 	unint		m_iStructDistance;

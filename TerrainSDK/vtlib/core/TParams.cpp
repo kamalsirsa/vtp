@@ -63,7 +63,7 @@ TParams::TParams()
 
 	m_bFog = false;
 	m_fFogDistance = 50;	// 50 km
-	m_fFogR = m_fFogG = m_fFogB = -1; // unset
+	m_FogColor.Set(-1, -1, -1); // unset
 
 	m_iStructDistance = 2000;	// 2 km
 
@@ -153,9 +153,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 
 	m_bFog = rhs.m_bFog;
 	m_fFogDistance = rhs.m_fFogDistance;
-	m_fFogR = rhs.m_fFogR;
-	m_fFogG = rhs.m_fFogG;
-	m_fFogB = rhs.m_fFogB;
+	m_FogColor = rhs.m_FogColor;
 
 	m_strStructFiles = rhs.m_strStructFiles;
 	m_iStructDistance = rhs.m_iStructDistance;
@@ -410,11 +408,11 @@ bool TParams::LoadFromFile(const char *filename)
 		else if (strcmp(buf, STR_FOG) == 0)
 			input >> m_bFog;
 		else if (strcmp(buf, STR_FOGCOLORR) == 0)
-			input >> m_fFogR;
+			input >> m_FogColor.r;
 		else if (strcmp(buf, STR_FOGCOLORG) == 0)
-			input >> m_fFogG;
+			input >> m_FogColor.g;
 		else if (strcmp(buf, STR_FOGCOLORB) == 0)
-			input >> m_fFogB;
+			input >> m_FogColor.b;
 		else if (strcmp(buf, STR_FOGDISTANCE) == 0)
 			input >> m_fFogDistance;
 
@@ -601,14 +599,14 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bFog << endl;
 	output << STR_FOGDISTANCE << "\t";
 	output << m_fFogDistance << endl;
-	if(m_fFogR != -1.0f)
+	if(m_FogColor.r != -1.0f)
 	{ // don't pollute old scenes that aren't using this feature yet
 		output << STR_FOGCOLORR << "\t\t";
-		output << m_fFogR << endl;
+		output << m_FogColor.r << endl;
 		output << STR_FOGCOLORG << "\t\t";
-		output << m_fFogG << endl;
+		output << m_FogColor.g << endl;
 		output << STR_FOGCOLORB << "\t\t";
-		output << m_fFogB << endl;
+		output << m_FogColor.b << endl;
 	}
 
 	output << "\n; Structures\n";

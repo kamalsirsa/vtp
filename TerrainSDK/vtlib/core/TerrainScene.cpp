@@ -56,6 +56,7 @@ vtTerrainScene::vtTerrainScene()
 {
 	horizon_color.Set(0.70f, 0.85f, 1.0f);
 	azimuth_color.Set(0.12f, 0.32f, 0.70f);
+	fog_color.Set(-1.0f, -1.0f, -1.0f);
 
 	m_pTop = NULL;
 	m_pSkyDome = NULL;
@@ -293,7 +294,13 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 		if (skytex != "")
 			m_pSkyDome->SetTexture(skytex);
 	}
+	SetFogColor(param.m_FogColor);
 	SetFog(param.m_bFog);
+}
+
+void vtTerrainScene::SetFogColor(const RGBf &color)
+{
+	fog_color = color;
 }
 
 void vtTerrainScene::ToggleFog()
@@ -309,7 +316,13 @@ void vtTerrainScene::SetFog(bool fog)
 	if (m_bFog)
 	{
 		TParams &param = m_pCurrentTerrain->GetParams();
-		m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, param.m_iFogDistance * 1000.0f);
+		float dist = param.m_fFogDistance * 1000.0f;
+
+		if(fog_color.r != -1)
+			m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, dist, fog_color);
+		else
+			m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, dist);
+
 		vtGetScene()->SetBgColor(horizon_color);
 	}
 	else
