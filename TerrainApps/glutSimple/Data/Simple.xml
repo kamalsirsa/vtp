@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Terrain_Parameters>
 	<Name>Simple Terrain</Name>
-	<Filename>crater_0513.bt </Filename>
+	<Filename>crater_0513.bt</Filename>
 	<Vertical_Exag>1.300000</Vertical_Exag>
 	<Min_Height>10</Min_Height>
 	<Nav_Style>0</Nav_Style>
