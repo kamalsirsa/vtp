@@ -836,6 +836,14 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
 	return *this;
 }
 
+enum SelectionType
+{
+	ST_NORMAL,
+	ST_ADD,
+	ST_SUBTRACT,
+	ST_TOGGLE
+};
+
 
 //
 // handy helper functions
