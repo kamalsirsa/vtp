@@ -389,6 +389,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		vtGeom *thebox = make_red_cube();
 		vtGeom *thecone = make_test_cone();
 		vtTransform *container = new vtTransform();
+		container->SetName2("Test Shape");
 		container->AddChild(thebox);
 		container->AddChild(thecone);
 		AddNode(container);
