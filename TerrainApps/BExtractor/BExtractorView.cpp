@@ -125,7 +125,7 @@ BExtractorView::BExtractorView()
 	m_scrollposH = SCROLL_MULT;
 	m_scrollposV = SCROLL_MULT;
 
-	m_bConstrain = false;
+	m_bConstrain = true;
 
 	DWORD blah = MAX_PATH;
 	GetCurrentDirectory(blah, m_directory);
