@@ -41,6 +41,10 @@ vtProjection::vtProjection() : OGRSpatialReference()
 {
 }
 
+vtProjection::~vtProjection()
+{
+}
+
 /**
  * Assignment operator.
  */

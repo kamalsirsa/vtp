@@ -55,6 +55,7 @@ class vtProjection : public OGRSpatialReference
 {
 public:
 	vtProjection();
+	~vtProjection();
 
 	// Assignment
 	vtProjection &operator=(const vtProjection &ref);
