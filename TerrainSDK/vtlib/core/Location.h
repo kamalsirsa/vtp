@@ -11,7 +11,6 @@
 #include "vtdata/vtString.h"
 #include "vtdata/Projections.h"
 #include "vtdata/LocalConversion.h"
-#include "vtdata/config_vtdata.h"
 
 #if SUPPORT_WSTRING
 	#define LocNameString wstring2
