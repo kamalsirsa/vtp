@@ -297,6 +297,12 @@ void IcoGlobe::refresh_face_positions(vtMesh *mesh, int mface, float f)
 		// do interpolation between icosa face and sphere
 		len = m_rtv[mface][i].p.Length();
 		fp = m_rtv[mface][i].p / len * (f + (1 - f) * len);
+
+		if (m_style == DYMAX_UNFOLD)
+		{
+			fp -= m_local_origin[mface];
+		}
+
 		mesh->SetVtxPos(i, fp);
 	}
 }
@@ -660,7 +666,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 		geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
 
 		// flatten mesh
-		refresh_face_positions(m_mesh[i], i, 0);
+//		refresh_face_positions(m_mesh[i], i, 0);
 	}
 	m_top->AddChild(m_xform[0]);
 
@@ -736,10 +742,6 @@ void IcoGlobe::CreateNormalSphere()
  */
 void IcoGlobe::SetInflation(float f)
 {
-	// not allowed for unfoldable globes
-	if (m_style == DYMAX_UNFOLD)
-		return;
-
 	for (int mface = 0; mface < m_mfaces; mface++)
 	{
 		if (m_style == GEODESIC)
