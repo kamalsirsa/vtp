@@ -112,7 +112,10 @@ public:
 	bool		m_bWildVeg;
 
 	bool		m_bFog;
-	int			m_iFogDistance;
+	float		m_fFogDistance;
+	float		m_fFogR;
+	float		m_fFogG;
+	float		m_fFogB;
 
 	vtStringArray	m_strStructFiles;
 	unint		m_iStructDistance;

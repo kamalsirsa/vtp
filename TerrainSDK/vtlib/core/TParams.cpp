@@ -62,7 +62,8 @@ TParams::TParams()
 	m_bWildVeg = false;
 
 	m_bFog = false;
-	m_iFogDistance = 50;	// 50 km
+	m_fFogDistance = 50;	// 50 km
+	m_fFogR = m_fFogG = m_fFogB = -1; // unset
 
 	m_iStructDistance = 2000;	// 2 km
 
@@ -151,7 +152,10 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bWildVeg = rhs.m_bWildVeg;
 
 	m_bFog = rhs.m_bFog;
-	m_iFogDistance = rhs.m_iFogDistance;
+	m_fFogDistance = rhs.m_fFogDistance;
+	m_fFogR = rhs.m_fFogR;
+	m_fFogG = rhs.m_fFogG;
+	m_fFogB = rhs.m_fFogB;
 
 	m_strStructFiles = rhs.m_strStructFiles;
 	m_iStructDistance = rhs.m_iStructDistance;
@@ -237,6 +241,9 @@ const TParams &TParams::operator = (const TParams &rhs)
 
 #define STR_FOG "Fog"
 #define STR_FOGDISTANCE "Fog_Distance"
+#define STR_FOGCOLORR "Fog_Color_R"
+#define STR_FOGCOLORG "Fog_Color_G"
+#define STR_FOGCOLORB "Fog_Color_B"
 
 #define STR_BUILDINGFILE "Building_File"	// for backward compatibility
 #define STR_STRUCTFILE	 "Structure_File"
@@ -402,8 +409,14 @@ bool TParams::LoadFromFile(const char *filename)
 
 		else if (strcmp(buf, STR_FOG) == 0)
 			input >> m_bFog;
+		else if (strcmp(buf, STR_FOGCOLORR) == 0)
+			input >> m_fFogR;
+		else if (strcmp(buf, STR_FOGCOLORG) == 0)
+			input >> m_fFogG;
+		else if (strcmp(buf, STR_FOGCOLORB) == 0)
+			input >> m_fFogB;
 		else if (strcmp(buf, STR_FOGDISTANCE) == 0)
-			input >> m_iFogDistance;
+			input >> m_fFogDistance;
 
 		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
 		{
@@ -587,7 +600,16 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_FOG << "\t\t\t\t";
 	output << m_bFog << endl;
 	output << STR_FOGDISTANCE << "\t";
-	output << m_iFogDistance << endl;
+	output << m_fFogDistance << endl;
+	if(m_fFogR != -1.0f)
+	{ // don't pollute old scenes that aren't using this feature yet
+		output << STR_FOGCOLORR << "\t\t";
+		output << m_fFogR << endl;
+		output << STR_FOGCOLORG << "\t\t";
+		output << m_fFogG << endl;
+		output << STR_FOGCOLORB << "\t\t";
+		output << m_fFogB << endl;
+	}
 
 	output << "\n; Structures\n";
 	for (i = 0; i < m_strStructFiles.size(); i++)
