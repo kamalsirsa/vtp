@@ -186,6 +186,7 @@ public:
 	DPoint2(const FPoint2 &f);
 
 	double Length() const { return sqrt(x*x+y*y); }
+	double LengthSquared() const { return (x*x+y*y); }
 	void Normalize() { double s = 1.0/Length(); x*=s; y*=s; }
 	void Set(double fx, double fy) { x=fx; y=fy; }
 	void Rotate(double radians)
