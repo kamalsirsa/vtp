@@ -80,8 +80,12 @@ public:
 
 	// you must call these 3 methods before this class is useful
 	void SetTransform(vtTransform *trans) { m_pTransform = trans; }
+	vtTransform *GetTransform() { return m_pTransform; }
+
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
+
 	void SetProjection(const vtProjection &proj);
+	const vtProjection &GetAtProjection() const { return m_proj; }
 
 	bool StoreTo(unsigned int num, const LocNameString &name = "");
 	bool RecallFrom(int num);
