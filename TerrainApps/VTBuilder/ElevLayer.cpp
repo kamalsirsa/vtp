@@ -1076,7 +1076,7 @@ bool vtElevLayer::AskForSaveFilename()
 	if (m_pTin)
 		filter = FSTRING_TIN;
 	else
-		filter = _("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz|");
+		filter = _("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz");
 
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);

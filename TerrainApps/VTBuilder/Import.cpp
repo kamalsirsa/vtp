@@ -496,7 +496,7 @@ wxString GetImportFilterString(LayerType ltype)
 {
 	wxString filter = _T("All Known ");
 	filter += vtLayer::LayerTypeNames[ltype];
-	filter += _T(" Formats||");
+	filter += _T(" Formats|");
 
 	switch (ltype)
 	{

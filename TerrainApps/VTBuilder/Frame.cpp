@@ -1500,7 +1500,7 @@ void MainFrame::ExportImage()
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
-	wxString filter = _("All Files|*.*|");
+	wxString filter = _("All Files|*.*");
 	AddType(filter, FSTRING_TIF);
 
 	// ask the user for a filename

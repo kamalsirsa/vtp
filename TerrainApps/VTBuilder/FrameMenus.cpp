@@ -476,7 +476,7 @@ wxString2 GetProjectFilter()
 {
 	wxString2 str = _T(APPNAME);
 	str += _T(" ");
-	str += _("Project Files (*.vtb)|*.vtb|");
+	str += _("Project Files (*.vtb)|*.vtb");
 	return str;
 }
 
@@ -927,7 +927,7 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 
 void MainFrame::OnLayerOpen(wxCommandEvent &event)
 {
-	wxString filter = _("Native Layer Formats||");
+	wxString filter = _("Native Layer Formats|");
 
 	AddType(filter, FSTRING_BT);	// elevation
 	AddType(filter, FSTRING_BTGZ);	// compressed elevation
@@ -1941,7 +1941,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 
 vtString GetExportFilename(const wxString &format_filter)
 {
-	wxString2 filter = _("All Files|*.*|");
+	wxString2 filter = _("All Files|*.*");
 	AddType(filter, format_filter);
 
 	// ask the user for a filename
@@ -2349,7 +2349,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	// if PlantList has not previously been open, get the data from file first
 	if (m_strSpeciesFilename == "")
 	{
-		wxString filter = _("Plant Species List Files (*.xml)|*.xml|");
+		wxString filter = _("Plant Species List Files (*.xml)|*.xml");
 
 		// Use file dialog to open plant list text file.
 		wxFileDialog loadFile(NULL, _("Load Plant Info"), _T(""), _T(""),
@@ -2379,7 +2379,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 	// if data isn't there, get the data first
 	if (m_strBiotypesFilename == "")
 	{
-		wxString filter = _("Bioregion Files (*.txt)|*.txt|");
+		wxString filter = _("Bioregion Files (*.txt)|*.txt");
 
 		// Use file dialog to open bioregion text file.
 		wxFileDialog loadFile(NULL, _("Load BioRegion Info"), _T(""), _T(""),

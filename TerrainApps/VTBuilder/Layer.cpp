@@ -49,9 +49,8 @@ void AddType(wxString &str, const wxString &filter)
 	wxString str3 = str.AfterFirst('|');
 	str3 = str3.AfterFirst('|');
 
-	// Chop up the filter string.  str3 is the wildcard part.
+	// Chop up the filter string.  str4 is the wildcard part.
 	wxString str4 = filter.AfterFirst('|');
-	str4 = str4.BeforeFirst('|');
 
 	// Now rebuild the string, with the filter added
 	wxString output = str1 + _T("|");
@@ -60,7 +59,11 @@ void AddType(wxString &str, const wxString &filter)
 		output += _T(";");
 	output += str4;
 	output += _T("|");
-	output += str3;
+	if (str3.Len() > 1)
+	{
+		output += str3;
+		output += _T("|");
+	}
 	output += filter;
 
 	str = output;
@@ -156,7 +159,7 @@ wxString vtLayer::GetSaveFileDialogFilter()
 	str += ext;
 	str += _T(")|*");
 	str += ext;
-	str += _("|All Files|*.*|");
+	str += _("|All Files|*.*");
 
 	return str;
 }

@@ -1127,8 +1127,10 @@ void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 bool vtStructureLayer::AskForSaveFilename()
 {
 	wxString filter;
-	filter += _T("VTST File (.vtst)|*.vtst|");
-	filter += _T("GZipped VTST File (.vtst.gz)|*.vtst.gz|");
+	filter += _T("VTST File (.vtst)|*.vtst");
+	filter += _T("|");
+	filter += _T("GZipped VTST File (.vtst.gz)|*.vtst.gz");
+
 	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 	saveFile.SetFilterIndex( m_bPreferGZip ? 1 : 0);
