@@ -170,7 +170,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 		// Display biotype as level 1 of tree.
 		wxTreeItemId region;
 		wxString bt;
-		bt.Printf("Type %d", i+1);
+		bt.Printf("Type %d", i);
 		region = m_BTree->AppendItem(rootId, bt);
 
 		int numspecies = br->m_Types[i]->m_Densities.GetSize();
