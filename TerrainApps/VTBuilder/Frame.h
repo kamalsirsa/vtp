@@ -365,7 +365,6 @@ public:
 	vtBioRegion *GetBioRegion() { return &m_BioRegions; }
 	BioRegionDlg *m_BioRegionDlg;
 
-	void FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap);
 	void GenerateVegetation(const char *vf_file, DRECT area, VegGenOptions &opt);
 	void GenerateVegetationPhase2(const char *vf_file, DRECT area, VegGenOptions &opt);
 
