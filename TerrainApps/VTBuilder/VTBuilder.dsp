@@ -220,10 +220,6 @@ SOURCE=.\app.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\AutoDialog.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\BuilderView.h
 # End Source File
 # Begin Source File
@@ -568,10 +564,6 @@ SOURCE=.\icons\water.ico
 # Begin Group "Source - Dialogs"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\AutoDialog.cpp
-# End Source File
 # Begin Source File
 
 SOURCE=.\BuildingDlg.cpp
