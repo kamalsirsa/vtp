@@ -368,7 +368,6 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString fname_in,
 	}
 	VTLOG(" succeeded.\n");
 	pLayer->SetFilename(strFileName);
-	pLayer->SetModified(true);
 
 	bool success = AddLayerWithCheck(pLayer, true);
 	if (!success)
