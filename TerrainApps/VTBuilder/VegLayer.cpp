@@ -148,12 +148,18 @@ void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 void vtVegLayer::GetProjection(vtProjection &proj)
 {
-	proj = m_proj;
+	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
+		proj = m_proj;
+	else if (m_VLType == VLT_Instances)
+		proj = m_Pia.m_proj;
 }
 
 void vtVegLayer::SetProjection(const vtProjection &proj)
 {
-	m_proj = proj;
+	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
+		m_proj = proj;
+	else if (m_VLType == VLT_Instances)
+		m_Pia.m_proj = proj;
 }
 
 void vtVegLayer::Offset(const DPoint2 &p)
@@ -221,8 +227,11 @@ bool vtVegLayer::OnLoad()
 
 bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 {
+	vtProjection proj_old;
+	GetProjection(proj_old);
+
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &proj_new);
+	OCT *trans = OGRCreateCoordinateTransformation(&proj_old, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 
@@ -238,6 +247,8 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 		}
 	}
 	delete trans;
+
+	SetProjection(proj_new);
 	return true;
 }
 
@@ -278,7 +289,9 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	LULCPoly *poly;
 
 	//set projections
-	m_proj.SetProjectionSimple(0, -1, EPSG_DATUM_WGS84);
+	vtProjection proj_new;
+	proj_new.SetProjectionSimple(0, -1, EPSG_DATUM_WGS84);
+	SetProjection(proj_new);
 
 	m_VLType = VLT_Density;
 
@@ -379,7 +392,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	DBFFieldType fieldtype = DBFGetFieldInfo(db, iField,
 		pszFieldName, pnWidth, pnDecimals );
 
-	m_proj = proj;	// Set projection
+	SetProjection(proj);
 
 	if (datatype == 0)
 	{
@@ -520,7 +533,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	}
 
 	// Set projection
-	m_proj = proj;
+	SetProjection(proj);
 
 	// Initialize arrays
 	m_Pia.SetMaxSize(nElem);
