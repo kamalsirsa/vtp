@@ -48,6 +48,15 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
 		for (i = 0; i < entities; i++)
 			rect.GrowToContainPoint(m_Point2[i]);
+
+		// to support zoom into a single point, create artificial size
+		if (rect.Width() == 0 || rect.Height() == 0)
+		{
+			if (m_proj.IsGeographic())
+				rect.Grow(0.00002, 0.00002);
+			else
+				rect.Grow(2, 2);
+		}
 	}
 	if (m_nSHPType == SHPT_POINTZ)
 	{
