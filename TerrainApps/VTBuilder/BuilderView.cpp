@@ -941,7 +941,7 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 /////////////////////////////////////////////////////////////
 // Mouse handlers
 
-void BuilderView::OnLeftDown(const wxMouseEvent& event)
+void BuilderView::OnLeftDown(wxMouseEvent& event)
 {
 	m_ui.m_bLMouseButton = true;
 	m_bMouseMoved = false;	
@@ -996,7 +996,7 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 		pL->OnLeftDown(this, m_ui);
 }
 
-void BuilderView::OnLeftUp(const wxMouseEvent& event)
+void BuilderView::OnLeftUp(wxMouseEvent& event)
 {
 	ReleaseMouse();
 
@@ -1013,7 +1013,7 @@ void BuilderView::OnLeftUp(const wxMouseEvent& event)
 	m_ui.m_bLMouseButton = false;	// left mouse button no longer down
 }
 
-void BuilderView::OnLeftDoubleClick(const wxMouseEvent& event)
+void BuilderView::OnLeftDoubleClick(wxMouseEvent& event)
 {
 	GetCanvasPosition(event, m_ui.m_DownPoint);
 	m_ui.m_CurPoint = m_ui.m_LastPoint = m_ui.m_DownPoint;
@@ -1024,7 +1024,7 @@ void BuilderView::OnLeftDoubleClick(const wxMouseEvent& event)
 		pL->OnLeftDoubleClick(this, m_ui);
 }
 
-void BuilderView::OnLButtonClick(const wxMouseEvent& event)
+void BuilderView::OnLButtonClick(wxMouseEvent& event)
 {
 	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
 	if (!pL) return;
@@ -1047,7 +1047,7 @@ void BuilderView::OnLButtonClick(const wxMouseEvent& event)
 		OnLButtonClickFeature(pL);
 }
 
-void BuilderView::OnLButtonDragRelease(const wxMouseEvent& event)
+void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
 {
 	if (m_bPanning)
 		EndPan();
@@ -1168,7 +1168,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 
 ////////////////
 
-void BuilderView::OnMiddleDown(const wxMouseEvent& event)
+void BuilderView::OnMiddleDown(wxMouseEvent& event)
 {
 	m_ui.m_bMMouseButton = true;
 	m_bMouseMoved = false;	
@@ -1183,7 +1183,7 @@ void BuilderView::OnMiddleDown(const wxMouseEvent& event)
 	BeginPan();
 }
 
-void BuilderView::OnMiddleUp(const wxMouseEvent& event)
+void BuilderView::OnMiddleUp(wxMouseEvent& event)
 {
 	if (m_bPanning)
 		EndPan();
@@ -1191,7 +1191,7 @@ void BuilderView::OnMiddleUp(const wxMouseEvent& event)
 	ReleaseMouse();
 }
 
-void BuilderView::OnRightDown(const wxMouseEvent& event)
+void BuilderView::OnRightDown(wxMouseEvent& event)
 {
 	m_ui.m_bRMouseButton = true;
 	CaptureMouse();			// capture mouse
@@ -1202,7 +1202,7 @@ void BuilderView::OnRightDown(const wxMouseEvent& event)
 		pL->OnRightDown(this, m_ui);
 }
 
-void BuilderView::OnRightUp(const wxMouseEvent& event)
+void BuilderView::OnRightUp(wxMouseEvent& event)
 {
 	m_ui.m_bRMouseButton = false;	//right mouse button no longer down
 	ReleaseMouse();
@@ -1227,7 +1227,7 @@ void BuilderView::OnRightUpStructure(vtStructureLayer *pSL)
 	pSL->EditBuildingProperties();
 }
 
-void BuilderView::OnMouseMove(const wxMouseEvent& event)
+void BuilderView::OnMouseMove(wxMouseEvent& event)
 {
 //	VTLOG("MouseMove\n");
 
@@ -1311,5 +1311,5 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		SetScale(GetScale() / 1.2);
 	}
 	else
-		vtScaledView::OnChar(event);
+		event.Skip();
 }

@@ -154,22 +154,22 @@ protected:
 	void BeginLine();
 
 	// Mouse handlers
-	void OnLeftDown(const wxMouseEvent& event);	
-	void OnLeftUp(const wxMouseEvent& event);
-	void OnLeftDoubleClick(const wxMouseEvent& event);
-	void OnMiddleDown(const wxMouseEvent& event);
-	void OnMiddleUp(const wxMouseEvent& event);
-	void OnRightDown(const wxMouseEvent& event);
-	void OnRightUp(const wxMouseEvent& event);
+	void OnLeftDown(wxMouseEvent& event);	
+	void OnLeftUp(wxMouseEvent& event);
+	void OnLeftDoubleClick(wxMouseEvent& event);
+	void OnMiddleDown(wxMouseEvent& event);
+	void OnMiddleUp(wxMouseEvent& event);
+	void OnRightDown(wxMouseEvent& event);
+	void OnRightUp(wxMouseEvent& event);
 
-	void OnLButtonClick(const wxMouseEvent& event);
-	void OnLButtonDragRelease(const wxMouseEvent& event);
+	void OnLButtonClick(wxMouseEvent& event);
+	void OnLButtonDragRelease(wxMouseEvent& event);
 	void OnLButtonClickElement(vtRoadLayer *pRL);
 	void OnLButtonClickLinkEdit(vtRoadLayer *pRL);
 	void OnLButtonClickFeature(vtLayer *pL);
 	void OnRightUpStructure(vtStructureLayer *pSL);
 
-	void OnMouseMove(const wxMouseEvent& event);
+	void OnMouseMove(wxMouseEvent& event);
 	void OnMouseMoveLButton(const wxPoint &point);
 
 	void InvertRect(wxDC *pDC, const wxRect &r, bool bDashed = false);
