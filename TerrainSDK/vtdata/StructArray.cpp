@@ -524,21 +524,25 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double error,
 		// it might be a building
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
-			loc = bld->GetLocation();
+		{
+			dist = bld->GetDistanceToInterior(point);
+		}
 
 		// or a fence
 		vtFence *fen = str->GetFence();
-		if (fen)
-			fen->GetClosestPoint(point, loc);
-
 		// or an instance
 		vtStructInstance *inst = str->GetInstance();
+		if (fen)
+			fen->GetClosestPoint(point, loc);
 		if (inst)
 			loc = inst->m_p;
-
-		dist = (loc - point).Length();
+		if (fen || inst)
+		{
+			dist = (loc - point).Length();
+		}
 		if (dist > error)
 			continue;
+
 		if (dist < closest)
 		{
 			structure = i;
@@ -589,6 +593,7 @@ void vtStructureArray::DeleteSelected()
 		vtStructure *str = GetAt(i);
 		if (str->IsSelected())
 		{
+			DestroyStructure(i);
 			delete str;
 			RemoveAt(i);
 		}

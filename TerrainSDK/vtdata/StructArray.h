@@ -27,6 +27,7 @@ public:
 	virtual void DestructItems(int first, int last);	// override
 
 	void DeleteSelected();
+	virtual void DestroyStructure(int i) {}
 
 	bool ReadSHP(const char* pathname, vtStructureType type,
 		const DRECT &rect, bool bFlip, void progress_callback(int) = NULL);
