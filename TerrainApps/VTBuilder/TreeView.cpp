@@ -12,6 +12,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 
 #include "App.h"
@@ -138,16 +139,13 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 {
 	wxString str;
 	if (lp->GetModified())
-		str += _T("(*) ");
-	wxString fullpath = lp->GetFilename();
+		str = _T("(*) ");
+	wxString2 fullpath = lp->GetFilename();
+
 	if (!m_bShowPaths)
 	{
-		if (fullpath.Find('/') != -1)
-			fullpath = fullpath.AfterLast('/');
-		if (fullpath.Find('\\') != -1)
-			fullpath = fullpath.AfterLast('\\');
-		if (fullpath.Find(':') != -1)
-			fullpath = fullpath.AfterLast(':');
+		const char *fname = StartOfFilename(fullpath.mb_str());
+		fullpath = fname;
 	}
 	str += fullpath;
 	return str;
