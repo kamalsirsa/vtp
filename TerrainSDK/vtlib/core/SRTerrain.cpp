@@ -13,11 +13,9 @@
 #include "SRTerrain.h"
 #include "LocalGrid.h"
 
-#if ENABLE_SRTERRAIN
-  using namespace mini;
-  #ifdef _MSC_VER
-    #pragma comment( lib, "libMini.lib" )
-  #endif
+using namespace mini;
+#ifdef _MSC_VER
+#pragma comment( lib, "libMini.lib" )
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -87,7 +85,6 @@ float getelevation_vtp2(int i, int j, int size)
 bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale, 
 					 float fOceanDepth, int &iError)
 {
-#if ENABLE_SRTERRAIN
 	// Initializes necessary field of the parent class
 	BasicInit(pGrid);
 
@@ -118,7 +115,6 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	m_iDrawnTriangles = -1;
 	m_iBlockSize = m_iXPoints / 4;
-#endif
 	return true;
 }
 
@@ -127,14 +123,17 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 // This will be called once per frame, during the culling pass.
 //
 // However, libMini does not allow you to call the culling pass
-// independently of the rendering pass, so we cannot do it here.
+// independently of the rendering pass, so we cannot do culling here.
+// Instead, just store the values for later use.
 //
 void SRTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
 {
 	// store for later
 	m_eyepos_ogl = eyepos_ogl;
 	m_window_size = window_size;
-	m_fFOVY = fov * window_size.y / window_size.x * 180 / PIf;
+	float aspect = (float)window_size.x / window_size.y;
+	float fov_y2 = atan(tan (fov/2) / aspect);
+	m_fFOVY = fov_y2 * 2.0f * 180 / PIf;
 }
 
 
@@ -192,7 +191,7 @@ void SRTerrain::RenderSurface()
 
 	RenderPass();
 
-	// here is an example of how to do a second rendering pass
+	// how to do a second rendering pass
 	if (m_bDetailTexture)
 	{
 		// once again, with the detail texture material
@@ -215,7 +214,6 @@ void SRTerrain::RenderSurface()
 
 void SRTerrain::RenderPass()
 {
-#if ENABLE_SRTERRAIN
 	// grab necessary values from the VTP Scene framework
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
@@ -246,8 +244,7 @@ void SRTerrain::RenderPass()
 	myfancnt = myvtxcnt = 0;
 	int size = m_iXPoints;
 
-	// Convert to the strange origin-centered coordinate scheme of libMini.
-	// This is what works best so far:
+	// Convert the eye location to the unusual coordinate scheme of libMini.
 	ex-=(m_iXPoints/2)*m_fXStep;
 	ez+=(m_iYPoints/2)*m_fZStep;
 
@@ -255,7 +252,7 @@ void SRTerrain::RenderPass()
 				ex, ey, ez,
 				dx, dy, dz,
 				ux, uy, uz,
-				m_fFOVY * 1.06, aspect,		// 6% exageration workaround
+				m_fFOVY, aspect,
 				nearp, farp);
 
 	if (myfancnt>0) glEnd();
@@ -279,7 +276,6 @@ void SRTerrain::RenderPass()
 		m_fResolution = 1.0f;
 	if (m_fResolution > 4E7)
 		m_fResolution = 4E7;
-#endif
 }
 
 //
@@ -289,10 +285,8 @@ void SRTerrain::RenderPass()
 //
 void SRTerrain::GetLocation(int i, int j, FPoint3 &p)
 {
-#if ENABLE_SRTERRAIN
 	p.Set(m_fXLookup[i],
 		  m_pMini->getheight(i, j),
 		  m_fZLookup[j]);
-#endif
 }
 
