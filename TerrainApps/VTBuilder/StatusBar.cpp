@@ -26,7 +26,7 @@ MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 	{
 		-1,		// main message area
 		46,		// Geo or short projection identifier
-		55,		// Zone
+		65,		// Zone
 		65,		// Datum
 		58,		// Units
 		208,	// Coordinates of cursor
