@@ -32,7 +32,6 @@
 // WDR: event table for NodeDlg
 
 BEGIN_EVENT_TABLE(NodeDlg,AutoDialog)
-    EVT_BUTTON( wxID_OK, NodeDlg::OnOK )
     EVT_PAINT(NodeDlg::OnPaint)
     EVT_LISTBOX( ID_INTTYPE, NodeDlg::OnIntType )
     EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnRoadNum )
@@ -131,11 +130,6 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 		pNode->AdjustForLights();
 		break;
 	}
-}
-
-void NodeDlg::OnOK( wxCommandEvent &event )
-{
-    
 }
 
 void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
