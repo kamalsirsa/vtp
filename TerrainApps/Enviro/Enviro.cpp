@@ -194,8 +194,6 @@ void Enviro::LoadTerrainDescriptions()
 			if (pTerr->SetParamFile(directory + "/" + name))
 				AppendTerrain(pTerr);
 			count++;
-
-			// TEMP TEST
 		}
 		VTLOG("\t%d terrains.\n", count);
 	}

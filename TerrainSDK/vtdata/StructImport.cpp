@@ -113,7 +113,8 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			{
 				fscanf(fp, "%d\n", &stories);
 
-				if (stories < 1 || stories > 10) stories = 1;	// TEMPORARY FIX!
+				// Fix bad values that might be encountered
+				if (stories < 1 || stories > 20) stories = 1;
 				bld->SetStories(stories);
 			}
 			else if (!strcmp(key, "color"))
