@@ -18,6 +18,9 @@
 #include "Dib.h"
 #include "ipl.h"			// Image Processing Library 2.1
 #include "ProgDlg.h"
+#include <fstream>
+#include "vtdata/FilePath.h"
+#include "vtdata/vtLog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -128,6 +131,12 @@ BExtractorView::BExtractorView()
 		m_buildingColor = 0x0000ffff;
 		m_roadColor = RGB(0xff, 0x00, 0x00);
 	}
+
+	// Load structure defaults
+	vtStringArray paths;
+	ReadEnviroPaths(paths);
+	LoadGlobalMaterials(paths);
+	SetupDefaultStructures();
 }
 
 BExtractorView::~BExtractorView()
@@ -138,6 +147,55 @@ BOOL BExtractorView::PreCreateWindow(CREATESTRUCT& cs)
 {
 	return CView::PreCreateWindow(cs);
 }
+
+//////////////////////////////
+
+using namespace std;
+
+#define STR_DATAPATH "DataPath"
+
+void BExtractorView::ReadEnviroPaths(vtStringArray &paths)
+{
+	ifstream input;
+	input.open("Enviro.ini", ios::in | ios::binary);
+	if (!input.is_open())
+	{
+		input.clear();
+		input.open("../Enviro/Enviro.ini", ios::in | ios::binary);
+	}
+	if (!input.is_open())
+		return;
+
+	char buf[80];
+	while (!input.eof())
+	{
+		if (input.peek() == '\n')
+			input.ignore();
+		input >> buf;
+
+		// data value should been separated by a tab or space
+		int next = input.peek();
+		if (next != '\t' && next != ' ')
+			continue;
+		while (input.peek() == '\t' || input.peek() == ' ')
+			input.ignore();
+
+		if (strcmp(buf, STR_DATAPATH) == 0)
+		{
+			vtString string = get_line_from_stream(input);
+			paths.push_back(vtString(string));
+		}
+	}
+	VTLOG("Datapaths:\n");
+	int i, n = paths.size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (i = 0; i < n; i++)
+	{
+		VTLOG("   %s\n", (const char *) paths[i]);
+	}
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
