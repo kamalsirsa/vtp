@@ -238,6 +238,9 @@ wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_SHADING 10158
 wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_LINK_FIELD 10159
+wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

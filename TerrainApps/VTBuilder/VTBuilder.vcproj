@@ -1253,6 +1253,9 @@
 				RelativePath="ImageLayer.h">
 			</File>
 			<File
+				RelativePath=".\ImageMapDlg.h">
+			</File>
+			<File
 				RelativePath="ImportStructDlg.h">
 			</File>
 			<File
@@ -1662,6 +1665,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\ImageMapDlg.cpp">
 			</File>
 			<File
 				RelativePath="ImportStructDlg.cpp">
