@@ -298,8 +298,8 @@ void vtScene::CalcCullPlanes()
 	//  the state includes the funny modelview matrix used to scale
 	//  the heightfield.  We must get it from the 'scene' instead.
 
-	osg::Matrixd &_projection = m_pOsgSceneView->getProjectionMatrix();
-	osg::Matrixd &_modelView = m_pOsgSceneView->getViewMatrix();
+	const osg::Matrixd &_projection = m_pOsgSceneView->getProjectionMatrix();
+	const osg::Matrixd &_modelView = m_pOsgSceneView->getViewMatrix();
 
 	Polytope tope;
 	tope.setToUnitFrustum();
