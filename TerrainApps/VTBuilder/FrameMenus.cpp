@@ -1562,6 +1562,21 @@ void MainFrame::OnUpdateElevShow(wxUpdateUIEvent& event)
 void MainFrame::OnElevShading(wxCommandEvent &event)
 {
 	vtElevLayer::m_bShading = !vtElevLayer::m_bShading;
+
+	if (!LayersOfType(LT_ELEVATION))
+		return;
+
+	// refresh the display
+	for (int i = 0; i < m_Layers.GetSize(); i++)
+	{
+		vtLayer *lp = m_Layers.GetAt(i);
+		if (lp->GetType() == LT_ELEVATION)
+		{
+			vtElevLayer *elp = (vtElevLayer *)lp;
+			elp->ReRender();
+		}
+	}
+	m_pView->Refresh();
 }
 
 void MainFrame::OnUpdateElevShading(wxUpdateUIEvent& event)
