@@ -237,6 +237,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_bTopDown = false;
 	m_ToggledMode = MM_SELECT;
 	m_bEnableEarth = bEnableEarth;
+	m_bEarthLines = false;
 
 	m_pStatusBar = NULL;
 	m_pToolbar = NULL;
@@ -603,6 +604,11 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		}
 		break;
 
+	case 'e':
+		m_bEarthLines = !m_bEarthLines;
+		g_App.ShowEarthLines(m_bEarthLines);
+		break;
+
 	case 'z':
 		// A handy place to put test code
 #if 0
@@ -625,6 +631,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			vtGetTS()->GetSkyDome()->RefreshCelestialObjects();
 		}
 #endif
+		if (pTerr)
 		{
 			ContourConverter cc;
 			cc.Setup(pTerr, RGBf(1,1,0), 10);

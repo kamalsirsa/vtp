@@ -206,6 +206,7 @@ protected:
 	bool m_bFullscreen;
 	bool m_bTopDown;
 	bool m_bEnableEarth;
+	bool m_bEarthLines;
 
 	// snapshot members
 	wxString2 m_strSnapshotFilename;
