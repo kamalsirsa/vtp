@@ -561,7 +561,11 @@ void vtFrame::OnExit(wxCommandEvent& event)
 {
 	VTLOG("Got Exit event.\n");
 	if (m_canvas)
+	{
 		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
+	}
 	Destroy();
 }
 
