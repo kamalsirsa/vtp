@@ -173,8 +173,12 @@ void vtScene::DoUpdate()
 
 void vtScene::SetRoot(vtGroup *pRoot)
 {
-	m_pOsgSceneRoot = pRoot->GetOsgGroup();
-	m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
+	if (pRoot)
+		m_pOsgSceneRoot = pRoot->GetOsgGroup();
+	else
+		m_pOsgSceneRoot = NULL;
+	if (m_pOsgSceneView != NULL)
+		m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
 	m_pRoot = pRoot;
 }
 
