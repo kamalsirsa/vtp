@@ -9,6 +9,7 @@
 #define __wxString2_h__
 
 #include "vtdata/vtString.h"
+#include "vtdata/Array.h"
 #include "wx/string.h"
 
 #define MAX_WXSTRING2_SIZE 2048
