@@ -360,7 +360,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 									"BuildingModels/brick2_256.jpg",
 									VT_MATERIAL_BRICK,
 									0.8f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_PAINTED_BRICK),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor("Painted-Brick"),
 									"BuildingModels/brick_mono_256.jpg",
 									VT_MATERIAL_COLOURABLE_TEXTURE,
 									0.8f));
