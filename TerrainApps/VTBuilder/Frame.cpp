@@ -557,7 +557,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				keep = true;
 			if (ret == wxYES)
 			{
-				bool success = pLayer->ConvertProjection(m_proj);
+				bool success = pLayer->TransformCoords(m_proj);
 				if (success)
 					keep = true;
 				else
@@ -1512,15 +1512,29 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 	{
 		bio = m_BioRegions.m_Types[i];
-		str.Printf(_T("  BioType %d\n"), i);
-		msg += str;
+
+		int total_this_type = 0;
 		for (k = 0; k < bio->m_Densities.GetSize(); k++)
 		{
 			pd = bio->m_Densities[k];
-			str.Printf(_T("    Plant %d: %hs: %d generated.\n"), k,
-				(const char *) pd->m_common_name, pd->m_iNumPlanted);
-			msg += str;
+			total_this_type += pd->m_iNumPlanted;
 		}
+		str.Printf(_T("  BioType %d"), i);
+		msg += str;
+
+		if (total_this_type != 0)
+		{
+			msg += _T("\n");
+			for (k = 0; k < bio->m_Densities.GetSize(); k++)
+			{
+				pd = bio->m_Densities[k];
+				str.Printf(_T("    Plant %d: %hs: %d generated.\n"), k,
+					(const char *) pd->m_common_name, pd->m_iNumPlanted);
+				msg += str;
+			}
+		}
+		else
+			msg += _T(": None.\n");
 	}
 	DisplayAndLog(msg.mb_str());
 }
