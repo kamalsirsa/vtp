@@ -18,18 +18,6 @@
 using namespace std;
 
 //---------------------------------------------------------------------------
-
-RawStyle::RawStyle()
-{
-	m_Color.Set(255,255,255);	// white
-	m_iTextFieldIndex = -1;
-	m_iColorFieldIndex = -1;
-	m_fLabelElevation = 100.0f;	// 100m above the ground
-	m_fLabelSize = 10.0f;		// 10m tall text
-	m_LabelColor.Set(255,255,255);	// white
-}
-
-//---------------------------------------------------------------------------
 // Some string for backward compatibility with older (.ini) files
 #define STR_BUILDINGFILE "Building_File"
 #define STR_FOGCOLORR "Fog_Color_R"
@@ -122,13 +110,13 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_DEPRESSOCEAN, "false");
 	AddTag(STR_DEPRESSOCEANLEVEL, "-40");
 	AddTag(STR_HORIZON, "false");
-	AddTag(STR_OVERLAY, "false");
 	AddTag(STR_BGCOLOR, "40 75 124");	// old blue
 
-	AddTag(STR_ROUTEENABLE, "false");
-	AddTag(STR_ROUTEFILE, "");
+	AddTag(STR_ROUTEENABLE, "false");	// not used yet
+	AddTag(STR_ROUTEFILE, "");			// not used yet
 
 	AddTag(STR_DIST_TOOL_HEIGHT, "5");
+	AddTag(STR_HUD_OVERLAY, "");
 }
 
 //
@@ -311,8 +299,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 				 strcmp(buf, STR_OCEANPLANELEVEL) == 0 ||
 				 strcmp(buf, STR_DEPRESSOCEAN) == 0 ||
 				 strcmp(buf, STR_DEPRESSOCEANLEVEL) == 0 ||
-				 strcmp(buf, STR_HORIZON) == 0 ||
-				 strcmp(buf, STR_OVERLAY) == 0)
+				 strcmp(buf, STR_HORIZON) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 
 		// vehicles
@@ -392,12 +379,13 @@ bool TParams::LoadFromXML(const char *fname)
 	// Convert old time values to new values
 	ConvertOldTimeValue();
 
-	// Remove obsolete stuff
+	// Remove some obsolete stuff
 	RemoveTag("Labels");
 	RemoveTag("LabelFile");
 	RemoveTag("Label_Field");
 	RemoveTag("Label_Height");
 	RemoveTag("Label_Size");
+	RemoveTag("Overlay");
 
 	return true;
 }

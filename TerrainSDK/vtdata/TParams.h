@@ -35,19 +35,6 @@ enum LodMethodEnum {
 #define TERR_LTYPE_STRUCTURE	"Structure"
 #define TERR_LTYPE_ABSTRACT		"Abstract"
 
-class RawStyle
-{
-public:
-	RawStyle();
-
-	RGBi m_Color;
-	int m_iTextFieldIndex;		// index of field for Text to show
-	int m_iColorFieldIndex;
-	float m_fLabelElevation;
-	float m_fLabelSize;
-	RGBi m_LabelColor;
-};
-
 class TParams : public vtTagArray
 {
 public:
@@ -183,13 +170,13 @@ protected:
 #define STR_DEPRESSOCEAN "Depress_Ocean"
 #define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
 #define STR_HORIZON "Horizon"
-#define STR_OVERLAY	"Overlay"
 #define STR_BGCOLOR "Background_Color"
 
-#define STR_ROUTEENABLE "Route_Enable"
-#define STR_ROUTEFILE "Route_File"
+#define STR_ROUTEENABLE "Route_Enable"	// not used yet
+#define STR_ROUTEFILE "Route_File"		// not used yet
 
 #define STR_DIST_TOOL_HEIGHT "Distance_Tool_Height"
+#define STR_HUD_OVERLAY "HUD_Overlay"
 
 #endif	// TPARAMSH
 
