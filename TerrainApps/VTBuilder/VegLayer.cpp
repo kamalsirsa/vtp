@@ -42,9 +42,6 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-#define MAXPOINTS 8000
-static wxPoint vegbuf[MAXPOINTS];
-
 void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 {
 	// draw each polygon in m_Poly
@@ -85,15 +82,15 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 				}
 			}
 		}
-		for (int c = 0; c < num_points && c < MAXPOINTS; c++)
+		for (int c = 0; c < num_points && c < SCREENBUF_SIZE; c++)
 		{
-			pView->screen(m_Poly[i]->GetAt(c), vegbuf[vbuflength]);
+			pView->screen(m_Poly[i]->GetAt(c), g_screenbuf[vbuflength]);
 			vbuflength += 1;
 
 			if (pbNoLine[c] == true || c == num_points-1)
 			{
 				if (vbuflength > 1)
-					pDC->DrawLines(vbuflength, vegbuf);
+					pDC->DrawLines(vbuflength, g_screenbuf);
 				vbuflength = 0;
 			}
 		}

@@ -49,9 +49,6 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-#define MAXPOINTS 80
-static wxPoint pointbuf[MAXPOINTS];
-
 void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	int i, j;
@@ -98,9 +95,9 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	{
 		vtLine *line = m_Lines.GetAt(i);
 		for (j = 0; j < line->GetSize(); j++)
-			pView->screen(line->GetAt(j), pointbuf[j]);
+			pView->screen(line->GetAt(j), g_screenbuf[j]);
 
-		pDC->DrawLines(j, pointbuf);
+		pDC->DrawLines(j, g_screenbuf);
 	}
 }
 
