@@ -22,68 +22,6 @@
 #endif
 
 ///////////////////////////////////////////////////////////////
-// Override the CullVisitor class to allow turning off nodes
-// based on their NodeMask.  Eventually this capability will
-// probably be in the OSG core.
-//
-class CullVisitor2 : public osgUtil::CullVisitor
-{
-public:
-	void apply(osg::Node& node);
-	void apply(osg::Geode& node);
-	void apply(osg::Billboard& node);
-	void apply(osg::LightSource& node);
-
-	void apply(osg::Group& node);
-	void apply(osg::Transform& node);
-	void apply(osg::Switch& node);
-	void apply(osg::LOD& node);
-};
-
-typedef osgUtil::CullVisitor ourv;
-
-void CullVisitor2::apply(osg::Node& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::Geode& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::Billboard& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::LightSource& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::Group& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::Transform& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::Switch& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-void CullVisitor2::apply(osg::LOD& node)
-{
-	if (node.getNodeMask())
-		ourv::apply(node);
-}
-
-///////////////////////////////////////////////////////////////
 
 // There is always and only one global vtScene object
 vtScene g_Scene;
@@ -134,7 +72,6 @@ void vtScene::SetAmbient(RGBf color)
 
 float vtScene::GetFrameRate()
 {
-//	return m_FrameTimer.frameRate();
 	return m_FrameTimer.frameRateAverge();
 }
 
@@ -146,14 +83,8 @@ void vtScene::Init()
 	m_pOsgSceneView->setDefaults();
 	m_pOsgSceneView->setCalcNearFar(false);
 
-//	osgUtil::SceneView::LightingMode lm= m_pOsgSceneView->getLightingMode();
 	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::SKY_LIGHT);
 //	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
-
-	CullVisitor2 *cv = new CullVisitor2;
-	cv->setRenderGraph(m_pOsgSceneView->getRenderGraph());
-	cv->setRenderStage(m_pOsgSceneView->getRenderStage());
-	m_pOsgSceneView->setCullVisitor(cv);
 
 	m_bInitialized = true;
 
@@ -194,21 +125,11 @@ void vtScene::DoUpdate()
 //		l->m_pLight->setDirection(v2s(dir));
 	}
 
-	//
-	// Copy the camera location from it's transform node
-	// to the real camera
-	//
-	osg::Transform *pTransform = m_pCamera->m_pTransform;
-	const osg::Matrix &pCameraMatrix = pTransform->getMatrix();
 	osg::Camera *pOsgCam = m_pCamera->m_pOsgCamera;
-	osg::Vec3 eye(0.0f, 0.0f, 0.0f), look(0.0f, 0.0f, -1.0f), up(0.0f, 1.0f, 0.0f);
-	pOsgCam->setView(eye, look, up);
-// osg 8.40
-//	pOsgCam->mult(*pOsgCam, pCameraMatrix);
-// osg 8.41
-	pOsgCam->transformLookAt(pCameraMatrix);
 
-	assert(( m_WindowSize.x > 0 ) && ( m_WindowSize.y > 0 ));
+	// let the OSG Camera know that its transform has (probably) changed
+	pOsgCam->dirtyTransform();
+
 	m_pOsgSceneView->setCamera(pOsgCam);
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
 	m_pOsgSceneView->cull();
@@ -278,7 +199,7 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// Set the scene's global PolygonMode attribute, which will affect all
 	// other materials in the scene, except those which explicitly override
 	// the attribute themselves.
-	osg::StateSet *global_state = m_pOsgSceneView->getGlobalState();
+	osg::StateSet *global_state = m_pOsgSceneView->getGlobalStateSet();
 	osg::PolygonMode *npm = new osg::PolygonMode();
 	if (m_bWireframe)
 		npm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
@@ -292,16 +213,26 @@ bool vtScene::GetGlobalWireframe()
 	return m_bWireframe;
 }
 
+
 ////////////////////////////////////////
 
 vtNode *vtLoadModel(const char *filename)
 {
+	static 	osg::StateSet *normstate = NULL;
+
+	if (!normstate)
+	{
+		normstate = new osg::StateSet;
+		normstate->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
+	}
+
 	osg::Node *node = osgDB::readNodeFile(filename);
 	if (node)
 	{
 		vtGroup *pGroup = new vtGroup();
 		pGroup->SetName2(filename);
 		pGroup->GetOsgGroup()->addChild(node);
+		pGroup->GetOsgNode()->setStateSet(normstate);
 		return pGroup;
 	}
 	else
