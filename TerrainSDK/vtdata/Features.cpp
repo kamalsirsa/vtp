@@ -1,7 +1,7 @@
 //
 // Features.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -90,12 +90,26 @@ bool vtFeatures::SaveToSHP(const char *filename)
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
 		size = m_LinePoly.GetSize();
-		for (i = 0; i < size; i++)
+		for (i = 0; i < size; i++)	//for each polyline
 		{
 			DLine2 *dl = m_LinePoly.GetAt(i);
+			double* dX = new double[dl->GetSize()];
+			double* dY = new double[dl->GetSize()];
+
+			for (j=0;j<dl->GetSize();j++) //for each vertex
+			{
+				DPoint2 pt = dl->GetAt(j);
+				dX[j] = pt.x;
+				dY[j] = pt.y;
+
+			}
 			// Save to SHP
 			obj = SHPCreateSimpleObject(m_nSHPType, dl->GetSize(),
-				&m_Point2[i].x, &m_Point2[i].y, NULL);
+				dX, dY, NULL);
+
+			delete dX;
+			delete dY;
+
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}
@@ -750,6 +764,17 @@ int vtFeatures::AddPoint(const DPoint3 &p)
 	if (m_nSHPType == SHPT_POINTZ)
 	{
 		rec = m_Point3.Append(p);
+		AddRecord();
+	}
+	return rec;
+}
+
+int vtFeatures::AddPolyLine(DLine2* pl)
+{
+	int rec = -1;
+	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	{
+		rec = m_LinePoly.Append(pl);
 		AddRecord();
 	}
 	return rec;
