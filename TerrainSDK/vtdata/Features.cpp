@@ -752,7 +752,7 @@ int vtFeatures::AddPoint(const DPoint2 &p)
 	int rec = -1;
 	if (m_nSHPType == SHPT_POINT)
 	{
-		m_Point2.Append(p);
+		rec = m_Point2.Append(p);
 		AddRecord();
 	}
 	return rec;
