@@ -55,12 +55,13 @@ class vtDimension : public vtTransform
 {
 public:
 	vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
-		const RGBf &color, vtFont *font, const char *message);
+		const RGBf &line_color, const RGBf &text_color,
+		vtFont *font, const char *message);
 
 	vtGeom *m_pGeom;
 	vtMaterialArray *m_pMats;
 	vtMesh *m_pLines;
-	vtTextMesh *m_pLabel;
+	vtTextMesh *m_pLabel, *m_pLabel2;
 };
 
 

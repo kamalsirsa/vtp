@@ -204,6 +204,10 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 	return pGeom;
 }
 
+/**
+ * Create a grid of lines in the XZ plane.  This can be useful as a reference
+ * object, like a sheet of graph paper.
+ */
 vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
@@ -316,7 +320,8 @@ void vtMeshFactory::PrimEnd()
 // vtDimension
 
 vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
-						 const RGBf &color, vtFont *font, const char *message)
+						 const RGBf &line_color, const RGBf &text_color,
+						 vtFont *font, const char *message)
 {
 	// We can't orient the text message in space without a transform, so that's
 	//  why we're subclassed from vtTransform.
@@ -325,7 +330,7 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 
 	// create materials and meshes
 	m_pMats = new vtMaterialArray;
-	m_pMats->AddRGBMaterial1(color, false, false);	// plain, no culling
+	m_pMats->AddRGBMaterial1(line_color, false, false);	// plain, no culling
 	m_pGeom->SetMaterials(m_pMats);
 	m_pMats->Release();
 
@@ -351,17 +356,29 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 
 	m_pLines->AddLine(q1, q2);
 
-	// add the text object. unfortunately we can't orient...
+	// add the text object.
 	m_pLabel = new vtTextMesh(font, height, true);
 	m_pGeom->AddTextMesh(m_pLabel, 0);
 	m_pLabel->Release();
 
 	m_pLabel->SetText(message);
-	m_pLabel->SetColor(color);
+	m_pLabel->SetColor(text_color);
 	m_pLabel->SetAlignment(2);	// YZ plane
-	m_pLabel->SetPosition(FPoint3(0, 0, -diff.Length()/2));
+	m_pLabel->SetPosition(FPoint3(0, height*0.05f, -diff.Length()/2));
 	FQuat rot(FPoint3(0,1,0), PID2f);
 	m_pLabel->SetRotation(rot);
+
+	// and a second text object, facing the other way
+	m_pLabel2 = new vtTextMesh(font, height, true);
+	m_pGeom->AddTextMesh(m_pLabel2, 0);
+	m_pLabel2->Release();
+
+	m_pLabel2->SetText(message);
+	m_pLabel2->SetColor(text_color);
+	m_pLabel2->SetAlignment(2);	// YZ plane
+	m_pLabel2->SetPosition(FPoint3(0, height*0.05f, -diff.Length()/2));
+	FQuat rot2(FPoint3(0,1,0), -PID2f);
+	m_pLabel2->SetRotation(rot2);
 
 	// Now, orient it into the desired location
 	PointTowards(diff);
