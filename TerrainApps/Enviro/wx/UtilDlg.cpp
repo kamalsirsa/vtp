@@ -1,7 +1,7 @@
 //
 // Name: UtilDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,10 +15,9 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Route.h"
+#include "vtlib/core/TerrainScene.h"
 #include "UtilDlg.h"
 #include "EnviroGUI.h"
-
-extern UtilStructName s_Names[];
 
 // WDR: class implementations
 
@@ -46,7 +45,7 @@ UtilDlg::UtilDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void UtilDlg::OnStructType( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	g_App.SetRouteOptions(s_Names[m_iType].brief);
+	g_App.SetRouteOptions(m_pChoice->GetStringSelection().mb_str());
 	g_App.start_new_fence();
 }
 
@@ -56,15 +55,22 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_iType = 0;
 
+	vtContentManager &mng = vtGetContent();
+
 	m_pChoice->Clear();
-	int i;
-	for (i = 0; i < NUM_STRUCT_NAMES; i++)
+	for (unsigned int i = 0; i < mng.NumItems(); i++)
 	{
-		m_pChoice->Append(wxString::FromAscii(s_Names[i].full));
+		vtString str;
+		vtItem *item = mng.GetItem(i);
+		if (item->GetValueString("type", str))
+		{
+			if (str == "utility pole")
+				m_pChoice->Append(wxString::FromAscii(item->m_name));
+		}
 	}
 
 	TransferDataToWindow();
 
-	g_App.SetRouteOptions(s_Names[m_iType].brief);
+	g_App.SetRouteOptions(m_pChoice->GetStringSelection().mb_str());
 }
 
