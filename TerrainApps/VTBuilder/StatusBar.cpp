@@ -75,7 +75,9 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	if (pView)
 	{
 		pView->GetMouseLocation(lx, ly);
-		str = wxString::Format("Mouse: %s, %s", FormatCoord(bGeo, lx), FormatCoord(bGeo, ly));
+		str = wxString::Format("Mouse: %s, %s",
+				(const char *) FormatCoord(bGeo, lx),
+				(const char *) FormatCoord(bGeo, ly));
 		SetStatusText(str, Field_Mouse);
 
 		float height = frame->GetHeightFromTerrain(lx, ly);
@@ -96,7 +98,6 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 // Not sure why the event table must be down here, but it does - for WinZip
 //
 BEGIN_EVENT_TABLE(MyStatusBar, wxStatusBar)
-	EVT_SIZE(MyStatusBar::OnSize)
+EVT_SIZE(MyStatusBar::OnSize)
 END_EVENT_TABLE()
-
 
