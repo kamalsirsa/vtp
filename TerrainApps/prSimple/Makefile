@@ -70,4 +70,4 @@ clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files
 
 clobber :
-	rm -rf $(OBJS) $(EXEC).core core ii_files $(EXEC) $(EXEC).pure
+	rm -rf $(OBJS) $(EXEC).core core ii_files $(EXEC) $(EXEC).pure $(OSX_APPS)/$(EXEC).app

@@ -247,15 +247,15 @@ ifeq ($(OS),Darwin)
 #	change the -install_name option when you build.
 #	See TerrainSDK/Make.defs
 #	-cp -Rf $(FRAMEWORKS) $(OSX_APPS)/$(EXEC).app/Contents
-	if [ -e $(EXEC).plist ]; then \
+	if [ -e osx/$(EXEC).plist ]; then \
 		cp $(EXEC).plist $(OSX_APPS)/$(EXEC).app/Contents/Info.plist; \
 	fi
 	echo -n "APPL????" > $(OSX_APPS)/$(EXEC).app/Contents/PkgInfo
-	if [ -e $(EXEC).rsrc ]; then \
-		cp $(EXEC).rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc; \
+	if [ -e osx/$(EXEC).rsrc ]; then \
+		cp osx/$(EXEC).rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc; \
 	fi
-	if [ -e icons/$(EXEC).icns ]; then \
-		cp icons/$(EXEC).icns $(OSX_APPS)/$(EXEC).app/Contents/Resources/; \
+	if [ -e osx/$(EXEC).icns ]; then \
+		cp osx/$(EXEC).icns $(OSX_APPS)/$(EXEC).app/Contents/Resources/; \
 	fi
 
 

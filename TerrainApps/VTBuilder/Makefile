@@ -8,7 +8,7 @@
 
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC   = VTBuilder
-include $(VTP_ROOT)/TerrainApps/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(GDAL_INC)              \
@@ -53,6 +53,11 @@ else
 LIBS   +=  -lGL -lX11 $(EXTRA_LIBS)   \
 	  -lxmlhelper -lvtdata -lvtui \
 	  -lnetcdf                  
+
+LDIRS  += \
+	  $(VTDATA_INST_DIR)             \
+	  $(VTUI_INST_DIR)               \
+          $(XMLHELPER_INST_DIR)
 
 all : $(EXEC)
 endif
