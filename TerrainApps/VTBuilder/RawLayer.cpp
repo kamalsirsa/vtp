@@ -261,7 +261,7 @@ bool vtRawLayer::OnLoad()
 	FPoint2 point;
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
-	//  Check Shape Type, Veg Layer should be Poly data
+	//  Check shape type, we only support a few types
 	switch (nShapeType)
 	{
 	case SHPT_POINT:
@@ -276,12 +276,12 @@ bool vtRawLayer::OnLoad()
 	}
 
 #if 0
-	//Open DBF File & Get DBF Info:
+	// Open DBF File & Get DBF Info:
 	DBFHandle db = DBFOpen(filename, "rb");
 	if (db == NULL)
 		return false;
 
-	//  Check for field of poly id, current default field in dbf is Id
+	// Check for field of poly id, current default field in dbf is Id
 	int iField = 0, *pnWidth = 0, *pnDecimals = 0;
 	char *pszFieldName = NULL;
 
@@ -294,7 +294,7 @@ bool vtRawLayer::OnLoad()
 	DBFClose(db);
 #endif
 
-	//Initialize arrays
+	// Initialize arrays
 	switch (m_nSHPType)
 	{
 	case SHPT_POINT:
