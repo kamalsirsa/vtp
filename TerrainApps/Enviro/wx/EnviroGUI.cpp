@@ -82,8 +82,8 @@ vtString EnviroGUI::GetPathFromGUI()
 	return str.mb_str();
 }
 
-bool EnviroGUI::OnTerrainSelect()
+bool EnviroGUI::OnMouseEvent(vtMouseEvent &event)
 {
-	return GetFrame()->OnTerrainSelect();
+	return GetFrame()->OnMouseEvent(event);
 }
 

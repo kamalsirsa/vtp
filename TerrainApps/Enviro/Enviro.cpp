@@ -1422,6 +1422,11 @@ void Enviro::OnMouse(vtMouseEvent &event)
 	// check for what is under the pickers
 	DoPickers();
 
+	// give the child classes first chance to take this event
+	bool bCancel = OnMouseEvent(event);
+	if (bCancel)
+		return;
+
 	if (event.type == VT_DOWN)
 	{
 		if (event.button == VT_LEFT)
@@ -1496,11 +1501,6 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 {
-	// give the child classes first chance to take this event
-	bool bCancel = OnTerrainSelect();
-	if (bCancel)
-		return;
-
 	vtTerrain *pTerr = GetCurrentTerrain();
 
 	// See if camera ray intersects a structure?  NO, it's simpler and

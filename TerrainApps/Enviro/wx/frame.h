@@ -47,7 +47,7 @@ public:
 	void Snapshot(bool bNumbered);
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
-	virtual bool OnTerrainSelect() { return false; }
+	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);

@@ -8,7 +8,7 @@
 #ifndef ENVIROH
 #define ENVIROH
 
-#include "vtdata/Fence.h"
+//#include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
 #include "vtlib/core/Engine.h"
 #include "vtlib/core/TimeEngines.h"
@@ -23,6 +23,7 @@ class IcoGlobe;
 class vtRoute;
 class vtUtilNode;
 class vtFence3d;
+enum FenceType;
 
 // Engines
 class vtTerrainFlyer;
@@ -189,7 +190,7 @@ public:
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 		float fGround, float fVertical) {}
 	virtual vtString GetPathFromGUI() { return ""; }
-	virtual bool OnTerrainSelect() { return false; }
+	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
