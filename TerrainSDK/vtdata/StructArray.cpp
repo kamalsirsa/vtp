@@ -954,7 +954,8 @@ void StructureVisitor::endElement(const char * name)
 	}
 	if (_level == 3)
 	{
-		if (string(name) != (string)"placement")
+		if (pStruct->GetType() == ST_INSTANCE &&
+			string(name) != (string)"placement")
 		{
 			// save all other tags as literal strings
 			vtTag *tag = new vtTag;
