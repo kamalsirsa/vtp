@@ -549,7 +549,6 @@ void Enviro::DoCursorOnEarth()
 	FormatCoordString(str1, m_EarthPos, LU_DEGREES);
 	str2 = "Cursor ";
 	str2 += str1;
-	m_pSprite2->SetText(str2);
 }
 
 

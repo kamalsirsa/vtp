@@ -532,14 +532,10 @@ void Enviro::DoCursorOnTerrain()
 			m_pCursorMGeom->Scale3(sc, sc, sc);
 			m_pCursorMGeom->SetTrans(pos);
 		}
-		str.Format("Cursor %7d, %7d", (int) m_EarthPos.x, (int) m_EarthPos.y);
-		m_pSprite2->SetText(str);
 
 		// Inform GUI, in case it cares.
 		EarthPosUpdated();
 	}
-	else
-		m_pSprite2->SetText("Not on terrain");
 }
 
 
@@ -620,14 +616,6 @@ void Enviro::SetupScene2()
 
 	// Connect to the GrabFlyer
 	m_pGFlyer->SetTerrainPicker(m_pTerrainPicker);
-
-#if 0
-	m_pSprite2 = new vtSprite();
-	m_pSprite2->SetName2("Sprite2");
-	m_pSprite2->SetWindowRect(0.73f, 0.90f, 1.00f, 1.00f);
-	m_pSprite2->SetText("...");
-	m_pRoot->AddChild(m_pSprite2);
-#endif
 
 	VTLOG("Setting up Cameras\n");
 	m_pNormalCamera = vtGetScene()->GetCamera();

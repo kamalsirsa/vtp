@@ -121,7 +121,6 @@ protected:
 class vtMesh : public vtMeshBase, public osg::Referenced
 {
 	friend class vtGeom;
-	friend class vtSprite;
 
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);

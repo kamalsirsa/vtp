@@ -277,8 +277,7 @@ protected:
 	FPQ			m_SpaceLoc;
 	FPQ			m_FlatLoc;
 
-	vtSprite	*m_pMessageSprite;
-	vtSprite	*m_pSprite2;
+//	vtTextSprite	*m_pMessageSprite;
 	float			m_fMessageStart, m_fMessageTime;
 	ControlEngine	*m_pControlEng;
 	vtHUD		*m_pHUD;
