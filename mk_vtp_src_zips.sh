@@ -61,9 +61,15 @@ zip $DIST_FILE1 VTP/TerrainApps/CManager/cmanager.wdr
 zip $DIST_FILE1 VTP/TerrainApps/CManager/bitmaps/*
 zip $DIST_FILE1 VTP/TerrainApps/CManager/icons/*
 
+# deal specially with Enviro.ini
+mv VTP/TerrainApps/Enviro/Enviro.ini VTP/TerrainApps/Enviro/Enviro_dev.ini
+cp VTP/TerrainApps/Enviro/Ship/Enviro.ini VTP/TerrainApps/Enviro
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/Enviro.ini
+rm VTP/TerrainApps/Enviro/Enviro.ini
+mv VTP/TerrainApps/Enviro/Enviro_dev.ini VTP/TerrainApps/Enviro/Enviro.ini
+
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.h
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/Enviro.ini
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro.vcproj
