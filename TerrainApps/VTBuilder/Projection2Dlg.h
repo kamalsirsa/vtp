@@ -63,16 +63,16 @@ public:
 	void RefreshDatums();
 	void UpdateDatumStatus();
 
-	int		 m_iDatum;
-	int		 m_iZone;
+	int	  m_iDatum;
+	int	  m_iZone;
 	vtProjection	m_proj;
 	bool	m_bShowAllDatums;
 
 private:
 	// WDR: member variable declarations for Projection2Dlg
 	ProjType	m_eProj;
-	int		 m_iProj;
-	int		 m_iUnits;
+	int	  m_iProj;
+	int	  m_iUnits;
 	wxListCtrl  *m_pParamCtrl;
 	wxChoice	*m_pZoneCtrl;
 	wxChoice	*m_pHorizCtrl;
@@ -83,6 +83,8 @@ private:
 
 private:
 	// WDR: handler declarations for Projection2Dlg
+	void OnProjSave( wxCommandEvent &event );
+	void OnProjLoad( wxCommandEvent &event );
 	void OnDatum( wxCommandEvent &event );
 	void OnItemRightClick( wxListEvent &event );
 	void OnHorizUnits( wxCommandEvent &event );

@@ -45,7 +45,9 @@ BEGIN_EVENT_TABLE(Projection2Dlg,AutoDialog)
 	EVT_CHOICE( ID_HORUNITS, Projection2Dlg::OnHorizUnits )
 	EVT_LIST_ITEM_RIGHT_CLICK( ID_PROJPARAM, Projection2Dlg::OnItemRightClick )
 	EVT_CHOICE( ID_DATUM, Projection2Dlg::OnDatum )
-    EVT_CHECKBOX( ID_SHOW_ALL_DATUMS, Projection2Dlg::OnShowAllDatums )
+	EVT_CHECKBOX( ID_SHOW_ALL_DATUMS, Projection2Dlg::OnShowAllDatums )
+	EVT_BUTTON( ID_PROJ_LOAD, Projection2Dlg::OnProjLoad )
+	EVT_BUTTON( ID_PROJ_SAVE, Projection2Dlg::OnProjSave )
 END_EVENT_TABLE()
 
 Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -235,7 +237,7 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 	if (!root)
 	{
 		m_pParamCtrl->InsertItem(0, _T("(Invalid projection)"));
-		return;		// bogus projection
+		return;	 // bogus projection
 	}
 
 	OGR_SRSNode *node, *par1, *par2;
@@ -310,6 +312,27 @@ void Projection2Dlg::GetProjection(vtProjection &proj)
 
 // WDR: handler implementations for Projection2Dlg
 
+void Projection2Dlg::OnProjSave( wxCommandEvent &event )
+{
+	wxFileDialog saveFile(NULL, _T("Save Projection to File"), _T(""), _T(""),
+		_T("Projection Files (*.prj)|*.prj|"), wxSAVE | wxOVERWRITE_PROMPT);
+	if (saveFile.ShowModal() == wxID_CANCEL)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+	m_proj.WriteProjFile(strPathName.mb_str());
+}
+
+void Projection2Dlg::OnProjLoad( wxCommandEvent &event )
+{
+	wxFileDialog loadFile(NULL, _T("Load Projection from File"), _T(""), _T(""),
+		_T("Projection Files (*.prj)|*.prj|"), wxOPEN);
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+	wxString2 strPathName = loadFile.GetPath();
+	m_proj.ReadProjFile(strPathName.mb_str());
+	SetUIFromProjection();
+}
+
 void Projection2Dlg::OnDatum( wxCommandEvent &event )
 {
 	int sel = event.GetInt();
@@ -347,7 +370,7 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 				str, this);
 			if (result != _T(""))
 			{
-//				double newval = atof((const char *)result);
+//			  double newval = atof((const char *)result);
 				par2->SetValue(result.mb_str());
 				DisplayProjectionSpecificParams();
 				return;
