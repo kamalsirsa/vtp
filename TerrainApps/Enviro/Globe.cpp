@@ -296,24 +296,31 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 	m_yellow = m_mats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 					 true, false, false);
 
+	vtString base;
+	vtString fname;
+	vtString fullpath;
+
 	int index;
 	for (pair = 0; pair < 10; pair++)
 	{
 		int f1 = icos_face_pairs[pair][0];
 		int f2 = icos_face_pairs[pair][1];
 
-		vtString base = "WholeEarth/";
+		base = "WholeEarth/";
 		base += strImagePrefix;
 		base += "_";
 
-		vtString fname;
-		fname.Format("%s%02d%02d.png", (const char *)base, f1, f2);
+		fname.Format("%s%02d%02d.jpg", (const char *)base, f1, f2);
+		VTLOG("\t texture: %s\n", (const char *)fname);
 
-		vtString msg;
-		msg.Format("\t texture: %s\n", (const char *)fname);
-		g_Log._Log(msg);
-
-		vtString fullpath = FindFileOnPaths(paths, (const char *)fname);
+		fullpath = FindFileOnPaths(paths, (const char *)fname);
+		if (fullpath == "")
+		{
+			// try again with png
+			fname.Format("%s%02d%02d.png", (const char *)base, f1, f2);
+			VTLOG("\t texture: %s\n", (const char *)fname);
+			fullpath = FindFileOnPaths(paths, (const char *)fname);
+		}
 
 		index = m_mats->AddTextureMaterial2(fullpath,
 					 bCulling, bLighting,

@@ -1,7 +1,7 @@
 //
 // Name:		StartupDlg.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -353,6 +353,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 		vtString path = *paths[i];
 		path += "WholeEarth/";
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
+		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);
 	}
 	int sel = m_pImage->FindString(m_strImage);
 	if (sel != -1)
