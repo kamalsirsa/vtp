@@ -328,6 +328,7 @@ public:
 	void SetProjection(const vtProjection &p);
 	void GetProjection(vtProjection &p) { p = m_proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
+	bool ConfirmValidCRS(vtProjection *pProj);
 
 	// Raw features
 	FeatInfoDlg	*ShowFeatInfoDlg();
@@ -380,6 +381,7 @@ public:
 	vtLayer *ImportDataFromFile(LayerType ltype, const wxString2 &strFileName, bool bRefresh, bool bWarn = true);
 	vtLayer *ImportFromDLG(const wxString2 &strFileName, LayerType ltype);
 	vtLayer *ImportFromSHP(const wxString2 &strFileName, LayerType ltype);
+	vtLayer *ImportFromDXF(const wxString2 &strFileName, LayerType ltype);
 	vtLayer *ImportElevation(const wxString2 &strFileName, bool bWarn = true);
 	vtLayer *ImportImage(const wxString2 &strFileName);
 	vtLayer *ImportFromLULC(const wxString2 &strFileName, LayerType ltype);

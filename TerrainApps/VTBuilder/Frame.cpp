@@ -39,6 +39,7 @@
 #include "ResampleDlg.h"
 #include "SampleImageDlg.h"
 #include "FeatInfoDlg.h"
+#include "Projection2Dlg.h"
 #include "vtui/DistanceDlg.h"
 #include "vtui/LinearStructDlg.h"
 #include "vtui/InstanceDlg.h"
@@ -1829,5 +1830,29 @@ void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 	{
 		VTLOG("   %s\n", (const char *) paths[i]);
 	}
+}
+
+bool MainFrame::ConfirmValidCRS(vtProjection *pProj)
+{
+	if (!pProj->GetRoot())
+	{
+		// No projection.
+		wxString2 msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
+		int res = wxMessageBox(msg, _("Coordinate Reference System"), wxYES_NO | wxCANCEL);
+		if (res == wxYES)
+		{
+			Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
+			dlg.SetProjection(m_proj);
+
+			if (dlg.ShowModal() == wxID_CANCEL)
+				return false;
+			dlg.GetProjection(*pProj);
+		}
+		else if (res == wxNO)
+			*pProj = m_proj;
+		else if (res == wxCANCEL)
+			return false;
+	}
+	return true;
 }
 
