@@ -657,6 +657,8 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 
 bool vtPlantInstanceArray::ReadVF(const char *fname)
 {
+	VTLOG("Reading VF file '%s'\n", fname);
+
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -697,15 +699,25 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	fread(&numspecies, sizeof(int), 1, fp);
 
 	// read species binomial strings, creating lookup table of new IDs
-	short *temp_ids = new short[numspecies];
+	int unknown = 0;
+	short species_id;
+	vector<short> local_ids;
 	char name[200];
 	for (i = 0; i < numspecies; i++)
 	{
 		fread(&len, sizeof(short), 1, fp);
 		fread(name, len, 1, fp);
 		name[len] = 0;
-		temp_ids[i] = m_pPlantList->GetSpeciesIdByName(name);
+		species_id = m_pPlantList->GetSpeciesIdByName(name);
+		if (species_id == -1)
+		{
+			VTLOG("  Unknown species: %s\n", name);
+			unknown++;
+		}
+		local_ids.push_back(species_id);
 	}
+	if (unknown > 0)
+		VTLOG("Warning: %d unknown species encountered in VF table\n", unknown);
 
 	// read number of instances
 	fread(&numinstances, sizeof(int), 1, fp);
@@ -719,6 +731,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	short height;
 	FPoint2 local_offset;
 	short local_species_id;
+	unknown = 0;
 	for (i = 0; i < numinstances; i++)
 	{
 		// location
@@ -739,12 +752,15 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 		}
 		else
 		{
-			short species_id = temp_ids[local_species_id];
+			species_id = local_ids[local_species_id];
+			if (species_id == -1)
+				unknown++;
 			AddPlant(pos, size, species_id);
 		}
 	}
+	if (unknown > 0)
+		VTLOG("Warning: %d/%d instances are unknown species.\n", unknown, numinstances);
 
-	delete [] temp_ids;
 	fclose(fp);
 	return true;
 }
@@ -758,6 +774,8 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 		return false;
 	int numspecies = m_pPlantList->NumSpecies();
 	short len;	// for string lengths
+	short species_id;
+	float size;
 
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
@@ -775,17 +793,41 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	fwrite(wkt, len, 1, fp);
 	OGRFree(wkt);
 
-	// write number of species
-	fwrite(&numspecies, sizeof(int), 1, fp);
-
-	// write species binomial strings
+	// filter out ununsed species, create table of used species
+	vector<short> index_count;
+	for (i = 0; i < numspecies; i++)
+		index_count.push_back(0);
+	for (i = 0; i < numinstances; i++)
+	{
+		GetPlant(i, size, species_id);
+		index_count[species_id]++;
+	}
+	vector<short> index_table;
 	for (i = 0; i < numspecies; i++)
 	{
-		const char *name = m_pPlantList->GetSpecies(i)->GetSciName();
+		if (index_count[i] > 0)
+			index_table.push_back(i);
+	}
+	int used = index_table.size();
+
+	// write number of species
+	fwrite(&used, sizeof(int), 1, fp);
+
+	// write species binomial strings
+	for (i = 0; i < used; i++)
+	{
+		species_id = index_table[i];
+		const char *name = m_pPlantList->GetSpecies(species_id)->GetSciName();
 		len = (short) strlen(name);
 		fwrite(&len, sizeof(short), 1, fp);
 		fwrite(name, len, 1, fp);
 	}
+
+	// reverse table for lookup
+	vector<short> reverse_table;
+	reverse_table.resize(numspecies);
+	for (i = 0; i < used; i++)
+		reverse_table[index_table[i]] = i;
 
 	// write number of instances
 	fwrite(&numinstances, sizeof(int), 1, fp);
@@ -806,13 +848,15 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 		offset = diff;	// acceptable to use single precision for local offset
 		fwrite(&offset, sizeof(float), 2, fp);
 
+		GetPlant(i, size, species_id);
+
 		// height in centimeters
-		short height = (short) (GetFloatValue(i, m_SizeField) * 100.0f);
+		short height = (short) (size * 100.0f);
 		fwrite(&height, sizeof(short), 1, fp);
 
 		// species id
-		short species_id = GetShortValue(i, m_SpeciesField);
-		fwrite(&species_id, sizeof(short), 1, fp);
+		short local_id = reverse_table[species_id];
+		fwrite(&local_id, sizeof(short), 1, fp);
 	}
 
 	fclose(fp);
