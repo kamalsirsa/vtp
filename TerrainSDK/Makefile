@@ -8,7 +8,7 @@
 
 VTP_ROOT = $(shell cd ..; pwd)
 
-include $(VTP_ROOT)/TerrainSDK/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 all :
 ifeq ($(OS),Darwin)
