@@ -127,6 +127,8 @@ public:
 	int CompareNoCase(pcchar lpsz) const;
 	// test if the string is an integer (with possible sign)
 	bool IsNumber() const;
+	// test if it matches a pattern which can include * and ?
+	bool Matches(pcchar lpsz) const;
 
 	// simple sub-string extraction
 

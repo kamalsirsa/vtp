@@ -351,6 +351,48 @@ bool vtString::IsNumber() const
 	return true;
 }
 
+bool vtString::Matches(pcchar lpsz) const
+{
+	const char *string = (const char *) m_pchData;
+	const char *wild = lpsz;
+
+	const char *cp, *mp;
+	
+	while ((*string) && (*wild != '*'))
+	{
+		if ((*wild != *string) && (*wild != '?'))
+			return false;
+
+        wild++;
+		string++;
+	}
+	while (*string)
+	{
+		if (*wild == '*')
+		{
+			if (!*++wild)
+				return true;
+
+			mp = wild;
+			cp = string+1;
+		}
+		else if ((*wild == *string) || (*wild == '?'))
+		{
+			wild++;
+			string++;
+		}
+		else
+		{
+			wild = mp;
+			string = cp++;
+		}
+	}
+		
+	while (*wild == '*')
+		wild++;
+
+	return !*wild;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Advanced direct buffer access
