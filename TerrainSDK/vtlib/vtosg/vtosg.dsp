@@ -155,6 +155,10 @@ SOURCE=..\core\Building3d.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\Content3d.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\CoreMeshMat.cpp
 # End Source File
 # Begin Source File
@@ -344,6 +348,10 @@ SOURCE=..\core\BryanTerrain.h
 # Begin Source File
 
 SOURCE=..\core\Building3d.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\Content3d.h
 # End Source File
 # Begin Source File
 
