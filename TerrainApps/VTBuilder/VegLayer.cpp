@@ -240,7 +240,7 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 	GetProjection(proj_old);
 
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&proj_old, &proj_new);
+	OCT *trans = CreateCoordTransform(&proj_old, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 

@@ -44,7 +44,7 @@ bool vtWaterLayer::OnLoad()
 bool vtWaterLayer::ConvertProjection(vtProjection &proj_new)
 {
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &proj_new);
+	OCT *trans = CreateCoordTransform(&m_proj, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 

@@ -174,7 +174,7 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	vtProjection Source;
 	GetProjection(Source);
 
-	OCT *trans = OGRCreateCoordinateTransformation(&Source, &proj_new);
+	OCT *trans = CreateCoordTransform(&Source, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 

@@ -180,11 +180,11 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	m_strOriginalDEMName = pOld->GetDEMName();
 
 	// Create conversion object
-	const OGRSpatialReference *pSource, *pDest;
+	const vtProjection *pSource, *pDest;
 	pSource = &pOld->GetProjection();
 	pDest = &NewProj;
 
-	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource, (OGRSpatialReference *)pDest);
+	OCT *trans = CreateCoordTransform(pSource, pDest);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -260,7 +260,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	float value;
 
 	// projects points backwards, from the target to the source
-	trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)pDest, (OGRSpatialReference *)pSource);
+	trans = CreateCoordTransform(pDest, pSource);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -305,11 +305,11 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
 {
 	// Create conversion object
-	const OGRSpatialReference *pSource, *pDest;
+	const vtProjection *pSource, *pDest;
 	pSource = &m_proj;
 	pDest = &proj_new;
 
-	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource, (OGRSpatialReference *)pDest);
+	OCT *trans = CreateCoordTransform(pSource, pDest);
 	if (!trans)
 	{
 		// inconvertible projections
