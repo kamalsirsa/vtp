@@ -2,7 +2,7 @@
 // EnviroGUI.cpp
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -85,5 +85,10 @@ vtString EnviroGUI::GetPathFromGUI()
 bool EnviroGUI::OnMouseEvent(vtMouseEvent &event)
 {
 	return GetFrame()->OnMouseEvent(event);
+}
+
+void EnviroGUI::SetupScene3()
+{
+	GetFrame()->Setup3DScene();
 }
 

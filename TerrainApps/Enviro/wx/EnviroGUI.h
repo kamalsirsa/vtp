@@ -2,7 +2,7 @@
 // EnviroGUI.h
 // GUI-specific functionality of the Enviro class
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -25,6 +25,7 @@ public:
 		float fGround, float fVertical);
 	virtual vtString GetPathFromGUI();
 	virtual bool OnMouseEvent(vtMouseEvent &event);
+	virtual void SetupScene3();
 };
 
 // global singleton

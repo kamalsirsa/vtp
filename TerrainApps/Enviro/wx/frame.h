@@ -49,6 +49,7 @@ public:
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
+	virtual void Setup3DScene() {}
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
