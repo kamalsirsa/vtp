@@ -638,6 +638,7 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 	msg.Printf("%s %d entit%s, %d total selected", verb, changed,
 		changed == 1 ? "y" : "ies", selected);
 	GetMainFrame()->SetStatusText(msg);
+	GetMainFrame()->OnSelectionChanged();
 	Refresh(false);
 }
 
@@ -897,6 +898,7 @@ void BuilderView::DeselectAll()
 	{
 		pRawL->DeselectAll();
 		Refresh(TRUE);
+		GetMainFrame()->OnSelectionChanged();
 	}
 }
 
@@ -1478,6 +1480,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 	else if (pL->GetType() == LT_RAW)
 	{
 		vtRawLayer *pRL = (vtRawLayer *)pL;
+		// TODO? single click selection of raw features
 	}
 }
 
@@ -1501,7 +1504,7 @@ void BuilderView::OnLButtonClickInfo()
 		pRL->FindAllPointsAtLocation(loc, found);
 
 		FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
-		fdlg->Clear();
+		fdlg->ShowPicked();
 		fdlg->SetFeatureSet(pRL);
 		for (int i = 0; i < found.GetSize(); i++)
 			fdlg->ShowFeature(found[i]);
