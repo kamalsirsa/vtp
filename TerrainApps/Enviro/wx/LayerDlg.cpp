@@ -219,14 +219,16 @@ void LayerDlg::RefreshTreeSpace()
 		str = feat->GetFilename();
 		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, -1, -1);
 
-		int type = feat->GetEntityType();
+		OGRwkbGeometryType type = feat->GetGeomType();
 		int num = feat->GetNumEntities();
 		str.Printf(_T("%d "), num);
-		if (type == SHPT_POINT)
+		if (type == wkbPoint)
 			str += _T("Point");
-		if (type == SHPT_ARC)
+		if (type == wkbPoint25D)
+			str += _T("PointZ");
+		if (type == wkbLineString)
 			str += _T("Arc");
-		if (type == SHPT_POLYGON)
+		if (type == wkbPolygon)
 			str += _T("Polygon");
 		str += _T(" Feature");
 		if (num != 1)

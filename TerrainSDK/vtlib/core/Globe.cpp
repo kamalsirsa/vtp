@@ -271,13 +271,13 @@ int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
 
 void IcoGlobe::BuildSphericalFeatures(vtFeatures *feat, float fSize)
 {
-	if (feat->GetEntityType() == SHPT_POINT)
+	if (feat->GetGeomType() == wkbPoint)
 		BuildSphericalPoints(feat, fSize);
 
-	if (feat->GetEntityType() == SHPT_ARC)
+	if (feat->GetGeomType() == wkbLineString)
 		BuildSphericalLines(feat, fSize);
 
-	if (feat->GetEntityType() == SHPT_POLYGON)
+	if (feat->GetGeomType() == wkbPolygon)
 		BuildSphericalLines(feat, fSize);
 }
 
@@ -446,7 +446,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 
 void IcoGlobe::BuildFlatFeatures(vtFeatures *feat, float fSize)
 {
-	if (feat->GetEntityType() == SHPT_POINT)
+	if (feat->GetGeomType() == wkbPoint)
 	{
 		if (!m_cylinder)
 		{
