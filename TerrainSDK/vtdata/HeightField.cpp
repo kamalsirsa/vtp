@@ -34,6 +34,16 @@ void vtHeightField::Initialize(vtTin *pTin)
 {
 }
 
+/** Gets the minimum and maximum height values.  The values are placed in the
+ * arguments by reference.  You must have first called ComputeHeightExtents.
+ */
+void vtHeightField::GetHeightExtents(float &fMinHeight, float &fMaxHeight) const
+{
+	fMinHeight = m_fMinHeight;
+	fMaxHeight = m_fMaxHeight;
+}
+
+
 /**
  * \return 0 if below terrain, 1 if above terrain, -1 if off terrain.
  */

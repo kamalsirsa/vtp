@@ -38,9 +38,11 @@ public:
 	const DRECT &GetEarthExtents() const { return m_EarthExtents; }
 
 	/** Set the geographic extents of the grid. */
-	void SetEarthExtents(DRECT &ext)	{ m_EarthExtents = ext; }
+	void SetEarthExtents(const DRECT &ext)	{ m_EarthExtents = ext; }
+	void GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 
-	// minimum and maximum height values for the whole grid
+protected:
+	// minimum and maximum height values for the whole heightfield
 	float	m_fMinHeight, m_fMaxHeight;
 
 	DRECT	m_EarthExtents;		// raw extents (geographic or projected)
