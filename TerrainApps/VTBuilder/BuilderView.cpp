@@ -12,6 +12,7 @@
 #endif
 
 #include "vtdata/shapelib/shapefil.h"
+#include "vtdata/ElevationGrid.h"
 
 #include "BuilderView.h"
 #include "Frame.h"
@@ -134,10 +135,10 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	DrawArea(&dc);
 }
 
-void BuilderView::GetMouseLocation(double &x, double &y)
+void BuilderView::GetMouseLocation(DPoint2 &p)
 {
-	x = ox(m_CurPoint.x);
-	y = oy(m_CurPoint.y);
+	p.x = ox(m_CurPoint.x);
+	p.y = oy(m_CurPoint.y);
 }
 
 void BuilderView::SetMode(LBMode m)
@@ -431,10 +432,11 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 
 	if (!m_bHidden)
 	{
-		int x, y;
-		GetClientSize(&x, &y);
-		pDC->DrawText("Preparing World Map...", x * 4 / 10, y / 2);
+	    wxDialog dialog(this, -1, "Preparing World Map...", wxDefaultPosition,
+			wxSize(400, 50), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODELESS);
+		dialog.Show(true);
 		HideWorldMapEdges();
+		dialog.Show(false);
 		Refresh();
 	}
 
@@ -655,13 +657,15 @@ void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 
 	// perhaps the user clicked on a terrain
 	bool bFound = false;
+	DRECT rect;
 	for (int l = 0; l < pFrame->m_Layers.GetSize(); l++)
 	{
 		vtLayerPtr lp = pFrame->m_Layers.GetAt(l);
 		if (lp->GetType() != LT_ELEVATION) continue;
 		vtElevLayer *t = (vtElevLayer *)lp;
 
-		if (t->GetExtents().ContainsPoint(loc))
+		t->GetExtent(rect);
+		if (rect.ContainsPoint(loc))
 		{
 			SetActiveLayer(t);
 			bFound = true;
@@ -705,7 +709,9 @@ void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
 	pDC->SetPen(bgPen);
 	pDC->SetLogicalFunction(wxINVERT);
 
-	wxRect sr = WorldToCanvas(t->GetExtents());
+	DRECT rect;
+	t->GetExtent(rect);
+	wxRect sr = WorldToCanvas(rect);
 	int s = sr.width / 3;
 	int left = sr.x, right = sr.x+sr.width,
 		top = sr.y, bottom = sr.y+sr.height;
@@ -900,7 +906,8 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 	SetScale(1.0f / spacing.x);
 
 	FPoint2 center;
-	DRECT area = pEL->GetExtents();
+	DRECT area;
+	pEL->GetExtent(area);
 	center.x = (float) (area.left + area.right) / 2;
 	center.y = (float) (area.bottom + area.top) / 2;
 	ZoomToPoint(center);
@@ -1295,8 +1302,6 @@ void BuilderView::OnDragDistance()
 {
 	vtProjection proj;
 	GetMainFrame()->GetProjection(proj);
-
-	bool bUTM = proj.IsUTM();
 
 	DPoint2 p1, p2;
 	p1.x = ox(m_DownPoint.x);
