@@ -27,6 +27,7 @@ public:
 	wxString2(const char *psz);
 #endif
 	wxString2(const wxChar *psz);
+	wxString2(const wxString &in) : wxString(in) {}
 	wxString2(const vtString &vtstr);
 
 	// Assignment
@@ -34,10 +35,11 @@ public:
 	wxString2& operator=(const char *psz);
 #endif
 	wxString2& operator=(const wxChar *psz);
+	wxString2& operator=(const wxString &str);
 	wxString2& operator=(const vtString &vtstr);
 
     // implicit conversion to vtString
-    operator vtString() const;
+	operator vtString() const;
 
 	// implicit conversion to C string
 	operator const char*() const;
@@ -53,4 +55,3 @@ private:
 };
 
 #endif // __wxString2_h__
-

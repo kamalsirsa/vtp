@@ -50,6 +50,13 @@ wxString2& wxString2::operator=(const wxChar *psz)
 	return *this;
 }
 
+wxString2& wxString2::operator=(const wxString &str)
+{
+	wxString *ptr = (wxString *)this;
+	*ptr = str;
+	return *this;
+}
+
 wxString2& wxString2::operator=(const vtString &vtstr)
 {
 	*this = (const char *) vtstr;
@@ -74,4 +81,3 @@ const char *wxString2::mb_str() const
 	return s_buffer;
 }
 #endif
-
