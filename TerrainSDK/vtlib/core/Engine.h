@@ -27,8 +27,16 @@ class vtEngine : public vtEnabledBase
 public:
 	vtEngine();
 
-	void *GetTarget() { return m_pTarget; }
-	void SetTarget(void *ptr) { m_pTarget = ptr; }
+	vtTarget *GetTarget(int which = 0)
+	{
+		if (which < NumTargets())
+			return m_pTargets.GetAt(which);
+		else
+			return NULL;
+	}
+	void SetTarget(vtTarget *ptr) { m_pTargets.SetAt(0, ptr); }
+	void AddTarget(vtTarget *ptr) { m_pTargets.Append(ptr); }
+	int NumTargets() { return m_pTargets.GetSize(); }
 
 	void SetName2(const char *str) { m_strName = str; }
 	const char *GetName2() { return m_strName; }
@@ -38,8 +46,8 @@ public:
 	virtual void Eval();
 
 protected:
-	void	 *m_pTarget;
-	vtString m_strName;
+	Array<vtTarget*> m_pTargets;
+	vtString		 m_strName;
 };
 
 /**

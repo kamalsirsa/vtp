@@ -10,7 +10,6 @@
 
 vtEngine::vtEngine() : vtEnabledBase()
 {
-	m_pTarget = NULL;
 }
 
 void vtEngine::Eval()
