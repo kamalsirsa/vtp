@@ -21,6 +21,8 @@
 #include "Route.h"
 #include "Terrain.h"
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #define LONGEST_ROUTE		2000   // in meters
 #define NUM_WIRE_SEGMENTS	100
 
@@ -164,7 +166,7 @@ void vtRoute::add_Pole(DPoint3 &p1, long lStationIndex)
 		xform->RotateLocal(FPoint3(0,1,0), m_StationArray.GetAt(lStationIndex).dRadAzimuth+PID2f);
 		m_pTheTerrain->PlantModelAtPoint(xform, DPoint2(p1.x,p1.y));
 		tower->SetEnabled(true);
-		m_pTheTerrain->m_pLodGrid->AppendToGrid(xform);
+		m_pTheTerrain->AddNodeToLodGrid(xform);
 	}
 }
 
@@ -197,7 +199,7 @@ void vtRoute::AddRouteMeshes(vtHeightField *pHeightField)
 	{
 		float x, z;
 		dp = posts[i];
-		g_Proj.ConvertFromEarth(dp, x, z);
+		g_Conv.ConvertFromEarth(dp, x, z);
 
 		// plant the pole on the terrain
 		p3[i].x = x;
@@ -249,14 +251,14 @@ void vtRoute::StringWires(long ll, vtHeightField *pHeightField)
 
 		vtMesh *pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
 
-		g_Proj.ConvertFromEarth(p0, fp0.x, fp0.z);
+		g_Conv.ConvertFromEarth(p0, fp0.x, fp0.z);
 		pHeightField->FindAltitudeAtPoint(fp0, fp0.y);
 		fp0 = fp0 + FPoint3(st0.m_fpWireAtt1[j].y*WORLD_SCALE/3.25,
 			(st0.m_fpWireAtt1[j].z)*WORLD_SCALE/3.25,
 			st0.m_fpWireAtt1[j].x*WORLD_SCALE/3.25);
 		pWireMesh->AddVertex(fp0);
 
-		g_Proj.ConvertFromEarth(p1, fp1.x, fp1.z);
+		g_Conv.ConvertFromEarth(p1, fp1.x, fp1.z);
 		pHeightField->FindAltitudeAtPoint(fp1, fp1.y);
 		fp1 = fp1 + FPoint3(st1.m_fpWireAtt2[j].y*WORLD_SCALE/3.25,
 			(st1.m_fpWireAtt2[j].z)*WORLD_SCALE/3.25,
@@ -904,4 +906,6 @@ void vtRoute::DrawCat(FPoint3 pt0, FPoint3 pt1, double Az, double catenary,
 		pWireMesh->AddVertex(ptNew);
 	}
 }
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 

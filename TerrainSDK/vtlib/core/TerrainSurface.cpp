@@ -11,7 +11,7 @@
 
 /////////////////////////////////////////////////////////////////////////
 
-vtTerrainGeom::vtTerrainGeom() : vtGeom(), vtHeightField()
+vtTerrainGeom::vtTerrainGeom() : vtGeom(), vtHeightFieldGrid()
 {
 	m_pPatches = NULL;
 }
@@ -107,8 +107,8 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 	m_iXPoints = iXQuads + 1;
 	m_iYPoints = iZQuads + 1;
 
-	float fXoffset = m_WorldExtents.left;
-	float fZoffset = m_WorldExtents.bottom;
+	float fXoffset = m_Conversion.m_WorldExtents.left;
+	float fZoffset = m_Conversion.m_WorldExtents.bottom;
 
 	// compute number of patches we'll have to break it into
 	// biggest patch allowed is 64x64 quads
@@ -136,7 +136,7 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 	for (i = 0; i < m_iXPoints; i++)
 	for (j = 0; j < m_iYPoints; j++)
 	{
-		fValue = pGrid->GetLocalValue(i*iEveryX, j*iEveryZ);
+		fValue = pGrid->GetWorldValue(i*iEveryX, j*iEveryZ);
 		p.x = fXoffset + (i * iEveryX * m_fXStep);
 		p.y = fValue;
 		p.z = fZoffset - (j * iEveryZ * m_fZStep);
@@ -171,7 +171,7 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 			{
 				for (j = m_iChopz[b]; j <= m_iChopz[b+1]; j++)
 				{
-					fValue = pGrid->GetLocalValue(i*iEveryX, j*iEveryZ);
+					fValue = pGrid->GetWorldValue(i*iEveryX, j*iEveryZ);
 					if (fValue != 0.0f)
 						bIsFlat = false;
 					else
@@ -208,7 +208,7 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 					// compute vertex colors
 					if (VtxType & VT_Colors)
 					{
-						fValue = pGrid->GetLocalValue(i*iEveryX, j*iEveryZ);
+						fValue = pGrid->GetWorldValue(i*iEveryX, j*iEveryZ);
 						RGBf c(1.0f, 1.0f, 1.0f);
 						if (fValue == 0.0f)
 							c.g = c.r = 0.0f;
@@ -249,7 +249,8 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 //
 // Returns true if the point was over the terrain
 //
-bool vtTerrainGeom::FindAltitudeAtPoint(FPoint3 &point, float &fAltitude, FPoint3 *vNormal)
+bool vtTerrainGeom::FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
+										FPoint3 *vNormal)
 {
 	int iX = -1, iZ = -1;
 	for (int a = 0; a < m_iXPatches; a++)
@@ -276,8 +277,7 @@ bool vtTerrainGeom::FindAltitudeAtPoint(FPoint3 &point, float &fAltitude, FPoint
 
 	if (!pPatch) return false;	// safety
 
-	pPatch->FindAltitudeAtPoint(point, fAltitude, vNormal);
-	return true;
+	return pPatch->FindAltitudeAtPoint(point, fAltitude, vNormal);
 }
 
 TerrainPatch *vtTerrainGeom::GetPatch(int x, int z)
@@ -300,8 +300,8 @@ bool vtTerrainGeom::DrapeTextureUV()
 {
 	// just do exact (0,0 - 1,1) draping
 	// use extent of terrain in the ground plane
-	FPoint3 size(m_WorldExtents.right - m_WorldExtents.left, 0.0f,
-				 m_WorldExtents.top - m_WorldExtents.bottom);
+	FPoint3 size(m_Conversion.m_WorldExtents.Width(), 0.0f,
+				 m_Conversion.m_WorldExtents.Height());
 	FPoint3 p3;
 	int iNum;
 
@@ -327,8 +327,8 @@ bool vtTerrainGeom::DrapeTextureUV()
 bool vtTerrainGeom::DrapeTextureUVTiled(vtTextureCoverage *cover)
 {
 	// find extent of surface in the ground plane
-	FPoint3 size(m_WorldExtents.right - m_WorldExtents.left, 0.0f,
-				 m_WorldExtents.top - m_WorldExtents.bottom);
+	FPoint3 size(m_Conversion.m_WorldExtents.Width(), 0.0f,
+				 m_Conversion.m_WorldExtents.Height());
 
 	FPoint3 p3;
 	int iNum;

@@ -146,7 +146,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	{
 		float x, z;
 		dp = posts[i];
-		g_Proj.ConvertFromEarth(dp, x, z);
+		g_Conv.ConvertFromEarth(dp, x, z);
 
 		if (i > 0 && i < nposts-1)
 		{

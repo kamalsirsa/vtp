@@ -45,9 +45,9 @@ void vtDynTerrainGeom::BasicInit(vtLocalGrid *pLocalGrid)
 	m_fZLookup = new float[m_iYPoints];
 	int i;
 	for (i = 0; i < m_iXPoints; i++)
-		m_fXLookup[i] = (float) (m_WorldExtents.left + i * m_fXStep);
+		m_fXLookup[i] = m_Conversion.m_WorldExtents.left + i * m_fXStep;
 	for (i = 0; i < m_iYPoints; i++)
-		m_fZLookup[i] = (float) (m_WorldExtents.bottom - i * m_fZStep);
+		m_fZLookup[i] = m_Conversion.m_WorldExtents.bottom - i * m_fZStep;
 
 	m_iTotalTriangles = m_iXPoints * m_iYPoints * 2;
 }
@@ -60,11 +60,11 @@ void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatc
 	m_iTPatchSize = iTPatchSize;
 }
 
-bool vtDynTerrainGeom::FindAltitudeAtPoint(FPoint3 &p, float &fAltitude,
+bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 									FPoint3 *vNormal)
 {
-	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
-	int iZ = (int)(-(p.z - m_WorldExtents.bottom) / m_fZStep);
+	int iX = (int)((p.x - m_Conversion.m_WorldExtents.left) / m_fXStep);
+	int iZ = (int)(-(p.z - m_Conversion.m_WorldExtents.bottom) / m_fZStep);
 
 	// safety check
 	if (iX < 0 || iX >= m_iXPoints-1 || iZ < 0 || iZ >= m_iYPoints-1)

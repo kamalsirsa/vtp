@@ -13,53 +13,44 @@
 #include "LocalGrid.h"
 #include "HeightField.h"
 
-void SetLocalProjection(vtProjection &proj, DPoint2 lower_left)
+vtLocalGrid::vtLocalGrid() : vtElevationGrid()
 {
-	((vtProjection &)g_Proj) = proj;
+	m_fXStep = m_fZStep = 0;
+}
 
-	// set the base coordinate at the lower-left corner of the terrain
-	if (proj.IsGeographic())
-		g_Proj.SetDegreeOrigin(lower_left);
-	else
-		g_Proj.SetMeterOrigin(lower_left);
+vtLocalGrid::vtLocalGrid(const DRECT &area, int iColumns, int iRows,
+						 bool bFloat, vtProjection &proj, float fVerticalExag) :
+	vtElevationGrid(area, iColumns, iRows, bFloat, proj)
+{
+	SetupConversion(fVerticalExag);
 }
 
 void vtLocalGrid::SetGlobalProjection()
 {
-	SetLocalProjection(m_proj, DPoint2(m_area.left, m_area.bottom));
+	// copy projection and conversion to global variable
+	g_Conv = m_Conversion;
 }
 
-void vtLocalGrid::Setup(float fVerticalExag)
+void vtLocalGrid::SetupConversion(float fVerticalExag)
 {
-	m_fHeightScale = WORLD_SCALE * fVerticalExag;
-
-	if (m_proj.IsGeographic())
-	{
-		g_Proj.convert_latlon_to_local_xz(m_area.bottom, m_area.left, m_WorldExtents.left, m_WorldExtents.bottom);
-		g_Proj.convert_latlon_to_local_xz(m_area.top, m_area.right, m_WorldExtents.right, m_WorldExtents.top);
-	}
-	else
-	{
-		g_Proj.convert_meters_to_local_xz(m_area.left, m_area.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-		g_Proj.convert_meters_to_local_xz(m_area.right, m_area.top, m_WorldExtents.right, m_WorldExtents.top);
-	}
+	m_Conversion.Setup(m_proj.IsGeographic(), m_area);
+	m_Conversion.m_fVerticalScale = WORLD_SCALE * fVerticalExag;
 
 	// determine step size between each height sample
-	m_fXStep = (float) (m_WorldExtents.right - m_WorldExtents.left) / (m_iColumns - 1);
-	m_fZStep = (float) (m_WorldExtents.bottom - m_WorldExtents.top) / (m_iRows - 1);
+	m_fXStep = m_Conversion.m_WorldExtents.Width() / (m_iColumns - 1);
+	m_fZStep = -m_Conversion.m_WorldExtents.Height() / (m_iRows - 1);
 }
 
-
-void vtLocalGrid::GetLocation(int i, int j, FPoint3 &loc)
+void vtLocalGrid::GetWorldLocation(int i, int j, FPoint3 &loc)
 {
 	if (m_bFloatMode)
-		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				m_pFData[i*m_iRows+j] * m_fHeightScale,
-				m_WorldExtents.bottom - j * m_fZStep);
+		loc.Set(m_Conversion.m_WorldExtents.left + i * m_fXStep,
+				m_pFData[i*m_iRows+j] * m_Conversion.m_fVerticalScale,
+				m_Conversion.m_WorldExtents.bottom - j * m_fZStep);
 	else
-		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				m_pData[i*m_iRows+j] * m_fHeightScale,
-				m_WorldExtents.bottom - j * m_fZStep);
+		loc.Set(m_Conversion.m_WorldExtents.left + i * m_fXStep,
+				m_pData[i*m_iRows+j] * m_Conversion.m_fVerticalScale,
+				m_Conversion.m_WorldExtents.bottom - j * m_fZStep);
 }
 
 //
@@ -68,10 +59,11 @@ void vtLocalGrid::GetLocation(int i, int j, FPoint3 &loc)
 //
 // This approach is really straightforward, so it could be majorly sped up if needed
 //
-bool vtLocalGrid::FindAltitudeAtPoint(FPoint3 &p, float &fAltitude, FPoint3 *vNormal)
+bool vtLocalGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
+									  FPoint3 *vNormal)
 {
-	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
-	int iZ = (int)((p.z - m_WorldExtents.bottom) / m_fZStep);
+	int iX = (int)((p.x - m_Conversion.m_WorldExtents.left) / m_fXStep);
+	int iZ = (int)((p.z - m_Conversion.m_WorldExtents.bottom) / m_fZStep);
 
 	// safety check
 	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
@@ -83,10 +75,10 @@ bool vtLocalGrid::FindAltitudeAtPoint(FPoint3 &p, float &fAltitude, FPoint3 *vNo
 
 	FPoint3 p0, p1, p2, p3;
 
-	GetLocation(iX, iZ, p0);
-	GetLocation(iX+1, iZ, p1);
-	GetLocation(iX+1, iZ+1, p2);
-	GetLocation(iX, iZ+1, p3);
+	GetWorldLocation(iX, iZ, p0);
+	GetWorldLocation(iX+1, iZ, p1);
+	GetWorldLocation(iX+1, iZ+1, p2);
+	GetWorldLocation(iX, iZ+1, p3);
 
 	// find fractional amount (0..1 across quad)
 	float fX = (p.x - p0.x) / m_fXStep;
@@ -123,91 +115,16 @@ bool vtLocalGrid::FindAltitudeAtPoint(FPoint3 &p, float &fAltitude, FPoint3 *vNo
 }
 
 
-void vtLocalGrid::GetWorldExtents(FRECT &rect)
+float vtLocalGrid::GetWorldValue(int i, int j)
 {
-	rect = m_WorldExtents;
+	if (m_bFloatMode)
+		return m_pFData[i*m_iRows+j] * m_Conversion.m_fVerticalScale;
+	else
+		return m_pData[i*m_iRows+j] * m_Conversion.m_fVerticalScale;
 }
-
-
-void vtLocalGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean)
-{
-	int w = pDIB->GetWidth();
-	int h = pDIB->GetHeight();
-
-	int gw, gh;
-	GetDimensions(gw, gh);
-
-	int i, j;
-	int x, y;
-	RGBi color;
-
-	float fMin, fMax;
-	GetHeightExtents(fMin, fMax);
-
-	Array<RGBi> colors;
-	colors.Append(RGBi(75, 155, 75));
-	colors.Append(RGBi(180, 160, 120));
-	colors.Append(RGBi(128, 128, 128));
-	int bracket, num = colors.GetSize();
-	float bracket_size = (fMax - fMin) / (num - 1);
-
-	// iterate over the texels
-	for (i = 0; i < w; i++)
-	{
-		x = i * gw / w;			// find corresponding location in terrain
-
-		for (j = 0; j < h; j++)
-		{
-			y = j * gh / h;
-
-			float m = GetFValue(x, y);	// local units
-			float elev = m - fMin;
-
-			color.r = color.g = color.b = 0;
-			if (m == 0.0f)
-			{
-				color = color_ocean;
-			}
-			else
-			{
-				bracket = (int) (elev / bracket_size);
-				if (bracket < 0)
-					color = colors[0];
-				else if (bracket < num-1)
-				{
-					float fraction = (elev / bracket_size) - bracket;
-					RGBi diff = (colors[bracket+1] - colors[bracket]);
-					color = colors[bracket] + (diff * fraction);
-				}
-				else
-					color = colors[num-1];
-			}
-#if 0
-			else if (elev < low_elev)
-			{
-				color = color_base;
-			}
-			else if (elev < low_elev*2)
-			{
-				float scale = (elev - low_elev) / low_elev;
-				RGBi diff = (color_hill - color_base);
-				RGBi offset = (diff * scale);
-				color = color_base + offset;
-			}
-			else
-			{
-				color = color_hill;
-			}
-#endif
-			pDIB->SetPixel24(i, h-1-j, RGB(color.r, color.g, color.b));
-		}
-	}
-}
-
 
 void vtLocalGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-									float light_adj,
-									int xPatch, int yPatch, int nPatches)
+									float light_adj)
 {
 	FPoint3 p1, p2, p3;
 	FPoint3 v1, v2, v3;
@@ -224,12 +141,8 @@ void vtLocalGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 	int x, y;
 	int r, g, b;
 
-	float xFactor = (float)gw/(float)w/(float)nPatches;
-	float yFactor = (float)gh/(float)h/(float)nPatches;
-
-	yPatch = (nPatches - 1) - yPatch;
-	float x_off = (float)xPatch * (float)gw/(float)nPatches;
-	float y_off = (float)yPatch * (float)gh/(float)nPatches;
+	float xFactor = (float)gw/(float)w;
+	float yFactor = (float)gh/(float)h;
 
 	bool mono = (pDIB->GetDepth() == 8);
 
@@ -237,18 +150,18 @@ void vtLocalGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 	for (j = 0; j < h-1; j++)
 	{
 		// find corresponding location in terrain
-		y = (int) (y_off + j * yFactor);
+		y = (int) (j * yFactor);
 		for (i = 0; i < w-1; i++)
 		{
-			x = (int) (x_off + i * xFactor);
+			x = (int) (i * xFactor);
 
 			float shade;
 			if (x < gw-1)
 			{
 				// compute surface normal
-				GetLocation(x, y, p1);
-				GetLocation(x+1, y, p2);
-				GetLocation(x, y+1, p3);
+				GetWorldLocation(x, y, p1);
+				GetWorldLocation(x+1, y, p2);
+				GetWorldLocation(x, y+1, p3);
 				v1 = p2 - p1;
 				v2 = p3 - p1;
 				v3 = v1.Cross(v2);

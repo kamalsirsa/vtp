@@ -27,7 +27,7 @@ public:
 };
 
 
-class vtTerrainGeom : public vtGeom, public vtHeightField
+class vtTerrainGeom : public vtGeom, public vtHeightFieldGrid
 {
 public:
 	vtTerrainGeom();
@@ -40,7 +40,9 @@ public:
 		 bool bLighting = true);
 
 	// overrides for vtHeightField
-	bool FindAltitudeAtPoint(FPoint3 &p3, float &fAltitude, FPoint3 *vNormal);
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude, FPoint3 *vNormal);
+	void GetEarthExtents(DRECT &ext);
+	void GetTerrainExtents(FRECT &ext);
 
 	TerrainPatch *GetPatch(int x, int z);
 	void SetPatch(int x, int z, TerrainPatch *pPatch);

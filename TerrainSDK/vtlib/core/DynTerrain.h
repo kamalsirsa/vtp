@@ -12,7 +12,7 @@
 #include "HeightField.h"
 #include "TerrainErr.h"
 
-class vtDynTerrainGeom : public vtDynGeom, public vtHeightField
+class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid
 {
 public:
 	vtDynTerrainGeom();
@@ -43,7 +43,7 @@ public:
 	void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 
 	// overrides for HeightField
-	bool FindAltitudeAtPoint(FPoint3 &p3, float &fAltitude,
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL);
 
 	// overridables

@@ -15,30 +15,23 @@
 class vtLocalGrid : public vtElevationGrid
 {
 public:
+	vtLocalGrid();
+	vtLocalGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
+		vtProjection &proj, float fVerticalExag = 1.0f);
+
 	void SetGlobalProjection();
-	void GetWorldExtents(FRECT &rect);
-	float GetLocalValue(int i, int j) {
-		if (m_bFloatMode)
-			return m_pFData[i*m_iRows+j] * m_fHeightScale;
-		else
-			return m_pData[i*m_iRows+j] * m_fHeightScale;
-	}
-	void GetLocation(int i, int j, FPoint3 &loc);
+	float GetWorldValue(int i, int j);
+	void GetWorldLocation(int i, int j, FPoint3 &loc);
 
-	void Setup(float fVerticalExag);
-
-	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean);
-	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,float light_adj,
-									int xPatch=0, int yPatch=0, int nPatches = 1);
-	bool FindAltitudeAtPoint(FPoint3 &p3, float &fAltitude, FPoint3 *vNormal = NULL);
+	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,float light_adj);
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude, FPoint3 *vNormal = NULL);
 	DPoint2 GetWorldSpacing();
 
-protected:
-	// bounds in the application-specific coordinate scheme
-	FRECT	m_WorldExtents;
+	void SetupConversion(float fVerticalExag);
+	vtLocalConversion	m_Conversion;
 
+protected:
 	float	m_fXStep, m_fZStep;
-	float	m_fHeightScale;
 };
 
 #endif
