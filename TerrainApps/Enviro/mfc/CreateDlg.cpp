@@ -215,7 +215,7 @@ BOOL CCreateDlg::OnInitDialog()
 	for (i = 0; i < paths.GetSize(); i++)
 	{
 		// fill the "terrain filename" control with available terrain files
-		AddFilenamesToComboBox(&m_cbLODFilename, paths[i] + "Elevation/*.bt");
+		AddFilenamesToComboBox(&m_cbLODFilename, paths[i] + "Elevation/*.bt*");
 		m_cbLODFilename.SelectString(-1, m_strFilename);
 
 		// fill the "single texture filename" control with available bitmap files

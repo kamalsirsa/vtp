@@ -419,7 +419,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < paths.size(); i++)
 	{
 		// fill the "Grid filename" control with available files
-		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt");
+		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt*");
 		sel = m_pFilename->FindString(m_strFilename);
 		if (sel != -1)
 			m_pFilename->SetSelection(sel);
