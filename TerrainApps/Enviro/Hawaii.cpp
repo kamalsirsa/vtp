@@ -129,7 +129,7 @@ void IslandTerrain::CreateCustomCulture()
 		PlantModelAtPoint(container, mauna_loa);
 	}
 
-	if (m_Params.GetValueBool(STR_VEHICLES))
+	if (m_Params.GetValueBool(STR_VEHICLES) && GetRoadMap() != NULL)
 	{
 		float size = m_Params.GetValueFloat(STR_VEHICLESIZE);
 		float speed = m_Params.GetValueFloat(STR_VEHICLESPEED);
