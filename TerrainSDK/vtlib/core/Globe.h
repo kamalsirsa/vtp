@@ -1,7 +1,7 @@
 //
 // Globe.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,7 @@
 #include "vtdata/Features.h"
 #include "vtdata/FilePath.h"
 #include "vtlib/core/TimeEngines.h"
+#include "vtlib/core/GeomUtil.h"
 
 class vtTerrainScene;
 
@@ -57,8 +58,8 @@ public:
 	vtFeaturesSet &GetFeaturesSet() { return m_features; }
 	int AddGlobePoints(const char *fname, float fSize);
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
-	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
-	double AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line);
+	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2);
+	double AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line);
 
 protected:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

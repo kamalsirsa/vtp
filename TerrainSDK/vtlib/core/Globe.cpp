@@ -1,7 +1,7 @@
 //
 // Globe.cpp
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -422,28 +422,12 @@ void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 	geom->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(geom);
 
-	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
-	geom->AddMesh(mesh, m_yellow);
-	mesh->Release();	// pass ownership to Geometry
-
-	int total = 0;
-
-	DPoint2 p1, p2;
+	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
 	{
 		const DLine2 &line = pSetLS->GetPolyLine(i);
-		AddSurfaceLineToMesh(mesh, &line);
-
-		// don't put too many vertices in any one mesh
-		if (mesh->GetNumVertices() > 10000)
-		{
-			total += mesh->GetNumVertices();
-			mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
-			geom->AddMesh(mesh, m_yellow);
-			mesh->Release();	// pass ownership to Geometry
-		}
+		AddSurfaceLineToMesh(&mf, &line);
 	}
-	total += mesh->GetNumVertices();
 }
 
 void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
@@ -460,32 +444,16 @@ void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 	geom->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(geom);
 
-	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
-	geom->AddMesh(mesh, m_yellow);
-	mesh->Release();	// pass ownership to Geometry
-
-	int total = 0;
-
-	DPoint2 p1, p2;
+	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, m_yellow);
 	for (i = 0; i < size; i++)
 	{
 		const DPolygon2 &poly = pSetPoly->GetPolygon(i);
 		for (unsigned int ring = 0; ring < poly.size(); ring++)
 		{
 			const DLine2 &line = poly[ring];
-			AddSurfaceLineToMesh(mesh, &line);
-
-			// don't put too many vertices in any one mesh
-			if (mesh->GetNumVertices() > 10000)
-			{
-				total += mesh->GetNumVertices();
-				mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
-				geom->AddMesh(mesh, m_yellow);
-				mesh->Release();	// pass ownership to Geometry
-			}
+			AddSurfaceLineToMesh(&mf, &line);
 		}
 	}
-	total += mesh->GetNumVertices();
 }
 
 void IcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
@@ -565,6 +533,7 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	m_pRectangles->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(m_pRectangles);
 
+	vtMeshFactory mf(m_pRectangles, vtMesh::LINE_STRIP, 0, 30000, m_red);
 	for (unsigned int a = 0; a < pTerrainScene->NumTerrains(); a++)
 	{
 		vtTerrain *pTerr = pTerrainScene->GetTerrain(a);
@@ -573,7 +542,6 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 			continue;
 
 		int numvtx = 4;
-		vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, numvtx);
 
 		int i, j;
 		DPoint2 p1, p2;
@@ -582,14 +550,12 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 			j = (i+1) % 4;
 			p1 = pTerr->m_Corners_geo[i];
 			p2 = pTerr->m_Corners_geo[j];
-			AddSurfaceLineToMesh(mesh, p1, p2);
+			AddSurfaceLineToMesh(&mf, p1, p2);
 		}
-		m_pRectangles->AddMesh(mesh, m_red);
-		mesh->Release();	// pass ownership to the Geometry
 	}
 }
 
-double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2)
+double IcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, const DPoint2 &g2)
 {
 	// first determine how many points we should use for a smooth arc
 	DPoint3 p1, p2;
@@ -613,19 +579,19 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPo
 	rot3.SetByMatrix4(rot4);
 
 	// curved arc on great-circle path
-	int start = mesh->GetNumVertices();
+	pMF->PrimStart();
 	for (int i = 0; i < points; i++)
 	{
 		FPoint3 fp = p1 * 1.0002;
-		mesh->AddVertex(fp);
+		pMF->AddVertex(fp);
 		rot3.Transform(p1, p2);
 		p1 = p2;
 	}
-	mesh->AddStrip2(points, start);
+	pMF->PrimEnd();
 	return angle;
 }
 
-double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line)
+double IcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 *line)
 {
 	DPoint2 g1, g2;
 	DPoint3 p1, p2;
@@ -633,7 +599,7 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line)
 	int length = 0;
 	DMatrix3 rot3;
 
-	int start = mesh->GetNumVertices();
+	pMF->PrimStart();
 	int i, j, size = line->GetSize();
 
 	for (i = 0; i < size-1; i++)
@@ -662,7 +628,7 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line)
 		for (j = 0; j < segments; j++)
 		{
 			FPoint3 fp = p1 * 1.0002;
-			mesh->AddVertex(fp);
+			pMF->AddVertex(fp);
 			length++;
 
 			if (j < segments-1)
@@ -678,11 +644,11 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line)
 	{
 		g2 = line->GetAt(size-1);
 		geo_to_xyz(1.0, g2, p2);
-		mesh->AddVertex(p2 * scale);
+		pMF->AddVertex(p2 * scale);
 		length++;
 	}
 
-	mesh->AddStrip2(length, start);
+	pMF->PrimEnd();
 	return 0.0;
 }
 
