@@ -344,9 +344,11 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	m_pGeoSet->setAttributeDeleteFunctor(NULL);
 
 	m_Vert.SetMaxSize(NumVertices);
-	// all the primitives we do are indexed, so it's fair to assume that
-	// there will probably be at least as many indices as vertices
-	m_Index.SetMaxSize(NumVertices);
+
+	// All the primitives except GL_POINTS are indexed, so it's fair to
+	//  assume that there will be at least as many indices as vertices.
+	if (PrimType != GL_POINTS)
+		m_Index.SetMaxSize(NumVertices);
 
 	m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
 	m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
@@ -378,38 +380,30 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	case GL_POINTS:
 		m_pGeoSet->setPrimType(GeoSet::POINTS);
 		m_pGeoSet->setNumPrims(NumVertices);
-		m_bIndexedPrims = false;	// points are not indexed
 		break;
 	case GL_LINES:
 		m_pGeoSet->setPrimType(GeoSet::LINES);
 		m_pGeoSet->setNumPrims(NumVertices/2);
-		m_bIndexedPrims = true;
 		break;
 	case GL_LINE_STRIP:
 		m_pGeoSet->setPrimType(GeoSet::LINE_STRIP);
-		m_bIndexedPrims = true;
 		break;
 	case GL_TRIANGLES:
 		m_PrimLen.SetMaxSize(NumVertices/3);
 		m_pGeoSet->setPrimType(GeoSet::TRIANGLES);
 		m_pGeoSet->setNumPrims(NumVertices/3);
-		m_bIndexedPrims = true;
 		break;
 	case GL_TRIANGLE_STRIP:
 		m_pGeoSet->setPrimType(GeoSet::TRIANGLE_STRIP);
-		m_bIndexedPrims = true;
 		break;
 	case GL_TRIANGLE_FAN:
 		m_pGeoSet->setPrimType(GeoSet::TRIANGLE_FAN);
-		m_bIndexedPrims = true;
 		break;
 	case GL_QUADS:
 		m_pGeoSet->setPrimType(GeoSet::QUADS);
-		m_bIndexedPrims = true;
 		break;
 	case GL_POLYGON:
 		m_pGeoSet->setPrimType(GeoSet::POLYGON);
-		m_bIndexedPrims = true;
 		break;
 	}
 	SendPointersToOSG();
@@ -508,6 +502,9 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 	Vec3 s;
 	v2s(p, s);
 	m_Vert.SetAt(i, s);
+
+	if (m_ePrimType == GL_POINTS)
+		m_pGeoSet->setNumPrims(m_Vert.GetSize());
 }
 
 /**
@@ -699,17 +696,22 @@ void vtMesh::_AddStripNormals()
 void vtMesh::SendPointersToOSG()
 {
 	// in case they got reallocated, tell OSG again
-	if (m_bIndexedPrims)
-		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
-	else
+	if (m_ePrimType == GL_POINTS)
+	{
 		m_pGeoSet->setCoords(m_Vert.GetData());
-
-	if (m_iVtxType & VT_Normals)
-		m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
-	if (m_iVtxType & VT_Colors)
-		m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
-	if (m_iVtxType & VT_TexCoords)
-		m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
+		if (m_iVtxType & VT_Colors)
+			m_pGeoSet->setColors(m_Color.GetData());
+	}
+	else
+	{
+		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
+		if (m_iVtxType & VT_Normals)
+			m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
+		if (m_iVtxType & VT_Colors)
+			m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
+		if (m_iVtxType & VT_TexCoords)
+			m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
+	}
 
 	// three geometry types don't use 'primitive lengths'
 	int NumVertices = m_Vert.GetSize();

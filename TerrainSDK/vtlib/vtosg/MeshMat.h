@@ -153,10 +153,6 @@ protected:
 	Array<osg::Vec4>	m_Color;
 	Array<osg::Vec2>	m_Tex;
 
-	// This flag is true if the primitives are indexed (generally
-	//	true except for point primitives)
-	bool	m_bIndexedPrims;
-
 	// Point OSG to the vertex and primitive data that we maintain
 	void	SendPointersToOSG();
 };
