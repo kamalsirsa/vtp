@@ -130,7 +130,7 @@ void EnviroView::OnDraw(CDC* pDC)
 void EnviroView::OnEnviroTimeon() 
 {
 	m_bTimeOn = !m_bTimeOn;
-	GetTerrainScene()->m_pTime->SetEnabled(m_bTimeOn);
+	GetTerrainScene()->GetTimeEngine()->SetEnabled(m_bTimeOn);
 }
 
 void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI) 
@@ -297,19 +297,7 @@ void EnviroView::OnEnviroShowfog()
 
 void EnviroView::OnUpdateEnviroShowfog(CCmdUI* pCmdUI) 
 {
-#if 1
-	// not really implemented yet
-	pCmdUI->Enable(false);
-#else
-	pCmdUI->Enable(g_App.m_state == AS_Terrain);
-	if (vtGetScene()->GetFog() == NULL)
-	{
-		pCmdUI->SetCheck(false);
-		pCmdUI->Enable(false);
-	}
-	else
-		pCmdUI->SetCheck(!GetTerrainScene()->m_bFog);
-#endif
+	pCmdUI->SetCheck(GetTerrainScene()->GetFog());
 }
 
 void EnviroView::OnEnviroShowtrees() 

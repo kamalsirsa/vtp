@@ -129,6 +129,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_TERRAIN_OCEAN, vtFrame::OnOcean)
 	EVT_MENU(ID_TERRAIN_TREES, vtFrame::OnTrees)
 	EVT_MENU(ID_TERRAIN_ROADS, vtFrame::OnRoads)
+	EVT_MENU(ID_TERRAIN_FOG, vtFrame::OnFog)
 	EVT_MENU(ID_TERRAIN_INCREASE, vtFrame::OnIncrease)
 	EVT_MENU(ID_TERRAIN_DECREASE, vtFrame::OnDecrease)
 	EVT_MENU(ID_TERRAIN_SAVEVEG, vtFrame::OnSaveVeg)
@@ -141,6 +142,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_TERRAIN_OCEAN, vtFrame::OnUpdateOcean)
 	EVT_UPDATE_UI(ID_TERRAIN_TREES, vtFrame::OnUpdateTrees)
 	EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
+	EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
 
 	EVT_MENU(ID_EARTH_SHOWTIME, vtFrame::OnEarthShowTime)
 	EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
@@ -264,6 +266,7 @@ void vtFrame::CreateMenus()
 	terrainMenu->Append(ID_TERRAIN_OCEAN, "Show Ocean\tF5", "Show Ocean", true);
 	terrainMenu->Append(ID_TERRAIN_TREES, "Show Trees and Buildings\tF6", "Show Trees and Buildings", true);
 	terrainMenu->Append(ID_TERRAIN_ROADS, "Show Roads\tF7", "Show Roads", true);
+	terrainMenu->Append(ID_TERRAIN_FOG, "Show Fog\tF8", "Show Fog", true);
 	terrainMenu->AppendSeparator();
 	terrainMenu->Append(ID_TERRAIN_INCREASE, "Increase Detail (+)");
 	terrainMenu->Append(ID_TERRAIN_DECREASE, "Decrease Detail (-)");
@@ -877,6 +880,11 @@ void vtFrame::OnRoads(wxCommandEvent& event)
 	if (t) t->SetFeatureVisible(TFT_ROADS, !t->GetFeatureVisible(TFT_ROADS));
 }
 
+void vtFrame::OnFog(wxCommandEvent& event)
+{
+	GetTerrainScene()->ToggleFog();
+}
+
 void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
@@ -885,6 +893,11 @@ void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 		on = t->GetFeatureVisible(TFT_ROADS);
 	event.Enable(t != NULL);
 	event.Check(on);
+}
+
+void vtFrame::OnUpdateFog(wxUpdateUIEvent& event)
+{
+	event.Check(GetTerrainScene()->GetFog());
 }
 
 void vtFrame::OnIncrease(wxCommandEvent& event)
