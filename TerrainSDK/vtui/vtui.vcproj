@@ -385,6 +385,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Helper.cpp">
+			</File>
+			<File
+				RelativePath=".\InstanceDlg.cpp">
+			</File>
+			<File
 				RelativePath="LinearStructDlg.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -559,6 +565,12 @@
 			</File>
 			<File
 				RelativePath="HeightGrid.h">
+			</File>
+			<File
+				RelativePath=".\Helper.h">
+			</File>
+			<File
+				RelativePath=".\InstanceDlg.h">
 			</File>
 			<File
 				RelativePath="LinearStructDlg.h">
