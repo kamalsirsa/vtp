@@ -12,6 +12,7 @@
 #include "vtdata/Projections.h"
 #include "vtdata/Building.h"
 #include "vtdata/Fence.h"
+#include "vtdata/Icosa.h"
 
 class vtLayer;
 class vtRoadLayer;
@@ -209,9 +210,10 @@ protected:
 	DPolyArray2		WMPolyDraw; // This is the WM that is drawn
 	unsigned int	m_iEntities;
 	bool	m_bAttemptedLoad;
+	DymaxIcosa		m_icosa;
 
 	bool ImportWorldMap();
-	void DrawWorldMap(wxDC* pDC, vtScaledView *pView);
+	void DrawWorldMap(wxDC* pDC);
 
 	UIContext m_ui;
 

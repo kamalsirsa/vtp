@@ -121,7 +121,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 
 	// Draw the world map SHP file of country outline polys in latlon
 	if (m_bShowMap)
-		DrawWorldMap(&dc, this);
+		DrawWorldMap(&dc);
 
 	// Draw the solid layers first
 	for (i = 0; i < iLayers; i++)
@@ -152,6 +152,14 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 
 void BuilderView::DrawDymaxionOutline(wxDC *pDC)
 {
+	DPolyArray2 polys;
+
+	m_icosa.GetDymaxEdges(polys);
+
+	for (unsigned int i = 0; i < polys.size(); i++)
+	{
+		DrawDLine(pDC, polys[i], true);
+	}
 }
 
 void BuilderView::GetMouseLocation(DPoint2 &p)
@@ -419,23 +427,21 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	DPoint2 point;
 	for (i = 0; i < m_iEntities; i++)
 	{
+		WMPolyDraw[i].Empty();
 		for (j = 0; j < WMPoly[i].GetSize(); j++)
 		{
 			point = WMPoly[i].GetAt(j);
-			trans->Transform(1, &point.x, &point.y);
-			WMPolyDraw[i].SetAt(j, point);
+
+			int converted = trans->Transform(1, &point.x, &point.y);
+
+			if (converted == 1)
+				WMPolyDraw[i].Append(point);
 		}
 	}
 	delete trans;
 }
 
-
-#define MAXPOINTS 8000
-static wxPoint wmbuf[MAXPOINTS];
-// All poly have less than 8000 points except ocean (the one we don't want
-// to draw)
-
-void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
+void BuilderView::DrawWorldMap(wxDC *pDC)
 {
 	if (m_iEntities == 0 && !m_bAttemptedLoad)
 	{
@@ -453,23 +459,9 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 	pDC->SetPen(WMPen);
 
 	// Draw each poly in WMPolyDraw
-	unsigned int wmbuflen, pts;
 	for (unsigned int i = 0; i < m_iEntities; i++)
-	{
-		wmbuflen = 0;
-		pts = WMPolyDraw[i].GetSize();
-
-		for (unsigned int j = 0; j < pts && j < MAXPOINTS; j++)
-		{
-			wmbuf[j].x = pView->sx(WMPolyDraw[i].GetAt(j).x);
-			wmbuf[j].y = pView->sy(WMPolyDraw[i].GetAt(j).y);
-			wmbuflen ++;
-		}
-		if (wmbuflen > 1)
-			pDC->DrawLines(wmbuflen, wmbuf);
-	}
+		DrawDLine(pDC, WMPolyDraw[i], true);
 }
-
 
 //////////////////////////////////////////////////////////
 // Pan handlers
