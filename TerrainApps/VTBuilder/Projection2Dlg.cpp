@@ -230,7 +230,7 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 	OGR_SRSNode *root = m_proj.GetRoot();
 	if (!root)
 	{
-		m_pParamCtrl->InsertItem(0, "(Invalid projection)");
+		m_pParamCtrl->InsertItem(0, _T("(Invalid projection)"));
 		return;		// bogus projection
 	}
 
