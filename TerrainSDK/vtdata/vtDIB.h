@@ -10,6 +10,8 @@
 
 #include "MathTypes.h"
 
+class vtProjection;
+
 /**
  * A highly virtual class which defines the basic functionality that any
  * bitmap must expose.
@@ -71,7 +73,7 @@ public:
 	bool WriteJPEG(const char *fname, int quality);
 	bool ReadPNG(const char *fname);
 	bool WritePNG(const char *fname);
-	bool WriteTIF(const char *fname);
+	bool WriteTIF(const char *fname, const DRECT *area = NULL, const vtProjection *proj = NULL);
 
 	unsigned int GetPixel24(int x, int y) const;
 	void GetPixel24(int x, int y, RGBi &rgb) const;

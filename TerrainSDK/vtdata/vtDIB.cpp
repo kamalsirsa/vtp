@@ -951,9 +951,10 @@ bool vtDIB::WritePNG(const char *fname)
 }
 
 /**
- * Write a TIF file.
+ * Write a TIFF file.  If extents and projection are support, a GeoTIFF file
+ * will be written.
  */
-bool vtDIB::WriteTIF(const char *fname)
+bool vtDIB::WriteTIF(const char *fname, const DRECT *area, const vtProjection *proj)
 {
 	g_GDALWrapper.RequestGDALFormats();
 
@@ -978,8 +979,21 @@ bool vtDIB::WriteTIF(const char *fname)
 	if (!pDataset)
 		return false;
 
-//	pDataset->SetGeoTransform(adfGeoTransform);
-//	pDataset->SetProjection(pszSRS_WKT);
+	if (area != NULL)
+	{
+		DPoint2 spacing(area->Width() / m_iWidth, area->Height() / m_iHeight);
+		double adfGeoTransform[6] = { area->left, spacing.x, 0,
+									area->top, 0, -spacing.y };
+		pDataset->SetGeoTransform(adfGeoTransform);
+	}
+	if (proj != NULL)
+	{
+		char *pszSRS_WKT = NULL;
+		vtProjection *hack = const_cast<vtProjection *>(proj);
+		hack->exportToWkt( &pszSRS_WKT );
+		pDataset->SetProjection(pszSRS_WKT);
+		CPLFree( pszSRS_WKT );
+	}
 
 	GByte *raster = new GByte[m_iWidth*m_iHeight];
 
