@@ -63,6 +63,10 @@ BOOL CBExtractorApp::InitInstance()
 #endif
 	VTLOG("\n");
 
+	// Try to guess GDAL and PROJ.4 data paths, in case the user doesn't have
+	//  their GDAL_DATA and PROJ_LIB environment variables set.
+	g_GDALWrapper.GuessDataPaths();
+
 	AfxEnableControlContainer();
 
 	// Change the registry key under which our settings are stored.
