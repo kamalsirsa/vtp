@@ -29,7 +29,7 @@
 
 #define DETAIL_TILING	1200.0f
 
-#define ENABLE_TREES 0
+#define ENABLE_PLANTS 0
 
 #define HORIZON_FOG		RGBi(200, 227, 255)
 
@@ -232,7 +232,7 @@ void NevadaTerrain::CreatePast()
 	}
 #endif
 
-#if ENABLE_TREES	// enable/disable trees
+#if ENABLE_PLANTS	// enable/disable plants
 	//tree generation
 #define TREE_EXAG	6.0f
 	vtPlantAppearance3d *pPlantApp = new vtPlantAppearance3d(AT_BILLBOARD,

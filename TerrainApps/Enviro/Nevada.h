@@ -76,7 +76,7 @@ public:
 	vtMaterial *m_pPastMat;
 	vtMaterial *m_pPresentMat;
 
-	vtGroup *m_pTrees;
+	vtGroup *m_pPlants;
 };
 
 #endif	// NEVADAH
