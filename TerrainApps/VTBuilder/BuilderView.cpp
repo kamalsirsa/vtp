@@ -47,6 +47,8 @@ EVT_RIGHT_UP(BuilderView::OnRightUp)
 EVT_MOTION(BuilderView::OnMouseMove)
 
 EVT_CHAR(BuilderView::OnChar)
+EVT_IDLE(BuilderView::OnIdle)
+EVT_SIZE(BuilderView::OnSize)
 END_EVENT_TABLE()
 
 /////////////////////////////////////////////////////////////////
@@ -1321,6 +1323,45 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 	m_ui.m_LastPoint = m_ui.m_CurPoint;
 	m_ui.m_PrevLocation = m_ui.m_CurLocation;
 }
+
+void BuilderView::OnIdle(wxIdleEvent& event)
+{
+	MainFrame *pFrame = GetMainFrame();
+	int i, iLayers = pFrame->m_Layers.GetSize();
+
+	// Check to see if any elevation layers needs drawing
+	bool bDrew = false;
+	for (i = 0; i < iLayers; i++)
+	{
+		vtLayer *lp = pFrame->m_Layers.GetAt(i);
+		if (lp->GetType() == LT_ELEVATION)
+		{
+			vtElevLayer *pEL = (vtElevLayer *)lp;
+			if (pEL->NeedsDraw())
+			{
+				pEL->RenderBitmap();
+				bDrew = true;
+			}
+		}
+	}
+	if (bDrew)
+		Refresh(true);
+}
+
+void BuilderView::OnSize(wxSizeEvent& event)
+{
+	// Attempt to avoid unnecessary redraws on shrinking the window.
+	// Unfortunately this code appears to have no effect, we still
+	//  get the Refresh-Draw event.
+	//
+	wxSize size = GetSize();
+	if (size.x <= m_previous_size.x && size.y <= m_previous_size.y)
+		event.Skip();
+	else
+		vtScaledView::OnSize(event);
+	m_previous_size = size;
+}
+
 
 //////////////////
 // Keyboard shortcuts

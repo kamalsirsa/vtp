@@ -177,10 +177,14 @@ protected:
 	void OnMouseMove(wxMouseEvent& event);
 	void OnMouseMoveLButton(const wxPoint &point);
 
+	void OnIdle(wxIdleEvent& event);
+	void OnSize(wxSizeEvent& event);
+
 	void InvertRect(wxDC *pDC, const wxRect &r, bool bDashed = false);
 	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
 	void DrawArea(wxDC *pDC);
 
+	wxSize m_previous_size;
 	DRECT m_world_rect;		// rectangle box drawn by mouse
 
 	// Mouse in window coords
