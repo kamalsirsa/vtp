@@ -786,6 +786,11 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 
 ////////////////////////////////////////////////////////////////////
 
+vtMaterialArrayBase::~vtMaterialArrayBase()
+{
+	Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0;
+}
+
 void vtMaterialArrayBase::DestructItems(int first, int last)
 {
 	for (int i = first; i <= last; i++)
@@ -1032,7 +1037,6 @@ void vtMaterialArrayBase::CopyFrom(vtMaterialArrayBase *pFrom)
 
 vtMaterialBase::vtMaterialBase()
 {
-	m_pImage = NULL;
 }
 
 /**
@@ -1041,14 +1045,6 @@ vtMaterialBase::vtMaterialBase()
 void vtMaterialBase::SetTexture2(const char *szFilename)
 {
 	SetTexture(new vtImage(szFilename));
-}
-
-/**
- * Returns the texture (image) associated with a material.
- */
-vtImage *vtMaterialBase::GetTexture()
-{
-	return m_pImage;
 }
 
 /**
@@ -1064,22 +1060,7 @@ void vtMaterialBase::CopyFrom(vtMaterial *pFrom)
 	SetCulling(pFrom->GetCulling());
 	SetLighting(pFrom->GetLighting());
 
-	SetTexture(pFrom->GetTexture());
+//	SetTexture(pFrom->GetTexture());
 	SetTransparent(pFrom->GetTransparent());
-}
-
-/////////////////////////////////////////////
-
-void vtGeomBase::SetMaterials(class vtMaterialArray *mats)
-{
-	m_pMaterialArray = mats;
-}
-
-vtMaterial *vtGeomBase::GetMaterial(int idx)
-{
-	if (m_pMaterialArray && idx >= 0 && idx < m_pMaterialArray->GetSize())
-		return m_pMaterialArray->GetAt(idx);
-	else
-		return NULL;
 }
 
