@@ -31,22 +31,21 @@ enum LodMethodEnum {
 	LM_BRYANQUAD
 };
 
-class PointStyle
+// TParam Layer Types
+#define TERR_LTYPE_STRUCTURE	"Structure"
+#define TERR_LTYPE_RAW			"Raw"
+
+class RawStyle
 {
 public:
-	PointStyle();
+	RawStyle();
 
-	int m_field_index;			// index of field for Text to show
-	float m_label_elevation;
-	float m_label_size;
-	RGBi m_label_color;
-};
-
-struct ParamStructLayer
-{
-	ParamStructLayer() : m_bVisible(true) {}
-	vtString m_strStructFile;
-	bool m_bVisible;
+	RGBi m_Color;
+	int m_iTextFieldIndex;		// index of field for Text to show
+	int m_iColorFieldIndex;
+	float m_fLabelElevation;
+	float m_fLabelSize;
+	RGBi m_LabelColor;
 };
 
 class TParams : public vtTagArray
@@ -63,11 +62,7 @@ public:
 	bool LoadFromXML(const char *fname);
 
 	// override to catch structure files
-	void WriteOverridesToXML(FILE *fp);
-
-	// Convenience methods
-	void SetPointStyle(const PointStyle &style);
-	PointStyle GetPointStyle() const;
+	void WriteOverridesToXML(FILE *fp) const;
 
 	void SetLodMethod(LodMethodEnum method);
 	LodMethodEnum GetLodMethod() const;
@@ -80,7 +75,7 @@ public:
 
 public:
 	// this must be a public member (currently..)
-	std::vector<ParamStructLayer> m_strStructFiles;
+	std::vector<vtTagArray> m_Layers;
 
 private:
 	bool LoadFromIniFile(const char *fname);
@@ -100,6 +95,7 @@ public:
 
 protected:
 	TParams *m_pParams;
+	vtTagArray m_layer;
 	bool m_bViz;
 };
 
@@ -189,12 +185,6 @@ protected:
 #define STR_HORIZON "Horizon"
 #define STR_OVERLAY	"Overlay"
 #define STR_BGCOLOR "Background_Color"
-
-#define STR_LABELS "Labels"
-#define STR_LABELFILE "LabelFile"
-#define STR_LABELFIELD "Label_Field"
-#define STR_LABELHEIGHT "Label_Height"
-#define STR_LABELSIZE "Label_Size"
 
 #define STR_ROUTEENABLE "Route_Enable"
 #define STR_ROUTEFILE "Route_File"

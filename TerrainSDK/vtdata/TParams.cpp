@@ -19,12 +19,14 @@ using namespace std;
 
 //---------------------------------------------------------------------------
 
-PointStyle::PointStyle()
+RawStyle::RawStyle()
 {
-	m_field_index = 0;
-	m_label_elevation = 100.0f;	// 100m above the ground
-	m_label_size = 10.0f;		// 10m tall text
-	m_label_color.Set(255,255,255);	// white
+	m_Color.Set(255,255,255);	// white
+	m_iTextFieldIndex = -1;
+	m_iColorFieldIndex = -1;
+	m_fLabelElevation = 100.0f;	// 100m above the ground
+	m_fLabelSize = 10.0f;		// 10m tall text
+	m_LabelColor.Set(255,255,255);	// white
 }
 
 //---------------------------------------------------------------------------
@@ -123,12 +125,6 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_OVERLAY, "false");
 	AddTag(STR_BGCOLOR, "40 75 124");	// old blue
 
-	AddTag(STR_LABELS, "false");
-	AddTag(STR_LABELFILE, "");
-	AddTag(STR_LABELFIELD, "");
-	AddTag(STR_LABELHEIGHT, "");
-	AddTag(STR_LABELSIZE, "");
-
 	AddTag(STR_ROUTEENABLE, "false");
 	AddTag(STR_ROUTEFILE, "");
 
@@ -152,7 +148,7 @@ TParams &TParams::operator = (const TParams &rhs)
 	*((vtTagArray*)this) = rhs;
 
 	// this the elements of this class
-	m_strStructFiles = rhs.m_strStructFiles;
+	m_Layers = rhs.m_Layers;
 
 	return *this;
 }
@@ -295,10 +291,11 @@ bool TParams::LoadFromIniFile(const char *filename)
 			vtString strFile(get_line_from_stream(input));
 			if (strFile != "")
 			{
-				ParamStructLayer psl;
-				psl.m_bVisible = true;
-				psl.m_strStructFile = strFile;
-				m_strStructFiles.push_back(psl);
+				vtTagArray lay;
+				lay.SetValueString("Type", "Structure");
+				lay.SetValueString("Filename", strFile);
+				lay.SetValueBool("Visible", true);
+				m_Layers.push_back(lay);
 			}
 		}
 		else if (strcmp(buf, STR_STRUCTDIST) == 0 ||
@@ -316,14 +313,6 @@ bool TParams::LoadFromIniFile(const char *filename)
 				 strcmp(buf, STR_DEPRESSOCEANLEVEL) == 0 ||
 				 strcmp(buf, STR_HORIZON) == 0 ||
 				 strcmp(buf, STR_OVERLAY) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-
-		// labels
-		else if (strcmp(buf, STR_LABELS) == 0 ||
-				 strcmp(buf, STR_LABELFILE) == 0 ||
-				 strcmp(buf, STR_LABELFIELD) == 0 ||
-				 strcmp(buf, STR_LABELHEIGHT) == 0 ||
-				 strcmp(buf, STR_LABELSIZE) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 
 		// vehicles
@@ -403,6 +392,13 @@ bool TParams::LoadFromXML(const char *fname)
 	// Convert old time values to new values
 	ConvertOldTimeValue();
 
+	// Remove obsolete stuff
+	RemoveTag("Labels");
+	RemoveTag("LabelFile");
+	RemoveTag("Label_Field");
+	RemoveTag("Label_Height");
+	RemoveTag("Label_Size");
+
 	return true;
 }
 
@@ -416,36 +412,37 @@ void TParamsVisitor::startElement(const char *name, const XMLAttributes &atts)
 		if (attval && !strcmp(attval, "false"))
 			m_bViz = false;
 	}
+	else if (m_level == 2 && !strcmp(name, "Layer"))
+	{
+		m_layer.Clear();
+	}
 }
 
 void TParamsVisitor::endElement(const char *name)
 {
+	// Detect and support old "Structure_File" parameter
 	if (m_level == 2 && !strcmp(name, STR_STRUCTFILE))
 	{
-		ParamStructLayer psl;
-		psl.m_bVisible = m_bViz;
-		psl.m_strStructFile = m_data.c_str();
-		m_pParams->m_strStructFiles.push_back(psl);
+		vtTagArray lay;
+		lay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
+		lay.SetValueString("Filename", m_data.c_str(), true);
+		lay.SetValueBool("Visible", m_bViz, true);
+		m_pParams->m_Layers.push_back(lay);
+		m_level--;
+	}
+	else if (m_level == 2 && !strcmp(name, "Layer"))
+	{
+		m_pParams->m_Layers.push_back(m_layer);
+		m_level--;
+	}
+	else if (m_level == 3)
+	{
+		// Layer properties
+		m_layer.SetValueString(name, m_data.c_str(), true);
 		m_level--;
 	}
 	else
 		TagVisitor::endElement(name);
-}
-
-void TParams::SetPointStyle(const PointStyle &style)
-{
-	SetValueInt(STR_LABELFIELD, style.m_field_index);
-	SetValueFloat(STR_LABELHEIGHT, style.m_label_elevation);
-	SetValueFloat(STR_LABELSIZE, style.m_label_size);
-}
-
-PointStyle TParams::GetPointStyle() const
-{
-	PointStyle ps;
-	ps.m_field_index = GetValueInt(STR_LABELFIELD);
-	ps.m_label_elevation = GetValueFloat(STR_LABELHEIGHT);
-	ps.m_label_size = GetValueFloat(STR_LABELSIZE);
-	return ps;
 }
 
 void TParams::SetLodMethod(LodMethodEnum method)
@@ -482,14 +479,15 @@ vtString TParams::CookTextureFilename() const
 	return str;
 }
 
-void TParams::WriteOverridesToXML(FILE *fp)
+void TParams::WriteOverridesToXML(FILE *fp) const
 {
-	for (unsigned int i = 0; i < m_strStructFiles.size(); i++)
+	for (unsigned int i = 0; i < m_Layers.size(); i++)
 	{
-		const ParamStructLayer &psl = m_strStructFiles[i];
-		fprintf(fp, "\t<%s Visible=\"%s\">%s</%s>\n", STR_STRUCTFILE,
-			psl.m_bVisible ? "true" : "false",
-			(const char *) psl.m_strStructFile, STR_STRUCTFILE);
+		const vtTagArray &lay = m_Layers[i];
+
+		fprintf(fp, "\t<Layer>\n");
+		lay.WriteToXMLBody(fp, 2);
+		fprintf(fp, "\t</Layer>\n");
 	}
 }
 

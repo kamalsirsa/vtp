@@ -256,13 +256,19 @@ void vtTerrain::SetTin(vtTin3d *pTin)
 
 ///////////////////////////////////////////////////////////////////////
 
-void vtTerrain::create_roads(const vtString &strRoadFile)
+void vtTerrain::_CreateRoads()
 {
+	vtString road_fname = "RoadData/";
+	road_fname += m_Params.GetValueString(STR_ROADFILE, true);
+	vtString road_path = FindFileOnPaths(vtGetDataPath(), road_fname);
+	if (road_path == "")
+		return;
+
 	VTLOG("Creating Roads: ");
 	m_pRoadMap = new vtRoadMap3d();
 
-	VTLOG("  Reading from file '%s'\n", (const char *) strRoadFile);
-	bool success = m_pRoadMap->ReadRMF(strRoadFile,
+	VTLOG("  Reading from file '%s'\n", (const char *) road_path);
+	bool success = m_pRoadMap->ReadRMF(road_path,
 		m_Params.GetValueBool(STR_HWY),
 		m_Params.GetValueBool(STR_PAVED),
 		m_Params.GetValueBool(STR_DIRT));
@@ -290,6 +296,25 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
 		m_pRoadMap->GenerateSigns(m_pStructGrid);
+
+	if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
+	{
+		NodeGeom* node = m_pRoadMap->GetFirstNode();
+		IntersectionEngine* lightEngine;
+		char string[50];
+		while (node)
+		{
+			if (node->HasLights())
+			{
+				// add an traffic control engine
+				lightEngine = new IntersectionEngine(node);
+				sprintf(string, "Traffic Control: Node %i", node->m_id);
+				lightEngine->SetName2(string);
+				AddEngine(lightEngine);
+			}
+			node = (NodeGeom*)node->m_pNext;
+		}
+	}
 }
 
 
@@ -1216,44 +1241,54 @@ void vtTerrain::_CreateCulture()
 			VTLOG("  Not found.\n");
 	}
 
-	// The LOD distances are in meters
-	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
-	_SetupVegGrid((float) m_Params.GetValueInt(STR_VEGDISTANCE));
-
 	// create roads
 	if (m_Params.GetValueBool(STR_ROADS))
-	{
-		vtString road_fname = "RoadData/";
-		road_fname += m_Params.GetValueString(STR_ROADFILE, true);
-		vtString road_path = FindFileOnPaths(vtGetDataPath(), road_fname);
-		if (road_path != "")
-			create_roads(road_path);
-
-		if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
-		{
-			NodeGeom* node = m_pRoadMap->GetFirstNode();
-			IntersectionEngine* lightEngine;
-			char string[50];
-			while (node)
-			{
-				if (node->HasLights())
-				{
-					// add an traffic control engine
-					lightEngine = new IntersectionEngine(node);
-					sprintf(string, "Traffic Control: Node %i", node->m_id);
-					lightEngine->SetName2(string);
-					AddEngine(lightEngine);
-				}
-				node = (NodeGeom*)node->m_pNext;
-			}
-		}
-	}
+		_CreateRoads();
 
 	m_pBBEngine = new SimpleBillboardEngine(PID2f);
 	m_pBBEngine->SetName2("Billboard Engine");
 	AddEngine(m_pBBEngine);
 
-	// create trees
+	_CreateVegetation();
+	_CreateStructures();
+
+	// create utility structures (routes = towers and wires)
+	if (m_Params.GetValueBool(STR_ROUTEENABLE))
+	{
+		// TODO
+	}
+
+	// Let any terrain subclasses provide their own culture
+	CreateCustomCulture();
+}
+
+
+//
+// Create an LOD grid to contain and efficiently hide stuff that's far away
+//
+void vtTerrain::_SetupVegGrid(float fLODDistance)
+{
+	// must have a terrain with some size
+	if (!m_pHeightField)
+		return;
+
+	FRECT world_extents;
+	world_extents = m_pHeightField->m_WorldExtents;
+
+	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
+	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
+
+	m_pVegGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
+	m_pVegGrid->SetName2("Vegetation LOD Grid");
+	m_pTerrainGroup->AddChild(m_pVegGrid);
+}
+
+// create vegetation
+void vtTerrain::_CreateVegetation()
+{
+	// The vegetation nodes will be contained in an LOD Grid
+	_SetupVegGrid((float) m_Params.GetValueInt(STR_VEGDISTANCE));
+
 	m_PIA.SetHeightField(m_pHeightField);
 
 	// In case we don't load any plants, or fail to load, we will start with
@@ -1306,78 +1341,6 @@ void vtTerrain::_CreateCulture()
 				VTLOG("\tCouldn't load VF file.\n");
 		}
 	}
-
-	// create built structures
-	vtStructure3d::InitializeMaterialArrays();
-
-	unsigned int i, num = m_Params.m_strStructFiles.size();
-	int created = 0;
-	for (i = 0; i < num; i++)
-	{
-		vtString building_fname = "BuildingData/";
-		const ParamStructLayer &psl = m_Params.m_strStructFiles[i];
-		building_fname += psl.m_strStructFile;
-
-		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
-
-		vtString building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
-		if (building_path == "")
-		{
-			VTLOG("\tNot found.\n");
-		}
-		else
-		{
-			VTLOG("\tFound: %s\n", (const char *) building_path);
-			vtStructureArray3d *sa = CreateStructuresFromXML(building_path);
-			if (sa)
-			{
-				created++;
-
-				// If the user wants it to start hidden, hide it
-				if (psl.m_bVisible == false)
-					sa->SetEnabled(false);
-			}
-		}
-	}
-	if (created == 0)
-	{
-		// No structures loaded, but the user might want to create some later,
-		//  so create a default structure set, and set the projection to match
-		//  the terrain.
-		vtStructureArray3d *sa = NewStructureArray();
-		sa->SetFilename("Untitled.vtst");
-		sa->m_proj = m_proj;
-	}
-
-	// create utility structures (routes = towers and wires)
-	if (m_Params.GetValueBool(STR_ROUTEENABLE))
-	{
-		// TODO
-	}
-
-	// Let any terrain subclasses provide their own culture
-	CreateCustomCulture();
-}
-
-
-//
-// Create an LOD grid to contain and efficiently hide stuff that's far away
-//
-void vtTerrain::_SetupVegGrid(float fLODDistance)
-{
-	// must have a terrain with some size
-	if (!m_pHeightField)
-		return;
-
-	FRECT world_extents;
-	world_extents = m_pHeightField->m_WorldExtents;
-
-	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
-	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
-
-	m_pVegGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
-	m_pVegGrid->SetName2("Vegetation LOD Grid");
-	m_pTerrainGroup->AddChild(m_pVegGrid);
 }
 
 //
@@ -1400,32 +1363,94 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 	m_pTerrainGroup->AddChild(m_pStructGrid);
 }
 
+void vtTerrain::_CreateStructures()
+{
+	// The LOD distances are in meters
+	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
+
+	// create built structures
+	vtStructure3d::InitializeMaterialArrays();
+
+	int created = 0;
+	unsigned int i, num = m_Params.m_Layers.size();
+	for (i = 0; i < num; i++)
+	{
+		const vtTagArray &lay = m_Params.m_Layers[i];
+
+		// Look for structure layers
+		vtString ltype = lay.GetValueString("Type");
+		if (ltype != TERR_LTYPE_STRUCTURE)
+			continue;
+
+		vtString building_fname = "BuildingData/";
+		building_fname += lay.GetValueString("Filename");
+
+		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
+
+		vtString building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
+		if (building_path == "")
+			VTLOG("\tNot found.\n");
+		else
+		{
+			VTLOG("\tFound: %s\n", (const char *) building_path);
+			vtStructureArray3d *sa = CreateStructuresFromXML(building_path);
+			if (sa)
+			{
+				created++;
+
+				// If the user wants it to start hidden, hide it
+				bool bVisible;
+				if (lay.GetValueBool("visible", bVisible))
+					sa->SetEnabled(bVisible);
+			}
+		}
+	}
+	if (created == 0)
+	{
+		// No structures loaded, but the user might want to create some later,
+		//  so create a default structure set, and set the projection to match
+		//  the terrain.
+		vtStructureArray3d *sa = NewStructureArray();
+		sa->SetFilename("Untitled.vtst");
+		sa->m_proj = m_proj;
+	}
+}
+
 /////////////////////////
 
-void vtTerrain::_CreateLabels()
+void vtTerrain::_CreateRawLayers()
 {
-	vtString fname = "PointData/";
-	fname += m_Params.GetValueString(STR_LABELFILE, true);
-	vtString labels_path = FindFileOnPaths(vtGetDataPath(), fname);
-	if (labels_path == "")
+	unsigned int i, num = m_Params.m_Layers.size();
+	for (i = 0; i < num; i++)
 	{
-		VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
-		return;
+		const vtTagArray &lay = m_Params.m_Layers[i];
+
+		// Look for structure layers
+		vtString ltype = lay.GetValueString("Type");
+		if (ltype != TERR_LTYPE_RAW)
+			continue;
+
+		vtString fname = lay.GetValueString("Filename", true);
+		vtString labels_path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (labels_path == "")
+		{
+			VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
+			return;
+		}
+
+		vtFeatureLoader loader;
+		vtFeatureSet *feat = loader.LoadFrom(labels_path);
+		if (!feat)
+		{
+			VTLOG("Couldn't read features from file '%s'\n", (const char *) labels_path);
+			return;
+		}
+		VTLOG("Read features from file '%s'\n", (const char *) labels_path);
+
+		CreateStyledFeatures(*feat, "Fonts/Arial.ttf", lay);
+
+		delete feat;
 	}
-
-	vtFeatureLoader loader;
-
-	vtFeatureSet *feat = loader.LoadFrom(labels_path);
-	if (!feat)
-	{
-		VTLOG("Couldn't read features from file '%s'\n", (const char *) labels_path);
-		return;
-	}
-	VTLOG("Read features from file '%s'\n", (const char *) labels_path);
-
-	CreateStyledFeatures(*feat, "Fonts/Arial.ttf", m_Params.GetPointStyle());
-
-	delete feat;
 }
 
 
@@ -1442,7 +1467,7 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 }
 
 void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname,
-									 const PointStyle &style)
+									 const vtTagArray &style)
 {
 	unsigned int features = feat.GetNumEntities();
 	if (features == 0)
@@ -1456,10 +1481,9 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 	// Create materials.
 	vtMaterialArray *pLabelMats = new vtMaterialArray();
 
-	int field_index_color = feat.GetFieldIndex("color");
-
 	// default case: common label color
-	int common_material_index = pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
+	RGBi label_color = style.GetValueRGBi("Color");
+	int common_material_index = pLabelMats->AddRGBMaterial1(label_color, false, false);
 
 #if 0
 	// It turns out that we don't have to do this, because OSG lets us
@@ -1503,6 +1527,19 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
 	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
 
+	int text_field_index, color_field_index;
+
+	if (!style.GetValueInt("TextFieldIndex", text_field_index))
+		text_field_index = -1;
+	if (!style.GetValueInt("ColorFieldIndex", color_field_index))
+		color_field_index = -1;
+
+	float label_elevation, label_size;
+	if (!style.GetValueFloat("Elevation", label_elevation))
+		label_elevation = 0.0f;
+	if (!style.GetValueFloat("Size", label_size))
+		label_size = 18;
+
 	unsigned int i;
 	DPoint2 p2;
 	DPoint3 p3;
@@ -1524,17 +1561,17 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 			continue;
 
 		// Elevate the location by the desired vertical offset
-		fp3.y += style.m_label_elevation;
+		fp3.y += label_elevation;
 
 		// If we have a 3D point, we can use the Z component of the point
 		//  to further affect the elevation.
 		if (pSetP3)
-			fp3.y += p3.z;
+			fp3.y += label_elevation;
 
 		// Create the vtTextMesh
-		vtTextMesh *text = new vtTextMesh(font, style.m_label_size, true);	// center
+		vtTextMesh *text = new vtTextMesh(font, label_size, true);	// center
 
-		feat.GetValueAsString(i, style.m_field_index, str);
+		feat.GetValueAsString(i, text_field_index, str);
 #if SUPPORT_WSTRING
 		// Text might be UTF-8
 		wstring2 wide_string;
@@ -1557,16 +1594,16 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 			material_index = common_material_index;
 		else
 		{
-			if (GetColorField(feat, i, field_index_color, rgba))
+			if (GetColorField(feat, i, color_field_index, rgba))
 				material_index = pLabelMats->FindByDiffuse(rgba);
 			else
 				material_index = common_material_index;
 		}
 		geom->AddTextMesh(text, material_index);
 #else
-		if (field_index_color != -1)
+		if (color_field_index != -1)
 		{
-			if (GetColorField(feat, i, field_index_color, rgba))
+			if (GetColorField(feat, i, color_field_index, rgba))
 			{
 				text->SetColor(rgba);
 			}
@@ -1922,8 +1959,7 @@ bool vtTerrain::CreateStep5()
 		create_artificial_horizon(bWater, bHorizon, bCenter, 0.5f);
 	}
 
-	if (m_Params.GetValueBool(STR_LABELS))
-		_CreateLabels();
+	_CreateRawLayers();
 
 	// Engines will be activated later in vtTerrainScene::SetTerrain
 	ActivateEngines(false);
