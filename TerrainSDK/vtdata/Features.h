@@ -16,6 +16,14 @@
 #include "Projections.h"
 #include "Content.h"
 
+enum SelectionType
+{
+	ST_NORMAL,
+	ST_ADD,
+	ST_SUBTRACT,
+	ST_TOGGLE
+};
+
 /**
  * This class is used to store values in memory loaded from DBF files.
  * Alternately, we could use values directly from the DBF file instead,
