@@ -48,7 +48,7 @@ public:
 	void AddElementsFromLULC(vtLULCFile *pLULC);
 	void AddElementsFromSHP_Polys(const wxString2 &filename, vtProjection &proj,
 		int fieldindex, int datatype);
-	void AddElementsFromSHP_Points(const wxString2 &filename, vtProjection &proj,
+	bool AddElementsFromSHP_Points(const wxString2 &filename, vtProjection &proj,
 		VegPointOptions &opt);
 
 	// Search functionality
