@@ -3,12 +3,13 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include <osg/Polytope>
+#include <osg/LightSource>
 
 using namespace osg;
 
@@ -304,10 +305,13 @@ void vtTransform::PointTowards(const FPoint3 &point)
 
 vtLight::vtLight()
 {
-	// lights don't go into the scene graph in OSG (yet?)
-//	m_pTransform->addChild(m_pLight);
-//	m_pLight = new Light;
-	m_pLight = vtGetScene()->m_pOsgSceneView->getLight();
+	// Lights can now go into the scene graph in OSG, with LightSource.
+	m_pLightSource = new osg::LightSource;
+
+	// A lightsource creates a light, which we will need to get at.
+	m_pLight = (osg::Light *) m_pLightSource->getLight();
+
+	SetOsgNode(m_pLightSource);
 }
 
 void vtLight::SetColor2(const RGBf &color)
@@ -320,11 +324,23 @@ void vtLight::SetAmbient2(const RGBf &color)
 	m_pLight->setAmbient(v2s(color));
 }
 
+void vtLight::SetEnabled(bool bOn)
+{
+/*
+	if (bOn)
+		m_pLightSource->setLocalStateSetModes(StateAttribute::ON);
+	else
+		m_pLightSource->setLocalStateSetModes(StateAttribute::OFF);
+
+*/
+	vtNode::SetEnabled(bOn);
+}
+
 vtMovLight::vtMovLight(vtLight *pContained) : vtTransform()
 {
 	m_pLight = pContained;
-//	m_pGroup->addChild(m_pGeom->m_pGeode);	// Light is not a OSG node
-	vtGetScene()->AddMovLight(this);
+	AddChild(pContained);
+//	m_pGroup->addChild(m_pLight->m_pLightSource);
 }
 
 

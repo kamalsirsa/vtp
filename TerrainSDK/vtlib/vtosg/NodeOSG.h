@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -165,7 +165,11 @@ public:
 	void SetColor2(const RGBf &color);
 	void SetAmbient2(const RGBf &color);
 
-	osg::Light	*m_pLight;
+	// provide override to catch this state
+	virtual void SetEnabled(bool bOn);
+
+	osg::LightSource *m_pLightSource;
+	osg::Light		 *m_pLight;
 };
 
 class vtMovLight : public vtTransform

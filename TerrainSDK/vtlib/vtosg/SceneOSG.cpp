@@ -3,7 +3,7 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,6 +34,10 @@ vtScene::vtScene() : vtSceneBase()
 	m_bInitialized = false;
 	m_bWireframe = false;
 	m_bWinInfo = false;
+}
+
+vtScene::~vtScene()
+{
 }
 
 vtScene *vtGetScene()
@@ -89,18 +93,14 @@ bool vtScene::Init()
 	// OSG 0.8.45 and before
 //	m_pOsgSceneView->setCalcNearFar(false);
 
-	// OSG 0.9.0
+	// OSG 0.9.0 and newer
 	m_pOsgSceneView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 
-	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::SKY_LIGHT);
-//	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
-	osgUtil::CullVisitor *cvis = m_pOsgSceneView->getCullVisitor();
-
-	// OSG 0.8.44
-//	osgUtil::CullViewState::CullingMode mode = cvis->getCullingMode();
-//	mode &= ~(osgUtil::CullViewState::SMALL_FEATURE_CULLING);
+//	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::SKY_LIGHT);
+	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
 	// OSG 0.8.45
+//	osgUtil::CullVisitor *cvis = m_pOsgSceneView->getCullVisitor();
 //	osgUtil::CullVisitor::CullingMode mode = cvis->getCullingMode();
 //	mode &= ~(osgUtil::CullVisitor::SMALL_FEATURE_CULLING);
 //	cvis->setCullingMode(mode);
@@ -116,12 +116,6 @@ bool vtScene::Init()
 	return true;
 }
 
-void vtScene::AddMovLight(vtMovLight *pML)
-{
-	m_Lights.Append(pML);
-	m_pOsgSceneView->setLight(pML->GetLight()->m_pLight);
-}
-
 void vtScene::DoUpdate()
 {
 	if (!m_bInitialized)
@@ -132,31 +126,11 @@ void vtScene::DoUpdate()
 
 	DoEngines();
 
-	// Copy the light locations from their transform nodes
-	// to the real lights
-	for (int i = 0; i < m_Lights.GetSize(); i++)
-	{
-		vtMovLight *m = m_Lights[i];
-		vtLight *l = m->GetLight();
-		FMatrix4 mat;
-		m->GetTransform1(mat);
-
-		// get position
-		FPoint3 pos = mat.GetTrans();
-
-		// get direction
-		FPoint3 dir1(0.0f, 0.0f, -1.0f), dir;
-		mat.TransformVector(dir1, dir);
-
-		pos = -dir;
-		l->m_pLight->setPosition(v2s2(pos));
-//		l->m_pLight->setDirection(v2s(dir));
-	}
-
 	Camera *pOsgCam = m_pCamera->m_pOsgCamera;
 
 	// let the OSG Camera know that its transform has (probably) changed
-//	pOsgCam->dirtyTransform();	// no longer needed as of OSG 0.8.45?
+	// apparently no longer needed as of OSG 0.8.45
+//	pOsgCam->dirtyTransform();
 
 	m_pOsgSceneView->setCamera(pOsgCam);
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
@@ -167,7 +141,7 @@ void vtScene::DoUpdate()
 void vtScene::SetRoot(vtRoot *pRoot)
 {
 	m_pOsgSceneRoot = pRoot->m_pOsgRoot;
-	m_pOsgSceneView->setSceneData(m_pOsgSceneRoot);
+	m_pOsgSceneView->setSceneData(m_pOsgSceneRoot.get());
 	m_pRoot = pRoot;
 }
 
@@ -249,10 +223,15 @@ vtNodeBase *vtLoadModel(const char *filename)
 	char newname[500];
 	strcpy(newname, filename);
 	for (unsigned int i = 0; i < strlen(filename); i++)
+	{
 		if (newname[i] == '\\') newname[i] = '/';
+	}
 
+	// We must insert a 'Normalize' state above the geometry objets
+	// that we load, otherwise when they are scaled, the vertex normals
+	// will cause strange lighting.  Fortunately, we only need to create
+	// a single State object which is shared by all loaded models.
 	static 	StateSet *normstate = NULL;
-
 	if (!normstate)
 	{
 		normstate = new StateSet;

@@ -23,6 +23,7 @@ class vtScene : public vtSceneBase
 {
 public:
 	vtScene();
+	~vtScene();
 
 	void SetBgColor(RGBf color);
 	void SetAmbient(RGBf color);
@@ -38,8 +39,7 @@ public:
 	void DrawFrameRateChart();
 
 	// OSG-specific implementation
-	void AddMovLight(vtMovLight *pTrans);
-	osgUtil::SceneView	*m_pOsgSceneView;
+	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
 
 #if WIN32
 	bool vtScene::HasWinInfo() { return m_bWinInfo; }
@@ -47,8 +47,7 @@ public:
 #endif
 
 protected:
-	osg::Group			*m_pOsgSceneRoot;
-	Array<vtMovLight*>	m_Lights;
+	osg::ref_ptr<osg::Group>	m_pOsgSceneRoot;
 
 	osg::Timer   _timer;
 	osg::Timer_t _initialTick;
