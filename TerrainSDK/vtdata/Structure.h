@@ -56,7 +56,7 @@ enum vtStructureType
  * Structures are implemented as 3 types:
  *  - Buildings (vtBuilding)
  *  - Fences and walls (vtFence)
- *  - Instances (vtStructureInstance)
+ *  - Instances (vtStructInstance)
  * \par
  * For enclosed and linear structures which can be well-described
  * parametrically, vtBuilding and vtFence provide efficient data representation.
