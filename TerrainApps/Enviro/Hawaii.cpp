@@ -435,7 +435,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	if (m_Params.m_bDetailTexture)
 	{
 		m_pDetailMats = new vtMaterialArray();
-		vtString path = FindFileOnPaths(m_DataPaths, "GeoTypical/grass_repeat2_512.bmp");
+		vtString path = FindFileOnPaths(m_DataPaths, "GeoTypical/grass_repeat2_512.jpg");
 		vtDIB *dib = new vtDIB;
 		if (dib->ReadBMP((const char *) path))
 		{
