@@ -43,7 +43,7 @@ RSC=rc.exe
 F90=df.exe
 MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "\APIs" /I "\APIs\libpng-1.0.8" /I "\APIs\zlib" /I "\APIs\netcdf-3.5.0.win32bin\include" /I "\APIs\sdtsxx" /I "\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /D SUPPORT_SDTS=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /D SUPPORT_SDTS=1 /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -68,7 +68,7 @@ LIB32=link.exe -lib
 F90=df.exe
 MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I "\APIs" /I "\APIs\libpng-1.0.8" /I "\APIs\zlib" /I "\APIs\netcdf-3.5.0.win32bin\include" /I "\APIs\sdtsxx" /I "\TerrainSDK" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /FR /YX /FD /c
+# ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /FR /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe

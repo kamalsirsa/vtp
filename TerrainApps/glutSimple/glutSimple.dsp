@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "\TerrainSDK" /I "\APIs" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D VTLIB_OSG=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D VTLIB_OSG=1 /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GR /GX /Zi /Od /I "\TerrainSDK" /I "\APIs" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D VTLIB_OSG=1 /FR /YX /FD /Zm1000 /GZ /c
+# ADD CPP /nologo /MDd /W3 /GR /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D VTLIB_OSG=1 /FR /YX /FD /Zm1000 /GZ /c
 # SUBTRACT CPP /X
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"

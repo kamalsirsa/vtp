@@ -40,10 +40,10 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I "\APIs" /I "\plib-1.3.1\include" /I "\TerrainSDK" /I "\APIs\osg-0.8.41\include" /I "\APIs\libpng-1.0.8" /I "\APIs\zlib" /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /YX"vtlib/vtlib.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GR /GX /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /YX"vtlib/vtlib.h" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -65,10 +65,10 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I "\APIs" /I "\plib-1.3.1\include" /I "\TerrainSDK" /I "\APIs\osg-0.8.41\include" /I "\APIs\libpng-1.0.8" /I "\APIs\zlib" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I ".." /I "..\.." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
