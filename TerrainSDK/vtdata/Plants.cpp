@@ -231,67 +231,37 @@ class PlantListVisitor : public XMLVisitor
 {
 public:
 	PlantListVisitor(vtPlantList *pl) :
-		_level(0), m_pPL(pl) {}
+		m_state(0), m_pPL(pl) {}
 
 	virtual ~PlantListVisitor () {}
 
-	void startXML ();
-	void endXML ();
-	void startElement (const char * name, const XMLAttributes &atts);
-	void endElement (const char * name);
-	void data (const char * s, int length);
+	void startXML() { m_state = 0; }
+	void startElement(const char * name, const XMLAttributes &atts);
+	void endElement(const char * name);
+	void data(const char * s, int length);
 
 private:
-	struct State
+	void push_state()
 	{
-		State () : item(0), type("") {}
-		State (vtPlantSpecies * _item, const char * _type)
-			: item(_item), type(_type) {}
-		vtPlantSpecies * item;
-		string type;
-	};
-
-	State &state () { return _state_stack[_state_stack.size() - 1]; }
-
-	void push_state (vtPlantSpecies *_item, const char *type)
-	{
-		if (type == 0)
-			_state_stack.push_back(State(_item, "unspecified"));
-		else
-			_state_stack.push_back(State(_item, type));
-		_level++;
-		_data = "";
+		m_state++;
+		m_data = "";
 	}
+	void pop_state() { m_state--; }
 
-	void pop_state () {
-		_state_stack.pop_back();
-		_level--;
-	}
-
-	string _data;
-	int _level;
-	vector<State> _state_stack;
+	vtPlantSpecies *m_pSpecies;
+	string m_data;
+	int m_state;
 
 	vtPlantList *m_pPL;
 };
 
-void PlantListVisitor::startXML ()
+void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts)
 {
-  _level = 0;
-  _state_stack.resize(0);
-}
+	const char *attval;
 
-void PlantListVisitor::endXML ()
-{
-  _level = 0;
-  _state_stack.resize(0);
-}
+	push_state();
 
-void PlantListVisitor::startElement (const char * name, const XMLAttributes &atts)
-{
-	State &st = state();
-
-	if (_level == 0)
+	if (m_state == 1)
 	{
 		if (string(name) != (string)"species-file")
 		{
@@ -300,52 +270,42 @@ void PlantListVisitor::startElement (const char * name, const XMLAttributes &att
 			message += "; expected species-file";
 			throw xh_io_exception(message, "XML Reader");
 		}
-		push_state(NULL, "top");
-		return;
 	}
 
-	const char * attval;
-
-	if (_level == 1)
+	if (m_state == 2)
 	{
 		if (string(name) == (string)"species")
 		{
-			vtPlantSpecies *pItem = new vtPlantSpecies();
+			m_pSpecies = new vtPlantSpecies();
 
 			// Get id, name, max height.
 			attval = atts.getValue("id");
 			if (attval != NULL)
-				pItem->SetSpecieID(atoi(attval));
+				m_pSpecies->SetSpecieID(atoi(attval));
 			attval = atts.getValue("name");
 			if (attval != NULL)
-				pItem->SetSciName(attval);
+				m_pSpecies->SetSciName(attval);
 			attval = atts.getValue("max_height");
 			if (attval != NULL)
-				pItem->SetMaxHeight((float)atof(attval));
+				m_pSpecies->SetMaxHeight((float)atof(attval));
 
-			push_state(pItem, "species");
 		}
-		return;
 	}
 
-	vtPlantSpecies *pItem = st.item;
-	if (!pItem)
-		return;
-
-	if (_level == 2)
+	if (m_pSpecies && m_state == 3)
 	{
 		if (string(name) == (string)"common")
 		{
 			// Get the common name (assumes English language)
 			attval = atts.getValue("name");
 			if (attval != NULL)
-				pItem->SetCommonName(attval);
+				m_pSpecies->SetCommonName(attval);
 		}
 		else if (string(name) == (string)"appearance")
 		{
 			AppearType type;
 			vtString filename;
-			float width, height, shadow_radius, shadow_darkness;
+			float width, height, shadow_radius = 1.0f, shadow_darkness = 0.0f;
 			attval = atts.getValue("type");
 			if (attval != NULL)
 				type = (AppearType) atoi(attval);
@@ -364,29 +324,25 @@ void PlantListVisitor::startElement (const char * name, const XMLAttributes &att
 			attval = atts.getValue("shadow_darkness");
 			if (attval != NULL)
 				shadow_darkness = (float)atof(attval);
-			pItem->AddAppearance(type, filename, width, height, shadow_radius, shadow_darkness);
+			m_pSpecies->AddAppearance(type, filename, width, height,
+				shadow_radius, shadow_darkness);
 		}
-		return;
 	}
-
 }
 
-void PlantListVisitor::endElement(const char * name)
+void PlantListVisitor::endElement(const char *name)
 {
-	State &st = state();
-
-	if (string(name) == (string)"species")
+	if (m_pSpecies != NULL && m_state == 2)
 	{
-		if (st.item != NULL)
-			m_pPL->Append(st.item);
-		pop_state();
+		m_pPL->Append(m_pSpecies);
+		m_pSpecies = NULL;
 	}
+	pop_state();
 }
 
 void PlantListVisitor::data(const char *s, int length)
 {
-	if (state().item != NULL)
-		_data.append(string(s, length));
+	m_data.append(string(s, length));
 }
 
 bool vtPlantList::ReadXML(const char* pathname)
