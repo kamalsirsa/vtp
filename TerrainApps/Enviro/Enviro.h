@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -239,7 +239,6 @@ protected:
 
 	// linear arc on Earth (or Distance Tool on the Terrain)
 	vtGeom		*m_pArc;
-	vtMesh		*m_pArcMesh;
 	vtMaterialArray *m_pArcMats;
 	double		m_fArcLength;
 	float		m_fDistToolHeight;

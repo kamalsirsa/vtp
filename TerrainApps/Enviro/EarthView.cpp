@@ -1,7 +1,7 @@
 //
 // Earth View functionality of class Enviro
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -684,13 +684,11 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 {
 	SetupArcMesh();
 
-	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(m_pArcMesh, g1, g2);
+	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 0);
+	double angle = m_pIcoGlobe->AddSurfaceLineToMesh(&mf, g1, g2);
 
 	// estimate horizontal distance (angle * radius)
 	m_fArcLength = angle * EARTH_RADIUS;
-
-	m_pArc->AddMesh(m_pArcMesh, 0);
-	m_pArcMesh->Release();		// Pass ownership
 }
 
 void Enviro::DescribeCoordinatesEarth(vtString &str)

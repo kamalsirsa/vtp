@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,7 +60,6 @@ Enviro::Enviro() : vtTerrainScene()
 	m_pCursorMGeom = NULL;
 
 	m_pArc = NULL;
-	m_pArcMesh = NULL;
 	m_pArcMats = NULL;
 	m_fArcLength = 0.0;
 	m_fDistToolHeight = 5.0f;
@@ -1310,8 +1309,6 @@ void Enviro::SetupArcMesh()
 
 	// re-create mesh if not the first time
 	FreeArcMesh();
-	// set the points of the arc
-	m_pArcMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 20);
 }
 
 void Enviro::FreeArc()
@@ -1326,10 +1323,10 @@ void Enviro::FreeArc()
 
 void Enviro::FreeArcMesh()
 {
-	if (m_pArc && m_pArcMesh)
+	if (m_pArc)
 	{
-		m_pArc->RemoveMesh(m_pArcMesh);
-		m_pArcMesh = NULL;
+		for (int i = m_pArc->GetNumMeshes()-1; i >= 0; i--)
+			m_pArc->RemoveMesh(m_pArc->GetMesh(i));
 	}
 }
 
@@ -1343,10 +1340,8 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	dline.Append(g2);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	m_fArcLength = pTerr->AddSurfaceLineToMesh(m_pArcMesh, dline, m_fDistToolHeight);
-
-	m_pArc->AddMesh(m_pArcMesh, 1);
-	m_pArcMesh->Release();		// Pass ownership
+	vtMeshFactory mf(m_pArc, vtMesh::LINE_STRIP, 0, 30000, 1);
+	m_fArcLength = pTerr->AddSurfaceLineToMesh(&mf, dline, m_fDistToolHeight, true);
 }
 
 
