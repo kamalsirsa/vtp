@@ -363,7 +363,7 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		return;
 	}
 
-	wxString str;
+	wxString2 str;
 
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
 	str.Printf(_("Entity type: %hs\n"), OGRGeometryTypeToName(type));
@@ -407,7 +407,7 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		for (int i = 0; i < num_fields; i++)
 		{
 			Field *pField = m_pSet->GetField(i);
-			str.Printf(_T("  %s (%s)\n"), (const char *) pField->m_name,
+			str.Printf(_T("  %hs (%hs)\n"), (const char *) pField->m_name,
 				DescribeFieldType(pField->m_type));
 			strIn += str;
 		}
