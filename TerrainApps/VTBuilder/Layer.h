@@ -17,6 +17,7 @@
 #define FSTRING_BT		"BT Files (*.bt)|*.bt|"
 #define FSTRING_RMF		"RMF Files (*.rmf)|*.rmf|"
 #define FSTRING_BCF		"BCF Files (*.bcf)|*.bcf|"
+#define FSTRING_TIN		"TIN Files (*.tin)|*.tin|"
 
 #define FSTRING_ADF		"Arc Data Files (*.adf)|*.adf|"
 #define FSTRING_ASC		"ArcInfo ASCII grid (*.asc)|*.asc|"
@@ -77,7 +78,7 @@ public:
 	bool Save(const char *filename = NULL);
 	bool Load(const char *filename = NULL);
 
-	// these must be overriden
+	// these must be implemented
 	virtual bool GetExtent(DRECT &rect) = 0;
 	virtual void DrawLayer(wxDC* pDC, class vtScaledView *pView) = 0;
 	virtual bool ConvertProjection(vtProjection &proj) = 0;
@@ -88,6 +89,9 @@ public:
 	virtual void SetProjection(vtProjection &proj) = 0;
 	virtual void Offset(const DPoint2 &p);
 	virtual void GetPropertyText(wxString &str) {}
+
+	// these may be optionally implemented
+	virtual char *GetFileExtension();
 
 	static char *LayerTypeName[];
 	static char *LayerFileExtension[];

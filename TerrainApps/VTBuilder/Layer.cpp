@@ -150,15 +150,16 @@ char *vtLayer::GetFileDialogFilter()
 	memcpy(str, " Files (*", 9);
 	str += 9;
 
-	len = strlen(LayerFileExtension[m_type]);
-	memcpy(str, LayerFileExtension[m_type], len);
+	char *ext = GetFileExtension();
+	len = strlen(ext);
+	memcpy(str, ext, len);
 	str += len;
 
 	memcpy(str, ")|*", 3);
 	str += 3;
 
-	len = strlen(LayerFileExtension[m_type]);
-	memcpy(str, LayerFileExtension[m_type], len);
+	len = strlen(ext);
+	memcpy(str, ext, len);
 	str += len;
 
 	memcpy(str, "|All Files|*.*|", 16);
@@ -177,7 +178,7 @@ bool vtLayer::AskForSaveFilename()
 		return false;
 
 	wxString name = saveFile.GetPath();
-	wxString ext = LayerFileExtension[GetType()];
+	wxString ext = GetFileExtension();
 	if (name.Len() < ext.Len() ||
 		name.Right(ext.Len()) != ext)
 	{
@@ -186,6 +187,11 @@ bool vtLayer::AskForSaveFilename()
 	SetFilename(name);
 	m_bNative = true;
 	return true;
+}
+
+char *vtLayer::GetFileExtension()
+{
+	return LayerFileExtension[GetType()];
 }
 
 void vtLayer::SetMessageText(const char *msg)
