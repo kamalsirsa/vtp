@@ -53,6 +53,7 @@ vtScene::vtScene() : vtSceneBase()
 	m_bInitialized = false;
 	m_bWireframe = false;
 	m_bWinInfo = false;
+	m_pHUD = NULL;
 }
 
 vtScene::~vtScene()
@@ -373,6 +374,14 @@ bool vtScene::GetGlobalWireframe()
 {
 	return m_bWireframe;
 }
+
+void vtScene::SetWindowSize(int w, int h)
+{
+	if (m_pHUD)
+		m_pHUD->SetWindowSize(w, h);
+	vtSceneBase::SetWindowSize(w, h);
+}
+
 
 void printnode(osg::Node *node, int tab) {
 	for (int i = 0; i < tab*2; i++) {

@@ -491,16 +491,18 @@ protected:
 class vtHUD : public vtGroup
 {
 public:
-	vtHUD();
+	vtHUD(bool bPixelCoords = true);
 	vtNodeBase *Clone();
 	void CopyFrom(const vtHUD *rhs);
 	void Release();
 
-public:
-	// OSG-specific Implementation
-	osg::Projection *m_projection;
+	void SetWindowSize(int w, int h);
 
 protected:
+	// OSG-specific Implementation
+	osg::Projection *m_projection;
+	bool m_bPixelCoords;
+
 	virtual ~vtHUD() {}
 };
 

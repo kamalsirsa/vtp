@@ -79,6 +79,9 @@ public:
 	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 	void ShadowVisibleNode(vtNode *node, bool bVis);
 
+	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
+	void SetWindowSize(int w, int h);
+
 protected:
 	// OSG-specific implementation
 	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
@@ -97,6 +100,7 @@ protected:
 	bool	m_bWinInfo;
 	bool	m_bInitialized;
 	bool	m_bWireframe;
+	vtHUD	*m_pHUD;
 };
 
 // global

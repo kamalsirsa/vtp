@@ -384,7 +384,7 @@ public:
 	void SetKeyStates(bool *piKeyState) { m_piKeyState = piKeyState; }
 	bool GetKeyState(int key);
 
-	void SetWindowSize(int w, int h);
+	virtual void SetWindowSize(int w, int h);
 	IPoint2 GetWindowSize() { return m_WindowSize; }
 
 	virtual void SetRoot(vtGroup *pRoot) = 0;

@@ -1373,36 +1373,62 @@ void vtSprite::SetWindowSize(int x, int y)
 
 //////////////////////////////////////////////
 
-vtHUD::vtHUD() : vtGroup(true)
+/**
+ * Create a HUD node.  A HUD ("heads-up display") is a group whose whose
+ * children are transformed to be drawn in window coordinates, rather
+ * than world coordinates.
+ *
+ * You should only ever create one HUD node in your scenegraph.
+ *
+ * \param bPixelCoords If true, the child transforms should be interpreted
+ *		as pixel coordinates, from (0,0) in the lower-left of the viewpoint.
+ *		Otherwise, they are considered in normalized window coordinates,
+ *		from (0,0) in the lower-left to (1,1) in the upper right.
+ */
+vtHUD::vtHUD(bool bPixelCoords) : vtGroup(true)
 {
 	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
 	modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
 	modelview_abs->setMatrix(osg::Matrix::identity());
 
+	m_projection = new osg::Projection;
+	m_projection->addChild(modelview_abs);
+	SetOsgGroup(m_projection);
+
 	// We can set the projection to pixels (0,width,0,height) or
 	//	normalized (0,1,0,1)
-	vtScene *pScene = vtGetScene();
-	IPoint2 winsize = pScene->GetWindowSize();
+	m_bPixelCoords = bPixelCoords;
+	if (m_bPixelCoords)
+	{
+		IPoint2 winsize = vtGetScene()->GetWindowSize();
+		m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
+	}
+	else
+	{
+		// Normalized window coordinates, 0 to 1
+		m_projection->setMatrix(osg::Matrix::ortho2D(0, 1, 0, 1));
+	}
 
-	m_projection = new osg::Projection;
-	m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
-	m_projection->addChild(modelview_abs);
-
-	// To ensure the sprite appears on top we can use osg::Depth to force
-	//  the depth fragments to be placed at the front of the screen.
+	// To ensure that the sprite appears on top we can use osg::Depth to
+	//  force the depth fragments to be placed at the front of the screen.
 	osg::StateSet* stateset = m_projection->getOrCreateStateSet();
 	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
 
-	SetOsgGroup(m_projection);
-	// but, HUD is special!  the modelview node is the container
+	// A HUD node is unlike other group nodes!
+	// The modelview node is the container for the node's children.
 	m_pGroup = modelview_abs;
+
+	vtGetScene()->SetHUD(this);
 }
 
 void vtHUD::Release()
 {
 	// Check if there are no more external references to this HUD node.
 	if (m_pNode->referenceCount() == 1)
+	{
 		m_projection = NULL;
+		vtGetScene()->SetHUD(NULL);
+	}
 	vtGroup::Release();
 }
 
@@ -1416,5 +1442,11 @@ vtNodeBase *vtHUD::Clone()
 void vtHUD::CopyFrom(const vtHUD *rhs)
 {
 	// TODO
+}
+
+void vtHUD::SetWindowSize(int w, int h)
+{
+	if (m_bPixelCoords)
+		m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
 }
 
