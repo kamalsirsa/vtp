@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1502,8 +1502,12 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		}
 
 		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
-		m_pInstanceDlg->SetDataPaths(pTerrain->s_DataPaths);
 		m_pDistanceDlg->SetProjection(pTerrain->GetProjection());
+
+		// Fill instance dialog with global and terrain-specific content
+		m_pInstanceDlg->ClearContent();
+		m_pInstanceDlg->AddContent(&vtTerrain::s_Content);
+		m_pInstanceDlg->AddContent(&pTerrain->m_Content);
 
 		// Also switch to the time engine for the terrain, not the globe.
 		SetTimeEngine(GetTerrainScene()->GetTimeEngine());
