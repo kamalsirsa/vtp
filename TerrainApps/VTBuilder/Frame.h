@@ -260,7 +260,7 @@ public:
 	void OnSelectionChanged();
 
 	// Projection
-	void SetProjection(vtProjection &p);
+	void SetProjection(const vtProjection &p);
 	void GetProjection(vtProjection &p) { p = m_proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 

@@ -1493,7 +1493,8 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	OpenProgressDialog("Generating Bitmap");
 
 	wxString fname = loadFile.GetPath();
-	vtDIB dib(size, size, 24, false);
+	vtDIB dib;
+	dib.Create(size, size, 24, false);
 
 	vtElevLayer *pEL = GetActiveElevLayer();
 

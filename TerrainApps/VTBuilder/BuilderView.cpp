@@ -365,9 +365,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	if (!WMPoly)
 		return;
 
-	vtProjection &dproj = (vtProjection &)proj;
-
-	const char *proj_name = dproj.GetProjectionNameShort();
+	const char *proj_name = proj.GetProjectionNameShort();
 	if (!strcmp(proj_name, "Geo") || !strcmp(proj_name, "Unknown"))
 	{
 		// the data is already in latlon so just use WMPoly
@@ -378,13 +376,13 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 
 	// Otherwise, must convert from Geo to whatever project is desired
 	vtProjection Source;
-	CreateSimilarGeographicProjection(dproj, Source);
+	CreateSimilarGeographicProjection(proj, Source);
 
 #if DEBUG
 	// Check projection text
 	char *str1, *str2;
 	Source.exportToWkt(&str1);
-	dproj.exportToWkt(&str2);
+	((vtProjection &)proj).exportToWkt(&str2);
 	wxLogDebug(str1);
 	wxLogDebug(str2);
 
@@ -392,13 +390,13 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	char *str3, *str4;
 	Source.exportToProj4(&str3);
 	wxLogDebug(str3);
-	dproj.exportToProj4(&str4);
+	proj.exportToProj4(&str4);
 	wxLogDebug(str4);
 #endif
 
 	CPLPushErrorHandler(myErrorHandler);
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&Source, &dproj);
+	OCT *trans = OGRCreateCoordinateTransformation(&Source, &proj);
 	CPLPopErrorHandler();
 
 	if (!trans)

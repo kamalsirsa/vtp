@@ -128,7 +128,7 @@ void vtWaterLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtWaterLayer::SetProjection(vtProjection &proj)
+void vtWaterLayer::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 }

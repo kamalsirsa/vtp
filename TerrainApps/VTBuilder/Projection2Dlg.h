@@ -48,7 +48,7 @@ public:
     wxChoice* GetZonechoice()  { return (wxChoice*) FindWindow( ID_ZONE ); }
     wxChoice* GetDatumchoice()  { return (wxChoice*) FindWindow( ID_DATUM ); }
     wxChoice* GetProjchoice()  { return (wxChoice*) FindWindow( ID_PROJ ); }
-    void SetProjection(vtProjection &proj);
+    void SetProjection(const vtProjection &proj);
     void GetProjection(vtProjection &proj);
     void SetUIFromProjection();
     void SetProjectionUI(ProjType type);

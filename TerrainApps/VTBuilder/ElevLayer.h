@@ -48,7 +48,7 @@ public:
 	bool OnSave();
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
-	void SetProjection(vtProjection &proj);
+	void SetProjection(const vtProjection &proj);
 	void GetPropertyText(wxString &str);
 	char *vtElevLayer::GetFileExtension();
 

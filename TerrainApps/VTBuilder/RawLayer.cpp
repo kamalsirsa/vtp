@@ -254,7 +254,7 @@ void vtRawLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtRawLayer::SetProjection(vtProjection &proj)
+void vtRawLayer::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 }

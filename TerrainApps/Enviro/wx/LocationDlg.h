@@ -39,8 +39,8 @@ public:
     wxListBox* GetLoclist()  { return (wxListBox*) FindWindow( ID_LOCLIST ); }
     wxButton* GetRemove()  { return (wxButton*) FindWindow( ID_REMOVE ); }
 	void RefreshList();
-    void SetTarget(vtTransform *pTarget, vtProjection &proj,
-				   vtLocalConversion &conv);
+    void SetTarget(vtTransform *pTarget, const vtProjection &proj,
+				   const vtLocalConversion &conv);
     void SetLocFile(const char *fname);
 	void RefreshButtons();
 

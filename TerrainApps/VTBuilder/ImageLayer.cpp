@@ -91,7 +91,7 @@ void vtImageLayer::GetProjection(vtProjection &proj)
 	proj = m_Proj;
 }
 
-void vtImageLayer::SetProjection(vtProjection &proj)
+void vtImageLayer::SetProjection(const vtProjection &proj)
 {
 	m_Proj = proj;
 }

@@ -150,7 +150,7 @@ void vtVegLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtVegLayer::SetProjection(vtProjection &proj)
+void vtVegLayer::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 }

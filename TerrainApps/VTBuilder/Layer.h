@@ -90,7 +90,7 @@ public:
 	virtual bool OnLoad() = 0;
 	virtual bool AppendDataFrom(vtLayer *pL) = 0;
 	virtual void GetProjection(vtProjection &proj) = 0;
-	virtual void SetProjection(vtProjection &proj) = 0;
+	virtual void SetProjection(const vtProjection &proj) = 0;
 	virtual void Offset(const DPoint2 &p);
 	virtual void GetPropertyText(wxString &str) {}
 

@@ -52,8 +52,8 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	RefreshButtons();
 }
 
-void LocationDlg::SetTarget(vtTransform *pTarget, vtProjection &proj,
-							vtLocalConversion &conv)
+void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
+							const vtLocalConversion &conv)
 {
     m_pSaver->SetTransform(pTarget);
 	m_pSaver->SetConversion(conv);

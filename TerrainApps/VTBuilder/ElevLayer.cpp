@@ -808,7 +808,7 @@ void vtElevLayer::GetProjection(vtProjection &proj)
 		proj = m_pTin->m_proj;
 }
 
-void vtElevLayer::SetProjection(vtProjection &proj)
+void vtElevLayer::SetProjection(const vtProjection &proj)
 {
 	if (m_pGrid)
 		m_pGrid->SetProjection(proj);

@@ -200,7 +200,7 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	return true;
 }
 
-void vtRoadLayer::SetProjection(vtProjection &proj)
+void vtRoadLayer::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 }

@@ -54,7 +54,7 @@ Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString 
 	ProjectionDialog2Func( this, TRUE ); 
 }
 
-void Projection2Dlg::SetProjection(vtProjection &proj)
+void Projection2Dlg::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 

@@ -26,7 +26,7 @@ public:
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
-	void SetProjection(vtProjection &proj);
+	void SetProjection(const vtProjection &proj);
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &strIn);
 };

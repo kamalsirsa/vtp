@@ -191,7 +191,7 @@ void vtStructureLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtStructureLayer::SetProjection(vtProjection &proj)
+void vtStructureLayer::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 }

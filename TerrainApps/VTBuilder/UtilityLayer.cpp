@@ -134,7 +134,7 @@ void vtUtilityLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtUtilityLayer::SetProjection(vtProjection &proj)
+void vtUtilityLayer::SetProjection(const vtProjection &proj)
 {
 	m_proj = proj;
 }

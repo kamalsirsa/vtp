@@ -859,7 +859,7 @@ double MainFrame::GetHeightFromTerrain(DPoint2 &p)
 	return height;
 }
 
-void MainFrame::SetProjection(vtProjection &p)
+void MainFrame::SetProjection(const vtProjection &p)
 {
 	m_proj = p;
 	GetView()->SetWMProj(p);
