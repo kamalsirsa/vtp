@@ -31,6 +31,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/Globe.h"
+#include "vtlib/core/Contours.h"
 #include "vtdata/vtLog.h"
 
 #include "frame.h"
@@ -624,6 +625,12 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			vtGetTS()->GetSkyDome()->RefreshCelestialObjects();
 		}
 #endif
+		{
+			ContourConverter cc;
+			cc.Setup(pTerr, RGBf(1,1,0));
+			cc.GenerateContours(100);
+			cc.Finish();
+		}
 		break;
 
 	case 4:	// Ctrl-D
