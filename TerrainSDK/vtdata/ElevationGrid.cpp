@@ -994,10 +994,6 @@ bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) c
 		return false;
 	}
 
-//	GetWorldLocation(iX, iZ, p0);
-//	GetWorldLocation(iX+1, iZ, p1);
-//	GetWorldLocation(iX+1, iZ+1, p2);
-//	GetWorldLocation(iX, iZ+1, p3);
 	float alt0, alt1, alt2, alt3;
 	alt0 = GetFValue(iX, iY);
 	alt1 = GetFValue(iX+1, iY);
