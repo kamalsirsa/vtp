@@ -36,8 +36,9 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for ColorMapDlg
+	wxButton* GetSave()  { return (wxButton*) FindWindow( ID_SAVE_CMAP ); }
 	wxTextCtrl* GetHeightToAdd()  { return (wxTextCtrl*) FindWindow( ID_HEIGHT_TO_ADD ); }
 	wxButton* GetDeleteColor()  { return (wxButton*) FindWindow( ID_DELETE_ELEVATION ); }
 	wxButton* GetChangeColor()  { return (wxButton*) FindWindow( ID_CHANGE_COLOR ); }

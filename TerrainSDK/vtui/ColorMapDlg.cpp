@@ -109,12 +109,14 @@ void ColorMapDlg::UpdateItems()
 void ColorMapDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	UpdateEnabling();
+	return wxDialog::OnInitDialog(event);
 }
 
 void ColorMapDlg::UpdateEnabling()
 {
 	GetChangeColor()->Enable(m_iItem != -1);
 	GetDeleteColor()->Enable(m_iItem != -1);
+	GetSave()->Enable(m_strFile != _T(""));
 }
 
 void ColorMapDlg::OnLoad( wxCommandEvent &event )
