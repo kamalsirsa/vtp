@@ -595,6 +595,9 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 			diff = diff * (1 - light_factor);
 			shade += diff;
 
+			// don't over-darken
+			if (shade < 0) shade = 0;
+
 			// combine color and shading
 			if (b8bit)
 				pBM->ScalePixel8(i, h-1-j, shade);
