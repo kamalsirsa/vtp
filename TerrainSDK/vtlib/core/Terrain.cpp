@@ -254,7 +254,7 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 ///////////////////
 
-void vtTerrain::_CreateTextures(const vtTime &time)
+void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 {
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.GetTextureEnum();
@@ -331,7 +331,7 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 	// apply pre-lighting (darkening)
 	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pDIB)
 	{
-		_ApplyPreLight(pHFGrid, m_pDIB, time);
+		_ApplyPreLight(pHFGrid, m_pDIB, light_dir);
 	}
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
@@ -391,9 +391,9 @@ void vtTerrain::_CreateTextures(const vtTime &time)
 /**
  * Experimental only!!!
  */
-void vtTerrain::recreate_textures(const vtTime &time)
+void vtTerrain::recreate_textures(vtTransform *pSunLight)
 {
-	_CreateTextures(time);
+	_CreateTextures(pSunLight->GetDirection());
 }
 
 
@@ -1323,6 +1323,20 @@ void vtTerrain::SetFogDistance(float fMeters)
 		SetFog(true);
 }
 
+
+///////////////////////////////////////////////////////////////////////
+//////////////////////////// Time Methods /////////////////////////////
+
+/**
+ * Get the time at which a terrain is set to begin.
+ */
+vtTime vtTerrain::GetInitialTime()
+{
+	vtTime localtime;
+	localtime.SetTimeOfDay(m_Params.GetValueInt(STR_INITTIME), 0, 0);
+	return localtime;
+}
+
 /**
  * Given a time value, convert it from the LT (local time) of the center of
  * this terrain to GMT.  Local time is defined precisely by longitude,
@@ -1419,7 +1433,17 @@ bool vtTerrain::CreateStep1()
 		{
 			// if they did not provide us with a TIN, try to load it
 			m_pTin = new vtTin3d;
-			m_pTin->Read(fullpath);
+			bool status = m_pTin->Read(fullpath);
+
+			if (status == false)
+			{
+				_SetErrorMessage("TIN load failed.");
+				return false;
+			}
+			VTLOG("\tTIN load succeeded.\n");
+
+			m_proj = m_pTin->m_proj;
+			g_Conv = m_pTin->m_Conversion;
 		}
 	}
 	else
@@ -1432,8 +1456,11 @@ bool vtTerrain::CreateStep1()
 			_SetErrorMessage("Grid load failed.");
 			return false;
 		}
-
 		VTLOG("\tGrid load succeeded.\n");
+
+		// set global projection based on this terrain
+		m_proj = m_pElevGrid->GetProjection();
+		g_Conv = m_pElevGrid->m_Conversion;
 
 		int col, row;
 		m_pElevGrid->GetDimensions(col, row);
@@ -1458,23 +1485,11 @@ bool vtTerrain::CreateStep1()
 /**
  * Next step in terrain creation: create textures.
  */
-bool vtTerrain::CreateStep2()
+bool vtTerrain::CreateStep2(vtTransform *pSunLight)
 {
-	if (m_Params.GetValueBool(STR_TIN))
-	{
-		m_proj = m_pTin->m_proj;
-		g_Conv = m_pTin->m_Conversion;
-	}
-	else
-	{
-		// set global projection based on this terrain
-		m_proj = m_pElevGrid->GetProjection();
-		g_Conv = m_pElevGrid->m_Conversion;
+	if (!m_Params.GetValueBool(STR_TIN))
+		_CreateTextures(pSunLight->GetDirection());
 
-		vtTime terraintime;
-		terraintime.SetTimeOfDay(m_Params.GetValueInt(STR_INITTIME), 0, 0);
-		_CreateTextures(terraintime);
-	}
 	return true;
 }
 
@@ -1579,33 +1594,6 @@ bool vtTerrain::CreateStep5()
 	ActivateEngines(false);
 
 	return true;
-}
-
-/**
- * CreateScene constructs all geometry, textures and objects for a given terrain.
- *
- * \param bDummy : Ignore this parameter.
- * \param iError : Returns by reference an error value, or 0 for no error.
- * \returns A vtGroup which is the top of the terrain scene graph.
- */
-vtGroup *vtTerrain::CreateScene()
-{
-	if (!CreateStep1())
-		return NULL;
-
-	if (!CreateStep2())
-		return NULL;
-
-	if (!CreateStep3())
-		return NULL;
-
-	if (!CreateStep4())
-		return NULL;
-
-	if (!CreateStep5())
-		return NULL;
-
-	return m_pTerrainGroup;
 }
 
 bool vtTerrain::IsCreated()
@@ -1869,32 +1857,9 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 
 
 void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib,
-							  const vtTime &time)
+							  const FPoint3 &light_dir)
 {
 	VTLOG("Prelighting terrain texture: ");
-	FPoint3 light_dir;
-
-#if 0
-	// This is a cool scientifically accurate way (which we're not using yet..)
-	float altDEG, aziDEG;
-
-	// Compute angle of sun based on location, date and time  (#include "spa.h")
-	SunAltAzi(altDEG,aziDEG,44.875,-110.875,2004,8,1,8,20,0,-7.0,1000.0);  
-
-	// Convert sun azimuth and elevation angles to radians
-	float alt=(altDEG/180.0f*PIf);
-	float azi=(aziDEG/180.0f*PIf);
-
-	light_dir.x=(-sin(azi)*cos(alt));
-	light_dir.z=(-cos(azi)*cos(alt));
-	light_dir.y=-sin(alt);
-#endif
-
-	// Quick and dirty sunlight vector, simply rotate assuming sun will go
-	//  directly overhead.
-	float fraction = (float) time.GetSecondOfDay() / (24*60*60);
-	float angle = PID2f + fraction * PI2f;
-	light_dir.Set(cosf(angle), sinf(angle), 0);
 
 	clock_t c1 = clock();
 

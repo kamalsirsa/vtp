@@ -98,9 +98,8 @@ public:
 	vtTin3d *GetTin() { return m_pTin; }
 
 	/// primary creation function
-	vtGroup *CreateScene();
 	bool CreateStep1();
-	bool CreateStep2();
+	bool CreateStep2(vtTransform *pSunLight);
 	bool CreateStep3();
 	bool CreateStep4();
 	bool CreateStep5();
@@ -220,6 +219,7 @@ public:
 	vtTerrain *GetNext() { return m_pNext; }
 
 	// Time
+	vtTime GetInitialTime();
 	void TranslateToGMT(vtTime &time);
 	void TranslateFromGMT(vtTime &time);
 	DPoint2 GetCenterGeoLocation();
@@ -237,7 +237,7 @@ public:
 	static vtContentManager3d s_Content;
 
 	// Experimental!
-	void recreate_textures(const vtTime &time);
+	void recreate_textures(vtTransform *pSunLight);
 
 protected:
 	/********************** Protected Methods ******************/
@@ -249,7 +249,7 @@ protected:
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateLabels();
-	void _CreateTextures(const vtTime &time);
+	void _CreateTextures(const FPoint3 &light_dir);
 	bool _CreateDynamicTerrain(float fOceanDepth);
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
@@ -262,7 +262,7 @@ protected:
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
 	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtDIB *dib,
-		const vtTime &time);
+		const FPoint3 &light_dir);
 	void _ComputeCenterLocation();
 	void GetTerrainBounds();
 
