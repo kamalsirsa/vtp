@@ -78,9 +78,9 @@ public:
 	vtEdge(const vtEdge &lhs);
 	~vtEdge();
 
-	void Set(int doors, int windows, const vtString& material);
+	void Set(int doors, int windows, const char *material);
 	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
-	int NumFeatures() const { return m_Features.GetSize(); }
+	int NumFeatures() const { return m_Features.size(); }
 	int NumFeaturesOfCode(int code);
 	float FixedFeaturesWidth();
 	float ProportionTotal();
@@ -96,7 +96,7 @@ public:
 
 	// members
 	const vtString		*m_pMaterial;
-	Array<vtEdgeFeature> m_Features;
+	std::vector<vtEdgeFeature> m_Features;
 	vtString			 m_Facade;
 };
 
@@ -116,7 +116,7 @@ public:
 
 	void DeleteEdge(int iEdge);
 	bool AddEdge(int iEdge, DPoint2 &Point);
-	int GetNumEdges() { return m_Edges.GetSize(); }
+	int NumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
 	const vtString GetOverallEdgeMaterial();
@@ -138,8 +138,6 @@ public:
 	int		m_iStories;
 	float	m_fStoryHeight;
 
-	Array<vtEdge *> m_Edges;
-
 	void SetFootprint(const DLine2 &dl);
 	void SetFootprint(const OGRPolygon *poly);
 	DLine2 GetFootprint() { return m_Footprint; }
@@ -153,6 +151,8 @@ private:
 	void GetEdgePlane(int i, FPlane &plane);
 	bool DetermineHeightFromSlopes();
 	void DeleteEdges();
+
+	Array<vtEdge *> m_Edges;
 
 	// footprint of the stories in this level
 	DLine2		m_Footprint;

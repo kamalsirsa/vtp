@@ -823,7 +823,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		else if (!strcmp(name, "Edge"))
 		{
 			m_pEdge = m_pLevel->GetEdge(m_iEdge);
-			m_pEdge->m_Features.Empty();
+			m_pEdge->m_Features.clear();
 
 			attval = atts.getValue("Material");
 			if (attval)
@@ -866,7 +866,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			attval = atts.getValue("End");
 			if (attval)
 				ef.m_vf2 = (float) atof(attval);
-			m_pEdge->m_Features.Append(ef);
+			m_pEdge->m_Features.push_back(ef);
 		}
 	}
 
@@ -1290,14 +1290,14 @@ bool SetupDefaultStructures(const char *fname)
 	pLevel->m_fStoryHeight = 3.20f;
 	pLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLevel->SetEdgeColor(RGBi(255,0,0)); // Red
-	pLevel->m_Edges[0]->m_iSlope = 90;
+	pLevel->GetEdge(0)->m_iSlope = 90;
 	// Level 1
 	pLevel = pBld->CreateLevel(DefaultFootprint);
 	pLevel->m_iStories = 1;
 	pLevel->m_fStoryHeight = 3.20f;
 	pLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLevel->SetEdgeColor(RGBi(255,240,225)); // Tan
-	pLevel->m_Edges[0]->m_iSlope = 0;		 // Flat
+	pLevel->GetEdge(0)->m_iSlope = 0;		 // Flat
 
 	g_DefaultStructures.Append(pBld);
 
