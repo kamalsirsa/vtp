@@ -363,7 +363,7 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 			ui.m_bRubber = true;
 		}
 		ui.m_pCurLinear->AddPoint(ui.m_CurLocation);
-		pView->Refresh(TRUE);
+		pView->Refresh(true);
 		break;
 	case LB_BldEdit:
 		OnLeftDownEditBuilding(pView, ui);
@@ -393,8 +393,8 @@ void vtStructureLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 		screen_old.Inflate(1);
 		screen_new.Inflate(1);
 
-		pView->Refresh(TRUE, &screen_old);
-		pView->Refresh(TRUE, &screen_new);
+		pView->Refresh(true, &screen_old);
+		pView->Refresh(true, &screen_new);
 
 		// copy back from temp building to real building
 		*ui.m_pCurBuilding = ui.m_EditBuilding;
@@ -410,8 +410,8 @@ void vtStructureLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
 		wxRect screen_old = pView->WorldToWindow(extent_old);
 		wxRect screen_new = pView->WorldToWindow(extent_new);
 
-		pView->Refresh(TRUE, &screen_old);
-		pView->Refresh(TRUE, &screen_new);
+		pView->Refresh(true, &screen_old);
+		pView->Refresh(true, &screen_new);
 
 		// copy back from temp building to real building
 		*ui.m_pCurLinear = ui.m_EditLinear;
@@ -491,207 +491,179 @@ void vtStructureLayer::OnLeftDownEditBuilding(BuilderView *pView, UIContext &ui)
 void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 {
 	double dEpsilon = pView->odx(6);  // 6 pixels as world coord
-	int iLevel;
-	vtBuilding *pBuilding;
-	vtLevel *pLevel;
+	double dClosest;
+	int iStructure;
+
+	if (!FindClosestBuilding(ui.m_DownLocation, dEpsilon, iStructure, dClosest))
+		return;
+
+	vtBuilding *pBuilding = GetAt(iStructure)->GetBuilding();
+
+	// Find extent of building and refresh that area of the window
 	DRECT Extent;
 	wxRect Redraw;
-	int iNumLevels;
-	int iNumStructures = GetSize();
-	int i;
-	vtStructure *pStructure;
-	DLine2 Footprint;
-	int iIndex;
+	pBuilding->GetExtents(Extent);
+	Redraw = pView->WorldToWindow(Extent);
+	Redraw.Inflate(3);
+	pView->Refresh(true, &Redraw);
+
+	// Variables for levels and edges
+	vtLevel *pLevel;
+	int i, iIndex, iLevel, iNumLevels;
 	DPoint2 Intersection;
 
-	if (1 != NumSelected())
-		return;
+#if ROGER
+	// See if I can get some UI feedback;
+	m_pEditBuilding = pBuilding;
+	m_iEditLevel = 0;
+	pLevel = pBuilding->GetLevel(0);
+	pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection);
+	m_iEditEdge = iIndex;
 
-	for (i = 0; i < iNumStructures; i++)
-	{
-		pStructure = GetAt(i);
-		if (pStructure->IsSelected())
-			break;
-	}
-	if (i == iNumStructures)
-		return;
-
-	if (NULL != (pBuilding = GetAt(i)->GetBuilding()))
-	{
-		// Only work on selected buildings
-		if (!pBuilding->IsSelected())
-			return;
-
-		// Find extent of building
-		pBuilding->GetExtents(Extent);
-		Redraw = pView->WorldToWindow(Extent);
-		Redraw.Inflate(3);
-
-		// See if I can get some UI feedback;
-		m_pEditBuilding = pBuilding;
-		m_iEditLevel = 0;
-		pLevel = pBuilding->GetLevel(0);
-		pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection);
-		m_iEditEdge = iIndex;
-
-		pView->Refresh(TRUE, &Redraw);
-
-		// Find out the level to work on
+	// Find out the level to work on
 #if 0
-		CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
+	CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
 
-		LevelSelectionDialog.SetBuilding(pBuilding);
+	LevelSelectionDialog.SetBuilding(pBuilding);
 
-		if (LevelSelectionDialog.ShowModal()!= wxID_OK)
-		{
-			m_pEditBuilding = NULL;
-			pView->Refresh(TRUE, &Redraw);
-			return;
-		}
-		iLevel = LevelSelectionDialog.GetLevel();
+	if (LevelSelectionDialog.ShowModal()!= wxID_OK)
+	{
+		m_pEditBuilding = NULL;
+		pView->Refresh(true, &Redraw);
+		return;
+	}
+	iLevel = LevelSelectionDialog.GetLevel();
 #else
-		int iLevels = pBuilding->GetNumLevels();
-		wxString msg;
-		msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-		iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
-		if (iLevel == -1)
-		{
-			m_pEditBuilding = NULL;
-			pView->Refresh(TRUE, &Redraw);
-			return;
-		}
+	int iLevels = pBuilding->GetNumLevels();
+	wxString msg;
+	msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
+	iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
+	if (iLevel == -1)
+	{
+		m_pEditBuilding = NULL;
+		pView->Refresh(true, &Redraw);
+		return;
+	}
 #endif
 
-		m_pEditBuilding = NULL;
-		pView->Refresh(TRUE, &Redraw);
+	m_pEditBuilding = NULL;
+	pView->Refresh(true, &Redraw);
+#else
+	// Since we don't yet do editing of level footprints other than 0,
+	//  and editing it affects all levels, it's only useful to do all levels
+	iLevel = -1;
+#endif
 
-		if (-1 == iLevel)
+	if (-1 == iLevel)
+	{
+		// Add in all levels
+		iNumLevels = pBuilding->GetNumLevels();
+		for (i = 0; i < iNumLevels; i++)
 		{
-			// Add in all levels
-			iNumLevels = pBuilding->GetNumLevels();
-			for (i = 0; i <iNumLevels; i++)
-			{
-				pLevel = pBuilding->GetLevel(i);
-				if (-1 == pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection))
-					continue;
-				pLevel->AddEdge(iIndex, Intersection);
-
-			}
+			pLevel = pBuilding->GetLevel(i);
+			if (-1 == pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection))
+				continue;
+			pLevel->AddEdge(iIndex, Intersection);
 		}
-		else
-		{
-			// Add in specified level
-			pLevel = pBuilding->GetLevel(iLevel);
-			if (-1 != pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection))
-				pLevel->AddEdge(iIndex, Intersection);
-		}
-
-		// Find new extent of building
-		pBuilding->GetExtents(Extent);
-		Redraw = pView->WorldToWindow(Extent);
-		Redraw.Inflate(3);
-
-		// Force redraw
-		pView->Refresh(TRUE, &Redraw);
 	}
+	else
+	{
+		// Add in specified level
+		pLevel = pBuilding->GetLevel(iLevel);
+		if (-1 != pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection))
+			pLevel->AddEdge(iIndex, Intersection);
+	}
+
+	// Find new extent of building and refresh that area of the window
+	pBuilding->GetExtents(Extent);
+	Redraw = pView->WorldToWindow(Extent);
+	Redraw.Inflate(3);
+	pView->Refresh(true, &Redraw);
 }
 
 void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &ui)
 {
 	double dEpsilon = pView->odx(6);  // 6 pixels as world coord
-	int iLevel;
-	vtBuilding *pBuilding;
-	vtLevel *pLevel;
+	double dClosest;
+	int iStructure;
+
+	if (!FindClosestBuilding(ui.m_DownLocation, dEpsilon, iStructure, dClosest))
+		return;
+
+	vtBuilding *pBuilding = GetAt(iStructure)->GetBuilding();
+
+	// Find extent of building before any point removal
 	DRECT Extent;
-	wxRect Redraw;
-	int iNumLevels;
-	int i;
-	int iNumStructures = GetSize();
-	vtStructure *pStructure;
-	int iIndex;
+	pBuilding->GetExtents(Extent);
 
+	vtLevel *pLevel;
+	int i, iIndex, iLevel, iNumLevels;
 
-	if (1 != NumSelected())
-		return;
+#if ROGER
+	// See if I can get some UI feedback;
+	m_pEditBuilding = pBuilding;
+	m_iEditLevel = 0;
+	pLevel = pBuilding->GetLevel(0);
+	pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
+	m_iEditEdge = iIndex;
 
-	for (i = 0; i < iNumStructures; i++)
-	{
-		pStructure = GetAt(i);
-		if (pStructure->IsSelected())
-			break;
-	}
-	if (i == iNumStructures)
-		return;
-
-	if (NULL != (pBuilding = GetAt(i)->GetBuilding()))
-	{
-		// Only work on selected buildings
-		if (!pBuilding->IsSelected())
-			return;
-
-		// Find extent of building
-		pBuilding->GetExtents(Extent);
-		Redraw = pView->WorldToWindow(Extent);
-		Redraw.Inflate(3);
-
-		// See if I can get some UI feedback;
-		m_pEditBuilding = pBuilding;
-		m_iEditLevel = 0;
-		pLevel = pBuilding->GetLevel(0);
-		pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
-		m_iEditEdge = iIndex;
-
-		pView->Refresh(TRUE, &Redraw);
-
-		// Find out the level to work on
+	// Find out the level to work on
 #if 0
-		CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
+	CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
 
-		LevelSelectionDialog.SetBuilding(pBuilding);
+	LevelSelectionDialog.SetBuilding(pBuilding);
 
-		if (LevelSelectionDialog.ShowModal()!= wxID_OK)
-		{
-			m_pEditBuilding = NULL;
-			pView->Refresh(TRUE, &Redraw);
-			return;
-		}
-		iLevel = LevelSelectionDialog.GetLevel();
-#else
-		int iLevels = pBuilding->GetNumLevels();
-		wxString msg;
-		msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-		iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
-		if (iLevel == -1)
-		{
-			m_pEditBuilding = NULL;
-			pView->Refresh(TRUE, &Redraw);
-			return;
-		}
-#endif
+	if (LevelSelectionDialog.ShowModal()!= wxID_OK)
+	{
 		m_pEditBuilding = NULL;
-		pView->Refresh(TRUE, &Redraw);
+		pView->Refresh(true, &Redraw);
+		return;
+	}
+	iLevel = LevelSelectionDialog.GetLevel();
+#else
+	int iLevels = pBuilding->GetNumLevels();
+	wxString msg;
+	msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
+	iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
+	if (iLevel == -1)
+	{
+		m_pEditBuilding = NULL;
+		pView->Refresh(true, &Redraw);
+		return;
+	}
+#endif
+	m_pEditBuilding = NULL;
+	pView->Refresh(true, &Redraw);
+#else
+	// Since we don't yet do editing of level footprints other than 0,
+	//  and editing it affects all levels, it's only useful to do all levels
+	iLevel = -1;
+#endif
 
-		if (-1 == iLevel)
+	if (-1 == iLevel)
+	{
+		// Remove in all levels
+		iNumLevels = pBuilding->GetNumLevels();
+		for (i = 0; i <iNumLevels; i++)
 		{
-			// Remove in all levels
-			iNumLevels = pBuilding->GetNumLevels();
-			for (i = 0; i <iNumLevels; i++)
-			{
-				pLevel = pBuilding->GetLevel(i);
-				pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
-				pLevel->DeleteEdge(iIndex);
-			}
-		}
-		else
-		{
-			// Remove in specified level
-			pLevel = pBuilding->GetLevel(iLevel);
+			pLevel = pBuilding->GetLevel(i);
 			pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
 			pLevel->DeleteEdge(iIndex);
 		}
-		// Force redraw
-		pView->Refresh(TRUE, &Redraw);
 	}
+	else
+	{
+		// Remove in specified level
+		pLevel = pBuilding->GetLevel(iLevel);
+		pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
+		pLevel->DeleteEdge(iIndex);
+	}
+
+	// Refresh area of the window with original building extent
+	wxRect Redraw;
+	Redraw = pView->WorldToWindow(Extent);
+	Redraw.Inflate(3);
+	pView->Refresh(true, &Redraw);
 }
 
 void vtStructureLayer::OnLeftDownEditLinear(BuilderView *pView, UIContext &ui)
@@ -721,7 +693,7 @@ void vtStructureLayer::OnRightDown(BuilderView *pView, UIContext &ui)
 	if (ui.mode == LB_AddLinear && ui.m_pCurLinear != NULL)
 	{
 		ui.m_pCurLinear->AddPoint(ui.m_CurLocation);
-		pView->Refresh(TRUE);
+		pView->Refresh(true);
 		ui.m_pCurLinear = NULL;
 		ui.m_bRubber = false;
 	}
