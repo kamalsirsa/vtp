@@ -1,7 +1,7 @@
 //
 // Name: canvas.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,6 +30,8 @@ public:
 	void OnSize(wxSizeEvent& event);
 	void OnEraseBackground(wxEraseEvent& event);
 	void OnChar(wxKeyEvent& event);
+	void OnKeyDown(wxKeyEvent& event);
+	void OnKeyUp(wxKeyEvent& event);
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnClose(wxCloseEvent& event);
 	void QueueRefresh(bool eraseBackground);
@@ -39,6 +41,7 @@ public:
 	bool m_bShowFrameRateChart;
 
 protected:
+	bool m_pbKeyState[512];
 	DECLARE_EVENT_TABLE()
 };
 

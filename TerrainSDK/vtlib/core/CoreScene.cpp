@@ -42,6 +42,7 @@ vtSceneBase::vtSceneBase()
 	m_pCamera = NULL;
 	m_WindowSize.Set(0, 0);
 	m_pRoot = NULL;
+	m_piKeyState = NULL;
 }
 
 vtSceneBase::~vtSceneBase()
@@ -76,6 +77,14 @@ void vtSceneBase::OnKey(int key, int flags)
 		if (pEng->GetEnabled())
 			pEng->OnKey(key, flags);
 	}
+}
+
+bool vtSceneBase::GetKeyState(int key)
+{
+	if (m_piKeyState)
+		return m_piKeyState[key];
+	else
+		return false;
 }
 
 void vtSceneBase::DoEngines()

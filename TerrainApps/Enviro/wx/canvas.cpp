@@ -2,7 +2,7 @@
 // Name:	 canvas.cpp
 // Purpose:	 Implements the canvas class for the wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,6 +34,8 @@ EVT_CLOSE(vtGLCanvas::OnClose)
 EVT_SIZE(vtGLCanvas::OnSize)
 EVT_PAINT(vtGLCanvas::OnPaint)
 EVT_CHAR(vtGLCanvas::OnChar)
+EVT_KEY_DOWN(vtGLCanvas::OnKeyDown)
+EVT_KEY_UP(vtGLCanvas::OnKeyUp)
 EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
 EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
 END_EVENT_TABLE()
@@ -52,6 +54,10 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 	m_bPainting = false;
 	m_bRunning = true;
 	m_bShowFrameRateChart = false;
+
+	for (int i = 0; i < 512; i++)
+		m_pbKeyState[i] = false;
+	vtGetScene()->SetKeyStates(m_pbKeyState);
 
 	s_canvas = this;
 }
@@ -220,6 +226,21 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 
 	// pass the char to the vtlib Scene
 	vtGetScene()->OnKey(key, flags);
+
+	// Allow wxWindows to pass the event along to other code
+	event.Skip();
+}
+
+void vtGLCanvas::OnKeyDown(wxKeyEvent& event)
+{
+	m_pbKeyState[event.m_keyCode] = true;
+	event.Skip();
+}
+
+void vtGLCanvas::OnKeyUp(wxKeyEvent& event)
+{
+	m_pbKeyState[event.m_keyCode] = false;
+	event.Skip();
 }
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)

@@ -366,6 +366,8 @@ public:
 
 	void OnMouse(vtMouseEvent &event);
 	void OnKey(int key, int flags);
+	void SetKeyStates(bool *piKeyState) { m_piKeyState = piKeyState; }
+	bool GetKeyState(int key);
 	void DoEngines();
 
 	void SetWindowSize(int w, int h) { m_WindowSize.Set(w, h); }
@@ -379,6 +381,7 @@ protected:
 	vtCamera *m_pCamera;
 	IPoint2	m_WindowSize;
 	vtGroup *m_pRoot;
+	bool *m_piKeyState;
 };
 
 // helper functions
