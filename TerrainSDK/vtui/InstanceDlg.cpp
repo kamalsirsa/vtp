@@ -18,7 +18,6 @@
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
-#include "xmlhelper/exception.hpp"
 
 // WDR: class implementations
 
