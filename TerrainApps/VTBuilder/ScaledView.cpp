@@ -219,7 +219,7 @@ void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 	CalcUnscrolledPosition(p.x, p.y, &pos.x, &pos.y);
 }
 
-void vtScaledView::DrawDLine(wxDC *pDC, const DLine2 &dline, bool bClose)
+void vtScaledView::DrawLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 {
 	int i, size = dline.GetSize();
 
@@ -232,5 +232,28 @@ void vtScaledView::DrawDLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 	}
 
 	pDC->DrawLines(i, g_screenbuf);
+}
+
+void vtScaledView::DrawPolygon(wxDC *pDC, const DPolygon2 &poly, bool bFill)
+{
+	if (bFill)
+	{
+		// inefficient temporary array.  TODO: make this more efficient.
+		DLine2 dline;
+		poly.GetAsDLine2(dline);
+
+		int i, size = dline.GetSize();
+
+		for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
+			screen(dline.GetAt(i), g_screenbuf[i]);
+
+		pDC->DrawPolygon(i, g_screenbuf);
+	}
+	else
+	{
+		// just draw each ring
+		for (unsigned int ring = 0; ring < poly.size(); ring++)
+			DrawLine(pDC, poly[ring], true);
+	}
 }
 
