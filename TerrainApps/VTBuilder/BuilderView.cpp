@@ -93,9 +93,6 @@ vtScaledView(parent, id, pos, size, name )
 
 BuilderView::~BuilderView()
 {
-//	for (int i = 0; i < m_iEntities; i++)
-//		delete WMPolyDraw[i];
-//	m_iEntities = 0;
 	delete m_pCursorPan;
 }
 
