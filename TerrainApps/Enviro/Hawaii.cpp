@@ -480,6 +480,17 @@ void MyGeom::DoCalcBoundBox(FBox3 &box)
 void IslandTerrain::do_test_code()
 {
 #if 0
+	vtElevationGrid grid;
+	grid.LoadFromBT("C:/VTP/TerrainApps/Data/Elevation/crater_0513.bt");
+	grid.SetupConversion(1.0);
+	FPoint3 p;
+	grid.GetWorldLocation(200, 200, p);
+
+	float alt;
+	grid.FindAltitudeAtPoint(p, alt);
+#endif
+
+#if 0
 	MyGeom *geom = new MyGeom();
 	vtGetScene()->GetRoot()->AddChild(geom);
 #endif
