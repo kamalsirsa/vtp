@@ -755,6 +755,10 @@ void vtElevLayer::SetProjection(const vtProjection &proj)
 bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	void progress_callback(int am))
 {
+	// Avoid trouble with '.' and ',' in Europe - all the file readers assume
+	//  the default "C" locale.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG("ImportFromFile '%s'\n", strFileName.mb_str());
 
 	wxString strExt = strFileName.AfterLast('.');
