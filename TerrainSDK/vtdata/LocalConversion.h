@@ -1,5 +1,5 @@
 //
-// LocalProjection.h
+// LocalConversion.h
 //
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
@@ -8,8 +8,8 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef VTLIB_LOCALPROJECTIONH
-#define VTLIB_LOCALPROJECTIONH
+#ifndef VTLIB_LOCALCONVERSIONH
+#define VTLIB_LOCALCONVERSIONH
 
 // global conversion factor
 #define WORLD_SCALE				1.0f	// 1 meter = 1.0 units
@@ -49,4 +49,5 @@ protected:
 
 extern vtLocalConversion g_Conv;
 
-#endif // VTLIB_LOCALPROJECTIONH
+#endif // VTLIB_LOCALCONVERSIONH
+
