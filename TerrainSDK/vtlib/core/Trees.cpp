@@ -6,8 +6,10 @@
 // vtPlantAppearance3d
 // vtPlantSpecies3d
 // vtPlantList3d
+// vtPlantInstance3d
+// vtPlantInstanceArray3d
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,6 +20,10 @@
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
+
+/////////////////////////////////////////////////////////////////////////////
+// vtPlantAppearance3d
+//
 
 vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 	 float width, float height, float shadow_radius, float shadow_darkness)
@@ -73,7 +79,7 @@ void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
 		m_iMatIdx = m_pMats->AddTextureMaterial2(fname,
 			false, true, true, false,	// cull, lighting, transp, additive
 			TREE_AMBIENT, TREE_DIFFUSE,
-			1.0f,		// alpha
+			1.0f,		// alpha (material is opaque, alpha is in the texture)
 			TREE_EMISSIVE);
 
 		if (m_iMatIdx == -1)
@@ -103,11 +109,10 @@ void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
 	}
 }
 
-//
-// create an object to represent a textured tree
-//
-// makes two intersecting polygons (4 triangles)
-//
+/**
+ * Create an object to represent a textured plant billboard.
+ * Makes two intersecting polygons (4 triangles).
+ */
 vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 											bool bBillboards)
 {
@@ -198,9 +203,34 @@ vtTransform *vtPlantAppearance3d::GenerateGeom()
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+// vtPlantSpecies3d
 //
-// return the species' appearance which is closest to a given height
-//
+
+vtPlantSpecies3d::vtPlantSpecies3d() : vtPlantSpecies()
+{
+}
+
+vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
+{
+	m_iSpecieID = v.GetSpecieID();
+	m_szCommonName = v.GetCommonName();
+	m_szSciName = v.GetSciName();
+	m_fMaxHeight = v.GetMaxHeight();
+
+	int apps = v.NumAppearances();
+	for (int i = 0; i < apps; i++)
+	{
+		vtPlantAppearance3d *pa3d = new vtPlantAppearance3d(*(v.GetAppearance(i)));
+//		*pa3d = ;
+		m_Apps.Append(pa3d);
+	}
+	return *this;
+}
+
+/**
+ * Return the species' appearance which is closest to a given height
+ */
 vtPlantAppearance3d *vtPlantSpecies3d::GetAppearanceByHeight(float fHeight)
 {
 	// simple case: if only one appearance, nothing random is possible
@@ -224,10 +254,10 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetAppearanceByHeight(float fHeight)
 	return (vtPlantAppearance3d *)closest;
 }
 
-//
-// pick a random height, and return the species' appearance
-//  which is closest to that height
-//
+/**
+ * Picks a random height, and return the species' appearance
+ *  which is closest to that height.
+ */
 vtPlantAppearance3d *vtPlantSpecies3d::GetRandomAppearance()
 {
 	// pick a random height
@@ -236,30 +266,6 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetRandomAppearance()
 	return GetAppearanceByHeight(height);
 }
 
-
-/////////////////////////////////////////////////////
-// vtPlantSpecies3d
-//
-vtPlantSpecies3d::vtPlantSpecies3d() : vtPlantSpecies()
-{
-}
-
-vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
-{
-	m_iSpecieID = v.GetSpecieID();
-	m_szCommonName = v.GetCommonName();
-	m_szSciName = v.GetSciName();
-	m_fMaxHeight = v.GetMaxHeight();
-
-	int apps = v.NumAppearances();
-	for (int i = 0; i < apps; i++)
-	{
-		vtPlantAppearance3d *pa3d = new vtPlantAppearance3d(*(v.GetAppearance(i)));
-//		*pa3d = ;
-		m_Apps.Append(pa3d);
-	}
-	return *this;
-}
 
 void vtPlantSpecies3d::AddAppearance(AppearType type, const char *filename,
 	float width, float height, float shadow_radius, float shadow_darkness)
@@ -270,7 +276,7 @@ void vtPlantSpecies3d::AddAppearance(AppearType type, const char *filename,
 }
 
 
-/////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // vtPlantList3d
 //
 
@@ -385,6 +391,8 @@ vtPlantAppearance3d *vtPlantList3d::GetAppearanceByName(const char *szName, floa
 
 
 /////////////////////////////////////////////////////////////////////////////
+// vtPlantInstance3d
+//
 
 vtPlantInstance3d::vtPlantInstance3d()
 {
@@ -418,6 +426,8 @@ void vtPlantInstance3d::ShowBounds(bool bShow)
 
 
 /////////////////////////////////////////////////////////////////////////////
+// vtPlantInstanceArray3d
+//
 
 vtPlantInstanceArray3d::vtPlantInstanceArray3d()
 {
@@ -472,13 +482,20 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 
 	UpdateTransform(i);
 
-#if 1
-	float size_variability = 0.3f;
-	float random_scale = 1.0f + random_offset(size_variability);
-	inst3d->m_pTransform->Scale3(random_scale, random_scale, random_scale);
+	// We need to scale the model to produce the desired size, not the
+	//  size of the appearance but of the instance.
+	float scale = pi.size / pApp->m_height;
+	inst3d->m_pTransform->Scale3(scale, scale, scale);
+
+//	float size_variability = 0.3f;
+//	float random_scale = 1.0f + random_offset(size_variability);
+//	inst3d->m_pTransform->Scale3(random_scale, random_scale, random_scale);
+
+	// Since the billboard are symmetric, a small rotation helps provide
+	//  a more natural look.
 	float random_rotation = random(PI2f);
 	inst3d->m_pTransform->RotateLocal(FPoint3(0,1,0), random_rotation);
-#endif
+
 	return true;
 }
 
