@@ -33,6 +33,7 @@
 #include "LayerPropDlg.h"
 #include "Projection2Dlg.h"
 #include "DistribVegDlg.h"
+#include "SelectDlg.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
@@ -160,11 +161,13 @@ EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
 EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
+EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,		MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,		MainFrame::OnUpdateRawAddPoints)
 EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,	MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,	MainFrame::OnUpdateRawAddPointsGPS)
+EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawSelectCondition)
 
 EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
@@ -341,10 +344,14 @@ void MainFrame::CreateMenus()
 
 	// Raw
 	rawMenu = new wxMenu;
+	rawMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
+	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SETTYPE, "Set Entity Type", "Set Entity Type");
 	rawMenu->Append(ID_RAW_ADDPOINTS, "Add Points with Mouse", "Add points with the mouse", true);
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, "Add Point with Text\tCtrl+T", "Add point");
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, "Add Points with GPS", "Add points with GPS");
+	rawMenu->AppendSeparator();
+	rawMenu->Append(ID_RAW_SELECTCONDITION, "Select Features by Condition");
 	m_pMenuBar->Append(rawMenu, "Ra&w");
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
@@ -1824,6 +1831,36 @@ void MainFrame::OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event)
 //	vtRawLayer *pRL = GetActiveRawLayer();
 //	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
 	event.Enable(false);	// not implemented yet
+}
+
+void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+
+	if (pRL->GetNumFields() == 0)
+	{
+		wxMessageBox("Can't select by condition because the current\n"
+			"layer has no fields defined.", "Warning");
+		return;
+	}
+	SelectDlg dlg(this, -1, "Select");
+	dlg.SetRawLayer(pRL);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		int selected = pRL->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
+			dlg.m_strValue);
+
+		wxString msg;
+		msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
+		SetStatusText(msg);
+		m_pView->Refresh(FALSE);
+	}
+}
+
+void MainFrame::OnUpdateRawSelectCondition(wxUpdateUIEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL);
 }
 
 

@@ -175,11 +175,13 @@ public:
 	void OnRawAddPoints(wxCommandEvent& event);
 	void OnRawAddPointText(wxCommandEvent& event);
 	void OnRawAddPointsGPS(wxCommandEvent& event);
+	void OnRawSelectCondition(wxCommandEvent& event);
 
 	void OnUpdateRawSetType(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointText(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
+	void OnUpdateRawSelectCondition(wxUpdateUIEvent& event);
 
 	void OnAreaStretch(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
