@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -85,6 +85,7 @@
 #  include "view_plus.xpm"
 #  include "view_zoomall.xpm"
 #  include "view_zoomexact.xpm"
+#  include "view_zoom_layer.xpm"
 
 #	include "VTBuilder.xpm"
 #endif
@@ -140,6 +141,12 @@ void MainFrame::CreateView()
 {
 	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
 			wxPoint(0, 0), wxSize(200, 400), _T("MainView") );
+}
+
+void MainFrame::ZoomAll()
+{
+	VTLOG("Zoom All\n");
+	m_pView->ZoomToRect(GetExtents(), 0.1f);
 }
 
 void MainFrame::SetupUI()
@@ -409,6 +416,7 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"), false);
 	ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"), false);
 	ADD_TOOL(ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"), false);
+	ADD_TOOL(ID_VIEW_ZOOM_LAYER, wxBITMAP(view_zoom_layer), _("Zoom To Layer"), false);
 	toolBar_main->AddSeparator();
 	ADD_TOOL(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), true);
 	ADD_TOOL(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), true);
@@ -577,7 +585,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 	if (bRefresh)
 	{
 		// refresh the view
-		m_pView->ZoomAll();
+		ZoomAll();
 		RefreshToolbar();
 		RefreshTreeView();
 		RefreshStatusBar();
@@ -1140,7 +1148,7 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 	// refresh the view
 	m_bDrawDisabled = false;
 	if (!bHasView)
-		m_pView->ZoomAll();
+		ZoomAll();
 	RefreshTreeView();
 	RefreshToolbar();
 }
