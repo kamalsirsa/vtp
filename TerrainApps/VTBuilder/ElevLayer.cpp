@@ -339,29 +339,8 @@ void vtElevLayer::DrawLayerOutline(wxDC* pDC, vtScaledView *pView)
 	screenrect.y++;
 	screenrect.width-=2;
 	screenrect.height-=2;
-	int left = screenrect.x;
-	int right = screenrect.x + screenrect.GetWidth();
-	int top = screenrect.y;
-	int bottom = screenrect.y + screenrect.GetHeight();
-	wxPoint p[5];
-	p[0].x = left;
-	p[0].y = bottom;
 
-	p[1].x = left;
-	p[1].y = top;
-
-	p[2].x = right;
-	p[2].y = top;
-
-	p[3].x = right;
-	p[3].y = bottom;
-
-	p[4].x = left;
-	p[4].y = bottom;
-	pDC->DrawLines(5, p);
-
-	pDC->DrawLine(left, bottom, right, top);
-	pDC->DrawLine(left, top, right, bottom);
+	DrawRectangle(pDC, screenrect);
 }
 
 bool vtElevLayer::GetExtent(DRECT &rect)
