@@ -805,7 +805,7 @@ void Road::SetFlag(int flag, bool value)
 		m_iFlags &= ~flag;
 }
 
-bool Road::GetFlag(int flag)
+int Road::GetFlag(int flag)
 {
 	return (m_iFlags & flag) != 0;
 }
@@ -1331,8 +1331,8 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	FWrite(RMFVERSION_STRING, 11);
 
 	// Projection
-	int iUTM = m_proj.IsUTM();
 	int iZone = m_proj.GetUTMZone();
+	int iUTM = (iZone != 0);
 	int iDatum = (int) m_proj.GetDatum();
 	FWrite(&iUTM, intSize);
 	FWrite(&iZone, intSize);

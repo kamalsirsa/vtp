@@ -603,8 +603,8 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 		return false;
 
 	fwrite("vf1.1", 6, 1, fp);
-	bool utm = m_proj.IsUTM();
 	int zone = m_proj.GetUTMZone(), datum = m_proj.GetDatum();
+	bool utm = (zone != 0);
 	fwrite(&utm, 1, 1, fp);
 	/*  FIXME:  Ahoy, there be byte order issues here.  See below in this routine.  */
 	fwrite(&zone, 4, 1, fp);
