@@ -24,6 +24,20 @@ class vtGroup;
 class vtLOD;
 class vtGeom;
 
+class Splitter2 : public wxSplitterWindow
+{
+public:
+	Splitter2(wxWindow *parent, wxWindowID id = -1,
+			  const wxPoint& pos = wxDefaultPosition,
+			  const wxSize& size = wxDefaultSize,
+			  long style = wxSP_3D|wxCLIP_CHILDREN,
+			  const wxString& name = "splitter") :
+		wxSplitterWindow(parent, id, pos, size, style, name) {}
+	virtual void SizeWindows();
+
+	int m_last;
+};
+
 //////////////////////////////////////////////////////////////////////////
 // ItemGroup
 //
@@ -70,6 +84,7 @@ protected:
 	void OnTestXML(wxCommandEvent& event);
 	void OnSetDataPath(wxCommandEvent& event);
 	void OnItemNew(wxCommandEvent& event);
+	void OnItemDelete(wxCommandEvent& event);
 	void OnItemAddModel(wxCommandEvent& event);
 	void OnItemRemoveModel(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
@@ -90,7 +105,7 @@ public:
 	wxToolBar		*m_pToolbar;
 
 	wxSplitterWindow *m_splitter;
-	wxSplitterWindow *m_splitter2;
+	Splitter2		 *m_splitter2;
 	MyTreeCtrl		*m_pTree;		// left child of splitter
 
 	// Modeless dialogs

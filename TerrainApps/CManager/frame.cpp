@@ -153,23 +153,13 @@ void ItemGroup::ShowLOD(bool bTrue)
 //////////////////////////////////////////////////////////////////////////
 // Splitter window management
 
-class Splitter2 : public wxSplitterWindow
-{
-public:
-	Splitter2(wxWindow *parent, wxWindowID id = -1,
-			  const wxPoint& pos = wxDefaultPosition,
-			  const wxSize& size = wxDefaultSize,
-			  long style = wxSP_3D|wxCLIP_CHILDREN,
-			  const wxString& name = "splitter") :
-		wxSplitterWindow(parent, id, pos, size, style, name) {}
-	virtual void SizeWindows();
-};
-
 void Splitter2::SizeWindows()
 {
 	int w, h;
 	GetClientSize(&w, &h);
 
+	int pos = GetSashPosition();
+	if (pos != 0) m_last = pos;
 //	if (h > 190)
 //		SetSashPosition(h - 180, false);
 
@@ -188,7 +178,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
 	EVT_MENU(ID_TEST_XML, vtFrame::OnTestXML)
 	EVT_MENU(ID_SET_DATA_PATH, vtFrame::OnSetDataPath)
-	EVT_MENU(ID_ITEM_NEWITEM, vtFrame::OnItemNew)
+	EVT_MENU(ID_ITEM_NEW, vtFrame::OnItemNew)
+	EVT_MENU(ID_ITEM_DEL, vtFrame::OnItemDelete)
 	EVT_MENU(ID_ITEM_ADDMODEL, vtFrame::OnItemAddModel)
 	EVT_UPDATE_UI(ID_ITEM_ADDMODEL, vtFrame::OnUpdateItemAddModel)
 	EVT_MENU(ID_ITEM_REMOVEMODEL, vtFrame::OnItemRemoveModel)
@@ -331,7 +322,8 @@ void vtFrame::CreateMenus()
 	fileMenu->Append(wxID_EXIT, "E&xit\tEsc", "Exit");
 
 	wxMenu *itemMenu = new wxMenu;
-	itemMenu->Append(ID_ITEM_NEWITEM, "New Item", "New Item");
+	itemMenu->Append(ID_ITEM_NEW, "New Item", "New Item");
+	itemMenu->Append(ID_ITEM_DEL, "Delete Item", "Delete Item");
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_ADDMODEL, "Add Model", "Add Model");
 	itemMenu->Append(ID_ITEM_REMOVEMODEL, "Remove Model", "Remove Model");
@@ -357,7 +349,9 @@ void vtFrame::CreateToolbar()
 
 	ADD_TOOL(wxID_OPEN, wxBITMAP(contents_open), _("Select"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_NEWITEM, wxBITMAP(item_new), _("Select"), false);
+	ADD_TOOL(ID_ITEM_NEW, wxBITMAP(item_new), _("Select"), false);
+	ADD_TOOL(ID_ITEM_DEL, wxBITMAP(item_rem), _("Select"), false);
+	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(item_addmodel), _("Select"), false);
 	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(item_remmodel), _("Select"), false);
 
@@ -469,6 +463,17 @@ void vtFrame::OnItemNew(wxCommandEvent& event)
 	m_pTree->RefreshTreeItems(this);
 }
 
+void vtFrame::OnItemDelete(wxCommandEvent& event)
+{
+	if (!m_pCurrentItem)
+		return;
+
+	m_Man.RemoveItem(m_pCurrentItem);
+	SetCurrentItemAndModel(NULL, NULL);
+
+	m_pTree->RefreshTreeItems(this);
+}
+
 void vtFrame::OnItemAddModel(wxCommandEvent& event)
 {
 	wxFileDialog loadFile(NULL, "Load 3d Model", "", "",
@@ -570,8 +575,8 @@ void vtFrame::AddNewItem()
 {
 	vtItem *pItem = new vtItem();
 	pItem->m_name = "untitled";
-	SetCurrentItem(pItem);
-	m_Man.AddItem(m_pCurrentItem);
+	m_Man.AddItem(pItem);
+	SetCurrentItemAndModel(pItem, NULL);
 }
 
 vtModel *vtFrame::AddModel(wxString &fname)
@@ -655,14 +660,14 @@ void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 		SetCurrentItem(item);
 		SetCurrentModel(model);
 		DisplayCurrentItem();
-		m_splitter2->SplitHorizontally( m_pTree, m_pPropDlg, 200);
+		m_splitter2->SplitHorizontally( m_pTree, m_pPropDlg, m_splitter2->m_last);
 		m_pPropDlg->Show(TRUE);
 	}
 	else if (item != NULL && model != NULL)
 	{
 		SetCurrentItem(item);
 		SetCurrentModel(model);
-		m_splitter2->SplitHorizontally( m_pTree, m_pModelDlg, 200);
+		m_splitter2->SplitHorizontally( m_pTree, m_pModelDlg, m_splitter2->m_last);
 		m_pModelDlg->Show(TRUE);
 	}
 }
