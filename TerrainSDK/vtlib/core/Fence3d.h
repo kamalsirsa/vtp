@@ -19,7 +19,7 @@ public:
 	vtFence3d(FenceType type, float fHeight, float fSpacing);
 
 	// implement vtStructure3d methods
-	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options);
+	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options);
 	vtGeom *GetGeom();
 	virtual void DeleteNode();
 
@@ -29,7 +29,7 @@ public:
 
 protected:
 	void	Init();
-	void	AddFenceMeshes(vtHeightField *pHeightField);
+	void	AddFenceMeshes(vtHeightField3d *pHeightField);
 	void	AddFencepost(FPoint3 &p1, int iMatIdx);
 
 	// all fences share the same set of materials

@@ -16,7 +16,7 @@ class vtLodGrid : public vtGroup
 {
 public:
 	vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
-		int iDimension, float fLODDistance, vtHeightField *pHF = NULL);
+		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL);
 	void Destroy();
 
 	// methods
@@ -34,7 +34,7 @@ protected:
 	int m_dim;
 	float m_fLODDistance;
 	vtLOD **m_pCells;
-	vtHeightField *m_pHeightField;
+	vtHeightField3d *m_pHeightField;
 
 	vtGroup *FindCellParent(const FPoint3 &point);
 	void AllocateCell(int a, int b);

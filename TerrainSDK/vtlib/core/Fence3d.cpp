@@ -127,7 +127,7 @@ void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
 }
 
 
-void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
+void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 {
 	Array<DPoint2> posts;
 	DPoint2 diff, dp;
@@ -174,8 +174,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	p3.SetSize(nposts);
 	for (i = 0; i < nposts; i++)
 	{
-		dp = posts[i];
-		pHeightField->ConvertEarthToSurfacePoint(dp.x, dp.y, pout);
+		pHeightField->ConvertEarthToSurfacePoint(posts[i], pout);
 
 		if (i > 0 && i < nposts-1)
 		{
@@ -309,7 +308,7 @@ void vtFence3d::DestroyGeometry()
 /**
  * Build (or rebuild) the geometry for a fence.
  */
-bool vtFence3d::CreateNode(vtHeightField *hf, const vtTagArray &options)
+bool vtFence3d::CreateNode(vtHeightField3d *hf, const vtTagArray &options)
 {
 	if (!m_pFenceGeom)
 	{

@@ -13,7 +13,7 @@
 #define index(a,b) ((a*m_dim)+b)
 
 vtLodGrid::vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
-				 int iDimension, float fLODDistance, vtHeightField *pHF)
+				 int iDimension, float fLODDistance, vtHeightField3d *pHF)
 {
 	m_origin = origin;
 	m_size = size;
