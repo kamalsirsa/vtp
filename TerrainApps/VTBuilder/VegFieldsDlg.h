@@ -19,6 +19,7 @@
 #include "VTBuilder_wdr.h"
 #include "vtdata/shapelib/shapefil.h"
 #include "vtui/AutoDialog.h"
+#include "VegPointOptions.h"
 
 class vtVegLayer;
 
@@ -51,7 +52,10 @@ public:
 	wxRadioButton* GetSpeciesId()  { return (wxRadioButton*) FindWindow( ID_SPECIES_ID ); }
 	wxChoice* GetHeightField()  { return (wxChoice*) FindWindow( ID_HEIGHT_FIELD ); }
 	wxChoice* GetSpeciesField()  { return (wxChoice*) FindWindow( ID_SPECIES_FIELD ); }
-	
+
+public:
+	VegPointOptions m_options;
+
 private:
 	// WDR: member variable declarations for VegFieldsDlg
 	vtVegLayer *m_pLayer;

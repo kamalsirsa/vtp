@@ -76,6 +76,8 @@ void VegFieldsDlg::RefreshEnabled()
 
 void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
+	int i;
+
 	// Open the SHP File
 	m_hSHP = SHPOpen(m_filename, "rb");
 	if (m_hSHP == NULL)
@@ -96,7 +98,17 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 		return;
 	}
 
-	int i, *pnWidth = 0, *pnDecimals = 0;
+	// Fill species names into the SpeciesChoice control
+	GetUseSpecies()->Clear();
+	vtPlantList* pl = GetMainFrame()->GetPlantList();
+	for (i = 0; i < pl->NumSpecies(); i++)
+	{
+		vtPlantSpecies *spe = pl->GetSpecies(i);
+		GetSpeciesChoice()->Append(spe->GetSciName());
+	}
+
+	// Fill the DBF field names into the "Use Field" controls
+	int *pnWidth = 0, *pnDecimals = 0;
 	DBFFieldType fieldtype;
 	char pszFieldName[20];
 	m_iFields = DBFGetFieldCount(m_db);
@@ -141,7 +153,27 @@ void VegFieldsDlg::OnChoice2( wxCommandEvent &event )
 
 void VegFieldsDlg::OnOK( wxCommandEvent &event )
 {
-	
+	// Species
+	m_options.bFixedSpecies = m_bUseSpecies;
+	m_options.strFixedSpeciesName = GetSpeciesChoice()->GetStringSelection();
+	m_options.iSpeciesFieldIndex = GetSpeciesField()->GetSelection();
+
+	if (GetSpeciesId()->GetValue())
+		m_options.iInterpretSpeciesField = 0;
+	if (GetSpeciesName()->GetValue())
+		m_options.iInterpretSpeciesField = 1;
+	if (GetCommonName()->GetValue())
+		m_options.iInterpretSpeciesField = 2;
+	if (GetBiotypeInt()->GetValue())
+		m_options.iInterpretSpeciesField = 3;
+	if (GetBiotypeString()->GetValue())
+		m_options.iInterpretSpeciesField = 4;
+
+	// Height
+	m_options.bHeightRandom = m_bHeightRandomize;
+	m_options.iHeightFieldIndex = GetHeightField()->GetSelection();
+
+	wxDialog::OnOK(event);
 }
 
 
