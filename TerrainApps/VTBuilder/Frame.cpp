@@ -14,8 +14,6 @@
 
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
-#include "vtdata/Unarchive.h"
-#include "vtdata/boost/directory.h"
 
 #include "Frame.h"
 #include "SplitterWin.h"
@@ -362,34 +360,6 @@ void MainFrame::AddMainToolbars()
 }
 
 
-// Helper
-void GetTempFolderName(char *path, const char *base)
-{
-	const char *tmp = base;
-	const char *tmp1 = strrchr(base, '/');
-	if (tmp1)
-		tmp = tmp1+1;
-	const char *tmp2 = strrchr(base, '\\');
-	if (tmp2 && tmp2 > tmp)
-		tmp = tmp2+1;
-	const char *tmp3 = strrchr(base, ':');
-	if (tmp3 && tmp3 > tmp)
-		tmp = tmp3+1;
-
-	const char *temp = getenv("TEMP");
-	if (temp)
-		strcpy(path, temp);
-	else
-#if WIN32
-		strcpy(path, "C:/TEMP");
-#else
-		strcpy(path, "/tmp");
-#endif
-	strcat(path, "/");
-	strcat(path, tmp);
-	strcat(path, "_temp");
-}
-
 ////////////////////////////////////////////////////////////////
 // Application Methods
 
@@ -405,87 +375,6 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	wxString ext = fname.AfterLast('.');
 
 	bool bFirst = (m_Layers.GetSize() == 0);
-
-	using namespace boost::filesystem;
-
-	// check if it's an archive
-	bool bExpandedArchive = false;
-	char prepend_path[1024];
-	GetTempFolderName(prepend_path, fname_in);
-
-	if (ext.CmpNoCase("gz") == 0 || ext.CmpNoCase("tgz") == 0 ||
-			ext.CmpNoCase("tar") == 0)
-	{
-		// try to uncompress
-		const char *input_filename = fname;
-
-		int result;
-		result = vtCreateDir(prepend_path);
-		if (result == 0 && errno != EEXIST)
-		{
-			wxMessageBox("Couldn't create temporary directory to hold contents of archive.");
-			return;
-		}
-		strcat(prepend_path, "/");
-
-		result = ExpandTGZ(input_filename, prepend_path);
-		if (result < 1)
-		{
-			wxMessageBox("Couldn't expand archive.");
-			return;
-		}
-		else if (result == 1)
-		{
-			// the archive contained a single file
-			for (dir_it it(prepend_path); it != dir_it(); ++it)
-			{
-				if (get<is_directory>(it))
-					continue;
-				std::string name1 = *it;
-				fname = prepend_path;
-				fname += name1.c_str();
-				break;
-			}
-		}
-		else if (result > 1)
-		{
-			// probably SDTS
-			// try to guess layer type from original file name
-			if (fname.Contains(".hy") || fname.Contains(".HY"))
-				ltype = LT_WATER;
-			if (fname.Contains(".rd") || fname.Contains(".RD"))
-				ltype = LT_ROAD;
-			if (fname.Contains(".dem") || fname.Contains(".DEM"))
-				ltype = LT_ELEVATION;
-			if (fname.Contains(".ms") || fname.Contains(".MS"))
-				ltype = LT_STRUCTURE;
-
-			// look for the catalog file
-			bool found = false;
-			for (dir_it it(prepend_path); it != dir_it(); ++it)
-			{
-				std::string name1 = *it;
-				wxString fname2 = name1.c_str();
-				if (fname2.Right(8).CmpNoCase("catd.ddf") == 0)
-				{
-					fname = prepend_path;
-					fname += fname2;
-					found= true;
-					break;
-				}
-			}
-			if (!found)
-			{
-				wxMessageBox("Don't know what to do with contents of archive.");
-				return;
-			}
-		}
-
-		// extension has certainly changed
-		wxString ext = fname.AfterLast('.');
-
-		bExpandedArchive = true;
-	}
 
 	vtLayer *pLayer = NULL;
 	if (ext.CmpNoCase("rmf") == 0)
@@ -549,15 +438,9 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	else
 	{
 		// try importing
-		ImportDataFromFile(ltype, fname, true);
+		ImportDataFromArchive(ltype, fname, true);
 	}
 
-	if (bExpandedArchive)
-	{
-		// clean up after ourselves
-		GetTempFolderName(prepend_path, fname_in);
-		vtDestroyDir(prepend_path);
-	}
 }
 
 void MainFrame::AddLayer(vtLayer *lp)
@@ -1037,7 +920,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 
 		if (!strcmp(buf2, "import"))
 		{
-			ImportDataFromFile(ltype, fname, false);
+			ImportDataFromArchive(ltype, fname, false);
 		}
 		else
 		{

@@ -304,6 +304,7 @@ public:
 
 	// import
 	void ImportData(LayerType ltype);
+	void ImportDataFromArchive(LayerType ltype, wxString strFileName, bool bRefresh);
 	void ImportDataFromFile(LayerType ltype, wxString strFileName, bool bRefresh);
 	vtLayer *ImportFromDLG(wxString &strFileName, LayerType ltype);
 	vtLayer *ImportFromSHP(wxString &strFileName, LayerType ltype);
