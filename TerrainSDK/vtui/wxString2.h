@@ -23,18 +23,22 @@ class wxString2 : public wxString
 public:
 	// Construction
 	wxString2() : wxString() {}
-#if wxUSE_UNICODE
-	wxString2(const char *psz);
-#endif
 	wxString2(const wxChar *psz);
+#if wxUSE_UNICODE	// supply the conversion that wxChar doesn't
+	wxString2(const char *psz);
+#else
+	wxString2(const wchar_t *psz);
+#endif
 	wxString2(const wxString &in) : wxString(in) {}
 	wxString2(const vtString &vtstr);
 
 	// Assignment
-#if wxUSE_UNICODE
-	wxString2& operator=(const char *psz);
-#endif
 	wxString2& operator=(const wxChar *psz);
+#if wxUSE_UNICODE	// supply the conversion that wxChar doesn't
+	wxString2& operator=(const char *psz);
+#else
+	wxString2& operator=(const wchar_t *psz);
+#endif
 	wxString2& operator=(const wxString &str);
 	wxString2& operator=(const vtString &vtstr);
 

@@ -14,17 +14,22 @@
 #include "wxString2.h"
 
 // Construction
-#if wxUSE_UNICODE
-wxString2::wxString2(const char *psz)
-{
-	*this = psz;
-}
-#endif
-
 wxString2::wxString2(const wxChar *psz)
 {
 	(void) wxString::operator=(psz);
 }
+
+#if wxUSE_UNICODE	// supply the conversion that wxChar doesn't
+wxString2::wxString2(const char *psz)
+{
+	*this = psz;
+}
+#else
+wxString2::wxString2(const wchar_t *psz)
+{
+	*this = psz;
+}
+#endif
 
 wxString2::wxString2(const vtString &vtstr)
 {
@@ -32,6 +37,12 @@ wxString2::wxString2(const vtString &vtstr)
 }
 
 // Assignment
+wxString2& wxString2::operator=(const wxChar *psz)
+{
+	(void) wxString::operator=(psz);
+	return *this;
+}
+
 #if wxUSE_UNICODE
 wxString2& wxString2::operator=(const char *psz)
 {
@@ -42,13 +53,17 @@ wxString2& wxString2::operator=(const char *psz)
 	delete buf;
 	return *this;
 }
-#endif
-
-wxString2& wxString2::operator=(const wxChar *psz)
+#else
+wxString2& wxString2::operator=(const wchar_t *psz)
 {
-	(void) wxString::operator=(psz);
+	int len = wcslen(psz);
+	char *buf = new char[len+1];
+	int result = wxWC2MB(buf, psz, len+1);
+	(void) wxString::operator=(buf);
+	delete buf;
 	return *this;
 }
+#endif
 
 wxString2& wxString2::operator=(const wxString &str)
 {
