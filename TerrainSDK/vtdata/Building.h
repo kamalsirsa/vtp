@@ -136,6 +136,7 @@ public:
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
 	void FlipFootprintDirection();
+	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
 
 	bool HasSlopedEdges();
 	bool IsHorizontal();
@@ -218,6 +219,7 @@ public:
 	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
+	const FLine3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
 
 	static vtLocalConversion s_Conv;
 	static const char *GetMaterialString(BldMaterial mat);
