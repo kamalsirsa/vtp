@@ -148,12 +148,12 @@ bool vtSpeciesList::WriteXML(const char *fname)
 }
 
 
-int vtSpeciesList::FindSpeciesId(vtPlantSpecies *ps)
+short vtSpeciesList::FindSpeciesId(vtPlantSpecies *ps)
 {
 	for (unsigned int i = 0; i < m_Species.GetSize(); i++)
 	{
 		if (m_Species[i] == ps)
-			return i;
+			return (short) i;
 	}
 	return -1;
 }
@@ -188,17 +188,17 @@ vtString RemSpaces(const vtString &str)
 	}
 }*/
 
-int vtSpeciesList::GetSpeciesIdByName(const char *name) const
+short vtSpeciesList::GetSpeciesIdByName(const char *name) const
 {
 	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
 		if (!strcmp(name, m_Species[j]->GetSciName()))
-			return j;
+			return (short) j;
 	}
 	return -1;
 }
 
-int vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
+short vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 {
 	unsigned int i, j;
 	for (i = 0; i < NumSpecies(); i++)
@@ -208,12 +208,12 @@ int vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 		{
 			vtPlantSpecies::CommonName cname = spe->GetCommonName(j);
 			if (!strcmp(name, cname.m_strName))
-				return i;
+				return (short) i;
 
 			// also, for backward compatibility, look for a match without spaces
 			vtString nospace = RemSpaces(cname.m_strName);
 			if (!strcmp(name, nospace))
-				return i;
+				return (short) i;
 		}
 	}
 	return -1;
@@ -301,9 +301,9 @@ void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts
 		}
 		else if (string(name) == (string)"appearance")
 		{
-			AppearType type;
+			AppearType type = AT_BILLBOARD;
 			vtString filename;
-			float width, height, shadow_radius = 1.0f, shadow_darkness = 0.0f;
+			float width=1, height=1, shadow_radius = 1.0f, shadow_darkness = 0.0f;
 			attval = atts.getValue("type");
 			if (attval != NULL)
 				type = (AppearType) atoi(attval);
@@ -539,7 +539,7 @@ int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 									vtPlantSpecies *ps)
 {
-	int species_id = m_pPlantList->FindSpeciesId(ps);
+	short species_id = m_pPlantList->FindSpeciesId(ps);
 	if (species_id == -1)
 		return -1;
 	return AddPlant(pos, size, species_id);
@@ -753,7 +753,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	OGRErr err = m_proj.exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
-	len = strlen(wkt);
+	len = (short) strlen(wkt);
 	fwrite(&len, sizeof(short), 1, fp);
 	fwrite(wkt, len, 1, fp);
 	OGRFree(wkt);
@@ -765,7 +765,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	for (i = 0; i < numspecies; i++)
 	{
 		const char *name = m_pPlantList->GetSpecies(i)->GetSciName();
-		len = strlen(name);
+		len = (short) strlen(name);
 		fwrite(&len, sizeof(short), 1, fp);
 		fwrite(name, len, 1, fp);
 	}

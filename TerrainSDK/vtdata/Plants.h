@@ -141,13 +141,13 @@ public:
 		else
 			return NULL;
 	}
-	int GetSpeciesIdByName(const char *name) const;
-	int GetSpeciesIdByCommonName(const char *name) const;
+	short GetSpeciesIdByName(const char *name) const;
+	short GetSpeciesIdByCommonName(const char *name) const;
 	void Append(vtPlantSpecies *pSpecies)
 	{
 		m_Species.Append(pSpecies);
 	}
-	int FindSpeciesId(vtPlantSpecies *ps);
+	short FindSpeciesId(vtPlantSpecies *ps);
 	void Clear() { m_Species.Empty(); }
 
 protected:
