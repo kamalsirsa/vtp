@@ -640,6 +640,11 @@ public:
 class FRECT
 {
 public:
+	FRECT() { left = top = right = bottom = 0.0; }
+	FRECT(float l, float t, float r, float b)
+	{
+		left = l; top = t; right = r; bottom = b;
+	}
 	void SetRect(float l, float t, float r, float b)
 	{
 		left = l; top = t; right = r; bottom = b;
@@ -656,6 +661,11 @@ public:
 	{
 		center.x = (left + right)/2;
 		center.y = (bottom + top)/2;
+	}
+	void operator+=(const FPoint2 &delta)
+	{
+		left += delta.x; top += delta.y;
+		right += delta.x; bottom += delta.y;
 	}
 
 	float	left;
