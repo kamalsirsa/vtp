@@ -420,6 +420,12 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ElevationGridBT.cpp">
+			</File>
+			<File
+				RelativePath=".\ElevationGridDEM.cpp">
+			</File>
+			<File
 				RelativePath="ElevationGridIO.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
