@@ -682,6 +682,10 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
 	vtNodeBase *pNode = vtLoadModel(fullpath);
 
+	// check
+	FSphere sphere;
+	pNode->GetBoundSphere(sphere);
+
 	if (!pNode)
 	{
 		wxString2 str;
