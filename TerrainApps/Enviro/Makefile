@@ -2,10 +2,6 @@
 # GNU Makefile:  TerrainApps/Enviro
 #
 
-#------------------------------------------------------------------------------
-# You shouldn't need to tweak below this line
-#------------------------------------------------------------------------------
-
 VTP_ROOT = $(shell cd ../..; pwd)
 
 include $(VTP_ROOT)/TerrainApps/Make.defs
@@ -57,7 +53,7 @@ clobber :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure
 
 #
-# Internationalization steps (iso-8859-1)
+# Internationalization steps (iso-8859-1) for Enviro
 #
 
 I18N_SOURCES = \
@@ -74,12 +70,14 @@ I18N_SOURCES = \
 	../../TerrainSDK/vtui/vtui_wdr.cpp \
 	../../TerrainSDK/vtui/BuildingDlg.cpp
 
+update-pot:
+	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
+
 publish-de:
 	cp de/Enviro.pox de/Enviro.po
 	msgfmt de/Enviro.po -o de/Enviro.mo
 
 update-de:
-	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
 	msgmerge --no-fuzzy-matching de/Enviro.po Enviro.pot -o de/Enviro.pox
 
 publish-sv:
@@ -87,7 +85,6 @@ publish-sv:
 	msgfmt sv/Enviro.po -o sv/Enviro.mo
 
 update-sv:
-	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
 	msgmerge --no-fuzzy-matching sv/Enviro.po Enviro.pot -o sv/Enviro.pox
 
 publish-pt:
@@ -95,7 +92,6 @@ publish-pt:
 	msgfmt pt/Enviro.po -o pt/Enviro.mo
 
 update-pt:
-	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
 	msgmerge --no-fuzzy-matching pt/Enviro.po Enviro.pot -o pt/Enviro.pox
 
 publish-hu:
@@ -103,12 +99,18 @@ publish-hu:
 	msgfmt hu/Enviro.po -o hu/Enviro.mo
 
 update-hu:
-	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
 	msgmerge --no-fuzzy-matching hu/Enviro.po Enviro.pot -o hu/Enviro.pox
 
 publish-uk:
 	cp en_GB/Enviro.pox en_GB/Enviro.po
 	msgfmt en_GB/Enviro.po -o en_GB/Enviro.mo
+
+publish-af:
+	cp af/Enviro.pox af/Enviro.po
+	msgfmt af/Enviro.po -o af/Enviro.mo
+
+update-af:
+	msgmerge --no-fuzzy-matching af/Enviro.po Enviro.pot -o af/Enviro.pox
 
 #
 # Internationalization steps for Infra (iso-8859-1)
@@ -125,5 +127,4 @@ publish-infra:
 update-infra:
 	xgettext -k_ -o Infra.pot $(I18N_SOURCES_INFRA)
 	msgmerge --no-fuzzy-matching sv/Infra.po Infra.pot -o sv/Infra.pox
-
 
