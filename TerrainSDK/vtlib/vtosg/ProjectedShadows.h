@@ -67,12 +67,14 @@ class CreateProjectedShadowTextureCullCallback : public osg::NodeCallback
 public:
 	CreateProjectedShadowTextureCullCallback(osg::Node* shadower,
 		int iRez = 1024, const osg::Vec3 &position = osg::Vec3(),
+		const osg::Vec4 &ambientLightColor = osg::Vec4(),
 		unsigned int textureUnit = 1);
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
 	void SetLightPosition(const osg::Vec3 &position);
 	void SetInitialLightPosition(const osg::Vec3 &position) { m_position = position; m_bRecomputeShadows = true; }
+	void SetAmbientLightColor(const osg::Vec4 &ambientLightColor) { m_ambientLightColor = ambientLightColor; }
 	void SetShadower(osg::Node* pShadower) { m_shadower = pShadower; }
 	void SetEnabled(bool enable) { m_bDrawEnabled = enable; }
 	void SetShadowDarkness(float fDarkness);
@@ -86,10 +88,12 @@ protected:
  	bool m_bRecomputeShadows;
 	bool m_bInCallback;
 	bool m_bDrawEnabled;
+	bool m_bDepthShadow;
 	float m_fShadowDarkness;
 
 	osg::ref_ptr<osg::Node>      m_shadower;
 	osg::Vec3                    m_position;
+	osg::Vec4                    m_ambientLightColor;
 	unsigned int                 m_unit;
 	unsigned int				 m_iRez;
 	osg::ref_ptr<osg::StateSet>  m_shadowState;

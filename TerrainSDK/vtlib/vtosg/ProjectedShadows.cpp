@@ -14,6 +14,7 @@
 #include <osg/LightSource>
 #include <osg/Geode>
 #include <osg/ShapeDrawable>
+#include <osg/PolygonOffset>
 #include <osg/CullFace>
 
 #include <osgUtil/CullVisitor>
@@ -27,20 +28,52 @@
 
 CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallback(
 	osg::Node *shadower, int iRez, const osg::Vec3& position,
-	unsigned int textureUnit) :
+	const osg::Vec4 &ambientLightColor, unsigned int textureUnit) :
 		m_shadower(shadower),
 		m_position(position),
+			m_ambientLightColor(ambientLightColor),
 		m_unit(textureUnit),
 		m_shadowState(new osg::StateSet),
 		m_shadowedState(new osg::StateSet)
 {
+	osg::ref_ptr<osg::Texture::Extensions> pExtensions = new osg::Texture::Extensions;
+	pExtensions->setupGLExtensions();
+	if (pExtensions->isShadowSupported())
+		m_bDepthShadow = true;
+	else
+		m_bDepthShadow = false;
+
+	// BD note: the main effect i see from DepthShadow=true is that shadows lose
+	//	their soft edges.
+	m_bDepthShadow = false;
+
 #ifdef _DEBUG
 	m_texture = new MyTexture2D;
 #else
 	m_texture = new osg::Texture2D;
 #endif
-	m_texture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
-	m_texture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+	if (m_bDepthShadow)
+	{
+		m_texture->setInternalFormat(GL_DEPTH_COMPONENT);
+		m_texture->setShadowComparison(true);
+		m_texture->setShadowTextureMode(osg::Texture::LUMINANCE);
+
+		osg::ref_ptr<osg::PolygonOffset> pPolygonOffset = new osg::PolygonOffset;
+		pPolygonOffset->setFactor(1.1f);
+		pPolygonOffset->setUnits(4.0f);
+		m_shadowState->setAttribute(pPolygonOffset.get(), SA_ON|SA_OVERRIDE);
+		m_shadowState->setMode(GL_POLYGON_OFFSET_FILL, SA_ON|SA_OVERRIDE);
+	}
+	else
+	{
+		m_texture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
+		m_texture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+	}
+
+	osg::ref_ptr<osg::CullFace> pCullFace = new osg::CullFace;
+	pCullFace->setMode(osg::CullFace::FRONT);
+	m_shadowState->setAttribute(pCullFace.get(), SA_ON|SA_OVERRIDE);
+	m_shadowState->setMode(GL_CULL_FACE, SA_ON|SA_OVERRIDE);
 	m_texture->setWrap(osg::Texture2D::WRAP_S,osg::Texture2D::CLAMP_TO_BORDER);
 	m_texture->setWrap(osg::Texture2D::WRAP_T,osg::Texture2D::CLAMP_TO_BORDER);
 	m_texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
@@ -148,8 +181,17 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	osgUtil::RenderStage* previous_stage = cv.getCurrentRenderBin()->getStage();
 
 	// set up the background color and clear mask.
-	m_pRtts->setClearColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
-	m_pRtts->setClearMask(previous_stage->getClearMask());
+	if (m_bDepthShadow)
+	{
+		m_pRtts->setClearMask(GL_DEPTH_BUFFER_BIT);
+		m_pRtts->setColorMask(new osg::ColorMask(false, false, false, false));
+	}
+	else
+	{
+		// set up the background color and clear mask.
+		m_pRtts->setClearColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+		m_pRtts->setClearMask(previous_stage->getClearMask());
+	}
 
 	// set up to charge the same RenderStageLighting is the parent previous stage.
 	m_pRtts->setRenderStageLighting(previous_stage->getRenderStageLighting());
@@ -172,44 +214,52 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 			osg::Matrix::translate(1.0f,1.0f,1.0f) *
 			osg::Matrix::scale(0.5f,0.5f,0.5f);
 
-	// make the material black for a shadow.
-	m_material = new osg::Material;
-	m_material->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
-	m_material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,m_fShadowDarkness));
+	if (!m_bDepthShadow)
+	{
+		// make the material black for a shadow.
+		m_material = new osg::Material;
+		m_material->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
+		m_material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,m_fShadowDarkness));
 //		material->setEmission(osg::Material::FRONT_AND_BACK,m_ambientLightColor);
-	// Do not pick up the emmissive colour from the sun light ambient or else
-	// we will lose shadows when the ambient peaks in the middle of the day
-	m_material->setEmission(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
-	m_material->setShininess(osg::Material::FRONT_AND_BACK,0.0f);
-	m_shadowState->setAttribute(m_material.get(), SA_OVERRIDE);
+		// Do not pick up the emmissive colour from the sun light ambient or else
+		// we will lose shadows when the ambient peaks in the middle of the day
+		m_material->setEmission(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
+		m_material->setShininess(osg::Material::FRONT_AND_BACK,0.0f);
+		m_shadowState->setAttribute(m_material.get(), SA_OVERRIDE);
 
 #if 1
-	// Roger suggested this code on 2004.05.27, to avoid the shadows cast by
-	//  the front faces of the buildings.  Seems to work well!
-	osg::ref_ptr<osg::CullFace> pCullFace = new osg::CullFace;
-	pCullFace->setMode(osg::CullFace::FRONT);
-	m_shadowState->setAttribute(pCullFace.get(), SA_ON|SA_OVERRIDE);
-	m_shadowState->setMode(GL_CULL_FACE, SA_ON|SA_OVERRIDE);
+		// Roger suggested this code on 2004.05.27, to avoid the shadows cast by
+		//  the front faces of the buildings.  Seems to work well!
+		osg::ref_ptr<osg::CullFace> pCullFace = new osg::CullFace;
+		pCullFace->setMode(osg::CullFace::FRONT);
+		m_shadowState->setAttribute(pCullFace.get(), SA_ON|SA_OVERRIDE);
+		m_shadowState->setMode(GL_CULL_FACE, SA_ON|SA_OVERRIDE);
 #endif
 
 #if 1
-	// This blend function lets us vary the darkness of the shadow with the
-	//  alpha component of the diffure color of the material.
-	osg::ref_ptr<osg::BlendFunc>	pBlendFunc = new osg::BlendFunc;
-	m_shadowState->setAttributeAndModes(pBlendFunc.get(), SA_ON|SA_OVERRIDE);
+		// This blend function lets us vary the darkness of the shadow with the
+		//  alpha component of the diffure color of the material.
+		osg::ref_ptr<osg::BlendFunc>	pBlendFunc = new osg::BlendFunc;
+		m_shadowState->setAttributeAndModes(pBlendFunc.get(), SA_ON|SA_OVERRIDE);
 #endif
 
-	// Kill any textures
-	m_shadowState->setTextureMode(0,GL_TEXTURE_2D,SA_OVERRIDE|SA_OFF);
+		// Kill any textures
+		m_shadowState->setTextureMode(0,GL_TEXTURE_2D,SA_OVERRIDE|SA_OFF);
+	}
 
 	cv.pushStateSet(m_shadowState.get());
 
 	// No shadows after sunset
 	if (m_position.y() > 0.0f)
 	{
-		// Stop the shadowed node being included in the shadow cull
-		osg::Node::NodeMask  NodeMask = node.getNodeMask();
-		node.setNodeMask(0);
+		osg::Node::NodeMask  NodeMask;
+		
+		if (!m_bDepthShadow)
+		{
+			// Stop the shadowed node being included in the shadow cull
+			NodeMask = node.getNodeMask();
+			node.setNodeMask(0);
+		}
 
 		// Need to turn off LOD culling temporarily
 		// shadower node should be a lod grid
@@ -248,8 +298,9 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
  		if (NULL != pGrid)
 			pGrid->SetDistance(fOldDistance);
 
-		// Restore the shadowed to the subgraph
-		node.setNodeMask(NodeMask);
+		if (!m_bDepthShadow)
+			// Restore the shadowed to the subgraph
+			node.setNodeMask(NodeMask);
 	}
 
 	cv.popStateSet();
