@@ -327,6 +327,7 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 
 void Enviro::SetupTerrain(vtTerrain *pTerr)
 {
+	VTLOG("SetupTerrain step %d\n", m_iInitStep);
 	if (m_iInitStep == 1)
 	{
 		vtString str;
@@ -711,7 +712,7 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 			SetCurrentNavigator(m_pGFlyer);
 //		if (m_nav == NT_Quake)
 //			SetCurrentNavigator(m_pQuakeFlyer);
-		if (m_nav == NT_Pano)
+		if (m_nav == NT_Pano || m_nav == NT_Dummy)
 			SetCurrentNavigator(m_pPanoFlyer);
 	}
 	else
@@ -769,14 +770,17 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 
 	// inform the navigation engine of the new terrain
 	float speed = param.GetValueFloat(STR_NAVSPEED);
-	m_pCurrentFlyer->SetTarget(m_pNormalCamera);
-	m_pCurrentFlyer->SetMinHeight(param.GetValueInt(STR_MINHEIGHT));
+	if (m_pCurrentFlyer != NULL)
+	{
+		m_pCurrentFlyer->SetTarget(m_pNormalCamera);
+		m_pCurrentFlyer->SetMinHeight(param.GetValueInt(STR_MINHEIGHT));
+		m_pCurrentFlyer->SetEnabled(true);
+		m_pCurrentFlyer->SetExag(param.GetValueBool(STR_ACCEL));
+	}
 	m_pTFlyer->SetSpeed(speed);
 	m_pVFlyer->SetSpeed(speed);
 	m_pPanoFlyer->SetSpeed(speed);
 	m_pOrthoFlyer->SetSpeed(speed);
-	m_pCurrentFlyer->SetEnabled(true);
-	m_pCurrentFlyer->SetExag(param.GetValueBool(STR_ACCEL));
 
 	// TODO: a more elegant way of keeping all nav engines current
 	m_pQuakeFlyer->SetHeightField(pHF);
