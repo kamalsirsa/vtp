@@ -2120,7 +2120,7 @@ void MainFrame::OnUpdateElevHide(wxUpdateUIEvent& event)
 void MainFrame::OnVegPlants(wxCommandEvent& event)
 {
 	// if PlantList has not previously been open, get the data from file first
-	if (!m_PlantListDlg)
+	if (m_strPlantListFilename == "")
 	{
 		// Use file dialog to open plant list text file.
 		wxFileDialog loadFile(NULL, _T("Load Plant Info"), _T(""), _T(""),
@@ -2130,12 +2130,11 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 			return;
 
 		wxString2 str = loadFile.GetPath();
-		if (!GetPlantList()->ReadXML(str.mb_str()))
-		{
-			DisplayAndLog("Couldn't read plant list from that file.");
+		if (!LoadPlantFile(str.mb_str()))
 			return;
-		}
-
+	}
+	if (!m_PlantListDlg)
+	{
 		// Create new Plant List Dialog
 		m_PlantListDlg = new PlantListDlg(this, WID_PLANTS, _T("Plants List"), 
 				wxPoint(140, 100), wxSize(950, 400), wxSYSTEM_MENU | wxCAPTION);

@@ -1002,6 +1002,14 @@ void MainFrame::OnSelectionChanged()
 ////////////////////////////////////////////////////////////////
 // Project operations
 
+void trim_eol(char *buf)
+{
+	int len = strlen(buf);
+	if (len && buf[len-1] == 10) buf[len-1] = 0;
+	len = strlen(buf);
+	if (len && buf[len-1] == 13) buf[len-1] = 0;
+}
+
 void MainFrame::LoadProject(const wxString2 &strPathName)
 {
 	// read project file
@@ -1032,6 +1040,11 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 				return;
 			}
 		}
+		if (!strncmp(buf, "PlantList ", 10))
+		{
+			trim_eol(buf);
+			LoadPlantFile(buf+10);
+		}
 		if (!strncmp(buf, "area ", 5))
 		{
 			sscanf(buf+5, "%lf %lf %lf %lf\n", &m_area.left, &m_area.top,
@@ -1058,10 +1071,7 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 				fgets(buf, 160, fp);
 
 				// trim trailing LF character
-				int len = strlen(buf);
-				if (len && buf[len-1] == 10) buf[len-1] = 0;
-				len = strlen(buf);
-				if (len && buf[len-1] == 13) buf[len-1] = 0;
+				trim_eol(buf);
 				wxString2 fname = buf;
 
 				if (!strcmp(buf2, "import"))
@@ -1103,6 +1113,11 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 	fprintf(fp, "Projection %s\n", wkt);
 	OGRFree(wkt);
 
+	if (m_strPlantListFilename != "")
+	{
+		fprintf(fp, "PlantList %s\n", (const char *) m_strPlantListFilename);
+	}
+
 	// write list of layers
 	int iLayers = m_Layers.GetSize();
 	fprintf(fp, "layers: %d\n", iLayers);
@@ -1127,6 +1142,17 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 
 	// done
 	fclose(fp);
+}
+
+bool MainFrame::LoadPlantFile(const char *fname)
+{
+	if (!GetPlantList()->ReadXML(fname))
+	{
+		DisplayAndLog("Couldn't read plant list from file '%s'", fname);
+		return false;
+	}
+	m_strPlantListFilename = fname;
+	return true;
 }
 
 
