@@ -166,7 +166,7 @@ SOURCE=.\wx\enviro_wdr.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\FenceDlg.cpp
+SOURCE=.\wx\frame.cpp
 
 !IF  "$(CFG)" == "wxEnviro - Win32 Debug"
 
@@ -179,16 +179,7 @@ SOURCE=.\wx\FenceDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\frame.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"wx/wxprec.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ENDIF 
-
+SOURCE=.\wx\LinearStructDlg3d.cpp
 # End Source File
 # Begin Source File
 
@@ -289,11 +280,11 @@ SOURCE=.\wx\enviro_wdr.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\FenceDlg.h
+SOURCE=.\wx\frame.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\frame.h
+SOURCE=.\wx\LinearStructDlg3d.h
 # End Source File
 # Begin Source File
 
