@@ -929,6 +929,11 @@ void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 		pTextMesh->m_pOsgText->setStateSet(pState);
 	}
 #endif
+
+	// In fact, we need to avoid lighting the text, yet text messes with
+	//  own StateSet, so we can't set it there.  We set it here.
+	StateSet *sset = m_pGeode->getOrCreateStateSet();
+	sset->setMode(GL_LIGHTING, StateAttribute::OFF);
 }
 
 void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)

@@ -935,8 +935,9 @@ vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 	if (bCenter)
 		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
 
-	StateSet *sset = m_pOsgText->getOrCreateStateSet();
-	sset->setMode(GL_LIGHTING, SA_OFF | StateAttribute::PROTECTED);
+	// We'd like to turn off lighting for the text, but we can't, because
+	//  the OSG Text object fiddles with its own StateSet.  Instead, we do
+	//  it in vtGeom::AddTextMesh().
 }
 
 vtTextMesh::~vtTextMesh()
