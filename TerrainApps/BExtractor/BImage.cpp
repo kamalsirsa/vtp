@@ -154,10 +154,10 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 			bRet = false;
 			goto Exit;
 		}
-		m_fImageWidth = (float)(BRGeoX - TLGeoX);
-		m_fImageHeight = (float)(TLGeoY - BRGeoY);
-		m_xUTMoffset = (float)TLGeoX;
-		m_yUTMoffset = (float)TLGeoY;
+		m_fImageWidth = BRGeoX - TLGeoX;
+		m_fImageHeight = TLGeoY - BRGeoY;
+		m_xUTMoffset = TLGeoX;
+		m_yUTMoffset = TLGeoY;
 		if (NULL == (m_pSpatialReference = NewSpatialReference.Clone()))
 		{
 			bRet = false;
@@ -166,18 +166,17 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	}
 	else
 	{
-		// Nut sure I need to do this conversion
-		// more thinking needed
-		// I have nto fully checked if there is any dependency on these units
+		// I have not fully checked if there is any dependency on these units
 		// being metres elsewhere
 		linearConversionFactor = SpatialReference.GetLinearUnits();
 
 		// Compute sizes in metres along NW/SE axis for compatibility with
-		// world files  i.e. xright - xleft and ytop - ybottom
-		m_fImageWidth = (float)((m_PixelSize.x * affineTransform[1] + m_PixelSize.y * affineTransform[2]) * linearConversionFactor);
-		m_fImageHeight = (float)( - (m_PixelSize.x * affineTransform[4] + m_PixelSize.y * affineTransform[5]) * linearConversionFactor);
-		m_xUTMoffset = (float)(affineTransform[0] * linearConversionFactor);
-		m_yUTMoffset = (float)(affineTransform[3] * linearConversionFactor);
+		// world files, i.e. xright - xleft and ytop - ybottom
+		m_fImageWidth = (m_PixelSize.x * affineTransform[1] - m_PixelSize.y * affineTransform[2]) * linearConversionFactor;
+		m_fImageHeight = (m_PixelSize.y * affineTransform[5] - m_PixelSize.x * affineTransform[4]) * linearConversionFactor;
+		m_xUTMoffset = (affineTransform[0] + affineTransform[2] *  m_PixelSize.y) * linearConversionFactor;
+		m_yUTMoffset = (affineTransform[3] + affineTransform[5] *  m_PixelSize.y) * linearConversionFactor;
+
 		if (NULL == (m_pSpatialReference = SpatialReference.Clone()))
 		{
 			bRet = false;
