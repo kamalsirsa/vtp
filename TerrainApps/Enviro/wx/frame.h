@@ -113,6 +113,7 @@ public:
 
 	void OnEarthShowShading(wxCommandEvent& event);
 	void OnEarthShowAxes(wxCommandEvent& event);
+	void OnEarthTilt(wxCommandEvent& event);
 	void OnEarthFlatten(wxCommandEvent& event);
 	void OnEarthUnfold(wxCommandEvent& event);
 	void OnEarthPoints(wxCommandEvent& event);
@@ -120,6 +121,7 @@ public:
 
 	void OnUpdateEarthShowShading(wxUpdateUIEvent& event);
 	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);
+	void OnUpdateEarthTilt(wxUpdateUIEvent& event);
 	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);

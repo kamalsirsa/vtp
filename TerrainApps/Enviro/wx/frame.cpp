@@ -30,6 +30,7 @@
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
+#include "vtlib/core/Globe.h"
 #include "vtdata/vtLog.h"
 
 #include "frame.h"
@@ -150,6 +151,7 @@ EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
 
 EVT_MENU(ID_EARTH_SHOWSHADING, vtFrame::OnEarthShowShading)
 EVT_MENU(ID_EARTH_SHOWAXES, vtFrame::OnEarthShowAxes)
+EVT_MENU(ID_EARTH_TILT, vtFrame::OnEarthTilt)
 EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
 EVT_MENU(ID_EARTH_UNFOLD, vtFrame::OnEarthUnfold)
 EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
@@ -157,6 +159,7 @@ EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
 
 EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, vtFrame::OnUpdateEarthShowShading)
 EVT_UPDATE_UI(ID_EARTH_SHOWAXES, vtFrame::OnUpdateEarthShowAxes)
+EVT_UPDATE_UI(ID_EARTH_TILT, vtFrame::OnUpdateEarthTilt)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_UNFOLD, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
@@ -288,6 +291,7 @@ void vtFrame::CreateMenus()
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _T("&Show Axes\tCtrl+A"));
+	earthMenu->AppendCheckItem(ID_EARTH_TILT, _T("Seasonal Tilt"));
 	earthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
 	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
 	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
@@ -334,6 +338,8 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Time of Day"), true);
+	ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
+	ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
 	ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
 	ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
 	m_pToolbar->AddSeparator();
@@ -1004,6 +1010,17 @@ void vtFrame::OnUpdateEarthShowAxes(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetSpaceAxes());
+}
+
+void vtFrame::OnEarthTilt(wxCommandEvent& event)
+{
+	g_App.SetEarthTilt(!g_App.GetEarthTilt());
+}
+
+void vtFrame::OnUpdateEarthTilt(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit);
+	event.Check(g_App.GetEarthTilt());
 }
 
 void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
