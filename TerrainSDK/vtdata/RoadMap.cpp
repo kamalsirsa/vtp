@@ -211,7 +211,7 @@ void Node::Copy(Node *node)
 
 Road* Node::GetRoad(int n)
 {
-	if (m_r && n <= m_iRoads)	// safety check
+	if (m_r && n < m_iRoads)	// safety check
 		return m_r[n];
 	else
 		return NULL;
@@ -1301,6 +1301,10 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	Road *curRoad = GetFirstRoad();
 	int numNodes = NumNodes();
 	int numRoads = NumRoads();
+
+	// must have nodes, or saving will fail
+	if (numNodes == 0)
+		return false;
 
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
