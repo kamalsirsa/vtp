@@ -10,13 +10,16 @@
 
 ///////////////////////////////////////////////////////
 
-time_t vtTime::s_DifferenceFromGMT = (time_t) -1;
+//time_t vtTime::s_DifferenceFromGMT = (time_t) -1;
 
 vtTime::vtTime()
 {
 	// default to "current" time
 	GetSystemTime();
 
+#if 0
+	// This code attempts to work around the trouble with mktime(), but
+	//  it isn't used, as we avoid the issue by using localtime() instead.
 	if (s_DifferenceFromGMT == (time_t) -1)
 	{
 		VTLOG("vtTime: Calculating offset from local timezone to GMT.\n");
@@ -27,21 +30,18 @@ vtTime::vtTime()
 		struct tm tm_gm, tm_local;
 		tm_gm = *gmtime(&m_time);
 		tm_local = *localtime(&m_time);
-
 		VTLOG(" Local: %s", asctime(&tm_local));
 		VTLOG("   GMT: %s", asctime(&tm_gm));
 
-		// ignore daylight savings time
-		tm_local.tm_isdst = 0;
 		s_DifferenceFromGMT = mktime(&tm_local) - mktime(&tm_gm);
-
 		VTLOG(" Diff: %d seconds\n", s_DifferenceFromGMT);
 	}
+#endif
 }
 
 void vtTime::_UpdateTM()
 {
-	struct tm *t = gmtime(&m_time);
+	struct tm *t = localtime(&m_time);
 	m_tm = *t;
 }
 
@@ -63,7 +63,7 @@ bool vtTime::SetFromString(const vtString &str)
 	if (m_time == -1)
 		return false;
 
-	m_time += s_DifferenceFromGMT;
+//	m_time += s_DifferenceFromGMT;
 	return true;
 }
 
@@ -81,6 +81,13 @@ void vtTime::GetSystemTime()
 	_UpdateTM();
 }
 
+/**
+ * Set the date components of a vtTime value.
+ *
+ * \param year E.g. 2001.
+ * \param month in the range of 1 to 12.
+ * \param day in the range of 1 to 31.
+ */
 void vtTime::SetDate(int year, int month, int day)
 {
 	// safety checks
@@ -96,7 +103,7 @@ void vtTime::SetDate(int year, int month, int day)
 
 	m_tm.tm_mday = day;
 	m_time = mktime(&m_tm);
-	m_time += s_DifferenceFromGMT;
+//	m_time += s_DifferenceFromGMT;
 	_UpdateTM();
 }
 
@@ -117,7 +124,7 @@ void vtTime::SetTimeOfDay(int hr, int min, int sec)
 	m_tm.tm_sec = sec;
 	m_time = mktime(&m_tm);
 
-	m_time += s_DifferenceFromGMT;
+//	m_time += s_DifferenceFromGMT;
 	_UpdateTM();
 }
 
