@@ -17,7 +17,7 @@
 #define STORY_HEIGHT	3.0f
 #define WINDOW_WIDTH	1.3f
 #define WINDOW_BOTTOM	0.4f
-#define WINDOW_TOP		0.8f
+#define WINDOW_TOP		0.9f
 #define DOOR_WIDTH		1.0f
 #define DOOR_TOP		0.7f
 
