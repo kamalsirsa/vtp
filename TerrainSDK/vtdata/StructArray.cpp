@@ -423,8 +423,8 @@ RGBi ParseRGB(const char *str)
 class StructureVisitor : public XMLVisitor
 {
 public:
-	StructureVisitor(vtStructureArray *sa)
-	: m_pSA(sa), _level(0), _hasException(false) {}
+	StructureVisitor(vtStructureArray *sa) :
+		m_pSA(sa), _level(0) {}
 
 	virtual ~StructureVisitor () {}
 
@@ -433,14 +433,6 @@ public:
 	void startElement (const char * name, const XMLAttributes &atts);
 	void endElement (const char * name);
 	void data (const char * s, int length);
-	void warning (const char * message, int line, int column);
-
-	bool hasException () const { return _hasException; }
-	xh_io_exception &getException () { return _exception; }
-	void setException (const xh_io_exception &exception) {
-		_exception = exception;
-		_hasException = true;
-	}
 
 private:
 	struct State
@@ -454,7 +446,7 @@ private:
 
 	State &state () { return _state_stack[_state_stack.size() - 1]; }
 
-	void push_state (vtStructure * _item, const char * type)
+	void push_state (vtStructure *_item, const char *type)
 	{
 		if (type == 0)
 			_state_stack.push_back(State(_item, "unspecified"));
@@ -465,16 +457,13 @@ private:
 	}
 
 	void pop_state () {
-	_state_stack.pop_back();
-	_level--;
+		_state_stack.pop_back();
+		_level--;
 	}
 
 	string _data;
 	int _level;
 	vector<State> _state_stack;
-	string _base;
-	xh_io_exception _exception;
-	bool _hasException;
 
 	vtStructureArray *m_pSA;
 };
@@ -751,7 +740,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 	}
 }
 
-void StructureVisitor::endElement (const char * name)
+void StructureVisitor::endElement(const char * name)
 {
 	State &st = state();
 
@@ -777,14 +766,10 @@ void StructureVisitor::endElement (const char * name)
 	}
 }
 
-void StructureVisitor::data (const char * s, int length)
+void StructureVisitor::data(const char *s, int length)
 {
 	if (state().item != NULL)
 		_data.append(string(s, length));
-}
-
-void StructureVisitor::warning (const char * message, int line, int column)
-{
 }
 
 
@@ -842,8 +827,6 @@ bool vtStructureArray::ReadXML(const char* pathname)
 		// TODO: would be good to pass back the error message.
 		return false;
 	}
-	if (visitor.hasException())
-		throw visitor.getException();
 	return true;
 }
 
