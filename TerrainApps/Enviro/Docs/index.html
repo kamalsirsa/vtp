@@ -1,0 +1,216 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>VTP Enviro</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h2><font face="Verdana"><i>VTP Enviro Documentation</i></font></h2>
+
+<blockquote>
+
+<p><b>Enviro</b> is the VTP runtime environment program.&nbsp; It provides an interactive,
+realtime 3D navigation of your virtual terrain.&nbsp; There are two primary view
+modes: <b>Earth</b> and <b>Terrain</b>.&nbsp; At startup, you chose which view
+you want to start with, and you can switch at any time.</p>
+
+</blockquote>
+
+<h3>Earth View</h3>
+
+<blockquote>
+  <p>At startup, select &quot;Earth View&quot; and press OK.&nbsp; You are now
+  viewing the planet from space.</p>
+
+  <p><b>How to Navigate:</b></p>
+
+  <ul>
+    <li>To spin the viewpoint around the earth, hold down the <b>middle </b>mouse
+      button.</li>
+    <li>To zoom in and out, use the <b>shift key</b> and the <b>middle </b>mouse
+      button to drag up and down.</li>
+  </ul>
+  <p>Each known terrain area will be shown as a small red rectangle on the
+  earth.&nbsp; To switch to a terrain, just click within its rectangle with the <b>left</b>  mouse
+  button.</p>
+  <p><b>Commands:</b></p>
+  <ul>
+    <li>Earth - <b>Show Time of Day</b> 
+      <ul>
+        <li>shows the earth illuminated by
+      sunlight based on real, current time according to your computer's clock</li>
+      </ul>
+    </li>
+    <li>Earth - <b>Add Point Data</b> 
+      <ul>
+        <li>allows you to display a set of point data
+      (from a Shapefile) on the Earth as small yellow points.</li>
+        <li>Try the file <b>Enviro/Data/PointData/vtp-users.shp</b> to see the
+          locations of the first 160 VTP recipients.</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+<h3>Terrain View</h3>
+
+<blockquote>
+
+<p> At startup, to launch with Terrain:</p>
+
+<ul>
+  <li>Use &quot;Select&quot; to choose from the known terrain.</li>
+  <li>Use &quot;Edit Properties&quot; to adjust the properties of the currently
+    chosen terrain (see <b>Terrain Creation Parameters</b> below)</li>
+</ul>
+<p>Press &quot;OK&quot;.&nbsp; The terrain will now load, which may take up to a
+minute.&nbsp; Messages in the status bar will inform you of the loading
+progress.</p>
+
+<h4> How to Navigate:</h4>
+
+<ul>
+  <li>Here's a handy guide for <a href="Navigation/index.html">using
+    the mouse to navigate</a> in Terrain View.</li>
+</ul>
+
+</blockquote>
+
+<h3>Terrain Creation Parameters</h3>
+
+<blockquote>
+
+<p>Here are some <a href="defaults.html"> good default values</a> for the parameters dialog, to try first to get Enviro
+working.</p>
+
+</blockquote>
+<blockquote>
+  After your installation of Enviro passes this initial test, run the
+    program again - try
+    turning on roads, trees, roads, etc., by editing the terrain properties.
+
+</blockquote>
+
+<h3>Making Your Own Terrain</h3>
+
+  <ul>
+    <li>Put your data in the following directories:
+      <table border="1" cellspacing="0" cellpadding="2" bgcolor="#C2C7D6">
+        <tr>
+          <td width="50%"><b>Data</b></td>
+          <td width="50%"><b>Location</b></td>
+        </tr>
+        <tr>
+          <td width="50%">elevation data (BT files)</td>
+          <td width="50%"><code>Enviro/Data/Elevation</code></td>
+        </tr>
+        <tr>
+          <td width="50%">geospecific images (BMP files)</td>
+          <td width="50%"><code>Enviro/Data/GeoSpecific</code></td>
+        </tr>
+        <tr>
+          <td width="50%">road data (RMF files)</td>
+          <td width="50%"><code>Enviro/Data/RoadData</code></td>
+        </tr>
+        <tr>
+          <td width="50%">built structure data (VTST files)</td>
+          <td width="50%"><code>Enviro/Data/BuildingData</code></td>
+        </tr>
+      </table>
+    </li>
+    <li>Don't forget that in order to use the continuous LOD rendering,
+      elevation files must be square-power-of-2-plus-1 in size.&nbsp; For
+      example:
+      <table border="1" cellspacing="0" cellpadding="2" bgcolor="#C2C7D6">
+        <tr>
+          <td width="50%">513 x 513</td>
+        </tr>
+        <tr>
+          <td width="50%">1025 x 1025</td>
+        </tr>
+        <tr>
+          <td width="50%">2049 x 2049</td>
+        </tr>
+        <tr>
+          <td width="50%">4097 x 4097</td>
+        </tr>
+      </table>
+    </li>
+    <li>In the Startup Dialog, use the &quot;Generic Terrain&quot; setting,
+      press &quot;Edit Properties&quot;, and select your data in
+      the Parameters dialog</li>
+  </ul>
+<h4>Using Your Own Textures:</h4>
+
+  <ul>
+    <li>First, learn how large a texture your computer can display.&nbsp; From
+      the Enviro Start dialog, press &quot;OpenGL Info...&quot; and look at the
+      number for &quot;Maximum Texture Dimension&quot;</li>
+    <li>If your terrain texture map is not larger than the maximum texture, you
+      can use the &quot;Single texture&quot; option, otherwise you will need to
+      use &quot;4x4 Tiled texture&quot;.</li>
+    <li>Give your texture a filename ending in it's size, e.g.
+      &quot;<code>newyork_1024.bmp</code>&quot;</li>
+    <li>Put your texture in in the directory<code> Enviro/Data/GeoSpecific</code></li>
+    <li>For a Single texture:
+      <ul>
+        <li>Your texture size must be a square power of 2, up to the limit of your computer
+          (e.g. 512, 1024)</li>
+      </ul>
+    </li>
+    <li>For a 4x4 Tiles texture:
+      <ul>
+        <li>You provide a single large square image file, and Enviro will break
+          it up for you, at runtime, into a set of 16 tiles (4x4)</li>
+        <li>The size of each tile must be a power of 2, up to the limit of your computer
+          (e.g. 512, 1024)</li>
+        <li>Due to pixel overlap to avoid texture seams, the dimensions may seem
+          somewhat unusual - e.g. 2045 for a 4x4 at 512, 4093 for a 4x4 at 1024</li>
+        <li>The filename is made up of two parts: the prefix (e.g. &quot;hawaii_&quot;)
+          and the image size (e.g. &quot;4093&quot;). The dialog lets you
+          specify the prefix, and it computes and appends the image size, based
+          on the tile size you specify</li>
+        <li>So, when you're preparing your image files, simply name them ending
+          in a number that is their size in pixels (e.g.
+          &quot;hawaii_4093.bmp&quot;)</li>
+      </ul>
+    </li>
+  </ul>
+  <h4>Data in a Different Location</h4>
+
+<ul>
+  <li>If you want to put your Enviro Data directory in another location, edit
+    your<code> </code><code>Enviro.ini</code><code> </code>file and change the
+    first line to contain the path to the data.&nbsp; The path can be relative
+    or absolute, and should leave on a trailing slash.&nbsp; For example, the
+    default path is:<br>
+    <code>&nbsp;&nbsp;&nbsp; DataPath		Data/</code><br>
+    You could change it to paths like this:<br>
+    <code>&nbsp;&nbsp;&nbsp; DataPath ../../Data/<br>
+    </code><code>&nbsp;&nbsp;&nbsp; DataPath C:\MyData\<br>
+    </code><code>&nbsp;&nbsp;&nbsp; DataPath /</code><code>home/me/mydata/</code></li>
+</ul>
+  <h4>Notes for Developers</h4>
+
+  <ul>
+    <li>If you want to fully customize the terrain, such as adding your own
+      objects and behaviors to the scene, or to add a number of different
+      terrain, it will require re-compiling Enviro
+      <ul>
+        <li>in <code>Enviro.cpp,</code> add a line to the function <code>DeclareAllTerrain()</code>
+          for each terrain you want, then rebuild.</li>
+      </ul>
+    </li>
+  </ul>
+<p>We apologize that the Enviro documentation is still very small.<br>
+However, you may find most features to be self-explanatory.&nbsp;
+<b>Please</b>  <a href="http://vterrain.org/Implementation/faq.html">check the
+FAQ</a> then <a href="mailto:info@vterrain.org">email</a>
+any questions you may have.</p>
+
+</body>
+
+</html>

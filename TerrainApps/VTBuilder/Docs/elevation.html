@@ -1,0 +1,130 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>VTBuilder back to top</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h3 align="center">
+VTBuilder<br>
+<a href="index.html">back to top</a>
+</h3>
+<h2>Elevation Layers</h2>
+<blockquote>
+  <p>VTBuilder will read in elevation files and save them to a simple binary
+  terrain format (BT). You can load multiple files, merge them, and select the
+  area of interest to export.</p>
+  <p>VTBuilder can import elevation from these formats:</p>
+  <ul>
+    <li>USGS DEM (Digital Elevation Models)</li>
+    <li>SDTS DEMs</li>
+    <li>several less-common flavors of DEM</li>
+    <li>GTOPO30</li>
+    <li>DTED0</li>
+    <li>CDF (preliminary)</li>
+    <li>PGM<b> (&quot;</b>portable graymap format&quot;)</li>
+    <li><a href="http://www.goldensoftware.com/frames/surferframe.htm">Surfer 7</a>
+      Binary Grid</li>
+    <li>TerraGen terrains</li>
+    <li>ArcInfo Ascii Grid (preliminary)</li>
+    <li>ArcInfo BIL (includes NOAA Globe files)</li>
+  </ul>
+  <blockquote>
+    <p>
+    If any of your terrain grids use different coordinates (such as different UTM
+    zones), VTBuilder can convert them to the same projection for you.</p>
+  </blockquote>
+  <p>The native format for elevation is the <a href="http://vterrain.org/Implementation/BT.html">BT
+  format</a>.&nbsp; BT can be read by VTP <b>Enviro</b> program and other</p>
+</blockquote>
+<p><u><b>Display of Elevation Layers</b></u></p>
+<blockquote>
+  <p>The default is to display elevation as artificially shaded and
+  false-colored by elevation.&nbsp; Elevation at sea level is shown in
+  blue.&nbsp; Areas of unknown elevation are shown in red, unless hidden with
+  the <b>View: Hide Unknown Areas</b> option</p>
+</blockquote>
+<p><u><b>How To Resample and Export Elevation</b></u></p>
+<ul>
+  <li>Use the Area Tool to drag the black lines with the mouse to indicate the area
+    of interest.&nbsp; You can also type in precise extents with the command <b>Export Area
+    - Numeric Values</b></li>
+  <li>Use the command &quot;<b>Elevation - Merge and Export Elevation</b>&quot; to
+    create a BT file</li>
+  <li>Important!&nbsp; If you will be using this for terrain LOD in Enviro
+    (recommended), let VTBuilder enforce the size constraints in the &quot;Merge
+    and Resample&quot; dialog.</li>
+</ul>
+<p><u><b>Elevation Menus</b></u></p>
+<ul>
+      <li><a name="Elevation"><b>Elevation</b></a>
+        <ul>
+          <li>Select Elevation
+            <ul>
+              <li>Use this mode to pick elevation layers with the mouse.</li>
+            </ul>
+          </li>
+          <li>Remove terrain above sea
+        <ul>
+          <li>For the currently selected layer, sets all elevation points
+            which are above sea level to 'unknown' (shown as red)</li>
+        </ul>
+          </li>
+          <li>Fill in unknown areas
+        <ul>
+          <li>For the currently selected layer, this feature can be used to
+            fill &quot;cracks&quot; of unknown values.&nbsp; The unknown areas
+            are filled in by interpolating the surrounding known areas.</li>
+        </ul>
+          </li>
+          <li>Scale Elevation
+        <ul>
+          <li>For the currently selected layer, scales the elevation values up
+            or down.</li>
+        </ul>
+          </li>
+          <li>Export to TerraGen
+            <ul>
+              <li>Saves the current elevation layer to a TerraGen file.</li>
+            </ul>
+          </li>
+          <li>Merge Area and Save to BT
+            <ul>
+              <li>Asks you for an output filename, merges and resamples all
+                elevation within the Export Area into a new BT file.</li>
+            </ul>
+          </li>
+        </ul>
+  </li>
+  <li><b>Export Area</b>
+    <ul>
+      <li>Set to Extents
+        <ul>
+          <li>Moves the black lines to surround all of the currently loaded
+            terrains.</li>
+        </ul>
+      </li>
+      <li>Numeric Values
+        <ul>
+          <li>Allows you to examine and manually enter the range of the export area.</li>
+        </ul>
+      </li>
+      <li>Export Bitmap
+        <ul>
+          <li>Creates and saves a bitmap (BMP) of the Export Area.&nbsp; The
+            current terrain layer will be used to provide artificial color and
+            shading for the bitmap.&nbsp; When you don't have any imagery for
+            your area, only elevation, this can give you a visually useful image
+            - similar to the &quot;Texture: Derive from Elevation&quot; option
+            in Enviro, but better because the image is generated before runtime.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+</body>
+
+</html>

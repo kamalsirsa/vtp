@@ -1,0 +1,25 @@
+/* XPM */
+static char *magick[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 3 1",
+"  c #0000000000000090",
+". c fractal",
+"X c None",
+/* pixels */
+"                ",
+"XXX XX XXX XXXXX",
+"                ",
+"XX XX XXX   XXXX",
+"                ",
+"X XX XXXXX XXXXX",
+"            . . ",
+"XXX XXX XXXXX.XX",
+"          .     ",
+"XX XXX   XXX   X",
+"          .     ",
+"X XXXXX.XXXXX.XX",
+"      . .   . . ",
+"XXXXXXXXXXXXXXXX",
+"                ",
+"XXXXXXXXXXXXXXXX"
+};

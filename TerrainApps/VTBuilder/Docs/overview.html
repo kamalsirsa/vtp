@@ -1,0 +1,82 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Overview</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h3 align="center">
+VTBuilder<br>
+<a href="index.html">back to top</a>
+</h3>
+<h3>
+<a Name="Overview"><u>Overview</u>
+</a>
+</h3>
+<blockquote>
+<p>VTBuilder is a tool for viewing and processing geospatial data.&nbsp; It can
+import a wide variety of data formats, and output efficiently to 3d runtime
+software such as VTP <b><a href="../Enviro/README.html">Enviro</a>.</b> </p>
+<p>The usual process is:</p>
+<ol>
+  <li>Acquire raw geospatial data (elevation, road vectors, etc.)</li>
+  <li>Read them into VTBuilder.</li>
+  <li>Clean up the data with operations such as bringing it into alignment,
+    extracting areas of interest, merging and resampling, and supplying missing information.</li>
+  <li>Write the data out.</li>
+</ol>
+</blockquote>
+
+<h3>
+
+<a Name="Distribution">
+Distribution</a>
+</h3>
+<blockquote>
+<p>This software is entirely free to use and redistribute, with <a href="../license.txt">this
+license</a>.<br>
+Questions or comments can be sent to <a ref="mailto:ben.discoe@intel.com" href="mailto:toolbox@vterrain.org">info@vterrain.org</a><br>
+More information about the VTP software is online at <a href="http://vterrain.org/">http://vterrain.org/</a>
+</p>
+</blockquote>
+<a Name="Basic"><h3> Concepts</h3></a>
+<blockquote>
+  <h4 align="left">Layers</h4>
+  <blockquote>
+  <p align="left">VTBuilder treats data as <i><b>Layers</b></i>, much like other
+  GIS software tools.<br>
+  Layers are organized into the following <b>types</b>:</p>
+  <ul>
+    <li>
+      <p align="left">Elevation</li>
+    <li>
+      <p align="left">Structures (Buildings, Fences..)</li>
+    <li>
+      <p align="left">Roads</li>
+    <li>
+      <p align="left">Vegetation</li>
+    <li>
+      <p align="left">Water</li>
+  </ul>
+  <p align="left">Because VTBuilder knows what kind of data is contained in each
+  layer, it can perform operations on them which exploit high-level geospatial
+  knowledge.</p>
+  <p align="left">Each layer corresponds with a file on disk.&nbsp; The file can
+  be <b>imported</b> or a <b>native</b> format.&nbsp; Layers can be read from
+  any <b>imported</b> data format, and can be both read and written to <b>native</b>
+  formats.</p>
+  </blockquote>
+<h4>Projects</h4>
+  <blockquote>
+<p>You can save a description of all the current layers to a <b>project file.</b>&nbsp;
+For imported data, the project will store the name of the imported file, which
+will be imported again when the project is loaded.&nbsp; For native formats, the
+layer is simply loaded from the native file.</p>
+  </blockquote>
+</blockquote>
+
+</body>
+
+</html>

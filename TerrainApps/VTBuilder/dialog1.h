@@ -1,0 +1,26 @@
+/*
+ * dialog1.h
+ * Window identifiers file written by Dialog Editor
+ */
+
+#define ID_RB_SCALEUP 6001
+#define ID_RB_SCALEDOWN 6002
+#define IDC_CURRENTSIZE 6020
+#define IDC_SAMPLEFACTOR 6019
+#define IDC_MORE 6028
+#define IDC_LESS 6027
+#define IDC_RADIO1 6011
+#define ID_TC_UPBY 6003
+#define IDC_SFLABEL 6025
+#define ID_DIALOG100 100
+#define IDC_XSAMPLE 6015
+#define IDC_YSAMPLE 6017
+#define ID_DIALOG6006 6006
+#define IDC_SAVEAREA 6018
+#define ID_STATIC6010 6010
+#define ID_STATIC6013 6013
+#define ID_STATIC6014 6014
+#define ID_STATIC6007 6007
+#define ID_STATIC6008 6008
+#define ID_STATIC6009 6009
+#define ID_TC_DOWNBY 6005

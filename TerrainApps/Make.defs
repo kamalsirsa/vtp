@@ -1,0 +1,121 @@
+#
+# GNU Makefile Variable Defs:  TerrainApps
+#
+
+#------------------------------------------------------------------------------
+# SGI IRIX with MIPSPro compilers  (tested with ver. 7.3.1.1m)
+#   (IRIX Folks:  Read TerrainApps/README.sgi!)
+#------------------------------------------------------------------------------
+## CC        = cc -n32 -mips4 -w
+## CXX       = CC -n32 -mips4 -w -LANG:std -exceptions -prelink -ptnone
+## AR        = CC -n32 -mips4 -ar -WR,-v -o
+## COPT      = -O -g
+## LD        = $(CXX)
+## LD_SHARED = $(CXX) -shared
+## 
+## GLUT_LIB = -lglut
+## GLU_LIB  = -lGLU
+## LDIRFLAGS = $(LDIRS:%=-L%)                \
+##             -Wl,-rpath,$(subst $(space),$(colon),$(LDIRS))
+
+#------------------------------------------------------------------------------
+# SGI IRIX with GCC  (tested with ver. 2.95.3-test2)
+#   (IRIX Folks:  Read TerrainApps/README.sgi!)
+#------------------------------------------------------------------------------
+##CC        = gcc
+##CXX       = g++
+##AR        = ar ruv
+##COPT      = -O -g
+##LD        = $(CXX)
+##LD_SHARED = $(CXX) -shared
+##
+##GLUT_LIB = $(HOME)/software/Mesa-3.4.1/lib/libglut.a
+##GLU_LIB  = $(HOME)/software/Mesa-3.4.1/lib/libGLU.a
+##LDIRFLAGS = $(LDIRS:%=-L%)                \
+##            -Wl,-rpath,$(subst $(space),$(colon),$(LDIRS))
+
+#------------------------------------------------------------------------------
+# FreeBSD with GCC (tested with ver. 2.95.2)
+#------------------------------------------------------------------------------
+CC        = gcc
+CXX       = g++
+AR        = ar ruv
+#COPT      = -O -fpic -DPIC
+LD        = $(CXX)
+LD_SHARED = $(CXX) -shared
+PTHREAD_LIBS = -pthread
+
+GLUT_LIB = -lglut
+GLU_LIB  = -lGLU
+EXTRA_LIBS = -lXi $(PTHREAD_LIBS)
+LDIRFLAGS = $(LDIRS:%=-L%)                \
+            -rpath $(subst $(space),$(colon),$(LDIRS))
+
+#------------------------------------------------------------------------------
+# Linux with GCC (tested with ver. 2.95.3)
+#------------------------------------------------------------------------------
+## CC        = gcc
+## CXX       = g++
+## AR        = ar ruv
+## COPT      = -O -g
+## LD        = $(CXX)
+## LD_SHARED = $(CXX) -shared
+## 
+## GLUT_LIB = -lglut
+## GLU_LIB  = -lGLU
+## EXTRA_LIBS = -lXi
+## LDIRFLAGS = $(LDIRS:%=-L%)                \
+## 	       -R $(subst $(space),$(colon),$(LDIRS))
+
+#------------------------------------------------------------------------------
+
+colon:= :
+empty:=  
+space:= $(empty) $(empty)
+
+#==============================================================================
+#
+#                                DIRECTORIES
+#
+#==============================================================================
+
+LOCALBASE = /usr/local
+X11BASE   = /usr/X11R6
+PREFIX    = $(X11BASE)
+
+#X_INC = /usr/include
+#X_LIB = /usr/lib
+X_INC = $(X11BASE)/include
+X_LIB = $(X11BASE)/lib
+
+# NOTE: VTP_ROOT is set in each Makefile
+
+APIS_DIR         = $(VTP_ROOT)/APIs
+TERRAIN_SDK_DIR  = $(VTP_ROOT)/TerrainSDK
+TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
+VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
+VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
+VTOSG_DIR        = $(VTLIB_DIR)/vtosg
+
+#NETCDF_INC = $(APIS_DIR)/NetCDF/include
+#NETCDF_LIB = $(APIS_DIR)/NetCDF/lib
+NETCDF_INC = $(LOCALBASE)/include
+NETCDF_LIB = $(LOCALBASE)/lib
+
+#PNG_INC = $(APIS_DIR)/libpng-1.0.8/include
+#PNG_LIB = $(APIS_DIR)/libpng-1.0.8/lib
+PNG_INC = $(LOCALBASE)/include
+PNG_LIB = $(LOCALBASE)/lib
+
+#OSG_INC = $(VTP_ROOT)/OpenSceneGraph-0.8/include
+#OSG_LIB = $(VTP_ROOT)/OpenSceneGraph-0.8/lib
+OSG_INC = $(LOCALBASE)/include
+OSG_LIB = $(LOCALBASE)/lib
+
+GDAL_INC = $(LOCALBASE)/include
+GDAL_LIB = $(LOCALBASE)/lib
+
+#VTDATA_INST_DIR = $(VTDATA_DIR)
+#VTOSG_INST_DIR  = $(VTOSG_DIR)
+VTDATA_INST_DIR = $(PREFIX)/lib
+VTOSG_INST_DIR  = $(PREFIX)/lib

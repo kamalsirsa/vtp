@@ -1,0 +1,234 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>VTBuilder Roads</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h3 align="center">
+VTBuilder<br>
+<a href="index.html">back to top</a>
+</h3>
+<h2>Road Layers</h2>
+<blockquote>
+  <p>VTBuilder supports networks of transportation elements.&nbsp; The topology is represented by <b>nodes</b> (intersections) and
+  <b>roads</b> (a centerline path between two nodes).
+</p>
+  <p>Road data is imported from raw data sources, and saved to a compact Road
+  Map Format (RMF). You can load multiple files, merge them, and delete areas
+  not of interest.&nbsp; Traffic direction
+  and intersection behavior can be modelled and easily edited.</p>
+  <p>VTBuilder can import road data from these formats:</p>
+  <ul>
+    <li>USGS DLG-O (Digital Line Graph - Optional format)</li>
+    <li>ESRI Shape files (SHP)</li>
+  </ul>
+</blockquote>
+<h4>
+Road Menu
+</h4>
+    <ul>
+      <li><a name="Select/Modify">Select/Modify</a> Roads
+        <ul>
+          <li>In this mode, you may select roads in the road map by
+            left clicking on them (click again to deselect.)&nbsp; Double
+            clicking will bring up that roads properties in a dialog box.&nbsp; You may also modify multiple roads at once by selecting multiple
+            roads and then right clicking anywhere on the road map.</li>
+          <li>Road properties include:
+            <ul type="disc">
+              <li>Highway number</li>
+              <li>Number of lanes</li>
+              <li>Sidewalk</li>
+              <li>Parking (presence of vehicle-width area of pavement along
+                road)</li>
+              <li>Margin (presence of paved shoulder)</li>
+              <li>Road surface type</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Select/Modify Nodes
+        <ul>
+          <li>In this mode, you may select nodes in the road map by
+            left clicking on them (click again to deselect.)&nbsp; Double
+            clicking will bring up that nodes properties in a dialog box.&nbsp;
+            You may also modify multiple nodes at once by selecting multiple
+            nodes and then right clicking anywhere on the road map.</li>
+          <li>Node properties include:
+            <ul type="disc">
+              <li>Intersection Type (Signal lights, Stop sign, or
+                uncontrolled/none.)</li>
+              <li>Properties for each of the road at the intersection
+                point.&nbsp; Each road is associated with a number as seen on
+                the diagram on the right side of the dialog box.
+                <ul type="circle">
+                  <li>A red outline of an octagon denotes a stop sign for the
+                    road at the given node.</li>
+                  <li>A solid circle denotes a signal sign for the road at the
+                    given node.&nbsp; Signal lights of like color (red or green)
+                    indicate linked signal lights (determined
+                    automatically.)&nbsp; A black circle indicates that the
+                    signal light hasn't been set up properly.&nbsp; Simply force
+                    the intersection type to signal lights to fix the problem.</li>
+                  <li>If the road is uncontrolled, there will not be any symbol.</li>
+                </ul>
+              </li>
+              <li>Road height.&nbsp; This is to be used for elevated roadways
+                such as overpasses.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><a name="Select Whole">Select Whole</a> Roads
+        <ul>
+          <li>Click on a road, and VTBuilder will attempt to select all adjacent
+            roads that constitute a single conceptual &quot;road&quot;.&nbsp;
+            For example, you can use this to select an entire highway at once.</li>
+        </ul>
+      </li>
+      <li>Set Road Direction
+        <ul>
+          <li>Adjust traffic direction on roads by left clicking on the road.
+            <ul>
+              <li><font color="#008000"><b>&lt;&gt;</b> </font>- two-way traffic</li>
+              <li><b><font color="#008000">&gt; </font>or<font color="#008000">
+                &lt; </font>- </b>one-way traffic, in direction of the arrow.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Edit Road Points
+        <ul>
+          <li>In this mode, you can use the mouse to drag individual points of
+            the roads.&nbsp; Click on any road to select the points in that
+            road, then click and drag those points to move them.&nbsp; Note that
+            intersections are not currently moved correctly.</li>
+        </ul>
+      </li>
+      <li>Show Nodes
+        <ul>
+          <li>Toggles the display of nodes (intersections).&nbsp; Turning this
+            off is useful to make roads faster to display and edit.</li>
+        </ul>
+      </li>
+      <li>Select Highway Number
+        <ul>
+          <li>Simply enter the number of the highway you want selected.</li>
+        </ul>
+      </li>
+      <li><a name="Clean">Clean</a> RoadMap
+        <ul>
+          <li>This powerful feature will perform a number of steps to fix errors
+            in current road layer.&nbsp; This is very important because raw
+            sources of road data such as USGS DLG files often contain dangerous anomalies.&nbsp;
+            The following actions are performed:
+            <ul>
+              <li>Merge Redundant Nodes
+        <ul>
+          <li>Merges nodes that are extremely close to each other.&nbsp; This function joins
+            roads that were cut off on adjacent source files.&nbsp; However, the
+            roads are still separate.</li>
+        </ul>
+              </li>
+              <li>Remove Degenerate Roads
+        <ul>
+          <li>Removes small roads that don't go anywhere (i.e. start and end at same
+            point and have less than 3 points.)</li>
+        </ul>
+              </li>
+              <li>Remove Unnecessary Nodes
+        <ul>
+          <li>Eliminates nodes and merges the 2 roads into one road if the 2 roads
+            have the same properties.</li>
+        </ul>
+              </li>
+              <li>Clean Road Points
+        <ul>
+          <li>Ensures that roads end on nodes and eliminates any repeating
+            points.</li>
+        </ul>
+              </li>
+              <li>Delete Dangling Roads
+        <ul>
+          <li>Delete roads that either:
+            <ul type="circle">
+              <li type="disc">have the same start and end nodes and have less
+                than 4 points</li>
+              <li type="disc">have less than 2 points, regardless of start or
+                end nodes.</li>
+            </ul>
+          </li>
+        </ul>
+              </li>
+              <li>Remove Unused Nodes
+        <ul>
+          <li>Deletes nodes with no roads.</li>
+        </ul>
+              </li>
+              <li>Fix Overlapped Roads
+        <ul>
+          <li>Fix when two different roads meet at the same node along the same path</li>
+        </ul>
+              </li>
+              <li>Fix Extraneous Parallels
+        <ul>
+          <li>Delete roads that are really close to other roads and lead nowhere.</li>
+        </ul>
+              </li>
+              <li>Split Looping Roads
+        <ul>
+          <li>Splits a road that has the same start and end point.&nbsp; Road
+            will be split at the middle point and a new uncontrolled node will
+            be created between the 2 new roads.</li>
+        </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+
+<h4><a name="Use of RMF Files">Use of RMF Files</a>
+</h4>
+<blockquote>
+  <p>In order to use the RMF files you have generated, copy them to the VTP
+  Enviro data directory <b>Enviro/Data/RoadData.</b>&nbsp; The next time
+  you run Enviro, they will appear on the &quot;Roads Filename&quot;
+  drop-down control in the Create Terrain dialog.</p>
+</blockquote>
+
+<p>Currently Unimplemented:</p>
+    <ul>
+      <li>Merge 2 nodes.
+        <ul>
+          <li>Merges the 2 selected nodes.</li>
+        </ul>
+      </li>
+      <li>Path Finder
+        <ul>
+          <li>Tool to create a path for a vehicle to follow in the Enviro Program.</li>
+          <li>There are 3 steps:
+            <ul>
+              <li>Select the start node.</li>
+              <li>Select roads to create the path.&nbsp; This can
+                be done in 2 ways.&nbsp; First, you can choose another node and
+                let VTBuilder find the shortest path from the start point to the
+                selected point ( <img border="0" src="images/README14.gif" align="middle" width="34" height="30">
+                on the toolbar - default setting.)&nbsp; Second, you may also
+                select individual roads to create the path - you must choose
+                connected roads ( <img border="0" src="images/README15.gif" align="middle" width="34" height="30">
+                on the toolbar.)</li>
+              <li>Save the path by clicking on <img border="0" src="images/README16.gif" align="middle" width="34" height="30">
+                in the toolbar.&nbsp;</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+<p>&nbsp;</p>
+
+</body>
+
+</html>

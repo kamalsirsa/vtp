@@ -1,0 +1,46 @@
+static char *dialog1 = "dialog(name = 'dialog1',\
+  style = 'wxRAISED_BORDER | wxCAPTION | wxTHICK_FRAME | wxRESIZE_BORDER | wxSYSTEM_MENU',\
+  title = 'Merge and Resample',\
+  id = 6006,\
+  x = 5, y = 10, width = 208, height = 148,\
+  background_colour = 'D5D2BF',\
+  use_dialog_units = 1,\
+  use_system_defaults = 0,\
+  font = [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg'],\
+  control = [6007, wxStaticText, 'Save Area:', '0', 'statictext2', 15, 13, 38, 10, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6008, wxStaticText, 'Sample factor:', '0', 'statictext3', 15, 28, 46, 9, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6009, wxStaticText, 'Size at that density:', '0', 'statictext4', 15, 42, 64, 9, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6010, wxStaticText, 'Size constraint:', '0', 'statictext5', 36, 56, 48, 13, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6011, wxRadioButton, 'Powers of 2 + 1 (for Terrain LOD)', '0', 'radiobutton6', 48, 68, 114, 9, 0,\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6011, wxRadioButton, 'Any Size', '0', 'radiobutton7', 48, 80, 50, 9, 0,\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6013, wxStaticText, 'X size:', '0', 'statictext8', 55, 93, 22, 9, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6014, wxStaticText, 'Y size:', '0', 'statictext9', 55, 107, 24, 9, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6015, wxTextCtrl, '', '0', 'textctrl10', 80, 91, 36, 14, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6017, wxTextCtrl, '', '0', 'textctrl12', 80, 105, 36, 14, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6018, wxTextCtrl, '', 'wxTE_READONLY', 'textctrl13', 80, 9, 110, 14, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6019, wxTextCtrl, '', '0', 'textctrl14', 80, 24, 50, 14, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6020, wxTextCtrl, '', 'wxTE_READONLY', 'textctrl15', 80, 40, 88, 14, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [5100, wxButton, 'OK', '0', 'button16', 48, 126, 50, 16, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [5101, wxButton, 'Cancel', '0', 'button17', 112, 126, 50, 16, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6025, wxStaticText, 'meters per grid point', '0', 'statictext20', 132, 29, 54, 9, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
+  control = [6027, wxButton, '<<', '0', 'button2', 128, 96, 18, 16, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxBOLD', 0, 'Arial']],\
+  control = [6028, wxButton, '>>', '0', 'button3', 148, 96, 18, 16, '',\
+      [8, 'wxSWISS', 'wxNORMAL', 'wxBOLD', 0, 'Arial']]).";
+

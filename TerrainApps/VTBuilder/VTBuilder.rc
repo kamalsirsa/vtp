@@ -1,0 +1,62 @@
+aaaaaaa ICON "icons/VTBuilder.ico"
+#include "wx/msw/wx.rc"
+
+dialog1 TEXT "dialog1.wxr"
+dialog2 TEXT "dialog2.wxr"
+dialog3 TEXT "dialog3.wxr"
+dialog4 TEXT "dialog4.wxr"
+dialog5 TEXT "dialog5.wxr"
+
+proj_new		BITMAP "bitmaps/newproj.bmp"
+proj_open		BITMAP "bitmaps/openproj.bmp"
+proj_save		BITMAP "bitmaps/saveproj.bmp"
+edit_delete		BITMAP "bitmaps/edit_delete.bmp"
+edit_crossing	BITMAP "bitmaps/edit_crossing.bmp"
+edit_offset		BITMAP "bitmaps/edit_offset.bmp"
+layer_new		BITMAP "bitmaps/layer_new.bmp"
+layer_open		BITMAP "bitmaps/layer_open.bmp"
+layer_save		BITMAP "bitmaps/layer_save.bmp"
+layer_import	BITMAP "bitmaps/layer_import.bmp"
+layer_export	BITMAP "bitmaps/layer_export.bmp"
+layer_show		BITMAP "bitmaps/layer_show.bmp"
+view_hand		BITMAP "bitmaps/hand.bmp"
+view_mag		BITMAP "bitmaps/view_mag.bmp"
+view_plus		BITMAP "bitmaps/plus.bmp"
+view_minus		BITMAP "bitmaps/minus.bmp"
+view_zoomall	BITMAP "bitmaps/zoomall.bmp"
+view_zoomexact	BITMAP "bitmaps/zoomexact.bmp"
+distance		BITMAP "bitmaps/distance.bmp"
+
+rd_select_road	BITMAP "bitmaps/rd_select_road.bmp"
+rd_select_node	BITMAP "bitmaps/rd_select_node.bmp"
+rd_select_whole	BITMAP "bitmaps/rd_select_whole.bmp"
+rd_direction	BITMAP "bitmaps/rd_direction.bmp"
+rd_edit			BITMAP "bitmaps/rd_edit.bmp"
+rd_shownodes	BITMAP "bitmaps/rd_shownodes.bmp"
+
+select			BITMAP "bitmaps/select.bmp"
+elev_box		BITMAP "bitmaps/elev_box.bmp"
+
+bld_edit		BITMAP "bitmaps/bld_edit.bmp"
+str_add_linear	BITMAP "bitmaps/str_add_linear.bmp"
+
+vtbuilder ICON "icons/VTBuilder.ico"
+
+icon1   ICON "icons/file1.ico"
+icon2   ICON "icons/file2.ico"
+icon3   ICON "icons/folder1.ico"
+icon4   ICON "icons/folder2.ico"
+icon5   ICON "icons/folder3.ico"
+
+icon6   ICON "icons/building.ico"
+icon7   ICON "icons/road.ico"
+icon8   ICON "icons/grid.ico"
+icon9   ICON "icons/image.ico"
+icon10  ICON "icons/veg1.ico"
+
+icon11  ICON "icons/water.ico"
+icon12  ICON "icons/transit.ico"
+icon13  ICON "icons/raw.ico"
+
+panhand	CURSOR "cursors/panhand.cur"
+

@@ -1,0 +1,223 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>VTBuilder Basic Menu Commands</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h3 align="center">
+VTBuilder<br>
+<a href="index.html">back to top</a>
+</h3>
+<h3>Basic Menu Commands</h3>
+<ul>
+  <li><b><a name="Project">Project</a></b>
+    <ul>
+      <li>New
+        <ul>
+          <li>Clears the VTBuilder workspace to begin new project.</li>
+        </ul>
+      </li>
+      <li>Open Project...
+        <ul>
+          <li>Opens a previously saved VTBuilder Project.</li>
+        </ul>
+      </li>
+      <li>Save Project
+        <ul>
+          <li>Saves Project containing info on all layers as a <b>vtb</b>
+            (VTBuilder Project File).</li>
+        </ul>
+      </li>
+      <li>Exit</li>
+    </ul>
+  </li>
+  <li><b><a name="Edit">Edit</a></b>
+    <ul>
+      <li>Delete
+        <ul>
+          <li>If the current layer has some elements selected, they are
+            deleted.&nbsp; Otherwise, the current layer is deleted, after you are
+            asked to confirm.</li>
+        </ul>
+      </li>
+      <li>Deselect All
+        <ul>
+          <li>Deselects all selected elements in the current layer (eg. all
+            roads in a road layer).</li>
+        </ul>
+      </li>
+      <li>Invert Selection
+        <ul>
+          <li>Toggles the selection state of all elements in to current layer.</li>
+        </ul>
+      </li>
+      <li>Crossing Selection</li>
+        <ul>
+          <li>This option affects interactive selection of elements.&nbsp; When
+            true, any part of an element inside the selection box will
+            selected.&nbsp; When false, only elements entirely within the
+            selection box are selected.</li>
+        </ul>
+    </ul>
+  </li>
+  <li><b><a name="Layer">Layer</a></b>
+    <ul>
+      <li>New Layer
+        <ul>
+          <li>Creates a blank layer of selected type.</li>
+        </ul>
+      </li>
+      <li>Open Layer
+        <ul>
+          <li>Opens any type of layer (e.g. Road, Building, Water) and adds it
+            to the current project.</li>
+        </ul>
+      </li>
+      <li>Save Layer
+      </li>
+      <li>Save Layer As...
+        <ul>
+          <li>Save selected layer as a binary file (e.g. roads as RMF, buildings
+            as BCF), to be read in by the
+            Enviro program.</li>
+        </ul>
+      </li>
+      <li>Import Data
+        <ul>
+          <li>Creates a new layer by importing data from any known file
+            format.&nbsp; You can also simply drag-and-drop files into the VTBuilder
+            window.&nbsp; Multiple files can be imported at once by dragging over a
+            group of icons.</li>
+        </ul>
+      </li>
+      <li>Layer Properties
+        <ul>
+          <li>Will display some properties of the current layer.&nbsp; Not all
+            layer types will have properties to display.</li>
+        </ul>
+      </li>
+      <li>Offset Coordinates
+        <ul>
+          <li>Shifts all the data in the current layer by a specified
+            amount.&nbsp; This is useful to manually aligning layers which
+            differ by a fixed horizontal offset.</li>
+        </ul>
+      </li>
+      <li>Flatten Layers
+        <ul>
+          <li>This will merge (&quot;flatten&quot;) all layers <i> of the currently selected layer
+            type</i> into a single layer.</li>
+        </ul>
+      </li>
+      <li>Convert Projection
+        <ul>
+          <li>Converts the geographic projection of <b>all</b> loaded layers to
+            a new projection</li>
+        </ul>
+      </li>
+      <li>Set Projection
+        <ul>
+          <li>Changes the currently assumed projection, <b>without</b>
+            converting any coordinates.&nbsp; Use this if you know that the
+            current projection (as displayed in the Status Bar) is incorrect,
+            and you wish to correct it.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><b><a name="View">View</a></b>
+    <ul>
+      <li>Toolbar
+        <ul>
+          <li>Toggles display of the Toolbar.</li>
+        </ul>
+      </li>
+      <li>Status Bar
+        <ul>
+          <li>Toggles display of the Status Bar.</li>
+        </ul>
+      </li>
+      <li>Current Layer Visible
+        <ul>
+          <li>Toggles the visibility of the current layer.&nbsp; This is useful
+            to hide layers, for easier editing or faster redraw.</li>
+        </ul>
+      </li>
+      <li>Zoom In / Out
+        <ul>
+          <li>Zooms in/out by about 40%.</li>
+        </ul>
+      </li>
+      <li>Zoom All
+        <ul>
+          <li>Centers your view on the currently loaded terrains (but doesn't
+            yet change the level of Zoom)</li>
+        </ul>
+      </li>
+      <li>Zoom to Full Res (1:1)
+        <ul>
+          <li>If the current terrain is grid data (Elevation or Image), sets the
+            view to match (1 pixel per grid point)</li>
+        </ul>
+      </li>
+      <li>Magnifier
+        <ul>
+          <li>Allows you to zoom the view into a specified rectangle.</li>
+        </ul>
+      </li>
+      <li>Pan
+        <ul>
+          <li>Allows you to pan the view by dragging the first mouse
+            button.&nbsp; You can also drag with the middle mouse button, if you have
+            one, to pan at <b>any</b> time.</li>
+        </ul>
+      </li>
+      <li>Obtain Distance
+        <ul>
+          <li>Click and drag to measure horizontal distance and offset between
+            any two points.</li>
+        </ul>
+      </li>
+      <li>Set Export Area
+        <ul>
+          <li>Allows you to set the area which is used to extract and export
+            data (currently only used for Elevation).</li>
+        </ul>
+      </li>
+      <li>World Map
+      </li>
+      <li>Show UTM Boundaries
+        <ul>
+          <li>If you are using data in a geographic projection, this will toggle
+            the display of the boundaries of the UTM coordinate zones.</li>
+        </ul>
+      </li>
+      <li>Show minutes and seconds
+        <ul>
+          <li>If you are using data in a geographic projection, this will toggle
+            the display of minutes and seconds of latitude-longitude.</li>
+        </ul>
+      </li>
+      <li>Show Terrain Elevation
+        <ul>
+          <li>Turn this off to show each elevation layer as a simple box, which saves a
+            lot of memory and time.</li>
+        </ul>
+      </li>
+      <li>Artificial Shading
+        <ul>
+          <li>Produces much more attractive images, but adds a little time to
+            load each file.</li>
+        </ul>
+      </li>
+      <li>Hide Unknown Areas</li>
+    </ul>
+  </li>
+</ul>
+
+</body>
+
+</html>
