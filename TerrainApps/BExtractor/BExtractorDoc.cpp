@@ -186,7 +186,7 @@ void BExtractorDoc::PreFloodFillDIB(CDib *bm)
 	}
 }
 
-void BExtractorDoc::FloodFillDIB(CDib *bm)
+void BExtractorDoc::FloodFillDIB(CDib *bm, CProgressDlg *prog)
 {
 	int width = bm->GetWidth();
 	int height = bm->GetHeight();
@@ -195,6 +195,8 @@ void BExtractorDoc::FloodFillDIB(CDib *bm)
 
 	for (int i = 0; i < width; i++)
 	{
+		if ((i % 10) == 0)
+			prog->SetPos(i * 200 / width);
 		for (int j = 0; j < height; j++)
 		{
 			if (bm->GetPixel8(i,j) == target)

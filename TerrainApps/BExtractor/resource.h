@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by BExtractor.rc
 //
 #define IDD_ABOUTBOX                    100
@@ -8,17 +8,19 @@
 #define CG_IDS_PROGRESS_CAPTION2        104
 #define CG_IDS_PROGRESS_CAPTION3        105
 #define CG_IDS_PROGRESS_CAPTION4        106
-#define ID_COORDSYS                     107
-#define ID_ZONE                         108
-#define ID_DATUM                        109
-#define ID_UNITS                        110
-#define ID_CURSOR                       111
+#define CG_IDS_PROGRESS_CAPTION5        107
+#define CG_IDS_PROGRESS_CAPTION6        108
 #define IDR_MAINFRAME                   128
 #define IDR_B_EXTRTYPE                  129
 #define IDD_THRESH_DIALOG               130
+#define ID_UNITS                        130
 #define IDD_KERNEL                      131
+#define ID_CURSOR                       131
 #define IDD_PREFLOOD                    132
+#define ID_COORDSYS                     132
+#define ID_ZONE                         133
 #define IDD_ZONEDLG                     134
+#define ID_DATUM                        134
 #define IDC_RICHEDIT1                   1000
 #define IDC_Thresh1                     1001
 #define IDC_Thresh2                     1002

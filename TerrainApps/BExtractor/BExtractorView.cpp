@@ -1739,7 +1739,13 @@ void BExtractorView::OnFunctionsConvolve()
 		(char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
 
 	// Distinguish individual buildings and label them
-	doc->FloodFillDIB(&ResultDib);
+	if (1)
+	{
+		CProgressDlg prog(CG_IDS_PROGRESS_CAPTION5);
+		prog.Create(NULL);	// top level
+
+		doc->FloodFillDIB(&ResultDib, &prog);
+	}
 
 	// Loop through the building coordinates, remove any that are too close
 	// to one another
@@ -1747,32 +1753,41 @@ void BExtractorView::OnFunctionsConvolve()
 	int num = doc->m_Buildings.GetSize();
 	bool match = false;
 
-	for (int k = 0; k < num; )
+	if (1)
 	{
-		vtBuilding *bld = doc->m_Buildings.GetAt(k)->GetBuilding();
+		CProgressDlg prog(CG_IDS_PROGRESS_CAPTION6);
+		prog.Create(NULL);	// top level
 
-		DPoint2 point, point2;
-
-		bld->GetBaseLevelCenter(point);
-		for (l = 0; (!match)&&(l < num); l++)
+		for (int k = 0; k < num; )
 		{
-			if (l!=k)
+			if ((k % 10) == 0)
+				prog.SetPos(k * 200 / num);
+
+			vtBuilding *bld = doc->m_Buildings.GetAt(k)->GetBuilding();
+
+			DPoint2 point, point2;
+
+			bld->GetBaseLevelCenter(point);
+			for (l = 0; (!match)&&(l < num); l++)
 			{
-				vtBuilding *bld2 = doc->m_Buildings.GetAt(l)->GetBuilding();
-				bld2->GetBaseLevelCenter(point2);
+				if (l!=k)
+				{
+					vtBuilding *bld2 = doc->m_Buildings.GetAt(l)->GetBuilding();
+					bld2->GetBaseLevelCenter(point2);
 
-				if ((fabs(point.x - point2.x) < 11) &&
-					(fabs(point.y - point2.y) < 7))
-					match = true;
+					if ((fabs(point.x - point2.x) < 11) &&
+						(fabs(point.y - point2.y) < 7))
+						match = true;
+				}
 			}
+			if (match)
+			{
+				doc->m_Buildings.RemoveAt(k, 1);
+				num--;
+				match = false;
+			}
+			else k++;
 		}
-		if (match)
-		{
-			doc->m_Buildings.RemoveAt(k, 1);
-			num--;
-			match = false;
-		}
-		else k++;
 	}
 	CString NumberBuildings;
 	NumberBuildings.Format("Building Extraction is finished. %d buildings were extracted", num);

@@ -42,7 +42,7 @@ public:
 	void OnImportimage2(LPCTSTR szPathName);
 
 	void PreFloodFillDIB(CDib *bm);
-	void FloodFillDIB(CDib *bm);
+	void FloodFillDIB(CDib *bm, class CProgressDlg *prog);
 	int Fill(CDib *bm, int x, int y, byte ov, byte nv, int w, int h, int diag, int count = 0);
 
 	// transform image space -> UTM space
