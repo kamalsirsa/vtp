@@ -59,11 +59,18 @@ vtTerrainScene::vtTerrainScene()
 	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
 	m_pTime = NULL;
+	m_pSkyTrack = NULL;
 	m_pSunLight = NULL;
 }
 
 vtTerrainScene::~vtTerrainScene()
 {
+	vtGetScene()->RemoveEngine(m_pTime);
+	vtGetScene()->RemoveEngine(m_pSkyTrack);
+
+	delete m_pTime;
+	delete m_pSkyTrack;
+
 	while (m_pFirstTerrain)
 	{
 		vtTerrain *del = m_pFirstTerrain;
@@ -72,7 +79,6 @@ vtTerrainScene::~vtTerrainScene()
 	}
 	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
-	// TODO: proper cleanup
 }
 
 void vtTerrainScene::create_skydome(const StringArray &datapath)
@@ -95,11 +101,11 @@ void vtTerrainScene::create_skydome(const StringArray &datapath)
 	m_pSkyDome->SetName2("The Sky");
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
 
-	vtSkyTrackEngine *pEng = new vtSkyTrackEngine();
-	pEng->SetName2("Sky-Camera-Following");
-	pEng->m_pCamera = vtGetScene()->GetCamera();
-	pEng->SetTarget(m_pSkyDome);
-	vtGetScene()->AddEngine(pEng);
+	m_pSkyTrack = new vtSkyTrackEngine();
+	m_pSkyTrack->SetName2("Sky-Camera-Following");
+	m_pSkyTrack->m_pCamera = vtGetScene()->GetCamera();
+	m_pSkyTrack->SetTarget(m_pSkyDome);
+	vtGetScene()->AddEngine(m_pSkyTrack);
 }
 
 //
@@ -147,6 +153,7 @@ void vtTerrainScene::create_engines(bool bDoSound)
 	// Set Time in motion
 	m_pTime = new TimeEngine(this, 0);
 	m_pTime->SetName2("Time");
+	m_pTime->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pTime);
 }
 
