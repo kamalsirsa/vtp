@@ -46,6 +46,7 @@
 #define FSTRING_SDTS	_T("SDTS Files (*catd.ddf)|*catd.ddf|")	
 #define FSTRING_SHP		_T("ArcView Shape Files (*.shp)|*.shp|")
 #define FSTRING_Surfer	_T("Surfer Binary Grids (*.grd)|*.grd|")
+#define FSTRING_STM		_T("STM Files (*.stm)|*.stm|")
 #define FSTRING_TER		_T("Terragen terrain (*.ter)|*.ter|")
 #define FSTRING_TIF		_T("GeoTIFF Files (*.tif)|*.tif|")
 #define FSTRING_UTL		_T("Utility Files (*.utl)|*.utl|")
