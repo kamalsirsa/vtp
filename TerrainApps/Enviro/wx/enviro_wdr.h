@@ -188,6 +188,19 @@ extern wxSizer *g_pLayerSizer2;
 #define ID_ZOOM_TO 10125
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_SPIN_YEAR 10126
+#define ID_SPIN_MONTH 10127
+#define ID_SPIN_DAY 10128
+#define ID_SPIN_HOUR 10129
+#define ID_SPIN_MINUTE 10130
+#define ID_SPIN_SECOND 10131
+#define ID_STOP 10132
+#define ID_GO 10133
+#define ID_TEXT_SPEED 10134
+#define ID_SLIDER_SPEED 10135
+#define ID_APPLY 10136
+wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

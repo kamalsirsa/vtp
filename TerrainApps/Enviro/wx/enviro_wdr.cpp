@@ -1337,6 +1337,89 @@ wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Year:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Enable( FALSE );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item3 = new wxSpinCtrl( parent, ID_SPIN_YEAR, wxT("2000"), wxDefaultPosition, wxSize(60,-1), 0, 2000, 2000, 2000 );
+    item3->Enable( FALSE );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Month"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item5 = new wxSpinCtrl( parent, ID_SPIN_MONTH, wxT("1"), wxDefaultPosition, wxSize(60,-1), 0, 1, 12, 1 );
+    item1->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Day"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item7 = new wxSpinCtrl( parent, ID_SPIN_DAY, wxT("1"), wxDefaultPosition, wxSize(60,-1), 0, 1, 28, 1 );
+    item1->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Hour:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item10 = new wxSpinCtrl( parent, ID_SPIN_HOUR, wxT("0"), wxDefaultPosition, wxSize(60,-1), 0, 0, 23, 0 );
+    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Minute"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item12 = new wxSpinCtrl( parent, ID_SPIN_MINUTE, wxT("0"), wxDefaultPosition, wxSize(60,-1), 0, 0, 59, 0 );
+    item8->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Second"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item14 = new wxSpinCtrl( parent, ID_SPIN_SECOND, wxT("0"), wxDefaultPosition, wxSize(60,-1), 0, 0, 59, 0 );
+    item8->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item8, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item16 = new wxButton( parent, ID_STOP, _("Stop"), wxDefaultPosition, wxSize(40,-1), 0 );
+    item15->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item17 = new wxButton( parent, ID_GO, _(">>"), wxDefaultPosition, wxSize(40,-1), 0 );
+    item15->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item18 = new wxTextCtrl( parent, ID_TEXT_SPEED, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item15->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item19 = new wxSlider( parent, ID_SLIDER_SPEED, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item15->Add( item19, 0, wxALIGN_CENTER, 5 );
+
+    wxButton *item20 = new wxButton( parent, ID_APPLY, _("Apply"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item15, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
