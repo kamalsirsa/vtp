@@ -173,13 +173,13 @@ const char *wxString2::to_utf8() const
 
 void wxString2::from_utf8(const char *input)
 {
-#if wxUSE_UNICODE
-	wxChar buf[MAX_WXSTRING2_SIZE];
+//#if wxUSE_UNICODE
+	wchar_t buf[MAX_WXSTRING2_SIZE];
 	int result = wxConvUTF8.MB2WC(buf, input, MAX_WXSTRING2_SIZE);
 	*this = buf;
-#else
-	*this = wxString::FromAscii(input);
-#endif
+//#else
+//	*this = wxString::FromAscii(input);
+//#endif
 }
 
 
