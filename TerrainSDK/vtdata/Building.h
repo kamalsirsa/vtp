@@ -211,7 +211,7 @@ public:
 	int GetStories() const;
 
 	unsigned int GetNumLevels() const { return m_Levels.GetSize(); }
-	vtLevel *GetLevel(int i) { return m_Levels[i]; }
+	vtLevel *GetLevel(int i) { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	vtLevel *CreateLevel(const DLine2 &footprint);
 	vtLevel *CreateLevel();
 	void InsertLevel(int iLev, vtLevel *pLev);
