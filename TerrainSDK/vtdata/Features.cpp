@@ -594,6 +594,17 @@ void vtFeatures::CopyEntity(int from, int to)
 /////////////////////////////////////////////////////////////////////////////
 // Data Fields
 
+Field *vtFeatures::GetField(const char *name)
+{
+	int i, num = m_fields.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		if (!m_fields[i]->m_name.CompareNoCase(name))
+			return m_fields[i];
+	}
+	return NULL;
+}
+
 int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length)
 {
 	Field *f = new Field(name, ftype);
@@ -692,6 +703,29 @@ void Field::SetValue(int record, double value)
 		m_int[record] = (int) value;
 	else if (m_type == FTDouble)
 		m_double[record] = value;
+}
+
+void Field::GetValue(int record, vtString &string)
+{
+	if (m_type != FTString)
+		return;
+	string = *(m_string[record]);
+}
+
+void Field::GetValue(int record, int &value)
+{
+	if (m_type == FTInteger)
+		value = m_int[record];
+	else if (m_type == FTDouble)
+		value = (int) m_double[record];
+}
+
+void Field::GetValue(int record, double &value)
+{
+	if (m_type == FTInteger)
+		value = (double) m_int[record];
+	else if (m_type == FTDouble)
+		value = m_double[record];
 }
 
 void Field::CopyValue(int FromRecord, int ToRecord)

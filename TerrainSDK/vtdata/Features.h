@@ -29,6 +29,9 @@ public:
 	void SetValue(int record, const char *string);
 	void SetValue(int record, int value);
 	void SetValue(int record, double value);
+	void GetValue(int record, vtString &string);
+	void GetValue(int record, int &value);
+	void GetValue(int record, double &value);
 	void CopyValue(int FromRecord, int ToRecord);
 
 	DBFFieldType m_type;
@@ -82,6 +85,7 @@ public:
 	// attribute (field) operations
 	int GetNumFields() { return m_fields.GetSize(); }
 	Field *GetField(int i) { return m_fields.GetAt(i); }
+	Field *GetField(const char *name);
 	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
 	int AddRecord();
 	void SetValue(int record, int field, const char *string);
