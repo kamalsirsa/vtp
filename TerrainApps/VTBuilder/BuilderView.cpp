@@ -1453,7 +1453,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
 		pR->CarveRoadway(pE, 2.0);
 #endif
-#if 1
+#if 0
 		DBFHandle db = DBFOpen("E:/GreenMaps/Locations/map_locations_v4.dbf", "rb");
 		DBFHandle db2 = DBFCreate("E:/GreenMaps/Locations/map_locations_v4d.dbf");
 		if (db != NULL && db2 != NULL)
@@ -1506,6 +1506,25 @@ void BuilderView::OnChar(wxKeyEvent& event)
 			}
 			DBFClose(db);
 			DBFClose(db2);
+		}
+#endif
+#if 1
+		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+		if (pE)
+		{
+			vtElevationGrid *g = pE->m_pGrid;
+			int xs, zs;
+			g->GetDimensions(xs, zs);
+			for (int i = 0; i < xs; i++)
+			for (int j = 0; j < zs; j++)
+			{
+				float val = g->GetFValue(i, j);
+				val += (cos(j*0.02) + cos(i*0.02))*5;
+				g->SetFValue(i, j, val);
+			}
+			g->ComputeHeightExtents();
+			pE->SetModified(true);
+			pE->ReRender();
 		}
 #endif
 	}
