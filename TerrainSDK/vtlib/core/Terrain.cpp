@@ -2370,11 +2370,14 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 		if (bIsRoad || name == "building-geom")
 		{
 			FPoint3 point = hlist[i].point;
+#if 0
+			// NO longer needed.  vtIntersect now returns world coords.
 			if (name != "road")
 			{
 				// things that aren't roads might have a transform to worry about
 				hlist[i].node->LocalToWorld(point);
 			}
+#endif
 			// take first match encountered
 			fAltitude =  point.y;
 			hit = true;
