@@ -15,6 +15,18 @@
 #include <fstream>
 using namespace std;
 
+//---------------------------------------------------------------------------
+
+PointStyle::PointStyle()
+{
+	m_field_index = 0;
+	m_label_elevation = 100.0f;	// 100m above the ground
+	m_label_size = 10.0f;		// 10m tall text
+	m_label_color.Set(255,255,255);	// white
+}
+
+//---------------------------------------------------------------------------
+
 // default (currently fixed) number of tiles
 #define NTILES	4
 
