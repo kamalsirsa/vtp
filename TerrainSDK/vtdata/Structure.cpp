@@ -21,6 +21,8 @@ vtStructInstance::vtStructInstance() : vtStructure()
 	m_p.Set(0, 0);
 	m_fRotation = 0.0f;
 	m_fScale = 1.0f;
+
+	m_pItem = NULL;
 }
 
 void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)

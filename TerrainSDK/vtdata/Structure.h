@@ -278,6 +278,8 @@ public:
 	DPoint2	m_p;			// earth position
 	float	m_fRotation;	// in radians
 	float	m_fScale;		// meters per unit
+
+	vtItem *m_pItem;	// If this is an instance of a content item
 };
 
 bool LoadGlobalMaterials(const vtStringArray &paths);
