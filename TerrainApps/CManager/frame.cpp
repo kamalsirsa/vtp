@@ -211,7 +211,11 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	wxFrame(parent, WID_FRAME, title, pos, size, style)
 {
 	// Give it an icon
-	SetIcon(wxIcon("cmanager"));
+	{
+		wxString name = "cmanager";
+		wxIcon icon(name);
+		SetIcon(icon);
+	}
 
 	m_strDataPath = "C:\\VTP\\TerrainApps\\Data\\";
 
