@@ -44,7 +44,6 @@ private:
 //	bool	m_bHtmlpane;
 //	bool	m_bFloatingToolbar;
 	bool	m_bTextureCompression;
-//	bool	m_bSpeedTest;
 	bool	m_bDisableMipmaps;
 
 	float	m_fSelectionCutoff;

@@ -31,7 +31,6 @@ public:
 	bool	m_bFloatingToolbar;
 	bool	m_bTextureCompression;
 	bool	m_bDisableModelMipmaps;
-	bool	m_bSpeedTest;
 
 	float	m_fSelectionCutoff;
 	float	m_fMaxPickableInstanceRadius;

@@ -23,7 +23,6 @@ EnviroOptions g_Options;
 #define STR_HTMLPANE "HTMLPane"
 #define STR_FLOATBAR "FloatingToolBar"
 #define STR_TEXTURE_COMPRESSION "TextureCompression"
-#define STR_SPEEDTEST "SpeedTest"
 #define STR_PLANTSIZE "PlantSize"
 #define STR_PLANTSHADOWS "PlantShadows"
 #define STR_ONLY_AVAILABLE_SPECIES "ShowOnlyAvailableSpecies"
@@ -99,8 +98,6 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_bFloatingToolbar;
 		else if (strcmp(buf, STR_TEXTURE_COMPRESSION) == 0)
 			input >> m_bTextureCompression;
-		else if (strcmp(buf, STR_SPEEDTEST) == 0)
-			input >> m_bSpeedTest;
 		else if (strcmp(buf, STR_PLANTSIZE) == 0)
 			input >> m_fPlantScale;
 		else if (strcmp(buf, STR_PLANTSHADOWS) == 0)
@@ -173,8 +170,6 @@ bool EnviroOptions::Write()
 
 	output << STR_TEXTURE_COMPRESSION << "\t";
 	output << m_bTextureCompression << endl;
-	output << STR_SPEEDTEST << "\t\t";
-	output << m_bSpeedTest << endl;
 	output << STR_PLANTSIZE << "\t\t";
 	output << m_fPlantScale << endl;
 	output << STR_PLANTSHADOWS << "\t";

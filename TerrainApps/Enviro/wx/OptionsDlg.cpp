@@ -62,7 +62,6 @@ void OptionsDlg::GetOptionsFrom(EnviroOptions &opt)
 //	m_bHtmlpane = opt.m_bHtmlpane;
 //	m_bFloatingToolbar = opt.m_bFloatingToolbar;
 	m_bTextureCompression = opt.m_bTextureCompression;
-//	m_bSpeedTest = opt.m_bSpeedTest;
 	m_bDisableMipmaps = opt.m_bDisableModelMipmaps;
 
 	m_fSelectionCutoff = opt.m_fSelectionCutoff;
@@ -81,7 +80,6 @@ void OptionsDlg::PutOptionsTo(EnviroOptions &opt)
 //	opt.m_bHtmlpane = m_bHtmlpane;
 //	opt.m_bFloatingToolbar = m_bFloatingToolbar;
 	opt.m_bTextureCompression = m_bTextureCompression;
-//	opt.m_bSpeedTest = m_bSpeedTest;
 	opt.m_bDisableModelMipmaps = m_bDisableMipmaps;
 
 	opt.m_fSelectionCutoff = m_fSelectionCutoff;
