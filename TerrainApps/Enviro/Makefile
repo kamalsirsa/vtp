@@ -20,6 +20,7 @@ LDIRS  = \
 	  $(OSG_LIB)                     \
 	  $(VTDATA_INST_DIR)             \
 	  $(VTOSG_INST_DIR)              \
+	  $(XMLHELPER_INST_DIR)          \
 	  $(SHAPE_LIB)                   \
 	  $(PNG_LIB)                     \
 	  $(NETCDF_LIB)                  \
@@ -36,11 +37,9 @@ CXXSRC = $(filter-out CarEngine.cpp, $(wildcard *.cpp)) \
 	 $(filter-out wx/StartupDlg0.cpp, $(wildcard wx/*.cpp))
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = wxEnviro
-LIBS   = $(shell wx-config --libs)     \
-	  -lwx_gtk_gl                      \
-	  -lgdal.1.1 -lvtosg -lvtdata      \
-	  -lxmlhelper					   \
-	  -losgDB -losgUtil -losg -lnetcdf \
+LIBS   = $(shell wx-config --libs) $(shell wx-config --gl-libs) \
+	  -lgdal.1.1 -lvtosg -lvtdata -lxmlhelper $(MINI_LIB) \
+	  -losgDB -losgText -losgUtil -losg -lnetcdf \
 	  $(GLU_LIB) -lGL -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)

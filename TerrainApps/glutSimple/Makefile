@@ -19,6 +19,7 @@ IFLAGS = -I$(X_INC)                 \
 LDIRS  = $(OSG_LIB)                     \
 	 $(VTDATA_INST_DIR)             \
 	 $(XMLHELPER_INST_DIR)          \
+	 $(XMLHELPER_INST_DIR)          \
 	 $(VTOSG_INST_DIR)              \
          $(PNG_LIB)                     \
          $(NETCDF_LIB)                  \
