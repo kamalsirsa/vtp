@@ -12,7 +12,7 @@
 
 class SceneGraphDlg;
 class PlantDlg;
-class FenceDlg;
+class LinearStructureDlg3d;
 class CameraDlg;
 class LocationDlg;
 class BuildingDlg3d;
@@ -128,7 +128,7 @@ public:
 	// Modeless dialogs
 	SceneGraphDlg		*m_pSceneGraphDlg;
 	PlantDlg			*m_pPlantDlg;
-	FenceDlg			*m_pFenceDlg;
+	LinearStructureDlg3d *m_pFenceDlg;
 	UtilDlg				*m_pUtilDlg;
 	CameraDlg			*m_pCameraDlg;
 	LocationDlg			*m_pLocationDlg;

@@ -35,7 +35,7 @@
 
 #include "SceneGraphDlg.h"
 #include "PlantDlg.h"
-#include "FenceDlg.h"
+#include "LinearStructDlg3d.h"
 #include "UtilDlg.h"
 #include "CameraDlg.h"
 #include "LocationDlg.h"
@@ -201,7 +201,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pSceneGraphDlg->SetSize(250, 350);
 
 	m_pPlantDlg = new PlantDlg(this, -1, "Plants", wxDefaultPosition);
-	m_pFenceDlg = new FenceDlg(this, -1, "Fences", wxDefaultPosition);
+	m_pFenceDlg = new LinearStructureDlg3d(this, -1, "Linear Structures", wxDefaultPosition);
 	m_pUtilDlg = new UtilDlg(this, -1, "Utility", wxDefaultPosition);
 	m_pCameraDlg = new CameraDlg(this, -1, "Camera-View", wxDefaultPosition);
 	m_pLocationDlg = new LocationDlg(this, -1, "Locations",
@@ -407,11 +407,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			while (!sa.GetAt(i)->IsSelected())
 				i++;
 			vtBuilding3d *bld = sa.GetBuilding(i);
-			float width, depth;
-			bld->GetRectangle(width, depth);
-			width -= 1;
-//			depth -= 1;
-			bld->SetRectangle(width, depth);
+			// (Do something to the building as a test)
 			sa.ConstructStructure(bld);
 		}
 	}
@@ -425,11 +421,6 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			while (!sa.GetAt(i)->IsSelected())
 				i++;
 			vtBuilding3d *bld = sa.GetBuilding(i);
-			float width, depth;
-			bld->GetRectangle(width, depth);
-			width += 1;
-//			depth += 1;
-			bld->SetRectangle(width, depth);
 			sa.ConstructStructure(bld);
 		}
 	}
