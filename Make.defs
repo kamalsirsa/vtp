@@ -33,7 +33,7 @@ endif
 #----------------------------------------------------------------------------
 # General Unix systems will use these values
 #----------------------------------------------------------------------------
-LOCALBASE = /usr/local
+LOCALBASE = /usr
 X11BASE   = /usr/X11R6
 PREFIX    = $(X11BASE)
 X_INC = $(X11BASE)/include
@@ -96,7 +96,7 @@ VTUI_INST_DIR = $(VTUI_DIR)
 VTOSG_INST_DIR  = $(VTOSG_DIR)
 XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
 
-WX_DIR		 = /usr/local
+WX_DIR		 = /usr
 
 -include $(HOME)/.vtp-user.defs
 
@@ -274,14 +274,29 @@ ifeq ($(OS),Linux)
    CC        = gcc
    CXX       = g++
    AR        = ar ruv
-   COPT      = -O -g
    LD        = $(CXX)
    LD_SHARED = $(CXX) -shared
 
    GLUT_LIB = -lglut
    GLU_LIB  = -lGLU
-   EXTRA_LIBS = -lXi
-   LDIRFLAGS = $(LDIRS:%=-L%)
+   EXTRA_LIBS = -lXi -lquikgrid
+
+   NETCDF_INC = $(LOCALBASE)/include/netcdf-3
+   MINI_INC   = $(LOCALBASE)/include/mini
+   MINI_LIB   = $(LOCALBASE)/lib/libmini.a
+
+   ARCH := $(shell uname -p)
+   ifeq ($(ARCH),x86_64)
+      COPT      = -O -g -fPIC
+      LDIRFLAGS = -L/usr/lib64 $(LDIRS:%=-L%)
+      X_LIB     = $(X11BASE)/lib64
+      MINI_LIB = $(LOCALBASE)/lib64/libmini.a
+      NETCDF_LIB = $(LOCALBASE)/lib64/netcdf-3
+   else
+      COPT      = -O -g
+      LDIRFLAGS = $(LDIRS:%=-L%)
+      NETCDF_LIB = $(LOCALBASE)/lib/netcdf-3
+   endif
 endif
 
 #------------------------------------------------------------------------------
