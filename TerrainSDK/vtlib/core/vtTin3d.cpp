@@ -361,7 +361,8 @@ bool intersect_triangle(const FPoint3 &orig, const FPoint3 &dir,
 bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir, FPoint3 &result)
 {
 	FPoint3 wp1, wp2, wp3;
-	float i, t, u, v, closest = 1E9;
+	float t, u, v, closest = 1E9;
+	int i;
 
 	for (int m = 0; m < m_Meshes.GetSize(); m++)
 	{
