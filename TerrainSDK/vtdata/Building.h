@@ -233,6 +233,7 @@ public:
 
 	bool IsContainedBy(const DRECT &rect) const;
 	void SwapLevels(int lev1, int lev2);
+	void CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight);
 
 protected:
 	// information about each story

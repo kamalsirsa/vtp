@@ -1515,3 +1515,59 @@ void vtBuilding::SwapLevels(int lev1, int lev2)
 	// keep 2d and 3d in synch
 	DetermineLocalFootprints();
 }
+
+void vtBuilding::CopyFromDefault(vtBuilding *pDefBld, bool bDoHeight)
+{
+	SetElevationOffset(pDefBld->GetElevationOffset());
+
+	DLine2 foot;
+
+	unsigned int from_levels = pDefBld->GetNumLevels();
+	unsigned int copy_levels;
+	if (bDoHeight)
+		copy_levels = from_levels;
+	else
+		copy_levels = GetNumLevels();
+
+	for (unsigned int i = 0; i < copy_levels; i++)
+	{
+		vtLevel *pLevel = GetLevel(i);
+		if (pLevel)
+			foot = pLevel->GetFootprint();
+		else
+			pLevel = CreateLevel(foot);
+
+		vtLevel *pFromLevel;
+		if (bDoHeight)
+		{
+			pFromLevel = pDefBld->GetLevel(i);
+
+			pLevel->m_iStories = pFromLevel->m_iStories;
+			pLevel->m_fStoryHeight = pFromLevel->m_fStoryHeight;
+		}
+		else
+		{
+			// The target building may have more more levels than the default.
+			//  Try to guess an appropriate corresponding level.
+			int from_level;
+			if (i == 0)
+				from_level = 0;
+			else if (i == copy_levels-1)
+				from_level = from_levels - 1;
+			else
+			{
+				from_level = i;
+				if (from_levels > 2)
+					from_level = 1;
+				else
+					from_level = 0;
+			}
+			pFromLevel = pDefBld->GetLevel(from_level);
+		}
+		pLevel->SetEdgeColor(pFromLevel->GetEdge(0)->m_Color);
+		pLevel->SetEdgeMaterial(*pFromLevel->GetEdge(0)->m_pMaterial);
+		for (int j = 0; j < pLevel->NumEdges(); j++)
+			pLevel->GetEdge(j)->m_iSlope = pFromLevel->GetEdge(0)->m_iSlope;
+	}
+}
+
