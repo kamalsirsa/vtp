@@ -1367,6 +1367,13 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	unsigned int i, j, k;
 	DPoint2 p, p2;
 
+	vtPlantList *pl = GetPlantList();
+	if (!pl)
+	{
+		wxMessageBox(_T("No plant list."));
+		return;
+	}
+
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 		m_PlantList.LookupPlantIndices(m_BioRegions.m_Types[i]);
 
@@ -1387,6 +1394,12 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	vtBioType *bio;
 
 	m_BioRegions.ResetAmounts();
+	pia.SetPlantList(pl);
+
+	// inherit projection from the main frame
+	vtProjection proj;
+	GetProjection(proj);
+	pia.SetProjection(proj);
 
 	// all vegetation
 	for (i = 0; i < x_trees; i ++)
