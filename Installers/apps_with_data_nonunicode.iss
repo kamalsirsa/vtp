@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2004.10.01
+AppVerName=VTP Software 2005.02.16
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -14,8 +14,8 @@ AllowNoIcons=yes
 LicenseFile=C:\VTP\Installers\license.txt
 OutputBaseFilename=setup_full_no_unicode
 OutputDir=C:\Distrib
-; We need the following because some Windows machines won't turn Registry settings into Enviroment variables w/o a reboot
-AlwaysRestart=yes
+; We might need the following because some Windows machines won't turn Registry settings into Enviroment variables w/o a reboot
+AlwaysRestart=no
 
 [Types]
 Name: "standard"; Description: "Standard installation"; Flags: iscustom
@@ -31,7 +31,7 @@ Name: "dlls"; Description: "Third-party DLL files (wxWindows, OSG, etc.)"; Types
 Name: env; Description: "Set environment variables for coordinate system data files"; GroupDescription: "Environment variables:"; Components: proj
 
 [Registry]
-Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "GEOTIFF_CSV"; ValueData: "{app}\GDAL-data"; Components: proj
+Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "GDAL_DATA"; ValueData: "{app}\GDAL-data"; Components: proj
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PROJ_LIB"; ValueData: "{app}\PROJ4-data"; Components: proj
 
 [Files]
@@ -59,29 +59,18 @@ Source: "C:\VTP\TerrainApps\VTBuilder\Docs\images\*"; DestDir: "{app}\Docs\VTBui
 Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\de\Enviro.mo"; DestDir: "{app}\Apps\de"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\en_GB\Enviro.mo"; DestDir: "{app}\Apps\en_GB"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\es\Enviro.mo"; DestDir: "{app}\Apps\es"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\hu\Enviro.mo"; DestDir: "{app}\Apps\hu"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\it\Enviro.mo"; DestDir: "{app}\Apps\it"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\pt\Enviro.mo"; DestDir: "{app}\Apps\pt"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\ro\Enviro.mo"; DestDir: "{app}\Apps\ro"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\sv\Enviro.mo"; DestDir: "{app}\Apps\sv"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\zh\Enviro.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\zh\VTBuilder.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
 
 ; Core Data
 Source: "C:\VTP\TerrainApps\VTBuilder\WorldMap\gnv19.*"; DestDir: "{app}\Apps\WorldMap"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\common_content.vtco"; DestDir: "{app}\Data"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\BuildingModels\*.jpg"; DestDir: "{app}\Data\BuildingModels"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Culture\*"; DestDir: "{app}\Data\Culture"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Culture\UtilityStructures\*"; DestDir: "{app}\Data\Culture\UtilityStructures"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Fonts\Arial.ttf"; DestDir: "{app}\Data\Fonts"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\GeoTypical\*"; DestDir: "{app}\Data\GeoTypical"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\PlantData\species.xml"; DestDir: "{app}\Data\PlantData"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\PlantModels\*.png"; DestDir: "{app}\Data\PlantModels"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\PointData\vtp-users-04*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Sky\bsc.data"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Sky\*.png"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Sky\philo*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\Sky\skydome*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\WholeEarth\ev11656_1024_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
-Source: "E:\Data-Distro\WholeEarth\ev11656_512_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\*"; DestDir: "{app}\Data"; Flags: ignoreversion recursesubdirs; Components: data
 
 ; overview docs
 Source: "C:\VTP\Docs\*.html"; DestDir: "{app}\Docs"; Flags: ignoreversion; Components: docs
@@ -91,13 +80,15 @@ Source: "C:\VTP\gdal\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; 
 Source: "C:\VTP\proj\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
-Source: "C:\APIs\gdal123\bin\gdal12.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal123\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal125\bin\gdal12.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal125\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-0.9.7-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\osg-0.9.8-2-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libwww\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.4.2\lib\wxmsw24.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\xerces-c_2_3_0-win32\bin\xerces-c_2_3_0.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.8\libpng13.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\libpng-1.2.8\zlib1.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; Microsoft DLLs
 Source: "C:\VTP\Installers\Redistributable_MS_DLLs\msvcp71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
