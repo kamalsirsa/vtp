@@ -71,6 +71,7 @@ Enviro::Enviro()
 	m_pArcMesh = NULL;
 	m_pArcMats = NULL;
 	m_fArcLength = 0.0;
+	m_fDistToolHeight = 5.0f;
 
 	m_fMessageTime = 0.0f;
 
@@ -790,6 +791,8 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	if (m_pTerrainPicker != NULL)
 		m_pTerrainPicker->SetHeightField(pHF);
 
+	m_fDistToolHeight = param.GetValueFloat(STR_DIST_TOOL_HEIGHT);
+
 	// Inform the GUI that the terrain has changed
 	SetTerrainToGUI(pTerrain);
 }
@@ -1300,7 +1303,7 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 	dline.Append(g2);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	m_fArcLength = pTerr->AddSurfaceLineToMesh(m_pArcMesh, dline, 10.0f);
+	m_fArcLength = pTerr->AddSurfaceLineToMesh(m_pArcMesh, dline, m_fDistToolHeight);
 
 	m_pArc->AddMesh(m_pArcMesh, 1);
 	m_pArcMesh->Release();

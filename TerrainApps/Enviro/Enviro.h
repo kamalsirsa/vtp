@@ -240,10 +240,11 @@ protected:
 	RouteFollowerEngine	*m_pRouteFollower;
 
 	// linear arc on Earth (or Distance Tool on the Terrain)
-	vtGeom *m_pArc;
-	vtMesh *m_pArcMesh;
+	vtGeom		*m_pArc;
+	vtMesh		*m_pArcMesh;
 	vtMaterialArray *m_pArcMats;
-	double m_fArcLength;
+	double		m_fArcLength;
+	float		m_fDistToolHeight;
 
 	// view and navigation
 	vtCamera	*m_pNormalCamera;
