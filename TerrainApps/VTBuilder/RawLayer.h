@@ -38,6 +38,7 @@ public:
 	void SetValue(int record, const char *string);
 	void SetValue(int record, int value);
 	void SetValue(int record, double value);
+	void CopyValue(int FromRecord, int ToRecord);
 };
 
 
@@ -65,12 +66,17 @@ public:
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
 	void GetPoint(int num, DPoint3 &p);
+	void CopyEntity(int from, int to);
 
 	// selection
 	void Select(int iEnt, bool set = true);
 	bool IsSelected(int iEnt);
+	int NumSelected();
 	void DeselectAll();
+	void InvertSelection();
 	int DoBoxSelect(const DRECT &rect);
+	int SelectByCondition(int iField, int iCondition, const char *szValue);
+	void DeleteSelected();
 
 	int GetNumFields() { return m_fields.GetSize(); }
 	Field *GetField(int i) { return m_fields.GetAt(i); }
@@ -80,7 +86,6 @@ public:
 	void SetValue(int record, int field, int value);
 	void SetValue(int record, int field, double value);
 	void GetValueAsString(int record, int field, vtString &str);
-	int SelectByCondition(int iField, int iCondition, const char *szValue);
 
 protected:
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
@@ -97,4 +102,5 @@ protected:
 	vtProjection	m_proj;
 };
 
-#endif
+#endif	// RAWLAYERH
+

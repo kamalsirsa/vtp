@@ -77,26 +77,16 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	int i, j, size, size2;
 
 	wxPoint p;
+	int entities = NumEntities();
 	if (m_nSHPType == SHPT_POINT)
 	{
-		size = m_Point2.GetSize();
-		for (i = 0; i < size; i++)
+		for (i = 0; i < entities; i++)
 		{
-			if (m_Selected[i])
-			{
-				if (pen == 0)
-				{
-					pDC->SetPen(SelPen);
-					pen = 1;
-				}
+			if (m_Selected[i]) {
+				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
 			}
-			else
-			{
-				if (pen == 1)
-				{
-					pDC->SetPen(DefPen);
-					pen = 0;
-				}
+			else {
+				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
 			}
 			pView->screen(m_Point2[i], p);
 			pDC->DrawPoint(p);
@@ -109,8 +99,14 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_nSHPType == SHPT_POINTZ)
 	{
 		size = m_Point3.GetSize();
-		for (i = 0; i < size; i++)
+		for (i = 0; i < entities; i++)
 		{
+			if (m_Selected[i]) {
+				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
+			}
+			else {
+				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
+			}
 			pView->screen(DPoint2(m_Point3[i].x, m_Point3[i].y), p);
 			pDC->DrawPoint(p);
 			pDC->DrawPoint(p.x+1, p.y);
@@ -122,8 +118,14 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
 		size = m_LinePoly.GetSize();
-		for (i = 0; i < size; i++)
+		for (i = 0; i < entities; i++)
 		{
+			if (m_Selected[i]) {
+				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
+			}
+			else {
+				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
+			}
 			DLine2 *dl = m_LinePoly.GetAt(i);
 			size2 = dl->GetSize();
 
@@ -218,60 +220,69 @@ bool vtRawLayer::OnSave()
 	}
 	SHPClose(hSHP);
 
-	// Save DBF File also
-	wxString dbfname = m_strFilename;
-	dbfname.Truncate(dbfname.Len() - 4);
-	dbfname += ".dbf";
-	DBFHandle db = DBFCreate(dbfname);
-	if (db == NULL)
+	if (m_fields.GetSize() > 0)
 	{
-		wxMessageBox("Couldn't create DBF file.");
-		return false;
-	}
-
-	Field *field;
-	for (i = 0; i < m_fields.GetSize(); i++)
-	{
-		field = m_fields[i];
-
-		DBFAddField(db, (const char *) field->m_name, field->m_type,
-			field->m_width, field->m_decimals );
-	}
-
-	// Write DBF Attributes, one record per entity
-	int entities = NumEntities();
-	for (i = 0; i < entities; i++)
-	{
-		for (j = 0; j < m_fields.GetSize(); j++)
+		// Save DBF File also
+		wxString dbfname = m_strFilename;
+		dbfname.Truncate(dbfname.Len() - 4);
+		dbfname += ".dbf";
+		DBFHandle db = DBFCreate(dbfname);
+		if (db == NULL)
 		{
-			field = m_fields[j];
-			switch (field->m_type)
+			wxMessageBox("Couldn't create DBF file.");
+			return false;
+		}
+
+		Field *field;
+		for (i = 0; i < m_fields.GetSize(); i++)
+		{
+			field = m_fields[i];
+
+			DBFAddField(db, (const char *) field->m_name, field->m_type,
+				field->m_width, field->m_decimals );
+		}
+
+		// Write DBF Attributes, one record per entity
+		int entities = NumEntities();
+		for (i = 0; i < entities; i++)
+		{
+			for (j = 0; j < m_fields.GetSize(); j++)
 			{
-			case FTInteger:
-				DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
-				break;
-			case FTDouble:
-				DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
-				break;
-			case FTString:
-				DBFWriteStringAttribute(db, i, j, (const char *) *(field->m_string[i]));
-				break;
+				field = m_fields[j];
+				switch (field->m_type)
+				{
+				case FTInteger:
+					DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
+					break;
+				case FTDouble:
+					DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
+					break;
+				case FTString:
+					DBFWriteStringAttribute(db, i, j, (const char *) *(field->m_string[i]));
+					break;
+				}
 			}
 		}
+		DBFClose(db);
 	}
-	DBFClose(db);
+
+	// Try saving projection to PRJ
+	wxString prjname = m_strFilename;
+	prjname.Truncate(prjname.Len() - 4);
+	prjname += ".prj";
+	m_proj.WriteProjFile(prjname);
 
 	return true;
 }
 
 bool vtRawLayer::OnLoad()
 {
-	//Open the SHP File & Get Info from SHP:
+	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(m_strFilename, "rb");
 	if (hSHP == NULL)
 		return false;
 
-	//  Get number of polys (m_iNumPolys) and type of data (nShapeType)
+	// Get number of entities (nElem) and type of data (nShapeType)
 	int		nElem;
 	int		nShapeType;
     double	adfMinBound[4], adfMaxBound[4];
@@ -391,6 +402,9 @@ bool vtRawLayer::OnLoad()
 			}
 		}
 	}
+
+	// Try loading projection from PRJ
+	m_proj.ReadProjFile(m_strFilename);
 
 	SHPClose(hSHP);
 	if (db != NULL)
@@ -513,10 +527,26 @@ bool vtRawLayer::IsSelected(int iEnt)
 	return m_Selected[iEnt];
 }
 
+int vtRawLayer::NumSelected()
+{
+	int count = 0;
+	int size = m_Selected.GetSize();
+	for (int i = 0; i < size; i++)
+		if (m_Selected[i])
+			count++;
+	return count;
+}
+
 void vtRawLayer::DeselectAll()
 {
 	for (int i = 0; i < m_Selected.GetSize(); i++)
 		m_Selected[i] = false;
+}
+
+void vtRawLayer::InvertSelection()
+{
+	for (int i = 0; i < m_Selected.GetSize(); i++)
+		m_Selected[i] = !m_Selected[i];
 }
 
 int vtRawLayer::DoBoxSelect(const DRECT &rect)
@@ -548,10 +578,10 @@ int vtRawLayer::SelectByCondition(int iField, int iCondition,
 {
 	int i, ival, itest;
 	double dval, dtest;
-	int entities = NumEntities();
-	bool result;
+	int entities = NumEntities(), selected = 0;
 	int con = iCondition;
 	vtString *sp;
+	bool result;
 
 	Field *field = m_fields[iField];
 	switch (field->m_type)
@@ -567,7 +597,10 @@ int vtRawLayer::SelectByCondition(int iField, int iCondition,
 			if (con == 4) result = (sp->Compare(szValue) <= 0);
 			if (con == 5) result = (sp->Compare(szValue) != 0);
 			if (result)
+			{
 				Select(i);
+				selected++;
+			}
 		}
 		break;
 	case FTInteger:
@@ -582,7 +615,10 @@ int vtRawLayer::SelectByCondition(int iField, int iCondition,
 			if (con == 4) result = (itest <= ival);
 			if (con == 5) result = (itest != ival);
 			if (result)
+			{
 				Select(i);
+				selected++;
+			}
 		}
 		break;
 	case FTDouble:
@@ -597,13 +633,65 @@ int vtRawLayer::SelectByCondition(int iField, int iCondition,
 			if (con == 4) result = (dtest <= dval);
 			if (con == 5) result = (dtest != dval);
 			if (result)
+			{
 				Select(i);
+				selected++;
+			}
 		}
 		break;
 	}
-	return 0;
+	return selected;
 }
 
+void vtRawLayer::DeleteSelected()
+{
+	int i, entities = NumEntities();
+
+	int target = 0;
+	int newtotal = entities;
+	for (i = 0; i < entities; i++)
+	{
+		if (!m_Selected[i])
+		{
+			if (target != i)
+			{
+				CopyEntity(i, target);
+				m_Selected[target] = false;
+			}
+			target++;
+		}
+		else
+			newtotal--;
+	}
+	if (m_nSHPType == SHPT_POINT)
+		m_Point2.SetSize(newtotal);
+	if (m_nSHPType == SHPT_POINTZ)
+		m_Point3.SetSize(newtotal);
+	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+		m_LinePoly.SetSize(newtotal);
+}
+
+void vtRawLayer::CopyEntity(int from, int to)
+{
+	// copy geometry
+	if (m_nSHPType == SHPT_POINT)
+	{
+		m_Point2[to] = m_Point2[from];
+	}
+	if (m_nSHPType == SHPT_POINTZ)
+	{
+		m_Point3[to] = m_Point3[from];
+	}
+	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	{
+		m_LinePoly[to] = m_LinePoly[from];
+	}
+	// copy record
+	for (int i = 0; i < m_fields.GetSize(); i++)
+	{
+		m_fields[i]->CopyValue(from, to);
+	}
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Data Fields
@@ -706,5 +794,18 @@ void Field::SetValue(int record, double value)
 		m_int[record] = (int) value;
 	else if (m_type == FTDouble)
 		m_double[record] = value;
+}
+
+void Field::CopyValue(int FromRecord, int ToRecord)
+{
+	if (m_type == FTInteger)
+		m_int[ToRecord] = m_int[FromRecord];
+	if (m_type == FTDouble)
+		m_double[ToRecord] = m_double[FromRecord];
+
+	// when dealing with strings, copy by value not reference, to
+	// avoid memory tracking issues
+	if (m_type == FTString)
+		*m_string[ToRecord] = *m_string[FromRecord];
 }
 
