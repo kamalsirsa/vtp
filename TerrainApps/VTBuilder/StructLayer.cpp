@@ -857,7 +857,10 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 	OGRPolygon		*pPolygon;
 	vtBuilding		*pBld;
 	DPoint2			point;
-
+	DLine2 foot;
+	OGRLinearRing *ring;
+	OGRLineString *pLineString;
+	int num_points;
 	//
 	// Iterate through the layers looking
 	// Test for known USGS SDTS DLG layer names
@@ -941,7 +944,7 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				int iMajorAttr = numEntity / 10000;
 				int iMinorAttr = numEntity % 10000;
 
-				int num_stories = 1;
+				int num_stories = 1; // Use this as a multiplier
 				pBld = NULL;
 				switch (iMinorAttr)
 				{
@@ -972,10 +975,9 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				if (!pGeom) continue;
 				pPolygon = (OGRPolygon *) pGeom;
 
-				OGRLinearRing *ring = pPolygon->getExteriorRing();
-				int num_points = ring->getNumPoints();
+				ring = pPolygon->getExteriorRing();
+				num_points = ring->getNumPoints();
 
-				DLine2 foot;
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
 					foot.SetAt(j, DPoint2(ring->getX(j),
@@ -983,7 +985,29 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				pBld->SetFootprint(0, foot);
 				pBld->SetCenterFromPoly();
-				pBld->SetStories(num_stories);
+
+				vtBuilding *pDefBld = GetClosestDefault(pBld);
+				if (!pDefBld)
+				{
+					pBld->SetStories(1);
+				}
+				else
+				{
+					pBld->SetElevationOffset(pDefBld->GetElevationOffset());
+
+					for (int i = 0; i < pDefBld->GetNumLevels(); i++)
+					{
+						if (i != 0)
+							pBld->CreateLevel(foot);
+						vtLevel *pLevel = pBld->GetLevel(i);
+						pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories * num_stories;
+						pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
+						pLevel->SetEdgeColor(pDefBld->GetLevel(i)->m_Edges[0]->m_Color);
+						pLevel->SetEdgeMaterial(pDefBld->GetLevel(i)->m_Edges[0]->m_Material);
+						for (int j = 0; j < pLevel->GetNumEdges(); j++)
+							pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
+					}
+				}
 
 				Append(pBld);
 			}
@@ -1009,29 +1033,74 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				// For the moment ignore multi polygons .. although we could
 				// treat them as multiple buildings !!
-				if (wkbPolygon != wkbFlatten(pGeom->getGeometryType()))
-					continue;
+				switch(wkbFlatten(pGeom->getGeometryType()))
+				{
+					case wkbPolygon:
+						pPolygon = (OGRPolygon *) pGeom;
+						
+
+						ring = pPolygon->getExteriorRing();
+						num_points = ring->getNumPoints();
+
+						foot.SetSize(num_points);
+						for (j = 0; j < num_points; j++)
+							foot.SetAt(j, DPoint2(ring->getX(j), ring->getY(j)));
+						break;
+
+					case wkbLineString:
+						pLineString = (OGRLineString *) pGeom;
+						
+						num_points = pLineString->getNumPoints();
+
+						if (DPoint2(pLineString->getX(0), pLineString->getY(0)) == DPoint2(pLineString->getX(num_points - 1), pLineString->getY(num_points - 1)))
+							num_points--;
+
+						foot.SetSize(num_points);
+						// Ignore last point if it is the same as the first
+						for (j = 0; j < num_points; j++)
+						{
+#ifdef _DEBUG
+							double dx = pLineString->getX(j);
+							double dy = pLineString->getY(j);
+#endif
+							foot.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
+						}
+						break;
+
+					default:
+						continue;
+				}
 
 				pBld = NewBuilding();
 				if (!pBld)
 					return;
 
-				pPolygon = (OGRPolygon *) pGeom;
-				
-
-				OGRLinearRing *ring = pPolygon->getExteriorRing();
-				int num_points = ring->getNumPoints();
-
-				DLine2 foot;
-				foot.SetSize(num_points);
-				for (j = 0; j < num_points; j++)
-					foot.SetAt(j, DPoint2(ring->getX(j),
-						ring->getY(j)));
 
 				pBld->SetFootprint(0, foot);
 				pBld->SetCenterFromPoly();
-				pBld->SetStories(1);
 
+				vtBuilding *pDefBld = GetClosestDefault(pBld);
+				if (!pDefBld)
+				{
+					pBld->SetStories(1);
+				}
+				else
+				{
+					pBld->SetElevationOffset(pDefBld->GetElevationOffset());
+
+					for (int i = 0; i < pDefBld->GetNumLevels(); i++)
+					{
+						if (i != 0)
+							pBld->CreateLevel(foot);
+						vtLevel *pLevel = pBld->GetLevel(i);
+						pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories;
+						pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
+						pLevel->SetEdgeColor(pDefBld->GetLevel(i)->m_Edges[0]->m_Color);
+						pLevel->SetEdgeMaterial(pDefBld->GetLevel(i)->m_Edges[0]->m_Material);
+						for (int j = 0;  j < pLevel->GetNumEdges(); j++)
+							pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
+					}
+				}
 				Append(pBld);
 			}
 		}

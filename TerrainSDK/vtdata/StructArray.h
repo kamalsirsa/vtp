@@ -95,7 +95,17 @@ protected:
 	int m_iEditEdge;
 };
 
-// Helper
+extern vtStructureArray g_DefaultStructures;
+
+// Helpers
 int GetSHPType(const char *filename);
 
-#endif
+bool SetupDefaultStructures(const char *fname = NULL);
+vtBuilding *GetClosestDefault(vtBuilding *pBld);
+
+// When needed, we could also have:
+//vtFence *GetClosestDefault(vtFence *pBld);
+//vtStructInstance *GetClosestDefault(vtStructInstance *pBld);
+
+#endif	// STRUCTARRAYH
+

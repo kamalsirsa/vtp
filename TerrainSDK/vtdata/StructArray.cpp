@@ -23,6 +23,8 @@
 
 #define BCFVERSION_SUPPORTED	1.1f
 
+vtStructureArray g_DefaultStructures;
+
 //
 // Helper: find the index of a field in a DBF file, given the name of the field.
 // Returns -1 if not found.
@@ -1568,7 +1570,7 @@ bool vtStructureArray::ReadXML(const char* pathname)
 }
 
 /////////////////////
-// Helper
+// Helpers
 
 int GetSHPType(const char *filename)
 {
@@ -1584,4 +1586,65 @@ int GetSHPType(const char *filename)
 	return nShapeType;
 }
 
+vtBuilding *GetClosestDefault(vtBuilding *pBld)
+{
+	// For now, just grab the first building from the defaults
+	int i, num = g_DefaultStructures.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtStructure *pStr = g_DefaultStructures[i]; 
+		vtBuilding *pBld = pStr->GetBuilding();
+		if (pBld)
+			return pBld;
+	}
+	return NULL;
+}
+
+// When needed, we could also have:
+//vtFence *GetClosestDefault(vtFence *pBld);
+//vtStructInstance *GetClosestDefault(vtStructInstance *pBld);
+
+bool SetupDefaultStructures(const char *fname)
+{
+	if (!fname)
+		fname = "DefaultStructures.vtst";
+	if (g_DefaultStructures.ReadXML(fname))
+		return true;
+
+	// else supply some internal defaults and let the user know the load failed
+	vtBuilding *pBld = g_DefaultStructures.NewBuilding();
+	vtLevel *pLevel;
+	DLine2 DefaultFootprint; // Single edge
+	DefaultFootprint.Append(DPoint2(0.0, 0.0));
+	DefaultFootprint.Append(DPoint2(0.0, 1.0));
+
+	// The default building is NOT a complete building
+	// Alter the code here to set different hard coded
+	// defaults for use in other operations
+	// First set any structure tags needed
+	// 
+	// NONE
+	//
+	// Now create the required number of levels
+	// and set the values
+	//
+	// Level 0
+	pLevel = pBld->CreateLevel(DefaultFootprint);
+	pLevel->m_iStories = 1;
+	pLevel->m_fStoryHeight = 3.20f;
+	pLevel->SetEdgeMaterial(BMAT_PLAIN);
+	pLevel->SetEdgeColor(RGBi(255,0,0)); // Red
+	pLevel->m_Edges[0]->m_iSlope = 90;
+	// Level 1
+	pLevel = pBld->CreateLevel(DefaultFootprint);
+	pLevel->m_iStories = 1;
+	pLevel->m_fStoryHeight = 3.20f;
+	pLevel->SetEdgeMaterial(BMAT_PLAIN);
+	pLevel->SetEdgeColor(RGBi(255,240,225)); // Tan
+	pLevel->m_Edges[0]->m_iSlope = 0;		 // Flat
+
+	g_DefaultStructures.Append(pBld);
+
+	return false;
+}
 

@@ -211,6 +211,9 @@ void MainFrame::SetupUI()
 	SetProjection(proj);
 	RefreshStatusBar();
 
+	// Load structure defaults
+	SetupDefaultStructures();
+
 	SetStatusText(_T("Ready"));
 }
 
