@@ -1012,7 +1012,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 //	dlg.m_strCaption = _T("Shapefiles do not contain projection information.  ")
 //		_T("Please indicate the projection of this file:");
 	// ask user for a projection
-	Projection2Dlg dlg(NULL, -1, _T("Indicate Projection"), wxDefaultPosition);
+	Projection2Dlg dlg(NULL, -1, _T("Indicate Projection"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -1207,7 +1207,7 @@ void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)
 void MainFrame::OnLayerConvert(wxCommandEvent &event)
 {
 	// ask for what projection to convert to
-	Projection2Dlg dlg(NULL, 200, _T("Convert to what projection?"), wxDefaultPosition);
+	Projection2Dlg dlg(NULL, 200, _T("Convert to what projection?"));
 	dlg.SetProjection(m_proj);
 
 	// might go from geo to utm, provide a good guess for UTM zone
@@ -1251,7 +1251,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	// Allow the user to directly specify the projection for all loaded
 	// layers (override it, without reprojecting the layer's data)
 	// ask for what projection to convert to
-	Projection2Dlg dlg(NULL, -1, _T("Set to what projection?"), wxDefaultPosition);
+	Projection2Dlg dlg(NULL, -1, _T("Set to what projection?"));
 	dlg.SetProjection(m_proj);
 
 	if (m_proj.IsGeographic())
@@ -2086,7 +2086,7 @@ void MainFrame::OnUpdateAreaStretch(wxUpdateUIEvent& event)
 
 void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 {
-	ExtentDlg dlg(NULL, -1, _T("Edit Area"), wxDefaultPosition);
+	ExtentDlg dlg(NULL, -1, _T("Edit Area"));
 	dlg.SetArea(m_area, (m_proj.IsGeographic() != 0));
 	if (dlg.ShowModal() == wxID_OK)
 	{
@@ -2506,7 +2506,14 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 	{
 		cur_type = dialog.GetSelection();
 		vtRawLayer *pRL = (vtRawLayer *) GetActiveLayer();
+
+		// must set the projection and layername again, as they are reset on
+		//  setting geom type
+		wxString2 name = pRL->GetLayerFilename();
 		pRL->SetGeomType(types[cur_type]);
+		pRL->SetProjection(m_proj);
+		pRL->SetLayerFilename(name);
+		RefreshTreeStatus();
 	}
 }
 
