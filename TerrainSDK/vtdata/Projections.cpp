@@ -20,6 +20,23 @@ vtProjection::vtProjection()
 	m_Datum = NO_DATUM;
 }
 
+/**
+ * Assignment operator.
+ */
+vtProjection &vtProjection::operator=(vtProjection &ref)
+{
+	// copy new projection
+	if (ref.GetRoot() != NULL)
+	{
+		OGRSpatialReference *ref_copy = ref.Clone();
+		(*(OGRSpatialReference *)this) = *ref_copy;
+	}
+
+	// copy old fields
+	m_Datum = ref.m_Datum;
+	return *this;
+}
+
 bool vtProjection::operator==(vtProjection &ref)
 {
 	// Work around problem in IsSame, by detecting this type of difference
@@ -28,28 +45,44 @@ bool vtProjection::operator==(vtProjection &ref)
 	return (IsSame( (OGRSpatialReference *) &ref ) != 0);
 }
 
-bool  vtProjection::IsUTM()
+/**
+ * Get the UTM zone of the projection.
+ *
+ * \param iZone
+ * Should be one of the following values:
+	- 1 through 60 for the northern hemisphere
+	- -1 through -60 for the southern hemisphere
+ */
+void vtProjection::SetUTMZone(int iZone)
 {
-	const char *proj_string = GetAttrValue("PROJECTION");
-	return (proj_string &&
-		!strcmp(proj_string, "Transverse_Mercator") &&
-		GetUTMZone() > 0);
+	OGRErr err = OGRSpatialReference::SetUTM( iZone );
 }
 
-void  vtProjection::SetUTMZone(int iZone)
+/**
+ * Get the UTM zone of the projection.
+ *
+ * \return
+ *	- 1 through 60 in the northern hemisphere
+ *  - -1 through -60 for the southern hemisphere
+ *  - 0 if the projection is not UTM
+ */
+int	vtProjection::GetUTMZone()
 {
-    OGRErr err = OGRSpatialReference::SetUTM( iZone );
+	int north;
+	int zone = OGRSpatialReference::GetUTMZone(&north);
+	if (north)
+		return zone;
+	else
+		return -zone;
 }
 
-int	  vtProjection::GetUTMZone()
-{
-	return OGRSpatialReference::GetUTMZone();
-}
-
-void  vtProjection::SetDatum(DATUM datum)
+/**
+ * Set the datum as an enumeration (see DATUM)
+ */
+void vtProjection::SetDatum(DATUM datum)
 {
 	// Convert the DATUM enumeration to a Datum string
-    OGR_SRSNode *dnode = GetAttrNode("DATUM");
+	OGR_SRSNode *dnode = GetAttrNode("DATUM");
 	if (!dnode)
 		return;
 	switch (datum)
@@ -63,6 +96,9 @@ void  vtProjection::SetDatum(DATUM datum)
 	}
 }
 
+/**
+ * Return the datum as an enumeration (see DATUM)
+ */
 DATUM vtProjection::GetDatum()
 {
 	// Convert new DATUM string to old Datum enum
@@ -83,29 +119,55 @@ DATUM vtProjection::GetDatum()
 	return WGS_84;	// default
 }
 
-
 /**
-  * Assignment operator.
-  */
-vtProjection &vtProjection::operator=(vtProjection &ref)
+ * Return the kind of horizontal units used by the projection.  This is
+ * also called "linear units."
+ *
+ * \return
+	- 0 - Arc Degrees
+	- 1 - Meters
+	- 2 - Feet (International Foot)
+	- 3 - Feet (U.S. Survey Foot)
+ */
+int vtProjection::GetUnits()
 {
-	// copy new projection
-	if (ref.GetRoot() != NULL)
-	{
-		OGRSpatialReference *ref_copy = ref.Clone();
-		(*(OGRSpatialReference *)this) = *ref_copy;
-	}
+	if( IsGeographic() )
+		return 0;  // degrees
 
-	// copy old fields
-	m_Datum = ref.m_Datum;
-	return *this;
+	// Get horizontal units ("linear units")
+	char *pszLinearUnits;
+	double dfLinearConv = GetLinearUnits(&pszLinearUnits);
+	double diff;
+
+	diff = dfLinearConv - 0.3048;
+	if( EQUAL(pszLinearUnits,SRS_UL_FOOT) || fabs(diff) < 0.000000001)
+		return 2;  // international feet
+
+	diff = dfLinearConv - (1200.0/3937.0);
+	if( EQUAL(pszLinearUnits,SRS_UL_US_FOOT) || fabs(diff) < 0.000000001)
+		return 3;  // u.s. survey feet
+
+	if( dfLinearConv == 1.0 )
+		return 1;  // meters
+
+	return 1;	// can't guess; assume meters
 }
 
+
+/**
+ * Set the projection by copying from a OGRSpatialReference.
+ */
 void vtProjection::SetSpatialReference(OGRSpatialReference *pRef)
 {
 	*((OGRSpatialReference *)this) = *(pRef->Clone());
 }
 
+/**
+ * Return a string describing the type of projection.
+ *
+ * \par Example:
+ *	"Geographic", "Transverse_Mercator", "Albers_Conic_Equal_Area"
+ */
 const char *vtProjection::GetProjectionName()
 {
 	const char *proj_string = GetAttrValue("PROJECTION");
@@ -115,7 +177,8 @@ const char *vtProjection::GetProjectionName()
 		return proj_string;
 }
 
-/** Return a very short string describing the type of projection.
+/**
+ * Return a very short string describing the type of projection.
  * \par
  * Possible values are "Geo", "UTM", "TM", "Albers", "LCC", "Other", or "Unknown"
  */
@@ -126,20 +189,28 @@ const char *vtProjection::GetProjectionNameShort()
 	const char *proj_string = GetAttrValue("PROJECTION");
 	if (!proj_string)
 		return "Unknown";
-	if (!strcmp(proj_string, "Transverse_Mercator"))
+	if (!strcmp(proj_string, SRS_PT_TRANSVERSE_MERCATOR))
 	{
-		if (GetUTMZone() > 0)
+		if (GetUTMZone() != 0)
 			return "UTM";
 		else
 			return "TM";
 	}
-	if (proj_string && !strcmp(proj_string, "Albers_Conic_Equal_Area"))
+	if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 		return "Albers";
-	if (proj_string && !strncmp(proj_string, "Lambert_Conformal_Conic", 23))
+	if (!strncmp(proj_string, "Lambert_Conformal_Conic", 23))
 		return "LCC";
 	return "Other";
 }
 
+/**
+ * Convenient way to set a simple projection.
+ *
+ * \param bUTM true for UTM, false for Geographic.
+ * \param iUTMZone If UTM, this is the zone: 1 through 60 in the northern
+ *		hemisphere, -1 through -60 for the southern hemisphere.
+ * \param eDatum The Datum as an enumeration (see DATUM)
+ */
 void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
 {
 	switch (eDatum)
@@ -163,20 +234,34 @@ void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
 	}
 }
 
+/**
+ * Get the projection as a text description.  If the projection is Geographic
+ * or UTM, then a "simple" type string will be returned.  For all other
+ * projection types, 
+ *
+ * \param type A string buffer to contain the type of description.
+ * This buffer should be at least 7 characters long to contain either the
+ * word "simple" or "wkt".
+ *
+ * \param value A string buffer to contain the full description.
+ * This buffer should be at least 2048 characters long to contain either
+ * a simple or WKT description.
+ */
 bool vtProjection::GetTextDescription(char *type, char *value)
 {
 	DATUM datum = GetDatum();
 	const char *datum_string = datumToString(datum);
+	int zone = GetUTMZone();
 
 	if (IsGeographic())
 	{
 		strcpy(type, "simple");
 		sprintf(value, "geo, datum %s", datum_string);
 	}
-	else if (IsUTM())
+	else if (zone != 0)
 	{
 		strcpy(type, "simple");
-		sprintf(value, "utm, datum %s, zone %d", datum_string, GetUTMZone());
+		sprintf(value, "utm, datum %s, zone %d", datum_string, zone);
 	}
 	else
 	{
@@ -193,6 +278,23 @@ bool vtProjection::GetTextDescription(char *type, char *value)
 	return true;
 }
 
+/**
+ * Set the projection using a text description.
+ *
+ * \param type The type of description, either "simple" for short simple
+ * string, or "wkt" for a full-length WKT (Well-Known Text) description.
+ *
+ * \param value The description itself.  A WKT description should be a
+ * single string, with no extra whitespace.  A simple string can have the
+ * following forms:
+ *		- geo, datum <D>
+ *		- utm, datum <D>, zone <Z>
+ *
+ * \par Example:
+	\code
+	proj.SetTextDescription("simple", "utm, datum WGS_84, zone 11");
+	\endcode
+ */
 bool vtProjection::SetTextDescription(const char *type, const char *value)
 {
 	if (!strcmp(type, "simple"))
@@ -226,14 +328,56 @@ bool vtProjection::SetTextDescription(const char *type, const char *value)
 	return false;
 }
 
+/**
+ * Read the projection from a .prj file.
+ * 
+ * If the filename does not have the file extension ".prj", this
+ * method will look for a file which has the same name with a
+ * ".prj" extension.
+ *
+ * \return true if successful.
+ */
+bool vtProjection::ReadProjFile(const char *filename)
+{
+	char prj_name[256];
+	int len = strlen(filename);
+
+	// check file extension
+	if (len >= 4 && !stricmp(filename + len - 4, ".prj"))
+	{
+		strcpy(prj_name, filename);
+	}
+	else
+	{
+		strcpy(prj_name, filename);
+		char *dot = strrchr(prj_name, '.');
+		if (dot)
+			strcpy(dot, ".prj");
+		else
+			strcat(prj_name, ".prj");
+	}
+
+	FILE *fp2 = fopen(prj_name, "rb");
+	if (!fp2)
+		return false;
+	char wkt_buf[2000], *wkt = wkt_buf;
+	fgets(wkt, 2000, fp2);
+	fclose(fp2);
+	OGRErr err = importFromWkt((char **) &wkt);
+	if (err != OGRERR_NONE)
+		return false;
+	return true;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
 
-/** Given a non-geographic projection, produce a geographic projection which
-  * has the same datum/ellipsoid values.
-  */
+/**
+ * Given a non-geographic projection, produce a geographic projection which
+ * has the same datum/ellipsoid values.
+ */
 void CreateSimilarGeographicProjection(vtProjection &source,
 									   vtProjection &geo)
 {
@@ -248,9 +392,9 @@ void CreateSimilarGeographicProjection(vtProjection &source,
 }
 
 
-//
-// provide access to the State Plane Table
-//
+/**
+ * Provides access to the State Plane Table
+ */
 StatePlaneInfo *GetStatePlaneTable()
 {
 	return g_StatePlaneInfo;
@@ -261,64 +405,64 @@ int GetNumStatePlanes()
 	return sizeof(g_StatePlaneInfo) /  sizeof(StatePlaneInfo);
 }
 
-//
-// Datum strings
-//
+/**
+ * Convert an enumerated DATUM to a string of the Datum Name.
+ */
 const char *datumToString(DATUM d)
 {
-    switch ( d )
-    {
-    case ADINDAN:
-        return "ADINDAN";
-    case ARC1950:
-        return "ARC1950";
-    case ARC1960:
-        return "ARC1960";
-    case AUSTRALIAN_GEODETIC_1966:
-        return "AUSTRALIAN GEODETIC 1966";
-    case AUSTRALIAN_GEODETIC_1984:
-        return "AUSTRALIAN GEODETIC 1984";
-    case CAMP_AREA_ASTRO:
-        return "CAMP AREA ASTRO";
-    case CAPE:
-        return "CAPE";
-    case EUROPEAN_DATUM_1950:
-        return "EUROPEAN DATUM 1950";
-    case EUROPEAN_DATUM_1979:
-        return "EUROPEAN DATUM 1979";
-    case GEODETIC_DATUM_1949:
-        return "GEODETIC DATUM 1949";
-    case HONG_KONG_1963:
-        return "HONG KONG 1963";
-    case HU_TZU_SHAN:
-        return "HU TZU SHAN";
-    case INDIAN:
-        return "INDIAN";
-    case NAD27:
-        return "NAD27";
-    case NAD83:
-        return "NAD83";
-    case OLD_HAWAIIAN_MEAN:
-        return "OLD HAWAIIAN MEAN";
-    case OMAN:
-        return "OMAN";
-    case ORDNANCE_SURVEY_1936:
-        return "ORDNANCE SURVEY 1936";
-    case PULKOVO_1942:
-        return "PULKOVO 1942";
-    case PROVISIONAL_S_AMERICAN_1956:
-        return "PROVISIONAL SOUTH AMERICAN 1956";
-    case TOKYO:
-        return "TOKYO";
-    case WGS_72:
-        return "WGS72";
-    case WGS_84:
-        return "WGS84";
-    case NO_DATUM:
-        return "NO DATUM";
-    default:
-        return "Unknown Datum";
-    }
+	switch ( d )
+	{
+	case ADINDAN:
+		return "ADINDAN";
+	case ARC1950:
+		return "ARC1950";
+	case ARC1960:
+		return "ARC1960";
+	case AUSTRALIAN_GEODETIC_1966:
+		return "AUSTRALIAN GEODETIC 1966";
+	case AUSTRALIAN_GEODETIC_1984:
+		return "AUSTRALIAN GEODETIC 1984";
+	case CAMP_AREA_ASTRO:
+		return "CAMP AREA ASTRO";
+	case CAPE:
+		return "CAPE";
+	case EUROPEAN_DATUM_1950:
+		return "EUROPEAN DATUM 1950";
+	case EUROPEAN_DATUM_1979:
+		return "EUROPEAN DATUM 1979";
+	case GEODETIC_DATUM_1949:
+		return "GEODETIC DATUM 1949";
+	case HONG_KONG_1963:
+		return "HONG KONG 1963";
+	case HU_TZU_SHAN:
+		return "HU TZU SHAN";
+	case INDIAN:
+		return "INDIAN";
+	case NAD27:
+		return "NAD27";
+	case NAD83:
+		return "NAD83";
+	case OLD_HAWAIIAN_MEAN:
+		return "OLD HAWAIIAN MEAN";
+	case OMAN:
+		return "OMAN";
+	case ORDNANCE_SURVEY_1936:
+		return "ORDNANCE SURVEY 1936";
+	case PULKOVO_1942:
+		return "PULKOVO 1942";
+	case PROVISIONAL_S_AMERICAN_1956:
+		return "PROVISIONAL SOUTH AMERICAN 1956";
+	case TOKYO:
+		return "TOKYO";
+	case WGS_72:
+		return "WGS72";
+	case WGS_84:
+		return "WGS84";
+	case NO_DATUM:
+		return "NO DATUM";
+	default:
+		return "Unknown Datum";
+	}
 }
 
 
@@ -357,7 +501,7 @@ OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget)
 		enode2->GetChild(2)->SetValue(enode1->GetChild(2)->GetValue());
 	}
 
-#if DEBUG && 0
+#if DEBUG && 1
 	// Debug: Check texts in PROJ4
 	char *str3, *str4;
 	pSource->exportToProj4(&str3);
