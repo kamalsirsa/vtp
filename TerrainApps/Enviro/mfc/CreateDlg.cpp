@@ -5,8 +5,9 @@
 #include "vtlib/vtlib.h"
 #include "stdio.h"
 #include "CreateDlg.h"
+#include "../Options.h"
 
-#include "vtlib/core/LKTerrain.h"
+#include "vtlib/core/SRTerrain.h"
 #include "vtlib/core/TVTerrain.h"
 #include "vtlib/core/SMTerrain.h"
 
@@ -15,7 +16,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // CCreateDlg dialog
 
-CCreateDlg::CCreateDlg(CString strDatapath, CWnd* pParent /*=NULL*/)
+CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CCreateDlg::IDD, pParent)
 {
 	//{{AFX_DATA_INIT(CCreateDlg)
@@ -72,8 +73,6 @@ CCreateDlg::CCreateDlg(CString strDatapath, CWnd* pParent /*=NULL*/)
 	m_bPreLit = FALSE;
 	m_bAirports = FALSE;
 	//}}AFX_DATA_INIT
-
-	m_strDatapath = strDatapath;
 
 	// Beware: we need to store and display the same time on all
 	// systems, but using MFC's CDateTimeCtrl will always show
@@ -202,8 +201,9 @@ END_MESSAGE_MAP()
 //  does not support non-8.3 directory names (or file names)
 //  in Win9x operating systems.
 //
-void AddFilenamesToComboBox(CComboBox *box, CString wildcard)
+void AddFilenamesToComboBox(CComboBox *box, const char *pattern)
 {
+	CString wildcard = pattern;
 	CFileFind finder; 
 	BOOL bWorking = finder.FindFile(wildcard); 
 	while (bWorking)
@@ -225,30 +225,31 @@ BOOL CCreateDlg::OnInitDialog()
 
 //	unsigned int iFlags = DDL_READWRITE | DDL_READONLY;
 
-	// fill the "terrain filename" control with available terrain files
-//	int r = m_cbLODFilename.Dir(iFlags, dummy);
-	AddFilenamesToComboBox(&m_cbLODFilename, m_strDatapath + "Elevation/*.bt");
-	m_cbLODFilename.SelectString(-1, m_strFilename);
+	int i;
+	StringArray &paths = g_Options.m_DataPaths;
 
-	// fill the "single texture filename" control with available bitmap files
-//	m_cbTextureFileSingle.Dir(iFlags, m_strDatapath + "GeoSpecific/*.bmp");
-	AddFilenamesToComboBox(&m_cbTextureFileSingle, m_strDatapath + "GeoSpecific/*.bmp");
-	m_cbLODFilename.SelectString(-1, m_strTextureSingle);
+	for (i = 0; i < paths.GetSize(); i++)
+	{
+		// fill the "terrain filename" control with available terrain files
+		AddFilenamesToComboBox(&m_cbLODFilename, *paths[i] + "Elevation/*.bt");
+		m_cbLODFilename.SelectString(-1, m_strFilename);
 
-	// fill in Road files
-//	m_cbRoadFile.Dir(iFlags, m_strDatapath + "RoadData/*.rmf");
-	AddFilenamesToComboBox(&m_cbRoadFile, m_strDatapath + "RoadData/*.rmf");
-	m_cbRoadFile.SelectString(-1, m_strRoadFile);
+		// fill the "single texture filename" control with available bitmap files
+		AddFilenamesToComboBox(&m_cbTextureFileSingle, *paths[i] + "GeoSpecific/*.bmp");
+		m_cbLODFilename.SelectString(-1, m_strTextureSingle);
 
-	// fill in Building files
-//	m_cbBuildingFile.Dir(iFlags, m_strDatapath + "BuildingData/*.vtst");
-	AddFilenamesToComboBox(&m_cbBuildingFile, m_strDatapath + "BuildingData/*.vtst");
-	m_cbBuildingFile.SelectString(-1, m_strBuildingFile);
+		// fill in Road files
+		AddFilenamesToComboBox(&m_cbRoadFile, *paths[i] + "RoadData/*.rmf");
+		m_cbRoadFile.SelectString(-1, m_strRoadFile);
 
-	// fill in Tree files
-//	m_cbTreeFile.Dir(iFlags, m_strDatapath + "PlantData/*.vcf");
-	AddFilenamesToComboBox(&m_cbTreeFile, m_strDatapath + "PlantData/*.vf");
-	m_cbTreeFile.SelectString(-1, m_strTreeFile);
+		// fill in Building files
+		AddFilenamesToComboBox(&m_cbBuildingFile, *paths[i] + "BuildingData/*.vtst");
+		m_cbBuildingFile.SelectString(-1, m_strBuildingFile);
+
+		// fill in Tree files
+		AddFilenamesToComboBox(&m_cbTreeFile, *paths[i] + "PlantData/*.vf");
+		m_cbTreeFile.SelectString(-1, m_strTreeFile);
+	}
 
 	m_cbLodMethod.AddString("Lindstrom-Koller");
 	m_cbLodMethod.AddString("TopoVista");
@@ -461,8 +462,8 @@ void CCreateDlg::UpdateMem()
 		k += (m_iTerrainSize * 8) / 1024;		 // Lookup tables
 		switch (m_iLodMethod)
 		{
-			case LM_LINDSTROMKOLLER:
-				k += LKTerrain::MemoryRequired(m_iTerrainSize);
+			case LM_ROETTGER:
+//				k += SRTerrain::MemoryRequired(m_iTerrainSize);
 				break;
 			case LM_TOPOVISTA:
 				k += TVTerrain::MemoryRequired(m_iTerrainSize);
@@ -500,7 +501,7 @@ void CCreateDlg::OnChangeMem()
 	// if TVTerrain or tiled LKTerrain, no tristrips
 	bool enable_strips = true;
 	if (m_iLodMethod == LM_TOPOVISTA ||
-		(m_iTexture == 2 && m_iLodMethod == LM_LINDSTROMKOLLER))
+		(m_iTexture == 2 && m_iLodMethod == LM_ROETTGER))
 	{
 		m_bTriStrips = FALSE;
 		enable_strips = false;
@@ -520,31 +521,24 @@ void CCreateDlg::OnChangeMem()
 
 void CCreateDlg::DetermineTerrainSizeFromBT()
 {
-	char buf[10];
-
-	FILE *fp = fopen(m_strDatapath + "Elevation/" + m_strFilename, "rb");
-	if (!fp)
+	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, "Elevation/" + m_strFilename);
+	if (fname == "")
 	{
 		m_iTerrainSize = 1024;
 		return;
 	}
 
-	fread(buf, 10, 1, fp);
-	if (!strncmp(buf, "binterr1.0", 10))
-	{
-		int rows, cols, datasize;
-		fread(&rows, 4, 1, fp);
-		fread(&cols, 4, 1, fp);
-		fread(&datasize, 4, 1, fp);
-		m_iTerrainSize = rows;
-		m_iTerrainDepth = datasize;
-	}
-	else
+	vtElevationGrid grid;
+	if (!grid.LoadBTHeader(fname))
 	{
 		m_iTerrainSize = 1024;
-		m_iTerrainDepth = 2;
+		return;
 	}
-	fclose(fp);
+
+	int col, row;
+	grid.GetDimensions(col, row);
+	m_iTerrainSize = col;
+	m_iTerrainDepth = grid.IsFloatMode() ? 4 : 2;
 }
 
 void CCreateDlg::DetermineSizeFromBMP()
@@ -554,7 +548,11 @@ void CCreateDlg::DetermineSizeFromBMP()
     OFSTRUCT            openFileStruct;
     BITMAPFILEHEADER    bitmapHdr;
 
-    fileHandle = OpenFile (m_strDatapath + "GeoSpecific/" + m_strTextureSingle, &openFileStruct, OF_READ);
+	vtString fname = FindFileOnPaths(g_Options.m_DataPaths, "GeoSpecific/" + m_strTextureSingle);
+	if (fname == "")
+		goto ErrExit;
+
+    fileHandle = OpenFile(fname, &openFileStruct, OF_READ);
     if (fileHandle == HFILE_ERROR) {
         return;
     }

@@ -5,18 +5,16 @@
 #include "StdAfx.h"
 
 #include "vtlib/vtlib.h"
-
 #include "vtlib/core/Terrain.h"
-#include "../TerrainSceneWP.h"
-
+#include "vtlib/core/TerrainScene.h"
 #include "StartupDlg.h"
 #include "ChooseDlg.h"
+#include "../Enviro.h"	// for GetTerrainScene
 
 CStartupDlg g_StartDlg;
 
 void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
-	m_strDataPath = opt.m_strDataPath;
 	m_iLaunch = (opt.m_bEarthView ? 0 : 1);
 	m_strImage = opt.m_strImage;
 	m_strTName = opt.m_strInitTerrain;
@@ -34,7 +32,6 @@ void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 
 void CStartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
-	opt.m_strDataPath = m_strDataPath;
 	opt.m_bEarthView = (m_iLaunch == 0);
 	opt.m_strImage = m_strImage;
 	opt.m_strInitTerrain = m_strTName;
@@ -68,12 +65,10 @@ CStartupDlg::CStartupDlg(CWnd* pParent /*=NULL*/)
 	m_bQuakeNavigation = FALSE;
 	m_iLaunch = -1;
 	m_strTName = _T("");
-	m_strDataPath = _T("");
 	m_strImage = _T("");
 	m_fPlantSize = 0.0f;
 	m_bShadows = FALSE;
 	//}}AFX_DATA_INIT
-	m_strDataPath = "Data/";
 }
 
 
@@ -95,7 +90,6 @@ void CStartupDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_QUAKEENGINE, m_bQuakeNavigation);
 	DDX_Radio(pDX, IDC_LAUNCH1, m_iLaunch);
 	DDX_Text(pDX, IDC_TNAME, m_strTName);
-	DDX_Text(pDX, IDC_DATAPATH, m_strDataPath);
 	DDX_Text(pDX, IDC_IMAGE, m_strImage);
 	DDX_Text(pDX, IDC_PLANTSIZE, m_fPlantSize);
 	DDX_Check(pDX, IDC_SHADOWS, m_bShadows);
@@ -138,7 +132,7 @@ void AddFilesToComboBox(CComboBox *box, CString wildcard)
 
 BOOL CStartupDlg::OnInitDialog() 
 {
-	vtTerrain *pTerr = GetTerrainScene().FindTerrainByName(m_strTName);
+	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
 	if (pTerr)
 		m_strTName = pTerr->GetName();
 	else
@@ -146,7 +140,12 @@ BOOL CStartupDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	AddFilesToComboBox(&m_cbImage, m_strDataPath + "WholeEarth/*_0106.png");
+	StringArray &paths = g_Options.m_DataPaths;
+	for (int i = 0; i < paths.GetSize(); i++)
+	{
+		CString path = (const char *) (*paths[i]);
+		AddFilesToComboBox(&m_cbImage, path + "WholeEarth/*_0106.png");
+	}
 	m_cbImage.SelectString(-1, m_strImage);
 
 	UpdateState();

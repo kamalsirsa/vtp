@@ -19,7 +19,7 @@ class CCreateDlg : public CDialog
 {
 // Construction
 public:
-	CCreateDlg(CString strDatapath, CWnd* pParent = NULL);   // standard constructor
+	CCreateDlg(CWnd* pParent = NULL);   // standard constructor
 	~CCreateDlg();
 
 // Dialog Data
@@ -112,7 +112,6 @@ public:
 
 // Implementation
 protected:
-	CString m_strDatapath;
 	time_t m_iTimeDiff;
 
 	// Generated message map functions
