@@ -1219,7 +1219,8 @@ void vtTerrain::_CreateCulture()
 		vtString road_fname = "RoadData/";
 		road_fname += m_Params.GetValueString(STR_ROADFILE, true);
 		vtString road_path = FindFileOnPaths(vtGetDataPath(), road_fname);
-		create_roads(road_path);
+		if (road_path != "")
+			create_roads(road_path);
 
 		if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
 		{
