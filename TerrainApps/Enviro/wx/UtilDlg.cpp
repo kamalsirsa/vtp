@@ -65,7 +65,6 @@ void UtilDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < NUM_STRUCT_NAMES; i++)
 	{
 		m_pChoice->Append(wxString::FromAscii(s_Names[i].full));
-	//	m_pChoice->SetClientData(0, FT_WIRE);
 	}
 
 	TransferDataToWindow();
