@@ -82,7 +82,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	double	fVertUnits;
 	double 	dxdelta, dydelta, dzdelta;
 	double	dElevMax, dElevMin;
-	bool	bNewFormat;
+	bool	bOldFormat = false, bNewFormat = false, bFixedLength = true;
 	int		iCoordSystem;
 	int		iProfiles;
 	char	szName[41];
@@ -111,31 +111,37 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fseek(fp, 864, 0);
 	fscanf(fp, "%d", &iRow);
 	fscanf(fp, "%d", &iColumn);
-	bNewFormat = ((iRow!=1)||(iColumn!=1));
-	if (bNewFormat)
+	bOldFormat = (iRow==1 && iColumn==1);
+	if (bOldFormat)
+		iDataStartOffset = 1024;	// 1024 is record length
+	else
 	{
-		fseek(fp, 1024, 0); 	// New Format
-		fscanf(fp, "%d", &i);
-		fscanf(fp, "%d", &j);
-		if ((i!=1)||(j!=1))		// File OK?
+		fseek(fp, 1024, 0); 		// Check for New Format
+		fscanf(fp, "%d", &iRow);
+		fscanf(fp, "%d", &iColumn);
+		if (iRow==1 && iColumn==1)	// File OK?
 		{
-			fseek(fp, 893, 0);	 	// Undocumented Format
-			fscanf(fp, "%d", &i);
-			fscanf(fp, "%d", &j);
-			if ((i!=1)||(j!=1))		// File OK?
+			bNewFormat = true;
+			iDataStartOffset = 1024;
+		}
+		else
+		{
+			fseek(fp, 893, 0);	 	// Non-fixed-length record format
+			fscanf(fp, "%d", &iRow);
+			fscanf(fp, "%d", &iColumn);
+			if (iRow==1 && iColumn==1)	// File OK?
+			{
+				bFixedLength = false;
+				iDataStartOffset = 893;
+			}
+			else
 			{
 				// Not a DEM file
 				fclose(fp);
 				return false;
 			}
-			else
-				iDataStartOffset = 893;
 		}
-		else
-			iDataStartOffset = 1024;
 	}
-	else
-		iDataStartOffset = 1024;	// 1024 is record length
 
 	// Read the embedded DEM name
 	fseek(fp, 0, 0);
@@ -262,13 +268,19 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	else
 	{
 		m_area.SetRect(1E9, -1E9, -1E9, 1E9);
+
+		if (!bFixedLength)
+			fseek(fp, iDataStartOffset, 0);
 		// Need to scan over all the profiles, accumulating the TRUE
 		// extents of the actual data points.
 		int record = 0;
 		int data_len;
 		for (i = 0; i < iProfiles; i++)
 		{
-			fseek(fp, iDataStartOffset + (record * 1024) + 12, 0);
+			if (bFixedLength)
+				fseek(fp, iDataStartOffset + (record * 1024), 0);
+			fscanf(fp, "%d", &iRow);
+			fscanf(fp, "%d", &iColumn);
 			fscanf(fp, "%d", &iProfileRows);
 			fscanf(fp, "%d", &iProfileCols);
 			start.x = DConvert(fp, 24);
@@ -277,12 +289,25 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			start.y += (iProfileRows * dydelta);
 			m_area.GrowToContainPoint(start);
 
-			record++;
-			data_len = 144 + (iProfileRows * 6);
-			while (data_len > 1020)	// max bytes in a record
+			if (bFixedLength)
 			{
-				data_len -= 1020;
 				record++;
+				data_len = 144 + (iProfileRows * 6);
+				while (data_len > 1020)	// max bytes in a record
+				{
+					data_len -= 1020;
+					record++;
+				}
+			}
+			else
+			{
+				dLocalDatumElev = DConvert(fp, 24);
+				dProfileMin = DConvert(fp, 24);
+				dProfileMax = DConvert(fp, 24);
+				for (j = 0; j < iProfileRows; j++)
+				{
+					fscanf(fp, "%d", &iElev);
+				}
 			}
 		}
 		dMinY = m_area.bottom;
