@@ -1,6 +1,9 @@
 //
 // Structure3d.cpp
 //
+// Copyright (c) 2001-2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #include "vtlib/vtlib.h"
 
@@ -131,10 +134,8 @@ bool vtStructInstance3d::CreateNode(vtHeightField *hf, const char *options)
 
 ///////////////////////////////////////////////////////////////////////
 //
-// vtStructure3d
+// vtStructureArray3d
 //
-
-/////////////////////////////////////////////////////////////////////
 
 vtBuilding *vtStructureArray3d::NewBuilding()
 {
@@ -205,7 +206,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 		if (str->GetType() == ST_FENCE)
 		{
 			vtFence3d *fen = GetFence(i);
-			// TODO
+			// TODO: implement moving of fences?
 		}
 		if (str->GetType() == ST_INSTANCE)
 		{
@@ -222,8 +223,6 @@ void vtStructureArray3d::VisualDeselectAll()
 	{
 		vtStructure *str = (vtStructure *) GetAt(i);
 		vtStructure3d *str3d = GetStructure3d(i);
-
-//		Selectable *sel = (Selectable *) GetAt(i);
 
 		str->Select(false);
 		str3d->ShowBounds(false);
