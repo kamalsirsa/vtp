@@ -17,12 +17,19 @@
 #include "BuilderView.h"
 #include "vtdata/vtLog.h"
 
+#ifdef ENVIRON
+  #define APPNAME "EnvironBuilder"
+#else
+  #define APPNAME "VTBuilder"
+#endif
+
+
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
 	g_Log._StartLog("debug.txt");
-	VTLOG("VTBuilder\nBuild:");
+	VTLOG("%s\nBuild:", APPNAME);
 #if DEBUG
 	VTLOG(" Debug");
 #else
@@ -33,7 +40,7 @@ bool MyApp::OnInit()
 #endif
 	VTLOG("\n");
 
-	MainFrame* frame = new MainFrame((wxFrame *) NULL, _T("VTBuilder"),
+	MainFrame* frame = new MainFrame((wxFrame *) NULL, _T(APPNAME),
 							   wxPoint(50, 50), wxSize(900, 500));
 
 	VTLOG(" Setting up the UI.\n");
