@@ -1364,11 +1364,11 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	}
 	else if (code == WXK_ADD && ctrl)
 	{
-		SetScale(GetScale() * 1.2);
+		SetScale(GetScale() * sqrt(2));
 	}
 	else if (code == WXK_SUBTRACT && ctrl)
 	{
-		SetScale(GetScale() / 1.2);
+		SetScale(GetScale() / sqrt(2));
 	}
 	else if (code == WXK_F10)
 	{
