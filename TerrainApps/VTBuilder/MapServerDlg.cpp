@@ -84,7 +84,7 @@ void MapServerDlg::UpdateURL()
 
 	str.Format("&WIDTH=%d&HEIGHT=%d", m_iXSize, m_iYSize);
 	url += str;
-	url += "&FORMAT=PNG&TRANSPARENT=TRUE&EXCEPTIONS=WMS_XML&";
+	url += "&FORMAT=JPEG&TRANSPARENT=TRUE&EXCEPTIONS=WMS_XML&";
 
 	m_query = url;
 
