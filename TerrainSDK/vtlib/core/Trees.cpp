@@ -14,10 +14,11 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "Trees.h"
-#include "vtlib/core/Terrain.h"
-#include "vtlib/core/Light.h"
 #include "vtdata/vtLog.h"
+#include "Trees.h"
+#include "Terrain.h"
+#include "TerrainScene.h"
+#include "Light.h"
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
@@ -123,7 +124,7 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 			vtString fname = "PlantModels/";
 			fname += m_filename;
 			// if not directly resolvable, look on data paths
-			vtString fullpath = FindFileOnPaths(vtTerrain::s_DataPaths, fname);
+			vtString fullpath = FindFileOnPaths(vtGetDataPath(), fname);
 			if (fullpath != "")
 				m_pExternal = vtNode::LoadModel(fullpath);
 		}
