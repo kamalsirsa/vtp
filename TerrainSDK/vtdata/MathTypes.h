@@ -143,6 +143,10 @@ public:
 	void operator /=(float s) { x/=s; y/=s; z/=s; }
 	FPoint3 operator -() const { return FPoint3 (-x, -y, -z); }
 
+	// also allow array-like access, such that x,y,z components are 0,1,2
+	float &operator[](int nIndex) { return *(&x+nIndex); }
+	const float &operator[](int nIndex) const { return *(&x+nIndex); }
+
 	float x, y, z;
 };
 
