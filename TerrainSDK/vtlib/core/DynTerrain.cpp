@@ -256,7 +256,7 @@ void vtDynTerrainGeom::DoCalcBoundBox(FBox3 &box)
 			(float)m_iColumns, m_fMaxHeight, (float)m_iRows);
 }
 
-void vtDynTerrainGeom::DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
+void vtDynTerrainGeom::DoCull(const vtCamera *pCam)
 {
 	// make sure we cull at least every 300 ms
 	bool bCullThisFrame = false;
@@ -271,7 +271,7 @@ void vtDynTerrainGeom::DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fo
 #endif
 	if (m_bCulleveryframe || m_bCullonce || bCullThisFrame)
 	{
-		DoCulling(eyepos_ogl, window_size, fov);
+		DoCulling(pCam);
 		m_bCullonce = false;
 	}
 }

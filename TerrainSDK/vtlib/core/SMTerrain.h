@@ -144,7 +144,7 @@ public:
 
 	// overrides
 	void DoRender();
-	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
+	void DoCulling(const vtCamera *pCam);
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
 

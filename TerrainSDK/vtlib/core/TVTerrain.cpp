@@ -818,8 +818,9 @@ int TVTerrain::MemoryRequired(int iDimension)
 }
 
 
-void TVTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
+void TVTerrain::DoCulling(const vtCamera *pCam)
 {
+	FPoint3 eyepos_ogl = pCam->GetTrans();
 	buildSurface(eyepos_ogl);
 }
 

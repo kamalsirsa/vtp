@@ -116,9 +116,9 @@ DTErr BryanTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 }
 
 
-void BryanTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
+void BryanTerrain::DoCulling(const vtCamera *pCam)
 {
-	m_eyepos_ogl = eyepos_ogl;
+	m_eyepos_ogl = pCam->GetTrans();
 
 	// Tessellate the Mesh
 	RecursTessellate( 0, 0, 0, m_nPoints, 4 );

@@ -561,9 +561,9 @@ void SMTerrain::AdjustQualityConstant()
 }
 
 
-void SMTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
+void SMTerrain::DoCulling(const vtCamera *pCam)
 {
-	m_Eyepos = eyepos_ogl;
+	m_Eyepos = pCam->GetTrans();
 
 	if (m_iDrawnTriangles != -1)
 		AdjustQualityConstant();

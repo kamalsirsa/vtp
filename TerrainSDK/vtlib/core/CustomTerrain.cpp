@@ -71,7 +71,7 @@ DTErr CustomTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 //
 // This will be called once per frame, during the culling pass.
 //
-void CustomTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
+void CustomTerrain::DoCulling(const vtCamera *pCam)
 {
 	// Do your visibility testing here.
 	// (Compute which detail will actually gets drawn)

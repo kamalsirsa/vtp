@@ -14,16 +14,6 @@
 
 #include "DynTerrain.h"
 
-#include "mini.h"
-#include "ministub.hpp"
-
-class myministub : public ministub
-{
-public:
-	// work around access to protected 'SCALE' member
-	void SetScale(float fScale) { SCALE = fScale; }
-};
-
 /*!
 	The SRTerrain class implements Stefan Roettger's algorithm for
 	regular-grid terrain LOD.  It was adapted directly from his sample
@@ -39,7 +29,7 @@ public:
 
 	// overrides
 	void DoRender();
-	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
+	void DoCulling(const vtCamera *pCam);
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
 	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
 	void SetVerticalExag(float fExag);
@@ -58,7 +48,7 @@ protected:
 	virtual ~SRTerrain();
 
 private:
-	myministub *m_pMini;
+	class myministub *m_pMini;
 
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;

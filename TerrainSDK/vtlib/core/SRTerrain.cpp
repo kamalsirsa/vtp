@@ -12,6 +12,16 @@
 #include "vtlib/vtlib.h"
 #include "SRTerrain.h"
 
+#include "mini.h"
+#include "ministub.hpp"
+
+class myministub : public ministub
+{
+public:
+	// work around access to protected 'SCALE' member
+	void SetScale(float fScale) { SCALE = fScale; }
+};
+
 using namespace mini;
 #ifdef _MSC_VER
 #pragma comment( lib, "libMini.lib" )
@@ -148,12 +158,14 @@ void SRTerrain::SetVerticalExag(float fExag)
 // independently of the rendering pass, so we cannot do culling here.
 // Instead, just store the values for later use.
 //
-void SRTerrain::DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
+void SRTerrain::DoCulling(const vtCamera *pCam)
 {
 	// store for later
-	m_eyepos_ogl = eyepos_ogl;
-	m_window_size = window_size;
-	float aspect = (float)window_size.x / window_size.y;
+	m_eyepos_ogl = pCam->GetTrans();
+	m_window_size = vtGetScene()->GetWindowSize();
+	float aspect = (float)m_window_size.x / m_window_size.y;
+
+	float fov = pCam->GetFOV();
 	float fov_y2 = atan(tan (fov/2) / aspect);
 	m_fFOVY = fov_y2 * 2.0f * 180 / PIf;
 }

@@ -54,7 +54,7 @@ public:
 
 	// overrides for vtDynGeom
 	void DoCalcBoundBox(FBox3 &box);
-	void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
+	void DoCull(const vtCamera *pCam);
 
 	// overrides for HeightField
 	void GetChecksum(unsigned char **ppChecksum) const {}
@@ -65,7 +65,7 @@ public:
 		FPoint3 *vNormal = NULL) const;
 
 	// overridables
-	virtual void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) = 0;
+	virtual void DoCulling(const vtCamera *pCam) = 0;
 
 	// control
 	void SetCull(bool bOnOff);
