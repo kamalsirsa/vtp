@@ -940,6 +940,9 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 	// TODO: ask user exactly how much slope (or depth) to tolerate
 	//	without building a foundation.
 
+#if 1
+	int built = vtStructureArray::AddFoundations(pEL->GetHeightField());
+#else
 	vtLevel *pLev, *pNewLev;
 	int i, j, pts, built = 0;
 	float fElev;
@@ -982,12 +985,12 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 		pNewLev->m_iStories = 1;
 		pNewLev->m_fStoryHeight = fDiff;
 		bld->InsertLevel(0, pNewLev);
-//		pNewLev->SetFootprint(foot);
 		bld->SetFootprint(0, foot);
 		pNewLev->SetEdgeMaterial(BMAT_NAME_CEMENT);
 		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
 		built++;
 	}
+#endif
 	DisplayAndLog("Added a foundation level to %d buildings.", built);
 }
 
