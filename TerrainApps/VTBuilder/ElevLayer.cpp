@@ -543,7 +543,7 @@ void vtElevLayer::RenderBitmap()
 			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
 		else
 //			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0, progress_callback);
-			m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, progress_callback);
+			m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, true, progress_callback);
 	}
 
 	if (has_invalid && m_draw.m_bDoMask)

@@ -2125,7 +2125,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 		if (vtElevLayer::m_draw.m_bCastShadows)
 			pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0, progress_callback);
 		else
-			pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0, progress_callback);
+			pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0, true, progress_callback);
 	}
 
 	if (dlg.m_bToFile)
