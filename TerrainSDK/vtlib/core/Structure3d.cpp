@@ -77,7 +77,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 }
 
 // implement vtStructure3d methods
-bool vtStructInstance3d::CreateNode(vtHeightField *hf, const char *options)
+bool vtStructInstance3d::CreateNode(vtHeightField *hf, const vtTagArray &options)
 {
 	if (!m_pContainer)
 	{
@@ -151,6 +151,10 @@ vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 {
 	vtStructure *str = GetAt(i);
 
+	// Due to the somewhat complicated structure of the multiple inheritance
+	// here, we must do a double-cast: first cast down to the object's true
+	// type, then back up to vtStructure3d.
+
 	if (str->GetType() == ST_BUILDING)
 		return (vtStructure3d *) (vtBuilding3d *) str;
 
@@ -163,17 +167,17 @@ vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 	return NULL;
 }
 
-bool vtStructureArray3d::ConstructStructure(vtStructure3d *str,
-													const char *options)
+bool vtStructureArray3d::ConstructStructure(vtStructure3d *str)
 {
+	vtTagArray options;
+
 	return str->CreateNode(m_pHeightField, options);
 }
 
-void vtStructureArray3d::ReConstructStructure(vtStructure3d *str,
-											  const char *options)
+void vtStructureArray3d::ReConstructStructure(vtStructure3d *str)
 {
 	str->DeleteNode();
-	str->CreateNode(m_pHeightField, options);
+	ConstructStructure(str);
 }
 
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
@@ -220,3 +224,28 @@ void vtStructureArray3d::VisualDeselectAll()
 	}
 }
 
+//
+// Be informed of edit hightlighting
+//
+void vtStructureArray3d::SetEditedEdge(vtBuilding *bld, int lev, int edge)
+{
+	vtStructure3d *str1, *str2;
+
+	if (m_pEditBuilding)
+	{
+		m_pEditBuilding->RemoveTag("level");
+		m_pEditBuilding->RemoveTag("edge");
+		str1 = (vtStructure3d *) (vtBuilding3d *) m_pEditBuilding;
+		ReConstructStructure(str1);
+	}
+
+	vtStructureArray::SetEditedEdge(bld, lev, edge);
+
+	if (m_pEditBuilding)
+	{
+		m_pEditBuilding->SetValue("level", m_iEditLevel);
+		m_pEditBuilding->SetValue("edge", m_iEditEdge);
+		str2 = (vtStructure3d *) (vtBuilding3d *) m_pEditBuilding;
+		ReConstructStructure(str2);
+	}
+}
