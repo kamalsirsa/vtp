@@ -164,6 +164,8 @@ public:
 	void OnUpdateEarthShowShading(wxUpdateUIEvent& event);
 	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);
 	void OnUpdateEarthTilt(wxUpdateUIEvent& event);
+	void OnUpdateEarthFlatten(wxUpdateUIEvent& event);
+	void OnUpdateEarthUnfold(wxUpdateUIEvent& event);
 	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 	void OnUpdateInOrbitOrTerrain(wxUpdateUIEvent& event);
 

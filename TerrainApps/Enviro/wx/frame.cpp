@@ -206,8 +206,8 @@ EVT_MENU(ID_EARTH_POINTS,		vtFrame::OnEarthPoints)
 EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, vtFrame::OnUpdateEarthShowShading)
 EVT_UPDATE_UI(ID_EARTH_SHOWAXES, vtFrame::OnUpdateEarthShowAxes)
 EVT_UPDATE_UI(ID_EARTH_TILT,	vtFrame::OnUpdateEarthTilt)
-EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
-EVT_UPDATE_UI(ID_EARTH_UNFOLD,	vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateEarthFlatten)
+EVT_UPDATE_UI(ID_EARTH_UNFOLD,	vtFrame::OnUpdateEarthUnfold)
 EVT_UPDATE_UI(ID_EARTH_POINTS,	vtFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
@@ -328,15 +328,37 @@ void vtFrame::CreateMenus()
 	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
 //	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
 	m_pMenuBar->Append(toolsMenu, _("&Tools"));
+
+	// shortcuts:
+	// Ctrl+A Show Axes
+	// Ctrl+C Cull Every Frame
+	// Ctrl+D Measure Distances
+	// Ctrl+E Flatten
+	// Ctrl+F Fullscreen
+	// Ctrl+G Go to Terrain
+	// Ctrl+K Cull Once
+	// Ctrl+I Time
+	// Ctrl+L Store/Recall Locations
+	// Ctrl+N Save Numbered Snapshot
+	// Ctrl+P Load Point Data
+	// Ctrl+S Camera - View Settings
+	// Ctrl+T Top-Down
+	// Ctrl+U Unfold
+	// Ctrl+W Wireframe
+	// Ctrl+Z Framerate Chart
+	// A Maintain height above ground
+	// D Toggle Grab-Pivot
+	// F Faster
+	// S Faster
 
 	if (m_bEnableEarth)
 	{
 		m_pSceneMenu = new wxMenu;
 		m_pSceneMenu->Append(ID_SCENE_SCENEGRAPH, _("Scene Graph"));
 		m_pSceneMenu->AppendSeparator();
-		m_pSceneMenu->Append(ID_SCENE_TERRAIN, _("Go to Terrain..."));
+		m_pSceneMenu->Append(ID_SCENE_TERRAIN, _("Go to Terrain...\tCtrl+G"));
 		m_pSceneMenu->Append(ID_SCENE_SPACE, _("Go to Space"));
 #if VTLIB_OSG
 		m_pSceneMenu->AppendSeparator();
@@ -349,24 +371,6 @@ void vtFrame::CreateMenus()
 		m_pMenuBar->Append(m_pSceneMenu, _("&Scene"));
 	}
 
-	// shortcuts:
-	// Ctrl+A Show Axes
-	// Ctrl+C Cull Every Frame
-	// Ctrl+E Flatten
-	// Ctrl+F Fullscreen
-	// Ctrl+K Cull Once
-	// Ctrl+L Add Linear Features
-	// Ctrl+N Save Numbered Snapshot
-	// Ctrl+P Load Point Data
-	// Ctrl+R Framerate Chart
-	// Ctrl+S Camera - View Settings
-	// Ctrl+T Top-Down
-	// Ctrl+U Unfold
-	// Ctrl+W Wireframe
-	// A Maintain height above ground
-	// F Faster
-	// S Faster
-
 	m_pViewMenu = new wxMenu;
 	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _("Wireframe\tCtrl+W"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _("Fullscreen\tCtrl+F"));
@@ -374,7 +378,7 @@ void vtFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _("Framerate Chart\tCtrl+Z"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
-	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations"));
+	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations\tCtrl+L"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SNAPSHOT, _("Save Window Snapshot"));
 	m_pViewMenu->Append(ID_VIEW_SNAP_AGAIN, _("Save Numbered Snapshot\tCtrl+N"));
@@ -422,9 +426,9 @@ void vtFrame::CreateMenus()
 	if (m_bEnableEarth)
 	{
 		m_pEarthMenu = new wxMenu;
-		m_pEarthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _("&Show Shading\tCtrl+I"));
-		m_pEarthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _("&Show Axes\tCtrl+A"));
-		m_pEarthMenu->AppendCheckItem(ID_EARTH_TILT, _("Seasonal Tilt"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _("&Show Shading"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _("Show &Axes\tCtrl+A"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_TILT, _("Seasonal &Tilt"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _("&Flatten\tCtrl+E"));
 		m_pEarthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _("&Unfold\tCtrl+U"));
 		m_pEarthMenu->Append(ID_EARTH_POINTS, _("&Load Point Data...\tCtrl+P"));
@@ -1448,6 +1452,18 @@ void vtFrame::OnUpdateEarthTilt(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetEarthTilt());
+}
+
+void vtFrame::OnUpdateEarthFlatten(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit);
+	event.Check(g_App.GetEarthShape());
+}
+
+void vtFrame::OnUpdateEarthUnfold(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit);
+	event.Check(g_App.GetEarthUnfold());
 }
 
 void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
