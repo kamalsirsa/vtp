@@ -36,6 +36,7 @@ BEGIN_EVENT_TABLE(InstanceDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_RADIO_CONTENT, InstanceDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_MODEL, InstanceDlg::OnRadio )
 	EVT_CHOICE( ID_CHOICE_FILE, InstanceDlg::OnChoice )
+	EVT_CHOICE( ID_CHOICE_TYPE, InstanceDlg::OnChoice )
 	EVT_CHOICE( ID_CHOICE_ITEM, InstanceDlg::OnChoiceItem )
 	EVT_BUTTON( ID_BROWSE_MODEL_FILE, InstanceDlg::OnBrowseModeFile )
 	EVT_TEXT( ID_LOCATION, InstanceDlg::OnLocationText )
@@ -48,6 +49,8 @@ InstanceDlg::InstanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	// WDR: dialog function InstanceDialogFunc for InstanceDlg
 	InstanceDialogFunc( this, TRUE );
 	m_bContent = true;
+	m_iManager = 0;
+	m_iItem = 0;
 }
 
 void InstanceDlg::UpdateLoc()
@@ -68,9 +71,32 @@ void InstanceDlg::SetLocation(const DPoint2 &pos)
 	UpdateLoc();
 }
 
+vtTagArray *InstanceDlg::GetTagArray()
+{
+	m_dummy.Clear();
+
+	// Return a description of the current content item
+	if (m_bContent)
+	{
+		if (!Current())
+			return NULL;
+		vtItem *item = Current()->GetItem(m_iItem);
+		if (!item)
+			return NULL;
+		m_dummy.SetValueString("itemname", item->m_name, true);
+	}
+	else
+	{
+		wxString2 str = GetModelFile()->GetValue();
+		m_dummy.SetValueString("filename", str.mb_str(), true);
+	}
+	return &m_dummy;
+}
+
 void InstanceDlg::UpdateEnabling()
 {
 	GetChoiceFile()->Enable(m_bContent);
+	GetChoiceType()->Enable(m_bContent);
 	GetChoiceItem()->Enable(m_bContent);
 
 	GetModelFile()->Enable(!m_bContent);
@@ -81,53 +107,58 @@ void InstanceDlg::UpdateContentItems()
 {
 	GetChoiceItem()->Clear();
 
-	wxString2 path = GetChoiceFile()->GetStringSelection();
-	if (path == _T(""))
-		return;
+//	for (int i = 0; i < m_contents.size(); i++)
+//	{
+		vtContentManager *mng = Current();
+		if (!mng)
+			return;
 
-	vtString fname = FindFileOnPaths(m_datapaths, path.mb_str());
-	if (fname == "")
-		return;
-
-	vtContentManager mng;
-	try
-	{
-		mng.ReadXML(fname);
-	}
-	catch (xh_io_exception &ex)
-	{
-		// display (or a least log) error message here
-		VTLOG("XML error:");
-		VTLOG(ex.getFormattedMessage().c_str());
-		return;
-	}
-
-	wxString2 str;
-	for (unsigned int i = 0; i < mng.NumItems(); i++)
-	{
-		vtItem *item = mng.GetItem(i);
-		str = item->m_name;
-//		str += _T(" (");
-//		str += item->GetValue("filename");
-//		str += _T(")");
-		GetChoiceItem()->Append(str);
-	}
+		wxString2 str;
+		for (unsigned int j = 0; j < mng->NumItems(); j++)
+		{
+			vtItem *item = mng->GetItem(j);
+			str = item->m_name;
+//			str += _T(" (");
+//			str += item->GetValue("filename");
+//			str += _T(")");
+			GetChoiceItem()->Append(str);
+		}
+//	}
 	GetChoiceItem()->SetSelection(0);
 }
 
+
+void InstanceDlg::ClearContent()
+{
+	m_contents.clear();
+}
+
+void InstanceDlg::AddContent(vtContentManager *mng)
+{
+	m_contents.push_back(mng);
+}
 
 // WDR: handler implementations for InstanceDlg
 
 void InstanceDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetChoiceFile()->Clear();
-	for (unsigned int i = 0; i < m_datapaths.size(); i++)
+	for (unsigned int i = 0; i < m_contents.size(); i++)
 	{
-		AddFilenamesToChoice(GetChoiceFile(), m_datapaths[i], "*.vtco");
+		vtContentManager *mng = m_contents[i];
+		vtString str = mng->GetFilename();
+		wxString2 ws = str;
+		GetChoiceFile()->Append(ws);
 	}
 	GetChoiceFile()->Select(0);
 
+	GetChoiceType()->Append(_T("(All)"));
+	GetChoiceType()->Select(0);
+
 	AddValidator(ID_RADIO_CONTENT, &m_bContent);
+	AddValidator(ID_CHOICE_FILE, &m_iManager);
+	AddValidator(ID_CHOICE_ITEM, &m_iItem);
+
 	UpdateLoc();
 	UpdateEnabling();
 	UpdateContentItems();
@@ -154,11 +185,13 @@ void InstanceDlg::OnBrowseModeFile( wxCommandEvent &event )
 
 void InstanceDlg::OnChoice( wxCommandEvent &event )
 {
+	TransferDataFromWindow();
 	UpdateContentItems();
 }
 
 void InstanceDlg::OnChoiceItem( wxCommandEvent &event )
 {
+	TransferDataFromWindow();
 }
 
 void InstanceDlg::OnRadio( wxCommandEvent &event )
@@ -167,4 +200,10 @@ void InstanceDlg::OnRadio( wxCommandEvent &event )
 	UpdateEnabling();
 }
 
+vtContentManager *InstanceDlg::Current()
+{
+	if (m_iManager < m_contents.size())
+		return m_contents[m_iManager];
+	return NULL;
+}
 
