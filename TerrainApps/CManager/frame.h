@@ -109,6 +109,7 @@ public:
 	void RenderingPause();
 	void RenderingResume();
 	void AddModelFromFile(const wxString2 &fname);
+	int GetModelTriCount(vtModel *model);
 	void OnChar(wxKeyEvent& event);
 
 public:

@@ -109,7 +109,7 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 	vtContentManager *pMan = &(pFrame->m_Man);
 
 	int i, j;
-	wxString2 str;
+	wxString2 str, str2;
 
 	int iItems = pMan->NumItems();
 	for (i = 0; i < iItems; i++)
@@ -131,6 +131,9 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 			vtModel *pModel = pItem->GetModel(j);
 
 			str = (const char *) pModel->m_filename;
+			int tri_count = pFrame->GetModelTriCount(pModel);
+			str2.Printf(_T(" (%d tris)"), tri_count);
+			str += str2;
 
 			wxTreeItemId hItem2;
 			hItem2 = AppendItem(hItem, str, TreeCtrlIcon_Model, TreeCtrlIcon_ModelSelected);

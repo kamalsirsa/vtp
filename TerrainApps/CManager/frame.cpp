@@ -423,6 +423,14 @@ void vtFrame::AddModelFromFile(const wxString2 &fname)
 		SetCurrentItemAndModel(m_pCurrentItem, nm);
 }
 
+int vtFrame::GetModelTriCount(vtModel *model)
+{
+	vtTransform *trans = m_nodemap[model];
+	if (!trans)
+		return 0;
+	return 0;
+}
+
 void vtFrame::OnExit(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
