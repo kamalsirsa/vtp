@@ -39,6 +39,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
 	 $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
 	 -lgdal -lGL $(MINI_LIB) \
+	 -losg -losgDB -losgUtil -losgText \
 	 -lm $(EXTRA_LIBS)
 
 # Support of Mac OS X
@@ -46,7 +47,7 @@ ifeq ($(OS),Darwin)
 OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
 LIBS   += -F$(FRAMEWORKS) \
 	  -lobjc -framework Carbon \
-	  -losg -losgDB -losgGA -losgText -losgUtil -lOpenThreads \
+	  -lOpenThreads \
 	  -framework vtdata -framework vtui -framework vtosg \
 	  -framework xmlhelper \
 	  -L$(FINK_LIB) -lnetcdf \
@@ -59,7 +60,7 @@ else
 # Support for all other Unix platforms
 LIBS   +=  $(GLU_LIB) -lX11 \
 	  -lxmlhelper -lvtdata -lvtui -lvtosg \
-	  -lnetcdf                 
+	  -lnetcdf -lmini -lquikgrid                
 
 LDIR   +=\
 	  $(VTDATA_INST_DIR)             \
