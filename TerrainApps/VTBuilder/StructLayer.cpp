@@ -913,9 +913,9 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 
 bool vtStructureLayer::EditBuildingProperties()
 {
+	// Look for the first selected building, and count how many are selected
 	int count = 0;
 	vtBuilding *bld_selected=NULL;
-
 	int size = GetSize();
 	for (int i = 0; i < size; i++)
 	{
@@ -927,9 +927,11 @@ bool vtStructureLayer::EditBuildingProperties()
 			bld_selected = bld;
 		}
 	}
+	// We don't support editing more than 1 building at a time
 	if (count != 1)
 		return false;
 
+	// Get a heightfield.  This is for RJ's Baseline Editor" Height Dialog
 	MainFrame *pFrame = GetMainFrame();
 	vtHeightField *pHeightField = NULL;
 	vtElevLayer *pElevLayer = (vtElevLayer *) pFrame->FindLayerOfType(LT_ELEVATION);
