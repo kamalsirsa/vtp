@@ -444,7 +444,7 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 		}
 	}
 	// Create sides
-	unsigned short *indices = new unsigned short[res * 2];
+	unsigned short *indices = new unsigned short[(res+1) * 2];
 	j = 0;
 	k = 0;
 	for (i = 0; i < res+1; i++)
@@ -486,6 +486,7 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 		}
 		AddStrip(j, indices);
 	}
+	delete indices;
 }
 
 
