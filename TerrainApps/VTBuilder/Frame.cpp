@@ -880,13 +880,14 @@ void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	// iterate through the pixels of the new image
 	RGBi rgb;
 	bool bHit;
-	for (i = 0; i < iColumns; i++)
+	for (j = 0; j < iRows; j++)
 	{
-		UpdateProgressDialog(i*100/iColumns);
-		x = area.left + (i * step.x);
-		for (j = 0; j < iRows; j++)
+		UpdateProgressDialog(j*100/iRows);
+		y = area.bottom + (j * step.y);
+
+		for (i = 0; i < iColumns; i++)
 		{
-			y = area.bottom + (j * step.y);
+			x = area.left + (i * step.x);
 
 			// find some data for this point
 			rgb.Set(0,0,0);
@@ -898,7 +899,7 @@ void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 				if (bHit)
 					break;
 			}
-			pTarget->GetImage()->SetRGB(i, j, rgb.r, rgb.g, rgb.b);
+			pTarget->GetImage()->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
 		}
 	}
 	CloseProgressDialog();
