@@ -30,9 +30,6 @@ public:
 	vtScene();
 	~vtScene();
 
-	/// Set the background color for the scene (the rendering window).
-	void SetBgColor(RGBf color);
-
 	/// Set the root node, the top node of the scene graph.
 	void SetRoot(vtGroup *pRoot);
 
@@ -47,16 +44,19 @@ public:
 	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();
 
+	void UpdateBegin();
+	void UpdateEngines();
+	void UpdateWindow(vtWindow *window = NULL);
+
+	// backward compatibility
 	void DoUpdate();
+
 	/// Return the instantaneous framerate in frames per seconds estimated.
 	float GetFrameRate()
 	{
 		return 1.0 / _timer.delta_s(_lastFrameTick,_frameTick);
 	}
 	void DrawFrameRateChart();
-
-	bool HasWinInfo() { return m_bWinInfo; }
-	void SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
 
 	float GetTime()
 	{
@@ -68,7 +68,7 @@ public:
 	}
 
 	// View methods
-	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir);
+	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow *pWindow = NULL);
 	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
 	// Experimental:
@@ -82,7 +82,13 @@ public:
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
 	vtHUD *GetHUD() { return m_pHUD; }
-	void SetWindowSize(int w, int h);
+	void SetWindowSize(int w, int h, vtWindow *pWindow = NULL);
+
+	// For backward compatibility
+	void SetBgColor(const RGBf &color) {
+		if (GetWindow(0))
+			GetWindow(0)->SetBgColor(color);
+	}
 
 protected:
 	// OSG-specific implementation

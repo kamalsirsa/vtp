@@ -36,11 +36,15 @@ graphical class hierarchy</a>.
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
 
+vtWindow::vtWindow()
+{
+	m_BgColor.Set(0.2f, 0.2f, 0.4f);
+	m_Size.Set(0, 0);
+}
 
 vtSceneBase::vtSceneBase()
 {
 	m_pCamera = NULL;
-	m_WindowSize.Set(0, 0);
 	m_pRoot = NULL;
 	m_pRootEngine = NULL;
 	m_piKeyState = NULL;
@@ -55,26 +59,28 @@ vtSceneBase::~vtSceneBase()
 	m_pRootEngine = NULL;
 }
 
-void vtSceneBase::OnMouse(vtMouseEvent &event)
+void vtSceneBase::OnMouse(vtMouseEvent &event, vtWindow *pWindow)
 {
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
 	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
-		if (pEng->GetEnabled())
+		if (pEng->GetEnabled() &&
+			(pEng->GetWindow() == NULL || pEng->GetWindow() == pWindow))
 			pEng->OnMouse(event);
 	}
 }
 
-void vtSceneBase::OnKey(int key, int flags)
+void vtSceneBase::OnKey(int key, int flags, vtWindow *pWindow)
 {
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
 	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
-		if (pEng->GetEnabled())
+		if (pEng->GetEnabled() &&
+			(pEng->GetWindow() == NULL || pEng->GetWindow() == pWindow))
 			pEng->OnKey(key, flags);
 	}
 }
@@ -87,18 +93,28 @@ bool vtSceneBase::GetKeyState(int key)
 		return false;
 }
 
-void vtSceneBase::SetWindowSize(int w, int h)
+void vtSceneBase::SetWindowSize(int w, int h, vtWindow *pWindow)
 {
-	m_WindowSize.Set(w, h);
+	if (!pWindow)
+		pWindow = GetWindow(0);
+	pWindow->SetSize(w, h);
 
 	// Pass event to Engines
 	vtEngineArray list(m_pRootEngine);
 	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
 		vtEngine *pEng = list[i];
-		if (pEng->GetEnabled())
+		if (pEng->GetEnabled() &&
+			(pEng->GetWindow() == NULL || pEng->GetWindow() == pWindow))
 			pEng->OnWindowSize(w, h);
 	}
+}
+
+IPoint2 vtSceneBase::GetWindowSize(vtWindow *pWindow)
+{
+	if (!pWindow)
+		pWindow = GetWindow(0);
+	return pWindow->GetSize();
 }
 
 void vtSceneBase::DoEngines()

@@ -11,6 +11,7 @@
 
 vtEngine::vtEngine() : vtEnabledBase()
 {
+	m_pWindow = NULL;
 }
 
 void vtEngine::Eval()
@@ -92,7 +93,10 @@ void apply_dead_zone(float amount, float &val)
  */
 void vtLastMouse::GetNormalizedMouseCoords(float &mx, float &my)
 {
-	IPoint2	WinSize = vtGetScene()->GetWindowSize();
+	vtWindow *window = m_pWindow;
+	if (!window) window = vtGetScene()->GetWindow(0);
+
+	IPoint2	WinSize = window->GetSize();
 	mx = (((float) m_pos.x / WinSize.x) - 0.5f) * 2;
 	my = (((float) m_pos.y / WinSize.y) - 0.5f) * 2;
 	apply_dead_zone(DEAD_ZONE_SIZE, mx);

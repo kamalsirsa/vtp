@@ -8,6 +8,8 @@
 #ifndef VTENGINEH
 #define VTENGINEH
 
+class vtWindow;
+
 #include "vtdata/vtString.h"
 
 /**
@@ -69,6 +71,10 @@ public:
 	 */
 	virtual void Eval();
 
+	// an engine may be associate with a window
+	void SetWindow(vtWindow *pWin) { m_pWindow = pWin; }
+	vtWindow *GetWindow() { return m_pWindow; }
+
 	// Engine tree methods
 	void AddChild(vtEngine *pEngine) { m_Children.Append(pEngine); }
 	void RemoveChild(vtEngine *pEngine);
@@ -81,6 +87,7 @@ protected:
 	Array<vtTarget*> m_Targets;
 	Array<vtEngine*> m_Children;
 	vtString		 m_strName;
+	vtWindow		*m_pWindow;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

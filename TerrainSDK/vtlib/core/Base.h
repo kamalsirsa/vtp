@@ -360,6 +360,23 @@ public:
 	void RemoveMaterial(vtMaterial *pMat);
 };
 
+class vtWindow
+{
+public:
+	vtWindow();
+
+	/// Set the background color for the scene (the rendering window).
+	void SetBgColor(const RGBf &color) { m_BgColor = color; }
+	RGBf GetBgColor() { return m_BgColor; }
+
+	void SetSize(int w, int h) { m_Size.Set(w,h); }
+	IPoint2 GetSize() { return m_Size; }
+
+protected:
+	RGBf m_BgColor;
+	IPoint2 m_Size;
+};
+
 /**
  * vtSceneBase provides the Scene methods that are common across all
  * 3D libraries supported by vtlib.
@@ -370,8 +387,6 @@ class vtSceneBase
 public:
 	vtSceneBase();
 	virtual ~vtSceneBase();
-
-	virtual void SetBgColor(RGBf color) = 0;
 
 	/// Set the top engine in the Engine graph
 	void SetRootEngine(vtEngine *ptr) { m_pRootEngine = ptr; }
@@ -390,23 +405,31 @@ public:
 	/// Get the camera associated with the scene.
 	vtCamera *GetCamera() { return m_pCamera; }
 
-	void OnMouse(vtMouseEvent &event);
-	void OnKey(int key, int flags);
+	void OnMouse(vtMouseEvent &event, vtWindow *pWindow = NULL);
+	void OnKey(int key, int flags, vtWindow *pWindow = NULL);
 	void SetKeyStates(bool *piKeyState) { m_piKeyState = piKeyState; }
 	bool GetKeyState(int key);
 
-	virtual void SetWindowSize(int w, int h);
-	IPoint2 GetWindowSize() { return m_WindowSize; }
+	virtual void SetWindowSize(int w, int h, vtWindow *pWindow = NULL);
+	IPoint2 GetWindowSize(vtWindow *pWindow = NULL);
 
 	virtual void SetRoot(vtGroup *pRoot) = 0;
 	/// Get the root node, which is the top of the scene graph.
 	vtGroup *GetRoot() { return m_pRoot; }
 
+	// Windows
+	void AddWindow(vtWindow *pWindow) {
+		m_Windows.Append(pWindow);
+	}
+	vtWindow *GetWindow(unsigned int i) {
+		return m_Windows[i];
+	}
+
 protected:
 	void DoEngines();
 
+	Array<vtWindow*> m_Windows;
 	vtCamera	*m_pCamera;
-	IPoint2		 m_WindowSize;
 	vtGroup		*m_pRoot;
 	vtEngine	*m_pRootEngine;
 	bool		*m_piKeyState;

@@ -83,13 +83,6 @@ int vtGetMaxTextureSize()
 	return tmax;
 }
 
-void vtScene::SetBgColor(RGBf color)
-{
-	Vec4 color2;
-	v2s(color, color2);
-	m_pOsgSceneView->setClearColor(color2);
-}
-
 bool vtScene::Init()
 {
 	// Redirect cout messages (where OSG sends its messages) to our own log
@@ -97,6 +90,7 @@ bool vtScene::Init()
 	std::cerr.rdbuf(&g_Trap);
 
 	SetCamera(new vtCamera());
+	AddWindow(new vtWindow());
 
 	m_pOsgSceneView = new osgUtil::SceneView();
 	m_pOsgSceneView->setDefaults();
@@ -124,23 +118,38 @@ void vtScene::Shutdown()
 	osgDB::Registry::instance()->clearObjectCache();
 }
 
-void vtScene::DoUpdate()
+void vtScene::UpdateBegin()
 {
-	if (!m_bInitialized)
-		return;
-
 	_lastFrameTick = _frameTick;
 	_frameTick = _timer.tick();
+}
 
+void vtScene::UpdateEngines()
+{
+	if (!m_bInitialized) return;
 	DoEngines();
+}
+
+void vtScene::UpdateWindow(vtWindow *pWindow)
+{
+	if (!m_bInitialized) return;
+
+	// window background color
+	Vec4 color2;
+	v2s(pWindow->GetBgColor(), color2);
+	m_pOsgSceneView->setClearColor(color2);
+
+	// window size
+	IPoint2 winsize = pWindow->GetSize();
+	m_pOsgSceneView->setViewport(0, 0, winsize.x, winsize.y);
 
 	// As of OSG 0.9.5, we need to store our own camera params and recreate
 	//  the projection matrix each frame.
 	float aspect;
-	if (m_WindowSize.x == 0 || m_WindowSize.y == 0)		// safety
+	if (winsize.x == 0 || winsize.y == 0)		// safety
 		aspect = 1.0;
 	else
-		aspect = (float) m_WindowSize.x / m_WindowSize.y;
+		aspect = (float) winsize.x / winsize.y;
 
 	if (m_pCamera->IsOrtho())
 	{
@@ -186,12 +195,18 @@ void vtScene::DoUpdate()
 	m_pOsgSceneView->setFrameStamp(frameStamp.get());
 #endif
 
-	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
 #if USE_OSG_UPDATE
 	m_pOsgSceneView->update();
 #endif
 	m_pOsgSceneView->cull();
 	m_pOsgSceneView->draw();
+}
+
+void vtScene::DoUpdate()
+{
+	UpdateBegin();
+	UpdateEngines();
+	UpdateWindow(GetWindow(0));
 }
 
 void vtScene::SetRoot(vtGroup *pRoot)
@@ -209,12 +224,16 @@ void vtScene::SetRoot(vtGroup *pRoot)
  * Convert window coordinates (in pixels) to a ray from the camera
  * in world coordinates.
  */
-bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir)
+bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow *pWindow)
 {
+	if (!pWindow)
+		pWindow = GetWindow(0);
+
 	Vec3 near_point, far_point, diff;
 
 	// call the handy OSG function
-	m_pOsgSceneView->projectWindowXYIntoObject(win.x, m_WindowSize.y-win.y, near_point, far_point);
+	IPoint2 winsize = pWindow->GetSize();
+	m_pOsgSceneView->projectWindowXYIntoObject(win.x, winsize.y-win.y, near_point, far_point);
 
 	diff = far_point - near_point;
 	diff.normalize();
@@ -382,11 +401,12 @@ bool vtScene::GetGlobalWireframe()
 	return m_bWireframe;
 }
 
-void vtScene::SetWindowSize(int w, int h)
+void vtScene::SetWindowSize(int w, int h, vtWindow *pWindow)
 {
+	if (!m_bInitialized) return;
 	if (m_pHUD)
 		m_pHUD->SetWindowSize(w, h);
-	vtSceneBase::SetWindowSize(w, h);
+	vtSceneBase::SetWindowSize(w, h, pWindow);
 }
 
 
