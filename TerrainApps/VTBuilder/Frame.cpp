@@ -904,11 +904,18 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 				else if (tin)
 					tin->FindAltitudeAtPoint2(DPoint2(x, y), fData);
 
-				if (fData != INVALID_ELEVATION &&
-						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
+				if (fData != INVALID_ELEVATION)
 					fBestData = fData;
-				if (fBestData != INVALID_ELEVATION && fBestData != 0)
-					break;
+
+				// We used to have much more complicated logic here, though
+				//  i don't recall it's purpose, so i've removed it and just
+				//  done the simple thing instead.
+
+//				if (fData != INVALID_ELEVATION &&
+//						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
+//					fBestData = fData;
+//				if (fBestData != INVALID_ELEVATION && fBestData != 0)
+//					break;
 			}
 			pTarget->m_pGrid->SetFValue(i, j, fBestData);
 		}
