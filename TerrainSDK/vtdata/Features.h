@@ -95,7 +95,7 @@ public:
 	bool AddElementsFromDLG(class vtDLGFile *pDLG);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
-	vtString GetFilename() { return m_strFilename; }
+	vtString GetFilename() const { return m_strFilename; }
 
 	// feature (entity) operations
 	int NumEntities() const;
@@ -151,9 +151,10 @@ public:
 	void DePickAll();
 
 	// attribute (field) operations
-	int GetNumFields() { return m_fields.GetSize(); }
+	unsigned int GetNumFields() const { return m_fields.GetSize(); }
 	Field *GetField(int i) { return m_fields.GetAt(i); }
 	Field *GetField(const char *name);
+	int GetFieldIndex(const char *name) const;
 	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
 	int AddRecord();
 
