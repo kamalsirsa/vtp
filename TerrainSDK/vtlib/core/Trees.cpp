@@ -117,7 +117,7 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 	}
 	else if (m_eType == AT_MODEL)
 	{
-		m_pExternal = vtLoadModel(m_filename);
+		m_pExternal = vtNode::LoadModel(m_filename);
 		if (!m_pExternal)
 		{
 			vtString fname = "PlantModels/";
@@ -125,11 +125,14 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 			// if not directly resolvable, look on data paths
 			vtString fullpath = FindFileOnPaths(vtTerrain::s_DataPaths, fname);
 			if (fullpath != "")
-				m_pExternal = vtLoadModel(fullpath);
+				m_pExternal = vtNode::LoadModel(fullpath);
 		}
 		if (!m_pExternal)
 			return;
-		if (m_filename.Right(3).CompareNoCase("3ds") == 0)
+
+		vtString ext = GetExtension(m_filename, false);
+		if (ext.CompareNoCase(".3ds") == 0 ||
+			ext.CompareNoCase(".flt") == 0)
 		{
 			// Wrap in a transform node so that we can correct for 3ds problem
 			vtTransform *pTrans = new vtTransform();

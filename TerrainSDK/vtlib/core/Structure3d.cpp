@@ -49,16 +49,13 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 
 	// try to work around 3DS coordinate axes difference problem
 	vtString fname2 = GetValueString("filename");
-	int dot = fname2.ReverseFind('.');
-	if (dot > 0)
+	vtString ext = GetExtension(fname2, false);
+
+	if (ext.CompareNoCase(".3ds") == 0 ||
+		ext.CompareNoCase(".flt") == 0)
 	{
-		vtString ext = fname2.Mid(dot+1);
-//		if ((ext.CompareNoCase("3ds") == 0) || (ext.CompareNoCase("lwo") == 0))
-		if (ext.CompareNoCase("3ds") == 0)
-		{
-			// Must rotate by 90 degrees for 3DS MAX -> OpenGL (or Lightwave LWO?)
-			m_pContainer->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-		}
+		// Must rotate by 90 degrees for 3DS MAX -> OpenGL (or Lightwave LWO?)
+		m_pContainer->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
 	}
 
 	if (m_fRotation != 0.0f)
@@ -125,7 +122,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		vtString fullpath = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
 		if (fullpath != "")
 		{
-			m_pModel = vtLoadModel(fullpath);
+			m_pModel = vtNode::LoadModel(fullpath);
 			if (m_pModel)
 				SetValueString("filename", fullpath);
 		}

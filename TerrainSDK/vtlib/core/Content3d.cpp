@@ -62,11 +62,11 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 		{
 			vtString fullpath = FindFileOnPaths(*pDataPaths, model->m_filename);
 			if (fullpath != "")
-				pNode = vtLoadModel(fullpath);
+				pNode = vtNode::LoadModel(fullpath);
 		}
 		else
 			// perhaps it's directly resolvable
-			pNode = vtLoadModel(model->m_filename);
+			pNode = vtNode::LoadModel(model->m_filename);
 
 		if (!pNode)
 		{
@@ -79,8 +79,12 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 		vtTransform *pTrans = new vtTransform();
 		pTrans->AddChild(pNode);
 
+		vtString ext = GetExtension(model->m_filename, false);
+
 		pTrans->Identity();
-		if ((model->m_filename.Right(3).CompareNoCase("3ds") == 0) || (model->m_filename.Right(3).CompareNoCase("lwo") == 0))
+		if (ext.CompareNoCase(".3ds") == 0 ||
+//			ext.CompareNoCase(".lwo") == 0 ||
+			ext.CompareNoCase(".flt") == 0)
 		{
 			// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO)
 			pTrans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
