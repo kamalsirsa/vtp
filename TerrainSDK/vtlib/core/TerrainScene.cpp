@@ -1,11 +1,12 @@
 //
 // vtTerrainScene - Container class for all of the terrains loaded
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
 #include "TerrainScene.h"
 #include "Light.h"
 #include "SkyDome.h"
@@ -143,12 +144,14 @@ void vtTerrainScene::_CreateEngines(bool bDoSound)
  */
 vtRoot *vtTerrainScene::BeginTerrainScene(bool bDoSound)
 {
+	VTLOG("BeginTerrainScene:\n");
 	_CreateEngines(bDoSound);
 
 	m_pTop = new vtRoot();
 	m_pTop->SetName2("All Terrain");
 
 	// create the sun
+	VTLOG("  creating Main Light\n");
 	vtLight *pLight = new vtLight();
 	pLight->SetName2("Main Light");
 	m_pSunLight = new vtMovLight(pLight);
@@ -162,6 +165,7 @@ vtRoot *vtTerrainScene::BeginTerrainScene(bool bDoSound)
 	m_pTop->AddChild(m_pSunLight);
 
 	// create sky group - this holds all celestial objects
+	VTLOG("  creating Sky\n");
 	m_pAtmosphereGroup = new vtGroup();
 	m_pAtmosphereGroup->SetName2("Atmosphere Group");
 	m_pTop->AddChild(m_pAtmosphereGroup);
