@@ -45,6 +45,7 @@ Node::Node()
 {
 	m_pNext = NULL;
 	m_iLinks = 0;
+	m_id = -1;
 	m_r = NULL;
 	m_IntersectTypes = NULL;
 	m_Lights = NULL;
