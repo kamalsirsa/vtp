@@ -172,7 +172,10 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	// Create conversion object
 	vtProjection Source;
 	GetProjection(Source);
-	OCT *trans = OGRCreateCoordinateTransformation(&Source, &proj_new);
+
+	//OCT *trans = OGRCreateCoordinateTransformation(&Source, &proj_new);
+	// TEMP until Datums fixed
+	OCT *trans = CreateConversionIgnoringDatum(&Source, &proj_new);
 	if (!trans)
 		return false;		// inconvertible projections
 
