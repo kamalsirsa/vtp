@@ -177,6 +177,10 @@ SOURCE=..\core\SMTerrain.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\SRTerrain.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\Structure3d.cpp
 # End Source File
 # Begin Source File
@@ -302,6 +306,10 @@ SOURCE=..\core\SkyDome.h
 # Begin Source File
 
 SOURCE=..\core\SMTerrain.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\SRTerrain.h
 # End Source File
 # Begin Source File
 
