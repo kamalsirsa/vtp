@@ -27,7 +27,7 @@
 
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
-#define PLANETWORK			0
+#define PLANETWORK			1
 #define SPACE_DARKNESS		0.0f
 #define UNFOLD_SPEED		0.01f
 
@@ -325,6 +325,7 @@ void Enviro::SetupGlobe()
 		m_pGlobeContainer->SetEnabled(true);
 		m_pRoot->AddChild(m_pGlobeContainer);
 		m_pCursorMGeom->Identity();
+		m_pCursorMGeom->Scale3(.1f, .1f, .1f);
 	}
 	if (m_iInitStep == 4)
 	{
@@ -742,21 +743,29 @@ void Enviro::MakeGlobe()
 	trans->Scale3(1.006f, 1.006f, 1.006f);
 	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
 
-	m_pGlobeTime->SetSpeed(500);
-	Globe2->DoSeasonalTilt(false);
-	m_pIcoGlobe->DoSeasonalTilt(false);
+//	m_pGlobeTime->SetSpeed(500);
+//	Globe2->DoSeasonalTilt(false);
+//	m_pIcoGlobe->DoSeasonalTilt(false);
+
+	// Planetwork globe is around 3 PM GMT, summer over the north atlantic
+	m_pGlobeTime->SetDate(2000, 6, 20);
+	m_pGlobeTime->SetGMT(15,0,0);
 #endif
 
 	// pass the time along once to orient the earth
 	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
 
-	VTLOG("\tcreating Trackball\n");
 	// use a trackball engine for navigation
 	//
+	VTLOG("\tcreating Trackball\n");
 	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
 	m_pTrackball->SetName2("Trackball2");
 	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
 	vtGetScene()->AddEngine(m_pTrackball);
+#if PLANETWORK
+	m_pTrackball->SetDirection(0,0.185);
+	Globe2->SetTime(m_pGlobeTime->GetTime());
+#endif
 
 	// determine where the terrains are, and show them as red rectangles
 	//
@@ -1214,6 +1223,20 @@ void Enviro::DumpCameraInfo()
 		pos.x, pos.y, pos.z, dir.x, dir.y, dir.z);
 }
 
+void Enviro::SetSpeed(float x)
+{
+	if (!m_pGlobeTime)
+		return;
+	m_pGlobeTime->SetSpeed(x);
+}
+
+float Enviro::GetSpeed()
+{
+	if (!m_pGlobeTime)
+		return 0.0f;
+	return m_pGlobeTime->GetSpeed();
+}
+
 void Enviro::OnMouse(vtMouseEvent &event)
 {
 	// check for what is under the pickers
@@ -1660,5 +1683,4 @@ vtTerrainScene *GetTerrainScene()
 {
 	return g_App.m_pTerrainScene;
 }
-
 

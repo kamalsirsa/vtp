@@ -66,6 +66,8 @@ public:
 	void SetRouteFollower(bool bOn);
 	bool GetRouteFollower();
 	void DumpCameraInfo();
+	void SetSpeed(float x);
+	float GetSpeed();
 
 	// go to space or a terrain
 	void FlyToSpace();
