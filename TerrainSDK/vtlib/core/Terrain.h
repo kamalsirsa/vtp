@@ -142,7 +142,7 @@ public:
 	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
 
 	// fences
-	void AddFence(vtFence3d *f);
+	bool AddFence(vtFence3d *f);
 	void AddFencepoint(vtFence3d *f, const DPoint2 &epos);
 	void RedrawFence(vtFence3d *f);
 

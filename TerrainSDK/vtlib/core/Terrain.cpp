@@ -739,13 +739,18 @@ void vtTerrain::_SetErrorMessage(const vtString &msg)
 }
 
 
-void vtTerrain::AddFence(vtFence3d *fen)
+bool vtTerrain::AddFence(vtFence3d *fen)
 {
-	GetStructures()->Append(fen);
+	vtStructureArray3d *structs = GetStructures();
+	if (!structs)
+		return false;
+
+	structs->Append(fen);
 	fen->CreateNode(this);
 
 	// Add to LOD grid
 	AddNodeToStructGrid(fen->GetGeom());
+	return true;
 }
 
 void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
@@ -1060,6 +1065,10 @@ void vtTerrain::DeleteStructureSet(int index)
 	}
 	m_StructureSet.RemoveAt(index);
 	delete sa;
+
+	// If that was the current layer, deal with it
+	if (index == m_iStructSet)
+		m_iStructSet = 0;
 }
 
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
