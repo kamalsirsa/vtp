@@ -180,22 +180,26 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 extern wxSizer *g_pLayerSizer1;
-#define ID_LAYER_TREE 10121
 extern wxSizer *g_pLayerSizer2;
-#define ID_SHOW_ALL 10122
-#define ID_VISIBLE 10123
-#define ID_ZOOM_TO 10124
+#define ID_LAYER_ACTIVE 10121
+#define ID_LAYER_VISIBLE 10122
+#define ID_LAYER_ZOOM_TO 10123
+#define ID_LAYER_SAVE 10124
+#define ID_LAYER_CREATE 10125
+#define ID_LAYER_REMOVE 10126
+#define ID_SHOW_ALL 10127
+#define ID_LAYER_TREE 10128
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPIN_YEAR 10125
-#define ID_SPIN_MONTH 10126
-#define ID_SPIN_DAY 10127
-#define ID_SPIN_HOUR 10128
-#define ID_SPIN_MINUTE 10129
-#define ID_SPIN_SECOND 10130
-#define ID_TEXT_SPEED 10131
-#define ID_SLIDER_SPEED 10132
-#define ID_STOP 10133
+#define ID_SPIN_YEAR 10129
+#define ID_SPIN_MONTH 10130
+#define ID_SPIN_DAY 10131
+#define ID_SPIN_HOUR 10132
+#define ID_SPIN_MINUTE 10133
+#define ID_SPIN_SECOND 10134
+#define ID_TEXT_SPEED 10135
+#define ID_SLIDER_SPEED 10136
+#define ID_STOP 10137
 wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

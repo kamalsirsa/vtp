@@ -1319,28 +1319,43 @@ wxSizer *g_pLayerSizer1;
 wxSizer *g_pLayerSizer2;
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
     g_pLayerSizer1 = item0;
 
-    wxTreeCtrl *item1 = new wxTreeCtrl( parent, ID_LAYER_TREE, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
+    g_pLayerSizer2 = item1;
 
-    wxBoxSizer *item2 = new wxBoxSizer( wxHORIZONTAL );
-    g_pLayerSizer2 = item2;
+    wxButton *item2 = new wxButton( parent, ID_LAYER_ACTIVE, _("Set Active"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item3 = new wxCheckBox( parent, ID_SHOW_ALL, _("Show All"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item3 = new wxCheckBox( parent, ID_LAYER_VISIBLE, _("Visible"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticLine *item4 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(-1,20), wxLI_VERTICAL );
-    item2->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticLine *item4 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item5 = new wxCheckBox( parent, ID_VISIBLE, _("Visible"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item5 = new wxButton( parent, ID_LAYER_ZOOM_TO, _("Zoom To"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item6 = new wxButton( parent, ID_ZOOM_TO, _("Zoom To"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item6, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+    wxButton *item6 = new wxButton( parent, ID_LAYER_SAVE, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item2, 0, wxALIGN_CENTER, 5 );
+    wxButton *item7 = new wxButton( parent, ID_LAYER_CREATE, _("Create"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item8 = new wxButton( parent, ID_LAYER_REMOVE, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticLine *item9 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item1->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxCheckBox *item10 = new wxCheckBox( parent, ID_SHOW_ALL, _("Show All"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER, 5 );
+
+    wxTreeCtrl *item11 = new wxTreeCtrl( parent, ID_LAYER_TREE, wxDefaultPosition, wxDefaultSize, wxTR_HAS_BUTTONS|wxTR_LINES_AT_ROOT|wxSUNKEN_BORDER );
+    item0->Add( item11, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
