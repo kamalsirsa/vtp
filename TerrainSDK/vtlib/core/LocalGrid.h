@@ -31,6 +31,7 @@ public:
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,float light_adj,
 									int xPatch=0, int yPatch=0, int nPatches = 1);
 	bool FindAltitudeAtPoint(FPoint3 &p3, float &fAltitude, FPoint3 *vNormal = NULL);
+	DPoint2 GetWorldSpacing();
 
 protected:
 	// bounds in the application-specific coordinate scheme

@@ -297,4 +297,8 @@ void vtLocalGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 	}
 }
 
+DPoint2 vtLocalGrid::GetWorldSpacing()
+{
+	return DPoint2(m_fXStep, m_fZStep);
+}
 
