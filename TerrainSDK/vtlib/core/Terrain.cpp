@@ -442,7 +442,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	m_pDynGeomScale = new vtTransform();
 	m_pDynGeomScale->SetName2("Dynamic Geometry Container");
 
-	DPoint2 spacing = m_pElevGrid->GetWorldSpacing();
+	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
 	m_pDynGeomScale->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
 
 	m_pDynGeomScale->AddChild(m_pDynGeom);
