@@ -17,6 +17,7 @@ vtFeatures::vtFeatures()
 {
 	m_iSHPElems = 0;
 	m_iSHPFields = 0;
+	m_eGeomType = wkbNone;
 }
 
 vtFeatures::~vtFeatures()
@@ -50,7 +51,8 @@ bool vtFeatures::LoadFrom(const char *filename)
 
 bool vtFeatures::SaveToSHP(const char *filename) const
 {
-	SHPHandle hSHP = SHPCreate(filename, m_nSHPType);
+	int nSHPType = OGRToShapelib(m_eGeomType);
+	SHPHandle hSHP = SHPCreate(filename, nSHPType);
 	if (!hSHP)
 		return false;
 
@@ -58,31 +60,31 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 	SHPObject *obj;
 	DPoint2 p2;
 	DPoint3 p3;
-	if (m_nSHPType == SHPT_POINT)
+	if (nSHPType == SHPT_POINT)
 	{
 		size = m_Point2.GetSize();
 		for (i = 0; i < size; i++)
 		{
 			// Save to SHP
 			p2 = m_Point2[i];
-			obj = SHPCreateSimpleObject(m_nSHPType, 1, &p2.x, &p2.y, NULL);
+			obj = SHPCreateSimpleObject(nSHPType, 1, &p2.x, &p2.y, NULL);
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (nSHPType == SHPT_POINTZ)
 	{
 		size = m_Point3.GetSize();
 		for (i = 0; i < size; i++)
 		{
 			// Save to SHP
 			p3 = m_Point3[i];
-			obj = SHPCreateSimpleObject(m_nSHPType, 1, &p3.x, &p3.y, &p3.z);
+			obj = SHPCreateSimpleObject(nSHPType, 1, &p3.x, &p3.y, &p3.z);
 			SHPWriteObject(hSHP, -1, obj);
 			SHPDestroyObject(obj);
 		}
 	}
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (nSHPType == SHPT_ARC || nSHPType == SHPT_POLYGON)
 	{
 		size = m_LinePoly.size();
 		for (i = 0; i < size; i++)	//for each polyline
@@ -99,7 +101,7 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 
 			}
 			// Save to SHP
-			obj = SHPCreateSimpleObject(m_nSHPType, dl.GetSize(),
+			obj = SHPCreateSimpleObject(nSHPType, dl.GetSize(),
 				dX, dY, NULL);
 
 			delete dX;
@@ -191,7 +193,7 @@ bool vtFeatures::LoadHeaderFromSHP(const char *filename)
 	case SHPT_POINTZ:
 	case SHPT_ARC:
 	case SHPT_POLYGON:
-		m_nSHPType = nShapeType;
+		m_eGeomType = ShapelibToOGR(nShapeType);
 		break;
 	default:
 		SHPClose(hSHP);
@@ -233,16 +235,16 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 	DBFHandle db = DBFOpen(m_dbfname, "rb");
 
 	// Initialize arrays
-	switch (m_nSHPType)
+	switch (m_eGeomType)
 	{
-	case SHPT_POINT:
+	case wkbPoint:
 		m_Point2.SetSize(m_iSHPElems);
 		break;
-	case SHPT_POINTZ:
+	case wkbPoint25D:
 		m_Point3.SetSize(m_iSHPElems);
 		break;
-	case SHPT_ARC:
-	case SHPT_POLYGON:
+	case wkbLineString:
+	case wkbPolygon:
 		m_LinePoly.reserve(m_iSHPElems);
 		break;
 	}
@@ -261,39 +263,39 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		// vertices
 		if (psShape->nVertices == 0)
 		{
-			switch (m_nSHPType)
+			switch (m_eGeomType)
 			{
-			case SHPT_POINT:
+			case wkbPoint:
 				p2.Set(0,0);
 				m_Point2.SetAt(i, p2);
 				break;
-			case SHPT_POINTZ:
+			case wkbPoint25D:
 				p3.Set(0,0,0);
 				m_Point3.SetAt(i, p3);
 				break;
-			case SHPT_ARC:
-			case SHPT_POLYGON:
+			case wkbLineString:
+			case wkbPolygon:
 				m_LinePoly[i] = dline;
 				break;
 			}
 		}
 		else
 		{
-			switch (m_nSHPType)
+			switch (m_eGeomType)
 			{
-			case SHPT_POINT:
+			case wkbPoint:
 				p2.x = *psShape->padfX;
 				p2.y = *psShape->padfY;
 				m_Point2.SetAt(i, p2);
 				break;
-			case SHPT_POINTZ:
+			case wkbPoint25D:
 				p3.x = *psShape->padfX;
 				p3.y = *psShape->padfY;
 				p3.z = *psShape->padfZ;
 				m_Point3.SetAt(i, p3);
 				break;
-			case SHPT_ARC:
-			case SHPT_POLYGON:
+			case wkbLineString:
+			case wkbPolygon:
 				// Store each coordinate
 				dline.SetSize(psShape->nVertices);
 				for (int j = 0; j < psShape->nVertices; j++)
@@ -544,34 +546,23 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	}
 
 	// Convert from OGR to our geometry type
-	m_nSHPType = SHPT_NULL;
-	while (m_nSHPType == SHPT_NULL)
+	switch (geom_type)
 	{
-		switch (geom_type)
-		{
-		case wkbPoint:
-			m_nSHPType = SHPT_POINT;
-			break;
-		case wkbLineString:
-		case wkbMultiLineString:
-			m_nSHPType = SHPT_ARC;
-			break;
-		case wkbPolygon:
-			m_nSHPType = SHPT_POLYGON;
-			break;
-		case wkbPoint25D:
-			m_nSHPType = SHPT_POINTZ;
-			break;
-		case wkbUnknown:
-			// This usually indicates that the file contains a mix of different
-			// geometry types.  Look at the first geometry.
-			pFeature = pLayer->GetNextFeature();
-			pGeom = pFeature->GetGeometryRef();
-			geom_type = pGeom->getGeometryType();
-			break;
-		default:
-			return false;	// don't know what to do with this geom type
-		}
+	case wkbPoint:
+	case wkbLineString:
+	case wkbPolygon:
+	case wkbPoint25D:
+		m_eGeomType = geom_type;
+		break;
+	case wkbUnknown:
+		// This usually indicates that the file contains a mix of different
+		// geometry types.  Look at the first geometry.
+		pFeature = pLayer->GetNextFeature();
+		pGeom = pFeature->GetGeometryRef();
+		m_eGeomType = pGeom->getGeometryType();
+		break;
+	default:
+		return false;	// don't know what to do with this geom type
 	}
 
 	// We're going to read the file now, so take it's name
@@ -603,16 +594,16 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	}
 
 	// Initialize arrays
-	switch (m_nSHPType)
+	switch (m_eGeomType)
 	{
-	case SHPT_POINT:
+	case wkbPoint:
 		m_Point2.SetMaxSize(feature_count);
 		break;
-	case SHPT_POINTZ:
+	case wkbPoint25D:
 		m_Point3.SetMaxSize(feature_count);
 		break;
-	case SHPT_ARC:
-	case SHPT_POLYGON:
+	case wkbLineString:
+	case wkbPolygon:
 		m_LinePoly.reserve(feature_count);
 		break;
 	}
@@ -766,7 +757,7 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 	int nodes = pDLG->m_iNodes, areas = pDLG->m_iAreas, lines = pDLG->m_iLines;
 	if (nodes > lines)
 	{
-		SetEntityType(SHPT_POINT);
+		SetGeomType(wkbPoint);
 		for (i = 0; i < nodes; i++)
 			AddPoint(pDLG->m_nodes[i].m_p);
 	}
@@ -782,7 +773,7 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 */
 	else
 	{
-		SetEntityType(SHPT_ARC);
+		SetGeomType(wkbLineString);
 		for (i = 0; i < areas; i++)
 			AddPolyLine(pDLG->m_lines[i].m_p);
 	}
@@ -798,11 +789,11 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 
 int vtFeatures::GetNumEntities() const
 {
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 		return m_Point2.GetSize();
-	else if (m_nSHPType == SHPT_POINTZ)
+	else if (m_eGeomType == wkbPoint25D)
 		return m_Point3.GetSize();
-	else if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	else if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 		return m_LinePoly.size();
 	else
 		return -1;
@@ -810,11 +801,11 @@ int vtFeatures::GetNumEntities() const
 
 void vtFeatures::SetNumEntities(int iNum)
 {
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 		m_Point2.SetSize(iNum);
-	else if (m_nSHPType == SHPT_POINTZ)
+	else if (m_eGeomType == wkbPoint25D)
 		m_Point3.SetSize(iNum);
-	else if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	else if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 		m_LinePoly.resize(iNum);
 }
 
@@ -822,34 +813,34 @@ void vtFeatures::SetNumEntities(int iNum)
  * Returns the type of geometry that each feature has.
  *
  * \return
- *		- SHPT_POINT for 2D points
- *		- SHPT_POINTZ fpr 3D points
- *		- SHPT_ARC for 2D polylines
- *		- SHPT_POLYGON for 2D polygons
+ *		- wkbPoint for 2D points
+ *		- wkbPoint25D fpr 3D points
+ *		- wkbLineString for 2D polylines
+ *		- wkbPolygon for 2D polygons
  */
-int vtFeatures::GetEntityType() const
+OGRwkbGeometryType vtFeatures::GetGeomType() const
 {
-	return m_nSHPType;
+	return m_eGeomType;
 }
 
 /**
  * Set the type of geometry that each feature will have.
  *
  * \param type
- *		- SHPT_POINT for 2D points
- *		- SHPT_POINTZ fpr 3D points
- *		- SHPT_ARC for 2D polylines
- *		- SHPT_POLYGON for 2D polygons
+ *		- wkbPoint for 2D points
+ *		- wkbPoint25D fpr 3D points
+ *		- wkbLineString for 2D polylines
+ *		- wkbPolygon for 2D polygons
  */
-void vtFeatures::SetEntityType(int type)
+void vtFeatures::SetGeomType(OGRwkbGeometryType eGeomType)
 {
-	m_nSHPType = type;
+	m_eGeomType = eGeomType;
 }
 
 int vtFeatures::AddPoint(const DPoint2 &p)
 {
 	int rec = -1;
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		rec = m_Point2.Append(p);
 		AddRecord();
@@ -860,7 +851,7 @@ int vtFeatures::AddPoint(const DPoint2 &p)
 int vtFeatures::AddPoint(const DPoint3 &p)
 {
 	int rec = -1;
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		rec = m_Point3.Append(p);
 		AddRecord();
@@ -871,7 +862,7 @@ int vtFeatures::AddPoint(const DPoint3 &p)
 int vtFeatures::AddPolyLine(const DLine2 &pl)
 {
 	int rec = -1;
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{
 		m_LinePoly.push_back(pl);
 		rec = m_LinePoly.size()-1;
@@ -882,20 +873,20 @@ int vtFeatures::AddPolyLine(const DLine2 &pl)
 
 void vtFeatures::SetPoint(unsigned int num, const DPoint2 &p)
 {
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 		m_Point2.SetAt(num, p);
 }
 
 void vtFeatures::GetPoint(unsigned int num, DPoint3 &p) const
 {
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		DPoint2 p2 = m_Point2.GetAt(num);
 		p.x = p2.x;
 		p.y = p2.y;
 		p.z = 0;
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		p = m_Point3.GetAt(num);
 	}
@@ -903,13 +894,13 @@ void vtFeatures::GetPoint(unsigned int num, DPoint3 &p) const
 
 void vtFeatures::GetPoint(unsigned int num, DPoint2 &p) const
 {
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		DPoint3 p3 = m_Point3.GetAt(num);
 		p.x = p3.x;
 		p.y = p3.y;
 	}
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		p = m_Point2.GetAt(num);
 	}
@@ -925,9 +916,9 @@ int vtFeatures::FindClosestPoint(const DPoint2 &p, double epsilon)
 	int i;
 	for (i = 0; i < entities; i++)
 	{
-		if (m_nSHPType == SHPT_POINT)
+		if (m_eGeomType == wkbPoint)
 			diff = p - m_Point2.GetAt(i);
-		if (m_nSHPType == SHPT_POINTZ)
+		if (m_eGeomType == wkbPoint25D)
 		{
 			DPoint3 p3 = m_Point3.GetAt(i);
 			diff.x = p.x - p3.x;
@@ -950,12 +941,12 @@ void vtFeatures::FindAllPointsAtLocation(const DPoint2 &loc, Array<int> &found)
 	int i;
 	for (i = 0; i < entities; i++)
 	{
-		if (m_nSHPType == SHPT_POINT)
+		if (m_eGeomType == wkbPoint)
 		{
 			if (loc == m_Point2.GetAt(i))
 				found.Append(i);
 		}
-		if (m_nSHPType == SHPT_POINTZ)
+		if (m_eGeomType == wkbPoint25D)
 		{
 			DPoint3 p3 = m_Point3.GetAt(i);
 			if (loc.x == p3.x && loc.y == p3.y)
@@ -1003,13 +994,13 @@ int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 		if (st == ST_NORMAL)
 			Select(i, false);
 
-		if (m_nSHPType == SHPT_POINT)
+		if (m_eGeomType == wkbPoint)
 			bIn = rect.ContainsPoint(m_Point2[i]);
 
-		if (m_nSHPType == SHPT_POINTZ)
+		if (m_eGeomType == wkbPoint25D)
 			bIn = rect.ContainsPoint(DPoint2(m_Point3[i].x, m_Point3[i].y));
 
-		if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+		if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 			bIn = rect.ContainsLine(m_LinePoly[i]);
 
 		if (!bIn)
@@ -1054,13 +1045,13 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 		for (i = 0; i < entities; i++)
 		{
 			// special field numbers are used to refer to the spatial components
-			if (m_nSHPType == SHPT_POINT)
+			if (m_eGeomType == wkbPoint)
 			{
 				if (iField == -1) dtest = m_Point2[i].x;
 				if (iField == -2) dtest = m_Point2[i].y;
 				if (iField == -3) return -1;
 			}
-			else if (m_nSHPType == SHPT_POINTZ)
+			else if (m_eGeomType == wkbPoint25D)
 			{
 				if (iField == -1) dtest = m_Point3[i].x;
 				if (iField == -2) dtest = m_Point3[i].y;
@@ -1206,28 +1197,28 @@ void vtFeatures::ApplyDeletion()
 
 void vtFeatures::_ShrinkGeomArraySize(int size)
 {
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 		m_Point2.SetSize(size);
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 		m_Point3.SetSize(size);
 	// TODO: check this, it might leak some memory by not freeing
 	//  the linepoly which is dropped off the end
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 		m_LinePoly.resize(size);
 }
 
 void vtFeatures::CopyEntity(unsigned int from, unsigned int to)
 {
 	// copy geometry
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		m_Point2[to] = m_Point2[from];
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		m_Point3[to] = m_Point3[from];
 	}
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{
 		m_LinePoly[to] = m_LinePoly[from];
 	}
@@ -1533,5 +1524,66 @@ void Field::SetValueFromString(unsigned int iRecord, const char *str)
 			m_double.Append(d);
 		break;
 	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Helpers
+
+/**
+ * Convert a Shapelib geometry type to an OGR type.
+ */
+OGRwkbGeometryType ShapelibToOGR(int nSHPType)
+{
+	switch (nSHPType)
+	{
+	case SHPT_NULL: return wkbNone;
+	case SHPT_POINT: return wkbPoint;
+	case SHPT_ARC: return wkbLineString;
+	case SHPT_POLYGON: return wkbPolygon;
+	case SHPT_MULTIPOINT: return wkbMultiPoint;
+	case SHPT_POINTZ: return wkbPoint25D;
+	case SHPT_ARCZ: return wkbLineString25D;
+	case SHPT_POLYGONZ: return wkbPolygon25D;
+
+	// the following are guesses
+	case SHPT_MULTIPOINTZ: return wkbMultiPoint25D;
+	case SHPT_POINTM: return wkbMultiPoint;
+	case SHPT_ARCM: return wkbMultiLineString;
+	case SHPT_POLYGONM: return wkbMultiPolygon;
+	case SHPT_MULTIPOINTM: return wkbUnknown;
+	case SHPT_MULTIPATCH: return wkbUnknown;
+	}
+	return wkbUnknown;
+}
+
+/**
+ * Convert a OGR geometry type to an Shapelib type.
+ */
+int OGRToShapelib(OGRwkbGeometryType eGeomType)
+{
+	switch (eGeomType)
+	{
+	// some of the following are guesses
+	case wkbUnknown: return SHPT_NULL;
+	case wkbPoint: return SHPT_POINT;
+	case wkbLineString: return SHPT_ARC;
+	case wkbPolygon: return SHPT_POLYGON;
+	case wkbMultiPoint: return SHPT_MULTIPOINT;
+	case wkbMultiLineString: return SHPT_ARCM;
+	case wkbMultiPolygon: return SHPT_POLYGONM;
+
+	case wkbGeometryCollection: return SHPT_NULL;
+	case wkbNone: return SHPT_NULL;
+
+	case wkbPoint25D: return SHPT_POINTZ;
+	case wkbLineString25D: return SHPT_ARCZ;
+	case wkbPolygon25D: return SHPT_POLYGONZ;
+
+	case wkbMultiPoint25D: return SHPT_MULTIPOINTZ;
+	case wkbMultiLineString25D: return SHPT_NULL;
+	case wkbGeometryCollection25D: return SHPT_NULL;
+	}
+	return SHPT_NULL;
 }
 

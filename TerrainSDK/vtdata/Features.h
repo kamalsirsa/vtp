@@ -101,8 +101,8 @@ public:
 	void Empty();
 	int GetNumEntities() const;
 	void SetNumEntities(int iNum);
-	int GetEntityType() const;
-	void SetEntityType(int iType);
+	OGRwkbGeometryType GetGeomType() const;
+	void SetGeomType(OGRwkbGeometryType eGeomType);
 
 	// geometric primitives: access
 	void GetPoint(unsigned int num, DPoint3 &p) const;
@@ -184,12 +184,10 @@ protected:
 	vtString	m_dbfname;
 	int			m_iSHPElems, m_iSHPFields;
 
-	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
-	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON
-	int			m_nSHPType;
-	DLine2		m_Point2;		// SHPT_POINT
-	DLine3		m_Point3;		// SHPT_POINTZ
-	DPolyArray2	m_LinePoly;		// SHPT_ARC, SHPT_POLYGON
+	OGRwkbGeometryType		m_eGeomType;
+	DLine2			m_Point2;		// wkbPoint
+	DLine3			m_Point3;		// wkbPoint25D
+	DPolyArray2		m_LinePoly;		// wkbLineString, wkbPolygon
 
 	Array<unsigned char> m_Flags;
 
@@ -200,6 +198,10 @@ protected:
 	// remember the filename these feature were loaded from or saved to
 	vtString	m_strFilename;
 };
+
+// Helpers
+OGRwkbGeometryType ShapelibToOGR(int nSHPType);
+int OGRToShapelib(OGRwkbGeometryType eGeomType);
 
 #endif // VTDATA_FEATURES
 

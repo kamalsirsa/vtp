@@ -1086,7 +1086,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 		if (!strncmp(buf, "Track\t", 6))
 		{
 			pRL = new vtRawLayer();
-			pRL->SetEntityType(SHPT_POINT);
+			pRL->SetGeomType(wkbPoint);
 			layers.Append(pRL);
 			bGotSRS = false;
 
@@ -2423,15 +2423,21 @@ void MainFrame::OnUpdateStructureConstrain(wxUpdateUIEvent& event)
 
 void MainFrame::OnRawSetType(wxCommandEvent& event)
 {
-	static int types[4] = { SHPT_NULL, SHPT_POINT, SHPT_ARC, SHPT_POLYGON };
-	wxString choices[4];
-	for (int i = 0; i < 4; i++)
-		choices[i] = wxString::FromAscii(SHPTypeName(types[i]));
+	static OGRwkbGeometryType types[5] = {
+		wkbNone,
+		wkbPoint,
+		wkbPoint25D,
+		wkbLineString,
+		wkbPolygon
+	};
+	wxString choices[5];
+	for (int i = 0; i < 5; i++)
+		choices[i] = wxString::FromAscii(OGRGeometryTypeToName(types[i]));
 
-	int n = 4;
+	int n = 5;
 	int cur_type = 0;
 
-	wxSingleChoiceDialog dialog(this, _T("These are your choices"),
+	wxSingleChoiceDialog dialog(this, _T("Raw Layer Type"),
 		_T("Please indicate entity type:"), n, (const wxString *)choices);
 
 	dialog.SetSelection(cur_type);
@@ -2440,14 +2446,14 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 	{
 		cur_type = dialog.GetSelection();
 		vtRawLayer *pRL = (vtRawLayer *) GetActiveLayer();
-		pRL->SetEntityType(types[cur_type]);
+		pRL->SetGeomType(types[cur_type]);
 	}
 }
 
 void MainFrame::OnUpdateRawSetType(wxUpdateUIEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
-	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_NULL);
+	event.Enable(pRL != NULL && pRL->GetGeomType() == wkbNone);
 }
 
 void MainFrame::OnRawAddPoints(wxCommandEvent& event)
@@ -2458,7 +2464,9 @@ void MainFrame::OnRawAddPoints(wxCommandEvent& event)
 void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
-	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
+	event.Enable(pRL != NULL &&
+		(pRL->GetGeomType() == wkbPoint ||
+		 pRL->GetGeomType() == wkbPoint25D));
 	event.Check(m_pView->GetMode() == LB_AddPoints);
 }
 
@@ -2482,7 +2490,7 @@ void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 void MainFrame::OnUpdateRawAddPointText(wxUpdateUIEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
-	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
+	event.Enable(pRL != NULL && pRL->GetGeomType() == wkbPoint);
 }
 
 void MainFrame::OnRawAddPointsGPS(wxCommandEvent& event)

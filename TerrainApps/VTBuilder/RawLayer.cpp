@@ -26,10 +26,9 @@
 
 ////////////////////////////////////////////////////////////////////
 
-vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
+vtRawLayer::vtRawLayer() : vtLayer(LT_RAW), vtFeatures()
 {
 	SetFilename("Untitled.shp");
-	m_nSHPType = SHPT_NULL;
 }
 
 vtRawLayer::~vtRawLayer()
@@ -43,7 +42,7 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 	if (!entities)
 		return false;
 
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
 		for (i = 0; i < entities; i++)
@@ -58,7 +57,7 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 				rect.Grow(2, 2);
 		}
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
 		DPoint2 p;
@@ -68,7 +67,7 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 			rect.GrowToContainPoint(p);
 		}
 	}
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
 		for (i = 0; i < entities; i++)
@@ -90,7 +89,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 	wxPoint p;
 	int entities = GetNumEntities();
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		for (i = 0; i < entities; i++)
 		{
@@ -108,7 +107,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			pDC->DrawPoint(p.x, p.y-1);
 		}
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		size = m_Point3.GetSize();
 		for (i = 0; i < entities; i++)
@@ -127,7 +126,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			pDC->DrawPoint(p.x, p.y-1);
 		}
 	}
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{
 		size = m_LinePoly.size();
 		for (i = 0; i < entities; i++)
@@ -143,7 +142,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 			for (j = 0; j < size2 && j < SCREENBUF_SIZE-1; j++)
 				pView->screen(dline.GetAt(j), g_screenbuf[j]);
-			if (m_nSHPType == SHPT_POLYGON)
+			if (m_eGeomType == wkbPolygon)
 				pView->screen(dline.GetAt(0), g_screenbuf[j++]);
 
 			pDC->DrawLines(j, g_screenbuf);
@@ -154,22 +153,22 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 bool vtRawLayer::ConvertProjection(vtProjection &proj)
 {
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&m_proj, &proj);
+	OCT *trans = CreateCoordTransform(&m_proj, &proj);
 	if (!trans)
 		return false;		// inconvertible projections
 
 	unsigned int i, j, pts, success, good = 0, bad = 0;
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		for (i = 0; i < m_Point2.GetSize(); i++)
 			trans->Transform(1, &m_Point2[i].x, &m_Point2[i].y);
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		for (i = 0; i < m_Point3.GetSize(); i++)
 			trans->Transform(1, &m_Point3[i].x, &m_Point3[i].y);
 	}
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{
 		for (i = 0; i < m_LinePoly.size(); i++)
 		{
@@ -211,7 +210,8 @@ bool vtRawLayer::OnLoad()
 	}
 	else if (!fname.Right(4).CmpNoCase(_T(".shp")))
 	{
-		return LoadFromSHP(fname.mb_str());
+//		return LoadFromSHP(fname.mb_str());
+		return LoadWithOGR(fname.mb_str());
 	}
 	return false;
 }
@@ -227,7 +227,7 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 	// compatibility check
 	if (pFrom->m_type != m_type)
 		return false;
-	if (pFrom->GetEntityType() != GetEntityType())
+	if (pFrom->GetGeomType() != GetGeomType())
 		return false;
 
 	// copy entities
@@ -237,16 +237,16 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 	for (i = 0; i < num; i++)
 	{
 		// copy geometry
-		switch (m_nSHPType)
+		switch (m_eGeomType)
 		{
-		case SHPT_POINT:
+		case wkbPoint:
 			result = m_Point2.Append(pFrom->m_Point2[i]);
 			break;
-		case SHPT_POINTZ:
+		case wkbPoint25D:
 			result = m_Point3.Append(pFrom->m_Point3[i]);
 			break;
-		case SHPT_ARC:
-		case SHPT_POLYGON:
+		case wkbLineString:
+		case wkbPolygon:
 			m_LinePoly.push_back(pFrom->m_LinePoly[i]);
 			result = m_LinePoly.size()-1;
 			break;
@@ -264,12 +264,12 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 		m_Flags.Append(pFrom->m_Flags[i]);
 	}
 	// empty the source layer
-	switch (m_type)
+	switch (m_eGeomType)
 	{
-	case SHPT_POINT:  pFrom->m_Point2.SetSize(0); break;
-	case SHPT_POINTZ: pFrom->m_Point3.SetSize(0); break;
-	case SHPT_ARC:
-	case SHPT_POLYGON: pFrom->m_LinePoly.resize(0); break;
+	case wkbPoint:		pFrom->m_Point2.SetSize(0); break;
+	case wkbPoint25D:	pFrom->m_Point3.SetSize(0); break;
+	case wkbLineString:
+	case wkbPolygon:	pFrom->m_LinePoly.resize(0); break;
 	}
 	return true;
 }
@@ -287,17 +287,17 @@ void vtRawLayer::SetProjection(const vtProjection &proj)
 void vtRawLayer::Offset(const DPoint2 &p)
 {
 	int i, entities = GetNumEntities();
-	if (m_nSHPType == SHPT_POINT)
+	if (m_eGeomType == wkbPoint)
 	{
 		for (i = 0; i < entities; i++)
 			m_Point2[i] += p;
 	}
-	if (m_nSHPType == SHPT_POINTZ)
+	if (m_eGeomType == wkbPoint25D)
 	{
 		for (i = 0; i < entities; i++)
 			m_Point3[i] += DPoint3(p.x, p.y, 0);
 	}
-	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{
 		for (i = 0; i < entities; i++)
 			m_LinePoly[i].Add(p);
@@ -308,14 +308,14 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 {
 	wxString str;
 
-	str.Printf(_T("Entity type: %hs\n"), SHPTypeName(m_nSHPType));
+	str.Printf(_T("Entity type: %hs\n"), OGRGeometryTypeToName(m_eGeomType));
 	strIn += str;
 
 	str.Printf(_T("Entities: %d\n"), GetNumEntities());
 	strIn += str;
 
 	int entities = GetNumEntities();
-	if (m_nSHPType == SHPT_POINTZ && entities > 0)
+	if (m_eGeomType == wkbPoint25D && entities > 0)
 	{
 		float fmin = 1E9, fmax = -1E9;
 
@@ -341,13 +341,16 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	switch (ui.mode)
 	{
 	case LB_AddPoints:
-		AddPoint(ui.m_DownLocation);
+		if (m_eGeomType == wkbPoint)
+			AddPoint(ui.m_DownLocation);
+		else if (m_eGeomType == wkbPoint25D)
+			AddPoint(DPoint3(ui.m_DownLocation.x, ui.m_DownLocation.y, 0));
 		SetModified(true);
 		pView->Refresh();
 		break;
 	case LB_FeatInfo:
-		etype = GetEntityType();
-		if (etype != SHPT_POINT && etype != SHPT_POINTZ)
+		etype = GetGeomType();
+		if (etype != wkbPoint && etype != wkbPoint25D)
 			return;
 
 		iEnt = FindClosestPoint(ui.m_DownLocation, epsilon);
@@ -440,7 +443,7 @@ void VisitorGU::data(const char *s, int length)
 
 void vtRawLayer::ReadGeoURL()
 {
-	SetEntityType(SHPT_POINT);
+	SetGeomType(wkbPoint);
 	AddField("Name", FTString, 80);
 	AddField("URL", FTString, 80);
 

@@ -52,8 +52,8 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLayer->GetProjection(proj);
 
 	m_iFauxFields = 0;
-	int type = m_pLayer->GetEntityType();
-	if (type == SHPT_POINT || type == SHPT_POINTZ)
+	OGRwkbGeometryType type = m_pLayer->GetGeomType();
+	if (type == wkbPoint || type == wkbPoint25D)
 	{
 		if (proj.IsGeographic())
 		{
@@ -67,7 +67,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 		}
 		m_iFauxFields = 2;
 	}
-	if (type == SHPT_POINTZ)
+	if (type == wkbPoint25D)
 	{
 		GetField()->Append(_T("Z (meters)"), (void *) 902);
 		m_iFauxFields = 3;

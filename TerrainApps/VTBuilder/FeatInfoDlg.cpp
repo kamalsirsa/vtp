@@ -60,14 +60,14 @@ void FeatInfoDlg::SetFeatureSet(vtRawLayer *pFeatures)
 	GetList()->ClearAll();  // clears all items and columns
 	m_iCoordColumns = 0;
 
-	int type = m_pFeatures->GetEntityType();
-	if (type == SHPT_POINT || type == SHPT_POINTZ)
+	OGRwkbGeometryType type = m_pFeatures->GetGeomType();
+	if (type == wkbPoint || type == wkbPoint25D)
 	{
 		GetList()->InsertColumn(field++, _T("X"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 60);
 		GetList()->InsertColumn(field++, _T("Y"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 60);
 		m_iCoordColumns = 2;
 	}
-	if (type == SHPT_POINTZ)
+	if (type == wkbPoint25D)
 	{
 		GetList()->InsertColumn(field++, _T("Z"), wxLIST_FORMAT_LEFT, 70);
 		m_iCoordColumns = 3;
@@ -171,15 +171,15 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 	else
 		strFormat = _T("%.2lf");
 
-	int type = m_pFeatures->GetEntityType();
-	if (type == SHPT_POINT || type == SHPT_POINTZ)
+	OGRwkbGeometryType type = m_pFeatures->GetGeomType();
+	if (type == wkbPoint || type == wkbPoint25D)
 	{
 		str.Printf(strFormat, p.x);
 		GetList()->SetItem(iItem, field++, str);
 		str.Printf(strFormat, p.y);
 		GetList()->SetItem(iItem, field++, str);
 	}
-	if (type == SHPT_POINTZ)
+	if (type == wkbPoint25D)
 	{
 		double scale = GetMetersPerUnit((LinearUnits) (m_iVUnits+1));
 		str.Printf(_T("%.2lf"), p.z / scale);
