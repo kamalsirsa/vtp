@@ -36,6 +36,10 @@ extern void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_TEXT( ID_TILESIZE, TParamsDlg::OnTileSize )
 	EVT_TEXT( ID_TFILEBASE, TParamsDlg::OnTextureFileBase )
+	EVT_RADIOBUTTON( ID_NONE, TParamsDlg::OnTextureNone )
+	EVT_RADIOBUTTON( ID_SINGLE, TParamsDlg::OnTextureSingle )
+	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
+	EVT_RADIOBUTTON( ID_TILED, TParamsDlg::OnTextureTiled )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -235,6 +239,19 @@ void TParamsDlg::UpdateTiledTextureFilename()
 	TransferDataToWindow();
 }
 
+void TParamsDlg::UpdateEnableState()
+{
+	FindWindow(ID_TILESIZE)->Enable(m_iTexture == TE_TILED);
+	FindWindow(ID_TFILEBASE)->Enable(m_iTexture == TE_TILED);
+	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
+
+	FindWindow(ID_MIPMAP)->Enable(m_iTexture != TE_NONE);
+	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE);
+	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE);
+	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE);
+	FindWindow(ID_PRELIT)->Enable(m_iTexture != TE_NONE);
+}
+
 
 // WDR: handler implementations for TParamsDlg
 
@@ -255,6 +272,7 @@ void TParamsDlg::OnTileSize( wxCommandEvent &event )
 void TParamsDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
 	m_bReady = false;
+	m_bSetting = true;
 
 	m_pPreLightFactor = GetLightFactor();
 	m_pBuildingFile = GetBuildingfile();
@@ -278,13 +296,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	for (i = 0; i < paths.GetSize(); i++)
 	{
-		// fill the "terrain filename" control with available terrain files
+		// fill the "Grid filename" control with available files
 		AddFilenamesToComboBox(m_pFilename, *paths[i] + "Elevation", "*.bt");
 		sel = m_pFilename->FindString(m_strFilename);
 		if (sel != -1)
 			m_pFilename->SetSelection(sel);
 
-		// fill the "terrain filename" control with available terrain files
+		// fill the "TIN filename" control with available files
 		AddFilenamesToComboBox(m_pFilenameTin, *paths[i] + "Elevation", "*.tin");
 		sel = m_pFilenameTin->FindString(m_strFilenameTin);
 		if (sel != -1)
@@ -314,7 +332,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pBuildingFile->SetSelection(sel);
 
-		// fill in Tree files
+		// fill in Vegetation files
 		AddFilenamesToComboBox(m_pTreeFile, *paths[i] + "PlantData", "*.vf");
 		sel = m_pTreeFile->FindString(m_strTreeFile);
 		if (sel != -1)
@@ -365,12 +383,18 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_TILESIZE, &m_iTilesize);
+
+	// texture
 	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
+	AddNumValidator(ID_TILESIZE, &m_iTilesize);
 	AddValidator(ID_TFILEBASE, &m_strTextureBase);
 	AddValidator(ID_TFILENAME, &m_strTextureFilename);
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
+	AddValidator(ID_PRELIGHT, &m_bPreLight);
+	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor);
+	AddValidator(ID_PRELIT, &m_bPreLit);
+
 	AddValidator(ID_ROADS, &m_bRoads);
 	AddValidator(ID_ROADFILE, &m_strRoadFile);
 	AddValidator(ID_TEXROADS, &m_bTexRoads);
@@ -386,7 +410,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_BUILDINGFILE, &m_strBuildingFile);
 	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
 	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
-	AddValidator(ID_PRELIGHT, &m_bPreLight);
 	AddValidator(ID_DIRT, &m_bDirt);
 	AddValidator(ID_PAVED, &m_bPaved);
 	AddValidator(ID_HIGHWAYS, &m_bHwy);
@@ -394,9 +417,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
 	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
-	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
-	AddValidator(ID_PRELIT, &m_bPreLit);
 	AddValidator(ID_AIRPORTS, &m_bAirports);
 	AddValidator(ID_ROUTEFILE, &m_strRouteFile);
 	AddValidator(ID_ROUTEENABLE, &m_bRouteEnable);
@@ -407,17 +428,25 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	wxWindow::OnInitDialog(event);
 
+	UpdateEnableState();
+
 	m_bReady = true;
+	m_bSetting = false;
 }
 
 bool TParamsDlg::TransferDataToWindow()
 {
+	m_bSetting = true;
+
 	m_pNone->SetValue(m_iTexture == TE_NONE);
 	m_pSingle->SetValue(m_iTexture == TE_SINGLE);
 	m_pDerived->SetValue(m_iTexture == TE_DERIVED);
 	m_pTiled->SetValue(m_iTexture == TE_TILED);
 
-	return wxDialog::TransferDataToWindow();
+	bool result = wxDialog::TransferDataToWindow();
+	m_bSetting = false;
+
+	return result;
 }
 
 bool TParamsDlg::TransferDataFromWindow()
@@ -428,5 +457,51 @@ bool TParamsDlg::TransferDataFromWindow()
 	if (m_pTiled->GetValue()) m_iTexture = TE_TILED;
 
 	return wxDialog::TransferDataFromWindow();
+}
+
+void TParamsDlg::OnTextureNone( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	if (event.IsChecked())
+	{
+		// turn off "Prelighting" if there is no texture
+		TransferDataFromWindow();
+		m_bPreLight = false;
+		m_bPreLit = false;
+		TransferDataToWindow();
+	}
+	UpdateEnableState();
+}
+
+void TParamsDlg::OnTextureSingle( wxCommandEvent &event )
+{
+	if (m_bSetting || !event.IsChecked())
+		return;
+	TransferDataFromWindow();
+	UpdateEnableState();
+}
+
+void TParamsDlg::OnTextureDerived( wxCommandEvent &event )
+{
+	if (m_bSetting)
+		return;
+	if (event.IsChecked())
+	{
+		// turn on "Prelighting" if the user wants a derived texture
+		TransferDataFromWindow();
+		m_bPreLight = true;
+		m_bPreLit = true;
+		TransferDataToWindow();
+	}
+	UpdateEnableState();
+}
+
+void TParamsDlg::OnTextureTiled( wxCommandEvent &event )
+{
+	if (m_bSetting || !event.IsChecked())
+		return;
+	TransferDataFromWindow();
+	UpdateEnableState();
 }
 
