@@ -86,7 +86,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 			vtString name = name1.c_str();
 
 			// only look terrain parameters files
-			vtString ext = GetExtension(name);
+			vtString ext = GetExtension(name, false);
 			if (ext.CompareNoCase(".ini") != 0 &&
 				ext.CompareNoCase(".xml") != 0)
 				continue;
@@ -193,7 +193,7 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 		// They might have changed an .ini to .xml
 		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
 		vtString str = data->m_strIniFile;
-		if (GetExtension(str) == ".ini")
+		if (GetExtension(str, false) == ".ini")
 			data->m_strIniFile = str.Left(str.GetLength()-4)+".xml";
 
 		// They might have changed the terrain name
