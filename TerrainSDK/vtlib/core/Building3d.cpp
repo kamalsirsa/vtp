@@ -1037,13 +1037,13 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 			iTriangleCount = TriangulatedRoofSection2D.GetSize() / 3;
 
 			// determine normal and primary axes of the face
-			PanelNormal = Normal(RoofSection3D[2], RoofSection3D[1], RoofSection3D[0]);
+			j = RoofSection3D.GetSize();
+			PanelNormal = Normal(RoofSection3D[1], RoofSection3D[0], RoofSection3D[j-1]);
 			EaveAxis = RoofSection3D[1] - RoofSection3D[0];
 			EaveAxis.Normalize();
 			PanelAxis = PanelNormal.Cross(EaveAxis);
 
 			// Build vertex list
-			j = RoofSection3D.GetSize();
 			for (i = 0; i < j; i++)
 				iaVertices.Append(pMesh->AddVertexNUV(RoofSection3D[i], PanelNormal, FPoint2(0, 0)));
 
