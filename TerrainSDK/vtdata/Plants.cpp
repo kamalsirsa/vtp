@@ -534,29 +534,42 @@ int vtBioType::GetWeightedRandomPlant()
 
 ///////////////////////////////////////////////////////////////////////
 
+
 vtPlantInstanceArray::vtPlantInstanceArray()
 {
-	m_pPlantList = NULL;
+	m_SizeField = AddField("Size", FT_Float);
+	m_SpeciesField = AddField("Species", FT_Short);
 }
 
-void vtPlantInstanceArray::AddInstance(DPoint2 &pos, float size,
+int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 									   short species_id)
 {
-	vtPlantInstance pi;
-	pi.m_p = pos;
-	pi.size = size;
-	pi.species_id = species_id;
-	Append(pi);
+	int index = AddPoint(pos);
+	SetValue(index, m_SizeField, size);
+	SetValue(index, m_SpeciesField, species_id);
+	return index;
 }
 
-void vtPlantInstanceArray::AppendFrom(const vtPlantInstanceArray &from)
+void vtPlantInstanceArray::SetPlant(int iNum, float size, short species_id)
+{
+	SetValue(iNum, m_SizeField, size);
+	SetValue(iNum, m_SpeciesField, species_id);
+}
+
+void vtPlantInstanceArray::GetPlant(int iNum, float &size, short &species_id)
+{
+	size = GetFloatValue(iNum, m_SizeField);
+	species_id = GetShortValue(iNum, m_SpeciesField);
+}
+
+/*void vtPlantInstanceArray::AppendFrom(const vtPlantInstanceArray &from)
 {
 	// TODO: match actual species
 	for (unsigned int i = 0; i < from.GetSize(); i++)
 	{
 		Append(from[i]);
 	}
-}
+}*/
 
 struct PlantInstance10 {
 	float x, y;
@@ -565,6 +578,12 @@ struct PlantInstance10 {
 };
 
 struct PlantInstance11 {
+	DPoint2 m_p;
+	float size;
+	short species_id;
+};
+
+struct vtPlantInstance20 {
 	DPoint2 m_p;
 	float size;
 	short species_id;
@@ -594,38 +613,29 @@ bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 		m_proj.SetUTMZone(zone);
 	m_proj.SetDatum(datum);
 
-	int size;
+	int i, size;
 	fread(&size, 4, 1, fp);
-	SetSize(size);
+	Reserve(size);
 
 	if (version == 1.0f)
 	{
 		PlantInstance10 *pOld = new PlantInstance10[size];
 		fread(pOld, sizeof(PlantInstance10), size, fp);
-		vtPlantInstance pi;
-		for (int i = 0; i < size; i++)
-		{
-			pi.m_p.x = pOld[i].x;
-			pi.m_p.y = pOld[i].y;
-			pi.size = pOld[i].size;
-			pi.species_id = pOld[i].species_id;
-			SetAt(i, pi);
-		}
-		delete pOld;
+		vtPlantInstance20 pi;
+		for (i = 0; i < size; i++)
+			AddPlant(DPoint2(pOld[i].x, pOld[i].y), pOld[i].size, pOld[i].species_id);
+
+		delete [] pOld;
 	}
 	else if (version == 1.1f)
 	{
 		PlantInstance11 *pTemp = new PlantInstance11[size];
 		fread(pTemp, sizeof(PlantInstance11), size, fp);
-		vtPlantInstance pi;
-		for (int i = 0; i < size; i++)
-		{
-			pi.m_p = pTemp[i].m_p;
-			pi.size = pTemp[i].size;
-			pi.species_id = pTemp[i].species_id;
-			SetAt(i, pi);
-		}
-		delete pTemp;
+
+		for (i = 0; i < size; i++)
+			AddPlant(pTemp[i].m_p, pTemp[i].size, pTemp[i].species_id);
+
+		delete [] pTemp;
 	}
 	else
 		return false;
@@ -684,7 +694,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 
 	// read number of instances
 	fread(&numinstances, sizeof(int), 1, fp);
-	SetSize(numinstances);
+	Reserve(numinstances);
 
 	// read local origin (center of exents) as double-precision coordinates
 	DPoint2 origin;
@@ -698,26 +708,28 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	{
 		// location
 		fread(&local_offset, sizeof(float), 2, fp);
-		GetAt(i).m_p = origin + DPoint2(local_offset);
+		DPoint2 pos = origin + DPoint2(local_offset);
 
 		// height in centimeters
 		fread(&height, sizeof(short), 1, fp);
-		GetAt(i).size = (float) height / 100.0f;
+		float size = (float) height / 100.0f;
 
 		// species id
 		fread(&local_species_id, sizeof(short), 1, fp);
 		// convert from file-local id to new id
-		GetAt(i).species_id = temp_ids[local_species_id];
+		short species_id = temp_ids[local_species_id];
+
+		AddPlant(pos, size, species_id);
 	}
 
-	delete temp_ids;
+	delete [] temp_ids;
 	fclose(fp);
 	return true;
 }
 
 bool vtPlantInstanceArray::WriteVF(const char *fname)
 {
-	int i, numinstances = GetSize();
+	int i, numinstances = GetNumEntities();
 	if (numinstances == 0)
 		return false;	// empty files not allowed
 	if (!m_pPlantList)
@@ -758,7 +770,7 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 
 	// write local origin (center of exents) as double-precision coordinates
 	DRECT rect;
-	GetExtent(rect);
+	ComputeExtent(rect);
 	DPoint2 origin, diff;
 	rect.GetCenter(origin);
 	fwrite(&origin, sizeof(double), 2, fp);
@@ -768,16 +780,16 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	for (i = 0; i < numinstances; i++)
 	{
 		// location
-		diff = GetAt(i).m_p - origin;
+		diff = GetPoint(i) - origin;
 		offset = diff;	// acceptable to use single precision for local offset
 		fwrite(&offset, sizeof(float), 2, fp);
 
 		// height in centimeters
-		short height = (short) (GetAt(i).size * 100);
+		short height = (short) (GetFloatValue(i, m_SizeField) * 100.0f);
 		fwrite(&height, sizeof(short), 1, fp);
 
 		// species id
-		short species_id = GetAt(i).species_id;
+		short species_id = GetShortValue(i, m_SpeciesField);
 		fwrite(&species_id, sizeof(short), 1, fp);
 	}
 
@@ -787,130 +799,25 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 
 bool vtPlantInstanceArray::ReadSHP(const char *fname)
 {
+	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(fname, "rb");
 	if (hSHP == NULL)
 		return false;
 
-	int i, nEntities, nShapeType;
-
-	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
-	if (nShapeType != SHPT_POINT)
-		return false;
-
-	// Open DBF File & Get DBF Info:
-	DBFHandle db = DBFOpen(fname, "rb");
-	if (db == NULL)
-		return false;
-
-	int	field_height = FindDBField(db, "Height");
-	int	field_id = FindDBField(db, "Species");
-	if (field_height == -1 || field_id == -1)
-		return false;
-
-	SetSize(nEntities);
-	for (i = 0; i < nEntities; i++)
-	{
-		SHPObject *psShape = SHPReadObject(hSHP, i);
-
-		GetAt(i).m_p.Set(psShape->padfX[0], psShape->padfY[0]);
-
-		// height
-		double height = DBFReadDoubleAttribute(db, i, field_height);
-		GetAt(i).size = (float) height;
-
-		// species id
-		GetAt(i).species_id = DBFReadIntegerAttribute(db, i, field_id);
-	}
-	DBFClose(db);
-	SHPClose(hSHP);
-	return true;
-}
-
-bool vtPlantInstanceArray::WriteSHP(const char *fname)
-{
-	SHPHandle hSHP = SHPCreate(fname, SHPT_POINT);
-	if (!hSHP)
-		return false;
-
-	SHPObject *obj;
-
-	int i, numinstances = GetSize();
-
-	for (i = 0; i < numinstances; i++)
-	{
-		vtPlantInstance &plant = GetAt(i);
-
-		obj = SHPCreateSimpleObject(SHPT_POINT, 1,
-			&plant.m_p.x, &plant.m_p.y, NULL);
-
-		SHPWriteObject(hSHP, -1, obj);
-		SHPDestroyObject(obj);
-	}
+	LoadGeomFromSHP(hSHP);
 	SHPClose(hSHP);
 
-	// Save DBF File also
-	vtString dbfname = fname;
-	dbfname = dbfname.Left(dbfname.GetLength() - 4);
-	dbfname += ".dbf";
-	DBFHandle db = DBFCreate(dbfname);
-	if (db == NULL)
+	if (!LoadInfoFromDBF(fname))
+		return false;
+	if (!LoadAttributesFromDBF())
 		return false;
 
-	DBFAddField(db, "Height", FTDouble, 4, 2);
-	DBFAddField(db, "Species", FTInteger, 6, 0);
+	m_SizeField = GetFieldIndex("Size");
+	m_SpeciesField = GetFieldIndex("Species");
 
-	for (i = 0; i < numinstances; i++)
-	{
-		vtPlantInstance &plant = GetAt(i);
-
-		DBFWriteDoubleAttribute(db, i, 0, plant.size);
-		DBFWriteIntegerAttribute(db, i, 1, plant.species_id);
-	}
-	DBFClose(db);
-
-	// and projection
-	char prj_name[256];
-	strcpy(prj_name, fname);
-	int len = strlen(prj_name);
-	strcpy(prj_name + len - 4, ".prj"); // overwrite the .bt
-	m_proj.WriteProjFile(prj_name);
+	if (m_SizeField == -1 || m_SpeciesField == -1)
+		return false;
 
 	return true;
 }
 
-bool vtPlantInstanceArray::FindClosestPlant(const DPoint2 &point, double error_meters,
-											int &plant, double &closest)
-{
-	plant = -1;
-	closest = 1E8;
-
-	if (IsEmpty())
-		return false;
-
-	double dist;
-
-	int i, size = GetSize();
-	for (i = 0; i < size; i++)
-	{
-		vtPlantInstance &pi = GetAt(i);
-		dist = (pi.m_p - point).Length();
-		if (dist > error_meters)
-			continue;
-		if (dist < closest)
-		{
-			plant = i;
-			closest = dist;
-		}
-	}
-	return (plant != -1);
-}
-
-bool vtPlantInstanceArray::GetExtent(DRECT &rect)
-{
-	int size = GetSize();
-	if (size == 0)
-		return false;
-	for (int i = 0; i < size; i++)
-		rect.GrowToContainPoint(GetAt(i).m_p);
-	return true;
-}

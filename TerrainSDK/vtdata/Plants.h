@@ -1,17 +1,15 @@
 //
 // Plants.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTDATA_PLANTSH
 #define VTDATA_PLANTSH
 
-#include "Projections.h"
-#include "vtString.h"
 #include "Array.h"
-#include "MathTypes.h"
+#include "Features.h"
 
 class vtPlantDensity
 {
@@ -157,37 +155,26 @@ protected:
 };
 
 
-struct vtPlantInstance {
-	DPoint2 m_p;
-	float size;
-	short species_id;
-};
-
-class vtPlantInstanceArray : public Array<vtPlantInstance>
+class vtPlantInstanceArray : public vtFeatureSetPoint2D
 {
 public:
 	vtPlantInstanceArray();
 
 	void SetPlantList(vtPlantList *list) { m_pPlantList = list; }
-	void AddInstance(DPoint2 &pos, float size, short species_id);
-	void AppendFrom(const vtPlantInstanceArray &from);
+	int AddPlant(const DPoint2 &pos, float size, short species_id);
+	void SetPlant(int iNum, float size, short species_id);
+	void GetPlant(int iNum, float &size, short &species_id);
 
 	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);
 	bool ReadSHP(const char *fname);
 	bool WriteVF(const char *fname);
-	bool WriteSHP(const char *fname);
-
-	bool FindClosestPlant(const DPoint2 &pos, double error_meters,
-		int &plant, double &distance);
-	bool GetExtent(DRECT &rect);
-
-	void GetProjection(vtProjection &proj) const { proj = m_proj; }
-	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 
 protected:
 	vtPlantList *m_pPlantList;
-	vtProjection m_proj;
+
+	int m_SizeField;
+	int m_SpeciesField;
 };
 
 #endif	// VTDATA_PLANTSH
