@@ -59,8 +59,8 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 	// initial value: based on estimate spacing
 	m_fSpacingX = m_fEstX;
 	m_fSpacingY = m_fEstY;
-	m_iSizeX = ((int) (m_fAreaX / m_fSpacingX + 0.5)) + 1;
-	m_iSizeY = ((int) (m_fAreaY / m_fSpacingY + 0.5)) + 1;
+	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
+	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
 
 	// sampling
 	AddNumValidator(ID_SPACINGX, &m_fSpacingX);
@@ -94,8 +94,8 @@ void SampleImageDlg::RecomputeSize()
 		m_iSizeX -= 3;
 		m_iSizeY -= 3;
 	}
-	m_fSpacingX = m_fAreaX / (m_iSizeX - 1);
-	m_fSpacingY = m_fAreaY / (m_iSizeY - 1);
+	m_fSpacingX = m_fAreaX / m_iSizeX;
+	m_fSpacingY = m_fAreaY / m_iSizeY;
 }
 
 // WDR: handler implementations for SampleImageDlg
@@ -106,8 +106,8 @@ void SampleImageDlg::OnSpacingXY( wxCommandEvent &event )
 		return;
 
 	TransferDataFromWindow();
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX)+1;
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY)+1;
+	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
+	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
 
 	m_bSetting = true;
 	TransferDataToWindow();
