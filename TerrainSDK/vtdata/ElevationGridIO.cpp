@@ -27,6 +27,9 @@ extern "C" {
 // GDAL
 #include "gdal_priv.h"
 
+// OGR
+#include <ogrsf_frmts.h> 
+
 //	Header structure for a GTOPO30 DEM header file
 typedef struct
 {
@@ -865,12 +868,19 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		{
 			swap[1] = *(linebuf + offset++);
 			swap[0] = *(linebuf + offset++);
-			int z = *((unsigned short *)swap);
-			SetValue(i, j, z);
+			short z = *((short *)swap);
+			// DTED values are signed magnitude so convert to complement
+			if (z < 0)
+				z = (*((unsigned short *)swap) & ~0x8000) * -1;
+			if (-32767 == z)
+				SetValue(i, j, INVALID_ELEVATION);
+			else
+				SetValue(i, j, z);
 		}
 	}
 	delete linebuf;
 	fclose(fp);
+	ComputeHeightExtents();
 	return true;
 }
 
@@ -1674,6 +1684,140 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	// Return success
 	return true;
 }
+
+/**
+ * Loads an elevation grid from an UK
+ * Ordnance Survey NTF level 5 file using the OGR library
+ *
+ * \param szFileName The file name to read from.
+ * \param progress_callback If supplied, this function will be called back
+ *		with a value of 0 to 100 as the operation progresses.
+ *
+ * \returns True if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
+								   void progress_callback(int))
+{
+	OGRDataSource	*pDatasource = NULL;
+	OGRLayer		*pLayer = NULL;
+	OGRFeature		*pFeature = NULL;
+	OGRFeatureDefn	*pFeatureDefn = NULL;
+	OGRFieldDefn	*pFieldDefn = NULL;
+	OGRPoint		*pPoint;
+	OGRSpatialReference *pSpatialRef;
+	OGREnvelope		Extent;
+	int iRowCount;
+	int iColCount;
+	int i;
+	double dX;
+	int				iTotalCells;
+	bool			bRet = false;
+
+	OGRRegisterAll();
+
+	if (NULL == (pDatasource = OGRSFDriverRegistrar::Open(szFileName)))
+		goto Exit;
+
+	if (1 != pDatasource->GetLayerCount())
+		goto Exit;
+
+	if (NULL == (pLayer = pDatasource->GetLayer(0)))
+		goto Exit;
+
+	if (NULL == (pFeatureDefn = pLayer->GetLayerDefn()))
+		goto Exit;
+
+	if (0 != strncmp(pFeatureDefn->GetName(), "DTM_", 4))
+		goto Exit;
+
+	if (wkbPoint25D != pFeatureDefn->GetGeomType())
+		goto Exit;
+
+	if (1 != pFeatureDefn->GetFieldCount())
+		goto Exit;
+
+	if (NULL == (pFieldDefn = pFeatureDefn->GetFieldDefn(0)))
+		goto Exit;
+
+	if (0 != strcmp(pFieldDefn->GetNameRef(), "HEIGHT"))
+		goto Exit;
+
+	if (NULL == (pSpatialRef = pLayer->GetSpatialRef()))
+		goto Exit;
+ 
+	pLayer->GetExtent(&Extent);
+
+	// Get number of features. In this case the total number of cells
+	// in the elevation matrix
+	iTotalCells = pLayer->GetFeatureCount();
+
+  	pLayer->ResetReading();
+
+	// Prescan the features to calculate the x and y intervals
+	// this is a horrible kludge
+	iRowCount = 0;
+	while( (pFeature = pLayer->GetNextFeature()) != NULL )
+	{
+		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
+			goto Exit;
+		if (wkbPoint25D != pPoint->getGeometryType())
+			goto Exit;
+		if (0 == iRowCount)
+			dX = pPoint->getX();
+		else
+			if (pPoint->getX() != dX)
+			{
+				delete pFeature;
+				pFeature = NULL;
+				break;
+			}
+		delete pFeature;
+		pFeature = NULL;
+		iRowCount++;
+	}
+
+	iColCount = iTotalCells / iRowCount;
+
+	m_iColumns = iColCount;
+	m_iRows = iRowCount;
+	m_proj.SetSpatialReference(pSpatialRef);
+	m_bFloatMode = true;
+	m_EarthExtents.left = Extent.MinX;
+	m_EarthExtents.top = Extent.MaxY;
+	m_EarthExtents.right = Extent.MaxX;
+	m_EarthExtents.bottom = Extent.MinY;
+	ComputeCornersFromExtents();
+
+	_AllocateArray();
+
+  	pLayer->ResetReading();
+
+	for (i = 0; i < iTotalCells; i++)
+	{
+		if (NULL == (pFeature = pLayer->GetNextFeature()))
+			goto Exit;
+		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
+			goto Exit;
+		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))
+			goto Exit;
+		SetFValue(i / iRowCount, i % iRowCount, (float)pPoint->getZ());
+		delete pFeature;
+		pFeature = NULL;
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / iTotalCells);
+	}
+
+	ComputeHeightExtents();
+	bRet = true;
+
+Exit:
+	if (NULL != pFeature)
+		delete pFeature;
+	if (NULL != pDatasource)
+		delete pDatasource;
+	return bRet;
+}
+
 
 /**
  * Loads from a RAW file (a naked array of elevation values).

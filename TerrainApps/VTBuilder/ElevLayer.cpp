@@ -932,6 +932,10 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 			m_pGrid->m_EarthExtents.right = dlg.m_iWidth * dlg.m_fSpacing;
 		}
 	}
+	else if (!strExt.CmpNoCase(_T("ntf")))
+	{
+		success = m_pGrid->LoadFromNTF5(strFileName.mb_str(), progress_callback);
+	}
 	if (!success)
 	{
 		wxMessageBox(_T("Couldn't import data from that file."));

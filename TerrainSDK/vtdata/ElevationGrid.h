@@ -64,6 +64,9 @@ public:
 	// Use GDAL to read a file
 	bool LoadWithGDAL(const char *szFileName, void progress_callback(int) = NULL);
 
+	// Use OGR to read a file
+	bool LoadFromNTF5(const char *szFileName, void progress_callback(int) = NULL);
+
 	// Save
 	bool SaveToTerragen(const char *szFileName);
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL);
