@@ -34,13 +34,13 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	void OnInitDialog(wxInitDialogEvent& event);
-
 	void GetOptionsFrom(EnviroOptions &opt);
 	void PutOptionsTo(EnviroOptions &opt);
 	void UpdateState();
 	void RefreshTerrainChoices();
 
 	// WDR: method declarations for StartupDlg
+	wxChoice* GetContent()  { return (wxChoice*) FindWindow( ID_CHOICE_CONTENT ); }
 	wxButton* GetTerrMan()  { return (wxButton*) FindWindow( ID_TERRMAN ); }
 	wxButton* GetEditprop()  { return (wxButton*) FindWindow( ID_EDITPROP ); }
 	wxChoice* GetTname()  { return (wxChoice*) FindWindow( ID_TNAME ); }
@@ -58,8 +58,10 @@ private:
 	bool	m_bStartTerrain;
 	wxString2   m_strTName;
 	wxString2   m_strImage;
-	float	   m_fPlantScale;
+	float		m_fPlantScale;
 	bool		m_bShadows;
+	int			m_iContentFile;
+	wxString2	m_strContentFile;
 
 	wxStaticText  *m_psImage;
 	wxComboBox  *m_pImage;

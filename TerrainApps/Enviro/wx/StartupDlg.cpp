@@ -49,18 +49,18 @@ static void ShowOGLInfo(bool bLog)
 	PIXELFORMATDESCRIPTOR pfd =
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd
-		1,					// version number
+		1,				  // version number
 		PFD_DRAW_TO_WINDOW |	// support window
 		PFD_SUPPORT_OPENGL |	// support OpenGL
-		PFD_DOUBLEBUFFER,	  // double buffered
-		PFD_TYPE_RGBA,		// RGBA type
-		24,				  // 24-bit color depth
-		0, 0, 0, 0, 0, 0,	  // color bits ignored
+		PFD_DOUBLEBUFFER,	 // double buffered
+		PFD_TYPE_RGBA,	  // RGBA type
+		24,			   // 24-bit color depth
+		0, 0, 0, 0, 0, 0,	 // color bits ignored
 		0, 0, 0,				// no alpha buffer
-		0, 0, 0, 0,		  // accum bits ignored
-		32, 0, 0,			  // 32-bit z-buffer
-		PFD_MAIN_PLANE,	  // main layer
-		0, 0, 0, 0			// reserved, layer masks ignored
+		0, 0, 0, 0,	   // accum bits ignored
+		32, 0, 0,			 // 32-bit z-buffer
+		PFD_MAIN_PLANE,   // main layer
+		0, 0, 0, 0		  // reserved, layer masks ignored
 	};
 	int  iPixelFormat;
 
@@ -188,6 +188,7 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bSpeedTest = opt.m_bSpeedTest;
 	m_fPlantScale = opt.m_fPlantScale;
 	m_bShadows = opt.m_bShadows;
+	m_strContentFile = opt.m_strContentFile;
 }
 
 void StartupDlg::PutOptionsTo(EnviroOptions &opt)
@@ -202,6 +203,7 @@ void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_bSpeedTest = m_bSpeedTest;
 	opt.m_fPlantScale = m_fPlantScale;
 	opt.m_bShadows = m_bShadows;
+	opt.m_strContentFile = m_strContentFile.mb_str();
 }
 
 void StartupDlg::UpdateState()
@@ -348,6 +350,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_psImage = GetImagetext();
 	m_pImage = GetImage();
 
+	// Populate Earth Image files choices
 	vtStringArray &paths = g_Options.m_DataPaths;
 	for (unsigned int i = 0; i < paths.size(); i++)
 	{
@@ -360,16 +363,29 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	if (sel != -1)
 		m_pImage->SetSelection(sel);
 
+	// Populate Content files choices
+	for (unsigned int i = 0; i < paths.size(); i++)
+	{
+		vtString path = paths[i];
+		AddFilenamesToChoice(GetContent(), path, "*.vtco");
+	}
+	m_iContentFile = GetContent()->FindString(m_strContentFile);
+	if (m_iContentFile != -1)
+		GetContent()->SetSelection(m_iContentFile);
+
 	UpdateState();
 
 	AddValidator(ID_EARTHVIEW, &m_bStartEarth);
 	AddValidator(ID_TERRAIN, &m_bStartTerrain);
 
 	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
-	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
-	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
+//	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
+//	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
 	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
-	AddValidator(ID_SHADOWS, &m_bShadows);
+//	AddValidator(ID_SHADOWS, &m_bShadows);
+
+	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
+	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
 
 	// Terrain choices
 	RefreshTerrainChoices();
