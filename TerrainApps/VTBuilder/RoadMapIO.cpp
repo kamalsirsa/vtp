@@ -700,29 +700,18 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 		// Lines (Arcs, Roads)
 		if (!strcmp(layer_name, "LE01"))
 		{
-			// field indices
-			int index_snid;
-			int index_enid;
-			int index_entity;
-			int index_lanes;
-			int index_class;
-			int index_route;
-			int index_rtype;
+			// get field indices
+			int index_snid = defn->GetFieldIndex("SNID");
+			int index_enid = defn->GetFieldIndex("ENID");
+			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+			int index_lanes = defn->GetFieldIndex("LANES");
+			int index_class = defn->GetFieldIndex("FUNCTIONAL_CLASS");
+			int index_route = defn->GetFieldIndex("ROUTE_NUMBER");
+			int index_rtype = defn->GetFieldIndex("ROUTE_TYPE");
 
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
 			{
-				if (count == 0)
-				{
-					// get field indices from the first feature
-					index_snid = pFeature->GetFieldIndex("SNID");
-					index_enid = pFeature->GetFieldIndex("ENID");
-					index_entity = pFeature->GetFieldIndex("ENTITY_LABEL");
-					index_lanes = pFeature->GetFieldIndex("LANES");
-					index_class = pFeature->GetFieldIndex("FUNCTIONAL_CLASS");
-					index_route = pFeature->GetFieldIndex("ROUTE_NUMBER");
-					index_rtype = pFeature->GetFieldIndex("ROUTE_TYPE");
-				}
 				count++;
 				progress_callback(count * 100 / feature_count);
 
