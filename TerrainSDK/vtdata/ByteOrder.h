@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <zlib.h>
 
 enum ByteOrder
 {
@@ -175,6 +176,22 @@ void SwapMemBytes( void *items, DataType type, size_t count,
  *
  */
 size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
+			  ByteOrder file_order, ByteOrder desired_order = BO_MACHINE );
+
+/**
+ * Just like stdio's fread(), but adds an optional byte swapping phase for
+ * the data read. File access is done via zlib's gzip IO routines to
+ * be compatible with gzopen(), etc.
+ * \param ptr data buffer to read items into
+ * \param type the data type of items to be read
+ * \param nitems the number of items to read
+ * \param stream the stdio stream open for read
+ * \param file_order the byte ordering of data read from the file
+ * \param desired_order the desired byte ordering
+ * \return fread() return value (num items read, or negative for error)
+ *
+ */
+size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
 			  ByteOrder file_order, ByteOrder desired_order = BO_MACHINE );
 
 #endif

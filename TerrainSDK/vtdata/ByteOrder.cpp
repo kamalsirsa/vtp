@@ -102,3 +102,28 @@ size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
 		SwapMemBytes( ptr, type, ret, file_order, desired_order );
 	return ret;
 }
+
+
+/**
+ * Like stdio's fread(), but adds an optional byte swapping phase for
+ * the data read. File access is done via zlib's gzip IO routines to
+ * be compatible with gzopen(), etc.
+ * \param ptr data buffer to read items into
+ * \param type the data type of items to be read
+ * \param nitems the number of items to read
+ * \param stream the stdio stream open for read
+ * \param file_order the byte ordering of data read from the file
+ * \param desired_order the desired byte ordering
+ * \return fread() return value (num items read, or negative for error)
+ *
+ */
+size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
+			  ByteOrder file_order, ByteOrder desired_order )
+{
+	int tsize  = GetDataTypeSize( type );
+	size_t ret = gzread(gzstream, ptr, tsize * nitems);
+
+	if ( (int)ret >= 0 )
+		SwapMemBytes( ptr, type, ret, file_order, desired_order );
+	return ret;
+}
