@@ -12,7 +12,7 @@
 
 // Machine-specific typedefs
 //   NOTE:  On UNIX, INT{8,16,32,64} are defined in X11/Xmd.h, and 
-//          not necessarily signed
+//		  not necessarily signed
 typedef unsigned long UINT_32;
 typedef unsigned short UINT16;
 typedef unsigned char UINT8;

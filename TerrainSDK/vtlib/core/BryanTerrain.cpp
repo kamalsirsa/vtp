@@ -334,7 +334,7 @@ void BryanTerrain::Split( UINT16 nNode )
 //		;
 	// Children not allowed for this node unless other nodes are split first.
 	//  - Should it split them?
-	//      * probably not for breadth-first algorithm.  This ensures no more depth is added until the breadth is filled out.
+	//	  * probably not for breadth-first algorithm.  This ensures no more depth is added until the breadth is filled out.
 }
 
 // --------------------------------------------------------
@@ -530,7 +530,7 @@ void BryanTerrain::RecursRender(	UINT16 nNode, UINT_32 NW_X, UINT_32 NW_Y, UINT_
 		float nSouthWest = HeightField(((NW_Y + (nQuadWidth))	), (NW_X + (0)) );
 		float nSouthEast = HeightField(((NW_Y + (nQuadWidth))	), (NW_X + (nQuadWidth)) );
 
-		float nCenter    = HeightField(((NW_Y + (radius))		), (NW_X + (radius)) );
+		float nCenter	= HeightField(((NW_Y + (radius))		), (NW_X + (radius)) );
 
 		// ---------------------------------------------------------
 		// DRAW ONE TRIANGLE FAN : from Four to Eight Triangles
