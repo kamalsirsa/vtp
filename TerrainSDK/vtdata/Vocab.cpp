@@ -28,7 +28,7 @@
   <rooftype> = "flat, shed, hip, gable, vertical"
 */
 
-#include "vocab.h"
+#include "Vocab.h"
 
 struct ColorEntry
 {
@@ -440,7 +440,7 @@ bool TestParser::Matches(SentenceMatch &pattern)
 
 
 MatchToken *SentenceMatch::AddLiteral(bool required, const char *str1,
-		const char *str2, const char *str3, const char *str4)
+	const char *str2, const char *str3, const char *str4)
 {
 	MatchToken *mtok = new MatchToken;
 	mtok->type = LITERAL;
@@ -466,4 +466,3 @@ MatchToken *SentenceMatch::AddToken(bool required, enum TokenType type)
 	Append(mtok);
 	return mtok;
 }
-
