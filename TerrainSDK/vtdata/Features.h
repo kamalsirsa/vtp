@@ -111,6 +111,7 @@ public:
 	bool LoadFromSHP(const char *fname, bool progress_callback(int)=0);
 	bool LoadDataFromDBF(const char *filename, bool progress_callback(int)=0);
 	bool LoadFieldInfoFromDBF(const char *filename);
+	bool LoadDataFromCSV(const char *filename, bool progress_callback(int)=0);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() const { return m_strFilename; }

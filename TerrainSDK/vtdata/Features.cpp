@@ -737,41 +737,6 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 }
 
 
-/*
-vtFeatureSet *vtFeatureLoader::CreateFromDLG(class vtDLGFile *pDLG)
-{
-	// A DLG file can be fairly directly interpreted as features, since
-	// it consists of nodes, areas, and lines.  However, topology is lost
-	// and we must pick which of the three to display.
-
-	int i;
-	int nodes = pDLG->m_iNodes, areas = pDLG->m_iAreas, lines = pDLG->m_iLines;
-	if (nodes > lines)
-	{
-		pSet->SetGeomType(wkbPoint);
-		for (i = 0; i < nodes; i++)
-			AddPoint(pDLG->m_nodes[i].m_p);
-	}
-#if 0
-	else if (areas >= nodes && areas >= lines)
-	{
-		// "Areas" in a DLG area actually points which indicate an interior
-		//  point in a polygon defined by some of the "lines"
-		SetEntityType(SHPT_POLYGON);
-		for (i = 0; i < areas; i++)
-			AddPolyLine(&pDLG->m_areas[i].m_p);
-	}
-#endif
-	else
-	{
-		SetGeomType(wkbLineString);
-		for (i = 0; i < areas; i++)
-			AddPolyLine(pDLG->m_lines[i].m_p);
-	}
-	m_proj = pDLG->GetProjection();
-	return true;
-}*/
-
 bool vtFeatureSet::LoadDataFromDBF(const char *filename, bool progress_callback(int))
 {
 	// Must use "C" locale in case we read any floating-point fields
@@ -863,6 +828,106 @@ void vtFeatureSet::ParseDBFRecords(DBFHandle db, bool progress_callback(int))
 		}
 	}
 }
+
+void ParseQuotedCSV(const char *buf, vtStringArray &strings)
+{
+	const char *c = buf;
+	bool instring = false;
+	vtString newstring;
+	while (*c)
+	{
+		if (instring)
+		{
+			if (*c == '"')
+			{
+				// might be end of string, might be an escaped quote 
+				if (*(c+1) == '"')
+				{
+					newstring += '"';
+					c++;
+				}
+				else
+				{
+					instring = false;
+					strings.push_back(newstring);
+					newstring = "";
+				}
+			}
+			else
+				newstring += *c;
+		}
+		else
+		{
+			if (*c == '"')
+				instring = true;
+			// also beware the possibility of completely empty entries
+			else if (*c == ',' && *(c+1) == ',')
+				strings.push_back(vtString(""));
+		}
+		c++;
+	}
+}
+
+bool vtFeatureSet::LoadDataFromCSV(const char *filename, bool progress_callback(int))
+{
+	VTLOG(" LoadDataFromCSV\n");
+	// Try loading DBF File as well
+	FILE *fp = fopen(filename, "rb");
+	if (fp == NULL)
+		return false;
+
+	char buf[4096];
+	if (!fgets(buf, 4096, fp))
+	{
+		fclose(fp);
+		return false;
+	}
+
+	// parse first line: field names
+	vtStringArray words;
+	ParseQuotedCSV(buf, words);
+	unsigned int iFields = words.size();
+	if (iFields == 0)
+	{
+		// no fields
+		fclose(fp);
+		return false;
+	}
+	unsigned int f;
+	for (f = 0; f < iFields; f++)
+	{
+		// 1 is dummy value replaced later when we know max field width
+		AddField(words[f], FT_String, 1);
+	}
+	unsigned int iEntities = 0;
+	while (fgets(buf, 4096, fp) != NULL)
+	{
+		words.clear();
+		ParseQuotedCSV(buf, words);
+		if (words.size() != iFields)
+		{
+			int error = 1;
+		}
+		int rec = AddRecord();
+		for (f = 0; f < words.size(); f++)
+		{
+			SetValue(rec, f, words[f]);
+
+			// look up maximum string lengths for DBF field widths
+			int len = strlen(words[f]);
+			Field *field = GetField(f);
+			if (len > field->m_width)
+				field->m_width = len;
+		}
+		iEntities++;
+	}
+	// create blank geometries to match the records
+	SetNumGeometries(iEntities);
+
+	fclose(fp);
+	return true;
+}
+
 
 void vtFeatureSet::SetNumEntities(int iNum)
 {
