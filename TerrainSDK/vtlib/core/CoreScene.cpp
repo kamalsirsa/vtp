@@ -84,28 +84,3 @@ void vtSceneBase::RemoveEngine(vtEngine *ptr)
 		m_Engines.RemoveAt(index);
 }
 
-
-////////////////////////////////////////////////////////////////
-
-#ifndef VTLIB_PSM
-
-vtNode *vtNodeBase::FindDescendantByName(const char *name)
-{
-	if (!strcmp(GetName2(), name))
-		return (dynamic_cast<vtNode *>(this));
-
-	vtGroupBase *pGroup = dynamic_cast<vtGroupBase *>(this);
-	if (pGroup)
-	{
-		for (int i = 0; i < pGroup->GetNumChildren(); i++)
-		{
-			vtNode *pChild = pGroup->GetChild(i);
-			vtNode *pResult = pChild->FindDescendantByName(name);
-			if (pResult)
-				return pResult;
-		}
-	}
-	return NULL;
-}
-
-#endif
