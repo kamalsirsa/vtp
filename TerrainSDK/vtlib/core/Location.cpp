@@ -143,10 +143,10 @@ bool vtLocationSaver::Read(const char *fname)
 	return true;
 }
 
-void vtLocationSaver::StoreTo(int num, const char *name)
+bool vtLocationSaver::StoreTo(int num, const char *name)
 {
 	if (!m_pTransform)
-		return;
+		return false;
 
 	vtLocation *loc;
 	if (num < m_loc.GetSize())
@@ -179,11 +179,18 @@ void vtLocationSaver::StoreTo(int num, const char *name)
 	if (!conversion)
 	{
 		// fatal: can't convert between CS
-		return;
+		return false;
 	}
-	conversion->Transform(1, &epos1.x, &epos1.y);
-	conversion->Transform(1, &epos2.x, &epos2.y);
+	int result = 0;
+	result += conversion->Transform(1, &epos1.x, &epos1.y);
+	result += conversion->Transform(1, &epos2.x, &epos2.y);
 	delete conversion;
+
+	if (result != 2)
+	{
+		// fatal: can't convert these points between CS
+		return false;
+	}
 
 	loc->m_pos1.Set(epos1.x, epos1.y);
 	loc->m_fElevation1 = epos1.z;
@@ -195,12 +202,13 @@ void vtLocationSaver::StoreTo(int num, const char *name)
 		loc->m_name = name;
 
 	m_loc.SetAt(num, loc);
+	return true;
 }
 
-void vtLocationSaver::RecallFrom(int num)
+bool vtLocationSaver::RecallFrom(int num)
 {
 	if (!m_pTransform)
-		return;
+		return false;
 
 	vtLocation *loc = m_loc[num];
 
@@ -216,11 +224,18 @@ void vtLocationSaver::RecallFrom(int num)
 	if (!conversion)
 	{
 		// fatal: can't convert between CS
-		return;
+		return false;
 	}
-	conversion->Transform(1, &epos1.x, &epos1.y);
-	conversion->Transform(1, &epos2.x, &epos2.y);
+	int result = 0;
+	result += conversion->Transform(1, &epos1.x, &epos1.y);
+	result += conversion->Transform(1, &epos2.x, &epos2.y);
 	delete conversion;
+
+	if (result != 2)
+	{
+		// fatal: can't convert these points between CS
+		return false;
+	}
 
 	// convert to terrain coords
 	FPoint3 pos1, pos2;
@@ -229,6 +244,7 @@ void vtLocationSaver::RecallFrom(int num)
 
 	m_pTransform->SetTrans(pos1);
 	m_pTransform->PointTowards(pos2);
+	return true;
 }
 
 void vtLocationSaver::Remove(int num)

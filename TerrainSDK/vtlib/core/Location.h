@@ -74,8 +74,8 @@ public:
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
 	void SetProjection(vtProjection proj) { m_proj = proj; }
 
-	void StoreTo(int num, const char *name = NULL);
-	void RecallFrom(int num);
+	bool StoreTo(int num, const char *name = NULL);
+	bool RecallFrom(int num);
 
 	// Store information necessary to convert from global earth CS
 	// to the local CS
