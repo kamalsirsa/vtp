@@ -20,7 +20,6 @@
 #include "StructLayer.h"
 #include "ElevLayer.h"
 #include "BuilderView.h"
-//#include "ScaledView.h"
 #include "vtui/BuildingDlg.h"
 #include "Helper.h"
 #include "ImportStructDlg.h"
@@ -653,14 +652,21 @@ bool vtStructureLayer::EditBuildingProperties()
 	if (count != 1)
 		return false;
 
+	MainFrame *pFrame = GetMainFrame();
+	vtHeightField *pHeightField = NULL;
+	vtElevLayer *pElevLayer = (vtElevLayer *) pFrame->FindLayerOfType(LT_ELEVATION);
+	if (pElevLayer)
+		pHeightField = pElevLayer->GetHeightField();
+
 	// for now, assume they will use the dialog to change something about
 	// the building (pessimistic)
 	SetModified(true);
 
 	BuildingDlg dlg(NULL, -1, _T("Building Properties"), wxDefaultPosition);
-	dlg.Setup(this, bld_selected);
+	dlg.Setup(this, bld_selected, pHeightField);
 
 	dlg.ShowModal();
+
 	return true;
 }
 
@@ -852,9 +858,10 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 	vtBuilding		*pBld;
 	DPoint2			point;
 
-	// Assume that this data source is a USGS SDTS DLG
 	//
-	// Iterate through the layers looking for the ones we care about
+	// Iterate through the layers looking
+	// Test for known USGS SDTS DLG layer names
+	// Treat unknown ones as containing feature polygons
 	//
 	int num_layers = pDatasource->GetLayerCount();
 	for (i = 0; i < num_layers; i++)
@@ -876,7 +883,7 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 		{
 			// only 1 field: RCID - not enough to do anything useful
 		}
-		if (!strcmp(layer_name, "NE01"))
+		else if (!strcmp(layer_name, "NE01"))
 		{
 			// get field indices
 			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
@@ -901,12 +908,12 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 			}
 		}
 		// Lines
-		if (!strcmp(layer_name, "LE01"))
+		else if (!strcmp(layer_name, "LE01"))
 		{
 			// only 3 field: RCID, SNID, ENID - not enough to do anything useful
 		}
 		// Areas (buildings, built-up areas, other areas like golf courses)
-		if (!strcmp(layer_name, "PC01"))
+		else if (!strcmp(layer_name, "PC01"))
 		{
 			// Get the projection (SpatialReference) from this layer
 			OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
@@ -977,6 +984,53 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pBld->SetFootprint(0, foot);
 				pBld->SetCenterFromPoly();
 				pBld->SetStories(num_stories);
+
+				Append(pBld);
+			}
+		}
+		else
+		{
+			// Just look for footprints and assume they are buildings
+			// Get the projection (SpatialReference) from this layer
+			OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+			if (pSpatialRef)
+				m_proj.SetSpatialReference(pSpatialRef);
+
+			count = 0;
+			while( (pFeature = pLayer->GetNextFeature()) != NULL )
+			{
+				count++;
+				progress_callback(count * 100 / feature_count);
+
+
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom)
+					continue;
+
+				// For the moment ignore multi polygons .. although we could
+				// treat them as multiple buildings !!
+				if (wkbPolygon != wkbFlatten(pGeom->getGeometryType()))
+					continue;
+
+				pBld = NewBuilding();
+				if (!pBld)
+					return;
+
+				pPolygon = (OGRPolygon *) pGeom;
+				
+
+				OGRLinearRing *ring = pPolygon->getExteriorRing();
+				int num_points = ring->getNumPoints();
+
+				DLine2 foot;
+				foot.SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+					foot.SetAt(j, DPoint2(ring->getX(j),
+						ring->getY(j)));
+
+				pBld->SetFootprint(0, foot);
+				pBld->SetCenterFromPoly();
+				pBld->SetStories(1);
 
 				Append(pBld);
 			}
