@@ -152,6 +152,8 @@ public:
 	Array<osg::Vec2>	m_Tex;
 
 protected:
+	bool	m_bIndexedPrims;
+
 	// keep track of the number of vertices ourselves
 	void	SendPointersToOSG();
 };

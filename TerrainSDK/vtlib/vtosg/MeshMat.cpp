@@ -382,39 +382,53 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	case GL_POINTS:
 		m_pGeoSet->setPrimType(GeoSet::POINTS);
 		m_pGeoSet->setNumPrims(NumVertices);
+		m_bIndexedPrims = false;
 		break;
 	case GL_LINES:
 		m_pGeoSet->setPrimType(GeoSet::LINES);
 		m_pGeoSet->setNumPrims(NumVertices/2);
+		m_bIndexedPrims = true;
 		break;
 	case GL_LINE_STRIP:
 		m_pGeoSet->setPrimType(GeoSet::LINE_STRIP);
+		m_bIndexedPrims = true;
 		break;
 	case GL_TRIANGLES:
 		m_PrimLen.SetMaxSize(NumVertices/3);
 		m_pGeoSet->setPrimType(GeoSet::TRIANGLES);
 		m_pGeoSet->setNumPrims(NumVertices/3);
+		m_bIndexedPrims = true;
 		break;
 	case GL_TRIANGLE_STRIP:
 		m_pGeoSet->setPrimType(GeoSet::TRIANGLE_STRIP);
+		m_bIndexedPrims = true;
 		break;
 	case GL_TRIANGLE_FAN:
 		m_pGeoSet->setPrimType(GeoSet::TRIANGLE_FAN);
+		m_bIndexedPrims = true;
 		break;
 	case GL_QUADS:
 		m_pGeoSet->setPrimType(GeoSet::QUADS);
+		m_bIndexedPrims = true;
 		break;
 	case GL_POLYGON:
 		m_pGeoSet->setPrimType(GeoSet::POLYGON);
+		m_bIndexedPrims = true;
 		break;
 	}
+	SendPointersToOSG();
 }
 
 void vtMesh::SendPointersToOSG()
 {
 	// in case they got reallocated, tell OSG again
-	m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
-	m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
+	if (m_bIndexedPrims)
+	{
+		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
+		m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
+	}
+	else
+		m_pGeoSet->setCoords(m_Vert.GetData());
 
 	if (m_iVtxType & VT_Normals)
 		m_pGeoSet->setNormals(m_Norm.GetData(), m_Index.GetData());
