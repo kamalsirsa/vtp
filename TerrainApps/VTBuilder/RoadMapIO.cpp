@@ -329,7 +329,8 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 	}
 }
 
-void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj)
+void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
+									 void progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(filename, "rb");
 	if (hSHP == NULL)
@@ -352,6 +353,9 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj)
 
 	for (i = 0; i < nEntities; i++)
 	{
+		if ((i % 32) == 0)
+			progress_callback(i * 100 / nEntities);
+
 		SHPObject *psShape = SHPReadObject(hSHP, i);
 		npoints = psShape->nVertices;
 

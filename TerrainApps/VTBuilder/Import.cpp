@@ -363,7 +363,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_ROAD)
 	{
 		vtRoadLayer *pRL = (vtRoadLayer *)pLayer;
-		pRL->AddElementsFromSHP(strFileName, proj);
+		pRL->AddElementsFromSHP(strFileName, proj, progress_callback);
 		pRL->RemoveUnusedNodes();
 	}
 
