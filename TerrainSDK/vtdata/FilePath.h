@@ -4,7 +4,6 @@
 
 #include "vtString.h"
 #include "Array.h"
-#include "Array.inl"
 
 class StringArray : public Array<vtString*>
 {

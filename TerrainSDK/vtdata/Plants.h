@@ -11,7 +11,6 @@
 #include "Projections.h"
 #include "vtString.h"
 #include "Array.h"
-#include "Array.inl"
 #include "MathTypes.h"
 
 class vtPlantDensity

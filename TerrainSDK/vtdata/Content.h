@@ -12,7 +12,6 @@
 
 #include "vtString.h"
 #include "Array.h"
-#include "Array.inl"
 
 /**
  * vtModel contains a reference to a 3d polygonal model: a filename, the
