@@ -125,8 +125,7 @@ void SceneGraphDlg::CreateImageList(int size)
 		if ( size == sizeOrig )
 			m_imageListNormal->Add(icons[i]);
 		else
-			m_imageListNormal->Add(wxImage(icons[i]).Rescale(size, size).
-									ConvertToBitmap());
+			m_imageListNormal->Add(wxBitmap(wxBitmap(icons[i]).ConvertToImage().Rescale(size, size)));
 	}
 	m_pTree->SetImageList(m_imageListNormal);
 }
