@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -242,6 +242,13 @@ void MainFrame::CheckForGDALAndWarn()
 	// check for correctly set up environment variables and locatable files
 	bool has1 = false, has2 = false, has3 = false;
 
+	const char *gdal = getenv("GDAL_DATA");
+	VTLOG("getenv GDAL_DATA: '%s'\n", gdal ? gdal : "NULL");
+	const char *gtif = getenv("GEOTIFF_CSV");
+	VTLOG("getenv GEOTIFF_CSV: '%s'\n", gtif ? gtif : "NULL");
+	const char *proj4 = getenv("PROJ_LIB");
+	VTLOG("getenv PROJ_LIB: '%s'\n", proj4 ? proj4 : "NULL");
+
 	const char *gdal1 = CSVFilename("pcs.csv");	// this should always be there
 	if (gdal1 != NULL)
 		has1 = true;
@@ -250,7 +257,6 @@ void MainFrame::CheckForGDALAndWarn()
 	if (gdal2 != NULL)
 		has2 = true;
 
-	const char *proj4 = getenv("PROJ_LIB");
 	if (proj4)
 	{
 		vtString fname = proj4;
@@ -262,6 +268,7 @@ void MainFrame::CheckForGDALAndWarn()
 			has3 = true;
 		}
 	}
+	VTLOG("Has: %d %d %d\n", has1, has2, has3);
 	if (has1 && !has2)
 	{
 		DisplayAndLog("The GDAL data files on your computer are missing or out of date.\n"
