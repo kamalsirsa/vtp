@@ -728,15 +728,7 @@ RoofType vtLevel::GuessRoofType()
 
 void vtLevel::FlipFootprintDirection()
 {
-	DPoint2 p;
-
-	int i, size = m_Footprint.GetSize();
-	for (i = 0; i < size/2; i++)
-	{
-		p = m_Footprint[i];
-		m_Footprint[i] = m_Footprint[size-1-i];
-		m_Footprint[size-1-i] = p;
-	}
+	m_Footprint.ReverseOrder();
 }
 
 
