@@ -57,7 +57,6 @@ public:
 	void DoCull(const vtCamera *pCam);
 
 	// overrides for HeightField
-	void GetChecksum(unsigned char **ppChecksum) const {}
 	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// overrides for HeightField3d
