@@ -57,6 +57,8 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_FEATURE_TYPE, &m_strFeatureType);
 
 	AddValidator(ID_GEOMETRY, &m_bGeometry);
+	AddNumValidator(ID_GEOM_HEIGHT, &m_fGeomHeight);
+	AddValidator(ID_TESSELLATE, &m_bTessellate);
 
 	AddValidator(ID_TEXT_LABELS, &m_bTextLabels);
 	AddValidator(ID_TEXT_FIELD, &m_iTextField);
@@ -81,6 +83,9 @@ void StyleDlg::SetOptions(vtStringArray &datapaths, const vtTagArray &Layer)
 	m_bGeometry = Layer.GetValueBool("Geometry");
 	if (!Layer.GetValueRGBi("GeomColor", m_GeomColor))
 		m_GeomColor.Set(255,255,255);
+	if (!Layer.GetValueFloat("GeomHeight", m_fGeomHeight))
+		m_fGeomHeight = 1;
+	m_bTessellate = Layer.GetValueBool("Tessellate");
 
 	m_bTextLabels = Layer.GetValueBool("Labels");
 	if (!Layer.GetValueRGBi("LabelColor", m_LabelColor))
@@ -113,6 +118,16 @@ void StyleDlg::GetOptions(vtTagArray &pLayer)
 		pLayer.SetValueRGBi("GeomColor", m_GeomColor, true);
 	else
 		pLayer.RemoveTag("GeomColor");
+
+	if (m_bGeometry && !GeometryTypeIs3D(m_type))
+		pLayer.SetValueFloat("GeomHeight", m_fGeomHeight);
+	else
+		pLayer.RemoveTag("GeomHeight");
+
+	if (m_bGeometry && m_type != wkbPoint && m_type != wkbPoint25D)
+		pLayer.SetValueBool("Tessellate", m_bTessellate);
+	else
+		pLayer.RemoveTag("Tessellate");
 
 	pLayer.SetValueBool("Labels", m_bTextLabels, true);
 	if (m_bTextLabels)
@@ -169,6 +184,8 @@ void StyleDlg::RefreshFields()
 void StyleDlg::UpdateEnabling()
 {
 	GetGeomColor()->Enable(m_bGeometry);
+	GetGeomHeight()->Enable(m_bGeometry && !GeometryTypeIs3D(m_type));
+	GetTessellate()->Enable(m_bGeometry && m_type != wkbPoint && m_type != wkbPoint25D);
 
 	GetLabelColor()->Enable(m_bTextLabels);
 	GetTextField()->Enable(m_bTextLabels);

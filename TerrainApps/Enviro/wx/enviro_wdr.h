@@ -247,12 +247,14 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_siz
 #define ID_FEATURE_TYPE 10177
 #define ID_GEOMETRY 10178
 #define ID_GEOM_COLOR 10179
-#define ID_TEXT_LABELS 10180
-#define ID_LABEL_COLOR 10181
-#define ID_TEXT_FIELD 10182
-#define ID_COLOR_FIELD 10183
-#define ID_LABEL_HEIGHT 10184
-#define ID_LABEL_SIZE 10185
+#define ID_GEOM_HEIGHT 10180
+#define ID_TESSELLATE 10181
+#define ID_TEXT_LABELS 10182
+#define ID_LABEL_COLOR 10183
+#define ID_TEXT_FIELD 10184
+#define ID_COLOR_FIELD 10185
+#define ID_LABEL_HEIGHT 10186
+#define ID_LABEL_SIZE 10187
 wxSizer *StyleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

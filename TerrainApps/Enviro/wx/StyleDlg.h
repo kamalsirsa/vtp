@@ -35,6 +35,8 @@ public:
 
 private:
 	// WDR: method declarations for StyleDlg
+	wxTextCtrl* GetGeomHeight()  { return (wxTextCtrl*) FindWindow( ID_GEOM_HEIGHT ); }
+	wxCheckBox* GetTessellate()  { return (wxCheckBox*) FindWindow( ID_TESSELLATE ); }
 	wxTextCtrl* GetLabelSize()  { return (wxTextCtrl*) FindWindow( ID_LABEL_SIZE ); }
 	wxTextCtrl* GetLabelHeight()  { return (wxTextCtrl*) FindWindow( ID_LABEL_HEIGHT ); }
 	wxChoice* GetColorField()  { return (wxChoice*) FindWindow( ID_COLOR_FIELD ); }
@@ -54,6 +56,8 @@ private:
 
 	bool m_bGeometry;
 	RGBi m_GeomColor;
+	float m_fGeomHeight;
+	bool m_bTessellate;
 
 	bool m_bTextLabels;
 	RGBi m_LabelColor;
