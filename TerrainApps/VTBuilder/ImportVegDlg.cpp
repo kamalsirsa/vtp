@@ -87,7 +87,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	wxString2 str, fieldname;
 	int fields, i, iField, *pnWidth = 0, *pnDecimals = 0;
 	DBFFieldType fieldtype;
-	char pszFieldName[20];
+	char pszFieldName[80];
 	fields = DBFGetFieldCount(db);
 	for (i = 0; i < fields; i++)
 	{
