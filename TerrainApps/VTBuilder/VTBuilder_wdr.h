@@ -146,31 +146,18 @@ wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_PATHNAMES 10085
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LEVEL 10086
-#define ID_ADD_LEVEL 10087
-#define ID_DEL_LEVEL 10088
-#define ID_STORIES 10089
-#define ID_STORY_HEIGHT 10090
-#define ID_MATERIAL 10091
-#define ID_SET_MATERIAL 10092
-#define ID_COLOR 10093
-#define ID_SET_COLOR 10094
-#define ID_EDGE_SLOPES 10095
-#define ID_SET_EDGE_SLOPES 10096
-wxSizer *BuildingDialog2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
-
-#define ID_USE_SPECIES 10097
-#define ID_SPECIES_CHOICE 10098
-#define ID_SPECIES_USE_FIELD 10099
-#define ID_SPECIES_FIELD 10100
-#define ID_SPECIES_ID 10101
-#define ID_SPECIES_NAME 10102
-#define ID_COMMON_NAME 10103
-#define ID_BIOTYPE_INT 10104
-#define ID_BIOTYPE_STRING 10105
-#define ID_HEIGHT_RANDOM 10106
-#define ID_HEIGHT_USE_FIELD 10107
-#define ID_HEIGHT_FIELD 10108
+#define ID_USE_SPECIES 10086
+#define ID_SPECIES_CHOICE 10087
+#define ID_SPECIES_USE_FIELD 10088
+#define ID_SPECIES_FIELD 10089
+#define ID_SPECIES_ID 10090
+#define ID_SPECIES_NAME 10091
+#define ID_COMMON_NAME 10092
+#define ID_BIOTYPE_INT 10093
+#define ID_BIOTYPE_STRING 10094
+#define ID_HEIGHT_RANDOM 10095
+#define ID_HEIGHT_USE_FIELD 10096
+#define ID_HEIGHT_FIELD 10097
 wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
