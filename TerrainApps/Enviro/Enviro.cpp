@@ -1636,7 +1636,17 @@ vtString Enviro::GetStatusString(int which)
 		{
 			bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 			if (bOn)
+			{
+				float exag;
+				{
+					// Avoid trouble with '.' and ',' in Europe
+					LocaleWrap normal_numbers(LC_NUMERIC, "C");
+					// Report true elevation, without vertical exaggeration
+					exag = GetCurrentTerrain()->GetParams().GetValueFloat(STR_VERTICALEXAG);
+				}
+				epos.z /= exag;
 				str.Format("Elev: %.1f", epos.z);
+			}
 			else
 				str += "Not on ground";
 		}
