@@ -30,6 +30,8 @@ public:
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &strIn);
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
+
+	void ReadGeoURL();
 };
 
 #endif	// RAWLAYERH

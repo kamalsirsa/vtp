@@ -1344,6 +1344,10 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	else if (code == WXK_F10)
 	{
 		// a place to put quick hacks
+		vtRawLayer *pRaw = GetMainFrame()->GetActiveRawLayer();
+		if (!pRaw) return;
+		pRaw->ReadGeoURL();
+		Refresh();
 	}
 	else
 		event.Skip();

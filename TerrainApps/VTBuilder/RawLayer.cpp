@@ -1,7 +1,7 @@
 //
 // RawLayer.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // A 'raw' layer is just abstract data, without any specific correspondence
@@ -20,6 +20,7 @@
 #include "BuilderView.h"
 #include "Helper.h"
 #include "Frame.h"
+#include "xmlhelper/easyxml.hpp"
 // Dialogs
 #include "FeatInfoDlg.h"
 
@@ -347,3 +348,90 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		break;
 	}
 }
+
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of a GeoURL file.
+////////////////////////////////////////////////////////////////////////
+
+class VisitorGU : public XMLVisitor
+{
+public:
+	VisitorGU(vtRawLayer *rl) : m_state(0), m_pLayer(rl) {}
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
+	void data(const char *s, int length);
+
+private:
+	string m_data;
+	int m_state;
+	int m_rec;
+
+	vtRawLayer *m_pLayer;
+};
+
+void VisitorGU::startElement(const char *name, const XMLAttributes &atts)
+{
+	// clear data at the start of each element
+	m_data = "";
+	const char *val;
+
+	if (m_state == 0 && !strcmp(name, "geourl"))
+	{
+		m_state = 1;
+	}
+	else if (m_state == 1)
+	{
+		if (!strcmp(name, "site"))
+		{
+			DPoint2 p;
+
+			val = atts.getValue("lon");
+			if (!val) val = atts.getValue("longitude");
+			p.x = atof(val);
+
+			val = atts.getValue("lat");
+			if (!val) val = atts.getValue("latitude");
+			p.y = atof(val);
+
+			m_rec = m_pLayer->AddPoint(p);
+
+			val = atts.getValue("href");
+			m_pLayer->SetValue(m_rec, 1, val);
+
+			m_state = 2;
+		}
+	}
+}
+
+void VisitorGU::endElement(const char *name)
+{
+	if (m_state == 2)
+	{
+		m_pLayer->SetValue(m_rec, 0, m_data.c_str());
+		m_state = 1;
+	}
+}
+
+void VisitorGU::data(const char *s, int length)
+{
+	m_data.append(string(s, length));
+}
+
+void vtRawLayer::ReadGeoURL()
+{
+	SetEntityType(SHPT_POINT);
+	AddField("Name", FTString, 80);
+	AddField("URL", FTString, 80);
+
+	VisitorGU visitor(this);
+	try
+	{
+		readXML("D:/Data-World/geourl2.xml", visitor);
+	}
+	catch (xh_exception &)
+	{
+		return;
+	}
+}
+
