@@ -100,6 +100,14 @@ update-hu:
 	msgmerge --no-fuzzy-matching hu/Enviro.po Enviro.pot -o hu/Enviro.pox
 
 #----------
+publish-it:
+	cp it/Enviro.pox it/Enviro.po
+	msgfmt it/Enviro.po -o it/Enviro.mo
+
+update-it:
+	msgmerge --no-fuzzy-matching it/Enviro.po Enviro.pot -o it/Enviro.pox
+
+#----------
 publish-pt:
 	cp pt/Enviro.pox pt/Enviro.po
 	msgfmt pt/Enviro.po -o pt/Enviro.mo
