@@ -288,8 +288,11 @@ if (pwdemo){
 	vtString bsc_file = FindFileOnPaths(g_Options.m_DataPaths, "Sky/bsc.data");
 	if (bsc_file != "")
 	{
-		pStars->Create(bsc_file, 20.0f, 5.0f);	// radius, brightness
-		m_pGlobeContainer->AddChild(pStars);
+		pStars->Create(bsc_file, 5.0f);	// brightness
+		vtTransform *pScale = new vtTransform();
+		pScale->Scale3(20, 20, 20);
+		m_pGlobeContainer->AddChild(pScale);
+		pScale->AddChild(pStars);
 	}
 
 	// create some geometry showing various astronomical axes
