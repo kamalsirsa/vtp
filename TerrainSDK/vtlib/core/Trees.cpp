@@ -518,18 +518,22 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(unsigned int i) const
 
 int vtPlantInstanceArray3d::CreatePlantNodes()
 {
-	int size = GetNumEntities();
+	unsigned int i, size = GetNumEntities();
 	int created = 0;
 
-	for (int i = 0; i < size; i++)
+	m_Instances3d.SetSize(size);
+	for (i = 0; i < size; i++)
 	{
+		// Clear value first, in case it doesn't construct.
+		m_Instances3d.SetAt(i, NULL);
+
 		if (CreatePlantNode(i))
 			created++;
 	}
 	return created;
 }
 
-bool vtPlantInstanceArray3d::CreatePlantNode(int i)
+bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 {
 	// If it was already constructed, destruct so we can build again
 	ReleasePlantGeometry(i);
