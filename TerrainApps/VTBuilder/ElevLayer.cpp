@@ -254,7 +254,7 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 
 	wxRect screenrect = pView->WorldToCanvas(m_pGrid->GetAreaExtents());
 	wxRect destRect = screenrect;
-	wxRect srcRect(0, 0, iColumns, iRows);
+	wxRect srcRect(0, 0, m_iImageWidth, m_iImageHeight);
 
 	double ratio_x = (float) srcRect.GetWidth() / destRect.GetWidth();
 	double ratio_y = (float) srcRect.GetHeight() / destRect.GetHeight();
@@ -398,7 +398,20 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 	m_bHasBitmap = true;
 
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
-	m_pImage = new wxImage(m_iColumns, m_iRows);
+
+	m_iImageWidth = m_iColumns;
+	m_iImageHeight = m_iRows;
+
+	int div = 1;
+	while (m_iImageWidth * m_iImageHeight > 4096*4096)
+	{
+		// really huge bitmap is going to fail, chop it down
+		div++;
+		m_iImageWidth = m_iColumns / div;
+		m_iImageHeight = m_iRows / div;
+	}
+
+	m_pImage = new wxImage(m_iImageWidth, m_iImageHeight);
 }
 
 void vtElevLayer::RenderBitmap()
@@ -408,6 +421,7 @@ void vtElevLayer::RenderBitmap()
 
 	// only show a progress dialog for large terrain (>300 points tall)
 	bool bProg = (m_iRows > 300);
+
 #if WIN32
 	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,
 	// so just disable for now. (wxGTK 2.2.9 on Linux Mandrake 8.1)
@@ -418,18 +432,25 @@ void vtElevLayer::RenderBitmap()
 	UpdateProgressDialog(0, _T("Generating colors..."));
 	DetermineMeterSpacing();
 
+	int i, j;		// image coord
+	int x, y;		// elevation coord
 	int r, g, b;
+	int stepx = m_iColumns / m_iImageWidth;
+	int stepy = m_iRows / m_iImageHeight;
 	unsigned char *data = m_pImage->GetData();
 	bool has_invalid = false;
-	for ( register int j = 0; j < m_iRows; j++ )
+	for (j = 0; j < m_iImageHeight; j++)
 	{
 		if (bProg)
-			UpdateProgressDialog(j*80/m_iRows);
-		for ( register int i = 0; i < m_iColumns; i++ )
+			UpdateProgressDialog(j*80/m_iImageHeight);
+		y = m_iRows - 1 - (j * stepy);
+		for (i = 0; i < m_iImageWidth; i++)
 		{
-			if (!has_invalid && (m_pGrid->GetValue(i, j) == INVALID_ELEVATION))
+			x = (i * stepx);
+
+			if (!has_invalid && (m_pGrid->GetValue(x, y) == INVALID_ELEVATION))
 				has_invalid = true;
-			GenerateShadedColor(i, m_iRows-1-j, r, g, b);
+			GenerateShadedColor(x, y, r, g, b);
 //			GenerateColorFromGrid2(i, m_iRows-1-j, r, g, b);
 			*data++ = r;
 			*data++ = g;
@@ -437,7 +458,7 @@ void vtElevLayer::RenderBitmap()
 		}
 	}
 	UpdateProgressDialog(80, _T("Generating bitmap..."));
-	m_pBitmap = new wxBitmap(m_pImage->ConvertToBitmap());
+	m_pBitmap = new wxBitmap(m_pImage);
 	int ok = m_pBitmap->Ok();
 	if (!ok)
 		wxMessageBox(_T("Couldn't create bitmap, probably too large."));

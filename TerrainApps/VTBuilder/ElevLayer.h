@@ -100,11 +100,13 @@ protected:
 	bool	m_bHasMask;
 	float	m_fSpacing;
 
-	int m_iRows, m_iColumns;
+	int m_iColumns, m_iRows;
+	int m_iImageWidth, m_iImageHeight;
 
 	wxBitmap	*m_pBitmap;
 	wxMask		*m_pMask;
 	wxImage		*m_pImage;
 };
 
-#endif
+#endif	// ELEVLAYER_H
+
