@@ -55,7 +55,7 @@ void ChooseTerrainDlg::OnInitDialog(wxInitDialogEvent& event)
 
     // list each known terrain
     vtTerrain *pTerr;
-    for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+    for (pTerr = GetTerrainScene()->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
     {
         m_pTList->Append((const char *)(pTerr->GetName()));
     }

@@ -108,7 +108,7 @@ void StatusTimer::Notify()
 		str.Format("fps %3.0f, ", fps);
 
 	// get time of day
-	TimeEngine *te = GetTerrainScene()->m_pTime;
+	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
 	if (te->GetEnabled())
 	{
 		int hr, min, sec;

@@ -698,7 +698,7 @@ void Enviro::LookUpTerrainLocations()
 
 	// look up the earth location of each known terrain
 	vtTerrain *pTerr;
-	for (pTerr = m_pTerrainScene->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = m_pTerrainScene->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
 	{
 		m_msg.Format("\tlooking up: %s\n", (const char *) pTerr->GetName());
 		_Log(m_msg);
@@ -981,9 +981,8 @@ void Enviro::SetupCameras()
 
 	_Log("Setting hither and yon\n");
 	FPoint3 pos = m_pNormalCamera->GetTrans();
-	m_pNormalCamera->SetHither(5.0f);		// 10 m
-	//m_pNormalCamera->SetYon(500000.0f);	// 500 km
-	m_pTerrainScene->SetYon(500000.0f);	// 500 km
+	m_pNormalCamera->SetHither(10);		// 10 m
+	m_pNormalCamera->SetYon(500000);		// 500 km
 
 #if 1
 	// Create second camera (for Top-Down view)
@@ -1140,7 +1139,7 @@ vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
 {
 	vtTerrain *t, *smallest = NULL;
 	float diag, smallest_diag = 1E7;
-	for (t = m_pTerrainScene->m_pFirstTerrain; t; t=t->GetNext())
+	for (t = m_pTerrainScene->GetFirstTerrain(); t; t=t->GetNext())
 	{
 		if (t->m_Corners_geo.ContainsPoint(p))
 		{
@@ -1459,7 +1458,7 @@ void ControlEngine::Eval()
 
 vtTerrain *GetCurrentTerrain()
 {
-	return g_App.m_pTerrainScene->m_pCurrentTerrain;
+	return g_App.m_pTerrainScene->GetCurrentTerrain();
 }
 
 vtTerrainScene *GetTerrainScene()

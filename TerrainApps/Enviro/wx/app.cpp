@@ -97,18 +97,18 @@ int vtApp::OnExit()
 //
 bool AskForTerrainName(wxWindow *pParent, wxString &str)
 {
-    vtTerrain *pTerr;
+    vtTerrain *pTerr, *pFirst = GetTerrainScene()->GetFirstTerrain();
 
 	// count them
 	int num = 0;
-    for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+    for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
 		num++;
 
 	// get their names
 	wxString *choices = new wxString[num];
 	num = 0;
 	int first_idx = 0;
-	for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
 	{
 		choices[num] = (const char *)(pTerr->GetName());
 		if (str == choices[num]) first_idx = num;
