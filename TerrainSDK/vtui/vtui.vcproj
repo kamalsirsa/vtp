@@ -307,6 +307,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ColorMapDlg.cpp">
+			</File>
+			<File
 				RelativePath=".\DistanceDlg.cpp">
 			</File>
 			<File
@@ -487,6 +490,9 @@
 			</File>
 			<File
 				RelativePath="BuildingDlg.h">
+			</File>
+			<File
+				RelativePath=".\ColorMapDlg.h">
 			</File>
 			<File
 				RelativePath=".\DistanceDlg.h">
