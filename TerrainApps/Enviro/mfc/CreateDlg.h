@@ -73,7 +73,6 @@ public:
 	float	m_fRoadHeight;
 	float	m_fNavSpeed;
 	float	m_fPreLightFactor;
-	int		m_iNumCars;
 	BOOL	m_bRoadCulture;
 	int		m_iLodMethod;
 	float	m_fVehicleSpeed;

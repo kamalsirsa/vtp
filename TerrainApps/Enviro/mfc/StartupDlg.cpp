@@ -30,7 +30,6 @@ void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bFullscreen = opt.m_bFullscreen;
 	m_bHtmlpane = opt.m_bHtmlpane;
 	m_bFloatingToolbar = opt.m_bFloatingToolbar;
-	m_bSpeedTest = opt.m_bSpeedTest;
 	m_fPlantSize = opt.m_fPlantScale;
 	m_bShadows = opt.m_bShadows;
 }
@@ -43,7 +42,6 @@ void CStartupDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
-	opt.m_bSpeedTest = m_bSpeedTest;
 	opt.m_fPlantScale = m_fPlantSize;
 	opt.m_bShadows = m_bShadows;
 }
@@ -59,7 +57,6 @@ CStartupDlg::CStartupDlg(CWnd* pParent /*=NULL*/)
 	m_bFullscreen = FALSE;
 	m_bHtmlpane = FALSE;
 	m_bFloatingToolbar = FALSE;
-	m_bSpeedTest = FALSE;
 	m_iLaunch = -1;
 	m_strTName = _T("");
 	m_strImage = _T("");

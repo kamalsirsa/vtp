@@ -61,7 +61,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_fRoadHeight = 2.0f;
 	m_fNavSpeed = 10.0f;
 	m_fPreLightFactor = 1.0f;
-	m_iNumCars = 0;
 	m_bRoadCulture = FALSE;
 	m_iLodMethod = 0;
 	m_fVehicleSpeed = 1.0f;
@@ -147,7 +146,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_NAVSPEED, m_fNavSpeed);
 	DDX_Text(pDX, IDC_LIGHT_FACTOR, m_fPreLightFactor);
 	DDV_MinMaxFloat(pDX, m_fPreLightFactor, 0.f, 1.f);
-	DDX_Text(pDX, IDC_CARNUMBER, m_iNumCars);
 	DDX_Check(pDX, IDC_ROADCULTURE, m_bRoadCulture);
 	DDX_CBIndex(pDX, IDC_LODMETHOD, m_iLodMethod);
 	DDX_Text(pDX, IDC_VEHICLESPEED, m_fVehicleSpeed);
@@ -300,7 +298,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bVehicles =		Params.GetValueBool(STR_VEHICLES);
 	m_fVehicleSize =	Params.GetValueFloat(STR_VEHICLESIZE);
 	m_fVehicleSpeed =	Params.GetValueFloat(STR_VEHICLESPEED);
-	m_iNumCars =		Params.GetValueInt(STR_NUMCARS);
 
 	m_bSky =			Params.GetValueBool(STR_SKY);
 	m_bOceanPlane =		Params.GetValueBool(STR_OCEANPLANE);
@@ -358,7 +355,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //	Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
 //	Params.SetValueFloat(STR_VEHICLESPEED, m_fVehicleSpeed);
-//	Params.SetValueInt(STR_NUMCARS, m_iNumCars);
 
 	Params.SetValueBool(STR_SKY, m_bSky);
 
