@@ -147,13 +147,14 @@ void TerrainPatch::SetVertexColors()
 //
 // This approach is really straightforward, so it could be majorly sped up if needed
 //
-void TerrainPatch::FindAltitudeAtPoint(FPoint3 point, float &fAltitude, FPoint3 *vNormal)
+bool TerrainPatch::FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
+									   FPoint3 *vNormal)
 {
 	if (m_bIsFlat)
 	{
 		fAltitude = 0.0f;
 		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
-		return;
+		return true;
 	}
 
 	FPoint3 porigin = GetVtxPos(0);
@@ -166,7 +167,7 @@ void TerrainPatch::FindAltitudeAtPoint(FPoint3 point, float &fAltitude, FPoint3 
 	{
 		fAltitude = 0.0f;
 		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
-		return;
+		return false;
 	}
 
 	int iIndex0 = iX * m_iZVerts + iZ;
@@ -210,6 +211,7 @@ void TerrainPatch::FindAltitudeAtPoint(FPoint3 point, float &fAltitude, FPoint3 
 			vNormal->Normalize();
 		}
 	}
+	return true;
 }
 
 vtMovGeom *CreatePlaneMGeom(vtMaterialArray *pMats, int iMatIdx,

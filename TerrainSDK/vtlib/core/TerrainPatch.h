@@ -21,7 +21,8 @@ public:
 	void MoveVerticesIntoSineCurve(float fOffset);
 	void SetVertexTextureCoords();
 	void SetVertexColors();
-	void FindAltitudeAtPoint(FPoint3 point, float &fAltitude, FPoint3 *vNormal);
+	bool FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
+		FPoint3 *vNormal);
 
 	int		m_iXVerts, m_iZVerts;
 	float	m_fXSize, m_fZSize;
