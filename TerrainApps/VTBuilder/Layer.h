@@ -31,6 +31,7 @@
 #define FSTRING_DTED	_T("DTED Files (*.dte, *.dt0, *.dt1, *.dt2)|*.dte;*.dt0;*.dt1;*.dt2|")
 #define FSTRING_GML		_T("GML Files (*.gml, *.xml)|*.gml;*.xml|")
 #define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr|")	
+#define FSTRING_JPEG	_T("JPEG Files (*.jpg)|*.jpg|")	
 #define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir|")
 #define FSTRING_MEM		_T("Japanese DEM Files (*.mem)|*.mem|")
 #define FSTRING_MI		_T("MapInfo Files (*.tab, *.mif)|*.tab;*.mif|")
@@ -139,6 +140,7 @@ typedef vtLayer *vtLayerPtr;
 class LayerArray : public Array<vtLayerPtr>
 {
 public:
+	// don't need explicit destructor here because Empty() is always called
 	virtual void DestructItems(int first, int last);
 };
 
