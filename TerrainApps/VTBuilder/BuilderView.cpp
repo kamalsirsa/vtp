@@ -542,18 +542,18 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	InvertRect(&dc, m_DownPoint, m_LastPoint);
 
 	wxRect rect = PointsToRect(m_DownPoint, m_LastPoint);
-	DRECT world_rect = CanvasToWorld(rect);
+	m_world_rect = CanvasToWorld(rect);
 	switch (m_mode)
 	{
 	case LB_Mag:
 		if (event.AltDown())
-			ZoomOutToRect(world_rect);
+			ZoomOutToRect(m_world_rect);
 		else
-			ZoomToRect(world_rect, 0.0f);
+			ZoomToRect(m_world_rect, 0.0f);
 		break;
 	case LB_Box:
 		DrawArea(&dc);
-		GetMainFrame()->m_area = world_rect;
+		GetMainFrame()->m_area = m_world_rect;
 		DrawArea(&dc);
 		break;
 	case LB_Path:
@@ -565,10 +565,10 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 		{
 			//select everything in the highlighted box.
 			vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
-			if (pRL->SelectArea(world_rect, (m_mode == LB_Node),
+			if (pRL->SelectArea(m_world_rect, (m_mode == LB_Node),
 				m_bCrossSelect))
 			{
-				rect = WorldToWindow(world_rect);
+				rect = WorldToWindow(m_world_rect);
 				IncreaseRect(rect, BOUNDADJUST);
 				if (m_bCrossSelect)
 					Refresh();
@@ -603,22 +603,30 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 		}
 		break;
 	case LB_FSelect:
-		{
-			vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
-			int selected = 0;
-			for (int i = 0; i < pSL->GetSize(); i++)
-			{
-				vtStructure *str = pSL->GetAt(i);
-				bool bSelect = str->IsContainedBy(world_rect);
-				str->Select(bSelect);
-				if (bSelect) selected++;
-			}
-			wxString msg;
-			msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
-			GetMainFrame()->SetStatusText(msg);
-			Refresh(FALSE);
-		}
+		EndBoxFeatureSelect();
 	}
+}
+
+void BuilderView::EndBoxFeatureSelect()
+{
+	vtLayer *pL = GetMainFrame()->GetActiveLayer();
+	if (!pL) return;
+
+	int selected;
+	if (pL->GetType() == LT_STRUCTURE)
+	{
+		vtStructureLayer *pSL = (vtStructureLayer *)pL;
+		selected = pSL->DoBoxSelect(m_world_rect);
+	}
+	if (pL->GetType() == LT_RAW)
+	{
+		vtRawLayer *pRL = (vtRawLayer *)pL;
+		selected = pRL->DoBoxSelect(m_world_rect);
+	}
+	wxString msg;
+	msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
+	GetMainFrame()->SetStatusText(msg);
+	Refresh(FALSE);
 }
 
 void BuilderView::DoBox(wxPoint point)
@@ -1477,7 +1485,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 
 		Refresh(FALSE);
 	}
-	else if (pL->GetType() ==LT_UTILITY)
+	else if (pL->GetType() == LT_UTILITY)
 	{
 		vtUtilityLayer *pTL = (vtUtilityLayer *)pL;
 
@@ -1487,6 +1495,10 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 		if(twr)
 			twr->Select(!twr->IsSelected()); */
 		Refresh(FALSE);
+	}
+	else if (pL->GetType() == LT_RAW)
+	{
+		vtRawLayer *pRL = (vtRawLayer *)pL;
 	}
 }
 

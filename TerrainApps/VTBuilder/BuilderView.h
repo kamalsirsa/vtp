@@ -112,6 +112,7 @@ protected:
 	// Box handlers
 	void BeginBox();
 	void EndBox(const wxMouseEvent& event);
+	void EndBoxFeatureSelect();
 	void DoBox(wxPoint point);
 	void BeginArea();
 	void DoArea(wxPoint point);
@@ -155,6 +156,7 @@ protected:
 	wxPoint	m_DownPoint;
 	wxPoint m_CurPoint;		// current position of mouse
 	wxPoint m_LastPoint;	// last position of mouse
+	DRECT m_world_rect;		// rectangle box drawn by mouse
 
 	// in widow coords
 	wxPoint m_DownClient;
