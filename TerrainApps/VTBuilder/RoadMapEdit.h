@@ -14,7 +14,8 @@
 class vtRoadLayer;
 class vtScaledView;
 class vtDLGFile;
-
+class OGRLayer;
+class OGRLineString;
 
 enum VisualIntersectionType {
 	VIT_UNKNOWN,	//uncontrolled
@@ -205,6 +206,8 @@ protected:
 								  SurfaceType &stype, int &priority);
 
 	bool attribute_filter_roads(DLGLine *pLine, int &lanes, SurfaceType &stype, int &priority);
+	bool AppendFromOGRLayer(OGRLayer *pLayer);
+	void AddLinkFromLineString(OGRLineString *pLineString);
 
 	//delete one road.
 	void DeleteSingleLink(LinkEdit *pLink);

@@ -176,11 +176,8 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 
 		// create new road
 		pR = new LinkEdit();
-		pR->m_fWidth = 1.0f;
 		pR->m_Surface = stype;
 		pR->m_iLanes = lanes;
-		pR->SetHeightAt(0,0);
-		pR->SetHeightAt(1,0);
 		pR->m_iPriority = priority;
 
 		// copy data from DLG line
@@ -486,7 +483,6 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 
 		// create 2 new nodes (begin/end) and a new line
 		pN1 = new NodeEdit();
-		pN1->m_id = -1;
 		pN1->m_p.x = psShape->padfX[0];
 		pN1->m_p.y = psShape->padfY[0];
 		pN1->SetVisual(VIT_NONE);
@@ -495,7 +491,6 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 		AddNode(pN1);
 
 		pN2 = new NodeEdit();
-		pN2->m_id = -1;
 		pN2->m_p.x = psShape->padfX[npoints-1];
 		pN2->m_p.y = psShape->padfY[npoints-1];
 		pN2->SetVisual(VIT_NONE);
@@ -505,13 +500,8 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 
 		// create new road
 		pR = new LinkEdit();
-		pR->m_fWidth = 1.0f;
-		pR->m_Surface = SURFT_PAVED;
 		pR->m_iLanes = 2;
-		pR->SetHeightAt(0, 0);
-		pR->SetHeightAt(1, 0);
 		pR->m_iPriority = 1;
-		pR->m_iHwy = -1;
 
 		if (cfcc != -1)
 		{
@@ -752,115 +742,169 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 		{
 			// For OGR import from a file that isn't an SDTS-DLG, import what
 			// we can from the first layer, then stop.
-
-			int num_fields = defn->GetFieldCount();
-			OGRwkbGeometryType geom_type = defn->GetGeomType();
-			for (j = 0; j < num_fields; j++)
-			{
-				OGRFieldDefn *field_def = defn->GetFieldDefn(j);
-				const char *field_name = field_def->GetNameRef();
-			    OGRFieldType field_type = field_def->GetType();
-			}
+			AppendFromOGRLayer(pLayer);
+			break;
 		}
 	}
-	GuessIntersectionTypes();
+	if (bIsSDTS)
+		GuessIntersectionTypes();
 }
 
-#if 0
-	// unused code; here in case is becomes useful in the future
+
+bool RoadMapEdit::AppendFromOGRLayer(OGRLayer *pLayer)
 {
+	int i, num_fields, feature_count, count;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRFeatureDefn	*defn;
+	const char		*layer_name;
+	OGRwkbGeometryType geom_type;
+
+	// Get basic information about the layer we're reading
+	feature_count = pLayer->GetFeatureCount();
+  	pLayer->ResetReading();
+	defn = pLayer->GetLayerDefn();
+	if (!defn)
+		return false;
+
+	layer_name = defn->GetName();
+	num_fields = defn->GetFieldCount();
+	geom_type = defn->GetGeomType();
+
+	// Get the projection (SpatialReference) from this layer, if we can.
+	// Sometimes (e.g. for GML) the layer doesn't have it; may have to
+	// use the first Geometry instead.
+	bool bGotCS = false;
+	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+	if (pSpatialRef)
 	{
-		int field_count1 = defn->GetFieldCount();
-		for (j = 0; j < field_count1; j++)
+		m_proj.SetSpatialReference(pSpatialRef);
+		bGotCS = true;
+	}
+
+	// Convert from OGR to our geometry type
+	bool bGood = false;
+	while (!bGood)
+	{
+		switch (geom_type)
 		{
-			OGRFieldDefn *field_def1 = defn->GetFieldDefn(j);
-			if (field_def1)
-			{
-				const char *fnameref = field_def1->GetNameRef();
-				OGRFieldType ftype = field_def1->GetType();
-			}
-		}
-
-		OGRSpatialReference *spatialref2 = layer->GetSpatialRef();
-		// const char*  layer->GetInfo ( const char * ) 
-
-		int feature_count = layer->GetFeatureCount();
-		OGRFeature  *pFeature;
-
-		int count = 0;
-  		layer->ResetReading();
-		while( (pFeature = layer->GetNextFeature()) != NULL )
-		{
-			count++;
-			OGRGeometry *geom = pFeature->GetGeometryRef();
-			if (geom)
-			{
-				int dim = geom->getDimension();
-				int dim2 = geom->getCoordinateDimension();
-				const char *gname2 = geom->getGeometryName();
-				OGRwkbGeometryType gtype2 = geom->getGeometryType();
-				switch (gtype2)
-				{
-				case wkbPoint:
-					{
-						OGRPoint    *pPoint = (OGRPoint *) geom;
-						double x = pPoint->getX();
-					}
-					break;
-				case wkbLineString:
-					{
-						OGRLineString    *pLine = (OGRLineString *) geom;
-						int line_poins = pLine->getNumPoints();
-						double x = pLine->getX(0);
-					}
-					break;
-				}
-			}
-			OGRFeatureDefn *feat_defn = pFeature->GetDefnRef();
-			if (feat_defn)
-			{
-				const char *name2 = feat_defn->GetName();
-				int field_count2 = feat_defn->GetFieldCount();
-				for (j = 0; j < field_count2; j++)
-				{
-					OGRFieldDefn *field_def2 = feat_defn->GetFieldDefn(j);
-					if (field_def2)
-					{
-						const char *fnameref = field_def2->GetNameRef();
-						OGRFieldType ftype = field_def2->GetType();
-					}
-				}
-			}
-			int field_count2 = pFeature->GetFieldCount();
-			for (j = 0; j < field_count2; j++)
-			{
-				OGRFieldDefn *field_def2 = pFeature->GetFieldDefnRef(j);
-				if (field_def2)
-				{
-					const char *fnameref2 = field_def2->GetNameRef();
-					OGRFieldType ftype2 = field_def2->GetType();
-				}
-				if (!pFeature->IsFieldSet(j))
-					continue;
-
-				OGRFieldType ftype2 = pFeature->GetFieldDefnRef(j)->GetType();
-				switch (ftype2)
-				{
-				case OFTInteger:
-					{
-						int ivalue = pFeature->GetFieldAsInteger(j);
-					}
-					break;
-				case OFTString:
-					{
-						const char * strvalue = pFeature->GetFieldAsString(j);
-					}
-					break;
-				}
-			}
+		case wkbLineString:
+		case wkbMultiLineString:
+			bGood = true;
+			break;
+		case wkbUnknown:
+			// This usually indicates that the file contains a mix of different
+			// geometry types.  Look at the first geometry.
+			pFeature = pLayer->GetNextFeature();
+			pGeom = pFeature->GetGeometryRef();
+			geom_type = pGeom->getGeometryType();
+			break;
+		default:
+			return false;	// don't know what to do with this geom type
 		}
 	}
-}
-#endif
 
+	// Read Data from OGR into memory
+	int num_geoms;
+	OGRLineString   *pLineString;
+	OGRMultiLineString   *pMulti;
+
+	pLayer->ResetReading();
+	count = 0;
+	while( (pFeature = pLayer->GetNextFeature()) != NULL )
+	{
+		pGeom = pFeature->GetGeometryRef();
+		if (!pGeom)
+			continue;
+
+		if (!bGotCS)
+		{
+			OGRSpatialReference *pSpatialRef = pGeom->getSpatialReference();
+			if (pSpatialRef)
+			{
+				m_proj.SetSpatialReference(pSpatialRef);
+				bGotCS = true;
+			}
+		}
+		// Beware - some OGR-supported formats, such as MapInfo,
+		//  will have more than one kind of geometry per layer.
+		geom_type = pGeom->getGeometryType();
+		num_geoms = 1;
+
+		switch (geom_type)
+		{
+		case wkbLineString:
+			pLineString = (OGRLineString *) pGeom;
+			AddLinkFromLineString(pLineString);
+			break;
+		case wkbMultiLineString:
+			pMulti = (OGRMultiLineString *) pGeom;
+			num_geoms = pMulti->getNumGeometries();
+			for (i = 0; i < num_geoms; i++)
+			{
+				pLineString = (OGRLineString *) pMulti->getGeometryRef(i);
+				AddLinkFromLineString(pLineString);
+			}
+			break;
+		default:
+			continue;	// ignore all other geometry types
+		}
+		// track total features
+		feature_count += (num_geoms-1);
+	}
+	return true;
+}
+
+
+void RoadMapEdit::AddLinkFromLineString(OGRLineString *pLineString)
+{
+	NodeEdit *pN1, *pN2;
+	LinkEdit *pR;
+	DPoint2 p2;
+
+	int j, num_points = pLineString->getNumPoints();
+
+	// create new road
+	pR = new LinkEdit();
+	pR->m_iLanes = 2;
+	pR->m_iPriority = 1;
+
+	pR->SetSize(num_points);
+	for (j = 0; j < num_points; j++)
+	{
+		p2.Set(pLineString->getX(j), pLineString->getY(j));
+		pR->SetAt(j, p2);
+	}
+
+	// create 2 new nodes (begin/end) and a new line
+	pN1 = new NodeEdit();
+	pN1->m_p.x = pLineString->getX(0);
+	pN1->m_p.y = pLineString->getY(0);
+	pN1->SetVisual(VIT_NONE);
+
+	// add to list
+	AddNode(pN1);
+
+	pN2 = new NodeEdit();
+	pN2->m_p.x = pLineString->getX(num_points-1);
+	pN2->m_p.y = pLineString->getY(num_points-1);
+	pN2->SetVisual(VIT_NONE);
+
+	// add to list
+	AddNode(pN2);
+
+	// point link to nodes
+	pR->SetNode(0, pN1);
+	pR->SetNode(1, pN2);
+
+	//set bounding box for the road
+	pR->ComputeExtent();
+
+	// add to list
+	AddLink(pR);
+
+	// point node to links
+	pR->GetNode(0)->AddLink(pR);
+	pR->GetNode(1)->AddLink(pR);
+}
 
