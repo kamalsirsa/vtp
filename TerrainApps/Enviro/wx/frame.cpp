@@ -185,14 +185,6 @@ wxFrame(parent, -1, title, pos, size, style)
 	CreateToolbar();
 	CreateStatusBar();
 
-	// Make a vtGLCanvas
-/*#ifdef __WXMOTIF__
-	// FIXME:  Can remove this special case once wxMotif 2.3 is released?
-	int gl_attrib[20] = { GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
-		GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
-		GLX_DOUBLEBUFFER, None };
-#else */
-
 	// We definitely want full color and a 24-bit Z-buffer!
 	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
 		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
@@ -415,13 +407,13 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (pTerr && g_App.m_bSelectedStruct)
 		{
-			vtStructureArray3d &sa = pTerr->GetStructures();
+			vtStructureArray3d *sa = pTerr->GetStructures();
 			int i = 0;
-			while (!sa.GetAt(i)->IsSelected())
+			while (!sa->GetAt(i)->IsSelected())
 				i++;
-			vtBuilding3d *bld = sa.GetBuilding(i);
+			vtBuilding3d *bld = sa->GetBuilding(i);
 			// (Do something to the building as a test)
-			sa.ConstructStructure(bld);
+			sa->ConstructStructure(bld);
 		}
 	}
 	if (key == 'Z')
@@ -429,12 +421,12 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		vtTerrain *pTerr = GetCurrentTerrain();
 		if (pTerr && g_App.m_bSelectedStruct)
 		{
-			vtStructureArray3d &sa = pTerr->GetStructures();
+			vtStructureArray3d *sa = pTerr->GetStructures();
 			int i = 0;
-			while (!sa.GetAt(i)->IsSelected())
+			while (!sa->GetAt(i)->IsSelected())
 				i++;
-			vtBuilding3d *bld = sa.GetBuilding(i);
-			sa.ConstructStructure(bld);
+			vtBuilding3d *bld = sa->GetBuilding(i);
+			sa->ConstructStructure(bld);
 		}
 	}
 	if (key == 1)	// Ctrl-A
@@ -960,8 +952,8 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 	}
 	wxString2 str = saveFile.GetPath();
 
-	vtStructureArray3d &SA = GetCurrentTerrain()->GetStructures();
-	SA.WriteXML(str.mb_str());
+	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+	sa->WriteXML(str.mb_str());
 }
 
 
@@ -1058,20 +1050,20 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 void vtFrame::OnPopupProperties(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d &structures = pTerr->GetStructures();
+	vtStructureArray3d *structures = pTerr->GetStructures();
 
-	int count = structures.GetSize();
+	int count = structures->GetSize();
 	vtStructure *str;
 	vtBuilding3d *bld;
 	vtFence3d *fen;
 	for (int i = 0; i < count; i++)
 	{
-		str = structures.GetAt(i);
+		str = structures->GetAt(i);
 		if (!str->IsSelected())
 			continue;
 
-		bld = structures.GetBuilding(i);
-		fen = structures.GetFence(i);
+		bld = structures->GetBuilding(i);
+		fen = structures->GetFence(i);
 		if (bld)
 		{
 			m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
@@ -1089,22 +1081,22 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 void vtFrame::OnPopupFlip(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d &structures = pTerr->GetStructures();
+	vtStructureArray3d *structures = pTerr->GetStructures();
 
-	int count = structures.GetSize();
+	int count = structures->GetSize();
 	vtStructure *str;
 	vtBuilding3d *bld;
 	for (int i = 0; i < count; i++)
 	{
-		str = structures.GetAt(i);
+		str = structures->GetAt(i);
 		if (!str->IsSelected())
 			continue;
 
-		bld = structures.GetBuilding(i);
+		bld = structures->GetBuilding(i);
 		if (!bld)
 			continue;
 		bld->FlipFootprintDirection();
-		structures.ConstructStructure(structures.GetStructure3d(i));
+		structures->ConstructStructure(structures->GetStructure3d(i));
 	}
 }
 
@@ -1113,3 +1105,4 @@ void vtFrame::OnPopupDelete(wxCommandEvent& event)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->DeleteSelectedStructures();
 }
+
