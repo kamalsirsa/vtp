@@ -1627,6 +1627,8 @@ bool vtElevationGrid::SaveToTerragen(const char *szFileName)
  * \param szFileName		The file name to write to.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
+ * \param bGZip			If true, the data will be compressed with gzip.
+ *				If true, you should Use a filename ending with ".gz".
  */
 bool vtElevationGrid::SaveToBT(const char *szFileName,
 							   void progress_callback(int), bool bGZip)
