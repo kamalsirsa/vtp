@@ -950,7 +950,6 @@ int vtString::Delete(int iIndex, int nCount)
 	{
 		CopyBeforeWrite();
 
-		int nNewLength = nLength-nCount;
 		int nCharsToCopy = nLength-(iIndex+nCount)+1;
 		memmove( m_pchData+iIndex, m_pchData+iIndex+nCount, nCharsToCopy );
 	}
@@ -1120,7 +1119,7 @@ wstring2::wstring2(const char *__s)
 {
 	int len = strlen(__s);
 	wchar_t *tmp = new wchar_t[len*2+1];
-	int result = mbstowcs(tmp, __s, len+1);
+	mbstowcs(tmp, __s, len+1);
 	// now copy the result into our own storage
 	*((wstring*)this) = tmp;
 	// and get rid of the temporary buffer
@@ -1130,7 +1129,7 @@ wstring2::wstring2(const char *__s)
 const char *wstring2::eb_str() const
 {
 	const wchar_t *guts = c_str();
-	int result = wcstombs(s_buffer, guts, MAX_WSTRING2_SIZE);
+	wcstombs(s_buffer, guts, MAX_WSTRING2_SIZE);
 	return s_buffer;
 }
 

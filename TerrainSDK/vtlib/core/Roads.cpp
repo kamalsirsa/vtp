@@ -122,8 +122,7 @@ void NodeGeom::BuildIntersection()
 	// how many roads meet here?
 	if (m_iLinks == 0)
 	{
-		// bogus case
-		int foo = 1;
+		; // bogus case (put a breakpoint here)
 	}
 	else if (m_iLinks == 1)
 	{
@@ -152,7 +151,7 @@ void NodeGeom::BuildIntersection()
 		// get info about the roads
 		w = (GetRoad(0)->m_fWidth + GetRoad(1)->m_fWidth) / 2.0f;
 		if (m_id == 8311) {
-			int hello = 1;
+			; // (bogus case - put a breakpoint here to debug)
 		}
 		pn0 = find_adjacent_roadpoint(GetRoad(0), this);
 		pn1 = find_adjacent_roadpoint(GetRoad(1), this);
@@ -187,7 +186,6 @@ void NodeGeom::BuildIntersection()
 			Link *pR_prev = GetRoad(i_prev);
 			w = pR->m_fWidth;
 			float w_next = pR_next->m_fWidth;
-			float w_prev = pR_prev->m_fWidth;
 
 			// find corner between this road and next
 			v = GetUnitRoadVector(i);
@@ -244,7 +242,7 @@ void NodeGeom::FindVerticesForRoad(Link *pR, FPoint3 &p0, FPoint3 &p1)
 		if (i == m_iLinks)
 		{
 			// bad case!  This node does not reference the road passed
-			int foo = 1;
+			; // (put a breakpoint here)
 		}
 		p0 = m_v[i*2];
 		p1 = m_v[i*2+1];
