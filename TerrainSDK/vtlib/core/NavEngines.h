@@ -40,9 +40,13 @@ public:
 
 	void Eval();
 
+	enum DOF { DOF_X = 0, DOF_Y, DOF_Z, DOF_PITCH, DOF_YAW, DOF_ROLL };
+	void SetDOF(DOF dof, bool bTrue) { m_bDOF[dof] = bTrue; }
+	bool GetDOF(DOF dof) { return m_bDOF[dof]; }
+
 protected:
 	float	m_fSpeed;		// max units per frame of movement
-	bool	m_bPreventRoll;
+	bool	m_bDOF[6];		// six degrees of freedom
 	bool	m_bAlwaysMove;
 };
 

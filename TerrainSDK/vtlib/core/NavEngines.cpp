@@ -19,8 +19,13 @@
 vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
 {
 	m_fSpeed = fSpeed;
-	m_bPreventRoll = bPreventRoll;
 	m_bAlwaysMove = false;
+
+	// by default, all degrees of freedom are allowed
+	for (int i = 0; i < 6; i++)
+		m_bDOF[i] = true;
+
+	m_bDOF[DOF_ROLL] = !bPreventRoll;
 }
 
 void vtFlyer::SetAlwaysMove(bool bMove)
@@ -46,11 +51,16 @@ void vtFlyer::Eval()
 		float trans = my * m_fSpeed * elapsed;
 		float rotate = -mx * elapsed;
 
-		pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, trans));
-		if (m_bPreventRoll)
-			pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
-		else
-			pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+		if (m_bDOF[DOF_Z])
+			pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, trans));
+
+		if (m_bDOF[DOF_YAW])
+		{
+			if (m_bDOF[DOF_ROLL])
+				pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+			else
+				pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+		}
 
 /*		static float temp = 0;
 		temp += elapsed;
@@ -67,7 +77,11 @@ void vtFlyer::Eval()
 		float updown = -my * m_fSpeed * elapsed;
 		float leftright = mx * m_fSpeed * elapsed;
 
-		pTarget->TranslateLocal(FPoint3(leftright, updown, 0.0f));
+		if (m_bDOF[DOF_X])
+			pTarget->TranslateLocal(FPoint3(leftright, 0, 0.0f));
+
+		if (m_bDOF[DOF_Y])
+			pTarget->TranslateLocal(FPoint3(0, updown, 0.0f));
 	}
 
 	//  Both buttons: pitch, roll
@@ -75,9 +89,10 @@ void vtFlyer::Eval()
 	{
 		float updown = -my * elapsed;
 		float leftright = mx * elapsed;
-		if (fabs(updown) > fabs(leftright))
+
+		if (fabs(updown) > fabs(leftright) && m_bDOF[DOF_PITCH])
 			pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
-		else if (!m_bPreventRoll)
+		else if (m_bDOF[DOF_ROLL])
 			pTarget->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), -leftright);
 	}
 }
@@ -390,10 +405,10 @@ void VFlyer::Eval()
 		float rotate = -mx * elapsed;
 
 		m_Velocity.z += trans;
-		if (m_bPreventRoll)
-			pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
-		else
+		if (m_bDOF[DOF_ROLL])
 			pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+		else
+			pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
 	}
 
 	// Right button: up-down, left-right
@@ -417,7 +432,7 @@ void VFlyer::Eval()
 		float leftright = mx * elapsed;
 		if (fabs(updown) > fabs(leftright))
 			pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
-		else if (!m_bPreventRoll)
+		else if (m_bDOF[DOF_ROLL])
 			pTarget->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), -leftright);
 	}
 
