@@ -1530,7 +1530,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 		m_PlantList.LookupPlantIndices(m_BioRegions.m_Types[i]);
 
-	OpenProgressDialog(_("Generating Vegetation"));
+	OpenProgressDialog(_("Generating Vegetation"), true);
 
 	int tree_count = 0;
 
@@ -1559,7 +1559,12 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	{
 		wxString str;
 		str.Printf(_("plants: %d"), pia.GetNumEntities());
-		UpdateProgressDialog(i * 100 / x_trees, str);
+		if (UpdateProgressDialog(i * 100 / x_trees, str))
+		{
+			// user cancel
+			CloseProgressDialog();
+			return;
+		}
 
 		p.x = area.left + (i * fTreeSpacing);
 		for (j = 0; j < y_trees; j ++)
