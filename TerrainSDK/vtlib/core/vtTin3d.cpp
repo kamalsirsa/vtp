@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,7 @@ vtTin3d::vtTin3d()
 
 /**
  * Read the TIN from a file.  This can either be an old-style or new-style
- * .tin format (custom VTP format)
+ * .tin format (so far, a VTP-specific format)
  */
 bool vtTin3d::Read(const char *fname)
 {
@@ -27,16 +27,7 @@ bool vtTin3d::Read(const char *fname)
 		return false;
 
 	ComputeExtents();
-
-	// No need to initialize
-	//Initialize(this);
-
 	return true;
-}
-
-void vtTin3d::ComputeExtents()
-{
-	GetExtents(m_EarthExtents, m_fMinHeight, m_fMaxHeight);
 }
 
 FPoint3 ComputeNormal(const FPoint3 &p1, const FPoint3 &p2, const FPoint3 &p3)

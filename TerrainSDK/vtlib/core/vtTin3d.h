@@ -33,8 +33,6 @@ public:
 
 	FPoint3 FindVectorToClosestVertex(const FPoint3 &pos);
 
-	void ComputeExtents();
-
 protected:
 	Array<vtMesh*> m_Meshes;
 	vtGeom		*m_pGeom;
