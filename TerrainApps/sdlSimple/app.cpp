@@ -20,12 +20,14 @@
 class App
 {
 public:
+	App::App() { m_ts = NULL; m_pCamera = NULL; }
 	bool CreateScene();
 
 	void videosettings(bool same_video_mode, bool fullscreen);
 	void display();
 	void run();
 	int main();
+	int  process_modifiers();
 	void process_mouse_button(const SDL_Event &event);
 	void process_mouse_motion(const SDL_Event &event);
 	bool process_event(const SDL_Event &event);
@@ -194,6 +196,16 @@ void App::display()
 #endif
 }
 
+int App::process_modifiers()
+{
+	int flags = 0;
+	SDLMod modifiers = SDL_GetModState();
+	if (modifiers & (KMOD_LSHIFT | KMOD_RSHIFT)) flags |= VT_SHIFT;
+	if (modifiers & (KMOD_LCTRL | KMOD_RCTRL))	 flags |= VT_CONTROL;
+	if (modifiers & (KMOD_LALT | KMOD_RALT))	 flags |= VT_ALT;
+	return flags;
+}
+
 void App::process_mouse_button(const SDL_Event &sdle)
 {
 	// turn SDL mouse button event into a VT mouse event
@@ -207,7 +219,7 @@ void App::process_mouse_button(const SDL_Event &sdle)
 	else if (sdle.button.button == 3)
 		event.button = VT_RIGHT;
 
-	event.flags = 0;
+	event.flags = process_modifiers();
 	event.pos.Set(sdle.button.x, sdle.button.y);
 
 	vtGetScene()->OnMouse(event);
@@ -219,7 +231,7 @@ void App::process_mouse_motion(const SDL_Event &sdle)
 	vtMouseEvent event;
 	event.type = VT_MOVE;
 	event.button = VT_NONE;
-	event.flags = 0;
+	event.flags = process_modifiers();
 	event.pos.Set(sdle.motion.x, sdle.motion.y);
 
 	vtGetScene()->OnMouse(event);
@@ -303,8 +315,10 @@ int App::main()
 
 	printf("Cleaning up..\n");
 	vtGetScene()->SetRoot(NULL);
-	m_ts->CleanupScene();
-	m_pCamera->Release();
+	if (m_ts)
+		m_ts->CleanupScene();
+	if (m_pCamera)
+		m_pCamera->Release();
 	delete m_ts;
 	vtGetScene()->Shutdown();
 
