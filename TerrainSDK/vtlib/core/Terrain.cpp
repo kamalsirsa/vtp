@@ -77,7 +77,7 @@ vtTerrain::vtTerrain()
 
 	m_CamLocation.Identity();
 
-	m_fCenterLongitude = -999;	// initially unknown
+	m_CenterGeoLocation.Set(-999, -999);	// initially unknown
 }
 
 vtTerrain::~vtTerrain()
@@ -1333,8 +1333,8 @@ void vtTerrain::SetFogDistance(float fMeters)
  */
 void vtTerrain::TranslateToGMT(vtTime &time)
 {
-	if (m_fCenterLongitude == -999)
-		_ComputeCenterLongitude();
+	if (m_CenterGeoLocation.x == -999)
+		_ComputeCenterLocation();
 
 	time.Increment(-m_iDifferenceFromGMT);
 }
@@ -1349,33 +1349,38 @@ void vtTerrain::TranslateToGMT(vtTime &time)
  */
 void vtTerrain::TranslateFromGMT(vtTime &time)
 {
-	if (m_fCenterLongitude == -999)
-		_ComputeCenterLongitude();
+	if (m_CenterGeoLocation.x == -999)
+		_ComputeCenterLocation();
 
 	time.Increment(m_iDifferenceFromGMT);
 }
 
-void vtTerrain::_ComputeCenterLongitude()
+DPoint2 vtTerrain::GetCenterGeoLocation()
+{
+	if (m_CenterGeoLocation.x == -999)
+		_ComputeCenterLocation();
+
+	return m_CenterGeoLocation;
+}
+
+void vtTerrain::_ComputeCenterLocation()
 {
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
 	DRECT drect = pHFGrid->GetEarthExtents();
-	DPoint2 center;
-	drect.GetCenter(center);
+	drect.GetCenter(m_CenterGeoLocation);
 
-	// must convert from whatever we are, to geo
+	// must convert from whatever we CRS are, to Geographic
 	vtProjection Dest;
 	Dest.SetWellKnownGeogCS("WGS84");
 
 	// safe (won't fail on tricky Datum conversions)
 	OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
-	trans->Transform(1, &center.x, &center.y);
+	trans->Transform(1, &m_CenterGeoLocation.x, &m_CenterGeoLocation.y);
 	delete trans;
-
-	m_fCenterLongitude = center.x;
 
 	// calculate offset FROM GMT
 	// longitude of 180 deg = 12 hours = 720 min = 43200 sec
-	m_iDifferenceFromGMT = (int) (m_fCenterLongitude / 180 * 43200);
+	m_iDifferenceFromGMT = (int) (m_CenterGeoLocation.x / 180 * 43200);
 }
 
 

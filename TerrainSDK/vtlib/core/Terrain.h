@@ -175,7 +175,6 @@ public:
 	// reports world coordinates
 	FPoint3 GetCenter();
 	float GetRadius();
-	void GetTerrainBounds();
 
 	// turn various features on/off
 	void SetFeatureVisible(TFType ftype, bool bOn);
@@ -223,6 +222,7 @@ public:
 	// Time
 	void TranslateToGMT(vtTime &time);
 	void TranslateFromGMT(vtTime &time);
+	DPoint2 GetCenterGeoLocation();
 
 	/********************** Public Data ******************/
 
@@ -263,7 +263,8 @@ protected:
 							 float diffuse, float emmisive);
 	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtDIB *dib,
 		const vtTime &time);
-	void _ComputeCenterLongitude();
+	void _ComputeCenterLocation();
+	void GetTerrainBounds();
 
 	/********************** Protected Data ******************/
 
@@ -337,8 +338,9 @@ protected:
 	// only used during initialization
 	vtElevationGrid	*m_pElevGrid;
 
-	// a useful value for computing "local time"
-	double m_fCenterLongitude;
+	// A useful value for computing "local time", the location of the
+	//  center of the terrain in Geographic coords.
+	DPoint2			m_CenterGeoLocation;;
 	int m_iDifferenceFromGMT;
 
 	// hold an informative message in case anything goes wrong
