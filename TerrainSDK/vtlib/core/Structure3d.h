@@ -123,7 +123,7 @@ public:
 	vtStructInstance3d();
 
 	// implement vtStructInstance methods
-	virtual double DistanceToPoint(const DPoint2 &p) const;
+	virtual double DistanceToPoint(const DPoint2 &p, float fMaxRadius) const;
 
 	// implement vtStructure3d methods
 	/// Create the node(s) and position them on the indicated heightfield

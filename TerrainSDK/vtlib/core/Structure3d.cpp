@@ -174,9 +174,9 @@ void vtStructInstance3d::DeleteNode()
 	}
 }
 
-double vtStructInstance3d::DistanceToPoint(const DPoint2 &p) const
+double vtStructInstance3d::DistanceToPoint(const DPoint2 &p, float fMaxRadius) const
 {
-	if (m_pModel)
+	if (m_pContainer && m_pModel)
 	{
 		// If we have the 3D model already loaded, we can return distance
 		//  from the given point to the edge of the bounding sphere.  This
@@ -185,15 +185,22 @@ double vtStructInstance3d::DistanceToPoint(const DPoint2 &p) const
 		//  it's a world-coord operation applied to a earth-coord result.
 		FSphere sphere;
 		m_pModel->GetBoundSphere(sphere);
-		DPoint2 evector;
-		g_Conv.ConvertVectorToEarth(sphere.radius, 0, evector);
-		return (m_p - p).Length() - evector.x;
+		FPoint3 trans = m_pContainer->GetTrans();
+		sphere.center += trans;
+		if (sphere.radius < fMaxRadius)
+		{
+			DPoint2 ecenter;
+			DPoint2 evector;
+			g_Conv.ConvertToEarth(sphere.center.x, sphere.center.z, ecenter);
+			g_Conv.ConvertVectorToEarth(sphere.radius, 0, evector);
+			double dist = (ecenter - p).Length();
+			return (dist - evector.x);
+		}
+		else
+			return 1E9;	// Ignore instances with such a large radius
 	}
-	else
-	{
-		// simple distance from the origin of this instance to the given point
-		return (m_p - p).Length();
-	}
+	// otherwise, simple distance from the origin of this instance to the given point
+	return vtStructInstance::DistanceToPoint(p, fMaxRadius);
 }
 
 ///////////////////////////////////////////////////////////////////////

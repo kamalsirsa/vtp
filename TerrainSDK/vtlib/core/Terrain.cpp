@@ -1072,7 +1072,7 @@ void vtTerrain::DeleteStructureSet(int index)
 }
 
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
-					   int &structure, double &closest)
+					   int &structure, double &closest, float fMaxInstRadius)
 {
 	structure = -1;
 	closest = 1E8;
@@ -1083,7 +1083,7 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 	{
 		vtStructureArray *sa = m_StructureSet[i];
 
-		if (sa->FindClosestStructure(point, epsilon, index, dist))
+		if (sa->FindClosestStructure(point, epsilon, index, dist, fMaxInstRadius))
 		{
 			if (dist < closest)
 			{
