@@ -800,10 +800,10 @@ void vtStarDome::SetTimeOfDay(int time)
 }
 
 // Helper function to compare stars by magnitude
-int	compare_mag(const void* star1, const void* star2)
+int	compare_mag(const void *star1, const void *star2)
 {
-	Star *pstar1 = (Star *)star1;
-	Star *pstar2 = (Star *)star2;
+	vtStarDome::Star *pstar1 = (vtStarDome::Star *)star1;
+	vtStarDome::Star *pstar2 = (vtStarDome::Star *)star2;
 
 	float magdiff = pstar1->mag - pstar2->mag;
 	if (magdiff < 0) return -1;

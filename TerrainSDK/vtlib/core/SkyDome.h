@@ -16,26 +16,6 @@ inline const int TIME_TO_INT(const double hr, const double min, const double sec
 	return (int)((hr * 60 + min) * 60 + sec);
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-struct Star
-{
-	// Right Ascension
-	float 	ra;
-
-	// Declination
-	float dec;
-
-	// Magnitude
-	float	mag;
-	float	relmag;
-
-	// Cartesian coordinate
-	FPoint3 cartpt;
-};
-
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 
 /**
  * A DayDome is a hemisphere which is colored according to the time of day:
@@ -125,7 +105,19 @@ public:
 	void	SetStarFile(char *starpath);
 	void	SetRadius(float radius);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+	struct Star
+	{
+		float 	ra;		// Right Ascension
+		float	dec;	// Declination
+		float	mag;	// Magnitude
+		float	relmag;
+		FPoint3 cartpt;	// Cartesian coordinate
+	};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 private:
+
 	float	Radius;
 	float	RelativeBrightness;
 
