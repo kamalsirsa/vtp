@@ -26,12 +26,11 @@ public:
 
 	enum Style
 	{
-		GEODESIC, RIGHT_TRIANGLE
+		GEODESIC, RIGHT_TRIANGLE, DYMAX_UNFOLD
 	};
 
 	void Create(int iTriangleCount, const StringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
-	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
 	void SetInflation(float f);
 	void SetLighting(bool bLight);
 	void AddPoints(DLine2 &points, float fSize);
@@ -42,6 +41,8 @@ public:
 	vtTransform *GetTop() { return m_mgeom; }
 
 protected:
+	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
+
 	// these methods create a mesh for each face composed of strips
 	void add_face1(vtMesh *mesh, int face, bool second);
 	void set_face_verts1(vtMesh *geom, int face, float f);
@@ -60,7 +61,7 @@ protected:
 	vtGeom		*m_geom;
 	vtMaterialArray	*m_mats;
 	int		m_globe_mat[10];
-	vtMesh	*m_mesh[21];
+	vtMesh	*m_mesh[22];
 
 	IcoGlobe::Style m_style;
 
@@ -69,7 +70,7 @@ protected:
 
 	// for RIGHT_TRIANGLE
 	int		m_vert;
-	Array<IcoVert>	m_rtv[21];	// right-triangle vertices
+	Array<IcoVert>	m_rtv[20];	// right-triangle vertices
 	int		m_depth;	// tesselation depth
 };
 

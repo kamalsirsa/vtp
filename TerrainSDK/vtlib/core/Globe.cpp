@@ -364,14 +364,14 @@ void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImag
 		base += strImagePrefix;
 		base += "_";
 
-		fname.Format("%s%02d%02d.jpg", (const char *)base, f1, f2);
+		fname.Format("%s%02d%02d.jpg", (const char *)base, f1+1, f2+1);
 		VTLOG("\t texture: %s\n", (const char *)fname);
 
 		fullpath = FindFileOnPaths(paths, (const char *)fname);
 		if (fullpath == "")
 		{
 			// try again with png
-			fname.Format("%s%02d%02d.png", (const char *)base, f1, f2);
+			fname.Format("%s%02d%02d.png", (const char *)base, f1+1, f2+1);
 			VTLOG("\t texture: %s\n", (const char *)fname);
 			fullpath = FindFileOnPaths(paths, (const char *)fname);
 		}
@@ -420,7 +420,7 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 		else
 			m_freq = iLess;
 	}
-	else if (style == RIGHT_TRIANGLE)
+	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
 	{
 		// Recursive right-triangle subdivision gives (2 * 3 ^ (depth+1))
 		// triangles.  Find what depth most closely matches the desired
@@ -439,16 +439,19 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 
 	int i;
 	int numvtx;
+	int meshes;
 	if (m_style == GEODESIC)
 	{
 		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
+		meshes = 20;
 	}
-	else if (style == RIGHT_TRIANGLE)
+	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
 	{
 		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
+		meshes = style == RIGHT_TRIANGLE ? 20 : 22;
 	}
 
-	for (i = 1; i <= 20; i++)
+	for (i = 0; i < meshes; i++)
 	{
 		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
 		m_mesh[i]->AllowOptimize(false);
@@ -495,11 +498,11 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 //
 void IcoGlobe::SetInflation(float f)
 {
-	for (int face = 1; face <= 20; face++)
+	for (int face = 0; face < 20; face++)
 	{
 		if (m_style == GEODESIC)
 			set_face_verts1(m_mesh[face], face, f);
-		else if (m_style == RIGHT_TRIANGLE)
+		else if (m_style == RIGHT_TRIANGLE || m_style == DYMAX_UNFOLD)
 			set_face_verts2(m_mesh[face], face, f);
 	}
 }

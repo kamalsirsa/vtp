@@ -54,13 +54,14 @@ public:
 
 protected:
 	// icosahedron data
-	DPoint3 m_verts[13];
-	icoface m_face[21];
+	DPoint3 m_verts[12];
+	icoface m_face[20];
 	double m_edge_length;	// edge length of icosahedron (~1.05 for unit radius)
 };
 
 // vertex indices for each face of the icosahedron
-extern int icosa_face_v[21][3];
+extern int icosa_face_v[20][3];
 extern int icosa_face_pairs[10][2];
 
-#endif
+#endif	// ICOSAH
+
