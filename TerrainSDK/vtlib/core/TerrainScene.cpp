@@ -80,14 +80,14 @@ vtTerrainScene::vtTerrainScene()
 vtTerrainScene::~vtTerrainScene()
 {
 	VTLOG("TerrainScene destructing\n");
-
-	for (unsigned int i = 0; i < m_StructObjs.GetSize(); i++)
-		delete m_StructObjs[i];
 }
 
 void vtTerrainScene::CleanupScene()
 {
 	VTLOG("vtTerrainScene::CleanupScene\n");
+
+	m_Content.ReleaseContents();
+	m_Content.Empty();
 
 	SetCurrentTerrain(NULL);
 
@@ -110,6 +110,9 @@ void vtTerrainScene::CleanupScene()
 	}
 	m_Terrains.clear();
 	m_pCurrentTerrain = NULL;
+
+	for (unsigned int i = 0; i < m_StructObjs.GetSize(); i++)
+		delete m_StructObjs[i];
 
 	// get anything left at the top of the scene graph
 	if (m_pTop)
