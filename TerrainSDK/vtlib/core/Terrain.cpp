@@ -1097,8 +1097,11 @@ bool vtTerrain::CreateStep4(int &iError)
 
 bool vtTerrain::CreateStep5(bool bSound, int &iError)
 {
-	if (m_pHeightField)
-		create_culture(bSound);
+	// must have a heightfield by this point
+	if (!m_pHeightField)
+		return false;
+
+	create_culture(bSound);
 
 	if (m_Params.m_bOceanPlane || m_Params.m_bHorizon)
 	{
