@@ -95,13 +95,48 @@ wxSizer *DistribVegFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer 
 #define ID_TOWER_ELEV 10048
 wxSizer *TowerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_PROJCHOICE 10049
-#define ID_DATUMCHOICE 10050
-#define ID_ZONECHOICE 10051
+#define ID_PROJ 10049
+#define ID_HORUNITS 10050
+#define ID_ZONE 10051
 #define ID_PROJPARAM 10052
 wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-// Declare menu bar functions
+#define ID_STATEPLANES 10053
+#define ID_NAD27 10054
+#define ID_NAD83 10055
+wxSizer *StatePlaneDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_NUMLANES 10056
+#define ID_HWYNAME 10057
+#define ID_SIDEWALK 10058
+#define ID_PARKING 10059
+#define ID_MARGIN 10060
+#define ID_SURFTYPE 10061
+wxSizer *RoadPropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_INTTYPE 10062
+#define ID_ROADNUM 10063
+#define ID_BEHAVIOR 10064
+wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_SPACINGX 10065
+#define ID_SPACINGY 10066
+#define ID_SIZEX 10067
+#define ID_SIZEY 10068
+#define ID_CONSTRAIN 10069
+#define ID_SMALLER 10070
+#define ID_BIGGER 10071
+#define ID_FLOATS 10072
+#define ID_SHORTS 10073
+#define ID_AREAX 10074
+#define ID_AREAY 10075
+#define ID_ESTX 10076
+#define ID_ESTY 10077
+wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+// Declare menubar functions
+
+// Declare toolbar functions
 
 // Declare bitmap functions
 
