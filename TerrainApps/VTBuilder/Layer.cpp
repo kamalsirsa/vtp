@@ -18,7 +18,7 @@
 #include "StructLayer.h"
 #include "VegLayer.h"
 #include "TransitLayer.h"
-#include "TowerLayer.h"
+#include "UtilityLayer.h"
 #include "RawLayer.h"
 
 char *vtLayer::LayerTypeName[LAYER_TYPES] =
@@ -225,7 +225,7 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 		pLayer = new vtRawLayer();
 		break;
 	case LT_UTILITY:
-		pLayer = new vtTowerLayer();
+		pLayer = new vtUtilityLayer();
 		break;
 	case LT_WATER:
 		pLayer = new vtWaterLayer();

@@ -30,7 +30,7 @@ class vtRawLayer;
 class vtElevLayer;
 class vtRoadLayer;
 class vtStructureLayer;
-class vtTowerLayer;
+class vtUtilityLayer;
 class BuilderView;
 
 class MainFrame: public wxFrame
@@ -68,6 +68,7 @@ public:
 	void OnLayerSave(wxCommandEvent& event);
 	void OnLayerSaveAs(wxCommandEvent& event);
 	void OnLayerImport(wxCommandEvent& event);
+	void OnLayerImportTIGER(wxCommandEvent& event);
 	void OnLayerProperties(wxCommandEvent& event);
 	void OnLayerConvert(wxCommandEvent& event);
 	void OnLayerSetProjection(wxCommandEvent& event);
@@ -218,10 +219,10 @@ public:
 			return (vtStructureLayer *)m_pActiveLayer;
 		return NULL;
 	}
-	vtTowerLayer *GetActiveTowerLayer()
+	vtUtilityLayer *GetActiveUtilityLayer()
 	{
 		if(m_pActiveLayer &&m_pActiveLayer->GetType() == LT_UTILITY)
-			return (vtTowerLayer *)m_pActiveLayer;
+			return (vtUtilityLayer *)m_pActiveLayer;
 		return NULL;
 	}
 	void LoadLayer(const wxString &fname);
@@ -274,6 +275,7 @@ public:
 	vtLayer *ImportFromLULC(wxString &strFileName, LayerType ltype);
 	vtLayer *ImportVectorsWithOGR(wxString &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(wxString &strFileName);
+	void ImportDataFromTIGER(wxString &strDirName);
 
 	// export
 	void ExportElevation();

@@ -27,7 +27,7 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
-#include "TowerLayer.h"
+#include "UtilityLayer.h"
 // Dialogs
 #include "ElevDlg.h"
 
@@ -350,7 +350,7 @@ void MainFrame::LoadLayer(const wxString &fname)
 	}
 	if (ext.CmpNoCase("utl") == 0)
 	{
-		vtTowerLayer *pTR = new vtTowerLayer();
+		vtUtilityLayer *pTR = new vtUtilityLayer();
 		if(pTR->Load(fname))
 			pLayer = pTR;
 	}

@@ -228,19 +228,15 @@ SOURCE=.\StructLayer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TowerDLG.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\TowerLayer.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\TransitLayer.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\TreeView.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\UtilityLayer.cpp
 # End Source File
 # Begin Source File
 
@@ -384,19 +380,15 @@ SOURCE=.\StructLayer.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TowerDLG.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TowerLayer.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\TransitLayer.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\TreeView.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\UtilityLayer.h
 # End Source File
 # Begin Source File
 
