@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -686,35 +686,44 @@ RGBi vtBuilding::GetColor(BldColor which) const
 
 void vtBuilding::SetStories(int iStories)
 {
+	vtLevel *pLev;
+
 	int previous = GetStories();
 	if (previous == iStories)
 		return;
 
-	// must have at least one level
+	// this method assume each building must have at least two levels: one
+	// for the walls and one for the roof.
 	int levels = m_Levels.GetSize();
-	if (!levels)
+	if (levels == 0)
 	{
 		CreateLevel();
-		levels = 1;
+		levels++;
+	}
+	if (levels == 1)
+	{
+		pLev = CreateLevel();
+		pLev->SetRoofType(ROOF_FLAT, 0);
+		levels++;
 	}
 
 	// increase if necessary
 	if (iStories > previous)
 	{
-		// get top level
-		vtLevel *pTopLev = m_Levels[levels-1];
+		// get top non-roof level
+		pLev = m_Levels[levels-2];
 		// added some stories
-		pTopLev->m_iStories += (iStories - previous);
+		pLev->m_iStories += (iStories - previous);
 	}
 	// decrease if necessary
 	while (GetStories() > iStories)
 	{
-		// get top level
-		vtLevel *pTopLev = m_Levels[levels-1];
-		pTopLev->m_iStories--;
-		if (pTopLev->m_iStories == 0)
+		// get top non-roof level
+		pLev = m_Levels[levels-2];
+		pLev->m_iStories--;
+		if (pLev->m_iStories == 0)
 		{
-			delete pTopLev;
+			delete pLev;
 			m_Levels.SetSize(levels-1);
 			levels--;
 		}
@@ -723,8 +732,10 @@ void vtBuilding::SetStories(int iStories)
 
 int vtBuilding::GetStories() const
 {
+	// this method assume each building must have at least two levels: one
+	// for the walls and one for the roof.
 	int stories = 0;
-	for (int i = 0; i < m_Levels.GetSize(); i++)
+	for (int i = 0; i < m_Levels.GetSize() - 1; i++)
 		stories += m_Levels[i]->m_iStories;
 	return stories;
 }
