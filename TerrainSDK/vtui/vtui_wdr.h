@@ -6,7 +6,7 @@
 #ifndef __WDR_vtui_H__
 #define __WDR_vtui_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
     #pragma interface "vtui_wdr.h"
 #endif
 
@@ -73,6 +73,15 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool se
 #define ID_RECALCULATEHEIGHTS 10034
 #define ID_BASELINEOFFSET 10035
 wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_RADIO_CONTENT 10036
+#define ID_CHOICE_FILE 10037
+#define ID_CHOICE_ITEM 10038
+#define ID_RADIO_MODEL 10039
+#define ID_MODEL_FILE 10040
+#define ID_BROWSE_MODEL_FILE 10041
+#define ID_LOCATION 10042
+wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
