@@ -393,7 +393,11 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 						 bool bTexGen, bool bClamp,
 						 bool bMipMap)
 {
-	return AddTextureMaterial(new vtImage(fname), bCulling, bLighting,
+	vtImage *pImage = new vtImage(fname);
+	if (!pImage->LoadedOK())
+		return -1;
+
+	return AddTextureMaterial(pImage, bCulling, bLighting,
 		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen, bClamp);
 }
 
