@@ -3,7 +3,7 @@
 // Do not modify this file, all changes will be lost!
 //------------------------------------------------------------------------------
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma implementation "vtui_wdr.h"
 #endif
 
@@ -16,6 +16,7 @@
 
 // Include private header
 #include "vtui_wdr.h"
+const int ID_TEXT = 10000;
 
 #include <wx/intl.h>
 
