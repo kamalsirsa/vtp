@@ -63,6 +63,10 @@ void CameraDlg::SlidersToValues(int w)
 	if (w == 2)	m_fNear =	powf(10, (CLIP_MIN + m_iNear * CLIP_RANGE / 100));
 	if (w == 3)	m_fFar =	powf(10, (CLIP_MIN + m_iFar * CLIP_RANGE / 100));
 	if (w == 4)	m_fSpeed =	powf(10, (SPEED_MIN + m_iSpeed * SPEED_RANGE / 100));
+
+	// safety check to prevent user from putting Near > Far
+	if (m_fNear >= m_fFar)
+		m_fNear = m_fFar -1;
 }
 
 void CameraDlg::ValuesToSliders()
