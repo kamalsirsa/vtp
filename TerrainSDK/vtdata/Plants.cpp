@@ -18,6 +18,8 @@
 #include "xmlhelper/easyxml.hpp"
 #include "shapelib/shapefil.h"
 
+extern int FindDBField(DBFHandle db, const char *field_name);
+
 float vtPlantAppearance::s_fTreeScale = 1.0f;
 
 /////////////////////////
@@ -759,6 +761,49 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	}
 
 	fclose(fp);
+	return true;
+}
+
+bool vtPlantInstanceArray::ReadSHP(const char *fname)
+{
+	SHPHandle hSHP = SHPOpen(fname, "rb");
+	if (hSHP == NULL)
+		return false;
+
+	int		i, nEntities, nShapeType;
+	double 	adfMinBound[4], adfMaxBound[4];
+	DPoint2 point;
+
+	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
+	if (nShapeType != SHPT_POINT)
+		return false;
+
+	// Open DBF File & Get DBF Info:
+	DBFHandle db = DBFOpen(fname, "rb");
+	if (db == NULL)
+		return false;
+
+	int	field_height = FindDBField(db, "Height");
+	int	field_id = FindDBField(db, "Species");
+	if (field_height == -1 || field_id == -1)
+		return false;
+
+	SetSize(nEntities);
+	for (i = 0; i < nEntities; i++)
+	{
+		SHPObject *psShape = SHPReadObject(hSHP, i);
+
+		GetAt(i).m_p.Set(psShape->padfX[0], psShape->padfY[0]);
+
+		// height
+		double height = DBFReadDoubleAttribute(db, i, field_height);
+		GetAt(i).size = (float) height;
+
+		// species id
+		GetAt(i).species_id = DBFReadIntegerAttribute(db, i, field_id);
+	}
+	DBFClose(db);
+	SHPClose(hSHP);
 	return true;
 }
 

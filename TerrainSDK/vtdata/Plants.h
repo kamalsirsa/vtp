@@ -172,6 +172,7 @@ public:
 
 	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);
+	bool ReadSHP(const char *fname);
 	bool WriteVF(const char *fname);
 	bool WriteSHP(const char *fname);
 
