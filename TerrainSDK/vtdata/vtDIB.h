@@ -20,7 +20,7 @@ typedef unsigned long dword;
 typedef unsigned short word;
 typedef unsigned char byte;
 
-#if WIN32
+#ifdef _MSC_VER
 #include <pshpack2.h>
 #endif
 
@@ -37,7 +37,8 @@ typedef struct tagBITMAPFILEHEADER {
 	word    bfReserved2;
 	dword   bfOffBits;
 } PACKED BITMAPFILEHEADER;
-#if WIN32
+
+#ifdef _MSC_VER
 #include <poppack.h>
 #endif
 
