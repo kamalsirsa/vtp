@@ -370,6 +370,9 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 
 bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// Read wire locations from a .wire file into the station record
 	int icount = 0;
 	FILE* f = fopen(filename, "r");
