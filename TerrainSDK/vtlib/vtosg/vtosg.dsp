@@ -215,6 +215,10 @@ SOURCE=..\core\TVTerrain.cpp
 
 SOURCE=..\core\vtSOG.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\core\vtTin.cpp
+# End Source File
 # End Group
 # Begin Group "Core Headers"
 
@@ -258,6 +262,10 @@ SOURCE=..\core\FP8.h
 # Begin Source File
 
 SOURCE=..\core\FrameTimer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\HeightField.h
 # End Source File
 # Begin Source File
 
@@ -346,6 +354,10 @@ SOURCE=..\vtlib.h
 # Begin Source File
 
 SOURCE=..\core\vtSOG.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\vtTin.h
 # End Source File
 # End Group
 # Begin Group "OSG Source"
