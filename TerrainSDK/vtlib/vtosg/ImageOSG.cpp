@@ -8,12 +8,12 @@
 #include <osgDB/ReadFile>
 
 //
-// Change any of these definitions to use OSG's own support for the various
+// Set any of these definitions to use OSG's own support for the various
 // image file formats instead of our own.
 //
-#define USE_OSG_FOR_PNG		0
-#define USE_OSG_FOR_BMP		0
-#define USE_OSG_FOR_JPG		0
+#define USE_OSG_FOR_PNG		1
+#define USE_OSG_FOR_BMP		1
+#define USE_OSG_FOR_JPG		1
 
 
 vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
@@ -95,48 +95,47 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 
 	GLubyte *image = new GLubyte[SizeImage];
 
-#if 0
+#if 1
 	memcpy(image, data, SizeImage);
 #else
-	// flip image
+	// Flip the orientation of the image: a DIB is stored bottom-up, but
+	// OSG and OpenGL expect the bitmap to be top-down.
+	// (Why is this not required?? It should be, but it works correctly
+	//  if we don't do the flip.)
 	for (i = 0; i < h; i++)
 		memcpy(image + i * SizeRow, data + (h-1-i) * SizeRow, SizeRow);
 #endif
 
 	int z;
-
 	int pixelFormat = GL_RGB;
+	GLubyte tmp;
 	if ( bpp == 24 )
 	{
 		z = 3;
 
 		/* BGR --> RGB */
-
 		for (i = 0; i < w * h; i++)
 		{
-			GLubyte tmp = image [ 3 * i ];
+			tmp = image [ 3 * i ];
 			image [ 3 * i ] = image [ 3 * i + 2 ];
 			image [ 3 * i + 2 ] = tmp;
 		}
 		pixelFormat = GL_RGB;
 	}
-	else
-	if ( bpp == 32 )
+	else if ( bpp == 32 )
 	{
 		z = 4;
 
 		/* BGRA --> RGBA */
-
 		for (i = 0; i < w * h; i++ )
 		{
-			GLubyte tmp = image [ 4 * i ];
+			tmp = image [ 4 * i ];
 			image [ 4 * i ] = image [ 4 * i + 2 ];
 			image [ 4 * i + 2 ] = tmp;
 		}
 		pixelFormat = GL_RGBA;
 	}
-	else
-	if ( bpp == 8 )
+	else if ( bpp == 8 )
 	{
 		pixelFormat = GL_LUMINANCE;
 	}
@@ -160,7 +159,7 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 
 #if USE_OSG_FOR_PNG
 
-bool vtImage::_ReadPNG()
+bool vtImage::_ReadPNG(const char *filename)
 {
 	return false;
 }
@@ -262,7 +261,7 @@ bool vtImage::_ReadPNG(const char *filename)
 	m_pPngData = (png_bytep) malloc(png_get_rowbytes(png, info)*height);
 	row_p = (png_bytep *) malloc(sizeof(png_bytep)*height);
 
-	bool StandardOrientation = false;
+	bool StandardOrientation = true;
 	for (i = 0; i < height; i++) {
 		if (StandardOrientation)
 			row_p[height - 1 - i] = &m_pPngData[png_get_rowbytes(png, info)*i];

@@ -234,7 +234,7 @@ void vtDynTerrainGeom::DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fo
 void vtDynTerrainGeom::SetupTexGen(float fTiling)
 {
 	GLfloat sPlane[4] = { fTiling * 1.0f / (m_iColumns-1), 0.0f, 0.0f, 0.0f };
-	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / -(m_iRows-1), 0.0f };
+	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / (m_iRows-1), 0.0f };
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
@@ -258,7 +258,7 @@ void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
 	float factor_y = (float) (1.0 / (-(m_iRows-1)/4.00+grid_offset_y));
 
 	GLfloat sPlane[4] = { factor_x, 0.00, 0.0, (a*2+1) * uv_offset };
-	GLfloat tPlane[4] = { 0.0, 0.00, factor_y, -(b*2+1) * uv_offset };
+	GLfloat tPlane[4] = { 0.0, 0.00, -factor_y, (b*2+1) * uv_offset };
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
