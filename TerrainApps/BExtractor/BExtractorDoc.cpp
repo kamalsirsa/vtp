@@ -272,8 +272,7 @@ BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 		SetPathName("Untitled", false);
 		return false;
 	}
-	// RFJ !!!!!!!!!
-	else if (!ext.CompareNoCase(".bmp"))
+	else if (!ext.CompareNoCase(".bmp") || !ext.CompareNoCase(".jpg"))
 	{
 		OnImportimage2(szPathName);
 		SetPathName(szPathName, true);
@@ -339,7 +338,7 @@ BOOL BExtractorDoc::OnSaveDocument(LPCTSTR szPathName)
 void BExtractorDoc::OnImportimage()
 {
 	CFileDialog openDialog(TRUE, "tif", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		"Image Files (*.bmp, *.tif)|*.bmp;*.tif||");
+		"Image Files (*.bmp, *.tif, *.jpg)|*.bmp;*.tif;*.jpg||");
 
 	if (openDialog.DoModal() != IDOK)
 		return;
