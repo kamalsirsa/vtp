@@ -1,9 +1,6 @@
 //
 // HeightField.cpp
 //
-// A class to represent any regular grid of points representing a height field.
-// Includes functionality to find the surface height at any given point.
-//
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
@@ -11,7 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "HeightField.h"
 #include "LocalGrid.h"
-#include "vtTin.h"
+#include "vtTin3d.h"
 
 void vtHeightField::Initialize(vtLocalGrid *pLocalGrid)
 {
@@ -27,7 +24,7 @@ void vtHeightField::Initialize(vtLocalGrid *pLocalGrid)
 	m_fDiagonalLength = hypo.Length();
 }
 
-void vtHeightField::Initialize(vtTin *pTin)
+void vtHeightField::Initialize(vtTin3d *pTin)
 {
 	m_Conversion.Setup(pTin->m_proj.IsGeographic(), m_EarthExtents);
 	m_Conversion.m_fVerticalScale = WORLD_SCALE;
