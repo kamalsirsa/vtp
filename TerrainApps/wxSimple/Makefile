@@ -15,13 +15,13 @@ IFLAGS = $(shell wx-config --cflags) \
 	  -I$(OSG_INC)               \
 	  -I$(X_INC)
 
-LDIRS  = $(OSG_LIB)                     \
-	 $(VTDATA_INST_DIR)             \
-	 $(VTOSG_INST_DIR)              \
-	 $(PNG_LIB)                     \
-	 $(SHAPE_LIB)                   \
-	 $(NETCDF_LIB)                  \
-	 $(X_LIB)                       \
+LDIRS  = $(OSG_LIB)            \
+	 $(VTDATA_INST_DIR)        \
+	 $(VTOSG_INST_DIR)         \
+	 $(PNG_LIB)                \
+	 $(SHAPE_LIB)              \
+	 $(NETCDF_LIB)             \
+	 $(X_LIB)                  \
 	 $(EXTRA_LDIRS)
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
@@ -34,8 +34,9 @@ CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = wxSimple
 LIBS   = $(shell wx-config --libs)   \
-	 -lwx_gtk_gl                 \
+		 -lwx_gtk_gl                 \
          -lvtosg -lvtdata            \
+		 -lxmlhelper				 \
          -lgdal.1.1 -losgDB -losgUtil -losg -lnetcdf    \
          $(GLU_LIB) -lGL -lX11 $(EXTRA_LIBS) -lm 
 
