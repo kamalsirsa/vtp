@@ -255,12 +255,25 @@ vtMeshFactory::vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
 	m_pMesh = NULL;
 	m_iPrimStart = -1;
 	m_iPrimVerts = -1;
+
+	m_bSimple = false;
+}
+
+vtMeshFactory::vtMeshFactory(vtMesh *pMesh)
+{
+	m_pGeom = NULL;
+	m_pMesh = pMesh;
+	m_iPrimStart = -1;
+	m_iPrimVerts = -1;
+
+	m_bSimple = true;
 }
 
 void vtMeshFactory::NewMesh()
 {
 	m_pMesh = new vtMesh(m_ePrimType, m_iVertType, m_iMaxVertsPerMesh);
 	m_pGeom->AddMesh(m_pMesh, m_iMatIndex);
+	m_pMesh->Release();	// pass ownership to geometry
 }
 
 void vtMeshFactory::PrimStart()
@@ -273,17 +286,20 @@ void vtMeshFactory::PrimStart()
 
 void vtMeshFactory::AddVertex(const FPoint3 &p)
 {
-	int count = m_pMesh->GetNumVertices();
-	if (count == m_iMaxVertsPerMesh)
+	if (!m_bSimple)
 	{
-		// repeat vertex; it needs to appear in both meshes
-		m_pMesh->AddVertex(p);
-		m_iPrimVerts++;
+		int count = m_pMesh->GetNumVertices();
+		if (count == m_iMaxVertsPerMesh)
+		{
+			// repeat vertex; it needs to appear in both meshes
+			m_pMesh->AddVertex(p);
+			m_iPrimVerts++;
 
-		// close that primitive and start another on a new mesh
-		PrimEnd();
-		NewMesh();
-		PrimStart();
+			// close that primitive and start another on a new mesh
+			PrimEnd();
+			NewMesh();
+			PrimStart();
+		}
 	}
 	m_pMesh->AddVertex(p);
 	m_iPrimVerts++;

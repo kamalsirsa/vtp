@@ -26,6 +26,7 @@ class vtMeshFactory
 public:
 	vtMeshFactory(vtGeom *pGeom, vtMeshBase::PrimType ePrimType,
 		int iVertType, int iMaxVertsPerMesh, int iMatIndex);
+	vtMeshFactory(vtMesh *pMesh);
 
 	void PrimStart();
 	void AddVertex(const FPoint3 &p);
@@ -43,6 +44,8 @@ protected:
 	vtMesh *m_pMesh;
 	int m_iPrimStart;
 	int m_iPrimVerts;
+
+	bool m_bSimple;
 };
 
 // helper functions
