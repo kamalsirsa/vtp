@@ -4,7 +4,7 @@
 // This modules contains the implementations of the file I/O methods of
 // the class vtElevationGrid.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project.
+// Copyright (c) 2001-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -202,7 +202,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	// check for version of DEM format
 	int		iRow, iColumn;
-	char buffer[144];
+	char buffer[158];
 
 	fseek(fp, 864, 0);
 	fread(buffer, 144, 1, fp);
@@ -274,7 +274,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	int iDatum = EPSG_DATUM_NAD27;	// default
 
-	// OLD format header ends at byte 864; new format has Datum
+	// OLD format header ends at byte 864 (0x360); new format has Datum
 	if (bNewFormat)
 	{
 		// year of data compilation
@@ -306,12 +306,13 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	// Set up the projection
 	bool bGeographic = false;
+	bool bSuccessfulCRS = true;
 	switch (iCoordSystem)
 	{
 	case 0:		// geographic (lat-lon)
 		bGeographic = true;
 		iUTMZone = -1;
-		m_proj.SetProjectionSimple(false, iUTMZone, iDatum);
+		bSuccessfulCRS = m_proj.SetProjectionSimple(false, iUTMZone, iDatum);
 		break;
 	case 1:		// utm
 		m_proj.SetProjectionSimple(true, iUTMZone, iDatum);
@@ -353,6 +354,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		VTLOG("Warning!  We don't yet support DEM coordinate system %d.\n", iCoordSystem);
 		break;
 	}
+
+	// We must have a functional CRS, or it will sebsequently fail
+	if (!bSuccessfulCRS)
+		return false;
 
 	fseek(fp, 528, 0);
 	int iGUnit = IConvert(fp, 6);
