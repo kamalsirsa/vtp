@@ -1042,6 +1042,62 @@ int vtRoadMap::RemoveUnusedNodes()
 	return unused;
 }
 
+//
+// Remove a node - use with caution
+//
+void vtRoadMap::RemoveNode(Node *pNode)
+{
+	Node *prev = NULL, *next;
+	Node *pN = m_pFirstNode;
+
+	while (pN)
+	{
+		next = pN->m_pNext;
+		if (pNode == pN)
+		{
+			// delete it
+			if (prev)
+				prev->m_pNext = next;
+			else
+				m_pFirstNode = next;
+			delete pN;
+			// I assume that a node cannot be on the list more than once!!!
+			break;
+		}
+		else
+			prev = pN;
+		pN = next;
+	}
+}
+
+//
+// Remove a road - use with caution
+//
+void vtRoadMap::RemoveRoad(Road *pRoad)
+{
+	Road *prev = NULL, *next;
+	Road *pR = m_pFirstRoad;
+
+	while (pR)
+	{
+		next = pR->m_pNext;
+		if (pRoad == pR)
+		{
+			// delete it
+			if (prev)
+				prev->m_pNext = next;
+			else
+				m_pFirstRoad = next;
+			delete pR;
+			// I assume that a node cannot be on the list more than once!!!
+			break;
+		}
+		else
+			prev = pR;
+		pR = next;
+	}
+}
+
 #define FRead(a,b) fread(a,b,1,fp)
 #define FWrite(a,b) fwrite(a,b,1,fp)
 

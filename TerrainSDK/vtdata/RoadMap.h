@@ -260,6 +260,11 @@ public:
 	// cleaning function: remove unused nodes, return the number removed
 	int RemoveUnusedNodes();
 
+	// Other clean up functions
+	void RemoveNode(Node *pNode);
+	void RemoveRoad(Road *pRoad);
+
+
 	bool ReadRMF(const char *filename, bool bHwy, bool bPaved, bool bDirt);
 	bool WriteRMF(const char *filename);
 
