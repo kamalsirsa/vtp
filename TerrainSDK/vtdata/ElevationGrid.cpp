@@ -17,17 +17,17 @@ using namespace std;
 #define meters_per_latitude	111300.0f
 
 #ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#define max(a,b)	(((a) > (b)) ? (a) : (b))
 #endif
 
 #ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#define min(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
 
 //////////////////////////////////////////////////
 
-/** Constructor: Creates an empty grid.
- *
+/**
+ * Constructor: Creates an empty grid.
  */
 vtElevationGrid::vtElevationGrid()
 {
@@ -39,11 +39,12 @@ vtElevationGrid::vtElevationGrid()
 
 	m_fMinHeight = m_fMaxHeight = 0.0f;
 	m_szOriginalDEMName[0] = 0;
-	m_fVMeters = 1.0;
-	m_fGRes = 1.0;
+	m_fVMeters = 1.0f;
 }
 
-/** Constructor: Creates a grid of given size.
+/**
+ * Constructor: Creates a grid of given size.
+ *
  * \param area the coordinate extents of the grid (rectangular area)
  * \param iColumns number of columns in the grid (east-west)
  * \param iRows number of rows (north-south)
@@ -61,9 +62,24 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 	m_bFloatMode = bFloat;
 	m_proj = proj;
 	m_szOriginalDEMName[0] = 0;
+	m_fVMeters = 1.0f;
 
-	AllocateArray();
+	_AllocateArray();
 }
+
+/**
+ * Destructor
+ */
+vtElevationGrid::~vtElevationGrid()
+{
+	if (m_pData)
+		free(m_pData);
+	m_pData = NULL;
+	if (m_pFData)
+		free(m_pFData);
+	m_pFData = NULL;
+}
+
 
 // helper
 double MetersPerLongitude(double latitude)
@@ -72,7 +88,8 @@ double MetersPerLongitude(double latitude)
 }
 
 
-/** Initializes an elevation grid by converting the contents of an another
+/**
+ * Initializes an elevation grid by converting the contents of an another
  * grid to a new projection.
  * \param pOld An existing elevation grid to convert from.
  * \param NewProj The new projection to convert to.
@@ -114,30 +131,34 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// now, how large an array will we need for the new terrain?
 	// try to preserve the sampling rate approximately
 	//
+	double meters_per_longitude;
+
 	bool bOldGeo = (pSource->IsGeographic() != 0);
 	bool bNewGeo = (pDest->IsGeographic() != 0);
 
 	DPoint2 old_step = pOld->GetSpacing();
 	DPoint2 new_step;
 
-	double meters_per_longitude = MetersPerLongitude(pOld->m_Corners[0].y);
-
 	if (bOldGeo && !bNewGeo)
 	{
 		// convert degrees to meters (approximately)
+		meters_per_longitude = MetersPerLongitude(pOld->m_Corners[0].y);
 		new_step.x = old_step.x * meters_per_longitude;
 		new_step.y = old_step.y * meters_per_latitude;
 	}
 	else if (!bOldGeo && bNewGeo)
 	{
 		// convert meters to degrees (approximately)
+		meters_per_longitude = MetersPerLongitude(m_Corners[0].y);
 		new_step.x = old_step.x / meters_per_longitude;
 		new_step.y = old_step.y / meters_per_latitude;	// convert degrees to meters (approximately)
 	}
 	else
 	{
-		// old and new terrain are in the same horizontal units
-		new_step = old_step;
+		// check horizontal units or old and new terrain
+		double units_old = pSource->GetLinearUnits(NULL);
+		double units_new = pDest->GetLinearUnits(NULL);
+		new_step = old_step * (units_old / units_new);
 	}
 	double fColumns = m_area.Width() / new_step.x;
 	double fRows = m_area.Height() / new_step.y;
@@ -150,7 +171,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (m_iColumns > 40000 || m_iRows > 40000)
 		return false;
 
-	AllocateArray();
+	_AllocateArray();
 
 	// convert each bit of data from the old array to the new
 	DPoint2 p, lat, step = GetSpacing();
@@ -184,17 +205,30 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 }
 
 
-/** Destructor
+/**
+ * Scale all the valid elevation values in the grid by a given factor.
  *
+ * \param bDirect If true, scale the stored height values directly.  Otherwise,
+ * only the height scale (vertical meters per unit) is scaled.
  */
-vtElevationGrid::~vtElevationGrid()
+void vtElevationGrid::Scale(float fScale, bool bDirect)
 {
-	if (m_pData)
-		free(m_pData);
-	m_pData = NULL;
-	if (m_pFData)
-		free(m_pFData);
-	m_pFData = NULL;
+	if (!bDirect)
+	{
+		m_fVMeters *= fScale;
+		return;
+	}
+	int i, j;
+	float f;
+	for (i = 0; i < m_iColumns; i++)
+	{
+		for (j = 0; j < m_iRows; j++)
+		{
+			f = GetFValue(i, j);
+			if (f != INVALID_ELEVATION)
+				SetFValue(i, j, f * fScale);
+		}
+	}
 }
 
 
@@ -257,9 +291,19 @@ DPoint2 vtElevationGrid::GetSpacing()
 void vtElevationGrid::SetValue(int i, int j, short value)
 {
 	if (m_bFloatMode)
-		m_pFData[i*m_iRows+j] = (float)value;
+	{
+		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
+			m_pFData[i*m_iRows+j] = (float)value;
+		else
+			m_pFData[i*m_iRows+j] = (float)value / m_fVMeters;
+	}
 	else
-		m_pData[i*m_iRows+j] = value;
+	{
+		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
+			m_pData[i*m_iRows+j] = value;
+		else
+			m_pData[i*m_iRows+j] = (short) ((float)value / m_fVMeters);
+	}
 }
 
 /** Set an elevation value to the grid.
@@ -269,9 +313,19 @@ void vtElevationGrid::SetValue(int i, int j, short value)
 void vtElevationGrid::SetFValue(int i, int j, float value)
 {
 	if (m_bFloatMode)
-		m_pFData[i*m_iRows+j] = value;
+	{
+		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
+			m_pFData[i*m_iRows+j] = value;
+		else
+			m_pFData[i*m_iRows+j] = value / m_fVMeters;
+	}
 	else
-		m_pData[i*m_iRows+j] = (short)value;
+	{
+		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
+			m_pData[i*m_iRows+j] = (short) value;
+		else
+			m_pData[i*m_iRows+j] = (short) (value / m_fVMeters);
+	}
 }
 
 /** Get an elevation value from the grid.
@@ -281,9 +335,18 @@ void vtElevationGrid::SetFValue(int i, int j, float value)
 int vtElevationGrid::GetValue(int i, int j)
 {
 	if (m_bFloatMode)
-		return (int) m_pFData[i*m_iRows+j];
+	{
+		float value = m_pFData[i*m_iRows+j];
+		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
+			return (int) value;
+		else
+			return (int) (value * m_fVMeters);
+	}
+	short svalue = m_pData[i*m_iRows+j];
+	if (m_fVMeters == 1.0f || svalue == INVALID_ELEVATION)
+		return svalue;
 	else
-		return m_pData[i*m_iRows+j];
+		return (int) ((float)svalue * m_fVMeters);
 }
 
 /** Get an elevation value from the grid.
@@ -293,10 +356,20 @@ int vtElevationGrid::GetValue(int i, int j)
 float vtElevationGrid::GetFValue(int i, int j)
 {
 	if (m_bFloatMode)
-		return m_pFData[i*m_iRows+j];
+	{
+		float value = m_pFData[i*m_iRows+j];
+		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
+			return value;
+		else
+			return value * m_fVMeters;
+	}
+	short svalue = m_pData[i*m_iRows+j];
+	if (m_fVMeters == 1.0f || svalue == INVALID_ELEVATION)
+		return (float) svalue;
 	else
-		return (float) m_pData[i*m_iRows+j];
+		return ((float)svalue * m_fVMeters);
 }
+
 
 /** For a grid whose 4 corners coordinates are known, use
  * those corners to imply absolute extents.
@@ -330,7 +403,7 @@ void vtElevationGrid::ComputeCornersFromExtents()
 //
 // Allocates a data array big enough to contain the grid data.
 //
-void vtElevationGrid::AllocateArray()
+void vtElevationGrid::_AllocateArray()
 {
 	if (m_bFloatMode) {
 		m_pData = NULL;
@@ -360,14 +433,9 @@ void vtElevationGrid::AllocateArray()
 void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc)
 {
 	DPoint2 spacing = GetSpacing();
-	if (m_bFloatMode)
-		loc.Set(m_area.left + i * spacing.x,
-				m_area.bottom + j * spacing.y,
-				m_pFData[i*m_iRows+j]);
-	else
-		loc.Set(m_area.left + i * spacing.x,
-				m_area.bottom + j * spacing.y,
-				m_pData[i*m_iRows+j]);
+	loc.Set(m_area.left + i * spacing.x,
+			m_area.bottom + j * spacing.y,
+			GetFValue(i, j));
 }
 
 /** Use the height data in the grid to fill a bitmap with a shaded color image.
@@ -433,7 +501,9 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean)
 }
 
 
-/** Get the height of the grid at a specific world coordinate.
+/**
+ * Get the height of the grid at a specific world coordinate.
+ *
  * The value of the gridpoint closest to the specified location is returned.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
  * \param x, y	The coordinate to query.
@@ -448,8 +518,9 @@ float vtElevationGrid::GetClosestValue(double x, double y)
 		return INVALID_ELEVATION;
 }
 
-
-/** Get the interpolated height of the grid at a specific world coordinate.
+/**
+ * Get the interpolated height of the grid at a specific world coordinate.
+ *
  * The value is linearly interpolated between the surrounding gridpoints.
  * If the location is not within the extents of the grid, INVALID_ELEVATION is returned.
  * \param x, y	The coordinate to query.
@@ -483,6 +554,8 @@ float vtElevationGrid::GetFilteredValue(double x, double y)
 		// right edge - interpolate north-south
 		fDataBL = GetFValue(index_x, index_y);
 		fDataTL = GetFValue(index_x, index_y+1);
+		if (fDataBL == INVALID_ELEVATION || fDataTL == INVALID_ELEVATION)
+			return INVALID_ELEVATION;
 		double diff_y = findex_y - index_y;
 		fData = fDataBL + (fDataTL - fDataBL) * diff_y;
 	}
@@ -491,6 +564,8 @@ float vtElevationGrid::GetFilteredValue(double x, double y)
 		// top edge - interpolate east-west
 		fDataBL = GetFValue(index_x, index_y);
 		fDataBR = GetFValue(index_x+1, index_y);
+		if (fDataBL == INVALID_ELEVATION || fDataBR == INVALID_ELEVATION)
+			return INVALID_ELEVATION;
 		double diff_x = findex_x - index_x;
 		fData = fDataBL + (fDataBR - fDataBL) * diff_x;
 	}
@@ -506,12 +581,105 @@ float vtElevationGrid::GetFilteredValue(double x, double y)
 			(fDataBR != INVALID_ELEVATION) &&
 			(fDataTL != INVALID_ELEVATION) &&
 			(fDataTR != INVALID_ELEVATION))
+		{
 			fData = fDataBL + (fDataBR-fDataBL)*diff_x +
 							  (fDataTL-fDataBL)*diff_y +
 							  (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
+		}
 		else
 			fData = INVALID_ELEVATION;
 	}
+	return (float) fData;
+}
+
+float vtElevationGrid::GetFValueSafe(int i, int j)
+{
+	if (i < 0 || i > m_iColumns-1 || j < 0 || j > m_iRows-1)
+		return INVALID_ELEVATION;
+	float fData = GetFValue(i, j);
+	return fData;
+}
+
+/**
+ * Get the interpolated height of the grid at a specific world coordinate.
+ * This method is more liberal in regards to finding a valid data point
+ * among undefined data than GetFilteredValue()
+ */
+float vtElevationGrid::GetFilteredValue2(double x, double y)
+{
+	float fData;
+
+	// simple case, within the 
+	if (ContainsPoint(x, y))
+	{
+		fData = GetFilteredValue(x, y);
+		if (fData != INVALID_ELEVATION)
+			return fData;
+	}
+
+	// what data point in t is closest to (x,y)?
+	double local_x = (x - m_area.left) / (m_area.right - m_area.left);
+	double local_y = (y - m_area.bottom) / (m_area.top - m_area.bottom);
+
+	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
+	int index_x2 = (int) (local_x * (m_iColumns-1) + 0.5);
+	if (index_x2 < 0 || index_x2 > m_iColumns)
+		return INVALID_ELEVATION;
+
+	int index_y = (int) (local_y * (m_iRows-1) + 0.0000000001);
+	int index_y2 = (int) (local_y * (m_iRows-1) + 0.5);
+	if (index_y2 < 0 || index_y2 > m_iRows)
+		return INVALID_ELEVATION;
+
+	double findex_x = local_x * (m_iColumns-1);
+	double findex_y = local_y * (m_iRows-1);
+
+	float fDataBL, fDataTL, fDataTR, fDataBR;
+
+	int valid = 0;
+	float sum = 0.0f;
+	fDataBL = GetFValueSafe(index_x, index_y);
+	fDataBR = GetFValueSafe(index_x+1, index_y);
+	fDataTL = GetFValueSafe(index_x, index_y+1);
+	fDataTR = GetFValueSafe(index_x+1, index_y+1);
+
+	if (fDataBL != INVALID_ELEVATION)
+	{
+		sum += fDataBL;
+		valid++;
+	}
+	if (fDataBR != INVALID_ELEVATION)
+	{
+		sum += fDataBR;
+		valid++;
+	}
+	if (fDataTL != INVALID_ELEVATION)
+	{
+		sum += fDataTL;
+		valid++;
+	}
+	if (fDataTR != INVALID_ELEVATION)
+	{
+		sum += fDataTR;
+		valid++;
+	}
+	if (valid == 4)	// all valid
+	{
+		// do bilinear filtering
+		double diff_x = findex_x - index_x;
+		double diff_y = findex_y - index_y;
+		fData = (float) fDataBL + (fDataBR-fDataBL)*diff_x +
+						  (fDataTL-fDataBL)*diff_y +
+						  (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
+	}
+	else if (valid == 3)
+	{
+		// do average; it's better than nothing
+		fData = sum / valid;
+	}
+	else
+		fData = INVALID_ELEVATION;
+	
 	return (float) fData;
 }
 
