@@ -155,6 +155,31 @@ double DLine2::NearestPoint(const DPoint2 &Point, int &iIndex)
 }
 
 /**
+ * Get a point on the line, safely wrapping around to the end or beginning
+ * for index values that are out of range.
+ */
+DPoint2 DLine2::GetSafePoint(int index)
+{
+	int points = GetSize();
+	if (index < 0)
+		return GetAt(index + points);
+	if (index >= points)
+		return GetAt(index - points);
+	return GetAt(index);
+}
+
+void DLine2::SetSafePoint(int index, const DPoint2 &p)
+{
+	int points = GetSize();
+	if (index < 0)
+		SetAt(index + points, p);
+	else if (index >= points)
+		SetAt(index - points, p);
+	else
+		SetAt(index, p);
+}
+
+/**
  * Return the length of the N'th segment in the line, which is the distance
  * between points N and N+1.  If the length of the last segment is requested,
  * a closed polygon is assumed.

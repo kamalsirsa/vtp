@@ -375,6 +375,8 @@ public:
 	double SegmentLength(int i) const;
 	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection);
 	double NearestPoint(const DPoint2 &Point, int &iIndex);
+	DPoint2 GetSafePoint(int index);
+	void SetSafePoint(int index, const DPoint2 &p);
 };
 
 /**
