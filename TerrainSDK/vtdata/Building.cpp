@@ -356,7 +356,15 @@ void vtLevel::SetEdgeColor(RGBi color)
 		m_Edges[i]->m_Color = color;
 }
 
-float vtLevel::GetEdgeLength(int i)
+vtEdge *vtLevel::GetEdge(unsigned int i)
+{
+	if (i < m_Edges.GetSize())		// safety check
+		return m_Edges[i];
+	else
+		return NULL;
+}
+
+float vtLevel::GetEdgeLength(unsigned int i)
 {
 	int edges = NumEdges();
 	int j = i+1;
@@ -365,10 +373,10 @@ float vtLevel::GetEdgeLength(int i)
 	return (float) (m_Footprint[j] - m_Footprint[i]).Length();
 }
 
-void vtLevel::SetWalls(int n)
+void vtLevel::SetWalls(unsigned int n)
 {
 	DeleteEdges();
-	for (int i = 0; i < n; i++)
+	for (unsigned int i = 0; i < n; i++)
 	{
 		vtEdge *pnew = new vtEdge;
 		pnew->Set(0, 0, BMAT_NAME_PLAIN);
@@ -555,7 +563,7 @@ void vtLevel::DetermineLocalFootprint(float fHeight)
 	}
 }
 
-void vtLevel::GetEdgePlane(int i, FPlane &plane)
+void vtLevel::GetEdgePlane(unsigned int i, FPlane &plane)
 {
 	vtEdge *edge = m_Edges[i];
 	int edges = m_Edges.GetSize();

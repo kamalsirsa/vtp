@@ -117,8 +117,8 @@ public:
 	void DeleteEdge(int iEdge);
 	bool AddEdge(int iEdge, DPoint2 &Point);
 	int NumEdges() { return m_Edges.GetSize(); }
-	vtEdge *GetEdge(int i) { return m_Edges[i]; }
-	float GetEdgeLength(int i);
+	vtEdge *GetEdge(unsigned int i);
+	float GetEdgeLength(unsigned int i);
 	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
@@ -147,8 +147,8 @@ public:
 	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
 
 private:
-	void SetWalls(int n);
-	void GetEdgePlane(int i, FPlane &plane);
+	void SetWalls(unsigned int n);
+	void GetEdgePlane(unsigned int i, FPlane &plane);
 	bool DetermineHeightFromSlopes();
 	void DeleteEdges();
 
