@@ -415,7 +415,8 @@ void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 
 	vtFeatureSetLineString3D lines;
 
-	const char *filename = loadFile.GetPath().mb_str();
+	wxString2 str = loadFile.GetPath();
+	const char *filename = str.mb_str();
 	if (!lines.LoadFromSHP(filename))
 		return;
 
