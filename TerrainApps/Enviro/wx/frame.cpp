@@ -603,7 +603,7 @@ void vtFrame::OnViewFramerate(wxCommandEvent& event)
 
 void vtFrame::OnUpdateViewFramerate(wxUpdateUIEvent& event)
 {
-	event.Check(m_canvas->m_bShowFrameRateChart);
+	event.Check(m_canvas && m_canvas->m_bShowFrameRateChart);
 }
 
 void vtFrame::OnViewSlower(wxCommandEvent& event)
@@ -1096,4 +1096,3 @@ void vtFrame::OnPopupDelete(wxCommandEvent& event)
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->DeleteSelectedStructures();
 }
-
