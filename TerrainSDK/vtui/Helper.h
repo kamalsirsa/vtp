@@ -14,6 +14,7 @@ int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 	const char *wildcard, int omit_chars = 0);
 bool LogWindowsVersion();
 vtString FormatCoord(bool bGeo, double val, bool minsec = false);
+enum wxLanguage GetLangFromName(const wxString &name);
 
 /////
 

@@ -15,6 +15,7 @@
 #include "wxString2.h"
 #include "vtdata/FilePath.h"	// for dir_iter
 #include "vtdata/vtLog.h"
+#include "Helper.h"
 
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 {
@@ -325,4 +326,34 @@ vtString FormatCoord(bool bGeo, double val, bool minsec)
 	return str;
 }
 
+/////////////////////////////////
+
+//
+// Given a string name of a language like "de" or "German", return the
+// enumerated language id, e.g. wxLANGUAGE_GERMAN.
+//
+enum wxLanguage GetLangFromName(const wxString &name)
+{
+	int lang;
+	for (lang = wxLANGUAGE_ABKHAZIAN; lang < wxLANGUAGE_USER_DEFINED; lang++)
+	{
+		const wxLanguageInfo *info = wxLocale::GetLanguageInfo(lang);
+		if (name.CmpNoCase(info->Description) == 0)
+			return (enum wxLanguage) lang;
+		if (name.Length() == 2)
+		{
+			wxString shortname = info->CanonicalName.Left(2);
+			if (name.CmpNoCase(shortname) == 0)
+				return (enum wxLanguage) lang;
+		}
+		else if (name.Length() == 5 && name[2] == '_')
+		{
+			if (name.CmpNoCase(info->CanonicalName) == 0)
+				return (enum wxLanguage) lang;
+		}
+		else if (name.CmpNoCase(info->Description) == 0)
+			return (enum wxLanguage) lang;
+	}
+	return wxLANGUAGE_UNKNOWN;
+}
 
