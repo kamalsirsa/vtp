@@ -59,6 +59,9 @@ public:
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
 
+	// notify subclasses when building is modified
+	virtual void Modified() {}
+
 protected:
 	// WDR: member variable declarations for BuildingDlg
 	vtStructureArray *m_pSA;

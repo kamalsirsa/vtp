@@ -127,6 +127,7 @@ void BuildingDlg::OnFeatDoor( wxCommandEvent &event )
 	f.m_vf2 = 0.8f;
 	m_pEdge->m_Features.Append(f);
 	UpdateFeatures();
+	Modified();
 }
 
 void BuildingDlg::OnFeatWindow( wxCommandEvent &event )
@@ -138,6 +139,7 @@ void BuildingDlg::OnFeatWindow( wxCommandEvent &event )
 	f.m_vf2 = 0.8f;
 	m_pEdge->m_Features.Append(f);
 	UpdateFeatures();
+	Modified();
 }
 
 void BuildingDlg::OnFeatWall( wxCommandEvent &event )
@@ -149,18 +151,21 @@ void BuildingDlg::OnFeatWall( wxCommandEvent &event )
 	f.m_vf2 = 1;
 	m_pEdge->m_Features.Append(f);
 	UpdateFeatures();
+	Modified();
 }
 
 void BuildingDlg::OnFeatClear( wxCommandEvent &event )
 {
 	m_pEdge->m_Features.Empty();
 	UpdateFeatures();
+	Modified();
 }
 
 void BuildingDlg::OnEdgeSlope( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	m_pEdge->m_iSlope = m_iEdgeSlope;
+	Modified();
 }
 
 void BuildingDlg::OnLevelUp( wxCommandEvent &event )
@@ -171,6 +176,7 @@ void BuildingDlg::OnLevelUp( wxCommandEvent &event )
 		RefreshLevelsBox();
 		SetLevel(m_iLevel-1);
 		HighlightSelectedLevel();
+		Modified();
 	}
 }
 
@@ -182,6 +188,7 @@ void BuildingDlg::OnLevelDown( wxCommandEvent &event )
 		RefreshLevelsBox();
 		SetLevel(m_iLevel+1);
 		HighlightSelectedLevel();
+		Modified();
 	}
 }
 
@@ -192,6 +199,7 @@ void BuildingDlg::OnLevelCopy( wxCommandEvent &event )
 	RefreshLevelsBox();
 	SetLevel(m_iLevel);
 	HighlightSelectedLevel();
+	Modified();
 }
 
 void BuildingDlg::OnLevelDelete( wxCommandEvent &event )
@@ -202,6 +210,7 @@ void BuildingDlg::OnLevelDelete( wxCommandEvent &event )
 	RefreshLevelsBox();
 	SetLevel(m_iLevel);
 	HighlightSelectedLevel();
+	Modified();
 }
 
 void BuildingDlg::OnStoryHeight( wxCommandEvent &event )
@@ -210,6 +219,7 @@ void BuildingDlg::OnStoryHeight( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	m_pLevel->m_fStoryHeight = m_fStoryHeight;
+	Modified();
 }
 
 void BuildingDlg::OnSpinStories( wxCommandEvent &event )
@@ -220,11 +230,13 @@ void BuildingDlg::OnSpinStories( wxCommandEvent &event )
 	m_pLevel->m_iStories = m_iStories;
 	RefreshLevelsBox();
 	HighlightSelectedLevel();
+	Modified();
 }
 
 void BuildingDlg::OnColor1( wxCommandEvent &event )
 {
 	EditColor();
+	Modified();
 }
 
 void BuildingDlg::OnOK( wxCommandEvent &event )
@@ -500,6 +512,7 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 	UpdateSlopes();
 	RefreshLevelsBox();
 	HighlightSelectedLevel();
+	Modified();
 }
 
 void BuildingDlg::UpdateSlopes()
@@ -581,6 +594,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
+	Modified();
 }
 
 
