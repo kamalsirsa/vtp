@@ -264,3 +264,28 @@ bool LogWindowsVersion()
 
 #endif // WIN32
 
+/////////////////////////////////
+
+vtString FormatCoord(bool bGeo, double val, bool minsec)
+{
+	vtString str;
+	if (bGeo)
+	{
+		if (minsec)
+		{
+			// show minutes and seconds
+			double degree = val;
+			double min = (degree - (int)degree) * 60.0f;
+			double sec = (min - (int)min) * 60.0f;
+
+			str.Format("%d° %d' %.1f\"", (int)degree, (int)min, sec);
+		}
+		else
+			str.Format("%3.6lf", val);	// decimal degrees
+	}
+	else
+		str.Format("%.2lf", val);	// meters-based
+	return str;
+}
+
+

@@ -10,4 +10,7 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 	const char *wildcard, int omit_chars = 0);
 bool LogWindowsVersion();
+vtString FormatCoord(bool bGeo, double val, bool minsec = false);
+
+/////
 
