@@ -240,7 +240,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			char buffer[144];
 			fseek(fp, 892, 0);
 			fread(buffer, 144, 1, fp);
-			for (int i = 0; i < 144; i++)
+			for (i = 0; i < 144; i++)
 			{
 				if (!strncmp(buffer+i, "     1     1", 12))
 				{
