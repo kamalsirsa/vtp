@@ -14,6 +14,60 @@
 #include "Nevada.h"
 
 
+////////////////////////
+
+class TestMesh : public vtMesh
+{
+public:
+	TestMesh(GLenum PrimType, int VertType, int NumVertices) :
+	  vtMesh(PrimType, VertType, NumVertices) {};
+
+	void CreateSpecialConicalSurface(FPoint3 &tip, double fConeRadius,
+											 double theta1, double theta2,
+											 double r1, double r2);
+};
+
+#define RES		40
+
+void TestMesh::CreateSpecialConicalSurface(FPoint3 &tip, double cone_radius,
+											 double theta1, double theta2,
+											 double r1, double r2)
+{
+	int i, j, vidx;
+	double tan_cr = tan(cone_radius);
+	double theta, theta_step = (theta2 - theta1) / (RES - 1);
+	double r, r_step = (r2 - r1) / (RES - 1);
+
+	FPoint3 p, norm;
+
+	r = r1;
+	for (i = 0; i < RES; i++)
+	{
+		theta = theta1;
+		for (j = 0; j < RES; j++)
+		{
+			p.x = tip.x + cos(theta) * r;
+			p.z = tip.z - sin(theta) * r;
+			p.y = tip.y - (r / tan_cr);
+			vidx = AddVertex(p);
+
+			if (GetVtxType() & VT_Normals)
+			{
+				// compute vertex normal for lighting
+				norm.x = cos(theta) * r;
+				norm.y = 0.0f;
+				norm.z = sin(theta) * r;
+				norm.Normalize();
+				SetVtxNormal(vidx, norm);
+			}
+
+			theta += theta_step;
+		}
+		r += r_step;
+	}
+	CreateRectangularMesh(RES, RES);
+}
+
 ///////////////////////////////
 
 IslandTerrain::IslandTerrain() : PTerrain()
@@ -66,6 +120,31 @@ void IslandTerrain::create_telescopes()
 }
 
 
+vtGeom *make_test_cone()
+{
+	vtMaterialArray *looks = new vtMaterialArray();
+	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false);
+
+	////////////
+	TestMesh *pMesh = new TestMesh(GL_TRIANGLE_STRIP, VT_Normals, RES*RES);
+
+	FPoint3 tip(0, 2000, 0);
+	double cone_radius = PId/4;
+	double theta1 = PId * 1.3;
+	double theta2 = PId * 1.8;
+	double r1 = 700;
+	double r2 = 1500;
+
+	pMesh->CreateSpecialConicalSurface(tip, cone_radius, theta1, theta2, r1, r2);
+
+	vtGeom *pGeom = new vtGeom();
+	pGeom->SetMaterials(looks);
+	pGeom->AddMesh(pMesh, 0);
+	/////////////
+
+	return pGeom;
+}
+
 vtGeom *IslandTerrain::make_red_cube()
 {
 	vtGeom *thebox = new vtGeom();
@@ -78,7 +157,7 @@ vtGeom *IslandTerrain::make_red_cube()
 	mesh->CreateBlock(half);
 
 	vtMaterialArray *looks = new vtMaterialArray();
-	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f));
+	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true);
 	thebox->SetMaterials(looks);
 	thebox->AddMesh(mesh, 0);
 
@@ -127,20 +206,20 @@ void IslandTerrain::create_airports()
 
 void IslandTerrain::CreateCustomCulture(bool bDoSound)
 {
-	DPoint2 bound[8];
-	bound[0].Set(237387, 2219678);
+	DPoint2 bound[7], c1;
+	bound[0].Set(237257, 2219644);
 	bound[1] = bound[0] + DPoint2(0.0, -96.64);
 	bound[2] = bound[1] + DPoint2(82.5, 0.0);
 	bound[3] = bound[1] + DPoint2(178.2, 0.0);
 	bound[4] = bound[3] + DPoint2(0.0, 30.48);
 	bound[5] = bound[4] + DPoint2(-178.2 + 37.44f, 0.0);
 	bound[6] = bound[5] + DPoint2(0.0, 96.64f - 30.48);
-	bound[7] = bound[2] + DPoint2(0.0, 12.2);
+	c1 = bound[2] + DPoint2(0.0, 12.2);
 
 #if 0
 	if (m_Params.m_bBuildings)
 	{
-		if (PointIsInTerrain(bound[7].x, bound[7].y)) // if area includes ben's house
+		if (PointIsInTerrain(c1)) // if area includes ben's house
 		{
 			// test ability to import a max model (a house)
 			vtTransform *house = LoadModel("BuildingModels/house3.dsm");
@@ -149,7 +228,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 				// scale was one unit = 1 inch
 				// 1 inch = 2.54 centimeters = .0254 meters
 				float scale = .0254f;
-				house->Scale2(scale, scale, scale);
+				house->Scale3(scale, scale, scale);
 
 				// plant it on the ground
 				PlantModelAtPoint(house, bound[7]);
@@ -169,6 +248,85 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		}
 	}
 #endif
+
+	//  8' =  2.4385 m
+	// 12' =  3.6576 m
+	// 36' = 10.9728 m
+	// 40' = 12.1920 m
+	// 48' = 14.6304 m
+	// test dynamic creation of a complicated building
+	if (1)
+	{
+		vtBuilding3d *bld = new vtBuilding3d();
+
+		DPoint2 c2, c3, c4, c5, c6;
+		c2 = c1 + DPoint2(10.9728, 0.0);
+		c3 = c1 + DPoint2(14.6304, 0.0);
+		c4 = c1 + DPoint2(14.6304, 12.1920);
+		c5 = c1 + DPoint2(10.9728, 12.1920);
+		c6 = c1 + DPoint2(0.0, 12.1920);
+		DLine2 dl;
+		vtLevel *pLev;
+		vtWall *pWall;
+
+		// basement/garage level
+		dl.Append(c2);
+		dl.Append(c3);
+		dl.Append(c4);
+		dl.Append(c5);
+		pLev = new vtLevel();
+		pLev->SetFootprint(dl);
+		pLev->m_fStoryHeight = 2.4385f;
+		pLev->m_iStories = 1;
+
+		pWall = pLev->m_Wall[0];
+		pWall->m_Features.Empty();
+		pWall->m_Features.Append(vtWallFeature(WFC_GAP));
+
+		pWall = pLev->m_Wall[1];
+		pWall->m_Features.Empty();
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1));
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -2, 0, 0.5));
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -4));
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -2, 0, 0.5));
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1));
+
+		pWall = pLev->m_Wall[2];
+		pWall->m_Features.Empty();
+		pWall->m_Features.Append(vtWallFeature(WFC_GAP));
+
+		pWall = pLev->m_Wall[3];
+		pWall->m_Features.Empty();
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1, 0, 0.5));
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL));
+		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1, 0, 0.5));
+
+		bld->AddLevel(pLev);
+
+		// main floor level
+		dl.Empty();
+		dl.Append(c1);
+		dl.Append(c3);
+		dl.Append(c4);
+		dl.Append(c6);
+		pLev = new vtLevel();
+		pLev->SetFootprint(dl);
+		pLev->m_fStoryHeight = 2.4385f;
+		pLev->m_iStories = 1;
+		// pLev->m_Wall
+		bld->AddLevel(pLev);
+
+		bld->m_RoofType = ROOF_HIP;
+		bld->SetCenterFromPoly();
+
+		vtStructure3d *str = new vtStructure3d;
+		str->SetBuilding(bld);
+		bool success = str->CreateNode(m_pHeightField, "roof walls detail");
+		vtTransform *trans = str->GetTransform();
+		trans->SetName2("Test House");
+		AddNode(trans);
+		PlantModel(trans);
+	}
 
 	if (m_Params.m_bAirports)
 	{
@@ -192,12 +350,17 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	}
 #endif
 
-#if 1
-	if (PointIsInTerrain(DPoint2(227611, 2155222))) // if area includes top of Mauna Loa
+	DPoint2 mauna_loa(227611, 2155222);
+	if (PointIsInTerrain(mauna_loa)) // if area includes top of Mauna Loa
 	{
 		vtGeom *thebox = make_red_cube();
+		vtGeom *thecone = make_test_cone();
+		vtTransform *container = new vtTransform();
+		container->AddChild(thebox);
+		container->AddChild(thecone);
+		AddNode(container);
+		PlantModelAtPoint(container, mauna_loa);
 	}
-#endif
 
 	if (m_Params.m_bVehicles)
 	{
