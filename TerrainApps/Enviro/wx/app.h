@@ -15,9 +15,17 @@ public:
 	int OnExit();
 	void Args(int argc, wxChar **argv);
 
+	void RefreshTerrainList();
+	bool AskForTerrainName(wxWindow *pParent, wxString &strTerrainName);
+	vtString GetIniFileForTerrain(const vtString &name);
+
 	bool m_bShowStartupDialog;
+
+	vtStringArray terrain_files;
+	vtStringArray terrain_paths;
+	vtStringArray terrain_names;
 };
 
-// helper
-bool AskForTerrainName(wxWindow *pParent, wxString &str);
+// helpers
+void EditTerrainParameters(wxWindow *parent, const char *filename);
 

@@ -1,5 +1,5 @@
 //
-// Name:     app.cpp
+// Name:	 app.cpp
 // Purpose:  The application class for our wxWindows application.
 //
 // Copyright (c) 2001-2003 Virtual Terrain Project
@@ -29,6 +29,7 @@
 #include "app.h"
 #include "frame.h"
 #include "StartupDlg.h"
+#include "TParamsDlg.h"
 
 IMPLEMENT_APP(vtApp)
 
@@ -63,7 +64,8 @@ void vtApp::Args(int argc, wxChar **argv)
 bool vtApp::OnInit()
 {
 #if WIN32 && defined(_MSC_VER) && DEBUG
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
 	g_Options.Read("Enviro.ini");
@@ -73,7 +75,8 @@ bool vtApp::OnInit()
 	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
 	Args(argc, argv);
 
-	g_App.LoadTerrainDescriptions();
+	// Look for all terrains on all data paths
+	RefreshTerrainList();
 
 /*	class AA { public: virtual void func() {} };
 	class BB : public AA {};
@@ -100,6 +103,9 @@ bool vtApp::OnInit()
 		StartDlg.PutOptionsTo(g_Options);
 		g_Options.Write();
 	}
+
+	// Now we can create vtTerrain objects for each terrain
+	g_App.LoadTerrainDescriptions();
 
 	//
 	// Create the main frame window
@@ -142,31 +148,59 @@ int vtApp::OnExit()
 }
 
 //
+// Look for all terrains on all data paths
+//
+void vtApp::RefreshTerrainList()
+{
+	vtStringArray &paths = g_Options.m_DataPaths;
+
+	terrain_files.clear();
+	terrain_paths.clear();
+	terrain_names.clear();
+
+	for (unsigned int i = 0; i < paths.size(); i++)
+	{
+		vtString directory = paths[i] + "Terrains";
+		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
+		{
+			if (it.is_hidden() || it.is_directory())
+				continue;
+
+			std::string name1 = it.filename();
+			vtString name = name1.c_str();
+
+			// only look for ".ini" files
+			if (name.GetLength() < 5 || name.Right(4).CompareNoCase(".ini"))
+				continue;
+
+			TParams params;
+			vtString path = directory + "/" + name;
+			if (params.LoadFromFile(path))
+			{
+				terrain_files.push_back(name);
+				terrain_paths.push_back(path);
+				terrain_names.push_back(params.m_strName);
+			}
+		}
+	}
+}
+
+//
 // ask the user to choose from a list of known terrain
 //
-bool AskForTerrainName(wxWindow *pParent, wxString &str)
+bool vtApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 {
-    vtTerrain *pTerr, *pFirst = GetTerrainScene()->GetFirstTerrain();
+	// convert all the terrain names to wxStrings
+	int num = 0, first_idx = 0;
+	std::vector<wxString> choices;
 
-	// count them
-	int num = 0;
-    for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
-		num++;
-
-	// get their names
-	wxString *choices = new wxString[num];
-	num = 0;
-	int first_idx = 0;
-	for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
+	for (unsigned int i = 0; i < terrain_files.size(); i++)
 	{
-#if SUPPORT_WSTRING && UNICODE
-		wstring2 ws;
-		ws.from_utf8(pTerr->GetName());
-		choices[num] = wxString2(ws.c_str());
-#else
-		choices[num] = wxString2(pTerr->GetName());
-#endif
-		if (str == choices[num]) first_idx = num;
+		wxString2 wstr;
+		wstr.from_utf8(terrain_names[i]);
+		choices.push_back(wstr);
+		if (wstr.Cmp(strTerrainName) == 0)
+			first_idx = num;
 		num++;
 	}
 
@@ -177,14 +211,48 @@ bool AskForTerrainName(wxWindow *pParent, wxString &str)
 	}
 
 	wxSingleChoiceDialog dlg(pParent, _T("Please choose a terrain"),
-		_T("Select Terrain"), num, choices);
+		_T("Select Terrain"), num, &(choices.front()));
 	dlg.SetSelection(first_idx);
-	delete [] choices;
+
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		str = dlg.GetStringSelection();
+		strTerrainName = dlg.GetStringSelection();
 		return true;
 	}
 	else
 		return false;
+}
+
+vtString vtApp::GetIniFileForTerrain(const vtString &name)
+{
+	for (unsigned int i = 0; i < terrain_files.size(); i++)
+	{
+		if (name == terrain_names[i])
+			return terrain_paths[i];
+	}
+	return vtString("");
+}
+
+void EditTerrainParameters(wxWindow *parent, const char *filename) 
+{
+	TParamsDlg dlg(parent, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
+	dlg.SetDataPaths(g_Options.m_DataPaths);
+
+	TParams Params;
+	if (Params.LoadFromFile(filename))
+		dlg.SetParams(Params);
+
+	dlg.CenterOnParent();
+	int result = dlg.ShowModal();
+	if (result == wxID_OK)
+	{
+		dlg.GetParams(Params);
+		if (!Params.SaveToFile(filename))
+		{
+			wxString str;
+			str.Printf(_T("Couldn't save to file %hs.\n")
+				_T("Please make sure the file is not read-only."), filename);
+			wxMessageBox(str);
+		}
+	}
 }
