@@ -582,6 +582,13 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 	}
 }
 
+
+#pragma message( "Look here for more things to do " __FILE__ )
+
+// 1. Better copy syntax for vtStructure and its descendants
+// 2. extra import fields for fences and structures.
+// 3. Handle tags
+
 void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 		StructImportOptions &opt, void progress_callback(int))
 {
@@ -776,6 +783,16 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		if (!PolyChecker.IsSimplePolygon(footprint))
 			continue;
 
+		if (opt.bInsideOnly)
+		{
+			// Exclude footprints outside the indicated extents
+			for (i = 0; i < num_points; i++)
+				if (opt.rect.ContainsPoint(footprint.GetAt(i)))
+					break;
+			if (i != num_points)
+				continue;
+		}
+
 		pBld = NewBuilding();
 		if (!pBld)
 			return;
@@ -916,6 +933,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 	vtFence *pFence;
 	vtFence *pDefaultFence;
 	float fOriginalElevation;
+	int iHeightIndex = -1;
 	int iElevationIndex = -1;
 
 	iFeatureCount = pLayer->GetFeatureCount();
@@ -933,7 +951,10 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 	else if (!strcmp(pLayerName, "osgb:TopographicPoint"))
 		eSchema = SCHEMA_OSGB_TOPO_POINT;
 	else
+	{
+		iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
 		iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
+	}
 
 	iCount = 0;
 	while((pFeature = pLayer->GetNextFeature()) != NULL )
@@ -986,20 +1007,30 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 		}
 		fAverageZ = fTotalZ/iNumPoints;
 
+		if (opt.bInsideOnly)
+		{
+			// Exclude fences outside the indicated extents
+			for (i = 0; i < iNumPoints; i++)
+				if (opt.rect.ContainsPoint(FencePoints.GetAt(i)))
+					break;
+			if (i != iNumPoints)
+				continue;
+		}
+
 		pFence = NewFence();
 		if (!pFence)
 			return;
 
+		pDefaultFence = GetClosestDefault(pFence);
+		if (NULL != pDefaultFence)
+			*pFence = *pDefaultFence;
+
 		for (i = 0; i < iNumPoints; i++)
 			pFence->AddPoint(FencePoints[i]);
 
-		pDefaultFence = GetClosestDefault(pFence);
-		if (!pDefaultFence)
-		{
-		}
-		else
-		{
-		}
+		// Modify height of fence
+		if (iHeightIndex != -1)
+			pFence->SetHeight((float)pFeature->GetFieldAsDouble(iHeightIndex));
 
 		// Modify elevation of fence
 		fOriginalElevation = -1E9;
@@ -1085,17 +1116,24 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 		dPoint = DPoint2(((OGRPoint *)pGeom)->getX(), ((OGRPoint *)pGeom)->getY());
 		fAverageZ = (float)((OGRPoint *)pGeom)->getZ();
 
+		if (opt.bInsideOnly && !opt.rect.ContainsPoint(dPoint))
+			// Exclude instances outside the indicated extents
+			continue;
+
 		pInstance = NewInstance();
 		if (!pInstance)
 			return;
 
 		pDefaultInstance = GetClosestDefault(pInstance);
-		if (!pDefaultInstance)
+		if (NULL != pDefaultInstance)
 		{
+			pInstance->m_fRotation = pDefaultInstance->m_fRotation;
+			pInstance->m_fScale = pDefaultInstance->m_fScale;
 		}
-		else
-		{
-		}
+
+		pInstance->m_p = dPoint;
+
+
 		Append(pDefaultInstance);
 	}
 }
