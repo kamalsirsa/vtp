@@ -299,6 +299,10 @@ bool vtRawLayer::OnLoad()
 		m_pSet = loader.LoadFromSHP(fname.mb_str());
 //		return LoadWithOGR(fname.mb_str());
 	}
+	else if (!fname.Right(4).CmpNoCase(_T(".igc")))
+	{
+		m_pSet = loader.LoadFromIGC(fname.mb_str());
+	}
 	if (m_pSet)
 	{
 		vtProjection proj = m_pSet->GetAtProjection();

@@ -491,6 +491,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_MI);
 		AddType(filter, FSTRING_NTF);
+		AddType(filter, FSTRING_IGC);
 		break;
 	case LT_ELEVATION:
 		// dem, etc.

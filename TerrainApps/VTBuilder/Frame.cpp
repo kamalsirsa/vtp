@@ -510,8 +510,9 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 			delete pTR;
 	}
 	if (ext.CmpNoCase(_T("shp")) == 0 ||
-			ext.CmpNoCase(_T("gml")) == 0 ||
-			ext.CmpNoCase(_T("xml")) == 0)
+		ext.CmpNoCase(_T("gml")) == 0 ||
+		ext.CmpNoCase(_T("xml")) == 0 ||
+		ext.CmpNoCase(_T("igc")) == 0)
 	{
 		vtRawLayer *pRL = new vtRawLayer();
 		if (pRL->Load(fname))

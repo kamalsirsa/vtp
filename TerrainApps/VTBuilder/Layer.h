@@ -35,6 +35,7 @@
 #define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr|")	
 #define FSTRING_HGT		_T("HGT SRTM Files (*.hgt)|*.hgt|")
 #define FSTRING_HTML	_T("HTML Files (*.html)|*.html|")
+#define FSTRING_IGC		_T("IGC Files (*.igc)|*.igc|")
 #define FSTRING_IMG		_T("IMG Files (*.img)|*.img|")
 #define FSTRING_JPEG	_T("JPEG Files (*.jpeg, *.jpg)|*.jpeg;*.jpg|")
 #define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir|")
