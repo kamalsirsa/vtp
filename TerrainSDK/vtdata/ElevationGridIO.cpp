@@ -2033,7 +2033,8 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, void progress_callback
 	{
 		for (int i = 0; i < m_iColumns; i++)
 		{
-			short val = GetValue(i, m_iRows-1-j);
+//			short val = GetValue(i, m_iRows-1-j);
+			short val = GetValue(i, j);
 			BSWAP_W(val);
 			pixels[idx++] = val;
 		}
