@@ -1338,18 +1338,12 @@ void BuilderView::OnLButtonDragRelease(const wxMouseEvent& event)
 
 void BuilderView::OnDragDistance()
 {
-	static vtProjection proj;
-	GetMainFrame()->GetProjection(proj);
-
 	DPoint2 p1, p2;
 	object(m_DownPoint, p1);
 	object(m_LastPoint, p2);
 
-	DistanceDlg dlg(NULL, -1, "Distance", wxDefaultPosition);
-	dlg.SetProjection(&proj);
-	dlg.SetPoints(p1, p2);
-
-	dlg.ShowModal();
+	DistanceDlg *pDlg = GetMainFrame()->ShowDistanceDlg();
+	pDlg->SetPoints(p1, p2);
 }
 
 void BuilderView::OnDragRoadEdit()

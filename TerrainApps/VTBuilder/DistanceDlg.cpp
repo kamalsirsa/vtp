@@ -40,6 +40,9 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 void DistanceDlg::SetProjection(vtProjection *proj)
 {
 	m_pProj = proj;
+	GetMapOffset()->SetValue("");
+	GetMapDist()->SetValue("");
+	GetGeodDist()->SetValue("");
 	SetAvailableUnits();
 }
 

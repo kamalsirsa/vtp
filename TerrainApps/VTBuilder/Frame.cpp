@@ -34,6 +34,7 @@
 // Dialogs
 #include "ResampleDlg.h"
 #include "FeatInfoDlg.h"
+#include "DistanceDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "bld_edit.xpm"
@@ -107,6 +108,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_PlantListDlg = NULL;
 	m_BioRegionDlg = NULL;
 	m_pFeatInfoDlg = NULL;
+	m_pDistanceDlg = NULL;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -748,6 +750,22 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 	return m_pFeatInfoDlg;
 }
 
+
+DistanceDlg	*MainFrame::ShowDistanceDlg()
+{
+	if (!m_pDistanceDlg)
+	{
+		// Create new Bioregion Dialog
+		m_pDistanceDlg = new DistanceDlg(this, WID_FEATINFO, "Feature Info",
+				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+		m_pDistanceDlg->SetProjection(&m_proj);
+	}
+	m_pDistanceDlg->Show(true);
+	return m_pDistanceDlg;
+}
+
+
+
 //
 // merge all terrain data into this one
 //
@@ -828,6 +846,8 @@ void MainFrame::SetProjection(vtProjection &p)
 {
 	m_proj = p;
 	GetView()->SetWMProj(p);
+	if (m_pDistanceDlg)
+		m_pDistanceDlg->SetProjection(&m_proj);
 }
 
 ////////////////////////////////////////////////////////////////

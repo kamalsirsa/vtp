@@ -36,6 +36,7 @@ class BuilderView;
 class PlantListDlg;
 class BioRegionDlg;
 class FeatInfoDlg;
+class DistanceDlg;
 
 class MainFrame: public wxFrame
 {
@@ -260,6 +261,10 @@ public:
 	// Raw features
 	FeatInfoDlg	*ShowFeatInfoDlg();
 	FeatInfoDlg	*m_pFeatInfoDlg;
+
+	// Distance
+	DistanceDlg	*ShowDistanceDlg();
+	DistanceDlg *m_pDistanceDlg;
 
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);
