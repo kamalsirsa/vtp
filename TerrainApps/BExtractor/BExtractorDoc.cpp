@@ -210,6 +210,8 @@ void BExtractorDoc::FloodFillDIB(CDib *bm)
 
 				vtBuilding *bld = new vtBuilding();
 				bld->SetRectangle(point, 10, 10);
+				bld->SetStories(1);
+				bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
 				m_Buildings.Append(bld);
 			}
 		}

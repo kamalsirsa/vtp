@@ -900,9 +900,10 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 		{
 			// yes, done
 			vtBuilding *bld = new vtBuilding();
-			bld->SetStories(1);
-
 			bld->SetFootprint(0, m_poly);
+			bld->SetStories(1);
+			bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
+
 			pDoc->m_Buildings.Append(bld);
 
 			InvalidatePolyExtent();
@@ -946,6 +947,7 @@ void BExtractorView::OnLButtonUpRectangle(CPoint point)
 
 		bld->SetRectangle(center, fWidth, fDepth, fRotation);
 		bld->SetStories(1);
+		bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
 
 		pDoc->m_Buildings.Append(bld);
 
@@ -968,13 +970,14 @@ void BExtractorView::OnLButtonUpCircle(CPoint point)
 
 	vtBuilding *bld = new vtBuilding();
 
-	bld->SetStories(1);
-
 	DPoint2 p;
 	s_UTM(m_p0, p);
 	float fCoordRadius = (float) s_UTMdx(m_fPixelRadius);
 
 	bld->SetCircle(p, fCoordRadius);
+	bld->SetStories(1);
+	bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
+
 	pDoc->m_Buildings.Append(bld);
 
 	DRECT extent_new;
@@ -1005,8 +1008,10 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 		vtBuilding *bld = new vtBuilding();
 		bld->SetRectangle(imagepoint, 10, 10);
 		bld->SetStories(1);
+		bld->GetLevel(1)->SetEdgeColor(RGBi(255,255,255));	// white roof
 		pDoc->m_Buildings.Append(bld);
 
+		// redraw area of window around new building
 		int size = UTM_sdx(15.0f);
 		RECT r;
 		r.top = point.y-size-1;
