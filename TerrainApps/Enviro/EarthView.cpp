@@ -290,6 +290,7 @@ if (pwdemo){
 	{
 		pStars->Create(bsc_file, 5.0f);	// brightness
 		vtTransform *pScale = new vtTransform();
+		pScale->SetName2("Star Scaling Transform");
 		pScale->Scale3(20, 20, 20);
 		m_pGlobeContainer->AddChild(pScale);
 		pScale->AddChild(pStars);
@@ -342,16 +343,30 @@ if (pwdemo){
 
 void Enviro::SetSpaceAxes(bool bShow)
 {
-	if (m_pSpaceAxes)
-		m_pSpaceAxes->SetEnabled(bShow);
-	if (m_pIcoGlobe)
-		m_pIcoGlobe->ShowAxis(bShow);
+	if (m_state == AS_Orbit)
+	{
+		if (m_pSpaceAxes)
+			m_pSpaceAxes->SetEnabled(bShow);
+		if (m_pIcoGlobe)
+			m_pIcoGlobe->ShowAxis(bShow);
+	}
+	else if (m_state == AS_Terrain)
+	{
+		GetTerrainScene()->GetSkyDome()->ShowMarkers(bShow);
+	}
 }
 
 bool Enviro::GetSpaceAxes()
 {
-	if (m_pSpaceAxes)
-		return m_pSpaceAxes->GetEnabled();
+	if (m_state == AS_Orbit)
+	{
+		if (m_pSpaceAxes)
+			return m_pSpaceAxes->GetEnabled();
+	}
+	else if (m_state == AS_Terrain)
+	{
+		return GetTerrainScene()->GetSkyDome()->MarkersShown();
+	}
 	return false;
 }
 
