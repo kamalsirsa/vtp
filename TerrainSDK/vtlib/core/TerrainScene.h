@@ -84,6 +84,7 @@ public:
 
 	// utility structures, shared between all terrains
 	vtUtilStruct *LoadUtilStructure(const vtString &name);
+	float		m_fCatenaryFactor;
 
 	// Statics
 	// handle to the singleton

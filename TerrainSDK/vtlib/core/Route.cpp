@@ -17,7 +17,6 @@
 
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
-#define CATENARY_FACTOR		140.0
 
 vtMaterialArray *vtRoute::m_pRouteMats = NULL;
 
@@ -208,17 +207,13 @@ void vtRoute::_AddRouteMeshes(vtHeightField3d *pHeightField)
 
 	// generate the structures (poles/towers/etc.)
 	for (i = 0; i < numnodes; i++)
-	{
 		_CreateStruct(i);
-	}
 
 	// and the wires
 	if (numnodes > 1)
 	{
 		for (i=1; i<numnodes; i++)
-		{
 			_StringWires(i, pHeightField);
-		}
 	}
 }
 
@@ -270,7 +265,7 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 		rot.Transform(offset, wire1);
 		FPoint3 wire_end = fp1 + wire1;
 
-		_DrawCat(wire_start, wire_end, CATENARY_FACTOR, numiterations, pWireMesh);
+		_DrawCat(wire_start, wire_end, vtGetTS()->m_fCatenaryFactor, numiterations, pWireMesh);
 
 		pWireMesh->AddVertex(wire_end);
 
@@ -279,62 +274,6 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 		pWireMesh->Release();		// pass ownership to geometry
 	}
 }
-
-#if 0
-bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
-{
-	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
-	// Read wire locations from a .wire file into the station record
-	int icount = 0;
-	FILE* f = fopen(filename, "r");
-	if (!f)
-		return false;
-
-	vtString hack = filename;
-	hack += ".txt";
-	FILE *fp =fopen(hack, "wb");
-
-	float height=0;
-	int inumwires=0;
-	if (!feof(f))
-		fscanf(f, "%f", &height);
-//	node->m_fTowerHeight = height;
-	if (!feof(f))
-		fscanf(f, "%d", &inumwires);
-	st->m_iNumWires = inumwires;
-
-	for (int i = 0; i < inumwires; i++)
-//	while (!feof(f))
-	{	// read wire positions relative to the tower
-		fprintf(fp, "<wire_info>");
-
-		float a1,a2,a3;
-		FPoint3 fpTemp;
-		fscanf(f, "%f", &a1);
-		fscanf(f, "%f", &a2);
-		fscanf(f, "%f", &a3);
-		fpTemp.Set(-a1, a3, -a2);
-		fpTemp *= METERS_PER_FOOT;
-		fprintf(fp, "%g, %g, %g", fpTemp.x, fpTemp.y, fpTemp.z);
-		st->m_fpWireAtt1[icount] = fpTemp;
-		fscanf(f, "%f", &a1);
-		fscanf(f, "%f", &a2);
-		fscanf(f, "%f", &a3);
-		fpTemp.Set(-a1, a3, -a2);
-		fpTemp *= METERS_PER_FOOT;
-		fprintf(fp, ", %g, %g, %g", fpTemp.x, fpTemp.y, fpTemp.z);
-		st->m_fpWireAtt2[icount++] = fpTemp;
-		fprintf(fp, "</wire_info>\n");
-	}
-
-	fclose(fp);
-	fclose(f);
-	return true;
-}
-#endif
-
 
 //
 // Draw catenary curve between conductor attachment points

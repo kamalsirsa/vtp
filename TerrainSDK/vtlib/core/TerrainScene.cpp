@@ -74,6 +74,8 @@ vtTerrainScene::vtTerrainScene()
 	m_pSkyTrack = NULL;
 	m_pSunLight = NULL;
 	m_pAtmosphereGroup = NULL;
+
+	m_fCatenaryFactor = 140.0;	// a default value
 }
 
 vtTerrainScene::~vtTerrainScene()
