@@ -79,8 +79,9 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	int num_lines = m_Lines.GetSize();
 	for (int i = 0; i < num_lines; i++)
 	{
+		int c;
 		int size = m_Lines[i]->GetSize();
-		for (int c = 0; c < size && c < MAXPOINTS; c++)
+		for (c = 0; c < size && c < MAXPOINTS; c++)
 			pView->screen(m_Lines[i]->GetAt(c), roadbuf[c]);
 
 		if (m_bFill)
@@ -132,7 +133,7 @@ void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 	//  Get number of polys (m_iNumPolys) and type of data (nShapeType)
 	int		nElem;
 	int		nShapeType;
-    double	adfMinBound[4], adfMaxBound[4];
+	double	adfMinBound[4], adfMaxBound[4];
 	FPoint2 point;
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
