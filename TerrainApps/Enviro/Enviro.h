@@ -128,7 +128,7 @@ public:
 	GrabFlyer		*m_pGFlyer;
 	FlatFlyer		*m_pFlatFlyer;
 	vtPanoFlyer		*m_pPanoFlyer;
-	// related engine to keep the camera above the terrain
+	// engine to keep the camera above the terrain
 	vtHeightConstrain *m_pHeightEngine;
 
 	// event handlers
@@ -181,7 +181,6 @@ public:
 	vtRoute		*m_pSelRoute;
 	IPoint2		m_MouseDown;
 	float		m_StartRotation;
-	vtEngine	*m_pLocEngines;
 
 	// handle to the singleton
 	static Enviro *s_pEnviro;

@@ -634,10 +634,6 @@ void Enviro::SetupScene2()
 	m_pFlatFlyer->SetTarget(m_pNormalCamera);
 	m_pPanoFlyer->SetTarget(m_pNormalCamera);
 
-	m_pLocEngines = new vtEngine();
-	m_pLocEngines->SetName2("Location Engines");
-	vtGetScene()->GetRootEngine()->AddChild(m_pLocEngines);
-
 	// An engine to keep the camera above the terrain, comes after the other
 	//  engines which could move the camera.
 	m_pHeightEngine = new vtHeightConstrain(1.0f);
