@@ -62,6 +62,18 @@ void fanvertex_vtp(float x,float y,float z)
    myvtxcnt++;
 }
 
+static vtLocalGrid *s_pGrid;
+
+short int getelevation_vtp1(int i, int j, int S)
+{
+	return s_pGrid->GetValue(i, j);
+}
+
+float getelevation_vtp2(int i, int j, int S)
+{
+	return s_pGrid->GetFValue(i, j);
+}
+
 //
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
@@ -79,19 +91,25 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	float dim = m_fXStep;
 	float cellaspect = m_fZStep / m_fXStep;
 
+	s_pGrid = pGrid;
+
 	if (pGrid->IsFloatMode())
 	{
-		float *image = pGrid->GetFloatData();
+//		float *image = pGrid->GetFloatData();
+		float *image = NULL;
 		m_pMini = new ministub(image,
 				&size, &dim, fZScale, cellaspect,
-				beginfan_vtp, fanvertex_vtp);
+				beginfan_vtp, fanvertex_vtp, NULL,
+				getelevation_vtp2);
 	}
 	else
 	{
-		short *image = pGrid->GetData();
+//		short *image = pGrid->GetData();
+		short *image = NULL;
 		m_pMini = new ministub(image,
 				&size, &dim, fZScale, cellaspect,
-				beginfan_vtp, fanvertex_vtp);
+				beginfan_vtp, fanvertex_vtp, NULL,
+				getelevation_vtp1);
 	}
 
 	m_iDrawnTriangles = -1;
@@ -209,6 +227,15 @@ void SRTerrain::RenderPass()
 
 	myfancnt = myvtxcnt = 0;
 
+	int size = m_iXPoints;
+//	glPushMatrix();
+//	glTranslatef(-size/2,0.0f,-size/2);
+//	ex += size/2;
+//	ez += size/2;
+//	ex += ((size-1)/2 * m_fXStep);
+//	ez += ((size-1)/2 * m_fZStep);
+	ex += m_fXStep/2;
+	ez += m_fZStep/2;
 	m_pMini->draw(m_fResolution, 
 				ex, ey, ez, 
 //				fx, fy, fz, 
@@ -216,12 +243,14 @@ void SRTerrain::RenderPass()
 				ux, uy, uz, 
 				fov, aspect, 
 				nearp, farp);
+//	glPopMatrix();
 
 	if (myfancnt>0) glEnd();
 
 	// We are drawing fans, so the number of triangles is roughly equal to
 	// number of vertices
 //	m_iDrawnTriangles = mini::getvtxcnt();
+	m_iDrawnTriangles = myvtxcnt;
 
 	// adaptively adjust resolution threshold up or down to attain
 	// the desired polygon (vertex) count target
@@ -250,7 +279,7 @@ void SRTerrain::GetLocation(int i, int j, FPoint3 &p)
 {
 #if ENABLE_SRTERRAIN
 	p.Set(m_fXLookup[i],
-		  m_pMini->getheight(i, j) /* *m_fHeightScale */,
+		  m_pMini->getheight(i, j),
 		  m_fZLookup[j]);
 #endif
 }
