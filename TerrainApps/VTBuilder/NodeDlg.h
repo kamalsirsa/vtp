@@ -1,49 +1,71 @@
-//
-// Copyright (c) 2001 Virtual Terrain Project
-// Free for all uses, see license.txt for details.
-//
+/////////////////////////////////////////////////////////////////////////////
+// Name:        NodeDlg.h
+// Author:      XX
+// Created:     XX/XX/XX
+// Copyright:   XX
+/////////////////////////////////////////////////////////////////////////////
 
-#ifndef NODEDLGH
-#define NODEDLGH
+#ifndef __NodeDlg_H__
+#define __NodeDlg_H__
 
-#include "Layer.h"
-#include "RoadMapEdit.h"
+#ifdef __GNUG__
+    #pragma interface "NodeDlg.cpp"
+#endif
+
+#ifndef WX_PRECOMP
+    #include "wx/wx.h"
+#endif
+
+#include "VTBuilder_wdr.h"
 #include "AutoDialog.h"
 
-class CNodeDlg : public AutoDialog
+class NodeEdit;
+class vtRoadLayer;
+enum VisualIntersectionType;
+
+// WDR: class declarations
+
+//----------------------------------------------------------------------------
+// NodeDlg
+//----------------------------------------------------------------------------
+
+class NodeDlg: public AutoDialog
 {
-// Construction
 public:
-	CNodeDlg(class NodeEdit *node, vtLayer *pLayer, bool bMultiple=false);
-	~CNodeDlg();
+    // constructors and destructors
+    NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = wxDEFAULT_DIALOG_STYLE );
+    
+    void SetNode(NodeEdit *pSingleRoad, vtRoadLayer *pLayer);
+	void ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype);
 
-	void OnInitDialog(wxInitDialogEvent& event);
-	void OnSelchangeNodeRoadnum(wxCommandEvent&);
-	void OnSelchangeNodeRoadbeh(wxCommandEvent&);
-	void OnSelchangeNodeIntersect(wxCommandEvent&);
+    // WDR: method declarations for NodeDlg
+    wxListBox* GetBehavior()  { return (wxListBox*) FindWindow( ID_BEHAVIOR ); }
+    wxListBox* GetRoadNum()  { return (wxListBox*) FindWindow( ID_ROADNUM ); }
+    wxListBox* GetIntType()  { return (wxListBox*) FindWindow( ID_INTTYPE ); }
+    
+private:
+    // WDR: member variable declarations for NodeDlg
+    NodeEdit *m_pNode;
+    vtRoadLayer *m_pLayer;
 
-	wxListBox	*m_pcRoadBehavior;
-	wxListBox	*m_pcRoadNum;
-	wxListBox	*m_pcIntersectType;
-	float	m_fRoadHeight;
+private:
+    // WDR: handler declarations for NodeDlg
+    void OnBehavior( wxCommandEvent &event );
+    void OnRoadNum( wxCommandEvent &event );
+    void OnIntType( wxCommandEvent &event );
+    void OnOK( wxCommandEvent &event );
+    void OnInitDialog(wxInitDialogEvent& event);
+    void OnPaint(wxPaintEvent& event);
+    void OnDraw(wxDC &dc);
 
-	void OnOK(wxCommandEvent& event);
-	bool OnOKMultiple();
-	bool OnOKSingle();
-	void OnDraw(wxDC &dc);
-	void OnPaint(wxPaintEvent& event);
-
-// Implementation
-protected:
-	//the node to edit.
-	NodeEdit *m_pNode;
-	//a dummy node to do the editting on
-	NodeEdit *m_pTempNode;
-	vtLayer *m_pLayer;
-
-	bool m_bMultiple;  //true if we are editing multiple nodes
-
+private:
     DECLARE_EVENT_TABLE()
 };
+
+
+
 
 #endif

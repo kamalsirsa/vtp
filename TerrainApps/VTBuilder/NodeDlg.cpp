@@ -1,420 +1,315 @@
-//
-// NodeDlg.cpp
-//
-// Copyright (c) 2001 Virtual Terrain Project
-// Free for all uses, see license.txt for details.
-//
+/////////////////////////////////////////////////////////////////////////////
+// Name:        NodeDlg.cpp
+// Author:      XX
+// Created:     XX/XX/XX
+// Copyright:   XX
+/////////////////////////////////////////////////////////////////////////////
 
+#ifdef __GNUG__
+    #pragma implementation "NodeDlg.cpp"
+#endif
+
+// For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
+#ifdef __BORLANDC__
+    #pragma hdrstop
 #endif
 
 #include "NodeDlg.h"
-#include "dialog4.h"
+#include "RoadLayer.h"
 #include "Frame.h"
 #include "BuilderView.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CNodeDlg dialog
+#define MULTIPLE    5000
 
-CNodeDlg::CNodeDlg(NodeEdit *node, vtLayer *pLayer, bool bMultiple)
-{
-	//{{AFX_DATA_INIT(CNodeDlg)
-	m_fRoadHeight = 0.0f;
-	//}}AFX_DATA_INIT
-	m_pNode = node;
-	//a dummy node to do the editing on.
-	m_pTempNode = new NodeEdit();
-	m_pTempNode->Copy(m_pNode);
-	m_pLayer = pLayer;
+// WDR: class implementations
 
-	m_bMultiple = bMultiple;
-}
+//----------------------------------------------------------------------------
+// NodeDlg
+//----------------------------------------------------------------------------
 
-CNodeDlg::~CNodeDlg()
-{
-	delete m_pTempNode;
-}
+// WDR: event table for NodeDlg
 
-BEGIN_EVENT_TABLE(CNodeDlg, AutoDialog)
-EVT_LISTBOX 	(IDC_NODE_INTERSECT, CNodeDlg::OnSelchangeNodeIntersect)
-EVT_LISTBOX 	(IDC_NODE_ROADNUM, CNodeDlg::OnSelchangeNodeRoadnum)
-EVT_LISTBOX 	(IDC_NODE_ROADBEH, CNodeDlg::OnSelchangeNodeRoadbeh)
-EVT_BUTTON		(wxID_OK, CNodeDlg::OnOK)
-EVT_PAINT		(CNodeDlg::OnPaint)
+BEGIN_EVENT_TABLE(NodeDlg,AutoDialog)
+    EVT_BUTTON( wxID_OK, NodeDlg::OnOK )
+    EVT_PAINT(NodeDlg::OnPaint)
+    EVT_LISTBOX( ID_INTTYPE, NodeDlg::OnIntType )
+    EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnRoadNum )
+    EVT_LISTBOX( ID_BEHAVIOR, NodeDlg::OnBehavior )
 END_EVENT_TABLE()
 
-/////////////////////////////////////////////////////////////////////////////
-// CNodeDlg message handlers
-
-void CNodeDlg::OnPaint(wxPaintEvent& event)
+NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+    const wxPoint &position, const wxSize& size, long style ) :
+    AutoDialog( parent, id, title, position, size, style )
 {
-//	wxEvtHandler::OnPaint(event);
-	wxPaintDC dc(this);
-	OnDraw(dc);
+    NodePropDialogFunc( this, TRUE ); 
 }
 
-void CNodeDlg::OnInitDialog(wxInitDialogEvent& event)
+void NodeDlg::SetNode(NodeEdit *pSingleNode, vtRoadLayer *pLayer)
 {
-	m_pcIntersectType = (wxListBox *) FindWindow(IDC_NODE_INTERSECT);
-	m_pcRoadNum = (wxListBox *) FindWindow(IDC_NODE_ROADNUM);
-	m_pcRoadBehavior = (wxListBox *) FindWindow(IDC_NODE_ROADBEH);
-
-	m_pcIntersectType->Append("Uncontrolled");
-	m_pcIntersectType->Append("All Signal Light(s)");
-	m_pcIntersectType->Append("All Stop Sign(s)");
-	m_pcIntersectType->Append("Signal Light(s)");
-	m_pcIntersectType->Append("Stop Sign(s)");
-
-	m_pcRoadBehavior->Append("Uncontrolled");	// IT_NONE
-	m_pcRoadBehavior->Append("Signal Light");	// IT_LIGHT
-	m_pcRoadBehavior->Append("Stop Sign");	// IT_STOPSIGN
-
-	// if we are editing multiple nodes at once, disable some of the editing abilities
-	if (m_bMultiple)
-	{
-		//multiple edit
-		m_pcRoadNum->Enable(false);
-		m_pcRoadBehavior->Enable(false);
-		m_pcRoadNum->Append("0"); 
-
-		NodeEdit *curNode = m_pNode;
-		bool first = true;
-		VisualIntersectionType intersect;
-		bool uniformIntersection = true;
-
-		//find out if all the selected intersection are of one type.  if so, select it.
-		//does not handle partial stop sign
-		while (curNode && uniformIntersection)
-		{
-			if (curNode->IsSelected())
-			{
-				if (!first) {
-					if (intersect != curNode->GetVisual()) {
-						uniformIntersection = false;
-					}
-				} else {
-					intersect = curNode->GetVisual();
-					uniformIntersection = true;
-					first = false;
-				}
-			}
-			curNode = (NodeEdit*) curNode->m_pNext;
-		}
-		if (uniformIntersection) {
-			m_pcIntersectType->SetSelection(intersect);
-		}
-	}
-	else
-	{
-		int i;
-		//assign the behavior of each road at this node.
-		m_pcIntersectType->SetSelection(m_pTempNode->GetVisual());
-
-		wxString string;
-		for (i=0; i < m_pTempNode->m_iRoads; i++)
-		{
-			string = wxString::Format("%i",i);
-			m_pcRoadNum->Append(string);
-		}
-		m_pcRoadNum->SetSelection(0);
-
-		m_pcRoadBehavior->SetSelection(m_pTempNode->GetIntersectType(0));
-		TransferDataToWindow();
-	}
-
-	wxDialog::OnInitDialog(event);
+    m_pNode = pSingleNode;
+    m_pLayer = pLayer;
 }
 
+// WDR: handler implementations for NodeDlg
 
-void CNodeDlg::OnOK(wxCommandEvent& event)
+void NodeDlg::OnBehavior( wxCommandEvent &event )
 {
-	bool bMod;	// check for modification
-
-	if (m_bMultiple)
-		bMod = OnOKMultiple();
-	else
-		bMod = OnOKSingle();
-
-	if (bMod)
-		m_pLayer->SetModified(true);
-
-	//modify pRoads info with new info	
-	wxDialog::OnOK(event);
-}
-
-bool CNodeDlg::OnOKMultiple()
-{
-	bool bMod = false;	// check for modification
-
-	// multiple node edit
-	VisualIntersectionType vit = m_pTempNode->GetVisual();
-
-	for (; m_pNode; m_pNode = m_pNode->GetNext())
-	{
-		if (!m_pNode->IsSelected())
-			continue;
-
-		// remember previous state
-		NodeEdit n2;
-		n2.Copy(m_pNode);
-
-		for (int i = 0; i < m_pNode->m_iRoads; i++)
-		{
-			if (vit == VIT_ALLLIGHTS)
-				m_pNode->SetIntersectType(i, IT_LIGHT);
-			else
-				if (vit == VIT_ALLSTOPS)
-					m_pNode->SetIntersectType(i, IT_STOPSIGN);
-				else
-					if (vit == VIT_NONE)
-						m_pNode->SetIntersectType(i, IT_NONE);
-		}
-		m_pNode->DetermineVisualFromRoads();
-		if (m_pTempNode->HasLights())
-		{
-			//if we just changed behavior to lights, then we need to 
-			//properly assign the light behavior relationships.
-			m_pNode->AdjustForLights();
-		}
-
-		// if state has changed, layer is modified
-		if (bMod == false && !(*m_pNode == n2))
-			bMod = true;
-	}
-	return bMod;
-}
-
-
-bool CNodeDlg::OnOKSingle()
-{
-	int i;
-	bool bMod = false;	// check for modification
-
-	// remember previous state
-	int iVisual = m_pNode->GetVisual();
-
-	// double check logic of values, not necessarily fool proof.
-	int numLights = 0;
-	int numStopSigns = 0;
-	int numNone = 0;
-	for (i = 0; i < m_pTempNode->m_iRoads; i++)
-	{
-		if (m_pTempNode->GetIntersectType(i) == IT_NONE)
-			numNone++;
-		else if (m_pTempNode->GetIntersectType(i) == IT_STOPSIGN)
-			numStopSigns++;
-		else if (m_pTempNode->GetIntersectType(i) == IT_LIGHT)
-			numLights++;
-	}
-
-	if (numLights > 0)
-	{
-		if (numLights < m_pTempNode->m_iRoads)
-			m_pNode->SetVisual(VIT_LIGHTS);
-		else
-			m_pNode->SetVisual(VIT_ALLLIGHTS);
-	}
-	else if (numStopSigns > 0)
-	{
-		if (numStopSigns < m_pTempNode->m_iRoads)
-			m_pNode->SetVisual(VIT_STOPSIGN);
-		else
-			m_pNode->SetVisual(VIT_ALLSTOPS);
-	}
-	else
-	{
-		//uncontrolled
-		m_pNode->SetVisual(VIT_NONE);
-	}
-
-	//save new values
-	m_pNode->AdjustForLights();
-
-	for (i=0; i < m_pNode->m_iRoads; i++)
-	{
-		IntersectionType t = m_pTempNode->GetIntersectType(i);
-		if (t != m_pNode->GetIntersectType(i))
-		{
-			m_pNode->SetIntersectType(i, t);
-			bMod = true;
-		}
-	}
-
-	// if state has changed, layer is modified
-//	if (!(*m_pNode == n2))
-	if (iVisual != m_pNode->GetVisual())
-		bMod = true;
-
-	return bMod;
-}
-
-
-void CNodeDlg::OnSelchangeNodeRoadnum(wxCommandEvent &event) 
-{
-	int sel = m_pcRoadNum->GetSelection();
-	//update what the behavior shows to match that of the road
-	m_pcRoadBehavior->SetSelection(m_pTempNode->GetIntersectType(sel));
-	TransferDataToWindow();
-}
-
-void CNodeDlg::OnSelchangeNodeRoadbeh(wxCommandEvent &event) 
-{
-	int sel = m_pcRoadNum->GetSelection();
+	int sel = GetRoadNum()->GetSelection();
 	//select new behavior and redraw it on the dialog.
-	m_pTempNode->SetIntersectType(sel, (IntersectionType) m_pcRoadBehavior->GetSelection());
+	int itype = GetBehavior()->GetSelection();
+	m_pNode->SetIntersectType(sel, (IntersectionType)itype );
+
+	// this may have changed the VIT, so check
+	m_pNode->DetermineVisualFromRoads();
+    GetIntType()->SetSelection(m_pNode->GetVisual());
+
 	Refresh();
 }
 
-void CNodeDlg::OnSelchangeNodeIntersect(wxCommandEvent &event) 
+void NodeDlg::OnRoadNum( wxCommandEvent &event )
+{
+	int sel = GetRoadNum()->GetSelection();
+	//update what the behavior shows to match that of the road
+	GetBehavior()->SetSelection(m_pNode->GetIntersectType(sel));
+}
+
+void NodeDlg::OnIntType( wxCommandEvent &event )
+{
+	//new node behavior
+	VisualIntersectionType vitype;
+	int sel = GetIntType()->GetSelection();
+	if (sel == 0 || sel == 6)	// unknown or multiple not allowed
+		return;
+
+	vitype = (VisualIntersectionType) sel;
+
+	if (m_pNode)
+		ApplyVisualToNode(m_pNode, vitype);
+	else
+	{
+        for (NodeEdit *n = m_pLayer->GetFirstNode(); n; n=n->GetNext())
+        {
+            if (!n->IsSelected())
+                continue;
+			ApplyVisualToNode(n, vitype);
+		}
+	}
+	Refresh();
+}
+
+void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 {
 	int i;
 
-	//new node behavior
-	VisualIntersectionType itype = (VisualIntersectionType) m_pcIntersectType->GetSelection();
-	m_pTempNode->SetVisual(itype);
+	pNode->SetVisual(vitype);
 
 	//overwrite all behaviors at the roads to match new assigned node behavior.
-	switch (itype)
+	switch (vitype)
 	{
-		case IT_NONE:
+	case VIT_NONE:
 		//make all intersections uncontrolled
-			for (i = 0; i < m_pTempNode->m_iRoads; i++) {
-				m_pTempNode->SetIntersectType(i, IT_NONE);
-			}
-			m_pcRoadBehavior->SetSelection(IT_NONE);
-			break;
-		case IT_STOPSIGN:
+		for (i = 0; i < m_pNode->m_iRoads; i++) {
+			pNode->SetIntersectType(i, IT_NONE);
+		}
+		GetBehavior()->SetSelection(IT_NONE);
+		break;
+	case VIT_ALLSTOPS:
 		//make all intersections stop signs
-			for (i = 0; i < m_pTempNode->m_iRoads; i++) {
-				m_pTempNode->SetIntersectType(i, IT_STOPSIGN);
-			}
-			m_pcRoadBehavior->SetSelection(IT_STOPSIGN);
-			break;
-		case IT_LIGHT:
+		for (i = 0; i < m_pNode->m_iRoads; i++) {
+			pNode->SetIntersectType(i, IT_STOPSIGN);
+		}
+		GetBehavior()->SetSelection(IT_STOPSIGN);
+		break;
+	case VIT_ALLLIGHTS:
 		//make all intersections lights
-			for (i = 0; i < m_pTempNode->m_iRoads; i++) {
-				m_pTempNode->SetIntersectType(i, IT_LIGHT);
-			}
-			m_pcRoadBehavior->SetSelection(IT_LIGHT);
-			m_pTempNode->AdjustForLights();
-			break;
+		for (i = 0; i < m_pNode->m_iRoads; i++) {
+			pNode->SetIntersectType(i, IT_LIGHT);
+		}
+		GetBehavior()->SetSelection(IT_LIGHT);
+		pNode->AdjustForLights();
+		break;
 	}
-	Refresh();
+}
+
+void NodeDlg::OnOK( wxCommandEvent &event )
+{
+    
+}
+
+void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+    GetIntType()->Append("Unknown");
+    GetIntType()->Append("Uncontrolled");
+    GetIntType()->Append("All Signal Light(s)");
+    GetIntType()->Append("All Stop Sign(s)");
+    GetIntType()->Append("Signal Light(s)");
+    GetIntType()->Append("Stop Sign(s)");
+    GetIntType()->Append("(multiple)");
+
+    GetBehavior()->Append("Uncontrolled");  // IT_NONE
+    GetBehavior()->Append("Signal Light");  // IT_LIGHT
+    GetBehavior()->Append("Stop Sign"); // IT_STOPSIGN
+
+    // if we are editing multiple nodes at once, disable some of the
+    // editing abilities
+    if (!m_pNode)
+    {
+        GetRoadNum()->Enable(false);
+        GetBehavior()->Enable(false);
+
+        // Accumulate state
+        int viz = -1;
+        for (NodeEdit *n = m_pLayer->GetFirstNode(); n; n=n->GetNext())
+        {
+            if (!n->IsSelected())
+                continue;
+            if (viz == -1)
+                viz = n->GetVisual();
+            if (n->GetVisual() != viz)
+                viz = MULTIPLE;
+        }
+
+        // Transfer state to control
+        if (viz == MULTIPLE)
+            GetIntType()->SetSelection(5);
+        else
+            GetIntType()->SetSelection(viz);
+    }
+    else
+    {
+        // single road
+        wxString string;
+        for (int i = 0; i < m_pNode->m_iRoads; i++)
+        {
+            string.Printf("%i", i);
+            GetRoadNum()->Append(string);
+        }
+        GetRoadNum()->SetSelection(0);
+        GetIntType()->SetSelection(m_pNode->GetVisual());
+        int itype = m_pNode->GetIntersectType(0);
+        GetBehavior()->SetSelection(itype);
+    }
+}
+
+void NodeDlg::OnPaint(wxPaintEvent& event)
+{
+//  wxEvtHandler::OnPaint(event);
+    wxPaintDC dc(this);
+    OnDraw(dc);
 }
 
 static wxPoint buf[10];
 
 //draw the node structure on the dialog box.
-void CNodeDlg::OnDraw(wxDC &dc) 
+void NodeDlg::OnDraw(wxDC &dc) 
 {
-	if (m_bMultiple)
-		return;
+    if (!m_pNode)
+        return;
 
-	vtScaledView *pView = GetMainFrame()->GetView();
-	float fSaveScale = pView->GetScale();
-	pView->SetScale(1.0f);
+    vtScaledView *pView = GetMainFrame()->GetView();
+    float fSaveScale = pView->GetScale();
+    pView->SetScale(1.0f);
 
-	wxPoint off;
-	off.x = pView->sx(m_pTempNode->m_p.x);
-	off.y = pView->sy(m_pTempNode->m_p.y);
-	dc.SetDeviceOrigin(-off.x + 315, -off.y +125);
-	dc.DrawLine(0, 0, 400, 400);
-	m_pTempNode->Draw(&dc, pView);
+    wxPoint off;
+    off.x = pView->sx(m_pNode->m_p.x);
+    off.y = pView->sy(m_pNode->m_p.y);
+    dc.SetDeviceOrigin(-off.x + 315, -off.y +125);
+    dc.DrawLine(0, 0, 400, 400);
+    m_pNode->Draw(&dc, pView);
 
-	wxString string;
-	for (int i = 0; i < m_pTempNode->m_iRoads; i++)
-	{
-		RoadEdit *pR = m_pTempNode->GetRoad(i);
-		pR->Draw(&dc, pView);
+    wxString string;
+    for (int i = 0; i < m_pNode->m_iRoads; i++)
+    {
+        RoadEdit *pR = m_pNode->GetRoad(i);
+        pR->Draw(&dc, pView);
 
-		//we need to use the original node here because the roads point to it.
-		DPoint2 close = m_pNode->find_adjacent_roadpoint2d(pR);
-		DPoint2 vector = close - m_pTempNode->m_p;
-		vector.Normalize();
-		IPoint2 vec;
+        //we need to use the original node here because the roads point to it.
+        DPoint2 close = m_pNode->find_adjacent_roadpoint2d(pR);
+        DPoint2 vector = close - m_pNode->m_p;
+        vector.Normalize();
+        IPoint2 vec;
 
-		vec.x = (int)(off.x + vector.x*20);
-		vec.y = (int)(off.y - vector.y*20);
+        vec.x = (int)(off.x + vector.x*20);
+        vec.y = (int)(off.y - vector.y*20);
 
-		//draw signal lights or stop signs as necessary.
-		dc.SetLogicalFunction(wxCOPY);
-		wxPen pen;
+        //draw signal lights or stop signs as necessary.
+        dc.SetLogicalFunction(wxCOPY);
+        wxPen pen;
 
-		switch (m_pTempNode->GetIntersectType(i))
-		{
-			case IT_STOPSIGN:
-				pen.SetColour(128,0,0);
-				dc.SetPen(pen);
-				vec.x += 2;
-				vec.y += 6;
-				buf[0].x = vec.x; buf[0].y = vec.y;
-				vec.x -= 4;
-				buf[1].x = vec.x; buf[1].y = vec.y;
-				vec.x -= 3;
-				vec.y -= 3;
-				buf[2].x = vec.x; buf[2].y = vec.y;
-				vec.y -= 4;
-				buf[3].x = vec.x; buf[3].y = vec.y;
-				vec.x += 3;
-				vec.y -= 3;
-				buf[4].x = vec.x; buf[4].y = vec.y;
-				vec.x += 4;
-				buf[5].x = vec.x; buf[5].y = vec.y;
-				vec.x += 3;
-				vec.y += 3;
-				buf[6].x = vec.x; buf[6].y = vec.y;
-				vec.y += 4;
-				buf[7].x = vec.x; buf[7].y = vec.y;
-				vec.x -= 3;
-				vec.y += 3;
-				buf[8].x = vec.x; buf[8].y = vec.y;
-				dc.DrawLines(9, buf);
-				break;
-			case IT_LIGHT:
-				wxBrush brush;
-				switch (m_pTempNode->GetLightStatus(i)) {
-					case LT_INVALID:
-						pen.SetColour(0,0,0);
-						brush.SetColour(0,0,0);
-						break;
-					case LT_RED:
-						pen.SetColour(128,0,0);
-						brush.SetColour(128,0,0);
-						break;
-					case LT_YELLOW:
-						pen.SetColour(0,128,128);
-						brush.SetColour(0,128,128);
-						break;
-					case LT_GREEN:
-						pen.SetColour(0,128,0);
-						brush.SetColour(0,128,0);
-						break;
-					default:
-				//unrecognized
-						pen.SetColour(0,0,255);
-						brush.SetColour(0,0,255);
-				}
+        switch (m_pNode->GetIntersectType(i))
+        {
+            case IT_STOPSIGN:
+                pen.SetColour(128,0,0);
+                dc.SetPen(pen);
+                vec.x += 2;
+                vec.y += 6;
+                buf[0].x = vec.x; buf[0].y = vec.y;
+                vec.x -= 4;
+                buf[1].x = vec.x; buf[1].y = vec.y;
+                vec.x -= 3;
+                vec.y -= 3;
+                buf[2].x = vec.x; buf[2].y = vec.y;
+                vec.y -= 4;
+                buf[3].x = vec.x; buf[3].y = vec.y;
+                vec.x += 3;
+                vec.y -= 3;
+                buf[4].x = vec.x; buf[4].y = vec.y;
+                vec.x += 4;
+                buf[5].x = vec.x; buf[5].y = vec.y;
+                vec.x += 3;
+                vec.y += 3;
+                buf[6].x = vec.x; buf[6].y = vec.y;
+                vec.y += 4;
+                buf[7].x = vec.x; buf[7].y = vec.y;
+                vec.x -= 3;
+                vec.y += 3;
+                buf[8].x = vec.x; buf[8].y = vec.y;
+                dc.DrawLines(9, buf);
+                break;
+            case IT_LIGHT:
+                wxBrush brush;
+                switch (m_pNode->GetLightStatus(i)) {
+                    case LT_INVALID:
+                        pen.SetColour(0,0,0);
+                        brush.SetColour(0,0,0);
+                        break;
+                    case LT_RED:
+                        pen.SetColour(128,0,0);
+                        brush.SetColour(128,0,0);
+                        break;
+                    case LT_YELLOW:
+                        pen.SetColour(0,128,128);
+                        brush.SetColour(0,128,128);
+                        break;
+                    case LT_GREEN:
+                        pen.SetColour(0,128,0);
+                        brush.SetColour(0,128,0);
+                        break;
+                    default:
+                //unrecognized
+                        pen.SetColour(0,0,255);
+                        brush.SetColour(0,0,255);
+                }
 
-				dc.SetPen(pen);
-				dc.SetBrush(brush);
-				wxRect box;
-				int radius = 4;
-				box.y = vec.y - radius;
-				box.height = (radius << 1);
-				box.x = vec.x - radius;
-				box.width = (radius << 1);
-				dc.DrawEllipse(box.x, box.y, box.width, box.height);
-				break;
-		} 
+                dc.SetPen(pen);
+                dc.SetBrush(brush);
+                wxRect box;
+                int radius = 4;
+                box.y = vec.y - radius;
+                box.height = (radius << 1);
+                box.x = vec.x - radius;
+                box.width = (radius << 1);
+                dc.DrawEllipse(box.x, box.y, box.width, box.height);
+                break;
+        } 
 
-		vec.x = (int)(off.x + vector.x*40);
-		vec.y = (int)(off.y - vector.y*40);
-		string = wxString::Format("%i", i);
-		//draw text labels
-		dc.DrawText(string, vec.x-10, vec.y-10);
-	}
-	pView->SetScale(fSaveScale);
+        vec.x = (int)(off.x + vector.x*40);
+        vec.y = (int)(off.y - vector.y*40);
+        string.Printf("%i", i);
+        //draw text labels
+        dc.DrawText(string, vec.x-10, vec.y-10);
+    }
+    pView->SetScale(fSaveScale);
 }
