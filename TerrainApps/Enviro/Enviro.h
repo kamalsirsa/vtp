@@ -150,7 +150,7 @@ public:
 	vtPlantList3d	*GetPlantList() { return m_pPlantList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	bool PlantATree(const DPoint2 &epos);
-	void SetPlantOptions(PlantingOptions &opt) { m_PlantOpt = opt; }
+	void SetPlantOptions(PlantingOptions &opt);
 
 	// global state
 	AppState	m_state;

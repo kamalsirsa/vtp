@@ -181,7 +181,7 @@ EVT_UPDATE_UI(ID_EARTH_LINEAR, vtFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 
-	// Popup
+// Popup
 EVT_MENU(ID_POPUP_PROPERTIES, vtFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, vtFrame::OnPopupFlip)
 EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
@@ -1241,6 +1241,7 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 			}
 			if (fen)
 			{
+				// TODO
 				m_pFenceDlg->Show(true);
 				return;
 			}
@@ -1248,13 +1249,28 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 	}
 	if (plants.NumSelected() != 0)
 	{
+		int found = -1;
 		count = plants.GetSize();
 		for (i = 0; i < count; i++)
 		{
 			vtPlantInstance3d *inst3d = plants.GetInstance3d(i);
-			if (!inst3d->IsSelected())
-				continue;
+			if (inst3d->IsSelected())
+			{
+				found = i;
+				break;
+			}
+		}
+		if (found != -1)
+		{
 			// TODO: show properties for this plant
+			PlantingOptions &opt = g_App.GetPlantOptions();
+
+			opt.m_iSpecies = plants[found].species_id;
+			opt.m_fHeight = plants[found].size;
+
+			m_pPlantDlg->SetPlantList(g_App.GetPlantList());
+			m_pPlantDlg->SetPlantOptions(opt);
+			m_pPlantDlg->Show(true);
 		}
 	}
 }

@@ -86,7 +86,7 @@ Enviro::Enviro()
 	m_bPlantsLoaded = false;
 	m_PlantOpt.m_iMode = 0;
 	m_PlantOpt.m_iSpecies = 0;
-	m_PlantOpt.m_fHeight = 2.0f;
+	m_PlantOpt.m_fHeight = 100.0f;
 	m_PlantOpt.m_iVariance = 20;
 	m_PlantOpt.m_fSpacing = 2.0f;
 
@@ -1795,6 +1795,26 @@ void Enviro::SetRouteOptions(const vtString &sStructType)
 
 ////////////////////////////////////////////////
 // Plants
+
+void Enviro::SetPlantOptions(PlantingOptions &opt)
+{
+	m_PlantOpt = opt;
+	if (m_mode == MM_SELECT)
+	{
+		vtPlantInstanceArray3d &pia = GetCurrentTerrain()->GetPlantInstances();
+		for (int i = 0; i < pia.GetSize(); i++)
+		{
+			vtPlantInstance3d *inst3d = pia.GetInstance3d(i);
+			if (inst3d->IsSelected())
+			{
+				vtPlantInstance &inst = pia.GetAt(i);
+				inst.species_id = opt.m_iSpecies;
+				inst.size = opt.m_fHeight;
+				pia.CreatePlantNode(i);
+			}
+		}
+	}
+}
 
 /**
  * Plant a tree at the given location (in earth coordinates)
