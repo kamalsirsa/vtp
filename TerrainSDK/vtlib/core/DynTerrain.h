@@ -22,7 +22,6 @@ class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid3d
 {
 public:
 	vtDynTerrainGeom();
-	~vtDynTerrainGeom();
 
 	virtual bool Init(vtElevationGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError) = 0;
@@ -93,6 +92,9 @@ protected:
 	float m_fDetailTiling;
 	bool m_bDetailTexture;
 	vtMaterial *m_pDetailMat;
+
+protected:
+	~vtDynTerrainGeom();
 };
 
 #endif	// DYNTERRAINH
