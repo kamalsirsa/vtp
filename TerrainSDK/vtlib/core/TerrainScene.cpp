@@ -208,7 +208,7 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 		return NULL;
 
 	// Set time to that of the new terrain
-	m_pSkyDome->SetTime(pTerrain->GetInitialTime(), true);
+	m_pSkyDome->SetTime(pTerrain->GetInitialTime());
 
 	// Tell the skydome where on the planet we are
 	DPoint2 geo = pTerrain->GetCenterGeoLocation();

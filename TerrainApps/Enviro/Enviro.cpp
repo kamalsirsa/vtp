@@ -363,7 +363,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		m_pSkyDome->SetGeoLocation(geo);
 
 		// Set time to that of the new terrain
-		m_pSkyDome->SetTime(pTerr->GetInitialTime(), true);
+		m_pSkyDome->SetTime(pTerr->GetInitialTime());
 
 		if (!pTerr->CreateStep2(GetSunLight()))
 		{
