@@ -39,7 +39,14 @@ bool MyApp::OnInit()
 #endif
 	VTLOG("\n");
 
-	MainFrame* frame = new MainFrame((wxFrame *) NULL, _T(APPNAME),
+	VTLOG("Testing ability to allocate a frame object.\n");
+	wxFrame *frametest = new wxFrame(NULL, -1, _T("Title"));
+	delete frametest;
+
+	VTLOG(" Creating Main Frame Window,");
+	wxString2 title = _T(APPNAME);
+	VTLOG(" title '%s'\n", title.mb_str());
+	MainFrame* frame = new MainFrame((wxFrame *) NULL, title,
 							   wxPoint(50, 50), wxSize(900, 500));
 
 	VTLOG(" Setting up the UI.\n");

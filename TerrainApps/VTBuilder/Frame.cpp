@@ -112,6 +112,8 @@ MainFrame::MainFrame(wxFrame* frame, const wxString& title,
 	const wxPoint& pos, const wxSize& size) :
 wxFrame(frame, WID_FRAME, title, pos, size)
 {
+	VTLOG("  MainFrame constructor: enter\n");
+
 	// init app data
 	m_pView = NULL;
 	m_pActiveLayer = NULL;
@@ -125,6 +127,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
+	VTLOG("  MainFrame constructor: exit\n");
 }
 
 MainFrame::~MainFrame()
