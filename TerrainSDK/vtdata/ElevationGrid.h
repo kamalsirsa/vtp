@@ -89,9 +89,9 @@ public:
 	float GetFValue(int i, int j) const;	// returns height value as a float
 	float GetFValueSafe(int i, int j) const;
 
-	float GetClosestValue(double x, double y) const;
-	float GetFilteredValue(double x, double y) const;
-	float GetFilteredValue2(double x, double y) const;
+	float GetClosestValue(const DPoint2 &p) const;
+	float GetFilteredValue(const DPoint2 &p) const;
+	float GetFilteredValue2(const DPoint2 &p) const;
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */
