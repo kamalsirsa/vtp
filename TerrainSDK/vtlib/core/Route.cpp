@@ -160,7 +160,7 @@ void vtRoute::add_Pole(DPoint3 &p1, long lStationIndex)
 		xform->RotateLocal(FPoint3(1,0,0), -PIf);
 		// orient
 		xform->RotateLocal(FPoint3(0,1,0), m_StationArray.GetAt(lStationIndex).dRadAzimuth+PID2f);
-		m_pTheTerrain->PlantModelUTM(xform, p1.x,p1.y);
+		m_pTheTerrain->PlantModelAtPoint(xform, DPoint2(p1.x,p1.y));
 		tower->SetEnabled(true);
 		m_pTheTerrain->m_pLodGrid->AppendToGrid(xform);
 	}
