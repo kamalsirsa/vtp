@@ -16,6 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TimeEngines.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtdata/vtLog.h"
 #include "../Enviro.h"			// for g_App, GetTerrainScene
 #include "canvas.h"
 #include "frame.h"
@@ -290,16 +291,25 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	if (ev == wxEVT_LEFT_DOWN || ev == wxEVT_MIDDLE_DOWN || ev == wxEVT_RIGHT_DOWN)
 	{
-		CaptureMouse();
-		bCapture = true;
+//		VTLOG("DOWN: capture %d", bCapture);
+		if (!bCapture)
+		{
+			CaptureMouse();
+			bCapture = true;
+//			VTLOG(" -> true");
+		}
+//		VTLOG("\n");
 	}
 	if (ev == wxEVT_LEFT_UP || ev == wxEVT_MIDDLE_UP || ev == wxEVT_RIGHT_UP)
 	{
+//		VTLOG("  UP: capture %d", bCapture);
 		if (bCapture)
 		{
 			ReleaseMouse();
 			bCapture = false;
+//			VTLOG(" -> false");
 		}
+//		VTLOG("\n");
 	}
 
 	event.flags = 0;
