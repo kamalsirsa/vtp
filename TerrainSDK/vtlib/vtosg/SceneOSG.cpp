@@ -315,8 +315,8 @@ void vtScene::DrawFrameRateChart()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+//	glMatrixMode(GL_PROJECTION);
+//	glLoadIdentity();
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
