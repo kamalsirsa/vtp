@@ -800,11 +800,6 @@ DRECT MainFrame::GetExtents()
 		return DRECT(-180,90,180,-90);	// geo extents of whole planet
 }
 
-void MainFrame::StretchArea()
-{
-	m_area = GetExtents();
-}
-
 void MainFrame::RefreshTreeView()
 {
 	if (m_pTree)
