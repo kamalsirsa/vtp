@@ -33,6 +33,7 @@ class vtLinearParams
 {
 public:
 	void Defaults();
+	void Blank();
 	void ApplyStyle(vtLinearStyle style);
 	void WriteXML(GZOutput &out);
 

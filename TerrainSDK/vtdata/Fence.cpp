@@ -18,6 +18,20 @@ void vtLinearParams::Defaults()
 	ApplyStyle(FS_WOOD_POSTS_WIRE);
 }
 
+void vtLinearParams::Blank()
+{
+	m_PostType = "none";
+	m_fPostSpacing = 1.0f;
+	m_fPostHeight = 1.0f;
+	m_fPostWidth = 0.0f;
+	m_fPostDepth = 0.0f;
+	//
+	m_ConnectType = "none";
+	m_fConnectTop = 1.0f;
+	m_fConnectBottom = 0.0f;
+	m_fConnectWidth = 0.0f;
+}
+
 void vtLinearParams::ApplyStyle(vtLinearStyle style)
 {
 	switch (style)
@@ -129,8 +143,7 @@ void vtLinearParams::WriteXML(GZOutput &out)
 	if (m_ConnectType != "none")
 	{
 		gfprintf(out, "\t\t<Connect Type=\"%s\"", m_ConnectType);
-		if (m_fConnectTop != m_fPostHeight)
-			gfprintf(out, " Top=\"%.2f\"", m_fConnectTop);
+		gfprintf(out, " Top=\"%.2f\"", m_fConnectTop);
 		if (m_fConnectBottom != 0.0f)
 			gfprintf(out, " Bottom=\"%.2f\"", m_fConnectBottom);
 		if (m_fConnectWidth != 0.0f)

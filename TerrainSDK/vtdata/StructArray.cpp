@@ -915,6 +915,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		else if (!strcmp(name, "Linear"))
 		{
 			m_pFence = m_pSA->NewFence();
+			m_pFence->GetParams().Blank();
 			m_pStructure = m_pFence;
 
 			// support obsolete attribute
