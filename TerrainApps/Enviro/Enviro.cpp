@@ -15,6 +15,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/Globe.h"
 
 #include "vtdata/boost/directory.h"
 #include "vtdata/FilePath.h"
@@ -25,7 +26,6 @@
 #include "Hawaii.h"
 #include "Nevada.h"
 #include "TransitTerrain.h"
-#include "Globe.h"
 
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
@@ -678,7 +678,8 @@ void Enviro::MakeGlobe()
 #else
 	// fancy icosahedral globe
 	m_pIcoGlobe = new IcoGlobe();
-	m_pIcoGlobe->Create(16, g_Options.m_DataPaths, g_Options.m_strImage);
+	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strImage,
+		IcoGlobe::RIGHT_TRIANGLE);
 	m_pGlobeMGeom = m_pIcoGlobe->m_mgeom;
 #endif
 
@@ -753,7 +754,7 @@ void Enviro::LookUpTerrainLocations()
 void Enviro::AddTerrainRectangles()
 {
 	VTLOG("AddTerrainRectangles\n");
-	m_pIcoGlobe->AddTerrainRectangles();
+	m_pIcoGlobe->AddTerrainRectangles(GetTerrainScene());
 }
 
 int Enviro::AddGlobePoints(const char *fname)
