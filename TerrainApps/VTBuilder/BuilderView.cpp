@@ -37,7 +37,7 @@
 ////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(BuilderView, vtScaledView)
-EVT_LEFT_DOWN(BuilderView::OnLeftDown)	
+EVT_LEFT_DOWN(BuilderView::OnLeftDown)
 EVT_LEFT_UP(BuilderView::OnLeftUp)
 EVT_LEFT_DCLICK(BuilderView::OnLeftDoubleClick)
 EVT_MIDDLE_DOWN(BuilderView::OnMiddleDown)
@@ -55,7 +55,7 @@ END_EVENT_TABLE()
 
 BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, const wxString& name) :
-vtScaledView(parent, id, pos, size, name )
+		vtScaledView(parent, id, pos, size, name )
 {
 	VTLOG(" Constructing BuilderView\n");
 
@@ -393,7 +393,8 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 
 	CPLPushErrorHandler(myErrorHandler);
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)&Source, (OGRSpatialReference *)&proj);
+	OCT *trans = OGRCreateCoordinateTransformation(
+		(OGRSpatialReference *)&Source, (OGRSpatialReference *)&proj);
 	CPLPopErrorHandler();
 
 	if (!trans)
@@ -955,7 +956,7 @@ void BuilderView::SetShowMap(bool bShow)
 void BuilderView::OnLeftDown(wxMouseEvent& event)
 {
 	m_ui.m_bLMouseButton = true;
-	m_bMouseMoved = false;	
+	m_bMouseMoved = false;
 
 	// save the point where the user clicked
 	m_DownClient = event.GetPosition();
@@ -1190,7 +1191,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 void BuilderView::OnMiddleDown(wxMouseEvent& event)
 {
 	m_ui.m_bMMouseButton = true;
-	m_bMouseMoved = false;	
+	m_bMouseMoved = false;
 
 	// save the point where the user clicked
 	m_DownClient = event.GetPosition();
@@ -1396,7 +1397,8 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		Refresh();
 #endif
 #if 0
-		wxString str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
+		wxString str = wxGetTextFromUser(_T("Test Message"),
+			_T("Test Caption"), _T(""), this);
 
 		const char *from = str.mb_str();
 		VTLOG("from wxString's mb_str: %s\n", from);
