@@ -77,10 +77,9 @@ void EnviroGUI::ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 	GetFrame()->m_pDistanceDlg->SetGroundAndVertical(fGround, fVertical, true);
 }
 
-vtString EnviroGUI::GetPathFromGUI()
+vtTagArray *EnviroGUI::GetInstanceFromGUI()
 {
-	wxString2 str = GetFrame()->m_pInstanceDlg->GetPath();
-	return str.mb_str();
+	return GetFrame()->m_pInstanceDlg->GetTagArray();
 }
 
 bool EnviroGUI::OnMouseEvent(vtMouseEvent &event)
