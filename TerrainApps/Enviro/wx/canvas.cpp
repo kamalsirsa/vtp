@@ -170,12 +170,15 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 #endif // VTLIB_PSM
 	}
 
-	// Must allow some idle processing to occur - or the toolbars will not
-	// update, and the close box will not respond!
-	bool go = true;
-	while (go)
+	if (m_bRunning)
 	{
-		go = wxGetApp().ProcessIdle();
+		// Must allow some idle processing to occur - or the toolbars will not
+		// update, and the close box will not respond!
+		bool go = true;
+		while (go)
+		{
+			go = wxGetApp().ProcessIdle();
+		}
 	}
 }
 
