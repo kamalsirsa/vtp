@@ -314,7 +314,7 @@ void vtTin::CleanupClockwisdom()
 	DPoint2 p1, p2, p3;		// 2D points
 	int v0, v1, v2;
 	unsigned int tris = NumTris();
-	for (int i = 0; i < tris; i++)
+	for (unsigned int i = 0; i < tris; i++)
 	{
 		v0 = m_tri[i*3];
 		v1 = m_tri[i*3+1];
