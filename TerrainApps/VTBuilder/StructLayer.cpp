@@ -11,7 +11,10 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/DLG.h"
 #include "vtdata/Fence.h"
+#include "ogrsf_frmts.h"
+
 #include "Frame.h"
 #include "StructLayer.h"
 #include "ScaledView.h"
@@ -367,28 +370,6 @@ void vtStructureLayer::DeselectAll()
 	}
 }
 
-void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
-{
-	wxString choices[3];
-	choices[0] = "Buildings (parametric by center or footprint)";
-	choices[1] = "Linear Structures (fences)";
-	choices[2] = "Instances (external model references)";
-
-	wxSingleChoiceDialog dialog(NULL, "These are your choices",
-		"Please indicate the type of structures in this SHP file:",
-		3, (const wxString *)choices);
-	if (dialog.ShowModal() != wxID_OK)
-		return;
-
-	vtStructureType type = (vtStructureType) dialog.GetSelection();
-
-	bool success = ReadSHP(filename, type);
-	if (!success)
-		return;
-
-	m_proj = proj;	// Set projection
-}
-
 int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 {
 	int affected = 0;
@@ -426,6 +407,190 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 		}
 	}
 	return affected;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Import methods
+
+void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
+{
+	wxString choices[3];
+	choices[0] = "Buildings (parametric by center or footprint)";
+	choices[1] = "Linear Structures (fences)";
+	choices[2] = "Instances (external model references)";
+
+	wxSingleChoiceDialog dialog(NULL, "These are your choices",
+		"Please indicate the type of structures in this SHP file:",
+		3, (const wxString *)choices);
+	if (dialog.ShowModal() != wxID_OK)
+		return;
+
+	vtStructureType type = (vtStructureType) dialog.GetSelection();
+
+	bool success = ReadSHP(filename, type);
+	if (!success)
+		return;
+
+	m_proj = proj;	// Set projection
+}
+
+void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
+{
+	// set projection
+	m_proj = pDlg->GetProjection();
+
+/*	TODO: similar code to import from SDTS-DLG
+	NEEDED: an actual sample file containing building data in this format.
+*/
+}
+
+void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
+									 void progress_callback(int))
+{
+	int i, j, feature_count, count;
+	OGRLayer		*pLayer;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRPoint		*pPoint;
+	OGRPolygon		*pPolygon;
+	vtBuilding		*pBld;
+	DPoint2			point;
+
+	// Assume that this data source is a USGS SDTS DLG
+	//
+	// Iterate through the layers looking for the ones we care about
+	//
+	int num_layers = pDatasource->GetLayerCount();
+	for (i = 0; i < num_layers; i++)
+	{
+		pLayer = pDatasource->GetLayer(i);
+		if (!pLayer)
+			continue;
+
+		feature_count = pLayer->GetFeatureCount();
+  		pLayer->ResetReading();
+		OGRFeatureDefn *defn = pLayer->GetLayerDefn();
+		if (!defn)
+			continue;
+
+		const char *layer_name = defn->GetName();
+
+		// Nodes
+		if (!strcmp(layer_name, "NO01"))
+		{
+			// only 1 field: RCID - not enough to do anything useful
+		}
+		if (!strcmp(layer_name, "NE01"))
+		{
+			// get field indices
+			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+
+			count = 0;
+			while( (pFeature = pLayer->GetNextFeature()) != NULL )
+			{
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom) continue;
+				pPoint = (OGRPoint *) pGeom;
+				pBld = NewBuilding();
+
+				pBld->SetShape(SHAPE_RECTANGLE);
+				point.x = pPoint->getX();
+				point.y = pPoint->getY();
+				pBld->SetLocation(point);
+				pBld->SetStories(1);
+
+				vtStructure *s = NewStructure();
+				s->SetBuilding(pBld);
+				Append(s);
+
+				count++;
+			}
+		}
+		// Lines
+		if (!strcmp(layer_name, "LE01"))
+		{
+			// only 3 field: RCID, SNID, ENID - not enough to do anything useful
+		}
+		// Areas (buildings, built-up areas, other areas like golf courses)
+		if (!strcmp(layer_name, "PC01"))
+		{
+			// Get the projection (SpatialReference) from this layer
+			OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+			if (pSpatialRef)
+				m_proj.SetSpatialReference(pSpatialRef);
+
+			// get field indices
+			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+
+			count = 0;
+			while( (pFeature = pLayer->GetNextFeature()) != NULL )
+			{
+				count++;
+				progress_callback(count * 100 / feature_count);
+
+				// Ignore non-entities
+				if (!pFeature->IsFieldSet(index_entity))
+					continue;
+
+				// The "ENTITY_LABEL" contains the same information as the old
+				// DLG classification.  First, try to use this field to guess
+				// values such as number of lanes, etc.
+				const char *str_entity = pFeature->GetFieldAsString(index_entity);
+				int numEntity = atoi(str_entity);
+				int iMajorAttr = numEntity / 10000;
+				int iMinorAttr = numEntity % 10000;
+
+				int num_stories = 1;
+				pBld = NULL;
+				switch (iMinorAttr)
+				{
+				case 123:	// golf course
+				case 150:	// built-up area
+				case 420:	// cemetary
+					break;
+				case 402:	// church
+				case 403:	// school
+				case 405:	// courthouse
+				case 406:	// post office
+				case 407:	// city/town hall
+				case 408:	// hospital
+				case 409:	// prison
+				case 412:	// customs building
+				case 413:	// capitol
+				case 414:	// community center
+				case 415:	// muesum
+				case 418:	// library
+					num_stories = 2;
+				case 400:	// building (general case)
+					pBld = NewBuilding();
+					break;
+				}
+				if (!pBld)
+					continue;
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom) continue;
+				pPolygon = (OGRPolygon *) pGeom;
+
+				OGRLinearRing *ring = pPolygon->getExteriorRing();
+				int num_points = ring->getNumPoints();
+				pBld->SetShape(SHAPE_POLY);
+				DLine2 foot;
+				foot.SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+					foot.SetAt(j, DPoint2(ring->getX(j),
+						ring->getY(j)));
+
+				pBld->SetFootprint(foot);
+				pBld->SetCenterFromPoly();
+				pBld->SetStories(num_stories);
+
+				vtStructure *s = NewStructure();
+				s->SetBuilding(pBld);
+				Append(s);
+			}
+		}
+	}
 }
 
 

@@ -30,6 +30,10 @@ public:
 	void Offset(const DPoint2 &p);
 
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);
+	void AddElementsFromDLG(vtDLGFile *pDlg);
+	// Import from SDTS via OGR
+	void AddElementsFromOGR(class OGRDataSource *datasource,
+		void progress_callback(int) = NULL);
 
 	vtStructure *FindBuilding(DPoint2 &point, double epsilon);
 	bool EditBuildingProperties();
