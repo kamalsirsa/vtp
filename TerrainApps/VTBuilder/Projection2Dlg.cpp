@@ -22,6 +22,7 @@
 
 #include "Projection2Dlg.h"
 #include "StatePlaneDlg.h"
+#include "vtui/wxString2.h"
 
 //
 // Must offset the values we use for Datum because a Choice
@@ -81,10 +82,10 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl->Append(_T("Transverse Mercator"));
 
 	// Fill in choices for Datum
-	wxString str;
+	wxString2 str;
 	for (i = NO_DATUM; i <= WGS_84; i++)
 	{
-		str = wxString::FromAscii(datumToString((DATUM) i));
+		str = datumToString((DATUM) i);
 		m_pDatumCtrl->Append(str, (void *) (i+CHOICE_OFFSET));
 	}
 
@@ -115,7 +116,7 @@ void Projection2Dlg::UpdateControlStatus()
 {
 	int i, pos = 0;
 	int real_zone;
-	wxString str;
+	wxString2 str;
 
 	m_pZoneCtrl->Clear();
 	switch (m_eProj)
@@ -159,7 +160,7 @@ void Projection2Dlg::UpdateControlStatus()
 		break;
 	}
 	m_iDatum = (int) m_proj.GetDatum();
-	str = wxString::FromAscii(datumToString((DATUM)m_iDatum));
+	str = datumToString((DATUM)m_iDatum);
 	m_pDatumCtrl->SetStringSelection(str);
 
 	// Do horizontal units ("linear units")
@@ -204,7 +205,7 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 	int children = root->GetChildCount();
 	int i, item = 0;
 
-	wxString str;
+	wxString2 str;
 	for (i = 0; i < children; i++)
 	{
 		node = root->GetChild(i);
@@ -213,12 +214,12 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 		{
 			par1 = node->GetChild(0);
 			value = par1->GetValue();
-			str = wxString::FromAscii(value);
+			str = value;
 			item = m_pParamCtrl->InsertItem(item, str);
 
 			par2 = node->GetChild(1);
 			value = par2->GetValue();
-			str = wxString::FromAscii(value);
+			str = value;
 			m_pParamCtrl->SetItem(item, 1, str);
 			item++;
 		}
@@ -275,7 +276,7 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 	const char *value;
 	int children = root->GetChildCount();
 	int i, item = 0;
-	wxString str;
+	wxString2 str;
 
 	for (i = 0; i < children; i++)
 	{
@@ -289,14 +290,14 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 		if (item == item_clicked)
 		{
 			wxString caption = _T("Value for ");
-			str = wxString::FromAscii(par1->GetValue());
+			str = par1->GetValue();
 			caption += str;
-			str = wxString::FromAscii(value);
-			wxString result = wxGetTextFromUser(caption, _T("Enter new value"),
+			str = value;
+			wxString2 result = wxGetTextFromUser(caption, _T("Enter new value"),
 				str, this);
 			if (result != _T(""))
 			{
-//			  double newval = atof((const char *)result);
+//				double newval = atof((const char *)result);
 				par2->SetValue(result.mb_str());
 				DisplayProjectionSpecificParams();
 				return;

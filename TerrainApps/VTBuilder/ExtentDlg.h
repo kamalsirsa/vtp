@@ -14,6 +14,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 
 // WDR: class declarations
@@ -34,11 +35,11 @@ public:
     // WDR: method declarations for ExtentDlg
 	void SetArea(DRECT area, bool bMeters);
     
-	wxString	m_strAll;
-	wxString	m_strEast;
-	wxString	m_strNorth;
-	wxString	m_strSouth;
-	wxString	m_strWest;
+	wxString2	m_strAll;
+	wxString2	m_strEast;
+	wxString2	m_strNorth;
+	wxString2	m_strSouth;
+	wxString2	m_strWest;
 
 	DRECT m_area;
 	bool m_bMeters;

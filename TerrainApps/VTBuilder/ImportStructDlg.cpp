@@ -59,7 +59,8 @@ bool ImportStructDlg::GetRadio(int id)
 void ImportStructDlg::OnChoiceFileField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_strFieldNameFile = GetChoiceFileField()->GetStringSelection().mb_str();
+	wxString2 str = GetChoiceFileField()->GetStringSelection();
+	m_opt.m_strFieldNameFile = str.mb_str();
 }
 
 void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
@@ -71,7 +72,8 @@ void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
 void ImportStructDlg::OnChoiceHeightField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_strFieldNameHeight = GetChoiceHeightField()->GetStringSelection().mb_str();
+	wxString2 str = GetChoiceHeightField()->GetStringSelection();
+	m_opt.m_strFieldNameHeight = str.mb_str();
 }
 
 void ImportStructDlg::OnRadio( wxCommandEvent &event )
@@ -129,12 +131,12 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 		int *pnWidth = 0, *pnDecimals = 0;
 		char pszFieldName[20];
 		int iFields = DBFGetFieldCount(db);
-		wxString str;
+		wxString2 str;
 		for (i = 0; i < iFields; i++)
 		{
 			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
 				pszFieldName, pnWidth, pnDecimals );
-			str = wxString::FromAscii(pszFieldName);
+			str = pszFieldName;
 
 			if (fieldtype == FTString)
 				GetChoiceFileField()->Append(str);

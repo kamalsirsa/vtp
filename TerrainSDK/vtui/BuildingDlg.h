@@ -14,6 +14,7 @@
 
 #include "vtui_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "vtdata/Building.h"
 #include "vtdata/StructArray.h"
 
@@ -77,10 +78,10 @@ protected:
 	int	  m_iEdge;
 	int	  m_iStories;
 	float	  m_fStoryHeight;
-	wxString	m_strMaterial;
-	wxString	m_strEdgeSlopes;
-	wxString	m_strFeatures;
-	wxString	m_strFacade;
+	wxString2	m_strMaterial;
+	wxString2	m_strEdgeSlopes;
+	wxString2	m_strFeatures;
+	wxString2	m_strFacade;
 	wxColour	m_Color;
 	int	  m_iEdgeSlope;
 

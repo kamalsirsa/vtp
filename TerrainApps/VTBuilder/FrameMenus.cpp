@@ -553,7 +553,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 			}
 		}
 		wxString name;
-		name.Printf(_T("%s%02d%02d.png"), prefix.mb_str(),
+		name.Printf(_T("%s%02d%02d.png"), prefix.c_str(),
 			face_pairs[i][0], face_pairs[i][1]);
 		bool success = out[i].SaveFile(name, wxBITMAP_TYPE_PNG);
 	}
@@ -706,7 +706,9 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	if (dlg1.ShowModal() == wxID_CANCEL)
 		return;
 	RGBi bg;
-	const char *color = dlg1.GetValue().mb_str();
+	wxString2 str;
+	str = dlg1.GetValue();
+	const char *color = str.mb_str();
 	int res = sscanf(color, "%d %d %d", &bg.r, &bg.g, &bg.b);
 	if (res != 3)
 	{
@@ -716,12 +718,14 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	wxFileDialog dlg2(this, _T("Choose input texture file"), _T(""), _T(""), _T("*.png"));
 	if (dlg2.ShowModal() == wxID_CANCEL)
 		return;
-	const char *fname_in = dlg2.GetPath().mb_str();
+	str = dlg2.GetPath();
+	const char *fname_in = str.mb_str();
 
 	wxFileDialog dlg3(this, _T("Choose output texture file"), _T(""), _T(""), _T("*.png"), wxSAVE);
 	if (dlg3.ShowModal() == wxID_CANCEL)
 		return;
-	const char *fname_out = dlg3.GetPath().mb_str();
+	str = dlg3.GetPath();
+	const char *fname_out = str.mb_str();
 
 	OpenProgressDialog(_T("Processing"));
 
@@ -823,7 +827,7 @@ void MainFrame::OnEditOffset(wxCommandEvent &event)
 		return;
 
 	DPoint2 offset;
-	wxString str = dlg.GetValue();
+	wxString2 str = dlg.GetValue();
 	sscanf(str.mb_str(), "%lf, %lf", &offset.x, &offset.y);
 
 	GetActiveLayer()->Offset(offset);
@@ -977,7 +981,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString strDirName = getDir.GetPath();
+	wxString2 strDirName = getDir.GetPath();
 
 //	dlg.m_strCaption = _T("Shapefiles do not contain projection information.  ")
 //		_T("Please indicate the projection of this file:");
@@ -1089,7 +1093,7 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	{
 		wxString str;
 		if (layers == 1)
-			str.Printf(_T("Failed to convert."));
+			str = _T("Failed to convert.");
 		else
 			str.Printf(_T("Failed to convert %d of %d layers."),
 				layers-succeeded, layers);
@@ -1417,7 +1421,7 @@ void MainFrame::OnSelectHwy(wxCommandEvent &event)
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		int num;
-		wxString str = dlg.GetValue();
+		wxString2 str = dlg.GetValue();
 		sscanf(str.mb_str(), "%d", &num);
 		if (pRL->SelectHwyNum(num))
 			m_pView->Refresh();
@@ -1584,7 +1588,7 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 	if (!t)	return;
 	vtElevationGrid *grid = t->m_pGrid;
 
-	wxString str = wxGetTextFromUser(_T("Set unknown areas to what value?"),
+	wxString2 str = wxGetTextFromUser(_T("Set unknown areas to what value?"),
 		_T("Set Unknown Areas"), _T("1.0"), this);
 	if (str == _T(""))
 		return;
@@ -1638,7 +1642,7 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (!grid)
 		return;
 
-	wxString str = wxGetTextFromUser(_T("Please enter a scale factor"),
+	wxString2 str = wxGetTextFromUser(_T("Please enter a scale factor"),
 		_T("Scale Elevation"), _T("1.0"), this);
 	if (str == _T(""))
 		return;
@@ -1679,7 +1683,7 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString strPathName = saveFile.GetPath();
+	wxString2 strPathName = saveFile.GetPath();
 
 	bool success = el->m_pGrid->SaveToTerragen(strPathName.mb_str());
 	if (!success)
@@ -1703,7 +1707,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 		if (dlg.ShowModal() != wxID_OK)
 			return;
 
-		wxString str = dlg.GetValue();
+		wxString2 str = dlg.GetValue();
 		sscanf(str.mb_str(), "%d", &size);
 	}
 
@@ -1716,7 +1720,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 
 	OpenProgressDialog(_T("Generating Bitmap"));
 
-	wxString fname = loadFile.GetPath();
+	wxString2 fname = loadFile.GetPath();
 	vtDIB dib;
 	dib.Create(size, size, 24, false);
 
@@ -1785,7 +1789,8 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 		_T("Please enter server base URL"), _T("http://10.254.0.29:8081/"));
 	if (dlg.ShowModal() != wxID_OK)
 		return;
-	const char *server = dlg.GetValue().mb_str();
+	wxString2 value = dlg.GetValue();
+	const char *server = value.mb_str();
 
 	WFSLayerArray layers;
 	success = GetLayersFromWFS(server, layers);
@@ -1887,7 +1892,8 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
 
-		if (!GetPlantList()->ReadXML(loadFile.GetPath().mb_str()))
+		wxString2 str = loadFile.GetPath();
+		if (!GetPlantList()->ReadXML(str.mb_str()))
 		{
 			wxMessageBox(_T("Couldn't read plant list from that file."),
 				_T("Error"), wxOK, this);
@@ -1917,7 +1923,8 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 			return;
 
 		// Read bioregions, data kept on frame with m_pBioRegion.
-		if (!m_BioRegions.Read(loadFile.GetPath().mb_str()))
+		wxString2 str = loadFile.GetPath();
+		if (!m_BioRegions.Read(str.mb_str()))
 		{
 			wxMessageBox(_T("Couldn't read bioregion list from that file."),
 				_T("Error"), wxOK, this);
@@ -1942,7 +1949,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
-	wxString strPathName = saveFile.GetPath();
+	wxString2 strPathName = saveFile.GetPath();
 
 	DistribVegDlg dlg(this, -1, _T("Vegetation Distribution Options"));
 	dlg.m_fSampling = 40.0f;
@@ -2131,7 +2138,7 @@ void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 
 void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 {
-	wxString str = wxGetTextFromUser(_T("(X, Y) in current projection"),
+	wxString2 str = wxGetTextFromUser(_T("(X, Y) in current projection"),
 			_T("Enter coordinate"));
 	if (str == _T(""))
 		return;
@@ -2177,14 +2184,15 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	dlg.SetRawLayer(pRL);
 	if (dlg.ShowModal() == wxID_OK)
 	{
+		wxString2 str = dlg.m_strValue;
 		int selected = pRL->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
-			dlg.m_strValue.mb_str());
+			str.mb_str());
 
 		wxString msg;
 		if (selected == -1)
 			msg = _T("Unable to select");
 		else
-			msg.Printf(_T("Selected %d entit%s"), selected, selected == 1 ? "y" : "ies");
+			msg.Printf(_T("Selected %d entit%hs"), selected, selected == 1 ? "y" : "ies");
 		SetStatusText(msg);
 		m_pView->Refresh(false);
 		OnSelectionChanged();

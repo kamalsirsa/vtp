@@ -13,6 +13,7 @@
 #endif
 
 #include "VTBuilder_wdr.h"
+#include "vtui/wxString2.h"
 
 // WDR: class declarations
 
@@ -36,7 +37,7 @@ public:
     int m_fieldindex, m_datatype;
     wxComboBox *m_pcbField;
 	wxRadioButton *m_pDensity, *m_pBiotype1, *m_pBiotype2;
-    wxString m_filename;
+    wxString2 m_filename;
 
     // WDR: method declarations for ImportVegDlg
     wxRadioButton* GetDensity()  { return (wxRadioButton*) FindWindow( ID_DENSITY ); }

@@ -168,10 +168,10 @@ void vtWaterLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 	}
 }
 
-void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
+void vtWaterLayer::AddElementsFromSHP(const wxString2 &filename, vtProjection &proj)
 {
 	//Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(filename, "rb");
+	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
 		return;
 

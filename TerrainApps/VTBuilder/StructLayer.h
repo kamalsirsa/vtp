@@ -47,7 +47,7 @@ public:
 	void UpdateResizeScale(UIContext &ui);
 
 	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
-	bool AddElementsFromSHP(const wxString &filename, vtProjection &proj, DRECT rect);
+	bool AddElementsFromSHP(const wxString2 &filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,

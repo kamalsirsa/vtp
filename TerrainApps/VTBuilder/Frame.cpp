@@ -92,10 +92,9 @@ DECLARE_APP(MyApp)
 #define WID_FEATINFO	103
 #define WID_DISTANCE	104
 
-
 //////////////////////////////////////////////////////////////////
 
-	MainFrame *GetMainFrame()
+MainFrame *GetMainFrame()
 {
 	return (MainFrame *) wxGetApp().GetTopWindow();
 }
@@ -235,9 +234,9 @@ void MainFrame::OnClose(wxCloseEvent &event)
 	if (num > 0)
 	{
 		wxString str;
-		str.Printf(_T("There %s %d layer%s modified but unsaved.\n")
-				_T("Are you sure you want to exit?"), num == 1 ? _T("is") : _T("are"), num,
-			num == 1 ? "" : "s");
+		str.Printf(_T("There %hs %d layer%hs modified but unsaved.\n")
+			_T("Are you sure you want to exit?"), num == 1 ? "is" : "are",
+			num, num == 1 ? "" : "s");
 		if (wxMessageBox(str, _T("Warning"), wxYES_NO) == wxNO)
 		{
 			event.Veto();
@@ -471,12 +470,12 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 
 			bool keep = false;
 			wxString msg;
-			msg.Printf(_T("The data already loaded is in:\n     %s\n")
+			msg.Printf(_T("The data already loaded is in:\n     %hs\n")
 					_T("but the layer you are attempting to add:\n     %s\n")
-					_T("is using:\n     %s\n")
+					_T("is using:\n     %hs\n")
 					_T("Would you like to attempt to convert it now to the existing projection?"),
 				str1,
-				pLayer->GetFilename().mb_str(),
+				pLayer->GetFilename().c_str(),
 				str2);
 			int ret = wxMessageBox(msg, _T("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
 			if (ret == wxNO)
@@ -882,11 +881,11 @@ void MainFrame::OnSelectionChanged()
 void MainFrame::LoadProject(const wxString &strPathName)
 {
 	// read project file
-	wxString str;
-	FILE *fp = fopen(strPathName.mb_str(), "rb");
+	wxString2 str = strPathName;
+	FILE *fp = fopen(str.mb_str(), "rb");
 	if (!fp)
 	{
-		str = wxString::FromAscii("Couldn't open project file: ");
+		str = _T("Couldn't open project file: ");
 		str += strPathName;
 		wxMessageBox(str);
 		return;
@@ -968,7 +967,8 @@ void MainFrame::LoadProject(const wxString &strPathName)
 void MainFrame::SaveProject(const wxString &strPathName)
 {
 	// write project file
-	FILE *fp = fopen(strPathName.mb_str(), "wb");
+	wxString2 str = strPathName;
+	FILE *fp = fopen(str.mb_str(), "wb");
 	if (!fp)
 		return;
 
@@ -1074,7 +1074,7 @@ void MainFrame::ExportElevation()
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
-	wxString strPathName = saveFile.GetPath();
+	wxString2 strPathName = saveFile.GetPath();
 
 	// Make new terrain
 	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
@@ -1232,7 +1232,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 		for (k = 0; k < bio->m_Densities.GetSize(); k++)
 		{
 			pd = bio->m_Densities[k];
-			str.Printf(_T("    Plant %d: %s: %d generated.\n"), k,
+			str.Printf(_T("    Plant %d: %hs: %d generated.\n"), k,
 				(const char *) pd->m_common_name, pd->m_iNumPlanted);
 			msg += str;
 		}

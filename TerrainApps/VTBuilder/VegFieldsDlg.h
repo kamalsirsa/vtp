@@ -19,6 +19,7 @@
 #include "VTBuilder_wdr.h"
 #include "vtdata/shapelib/shapefil.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "VegPointOptions.h"
 
 class vtVegLayer;
@@ -62,7 +63,7 @@ private:
 
 	SHPHandle m_hSHP;
 	int	   m_nElem, m_nShapeType;
-	wxString  m_filename;
+	wxString2  m_filename;
 	int	   m_iFields;
 
 	bool	m_bUseSpecies;

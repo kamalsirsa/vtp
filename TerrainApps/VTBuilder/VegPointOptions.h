@@ -8,7 +8,7 @@
 #ifndef __VegPointOptions_H__
 #define __VegPointOptions_H__
 
-#include "vtdata/vtString.h"
+#include "vtui/wxString2.h"
 
 /** This structure stores a description of how an imported file should be
    intepreted as vegetation point data. */
@@ -16,7 +16,7 @@ class VegPointOptions
 {
 public:
 	bool bFixedSpecies;
-	wxString strFixedSpeciesName;
+	wxString2 strFixedSpeciesName;
 
 	int iSpeciesFieldIndex;
 

@@ -77,7 +77,6 @@ void VegFieldsDlg::RefreshEnabled()
 void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	int i;
-	wxString str;
 
 	// Open the SHP File
 	m_hSHP = SHPOpen(m_filename.mb_str(), "rb");
@@ -100,12 +99,13 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	// Fill species names into the SpeciesChoice control
+	wxString2 str;
 	GetUseSpecies()->Clear();
 	vtPlantList* pl = GetMainFrame()->GetPlantList();
 	for (i = 0; i < pl->NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = pl->GetSpecies(i);
-		str = wxString::FromAscii(spe->GetSciName());
+		str = spe->GetSciName();
 		GetSpeciesChoice()->Append(str);
 	}
 
@@ -118,7 +118,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		fieldtype = DBFGetFieldInfo(m_db, i,
 			pszFieldName, pnWidth, pnDecimals );
-		str = wxString::FromAscii(pszFieldName);
+		str = pszFieldName;
 
 		if (fieldtype == FTString || fieldtype == FTInteger)
 			GetSpeciesField()->Append(str);

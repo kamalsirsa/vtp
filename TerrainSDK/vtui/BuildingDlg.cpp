@@ -341,7 +341,7 @@ void BuildingDlg::RefreshLevelsBox()
 		else
 		{
 			wxString str2;
-			str2.Printf(_T(" (%d stor%s)"), pLev->m_iStories,
+			str2.Printf(_T(" (%d stor%hs)"), pLev->m_iStories,
 				pLev->m_iStories == 1 ? "y" : "ies");
 			str += str2;
 		}
@@ -662,7 +662,7 @@ void BuildingDlg::OnCharHook( wxKeyEvent &event )
 	}
 
 	// Test text input
-	wxString str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
+	wxString2 str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
 	TestParser par;
 	par.ParseInput(str.mb_str());
 

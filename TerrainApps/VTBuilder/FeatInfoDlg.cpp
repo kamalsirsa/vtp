@@ -14,6 +14,7 @@
 
 #include "FeatInfoDlg.h"
 #include "vtdata/Features.h"
+#include "vtui/wxString2.h"
 #include "BuilderView.h"
 
 // WDR: class implementations
@@ -72,8 +73,7 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *pField = m_pFeatures->GetField(i);
-		wxString name;
-		name = wxString::FromAscii(pField->m_name);
+		wxString2 name = pField->m_name;
 		int width = pField->m_width * 4;
 		if (width < 20)
 			width = 20;
@@ -144,7 +144,7 @@ void FeatInfoDlg::ShowAll()
 
 void FeatInfoDlg::ShowFeature(int iFeat)
 {
-	wxString str;
+	wxString2 str;
 	int i, next;
 
 	next = GetList()->GetItemCount();
@@ -180,7 +180,7 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
-		str = wxString::FromAscii((const char *) vs);
+		str = (const char *) vs;
 		GetList()->SetItem(next, field++, str);
 	}
 }

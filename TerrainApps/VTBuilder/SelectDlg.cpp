@@ -45,7 +45,6 @@ void SelectDlg::SetRawLayer(vtRawLayer *pRL)
 void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	int i;
-	wxString str;
 
 	m_iField = 0;
 	m_iCondition = 0;
@@ -76,10 +75,11 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_iFauxFields = 3;
 	}
 
+	wxString2 str;
 	for (i = 0; i < m_pLayer->GetNumFields(); i++)
 	{
 		Field *field = m_pLayer->GetField(i);
-		str = wxString::FromAscii( (const char *) field->m_name );
+		str = field->m_name;
 		GetField()->Append(str, (void *) 0);
 	}
 	GetField()->SetSelection(0);
@@ -106,7 +106,7 @@ void SelectDlg::FillValuesControl()
 {
 	int i, values = 0;
 	vtString str;
-	wxString str2;
+	wxString2 str2;
 
 	GetComboValue()->Clear();
 
@@ -120,7 +120,7 @@ void SelectDlg::FillValuesControl()
 	{
 		m_pLayer->GetValueAsString(i, m_iField, str);
 
-		str2 = wxString::FromAscii((const char *) str);
+		str2 = str;
 		if (str2 == _T(""))
 			continue;
 

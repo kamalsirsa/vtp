@@ -18,6 +18,7 @@
 #endif
 
 #include "AutoDialog.h"
+#include "wxString2.h"
 
 /////////////////////////////////////////////////
 //
@@ -102,7 +103,7 @@ bool wxNumericValidator::TransferFromWindow()
 	if ( !m_validatorWindow )
 		return FALSE;
 
-	wxString str = _T("");
+	wxString2 str = _T("");
 	// string controls
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{

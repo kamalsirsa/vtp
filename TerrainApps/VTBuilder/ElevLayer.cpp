@@ -1015,7 +1015,7 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		str.Printf(_T("Grid size: %d x %d\n"), cols, rows);
 		strIn += str;
 
-		str.Printf(_T("Floating point: %s\n"), m_pGrid->IsFloatMode() ? "Yes" : "No");
+		str.Printf(_T("Floating point: %hs\n"), m_pGrid->IsFloatMode() ? "Yes" : "No");
 		strIn += str;
 
 		m_pGrid->ComputeHeightExtents();
@@ -1032,7 +1032,7 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		const char *dem_name = m_pGrid->GetDEMName();
 		if (*dem_name)
 		{
-			str.Printf(_T("Original DEM name: \"%s\"\n"), dem_name);
+			str.Printf(_T("Original DEM name: \"%hs\"\n"), dem_name);
 			strIn += str;
 		}
 	}

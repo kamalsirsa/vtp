@@ -64,8 +64,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	vtProjection &proj = frame->GetAtProjection();
 	bool bGeo = (proj.IsGeographic() != 0);
 
-	wxString str;
-	str = wxString::FromAscii(proj.GetProjectionNameShort());
+	wxString2 str = proj.GetProjectionNameShort();
 	SetStatusText(str, Field_Coord);
 
 	int zone = proj.GetUTMZone();
@@ -75,7 +74,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		str = _T("");
 	SetStatusText(str, Field_Zone);
 
-	str = wxString::FromAscii(datumToStringShort(proj.GetDatum()));
+	str = datumToStringShort(proj.GetDatum());
 	SetStatusText(str, Field_Datum);
 
 	LinearUnits lu = proj.GetUnits();

@@ -45,7 +45,7 @@ public:
 	void PaintDibWithWater(vtDIB *dib);
 
 	void AddElementsFromDLG(vtDLGFile *pDlg);
-	void AddElementsFromSHP(const char *filename, vtProjection &proj);
+	void AddElementsFromSHP(const wxString2 &filename, vtProjection &proj);
 
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,

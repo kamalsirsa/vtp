@@ -434,10 +434,10 @@ bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 	return bReject;
 }
 
-void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
+void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, vtProjection &proj,
 									 void progress_callback(int))
 {
-	SHPHandle hSHP = SHPOpen(filename, "rb");
+	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
 		return;
 
@@ -451,7 +451,7 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 
 	// Open DBF File, if one exists
 	int cfcc = -1;
-	DBFHandle db = DBFOpen(filename, "rb");
+	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
 	if (db != NULL)
 	{
 		int fields, i, *pnWidth = 0, *pnDecimals = 0;

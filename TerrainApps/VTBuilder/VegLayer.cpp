@@ -346,12 +346,12 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
  *		intepreted as a density value (double), the name of a biotype
  *		(string), or the ID of a biotype (int).
  */
-void vtVegLayer::AddElementsFromSHP_Polys(const char *filename,
+void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 										  vtProjection &proj,
 										  int iField, int datatype)
 {
 	// Open the SHP File
-	SHPHandle hSHP = SHPOpen(filename, "rb");
+	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
 		return;
 
@@ -367,7 +367,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const char *filename,
 		return;
 
 	// Open DBF File
-	DBFHandle db = DBFOpen(filename, "rb");
+	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
 	if (db == NULL)
 		return;
 
@@ -457,7 +457,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const char *filename,
  * The 'opt' parameter contains a description of how the fields in the
  * imported file are to be interpreted.
  */
-void vtVegLayer::AddElementsFromSHP_Points(const char *filename,
+void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 										   vtProjection &proj,
 										   VegPointOptions &opt)
 {
@@ -468,7 +468,7 @@ void vtVegLayer::AddElementsFromSHP_Points(const char *filename,
 	vtBioRegion *pBioRegion = GetMainFrame()->GetBioRegion();
 
 	// Open the SHP File
-	SHPHandle hSHP = SHPOpen(filename, "rb");
+	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
 		return;
 
@@ -484,7 +484,7 @@ void vtVegLayer::AddElementsFromSHP_Points(const char *filename,
 		return;
 
 	// Open DBF File
-	DBFHandle db = DBFOpen(filename, "rb");
+	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
 	if (db == NULL)
 		return;
 

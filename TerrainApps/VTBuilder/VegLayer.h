@@ -46,9 +46,9 @@ public:
 	// Importing data into veglayer
 	VegLayerType m_VLType;
 	void AddElementsFromLULC(vtLULCFile *pLULC);
-	void AddElementsFromSHP_Polys(const char *filename, vtProjection &proj,
+	void AddElementsFromSHP_Polys(const wxString2 &filename, vtProjection &proj,
 		int fieldindex, int datatype);
-	void AddElementsFromSHP_Points(const char *filename, vtProjection &proj,
+	void AddElementsFromSHP_Points(const wxString2 &filename, vtProjection &proj,
 		VegPointOptions &opt);
 
 	// Search functionality

@@ -37,20 +37,20 @@ void PlantListCtrl::OnSelect(wxListEvent &event)
 	for (int j = 0; j < ps->NumAppearances(); j++)
 	{
 		vtPlantAppearance* app = ps->GetAppearance(j);
-		wxString str1;
+		wxString2 str;
 		long item1;
-		str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
-		item1 = apps->InsertItem(j, str1, 0);
-		str1 = wxString::FromAscii((const char *) app->m_filename);
-		item1 = apps->SetItem(j, 1, str1);
-		str1.Printf(_T("%4.2f"), app->m_width);
-		item1 = apps->SetItem(j, 2, str1);
-		str1.Printf(_T("%4.2f"), app->m_height);
-		item1 = apps->SetItem(j, 3, str1);
-		str1.Printf(_T("%4.2f"), app->m_shadow_radius);
-		item1 = apps->SetItem(j, 4, str1);
-		str1.Printf(_T("%4.2f"), app->m_shadow_darkness);
-		item1 = apps->SetItem(j, 5, str1);
+		str.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
+		item1 = apps->InsertItem(j, str, 0);
+		str = app->m_filename;
+		item1 = apps->SetItem(j, 1, str);
+		str.Printf(_T("%4.2f"), app->m_width);
+		item1 = apps->SetItem(j, 2, str);
+		str.Printf(_T("%4.2f"), app->m_height);
+		item1 = apps->SetItem(j, 3, str);
+		str.Printf(_T("%4.2f"), app->m_shadow_radius);
+		item1 = apps->SetItem(j, 4, str);
+		str.Printf(_T("%4.2f"), app->m_shadow_darkness);
+		item1 = apps->SetItem(j, 5, str);
 	}
 }
 
@@ -112,9 +112,9 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		str.Printf(_T("%d"), spe->GetSpecieID() );
         item = m_PSTable->InsertItem(i, str, 0);
-		str.Printf(_T("%s"), spe->GetCommonName() );
+		str.Printf(_T("%hs"), spe->GetCommonName() );
         item = m_PSTable->SetItem(i, 1, str);
-		str.Printf(_T("%s"), spe->GetSciName() );
+		str.Printf(_T("%hs"), spe->GetSciName() );
         item = m_PSTable->SetItem(i, 2, str);
 		str.Printf(_T("%4.2f m"), spe->GetMaxHeight() );
         item = m_PSTable->SetItem(i, 3, str);
@@ -123,12 +123,12 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 		for (int j = 0; j < pl->GetSpecies(i)->NumAppearances(); j++)
 		{
 			vtPlantAppearance* app = spe->GetAppearance(j);
-			wxString str1;
+			wxString2 str1;
 			long item1;
 
 			str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
 			item1 = m_PATable->InsertItem(j, str1, 0);
-			str1 = wxString::FromAscii((const char *) app->m_filename);
+			str1 = app->m_filename;
 			item1 = m_PATable->SetItem(j, 1, str1);
 			str1.Printf(_T("%4.2f"), app->m_width);
 			item1 = m_PATable->SetItem(j, 2, str1);
@@ -176,9 +176,10 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 		int numspecies = br->m_Types[i]->m_Densities.GetSize();
 		for (int j = 0; j < numspecies; j++)
 		{
-			// Display all species and it's density under each biotype as level 2 of tree.
+			// Display all species and it's density under each biotype as
+			//  level 2 of the tree.
 			wxString s;
-			s.Printf(_T("%s (%1.4f /m^2)"),
+			s.Printf(_T("%hs (%1.4f /m^2)"),
 				(const char *) br->m_Types[i]->m_Densities[j]->m_common_name,
 				br->m_Types[i]->m_Densities[j]->m_plant_per_m2);
 

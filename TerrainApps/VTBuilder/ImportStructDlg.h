@@ -14,6 +14,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "vtdata/StructArray.h"
 
 // WDR: class declarations
@@ -53,7 +54,7 @@ public:
 
 private:
 	// WDR: member variable declarations for ImportStructDlg
-	wxString m_filename;
+	wxString2 m_filename;
 
 private:
 	// WDR: handler declarations for ImportStructDlg

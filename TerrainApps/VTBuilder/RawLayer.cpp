@@ -288,7 +288,7 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 {
 	wxString str;
 
-	str.Printf(_T("Entity type: %s\n"), SHPTypeName(m_nSHPType));
+	str.Printf(_T("Entity type: %hs\n"), SHPTypeName(m_nSHPType));
 	strIn += str;
 
 	str.Printf(_T("Entities: %d\n"), NumEntities());

@@ -94,13 +94,13 @@ void RoadDlg::TransferStateToControls()
 	wxString str;
 
 	if (m_iLanes == MULTIPLE)
-		str.Printf(_T("(multiple)"));
+		str = _T("(multiple)");
 	else
 		str.Printf(_T("%d"), m_iLanes);
 	GetNumLanes()->SetValue(str);
 
 	if (m_iHwy == MULTIPLE)
-		str.Printf(_T("(multiple)"));
+		str = _T("(multiple)");
 	else
 		str.Printf(_T("%d"), m_iHwy);
 	GetHwyName()->SetValue(str);
@@ -191,7 +191,7 @@ void RoadDlg::OnOK( wxCommandEvent &event )
 //
 void RoadDlg::ApplyState(LinkEdit *pRoad)
 {
-	wxString str;
+	wxString2 str;
 	int val;
 
 	str = GetNumLanes()->GetValue();

@@ -10,6 +10,7 @@
 
 #include "vtdata/MathTypes.h"
 #include "vtdata/Projections.h"
+#include "vtui/wxString2.h"
 
 //
 // Filename filter strings
@@ -73,7 +74,7 @@ public:
 	virtual ~vtLayer();
 
 	// attributes
-	wxString GetFilename() { return m_strFilename; }
+	wxString2 GetFilename() { return m_strFilename; }
 	void SetFilename(const wxString &fname);
 	LayerType GetType() { return m_type; }
 	bool SetVisible(bool bVisible);
@@ -119,7 +120,7 @@ protected:
 	wxString GetFileDialogFilter();
 	void SetMessageText(const wxString &msg);
 
-	wxString	m_strFilename;
+	wxString2	m_strFilename;
 	LayerType	m_type;
 	bool		m_bVisible;
 	bool		m_bModified;

@@ -17,6 +17,7 @@
 #endif
 
 #include "StatePlaneDlg.h"
+#include "vtui/wxString2.h"
 
 // WDR: class implementations
 
@@ -42,11 +43,10 @@ void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)
     int num_planes = GetNumStatePlanes();
     StatePlaneInfo *plane_info = GetStatePlaneTable();
 
-    wxString *choices = new wxString[num_planes];
-	wxString str;
+	wxString2 str;
     for (int i = 0; i < num_planes; i++)
     {
-		str = wxString::FromAscii(plane_info[i].name);
+		str = plane_info[i].name;
         GetStatePlanes()->Append(str, (void *) plane_info[i].usgs_code);
     }
 

@@ -46,7 +46,7 @@ wxString ImportDirectory[LAYER_TYPES];
 // Helper
 wxString GetTempFolderName(const char *base)
 {
-	wxString path;
+	wxString2 path;
 
 	const char *tmp = base;
 	const char *tmp1 = strrchr(base, '/');
@@ -61,7 +61,7 @@ wxString GetTempFolderName(const char *base)
 
 	const char *temp = getenv("TEMP");
 	if (temp)
-		path = wxString::FromAscii(temp);
+		path = temp;
 	else
 #if WIN32
 		path = _T("C:/TEMP");
@@ -70,8 +70,7 @@ wxString GetTempFolderName(const char *base)
 #endif
 	path += _T("/");
 
-	wxString base2;
-	base2 = wxString::FromAscii(tmp);
+	wxString2 base2 = tmp;
 	path += base2;
 
 	path += _T("_temp");
@@ -106,18 +105,19 @@ void MainFrame::ImportData(LayerType ltype)
  * archive file.  If it's an archive, it will be unarchived to a temporary
  * folder, and the contents will be imported.
  */
-void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
+void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
 									  bool bRefresh)
 {
 	// check file extension
-	wxString fname = fname_in;
-	wxString ext = fname.AfterLast('.');
+	wxString2 fname_in = fname_org;
+	wxString2 fname = fname_in;
+	wxString2 ext = fname.AfterLast('.');
 
 	using namespace boost::filesystem;
 
 	// check if it's an archive
 	bool bExpandedArchive = false;
-	wxString prepend_path;
+	wxString2 prepend_path;
 	prepend_path = GetTempFolderName(fname_in.mb_str());
 
 	if (ext.CmpNoCase(_T("gz")) == 0 || ext.CmpNoCase(_T("tgz")) == 0 ||
@@ -133,7 +133,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 		}
 		prepend_path += _T("/");
 
-		result = ExpandTGZ(fname.mb_str(), prepend_path.mb_str());
+		result = ExpandTGZ(fname_in.mb_str(), prepend_path.mb_str());
 		if (result < 1)
 		{
 			wxMessageBox(_T("Couldn't expand archive."));
@@ -150,8 +150,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 					continue;
 				std::string name1 = *it;
 				fname = prepend_path;
-				wxString tmp;
-				tmp = wxString::FromAscii(name1.c_str());
+				wxString2 tmp = name1.c_str();
 				fname += tmp;
 				break;
 			}
@@ -174,8 +173,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 			for (dir_it it((std::string) (prepend_path.mb_str())); it != dir_it(); ++it)
 			{
 				std::string name1 = *it;
-				wxString fname2;
-				fname2 = wxString::FromAscii(name1.c_str());
+				wxString2 fname2 = name1.c_str();
 				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 				{
 					fname = prepend_path;
@@ -204,9 +202,10 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 	}
 }
 
-void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
+void MainFrame::ImportDataFromFile(LayerType ltype, wxString fname_in,
 								   bool bRefresh)
 {
+	wxString2 strFileName = fname_in;
 
 	// check to see if the file is readable
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
@@ -218,7 +217,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 	}
 	fclose(fp);
 
-	wxString msg = _T("Importing Data from ");
+	wxString2 msg = _T("Importing Data from ");
 	msg += strFileName;
 	VTLOG(msg.mb_str());
 	VTLOG("...");
@@ -302,9 +301,10 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 			// which would indicate that it is a raster.
 			bool bRaster = false;
 			int len = strFileName.Length();
-			wxString strFileName2 = strFileName.Left(len - 8);
+			wxString2 strFileName2 = strFileName.Left(len - 8);
+			wxString2 strFileName3 = strFileName2 + _T("rsdf.ddf");
 			FILE *fp;
-			fp = fopen((strFileName2 + _T("rsdf.ddf")).mb_str(), "rb");
+			fp = fopen(strFileName3.mb_str(), "rb");
 			if (fp != NULL)
 			{
 				bRaster = true;
@@ -313,7 +313,8 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 			else
 			{
 				// also try with upper-case (for Unix)
-				fp = fopen((strFileName2 + _T("RSDF.DDF")).mb_str(), "rb");
+				strFileName3 = strFileName2 + _T("RSDF.DDF");
+				fp = fopen(strFileName3.mb_str(), "rb");
 				if (fp != NULL)
 				{
 					bRaster = true;
@@ -483,14 +484,15 @@ wxString GetImportFilterString(LayerType ltype)
 }
 
 
-vtLayerPtr MainFrame::ImportFromDLG(wxString &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromDLG(wxString &fname_in, LayerType ltype)
 {
+	wxString2 strFileName = fname_in;
+
 	vtDLGFile *pDLG = new vtDLGFile();
 	bool success = pDLG->Read(strFileName.mb_str(), progress_callback);
 	if (!success)
 	{
-		wxString msg;
-		msg = wxString::FromAscii(pDLG->GetErrorMessage());
+		wxString2 msg = pDLG->GetErrorMessage();
 		wxMessageBox(msg);
 		delete pDLG;
 		return NULL;
@@ -527,11 +529,12 @@ vtLayerPtr MainFrame::ImportFromDLG(wxString &strFileName, LayerType ltype)
 	return pLayer;
 }
 
-vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromSHP(wxString &fname_in, LayerType ltype)
 {
 	bool success;
-
 	int nShapeType;
+	wxString2 strFileName = fname_in;
+
 	SHPHandle hSHP = SHPOpen(strFileName.mb_str(), "rb");
 	if (hSHP == NULL)
 	{
@@ -570,7 +573,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_ROAD)
 	{
 		vtRoadLayer *pRL = (vtRoadLayer *)pLayer;
-		pRL->AddElementsFromSHP(strFileName.mb_str(), proj, progress_callback);
+		pRL->AddElementsFromSHP(strFileName, proj, progress_callback);
 		pRL->RemoveUnusedNodes();
 	}
 
@@ -591,7 +594,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 			dlg.SetShapefileName(strFileName);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			pVL->AddElementsFromSHP_Polys(strFileName.mb_str(), proj,
+			pVL->AddElementsFromSHP_Polys(strFileName, proj,
 				dlg.m_fieldindex, dlg.m_datatype);
 		}
 		if (nShapeType == SHPT_POINT)
@@ -608,7 +611,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_WATER)
 	{
 		vtWaterLayer *pWL = (vtWaterLayer *)pLayer;
-		pWL->AddElementsFromSHP(strFileName.mb_str(), proj);
+		pWL->AddElementsFromSHP(strFileName, proj);
 	}
 
 	if (ltype == LT_STRUCTURE)
@@ -673,14 +676,15 @@ vtLayerPtr MainFrame::ImportImage(wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportFromLULC(wxString &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportFromLULC(wxString &fname_in, LayerType ltype)
 {
+	wxString2 strFileName = fname_in;
+
 	// Read LULC file, check for errors
 	vtLULCFile *pLULC = new vtLULCFile(strFileName.mb_str());
 	if (pLULC->m_iError)
 	{
-		wxString msg;
-		msg = wxString::FromAscii(pLULC->GetErrorMessage());
+		wxString2 msg = pLULC->GetErrorMessage();
 		wxMessageBox(msg);
 		delete pLULC;
 		return NULL;
@@ -706,8 +710,10 @@ vtLayerPtr MainFrame::ImportFromLULC(wxString &strFileName, LayerType ltype)
 	return pLayer;
 }
 
-vtStructureLayer *MainFrame::ImportFromBCF(wxString &strFileName)
+vtStructureLayer *MainFrame::ImportFromBCF(wxString &fname_in)
 {
+	wxString2 strFileName = fname_in;
+
 	vtStructureLayer *pSL = new vtStructureLayer();
 	if (pSL->ReadBCF(strFileName.mb_str()))
 		return pSL;
@@ -718,8 +724,10 @@ vtStructureLayer *MainFrame::ImportFromBCF(wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportRawFromOGR(wxString &strFileName)
+vtLayerPtr MainFrame::ImportRawFromOGR(wxString &fname_in)
 {
+	wxString2 strFileName = fname_in;
+
 	// create the new layer
 	vtRawLayer *pRL = new vtRawLayer();
 	bool success = pRL->LoadWithOGR(strFileName.mb_str(), progress_callback);
@@ -733,8 +741,10 @@ vtLayerPtr MainFrame::ImportRawFromOGR(wxString &strFileName)
 	}
 }
 
-vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltype)
+vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 {
+	wxString2 strFileName = fname_in;
+
 	OGRRegisterAll();
 
 	OGRDataSource *datasource = OGRSFDriverRegistrar::Open(strFileName.mb_str());
@@ -775,8 +785,10 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltyp
 }
 
 
-void MainFrame::ImportDataFromTIGER(wxString &strDirName)
+void MainFrame::ImportDataFromTIGER(wxString &dirname_in)
 {
+	wxString2 strDirName = dirname_in;
+
 	OGRRegisterAll();
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());

@@ -84,7 +84,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
         wxMessageBox(_T("Couldn't open DBF file."));
         return;
     }
-    wxString str, fieldname;
+    wxString2 str, fieldname;
     int fields, i, iField, *pnWidth = 0, *pnDecimals = 0;
     DBFFieldType fieldtype;
     char pszFieldName[20];
@@ -95,7 +95,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
         fieldtype = DBFGetFieldInfo(db, iField,
             pszFieldName, pnWidth, pnDecimals );
         str.Printf(_T("%d: "), i);
-		fieldname = wxString::FromAscii(pszFieldName);
+		fieldname = pszFieldName;
         str += fieldname;
 
         if (fieldtype == FTString)

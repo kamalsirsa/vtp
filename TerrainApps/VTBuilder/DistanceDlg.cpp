@@ -94,8 +94,8 @@ void DistanceDlg::ShowValues()
 	if (m_iUnits1 == 0)	// degrees
 	{
 		str.Printf(_T("%s, %s"),
-			FormatCoord(true, diff_degrees.x).mb_str(),
-			FormatCoord(true, diff_degrees.y).mb_str());
+			FormatCoord(true, diff_degrees.x).c_str(),
+			FormatCoord(true, diff_degrees.y).c_str());
 	}
 	else
 	{
@@ -103,8 +103,8 @@ void DistanceDlg::ShowValues()
 			GetMetersPerUnit((LinearUnits)m_iUnits1);
 		DPoint2 diff_show = diff_map * scale;
 		str.Printf(_T("%s, %s"),
-			FormatCoord(bIsGeo, diff_show.x).mb_str(),
-			FormatCoord(bIsGeo, diff_show.y).mb_str());
+			FormatCoord(bIsGeo, diff_show.x).c_str(),
+			FormatCoord(bIsGeo, diff_show.y).c_str());
 	}
 	GetMapOffset()->SetValue(str);
 
