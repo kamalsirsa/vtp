@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="glutSimple"
+	ProjectGUID="{F84608F0-2B6C-4A8E-9C71-D9F22B98D8A4}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
