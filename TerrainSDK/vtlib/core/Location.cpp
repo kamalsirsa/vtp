@@ -260,7 +260,7 @@ bool vtLocationSaver::RecallFrom(int num)
 	vtProjection global_proj;
 	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
 
-	OCT *conversion = OGRCreateCoordinateTransformation(&global_proj, &m_proj);
+	OCT *conversion = CreateCoordTransform(&global_proj, &m_proj);
 	if (!conversion)
 	{
 		// fatal: can't convert between CS
