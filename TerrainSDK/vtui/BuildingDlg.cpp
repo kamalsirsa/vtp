@@ -682,9 +682,9 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	delete[] pChoices;
 
 	if (m_bEdges)
-		m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(m_strMaterial);
+		m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(m_strMaterial.mb_str());
 	else
-		m_pLevel->SetEdgeMaterial(*GetGlobalMaterials()->FindName(m_strMaterial));
+		m_pLevel->SetEdgeMaterial(*GetGlobalMaterials()->FindName(m_strMaterial.mb_str()));
 
 	m_bSetting = true;
 	TransferDataToWindow();
