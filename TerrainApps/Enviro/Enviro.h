@@ -75,8 +75,11 @@ public:
 	void SwitchToTerrain(vtTerrain *pTerr);
 
 	// these work in space
-	bool GetEarthShading();
+	IcoGlobe *GetGlobe() { return m_pIcoGlobe; }
 	void SetEarthShading(bool bShade);
+	bool GetEarthShading();
+	void SetEarthTilt(bool bTilt);
+	bool GetEarthTilt();
 	void SetEarthShape(bool Flat);
 	bool GetEarthShape() { return m_bGlobeFlat; }
 	void SetEarthUnfold(bool Flat);
@@ -113,6 +116,7 @@ public:
 	void OnMouse(vtMouseEvent &event);
 	void OnMouseLeftDownTerrain(vtMouseEvent &event);
 	void OnMouseLeftDownOrbit(vtMouseEvent &event);
+	void OnMouseLeftUp(vtMouseEvent &event);
 	void OnMouseRightDown(vtMouseEvent &event);
 	void OnMouseRightUp(vtMouseEvent &event);
 	void OnMouseMove(vtMouseEvent &event);
@@ -152,6 +156,9 @@ public:
 	vtRoute		*m_pCurRoute;
 	vtUtilNode	*m_pSelUtilNode;
 	vtRoute		*m_pSelRoute;
+
+	// temporary for demo use
+	void ToggleLogo(); vtGroup *logo;
 
 protected:
 	// startup methods

@@ -27,9 +27,11 @@
 
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
-#define PLANETWORK			0
 #define SPACE_DARKNESS		0.0f
 #define UNFOLD_SPEED		0.01f
+
+extern int pwdemo;
+
 
 //
 // This is a 'singleton', the only instance of the global application object
@@ -310,14 +312,14 @@ void Enviro::SetupGlobe()
 		pSunLight->Identity();
 		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
-#if PLANETWORK
+if (pwdemo){
 		pSunLight->GetLight()->SetColor2(RGBf(1, 1, 1));
 		pSunLight->GetLight()->SetAmbient2(RGBf(0, 0, 0));
-#else
+}else{
 		// standard bright sunlight
 		pSunLight->GetLight()->SetColor2(RGBf(3, 3, 3));
 		pSunLight->GetLight()->SetAmbient2(RGBf(0.5f, 0.5f, 0.5f));
-#endif
+}
 		pSunLight->GetLight()->SetAmbient2(RGBf(0.5f, 0.5f, 0.5f));
 
 		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
@@ -336,11 +338,11 @@ void Enviro::SetupGlobe()
 	}
 	if (m_iInitStep == 5)
 	{
-#if PLANETWORK
+if (pwdemo){
 		SetEarthShading(true);
-#else
+}else{
 		SetEarthShading(false);
-#endif
+}
 	}
 	if (m_iInitStep == 6)
 	{
@@ -743,13 +745,15 @@ void Enviro::MakeGlobe()
 	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
 	m_pGlobeTime->AddTarget((TimeTarget *)m_pIcoGlobe);
 
-#if PLANETWORK
+if (pwdemo){
+	logo = new vtGroup;
 	IcoGlobe *Globe2 = new IcoGlobe();
 	Globe2->Create(1000, g_Options.m_DataPaths, vtString(""),
 		IcoGlobe::GEODESIC);
 	vtTransform *trans = new vtTransform();
 	trans->SetName2("2nd Globe Scaler");
-	m_pGlobeContainer->AddChild(trans);
+	m_pGlobeContainer->AddChild(logo);
+	logo->AddChild(trans);
 	trans->AddChild(Globe2->GetTop());
 	trans->Scale3(1.006f, 1.006f, 1.006f);
 	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
@@ -768,8 +772,11 @@ void Enviro::MakeGlobe()
 	GeomAddRectMesh(geom, rect, 1.15, 0);
 	rect += FPoint2(0.01, -0.01);
 	GeomAddRectMesh(geom, rect, 1.14, 1);
-	m_pGlobeContainer->AddChild(geom);
-#endif
+	logo->AddChild(geom);
+	Globe2->SetTime(m_pGlobeTime->GetTime());
+}else{
+	logo = NULL;
+}
 
 	// pass the time along once to orient the earth
 	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
@@ -781,10 +788,6 @@ void Enviro::MakeGlobe()
 	m_pTrackball->SetName2("Trackball2");
 	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
 	vtGetScene()->AddEngine(m_pTrackball);
-#if PLANETWORK
-//	m_pTrackball->SetDirection(0,0.185);
-	Globe2->SetTime(m_pGlobeTime->GetTime());
-#endif
 
 	// determine where the terrains are, and show them as red rectangles
 	//
@@ -902,7 +905,9 @@ void Enviro::LookUpTerrainLocations()
 
 int Enviro::AddGlobePoints(const char *fname)
 {
-	return m_pIcoGlobe->AddGlobePoints(fname);
+//	return m_pIcoGlobe->AddGlobePoints(fname, 0.0015f);	// this size works OK for the VTP recipients
+	return m_pIcoGlobe->AddGlobePoints(fname, 0.003f);
+//	return m_pIcoGlobe->AddGlobePoints(fname, 0.0005f);	// better for GeoURL
 }
 
 
@@ -1278,7 +1283,7 @@ void Enviro::OnMouse(vtMouseEvent &event)
 	if (event.type == VT_UP)
 	{
 		if (event.button == VT_LEFT)
-			m_bDragging = false;
+			OnMouseLeftUp(event);
 		if (event.button == VT_RIGHT)
 			OnMouseRightUp(event);
 	}
@@ -1411,6 +1416,18 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 	}
 }
 
+void Enviro::OnMouseLeftUp(vtMouseEvent &event)
+{
+	m_bDragging = false;
+
+	if (m_state == AS_Orbit && m_mode == MM_LINEAR && m_bDragging)
+	{
+		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
+		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
+		SetDisplayedArc(epos1, epos2);
+	}
+}
+
 void Enviro::OnMouseRightDown(vtMouseEvent &event)
 {
 }
@@ -1506,6 +1523,23 @@ void Enviro::SetEarthShape(bool bFlat)
 		m_fFlattenDir = 0.03f;
 }
 
+void Enviro::SetEarthTilt(bool bTilt)
+{
+	if (!m_pIcoGlobe)
+		return;
+	m_pIcoGlobe->SetSeasonalTilt(bTilt);
+
+	// remind the earth of the time/date to refresh orientation
+	m_pIcoGlobe->SetTime(m_pGlobeTime->GetTime());
+}
+
+bool Enviro::GetEarthTilt()
+{
+	if (!m_pIcoGlobe)
+		return false;
+	return m_pIcoGlobe->GetSeasonalTilt();
+}
+
 void Enviro::SetEarthUnfold(bool bUnfold)
 {
 	m_bGlobeUnfolded = bUnfold;
@@ -1544,7 +1578,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	if (!m_pArc)
 	{
 		m_pArc = new vtGeom();
-//		m_pGlobeXForm->AddChild(m_pArc);
+		m_pIcoGlobe->GetTop()->AddChild(m_pArc);
 		vtMaterialArray *pMats = new vtMaterialArray();
 		int yellow = pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 						 false, false, false);
@@ -1683,6 +1717,10 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	return true;
 }
 
+void Enviro::ToggleLogo()
+{
+	logo->SetEnabled(!logo->GetEnabled());
+}
 
 ////////////////////////////////////////////////////////////////////////
 
