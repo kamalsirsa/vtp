@@ -643,3 +643,12 @@ int vtVegLayer::FindBiotype(const DPoint2 &p)
 	else
 		return -1;
 }
+
+bool vtVegLayer::ExportToSHP(const char *fname)
+{
+	if (m_VLType != VLT_Instances)
+		return false;
+
+	return m_Pia.WriteSHP(fname);
+}
+

@@ -30,6 +30,7 @@
 #include "RoadLayer.h"
 #include "StructLayer.h"
 #include "UtilityLayer.h"
+#include "VegLayer.h"
 #include "WaterLayer.h"
 // Dialogs
 #include "DistribVegDlg.h"
@@ -151,6 +152,9 @@ EVT_UPDATE_UI(ID_TOWER_EDIT,		MainFrame::OnUpdateTowerEdit)
 
 EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
+EVT_MENU(ID_VEG_EXPORTSHP,			MainFrame::OnVegExportSHP)
+
+EVT_UPDATE_UI(ID_VEG_EXPORTSHP,		MainFrame::OnUpdateVegExportSHP)
 
 EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
 EVT_MENU(ID_FEATURE_PICK,			MainFrame::OnFeaturePick)
@@ -342,6 +346,7 @@ void MainFrame::CreateMenus()
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, _T("Plants List"), _T("View/Edit list of available plant species"));
 	vegMenu->Append(ID_VEG_BIOREGIONS, _T("BioRegions"), _T("View/Edit list of species & density for each BioRegion"));
+	vegMenu->Append(ID_VEG_EXPORTSHP, _T("Export SHP"));
 	m_pMenuBar->Append(vegMenu, _T("Veg&etation"));
 	m_iLayerMenu[LT_VEG] = menu_num;
 	menu_num++;
@@ -2022,6 +2027,26 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 	m_BioRegionDlg->Show(true);
 }
 
+void MainFrame::OnVegExportSHP(wxCommandEvent& event)
+{
+	vtVegLayer *pVeg = GetMainFrame()->GetActiveVegLayer();
+	if (!pVeg) return;
+
+	// Open File Save Dialog
+	wxFileDialog saveFile(NULL, _T("Export vegetation to SHP"), _T(""), _T(""),
+		_T("Vegetation Files (*.shp)|*.shp|"), wxSAVE | wxOVERWRITE_PROMPT);
+	if (saveFile.ShowModal() == wxID_CANCEL)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+
+	pVeg->ExportToSHP(strPathName.mb_str());
+}
+
+void MainFrame::OnUpdateVegExportSHP(wxUpdateUIEvent& event)
+{
+	vtVegLayer *pVeg = GetMainFrame()->GetActiveVegLayer();
+	event.Enable(pVeg && pVeg->IsNative());
+}
 
 void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 {

@@ -178,6 +178,8 @@ public:
 
 	void OnVegPlants(wxCommandEvent& event);
 	void OnVegBioregions(wxCommandEvent& event);
+	void OnVegExportSHP(wxCommandEvent& event);
+	void OnUpdateVegExportSHP(wxUpdateUIEvent& event);
 
 	void OnFeatureSelect(wxCommandEvent& event);
 	void OnFeaturePick(wxCommandEvent& event);
@@ -272,8 +274,14 @@ public:
 	}
 	vtUtilityLayer *GetActiveUtilityLayer()
 	{
-		if(m_pActiveLayer &&m_pActiveLayer->GetType() == LT_UTILITY)
+		if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_UTILITY)
 			return (vtUtilityLayer *)m_pActiveLayer;
+		return NULL;
+	}
+	vtVegLayer *GetActiveVegLayer()
+	{
+		if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_VEG)
+			return (vtVegLayer *)m_pActiveLayer;
 		return NULL;
 	}
 	int LayersOfType(LayerType lt);

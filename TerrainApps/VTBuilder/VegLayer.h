@@ -55,6 +55,9 @@ public:
 	float FindDensity(const DPoint2 &p);
 	int   FindBiotype(const DPoint2 &p);
 
+	// Exporting data
+	bool ExportToSHP(const char *fname);
+
 protected:
 	void DrawInstances(wxDC* pDC, vtScaledView *pView);
 	void DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView);
