@@ -31,7 +31,8 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+	~LocationDlg();
+
 	// WDR: method declarations for LocationDlg
 	wxButton* GetStoreas()  { return (wxButton*) FindWindow( ID_STOREAS ); }
 	wxButton* GetStore()  { return (wxButton*) FindWindow( ID_STORE ); }
