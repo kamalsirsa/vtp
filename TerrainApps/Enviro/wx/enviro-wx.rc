@@ -18,6 +18,8 @@ space		BITMAP "bitmap/space.bmp"
 sun			BITMAP "bitmap/sun.bmp"
 terrain		BITMAP "bitmap/terrain.bmp"
 tree		BITMAP "bitmap/tree.bmp"
+route       BITMAP "bitmap/route.bmp"
+nav_route   BITMAP "bitmap/navroute.bmp"
 
 icon1   ICON "wx/icons/camera.ico"
 icon2   ICON "wx/icons/engine.ico"

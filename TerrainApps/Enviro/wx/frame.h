@@ -55,6 +55,8 @@ public:
 	void OnViewFaster(wxCommandEvent& event);
 	void OnUpdateViewFaster(wxUpdateUIEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
+	void OnViewFollowRoute(wxCommandEvent& event);
+	void OnUpdateViewFollowRoute(wxUpdateUIEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 
@@ -62,6 +64,8 @@ public:
 	void OnUpdateToolsSelect(wxUpdateUIEvent& event);
 	void OnToolsFences(wxCommandEvent& event);
 	void OnUpdateToolsFences(wxUpdateUIEvent& event);
+	void OnToolsRoutes(wxCommandEvent& event);
+	void OnUpdateToolsRoutes(wxUpdateUIEvent& event);
 	void OnToolsTrees(wxCommandEvent& event);
 	void OnUpdateToolsTrees(wxUpdateUIEvent& event);
 	void OnToolsMove(wxCommandEvent& event);
@@ -127,6 +131,7 @@ public:
 
 protected:
 	bool m_bMaintainHeight;
+	bool m_bAlwaysMove;
 	bool m_bCulleveryframe;
 	bool m_bFullscreen;
 	bool m_bTopDown;

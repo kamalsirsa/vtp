@@ -38,6 +38,7 @@
 #include "LocationDlg.h"
 #include "BuildingDlg.h"
 
+#include "../Engines.h"
 #include "../Enviro.h"
 #include "../TerrainSceneWP.h"	// for GetCurrentTerrain
 
@@ -48,6 +49,7 @@
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "camera.xpm"
 #  include "fence.xpm"
+#  include "route.xpm"
 #  include "loc.xpm"
 #  include "maintain.xpm"
 #  include "move.xpm"
@@ -78,6 +80,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_TOOLS_SELECT, vtFrame::OnUpdateToolsSelect)
 	EVT_MENU(ID_TOOLS_FENCES, vtFrame::OnToolsFences)
 	EVT_UPDATE_UI(ID_TOOLS_FENCES, vtFrame::OnUpdateToolsFences)
+	EVT_MENU(ID_TOOLS_ROUTES, vtFrame::OnToolsRoutes)
+	EVT_UPDATE_UI(ID_TOOLS_ROUTES, vtFrame::OnUpdateToolsRoutes)
 	EVT_MENU(ID_TOOLS_TREES, vtFrame::OnToolsTrees)
 	EVT_UPDATE_UI(ID_TOOLS_TREES, vtFrame::OnUpdateToolsTrees)
 	EVT_MENU(ID_TOOLS_MOVE, vtFrame::OnToolsMove)
@@ -100,6 +104,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_VIEW_FASTER, vtFrame::OnViewFaster)
 	EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
 	EVT_MENU(ID_VIEW_SETTINGS, vtFrame::OnViewSettings)
+	EVT_MENU(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnViewFollowRoute)
+	EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
 	EVT_MENU(ID_VIEW_LOCATIONS, vtFrame::OnViewLocations)
 	EVT_UPDATE_UI(ID_VIEW_LOCATIONS, vtFrame::OnUpdateViewLocations)
 
@@ -157,6 +163,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	m_bCulleveryframe = true;
 	m_bMaintainHeight = false;
+	m_bAlwaysMove = false;
 	m_bFullscreen = false;
 	m_bTopDown = false;
 
@@ -213,6 +220,7 @@ void vtFrame::CreateMenus()
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->Append(ID_TOOLS_SELECT, "Select", "Select", true);
 	toolsMenu->Append(ID_TOOLS_FENCES, "Fences", "Fences", true);
+	toolsMenu->Append(ID_TOOLS_ROUTES, "Routes", "Routes", true);
 	toolsMenu->Append(ID_TOOLS_TREES, "Trees", "Trees", true);
 	toolsMenu->Append(ID_TOOLS_MOVE, "Move Objects", "Move Objects", true);
 	toolsMenu->Append(ID_TOOLS_NAVIGATE, "Navigate", "Navigate", true);
@@ -284,6 +292,7 @@ void vtFrame::CreateToolbar()
 
 	ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
 	ADD_TOOL(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
+	ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
 	ADD_TOOL(ID_TOOLS_TREES, wxBITMAP(tree), _("Create Plants"), true);
 //	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
 	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
@@ -292,6 +301,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
 	ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
 	ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
+	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(nav_route), _("Follow Route"), true);
 	ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
@@ -338,10 +348,6 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	}
 
 	// Keyboard shortcuts ("accelerators")
-	if (key == 'f')
-		ChangeFlightSpeed(1.8f);
-	if (key == 's')
-		ChangeFlightSpeed(1.0f / 1.8f);
 	if (key == 'a')
 	{
 		m_bMaintainHeight = !m_bMaintainHeight;
@@ -350,6 +356,16 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			g_App.m_pTFlyer->MaintainHeight(m_bMaintainHeight);
 			g_App.m_pTFlyer->SetMaintainHeight(0);
 		}
+	}
+	if (key == 'f')
+		ChangeFlightSpeed(1.8f);
+	if (key == 's')
+		ChangeFlightSpeed(1.0f / 1.8f);
+	if (key == 'w')
+	{
+		m_bAlwaysMove = !m_bAlwaysMove;
+		if (g_App.m_pTFlyer != NULL)
+			g_App.m_pTFlyer->SetAlwaysMove(m_bAlwaysMove);
 	}
 	if (key == '+')
 		ChangeTerrainDetail(true);
@@ -535,6 +551,49 @@ void vtFrame::OnViewSettings(wxCommandEvent& event)
 	m_pCameraDlg->Show(true);
 }
 
+void vtFrame::OnViewFollowRoute(wxCommandEvent& event)
+{
+	if (g_App.m_pCurRoute)
+	{
+		if (!g_App.m_pRouteFollower)
+		{
+			g_App.SetFollowerCamera();
+			g_App.m_pRouteFollower = new RouteFollowerEngine(g_App.m_pCurRoute, g_App.m_pRouteFollowerCamera);
+			vtGetScene()->AddEngine(g_App.m_pRouteFollower);
+	//		vtGetScene()->DoUpdate();
+			// did it work?
+			if (!g_App.m_pRouteFollower) return;
+		}
+		if (!g_App.m_pRouteFollower->m_bFollowerOn)
+		{
+			// Control the follower camera.
+			g_App.m_pRouteFollower->Eval();
+			g_App.m_pRouteFollower->m_bFollowerOn = true;
+		}
+		else
+		{
+			g_App.m_pRouteFollower->m_bFollowerOn = false;
+			g_App.m_nav=NT_Normal;
+			SetMode(MM_NAVIGATE);
+		}
+	}
+}
+
+void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
+{
+	if (g_App.m_pCurRoute)
+	{
+		if (g_App.m_pRouteFollower)
+		{
+			if (g_App.m_pRouteFollower->m_bFollowerOn)
+			{
+				g_App.m_pRouteFollower->Eval();
+			}
+		}
+	}
+	event.Enable(g_App.m_state == AS_Terrain);
+}
+
 void vtFrame::OnViewLocations(wxCommandEvent& event)
 {
 	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera());
@@ -571,6 +630,20 @@ void vtFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_FENCES);
+}
+
+void vtFrame::OnToolsRoutes(wxCommandEvent& event)
+{
+//	SetMode(MM_ROUTES);
+//	g_App.EnableFlyerEngine(false);
+	if (g_App.m_pCurRoute)
+		g_App.SetFollowerCamera();
+}
+
+void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
+{
+//	event.Enable(g_App.m_state == AS_Terrain);
+//	event.Check(g_App.m_mode == MM_ROUTES);
 }
 
 void vtFrame::OnToolsTrees(wxCommandEvent& event)
