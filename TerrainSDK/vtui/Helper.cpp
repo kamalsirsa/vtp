@@ -83,6 +83,28 @@ int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 	return matches;
 }
 
+int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
+	const char *wildcard, int omit_chars)
+{
+	int matches = 0;
+	for (dir_iter it(directory); it != dir_iter(); ++it)
+	{
+		if (it.is_hidden() || it.is_directory())
+			continue;
+
+		vtString name = it.filename().c_str();
+		if (name.Matches(wildcard))
+		{
+			if (omit_chars)
+				array.push_back(name.Left(name.GetLength()-omit_chars));
+			else
+				array.push_back(name);
+			matches++;
+		}
+	}
+	return matches;
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 #if WIN32
