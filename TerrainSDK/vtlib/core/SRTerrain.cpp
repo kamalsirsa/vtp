@@ -219,9 +219,9 @@ void SRTerrain::DoCulling(const vtCamera *pCam)
 
 	if (pCam->IsOrtho())
 	{
-		// libMini reported supports orthographic viewing as of 5.0.
+		// libMini supports orthographic viewing as of libMini 5.0.
 		// A negative FOV value indicates to the library that the FOV is
-		//  actually the rothographic height of the camera.
+		//  actually the orthographic height of the camera.
 		m_fFOVY = pCam->GetWidth() / m_fAspect;
 		m_fFOVY = -m_fFOVY;
 	}
