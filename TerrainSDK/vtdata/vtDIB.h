@@ -87,14 +87,15 @@ class vtDIB
 {
 public:
 	vtDIB();
-	vtDIB(const char *fname);		// load new DIB from file
-	vtDIB(int width, int height, int bitdepth, bool create_palette);	// create new DIB
 	vtDIB(void *pDIB);				// wrap an existing DIB
 	~vtDIB();
 
+	bool Create(int width, int height, int bitdepth, bool create_palette);
+	bool Read(const char *fname);
 	bool ReadBMP(const char *fname);
 	bool WriteBMP(const char *fname);
 //	bool ReadPNG(const char *filename);
+	bool ReadJPEG(const char *fname);
 
 	unsigned long GetPixel24(int x, int y);
 	void SetPixel24(int x, int y, dword color);

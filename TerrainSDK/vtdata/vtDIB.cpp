@@ -10,6 +10,11 @@
 #include "vtDIB.h"
 #include "ByteOrder.h"
 
+// Headers for JPEG support, which uses the library "libjpeg"
+extern "C" {
+#include "jinclude.h"
+#include "jpeglib.h"
+}
 
 /**
  * Create a new empty DIB wrapper.
@@ -22,24 +27,36 @@ vtDIB::vtDIB()
 }
 
 
-/**
- * Load a new DIB from a file.
- */
-vtDIB::vtDIB(const char *fname)
+vtDIB::vtDIB(void *pDIB)
 {
-	// assume failure
-	m_bLoadedSuccessfully = false;
-	m_bLeaveIt = false;
-	m_pDIB = NULL;
+	m_pDIB = pDIB;
 
-	if (ReadBMP(fname))
-		m_bLoadedSuccessfully = true;
+	m_Hdr = (BITMAPINFOHEADER *) m_pDIB;
+	m_Data = ((byte *)m_Hdr) + sizeof(BITMAPINFOHEADER) + m_iPaletteSize;
+
+	m_iWidth = m_Hdr->biWidth;
+	m_iHeight = m_Hdr->biHeight;
+	m_iBitCount = m_Hdr->biBitCount;
+
+	_ComputeByteWidth();
 }
+
+
+vtDIB::~vtDIB()
+{
+	// Only free the encapsulated DIB if we're allowed to
+	if (!m_bLeaveIt)
+	{
+		if (m_pDIB != NULL)
+			free(m_pDIB);
+	}
+}
+
 
 /**
  * Create a new DIB in memory.
  */
-vtDIB::vtDIB(int xsize, int ysize, int bitdepth, bool create_palette)
+bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
 {
 	m_iWidth = xsize;
 	m_iHeight = ysize;
@@ -74,31 +91,27 @@ vtDIB::vtDIB(int xsize, int ysize, int bitdepth, bool create_palette)
 				(unsigned char)i;
 	}
 	m_bLeaveIt = false;
-}
-
-vtDIB::vtDIB(void *pDIB)
-{
-	m_pDIB = pDIB;
-
-	m_Hdr = (BITMAPINFOHEADER *) m_pDIB;
-	m_Data = ((byte *)m_Hdr) + sizeof(BITMAPINFOHEADER) + m_iPaletteSize;
-
-	m_iWidth = m_Hdr->biWidth;
-	m_iHeight = m_Hdr->biHeight;
-	m_iBitCount = m_Hdr->biBitCount;
-
-	_ComputeByteWidth();
+	return true;
 }
 
 
-vtDIB::~vtDIB()
+/**
+ * Read a image file into the DIB.  This method will check to see if the
+ * file is a BMP or JPEG and call the appropriate reader.
+ */
+bool vtDIB::Read(const char *fname)
 {
-	// Only free the encapsulated DIB if we're allowed to
-	if (!m_bLeaveIt)
-	{
-		if (m_pDIB != NULL)
-			free(m_pDIB);
-	}
+	FILE *fp = fopen(fname, "rb");
+	if (!fp)
+		return false;
+	unsigned char buf[2];
+	if (fread(buf, 2, 1, fp) != 1)
+		return false;
+	fclose(fp);
+	if (buf[0] == 0x42 && buf[1] == 0x4d)
+		return ReadBMP(fname);
+	else
+		return ReadJPEG(fname);
 }
 
 
@@ -253,6 +266,92 @@ bool vtDIB::WriteBMP(const char *fname)
 	return true;
 }
 
+
+/**
+ * Read a JPEG file. A DIB of the necessary size and depth is allocated.
+ */
+bool vtDIB::ReadJPEG(const char *fname)
+{
+	struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+	FILE * input_file;
+	JDIMENSION num_scanlines;
+
+	/* Initialize the JPEG decompression object with default error handling. */
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_decompress(&cinfo);
+
+	input_file = fopen(fname, "rb");
+    if (input_file == NULL)
+		return false;
+
+	/* Specify data source for decompression */
+	jpeg_stdio_src(&cinfo, input_file);
+
+	/* Read file header, set default decompression parameters */
+	jpeg_read_header(&cinfo, TRUE);
+
+	int bitdepth;
+	if (cinfo.num_components == 1)
+		bitdepth = 8;
+	else
+		bitdepth = 24;
+	Create(cinfo.image_width, cinfo.image_height, bitdepth, bitdepth == 8);
+
+	/* Start decompressor */
+	jpeg_start_decompress(&cinfo);
+
+	int buffer_height = 1;
+	int row_stride = cinfo.output_width * cinfo.output_components;
+
+	/* Make a one-row-high sample array that will go away when done with image */
+	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
+		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+	int cur_output_row = 0;
+	unsigned int col;
+
+	/* Process data */
+	while (cinfo.output_scanline < cinfo.output_height)
+	{
+		num_scanlines = jpeg_read_scanlines(&cinfo, buffer,
+						buffer_height);
+
+		/* Transfer data.  Note destination values must be in BGR order
+		* (even though Microsoft's own documents say the opposite).
+		*/
+		JSAMPROW inptr = buffer[0];
+		byte *adr = ((byte *)m_Data) + (m_iHeight-cur_output_row-1)*m_iByteWidth;
+
+		if (bitdepth == 8)
+		{
+			for (col = 0; col < cinfo.output_width; col++)
+				*adr++ = *inptr++;
+		}
+		else
+		{
+			for (col = 0; col < cinfo.output_width; col++)
+			{
+				adr[2] = *inptr++;	/* can omit GETJSAMPLE() safely */
+				adr[1] = *inptr++;
+				adr[0] = *inptr++;
+				adr += 3;
+			}
+		}
+		cur_output_row++;
+	}
+
+	jpeg_finish_decompress(&cinfo);
+	jpeg_destroy_decompress(&cinfo);
+
+	/* Close files, if we opened them */
+	if (input_file != stdin)
+		fclose(input_file);
+
+	return true;
+}
+
+
 void vtDIB::_ComputeByteWidth()
 {
 	m_iByteWidth = (((m_iWidth)*(m_iBitCount) + 31) / 32 * 4);
@@ -293,9 +392,9 @@ void vtDIB::SetPixel24(int x, int y, dword color)
 	// note: Most processors don't support unaligned int/float writes, and on
 	//	   those that do, it's slower than unaligned writes.
 	adr = ((byte *)m_Data) + (m_iHeight-y-1)*m_iByteWidth + x+x+x;
-	*((byte *)(adr+0)) = color >> 16;
-	*((byte *)(adr+1)) = color >>  8;
-	*((byte *)(adr+2)) = color;
+	*((byte *)(adr+0)) = (unsigned char) (color >> 16);
+	*((byte *)(adr+1)) = (unsigned char) (color >>  8);
+	*((byte *)(adr+2)) = (unsigned char) color;
 }
 
 /**
