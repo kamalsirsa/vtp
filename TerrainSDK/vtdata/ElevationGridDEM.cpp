@@ -138,7 +138,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fseek(fp, 168, 0);
 	double dProjParams[15];
 	for (i = 0; i < 15; i++)
-		dProjParams[i] = DConvert(fp, 24);
+		dProjParams[i] = DConvert(fp, 24, DEBUG_DEM);
 
 	int iDatum = EPSG_DATUM_NAD27;	// default
 
@@ -187,12 +187,21 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		break;
 	case 3:		// Albers Conical Equal Area
 		{
+			// The Official DEM documentation says:
+			// "Note: All angles (latitudes, longitudes, or azimuth) are
+			// required in degrees, minutes, and arc seconds in the packed
+			// real number format +DDDOMMOSS.SSSSS."
+			// However, what i've actually seen is values like:
+			//  0.420000000000000D+06' -> 420000
+			// for 42 degrees, which is off by a decimal point from the DEM docs.
+			// So, intepret the values with factor of 10000 to convert to degrees:
+
 			// double semi_major = dProjParams[0];		// unused
 			// double eccentricity = dProjParams[1];	// unused
-			double lat_1st_std_parallel = dProjParams[2];
-			double lat_2nd_std_parallel = dProjParams[3];
-			double lon_central_meridian = dProjParams[4];
-			double lat_origin = dProjParams[5];
+			double lat_1st_std_parallel = dProjParams[2] / 10000;
+			double lat_2nd_std_parallel = dProjParams[3] / 10000;
+			double lon_central_meridian = dProjParams[4] / 10000;
+			double lat_origin = dProjParams[5] / 10000;
 			double false_easting = dProjParams[6];
 			double false_northing = dProjParams[7];
 
