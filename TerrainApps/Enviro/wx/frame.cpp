@@ -998,7 +998,7 @@ void vtFrame::Snapshot(bool bNumbered)
 			m_iSnapshotNumber = 0;
 		}
 		else
-			use_name = saveFile.GetPath();;
+			use_name = saveFile.GetPath();
 	}
 	if (bNumbered)
 	{

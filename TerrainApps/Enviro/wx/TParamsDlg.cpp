@@ -883,7 +883,7 @@ void TParamsDlg::OnEditColors( wxCommandEvent &event )
 		return;
 	}
 
-	ColorMapDlg dlg(this, -1, _("ColorMap"));;
+	ColorMapDlg dlg(this, -1, _("ColorMap"));
 	dlg.SetFile(name);
 	dlg.ShowModal();
 
