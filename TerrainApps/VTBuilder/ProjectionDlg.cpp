@@ -16,6 +16,10 @@
     #pragma hdrstop
 #endif
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "ProjectionDlg.h"
 
 //
@@ -153,8 +157,14 @@ void ProjectionDlg::SetProjection(vtProjection &proj)
             m_iZone = proj.GetUTMZone();
         }
         if (!strcmp(proj_string, "Albers_Conic_Equal_Area"))
+		{
             m_iProj = PT_ALBERS;
-        // TODO: state plane
+			m_fPar1 = proj.GetProjParm("standard_parallel_1");
+			m_fPar2 = proj.GetProjParm("standard_parallel_2");
+			m_fMeridian = proj.GetProjParm("longitude_of_center");
+			// what about "latitude_of_center"? "latitude of projection's origin"
+		}
+        // TODO: state plane? is that possible or desirable to detect?
     }
     m_iDatum = (int) proj.GetDatum();
 }
