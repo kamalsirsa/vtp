@@ -421,6 +421,18 @@ void vtStructureArray::DeleteSelected()
 	}
 }
 
+/**
+ * Return the index of the first selected structure, or -1 if no
+ *  structure is selected.
+ */
+int vtStructureArray::GetFirstSelected()
+{
+	for (unsigned int i = 0; i < GetSize(); i++)
+		if (GetAt(i)->IsSelected())
+			return i;
+	return -1;
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 // Visitor class, for XML parsing of Structure files.

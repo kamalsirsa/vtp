@@ -66,6 +66,7 @@ public:
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() { return m_strFilename; }
 
+	int GetFirstSelected();
 	void DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 
