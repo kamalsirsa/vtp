@@ -104,7 +104,7 @@ bool vtScene::Init()
 
 	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 
-	// OSG 0.9.2 and newer
+	// OSG 0.9.2 and newer: turn off "small feature culling"
 	m_pOsgSceneView->setCullingMode( m_pOsgSceneView->getCullingMode() & ~osg::CullStack::SMALL_FEATURE_CULLING);
 
 	m_bInitialized = true;
