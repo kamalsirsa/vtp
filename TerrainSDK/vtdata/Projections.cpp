@@ -124,15 +124,15 @@ DATUM vtProjection::GetDatum()
  * also called "linear units."
  *
  * \return
-	- 0 - Arc Degrees
-	- 1 - Meters
-	- 2 - Feet (International Foot)
-	- 3 - Feet (U.S. Survey Foot)
+	- LU_DEGREES - Arc Degrees
+	- LU_METERS - Meters
+	- LU_FEET_INT - Feet (International Foot)
+	- LU_FEET_US - Feet (U.S. Survey Foot)
  */
-int vtProjection::GetUnits()
+LinearUnits vtProjection::GetUnits()
 {
 	if( IsGeographic() )
-		return 0;  // degrees
+		return LU_DEGREES;  // degrees
 
 	// Get horizontal units ("linear units")
 	char *pszLinearUnits;
@@ -141,16 +141,16 @@ int vtProjection::GetUnits()
 
 	diff = dfLinearConv - 0.3048;
 	if( EQUAL(pszLinearUnits,SRS_UL_FOOT) || fabs(diff) < 0.000000001)
-		return 2;  // international feet
+		return LU_FEET_INT;  // international feet
 
 	diff = dfLinearConv - (1200.0/3937.0);
 	if( EQUAL(pszLinearUnits,SRS_UL_US_FOOT) || fabs(diff) < 0.000000001)
-		return 3;  // u.s. survey feet
+		return LU_FEET_US;  // u.s. survey feet
 
 	if( dfLinearConv == 1.0 )
-		return 1;  // meters
+		return LU_METERS;  // meters
 
-	return 1;	// can't guess; assume meters
+	return LU_METERS;	// can't guess; assume meters
 }
 
 

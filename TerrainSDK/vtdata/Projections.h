@@ -41,6 +41,16 @@ enum DATUM { ADINDAN = 0, ARC1950, ARC1960, AUSTRALIAN_GEODETIC_1966,
 			 PULKOVO_1942, PROVISIONAL_S_AMERICAN_1956, TOKYO, WGS_72, WGS_84,
 			 UNKNOWN_DATUM = -1, NO_DATUM = -2, DEFAULT_DATUM = -3 };
 
+// Do not change the order of this enumeration
+enum LinearUnits
+{
+	LU_DEGREES,
+	LU_METERS,
+	LU_FEET_INT,	// International Foot
+	LU_FEET_US,		// U.S. Survey Foot
+	LU_UNKNOWN
+};
+
 #include "ogr_spatialref.h"
 
 ///////////////////////////
@@ -62,11 +72,11 @@ public:
 	// Equality
 	bool operator==(vtProjection &ref);
 
-	void  SetUTMZone(int iZone);
-	int	  GetUTMZone();
-	void  SetDatum(DATUM datum);
-	DATUM GetDatum();
-	int	  GetUnits();
+	void	SetUTMZone(int iZone);
+	int		GetUTMZone();
+	void	SetDatum(DATUM datum);
+	DATUM	GetDatum();
+	LinearUnits	GetUnits();
 
 	void	SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum);
 	void	SetSpatialReference(OGRSpatialReference *pRef);
