@@ -11,8 +11,6 @@
 #include "EnviroFrame.h"
 #include "../Enviro.h"	// for GetCurrentTerrain
 
-int pwdemo = 0;
-
 /////////////////////////////////////////////////////////////////////////////
 // EnviroApp
 
