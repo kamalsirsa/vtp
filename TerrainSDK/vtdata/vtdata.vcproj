@@ -376,6 +376,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DxfParser.cpp">
+			</File>
+			<File
 				RelativePath="ElevationGrid.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -1560,6 +1563,9 @@
 			</File>
 			<File
 				RelativePath="DLG.h">
+			</File>
+			<File
+				RelativePath=".\DxfParser.h">
 			</File>
 			<File
 				RelativePath="ElevationGrid.h">
