@@ -1,7 +1,7 @@
 //
 // vtTin.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -36,6 +36,7 @@ public:
 
 	bool Read(const char *fname);
 	bool Write(const char *fname);
+	bool ReadDXF(const char *fname, void progress_callback(int) = NULL);
 
 	bool ComputeExtents();
 	void Offset(const DPoint2 &p);

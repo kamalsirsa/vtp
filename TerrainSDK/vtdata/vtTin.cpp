@@ -3,11 +3,13 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtTin.h"
+#include "vtLog.h"
+#include "DxfParser.h"
 
 
 void vtTin::AddVert(const DPoint2 &p, float z)
@@ -102,25 +104,59 @@ bool vtTin::Read(const char *fname)
 	fread(buf, 3, 1, fp);
 	fseek(fp, 0, SEEK_SET);
 
-	bool success;
-	if (!strncmp(buf, "tin", 3))
-	{
-		success = _ReadTin(fp);
-	}
-	else
-	{
-		success = _ReadTinOld(fp);
-		if (success)
-		{
-			// Now try to read projection from corresponding .prj file.
-			// No need to check for failure; there's nothing we can do about it.
-			m_proj.ReadProjFile(fname);
-		}
-	}
+	bool success = _ReadTin(fp);
+	if (!success)
+		return false;
+
 	fclose(fp);
 
+	ComputeExtents();
 	return true;
 }
+
+/**
+ * Attempt to read TIN data from a DXF file.
+ */
+bool vtTin::ReadDXF(const char *fname, void progress_callback(int))
+{
+	std::vector<DxfEntity> entities;
+	std::vector<vtString> layers;
+
+	DxfParser parser(fname, entities, layers);
+	bool bSuccess = parser.RetreiveEntities(progress_callback);
+	if (!bSuccess)
+	{
+		VTLOG(parser.GetLastError());
+		return false;
+	}
+
+	int vtx = 0;
+	for (unsigned int i = 0; i < entities.size(); i++)
+	{
+		const DxfEntity &ent = entities[i];
+		if (ent.m_iType == DET_3DFace)
+		{
+			int NumVerts = ent.m_points.size();
+			if (NumVerts == 3)
+			{
+				DPoint3 p3[3];
+				for (int j = 0; j < 3; j++)
+				{
+					DPoint2 p(ent.m_points[j].x, ent.m_points[j].y);
+					float z = (float) ent.m_points[j].z;
+
+					AddVert(p, z);
+				}
+				AddTri(vtx, vtx+1, vtx+2);
+				vtx += 3;
+			}
+		}
+	}
+
+	ComputeExtents();
+	return true;
+}
+
 
 /**
  * Write the TIN to a new-style .tin file (custom VTP format).
