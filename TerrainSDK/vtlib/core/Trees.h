@@ -115,7 +115,7 @@ public:
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
 
 	/// Indicate the Plant List to use
-	void SetPlantList(vtPlantList3d *pl) { m_pPlantList = pl; }
+	vtPlantList3d *GetPlantList() { return (vtPlantList3d *) m_pPlantList; }
 
 	/// Deselect all structures including turning off their visual highlights
 	void VisualDeselectAll();
@@ -130,7 +130,6 @@ public:
 protected:
 	Array<vtPlantInstance3d*>	m_Instances3d;
 	vtHeightField3d		*m_pHeightField;
-	vtPlantList3d		*m_pPlantList;
 };
 
 #endif	// TERRAINTREESH

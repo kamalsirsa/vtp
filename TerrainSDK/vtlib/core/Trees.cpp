@@ -486,7 +486,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 		m_Instances3d.SetAt(i, inst3d);
 	}
 
-	vtPlantSpecies3d *ps = m_pPlantList->GetSpecies(pi.species_id);
+	vtPlantSpecies3d *ps = GetPlantList()->GetSpecies(pi.species_id);
 	if (!ps)
 		return false;
 
