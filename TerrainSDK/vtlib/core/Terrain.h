@@ -223,7 +223,9 @@ public:
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		float fOffset, bool bCurve = false, bool bTrue = false);
-	void CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname, const vtTagArray &style);
+	void CreateStyledFeatures(const vtFeatureSet &feat,  const vtTagArray &style);
+	void CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style);
+	void CreateFeatureLabels(const vtFeatureSet &feat,   const vtTagArray &style);
 
 	// Access the viewpoint associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
@@ -263,7 +265,7 @@ protected:
 	void _CreateRoads();
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
-	void _CreateRawLayers();
+	void _CreateAbstractLayers();
 	void _CreateTextures(const FPoint3 &light_dir);
 	void _CreateDetailTexture();
 	bool _CreateDynamicTerrain();

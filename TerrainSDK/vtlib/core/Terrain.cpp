@@ -1418,36 +1418,41 @@ void vtTerrain::_CreateStructures()
 
 /////////////////////////
 
-void vtTerrain::_CreateRawLayers()
+void vtTerrain::_CreateAbstractLayers()
 {
 	unsigned int i, num = m_Params.m_Layers.size();
 	for (i = 0; i < num; i++)
 	{
 		const vtTagArray &lay = m_Params.m_Layers[i];
 
-		// Look for structure layers
+		// Look for abstract layers
 		vtString ltype = lay.GetValueString("Type");
-		if (ltype != TERR_LTYPE_RAW)
+		if (ltype != TERR_LTYPE_ABSTRACT)
 			continue;
 
 		vtString fname = lay.GetValueString("Filename", true);
-		vtString labels_path = FindFileOnPaths(vtGetDataPath(), fname);
-		if (labels_path == "")
+		vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+		if (path == "")
+		{
+			vtString prefix = "PointData/";
+			path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+		}
+		if (path == "")
 		{
 			VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
 			return;
 		}
 
 		vtFeatureLoader loader;
-		vtFeatureSet *feat = loader.LoadFrom(labels_path);
+		vtFeatureSet *feat = loader.LoadFrom(path);
 		if (!feat)
 		{
-			VTLOG("Couldn't read features from file '%s'\n", (const char *) labels_path);
+			VTLOG("Couldn't read features from file '%s'\n", (const char *) path);
 			return;
 		}
-		VTLOG("Read features from file '%s'\n", (const char *) labels_path);
+		VTLOG("Read features from file '%s'\n", (const char *) path);
 
-		CreateStyledFeatures(*feat, "Fonts/Arial.ttf", lay);
+		CreateStyledFeatures(*feat, lay);
 
 		delete feat;
 	}
@@ -1466,24 +1471,87 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 	return true;
 }
 
-void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname,
-									 const vtTagArray &style)
+void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const vtTagArray &style)
 {
-	unsigned int features = feat.GetNumEntities();
-	if (features == 0)
+	if (style.GetValueBool("Geometry"))
+		CreateFeatureGeometry(feat, style);
+
+	if (style.GetValueBool("Labels"))
+		CreateFeatureLabels(feat, style);
+}
+
+void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style)
+{
+	// We support geometry for 3D polylines
+	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(&feat);
+	if (!pSetLS3)
 		return;
 
 	// create container group
-	vtGroup *pPlaceNames = new vtGroup();
-	pPlaceNames->SetName2("Place Names");
-	m_pTerrainGroup->AddChild(pPlaceNames);
+	vtGroup *pAbstractGroup = new vtGroup();
+	pAbstractGroup->SetName2("Abstract Layer");
+	m_pTerrainGroup->AddChild(pAbstractGroup);
+
+	// Create materials.
+	vtMaterialArray *pMats = new vtMaterialArray();
+
+	// common color
+	RGBi color = style.GetValueRGBi("GeomColor");
+	int index = pMats->AddRGBMaterial1(color, false, false);
+
+	vtGeom *geom = new vtGeom();
+	geom->SetMaterials(pMats);
+	pMats->Release();
+
+	int total = pSetLS3->NumPointsTotal();
+	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, total);
+
+	DPoint3 d3;
+	FPoint3 f3;
+	for (unsigned int i = 0; i < pSetLS3->GetNumEntities(); i++)
+	{
+		const DLine3 &dline = pSetLS3->GetPolyLine(i);
+		int start = mesh->GetNumVertices();
+		unsigned int size = dline.GetSize();
+		for (unsigned int j = 0; j < size; j++)
+		{
+			d3 = dline[j];
+			m_pHeightField->m_Conversion.ConvertFromEarth(d3, f3);
+			mesh->AddVertex(f3);
+		}
+		mesh->AddStrip2(size, start);
+	}
+	geom->AddMesh(mesh, 0);
+	mesh->Release();
+	pAbstractGroup->AddChild(geom);
+}
+
+void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &style)
+{
+	// We support text labels for both 2D and 3D points
+	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
+	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
+	if (!pSetP2 && !pSetP3)
+		return;
+
+	const char *fontname = "Fonts/Arial.ttf";
+
+	// create container group
+	vtGroup *pAbstractGroup = new vtGroup();
+	pAbstractGroup->SetName2("Abstract Layer");
+	m_pTerrainGroup->AddChild(pAbstractGroup);
 
 	// Create materials.
 	vtMaterialArray *pLabelMats = new vtMaterialArray();
 
+	unsigned int features = feat.GetNumEntities();
+	if (features == 0)
+		return;
+
 	// default case: common label color
-	RGBi label_color = style.GetValueRGBi("Color");
-	int common_material_index = pLabelMats->AddRGBMaterial1(label_color, false, false);
+	RGBi label_color = style.GetValueRGBi("LabelColor");
+	int common_material_index =
+		pLabelMats->AddRGBMaterial1(label_color, false, true);
 
 #if 0
 	// It turns out that we don't have to do this, because OSG lets us
@@ -1523,10 +1591,6 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 		return;
 	}
 
-	// We support both 2D and 3D points
-	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
-	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
-
 	int text_field_index, color_field_index;
 
 	if (!style.GetValueInt("TextFieldIndex", text_field_index))
@@ -1537,7 +1601,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 	float label_elevation, label_size;
 	if (!style.GetValueFloat("Elevation", label_elevation))
 		label_elevation = 0.0f;
-	if (!style.GetValueFloat("Size", label_size))
+	if (!style.GetValueFloat("LabelSize", label_size))
 		label_size = 18;
 
 	unsigned int i;
@@ -1601,13 +1665,17 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 		}
 		geom->AddTextMesh(text, material_index);
 #else
+		bool bColorSet = false;
 		if (color_field_index != -1)
 		{
 			if (GetColorField(feat, i, color_field_index, rgba))
 			{
 				text->SetColor(rgba);
+				bColorSet = true;
 			}
 		}
+		if (!bColorSet)
+			text->SetColor(RGBf(label_color));
 		geom->AddTextMesh(text, common_material_index);
 #endif
 
@@ -1618,7 +1686,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 		m_pBBEngine->AddTarget(bb);
 
 		bb->SetTrans(fp3);
-		pPlaceNames->AddChild(bb);
+		pAbstractGroup->AddChild(bb);
 	}
 	delete font;
 	pLabelMats->Release();
@@ -1959,7 +2027,7 @@ bool vtTerrain::CreateStep5()
 		create_artificial_horizon(bWater, bHorizon, bCenter, 0.5f);
 	}
 
-	_CreateRawLayers();
+	_CreateAbstractLayers();
 
 	// Engines will be activated later in vtTerrainScene::SetTerrain
 	ActivateEngines(false);
