@@ -35,7 +35,23 @@ vtBitmap::~vtBitmap()
 #endif
 }
 
-bool vtBitmap::Allocate(int iXSize, int iYSize)
+bool vtBitmap::Allocate(int iXSize, int iYSize, int iDepth)
+{
+	if (iDepth == 8)
+		return Allocate8(iXSize, iYSize);
+	else if (iDepth == 24)
+		return Allocate24(iXSize, iYSize);
+	else
+		return false;
+}
+
+bool vtBitmap::Allocate8(int iXSize, int iYSize)
+{
+	// TODO: difficult, as wxImage can only be 24-bit.
+	return false;
+}
+
+bool vtBitmap::Allocate24(int iXSize, int iYSize)
 {
 #if USE_DIBSECTIONS
 	BITMAPINFO ScanlineFormat =

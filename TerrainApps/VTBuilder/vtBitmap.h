@@ -22,7 +22,7 @@ public:
 	vtBitmap();
 	~vtBitmap();
 
-	bool Allocate(int iXSize, int iYSize);
+	bool Allocate(int iXSize, int iYSize, int iDepth = 24);
 	void SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b);
 	void SetPixel24(int x, int y, const RGBi &rgb)
 	{
@@ -42,6 +42,8 @@ public:
 	wxBitmap	*m_pBitmap;
 
 protected:
+	bool Allocate8(int iXSize, int iYSize);
+	bool Allocate24(int iXSize, int iYSize);
 
 #if USE_DIBSECTIONS
 	// A DIBSection is a special kind of bitmap, handled as a HBITMAP,
