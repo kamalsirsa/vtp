@@ -56,6 +56,7 @@
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "axes.xpm"
 #  include "camera.xpm"
+#  include "distance.xpm"
 #  include "faster.xpm"
 #  include "fence.xpm"
 #  include "instances.xpm"
@@ -109,6 +110,8 @@ EVT_MENU(ID_TOOLS_MOVE,				vtFrame::OnToolsMove)
 EVT_UPDATE_UI(ID_TOOLS_MOVE,		vtFrame::OnUpdateToolsMove)
 EVT_MENU(ID_TOOLS_NAVIGATE,			vtFrame::OnToolsNavigate)
 EVT_UPDATE_UI(ID_TOOLS_NAVIGATE,	vtFrame::OnUpdateToolsNavigate)
+EVT_MENU(ID_TOOLS_MEASURE,			vtFrame::OnToolsMeasure)
+EVT_UPDATE_UI(ID_TOOLS_MEASURE,		vtFrame::OnUpdateToolsMeasure)
 
 EVT_MENU(ID_VIEW_MAINTAIN,			vtFrame::OnViewMaintain)
 EVT_UPDATE_UI(ID_VIEW_MAINTAIN,		vtFrame::OnUpdateViewMaintain)
@@ -186,7 +189,6 @@ EVT_MENU(ID_EARTH_TILT,			vtFrame::OnEarthTilt)
 EVT_MENU(ID_EARTH_FLATTEN,		vtFrame::OnEarthFlatten)
 EVT_MENU(ID_EARTH_UNFOLD,		vtFrame::OnEarthUnfold)
 EVT_MENU(ID_EARTH_POINTS,		vtFrame::OnEarthPoints)
-EVT_MENU(ID_EARTH_LINEAR,		vtFrame::OnEarthLinear)
 
 EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, vtFrame::OnUpdateEarthShowShading)
 EVT_UPDATE_UI(ID_EARTH_SHOWAXES, vtFrame::OnUpdateEarthShowAxes)
@@ -194,7 +196,6 @@ EVT_UPDATE_UI(ID_EARTH_TILT,	vtFrame::OnUpdateEarthTilt)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_UNFOLD,	vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_POINTS,	vtFrame::OnUpdateInOrbit)
-EVT_UPDATE_UI(ID_EARTH_LINEAR,	vtFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 
@@ -284,6 +285,7 @@ void vtFrame::CreateMenus()
 	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _T("Instances"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _T("Move Objects"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _T("Navigate"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _T("Measure Distances"));
 
 	wxMenu *sceneMenu = new wxMenu;
 	sceneMenu->Append(ID_SCENE_SCENEGRAPH, _T("Scene Graph"));
@@ -369,7 +371,6 @@ void vtFrame::CreateMenus()
 	earthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
 	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
 	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
-	earthMenu->Append(ID_EARTH_LINEAR, _T("Add &Linear Features...\tCtrl+L"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About ") WSTRING_APPORG _T("..."));
@@ -400,6 +401,7 @@ void vtFrame::CreateToolbar()
 //	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
 	ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
+	ADD_TOOL(ID_TOOLS_MEASURE, wxBITMAP(distance), _("Measure Distance"), true);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_VIEW_MAINTAIN, wxBITMAP(maintain), _("Maintain Height"), true);
 	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
@@ -1005,6 +1007,17 @@ void vtFrame::OnUpdateToolsNavigate(wxUpdateUIEvent& event)
 	event.Check(g_App.m_mode == MM_NAVIGATE);
 }
 
+void vtFrame::OnToolsMeasure(wxCommandEvent& event)
+{
+	SetMode(MM_MEASURE);
+}
+
+void vtFrame::OnUpdateToolsMeasure(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
+	event.Check(g_App.m_mode == MM_MEASURE);
+}
+
 /////////////////////// Scene menu ///////////////////////////
 
 void vtFrame::OnSceneGraph(wxCommandEvent& event)
@@ -1359,10 +1372,6 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 	wxSetWorkingDirectory(path);
 }
 
-void vtFrame::OnEarthLinear(wxCommandEvent& event)
-{
-	SetMode(MM_LINEAR);
-}
 
 //////////////////////////////////////////////////////
 

@@ -98,6 +98,8 @@ public:
 	void OnUpdateToolsMove(wxUpdateUIEvent& event);
 	void OnToolsNavigate(wxCommandEvent& event);
 	void OnUpdateToolsNavigate(wxUpdateUIEvent& event);
+	void OnToolsMeasure(wxCommandEvent& event);
+	void OnUpdateToolsMeasure(wxUpdateUIEvent& event);
 
 	void OnSceneGraph(wxCommandEvent& event);
 	void OnSceneTerrain(wxCommandEvent& event);
@@ -142,7 +144,6 @@ public:
 	void OnEarthFlatten(wxCommandEvent& event);
 	void OnEarthUnfold(wxCommandEvent& event);
 	void OnEarthPoints(wxCommandEvent& event);
-	void OnEarthLinear(wxCommandEvent& event);
 
 	void OnUpdateEarthShowShading(wxUpdateUIEvent& event);
 	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);
