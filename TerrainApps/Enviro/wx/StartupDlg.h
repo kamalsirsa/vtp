@@ -49,13 +49,10 @@ public:
 private:
 	// WDR: member variable declarations for StartupDlg
 	bool	m_bFullscreen;
-	bool	m_bGravity;
 	bool	m_bHtmlpane;
 	bool	m_bFloatingToolbar;
 	bool	m_bSound;
-	bool	m_bVCursor;
 	bool	m_bSpeedTest;
-	bool	m_bQuakeNavigation;
 	bool	m_bStartEarth;
 	bool	m_bStartTerrain;
 	wxString2	m_strTName;

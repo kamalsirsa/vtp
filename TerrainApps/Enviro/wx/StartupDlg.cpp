@@ -210,13 +210,10 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_strImage = wxString::FromAscii((const char *)opt.m_strImage);
 	m_strTName = wxString::FromAscii((const char *)opt.m_strInitTerrain);
 	m_bFullscreen = (opt.m_bFullscreen == TRUE);
-	m_bGravity = (opt.m_bGravity == TRUE);
 	m_bHtmlpane = (opt.m_bHtmlpane == TRUE);
 	m_bFloatingToolbar = (opt.m_bFloatingToolbar == TRUE);
 	m_bSound = (opt.m_bSound == TRUE);
-	m_bVCursor = (opt.m_bVCursor == TRUE);
 	m_bSpeedTest = (opt.m_bSpeedTest == TRUE);
-	m_bQuakeNavigation = (opt.m_bQuakeNavigation == TRUE);
 	m_fPlantScale = opt.m_fPlantScale;
 	m_bShadows = (opt.m_bShadows == TRUE);
 }
@@ -227,13 +224,10 @@ void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_strImage = m_strImage.mb_str();
 	opt.m_strInitTerrain = m_strTName.mb_str();
 	opt.m_bFullscreen = m_bFullscreen;
-	opt.m_bGravity = m_bGravity;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
 	opt.m_bSound = m_bSound;
-	opt.m_bVCursor = m_bVCursor;
 	opt.m_bSpeedTest = m_bSpeedTest;
-	opt.m_bQuakeNavigation = m_bQuakeNavigation;
 	opt.m_fPlantScale = m_fPlantScale;
 	opt.m_bShadows = m_bShadows;
 }
@@ -383,11 +377,9 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TERRAIN, &m_bStartTerrain);
 
 	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
-	AddValidator(ID_GRAVITY, &m_bGravity);
 	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
 	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
 	AddValidator(ID_SOUND, &m_bSound);
-	AddValidator(ID_VCURSOR, &m_bVCursor);
 	AddValidator(ID_SHADOWS, &m_bShadows);
 
 	AddValidator(ID_TNAME, &m_strTName);
