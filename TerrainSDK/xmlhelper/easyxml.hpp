@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "zlib.h"
 
 using namespace std;
 
@@ -348,6 +349,8 @@ public:
  */
 extern void readXML (istream &input, XMLVisitor &visitor,
 		     const string &path="");
+extern void readCompressedXML (gzFile fp, XMLVisitor &visitor,
+							   const string& path="");
 
 
 /**

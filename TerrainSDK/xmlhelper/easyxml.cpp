@@ -231,22 +231,81 @@ void readXML (istream &input, XMLVisitor &visitor, const string &path)
 
 void readXML (const string &path, XMLVisitor &visitor)
 {
-	ifstream input(path.c_str());
-	if (input.good()) {
-		try {
-			readXML(input, visitor, path);
-		} catch (xh_io_exception &e) {
-			input.close();
-			throw e;
-		} catch (xh_throwable &t) {
-			input.close();
-			throw t;
+	gzFile fp = gzopen(path.c_str(), "rb");
+
+	if (fp)
+	{
+		try
+		{
+			readCompressedXML(fp, visitor, path);
 		}
-	} else {
-		throw xh_io_exception("Failed to open file", xh_location(path),
-				"XML Parser");
+		catch (xh_io_exception &e)
+		{
+				gzclose(fp);
+				throw e;
+		}
+		catch (xh_throwable &t)
+		{
+				gzclose(fp);
+				throw t;
+		}
+		gzclose(fp);
 	}
-	input.close();
+	else
+	{
+		throw xh_io_exception("Failed to open file", xh_location(path),
+					"XML Parser");
+	}
 }
 
+void readCompressedXML (gzFile fp, XMLVisitor &visitor, const string& path)
+{
+	XML_Parser parser = XML_ParserCreate(0);
+	XML_SetUserData(parser, &visitor);
+	XML_SetElementHandler(parser, start_element, end_element);
+	XML_SetCharacterDataHandler(parser, character_data);
+	XML_SetProcessingInstructionHandler(parser, processing_instruction);
+
+	visitor.startXML();
+
+	char buf[16384];
+	while (!gzeof(fp))
+	{
+		int iCount = gzread(fp, buf, 16384);
+		if (iCount > 0)
+		{
+			if (!XML_Parse(parser, buf, iCount, false))
+			{
+				const XML_LChar *message = XML_ErrorString(XML_GetErrorCode(parser));
+				int line = XML_GetCurrentLineNumber(parser);
+				int col = XML_GetCurrentColumnNumber(parser);
+				XML_ParserFree(parser);
+				throw xh_io_exception(message,
+						xh_location(path, line, col),
+						"XML Parser");
+			}
+		}
+		else if (iCount < 0)
+		{
+			XML_ParserFree(parser);
+			throw xh_io_exception("Problem reading file",
+					xh_location(path,
+					XML_GetCurrentLineNumber(parser),
+					XML_GetCurrentColumnNumber(parser)),
+					"XML Parser");
+		}
+	}
+
+	// Verify end of document.
+	if (!XML_Parse(parser, buf, 0, true)) {
+		XML_ParserFree(parser);
+		throw xh_io_exception(XML_ErrorString(XML_GetErrorCode(parser)),
+				xh_location(path,
+							XML_GetCurrentLineNumber(parser),
+							XML_GetCurrentColumnNumber(parser)),
+				"XML Parser");
+	}
+
+	XML_ParserFree(parser);
+}
 
