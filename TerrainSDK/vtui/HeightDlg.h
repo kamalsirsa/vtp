@@ -56,7 +56,6 @@ protected:
 	void OnBaselineOffset( wxCommandEvent &event );
 	void OnOK( wxCommandEvent &event );
 	void OnRecalculateHeights( wxCommandEvent &event );
-	void OnInitDialog(wxInitDialogEvent& event);
 	void OnClose(wxCloseEvent& event);
 
 private:

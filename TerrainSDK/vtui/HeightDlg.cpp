@@ -42,6 +42,9 @@ CHeightDialog::CHeightDialog( wxWindow *parent, wxWindowID id, const wxString &t
 	AutoDialog( parent, id, title, position, size, style )
 {
 	HeightDialogFunc( this, TRUE );
+
+	// TODO? --- find an easy way of adding a KILL_FOCUS handler to this ctrl
+	AddNumValidator(ID_BASELINEOFFSET, &m_fBaselineOffset);
 }
 
 void CHeightDialog::Setup(vtBuilding  * const pBuilding, vtHeightField *pHeightField)
@@ -60,8 +63,6 @@ void CHeightDialog::Setup(vtBuilding  * const pBuilding, vtHeightField *pHeightF
 
 	// Set up the baseline offset
 	m_fBaselineOffset = m_pBuilding->GetElevationOffset();
-	// TODO --- find an easy way of adding a KILL_FOCUS handler to this ctrl
-	AddNumValidator(ID_BASELINEOFFSET, &m_fBaselineOffset);
 
 	m_NumLevels = m_pBuilding->GetNumLevels();
 	m_BottomRow = m_NumLevels - 1;
@@ -182,7 +183,6 @@ void CHeightDialog::OnGridCellChange( wxGridEvent &event )
 void CHeightDialog::ValidateGrid()
 {
 	double dBaseLine =  m_dBaseLine;
-
 
 	// Validate the storey heights
 	for (int i = 1; i < m_NumLevels; i++)
@@ -330,11 +330,6 @@ void CHeightDialog::OnRecalculateHeights( wxCommandEvent &event )
 	m_pBuilding->DetermineLocalFootprints();
 	m_bGridModified = false;
 	((BuildingDlg*)GetParent())->Modified();
-}
-
-void CHeightDialog::OnInitDialog(wxInitDialogEvent& event)
-{
-	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
 }
 
 void CHeightDialog::OnClose(wxCloseEvent& event)
