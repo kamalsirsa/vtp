@@ -98,18 +98,23 @@ public:
 	vtString GetFilename() const { return m_strFilename; }
 
 	// feature (entity) operations
-	int NumEntities() const;
+	void Empty();
+	int GetNumEntities() const;
+	void SetNumEntities(int iNum);
 	int GetEntityType() const;
-	void SetEntityType(int type);
+	void SetEntityType(int iType);
 
-	// geometric primitives
-	int AddPoint(const DPoint2 &p);
-	int AddPoint(const DPoint3 &p);
-	int AddPolyLine(const DLine2 &pl);
+	// geometric primitives: access
 	void GetPoint(unsigned int num, DPoint3 &p) const;
 	void GetPoint(unsigned int num, DPoint2 &p) const;
 	const DLine2 &GetLine(unsigned int num) const { return m_LinePoly[num]; }
 	DLine2 &GetLine(unsigned int num) { return m_LinePoly[num]; }
+
+	// geometric primitives: create and edit
+	int AddPoint(const DPoint2 &p);
+	int AddPoint(const DPoint3 &p);
+	int AddPolyLine(const DLine2 &pl);
+	void SetPoint(unsigned int num, const DPoint2 &p);
 
 	void CopyEntity(unsigned int from, unsigned int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);

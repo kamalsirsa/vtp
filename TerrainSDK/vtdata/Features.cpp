@@ -15,9 +15,16 @@
 //
 vtFeatures::vtFeatures()
 {
+	m_iSHPElems = 0;
+	m_iSHPFields = 0;
 }
 
 vtFeatures::~vtFeatures()
+{
+	Empty();
+}
+
+void vtFeatures::Empty()
 {
 	int count = m_fields.GetSize();
 	for (int i = 0; i < count; i++)
@@ -127,7 +134,7 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 		}
 
 		// Write DBF Attributes, one record per entity
-		unsigned int entities = NumEntities();
+		unsigned int entities = GetNumEntities();
 		for (i = 0; i < entities; i++)
 		{
 			for (j = 0; j < m_fields.GetSize(); j++)
@@ -789,7 +796,7 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 // feature (entity) operations
 //
 
-int vtFeatures::NumEntities() const
+int vtFeatures::GetNumEntities() const
 {
 	if (m_nSHPType == SHPT_POINT)
 		return m_Point2.GetSize();
@@ -799,6 +806,16 @@ int vtFeatures::NumEntities() const
 		return m_LinePoly.size();
 	else
 		return -1;
+}
+
+void vtFeatures::SetNumEntities(int iNum)
+{
+	if (m_nSHPType == SHPT_POINT)
+		m_Point2.SetSize(iNum);
+	else if (m_nSHPType == SHPT_POINTZ)
+		m_Point3.SetSize(iNum);
+	else if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
+		m_LinePoly.resize(iNum);
 }
 
 /**
@@ -863,6 +880,12 @@ int vtFeatures::AddPolyLine(const DLine2 &pl)
 	return rec;
 }
 
+void vtFeatures::SetPoint(unsigned int num, const DPoint2 &p)
+{
+	if (m_nSHPType == SHPT_POINT)
+		m_Point2.SetAt(num, p);
+}
+
 void vtFeatures::GetPoint(unsigned int num, DPoint3 &p) const
 {
 	if (m_nSHPType == SHPT_POINT)
@@ -894,7 +917,7 @@ void vtFeatures::GetPoint(unsigned int num, DPoint2 &p) const
 
 int vtFeatures::FindClosestPoint(const DPoint2 &p, double epsilon)
 {
-	int entities = NumEntities();
+	int entities = GetNumEntities();
 	double dist, closest = 1E9;
 	int found = -1;
 	DPoint2 diff;
@@ -922,7 +945,7 @@ int vtFeatures::FindClosestPoint(const DPoint2 &p, double epsilon)
 
 void vtFeatures::FindAllPointsAtLocation(const DPoint2 &loc, Array<int> &found)
 {
-	int entities = NumEntities();
+	int entities = GetNumEntities();
 
 	int i;
 	for (i = 0; i < entities; i++)
@@ -970,7 +993,7 @@ void vtFeatures::InvertSelection()
 int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 {
 	int affected = 0;
-	int entities = NumEntities();
+	int entities = GetNumEntities();
 
 	bool bIn;
 	bool bWas;
@@ -1021,7 +1044,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 	bool bval, btest;
 	int i, ival, itest;
 	double dval, dtest;
-	int entities = NumEntities(), selected = 0;
+	int entities = GetNumEntities(), selected = 0;
 	int con = iCondition;
 	bool result;
 
@@ -1141,7 +1164,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 
 void vtFeatures::DeleteSelected()
 {
-	int i, entities = NumEntities();
+	int i, entities = GetNumEntities();
 	for (i = 0; i < entities; i++)
 	{
 		if (IsSelected(i))
@@ -1160,7 +1183,7 @@ void vtFeatures::SetToDelete(int iFeature)
 
 void vtFeatures::ApplyDeletion()
 {
-	int i, entities = NumEntities();
+	int i, entities = GetNumEntities();
 
 	int target = 0;
 	int newtotal = entities;
@@ -1217,7 +1240,7 @@ void vtFeatures::CopyEntity(unsigned int from, unsigned int to)
 
 void vtFeatures::DePickAll()
 {
-	int i, entities = NumEntities();
+	int i, entities = GetNumEntities();
 	for (i = 0; i < entities; i++)
 		m_Flags[i] &= ~FF_PICKED;
 }
