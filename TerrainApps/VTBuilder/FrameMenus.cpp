@@ -1791,7 +1791,8 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 
 	FindVegLayers(&Density, &BioMap);
 
-	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap &&
+	// density is now optional, defaults to 1 if there is no density layer
+	event.Enable(m_PlantListDlg && m_BioRegionDlg && BioMap &&
 			!m_area.IsEmpty());
 }
 

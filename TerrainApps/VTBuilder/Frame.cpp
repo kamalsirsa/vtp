@@ -1122,8 +1122,13 @@ void MainFrame::FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap)
 	}
 }
 
+/**
+ * Generate vegetation in a given area, given input layers for biotypes
+ * and density.
+ * Density is now optional, defaults to 1 if there is no density layer.
+ */
 void MainFrame::GenerateVegetation(const char *vf_file, DRECT area, 
-	vtVegLayer *pLandUse, vtVegLayer *pVegType,
+	vtVegLayer *pDensity, vtVegLayer *pVegType,
 	float fTreeSpacing, float fTreeScarcity)
 {
 	int i, j, k;
@@ -1167,10 +1172,14 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			p2.y = p.y + random_offset(fTreeSpacing * 0.5f);
 
 			// Get Land Use Attribute
-			density_scale = pLandUse->FindDensity(p2);
-
-			if (density_scale == 0.0f)
-				continue;
+			if (pDensity)
+			{
+				density_scale = pDensity->FindDensity(p2);
+				if (density_scale == 0.0f)
+					continue;
+			}
+			else
+				density_scale = 1.0f;
 
 			bio_type = pVegType->FindBiotype(p2);
 			if (bio_type == -1)
