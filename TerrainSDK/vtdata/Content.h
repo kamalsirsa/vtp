@@ -121,7 +121,7 @@ public:
 	void Empty();
 	void AddItem(vtItem *item) { m_items.Append(item); }
 	void RemoveItem(vtItem *item);
-	int NumItems() { return m_items.GetSize(); }
+	unsigned int NumItems() { return m_items.GetSize(); }
 	virtual vtItem *NewItem() { return new vtItem; }
 	vtItem *GetItem(int i) { return m_items.GetAt(i); }
 	vtItem *FindItemByName(const char *name);
