@@ -272,6 +272,10 @@ SOURCE=.\NodeDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\OptionsDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Projection2Dlg.h
 # End Source File
 # Begin Source File
@@ -579,6 +583,10 @@ SOURCE=.\LayerPropDlg.cpp
 # Begin Source File
 
 SOURCE=.\NodeDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\OptionsDlg.cpp
 # End Source File
 # Begin Source File
 

@@ -141,6 +141,12 @@ wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_size
 #define ID_LIST 10080
 wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_TOOLBAR 10081
+#define ID_MINUTES 10082
+#define ID_ELEVUNIT 10083
+#define ID_PATHNAMES 10084
+wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

@@ -1098,6 +1098,67 @@ wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item2 = new wxCheckBox( parent, ID_TOOLBAR, "Show toolbar", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item4 = new wxStaticBox( parent, -1, "Status Bar" );
+    wxStaticBoxSizer *item3 = new wxStaticBoxSizer( item4, wxVERTICAL );
+
+    wxCheckBox *item5 = new wxCheckBox( parent, ID_MINUTES, "Show minutes and seconds for degree values", wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, "Show elevation values as:", wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxString *strs8 = (wxString*) NULL;
+    wxChoice *item8 = new wxChoice( parent, ID_ELEVUNIT, wxDefaultPosition, wxSize(100,-1), 0, strs8, 0 );
+    item6->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item3->Add( item6, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item10 = new wxCheckBox( parent, ID_PATHNAMES, "Show full pathnames in Layer View", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item12 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item13 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item13, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
