@@ -123,23 +123,29 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 									vtBuilding *bld)
 {
 	DPoint2 corner[4];
-	int j;
+	int i, j;
 
 	wxPoint origin;
 	pView->screen(bld->GetLocation(), origin);
 
+	// crosshair at building center
 	pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
 	pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
 
-	DLine2 &dl = bld->GetFootprint();
-	int sides = dl.GetSize();
-	if (sides == 0)
-		return;
-	for (j = 0; j < sides && j < MAX_SIDES-1; j++)
-		pView->screen(dl.GetAt(j), array[j]);
-	pView->screen(dl.GetAt(0), array[j++]);
+	// draw building footprint for all levels
+	int levs = bld->GetNumLevels();
+	for (i = 0; i < levs; i++)
+	{
+		DLine2 &dl = bld->GetFootprint(i);
+		int sides = dl.GetSize();
+		if (sides == 0)
+			return;
+		for (j = 0; j < sides && j < MAX_SIDES-1; j++)
+			pView->screen(dl.GetAt(j), array[j]);
+		pView->screen(dl.GetAt(0), array[j++]);
 
-	pDC->DrawLines(j, array);
+		pDC->DrawLines(j, array);
+	}
 }
 
 bool vtStructureLayer::OnSave()
@@ -575,7 +581,7 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 					foot.SetAt(j, DPoint2(ring->getX(j),
 						ring->getY(j)));
 
-				pBld->SetFootprint(foot);
+				pBld->SetFootprint(0, foot);
 				pBld->SetCenterFromPoly();
 				pBld->SetStories(num_stories);
 

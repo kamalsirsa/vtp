@@ -1675,18 +1675,17 @@ void BuilderView::UpdateMove()
 	DPoint2 p;
 	DPoint2 moved_by = m_CurLocation - m_DownLocation;
 
-	DLine2 dl = m_pCurBuilding->GetFootprint();
-	for (int i = 0; i < dl.GetSize(); i++)
+	int i, levs = m_pCurBuilding->GetNumLevels();
+	for (i = 0; i < levs; i++)
 	{
-		p = dl.GetAt(i);
-		p += moved_by;
-		dl.SetAt(i, p);
+		DLine2 dl = m_pCurBuilding->GetFootprint(i);
+		dl.Add(moved_by);
+		m_EditBuilding.SetFootprint(i, dl);
 	}
-	m_EditBuilding.SetFootprint(dl);
 
 	p = m_pCurBuilding->GetLocation();
 	p += moved_by;
-	m_EditBuilding.SetLocation(p.x, p.y);
+	m_EditBuilding.SetLocation(p);
 }
 
 void BuilderView::UpdateResizeScale()
@@ -1701,28 +1700,34 @@ void BuilderView::UpdateResizeScale()
 	DPoint2 diff2 = m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
 
-	DLine2 dl = m_pCurBuilding->GetFootprint();
 	DPoint2 p;
 	if (m_bShift)
 	{
 		// Scale evenly
-		for (int i = 0; i < dl.GetSize(); i++)
+		int i, j, levs = m_pCurBuilding->GetNumLevels();
+		for (i = 0; i < levs; i++)
 		{
-			p = dl.GetAt(i);
-			p -= origin;
-			p *= fScale;
-			p += origin;
-			dl.SetAt(i, p);
+			DLine2 dl = m_pCurBuilding->GetFootprint(i);
+			for (j = 0; j < dl.GetSize(); j++)
+			{
+				p = dl.GetAt(j);
+				p -= origin;
+				p *= fScale;
+				p += origin;
+				dl.SetAt(j, p);
+			}
+			m_EditBuilding.SetFootprint(i, dl);
 		}
 	}
 	else
 	{
+		DLine2 dl = m_pCurBuilding->GetFootprint(0);
 		// drag individual corner points
 		p = dl.GetAt(m_iCurCorner);
 		p += moved_by;
 		dl.SetAt(m_iCurCorner, p);
+		m_EditBuilding.SetFootprint(0, dl);
 	}
-	m_EditBuilding.SetFootprint(dl);
 }
 
 void BuilderView::UpdateRotate()
@@ -1738,17 +1743,21 @@ void BuilderView::UpdateRotate()
 
 	double angle_diff = angle2 - angle1;
 
-	DLine2 dl = m_pCurBuilding->GetFootprint();
 	DPoint2 p;
-	for (int i = 0; i < dl.GetSize(); i++)
+	int i, j, levs = m_pCurBuilding->GetNumLevels();
+	for (i = 0; i < levs; i++)
 	{
-		p = dl.GetAt(i);
-		p -= origin;
-		p.Rotate(angle_diff);
-		p += origin;
-		dl.SetAt(i, p);
+		DLine2 dl = m_pCurBuilding->GetFootprint(i);
+		for (j = 0; j < dl.GetSize(); j++)
+		{
+			p = dl.GetAt(j);
+			p -= origin;
+			p.Rotate(angle_diff);
+			p += origin;
+			dl.SetAt(j, p);
+		}
+		m_EditBuilding.SetFootprint(i, dl);
 	}
-	m_EditBuilding.SetFootprint(dl);
 }
 
 //////////////////

@@ -292,8 +292,8 @@ void BExtractorView::DrawBuilding(CDC *pDC, vtBuilding *bld)
 	pDC->LineTo(origin.x, origin.y+size+1);
 
 	int j;
-	for (j = 0; j < bld->GetFootprint().GetSize(); j++)
-		UTM_s(bld->GetFootprint().GetAt(j), array[j]);
+	for (j = 0; j < bld->GetFootprint(0).GetSize(); j++)
+		UTM_s(bld->GetFootprint(0).GetAt(j), array[j]);
 	array[j] = array[0];
 
 	pDC->Polyline(array, j+1);
@@ -825,7 +825,7 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 			vtBuilding *bld = new vtBuilding();
 			bld->SetStories(1);
 
-			bld->SetFootprint(m_poly);
+			bld->SetFootprint(0, m_poly);
 			bld->SetCenterFromPoly();
 			pDoc->m_Buildings.AddBuilding(bld);
 
@@ -1238,7 +1238,7 @@ void BExtractorView::UpdateResizeScale()
 	double fScale = diff2.Length() / diff1.Length();
 
 	DPoint2 p;
-	DLine2 foot = m_pCurBuilding->GetFootprint();
+	DLine2 foot = m_pCurBuilding->GetFootprint(0);
 	if (m_bShift)
 	{
 		// Scale evenly
@@ -1258,7 +1258,7 @@ void BExtractorView::UpdateResizeScale()
 		p += moved_by;
 		foot.SetAt(m_iCurCorner, p);
 	}
-	m_EditBuilding.SetFootprint(foot);
+	m_EditBuilding.SetFootprint(0, foot);
 }
 
 void BExtractorView::UpdateRotate()
@@ -1275,7 +1275,7 @@ void BExtractorView::UpdateRotate()
 	double angle_diff = angle2 - angle1;
 
 	DPoint2 p;
-	DLine2 foot = m_pCurBuilding->GetFootprint();
+	DLine2 foot = m_pCurBuilding->GetFootprint(0);
 	for (int i = 0; i < foot.GetSize(); i++)
 	{
 		p = foot.GetAt(i);
@@ -1284,7 +1284,7 @@ void BExtractorView::UpdateRotate()
 		p += origin;
 		foot.SetAt(i, p);
 	}
-	m_EditBuilding.SetFootprint(foot);
+	m_EditBuilding.SetFootprint(0, foot);
 }
 
 void BExtractorView::DrawCurrentBuilding(CDC *pDC)
