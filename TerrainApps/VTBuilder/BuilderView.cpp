@@ -108,8 +108,6 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	for (i = 0; i < iLayers; i++)
 	{
 		lp = pFrame->m_Layers.GetAt(i);
-		if (!lp->GetVisible())
-			continue;
 		if (lp->GetType() != LT_IMAGE && lp->GetType() != LT_ELEVATION)
 			continue;
 		if (lp->GetVisible())
@@ -119,8 +117,6 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	for (i = 0; i < iLayers; i++)
 	{
 		lp = pFrame->m_Layers.GetAt(i);
-		if (!lp->GetVisible())
-			continue;
 		if (lp->GetType() == LT_IMAGE || lp->GetType() == LT_ELEVATION)
 			continue;
 		if (lp->GetVisible())
