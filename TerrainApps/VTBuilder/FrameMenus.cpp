@@ -533,7 +533,6 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	input_y = img.GetHeight();
 
 	DymaxIcosa ico;
-	ico.InitIcosa();
 
 	wxImage out[10];
 	for (i = 0; i < 10; i++)
