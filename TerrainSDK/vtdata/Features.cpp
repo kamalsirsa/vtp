@@ -235,42 +235,66 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 	}
 
 	// Read Data from SHP into memory
+	DPoint2 p2;
+	DPoint3 p3;
+	DLine2 *new_poly;
 	for (int i = 0; i < m_iSHPElems; i++)
 	{
 		// Get the i-th Shape in the SHP file
 		SHPObject	*psShape;
 		psShape = SHPReadObject(hSHP, i);
 
-		DPoint2 p2;
-		DPoint3 p3;
-		DLine2 *new_poly;
-		switch (m_nSHPType)
+		// beware - it is possible for the shape to not actually have any
+		// vertices
+		if (psShape->nVertices == 0)
 		{
-		case SHPT_POINT:
-			p2.x = *psShape->padfX;
-			p2.y = *psShape->padfY;
-			m_Point2.SetAt(i, p2);
-			break;
-		case SHPT_POINTZ:
-			p3.x = *psShape->padfX;
-			p3.y = *psShape->padfY;
-			p3.z = *psShape->padfZ;
-			m_Point3.SetAt(i, p3);
-			break;
-		case SHPT_ARC:
-		case SHPT_POLYGON:
-			new_poly = new DLine2();
-			new_poly->SetSize(psShape->nVertices);
-			m_LinePoly.SetAt(i, new_poly);
-
-			// Store each coordinate
-			for (int j = 0; j < psShape->nVertices; j++)
+			switch (m_nSHPType)
 			{
-				p2.x = psShape->padfX[j];
-				p2.y = psShape->padfY[j];
-				new_poly->SetAt(j, p2);
+			case SHPT_POINT:
+				p2.Set(0,0);
+				m_Point2.SetAt(i, p2);
+				break;
+			case SHPT_POINTZ:
+				p3.Set(0,0,0);
+				m_Point3.SetAt(i, p3);
+				break;
+			case SHPT_ARC:
+			case SHPT_POLYGON:
+				new_poly = new DLine2();
+				m_LinePoly.SetAt(i, new_poly);
+				break;
 			}
-			break;
+		}
+		else
+		{
+			switch (m_nSHPType)
+			{
+			case SHPT_POINT:
+				p2.x = *psShape->padfX;
+				p2.y = *psShape->padfY;
+				m_Point2.SetAt(i, p2);
+				break;
+			case SHPT_POINTZ:
+				p3.x = *psShape->padfX;
+				p3.y = *psShape->padfY;
+				p3.z = *psShape->padfZ;
+				m_Point3.SetAt(i, p3);
+				break;
+			case SHPT_ARC:
+			case SHPT_POLYGON:
+				new_poly = new DLine2();
+				new_poly->SetSize(psShape->nVertices);
+				m_LinePoly.SetAt(i, new_poly);
+
+				// Store each coordinate
+				for (int j = 0; j < psShape->nVertices; j++)
+				{
+					p2.x = psShape->padfX[j];
+					p2.y = psShape->padfY[j];
+					new_poly->SetAt(j, p2);
+				}
+				break;
+			}
 		}
 		SHPDestroyObject(psShape);
 
@@ -1156,7 +1180,10 @@ int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length
 	}
 	else
 	{
-		VTLOG("Attempting to add field '%s' of invalid type '%d'\n", name, ftype);
+		VTLOG("Attempting to add field '%s' of type 'invalid', adding an integer field instead.\n", name, ftype);
+		f->m_type = FTInteger;
+		f->m_width = 1;
+		f->m_decimals = 0;
 	}
 	return m_fields.Append(f);
 }
