@@ -61,6 +61,7 @@ public:
 	void Finish(const vtStringArray &datapath) {}	// dummy; obsolete method
 	void SetCurrentTerrain(vtTerrain *pTerrain);
 	vtGroup *BuildTerrain(vtTerrain *pTerrain);
+	void RemoveTerrain(vtTerrain *pTerrain);
 	void CleanupScene();
 
 	vtGroup *GetTop() { return m_pTop; }

@@ -245,6 +245,21 @@ vtGroup *vtTerrainScene::BuildTerrain(vtTerrain *pTerrain)
 	return pTerrain->GetTopGroup();
 }
 
+void vtTerrainScene::RemoveTerrain(vtTerrain *pTerrain)
+{
+	for (unsigned int i = 0; i < NumTerrains(); i++)
+	{
+		if (pTerrain != GetTerrain(i))
+			continue;
+
+		// remove from scene graph
+		vtGroup *group = pTerrain->GetTopGroup();
+		m_pTop->RemoveChild(group);
+
+		m_Terrains.erase(m_Terrains.begin()+i);
+		return;
+	}
+}
 
 /**
  * Set the current Terrain for the scene.  There can only be one terrain
