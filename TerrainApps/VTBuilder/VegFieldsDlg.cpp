@@ -5,10 +5,6 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__ && !defined(__APPLE__)
-	#pragma implementation "VegFieldsDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 

@@ -5,19 +5,11 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
-	#pragma implementation "ExtentDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
-#endif
-
-#ifdef __BORLANDC__
-	#pragma hdrstop
 #endif
 
 #include "ExtentDlg.h"

@@ -5,16 +5,8 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
-	#pragma implementation "ImportVegDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
