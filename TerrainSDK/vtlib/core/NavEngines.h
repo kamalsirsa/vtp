@@ -41,6 +41,25 @@ protected:
 };
 
 /**
+ * This engine extends vtFlyer for navigation of an orthographic
+ * camera (usually, top-down).
+ *
+ *	Left button: forward-backward (implemented as zoom), yaw
+ *  Right button: up-down, left-right
+ *
+ *  Position is considered relative to the center of the window.
+ */
+class vtOrthoFlyer : public vtFlyer
+{
+public:
+	vtOrthoFlyer(float fSpeed);
+
+	void Eval();
+
+protected:
+};
+
+/**
  * This engine extends vtFlyer with the ability to do terrain following
  * (keeping the target "above the ground" relative to a given heightfield).
  *

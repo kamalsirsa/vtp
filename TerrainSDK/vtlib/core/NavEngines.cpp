@@ -84,6 +84,45 @@ void vtFlyer::Eval()
 
 
 //
+// Fly engine specifically for an orthographic camera (e.g. top-down view)
+//
+vtOrthoFlyer::vtOrthoFlyer(float fSpeed) : vtFlyer(fSpeed, true)
+{
+}
+
+void vtOrthoFlyer::Eval()
+{
+	float elapsed = vtGetFrameTime();
+
+	vtCamera *pCamera = (vtCamera*) GetTarget();
+	if (!pCamera)
+		return;
+
+	float mx, my;
+	GetNormalizedMouseCoords(mx, my);
+
+	//	Left button: forward-backward (zoom), yaw
+	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
+	{
+		float trans = my * m_fSpeed * elapsed;
+		float rotate = -mx * elapsed;
+
+		pCamera->SetWidth(pCamera->GetWidth() * (1.0 + trans/2000.0));
+		pCamera->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), rotate);
+	}
+
+	//  Right button: up-down, left-right
+	if ((m_buttons & VT_RIGHT) && !(m_buttons & VT_LEFT))
+	{
+		float updown = -my * m_fSpeed * elapsed;
+		float leftright = mx * m_fSpeed * elapsed;
+
+		pCamera->TranslateLocal(FPoint3(leftright, updown, 0.0f));
+	}
+}
+
+
+//
 // Fly engine specifically for following terrain
 //
 vtTerrainFlyer::vtTerrainFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin)
