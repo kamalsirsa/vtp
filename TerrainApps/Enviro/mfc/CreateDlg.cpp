@@ -359,7 +359,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bFog = m_bFog;
 	Params.m_fFogDistance = m_fFogDistance;
 
-	Params.m_strStructFiles.empty();
+	Params.m_strStructFiles.clear();
 	Params.m_strStructFiles.push_back(vtString((const char *) m_strBuildingFile));
 
 	Params.m_bVehicles = m_bVehicles;
