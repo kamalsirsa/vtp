@@ -14,7 +14,7 @@ bool ColorMap::Save(const char *fname)
 	if (!fp)
 		return false;
 	fprintf(fp, "colormap1\n");
-//	fprintf(fp, "relative: %d\n", m_bRelative);
+	fprintf(fp, "relative: %d\n", m_bRelative);
 	int size = m_elev.size();
 	fprintf(fp, "size %d\n", size);
 	for (int i = 0; i < size; i++)
@@ -32,24 +32,49 @@ bool ColorMap::Load(const char *fname)
 	if (!fp)
 		return false;
 	fscanf(fp, "colormap1\n");
-//	fscanf(fp, "relative: %d\n", &m_bRelative);
+	fscanf(fp, "relative: %d\n", &m_bRelative);
 	int size;
 	fscanf(fp, "size %d\n", &size);
 	m_elev.resize(size);
 	m_color.resize(size);
 	for (int i = 0; i < size; i++)
 	{
-		fscanf(fp, "\telev %f color %d %d %d\n", &m_elev[i],
-			&m_color[i].r, &m_color[i].g, &m_color[i].b);
+		float f;
+		int r, g, b;
+		fscanf(fp, "\telev %f color %d %d %d\n", &f, &r, &g, &b);
+		m_elev[i] = f;
+		m_color[i].Set(r, g, b);
 	}
 	fclose(fp);
 	return true;
 }
 
+//
+// Add a color entry, keeping the elevation values sorted.
+//
 void ColorMap::Add(float elev, const RGBi &color)
 {
-	m_elev.push_back(elev);
-	m_color.push_back(color);
+	float next, previous = -1E9;
+	int size = m_elev.size();
+	for (int i = 0; i < size+1; i++)
+	{
+		if (i < size)
+			next = m_elev[i];
+		else
+			next = 1E9;
+		if (previous <= elev && elev <= next)
+		{
+			m_elev.insert(m_elev.begin() + i, elev);
+			m_color.insert(m_color.begin() + i, color);
+			return;
+		}
+	}
+}
+
+void ColorMap::RemoveAt(int num)
+{
+	m_elev.erase(m_elev.begin()+num);
+	m_color.erase(m_color.begin()+num);
 }
 
 int ColorMap::Num() const
@@ -363,7 +388,7 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 		}
 		else
 		{
-			int bracket = (elev-fMin) / fRange * (num-1);
+			int bracket = (int) ((elev-fMin) / fRange * (num-1));
 			if (bracket != current)
 			{
 				current = bracket;

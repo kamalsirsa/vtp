@@ -19,6 +19,7 @@ public:
 	bool Save(const char *fname);
 	bool Load(const char *fname);
 	void Add(float elev, const RGBi &color);
+	void RemoveAt(int num);
 	int Num() const;
 
 	bool m_bRelative;
