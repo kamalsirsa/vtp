@@ -189,7 +189,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	int		iDataStartOffset;
 	bool	bUTM;
 	int		iUTMZone;
-	DATUM	eDatum;
+	int		iDatum;
 	int		iProfileRows, iProfileCols;
 	double	dLocalDatumElev, dProfileMin, dProfileMax;
 	int		ygap;
@@ -321,7 +321,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fscanf(fp, "%d", &rows);
 	fscanf(fp, "%d", &iProfiles);
 
-	eDatum = NAD27;	// default
+	iDatum = EPSG_DATUM_NAD27;	// default
 
 	// OLD format header ends at byte 864
 	if (bNewFormat)
@@ -342,17 +342,17 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		fseek(fp, 890, 0);
 		fscanf(fp, "%d", &datum);
 		switch (datum) {
-			case 1: eDatum = NAD27; break;
-			case 2: eDatum = WGS_72; break;
-			case 3: eDatum = WGS_84; break;
-			case 4:	eDatum = NAD83; break;
-			case 5: eDatum = OLD_HAWAIIAN_MEAN; break;
-			case 6: eDatum = PUERTO_RICO; break;
+			case 1: iDatum = EPSG_DATUM_NAD27; break;
+			case 2: iDatum = EPSG_DATUM_WGS72; break;
+			case 3: iDatum = EPSG_DATUM_WGS84; break;
+			case 4:	iDatum = EPSG_DATUM_NAD83; break;
+			case 5: iDatum = EPSG_DATUM_OLD_HAWAIIAN; break;
+			case 6: iDatum = EPSG_DATUM_PUERTO_RICO; break;
 		}
 	}
 
 	// Set up the projection
-	m_proj.SetProjectionSimple(bUTM, iUTMZone, eDatum);
+	m_proj.SetProjectionSimple(bUTM, iUTMZone, iDatum);
 	m_iColumns = iProfiles;
 
 	if (!bUTM)
@@ -530,7 +530,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	}
 	if (progress_callback != NULL) progress_callback(90);
 
-	m_proj.SetProjectionSimple(false, 0, WGS_84);
+	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 
 	m_EarthExtents.left = xrange[0];
 	m_EarthExtents.right = xrange[1];
@@ -591,7 +591,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	m_iColumns = ncols;
 	m_iRows = nrows;
 
-	m_proj.SetProjectionSimple(true, 1, WGS_84);
+	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 	m_bFloatMode = false;
 
@@ -641,7 +641,7 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 
 	if (progress_callback != NULL) progress_callback(0);
 
-	m_proj.SetProjectionSimple(true, 1, WGS_84);
+	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 	m_bFloatMode = false;
 
@@ -809,7 +809,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 
 	// all DTEDs are geographic and in integer meters
 	// datum is always WGS84
-	m_proj.SetProjectionSimple(false, 0, WGS_84);
+	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 	m_bFloatMode = false;
 
 	// check for correct format
@@ -966,7 +966,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	if (progress_callback != NULL) progress_callback(5);
 
 	// Projection is always geographic, integer
-	m_proj.SetProjectionSimple(false, 0, WGS_84);
+	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
 	m_bFloatMode = false;
 
 	m_EarthExtents.left = gh.ULXMap;
@@ -1042,7 +1042,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	fread(&zhi, 8, 1, fp);
 
 	// Set the projection (actually we don't know it)
-	m_proj.SetProjectionSimple(true, 1, WGS_84);
+	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 	// set the corresponding vtElevationGrid info
 	m_bFloatMode = true;
@@ -1135,7 +1135,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 	maxval = strtod(sbuf, &junk);	/* store maxval. could throw away. */
 
 	// Set the projection (actually we don't know it)
-	m_proj.SetProjectionSimple(true, 1, WGS_84);
+	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 
 	// set the corresponding vtElevationGrid info
 	m_bFloatMode = true;
@@ -1231,7 +1231,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// 1.0 didn't support Datum, so assume WGS84
-		datum = WGS_84;
+		datum = EPSG_DATUM_WGS84;
 
 		// coordinate extents left-right
 		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
@@ -1292,7 +1292,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	else
 	{
 		// Internal specification: proj_type 0 = Geo, 1 = UTM
-		m_proj.SetProjectionSimple(proj_type == 1, zone, (DATUM) datum);
+		m_proj.SetProjectionSimple(proj_type == 1, zone, datum);
 	}
 
 	ComputeCornersFromExtents();
@@ -1716,7 +1716,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	m_EarthExtents.bottom = 0;
 	ComputeCornersFromExtents();
 
-	m_proj.SetProjectionSimple(true, 1, WGS_84);
+	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
 	if (bytes_per_element == 4)
 		m_bFloatMode = true;
 	else
@@ -1848,21 +1848,21 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	switch (digitize_datum)
 	{
 	case 0: //WGS72
-		m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_72);
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, EPSG_DATUM_WGS72);
 		break;
 	case 1: //WGS84
-		m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, EPSG_DATUM_WGS84);
 		break;
 	case 2: //NAD27
-		m_proj.SetProjectionSimple(dem_type==0, utm_zone, NAD27);
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, EPSG_DATUM_NAD27);
 		break;
 	case 3: //NAD83
-		m_proj.SetProjectionSimple(dem_type==0, utm_zone, NAD83);
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, EPSG_DATUM_NAD83);
 		break;
 	case 4: //Spherical
 	case 5: //Local
 	default:
-		m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, EPSG_DATUM_WGS84);
 		break;
 	}
 

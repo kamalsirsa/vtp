@@ -564,7 +564,7 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	fread(&datum, 4, 1, fp);
 	if (utm)
 		m_proj.SetUTMZone(zone);
-	m_proj.SetDatum((DATUM) datum);
+	m_proj.SetDatum(datum);
 
 	int size;
 	fread(&size, 4, 1, fp);

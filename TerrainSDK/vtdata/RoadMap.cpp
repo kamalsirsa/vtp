@@ -820,7 +820,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 	// Projection
 	int proj_type, iUTMZone;
-	DATUM eDatum;
+	int iDatum = EPSG_DATUM_WGS84;
 	if (version >= 1.8f)
 	{
 		int iUTM;
@@ -830,11 +830,9 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	fread(&iUTMZone, intSize, 1, fp);
 	if (version >= 1.8f)
 	{
-		int iDatum;
 		fread(&iDatum, intSize, 1, fp);
-		eDatum = (DATUM) iDatum;
 	}
-	m_proj.SetProjectionSimple(proj_type == 1, iUTMZone, eDatum);
+	m_proj.SetProjectionSimple(proj_type == 1, iUTMZone, iDatum);
 
 	// Extents
 	int le, ri, to, bo;

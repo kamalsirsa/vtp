@@ -108,24 +108,24 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 
 	// Datum.  Undocumented field!  Had to look at the government's
 	// own "dlgv32" source to figure out how to find this value.
-	int iDatum = geti3(buf + 66);
+	int iDLGDatum = geti3(buf + 66);
 
 	// safety check.. because they do
-	if ((iDatum < 0) || (iDatum > 4))
-		iDatum = 0;
+	if ((iDLGDatum < 0) || (iDLGDatum > 4))
+		iDLGDatum = 0;
 
 	// this is how they interpret the value
-	DATUM eDatum;
-	switch (iDatum)
+	int iDatum;
+	switch (iDLGDatum)
 	{
 		case 0:
-			eDatum = NAD27;
+			iDatum = EPSG_DATUM_NAD27;
 			break;
 		case 1:
-			eDatum = NAD83;
+			iDatum = EPSG_DATUM_NAD83;
 			break;
 		default:
-			eDatum = UNKNOWN_DATUM;
+			iDatum = -1;
 			break;
 	}
 
@@ -168,12 +168,12 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 	// Old Hawaiian Datum (OHD) - so check for it.
 	if ((iUTMZone == 4 || iUTMZone == 5) && m_SW_utm.y < 3500000)
 	{
-		if (eDatum == NAD27)
-			eDatum = OLD_HAWAIIAN_MEAN;
+		if (iDatum == EPSG_DATUM_NAD27)
+			iDatum = EPSG_DATUM_OLD_HAWAIIAN;
 	}
 
 	// We now know enough to set the projection.
-	m_proj.SetProjectionSimple(true, iUTMZone, eDatum);
+	m_proj.SetProjectionSimple(true, iUTMZone, iDatum);
 
 	// record 15 - category name, attribute format code, number of nodes...
 	if (!GetRecord(buf)) return false;
