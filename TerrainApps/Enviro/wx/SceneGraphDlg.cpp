@@ -106,7 +106,6 @@ void SceneGraphDlg::CreateImageList(int size)
 	// Make an image list containing small icons
 	m_imageListNormal = new wxImageList(size, size, TRUE);
 
-	// should correspond to TreeCtrlIcon_xxx enum
 	wxIcon icons[10];
 	icons[0] = wxICON(icon1);
 	icons[1] = wxICON(icon2);
