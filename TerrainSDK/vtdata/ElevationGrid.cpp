@@ -56,7 +56,7 @@ vtElevationGrid::vtElevationGrid()
  * The grid will initially have no data in it (all values are INVALID_ELEVATION).
  */
 vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
-								 bool bFloat, const vtProjection &proj)
+	bool bFloat, const vtProjection &proj)
 {
 	m_EarthExtents = area;			// raw extents
 	m_iColumns = iColumns;
@@ -135,8 +135,8 @@ double MetersPerLongitude(double latitude)
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
-										const vtProjection &NewProj,
-										void progress_callback(int))
+	const vtProjection &NewProj,
+	void progress_callback(int))
 {
 	int i, j;
 
@@ -150,7 +150,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	pSource = &pOld->GetProjection();
 	pDest = &NewProj;
 
-	OCT *trans = OGRCreateCoordinateTransformation(pSource, pDest);
+	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource, (OGRSpatialReference *)pDest);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -217,7 +217,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	float value;
 
 	// projects points backwards, from the target to the source
-	trans = OGRCreateCoordinateTransformation(pDest, pSource);
+	trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)pDest, (OGRSpatialReference *)pSource);
 	if (!trans)
 	{
 		// inconvertible projections
@@ -320,7 +320,7 @@ void vtElevationGrid::GetDimensions(int &nColumns, int &nRows) const
 DPoint2 vtElevationGrid::GetSpacing() const
 {
 	return DPoint2(m_EarthExtents.Width() / (m_iColumns - 1),
-				   m_EarthExtents.Height() / (m_iRows - 1));
+		m_EarthExtents.Height() / (m_iRows - 1));
 }
 
 /** Set an elevation value to the grid.
@@ -473,8 +473,8 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 {
 	DPoint2 spacing = GetSpacing();
 	loc.Set(m_EarthExtents.left + i * spacing.x,
-			m_EarthExtents.bottom + j * spacing.y,
-			GetFValue(i, j));
+		m_EarthExtents.bottom + j * spacing.y,
+		GetFValue(i, j));
 }
 
 /** Use the height data in the grid to fill a bitmap with a shaded color image.
@@ -484,7 +484,7 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
  *		value of 0 to 100 as the operation progresses.
  */
 void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
-											bool bZeroIsOcean, void progress_callback(int))
+	bool bZeroIsOcean, void progress_callback(int))
 {
 	int w = pDIB->GetWidth();
 	int h = pDIB->GetHeight();
@@ -629,13 +629,13 @@ float vtElevationGrid::GetFilteredValue(double x, double y) const
 		fDataTL = GetFValue(index_x, index_y+1);
 		fDataTR = GetFValue(index_x+1, index_y+1);
 		if ((fDataBL != INVALID_ELEVATION) &&
-			(fDataBR != INVALID_ELEVATION) &&
-			(fDataTL != INVALID_ELEVATION) &&
-			(fDataTR != INVALID_ELEVATION))
+				(fDataBR != INVALID_ELEVATION) &&
+				(fDataTL != INVALID_ELEVATION) &&
+				(fDataTR != INVALID_ELEVATION))
 		{
 			fData = fDataBL + (fDataBR-fDataBL)*diff_x +
-							  (fDataTL-fDataBL)*diff_y +
-							  (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
+				(fDataTL-fDataBL)*diff_y +
+				(fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
 		}
 		else
 			fData = INVALID_ELEVATION;
@@ -720,8 +720,8 @@ float vtElevationGrid::GetFilteredValue2(double x, double y) const
 		double diff_x = findex_x - index_x;
 		double diff_y = findex_y - index_y;
 		fData = (float) (fDataBL + (fDataBR-fDataBL)*diff_x +
-						  (fDataTL-fDataBL)*diff_y +
-						  (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
+				(fDataTL-fDataBL)*diff_y +
+				(fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
 	}
 	else if (valid == 3)
 	{
@@ -730,7 +730,7 @@ float vtElevationGrid::GetFilteredValue2(double x, double y) const
 	}
 	else
 		fData = INVALID_ELEVATION;
-	
+
 	return fData;
 }
 
@@ -738,9 +738,9 @@ DRECT vtElevationGrid::GetAreaExtents() const
 {
 	DPoint2 sample_size = GetSpacing();
 	return DRECT(m_EarthExtents.left - (sample_size.x / 2.0f),
-				 m_EarthExtents.top + (sample_size.y / 2.0f),
-				 m_EarthExtents.right + (sample_size.x / 2.0f),
-				 m_EarthExtents.bottom - (sample_size.y / 2.0f));
+		m_EarthExtents.top + (sample_size.y / 2.0f),
+		m_EarthExtents.right + (sample_size.x / 2.0f),
+		m_EarthExtents.bottom - (sample_size.y / 2.0f));
 }
 
 bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
@@ -827,7 +827,7 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 			size_t Size = m_iColumns * m_iRows * sizeof(short);
 
 			m_pData = (short *)malloc(Size);
-			
+
 			memcpy( m_pData, Other.m_pData, Size );
 		}
 		else
@@ -845,8 +845,8 @@ void vtElevationGrid::SetupConversion(float fVerticalExag)
 void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
 {
 	loc.Set(m_WorldExtents.left + i * m_fXStep,
-			GetFValue(i,j) * m_fVerticalScale,
-			m_WorldExtents.bottom - j * m_fZStep);
+		GetFValue(i,j) * m_fVerticalScale,
+		m_WorldExtents.bottom - j * m_fZStep);
 }
 
 float vtElevationGrid::GetWorldValue(int i, int j) const
@@ -862,7 +862,7 @@ float vtElevationGrid::GetWorldValue(int i, int j) const
  * sped up if needed.
  */
 bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-									  FPoint3 *vNormal) const
+	FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)((p.z - m_WorldExtents.bottom) / m_fZStep);
@@ -916,7 +916,7 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 }
 
 void vtElevationGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-									float light_adj, void progress_callback(int))
+	float light_adj, void progress_callback(int))
 {
 	FPoint3 p1, p2, p3;
 	FPoint3 v1, v2, v3;
@@ -1006,4 +1006,3 @@ void vtElevationGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 		}
 	}
 }
-
