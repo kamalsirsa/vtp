@@ -384,13 +384,13 @@ bool CarEngine::SetTires()
 			} else if (strend  (tName, "rear right")) {
 				m_pRearRight = tModel;
 			} else {
-				VTLOG("INVALID TIRE IN MODEL: %s!!!!!\n", car->GetName2());
+				VTLOG("Invalid tire in model: %s!\n", car->GetName2());
 			}
 			i++;
 		}
 		return true;
 	} else {
-		VTLOG("TIRES NOT FOUND IN MODEL: %s!!!!!\n", car->GetName2());
+		VTLOG("Tires not found in model: %s!\n", car->GetName2());
 		return false;
 	}
 
