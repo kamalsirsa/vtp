@@ -1698,6 +1698,9 @@
 				RelativePath="wx\bitmap\camera.bmp">
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\distance.bmp">
+			</File>
+			<File
 				RelativePath="wx\enviro-wx.rc">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -1729,16 +1732,25 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="wx\Enviro.ico">
+				RelativePath=".\wx\icons\Enviro.ico">
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\faster.bmp">
 			</File>
 			<File
 				RelativePath="wx\bitmap\fence.bmp">
 			</File>
 			<File
-				RelativePath="wx\bitmap\maintain.bmp">
+				RelativePath=".\wx\bitmap\instances.bmp">
 			</File>
 			<File
-				RelativePath="wx\mondrian.ico">
+				RelativePath=".\wx\bitmap\layers.bmp">
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\loc.bmp">
+			</File>
+			<File
+				RelativePath="wx\bitmap\maintain.bmp">
 			</File>
 			<File
 				RelativePath="wx\bitmap\move.bmp">
@@ -1759,10 +1771,19 @@
 				RelativePath="wx\bitmap\points.bmp">
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\route.bmp">
+			</File>
+			<File
 				RelativePath="wx\bitmap\select.bmp">
 			</File>
 			<File
 				RelativePath="wx\bitmap\sgraph.bmp">
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\snap.bmp">
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\snap_num.bmp">
 			</File>
 			<File
 				RelativePath="wx\bitmap\space.bmp">
@@ -1777,7 +1798,13 @@
 				RelativePath="wx\bitmap\tilt.bmp">
 			</File>
 			<File
+				RelativePath=".\wx\bitmap\time.bmp">
+			</File>
+			<File
 				RelativePath="wx\bitmap\tree.bmp">
+			</File>
+			<File
+				RelativePath=".\wx\bitmap\unfold.bmp">
 			</File>
 		</Filter>
 		<Filter
