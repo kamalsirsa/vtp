@@ -78,7 +78,7 @@ void vtDeleteFile(const char *filename);
 const char *StartOfFilename(const char *szFullPath);
 bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
-void RemoveFileExtensions(vtString &fname);
+void RemoveFileExtensions(vtString &fname, bool bAll = true);
 vtString GetExtension(const vtString &fname, bool bFull = true);
 
 // Encapsulation for Zlib's gzip output functions.

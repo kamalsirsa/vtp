@@ -337,7 +337,7 @@ bool PathIsAbsolute(const char *szPath)
  * Given a filename (which may include a path), remove any file extension(s)
  * which it may have.
  */
-void RemoveFileExtensions(vtString &fname)
+void RemoveFileExtensions(vtString &fname, bool bAll)
 {
 	for (int i = fname.GetLength()-1; i >= 0; i--)
 	{
@@ -349,7 +349,13 @@ void RemoveFileExtensions(vtString &fname)
 
 		// If we hit a period which indicates an extension, snip
 		if (ch == '.')
+		{
 			fname = fname.Left(i);
+
+			// if we're not snipping all the extensions, stop now
+			if (!bAll)
+				return;
+		}
 	}
 }
 
