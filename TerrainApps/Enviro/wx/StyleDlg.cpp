@@ -108,20 +108,20 @@ void StyleDlg::SetOptions(vtStringArray &datapaths, const vtTagArray &Layer)
 
 void StyleDlg::GetOptions(vtTagArray &pLayer)
 {
-	pLayer.SetValueBool("Geometry", m_bGeometry);
+	pLayer.SetValueBool("Geometry", m_bGeometry, true);
 	if (m_bGeometry)
-		pLayer.SetValueRGBi("GeomColor", m_GeomColor);
+		pLayer.SetValueRGBi("GeomColor", m_GeomColor, true);
 	else
 		pLayer.RemoveTag("GeomColor");
 
-	pLayer.SetValueBool("Labels", m_bTextLabels);
+	pLayer.SetValueBool("Labels", m_bTextLabels, true);
 	if (m_bTextLabels)
 	{
-		pLayer.SetValueRGBi("LabelColor", m_LabelColor);
-		pLayer.SetValueBool("TextFieldIndex", m_bTextLabels);
-		pLayer.SetValueInt("ColorFieldIndex", m_iColorField);
-		pLayer.SetValueFloat("Elevation", m_fLabelHeight);
-		pLayer.SetValueFloat("LabelSize", m_fLabelSize);
+		pLayer.SetValueRGBi("LabelColor", m_LabelColor, true);
+		pLayer.SetValueBool("TextFieldIndex", m_bTextLabels, true);
+		pLayer.SetValueInt("ColorFieldIndex", m_iColorField, true);
+		pLayer.SetValueFloat("Elevation", m_fLabelHeight, true);
+		pLayer.SetValueFloat("LabelSize", m_fLabelSize, true);
 	}
 	else
 	{
