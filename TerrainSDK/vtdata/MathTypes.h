@@ -16,6 +16,55 @@
 #include <math.h>
 #include "Array.h"
 
+// willemsn: this was taken from OSG's Math include file.
+// 04/29/03
+#ifdef __DARWIN_OSX__
+	#include <float.h>
+
+	// PJA MAC OSX
+	// This appears to be the simplest way to get these defined under MACOSX
+	// where they arent in math.h
+	#ifndef acosf
+	#define acosf (float)acos
+	#endif
+
+	#ifndef asinf
+	#define asinf (float)asin
+	#endif
+
+	#ifndef atan2f
+	#define atan2f (float)atan2
+	#endif
+
+	#ifndef cosf
+	#define cosf (float)cos
+	#endif
+
+	#ifndef sinf
+	#define sinf (float)sin
+	#endif
+
+	#ifndef tanf
+	#define tanf (float)tan
+	#endif
+
+	#ifndef logf
+	#define logf (float)log
+	#endif
+
+	#ifndef powf
+	#define powf (float)pow
+	#endif
+
+	#ifndef sqrtf
+	#define sqrtf (float)sqrt
+	#endif
+	
+	#ifndef fabsf
+	#define fabsf (float)fabs
+	#endif
+#endif
+
 #ifndef PId
  #define PId		3.141592653589793238
  #define PIf 	3.141592653589793238f
