@@ -614,7 +614,7 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticBox *item6 = new wxStaticBox( parent, -1, _("Colors") );
     wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
 
-    wxListCtrl *item7 = new wxListCtrl( parent, ID_COLORLIST, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxSUNKEN_BORDER );
+    wxListCtrl *item7 = new wxListCtrl( parent, ID_COLORLIST, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxLC_NO_HEADER|wxSUNKEN_BORDER );
     item5->Add( item7, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
