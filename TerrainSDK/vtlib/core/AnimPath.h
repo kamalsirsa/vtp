@@ -9,6 +9,7 @@
 
 #include "vtlib/core/Engine.h"
 #include "vtdata/CubicSpline.h"
+#include "vtdata/Features.h"
 
 /**
  * This class describes a single location, including both a position and
@@ -21,24 +22,24 @@ struct ControlPoint
 
 	ControlPoint(const FPoint3 &position):
 		m_Position(position),
-		m_fRotation(),
+		m_Rotation(),
 		m_Scale(1.0f,1.0f,1.0f) {}
 
 	ControlPoint(const FPoint3 &position, const FQuat &rotation):
 		m_Position(position),
-		m_fRotation(rotation),
+		m_Rotation(rotation),
 		m_Scale(1.0f,1.0f,1.0f) {}
 
 	ControlPoint(const FPoint3 &position, const FQuat &rotation, const FPoint3 &scale):
 		m_Position(position),
-		m_fRotation(rotation),
+		m_Rotation(rotation),
 		m_Scale(scale) {}
 
 	void Interpolate(float ratio,const ControlPoint &first, const ControlPoint &second);
-	void GetMatrix(FMatrix4 &matrix) const;
+	void GetMatrix(FMatrix4 &matrix, bool bPosOnly) const;
 
 	FPoint3 m_Position;
-	FQuat m_fRotation;
+	FQuat m_Rotation;
 	FPoint3 m_Scale;
 	int m_iIndex;
 };
@@ -64,12 +65,12 @@ public:
 	virtual ~vtAnimPath() {}
 
 	/// get the transformation matrix for a point in time.        
-	bool GetMatrix(double time, FMatrix4 &matrix) const
+	bool GetMatrix(double time, FMatrix4 &matrix, bool bPosOnly) const
 	{
 		ControlPoint cp;
 		if (!GetInterpolatedControlPoint(time,cp))
 			return false;
-		cp.GetMatrix(matrix);
+		cp.GetMatrix(matrix, bPosOnly);
 		return true;
 	}
 
@@ -135,14 +136,18 @@ public:
 	vtAnimPathEngine():
 		m_pAnimationPath(NULL),
 		m_fTimeMultiplier(1.0),
-		m_fFirstTime(DBL_MAX),
-		m_fLatestTime(0.0) {}
+		m_fLastTime(DBL_MAX),
+		m_fTime(1.0f),
+		m_bPosOnly(false),
+		m_fSpeed(1.0f) {}
 
 	vtAnimPathEngine(vtAnimPath *ap, double timeMultiplier=1.0f):
 		m_pAnimationPath(ap),
 		m_fTimeMultiplier(timeMultiplier),
-		m_fFirstTime(DBL_MAX),
-		m_fLatestTime(0.0) {}
+		m_fLastTime(DBL_MAX),
+		m_fTime(1.0f),
+		m_bPosOnly(false),
+		m_fSpeed(1.0f) {}
 
 	~vtAnimPathEngine()
 	{
@@ -158,16 +163,31 @@ public:
 
 	void Reset();
 
-	/// Get the time value used to specify the location along the path.
-	double GetAnimationTime() const;
+	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
+	float GetSpeed() const { return m_fSpeed; }
+
+	void SetPosOnly(bool bFlag) { m_bPosOnly = bFlag; }
+	bool GetPosOnly() const { return m_bPosOnly; }
 
 	/// Virtual handler, will be called every frame to do the work of the engine.
 	virtual void Eval();
+	virtual void SetEnabled(bool bOn);
 
 public:
 	vtAnimPath *m_pAnimationPath;
 	double	m_fTimeMultiplier;
-	double	m_fFirstTime;
-	double	m_fLatestTime;
+	double	m_fLastTime;
+	double	m_fTime;
+	bool	m_bPosOnly;
+	float	m_fSpeed;
+};
+
+/**
+ * vtAnimPath3d extends vtAnimPath with the ability to operate on both
+ */
+class vtAnimPath3d : public vtAnimPath, public vtFeatureSetLineString3D
+{
+public:
+	void TransformToTerrain(const vtProjection &proj);
 };
 

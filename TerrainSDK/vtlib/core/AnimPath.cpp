@@ -9,26 +9,30 @@
 
 #include "vtlib/vtlib.h"
 #include "AnimPath.h"
+#include "vtdata/LocalConversion.h"
 
 
 void ControlPoint::Interpolate(float ratio, const ControlPoint &first, const ControlPoint &second)
 {
 	float one_minus_ratio = 1.0f - ratio;
 	m_Position = first.m_Position*one_minus_ratio + second.m_Position*ratio;
-	m_fRotation.Slerp(first.m_fRotation, second.m_fRotation, ratio);
+	m_Rotation.Slerp(first.m_Rotation, second.m_Rotation, ratio);
 	m_Scale = first.m_Scale*one_minus_ratio + second.m_Scale*ratio;
 }
 
-void ControlPoint::GetMatrix(FMatrix4 &matrix) const
+void ControlPoint::GetMatrix(FMatrix4 &matrix, bool bPosOnly) const
 {
 	matrix.MakeScale(m_Scale.x, m_Scale.y, m_Scale.z);
 
-	FMatrix3 m3;
-	m_fRotation.GetMatrix(m3);
+	if (!bPosOnly)
+	{
+		FMatrix3 m3;
+		m_Rotation.GetMatrix(m3);
 
-	FMatrix4 m4;
-	m4.SetFromMatrix3(m3);
-	matrix.PostMult(m4);
+		FMatrix4 m4;
+		m4.SetFromMatrix3(m3);
+		matrix.PostMult(m4);
+	}
 
 	matrix.Translate(m_Position);
 }
@@ -115,6 +119,16 @@ bool vtAnimPath::GetInterpolatedControlPoint(double time, ControlPoint &controlP
 	return true;
 }
 
+void vtAnimPathEngine::SetEnabled(bool bOn)
+{
+	bool bWas = m_bEnabled;
+	vtEnabledBase::SetEnabled(bOn);
+	if (!bWas && bOn)
+	{
+		// turning this engine on
+		m_fLastTime = vtGetTime();
+	}
+}
 
 /*void vtAnimPath::Read(std::istream &in)
 {
@@ -146,11 +160,6 @@ void vtAnimPath::Write(std::ostream &fout) const
 	fout.precision(prec);
 }*/
 
-double vtAnimPathEngine::GetAnimationTime() const
-{
-	return (m_fLatestTime - m_fFirstTime) * m_fTimeMultiplier;
-}
-
 void vtAnimPathEngine::Eval()
 {
 	if (m_pAnimationPath == NULL)
@@ -161,21 +170,107 @@ void vtAnimPathEngine::Eval()
 	if (!tr)
 		return;
 
-	m_fLatestTime = vtGetTime();
-	if (m_fFirstTime==DBL_MAX)
-		m_fFirstTime = m_fLatestTime;
+	float fTime = vtGetTime();
+	if (m_fLastTime==DBL_MAX)
+		m_fLastTime = fTime;
+
+	float fElapsed = fTime - m_fLastTime;
+	m_fTime += fElapsed * m_fSpeed;
 
 	ControlPoint cp;
-	if (m_pAnimationPath->GetInterpolatedControlPoint(GetAnimationTime(),cp))
+	if (m_pAnimationPath->GetInterpolatedControlPoint(m_fTime, cp))
 	{
 		FMatrix4 matrix;
-		cp.GetMatrix(matrix);
-		tr->SetTransform1(matrix);
+		cp.GetMatrix(matrix, m_bPosOnly);
+		if (m_bPosOnly)
+		{
+			// Only copy position
+			FPoint3 pos = matrix.GetTrans();
+			tr->SetTrans(pos);
+		}
+		else
+			tr->SetTransform1(matrix);
 	}
+	m_fLastTime = fTime;
 }
 
 void vtAnimPathEngine::Reset()
 {
-	m_fFirstTime = m_fLatestTime;
+	m_fTime = 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+void vtAnimPath3d::TransformToTerrain(const vtProjection &proj)
+{
+	// Clear our control points because we're going to fill it 
+	m_TimeControlPointMap.clear();
+
+	OCT *trans = NULL;
+	if (!proj.IsSame(&m_proj))
+	{
+		// need transformation from feature CRS to terrain CRS
+		trans = CreateCoordTransform(&m_proj, &proj, true);
+	}
+
+	DPoint3 current, previous(1E9,1E9,1E9);
+	FPoint3 pos;
+
+//	for (unsigned int i = 0; i < GetNumEntities(); i++)
+	unsigned int i = 0, j;	// only first entity
+
+	const DLine3 &dline = GetPolyLine(i);
+	FLine3 fline;
+	for (j = 0; j < dline.GetSize(); j++)
+	{
+		current = dline[j];
+
+		// Must skip redundant points, smooth (spline) paths don't like them
+		if (current == previous)
+			continue;
+
+		// Transform 1: feature CRS to terrain CRS
+		if (trans)
+			trans->Transform(1, &current.x, &current.y);
+
+		// Transform 2: earth CRS to world CRS
+		g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
+		pos.y = current.z;
+
+		fline.Append(pos);
+
+		previous = current;
+	}
+	double time = 0;
+	for (j = 0; j < fline.GetSize(); j++)
+	{
+		// SHP file has no orientations, so derive from positions
+		FPoint3 diff;
+		if (j == 0)
+			diff = (fline[j+1] - fline[j]);
+		else
+			diff = (fline[j] - fline[j-1]);
+
+		if (j > 0)
+		{
+			// estimate time based on linear distance
+			float distance = diff.Length();
+
+			// default correlation: 1 approximate meter per second
+			time += distance;
+		}
+		FMatrix3 m3;
+		m3.MakeOrientation(diff, true);
+		FQuat quat;
+		quat.SetFromMatrix(m3);
+
+		// Add as a control point
+		Insert(time, ControlPoint(fline[j], quat));
+
+	}
+
+	// Set up spline, in case they want smooth motion
+	ProcessPoints();
 }
 
