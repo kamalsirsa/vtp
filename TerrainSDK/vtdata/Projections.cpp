@@ -240,7 +240,7 @@ LinearUnits vtProjection::GetUnits() const
  */
 void vtProjection::SetSpatialReference(OGRSpatialReference *pRef)
 {
-	*((OGRSpatialReference *)this) = *(pRef->Clone());
+	*((OGRSpatialReference *)this) = *pRef;
 }
 
 /**
