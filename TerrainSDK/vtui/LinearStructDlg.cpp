@@ -108,8 +108,8 @@ void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pFenceChoice->Append(_T("English Hedgerow"));
 	m_pFenceChoice->Append(_T("English Drystone"));
 	m_pFenceChoice->Append(_T("English Privet"));
-	m_pFenceChoice->Append(_T("Stone"));
 	m_pFenceChoice->Append(_T("English Beech"));
+	m_pFenceChoice->Append(_T("Coursed Stone"));
 
 	TransferDataToWindow();
 
