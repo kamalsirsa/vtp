@@ -131,7 +131,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 			}
 			AddNode(car);
 			PlantModelAtPoint(car, n->m_p);
-//			AddCarEngine(car, 60.0f, n);
+			AddCarEngine(car, 60.0f, n);
 			n = (NodeGeom*) n->m_pNext;
 		}
 	}
