@@ -27,8 +27,8 @@ typedef Array<int> Bin;
 class vtTin
 {
 public:
-	int NumVerts() { return m_vert.GetSize(); }
-	int NumTris() { return m_tri.GetSize()/3; }
+	int NumVerts() const { return m_vert.GetSize(); }
+	int NumTris() const { return m_tri.GetSize()/3; }
 
 	void AddVert(const DPoint2 &p, float z);
 	void AddTri(int i1, int i2, int i3);
@@ -38,7 +38,7 @@ public:
 
 	bool GetExtents(DRECT &rect, float &minheight, float &maxheight);
 	void Offset(const DPoint2 &p);
-	bool FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude);
+	bool FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude) const;
 	bool ConvertProjection(vtProjection &proj_new);
 
 	double GetTriMaxEdgeLength(int iTri);
