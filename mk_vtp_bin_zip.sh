@@ -38,6 +38,14 @@ zip $DIST_FILE3 VTP/TerrainApps/Enviro/Enviro.ini
 rm VTP/TerrainApps/Enviro/Enviro.ini
 mv VTP/TerrainApps/Enviro/Enviro_dev.ini VTP/TerrainApps/Enviro/Enviro.ini
 
+# Enviro locale files
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/af/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/de/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/hu/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/pt/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/ro/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/sv/Enviro.mo
+
 cp VTP/TerrainApps/VTBuilder/Release_Unicode/VTBuilder_u.exe VTP/TerrainApps/VTBuilder
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/license.txt
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder_u.exe
