@@ -116,6 +116,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_pDistanceDlg = NULL;
 	m_pLinearStructureDlg = NULL;
 	m_szIniFilename = "VTBuilder.ini";
+	m_bDrawDisabled = false;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -590,7 +591,8 @@ int MainFrame::NumModifiedLayers()
 	int layers = m_Layers.GetSize();
 	for (int l = 0; l < layers; l++)
 	{
-		if (m_Layers.GetAt(l)->GetModified())
+		vtLayer *lp = m_Layers[l];
+		if (lp->GetModified() && lp->CanBeSaved())
 			count++;
 	}
 	return count;
@@ -901,6 +903,9 @@ void MainFrame::LoadProject(const wxString &strPathName)
 		return;
 	}
 
+	// avoid trying to draw while we're loading the project
+	m_bDrawDisabled = true;
+
 	int count = 0;
 	LayerType ltype;
 
@@ -952,6 +957,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	fclose(fp);
 
 	// refresh the view
+	m_bDrawDisabled = false;
 	if (!bHasView)
 		m_pView->ZoomAll();
 	RefreshTreeView();
