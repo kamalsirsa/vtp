@@ -46,13 +46,19 @@ void vtLog::_Log(const char *msg)
 		fflush(m_log);
 	}
 #ifdef _MSC_VER
-#ifdef _UNICODE
-	wchar_t buf[1024];
-	MultiByteToWideChar(CP_ACP, 0, msg, -1, buf, 1024);
-	OutputDebugString(buf);
-#else
-	OutputDebugString(msg);
+	OutputDebugStringA(msg);
 #endif
+}
+
+void vtLog::_Log(const wchar_t *msg)
+{
+	if (m_log)
+	{
+		fputws(msg, m_log);
+		fflush(m_log);
+	}
+#ifdef _MSC_VER
+	OutputDebugStringW(msg);
 #endif
 }
 
@@ -63,6 +69,17 @@ void vtLog::Printf(const char *pFormat, ...)
 
 	char ach[1024];
 	vsprintf(ach, pFormat, va);
+
+	_Log(ach);
+}
+
+void vtLog::Printf(const wchar_t *pFormat, ...)
+{
+	va_list va;
+	va_start(va, pFormat);
+
+	wchar_t ach[1024];
+	vswprintf(ach, pFormat, va);
 
 	_Log(ach);
 }
