@@ -643,7 +643,10 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	fread(wkt, len, 1, fp);
 	OGRErr err = m_proj.importFromWkt(&wkt);
 	if (err != OGRERR_NONE)
-		return false;
+	{
+		// It shouldn't be fatal to encounter a missing or unparsable projection
+		// return false;
+	}
 
 	// read number of species
 	fread(&numspecies, sizeof(int), 1, fp);
