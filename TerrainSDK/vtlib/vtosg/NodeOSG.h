@@ -53,9 +53,11 @@ public:
 	// implementation data
 	void SetOsgNode(osg::Node *n);
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
+	vtNodeBase *Clone() { return NULL; }
+
+	static vtNode *LoadModel(const char *filename);
 
 protected:
-
 	osg::ref_ptr<osg::Node> m_pNode;
 	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
 	osg::ref_ptr<osg::Fog> m_pFog;

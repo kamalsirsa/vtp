@@ -13,7 +13,6 @@
 #include <osg/Switch>
 #include <osg/Fog>
 #include <osgDB/Registry>
-#include <osgDB/ReadFile>
 #include <time.h>		// clock() & CLOCKS_PER_SEC
 
 #ifdef __FreeBSD__
@@ -356,93 +355,4 @@ bool vtScene::GetGlobalWireframe()
 
 
 ////////////////////////////////////////
-
-vtNodeBase *vtLoadModel(const char *filename)
-{
-	// Temporary workaround for OSG OBJ-MTL reader which doesn't like
-	// backslashes in the version we're using
-	char newname[500];
-	strcpy(newname, filename);
-	for (unsigned int i = 0; i < strlen(filename); i++)
-	{
-		if (newname[i] == '\\') newname[i] = '/';
-	}
-
-	// We must insert a 'Normalize' state above the geometry objets
-	// that we load, otherwise when they are scaled, the vertex normals
-	// will cause strange lighting.  Fortunately, we only need to create
-	// a single State object which is shared by all loaded models.
-	static 	StateSet *normstate = NULL;
-	if (!normstate)
-	{
-		normstate = new StateSet;
-		normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
-	}
-
-	Node *node = osgDB::readNodeFile(newname);
-	if (node)
-	{
-		vtGroup *pGroup = new vtGroup();
-		pGroup->SetName2(newname);
-		pGroup->GetOsgGroup()->addChild(node);
-		pGroup->GetOsgNode()->setStateSet(normstate);
-		return pGroup;
-	}
-	else
-		return NULL;
-}
-
-RGBf vtNodeBase::s_white(1, 1, 1);
-
-/**
- * Set the Fog state for a node.
- *
- * You can turn fog on or off.  When you turn fog on, it affects this node
- * and all others below it in the scene graph.
- *
- * \param bOn True to turn fog on, false to turn it off.
- * \param start The distance from the camera at which fog starts, in meters.
- * \param end The distance from the camera at which fog end, in meters.  This
- *		is the point at which it becomes totally opaque.
- * \param color The color of the fog.  All geometry will be faded toward this
- *		color.
- * \param iType Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
- *		increase of the fog density.
- */
-void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iType)
-{
-	osg::StateSet *set = GetOsgNode()->getStateSet();
-	if (!set)
-	{
-		m_pFogStateSet = new osg::StateSet;
-		set = m_pFogStateSet.get();
-		GetOsgNode()->setStateSet(set);
-	}
-
-	if (bOn)
-	{
-		Fog::Mode eType;
-		switch (iType)
-		{
-		case GL_LINEAR: eType = Fog::LINEAR; break;
-		case GL_EXP: eType = Fog::EXP; break;
-		case GL_EXP2: eType = Fog::EXP2; break;
-		default: return;
-		}
-		m_pFog = new Fog;
-		m_pFog->setMode(eType);
-		m_pFog->setDensity(0.25f);	// not used for linear
-		m_pFog->setStart(start);
-		m_pFog->setEnd(end);
-		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
-
-		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
-	}
-	else
-	{
-		// turn fog off
-		set->setModeToInherit(GL_FOG);
-	}
-}
-
 
