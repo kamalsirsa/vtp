@@ -492,6 +492,52 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere)
 	return pGeom;
 }
 
+
+vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res)
+{
+	vtGeom *pGeom = new vtGeom();
+	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, res*res*2);
+	geo->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
+	pGeom->SetMaterials(pMats);
+	pGeom->AddMesh(geo, iMatIdx);
+	return pGeom;
+}
+
+vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
+						   FPoint3 min1, FPoint3 max1, int steps)
+{
+	vtGeom *pGeom = new vtGeom();
+	vtMesh *geo = new vtMesh(GL_LINES, 0, (steps+1)*4);
+
+	FPoint3 p, diff = max1 - min1, step = diff/steps;
+	p.y = diff.y;
+	int i, idx = 0;
+	for (i = 0; i < steps+1; i++)
+	{
+		p.x = min1.x + step.x * i;
+		p.z = min1.z;
+		geo->AddVertex(p);
+		p.z = max1.z;
+		geo->AddVertex(p);
+		geo->AddLine(idx, idx+1);
+		idx += 2;
+	}
+	for (i = 0; i < steps+1; i++)
+	{
+		p.z = min1.z + step.z * i;
+		p.x = min1.x;
+		geo->AddVertex(p);
+		p.x = max1.x;
+		geo->AddVertex(p);
+		geo->AddLine(idx, idx+1);
+		idx += 2;
+	}
+	pGeom->SetMaterials(pMats);
+	pGeom->AddMesh(geo, iMatIdx);
+	return pGeom;
+}
+
+
 ////////////////////////////////////////////////////////////////////
 
 /**

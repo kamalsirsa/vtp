@@ -357,8 +357,11 @@ protected:
 	vtRoot *m_pRoot;
 };
 
-// global functions
+// helper functions
 vtGeom *Create3DCursor(float fSize, float fSmall);
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere);
+vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res);
+vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
+					   FPoint3 min1, FPoint3 max1, int steps);
 
-#endif
+#endif	// VTLIB_BASEH
