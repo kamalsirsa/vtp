@@ -79,7 +79,12 @@ void ItemGroup::AttachModels(vtFont *font)
 			node->GetBoundSphere(sph);
 		}
 	}
+	UpdateCrosshair(sph);
+	UpdateRulers(font, sph);
+}
 
+void ItemGroup::UpdateCrosshair(const FSphere &sph)
+{
 	// Update origin crosshair
 	if (m_pAxes)
 	{
@@ -90,13 +95,17 @@ void ItemGroup::AttachModels(vtFont *font)
 	m_pAxes = Create3DCursor(size, size/100, 0.4f);
 	m_pAxes->SetName2("Origin Axes");
 	m_pTop->AddChild(m_pAxes);
+}
 
+void ItemGroup::UpdateRulers(vtFont *font, const FSphere &sph)
+{
 	// Update rulers
 	if (m_pRulers)
 	{
 		m_pTop->RemoveChild(m_pRulers);
 		m_pRulers->Release();
 	}
+	float size = sph.radius * 2;
 	m_pRulers = CreateRulers(font, size);
 	m_pRulers->SetName2("Rulers");
 	m_pTop->AddChild(m_pRulers);
@@ -244,15 +253,18 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 			*wide = j * interval;
 			*thin = interval/2;
 
-			str.Format("%g", j * interval);
-			text = new vtTextMesh(font, interval/2, false);
-			text->SetPosition(p);
-			if (i == 0)
-				text->SetAlignment(0);
-			else
-				text->SetAlignment(1);
-			text->SetText(str);
-			pGeom->AddTextMesh(text, 0);
+			if (font)
+			{
+				str.Format("%g", j * interval);
+				text = new vtTextMesh(font, interval/2, false);
+				text->SetPosition(p);
+				if (i == 0)
+					text->SetAlignment(0);
+				else
+					text->SetAlignment(1);
+				text->SetText(str);
+				pGeom->AddTextMesh(text, 0);
+			}
 		}
 	}
 	return pGeom;

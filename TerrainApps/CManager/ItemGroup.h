@@ -23,6 +23,8 @@ public:
 	vtGroup	*GetTop() { return m_pTop; }
 	void ShowOrigin(bool bShow);
 	void ShowRulers(bool bShow);
+	void UpdateCrosshair(const FSphere &sph);
+	void UpdateRulers(vtFont *font, const FSphere &sph);
 
 protected:
 	vtItem	*m_pItem;
