@@ -29,9 +29,9 @@ inline void Footprints3d::DestructItems(int first, int last)
 
 struct MatMesh
 {
-	int			m_iMatIdx;
-	vtMesh		*m_pMesh;
-	bool		m_bFans;
+	int		m_iMatIdx;
+	vtMesh	*m_pMesh;
+	int		m_iPrimType;
 };
 
 class vtBuilding3d : public vtBuilding, public vtStructure3d
@@ -41,7 +41,7 @@ public:
 	~vtBuilding3d();
 
 	// implement vtStructure3d methods
-	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
+	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options);
 	vtGeom *GetGeom();
 	virtual void DeleteNode();
 	// display a bounding box around to object to highlight it
@@ -54,8 +54,7 @@ public:
 	void FindMaterialIndices();
 
 	void DestroyGeometry();
-	void CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
-						bool bDoWalls, bool details);
+	void CreateGeometry(vtHeightField *pHeightField);
 	void AdjustHeight(vtHeightField *pHeightField);
 
 	// randomize building properties
@@ -73,7 +72,7 @@ protected:
 	// the geometry is composed of several meshes, one for each potential material used
 	Array<MatMesh>	m_Mesh;
 
-	vtMesh *FindMatMesh(BldMaterial bm, RGBi color, bool bFans);
+	vtMesh *FindMatMesh(BldMaterial bm, RGBi color, int iPrimType);
 
 	// center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
@@ -88,7 +87,7 @@ protected:
 	void CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2);
 
 	void CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly2,
-		int iWall, bool details);
+		int iEdge, bool bShowEdge);
 
 	// create special, simple geometry for a level which is uniform
 	void CreateUniformLevel(int iLevel, float fHeight);
@@ -96,7 +95,9 @@ protected:
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
 	void AddWallSection(vtEdge *pEdge, BldMaterial bmat,
-		const FLine3 &quad, float h1, float h2, float hf1 = 1.0f);
+		const FLine3 &quad, float h1, float h2, float hf1 = -1.0f);
+
+	void AddHighlightSection(vtEdge *pEdge, const FLine3 &quad);
 
 	//adds a wall section with a door
 	void AddDoorSection(vtEdge *pWall, vtEdgeFeature *pFeat,
