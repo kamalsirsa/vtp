@@ -190,7 +190,7 @@ bool vtAnimPath::GetInterpolatedControlPoint(double time, ControlPoint &controlP
 		{
 			TimeControlPointMap dummy;
 			dummy[m_fLoopSegmentTime] = m_LoopControlPoint;
-			TimeControlPointMap::iterator it2 = dummy.begin();
+			TimeControlPointMap::const_iterator it2 = dummy.begin();
 
 			second--;
 			InterpolateControlPoints(second, it2, time, controlPoint);
