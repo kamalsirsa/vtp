@@ -212,7 +212,12 @@ public:
 
 	double Length() const { return sqrt(x*x+y*y); }
 	double LengthSquared() const { return (x*x+y*y); }
-	void Normalize() { double s = 1.0/Length(); x*=s; y*=s; }
+	bool Normalize()
+	{
+		double s = Length();
+		if (s == 0.0) return false;
+		x/=s; y/=s; return true;
+	}
 	void Set(double fx, double fy) { x=fx; y=fy; }
 	double Dot(const DPoint2 &rhs) const
 	{
