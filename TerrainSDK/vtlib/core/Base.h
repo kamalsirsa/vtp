@@ -128,9 +128,6 @@ public:
 	virtual void GetTransform1(FMatrix4 &mat) = 0;
 };
 
-// global function
-class vtNodeBase *vtLoadModel(const char *fname);
-
 #define VT_Normals		1
 #define VT_Colors		2
 #define VT_TexCoords	4
