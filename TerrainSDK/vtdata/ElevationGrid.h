@@ -16,7 +16,8 @@
 
 class vtDIB;
 
-/**  The vtElevationGrid class represents a generic grid of elevation data.
+/**
+ * The vtElevationGrid class represents a generic grid of elevation data.
  * It supports reading and writing the data from several file formats.
  * \par
  * Height elements ("heixels") can be either integer (2 bytes) or floating
@@ -40,6 +41,8 @@ public:
 	bool ConvertProjection(vtElevationGrid *pOld, const vtProjection &NewProj, void progress_callback(int) = NULL);
 	bool ReprojectExtents(const vtProjection &proj_new);
 	void Scale(float fScale, bool bDirect, bool bRecomputeExtents = true);
+	void ComputeHeightExtents();
+	void Offset(const DPoint2 &delta);
 
 	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, void progress_callback(int) = NULL );
@@ -74,8 +77,6 @@ public:
 	bool SaveToBMP(const char *szFileName);
 	bool SaveToTerragen(const char *szFileName);
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
-
-	void ComputeHeightExtents();
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);

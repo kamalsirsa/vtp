@@ -370,7 +370,8 @@ void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
 }
 
 
-/** Scans the grid to compute the minimum and maximum height values.
+/**
+ * Scans the grid to compute the minimum and maximum height values.
  * \sa GetHeightExtents
  */
 void vtElevationGrid::ComputeHeightExtents()
@@ -390,6 +391,23 @@ void vtElevationGrid::ComputeHeightExtents()
 			if (value < m_fMinHeight) m_fMinHeight = value;
 		}
 	}
+}
+
+/**
+ * Offset the entire elevation grid horizontally.
+ * \param delta The X,Y amount to shift the location of the grid.
+ */
+void vtElevationGrid::Offset(const DPoint2 &delta)
+{
+	// Shifting an elevation is as easy as shifting its extents
+	m_EarthExtents.left += delta.x;
+	m_EarthExtents.right += delta.x;
+	m_EarthExtents.top += delta.y;
+	m_EarthExtents.bottom += delta.y;
+
+	// Also the corners, which are mantained in parallel
+	for (int i = 0; i < 4; i++)
+		m_Corners[i] += delta;
 }
 
 /** Set an elevation value to the grid.
