@@ -1058,9 +1058,14 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		int tris = m_pTin->NumTris();
 		str.Printf(_("TIN\nVertices: %d\nTriangles: %d\n"), verts, tris);
 		result += str;
+
+		result += _("Min/max elevation: ");
 		float minh, maxh;
 		m_pTin->GetHeightExtents(minh, maxh);
-		str.Printf(_("Min/max elevation: %.2f, %.2f\n"), minh, maxh);
+		if (minh == INVALID_ELEVATION)
+			str = _("None\n");
+		else
+			str.Printf(_T("%.2f, %.2f\n"), minh, maxh);
 		result += str;
 	}
 	strIn = result;
