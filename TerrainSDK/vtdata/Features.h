@@ -14,6 +14,7 @@
 #include "MathTypes.h"
 #include "vtString.h"
 #include "Projections.h"
+#include "Content.h"
 
 /**
  * This class is used to store values in memory loaded from DBF files.
@@ -73,7 +74,7 @@ public:
 	bool LoadFromSHP(const char *filename);
 	bool LoadFromGML(const char *filename);
 
-	bool ReadFeaturesFromWFS(const char *url);
+	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 
 	// feature (entity) operations
 	int NumEntities();
@@ -153,6 +154,9 @@ protected:
 
 	vtProjection	m_proj;
 };
+
+typedef Array<vtTagArray *> WFSLayerArray;
+bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers);
 
 #endif // VTDATA_FEATURES
 

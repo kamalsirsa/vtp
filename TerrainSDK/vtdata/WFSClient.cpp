@@ -11,6 +11,7 @@
 
 #include "Features.h"
 #include "config_vtdata.h"
+#include "FilePath.h"
 
 // The dependency on Libwww is optional.  If not desired, skip this file.
 #if SUPPORT_HTTP
@@ -35,6 +36,8 @@
 
 #define DEFAULT_TIMEOUT	10				  /* timeout in secs */
 #define MILLIES			1000
+
+#include "xmlhelper/easyxml.hpp"
 
 class ReqContext
 {
@@ -75,7 +78,7 @@ PRIVATE BOOL PromptUsernameAndPassword (HTRequest * request, HTAlertOpcode op,
 	return NO;
 }
 
-PRIVATE int terminate_handler (HTRequest * request, HTResponse * response,
+PRIVATE int term_handler (HTRequest * request, HTResponse * response,
 				   void * param, int status) 
 {
 	/* Check for status */
@@ -132,7 +135,7 @@ ReqContext::ReqContext()
 		HTMIMEInit();
 
 		/* Add our own filter to handle termination */
-		HTNet_addAfter(terminate_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
+		HTNet_addAfter(term_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
 
 		/* Setting event timeout */
 		int timer = DEFAULT_TIMEOUT*MILLIES;
@@ -183,8 +186,12 @@ char *ReqContext::GetURL(const char *url)
 	return string;
 }
 
-bool vtFeatures::ReadFeaturesFromWFS(const char *url)
+bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layername)
 {
+	vtString url = szServerURL;
+	url += "GetFeature?typeName=";
+	url += layername;
+
 	ReqContext cl;
 	char *string = cl.GetURL(url);
 	if (!string)
@@ -202,9 +209,113 @@ bool vtFeatures::ReadFeaturesFromWFS(const char *url)
 	return LoadFromGML(temp_fname);
 }
 
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of WFS Layer List files.
+////////////////////////////////////////////////////////////////////////
+
+class LayerListVisitor : public XMLVisitor
+{
+public:
+	LayerListVisitor(WFSLayerArray *pLayers) :
+		m_pLayers(pLayers), _level(0) {}
+
+	virtual ~LayerListVisitor () {}
+
+	void startXML ();
+	void endXML ();
+	void startElement (const char * name, const XMLAttributes &atts);
+	void endElement (const char * name);
+	void data (const char * s, int length);
+
+private:
+	string _data;
+	int _level;
+
+	WFSLayerArray *m_pLayers;
+	vtTagArray *m_pTags;
+};
+
+void LayerListVisitor::startXML ()
+{
+	_level = 0;
+}
+
+void LayerListVisitor::endXML ()
+{
+	_level = 0;
+}
+
+void LayerListVisitor::startElement (const char * name, const XMLAttributes &atts)
+{
+	if (_level == 0)
+	{
+		if (string(name) == "FeatureType")
+		{
+			_level = 1;
+			m_pTags = new vtTagArray;
+		}
+	}
+	_data = "";
+}
+
+void LayerListVisitor::endElement(const char * name)
+{
+	if (_level == 1)
+	{
+		if (string(name) == "FeatureType")
+		{
+			m_pLayers->Append(m_pTags);
+			_level = 0;
+			return;
+		}
+		const char *value = _data.c_str();
+		m_pTags->AddTag(name, value);
+	}
+}
+
+void LayerListVisitor::data(const char *s, int length)
+{
+	if (_level == 1)
+		_data.append(string(s, length));
+}
+
+//
+//
+//
+bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers)
+{
+	vtString url = szServerURL;
+	url += "GetCapabilities?version=0.0.14";
+
+	ReqContext cl;
+	char *string = cl.GetURL(url);
+	if (!string)
+		return false;
+
+	char *temp_fname = "C:/temp/layers_temp.xml";
+	FILE *fp = fopen(temp_fname, "wb");
+	if (!fp)
+		return false;
+	fwrite(string, 1, strlen(string), fp);
+	HT_FREE(string);
+	fclose(fp);
+
+	LayerListVisitor visitor(&layers);
+	try
+	{
+		readXML(temp_fname, visitor);
+	}
+	catch (xh_exception &)
+	{
+		// TODO: would be good to pass back the error message.
+		return false;
+	}
+	return true;
+}
+
 #else
 // no support for HTTP
-bool ReadFeaturesFromWFS::TestWFSQuery(const char *url)
+bool vtFeatures::ReadFeaturesFromWFS(const char *url)
 {
 	return false;
 }
