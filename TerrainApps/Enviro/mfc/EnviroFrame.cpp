@@ -204,6 +204,7 @@ void EnviroFrame::SetMode(MouseMode mode)
 	if (mode == MM_PLANTS)
 	{
 		m_wndPlants.SetPlantList(g_App.GetPlantList());
+		m_wndPlants.SetPlantOptions(g_App.GetPlantOptions());
 		m_wndPlants.ShowWindow(SW_SHOW);
 	}
 	else

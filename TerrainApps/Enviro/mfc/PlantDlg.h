@@ -11,6 +11,8 @@
 // PlantDlg.h : header file
 //
 
+#include "../PlantingOptions.h"
+
 class vtPlantList3d;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -27,12 +29,13 @@ public:
 	enum { IDD = IDD_PLANTDLG };
 	CComboBox	m_cbSpecies;
 	int		m_iSpecies;
-	float	m_fSize;
+	float	m_fHeight;
 	int		m_iSize;
 	float	m_fSpacing;
 	//}}AFX_DATA
 
 	void SetPlantList(vtPlantList3d *plants);
+	void SetPlantOptions(PlantingOptions &opt);
 
 // Overrides
 	// ClassWizard generated virtual function overrides
@@ -44,6 +47,7 @@ public:
 // Implementation
 protected:
 	vtPlantList3d *m_pPlantList;
+	PlantingOptions m_opt;
 	void SizerToSize();
 	void SizeToSizer();
 

@@ -25,10 +25,11 @@ CPlantDlg::CPlantDlg(CWnd* pParent /*=NULL*/)
 {
 	//{{AFX_DATA_INIT(CPlantDlg)
 	m_iSpecies = -1;
-	m_fSize = 0.0f;
+	m_fHeight = 0.0f;
 	m_iSize = 0;
 	m_fSpacing = 0.0f;
 	//}}AFX_DATA_INIT
+	m_pPlantList = NULL;
 }
 
 
@@ -38,7 +39,7 @@ void CPlantDlg::DoDataExchange(CDataExchange* pDX)
 	//{{AFX_DATA_MAP(CPlantDlg)
 	DDX_Control(pDX, IDC_SPECIES, m_cbSpecies);
 	DDX_CBIndex(pDX, IDC_SPECIES, m_iSpecies);
-	DDX_Text(pDX, IDC_SIZEEDIT, m_fSize);
+	DDX_Text(pDX, IDC_SIZEEDIT, m_fHeight);
 	DDX_Slider(pDX, IDC_SIZESLIDER, m_iSize);
 	DDX_Text(pDX, IDC_SPACINGEDIT, m_fSpacing);
 	//}}AFX_DATA_MAP
@@ -56,7 +57,6 @@ void CPlantDlg::SetPlantList(vtPlantList3d *plants)
 		m_cbSpecies.SetItemData(index, i);
 	}
 	UpdateData(FALSE);
-	OnSelchangeSpecies();
 }
 
 BEGIN_MESSAGE_MAP(CPlantDlg, CDialog)
@@ -75,16 +75,27 @@ BOOL CPlantDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
 
-	m_iSpecies = 0;
-	m_fSize = 2.0f;
-	m_fSpacing = 4.0f;
-	m_iSize = 1;
+	m_iSpecies = m_opt.m_iSpecies;
+	m_fHeight = m_opt.m_fHeight;
+	m_fSpacing = m_opt.m_fSpacing;
+	SizeToSizer();
 
 	UpdateData(FALSE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 }
 
+void CPlantDlg::SetPlantOptions(PlantingOptions &opt)
+{
+	m_opt = opt;
+
+	m_iSpecies = m_opt.m_iSpecies;
+	m_fHeight = m_opt.m_fHeight;
+	m_fSpacing = m_opt.m_fSpacing;
+	SizeToSizer();
+
+	UpdateData(FALSE);
+}
 
 void CPlantDlg::OnSelchangeSpecies() 
 {
@@ -92,8 +103,8 @@ void CPlantDlg::OnSelchangeSpecies()
 	SizeToSizer();
 	UpdateData(FALSE);
 
-	int iSpecies = m_cbSpecies.GetItemData(m_iSpecies);
-	g_App.SetPlantOptions(iSpecies, m_fSize, m_fSpacing);
+	m_opt.m_iSpecies = m_cbSpecies.GetItemData(m_iSpecies);
+	g_App.SetPlantOptions(m_opt);
 }
 
 void CPlantDlg::OnChangeSizeedit() 
@@ -107,8 +118,9 @@ void CPlantDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	SizerToSize();
 	UpdateData(FALSE);
 
-	int iSpecies = m_cbSpecies.GetItemData(m_iSpecies);
-	g_App.SetPlantOptions(iSpecies, m_fSize, m_fSpacing);
+	m_opt.m_iSpecies = m_cbSpecies.GetItemData(m_iSpecies);
+	m_opt.m_fHeight = m_fHeight;
+	g_App.SetPlantOptions(m_opt);
 }
 
 void CPlantDlg::SizerToSize()
@@ -117,7 +129,7 @@ void CPlantDlg::SizerToSize()
 		return;
 	int iSpecies = m_cbSpecies.GetItemData(m_iSpecies);
 	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(iSpecies);
-	m_fSize = m_iSize * pSpecies->GetMaxHeight() / 100.0f;
+	m_fHeight = m_iSize * pSpecies->GetMaxHeight() / 100.0f;
 }
 
 void CPlantDlg::SizeToSizer()
@@ -125,12 +137,18 @@ void CPlantDlg::SizeToSizer()
 	if (!m_pPlantList)
 		return;
 	int iSpecies = m_cbSpecies.GetItemData(m_iSpecies);
-	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(iSpecies);
-	m_iSize = (int) (m_fSize / pSpecies->GetMaxHeight() * 100.0f);
+	if (m_pPlantList)
+	{
+		vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(iSpecies);
+		if (pSpecies)
+			m_iSize = (int) (m_fHeight / pSpecies->GetMaxHeight() * 100.0f);
+	}
 }
 
 
 void CPlantDlg::OnChangeSpacingedit() 
 {
-	OnSelchangeSpecies();
+	UpdateData(TRUE);
+	m_opt.m_fSpacing = m_fSpacing;
+	g_App.SetPlantOptions(m_opt);
 }
