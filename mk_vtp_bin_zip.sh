@@ -45,6 +45,7 @@ zip $DIST_FILE3 VTP/TerrainApps/Enviro/hu/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/pt/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/ro/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/sv/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/zh/Enviro.mo
 
 cp VTP/TerrainApps/VTBuilder/Release_Unicode/VTBuilder_u.exe VTP/TerrainApps/VTBuilder
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/license.txt
@@ -52,6 +53,13 @@ zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder_u.exe
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/VTBuilder.ini
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/*
 zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/Docs/images/*
+
+# VTBuilder locale files
+zip $DIST_FILE3 VTP/TerrainApps/VTBuilder/zh/VTBuilder.mo
+
+# VTConvert
+cp VTP/TerrainApps/VTConvert/Release/VTConvert.exe VTP/TerrainApps/VTConvert
+zip $DIST_FILE3 VTP/TerrainApps/VTConvert/VTConvert.exe
 
 #deal specially with docs
 mv VTP/Docs/*.html VTP/TerrainApps
