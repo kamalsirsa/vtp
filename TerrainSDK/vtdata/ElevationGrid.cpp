@@ -135,8 +135,7 @@ double MetersPerLongitude(double latitude)
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
-	const vtProjection &NewProj,
-	void progress_callback(int))
+	const vtProjection &NewProj, void progress_callback(int))
 {
 	int i, j;
 
@@ -158,10 +157,17 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	}
 
 	// find where the extent corners are going to be in the new terrain
+	int success;
 	for (i = 0; i < 4; i++)
 	{
 		DPoint2 point = pOld->m_Corners[i];
-		trans->Transform(1, &point.x, &point.y);
+		success = trans->Transform(1, &point.x, &point.y);
+		if (success == 0)
+		{
+			// inconvertible projections
+			delete trans;
+			return false;
+		}
 		m_Corners[i] = point;
 	}
 	ComputeExtentsFromCorners();
@@ -233,6 +239,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 			p.x = m_EarthExtents.left + i * step.x;
 			p.y = m_EarthExtents.bottom + j * step.y;
 
+			// Since transforming the extents succeeded, it's safe to assume
+			// that the points will also transform without errors.
 			trans->Transform(1, &p.x, &p.y);
 
 			value = pOld->GetFilteredValue(p.x, p.y);
