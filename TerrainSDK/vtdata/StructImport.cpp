@@ -226,7 +226,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	if (opt.type == ST_BUILDING)
 	{
 		if (nShapeType != SHPT_POINT && nShapeType != SHPT_POLYGON &&
-			nShapeType != SHPT_ARC)
+			nShapeType != SHPT_ARC && nShapeType != SHPT_POLYGONZ)
 			return false;
 		// Check for field with number of stories
 		if (db != NULL)
@@ -348,6 +348,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 					break;
 				}
 			}
+			// if DBF didn't have height info, get it from default building
+			bool bDoHeight = (field_height == -1);
+
+			vtBuilding *pDefBld = GetClosestDefault(bld);
+			if (pDefBld)
+				bld->CopyFromDefault(pDefBld, bDoHeight);
+
 			Append(bld);
 		}
 		if (opt.type == ST_INSTANCE)
@@ -553,27 +560,10 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				pBld->SetFootprint(0, foot);
 
 				vtBuilding *pDefBld = GetClosestDefault(pBld);
-				if (!pDefBld)
-				{
-					pBld->SetStories(1);
-				}
+				if (pDefBld)
+					pBld->CopyFromDefault(pDefBld, true);
 				else
-				{
-					pBld->SetElevationOffset(pDefBld->GetElevationOffset());
-
-					for (unsigned int i = 0; i < pDefBld->GetNumLevels(); i++)
-					{
-						if (i != 0)
-							pBld->CreateLevel(foot);
-						vtLevel *pLevel = pBld->GetLevel(i);
-						pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories * num_stories;
-						pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
-						pLevel->SetEdgeColor(pDefBld->GetLevel(i)->GetEdge(0)->m_Color);
-						pLevel->SetEdgeMaterial(*pDefBld->GetLevel(i)->GetEdge(0)->m_pMaterial);
-						for (int j = 0; j < pLevel->NumEdges(); j++)
-							pLevel->GetEdge(j)->m_iSlope = pDefBld->GetLevel(i)->GetEdge(0)->m_iSlope;
-					}
-				}
+					pBld->SetStories(1);
 
 				Append(pBld);
 			}
@@ -702,7 +692,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 
 		// For the moment ignore multi polygons .. although we could
 		// treat them as multiple buildings !!
-		switch(wkbFlatten(GeometryType))
+		switch (wkbFlatten(GeometryType))
 		{
 			case wkbPolygon:
 				pPolygon = (OGRPolygon *) pGeom;
@@ -800,27 +790,11 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		}
 
 		vtBuilding *pDefBld = GetClosestDefault(pBld);
-		if (!pDefBld)
-		{
-			pBld->SetStories(1);
-		}
+		if (pDefBld)
+			pBld->CopyFromDefault(pDefBld, true);
 		else
-		{
-			pBld->SetElevationOffset(pDefBld->GetElevationOffset());
+			pBld->SetStories(1);
 
-			for (i = 0; i < pDefBld->GetNumLevels(); i++)
-			{
-				if (i != 0)
-					pBld->CreateLevel(footprint);
-				vtLevel *pLevel = pBld->GetLevel(i);
-				pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories;
-				pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
-				pLevel->SetEdgeColor(pDefBld->GetLevel(i)->GetEdge(0)->m_Color);
-				pLevel->SetEdgeMaterial(*pDefBld->GetLevel(i)->GetEdge(0)->m_pMaterial);
-				for (int j = 0;  j < pLevel->NumEdges(); j++)
-					pLevel->GetEdge(j)->m_iSlope = pDefBld->GetLevel(i)->GetEdge(0)->m_iSlope;
-			}
-		}
 		// Set the correct height for the roof level if neccessary
 		pLevel = pBld->GetLevel(pBld->GetNumLevels() - 1);
 		pBld->SetRoofType(pLevel->GuessRoofType(), pLevel->GetEdge(0)->m_iSlope);
