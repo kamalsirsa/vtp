@@ -109,6 +109,7 @@ protected:
 vtScene *vtGetScene();
 float vtGetTime();
 float vtGetFrameTime();
+int vtGetMaxTextureSize();
 
 #endif	// VTOSG_SCENEH
 

@@ -76,6 +76,13 @@ float vtGetFrameTime()
 	return g_Scene.GetFrameTime();
 }
 
+int vtGetMaxTextureSize()
+{
+	GLint tmax = 0;	// TODO: cannot make direct GL calls in threaded environment
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
+	return tmax;
+}
+
 void vtScene::SetBgColor(RGBf color)
 {
 	Vec4 color2;
