@@ -35,11 +35,26 @@ static void Args(int argc, wxChar **argv)
 
 IMPLEMENT_APP(vtApp)
 
+class LogCatcher : public wxLog
+{
+    void DoLogString(const wxChar *szString, time_t t)
+	{
+		VTLOG(" wxLog: ");
+		VTLOG(szString);
+		VTLOG("\n");
+	}
+};
+
+
 //
 // Initialize the app object
 //
 bool vtApp::OnInit(void)
 {
+	// Redirect the wxWindows log messages to our own logging stream
+	wxLog *logger = new LogCatcher();
+	wxLog::SetActiveTarget(logger);
+
 	Args(argc, argv);
 
 	g_Log._StartLog("debug.txt");
@@ -136,6 +151,8 @@ bool vtApp::OnInit(void)
 
 int vtApp::OnExit(void)
 {
+	VTLOG("App OnExit\n");
+
 	vtCamera *pCamera = vtGetScene()->GetCamera();
 	pCamera->Release();
 
