@@ -1,7 +1,7 @@
 //
 // Projections.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 // Parts of the code are derived from public-domain USGS software.
@@ -68,18 +68,37 @@ vtProjection &vtProjection::operator=(const vtProjection &ref)
 /**
  * Equality operator.
  */
-bool vtProjection::operator==(const vtProjection &ref)
+bool vtProjection::operator==(const vtProjection &ref) const
 {
+	if (m_bDymaxion != ref.m_bDymaxion)
+		return false;
+
 	// Work around problem in IsSame, by detecting this type of difference
 	if( IsProjected() != ref.IsProjected() )
 		return false;
 	bool same = IsSame( (OGRSpatialReference *) &ref ) != 0;
 	if (!same)
 		return false;
-	if (m_bDymaxion != ref.m_bDymaxion)
-		return false;
 
 	return true;
+}
+
+/**
+ * Inequality operator.
+ */
+bool vtProjection::operator!=(const vtProjection &ref) const
+{
+	if (m_bDymaxion != ref.m_bDymaxion)
+		return true;
+
+	// Work around problem in IsSame, by detecting this type of difference
+	if( IsProjected() != ref.IsProjected() )
+		return true;
+	bool same = IsSame( (OGRSpatialReference *) &ref ) != 0;
+	if (!same)
+		return true;
+
+	return false;
 }
 
 /**

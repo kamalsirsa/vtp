@@ -46,8 +46,9 @@ enum LinearUnits
 
 ///////////////////////////
 
-/**  The vtProjection class represents an earth projection, which defines a
- * coordinate system.  It is based on the class
+/**  The vtProjection class represents an earth coordinate reference system
+ * (CRS), which is generally a projected coordinate system (PCS).  It is
+ * based on the class
  * <a href="http://gdal.velocet.ca/projects/opengis/ogrhtml/class_ogrspatialreference.html">OGRSpatialReference</a>
  * which represents a full OpenGIS Spatial Reference System.  The vtProjection
  * class extends OGRSpatialReference with several useful methods.
@@ -62,7 +63,8 @@ public:
 	vtProjection &operator=(const vtProjection &ref);
 
 	// Equality
-	bool operator==(const vtProjection &ref);
+	bool operator==(const vtProjection &ref) const;
+	bool operator!=(const vtProjection &ref) const;
 
 	void	SetUTMZone(int iZone);
 	int		GetUTMZone() const;
