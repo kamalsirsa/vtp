@@ -45,7 +45,7 @@ void CPlantDlg::DoDataExchange(CDataExchange* pDX)
 	//}}AFX_DATA_MAP
 }
 
-void CPlantDlg::SetPlantList(vtPlantList3d *plants) 
+void CPlantDlg::SetPlantList(vtSpeciesList3d *plants) 
 {
 	m_pPlantList = plants;
 

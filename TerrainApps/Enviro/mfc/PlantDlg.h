@@ -14,7 +14,7 @@
 #include "resource.h"
 #include "../PlantingOptions.h"
 
-class vtPlantList3d;
+class vtSpeciesList3d;
 
 /////////////////////////////////////////////////////////////////////////////
 // CPlantDlg dialog
@@ -35,7 +35,7 @@ public:
 	float	m_fSpacing;
 	//}}AFX_DATA
 
-	void SetPlantList(vtPlantList3d *plants);
+	void SetPlantList(vtSpeciesList3d *plants);
 	void SetPlantOptions(PlantingOptions &opt);
 
 // Overrides
@@ -47,7 +47,7 @@ public:
 
 // Implementation
 protected:
-	vtPlantList3d *m_pPlantList;
+	vtSpeciesList3d *m_pPlantList;
 	PlantingOptions m_opt;
 	void SizerToSize();
 	void SizeToSizer();
