@@ -67,30 +67,71 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 /**
  * Copy constructor.
  */
-vtElevationGrid::vtElevationGrid(const vtElevationGrid &Other)
+vtElevationGrid::vtElevationGrid(const vtElevationGrid &rhs)
 {
-	// Copy on write pointers for the data would be a better solution.
-	// Then we could use the default copy constructor and assignment
-	// operator, instead of writing them and their common _Copy()
-	// subroutine.
-	_Copy(Other);
+	*this = rhs;
 }
 
 /**
  * Assignment operator.
  * \return	*this with new values
  */
-vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &Other)
+vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 {
-	if (this != &Other)
+	if (this == &rhs)
+		return *this;
+
+	if (m_pData)
+		free(m_pData);
+
+	if (m_pFData)
+		free(m_pFData);
+
+	m_EarthExtents = rhs.m_EarthExtents;
+	m_iColumns   = rhs.m_iColumns;
+	m_iRows		 = rhs.m_iRows;
+	m_bFloatMode = rhs.m_bFloatMode;
+	m_fVMeters   = rhs.m_fVMeters;
+
+	for (unsigned ii = 0; ii < sizeof( m_Corners ) / sizeof( *m_Corners ); ++ii)
+		m_Corners[ii] = rhs.m_Corners[ii];
+
+	m_proj = rhs.m_proj;
+
+	m_fMinHeight = rhs.m_fMinHeight;
+	m_fMaxHeight = rhs.m_fMaxHeight;
+
+	m_strOriginalDEMName = rhs.m_strOriginalDEMName;
+
+	if( m_bFloatMode )
 	{
-		if (m_pData)
-			free(m_pData);
+		m_pData = NULL;
 
-		if (m_pFData)
-			free(m_pFData);
+		if( rhs.m_pFData )
+		{
+			size_t Size = m_iColumns * m_iRows * sizeof(float);
 
-		_Copy(Other);
+			m_pFData = (float *)malloc( Size );
+
+			memcpy( m_pFData, rhs.m_pFData, Size );
+		}
+		else
+			m_pFData = NULL;
+	}
+	else
+	{
+		m_pFData = NULL;
+
+		if( rhs.m_pData )
+		{
+			size_t Size = m_iColumns * m_iRows * sizeof(short);
+
+			m_pData = (short *)malloc(Size);
+
+			memcpy( m_pData, rhs.m_pData, Size );
+		}
+		else
+			m_pData = NULL;
 	}
 	return *this;
 }
@@ -170,13 +211,12 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// now, how large an array will we need for the new terrain?
 	// try to preserve the sampling rate approximately
 	//
-	double meters_per_longitude;
-
 	bool bOldGeo = (pSource->IsGeographic() != 0);
 	bool bNewGeo = (pDest->IsGeographic() != 0);
 
 	DPoint2 old_step = pOld->GetSpacing();
 	DPoint2 new_step;
+	double meters_per_longitude;
 
 	if (bOldGeo && !bNewGeo)
 	{
@@ -329,11 +369,10 @@ void vtElevationGrid::Scale(float fScale, bool bDirect)
  */
 void vtElevationGrid::ComputeHeightExtents()
 {
-	int i, j;
-
 	m_fMinHeight = 100000.0f;
 	m_fMaxHeight = -100000.0f;
 
+	int i, j;
 	for (i=0; i<m_iColumns; i++)
 	{
 		for (j=0; j<m_iRows; j++)
@@ -483,10 +522,13 @@ void vtElevationGrid::ComputeCornersFromExtents()
 //
 void vtElevationGrid::_AllocateArray()
 {
-	if (m_bFloatMode) {
+	if (m_bFloatMode)
+	{
 		m_pData = NULL;
 		m_pFData = (float *)malloc(m_iColumns * m_iRows * sizeof(float));
-	} else {
+	}
+	else
+	{
 		m_pData = (short *)malloc(m_iColumns * m_iRows * sizeof(short));
 		m_pFData = NULL;
 	}
@@ -535,10 +577,6 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 	int gw, gh;
 	GetDimensions(gw, gh);
 
-	int i, j;
-	int x, y;
-	RGBi color;
-
 	float fMin, fMax;
 	GetHeightExtents(fMin, fMax);
 
@@ -548,6 +586,10 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 	colors.Append(RGBi(128, 128, 128));
 	int bracket, num = colors.GetSize();
 	float bracket_size = (fMax - fMin) / (num - 1);
+
+	int i, j;
+	int x, y;
+	RGBi color;
 
 	// iterate over the texels
 	for (i = 0; i < w; i++)
@@ -830,59 +872,6 @@ void vtElevationGrid::SetCorners(const DLine2 &line)
 		m_Corners[i] = line[i];
 }
 
-/*
- * Helper for copy ctor and assignment operator.
- */
-void vtElevationGrid::_Copy(const vtElevationGrid &Other)
-{
-	m_EarthExtents		 = Other.m_EarthExtents;
-	m_iColumns   = Other.m_iColumns;
-	m_iRows		 = Other.m_iRows;
-	m_bFloatMode = Other.m_bFloatMode;
-	m_fVMeters   = Other.m_fVMeters;
-
-	for (unsigned ii = 0; ii < sizeof( m_Corners ) / sizeof( *m_Corners ); ++ii)
-		m_Corners[ii] = Other.m_Corners[ii];
-
-	m_proj = Other.m_proj;
-
-	m_fMinHeight = Other.m_fMinHeight;
-	m_fMaxHeight = Other.m_fMaxHeight;
-
-	m_strOriginalDEMName = Other.m_strOriginalDEMName;
-
-	if( m_bFloatMode )
-	{
-		m_pData = NULL;
-
-		if( Other.m_pFData )
-		{
-			size_t Size = m_iColumns * m_iRows * sizeof(float);
-
-			m_pFData = (float *)malloc( Size );
-
-			memcpy( m_pFData, Other.m_pFData, Size );
-		}
-		else
-			m_pFData = NULL;
-	}
-	else
-	{
-		m_pFData = NULL;
-
-		if( Other.m_pData )
-		{
-			size_t Size = m_iColumns * m_iRows * sizeof(short);
-
-			m_pData = (short *)malloc(Size);
-
-			memcpy( m_pData, Other.m_pData, Size );
-		}
-		else
-			m_pData = NULL;
-	}
-}
-
 void vtElevationGrid::SetupConversion(float fVerticalExag)
 {
 	if (m_fMinHeight == INVALID_ELEVATION ||
@@ -990,11 +979,10 @@ bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) c
 		return false;
 	}
 
-	float alt0, alt1, alt2, alt3;
-	alt0 = GetFValue(iX, iY);
-	alt1 = GetFValue(iX+1, iY);
-	alt2 = GetFValue(iX+1, iY+1);
-	alt3 = GetFValue(iX, iY+1);
+	float alt0 = GetFValue(iX, iY);
+	float alt1 = GetFValue(iX+1, iY);
+	float alt2 = GetFValue(iX+1, iY+1);
+	float alt3 = GetFValue(iX, iY+1);
 
 	// find fractional amount (0..1 across quad)
 	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
@@ -1012,9 +1000,7 @@ bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) c
 void vtElevationGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 	float light_adj, void progress_callback(int))
 {
-	FPoint3 p1, p2, p3;
-	FPoint3 v1, v2, v3;
-
+	// consider upward-pointing, rather than downward-pointing, normal
 	light_dir = -light_dir;
 
 	int w = pDIB->GetWidth();
@@ -1023,14 +1009,15 @@ void vtElevationGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 	int gw, gh;
 	GetDimensions(gw, gh);
 
-	int i, j;
-	int x, y;
-	int r, g, b;
-
 	float xFactor = (float)gw/(float)w;
 	float yFactor = (float)gh/(float)h;
 
 	bool mono = (pDIB->GetDepth() == 8);
+	FPoint3 p1, p2, p3;
+	FPoint3 v1, v2, v3;
+	int i, j;
+	int x, y;
+	int r, g, b;
 
 	// iterate over the texels
 	for (j = 0; j < h-1; j++)

@@ -827,22 +827,18 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 //
 float get_dms8(FILE *fp)
 {
-	float f;
-	char hem;
-	float degrees, minutes, seconds;
-
 	char buf[8];
 	fread(buf, 8, 1, fp);
 
-	hem = buf[7];
+	char hem = buf[7];
 	buf[7] = '\0';
-	seconds = (float)atof(buf + 5);
+	float seconds = (float)atof(buf + 5);
 	buf[5] = '\0';
-	minutes = (float)atof(buf + 3);
+	float minutes = (float)atof(buf + 3);
 	buf[3] = '\0';
-	degrees = (float)atof(buf);
+	float degrees = (float)atof(buf);
 
-	f = degrees + minutes/60 + seconds/3600;
+	float f = degrees + minutes/60 + seconds/3600;
 	if (hem == 'W') f = -f;
 	if (hem == 'S') f = -f;
 
@@ -855,14 +851,10 @@ float get_dms8(FILE *fp)
 //
 int get_dddd(FILE *fp)
 {
-	int i;
-
 	char buf[5];
 	buf[4] = '\0';
 	fread(buf, 4, 1, fp);
-	i = atoi(buf);
-
-	return i;
+	return atoi(buf);
 }
 
 //
@@ -872,12 +864,8 @@ int get_dddd(FILE *fp)
 //
 double get_ssss(FILE *fp)
 {
-	double f;
-
-	f = get_dddd(fp);
-	f = f/36000;
-
-	return f;
+	double f = get_dddd(fp);
+	return f/36000;
 }
 
 /** Loads from a DTED file.
@@ -897,14 +885,9 @@ double get_ssss(FILE *fp)
 bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 								 void progress_callback(int))
 {
-	FILE *fp;
-	char buf[80];
-
-	if (!(fp = fopen(szFileName, "rb")))
-	{
-		// Cannot Open File
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)	// Cannot Open File
 		return false;
-	}
 
 	// all DTEDs are geographic and in integer meters
 	// datum is always WGS84
@@ -912,6 +895,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	m_bFloatMode = false;
 
 	// check for correct format
+	char buf[80];
 	int header = 0;
 	fread(buf, 4, 1, fp);
 	buf[4] = 0;
@@ -920,7 +904,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	if (!strncmp(buf, "UHL1", 4))
 		header = 2;
 
-	if (!header)
+	if (header == 0)
 	{
 		// Not a DTED file
 		fclose(fp);
@@ -1175,7 +1159,8 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 bool vtElevationGrid::LoadFromGLOBE(const char *szFileName,
 									void progress_callback(int))
 {
-	if (progress_callback != NULL) progress_callback(1);
+	if (progress_callback != NULL)
+		progress_callback(1);
 
 	// Open the header file
 	ifstream hdrFile(szFileName);
@@ -1341,56 +1326,48 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
  */
 bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback(int))
 {
-	int xsize,ysize;
-	char sbuf[512],			/* buffer for file input */
-	dummy[2];				/* used for \n and \0   */
-	char *junk;				/* unconverted part of a number */
-	double a, maxval;
-	FILE *fpin;				/* input file pointer */
-	bool bBinary;			/* PGM binary format flag */
-	unsigned char oneb;		/* one byte from file */
-
-	/* open input file */
-	if ((fpin = fopen(szFileName, "rb")) == NULL)
-	{
-		// "Could not open input file"
+	// open input file
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)		// Could not open input file
 		return false;
-	}
 
-	if (fread(sbuf, sizeof(char), 2, fpin) != 2)
+	char sbuf[512],			// buffer for file input
+		 dummy[2];			// used for \n and \0
+	if (fread(sbuf, sizeof(char), 2, fp) != 2)
 	{
 		// "Could not read file"
 		return false;
 	}
 
-	bBinary = false;	/* assume PGM ascii */
+	bool bBinary = false;	// PGM binary format flag: assume PGM ascii
 	if (strncmp(sbuf,"P5",2) == 0)
-		bBinary = 1;	/* PGM binary format */
+		bBinary = 1;		// PGM binary format
 
 	if (strncmp(sbuf,"GI",2) == 0) {
-		fclose(fpin);
+		fclose(fp);
 		return false;
 	}
 	else if ((strncmp(sbuf,"P5",2) != 0) && (strncmp(sbuf,"P2",2) != 0))
 	{
 		/* not PGM Ascii */
-		fclose(fpin);
+		fclose(fp);
 		return false;
 	}
 
-	/* read PGM ASCII or binary file */
-	while ((fscanf(fpin, "%s", sbuf) != EOF) && sbuf[0] == '#')
+	// read PGM ASCII or binary file
+	while ((fscanf(fp, "%s", sbuf) != EOF) && sbuf[0] == '#')
 	{
 		// comment
-		fscanf(fpin,"%[^\n]", sbuf);  /* read comment beyond '#' */
-		fscanf(fpin,"%[\n]", dummy);  /* read newline */
+		fscanf(fp,"%[^\n]", sbuf);  // read comment beyond '#'
+		fscanf(fp,"%[\n]", dummy);  // read newline
 	}
 
-	xsize = atoi(sbuf);				/* store xsize of array */
-	fscanf(fpin,"%s",sbuf);			/* read ysize of array */
-	ysize = atoi(sbuf);
-	fscanf(fpin,"%s\n",sbuf);		/* read maxval of array */
-	maxval = strtod(sbuf, &junk);	/* store maxval. could throw away. */
+	int xsize = atoi(sbuf);		// store xsize of array
+	fscanf(fp,"%s",sbuf);		// read ysize of array
+	int ysize = atoi(sbuf);
+	fscanf(fp,"%s\n",sbuf);		// read maxval of array
+	char *junk;					// unconverted part of a number
+	double maxval = strtod(sbuf, &junk);/* store maxval. could throw away. */
 
 	// Set the projection (actually we don't know it)
 	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
@@ -1408,34 +1385,36 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 
 	_AllocateArray();
 
+	unsigned char oneb;		// one byte from file
+	double a;
 	if (bBinary)
 	{
-		/* read PGM binary */
+		// read PGM binary
 		for (int j = 0; j < ysize; j++)
 		{
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
 			for (int i = 0; i < xsize; i++)
 			{
-				fread(&oneb, sizeof(unsigned char), 1, fpin);
+				fread(&oneb, sizeof(unsigned char), 1, fp);
 				SetFValue(i, ysize-1-j, oneb);
 			}
 		}
 	}
 	else
 	{
-		/* read PGM ASCII */
+		// read PGM ASCII
 		for (int j = 0; j < ysize; j++)
 		{
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
 			for (int i = 0; i < xsize; i++)
 			{
-				fscanf(fpin, "%s", sbuf);
+				fscanf(fp, "%s", sbuf);
 				a = strtod(sbuf, &junk);
 				SetFValue(i, ysize-1-j, (float)a);
 			}
 		}
 	}
-	fclose(fpin);
+	fclose(fp);
 	return true;
 }
 
@@ -1444,15 +1423,12 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
  * \par
  * This can be useful if you want to check the information such as the
  * size of the data, without reading the entire file.
+ * This method works whether it is given a normal BT file, or one which
+ * has been compressed with gzip.
  * \returns \c true if the header was successfully parsed.
  */
 bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 {
-	short svalue, proj_type, zone, datum, external;
-	int ivalue;
-	char buf[11];
-	float ftmp;
-
 	// The gz functions (gzopen etc.) behave exactly like the stdlib
 	//  functions (fopen etc.) in the case where the input file is not in
 	//  gzip format, so we can simply use them without worry.
@@ -1460,6 +1436,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	if (!fp)
 		return false;		// Cannot Open File
 
+	char buf[11];
 	gzread(fp, buf, 10);
 	buf[10] = '\0';
 
@@ -1472,13 +1449,16 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	float version;
 	sscanf(buf+7, "%f", &version);
 
-	/*  NOTE:  BT format is little-endian  */
+	// NOTE:  BT format is little-endian
 	GZFRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 	GZFRead(&m_iRows,	   DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 	// Default to internal projection
-	external = 0;
+	short external = 0;
 
+	short svalue, proj_type, zone, datum;
+	int ivalue;
+	float ftmp;
 	if (version == 1.0f)
 	{
 		// data size
@@ -1566,12 +1546,12 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 /** Loads from a BT (Binary Terrain) file.
  * \par
  * Both the current version (1.1) and older BT versions are supported.
+ * This method works whether it is given a normal BT file, or one which
+ * has been compressed with gzip.
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(int))
 {
-	int i;
-
 	// First load the header
 	if (!LoadBTHeader(szFileName))
 		return false;
@@ -1585,6 +1565,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 
 	_AllocateArray();
 
+	int i;
 #if 0
 	// slow way
 	int value;
@@ -1594,7 +1575,8 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
 		for (j = 0; j < m_iRows; j++)
 		{
-			if (m_bFloatMode) {
+			if (m_bFloatMode)
+			{
 				GZFRead(&fvalue, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 				SetFValue(i, j, fvalue);
 			}
@@ -1919,8 +1901,6 @@ bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName)
  */
 bool vtElevationGrid::SaveToBMP(const char *szFileName)
 {
-	vtDIB dib;
-
 	// We must scale from our actual range down to 8 bits
 	float fMin = m_fMinHeight;
 	if (fMin < 0)
@@ -1929,6 +1909,7 @@ bool vtElevationGrid::SaveToBMP(const char *szFileName)
 	float fRange = fMax - fMin;
 	float fScale = (fRange == 0.0f ? 0.0f : 255.0f / fRange);
 
+	vtDIB dib;
 	if (!dib.Create(m_iColumns, m_iRows, 8, true))
 		return false;
 
@@ -2103,33 +2084,24 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 								   void progress_callback(int))
 {
-	OGRDataSource	*pDatasource = NULL;
-	OGRLayer		*pLayer = NULL;
-	OGRFeature		*pFeature = NULL;
-	OGRFeatureDefn	*pFeatureDefn = NULL;
-	OGRFieldDefn	*pFieldDefn = NULL;
-	OGRPoint		*pPoint;
-	OGRSpatialReference *pSpatialRef;
-	OGREnvelope		Extent;
-	int iRowCount;
-	int iColCount;
-	int i;
-	double dX;
-	int				iTotalCells;
-	bool			bRet = false;
+	OGREnvelope Extent;
+	bool bRet = false;
 
 	g_GDALWrapper.RequestOGRFormats();
 
-	if (NULL == (pDatasource = OGRSFDriverRegistrar::Open(szFileName)))
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(szFileName);
+	if (NULL == pDatasource)
 		goto Exit;
 
 	if (1 != pDatasource->GetLayerCount())
 		goto Exit;
 
-	if (NULL == (pLayer = pDatasource->GetLayer(0)))
+	OGRLayer *pLayer = pDatasource->GetLayer(0);
+	if (NULL == pLayer)
 		goto Exit;
 
-	if (NULL == (pFeatureDefn = pLayer->GetLayerDefn()))
+	OGRFeatureDefn *pFeatureDefn = pLayer->GetLayerDefn();
+	if (NULL == pFeatureDefn)
 		goto Exit;
 
 	if (0 != strncmp(pFeatureDefn->GetName(), "DTM_", 4))
@@ -2141,27 +2113,32 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	if (1 != pFeatureDefn->GetFieldCount())
 		goto Exit;
 
-	if (NULL == (pFieldDefn = pFeatureDefn->GetFieldDefn(0)))
+	OGRFieldDefn *pFieldDefn = pFeatureDefn->GetFieldDefn(0);
+	if (NULL == pFieldDefn)
 		goto Exit;
 
 	if (0 != strcmp(pFieldDefn->GetNameRef(), "HEIGHT"))
 		goto Exit;
 
-	if (NULL == (pSpatialRef = pLayer->GetSpatialRef()))
+	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+	if (NULL == pSpatialRef)
 		goto Exit;
 
 	pLayer->GetExtent(&Extent);
 
 	// Get number of features. In this case the total number of cells
 	// in the elevation matrix
-	iTotalCells = pLayer->GetFeatureCount();
+	int iTotalCells = pLayer->GetFeatureCount();
 
   	pLayer->ResetReading();
 
 	// Prescan the features to calculate the x and y intervals
 	// this is a horrible kludge
-	iRowCount = 0;
-	while( (pFeature = pLayer->GetNextFeature()) != NULL )
+	int iRowCount = 0;
+	OGRFeature *pFeature = NULL;
+	OGRPoint *pPoint;
+	double dX;
+	while ( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
 		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
 			goto Exit;
@@ -2182,7 +2159,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 		iRowCount++;
 	}
 
-	iColCount = iTotalCells / iRowCount;
+	int iColCount = iTotalCells / iRowCount;
 
 	m_iColumns = iColCount;
 	m_iRows = iRowCount;
@@ -2198,6 +2175,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 
   	pLayer->ResetReading();
 
+	int i;
 	for (i = 0; i < iTotalCells; i++)
 	{
 		if (NULL == (pFeature = pLayer->GetNextFeature()))
@@ -2321,10 +2299,31 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
  */
 bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_callback(int))
 {
-	FILE *fp;
-	int offset_to_header;
-	int offset_to_data;
+	/* open input file */
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)	// Could not open input file
+		return false;
+
 	char buf[40];
+	fread(buf, 9, 1, fp);
+	if (strncmp(buf, "*MICRODEM", 9))
+	{
+		// not MicroDEM format
+		fclose(fp);
+		return false;
+	}
+
+	// Find offsets to header and data
+	fseek(fp, 14, SEEK_SET);
+	fread(buf, 5, 1, fp);
+	buf[5] = '\0';
+	int offset_to_header = atoi(buf);
+	fseek(fp, 36, SEEK_SET);
+	fread(buf, 5, 1, fp);
+	buf[5] = '\0';
+	int offset_to_data = atoi(buf);
+
+	// Read header
 	short xsize, ysize;
 	short max_elev, min_elev;
 	char xspacing, yspacing;
@@ -2340,32 +2339,6 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	double scalefactor;
 	int i, j;
 
-	/* open input file */
-	if ((fp = fopen(szFileName, "rb")) == NULL)
-	{
-		// "Could not open input file"
-		return false;
-	}
-
-	fread(buf, 9, 1, fp);
-	if (strncmp(buf, "*MICRODEM", 9))
-	{
-		// not MicroDEM format
-		fclose(fp);
-		return false;
-	}
-
-	// Find offsets to header and data
-	fseek(fp, 14, SEEK_SET);
-	fread(buf, 5, 1, fp);
-	buf[5] = '\0';
-	offset_to_header = atoi(buf);
-	fseek(fp, 36, SEEK_SET);
-	fread(buf, 5, 1, fp);
-	buf[5] = '\0';
-	offset_to_data = atoi(buf);
-
-	// Read header
 	fseek(fp, offset_to_header, SEEK_SET);
 	fread(&xsize, 2, 1, fp);
 	fread(&ysize, 2, 1, fp);
