@@ -279,7 +279,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		if (num_children > 200)
 		{
 			wxTreeItemId	hSubItem;
-			str.Format("(%d children)", num_children);
+			str.Printf("(%d children)", num_children);
 			hSubItem = m_pTree->AppendItem(hNewItem, str, 8, 8);
 		}
 		else
