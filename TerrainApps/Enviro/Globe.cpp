@@ -149,6 +149,15 @@ void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 void IcoGlobe::set_face_verts2(vtMesh *mesh, int face, float f)
 {
 	refresh_face_positions(m_mesh[face], face, f);
+
+	if (f == 1.0f)
+	{
+		// sphere normals
+		for (int i = 0; i < m_rtv[face].GetSize(); i++)
+			mesh->SetVtxNormal(i, m_rtv[face][i].p);
+	}
+	else
+		m_mesh[face]->SetNormalsFromPrimitives();
 }
 
 void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
