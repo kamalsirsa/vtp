@@ -159,7 +159,8 @@ bool vtMaterial::GetTransparent()
 	// OSG 0.8.45 and before
 //	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::TRANSPARENCY);
 	// OSG 0.9.0
-	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::BLENDFUNC);
+	osg::StateAttribute::GLModeValue m;
+	m = m_pStateSet->getMode(osg::StateAttribute::BLENDFUNC);
 	return (m == GEO_ON);
 }
 
@@ -173,7 +174,8 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	m_pTexture->setImage(pImage->m_pOsgImage);
 
-	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(), osg::StateAttribute::ON);
+	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(),
+		osg::StateAttribute::ON);
 }
 
 /**
