@@ -921,7 +921,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	FPoint3 norm = Normal(quad[0],quad[1],quad[3]);
 
 	fname += pEdge->m_Facade;
-	fname = FindFileOnPaths(vtTerrain::m_DataPaths, (pcchar)fname);
+	fname = FindFileOnPaths(vtTerrain::s_DataPaths, (pcchar)fname);
 	if (fname == "")
 		return false;
 

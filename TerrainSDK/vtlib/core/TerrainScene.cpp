@@ -232,7 +232,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	// if the new terrain wants a skydome, and we haven't created one yet,
 	// do so
 	if (param.m_bSky && !m_pSkyDome)
-		_CreateSkydome(vtTerrain::m_DataPaths);
+		_CreateSkydome(vtTerrain::s_DataPaths);
 
 	// move the sky to fit the new current terrain
 	if (m_pSkyDome)
@@ -285,7 +285,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 		{
 			vtString filename = "Sky/";
 			filename += param.m_strSkyTexture;
-			vtString skytex = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
+			vtString skytex = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
 			if (skytex != "")
 				m_pSkyDome->SetTexture(skytex);
 		}

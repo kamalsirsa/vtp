@@ -216,8 +216,8 @@ public:
 	/********************** Statics ******************/
 
 	// during creation, all data will be looked for on the data path
-	static void SetDataPath(const vtStringArray &paths) { m_DataPaths = paths; }
-	static vtStringArray m_DataPaths;
+	static void SetDataPath(const vtStringArray &paths) { s_DataPaths = paths; }
+	static vtStringArray s_DataPaths;
 	static vtContentManager3d s_Content;
 
 protected:

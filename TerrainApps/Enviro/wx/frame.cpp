@@ -1212,7 +1212,7 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 
 	vtString loc = "Locations/";
 	loc += pTerrain->GetParams().m_strLocFile;
-	vtString path = FindFileOnPaths(pTerrain->m_DataPaths, loc);
+	vtString path = FindFileOnPaths(pTerrain->s_DataPaths, loc);
 	if (path != "")
 	{
 		m_pLocationDlg->SetLocFile((const char *)path);

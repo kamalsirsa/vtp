@@ -72,7 +72,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	// Here is an example of how to load structures from a VTST file:
 	if (PointIsInTerrain(DPoint2(240749, 2194370))) // if area includes top of Mauna Kea
 	{
-		vtString path = FindFileOnPaths(m_DataPaths, "BuildingData/MaunaKea.vtst");
+		vtString path = FindFileOnPaths(s_DataPaths, "BuildingData/MaunaKea.vtst");
 		if (path != "")
 			CreateStructuresFromXML(path);
 	}
@@ -170,7 +170,7 @@ void IslandTerrain::set_detail_texture()
 {
 	const char *fname = "GeoTypical/grass_repeat2_512.jpg";
 
-	vtString path = FindFileOnPaths(m_DataPaths, fname);
+	vtString path = FindFileOnPaths(s_DataPaths, fname);
 	vtDIB *dib = new vtDIB;
 
 	if (!dib->ReadBMP((const char *) path))
@@ -452,7 +452,7 @@ void IslandTerrain::do_test_code()
 	feat.SetEntityType(SHPT_POINTZ);
 	feat.AddField("Text", FTString);
 	feat.GetAtProjection() = m_proj;
-	vtString labels_path = FindFileOnPaths(m_DataPaths, "PointData/places.txt");
+	vtString labels_path = FindFileOnPaths(s_DataPaths, "PointData/places.txt");
 	FILE *fp = fopen(labels_path, "r");
 	while( !feof(fp) )
 	{

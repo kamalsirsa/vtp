@@ -24,7 +24,7 @@ void Romania::CreateCustomCulture(bool bDoSound)
 	vtString fname = "PointData/";
 	fname += "RO.shp";
 //	fname += "RO-subset.shp";
-	vtString path = FindFileOnPaths(m_DataPaths, fname);
+	vtString path = FindFileOnPaths(s_DataPaths, fname);
 	if (path == "")
 		return;
 

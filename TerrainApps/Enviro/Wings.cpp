@@ -24,7 +24,7 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 	else if (number == 1)	fname = "Nevada/butterfly2_v1.png";
 	else if (number == 2)	fname = "Nevada/butterfly3_v2.png";
 
-	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, fname);
+	vtString path = FindFileOnPaths(vtTerrain::s_DataPaths, fname);
 	m_pMats = new vtMaterialArray();
 	m_pMats->AddTextureMaterial2(path,
 		false, true,	// cull, light

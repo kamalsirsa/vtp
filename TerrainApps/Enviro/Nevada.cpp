@@ -126,7 +126,7 @@ void NevadaTerrain::CreateWater()
 	size.y = (float) world_extents.Height();
 
 	// create water material: texture waves
-	vtString str = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
+	vtString str = FindFileOnPaths(s_DataPaths, "GeoTypical/ocean1_256.jpg");
 
 	int id;
 
@@ -159,9 +159,9 @@ void NevadaTerrain::CreateDetailTextures()
 {
 	vtString str;
 
-	str = FindFileOnPaths(m_DataPaths, "Nevada/playa3.png");
+	str = FindFileOnPaths(s_DataPaths, "Nevada/playa3.png");
 	vtImage *pDetailTexture = new vtImage(str);
-	str = FindFileOnPaths(m_DataPaths, "Nevada/green3.png");
+	str = FindFileOnPaths(s_DataPaths, "Nevada/green3.png");
 	vtImage *pDetailTexture2 = new vtImage(str);
 
 	int id;
@@ -236,7 +236,7 @@ void NevadaTerrain::CreatePast()
 		"SEQ.png",
 		6.0f, 8.5f,	// width, height
 		0.0f, 0.0f);
-	pPlantApp->LoadAndCreate(m_DataPaths, TREE_EXAG, false, true);	// shadows, billboards
+	pPlantApp->LoadAndCreate(s_DataPaths, TREE_EXAG, false, true);	// shadows, billboards
 
 	vtTransform *tree;
 	FPoint3 p3;

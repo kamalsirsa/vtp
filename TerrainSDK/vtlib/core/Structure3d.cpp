@@ -114,7 +114,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	if (filename)
 	{
 		// relative path: look on the standards data paths
-		vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
+		vtString fullpath = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
 		if (fullpath != "")
 		{
 			m_pModel = vtLoadModel(fullpath);
@@ -373,7 +373,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 									1.0f,
 									false));
 	{
-		std::ofstream ops(FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/materials.xml"));
+		std::ofstream ops(FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/materials.xml"));
 		ops << s_MaterialDescriptors;
 		ops.close();
 	}
@@ -387,7 +387,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 		"BuildingModels/window_wall128.jpg", VT_MATERIAL_COLOURABLE_TEXTURE, 1.0f);
 
 	// Now load external materials (user-modifiable, user-extendable)
-	if (!LoadExternalMaterials(vtTerrain::m_DataPaths))
+	if (!LoadExternalMaterials(vtTerrain::s_DataPaths))
 		return;
 }
 
@@ -434,7 +434,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 {
 	RGBf color(1.0f, 1.0f, 1.0f);
 	vtMaterial *pMat = MakeMaterial(color, true);
-	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, descriptor->GetSourceName());
+	vtString path = FindFileOnPaths(vtTerrain::s_DataPaths, descriptor->GetSourceName());
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
@@ -442,7 +442,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 
 void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *descriptor)
 {
-	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, descriptor->GetSourceName());
+	vtString path = FindFileOnPaths(vtTerrain::s_DataPaths, descriptor->GetSourceName());
 	if (path == "")
 		return;
 

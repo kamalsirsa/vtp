@@ -38,7 +38,7 @@
 ///////////////////////////////////////////////////////////////////////
 
 // All terrains share a static data path and content manager
-vtStringArray vtTerrain::m_DataPaths;
+vtStringArray vtTerrain::s_DataPaths;
 vtContentManager3d vtTerrain::s_Content;
 
 //////////////////////////////////////////////////////////////////////
@@ -230,7 +230,7 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 	m_pRoadMap->SetLodDistance(m_Params.m_fRoadDistance * 1000);	// convert km to m
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.m_bTexRoads != 0,
-		m_DataPaths);
+		s_DataPaths);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 
 	if (m_Params.m_bRoadCulture)
@@ -269,7 +269,7 @@ void vtTerrain::create_textures()
 			texture_fname += m_Params.m_strTextureFilename;
 
 		VTLOG("  Texture: %s\n", (const char *) texture_fname);
-		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
+		vtString texture_path = FindFileOnPaths(s_DataPaths, texture_fname);
 		if (texture_path == "")
 		{
 			// failed to find texture
@@ -556,7 +556,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	if (bWater)
 	{
 		// create ocean material: texture waves
-		vtString fname = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
+		vtString fname = FindFileOnPaths(s_DataPaths, "GeoTypical/ocean1_256.jpg");
 		pMat_Ocean->AddTextureMaterial2(fname,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha
@@ -640,7 +640,7 @@ bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 {
 	vtString name = "Elevation/";
 	name += m_Params.m_strElevFile;
-	vtString grid_fname = FindFileOnPaths(m_DataPaths, name);
+	vtString grid_fname = FindFileOnPaths(s_DataPaths, name);
 	if (grid_fname == "")
 	{
 		VTLOG("\t'%s' not found on data paths.", (const char *)name);
@@ -822,7 +822,7 @@ MyTerrain::CreateCustomCulture(bool bSound)
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
 	vtNodeBase *node = NULL;
-	vtString path = FindFileOnPaths(m_DataPaths, filename);
+	vtString path = FindFileOnPaths(s_DataPaths, filename);
 	if (path == "")
 	{
 		VTLOG("Couldn't locate file '%s'\n", filename);
@@ -890,7 +890,7 @@ void vtTerrain::_CreateCulture(bool bSound)
 	{
 		vtString road_fname = "RoadData/";
 		road_fname += m_Params.m_strRoadFile;
-		vtString road_path = FindFileOnPaths(m_DataPaths, road_fname);
+		vtString road_path = FindFileOnPaths(s_DataPaths, road_fname);
 		create_roads(road_path);
 
 		if (m_pRoadMap && m_Params.m_bRoadCulture)
@@ -934,7 +934,7 @@ void vtTerrain::_CreateCulture(bool bSound)
 
 		VTLOG("\tLooking for plants file: %s\n", (const char *) plants_fname);
 
-		vtString plants_path = FindFileOnPaths(m_DataPaths, plants_fname);
+		vtString plants_path = FindFileOnPaths(s_DataPaths, plants_fname);
 		if (plants_path == "")
 		{
 			VTLOG("\tNot found.\n");
@@ -982,7 +982,7 @@ void vtTerrain::_CreateCulture(bool bSound)
 
 		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
 
-		vtString building_path = FindFileOnPaths(m_DataPaths, building_fname);
+		vtString building_path = FindFileOnPaths(s_DataPaths, building_fname);
 		if (building_path == "")
 		{
 			VTLOG("\tNot found.\n");
@@ -1056,7 +1056,7 @@ void vtTerrain::_CreateLabels()
 {
 	vtString fname = "PointData/";
 	fname += m_Params.m_strLabelFile;
-	vtString labels_path = FindFileOnPaths(m_DataPaths, fname);
+	vtString labels_path = FindFileOnPaths(s_DataPaths, fname);
 	if (labels_path == "")
 	{
 		VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
@@ -1082,7 +1082,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 	pPlaceNames->SetName2("Place Names");
 	m_pTerrainGroup->AddChild(pPlaceNames);
 
-	vtString font_path = FindFileOnPaths(m_DataPaths, fontname);
+	vtString font_path = FindFileOnPaths(s_DataPaths, fontname);
 	if (font_path == "")
 	{
 		VTLOG("Couldn't find font file '%s'\n", fontname);
@@ -1203,7 +1203,7 @@ bool vtTerrain::CreateStep1(int &iError)
 	fname += m_Params.m_strElevFile;
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
-	vtString fullpath = FindFileOnPaths(m_DataPaths, fname);
+	vtString fullpath = FindFileOnPaths(s_DataPaths, fname);
 	if (fullpath == "")
 	{
 		iError = TERRAIN_ERROR_NOTFOUND;

@@ -333,7 +333,7 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 		sStructure = "test.obj";
 		sWires = "test.wire";
 	}
-	vtString struct_file = FindFileOnPaths(vtTerrain::m_DataPaths,
+	vtString struct_file = FindFileOnPaths(vtTerrain::s_DataPaths,
 		sStructureDataPath + sStructure);
 
 	if (struct_file == "")
@@ -359,7 +359,7 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 	int j = m_StructObjs.Append(stnew);
 	node->m_struct = m_StructObjs[j];
 
-	vtString wire_file = FindFileOnPaths(vtTerrain::m_DataPaths,
+	vtString wire_file = FindFileOnPaths(vtTerrain::s_DataPaths,
 		sStructureDataPath + sWires);
 	if (wire_file != "")
 		_WireReader(wire_file, stnew);
