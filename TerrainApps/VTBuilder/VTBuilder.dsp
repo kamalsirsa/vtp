@@ -120,6 +120,10 @@ SOURCE=.\BuildingDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DistribVegDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ElevDlg.cpp
 # End Source File
 # Begin Source File
@@ -155,6 +159,10 @@ SOURCE=.\Helper.cpp
 # Begin Source File
 
 SOURCE=.\Import.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ImportVegDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -284,6 +292,10 @@ SOURCE=.\dialog5.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\DistribVegDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ElevDlg.h
 # End Source File
 # Begin Source File
@@ -301,6 +313,10 @@ SOURCE=.\frame.h
 # Begin Source File
 
 SOURCE=.\Helper.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ImportVegDlg.h
 # End Source File
 # Begin Source File
 
