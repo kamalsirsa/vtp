@@ -17,30 +17,25 @@
  */
 struct ControlPoint
 {
-	ControlPoint():
-		m_Scale(1.0f,1.0f,1.0f) {}
+	ControlPoint() {}
 
 	ControlPoint(const FPoint3 &position):
 		m_Position(position),
-		m_Rotation(),
-		m_Scale(1.0f,1.0f,1.0f) {}
+		m_Rotation() {}
 
 	ControlPoint(const FPoint3 &position, const FQuat &rotation):
 		m_Position(position),
-		m_Rotation(rotation),
-		m_Scale(1.0f,1.0f,1.0f) {}
+		m_Rotation(rotation) {}
 
 	ControlPoint(const FPoint3 &position, const FQuat &rotation, const FPoint3 &scale):
 		m_Position(position),
-		m_Rotation(rotation),
-		m_Scale(scale) {}
+		m_Rotation(rotation) {}
 
 	void Interpolate(float ratio,const ControlPoint &first, const ControlPoint &second);
 	void GetMatrix(FMatrix4 &matrix, bool bPosOnly) const;
 
 	FPoint3 m_Position;
 	FQuat m_Rotation;
-	FPoint3 m_Scale;
 	int m_iIndex;
 };
 
@@ -54,17 +49,19 @@ class vtAnimPath
 {
 public:
 	vtAnimPath():
-		m_bLoop(true),
+		m_bLoop(false),
+		m_fLoopSegmentTime(0.0f),
 		m_InterpMode(LINEAR) {}
 
 	vtAnimPath(const vtAnimPath &ap):
 		m_TimeControlPointMap(ap.m_TimeControlPointMap),
 		m_bLoop(ap.m_bLoop),
+		m_fLoopSegmentTime(0.0f),
 		m_InterpMode(ap.m_InterpMode) {}
 
 	virtual ~vtAnimPath() {}
 
-	/// get the transformation matrix for a point in time.        
+	/// get the transformation matrix for a point in time.
 	bool GetMatrix(double time, FMatrix4 &matrix, bool bPosOnly) const
 	{
 		ControlPoint cp;
@@ -80,30 +77,19 @@ public:
 	// Add a control point to this path
 	void Insert(double time, const ControlPoint &controlPoint);
 
+	unsigned int GetNumPoints() { return m_TimeControlPointMap.size(); }
 	void ProcessPoints();
 
-	double GetFirstTime() const
-	{
-		if (m_TimeControlPointMap.empty())
-			return 0.0;
-		return m_TimeControlPointMap.begin()->first;
-	}
-	double GetLastTime() const
-	{
-		if (m_TimeControlPointMap.empty())
-			return 0.0;
-		return m_TimeControlPointMap.rbegin()->first;
-	}
+	double GetFirstTime() const;
+	double GetLastTime() const;
 	double GetPeriod() const { return GetLastTime()-GetFirstTime();}
+	float GetTotalTime();
 
 	enum InterpMode
 	{
 		LINEAR,
 		CUBIC_SPLINE
 	};
-
-	void SetLoop(bool bLoop) { m_bLoop = bLoop; }
-	bool GetLoop() const { return m_bLoop; }
 
 	void SetInterpMode(InterpMode mode) { m_InterpMode = mode; }
 	InterpMode GetInterpMode() const { return m_InterpMode; }
@@ -118,13 +104,23 @@ public:
 /*	void Read(std::istream &in);
 	void Write(std::ostream &out) const; */
 
+	void SetLoop(bool bFlag);
+	bool GetLoop() const { return m_bLoop; }
+
 	void CreateFromLineString(const vtProjection &proj, vtFeatureSetLineString3D &lines);
 
 protected:
+	void InterpolateControlPoints(TimeControlPointMap::const_iterator &a,
+								  TimeControlPointMap::const_iterator &b,
+								  double time,
+								  ControlPoint &c) const;
+	bool			m_bLoop;
 	TimeControlPointMap m_TimeControlPointMap;
-	bool	            m_bLoop;
 	InterpMode			m_InterpMode;
 	CubicSpline			m_Spline;
+
+	float			m_fLoopSegmentTime;
+	ControlPoint	m_LoopControlPoint;
 };
 
 /**
@@ -140,6 +136,7 @@ public:
 		m_fTimeMultiplier(1.0),
 		m_fLastTime(DBL_MAX),
 		m_fTime(0.0f),
+		m_bContinuous(false),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
 
@@ -148,6 +145,7 @@ public:
 		m_fTimeMultiplier(timeMultiplier),
 		m_fLastTime(DBL_MAX),
 		m_fTime(0.0f),
+		m_bContinuous(false),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
 
@@ -163,10 +161,14 @@ public:
 	void SetTimeMultiplier(double multiplier) { m_fTimeMultiplier = multiplier; }
 	double GetTimeMultiplier() const { return m_fTimeMultiplier; }
 
+	void UpdateTargets();
 	void Reset();
 
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
 	float GetSpeed() const { return m_fSpeed; }
+
+	void SetContinuous(bool bFlag) { m_bContinuous = bFlag; }
+	bool GetContinuous() const { return m_bContinuous; }
 
 	void SetPosOnly(bool bFlag) { m_bPosOnly = bFlag; }
 	bool GetPosOnly() const { return m_bPosOnly; }
@@ -175,10 +177,12 @@ public:
 	virtual void Eval();
 	virtual void SetEnabled(bool bOn);
 
+	void SetTime(float fTime) { m_fTime = fTime; }
 	float GetTime() { return m_fTime; }
 
 public:
 	vtAnimPath *m_pAnimationPath;
+	bool	m_bContinuous;
 	double	m_fTimeMultiplier;
 	double	m_fLastTime;
 	double	m_fTime;
