@@ -33,7 +33,6 @@
 
 #include "app.h"
 #include "TParamsDlg.h"
-#include "TParamsTabDlg.h"
 
 //
 // This function is used to find all files in a given directory,
