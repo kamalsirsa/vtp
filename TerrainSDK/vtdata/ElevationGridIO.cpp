@@ -497,7 +497,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	if (bGeographic)
 	{
 		// degrees
-		fRows = m_EarthExtents.Height() * 1200.0f;
+		fRows = m_EarthExtents.Height() / dxdelta * 3600.0f;
 		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
 	}
 	else
@@ -545,7 +545,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			// We cannot use IConvert here, because there *might* be a spurious LF
 			// after the number - seen in some rare files.
 			fscanf(fp, "%d", &iElev);
-			SetValue(i, j, iElev);
+			if (iElev == -32767 || iElev == -32768)
+				SetValue(i, j, INVALID_ELEVATION);
+			else
+				SetValue(i, j, iElev);
 		}
 	}
 	fclose(fp);
