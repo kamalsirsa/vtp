@@ -304,7 +304,12 @@ void vtRawLayer::GetProjection(vtProjection &proj)
 void vtRawLayer::SetProjection(const vtProjection &proj)
 {
 	if (m_pSet)
+	{
+		const vtProjection &current = m_pSet->GetAtProjection();
+		if (proj != current)
+			SetModified(true);
 		m_pSet->SetProjection(proj);
+	}
 }
 
 void vtRawLayer::Offset(const DPoint2 &p)
