@@ -126,9 +126,10 @@ vtSkyDome::~vtSkyDome()
 void vtSkyDome::Create(const char *starfile, int depth, float radius,
 					 const char *sun_texture, const char *moon_texture)
 {
-	VTLOG("  Creating SkyDome\n");
+	VTLOG("  vtSkyDome::Create\n");
 	SetName2("SkyDome");
 
+	VTLOG("   Creating Dome Nodes\n");
 	m_pCelestial = new vtTransform();
 	m_pCelestial->SetName2("Celestial Sphere");
 	AddChild(m_pCelestial);
@@ -139,6 +140,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 	// Only a single material is needed for the dome, since vertex colors are
 	// used to change the color of the sky.
+	VTLOG("   Creating Dome Materials\n");
 	m_pMats = new vtMaterialArray();
 	m_pMat = new vtMaterial();
 	m_pMat->SetLighting(false);
@@ -147,6 +149,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	m_pDomeGeom->SetMaterials(m_pMats);
 
 	// Create the geometry of the dome itself
+	VTLOG("   Creating Dome Mesh\n");
 	int res = 16;
 	m_pDomeMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
 	m_pDomeMesh->CreateEllipsoid(FPoint3(1.0f, 1.0f, 1.0f), res, true);
@@ -154,6 +157,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	m_pDomeMesh->Release();	// pass ownership to Geometry
 
 	// Extra graphics on the dome, to help with development and testing.
+	VTLOG("   Creating Markers\n");
 	CreateMarkers();
 	ShowMarkers(false);
 
@@ -175,6 +179,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	{
 		int idx = -1;
 
+		VTLOG("   Loading Sun Image\n");
 		m_pSunImage = new vtImage(sun_texture);
 		if (m_pSunImage->HasData())
 		{
@@ -190,11 +195,13 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		// Create sun
 		m_pSunMat = m_pMats->GetAt(idx);
 
+		VTLOG("   Creating Sun Geom\n");
 		vtGeom *pGeom = new vtGeom();
 		pGeom->SetName2("Sun geom");
 		m_pSunGeom = new vtMovGeom(pGeom);
 		m_pSunGeom->SetName2("Sun xform");
 
+		VTLOG("   Creating Sun Mesh\n");
 		vtMesh *SunMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		SunMesh->AddRectangleXZ(0.50f, 0.50f);
@@ -673,7 +680,7 @@ vtStarDome::~vtStarDome()
 void vtStarDome::Create(const char *starfile, float brightness,
 					  const char *moon_texture)
 {
-	VTLOG("  Creating StarDome\n");
+	VTLOG("  vtStarDome::Create\n");
 
 	SetName2("StarDome");
 	m_pStarGeom = new vtGeom();
