@@ -50,7 +50,8 @@ void NodeEdit::EnforceRoadEndpoints()
 
 
 // merge nodes less than 8m apart
-#define TOLERANCE (8.0f)
+#define TOLERANCE_METERS (8.0f)
+#define TOLERANCE_DEGREES (TOLERANCE_METERS/110000)
 
 //
 // Since the original data is scattered over many source files,
@@ -64,34 +65,46 @@ void NodeEdit::EnforceRoadEndpoints()
 //
 // Return the number removed.
 //
-int RoadMapEdit::MergeRedundantNodes(void progress_callback(int))
+int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
 {
 	NodeEdit *prev = NULL, *next;
 	DPoint2 diff;
 	int removed = 0;
 
 	int nodes = NumNodes();
-	int total = nodes * nodes / 2;
-	int count = 0;
+	float total = nodes * nodes / 2;
+	int count1 = 0, count = 0, count_tick, count_last_tick = 0;
+	int tick_size = total / 100;
+	double tolerance, tolerance_squared;
+
+	if (bDegrees)
+		tolerance = TOLERANCE_DEGREES;
+	else
+		tolerance = TOLERANCE_METERS;
+	tolerance_squared = tolerance * tolerance;
 
 	NodeEdit *pN, *pN2;
 
 	for (pN = GetFirstNode(); pN && pN->m_pNext; pN = next)
 	{
+		count1++;
 		next = pN->GetNext();
 		bool remove = false;
 		for (pN2 = next; pN2; pN2 = pN2->GetNext())
 		{
-			count++;
-			if ((count % 1000) == 0)
-				progress_callback(count * 100 / total);
-
 			diff = pN2->m_p - pN->m_p;
-			if (diff.Length() < TOLERANCE)
+			if (diff.LengthSquared() < tolerance_squared)
 			{
 				remove = true;
 				break;
 			}
+		}
+		count += (nodes - count1);
+		count_tick = count / tick_size;
+		if (count_tick > count_last_tick)
+		{
+			count_last_tick = count_tick;
+			progress_callback(count_tick);
 		}
 		if (remove)
 		{
@@ -433,12 +446,18 @@ int RoadMapEdit::DeleteDanglingRoads()
 
 
 // fix when two different roads meet at the same node along the same path
-int RoadMapEdit::FixOverlappedRoads()
+int RoadMapEdit::FixOverlappedRoads(bool bDegrees)
 {
 	int fixed = 0, roads;
 	DPoint2 p0, p1, diff;
 	int i, j;
 	RoadEdit *pR1, *pR2;
+
+	double tolerance;
+	if (bDegrees)
+		tolerance = TOLERANCE_DEGREES/8;
+	else
+		tolerance = TOLERANCE_METERS/8;
 
 	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
 	{
