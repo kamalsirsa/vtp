@@ -67,6 +67,8 @@
 
 #  include "select.xpm"
 #  include "str_add_linear.xpm"
+#  include "str_edit_linear.xpm"
+#  include "raw_add_point.xpm"
 
 #  include "twr_edit.xpm"
 
