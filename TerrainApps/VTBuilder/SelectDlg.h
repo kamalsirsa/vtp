@@ -47,6 +47,7 @@ private:
 	// WDR: member variable declarations for SelectDlg
 	vtRawLayer	*m_pLayer;
 	bool		m_bSetting;
+	int			m_iFauxFields;
 
 private:
 	// WDR: handler declarations for SelectDlg

@@ -50,18 +50,28 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	vtProjection proj;
 	m_pLayer->GetProjection(proj);
 
-	if (proj.IsGeographic())
+	m_iFauxFields = 0;
+	int type = m_pLayer->GetEntityType();
+	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
-		GetField()->Append("X (longitude)", (void *) 900);
-		GetField()->Append("Y (latitude)", (void *) 901);
-		GetField()->Append("Z (altitude)", (void *) 902);
+		if (proj.IsGeographic())
+		{
+			GetField()->Append("X (longitude)", (void *) 900);
+			GetField()->Append("Y (latitude)", (void *) 901);
+		}
+		else
+		{
+			GetField()->Append("X (easting)", (void *) 900);
+			GetField()->Append("Y (northing)", (void *) 901);
+		}
+		m_iFauxFields = 2;
 	}
-	else
+	if (type == SHPT_POINTZ)
 	{
-		GetField()->Append("X (easting)", (void *) 900);
-		GetField()->Append("Y (northing)", (void *) 901);
-		GetField()->Append("Z (altitude)", (void *) 902);
+		GetField()->Append("Z (meters)", (void *) 902);
+		m_iFauxFields = 3;
 	}
+
 	for (i = 0; i < m_pLayer->GetNumFields(); i++)
 	{
 		Field *field = m_pLayer->GetField(i);
@@ -80,9 +90,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	FillValuesControl();
 
-//	AddValidator(ID_FIELD, &m_iField);
 	AddValidator(ID_CONDITION, &m_iCondition);
-//	AddValidator(ID_COMBO_VALUE, &m_strValue);
 
 	wxDialog::OnInitDialog(event);	// calls TransferValuesToWindow
 
@@ -132,7 +140,7 @@ void SelectDlg::OnChoiceField( wxCommandEvent &event )
 
 	m_iField = GetField()->GetSelection();
 
-	// work around the 3 "special" items
+	// work around the 2-3 "special" fields
 	void *data = GetField()->GetClientData(m_iField);
 	if (data == (void*) 900)
 		m_iField = -1;
@@ -141,7 +149,7 @@ void SelectDlg::OnChoiceField( wxCommandEvent &event )
 	else if (data == (void*) 902)
 		m_iField = -3;
 	else
-		m_iField -= 3;
+		m_iField -= m_iFauxFields;
 
 	TransferDataFromWindow();
 	FillValuesControl();
