@@ -97,7 +97,7 @@ void SimpleBillboardEngine::Eval()
 	// Potential optimization: store last camera pos and only update on change
 
 	//get the target and it's location
-	for (int i = 0; i < NumTargets(); i++)
+	for (unsigned int i = 0; i < NumTargets(); i++)
 	{
 		vtTransform* pTarget = (vtTransform*) GetTarget(i);
 		if (!pTarget)

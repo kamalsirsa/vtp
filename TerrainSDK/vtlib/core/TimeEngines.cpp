@@ -64,7 +64,7 @@ vtTime TimeEngine::GetTime() const
 
 void TimeEngine::_InformTarget()
 {
-	for (int i = 0; i < NumTargets(); i++)
+	for (unsigned int i = 0; i < NumTargets(); i++)
 	{
 		TimeTarget* pTarget = (TimeTarget *)GetTarget(i);
 		pTarget->SetTime(m_time);

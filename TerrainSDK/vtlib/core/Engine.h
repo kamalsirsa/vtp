@@ -32,7 +32,7 @@ public:
 	 * target.
 	 * \param which The number of the target (default 0).
 	 */
-	vtTarget *GetTarget(int which = 0)
+	vtTarget *GetTarget(unsigned int which = 0)
 	{
 		if (which < NumTargets())
 			return m_pTargets.GetAt(which);
@@ -49,7 +49,7 @@ public:
 	void SetTarget(vtTarget *ptr) { m_pTargets.SetAt(0, ptr); }
 
 	/// Return the number of targets for this engine.
-	int NumTargets() { return m_pTargets.GetSize(); }
+	unsigned int NumTargets() { return m_pTargets.GetSize(); }
 
 	void SetName2(const char *str) { m_strName = str; }
 	const char *GetName2() { return m_strName; }
