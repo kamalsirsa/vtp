@@ -419,3 +419,34 @@ void vtMesh::AllowOptimize(bool bAllow)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+// Text
+
+vtFont::vtFont()
+{
+}
+
+bool vtFont::LoadFont(const char *filename)
+{
+	m_pOsgFont = new osgText::PolygonFont(filename, 24, 3);
+
+	// TODO: is this the correct way to check for success?
+//	if (m_pOsgFont->getHeight() == -1)
+//		return false;
+
+	return true;
+}
+
+////
+
+vtTextMesh::vtTextMesh(vtFont *font, bool bCenter)
+{
+	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
+	if (bCenter)
+		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
+}
+
+void vtTextMesh::SetText(const char *text)
+{
+	m_pOsgText->setText(text);
+}

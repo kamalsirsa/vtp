@@ -170,6 +170,8 @@ public:
 	vtLight	*m_pLight;
 };
 
+class vtTextMesh;
+
 /** The vtGeom class represents a Geometry Node which can contain any number
 	of visible vtMesh objects.
 	\par
@@ -197,6 +199,12 @@ public:
 		currently contained. */
 	void RemoveMesh(vtMesh *pMesh);
 
+	/** Add a text mesh to this geometry.
+		\param pMesh The mesh to add
+		\param iMatIdx The material index for this mesh, which is an index
+			into the material array of the geometry. */
+	void AddText(vtTextMesh *pMesh, int iMatIdx);
+
 	/** Return a contained vtMesh by index. */
 	vtMesh *GetMesh(int i);
 
@@ -215,7 +223,6 @@ public:
 	{
 		m_pGeom = pContained;
 		AddChild(m_pGeom);
-//		m_pGroup->addChild(m_pGeom->m_pGeode);
 	}
 	vtGeom	*m_pGeom;
 };

@@ -6,6 +6,9 @@
 #ifndef VTOSG_MESHMATH
 #define VTOSG_MESHMATH
 
+#include <osgText/Font>
+#include <osgText/Text>
+
 class vtMaterial : public vtMaterialBase
 {
 public:
@@ -148,6 +151,27 @@ public:
 protected:
 	// keep track of the number of vertices ourselves
 	void	SendPointersToOSG();
+};
+
+class vtFont
+{
+public:
+	vtFont();
+	bool LoadFont(const char *filename);
+
+	// Implementation
+	osg::ref_ptr<osgText::PolygonFont> m_pOsgFont;
+};
+
+class vtTextMesh
+{
+public:
+	vtTextMesh(vtFont *font, bool bCenter = false);
+
+	void SetText(const char *text);
+
+	// Implementation
+	osg::ref_ptr<osgText::Text> m_pOsgText;
 };
 
 #endif

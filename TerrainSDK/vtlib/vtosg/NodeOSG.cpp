@@ -394,6 +394,18 @@ void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
 
+void vtGeom::AddText(vtTextMesh *pMesh, int iMatIdx)
+{
+	m_pGeode->addDrawable(pMesh->m_pOsgText.get());
+
+	vtMaterial *pMat = GetMaterial(iMatIdx);
+	if (pMat)
+	{
+		StateSet *pState = pMat->m_pStateSet.get();
+		pMesh->m_pOsgText->setStateSet(pState);
+	}
+}
+
 void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 {
 	vtMaterial *pMat = GetMaterial(iMatIdx);
@@ -433,11 +445,15 @@ int vtGeom::GetNumMeshes()
 
 vtMesh *vtGeom::GetMesh(int i)
 {
-	GeoSet *gs = (GeoSet *) m_pGeode->getDrawable(i);
-//	vtMesh *pMesh = (vtMesh *) gs->_userData;
-	GeoSet2 *gs2 = (GeoSet2 *) gs;
-	vtMesh *pMesh = gs2->m_pMesh;
-	return pMesh;
+	// Unfortunately we can't just store a backpointer to the vtMesh in the
+	// GeoSet, since it does not have a mechanism to support this.  Instead,
+	// we use a subclass called "GeoSet2" which provides the backpointer.
+	Drawable *draw = m_pGeode->getDrawable(i);
+	GeoSet2 *gs2 = dynamic_cast<GeoSet2*>(draw);
+	if (gs2)
+		return gs2->m_pMesh;
+	else
+		return NULL;
 }
 
 
