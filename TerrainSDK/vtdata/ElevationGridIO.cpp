@@ -2702,3 +2702,55 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback
 	return true;
 }
 
+
+////////////////////////////////////////////////////
+// Defines for STM writer
+
+#define MAGIC_VALUE 0x04030201
+typedef union {
+    unsigned int val;
+    unsigned char bytes[4];
+} bitTest;
+#define SWAP(a,b)  { a^=b; b^=a; a^=b; }
+#define BYTE    unsigned char
+#define BSWAP_W(w) SWAP( (((BYTE *)&w)[0]), (((BYTE *)&w)[1]) )
+
+/**
+ * Write elevation to the STM (Simple Terrain Model) format created by Michael
+ * Garland for his 'Scape' Terrain Simplification software.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(int))
+{
+	FILE *outf = fopen(szFileName, "wb");
+	if (!outf)
+		return false;
+
+	short *data = new short[m_iColumns];
+
+	bitTest test;
+	test.val = MAGIC_VALUE;
+	fprintf(outf, "STM %d %d %c%c%c%c", m_iColumns, m_iRows,
+		test.bytes[0], test.bytes[1], test.bytes[2], test.bytes[3]);
+	fputc(0x0A, outf);
+
+	for (int j = 0; j < m_iRows; j++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(j * 100 / m_iRows);
+		for (int i = 0; i < m_iRows; i++)
+		{
+			/* This byte swap is only necessary for PC and Alpha machines */
+			short val = GetValue(i, j);
+			BSWAP_W(val);
+			data[i] = val;
+			data[i] += 32767;
+		}
+		fwrite(data, sizeof(short), m_iColumns, outf);
+	}
+	delete [] data;
+	fclose(outf);
+	return true;
+}
+

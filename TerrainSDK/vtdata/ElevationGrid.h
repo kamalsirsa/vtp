@@ -77,6 +77,7 @@ public:
 	bool SaveToBMP(const char *szFileName);
 	bool SaveToTerragen(const char *szFileName);
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
+	bool SaveToSTM(const char *szFileName, void progress_callback(int) = NULL);
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);
