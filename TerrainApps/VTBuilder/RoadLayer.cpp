@@ -208,10 +208,13 @@ void vtRoadLayer::SetProjection(const vtProjection &proj)
 
 void vtRoadLayer::Offset(const DPoint2 &p)
 {
-	for (Link *r = GetFirstLink(); r; r=r->m_pNext)
+	for (LinkEdit *link = GetFirstLink(); link; link=link->GetNext())
 	{
-		for (int i = 0; i < r->GetSize(); i++)
-			r->GetAt(i) += p;
+		for (int i = 0; i < link->GetSize(); i++)
+		{
+			link->GetAt(i) += p;
+		}
+		link->m_bSidesComputed = false;
 	}
 	for (Node *n = GetFirstNode(); n; n=n->m_pNext)
 		n->m_p += p;
@@ -228,9 +231,9 @@ void vtRoadLayer::GetPropertyText(wxString &strIn)
 	strIn += _T("Network of links.\n");
 
 	wxString str;
-	str.Printf(_T("Nodes: %d\n"), NumNodes());
+	str.Printf(_T("Nodes: %d, selected: %d\n"), NumNodes(), NumSelectedNodes());
 	strIn += str;
-	str.Printf(_T("Links: %d\n"), NumLinks());
+	str.Printf(_T("Links: %d, selected: %d\n"), NumLinks(), NumSelectedLinks());
 	strIn += str;
 }
 
