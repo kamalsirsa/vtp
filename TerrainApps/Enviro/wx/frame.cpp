@@ -392,7 +392,7 @@ void vtFrame::ChangeTerrainDetail(bool bIncrease)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
-	vtDynTerrainGeom *pTerr = t->m_pDynGeom;
+	vtDynTerrainGeom *pTerr = t->GetDynTerrain();
 	if (!pTerr) return;
 
 	if (bIncrease)
@@ -741,21 +741,17 @@ void vtFrame::OnSceneSave(wxCommandEvent& event)
 void vtFrame::OnRegular(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pTerrainGeom) return;
-	bool on = t->m_pTerrainGeom->GetEnabled();
+	if (!t) return;
+	bool on = t->GetFeatureVisible(TFT_REGULAR);
 
-	t->m_pTerrainGeom->SetEnabled(!on);
+	t->SetFeatureVisible(TFT_REGULAR, !on);
 }
 
 void vtFrame::OnUpdateRegular(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pTerrainGeom)
-	{
-		event.Enable(false);
-		return;
-	}
-	bool on = t->m_pTerrainGeom->GetEnabled();
+	if (!t) return;
+	bool on = t->GetFeatureVisible(TFT_REGULAR);
 
 	event.Enable(true);
 	event.Check(on);
@@ -764,21 +760,21 @@ void vtFrame::OnUpdateRegular(wxUpdateUIEvent& event)
 void vtFrame::OnDynamic(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pDynGeom) return;
-	bool on = t->m_pDynGeom->GetEnabled();
+	if (!t || !t->GetDynTerrain()) return;
+	bool on = t->GetDynTerrain()->GetEnabled();
 
-	t->m_pDynGeom->SetEnabled(!on);
+	t->GetDynTerrain()->SetEnabled(!on);
 }
 
 void vtFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pDynGeom)
+	if (!t || !t->GetDynTerrain())
 	{
 		event.Enable(false);
 		return;
 	}
-	bool on = t->m_pDynGeom->GetEnabled();
+	bool on = t->GetDynTerrain()->GetEnabled();
 
 	event.Enable(true);
 	event.Check(on);
@@ -790,13 +786,13 @@ void vtFrame::OnCullEvery(wxCommandEvent& event)
 	if (!t) return;
 
 	m_bCulleveryframe = !m_bCulleveryframe;
-	t->m_pDynGeom->SetCull(m_bCulleveryframe);
+	t->GetDynTerrain()->SetCull(m_bCulleveryframe);
 }
 
 void vtFrame::OnUpdateCullEvery(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	event.Enable(t && t->m_pDynGeom);
+	event.Enable(t && t->GetDynTerrain());
 	event.Check(m_bCulleveryframe);
 }
 
@@ -804,7 +800,7 @@ void vtFrame::OnCullOnce(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
-	vtDynTerrainGeom *pTerr = t->m_pDynGeom;
+	vtDynTerrainGeom *pTerr = t->GetDynTerrain();
 	if (!pTerr) return;
 
 	pTerr->CullOnce();
@@ -829,7 +825,7 @@ void vtFrame::OnUpdateSky(wxUpdateUIEvent& event)
 void vtFrame::OnOcean(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(OCEAN, !t->GetFeatureVisible(OCEAN));
+	if (t) t->SetFeatureVisible(TFT_OCEAN, !t->GetFeatureVisible(TFT_OCEAN));
 }
 
 void vtFrame::OnUpdateOcean(wxUpdateUIEvent& event)
@@ -837,7 +833,7 @@ void vtFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
 	if (t)
-		on = t->GetFeatureVisible(OCEAN);
+		on = t->GetFeatureVisible(TFT_OCEAN);
 	event.Enable(t != NULL);
 	event.Check(on);
 }
@@ -845,7 +841,7 @@ void vtFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 void vtFrame::OnTrees(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(VEGETATION, !t->GetFeatureVisible(VEGETATION));
+	if (t) t->SetFeatureVisible(TFT_VEGETATION, !t->GetFeatureVisible(TFT_VEGETATION));
 }
 
 void vtFrame::OnUpdateTrees(wxUpdateUIEvent& event)
@@ -853,7 +849,7 @@ void vtFrame::OnUpdateTrees(wxUpdateUIEvent& event)
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
 	if (t)
-		on = t->GetFeatureVisible(VEGETATION);
+		on = t->GetFeatureVisible(TFT_VEGETATION);
 	event.Enable(t != NULL);
 	event.Check(on);
 }
@@ -861,7 +857,7 @@ void vtFrame::OnUpdateTrees(wxUpdateUIEvent& event)
 void vtFrame::OnRoads(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(ROADS, !t->GetFeatureVisible(ROADS));
+	if (t) t->SetFeatureVisible(TFT_ROADS, !t->GetFeatureVisible(TFT_ROADS));
 }
 
 void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
@@ -869,7 +865,7 @@ void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
 	if (t)
-		on = t->GetFeatureVisible(ROADS);
+		on = t->GetFeatureVisible(TFT_ROADS);
 	event.Enable(t != NULL);
 	event.Check(on);
 }
