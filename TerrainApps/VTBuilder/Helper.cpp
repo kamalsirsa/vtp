@@ -170,7 +170,7 @@ void DisplayAndLog(const char *pFormat, ...)
 
 //
 // Win32 allows us to do a real StrectBlt operation, although it still won't
-// do a StrectBlt with a mask.
+// do a StretchBlt with a mask.
 //
 void wxDC2::StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
 						wxCoord width, wxCoord height)
