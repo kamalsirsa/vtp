@@ -74,10 +74,10 @@ public:
 #if wxUSE_UNICODE
 	// explicit conversion to C string
 	const char *mb_str() const;
+#endif
 
 private:
 	static char s_buffer[MAX_WXSTRING2_SIZE];
-#endif
 };
 
 /**
