@@ -32,7 +32,7 @@ class vtFrame: public wxFrame
 {
 public:
 	vtFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
-		long style = wxDEFAULT_FRAME_STYLE, bool bVerticalToolbar = false);
+		long style = wxDEFAULT_FRAME_STYLE, bool bVerticalToolbar = false, bool bEnableEarth = true);
 	~vtFrame();
 
 	void CreateMenus();
@@ -172,6 +172,10 @@ public:
 	wxMenuBar			*m_pMenuBar;
 	class MyStatusBar	*m_pStatusBar;
 
+	wxMenu				*m_pFileMenu;
+	wxMenu				*m_pEarthMenu;
+	wxMenu				*m_pSceneMenu;
+
 	// Modeless dialogs
 	SceneGraphDlg		*m_pSceneGraphDlg;
 	PlantDlg			*m_pPlantDlg;
@@ -190,6 +194,7 @@ protected:
 	bool m_bCulleveryframe;
 	bool m_bFullscreen;
 	bool m_bTopDown;
+	bool m_bEnableEarth;
 
 	// snapshot members
 	wxString2 m_strSnapshotFilename;

@@ -213,7 +213,7 @@ END_EVENT_TABLE()
 
 // My frame constructor
 vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
-	const wxSize& size, long style, bool bVerticalToolbar):
+	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth):
 wxFrame(parent, -1, title, pos, size, style)
 {
 	// Give it an icon
@@ -224,6 +224,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_bFullscreen = false;
 	m_bTopDown = false;
 	m_ToggledMode = MM_NONE;
+	m_bEnableEarth = bEnableEarth;
 
 	m_pStatusBar = NULL;
 	m_pToolbar = NULL;
@@ -291,11 +292,15 @@ vtFrame::~vtFrame()
 
 void vtFrame::CreateMenus()
 {
+	// Make menu bar
+	m_pMenuBar = new wxMenuBar;
+
 	// Make menus
-	wxMenu *fileMenu = new wxMenu;
-	fileMenu->Append(ID_FILE_LAYERS, _T("Layers"), _T("Layers"));
-	fileMenu->AppendSeparator();
-	fileMenu->Append(wxID_EXIT, _T("E&xit (Esc)"), _T("Exit"));
+	m_pFileMenu = new wxMenu;
+	m_pFileMenu->Append(ID_FILE_LAYERS, _T("Layers"), _T("Layers"));
+	m_pFileMenu->AppendSeparator();
+	m_pFileMenu->Append(wxID_EXIT, _T("E&xit (Esc)"), _T("Exit"));
+	m_pMenuBar->Append(m_pFileMenu, _T("&File"));
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _T("Select"));
@@ -306,19 +311,24 @@ void vtFrame::CreateMenus()
 	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _T("Move Objects"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _T("Navigate"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _T("Measure Distances"));
+	m_pMenuBar->Append(toolsMenu, _T("&Tools"));
 
-	wxMenu *sceneMenu = new wxMenu;
-	sceneMenu->Append(ID_SCENE_SCENEGRAPH, _T("Scene Graph"));
-	sceneMenu->AppendSeparator();
-	sceneMenu->Append(ID_SCENE_TERRAIN, _T("Go to Terrain..."));
-	sceneMenu->Append(ID_SCENE_SPACE, _T("Go to Space"));
+	if (m_bEnableEarth)
+	{
+		m_pSceneMenu = new wxMenu;
+		m_pSceneMenu->Append(ID_SCENE_SCENEGRAPH, _T("Scene Graph"));
+		m_pSceneMenu->AppendSeparator();
+		m_pSceneMenu->Append(ID_SCENE_TERRAIN, _T("Go to Terrain..."));
+		m_pSceneMenu->Append(ID_SCENE_SPACE, _T("Go to Space"));
 #if VTLIB_OSG
-	sceneMenu->AppendSeparator();
-	sceneMenu->Append(ID_SCENE_SAVE, _T("Save scene graph to .osg"));
+		m_pSceneMenu->AppendSeparator();
+		m_pSceneMenu->Append(ID_SCENE_SAVE, _T("Save scene graph to .osg"));
 #endif
-	sceneMenu->AppendSeparator();
-	sceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
-	sceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
+		m_pSceneMenu->AppendSeparator();
+		m_pSceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
+		m_pSceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
+		m_pMenuBar->Append(m_pSceneMenu, _T("&Scene"));
+	}
 
 	// shortcuts:
 	// Ctrl+A Show Axes
@@ -351,11 +361,13 @@ void vtFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_SNAP_AGAIN, _T("Save Numbered Snapshot\tCtrl+N"));
 	viewMenu->AppendSeparator();
 	viewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _T("&Status Bar"));
+	m_pMenuBar->Append(viewMenu, _T("&View"));
 
 	wxMenu *navMenu = new wxMenu;
 	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
 	navMenu->Append(ID_VIEW_FASTER, _T("Fly Faster (F)"));
 	navMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _T("Maintain height above ground (A)"));
+	m_pMenuBar->Append(navMenu, _T("&Navigate"));
 
 		// submenu
 		wxMenu *navstyleMenu = new wxMenu;
@@ -385,27 +397,24 @@ void vtFrame::CreateMenus()
 	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
 	terrainMenu->AppendSeparator();
 	terrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _T("Toggle Artificial Foundations"));
+	m_pMenuBar->Append(terrainMenu, _T("Te&rrain"));
 
-	wxMenu *earthMenu = new wxMenu;
-	earthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
-	earthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _T("&Show Axes\tCtrl+A"));
-	earthMenu->AppendCheckItem(ID_EARTH_TILT, _T("Seasonal Tilt"));
-	earthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
-	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
-	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
+	if (m_bEnableEarth)
+	{
+		m_pEarthMenu = new wxMenu;
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _T("&Show Axes\tCtrl+A"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_TILT, _T("Seasonal Tilt"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
+		m_pEarthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
+		m_pEarthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
+		m_pMenuBar->Append(m_pEarthMenu, _T("&Earth"));
+	}
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About ") WSTRING_APPORG _T("..."));
-
-	m_pMenuBar = new wxMenuBar;
-	m_pMenuBar->Append(fileMenu, _T("&File"));
-	m_pMenuBar->Append(toolsMenu, _T("&Tools"));
-	m_pMenuBar->Append(sceneMenu, _T("&Scene"));
-	m_pMenuBar->Append(viewMenu, _T("&View"));
-	m_pMenuBar->Append(navMenu, _T("&Navigate"));
-	m_pMenuBar->Append(terrainMenu, _T("Te&rrain"));
-	m_pMenuBar->Append(earthMenu, _T("&Earth"));
 	m_pMenuBar->Append(helpMenu, _T("&Help"));
+
 	SetMenuBar(m_pMenuBar);
 }
 
@@ -446,20 +455,24 @@ void vtFrame::CreateToolbar(bool bVertical)
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
-	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
-	ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
-	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Time of Day"), true);
-	ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
-	ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
-	ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
-	ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
-	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
-	ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
-	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
+
+	if (m_bEnableEarth)
+	{
+		m_pToolbar->AddSeparator();
+		ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
+		ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
+		m_pToolbar->AddSeparator();
+		ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Time of Day"), true);
+		ADD_TOOL(ID_EARTH_SHOWAXES, wxBITMAP(axes), _("Axes"), true);
+		ADD_TOOL(ID_EARTH_TILT, wxBITMAP(tilt), _("Tilt"), true);
+		ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
+		ADD_TOOL(ID_EARTH_UNFOLD, wxBITMAP(unfold), _("Unfold"), true);
+		m_pToolbar->AddSeparator();
+		ADD_TOOL(ID_TIME_STOP, wxBITMAP(stop), _("Time Stop"), false);
+		ADD_TOOL(ID_TIME_FASTER, wxBITMAP(faster), _("Time Faster"), false);
+		m_pToolbar->AddSeparator();
+		ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
+	}
 
 //	m_pToolbar->SetRows(32);
 	m_pToolbar->Realize();
@@ -1078,7 +1091,9 @@ void vtFrame::OnSceneTerrain(wxCommandEvent& event)
 
 void vtFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
 {
-	event.Enable(g_App.m_state == AS_Terrain || g_App.m_state == AS_Orbit);
+	event.Enable(g_App.m_state == AS_Terrain ||
+		g_App.m_state == AS_Orbit ||
+		g_App.m_state == AS_Neutral);
 }
 
 void vtFrame::OnSceneSpace(wxCommandEvent& event)
