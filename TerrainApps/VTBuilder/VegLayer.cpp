@@ -108,7 +108,7 @@ bool vtVegLayer::OnLoad()
 	wxString2 dbfname = fname.Left(fname.Length() - 4);
 	dbfname += ".dbf";
 
-	if (!ext.CmpNoCase(".vf"))
+	if (!ext.CmpNoCase(_T(".vf")))
 	{
 		// read VF file
 		SetVegType(VLT_Instances);
@@ -126,7 +126,7 @@ bool vtVegLayer::OnLoad()
 			return false;
 		}
 	}
-	else if (!ext.CmpNoCase("shp"))
+	else if (!ext.CmpNoCase(_T("shp")))
 	{
 		// Study this SHP file, look at what it might be
 		int		nElems, nShapeType;
