@@ -3,16 +3,15 @@
 //
 // defines all the construction parameters for a terrain
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef TPARAMSH
 #define TPARAMSH
 
-#include <time.h>	// for time_t
 #include "MathTypes.h"
-#include "vtString.h"
+#include "Content.h"
 
 typedef unsigned int unint;
 
@@ -44,7 +43,7 @@ public:
 };
 
 
-class TParams
+class TParams : public vtTagArray
 {
 public:
 	TParams();
@@ -52,101 +51,119 @@ public:
 
 	// copy constructor and assignment operator
 	TParams(const TParams& paramsSrc);
-	const TParams & operator= (const TParams & rhs);
+	TParams &TParams::operator = (const TParams &rhs);
 
-	bool SaveToFile(const char *fname);
-	bool LoadFromFile(const char *fname);
+	// File IO
+	bool LoadFrom(const char *fname);
+	bool LoadFromIniFile(const char *fname);
+	bool LoadFromXML(const char *fname);
 
-	// parameters, starting with terrain name
-	vtString	m_strName;
-
-	// elevation
-	vtString	m_strElevFile;
-	float		m_fVerticalExag;
-	bool		m_bTin;
-
-	// camera / navigation
-	int			m_iMinHeight;
-	int			m_iNavStyle;
-	float		m_fNavSpeed;
-	vtString	m_strLocFile;
-	vtString	m_strInitLocation;
-	float		m_fHither;
-	bool		m_bAccel;
-
-	// LOD
-	LodMethodEnum m_eLodMethod;
-	float		m_fPixelError;
-	int			m_iTriCount;
-	bool		m_bTriStrips;
-	bool		m_bDetailTexture;
-
-	// time
-	bool		m_bTimeOn;
-	unint		m_iInitTime;
-	float		m_fTimeSpeed;
-
-	// texture
-	TextureEnum	m_eTexture;
-	unint		m_iTilesize;
-	vtString	m_strTextureSingle;
-	vtString	m_strTextureBase;
-	vtString	m_strTextureFilename;
-	bool		m_bJPEG;
-	bool		m_bMipmap;
-	bool		m_b16bit;
-	bool		m_bPreLight;
-	float		m_fPreLightFactor;
-	bool		m_bCastShadows;
-
-	// culture
-	bool		m_bRoads;
-	vtString	m_strRoadFile;
-	bool		m_bHwy;
-	bool		m_bPaved;
-	bool		m_bDirt;
-	float		m_fRoadHeight;
-	float		m_fRoadDistance;
-	bool		m_bTexRoads;
-	bool		m_bRoadCulture;
-
-	bool		m_bPlants;
-	vtString	m_strVegFile;
-	unint		m_iVegDistance;
-	bool		m_bAgriculture;
-	bool		m_bWildVeg;
-
-	bool		m_bFog;
-	float		m_fFogDistance;
-	RGBf		m_FogColor;
-
+	// this must be 
 	vtStringArray	m_strStructFiles;
-	unint		m_iStructDistance;
 
-	bool		m_bSky;
-	vtString	m_strSkyTexture;
-	bool		m_bOceanPlane;
-	float		m_fOceanPlaneLevel;
-	bool		m_bDepressOcean;
-	float		m_fDepressOceanLevel;
-	bool		m_bHorizon;
-	bool		m_bOverlay;
+	// override to catch structure files
+	bool OverrideValue(const char *szTagName, const vtString &string);
+	void WriteOverridesToXML(FILE *fp);
 
-	bool		m_bLabels;
-	vtString	m_strLabelFile;
-	PointStyle	m_Style;
+	// Convenience methods
+	void SetPointStyle(const PointStyle &style);
+	PointStyle GetPointStyle() const;
 
-	bool		m_bVehicles;
-	float		m_fVehicleSize;
-	float		m_fVehicleSpeed;
-	int			m_iNumCars;
+	void SetLodMethod(LodMethodEnum method);
+	LodMethodEnum GetLodMethod() const;
 
-	bool		m_bTransTowers;
-	vtString	m_strTowerFile;
+	void SetTextureEnum(TextureEnum tex);
+	TextureEnum GetTextureEnum() const;
 
-	vtString	m_strRouteFile;
-	bool		m_bRouteEnable;
+	// Combine the parameters to produce the texture name to use
+	vtString CookTextureFilename() const;
 };
+
+#define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
+
+#define STR_NAME "Name"
+#define STR_ELEVFILE "Filename"
+#define STR_LOCFILENAME "Locations_File"
+#define STR_VERTICALEXAG "Vertical_Exag"
+
+#define STR_MINHEIGHT "Min_Height"
+#define STR_NAVSTYLE "Nav_Style"
+#define STR_NAVSPEED "Nav_Speed"
+#define STR_LOCFILE "Locations_File"
+#define STR_INITLOCATION "Init_Location"
+#define STR_HITHER "Hither_Distance"
+#define STR_ACCEL "Accel"
+
+#define STR_LODMETHOD "LOD_Method"
+#define STR_PIXELERROR "Pixel_Error"
+#define STR_TRICOUNT "Tri_Count"
+#define STR_TRISTRIPS "Tristrips"
+#define STR_DETAILTEXTURE "Detail_Texture"
+
+#define STR_TIN "Is_TIN"
+
+#define STR_TIMEON "Time_On"
+#define STR_INITTIME "Init_Time"
+#define STR_TIMESPEED "Time_Speed"
+
+#define STR_TEXTURE "Texture"
+#define STR_NTILES "Num_Tiles"
+#define STR_TILESIZE "Tile_Size"
+#define STR_TEXTURESINGLE "Single_Texture"
+#define STR_TEXTUREBASE "Base_Texture"
+#define STR_TEXTUREFORMAT "Texture_Format"
+#define STR_MIPMAP "MIP_Map"
+#define STR_REQUEST16BIT "Request_16_Bit"
+#define STR_PRELIGHT "Pre-Light"
+#define STR_PRELIGHTFACTOR "PreLight_Factor"
+#define STR_CAST_SHADOWS "Cast_Shadows"
+
+#define STR_ROADS "Roads"
+#define STR_ROADFILE "Road_File"
+#define STR_HWY "Highway"
+#define STR_PAVED "Paved"
+#define STR_DIRT "Dirt"
+#define STR_ROADHEIGHT "Road_Height"
+#define STR_ROADDISTANCE "Road_Distance"
+#define STR_TEXROADS "Road_Texture"
+#define STR_ROADCULTURE "Road_Culture"
+
+#define STR_TREES "Trees"
+#define STR_TREEFILE "Tree_File"
+#define STR_VEGDISTANCE "Tree_Distance"
+
+#define STR_FOG "Fog"
+#define STR_FOGDISTANCE "Fog_Distance"
+#define STR_FOGCOLOR "Fog_Color"
+
+#define STR_STRUCTFILE	 "Structure_File"
+#define STR_STRUCTDIST	 "Structure_Distance"
+
+#define STR_TOWERS "Trans_Towers"
+#define	STR_TOWERFILE "Tower_File"
+
+#define STR_VEHICLES "Vehicles"
+#define STR_VEHICLESIZE "Vehicle_Size"
+#define STR_VEHICLESPEED "Vehicle_Speed"
+#define STR_NUMCARS "Number_of_Cars"
+
+#define STR_SKY "Sky"
+#define STR_SKYTEXTURE "Sky_Texture"
+#define STR_OCEANPLANE "Ocean_Plane"
+#define STR_OCEANPLANELEVEL "Ocean_Plane_Level"
+#define STR_DEPRESSOCEAN "Depress_Ocean"
+#define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
+#define STR_HORIZON "Horizon"
+#define STR_OVERLAY	"Overlay"
+
+#define STR_LABELS "Labels"
+#define STR_LABELFILE "LabelFile"
+#define STR_LABELFIELD "Label_Field"
+#define STR_LABELHEIGHT "Label_Height"
+#define STR_LABELSIZE "Label_Size"
+
+#define STR_ROUTEENABLE "Route_Enable"
+#define STR_ROUTEFILE "Route_File"
 
 #endif	// TPARAMSH
 
