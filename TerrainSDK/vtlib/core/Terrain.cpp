@@ -205,12 +205,15 @@ void vtTerrain::SetTin(vtTin3d *pTin)
 
 void vtTerrain::create_roads(vtString strRoadFile)
 {
+	VTLOG("Creating Roads: ");
 	m_pRoadMap = new vtRoadMap3d();
 
+	VTLOG("  Reading from file '%s'\n", (const char *) strRoadFile);
 	bool success = m_pRoadMap->ReadRMF(strRoadFile,
 		m_Params.m_bHwy != 0, m_Params.m_bPaved != 0, m_Params.m_bDirt != 0);
 	if (!success)
 	{
+		VTLOG("    read failed.\n");
 		delete m_pRoadMap;
 		m_pRoadMap = NULL;
 		return;

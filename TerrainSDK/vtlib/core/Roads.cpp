@@ -9,6 +9,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Light.h"
+#include "vtdata/vtLog.h"
 #include "Roads.h"
 
 #define ROAD_HEIGHT			(vtRoadMap3d::s_fHeight)	// height about the ground
@@ -795,6 +796,8 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 									   const vtStringArray &paths)
 {
+	VTLOG("   vtRoadMap3d::GenerateGeometry\n");
+	VTLOG("   Nodes %d, Links %d\n", NumNodes(), NumLinks());
 	m_pMats = new vtMaterialArray();
 
 	// road textures
