@@ -11,6 +11,7 @@ VTP_ROOT = $(shell cd ../..; pwd)
 include $(VTP_ROOT)/TerrainSDK/Make.defs
 
 IFLAGS = $(shell wx-config --cflags) \
+	-I$(GDAL_INC) \
 	-I$(TERRAIN_SDK_DIR)
 
 SWITCHES = -DUNIX
