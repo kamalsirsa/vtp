@@ -18,7 +18,7 @@
 #include "Frame.h"
 #include "StructLayer.h"
 #include "ScaledView.h"
-#include "BuildingDlg.h"
+#include "vtui/BuildingDlg.h"
 #include "Helper.h"
 
 wxPen orangePen;
