@@ -133,6 +133,10 @@ zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Simple.xml
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Elevation/README.txt
 
+zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert.cpp
+zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert.sln
+zip $DIST_FILE1 VTP/TerrainApps/VTConvert/VTConvert.vcproj
+
 
 # Create the archive containing the Source Help
 rm -f $DIST_FILE2
