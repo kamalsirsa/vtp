@@ -22,8 +22,8 @@ wxPoint g_screenbuf[SCREENBUF_SIZE];
 ///////////////////////////////////////////////////////////////////////
 
 vtScaledView::vtScaledView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
-						 const wxSize& size, const wxString& name) :
-	wxScrolledWindow(parent, id, pos, size, 0, name )
+						 const wxSize& size, long style, const wxString& name) :
+	wxScrolledWindow(parent, id, pos, size, style, name )
 {
 	m_limits.x = m_limits.y = -200;
 	m_limits.width = m_limits.height = 100;
@@ -79,7 +79,7 @@ void vtScaledView::ZoomOutToRect(const DRECT &geo_rect)
 	ZoomToPoint(new_center);
 }
 
-void vtScaledView::ZoomToPoint(const FPoint2 &p)
+void vtScaledView::ZoomToPoint(const DPoint2 &p)
 {
 	wxPoint offset;
 

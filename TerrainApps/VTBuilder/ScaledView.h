@@ -14,12 +14,12 @@ class vtScaledView : public wxScrolledWindow
 {
 public:
 	vtScaledView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, const wxString& name = _T(""));
+		const wxSize& size = wxDefaultSize, long style = wxHSCROLL | wxVSCROLL, const wxString& name = _T(""));
 
 	void SetScale(double scale);
 	double GetScale();
 
-	void ZoomToPoint(const FPoint2 &p);
+	void ZoomToPoint(const DPoint2 &p);
 	void ZoomToRect(const DRECT &geo_rect, float margin);
 	void ZoomOutToRect(const DRECT &geo_rect);
 

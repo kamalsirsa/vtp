@@ -59,7 +59,7 @@ END_EVENT_TABLE()
 
 BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	const wxSize& size, const wxString& name) :
-		vtScaledView(parent, id, pos, size, name )
+		vtScaledView(parent, id, pos, size, 0, name )
 {
 	VTLOG(" Constructing BuilderView\n");
 
