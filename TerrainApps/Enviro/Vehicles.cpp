@@ -14,7 +14,7 @@
 ///////////////////////////////
 // helpers
 
-void ConvertPurpleToColor(vtGroup *pModel, RGBf replace)
+void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 {
 #if 0
 	RGBf color;
@@ -172,7 +172,7 @@ void VehicleType::AttemptModelLoad()
 
 	for (int i = 0; i < m_iLods; i++)
 	{
-		if (vtNode *pMod = vtLoadModel(m_strFilename[i]))			// can read file?
+		if (vtNodeBase *pMod = vtLoadModel(m_strFilename[i]))			// can read file?
 			m_pModels.SetAt(i, pMod);
 	}
 }

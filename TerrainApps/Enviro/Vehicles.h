@@ -31,7 +31,7 @@ public:
 	VehicleType *m_pNext;
 
 protected:
-	Array<vtNode*> m_pModels;
+	Array<vtNodeBase*> m_pModels;
 
 	bool m_bAttemptedLoaded;
 	void AttemptModelLoad();
