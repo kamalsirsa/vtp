@@ -77,7 +77,7 @@ bool wxNumericValidator::TransferToWindow()
 			str.Printf(format, *m_pValFloat);
 		}
 		else
-			str.Printf(_T("%f"), *m_pValFloat);
+			str.Printf(_T("%g"), *m_pValFloat);
 	}
 	if (m_pValDouble)
 	{
@@ -87,7 +87,7 @@ bool wxNumericValidator::TransferToWindow()
 			str.Printf(format, *m_pValDouble);
 		}
 		else
-			str.Printf(_T("%lf"), *m_pValDouble);
+			str.Printf(_T("%lg"), *m_pValDouble);
 	}
 
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
