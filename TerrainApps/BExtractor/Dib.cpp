@@ -123,140 +123,298 @@ bool CDib::Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB h
 
 bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd)
 {
-	int iRasterCount = pDataset->GetRasterCount();
-
-	int width = pDataset->GetRasterXSize();
-	int height = pDataset->GetRasterYSize();
+	GDALColorEntry Ent;
+	int x, y, i;
+	int nxValid, nyValid;
+	CPLErr Err;
+	int iPixelWidth;
+	int iPixelHeight;
 	int xBlockSize, yBlockSize;
 	int nxBlocks, nyBlocks;
 	int ixBlock, iyBlock;
-	int nxValid, nyValid;
-	CPLErr Err;
-	CProgressDlg progBitmapCreate(CG_IDS_PROGRESS_CAPTION2);
-	m_hdd = hdd;
-	int j;
-
-	m_stride = ((width * 3 + 1) / 4) * 4;
-
-	progBitmapCreate.Create(NULL);
-	progBitmapCreate.SetStep(1);
-
-	if (iRasterCount == 1)
+	int iRasterCount;
+	GDALRasterBand *pBand;
+	GDALColorTable *pTable;
+	char *pScanline = NULL;
+	int iScanlineWidth;
+	GDALRasterBand *pRed = NULL;
+	GDALRasterBand *pGreen = NULL;
+	GDALRasterBand *pBlue = NULL;
+	char *pRedline = NULL;
+	char *pGreenline = NULL;
+	char *pBlueline = NULL;
+	BITMAPINFO ScanlineFormat =
 	{
-		GDALRasterBand *pIndices = pDataset->GetRasterBand(1);
-
-		GDALColorTable *pTable = pIndices->GetColorTable();
-		RGBQUAD colors[256];
-		GDALColorEntry ent;
-		for (j = 0; j < 256; j++)
 		{
-			pTable->GetColorEntryAsRGB(j, &ent);
-			colors[j].rgbBlue = ent.c3;
-			colors[j].rgbGreen = ent.c2;
-			colors[j].rgbRed = ent.c1;
-			colors[j].rgbReserved = 0;
-		}
-		Setup(pDC, width, height, 8, hdd, colors);
+			sizeof(BITMAPINFOHEADER), // Sizeof structure
+			0, // width
+			0, // height
+			1, // number of bit planes (always one)
+			24, // number of bits per pixel
+			BI_RGB, // compression
+			0, // size of image data (if bI_RGB then only needs to be set for things like Dib Sections)
+			1, // pixels per meter X
+			1, // pixels per meter Y
+			0, // colours used (0 for 24 bits per pixel)
+			0 // colours important (0 for 24 bits per pixel)
+		},
+		0
+	};
 
-		progBitmapCreate.SetRange(0, height);
-
-		//copy the data to the new location
-		char *pasScanline;
-		pasScanline = (char *) CPLMalloc(sizeof(char)*width);
-		for (j = 0; j < height; j++)
-		{
-			Err = pIndices->RasterIO( GF_Read, 0, j, width, 1,
-							  pasScanline, width, 1, GDT_Byte,
-							  0, 0 );
-			if (Err != CE_None)
-				return false;
-
-			char *line = ((char *)m_data) + ((height-1-j) * m_stride);
-			memcpy(line, pasScanline, width);
-			progBitmapCreate.StepIt();
-		}
-
-		// Clean up
-		CPLFree(pasScanline);
-	}
-	if (iRasterCount == 3)
+	// This all assumes MM_TEXT
+	try
 	{
-		Setup(pDC, width, height, 24, hdd);
 
-		// I assume by this point that I have a 3 band dataset
-		// ordered red green and blue with each band being
-		// 8 bits ands they all have the same block size
-		GDALRasterBand *pRed = pDataset->GetRasterBand(1);
-		GDALRasterBand *pGreen = pDataset->GetRasterBand(2);
-		GDALRasterBand *pBlue = pDataset->GetRasterBand(3);
-		char *pRedline, *pGreenline, *pBlueline;
+		iPixelWidth = pDataset->GetRasterXSize();
+		iPixelHeight = pDataset->GetRasterYSize();
 
-		pRed->GetBlockSize(&xBlockSize, &yBlockSize);
-		nxBlocks = (width + xBlockSize - 1) / xBlockSize;
-		nyBlocks = (height + yBlockSize - 1) / yBlockSize;
-		progBitmapCreate.SetRange(0, nyBlocks);
+		ScanlineFormat.bmiHeader.biWidth = iPixelWidth;
+		// GDAL image data is top down i.e. it has its origin at the top left corner
+//		ScanlineFormat.bmiHeader.biHeight = -iPixelHeight;
+		// But this code want to use DrawDIB later on abd that cannot handle then
+		// so I swap it round
+		ScanlineFormat.bmiHeader.biHeight = iPixelHeight;
+		iScanlineWidth = ((iPixelWidth * ScanlineFormat.bmiHeader.biBitCount + 31)/32) * 4;
+		m_stride = iScanlineWidth;
+		ScanlineFormat.bmiHeader.biSizeImage = iScanlineWidth * iPixelHeight;
 
-		// Need to do the following to ensure the internal InitBlockInfo function in gdal is called.
-		// Surely this must be a bug.
-		pRed->FlushBlock(0, 0);
-		pGreen->FlushBlock(0, 0);
-		pBlue->FlushBlock(0, 0);
+		if (NULL == (m_hbm = CreateDIBSection(pDC->GetSafeHdc(), &ScanlineFormat, DIB_RGB_COLORS, (void**)&pScanline, NULL, 0)))
+			throw "Cannot create bitmap section";
+		if (!Attach(m_hbm))
+			throw "Cannot attach bitmap section";
 
-		//copy the data to the new location
-		pRedline = new char[xBlockSize * yBlockSize];
-		pGreenline = new char[xBlockSize * yBlockSize];
-		pBlueline = new char[xBlockSize * yBlockSize];
+		iRasterCount = pDataset->GetRasterCount();
 
-		int x, y;
-		RGBQUAD rgb;
-
-		for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+		// Put the image data into the bitmap
+		// I am not going to change this data so I only need to do this once
+		// If the rest of the code did not assume a DIbSection I could
+		// use the set SetDIBits function for each group of scanlines
+		if (iRasterCount == 1)
 		{
-			for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+			pBand = pDataset->GetRasterBand(1);
+			// Check data type - it's either integer or float
+			if (GDT_Byte != pBand->GetRasterDataType())
+				throw "Raster is not of type byte.";
+			if (GCI_PaletteIndex != pBand->GetColorInterpretation())
+				throw "Couldn't get palette.";
+			if (NULL == (pTable = pBand->GetColorTable()))
+				throw "Couldn't get color table.";
+
+			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
+
+#ifdef DONTUSESECTION
+			if (NULL == (pScanline = new char[iScanlineWidth * yBlockSize]))
+				throw "Couldnt allocate scan line.";
+#endif
+
+			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
+			// Read the data
+			// Convert to rgb and write to image
+			pBand->FlushBlock(0, 0); // Bug in gdal
+			for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
 			{
-				Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
-				if (Err != CE_None)
-					return false;
-				Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
-				if (Err != CE_None)
-					return false;
-				Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
-				if (Err != CE_None)
-					return false;
-
-				// Compute the portion of the block that is valid
-				// for partial edge blocks.
-				if ((ixBlock+1) * xBlockSize > width)
-					nxValid = width - ixBlock * xBlockSize;
-				else
-					nxValid = xBlockSize;
-
-				if( (iyBlock+1) * yBlockSize > height)
-					nyValid = height - iyBlock * yBlockSize;
-				else
-					nyValid = yBlockSize;
-
-				for( int iY = 0; iY < nyValid; iY++ )
+				y = iyBlock * yBlockSize;
+				for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
 				{
-					y = (iyBlock * yBlockSize + iY);
-					for( int iX = 0; iX < nxValid; iX++ )
+					x = ixBlock * xBlockSize;
+					Err = pBand->ReadBlock(ixBlock, iyBlock, pScanline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+
+					// Compute the portion of the block that is valid
+					// for partial edge blocks.
+					if ((ixBlock+1) * xBlockSize > iPixelWidth)
+						nxValid = iPixelWidth - ixBlock * xBlockSize;
+					else
+						nxValid = xBlockSize;
+
+					if( (iyBlock+1) * yBlockSize > iPixelHeight)
+						nyValid = iPixelHeight - iyBlock * yBlockSize;
+					else
+						nyValid = yBlockSize;
+
+					for( int iY = 0; iY < nyValid; iY++ )
 					{
-						x = (ixBlock * xBlockSize) + iX;
-						rgb.rgbRed = pRedline[iY * xBlockSize + iX];
-						rgb.rgbGreen = pGreenline[iY * xBlockSize + iX];
-						rgb.rgbBlue = pBlueline[iY * xBlockSize + iX];
-						SetPixel24(x, height-1-y, rgb);
+						for( int iX = 0; iX < nxValid; iX++ )
+						{
+							pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
+#ifdef DONTUSESECTION
+							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3)) = (char)Ent.c3;
+							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 1) = (char)Ent.c2;
+							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 2) = (char)Ent.c1;
+#else
+							// Reverse the order for DrawDIB
+							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3)) = (char)Ent.c3;
+							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 1) = (char)Ent.c2;
+							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 2) = (char)Ent.c1;
+#endif
+						}
 					}
 				}
+				// There really is no such thing as a Device Independant Bitmap (DIB)!!!!
+				// Only a device independant data format
+				// This function takes data from a buffer in which the data is stored in DIB format
+				// as specified by the BITMAPINFO structure and copies it into a device dependant bitmap (DDB)
+				// in whatever internal format that is using.
+				// The third parameter is the starting scanline in the TARGET DDB!!! that the data is to be written
+				// to, this is always a bottom up co-ordinate (0 = bottom). The fourth parameter is the number of scanlines
+				// contained in the SOURCE buffer and to be written to the target. The source buffer maybe organised top
+				// down or bottom up depending on the setting in the BITMAPINFO structure. This function will sort it out.
+				// This means that you can select which whole scanlines to set in the target but not parts of scanlines
+#ifdef DONTUSESECTION
+				if (!SetDIBits(m_MemoryDC, m_Bitmap, m_iPixelHeight - y - 1, nyValid, pScanline, &ScanlineFormat, DIB_RGB_COLORS))
+					throw "SetDIBits failed.";
+#endif
 			}
-			progBitmapCreate.StepIt();
 		}
+		else if (iRasterCount == 3)
+		{
+			for (i = 1; i <= 3; i++)
+			{
+				pBand = pDataset->GetRasterBand(i);
+				// Check data type - it's either integer or float
+				if (GDT_Byte != pBand->GetRasterDataType())
+					throw "Three rasters, but not of type byte.";
+				switch(pBand->GetColorInterpretation())
+				{
+				case GCI_RedBand:
+					pRed = pBand;
+					break;
+				case GCI_GreenBand:
+					pGreen = pBand;
+					break;
+				case GCI_BlueBand:
+					pBlue = pBand;
+					break;
+				}
+			}
+			if ((NULL == pRed) || (NULL == pGreen) || (NULL == pBlue))
+				throw "Couldn't find bands for Red, Green, Blue.";
+			
+			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
 
-		delete pRedline;
-		delete pBlueline;
-		delete pGreenline;
+			if (xBlockSize % iPixelWidth != 0)
+				throw "Cannot handle this block size."; // TODO Handle odd block sizes
+
+#ifdef DONTUSESECTION
+			if (NULL == (pScanline = new char[iScanlineWidth * yBlockSize]))
+				throw "Couldnt allocate scan line.";
+#endif
+
+			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
+			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
+
+			pRed->FlushBlock(0, 0);
+			pGreen->FlushBlock(0, 0);
+			pBlue->FlushBlock(0, 0);
+
+			if (NULL == (pRedline = new char[xBlockSize * yBlockSize]))
+				throw "Cannot allocate Red Scanline buffer.";
+			if (NULL == (pGreenline = new char[xBlockSize * yBlockSize]))
+				throw "Cannot allocate Green Scanline buffer.";
+			if (NULL == (pBlueline = new char[xBlockSize * yBlockSize]))
+				throw "Cannot allocate Blue Scanline buffer.";
+
+
+			for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+			{
+				y = iyBlock * yBlockSize;
+				for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+				{
+					x = ixBlock * xBlockSize;
+					Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+					Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+					Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
+					if (Err != CE_None)
+						throw "Cannot read data.";
+
+					// Compute the portion of the block that is valid
+					// for partial edge blocks.
+					if ((ixBlock+1) * xBlockSize > iPixelWidth)
+						nxValid = iPixelWidth - ixBlock * xBlockSize;
+					else
+						nxValid = xBlockSize;
+
+					if( (iyBlock+1) * yBlockSize > iPixelHeight)
+						nyValid = iPixelHeight - iyBlock * yBlockSize;
+					else
+						nyValid = yBlockSize;
+
+					for( int iY = 0; iY < nyValid; iY++ )
+					{
+						for( int iX = 0; iX < nxValid; iX++ )
+						{
+#ifdef DONTUSESECTION
+							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
+							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
+							*(pScanline + (iY * iScanlineWidth) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
+#else
+							// Reverse the order for DrawDIB
+							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
+							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
+							*(pScanline + ((iPixelHeight - 1 - iY - y) * iScanlineWidth) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
+#endif
+						}
+					}
+				}
+				// There really is no such thing as a Device Independant Bitmap (DIB)!!!!
+				// Only a device independant data format
+				// This function takes data from a buffer in which the data is stored in DIB format
+				// as specified by the BITMAPINFO structure and copies it into a device dependant bitmap (DDB)
+				// in whatever internal format that is using.
+				// The third parameter is the starting scanline in the TARGET DDB!!! that the data is to be written
+				// to, this is always a bottom up co-ordinate (0 = bottom). The fourth parameter is the number of scanlines
+				// contained in the SOURCE buffer and to be written to the target. The source buffer maybe organised top
+				// down or bottom up depending on the setting in the BITMAPINFO structure. This function will sort it out.
+				// This means that you can select which whole scanlines to set in the target but not parts of scanlines
+#ifdef DONTUSESECTION
+				if (!SetDIBits(m_MemoryDC, m_Bitmap, iPixelHeight - y - 1, nyValid, pScanline, &ScanlineFormat, DIB_RGB_COLORS))
+					throw "SetDIBits failed.";
+#endif
+			}
+		}
+		else
+			throw "Image does not have 1 or 3 bands.";
 	}
 
+	catch (const char *msg)
+	{
+		HRESULT hResult = GetLastError();
+		CString ErrorMessage;
+		CString DisplayMessage;
+
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, hResult, 0, ErrorMessage.GetBuffer(1024), 1023, NULL);
+
+		DisplayMessage.Format("%s %08x\n%s\n",
+							msg, hResult,
+							(LPCSTR)ErrorMessage);
+
+		AfxMessageBox(DisplayMessage);
+		return false;
+	}
+
+	m_data = pScanline;
+
+	// Ugly !!
+	void *buf = malloc(sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD));
+	m_bmi = (BITMAPINFOHEADER *)buf;
+	*m_bmi = ScanlineFormat.bmiHeader;
+
+#ifdef DONTUSESECTION
+	if (NULL != pScanline)
+		delete pScanline;
+#endif
+	if (NULL != pRedline)
+		delete pRedline;
+	if (NULL != pGreenline)
+		delete pGreenline;
+	if (NULL != pBlueline)
+		delete pBlueline;
 	return true;
 }
 
@@ -381,6 +539,7 @@ BOOL CDib::Draw(CDC& dc, const CRect* rcDst, const CRect* rcSrc,
 	CPalette* pOldPal = dc.SelectPalette(pPal, !bForeground);
 	dc.RealizePalette();
 
+
 	BOOL bRet = FALSE;
 	if (bUseDrawDib) {
 		// Compute rectangles where NULL specified
@@ -422,9 +581,12 @@ void CDib::GetDIBFromSection()
 	DIBSECTION ds;
 
 	VERIFY(GetObject(sizeof(ds), &ds)==sizeof(ds));
-//	char buf[sizeof(BITMAPINFOHEADER) + MAXPALCOLORS*sizeof(RGBQUAD)];
-//	BITMAPINFOHEADER& bmih = *(BITMAPINFOHEADER*)buf;
-//	RGBQUAD* colors = (RGBQUAD*)(m_bmi+1);
+	char buf[sizeof(BITMAPINFOHEADER) + MAXPALCOLORS*sizeof(RGBQUAD)];
+	BITMAPINFOHEADER& bmih = *(BITMAPINFOHEADER*)buf;
+	RGBQUAD* colors = (RGBQUAD*)(m_bmi+1);
+	// N.B. There is a known bug in GetObject it always returns a positive bitmap height
+	// even if the bitmap is top down see MSKB article Q186586
+	// but because drawdib cannot handle negatives it doesnt matter
 	memcpy(m_bmi, &ds.dsBmih, sizeof(BITMAPINFOHEADER));
 	GetColorTable(m_colors, MAXPALCOLORS);
 }
