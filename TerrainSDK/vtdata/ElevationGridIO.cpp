@@ -2006,7 +2006,7 @@ typedef union {
  * Write elevation to the STM (Simple Terrain Model) format created by Michael
  * Garland for his 'Scape' Terrain Simplification software.
  *
- * \returns \c true if the file was successfully opened and read.
+ * \returns \c true if the file was successfully opened and written.
  */
 bool vtElevationGrid::SaveToSTM(const char *szFileName, bool progress_callback(int))
 {
@@ -2044,7 +2044,7 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, bool progress_callback(i
 /**
  * Write elevation to the MSI Planet (Marconi) format.
  *
- * \returns \c true if the file was successfully opened and read.
+ * \returns \c true if the file was successfully opened and written.
  */
 bool vtElevationGrid::SaveToPlanet(const char *szDirName, bool progress_callback(int))
 {
@@ -2201,6 +2201,108 @@ bool vtElevationGrid::SaveToASC(const char *szFileName,
 	// There is no projection info in a ASC file, but we can create
 	//  an accompanying .prj file, in the WKT-style .prj format.
 	m_proj.WriteProjFile(szFileName);
+
+	return true;
+}
+
+/**
+ * Write elevation to a VRML file which contains a single ElevationGrid node.
+ *
+ * \returns \c true if the file was successfully opened and written.
+ */
+bool vtElevationGrid::SaveToVRML(const char *szFileName, bool progress_callback(int))
+{
+	FILE *fp = fopen(szFileName, "wb");
+	if (!fp)
+		return false;
+
+	// Plain VRML can't handle real geographic coordinates, so it's basically
+	//  a local coordinate system with 0,0 at the south-west corner.
+
+	fprintf(fp, "#VRML V2.0 utf8\n");
+	fprintf(fp, "# Written by Virtual Terrain Project software VTBuilder application,\n");
+	fprintf(fp, "#  build date %s\n", __DATE__);
+	fprintf(fp, "# Conforms to ISO VRML 97 specification.\n");
+	fprintf(fp, "# Please report problems to formats@vterrain.org\n");
+	fprintf(fp, "\n");
+	fprintf(fp, "Group\n");
+	fprintf(fp, "{\n");
+	fprintf(fp, "	children\n");
+	fprintf(fp, "	[\n");
+	fprintf(fp, "		Shape\n");
+	fprintf(fp, "		{\n");
+	fprintf(fp, "			appearance Appearance\n");
+	fprintf(fp, "			{\n");
+	fprintf(fp, "				material Material { diffuseColor 0.800 0.800 0.800 }\n");
+	fprintf(fp, "			}\n");
+	fprintf(fp, "			geometry ElevationGrid\n");
+	fprintf(fp, "			{\n");
+	fprintf(fp, "				xDimension %d\n", m_iColumns);
+	fprintf(fp, "				xSpacing %f\n", m_fXStep);
+	fprintf(fp, "				zDimension %d\n", m_iRows);
+	fprintf(fp, "				zSpacing %f\n", m_fZStep);
+	fprintf(fp, "				solid FALSE\n");
+	fprintf(fp, "				height\n");
+	fprintf(fp, "				[\n");
+
+	// what does VRML use for NODATA - presuming it even supports it?
+	float nodata = INVALID_ELEVATION;
+
+	int i, j;
+	float z;
+	bool bWriteIntegers = (!m_bFloatMode && m_fVerticalScale == 1.0f);
+	if (!bWriteIntegers)
+	{
+		// We might be able to write integers anyway, as long as our
+		//  existing values are all actually integral.  It's worth taking
+		//  a second to scan, as it makes a much smaller output file.
+		bWriteIntegers = true;
+		for (i = 0; i < m_iRows; i++)
+		{
+			for (j = 0; j < m_iColumns; j++)
+			{
+				z = GetFValue(j, i);
+				if (z == INVALID_ELEVATION)
+					continue;
+				if ((int)z*100 != (int)(z*100))
+					bWriteIntegers= false;
+			}
+			if (!bWriteIntegers)
+				break;
+		}
+	}
+	// Now we can write the actual data
+	for (i = 0; i < m_iRows; i++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(i*100/m_iRows);
+
+		for (j = 0; j < m_iColumns; j++)
+		{
+			if (j > 0 && (j%20) == 0)
+				fprintf(fp, "\n");
+
+			z = GetFValue(j, m_iRows-1-i);
+			if (z == INVALID_ELEVATION)
+				fprintf(fp, " %d", nodata);
+			else
+			{
+				if (bWriteIntegers)
+					fprintf(fp, " %d", (int) z);
+				else
+					fprintf(fp, " %.3f", z);
+			}
+		}
+		fprintf(fp, "\n");
+	}
+
+	fprintf(fp, "				] # height\n");
+	fprintf(fp, "			} # geometry ElevationGrid\n");
+	fprintf(fp, "		} # ElevationGrid Shape\n");
+	fprintf(fp, "	] # children\n");
+	fprintf(fp, "} # Group\n");
+
+	fclose(fp);
 
 	return true;
 }
