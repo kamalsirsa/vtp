@@ -9,17 +9,18 @@
 
 #include "vtdata/vtLog.h"
 #include "vtdata/Features.h"
+#include "vtdata/StructArray.h"
 #include "xmlhelper/exception.hpp"
 
 #include "Terrain.h"
 #include "Light.h"
 #include "Building3d.h"
 #include "Building3d.h"
-#include "vtdata/StructArray.h"
 #include "IntersectionEngine.h"
 #include "Fence3d.h"
 #include "Route.h"
 #include "vtTin3d.h"
+#include "TerrainScene.h"
 
 #include "TVTerrain.h"
 #include "SMTerrain.h"
@@ -33,12 +34,6 @@
 
 // use a grid of LOD cells of size LOD_GRIDSIZE x LOD_GRIDSIZE
 #define LOD_GRIDSIZE		192
-
-///////////////////////////////////////////////////////////////////////
-
-// All terrains share a static data path and content manager
-vtStringArray vtTerrain::s_DataPaths;
-vtContentManager3d vtTerrain::s_Content;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -245,7 +240,7 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 	m_pRoadMap->SetLodDistance(m_Params.GetValueInt(STR_ROADDISTANCE) * 1000);	// convert km to m
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.GetValueBool(STR_TEXROADS),
-		s_DataPaths);
+		vtGetDataPath());
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 
 	if (m_Params.GetValueBool(STR_ROADCULTURE))
@@ -286,7 +281,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		texture_fname += texname;
 
 		VTLOG("  Looking for: %s\n", (const char *) texture_fname);
-		vtString texture_path = FindFileOnPaths(s_DataPaths, texture_fname);
+		vtString texture_path = FindFileOnPaths(vtGetDataPath(), texture_fname);
 		if (texture_path == "")
 		{
 			// failed to find texture
@@ -611,7 +606,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	if (bWater)
 	{
 		// create ocean material: texture waves
-		vtString fname = FindFileOnPaths(s_DataPaths, "GeoTypical/ocean1_256.jpg");
+		vtString fname = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
 		pMat_Ocean->AddTextureMaterial2(fname,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha
@@ -700,7 +695,7 @@ bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 {
 	vtString name = "Elevation/";
 	name += m_Params.GetValueString(STR_ELEVFILE, true);
-	vtString grid_fname = FindFileOnPaths(s_DataPaths, name);
+	vtString grid_fname = FindFileOnPaths(vtGetDataPath(), name);
 	if (grid_fname == "")
 	{
 		VTLOG("\t'%s' not found on data paths.", (const char *)name);
@@ -883,7 +878,7 @@ MyTerrain::CreateCustomCulture()
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
 	vtNodeBase *node = NULL;
-	vtString path = FindFileOnPaths(s_DataPaths, filename);
+	vtString path = FindFileOnPaths(vtGetDataPath(), filename);
 	if (path == "")
 	{
 		VTLOG("Couldn't locate file '%s'\n", filename);
@@ -945,7 +940,7 @@ void vtTerrain::_CreateCulture()
 	// Read terrain-specific content file
 	vtString con_file = m_Params.GetValueString(STR_CONTENT_FILE);
 	VTLOG(" Looking for terrain-specific content file: '%s'\n", (const char *) con_file);
-	vtString fname = FindFileOnPaths(s_DataPaths, con_file);
+	vtString fname = FindFileOnPaths(vtGetDataPath(), con_file);
 	if (fname != "")
 	{
 		VTLOG("  Found.\n");
@@ -973,7 +968,7 @@ void vtTerrain::_CreateCulture()
 	{
 		vtString road_fname = "RoadData/";
 		road_fname += m_Params.GetValueString(STR_ROADFILE, true);
-		vtString road_path = FindFileOnPaths(s_DataPaths, road_fname);
+		vtString road_path = FindFileOnPaths(vtGetDataPath(), road_fname);
 		create_roads(road_path);
 
 		if (m_pRoadMap && m_Params.GetValueBool(STR_ROADCULTURE))
@@ -1018,7 +1013,7 @@ void vtTerrain::_CreateCulture()
 
 		VTLOG("\tLooking for plants file: %s\n", (const char *) plants_fname);
 
-		vtString plants_path = FindFileOnPaths(s_DataPaths, plants_fname);
+		vtString plants_path = FindFileOnPaths(vtGetDataPath(), plants_fname);
 		if (plants_path == "")
 		{
 			VTLOG("\tNot found.\n");
@@ -1067,7 +1062,7 @@ void vtTerrain::_CreateCulture()
 
 		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
 
-		vtString building_path = FindFileOnPaths(s_DataPaths, building_fname);
+		vtString building_path = FindFileOnPaths(vtGetDataPath(), building_fname);
 		if (building_path == "")
 		{
 			VTLOG("\tNot found.\n");
@@ -1141,7 +1136,7 @@ void vtTerrain::_CreateLabels()
 {
 	vtString fname = "PointData/";
 	fname += m_Params.GetValueString(STR_LABELFILE, true);
-	vtString labels_path = FindFileOnPaths(s_DataPaths, fname);
+	vtString labels_path = FindFileOnPaths(vtGetDataPath(), fname);
 	if (labels_path == "")
 	{
 		VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
@@ -1218,7 +1213,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 #endif
 
 	// Find and load the font.
-	vtString font_path = FindFileOnPaths(s_DataPaths, fontname);
+	vtString font_path = FindFileOnPaths(vtGetDataPath(), fontname);
 	if (font_path == "")
 	{
 		VTLOG("Couldn't find font file '%s'\n", fontname);
@@ -1454,7 +1449,7 @@ bool vtTerrain::CreateStep1()
 	fname += elev_file;
 	VTLOG("\tLooking for elevation file: %s\n", (const char *) fname);
 
-	vtString fullpath = FindFileOnPaths(s_DataPaths, fname);
+	vtString fullpath = FindFileOnPaths(vtGetDataPath(), fname);
 	if (fullpath == "")
 	{
 		VTLOG("\t\tNot found.\n");

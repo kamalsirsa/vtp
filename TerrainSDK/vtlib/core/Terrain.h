@@ -15,8 +15,8 @@
 #include "Trees.h"
 #include "Structure3d.h"
 #include "Route.h"
-#include "Content3d.h"
 #include "DynTerrain.h"
+#include "Content3d.h"
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -232,14 +232,7 @@ public:
 	// polygon containing geo corners of terrain area
 	DLine2		m_Corners_geo;
 
-	/********************** Statics ******************/
-
-	// during creation, all data will be looked for on the global data path
-	static void SetDataPath(const vtStringArray &paths) { s_DataPaths = paths; }
-	static vtStringArray s_DataPaths;
-	static vtContentManager3d s_Content;
-
-	// Experimental!
+	// Experimental! Completely unoptimized!
 	void recreate_textures(vtTransform *pSunLight);
 
 protected:
