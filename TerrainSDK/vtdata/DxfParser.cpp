@@ -376,7 +376,7 @@ void DxfParser::ReadVertex(vector<DPoint3> & points)
 {
 	DxfCodeValue pair;
 
-	bool bFoundEnd = false, bFoundLayer = false, bFoundX = false;
+	bool bFoundEnd = false, bFoundX = false;
 	bool bFoundY = false, bFoundZ = false;
 	DPoint3 pt;
 
@@ -563,7 +563,7 @@ void DxfParser::Read3DFace()
 		{
 			// Invisible edge flags.  Ignore these?
 			//  Bit 1,2,3,4 means 1st,2nd,3rd,4th edge is invisible
-			int mask = atoi(pair.m_sValue);
+			// int mask = atoi(pair.m_sValue);
 		}
 		oldPos = ftell(m_pFile);
 	}

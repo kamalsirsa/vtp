@@ -101,6 +101,8 @@ bool vtDLGFile::Read(const char *fname, bool progress_callback(int))
 	// record 4 - codes, resolution, transformation info
 	if (!GetRecord(buf)) return false;
 	int reference_system = geti6(buf + 6);	// 1 = UTM, 3 = Albers
+	if (reference_system == 3)	// We don't support Albers
+		return false;
 	iUTMZone = geti6(buf + 12);
 
 	// Datum.  Undocumented field!  Had to look at the government's
@@ -317,7 +319,7 @@ bool vtDLGFile::GetRecord(char *buf)
 				return false;
 			}
 			else
-				buf[count++] = c;
+				buf[count++] = (char) c;
 		}
 		return true;
 	}
