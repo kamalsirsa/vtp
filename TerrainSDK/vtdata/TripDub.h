@@ -10,10 +10,10 @@
 #ifndef VTDATA_TRIPDUB_H
 #define VTDATA_TRIPDUB_H
 
+#include "vtString.h"
+
 // The dependency on Libwww is optional.  If not desired, skip this file.
 #if SUPPORT_HTTP
-
-#include "vtString.h"
 
 typedef struct _HTRequest HTRequest;
 typedef struct _HTAnchor	HTAnchor;
