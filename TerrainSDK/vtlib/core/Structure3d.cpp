@@ -53,6 +53,10 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 
 	FPoint3 surface_pos;
 	pHeightField->ConvertEarthToSurfacePoint(m_p, surface_pos);
+
+	// Use the Elevation Offset
+	surface_pos.y += m_fElevationOffset;
+
 	m_pContainer->SetTrans(surface_pos);
 }
 
