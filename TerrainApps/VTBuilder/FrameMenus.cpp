@@ -2046,8 +2046,14 @@ void MainFrame::ExportPlanet()
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 {
+	int cols, rows;
+	vtElevLayer *pEL = GetActiveElevLayer();
+	pEL->m_pGrid->GetDimensions(cols, rows);
+
 	RenderDlg dlg(this, -1, _("Render Elevation to Bitmap"));
 	dlg.m_datapaths = m_datapaths;
+	dlg.m_iSizeX = cols;
+	dlg.m_iSizeY = rows;
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
@@ -2123,7 +2129,7 @@ void MainFrame::ExportBitmap(RenderDlg &dlg)
 		if (dlg.m_bJPEG)
 			success = dib.WriteJPEG(fname.mb_str(), 99);
 		else
-			success = dib.WriteTIF(fname.mb_str());
+			success = dib.WriteTIF(fname.mb_str(), &area, &proj);
 		if (success)
 			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
 		else
