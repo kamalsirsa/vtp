@@ -552,7 +552,7 @@ wxSizer *UtilDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_STRUCTTYPE, wxDefaultPosition, wxSize(150,-1), 0, strs3, 0 );
+    wxChoice *item3 = new wxChoice( parent, ID_STRUCTTYPE, wxDefaultPosition, wxSize(250,-1), 0, strs3, 0 );
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
