@@ -78,8 +78,8 @@ WX_DECLARE_EXPORTED_STRING_HASH_MAP(wxString, wxMessagesHash);
 class MyMsgCatalogFile
 {
 public:
-    // fills the hash with string-translation pairs
-    void TestHash(bool convertEncoding)
+	// fills the hash with string-translation pairs
+	void TestHash(bool convertEncoding)
 	{
 		VTLOG("(Hash/conversion test: ");
 		wxCSConv *csConv = new wxCSConv(_T("iso-8859-1"));
@@ -186,7 +186,7 @@ void vtApp::SetupLocale()
 
 class LogCatcher : public wxLog
 {
-    void DoLogString(const wxChar *szString, time_t t)
+	void DoLogString(const wxChar *szString, time_t t)
 	{
 		VTLOG(" wxLog: ");
 		VTLOG(szString);
