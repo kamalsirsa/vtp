@@ -1336,7 +1336,7 @@ void Enviro::SetupArcMesh()
 	// re-create mesh if not the first time
 	FreeArcMesh();
 	// set the points of the arc
-	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, 20);
+	m_pArcMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 20);
 }
 
 void Enviro::FreeArc()
@@ -1718,7 +1718,7 @@ void Enviro::CreateElevationLegend()
 	pMats->Release();
 
 	// Solid rectangle behind it
-	vtMesh *mesh4 = new vtMesh(GL_QUADS, 0, 4);
+	vtMesh *mesh4 = new vtMesh(vtMesh::QUADS, 0, 4);
 	mesh4->AddRectangleXY(base.x, base.y, size.x, size.y, -1);
 	m_pLegendGeom->AddMesh(mesh4, 1);
 	mesh4->Release();
@@ -1726,7 +1726,7 @@ void Enviro::CreateElevationLegend()
 	// Big band of color
 	std::vector<RGBi> table;
 	cmap->GenerateColors(table, in_size.y, 0, 1);
-	vtMesh *mesh1 = new vtMesh(GL_TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
+	vtMesh *mesh1 = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors, (in_size.y + 1)*2);
 	for (i = 0; i < in_size.y + 1; i++)
 	{
 		FPoint3 p1(cbar_left,  in_base.y + i, 0);
@@ -1740,7 +1740,7 @@ void Enviro::CreateElevationLegend()
 	mesh1->Release();
 
 	// Small white tick marks
-	vtMesh *mesh2 = new vtMesh(GL_LINES, 0, ticks*2);
+	vtMesh *mesh2 = new vtMesh(vtMesh::LINES, 0, ticks*2);
 	for (i = 0; i < ticks; i++)
 	{
 		FPoint3 p1(cbar_left-border.x*2, in_base.y + i*vert_space, 0);

@@ -139,7 +139,7 @@ if (pwdemo){
 // Helper
 void GeomAddRectMesh(vtGeom *pGeom, const FRECT &rect, float z, int matidx)
 {
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords, 4);
 	mesh->AddVertexUV(FPoint3(rect.left, rect.bottom, z), 0, 0);
 	mesh->AddVertexUV(FPoint3(rect.right, rect.bottom, z), 1, 0);
 	mesh->AddVertexUV(FPoint3(rect.right, rect.top, z), 1, 1);
@@ -311,21 +311,21 @@ if (pwdemo){
 	m_pSpaceAxes->SetMaterials(pMats);
 	pMats->Release();	// pass ownership
 
-	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddLine(FPoint3(0,0,200), FPoint3(0,0,0));
 	mesh->AddLine(FPoint3(0,0,1),   FPoint3(-.07f,0,1.1f));
 	mesh->AddLine(FPoint3(0,0,1),   FPoint3( .07f,0,1.1f));
 	m_pSpaceAxes->AddMesh(mesh, yellow);
 	mesh->Release();	// pass ownership
 
-	mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddLine(FPoint3(1.5f,0,0), FPoint3(-1.5f,0,0));
 	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f, 0.07f,0));
 	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f,-0.07f,0));
 	m_pSpaceAxes->AddMesh(mesh, green);
 	mesh->Release();	// pass ownership
 
-	mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
 	m_pSpaceAxes->AddMesh(mesh, red);
 	mesh->Release();	// pass ownership
@@ -339,7 +339,7 @@ if (pwdemo){
 	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
 	m_pEarthLines->SetMaterials(pMats);
 
-	m_pLineMesh = new vtMesh(GL_LINE_STRIP, 0, 6);
+	m_pLineMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 6);
 	for (int i = 0; i < LL_COUNT*3; i++)
 		m_pLineMesh->AddVertex(FPoint3(0,0,0));
 	m_pLineMesh->AddStrip2(LL_COUNT*2, 0);

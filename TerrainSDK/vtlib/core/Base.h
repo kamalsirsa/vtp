@@ -80,8 +80,10 @@ public:
 	virtual vtGroup* GetParent(int iParent = 0) = 0;
 	virtual int		GetTriCount() = 0;
 
+	enum FogType { FM_LINEAR, FM_EXP, FM_EXP2 };
+
 	static RGBf s_white;
-	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR) = 0;
+	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR) = 0;
 };
 
 /** Virtual Base class for a Group node (scene graph node that can have children). */
@@ -142,9 +144,21 @@ public:
 class vtMeshBase
 {
 public:
-	vtMeshBase(GLenum PrimType, int VtxType, int NumVertices)
+	enum PrimType
 	{
-		m_ePrimType = PrimType;
+		POINTS,
+		LINES,
+		LINE_STRIP,
+		TRIANGLES,
+		TRIANGLE_STRIP,
+		TRIANGLE_FAN,
+		QUADS,
+		QUAD_STRIP,
+		POLYGON
+	};
+	vtMeshBase(PrimType ePrimType, int VtxType, int NumVertices)
+	{
+		m_ePrimType = ePrimType;
 		m_iVtxType = VtxType;
 		m_iNumVertsUsed = 0;
 		m_iMatIdx = -1;
@@ -152,7 +166,7 @@ public:
 
 	// Accessors
 	virtual int GetNumVertices() const { return m_iNumVertsUsed; }
-	GLenum GetPrimType() const { return m_ePrimType; }
+	PrimType GetPrimType() const { return m_ePrimType; }
 	int GetVtxType() const { return m_iVtxType; }
 	virtual void GetBoundBox(FBox3 &box);
 
@@ -224,7 +238,7 @@ public:
 						 float fTiling);
 
 protected:
-	GLenum m_ePrimType;
+	enum PrimType m_ePrimType;
 	int m_iVtxType;
 	int m_iMatIdx;
 

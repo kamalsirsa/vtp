@@ -86,7 +86,7 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 
 	for (int i = 0; i < m_meshes; i++)
 	{
-		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
+		m_mesh[i] = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
 		if (strImagePrefix == "")
 			m_mesh[i]->AllowOptimize(true);
 		else
@@ -360,14 +360,14 @@ void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 #if 0
 	// create simple hemisphere mesh
 	int res = 6;
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, res*res*2);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, 0, res*res*2);
 	FPoint3 scale(1.0f, 1.0f, 1.0f);
 	mesh->CreateEllipsoid(scale, res, true);
 #else
 	// create cylinder mesh instead
 	int res = 14;
 	int verts = res * 2;
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, 0, verts);
 	mesh->CreateCylinder(1.0f, 1.0f, res, true, false, false);
 #endif
 
@@ -422,7 +422,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 	geom->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(geom);
 
-	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
 	geom->AddMesh(mesh, m_yellow);
 	mesh->Release();	// pass ownership to Geometry
 
@@ -438,7 +438,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 		if (mesh->GetNumVertices() > 10000)
 		{
 			total += mesh->GetNumVertices();
-			mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+			mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
 			geom->AddMesh(mesh, m_yellow);
 			mesh->Release();	// pass ownership to Geometry
 		}
@@ -460,7 +460,7 @@ void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 	geom->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(geom);
 
-	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
 	geom->AddMesh(mesh, m_yellow);
 	mesh->Release();	// pass ownership to Geometry
 
@@ -479,7 +479,7 @@ void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
 			if (mesh->GetNumVertices() > 10000)
 			{
 				total += mesh->GetNumVertices();
-				mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+				mesh = new vtMesh(vtMesh::LINE_STRIP, 0, 10000);
 				geom->AddMesh(mesh, m_yellow);
 				mesh->Release();	// pass ownership to Geometry
 			}
@@ -497,7 +497,7 @@ void IcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
 			// create cylinder mesh
 			int res = 14;
 			int verts = res * 2;
-			m_cylinder = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
+			m_cylinder = new vtMesh(vtMesh::TRIANGLE_STRIP, 0, verts);
 			m_cylinder->CreateCylinder(1.0f, 1.0f, res, true, false, false);
 		}
 
@@ -573,7 +573,7 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 			continue;
 
 		int numvtx = 4;
-		vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, numvtx);
+		vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, numvtx);
 
 		int i, j;
 		DPoint2 p1, p2;
@@ -1299,7 +1299,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 	m_pAxisGeom->SetEnabled(false);
 	pMats->Release();
 
-	vtMesh *pMesh = new vtMesh(GL_LINES, 0, 6);
+	vtMesh *pMesh = new vtMesh(vtMesh::LINES, 0, 6);
 	pMesh->AddVertex(FPoint3(0,2,0));
 	pMesh->AddVertex(FPoint3(0,-2,0));
 	pMesh->AddLine(0,1);
@@ -1433,7 +1433,7 @@ vtTransform *WireAxis(RGBf color, float len)
 	geom->SetMaterials(pMats);
 	pMats->Release();
 
-	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 6);
 	mesh->AddVertex(FPoint3(-len,0,0));
 	mesh->AddVertex(FPoint3( len,0,0));
 	mesh->AddVertex(FPoint3(0,-len,0));
@@ -1453,7 +1453,7 @@ vtTransform *WireAxis(RGBf color, float len)
 vtMovGeom *CreateSimpleEarth(const vtString &strDataPath)
 {
 	// create simple texture-mapped sphere
-	vtMesh *mesh = new vtMesh(GL_QUADS, VT_Normals | VT_TexCoords, 20*20*2);
+	vtMesh *mesh = new vtMesh(vtMesh::QUADS, VT_Normals | VT_TexCoords, 20*20*2);
 	int res = 20;
 	FPoint3 size(1.0f, 1.0f, 1.0f);
 	mesh->CreateEllipsoid(size, res);

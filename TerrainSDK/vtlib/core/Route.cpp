@@ -248,7 +248,7 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 	vtMesh *pWireMesh;
 	for (int j = 0; j < st1->m_iNumWires; j++)
 	{
-		pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
+		pWireMesh = new vtMesh(vtMesh::LINE_STRIP, 0, numiterations+1);
 
 		offset = st0->m_fpWireAtt1[j];
 		rot.AxisAngle(axisY, n0->dRadAzimuth);

@@ -77,7 +77,7 @@ void TransitTerrain::CreateCustomCulture()
 vtGeom *TransitTerrain::MakeBlockGeom(FPoint3 size)
 {
 	// create a Mesh
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals, 24);
 
 	FPoint3 half = size / 2;	// Block() will double the size
 

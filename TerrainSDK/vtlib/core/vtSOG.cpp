@@ -228,18 +228,18 @@ void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 	bool need_prim_lengths = false;
 	switch (pMesh->GetPrimType())
 	{
-	case GL_POINTS:
-	case GL_LINES:
-	case GL_TRIANGLES:
-	case GL_QUADS:
+	case vtMesh::POINTS:
+	case vtMesh::LINES:
+	case vtMesh::TRIANGLES:
+	case vtMesh::QUADS:
 		need_prim_lengths = false;
 		break;
 
-	case GL_LINE_STRIP:
-	case GL_TRIANGLE_STRIP:
-	case GL_TRIANGLE_FAN:
-	case GL_QUAD_STRIP:
-	case GL_POLYGON:
+	case vtMesh::LINE_STRIP:
+	case vtMesh::TRIANGLE_STRIP:
+	case vtMesh::TRIANGLE_FAN:
+	case vtMesh::QUAD_STRIP:
+	case vtMesh::POLYGON:
 		need_prim_lengths = true;
 		break;
 	}
@@ -437,7 +437,7 @@ vtMesh *InputSOG::ReadMesh(FILE *fp)
 	fread(&verts, 2, 1, fp);
 
 	// we now have enough information to start mesh construction
-	vtMesh *pMesh = new vtMesh(ptype, vtype, verts);
+	vtMesh *pMesh = new vtMesh((vtMesh::PrimType)ptype, vtype, verts);
 	pMesh->SetMatIndex(matidx);
 
 	Read(fp, token, len);

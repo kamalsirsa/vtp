@@ -138,7 +138,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		if (!in_bin)
 			continue;
 
-		vtMesh *pMesh = new vtMesh(GL_TRIANGLES, VT_Normals|VT_Colors, in_bin * 3);
+		vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLES, VT_Normals|VT_Colors, in_bin * 3);
 
 		for (j = 0; j < in_bin; j++)
 		{
@@ -234,7 +234,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 	if (bDropShadowMesh)
 	{
-		vtMesh *pBaseMesh = new vtMesh(GL_TRIANGLE_FAN, 0, 4);
+		vtMesh *pBaseMesh = new vtMesh(vtMesh::TRIANGLE_FAN, 0, 4);
 
 		ep.Set(m_EarthExtents.left - 10, m_EarthExtents.bottom - 10, m_fMinHeight - 5);
 		m_Conversion.ConvertFromEarth(ep, wp);

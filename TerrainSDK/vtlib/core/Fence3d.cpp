@@ -113,7 +113,7 @@ void vtFence3d::CreateMaterials()
 void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
 {
 	// create fencepost block
-	vtMesh *pPostMesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
+	vtMesh *pPostMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
 
 	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
 	pPostMesh->CreateOptimizedBlock(PostSizeScaled );
@@ -203,7 +203,7 @@ void vtFence3d::CreateMeshesWithPosts(vtHeightField3d *pHeightField)
 		{
 			float wire_height[3] = { 0.42f, 0.66f, 0.91f };
 
-			vtMesh *pWireMesh = new vtMesh(GL_LINE_STRIP, 0, nposts);
+			vtMesh *pWireMesh = new vtMesh(vtMesh::LINE_STRIP, 0, nposts);
 			int vidx = 0;
 			for (j = 0; j < 3; j++)
 			{
@@ -232,7 +232,7 @@ void vtFence3d::CreateMeshesWithPosts(vtHeightField3d *pHeightField)
 
 		if (nposts > 1)
 		{
-			vtMesh *pMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, nposts*2);
+			vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, nposts*2);
 			int vidx = 0;
 			for (i = 0; i < nposts; i++)
 			{
@@ -264,7 +264,7 @@ void vtFence3d::CreateMeshesWithoutPosts(vtHeightField3d *pHeightField)
 	float fFenceHeightScaled = m_fHeight * s_fFenceScale;
 	float u = 0.0f;
 	FPoint3 pout;
-	vtMesh *pMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numfencepts * 2);
+	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numfencepts * 2);
 	int vidx = 0;
 	for (i = 0; i < numfencepts; i++)
 	{

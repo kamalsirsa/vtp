@@ -110,7 +110,7 @@ void ContourConverter::NewMesh()
 		m_pGeom->AddMesh(m_pMesh, 0);
 		m_pMesh->Release();		// pass ownership
 	}
-	m_pMesh = new vtMesh(GL_LINE_STRIP, 0, 2000);
+	m_pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 2000);
 }
 
 /**

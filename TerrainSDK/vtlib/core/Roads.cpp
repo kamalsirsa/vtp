@@ -478,7 +478,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	if (do_roadside)
 		total_vertices += (GetSize() * 2 * 2);		// 2 roadside strips
 
-	vtMesh *pMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_TexCoords | VT_Normals,
+	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords | VT_Normals,
 		total_vertices);
 
 	RoadBuildInfo bi(GetSize());

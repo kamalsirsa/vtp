@@ -526,9 +526,9 @@ void vtMeshBase::AddRectangleXY(float x, float y, float xsize, float ysize,
 		AddVertexUV(x+xsize, y+ysize,	z, 1.0f, 1.0f);
 		AddVertexUV(x,		 y+ysize,	z, 0.0f, 1.0f);
 	}
-	if (m_ePrimType == GL_TRIANGLE_FAN)
+	if (m_ePrimType == vtMesh::TRIANGLE_FAN)
 		AddFan(vidx, vidx+1, vidx+2, vidx+3);
-	else if (m_ePrimType == GL_QUADS)
+	else if (m_ePrimType == vtMesh::QUADS)
 		AddQuad(vidx, vidx+1, vidx+2, vidx+3);
 }
 
@@ -667,7 +667,7 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	vtMesh *mesh[3];
 
 	for (i = 0; i < 3; i++)
-		mesh[i] = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
+		mesh[i] = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals, 24);
 
 	mesh[0]->CreateBlock(FPoint3(fSize, fSmall, fSmall));
 	mesh[1]->CreateBlock(FPoint3(fSmall, fSize, fSmall));
@@ -717,7 +717,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 	pGeom->SetMaterials(pMats);
 	pMats->Release();	// pass ownership to the geom
 
-	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, (res+1)*3*2);
+	vtMesh *pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, (res+1)*3*2);
 
 	float radius = sphere.radius * 0.9f;
 
@@ -766,7 +766,7 @@ vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						float fTiling, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
 
 	mesh->CreateRectangle(steps, steps, FPoint3(base.x, 0, base.y),
 		FPoint3(size.x / steps, 0, size.y / steps), fTiling);
@@ -797,7 +797,7 @@ vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertTyp
 						 float fRadius, int res)
 {
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*res*2);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*res*2);
 	mesh->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
@@ -840,7 +840,7 @@ vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertT
 		verts = res * 2;
 
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*2);
+	vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, iVertType, res*2);
 	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
 	pGeom->AddMesh(mesh, iMatIdx);
@@ -852,7 +852,7 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *mesh = new vtMesh(GL_LINES, 0, (steps+1)*4);
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
 	p.y = diff.y;

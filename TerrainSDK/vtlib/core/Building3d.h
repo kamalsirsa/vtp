@@ -27,7 +27,7 @@ struct MatMesh
 {
 	int		m_iMatIdx;
 	vtMesh	*m_pMesh;
-	int		m_iPrimType;
+	vtMesh::PrimType m_ePrimType;
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
@@ -68,7 +68,7 @@ protected:
 	// the geometry is composed of several meshes, one for each potential material used
 	Array<MatMesh>	m_Mesh;
 
-	vtMesh *FindMatMesh(const vtString &Material, const RGBi &color, int iPrimType);
+	vtMesh *FindMatMesh(const vtString &Material, const RGBi &color, vtMesh::PrimType ePrimType);
 	// center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
 	FPoint3 m_center;

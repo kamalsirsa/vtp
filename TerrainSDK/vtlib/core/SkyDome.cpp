@@ -64,7 +64,7 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	// Now make a green marker, directly north
 	int matidx = pMats->AddRGBMaterial1(color, false, false, true);
 	FPoint3 p;
-	vtMesh *mesh = new vtMesh(GL_LINES, 0, 500);
+	vtMesh *mesh = new vtMesh(vtMesh::LINES, 0, 500);
 	mesh->AddVertex(FPoint3(-0.07, 0, -0.94));
 	mesh->AddVertex(FPoint3( 0.07, 0, -0.94));
 	mesh->AddVertex(FPoint3(0, -0.07, -0.94));
@@ -147,7 +147,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 	// Create the geometry of the dome itself
 	int res = 16;
-	m_pDomeMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
+	m_pDomeMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
 	m_pDomeMesh->CreateEllipsoid(FPoint3(1.0f, 1.0f, 1.0f), res, true);
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
 	m_pDomeMesh->Release();	// pass ownership to Geometry
@@ -194,7 +194,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pSunGeom = new vtMovGeom(pGeom);
 		m_pSunGeom->SetName2("Sun xform");
 
-		vtMesh *SunMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
+		vtMesh *SunMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		SunMesh->AddRectangleXZ(0.50f, 0.50f);
 		pGeom->SetMaterials(m_pMats);
@@ -229,7 +229,7 @@ void vtSkyDome::CreateMarkers()
 	// First create some 5-degree tic marks.
 	int yellow = m_pMats->AddRGBMaterial1(RGBf(1,1,0), false, false, true);
 	FPoint3 p;
-	vtMesh *tics = new vtMesh(GL_LINES, 0, (36+1)*2*2);
+	vtMesh *tics = new vtMesh(vtMesh::LINES, 0, (36+1)*2*2);
 	for (double t = 0; t < PId; t += (PId / 36))	// 5 degree increment
 	{
 		float sint = sin(t) * 0.95;
@@ -691,7 +691,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	// Need a material?
 	m_pStarGeom->SetMaterials(m_pMats);
 
-	m_pStarMesh = new vtMesh(GL_POINTS, VT_Colors, NumStars);
+	m_pStarMesh = new vtMesh(vtMesh::POINTS, VT_Colors, NumStars);
 	AddStars(m_pStarMesh);
 	m_pStarGeom->AddMesh(m_pStarMesh, star_mat);
 	m_pStarMesh->Release();		// pass ownership to Geometry
@@ -718,7 +718,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 		m_pMoonGeom = new vtMovGeom(pGeom);
 		m_pMoonGeom->SetName2("Moon xform");
 
-		vtMesh *MoonMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
+		vtMesh *MoonMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords, 4);
 
 		MoonMesh->AddRectangleXZ(0.1f, 0.1f);
 		pGeom->SetMaterials(m_pMats);

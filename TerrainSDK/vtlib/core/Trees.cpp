@@ -175,7 +175,7 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows)
 	vtx_count += 8;
 
 	// make a mesh
-	vtMesh *pTreeMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, vtx_count);
+	vtMesh *pTreeMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_TexCoords, vtx_count);
 
 	// size of textured, upright portion
 	float w2 = (m_width * fTreeScale) / 2.0f;
