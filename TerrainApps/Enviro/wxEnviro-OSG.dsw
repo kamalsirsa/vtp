@@ -95,6 +95,9 @@ Package=<4>
     Begin Project Dependency
     Project_Dep_Name xmlhelper
     End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name vtui
+    End Project Dependency
 }}}
 
 ###############################################################################
