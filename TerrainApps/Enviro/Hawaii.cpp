@@ -12,6 +12,7 @@
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/Content3d.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/AnimPath.h"
 #include "vtdata/Features.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
@@ -159,7 +160,56 @@ void IslandTerrain::create_state_park()
 		scale *= 10;	// Exaggerate its size to make it easier to find
 		table->Scale3(scale, scale, scale);
 		PlantModelAtPoint(table, park_location);
-		AddNodeToStructGrid(table);
+//		AddNodeToStructGrid(table);
+		AddNode(table);
+		table->SetName2("Placement for Picnic Table");
+
+#if 0
+		// TEMP TEST CODE
+		FPoint3 center = table->GetTrans();
+		float radius = 20.0f;
+
+		FPoint3 scale1;
+		scale1.Set(scale, scale, scale);
+
+		vtAnimPath *path = new vtAnimPath;
+		path->SetLoop(true);
+
+#if 0
+		float looptime = 10.0f;
+		int numSamples = 40;
+		float yaw = 0.0f;
+		float yaw_delta = 2.0f*osg::PI/((float)numSamples-1.0f);
+		float roll = osg::inDegrees(30.0f);
+
+		double time=0.0f;
+		double time_delta = looptime/(double)numSamples;
+		for(int i=0;i<numSamples;++i)
+		{
+			FPoint3 position(center + FPoint3(sinf(yaw)*radius, cosf(yaw)*radius,0.0f));
+			FQuat rotation(FQuat(FPoint3(0.0,1.0,0.0), roll) * FQuat(FPoint3(0.0,0.0,1.0), -(yaw+osg::inDegrees(90.0f))));
+	        
+			path->Insert(time,ControlPoint(position,rotation,scale1));
+
+			yaw += yaw_delta;
+			time += time_delta;
+		}
+#else
+		FQuat down(FPoint3(1,0,0), PID2f);
+
+		path->Insert(0, ControlPoint(FPoint3(0,  4000,  0), down));
+		path->Insert(2, ControlPoint(FPoint3(40000, 4000,  0), down));
+		path->Insert(4, ControlPoint(FPoint3(40000, 4000, -40000), down));
+		path->Insert(6, ControlPoint(FPoint3(0,  4000, -40000), down));
+		path->Insert(8, ControlPoint(FPoint3(0,  4000, 0), down));
+		path->ProcessPoints();
+		path->SetInterpMode(vtAnimPath::CUBIC_SPLINE);
+#endif
+
+		vtAnimPathEngine *engine = new vtAnimPathEngine(path, 1.0);
+		engine->SetTarget(table);
+		AddEngine(engine);
+#endif
 	}
 
 	// An example of how to add the content definitions from a content
