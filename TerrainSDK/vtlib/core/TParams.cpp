@@ -21,18 +21,72 @@ TParams::TParams()
 {
 	// provide some defaults
 	m_fVerticalExag = 1.0f;
+	m_iMinHeight = 20;
+	m_fNavSpeed = 100;
+
 	m_bRegular = false;
+	m_iSubsample = 4;
+
 	m_bDynamic = false;
-	m_bTin = false;
-	m_iTriCount = 10000;
+	m_eLodMethod = LM_ROETTGER;
 	m_fPixelError = 2.0f;
+	m_iTriCount = 10000;
+	m_bTriStrips = true;
+	m_bDetailTexture = false;
+
+	m_bTin = false;
+
+	m_bTimeOn = false;
+	m_iInitTime = 10;
 	m_fTimeSpeed = 1;
+
+	m_eTexture = TE_NONE;
+	m_iTilesize = 512;
+	m_bMipmap = false;
+	m_b16bit = true;
+	m_bPreLight = true;
+	m_bPreLit = true;
+	m_fPreLightFactor = 1.0f;
+
+	m_bRoads = false;
+	m_bHwy = true;
+	m_bPaved = true;
+	m_bDirt = true;
+	m_fRoadHeight = 2;		// 2 m
+	m_fRoadDistance = 2;	// 2 km
+	m_bTexRoads = true;
+	m_bRoadCulture = false;
+
+	m_bTrees = false;
+	m_iTreeDistance = 2;
+	m_bAgriculture = false;
+	m_bWildVeg = false;
+
+	m_bFog = false;
+	m_iFogDistance = 50;	// 50 km
+
+	m_bBuildings = false;
+
 	m_bTransTowers = false;
-	m_bRouteEnable = false;
+
+	m_bVehicles = false;
+	m_fVehicleSize = 1;
+	m_fVehicleSpeed = 1;
+	m_iNumCars = 0;
+
+	m_bSky = true;
 	m_bOceanPlane = false;
 	m_fOceanPlaneLevel = -20.0f;
 	m_bDepressOcean = false;
 	m_fDepressOceanLevel = -40.0f;
+	m_bHorizon = false;
+	m_bVertexColors = false;
+	m_bOverlay = false;
+	m_bSuppressLand = false;
+	m_bLabels = false;
+
+	m_bAirports = false;
+	m_bRouteEnable = false;
 }
 
 //
