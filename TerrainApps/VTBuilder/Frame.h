@@ -383,8 +383,9 @@ public:
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
 	// Export
-	void ExportTerragen();
+	void ExportASC();
 	void ExportGeoTIFF();
+	void ExportTerragen();
 	void ExportBMP();
 	void ExportSTM();
 	void ExportPlanet();

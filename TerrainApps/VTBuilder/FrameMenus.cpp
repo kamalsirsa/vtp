@@ -1910,136 +1910,131 @@ void MainFrame::OnUpdateScaleElevation(wxUpdateUIEvent& event)
 
 void MainFrame::OnElevExport(wxCommandEvent &event)
 {
-	wxString choices[5];
-	choices[0] = _T("TerraGen");
+	if (!GetActiveElevLayer())
+		return;
+
+	wxString choices[6];
+	choices[0] = _T("ArcInfo ASCII Grid");
 	choices[1] = _T("GeoTIFF");
-	choices[2] = _T("BMP");
-	choices[3] = _T("STM");
-	choices[4] = _T("MSI Planet");
+	choices[2] = _T("TerraGen");
+	choices[3] = _T("BMP");
+	choices[4] = _T("STM");
+	choices[5] = _T("MSI Planet");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 5, choices);
+		_("Export to file format:"), 6, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
 	switch (dlg.GetSelection())
 	{
-	case 0: ExportTerragen(); break;
+	case 0: ExportASC(); break;
 	case 1: ExportGeoTIFF(); break;
-	case 2: ExportBMP(); break;
-	case 3: ExportSTM(); break;
-	case 4: ExportPlanet(); break;
+	case 2: ExportTerragen(); break;
+	case 3: ExportBMP(); break;
+	case 4: ExportSTM(); break;
+	case 5: ExportPlanet(); break;
 	}
+}
+
+vtString GetExportFilename(const char *format_filter)
+{
+	wxString filter = _("All Files|*.*|");
+	AddType(filter, format_filter);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	saveFile.SetFilterIndex(1);
+	if (saveFile.ShowModal() != wxID_OK)
+		return vtString("");
+	wxString2 result = saveFile.GetPath();
+	return result.vt_str();
+}
+
+void MainFrame::ExportASC()
+{
+	// check spacing
+	vtElevationGrid *grid = GetActiveElevLayer()->m_pGrid;
+	DPoint2 spacing = grid->GetSpacing();
+	double ratio = spacing.x / spacing.y;
+	if (ratio < 0.999 || ratio > 1.001)
+	{
+		wxString str, str2;
+		str = _("The Arc ASCII format only supports evenly spaced elevation grids.\n");
+		str2.Printf(_("The spacing of this grid is %g x %g\n"), spacing.x, spacing.y);
+		str += str2;
+		str += _("The result my be stretched.  Do you want to continue anyway?");
+		int result = wxMessageBox(str, _("Warning"), wxYES_NO | wxICON_QUESTION, this);
+		if (result != wxYES)
+			return;
+	}
+
+	vtString fname = GetExportFilename(FSTRING_ASC);
+	if (fname == "")
+		return;
+	bool success = grid->SaveToASC(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
+	else
+		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::ExportTerragen()
 {
-	vtElevLayer *el = GetActiveElevLayer();
-	if (!el)
+	vtString fname = GetExportFilename(FSTRING_TER);
+	if (fname == "")
 		return;
-
-	wxString filter = _("All Files|*.*|");
-	AddType(filter, FSTRING_TER);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	if (saveFile.ShowModal() != wxID_OK)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
-
-	bool success = el->m_pGrid->SaveToTerragen(strPathName.mb_str());
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToTerragen(fname);
 	if (success)
-		DisplayAndLog("Successfully wrote TerraGen file '%s'", strPathName.mb_str());
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::ExportGeoTIFF()
 {
-	vtElevLayer *el = GetActiveElevLayer();
-	if (!el)
+	vtString fname = GetExportFilename(FSTRING_TIF);
+	if (fname == "")
 		return;
-
-	wxString filter = _T("All Files|*.*|");
-	AddType(filter, FSTRING_TIF);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	if (saveFile.ShowModal() != wxID_OK)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
-
-	bool success = el->m_pGrid->SaveToGeoTIFF(strPathName.mb_str());
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToGeoTIFF(fname);
 	if (success)
-		DisplayAndLog("Successfully wrote GeoTIFF file '%s'", strPathName.mb_str());
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::ExportBMP()
 {
-	vtElevLayer *el = GetActiveElevLayer();
-	if (!el)
+	vtString fname = GetExportFilename(FSTRING_BMP);
+	if (fname == "")
 		return;
-
-	wxString filter = _("All Files|*.*|");
-	AddType(filter, FSTRING_BMP);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	if (saveFile.ShowModal() != wxID_OK)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
-
-	bool success = el->m_pGrid->SaveToBMP(strPathName.mb_str());
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToBMP(fname);
 	if (success)
-		DisplayAndLog("Successfully wrote BMP file '%s'", strPathName.mb_str());
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::ExportSTM()
 {
-	vtElevLayer *el = GetActiveElevLayer();
-	if (!el)
+	vtString fname = GetExportFilename(FSTRING_STM);
+	if (fname == "")
 		return;
-
-	wxString filter = _("All Files|*.*|");
-	AddType(filter, FSTRING_STM);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	saveFile.SetFilterIndex(1);
-	if (saveFile.ShowModal() != wxID_OK)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
-
-	bool success = el->m_pGrid->SaveToSTM(strPathName.mb_str());
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToSTM(fname);
 	if (success)
-		DisplayAndLog("Successfully wrote STM file '%s'", strPathName.mb_str());
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
 }
 
 void MainFrame::ExportPlanet()
 {
-	vtElevLayer *el = GetActiveElevLayer();
-	if (!el)
+	vtString fname = GetExportFilename(FSTRING_Planet);
+	if (fname == "")
 		return;
-
-	wxString filter = _("All Files|*.*|");
-	AddType(filter, FSTRING_Planet);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	saveFile.SetFilterIndex(1);
-	if (saveFile.ShowModal() != wxID_OK)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
-
-	bool success = el->m_pGrid->SaveToPlanet(strPathName.mb_str());
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(fname);
 	if (success)
-		DisplayAndLog("Successfully wrote Planet file '%s'", strPathName.mb_str());
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
 }
