@@ -87,6 +87,7 @@ public:
 	void OnViewMagnifier(wxCommandEvent& event);
 	void OnViewPan(wxCommandEvent& event);
 	void OnViewDistance(wxCommandEvent& event);
+	void OnViewSetArea(wxCommandEvent& event);
 	void OnViewZoomIn(wxCommandEvent& event);
 	void OnViewZoomOut(wxCommandEvent& event);
 	void OnViewZoomAll(wxCommandEvent& event);
@@ -129,7 +130,6 @@ public:
 	void OnUpdateRoadShowWidth(wxUpdateUIEvent& event);
 
 	void OnElevSelect(wxCommandEvent& event);
-	void OnElevBox(wxCommandEvent& event);
 	void OnRemoveAboveSea(wxCommandEvent& event);
 	void OnFillIn(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);
@@ -138,9 +138,10 @@ public:
 	void OnElevShading(wxCommandEvent& event);
 	void OnElevHide(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
+	void OnElevMergeTin(wxCommandEvent& event);
 
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);
-	void OnUpdateElevBox(wxUpdateUIEvent& event);
+	void OnUpdateViewSetArea(wxUpdateUIEvent& event);
 	void OnUpdateRemoveAboveSea(wxUpdateUIEvent& event);
 	void OnUpdateFillIn(wxUpdateUIEvent& event);
 	void OnUpdateScaleElevation(wxUpdateUIEvent& event);
@@ -149,6 +150,7 @@ public:
 	void OnUpdateElevShading(wxUpdateUIEvent& event);
 	void OnUpdateElevHide(wxUpdateUIEvent& event);
 	void OnUpdateExportBitmap(wxUpdateUIEvent& event);
+	void OnUpdateElevMergeTin(wxUpdateUIEvent& event);
 
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);
@@ -252,7 +254,7 @@ public:
 
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);
-	double GetHeightFromTerrain(double lx, double ly);
+	double GetHeightFromTerrain(DPoint2 &p);
 
 	// Vegetation
 	vtPlantList m_PlantList;
@@ -320,6 +322,9 @@ protected:
 
 	vtProjection	m_proj;
 	bool			m_bShowMinutes;
+
+	// menu numbers, for each layer type that has a corresponding menu
+	int		m_iLayerMenu[LAYER_TYPES];
 
 DECLARE_EVENT_TABLE()
 };
