@@ -25,7 +25,7 @@ unsigned int vtFeatureSetPoint2D::GetNumEntities() const
 	return m_Point2.GetSize();
 }
 
-void vtFeatureSetPoint2D::SetNumEntities(int iNum)
+void vtFeatureSetPoint2D::SetNumGeometries(int iNum)
 {
 	m_Point2.SetSize(iNum);
 }
@@ -207,7 +207,7 @@ unsigned int vtFeatureSetPoint3D::GetNumEntities() const
 	return m_Point3.GetSize();
 }
 
-void vtFeatureSetPoint3D::SetNumEntities(int iNum)
+void vtFeatureSetPoint3D::SetNumGeometries(int iNum)
 {
 	m_Point3.SetSize(iNum);
 }
@@ -356,7 +356,7 @@ unsigned int vtFeatureSetLineString::GetNumEntities() const
 	return m_Line.size();
 }
 
-void vtFeatureSetLineString::SetNumEntities(int iNum)
+void vtFeatureSetLineString::SetNumGeometries(int iNum)
 {
 	m_Line.resize(iNum);
 }
@@ -510,7 +510,7 @@ unsigned int vtFeatureSetPolygon::GetNumEntities() const
 	return m_Poly.size();
 }
 
-void vtFeatureSetPolygon::SetNumEntities(int iNum)
+void vtFeatureSetPolygon::SetNumGeometries(int iNum)
 {
 	m_Poly.resize(iNum);
 }
@@ -532,7 +532,11 @@ bool vtFeatureSetPolygon::ComputeExtent(DRECT &rect) const
 	{
 		// we only test the first, outer ring since it contains the rest
 		const DPolygon2 &poly = m_Poly[i];
-		rect.GrowToContainLine(poly[0]);
+		int num_rings = poly.size();
+		if (num_rings < 1)
+			continue;
+		const DLine2 &dline = poly[0];
+		rect.GrowToContainLine(dline);
 	}
 	return true;
 }
@@ -545,17 +549,17 @@ void vtFeatureSetPolygon::Offset(const DPoint2 &p)
 
 bool vtFeatureSetPolygon::TransformCoords(OCT *pTransform)
 {
-	unsigned int i, j, pts, bad = 0, size = m_Poly.size();
+	unsigned int i, j, k, pts, bad = 0, size = m_Poly.size();
 	for (i = 0; i < size; i++)
 	{
 		DPolygon2 &dpoly = m_Poly[i];
 		for (j = 0; j < dpoly.size(); j++)
 		{
-			DLine2 &dline = dpoly[i];
+			DLine2 &dline = dpoly[j];
 			pts = dline.GetSize();
-			for (j = 0; j < pts; j++)
+			for (k = 0; k < pts; k++)
 			{
-				DPoint2 &p = dline.GetAt(j);
+				DPoint2 &p = dline.GetAt(k);
 				int success = pTransform->Transform(1, &p.x, &p.y);
 				if (success != 1)
 					bad++;
