@@ -457,6 +457,11 @@ void vtMaterialBase::SetTexture2(const char *szFilename)
 	SetTexture(new vtImage(szFilename));
 }
 
+vtImage *vtMaterialBase::GetTexture()
+{
+	return m_pImage;
+}
+
 void vtMaterialBase::CopyFrom(vtMaterial *pFrom)
 {
 	SetDiffuse1(pFrom->GetDiffuse());

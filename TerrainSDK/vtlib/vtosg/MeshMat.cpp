@@ -99,10 +99,9 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 	if (bAdd)
 	{
 		osg::Transparency *trans = new osg::Transparency();
-//		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 //		trans->setFunction(GL_ONE, GL_ONE);
-		trans->setFunction(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 //		trans->setFunction(GL_SRC_COLOR, GL_DST_COLOR);
+		trans->setFunction(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 		m_pStateSet->setAttribute(trans);
 	}
 }
@@ -119,14 +118,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	m_pTexture->setImage(pImage->m_pOsgImage);
 
-//	m_pStateSet->setMode(GL_TEXTURE, GEO_ON);
-//	m_pStateSet->setAttribute(m_pTexture.get());
 	m_pStateSet->setAttributeAndModes(m_pTexture.get(), osg::StateAttribute::ON);
-}
-vtImage *vtMaterial::GetTexture()
-{
-//	return m_pImage;
-	return NULL;	// todo
 }
 
 void vtMaterial::SetClamp(bool bClamp)

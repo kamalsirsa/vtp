@@ -255,7 +255,7 @@ public:
 	virtual bool GetLighting() = 0;
 
 	virtual void SetTexture(class vtImage *pImage) = 0;
-	virtual vtImage *GetTexture() = 0;
+	virtual vtImage *GetTexture();
 	virtual void SetTexture2(const char *szFilename);
 
 	virtual void SetTransparent(bool bOn, bool bAdd = false) = 0;
