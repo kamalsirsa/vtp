@@ -260,6 +260,7 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 
 void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefix)
 {
+	VTLOG("IcoGlobe::Create\n");
 	int i;
 	m_freq = freq;
 
@@ -321,6 +322,11 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 			VTLOG("\t texture: %s\n", (const char *)fname);
 			fullpath = FindFileOnPaths(paths, (const char *)fname);
 		}
+		if (fullpath == "")
+		{
+			VTLOG("\t\tnot found on data paths.\n");
+			index = -1;
+		}
 
 		index = m_mats->AddTextureMaterial2(fullpath,
 					 bCulling, bLighting,
@@ -330,7 +336,10 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 //		g_Log.Printf("\t\tindex: %d\n", index);
 
 		if (index == -1)
+		{
+			VTLOG("\t\ttexture load failed, using red material.\n");
 			m_globe_mat[pair] = m_red;
+		}
 		else
 			m_globe_mat[pair] = index;
 	}

@@ -74,28 +74,27 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 // Helper: find the largest texture size supported by OpenGL
 //
 #ifdef WIN32
-static void ShowOGLInfo(HDC hdc)
+static void ShowOGLInfo(bool bLog, HDC hdc)
 #else
-	static void ShowOGLInfo()
+static void ShowOGLInfo(bool bLog)
 #endif
 {
 #if defined(WIN32)
 	PIXELFORMATDESCRIPTOR pfd =
 	{
 		sizeof(PIXELFORMATDESCRIPTOR),   // size of this pfd 
-		1,					  // version number 
+		1,						// version number 
 		PFD_DRAW_TO_WINDOW |	// support window 
 		PFD_SUPPORT_OPENGL |	// support OpenGL 
-		PFD_DOUBLEBUFFER,	   // double buffered 
-		PFD_TYPE_RGBA,		  // RGBA type 
-		24,					 // 24-bit color depth 
-		0, 0, 0, 0, 0, 0,	   // color bits ignored 
+		PFD_DOUBLEBUFFER,		// double buffered 
+		PFD_TYPE_RGBA,			// RGBA type 
+		24,						// 24-bit color depth 
+		0, 0, 0, 0, 0, 0,		// color bits ignored 
 		0, 0, 0,				// no alpha buffer 
-		0, 0, 0, 0,			 // accum bits ignored 
-		32, 0, 0,			   // 32-bit z-buffer 
-		PFD_MAIN_PLANE,		 // main layer
-		0,					  // reserved 
-		0, 0, 0				 // layer masks ignored
+		0, 0, 0, 0,				// accum bits ignored 
+		32, 0, 0,				// 32-bit z-buffer 
+		PFD_MAIN_PLANE,			// main layer
+		0, 0, 0, 0				// reserved, layer masks ignored
 	};
 	int  iPixelFormat;
 
@@ -166,18 +165,28 @@ static void ShowOGLInfo(HDC hdc)
 	if (error == GL_INVALID_OPERATION)
 		value = 0;
 
-	wxString str;
-	str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n")
-		_T("Maximum Texture Dimension: %d\nExtensions: %hs"),
-		glGetString(GL_VERSION), glGetString(GL_VENDOR),
-		glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
+	if (bLog)
+	{
+		VTLOG("\tOpenGL Version: %hs\n\tVendor: %hs\n\tRenderer: %hs\n"
+			"\tMaximum Texture Dimension: %d\n",
+			glGetString(GL_VERSION), glGetString(GL_VENDOR),
+			glGetString(GL_RENDERER), value);
+	}
+	else
+	{
+		wxString2 str;
+		str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n")
+			_T("Maximum Texture Dimension: %d\nExtensions: %hs"),
+			glGetString(GL_VERSION), glGetString(GL_VENDOR),
+			glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
 
-	wxDialog dlg(NULL, -1, _T("OpenGL Info"), wxDefaultPosition);
-	TextDialogFunc(&dlg, TRUE);
-	wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
-	pText->SetValue(str);
+		wxDialog dlg(NULL, -1, _T("OpenGL Info"), wxDefaultPosition);
+		TextDialogFunc(&dlg, TRUE);
+		wxTextCtrl* pText = (wxTextCtrl*) dlg.FindWindow( ID_TEXT );
+		pText->SetValue(str);
 
-	dlg.ShowModal();
+		dlg.ShowModal();
+	}
 
 #ifdef WIN32
 	wglDeleteContext(device);
@@ -319,13 +328,13 @@ void StartupDlg::OnEarthView( wxCommandEvent &event )
 
 void StartupDlg::OnOpenGLInfo( wxCommandEvent &event )
 {
-	// check the OpenGL max texture size
+	// display OpenGL info, including max texture size
 #ifdef WIN32
 	wxClientDC wdc(this);
 	HDC hdc = (HDC) wdc.GetHDC();
-	ShowOGLInfo(hdc);
+	ShowOGLInfo(false, hdc);
 #else
-	ShowOGLInfo();
+	ShowOGLInfo(false);
 #endif
 }
 
@@ -336,6 +345,15 @@ void StartupDlg::OnOK( wxCommandEvent &event )
 
 void StartupDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
+	// display OpenGL info, including max texture size
+#ifdef WIN32
+	wxClientDC wdc(this);
+	HDC hdc = (HDC) wdc.GetHDC();
+	ShowOGLInfo(true, hdc);
+#else
+	ShowOGLInfo(true);
+#endif
+
 	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName.mb_str());
 	if (pTerr)
 		m_strTName = wxString::FromAscii(pTerr->GetName());
