@@ -80,6 +80,15 @@ void MainFrame::ImportData(LayerType ltype)
 	// make a string which contains filters for the appropriate file types
 	wxString filter = GetImportFilterString(ltype);
 
+#ifdef __DARWIN_OSX__
+	// there is some bug caused by setting this filter on OS X.
+	// either the filter construction itself is causing the seg fault
+	// or an issue with wxWidgets is being exposed by these filter
+	// settings.  For now, set the filter to "" to get around
+	// this. - Pete Willemsen
+	filter = "";
+#endif
+
 	// ask the user for a filename
 	// default the same directory they used last time for a layer of this type
 	wxFileDialog loadFile(NULL, _("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN);
