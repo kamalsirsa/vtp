@@ -3,7 +3,7 @@
 //
 // Class which represents a Triangulated Irregular Network.
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -367,6 +367,18 @@ bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
+
+		FBox3 box;
+		mesh->GetBoundBox(box);
+		FSphere sph(box);
+
+		int iQuantity;
+		FPoint3 interpoints[2];
+		if (!RaySphereIntersection(point, dir, sph, iQuantity, interpoints))
+		{
+			continue;
+		}
+
 		int tris = mesh->GetNumVertices() / 3;
 		for (i = 0; i < tris; i++)
 		{
