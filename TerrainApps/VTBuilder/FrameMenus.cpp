@@ -535,20 +535,6 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	DymaxIcosa ico;
 	ico.InitIcosa();
 
-	int face_pairs[10][2] =
-	{
-		{ 1, 6 },
-		{ 2, 8 },
-		{ 3, 10 },
-		{ 4, 12 },
-		{ 5, 14 },
-		{ 7, 16 },
-		{ 9, 17 },
-		{ 11, 18 },
-		{ 13, 19 },
-		{ 15, 20 }
-	};
-
 	wxImage out[10];
 	for (i = 0; i < 10; i++)
 	{
@@ -564,13 +550,13 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 			{
 				if (y < output_size-1-x)
 				{
-					face = face_pairs[i][0];
+					face = icosa_face_pairs[i][0];
 					u = (double)x / output_size;
 					v = (double)y / output_size;
 				}
 				else
 				{
-					face = face_pairs[i][1];
+					face = icosa_face_pairs[i][1];
 					u = (double)(output_size-1-x) / output_size;
 					v = (double)(output_size-1-y) / output_size;
 				}
@@ -590,9 +576,15 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 		}
 		wxString name;
 		name.Printf(_T("%s%02d%02d.png"), prefix.c_str(),
-			face_pairs[i][0], face_pairs[i][1]);
+			icosa_face_pairs[i][0]+1, icosa_face_pairs[i][1]+1);
 		bool success = out[i].SaveFile(name, wxBITMAP_TYPE_PNG);
+		if (!success)
+		{
+			DisplayAndLog("Failed to write file %s.", name.mb_str());
+			return;
+		}
 	}
+	DisplayAndLog("Successful.");
 }
 
 bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
