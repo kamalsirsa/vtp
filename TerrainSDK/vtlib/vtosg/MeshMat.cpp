@@ -157,9 +157,10 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		if (!m_pBlendFunc.valid())
 			m_pBlendFunc = new BlendFunc;
 		m_pStateSet->setAttributeAndModes(m_pBlendFunc.get(), SA_ON);
-		AlphaFunc* alphaFunc = new AlphaFunc;
-		alphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
-		m_pStateSet->setAttributeAndModes( alphaFunc, SA_ON );
+		if (!m_pAlphaFunc.valid())
+			m_pAlphaFunc = new AlphaFunc;
+		m_pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
+		m_pStateSet->setAttributeAndModes(m_pAlphaFunc.get(), SA_ON );
 		m_pStateSet->setRenderingHint(StateSet::TRANSPARENT_BIN);
 	}
 	else
