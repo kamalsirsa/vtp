@@ -689,3 +689,13 @@ void vtTextMesh::SetText(const char *text)
 {
 	m_pOsgText->setText(text);
 }
+
+void vtTextMesh::SetText(const wchar_t *text)
+{
+	m_pOsgText->setText(text);
+}
+
+void vtTextMesh::SetText(const std::wstring &text)
+{
+	m_pOsgText->setText(text.c_str());
+}

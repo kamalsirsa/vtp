@@ -174,6 +174,8 @@ public:
 	vtTextMesh(vtFont *font, bool bCenter = false);
 
 	void SetText(const char *text);
+	void SetText(const wchar_t *text);
+	void SetText(const std::wstring &text);
 
 	// Implementation
 	osg::ref_ptr<osgText::Text> m_pOsgText;
