@@ -518,6 +518,8 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				str1,
 				pLayer->GetFilename().c_str(),
 				str2);
+			OGRFree(str1);
+			OGRFree(str2);
 			int ret = wxMessageBox(msg, _T("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
 			if (ret == wxNO)
 				keep = true;
