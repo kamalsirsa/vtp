@@ -41,6 +41,8 @@ public:
 class Lane
 {
 public:
+	Lane() { m_p3 = NULL; }
+	~Lane() { if (m_p3) delete m_p3; }
 	FPoint3 *m_p3;
 };
 

@@ -329,11 +329,15 @@ vtMesh *NodeGeom::GenerateGeometry()
 LinkGeom::LinkGeom()
 {
 	m_p3 = NULL;
+	m_pLanes = NULL;
 }
 
 LinkGeom::~LinkGeom()
 {
-	if (m_p3) delete m_p3;
+	if (m_p3)
+		delete m_p3;
+	if (m_pLanes)
+		delete [] m_pLanes;
 }
 
 RoadBuildInfo::RoadBuildInfo(int iCoords)
@@ -345,6 +349,7 @@ RoadBuildInfo::RoadBuildInfo(int iCoords)
 	fvLength = new float[iCoords];
 	verts = vert_index = 0;
 }
+
 RoadBuildInfo::~RoadBuildInfo()
 {
 	// clean up our temporary storage
