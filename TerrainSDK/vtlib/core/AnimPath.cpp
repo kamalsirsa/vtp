@@ -587,3 +587,30 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	return true;
 }
 
+
+/* Convenience classes for organizing a set of animation paths. */
+vtAnimContainer::vtAnimContainer()
+{
+}
+
+vtAnimContainer::~vtAnimContainer()
+{
+}
+
+void vtAnimContainer::DestructItems(unsigned int first, unsigned int last)
+{
+	for (unsigned int i = first; i <= last; i++)
+	{
+		vtAnimEntry *ent = GetAt(i);
+		m_pParentEngine->RemoveChild(ent->m_pEngine);
+		delete ent;
+	}
+}
+
+void vtAnimContainer::AppendEntry(vtAnimEntry *pEntry)
+{
+	m_pParentEngine->AddChild(pEntry->m_pEngine);
+	Append(pEntry);
+}
+
+

@@ -7,6 +7,9 @@
 // Free for all uses, see license.txt for details.
 //
 
+#ifndef ANIMPATHH
+#define ANIMPATHH
+
 #include "vtlib/core/Engine.h"
 #include "vtdata/CubicSpline.h"
 #include "vtdata/Features.h"
@@ -40,6 +43,10 @@ struct ControlPoint
  * define a path through space in world coordinates.  It is useful to use
  * in conjunction with the vtAnimPathEngine class, which can move any
  * transform (such as scene graph object or camera) along the path.
+ *
+ * When this object is serialized to an XML file, the points are projected
+ * to earth coordinates in GCS(WGS84) so that it is interoperable and
+ * terrain-independent.
  */
 class vtAnimPath
 {
@@ -187,4 +194,34 @@ public:
 	float	m_fSpeed;
 };
 
+/* Convenience classes for organizing a set of animation paths. */
+class vtAnimEntry
+{
+public:
+	vtAnimEntry() { m_pAnim = NULL; m_pEngine = NULL; }
+	~vtAnimEntry() {
+		delete m_pEngine; } // engine owns path
+	vtAnimPath *m_pAnim;
+	vtAnimPathEngine *m_pEngine;
+	vtString m_Name;
+};
+
+class vtAnimContainer : public Array<vtAnimEntry*>
+{
+public:
+	vtAnimContainer();
+	~vtAnimContainer();
+
+	void SetEngineContainer(vtEngine *pContainer)
+	{
+		m_pParentEngine = pContainer;
+	}
+	void DestructItems(unsigned int first, unsigned int last);
+	void AppendEntry(vtAnimEntry *pEntry);
+
+protected:
+	vtEngine *m_pParentEngine;
+};
+
+#endif // ANIMPATHH
 
