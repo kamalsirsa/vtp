@@ -369,6 +369,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		{
 			// failed to find texture
 			VTLOG("  Failed to find texture.\n");
+			eTex = TE_NONE;
 		}
 		else
 		{
