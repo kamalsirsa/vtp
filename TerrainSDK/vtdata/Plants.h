@@ -170,6 +170,7 @@ public:
 
 	void SetPlantList(vtPlantList *list) { m_pPlantList = list; }
 	void AddInstance(DPoint2 &pos, float size, short species_id);
+	void AppendFrom(const vtPlantInstanceArray &from);
 
 	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);

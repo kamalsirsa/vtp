@@ -549,6 +549,15 @@ void vtPlantInstanceArray::AddInstance(DPoint2 &pos, float size,
 	Append(pi);
 }
 
+void vtPlantInstanceArray::AppendFrom(const vtPlantInstanceArray &from)
+{
+	// TODO: match actual species
+	for (unsigned int i = 0; i < from.GetSize(); i++)
+	{
+		Append(from[i]);
+	}
+}
+
 struct PlantInstance10 {
 	float x, y;
 	float size;
