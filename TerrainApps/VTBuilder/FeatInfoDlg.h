@@ -37,6 +37,7 @@ public:
 	void SetView(BuilderView *pView) { m_pView = pView; }
 	void SetFeatureSet(vtFeatureSet *pFeatures);
 	void SetLayer(vtLayer *pLayer) { m_pLayer = pLayer; }
+	vtLayer *GetLayer() { return m_pLayer; }
 	void Clear();
 	void ShowSelected();
 	void ShowPicked();

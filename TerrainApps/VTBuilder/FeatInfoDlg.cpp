@@ -49,18 +49,28 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 void FeatInfoDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 {
-	if (m_pFeatures == pFeatures)
-		return;
-
 	m_pFeatures = pFeatures;
+
+	GetList()->ClearAll();  // clears all items and columns
+	m_iCoordColumns = 0;
+
+	if (!m_pFeatures)
+	{
+		GetList()->Enable(false);
+		GetChoiceShow()->Enable(false);
+		GetDelHigh()->Enable(false);
+		GetTextVertical()->Enable(false);
+		GetChoiceVertical()->Enable(false);
+		return;
+	}
 
 	vtProjection &proj = pFeatures->GetAtProjection();
 	m_bGeo = (proj.IsGeographic() != 0);
 
-	int field = 0;
-	GetList()->ClearAll();  // clears all items and columns
-	m_iCoordColumns = 0;
+	GetList()->Enable(true);
+	GetChoiceShow()->Enable(true);
 
+	int field = 0;
 	OGRwkbGeometryType type = m_pFeatures->GetGeomType();
 	if (type == wkbPoint || type == wkbPoint25D)
 	{
@@ -97,6 +107,9 @@ void FeatInfoDlg::Clear()
 
 void FeatInfoDlg::ShowSelected()
 {
+	if (!m_pFeatures)
+		return;
+
 	m_iShow = 0;
 	TransferDataToWindow();
 	Clear();
