@@ -499,26 +499,6 @@ SOURCE=.\Enviro.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Globe.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
-
-# ADD BASE CPP /YX"vtlib/vtlib.h"
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\Hawaii.cpp
 
 !IF  "$(CFG)" == "wxEnviro - Win32 Debug"
@@ -672,10 +652,6 @@ SOURCE=.\Engines.h
 # Begin Source File
 
 SOURCE=.\Enviro.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Globe.h
 # End Source File
 # Begin Source File
 
