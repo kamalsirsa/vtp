@@ -157,10 +157,11 @@ void NodeEdit::DetermineVisualFromRoads()
 
 ///////////////////////////////////////////////////////////////////
 
-RoadEdit::RoadEdit() : Road()
+RoadEdit::RoadEdit() : Road(), Selectable()
 {
 	m_extent.SetRect(0,0,0,0);
-	m_bSelect = false;
+	m_iPriority = 3;
+	m_fLength = 0.0f;
 	m_bDrawPoints = false;
 	m_bSidesComputed = false;
 }
@@ -910,7 +911,8 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 {
 	bool lights = false;
 	IntersectionType type = IT_NONE;
-	for (Road *pR = m_pFirstRoad; pR; pR=pR->m_pNext)
+
+	while (Road *pR = pN->GetRoad(0))
 	{
 		if (pR->GetNode(0) == pN)
 		{
@@ -932,9 +934,17 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 				lights = true;
 			}
 		}
+		pN->DetachRoad(pR);
 	}
-	if (lights) {
+	if (lights)
 		pN2->AdjustForLights();
-	}
+}
+
+class RoadEdit *NodeEdit::GetRoad(int n)
+{
+	if (m_r && n < m_iRoads)	// safety check
+		return (RoadEdit *)m_r[n];
+	else
+		return NULL;
 }
 
