@@ -415,8 +415,6 @@ void vtSkyDome::UpdateSunLight()
 		ambient = MAX_AMB;
 	}
 
-	vtGetScene()->SetAmbient(RGBf(ambient, ambient, ambient));
-
 	float intensity = 0.0f;
 
 	RGBf white(1.0f, 1.0f, 1.0f);
