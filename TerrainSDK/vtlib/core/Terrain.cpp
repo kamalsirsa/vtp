@@ -2358,10 +2358,10 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 			FPoint3 diff = v2 - v1;
 			float fLen = diff.Length();
 			unsigned int iSteps = (unsigned int) (fLen / fSpacing);
-			if (iSteps < 3) iSteps = 3;
+			if (iSteps < 1) iSteps = 1;
 
 			FPoint3 last_v;
-			for (j = 0; j <= iSteps; j++)
+			for (j = (i == 1 ? 0:1); j <= iSteps; j++)
 			{
 				// simple linear interpolation of the ground coordinate
 				v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
