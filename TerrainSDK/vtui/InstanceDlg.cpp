@@ -1,7 +1,7 @@
 //
 // InstanceDlg.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,6 +20,7 @@
 #include "wxString2.h"
 #include "vtdata/Content.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/vtLog.h"
 #include "vtui/Helper.h"
 #include "xmlhelper/exception.hpp"
 
@@ -95,7 +96,9 @@ void InstanceDlg::UpdateContentItems()
 	}
 	catch (xh_io_exception &ex)
 	{
-		// could display error message here
+		// display (or a least log) error message here
+		VTLOG("XML error:");
+		VTLOG(ex.getFormattedMessage().c_str());
 		return;
 	}
 
