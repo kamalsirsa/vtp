@@ -652,14 +652,14 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	fread(&numspecies, sizeof(int), 1, fp);
 
 	// read species binomial strings, creating lookup table of new IDs
-	short *id = new short[numspecies];
+	short *temp_ids = new short[numspecies];
 	char name[200];
 	for (i = 0; i < numspecies; i++)
 	{
 		fread(&len, sizeof(short), 1, fp);
 		fread(name, len, 1, fp);
 		name[len] = 0;
-		id[i] = m_pPlantList->GetSpeciesIdByName(name);
+		temp_ids[i] = m_pPlantList->GetSpeciesIdByName(name);
 	}
 
 	// read number of instances
@@ -687,9 +687,10 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 		// species id
 		fread(&local_species_id, sizeof(short), 1, fp);
 		// convert from file-local id to new id
-		GetAt(i).species_id = id[local_species_id];
+		GetAt(i).species_id = temp_ids[local_species_id];
 	}
 
+	delete temp_ids;
 	fclose(fp);
 	return true;
 }
