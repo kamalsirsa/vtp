@@ -111,10 +111,10 @@ public:
 	/** Set this transform to identity (no scale, rotation, or translation). */
 	void Identity();
 
-	/** Set the translation componet of the transform */
+	/** Set the translation component of the transform */
 	void SetTrans(const FPoint3 &pos);
 
-	/** Get the translation componet of the transform */
+	/** Get the translation component of the transform */
 	FPoint3 GetTrans();
 
 	/** Apply a relative offset (translation) to the transform, in the frame
