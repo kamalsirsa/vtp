@@ -49,6 +49,7 @@ public:
 	void Offset(const DPoint2 &delta);
 
 	// optional overrides
+	bool SetExtent(const DRECT &rect);
 	void GetPropertyText(wxString &str);
 
 	DPoint2 GetSpacing();

@@ -999,6 +999,16 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	}
 }
 
+bool vtElevLayer::SetExtent(const DRECT &rect)
+{
+	if (m_pGrid)
+	{
+		m_pGrid->SetEarthExtents(rect);
+		return true;
+	}
+	return false;
+}
+
 void vtElevLayer::GetPropertyText(wxString &strIn)
 {
 	wxString2 result = strIn, str;

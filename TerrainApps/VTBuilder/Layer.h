@@ -113,11 +113,13 @@ public:
 	virtual void Offset(const DPoint2 &p);
 
 	// these may be optionally implemented
+	virtual bool SetExtent(const DRECT &rect) { return false; }
 	virtual void GetPropertyText(wxString &str) {}
 	virtual wxString GetFileExtension();
 	virtual bool CanBeSaved() { return true; }
 	virtual wxString2 GetLayerFilename() { return m_wsFilename; }
 	virtual void SetLayerFilename(const wxString2 &fname);
+	virtual bool AskForSaveFilename();
 
 	// UI event handlers which can be implemented if desired
 	virtual void OnLeftDown(BuilderView *pView, UIContext &ui) {}
@@ -129,7 +131,6 @@ public:
 
 	static wxArrayString LayerTypeNames;
 	static wxChar *LayerFileExtension[];
-	virtual bool AskForSaveFilename();
 
 protected:
 	wxString GetSaveFileDialogFilter();

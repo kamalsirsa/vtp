@@ -84,6 +84,9 @@ public:
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
+
+	// optional overrides
+	bool SetExtent(const DRECT &rect);
 	void GetPropertyText(wxString &str);
 	wxString GetFileExtension();
 	bool AskForSaveFilename();

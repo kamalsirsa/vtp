@@ -1181,18 +1181,23 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 	lp->GetPropertyText(dlg.m_strText);
 
 	// For elevation layers, if the user changes the extents, apply.
-	if (dlg.ShowModal() == wxID_OK && ltype == LT_ELEVATION)
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	rect2.left = dlg.m_fLeft;
+	rect2.top = dlg.m_fTop;
+	rect2.right = dlg.m_fRight;
+	rect2.bottom = dlg.m_fBottom;
+	if (rect2 != rect)
 	{
-		vtElevLayer *pEL = (vtElevLayer *) lp;
-		rect2.left = dlg.m_fLeft;
-		rect2.top = dlg.m_fTop;
-		rect2.right = dlg.m_fRight;
-		rect2.bottom = dlg.m_fBottom;
-		if (rect2 != rect)
+		// user changed the extents
+		if (lp->SetExtent(rect2))
 		{
-			pEL->m_pGrid->SetEarthExtents(rect2);
+			wxMessageBox(_("Changed extents."));
 			m_pView->Refresh();
 		}
+		else
+			wxMessageBox(_("Could not change extents."));
 	}
 }
 

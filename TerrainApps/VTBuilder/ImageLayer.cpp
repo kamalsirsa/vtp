@@ -273,6 +273,12 @@ void vtImageLayer::Offset(const DPoint2 &delta)
 	m_Extents.bottom += delta.y;
 }
 
+bool vtImageLayer::SetExtent(const DRECT &rect)
+{
+	m_Extents = rect;
+	return true;
+}
+
 void vtImageLayer::GetPropertyText(wxString &str)
 {
 	str.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
