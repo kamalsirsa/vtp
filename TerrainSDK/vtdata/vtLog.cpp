@@ -63,6 +63,8 @@ void vtLog::_Log(const char *msg)
 #ifdef _MSC_VER
 	OutputDebugStringA(msg);
 #endif
+	// also send to the console, for those console-mode developers!
+	fputs(msg, stdout);
 }
 
 void vtLog::_Log(const wchar_t *msg)
@@ -89,7 +91,7 @@ void vtLog::Printf(const char *pFormat, ...)
 	va_list va;
 	va_start(va, pFormat);
 
-	char ach[1024];
+	char ach[2048];
 	vsprintf(ach, pFormat, va);
 
 	_Log(ach);
