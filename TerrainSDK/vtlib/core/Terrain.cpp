@@ -1,7 +1,7 @@
 //
 // Terrain.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1710,11 +1710,6 @@ void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
 
 	clock_t c3 = c2 - c1;
 	VTLOG("%.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
-
-	// must also adjust ocean color to match
-//	FPoint3 up(0.0f, -1.0f, 0.0f);
-//	float shade = up.Dot(light_dir);	// shading 0 (dark) to 1 (light)
-//	m_ocean_color *= shade;
 }
 
 void vtTerrain::AddPointOfInterest(double left, double bottom, double right,

@@ -1,7 +1,7 @@
 //
 // Terrain.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,7 @@
 #include "Route.h"
 #include "Content3d.h"
 
+// Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
 class vtTerrainGeom;
 class vtTextureCoverage;
@@ -28,7 +29,6 @@ class vtTin3d;
 class vtFeatures;
 class SimpleBillboardEngine;
 
-typedef vtImage *vtImagePtr;
 typedef Array<vtStructureArray3d *> StructureSet;
 
 /**
