@@ -113,6 +113,9 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 
 	s_pGrid = pGrid;
 
+#if 0
+	// NOTE: the following workaround is no longer needed with libMini 5.02
+	//
 	// Totally strange but repeatable behavior: runtime exit in Release-mode
 	//  libMini with values over a certain level.  Workaround here!
 	// Exit happens if (scale * maximum_height / dim > 967)
@@ -129,9 +132,14 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	// values greater than 10 are unnecessarily large
 	if (fMaxMax > 10)
 		fMaxMax = 10;
+	m_fMaximumScale = fMaxMax;
+#else
+	// This maxiumum scale is a reasonable tradeoff between the exaggeration
+	//  that the user is likely to need, and numerical precision issues.
+	m_fMaximumScale = 10;
+#endif
 
 	m_fHeightScale = fZScale;
-	m_fMaximumScale = fMaxMax;
 	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 
 	if (pGrid->IsFloatMode())
