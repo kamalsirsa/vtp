@@ -618,6 +618,10 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		g_App.ToggleLogo();
 		break;
 
+	case WXK_F12:
+		m_pSceneGraphDlg->Show(true);
+		break;
+
 	default:
 		event.Skip();
 		break;
