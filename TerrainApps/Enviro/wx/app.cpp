@@ -32,6 +32,8 @@
 
 static bShowStartupDialog = true;
 
+char StartupTerrainName[255];
+
 static void Args(int argc, wxChar **argv)
 {
 	for (int i = 0; i < argc; i++)
@@ -41,6 +43,11 @@ static void Args(int argc, wxChar **argv)
 		g_App.StartupArgument(i, cstr);
 		if (!strcmp(cstr, "-no_startup_dialog"))
 			bShowStartupDialog = false;
+		else if(!strncmp(cstr, "-terrain=", 9))
+		{
+			bShowStartupDialog = false;
+			strcpy(StartupTerrainName, &cstr[9]);
+		}
 	}
 }
 
@@ -55,7 +62,13 @@ bool vtApp::OnInit()
 
 	g_App.Startup();	// starts log
 
+	StartupTerrainName[0] = 0;
 	Args(argc, argv);
+	if(StartupTerrainName[0])
+	{
+		g_Options.m_strInitTerrain = StartupTerrainName;
+		g_Options.m_bFullscreen = 1;
+	}
 
 	g_App.LoadTerrainDescriptions();
 
