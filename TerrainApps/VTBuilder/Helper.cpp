@@ -17,6 +17,7 @@
 
 //////////////////////////////////////////////////////
 
+static bool s_bOpen = false;
 wxProgressDialog *g_pProg = NULL;
 		
 void progress_callback(int amount)
@@ -27,9 +28,13 @@ void progress_callback(int amount)
 
 void OpenProgressDialog(const char *title1)
 {
+	if (s_bOpen)
+		return;
+
 	// force the window to be wider by giving a dummy string
 	wxString message = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 	wxString title = title1;
+	s_bOpen = true;
 	g_pProg = new wxProgressDialog(title, message, 100);
 	g_pProg->Show(TRUE);
 	g_pProg->Update(0, " ");
@@ -41,6 +46,7 @@ void CloseProgressDialog()
 	{
 		g_pProg->Destroy();
 		g_pProg = NULL;
+		s_bOpen = false;
 	}
 }
 
