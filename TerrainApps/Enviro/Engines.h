@@ -160,7 +160,7 @@ protected:
 class GrabFlyer : public vtTerrainFlyer
 {
 public:
-	GrabFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin);
+	GrabFlyer(float fSpeed);
 	void Eval();
 	void OnMouse(vtMouseEvent &event);
 

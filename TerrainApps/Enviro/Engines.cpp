@@ -539,8 +539,7 @@ void FlatFlyer::Eval()
 //////////////////////////////////////////////////////////////////////
 
 
-GrabFlyer::GrabFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin) :
-	vtTerrainFlyer(fSpeed, fHeightAboveTerrain, bMin)
+GrabFlyer::GrabFlyer(float fSpeed) : vtTerrainFlyer(fSpeed)
 {
 	m_bDrag = false;
 	m_bPivot = false;
