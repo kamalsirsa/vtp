@@ -48,7 +48,7 @@ int vtHeightField::PointIsAboveTerrain(const FPoint3 &p1)
 		return 0;
 }
 
-#define PICK_ACCURACY	300
+#define PICK_ACCURACY	1000
 
 /**
  * Tests a ray against a heightfield grid.
