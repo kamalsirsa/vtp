@@ -15,6 +15,34 @@
 #include "Globe.h"
 #include "vtdata/vtLog.h"	// for logging debug message
 
+//
+// Handy helper to create a moveable wireframe axis geometry.
+//
+vtTransform *WireAxis(RGBf color, float len)
+{
+	vtGeom *geom = new vtGeom();
+	geom->SetName2("axis");
+
+	vtMaterialArray *mats = new vtMaterialArray();
+	int index = mats->AddRGBMaterial1(color, false, false);
+	geom->SetMaterials(mats);
+
+	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
+	mesh->AddVertex(FPoint3(-len,0,0));
+	mesh->AddVertex(FPoint3( len,0,0));
+	mesh->AddVertex(FPoint3(0,-len,0));
+	mesh->AddVertex(FPoint3(0, len,0));
+	mesh->AddVertex(FPoint3(0,0,-len));
+	mesh->AddVertex(FPoint3(0,0, len));
+	mesh->AddLine(0,1);
+	mesh->AddLine(2,3);
+	mesh->AddLine(4,5);
+	geom->AddMesh(mesh, index);
+	vtTransform *trans = new vtTransform();
+	trans->AddChild(geom);
+	return trans;
+}
+
 vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 {
 	// create simple texture-mapped sphere
@@ -56,7 +84,10 @@ IcoGlobe::IcoGlobe()
 {
 	m_top = NULL;
 	m_SurfaceGeom = NULL;
+	m_pAxisGeom = NULL;
 	m_mats = NULL;
+	m_bUnfolded = false;
+	m_bTilt = true;
 }
 
 //
@@ -431,6 +462,12 @@ void IcoGlobe::SetCulling(bool bCull)
 	}
 }
 
+void IcoGlobe::ShowAxis(bool bShow)
+{
+	if (m_pAxisGeom)
+		m_pAxisGeom->SetEnabled(bShow);
+}
+
 // This array describes the configuration and topology of the subfaces in
 // the flattened dymaxion map.
 struct dymax_info
@@ -473,22 +510,6 @@ dymax_subfaces[22] =
 
 	{ 15, 1<<6 | 1<<5 |                      1<<1, 19, 19, 0 },	// 20
 	{ 14, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, 19, 19, 1 },	// 21
-};
-
-class TestEngine : public vtEngine
-{
-public:
-	TestEngine() { f = 0; dir = -0.004; }
-	void Eval() {
-		f += dir;
-		if (f < -globe->DihedralAngle())
-			dir = 0.004;
-		if (f > 0)
-			dir = -0.004;
-		globe->DoTest(f);
-	}
-	IcoGlobe *globe;
-	float f, dir;
 };
 
 int GetMaterialForFace(int face, bool &which)
@@ -563,19 +584,13 @@ void IcoGlobe::SetMeshConnect(int mface)
 		xform->Translate1(edge_center - m_local_origin[parent_mface]);
 }
 
-void IcoGlobe::DoTest(float f)
-{
-//	SetUnfolding(f);
-//	m_xform[0]->Identity();
-//	m_xform[0]->RotateLocal(m_flat_axis, m_flat_angle * f);
-}
-
 void IcoGlobe::SetUnfolding(float f)
 {
 	// only possible on unfoldable globes
 	if (m_style != DYMAX_UNFOLD)
 		return;
 
+	m_bUnfolded = (f != 0.0f);
 	float dih = (float) DihedralAngle();
 	for (int i = 1; i < 22; i++)
 	{
@@ -584,21 +599,25 @@ void IcoGlobe::SetUnfolding(float f)
 		m_xform[i]->SetTrans(pos);
 		m_xform[i]->RotateLocal(m_axis[i], -f * dih);
 	}
-
 	// deflate as we unfold
 	SetInflation(1.0f-f);
 
-	// interpolate from No rotation to the desired rotation
-	FQuat qnull;
-	qnull.Set(0,0,0,1);
-	FQuat q;
-	q.Slerp(qnull, m_diff, f);
-
+	// gradually undo the current top rotation
+	FQuat qnull(0,0,0,1);
+	FQuat q1, q2;
 	FMatrix3 m3;
-	q.GetMatrix(m3);
+	FMatrix4 m4;
 
-	FMatrix4 m4 = m3;
-	m_xform[0]->SetTransform1(m4);
+	q1.Slerp(qnull, m_Rotation, 1-f);
+	q1.GetMatrix(m3);
+	m4 = m3;
+	m_top->SetTransform1(m3);
+
+	// interpolate from No rotation to the desired rotation
+	q2.Slerp(qnull, m_diff, f);
+	q2.GetMatrix(m3);
+	m4 = m3;
+	m_xform[0]->SetTransform1(m3);
 }
 
 void IcoGlobe::SetTime(time_t time)
@@ -613,13 +632,36 @@ void IcoGlobe::SetTime(time_t time)
 	rotation = PI2f + rotation;
 	rotation -= PID2f;
 
-	m_top->Identity();
+	FMatrix4 tmp, m4;
+	m4.Identity();
 
-	// seasonal axis tilt (TODO)
-//	m_top->RotateLocal(FPoint3(1,0,0), tilt);
+	if (m_bTilt)
+	{
+		// The earth's axis is tilted with respect to the plane of its orbit
+		// at an angle of about 23.4 degrees.  Tilting the northern
+		// hemisphere away from the sun (-tilt) puts this at the winter
+		// solstice.
+		float tilt = 23.4 / 180.0f * PIf;
+		tmp.AxisAngle(FPoint3(1,0,0), -tilt);
+		m4.PreMult(tmp);
+
+		// plus seasonal axis rotation (days since winter solstice)
+		float season = (gmt->tm_yday + 10) / 365.0f * PI2f;
+		tmp.AxisAngle(FPoint3(0,1,0), season);
+		m4.PostMult(tmp);
+	}
 
 	// rotation around axis
-	m_top->RotateLocal(FPoint3(0,1,0), rotation);
+	tmp.AxisAngle(FPoint3(0,1,0), rotation);
+	m4.PreMult(tmp);
+
+	// store rotation to a quaternion
+	FMatrix3 m3 = m4;
+	m_Rotation.SetFromMatrix(m3);
+
+	// don't do time rotation on unfolded(ing) globes
+	if (!m_bUnfolded)
+		m_top->SetTransform1(m4);
 }
 
 /**
@@ -708,8 +750,8 @@ void IcoGlobe::CreateUnfoldableDymax()
 	for (i = 0; i < 22; i++)
 	{
 		m_xform[i] = new vtTransform;
-		vtGeom *geom = new vtGeom;
-		m_xform[i]->AddChild(geom);
+		m_geom[i] = new vtGeom;
+		m_xform[i]->AddChild(m_geom[i]);
 
 		vtString str;
 		str.Format("IcoFace %d", i);
@@ -723,8 +765,8 @@ void IcoGlobe::CreateUnfoldableDymax()
 
 		add_face2(m_mesh[i], face, i, subfaces, which);
 
-		geom->SetMaterials(m_mats);
-		geom->AddMesh(m_mesh[i], m_globe_mat[mat]);
+		m_geom[i]->SetMaterials(m_mats);
+		m_geom[i]->AddMesh(m_mesh[i], m_globe_mat[mat]);
 	}
 	m_top->AddChild(m_xform[0]);
 
@@ -734,25 +776,26 @@ void IcoGlobe::CreateUnfoldableDymax()
 		SetMeshConnect(i);
 
 	// Determine necessary rotation to orient flat map toward viewer.
-	FQuat q1, q2, q3;
-	FPoint3 v0 = m_verts[icosa_face_v[0][0]];
-	FPoint3 v1 = m_verts[icosa_face_v[0][1]];
-	FPoint3 v2 = m_verts[icosa_face_v[0][2]];
+	FQuat qface;
+	DPoint3 v0 = m_verts[icosa_face_v[0][0]];
+	DPoint3 v1 = m_verts[icosa_face_v[0][1]];
+	DPoint3 v2 = m_verts[icosa_face_v[0][2]];
 
-	// First, a rotation to turn the globe so that the edge faces down Z
-	FPoint3 edge = v0 - v2;
-	FPoint3 fnorm = (v0 + v1 + v2).Normalize();
-	q1.SetFromVectors(edge, fnorm);
-	q1.Invert();
+	// Create a rotation to turn the globe so that a specific edge
+	//  is pointed down -X for proper map orientation
+	DPoint3 edge = v2 - v0;
+	edge.Normalize();
 
-	// then a rotation to turn it toward the user
-	q2.SetFromVectors(FPoint3(0,1,0), FPoint3(0,0,1));
+	// compose face norm and face quaternion
+	DPoint3 fnorm = (v0 + v1 + v2).Normalize();
+	qface.SetFromVectors(edge, fnorm);
 
-	// then a rotation to spin it PI/2
-	q3.SetFromVectors(FPoint3(0,0,-1), FPoint3(1,0,0));
+	// desired vector points down -X
+	FQuat qdesired;
+	qdesired.SetFromVectors(FPoint3(-1,0,0),FPoint3(0,0,1));
 
-	// combine them
-	m_diff = q1 * q2 * q3;
+	// determine rotational difference
+	m_diff = qface.Inverse() * qdesired;
 
 	// Create a geom to contain the surface mesh features
 	m_SurfaceGeom = new vtGeom();
@@ -760,10 +803,42 @@ void IcoGlobe::CreateUnfoldableDymax()
 	m_SurfaceGeom->SetMaterials(m_mats);
 	m_top->AddChild(m_SurfaceGeom);
 
-//	TestEngine *test = new TestEngine();
-//	test->SetName2("Globe Test Engine");
-//	test->globe = this;
-//	vtGetScene()->AddEngine(test);
+#if 0
+	// test scaffolding mesh
+	vtMesh *sm = new vtMesh(GL_LINES, VT_Colors, 12);
+	sm->AddVertex(v0*1.0001f);
+	sm->AddVertex(v1*1.0001f);
+	sm->AddVertex(v2*1.0001f);
+	sm->AddVertex(v0*1.0001f+fnorm);
+	sm->SetVtxColor(0, RGBf(1,0,0));
+	sm->SetVtxColor(1, RGBf(0,1,0));
+	sm->SetVtxColor(2, RGBf(0,0,1));
+	sm->SetVtxColor(3, RGBf(1,1,0));
+	sm->AddLine(0,1);
+	sm->AddLine(0,2);
+	sm->AddLine(0,3);
+	m_geom[0]->AddMesh(sm, m_red);
+#endif
+
+	// Show axis of rotation (north and south poles)
+	vtMaterialArray *pMats = new vtMaterialArray();
+	int green = pMats->AddRGBMaterial1(RGBf(0,1,0), false, false);
+	m_pAxisGeom = new vtGeom();
+	m_pAxisGeom->SetName2("AxisGeom");
+	m_pAxisGeom->SetMaterials(pMats);
+	m_pAxisGeom->SetEnabled(false);
+
+	vtMesh *pMesh = new vtMesh(GL_LINES, 0, 6);
+	pMesh->AddVertex(FPoint3(0,2,0));
+	pMesh->AddVertex(FPoint3(0,-2,0));
+	pMesh->AddLine(0,1);
+	m_pAxisGeom->AddMesh(pMesh, green);
+	m_top->AddChild(m_pAxisGeom);
+
+#if 0
+	axis = WireAxis(RGBf(1,1,1), 1.1f);
+	m_top->AddChild(axis);
+#endif
 }
 
 void IcoGlobe::CreateNormalSphere()
@@ -1168,3 +1243,4 @@ int IcoGlobe::AddGlobePoints(const char *fname)
 	return nEntities;
 }
 
+ 

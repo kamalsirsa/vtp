@@ -49,10 +49,11 @@ public:
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
 	vtTransform *GetTop() { return m_top; }
 
-	void DoTest(float f);
 	void SetUnfolding(float f);
 	void SetTime(time_t time);
 	void SetCulling(bool bCull);
+	void ShowAxis(bool bShow);
+	void DoSeasonalTilt(bool bTilt) { m_bTilt = bTilt; }
 
 protected:
 	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
@@ -78,6 +79,7 @@ protected:
 	// Common to all globe styles
 	vtTransform	*m_top;
 	vtGeom		*m_SurfaceGeom;
+	vtGeom		*m_pAxisGeom;
 	vtMaterialArray	*m_mats;
 	int			m_globe_mat[10];
 	int			m_red;
@@ -85,6 +87,9 @@ protected:
 	int			m_white;
 	vtMesh		*m_mesh[22];
 	int			m_mfaces;	// either 20 or 22
+	bool		m_bUnfolded;
+	bool		m_bTilt;
+	FQuat		m_Rotation;
 
 	// for GEODESIC
 	int		m_freq;		// tesselation frequency
@@ -96,6 +101,7 @@ protected:
 
 	// for DYMAX_UNFOLD
 	vtTransform *m_xform[22];
+	vtGeom *m_geom[22];
 	FPoint3 m_local_origin[22];
 	FPoint3 m_axis[22];
 
