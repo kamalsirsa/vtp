@@ -1,7 +1,7 @@
 //
 // Name:		Projection2Dlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -74,22 +74,24 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_PROJ, &m_iProj);
 	AddValidator(ID_ZONE, &m_iZone);
 
-	m_pProjCtrl->Append("Geographic");
-	m_pProjCtrl->Append("UTM");
-	m_pProjCtrl->Append("Albers Equal Area Conic");
-	m_pProjCtrl->Append("Lambert Conformal Conic");
-	m_pProjCtrl->Append("Transverse Mercator");
+	m_pProjCtrl->Append(_T("Geographic"));
+	m_pProjCtrl->Append(_T("UTM"));
+	m_pProjCtrl->Append(_T("Albers Equal Area Conic"));
+	m_pProjCtrl->Append(_T("Lambert Conformal Conic"));
+	m_pProjCtrl->Append(_T("Transverse Mercator"));
 
 	// Fill in choices for Datum
+	wxString str;
 	for (i = NO_DATUM; i <= WGS_84; i++)
 	{
-		m_pDatumCtrl->Append(datumToString((DATUM) i), (void *) (i+CHOICE_OFFSET));
+		str.FromAscii(datumToString((DATUM) i));
+		m_pDatumCtrl->Append(str, (void *) (i+CHOICE_OFFSET));
 	}
 
 	m_pParamCtrl->ClearAll();
-	m_pParamCtrl->InsertColumn(0, "Attribute");
+	m_pParamCtrl->InsertColumn(0, _T("Attribute"));
 	m_pParamCtrl->SetColumnWidth(0, 130);
-	m_pParamCtrl->InsertColumn(1, "Value");
+	m_pParamCtrl->InsertColumn(1, _T("Value"));
 	m_pParamCtrl->SetColumnWidth(1, 85);
 
 	m_bInitializedUI = true;
@@ -128,7 +130,7 @@ void Projection2Dlg::UpdateControlStatus()
 		real_zone = m_proj.GetUTMZone();
 		for (i = -60; i <= -1; i++)
 		{
-			str.Printf("Zone %d", i);
+			str.Printf(_T("Zone %d"), i);
 			m_pZoneCtrl->Append(str, (void *) (i+100));
 			if (i == real_zone)
 				m_iZone = pos;
@@ -136,7 +138,7 @@ void Projection2Dlg::UpdateControlStatus()
 		}
 		for (i = 1; i <= 60; i++)
 		{
-			str.Printf("Zone %d", i);
+			str.Printf(_T("Zone %d"), i);
 			m_pZoneCtrl->Append(str, (void *) (i+100));
 			if (i == real_zone)
 				m_iZone = pos;
@@ -157,18 +159,19 @@ void Projection2Dlg::UpdateControlStatus()
 		break;
 	}
 	m_iDatum = (int) m_proj.GetDatum();
-	m_pDatumCtrl->SetStringSelection(datumToString((DATUM)m_iDatum));
+	str.FromAscii(datumToString((DATUM)m_iDatum));
+	m_pDatumCtrl->SetStringSelection(str);
 
 	// Do horizontal units ("linear units")
 	m_pHorizCtrl->Clear();
 	if (m_eProj == PT_GEO)
-		m_pHorizCtrl->Append("Degrees", (void *) 0);
+		m_pHorizCtrl->Append(_T("Degrees"), (void *) 0);
 	if (m_eProj != PT_GEO)
-		m_pHorizCtrl->Append("Meters", (void *) 1);
+		m_pHorizCtrl->Append(_T("Meters"), (void *) 1);
 	if (m_eProj != PT_GEO && m_eProj != PT_UTM)
 	{
-		m_pHorizCtrl->Append("Feet (International)", (void *) 2);
-		m_pHorizCtrl->Append("Feet (U.S. Survey)", (void *) 3);
+		m_pHorizCtrl->Append(_T("Feet (International)"), (void *) 2);
+		m_pHorizCtrl->Append(_T("Feet (U.S. Survey)"), (void *) 3);
 	}
 	// manually transfer value
 	for (i = 0; i < m_pHorizCtrl->Number(); i++)
@@ -201,6 +204,7 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 	int children = root->GetChildCount();
 	int i, item = 0;
 
+	wxString str;
 	for (i = 0; i < children; i++)
 	{
 		node = root->GetChild(i);
@@ -209,11 +213,13 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 		{
 			par1 = node->GetChild(0);
 			value = par1->GetValue();
-			item = m_pParamCtrl->InsertItem(item, value);
+			str.FromAscii(value);
+			item = m_pParamCtrl->InsertItem(item, str);
 
 			par2 = node->GetChild(1);
 			value = par2->GetValue();
-			m_pParamCtrl->SetItem(item, 1, value);
+			str.FromAscii(value);
+			m_pParamCtrl->SetItem(item, 1, str);
 			item++;
 		}
 	}
@@ -269,6 +275,7 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 	const char *value;
 	int children = root->GetChildCount();
 	int i, item = 0;
+	wxString str;
 
 	for (i = 0; i < children; i++)
 	{
@@ -281,14 +288,16 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 		value = par2->GetValue();
 		if (item == item_clicked)
 		{
-			wxString caption = "Value for ";
-			caption += par1->GetValue();
-			wxString result = wxGetTextFromUser(caption, "Enter new value",
-				value, this);
-			if (result != "")
+			wxString caption = _T("Value for ");
+			str.FromAscii(par1->GetValue());
+			caption += str;
+			str.FromAscii(value);
+			wxString result = wxGetTextFromUser(caption, _T("Enter new value"),
+				str, this);
+			if (result != _T(""))
 			{
 //			  double newval = atof((const char *)result);
-				par2->SetValue((const char *)result);
+				par2->SetValue(result.mb_str());
 				DisplayProjectionSpecificParams();
 				return;
 			}
@@ -373,7 +382,7 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 void Projection2Dlg::AskStatePlane()
 {
 	// Pop up choices for State Plane
-	StatePlaneDlg dialog(this, 201, "Select State Plane");
+	StatePlaneDlg dialog(this, 201, _T("Select State Plane"));
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
@@ -385,9 +394,9 @@ void Projection2Dlg::AskStatePlane()
 	OGRErr result = m_proj.SetStatePlane(usgs_code, bNAD83);
 	if (result == OGRERR_FAILURE)
 	{
-		wxMessageBox("Couldn't set state plane projection.  Perhaps the\n"
-			"EPSG tables could not be located.  Check that your\n"
-			"GEOTIFF_CSV environment variable is set.");
+		wxMessageBox(_T("Couldn't set state plane projection.  Perhaps the\n")
+			_T("EPSG tables could not be located.  Check that your\n")
+			_T("GEOTIFF_CSV environment variable is set."));
 	}
 	else
 	{

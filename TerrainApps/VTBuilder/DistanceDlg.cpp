@@ -1,7 +1,7 @@
 //
 // Name: DistanceDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -40,9 +40,9 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 void DistanceDlg::SetProjection(vtProjection *proj)
 {
 	m_pProj = proj;
-	GetMapOffset()->SetValue("");
-	GetMapDist()->SetValue("");
-	GetGeodDist()->SetValue("");
+	GetMapOffset()->SetValue(_T(""));
+	GetMapDist()->SetValue(_T(""));
+	GetGeodDist()->SetValue(_T(""));
 	SetAvailableUnits();
 }
 
@@ -93,24 +93,24 @@ void DistanceDlg::ShowValues()
 
 	if (m_iUnits1 == 0)	// degrees
 	{
-		str.Printf("%s, %s",
-			(const char *)FormatCoord(true, diff_degrees.x),
-			(const char *)FormatCoord(true, diff_degrees.y));
+		str.Printf(_T("%s, %s"),
+			FormatCoord(true, diff_degrees.x).mb_str(),
+			FormatCoord(true, diff_degrees.y).mb_str());
 	}
 	else
 	{
 		scale = GetMetersPerUnit(lu) /
 			GetMetersPerUnit((LinearUnits)m_iUnits1);
 		DPoint2 diff_show = diff_map * scale;
-		str.Printf("%s, %s",
-			(const char *)FormatCoord(bIsGeo, diff_show.x),
-			(const char *)FormatCoord(bIsGeo, diff_show.y));
+		str.Printf(_T("%s, %s"),
+			FormatCoord(bIsGeo, diff_show.x).mb_str(),
+			FormatCoord(bIsGeo, diff_show.y).mb_str());
 	}
 	GetMapOffset()->SetValue(str);
 
 	// Map Distance
 	if (bIsGeo)
-		str = "N/A";
+		str = _T("N/A");
 	else
 	{
 		scale = GetMetersPerUnit(lu) /
@@ -145,12 +145,12 @@ void DistanceDlg::SetAvailableUnits()
 	GetMapDist()->Enable(!bIsGeo);
 
 	GetUnits1()->Clear();
-	GetUnits1()->Append("Degrees");
+	GetUnits1()->Append(_T("Degrees"));
 	if (!bIsGeo)
 	{
-		GetUnits1()->Append("Meters");
-		GetUnits1()->Append("Feet");
-		GetUnits1()->Append("US Survey Feet");
+		GetUnits1()->Append(_T("Meters"));
+		GetUnits1()->Append(_T("Feet"));
+		GetUnits1()->Append(_T("US Survey Feet"));
 	}
 
 	switch (m_pProj->GetUnits())
@@ -183,16 +183,16 @@ void DistanceDlg::SetAvailableUnits()
 void DistanceDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetUnits2()->Clear();
-	GetUnits2()->Append("Meters");
-	GetUnits2()->Append("Feet");
-	GetUnits2()->Append("US Survey Feet");
+	GetUnits2()->Append(_T("Meters"));
+	GetUnits2()->Append(_T("Feet"));
+	GetUnits2()->Append(_T("US Survey Feet"));
 
 	GetUnits3()->Clear();
-	GetUnits3()->Append("Meters");
-	GetUnits3()->Append("Feet");
-	GetUnits3()->Append("US Survey Feet");
-	GetUnits3()->Append("Kilometers");
-	GetUnits3()->Append("Miles");
+	GetUnits3()->Append(_T("Meters"));
+	GetUnits3()->Append(_T("Feet"));
+	GetUnits3()->Append(_T("US Survey Feet"));
+	GetUnits3()->Append(_T("Kilometers"));
+	GetUnits3()->Append(_T("Miles"));
 
 	AddValidator(ID_UNITS1, &m_iUnits1);
 	AddValidator(ID_UNITS2, &m_iUnits2);

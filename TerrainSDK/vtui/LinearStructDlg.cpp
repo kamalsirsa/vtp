@@ -1,7 +1,7 @@
 //
 // Name: LinearStructDlg.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -103,13 +103,13 @@ void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// NB -- these must match the FT_ enum in order
 	m_pFenceChoice->Clear();
-	m_pFenceChoice->Append("Wooden posts, 3 wires");
-	m_pFenceChoice->Append("Metal poles, chain-link");
-	m_pFenceChoice->Append("English Hedgerow");
-	m_pFenceChoice->Append("English Drystone");
-	m_pFenceChoice->Append("English Privet");
-	m_pFenceChoice->Append("Stone");
-	m_pFenceChoice->Append("English Beech");
+	m_pFenceChoice->Append(_T("Wooden posts, 3 wires"));
+	m_pFenceChoice->Append(_T("Metal poles, chain-link"));
+	m_pFenceChoice->Append(_T("English Hedgerow"));
+	m_pFenceChoice->Append(_T("English Drystone"));
+	m_pFenceChoice->Append(_T("English Privet"));
+	m_pFenceChoice->Append(_T("Stone"));
+	m_pFenceChoice->Append(_T("English Beech"));
 
 	TransferDataToWindow();
 

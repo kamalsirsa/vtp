@@ -1,7 +1,7 @@
 //
 // Name:        ImportVegDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,7 +30,7 @@ public:
         long style = wxDEFAULT_DIALOG_STYLE );
 
     // Methods
-    void SetShapefileName(const char *filename);
+    void SetShapefileName(const wxString &filename);
 
     // Data
     int m_fieldindex, m_datatype;

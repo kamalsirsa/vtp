@@ -14,38 +14,38 @@
 //
 // Filename filter strings
 //
-#define FSTRING_BT		"BT Files (*.bt)|*.bt|"
-#define FSTRING_RMF		"RMF Files (*.rmf)|*.rmf|"
-#define FSTRING_BCF		"BCF Files (*.bcf)|*.bcf|"
-#define FSTRING_TIN		"TIN Files (*.itf)|*.itf|"
+#define FSTRING_BT		_T("BT Files (*.bt)|*.bt|")
+#define FSTRING_RMF		_T("RMF Files (*.rmf)|*.rmf|")
+#define FSTRING_BCF		_T("BCF Files (*.bcf)|*.bcf|")
+#define FSTRING_TIN		_T("TIN Files (*.itf)|*.itf|")
 
-#define FSTRING_ADF		"Arc Data Files (*.adf)|*.adf|"
-#define FSTRING_ASC		"ArcInfo ASCII grid (*.asc)|*.asc|"
-#define FSTRING_BIL		"ArcInfo BIL grid (*.bil)|*.bil|"
-#define FSTRING_CDF		"CDF Files (*.cdf, *.grd)|*.cdf;*.grd|"
-#define FSTRING_DEM		"DEM Files (*.dem)|*.dem|"
-#define FSTRING_DLG		"USGS DLG Files (*.dlg, *.opt)|*.dlg;*.opt|"
-#define FSTRING_DOQ		"USGS DOQ Files (*.jpg, *.doq, *.coq)|*.doq;*.coq;*.jpg|"
-#define FSTRING_DTED	"DTED Files (*.dte, *.dt0, *.dt1, *.dt2)|*.dte;*.dt0;*.dt1;*.dt2|"
-#define FSTRING_GML		"GML Files (*.gml, *.xml)|*.gml;*.xml|"
-#define FSTRING_GTOPO	"GTOPO30 Files (*.hdr)|*.hdr|"	
-#define FSTRING_LULC	"LULC Files (*.gir)|*.gir|"
-#define FSTRING_MEM		"Japanese DEM Files (*.mem)|*.mem|"
-#define FSTRING_MI		"MapInfo Files (*.tab, *.mif)|*.tab;*.mif|"
-#define FSTRING_PGM		"PGM Files (*.pgm)|*.pgm|"
-#define FSTRING_PNG		"PNG Files (*.png)|*.png|"
-#define FSTRING_RAW		"Raw raster files (*.raw)|*.raw|"
-#define FSTRING_SDTS	"SDTS Files (*catd.ddf)|*catd.ddf|"	
-#define FSTRING_SHP		"ArcView Shape Files (*.shp)|*.shp|"
-#define FSTRING_Surfer	"Surfer Binary Grids (*.grd)|*.grd|"
-#define FSTRING_TER		"Terragen terrain (*.ter)|*.ter|"
-#define FSTRING_TIF		"GeoTIFF Files (*.tif)|*.tif|"
-#define FSTRING_UTL		"Utility Files (*.utl)|*.utl|"
-#define FSTRING_VF		"Vegetation Files (*.vf)|*.vf|"
-#define FSTRING_VTST	"Structure Files (*.vtst)|*.vtst|"
-#define FSTRING_XML		"XML Files (*.xml)|*.xml|"
+#define FSTRING_ADF		_T("Arc Data Files (*.adf)|*.adf|")
+#define FSTRING_ASC		_T("ArcInfo ASCII grid (*.asc)|*.asc|")
+#define FSTRING_BIL		_T("ArcInfo BIL grid (*.bil)|*.bil|")
+#define FSTRING_CDF		_T("CDF Files (*.cdf, *.grd)|*.cdf;*.grd|")
+#define FSTRING_DEM		_T("DEM Files (*.dem)|*.dem|")
+#define FSTRING_DLG		_T("USGS DLG Files (*.dlg, *.opt)|*.dlg;*.opt|")
+#define FSTRING_DOQ		_T("USGS DOQ Files (*.jpg, *.doq, *.coq)|*.doq;*.coq;*.jpg|")
+#define FSTRING_DTED	_T("DTED Files (*.dte, *.dt0, *.dt1, *.dt2)|*.dte;*.dt0;*.dt1;*.dt2|")
+#define FSTRING_GML		_T("GML Files (*.gml, *.xml)|*.gml;*.xml|")
+#define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr|")	
+#define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir|")
+#define FSTRING_MEM		_T("Japanese DEM Files (*.mem)|*.mem|")
+#define FSTRING_MI		_T("MapInfo Files (*.tab, *.mif)|*.tab;*.mif|")
+#define FSTRING_PGM		_T("PGM Files (*.pgm)|*.pgm|")
+#define FSTRING_PNG		_T("PNG Files (*.png)|*.png|")
+#define FSTRING_RAW		_T("Raw raster files (*.raw)|*.raw|")
+#define FSTRING_SDTS	_T("SDTS Files (*catd.ddf)|*catd.ddf|")	
+#define FSTRING_SHP		_T("ArcView Shape Files (*.shp)|*.shp|")
+#define FSTRING_Surfer	_T("Surfer Binary Grids (*.grd)|*.grd|")
+#define FSTRING_TER		_T("Terragen terrain (*.ter)|*.ter|")
+#define FSTRING_TIF		_T("GeoTIFF Files (*.tif)|*.tif|")
+#define FSTRING_UTL		_T("Utility Files (*.utl)|*.utl|")
+#define FSTRING_VF		_T("Vegetation Files (*.vf)|*.vf|")
+#define FSTRING_VTST	_T("Structure Files (*.vtst)|*.vtst|")
+#define FSTRING_XML		_T("XML Files (*.xml)|*.xml|")
 
-#define FSTRING_COMP	"Compressed Files (*.tar, *.gz, *.tgz)|*.tar;*.gz;*.tgz|"
+#define FSTRING_COMP	_T("Compressed Files (*.tar, *.gz, *.tgz)|*.tar;*.gz;*.tgz|")
 
 enum LayerType
 {
@@ -74,7 +74,7 @@ public:
 
 	// attributes
 	wxString GetFilename() { return m_strFilename; }
-	void SetFilename(wxString str);
+	void SetFilename(const wxString &fname);
 	LayerType GetType() { return m_type; }
 	bool SetVisible(bool bVisible);
 	bool GetVisible() { return m_bVisible; }
@@ -84,8 +84,8 @@ public:
 
 	// operations
 	static vtLayer *CreateNewLayer(LayerType ltype);
-	bool Save(const char *filename = NULL);
-	bool Load(const char *filename = NULL);
+	bool Save(const wxString &filename = _T(""));
+	bool Load(const wxString &filename = _T(""));
 
 	// these must be implemented
 	virtual bool GetExtent(DRECT &rect) = 0;
@@ -100,7 +100,7 @@ public:
 
 	// these may be optionally implemented
 	virtual void GetPropertyText(wxString &str) {}
-	virtual char *GetFileExtension();
+	virtual wxString GetFileExtension();
 	virtual bool CanBeSaved() { return true; }
 
 	// UI event handlers which can be implemented if desired
@@ -111,13 +111,13 @@ public:
 	virtual void OnLeftDoubleClick(BuilderView *pView, UIContext &ui) {}
 	virtual void OnMouseMove(BuilderView *pView, UIContext &ui) {}
 
-	static char *LayerTypeName[];
-	static char *LayerFileExtension[];
+	static wxChar *LayerTypeName[];
+	static wxChar *LayerFileExtension[];
 	bool AskForSaveFilename();
 
 protected:
-	char *GetFileDialogFilter();
-	void SetMessageText(const char *msg);
+	wxString GetFileDialogFilter();
+	void SetMessageText(const wxString &msg);
 
 	wxString	m_strFilename;
 	LayerType	m_type;
@@ -142,7 +142,7 @@ public:
 ////////////////////
 // helpers
 
-void AddType(wxString &str, wxString filter);
+void AddType(wxString &str, const wxString &filter);
 
 #endif
 

@@ -1,7 +1,7 @@
 //
 // Name:        ImportVegDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,7 +47,7 @@ ImportVegDlg::ImportVegDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	m_pBiotype2 = GetBiotype2();
 }
 
-void ImportVegDlg::SetShapefileName(const char *filename)
+void ImportVegDlg::SetShapefileName(const wxString &filename)
 {
     m_filename = filename;
 }
@@ -57,10 +57,10 @@ void ImportVegDlg::SetShapefileName(const char *filename)
 void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 {
     // Open the SHP File
-    SHPHandle hSHP = SHPOpen(m_filename, "rb");
+    SHPHandle hSHP = SHPOpen(m_filename.mb_str(), "rb");
     if (hSHP == NULL)
     {
-        wxMessageBox("Couldn't open shapefile.");
+        wxMessageBox(_T("Couldn't open shapefile."));
         return;
     }
 
@@ -72,19 +72,19 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
     // Check Shape Type, Veg Layer should be Poly data
     if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
     {
-        wxMessageBox("Shapefile must have either point features (for individual\n"
-			"plants) or polygon features (for plant distribution areas).");
+        wxMessageBox(_T("Shapefile must have either point features (for individual\n")
+			_T("plants) or polygon features (for plant distribution areas)."));
         return;
     }
 
     // Open DBF File
-    DBFHandle db = DBFOpen(m_filename, "rb");
+    DBFHandle db = DBFOpen(m_filename.mb_str(), "rb");
     if (db == NULL)
     {
-        wxMessageBox("Couldn't open DBF file.");
+        wxMessageBox(_T("Couldn't open DBF file."));
         return;
     }
-    wxString str;
+    wxString str, fieldname;
     int fields, i, iField, *pnWidth = 0, *pnDecimals = 0;
     DBFFieldType fieldtype;
     char pszFieldName[20];
@@ -94,15 +94,16 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
         iField = i;
         fieldtype = DBFGetFieldInfo(db, iField,
             pszFieldName, pnWidth, pnDecimals );
-        str.Printf("%d: ", i);
-        str += pszFieldName;
+        str.Printf(_T("%d: "), i);
+		fieldname.FromAscii(pszFieldName);
+        str += fieldname;
 
         if (fieldtype == FTString)
-            str += " (String)";
+            str += _T(" (String)");
         if (fieldtype == FTInteger)
-            str += " (Integer)";
+            str += _T(" (Integer)");
         if (fieldtype == FTDouble)
-            str += " (Double)";
+            str += _T(" (Double)");
         m_pcbField->Append(str);
     }
     m_pcbField->SetSelection(0);

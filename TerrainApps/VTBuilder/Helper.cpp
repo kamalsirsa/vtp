@@ -1,7 +1,7 @@
 //
 // Helper.cpp - various helper functions used by the classes
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,6 +13,7 @@
 
 #include "wx/progdlg.h"
 #include "vtdata/MathTypes.h"
+#include "vtdata/vtLog.h"
 #include "Helper.h"
 
 //////////////////////////////////////////////////////
@@ -26,18 +27,17 @@ void progress_callback(int amount)
 		g_pProg->Update(amount);
 }
 
-void OpenProgressDialog(const char *title1)
+void OpenProgressDialog(const wxString &title)
 {
 	if (s_bOpen)
 		return;
 
 	// force the window to be wider by giving a dummy string
-	wxString message = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
-	wxString title = title1;
+	wxString message = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 	s_bOpen = true;
 	g_pProg = new wxProgressDialog(title, message, 100);
 	g_pProg->Show(TRUE);
-	g_pProg->Update(0, " ");
+	g_pProg->Update(0, _T(" "));
 }
 
 void CloseProgressDialog()
@@ -71,13 +71,13 @@ wxString FormatCoord(bool bGeo, double val, bool minsec)
 			double min = (degree - (int)degree) * 60.0f;
 			double sec = (min - (int)min) * 60.0f;
 
-			str.Printf("%d° %d' %.1f\"", (int)degree, (int)min, sec);
+			str.Printf(_T("%d° %d' %.1f\""), (int)degree, (int)min, sec);
 		}
 		else
-			str.Printf("%3.6lf", val);	// decimal degrees
+			str.Printf(_T("%3.6lf"), val);	// decimal degrees
 	}
 	else
-		str.Printf("%8.2lf", val);	// meters-based
+		str.Printf(_T("%8.2lf"), val);	// meters-based
 	return str;
 }
 

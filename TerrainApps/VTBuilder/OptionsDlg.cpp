@@ -1,7 +1,7 @@
 //
 // Name:		OptionsDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -37,9 +37,9 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetElevUnit()->Clear();
-	GetElevUnit()->Append("Meters");
-	GetElevUnit()->Append("Feet (International)");
-	GetElevUnit()->Append("Feet (U.S. Survey)");
+	GetElevUnit()->Append(_T("Meters"));
+	GetElevUnit()->Append(_T("Feet (International)"));
+	GetElevUnit()->Append(_T("Feet (U.S. Survey)"));
 
 	AddValidator(ID_TOOLBAR, &m_bShowToolbar);
 	AddValidator(ID_MINUTES, &m_bShowMinutes);

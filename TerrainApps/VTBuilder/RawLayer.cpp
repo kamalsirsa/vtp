@@ -28,7 +28,7 @@
 
 vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 {
-	m_strFilename = "Untitled.shp";
+	m_strFilename = _T("Untitled.shp");
 	m_nSHPType = SHPT_NULL;
 }
 
@@ -180,19 +180,19 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 
 bool vtRawLayer::OnSave()
 {
-	return SaveToSHP(m_strFilename);
+	return SaveToSHP(m_strFilename.mb_str());
 }
 
 bool vtRawLayer::OnLoad()
 {
-	if (!m_strFilename.Right(4).CmpNoCase(".gml") ||
-		 !m_strFilename.Right(4).CmpNoCase(".xml"))
+	if (!m_strFilename.Right(4).CmpNoCase(_T(".gml")) ||
+		 !m_strFilename.Right(4).CmpNoCase(_T(".xml")))
 	{
-		return LoadWithOGR(m_strFilename, progress_callback);
+		return LoadWithOGR(m_strFilename.mb_str(), progress_callback);
 	}
-	else if (!m_strFilename.Right(4).CmpNoCase(".shp"))
+	else if (!m_strFilename.Right(4).CmpNoCase(_T(".shp")))
 	{
-		return LoadFromSHP(m_strFilename);
+		return LoadFromSHP(m_strFilename.mb_str());
 	}
 	return false;
 }
@@ -288,10 +288,10 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 {
 	wxString str;
 
-	str.Printf("Entity type: %s\n", SHPTypeName(m_nSHPType));
+	str.Printf(_T("Entity type: %s\n"), SHPTypeName(m_nSHPType));
 	strIn += str;
 
-	str.Printf("Entities: %d\n", NumEntities());
+	str.Printf(_T("Entities: %d\n"), NumEntities());
 	strIn += str;
 
 	int entities = NumEntities();
@@ -305,10 +305,10 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 			if (m_Point3[i].z < fmin) fmin = m_Point3[i].z;
 		}
 
-		str.Printf("Minimum Height: %.2f\n", fmin);
+		str.Printf(_T("Minimum Height: %.2f\n"), fmin);
 		strIn += str;
 
-		str.Printf("Maximum Height: %.2f\n", fmax);
+		str.Printf(_T("Maximum Height: %.2f\n"), fmax);
 		strIn += str;
 	}
 }

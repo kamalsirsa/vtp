@@ -59,7 +59,7 @@ bool ImportStructDlg::GetRadio(int id)
 void ImportStructDlg::OnChoiceFileField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_strFieldNameFile = GetChoiceFileField()->GetStringSelection();
+	m_opt.m_strFieldNameFile = GetChoiceFileField()->GetStringSelection().mb_str();
 }
 
 void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
@@ -71,7 +71,7 @@ void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
 void ImportStructDlg::OnChoiceHeightField( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	m_opt.m_strFieldNameHeight = GetChoiceHeightField()->GetStringSelection();
+	m_opt.m_strFieldNameHeight = GetChoiceHeightField()->GetStringSelection().mb_str();
 }
 
 void ImportStructDlg::OnRadio( wxCommandEvent &event )
@@ -95,7 +95,7 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
 	AddValidator(ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
 
-	m_nShapeType = GetSHPType(m_filename);
+	m_nShapeType = GetSHPType(m_filename.mb_str());
 	UpdateEnables();
 
 	// Select one of the radio buttons, whichever is enabled
@@ -118,26 +118,28 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	UpdateEnables();
 
-	GetChoiceHeightField()->Append("(none)");
-	GetChoiceFileField()->Append("(none)");
+	GetChoiceHeightField()->Append(_T("(none)"));
+	GetChoiceFileField()->Append(_T("(none)"));
 
 	// Open DBF File
-	DBFHandle db = DBFOpen(m_filename, "rb");
+	DBFHandle db = DBFOpen(m_filename.mb_str(), "rb");
 	if (db != NULL)
 	{
 		// Fill the DBF field names into the "Use Field" controls
 		int *pnWidth = 0, *pnDecimals = 0;
 		char pszFieldName[20];
 		int iFields = DBFGetFieldCount(db);
+		wxString str;
 		for (i = 0; i < iFields; i++)
 		{
 			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
 				pszFieldName, pnWidth, pnDecimals );
+			str.FromAscii(pszFieldName);
 
 			if (fieldtype == FTString)
-				GetChoiceFileField()->Append(pszFieldName);
+				GetChoiceFileField()->Append(str);
 			if (fieldtype == FTInteger || fieldtype == FTDouble)
-				GetChoiceHeightField()->Append(pszFieldName);
+				GetChoiceHeightField()->Append(str);
 		}
 	}
 	GetChoiceFileField()->SetSelection(0);

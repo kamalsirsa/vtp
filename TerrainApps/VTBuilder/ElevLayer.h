@@ -1,7 +1,7 @@
 //
 // ElevLayer.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -50,7 +50,7 @@ public:
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
 	void GetPropertyText(wxString &str);
-	char *vtElevLayer::GetFileExtension();
+	wxString GetFileExtension();
 
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);

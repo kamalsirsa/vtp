@@ -38,15 +38,21 @@ void vtLog::_StartLog(const char *fname)
 	CPLPushErrorHandler(cpl_error_handler);
 }
 
-void vtLog::_Log(const char *str)
+void vtLog::_Log(const char *msg)
 {
 	if (m_log)
 	{
-		fputs(str, m_log);
+		fputs(msg, m_log);
 		fflush(m_log);
 	}
 #ifdef _MSC_VER
-	OutputDebugString(str);
+#ifdef _UNICODE
+	wchar_t buf[1024];
+	MultiByteToWideChar(CP_ACP, 0, msg, -1, buf, 1024);
+	OutputDebugString(buf);
+#else
+	OutputDebugString(msg);
+#endif
 #endif
 }
 

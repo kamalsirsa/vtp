@@ -1,7 +1,7 @@
 //
 // Name:		FeatInfoDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -59,11 +59,11 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 	int type = m_pFeatures->GetEntityType();
 	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
-		GetList()->InsertColumn(field++, "X", wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
-		GetList()->InsertColumn(field++, "Y", wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
+		GetList()->InsertColumn(field++, _T("X"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
+		GetList()->InsertColumn(field++, _T("Y"), wxLIST_FORMAT_LEFT, m_bGeo ? 90 : 40);
 	}
 	if (type == SHPT_POINTZ)
-		GetList()->InsertColumn(field++, "Z", wxLIST_FORMAT_LEFT, 80);
+		GetList()->InsertColumn(field++, _T("Z"), wxLIST_FORMAT_LEFT, 80);
 
 	GetTextVertical()->Enable(type == SHPT_POINTZ);
 	GetChoiceVertical()->Enable(type == SHPT_POINTZ);
@@ -72,7 +72,8 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *pField = m_pFeatures->GetField(i);
-		const char *name = pField->m_name;
+		wxString name;
+		name.FromAscii(pField->m_name);
 		int width = pField->m_width * 4;
 		if (width < 20)
 			width = 20;
@@ -95,9 +96,9 @@ void FeatInfoDlg::ShowSelected()
 	if (selected > 2000)
 	{
 		wxString msg;
-		msg.Printf("There are %d selected features.  Are you sure you\n"
-			"want to display them all in the table view?", selected);
-		if (wxMessageBox(msg, "Warning", wxYES_NO) == wxNO)
+		msg.Printf(_T("There are %d selected features.  Are you sure you\n")
+			_T("want to display them all in the table view?"), selected);
+		if (wxMessageBox(msg, _T("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
 	int i, num = m_pFeatures->NumEntities();
@@ -130,9 +131,9 @@ void FeatInfoDlg::ShowAll()
 	if (num > 2000)
 	{
 		wxString msg;
-		msg.Printf("There are %d features in this layer.  Are you sure\n"
-			"you want to display them all in the table view?", num);
-		if (wxMessageBox(msg, "Warning", wxYES_NO) == wxNO)
+		msg.Printf(_T("There are %d features in this layer.  Are you sure\n")
+			_T("you want to display them all in the table view?"), num);
+		if (wxMessageBox(msg, _T("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
 	for (i = 0; i < num; i++)
@@ -143,42 +144,44 @@ void FeatInfoDlg::ShowAll()
 
 void FeatInfoDlg::ShowFeature(int iFeat)
 {
-	vtString str;
+	wxString str;
 	int i, next;
 
 	next = GetList()->GetItemCount();
-	GetList()->InsertItem(next, "temp");
+	GetList()->InsertItem(next, _T("temp"));
 	GetList()->SetItemData(next, iFeat);
 
 	int field = 0;
 	DPoint3 p;
 	m_pFeatures->GetPoint(iFeat, p);
 
-	const char *szFormat;
+	wxString strFormat;
 	if (m_bGeo)
-		szFormat = "%.8lf";
+		strFormat = _T("%.8lf");
 	else
-		szFormat = "%.2lf";
+		strFormat = _T("%.2lf");
 
 	int type = m_pFeatures->GetEntityType();
 	if (type == SHPT_POINT || type == SHPT_POINTZ)
 	{
-		str.Format(szFormat, p.x);
-		GetList()->SetItem(next, field++, (const char *) str);
-		str.Format(szFormat, p.y);
-		GetList()->SetItem(next, field++, (const char *) str);
+		str.Printf(strFormat, p.x);
+		GetList()->SetItem(next, field++, str);
+		str.Printf(strFormat, p.y);
+		GetList()->SetItem(next, field++, str);
 	}
 	if (type == SHPT_POINTZ)
 	{
 		double scale = GetMetersPerUnit((LinearUnits) (m_iVUnits+1));
-		str.Format("%.2lf", p.z / scale);
-		GetList()->SetItem(next, field++, (const char *) str);
+		str.Printf(_T("%.2lf"), p.z / scale);
+		GetList()->SetItem(next, field++, str);
 	}
 
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
-		m_pFeatures->GetValueAsString(iFeat, i, str);
-		GetList()->SetItem(next, field++, (const char *) str);
+		vtString vs;
+		m_pFeatures->GetValueAsString(iFeat, i, vs);
+		str.FromAscii((const char *) vs);
+		GetList()->SetItem(next, field++, str);
 	}
 }
 
@@ -197,14 +200,14 @@ void FeatInfoDlg::RefreshItems()
 void FeatInfoDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetChoiceShow()->Clear();
-	GetChoiceShow()->Append("Selected");
-	GetChoiceShow()->Append("Picked");
-	GetChoiceShow()->Append("All");
+	GetChoiceShow()->Append(_T("Selected"));
+	GetChoiceShow()->Append(_T("Picked"));
+	GetChoiceShow()->Append(_T("All"));
 
 	GetChoiceVertical()->Clear();
-	GetChoiceVertical()->Append("Meter");
-	GetChoiceVertical()->Append("Foot");
-	GetChoiceVertical()->Append("Foot (US)");
+	GetChoiceVertical()->Append(_T("Meter"));
+	GetChoiceVertical()->Append(_T("Foot"));
+	GetChoiceVertical()->Append(_T("Foot (US)"));
 
 	AddValidator(ID_CHOICE_SHOW, &m_iShow);
 	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);

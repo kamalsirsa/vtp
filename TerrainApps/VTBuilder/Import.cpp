@@ -1,7 +1,7 @@
 //
-// methods for importing data
+// Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,8 +43,10 @@ wxString ImportDirectory[LAYER_TYPES];
 
 
 // Helper
-void GetTempFolderName(char *path, const char *base)
+wxString GetTempFolderName(const char *base)
 {
+	wxString path;
+
 	const char *tmp = base;
 	const char *tmp1 = strrchr(base, '/');
 	if (tmp1)
@@ -58,16 +60,21 @@ void GetTempFolderName(char *path, const char *base)
 
 	const char *temp = getenv("TEMP");
 	if (temp)
-		strcpy(path, temp);
+		path.FromAscii(temp);
 	else
 #if WIN32
-		strcpy(path, "C:/TEMP");
+		path = _T("C:/TEMP");
 #else
-		strcpy(path, "/tmp");
+		path = _T("/tmp");
 #endif
-	strcat(path, "/");
-	strcat(path, tmp);
-	strcat(path, "_temp");
+	path += _T("/");
+
+	wxString base2;
+	base2.FromAscii(tmp);
+	path += base2;
+
+	path += _T("_temp");
+	return path;
 }
 
 
@@ -81,7 +88,7 @@ void MainFrame::ImportData(LayerType ltype)
 
 	// ask the user for a filename
 	// default the same directory they used last time for a layer of this type
-	wxFileDialog loadFile(NULL, "Import Data", ImportDirectory[ltype], "", filter, wxOPEN);
+	wxFileDialog loadFile(NULL, _T("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -109,40 +116,42 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 
 	// check if it's an archive
 	bool bExpandedArchive = false;
-	char prepend_path[1024];
-	GetTempFolderName(prepend_path, fname_in);
+	wxString prepend_path;
+	prepend_path = GetTempFolderName(fname_in.mb_str());
 
-	if (ext.CmpNoCase("gz") == 0 || ext.CmpNoCase("tgz") == 0 ||
-		ext.CmpNoCase("tar") == 0)
+	if (ext.CmpNoCase(_T("gz")) == 0 || ext.CmpNoCase(_T("tgz")) == 0 ||
+		ext.CmpNoCase(_T("tar")) == 0)
 	{
 		// try to uncompress
 		int result;
-		result = vtCreateDir(prepend_path);
+		result = vtCreateDir(prepend_path.mb_str());
 		if (result == 0 && errno != EEXIST)
 		{
-			wxMessageBox("Couldn't create temporary directory to hold contents of archive.");
+			wxMessageBox(_T("Couldn't create temporary directory to hold contents of archive."));
 			return;
 		}
-		strcat(prepend_path, "/");
+		prepend_path += _T("/");
 
-		result = ExpandTGZ((const char *)fname, prepend_path);
+		result = ExpandTGZ(fname.mb_str(), prepend_path.mb_str());
 		if (result < 1)
 		{
-			wxMessageBox("Couldn't expand archive.");
-			GetTempFolderName(prepend_path, fname_in);
-			vtDestroyDir(prepend_path);
+			wxMessageBox(_T("Couldn't expand archive."));
+			prepend_path = GetTempFolderName(fname_in.mb_str());
+			vtDestroyDir(prepend_path.mb_str());
 			return;
 		}
 		else if (result == 1)
 		{
 			// the archive contained a single file
-			for (dir_it it(prepend_path); it != dir_it(); ++it)
+			for (dir_it it((std::string) (prepend_path.mb_str())); it != dir_it(); ++it)
 			{
 				if (get<is_directory>(it))
 					continue;
 				std::string name1 = *it;
 				fname = prepend_path;
-				fname += name1.c_str();
+				wxString tmp;
+				tmp.FromAscii(name1.c_str());
+				fname += tmp;
 				break;
 			}
 		}
@@ -150,22 +159,23 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 		{
 			// probably SDTS
 			// try to guess layer type from original file name
-			if (fname.Contains(".hy") || fname.Contains(".HY"))
+			if (fname.Contains(_T(".hy")) || fname.Contains(_T(".HY")))
 				ltype = LT_WATER;
-			if (fname.Contains(".rd") || fname.Contains(".RD"))
+			if (fname.Contains(_T(".rd")) || fname.Contains(_T(".RD")))
 				ltype = LT_ROAD;
-			if (fname.Contains(".dem") || fname.Contains(".DEM"))
+			if (fname.Contains(_T(".dem")) || fname.Contains(_T(".DEM")))
 				ltype = LT_ELEVATION;
-			if (fname.Contains(".ms") || fname.Contains(".MS"))
+			if (fname.Contains(_T(".ms")) || fname.Contains(_T(".MS")))
 				ltype = LT_STRUCTURE;
 
 			// look for the catalog file
 			bool found = false;
-			for (dir_it it(prepend_path); it != dir_it(); ++it)
+			for (dir_it it((std::string) (prepend_path.mb_str())); it != dir_it(); ++it)
 			{
 				std::string name1 = *it;
-				wxString fname2 = name1.c_str();
-				if (fname2.Right(8).CmpNoCase("catd.ddf") == 0)
+				wxString fname2;
+				fname2.FromAscii(name1.c_str());
+				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 				{
 					fname = prepend_path;
 					fname += fname2;
@@ -175,7 +185,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 			}
 			if (!found)
 			{
-				wxMessageBox("Don't know what to do with contents of archive.");
+				wxMessageBox(_T("Don't know what to do with contents of archive."));
 				return;
 			}
 		}
@@ -188,8 +198,8 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 	if (bExpandedArchive)
 	{
 		// clean up after ourselves
-		GetTempFolderName(prepend_path, fname_in);
-		vtDestroyDir(prepend_path);
+		prepend_path = GetTempFolderName(fname_in.mb_str());
+		vtDestroyDir(prepend_path.mb_str());
 	}
 }
 
@@ -197,12 +207,12 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 								   bool bRefresh)
 {
 	// check to see if the file is readable
-	FILE *fp = fopen(strFileName, "rb");
+	FILE *fp = fopen(strFileName.mb_str(), "rb");
 	if (!fp)
 		return;	// Cannot Open File
 	fclose(fp);
 
-	wxString msg = "Importing Data from ";
+	wxString msg = _T("Importing Data from ");
 	msg += strFileName;
 	OpenProgressDialog(msg);
 
@@ -221,63 +231,63 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 		break;
 	case LT_ROAD:
 	case LT_WATER:
-		if (!strExt.CmpNoCase("dlg"))
+		if (!strExt.CmpNoCase(_T("dlg")))
 		{
 			pLayer = ImportFromDLG(strFileName, ltype);
 		}
-		else if (!strExt.CmpNoCase("shp"))
+		else if (!strExt.CmpNoCase(_T("shp")))
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
 		}
-		else if (!strFileName.Right(8).CmpNoCase("catd.ddf") ||
-				 !strExt.CmpNoCase("mif") ||
-				 !strExt.CmpNoCase("tab"))
+		else if (!strFileName.Right(8).CmpNoCase(_T("catd.ddf")) ||
+				 !strExt.CmpNoCase(_T("mif")) ||
+				 !strExt.CmpNoCase(_T("tab")))
 		{
 			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
 		break;
 	case LT_STRUCTURE:
-		if (!strExt.CmpNoCase("shp"))
+		if (!strExt.CmpNoCase(_T("shp")))
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
 		}
-		else if (!strExt.CmpNoCase("bcf"))
+		else if (!strExt.CmpNoCase(_T("bcf")))
 		{
 			pLayer = ImportFromBCF(strFileName);
 		}
-		else if (!strExt.CmpNoCase("dlg"))
+		else if (!strExt.CmpNoCase(_T("dlg")))
 		{
 			pLayer = ImportFromDLG(strFileName, ltype);
 		}
-		else if (!strFileName.Right(8).CmpNoCase("catd.ddf"))
+		else if (!strFileName.Right(8).CmpNoCase(_T("catd.ddf")))
 		{
 			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
 		break;
 	case LT_VEG:
-		if (!strExt.CmpNoCase("gir"))
+		if (!strExt.CmpNoCase(_T("gir")))
 		{
 			pLayer = ImportFromLULC(strFileName, ltype);
 		}
-		if (!strExt.CmpNoCase("shp"))
+		if (!strExt.CmpNoCase(_T("shp")))
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
 		}
 		break;
 	case LT_UNKNOWN:
-		if (!strExt.CmpNoCase("gir"))
+		if (!strExt.CmpNoCase(_T("gir")))
 		{
 			pLayer = ImportFromLULC(strFileName, ltype);
 		}
-		else if (!strExt.CmpNoCase("bcf"))
+		else if (!strExt.CmpNoCase(_T("bcf")))
 		{
 			pLayer = ImportFromBCF(strFileName);
 		}
-		else if (!strExt.CmpNoCase("dlg"))
+		else if (!strExt.CmpNoCase(_T("dlg")))
 		{
 			pLayer = ImportFromDLG(strFileName, ltype);
 		}
-		else if (!strFileName.Right(8).CmpNoCase("catd.ddf"))
+		else if (!strFileName.Right(8).CmpNoCase(_T("catd.ddf")))
 		{
 			// SDTS file: might be Elevation or Vector (SDTS-DEM or SDTS-DLG)
 			// To try to distinguish, look for a file called xxxxrsdf.ddf
@@ -286,7 +296,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 			int len = strFileName.Length();
 			wxString strFileName2 = strFileName.Left(len - 8);
 			FILE *fp;
-			fp = fopen(strFileName2 + "rsdf.ddf", "rb");
+			fp = fopen((strFileName2 + _T("rsdf.ddf")).mb_str(), "rb");
 			if (fp != NULL)
 			{
 				bRaster = true;
@@ -295,7 +305,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 			else
 			{
 				// also try with upper-case (for Unix)
-				fp = fopen(strFileName2 + "RSDF.DDF", "rb");
+				fp = fopen((strFileName2 + _T("RSDF.DDF")).mb_str(), "rb");
 				if (fp != NULL)
 				{
 					bRaster = true;
@@ -308,11 +318,11 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 			else
 				pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
-		else if (!strExt.CmpNoCase("shp"))
+		else if (!strExt.CmpNoCase(_T("shp")))
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
 		}
-		else if (!strExt.CmpNoCase("bcf"))
+		else if (!strExt.CmpNoCase(_T("bcf")))
 		{
 			pLayer = ImportFromBCF(strFileName);
 		}
@@ -323,14 +333,14 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 		}
 		break;
 	case LT_UTILITY:
-		if(!strExt.CmpNoCase("shp"))
+		if(!strExt.CmpNoCase(_T("shp")))
 			pLayer = ImportFromSHP(strFileName, ltype);
 		break;
 	case LT_RAW:
-		if (!strExt.CmpNoCase("shp"))
+		if (!strExt.CmpNoCase(_T("shp")))
 			pLayer = ImportFromSHP(strFileName, ltype);
-		else if (!strExt.CmpNoCase("mif") ||
-				 !strExt.CmpNoCase("tab"))
+		else if (!strExt.CmpNoCase(_T("mif")) ||
+				 !strExt.CmpNoCase(_T("tab")))
 		{
 			pLayer = ImportRawFromOGR(strFileName);
 		}
@@ -389,9 +399,9 @@ LayerType MainFrame::GuessLayerTypeFromDLG(vtDLGFile *pDLG)
 //
 wxString GetImportFilterString(LayerType ltype)
 {
-	wxString filter = "All Known ";
+	wxString filter = _T("All Known ");
 	filter += vtLayer::LayerTypeName[ltype];
-	filter += " Formats||";
+	filter += _T(" Formats||");
 
 	switch (ltype)
 	{
@@ -465,10 +475,11 @@ wxString GetImportFilterString(LayerType ltype)
 vtLayerPtr MainFrame::ImportFromDLG(wxString &strFileName, LayerType ltype)
 {
 	vtDLGFile *pDLG = new vtDLGFile();
-	bool success = pDLG->Read(strFileName, progress_callback);
+	bool success = pDLG->Read(strFileName.mb_str(), progress_callback);
 	if (!success)
 	{
-		wxString msg = pDLG->GetErrorMessage();
+		wxString msg;
+		msg.FromAscii(pDLG->GetErrorMessage());
 		wxMessageBox(msg);
 		delete pDLG;
 		return NULL;
@@ -510,11 +521,11 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	bool success;
 
 	int nShapeType;
-	SHPHandle hSHP = SHPOpen(strFileName, "rb");
+	SHPHandle hSHP = SHPOpen(strFileName.mb_str(), "rb");
 	if (hSHP == NULL)
 	{
-		wxMessageBox("Couldn't read that Shape file.  Perhaps it is\n"
-			"missing its corresponding .dbf and .shx files.");
+		wxMessageBox(_T("Couldn't read that Shape file.  Perhaps it is\n")
+			_T("missing its corresponding .dbf and .shx files."));
 		return NULL;
 	}
 	else
@@ -536,7 +547,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	vtLayerPtr pLayer = vtLayer::CreateNewLayer(ltype);
 
 	// ask user for a projection
-	Projection2Dlg dlg(NULL, -1, "Please indicate projection", wxDefaultPosition);
+	Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"), wxDefaultPosition);
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -548,7 +559,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_ROAD)
 	{
 		vtRoadLayer *pRL = (vtRoadLayer *)pLayer;
-		pRL->AddElementsFromSHP(strFileName, proj, progress_callback);
+		pRL->AddElementsFromSHP(strFileName.mb_str(), proj, progress_callback);
 		pRL->RemoveUnusedNodes();
 	}
 
@@ -557,35 +568,36 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	{
 		if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
 		{
-			wxMessageBox("The Shapefile must have either point features (for individual\n"
-				"plants) or polygon features (for plant distribution areas).");
+			wxMessageBox(_T("The Shapefile must have either point features (for \n")
+				_T("individual plants) or polygon features (for plant distribution areas)."));
 			return NULL;
 		}
 
 		vtVegLayer *pVL = (vtVegLayer *)pLayer;
 		if (nShapeType == SHPT_POLYGON)
 		{
-			ImportVegDlg dlg(this, -1, "Import Vegetation Information");
+			ImportVegDlg dlg(this, -1, _T("Import Vegetation Information"));
 			dlg.SetShapefileName(strFileName);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			pVL->AddElementsFromSHP_Polys(strFileName, proj, dlg.m_fieldindex, dlg.m_datatype);
+			pVL->AddElementsFromSHP_Polys(strFileName.mb_str(), proj,
+				dlg.m_fieldindex, dlg.m_datatype);
 		}
 		if (nShapeType == SHPT_POINT)
 		{
-			VegFieldsDlg dlg(this, -1, "Map fields to attributes");
+			VegFieldsDlg dlg(this, -1, _T("Map fields to attributes"));
 			dlg.SetShapefileName(strFileName);
 			dlg.SetVegLayer(pVL);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
-			pVL->AddElementsFromSHP_Points(strFileName, proj, dlg.m_options);
+			pVL->AddElementsFromSHP_Points(strFileName.mb_str(), proj, dlg.m_options);
 		}
 	}
 
 	if (ltype == LT_WATER)
 	{
 		vtWaterLayer *pWL = (vtWaterLayer *)pLayer;
-		pWL->AddElementsFromSHP(strFileName, proj);
+		pWL->AddElementsFromSHP(strFileName.mb_str(), proj);
 	}
 
 	if (ltype == LT_STRUCTURE)
@@ -599,7 +611,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_UTILITY)
 	{
 		vtUtilityLayer *pUL = (vtUtilityLayer *)pLayer;
-		pUL->ImportFromSHP(strFileName, proj);
+		pUL->ImportFromSHP(strFileName.mb_str(), proj);
 	}
 
 	if (ltype == LT_RAW)
@@ -653,10 +665,11 @@ vtLayerPtr MainFrame::ImportImage(wxString &strFileName)
 vtLayerPtr MainFrame::ImportFromLULC(wxString &strFileName, LayerType ltype)
 {
 	// Read LULC file, check for errors
-	vtLULCFile *pLULC = new vtLULCFile(strFileName);
+	vtLULCFile *pLULC = new vtLULCFile(strFileName.mb_str());
 	if (pLULC->m_iError)
 	{
-		wxString msg = pLULC->GetErrorMessage();
+		wxString msg;
+		msg.FromAscii(pLULC->GetErrorMessage());
 		wxMessageBox(msg);
 		delete pLULC;
 		return NULL;
@@ -685,7 +698,7 @@ vtLayerPtr MainFrame::ImportFromLULC(wxString &strFileName, LayerType ltype)
 vtStructureLayer *MainFrame::ImportFromBCF(wxString &strFileName)
 {
 	vtStructureLayer *pSL = new vtStructureLayer();
-	if (pSL->ReadBCF(strFileName))
+	if (pSL->ReadBCF(strFileName.mb_str()))
 		return pSL;
 	else
 	{
@@ -698,7 +711,7 @@ vtLayerPtr MainFrame::ImportRawFromOGR(wxString &strFileName)
 {
 	// create the new layer
 	vtRawLayer *pRL = new vtRawLayer();
-	bool success = pRL->LoadWithOGR((const char *)strFileName, progress_callback);
+	bool success = pRL->LoadWithOGR(strFileName.mb_str(), progress_callback);
 
 	if (success)
 		return pRL;
@@ -713,7 +726,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltyp
 {
 	OGRRegisterAll();
 
-	OGRDataSource *datasource = OGRSFDriverRegistrar::Open( strFileName );
+	OGRDataSource *datasource = OGRSFDriverRegistrar::Open(strFileName.mb_str());
 	if (!datasource)
 		return NULL;
 
@@ -755,17 +768,17 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 {
 	OGRRegisterAll();
 
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( strDirName );
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());
 	if (!pDatasource)
 		return;
 
 	// create the new layers
 	vtWaterLayer *pWL = new vtWaterLayer;
-	pWL->SetFilename(strDirName + "/water");
+	pWL->SetFilename(strDirName + _T("/water"));
 	pWL->SetModified(true);
 
 	vtRoadLayer *pRL = new vtRoadLayer;
-	pRL->SetFilename(strDirName + "/roads");
+	pRL->SetFilename(strDirName + _T("/roads"));
 	pRL->SetModified(true);
 
 	int i, j, feature_count;
@@ -826,7 +839,7 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 		}
 
 		// Progress Dialog
-		OpenProgressDialog("Importing from TIGER...");
+		OpenProgressDialog(_T("Importing from TIGER..."));
 
 		int index_cfcc = defn->GetFieldIndex("CFCC");
 		int fcount = 0;

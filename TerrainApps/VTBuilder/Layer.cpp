@@ -1,7 +1,7 @@
 //
 // Layer.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,34 +22,34 @@
 #include "UtilityLayer.h"
 #include "RawLayer.h"
 
-char *vtLayer::LayerTypeName[LAYER_TYPES] =
+wxChar *vtLayer::LayerTypeName[LAYER_TYPES] =
 {
-	"Raw",
-	"Elevation",
-	"Image",
-	"Road",
-	"Structure",
-	"Water",
-	"Vegetation",
-	"Transit",
-	"Utility"
+	_T("Raw"),
+	_T("Elevation"),
+	_T("Image"),
+	_T("Road"),
+	_T("Structure"),
+	_T("Water"),
+	_T("Vegetation"),
+	_T("Transit"),
+	_T("Utility")
 };
 
-char *vtLayer::LayerFileExtension[LAYER_TYPES] =
+wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 {
-	".shp",
-	".bt",
-	".tif",
-	".rmf",
-	".vtst",
-	".hyd",
-	".vf",
-	".xml",
-	".utl"
+	_T(".shp"),
+	_T(".bt"),
+	_T(".tif"),
+	_T(".rmf"),
+	_T(".vtst"),
+	_T(".hyd"),
+	_T(".vf"),
+	_T(".xml"),
+	_T(".utl")
 };
 
 
-void AddType(wxString &str, wxString filter)
+void AddType(wxString &str, const wxString &filter)
 {
 	wxString str1 = str.BeforeFirst('|');
 
@@ -63,12 +63,12 @@ void AddType(wxString &str, wxString filter)
 	str4 = str4.BeforeFirst('|');
 
 //	wxString output = "All Known Formats|";
-	wxString output = str1 + "|";
+	wxString output = str1 + _T("|");
 	output += str2;
 	if (str2.Len() > 1)
-		output += ";";
+		output += _T(";");
 	output += str4;
-	output += "|";
+	output += _T("|");
 	output += str3;
 	output += filter;
 
@@ -91,7 +91,7 @@ vtLayer::~vtLayer()
 	int foo = 1;
 }
 
-bool vtLayer::Save(const char *filename)
+bool vtLayer::Save(const wxString &filename)
 {
 	if (!m_bNative)
 	{
@@ -107,9 +107,9 @@ bool vtLayer::Save(const char *filename)
 	return success;
 }
 
-bool vtLayer::Load(const char *filename)
+bool vtLayer::Load(const wxString &filename)
 {
-	if (filename)
+	if (filename != _T(""))
 		SetFilename(filename);
 	bool success = OnLoad();
 	if (success)
@@ -132,54 +132,40 @@ void vtLayer::SetModified(bool bModified)
 		GetMainFrame()->RefreshTreeStatus();
 }
 
-void vtLayer::SetFilename(wxString str)
+void vtLayer::SetFilename(const wxString &fname)
 {
-	bool bNeedRefresh = (m_strFilename.Cmp(str) != 0);
-	m_strFilename = str;
+	bool bNeedRefresh = (m_strFilename.Cmp(fname) != 0);
+	m_strFilename = fname;
 	GetMainFrame()->RefreshTreeStatus();
 }
 
-char *vtLayer::GetFileDialogFilter()
+wxString vtLayer::GetFileDialogFilter()
 {
-	char *str2 = new char[80], *str = str2;
-	int len;
+	wxString str;
 
-	len = strlen(LayerTypeName[m_type]);
-	memcpy(str, LayerTypeName[m_type], len);
-	str += len;
+	str = LayerTypeName[m_type];
+	str += _T(" Files (*");
 
-	memcpy(str, " Files (*", 9);
-	str += 9;
+	wxString ext = GetFileExtension();
+	str += ext;
+	str += _T(")|*");
+	str += ext;
+	str += _T("|All Files|*.*|");
 
-	char *ext = GetFileExtension();
-	len = strlen(ext);
-	memcpy(str, ext, len);
-	str += len;
-
-	memcpy(str, ")|*", 3);
-	str += 3;
-
-	len = strlen(ext);
-	memcpy(str, ext, len);
-	str += len;
-
-	memcpy(str, "|All Files|*.*|", 16);
-
-	return str2;
+	return str;
 }
 
 bool vtLayer::AskForSaveFilename()
 {
-	char *filter = GetFileDialogFilter();
-	wxFileDialog saveFile(NULL, "Save Layer", "", "", filter, wxSAVE);
+	wxString filter = GetFileDialogFilter();
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), _T(""), filter, wxSAVE);
 
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	delete filter;
 	if (!bResult)
 		return false;
 
 	wxString name = saveFile.GetPath();
-	wxString ext = GetFileExtension();
+	wxString ext(GetFileExtension(), wxConvCurrent);
 	if (name.Len() < ext.Len() ||
 		name.Right(ext.Len()) != ext)
 	{
@@ -190,12 +176,12 @@ bool vtLayer::AskForSaveFilename()
 	return true;
 }
 
-char *vtLayer::GetFileExtension()
+wxString vtLayer::GetFileExtension()
 {
 	return LayerFileExtension[GetType()];
 }
 
-void vtLayer::SetMessageText(const char *msg)
+void vtLayer::SetMessageText(const wxString &msg)
 {
 	GetMainFrame()->SetStatusText(msg);
 }

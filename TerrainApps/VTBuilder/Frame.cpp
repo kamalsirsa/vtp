@@ -1,7 +1,7 @@
 //
 // The main Frame window of the VTBuilder application
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -384,7 +384,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		if (pRL->Load(fname))
 			pLayer = pRL;
 	}
-	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase("tin") == 0)
+	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase(_T("tin")) == 0)
 	{
 		vtElevLayer *pEL = new vtElevLayer();
 		if (pEL->Load(fname))
@@ -471,14 +471,14 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 
 			bool keep = false;
 			wxString msg;
-			msg.Printf("The data already loaded is in:\n     %s\n"
-					"but the layer you are attempting to add:\n     %s\n"
-					"is using:\n     %s\n"
-					"Would you like to attempt to convert it now to the existing projection?",
+			msg.Printf(_T("The data already loaded is in:\n     %s\n")
+					_T("but the layer you are attempting to add:\n     %s\n")
+					_T("is using:\n     %s\n")
+					_T("Would you like to attempt to convert it now to the existing projection?"),
 				str1,
-				(const char *) pLayer->GetFilename(),
+				pLayer->GetFilename().mb_str(),
 				str2);
-			int ret = wxMessageBox(msg, "Convert Coordinate System?", wxYES_NO | wxCANCEL);
+			int ret = wxMessageBox(msg, _T("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
 			if (ret == wxNO)
 				keep = true;
 			if (ret == wxYES)
@@ -488,8 +488,8 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 					keep = true;
 				else
 				{
-					ret = wxMessageBox("Couldn't convert projection.\n"
-							"Proceed anyway?", "Warning", wxYES_NO);
+					ret = wxMessageBox(_T("Couldn't convert projection.\n")
+							_T("Proceed anyway?"), _T("Warning"), wxYES_NO);
 					if (ret == wxYES)
 						keep = true;
 				}
@@ -709,8 +709,8 @@ LayerType MainFrame::AskLayerType()
 	int n = LAYER_TYPES;
 	static int cur_type = 0;	// remember the choice for next time
 
-	wxSingleChoiceDialog dialog(this, "These are your choices",
-		"Please indicate layer type", n, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, _T("These are your choices"),
+		_T("Please indicate layer type"), n, (const wxString *)choices);
 
 	dialog.SetSelection(cur_type);
 
@@ -729,7 +729,7 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 	if (!m_pFeatInfoDlg)
 	{
 		// Create new Feature Info Dialog
-		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, "Feature Info",
+		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, _T("Feature Info"),
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pFeatInfoDlg->SetView(GetView());
 	}
@@ -743,7 +743,7 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 	if (!m_pDistanceDlg)
 	{
 		// Create new Distance Dialog
-		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, "Distance Tool",
+		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, _T("Distance Tool"),
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pDistanceDlg->SetProjection(&m_proj);
 	}
@@ -769,8 +769,9 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 	if (bShow && !m_pLinearStructureDlg)
 	{
 		// Create new Distance Dialog
-		m_pLinearStructureDlg = new LinearStructureDlg2d(this, WID_DISTANCE, "Linear Structures",
-				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+		m_pLinearStructureDlg = new LinearStructureDlg2d(this, WID_DISTANCE,
+			_T("Linear Structures"), wxPoint(120, 80), wxSize(600, 200),
+			wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pLinearStructureDlg->m_pFrame = this;
 	}
 	if (m_pLinearStructureDlg)
@@ -795,7 +796,7 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog("Merging and Resampling Elevation Layers");
+	OpenProgressDialog(_T("Merging and Resampling Elevation Layers"));
 
 	int num_elev = LayersOfType(LT_ELEVATION);
 	vtElevLayer **elevs = new vtElevLayer *[num_elev];
@@ -882,10 +883,10 @@ void MainFrame::LoadProject(const wxString &strPathName)
 {
 	// read project file
 	wxString str;
-	FILE *fp = fopen(strPathName, "rb");
+	FILE *fp = fopen(strPathName.mb_str(), "rb");
 	if (!fp)
 	{
-		str = "Couldn't open project file: ";
+		str.FromAscii("Couldn't open project file: ");
 		str += strPathName;
 		wxMessageBox(str);
 		return;
@@ -898,7 +899,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	OGRErr err = m_proj.importFromWkt(&wkt);
 	if (err != OGRERR_NONE)
 	{
-		wxMessageBox("Had trouble parsing the projection information from that file.");
+		wxMessageBox(_T("Had trouble parsing the projection information from that file."));
 		fclose(fp);
 		return;
 	}
@@ -921,7 +922,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 		if (len && buf[len-1] == 10) buf[len-1] = 0;
 		len = strlen(buf);
 		if (len && buf[len-1] == 13) buf[len-1] = 0;
-		wxString fname = buf;
+		wxString fname(buf, wxConvCurrent);
 
 		if (!strcmp(buf2, "import"))
 		{
@@ -967,7 +968,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 void MainFrame::SaveProject(const wxString &strPathName)
 {
 	// write project file
-	FILE *fp = fopen(strPathName, "wb");
+	FILE *fp = fopen(strPathName.mb_str(), "wb");
 	if (!fp)
 		return;
 
@@ -987,7 +988,7 @@ void MainFrame::SaveProject(const wxString &strPathName)
 		lp = m_Layers.GetAt(i);
 
 		fprintf(fp, "type %d, %s\n", lp->GetType(), lp->IsNative() ? "native" : "import");
-		fprintf(fp, "%s\n", (const char *) lp->GetFilename());
+		fprintf(fp, "%s\n", lp->GetFilename().mb_str());
 	}
 
 	// write area
@@ -1014,7 +1015,7 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 	for ( size_t n = 0; n < nFiles; n++ )
 	{
 		wxString str = filenames[n];
-		if (!str.Right(3).CmpNoCase("vtb"))
+		if (!str.Right(3).CmpNoCase(_T("vtb")))
 			GetMainFrame()->LoadProject(str);
 		else
 			GetMainFrame()->LoadLayer(str);
@@ -1049,13 +1050,13 @@ void MainFrame::ExportElevation()
 	}
 	if (spacing == DPoint2(1.0f, 1.0f))
 	{
-		wxMessageBox("Sorry, you must have some elevation grid layers to\n"
-				"perform a sampling operation on them.", "Info");
+		wxMessageBox(_T("Sorry, you must have some elevation grid layers to\n")
+				_T("perform a sampling operation on them."), _T("Info"));
 		return;
 	}
 
 	// Open the Resample dialog
-	ResampleDlg dlg(this, -1, "Merge and Resample Elevation");
+	ResampleDlg dlg(this, -1, _T("Merge and Resample Elevation"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
@@ -1064,11 +1065,11 @@ void MainFrame::ExportElevation()
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
-	wxString filter = "All Files|*.*|";
+	wxString filter = _T("All Files|*.*|");
 	AddType(filter, FSTRING_BT);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, "Export Elevation", "", "", filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
 	saveFile.SetFilterIndex(1);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
@@ -1086,15 +1087,15 @@ void MainFrame::ExportElevation()
 	pOutput->FillGaps();
 #endif
 
-	bool success = pOutput->m_pGrid->SaveToBT(strPathName);
+	bool success = pOutput->m_pGrid->SaveToBT(strPathName.mb_str());
 	if (!success)
 	{
-		wxMessageBox("Couldn't open file for writing.");
+		wxMessageBox(_T("Couldn't open file for writing."));
 		delete pOutput;
 		return;
 	}
 
-	wxString str = "Successfully wrote BT file ";
+	wxString str = _T("Successfully wrote BT file ");
 	str += strPathName;
 	wxMessageBox(str);
 	delete pOutput;
@@ -1137,7 +1138,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 		m_PlantList.LookupPlantIndices(m_BioRegions.m_Types[i]);
 
-	OpenProgressDialog("Generating Vegetation");
+	OpenProgressDialog(_T("Generating Vegetation"));
 
 	int tree_count = 0;
 
@@ -1159,7 +1160,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	for (i = 0; i < x_trees; i ++)
 	{
 		wxString str;
-		str.Printf("plants: %d", pia.GetSize());
+		str.Printf(_T("plants: %d"), pia.GetSize());
 		UpdateProgressDialog(i * 100 / x_trees, str);
 
 		p.x = area.left + (i * fTreeSpacing);
@@ -1222,21 +1223,21 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 
 	// display a useful message informing the user what was planted
 	wxString msg, str;
-	msg = "Vegetation distribution results:\n";
+	msg = _T("Vegetation distribution results:\n");
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 	{
 		bio = m_BioRegions.m_Types[i];
-		str.Printf("  BioType %d\n", i);
+		str.Printf(_T("  BioType %d\n"), i);
 		msg += str;
 		for (k = 0; k < bio->m_Densities.GetSize(); k++)
 		{
 			pd = bio->m_Densities[k];
-			str.Printf("    Plant %d: %s: %d generated.\n", k,
+			str.Printf(_T("    Plant %d: %s: %d generated.\n"), k,
 				(const char *) pd->m_common_name, pd->m_iNumPlanted);
 			msg += str;
 		}
 	}
-	wxMessageBox(msg, "Results");
+	wxMessageBox(msg, _T("Results"));
 }
 
 

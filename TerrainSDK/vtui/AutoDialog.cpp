@@ -7,7 +7,7 @@
 //
 // wxNumericValidator - A validator capable of transfering numeric values.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -64,11 +64,11 @@ bool wxNumericValidator::TransferToWindow()
 
 	wxString str;
 	if (m_pValInt)
-		str.Printf("%d", *m_pValInt);
+		str.Printf(_T("%d"), *m_pValInt);
 	if (m_pValFloat)
-		str.Printf("%f", *m_pValFloat);
+		str.Printf(_T("%f"), *m_pValFloat);
 	if (m_pValDouble)
-		str.Printf("%lf", *m_pValDouble);
+		str.Printf(_T("%lf"), *m_pValDouble);
 
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{
@@ -102,7 +102,7 @@ bool wxNumericValidator::TransferFromWindow()
 	if ( !m_validatorWindow )
 		return FALSE;
 
-	wxString str = "";
+	wxString str = _T("");
 	// string controls
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{
@@ -119,14 +119,15 @@ bool wxNumericValidator::TransferFromWindow()
 	else // unrecognized control, or bad pointer
 		return FALSE;
 
-	if (str != "")
+	if (str != _T(""))
 	{
+		const char *ccs = str.mb_str();
 		if (m_pValInt)
-			sscanf(str, "%d", m_pValInt);
+			sscanf(ccs, "%d", m_pValInt);
 		if (m_pValFloat)
-			sscanf(str, "%f", m_pValFloat);
+			sscanf(ccs, "%f", m_pValFloat);
 		if (m_pValDouble)
-			sscanf(str, "%lf", m_pValDouble);
+			sscanf(ccs, "%lf", m_pValDouble);
 		return TRUE;
 	}
 	return FALSE;

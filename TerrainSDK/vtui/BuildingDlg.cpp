@@ -311,7 +311,7 @@ void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLevel = NULL;
 	m_pEdge = NULL;
 	m_fStoryHeight = 0.0f;
-	m_strMaterial = "";
+	m_strMaterial = _T("");
 
 	SetupControls();
 
@@ -328,20 +328,20 @@ void BuildingDlg::RefreshLevelsBox()
 	for (i = 0; i < levels; i++)
 	{
 		vtLevel *pLev = m_pBuilding->GetLevel(i);
-		str.Printf("%d", i);
+		str.Printf(_T("%d"), i);
 		RoofType rt = pLev->GuessRoofType();
 		if (rt == ROOF_FLAT)
-			str += " (flat roof)";
+			str += _T(" (flat roof)");
 		else if (rt == ROOF_SHED)
-			str += " (shed roof)";
+			str += _T(" (shed roof)");
 		else if (rt == ROOF_GABLE)
-			str += " (gable roof)";
+			str += _T(" (gable roof)");
 		else if (rt == ROOF_HIP)
-			str += " (hip roof)";
+			str += _T(" (hip roof)");
 		else
 		{
 			wxString str2;
-			str2.Printf(" (%d stor%s)", pLev->m_iStories,
+			str2.Printf(_T(" (%d stor%s)"), pLev->m_iStories,
 				pLev->m_iStories == 1 ? "y" : "ies");
 			str += str2;
 		}
@@ -356,7 +356,7 @@ void BuildingDlg::RefreshEdgesBox()
 	int i, edges = m_pLevel->GetNumEdges();
 	for (i = 0; i < edges; i++)
 	{
-		str.Printf("%d", i);
+		str.Printf(_T("%d"), i);
 		m_pEdgeListBox->Append(str);
 	}
 }
@@ -377,7 +377,7 @@ void BuildingDlg::SetEdge(int iEdge)
 	m_iEdge = iEdge;
 	m_pEdge = m_pLevel->GetEdge(iEdge);
 	m_iEdgeSlope = m_pEdge->m_iSlope;
-	m_strFacade = m_pEdge->m_Facade;
+	m_strFacade.FromAscii((const char *) m_pEdge->m_Facade);
 
 	// material
 	UpdateMaterialControl();
@@ -447,7 +447,7 @@ void BuildingDlg::UpdateMaterialControl()
 	else
 		mat = m_pEdge->m_Material;
 
-	m_strMaterial = vtBuilding::GetMaterialString(mat);
+	m_strMaterial.FromAscii(vtBuilding::GetMaterialString(mat));
 }
 
 void BuildingDlg::UpdateColorControl()
@@ -496,14 +496,14 @@ void BuildingDlg::UpdateColorControl()
 void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 {
 	wxString choices[5];
-	choices[0] = "Flat (all edges 0°)";
-	choices[1] = "Shed";
-	choices[2] = "Gable";
-	choices[3] = "Hip";
-	choices[4] = "Vertical (all edges 90°)";
+	choices[0] = _T("Flat (all edges 0°)");
+	choices[1] = _T("Shed");
+	choices[2] = _T("Gable");
+	choices[3] = _T("Hip");
+	choices[4] = _T("Vertical (all edges 90°)");
 
-	wxSingleChoiceDialog dialog(this, "Choice",
-		"Please indicate edge slopes", 5, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, _T("Choice"),
+		_T("Please indicate edge slopes"), 5, (const wxString *)choices);
 
 	dialog.SetSelection(0);
 
@@ -518,8 +518,8 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 		if (sel == 1) slope = 4;
 		if (sel == 2) slope = 15;
 		if (sel == 3) slope = 15;
-		slope = wxGetNumberFromUser("Sloped edges", "Degrees",
-			"Slope", slope, 0, 90);
+		slope = wxGetNumberFromUser(_T("Sloped edges"), _T("Degrees"),
+			_T("Slope"), slope, 0, 90);
 		if (slope == -1)
 			return;
 		m_pLevel->SetRoofType((RoofType)sel, slope);
@@ -544,12 +544,12 @@ void BuildingDlg::UpdateSlopes()
 	if (m_bEdges == false)
 	{
 		wxString str;
-		m_strEdgeSlopes = "";
+		m_strEdgeSlopes = _T("");
 		int i, edges = m_pLevel->GetNumEdges();
 		for (i = 0; i < edges; i++)
 		{
 			vtEdge *edge = m_pLevel->GetEdge(i);
-			str.Printf(" %d", edge->m_iSlope);
+			str.Printf(_T(" %d"), edge->m_iSlope);
 			m_strEdgeSlopes += str;
 		}
 	}
@@ -564,21 +564,21 @@ void BuildingDlg::UpdateSlopes()
 
 void BuildingDlg::UpdateFeatures()
 {
-	m_strFeatures = "";
+	m_strFeatures = _T("");
 	int feats = m_pEdge->NumFeatures();
 	for (int i = 0; i < feats; i++)
 	{
 		vtEdgeFeature &feat = m_pEdge->m_Features[i];
 		if (feat.m_code == WFC_WALL)
-			m_strFeatures += "[W] ";
+			m_strFeatures += _T("[W] ");
 		else if (feat.m_code == WFC_GAP)
-			m_strFeatures += "[Gap] ";
+			m_strFeatures += _T("[Gap] ");
 		else if (feat.m_code == WFC_POST)
-			m_strFeatures += "[Post] ";
+			m_strFeatures += _T("[Post] ");
 		else if (feat.m_code == WFC_WINDOW)
-			m_strFeatures += "[Win] ";
+			m_strFeatures += _T("[Win] ");
 		else if (feat.m_code == WFC_DOOR)
-			m_strFeatures += "[Door] ";
+			m_strFeatures += _T("[Door] ");
 	}
 	m_bSetting = true;
 	TransferDataToWindow();
@@ -601,11 +601,11 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	for (i = BMAT_PLAIN; i < BMAT_DOOR; i++)
 	{
 		bm = (BldMaterial) i;
-		choices[i-1] = vtBuilding::GetMaterialString(bm);
+		choices[i-1].FromAscii(vtBuilding::GetMaterialString(bm));
 	}
 
-	wxSingleChoiceDialog dialog(this, "Choice",
-		"Set Building Material for All Edges", 8, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, _T("Choice"),
+		_T("Set Building Material for All Edges"), 8, (const wxString *)choices);
 
 	bm = m_pLevel->GetOverallEdgeMaterial();
 	if (bm != BMAT_UNKNOWN)
@@ -621,7 +621,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	else
 		m_pLevel->SetEdgeMaterial(bm);
 
-	m_strMaterial = vtBuilding::GetMaterialString(bm);
+	m_strMaterial.FromAscii(vtBuilding::GetMaterialString(bm));
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
@@ -662,9 +662,9 @@ void BuildingDlg::OnCharHook( wxKeyEvent &event )
 	}
 
 	// Test text input
-	wxString str = wxGetTextFromUser("Test Message", "Test Caption", "", this);
+	wxString str = wxGetTextFromUser(_T("Test Message"), _T("Test Caption"), _T(""), this);
 	TestParser par;
-	par.ParseInput((const char *) str);
+	par.ParseInput(str.mb_str());
 
 	MatchToken *tok;
 
@@ -716,9 +716,9 @@ void BuildingDlg::SetEdgeFacade()
 	{
 		// Store current facade
 		TransferDataFromWindow();
-		if (0 != m_pEdge->m_Facade.Compare(m_strFacade))
+		if (0 != m_pEdge->m_Facade.Compare(m_strFacade.mb_str()))
 		{
-			m_pEdge->m_Facade = m_strFacade;
+			m_pEdge->m_Facade = m_strFacade.mb_str();
 			Modified();
 		}
 	}

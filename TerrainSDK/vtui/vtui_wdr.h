@@ -7,7 +7,7 @@
 #define __WDR_vtui_H__
 
 #ifdef __GNUG__
-    #pragma interface "vtui_wdr.cpp"
+    #pragma interface "vtui_wdr.h"
 #endif
 
 // Include wxWindows' headers

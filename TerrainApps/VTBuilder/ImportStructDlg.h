@@ -40,7 +40,7 @@ public:
 	wxRadioButton* GetTypeLinear()  { return (wxRadioButton*) FindWindow( ID_TYPE_LINEAR ); }
 	wxRadioButton* GetTypeFootprint()  { return (wxRadioButton*) FindWindow( ID_TYPE_FOOTPRINT ); }
 	wxRadioButton* GetTypeCenter()  { return (wxRadioButton*) FindWindow( ID_TYPE_CENTER ); }
-	void SetFileName(const char *str) { m_filename = str; }
+	void SetFileName(const wxString &str) { m_filename = str; }
 	void UpdateEnables();
 	bool GetRadio(int id);
 

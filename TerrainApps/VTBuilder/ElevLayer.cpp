@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -157,7 +157,7 @@ bool vtElevLayer::OnSave()
 
 bool vtElevLayer::OnLoad()
 {
-	OpenProgressDialog("Loading Elevation Layer");
+	OpenProgressDialog(_T("Loading Elevation Layer"));
 
 	bool success = false;
 
@@ -186,7 +186,7 @@ bool vtElevLayer::ConvertProjection(vtProjection &proj_new)
 	if (proj_old == proj_new)
 		return true;		// No conversion necessary
 
-	OpenProgressDialog("Converting Elevation Projection");
+	OpenProgressDialog(_T("Converting Elevation Projection"));
 
 	bool success = false;
 	if (m_pGrid)
@@ -434,7 +434,7 @@ void vtElevLayer::RenderBitmap()
 	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,
 	// so just disable for now. (wxGTK 2.2.9 on Linux Mandrake 8.1)
 	if (bProg)
-		OpenProgressDialog("Rendering Bitmap");
+		OpenProgressDialog(_T("Rendering Bitmap"));
 #endif
 
 	UpdateProgressDialog(0, _T("Generating colors..."));
@@ -684,7 +684,7 @@ void vtElevLayer::FillGaps()
 	float *patch_column = new float[m_iRows];
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog("Filling Gaps");
+	OpenProgressDialog(_T("Filling Gaps"));
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
@@ -985,7 +985,7 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	if (!m_pTin)
 		return;
 
-	OpenProgressDialog("Merging shared vertices");
+	OpenProgressDialog(_T("Merging shared vertices"));
 
 	int before = m_pTin->NumVerts();
 	m_pTin->MergeSharedVerts(progress_callback);
@@ -1045,11 +1045,11 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 	}
 }
 
-char *vtElevLayer::GetFileExtension()
+wxString vtElevLayer::GetFileExtension()
 {
 	if (m_pTin)
-		return 	".itf";
+		return 	_T(".itf");
 	else
-		return 	".bt";
+		return 	_T(".bt");
 }
 

@@ -1,7 +1,7 @@
 //
 // RoadMapEdit.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -85,7 +85,7 @@ bool NodeEdit::Draw(wxDC* pDC, vtScaledView *pView)
 //
 bool NodeEdit::EditProperties(vtRoadLayer *pLayer)
 {
-	NodeDlg dlg(NULL, -1, "Node Properties");
+	NodeDlg dlg(NULL, -1, _T("Node Properties"));
 	dlg.SetNode(this, pLayer);
 	return (dlg.ShowModal() == wxID_OK);
 }
@@ -344,7 +344,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 
 bool LinkEdit::EditProperties(vtRoadLayer *pLayer)
 {
-	RoadDlg dlg(NULL, -1, "Road Properties");
+	RoadDlg dlg(NULL, -1, _T("Road Properties"));
 	dlg.SetRoad(this, pLayer);
 	return (dlg.ShowModal() == wxID_OK);
 }

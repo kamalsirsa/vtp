@@ -1,6 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:		SelectDlg.cpp
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2002-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
 	#pragma implementation "SelectDlg.cpp"
@@ -42,10 +45,11 @@ void SelectDlg::SetRawLayer(vtRawLayer *pRL)
 void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	int i;
+	wxString str;
 
 	m_iField = 0;
 	m_iCondition = 0;
-	m_strValue = "";
+	m_strValue = _T("");
 
 	vtProjection proj;
 	m_pLayer->GetProjection(proj);
@@ -56,36 +60,37 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		if (proj.IsGeographic())
 		{
-			GetField()->Append("X (longitude)", (void *) 900);
-			GetField()->Append("Y (latitude)", (void *) 901);
+			GetField()->Append(_T("X (longitude)"), (void *) 900);
+			GetField()->Append(_T("Y (latitude)"), (void *) 901);
 		}
 		else
 		{
-			GetField()->Append("X (easting)", (void *) 900);
-			GetField()->Append("Y (northing)", (void *) 901);
+			GetField()->Append(_T("X (easting)"), (void *) 900);
+			GetField()->Append(_T("Y (northing)"), (void *) 901);
 		}
 		m_iFauxFields = 2;
 	}
 	if (type == SHPT_POINTZ)
 	{
-		GetField()->Append("Z (meters)", (void *) 902);
+		GetField()->Append(_T("Z (meters)"), (void *) 902);
 		m_iFauxFields = 3;
 	}
 
 	for (i = 0; i < m_pLayer->GetNumFields(); i++)
 	{
 		Field *field = m_pLayer->GetField(i);
-		GetField()->Append((const char *) field->m_name, (void *) 0);
+		str.FromAscii( (const char *) field->m_name );
+		GetField()->Append(str, (void *) 0);
 	}
 	GetField()->SetSelection(0);
 
 	// The order of these must not change
-	GetCondition()->Append(" = ");
-	GetCondition()->Append(" > ");
-	GetCondition()->Append(" < ");
-	GetCondition()->Append(" >= ");
-	GetCondition()->Append(" <= ");
-	GetCondition()->Append(" <> ");
+	GetCondition()->Append(_T(" = "));
+	GetCondition()->Append(_T(" > "));
+	GetCondition()->Append(_T(" < "));
+	GetCondition()->Append(_T(" >= "));
+	GetCondition()->Append(_T(" <= "));
+	GetCondition()->Append(_T(" <> "));
 	GetCondition()->SetSelection(0);
 
 	FillValuesControl();
@@ -107,7 +112,7 @@ void SelectDlg::FillValuesControl()
 
 	if (m_iField < 0)
 	{
-		GetComboValue()->Append("0.0");
+		GetComboValue()->Append(_T("0.0"));
 		GetComboValue()->SetSelection(0);
 		return;
 	}
@@ -115,8 +120,8 @@ void SelectDlg::FillValuesControl()
 	{
 		m_pLayer->GetValueAsString(i, m_iField, str);
 
-		str2 = (const char *) str;
-		if (str2 == "")
+		str2.FromAscii((const char *) str);
+		if (str2 == _T(""))
 			continue;
 
 		if (GetComboValue()->FindString(str2) == -1)

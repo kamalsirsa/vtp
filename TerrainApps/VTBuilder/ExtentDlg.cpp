@@ -1,7 +1,7 @@
 //
 // Name:        ExtentDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -56,9 +56,9 @@ void ExtentDlg::FormatStrings(int which)
 {
 	wxString fs;		// format string depends on coordiante scheme
 	if (m_bMeters)
-		fs = "%8.1f";
+		fs = _T("%8.1f");
 	else
-		fs = "%4.8f";
+		fs = _T("%4.8f");
 
 	m_bSetting = true;
 	if (which == 1)
@@ -70,7 +70,7 @@ void ExtentDlg::FormatStrings(int which)
 	}
 	if (which == 2)
 	{
-		m_strAll.Printf("("+fs+", "+fs+"), ("+fs+", "+fs+")",
+		m_strAll.Printf(_T("(")+fs+_T(", ")+fs+_T("), (")+fs+_T(", ")+fs+_T(")"),
 			m_area.left, m_area.bottom, m_area.Width(), m_area.Height());
 	}
 	TransferDataToWindow();
@@ -99,7 +99,8 @@ void ExtentDlg::OnExtentAll( wxCommandEvent &event )
 
 	TransferDataFromWindow();
 	double d1, d2, d3, d4;
-	int ret = sscanf(m_strAll, "(%lf, %lf), (%lf, %lf)", &d1, &d2, &d3, &d4);
+	int ret = sscanf(m_strAll.mb_str(), "(%lf, %lf), (%lf, %lf)",
+		&d1, &d2, &d3, &d4);
 	if (ret == 4)
 	{
 		m_area.left = d1;
@@ -115,7 +116,7 @@ void ExtentDlg::OnExtentS( wxCommandEvent &event )
 	if (m_bSetting) return;
 
 	TransferDataFromWindow();
-	m_area.bottom = atof(m_strSouth);
+	m_area.bottom = atof(m_strSouth.mb_str());
 	FormatStrings(2);
 }
 
@@ -124,7 +125,7 @@ void ExtentDlg::OnExtentE( wxCommandEvent &event )
 	if (m_bSetting) return;
 
 	TransferDataFromWindow();
-	m_area.right = atof(m_strEast);
+	m_area.right = atof(m_strEast.mb_str());
 	FormatStrings(2);
 }
 
@@ -133,7 +134,7 @@ void ExtentDlg::OnExtentW( wxCommandEvent &event )
 	if (m_bSetting) return;
 
 	TransferDataFromWindow();
-	m_area.left = atof(m_strWest);
+	m_area.left = atof(m_strWest.mb_str());
 	FormatStrings(2);	
 }
 
@@ -142,7 +143,7 @@ void ExtentDlg::OnExtentN( wxCommandEvent &event )
 	if (m_bSetting) return;
 
 	TransferDataFromWindow();
-	m_area.top = atof(m_strNorth);
+	m_area.top = atof(m_strNorth.mb_str());
 	FormatStrings(2);
 }
 

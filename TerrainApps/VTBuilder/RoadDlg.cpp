@@ -1,7 +1,7 @@
 //
 // Name:		RoadDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -94,15 +94,15 @@ void RoadDlg::TransferStateToControls()
 	wxString str;
 
 	if (m_iLanes == MULTIPLE)
-		str.Printf("(multiple)");
+		str.Printf(_T("(multiple)"));
 	else
-		str.Printf("%d", m_iLanes);
+		str.Printf(_T("%d"), m_iLanes);
 	GetNumLanes()->SetValue(str);
 
 	if (m_iHwy == MULTIPLE)
-		str.Printf("(multiple)");
+		str.Printf(_T("(multiple)"));
 	else
-		str.Printf("%d", m_iHwy);
+		str.Printf(_T("%d"), m_iHwy);
 	GetHwyName()->SetValue(str);
 
 	if (m_iSidewalk == MULTIPLE)
@@ -128,29 +128,29 @@ void RoadDlg::TransferStateToControls()
 
 void RoadDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetSurfType()->Append("None");
-	GetSurfType()->Append("Gravel");
-	GetSurfType()->Append("Trail");
-	GetSurfType()->Append("2 Track");
-	GetSurfType()->Append("Dirt");
-	GetSurfType()->Append("Paved");
-	GetSurfType()->Append("Railroad");
-	GetSurfType()->Append("(multiple types)");
+	GetSurfType()->Append(_T("None"));
+	GetSurfType()->Append(_T("Gravel"));
+	GetSurfType()->Append(_T("Trail"));
+	GetSurfType()->Append(_T("2 Track"));
+	GetSurfType()->Append(_T("Dirt"));
+	GetSurfType()->Append(_T("Paved"));
+	GetSurfType()->Append(_T("Railroad"));
+	GetSurfType()->Append(_T("(multiple types)"));
 	GetSurfType()->SetSelection(0);
 
-	GetSidewalk()->Append("No");
-	GetSidewalk()->Append("Yes");
-	GetSidewalk()->Append("(multiple)");
+	GetSidewalk()->Append(_T("No"));
+	GetSidewalk()->Append(_T("Yes"));
+	GetSidewalk()->Append(_T("(multiple)"));
 	GetSidewalk()->SetSelection(0);
 
-	GetParking()->Append("No");
-	GetParking()->Append("Yes");
-	GetParking()->Append("(multiple)");
+	GetParking()->Append(_T("No"));
+	GetParking()->Append(_T("Yes"));
+	GetParking()->Append(_T("(multiple)"));
 	GetParking()->SetSelection(0);
 
-	GetMargin()->Append("No");
-	GetMargin()->Append("Yes");
-	GetMargin()->Append("(multiple)");
+	GetMargin()->Append(_T("No"));
+	GetMargin()->Append(_T("Yes"));
+	GetMargin()->Append(_T("(multiple)"));
 	GetMargin()->SetSelection(0);
 
 	ClearState();
@@ -195,12 +195,12 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 	int val;
 
 	str = GetNumLanes()->GetValue();
-	val = atoi(str.c_str());
+	val = atoi(str.mb_str());
 	if (val != 0)
 		pRoad->m_iLanes = val;
 
 	str = GetHwyName()->GetValue();
-	val = atoi(str.c_str());
+	val = atoi(str.mb_str());
 		pRoad->m_iHwy = val;
 
 	val = GetSidewalk()->GetSelection();

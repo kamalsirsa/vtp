@@ -1,7 +1,7 @@
 //
 // Name:        NodeDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -134,17 +134,17 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 
 void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-    GetIntType()->Append("Unknown");
-    GetIntType()->Append("Uncontrolled");
-    GetIntType()->Append("All Signal Light(s)");
-    GetIntType()->Append("All Stop Sign(s)");
-    GetIntType()->Append("Signal Light(s)");
-    GetIntType()->Append("Stop Sign(s)");
-    GetIntType()->Append("(multiple)");
+    GetIntType()->Append(_T("Unknown"));
+    GetIntType()->Append(_T("Uncontrolled"));
+    GetIntType()->Append(_T("All Signal Light(s)"));
+    GetIntType()->Append(_T("All Stop Sign(s)"));
+    GetIntType()->Append(_T("Signal Light(s)"));
+    GetIntType()->Append(_T("Stop Sign(s)"));
+    GetIntType()->Append(_T("(multiple)"));
 
-    GetBehavior()->Append("Uncontrolled");  // IT_NONE
-    GetBehavior()->Append("Signal Light");  // IT_LIGHT
-    GetBehavior()->Append("Stop Sign"); // IT_STOPSIGN
+    GetBehavior()->Append(_T("Uncontrolled"));  // IT_NONE
+    GetBehavior()->Append(_T("Signal Light"));  // IT_LIGHT
+    GetBehavior()->Append(_T("Stop Sign")); // IT_STOPSIGN
 
     // if we are editing multiple nodes at once, disable some of the
     // editing abilities
@@ -177,7 +177,7 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
         wxString string;
         for (int i = 0; i < m_pNode->m_iLinks; i++)
         {
-            string.Printf("%i", i);
+            string.Printf(_T("%i"), i);
             GetLinkNum()->Append(string);
         }
         GetLinkNum()->SetSelection(0);
@@ -301,7 +301,7 @@ void NodeDlg::OnDraw(wxDC &dc)
 
         vec.x = (int)(off.x + vector.x*40);
         vec.y = (int)(off.y - vector.y*40);
-        string.Printf("%i", i);
+        string.Printf(_T("%i"), i);
         //draw text labels
         dc.DrawText(string, vec.x-10, vec.y-10);
     }

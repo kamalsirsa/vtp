@@ -1,7 +1,7 @@
 //
 // RoadLayer.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -26,7 +26,7 @@ bool vtRoadLayer::m_bDrawWidth = false;
 
 vtRoadLayer::vtRoadLayer() : vtLayer(LT_ROAD)
 {
-	m_strFilename = "Untitled.rmf";
+	m_strFilename = _T("Untitled.rmf");
 }
 
 vtRoadLayer::~vtRoadLayer()
@@ -54,12 +54,12 @@ void vtRoadLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 bool vtRoadLayer::OnSave()
 {
-	return WriteRMF(m_strFilename);
+	return WriteRMF(m_strFilename.mb_str());
 }
 
 bool vtRoadLayer::OnLoad()
 {
-	bool success = ReadRMF(m_strFilename, true, true, true);
+	bool success = ReadRMF(m_strFilename.mb_str(), true, true, true);
 	if (!success)
 		return false;
 
@@ -225,12 +225,12 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 
 void vtRoadLayer::GetPropertyText(wxString &strIn)
 {
-	strIn += "Network of links.\n";
+	strIn += _T("Network of links.\n");
 
 	wxString str;
-	str.Printf("Nodes: %d\n", NumNodes());
+	str.Printf(_T("Nodes: %d\n"), NumNodes());
 	strIn += str;
-	str.Printf("Links: %d\n", NumLinks());
+	str.Printf(_T("Links: %d\n"), NumLinks());
 	strIn += str;
 }
 
@@ -401,7 +401,7 @@ bool vtRoadLayer::EditNodesProperties()
 	if (count == 0)
 		return false;
 
-	NodeDlg dlg(NULL, -1, "Node Properties");
+	NodeDlg dlg(NULL, -1, _T("Node Properties"));
 	if (count == 1)
 		dlg.SetNode(node, this);
 	else
@@ -425,7 +425,7 @@ bool vtRoadLayer::EditLinksProperties()
 	if (count == 0)
 		return false;
 
-	RoadDlg dlg(NULL, -1, "Link Properties");
+	RoadDlg dlg(NULL, -1, _T("Link Properties"));
 	if (count == 1)
 		dlg.SetRoad(link, this);	//only one road found
 	else
@@ -440,7 +440,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 	if (nodemode)
 	{
 		selected = SelectNodes(box, true);
-		wxString str = wxString::Format("Selected %d node%s", selected,
+		wxString str = wxString::Format(_T("Selected %d node%s"), selected,
 			selected == 1 ? "" : "s");
 		if (selected) SetMessageText(str);
 		return (selected != 0);
@@ -452,7 +452,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 		else
 			selected = SelectLinks(box, true);
 
-		wxString str = wxString::Format("Selected %d road%s", selected,
+		wxString str = wxString::Format(_T("Selected %d road%s"), selected,
 			selected == 1 ? "" : "s");
 		if (selected) SetMessageText(str);
 		return (selected != 0);

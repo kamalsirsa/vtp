@@ -132,7 +132,7 @@ bool vtImageLayer::LoadFromGDAL()
 	{
 		GDALAllRegister();
 
-		pDataset = (GDALDataset *) GDALOpen( m_strFilename, GA_ReadOnly );
+		pDataset = (GDALDataset *) GDALOpen(m_strFilename.mb_str(), GA_ReadOnly);
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
@@ -348,7 +348,9 @@ bool vtImageLayer::LoadFromGDAL()
 	
 	catch (const char *msg)
 	{
-		wxMessageBox(msg);
+		wxString str;
+		str.FromAscii(msg);
+		wxMessageBox(str);
 		bRet = false;
 	}
 
@@ -369,7 +371,7 @@ bool vtImageLayer::LoadFromGDAL()
 		if (!m_pBitmap || (m_pBitmap && !m_pBitmap->Ok()))
 		{
 			wxString str;
-			str.Printf("Couldn't create bitmap of size %d x %d", iPixelWidth, iPixelHeight);
+			str.Printf(_T("Couldn't create bitmap of size %d x %d"), iPixelWidth, iPixelHeight);
 			wxMessageBox(str);
 			bRet = false;
 			delete m_pBitmap;
