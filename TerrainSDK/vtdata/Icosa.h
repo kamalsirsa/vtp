@@ -50,6 +50,8 @@ public:
 	void GeoToFaceUV(double lon, double lat, DPoint3 &p_out);
 	void FaceUVToGeo(int tri, DPoint3 &uvw, double &lon, double &lat);
 
+	double DihedralAngle();
+
 protected:
 	// icosahedron data
 	DPoint3 m_verts[13];

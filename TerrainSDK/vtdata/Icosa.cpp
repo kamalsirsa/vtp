@@ -311,3 +311,10 @@ void DymaxIcosa::InitIcosa()
 	}
 }
 
+double DymaxIcosa::DihedralAngle()
+{
+	double dot = m_face[1].vec_c * m_face[2].vec_c;
+	double dihedral = acos(dot);
+	return dihedral;
+}
+
