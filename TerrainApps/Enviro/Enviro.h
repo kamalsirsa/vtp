@@ -137,7 +137,7 @@ public:
 	vtRoute		*m_pSelRoute;
 
 protected:
-	// methods
+	// startup methods
 	void SetupScene1();
 	void SetupScene2();
 	void DoPickers();
