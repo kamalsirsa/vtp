@@ -4,7 +4,7 @@
 // It supports operations including loading and saving to a file
 // and picking of building elements.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -982,7 +982,22 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 
 				attval = atts.getValue("Material");
 				if (attval)
-					m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(attval);
+				{
+					vtMaterialDescriptorArray *mats = GetGlobalMaterials();
+					m_pEdge->m_pMaterial = mats->FindName(attval);
+					if (m_pEdge->m_pMaterial == NULL)
+					{
+						// What to do when a VTST references a material that
+						// we don't have?  We don't want to lose the material
+						// name information, and we also don't want to crash
+						// later with a NULL material.  So, make a dummy.
+						vtMaterialDescriptor *mat;
+						mat = new vtMaterialDescriptor(attval, "", VT_MATERIAL_COLOURED);
+						mat->SetRGB(RGBi(255,255,255));	// white means: missing
+						mats->Append(mat);
+						m_pEdge->m_pMaterial = &mat->GetName();
+					}
+				}
 				attval = atts.getValue("Color");
 				if (attval)
 					m_pEdge->m_Color = ParseHexColor(attval);
