@@ -1,12 +1,10 @@
 //
 // ByteOrder.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project.
+// Copyright (c) 2001-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
-#include <stdio.h>
-#include <stdlib.h>  /*  For abort()  */
 #include "ByteOrder.h"
 
 static int GetDataTypeSize( DataType type )
@@ -14,13 +12,12 @@ static int GetDataTypeSize( DataType type )
 	int tsize;
 	switch ( type )
 	{
-		case DT_SHORT  : tsize = sizeof(short) ; break;
-		case DT_INT	: tsize = sizeof(int)   ; break;
-		case DT_LONG   : tsize = sizeof(long)  ; break;
-		case DT_FLOAT  : tsize = sizeof(float) ; break;
-		case DT_DOUBLE : tsize = sizeof(double); break;
-		/*  FIXME:  What is the appropriate VTP code bug reporting method?  */
-		default: abort();
+		case DT_SHORT:	tsize = sizeof(short);	break;
+		case DT_INT:	tsize = sizeof(int);	break;
+		case DT_LONG:	tsize = sizeof(long);	break;
+		case DT_FLOAT:	tsize = sizeof(float);	break;
+		case DT_DOUBLE:	tsize = sizeof(double);	break;
+		default: assert(false);
 	}
 	return tsize;
 }
@@ -74,8 +71,8 @@ void SwapMemBytes( void *items, DataType type, size_t nitems,
 			for ( p = base + (nitems-1) * tsize; p >= base; p -= tsize )
 				*(double *)p = SwapDouble( *(double *)p );
 			break;
-		/*  FIXME:  What is the appropriate VTP code bug reporting method? */
-		default: abort();
+		default:
+			assert(false);
 	}
 }
 
@@ -99,7 +96,7 @@ size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
 	size_t ret = fread( ptr, tsize, nitems, stream );
 
 	if ( (int)ret >= 0 )
-		SwapMemBytes( ptr, type, ret, file_order, desired_order );
+		SwapMemBytes( ptr, type, ret/tsize, file_order, desired_order );
 	return ret;
 }
 
@@ -124,6 +121,6 @@ size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
 	size_t ret = gzread(gzstream, ptr, tsize * nitems);
 
 	if ( (int)ret >= 0 )
-		SwapMemBytes( ptr, type, ret, file_order, desired_order );
+		SwapMemBytes( ptr, type, ret/tsize, file_order, desired_order );
 	return ret;
 }
