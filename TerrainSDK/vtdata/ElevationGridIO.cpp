@@ -135,7 +135,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	}
 	else if (!FileExt.CompareNoCase(".grd"))
 	{
-		// might by CDF, might be GRD
+		// might be CDF, might be GRD
 		if (FirstChar == 'D')
 			Success = LoadFromGRD(szFileName, progress_callback);
 		else
