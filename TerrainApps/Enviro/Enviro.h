@@ -152,6 +152,7 @@ protected:
 	// startup methods
 	void SetupScene1();
 	void SetupScene2();
+	void SetupScene3();
 	void DoPickers();
 	void MakeGlobe();
 	void SetupGlobe();
