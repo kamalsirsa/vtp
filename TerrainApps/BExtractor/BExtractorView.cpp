@@ -956,7 +956,7 @@ void BExtractorView::DrawCircle(CDC *pDC, CPoint &center, int iRadius)
 	int sx, sy;
 	for (int i = 0; i <= 16; i++)
 	{
-		double a = (double)i * PI2 / 16;
+		double a = (double)i * PI2d / 16;
 		sx = (int) (center.x + cos(a) * iRadius);
 		sy = (int) (center.y + sin(a) * iRadius);
 		if (i == 0)
