@@ -8,6 +8,7 @@
 #ifndef VTOSG_SCENEH
 #define VTOSG_SCENEH
 
+#include <osgUtil/SceneView>
 #include <osg/Timer>
 
 class CreateProjectedShadowTextureCullCallback;

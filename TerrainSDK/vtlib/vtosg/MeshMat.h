@@ -8,8 +8,11 @@
 
 #include <osgText/Font>
 #include <osgText/Text>
+
 #include <osg/BlendFunc>
-#include "vtdata/config_vtdata.h"
+#include <osg/Material>
+#include <osg/AlphaFunc>
+#include <osg/PrimitiveSet>
 
 class vtImage;
 

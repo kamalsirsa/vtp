@@ -7,6 +7,7 @@
 #define VTOSG_IMAGEH
 
 #include "vtdata/vtDIB.h"
+#include <osg/Image>
 
 /**
  * This class represents an Image.  It can be loaded from a number of

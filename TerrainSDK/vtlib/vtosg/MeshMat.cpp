@@ -8,8 +8,9 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 
-#include <osg/PolygonMode>
+#include <osg/Geometry>
 #include <osg/LineWidth>
+#include <osg/PolygonMode>
 using namespace osg;
 
 ///////////////////////////////////

@@ -9,6 +9,12 @@
 #ifndef VTOSG_MATHH
 #define VTOSG_MATHH
 
+#include <osg/Vec2>
+#include <osg/Vec4>
+#include <osg/BoundingBox>
+#include <osg/BoundingSphere>
+#include <osg/Matrix>
+
 #if OSG_USE_DOUBLE_MATRICES
 #error "You should build OSG to use float, not double, for matrices.  If you REALLY want to, you can bypass this error, but it's not recommended."
 typedef double osg_matrix_value;

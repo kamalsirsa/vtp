@@ -10,6 +10,9 @@
 #ifndef VTOSG_NODEH
 #define VTOSG_NODEH
 
+#include <osg/Light>
+#include <osg/MatrixTransform>
+
 namespace osg
 {
 	class Node;
