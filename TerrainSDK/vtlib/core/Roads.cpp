@@ -19,8 +19,10 @@
 #define UV_SCALE_ROAD		(.08f)
 #define UV_SCALE_SIDEWALK	(1.00f)
 
-#define TEXTURE_ARGS(alpha)		true, true, alpha, false, TERRAIN_AMBIENT, \
-	TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE, false, false
+#define ROAD_AMBIENT 0.6	// brighter than terrain ambient
+#define ROAD_DIFFUSE 0.4
+#define TEXTURE_ARGS(alpha)		true, true, alpha, false, ROAD_AMBIENT, \
+	ROAD_DIFFUSE, 1.0f, TERRAIN_EMISSIVE, false, false
 
 #define ROADTEXTURE_4WD		"GeoTypical/road_4wd1.png"
 #define ROADTEXTURE_TRAIL	"GeoTypical/trail1.png"
