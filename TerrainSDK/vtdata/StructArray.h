@@ -1,7 +1,7 @@
 //
 // StructArray.h
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,17 +39,19 @@ public:
 	bool WriteXML(const char* pathname);
 	bool WriteXML_Old(const char* pathname);
 
-	bool FindClosestBuildingCorner(const DPoint2 &point, double error,
+	bool FindClosestBuildingCorner(const DPoint2 &point, double epsilon,
 						   int &building, int &corner, double &distance);
-	bool FindClosestBuildingCenter(const DPoint2 &point, double error,
+	bool FindClosestBuildingCenter(const DPoint2 &point, double epsilon,
 						   int &building, double &distance);
+	bool FindClosestLinearCorner(const DPoint2 &point, double epsilon,
+						   int &structure, int &corner, double &distance);
 
 	/** Find the structure which is closest to the given point, if it is within
-	 * 'error' distance.  The structure index and distance are returned by
+	 * 'epsilon' distance.  The structure index and distance are returned by
 	 * reference.
 	 */
-	bool FindClosestStructure(const DPoint2 &point, double error,
-						   int &building, double &distance);
+	bool FindClosestStructure(const DPoint2 &point, double epsilon,
+						   int &building, double &distance, bool bSkipBuildings = false);
 
 	bool IsEmpty() { return (GetSize() == 0); }
 	void GetExtents(DRECT &ext);

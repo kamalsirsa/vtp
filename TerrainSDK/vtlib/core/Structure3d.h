@@ -17,7 +17,7 @@ class vtBuilding3d;
 class vtFence3d;
 class vtNode;
 class vtHeightField;
-
+class vtTransform;
 
 /**
  * This class contains the extra methods needed by a vtStructure to

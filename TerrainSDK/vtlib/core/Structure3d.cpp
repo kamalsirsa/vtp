@@ -158,7 +158,7 @@ vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 	if (str->GetType() == ST_BUILDING)
 		return (vtStructure3d *) (vtBuilding3d *) str;
 
-	if (str->GetType() == ST_FENCE)
+	if (str->GetType() == ST_LINEAR)
 		return (vtStructure3d *) (vtFence3d *) str;
 
 	if (str->GetType() == ST_INSTANCE)
@@ -191,7 +191,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 			// Grid, but unless it's moving really far we don't need to
 			// worry about this.
 		}
-		if (str->GetType() == ST_FENCE)
+		if (str->GetType() == ST_LINEAR)
 		{
 			vtFence3d *fen = GetFence(i);
 			// TODO: implement moving of fences?
