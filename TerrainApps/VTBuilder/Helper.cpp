@@ -25,6 +25,8 @@ wxProgressDialog *g_pProg = NULL;
 bool progress_callback(int amount)
 {
 	bool value = false;
+	// Update() returns false if the Cancel button has been pushed
+	// but this functions return _true_ if user wants to cancel
 	if (g_pProg)
 		value = (g_pProg->Update(amount) == false);
 	return value;
