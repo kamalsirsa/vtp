@@ -17,6 +17,10 @@ using namespace osg;
 // vtNode
 //
 
+vtNode::~vtNode()
+{
+}
+
 void vtNode::Destroy()
 {
 	// Tell OSG that we're through with this node
@@ -26,8 +30,12 @@ void vtNode::Destroy()
 	//  own count.
 	m_pNode = NULL;
 
+	// Artificially decrement our own "reference count", should trigger
+	// self-deletion
+	unref();
+
 	// This allows us to control deletion
-	delete this;
+//	delete this;
 }
 
 void vtNode::SetEnabled(bool bOn)
@@ -311,7 +319,7 @@ vtLight::vtLight()
 	// A lightsource creates a light, which we will need to get at.
 	m_pLight = (osg::Light *) m_pLightSource->getLight();
 
-	SetOsgNode(m_pLightSource);
+	SetOsgNode(m_pLightSource.get());
 }
 
 void vtLight::SetColor2(const RGBf &color)
@@ -352,8 +360,8 @@ vtCamera::vtCamera() : vtTransform()
 {
 	m_pOsgCamera = new Camera();
 
-	// Increase reference count so it won't get undesirably deleted later
-	m_pOsgCamera->ref();
+	// Increase reference count so it won't get undesirably deleted later?
+//	m_pOsgCamera->ref();
 
 #if 0
 	// Tell OSG to use our transform as the location of the camera
@@ -365,7 +373,8 @@ vtCamera::vtCamera() : vtTransform()
 
 vtCamera::~vtCamera()
 {
-	m_pOsgCamera->unref();
+	// don't manually deref?
+//	m_pOsgCamera->unref();
 }
 
 void vtCamera::SetHither(float f)
