@@ -12,6 +12,10 @@
 #include "CreateDlg.h"
 #include "../Enviro.h"	// for GetTerrainScene
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4800 ) 
+#endif
+
 CStartupDlg g_StartDlg;
 
 void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)

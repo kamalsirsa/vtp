@@ -11,6 +11,10 @@
 #include "vtlib/core/TVTerrain.h"
 #include "vtlib/core/SMTerrain.h"
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4800 ) 
+#endif
+
 #define NTILES 4
 
 /////////////////////////////////////////////////////////////////////////////
