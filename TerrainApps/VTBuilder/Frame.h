@@ -84,6 +84,7 @@ protected:
 	void OnProjectSave(wxCommandEvent& event);
 	void OnDymaxTexture(wxCommandEvent &event);
 	void OnProcessBillboard(wxCommandEvent &event);
+	void OnGeocode(wxCommandEvent &event);
 	void OnQuit(wxCommandEvent& event);
 
 	void OnEditDelete(wxCommandEvent& event);

@@ -6,11 +6,11 @@
 #ifndef __WDR_VTBuilder_H__
 #define __WDR_VTBuilder_H__
 
-#if defined(__GNUG__) && !defined(__APPLE__)
+#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma interface "VTBuilder_wdr.h"
 #endif
 
-// Include wxWindows' headers
+// Include wxWidgets' headers
 
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
@@ -29,226 +29,239 @@
 
 // Declare window functions
 
-#define ID_TEXT 10000
-#define ID_EXTENT_N 10001
-#define ID_EXTENT_W 10002
-#define ID_EXTENT_E 10003
-#define ID_EXTENT_S 10004
-#define ID_DMS 10005
-#define ID_EXTENT_ALL 10006
+const int ID_TEXT = 10000;
+const int ID_EXTENT_N = 10001;
+const int ID_EXTENT_W = 10002;
+const int ID_EXTENT_E = 10003;
+const int ID_EXTENT_S = 10004;
+const int ID_DMS = 10005;
+const int ID_EXTENT_ALL = 10006;
 wxSizer *ExtentDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_BYTES 10007
-#define ID_WIDTH 10008
-#define ID_HEIGHT 10009
-#define ID_LITTLE_ENDIAN 10010
-#define ID_BIG_ENDIAN 10011
-#define ID_VUNITS 10012
-#define ID_CRS_SIMPLE 10013
-#define ID_CRS_CURRENT 10014
-#define ID_CRS_EXACT 10015
-#define ID_CRS 10016
-#define ID_EXT_SPACING 10017
-#define ID_SPACING 10018
-#define ID_EXT_EXACT 10019
-#define ID_EXTENTS 10020
+const int ID_BYTES = 10007;
+const int ID_WIDTH = 10008;
+const int ID_HEIGHT = 10009;
+const int ID_LITTLE_ENDIAN = 10010;
+const int ID_BIG_ENDIAN = 10011;
+const int ID_VUNITS = 10012;
+const int ID_CRS_SIMPLE = 10013;
+const int ID_CRS_CURRENT = 10014;
+const int ID_CRS_EXACT = 10015;
+const int ID_CRS = 10016;
+const int ID_EXT_SPACING = 10017;
+const int ID_SPACING = 10018;
+const int ID_EXT_EXACT = 10019;
+const int ID_EXTENTS = 10020;
 wxSizer *RawDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_PROPS 10021
-#define ID_LEFT 10022
-#define ID_TOP 10023
-#define ID_RIGHT 10024
-#define ID_BOTTOM 10025
+const int ID_PROPS = 10021;
+const int ID_LEFT = 10022;
+const int ID_TOP = 10023;
+const int ID_RIGHT = 10024;
+const int ID_BOTTOM = 10025;
 wxSizer *LayerPropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FIELD 10026
-#define ID_DENSITY 10027
-#define ID_BIOTYPE1 10028
-#define ID_BIOTYPE2 10029
+const int ID_FIELD = 10026;
+const int ID_DENSITY = 10027;
+const int ID_BIOTYPE1 = 10028;
+const int ID_BIOTYPE2 = 10029;
 wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define IDC_SAMPLING 10030
-#define IDC_SCARCITY 10031
-#define ID_SPECIES1 10032
-#define ID_CHOICE_SPECIES 10033
-#define ID_SPECIES2 10034
-#define ID_CHOICE_BIOTYPE 10035
-#define ID_SPECIES3 10036
-#define ID_CHOICE_BIOTYPE_LAYER 10037
-#define ID_DENSITY1 10038
-#define ID_TEXT_FIXED_DENSITY 10039
-#define ID_DENSITY2 10040
-#define ID_DENSITY3 10041
-#define ID_CHOICE_DENSITY_LAYER 10042
-#define ID_SIZE1 10043
-#define ID_TEXT_FIXED_SIZE 10044
-#define ID_SIZE2 10045
-#define ID_SPIN_RANDOM_FROM 10046
-#define ID_SPIN_RANDOM_TO 10047
+const int IDC_SAMPLING = 10030;
+const int IDC_SCARCITY = 10031;
+const int ID_SPECIES1 = 10032;
+const int ID_CHOICE_SPECIES = 10033;
+const int ID_SPECIES2 = 10034;
+const int ID_CHOICE_BIOTYPE = 10035;
+const int ID_SPECIES3 = 10036;
+const int ID_CHOICE_BIOTYPE_LAYER = 10037;
+const int ID_DENSITY1 = 10038;
+const int ID_TEXT_FIXED_DENSITY = 10039;
+const int ID_DENSITY2 = 10040;
+const int ID_DENSITY3 = 10041;
+const int ID_CHOICE_DENSITY_LAYER = 10042;
+const int ID_SIZE1 = 10043;
+const int ID_TEXT_FIXED_SIZE = 10044;
+const int ID_SIZE2 = 10045;
+const int ID_SPIN_RANDOM_FROM = 10046;
+const int ID_SPIN_RANDOM_TO = 10047;
 wxSizer *DistribVegFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TOWER_XY 10048
-#define ID_TOWER_TYPE 10049
-#define ID_TOWER_MATERIAL 10050
-#define ID_TOWER_ELEV 10051
+const int ID_TOWER_XY = 10048;
+const int ID_TOWER_TYPE = 10049;
+const int ID_TOWER_MATERIAL = 10050;
+const int ID_TOWER_ELEV = 10051;
 wxSizer *TowerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_PROJ 10052
-#define ID_SHOW_ALL_DATUMS 10053
-#define ID_DATUM 10054
-#define ID_HORUNITS 10055
-#define ID_ZONE 10056
-#define ID_PROJPARAM 10057
-#define ID_STATEPLANE 10058
-#define ID_PROJ_LOAD 10059
-#define ID_PROJ_SAVE 10060
-#define ID_LINE 10061
+const int ID_PROJ = 10052;
+const int ID_SHOW_ALL_DATUMS = 10053;
+const int ID_DATUM = 10054;
+const int ID_HORUNITS = 10055;
+const int ID_ZONE = 10056;
+const int ID_PROJPARAM = 10057;
+const int ID_STATEPLANE = 10058;
+const int ID_PROJ_LOAD = 10059;
+const int ID_PROJ_SAVE = 10060;
+const int ID_LINE = 10061;
 wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_STATEPLANES 10062
-#define ID_NAD27 10063
-#define ID_NAD83 10064
-#define ID_RADIO_METERS 10065
-#define ID_RADIO_FEET 10066
-#define ID_RADIO_FEET_US 10067
+const int ID_STATEPLANES = 10062;
+const int ID_NAD27 = 10063;
+const int ID_NAD83 = 10064;
+const int ID_RADIO_METERS = 10065;
+const int ID_RADIO_FEET = 10066;
+const int ID_RADIO_FEET_US = 10067;
 wxSizer *StatePlaneDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_NUMLANES 10068
-#define ID_HWYNAME 10069
-#define ID_SIDEWALK 10070
-#define ID_PARKING 10071
-#define ID_MARGIN 10072
-#define ID_SURFTYPE 10073
+const int ID_NUMLANES = 10068;
+const int ID_HWYNAME = 10069;
+const int ID_SIDEWALK = 10070;
+const int ID_PARKING = 10071;
+const int ID_MARGIN = 10072;
+const int ID_SURFTYPE = 10073;
 wxSizer *RoadPropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_INTTYPE 10074
-#define ID_ROADNUM 10075
-#define ID_BEHAVIOR 10076
-#define ID_SCROLLED 10077
+const int ID_INTTYPE = 10074;
+const int ID_ROADNUM = 10075;
+const int ID_BEHAVIOR = 10076;
+const int ID_SCROLLED = 10077;
 wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_RADIO_CREATE_NEW 10078
-#define ID_RADIO_TO_FILE 10079
-#define ID_TEXT_TO_FILE 10080
-#define ID_DOTDOTDOT 10081
-#define ID_SPACINGX 10082
-#define ID_SPACINGY 10083
-#define ID_SIZEX 10084
-#define ID_SIZEY 10085
-#define ID_CONSTRAIN 10086
-#define ID_SMALLER 10087
-#define ID_BIGGER 10088
-#define ID_FLOATS 10089
-#define ID_SHORTS 10090
-#define ID_AREAX 10091
-#define ID_AREAY 10092
-#define ID_ESTX 10093
-#define ID_ESTY 10094
+const int ID_RADIO_CREATE_NEW = 10078;
+const int ID_RADIO_TO_FILE = 10079;
+const int ID_TEXT_TO_FILE = 10080;
+const int ID_DOTDOTDOT = 10081;
+const int ID_SPACINGX = 10082;
+const int ID_SPACINGY = 10083;
+const int ID_SIZEX = 10084;
+const int ID_SIZEY = 10085;
+const int ID_CONSTRAIN = 10086;
+const int ID_SMALLER = 10087;
+const int ID_BIGGER = 10088;
+const int ID_FLOATS = 10089;
+const int ID_SHORTS = 10090;
+const int ID_AREAX = 10091;
+const int ID_AREAY = 10092;
+const int ID_ESTX = 10093;
+const int ID_ESTY = 10094;
 wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CONDITION 10095
-#define ID_COMBO_VALUE 10096
+const int ID_CONDITION = 10095;
+const int ID_COMBO_VALUE = 10096;
 wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TEXT_SHOW 10097
-#define ID_CHOICE_SHOW 10098
-#define ID_TEXT_VERTICAL 10099
-#define ID_CHOICE_VERTICAL 10100
-#define ID_DEL_HIGH 10101
-#define ID_LIST 10102
+const int ID_TEXT_SHOW = 10097;
+const int ID_CHOICE_SHOW = 10098;
+const int ID_TEXT_VERTICAL = 10099;
+const int ID_CHOICE_VERTICAL = 10100;
+const int ID_DEL_HIGH = 10101;
+const int ID_LIST = 10102;
 wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TOOLBAR 10103
-#define ID_MINUTES 10104
-#define ID_ELEVUNIT 10105
-#define ID_RADIO_OUTLINE_ONLY 10106
-#define ID_RADIO_COLOR 10107
-#define ID_RADIO_NO_SHADING 10108
-#define ID_RADIO_SIMPLE_SHADING 10109
-#define ID_RADIO_CAST_SHADOWS 10110
-#define ID_SPIN_CAST_ANGLE 10111
-#define ID_SPIN_CAST_DIRECTION 10112
-#define ID_CHECK_HIDE_UNKNOWN 10113
-#define ID_CHECK_SHOW_ROAD_WIDTH 10114
-#define ID_PATHNAMES 10115
+const int ID_TOOLBAR = 10103;
+const int ID_MINUTES = 10104;
+const int ID_ELEVUNIT = 10105;
+const int ID_RADIO_OUTLINE_ONLY = 10106;
+const int ID_RADIO_COLOR = 10107;
+const int ID_RADIO_NO_SHADING = 10108;
+const int ID_RADIO_SIMPLE_SHADING = 10109;
+const int ID_RADIO_CAST_SHADOWS = 10110;
+const int ID_SPIN_CAST_ANGLE = 10111;
+const int ID_SPIN_CAST_DIRECTION = 10112;
+const int ID_CHECK_HIDE_UNKNOWN = 10113;
+const int ID_CHECK_SHOW_ROAD_WIDTH = 10114;
+const int ID_PATHNAMES = 10115;
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_USE_SPECIES 10116
-#define ID_SPECIES_CHOICE 10117
-#define ID_SPECIES_USE_FIELD 10118
-#define ID_SPECIES_FIELD 10119
-#define ID_SPECIES_ID 10120
-#define ID_SPECIES_NAME 10121
-#define ID_COMMON_NAME 10122
-#define ID_BIOTYPE_INT 10123
-#define ID_BIOTYPE_STRING 10124
-#define ID_HEIGHT_RANDOM 10125
-#define ID_HEIGHT_USE_FIELD 10126
-#define ID_HEIGHT_FIELD 10127
+const int ID_USE_SPECIES = 10116;
+const int ID_SPECIES_CHOICE = 10117;
+const int ID_SPECIES_USE_FIELD = 10118;
+const int ID_SPECIES_FIELD = 10119;
+const int ID_SPECIES_ID = 10120;
+const int ID_SPECIES_NAME = 10121;
+const int ID_COMMON_NAME = 10122;
+const int ID_BIOTYPE_INT = 10123;
+const int ID_BIOTYPE_STRING = 10124;
+const int ID_HEIGHT_RANDOM = 10125;
+const int ID_HEIGHT_USE_FIELD = 10126;
+const int ID_HEIGHT_FIELD = 10127;
 wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TYPE_CENTER 10128
-#define ID_TYPE_FOOTPRINT 10129
-#define ID_FLIP 10130
-#define ID_CHOICE_HEIGHT_FIELD 10131
-#define ID_CHOICE_HEIGHT_TYPE 10132
-#define ID_TYPE_LINEAR 10133
-#define ID_TYPE_INSTANCE 10134
-#define ID_CHOICE_FILE_FIELD 10135
-#define ID_INSIDE_AREA 10136
+const int ID_TYPE_CENTER = 10128;
+const int ID_TYPE_FOOTPRINT = 10129;
+const int ID_FLIP = 10130;
+const int ID_CHOICE_HEIGHT_FIELD = 10131;
+const int ID_CHOICE_HEIGHT_TYPE = 10132;
+const int ID_TYPE_LINEAR = 10133;
+const int ID_TYPE_INSTANCE = 10134;
+const int ID_CHOICE_FILE_FIELD = 10135;
+const int ID_INSIDE_AREA = 10136;
 wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LAYERNAME 10137
-#define ID_ELEVATION_FIELDNAME 10138
-#define ID_ELEVATION_UNITS 10139
-#define ID_TYPE_BUILDING 10140
-#define ID_BUILD_FOUNDATIONS 10141
-#define ID_USE_25D 10142
+const int ID_LAYERNAME = 10137;
+const int ID_ELEVATION_FIELDNAME = 10138;
+const int ID_ELEVATION_UNITS = 10139;
+const int ID_TYPE_BUILDING = 10140;
+const int ID_BUILD_FOUNDATIONS = 10141;
+const int ID_USE_25D = 10142;
 wxSizer *ImportStructFuncOGR( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LEVEL_CHOICE 10143
+const int ID_LEVEL_CHOICE = 10143;
 wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TILING 10144
+const int ID_TILING = 10144;
 wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_BASE_URL 10145
-#define ID_CHOICE_LAYERS 10146
-#define ID_QUERY_LAYERS 10147
-#define ID_CHOICE_FORMAT 10148
-#define ID_QUERY 10149
+const int ID_BASE_URL = 10145;
+const int ID_CHOICE_LAYERS = 10146;
+const int ID_QUERY_LAYERS = 10147;
+const int ID_CHOICE_FORMAT = 10148;
+const int ID_QUERY = 10149;
 wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPLITTER1 10150
+const int ID_SPLITTER1 = 10150;
 wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LISTCTRL_SPECIES 10151
+const int ID_LISTCTRL_SPECIES = 10151;
 wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LISTCTRL_APPEARANCES 10152
+const int ID_LISTCTRL_APPEARANCES = 10152;
 wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_THEME 10153
-#define ID_MPP 10154
+const int ID_THEME = 10153;
+const int ID_MPP = 10154;
 wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_GEOTIFF 10155
-#define ID_JPEG 10156
-#define ID_CHOICE_COLORS 10157
-#define ID_EDIT_COLORS 10158
-#define ID_SHADING 10159
+const int ID_GEOTIFF = 10155;
+const int ID_JPEG = 10156;
+const int ID_CHOICE_COLORS = 10157;
+const int ID_EDIT_COLORS = 10158;
+const int ID_SHADING = 10159;
 wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LINK_FIELD 10160
+const int ID_LINK_FIELD = 10160;
 wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_EASTING 10161
-#define ID_NORTHING 10162
-#define ID_SET_CRS 10163
-#define ID_FORMAT_DECIMAL 10164
-#define ID_FORMAT_DMS 10165
-#define ID_LONGITUDE_WEST 10166
+const int ID_EASTING = 10161;
+const int ID_NORTHING = 10162;
+const int ID_SET_CRS = 10163;
+const int ID_FORMAT_DECIMAL = 10164;
+const int ID_FORMAT_DMS = 10165;
+const int ID_LONGITUDE_WEST = 10166;
 wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+const int ID_FILE_DATA = 10167;
+const int ID_GET_FILE_DATA = 10168;
+const int ID_CHECK_USE1 = 10169;
+const int ID_CHECK_USE2 = 10170;
+const int ID_FILE_GAZ = 10171;
+const int ID_GET_FILE_GAZ = 10172;
+const int ID_FILE_ZIP = 10173;
+const int ID_GET_FILE_ZIP = 10174;
+const int ID_CHECK_USE3 = 10175;
+const int ID_FILE_GNS = 10176;
+const int ID_GET_FILE_GNS = 10177;
+wxSizer *GeocodeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 

@@ -16,6 +16,7 @@
 #include "vtdata/config_vtdata.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
+#include "vtdata/GEOnet.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/WFSClient.h"
@@ -38,6 +39,7 @@
 #include "DistribVegDlg.h"
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
+#include "GeocodeDlg.h"
 #include "ImageMapDlg.h"
 #include "LayerPropDlg.h"
 #include "MapServerDlg.h"
@@ -54,6 +56,7 @@ EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
 EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
 EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
+EVT_MENU(ID_SPECIAL_GEOCODE,	MainFrame::OnGeocode)
 EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
 
 EVT_MENU(ID_EDIT_DELETE, MainFrame::OnEditDelete)
@@ -244,6 +247,7 @@ void MainFrame::CreateMenus()
 	wxMenu *specialMenu = new wxMenu;
 	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
 	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
+	specialMenu->Append(ID_SPECIAL_GEOCODE, _("Geocode"));
 	fileMenu->Append(0, _("Special"), specialMenu);
 #endif
 	fileMenu->AppendSeparator();
@@ -778,6 +782,131 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 
 	CloseProgressDialog();
 }
+
+void MainFrame::OnGeocode(wxCommandEvent &event)
+{
+	GeocodeDlg dlg(this, -1, _("Geocode"));
+	dlg.m_bGeocodeUS = false;
+	dlg.m_bGazetteer = false;
+	dlg.m_bGNS = false;
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxString fname = dlg.m_strData;
+	bool success;
+	vtFeatureSetPoint2D feat;
+	const DPoint2 zero(0,0);
+
+	wxString shpname;
+	if (fname.Right(3) == _T("shp"))
+	{
+		shpname = fname;
+		success = feat.LoadFromSHP(shpname.mb_str());
+	}
+	else
+	{
+		DBFHandle hDBF = DBFOpen(fname.mb_str(), "rb");
+		if (!hDBF)
+			return;
+		int iDBFRecords = DBFGetRecordCount(hDBF);
+		DBFClose(hDBF);
+
+		vtFeatureSetPoint2D newfeat;
+		newfeat.SetNumEntities(iDBFRecords);
+		for (int i = 0; i < iDBFRecords; i++)
+			newfeat.SetPoint(i, zero);
+
+		shpname = fname.Left(fname.Length()-3);
+		shpname += _T("shp");
+		newfeat.SaveToSHP(shpname.mb_str());
+
+		// now re-open
+		success = feat.LoadFromSHP(shpname.mb_str());
+	}
+
+	if (!success)
+		return;
+	int iRecords = feat.GetNumEntities();
+	vtString strStreet;
+	vtString strCity;
+	vtString strState;
+	vtString strCode;
+	vtString strCountry;
+
+	int rec, iKnown = 0, iFound = 0; // How many are already known
+	DPoint2 p;
+
+	Gazetteer gaz;
+	bool m_bHaveGaz = false;
+	bool m_bHaveZip = false;
+	if (dlg.m_bGazetteer)
+	{
+		m_bHaveGaz = gaz.ReadPlaces(dlg.m_strGaz.mb_str());
+		m_bHaveZip = gaz.ReadZips(dlg.m_strZip.mb_str());
+	}
+
+	bool bFound;
+	for (rec = 0; rec < iRecords; rec++)
+	{
+		feat.GetPoint(rec, p);
+		if (p != zero)
+		{
+			iKnown++;
+			continue;
+		}
+
+		bFound = false;
+
+		feat.GetValueAsString(rec, 7, strStreet);
+		feat.GetValueAsString(rec, 8, strCity);
+		feat.GetValueAsString(rec, 9, strState);
+		feat.GetValueAsString(rec, 10, strCode);
+		feat.GetValueAsString(rec, 11, strCountry);
+
+		// Try geocode.us first; it has the most detail
+		if (dlg.m_bGeocodeUS)
+		{
+		}
+
+		// Then (for US addresses) the gazetteer can look up a point for a zip code or city
+		if (!bFound && dlg.m_bGazetteer && !strCountry.CompareNoCase("United States of America"))
+		{
+			// USA: Use zip code, if we have it
+			if (m_bHaveZip && strCode != "")
+			{
+				// We only use the 5-digit code
+				vtString five = strCode.Left(5);
+				int zip = atoi(five);
+				bFound = gaz.FindZip(zip, p);
+			}
+			else if (m_bHaveGaz)
+			{
+				// Use city/place name
+				bFound = gaz.FindPlace(strState, strCity, p);
+			}
+		}
+
+		// Then (for International addresses) GNS can get a point for a city
+		if (!bFound && dlg.m_bGNS)
+		{
+		}
+
+		if (bFound)
+		{
+			feat.SetPoint(rec, p);
+			iFound++;
+		}
+	}
+	wxString str;
+	str.Printf(_T("Result: %d records, %d already known\n  %d/%d resolved, %d remain unknown"),
+		iRecords, iKnown, iFound, iRecords-iKnown, iRecords-iKnown-iFound);
+	wxMessageBox(str, _T("Info"));
+	if (iFound != 0)
+	{
+		feat.SaveToSHP(shpname.mb_str());
+	}
+}
+
 
 void MainFrame::OnQuit(wxCommandEvent &event)
 {

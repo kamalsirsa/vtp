@@ -3,7 +3,7 @@
 // Do not modify this file, all changes will be lost!
 //------------------------------------------------------------------------------
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(NO_GCC_PRAGMA)
     #pragma implementation "VTBuilder_wdr.h"
 #endif
 
@@ -315,8 +315,8 @@ wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxString *strs3 = (wxString*) NULL;
-    wxComboBox *item3 = new wxComboBox( parent, ID_FIELD, wxT(""), wxDefaultPosition, wxSize(160,100), 0, strs3, wxCB_DROPDOWN|wxCB_READONLY );
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxComboBox *item3 = new wxComboBox( parent, ID_FIELD, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs3, wxCB_DROPDOWN|wxCB_READONLY );
+    item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
@@ -334,7 +334,7 @@ wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item8 = new wxRadioButton( parent, ID_BIOTYPE2, _("Biotype by ID (integer)"), wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
@@ -1981,7 +1981,11 @@ wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, 
-        _("This operation will take the current contents of the\nwindow and export them a PNG file.\nA corresponding HTML file will be written with an\nimage map with clickable areas derived from\nthe polygon features of the active Raw layer."),
+        wxT("This operation will take the current contents of the\n")
+        wxT("window and export them a PNG file.\n")
+        wxT("A corresponding HTML file will be written with an\n")
+        wxT("image map with clickable areas derived from\n")
+        wxT("the polygon features of the active Raw layer."),
         wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
@@ -2084,6 +2088,97 @@ wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer 
     item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+wxSizer *GeocodeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Data File") );
+    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxHORIZONTAL );
+
+    wxTextCtrl *item3 = new wxTextCtrl( parent, ID_FILE_DATA, wxT(""), wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    item1->Add( item3, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxButton *item4 = new wxButton( parent, ID_GET_FILE_DATA, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
+    item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item6 = new wxStaticBox( parent, -1, _("Geocoding") );
+    wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
+
+    wxCheckBox *item7 = new wxCheckBox( parent, ID_CHECK_USE1, wxT("Use Geocode.us (Web, US street addresses)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item8 = new wxCheckBox( parent, ID_CHECK_USE2, wxT("Use Gazeteer (US Cities)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    item9->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Places:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_FILE_GAZ, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item9->Add( item11, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item12 = new wxButton( parent, ID_GET_FILE_GAZ, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
+    item9->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    item5->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+
+    item13->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Zipcodes:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_FILE_ZIP, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item13->Add( item15, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item16 = new wxButton( parent, ID_GET_FILE_ZIP, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
+    item13->Add( item16, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+
+    item5->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxCheckBox *item17 = new wxCheckBox( parent, ID_CHECK_USE3, wxT("Use NIMA GEOnet (International Cities)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
+
+    item18->Add( 16, 16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item19 = new wxTextCtrl( parent, ID_FILE_GNS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item18->Add( item19, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item20 = new wxButton( parent, ID_GET_FILE_GNS, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
+    item18->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item5->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item22 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item23 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

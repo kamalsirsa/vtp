@@ -1247,6 +1247,9 @@
 				RelativePath="Frame.h">
 			</File>
 			<File
+				RelativePath=".\GeocodeDlg.h">
+			</File>
+			<File
 				RelativePath="Helper.h">
 			</File>
 			<File
@@ -1668,6 +1671,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeocodeDlg.cpp">
 			</File>
 			<File
 				RelativePath=".\ImageMapDlg.cpp">
