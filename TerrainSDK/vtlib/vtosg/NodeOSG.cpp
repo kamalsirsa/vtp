@@ -218,6 +218,7 @@ public:
 };
 
 bool vtNode::s_bDisableMipmaps = false;
+static vtStringArray m_ModelCache;
 
 vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
@@ -257,34 +258,58 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		node->accept(visitor);
 	}
 
-	// We must insert a rotation transform above the model, because OSG's file
-	//  loaders (now mostly consistently) tweak the model to put Z up, and
-	//  the VTP uses OpenGL coordinates which has Y up.
-	float fRotation = -PID2f;
+	// We must track whether we have loaded this object already; that is, whether
+	//  it is in the OSG object cache.  If it is in the cache, then we musn't
+	//  apply the rotation below, because it's already been applied to the
+	//  one in the cache that we've gotten again.
+	bool bInCache = false;
+	if (bAllowCache)
+	{
+		for (unsigned int i = 0; i < m_ModelCache.size(); i++)
+		{
+			if (m_ModelCache[i] == newname)
+			{
+				bInCache = true;
+				break;
+			}
+		}
+	}
+	if (!bInCache)
+		m_ModelCache.push_back(vtString(newname));
 
-	// Except for the OSG OBJ reader, which needs an additional rotation
-	//  offset, since it expect OBJ model to have Y up, but the ones i've
-	//  seen have Z up.
-	if (osgDB::getLowerCaseFileExtension( filename ) == "obj")
-		fRotation = -PIf;
+	if (!bInCache)
+	{
+		// We must insert a rotation transform above the model, because OSG's
+		//  file loaders (now mostly consistently) tweak the model to put Z
+		//  up, and the VTP uses OpenGL coordinates which has Y up.
+		float fRotation = -PID2f;
 
-	osg::MatrixTransform *transform = new osg::MatrixTransform;
-	transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
-	transform->addChild(node);
-	// it's not going to change, so tell OSG that it can be optimized
-    transform->setDataVariance(osg::Object::STATIC);
+		// Except for the OSG OBJ reader, which needs an additional rotation
+		//  offset, since it expect OBJ model to have Y up, but the ones i've
+		//  seen have Z up.
+		if (osgDB::getLowerCaseFileExtension( filename ) == "obj")
+			fRotation = -PIf;
 
-	// Now do some OSG voodoo, which should spread the transform downward
-	//  through the loaded model, and delete the transform.
-	osg::Group *group = new osg::Group;
-	group->addChild(transform);
+		osg::MatrixTransform *transform = new osg::MatrixTransform;
+		transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
+		transform->addChild(node);
+		// it's not going to change, so tell OSG that it can be optimized
+		transform->setDataVariance(osg::Object::STATIC);
 
-	osgUtil::Optimizer optimizer;
-	optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+		// Now do some OSG voodoo, which should spread the transform downward
+		//  through the loaded model, and delete the transform.
+		osg::Group *group = new osg::Group;
+		group->addChild(transform);
+
+		osgUtil::Optimizer optimizer;
+		optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+
+		node = group;
+	}
 
 	// The final resulting node is the container of that operation
 	vtNode *pNode = new vtNode();
-	pNode->SetOsgNode(group);
+	pNode->SetOsgNode(node);
 	pNode->SetName2(newname);
 	return pNode;
 }
