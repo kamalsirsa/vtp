@@ -655,15 +655,22 @@ void vtTransform::GetTransform1(FMatrix4 &mat) const
 
 void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 {
+	// get current matrix
 	FMatrix4 m4;
 	GetTransform1(m4);
+
+	// remember where it is now
 	FPoint3 trans = m4.GetTrans();
 
+	// orient it in the direction of the desired point
 	FMatrix3 m3;
 	m3.MakeOrientation(point - GetTrans(), bPitch);
-
 	m4.SetFromMatrix3(m3);
+
+	// restore translation
 	m4.SetTrans(trans);
+
+	// set current matrix
 	SetTransform1(m4);
 }
 
