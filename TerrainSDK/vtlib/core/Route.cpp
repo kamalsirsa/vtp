@@ -178,7 +178,7 @@ void vtRoute::_CreateStruct(int iNode)
 		if (!sobj)
 			return;
 
-		vtNodeBase* tower = sobj->m_pTower;
+		vtNode *tower = sobj->m_pTower;
 		if (tower)
 		{
 			node->m_pTrans = new vtTransform;

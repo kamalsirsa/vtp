@@ -92,11 +92,11 @@ class vtGroupBase
 #endif
 {
 public:
-	virtual void		AddChild(vtNodeBase* pChild) = 0;
-	virtual void		RemoveChild(vtNodeBase* pChild) = 0;
+	virtual void		AddChild(vtNode* pChild) = 0;
+	virtual void		RemoveChild(vtNode* pChild) = 0;
 	virtual vtNode*		GetChild(int num) const = 0;
 	virtual int			GetNumChildren() const = 0;
-	virtual bool		ContainsChild(vtNodeBase *pNode) const = 0;
+	virtual bool		ContainsChild(vtNode *pNode) const = 0;
 	virtual const vtNodeBase*	FindDescendantByName(const char *name) const = 0;
 };
 

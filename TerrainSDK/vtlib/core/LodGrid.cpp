@@ -156,7 +156,7 @@ void vtLodGrid::RemoveFromGrid(vtGeom *pGNode)
  * so it will work even in cases where the object may have moved
  * out of its original cell.
  */
-void vtLodGrid::RemoveNodeFromGrid(vtNodeBase *pNode)
+void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
 {
 	vtLOD *lod;
 	int a, b;

@@ -41,7 +41,7 @@ public:
 	bool AppendToGrid(vtGeom *pGeom);
 	void RemoveFromGrid(vtTransform *pTNode);
 	void RemoveFromGrid(vtGeom *pModel);
-	void RemoveNodeFromGrid(vtNodeBase *pNode);
+	void RemoveNodeFromGrid(vtNode *pNode);
 
 	void SetDistance(float fLODDistance);
 	float GetDistance();
