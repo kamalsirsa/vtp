@@ -55,8 +55,7 @@ wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 
 void MyStatusBar::SetTexts(MainFrame *frame)
 {
-	vtProjection proj;
-	frame->GetProjection(proj);
+	vtProjection &proj = frame->GetAtProjection();
 	bool bGeo = (proj.IsGeographic() != 0);
 
 	SetStatusText(proj.GetProjectionNameShort(), Field_Coord);
