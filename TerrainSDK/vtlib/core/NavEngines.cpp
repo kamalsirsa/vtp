@@ -555,6 +555,12 @@ void vtTrackball::OnMouse(vtMouseEvent &event)
 		m_bRotate = m_bZoom = false;
 }
 
+void vtTrackball::SetDirection(float fTheta, float fPhi)
+{
+	m_Pos.x = fTheta;
+	m_Pos.y = fPhi;
+}
+
 void vtTrackball::Eval()
 {
 	vtTransform *pTarget = (vtTransform *) GetTarget();

@@ -172,6 +172,7 @@ public:
 	void SetZoomScale(float s);
 	void SetRotateButton(int button, int modifier);
 	void SetZoomButton(int button, int modifier);
+	void SetDirection(float fTheta, float fPhi);
 
 	void OnMouse(vtMouseEvent &event);
 	void Eval();
