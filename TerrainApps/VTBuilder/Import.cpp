@@ -532,6 +532,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_Surfer);
 		AddType(filter, FSTRING_TER);
 		AddType(filter, FSTRING_TIF);
+		AddType(filter, FSTRING_TXT);
 		AddType(filter, FSTRING_COMP);
 		AddType(filter, FSTRING_XYZ);
 		AddType(filter, FSTRING_HGT);

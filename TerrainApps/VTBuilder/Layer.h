@@ -53,13 +53,14 @@
 #define FSTRING_STM		_T("STM Files (*.stm)|*.stm")
 #define FSTRING_TER		_T("Terragen terrain (*.ter)|*.ter")
 #define FSTRING_TIF		_T("GeoTIFF Files (*.tif)|*.tif")
+#define FSTRING_TXT		_T("Text Files (*.txt)|*.txt")
 #define FSTRING_UTL		_T("Utility Files (*.utl)|*.utl")
 #define FSTRING_VF		_T("Vegetation Files (*.vf)|*.vf")
 #define FSTRING_VTST	_T("Structure Files (*.vtst)|*.vtst")
 #define FSTRING_VTSTGZ	_T("Structure Files (*.vtst.gz)|*.vtst.gz")
 #define FSTRING_WRL		_T("WRL Files (*.wrl)|*.wrl")
 #define FSTRING_XML		_T("XML Files (*.xml)|*.xml")
-#define FSTRING_XYZ		_T("XYZ Text Files (*.txt)|*.txt")
+#define FSTRING_XYZ		_T("XYZ Text Files (*.xyz)|*.xyz")
 
 #define FSTRING_COMP	_T("Compressed Files (*.tar, *.gz, *.tgz, *.zip)|*.tar;*.gz;*.tgz;*.zip")
 
