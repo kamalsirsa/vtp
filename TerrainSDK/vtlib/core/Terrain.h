@@ -101,7 +101,8 @@ public:
 	void AddNode(vtNode *pNode);
 
 	/// add a model (or any node) to the LOD grid of the terrain 
-	void AddNodeToLodGrid(vtNode *pNode);
+	void AddNodeToLodGrid(vtTransform *pTrans);
+	void AddNodeToLodGrid(vtGeom *pGeom);
 
 	/// place a model on the terrain
 	void PlantModel(vtTransform *model);

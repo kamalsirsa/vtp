@@ -396,7 +396,7 @@ void vtTerrain::AddFence(vtFence3d *f)
 	str->CreateNode(m_pHeightField);
 
 	// Add to LOD grid
-	m_pLodGrid->AppendToGrid(str->GetGeom());
+	AddNodeToLodGrid(str->GetGeom());
 }
 
 void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
@@ -409,7 +409,7 @@ void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
 	f->AddPoint(epos);
 	f->BuildGeometry(m_pHeightField);
 
-	m_pLodGrid->AppendToGrid(f->GetGeom());
+	AddNodeToLodGrid(f->GetGeom());
 }
 
 void vtTerrain::RedrawFence(vtFence3d *f)
@@ -426,7 +426,7 @@ void vtTerrain::AddRoute(vtRoute *f)
 	m_pTerrainGroup->AddChild(f->GetGeom());
 
 	// Or add to LOD grid (much more efficient)
-//	m_pLodGrid->AppendToGrid(f->GetGeom());
+//	AddNodeToLodGrid(f->GetGeom());
 }
 
 void vtTerrain::add_routepoint_earth(vtRoute *f, const DPoint2 &epos)
@@ -670,38 +670,28 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 	for (int i = 0; i < num_structs; i++)
 	{
 		vtStructure3d *str = (vtStructure3d *) m_Structures.GetAt(i);
-		vtBuilding3d *bld = m_Structures.GetBuilding(i);
-		if (bld)
-		{
-			if (bld->GetStories() == 0)
-			{
-				// make random 1 or 2 story buildings.
-				// (make more 1 story buildings than 2 story buildings)
-				int stories = (rand() % 4) ? 1 : 2;
-				bool bRotation = false;
-				bld->Randomize(stories, bRotation);
-			}
 
-			if (bld->GetShape() != SHAPE_RECTANGLE)
-				bld->m_RoofType = ROOF_FLAT;
-			m_Structures.ConstructStructure(str,
-				"roof walls detail");
-		}
-		else
-		{
-			// fence, instance, etc. simply construct
-			m_Structures.ConstructStructure(str);
-		}
+		const char *options = NULL;
+		if (str->GetType() == ST_BUILDING)
+			options = "roof walls detail";
+		if (str->GetType() == ST_INSTANCE)
+			options = m_strDataPath;
+
+		// Construct
+		bool bSuccess = m_Structures.ConstructStructure(str, options);
+		if (!bSuccess)
+			continue;
+
 		vtTransform *pTrans = str->GetTransform();
 		if (pTrans)
 		{
-			m_pLodGrid->AppendToGrid(pTrans);
+			AddNodeToLodGrid(pTrans);
 		}
 		else
 		{
 			vtGeom *pGeom = str->GetGeom();
 			if (pGeom)
-				m_pLodGrid->AppendToGrid(pGeom);
+				AddNodeToLodGrid(pGeom);
 		}
 	}
 }
@@ -1707,7 +1697,7 @@ void vtTerrain::CreatePlantInstance(int i)
 	pTrans->RotateLocal(FPoint3(0,1,0), random_rotation);
 #endif
 	// add tree to scene graph
-	m_pLodGrid->AppendToGrid(pTrans);
+	AddNodeToLodGrid(pTrans);
 
 	m_PlantGeoms.SetAt(i, pTrans);
 }
@@ -1730,11 +1720,29 @@ void vtTerrain::AddNode(vtNode *pNode)
  * culled when it is far from the viewer.  This is usually desirable when
  * the models are complicated or there are lot of them.
  *
+ * There is another form of this method which takes a vtGeom node instead.
+ *
  * \sa AddNode
  */
-void vtTerrain::AddNodeToLodGrid(vtNode *pNode)
+void vtTerrain::AddNodeToLodGrid(vtTransform *pTrans)
 {
 	if (m_pLodGrid)
-		m_pLodGrid->AddChild(pNode);
+		m_pLodGrid->AppendToGrid(pTrans);
+}
+
+/**
+ * Adds a node to the terrain.
+ * The node will be added to the LOD Grid of the terrain, so it will be
+ * culled when it is far from the viewer.  This is usually desirable when
+ * the models are complicated or there are lot of them.
+ *
+ * There is another form of this method which takes a vtTransform node instead.
+ *
+ * \sa AddNode
+ */
+void vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
+{
+	if (m_pLodGrid)
+		m_pLodGrid->AppendToGrid(pGeom);
 }
 
