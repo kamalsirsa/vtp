@@ -40,6 +40,13 @@ bool vtStructInstance3d::CreateShape(vtHeightField *pHeightField)
 	{
 		// TODO: use ContentManager to create model
 	}
+	const char *scale = GetValue("scale");
+	if (scale)
+	{
+		double sc = atof(scale);
+		if (sc != 0.0)
+			m_fScale = sc;
+	}
 
 	UpdateTransform(pHeightField);
 	return true;
@@ -48,6 +55,9 @@ bool vtStructInstance3d::CreateShape(vtHeightField *pHeightField)
 void vtStructInstance3d::UpdateTransform(vtHeightField *pHeightField)
 {
 	m_pContainer->Identity();
+
+	if (m_fScale != 1.0f)
+		m_pContainer->Scale3(m_fScale, m_fScale, m_fScale);
 
 	// try to work around 3DS coordinate axes difference problem
 	vtString fname2 = GetValue("filename");
@@ -124,16 +134,16 @@ bool vtStructure3d::CreateNode(vtHeightField *hf, const char *options)
 	{
 		vtStructInstance3d *inst = (vtStructInstance3d *) m_pInstance;
 		bool bSuccess = inst->CreateShape(hf);
-		if (!bSuccess && options != NULL)
+		if (!bSuccess)
 		{
 			// try again with the supplied path
 			vtTag *tag = inst->FindTag("filename");
 			if (tag)
 			{
-				vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
-				if (path != "")
+				vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
+				if (fullpath != "")
 				{
-					tag->value = path + tag->value;
+					tag->value = fullpath;
 					// try again
 					bSuccess = inst->CreateShape(hf);
 				}
