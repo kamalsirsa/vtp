@@ -654,6 +654,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_VTST);	// structures
 	AddType(filter, FSTRING_VF);	// vegetation files
 #endif
+	AddType(filter, FSTRING_SHP);	// raw files
 
 	// ask the user for a filename
 	wxFileDialog loadFile(NULL, "Open Layer", "", "", filter, wxOPEN);
