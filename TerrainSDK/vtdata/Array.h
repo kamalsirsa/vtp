@@ -121,6 +121,22 @@ template <class E> Array<E>::Array(unsigned int size)
 		Grow(size);
 }
 
+/**
+ * Creates and initializes an array from another (of the same type).
+ *
+ * \param a	An array to copy from.
+ */
+template <class E> Array<E>::Array(const Array<E>& a)
+{
+	if( this == &a )
+		return;
+
+	m_Size = 0;		// empty to start
+	m_MaxSize = 0;	// remember the size
+	m_Data = NULL;
+	Append(a);		// copy each element from the given array
+}
+
 
 /**
  *	Called by the array implementation when array items are deleted.
@@ -455,7 +471,7 @@ template <class E> int Array<E>::Append(const Array<E>& src)
 
 	if (!Grow(n))
 		return -1;
-	for (int i = 0; i < src.m_Size; ++i)
+	for (unsigned int i = 0; i < src.m_Size; ++i)
 		m_Data[m_Size + i] = src.m_Data[i];
 	m_MaxSize = n;
 	m_Size += src.m_Size;
