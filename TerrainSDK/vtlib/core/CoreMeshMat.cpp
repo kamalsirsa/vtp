@@ -589,8 +589,9 @@ void vtMeshBase::TransformVertices(FMatrix4 &mat)
  *
  * \param fSize The overall width, height, and depth of the geometry
  * \param fSmall The width of the blocks (generally much smaller than fSize)
+ * \param fAlpha The alpha value to use, from 0 (transparent) to 1 (opaque)
  */
-vtGeom *Create3DCursor(float fSize, float fSmall)
+vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 {
 	int i, j;
 	vtMesh *geo[3];
@@ -613,10 +614,9 @@ vtGeom *Create3DCursor(float fSize, float fSmall)
 	vtGeom *pGeom = new vtGeom();
 	vtMaterialArray *pMats = new vtMaterialArray();
 
-	float alpha = 0.6f;
-	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, alpha);
-	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, true, false, alpha);
-	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, true, false, alpha);
+	pMats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true, true, false, fAlpha);
+	pMats->AddRGBMaterial1(RGBf(0.0f, 1.0f, 0.0f), true, true, false, fAlpha);
+	pMats->AddRGBMaterial1(RGBf(0.0f, 0.0f, 1.0f), true, true, false, fAlpha);
 
 	pGeom->SetMaterials(pMats);
 	pGeom->SetName2("3D Crosshair");

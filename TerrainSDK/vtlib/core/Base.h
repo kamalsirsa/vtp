@@ -387,7 +387,7 @@ protected:
 };
 
 // helper functions
-vtGeom *Create3DCursor(float fSize, float fSmall);
+vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
 vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
@@ -398,3 +398,4 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 					   FPoint3 min1, FPoint3 max1, int steps);
 
 #endif	// VTLIB_BASEH
+
