@@ -24,6 +24,9 @@ public:
 	vtStringArray terrain_files;
 	vtStringArray terrain_paths;
 	vtStringArray terrain_names;
+
+protected:
+    wxLocale m_locale; // locale we'll be using
 };
 
 // helpers

@@ -83,6 +83,10 @@ bool vtApp::OnInit()
 	LogWindowsVersion();
 #endif
 
+	m_locale.Init();
+//	m_locale.Init(wxLANGUAGE_SWEDISH);
+    bool success = m_locale.AddCatalog(wxT("Enviro"));
+
 	Args(argc, argv);
 
 	// Look for all terrains on all data paths
