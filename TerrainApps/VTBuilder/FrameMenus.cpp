@@ -838,10 +838,11 @@ bool FindWithGeocoderUS(ReqContext &webcontext,
 		}
 	}
 
-	static const char *snames[18] = {
+	static const char *snames[21] = {
 		"street ", "st. ", "avenue ", "ave. ",
-		"drive ", "dr. ", " dr ", "boulevard ", "blvd. ", "bl "
-		"blvd, ","place ", "pl. ",
+		"drive ", "drive, ", "dr. ", " dr ", "dr., ", 
+		"boulevard ", "blvd. ", "bl ", "blvd, ",
+		"place ", "pl. ",
 		"road ", "rd. ", "road, ", "rd., ",
 		"way ", "lane "};
 
@@ -899,14 +900,14 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	const DPoint2 zero(0,0);
 
 	wxString shpname;
-	if (fname.Right(3) == _T("shp"))
+	if (!fname.Right(3).CmpNoCase(_T("shp")))
 	{
 		shpname = fname;
 		OpenProgressDialog(_T("Reading"), false);
 		success = feat.LoadFromSHP(shpname.mb_str(), progress_callback);
 		CloseProgressDialog();
 	}
-	else
+	else if (!fname.Right(3).CmpNoCase(_T("dbf")))
 	{
 		DBFHandle hDBF = DBFOpen(fname.mb_str(), "rb");
 		if (!hDBF)
@@ -925,6 +926,10 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 
 		// now re-open
 		success = feat.LoadFromSHP(shpname.mb_str());
+	}
+	else if (!fname.Right(3).CmpNoCase(_T("csv")))
+	{
+//		feat.ImportDataFromCSV(fname.mb_str());
 	}
 
 	if (!success)
