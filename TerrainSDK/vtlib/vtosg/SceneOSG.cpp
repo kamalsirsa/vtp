@@ -161,7 +161,26 @@ void vtScene::DoUpdate()
 
 	CalcCullPlanes();
 
+#define USE_OSG_UPDATE 0	// We don't actually need OSG's "update" functionality
+
+#if USE_OSG_UPDATE
+	// record the timer tick at the start of rendering.
+	static osg::Timer_t start_tick = osg::Timer::instance()->tick();
+	static unsigned int frameNum = 0;
+
+	// set up the frame stamp for current frame to record the current time and frame number so that animtion code can advance correctly
+	osg::ref_ptr<osg::FrameStamp> frameStamp = new osg::FrameStamp;
+	frameStamp->setReferenceTime(osg::Timer::instance()->delta_s(start_tick,osg::Timer::instance()->tick()));
+	frameStamp->setFrameNumber(frameNum++);
+
+	// pass frame stamp to the SceneView so that the update, cull and draw traversals all use the same FrameStamp
+	m_pOsgSceneView->setFrameStamp(frameStamp.get());
+#endif
+
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
+#if USE_OSG_UPDATE
+	m_pOsgSceneView->update();
+#endif
 	m_pOsgSceneView->cull();
 	m_pOsgSceneView->draw();
 }
