@@ -19,6 +19,10 @@ extern "C" {
 #include "vtDIB.h"
 #include "ByteOrder.h"
 
+// GDAL for TIFF support
+#include "gdal_priv.h"
+#include "Projections.h"
+
 #ifndef _WINGDI_
 
 #ifdef _MSC_VER
@@ -435,8 +439,8 @@ bool vtDIB::ReadJPEG(const char *fname)
 /**
  * Write a JPEG file.
  *
- * \param fname The output filename.
- * \param quality JPEG quality in the range of 0..100.
+ * \param fname		The output filename.
+ * \param quality	JPEG quality in the range of 0..100.
  */
 bool vtDIB::WriteJPEG(const char *fname, int quality)
 {
@@ -662,7 +666,7 @@ bool vtDIB::ReadPNG(const char *fname)
 
 
 /**
- * Write a PNG file. A DIB of the necessary size and depth is allocated.
+ * Write a PNG file.
  */
 bool vtDIB::WritePNG(const char *fname)
 {
@@ -884,8 +888,85 @@ bool vtDIB::WritePNG(const char *fname)
 	return true;
 }
 
+/**
+ * Write a TIF file.
+ */
+bool vtDIB::WriteTIF(const char *fname)
+{
+	g_GDALWrapper.RequestGDALFormats();
+
+	// Save with GDAL to GeoTIFF
+	GDALDriverManager *pManager = GetGDALDriverManager();
+	if (!pManager)
+		return false;
+
+	GDALDriver *pDriver = pManager->GetDriverByName("GTiff");
+	if (!pDriver)
+		return false;
+
+	char **papszParmList = NULL;
+
+	GDALDataset *pDataset;
+	if (m_iBitCount == 8)
+		pDataset = pDriver->Create(fname, m_iWidth, m_iHeight,
+			1, GDT_Byte, papszParmList );
+	else
+		pDataset = pDriver->Create(fname, m_iWidth, m_iHeight,
+			3, GDT_Byte, papszParmList );
+	if (!pDataset)
+		return false;
+
+//	pDataset->SetGeoTransform(adfGeoTransform);
+//	pDataset->SetProjection(pszSRS_WKT);
+
+	GByte *raster = new GByte[m_iWidth*m_iHeight];
+
+	unsigned int x, y;
+	GDALRasterBand *pBand;
+
+	if (m_iBitCount == 8)
+	{
+		pBand = pDataset->GetRasterBand(1);
+		for (x = 0; x < m_iWidth; x++)
+		{
+			for (y = 0; y < m_iHeight; y++)
+				raster[y*m_iWidth + x] = GetPixel8(x, y);
+		}
+		pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight, 
+			raster, m_iWidth, m_iHeight, GDT_Byte, 0, 0 );
+	}
+	else
+	{
+		RGBi rgb;
+		int i;
+		for (i = 1; i <= 3; i++)
+		{
+			pBand = pDataset->GetRasterBand(i);
+
+			for (x = 0; x < m_iWidth; x++)
+			{
+				for (y = 0; y < m_iHeight; y++)
+				{
+					GetPixel24(x, y, rgb);
+					if (i == 1) raster[y*m_iWidth + x] = (GByte) rgb.r;
+					if (i == 2) raster[y*m_iWidth + x] = (GByte) rgb.g;
+					if (i == 3) raster[y*m_iWidth + x] = (GByte) rgb.b;
+				}
+			}
+			pBand->RasterIO( GF_Write, 0, 0, m_iWidth, m_iHeight, 
+				raster, m_iWidth, m_iHeight, GDT_Byte, 0, 0 );
+		}
+	}
+
+	delete raster;
+	GDALClose(pDataset);
+
+	return true;
+}
+
 void vtDIB::_ComputeByteWidth()
 {
+	// compute the width in bytes of each scanline (with DIB padding)
 	m_iByteWidth = (((m_iWidth)*(m_iBitCount) + 31) / 32 * 4);
 }
 

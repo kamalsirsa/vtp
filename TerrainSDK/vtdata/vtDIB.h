@@ -43,10 +43,11 @@ public:
 	bool Read(const char *fname);
 	bool ReadBMP(const char *fname);
 	bool WriteBMP(const char *fname);
-	bool ReadPNG(const char *fname);
 	bool ReadJPEG(const char *fname);
 	bool WriteJPEG(const char *fname, int quality);
+	bool ReadPNG(const char *fname);
 	bool WritePNG(const char *fname);
+	bool WriteTIF(const char *fname);
 
 	unsigned int GetPixel24(int x, int y) const;
 	void GetPixel24(int x, int y, RGBi &rgb) const;
@@ -94,5 +95,5 @@ private:
 	unsigned int	m_iPaletteSize;
 };
 
-#endif
+#endif	// VTDATA_DIBH
 
