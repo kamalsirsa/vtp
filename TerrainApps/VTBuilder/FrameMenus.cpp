@@ -791,14 +791,17 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 		return;
 	}
 	vtRawLayer *pRawL = GetActiveRawLayer();
-	vtFeatureSet *pSet = pRawL->GetFeatureSet();
-	if (pRawL && pSet->NumSelected() != 0)
+	if (pRawL)
 	{
-		pSet->DeleteSelected();
-		pRawL->SetModified(true);
-		m_pView->Refresh();
-		OnSelectionChanged();
-		return;
+		vtFeatureSet *pSet = pRawL->GetFeatureSet();
+		if (pSet->NumSelected() != 0)
+		{
+			pSet->DeleteSelected();
+			pRawL->SetModified(true);
+			m_pView->Refresh();
+			OnSelectionChanged();
+			return;
+		}
 	}
 
 	vtLayer *pL = GetActiveLayer();
