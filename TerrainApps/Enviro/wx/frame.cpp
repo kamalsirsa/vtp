@@ -180,6 +180,7 @@ EVT_MENU(ID_TERRAIN_DECREASE,	vtFrame::OnDecrease)
 EVT_MENU(ID_TERRAIN_SAVEVEG,	vtFrame::OnSaveVeg)
 EVT_MENU(ID_TERRAIN_SAVESTRUCT,	vtFrame::OnSaveStruct)
 EVT_MENU(ID_TERRAIN_FOUNDATIONS, vtFrame::OnToggleFoundations)
+EVT_MENU(ID_TERRAIN_RESHADE,	vtFrame::OnTerrainReshade)
 
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	vtFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
@@ -335,7 +336,7 @@ void vtFrame::CreateMenus()
 		m_pSceneMenu->Append(ID_SCENE_SAVE, _T("Save scene graph to .osg"));
 #endif
 		m_pSceneMenu->AppendSeparator();
-		m_pSceneMenu->Append(ID_TIME_DIALOG, _T("Time...\tCtrl+T"));
+		m_pSceneMenu->Append(ID_TIME_DIALOG, _T("Time...\tCtrl+I"));
 		m_pSceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
 		m_pSceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
 		m_pMenuBar->Append(m_pSceneMenu, _T("&Scene"));
@@ -363,7 +364,7 @@ void vtFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _("Top-Down Camera\tCtrl+T"));
-	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+R"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+Z"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
 	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations"));
@@ -408,6 +409,7 @@ void vtFrame::CreateMenus()
 	m_pTerrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _("Save Built Structures As..."));
 	m_pTerrainMenu->AppendSeparator();
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_FOUNDATIONS, _("Toggle Artificial Foundations"));
+	m_pTerrainMenu->Append(ID_TERRAIN_RESHADE, _("&Recalculate Shading\tCtrl+R"));
 	m_pMenuBar->Append(m_pTerrainMenu, _("Te&rrain"));
 
 	if (m_bEnableEarth)
@@ -589,21 +591,6 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			vtBuilding3d *bld = sa->GetBuilding(i);
 			// (Do something to the building as a test)
 			sa->ConstructStructure(bld);
-		}
-#else
-		{
-			vtTerrain *pTerr = GetCurrentTerrain();
-
-			static int hour = 6, min = 30;
-			vtTime time;
-			time.SetTimeOfDay(hour, min, 0);
-			pTerr->recreate_textures(time);
-			min += 30;
-			if (min == 60)
-			{
-				min = 0;
-				hour ++;
-			}
 		}
 #endif
 		break;
@@ -1387,6 +1374,16 @@ void vtFrame::OnUpdateFoundations(wxUpdateUIEvent& event)
 	event.Check(s_bBuilt);
 }
 
+void vtFrame::OnTerrainReshade(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
+
+	vtTime time = GetTerrainScene()->GetTimeEngine()->GetTime();
+	pTerr->recreate_textures(time);
+}
+
 
 ////////////////// Earth Menu //////////////////////
 
@@ -1508,6 +1505,8 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 void vtFrame::SetTimeEngine(TimeEngine *pEngine)
 {
 	m_pTimeDlg->SetTimeEngine(pEngine);
+	// poke it once to let the time dialog know
+	pEngine->SetTime(pEngine->GetTime());
 }
 
 void vtFrame::EarthPosUpdated(const DPoint3 &pos)
