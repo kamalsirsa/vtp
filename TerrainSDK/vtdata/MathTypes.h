@@ -305,7 +305,7 @@ class DLine2 : public Array<DPoint2>
 public:
 	DLine2() {}
 	// copy constructor
-	DLine2(DLine2 &ref) : Array<DPoint2>() { *this = ref; }
+	DLine2(const DLine2 &ref) : Array<DPoint2>() { *this = ref; }
 
 	// assignment
 	DLine2 &operator=(const class DLine2 &v);
@@ -327,7 +327,7 @@ class FLine2 : public Array<FPoint2>
 public:
 	FLine2() {}
 	// copy constructor
-	FLine2(FLine2 &ref) : Array<FPoint2>() { *this = ref; }
+	FLine2(const FLine2 &ref) : Array<FPoint2>() { *this = ref; }
 
 	// assignment
 	FLine2 &operator=(const class FLine2 &v);
@@ -397,7 +397,7 @@ class DLine3 : public Array<DPoint3>
 public:
 	DLine3() {}
 	// copy constructor
-	DLine3(DLine3 &ref) : Array<DPoint3>() { *this = ref; }
+	DLine3(const DLine3 &ref) : Array<DPoint3>() { *this = ref; }
 
 	// assignment
 	DLine3 &operator=(const class DLine3 &v);
@@ -416,7 +416,7 @@ public:
 	FLine3() {}
 	FLine3(int size) { SetSize(size); }
 	// copy constructor
-	FLine3(FLine3 &ref) : Array<FPoint3>() { *this = ref; }
+	FLine3(const FLine3 &ref) : Array<FPoint3>() { *this = ref; }
 
 	// assignment
 	FLine3 &operator=(const class FLine3 &v);
@@ -453,7 +453,7 @@ class FBox3
 {
 public:
 	FBox3() {}
-	FBox3(FPoint3 &min1, FPoint3 &max1) { min = min1; max = max1; }
+	FBox3(const FPoint3 &min1, const FPoint3 &max1) { min = min1; max = max1; }
 
 	void Set(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
@@ -510,7 +510,7 @@ class DPolyArray2 : public Array<DLine2 *>
 public:
 	DPolyArray2() { m_previous_poly = -1; }
 
-	int FindPoly(DPoint2 p);
+	int FindPoly(const DPoint2 &p);
 
 	// for speed, remember the polygon that we found last time
 	int m_previous_poly;

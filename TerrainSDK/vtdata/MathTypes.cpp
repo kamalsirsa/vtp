@@ -14,7 +14,7 @@
  * For speed, it first test the polygon which was found last time.
  * For spatially linear testing, this can be a 10x speedup.
  */
-int DPolyArray2::FindPoly(DPoint2 p)
+int DPolyArray2::FindPoly(const DPoint2 &p)
 {
 	if (m_previous_poly != -1)
 	{
