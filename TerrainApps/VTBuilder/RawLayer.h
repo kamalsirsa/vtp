@@ -18,6 +18,10 @@ public:
 	vtRawLayer();
 	virtual ~vtRawLayer();
 
+	// Import from generic GIS file via OGR
+	void AddElementsFromOGR(class OGRDataSource *datasource,
+		void progress_callback(int) = NULL);
+
 	// overrides for vtLayer methods
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, class vtScaledView *pView);

@@ -299,6 +299,7 @@ public:
 	vtLayer *ImportElevation(wxString &strFileName);
 	vtLayer *ImportImage(wxString &strFileName);
 	vtLayer *ImportFromLULC(wxString &strFileName, LayerType ltype);
+	vtLayer *ImportRawFromOGR(wxString &strFileName);
 	vtLayer *ImportVectorsWithOGR(wxString &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(wxString &strFileName);
 	void ImportDataFromTIGER(wxString &strDirName);

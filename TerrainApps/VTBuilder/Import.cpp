@@ -99,7 +99,9 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 		{
 			pLayer = ImportFromSHP(strFileName, ltype);
 		}
-		else if (!strFileName.Right(8).CmpNoCase("catd.ddf"))
+		else if (!strFileName.Right(8).CmpNoCase("catd.ddf") ||
+				 !strExt.CmpNoCase("mif") ||
+				 !strExt.CmpNoCase("tab"))
 		{
 			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
@@ -197,6 +199,11 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 	case LT_RAW:
 		if (!strExt.CmpNoCase("shp"))
 			pLayer = ImportFromSHP(strFileName, ltype);
+		else if (!strExt.CmpNoCase("mif") ||
+				 !strExt.CmpNoCase("tab"))
+		{
+			pLayer = ImportRawFromOGR(strFileName);
+		}
 		break;
 	}
 
@@ -261,6 +268,7 @@ wxString GetImportFilterString(LayerType ltype)
 	case LT_RAW:
 		// shp
 		AddType(filter, FSTRING_SHP);
+		AddType(filter, FSTRING_MI);
 		break;
 	case LT_ELEVATION:
 		// dem, etc.
@@ -292,6 +300,7 @@ wxString GetImportFilterString(LayerType ltype)
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_SDTS);
 		AddType(filter, FSTRING_COMP);
+		AddType(filter, FSTRING_MI);
 		break;
 	case LT_STRUCTURE:
 		// dlg, shp, bcf, sdts-dlg
@@ -553,6 +562,23 @@ vtStructureLayer *MainFrame::ImportFromBCF(wxString &strFileName)
 		delete pSL;
 		return NULL;
 	}
+}
+
+vtLayerPtr MainFrame::ImportRawFromOGR(wxString &strFileName)
+{
+	OGRRegisterAll();
+
+	OGRDataSource *datasource = OGRSFDriverRegistrar::Open( strFileName );
+	if (!datasource)
+		return NULL;
+
+	// create the new layer
+	vtRawLayer *pRL = new vtRawLayer();
+	pRL->AddElementsFromOGR(datasource, progress_callback);
+
+	delete datasource;
+
+	return pRL;
 }
 
 vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltype)
