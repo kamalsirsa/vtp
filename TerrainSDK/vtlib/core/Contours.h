@@ -8,6 +8,8 @@
 #ifndef CONTOURSH
 #define CONTOURSH
 
+#if SUPPORT_QUIKGRID
+
 #include "Terrain.h"
 class SurfaceGrid;
 
@@ -66,5 +68,6 @@ protected:
 	vtMesh *m_pMesh;
 };
 
+#endif // SUPPORT_QUIKGRID
 #endif // CONTOURSH
 

@@ -9,8 +9,14 @@
 
 #include "vtlib/vtlib.h"
 
+#if SUPPORT_QUIKGRID
+
 #include "QuikGrid/surfgrid.h"
 #include "QuikGrid/contour.h"
+
+#ifdef _MSC_VER
+#pragma comment( lib, "QuikGrid.lib" )
+#endif
 
 #include "Contours.h"
 
@@ -182,4 +188,5 @@ void ContourConverter::Flush()
 	m_line.Empty();
 }
 
+#endif // SUPPORT_QUIKGRID
 
