@@ -65,6 +65,8 @@ bool MyApp::OnInit()
 //	vtStructure *str = pSL->GetAt(0);
 //	str->Select(true);
 //	pSL->EditBuildingProperties();
+//	wxString fname("E:/Locations-USA/Hawai`i Island Data/DRG/O19154F8.TIF");
+//	frame->ImportDataFromFile(LT_IMAGE, fname, true);
 
 	frame->GetView()->ZoomAll();
 
