@@ -740,8 +740,10 @@ if (pwdemo){
 	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
 
 	// Planetwork globe is around 3 PM GMT, summer over the north atlantic
-	m_pGlobeTime->SetDate(2000, 6, 20);
-	m_pGlobeTime->SetGMT(15,0,0);
+	vtTime time;
+	time.SetDate(2000, 6, 20);
+	time.SetTimeOfDay(15,0,0);
+	m_pGlobeTime->SetTime(time);
 
 	vtGeom *geom = new vtGeom();
 	vtMaterialArray *mats = new vtMaterialArray();

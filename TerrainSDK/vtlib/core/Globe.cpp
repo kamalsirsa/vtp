@@ -196,11 +196,9 @@ void IcoGlobe::SetLighting(bool bLight)
  *
  * \param time A time value (assumed to be Greenwich Mean Time).
  */
-void IcoGlobe::SetTime(time_t time)
+void IcoGlobe::SetTime(const vtTime &time)
 {
-	tm *gmt = gmtime(&time);
-
-	float second_of_day = (gmt->tm_hour * 60 + gmt->tm_min) * 60 + gmt->tm_sec;
+	float second_of_day = time.GetSecondOfDay();
 	float fraction_of_day = second_of_day / (24 * 60 * 60);
 	float rotation = fraction_of_day * PI2f;
 
@@ -213,8 +211,9 @@ void IcoGlobe::SetTime(time_t time)
 	if (m_bTilt)
 	{
 		FPoint3 xvector(1,0,0), seasonal_axis;
+
 		// Seasonal axis rotation (days since winter solstice)
-		float season = (gmt->tm_yday + 10) / 365.0f * PI2f;
+		float season = (time.m_tm.tm_yday + 10) / 365.0f * PI2f;
 		tmp.AxisAngle(FPoint3(0,1,0), season);
 		tmp.Transform(xvector, seasonal_axis);
 

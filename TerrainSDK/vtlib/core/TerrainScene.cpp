@@ -268,20 +268,25 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	// Set background color to match the ocean
 	vtGetScene()->SetBgColor(m_pCurrentTerrain->GetOceanColor());
 
-	// turn on the engines specific to the new terrain
+	// Turn on the engines specific to the new terrain
 	m_pCurrentTerrain->ActivateEngines(true);
+
+	// Setup the time engine for the new terrain
+	vtTime localtime;
+	localtime.SetTimeOfDay(param.m_iInitTime, 0, 0);
+
+//	pTerrain->TranslateToGMT(time);
+
+	m_pTime->SetTime(localtime);
+	m_pTime->SetSpeed(param.m_fTimeSpeed);
+	m_pTime->SetEnabled(param.m_bTimeOn);
 
 	// set the time to the time of the new terrain
 	if (m_pSkyDome)
 	{
 		m_pSkyDome->SetSunLight(GetSunLight());
-		m_pSkyDome->SetTimeOfDay(TIME_TO_INT(param.m_iInitTime, 0, 0), true);
+		m_pSkyDome->SetTimeOfDay(localtime.GetSecondOfDay(), true);
 	}
-
-	// setup time engine
-	m_pTime->SetLocalTime(param.m_iInitTime, 0, 0);
-	m_pTime->SetSpeed(param.m_fTimeSpeed);
-	m_pTime->SetEnabled(param.m_bTimeOn);
 
 	// handle the atmosphere
 	if (m_pSkyDome)
@@ -299,15 +304,12 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pCurrentTerrain->SetFog(param.m_bFog);
 }
 
-void vtTerrainScene::SetTime(time_t time)
+void vtTerrainScene::SetTime(const vtTime &time)
 {
-	// Convert to local time
-	struct tm *pTime = localtime(&time);
-
 	if (m_pSkyDome)
 	{
-//		m_pSkyDome->SetTimeOfDay(time);
-		m_pSkyDome->SetTimeOfDay(pTime->tm_hour * 3600 + pTime->tm_min * 60 + pTime->tm_sec);
+		// TODO? Convert to local time?
+		m_pSkyDome->SetTimeOfDay(time.GetSecondOfDay());
 //		m_pSkyDome->ApplyDayColors();
 // TODO? Update the fog color to match the color of the horizon.
 	}

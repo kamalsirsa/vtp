@@ -51,7 +51,7 @@ public:
 	vtMovLight *GetSunLight() { return m_pSunLight; }
 	TimeEngine *GetTimeEngine() { return m_pTime; }
 
-	void SetTime(time_t time);
+	void SetTime(const vtTime &time);
 
 	// skydome
 	RGBf		horizon_color, azimuth_color;

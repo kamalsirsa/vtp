@@ -11,6 +11,7 @@
 #include "vtdata/Icosa.h"
 #include "vtdata/Features.h"
 #include "vtdata/FilePath.h"
+#include "vtlib/core/TimeEngines.h"
 
 class vtTerrainScene;
 
@@ -45,7 +46,7 @@ public:
 	void SetUnfolding(float f);
 	void SetCulling(bool bCull);
 	void SetLighting(bool bLight);
-	void SetTime(time_t time);
+	void SetTime(const vtTime &time);
 	void ShowAxis(bool bShow);
 	void SetSeasonalTilt(bool bTilt) { m_bTilt = bTilt; }
 	bool GetSeasonalTilt() { return m_bTilt; }
