@@ -992,10 +992,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		success = m_pGrid->LoadFromNTF5(strFileName.mb_str(), progress_callback);
 	}
 	if (!success)
-	{
-		DisplayAndLog("Couldn't import data from that file.");
 		return false;
-	}
 
 	vtProjection &proj = m_pGrid->GetProjection();
 	if (!proj.GetRoot())
