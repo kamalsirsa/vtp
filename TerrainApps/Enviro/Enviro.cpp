@@ -14,12 +14,12 @@
 #include "vtlib/core/Route.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/DynTerrain.h"
+#include "vtlib/core/TerrainScene.h"
 
 #include "vtdata/boost/directory.h"
 #include "vtdata/FilePath.h"
 
 #include "Enviro.h"
-#include "TerrainSceneWP.h"
 #include "Options.h"
 #include "Hawaii.h"
 #include "Nevada.h"
@@ -72,15 +72,24 @@ Enviro::Enviro()
 	m_bDragging = false;
 	m_bSelectedStruct = false;
 	m_bSelectedPlant = false;
+}
+
+Enviro::~Enviro()
+{
+}
+
+void Enviro::Startup()
+{
+	m_pTerrainScene = new vtTerrainScene();
 
 	_StartLog("debug.txt");
 	_Log("\nEnviro\n\n");
 }
 
-Enviro::~Enviro()
+void Enviro::Shutdown()
 {
-	if (m_pPlantList)
-		delete m_pPlantList;
+	delete m_pPlantList;
+	delete m_pTerrainScene;
 }
 
 void Enviro::LoadTerrainDescriptions()
@@ -112,7 +121,7 @@ void Enviro::LoadTerrainDescriptions()
 				pTerr = new vtTerrain();
 
 			if (pTerr->SetParamFile(directory + "/" + name))
-				GetTerrainScene().AppendTerrain(pTerr);
+				m_pTerrainScene->AppendTerrain(pTerr);
 		}
 	}
 }
@@ -211,7 +220,7 @@ void Enviro::FlyToSpace()
 	}
 
 	// turn off terrain, if any
-	GetTerrainScene().SetTerrain(NULL);
+	m_pTerrainScene->SetTerrain(NULL);
 	EnableFlyerEngine(false);
 
 	m_state = AS_MovingOut;
@@ -292,7 +301,7 @@ void Enviro::SetGlobeTime(struct tm *gmt)
 	rotation = PI2f - rotation;
 	rotation -= PID2f;
 
-	vtMovLight *pSunLight = GetTerrainScene().GetSunLight();
+	vtMovLight *pSunLight = m_pTerrainScene->GetSunLight();
 	pSunLight->Identity();
 	pSunLight->SetTrans(FPoint3(5.0f, 0.0f, 0.0f));
 	pSunLight->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotation);
@@ -304,7 +313,7 @@ void Enviro::SetGlobeTime(struct tm *gmt)
 
 bool Enviro::SwitchToTerrain(const char *name)
 {
-	vtTerrain *pTerr = GetTerrainScene().FindTerrainByName(name);
+	vtTerrain *pTerr = m_pTerrainScene->FindTerrainByName(name);
 	if (pTerr)
 	{
 		SwitchToTerrain(pTerr);
@@ -428,7 +437,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		SetupCameras();
 
 		_Log("Finishing Terrain Scene\n");
-		GetTerrainScene().Finish(g_Options.m_DataPaths);
+		m_pTerrainScene->Finish(g_Options.m_DataPaths);
 
 		if (g_Options.m_bSpeedTest)
 		{
@@ -680,7 +689,7 @@ void Enviro::LookUpTerrainLocations()
 
 	// look up the earth location of each known terrain
 	vtTerrain *pTerr;
-	for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = m_pTerrainScene->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 	{
 		m_msg.Format("\tlooking up: %s\n", (const char *) pTerr->GetName());
 		_Log(m_msg);
@@ -733,10 +742,10 @@ void Enviro::SetupScene1()
 	vtCamera *pCamera = pScene->GetCamera();
 	if (pCamera) pCamera->SetName2("Standard Camera");
 
-	m_pRoot = GetTerrainScene().BeginTerrainScene(g_Options.m_bSound != 0);
+	m_pRoot = m_pTerrainScene->BeginTerrainScene(g_Options.m_bSound != 0);
 	pScene->SetRoot(m_pRoot);
 
-	GetTerrainScene().SetupEngines();
+//	m_pTerrainScene->SetupEngines();
 }
 
 void Enviro::SetupScene2()
@@ -771,7 +780,7 @@ void Enviro::SetupScene2()
 	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/20));
 	m_pCursorMGeom->SetName2("Cursor");
 
-	GetTerrainScene().m_pTop->AddChild(m_pCursorMGeom);
+	m_pTerrainScene->m_pTop->AddChild(m_pCursorMGeom);
 	m_pTerrainPicker = new TerrainPicker();
 	m_pTerrainPicker->SetName2("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
@@ -786,7 +795,6 @@ void Enviro::SetupScene2()
 	m_pRoot->AddChild(m_pSprite2);
 
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
-	vtRoute::SetScale(g_Options.m_fPlantScale);
 
 	vtPlantList pl;
 	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
@@ -841,7 +849,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	if (!pHF)
 		return;
 
-	GetTerrainScene().SetTerrain(pTerrain);
+	m_pTerrainScene->SetTerrain(pTerrain);
 
 	TParams &param = pTerrain->GetParams();
 
@@ -966,7 +974,7 @@ void Enviro::SetupCameras()
 	FPoint3 pos = m_pNormalCamera->GetTrans();
 	m_pNormalCamera->SetHither(5.0f * WORLD_SCALE);		// 10 m
 	//m_pNormalCamera->SetYon(500000.0f * WORLD_SCALE);	// 500 km
-	GetTerrainScene().SetYon(500000.0f * WORLD_SCALE);	// 500 km
+	m_pTerrainScene->SetYon(500000.0f * WORLD_SCALE);	// 500 km
 
 #if 1
 	// Create second camera (for Top-Down view)
@@ -990,30 +998,6 @@ void Enviro::SetupCameras()
 		m_pTFlyer->SetTarget(m_pNormalCamera);
 		m_pTFlyer->SetName2("Terrain Flyer");
 	}
-}
-
-
-void Enviro::SetFollowerCamera()
-{
-	// set the initial camera position
-	vtStation st = (*m_pCurRoute)[0L];
-	DPoint3 dp = st.m_dpStationPoint;
-	FPoint3 fp;
-	g_Conv.ConvertFromEarth(dp, fp);
-	GetCurrentTerrain()->GetHeightField()->FindAltitudeAtPoint(fp, fp.y);;
-	m_pRouteFollowerCamera->Identity();
-
-	//Go to the first route point
-	m_pRouteFollowerCamera->SetTrans(fp);
-
-	// Orient to the route azimuth
-	m_pRouteFollowerCamera->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), -st.dRadAzimuth);
-	TParams &params = GetCurrentTerrain()->GetParams();
-	m_pRouteFollowerCamera->TranslateLocal(FPoint3(-0.01f,
-		params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
-
-	if (!m_bRouteTranslationSet)
-		m_bRouteTranslationSet = true;
 }
 
 
@@ -1044,10 +1028,10 @@ const char *Enviro::GetStatusText()
 
 #if 0
 	// won't need this until we have dynamic time-of-day on the standard terrain
-	if (GetTerrainScene().m_pTime != NULL)
+	if (m_pTerrainScene->m_pTime != NULL)
 		sprintf(msg, " Time %02d:%02d - ",
-			GetTerrainScene().m_pTime->hours,
-			GetTerrainScene().m_pTime->minutes);
+			m_pTerrainScene->m_pTime->hours,
+			m_pTerrainScene->m_pTime->minutes);
 #endif
 
 	vtTerrain *pTerrain = GetCurrentTerrain();
@@ -1138,7 +1122,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			m_bActiveRoute = true;
 		}
 		GetCurrentTerrain()->add_routepoint_earth(m_pCurRoute,
-			DPoint2(m_EarthPos.x, m_EarthPos.y));
+			DPoint2(m_EarthPos.x, m_EarthPos.y), m_sStructType);
 	}
 	if (m_bOnTerrain && m_mode == MM_PLANTS)
 	{
@@ -1151,24 +1135,30 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		//  to just test whether the ground cursor is near a structure
 		DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
 
-		double distance1, distance2;
+		double dist1, dist2, dist3;
 		vtStructureArray3d &structures = pTerr->GetStructures();
 		structures.VisualDeselectAll();
 		m_bSelectedStruct = false;
 
 		int structure;		// index of closest structure
 		bool result1 = structures.FindClosestStructure(gpos, 20.0,
-			structure, distance1);
+			structure, dist1);
 
 		vtPlantInstanceArray3d &plants = GetCurrentTerrain()->GetPlantInstances();
 		plants.VisualDeselectAll();
 		m_bSelectedPlant = false;
 
 		int plant;		// index of closest plant
-		bool result2 = plants.FindClosestPlant(gpos, 20.0, plant, distance2);
+		bool result2 = plants.FindClosestPlant(gpos, 20.0, plant, dist2);
 
-		bool click_struct = (result1 && distance1 < distance2);
-		bool click_plant = (result2 && distance2 < distance1);
+		vtRouteMap &routes = GetCurrentTerrain()->GetRouteMap();
+		m_bSelectedUtil = false;
+		bool result3 = routes.FindClosestUtilNode(gpos, 20.0, m_pSelRoute,
+			m_pSelUtilNode, dist3);
+
+		bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
+		bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);
+		bool click_route = (result3 && dist3 < dist1 && dist3 < dist2);
 
 		if (click_struct)
 		{
@@ -1183,6 +1173,11 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 			m_bDragging = true;
 			m_bSelectedPlant = true;
 		}
+		if (click_route)
+		{
+			m_bDragging = true;
+			m_bSelectedUtil = true;
+		}
 		m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	}
 }
@@ -1195,7 +1190,7 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 	if (m_mode == MM_SELECT)
 	{
 		vtTerrain *pTerr;
-		for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+		for (pTerr = m_pTerrainScene->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 		{
 			if (pTerr->m_Corners_geo.ContainsPoint(DPoint2(m_EarthPos.x, m_EarthPos.y)))
 			{
@@ -1253,6 +1248,13 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 			vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 			plants.OffsetSelectedPlants(ground_delta);
 		}
+		if (m_bSelectedUtil)
+		{
+			vtRouteMap &routemap = pTerr->GetRouteMap();
+			m_pSelUtilNode->Offset(ground_delta);
+			m_pSelRoute->Dirty();
+			routemap.BuildGeometry(pTerr->GetHeightField());
+		}
 
 		m_EarthPosLast = m_EarthPos;
 	}
@@ -1285,7 +1287,7 @@ void Enviro::SetShowTime(bool bShow)
 {
 	m_bShowTime = bShow;
 
-	vtMovLight *pMovLight = GetTerrainScene().GetSunLight();
+	vtMovLight *pMovLight = m_pTerrainScene->GetSunLight();
 
 	pMovLight->SetEnabled(bShow);
 	m_pIcoGlobe->SetLighting(bShow);
@@ -1396,8 +1398,7 @@ void Enviro::SetFenceOptions(FenceType type, float fHeight, float fSpacing)
 
 void Enviro::start_new_route()
 {
-	vtRoute *route = new vtRoute(m_fRouteOffL, m_fRouteOffR, m_fRouteStInc,
-		m_sRouteName, GetCurrentTerrain());
+	vtRoute *route = new vtRoute(GetCurrentTerrain());
 	GetCurrentTerrain()->AddRoute(route);
 	m_pCurRoute = route;
 }
@@ -1411,11 +1412,32 @@ void Enviro::close_route()
 {
 	if (m_bActiveRoute && m_pCurRoute)
 	{
-		if ( m_pCurRoute->close_route() )
-			GetCurrentTerrain()->RedrawRoute(m_pCurRoute);
 		GetCurrentTerrain()->SaveRoute();
 	}
 	m_bActiveRoute = false;
+}
+
+void Enviro::SetRouteOptions(const vtString &sStructType)
+{
+	m_sStructType = sStructType;
+}
+
+void Enviro::SetFollowerCamera()
+{
+	// set the initial camera position
+	vtUtilNode *st = m_pCurRoute->GetAt(0);
+	FPoint3 fp;
+	GetCurrentTerrain()->GetHeightField()->ConvertEarthToSurfacePoint(st->m_Point, fp);;
+	m_pRouteFollowerCamera->Identity();
+
+	//Go to the first route point
+	m_pRouteFollowerCamera->SetTrans(fp);
+
+	// Orient to the route azimuth
+	m_pRouteFollowerCamera->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), -st->dRadAzimuth);
+	TParams &params = GetCurrentTerrain()->GetParams();
+	m_pRouteFollowerCamera->TranslateLocal(FPoint3(-0.01f,
+		params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
 }
 
 
@@ -1479,6 +1501,18 @@ void Enviro::_Log(const char *str)
 void ControlEngine::Eval()
 {
 	g_App.DoControl();
+}
+
+////////////////////////////////////////////////////////////////////////
+
+vtTerrain *GetCurrentTerrain()
+{
+	return g_App.m_pTerrainScene->m_pCurrentTerrain;
+}
+
+vtTerrainScene *GetTerrainScene()
+{
+	return g_App.m_pTerrainScene;
 }
 
 

@@ -3,14 +3,17 @@
 #define ENVIROH
 
 #include "vtlib/core/Engine.h"
-#include "vtlib/core/Fence3d.h"
 #include "EnviroEnum.h"
 
 // Use forward declarations to minimize rebuild dependencies
+enum FenceType;
+class vtTerrainScene;
 class vtTerrain;
 class TerrainPicker;
 class IcoGlobe;
 class vtRoute;
+class vtUtilNode;
+class vtFence3d;
 
 // Engines
 class vtTerrainFlyer;
@@ -43,6 +46,9 @@ public:
 	~Enviro();
 
 	// methods
+	void Startup();
+	void Shutdown();
+
 	void LoadTerrainDescriptions();
 	void StartControlEngine(const char *filename);
 	void DoControl();
@@ -89,8 +95,8 @@ public:
 	vtTerrainFlyer	*m_pCurrentFlyer;
 
 	RouteFollowerEngine	*m_pRouteFollower;
-	bool			m_bRouteTranslationSet;
 	vtCamera		*m_pRouteFollowerCamera;
+	vtTerrainScene	*m_pTerrainScene;
 
 	// event handlers
 	void OnMouse(vtMouseEvent &event);
@@ -110,7 +116,7 @@ public:
 	void start_new_route();
 	void finish_route();
 	void close_route();
-	void SetRouteOptions(float fHeight, float fSpacing);
+	void SetRouteOptions(const vtString &sStructType);
 	void SetFollowerCamera();
 
 	// plants
@@ -129,9 +135,12 @@ public:
 	bool		m_bDragging;
 	bool		m_bSelectedStruct;
 	bool		m_bSelectedPlant;
+	bool		m_bSelectedUtil;
 	DPoint3		m_EarthPosDown;
 	DPoint3		m_EarthPosLast;
 	vtRoute		*m_pCurRoute;
+	vtUtilNode	*m_pSelUtilNode;
+	vtRoute		*m_pSelRoute;
 
 protected:
 	// methods
@@ -159,9 +168,7 @@ protected:
 
 	// route members
 	bool		m_bActiveRoute;
-	float		m_fRouteOffL, m_fRouteOffR;
-	float		m_fRouteStInc;
-	vtString	m_sRouteName;
+	vtString	m_sStructType;
 
 	// linear arc on Earth
 	vtGeom *m_pArc;
@@ -198,6 +205,11 @@ public:
 	void		_Log(const char *str);
 };
 
+// global singleton
 extern Enviro g_App;
+
+// global helper functions
+vtTerrain *GetCurrentTerrain();
+vtTerrainScene *GetTerrainScene();
 
 #endif
