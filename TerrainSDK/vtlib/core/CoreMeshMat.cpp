@@ -648,7 +648,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 			a = j * PI2f / res;
 			p.x = sin(a) * radius;
 			p.y = cos(a) * radius;
-			p.z = i ? radius * 0.05f : radius * -0.05f;
+			p.z = i ? radius * 0.01f : radius * -0.01f;
 			pMesh->AddVertex(p + sphere.center);
 		}
 		for (j = 0; j <= res; j++)
@@ -656,7 +656,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 			a = j * PI2f / res;
 			p.y = sin(a) * radius;
 			p.z = cos(a) * radius;
-			p.x = i ? radius * 0.05f : radius * -0.05f;
+			p.x = i ? radius * 0.01f : radius * -0.01f;
 			pMesh->AddVertex(p + sphere.center);
 		}
 		for (j = 0; j <= res; j++)
@@ -664,7 +664,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 			a = j * PI2f / res;
 			p.z = sin(a) * radius;
 			p.x = cos(a) * radius;
-			p.y = i ? radius * 0.08f : radius * -0.08f;
+			p.y = i ? radius * 0.01f : radius * -0.01f;
 			pMesh->AddVertex(p + sphere.center);
 		}
 	}
