@@ -16,12 +16,12 @@ IFLAGS = -I./shapelib \
 		 -I$(VTP_ROOT)/TerrainSDK/
 
 #SWITCHES = -DUNIX -DSUPPORT_NETCDF=1 -DSUPPORT_SDTS=1
-SWITCHES = -DUNIX -DSUPPORT_NETCDF=1
+SWITCHES = -DUNIX
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
 CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 
 CSRC   = $(wildcard *.c)
-CXXSRC = $(wildcard *.cpp) $(wildcard boost/*.cpp)
+CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
 LIB    = libvtdata.so
 
