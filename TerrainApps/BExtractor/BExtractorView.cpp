@@ -831,7 +831,7 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 
 			bld->SetFootprint(0, m_poly);
 			bld->SetCenterFromPoly();
-			pDoc->m_Buildings.AddBuilding(bld);
+			pDoc->m_Buildings.Append(bld);
 
 			InvalidatePolyExtent();
 			m_poly.Empty();
@@ -875,7 +875,7 @@ void BExtractorView::OnLButtonUpRectangle(CPoint point)
 		bld->SetCenterFromPoly();
 		bld->SetStories(1);
 
-		pDoc->m_Buildings.AddBuilding(bld);
+		pDoc->m_Buildings.Append(bld);
 
 		DRECT extent_new;
 		bld->GetExtents(extent_new);
@@ -905,7 +905,7 @@ void BExtractorView::OnLButtonUpCircle(CPoint point)
 	float fCoordRadius = (float) s_UTMdx(m_fPixelRadius);
 
 	bld->SetRadius(fCoordRadius);
-	pDoc->m_Buildings.AddBuilding(bld);
+	pDoc->m_Buildings.Append(bld);
 
 	DRECT extent_new;
 	bld->GetExtents(extent_new);
@@ -935,7 +935,7 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 		vtBuilding *bld = new vtBuilding();
 		bld->SetLocation(imagepoint);
 		bld->SetStories(1);
-		pDoc->m_Buildings.AddBuilding(bld);
+		pDoc->m_Buildings.Append(bld);
 
 		int size = UTM_sdx(15.0f);
 		RECT r;

@@ -471,15 +471,13 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 }
 
 
-void vtTerrain::AddFence(vtFence3d *f)
+void vtTerrain::AddFence(vtFence3d *fen)
 {
-	vtStructure3d *str = (vtStructure3d *) m_Structures.NewStructure();
-	str->SetFence(f);
-	m_Structures.Append(str);
-	str->CreateNode(m_pHeightField);
+	m_Structures.Append(fen);
+	fen->CreateNode(m_pHeightField);
 
 	// Add to LOD grid
-	AddNodeToLodGrid(str->GetGeom());
+	AddNodeToLodGrid(fen->GetGeom());
 }
 
 void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
@@ -657,25 +655,26 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 	m_Structures.SetHeightField(m_pHeightField);
 	for (int i = 0; i < num_structs; i++)
 	{
-		vtStructure3d *str = (vtStructure3d *) m_Structures.GetAt(i);
+		vtStructure *str = (vtStructure *) m_Structures.GetAt(i);
+		vtStructure3d *str3d = m_Structures.GetStructure3d(i);
 
 		const char *options = NULL;
 		if (str->GetType() == ST_BUILDING)
 			options = "roof walls detail";
 
 		// Construct
-		bool bSuccess = m_Structures.ConstructStructure(str, options);
+		bool bSuccess = m_Structures.ConstructStructure(str3d, options);
 		if (!bSuccess)
 			continue;
 
-		vtTransform *pTrans = str->GetTransform();
+		vtTransform *pTrans = str3d->GetTransform();
 		if (pTrans)
 		{
 			AddNodeToLodGrid(pTrans);
 		}
 		else
 		{
-			vtGeom *pGeom = str->GetGeom();
+			vtGeom *pGeom = str3d->GetGeom();
 			if (pGeom)
 				AddNodeToLodGrid(pGeom);
 		}

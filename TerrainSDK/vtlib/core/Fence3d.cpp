@@ -252,8 +252,19 @@ bool vtFence3d::CreateShape(vtHeightField *pHeightField)
 	return true;
 }
 
+// implement vtStructure3d methods
+bool vtFence3d::CreateNode(vtHeightField *hf, const char *options)
+{
+	return CreateShape(hf);
+}
+
 vtGeom *vtFence3d::GetGeom()
 {
 	return m_pFenceGeom;
 }
 
+void vtFence3d::DeleteNode()
+{
+	// is needed for fences:
+	DestroyGeometry();
+}

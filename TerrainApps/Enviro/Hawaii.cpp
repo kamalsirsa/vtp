@@ -52,13 +52,13 @@ void IslandTerrain::create_telescopes()
 	sa.SetHeightField(m_pHeightField);
 	for (int i = 0; i < num_structs; i++)
 	{
-		vtStructure3d *str = sa.GetStructure(i);
+		vtStructure3d *str3d = sa.GetStructure3d(i);
 
-		success = sa.ConstructStructure(str);
+		success = sa.ConstructStructure(str3d);
 		if (!success)
 			continue;
 
-		vtTransform *pTrans = str->GetTransform();
+		vtTransform *pTrans = str3d->GetTransform();
 		if (pTrans)
 			m_pLodGrid->AppendToGrid(pTrans);
 	}
@@ -226,7 +226,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		vtLevel *pLev;
 		vtEdge *pEdge;
 
-		// basement/garage level
+		// basement/garage level (0)
 		dl.Append(c2);
 		dl.Append(c3);
 		dl.Append(c4);
@@ -260,7 +260,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pEdge->AddFeature(WFC_WALL, -1, 0, 0.5);
 		pEdge->m_Material = BMAT_CEMENT;
 
-		// main floor level
+		// main floor level (1)
 		dl.Empty();
 		dl.Append(c7);
 		dl.Append(c3);
@@ -323,7 +323,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pEdge->AddFeature(WFC_WALL, -8);
 
 		//////////////////////////////
-		// first roof level
+		// first roof level (2)
 		dl.Empty();
 		dl.Append(c1);
 		dl.Append(c3);
@@ -333,12 +333,12 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pLev->m_iStories = 1;
 		pLev->SetEdgeMaterial(BMAT_PLAIN);
 		pLev->SetEdgeColor(RGBi(90, 75, 75));
-		pLev->SetRoofType(ROOF_HIP, 14);
+		bld->SetRoofType(ROOF_HIP, 14, 2);
 		pLev->m_fStoryHeight = 0.9144f;	// 3 ft
 		pLev->SetEaveLength(1.0f);
 
 		//////////////////////////////
-		// second roof level
+		// second roof level (3)
 		dl.Empty();
 		dl.Append(c8);
 		dl.Append(c10);
@@ -348,16 +348,14 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pLev->m_iStories = 1;
 		pLev->SetEdgeMaterial(BMAT_PLAIN);
 		pLev->SetEdgeColor(RGBi(220, 220, 220));
-		pLev->SetRoofType(ROOF_GABLE, 33);
+		bld->SetRoofType(ROOF_GABLE, 33, 3);
 		pLev->m_fStoryHeight = 1.6256f;	// 5 1/3 ft
 
 		/////////////////////////////////////////
 		bld->SetCenterFromPoly();
 
-		vtStructure3d *str = new vtStructure3d;
-		str->SetBuilding(bld);
-		bool success = str->CreateNode(m_pHeightField, "roof walls detail");
-		vtTransform *trans = str->GetTransform();
+		bool success = bld->CreateNode(m_pHeightField, "roof walls detail");
+		vtTransform *trans = bld->GetTransform();
 		trans->SetName2("Test House");
 		AddNode(trans);
 		PlantModel(trans);

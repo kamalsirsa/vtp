@@ -1100,7 +1100,7 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 		if (click_struct)
 		{
-			vtStructure3d *str = structures.GetStructure(structure);
+			vtStructure3d *str = structures.GetStructure3d(structure);
 			structures.VisualSelect(str);
 			m_bDragging = true;
 			m_bSelectedStruct = true;

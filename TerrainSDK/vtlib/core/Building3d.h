@@ -10,6 +10,7 @@
 
 #include "vtdata/Building.h"
 #include "vtdata/StructArray.h"
+#include "Structure3d.h"
 
 class vtHeightField;
 
@@ -31,11 +32,18 @@ struct MatMesh
 	bool		m_bFans;
 };
 
-class vtBuilding3d : public vtBuilding
+class vtBuilding3d : public vtBuilding, public vtStructure3d
 {
 public:
 	vtBuilding3d();
 	~vtBuilding3d();
+
+	// implement vtStructure3d methods
+	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
+	vtGeom *GetGeom();
+	virtual void DeleteNode();
+	// display a bounding box around to object to highlight it
+	virtual void ShowBounds(bool bShow);
 
 	// copy
 	vtBuilding3d &operator=(const vtBuilding &v);
@@ -49,14 +57,10 @@ public:
 	void DestroyGeometry();
 	void CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 						bool bDoWalls, bool details);
-	vtTransform *GetTransform();
 	void AdjustHeight(vtHeightField *pHeightField);
 
 	// randomize building properties
 	void Randomize(int iStories);
-
-	// display a bounding box around to object to highlight it
-	void ShowBounds(bool bShow);
 
 protected:
 	int FindMatIndex(BldMaterial bldApp, RGBi inputColor=RGBi(0,0,0));
@@ -127,7 +131,6 @@ protected:
 	void	BuildRoofPanel(FPoint3 *v, int n, ...);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
-	vtTransform	*m_pContainer;	// The transform which is used to position the building
 	vtGeom		*m_pGeom;		// The geometry node which contains the building geometry
 	vtGeom		*m_pHighlight;	// The wireframe highlight
 };

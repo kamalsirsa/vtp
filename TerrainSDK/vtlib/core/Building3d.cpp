@@ -298,11 +298,6 @@ void vtBuilding3d::DestroyGeometry()
 	m_Mesh.Empty();
 }
 
-vtTransform *vtBuilding3d::GetTransform()
-{
-	return m_pContainer;
-}
-
 void vtBuilding3d::AdjustHeight(vtHeightField *pHeightField)
 {
 	DetermineWorldFootprints(pHeightField);
@@ -463,32 +458,6 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 		m_pGeom->GetBoundSphere(sphere);
 		m_pHighlight = CreateBoundSphereGeom(sphere);
 		m_pContainer->AddChild(m_pHighlight);
-	}
-}
-
-/**
- * Display some bounding wires around the object to highlight it.
- */
-void vtBuilding3d::ShowBounds(bool bShow)
-{
-	if (bShow)
-	{
-		if (!m_pHighlight)
-		{
-			// the highlight geometry doesn't exist, so create it
-			// get bounding sphere
-			FSphere sphere;
-			m_pGeom->GetBoundSphere(sphere);
-
-			m_pHighlight = CreateBoundSphereGeom(sphere);
-			m_pContainer->AddChild(m_pHighlight);
-		}
-		m_pHighlight->SetEnabled(true);
-	}
-	else
-	{
-		if (m_pHighlight)
-			m_pHighlight->SetEnabled(false);
 	}
 }
 
@@ -1217,3 +1186,49 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 	return bestMatch;
 }
 
+
+// implement vtStructure3d methods
+bool vtBuilding3d::CreateNode(vtHeightField *hf, const char *options)
+{
+	bool roof = (strstr(options, "roof") != NULL);
+	bool walls = (strstr(options, "walls") != NULL);
+	bool details = (strstr(options, "detail") != NULL);
+	CreateShape(hf, roof, walls, details);
+	return true;
+}
+
+vtGeom *vtBuilding3d::GetGeom()
+{
+	return NULL;
+}
+
+void vtBuilding3d::DeleteNode()
+{
+	// not needed for buildings - those are automatically deleted when needed
+}
+
+/**
+ * Display some bounding wires around the object to highlight it.
+ */
+void vtBuilding3d::ShowBounds(bool bShow)
+{
+	if (bShow)
+	{
+		if (!m_pHighlight)
+		{
+			// the highlight geometry doesn't exist, so create it
+			// get bounding sphere
+			FSphere sphere;
+			m_pGeom->GetBoundSphere(sphere);
+
+			m_pHighlight = CreateBoundSphereGeom(sphere);
+			m_pContainer->AddChild(m_pHighlight);
+		}
+		m_pHighlight->SetEnabled(true);
+	}
+	else
+	{
+		if (m_pHighlight)
+			m_pHighlight->SetEnabled(false);
+	}
+}

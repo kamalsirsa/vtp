@@ -152,8 +152,7 @@ vtFence *vtStructureArray3d::NewFence()
 
 vtStructInstance *vtStructureArray3d::NewInstance()
 {
-	vtStructInstance3d *pSI3d = new vtStructInstance3d;
-	return pSI3d;
+	return new vtStructInstance3d;
 }
 
 vtStructure3d *vtStructureArray3d::GetStructure3d(int i)

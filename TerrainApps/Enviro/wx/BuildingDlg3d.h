@@ -28,10 +28,10 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for BuildingDlg
-	void Setup(vtStructure3d *str);
+	void Setup(vtBuilding3d *str);
 
 	// WDR: member variable declarations for BuildingDlg
-	vtStructure3d	*m_pStructure;
+	vtStructure3d	*m_pStructure3d;
 //	vtBuilding3d  *m_pBuilding;
 
 protected:

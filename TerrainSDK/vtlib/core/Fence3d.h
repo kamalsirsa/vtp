@@ -10,19 +10,24 @@
 
 #include "vtdata/Fence.h"
 #include "vtdata/HeightField.h"
+#include "Structure3d.h"
 
-class vtFence3d : public vtFence
+class vtFence3d : public vtFence, public vtStructure3d
 {
 public:
 	vtFence3d();
 	vtFence3d(FenceType type, float fHeight, float fSpacing);
+
+	// implement vtStructure3d methods
+	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
+	vtGeom *GetGeom();
+	virtual void DeleteNode();
 
 	static void SetScale(float fScale) { m_fFenceScale = fScale; }
 
 	bool CreateShape(vtHeightField *pHeightField);
 	void BuildGeometry(vtHeightField *pHeightField);
 	void DestroyGeometry();
-	vtGeom *GetGeom();
 
 protected:
 	void	Init();

@@ -392,16 +392,15 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		{
 			vtStructureArray3d &sa = pTerr->GetStructures();
 			int i = 0;
-			while (!sa.GetStructure(i)->IsSelected())
+			while (!sa.GetAt(i)->IsSelected())
 				i++;
-			vtStructure3d *str = sa.GetStructure(i);
-			vtBuilding *bld = str->GetBuilding();
+			vtBuilding3d *bld = sa.GetBuilding(i);
 			float width, depth;
 			bld->GetRectangle(width, depth);
 			width -= 1;
 //			depth -= 1;
 			bld->SetRectangle(width, depth);
-			sa.ReConstructStructure(str, "roof walls detail");
+			sa.ReConstructStructure(bld, "roof walls detail");
 		}
 	}
 	if (key == 'Z')
@@ -411,16 +410,15 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		{
 			vtStructureArray3d &sa = pTerr->GetStructures();
 			int i = 0;
-			while (!sa.GetStructure(i)->IsSelected())
+			while (!sa.GetAt(i)->IsSelected())
 				i++;
-			vtStructure3d *str = sa.GetStructure(i);
-			vtBuilding *bld = str->GetBuilding();
+			vtBuilding3d *bld = sa.GetBuilding(i);
 			float width, depth;
 			bld->GetRectangle(width, depth);
 			width += 1;
 //			depth += 1;
 			bld->SetRectangle(width, depth);
-			sa.ReConstructStructure(str, "roof walls detail");
+			sa.ReConstructStructure(bld, "roof walls detail");
 		}
 	}
 }
@@ -1044,20 +1042,20 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 
 	int count = structures.GetSize();
 	int sel = structures.NumSelected();	// TEMP
-	vtStructure3d *str;
+	vtStructure *str;
 	vtBuilding3d *bld;
 	vtFence3d *fen;
 	for (int i = 0; i < count; i++)
 	{
-		str = (vtStructure3d *) structures.GetAt(i);
+		str = structures.GetAt(i);
 		if (!str->IsSelected())
 			continue;
 
-		bld = (vtBuilding3d *) str->GetBuilding();
-		fen = (vtFence3d *) str->GetFence();
+		bld = structures.GetBuilding(i);
+		fen = structures.GetFence(i);
 		if (bld)
 		{
-			m_pBuildingDlg->Setup(str);
+			m_pBuildingDlg->Setup(bld);
 			m_pBuildingDlg->Show(true);
 			return;
 		}

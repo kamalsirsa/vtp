@@ -239,9 +239,7 @@ void BExtractorDoc::FloodFillDIB(CDib *bm)
 
 				vtBuilding *bld = new vtBuilding();
 				bld->SetLocation(point);
-				vtStructure *str = m_Buildings.NewStructure();
-				str->SetBuilding(bld);
-				m_Buildings.Append(str);
+				m_Buildings.Append(bld);
 			}
 		}
 	}
