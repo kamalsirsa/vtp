@@ -127,6 +127,31 @@ bool App::CreateScene()
 	vtScene *pScene = vtGetScene();
 	pScene->Init();
 
+#if 0
+	vtLight *pLight = new vtLight();
+	pLight->Release();
+
+	vtCamera *pCamera = new vtCamera();
+	pCamera->Release();
+
+	vtGeom *pGeom = new vtGeom();
+	pGeom->Release();
+
+	vtLOD *pLOD = new vtLOD();
+	pLOD->Release();
+
+	vtSprite *pSprite = new vtSprite();
+	pSprite->Release();
+
+	vtTransform *trans = new vtTransform();
+	vtGroup *parent1 = new vtGroup();
+	vtGroup *parent2 = new vtGroup();
+	parent1->AddChild(trans);
+	parent2->AddChild(trans);
+	parent1->Release();
+	parent2->Release();
+#endif
+
 	// Look up the camera
 	m_pCamera = pScene->GetCamera();
 	m_pCamera->SetHither(10);
