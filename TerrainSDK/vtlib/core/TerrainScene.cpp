@@ -72,7 +72,8 @@ vtTerrainScene::~vtTerrainScene()
 
 	delete m_pTime;
 	delete m_pSkyTrack;
-	m_pSkyDome->Destroy();
+	if (m_pSkyDome)
+		m_pSkyDome->Destroy();
 
 	while (m_pFirstTerrain)
 	{
