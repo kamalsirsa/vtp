@@ -157,7 +157,7 @@ void SpeciesListDlg::AddAppeance(int idx)
 
 ////////////////////////////////////////////////////////////////
 
-void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
+void BioRegionDlg::RefreshContents()
 {
 	// Create tree control window as child of dialog.
 	int width, height;

@@ -67,9 +67,12 @@ public:
 	BioRegionDlg(wxWindow *parent, wxWindowID id, const wxString& title,
 		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE)
-		: AutoDialog(parent, id, title, pos, size, style) {};
+		: AutoDialog(parent, id, title, pos, size, style)
+	{
+		RefreshContents();
+	}
 	
-	void OnInitDialog(wxInitDialogEvent& event);
+	void RefreshContents();
 
 	wxTreeCtrl *m_BTree;
 };
