@@ -1577,6 +1577,9 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 
 void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &style)
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// We support text labels for both 2D and 3D points
 	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
 	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
@@ -1868,6 +1871,9 @@ void vtTerrain::_ComputeCenterLocation()
  */
 bool vtTerrain::CreateStep1()
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// create terrain group - this holds all surfaces for the terrain
 	m_pTerrainGroup = new vtGroup();
 	m_pTerrainGroup->SetName2("Terrain Group");
