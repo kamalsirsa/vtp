@@ -222,7 +222,6 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 	OGRLayer		*pLayer;
 	OGRFeature		*pFeature;
 	OGRGeometry		*pGeom;
-//	OGRPoint		*pPoint;
 	OGRLineString   *pLineString;
 	OGRPolygon		*pPolygon;
 	vtWaterFeature	*pFeat;
