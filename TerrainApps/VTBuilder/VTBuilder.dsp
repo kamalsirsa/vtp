@@ -224,10 +224,6 @@ SOURCE=.\BuilderView.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\BuildingDlg.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\DistanceDlg.h
 # End Source File
 # Begin Source File
@@ -564,10 +560,6 @@ SOURCE=.\icons\water.ico
 # Begin Group "Source - Dialogs"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=.\BuildingDlg.cpp
-# End Source File
 # Begin Source File
 
 SOURCE=.\DistanceDlg.cpp
