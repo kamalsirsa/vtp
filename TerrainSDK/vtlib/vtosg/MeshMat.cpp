@@ -700,10 +700,7 @@ void vtMesh::SendPointersToOSG()
 {
 	// in case they got reallocated, tell OSG again
 	if (m_bIndexedPrims)
-	{
 		m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
-		m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
-	}
 	else
 		m_pGeoSet->setCoords(m_Vert.GetData());
 
@@ -713,6 +710,26 @@ void vtMesh::SendPointersToOSG()
 		m_pGeoSet->setColors(m_Color.GetData(), m_Index.GetData());
 	if (m_iVtxType & VT_TexCoords)
 		m_pGeoSet->setTextureCoords(m_Tex.GetData(), m_Index.GetData());
+
+	// three geometry types don't use 'primitive lengths'
+	int NumVertices = m_Vert.GetSize();
+	int NumIndices = m_Index.GetSize();
+	switch (m_ePrimType)
+	{
+	case GL_POINTS:
+		m_pGeoSet->setNumPrims(NumVertices);
+		break;
+	case GL_LINES:
+		m_pGeoSet->setNumPrims(NumIndices/2);
+		break;
+	case GL_TRIANGLES:
+		m_pGeoSet->setNumPrims(NumIndices/3);
+		break;
+	default:
+		// all the other types do
+		m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
+		break;
+	}
 }
 
 
@@ -739,7 +756,7 @@ bool vtFont::LoadFont(const char *filename)
 
 ////
 
-vtTextMesh::vtTextMesh(vtFont *font, bool bCenter)
+vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 {
 	// OSG 0.9.3
 //	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
@@ -747,8 +764,12 @@ vtTextMesh::vtTextMesh(vtFont *font, bool bCenter)
 	// OSG 0.9.4
 	m_pOsgText = new osgText::Text;
 	m_pOsgText->setFont(font->m_pOsgFont.get());
-	m_pOsgText->setFontSize(24,24);
-	m_pOsgText->setCharacterSize(24);
+
+	// Set the Font reference width and height resolution in texels.
+	m_pOsgText->setFontSize(32,32);
+
+	// Set the rendered character size in object coordinates.
+	m_pOsgText->setCharacterSize(fSize);
 
 	if (bCenter)
 		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
@@ -768,3 +789,16 @@ void vtTextMesh::SetText(const std::wstring &text)
 {
 	m_pOsgText->setText(text.c_str());
 }
+
+void vtTextMesh::SetPosition(const FPoint3 &pos)
+{
+	Vec3 s;
+	v2s(pos, s);
+	m_pOsgText->setPosition(s);
+}
+
+void vtTextMesh::SetAlignment(int align)
+{
+	m_pOsgText->setAlignment((osgText::Text::AlignmentType) align);
+}
+

@@ -174,15 +174,17 @@ public:
 class vtTextMesh
 {
 public:
-	vtTextMesh(vtFont *font, bool bCenter = false);
+	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);
 
 	void SetText(const char *text);
 	void SetText(const wchar_t *text);
 	void SetText(const std::wstring &text);
+	void SetPosition(const FPoint3 &pos);
+	void SetAlignment(int align);
 
 	// Implementation
 	osg::ref_ptr<osgText::Text> m_pOsgText;
 };
 
-#endif
+#endif	// VTOSG_MESHMATH
 
