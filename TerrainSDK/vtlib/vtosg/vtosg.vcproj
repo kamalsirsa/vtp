@@ -831,6 +831,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\core\GeomUtil.cpp">
+			</File>
+			<File
 				RelativePath="..\core\Globe.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1619,6 +1622,9 @@
 			</File>
 			<File
 				RelativePath="..\core\FP8.h">
+			</File>
+			<File
+				RelativePath="..\core\GeomUtil.h">
 			</File>
 			<File
 				RelativePath="..\core\Globe.h">
