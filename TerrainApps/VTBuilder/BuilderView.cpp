@@ -36,23 +36,23 @@
 ////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(BuilderView, vtScaledView)
-	EVT_LEFT_DOWN(BuilderView::OnLeftDown)	
-	EVT_LEFT_UP(BuilderView::OnLeftUp)
-	EVT_LEFT_DCLICK(BuilderView::OnLeftDoubleClick)
-	EVT_MIDDLE_DOWN(BuilderView::OnMiddleDown)
-	EVT_MIDDLE_UP(BuilderView::OnMiddleUp)
-	EVT_RIGHT_DOWN(BuilderView::OnRightDown)
-	EVT_RIGHT_UP(BuilderView::OnRightUp)
-	EVT_MOTION(BuilderView::OnMouseMove)
+EVT_LEFT_DOWN(BuilderView::OnLeftDown)	
+EVT_LEFT_UP(BuilderView::OnLeftUp)
+EVT_LEFT_DCLICK(BuilderView::OnLeftDoubleClick)
+EVT_MIDDLE_DOWN(BuilderView::OnMiddleDown)
+EVT_MIDDLE_UP(BuilderView::OnMiddleUp)
+EVT_RIGHT_DOWN(BuilderView::OnRightDown)
+EVT_RIGHT_UP(BuilderView::OnRightUp)
+EVT_MOTION(BuilderView::OnMouseMove)
 
-	EVT_CHAR(BuilderView::OnChar)
+EVT_CHAR(BuilderView::OnChar)
 END_EVENT_TABLE()
 
 /////////////////////////////////////////////////////////////////
 
 BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
-						 const wxSize& size, const wxString& name) :
-	vtScaledView(parent, id, pos, size, name )
+	const wxSize& size, const wxString& name) :
+vtScaledView(parent, id, pos, size, name )
 {
 	VTLOG(" Constructing BuilderView\n");
 	m_bPanning = false;
@@ -157,16 +157,16 @@ void BuilderView::SetMode(LBMode m)
 
 	switch (m_ui.mode)
 	{
-	case LB_Dir:
-		vtRoadLayer::SetShowDirection(true);
-		Refresh();
-		break;
-	case LB_Node:
-		if (!vtRoadLayer::GetDrawNodes()) {
-			vtRoadLayer::SetDrawNodes(true);
+		case LB_Dir:
+			vtRoadLayer::SetShowDirection(true);
 			Refresh();
-		}
-		break;
+			break;
+		case LB_Node:
+			if (!vtRoadLayer::GetDrawNodes()) {
+				vtRoadLayer::SetDrawNodes(true);
+				Refresh();
+			}
+			break;
 	}
 
 	// Show this dialog only in AddLinear mode
@@ -398,7 +398,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 
 	CPLPushErrorHandler(myErrorHandler);
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&Source, &proj);
+	OCT *trans = OGRCreateCoordinateTransformation((OGRSpatialReference *)&Source, (OGRSpatialReference *)&proj);
 	CPLPopErrorHandler();
 
 	if (!trans)
@@ -435,7 +435,7 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 	if (!m_bHidden)
 	{
 		VTLOG("Preparing World Map...");
-	    wxDialog dialog(this, -1, "Preparing World Map...", wxDefaultPosition,
+		wxDialog dialog(this, -1, "Preparing World Map...", wxDefaultPosition,
 			wxSize(400, 50), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODELESS);
 		dialog.Show(true);
 		HideWorldMapEdges();
@@ -491,7 +491,7 @@ void BuilderView::DoPan(wxPoint point)
 
 	// update picture to reflect the changes
 	Scroll(m_xScrollPosition - diff.x,
-		   m_yScrollPosition - diff.y);
+		m_yScrollPosition - diff.y);
 }
 
 
@@ -505,7 +505,7 @@ void BuilderView::InvertRect(wxDC *pDC, const wxRect &r, bool bDashed)
 }
 
 void BuilderView::InvertRect(wxDC *pDC, const wxPoint &one,
-							 const wxPoint &two, bool bDashed)
+	const wxPoint &two, bool bDashed)
 {
 	wxPen pen(*wxBLACK_PEN);
 	if (bDashed)
@@ -549,41 +549,41 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	m_world_rect = CanvasToWorld(rect);
 	switch (m_ui.mode)
 	{
-	case LB_Mag:
-		if (event.AltDown())
-			ZoomOutToRect(m_world_rect);
-		else
-			ZoomToRect(m_world_rect, 0.0f);
-		break;
-	case LB_Box:
-		DrawArea(&dc);
-		GetMainFrame()->m_area = m_world_rect;
-		DrawArea(&dc);
-		break;
-	case LB_Node:
-	case LB_Link:
-		{
-			// select everything in the highlighted box.
-			vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
-			if (pRL->SelectArea(m_world_rect, (m_ui.mode == LB_Node),
-				m_bCrossSelect))
-			{
-				rect = WorldToWindow(m_world_rect);
-				IncreaseRect(rect, 5);
-				if (m_bCrossSelect)
-					Refresh();
-				else
-					Refresh(TRUE, &rect);
-			}
+		case LB_Mag:
+			if (event.AltDown())
+				ZoomOutToRect(m_world_rect);
 			else
-				DeselectAll();
-		}
-		break;
-	case LB_Move:
-		Refresh();
-		break;
-	case LB_FSelect:
-		EndBoxFeatureSelect(event);
+				ZoomToRect(m_world_rect, 0.0f);
+			break;
+		case LB_Box:
+			DrawArea(&dc);
+			GetMainFrame()->m_area = m_world_rect;
+			DrawArea(&dc);
+			break;
+		case LB_Node:
+		case LB_Link:
+			{
+			// select everything in the highlighted box.
+				vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
+				if (pRL->SelectArea(m_world_rect, (m_ui.mode == LB_Node),
+							m_bCrossSelect))
+				{
+					rect = WorldToWindow(m_world_rect);
+					IncreaseRect(rect, 5);
+					if (m_bCrossSelect)
+						Refresh();
+					else
+						Refresh(TRUE, &rect);
+				}
+				else
+					DeselectAll();
+			}
+			break;
+		case LB_Move:
+			Refresh();
+			break;
+		case LB_FSelect:
+			EndBoxFeatureSelect(event);
 	}
 }
 
@@ -725,36 +725,36 @@ void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
 	int sx = sr.width / 3;
 	int sy = sr.height / 3;
 	int left = sr.x, right = sr.x+sr.width,
-		top = sr.y, bottom = sr.y+sr.height;
+	top = sr.y, bottom = sr.y+sr.height;
 	int d=3,e=6;
 
 	//
 	pDC->DrawLine(left - e, top - d,
-				  left - e, top + sy);
+		left - e, top + sy);
 
 	pDC->DrawLine(left - d, top - e,
-				  left + sx, top - e);
+		left + sx, top - e);
 
 	//
 	pDC->DrawLine(right - sx, top - e,
-				  right + e, top - e);
+		right + e, top - e);
 
 	pDC->DrawLine(right + e, top - d,
-				  right + e, top + sy);
+		right + e, top + sy);
 
 	//
 	pDC->DrawLine(right + e, bottom - sy,
-				  right + e, bottom + d);
+		right + e, bottom + d);
 
 	pDC->DrawLine(right - sx, bottom + e,
-				  right + e, bottom + e);
+		right + e, bottom + e);
 
 	//
 	pDC->DrawLine(left - e, bottom - sy,
-				  left - e, bottom + d);
+		left - e, bottom + d);
 
 	pDC->DrawLine(left + sx, bottom + e,
-				  left - e, bottom + e);
+		left - e, bottom + e);
 }
 
 ////////////////////////////////////////////////////////////
@@ -764,26 +764,26 @@ void BuilderView::SetCorrectCursor()
 {
 	switch (m_ui.mode)
 	{
-	case LB_None:	// none
-	case LB_Link:	// select/edit roads
-	case LB_Node:	// select/edit nodes
-	case LB_Move:	// move selected nodes
-		SetCursor(wxCURSOR_ARROW); break;
-	case LB_Pan:	// pan the view
-		SetCursor(*m_pCursorPan); break;
-	case LB_Dist:	// measure distance
-		SetCursor(wxCURSOR_CROSS); break;
-	case LB_Mag:	// zoom into rectangle
-		SetCursor(wxCURSOR_MAGNIFIER); break;
-	case LB_TowerAdd:
-		SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
-	case LB_Dir:		// show/change road direction
-	case LB_LinkEdit:	// edit road points
-	case LB_LinkExtend: //extend a road selection
-	case LB_TSelect:
-	case LB_Box:
-	default:
-		SetCursor(wxCURSOR_ARROW); break;
+		case LB_None:	// none
+		case LB_Link:	// select/edit roads
+		case LB_Node:	// select/edit nodes
+		case LB_Move:	// move selected nodes
+				SetCursor(wxCURSOR_ARROW); break;
+		case LB_Pan:	// pan the view
+				SetCursor(*m_pCursorPan); break;
+		case LB_Dist:	// measure distance
+				SetCursor(wxCURSOR_CROSS); break;
+		case LB_Mag:	// zoom into rectangle
+				SetCursor(wxCURSOR_MAGNIFIER); break;
+		case LB_TowerAdd:
+			SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
+		case LB_Dir:		// show/change road direction
+		case LB_LinkEdit:	// edit road points
+		case LB_LinkExtend: //extend a road selection
+		case LB_TSelect:
+		case LB_Box:
+		default:
+			SetCursor(wxCURSOR_ARROW); break;
 	}
 }
 
@@ -968,28 +968,28 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
 	switch (m_ui.mode)
 	{
-	case LB_TSelect:
-		CheckForTerrainSelect(m_ui.m_DownLocation);
-		break;
+		case LB_TSelect:
+			CheckForTerrainSelect(m_ui.m_DownLocation);
+			break;
 
-	case LB_Pan:
-		BeginPan();
-		break;
+		case LB_Pan:
+			BeginPan();
+			break;
 
-	case LB_Mag:
-	case LB_Node:
-	case LB_Link:
-	case LB_FSelect:
-		BeginBox();
-		break;
+		case LB_Mag:
+		case LB_Node:
+		case LB_Link:
+		case LB_FSelect:
+			BeginBox();
+			break;
 
-	case LB_Box:
-		BeginArea();
-		break;
+		case LB_Box:
+			BeginArea();
+			break;
 
-	case LB_Dist:
-		BeginLine();
-		break;
+		case LB_Dist:
+			BeginLine();
+			break;
 	}
 	// Dispatch for layer-specific handling
 	if (pL)
@@ -1037,10 +1037,10 @@ void BuilderView::OnLButtonClick(const wxMouseEvent& event)
 	{
 		switch (m_ui.mode)
 		{
-		case LB_Link:
-		case LB_Node:
-			OnLButtonClickElement((vtRoadLayer *)pL);
-			break;
+			case LB_Link:
+			case LB_Node:
+				OnLButtonClickElement((vtRoadLayer *)pL);
+				break;
 		}
 	}
 	if (m_ui.mode == LB_FSelect)
@@ -1109,8 +1109,8 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 		IncreaseRect(screen_bound, BOUNDADJUST);
 		Refresh(TRUE, &screen_bound);
 		wxString str = wxString::Format("Selected 1 %s (%d total)",
-			m_ui.mode == LB_Node ? "Node" : "Road",
-			m_ui.mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
+				m_ui.mode == LB_Node ? "Node" : "Road",
+				m_ui.mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
 		GetMainFrame()->SetStatusText(str);
 	}
 	else
@@ -1146,7 +1146,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 		int building;
 		double distance;
 		bool found = pSL->FindClosestStructure(m_ui.m_DownLocation, odx(5),
-						   building, distance);
+				building, distance);
 		if (found)
 		{
 			vtStructure *str = pSL->GetAt(building);
@@ -1216,9 +1216,9 @@ void BuilderView::OnRightUp(const wxMouseEvent& event)
 
 	switch (pL->GetType())
 	{
-	case LT_STRUCTURE:
-		OnRightUpStructure((vtStructureLayer *)pL);
-		break;
+		case LT_STRUCTURE:
+			OnRightUpStructure((vtStructureLayer *)pL);
+			break;
 	}
 }
 
