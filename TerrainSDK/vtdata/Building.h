@@ -38,7 +38,8 @@ enum BldMaterial {
 	BMAT_STUCCO,
 	BMAT_CORRUGATED,
 	BMAT_DOOR,
-	BMAT_WINDOW
+	BMAT_WINDOW,
+	BMAT_WINDOWWALL
 };
 
 
@@ -85,6 +86,7 @@ public:
 	void Set(int doors, int windows, BldMaterial material);
 	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
 	int NumFeatures() const { return m_Features.GetSize(); }
+	int NumFeaturesOfCode(int code);
 	float FixedFeaturesWidth();
 	float ProportionTotal();
 
@@ -101,7 +103,7 @@ public:
 	Array<vtEdgeFeature> m_Features;
 };
 
-#define MAX_WALLS	24	// the largest number of walls
+#define MAX_WALLS	360	// the largest number of walls
 						// (largest number of points in a poly-shaped building)
 
 class vtLevel
@@ -128,6 +130,7 @@ public:
 	void SetEaveLength(float fMeters);
 	bool IsEdgeConvex(int i);
 	bool IsCornerConvex(int i);
+	bool IsUniform();
 
 	Array<vtEdge *> m_Edges;
 

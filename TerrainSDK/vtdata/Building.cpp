@@ -80,6 +80,7 @@ void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 	int num_Edgess = iDoors + iWindows + 1;
 
 	m_Features.Empty();
+	m_Features.SetMaxSize((iDoors + iWindows) * 2 + 1);
 	m_Features.Append(wall);
 
 	bool do_door, do_window, flip = false;
@@ -116,6 +117,17 @@ void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 void vtEdge::AddFeature(int code, float width, float vf1, float vf2)
 {
 	m_Features.Append(vtEdgeFeature(code, width, vf1, vf2));
+}
+
+int vtEdge::NumFeaturesOfCode(int code)
+{
+	int i, count = 0, size = m_Features.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		if (m_Features[i].m_code == code)
+			count++;
+	}
+	return count;
 }
 
 float vtEdge::FixedFeaturesWidth()
@@ -342,6 +354,29 @@ bool vtLevel::IsCornerConvex(int i)
 	// if dot product is positive, it's convex
 	double xprod = v1.Cross(v2);
 	return (xprod > 0);
+}
+
+/**
+ * Returns true if this level consists of edges with identical,
+ * evenly spaced windows.
+ */
+bool vtLevel::IsUniform()
+{
+	int i, edges = GetNumEdges();
+	for (i = 0; i < edges; i++)
+	{
+		vtEdge *edge = m_Edges[i];
+		int windows = edge->NumFeaturesOfCode(WFC_WINDOW);
+		int doors = edge->NumFeaturesOfCode(WFC_DOOR);
+		int walls = edge->NumFeaturesOfCode(WFC_WALL);
+		if (doors > 0)
+			return false;
+		if (walls != (windows + 1))
+			return false;
+		if (edge->m_iSlope != 90)
+			return false;
+	}
+	return true;
 }
 
 #if 0
