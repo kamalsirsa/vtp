@@ -152,6 +152,7 @@ void RenderDlg::OnDotdotdot( wxCommandEvent &event )
 {
 	wxString filter;
 	filter += FSTRING_JPEG;
+	filter += _T("|");
 	filter += FSTRING_TIF;
 
 	// ask the user for a filename
