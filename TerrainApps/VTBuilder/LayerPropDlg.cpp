@@ -33,7 +33,7 @@ LayerPropDlg::LayerPropDlg( wxWindow *parent, wxWindowID id, const wxString &tit
     const wxPoint &position, const wxSize& size, long style ) :
     AutoDialog( parent, id, title, position, size, style )
 {
-    ElevPropDialogFunc( this, TRUE ); 
+    LayerPropDialogFunc( this, TRUE ); 
 }
 
 // WDR: handler implementations for LayerPropDlg
