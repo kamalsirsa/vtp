@@ -62,6 +62,7 @@ public:
 	void UpdateEnableState();
 	void RefreshLabelFields();
 	void RefreshLocationFields();
+	void UpdateTimeString();
 
 	// overall name
 	wxString2	m_strTerrainName;

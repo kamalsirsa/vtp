@@ -570,7 +570,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUseGrid()->SetValue(!m_bTin);
 	GetUseTin()->SetValue(m_bTin);
 
-	m_strInitTime = asctime(&m_InitTime.GetTM());
+	UpdateTimeString();
 
 	// overall name
 	AddValidator(ID_TNAME, &m_strTerrainName);
@@ -840,16 +840,25 @@ void TParamsDlg::OnChoiceInitLocation( wxCommandEvent &event )
 
 void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
 {
+	TransferDataFromWindow();
+
 	TimeDlg dlg(this, -1, _("Set Initial Time"));
 	dlg.AddOkCancel();
 	dlg.SetTime(m_InitTime);
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		dlg.GetTime(m_InitTime);
-		m_strInitTime = asctime(&m_InitTime.GetTM());
+		UpdateTimeString();
 		m_bSetting = true;
 		TransferDataToWindow();
 		m_bSetting = false;
 	}
 }
 
+void TParamsDlg::UpdateTimeString()
+{
+	m_strInitTime = asctime(&m_InitTime.GetTM());
+
+	// asctime has a weird habit of putting a LF at the end
+	m_strInitTime.Trim();
+}
