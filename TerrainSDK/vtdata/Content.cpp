@@ -21,12 +21,24 @@
 // Implementation of class vtTagArray
 //
 
+void vtTagArray::AddTag(vtTag *pTag)
+{
+	m_tags.Append(pTag);
+}
+
+void vtTagArray::AddTag(const char *name, const char *value)
+{
+	vtTag *tag = new vtTag;
+	tag->name = name;
+	tag->value = value;
+	m_tags.Append(tag);
+}
+
 vtTag *vtTagArray::FindTag(const char *name)
 {
 	int size = m_tags.GetSize();
-	int i;
 	vtTag *tag;
-	for (i = 0; i < size; i++)
+	for (int i = 0; i < size; i++)
 	{
 		tag = m_tags[i];
 		if (!tag->name.CompareNoCase(name))
@@ -35,11 +47,57 @@ vtTag *vtTagArray::FindTag(const char *name)
 	return NULL;
 }
 
-void vtTagArray::SetValue(const char *name, const char *value)
+vtTag *vtTagArray::GetTag(int index)
+{
+	return m_tags.GetAt(index);
+}
+
+int vtTagArray::NumTags()
+{
+	return m_tags.GetSize();
+}
+
+void vtTagArray::RemoveTag(int index)
+{
+	m_tags.RemoveAt(index);
+}
+
+void vtTagArray::RemoveTag(const char *szTagName)
+{
+	int size = m_tags.GetSize();
+	vtTag *tag;
+	for (int i = 0; i < size; i++)
+	{
+		tag = m_tags[i];
+		if (!tag->name.CompareNoCase(szTagName))
+		{
+			m_tags.RemoveAt(i);
+			break;
+		}
+	}
+}
+
+void vtTagArray::SetValue(const char *name, const char *szValue)
 {
 	vtTag *tag = FindTag(name);
 	if (tag)
-		tag->value = value;
+		tag->value = szValue;
+	else
+		AddTag(name, szValue);
+}
+
+void vtTagArray::SetValue(const char *name, int iValue)
+{
+	vtString str;
+	str.Format("%d", iValue);
+	SetValue(name, str);
+}
+
+void vtTagArray::SetValue(const char *name, double dValue)
+{
+	vtString str;
+	str.Format("%lf", dValue);
+	SetValue(name, str);
 }
 
 const char *vtTagArray::GetValue(const char *name)
@@ -49,6 +107,30 @@ const char *vtTagArray::GetValue(const char *name)
 		return tag->value;
 	else
 		return NULL;
+}
+
+bool vtTagArray::GetValue(const char *name, vtString &string)
+{
+	vtTag *tag = FindTag(name);
+	if (tag)
+		string = tag->value;
+	return (tag != NULL);
+}
+
+bool vtTagArray::GetValue(const char *name, int &value)
+{
+	vtTag *tag = FindTag(name);
+	if (tag)
+		value = atoi((const char *)tag->value);
+	return (tag != NULL);
+}
+
+bool vtTagArray::GetValue(const char *name, double &value)
+{
+	vtTag *tag = FindTag(name);
+	if (tag)
+		value = atof((const char *)tag->value);
+	return (tag != NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////

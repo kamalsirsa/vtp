@@ -53,33 +53,23 @@ struct vtTag
 class vtTagArray
 {
 public:
-	void AddTag(vtTag *pTag)
-	{
-		m_tags.Append(pTag);
-	}
-	void AddTag(const char *name, const char *value)
-	{
-		vtTag *tag = new vtTag;
-		tag->name = name;
-		tag->value = value;
-		m_tags.Append(tag);
-	}
+	void AddTag(vtTag *pTag);
+	void AddTag(const char *name, const char *value);
+
 	vtTag *FindTag(const char *szTagName);
-	vtTag *GetTag(int index)
-	{
-		return m_tags.GetAt(index);
-	}
-	int NumTags()
-	{
-		return m_tags.GetSize();
-	}
-	void RemoveTag(int index)
-	{
-		m_tags.RemoveAt(index);
-	}
+	vtTag *GetTag(int index);
+	int NumTags();
+	void RemoveTag(int index);
+	void RemoveTag(const char *szTagName);
 
 	void SetValue(const char *szTagName, const char *szValue);
+	void SetValue(const char *szTagName, int value);
+	void SetValue(const char *szTagName, double value);
+
 	const char *GetValue(const char *szTagName);
+	bool GetValue(const char *szTagName, vtString &string);
+	bool GetValue(const char *szTagName, int &value);
+	bool GetValue(const char *szTagName, double &value);
 
 protected:
 	Array<vtTag*>	m_tags;
