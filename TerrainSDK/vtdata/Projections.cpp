@@ -35,6 +35,9 @@ vtProjection &vtProjection::operator=(const vtProjection &ref)
 	return *this;
 }
 
+/**
+ * Equality operator.
+ */
 bool vtProjection::operator==(const vtProjection &ref)
 {
 	// Work around problem in IsSame, by detecting this type of difference
@@ -387,8 +390,8 @@ bool vtProjection::GetTextDescription(char *type, char *value)
  * \param value The description itself.  A WKT description should be a
  * single string, with no extra whitespace.  A simple string can have the
  * following forms:
- *		- geo, datum <D>
- *		- utm, datum <D>, zone <Z>
+ *		- geo, datum D
+ *		- utm, datum D, zone Z
  *
  * \par Example:
 	\code

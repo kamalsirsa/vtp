@@ -235,7 +235,11 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
  * Import structure information from a Shapefile.
  *
  * \param pathname A resolvable filename of a Shapefile (.shp)
- * \param type The type of structure to expect (Buildings, Fences, or Instances)
+ * \param opt	Options which specify how to import structures from the file.
+ * \param progress_callback If supplied, this function will be called back
+ *				with a value of 0 to 100 as the operation progresses.
+ *
+ * \return True if successful.
  */
 bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 							   void progress_callback(int))

@@ -65,7 +65,7 @@ public:
 	vtProjection();
 
 	// Assignment
-	vtProjection &vtProjection::operator=(const vtProjection &ref);
+	vtProjection &operator=(const vtProjection &ref);
 
 	// Equality
 	bool operator==(const vtProjection &ref);

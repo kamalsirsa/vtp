@@ -130,8 +130,12 @@ double MetersPerLongitude(double latitude)
 /**
  * Initializes an elevation grid by converting the contents of an another
  * grid to a new projection.
- * \param pOld An existing elevation grid to convert from.
- * \param NewProj The new projection to convert to.
+ *
+ * \param pOld		An existing elevation grid to convert from.
+ * \param NewProj	The new projection to convert to.
+ * \param progress_callback If supplied, this function will be called back
+ *				with a value of 0 to 100 as the operation progresses.
+ *
  * \return True if successful.
  */
 bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
@@ -255,8 +259,9 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 /**
  * Scale all the valid elevation values in the grid by a given factor.
  *
- * \param bDirect If true, scale the stored height values directly.  Otherwise,
- * only the height scale (vertical meters per unit) is scaled.
+ * \param fScale	The desired scale, e.g. 1.0 produces no change in scale. 
+ * \param bDirect	If true, scale the stored height values directly.
+ *		Otherwise, only the height scale (vertical meters per unit) is scaled.
  */
 void vtElevationGrid::Scale(float fScale, bool bDirect)
 {
@@ -485,11 +490,15 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 		GetFValue(i, j));
 }
 
-/** Use the height data in the grid to fill a bitmap with a shaded color image.
- * \param pDIB The bitmap to color.
- * \param color_ocean The color to use for areas at sea level.
- * \param progress_callback If supplied, this function will be called by with a
- *		value of 0 to 100 as the operation progresses.
+/**
+ * Use the height data in the grid to fill a bitmap with a shaded color image.
+ *
+ * \param pDIB			The bitmap to color.
+ * \param color_ocean	The color to use for areas at sea level.
+ * \param bZeroIsOcean	True if allow areas with elevation=0 are to be
+ *							considered ocean.
+ * \param progress_callback If supplied, this function will be called back
+ *				with a value of 0 to 100 as the operation progresses.
  */
 void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 	bool bZeroIsOcean, void progress_callback(int))

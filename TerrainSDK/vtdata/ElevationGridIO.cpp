@@ -1439,9 +1439,13 @@ bool vtElevationGrid::SaveToTerragen(const char *szFileName)
 }
 
 
-/** Writes the grid to a BT (Binary Terrain) file.
- * The current BT format version (1.2) is written.
- * \param szFileName The file name to write to.
+/**
+ * Writes the grid to a BT (Binary Terrain) file.
+ * The current BT format version (1.3) is written.
+ *
+ * \param szFileName		The file name to write to.
+ * \param progress_callback If supplied, this function will be called back
+ *				with a value of 0 to 100 as the operation progresses.
  */
 bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(int))
 {
@@ -1533,13 +1537,17 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 }
 
 
-/** Loads an elevation grid using the GDAL library.  The GDAL library
+/**
+ * Loads an elevation grid using the GDAL library.  The GDAL library
  * supports a very large number of formats, including SDTS-DEM.  See
  * http://www.remotesensing.org/gdal/formats_list.html for the complete list
  * of GDAL-supported formats.
  *
  * \param szFileName The file name to read from.
- * \returns \c true if the file was successfully opened and read.
+ * \param progress_callback If supplied, this function will be called back
+ *		with a value of 0 to 100 as the operation progresses.
+ *
+ * \returns True if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 								   void progress_callback(int))
@@ -1667,22 +1675,26 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	return true;
 }
 
-/** Loads from a RAW file (a naked array of elevation values).
+/**
+ * Loads from a RAW file (a naked array of elevation values).
  * The file will not contain any information about at all about data size,
  * data type, or projection, so this information must be passed in as
  * arguments.
  *
- * \param szFileName The file name to read from.
- * \param width The width of the expected array.
- * \param height The height of the expected array.
+ * \param szFileName	The file name to read from.
+ * \param width			The width of the expected array.
+ * \param height		The height of the expected array.
  * \param bytes_per_element The number of bytes for each elevation value.  If
  *		this is 1 or 2, the data is assumed to be integer.  If 4, then the
  *		data is assumed to be floating-point values.
  * \param vertical_units Indicates what scale factor to apply to the
  *		elevation values to convert them to meters.  E.g. if the file is in
  *		meters, pass 1.0, if in feet, pass 0.3048.
- * \param bBigEndian True for Big-endian byte order, false for Little-endian
- *		(Intel byte order).
+ * \param bBigEndian	True for Big-endian byte order, false for
+ *		Little-endian (Intel byte order).
+ * \param progress_callback If supplied, this function will be called back
+ *		with a value of 0 to 100 as the operation progresses.
+ *
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,

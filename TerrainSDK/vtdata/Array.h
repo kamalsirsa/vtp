@@ -40,7 +40,7 @@ public:
 	E*		GetData() const;
 	bool	IsEmpty() const;
 	E&		GetAt(int i) const;
-	bool	SetAt(int, E);
+	bool	SetAt(int i, E);
 
 //	Other operations
 	Array<E>& operator=(const Array<E>&);
@@ -93,17 +93,17 @@ template <class E> Array<E>::Array(int size)
 
 /**
  *	Called by the array implementation when new array items are created.
- *	The default implementation does <<not>> call the constructors for the
+ *	The default implementation does _not_ call the constructors for the
  *	array items, it just fills the data with zeros. This will not work if
  *	your array elements use virtual functions.
  *
  *	Override this function to explicitly call the constructors properly if
  *	you need this functionality. In order to call the constructors without
- *	allocating memory, you need to supply a special version of <operator new>
+ *	allocating memory, you need to supply a special version of operator new
  *	for your array elements.
  *
- * \param first		index of first element to make
- * \param last		index of last element to make
+ * \param first		Index of first element to make.
+ * \param last		Index of last element to make.
  *
  * \par Example:
 \code
@@ -126,7 +126,7 @@ template <class E> inline void Array<E>::ConstructItems(int start, int last)
 
 /**
  *	Called by the array implementation when array items are deleted.
- *	The default implementation does <<not>> call the destructors for the
+ *	The default implementation does _not_ call the destructors for the
  *	array items. This will not work if your array elements do memory
  *	deallocation in their destructors.
  *
@@ -165,15 +165,15 @@ template <class E> inline Array<E>::~Array()
 }
 
 /**
- * Enlarge the array to accomodate <growto> elements. If the array
+ * Enlarge the array to accomodate <i>growto</i> elements. If the array
  * can already hold this many elements, nothing is done. Otherwise,
  * the data area of the array is enlarged (reallocating if necessary)
- * so that <growto> contiguous elements can be stored.
+ * so that <i>growto</i> contiguous elements can be stored.
  *
  * \param growto	Number of elements the array should be able to
  *					hold after it has grown
  *
- * \return bool, <true> if array was successfully grown, else <false>
+ * \return True if array was successfully grown, else false.
  *
  * \sa Array::SetData Array::SetMaxSize
  */
@@ -220,10 +220,10 @@ template <class E> inline E* Array<E>::GetData() const
  * is dynamically managed by the system, setting the maximum size
  * enlarges its data area to accomodate the required number of elements.
  *
- * \param s	Current maximum size of array (number of elements
- *			its data area can hold)
+ * \param s	Current maximum size of array (number of elements its
+ *			data area can hold)
  *
- * \return bool, <true> if maximum size successfully changed, else <false>
+ * \return bool, true if maximum size successfully changed, else false.
  *
  * \sa Array::SetData Array::SetSize Array::GetElemSize Array::Grow
  */
@@ -247,11 +247,9 @@ template <class E> inline int	Array<E>::GetElemSize() const
  * When the array size is enlarged, we should call constructors
  * for the new empty elements. We don't do that yet.
  *
- * \param
- *	<s>	Current number of elements contained in array
+ * \param s		Current number of elements contained in array
  *
- * \return bool
- *	<true> if size successfully changed, else <false>
+ * \return bool	True if size successfully changed, else false.
  *
  * \sa Array::SetData Array::Grow Array::SetMaxSize
  *
@@ -278,18 +276,16 @@ template <class E> inline int	Array<E>::GetSize() const
 	{ return m_Size; }
 
 /**
- *	Sets the <i>th element of the array to the given value.
+ *	Sets the i'th element of the array to the given value.
  *	The number of bytes copied is determined by the element size
  *	of the array specified at initialization time.
  *	If the array is not large enough, it is extended to become
  *	1 1/2 times its current size.
  *
- * \param
- *	<i>		index of new element (0 based)
- *	<p>		pointer to the value of the new element
+ * \param i		Index of new element (0 based)
+ * \param val	Value of the new element.
  *
- * \return int
- *	index of element added or -1 if out of memory
+ * \return int index of element added or -1 if out of memory
  *
  * \par Examples:
 \code
@@ -300,7 +296,7 @@ template <class E> inline int	Array<E>::GetSize() const
 	cols.SetAt(17, RGBi(0,1,1));	// causes array growth
 \endcode
  */
-template <class E> bool Array<E>::SetAt(int i, E p)
+template <class E> bool Array<E>::SetAt(int i, E val)
 {
 	if (i >= m_MaxSize)			// need to extend array?
 	   {
@@ -317,12 +313,12 @@ template <class E> bool Array<E>::SetAt(int i, E p)
 }
 
 /**
- *	Gets the <i>th element of the array.
+ *	Gets the i'th element of the array.
  *
- * \param index	0 based index of element to get. Like C++ arrays,
- *				these arrays do not check the range of the index so your
- *				program will crash if you supply a number less than zero
- *				or greater than the array size as an index.
+ * \param i	0 based index of element to get. Like C++ arrays,
+ *			these arrays do not check the range of the index so your
+ *			program will crash if you supply a number less than zero
+ *			or greater than the array size as an index.
  *
  * \return element accessed
  */
@@ -401,14 +397,13 @@ template <class E> int inline Array<E>::Append(const E& v)
 }
 
 /**
- *	Removes the <i>th element of the array. The following
+ *	Removes the i'th element of the array. The following
  *	elements are shuffled up to eliminate the unused space.
  *
- * \param
- *	<i>		index of element to remove (0 based)
+ * \param	i	Index of element to remove (0 based)
+ * \param	n	Number of elements to remove (default 1)
  *
- * \return bool
- *	<true> if element was successfully removed, else <false>
+ * \return bool True if element was successfully removed, else false.
  *
  * \sa Array::Append Array::SetAt Array::SetSize
  *
@@ -421,7 +416,6 @@ template <class E> int inline Array<E>::Append(const E& v)
 	zot.RemoveAt(0);	 // remove first element
 	zot.RemoveAt(-1);	 // returns false
 \endcode
- *
  */
 template <class E> bool Array<E>::RemoveAt(int i, int n)
 {
@@ -486,7 +480,7 @@ template <class E> void Array<E>::Empty()
 /**
  * Determines whether an array has elements or not
  *
- * \return true if array contains no elements, else <false>
+ * \return True if array contains no elements, else false.
  *
  * \sa Array::SetSize Array::Empty
  */
