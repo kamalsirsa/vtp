@@ -1139,7 +1139,7 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 		f->m_width = 11;
 		f->m_decimals = 0;
 	}
-	if (ftype == FT_Short)
+	else if (ftype == FT_Short)
 	{
 		f->m_width = 6;
 		f->m_decimals = 0;
