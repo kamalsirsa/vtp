@@ -21,7 +21,7 @@
 /**
  * Represents a Node in the vtlib Scene Graph.
  */
-class vtNode : public vtNodeBase, public osg::Referenced
+class vtNode : public vtNodeBase, protected osg::Referenced
 {
 public:
 	vtNodeBase *Clone() { return NULL; }
