@@ -30,15 +30,15 @@
  * Also: ISMObj Array_SetMaxSize Array_SetSize
  *
  * Examples:
- *	Array<void*> foo;            // empty array of pointers
+ *	Array<void*> foo;		// empty array of pointers
  *
  ----*/
 template <class E> Array<E>::Array(int size)
 {
-	m_Size = 0;					// empty to start
+	m_Size = 0;				// empty to start
 	m_MaxSize = 0;			// remember the size
 	m_Data = NULL;
-	if (size > 0)				// make room for <size> elements
+	if (size > 0)			// make room for <size> elements
 		Grow(size);
 }
 
@@ -208,8 +208,8 @@ template <class E> inline E* Array<E>::GetData() const
  ----*/
 template <class E> bool Array<E>::SetMaxSize(int s)
 {
-	if (s > m_MaxSize)				// enlarge array
-		return Grow(s);				// if we can
+	if (s > m_MaxSize)			// enlarge array
+		return Grow(s);			// if we can
 	return true;
 }
 
@@ -241,10 +241,10 @@ template <class E> inline int	Array<E>::GetElemSize() const
  * Also: Array_SetData Array_Grow Array_SetMaxSize
  *
  * Examples:
- *	Array<ISMCol4f> cols(256);   // room for 256 colors
- *	int ncols = cols.GetSize();     // will be zero
- *	ncols = cols.GetMaxSize();      // will be 256
- *	cols.SetSize(ncols);            // calls 256 Color4 constructors NOT
+ *	Array<ISMCol4f> cols(256);  // room for 256 colors
+ *	int ncols = cols.GetSize();	// will be zero
+ *	ncols = cols.GetMaxSize();	// will be 256
+ *	cols.SetSize(ncols);		// calls 256 Color4 constructors NOT
  *
  ----*/
 template <class E> bool inline Array<E>::SetSize(int s)
@@ -281,11 +281,11 @@ template <class E> inline int	Array<E>::GetSize() const
  *	index of element added or -1 if out of memory
  *
  * Examples:
- *	Array<ISMCol4f> cols(16);        // room for 16 colors
- *	cols.SetAt(0, ISMCol4f(1,1,1));     // first color white
- *	cols.SetAt(15, ISMCol4f(1,0,0));    // last color red
- *                                      // makes Colors 1-14, too
- *	cols.SetAt(17, ISMCol4f(0,1,1));    // causes array growth
+ *	Array<ISMCol4f> cols(16);			// room for 16 colors
+ *	cols.SetAt(0, ISMCol4f(1,1,1));		// first color white
+ *	cols.SetAt(15, ISMCol4f(1,0,0));	// last color red
+ *										// makes Colors 1-14, too
+ *	cols.SetAt(17, ISMCol4f(0,1,1));	// causes array growth
  *
  ----*/
 template <class E> bool Array<E>::SetAt(int i, E p)
@@ -352,11 +352,11 @@ template <class E> inline E& Array<E>::operator[](int i)
  * Also: Array_SetAt
  *
  * Examples:
- *	Array<int> foo;   // define integer array
- *	foo.Append(5);         // first element is 5
- *	foo.Append(6);         // second element is 5
- *	int t = foo.Find(7);   // returns -1
- *	t = foo.Find(6);       // returns 1
+ *	Array<int> foo;		 // define integer array
+ *	foo.Append(5);		 // first element is 5
+ *	foo.Append(6);		 // second element is 5
+ *	int t = foo.Find(7);  // returns -1
+ *	t = foo.Find(6);	  // returns 1
  *
  ----*/
 template <class E> int Array<E>::Find(const E& elem) const
@@ -389,10 +389,10 @@ template <class E> int Array<E>::Find(const E& elem) const
  *
  * Examples:
  *	Array<float>	vals;
- *	vals.Append(1.0f);      // first element
- *	vals.Append(2.0f);      // second element
- *	vals.SetAt(5, 6.0f);    // sixth element
- *	vals.Append(7.0f);      // seventh element
+ *	vals.Append(1.0f);	  // first element
+ *	vals.Append(2.0f);	  // second element
+ *	vals.SetAt(5, 6.0f);  // sixth element
+ *	vals.Append(7.0f);	  // seventh element
  *
  ----*/
 template <class E> int inline Array<E>::Append(const E& v)
@@ -423,11 +423,11 @@ template <class E> int inline Array<E>::Append(const E& v)
  *
  * Examples:
  *	Array<int16> zot(8); // room for 8 shorts
- *	zot.SetSize(8);         // now has 8 zeros
- *	zot[1] = 1;             // second element
- *	zot[2] = 2;             // third element
- *	zot.RemoveAt(0);        // remove first element
- *	zot.RemoveAt(-1);       // returns false
+ *	zot.SetSize(8);		 // now has 8 zeros
+ *	zot[1] = 1;			 // second element
+ *	zot[2] = 2;			 // third element
+ *	zot.RemoveAt(0);	 // remove first element
+ *	zot.RemoveAt(-1);	 // returns false
  *
  ----*/
 template <class E> bool Array<E>::RemoveAt(int i, int n)
@@ -466,9 +466,9 @@ template <class E> bool Array<E>::RemoveAt(int i, int n)
  * Examples:
  *	int	zap[3] = { 1, 2, 3 };
  *	Array<int> zip(3, &zap);  // user managed
- *	Array<int> zot;           // dynamic
- *	zot.Append(zip);               // adds 1 2 3
- *	zot.Append(zip);               // adds 1 2 3 again
+ *	Array<int> zot;		   // dynamic
+ *	zot.Append(zip);			   // adds 1 2 3
+ *	zot.Append(zip);			   // adds 1 2 3 again
  *
  ----*/
 template <class E> int Array<E>::Append(const Array<E>& src)
