@@ -435,6 +435,9 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *descriptor)
 {
 	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, descriptor->GetSourceName());
+	if (path == "")
+		return;
+
 	int divisions = 6;
 	float start = .25f;
 	int step = (int) ((1.0f-start)/(divisions-1));
