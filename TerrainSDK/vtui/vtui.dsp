@@ -40,8 +40,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-F90=df.exe
 MTL=midl.exe
+F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /Yu"wx/wxprec.h" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -65,8 +65,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-F90=df.exe
 MTL=midl.exe
+F90=df.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /D "_DEBUG" /D DEBUG=1 /D "__WXDEBUG__" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /FR /Yu"wx/wxprec.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -97,6 +97,10 @@ SOURCE=.\BuildingDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\LinearStructDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\pre.cpp
 # ADD CPP /Yc"wx/wxprec.h"
 # End Source File
@@ -115,6 +119,10 @@ SOURCE=.\AutoDialog.h
 # Begin Source File
 
 SOURCE=.\BuildingDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\LinearStructDlg.h
 # End Source File
 # Begin Source File
 

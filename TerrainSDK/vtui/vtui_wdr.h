@@ -58,6 +58,13 @@ extern wxSizer *g_pEdgeGroup;
 #define ID_FEAT_DOOR 10023
 wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_TYPE 10024
+#define ID_HEIGHTEDIT 10025
+#define ID_HEIGHTSLIDER 10026
+#define ID_SPACINGEDIT 10027
+#define ID_SPACINGSLIDER 10028
+wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
