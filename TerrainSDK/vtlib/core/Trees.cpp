@@ -129,19 +129,6 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 		}
 		if (!m_pExternal)
 			return;
-
-		vtString ext = GetExtension(m_filename, false);
-		if (ext.CompareNoCase(".3ds") == 0 ||
-			ext.CompareNoCase(".flt") == 0)
-		{
-			// Wrap in a transform node so that we can correct for 3ds problem
-			vtTransform *pTrans = new vtTransform();
-			pTrans->AddChild(m_pExternal);
-			pTrans->Identity();
-			// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO?)
-			pTrans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-			m_pExternal = pTrans;
-		}
 	}
 }
 
