@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=VTBuilder - Win32 Debug
+CFG=VTBuilder - Win32 Debug Unicode
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,13 @@ CFG=VTBuilder - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "VTBuilder.mak" CFG="VTBuilder - Win32 Debug"
+!MESSAGE NMAKE /f "VTBuilder.mak" CFG="VTBuilder - Win32 Debug Unicode"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "VTBuilder - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "VTBuilder - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "VTBuilder - Win32 Debug Unicode" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -84,12 +85,40 @@ LINK32=link.exe
 # ADD BASE LINK32 wx22_1d.lib netcdfs.lib vtdatad.lib ProjectionLib.lib gctpc.lib gdi32.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcpd.lib" /pdbtype:sept /libpath:"\TerrainSDK\vtdata\Debug" /libpath:"\APIs\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Debug" /libpath:"\TerrainSDK\gctpc\Debug" /libpath:"\TerrainSDK\shapelib\Debug" /libpath:"\TerrainSDK\sdtsxx\builder\Debug" /libpath:"\TerrainSDK\sdtsxx\container\Debug" /libpath:"\TerrainSDK\sdtsxx\io\Debug"
 # ADD LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 
+!ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug Unicode"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "VTBuilder___Win32_Debug_Unicode"
+# PROP BASE Intermediate_Dir "VTBuilder___Win32_Debug_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Debug_Unicode"
+# PROP Intermediate_Dir "Debug_Unicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /FR /Yu"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D "_UNICODE" /D "UNICODE" /FR /Yu"wx/wxprec.h" /FD /c
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x809 /i "\APIs\wx2\include" /d "_DEBUG"
+# ADD RSC /l 0x809 /i "\APIs\wx2\include" /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 wxmsw240ud.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+
 !ENDIF 
 
 # Begin Target
 
 # Name "VTBuilder - Win32 Release"
 # Name "VTBuilder - Win32 Debug"
+# Name "VTBuilder - Win32 Debug Unicode"
 # Begin Group "Source"
 
 # PROP Default_Filter ".cpp"
