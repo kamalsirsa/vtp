@@ -19,7 +19,6 @@
 #include "Fence3d.h"
 #include "Route.h"
 #include "vtTin3d.h"
-#include "TerrainPatch.h"
 
 //#include "LKTerrain.h"
 #include "TVTerrain.h"
@@ -582,7 +581,6 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	pGeom->SetMaterials(pMat_Ocean);
 	pMat_Ocean->Release();
 
-	TerrainPatch *mesh;
 	float width, depth;
 	int i, j;
 
@@ -591,6 +589,8 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 	width = (float) world_size.x;
 	depth = (float) world_size.y;
+	FPoint3 base, size(width, 0, depth);
+
 	for (i = -3; i < 4; i++)
 	{
 		for (j = -3; j < 4; j++)
@@ -605,10 +605,12 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 				if (!bHorizon) continue;
 			}
 
-			mesh = new TerrainPatch(VtxType, 4);
-			mesh->MakeGrid(1, 1, width/1, depth/1,
-				world_extents.left + (i * width),
-				world_extents.bottom - (j * depth), 5.0f, 5.0f);
+			base.x = world_extents.left + (i * width);
+			base.y = 0;
+			base.z = world_extents.bottom - (j * depth);
+
+			vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, VtxType, 4);
+			mesh->CreateRectangle(1, 1, base, size, 5.0f);
 
 			pGeom->AddMesh(mesh, 0);	// actually add
 			mesh->Release();	// pass ownership to the Geometry
