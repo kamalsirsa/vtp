@@ -170,14 +170,7 @@ vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
 bool vtStructureArray3d::ConstructStructure(vtStructure3d *str)
 {
 	vtTagArray options;
-
 	return str->CreateNode(m_pHeightField, options);
-}
-
-void vtStructureArray3d::ReConstructStructure(vtStructure3d *str)
-{
-	str->DeleteNode();
-	ConstructStructure(str);
 }
 
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
@@ -236,7 +229,7 @@ void vtStructureArray3d::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 		m_pEditBuilding->RemoveTag("level");
 		m_pEditBuilding->RemoveTag("edge");
 		str1 = (vtStructure3d *) (vtBuilding3d *) m_pEditBuilding;
-		ReConstructStructure(str1);
+		ConstructStructure(str1);
 	}
 
 	vtStructureArray::SetEditedEdge(bld, lev, edge);
@@ -246,6 +239,15 @@ void vtStructureArray3d::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 		m_pEditBuilding->SetValue("level", m_iEditLevel);
 		m_pEditBuilding->SetValue("edge", m_iEditEdge);
 		str2 = (vtStructure3d *) (vtBuilding3d *) m_pEditBuilding;
-		ReConstructStructure(str2);
+		ConstructStructure(str2);
 	}
 }
+
+
+void vtStructureArray3d::DestroyStructure(int i)
+{
+	// Need to destroy the 3d geometry for this structure
+	vtStructure3d *st3d = GetStructure3d(i);
+	st3d->DeleteNode();
+}
+

@@ -89,7 +89,6 @@ public:
 
 	/// Construct an individual structure, return true if successful
 	bool ConstructStructure(vtStructure3d *str);
-	void ReConstructStructure(vtStructure3d *str);
 	void OffsetSelectedStructures(const DPoint2 &offset);
 
 	/// Deselect all structures including turning off their visual highlights
@@ -97,6 +96,9 @@ public:
 
 	// Be informed of edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
+
+	// Be informed when a structure is deleted
+	virtual void DestroyStructure(int i);
 
 protected:
 	vtHeightField *m_pHeightField;
