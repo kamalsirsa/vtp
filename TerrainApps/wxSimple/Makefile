@@ -12,17 +12,19 @@ include $(VTP_ROOT)/TerrainApps/Make.defs
 
 IFLAGS = $(shell wx-config --cflags) \
 	  -I$(TERRAIN_SDK_DIR)       \
+	  -I$(GDAL_INC)              \
 	  -I$(OSG_INC)               \
 	  -I$(X_INC)
 
-LDIRS  = $(OSG_LIB)                \
-	 $(VTDATA_INST_DIR)        \
-	 $(VTOSG_INST_DIR)         \
-	 $(XMLHELPER_INST_DIR)     \
-	 $(PNG_LIB)                \
-	 $(SHAPE_LIB)              \
-	 $(NETCDF_LIB)             \
-	 $(X_LIB)                  \
+LDIRS  = $(OSG_LIB)          \
+	 $(VTDATA_INST_DIR)      \
+	 $(VTOSG_INST_DIR)       \
+	 $(XMLHELPER_INST_DIR)   \
+	 $(PNG_LIB)              \
+	 $(SHAPE_LIB)            \
+	 $(NETCDF_LIB)           \
+	 $(GDAL_LIB)             \
+	 $(X_LIB)                \
 	 $(EXTRA_LDIRS)
 
 SWITCHES := $(SWITCHES) -DUNIX -DVTLIB_OSG=1
