@@ -192,7 +192,7 @@ void BExtractorView::OnDraw(CDC* pDC)
 	// clip left
 	diff = r.left - dest_offset.x;
 	diff_source = (long)(diff * ratio_x); // round to number of whole pixels
-	diff = diff_source / ratio_x;
+	diff = (int) (diff_source / ratio_x);
 	if (diff > 0)
 	{
 		dest_offset.x += diff;
@@ -203,7 +203,7 @@ void BExtractorView::OnDraw(CDC* pDC)
 	// clip top
 	diff = r.top - dest_offset.y;
 	diff_source = (long)(diff * ratio_y); // round to number of whole pixels
-	diff = diff_source / ratio_y;
+	diff = (int) (diff_source / ratio_y);
 	if (diff > 0)
 	{
 		dest_offset.y += diff;
@@ -214,7 +214,7 @@ void BExtractorView::OnDraw(CDC* pDC)
 	// clip right
 	diff = (dest_offset.x + dest_size.x) - r.right;
 	diff_source = (long)(diff * ratio_x); // round to number of whole pixels
-	diff = diff_source / ratio_x;
+	diff = (int) (diff_source / ratio_x);
 	if (diff > 0)
 	{
 		dest_size.x -= diff;
@@ -224,7 +224,7 @@ void BExtractorView::OnDraw(CDC* pDC)
 	// clip bottom
 	diff = (dest_offset.y + dest_size.y) - r.bottom;
 	diff_source = (long)(diff * ratio_y); // round to number of whole pixels
-	diff = diff_source / ratio_y;
+	diff = (int) (diff_source / ratio_y);
 	if (diff > 0)
 	{
 		dest_size.y -= diff;
