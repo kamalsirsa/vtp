@@ -314,7 +314,8 @@ void vtLevel::SetRoofType(RoofType rt, int iSlope)
 			bool last_gable = false;
 			for (i = 0; i < edges; i++)
 			{
-				if (IsEdgeConvex(i) && !last_gable)
+				if (IsEdgeConvex(i) && !last_gable &&
+					!((i == edges - 1) && (m_Edges[0]->m_iSlope == 90)))
 				{
 					m_Edges[i]->m_iSlope = 90;
 					last_gable = true;
@@ -487,6 +488,9 @@ bool vtLevel::DetermineHeightFromSlopes()
 		bool valid = PlaneIntersection(planes[i0], planes[i1], planes[i2], point);
 		if (valid)
 		{
+			if (point.y < 0)	// shouldn't happen, but just a safety check
+				continue;
+
 			// take this point as the height of the roof
 			float fHeight = (point.y - m_LocalFootprint[0].y);
 			if (fHeight < fMinHeight)

@@ -393,6 +393,12 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 
 			// vector of plane intersection is cross product of their normals
 			FPoint3 inter = norm1.Cross(norm2);
+
+			// Test that intersection vector is pointing into the polygon
+			// need a better test if we are going to handle downward sloping roofs
+			if (inter.y < 0)
+				inter = -inter;	// Reverse vector to point upward
+
 			inter.Normalize();
 			inter *= (lev->m_fStoryHeight / inter.y);
 
