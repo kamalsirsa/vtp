@@ -240,7 +240,11 @@ public:
 	vtTrackball(float fRadius);
 
 	void SetRadius(float fRadius);
-	float GetRadius();
+	float GetRadius() const;
+
+	void SetPivotPoint(const FPoint3 &pos) { m_Pivot = pos; }
+	FPoint3 GetPivotPoint() const { return m_Pivot; }
+
 	void SetRotateButton(int button, int modifier = 0, bool bExact = true);
 	void SetZoomButton(int button, int modifier = 0, bool bExact = true);
 	void SetTranslateButton(int button, int modifier = 0, bool bExact = true);
@@ -248,10 +252,12 @@ public:
 	void SetZoomScale(float s);
 	void SetTransScale(float s);
 
-	void SetPivotPoint(const FPoint3 &pos) { m_Pivot = pos; }
 	void SetDirection(float fTheta, float fPhi);
 	void MoveDirection(float fTheta, float fPhi);
+
 	void SetTrans(const FPoint3 &trans) { m_Trans = trans; }
+	void Translate(const FPoint3 &trans) { m_Trans += trans; }
+	FPoint3 GetTrans() const { return m_Trans; }
 
 	void OnMouse(vtMouseEvent &event);
 	void Eval();

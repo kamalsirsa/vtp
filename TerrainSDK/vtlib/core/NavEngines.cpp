@@ -735,7 +735,7 @@ void vtTrackball::SetRadius(float fRadius)
  * Get the radius, the distance from the pivot point that the Trackball
  * rotates around.
  */
-float vtTrackball::GetRadius()
+float vtTrackball::GetRadius() const
 {
 	return m_Pos.z;
 }
