@@ -292,7 +292,8 @@ bool vtRawLayer::OnLoad()
 
 	wxString2 fname = GetLayerFilename();
 	if (!fname.Right(4).CmpNoCase(_T(".gml")) ||
-		 !fname.Right(4).CmpNoCase(_T(".xml")))
+		!fname.Right(4).CmpNoCase(_T(".xml")) ||
+		!fname.Right(4).CmpNoCase(_T(".ntf")))
 	{
 		m_pSet = loader.LoadWithOGR(fname.mb_str(), progress_callback);
 	}
@@ -581,5 +582,18 @@ void vtRawLayer::FreeIndex()
 	vtFeatureSetPolygon *polyset = dynamic_cast<vtFeatureSetPolygon *>(m_pSet);
 	if (polyset)
 		polyset->FreeIndex();
+}
+
+
+///////////////////////////////////////////
+
+bool vtRawLayer::CreateFromOGRLayer(OGRLayer *pOGRLayer)
+{
+	vtFeatureLoader loader;
+
+	vtFeatureSet *pSet = loader.LoadWithOGR(pOGRLayer, progress_callback);
+	if (pSet)
+		m_pSet = pSet;
+	return (pSet != NULL);
 }
 

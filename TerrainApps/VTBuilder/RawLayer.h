@@ -37,6 +37,7 @@ public:
 
 	void AddPoint(const DPoint2 &p2);
 	bool LoadWithOGR(const char *filename, bool progress_callback(int) = NULL);
+	bool CreateFromOGRLayer(OGRLayer *pOGRLayer);
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
 
 	vtProjection *GetAtProjection()
