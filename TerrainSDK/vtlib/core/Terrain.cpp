@@ -1555,8 +1555,13 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 	geom->SetMaterials(pMats);
 	pMats->Release();
 
-	int start, total = feat.NumTotalVertices();
-	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, total);
+	vtMeshFactory mf(geom, vtMesh::LINE_STRIP, 0, 30000, 0);
+
+	float fHeight;
+	if (!style.GetValueFloat("GeomHeight", fHeight))
+		fHeight = 1;
+	bool bTessellate = style.GetValueBool("Tessellate");
+	bool bCurve = false;
 
 	FPoint3 f3;
 	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
@@ -1564,47 +1569,32 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 		unsigned int size;
 		if (pSetLS2)
 		{
-			start = mesh->GetNumVertices();
 			const DLine2 &dline = pSetLS2->GetPolyLine(i);
-			size = dline.GetSize();
-			for (unsigned int j = 0; j < size; j++)
-			{
-				m_pHeightField->ConvertEarthToSurfacePoint(dline[j], f3);
-				mesh->AddVertex(f3);
-			}
-			mesh->AddStrip2(size, start);
+			AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
 		}
 		else if (pSetLS3)
 		{
-			start = mesh->GetNumVertices();
+			mf.PrimStart();
 			const DLine3 &dline = pSetLS3->GetPolyLine(i);
 			size = dline.GetSize();
 			for (unsigned int j = 0; j < size; j++)
 			{
+				// preserve 3D point's elevation: don't drape
 				m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], f3);
-				mesh->AddVertex(f3);
+				mf.AddVertex(f3);
 			}
-			mesh->AddStrip2(size, start);
+			mf.PrimEnd();
 		}
 		else if (pSetPoly)
 		{
 			const DPolygon2 &dpoly = pSetPoly->GetPolygon(i);
 			for (unsigned int k = 0; k < dpoly.size(); k++)
 			{
-				start = mesh->GetNumVertices();
 				const DLine2 &dline = dpoly[k];
-				size = dline.GetSize();
-				for (unsigned int j = 0; j < size; j++)
-				{
-					m_pHeightField->ConvertEarthToSurfacePoint(dline[j], f3);
-					mesh->AddVertex(f3);
-				}
-				mesh->AddStrip2(size, start);
+				AddSurfaceLineToMesh(&mf, dline, fHeight, bTessellate, bCurve);
 			}
 		}
 	}
-	geom->AddMesh(mesh, 0);
-	mesh->Release();
 	pAbstractGroup->AddChild(geom);
 }
 
@@ -2501,7 +2491,14 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		return;
 	}
 
-	vtMesh *pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, STEPS*4);
+	poi->m_pGeom = new vtGeom();
+	poi->m_pGeom->SetName2("POI Geom");
+	vtMaterialArray *pMat = new vtMaterialArray();
+	pMat->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
+	poi->m_pGeom->SetMaterials(pMat);
+	pMat->Release();
+
+	vtMeshFactory mf(poi->m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
 
 	DLine2 dline;
 	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
@@ -2509,49 +2506,41 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	dline.Append(DPoint2(poi->m_rect.right, poi->m_rect.bottom));
 	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.bottom));
 	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
-	AddSurfaceLineToMesh(pMesh, dline, 10.0f);
-
-	poi->m_pGeom = new vtGeom();
-
-	vtMaterialArray *pMat = new vtMaterialArray();
-	pMat->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
-
-	poi->m_pGeom->SetMaterials(pMat);
-	poi->m_pGeom->SetName2("POI Geom");
-	poi->m_pGeom->AddMesh(pMesh, 0);
-	pMesh->Release();	// pass ownership to the Geometry
-	pMat->Release();
+	AddSurfaceLineToMesh(&mf, dline, 10.0f, true, false);
 
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
 }
 
 
-float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
-									 float fOffset, bool bCurve, bool bTrue)
+float vtTerrain::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
+									 float fOffset, bool bInterp, bool bCurve, bool bTrue)
 {
 	unsigned int i, j;
 	FPoint3 v1, v2, v;
 
-	// try to guess how finely to tesselate our line
 	float fSpacing=0;
-	if (m_pDynGeom)
+	if (bInterp)
 	{
-		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
-		fSpacing = std::min(spacing.x, spacing.y) / 2;
-	}
-	else if (m_pTin)
-	{
-		// TINs don't have a grid spacing.  In lieu of using a completely
-		//  different (more correct) algorithm for draping, just estimate.
-		DRECT ext = m_pTin->GetEarthExtents();
-		FPoint2 p1, p2;
-		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
-		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
-		fSpacing = (p2 - p1).Length() / 1000.0f;
+		// try to guess how finely to tessellate our line
+		if (m_pDynGeom)
+		{
+			FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
+			fSpacing = std::min(spacing.x, spacing.y) / 2;
+		}
+		else if (m_pTin)
+		{
+			// TINs don't have a grid spacing.  In lieu of using a completely
+			//  different (more correct) algorithm for draping, just estimate.
+			DRECT ext = m_pTin->GetEarthExtents();
+			FPoint2 p1, p2;
+			m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
+			m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
+			fSpacing = (p2 - p1).Length() / 1000.0f;
+		}
 	}
 
 	float fTotalLength = 0.0f;
-	int iStart = pMesh->GetNumVertices();
+	pMF->PrimStart();
 	int iVerts = 0;
 	unsigned int points = line.GetSize();
 	if (bCurve)
@@ -2592,7 +2581,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p3.x, p3.y, v.x, v.z);
 			m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 			v.y += fOffset;
-			pMesh->AddVertex(v);
+			pMF->AddVertex(v);
 			iVerts++;
 
 			// keep a running total of approximate ground length
@@ -2607,98 +2596,41 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 	{
 		for (i = 0; i < points; i++)
 		{
-			v1 = v2;
-			m_pHeightField->m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
-			if (i == 0)
-				continue;
-
-			// estimate how many steps to subdivide this segment into
-			FPoint3 diff = v2 - v1;
-			float fLen = diff.Length();
-			unsigned int iSteps = (unsigned int) (fLen / fSpacing);
-			if (iSteps < 1) iSteps = 1;
-
-			FPoint3 last_v;
-			for (j = (i == 1 ? 0:1); j <= iSteps; j++)
+			if (bInterp)
 			{
-				// simple linear interpolation of the ground coordinate
-				v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
-				m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
-				v.y += fOffset;
-				pMesh->AddVertex(v);
-				iVerts++;
+				v1 = v2;
+				m_pHeightField->m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
+				if (i == 0)
+					continue;
 
-				// keep a running toal of approximate ground length
-				if (j > 0)
-					fTotalLength += (v - last_v).Length();
-				last_v = v;
+				// estimate how many steps to subdivide this segment into
+				FPoint3 diff = v2 - v1;
+				float fLen = diff.Length();
+				unsigned int iSteps = (unsigned int) (fLen / fSpacing);
+				if (iSteps < 1) iSteps = 1;
+
+				FPoint3 last_v;
+				for (j = (i == 1 ? 0:1); j <= iSteps; j++)
+				{
+					// simple linear interpolation of the ground coordinate
+					v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+					m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
+					v.y += fOffset;
+					pMF->AddVertex(v);
+					iVerts++;
+
+					// keep a running toal of approximate ground length
+					if (j > 0)
+						fTotalLength += (v - last_v).Length();
+					last_v = v;
+				}
 			}
-		}
-	}
-	pMesh->AddStrip2(iVerts, iStart);
-	return fTotalLength;
-}
-
-float vtTerrain::AddSurfaceLineToMesh2(vtMeshFactory *pMF, const DLine2 &line,
-									 float fOffset, bool bCurve, bool bTrue)
-{
-	unsigned int i, j;
-	FPoint3 v1, v2, v;
-
-	// try to guess how finely to tesselate our line
-	float fSpacing=0;
-	if (m_pDynGeom)
-	{
-		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
-		fSpacing = std::min(spacing.x, spacing.y) / 2;
-	}
-	else if (m_pTin)
-	{
-		// TINs don't have a grid spacing.  In lieu of using a completely
-		//  different (more correct) algorithm for draping, just estimate.
-		DRECT ext = m_pTin->GetEarthExtents();
-		FPoint2 p1, p2;
-		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
-		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
-		fSpacing = (p2 - p1).Length() / 1000.0f;
-	}
-
-	float fTotalLength = 0.0f;
-	pMF->PrimStart();
-	int iVerts = 0;
-	unsigned int points = line.GetSize();
-	if (bCurve)
-	{
-	}
-	else
-	{
-		for (i = 0; i < points; i++)
-		{
-			v1 = v2;
-			m_pHeightField->m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
-			if (i == 0)
-				continue;
-
-			// estimate how many steps to subdivide this segment into
-			FPoint3 diff = v2 - v1;
-			float fLen = diff.Length();
-			unsigned int iSteps = (unsigned int) (fLen / fSpacing);
-			if (iSteps < 1) iSteps = 1;
-
-			FPoint3 last_v;
-			for (j = (i == 1 ? 0:1); j <= iSteps; j++)
+			else
 			{
-				// simple linear interpolation of the ground coordinate
-				v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+				m_pHeightField->m_Conversion.ConvertFromEarth(line[i], v.x, v.z);
 				m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 				v.y += fOffset;
 				pMF->AddVertex(v);
-				iVerts++;
-
-				// keep a running toal of approximate ground length
-				if (j > 0)
-					fTotalLength += (v - last_v).Length();
-				last_v = v;
 			}
 		}
 	}
