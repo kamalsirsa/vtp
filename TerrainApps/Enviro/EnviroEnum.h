@@ -8,6 +8,7 @@
 // States in which the application can be in:
 enum AppState {
 	AS_Initializing,	// still setting up
+	AS_Neutral,			// not doing anything
 	AS_Orbit,			// full view of the earth
 	AS_MovingIn,		// moving in toward a specific terrain
 	AS_Terrain,			// inside a terrain

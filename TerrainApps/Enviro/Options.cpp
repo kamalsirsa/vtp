@@ -31,6 +31,7 @@ EnviroOptions::EnviroOptions()
 {
 	m_strImage = "ev11656_512";
 	m_fSelectionCutoff = 15.0f;
+	m_bStartInNeutral = false;
 }
 
 EnviroOptions::~EnviroOptions()

@@ -147,6 +147,9 @@ void Enviro::StartupArgument(int i, const char *str)
 
 	else if(!strncmp(str, "-terrain=", 9))
 		g_Options.m_strInitTerrain = str+9;
+
+	else if(!strncmp(str, "-neutral", 8))
+		g_Options.m_bStartInNeutral = true;
 }
 
 void Enviro::LoadTerrainDescriptions()
@@ -228,7 +231,11 @@ void Enviro::DoControl()
 			SetupScene2();
 			return;
 		}
-		if (g_Options.m_bEarthView)
+		if (g_Options.m_bStartInNeutral)
+		{
+			m_state = AS_Neutral;
+		}
+		else if (g_Options.m_bEarthView)
 		{
 			FlyToSpace();
 			return;

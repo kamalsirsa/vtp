@@ -31,6 +31,7 @@ public:
 	float	m_fPlantScale;
 	float	m_fSelectionCutoff;
 	bool	m_bShadows;
+	bool	m_bStartInNeutral;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;
