@@ -20,7 +20,7 @@
 #include <vector>
 #include <list>
 
-#include "vtdata\vtlog.h"
+#include "vtdata/vtLog.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)	// prevent common warning about templates
