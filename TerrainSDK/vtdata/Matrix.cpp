@@ -7,11 +7,27 @@
 
 #include "MathTypes.h"
 
+static float det3x3(float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3)
+{
+		return (float) (a1 * (b2 * c3 - b3 * c2) - b1 * (a2 * c3 - a3 * c2) + c1 * (a2 * b3 - a3 * b2));
+}
+
+static double det3x3(double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3)
+{
+		return (double) (a1 * (b2 * c3 - b3 * c2) - b1 * (a2 * c3 - a3 * c2) + c1 * (a2 * b3 - a3 * b2));
+}
+#define SMALL_NUMBER		1.e-12f
+
 //
 // DMatrix methods
 //
 
 static double Dot3f(const double *d1, const double *d2)
+{
+	return d1[0]*d2[0]+d1[1]*d2[1]+d1[2]*d2[2];
+}
+
+static float Dot3f(const float *d1, const float *d2)
 {
 	return d1[0]*d2[0]+d1[1]*d2[1]+d1[2]*d2[2];
 }
@@ -323,12 +339,6 @@ static void Full_Inverse_Xform3(const double b[4][4], double a[4][4])
 	}
 }
 
-static double det3x3(double a1, double a2, double a3, double b1, double b2, double b3, double c1, double c2, double c3)
-{
-		return (double) (a1 * (b2 * c3 - b3 * c2) - b1 * (a2 * c3 - a3 * c2) + c1 * (a2 * b3 - a3 * b2));
-}
-#define SMALL_NUMBER		1.e-12f
-
 static void Down_triangle_Inverse_Xform(const double src[4][4], double dst[4][4])
 {
 	double det1, o33;
@@ -490,6 +500,13 @@ void FMatrix3::AxisAngle(const FPoint3 &vec, double theta)
 	data[2][2] = (float) (c2 * mcos + cost);
 }
 
+void FMatrix3::Transform(const FPoint3 &tmp, FPoint3 &dst) const
+{
+	dst.x = Dot3f(&tmp.x, data[0]);
+	dst.y = Dot3f(&tmp.x, data[1]);
+	dst.z = Dot3f(&tmp.x, data[2]);
+}
+
 void FMatrix3::SetFromVectors(const FPoint3 &forward, const FPoint3 &up)
 {
 	FPoint3 f = forward;
@@ -508,7 +525,6 @@ void FMatrix3::SetFromMatrix4(const FMatrix4 &mat)
 	SetRow(1, mat(0,1), mat(1,1), mat(2,1));
 	SetRow(2, mat(0,2), mat(1,2), mat(2,2));
 }
-
 
 //////////////////////////////////////////////////////////////
 // FMatrix4
@@ -655,11 +671,6 @@ void FMatrix4::PostMult(const FMatrix4 &mat)
 		t[3] = INNER_PRODUCT(*this, mat, 3, row);
 		SetRow(row, t[0], t[1], t[2], t[3]);
 	}
-}
-
-static float Dot3f(const float *d1, const float *d2)
-{
-	return d1[0]*d2[0]+d1[1]*d2[1]+d1[2]*d2[2];
 }
 
 static void Full_Inverse_Xform3(const float b[4][4], float a[4][4])
@@ -853,12 +864,6 @@ static void Full_Inverse_Xform3(const float b[4][4], float a[4][4])
 		a[3][ic] = temp;
 	}
 }
-
-static float det3x3(float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3)
-{
-		return (float) (a1 * (b2 * c3 - b3 * c2) - b1 * (a2 * c3 - a3 * c2) + c1 * (a2 * b3 - a3 * b2));
-}
-#define SMALL_NUMBER		1.e-12f
 
 static void Down_triangle_Inverse_Xform(const float src[4][4], float dst[4][4])
 {
