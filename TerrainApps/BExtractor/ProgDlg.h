@@ -29,7 +29,7 @@ public:
     int  SetPos(int nPos);
     int  OffsetPos(int nPos);
     int  StepIt();
-        
+
 // Dialog Data
     //{{AFX_DATA(CProgressDlg)
     enum { IDD = CG_IDD_PROGRESS };
@@ -56,7 +56,7 @@ protected:
     void ReEnableParent();
 
     virtual void OnCancel();
-    virtual void OnOK() {}; 
+    virtual void OnOK() {};
     void PumpMessages();
 
     // Generated message map functions
