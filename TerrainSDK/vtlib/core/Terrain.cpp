@@ -1343,7 +1343,7 @@ void vtTerrain::SetFogDistance(float fMeters)
 vtTime vtTerrain::GetInitialTime()
 {
 	vtTime localtime;
-	localtime.SetTimeOfDay(m_Params.GetValueInt(STR_INITTIME), 0, 0);
+	localtime.SetFromString(m_Params.GetValueString(STR_INITTIME));
 	return localtime;
 }
 

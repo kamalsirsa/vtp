@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/vtTime.h"
 #include <string.h>
 #include "TParams.h"
 
@@ -61,7 +62,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_TIN, "false");
 
 	AddTag(STR_TIMEON, "false");
-	AddTag(STR_INITTIME, "10");
+	AddTag(STR_INITTIME, "2004 4 4 12 0 0");
 	AddTag(STR_TIMESPEED, "1");
 
 	AddTag(STR_TEXTURE, "0");
@@ -342,6 +343,21 @@ bool TParams::LoadFromXML(const char *fname)
 	VTLOG("\tReading TParams from '%s'\n", fname);
 
 	bool success = vtTagArray::LoadFromXML(fname);
+
+	// Convert old time values to new values
+	const char *str = GetValueString(STR_INITTIME);
+	if (str)
+	{
+		int one, two;
+		int num = sscanf(str, "%d %d", &one, &two);
+		if (num == 1)
+		{
+			vtTime time;
+			time.SetTimeOfDay(one, 0, 0);
+			SetValueString(STR_INITTIME, time.GetAsString());
+		}
+	}
+
 	return success;
 }
 
