@@ -90,9 +90,13 @@ void vtProjection::SetDatum(DATUM datum)
 	}
 	else
 	{
+		// OGR does not have functionality to change the Datum of an
+		// existing coordinate system.
+		//
 		// Try to fake it by just changing the DATUM node.  This is not
-		// good enough for all purposes, but it suffices to make coordinate
-		// transformations work (which use PROJ.4)
+		// good enough for all purposes, since it doesn't change the
+		// underlying properties such as spheroid, but it appears to suffice
+		// to make coordinate transformations work (which use PROJ.4)
 
 		// Convert the DATUM enumeration to a Datum string
 		OGR_SRSNode *dnode = GetAttrNode("DATUM");
@@ -100,12 +104,27 @@ void vtProjection::SetDatum(DATUM datum)
 			return;
 		switch (datum)
 		{
-		case NAD27:		dnode->GetChild(0)->SetValue("North_American_Datum_1927"); break;
-		case NAD83:		dnode->GetChild(0)->SetValue("North_American_Datum_1983"); break;
-		case WGS_72:	dnode->GetChild(0)->SetValue("WGS_1972"); break;
-		case OLD_HAWAIIAN_MEAN:	dnode->GetChild(0)->SetValue("Old_Hawaiian"); break;
+		case AUSTRALIAN_GEODETIC_1966:
+			dnode->GetChild(0)->SetValue("Australian_Geodetic_Datum_1966"); break;
+		case AUSTRALIAN_GEODETIC_1984:
+			dnode->GetChild(0)->SetValue("Australian_Geodetic_Datum_1984"); break;
+		case EUROPEAN_DATUM_1950:
+			dnode->GetChild(0)->SetValue("European_Datum_1950"); break;
+		case NAD27:
+			dnode->GetChild(0)->SetValue("North_American_Datum_1927"); break;
+		case NAD83:
+			dnode->GetChild(0)->SetValue("North_American_Datum_1983"); break;
+		case OLD_HAWAIIAN_MEAN:
+			dnode->GetChild(0)->SetValue("Old_Hawaiian"); break;
+		case ORDNANCE_SURVEY_1936:
+			dnode->GetChild(0)->SetValue("OSGB_1936"); break;
+		case PUERTO_RICO:
+			dnode->GetChild(0)->SetValue("Puerto_Rico"); break;
+		case WGS_72:
+			dnode->GetChild(0)->SetValue("WGS_1972"); break;
 		default:
-		case WGS_84:	dnode->GetChild(0)->SetValue("WGS_1984"); break;
+		case WGS_84:
+			dnode->GetChild(0)->SetValue("WGS_1984"); break;
 		}
 	}
 }
@@ -148,7 +167,7 @@ DATUM vtProjection::GetDatum()
 		return OLD_HAWAIIAN_MEAN;
 	if (!strcmp(datum_string, "Fahud"))
 		return OMAN;
-	if (!strcmp(datum_string, "OSGB 1936"))
+	if (!strcmp(datum_string, "OSGB_1936"))
 		return ORDNANCE_SURVEY_1936;
 	if (!strcmp(datum_string, "Puerto_Rico"))
 		return PUERTO_RICO;
@@ -550,6 +569,8 @@ const char *datumToString(DATUM d)
 		return "OMAN";
 	case ORDNANCE_SURVEY_1936:
 		return "ORDNANCE SURVEY 1936";
+	case PUERTO_RICO:
+		return "PUERTO RICO";
 	case PULKOVO_1942:
 		return "PULKOVO 1942";
 	case PROVISIONAL_S_AMERICAN_1956:
@@ -615,6 +636,8 @@ const char *datumToStringShort(DATUM d)
 		return "OMAN";
 	case ORDNANCE_SURVEY_1936:
 		return "OSGB 1936";
+	case PUERTO_RICO:
+		return "PUERTO RICO";
 	case PULKOVO_1942:
 		return "PULKOVO 1942";
 	case PROVISIONAL_S_AMERICAN_1956:
