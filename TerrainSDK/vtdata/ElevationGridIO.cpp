@@ -2016,14 +2016,14 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(i
  *
  * \returns \c true if the file was successfully opened and read.
  */
-bool vtElevationGrid::SaveToPlanet(const char *szFileName, void progress_callback(int))
+bool vtElevationGrid::SaveToPlanet(const char *szDirName, void progress_callback(int))
 {
 	DPoint2 spacing = GetSpacing();
 
     // create name of binary file and write it to disk
-    vtString fname = szFileName;
-	RemoveFileExtensions(fname);
-    FILE *outfile = fopen(fname+".dat", "wb");
+	vtString fname_dat = szDirName;
+	fname_dat += "/binarydem.dat";
+    FILE *outfile = fopen(fname_dat, "wb");
 	if (!outfile)
 		return false;
 
@@ -2033,7 +2033,9 @@ bool vtElevationGrid::SaveToPlanet(const char *szFileName, void progress_callbac
 	{
 		for (int i = 0; i < m_iColumns; i++)
 		{
-			pixels[idx++] = GetValue(i, m_iRows-1-j);
+			short val = GetValue(i, m_iRows-1-j);
+			BSWAP_W(val);
+			pixels[idx++] = val;
 		}
 	}
 	fwrite(pixels, sizeof(short) * m_iColumns, m_iRows, outfile);
@@ -2041,17 +2043,19 @@ bool vtElevationGrid::SaveToPlanet(const char *szFileName, void progress_callbac
     fclose(outfile);
 
     // create index file
-    outfile = fopen(fname+".txt", "wb");
+	vtString fname_txt = szDirName;
+	fname_txt += "/index.txt";
+    outfile = fopen(fname_txt, "wb");
 	if (!outfile)
 		return false;
 
-	vtString fname2 = StartOfFilename(fname);
+	vtString fname2 = StartOfFilename(fname_dat);
 
     fprintf(outfile, "%s %g %g %g %g %g\n",
-        (const char *) (fname2+".dat"),
+        (const char *) fname2,
         m_EarthExtents.left,   m_EarthExtents.left + m_iColumns * spacing.x, 
         m_EarthExtents.bottom, m_EarthExtents.bottom + m_iRows * spacing.y,
-        spacing.x);		// must spacing be even in both directions?
+        spacing.x);		// apparently spacing must be even in both directions
     fclose(outfile);
 	return true;
 }
