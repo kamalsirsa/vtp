@@ -76,10 +76,13 @@ protected:
 	void CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly2,
 		int iWall, bool details);
 
+	// create special, simple geometry for a level which is uniform
+	void CreateUniformLevel(int iLevel, float fHeight);
+
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(vtLevel *pLev, vtEdge *pWall,
-		const FLine3 &quad, float h1, float h2);
+	void AddWallSection(vtLevel *pLev, BldMaterial bmat,
+		const FLine3 &quad, float h1, float h2, float hf1 = 1.0f);
 
 	//adds a wall section with a door
 	void AddDoorSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
