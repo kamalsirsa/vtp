@@ -445,7 +445,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		// Initial default location for camera for this terrain: Try center
 		//  of heightfield, just above the ground
-		vtHeightField *pHF = pTerr->GetHeightField();
+		vtHeightField3d *pHF = pTerr->GetHeightField();
 		FPoint3 middle;
 		FMatrix4 mat;
 
@@ -911,7 +911,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	// safety check
 	if (!pTerrain)
 		return;
-	vtHeightField *pHF = pTerrain->GetHeightField();
+	vtHeightField3d *pHF = pTerrain->GetHeightField();
 	if (!pHF)
 		return;
 

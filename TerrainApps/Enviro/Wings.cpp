@@ -53,16 +53,16 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 	AddChild(m_pWing2);
 
 	//make the FlyingCritter engine
-	FlyingCritterEngine *pFCE = new FlyingCritterEngine(this, terrain, center, 
-														speed, height, terrain->GetHeightField(),
-														radius);
+	FlyingCritterEngine *pFCE;
+	pFCE = new FlyingCritterEngine(this, terrain, center, speed, height,
+		terrain->GetHeightField(), radius);
 	pFCE->SetTarget(this);
 	terrain->AddEngine(pFCE);
 }
 
 FlyingCritterEngine::FlyingCritterEngine(Butterfly* critter, vtTerrain* terrain, 
 										 FPoint3 center, float speed, float height,
-										 vtHeightField* grid, float radius)
+										 vtHeightField3d* grid, float radius)
 {
 	m_critter = critter;
 	m_terrain = terrain;

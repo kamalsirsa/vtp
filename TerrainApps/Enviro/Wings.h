@@ -20,7 +20,7 @@ class FlyingCritterEngine : public vtEngine
 public:
 	FlyingCritterEngine(Butterfly *critter, class vtTerrain* terrain, 
 						FPoint3 center, float speed, float height, 
-						vtHeightField* grid, float radius);
+						vtHeightField3d* grid, float radius);
 
 	void Eval();
 
@@ -36,7 +36,7 @@ public:
 	float m_fHeightAboveGround;
 	float m_fCurRotation;
 
-	vtHeightField* m_pHeightField;
+	vtHeightField3d *m_pHeightField;
 };
 
 #endif

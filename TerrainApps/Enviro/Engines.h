@@ -72,7 +72,7 @@ public:
 	RouteFollowerEngine(vtRoute *route);
 	void Eval();
 
-	vtHeightField *m_pHeightField;
+	vtHeightField3d *m_pHeightField;
 	vtRoute *m_pRoute;
 
 	int m_cur, m_next;
@@ -109,16 +109,16 @@ class TerrainPicker : public vtLastMouse
 public:
 	TerrainPicker();
 	void Eval();
-	void SetHeightField(vtHeightField *pHeight) { m_pHeightField = pHeight; }
+	void SetHeightField(vtHeightField3d *pHeight) { m_pHeightField = pHeight; }
 
 	bool GetCurrentPoint(FPoint3 &p);
 	bool GetCurrentEarthPos(DPoint3 &p);
 
 protected:
-	FPoint3		m_GroundPoint;
-	vtHeightField *m_pHeightField;
-	DPoint3		m_EarthPos;
-	bool		m_bOnTerrain;
+	FPoint3			m_GroundPoint;
+	vtHeightField3d *m_pHeightField;
+	DPoint3			m_EarthPos;
+	bool			m_bOnTerrain;
 };
 
 ///////////////////////////////////////////////////
