@@ -5,7 +5,7 @@
 // utilizes: Roettger's MINI library implementation
 // http://wwwvis.informatik.uni-stuttgart.de/~roettger
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
