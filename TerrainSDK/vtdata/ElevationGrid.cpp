@@ -844,14 +844,9 @@ void vtElevationGrid::SetupConversion(float fVerticalExag)
 
 void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
 {
-	if (m_bFloatMode)
-		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				GetFValue(i,j) * m_fVerticalScale,
-				m_WorldExtents.bottom - j * m_fZStep);
-	else
-		loc.Set(m_WorldExtents.left + i * m_fXStep,
-				GetValue(i,j) * m_fVerticalScale,
-				m_WorldExtents.bottom - j * m_fZStep);
+	loc.Set(m_WorldExtents.left + i * m_fXStep,
+			GetFValue(i,j) * m_fVerticalScale,
+			m_WorldExtents.bottom - j * m_fZStep);
 }
 
 float vtElevationGrid::GetWorldValue(int i, int j) const
