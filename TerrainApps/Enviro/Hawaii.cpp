@@ -17,24 +17,23 @@
 #include "xmlhelper/easyxml.hpp"
 
 #include "Hawaii.h"
-#include "Nevada.h"
-
 
 ///////////////////////////////
 
 IslandTerrain::IslandTerrain() : PTerrain()
 {
-	// TEMP TEST
-//	char *foo = new char[1234];
-
 	// Points of Interest
-	// top left (x,y) then bottom right (x,y)
-
-	AddPointOfInterest(283376, 2182614, 287025, 2181205, "Hilo Airport", "http://www.hawaii.gov/dot/hilo.htm");
-	AddPointOfInterest(240459, 2202455, 244033, 2188779, "Mauna Kea", "/Html/maunakea.htm");
-	AddPointOfInterest(226689, 2157368, 227719, 2153045, "Mauna Loa", "http://www.yahoo.com");
-	AddPointOfInterest(188873, 2153990, 195080, 2156953, "Kealakekua bay", "/Html/kealakekua.htm");
-	AddPointOfInterest(253500, 2103500, 282500, 2080000, "Lo`ihi", "/Html/loihi_seamount.htm");
+	// bottom left (x,y) then top right (x,y)
+	AddPointOfInterest(283376, 2181205, 287025, 2182614, "Hilo Airport",
+		"http://www.hawaii.gov/dot/hilo.htm");
+	AddPointOfInterest(237000, 2188779, 247000, 2202455, "Mauna Kea",
+		"/Html/maunakea.htm");
+	AddPointOfInterest(223000, 2150000, 233000, 2159000, "Mauna Loa",
+		"http://www.yahoo.com");
+	AddPointOfInterest(190000, 2153953, 194500, 2157500, "Kealakekua bay",
+		"/Html/kealakekua.htm");
+	AddPointOfInterest(253500, 2080000, 282500, 2103500, "Lo`ihi",
+		"/Html/loihi_seamount.htm");
 }
 
 IslandTerrain::~IslandTerrain()
@@ -49,7 +48,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 
 	if (m_Params.m_bBuildings)
 	{
-		//import the lighthouses
+		// import the lighthouses
 		vtTransform *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
 		if (lighthouse1)
 		{
@@ -72,63 +71,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 			create_telescopes();
 	}
 
-	DPoint2 park_location(234900, 2185840);
-	if (PointIsInTerrain(park_location)) // if area includes saddle
-	{
-		// Here is an example of how to load a model directly and plant it
-		//	on the terrain.  Because it is not part of a vtStructure, the
-		//	user won't be able to select and operate on it.
-		vtTransform *table = LoadModel("Culture/picnictable.3ds");
-		if (table)
-		{
-			// model is at .1 inch per unit
-			float scale = .1f * 2.54f / 100;
-			scale *= 10;	// Exaggerate its size to make it easier to find
-			table->Scale3(scale, scale, scale);
-			// Must rotate by 90 degrees for 3DS MAX -> OpenGL
-			table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-			PlantModelAtPoint(table, park_location);
-			m_pLodGrid->AppendToGrid(table);
-		}
-
-		// An example of how to add the content definitions from a content
-		//	file (vtco) to the global content manager.
-		try
-		{
-			s_Content.ReadXML("C:/VTP/TerrainApps/Data/kai.vtco");
-		}
-		catch (xh_io_exception &e)
-		{
-			string str = e.getFormattedMessage();
-			VTLOG(str.c_str());
-		}
-
-		// Here is an example of how to create a structure instance which
-		//	references a content item.  It is planted automatically at the
-		//	desired location on the terrain.
-		int index = m_pSA->GetSize();
-		vtStructInstance *inst = m_pSA->AddNewInstance();
-		inst->SetValue("itemname", "Riesenbuehl");
-		inst->m_p = park_location;
-		bool bSuccess = CreateStructure(m_pSA, index);
-
-#if 0
-		// Here is an example of how to directly create a content item and
-		//	plant it manually on the terrain.
-		vtItem *item = s_Content.FindItemByName("Riesenbuehl");
-		if (item)
-		{
-			// create it
-			vtGroup *group = s_Content.CreateInstanceOfItem(item);
-
-			// plant it
-			vtTransform *xform = new vtTransform();
-			xform->AddChild(group);
-			PlantModelAtPoint(xform, park_location);
-			m_pLodGrid->AppendToGrid(xform);
-		}
-#endif
-	}
+	create_state_park();
 
 	DPoint2 mauna_loa(227611, 2155222);
 	if (PointIsInTerrain(mauna_loa)) // if area includes top of Mauna Loa
@@ -151,31 +94,70 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	}
 
 	if (m_Params.m_bDetailTexture)
-	{
-		m_pDetailMats = new vtMaterialArray();
-		vtString path = FindFileOnPaths(m_DataPaths, "GeoTypical/grass_repeat2_512.jpg");
-		vtDIB *dib = new vtDIB;
-		if (dib->ReadBMP((const char *) path))
-		{
-			vtImage *pDetailTexture = new vtImage(dib);
-			int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
-							 true,	// culling
-							 false,	// lighting
-							 true,	// transp: blend
-							 false,	// additive
-							 0.0f, 1.0f,	// ambient, diffuse
-							 0.5f, 0.0f,	// alpha, emmisive
-							 true, false,	// texgen, clamp
-							 true);			// mipmap
-			m_pDetailMat = m_pDetailMats->GetAt(index);
-
-			FRECT r = m_pHeightField->m_WorldExtents;
-			float width_meters = r.Width();
-			m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
-		}
-	}
+		set_detail_texture();
 }
 
+
+void IslandTerrain::create_state_park()
+{
+	DPoint2 park_location(234900, 2185840);
+	if (!PointIsInTerrain(park_location)) // if area includes saddle
+		return;
+
+	// Here is an example of how to load a model directly and plant it
+	//	on the terrain.  Because it is not part of a vtStructure, the
+	//	user won't be able to select and operate on it.
+	vtTransform *table = LoadModel("Culture/picnictable.3ds");
+	if (table)
+	{
+		// model is at .1 inch per unit
+		float scale = .1f * 2.54f / 100;
+		scale *= 10;	// Exaggerate its size to make it easier to find
+		table->Scale3(scale, scale, scale);
+		// Must rotate by 90 degrees for 3DS MAX -> OpenGL
+		table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
+		PlantModelAtPoint(table, park_location);
+		m_pLodGrid->AppendToGrid(table);
+	}
+
+	// An example of how to add the content definitions from a content
+	//	file (vtco) to the global content manager.
+	try
+	{
+		s_Content.ReadXML("C:/VTP/TerrainApps/Data/kai.vtco");
+	}
+	catch (xh_io_exception &e)
+	{
+		string str = e.getFormattedMessage();
+		VTLOG(str.c_str());
+	}
+
+	// Here is an example of how to create a structure instance which
+	//	references a content item.  It is planted automatically at the
+	//	desired location on the terrain.
+	int index = m_pSA->GetSize();
+	vtStructInstance *inst = m_pSA->AddNewInstance();
+	inst->SetValue("itemname", "Riesenbuehl");
+	inst->m_p = park_location;
+	bool bSuccess = CreateStructure(m_pSA, index);
+
+#if 0
+	// Here is an example of how to directly create a content item and
+	//	plant it manually on the terrain.
+	vtItem *item = s_Content.FindItemByName("Riesenbuehl");
+	if (item)
+	{
+		// create it
+		vtGroup *group = s_Content.CreateInstanceOfItem(item);
+
+		// plant it
+		vtTransform *xform = new vtTransform();
+		xform->AddChild(group);
+		PlantModelAtPoint(xform, park_location);
+		m_pLodGrid->AppendToGrid(xform);
+	}
+#endif
+}
 
 void IslandTerrain::create_telescopes()
 {
@@ -185,6 +167,36 @@ void IslandTerrain::create_telescopes()
 	if (path != "")
 		CreateStructuresFromXML(path);
 }
+
+void IslandTerrain::set_detail_texture()
+{
+	const char *fname = "GeoTypical/grass_repeat2_512.jpg";
+
+	vtString path = FindFileOnPaths(m_DataPaths, fname);
+	vtDIB *dib = new vtDIB;
+
+	if (!dib->ReadBMP((const char *) path))
+		return;
+
+	m_pDetailMats = new vtMaterialArray();
+
+	vtImage *pDetailTexture = new vtImage(dib);
+	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
+					 true,	// culling
+					 false,	// lighting
+					 true,	// transp: blend
+					 false,	// additive
+					 0.0f, 1.0f,	// ambient, diffuse
+					 0.5f, 0.0f,	// alpha, emmisive
+					 true, false,	// texgen, clamp
+					 true);			// mipmap
+	m_pDetailMat = m_pDetailMats->GetAt(index);
+
+	FRECT r = m_pHeightField->m_WorldExtents;
+	float width_meters = r.Width();
+	m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
+}
+
 
 vtGeom *IslandTerrain::make_test_cone()
 {

@@ -32,9 +32,11 @@ public:
 
 	vtGeom *make_test_cone();
 	vtGeom *make_red_cube();
+	void create_state_park();
 	void create_airports();
 	void create_telescopes();
 	void create_building_manually();
+	void set_detail_texture();
 	void do_test_code();
 	void create_airplanes(float fSize, float fSpeed, bool bDoSound);
 	void create_airplane(int i, float fSize, float fSpeed, bool bDoSound);
