@@ -130,21 +130,7 @@ protected:
 	int m_iEditEdge;
 };
 
-class vtMaterialNamesArray : public Array<vtMaterialName*>
-{
-public:
-	virtual ~vtMaterialNamesArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(int first, int last)
-	{
-		for (int i = first; i <= last; i++)
-			delete GetAt(i);
-	}
-	vtMaterialName& FindOrAppendMaterialName(const vtMaterialName& Name);
-};
-
-
 extern vtStructureArray g_DefaultStructures;
-extern vtMaterialNamesArray g_MaterialNames;
 
 // Helpers
 int GetSHPType(const char *filename);
