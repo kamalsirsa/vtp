@@ -9,6 +9,25 @@ class vtBitmapBase;
 #define INVALID_ELEVATION	SHRT_MIN
 
 /**
+ * This small class describes how to map elevation (as from a heightfield)
+ * onto a set of colors.
+ */
+class ColorMap
+{
+public:
+	ColorMap() { m_bRelative = true; }
+	bool Save(const char *fname);
+	bool Load(const char *fname);
+	void Add(float elev, const RGBi &color);
+	int Num() const;
+
+	bool m_bRelative;
+	std::vector<float> m_elev;
+	std::vector<RGBi> m_color;
+};
+
+
+/**
  * A heightfield is any collection of surfaces such that, given a horizontal
  * X,Y position, there exists only a single elevation value.
  */
@@ -22,7 +41,7 @@ public:
 
 	// Return an MD5 checksum for this heightfield
 	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
-	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const = 0;
+	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const = 0;
 
 	/** Test if a point is within the extents of the grid. */
 	bool ContainsEarthPoint(const DPoint2 &p) const
@@ -105,11 +124,11 @@ public:
 	void GetDimensions(int &nColumns, int &nRows) const;
 
 	// all grids must be able to return the elevation at a grid point
-	virtual float GetElevation(int iX, int iZ) const = 0;
+	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const = 0;
 
-	void ColorDibFromElevation(vtBitmapBase *pBM, Array<RGBi> *brackets, RGBi color_ocean,
-		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
+	void ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
+		void progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 							   float light_factor, void progress_callback(int) = NULL);
 	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,

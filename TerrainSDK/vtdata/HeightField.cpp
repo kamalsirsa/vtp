@@ -8,6 +8,58 @@
 #include "HeightField.h"
 #include "vtDIB.h"
 
+bool ColorMap::Save(const char *fname)
+{
+	FILE *fp = fopen(fname, "wb");
+	if (!fp)
+		return false;
+	fprintf(fp, "colormap1\n");
+	fprintf(fp, "relative: %d\n", m_bRelative);
+	int size = m_elev.size();
+	fprintf(fp, "size %d\n", size);
+	for (int i = 0; i < size; i++)
+	{
+		fprintf(fp, "\telev %f color %d %d %d\n", m_elev[i],
+			m_color[i].r, m_color[i].g, m_color[i].b);
+	}
+	fclose(fp);
+	return true;
+}
+
+bool ColorMap::Load(const char *fname)
+{
+	FILE *fp = fopen(fname, "rb");
+	if (!fp)
+		return false;
+	fscanf(fp, "colormap1\n");
+	fscanf(fp, "relative: %d\n", &m_bRelative);
+	int size;
+	fscanf(fp, "size %d\n", &size);
+	m_elev.resize(size);
+	m_color.resize(size);
+	for (int i = 0; i < size; i++)
+	{
+		fscanf(fp, "\telev %f color %d %d %d\n", &m_elev[i],
+			&m_color[i].r, &m_color[i].g, &m_color[i].b);
+	}
+	fclose(fp);
+	return true;
+}
+
+void ColorMap::Add(float elev, const RGBi &color)
+{
+	m_elev.push_back(elev);
+	m_color.push_back(color);
+}
+
+int ColorMap::Num() const
+{
+	return m_elev.size();
+}
+
+
+/////////////////////
+
 vtHeightField::vtHeightField()
 {
 	m_EarthExtents.SetRect(0, 0, 0, 0);
@@ -214,25 +266,44 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
  * Use the height data in the grid to fill a bitmap with a shaded color image.
  *
  * \param pBM			The bitmap to color.
- * \param color_ocean	The color to use for areas at sea level.
- * \param bZeroIsOcean	True if allow areas with elevation=0 are to be
- *							considered ocean.
+ * \param cmap			The mapping of elevation values to colors.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
  */
-void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, Array<RGBi> *brackets,
-	RGBi color_ocean, bool bZeroIsOcean, void progress_callback(int))
+void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
+	void progress_callback(int))
 {
-	Array<RGBi> defaults;
-	defaults.Append(RGBi(0x50, 0xFF, 0x50));	// greenish
-	defaults.Append(RGBi(0xFF, 0xFF, 0xAA));	// tanish
+	ColorMap defaults;
+	if (!cmap)
+	{
+		defaults.m_bRelative = false;
+		defaults.Add(-7000,	RGBi(60, 60, 60));		// dark grey
+		defaults.Add(-6000,	RGBi(160, 80, 0));		// dark orange
+		defaults.Add(-5000,	RGBi(128, 128, 0));		// dark yellow
+		defaults.Add(-4500,	RGBi(160, 0, 160));		// purplish
+		defaults.Add(-4000,	RGBi(144, 64, 144));
+		defaults.Add(-3500,	RGBi(128, 128, 128));
+		defaults.Add(-3000,	RGBi(64, 128, 60));
+		defaults.Add(-2500,	RGBi(0, 128, 128));
+		defaults.Add(-2000,	RGBi(0, 0, 160));
+		defaults.Add(-1500,	RGBi(43, 90, 142));
+		defaults.Add(-1000,	RGBi(81, 121, 172));
+		defaults.Add(-500,	RGBi(108, 156, 195));
+		defaults.Add(-100,	RGBi(182, 228, 255));		// light blue sub-sea
+		defaults.Add(0,		RGBi(40, 75, 124));			// blue sea level
+		defaults.Add(.01f,	RGBi(0x40, 0xE0, 0x40));	// light green
+		defaults.Add(500,	RGBi(0x10, 0x80, 0x10));	// dark green
+		defaults.Add(1000,	RGBi(0xE0, 0xC0, 0xA0));	// tanish
+		defaults.Add(2000,	RGBi(0xA0, 0x80, 0x60));	// brown
+		defaults.Add(3000,	RGBi(0xDD, 0x80, 0x22));	// orange
+		defaults.Add(4000,	RGBi(0xDD, 0xDD, 0xDD));	// light grey
+		defaults.Add(5000,	RGBi(0xCC, 0xCC, 0xFF));	// pale blue
+		cmap = &defaults;
+	}
 
-	Array<RGBi> *colors1;
-	if (brackets)
-		colors1 = brackets;
-	else
-		colors1 = &defaults;
-	Array<RGBi> &colors = *colors1;
+	int i, j;
+	int x, y;
+	RGBi color;
 
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
@@ -242,13 +313,45 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, Array<RGBi> *
 
 	float fMin, fMax;
 	GetHeightExtents(fMin, fMax);
+	float fRange = fMax - fMin;
 
-	int bracket, num = colors.GetSize();
-	float bracket_size = (fMax - fMin) / (num - 1);
+	// Rather than look through the color map for each pixel, pre-build
+	//  a color lookup table once - should be faster in nearly all cases.
+	std::vector<RGBi> table;
+	const int TABLE_SIZE = 2000;
+	float elev = fMin, step = fRange/TABLE_SIZE;
+	int current = 0;
+	int num = cmap->Num();
+	RGBi c1, c2;
+	float base, next, bracket_size, fraction;
 
-	int i, j;
-	int x, y;
-	RGBi color;
+	if (cmap->m_bRelative == true)
+	{
+		bracket_size = fRange / (num - 1);
+	}
+
+	for (i = 0; i < TABLE_SIZE; i++)
+	{
+		if (cmap->m_bRelative == false)
+		{
+			while (current < num-1 && elev >= cmap->m_elev[current+1])
+			{
+				current++;
+				c1 = cmap->m_color[current];
+				c2 = cmap->m_color[current+1];
+				base = cmap->m_elev[current];
+				next = cmap->m_elev[current+1];
+				bracket_size = next - base;
+			}
+			fraction = (elev - base) / bracket_size;
+			table.push_back(c1 * (1-fraction) + c2 * fraction);
+		}
+		else
+		{
+			// TODO: relative is simpler
+		}
+		elev += step;
+	}
 
 	// iterate over the texels
 	for (i = 0; i < w; i++)
@@ -264,33 +367,9 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, Array<RGBi> *
 		{
 			y = j * gh / h;
 
-			float m = GetElevation(x, y);	// local units
-			float elev = m - fMin;
-
-			color.r = color.g = color.b = 0;
-			if (bZeroIsOcean && m == 0.0f)
-			{
-				color = color_ocean;
-			}
-			else if (bracket_size != 0.0f)
-			{
-				bracket = (int) (elev / bracket_size);
-				if (bracket < 0)
-					color = colors[0];
-				else if (bracket < num-1)
-				{
-					float fraction = (elev / bracket_size) - bracket;
-					RGBi diff = (colors[bracket+1] - colors[bracket]);
-					color = colors[bracket] + (diff * fraction);
-				}
-				else
-					color = colors[num-1];
-			}
-			else
-			{
-				color.Set(20, 230, 20);	// flat green
-			}
-			pBM->SetPixel24(i, h-1-j, color);
+			elev = GetElevation(x, y, true);	// local units, true elevation
+			int table_entry = (int) ((elev - fMin) / fRange * TABLE_SIZE);
+			pBM->SetPixel24(i, h-1-j, table[table_entry]);
 		}
 	}
 }
@@ -552,7 +631,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		for (i = i_init; i != i_final; i += i_incr) 
 		{
 			pos = GridPos(texel_base, texel_size, i, j);
-			FindAltitudeAtPoint2(pos, shadowheight);
+			FindAltitudeAtPoint2(pos, shadowheight, true);
 
 			if (shadowheight == INVALID_ELEVATION)
 			{
@@ -575,7 +654,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				}
 
 				pos = GridPos(texel_base, texel_size, x, z);
-				FindAltitudeAtPoint2(pos, elevation);
+				FindAltitudeAtPoint2(pos, elevation, true);
 
 				// skip holes in the grid
 				if (elevation == INVALID_ELEVATION)
@@ -652,7 +731,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			pos = GridPos(texel_base, texel_size, i, j);
 
 			// 2D elevation query to check for holes in the grid
-			FindAltitudeAtPoint2(pos, elevation);
+			FindAltitudeAtPoint2(pos, elevation, true);
 			if (elevation == INVALID_ELEVATION)
 				continue;
 
