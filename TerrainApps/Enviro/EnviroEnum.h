@@ -20,7 +20,7 @@ enum NavType {
 	NT_Normal,
 	NT_Velo,
 	NT_Grab,
-//	NT_Quake,
+	NT_Dummy,	// takes place of historical removed style
 	NT_Pano
 };
 
