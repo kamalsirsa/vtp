@@ -118,15 +118,15 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 	DATUM eDatum;
 	switch (iDatum)
 	{
-        case 0:
-            eDatum = NAD27;
-            break;
-        case 1:
-            eDatum = NAD83;
-            break;
-        default:
-            eDatum = UNKNOWN_DATUM;
-            break;
+		case 0:
+			eDatum = NAD27;
+			break;
+		case 1:
+			eDatum = NAD83;
+			break;
+		default:
+			eDatum = UNKNOWN_DATUM;
+			break;
 	}
 
 	// record 5-9 - Projection parameters for map transformation

@@ -15,7 +15,7 @@ static int GetDataTypeSize( DataType type )
 	switch ( type )
 	{
 		case DT_SHORT  : tsize = sizeof(short) ; break;
-		case DT_INT    : tsize = sizeof(int)   ; break;
+		case DT_INT	: tsize = sizeof(int)   ; break;
 		case DT_LONG   : tsize = sizeof(long)  ; break;
 		case DT_FLOAT  : tsize = sizeof(float) ; break;
 		case DT_DOUBLE : tsize = sizeof(double); break;
@@ -39,13 +39,13 @@ static int GetDataTypeSize( DataType type )
  *
  */
 void SwapMemBytes( void *items, DataType type, size_t nitems,
-                   ByteOrder data_order, ByteOrder desired_order )
+				   ByteOrder data_order, ByteOrder desired_order )
 {
 	size_t tsize;
 	char  *base = (char *) items,
-        *p;
+		*p;
 
-	if ( data_order    == BO_MACHINE ) data_order    = NativeByteOrder();
+	if ( data_order	== BO_MACHINE ) data_order	= NativeByteOrder();
 	if ( desired_order == BO_MACHINE ) desired_order = NativeByteOrder();
 	if ( data_order == desired_order )
 		return;
@@ -58,7 +58,7 @@ void SwapMemBytes( void *items, DataType type, size_t nitems,
 			for ( p = base + (nitems-1) * tsize; p >= base; p -= tsize )
 				*(short *)p = SwapShort( *(short *)p );
 			break;
-		case DT_INT    :
+		case DT_INT	:
 			for ( p = base + (nitems-1) * tsize; p >= base; p -= tsize )
 				*(int   *)p = SwapInt( *(int   *)p );
 			break;
@@ -93,7 +93,7 @@ void SwapMemBytes( void *items, DataType type, size_t nitems,
  *
  */
 size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
-              ByteOrder file_order, ByteOrder desired_order )
+			  ByteOrder file_order, ByteOrder desired_order )
 {
 	int tsize  = GetDataTypeSize( type );
 	size_t ret = fread( ptr, tsize, nitems, stream );

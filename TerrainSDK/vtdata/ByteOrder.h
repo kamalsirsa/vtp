@@ -13,12 +13,12 @@
 
 enum ByteOrder
 {
-	BO_LITTLE_ENDIAN,                   /*  Intel  */
-	BO_BIG_ENDIAN,                      /*  Motorola, MIPS, Sun, etc.  */
+	BO_LITTLE_ENDIAN,		/*  Intel  */
+	BO_BIG_ENDIAN,			/*  Motorola, MIPS, Sun, etc.  */
 	BO_MACHINE,
-  BO_LE  = BO_LITTLE_ENDIAN,
-  BO_BE  = BO_BIG_ENDIAN,
-  BO_CPU = BO_MACHINE
+	BO_LE  = BO_LITTLE_ENDIAN,
+	BO_BE  = BO_BIG_ENDIAN,
+	BO_CPU = BO_MACHINE
 };
 
 enum DataType
@@ -52,7 +52,7 @@ inline short SwapShort( short data )
 inline long SwapLong( long data )
 {
 	assert( sizeof(long) == 4 );
-	return ( data << 24 )                 | (( data << 8 ) & 0x00FF0000 ) |
+	return ( data << 24 )				 | (( data << 8 ) & 0x00FF0000 ) |
 		   (( data >> 24 ) & 0x000000FF ) | (( data >> 8 ) & 0x0000FF00 );
 }
 inline int SwapInt( int data )
@@ -73,9 +73,9 @@ inline double SwapDouble( double data )
 {
 	assert( sizeof(double) == 2*sizeof(long) );
 	char *p  = (char *)&data;
-	long  l1 = *((long *)( p + 0            )),
-          l2 = *((long *)( p + sizeof(long) ));
-	*((long *)( p + 0            )) = SwapLong( l2 );
+	long  l1 = *((long *)( p + 0			)),
+		  l2 = *((long *)( p + sizeof(long) ));
+	*((long *)( p + 0			)) = SwapLong( l2 );
 	*((long *)( p + sizeof(long) )) = SwapLong( l1 );
 	return data;
 }
@@ -88,11 +88,11 @@ inline double SwapDouble( double data )
  * \return data, potentially byte swapped
  *
  */
-inline short SwapBytes( short     data,
-                        ByteOrder data_order,
-                        ByteOrder desired_order )
+inline short SwapBytes( short	 data,
+						ByteOrder data_order,
+						ByteOrder desired_order )
 {
-	if ( data_order    == BO_MACHINE ) data_order    = NativeByteOrder();
+	if ( data_order	== BO_MACHINE ) data_order	= NativeByteOrder();
 	if ( desired_order == BO_MACHINE ) desired_order = NativeByteOrder();
 	if ( data_order == desired_order )
 		return data;
@@ -100,11 +100,11 @@ inline short SwapBytes( short     data,
 		return SwapShort( data );
 }
 
-inline long SwapBytes( long      data,
-                       ByteOrder data_order,
-                       ByteOrder desired_order )
+inline long SwapBytes( long	  data,
+					   ByteOrder data_order,
+					   ByteOrder desired_order )
 {
-	if ( data_order    == BO_MACHINE ) data_order    = NativeByteOrder();
+	if ( data_order	== BO_MACHINE ) data_order	= NativeByteOrder();
 	if ( desired_order == BO_MACHINE ) desired_order = NativeByteOrder();
 	if ( data_order == desired_order )
 		return data;
@@ -112,11 +112,11 @@ inline long SwapBytes( long      data,
 		return SwapLong( data );
 }
 
-inline int SwapBytes( int        data,
-                      ByteOrder data_order,
-                      ByteOrder desired_order )
+inline int SwapBytes( int		data,
+					  ByteOrder data_order,
+					  ByteOrder desired_order )
 {
-	if ( data_order    == BO_MACHINE ) data_order    = NativeByteOrder();
+	if ( data_order	== BO_MACHINE ) data_order	= NativeByteOrder();
 	if ( desired_order == BO_MACHINE ) desired_order = NativeByteOrder();
 	if ( data_order == desired_order )
 		return data;
@@ -124,11 +124,11 @@ inline int SwapBytes( int        data,
 		return SwapInt( data );
 }
 
-inline float SwapBytes( float     data,
-                        ByteOrder data_order,
-                        ByteOrder desired_order )
+inline float SwapBytes( float	 data,
+						ByteOrder data_order,
+						ByteOrder desired_order )
 {
-	if ( data_order    == BO_MACHINE ) data_order    = NativeByteOrder();
+	if ( data_order	== BO_MACHINE ) data_order	= NativeByteOrder();
 	if ( desired_order == BO_MACHINE ) desired_order = NativeByteOrder();
 	if ( data_order == desired_order )
 		return data;
@@ -136,11 +136,11 @@ inline float SwapBytes( float     data,
 		return SwapFloat( data );
 }
 
-inline double SwapBytes( double    data,
-                         ByteOrder data_order,
-                         ByteOrder desired_order )
+inline double SwapBytes( double	data,
+						 ByteOrder data_order,
+						 ByteOrder desired_order )
 {
-	if ( data_order    == BO_MACHINE ) data_order    = NativeByteOrder();
+	if ( data_order	== BO_MACHINE ) data_order	= NativeByteOrder();
 	if ( desired_order == BO_MACHINE ) desired_order = NativeByteOrder();
 	if ( data_order == desired_order )
 		return data;
@@ -161,22 +161,21 @@ inline double SwapBytes( double    data,
  *
  */
 void SwapMemBytes( void *items, DataType type, size_t count,
-                   ByteOrder file_order, ByteOrder desired_order );
+				   ByteOrder file_order, ByteOrder desired_order );
 
 /**
  * Just like stdio's fread(), but adds an optional byte swapping phase for
  * the data read.
  * \param ptr data buffer to read items into
- * \param size the size of each item
+ * \param type the data type of items to be read
  * \param nitems the number of items to read
  * \param stream the stdio stream open for read
- * \param type the data type of items to be read
  * \param file_order the byte ordering of data read from the file
  * \param desired_order the desired byte ordering
  * \return fread() return value (num items read, or negative for error)
  *
  */
 size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
-              ByteOrder file_order, ByteOrder desired_order = BO_MACHINE );
+			  ByteOrder file_order, ByteOrder desired_order = BO_MACHINE );
 
 #endif
