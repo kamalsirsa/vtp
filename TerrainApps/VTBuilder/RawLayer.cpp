@@ -58,6 +58,9 @@ void vtRawLayer::SetGeomType(OGRwkbGeometryType type)
 		case wkbLineString:
 			m_pSet = new vtFeatureSetLineString();
 			break;
+		case wkbLineString25D:
+			m_pSet = new vtFeatureSetLineString3D();
+			break;
 		case wkbPolygon:
 			m_pSet = new vtFeatureSetPolygon();
 			break;
@@ -114,7 +117,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	pDC->SetPen(DefPen);
 
 	wxPoint p;
-	int i, entities = m_pSet->GetNumEntities();
+	int i, j, entities = m_pSet->GetNumEntities();
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
 	if (type == wkbPoint)
 	{
@@ -187,6 +190,29 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
 			}
 			DLine2 &dline = pSetLine->GetPolyLine(i);
+
+			bool bClosed = false;
+			pView->DrawLine(pDC, dline, bClosed);
+		}
+	}
+	if (type == wkbLineString25D)
+	{
+		vtFeatureSetLineString3D *pSetLine = dynamic_cast<vtFeatureSetLineString3D *>(m_pSet);
+		for (i = 0; i < entities; i++)
+		{
+			if (m_pSet->IsSelected(i)) {
+				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
+			}
+			else {
+				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
+			}
+			DLine3 &dline3 = pSetLine->GetPolyLine(i);
+
+			// convert (inefficient)
+			DLine2 dline;
+			dline.SetSize(dline3.GetSize());
+			for (j = 0; j < dline3.GetSize(); j++)
+				dline[j].Set(dline3[j].x, dline3[j].y);
 
 			bool bClosed = false;
 			pView->DrawLine(pDC, dline, bClosed);
@@ -340,6 +366,20 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(m_pSet);
 		float fmin, fmax;
 		if (pSetP3->ComputeHeightRange(fmin, fmax))
+		{
+			str.Printf(_T("Minimum Height: %.2f\n"), fmin);
+			strIn += str;
+
+			str.Printf(_T("Maximum Height: %.2f\n"), fmax);
+			strIn += str;
+		}
+	}
+
+	if (type == wkbLineString25D)
+	{
+		vtFeatureSetLineString3D *pLine3 = dynamic_cast<vtFeatureSetLineString3D *>(m_pSet);
+		float fmin, fmax;
+		if (pLine3->ComputeHeightRange(fmin, fmax))
 		{
 			str.Printf(_T("Minimum Height: %.2f\n"), fmin);
 			strIn += str;
