@@ -1446,33 +1446,59 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	const char *runits = poBand->GetUnitType();
 	if (runits && !strcmp(runits, "ft"))
 	{
-		fScale = 0.3048f;	// feet to meter conversion
-		m_bFloatMode = true;
+		// feet to meter conversion
+		if (m_bFloatMode)
+			fScale = 0.3048f;	// already floats, just multiply
+		else
+			SetScale(0.3048f);	// stay with shorts, use scaling
 	}
 
 	_AllocateArray();
 
 	short *pasScanline;
 	short elev;
+	float *pafScanline;
+	float fElev;
 	int   nXSize = poBand->GetXSize();
 
 	pasScanline = (short *) CPLMalloc(sizeof(short)*nXSize);
+	pafScanline = (float *) CPLMalloc(sizeof(float)*nXSize);
 	int i, j;
 	for (j = 0; j < m_iRows; j++)
 	{
-		poBand->RasterIO( GF_Read, 0, j, nXSize, 1,
-						  pasScanline, nXSize, 1, GDT_Int16,
-						  0, 0 );
-		for (i = 0; i < nXSize; i++)
+		if (m_bFloatMode)
 		{
-			elev = pasScanline[i];
+			poBand->RasterIO( GF_Read, 0, j, nXSize, 1,
+							  pafScanline, nXSize, 1, GDT_Float32,
+							  0, 0 );
+			for (i = 0; i < nXSize; i++)
+			{
+				fElev = pafScanline[i];
 
-			// check for several different commonly used values meaning
-			// "no data at this location"
-			if (elev == -9999 || elev == -32766 || elev == 32767)
-				SetValue(i, m_iRows-1-j, INVALID_ELEVATION);
-			else
-				SetFValue(i, m_iRows-1-j, elev * fScale);
+				// check for several different commonly used values meaning
+				// "no data at this location"
+				if (fElev == -9999 || fElev == -32766 || fElev == 32767)
+					SetValue(i, m_iRows-1-j, INVALID_ELEVATION);
+				else
+					SetFValue(i, m_iRows-1-j, fElev * fScale);
+			}
+		}
+		else
+		{
+			poBand->RasterIO( GF_Read, 0, j, nXSize, 1,
+							  pasScanline, nXSize, 1, GDT_Int16,
+							  0, 0 );
+			for (i = 0; i < nXSize; i++)
+			{
+				elev = pasScanline[i];
+
+				// check for several different commonly used values meaning
+				// "no data at this location"
+				if (elev == -9999 || elev == -32766 || elev == 32767)
+					SetValue(i, m_iRows-1-j, INVALID_ELEVATION);
+				else
+					SetFValue(i, m_iRows-1-j, elev * fScale);
+			}
 		}
 		if (progress_callback != NULL)
 			progress_callback(100*j/m_iRows);
@@ -1480,6 +1506,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 
 	// Clean up
 	CPLFree(pasScanline);
+	CPLFree(pafScanline);
 	delete poDataset;
 
 	// Return success
