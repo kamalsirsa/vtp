@@ -12,6 +12,7 @@
 #include "Array.h"
 
 #include "zlib.h"
+#include <fstream>
 
 #if WIN32
   #include <io.h>
