@@ -189,72 +189,7 @@ bool vtUtilityLayer::AppendDataFrom(vtLayer *pL)
 
 void vtUtilityLayer::Offset(DPoint2 p)
 {
-/*
-	int npoints = GetSize();
-	if (!npoints)
-		return;
-
-	DPoint2 temp;
-	for (int i = 0; i < npoints; i++)
-	{
-		vtTower *bld = GetAt(i);
-		bld->Offset(p);
-	}
-*/
 }
-
-//
-// inverts Selected value of tower within error or utmCoord
-//
-/*bool vtUtilityLayer::SelectTower(DPoint2 utmCoord, float error, DRECT &bound)
-{
-	NodeEdit* tower = SelectNode(utmCoord, error, true, false);
-	if (node) {
-		bound.left = bound.right = node->m_p.x;
-		bound.top = bound.bottom = node->m_p.y;
-		return true;
-	} else
-		return false;
-}
-
-//returns appropriate node at utmCoord within error
-//toggle:	toggles the select value
-//selectVal: what to assign the select value.
-// toggle has precendence over selectVal.
-NodeEdit* vtUtilityLayer::SelectNode(DPoint2 point, float error, bool toggle, bool selectVal)
-{
-	NodeEdit* bestSoFar;
-	float dist = (float)error;
-	float result;
-	bool found = false;
-
-	//a backwards rectangle, to provide greater flexibility for finding the node
-	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
-	for (NodeEdit* curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
-	{
-		if (curNode->WithinExtent(target))
-		{
-			result = curNode->DistanceToPoint(point);
-			if (result < dist) {
-				bestSoFar = curNode;
-				dist = result;
-				found = true;
-			}
-		}
-	}
-
-	if (found)
-	{
-		if (toggle)
-			bestSoFar->ToggleSelect();
-		else
-			bestSoFar->Select(selectVal);
-		return bestSoFar;
-	}
-	else
-		return NULL;
-}*/
-
 
 void vtUtilityLayer::DeselectAll()
 {
