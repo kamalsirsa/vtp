@@ -19,6 +19,13 @@ void vtHeightField::Initialize(vtLocalGrid *pLocalGrid)
 	// minimum and maximum height values for the whole grid
 	pLocalGrid->GetHeightExtents(m_fMinHeight, m_fMaxHeight);
 
+	if (m_fMinHeight == INVALID_ELEVATION ||
+		m_fMinHeight == INVALID_ELEVATION)
+	{
+		// we need height extents, so force them to be computed
+		pLocalGrid->ComputeHeightExtents();
+		pLocalGrid->GetHeightExtents(m_fMinHeight, m_fMaxHeight);
+	}
 	FPoint2 hypo(m_Conversion.m_WorldExtents.Width(),
 				 m_Conversion.m_WorldExtents.Height());
 	m_fDiagonalLength = hypo.Length();
