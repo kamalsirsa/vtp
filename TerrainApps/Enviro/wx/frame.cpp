@@ -593,6 +593,12 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			sa->ConstructStructure(bld);
 		}
 #endif
+		if (pTerr)
+		{
+			// Show 
+			GetTerrainScene()->GetSkyDome()->SetStarAltitude(90);
+			GetTerrainScene()->GetSkyDome()->RefreshCelestialObjects();
+		}
 		break;
 
 	case 4:	// Ctrl-D
@@ -1404,7 +1410,7 @@ void vtFrame::OnEarthShowAxes(wxCommandEvent& event)
 
 void vtFrame::OnUpdateEarthShowAxes(wxUpdateUIEvent& event)
 {
-	event.Enable(g_App.m_state == AS_Orbit);
+	event.Enable(g_App.m_state == AS_Orbit || g_App.m_state == AS_Terrain);
 	event.Check(g_App.GetSpaceAxes());
 }
 
