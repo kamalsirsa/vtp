@@ -7,6 +7,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+// Headers for PNG support, which uses the library "libpng"
+#include "png.h"
+
+// Headers for JPEG support, which uses the library "libjpeg"
+extern "C" {
+#include "jpeglib.h"
+}
+
 #include "vtDIB.h"
 #include "ByteOrder.h"
 
@@ -62,14 +71,6 @@ typedef struct tagRGBQUAD {
 #define BI_BITFIELDS	3L
 
 #endif // #ifndef _WINGDI_
-
-// Headers for JPEG support, which uses the library "libjpeg"
-extern "C" {
-#include "jpeglib.h"
-}
-
-// Headers for PNG support, which uses the library "libpng"
-#include "png.h"
 
 
 /**
