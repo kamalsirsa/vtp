@@ -477,6 +477,13 @@ void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjecti
 		SHPObject *psShape = SHPReadObject(hSHP, i);
 		npoints = psShape->nVertices;
 
+		// It's possible for some entities to be empty?
+		if (npoints == 0)
+		{
+			SHPDestroyObject(psShape);
+			continue;
+		}
+
 		// create 2 new nodes (begin/end) and a new line
 		pN1 = new NodeEdit();
 		pN1->m_p.x = psShape->padfX[0];
