@@ -137,6 +137,16 @@ void vtBitmap::GetPixel24(int x, int y, RGBi &rgb) const
 #endif
 }
 
+void vtBitmap::SetPixel32(int x, int y, const RGBAi &rgba)
+{
+	// unsupported
+}
+
+void vtBitmap::GetPixel32(int x, int y, RGBAi &rgba) const
+{
+	// unsupported
+}
+
 unsigned char vtBitmap::GetPixel8(int x, int y) const
 {
 	// unimplemented

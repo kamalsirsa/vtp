@@ -30,6 +30,9 @@ public:
 	}
 	void GetPixel24(int x, int y, RGBi &rgb) const;
 
+	void SetPixel32(int x, int y, const RGBAi &rgba);
+	void GetPixel32(int x, int y, RGBAi &rgba) const;
+
 	unsigned char GetPixel8(int x, int y) const;
 	void SetPixel8(int x, int y, unsigned char color);
 
