@@ -104,6 +104,9 @@ public:
 	bool IsEmpty() { return (GetSize() == 0); }
 	void GetExtents(DRECT &ext);
 
+	int AddFoundations(vtHeightField *pHF);
+	void RemoveFoundations();
+
 	// selection
 	int NumSelected();
 	void DeselectAll();

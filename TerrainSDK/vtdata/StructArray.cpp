@@ -280,6 +280,75 @@ void vtStructureArray::GetExtents(DRECT &rect)
 	}
 }
 
+int vtStructureArray::AddFoundations(vtHeightField *pHF)
+{
+	vtLevel *pLev, *pNewLev;
+	int i, j, pts, built = 0;
+	float fElev;
+
+	int selected = NumSelected();
+	int size = GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtBuilding *bld = str->GetBuilding();
+		if (!bld)
+			continue;
+		if (selected > 0 && !str->IsSelected())
+			continue;
+
+		// Get the footprint of the lowest level
+		pLev = bld->GetLevel(0);
+		const DLine2 &foot = pLev->GetFootprint();
+		pts = foot.GetSize();
+
+		float fMin = 1E9, fMax = -1E9;
+		for (j = 0; j < pts; j++)
+		{
+			pHF->FindAltitudeAtPoint2(foot.GetAt(j), fElev);
+
+			if (fElev < fMin) fMin = fElev;
+			if (fElev > fMax) fMax = fElev;
+		}
+		float fDiff = fMax - fMin;
+
+		// if there's less than 50cm of depth, don't bother building
+		// a foundation
+		if (fDiff < 0.5f)
+			continue;
+
+		// Create and add a foundation level
+		pNewLev = new vtLevel();
+		pNewLev->m_iStories = 1;
+		pNewLev->m_fStoryHeight = fDiff;
+		bld->InsertLevel(0, pNewLev);
+		bld->SetFootprint(0, foot);
+		pNewLev->SetEdgeMaterial(BMAT_NAME_CEMENT);
+		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
+		built++;
+	}
+	return built;
+}
+
+void vtStructureArray::RemoveFoundations()
+{
+	vtLevel *pLev;
+	int i, size = GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtBuilding *bld = str->GetBuilding();
+		if (!bld)
+			continue;
+		pLev = bld->GetLevel(0);
+		const vtString *mat = pLev->GetEdge(0)->m_pMaterial;
+		if (mat && *mat == BMAT_NAME_CEMENT)
+		{
+			bld->DeleteLevel(0);
+		}
+	}
+}
+
 int vtStructureArray::NumSelected()
 {
 	int sel = 0;
