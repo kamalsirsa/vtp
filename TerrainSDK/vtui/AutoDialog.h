@@ -93,8 +93,8 @@ public:
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
 	void AddNumValidator(long id, int *iptr);
-	void AddNumValidator(long id, float *fptr);
-	void AddNumValidator(long id, double *dptr);
+	void AddNumValidator(long id, float *fptr, int digits = -1);
+	void AddNumValidator(long id, double *dptr, int digits = -1);
 
 	DECLARE_EVENT_TABLE()
 };

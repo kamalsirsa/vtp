@@ -276,23 +276,23 @@ void AutoPanel::AddNumValidator(long id, int *iptr)
 	}
 }
 
-void AutoPanel::AddNumValidator(long id, float *fptr)
+void AutoPanel::AddNumValidator(long id, float *fptr, int digits)
 {
 	wxWindow *pWin = FindWindow(id);
 	if (pWin)
 	{
-		wxNumericValidator *gv = new wxNumericValidator(fptr);
+		wxNumericValidator *gv = new wxNumericValidator(fptr, digits);
 		pWin->SetValidator(*gv);	// actually clones the one we pass in
 		delete gv;
 	}
 }
 
-void AutoPanel::AddNumValidator(long id, double *dptr)
+void AutoPanel::AddNumValidator(long id, double *dptr, int digits)
 {
 	wxWindow *pWin = FindWindow(id);
 	if (pWin)
 	{
-		wxNumericValidator *gv = new wxNumericValidator(dptr);
+		wxNumericValidator *gv = new wxNumericValidator(dptr, digits);
 		pWin->SetValidator(*gv);	// actually clones the one we pass in
 		delete gv;
 	}
