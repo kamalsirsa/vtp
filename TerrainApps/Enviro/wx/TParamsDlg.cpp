@@ -480,6 +480,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		// fill the "TIN filename" control with available files
 		AddFilenamesToComboBox(m_pFilenameTin, paths[i] + "Elevation", "*.tin");
+		AddFilenamesToComboBox(m_pFilenameTin, paths[i] + "Elevation", "*.itf");
 		sel = m_pFilenameTin->FindString(m_strFilenameTin);
 		if (sel != -1)
 			m_pFilename->SetSelection(sel);

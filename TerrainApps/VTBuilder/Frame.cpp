@@ -450,7 +450,9 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		else
 			delete pRL;
 	}
-	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase(_T("tin")) == 0 ||
+	if (ext.CmpNoCase(_T("bt")) == 0 ||
+		ext.CmpNoCase(_T("tin")) == 0 ||
+		ext.CmpNoCase(_T("itf")) == 0 ||
 		fname.Right(6).CmpNoCase(_T(".bt.gz")) == 0)
 	{
 		vtElevLayer *pEL = new vtElevLayer();
