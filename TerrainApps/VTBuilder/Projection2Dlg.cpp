@@ -76,14 +76,15 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_ZONE, &m_iZone);
 	AddValidator(ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
 
-	m_pProjCtrl->Append(_T("Geographic"));
-	m_pProjCtrl->Append(_T("UTM"));
 	m_pProjCtrl->Append(_T("Albers Equal Area Conic"));
+	m_pProjCtrl->Append(_T("Geographic"));
 	m_pProjCtrl->Append(_T("Lambert Conformal Conic"));
-	m_pProjCtrl->Append(_T("Transverse Mercator"));
-	m_pProjCtrl->Append(_T("Stereographic"));
+	m_pProjCtrl->Append(_T("New Zealand Map Grid"));
 	m_pProjCtrl->Append(_T("Oblique Stereographic"));
 	m_pProjCtrl->Append(_T("Polar Stereographic"));
+	m_pProjCtrl->Append(_T("Stereographic"));
+	m_pProjCtrl->Append(_T("Transverse Mercator"));
+	m_pProjCtrl->Append(_T("UTM"));
 
 	// Fill in choices for Datum
 	RefreshDatums();
@@ -168,6 +169,7 @@ void Projection2Dlg::UpdateControlStatus()
 		break;
 	case PT_ALBERS:
 	case PT_LAMBERT:
+	case PT_NZMG:
 	case PT_TM:
 	case PT_STEREO:
 	case PT_OS:
@@ -280,6 +282,9 @@ void Projection2Dlg::SetUIFromProjection()
 
 		if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
 			SetProjectionUI(PT_LAMBERT);
+
+		if (!strcmp(proj_string, SRS_PT_NEW_ZEALAND_MAP_GRID))
+			SetProjectionUI(PT_NZMG);
 
 		if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
 			SetProjectionUI(PT_STEREO);
@@ -409,6 +414,9 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		break;
 	case PT_LAMBERT:
 		m_proj.SetLAEA( 51, -150, 1000000, 0 );
+		break;
+	case PT_NZMG:
+		m_proj.SetNZMG( 41, 173, 2510000, 6023150 );
 		break;
 	case PT_TM:
 		// Put in some default values

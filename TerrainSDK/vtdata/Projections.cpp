@@ -244,6 +244,8 @@ const char *vtProjection::GetProjectionNameShort() const
 		return "LCC";
 	if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
 		return "Stereo";
+	if (!strcmp(proj_string, SRS_PT_NEW_ZEALAND_MAP_GRID))
+		return "NZMG";
 	if (!strcmp(proj_string, SRS_PT_OBLIQUE_STEREOGRAPHIC))
 		return "OS";
 	if (!strcmp(proj_string, SRS_PT_POLAR_STEREOGRAPHIC))

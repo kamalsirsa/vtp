@@ -19,14 +19,15 @@
 #ifndef __ProjectionDlg_H__
 enum ProjType
 {
-	PT_GEO,
-	PT_UTM,
 	PT_ALBERS,
+	PT_GEO,
 	PT_LAMBERT,
-	PT_TM,
-	PT_STEREO,
+	PT_NZMG,
 	PT_OS,
-	PT_PS
+	PT_PS,
+	PT_STEREO,
+	PT_TM,
+	PT_UTM
 };
 #endif
 
