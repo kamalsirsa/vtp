@@ -373,7 +373,7 @@ SOURCE=.\SelectDlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\splitterwindow.h
+SOURCE=.\SplitterWin.h
 # End Source File
 # Begin Source File
 
@@ -381,7 +381,7 @@ SOURCE=.\StatePlaneDlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\statusbar.h
+SOURCE=.\StatusBar.h
 # End Source File
 # Begin Source File
 
