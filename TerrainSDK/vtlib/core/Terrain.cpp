@@ -77,6 +77,8 @@ vtTerrain::vtTerrain()
 	m_pStructGrid = NULL;
 
 	m_CamLocation.Identity();
+
+	m_fCenterLongitude = -999;	// initially unknown
 }
 
 vtTerrain::~vtTerrain()
@@ -239,7 +241,7 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 
 ///////////////////
 
-void vtTerrain::create_textures()
+void vtTerrain::_CreateTextures(const vtTime &time)
 {
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.m_eTexture;
@@ -249,17 +251,8 @@ void vtTerrain::create_textures()
 	m_pTerrMats->Empty();
 
 	float ambient, diffuse, emmisive;
-	if (m_Params.m_bPreLit)
-	{
-		diffuse = 1.0f;
-		ambient = emmisive = 0.0f;
-	}
-	else
-	{
-		ambient = TERRAIN_AMBIENT;
-		diffuse = TERRAIN_DIFFUSE;
-		emmisive = TERRAIN_EMISSIVE;
-	}
+	diffuse = 1.0f;
+	ambient = emmisive = 0.0f;
 
 	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
 	{
@@ -287,7 +280,7 @@ void vtTerrain::create_textures()
 				VTLOG("  Failed to load texture.\n");
 				m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 											RGBf(0.2f, 0.2f, 0.2f),
-											true, !m_Params.m_bPreLit);	// for shaded white
+											true, false);
 				m_Params.m_eTexture = TE_NONE;
 			}
 			if (eTex == TE_SINGLE)
@@ -320,16 +313,12 @@ void vtTerrain::create_textures()
 		m_pDIB = new vtDIB();
 		m_pDIB->Create(tsize, tsize, 24, false);
 		pHFGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
-
-		// TEST
-		if (m_pDynGeom != NULL)
-			m_pDIB->Invert();
 	}
 
 	// apply pre-lighting (darkening)
 	if (m_Params.m_bPreLight && m_pDIB)
 	{
-		ApplyPreLight(pHFGrid, m_pDIB);
+		_ApplyPreLight(pHFGrid, m_pDIB, time);
 	}
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
@@ -354,7 +343,7 @@ void vtTerrain::create_textures()
 		// no texture: create plain white material
 		m_pTerrMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
-									 true, !m_Params.m_bPreLit);
+									 true, false);
 		return;
 	}
 	// We're not going to use it anymore, so we're done with the DIB
@@ -368,7 +357,7 @@ void vtTerrain::create_textures()
 		vtImage *pImage = m_Images[0];
 		m_pTerrMats->AddTextureMaterial(pImage,
 			true,		// culling
-			!m_Params.m_bPreLit,	// lighting
+			false,		// lighting
 			false,		// transparent
 			false,		// additive
 			ambient, diffuse,
@@ -388,9 +377,9 @@ void vtTerrain::create_textures()
 /**
  * Experimental only!!!
  */
-void vtTerrain::recreate_textures()
+void vtTerrain::recreate_textures(const vtTime &time)
 {
-	create_textures();
+	_CreateTextures(time);
 }
 
 
@@ -403,18 +392,6 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		texture_patches = 4;	// tiled, which is always 4x4
 	else
 		texture_patches = 1;	// assume one texture
-
-	bool bLighting, bTextured;
-	if (m_Params.m_eTexture == TE_NONE)
-	{
-		bLighting = true;
-		bTextured = false;
-	}
-	else
-	{
-		bLighting = !m_Params.m_bPreLit;
-		bTextured = true;
-	}
 
 	VTLOG(" LOD method %d\n", m_Params.m_eLodMethod);
 //	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
@@ -1261,18 +1238,6 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 	VTLOG("Created %d text labels\n", features);
 }
 
-void vtTerrain::SetFogColor(const RGBf &color)
-{
-	m_fog_color = color;
-	if (m_bFog) SetFog(true);
-}
-
-void vtTerrain::SetFogDistance(float fMeters)
-{
-	m_Params.m_fFogDistance = fMeters / 1000;
-	if (m_bFog) SetFog(true);
-}
-
 void vtTerrain::SetFog(bool fog)
 {
 	m_bFog = fog;
@@ -1292,7 +1257,77 @@ void vtTerrain::SetFog(bool fog)
 	}
 }
 
+void vtTerrain::SetFogColor(const RGBf &color)
+{
+	m_fog_color = color;
+	if (m_bFog) SetFog(true);
+}
 
+void vtTerrain::SetFogDistance(float fMeters)
+{
+	m_Params.m_fFogDistance = fMeters / 1000;
+	if (m_bFog) SetFog(true);
+}
+
+/**
+ * Given a time value, convert it from the LT (local time) of the center of
+ * this terrain to GMT.  Local time is defined precisely by longitude,
+ * e.g. at noon local time, the sun is exactly halfway across the sky.
+ *
+ * Note that this is different that the "standard time" of a given place,
+ * which involves finding out what time zone is in effect (complicated!)
+ */
+void vtTerrain::TranslateToGMT(vtTime &time)
+{
+	if (m_fCenterLongitude == -999)
+		_ComputeCenterLongitude();
+
+	time.Increment(-m_iDifferenceFromGMT);
+}
+
+/**
+ * Given a time value, convert it to the LT (local time) of the center of
+ * this terrain from GMT.  Local time is defined precisely by longitude,
+ * e.g. at noon local time, the sun is exactly halfway across the sky.
+ *
+ * Note that this is different that the "standard time" of a given place,
+ * which involves finding out what time zone is in effect (complicated!)
+ */
+void vtTerrain::TranslateFromGMT(vtTime &time)
+{
+	if (m_fCenterLongitude == -999)
+		_ComputeCenterLongitude();
+
+	time.Increment(m_iDifferenceFromGMT);
+}
+
+void vtTerrain::_ComputeCenterLongitude()
+{
+	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
+	DRECT drect = pHFGrid->GetEarthExtents();
+	DPoint2 center;
+	drect.GetCenter(center);
+
+	// must convert from whatever we are, to geo
+	vtProjection Dest;
+	Dest.SetWellKnownGeogCS("WGS84");
+
+	// safe (won't fail on tricky Datum conversions)
+	OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
+	trans->Transform(1, &center.x, &center.y);
+	delete trans;
+
+	m_fCenterLongitude = center.x;
+
+	// calculate offset FROM GMT
+	// longitude of 180 deg = 12 hours = 720 min = 43200 sec
+	m_iDifferenceFromGMT = (int) (m_fCenterLongitude / 180 * 43200);
+}
+
+
+/**
+ * First step in terrain creation: load elevation.
+ */
 bool vtTerrain::CreateStep1(int &iError)
 {
 	// create terrain group - this holds all surfaces for the terrain
@@ -1351,6 +1386,9 @@ bool vtTerrain::CreateStep1(int &iError)
 	return true;
 }
 
+/**
+ * Next step in terrain creation: create textures.
+ */
 bool vtTerrain::CreateStep2(int &iError)
 {
 	if (m_Params.m_bTin)
@@ -1364,7 +1402,9 @@ bool vtTerrain::CreateStep2(int &iError)
 		m_proj = m_pElevGrid->GetProjection();
 		g_Conv = m_pElevGrid->m_Conversion;
 
-		create_textures();
+		vtTime terraintime;
+		terraintime.SetTimeOfDay(m_Params.m_iInitTime, 0, 0);
+		_CreateTextures(terraintime);
 	}
 	char type[10], value[2048];
 	m_proj.GetTextDescription(type, value);
@@ -1372,6 +1412,9 @@ bool vtTerrain::CreateStep2(int &iError)
 	return true;
 }
 
+/**
+ * Next step in terrain creation: create 3D geometry for the terrain.
+ */
 bool vtTerrain::CreateStep3(int &iError)
 {
 	if (m_Params.m_bTin)
@@ -1429,20 +1472,26 @@ bool vtTerrain::CreateFromGrid(int &iError)
 	return true;
 }
 
+/**
+ * Next step in terrain creation: additional CLOD construction.
+ */
 bool vtTerrain::CreateStep4(int &iError)
 {
 	// some algorithms need an additional stage of initialization
 	if (m_pDynGeom != NULL)
+	{
 		m_pDynGeom->Init2();
 
-	clock_t tm2 = clock();
-	float time = ((float)tm2 - tm)/CLOCKS_PER_SEC;
-//	FILE *fp = fopen("time.txt", "wb");
-//	fprintf(fp, "time %.2f\n", time);
-//	fclose(fp);
+		clock_t tm2 = clock();
+		float time = ((float)tm2 - tm)/CLOCKS_PER_SEC;
+		VTLOG("CLOD construction: %.3f seconds.\n", time);
+	}
 	return true;
 }
 
+/**
+ * Next step in terrain creation: create the culture and labels.
+ */
 bool vtTerrain::CreateStep5(bool bSound, int &iError)
 {
 	// must have a heightfield by this point
@@ -1741,7 +1790,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 			vtImage *image = m_Images.GetAt(i*patches+j);
 			pMat1->AddTextureMaterial(image,
 				true, 		// culling
-				!m_Params.m_bPreLit, // lighting
+				false,		// lighting
 				false,		// transparency
 				false,		// additive
 				ambient, diffuse,
@@ -1755,19 +1804,45 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 }
 
 
-void vtTerrain::ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib)
+void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib,
+							  const vtTime &time)
 {
 	VTLOG("Prelighting terrain texture: ");
 	FPoint3 light_dir;
-	light_dir.Set(-1.0f, -1.0f, 0.0f);
-	light_dir.Normalize();
+
+#if 0
+	// This is a cool scientifically accurate way (which we're not using yet..)
+	float altDEG, aziDEG;
+
+	// Compute angle of sun based on location, date and time  (#include "spa.h")
+	SunAltAzi(altDEG,aziDEG,44.875,-110.875,2004,8,1,8,20,0,-7.0,1000.0);  
+
+	// Convert sun azimuth and elevation angles to radians
+	float alt=(altDEG/180.0f*PIf);
+	float azi=(aziDEG/180.0f*PIf);
+
+	light_dir.x=(-sin(azi)*cos(alt));
+	light_dir.z=(-cos(azi)*cos(alt));
+	light_dir.y=-sin(alt);
+#endif
+
+	// at midnight: below the earth, pointing up
+	light_dir.Set(0,1,0);
+
+	float fraction = (float) time.GetSecondOfDay() / (24*60*60);
+	float angle = PID2f + fraction * PI2f;
+	light_dir.Set(cosf(angle), sinf(angle), 0);
 
 	clock_t c1 = clock();
 
-	pElevGrid->ShadeDibFromElevation(dib, light_dir, m_Params.m_fPreLightFactor);
-
-	// A more accurate alternative, still experimental
-//	pElevGrid->ShadowCastDib(dib, light_dir, m_Params.m_fPreLightFactor);
+	float shade_factor = m_Params.m_fPreLightFactor;
+	if (m_Params.m_bCastShadows)
+	{
+		// A more accurate shading, still a little experimental
+		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor);
+	}
+	else
+        pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor);
 
 	clock_t c2 = clock();
 

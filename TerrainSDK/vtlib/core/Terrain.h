@@ -9,6 +9,7 @@
 #define TERRAINH
 
 #include "vtdata/TParams.h"
+#include "vtdata/vtTime.h"
 #include "Trees.h"
 #include "Structure3d.h"
 #include "vtdata/FilePath.h"
@@ -218,6 +219,10 @@ public:
 	void SetNext(vtTerrain *t) { m_pNext = t; }
 	vtTerrain *GetNext() { return m_pNext; }
 
+	// Time
+	void TranslateToGMT(vtTime &time);
+	void TranslateFromGMT(vtTime &time);
+
 	/********************** Public Data ******************/
 
 	// polygon containing geo corners of terrain area
@@ -231,7 +236,7 @@ public:
 	static vtContentManager3d s_Content;
 
 	// Experimental!
-	void recreate_textures();
+	void recreate_textures(const vtTime &time);
 
 protected:
 	/********************** Protected Methods ******************/
@@ -243,7 +248,7 @@ protected:
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateLabels();
-	void create_textures();
+	void _CreateTextures(const vtTime &time);
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
@@ -253,7 +258,9 @@ protected:
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
-	void ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtDIB *dib);
+	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtDIB *dib,
+		const vtTime &time);
+	void _ComputeCenterLongitude();
 
 	/********************** Protected Data ******************/
 
@@ -326,6 +333,10 @@ protected:
 
 	// only used during initialization
 	vtElevationGrid	*m_pElevGrid;
+
+	// a useful value for computing "local time"
+	double m_fCenterLongitude;
+	int m_iDifferenceFromGMT;
 
 	vtProjection	m_proj;
 };
