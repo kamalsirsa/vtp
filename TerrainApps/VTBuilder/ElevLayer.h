@@ -29,8 +29,7 @@ public:
 	bool OnSave();
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
-	void SetProjection(vtProjection &proj)
-	{ if (m_pGrid) *((vtProjection *)m_pGrid) = proj; }
+	void SetProjection(vtProjection &proj);
 	void GetPropertyText(wxString &str);
 
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);

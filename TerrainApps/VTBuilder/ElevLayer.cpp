@@ -642,6 +642,12 @@ void vtElevLayer::GetProjection(vtProjection &proj)
 	proj = m_pGrid->GetProjection();
 }
 
+void vtElevLayer::SetProjection(vtProjection &proj)
+{
+	if (m_pGrid)
+		m_pGrid->SetProjection(proj);
+}
+
 bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	void progress_callback(int am))
 {
