@@ -460,7 +460,7 @@ void vtGroup::CopyFrom(const vtGroup *rhs)
 	// Deep copy or shallow copy?
 	// Assume shallow copy: duplicate this node and add another reference
 	//  to the existing children.
-	for (int i = 0; i < rhs->GetNumChildren(); i++)
+	for (unsigned int i = 0; i < rhs->GetNumChildren(); i++)
 	{
 		vtNode *child = rhs->GetChild(i);
 		if (child)
@@ -517,7 +517,7 @@ vtNode *FindNodeByName(vtNode *node, const char *name)
 	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(node);
 	if (pGroup)
 	{
-		for (int i = 0; i < pGroup->GetNumChildren(); i++)
+		for (unsigned int i = 0; i < pGroup->GetNumChildren(); i++)
 		{
 			vtNode *pChild = pGroup->GetChild(i);
 			vtNode *pResult = FindNodeByName(pChild, name);
@@ -557,7 +557,7 @@ vtNode *vtGroup::GetChild(int num) const
 		return NULL;
 }
 
-int vtGroup::GetNumChildren() const
+unsigned int vtGroup::GetNumChildren() const
 {
 	// shoudln't happen but... safety check anyway
 	if (m_pGroup == NULL)

@@ -110,7 +110,7 @@ public:
 	vtNode *GetChild(int num) const;
 
 	/** Return the number of child nodes */
-	int GetNumChildren() const;
+	unsigned int GetNumChildren() const;
 
 	/** Looks for a descendent node with a given name.  If not found, NULL
 	 is returned. */

@@ -88,7 +88,7 @@ public:
 	virtual void		AddChild(vtNode* pChild) = 0;
 	virtual void		RemoveChild(vtNode* pChild) = 0;
 	virtual vtNode*		GetChild(int num) const = 0;
-	virtual int			GetNumChildren() const = 0;
+	virtual unsigned int GetNumChildren() const = 0;
 	virtual bool		ContainsChild(vtNode *pNode) const = 0;
 	virtual const vtNodeBase*	FindDescendantByName(const char *name) const = 0;
 };
