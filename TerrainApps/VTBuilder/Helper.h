@@ -46,7 +46,8 @@ class wxDC2 : public wxDC
 {
 public:
 	void StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
-		wxCoord width, wxCoord height);
+		wxCoord width, wxCoord height, wxCoord src_x, wxCoord src_y,
+		wxCoord src_width, wxCoord src_height);
 };
 #endif	// WIN32
 

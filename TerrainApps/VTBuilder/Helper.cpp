@@ -172,8 +172,11 @@ void DisplayAndLog(const char *pFormat, ...)
 // Win32 allows us to do a real StrectBlt operation, although it still won't
 // do a StretchBlt with a mask.
 //
-void wxDC2::StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
-						wxCoord width, wxCoord height)
+void wxDC2::StretchBlit(const wxBitmap &bmp,
+						wxCoord x, wxCoord y,
+						wxCoord width, wxCoord height,
+						wxCoord src_x, wxCoord src_y,
+						wxCoord src_width, wxCoord src_height)
 {
 	wxCHECK_RET( bmp.Ok(), _T("invalid bitmap in wxDC::DrawBitmap") );
 
@@ -195,7 +198,7 @@ void wxDC2::StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
 	HGDIOBJ hOldBitmap = ::SelectObject( memdc, hbitmap );
 
 	int bwidth = bmp.GetWidth(), bheight = bmp.GetHeight();
-	::StretchBlt( cdc, x, y, width, height, memdc, 0, 0, bwidth, bheight, SRCCOPY);
+	::StretchBlt( cdc, x, y, width, height, memdc, src_x, src_y, src_width, src_height, SRCCOPY);
 
 	::SelectObject( memdc, hOldBitmap );
 	::DeleteDC( memdc );
