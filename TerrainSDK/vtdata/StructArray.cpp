@@ -263,7 +263,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	// Make sure that entities are of the expected type
 	if (opt.type == ST_BUILDING)
 	{
-		if (nShapeType != SHPT_POINT && nShapeType != SHPT_POLYGON)
+		if (nShapeType != SHPT_POINT && nShapeType != SHPT_POLYGON &&
+			nShapeType != SHPT_ARC)
 			return false;
 		// Check for field with number of stories
 		if (db != NULL)
@@ -310,7 +311,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			}
 		}
 
-		int num_points = psShape->nVertices-1;
+		int num_points = psShape->nVertices;
 
 		if (opt.type == ST_BUILDING)
 		{
@@ -322,8 +323,28 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				bld->SetLocation(point);
 				bld->SetRectangle(10, 10);	// default size
 			}
-			if (nShapeType == SHPT_POLYGON)
+			if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ ||
+				nShapeType == SHPT_ARC)
 			{
+				if (nShapeType == SHPT_POLYGON || nShapeType == SHPT_POLYGONZ)
+				{
+					// for some reason, for SHPT_POLYGON, Shapelib duplicates
+					// the first point, so we need to ignore it
+					num_points--;
+				}
+				if (nShapeType == SHPT_ARC)
+				{
+					// the ARC type is different; Shapelib doesn't duplicate
+					// the first point, but since it is closed, we still need
+					// to ignore it the first point
+					num_points--;
+				}
+				// must have at least 3 points in a footprint
+				if (num_points < 3)
+				{
+					SHPDestroyObject(psShape);
+					continue;
+				}
 				DLine2 foot;
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
