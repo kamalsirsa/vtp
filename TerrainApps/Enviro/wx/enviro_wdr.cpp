@@ -1375,9 +1375,9 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Raw Layers") );
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Abstract Layers") );
     wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
 
     wxString *strs3 = (wxString*) NULL;
@@ -1388,6 +1388,40 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item6 = new wxStaticBox( parent, -1, _("Overlay") );
+    wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Image file:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_OVERLAY_FILE, wxT(""), wxDefaultPosition, wxSize(160,-1), 0 );
+    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item10 = new wxButton( parent, ID_BUTTON, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
+    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item5->Add( item8, 0, wxALIGN_CENTER, 5 );
+
+    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Placement:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_OVERLAY_X, wxT(""), wxDefaultPosition, wxSize(44,-1), 0 );
+    item11->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_OVERLAY_Y, wxT(""), wxDefaultPosition, wxSize(44,-1), 0 );
+    item11->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item5->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("(pixels from the lower-left corner)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item5, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     if (set_sizer)
     {
