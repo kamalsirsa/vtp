@@ -16,6 +16,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TimeEngines.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/Event.h"
 #include "vtui/wxString2.h"
 #include "vtdata/vtLog.h"
 #include "EnviroGUI.h"			// for g_App, GetTerrainScene
