@@ -352,7 +352,7 @@ void MainFrame::CreateMenus()
 #ifndef ELEVATION_ONLY
 	// Vegetation
 	vegMenu = new wxMenu;
-	vegMenu->Append(ID_VEG_PLANTS, _("Plants List"), _("View/Edit list of available plant species"));
+	vegMenu->Append(ID_VEG_PLANTS, _("Species List"), _("View/Edit list of available plant species"));
 	vegMenu->Append(ID_VEG_BIOREGIONS, _("BioRegions"), _("View/Edit list of species & density for each BioRegion"));
 	vegMenu->Append(ID_VEG_EXPORTSHP, _("Export SHP"));
 	m_pMenuBar->Append(vegMenu, _("Veg&etation"));
@@ -2390,7 +2390,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 void MainFrame::OnVegBioregions(wxCommandEvent& event)
 {
 	// if data isn't there, get the data first
-	if (!m_BioRegionDlg)
+	if (m_strBiotypesFilename == "")
 	{
 		wxString filter = _("Bioregion Files (*.txt)|*.txt|");
 
@@ -2405,7 +2405,9 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 		wxString2 str = loadFile.GetPath();
 		if (!LoadBiotypesFile(str.mb_str()))
 			return;
-
+	}
+	if (!m_BioRegionDlg)
+	{
 		// Create new Bioregion Dialog
 		m_BioRegionDlg = new BioRegionDlg(this, WID_BIOREGIONS, _("BioRegions List"), 
 				wxPoint(120, 80), wxSize(300, 500), wxSYSTEM_MENU | wxCAPTION);
@@ -2447,31 +2449,22 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 	wxString2 strPathName = saveFile.GetPath();
 
 	DistribVegDlg dlg(this, -1, _("Vegetation Distribution Options"));
-	dlg.m_fSampling = 40.0f;
-	dlg.m_fScarcity = 0.001f;
+
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
 	// Generate the plants
-	vtVegLayer *Density = NULL, *BioMap = NULL;
-	FindVegLayers(&Density, &BioMap);
-
-	float fTreeSpacing = dlg.m_fSampling;
-	float fTreeScarcity = dlg.m_fScarcity;
-
-	GenerateVegetation(strPathName.mb_str(), m_area, Density, BioMap, fTreeSpacing,
-		fTreeScarcity);
+	GenerateVegetation(strPathName.mb_str(), m_area, dlg.m_opt);
 }
 
 void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 {
 	vtVegLayer *Density = NULL, *BioMap = NULL;
 
-	FindVegLayers(&Density, &BioMap);
+//	FindVegLayers(&Density, &BioMap);
 
 	// density is now optional, defaults to 1 if there is no density layer
-	event.Enable(m_strSpeciesFilename != "" && m_strBiotypesFilename != "" &&
-		BioMap != NULL && !m_area.IsEmpty());
+	event.Enable(m_strSpeciesFilename != "" && !m_area.IsEmpty());
 }
 
 
