@@ -169,6 +169,9 @@ vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 {
 	FILE *fp;
 
+	if (!strcmp(filename, ""))
+		return vtString("");
+
 	// it's possible that the filename is already resolvable without
 	// searching the data paths
 	fp = fopen(filename, "r");
