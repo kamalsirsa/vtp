@@ -40,6 +40,7 @@ public:
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);
+	void OnClose(wxCloseEvent &event);
 
 	void OnViewMaintain(wxCommandEvent& event);
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);

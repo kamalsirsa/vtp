@@ -75,11 +75,12 @@
 #include <osgDB/Registry>
 #endif
 
-DECLARE_APP(vtApp)
+DECLARE_APP(vtApp);
 
-	BEGIN_EVENT_TABLE(vtFrame, wxFrame)
+BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 EVT_CHAR(vtFrame::OnChar)
 EVT_MENU(wxID_EXIT, vtFrame::OnExit)
+EVT_CLOSE(vtFrame::OnClose)
 
 EVT_MENU(ID_TOOLS_SELECT, vtFrame::OnToolsSelect)
 EVT_UPDATE_UI(ID_TOOLS_SELECT, vtFrame::OnUpdateToolsSelect)
@@ -488,6 +489,14 @@ void vtFrame::OnExit(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;
 	Destroy();
+}
+
+void vtFrame::OnClose(wxCloseEvent &event)
+{
+	m_canvas->m_bRunning = false;
+	delete m_canvas;
+	m_canvas = NULL;
+	event.Skip();
 }
 
 void vtFrame::OnHelpAbout(wxCommandEvent& event)
