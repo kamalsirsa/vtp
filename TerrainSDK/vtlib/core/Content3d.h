@@ -3,12 +3,18 @@
 //
 // Header for the Content Management classes.
 //
-// Copyright (c) 2003 Virtual Terrain Project.
+// Copyright (c) 2003-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTLIB_CONTENT3DH
 #define VTLIB_CONTENT3DH
+
+/** \defgroup content Content Management
+ * These classes are used for managing 3D model content - generally,
+ * collections of 3D models with metadata.
+ */
+/*@{*/
 
 #include "vtdata/Content.h"
 
@@ -45,6 +51,8 @@ public:
 
 	vtGroup *m_pGroup;
 };
+
+/*@}*/	// group content
 
 #endif // VTLIB_CONTENT3DH
 

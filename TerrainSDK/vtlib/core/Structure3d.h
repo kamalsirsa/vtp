@@ -11,6 +11,9 @@
 #ifndef STRUCTURE3DH
 #define STRUCTURE3DH
 
+/** \addtogroup struct */
+/*@{*/
+
 #include <ostream>
 
 #include "vtdata/StructArray.h"
@@ -66,7 +69,7 @@ protected:
 
 /**
  * This class contains the extra methods needed by a vtStructure to
- * support the ability to construct and manage a 3d representations.
+ * support the ability to construct and manage a 3D representation.
  */
 class vtStructure3d
 {
@@ -185,6 +188,8 @@ public:
 protected:
 	vtTerrain *m_pTerrain;
 };
+
+/*@}*/	// Group struct
 
 #endif // STRUCTURE3DH
 

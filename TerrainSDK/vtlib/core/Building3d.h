@@ -1,12 +1,19 @@
 //
 // Building3d.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef BUILDING3DH
 #define BUILDING3DH
+
+/** \defgroup struct Built Structures
+ * These classes are used for built structures - buildings, fences, instances
+ * of 3D models.  They subclass the vtdata structure classes to extend them
+ * with the ability to create and operate on 3D geometry.
+ */
+/*@{*/
 
 #include "vtdata/Building.h"
 #include "vtdata/StructArray.h"
@@ -107,4 +114,7 @@ protected:
 	vtGeom		*m_pHighlight;	// The wireframe highlight
 };
 
-#endif
+/*@}*/	// Group struct
+
+#endif	// BUILDING3DH
+
