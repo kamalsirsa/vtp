@@ -1004,6 +1004,8 @@ void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
 void MainFrame::OnLayerShow(wxCommandEvent &event)
 {
 	vtLayer *pLayer = GetActiveLayer();
+	if (!pLayer)
+		return;
 	pLayer->SetVisible(!pLayer->GetVisible());
 
 	DRECT r;
