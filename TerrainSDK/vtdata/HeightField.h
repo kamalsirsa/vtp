@@ -47,10 +47,9 @@ public:
 	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const = 0;
 
 	/** Test if a point is within the extents of the grid. */
-	bool ContainsEarthPoint(const DPoint2 &p) const
+	bool ContainsEarthPoint(const DPoint2 &p, bool bInclusive = false) const
 	{
-		return (m_EarthExtents.left <= p.x && p.x <= m_EarthExtents.right &&
-				m_EarthExtents.bottom <= p.y && p.y <= m_EarthExtents.top);
+		return m_EarthExtents.ContainsPoint(p, bInclusive);
 	}
 
 	/** Returns the geographic extents of the grid. */
@@ -140,7 +139,7 @@ public:
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
 	bool ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
-		void progress_callback(int) = NULL);
+		int iGranularity, void progress_callback(int) = NULL);
 	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 							   float light_factor, void progress_callback(int) = NULL);
 	void ShadeQuick(vtBitmapBase *pBM, float light_factor, void progress_callback(int) = NULL);

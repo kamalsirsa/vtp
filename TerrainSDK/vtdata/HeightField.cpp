@@ -484,13 +484,15 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  *
  * \param pBM			The bitmap to be colored.
  * \param cmap			The mapping of elevation values to colors.
+ * \param iGranularity  The smoothness of the mapping, expressed as the size
+ *			of the internal mapping table.  2000 is a generally good value.
  * \param progress_callback If supplied, this function will be called back
- *				with a value of 0 to 100 as the operation progresses.
+ *			with a value of 0 to 100 as the operation progresses.
  *
  * \return true if any invalid elevation values were encountered.
  */
 bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
-	const ColorMap *cmap, void progress_callback(int))
+	const ColorMap *cmap, int iGranularity, void progress_callback(int))
 {
 	ColorMap defaults;
 	if (!cmap)
@@ -521,8 +523,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 	// Rather than look through the color map for each pixel, pre-build
 	//  a color lookup table once - should be faster in nearly all cases.
 	std::vector<RGBi> table;
-	const int TABLE_SIZE = 2000;
-	cmap->GenerateColors(table, TABLE_SIZE, fMin, fMax);
+	cmap->GenerateColors(table, iGranularity, fMin, fMax);
 
 	// now iterate over the texels
 	float elev;
@@ -548,7 +549,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 				has_invalid = true;
 				continue;
 			}
-			int table_entry = (int) ((elev - fMin) / fRange * TABLE_SIZE);
+			int table_entry = (int) ((elev - fMin) / fRange * iGranularity);
 			c3 = table[table_entry];
 			pBM->SetPixel24(i, h-1-j, c3);
 		}
@@ -649,8 +650,8 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 	int stepx = m_iColumns / w;
 	int stepy = m_iRows / h;
 
-	int i, j;
-	int x, y;
+	int i, j;	// indices into bitmap
+	int x, y;	// indices into elevation
 
 	RGBi rgb;
 
@@ -661,14 +662,14 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			if ((j&7) == 0)
 				progress_callback(j * 100 / h);
 		}
-		// find corresponding location in terrain
-		y = j * stepy;
+		// find corresponding location in heightfield
+		y = m_iRows-1 - (j * stepy);
 		for (i = 0; i < w; i++)
 		{
 			pBM->GetPixel24(i, j, rgb);
-			x = i * stepx;
 
-			float value = GetElevation(i, m_iRows-1-j);
+			x = i * stepx;
+			float value = GetElevation(x, y);
 			if (value == INVALID_ELEVATION)
 			{
 				pBM->SetPixel24(i, j, RGBi(255, 0, 0));
@@ -677,7 +678,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			if (i == w-1)
 				continue;
 
-			float value2 = GetElevation(i+1, m_iRows-1-j);
+			float value2 = GetElevation(x+1, y);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
 			int diff = (int) ((value2 - value) / m_dXStep * light_factor);
