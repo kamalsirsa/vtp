@@ -62,7 +62,7 @@ void vtImageLayer::SetRGB(int x, int y, unsigned char r, unsigned char g, unsign
 {
 	// this method clearly only works for in-memory images
 	if (m_pBitmap)
-		m_pBitmap->SetRGB(x, y, r, g, b);
+		m_pBitmap->SetPixel24(x, y, r, g, b);
 }
 
 void vtImageLayer::SetDefaults()
@@ -287,7 +287,7 @@ bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
 	{
 		// TODO: real filtering (interpolation)
 		// for now, just grab closest pixel
-		m_pBitmap->GetRGB(ix, iy, rgb);
+		m_pBitmap->GetPixel24(ix, iy, rgb);
 	}
 	return true;
 }
@@ -339,7 +339,7 @@ bool vtImageLayer::SaveToFile(const char *fname)
 		{
 			for (y = 0; y < m_iYSize; y++)
 			{
-				m_pBitmap->GetRGB(x, y, rgb);
+				m_pBitmap->GetPixel24(x, y, rgb);
 				if (i == 1) raster[y*m_iXSize + x] = rgb.r;
 				if (i == 2) raster[y*m_iXSize + x] = rgb.g;
 				if (i == 3) raster[y*m_iXSize + x] = rgb.b;
@@ -719,7 +719,7 @@ bool vtImageLayer::LoadFromGDAL()
 				for(int iX = 0; iX < m_iXSize; iX++ )
 				{
 					RGBi rgb = m_row[0].m_data[iX];
-					m_pBitmap->SetRGB(iX, iy, rgb);
+					m_pBitmap->SetPixel24(iX, iy, rgb);
 				}
 			}
 			m_pBitmap->ContentsChanged();
