@@ -46,6 +46,7 @@ class TParams
 {
 public:
 	TParams();
+	~TParams();
 
 	// copy constructor and assignment operator
 	TParams(const TParams& paramsSrc);

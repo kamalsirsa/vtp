@@ -86,6 +86,11 @@ TParams::TParams()
 	m_bRouteEnable = false;
 }
 
+TParams::~TParams()
+{
+}
+
+
 //
 // copy constructor
 //
