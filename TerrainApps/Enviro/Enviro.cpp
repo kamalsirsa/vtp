@@ -846,7 +846,7 @@ if (pwdemo){
 
 	vtFeatures ft;
 	ft.LoadFromSHP("../Data/PointData/vtp-users-020519.shp");
-	int half = ft.NumEntities() / 2;
+	int half = ft.GetNumEntities() / 2;
 	int foo = 0;
 	for (i = 0; i < half; i++)
 	{

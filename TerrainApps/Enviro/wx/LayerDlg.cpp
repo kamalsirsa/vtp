@@ -214,7 +214,7 @@ void LayerDlg::RefreshTreeSpace()
 		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, -1, -1);
 
 		int type = feat->GetEntityType();
-		int num = feat->NumEntities();
+		int num = feat->GetNumEntities();
 		str.Printf(_T("%d "), num);
 		if (type == SHPT_POINT)
 			str += _T("Point");

@@ -1106,7 +1106,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		return;
 	}
 
-	int features = feat.NumEntities();
+	int features = feat.GetNumEntities();
 	if (features == 0)
 		return;
 

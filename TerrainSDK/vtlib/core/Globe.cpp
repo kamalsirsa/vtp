@@ -266,7 +266,7 @@ int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
 	BuildSphericalFeatures(feat, fSize);
 	BuildFlatFeatures(feat, fSize);
 
-	return feat->NumEntities();
+	return feat->GetNumEntities();
 }
 
 void IcoGlobe::BuildSphericalFeatures(vtFeatures *feat, float fSize)
@@ -286,7 +286,7 @@ void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
 	int i, j, size;
 	Array<FSphere> spheres;
 
-	size = feat->NumEntities();
+	size = feat->GetNumEntities();
 	spheres.SetSize(size);
 
 	DPoint2 p;
@@ -413,7 +413,7 @@ void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
 void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 {
 	int i, size;
-	size = feat->NumEntities();
+	size = feat->GetNumEntities();
 
 	vtGeom *geom = new vtGeom();
 	geom->SetName2("spherical lines");
@@ -458,7 +458,7 @@ void IcoGlobe::BuildFlatFeatures(vtFeatures *feat, float fSize)
 		}
 
 		int i, size;
-		size = feat->NumEntities();
+		size = feat->GetNumEntities();
 
 		for (i = 0; i < size; i++)
 			BuildFlatPoint(feat, i, fSize);

@@ -38,7 +38,7 @@ vtRawLayer::~vtRawLayer()
 
 bool vtRawLayer::GetExtent(DRECT &rect)
 {
-	int i, entities = NumEntities();
+	int i, entities = GetNumEntities();
 
 	if (!entities)
 		return false;
@@ -89,7 +89,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	int i, j, size, size2;
 
 	wxPoint p;
-	int entities = NumEntities();
+	int entities = GetNumEntities();
 	if (m_nSHPType == SHPT_POINT)
 	{
 		for (i = 0; i < entities; i++)
@@ -233,7 +233,7 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 	// copy entities
 	vtString str;
 	int i, result;
-	int num = pFrom->NumEntities();
+	int num = pFrom->GetNumEntities();
 	for (i = 0; i < num; i++)
 	{
 		// copy geometry
@@ -286,7 +286,7 @@ void vtRawLayer::SetProjection(const vtProjection &proj)
 
 void vtRawLayer::Offset(const DPoint2 &p)
 {
-	int i, entities = NumEntities();
+	int i, entities = GetNumEntities();
 	if (m_nSHPType == SHPT_POINT)
 	{
 		for (i = 0; i < entities; i++)
@@ -311,10 +311,10 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 	str.Printf(_T("Entity type: %hs\n"), SHPTypeName(m_nSHPType));
 	strIn += str;
 
-	str.Printf(_T("Entities: %d\n"), NumEntities());
+	str.Printf(_T("Entities: %d\n"), GetNumEntities());
 	strIn += str;
 
-	int entities = NumEntities();
+	int entities = GetNumEntities();
 	if (m_nSHPType == SHPT_POINTZ && entities > 0)
 	{
 		float fmin = 1E9, fmax = -1E9;

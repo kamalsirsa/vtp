@@ -114,7 +114,7 @@ void SelectDlg::FillValuesControl()
 		GetComboValue()->SetSelection(0);
 		return;
 	}
-	for (i = 0; i < m_pLayer->NumEntities(); i++)
+	for (i = 0; i < m_pLayer->GetNumEntities(); i++)
 	{
 		m_pLayer->GetValueAsString(i, m_iField, str);
 

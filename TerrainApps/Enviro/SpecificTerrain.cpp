@@ -33,7 +33,7 @@ void Romania::CreateCustomCulture(bool bDoSound)
 	if (!feat.LoadFrom(path))
 		return;
 
-	int i, num = feat.NumEntities();
+	int i, num = feat.GetNumEntities();
 	for (i = 0; i < num; i++)
 	{
 		int ppc = feat.GetIntegerValue(i, 1);
@@ -41,7 +41,7 @@ void Romania::CreateCustomCulture(bool bDoSound)
 			feat.SetToDelete(i);
 	}
 	feat.ApplyDeletion();
-	num = feat.NumEntities();
+	num = feat.GetNumEntities();
 
 	PointStyle style;
 	style.m_field_index = 2;

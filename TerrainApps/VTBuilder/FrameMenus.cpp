@@ -1135,7 +1135,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 			str.Printf(_T("zone %d, "), proj.GetUTMZone());
 			choices[i] += str;
 		}
-		str.Printf(_T("points %d"), layers[i]->NumEntities());
+		str.Printf(_T("points %d"), layers[i]->GetNumEntities());
 		choices[i] += str;
 		choices[i] += _T(")");
 	}

@@ -108,7 +108,7 @@ void FeatInfoDlg::ShowSelected()
 		if (wxMessageBox(msg, _T("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
-	int i, num = m_pFeatures->NumEntities();
+	int i, num = m_pFeatures->GetNumEntities();
 	for (i = 0; i < num; i++)
 	{
 		if (m_pFeatures->IsSelected(i))
@@ -121,7 +121,7 @@ void FeatInfoDlg::ShowPicked()
 	m_iShow = 1;
 	TransferDataToWindow();
 	Clear();
-	int i, num = m_pFeatures->NumEntities();
+	int i, num = m_pFeatures->GetNumEntities();
 	for (i = 0; i < num; i++)
 	{
 		if (m_pFeatures->IsPicked(i))
@@ -134,7 +134,7 @@ void FeatInfoDlg::ShowAll()
 	m_iShow = 2;
 	TransferDataToWindow();
 	Clear();
-	int i, num = m_pFeatures->NumEntities();
+	int i, num = m_pFeatures->GetNumEntities();
 	if (num > 2000)
 	{
 		wxString msg;
