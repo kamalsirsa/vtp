@@ -254,6 +254,17 @@ void SRTerrain::RenderPass()
 	float ey = m_eyepos_ogl.y;
 	float ez = m_eyepos_ogl.z;
 
+	float fov;
+	if (pCamera->IsOrtho())
+	{
+		// libMini doesn't actually support orthographic viewing.
+		//  Can we try to fake it by estimating a sufficiently wide FOV?
+		//  Not really.
+		fov = m_fFOVY;
+	}
+	else
+		fov = m_fFOVY;
+
 	// Get up vector and direction vector from camera matrix
 	FMatrix4 mat;
 	pCamera->GetTransform1(mat);
@@ -280,7 +291,7 @@ void SRTerrain::RenderPass()
 				ex, ey, ez,
 				dx, dy, dz,
 				ux, uy, uz,
-				m_fFOVY, aspect,
+				fov, aspect,
 				nearp, farp);
 
 	if (myfancnt>0) glEnd();
