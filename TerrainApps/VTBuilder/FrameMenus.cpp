@@ -1,7 +1,7 @@
 //
 //  The menus functions of the main Frame window of the VTBuilder application.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -86,6 +86,7 @@ EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
 EVT_MENU(ID_VIEW_ZOOMIN,		MainFrame::OnViewZoomIn)
 EVT_MENU(ID_VIEW_ZOOMOUT,		MainFrame::OnViewZoomOut)
 EVT_MENU(ID_VIEW_ZOOMALL,		MainFrame::OnViewZoomAll)
+EVT_MENU(ID_VIEW_ZOOM_LAYER,	MainFrame::OnViewZoomToLayer)
 EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
 EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnViewSetArea)
 EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
@@ -96,6 +97,7 @@ EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
 EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
 EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
+EVT_UPDATE_UI(ID_VIEW_ZOOM_LAYER,	MainFrame::OnUpdateViewZoomToLayer)
 EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
 EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
@@ -169,15 +171,15 @@ EVT_MENU(ID_FEATURE_PICK,			MainFrame::OnFeaturePick)
 EVT_MENU(ID_FEATURE_TABLE,			MainFrame::OnFeatureTable)
 EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
 EVT_MENU(ID_STRUCTURE_ADD_POINTS,	MainFrame::OnBuildingAddPoints)
-EVT_MENU(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnBuildingDeletePoints)
+EVT_MENU(ID_STRUCTURE_DELETE_POINTS, MainFrame::OnBuildingDeletePoints)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
 EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
 EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 
-EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
-EVT_UPDATE_UI(ID_FEATURE_PICK,		MainFrame::OnUpdateFeaturePick)
-EVT_UPDATE_UI(ID_FEATURE_TABLE,		MainFrame::OnUpdateFeatureTable)
+EVT_UPDATE_UI(ID_FEATURE_SELECT,		MainFrame::OnUpdateFeatureSelect)
+EVT_UPDATE_UI(ID_FEATURE_PICK,			MainFrame::OnUpdateFeaturePick)
+EVT_UPDATE_UI(ID_FEATURE_TABLE,			MainFrame::OnUpdateFeatureTable)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_POINTS,	MainFrame::OnUpdateBuildingAddPoints)
 EVT_UPDATE_UI(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnUpdateBuildingDeletePoints)
@@ -192,10 +194,10 @@ EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
 
-EVT_UPDATE_UI(ID_RAW_SETTYPE,		MainFrame::OnUpdateRawSetType)
-EVT_UPDATE_UI(ID_RAW_ADDPOINTS,		MainFrame::OnUpdateRawAddPoints)
-EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,	MainFrame::OnUpdateRawAddPointText)
-EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,	MainFrame::OnUpdateRawAddPointsGPS)
+EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
+EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
+EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
+EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawSelectCondition)
 
 EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
@@ -287,6 +289,7 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_ZOOMIN, _T("Zoom In\tCtrl++"));
 	viewMenu->Append(ID_VIEW_ZOOMOUT, _T("Zoom Out\tCtrl+-"));
 	viewMenu->Append(ID_VIEW_ZOOMALL, _T("Zoom All"));
+	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _T("Zoom to Current Layer"));
 	viewMenu->Append(ID_VIEW_FULLVIEW, _T("Zoom to Full Res (1:1)"));
 	viewMenu->AppendSeparator();
 	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _T("Magnifier\tZ"));
@@ -408,17 +411,17 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_TYPEIN, _T("Numeric Values"),
 		_T("Set the Export Area rectangle by text entry of coordinates."));
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge && Export Elevation"),
-		_T("Sample all elevation data within the Export Area to produce a single, new elevation."));
+	areaMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge && Resample Elevation"),
+		_T("Sample all elevation data within the Area Tool to produce a single, new elevation."));
 #ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _T("Extract && Export Image"),
 		_T("Sample imagery within the Export Area to produce a single, new image."));
-	areaMenu->Append(ID_AREA_GENERATE_VEG, _T("Generate && Export Vegetation"),
+	areaMenu->Append(ID_AREA_GENERATE_VEG, _T("Generate Vegetation"),
 		_T("Generate Vegetation File (*.vf) containg plant distribution."));
 	areaMenu->Append(ID_AREA_REQUEST_LAYER, _T("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _T("Request Image from WMS"));
 #endif
-	m_pMenuBar->Append(areaMenu, _T("Export &Area"));
+	m_pMenuBar->Append(areaMenu, _T("&Area Tool"));
 	menu_num++;
 
 	// Help
@@ -1262,7 +1265,7 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	}
 
 	SetProjection(proj);
-	m_pView->ZoomAll();
+	ZoomAll();
 	RefreshStatusBar();
 }
 
@@ -1295,7 +1298,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	}
 
 	SetProjection(proj);
-	m_pView->ZoomAll();
+	ZoomAll();
 	RefreshStatusBar();
 }
 
@@ -1429,7 +1432,15 @@ void MainFrame::OnViewZoomOut(wxCommandEvent &event)
 
 void MainFrame::OnViewZoomAll(wxCommandEvent &event)
 {
-	m_pView->ZoomAll();
+	ZoomAll();
+}
+
+void MainFrame::OnViewZoomToLayer(wxCommandEvent &event)
+{
+	vtLayer *lp = GetActiveLayer();
+	DRECT rect;
+	if (lp->GetExtent(rect))
+		m_pView->ZoomToRect(rect, 0.1f);
 }
 
 void MainFrame::OnViewFull(wxCommandEvent& event)
@@ -1440,6 +1451,11 @@ void MainFrame::OnViewFull(wxCommandEvent& event)
 	vtImageLayer *pIL = GetActiveImageLayer();
 	if (pIL)
 		m_pView->MatchZoomToImage(pIL);
+}
+
+void MainFrame::OnUpdateViewZoomToLayer(wxUpdateUIEvent& event)
+{
+	event.Enable(GetActiveLayer() != NULL);
 }
 
 void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
@@ -2022,7 +2038,7 @@ void MainFrame::OnAreaStretch(wxCommandEvent &event)
 
 void MainFrame::OnUpdateAreaStretch(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveLayer() != NULL);
+	event.Enable(NumLayers() != 0);
 }
 
 void MainFrame::OnAreaTypeIn(wxCommandEvent &event)

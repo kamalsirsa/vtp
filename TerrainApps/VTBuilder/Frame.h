@@ -1,7 +1,7 @@
 //
 // Frame.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,7 +58,10 @@ public:
 		const wxPoint& pos, const wxSize& size);
 	virtual ~MainFrame();
 
+	// view
 	virtual void CreateView();
+	void ZoomAll();
+
 	void ReadEnviroPaths(vtStringArray &paths);
 	void SetupUI();
 	void CheckForGDALAndWarn();
@@ -115,6 +118,7 @@ public:
 	void OnViewZoomIn(wxCommandEvent& event);
 	void OnViewZoomOut(wxCommandEvent& event);
 	void OnViewZoomAll(wxCommandEvent& event);
+	void OnViewZoomToLayer(wxCommandEvent& event);
 	void OnViewFull(wxCommandEvent& event);
 	void OnViewWorldMap(wxUpdateUIEvent& event);
 	void OnViewUTMBounds(wxUpdateUIEvent& event);
@@ -125,6 +129,7 @@ public:
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
 	void OnUpdateViewFull(wxUpdateUIEvent& event);
+	void OnUpdateViewZoomToLayer(wxUpdateUIEvent& event);
 	void OnUpdateCrossingSelection(wxUpdateUIEvent& event);
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
@@ -368,7 +373,7 @@ public:
 	void ImportDataFromTIGER(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
-	// export
+	// area tool
 	void StretchArea();
 	void ExportElevation();
 	void ExportImage();
