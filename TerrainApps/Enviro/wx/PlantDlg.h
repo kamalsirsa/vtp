@@ -1,7 +1,7 @@
 //
 // Name:		PlantDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,7 +17,7 @@
 #include "../PlantingOptions.h"
 #include "vtdata/Array.h"
 
-class vtPlantList3d;
+class vtSpeciesList3d;
 class vtPlantInstance3d;
 
 // WDR: class declarations
@@ -35,7 +35,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
-	void SetPlantList(vtPlantList3d *plants);
+	void SetPlantList(vtSpeciesList3d *plants);
 	void SetPlantOptions(PlantingOptions &opt);
 
 //	void SetActivePlant(vtPlantInstance3d *p);
@@ -46,7 +46,7 @@ public:
 	void OnInitDialog(wxInitDialogEvent& event);
 	wxSlider	*m_pHeightSlider;
 	wxChoice	*m_pSpecies;
-	vtPlantList3d   *m_pPlantList;
+	vtSpeciesList3d   *m_pPlantList;
 
 	// planting options
 	PlantingOptions m_opt;

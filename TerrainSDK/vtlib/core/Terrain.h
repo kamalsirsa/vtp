@@ -145,7 +145,7 @@ public:
 	// plants
 	bool AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void DeleteSelectedPlants();
-	void SetPlantList(vtPlantList3d *pPlantList) { m_pPlantList = pPlantList; }
+	void SetPlantList(vtSpeciesList3d *pPlantList) { m_pPlantList = pPlantList; }
 	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 	bool AddNodeToVegGrid(vtTransform *pTrans);
 
@@ -293,7 +293,7 @@ protected:
 
 	// plants
 	vtPlantInstanceArray3d	m_PIA;
-	vtPlantList3d	*m_pPlantList;
+	vtSpeciesList3d	*m_pPlantList;
 	vtGroup			*m_pVegGroup;
 	vtLodGrid		*m_pVegGrid;
 

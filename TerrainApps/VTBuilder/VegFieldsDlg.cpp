@@ -100,7 +100,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	// Fill species names into the SpeciesChoice control
 	wxString2 str;
 	GetUseSpecies()->Clear();
-	vtPlantList* pl = GetMainFrame()->GetPlantList();
+	vtSpeciesList* pl = GetMainFrame()->GetPlantList();
 	for (i = 0; i < pl->NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = pl->GetSpecies(i);

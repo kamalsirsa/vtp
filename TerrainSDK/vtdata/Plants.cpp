@@ -73,11 +73,11 @@ void vtPlantSpecies::SetSciName(const char *SciName)
 
 /////////////////////////////////////////////////////////////////////////
 
-vtPlantList::vtPlantList()
+vtSpeciesList::vtSpeciesList()
 {
 }
 
-vtPlantList::~vtPlantList()
+vtSpeciesList::~vtSpeciesList()
 {
 	for (unsigned int i = 0; i < m_Species.GetSize(); i++)
 	{
@@ -85,7 +85,7 @@ vtPlantList::~vtPlantList()
 	}
 }
 
-bool vtPlantList::Read(const char *fname)
+bool vtSpeciesList::Read(const char *fname)
 {
 	char buf1[80], buf2[80], buf3[80];
 	int iApps = 0, j, apptype, iNumSpecies = 0, iSpecieID = 0;
@@ -121,7 +121,7 @@ bool vtPlantList::Read(const char *fname)
 	return true;
 }
 
-bool vtPlantList::Write(const char *fname)
+bool vtSpeciesList::Write(const char *fname)
 {
 	FILE *fp = fopen(fname, "wb");
 	if (!fp) return false;
@@ -150,7 +150,7 @@ bool vtPlantList::Write(const char *fname)
 }
 
 
-bool vtPlantList::WriteXML(const char *fname)
+bool vtSpeciesList::WriteXML(const char *fname)
 {
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
@@ -186,7 +186,7 @@ bool vtPlantList::WriteXML(const char *fname)
 }
 
 
-void vtPlantList::AddSpecies(int SpecieID, const char *CommonName,
+void vtSpeciesList::AddSpecies(int SpecieID, const char *CommonName,
 						   const char *SciName, float MaxHeight)
 {
 	vtPlantSpecies *pSpecie = new vtPlantSpecies();
@@ -208,7 +208,7 @@ vtString RemSpaces(const vtString &str)
 	return out;
 }
 
-void vtPlantList::LookupPlantIndices(vtBioType *bt)
+void vtSpeciesList::LookupPlantIndices(vtBioType *bt)
 {
 	for (unsigned int i = 0; i < bt->m_Densities.GetSize(); i++)
 	{
@@ -227,7 +227,7 @@ void vtPlantList::LookupPlantIndices(vtBioType *bt)
 	}
 }
 
-int vtPlantList::GetSpeciesIdByName(const char *name)
+int vtSpeciesList::GetSpeciesIdByName(const char *name)
 {
 	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
@@ -237,7 +237,7 @@ int vtPlantList::GetSpeciesIdByName(const char *name)
 	return -1;
 }
 
-int vtPlantList::GetSpeciesIdByCommonName(const char *name)
+int vtSpeciesList::GetSpeciesIdByCommonName(const char *name)
 {
 	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
@@ -254,7 +254,7 @@ int vtPlantList::GetSpeciesIdByCommonName(const char *name)
 class PlantListVisitor : public XMLVisitor
 {
 public:
-	PlantListVisitor(vtPlantList *pl) :
+	PlantListVisitor(vtSpeciesList *pl) :
 		m_state(0), m_pPL(pl) {}
 
 	virtual ~PlantListVisitor () {}
@@ -276,7 +276,7 @@ private:
 	string m_data;
 	int m_state;
 
-	vtPlantList *m_pPL;
+	vtSpeciesList *m_pPL;
 };
 
 void PlantListVisitor::startElement(const char * name, const XMLAttributes &atts)
@@ -369,7 +369,7 @@ void PlantListVisitor::data(const char *s, int length)
 	m_data.append(string(s, length));
 }
 
-bool vtPlantList::ReadXML(const char* pathname)
+bool vtSpeciesList::ReadXML(const char* pathname)
 {
 	PlantListVisitor visitor(this);
 	try

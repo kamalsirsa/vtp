@@ -1,7 +1,7 @@
 //
 // Trees.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -81,21 +81,21 @@ public:
 
 
 /**
- * This class extends vtPlantList with the ability to construct and
+ * This class extends vtSpeciesList with the ability to construct and
  * manage 3D representations of the plants.
  */
-class vtPlantList3d : public vtPlantList
+class vtSpeciesList3d : public vtSpeciesList
 {
 public:
-	vtPlantList3d();
+	vtSpeciesList3d();
 
 	// copy operator
-	vtPlantList3d &operator=(const vtPlantList &v);
+	vtSpeciesList3d &operator=(const vtSpeciesList &v);
 
 	void CreatePlantSurfaces(const vtStringArray &paths, float fTreeScale,
 		bool bShadows, bool bBillboards);
 
-	// override / replace a few methods of vtPlantList
+	// override / replace a few methods of vtSpeciesList
 	vtPlantSpecies3d *GetSpecies(unsigned int i) const;
 	vtPlantAppearance3d *GetAppearanceByName(const char *szName, float fHeight);
 	void AddSpecies(const char *common_name, float max_height);
@@ -143,7 +143,7 @@ public:
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
 
 	/// Indicate the Plant List to use
-	vtPlantList3d *GetPlantList() { return (vtPlantList3d *) m_pPlantList; }
+	vtSpeciesList3d *GetPlantList() { return (vtSpeciesList3d *) m_pPlantList; }
 
 	/// Deselect all plants including turning off their visual highlights
 	void VisualDeselectAll();

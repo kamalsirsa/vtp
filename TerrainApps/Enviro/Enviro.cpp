@@ -1081,10 +1081,10 @@ void Enviro::SetupCommonCulture()
 		if (species_path == "")
 			species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
 
-		vtPlantList pl;
+		vtSpeciesList pl;
 		if (species_path != "" && pl.ReadXML(species_path))
 		{
-			m_pPlantList = new vtPlantList3d();
+			m_pPlantList = new vtSpeciesList3d();
 			*m_pPlantList = pl;
 			m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
 				g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);

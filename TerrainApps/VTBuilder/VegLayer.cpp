@@ -94,7 +94,7 @@ bool vtVegLayer::OnSave()
 
 bool vtVegLayer::OnLoad()
 {
-	vtPlantList *plants = GetMainFrame()->GetPlantList();
+	vtSpeciesList *plants = GetMainFrame()->GetPlantList();
 	if (plants->NumSpecies() == 0)
 	{
 		wxMessageBox(_T("You must specify a species file (plant list) to use\n")
@@ -389,7 +389,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	// We will be creating plant instances
 	SetVegType(VLT_Instances);
 
-	vtPlantList *pPlantList = GetMainFrame()->GetPlantList();
+	vtSpeciesList *pPlantList = GetMainFrame()->GetPlantList();
 	vtBioRegion *pBioRegion = GetMainFrame()->GetBioRegion();
 	GetPIA()->SetPlantList(pPlantList);
 

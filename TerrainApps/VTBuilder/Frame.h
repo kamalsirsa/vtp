@@ -11,7 +11,7 @@
 #include "wx/dnd.h"
 
 #include "vtdata/Projections.h"
-#include "vtdata/Plants.h"	// for vtPlantList
+#include "vtdata/Plants.h"	// for vtSpeciesList
 #include "vtdata/Fence.h"	// for LinStructOptions
 
 #include "StatusBar.h"
@@ -342,8 +342,8 @@ public:
 	// Vegetation
 	vtString m_strSpeciesFilename;
 	vtString m_strBiotypesFilename;
-	vtPlantList m_PlantList;
-	vtPlantList *GetPlantList() { return &m_PlantList; }
+	vtSpeciesList m_PlantList;
+	vtSpeciesList *GetPlantList() { return &m_PlantList; }
 	SpeciesListDlg *m_SpeciesListDlg;
 	bool LoadSpeciesFile(const char *fname);
 	bool LoadBiotypesFile(const char *fname);

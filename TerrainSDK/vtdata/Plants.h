@@ -120,11 +120,11 @@ protected:
 };
 
 
-class vtPlantList
+class vtSpeciesList
 {
 public:
-	vtPlantList();
-	virtual ~vtPlantList();
+	vtSpeciesList();
+	virtual ~vtSpeciesList();
 
 	bool Read(const char *fname);
 	bool Write(const char *fname);
@@ -160,7 +160,7 @@ class vtPlantInstanceArray : public vtFeatureSetPoint2D
 public:
 	vtPlantInstanceArray();
 
-	void SetPlantList(vtPlantList *list) { m_pPlantList = list; }
+	void SetPlantList(vtSpeciesList *list) { m_pPlantList = list; }
 	int AddPlant(const DPoint2 &pos, float size, short species_id);
 	void SetPlant(int iNum, float size, short species_id);
 	void GetPlant(int iNum, float &size, short &species_id);
@@ -171,7 +171,7 @@ public:
 	bool WriteVF(const char *fname);
 
 protected:
-	vtPlantList *m_pPlantList;
+	vtSpeciesList *m_pPlantList;
 
 	int m_SizeField;
 	int m_SpeciesField;

@@ -1407,7 +1407,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	unsigned int i, j, k;
 	DPoint2 p, p2;
 
-	vtPlantList *pl = GetPlantList();
+	vtSpeciesList *pl = GetPlantList();
 	if (!pl)
 	{
 		wxMessageBox(_T("No plant list."));

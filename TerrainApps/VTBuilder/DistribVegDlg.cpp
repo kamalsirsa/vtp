@@ -77,7 +77,7 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Single species
 	GetChoiceSpecies()->Clear();
-	vtPlantList* pl = GetMainFrame()->GetPlantList();
+	vtSpeciesList* pl = GetMainFrame()->GetPlantList();
 	if (pl != NULL)
 	{
 		for (i = 0; i < pl->NumSpecies(); i++)

@@ -37,7 +37,7 @@ class GlobePicker;
 class vtPanoFlyer;
 
 // Plants
-class vtPlantList3d;
+class vtSpeciesList3d;
 
 class ControlEngine : public vtEngine
 {
@@ -153,7 +153,7 @@ public:
 	void SetRouteOptions(const vtString &sStructType);
 
 	// plants
-	vtPlantList3d	*GetPlantList() { return m_pPlantList; }
+	vtSpeciesList3d	*GetPlantList() { return m_pPlantList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	bool PlantATree(const DPoint2 &epos);
 	void SetPlantOptions(PlantingOptions &opt);
@@ -214,7 +214,7 @@ protected:
 	void SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2);
 
 	// plants
-	vtPlantList3d	*m_pPlantList;
+	vtSpeciesList3d	*m_pPlantList;
 	PlantingOptions m_PlantOpt;
 	bool		m_bPlantsLoaded;
 	bool		m_bDoPlants;

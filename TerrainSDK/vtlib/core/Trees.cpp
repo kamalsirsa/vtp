@@ -5,7 +5,7 @@
 //
 // vtPlantAppearance3d
 // vtPlantSpecies3d
-// vtPlantList3d
+// vtSpeciesList3d
 // vtPlantInstance3d
 // vtPlantInstanceArray3d
 //
@@ -317,15 +317,15 @@ void vtPlantSpecies3d::AddAppearance(AppearType type, const char *filename,
 
 
 /////////////////////////////////////////////////////////////////////////////
-// vtPlantList3d
+// vtSpeciesList3d
 //
 
-vtPlantList3d::vtPlantList3d()
+vtSpeciesList3d::vtSpeciesList3d()
 {
 }
 
 // copy operator
-vtPlantList3d &vtPlantList3d::operator=(const vtPlantList &v)
+vtSpeciesList3d &vtSpeciesList3d::operator=(const vtSpeciesList &v)
 {
 	int sp = v.NumSpecies();
 	for (int i = 0; i < sp; i++)
@@ -339,7 +339,7 @@ vtPlantList3d &vtPlantList3d::operator=(const vtPlantList &v)
 }
 
 
-vtPlantSpecies3d *vtPlantList3d::GetSpecies(unsigned int i) const
+vtPlantSpecies3d *vtSpeciesList3d::GetSpecies(unsigned int i) const
 {
 	if (i >= 0 && i < m_Species.GetSize())
 		return (vtPlantSpecies3d *) m_Species[i];
@@ -347,7 +347,7 @@ vtPlantSpecies3d *vtPlantList3d::GetSpecies(unsigned int i) const
 		return NULL;
 }
 
-void vtPlantList3d::AddSpecies(const char *common_name, float max_height)
+void vtSpeciesList3d::AddSpecies(const char *common_name, float max_height)
 {
 	vtPlantSpecies3d *pSpe = new vtPlantSpecies3d();
 	pSpe->SetCommonName(common_name);
@@ -396,7 +396,7 @@ void vtPlantList3d::AddSpecies(const char *common_name, float max_height)
 #endif
 
 
-void vtPlantList3d::CreatePlantSurfaces(const vtStringArray &paths,
+void vtSpeciesList3d::CreatePlantSurfaces(const vtStringArray &paths,
 		float fTreeScale, bool bShadows, bool bBillboards)
 {
 	for (unsigned int i = 0; i < NumSpecies(); i++)
@@ -415,7 +415,7 @@ void vtPlantList3d::CreatePlantSurfaces(const vtStringArray &paths,
 //
 // Look up an appropriate plant appearance, given a common name and a requested height
 //
-vtPlantAppearance3d *vtPlantList3d::GetAppearanceByName(const char *szName, float fHeight)
+vtPlantAppearance3d *vtSpeciesList3d::GetAppearanceByName(const char *szName, float fHeight)
 {
 	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{

@@ -1,7 +1,7 @@
 //
 // Name: PlantDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -55,7 +55,7 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bSetting = false;
 }
 
-void PlantDlg::SetPlantList(vtPlantList3d *plants)	
+void PlantDlg::SetPlantList(vtSpeciesList3d *plants)	
 {
 	if (m_pPlantList == plants)
 		return;
