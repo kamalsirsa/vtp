@@ -112,7 +112,7 @@ public:
 	int		m_iVegDistance;
 
 	bool	m_bFog;
-	int		m_iFogDistance;
+	float	m_fFogDistance;
 
 	wxStringArray	m_strStructFiles;
 	int		m_iStructDistance;

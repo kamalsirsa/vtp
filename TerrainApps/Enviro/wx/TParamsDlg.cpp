@@ -161,7 +161,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_iVegDistance = Params.m_iVegDistance;
 
 	m_bFog = Params.m_bFog;
-	m_iFogDistance = Params.m_iFogDistance;
+	m_fFogDistance = Params.m_fFogDistance;
 
 	unsigned int i, num = Params.m_strStructFiles.size();
 	for (i = 0; i < num; i++)
@@ -251,7 +251,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_iVegDistance = m_iVegDistance;
 
 	Params.m_bFog = m_bFog;
-	Params.m_iFogDistance = m_iFogDistance;
+	Params.m_fFogDistance = m_fFogDistance;
 
 	Params.m_strStructFiles.clear();
 	int i, num = m_strStructFiles.GetSize();
@@ -551,7 +551,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
 
 	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_FOG_DISTANCE, &m_iFogDistance);
+	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
 
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
 

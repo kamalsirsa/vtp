@@ -55,7 +55,7 @@ public:
 	BOOL	m_bTrees;
 	CString	m_strTreeFile;
 	UINT	m_iVegDistance;
-	int		m_iFogDistance;
+	float	m_fFogDistance;
 	BOOL	m_bOverlay;
 	BOOL	m_bOceanPlane;
 	BOOL	m_bLabels;

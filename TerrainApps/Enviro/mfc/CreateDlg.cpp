@@ -43,7 +43,7 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_bTrees = FALSE;
 	m_strTreeFile = _T("");
 	m_iVegDistance = 10;
-	m_iFogDistance = 10;
+	m_fFogDistance = 10;
 	m_bOverlay = FALSE;
 	m_bOceanPlane = FALSE;
 	m_bLabels = FALSE;
@@ -129,7 +129,7 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_CBString(pDX, IDC_TREEFILE, m_strTreeFile);
 	DDX_Text(pDX, IDC_VEGDISTANCE, m_iVegDistance);
 	DDV_MinMaxUInt(pDX, m_iVegDistance, 10, 100000);
-	DDX_Text(pDX, IDC_FOGDISTANCE, m_iFogDistance);
+	DDX_Text(pDX, IDC_FOGDISTANCE, m_fFogDistance);
 	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
 	DDX_Check(pDX, IDC_LABELS, m_bLabels);
@@ -293,7 +293,7 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_iVegDistance = Params.m_iVegDistance;
 
 	m_bFog = Params.m_bFog;
-	m_iFogDistance = Params.m_iFogDistance;
+	m_fFogDistance = Params.m_fFogDistance;
 
 	if (Params.m_strStructFiles.size() > 0)
 		m_strBuildingFile = (const char *) Params.m_strStructFiles[0];
@@ -357,7 +357,7 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_iVegDistance = m_iVegDistance;
 
 	Params.m_bFog = m_bFog;
-	Params.m_iFogDistance = m_iFogDistance;
+	Params.m_fFogDistance = m_fFogDistance;
 
 	Params.m_strStructFiles.empty();
 	Params.m_strStructFiles.push_back(vtString((const char *) m_strBuildingFile));
