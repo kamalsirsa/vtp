@@ -187,7 +187,7 @@ ColorEntry ColorEntries[] =
 
 struct MatEntry
 {
-	const _TCHAR *bmat;
+	const char *bmat;
 	short words;
 	char *name;
 };

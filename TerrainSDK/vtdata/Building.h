@@ -38,28 +38,6 @@ enum BldColor
 	BLD_ROOF,
 };
 
-enum BldMaterial {
-	BMAT_UNKNOWN,
-	BMAT_PLAIN,
-	BMAT_WOOD,
-	BMAT_SIDING,
-	BMAT_GLASS,
-	BMAT_BRICK,
-	BMAT_PAINTED_BRICK,
-	BMAT_ROLLED_ROOFING,
-	BMAT_CEMENT,
-	BMAT_STUCCO,
-	BMAT_CORRUGATED,
-	BMAT_DOOR,
-	BMAT_WINDOW,
-	BMAT_WINDOWWALL,
-	TOTAL_BUILDING_MATS
-};
-
-// When giving the user a choice of building materials, omit "unknown",
-// "door", "window", and "window-wall"
-#define EXPOSED_BUILDING_MATS	TOTAL_BUILDING_MATS-4
-
 // Edge feature codes
 #define WFC_WALL		1
 #define WFC_GAP			2
@@ -100,7 +78,7 @@ public:
 	vtEdge(const vtEdge &lhs);
 	~vtEdge();
 
-	void Set(int doors, int windows, BldMaterial material);
+	void Set(int doors, int windows, const vtMaterialName& material);
 	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
 	int NumFeatures() const { return m_Features.GetSize(); }
 	int NumFeaturesOfCode(int code);
@@ -117,7 +95,7 @@ public:
 	float m_fEaveLength;
 
 	// members
-	enum BldMaterial	 m_Material;
+	const vtMaterialName *m_pMaterial;
 	Array<vtEdgeFeature> m_Features;
 	vtString			 m_Facade;
 };
@@ -141,7 +119,7 @@ public:
 	int GetNumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
-	BldMaterial GetOverallEdgeMaterial();
+	const vtMaterialName& GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
 	void FlipFootprintDirection();
@@ -152,7 +130,7 @@ public:
 	bool IsCornerConvex(int i);
 	bool IsUniform();
 
-	void SetEdgeMaterial(BldMaterial bm);
+	void SetEdgeMaterial(const vtMaterialName &Material);
 	void SetEdgeColor(RGBi color);
 	void SetRoofType(RoofType rt, int iSlopeDegrees);
 	void SetEaveLength(float fMeters);
@@ -241,8 +219,6 @@ public:
 	const FLine3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
 
 	static vtLocalConversion s_Conv;
-	static const char *GetMaterialString(BldMaterial mat);
-	static BldMaterial GetMaterialValue(const char *value);
 	static const char *GetEdgeFeatureString(int edgetype);
 	static int		   GetEdgeFeatureValue(const char *value);
 

@@ -52,9 +52,9 @@ void vtEdgeFeature::SetDefaults()
 vtEdge::vtEdge()
 {
 	m_Color.Set(255,0,0);		// default color: red
-	m_Material = BMAT_PLAIN;	// default material: plain
 	m_iSlope = 90;		// vertical
 	m_fEaveLength = 0.0f;
+	m_pMaterial = &BMAT_NAME_PLAIN;
 }
 
 vtEdge::~vtEdge()
@@ -66,12 +66,12 @@ vtEdge::vtEdge(const vtEdge &lhs)
 	m_Color = lhs.m_Color;
 	m_iSlope = lhs.m_iSlope;
 	m_fEaveLength = lhs.m_fEaveLength;
-	m_Material = lhs.m_Material;
 	for (int i = 0; i < lhs.m_Features.GetSize(); i++)
 		m_Features.Append(lhs.m_Features[i]);
+	m_pMaterial = lhs.m_pMaterial;
 }
 
-void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
+void vtEdge::Set(int iDoors, int iWindows, const vtMaterialName& material)
 {
 	vtEdgeFeature wall, window, door;
 
@@ -119,7 +119,7 @@ void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 		}
 		m_Features.Append(wall);
 	}
-	m_Material = material;
+	m_pMaterial = &material;
 }
 
 void vtEdge::AddFeature(int code, float width, float vf1, float vf2)
@@ -343,10 +343,10 @@ void vtLevel::SynchFromOGR()
 #endif
 }
 
-void vtLevel::SetEdgeMaterial(BldMaterial bm)
+void vtLevel::SetEdgeMaterial(const vtMaterialName& Material)
 {
 	for (int i = 0; i < m_Edges.GetSize(); i++)
-		m_Edges[i]->m_Material = bm;
+		m_Edges[i]->m_pMaterial = &Material;
 }
 
 void vtLevel::SetEdgeColor(RGBi color)
@@ -370,7 +370,7 @@ void vtLevel::SetWalls(int n)
 	for (int i = 0; i < n; i++)
 	{
 		vtEdge *pnew = new vtEdge;
-		pnew->Set(0, 0, BMAT_PLAIN);
+		pnew->Set(0, 0, BMAT_NAME_PLAIN);
 		m_Edges.Append(pnew);
 	}
 }
@@ -532,7 +532,7 @@ bool vtLevel::IsUniform()
 			return false;
 //		if (edge->m_Color != RGBi(255, 255, 255))
 //			return false;
-		if (edge->m_Material != BMAT_SIDING)
+		if (*edge->m_pMaterial != BMAT_NAME_SIDING)
 			return false;
 	}
 	return true;
@@ -640,21 +640,21 @@ bool vtLevel::DetermineHeightFromSlopes()
 // Look at the materials of this level's edges.  If they all use the
 // same material, return it.  Otherwise, return BMAT_UNKNOWN.
 //
-BldMaterial vtLevel::GetOverallEdgeMaterial()
+const vtMaterialName& vtLevel::GetOverallEdgeMaterial()
 {
-	BldMaterial most = BMAT_UNKNOWN;
+	const vtMaterialName *most = &BMAT_NAME_UNKNOWN;
 
 	int edges = GetNumEdges();
 	for (int i = 0; i < edges; i++)
 	{
 		vtEdge *pEdge = GetEdge(i);
-		BldMaterial mat = pEdge->m_Material;
-		if (most == BMAT_UNKNOWN)
+		const vtMaterialName *mat = pEdge->m_pMaterial;
+		if (*most == BMAT_NAME_UNKNOWN)
 			most = mat;
-		else if (most != mat)
-			return BMAT_UNKNOWN;
+		else if (*most != *mat)
+			return BMAT_NAME_UNKNOWN;
 	}
-	return most;
+	return *most;
 }
 
 //
@@ -750,6 +750,9 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 
 	for (int i = 0; i < v.m_Levels.GetSize(); i++)
 		m_Levels.Append(new vtLevel(* v.m_Levels.GetAt(i)));
+
+	SetElevationOffset(v.GetElevationOffset());
+	SetOriginalElevation(v.GetOriginalElevation());
 
 	return *this;
 }
@@ -994,7 +997,7 @@ void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 		vtEdge *edge1 = pLev->GetEdge(i);
 		if (edge1->m_iSlope == 90)
 		{
-			edge1->m_Material = edge0->m_Material;
+			edge1->m_pMaterial = edge0->m_pMaterial;
 			edge1->m_Color = edge0->m_Color;
 		}
 	}
@@ -1275,7 +1278,7 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 			fprintf(fp, "\t\t\t<Edge");
 
 			fprintf(fp, " Material=\"%s\"",
-				vtBuilding::GetMaterialString(edge->m_Material));
+				(const char *)*edge->m_pMaterial);
 
 			fprintf(fp, " Color=\"%02x%02x%02x\"",
 				edge->m_Color.r, edge->m_Color.g, edge->m_Color.b);
@@ -1341,7 +1344,7 @@ void vtBuilding::AddDefaultDetails()
 			edge = lev->GetEdge(j);
 			int doors = 0;
 			int windows = (int) (lev->GetEdgeLength(j) / 6.0f);
-			edge->Set(doors, windows, BMAT_SIDING);
+			edge->Set(doors, windows, BMAT_NAME_SIDING);
 		}
 	}
 
@@ -1376,59 +1379,6 @@ void vtBuilding::DetermineLocalFootprints()
 		lev->DetermineLocalFootprint(fHeight);
 		fHeight += (lev->m_iStories * lev->m_fStoryHeight);
 	}
-}
-
-const char *vtBuilding::GetMaterialString(BldMaterial mat)
-{
-	switch (mat)
-	{
-	case BMAT_UNKNOWN: return "Unknown"; break;
-	case BMAT_PLAIN: return "Plain"; break;
-	case BMAT_WOOD: return "Wood"; break;
-	case BMAT_SIDING: return "Siding"; break;
-	case BMAT_GLASS: return "Glass"; break;
-	case BMAT_BRICK: return "Brick"; break;
-	case BMAT_PAINTED_BRICK: return "Painted-Brick"; break;
-	case BMAT_ROLLED_ROOFING: return "Rolled-Roofing"; break;
-	case BMAT_CEMENT: return "Cement"; break;
-	case BMAT_STUCCO: return "Stucco"; break;
-	case BMAT_CORRUGATED: return "Corrugated"; break;
-	case BMAT_DOOR: return "Door"; break;
-	case BMAT_WINDOW: return "Window"; break;
-	case BMAT_WINDOWWALL: return "Window-Wall"; break;
-	}
-	return "Bad Value";
-}
-
-BldMaterial vtBuilding::GetMaterialValue(const char *value)
-{
-	if (!strcmp(value, "Plain"))
-		return BMAT_PLAIN;
-	else if (!strcmp(value, "Wood"))
-		return BMAT_WOOD;
-	else if (!strcmp(value, "Siding"))
-		return BMAT_SIDING;
-	else if (!strcmp(value, "Glass"))
-		return BMAT_GLASS;
-	else if (!strcmp(value, "Brick"))
-		return BMAT_BRICK;
-	else if (!strcmp(value, "Painted-Brick"))
-		return BMAT_PAINTED_BRICK;
-	else if (!strcmp(value, "Rolled-Roofing"))
-		return BMAT_ROLLED_ROOFING;
-	else if (!strcmp(value, "Cement"))
-		return BMAT_CEMENT;
-	else if (!strcmp(value, "Stucco"))
-		return BMAT_STUCCO;
-	else if (!strcmp(value, "Corrugated"))
-		return BMAT_CORRUGATED;
-	else if (!strcmp(value, "Door"))
-		return BMAT_DOOR;
-	else if (!strcmp(value, "Window"))
-		return BMAT_WINDOW;
-	else if (!strcmp(value, "Window-Wall"))
-		return BMAT_WINDOWWALL;
-	return BMAT_UNKNOWN;
 }
 
 const char *vtBuilding::GetEdgeFeatureString(int edgetype)
