@@ -35,7 +35,7 @@ public:
 
 	void Eval();
 
-	void SetTime(vtTime &time);
+	void SetTime(const vtTime &time);
 	void GetTime(vtTime &time) const;
 	vtTime GetTime() const;
 

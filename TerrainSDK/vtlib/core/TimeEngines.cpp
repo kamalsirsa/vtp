@@ -43,11 +43,13 @@ void TimeEngine::Eval()
 void TimeEngine::SetSpeed(float factor)
 {
 	m_fSpeed = factor;
+	_InformTarget();
 }
 
-void TimeEngine::SetTime(vtTime &time)
+void TimeEngine::SetTime(const vtTime &time)
 {
 	m_time = time;
+	_InformTarget();
 }
 
 void TimeEngine::GetTime(vtTime &time) const
