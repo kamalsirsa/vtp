@@ -1024,14 +1024,14 @@ wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_CHOICE_SHOW, wxDefaultPosition, wxSize(75,-1), 0, strs3, 0 );
+    wxChoice *item3 = new wxChoice( parent, ID_CHOICE_SHOW, wxDefaultPosition, wxSize(105,-1), 0, strs3, 0 );
     item1->Add( item3, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
     wxStaticText *item4 = new wxStaticText( parent, ID_TEXT_VERTICAL, _("Vertical units:"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs5 = (wxString*) NULL;
-    wxChoice *item5 = new wxChoice( parent, ID_CHOICE_VERTICAL, wxDefaultPosition, wxSize(75,-1), 0, strs5, 0 );
+    wxChoice *item5 = new wxChoice( parent, ID_CHOICE_VERTICAL, wxDefaultPosition, wxSize(95,-1), 0, strs5, 0 );
     item1->Add( item5, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
     wxButton *item6 = new wxButton( parent, ID_DEL_HIGH, _("Delete Highlighted"), wxDefaultPosition, wxDefaultSize, 0 );
