@@ -202,7 +202,7 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		double scale_x = 1.0/ratio_x;
 		double scale_y = 1.0/ratio_y;
 		pDC->SetUserScale(scale_x, scale_y);
-		pDC->DrawBitmap(*m_pBitmap, (int) (destRect.x/scale_x),
+		pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
 			(int) (destRect.y/scale_y), false);
 
 		// restore
@@ -857,4 +857,3 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 		}
 	}
 }
-
