@@ -196,7 +196,8 @@ EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
 EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawSelectCondition)
 
-EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
+EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
+EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
@@ -205,7 +206,8 @@ EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
 EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 
-EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
+EVT_UPDATE_UI(ID_AREA_ZOOM_ALL,		MainFrame::OnUpdateAreaZoomAll)
+EVT_UPDATE_UI(ID_AREA_ZOOM_LAYER,	MainFrame::OnUpdateAreaZoomLayer)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
 EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
@@ -399,8 +401,10 @@ void MainFrame::CreateMenus()
 
 	// Area
 	areaMenu = new wxMenu;
-	areaMenu->Append(ID_AREA_STRETCH, _("Set to Extents"),
+	areaMenu->Append(ID_AREA_ZOOM_ALL, _("Set to Full Extents"),
 		_("Set the Area Tool rectangle to the combined extent of all layers."));
+	areaMenu->Append(ID_AREA_ZOOM_LAYER, _("Set to Layer Extents"),
+		_("Set the Area Tool rectangle to the extent of the active layer."));
 	areaMenu->Append(ID_AREA_TYPEIN, _("Numeric Values"),
 		_("Set the Area Tool rectangle by text entry of coordinates."));
 	areaMenu->AppendSeparator();
@@ -2252,14 +2256,32 @@ void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)
 // Area Menu
 //
 
-void MainFrame::OnAreaStretch(wxCommandEvent &event)
+void MainFrame::OnAreaZoomAll(wxCommandEvent &event)
 {
-	m_pView->AreaStretch();
+	m_pView->InvertAreaTool(m_area);
+	m_area = GetExtents();
+	m_pView->InvertAreaTool(m_area);
 }
 
-void MainFrame::OnUpdateAreaStretch(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateAreaZoomAll(wxUpdateUIEvent& event)
 {
 	event.Enable(NumLayers() != 0);
+}
+
+void MainFrame::OnAreaZoomLayer(wxCommandEvent &event)
+{
+	DRECT area;
+	if (GetActiveLayer()->GetExtent(area))
+	{
+		m_pView->InvertAreaTool(m_area);
+		m_area = area;
+		m_pView->InvertAreaTool(m_area);
+	}
+}
+
+void MainFrame::OnUpdateAreaZoomLayer(wxUpdateUIEvent& event)
+{
+	event.Enable(GetActiveLayer() != NULL);
 }
 
 void MainFrame::OnAreaTypeIn(wxCommandEvent &event)

@@ -226,7 +226,8 @@ protected:
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
 	void OnUpdateRawSelectCondition(wxUpdateUIEvent& event);
 
-	void OnAreaStretch(wxCommandEvent& event);
+	void OnAreaZoomAll(wxCommandEvent& event);
+	void OnAreaZoomLayer(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
 	void OnAreaExportElev(wxCommandEvent& event);
 	void OnAreaExportImage(wxCommandEvent& event);
@@ -235,7 +236,8 @@ protected:
 	void OnAreaRequestWMS(wxCommandEvent& event);
 	void OnAreaRequestTServe(wxCommandEvent& event);
 
-	void OnUpdateAreaStretch(wxUpdateUIEvent& event);
+	void OnUpdateAreaZoomAll(wxUpdateUIEvent& event);
+	void OnUpdateAreaZoomLayer(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportImage(wxUpdateUIEvent& event);
 	void OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event);
@@ -395,7 +397,6 @@ public:
 	void ExportPlanet();
 
 	// area tool
-	void StretchArea();
 	void ExportElevation();
 	void ExportImage();
 
