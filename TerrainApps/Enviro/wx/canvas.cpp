@@ -37,6 +37,7 @@ EVT_KEY_DOWN(vtGLCanvas::OnKeyDown)
 EVT_KEY_UP(vtGLCanvas::OnKeyUp)
 EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
 EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+EVT_IDLE(vtGLCanvas::OnIdle)
 END_EVENT_TABLE()
 
 static vtGLCanvas *s_canvas = NULL;
@@ -44,7 +45,7 @@ static vtGLCanvas *s_canvas = NULL;
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
-wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	VTLOG("Constructing vtGLCanvas\n");
 	parent->Show(TRUE);
@@ -122,10 +123,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		// This is a dummy, to avoid an endless succession of paint messages.
 		// OnPaint handlers must always create a wxPaintDC.
 		wxPaintDC dc(this);
+
 #ifdef __WXMSW__
+		// Safety check
 		if (!GetContext()) return;
 #endif
-
+		// Avoid reentrance
 		if (m_bPainting) return;
 
 #if !VTLIB_PSM
@@ -140,9 +143,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		SwapBuffers();
 
 #ifdef WIN32
-		// Call Refresh again for continuous rendering,
-		if (m_bRunning)
-			Refresh(FALSE);
+		// We use refresh-on-idle on WIN32
 #else
 		// Queue another refresh for continuous rendering.
 		//   (Yield first so we don't starve out keyboard & mouse events.)
@@ -168,17 +169,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 
 		m_bPainting = false;
 #endif // VTLIB_PSM
-	}
-
-	if (m_bRunning)
-	{
-		// Must allow some idle processing to occur - or the toolbars will not
-		// update, and the close box will not respond!
-		bool go = true;
-		while (go)
-		{
-			go = wxGetApp().ProcessIdle();
-		}
 	}
 }
 
@@ -326,3 +316,11 @@ void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 {
 	// Do nothing, to avoid flashing.
 }
+
+void vtGLCanvas::OnIdle(wxIdleEvent &event)
+{
+	// We use the "Refresh on Idle" approach to continuous rendering.
+	if (m_bRunning)
+		Refresh(FALSE);
+}
+

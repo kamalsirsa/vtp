@@ -35,6 +35,7 @@ public:
 	void OnMouseEvent(wxMouseEvent& event);
 	void OnClose(wxCloseEvent& event);
 	void QueueRefresh(bool eraseBackground);
+	void OnIdle(wxIdleEvent &event);
 
 	bool m_bPainting;
 	bool m_bRunning;
