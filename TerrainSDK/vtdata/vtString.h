@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,9 @@
 
 #include <string.h>
 #include <stdarg.h>
+
+#include <string>
+//using namespace std;
 
 #ifdef WIN32
 #  define WIN_UNIX_STDCALL __stdcall
@@ -270,10 +273,6 @@ bool WIN_UNIX_STDCALL operator>=(const vtString& s1, const vtString& s2);
 bool WIN_UNIX_STDCALL operator>=(const vtString& s1, pcchar s2);
 bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2);
 
-// conversion helpers
-int WIN_UNIX_CDECL _wcstombsz(char* mbstr, const wchar_t* wcstr, size_t count);
-int WIN_UNIX_CDECL _mbstowcsz(wchar_t* wcstr, const char* mbstr, size_t count);
-
 // Globals
 extern char vtChNil;
 extern pcchar _vtPchNil;
@@ -357,8 +356,47 @@ inline bool WIN_UNIX_STDCALL operator>=(const vtString& s1, pcchar s2)
 inline bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) <= 0; }
 
-// helper
+// helpers
 vtString EscapeStringForXML(const char *input);
+void EscapeStringForXML(const std::string &input, std::string &output);
+void EscapeStringForXML(const std::wstring &input, std::string &output);
+void EscapeStringForXML(const std::wstring &input, std::wstring &output);
+
+
+/////////////////////////////////////////////////////////////////////////////
+// wstring2
+
+#define MAX_WSTRING2_SIZE 2048
+
+/**
+ * Another string class.  This one always stores string internally as 16-bit
+ * wide characters, and can convert to and from other representations as
+ * desired.
+ *
+ * Unlike the C++ standard "wstring" class, on which it is based, this class
+ * can automatically convert to and from classic 8-bit character strings.
+ *
+ * Unlike wxString, this class always uses wide characters, so it does not
+ * need to be compiled in two flavors.  It also avoids a dependency on all
+ * of wxWindows as well..
+ *
+ * Unlike MFC's CString, this class actually stores wide characters rather
+ * than messy, multi-byte variable encodings.
+ */
+class wstring2 : public std::wstring
+{
+public:
+	wstring2();
+	wstring2(const wchar_t *__s);
+	wstring2(const char *__s);
+	const char *eb_str() const;		// 8-bit string
+
+	size_t from_utf8(const char *in);
+	const char *to_utf8() const;
+
+private:
+	static char s_buffer[MAX_WSTRING2_SIZE];
+};
 
 #endif
 
