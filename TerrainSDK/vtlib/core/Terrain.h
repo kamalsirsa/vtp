@@ -230,6 +230,7 @@ protected:
 
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
+	vtTransform		 *m_pDynGeomScale;
 
 	// triangulated irregular network (TIN)
 	vtTin3d		*m_pTin;

@@ -61,6 +61,7 @@ vtTerrain::vtTerrain()
 	m_pPlantList = NULL;
 
 	m_pDynGeom = NULL;
+	m_pDynGeomScale = NULL;
 	m_pTerrainGeom = NULL;
 	m_pTin = NULL;
 	m_pNext = NULL;
@@ -459,13 +460,13 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	m_pDynGeom->SetMaterials(m_pTerrApps2);
 
 	// build heirarchy (add terrain to scene graph)
-	vtTransform *trans = new vtTransform();
+	m_pDynGeomScale = new vtTransform();
 
 	DPoint2 spacing = m_pLocalGrid->GetWorldSpacing();
-	trans->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
+	m_pDynGeomScale->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
 
-	trans->AddChild(m_pDynGeom);
-	m_pTerrainGroup->AddChild(trans);
+	m_pDynGeomScale->AddChild(m_pDynGeom);
+	m_pTerrainGroup->AddChild(m_pDynGeomScale);
 
 	return true;
 }
@@ -1162,8 +1163,8 @@ float vtTerrain::GetRadius()
 
 void vtTerrain::GetTerrainBounds()
 {
-	if (m_pDynGeom != NULL)
-		m_pDynGeom->GetBoundSphere(m_bound_sphere);
+	if (m_pDynGeomScale != NULL)
+		m_pDynGeomScale->GetBoundSphere(m_bound_sphere);
 	else if (m_pTerrainGeom != NULL)
 		m_pTerrainGeom->GetBoundSphere(m_bound_sphere);
 	else
