@@ -18,7 +18,7 @@
 
 #include "MapServerDlg.h"
 #if SUPPORT_HTTP
-#include "Vtdata/WFSClient.h"
+#include "vtdata/WFSClient.h"
 #endif
 
 // WDR: class implementations
