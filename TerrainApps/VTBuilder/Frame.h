@@ -40,7 +40,8 @@ public:
 		const wxPoint& pos, const wxSize& size);
 	virtual ~MainFrame();
 
-	void CreateMenus();
+	void SetupUI();
+	virtual void CreateMenus();
 	void CreateToolbar();
 	void RefreshToolbar();
 
@@ -311,7 +312,7 @@ protected:
 	wxMenu*    rawMenu;
 	wxMenu*    areaMenu;
 	wxMenu*    helpMenu;
-	wxMenuBar *menuBar;
+	wxMenuBar *m_pMenuBar;
 	wxToolBar *toolBar_main;
 	wxToolBar *toolBar_road;
 	MyStatusBar *m_statbar;

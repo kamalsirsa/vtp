@@ -107,7 +107,10 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
+}
 
+void MainFrame::SetupUI()
+{
 	m_statbar = new MyStatusBar(this);
 	SetStatusBar(m_statbar);
 	m_statbar->Show();
@@ -122,7 +125,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	// splitter
 	m_splitter = new MySplitterWindow(this, WID_SPLITTER);
 
-	m_pTree = new MyTreeCtrl(m_splitter, TreeTest_Ctrl,
+	m_pTree = new MyTreeCtrl(m_splitter, LayerTree_Ctrl,
 			wxPoint(0, 0), wxSize(200, 400),
 //		wxTR_HAS_BUTTONS |
 //		wxTR_EDIT_LABELS |
@@ -263,13 +266,13 @@ void MainFrame::RefreshToolbar()
 	}
 	toolBar_main->Realize();
 
-	menuBar->EnableTop(m_iLayerMenu[LT_ELEVATION], lt == LT_ELEVATION);
+	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ELEVATION], lt == LT_ELEVATION);
 #ifndef ELEVATION_ONLY
-	menuBar->EnableTop(m_iLayerMenu[LT_ROAD], lt == LT_ROAD);
-	menuBar->EnableTop(m_iLayerMenu[LT_UTILITY], lt == LT_UTILITY);
-//	menuBar->EnableTop(m_iLayerMenu[LT_VEG], lt == LT_VEG);
-	menuBar->EnableTop(m_iLayerMenu[LT_STRUCTURE], lt == LT_STRUCTURE);
-	menuBar->EnableTop(m_iLayerMenu[LT_RAW], lt == LT_RAW);
+	m_pMenuBar->EnableTop(m_iLayerMenu[LT_ROAD], lt == LT_ROAD);
+	m_pMenuBar->EnableTop(m_iLayerMenu[LT_UTILITY], lt == LT_UTILITY);
+//	m_pMenuBar->EnableTop(m_iLayerMenu[LT_VEG], lt == LT_VEG);
+	m_pMenuBar->EnableTop(m_iLayerMenu[LT_STRUCTURE], lt == LT_STRUCTURE);
+	m_pMenuBar->EnableTop(m_iLayerMenu[LT_RAW], lt == LT_RAW);
 #endif
 }
 

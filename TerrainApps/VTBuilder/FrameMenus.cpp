@@ -183,7 +183,7 @@ void MainFrame::CreateMenus()
 {
 	int menu_num = 0;
 
-	menuBar = new wxMenuBar;
+	m_pMenuBar = new wxMenuBar;
 
 	// Project menu
 	fileMenu = new wxMenu;
@@ -196,7 +196,7 @@ void MainFrame::CreateMenus()
 #endif
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_EXIT, "E&xit\tAlt-X", "Exit");
-	menuBar->Append(fileMenu, "&Project");
+	m_pMenuBar->Append(fileMenu, "&Project");
 	menu_num++;
 
  	// Edit
@@ -206,7 +206,7 @@ void MainFrame::CreateMenus()
 	editMenu->Append(ID_EDIT_DESELECTALL, "Deselect All", "Clears selection.");
 	editMenu->Append(ID_EDIT_INVERTSELECTION, "Invert Selection", "Invert Selection.");
 	editMenu->Append(ID_EDIT_CROSSINGSELECTION, "Crossing Selection", "Crossing Selection.", true);
-	menuBar->Append(editMenu, "&Edit");
+	m_pMenuBar->Append(editMenu, "&Edit");
 	menu_num++;
 
 	// Layer
@@ -233,7 +233,7 @@ void MainFrame::CreateMenus()
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_CONVERTPROJ, "Convert Projection", "Convert");
 	layerMenu->Append(ID_LAYER_SETPROJ, "Set Projection", "Set Projection");
-	menuBar->Append(layerMenu, "&Layer");
+	m_pMenuBar->Append(layerMenu, "&Layer");
 	menu_num++;
 
 	// View
@@ -265,7 +265,7 @@ void MainFrame::CreateMenus()
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_FILLWATER, "Show Water Bodies Filled", "Show Water Bodies Filled", true);
 #endif
-	menuBar->Append(viewMenu, "&View");
+	m_pMenuBar->Append(viewMenu, "&View");
 	menu_num++;
 
 #ifndef ELEVATION_ONLY
@@ -283,7 +283,7 @@ void MainFrame::CreateMenus()
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, "Clean RoadMap", "Clean");
 	roadMenu->Append(ID_ROAD_GUESS, "Guess Intersection Types");
-	menuBar->Append(roadMenu, "&Roads");
+	m_pMenuBar->Append(roadMenu, "&Roads");
 	m_iLayerMenu[LT_ROAD] = menu_num;
 	menu_num++;
 
@@ -293,7 +293,7 @@ void MainFrame::CreateMenus()
 	utilityMenu->AppendSeparator();
 	utilityMenu->Append(ID_TOWER_SELECT, "Select Utility Layer", "Select Utility Layer",true);
 	utilityMenu->Append(ID_TOWER_EDIT, "Edit Transmission Towers", "Edit Transmission Towers",true);
-	menuBar->Append(utilityMenu, "Util&ities");
+	m_pMenuBar->Append(utilityMenu, "Util&ities");
 	m_iLayerMenu[LT_UTILITY] = menu_num;
 	menu_num++;
 #endif
@@ -310,7 +310,7 @@ void MainFrame::CreateMenus()
 //	elevMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge Area and Export");
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, "Merge shared TIN vertices");
-	menuBar->Append(elevMenu, "Elev&ation");
+	m_pMenuBar->Append(elevMenu, "Elev&ation");
 	m_iLayerMenu[LT_ELEVATION] = menu_num;
 	menu_num++;
 
@@ -320,7 +320,7 @@ void MainFrame::CreateMenus()
 	vegMenu->Append(ID_VEG_PLANTS, "Plants List", "View/Edit list of available plant species");
 	vegMenu->Append(ID_VEG_BIOREGIONS, "BioRegions", "View/Edit list of species & density for each BioRegion");
 //	vegMenu->Append(ID_AREA_GENERATE_VEG, "Generate");
-	menuBar->Append(vegMenu, "Veg&etation");
+	m_pMenuBar->Append(vegMenu, "Veg&etation");
 	m_iLayerMenu[LT_VEG] = menu_num;
 	menu_num++;
 
@@ -329,7 +329,7 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
 	bldMenu->Append(ID_STRUCTURE_EDIT_BLD, "Edit Buildings", "Edit Buildings", true);
 	bldMenu->Append(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features", "Add Linear Features", true);
-	menuBar->Append(bldMenu, "&Structures");
+	m_pMenuBar->Append(bldMenu, "&Structures");
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
 
@@ -339,7 +339,7 @@ void MainFrame::CreateMenus()
 	rawMenu->Append(ID_RAW_ADDPOINTS, "Add Points with Mouse", "Add points with the mouse", true);
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, "Add Point with Text\tCtrl+T", "Add point");
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, "Add Points with GPS", "Add points with GPS");
-	menuBar->Append(rawMenu, "Ra&w");
+	m_pMenuBar->Append(rawMenu, "Ra&w");
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
 #endif
@@ -355,16 +355,16 @@ void MainFrame::CreateMenus()
 		"Sample all elevation data within the Export Area to produce a single, new elevation.");
 	areaMenu->Append(ID_AREA_GENERATE_VEG, "Generate && Export Vegetation",
 		"Generate Vegetation File (*.vf) containg plant distribution.");
-	menuBar->Append(areaMenu, "Export &Area");
+	m_pMenuBar->Append(areaMenu, "Export &Area");
 	menu_num++;
 
 	// Help
 	helpMenu = new wxMenu;
 	helpMenu->Append(wxID_HELP, "&About", "About VTBuilder");
-	menuBar->Append(helpMenu, "&Help");
+	m_pMenuBar->Append(helpMenu, "&Help");
 	menu_num++;
 
-	SetMenuBar(menuBar);
+	SetMenuBar(m_pMenuBar);
 
 #if 0
     // Accelerators
