@@ -78,7 +78,11 @@ void vtStructInstance::WriteXML(FILE *fp, bool bDegrees)
 
 	if (m_fRotation != 0.0f)
 	{
-		fprintf(fp, "\t\t<Rotation Radians=\"%f\"/>\n", m_fRotation);
+		fprintf(fp, "\t\t<Rotation>%g</Rotation>\n", m_fRotation);
+	}
+	if (m_fScale != 1.0f)
+	{
+		fprintf(fp, "\t\t<Scale>%g</Scale>\n", m_fScale);
 	}
 	WriteTags(fp);
 	fprintf(fp, "\t</Imported>\n");
