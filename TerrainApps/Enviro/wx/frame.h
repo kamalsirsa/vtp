@@ -8,14 +8,14 @@
 #ifndef FRAMEH
 #define FRAMEH
 
+#include "../EnviroEnum.h"
+
 class SceneGraphDlg;
 class PlantDlg;
 class FenceDlg;
 class CameraDlg;
 class LocationDlg;
 class BuildingDlg;
-
-enum MouseMode;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
