@@ -52,6 +52,7 @@ wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 
 void AddType(wxString &str, const wxString &filter)
 {
+	// Chop up the input string.  Expected form is "str1|str2|str3"
 	wxString str1 = str.BeforeFirst('|');
 
 	wxString str2 = str.AfterFirst('|');
@@ -60,10 +61,11 @@ void AddType(wxString &str, const wxString &filter)
 	wxString str3 = str.AfterFirst('|');
 	str3 = str3.AfterFirst('|');
 
+	// Chop up the filter string.  str3 is the wildcard part.
 	wxString str4 = filter.AfterFirst('|');
 	str4 = str4.BeforeFirst('|');
 
-//	wxString output = "All Known Formats|";
+	// Now rebuild the string, with the filter added
 	wxString output = str1 + _T("|");
 	output += str2;
 	if (str2.Len() > 1)
