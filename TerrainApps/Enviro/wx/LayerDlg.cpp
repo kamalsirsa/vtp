@@ -63,6 +63,12 @@ LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	LayerDialogFunc( this, TRUE );
 }
 
+void LayerDlg::SetShowAll(bool bTrue)
+{
+	m_bShowAll = bTrue;
+	GetShowAll()->SetValue(bTrue);
+}
+
 //
 // For an item in the tree which corresponds to an actual structure,
 //  return the node associated with that structure.

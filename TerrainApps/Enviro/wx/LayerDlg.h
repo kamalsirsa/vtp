@@ -40,6 +40,8 @@ public:
 	void RefreshTreeTerrain();
 	void RefreshTreeSpace();
 
+	void SetShowAll(bool bTrue);
+
 private:
 	// WDR: member variable declarations for LayerDlg
 	wxTreeCtrl *m_pTree;
