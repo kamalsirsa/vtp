@@ -388,8 +388,8 @@ void vtFrame::CreateMenus()
 		navstyleMenu->AppendCheckItem(ID_NAV_NORMAL, _("Normal Terrain Flyer"));
 		navstyleMenu->AppendCheckItem(ID_NAV_VELO, _("Flyer with Velocity"));
 		navstyleMenu->AppendCheckItem(ID_NAV_GRAB_PIVOT, _("Grab-Pivot"));
-		navstyleMenu->AppendCheckItem(ID_NAV_PANO, _("Panoramic Flyer"));
 //		navstyleMenu->AppendCheckItem(ID_NAV_QUAKE, _T("Keyboard Walk"));
+		navstyleMenu->AppendCheckItem(ID_NAV_PANO, _("Panoramic Flyer"));
 		navMenu->Append(0, _("Navigation Style"), navstyleMenu);
 
 	m_pTerrainMenu = new wxMenu;
