@@ -1290,35 +1290,27 @@ void MainFrame::ExportElevation()
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
-	wxString filter = _T("All Files|*.*|");
-	AddType(filter, FSTRING_BT);
-	AddType(filter, FSTRING_BTGZ);
-
-	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
-	saveFile.SetFilterIndex(1);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	if (!bResult)
-		return;
-	wxString2 strPathName = saveFile.GetPath();
-
 	// Make new terrain
 	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
-	pOutput->SetLayerFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
 	SampleCurrentTerrains(pOutput);
 	pOutput->FillGaps();
 
-	bool gzip = (strPathName.Right(3).CmpNoCase(_T(".gz")) == 0);
-	bool success = pOutput->m_pGrid->SaveToBT(strPathName.mb_str(), NULL, gzip);
-	if (success)
-		DisplayAndLog("Successfully wrote BT file to '%s'", strPathName.mb_str());
+	if (dlg.m_bToFile)
+	{
+		wxString2 fname = dlg.m_strToFile;
+		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
+		bool success = pOutput->m_pGrid->SaveToBT(fname.mb_str(), NULL, gzip);
+		if (success)
+			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
+		else
+			DisplayAndLog("Couldn't open file for writing.");
+		delete pOutput;
+	}
 	else
-		DisplayAndLog("Couldn't open file for writing.");
-
-	delete pOutput;
+		AddLayerWithCheck(pOutput);
 }
 
 

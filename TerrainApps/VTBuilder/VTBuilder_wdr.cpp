@@ -794,118 +794,140 @@ wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Sampling") );
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Output") );
     wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
 
-    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
+    wxRadioButton *item3 = new wxRadioButton( parent, ID_RADIO_CREATE_NEW, _("Create new layer"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item1->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Grid spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_SPACINGX, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
-    item3->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item5 = new wxRadioButton( parent, ID_RADIO_TO_FILE, _("To file"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_SPACINGY, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
-    item3->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_TEXT_TO_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item4->Add( item6, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item7 = new wxButton( parent, ID_DOTDOTDOT, _("..."), wxDefaultPosition, wxSize(24,-1), 0 );
+    item7->SetFont( wxFont( 11, wxROMAN, wxNORMAL, wxBOLD ) );
+    item4->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Grid size:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item7->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_SIZEX, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item7->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SIZEY, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item7->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item1->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
-
-    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxCheckBox *item12 = new wxCheckBox( parent, ID_CONSTRAIN, _("Size constraint: power of 2 plus 1 for terrain LOD"), wxDefaultPosition, wxDefaultSize, 0 );
-    item11->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item1->Add( item11, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
-
-    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxButton *item14 = new wxButton( parent, ID_SMALLER, _("<< Smaller"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item15 = new wxButton( parent, ID_BIGGER, _(">> Bigger"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item13->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item1->Add( item13, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item1->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticBox *item17 = new wxStaticBox( parent, -1, _("Output Grid") );
-    wxStaticBoxSizer *item16 = new wxStaticBoxSizer( item17, wxHORIZONTAL );
+    wxStaticBox *item9 = new wxStaticBox( parent, -1, _("Sampling") );
+    wxStaticBoxSizer *item8 = new wxStaticBoxSizer( item9, wxVERTICAL );
 
-    wxBoxSizer *item18 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxRadioButton *item19 = new wxRadioButton( parent, ID_FLOATS, _("Floating point"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    item18->Add( item19, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Grid spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxRadioButton *item20 = new wxRadioButton( parent, ID_SHORTS, _("Short Integer"), wxDefaultPosition, wxDefaultSize, 0 );
-    item18->Add( item20, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item12 = new wxTextCtrl( parent, ID_SPACINGX, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item10->Add( item12, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item16->Add( item18, 0, wxALIGN_CENTER, 5 );
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_SPACINGY, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item10->Add( item13, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, _("Vertical units:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    item8->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_VUNITS, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item16->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Grid size:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item16 = new wxTextCtrl( parent, ID_SIZEX, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Information") );
-    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_SIZEY, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+    item8->Add( item14, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Size of sample area:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_AREAX, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item19 = new wxCheckBox( parent, ID_CONSTRAIN, _("Size constraint: power of 2 plus 1 for terrain LOD"), wxDefaultPosition, wxDefaultSize, 0 );
+    item18->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_AREAY, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+    item8->Add( item18, 0, wxALIGN_CENTER, 5 );
 
-    item24->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
+    wxButton *item21 = new wxButton( parent, ID_SMALLER, _("<< Smaller"), wxDefaultPosition, wxSize(73,-1), 0 );
+    item20->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("Estimated grid spacing of existing data:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item22 = new wxButton( parent, ID_BIGGER, _(">> Bigger"), wxDefaultPosition, wxSize(70,-1), 0 );
+    item20->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item32 = new wxTextCtrl( parent, ID_ESTX, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
-    item30->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+    item8->Add( item20, 0, wxALIGN_CENTER, 5 );
 
-    wxTextCtrl *item33 = new wxTextCtrl( parent, ID_ESTY, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
-    item30->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item24->Add( item30, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxStaticBox *item24 = new wxStaticBox( parent, -1, _("Elevation Values") );
+    wxStaticBoxSizer *item23 = new wxStaticBoxSizer( item24, wxHORIZONTAL );
 
-    item0->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item25 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
+    wxRadioButton *item26 = new wxRadioButton( parent, ID_FLOATS, _("Floating point"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item25->Add( item26, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item35 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item27 = new wxRadioButton( parent, ID_SHORTS, _("Short integer"), wxDefaultPosition, wxDefaultSize, 0 );
+    item25->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxButton *item36 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
+    item23->Add( item25, 0, wxALIGN_CENTER, 5 );
 
-    item0->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, _("Vertical units:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_VUNITS, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item23->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item30 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item32 = new wxStaticBox( parent, -1, _("Information") );
+    wxStaticBoxSizer *item31 = new wxStaticBoxSizer( item32, wxVERTICAL );
+
+    wxBoxSizer *item33 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item34 = new wxStaticText( parent, ID_TEXT, _("Size of sample area:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item33->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item35 = new wxTextCtrl( parent, ID_AREAX, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item33->Add( item35, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item36 = new wxTextCtrl( parent, ID_AREAY, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item33->Add( item36, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item31->Add( item33, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item37 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item38 = new wxStaticText( parent, ID_TEXT, _("Grid spacing of existing data:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item39 = new wxTextCtrl( parent, ID_ESTX, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    item37->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item40 = new wxTextCtrl( parent, ID_ESTY, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    item37->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item31->Add( item37, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBoxSizer *item41 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item42 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item42, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item43 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

@@ -1,7 +1,7 @@
 //
 // Name: ResampleDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,6 +17,7 @@
 #endif
 
 #include "ResampleDlg.h"
+#include "Layer.h"
 
 // WDR: class implementations
 
@@ -36,6 +37,9 @@ BEGIN_EVENT_TABLE(ResampleDlg,AutoDialog)
 	EVT_TEXT( ID_SPACINGY, ResampleDlg::OnSpacingXY )
 	EVT_RADIOBUTTON( ID_FLOATS, ResampleDlg::OnFloats )
 	EVT_RADIOBUTTON( ID_SHORTS, ResampleDlg::OnShorts )
+	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, ResampleDlg::OnRadioOutput )
+	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, ResampleDlg::OnRadioOutput )
+	EVT_BUTTON( ID_DOTDOTDOT, ResampleDlg::OnDotDotDot )
 END_EVENT_TABLE()
 
 ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -48,9 +52,17 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 {
+	m_bNewLayer = true;
+	m_bToFile = false;
+
 	m_power = 8;
 	m_bConstraint = false;
 	m_fVUnits = 1.0f;
+
+	// output options
+	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
+	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
+	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
 
 	m_fAreaX = m_area.Width();
 	m_fAreaY = m_area.Height();
@@ -98,6 +110,48 @@ void ResampleDlg::RecomputeSize()
 }
 
 // WDR: handler implementations for ResampleDlg
+
+void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
+{
+	wxString filter;
+	filter += FSTRING_BT;
+	filter += FSTRING_BTGZ;
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _T("Save Elevation"), _T(""), _T(""), filter, wxSAVE);
+	saveFile.SetFilterIndex(0);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+
+	wxString2 name = saveFile.GetPath();
+
+	// work around incorrect extension(s) that wxFileDialog added
+	bool bPreferGZip = (saveFile.GetFilterIndex() == 1);
+
+	if (!name.Right(3).CmpNoCase(_T(".gz")))
+		name = name.Left(name.Len()-3);
+	if (!name.Right(3).CmpNoCase(_T(".bt")))
+		name = name.Left(name.Len()-3);
+
+	if (bPreferGZip)
+		name += _T(".bt.gz");
+	else
+		name += _T(".bt");
+
+	m_strToFile = name;
+
+	// update controls
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+}
+
+void ResampleDlg::OnRadioOutput( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	EnableBasedOnConstraint();
+}
 
 void ResampleDlg::OnShorts( wxCommandEvent &event )
 {
@@ -175,6 +229,9 @@ void ResampleDlg::EnableBasedOnConstraint()
 	GetSpacingX()->SetEditable(!m_bConstraint);
 	GetSpacingY()->SetEditable(!m_bConstraint);
 	GetVUnits()->Enable(!m_bFloats);
+
+	GetDotDotDot()->Enable(m_bToFile);
+	GetTextToFile()->Enable(m_bToFile);
 }
 
 void ResampleDlg::OnBigger( wxCommandEvent &event )
