@@ -80,9 +80,9 @@ bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 		pTrans->AddChild(pNode);
 
 		pTrans->Identity();
-		if (model->m_filename.Right(3).CompareNoCase("3ds") == 0)
+		if ((model->m_filename.Right(3).CompareNoCase("3ds") == 0) || (model->m_filename.Right(3).CompareNoCase("lwo") == 0))
 		{
-			// Must rotate by 90 degrees for 3DS -> OpenGL
+			// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO)
 			pTrans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
 		}
 		pTrans->Scale3(model->m_scale, model->m_scale, model->m_scale);
