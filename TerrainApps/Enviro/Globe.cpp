@@ -448,6 +448,13 @@ bool FindIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
 
 void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p)
 {
+	DPoint3 dp;
+	geo_to_xyz(radius, geo, dp);
+	p = dp;
+}
+
+void geo_to_xyz(double radius, const DPoint2 &geo, DPoint3 &p)
+{
 	// Convert spherical polar coordinates to cartesian coordinates
 	// The angles are given in degrees
 	double theta = geo.x / 180.0 * PId;
@@ -460,9 +467,9 @@ void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p)
 	double y = sin(phi) * sin(theta) * radius;
 	double z = cos(phi) * radius;
 
-	p.x = (float) x;
-	p.y = (float) -z;
-	p.z = (float) y;
+	p.x = x;
+	p.y = -z;
+	p.z = y;
 }
 
 double radians(double degrees)

@@ -45,6 +45,7 @@ bool FindIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
 					  int& riQuantity, FPoint3 akPoint[2]);
 
 void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p);
+void geo_to_xyz(double radius, const DPoint2 &geo, DPoint3 &p);
 void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo);
 
 #endif
