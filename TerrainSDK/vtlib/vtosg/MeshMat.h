@@ -164,9 +164,6 @@ protected:
 
 	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
 
-	// Point OSG to the vertex and primitive data that we maintain
-	void	SendPointersToOSG();
-
 	virtual ~vtMesh();
 };
 
