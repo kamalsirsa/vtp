@@ -332,16 +332,12 @@ void CNodeDlg::OnDraw(wxDC &dc)
 
 		//we need to use the original node here because the roads point to it.
 		DPoint2 close = m_pNode->find_adjacent_roadpoint2d(pR);
-		DPoint2 vec = close - m_pTempNode->m_p;
-		DPoint2 vector;
-		vector.x = vec.x;
-		vector.y = vec.y;
-		float length = vec.Length();
-		vector.x = vector.x/length;
-		vector.y = vector.y/length;
+		DPoint2 vector = close - m_pTempNode->m_p;
+		vector.Normalize();
+		IPoint2 vec;
 
-		vec.x = (float)(off.x + vector.x*20);
-		vec.y = (float)(off.y - vector.y*20);
+		vec.x = (int)(off.x + vector.x*20);
+		vec.y = (int)(off.y - vector.y*20);
 
 		//draw signal lights or stop signs as necessary.
 		dc.SetLogicalFunction(wxCOPY);
