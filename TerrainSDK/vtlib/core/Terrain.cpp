@@ -1078,6 +1078,19 @@ void vtTerrain::_CreateLabels()
 	CreateStyledFeatures(feat, "Fonts/Arial.ttf", m_Params.m_Style);
 }
 
+
+// Helper for CreateStyledFeatures
+bool GetColorField(const vtFeatures &feat, int iRecord, int iField, RGBAf &rgba)
+{
+	vtString str;
+	float r, g, b;
+	feat.GetValueAsString(iRecord, iField, str);
+	if (sscanf((const char *)str, "%f %f %f", &r, &g, &b) != 3)
+		return false;
+	rgba.Set(r, g, b, 1);
+	return true;
+}
+
 void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontname,
 									 const PointStyle &style)
 {
@@ -1097,10 +1110,35 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 	if (features == 0)
 		return;
 
+	int i;
+	vtString str;
+	RGBAf rgba;
 	vtMaterialArray *pLabelMats = new vtMaterialArray();
 
-	// TODO: it would be smarter to share materials of the same color
-	int index = pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
+	int common_material_index = -1;
+	int field_index_color = feat.GetFieldIndex("color");
+
+	// default case: common label color
+	common_material_index = pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
+
+#if 0
+	if (field_index_color != -1)
+	{
+		// go through all the features collecting unique colors
+		for (i = 0; i < features; i++)
+		{
+			// if we have a unique color, add it
+			if (GetColorField(feat, i, field_index_color, rgba))
+			{
+				if (pLabelMats->FindByDiffuse(rgba) == -1)
+				{
+					RGBi rgb = (RGBi) (RGBf) rgba;
+					pLabelMats->AddRGBMaterial1(rgb, false, false);
+				}
+			}
+		}
+	}
+#endif
 
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
@@ -1114,8 +1152,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 
 	DPoint3 p;
 	FPoint3 p3;
-	vtString str;
-	for (int i = 0; i < features; i++)
+	for (i = 0; i < features; i++)
 	{
 		feat.GetPoint(i, p);
 		if (!m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3))
@@ -1139,7 +1176,29 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		vtGeom *geom = new vtGeom();
 		geom->SetName2(str);
 		geom->SetMaterials(pLabelMats);
-		geom->AddTextMesh(text, index);
+
+#if 0
+		int material_index;
+		if (field_index_color == -1)
+			material_index = common_material_index;
+		else
+		{
+			if (GetColorField(feat, i, field_index_color, rgba))
+				material_index = pLabelMats->FindByDiffuse(rgba);
+			else
+				material_index = common_material_index;
+		}
+		geom->AddTextMesh(text, material_index);
+#else
+		if (field_index_color != -1)
+		{
+			if (GetColorField(feat, i, field_index_color, rgba))
+			{
+				text->SetColor(rgba);
+			}
+		}
+		geom->AddTextMesh(text, common_material_index);
+#endif
 
 		// TODO: add a billboarding transform so that the labels turn
 		// toward the viewer
