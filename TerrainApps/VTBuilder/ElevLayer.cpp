@@ -616,12 +616,8 @@ void vtElevLayer::DetermineMeterSpacing()
 	{
 		DRECT area = m_pGrid->GetGridExtents();
 
-		// estimate meters per degree of longitude, using the terrain origin
-		float earth_radius = 6378000.0f;		// in meters
-		float r0 = earth_radius * (float) cos(area.bottom / 180.0f * PI);
-		float circ = 2.0f * r0 * PIf;
-		float meters_per_longitude = circ / 360.0f;
-		m_fSpacing = (float) (area.Width()) * meters_per_longitude / (m_iColumns - 1);
+		double fToMeters = EstimateDegreesToMeters(area.bottom);
+		m_fSpacing = (float) (area.Width()) * fToMeters / (m_iColumns - 1);
 	}
 	else
 	{
