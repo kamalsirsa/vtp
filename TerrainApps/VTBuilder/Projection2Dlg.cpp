@@ -282,6 +282,11 @@ void Projection2Dlg::SetUIFromProjection()
 			else
 				SetProjectionUI(PT_TM);
 		}
+
+		// Supposedly, Gauss-Kruger is just a form of Transverse Mercator
+		if (!strcmp(proj_string, "Gauss_Kruger"))
+			SetProjectionUI(PT_TM);
+
 		if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 			SetProjectionUI(PT_ALBERS);
 
