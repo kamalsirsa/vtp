@@ -23,6 +23,38 @@ extern "C" {
 // GDAL
 #include "gdal_priv.h"
 
+//	Header structure for a GTOPO30 DEM header file
+typedef struct
+{
+	char			ByteOrder[30];		//	Byte order in which image pixel values are stored
+										//		M = Motorola byte order (MSB first)
+	char			Layout[30];			//	Organization of the bands in the file
+										//		BIL = Band interleaved by line (DEM = single band image)
+	unsigned long	NumRows;			//	Number of rows in the image
+	unsigned long	NumCols;			//	Number of columns in the image
+	char			Bands[30];			//	Number of spectral bands in the image (1 for DEM)
+	char			Bits[30];			//	Number of bits per pixel (16 for DEM)
+	char			BandRowBytes[30];	//	Number of bytes per band per row
+										//		(twice the number of columns for 16 bit DEM)
+	char			TotalRowBytes[30];	//	Total number of bytes of data per row
+										//		(twice the number of columns for 16 bit DEM)
+	char			BandGapBytes[30];	//	Number of bytes between bands in a BSQ format
+										//		(0 for DEM)
+	short			NoData;				//	Value used for no data or masking purposes
+	double			ULXMap;				//	Longitude of the center of the upper left pixel in decimal degrees.
+	double			ULYMap;				//	Latitude of the center of the upper left pixel in decimal degrees.
+	double			XDim;				//	x dimension of a pixel in geographic units (decimal degrees).
+	double			YDim;				//	y dimension of a pixel in geographic units (decimal degrees).
+} GTOPOHeader;
+
+#ifndef max
+#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
+
 
 // ************** DConvert - DEM Helper fn ****************
 
