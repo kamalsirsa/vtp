@@ -9,6 +9,10 @@
 	#pragma implementation "OptionsDlg.cpp"
 #endif
 
+#ifndef WX_PRECOMP
+      #include "wx/wx.h"
+#endif
+
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
