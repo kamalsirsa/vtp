@@ -73,5 +73,18 @@ public:
 	IPoint2 m_pos;
 };
 
+/**
+ * A simple "Billboard" engine which turns its target to face the
+ * camera each frame.
+ */
+class SimpleBillboardEngine : public vtEngine
+{
+public:
+	SimpleBillboardEngine(float fAngleOffset = 0.0f);
+	void Eval();
+
+	float m_fAngleOffset;
+};
+
 #endif	// VTENGINEH
 

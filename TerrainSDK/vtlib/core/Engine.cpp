@@ -80,3 +80,34 @@ void vtLastMouse::GetNormalizedMouseCoords(float &mx, float &my)
 	apply_dead_zone(DEAD_ZONE_SIZE, my);
 }
 
+//////////////////////////////////////////////////////////////////////
+
+SimpleBillboardEngine::SimpleBillboardEngine(float fAngleOffset)
+{
+	m_fAngleOffset = fAngleOffset;
+}
+
+void SimpleBillboardEngine::Eval()
+{
+	// Potential optimization: store last camera pos and only update on change
+
+	//get the target and it's location
+	for (int i = 0; i < NumTargets(); i++)
+	{
+		vtTransform* pTarget = (vtTransform*) GetTarget(i);
+		if (!pTarget)
+			return;
+		FPoint3 camera_loc = vtGetScene()->GetCamera()->GetTrans();
+		FPoint3 target_loc = pTarget->GetTrans();
+		FPoint3 diff = camera_loc - target_loc;
+
+		float angle = atan2f(-diff.z, diff.x);
+
+		// TODO: make this more efficient!
+		FPoint3 pos = pTarget->GetTrans();
+		pTarget->Identity();
+		pTarget->SetTrans(pos);
+		pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), m_fAngleOffset + angle);
+	}
+}
+
