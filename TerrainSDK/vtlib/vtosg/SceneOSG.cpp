@@ -355,10 +355,11 @@ bool vtScene::GetGlobalWireframe()
 	return m_bWireframe;
 }
 
-void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform)
+void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
+							  vtTransform *pTransform, int iRez)
 {
 	if (!m_pShadowVisitor.valid())
-		m_pShadowVisitor = new CreateProjectedShadowTextureCullCallback(pShadowNode->GetOsgNode());
+		m_pShadowVisitor = new CreateProjectedShadowTextureCullCallback(pShadowNode->GetOsgNode(), iRez);
 	else
 		m_pShadowVisitor->SetShadower(pShadowNode->GetOsgNode());
 		m_pShadowVisitor->SetInitialLightPosition(v2s(-(pLight->GetDirection()) * 10000));
@@ -372,7 +373,7 @@ void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransf
 	}
 #endif
 }
- 
+
 void vtScene::UnsetShadowedNode(vtTransform *pTransform)
 {
 	pTransform->GetOsgNode()->setCullCallback(NULL);

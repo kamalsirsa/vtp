@@ -64,7 +64,7 @@ public:
 
 	// Experimental:
 	// Object-terrain shadow casting, only for OSG
-	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform);
+	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform, int iRez);
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
 	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;

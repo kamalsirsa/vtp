@@ -65,7 +65,7 @@ protected:
 class CreateProjectedShadowTextureCullCallback : public osg::NodeCallback
 {
 public:
-	CreateProjectedShadowTextureCullCallback(osg::Node* shadower, const osg::Vec3& position = osg::Vec3(), const osg::Vec4& ambientLightColor = osg::Vec4(), unsigned int textureUnit = 1):
+	CreateProjectedShadowTextureCullCallback(osg::Node* shadower, int iRez = 1024, const osg::Vec3& position = osg::Vec3(), const osg::Vec4& ambientLightColor = osg::Vec4(), unsigned int textureUnit = 1):
 		m_shadower(shadower),
 		m_position(position),
 		m_ambientLightColor(ambientLightColor),
@@ -84,8 +84,9 @@ public:
 		m_texture->setWrap(osg::Texture2D::WRAP_T,osg::Texture2D::CLAMP_TO_BORDER);
 		m_texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
 		m_bRecomputeShadows = false;
+		m_iRez = iRez;
 	}
-	
+
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
 	void SetLightPosition(const osg::Vec3& position);
@@ -102,6 +103,7 @@ protected:
 	osg::Vec3                    m_position;
 	osg::Vec4                    m_ambientLightColor;
 	unsigned int                 m_unit;
+	unsigned int				 m_iRez;
 	osg::ref_ptr<osg::StateSet>  m_shadowState;
 	osg::ref_ptr<osg::StateSet>  m_shadowedState;
 	osg::Matrix m_VPOSTransform;

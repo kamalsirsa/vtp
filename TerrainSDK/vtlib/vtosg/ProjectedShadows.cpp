@@ -23,7 +23,8 @@ using namespace osg;
 
 #define SHADOW_UPDATE_ANGLE 5.0f
 
-void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node, osgUtil::CullVisitor& cv)
+void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
+														   osgUtil::CullVisitor &cv)
 {
 	if (m_bRecomputeShadows)
 	{
@@ -168,8 +169,8 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node, osgU
 		// restore the previous renderbin.
 		cv.setCurrentRenderBin(previousRenderBin);
 
-		int height = 256;
-		int width  = 256;
+		int height = m_iRez;
+		int width  = m_iRez;
 
 		const osg::Viewport& viewport = *cv.getViewport();
 
