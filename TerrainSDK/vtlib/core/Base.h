@@ -352,9 +352,6 @@ public:
 	void CopyFrom(vtMaterialArrayBase *pFromMats);
 
 	virtual int AppendMaterial(vtMaterial *pMat) = 0;
-
-	virtual bool Import(vtString &name) = 0;
-	virtual bool Export(vtString &name) = 0;
 };
 
 #if VTLIB_PSM

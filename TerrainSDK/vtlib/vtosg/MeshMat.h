@@ -71,8 +71,6 @@ class vtMaterialArray : public vtMaterialArrayBase
 {
 public:
 	int AppendMaterial(vtMaterial *pMat);
-	bool Import(vtString &name) { return false; }
-	bool Export(vtString &name) { return false; }
 };
 
 
