@@ -532,6 +532,8 @@ void vtFrame::SetMode(MouseMode mode)
 		m_pPlantDlg->Show(false);
 }
 
+vtTransform *contourtrans = NULL;
+
 void vtFrame::OnChar(wxKeyEvent& event)
 {
 	static NavType prev = NT_Normal;
@@ -594,6 +596,11 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			float exag = pTerr->GetVerticalExag();
 			exag /= 1.01;
 			pTerr->SetVerticalExag(exag);
+			if (contourtrans)
+			{
+				contourtrans->Identity();
+				contourtrans->Scale3(1, exag, 1);
+			}
 		}
 		break;
 	case ']':
@@ -601,6 +608,11 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			float exag = pTerr->GetVerticalExag();
 			exag *= 1.01;
 			pTerr->SetVerticalExag(exag);
+			if (contourtrans)
+			{
+				contourtrans->Identity();
+				contourtrans->Scale3(1, exag, 1);
+			}
 		}
 		break;
 
@@ -634,8 +646,8 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		if (pTerr)
 		{
 			ContourConverter cc;
-			cc.Setup(pTerr, RGBf(1,1,0), 10);
-			cc.GenerateContours(100);
+			contourtrans = cc.Setup(pTerr, RGBf(1,1,0), 10);
+			cc.GenerateContours(500);
 			cc.Finish();
 		}
 		break;
