@@ -159,8 +159,6 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	PolyChecker PolyChecker;
 	int i, j, k;
 
-	bool bDoWalls = true;
-
 	// make sure we've got materials first
 	InitializeMaterialArrays();
 
@@ -172,61 +170,59 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;
 	int iLevels = GetNumLevels();
-	if (bDoWalls)
+
+	int level_show = -1, edge_show = -1;
+	GetValue("level", level_show);
+	GetValue("edge", edge_show);
+
+	for (i = 0; i < iLevels; i++)
 	{
-		for (i = 0; i < iLevels; i++)
+		vtLevel *lev = m_Levels[i];
+		const FLine3 &foot = GetLocalFootprint(i);
+		int edges = lev->m_Edges.GetSize();
+
+		if (lev->IsHorizontal())
 		{
-			vtLevel *lev = m_Levels[i];
-			const FLine3 &foot = GetLocalFootprint(i);
-			int edges = lev->m_Edges.GetSize();
+			// make flat roof
+			AddFlatRoof(foot, lev);
+		}
+		else if (lev->IsUniform())
+		{
+			int iHighlightEdge = level_show == i ? edge_show : -1;
+			CreateUniformLevel(i, fHeight, iHighlightEdge);
+			fHeight += lev->m_iStories * lev->m_fStoryHeight;
+		}
+		else if (lev->HasSlopedEdges() && edges > 4)
+		{
+			// For complicated roofs with sloped edges which meet at a
+			// roofline of uneven height, we need a sophisticated
+			// straight-skeleton solution like Petr Felkel's
+			float fRoofHeight = MakeFelkelRoof(foot, lev);
+			if (fRoofHeight < 0.0)
+				return false;
+			fHeight += fRoofHeight;
+		}
+		else
+		{
+			// 'flat roof' for the floor
+			AddFlatRoof(foot, lev);
 
-			int level_show = -1, edge_show = -1;
-			GetValue("level", level_show);
-			GetValue("edge", edge_show);
+			FLine3 poly = foot;
+			FLine3 poly2;
 
-			if (lev->IsHorizontal())
+			for (j = 0; j < lev->m_iStories; j++)
 			{
-				// make flat roof
-				AddFlatRoof(foot, lev);
-			}
-			else if (lev->IsUniform())
-			{
-				int iHighlightEdge = level_show == i ? edge_show : -1;
-				CreateUniformLevel(i, fHeight, iHighlightEdge);
-				fHeight += lev->m_iStories * lev->m_fStoryHeight;
-			}
-			else if (lev->HasSlopedEdges() && edges > 4)
-			{
-				// For complicated roofs with sloped edges which meet at a
-				// roofline of uneven height, we need a sophisticated
-				// straight-skeleton solution like Petr Felkel's
-				float fRoofHeight = MakeFelkelRoof(foot, lev);
-				if (fRoofHeight < 0.0)
-					return false;
-				fHeight += fRoofHeight;
-			}
-			else
-			{
-				// 'flat roof' for the floor
-				AddFlatRoof(foot, lev);
-
-				FLine3 poly = foot;
-				FLine3 poly2;
-
-				for (j = 0; j < lev->m_iStories; j++)
+				for (k = 0; k < edges; k++)
 				{
-					for (k = 0; k < edges; k++)
-					{
-						poly[k].y = fHeight;
-					}
-					CreateUpperPolygon(lev, poly, poly2);
-					for (k = 0; k < edges; k++)
-					{
-						bool bShowEdge = (level_show == i && edge_show == k);
-						CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
-					}
-					fHeight += lev->m_fStoryHeight;
+					poly[k].y = fHeight;
 				}
+				CreateUpperPolygon(lev, poly, poly2);
+				for (k = 0; k < edges; k++)
+				{
+					bool bShowEdge = (level_show == i && edge_show == k);
+					CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
+				}
+				fHeight += lev->m_fStoryHeight;
 			}
 		}
 	}
