@@ -21,6 +21,7 @@ public:
 	void SetGeomType(OGRwkbGeometryType type);
 	OGRwkbGeometryType GetGeomType();
 	vtFeatureSet *GetFeatureSet() { return m_pSet; }
+	void SetFeatureSet(vtFeatureSet *pSet) { m_pSet = pSet; }
 
 	// implementation of vtLayer methods
 	bool GetExtent(DRECT &rect);
