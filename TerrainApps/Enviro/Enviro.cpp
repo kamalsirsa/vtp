@@ -66,9 +66,14 @@ Enviro::Enviro()
 	m_fArcLength = 0.0;
 
 	m_fMessageTime = 0.0f;
-	m_pPlantList = NULL;
 
-	SetPlantOptions(0, 3.0f, 3.0f);
+	// plants
+	m_pPlantList = NULL;
+	m_PlantOpt.m_iMode = 0;
+	m_PlantOpt.m_iSpecies = 0;
+	m_PlantOpt.m_fHeight = 2.0f;
+    m_PlantOpt.m_iVariance = 20;
+	m_PlantOpt.m_fSpacing = 2.0f;
 
 	m_bDragging = false;
 	m_bSelectedStruct = false;
@@ -1397,9 +1402,9 @@ void Enviro::SetRouteOptions(const vtString &sStructType)
 ////////////////////////////////////////////////
 // Plants
 
-//
-// Plant a tree at the given (utm) location
-//
+/**
+ * Plant a tree at the given location (in earth coordinates)
+ */
 void Enviro::PlantATree(const DPoint2 &epos)
 {
 	if (!m_pPlantList)
@@ -1415,23 +1420,28 @@ void Enviro::PlantATree(const DPoint2 &epos)
 	double len, closest = 1E8;
 	DPoint2 diff;
 
-	for (int i = 0; i < size; i++)
+	bool bPlant = true;
+	if (m_PlantOpt.m_fSpacing > 0.0f)
 	{
-		diff = epos - pia.GetAt(i).m_p;
-		len = diff.Length();
+		for (int i = 0; i < size; i++)
+		{
+			diff = epos - pia.GetAt(i).m_p;
+			len = diff.Length();
 
-		if (len < closest) closest = len;
+			if (len < closest) closest = len;
+		}
+		if (closest < m_PlantOpt.m_fSpacing)
+			bPlant = false;
 	}
-	if (closest > m_fPlantSpacing)
-		pTerr->AddPlant(epos, m_iSpecies, m_fPlantSize);
+	if (bPlant)
+	{
+		float height = m_PlantOpt.m_fHeight;
+		float variance = m_PlantOpt.m_iVariance / 100.0f;
+		height *= (1.0 + random(variance*2) - variance);
+		pTerr->AddPlant(epos, m_PlantOpt.m_iSpecies, height);
+	}
 }
 
-void Enviro::SetPlantOptions(int iSpecies, float fSize, float fSpacing)
-{
-	m_iSpecies = iSpecies;
-	m_fPlantSize = fSize;
-	m_fPlantSpacing = fSpacing;
-}
 
 ////////////////////////////////////////////////////////////////////////
 

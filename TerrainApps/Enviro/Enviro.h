@@ -6,6 +6,7 @@
 #include "vtdata/Projections.h"
 #include "vtlib/core/Engine.h"
 #include "EnviroEnum.h"
+#include "PlantingOptions.h"
 
 // Use forward declarations to minimize rebuild dependencies
 class vtTerrainScene;
@@ -116,8 +117,9 @@ public:
 
 	// plants
 	vtPlantList3d	*GetPlantList() { return m_pPlantList; }
+	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	void PlantATree(const DPoint2 &epos);
-	void SetPlantOptions(int iSpecies, float fSize, float fSpacing);
+	void SetPlantOptions(PlantingOptions &opt) { m_PlantOpt = opt; }
 
 	// global state
 	AppState	m_state;
@@ -151,9 +153,7 @@ protected:
 
 	// plants
 	vtPlantList3d	*m_pPlantList;
-	int			m_iSpecies;
-	float		m_fPlantSize;
-	float		m_fPlantSpacing;
+	PlantingOptions m_PlantOpt;
 
 	// fence members
 	bool		m_bActiveFence, m_bFenceClosed;
