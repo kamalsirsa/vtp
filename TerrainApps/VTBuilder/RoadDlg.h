@@ -1,19 +1,15 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        RoadDlg.h
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: RoadDlg.h
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __RoadDlg_H__
 #define __RoadDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "RoadDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
+	#pragma interface "RoadDlg.cpp"
 #endif
 
 #include "VTBuilder_wdr.h"
@@ -31,11 +27,11 @@ class vtRoadLayer;
 class RoadDlg: public AutoDialog
 {
 public:
-    // constructors and destructors
-    RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
+	// constructors and destructors
+	RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
 
 	void SetRoad(RoadEdit *pSingleRoad, vtRoadLayer *pLayer);
 	void ClearState();
@@ -43,16 +39,16 @@ public:
 	void TransferStateToControls();
 	void ApplyState(RoadEdit *pRoad);
 
-    // WDR: method declarations for RoadDlg
-    wxListBox* GetSurfType()  { return (wxListBox*) FindWindow( ID_SURFTYPE ); }
-    wxChoice* GetMargin()  { return (wxChoice*) FindWindow( ID_MARGIN ); }
-    wxChoice* GetParking()  { return (wxChoice*) FindWindow( ID_PARKING ); }
-    wxChoice* GetSidewalk()  { return (wxChoice*) FindWindow( ID_SIDEWALK ); }
-    wxTextCtrl* GetHwyName()  { return (wxTextCtrl*) FindWindow( ID_HWYNAME ); }
-    wxTextCtrl* GetNumLanes()  { return (wxTextCtrl*) FindWindow( ID_NUMLANES ); }
-    
+	// WDR: method declarations for RoadDlg
+	wxListBox* GetSurfType()  { return (wxListBox*) FindWindow( ID_SURFTYPE ); }
+	wxChoice* GetMargin()  { return (wxChoice*) FindWindow( ID_MARGIN ); }
+	wxChoice* GetParking()  { return (wxChoice*) FindWindow( ID_PARKING ); }
+	wxChoice* GetSidewalk()  { return (wxChoice*) FindWindow( ID_SIDEWALK ); }
+	wxTextCtrl* GetHwyName()  { return (wxTextCtrl*) FindWindow( ID_HWYNAME ); }
+	wxTextCtrl* GetNumLanes()  { return (wxTextCtrl*) FindWindow( ID_NUMLANES ); }
+	
 private:
-    // WDR: member variable declarations for RoadDlg
+	// WDR: member variable declarations for RoadDlg
 	RoadEdit *m_pRoad;
 	vtRoadLayer *m_pLayer;
 
@@ -65,12 +61,12 @@ private:
 	int m_iSurf;
 
 private:
-    // WDR: handler declarations for RoadDlg
-    void OnOK( wxCommandEvent &event );
+	// WDR: handler declarations for RoadDlg
+	void OnOK( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 

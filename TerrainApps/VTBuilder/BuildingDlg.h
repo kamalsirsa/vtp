@@ -12,10 +12,6 @@
     #pragma interface "BuildingDlg.cpp"
 #endif
 
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
-#endif
-
 #include "VTBuilder_wdr.h"
 #include "AutoDialog.h"
 #include "vtdata/Building.h"

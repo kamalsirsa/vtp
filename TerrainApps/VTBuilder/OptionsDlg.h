@@ -1,5 +1,5 @@
 //
-// Name:		OptionsDlg.h
+// Name: OptionsDlg.h
 //
 // Copyright (c) 2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -10,10 +10,6 @@
 
 #ifdef __GNUG__
 	#pragma interface "OptionsDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
 #endif
 
 #include "VTBuilder_wdr.h"

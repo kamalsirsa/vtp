@@ -1,19 +1,15 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:        NodeDlg.h
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __NodeDlg_H__
 #define __NodeDlg_H__
 
 #ifdef __GNUG__
     #pragma interface "NodeDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
 #endif
 
 #include "VTBuilder_wdr.h"

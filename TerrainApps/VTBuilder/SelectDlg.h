@@ -1,19 +1,15 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:		SelectDlg.h
-// Author:	  XX
-// Created:	 XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __SelectDlg_H__
 #define __SelectDlg_H__
 
 #ifdef __GNUG__
 	#pragma interface "SelectDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
 #endif
 
 #include "VTBuilder_wdr.h"

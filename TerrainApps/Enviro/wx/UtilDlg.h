@@ -12,10 +12,6 @@
 	#pragma interface "UtilDlg.cpp"
 #endif
 
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
-#endif
-
 #include "enviro_wdr.h"
 #include "AutoDialog.h"
 

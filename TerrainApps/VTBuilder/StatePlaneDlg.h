@@ -1,19 +1,15 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        StatePlaneDlg.h
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: StatePlaneDlg.h
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __StatePlaneDlg_H__
 #define __StatePlaneDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "StatePlaneDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
+	#pragma interface "StatePlaneDlg.cpp"
 #endif
 
 #include "VTBuilder_wdr.h"
@@ -29,27 +25,27 @@
 class StatePlaneDlg: public AutoDialog
 {
 public:
-    // constructors and destructors
-    StatePlaneDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
-    
-    // WDR: method declarations for StatePlaneDlg
-    wxListBox* GetStatePlanes()  { return (wxListBox*) FindWindow( ID_STATEPLANES ); }
-    
+	// constructors and destructors
+	StatePlaneDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
+	
+	// WDR: method declarations for StatePlaneDlg
+	wxListBox* GetStatePlanes()  { return (wxListBox*) FindWindow( ID_STATEPLANES ); }
+	
 public:
-    // WDR: member variable declarations for StatePlaneDlg
-    int m_iStatePlane;
-    bool m_bNAD27;
-    
+	// WDR: member variable declarations for StatePlaneDlg
+	int m_iStatePlane;
+	bool m_bNAD27;
+	
 private:
-    // WDR: handler declarations for StatePlaneDlg
-    void OnListBox( wxCommandEvent &event );
-    void OnInitDialog(wxInitDialogEvent& event);
+	// WDR: handler declarations for StatePlaneDlg
+	void OnListBox( wxCommandEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 

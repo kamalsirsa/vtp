@@ -12,10 +12,6 @@
     #pragma interface "PropDlg.cpp"
 #endif
 
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
-#endif
-
 #include "cmanager_wdr.h"
 #include "AutoPanel.h"
 

@@ -1,19 +1,15 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:        LayerPropDlg.h
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2001 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __LayerPropDlg_H__
 #define __LayerPropDlg_H__
 
 #ifdef __GNUG__
     #pragma interface "LayerPropDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-    #include "wx/wx.h"
 #endif
 
 #include "VTBuilder_wdr.h"
