@@ -13,10 +13,12 @@
 
 #include "vtdata/DLG.h"
 #include "vtdata/Fence.h"
+#include "vtdata/ElevationGrid.h"
 #include "ogrsf_frmts.h"
 
 #include "Frame.h"
 #include "StructLayer.h"
+#include "ElevLayer.h"
 #include "BuilderView.h"
 //#include "ScaledView.h"
 #include "vtui/BuildingDlg.h"
@@ -660,6 +662,66 @@ bool vtStructureLayer::EditBuildingProperties()
 
 	dlg.ShowModal();
 	return true;
+}
+
+void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
+{
+	// TODO: ask user if they want concrete, the same material as the
+	//	building wall, or what.
+	// TODO: ask user exactly how much slope (or depth) to tolerate
+	//	without building a foundation.
+
+	vtLevel *pLev, *pNewLev;
+	int i, j, pts, built = 0;
+	float fElev;
+
+	int selected = NumSelected();
+	int size = GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtBuilding *bld = str->GetBuilding();
+		if (!bld)
+			continue;
+		if (selected > 0 && !str->IsSelected())
+			continue;
+
+		// Get the footprint of the lowest level
+		pLev = bld->GetLevel(0);
+		DLine2 &foot = pLev->GetFootprint();
+		pts = foot.GetSize();
+
+		float fMin = 1E9, fMax = -1E9;
+		for (j = 0; j < pts; j++)
+		{
+			fElev = pEL->GetElevation(foot.GetAt(j));
+			if (fElev == INVALID_ELEVATION)
+				continue;
+
+			if (fElev < fMin) fMin = fElev;
+			if (fElev > fMax) fMax = fElev;
+		}
+		float fDiff = fMax - fMin;
+
+		// if there's less than 50cm of depth, don't bother building
+		// a foundation
+		if (fDiff < 0.5f)
+			continue;
+
+		// Create and add a foundation level
+		pNewLev = new vtLevel();
+		pNewLev->m_iStories = 1;
+		pNewLev->m_fStoryHeight = fDiff;
+		bld->InsertLevel(0, pNewLev);
+//		pNewLev->SetFootprint(foot);
+		bld->SetFootprint(0, foot);
+		pNewLev->SetEdgeMaterial(BMAT_CEMENT);
+		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
+		built++;
+	}
+	wxString str;
+	str.Printf("Added a foundation level to %d buildings.\n", built);
+	wxMessageBox(str);
 }
 
 void vtStructureLayer::InvertSelection()

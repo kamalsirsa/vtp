@@ -154,6 +154,7 @@ EVT_MENU(ID_FEATURE_TABLE,			MainFrame::OnFeatureTable)
 EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
+EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,		MainFrame::OnUpdateFeaturePick)
@@ -161,6 +162,7 @@ EVT_UPDATE_UI(ID_FEATURE_TABLE,		MainFrame::OnUpdateFeatureTable)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnUpdateStructureEditLinear)
+EVT_UPDATE_UI(ID_STRUCTURE_ADD_FOUNDATION,	MainFrame::OnUpdateStructureAddFoundation)
 
 EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
@@ -337,6 +339,8 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_STRUCTURE_EDIT_BLD, "Edit Buildings", "Edit Buildings", true);
 	bldMenu->Append(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features", "Add Linear Features", true);
 	bldMenu->Append(ID_STRUCTURE_EDIT_LINEAR, "Edit Linear Features", "Edit Linear Features", true);
+	bldMenu->AppendSeparator();
+	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, "Add Foundation Levels to Buildings", "");
 	m_pMenuBar->Append(bldMenu, "&Structures");
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
@@ -1886,6 +1890,20 @@ void MainFrame::OnStructureEditLinear(wxCommandEvent &event)
 void MainFrame::OnUpdateStructureEditLinear(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_EditLinear);
+}
+
+void MainFrame::OnStructureAddFoundation(wxCommandEvent &event)
+{
+	vtStructureLayer *pSL = GetActiveStructureLayer();
+	vtElevLayer *pEL = (vtElevLayer *) FindLayerOfType(LT_ELEVATION);
+	pSL->AddFoundations(pEL);
+}
+
+void MainFrame::OnUpdateStructureAddFoundation(wxUpdateUIEvent& event)
+{
+	vtStructureLayer *pSL = GetActiveStructureLayer();
+	vtElevLayer *pEL = (vtElevLayer *) FindLayerOfType(LT_ELEVATION);
+	event.Enable(pSL != NULL && pEL != NULL);
 }
 
 

@@ -176,12 +176,14 @@ public:
 	void OnBuildingEdit(wxCommandEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
 	void OnStructureEditLinear(wxCommandEvent& event);
+	void OnStructureAddFoundation(wxCommandEvent& event);
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
 	void OnUpdateFeaturePick(wxUpdateUIEvent& event);
 	void OnUpdateFeatureTable(wxUpdateUIEvent& event);
 	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureEditLinear(wxUpdateUIEvent& event);
+	void OnUpdateStructureAddFoundation(wxUpdateUIEvent& event);
 
 	void OnRawSetType(wxCommandEvent& event);
 	void OnRawAddPoints(wxCommandEvent& event);

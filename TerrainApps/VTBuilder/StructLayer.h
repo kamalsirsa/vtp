@@ -13,6 +13,7 @@
 #include "Layer.h"
 
 class vtDLGFile;
+class vtElevLayer;
 
 //////////////////////////////////////////////////////////
 
@@ -53,6 +54,7 @@ public:
 		void progress_callback(int) = NULL);
 
 	bool EditBuildingProperties();
+	void AddFoundations(vtElevLayer *pEL);
 
 	void DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *bld);
 	void DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen);
