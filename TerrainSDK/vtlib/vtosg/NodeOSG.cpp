@@ -269,7 +269,13 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		osgDB::ReaderWriter::Options *opts;
 
 		opts = reg->getOptions();
-		if (!opts) opts = new osgDB::ReaderWriter::Options;
+		if (!opts)
+		{
+			opts = new osgDB::ReaderWriter::Options;
+			opts->ref();	// workaround!  otherwise OSG might crash when
+				// closing its DLL, as the options get deleted twice (?) or
+				// perhaps it doesn't like deleting the object WE allocated.
+		}
 
 	    if (bAllowCache)
 			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() | (osgDB::ReaderWriter::Options::CACHE_NODES))));
