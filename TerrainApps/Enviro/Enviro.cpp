@@ -992,12 +992,22 @@ void Enviro::LookUpTerrainLocations()
 			continue;
 		}
 		char msg1[2000], msg2[2000];
-		grid.GetProjection().GetTextDescription(msg1, msg2);
+		success = grid.GetProjection().GetTextDescription(msg1, msg2);
+		if (!success)
+		{
+			VTLOG("\t\tCouldn't get projection description.\n");
+			continue;
+		}
 		VTLOG("\t\tprojection: type %s, value %s\n", msg1, msg2);
 
 		DPoint2 sw, nw, ne, se;
 		VTLOG("\t\tGetting terrain corners\n");
-		grid.GetCorners(pTerr->m_Corners_geo, true);
+		success = grid.GetCorners(pTerr->m_Corners_geo, true);
+		if (!success)
+		{
+			VTLOG("\t\tCouldn't get terrain corners.\n");
+			continue;
+		}
 		nw = pTerr->m_Corners_geo[1];
 		se = pTerr->m_Corners_geo[3];
 		VTLOG("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)\n", nw.x, nw.y, se.x, se.y);
