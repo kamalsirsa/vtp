@@ -129,9 +129,7 @@ EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnRemoveElevRange)
 EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
-EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
-EVT_MENU(ID_ELEV_EXPORT_GEOTIFF,	MainFrame::OnExportGeoTIFF)
-EVT_MENU(ID_ELEV_EXPORT_BMP,		MainFrame::OnExportBMP)
+EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnElevExport)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
@@ -140,9 +138,7 @@ EVT_UPDATE_UI(ID_ELEV_REMOVERANGE,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
-EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateIsGrid)
-EVT_UPDATE_UI(ID_ELEV_EXPORT_GEOTIFF, MainFrame::OnUpdateIsGrid)
-EVT_UPDATE_UI(ID_ELEV_EXPORT_BMP,	MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
@@ -168,6 +164,7 @@ EVT_MENU(ID_STRUCTURE_ADD_POINTS,	MainFrame::OnBuildingAddPoints)
 EVT_MENU(ID_STRUCTURE_DELETE_POINTS, MainFrame::OnBuildingDeletePoints)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
+EVT_MENU(ID_STRUCTURE_ADD_INST,		MainFrame::OnStructureAddInstances)
 EVT_MENU(ID_STRUCTURE_ADD_FOUNDATION, MainFrame::OnStructureAddFoundation)
 EVT_MENU(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnStructureConstrain)
 
@@ -179,6 +176,7 @@ EVT_UPDATE_UI(ID_STRUCTURE_ADD_POINTS,	MainFrame::OnUpdateBuildingAddPoints)
 EVT_UPDATE_UI(ID_STRUCTURE_DELETE_POINTS,	MainFrame::OnUpdateBuildingDeletePoints)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnUpdateStructureEditLinear)
+EVT_UPDATE_UI(ID_STRUCTURE_ADD_INST,	MainFrame::OnUpdateStructureAddInstances)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_FOUNDATION,	MainFrame::OnUpdateStructureAddFoundation)
 EVT_UPDATE_UI(ID_STRUCTURE_CONSTRAIN,	MainFrame::OnUpdateStructureConstrain)
 
@@ -339,9 +337,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_FILLIN, _T("&Fill In Unknown Areas"));
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("E&xport to TerraGen"));
-	elevMenu->Append(ID_ELEV_EXPORT_GEOTIFF, _T("Export to &GeoTIFF"));
-	elevMenu->Append(ID_ELEV_EXPORT_BMP, _T("Export to &BMP"));
+	elevMenu->Append(ID_ELEV_EXPORT, _T("E&xport To..."));
 	elevMenu->Append(ID_ELEV_BITMAP, _T("Re&nder and Save Bitmap"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _T("&Merge shared TIN vertices"));
@@ -367,6 +363,7 @@ void MainFrame::CreateMenus()
 	bldMenu->AppendCheckItem(ID_STRUCTURE_DELETE_POINTS, _T("Delete points from building footprints"), _T(""));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, _T("Add Linear Structures"));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _T("Edit Linear Structures"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_INST, _T("Add Instances"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _T("Add Foundation Levels to Buildings"), _T(""));
 	bldMenu->AppendSeparator();
@@ -1904,8 +1901,29 @@ void MainFrame::OnUpdateScaleElevation(wxUpdateUIEvent& event)
 	event.Enable(GetActiveElevLayer() != NULL);
 }
 
+void MainFrame::OnElevExport(wxCommandEvent &event)
+{
+	wxString choices[4];
+	choices[0] = _T("TerraGen");
+	choices[1] = _T("GeoTIFF");
+	choices[2] = _T("BMP");
+	choices[3] = _T("STM");
 
-void MainFrame::OnExportTerragen(wxCommandEvent &event)
+	wxSingleChoiceDialog dlg(this, _T("Please choose"),
+		_T("Export to file format:"), 4, choices);
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	switch (dlg.GetSelection())
+	{
+	case 0: ExportTerragen(); break;
+	case 1: ExportGeoTIFF(); break;
+	case 2: ExportBMP(); break;
+	case 3: ExportSTM(); break;
+	}
+}
+
+void MainFrame::ExportTerragen()
 {
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)
@@ -1927,7 +1945,7 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::OnExportGeoTIFF(wxCommandEvent &event)
+void MainFrame::ExportGeoTIFF()
 {
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)
@@ -1949,7 +1967,7 @@ void MainFrame::OnExportGeoTIFF(wxCommandEvent &event)
 		DisplayAndLog("Error writing file.");
 }
 
-void MainFrame::OnExportBMP(wxCommandEvent &event)
+void MainFrame::ExportBMP()
 {
 	vtElevLayer *el = GetActiveElevLayer();
 	if (!el)
@@ -1967,6 +1985,29 @@ void MainFrame::OnExportBMP(wxCommandEvent &event)
 	bool success = el->m_pGrid->SaveToBMP(strPathName.mb_str());
 	if (success)
 		DisplayAndLog("Successfully wrote BMP file '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::ExportSTM()
+{
+	vtElevLayer *el = GetActiveElevLayer();
+	if (!el)
+		return;
+
+	wxString filter = _T("All Files|*.*|");
+	AddType(filter, FSTRING_STM);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	saveFile.SetFilterIndex(1);
+	if (saveFile.ShowModal() != wxID_OK)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+
+	bool success = el->m_pGrid->SaveToSTM(strPathName.mb_str());
+	if (success)
+		DisplayAndLog("Successfully wrote STM file '%s'", strPathName.mb_str());
 	else
 		DisplayAndLog("Error writing file.");
 }
@@ -2400,6 +2441,16 @@ void MainFrame::OnStructureEditLinear(wxCommandEvent &event)
 void MainFrame::OnUpdateStructureEditLinear(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_EditLinear);
+}
+
+void MainFrame::OnStructureAddInstances(wxCommandEvent &event)
+{
+	m_pView->SetMode(LB_AddInstance);
+}
+
+void MainFrame::OnUpdateStructureAddInstances(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode() == LB_AddInstance);
 }
 
 void MainFrame::OnStructureAddFoundation(wxCommandEvent &event)
