@@ -1,7 +1,7 @@
 //
 // Implementation of methods for the basic data classes
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,12 +54,27 @@ void DLine2::Add(const DPoint2 &p)
 		GetAt(i) += p;
 }
 
+void  DLine2::InsertPointAfter(int iInsertAfter, DPoint2 &Point)
+{
+	int iNumPoints = GetSize();
+	int iIndex;
+	if (iInsertAfter == iNumPoints - 1)
+		Append(Point);
+	else
+	{
+		for (iIndex = iNumPoints - 1; iIndex > iInsertAfter ; iIndex--)
+			SetAt(iIndex + 1, GetAt(iIndex));
+		SetAt(iInsertAfter + 1, Point);
+	}
+}
+
 void DLine2::RemovePoint(int i)
 {
-	int size = GetSize();
-	for (int x=i; x < size-1; x++)
-		SetAt(x, GetAt(x+1));
-	SetSize(GetSize()-1);
+//	int size = GetSize();
+//	for (int x=i; x < size-1; x++)
+//		SetAt(x, GetAt(x+1));
+//	SetSize(GetSize()-1);
+	RemoveAt(i);
 }
 
 bool DLine2::ContainsPoint(const DPoint2 &p) const
@@ -68,6 +83,74 @@ bool DLine2::ContainsPoint(const DPoint2 &p) const
 		return CrossingsTest(GetData(), GetSize(), p);
 	else
 		return false;
+}
+
+/**
+ * Returns the index of the first point of the nearest line segment
+ * that has a normal to the specified point
+ */
+double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Intersection)
+{
+	int iNumPoints = GetSize();
+	int i;
+	double dMagnitude;
+	double dDistance;
+	double dMinDistance = 1E9;
+	double dU;
+	DPoint2 p0, p1, p2;
+
+	for (i = 0; i < iNumPoints; i++)
+	{
+		p0 = GetAt(i);
+		p1 = GetAt((i + 1) % iNumPoints);
+		dMagnitude = SegmentLength(i);
+		// Calcualate U for standard line equation
+		// values of U between 0.0 and +1.0 mean normal intersects segment
+		dU = ((( Point.x - p0.x) * (p1.x - p0.x)) +
+				((Point.y - p0.y) * (p1.y - p0.y))) / (dMagnitude * dMagnitude);
+		if ((dU < 0.0) || (dU > 1.0))
+			continue;
+		p2.x = p0.x + dU * (p1.x - p0.x);
+		p2.y = p0.y + dU * (p1.y - p0.y);
+		dDistance = DPoint2(Point - p2).Length();
+		if (dDistance < dMinDistance)
+		{
+			dMinDistance = dDistance;
+			iIndex = i;
+			Intersection = p2;
+		}
+	}
+	if (dMinDistance != 1E9)
+		return dMinDistance;
+	else
+		return -1;
+}
+
+/**
+ * Return the nearest point
+ */
+double DLine2::NearestPoint(const DPoint2 &Point, int &iIndex)
+{
+	int iNumPoints = GetSize();
+	int i;
+	double dMinDistance = 1E9;
+	double dDistance;
+	DPoint2 p0;
+
+	for (i = 0; i < iNumPoints; i++)
+	{
+		p0 = GetAt(i);
+		dDistance = DPoint2(Point - p0).Length();
+		if (dDistance < dMinDistance)
+		{
+			dMinDistance = dDistance;
+			iIndex = i;
+		}
+	}
+	if (dMinDistance != 1E9)
+		return dMinDistance;
+	else
+		return -1;
 }
 
 /**
