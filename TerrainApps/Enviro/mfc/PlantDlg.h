@@ -11,6 +11,7 @@
 // PlantDlg.h : header file
 //
 
+#include "resource.h"
 #include "../PlantingOptions.h"
 
 class vtPlantList3d;
