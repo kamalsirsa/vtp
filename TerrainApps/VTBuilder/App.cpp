@@ -136,8 +136,8 @@ bool BuilderApp::OnInit()
 //	frame->ImportDataFromFile(LT_IMAGE, fname, true);
 //	frame->LoadProject("E:/Locations-USA/Hawai`i Island Content/Honoka`a/latest_temp.vtb");
 
-//	vtString fname = "E:/Earth Imagery/NASA BlueMarble/FullRes/MOD09A1.W.interpol.cyl.retouched.topo.3x21600x10800-N.bmp";
-//	frame->ImportDataFromFile(LT_IMAGE, fname, true);
+//	vtString fname = "E:/Locations-Hawai'i/Hawai`i Island Data/SDTS-DLG/waipahu_HI/transportation/852867.RR.sdts.tar.gz";
+//	frame->ImportDataFromArchive(LT_ROAD, fname, true);
 
 	frame->ZoomAll();
 
