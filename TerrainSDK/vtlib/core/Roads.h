@@ -137,7 +137,7 @@ public:
 	Node		*NewNode() { return new NodeGeom; }
 	Link		*NewLink() { return new LinkGeom; }
 
-	void DrapeOnTerrain(vtHeightField *pHeightField);
+	void DrapeOnTerrain(vtHeightField3d *pHeightField);
 	void BuildIntersections();
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
 	void GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max);

@@ -111,7 +111,7 @@ public:
 	vtPlantInstance3d *GetInstance3d(int i);
 
 	/// Indicate the heightfield which will be used for the structures in this array
-	void SetHeightField(vtHeightField *hf) { m_pHeightField = hf; }
+	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
 
 	/// Indicate the Plant List to use
 	void SetPlantList(vtPlantList3d *pl) { m_pPlantList = pl; }
@@ -128,7 +128,7 @@ public:
 
 protected:
 	Array<vtPlantInstance3d*>	m_Instances3d;
-	vtHeightField		*m_pHeightField;
+	vtHeightField3d		*m_pHeightField;
 	vtPlantList3d		*m_pPlantList;
 };
 

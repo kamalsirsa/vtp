@@ -52,7 +52,7 @@ public:
 	vtTerrainFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin);
 
 	/// Set the heightfield on which to do the terrain following.
-	void SetHeightField(vtHeightField *pGrid) { m_pHeightField = pGrid; }
+	void SetHeightField(vtHeightField3d *pGrid) { m_pHeightField = pGrid; }
 
 	/// Enables whether to do terrain following or not.  Default is true.
 	void FollowTerrain(bool bFollow);
@@ -76,7 +76,7 @@ protected:
 	void KeepAboveGround();
 
 protected:
-	vtHeightField *m_pHeightField;
+	vtHeightField3d *m_pHeightField;
 	float	m_fHeightAboveTerrain;
 	bool	m_bMin;
 	bool	m_bFollow;

@@ -22,7 +22,7 @@ vtStructInstance3d::vtStructInstance3d() : vtStructInstance()
 	m_pModel = NULL;
 }
 
-void vtStructInstance3d::UpdateTransform(vtHeightField *pHeightField)
+void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 {
 	m_pContainer->Identity();
 
@@ -77,7 +77,7 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 }
 
 // implement vtStructure3d methods
-bool vtStructInstance3d::CreateNode(vtHeightField *hf, const vtTagArray &options)
+bool vtStructInstance3d::CreateNode(vtHeightField3d *hf, const vtTagArray &options)
 {
 	if (!m_pContainer)
 	{

@@ -11,7 +11,7 @@
 
 #define NUM_STRUCT_NAMES 14
 
-class vtHeightField;
+class vtHeightField3d;
 class vtTerrain;
 
 /**
@@ -66,7 +66,7 @@ public:
 
 	void AddPoint(const DPoint2 &epos, const char *structname);
 
-	void BuildGeometry(vtHeightField *pHeightField);
+	void BuildGeometry(vtHeightField3d *pHeightField);
 	void DestroyGeometry();
 	void Dirty();
 
@@ -84,8 +84,8 @@ protected:
 	bool _WireReader(const char *filename, vtUtilStruct *st);
 	void _ComputeStructureRotations();
 	void _CreateStruct(int iNode);
-	void _AddRouteMeshes(vtHeightField *pHeightField);
-	void _StringWires(long lTowerIndex, vtHeightField *pHeightField);	
+	void _AddRouteMeshes(vtHeightField3d *pHeightField);
+	void _StringWires(long lTowerIndex, vtHeightField3d *pHeightField);	
 	void _DrawCat(FPoint3 p0, FPoint3 p1,
 		double catenary, int iNumSegs, vtMesh *pWireMesh);
 
@@ -111,7 +111,7 @@ class vtRouteMap : public Array<vtRoute *>
 public:
 	bool FindClosestUtilNode(const DPoint2 &point, double error,
 					   vtRoute* &route, vtUtilNode* &node, double &closest);
-	void BuildGeometry(vtHeightField *pHeightField);
+	void BuildGeometry(vtHeightField3d *pHeightField);
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS

@@ -75,7 +75,7 @@ void vtRoute::AddPoint(const DPoint2 &epos, const char *structname)
 //
 // Builds (or rebuilds) the geometry for a fence.
 //
-void vtRoute::BuildGeometry(vtHeightField *pHeightField)
+void vtRoute::BuildGeometry(vtHeightField3d *pHeightField)
 {
 	if (!m_bDirty)
 		return;
@@ -190,7 +190,7 @@ void vtRoute::_CreateStruct(int iNode)
 }
 
 
-void vtRoute::_AddRouteMeshes(vtHeightField *pHeightField)
+void vtRoute::_AddRouteMeshes(vtHeightField3d *pHeightField)
 {
 	int i, numnodes = m_Nodes.GetSize();
 
@@ -210,7 +210,7 @@ void vtRoute::_AddRouteMeshes(vtHeightField *pHeightField)
 	}
 }
 
-void vtRoute::_StringWires(long ll, vtHeightField *pHeightField)
+void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 {
 	// pick pole numbers i and i-1 and string a wire between them
 	long numiterations = NUM_WIRE_SEGMENTS;
@@ -418,7 +418,7 @@ void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 	FPoint3 ptCur(0,0,0);
 	double dist=0;
 
-	vtHeightField *pHeightField = m_pTheTerrain->GetHeightField();
+	vtHeightField3d *pHeightField = m_pTheTerrain->GetHeightField();
 	float ground;
 
 	// Iterate along the xz-plane
@@ -482,7 +482,7 @@ bool vtRouteMap::FindClosestUtilNode(const DPoint2 &point, double error,
 	return (found_node != NULL);
 }
 
-void vtRouteMap::BuildGeometry(vtHeightField *pHeightField)
+void vtRouteMap::BuildGeometry(vtHeightField3d *pHeightField)
 {
 	int routes = GetSize();
 	for (int i = 0; i < routes; i++)

@@ -1046,7 +1046,7 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 	}
 }
 
-void vtRoadMap3d::DrapeOnTerrain(vtHeightField *pHeightField)
+void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 {
 	FPoint3 p;
 	NodeGeom *pN;
@@ -1082,10 +1082,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField *pHeightField)
 #endif
 	for (pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
 	{
-		pHeightField->ConvertEarthToSurfacePoint(pN->m_p, p);
-		pN->m_p3.x = p.x;
-		pN->m_p3.y = p.y;
-		pN->m_p3.z = p.z;
+		pHeightField->ConvertEarthToSurfacePoint(pN->m_p, pN->m_p3);
 #if 0
 		if (pN->m_iLinks > 0)
 		{

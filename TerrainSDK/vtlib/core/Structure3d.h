@@ -16,7 +16,7 @@
 class vtBuilding3d;
 class vtFence3d;
 class vtNode;
-class vtHeightField;
+class vtHeightField3d;
 class vtTransform;
 
 /**
@@ -31,7 +31,7 @@ public:
 	vtTransform *GetTransform() { return m_pContainer; }
 
 	/// Create the node(s) and position them on the indicated heightfield
-	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options) { return false; }
+	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options) { return false; }
 
 	/// Access the Geometry node for this structure, if it has one
 	virtual vtGeom *GetGeom() { return NULL; }
@@ -56,11 +56,11 @@ public:
 
 	// implement vtStructure3d methods
 	/// Create the node(s) and position them on the indicated heightfield
-	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options);
+	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options);
 	virtual void ShowBounds(bool bShow);
 
 	/// (Re-)position the instance on the indicated heightfield
-	void UpdateTransform(vtHeightField *pHeightField);
+	void UpdateTransform(vtHeightField3d *pHeightField);
 
 protected:
 	vtGeom		*m_pHighlight;	// The wireframe highlight
@@ -85,7 +85,7 @@ public:
 	vtStructInstance3d *GetInstance(int i) { return (vtStructInstance3d *) GetAt(i)->GetInstance(); }
 
 	/// Indicate the heightfield which will be used for the structures in this array
-	void SetHeightField(vtHeightField *hf) { m_pHeightField = hf; }
+	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
 
 	/// Construct an individual structure, return true if successful
 	bool ConstructStructure(vtStructure3d *str);
@@ -101,7 +101,7 @@ public:
 	virtual void DestroyStructure(int i);
 
 protected:
-	vtHeightField *m_pHeightField;
+	vtHeightField3d *m_pHeightField;
 };
 
 #endif // STRUCTURE3DH
