@@ -26,6 +26,8 @@
 #include "app.h"
 #include "frame.h"
 
+// #include <osgDB/ReadFile>
+
 static void Args(int argc, wxChar **argv)
 {
    return;
@@ -61,6 +63,7 @@ bool vtApp::OnInit(void)
 	pCamera->SetName2("Default Camera");
 
 	m_pRoot = new vtGroup();
+	m_pRoot->SetName2("Root");
 	pScene->SetRoot(m_pRoot);
 
 #if VTLIB_SGL
@@ -117,8 +120,14 @@ bool vtApp::OnInit(void)
 	pScene->AddEngine(m_pTrackball);
 
 	// Memleak Testing
-//	GetMainFrame()->AddModelFromFile("E:/3D/IDA Free Models/schoolbus.flt");
+//	GetMainFrame()->AddModelFromFile("E:/3D/Sample FLT files/spitfire.flt");
+//	vtNode *pNode = vtNode::LoadModel("E:/3D/Sample FLT files/spitfire.flt");
+//	if (pNode)
+//		m_pRoot->AddChild(pNode);
 //	GetMainFrame()->AddNewItem();
+
+//	osg::ref_ptr<osg::Node> node = osgDB::readNodeFile("E:/3D/Sample FLT files/spitfire.flt");
+//	node = NULL;
 
 	VTLOG(" end of OnInit\n");
 	return TRUE;
