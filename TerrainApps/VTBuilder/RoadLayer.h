@@ -46,7 +46,7 @@ public:
 	void ToggleLinkDirection(LinkEdit *pLink);
 	bool SelectArea(const DRECT &box, bool nodemode, bool crossSelect);
 	void MoveSelectedNodes(const DPoint2 &offset);
-	void CarveRoadway(class vtElevLayer *pElev);
+	void CarveRoadway(class vtElevLayer *pElev, float margin);
 
 	//edit a single node
 	bool EditNodeProperties(const DPoint2 &point, float error, DRECT &bound);

@@ -111,6 +111,7 @@ EVT_MENU(ID_ROAD_SHOWWIDTH,		MainFrame::OnRoadShowWidth)
 EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
 EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
 EVT_MENU(ID_ROAD_GUESS,			MainFrame::OnRoadGuess)
+EVT_MENU(ID_ROAD_FLATTEN,		MainFrame::OnRoadFlatten)
 
 EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectLink)
 EVT_UPDATE_UI(ID_ROAD_SELECTNODE,	MainFrame::OnUpdateSelectNode)
@@ -119,6 +120,7 @@ EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
 EVT_UPDATE_UI(ID_ROAD_EDIT,			MainFrame::OnUpdateRoadEdit)
 EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
 EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
+EVT_UPDATE_UI(ID_ROAD_FLATTEN,		MainFrame::OnUpdateRoadFlatten)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVERANGE,		MainFrame::OnRemoveElevRange)
@@ -313,6 +315,7 @@ void MainFrame::CreateMenus()
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, _T("Clean RoadMap"), _T("Clean"));
 	roadMenu->Append(ID_ROAD_GUESS, _T("Guess Intersection Types"));
+	roadMenu->Append(ID_ROAD_FLATTEN, _T("Flatten Elevation Grid Under Roads"));
 	m_pMenuBar->Append(roadMenu, _T("&Roads"));
 	m_iLayerMenu[LT_ROAD] = menu_num;
 	menu_num++;
@@ -1684,6 +1687,32 @@ void MainFrame::OnRoadGuess(wxCommandEvent &event)
 		pN->DetermineVisualFromLinks();
 
 	m_pView->Refresh();
+}
+
+void MainFrame::OnRoadFlatten(wxCommandEvent &event)
+{
+	float margin = 2.0;
+	wxString2 str;
+	str.Printf(_("%g"), margin);
+	str = wxGetTextFromUser(_T("How many meters for the margin at the edge of each road?"),
+		_T("Flatten elevation grid under roads"), str, this);
+	if (str == _T(""))
+		return;
+
+	margin = atof(str.mb_str());
+
+	vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
+	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+
+	pR->CarveRoadway(pE, margin);
+	m_pView->Refresh();
+}
+
+void MainFrame::OnUpdateRoadFlatten(wxUpdateUIEvent& event)
+{
+	vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
+
+	event.Enable(pE != NULL && pE->m_pGrid != NULL);
 }
 
 

@@ -467,7 +467,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 #include "ElevLayer.h"
 #include "vtdata/ElevationGrid.h"
 
-void vtRoadLayer::CarveRoadway(vtElevLayer *pElev)
+void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 {
 	vtElevationGrid	*grid = pElev->m_pGrid;
 
@@ -476,8 +476,8 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev)
 
 	// how many units to flatten on either side of the roadway, past the
 	//  physical edge of the road surface
-	float shoulder = 1.5;
-	float fade = 3.0;
+	float shoulder = margin;
+	float fade = margin;
 
 	OpenProgressDialog(_T("Scanning Grid against Roads"));
 

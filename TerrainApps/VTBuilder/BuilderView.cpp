@@ -1422,7 +1422,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 #if 1
 		vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
 		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
-		pR->CarveRoadway(pE);
+		pR->CarveRoadway(pE, 2.0);
 #endif
 	}
 	else

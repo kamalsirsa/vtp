@@ -138,6 +138,7 @@ public:
 	void OnSelectHwy(wxCommandEvent& event);
 	void OnRoadClean(wxCommandEvent& event);
 	void OnRoadGuess(wxCommandEvent& event);
+	void OnRoadFlatten(wxCommandEvent& event);
 
 	void OnUpdateSelectLink(wxUpdateUIEvent& event);
 	void OnUpdateSelectNode(wxUpdateUIEvent& event);
@@ -146,6 +147,7 @@ public:
 	void OnUpdateRoadEdit(wxUpdateUIEvent& event);
 	void OnUpdateRoadShowNodes(wxUpdateUIEvent& event);
 	void OnUpdateRoadShowWidth(wxUpdateUIEvent& event);
+	void OnUpdateRoadFlatten(wxUpdateUIEvent& event);
 
 	void OnElevSelect(wxCommandEvent& event);
 	void OnRemoveElevRange(wxCommandEvent& event);
