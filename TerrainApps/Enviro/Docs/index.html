@@ -91,19 +91,19 @@ progress.</p>
         </tr>
         <tr>
           <td width="50%">elevation data (BT and PRJ files)</td>
-          <td width="50%"><code>Enviro/Data/Elevation</code></td>
+          <td width="50%"><code>Data/Elevation</code></td>
         </tr>
         <tr>
           <td width="50%">geospecific images (BMP files)</td>
-          <td width="50%"><code>Enviro/Data/GeoSpecific</code></td>
+          <td width="50%"><code>Data/GeoSpecific</code></td>
         </tr>
         <tr>
           <td width="50%">road data (RMF files)</td>
-          <td width="50%"><code>Enviro/Data/RoadData</code></td>
+          <td width="50%"><code>Data/RoadData</code></td>
         </tr>
         <tr>
           <td width="50%">built structure data (VTST files)</td>
-          <td width="50%"><code>Enviro/Data/BuildingData</code></td>
+          <td width="50%"><code>Data/BuildingData</code></td>
         </tr>
       </table>
     </li>
@@ -143,7 +143,7 @@ progress.</p>
       use &quot;4x4 Tiled texture&quot;.</li>
     <li>Give your texture a filename ending in it's size, e.g.
       &quot;<code>newyork_1024.bmp</code>&quot;</li>
-    <li>Put your texture in in the directory<code> Enviro/Data/GeoSpecific</code></li>
+    <li>Put your texture in in the directory<code>  Data/GeoSpecific</code></li>
     <li>For a Single texture:
       <ul>
         <li>Your texture size must be a square power of 2, up to the limit of your computer
@@ -171,16 +171,20 @@ progress.</p>
   <h4>Data in a Different Location</h4>
 
 <ul>
-  <li>If you want to put your Enviro Data directory in another location, edit
+  <li>If you want to put your Data directory in another location, edit
     your<code> </code><code>Enviro.ini</code><code> </code>file and change the
     first line to contain the path to the data.&nbsp; The path can be relative
     or absolute, and should leave on a trailing slash.&nbsp; For example, the
     default path is:<br>
-    <code>&nbsp;&nbsp;&nbsp; DataPath		Data/</code><br>
+    <code>&nbsp;&nbsp;&nbsp; DataPath ../Data/</code><br>
     You could change it to paths such as these, depending on your platform:<br>
     <code>&nbsp;&nbsp;&nbsp; DataPath ../../Data/<br>
     </code><code>&nbsp;&nbsp;&nbsp; DataPath C:\MyData\<br>
-    </code><code>&nbsp;&nbsp;&nbsp; DataPath /</code><code>home/me/mydata/</code></li>
+    </code><code>&nbsp;&nbsp;&nbsp; DataPath /</code><code>home/me/mydata/<br>
+    </code></li>
+  <li>If you have data in different places, you can simply put more than one
+    &quot;<code>DataPath</code>&quot; line into the <code>Enviro.ini</code>
+    file, and all the data on all the paths will be available to Enviro.</li>
 </ul>
   <h4>Notes for Developers</h4>
 
