@@ -56,7 +56,14 @@ bool vtProjection::operator==(const vtProjection &ref)
  */
 void vtProjection::SetUTMZone(int iZone)
 {
-	OGRErr err = OGRSpatialReference::SetUTM( iZone );
+	// reset the name of the projection so that SetUTM() will set it
+	SetNode("PROJCS","unnamed");
+
+	// Northern Hemisphere for positive zone numbers
+	if (iZone > 0)
+		SetUTM( iZone, TRUE);
+	else
+		SetUTM( -iZone, FALSE);
 }
 
 /**
@@ -327,13 +334,7 @@ void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, DATUM eDatum)
 {
 	SetGeogCSFromDatum(eDatum);
 	if (bUTM)
-	{
-		// Northern Hemisphere for positive zone numbers
-		if (iUTMZone > 0)
-			SetUTM( iUTMZone, TRUE);
-		else
-			SetUTM( -iUTMZone, FALSE);
-	}
+		SetUTMZone(iUTMZone);
 }
 
 /**
@@ -416,10 +417,7 @@ bool vtProjection::SetTextDescription(const char *type, const char *value)
 			if (datum[strlen(datum)-1] == ',')
 				datum[strlen(datum)-1] = 0;
 			SetWellKnownGeogCS(datum);
-			if (iUTMZone > 0)
-				SetUTM( iUTMZone, TRUE);
-			else
-				SetUTM( -iUTMZone, FALSE);
+			SetUTMZone(iUTMZone);
 			return true;
 		}
 	}
