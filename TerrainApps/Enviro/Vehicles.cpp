@@ -174,11 +174,13 @@ void VehicleType::AttemptModelLoad()
 	{
 		// can we read the file?
 		vtString fname = m_strFilename[i];
-		if (vtNodeBase *pMod = vtLoadModel(fname))
+		if (vtNode *pMod = vtNode::LoadModel(fname))
 		{
 			vtTransform *trans = new vtTransform();
 			trans->AddChild(pMod);
-			if (fname.Right(3).CompareNoCase("3ds") == 0)
+			vtString ext = GetExtension(fname, false);
+			if (ext.CompareNoCase(".3ds") == 0 ||
+				ext.CompareNoCase(".flt") == 0)
 			{
 				// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO)
 				trans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
