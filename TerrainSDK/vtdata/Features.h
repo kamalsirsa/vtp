@@ -186,8 +186,5 @@ protected:
 	vtProjection	m_proj;
 };
 
-typedef Array<vtTagArray *> WFSLayerArray;
-bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers);
-
 #endif // VTDATA_FEATURES
 
