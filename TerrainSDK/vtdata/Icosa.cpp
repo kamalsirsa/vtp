@@ -77,17 +77,17 @@ void CartesianToSpherical(double *lng, double *lat,
 }
 
 
-void geo_to_xyz(DPoint2 geo, DPoint3 &p)
+void geo_to_xyz(const DPoint2 &geo, DPoint3 &p)
 {
-	geo.x *= (PId / 180.0);
-	geo.y *= (PId / 180.0);
+	double gx = geo.x * (PId / 180.0);
+	double gy = geo.y * (PId / 180.0);
 
-	geo.x += PId;
-	geo.y -= PID2d;
+	gx += PId;
+	gy -= PID2d;
 
-	p.x = sin(geo.y) * cos(geo.x);
-	p.z = -sin(geo.y) * sin(geo.x);
-	p.y = cos(geo.y);
+	p.x = sin(gy) * cos(gx);
+	p.z = -sin(gy) * sin(gx);
+	p.y = cos(gy);
 }
 
 
