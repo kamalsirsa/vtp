@@ -139,8 +139,14 @@ void Enviro::StartupArgument(int i, const char *str)
 	if (!strcmp(str, "-p"))
 		pwdemo = 1;
 
-	if (!strcmp(str, "-no_plants"))
+	else if (!strcmp(str, "-no_plants"))
 		m_bDoPlants = false;
+
+	else if (!strcmp(str, "-fullscreen"))
+		g_Options.m_bFullscreen = true;
+
+	else if(!strncmp(str, "-terrain=", 9))
+		g_Options.m_strInitTerrain = str+9;
 }
 
 void Enviro::LoadTerrainDescriptions()
