@@ -266,45 +266,15 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField *pHeightField)
 		}
 		m_lfp.Append(foot3d);
 	}
-	FLine3 &base = *m_lfp[0];
-	int base_corners = base.GetSize();
-
-	// determine the highest point of the base corners
-	float ymax = -10000.0f, ymin = 10000.0f;
-	int highest, lowest;
-	for (i = 0; i < base_corners; i++)
-	{
-		if (base[i].y > ymax)
-		{
-			ymax = base[i].y;
-			highest = i;
-		}
-		if (base[i].y < ymin)
-		{
-			ymin = base[i].y;
-			lowest = i;
-		}
-	}
-	if ((ymax - ymin) > 1.0f)	// it's on a slope
-	{
-		// Could do something about it - like deform the ground or build
-		//  some posts on which to set the building?  Not here at
-		//  construction time, should occur earlier.
-	}
 	// Embed the building in the ground such that the lowest corner of its
 	// lowest level is at ground level.
-	float base_level = ymin;
+	float base_level = CalculateBaseElevation(pHeightField);
 
 	// Find the center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
 	pHeightField->ConvertEarthToSurfacePoint(m_EarthPos, m_center);
 	m_center.y = base_level;
 
-	// The user is allowed to shift the building up or down by an
-	// arbitrary amount.
-	m_center.y += m_fBaseElevation;
-
-	//
 	// The final footprints are expressed relative to the origin of the
 	// building (they are in the building's local coordinate system)
 	//
