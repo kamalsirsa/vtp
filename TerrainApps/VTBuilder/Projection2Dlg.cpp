@@ -89,6 +89,7 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl->Append(_T("Stereographic"));
 	m_pProjCtrl->Append(_T("Transverse Mercator"));
 	m_pProjCtrl->Append(_T("UTM"));
+	m_pProjCtrl->Append(_T("Dymaxion"));
 
 	// Fill in choices for Datum
 	RefreshDatums();
@@ -181,6 +182,10 @@ void Projection2Dlg::UpdateControlStatus()
 		m_pParamCtrl->Enable(true);
 		m_pZoneCtrl->Enable(false);
 		break;
+	case PT_DYMAX:
+		m_pParamCtrl->Enable(false);
+		m_pZoneCtrl->Enable(false);
+		break;
 	}
 	m_iDatum = m_proj.GetDatum();
 	UpdateDatumStatus();
@@ -188,14 +193,16 @@ void Projection2Dlg::UpdateControlStatus()
 	// Do horizontal units ("linear units")
 	m_pHorizCtrl->Clear();
 	if (m_eProj == PT_GEO)
-		m_pHorizCtrl->Append(_T("Degrees"), (void *) 0);
-	if (m_eProj != PT_GEO)
-		m_pHorizCtrl->Append(_T("Meters"), (void *) 1);
-	if (m_eProj != PT_GEO && m_eProj != PT_UTM)
+		m_pHorizCtrl->Append(_T("Degrees"), (void *) LU_DEGREES);
+	if (m_eProj != PT_GEO && m_eProj != PT_DYMAX)
+		m_pHorizCtrl->Append(_T("Meters"), (void *) LU_METERS);
+	if (m_eProj != PT_GEO && m_eProj != PT_UTM && m_eProj != PT_DYMAX)
 	{
-		m_pHorizCtrl->Append(_T("Feet (International)"), (void *) 2);
-		m_pHorizCtrl->Append(_T("Feet (U.S. Survey)"), (void *) 3);
+		m_pHorizCtrl->Append(_T("Feet (International)"), (void *) LU_FEET_INT);
+		m_pHorizCtrl->Append(_T("Feet (U.S. Survey)"), (void *) LU_FEET_US);
 	}
+	if (m_eProj == PT_DYMAX)
+		m_pHorizCtrl->Append(_T("Unit Edges"), (void *) LU_UNITEDGE);
 	// manually transfer value
 	for (i = 0; i < m_pHorizCtrl->GetCount(); i++)
 	{
@@ -267,7 +274,9 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 
 void Projection2Dlg::SetUIFromProjection()
 {
-	if (m_proj.IsGeographic())
+	if (m_proj.IsDymaxion())
+		SetProjectionUI(PT_DYMAX);
+	else if (m_proj.IsGeographic())
 		SetProjectionUI(PT_GEO);
 	else
 	{
@@ -450,6 +459,10 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 	m_proj.SetGeogCSFromDatum(m_iDatum);
 
 	m_eProj = (ProjType) m_iProj;
+
+	if (m_eProj != PT_DYMAX)
+		m_proj.SetDymaxion(false);
+
 	switch (m_eProj)
 	{
 	case PT_GEO:
@@ -489,6 +502,9 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		// Put in some default values
 		// These are for the IBCAO polar bathymetry
 		m_proj.SetPS(90.0, 0.0, 1.0, 0.0, 0.0);
+		break;
+	case PT_DYMAX:
+		m_proj.SetDymaxion(true);
 		break;
 	}
 

@@ -748,6 +748,10 @@ DRECT MainFrame::GetExtents()
 	}
 	if (has_bounds)
 		return rect;
+	else if (m_proj.IsDymaxion())
+	{
+		return DRECT(0, 1.5*sqrt(3.0), 5.5, 0);
+	}
 	else
 		return DRECT(-180,90,180,-90);	// geo extents of whole planet
 }

@@ -28,7 +28,8 @@ enum ProjType
 	PT_SINUS,
 	PT_STEREO,
 	PT_TM,
-	PT_UTM
+	PT_UTM,
+	PT_DYMAX
 };
 #endif
 
