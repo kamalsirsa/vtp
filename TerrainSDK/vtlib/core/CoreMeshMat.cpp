@@ -195,8 +195,6 @@ int vtMeshBase::AddVertexNUV(const FPoint3 &p, const FPoint3 &n, const FPoint2 &
  *
  * \param iNVerts The number of vertices in the strip.
  * \param iStartIndex The index that starts the linear sequence.
- *
- * \return The index of the vertex that was added.
  */
 void vtMeshBase::AddStrip2(int iNVerts, int iStartIndex)
 {
