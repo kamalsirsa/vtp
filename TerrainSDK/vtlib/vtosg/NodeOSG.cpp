@@ -621,7 +621,7 @@ void vtDynGeom::CalcCullPlanes()
 //	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
 	// OSG 0.9.0
 	const Polytope &clipvol1 = pCam->m_pOsgCamera->getViewFrustum();
-	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
+//	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
 
 	// clipvol1 is the global camera frustum (in world coordinates)
 	// clipvol2 is the camera's frustum after it's been transformed to the
