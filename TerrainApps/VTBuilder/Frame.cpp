@@ -421,7 +421,7 @@ void MainFrame::AddMainToolbars()
 	ADD_TOOL(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), true);
 	ADD_TOOL(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), true);
 	ADD_TOOL(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), true);
-	ADD_TOOL(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Set Export Area"), true);
+	ADD_TOOL(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Area Tool"), true);
 }
 
 

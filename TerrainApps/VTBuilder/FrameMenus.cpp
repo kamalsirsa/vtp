@@ -295,7 +295,7 @@ void MainFrame::CreateMenus()
 	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _T("Magnifier\tZ"));
 	viewMenu->AppendCheckItem(ID_VIEW_PAN, _T("Pan\t<Space>"));
 	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, _T("Obtain Distance"));
-	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, _T("Set Export Area"));
+	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, _T("Area Tool"));
 	viewMenu->AppendSeparator();
 	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, _T("World Map"), _T("Show/Hide World Map"));
 	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _T("Show UTM Boundaries"));
@@ -407,15 +407,15 @@ void MainFrame::CreateMenus()
 	// Area
 	areaMenu = new wxMenu;
 	areaMenu->Append(ID_AREA_STRETCH, _T("Set to Extents"),
-		_T("Set the Export Area rectangle to the combined extent of all layers."));
+		_T("Set the Area Tool rectangle to the combined extent of all layers."));
 	areaMenu->Append(ID_AREA_TYPEIN, _T("Numeric Values"),
-		_T("Set the Export Area rectangle by text entry of coordinates."));
+		_T("Set the Area Tool rectangle by text entry of coordinates."));
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge && Resample Elevation"),
 		_T("Sample all elevation data within the Area Tool to produce a single, new elevation."));
 #ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _T("Extract && Export Image"),
-		_T("Sample imagery within the Export Area to produce a single, new image."));
+		_T("Sample imagery within the Area Tool to produce a single, new image."));
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _T("Generate Vegetation"),
 		_T("Generate Vegetation File (*.vf) containg plant distribution."));
 	areaMenu->Append(ID_AREA_REQUEST_LAYER, _T("Request Layer from WFS"));
