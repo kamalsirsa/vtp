@@ -51,10 +51,10 @@ public:
 //	AutoDialog(wxWindow *parent, const wxString& title, bool modal) :
 //	  wxDialog(parent, title, modal) {}
 	AutoDialog(wxWindow *parent, wxWindowID id,
-             const wxString& title,
-             const wxPoint& pos = wxDefaultPosition,
-             const wxSize& size = wxDefaultSize,
-             long style = wxDEFAULT_DIALOG_STYLE) :
+			 const wxString& title,
+			 const wxPoint& pos = wxDefaultPosition,
+			 const wxSize& size = wxDefaultSize,
+			 long style = wxDEFAULT_DIALOG_STYLE) :
 	  wxDialog(parent, id, title, pos, size, style) {}
 
 	virtual void OnInitDialog(wxInitDialogEvent& event) = 0;
@@ -66,7 +66,7 @@ public:
 	void AddNumValidator(long id, float *fptr);
 	void AddNumValidator(long id, double *dptr);
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

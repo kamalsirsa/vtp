@@ -22,43 +22,43 @@
 
 wxNumericValidator::wxNumericValidator(int *val) : wxValidator()
 {
-    Initialize();
-    m_pValInt = val;
+	Initialize();
+	m_pValInt = val;
 }
 
 wxNumericValidator::wxNumericValidator(float *val) : wxValidator()
 {
-    Initialize();
-    m_pValFloat = val;
+	Initialize();
+	m_pValFloat = val;
 }
 
 wxNumericValidator::wxNumericValidator(double *val) : wxValidator()
 {
-    Initialize();
-    m_pValDouble = val;
+	Initialize();
+	m_pValDouble = val;
 }
 
 wxNumericValidator::wxNumericValidator(const wxNumericValidator& val)
 {
-    Copy(val);
+	Copy(val);
 }
 
 bool wxNumericValidator::Copy(const wxNumericValidator& val)
 {
-    wxValidator::Copy(val);
+	wxValidator::Copy(val);
 
-    m_pValInt = val.m_pValInt;
-    m_pValFloat = val.m_pValFloat;
-    m_pValDouble = val.m_pValDouble;
+	m_pValInt = val.m_pValInt;
+	m_pValFloat = val.m_pValFloat;
+	m_pValDouble = val.m_pValDouble;
 
-    return TRUE;
+	return TRUE;
 }
 
 // Called to transfer data to the window
 bool wxNumericValidator::TransferToWindow()
 {
-    if ( !m_validatorWindow )
-        return FALSE;
+	if ( !m_validatorWindow )
+		return FALSE;
 
 	wxString str;
 	if (m_pValInt)
@@ -68,25 +68,25 @@ bool wxNumericValidator::TransferToWindow()
 	if (m_pValDouble)
 		str = wxString::Format("%lg", *m_pValDouble);
 
-    if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
-    {
-        wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
+	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
+	{
+		wxStaticText* pControl = (wxStaticText*) m_validatorWindow;
 		if (pControl)
 		{
 			pControl->SetLabel(str) ;
 			return TRUE;
 		}
-    }
+	}
 	else 
-    if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
-    {
-        wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
+	if (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)) )
+	{
+		wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
 		if (pControl)
 		{
 			pControl->SetValue(str) ;
 			return TRUE;
 		}
-    }
+	}
 	else
 		return FALSE;
 
@@ -135,9 +135,9 @@ bool wxNumericValidator::TransferFromWindow()
 */
 void wxNumericValidator::Initialize()
 {
-    m_pValInt = NULL;
-    m_pValFloat = NULL;
-    m_pValDouble = NULL;
+	m_pValInt = NULL;
+	m_pValFloat = NULL;
+	m_pValDouble = NULL;
 }
 
 /////////////////////////////////////////////////
