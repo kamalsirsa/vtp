@@ -384,7 +384,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep1(iError))
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DesribeError(iError));
+			SetMessage(pTerr->DescribeError(iError));
 			return;
 		}
 		SetMessage("Loading/Chopping/Prelighting Textures");
@@ -394,7 +394,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep2(iError))
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DesribeError(iError));
+			SetMessage(pTerr->DescribeError(iError));
 			return;
 		}
 		SetMessage("Building Terrain");
@@ -404,7 +404,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep3(iError))
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DesribeError(iError));
+			SetMessage(pTerr->DescribeError(iError));
 			return;
 		}
 		SetMessage("Building CLOD");
@@ -414,7 +414,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep4(iError))
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DesribeError(iError));
+			SetMessage(pTerr->DescribeError(iError));
 			return;
 		}
 		SetMessage("Creating Culture");
@@ -424,7 +424,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		if (!pTerr->CreateStep5(g_Options.m_bSound != 0, iError))
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DesribeError(iError));
+			SetMessage(pTerr->DescribeError(iError));
 			return;
 		}
 	}
