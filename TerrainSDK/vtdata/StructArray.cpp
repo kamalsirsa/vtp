@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "LocalConversion.h"
 #include "shapelib/shapefil.h"
 #include "xmlhelper/easyxml.hpp"
 #include "StructArray.h"
@@ -52,6 +53,10 @@ void vtStructureArray::AddBuilding(vtBuilding *bld)
 // Factories
 vtBuilding *vtStructureArray::NewBuilding()
 {
+	// Make sure that subsequent operations on this building are done in with
+	// the correct local coordinate system
+	vtBuilding::s_Conv.Setup(m_proj.GetUnits(), DPoint2(0, 0));
+
 	return new vtBuilding;
 }
 
@@ -638,6 +643,7 @@ private:
 			: item(_item), type(_type) {}
 		vtStructure * item;
 		string type;
+		RGBi wall_color;
 	};
 
 	State &state () { return _state_stack[_state_stack.size() - 1]; }
@@ -701,6 +707,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *type  = atts.getValue("type");
 			const char *value = atts.getValue("value");
 			m_pSA->m_proj.SetTextDescription(type, value);
+			g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
 		}
 		else if (string(name) == (string)"structures")
 		{
@@ -718,7 +725,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 
 	if (_level == 2)
 	{
-		vtStructure *pItem = NULL;
+		vtStructure *pStruct = NULL;
 		if (string(name) == (string)"structure")
 		{
 			// Get the name.
@@ -728,39 +735,39 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				if (string(attval) == (string)"building")
 				{
 					vtBuilding *bld = m_pSA->NewBuilding();
-					pItem = m_pSA->NewStructure();
-					pItem->SetBuilding(bld);
+					pStruct = m_pSA->NewStructure();
+					pStruct->SetBuilding(bld);
 				}
 				if (string(attval) == (string)"linear")
 				{
 					vtFence *fen = m_pSA->NewFence();
-					pItem = m_pSA->NewStructure();
-					pItem->SetFence(fen);
+					pStruct = m_pSA->NewStructure();
+					pStruct->SetFence(fen);
 				}
 				if (string(attval) == (string)"instance")
 				{
 					vtStructInstance *inst = m_pSA->NewInstance();
-					pItem = m_pSA->NewStructure();
-					pItem->SetInstance(inst);
+					pStruct = m_pSA->NewStructure();
+					pStruct->SetInstance(inst);
 				}
 			}
-			push_state(pItem, "structure");
+			push_state(pStruct, "structure");
 		}
 		else
 		{
 			// Unknown field, ignore.
-			pItem = NULL;
-			push_state(pItem, "dummy");
+			pStruct = NULL;
+			push_state(pStruct, "dummy");
 		}
 		return;
 	}
 
-	vtStructure *pItem = st.item;
-	if (!pItem)
+	vtStructure *pStruct = st.item;
+	if (!pStruct)
 		return;
-	vtFence *fen = pItem->GetFence();
-	vtBuilding *bld = pItem->GetBuilding();
-	vtStructInstance *inst = pItem->GetInstance();
+	vtFence *fen = pStruct->GetFence();
+	vtBuilding *bld = pStruct->GetBuilding();
+	vtStructInstance *inst = pStruct->GetInstance();
 
 	if (_level == 3 && bld != NULL)
 	{
@@ -779,7 +786,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		{
 			const char *color = atts.getValue("color");
 			if (bld && color)
-				bld->SetColor(BLD_BASIC, ParseRGB(color));
+				st.wall_color = ParseRGB(color);
 		}
 		if (string(name) == (string)"trim")
 		{
@@ -791,11 +798,14 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		}
 		if (string(name) == (string)"shapes")
 		{
-			push_state(pItem, "shapes");
+			push_state(pStruct, "shapes");
 			return;
 		}
 		if (string(name) == (string)"roof")
 		{
+			// hack to postpone setting building color until now
+			bld->SetColor(BLD_BASIC, st.wall_color);
+
 			const char *type = atts.getValue("type");
 			if (bld && (string)type == (string)"flat")
 				bld->SetRoofType(ROOF_FLAT);
@@ -945,7 +955,6 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				cp++;
 			}
 			bld->SetFootprint(0, foot);
-			bld->SetCenterFromPoly();
 		}
 	}
 }
@@ -953,8 +962,8 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 void StructureVisitor::endElement(const char * name)
 {
 	State &st = state();
-	vtStructure *pItem = st.item;
-	vtStructInstance *inst = pItem ? pItem->GetInstance() : NULL;
+	vtStructure *pStruct = st.item;
+	vtStructInstance *inst = pStruct ? pStruct->GetInstance() : NULL;
 
 	if (string(name) == (string)"structures")
 	{
@@ -970,8 +979,8 @@ void StructureVisitor::endElement(const char * name)
 	{
 		// currently, building wall information is not saved or restored, so
 		// we must manually indicate that detail should be implied upon loading
-		vtStructure *pItem = st.item;
-		vtBuilding *bld = pItem->GetBuilding();
+		vtStructure *pStruct = st.item;
+		vtBuilding *bld = pStruct->GetBuilding();
 		bld->AddDefaultDetails();
 
 		pop_state();
