@@ -17,7 +17,7 @@
 #include "Nevada.h"
 #include "SpecificTerrain.h"
 
-#define ORTHO_HEIGHT		40000	// 40 km in the air
+#define ORTHO_HEIGHT		20000	// 20 km in the air
 
 int pwdemo = 0;
 
@@ -781,9 +781,15 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	// set the top-down viewpoint to a point over
 	//  the center of the new terrain
 	FPoint3 middle;
-	pHF->GetCenter(middle);
+	pHF->GetCenter(middle);		// Gets XZ center; Y is zero
+
 	middle.y = ORTHO_HEIGHT;
+//	float fmin, fmax;
+//	pHF->GetHeightExtents(fmin, fmax);
+//	middle.y = fmax + 500;		// heuristic: highest value + 100 meters
 	m_pTopDownCamera->SetTrans(middle);
+
+	// point it straight down
 	m_pTopDownCamera->RotateLocal(TRANS_XAxis, -PID2f);
 	m_pTopDownCamera->SetHither(5.0f);
 	m_pTopDownCamera->SetYon(middle.y * 2.0f);
@@ -920,12 +926,21 @@ bool Enviro::GetRouteFollower()
 
 void Enviro::SetTopDown(bool bTopDown)
 {
+	static bool bWas;
+
 	m_bTopDown = bTopDown;
 
 	if (bTopDown)
+	{
 		vtGetScene()->SetCamera(m_pTopDownCamera);
+		bWas = m_pSkyDome->GetEnabled();
+		m_pSkyDome->SetEnabled(false);
+	}
 	else
+	{
 		vtGetScene()->SetCamera(m_pNormalCamera);
+		m_pSkyDome->SetEnabled(bWas);
+	}
 
 	m_pOrthoFlyer->SetEnabled(bTopDown);
 	EnableFlyerEngine(!bTopDown);
