@@ -258,7 +258,12 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString fname_in,
 	case LT_STRUCTURE:
 		if (!strExt.CmpNoCase(_T("shp")))
 		{
-			pLayer = ImportFromSHP(strFileName, ltype);
+//			pLayer = ImportFromSHP(strFileName, ltype);
+			pLayer = ImportVectorsWithOGR(strFileName, ltype);
+		}
+		else if (!strExt.CmpNoCase(_T("gml")))
+		{
+			pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
 		else if (!strExt.CmpNoCase(_T("bcf")))
 		{
@@ -459,6 +464,7 @@ wxString GetImportFilterString(LayerType ltype)
 		break;
 	case LT_STRUCTURE:
 		// dlg, shp, bcf, sdts-dlg
+		AddType(filter, FSTRING_GML);
 		AddType(filter, FSTRING_DLG);
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_BCF);
@@ -746,6 +752,7 @@ vtLayerPtr MainFrame::ImportRawFromOGR(wxString &fname_in)
 
 vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 {
+	vtProjection Projection;
 	wxString2 strFileName = fname_in;
 
 	OGRRegisterAll();
@@ -778,9 +785,55 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 	}
 	if (ltype == LT_STRUCTURE)
 	{
+#ifdef ENVIRON
+		ImportStructDlgOGR ImportDialog(GetMainFrame(), -1, _T("Import Structures"));
+
+		ImportDialog.SetDatasource(datasource);
+
+		if (ImportDialog.ShowModal() != wxID_OK)
+			return false;
+
+		if (ImportDialog.m_iType == 0)
+			ImportDialog.m_opt.type = ST_BUILDING;
+		if (ImportDialog.m_iType == 1)
+			ImportDialog.m_opt.type = ST_BUILDING;
+		if (ImportDialog.m_iType == 2)
+			ImportDialog.m_opt.type = ST_LINEAR;
+		if (ImportDialog.m_iType == 3)
+			ImportDialog.m_opt.type = ST_INSTANCE;
+
+		ImportDialog.m_opt.rect = m_area;
+
+		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
+
+		if (NULL != GetActiveElevLayer())
+			ImportDialog.m_opt.pHeightField = GetActiveElevLayer()->GetHeightField();
+		else if (NULL != FindLayerOfType(LT_ELEVATION))
+			ImportDialog.m_opt.pHeightField = ((vtElevLayer*)FindLayerOfType(LT_ELEVATION))->GetHeightField();
+		else
+			ImportDialog.m_opt.pHeightField = NULL;
+		pSL->AddElementsFromOGR_RAW(datasource, ImportDialog.m_opt, progress_callback);
+
+		pSL->GetProjection(Projection);
+		if (OGRERR_NONE != Projection.Validate())
+		{
+			// Get a projection
+			Projection2Dlg dlg(GetMainFrame(), -1, _T("Please indicate projection"));
+			dlg.SetProjection(m_proj);
+
+			if (dlg.ShowModal() == wxID_CANCEL)
+			{
+				delete pSL;
+				return NULL;
+			}
+			dlg.GetProjection(Projection);
+			pSL->SetProjection(Projection);
+		}
+#else
 		StructImportOptions dummy;
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
 		pSL->AddElementsFromOGR(datasource, dummy, progress_callback);
+#endif
 	}
 
 	delete datasource;
