@@ -253,7 +253,7 @@ bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	m_se = offset(m_iXPoints-1, 0);
 
 	m_iPolygonTarget = DEFAULT_POLYGON_TARGET;
-	m_fQualityConstant= 1.0f * PACK_SCALE;		// safe initial value
+	m_fQualityConstant= 0.1f;		// safe initial value
 	m_iDrawnTriangles = -1;
 	hack_detail_pass = false;
 
