@@ -1,7 +1,7 @@
 //
 // StructureLayer.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,6 +35,7 @@ public:
 	bool AppendDataFrom(vtLayer *pL);
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
+	bool AskForSaveFilename();
 
 	wxString2 GetLayerFilename() { return wxString2(GetFilename()); }
 	void SetLayerFilename(const wxString2 &fname)
@@ -77,6 +78,7 @@ public:
 
 protected:
 	int m_size;	// size in pixels of the small crosshair at building center
+	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file
 };
 
 #endif	// STRUCTLAYER_H

@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 #include "vtdata/DLG.h"
 #include "vtdata/Fence.h"
 #include "vtdata/ElevationGrid.h"
+#include "vtdata/FilePath.h"
 #include "ogrsf_frmts.h"
 
 #include "Frame.h"
@@ -34,6 +35,7 @@ static bool g_bInitializedPens = false;
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
 	SetLayerFilename(_T("Untitled.vtst"));
+	m_bPreferGZip = false;
 
 	if (!g_bInitializedPens)
 	{
@@ -204,12 +206,18 @@ void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 
 bool vtStructureLayer::OnSave()
 {
-	return WriteXML(GetFilename());
+	return WriteXML(GetFilename(), m_bPreferGZip);
 }
 
 bool vtStructureLayer::OnLoad()
 {
-	return ReadXML(GetFilename());
+	vtString fname = GetFilename();
+
+	// remember whether this layer was read from a compressed file
+	if (GetExtension(fname, true).CompareNoCase(".vtst.gz") == 0)
+		m_bPreferGZip = true;
+
+	return ReadXML(fname);
 }
 
 void vtStructureLayer::GetProjection(vtProjection &proj)
@@ -1079,3 +1087,28 @@ void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 */
 }
 
+bool vtStructureLayer::AskForSaveFilename()
+{
+	wxString filter = _T("VTST File (.vtst)|*.vtst|GZipped VTST File (.vtst.gz)|*.vtst.gz|");
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
+		filter, wxSAVE | wxOVERWRITE_PROMPT);
+	saveFile.SetFilterIndex( m_bPreferGZip ? 1 : 0);
+
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return false;
+
+	vtString fname = saveFile.GetPath().mb_str();
+	m_bPreferGZip = (saveFile.GetFilterIndex() == 1);
+
+	// work around incorrect extension(s) that wxFileDialog added
+	RemoveFileExtensions(fname);
+	if (m_bPreferGZip)
+		fname += ".vtst.gz";
+	else
+		fname += ".bt";
+
+	SetLayerFilename(fname);
+	m_bNative = true;
+	return true;
+}
