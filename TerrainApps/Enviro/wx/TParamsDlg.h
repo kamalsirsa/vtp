@@ -36,7 +36,6 @@ public:
     bool TransferDataToWindow();
     bool TransferDataFromWindow();
 
-    void SetPath(const char *path);
     void SetParams(TParams &Params);
     void GetParams(TParams &Params);
     void UpdateTiledTextureFilename();
@@ -71,7 +70,12 @@ public:
     bool    m_bVertexColors;
 //  bool    m_bOverlay;
     bool    m_bSuppressLand;
+
     bool    m_bOceanPlane;
+	float	m_fOceanPlaneLevel;
+	bool	m_bDepressOcean;
+	float	m_fDepressOceanLevel;
+
     bool    m_bHorizon;
     bool    m_bLabels;
     int     m_iMinHeight;
@@ -101,7 +105,6 @@ public:
 	bool	m_bRouteEnable;
 	wxString m_strRouteFile;
 
-    wxString m_strDatapath;
     wxString m_strInitTime;
 
     // WDR: method declarations for TParamsDlg

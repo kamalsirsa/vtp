@@ -18,6 +18,7 @@
 
 #include "vtlib/vtlib.h"
 #include "TParamsDlg.h"
+#include "../Options.h"
 
 #define NTILES 4
 
@@ -44,11 +45,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	TParamsFunc( this, TRUE );
 }
 
-
-void TParamsDlg::SetPath(const char *path)
-{
-	m_strDatapath = path;
-}
 
 //
 // set the values in the dialog from the supplied paramter structure
@@ -109,12 +105,16 @@ void TParamsDlg::SetParams(TParams &Params)
 //  m_iNumCars = Params.m_iNumCars;
 
 	m_bSky = Params.m_bSky;
-	m_bOceanPlane = Params.m_bOceanPlane;
 	m_bHorizon = Params.m_bHorizon;
 	m_bVertexColors = Params.m_bVertexColors;
 //  m_bOverlay = Params.m_bOverlay;
 	m_bSuppressLand = Params.m_bSuppressLand;
 	m_bLabels = Params.m_bLabels;
+
+	m_bOceanPlane = Params.m_bOceanPlane;
+	m_fOceanPlaneLevel = Params.m_fOceanPlaneLevel;
+	m_bDepressOcean = Params.m_bDepressOcean;
+	m_fDepressOceanLevel = Params.m_fDepressOceanLevel;
 
 	m_bPreLight = Params.m_bPreLight;
 	m_bPreLit = Params.m_bPreLit;
@@ -197,6 +197,11 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bSuppressLand = m_bSuppressLand;
 	Params.m_bLabels = m_bLabels;
 
+	Params.m_bOceanPlane = m_bOceanPlane;
+	Params.m_fOceanPlaneLevel = m_fOceanPlaneLevel;
+	Params.m_bDepressOcean = m_bDepressOcean;
+	Params.m_fDepressOceanLevel = m_fDepressOceanLevel;
+
 	Params.m_bPreLight = m_bPreLight;
 	Params.m_bPreLit = m_bPreLit;
 	Params.m_fPreLightFactor = m_fPreLightFactor;
@@ -250,52 +255,58 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pDerived = GetDerived();
 	m_pTiled = GetTiled();
 
-	int sel;
+	int i, sel;
 
-	// fill the "terrain filename" control with available terrain files
-	AddFilenamesToComboBox(m_pFilename, m_strDatapath + "Elevation", "*.bt");
-	sel = m_pFilename->FindString(m_strFilename);
-	if (sel != -1)
-		m_pFilename->SetSelection(sel);
+	StringArray &paths = g_Options.m_DataPaths;
 
-	// fill the "single texture filename" control with available bitmap files
-	AddFilenamesToComboBox(m_pTextureFileSingle, m_strDatapath + "GeoSpecific", "*.bmp");
-	sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
-	if (sel != -1)
-		m_pTextureFileSingle->SetSelection(sel);
+	for (i = 0; i < paths.GetSize(); i++)
+	{
+		// fill the "terrain filename" control with available terrain files
+		AddFilenamesToComboBox(m_pFilename, *paths[i] + "Elevation", "*.bt");
+		sel = m_pFilename->FindString(m_strFilename);
+		if (sel != -1)
+			m_pFilename->SetSelection(sel);
 
-	// fill the Location files
-	AddFilenamesToComboBox(m_pLocFile, m_strDatapath + "Locations", "*.loc");
-	sel = m_pLocFile->FindString(m_strLocFile);
-	if (sel != -1)
-		m_pLocFile->SetSelection(sel);
+		// fill the "single texture filename" control with available bitmap files
+		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.bmp");
+		sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
+		if (sel != -1)
+			m_pTextureFileSingle->SetSelection(sel);
 
-	// fill in Road files
-	AddFilenamesToComboBox(m_pRoadFile, m_strDatapath + "RoadData", "*.rmf");
-	sel = m_pRoadFile->FindString(m_strRoadFile);
-	if (sel != -1)
-		m_pRoadFile->SetSelection(sel);
+		// fill the Location files
+		AddFilenamesToComboBox(m_pLocFile, *paths[i] + "Locations", "*.loc");
+		sel = m_pLocFile->FindString(m_strLocFile);
+		if (sel != -1)
+			m_pLocFile->SetSelection(sel);
 
-	// fill in Building files
-	AddFilenamesToComboBox(m_pBuildingFile, m_strDatapath + "BuildingData", "*.vtst");
-	sel = m_pBuildingFile->FindString(m_strBuildingFile);
-	if (sel != -1)
-		m_pBuildingFile->SetSelection(sel);
+		// fill in Road files
+		AddFilenamesToComboBox(m_pRoadFile, *paths[i] + "RoadData", "*.rmf");
+		sel = m_pRoadFile->FindString(m_strRoadFile);
+		if (sel != -1)
+			m_pRoadFile->SetSelection(sel);
 
-	// fill in Tree files
-	AddFilenamesToComboBox(m_pTreeFile, m_strDatapath + "PlantData", "*.vf");
-	sel = m_pTreeFile->FindString(m_strTreeFile);
-	if (sel != -1)
-		m_pTreeFile->SetSelection(sel);
+		// fill in Building files
+		AddFilenamesToComboBox(m_pBuildingFile, *paths[i] + "BuildingData", "*.vtst");
+		sel = m_pBuildingFile->FindString(m_strBuildingFile);
+		if (sel != -1)
+			m_pBuildingFile->SetSelection(sel);
 
-	// fill in Routes files
-	AddFilenamesToComboBox(m_pRouteFile, m_strDatapath + "RouteData", "*.p3D");
-	sel = m_pRouteFile->FindString(m_strRouteFile);
-	if (sel != -1)
-		m_pRouteFile->SetSelection(sel);
+		// fill in Tree files
+		AddFilenamesToComboBox(m_pTreeFile, *paths[i] + "PlantData", "*.vf");
+		sel = m_pTreeFile->FindString(m_strTreeFile);
+		if (sel != -1)
+			m_pTreeFile->SetSelection(sel);
+
+		// fill in Routes files
+		AddFilenamesToComboBox(m_pRouteFile, *paths[i] + "RouteData", "*.p3D");
+		sel = m_pRouteFile->FindString(m_strRouteFile);
+		if (sel != -1)
+			m_pRouteFile->SetSelection(sel);
+	}
 
 	m_pLodMethod->Clear();
-	m_pLodMethod->Append("Lindstrom-Koller");
+	m_pLodMethod->Append("Roettger");
+//	m_pLodMethod->Append("Lindstrom-Koller");
 	m_pLodMethod->Append("TopoVista");
 	m_pLodMethod->Append("McNally");
 	m_pLodMethod->Append("Custom");
@@ -339,7 +350,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_TREEDISTANCE, &m_iTreeDistance);
 	AddValidator(ID_VERTEXCOLORS, &m_bVertexColors);
 	AddValidator(ID_SUPPRESSLAND, &m_bSuppressLand);
-	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
 	AddValidator(ID_HORIZON, &m_bHorizon);
 	AddValidator(ID_LABELS, &m_bLabels);
 	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
@@ -361,6 +371,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_AIRPORTS, &m_bAirports);
 	AddValidator(ID_ROUTEFILE, &m_strRouteFile);
 	AddValidator(ID_ROUTEENABLE, &m_bRouteEnable);
+	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
+	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
+	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
+	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
 
 	wxWindow::OnInitDialog(event);
 
