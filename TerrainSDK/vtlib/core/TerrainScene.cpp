@@ -97,7 +97,7 @@ vtTerrainScene::~vtTerrainScene()
 	vtRoute::ReleaseMaterials();
 }
 
-void vtTerrainScene::_CreateSkydome(const StringArray &datapath)
+void vtTerrainScene::_CreateSkydome(const vtStringArray &datapath)
 {
 	if (m_pSkyDome != NULL)
 		return;
@@ -201,7 +201,7 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 /**
  * Call once after you have appended all of your terrains.
  */
-void vtTerrainScene::Finish(const StringArray &datapath)
+void vtTerrainScene::Finish(const vtStringArray &datapath)
 {
 	_CreateSkydome(datapath);
 

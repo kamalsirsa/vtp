@@ -5,7 +5,7 @@
 #include "vtString.h"
 #include "Array.h"
 
-vtString FindFileOnPaths(const StringArray &paths, const char *filename);
+vtString FindFileOnPaths(const vtStringArray &paths, const char *filename);
 bool vtCreateDir(const char *dirname);
 void vtDestroyDir(const char *dirname);
 const char *StartOfFilename(const char *szFullPath);

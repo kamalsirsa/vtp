@@ -210,28 +210,28 @@ BOOL CCreateDlg::OnInitDialog()
 //	unsigned int iFlags = DDL_READWRITE | DDL_READONLY;
 
 	int i;
-	StringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = g_Options.m_DataPaths;
 
 	for (i = 0; i < paths.GetSize(); i++)
 	{
 		// fill the "terrain filename" control with available terrain files
-		AddFilenamesToComboBox(&m_cbLODFilename, *paths[i] + "Elevation/*.bt");
+		AddFilenamesToComboBox(&m_cbLODFilename, paths[i] + "Elevation/*.bt");
 		m_cbLODFilename.SelectString(-1, m_strFilename);
 
 		// fill the "single texture filename" control with available bitmap files
-		AddFilenamesToComboBox(&m_cbTextureFileSingle, *paths[i] + "GeoSpecific/*.bmp");
+		AddFilenamesToComboBox(&m_cbTextureFileSingle, paths[i] + "GeoSpecific/*.bmp");
 		m_cbLODFilename.SelectString(-1, m_strTextureSingle);
 
 		// fill in Road files
-		AddFilenamesToComboBox(&m_cbRoadFile, *paths[i] + "RoadData/*.rmf");
+		AddFilenamesToComboBox(&m_cbRoadFile, paths[i] + "RoadData/*.rmf");
 		m_cbRoadFile.SelectString(-1, m_strRoadFile);
 
 		// fill in Building files
-		AddFilenamesToComboBox(&m_cbBuildingFile, *paths[i] + "BuildingData/*.vtst");
+		AddFilenamesToComboBox(&m_cbBuildingFile, paths[i] + "BuildingData/*.vtst");
 		m_cbBuildingFile.SelectString(-1, m_strBuildingFile);
 
 		// fill in Tree files
-		AddFilenamesToComboBox(&m_cbTreeFile, *paths[i] + "PlantData/*.vf");
+		AddFilenamesToComboBox(&m_cbTreeFile, paths[i] + "PlantData/*.vf");
 		m_cbTreeFile.SelectString(-1, m_strTreeFile);
 	}
 

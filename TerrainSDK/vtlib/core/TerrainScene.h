@@ -34,7 +34,7 @@ public:
 	// scene setup
 	vtRoot *BeginTerrainScene(bool bDoSound);
 	void AppendTerrain(vtTerrain *pTerrain);
-	virtual void Finish(const StringArray &datapath);
+	virtual void Finish(const vtStringArray &datapath);
 	void SetTerrain(vtTerrain *pTerrain);
 
 	/// Get the first terrain in the list.
@@ -58,7 +58,7 @@ public:
 	vtSkyDome	*m_pSkyDome;
 
 protected:
-	void _CreateSkydome(const StringArray &datapath);
+	void _CreateSkydome(const vtStringArray &datapath);
 	void _CreateEngines(bool bDoSound);
 
 	vtGroup		*m_pAtmosphereGroup;

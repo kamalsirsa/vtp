@@ -44,7 +44,7 @@
  * \param filename A filename, which can optionally contain a partial path
  * as well.  Examples: "foo.txt" or "Stuff/foo.txt"
  */
-vtString FindFileOnPaths(const StringArray &paths, const char *filename)
+vtString FindFileOnPaths(const vtStringArray &paths, const char *filename)
 {
 	FILE *fp;
 
@@ -57,9 +57,9 @@ vtString FindFileOnPaths(const StringArray &paths, const char *filename)
 		return vtString(filename);
 	}
 
-	for (int i = 0; i < paths.GetSize(); i++)
+	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		vtString fname = *(paths[i]);
+		vtString fname = paths[i];
 		fname += filename;
 		fp = fopen((const char *)fname, "r");
 		if (fp != NULL)
@@ -128,7 +128,7 @@ void vtDestroyDir(const char *dirname)
 	int result;
 	using namespace boost::filesystem;
 
-	StringArray con;
+	vtStringArray con;
 
 	char fullname[1024];
 	dir_it it(dirname);
@@ -137,16 +137,16 @@ void vtDestroyDir(const char *dirname)
 		std::string name1 = *it;
 		if (name1 == "." || name1 == "..")
 			continue;
-		con.Append(new vtString(name1.c_str()));
+		con.push_back(vtString(name1.c_str()));
 	}
 
-	for (int i = 0; i < con.GetSize(); i++)
+	for (unsigned int i = 0; i < con.size(); i++)
 	{
-		vtString *item = con.GetAt(i);
+		vtString item = con[i];
 
 		strcpy(fullname, dirname);
 		strcat(fullname, "/");
-		strcat(fullname, (const char *) *item );
+		strcat(fullname, (const char *) item );
 
 		if (get<is_directory>(it))
 		{
@@ -164,8 +164,6 @@ void vtDestroyDir(const char *dirname)
 					result = 0;
 			}
 		}
-
-		delete item;
 	}
 	rmdir(dirname);
 }

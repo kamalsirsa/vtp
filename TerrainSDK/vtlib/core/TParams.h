@@ -114,7 +114,7 @@ public:
 	bool		m_bFog;
 	int			m_iFogDistance;
 
-	StringArray	m_strStructFiles;
+	vtStringArray	m_strStructFiles;
 	unint		m_iStructDistance;
 
 	bool		m_bSky;

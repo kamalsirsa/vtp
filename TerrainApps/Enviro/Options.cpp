@@ -64,8 +64,7 @@ bool EnviroOptions::Read(const char *szFilename)
 
 		if (strcmp(buf, STR_DATAPATH) == 0)
 		{
-			vtString *path = new vtString(get_line_from_stream(input));
-			m_DataPaths.Append(path);
+			m_DataPaths.push_back(vtString(get_line_from_stream(input)));
 		}
 		else if (strcmp(buf, STR_EARTHVIEW) == 0)
 			input >> m_bEarthView;
@@ -111,17 +110,17 @@ bool EnviroOptions::Write()
 	}
 
 	// write to file
-	for (int i = 0; i < m_DataPaths.GetSize(); i++)
+	for (unsigned int i = 0; i < m_DataPaths.size(); i++)
 	{
 		output << STR_DATAPATH << "\t\t";
-		output << ((const char *)(*m_DataPaths[i])) << endl;
+		output << (const char *)(m_DataPaths[i]) << endl;
 	}
 	output << STR_EARTHVIEW << "\t\t";
 	output << m_bEarthView << endl;
 	output << STR_EARTHIMAGE << "\t\t";
-	output << ((const char *)m_strImage) << endl;
+	output << (const char *)m_strImage << endl;
 	output << STR_INITTERRAIN << "\t";
-	output << ((const char *)m_strInitTerrain) << endl;
+	output << (const char *)m_strInitTerrain << endl;
 
 	output << STR_FULLSCREEN << "\t\t";
 	output << m_bFullscreen << endl;

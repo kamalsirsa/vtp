@@ -163,7 +163,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
-	int i, num = Params.m_strStructFiles.GetSize();
+	unsigned int i, num = Params.m_strStructFiles.size();
 	for (i = 0; i < num; i++)
 		m_strStructFiles.Append(new wxString2(Params.m_strStructFiles[i]));
 	m_iStructDistance = Params.m_iStructDistance;
@@ -253,10 +253,10 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
-	Params.m_strStructFiles.Empty();
+	Params.m_strStructFiles.clear();
 	int i, num = m_strStructFiles.GetSize();
 	for (i = 0; i < num; i++)
-		Params.m_strStructFiles.Append(new vtString(m_strStructFiles[i]->mb_str()));
+		Params.m_strStructFiles.push_back(vtString(m_strStructFiles[i]->mb_str()));
 	Params.m_iStructDistance = m_iStructDistance;
 
 //  Params.m_bVehicles = m_bVehicles;
@@ -411,60 +411,61 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pDerived = GetDerived();
 	m_pTiled = GetTiled();
 
-	int i, sel;
+	unsigned int i;
+	int sel;
 
-	StringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = g_Options.m_DataPaths;
 
-	for (i = 0; i < paths.GetSize(); i++)
+	for (i = 0; i < paths.size(); i++)
 	{
 		// fill the "Grid filename" control with available files
-		AddFilenamesToComboBox(m_pFilename, *paths[i] + "Elevation", "*.bt");
+		AddFilenamesToComboBox(m_pFilename, paths[i] + "Elevation", "*.bt");
 		sel = m_pFilename->FindString(m_strFilename);
 		if (sel != -1)
 			m_pFilename->SetSelection(sel);
 
 		// fill the "TIN filename" control with available files
-		AddFilenamesToComboBox(m_pFilenameTin, *paths[i] + "Elevation", "*.tin");
+		AddFilenamesToComboBox(m_pFilenameTin, paths[i] + "Elevation", "*.tin");
 		sel = m_pFilenameTin->FindString(m_strFilenameTin);
 		if (sel != -1)
 			m_pFilename->SetSelection(sel);
 
 		// fill the "single texture filename" control with available bitmap files
-		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.bmp");
-		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.jpg");
-		AddFilenamesToComboBox(m_pTextureFileSingle, *paths[i] + "GeoSpecific", "*.jpeg");
+		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.bmp");
+		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.jpg");
+		AddFilenamesToComboBox(m_pTextureFileSingle, paths[i] + "GeoSpecific", "*.jpeg");
 		sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
 		if (sel != -1)
 			m_pTextureFileSingle->SetSelection(sel);
 
 		// fill the Location files
-		AddFilenamesToComboBox(m_pLocFile, *paths[i] + "Locations", "*.loc");
+		AddFilenamesToComboBox(m_pLocFile, paths[i] + "Locations", "*.loc");
 		sel = m_pLocFile->FindString(m_strLocFile);
 		if (sel != -1)
 			m_pLocFile->SetSelection(sel);
 
 		// fill in Road files
-		AddFilenamesToComboBox(m_pRoadFile, *paths[i] + "RoadData", "*.rmf");
+		AddFilenamesToComboBox(m_pRoadFile, paths[i] + "RoadData", "*.rmf");
 		sel = m_pRoadFile->FindString(m_strRoadFile);
 		if (sel != -1)
 			m_pRoadFile->SetSelection(sel);
 
 		// fill in Vegetation files
-		AddFilenamesToComboBox(m_pTreeFile, *paths[i] + "PlantData", "*.vf");
+		AddFilenamesToComboBox(m_pTreeFile, paths[i] + "PlantData", "*.vf");
 		sel = m_pTreeFile->FindString(m_strVegFile);
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
 
 		// fill in Sky files
-		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.bmp");
-		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.png");
-		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.jpg");
+		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.bmp");
+		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.png");
+		AddFilenamesToComboBox(m_pSkyTexture, paths[i] + "Sky", "*.jpg");
 		sel = m_pSkyTexture->FindString(m_strSkyTexture);
 		if (sel != -1)
 			m_pSkyTexture->SetSelection(sel);
 
 		// fill in PointData files
-		AddFilenamesToComboBox(m_pLabelFile, *paths[i] + "PointData", "*.shp");
+		AddFilenamesToComboBox(m_pLabelFile, paths[i] + "PointData", "*.shp");
 		sel = m_pTreeFile->FindString(m_strVegFile);
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
@@ -700,12 +701,12 @@ void AddFilenamesToArray(wxArrayString &array, const char *directory,
 
 void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 {
-	int i;
+	unsigned int i;
     wxArrayString strings;
 
-	StringArray &paths = g_Options.m_DataPaths;
-	for (i = 0; i < paths.GetSize(); i++)
-		AddFilenamesToArray(strings, *paths[i] + "BuildingData", "*.vtst");
+	vtStringArray &paths = g_Options.m_DataPaths;
+	for (i = 0; i < paths.size(); i++)
+		AddFilenamesToArray(strings, paths[i] + "BuildingData", "*.vtst");
 
 	int num = strings.Count();
 

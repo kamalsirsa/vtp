@@ -1065,6 +1065,7 @@ const char *wstring2::to_utf8() const
 //
 // assignment operator
 //
+/*
 StringArray &StringArray::operator=(const class StringArray &v)
 {
 	int size = v.GetSize();
@@ -1074,5 +1075,5 @@ StringArray &StringArray::operator=(const class StringArray &v)
 
 	return *this;
 }
-
+*/
 

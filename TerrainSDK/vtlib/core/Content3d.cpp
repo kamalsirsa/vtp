@@ -28,7 +28,7 @@ vtItem3d::~vtItem3d()
  * Load the model(s) associated with an item.  If there are several models,
  * generally these are different levels of detail (LOD) for the item.
  */
-bool vtItem3d::LoadModels(StringArray *pDataPaths)
+bool vtItem3d::LoadModels(vtStringArray *pDataPaths)
 {
 	if (m_pGroup)
 		return true;	// already loaded

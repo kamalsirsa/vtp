@@ -143,7 +143,7 @@ public:
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;
 
-	static StringArray m_DataPaths;
+	static vtStringArray m_DataPaths;
 
 	bool m_bShowOrigin;
 	bool m_bShowRulers;

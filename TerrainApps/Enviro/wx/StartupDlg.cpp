@@ -359,10 +359,10 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_psImage = GetImagetext();
 	m_pImage = GetImage();
 
-	StringArray &paths = g_Options.m_DataPaths;
-	for (int i = 0; i < paths.GetSize(); i++)
+	vtStringArray &paths = g_Options.m_DataPaths;
+	for (unsigned int i = 0; i < paths.size(); i++)
 	{
-		vtString path = *paths[i];
+		vtString path = paths[i];
 		path += "WholeEarth/";
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
 		AddFilenamesToComboBox(m_pImage, path, "*_0106.jpg", 9);

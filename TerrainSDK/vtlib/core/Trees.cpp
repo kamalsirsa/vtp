@@ -62,7 +62,7 @@ vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 	m_shadow_darkness = v.m_shadow_darkness;
 }
 
-void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
+void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 		float fTreeScale, bool bShadows, bool bBillboards)
 {
 	s_fTreeScale = fTreeScale;
@@ -357,7 +357,7 @@ void vtPlantList3d::AddSpecies(const char *common_name, float max_height)
 #endif
 
 
-void vtPlantList3d::CreatePlantSurfaces(const StringArray &paths,
+void vtPlantList3d::CreatePlantSurfaces(const vtStringArray &paths,
 		float fTreeScale, bool bShadows, bool bBillboards)
 {
 	for (int i = 0; i < NumSpecies(); i++)

@@ -46,7 +46,7 @@ PointStyle::PointStyle()
 }
 
 // All terrains share a static data path and content manager
-StringArray vtTerrain::m_DataPaths;
+vtStringArray vtTerrain::m_DataPaths;
 vtContentManager3d vtTerrain::s_Content;
 
 //////////////////////////////////////////////////////////////////////
@@ -949,11 +949,11 @@ void vtTerrain::create_culture(bool bSound)
 	vtStructureArray3d *structures = new vtStructureArray3d;
 	m_StructureSet.Append(structures);
 
-	int i, num = m_Params.m_strStructFiles.GetSize();
+	unsigned int i, num = m_Params.m_strStructFiles.size();
 	for (i = 0; i < num; i++)
 	{
 		vtString building_fname = "BuildingData/";
-		building_fname += *(m_Params.m_strStructFiles[i]);
+		building_fname += m_Params.m_strStructFiles[i];
 
 		VTLOG("\tLooking for structures file: %s\n", (const char *) building_fname);
 

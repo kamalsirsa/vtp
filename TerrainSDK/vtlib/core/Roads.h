@@ -143,7 +143,7 @@ public:
 	void BuildIntersections();
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
 	void GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max);
-	vtGroup *GenerateGeometry(bool do_texture, const StringArray &paths);
+	vtGroup *GenerateGeometry(bool do_texture, const vtStringArray &paths);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }

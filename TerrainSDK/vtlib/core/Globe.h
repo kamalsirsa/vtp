@@ -51,7 +51,7 @@ public:
 	// construction
 	IcoGlobe();
 	~IcoGlobe();
-	void Create(int iTriangleCount, const StringArray &paths,
+	void Create(int iTriangleCount, const vtStringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
 	vtTransform *GetTop() { return m_top; }
 
@@ -78,7 +78,7 @@ protected:
 	void BuildSphericalLines(vtFeatures *feat, float fSize);
 	void BuildFlatFeatures(vtFeatures *feat, float fSize);
 	void BuildFlatPoint(vtFeatures *feat, int i, float fSize);
-	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
+	void CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix);
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);
 	void EstimateTesselation(int iTriangleCount);

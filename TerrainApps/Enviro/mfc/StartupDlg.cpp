@@ -141,10 +141,10 @@ BOOL CStartupDlg::OnInitDialog()
 
 	CDialog::OnInitDialog();
 
-	StringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = g_Options.m_DataPaths;
 	for (int i = 0; i < paths.GetSize(); i++)
 	{
-		CString path = (const char *) (*paths[i]);
+		CString path = (const char *) paths[i];
 		AddFilesToComboBox(&m_cbImage, path + "WholeEarth/*_0106.png");
 		AddFilesToComboBox(&m_cbImage, path + "WholeEarth/*_0106.jpg");
 	}

@@ -12,8 +12,6 @@
 
 #include "vtdata/Content.h"
 
-class StringArray;
-
 /**
  * Subclass of vtItem which is capable of instantiating the corresponding
  * 3D geometry for the item.
@@ -24,7 +22,7 @@ public:
 	vtItem3d();
 	~vtItem3d();
 
-	bool LoadModels(StringArray *pDataPaths);
+	bool LoadModels(vtStringArray *pDataPaths);
 
 	vtGroup *m_pGroup;
 };
@@ -38,14 +36,14 @@ class vtContentManager3d : public vtContentManager
 public:
 	vtContentManager3d();
 
-	void SetDataPaths(StringArray *pDataPaths) { m_pDataPaths = pDataPaths; }
+	void SetDataPaths(vtStringArray *pDataPaths) { m_pDataPaths = pDataPaths; }
 	vtGroup *CreateInstanceOfItem(vtItem *item);
 
 	// implementation
 	virtual vtItem *NewItem() { return new vtItem3d; }
 
 protected:
-	StringArray *m_pDataPaths;
+	vtStringArray *m_pDataPaths;
 };
 
 #endif // VTLIB_CONTENT3DH

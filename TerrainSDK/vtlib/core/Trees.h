@@ -29,7 +29,7 @@ public:
 	~vtPlantAppearance3d();
 	vtPlantAppearance3d(const vtPlantAppearance &v);
 
-	void LoadAndCreate(const StringArray &paths, float fTreeScale,
+	void LoadAndCreate(const vtStringArray &paths, float fTreeScale,
 					   bool bShadows, bool bBillboards);
 	vtTransform *GenerateGeom();
 
@@ -72,7 +72,7 @@ public:
 	// copy
 	vtPlantList3d &operator=(const vtPlantList &v);
 
-	void CreatePlantSurfaces(const StringArray &paths, float fTreeScale,
+	void CreatePlantSurfaces(const vtStringArray &paths, float fTreeScale,
 		bool bShadows, bool bBillboards);
 
 	// override / replace a few methods of vtPlantList

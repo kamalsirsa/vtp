@@ -19,7 +19,7 @@ public:
 	bool Read(const char *szFilename);
 	bool Write();
 
-	StringArray m_DataPaths;
+	vtStringArray m_DataPaths;
 	bool		m_bEarthView;
 	vtString	m_strImage;
 	vtString	m_strInitTerrain;

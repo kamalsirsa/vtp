@@ -59,7 +59,7 @@ IcoGlobe::~IcoGlobe()
  *			on seperate geometries so that the globe can be unfolded in the
  *			Dymaxion style.
  */
-void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
+void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 					  const vtString &strImagePrefix, Style style)
 {
 	VTLOG("IcoGlobe::Create\n");
@@ -1039,7 +1039,7 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 }
 
 
-void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImagePrefix)
+void IcoGlobe::CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix)
 {
 	m_mats = new vtMaterialArray();
 	bool bCulling = true;

@@ -436,11 +436,9 @@ bool TParams::LoadFromFile(const char *filename)
 
 		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
 		{
-			vtString *strFile = new vtString(get_line_from_stream(input));
-			if (*strFile == "")
-				delete strFile;
-			else
-				m_strStructFiles.Append(strFile);
+			vtString strFile(get_line_from_stream(input));
+			if (strFile != "")
+				m_strStructFiles.push_back(strFile);
 		}
 		else if (strcmp(buf, STR_STRUCTDIST) == 0)
 			input >> m_iStructDistance;
@@ -510,7 +508,7 @@ bool TParams::LoadFromFile(const char *filename)
 
 bool TParams::SaveToFile(const char *filename)
 {
-	int i;
+	unsigned int i;
 
 	ofstream output(filename, ios::binary);
 	if (!output.is_open())
@@ -621,10 +619,10 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_iFogDistance << endl;
 
 	output << "\n; Structures\n";
-	for (i = 0; i < m_strStructFiles.GetSize(); i++)
+	for (i = 0; i < m_strStructFiles.size(); i++)
 	{
 		output << STR_STRUCTFILE << "\t";
-		output << (const char *) (*m_strStructFiles[i]) << endl;
+		output << (const char *) m_strStructFiles[i] << endl;
 	}
 	output << STR_STRUCTDIST << "\t";
 	output << m_iStructDistance << endl;

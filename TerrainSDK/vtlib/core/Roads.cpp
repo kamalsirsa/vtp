@@ -793,7 +793,7 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 
 
 vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
-									   const StringArray &paths)
+									   const vtStringArray &paths)
 {
 	m_pMats = new vtMaterialArray();
 

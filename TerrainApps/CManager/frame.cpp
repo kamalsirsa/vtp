@@ -66,7 +66,7 @@ void Splitter2::SizeWindows()
 // vtFrame class implementation
 //
 
-StringArray vtFrame::m_DataPaths;
+vtStringArray vtFrame::m_DataPaths;
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CHAR(vtFrame::OnChar)

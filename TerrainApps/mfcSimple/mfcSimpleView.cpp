@@ -225,7 +225,7 @@ bool CreateScene()
 	pScene->Init();
 
 	// Set the global data path
-	StringArray paths;
+	vtStringArray paths;
 	paths.Append(new vtString("Data/"));
 	vtTerrain::SetDataPath(paths);
 

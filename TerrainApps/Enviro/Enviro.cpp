@@ -148,9 +148,9 @@ void Enviro::LoadTerrainDescriptions()
 	using namespace boost::filesystem;
 
 	vtTerrain *pTerr;
-	for (int i = 0; i < g_Options.m_DataPaths.GetSize(); i++)
+	for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
 	{
-		vtString directory = *(g_Options.m_DataPaths[i]) + "Terrains";
+		vtString directory = g_Options.m_DataPaths[i] + "Terrains";
 		for (dir_it it((const char *)directory); it != dir_it(); ++it)
 		{
 			if (get<is_hidden>(it) || get<is_directory>(it))
