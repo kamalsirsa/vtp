@@ -37,35 +37,34 @@
 #------------------------------------------------------------------------------
 # FreeBSD with GCC (tested with ver. 2.95.2)
 #------------------------------------------------------------------------------
-CC        = gcc
-CXX       = g++
-AR        = ar ruv
-#COPT      = -O -fpic -DPIC
-LD        = $(CXX)
-LD_SHARED = $(CXX) -shared
-PTHREAD_LIBS = -pthread
-
-GLUT_LIB = -lglut
-GLU_LIB  = -lGLU
-EXTRA_LIBS = -lXi $(PTHREAD_LIBS)
-LDIRFLAGS = $(LDIRS:%=-L%)                \
-            -rpath $(subst $(space),$(colon),$(LDIRS))
+## CC        = gcc
+## CXX       = g++
+## AR        = ar ruv
+## #COPT      = -O -fpic -DPIC
+## LD        = $(CXX)
+## LD_SHARED = $(CXX) -shared
+## PTHREAD_LIBS = -pthread
+## 
+## GLUT_LIB = -lglut
+## GLU_LIB  = -lGLU
+## EXTRA_LIBS = -lXi $(PTHREAD_LIBS)
+## LDIRFLAGS = $(LDIRS:%=-L%)                \
+##             -rpath $(subst $(space),$(colon),$(LDIRS))
 
 #------------------------------------------------------------------------------
 # Linux with GCC (tested with ver. 2.95.3)
 #------------------------------------------------------------------------------
-## CC        = gcc
-## CXX       = g++
-## AR        = ar ruv
-## COPT      = -O -g
-## LD        = $(CXX)
-## LD_SHARED = $(CXX) -shared
-## 
-## GLUT_LIB = -lglut
-## GLU_LIB  = -lGLU
-## EXTRA_LIBS = -lXi
-## LDIRFLAGS = $(LDIRS:%=-L%)                \
-## 	       -R $(subst $(space),$(colon),$(LDIRS))
+CC        = gcc
+CXX       = g++
+AR        = ar ruv
+COPT      = -O -g
+LD        = $(CXX)
+LD_SHARED = $(CXX) -shared
+
+GLUT_LIB = -lglut
+GLU_LIB  = -lGLU
+EXTRA_LIBS = -lXi
+LDIRFLAGS = $(LDIRS:%=-L%)
 
 #------------------------------------------------------------------------------
 
