@@ -731,6 +731,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\TerrManDlg.cpp">
+			</File>
+			<File
 				RelativePath="wx\TParamsDlg.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -847,6 +850,9 @@
 			</File>
 			<File
 				RelativePath="wx\StartupDlg.h">
+			</File>
+			<File
+				RelativePath=".\wx\TerrManDlg.h">
 			</File>
 			<File
 				RelativePath="wx\TParamsDlg.h">
