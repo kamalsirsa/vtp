@@ -512,12 +512,26 @@ public:
 	FBox3() {}
 	FBox3(const FPoint3 &min1, const FPoint3 &max1) { min = min1; max = max1; }
 
+	void InsideOut()
+	{
+		min.Set(1E10f, 1E10f, 1E10f);
+		max.Set(-1E10f, -1E10f, -1E10f);
+	}
 	void Set(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
 		min.Set(x1, y1, z1);
 		max.Set(x2, y2, z2);
 	}
 	FPoint3 Center() const { return ((min + max) * 0.5); }
+	void GrowToContainPoint(const FPoint3 &p)
+	{
+		if (p.x < min.x) min.x = p.x;
+		if (p.y < min.y) min.y = p.y;
+		if (p.z < min.z) min.z = p.z;
+		if (p.x > max.x) max.x = p.x;
+		if (p.y > max.y) max.y = p.y;
+		if (p.z > max.z) max.z = p.z;
+	}
 
 	FPoint3	min, max;
 };
