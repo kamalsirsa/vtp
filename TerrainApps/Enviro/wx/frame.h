@@ -49,6 +49,7 @@ public:
 	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	void SetTimeEngine(TimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
+	void CameraChanged();
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
