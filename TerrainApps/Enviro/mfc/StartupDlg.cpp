@@ -9,6 +9,7 @@
 #include "vtlib/core/TerrainScene.h"
 #include "StartupDlg.h"
 #include "ChooseDlg.h"
+#include "CreateDlg.h"
 #include "../Enviro.h"	// for GetTerrainScene
 
 CStartupDlg g_StartDlg;
@@ -86,8 +87,6 @@ void CStartupDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_TOOLBAR, m_bFloatingToolbar);
 	DDX_Check(pDX, IDC_SOUND, m_bSound);
 	DDX_Check(pDX, IDC_VCURSOR, m_bVCursor);
-	DDX_Check(pDX, IDC_SPEEDTEST, m_bSpeedTest);
-	DDX_Check(pDX, IDC_QUAKEENGINE, m_bQuakeNavigation);
 	DDX_Radio(pDX, IDC_LAUNCH1, m_iLaunch);
 	DDX_Text(pDX, IDC_TNAME, m_strTName);
 	DDX_Text(pDX, IDC_IMAGE, m_strImage);
@@ -103,6 +102,7 @@ BEGIN_MESSAGE_MAP(CStartupDlg, CDialog)
 	ON_BN_CLICKED(IDC_TSELECT, OnTSelect)
 	ON_BN_CLICKED(IDC_LAUNCH1, OnChangeLaunch)
 	ON_BN_CLICKED(IDC_LAUNCH2, OnChangeLaunch)
+	ON_BN_CLICKED(IDC_EDITPROP, OnEditProp)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -201,7 +201,6 @@ void ShowOGLInfo(HDC hdc)
 	AfxMessageBox(str);
 
 	wglDeleteContext(device);
-//	return value;
 }
 
 
@@ -237,4 +236,31 @@ void CStartupDlg::UpdateState()
 	m_cbImage.EnableWindow(m_iLaunch == 0);
 	m_editTName.EnableWindow(m_iLaunch == 1);
 	m_cbTSelect.EnableWindow(m_iLaunch == 1);
+}
+
+void CStartupDlg::OnEditProp() 
+{
+	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
+	if (!pTerr)
+		return;
+
+	const char *filename = pTerr->GetParamFile();
+
+	TParams Params;
+	CCreateDlg dlg;
+
+	if (Params.LoadFromFile(filename))
+		dlg.SetParams(Params);
+
+	int result = dlg.DoModal();
+	if (result == IDOK)
+	{
+		dlg.GetParams(Params);
+		if (!Params.SaveToFile(filename))
+		{
+			CString str;
+			str.Format("Couldn't save to file %s\nPlease make sure the file is not read-only.", filename);
+			::AfxMessageBox(str);
+		}
+	}
 }

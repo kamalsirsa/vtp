@@ -66,6 +66,7 @@ protected:
 	afx_msg void OnTSelect();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnChangeLaunch();
+	afx_msg void OnEditProp();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
