@@ -1,7 +1,7 @@
 //
 // Globe.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -80,7 +80,7 @@ void IcoGlobe::Create(int iTriangleCount, const vtStringArray &paths,
 	}
 	else if (style == RIGHT_TRIANGLE || style == DYMAX_UNFOLD)
 	{
-		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
+		numvtx = 1 + 2 * ((int) pow((double)3, m_depth+1));
 		m_meshes = (style == RIGHT_TRIANGLE) ? 20 : 22;
 	}
 
