@@ -21,6 +21,8 @@ class vtStructureArray;
 
 ////////////////////////////////////////////////////
 
+#define OGR_FOOTPRINT 0
+
 #define MINIMUM_BASEMENT_SIZE 0.5 // Mininum size of an automatically generated basement layer in a building
 
 #define DEFAULT_BUILDING_SIZE 10.0  // Default size for buildings imported from points
@@ -180,7 +182,9 @@ private:
 	// alternate storage of earth-CS footprint, in development
 	void SynchToOGR();
 	void SynchFromOGR();
+#if OGR_FOOTPRINT
 	OGRPolygon	m_Foot;
+#endif
 
 	// footprint in the local CS of this building
 	FLine3		m_LocalFootprint;

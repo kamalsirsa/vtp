@@ -174,7 +174,9 @@ vtLevel::vtLevel()
 
 vtLevel::~vtLevel()
 {
+#if OGR_FOOTPRINT
 	m_Foot.empty();
+#endif
 	DeleteEdges();
 }
 
@@ -250,12 +252,15 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 
 void vtLevel::SetFootprint(const OGRPolygon *poly)
 {
+#if OGR_FOOTPRINT
 	m_Foot = *poly;
+#endif
 	SynchFromOGR();
 }
 
 void vtLevel::SynchToOGR()
 {
+#if OGR_FOOTPRINT
 	// keep OGR poly in synch
 	int i, size = m_Footprint.GetSize();
 	OGRLinearRing *pRing = m_Foot.getExteriorRing();
@@ -280,10 +285,12 @@ void vtLevel::SynchToOGR()
 	// for now, assume that there are no internal features
 	for (i = 0; i < size; i++)
 		pRing->setPoint(i, m_Footprint[i].x, m_Footprint[i].y);
+#endif
 }
 
 void vtLevel::SynchFromOGR()
 {
+#if OGR_FOOTPRINT
 	OGRLinearRing *pRing = m_Foot.getExteriorRing();
 	if (!pRing)
 		return;
@@ -333,6 +340,7 @@ void vtLevel::SynchFromOGR()
 		}
 	}
 	assert(count == total);
+#endif
 }
 
 void vtLevel::SetEdgeMaterial(BldMaterial bm)
