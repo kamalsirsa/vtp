@@ -191,18 +191,29 @@ bool vtElevLayer::ConvertProjection(vtProjection &proj_new)
 	bool success = false;
 	if (m_pGrid)
 	{
-		vtElevationGrid *grid_new = new vtElevationGrid();
-
-		success = grid_new->ConvertProjection(m_pGrid, proj_new, progress_callback);
-
-		if (success)
+		// Check to see if the projections differ *only* by datum
+		vtProjection test = proj_old;
+		test.SetDatum(proj_new.GetDatum());
+		if (test == proj_new)
 		{
-			delete m_pGrid;
-			m_pGrid = grid_new;
-			ReImage();
+			success = m_pGrid->ReprojectExtents(proj_new);
 		}
 		else
-			delete grid_new;
+		{
+			// actually re-project the grid elements
+			vtElevationGrid *grid_new = new vtElevationGrid();
+
+			success = grid_new->ConvertProjection(m_pGrid, proj_new, progress_callback);
+
+			if (success)
+			{
+				delete m_pGrid;
+				m_pGrid = grid_new;
+				ReImage();
+			}
+			else
+				delete grid_new;
+		}
 	}
 	if (m_pTin)
 	{
