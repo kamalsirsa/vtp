@@ -193,6 +193,10 @@ SOURCE=.\frame.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ItemGroup.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ModelDlg.cpp
 # End Source File
 # Begin Source File
@@ -271,6 +275,10 @@ SOURCE=.\frame.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ItemGroup.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\menu_id.h
 # End Source File
 # Begin Source File
@@ -299,6 +307,10 @@ SOURCE=.\TreeView.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
+SOURCE=.\bitmaps\axes.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\wx\msw\blank.cur
 # End Source File
 # Begin Source File
@@ -312,6 +324,10 @@ SOURCE=.\icons\camera.ico
 # Begin Source File
 
 SOURCE=.\CManager.rc
+# End Source File
+# Begin Source File
+
+SOURCE=.\bitmaps\contents_open.bmp
 # End Source File
 # Begin Source File
 
@@ -339,7 +355,19 @@ SOURCE=.\wx\msw\info.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\bitmaps\item_addmodel.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\bitmaps\item_new.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\bitmaps\item_rem.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\bitmaps\item_remmodel.bmp
 # End Source File
 # Begin Source File
 
@@ -392,6 +420,10 @@ SOURCE=.\wx\msw\question.ico
 # Begin Source File
 
 SOURCE=.\wx\msw\roller.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\bitmaps\rulers.bmp
 # End Source File
 # Begin Source File
 
