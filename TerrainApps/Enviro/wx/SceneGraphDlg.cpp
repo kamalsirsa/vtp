@@ -285,7 +285,8 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 
 	if (!pEng) return;
 
-	wxString2 str = pEng->GetName2();
+	wxString2 str, str2;
+	str.from_utf8(pEng->GetName2());
 	if (str == wxString2(""))
 		str = "unnamed";
 
@@ -298,7 +299,8 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 		if (node)
 		{
 			str += _T("\"");
-			str += wxString::FromAscii(node->GetName2());
+			str2.from_utf8(node->GetName2());
+			str += str2;
 			str += _T("\"");
 		}
 		else
