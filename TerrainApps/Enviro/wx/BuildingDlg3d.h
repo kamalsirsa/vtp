@@ -36,6 +36,9 @@ public:
 	// allow the dialog to control rendering
 	virtual void EnableRendering(bool bEnable);
 
+	// recevied notification when the building is modified
+	virtual void Modified();
+
 protected:
 	// WDR: handler declarations for BuildingDlg
 	virtual void OnOK( wxCommandEvent &event );

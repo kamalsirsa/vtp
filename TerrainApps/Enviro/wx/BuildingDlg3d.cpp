@@ -38,7 +38,9 @@ BuildingDlg3d::BuildingDlg3d( wxWindow *parent, wxWindowID id, const wxString &t
 
 void BuildingDlg3d::Setup(vtBuilding3d *bld3d)
 {
+	vtTerrain *pTerr = GetCurrentTerrain();
 	m_pStructure3d = bld3d;
+	m_pSA = &pTerr->GetStructures();
 	m_pBuilding = bld3d;
 }
 
@@ -47,7 +49,7 @@ void BuildingDlg3d::OnOK( wxCommandEvent &event )
 	BuildingDlg::OnOK(event);
 
 	vtTerrain *pTerr = GetCurrentTerrain();
-	pTerr->GetStructures().ReConstructStructure(m_pStructure3d, "roof walls detail");
+	pTerr->GetStructures().ReConstructStructure(m_pStructure3d);
 }
 
 void BuildingDlg3d::EnableRendering(bool bEnable)
@@ -55,3 +57,8 @@ void BuildingDlg3d::EnableRendering(bool bEnable)
 	EnableContinuousRendering(bEnable);
 }
 
+void BuildingDlg3d::Modified()
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	pTerr->GetStructures().ReConstructStructure(m_pStructure3d);
+}
