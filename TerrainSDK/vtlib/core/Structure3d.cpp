@@ -610,6 +610,7 @@ void vtStructure3d::InitializeMaterialArrays()
 void vtStructure3d::ReleaseSharedMaterials()
 {
 	s_MaterialDescriptors.ReleaseMaterials();
+	vtFence3d::s_FenceMats.ReleaseMaterials();
 }
 
 //
