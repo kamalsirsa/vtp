@@ -77,6 +77,7 @@ public:
 	// load and use GCF
 	void ReadGCF(const char *fname, void progress_callback(int) = NULL);
 	bool FindPlace(const char *country, const char *place, DPoint2 &point);
+	bool FindPlaceWithGuess(const char *country, const char *place, DPoint2 &point);
 
 protected:
 	Array<Country*> m_countries;

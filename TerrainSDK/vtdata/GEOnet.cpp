@@ -7,7 +7,182 @@
 
 #include "GEOnet.h"
 #include "vtdata/shapelib/shapefil.h"
+#include "vtdata/vtLog.h"
 #include <stdio.h>
+
+//
+// Helper Function: Convert all accented characters to unaccented.
+//
+vtString RemoveAccents(const vtString &strInput)
+{
+	vtString strOutput = "";
+
+	int len = strInput.GetLength();
+	for (int i = 0; i < len; i++)
+	{
+		char ch = strInput.GetAt(i);
+		switch (ch)
+		{
+			// do conversion from "ANSI western europe" character set
+		case 'À':
+		case 'Á':
+		case 'Â':
+		case 'Ã':
+		case 'Ä':
+		case 'Å':
+			strOutput += 'A';
+			break;
+		case 'Ç':
+			strOutput += 'C';
+			break;
+		case 'È':
+		case 'É':
+		case 'Ê':
+		case 'Ë':
+			strOutput += 'E';
+			break;
+		case 'Ì':
+		case 'Í':
+		case 'Î':
+		case 'Ï':
+			strOutput += 'I';
+			break;
+		case 'Ð':
+			strOutput += 'D';
+			break;
+		case 'Ñ':
+			strOutput += 'N';
+			break;
+		case 'Ò':
+		case 'Ó':
+		case 'Ô':
+		case 'Õ':
+		case 'Ö':
+		case 'Ø':
+			strOutput += 'O';
+			break;
+		case 'Ù':
+		case 'Ú':
+		case 'Û':
+		case 'Ü':
+			strOutput += 'U';
+			break;
+		case 'Ý':
+			strOutput += 'Y';
+			break;
+		case 'ß':
+			strOutput += 's';	// NOTE: converts to 'ss'
+			strOutput += 's';
+			break;
+		case 'à':
+		case 'á':
+		case 'â':
+		case 'ã':
+		case 'ä':
+		case 'å':
+			strOutput += 'a';
+			break;
+		case 'ç':
+			strOutput += 'c';
+			break;
+		case 'è':
+		case 'é':
+		case 'ê':
+		case 'ë':
+			strOutput += 'e';
+			break;
+		case 'ì':
+		case 'í':
+		case 'î':
+		case 'ï':
+			strOutput += 'i';
+			break;
+		case 'ñ':
+			strOutput += 'n';
+			break;
+		case 'ò':
+		case 'ó':
+		case 'ô':
+		case 'õ':
+		case 'ö':
+		case 'ø':
+			strOutput += 'o';
+			break;
+		case 'ù':
+		case 'ú':
+		case 'û':
+		case 'ü':
+			strOutput += 'u';
+			break;
+		case 'ý':
+		case 'ÿ':
+			strOutput += 'y';
+			break;
+
+		// also do conversion from old DOS character set
+		case 'ƒ':
+		case '„':
+		case '…':
+		case '†':
+		case ' ':
+			strOutput += 'a';
+			break;
+		case '‹':
+		case 'Œ':
+		case '':
+		case '¡':
+			strOutput += 'i';
+			break;
+		case '':
+		case '–':
+		case '—':
+		case '£':
+			strOutput += 'u';
+			break;
+		case '‚':
+		case 'ˆ':
+		case '‰':
+		case 'Š':
+			strOutput += 'e';
+			break;
+		case '“':
+		case '”':
+		case '•':
+		case '¢':
+			strOutput += 'o';
+			break;
+		case 'Ž':
+		case '':
+			strOutput += 'A';
+			break;
+		case 'š':
+			strOutput += 'U';
+			break;
+		case '':
+			strOutput += 'E';
+			break;
+		case '™':
+			strOutput += 'O';
+			break;
+		case '‡':
+			strOutput += 'c';
+			break;
+		case '˜':
+			strOutput += 'y';
+			break;
+		case '¤':
+			strOutput += 'n';
+			break;
+		case '¥':
+			strOutput += 'N';
+			break;
+		default:
+			strOutput += ch;
+		}
+	}
+	return strOutput;
+}
+
 
 #if SUPPORT_WSTRING
 
@@ -585,6 +760,450 @@ bool Countries::FindPlace(const char *country_val, const char *place_val,
 	}
 	return false;
 }
+
+bool Countries::FindPlaceWithGuess(const char *country, const char *place,
+									 DPoint2 &geo)
+{
+	// country should never have accents in it
+	vtString strCountry = RemoveAccents(country);
+	vtString strCity = RemoveAccents(place);
+
+	// Australia
+	if (!strCountry.CompareNoCase("Australia"))
+	{
+		if (!strCity.CompareNoCase("Flinders View"))	// Brisbane suburb
+			strCity = "Brisbane";
+
+		if (!strCity.CompareNoCase("Daw Park"))	// Adelaide suburb
+			strCity = "Mitcham";
+
+		if (!strCity.CompareNoCase("Booragoon"))	// Perth suburb
+		{
+			geo.Set(115.834, -32.039);
+			return true;
+		}
+	}
+
+	// Barbados
+	if (!strCountry.CompareNoCase("Barbados"))
+	{
+		if (!strCity.CompareNoCase("St. Michael"))	// Bridgetown suburb
+			strCity = "Bridgetown";
+	}
+
+	// Bosnia
+	if (!strCountry.CompareNoCase("Bosnia-Herzegovina"))
+		strCountry = "BOSNIA AND HERZEGOVINA";
+
+	// Brazil
+	if (!strCountry.CompareNoCase("Brazil"))
+	{
+		if (!strCity.CompareNoCase("Lucas do Rio Verde"))	// tiny speck?
+		{
+			geo.Set(-55.951, -13.135);
+			return true;
+		}
+	}
+
+	// Brunei
+	if (!strCity.CompareNoCase("BSB"))	// you can see why they abbreviate it
+		strCity = "Bandar Seri Begawan";
+
+	// Canada
+	if (!strCountry.CompareNoCase("Canada"))
+	{
+		if (!strCity.CompareNoCase("100 Mile House"))
+			strCity = "One Hundred Mile House";
+		if (!strCity.CompareNoCase("150 Mile House"))
+			strCity = "One Hundred Fifty Mile House";
+		if (!strCity.CompareNoCase("Hanwell"))	// tiny town in NB
+			strCity = "Fredericton";		// nearest known town?
+		if (!strCity.CompareNoCase("Huberdeau"))	// in Quebec, pop. 942
+			strCity = "Saint-Remi-d'Amherst";	// nearby small town
+		if (!strCity.CompareNoCase("Quebec City"))
+			strCity = "Quebec";
+		if (!strCity.CompareNoCase("St. Albert"))
+			strCity = "Saint Albert";
+		if (!strCity.CompareNoCase("St. John's"))
+			strCity = "Saint John's";
+		if (!strCity.CompareNoCase("Sault Ste. Marie"))
+			strCity = "Sault Sainte Marie";
+		if (!strCity.CompareNoCase("Robson"))	// tiny speck?
+		{
+			geo.Set(-117.666, 49.333);
+			return true;
+		}
+	}
+
+	// China
+	if (!strCity.CompareNoCase("Dujiangyan"))
+	{
+		// mysteriously missing from atlases, even though it's UNESCO site
+		//  (http://whc.unesco.org/sites/1001.htm)
+		geo.Set(103.428, 30.877);
+		return true;
+	}
+	if (!strCity.CompareNoCase("Maanshan"))
+		strCity = "Ma'anshan";	// 54km SW of Nanjing
+
+	// Denmark
+	if (!strCity.CompareNoCase("Solroed Strand"))
+		strCity = "Solrod Strand";
+	if (!strCity.CompareNoCase("Bornholm"))
+		// it's an island; major town is romanized as Ronne
+		strCity = "Ronne";
+
+	// Colombia
+	if (!strCountry.CompareNoCase("Colombia"))
+	{
+		if (!strCity.Left(12).CompareNoCase("Cartagena de"))
+			strCity = "Cartagena";
+	}
+
+	// France
+	if (!strCity.CompareNoCase("Aix en Provence"))
+		strCity = "Aix-en-Provence";
+	if (!strCity.CompareNoCase("Les Sables d'Olonne"))
+		strCity = "Les Sables-d'Olonne";
+	if (!strCity.CompareNoCase("Marly le Roi"))
+		strCity = "Marly-le-Roi";
+	if (!strCity.CompareNoCase("Maisons Laffitte"))
+		strCity = "Maisons-Laffitte";
+	if (!strCity.CompareNoCase("Sophia Antipolis"))
+		strCity = "Nice";
+	if (!strCity.CompareNoCase("Sophia-Antipolis"))
+		strCity = "Nice";
+	if (!strCity.CompareNoCase("Salon de Provence"))
+		strCity = "Salon-de-Provence";
+	if (!strCity.CompareNoCase("St. Cloud"))
+		strCity = "Saint Cloud";
+	if (!strCity.CompareNoCase("St. Georges de Reintembault"))
+		strCity = "Saint Georges de Reintembault";
+	if (!strCountry.CompareNoCase("France") || !strCountry.CompareNoCase("Reunion") ||
+		!strCountry.CompareNoCase("New Caledonia"))
+	{
+		// French addresses often have "Cedex" following the city name;
+		// this is a required part of the address but should be ignored for
+		// purposes of matching the city name.
+		int offset = strCity.Find(" cedex");
+		if (offset == -1) offset = strCity.Find(" CEDEX");
+		if (offset == -1) offset = strCity.Find(" Cedex");
+		if (offset != -1)
+		{
+			strCity = strCity.Left(offset);
+			VTLOG("  Removing French Cedex: %s\n", (const char *) strCity);
+		}
+	}
+
+	// Germany
+	if (!strCity.CompareNoCase("Bad Arolsen"))
+		strCity = "Arolsen";	// apparently, English name has no "bad"
+	if (!strCity.CompareNoCase("Bad Duerrenberg"))
+		strCity = "Bad Durrenberg";
+	if (!strCity.CompareNoCase("Bedburg - Rath"))
+		strCity = "Bedburg";
+	if (!strCity.CompareNoCase("Goettingen"))
+		strCity = "Gottingen";
+	if (!strCity.CompareNoCase("Grafenwoehr"))
+		strCity = "Grafenwohr";
+	if (!strCity.Left(10).CompareNoCase("Oberthal-G"))
+		strCity = "Gudesweiler";
+	if (!strCity.CompareNoCase("Loehne"))
+		strCity = "Lohne";
+	if (!strCity.CompareNoCase("Osnabrueck"))
+		strCity = "Osnabruck";
+	if (!strCity.CompareNoCase("Saarbruecken"))
+		strCity = "Saarbrucken";
+	if (!strCity.CompareNoCase("St. Ingbert"))
+		strCity = "Saint Ingbert";
+	if (!strCity.CompareNoCase("Tuebingen"))
+		strCity = "Tubingen";
+
+	// Georgia
+	if (!strCity.CompareNoCase("Tbilisi"))
+		strCity = "T'bilisi";
+
+	// Greece
+	if (!strCity.CompareNoCase("Archanes"))	// on Crete
+		strCity = "Heraklion";
+
+	// Hong Kong
+	if (!strCity.CompareNoCase("Shatin"))
+		strCity = "Sha Tin";
+
+	// India
+	if (!strCity.Left(7).CompareNoCase("Ambala "))	// "Ambala Cantonment" etc.
+		strCity = "Ambala";
+
+	// Israel
+	if (!strCity.CompareNoCase("Herzlia") || !strCity.CompareNoCase("Hertzlia") ||
+		!strCity.CompareNoCase("Herzlia Pituach"))
+		strCity = "Herzliya";
+	if (!strCity.CompareNoCase("Bat-Yam"))
+		strCity = "Bat Yam";
+	if (!strCity.CompareNoCase("Tel-Aviv"))
+		strCity = "Tel Aviv";
+	if (!strCity.CompareNoCase("Tel-Adashim"))
+		strCity = "Tel Adashim";
+	if (!strCity.CompareNoCase("Raanana"))
+		strCity = "Ra'ananna";
+	// GEOnet doesn't know "Jerusalem" as a city!?
+
+	// Italy
+	if (!strCity.CompareNoCase("Giardini Naxos"))
+		strCity = "Giardini";
+	if (!strCity.CompareNoCase("Pomarolo"))		// tiny town in Trentino province
+		strCity = "Nomi";		// nearest uniquely-named known town
+	if (!strCity.CompareNoCase("Majano"))	// town missing from atlases
+		strCity = "Udine";		// nearest major city, probably 25km away
+
+	// Hong Kong - GEOnet/FIPS says it's a country
+	if (!strCity.CompareNoCase("Hong Kong"))
+		strCountry = "Hong Kong";
+
+	// Lebanon
+	if (!strCity.CompareNoCase("Jounieh"))	// "Jounieh" is the westernized name
+		strCity = "Juniyah";
+
+	// Mexico
+	if (!strCity.CompareNoCase("Mexico City"))
+		strCity = "Ciudad de Mexico";
+
+	// New Caledonia
+	if (!strCity.CompareNoCase("Mont Dore"))
+		strCity = "Mont-Dore";
+
+	// Palestine
+	if (!strCountry.CompareNoCase("Palestine"))
+		strCountry = "West Bank";
+
+	// Phillipines
+	if (!strCity.CompareNoCase("Metro Manila"))
+		strCity = "Manila";
+
+	// Reunion
+	if (!strCity.CompareNoCase("Sainte Clotilde"))
+		strCity = "Sainte-Clotilde";
+
+	// Romania
+	if (!strCity.CompareNoCase("Miercurea Ciuc"))
+		strCity = "Miercurea-Ciuc";
+	if (!strCity.CompareNoCase("Camplung"))
+		strCity = "Campulungul Moldovenesc";
+
+	// Russia
+	if (!strCountry.CompareNoCase("Russia"))
+	{
+		if (!strCity.CompareNoCase("Astrakhan"))
+			strCity = "Astrakhan'";
+		if (!strCity.CompareNoCase("Friazino"))
+			strCity = "Fryazino";
+		if (!strCity.CompareNoCase("Nalchik"))
+			strCity = "Nal'chik";
+		if (!strCity.CompareNoCase("Nizhny Novgorod"))
+			strCity = "Nizhni Novgorod";
+		if (!strCity.CompareNoCase("St.Petersburg"))
+			strCity = "Saint Petersburg";
+		if (!strCity.CompareNoCase("St. Petersburg"))
+			strCity = "Saint Petersburg";
+		if (!strCity.CompareNoCase("Saint-Petersburg"))
+			strCity = "Saint Petersburg";
+		if (!strCity.CompareNoCase("Tyumen"))
+			strCity = "Tyumen'";
+	}
+
+	// Serbia - GEOnet doesn't know "Serbia"
+	if (!strCountry.CompareNoCase("Serbia"))
+		strCountry = "Yugoslavia"; 
+
+	// Spain
+	// "Bellaterra (municipality of Cerdanyola del Vallès), between the towns of
+	// Sabadell and Sant Cugat del Vallès."
+	if (!strCity.CompareNoCase("Bellaterra"))
+		strCity = "Sabadell";
+	if (!strCity.Left(13).CompareNoCase("La Bisbal d'E"))
+		strCity = "La Bisbal";
+	if (!strCity.CompareNoCase("Playa del Ingles"))	// resort on gran canaria
+		strCity = "Maspalomas";		// nearest town
+
+	// Switzerland
+	if (!strCountry.CompareNoCase("Switzerland"))
+	{
+		if (!strCity.CompareNoCase("St-Aubin"))
+			strCity = "Saint-Aubin";
+	}
+
+	// Taiwan
+	if (!strCountry.CompareNoCase("Taiwan"))
+	{
+		if (!strCity.CompareNoCase("Taipei"))
+			strCity = "T'ai-pei";
+		if (!strCity.CompareNoCase("Hsinchu"))
+			strCity = "Hsin-chu";
+		if (!strCity.CompareNoCase("Tanshui"))
+			strCity = "Tan-shui";
+		if (!strCity.CompareNoCase("Taichung"))
+			strCity = "T'ai-chung";
+	}
+
+	// Tanzania
+	if (!strCity.CompareNoCase("Beysukent"))
+		strCity = "Ankara";
+
+	// Turkey
+	if (!strCity.CompareNoCase("Dar-es-Salaam"))
+		strCity = "Dar es Salaam";
+
+	// Ukraine
+	if (!strCity.CompareNoCase("Donetsk"))
+		strCity = "Donets'k";
+	if (!strCity.CompareNoCase("Lviv"))
+		strCity = "L'viv";
+	if (!strCity.CompareNoCase("Kramatorsk"))
+		strCity = "Kramators'k";
+	if (!strCity.CompareNoCase("Kharkov"))
+		strCity = "Khar'kov";
+
+	// UK
+	if (!strCountry.CompareNoCase("United Kingdom"))
+	{
+		if (!strCity.CompareNoCase("Walton-On-Thames"))
+			strCity = "Walton upon Thames";
+		if (!strCity.CompareNoCase("Prenton"))
+			strCity = "Birkenhead";
+	}
+
+	// (South) Korea
+	if (!strCountry.CompareNoCase("Korea (Repulic of)"))
+		strCountry = "South Korea";
+	if (!strCity.CompareNoCase("In'choen"))
+		strCity = "Incheon";
+	if (!strCity.CompareNoCase("Inchon"))
+		strCity = "Inch'on";
+	if (!strCity.CompareNoCase("Seocho-dong"))
+		strCity = "Seocho";
+	if (!strCountry.CompareNoCase("South Korea"))
+	{
+		// Apparently "-gu" is a generic ending for Korean place names, and
+		// the suffix is not stored in the GEOnet database
+		int offset = strCity.Find("-gu");
+		if (offset != -1)
+		{
+			VTLOG("  Removing Korean -gu\n");
+			strCity.Delete(offset, 3);
+		}
+	}
+
+	// Yemen
+	if (!strCity.CompareNoCase("Sana'a") || !strCity.CompareNoCase("Sana`a"))
+		strCity = "Sanaa";
+
+	VTLOG("Trying: (%s), (%s)\n",
+		(const char *) strCity, (const char *) strCountry);
+
+	bool bFound = FindPlace(strCountry, strCity, geo);
+
+	// If it has no city info, but the country is _very_ small, it's fair to assume
+	//  that the location is in the population center of the country.
+	if (!bFound && strCity == "")
+	{
+		if (!strCountry.CompareNoCase("Bahrain"))
+			strCity = "Manama";
+		if (!strCountry.CompareNoCase("Singapore"))
+			strCity = "Singapore";
+		if (!strCountry.CompareNoCase("San Marino"))
+			strCity = "San Marino";
+		if (!strCountry.CompareNoCase("Reunion"))
+			strCity = "Saint-Denis";
+
+		bFound = FindPlace(strCountry, strCity, geo);
+	}
+
+	// some addresses have a compound name for city, separated by commas,
+	// e.g. "Arbroath, Angus"
+	// if so, try just first part before the comma
+	if (!bFound && strCity.Find(",") != -1)
+	{
+		int comma_loc = strCity.Find(',');
+
+		vtString newCity = strCity.Left(comma_loc);
+		VTLOG("  Trying before comma: (%s)\n", (const char *) newCity);
+		bFound = FindPlace(strCountry, newCity, geo);
+		if (!bFound)
+		{
+			// try the part after the comma
+			newCity = strCity.Right(strCity.GetLength() - comma_loc - 1);
+			newCity.TrimLeft();
+			newCity.TrimRight();
+			VTLOG("  Trying after comma: (%s)\n", (const char *) newCity);
+			bFound = FindPlace(strCountry, newCity, geo);
+			if (bFound)
+				strCity = newCity;
+		}
+	}
+
+	// some addresses have a compound name for city, separated by a slash
+	if (!bFound && strCity.Find("/") != -1)
+	{
+		int slash_loc = strCity.Find('/');
+
+		vtString newCity = strCity.Left(slash_loc);
+		newCity.TrimRight();
+		VTLOG("  Trying before slash: (%s)\n", (const char *) newCity);
+		bFound = FindPlace(strCountry, newCity, geo);
+
+		if (!bFound)
+		{
+			// try the part after the comma
+			newCity = strCity.Right(strCity.GetLength() - slash_loc - 1);
+			newCity.TrimLeft();
+			newCity.TrimRight();
+			VTLOG("  Trying after comma: (%s)\n", (const char *) newCity);
+			bFound = FindPlace(strCountry, newCity, geo);
+			if (bFound)
+				strCity = newCity;
+		}
+	}
+
+	// many addresses (especially in Japan / Korea / China) uses "Foo City"
+	//  in place of simply "Foo"
+	if (!bFound && !strCity.Right(5).CompareNoCase(" City"))
+	{
+		strCity = strCity.Left(strCity.GetLength() - 5);
+		VTLOG("  Trying without 'city': (%s)\n", (const char *) strCity);
+		bFound = FindPlace(strCountry, strCity, geo);
+	}
+
+	// some addresses have a small obscure town name, followed by a more easily
+	//  found town in parentheses, e.g. Bucasia (Mackay), Australia
+	if (!bFound && strCity.Find("(") != -1)
+	{
+		int paren_loc = strCity.Find('(');
+
+		vtString strCity1 = strCity.Left(paren_loc-1);
+		vtString strCity2 = strCity.Mid(paren_loc+1, strCity.GetLength() - paren_loc - 2);
+
+		// remove "near"
+		if (strCity2.Left(5) == "near ")
+		{
+			strCity2 = strCity2.Right(strCity2.GetLength()-5);
+		}
+
+		bFound = FindPlace(strCountry, strCity1, geo);
+		if (!bFound)
+		{
+			bFound = FindPlace(strCountry, strCity2, geo);
+		}
+	}
+
+	if (bFound)
+		VTLOG("  Found: %3.2lf, %3.2lf\n\n", geo.x, geo.y);
+	else
+		VTLOG("  Failed.\n\n");
+
+	return bFound;
+}
+
 
 #endif // SUPPORT_WSTRING
 
