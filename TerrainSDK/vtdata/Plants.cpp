@@ -208,7 +208,7 @@ int vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 		{
 			vtPlantSpecies::CommonName cname = spe->GetCommonName(j);
 			if (!strcmp(name, cname.m_strName))
-				return j;
+				return i;
 
 			// also, for backward compatibility, look for a match without spaces
 			vtString nospace = RemSpaces(cname.m_strName);
@@ -216,7 +216,7 @@ int vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 				return i;
 		}
 	}
-	return i;
+	return -1;
 }
 
 ////////////////////////////////////////////////////////////////////////
