@@ -64,4 +64,5 @@ protected:
 	float	m_fXStep, m_fZStep;	// step size between the World grid points
 };
 
-#endif
+#endif	// HEIGHTFIELDH
+
