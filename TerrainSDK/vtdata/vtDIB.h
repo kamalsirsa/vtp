@@ -1,7 +1,7 @@
 //
 // vtDIB.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,18 +21,21 @@ class vtBitmapBase
 public:
 	virtual ~vtBitmapBase() {}
 
-	virtual void GetPixel24(int x, int y, RGBi &rgb) const = 0;
-	virtual void SetPixel24(int x, int y, const RGBi &rgb) = 0;
-
 	virtual unsigned char GetPixel8(int x, int y) const = 0;
+	virtual void GetPixel24(int x, int y, RGBi &rgb) const = 0;
+	virtual void GetPixel32(int x, int y, RGBAi &rgba) const = 0;
+
 	virtual void SetPixel8(int x, int y, unsigned char color) = 0;
+	virtual void SetPixel24(int x, int y, const RGBi &rgb) = 0;
+	virtual void SetPixel32(int x, int y, const RGBAi &rgba) = 0;
 
 	virtual unsigned int GetWidth() const = 0;
 	virtual unsigned int GetHeight() const = 0;
 	virtual unsigned int GetDepth() const = 0;
 
-	void ScalePixel24(int x, int y, float fScale);
 	void ScalePixel8(int x, int y, float fScale);
+	void ScalePixel24(int x, int y, float fScale);
+	void ScalePixel32(int x, int y, float fScale);
 	void BlitTo(vtBitmapBase &target, int x, int y);
 };
 
@@ -91,9 +94,6 @@ public:
 
 	bool GetPixel1(int x, int y) const;
 	void SetPixel1(int x, int y, bool color);
-
-	void ScalePixel24(int x, int y, float fScale);
-	void ScalePixel8(int x, int y, float fScale);
 
 	void SetColor(const RGBi &rgb);
 	void Invert();

@@ -1,7 +1,7 @@
 //
 // vtDIB.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2006 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -81,6 +81,15 @@ typedef struct tagRGBQUAD {
 // Base class vtBitmapBase
 //
 
+void vtBitmapBase::ScalePixel8(int x, int y, float fScale)
+{
+	unsigned int texel = GetPixel8(x, y);
+	texel = (int) (texel * fScale);
+	if (texel > 255)
+		texel = 255;
+	SetPixel8(x, y, (unsigned char) texel);
+}
+
 void vtBitmapBase::ScalePixel24(int x, int y, float fScale)
 {
 	RGBi rgb;
@@ -92,13 +101,15 @@ void vtBitmapBase::ScalePixel24(int x, int y, float fScale)
 	SetPixel24(x, y, rgb);
 }
 
-void vtBitmapBase::ScalePixel8(int x, int y, float fScale)
+void vtBitmapBase::ScalePixel32(int x, int y, float fScale)
 {
-	unsigned int texel = GetPixel8(x, y);
-	texel = (int) (texel * fScale);
-	if (texel > 255)
-		texel = 255;
-	SetPixel8(x, y, (unsigned char) texel);
+	RGBAi rgba;
+	GetPixel32(x, y, rgba);
+	rgba.MultRGB(fScale);
+	if (rgba.r > 255) rgba.r = 255;
+	if (rgba.g > 255) rgba.g = 255;
+	if (rgba.b > 255) rgba.b = 255;
+	SetPixel32(x, y, rgba);
 }
 
 void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
