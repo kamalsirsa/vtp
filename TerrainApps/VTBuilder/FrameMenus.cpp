@@ -43,7 +43,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
 EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
 EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
-EVT_MENU(ID_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
+EVT_MENU(ID_SPECIAL_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
+EVT_MENU(ID_SPECIAL_PROCESS_BILLBOARD,	MainFrame::OnProcessBillboard)
 EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
 
 EVT_MENU(ID_EDIT_DELETE, MainFrame::OnEditDelete)
@@ -208,7 +209,10 @@ void MainFrame::CreateMenus()
 	fileMenu->Append(ID_FILE_SAVE, "Save Project\tCtrl+S", "Save Project As");
 #ifndef ELEVATION_ONLY
 	fileMenu->AppendSeparator();
-	fileMenu->Append(ID_DYMAX_TEXTURES, "Create Dymaxion Textures");
+	wxMenu *specialMenu = new wxMenu;
+	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, "Create Dymaxion Textures");
+	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, "Process Billboard Texture");
+	fileMenu->Append(0, "Special", specialMenu);
 #endif
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_EXIT, "E&xit\tAlt-X", "Exit");
@@ -553,6 +557,177 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 			face_pairs[i][0], face_pairs[i][1]);
 		bool success = out[i].SaveFile(name, wxBITMAP_TYPE_PNG);
 	}
+}
+
+bool ProcessBillboardTexture(const char *fname_in, const char *fname_out,
+							 const RGBi &bg, void progress_callback(int) = NULL)
+{
+	float blend_factor;
+	vtDIB dib1, dib2, dib3;
+	if (!dib1.ReadPNG(fname_in))
+	{
+		wxMessageBox("Couldn't read input file.");
+		return false;
+	}
+	int i, j, width, height, x, y;
+	width = dib1.GetWidth();
+	height = dib1.GetHeight();
+
+	// First pass: restore color of edge texels by guessing correct
+	//  non-background color.
+	RGBAi c, res, diff;
+	dib2.Create(width, height, 32);
+	for (i = 0; i < width; i++)
+	{
+		progress_callback(i*100/width);
+		for (j = 0; j < height; j++)
+		{
+			dib1.GetPixel32(i, j, c);
+			if (c.a == 0)
+			{
+				res = bg;
+				res.a = 0;
+			}
+			else if (c.a == 255)
+			{
+				res = c;
+			}
+			else
+			{
+				blend_factor = c.a / 255.0f;
+
+				diff = c - bg;
+				res = bg + (diff * (1.0f / blend_factor));
+				res.Crop();
+				res.a = c.a;
+			}
+			dib2.SetPixel32(i, j, res);
+		}
+	}
+	dib2.WritePNG("D:/2d/pass1.png");
+
+	// Now make many passes over the bitmap, filling in areas of alpha==0
+	//  with values from the nearest pixels.
+	dib3.Create(width, height, 24);
+	int filled_in = 1;
+	int progress_target = -1;
+	while (filled_in)
+	{
+		filled_in = 0;
+		dib3.SetColor(RGBi(0,0,0));
+
+		RGBi sum;
+		int surround;
+		for (i = 0; i < width; i++)
+		{
+			for (j = 0; j < height; j++)
+			{
+				dib2.GetPixel32(i, j, c);
+				if (c.a != 0)
+					continue;
+
+				// collect surrounding values
+				sum.Set(0,0,0);
+				surround = 0;
+				for (x = -1; x <= 1; x++)
+				for (y = -1; y <= 1; y++)
+				{
+					if (x == 0 && y == 0) continue;
+					if (i+x < 0) continue;
+					if (i+x > width-1) continue;
+					if (j+y < 0) continue;
+					if (j+y > height-1) continue;
+					dib2.GetPixel32(i+x, j+y, c);
+					if (c.a != 0)
+					{
+						sum += c;
+						surround++;
+					}
+				}
+				if (surround > 2)
+				{
+					sum /= (float) surround;
+					dib3.SetPixel24(i, j, sum);
+				}
+			}
+		}
+		for (i = 0; i < width; i++)
+		{
+			for (j = 0; j < height; j++)
+			{
+				dib2.GetPixel32(i, j, c);
+				if (c.a == 0)
+				{
+					dib3.GetPixel24(i, j, sum);
+					if (sum.r != 0 || sum.g != 0 || sum.b != 0)
+					{
+						c = sum;
+						c.a = 1;
+						dib2.SetPixel32(i, j, c);
+						filled_in++;
+					}
+				}
+			}
+		}
+		if (progress_target == -1 && filled_in > 0)
+			progress_target = filled_in * 2 / 3;
+		progress_callback((progress_target - filled_in) * 100 / progress_target);
+	}
+	// One final pass: changed the regions with alpha==1 to 0
+	// (we were just using the value as a flag)
+	for (i = 0; i < width; i++)
+	{
+		progress_callback(i*100/width);
+		for (j = 0; j < height; j++)
+		{
+			dib2.GetPixel32(i, j, c);
+			if (c.a == 1)
+				c.a = 0;
+			dib2.SetPixel32(i, j, c);
+		}
+	}
+
+	if (dib2.WritePNG(fname_out))
+		wxMessageBox("Successful.");
+	else
+		wxMessageBox("Unsuccessful.");
+	return true;
+}
+
+
+void MainFrame::OnProcessBillboard(wxCommandEvent &event)
+{
+	wxTextEntryDialog dlg1(this,
+		"This feature allows you to process a billboard texture to remove\n"
+		"unwanted background effects on its edges.  The file should be in\n"
+		"PNG format, 24-bit color plus 8-bit alpha.  To begin, specify the\n"
+		"current background color of the image to process.  Enter the color\n"
+		"as R G B, e.g. black is 0 0 0 and white is 255 255 255.", "Wizard");
+	if (dlg1.ShowModal() == wxID_CANCEL)
+		return;
+	RGBi bg;
+	const char *color = dlg1.GetValue();
+	int res = sscanf(color, "%d %d %d", &bg.r, &bg.g, &bg.b);
+	if (res != 3)
+	{
+		wxMessageBox("Couldn't parse color.");
+		return;
+	}
+	wxFileDialog dlg2(this, "Choose input texture file", "", "", "*.png");
+	if (dlg2.ShowModal() == wxID_CANCEL)
+		return;
+	const char *fname_in = dlg2.GetPath();
+
+	wxFileDialog dlg3(this, "Choose output texture file", "", "", "*.png", wxSAVE);
+	if (dlg3.ShowModal() == wxID_CANCEL)
+		return;
+	const char *fname_out = dlg3.GetPath();
+
+	OpenProgressDialog("Processing");
+
+	ProcessBillboardTexture(fname_in, fname_out, bg, progress_callback);
+
+	CloseProgressDialog();
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event)
