@@ -20,6 +20,7 @@
 
 #ifdef WIN32
 #  ifdef _MSC_VER
+#	undef mkdir		// replace the one in direct.h that takes 1 param
 #	define mkdir(dirname,mode)	_mkdir(dirname)
 #	define rmdir(dirname)		_rmdir(dirname)
 #	define strdup(str)			_strdup(str)
