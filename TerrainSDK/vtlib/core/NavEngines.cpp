@@ -724,6 +724,7 @@ vtTrackball::vtTrackball(float fRadius)
 	m_bRotate = false;
 	m_bZoom = false;
 	m_fZoomScale = 1.0f;
+	m_fTransScale = 1.0f;
 
 	// Default button assignments: can be changed
 	m_rotate_button = VT_MIDDLE;
@@ -748,6 +749,11 @@ float vtTrackball::GetRadius()
 void vtTrackball::SetZoomScale(float s)
 {
 	m_fZoomScale = s;
+}
+
+void vtTrackball::SetTransScale(float s)
+{
+	m_fTransScale = s;
 }
 
 void vtTrackball::SetRotateButton(int button, int modifier, bool bExact)
@@ -867,8 +873,8 @@ void vtTrackball::OnMouse(vtMouseEvent &event)
 		}
 		if (m_bTrans)
 		{
-			m_Trans.x = m_Start.x - (event.pos.x - m_MouseStart.x) / 100.0f;
-			m_Trans.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 100.0f;
+			m_Trans.x = m_Start.x - (event.pos.x - m_MouseStart.x) / 100.0f * m_fTransScale;
+			m_Trans.y = m_Start.y + (event.pos.y - m_MouseStart.y) / 100.0f * m_fTransScale;
 		}
 	}
 }
@@ -877,6 +883,12 @@ void vtTrackball::SetDirection(float fTheta, float fPhi)
 {
 	m_Pos.x = fTheta;
 	m_Pos.y = fPhi;
+}
+
+void vtTrackball::MoveDirection(float fTheta, float fPhi)
+{
+	m_Pos.x += fTheta;
+	m_Pos.y += fPhi;
 }
 
 void vtTrackball::Eval()

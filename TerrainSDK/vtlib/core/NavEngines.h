@@ -241,13 +241,16 @@ public:
 
 	void SetRadius(float fRadius);
 	float GetRadius();
-	void SetZoomScale(float s);
 	void SetRotateButton(int button, int modifier = 0, bool bExact = true);
 	void SetZoomButton(int button, int modifier = 0, bool bExact = true);
 	void SetTranslateButton(int button, int modifier = 0, bool bExact = true);
 
+	void SetZoomScale(float s);
+	void SetTransScale(float s);
+
 	void SetPivotPoint(const FPoint3 &pos) { m_Pivot = pos; }
 	void SetDirection(float fTheta, float fPhi);
+	void MoveDirection(float fTheta, float fPhi);
 
 	void OnMouse(vtMouseEvent &event);
 	void Eval();
@@ -264,6 +267,7 @@ protected:
 
 	IPoint2	m_MouseStart;
 	float	m_fZoomScale;
+	float	m_fTransScale;
 
 	int		m_rotate_button;
 	int		m_rotate_modifier;
