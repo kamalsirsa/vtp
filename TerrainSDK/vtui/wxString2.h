@@ -53,6 +53,8 @@ public:
 	// implicit conversion to C string
 	operator const char*() const;
 
+	vtString vt_str() const;
+
 #if wxUSE_UNICODE
 	// explicit conversion to C string
 	const char *mb_str() const;
