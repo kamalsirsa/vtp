@@ -119,6 +119,7 @@ void TParamsDlg::SetParams(TParams &Params)
 //  m_iNumCars = Params.m_iNumCars;
 
 	m_bSky = Params.m_bSky;
+	m_strSkyTexture = Params.m_strSkyTexture;
 	m_bHorizon = Params.m_bHorizon;
 	m_bVertexColors = Params.m_bVertexColors;
 //  m_bOverlay = Params.m_bOverlay;
@@ -209,7 +210,7 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.m_fVehicleSpeed = m_fVehicleSpeed;
 //  Params.m_iNumCars = m_iNumCars;
 
-	Params.m_bSky = m_bSky;
+	Params.m_strSkyTexture = m_strSkyTexture;
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_bHorizon = m_bHorizon;
 	Params.m_bVertexColors = m_bVertexColors;
@@ -284,6 +285,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pFilenameTin = GetFilenameTin();
 	m_pLocFile = GetLocfile();
 	m_pRouteFile = GetRoutefile();
+	m_pSkyTexture = GetSkytexture();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
@@ -343,6 +345,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		sel = m_pRouteFile->FindString(m_strRouteFile);
 		if (sel != -1)
 			m_pRouteFile->SetSelection(sel);
+
+		// fill in Sky files
+		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.bmp");
+		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.png");
+		sel = m_pSkyTexture->FindString(m_strSkyTexture);
+		if (sel != -1)
+			m_pSkyTexture->SetSelection(sel);
 	}
 
 	m_pLodMethod->Clear();
@@ -382,6 +391,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_PIXELERROR, &m_fPixelError);
 	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
 	AddValidator(ID_SKY, &m_bSky);
+	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_FOG, &m_bFog);
 
 	// texture

@@ -54,6 +54,7 @@ public:
 	int		m_iInitTime;
 	float   m_fTimeSpeed;
 	bool	m_bSky;
+	wxString	m_strSkyTexture;
 	bool	m_bFog;
 	int		m_iTexture;
 	int		m_iTilesize;
@@ -126,6 +127,7 @@ public:
 	wxComboBox* GetFilename()  { return (wxComboBox*) FindWindow( ID_FILENAME ); }
 	wxComboBox* GetFilenameTin()  { return (wxComboBox*) FindWindow( ID_FILENAME_TIN ); }
 	wxComboBox* GetRoutefile()  { return (wxComboBox*) FindWindow( ID_ROUTEFILE ); }
+	wxComboBox* GetSkytexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
 
 	//  CButton m_PreLight;
 //  CButton m_TriStrips;
@@ -148,6 +150,7 @@ private:
 	wxRadioButton* m_pTiled;
 	wxComboBox* m_pLocFile;
 	wxComboBox* m_pRouteFile;
+	wxComboBox* m_pSkyTexture;
 
 private:
 	// WDR: handler declarations for TParamsDlg
