@@ -136,4 +136,7 @@
 	#include "vtsgl/SceneSGL.h"
 #endif	// SGL
 
+#ifdef _MSC_VER && DEBUG && 0
+#include "vtlib/core/MemoryTracker.h"
+#endif
 
