@@ -594,20 +594,20 @@ void vtMeshBase::TransformVertices(FMatrix4 &mat)
 vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 {
 	int i, j;
-	vtMesh *geo[3];
+	vtMesh *mesh[3];
 
 	for (i = 0; i < 3; i++)
-		geo[i] = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
+		mesh[i] = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
 
-	geo[0]->CreateBlock(FPoint3(fSize, fSmall, fSmall));
-	geo[1]->CreateBlock(FPoint3(fSmall, fSize, fSmall));
-	geo[2]->CreateBlock(FPoint3(fSmall, fSmall, fSize));
+	mesh[0]->CreateBlock(FPoint3(fSize, fSmall, fSmall));
+	mesh[1]->CreateBlock(FPoint3(fSmall, fSize, fSmall));
+	mesh[2]->CreateBlock(FPoint3(fSmall, fSmall, fSize));
 
-	// liven the cursor up a bit by flipping normals
+	// liven the appearance up a bit by flipping alternate normals
 	for (i = 0; i < 3; i++)
 	{
 		for (j = 0; j < 24; j+=2)
-			geo[i]->SetVtxNormal(j, -geo[i]->GetVtxNormal(j));
+			mesh[i]->SetVtxNormal(j, -mesh[i]->GetVtxNormal(j));
 	}
 
 	// Add the geometry and materials to the shape
@@ -622,7 +622,7 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	pGeom->SetName2("3D Crosshair");
 
 	for (i = 0; i < 3; i++)
-		pGeom->AddMesh(geo[i], i);
+		pGeom->AddMesh(mesh[i], i);
 
 	return pGeom;
 }
