@@ -301,42 +301,12 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	ColorMap defaults;
 	if (!cmap)
 	{
-#if 0
-		defaults.m_bRelative = false;
-		defaults.Add(-8000,	RGBi(60, 60, 60));		// dark grey
-		defaults.Add(-6000,	RGBi(160, 80, 0));		// dark orange
-		defaults.Add(-5000,	RGBi(128, 128, 0));		// dark yellow
-		defaults.Add(-4500,	RGBi(160, 0, 160));		// purplish
-		defaults.Add(-4000,	RGBi(144, 64, 144));
-		defaults.Add(-3500,	RGBi(128, 128, 128));
-		defaults.Add(-3000,	RGBi(64, 128, 60));
-		defaults.Add(-2500,	RGBi(0, 128, 128));
-		defaults.Add(-2000,	RGBi(0, 0, 160));
-		defaults.Add(-1500,	RGBi(43, 90, 142));
-		defaults.Add(-1000,	RGBi(81, 121, 172));
-		defaults.Add(-500,	RGBi(108, 156, 195));
-		defaults.Add(-100,	RGBi(182, 228, 255));		// light blue sub-sea
-		defaults.Add(0,		RGBi(40, 75, 124));			// blue sea level
-		defaults.Add(.01f,	RGBi(0x40, 0xE0, 0x40));	// light green
-		defaults.Add(500,	RGBi(0x10, 0x80, 0x10));	// dark green
-		defaults.Add(1000,	RGBi(0xE0, 0xC0, 0xA0));	// tanish
-		defaults.Add(2000,	RGBi(0xA0, 0x80, 0x60));	// brown
-		defaults.Add(3000,	RGBi(0xDD, 0x80, 0x22));	// orange
-		defaults.Add(4000,	RGBi(0xDD, 0xDD, 0xDD));	// light grey
-		defaults.Add(5000,	RGBi(0xCC, 0xCC, 0xFF));	// pale blue
-		defaults.Add(6000,	RGBi(0xDD, 0xCC, 0xBB));	// tan
-		defaults.Add(8000,	RGBi(0xDD, 0xDD, 0xDD));	// light grey again
-		defaults.Save("C:/VTP/TerrainApps/Data/GeoTypical/default_absolute.cmt");
-#endif
-#if 1
 		defaults.m_bRelative = true;
-		defaults.Add(0, RGBi(0x20, 0xB0, 0x20));
-		defaults.Add(0, RGBi(0x40, 0xE0, 0x40));
-		defaults.Add(0, RGBi(0xE0, 0xC0, 0xA0));
-		defaults.Add(0, RGBi(0xE0, 0x80, 0x10));
-		defaults.Add(0, RGBi(0xE0, 0xE0, 0xE0));
-		defaults.Save("C:/VTP/TerrainApps/Data/GeoTypical/default_relative.cmt");
-#endif
+		defaults.Add(0, RGBi(0x20, 0x90, 0x20));	// medium green
+		defaults.Add(0, RGBi(0x40, 0xE0, 0x40));	// light green
+		defaults.Add(0, RGBi(0xE0, 0xD0, 0xC0));	// tan
+		defaults.Add(0, RGBi(0xE0, 0x80, 0x10));	// orange
+		defaults.Add(0, RGBi(0xE0, 0xE0, 0xE0));	// light grey
 		cmap = &defaults;
 	}
 
