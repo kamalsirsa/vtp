@@ -106,7 +106,7 @@ public:
 	/** Add a triangle fan with up to 6 points (center + 5 points).  The first 3
 	 arguments are required, the rest are optional.  A fan will be created with as
 	 many point indices as you pass. */
-	void AddFan(int p0, int p1, int p2, int p3 = -1, int p4 = -1, int p5 = -1);
+	void AddFan(int p0, int p1, int p2 = -1, int p3 = -1, int p4 = -1, int p5 = -1);
 
 	/** Add a triangle fan with any number of points.
 	 \param idx An array of vertex indices for the fan.

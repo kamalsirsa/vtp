@@ -451,12 +451,12 @@ void vtMesh::AddTri(int p0, int p1, int p2)
 
 void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 {
-	int len = 3;
+	int len = 2;
 
 	m_Index.Append(p0);
 	m_Index.Append(p1);
-	m_Index.Append(p2);
 
+	if (p2 != -1) { m_Index.Append(p2); len = 3; }
 	if (p3 != -1) { m_Index.Append(p3); len = 4; }
 	if (p4 != -1) { m_Index.Append(p4); len = 5; }
 	if (p5 != -1) { m_Index.Append(p5); len = 6; }
