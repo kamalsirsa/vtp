@@ -51,13 +51,16 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	if (m_fRotation != 0.0f)
 		m_pContainer->Rotate2(FPoint3(0,1,0), m_fRotation);
 
-	FPoint3 surface_pos;
-	pHeightField->ConvertEarthToSurfacePoint(m_p, surface_pos);
+	FPoint3 point;
+	pHeightField->ConvertEarthToSurfacePoint(m_p, point);
+	if (m_bAbsolute)
+		// Absolute means elevation is relative to sealevel
+		point.y = m_fElevationOffset;
+	else
+		// Elevation Offset is relative to the terrain surface
+		point.y += m_fElevationOffset;
 
-	// Use the Elevation Offset
-	surface_pos.y += m_fElevationOffset;
-
-	m_pContainer->SetTrans(surface_pos);
+	m_pContainer->SetTrans(point);
 }
 
 void vtStructInstance3d::Reload()
