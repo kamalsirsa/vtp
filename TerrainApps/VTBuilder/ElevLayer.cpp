@@ -242,7 +242,12 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	if (!m_bBitmapRendered && m_pImage->Ok())
 		RenderBitmap();
 
-	if (!m_pImage->Ok() || !m_pBitmap->Ok())
+	if (!m_pImage || !m_pImage->Ok())
+	{
+		DrawLayerOutline(pDC, pView);
+		return;
+	}
+	if (!m_pBitmap || !m_pBitmap->Ok())
 	{
 		DrawLayerOutline(pDC, pView);
 		return;
@@ -906,10 +911,17 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		dlg.m_iHeight = 100;
 		dlg.m_fVUnits = 1.0f;
 		dlg.m_fSpacing = 30.0f;
+		dlg.m_bBigEndian = false;
 		if (dlg.ShowModal() == wxID_OK)
 		{
 			success = m_pGrid->LoadFromRAW(strFileName, dlg.m_iWidth,
-					dlg.m_iHeight, dlg.m_iBytes, dlg.m_fVUnits);
+					dlg.m_iHeight, dlg.m_iBytes, dlg.m_fVUnits, dlg.m_bBigEndian,
+					progress_callback);
+		}
+		if (success)
+		{
+			m_pGrid->m_EarthExtents.top = dlg.m_iHeight * dlg.m_fSpacing;
+			m_pGrid->m_EarthExtents.right = dlg.m_iWidth * dlg.m_fSpacing;
 		}
 	}
 	if (!success)
