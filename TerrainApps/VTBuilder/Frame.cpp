@@ -1055,8 +1055,9 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 		if (!strncmp(buf, "Projection ", 11))
 		{
 			// read projection info
+			vtProjection proj;
 			char *wkt = buf + 11;
-			OGRErr err = m_proj.importFromWkt(&wkt);
+			OGRErr err = proj.importFromWkt(&wkt);
 			if (err != OGRERR_NONE)
 			{
 				DisplayAndLog("Had trouble parsing the projection information"
@@ -1064,6 +1065,7 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 				fclose(fp);
 				return;
 			}
+			SetProjection(proj);
 		}
 		if (!strncmp(buf, "PlantList ", 10))
 		{
@@ -1383,7 +1385,7 @@ void MainFrame::FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap)
 		if (lp->GetType() == LT_VEG)
 		{
 			vtVegLayer *veg = (vtVegLayer *)lp;
-			VegLayerType vltype = veg->m_VLType;
+			VegLayerType vltype = veg->GetVegType();
 
 			if (vltype == VLT_Density)
 				*Density = veg;
@@ -1443,7 +1445,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	for (i = 0; i < x_trees; i ++)
 	{
 		wxString str;
-		str.Printf(_T("plants: %d"), pia.GetSize());
+		str.Printf(_T("plants: %d"), pia.GetNumEntities());
 		UpdateProgressDialog(i * 100 / x_trees, str);
 
 		p.x = area.left + (i * fTreeSpacing);
@@ -1497,7 +1499,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			if (species_num != -1)
 			{
 				vtPlantSpecies *ps = GetPlantList()->GetSpecies(species_num);
-				pia.AddInstance(p2, random(ps->GetMaxHeight()), species_num);
+				pia.AddPlant(p2, random(ps->GetMaxHeight()), species_num);
 			}
 		}
 	}
