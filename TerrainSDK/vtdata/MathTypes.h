@@ -10,6 +10,7 @@
 #define VTMATHTYPESH
 
 #include <math.h>
+#include <vector>
 #include "Array.h"
 
 // willemsn: this was taken from OSG's Math include file.
@@ -576,16 +577,10 @@ public:
 /**
  * A collection of 2d polygons.  Double-precision.
  */
-class DPolyArray2 : public Array<DLine2 *>
+class DPolyArray2 : public std::vector<DLine2>
 {
 public:
 	DPolyArray2() { m_previous_poly = -1; }
-	virtual ~DPolyArray2() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(int first, int last)
-	{
-		for (int i = first; i <= last; i++)
-			delete GetAt(i);
-	}
 
 	int FindPoly(const DPoint2 &p);
 

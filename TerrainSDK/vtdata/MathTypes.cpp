@@ -18,20 +18,20 @@ int DPolyArray2::FindPoly(const DPoint2 &p)
 {
 	if (m_previous_poly != -1)
 	{
-		if (GetAt(m_previous_poly)->ContainsPoint(p))
+		if (at(m_previous_poly).ContainsPoint(p))
 			return m_previous_poly;
 	}
-	int size = GetSize();
-	for (int i = 0; i < size; i++)
+	int num = size();
+	for (int i = 0; i < num; i++)
 	{
-		DLine2 *poly = GetAt(i);
+		const DLine2 &poly = at(i);
 #if 0
 		// possible further speed test: first test against extents
 		if (world_x < poly->xmin || world_x > poly->xmax ||
 			world_z < poly->zmin || world_z > poly->zmax)
 			continue;
 #endif
-		if (poly->ContainsPoint(p))
+		if (poly.ContainsPoint(p))
 		{
 			// found
 			m_previous_poly = i;
