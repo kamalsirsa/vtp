@@ -241,7 +241,6 @@ public:
 	virtual const bool computeBound() const;
 	virtual void drawImmediateMode(osg::State& state);
 
-	osg::BoundingBox	m_bbox;
 	class vtDynGeom		*m_pDynGeom;
 };
 
