@@ -23,6 +23,7 @@
 #include <wx/colordlg.h>
 #include "BuildingDlg.h"
 #include "HeightDlg.h"
+#include "vtui/Helper.h"
 
 // WDR: class implementations
 
@@ -73,20 +74,6 @@ void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *p
 	m_pSA = pSA;
 	m_pBuilding = bld;
 	m_pHeightField = pHeightField;
-}
-
-wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
-{
-	wxImage pImage(xsize, ysize);
-	int i, j;
-	for (i = 0; i < xsize; i++)
-		for (j = 0; j < ysize; j++)
-		{
-			pImage.SetRGB(i, j, color.Red(), color.Green(), color.Blue());
-		}
-
-	wxBitmap *pBitmap = new wxBitmap(pImage);
-	return pBitmap;
 }
 
 void BuildingDlg::EditColor()
