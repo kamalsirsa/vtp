@@ -74,7 +74,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
 
-	EVT_CHECKBOX( ID_TREES, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 
 	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClick )
@@ -167,7 +167,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bTexRoads = Params.m_bTexRoads;
 	m_bRoadCulture = Params.m_bRoadCulture;
 
-	m_bTrees = Params.m_bTrees;
+	m_bPlants = Params.m_bPlants;
 	m_strVegFile = wxString::FromAscii((const char *)Params.m_strVegFile);
 	m_iVegDistance = Params.m_iVegDistance;
 
@@ -265,7 +265,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bTexRoads = m_bTexRoads;
 	Params.m_bRoadCulture = m_bRoadCulture;
 
-	Params.m_bTrees = m_bTrees;
+	Params.m_bPlants = m_bPlants;
 	Params.m_strVegFile = m_strVegFile.mb_str();
 	Params.m_iVegDistance = m_iVegDistance;
 
@@ -339,8 +339,8 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_PRELIT)->Enable(m_iTexture != TE_NONE);
 
-	FindWindow(ID_TREEFILE)->Enable(m_bTrees);
-//	FindWindow(ID_VEGDISTANCE)->Enable(m_bTrees); // user might want to adjust
+	FindWindow(ID_TREEFILE)->Enable(m_bPlants);
+//	FindWindow(ID_VEGDISTANCE)->Enable(m_bPlants); // user might want to adjust
 
 	FindWindow(ID_ROADFILE)->Enable(m_bRoads);
 	FindWindow(ID_ROADHEIGHT)->Enable(m_bRoads);
@@ -595,7 +595,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 
 	// culture page
-	AddValidator(ID_TREES, &m_bTrees);
+	AddValidator(ID_PLANTS, &m_bPlants);
 	AddValidator(ID_TREEFILE, &m_strVegFile);
 	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
 

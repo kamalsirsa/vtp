@@ -69,7 +69,7 @@ TParams::TParams()
 	m_bTexRoads = true;
 	m_bRoadCulture = false;
 
-	m_bTrees = false;
+	m_bPlants = false;
 	m_iVegDistance = 2000;	// 2 km
 	m_bAgriculture = false;
 	m_bWildVeg = false;
@@ -160,7 +160,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bTexRoads = rhs.m_bTexRoads;
 	m_bRoadCulture = rhs.m_bRoadCulture;
 
-	m_bTrees = rhs.m_bTrees;
+	m_bPlants = rhs.m_bPlants;
 	m_strVegFile = rhs.m_strVegFile;
 	m_iVegDistance = rhs.m_iVegDistance;
 	m_bAgriculture = rhs.m_bAgriculture;
@@ -412,7 +412,7 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bRoadCulture;
 
 		else if (strcmp(buf, STR_TREES) == 0)
-			input >> m_bTrees;
+			input >> m_bPlants;
 		else if (strcmp(buf, STR_TREEFILE) == 0)
 			m_strVegFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_VEGDISTANCE) == 0)
@@ -609,7 +609,7 @@ bool TParams::SaveToFile(const char *filename)
 
 	output << "\n; Vegetation\n";
 	output << STR_TREES << "\t\t\t";
-	output << m_bTrees << endl;
+	output << m_bPlants << endl;
 	output << STR_TREEFILE << "\t\t";
 	output << (const char *) m_strVegFile << endl;
 	output << STR_VEGDISTANCE << "\t";

@@ -109,7 +109,7 @@ public:
 	bool		m_bTexRoads;
 	bool		m_bRoadCulture;
 
-	bool		m_bTrees;
+	bool		m_bPlants;
 	vtString	m_strVegFile;
 	unint		m_iVegDistance;
 	bool		m_bAgriculture;

@@ -782,7 +782,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item2 = new wxCheckBox( parent, ID_TREES, _("Trees"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item2 = new wxCheckBox( parent, ID_PLANTS, _("Plants"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxStaticBox *item4 = new wxStaticBox( parent, -1, wxT("") );

@@ -116,7 +116,7 @@ public:
 	bool	m_bTexRoads;
 	bool	m_bRoadCulture;
 
-	bool	m_bTrees;
+	bool	m_bPlants;
 	wxString2	m_strVegFile;
 	int		m_iVegDistance;
 

@@ -125,7 +125,7 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_PRELIT 10076
 wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TREES 10077
+#define ID_PLANTS 10077
 #define ID_TREEFILE 10078
 #define ID_VEGDISTANCE 10079
 #define ID_ROADS 10080

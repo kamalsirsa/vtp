@@ -94,8 +94,8 @@ public:
 	void OnUpdateToolsFences(wxUpdateUIEvent& event);
 	void OnToolsRoutes(wxCommandEvent& event);
 	void OnUpdateToolsRoutes(wxUpdateUIEvent& event);
-	void OnToolsTrees(wxCommandEvent& event);
-	void OnUpdateToolsTrees(wxUpdateUIEvent& event);
+	void OnToolsPlants(wxCommandEvent& event);
+	void OnUpdateToolsPlants(wxUpdateUIEvent& event);
 	void OnToolsInstances(wxCommandEvent& event);
 	void OnUpdateToolsInstances(wxUpdateUIEvent& event);
 	void OnToolsMove(wxCommandEvent& event);
@@ -120,7 +120,7 @@ public:
 	void OnCullOnce(wxCommandEvent& event);
 	void OnSky(wxCommandEvent& event);
 	void OnOcean(wxCommandEvent& event);
-	void OnTrees(wxCommandEvent& event);
+	void OnPlants(wxCommandEvent& event);
 	void OnStructures(wxCommandEvent& event);
 	void OnRoads(wxCommandEvent& event);
 	void OnFog(wxCommandEvent& event);
@@ -134,7 +134,7 @@ public:
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);
 	void OnUpdateSky(wxUpdateUIEvent& event);
 	void OnUpdateOcean(wxUpdateUIEvent& event);
-	void OnUpdateTrees(wxUpdateUIEvent& event);
+	void OnUpdatePlants(wxUpdateUIEvent& event);
 	void OnUpdateStructures(wxUpdateUIEvent& event);
 	void OnUpdateRoads(wxUpdateUIEvent& event);
 	void OnUpdateFog(wxUpdateUIEvent& event);

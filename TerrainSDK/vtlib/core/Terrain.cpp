@@ -929,7 +929,7 @@ void vtTerrain::_CreateCulture(bool bSound)
 	// of the terrain.
 	m_PIA.SetProjection(GetProjection());
 
-	if (m_Params.m_bTrees)
+	if (m_Params.m_bPlants)
 	{
 		// Read the VF file
 		vtString plants_fname = "PlantData/";

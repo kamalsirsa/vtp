@@ -103,8 +103,8 @@ EVT_MENU(ID_TOOLS_FENCES,			vtFrame::OnToolsFences)
 EVT_UPDATE_UI(ID_TOOLS_FENCES,		vtFrame::OnUpdateToolsFences)
 EVT_MENU(ID_TOOLS_ROUTES,			vtFrame::OnToolsRoutes)
 EVT_UPDATE_UI(ID_TOOLS_ROUTES,		vtFrame::OnUpdateToolsRoutes)
-EVT_MENU(ID_TOOLS_TREES,			vtFrame::OnToolsTrees)
-EVT_UPDATE_UI(ID_TOOLS_TREES,		vtFrame::OnUpdateToolsTrees)
+EVT_MENU(ID_TOOLS_PLANTS,			vtFrame::OnToolsPlants)
+EVT_UPDATE_UI(ID_TOOLS_PLANTS,		vtFrame::OnUpdateToolsPlants)
 EVT_MENU(ID_TOOLS_INSTANCES,		vtFrame::OnToolsInstances)
 EVT_UPDATE_UI(ID_TOOLS_INSTANCES,	vtFrame::OnUpdateToolsInstances)
 EVT_MENU(ID_TOOLS_MOVE,				vtFrame::OnToolsMove)
@@ -164,7 +164,7 @@ EVT_MENU(ID_TERRAIN_CULLEVERY,	vtFrame::OnCullEvery)
 EVT_MENU(ID_TERRAIN_CULLONCE,	vtFrame::OnCullOnce)
 EVT_MENU(ID_TERRAIN_SKY,		vtFrame::OnSky)
 EVT_MENU(ID_TERRAIN_OCEAN,		vtFrame::OnOcean)
-EVT_MENU(ID_TERRAIN_TREES,		vtFrame::OnTrees)
+EVT_MENU(ID_TERRAIN_PLANTS,		vtFrame::OnPlants)
 EVT_MENU(ID_TERRAIN_STRUCTURES,	vtFrame::OnStructures)
 EVT_MENU(ID_TERRAIN_ROADS,		vtFrame::OnRoads)
 EVT_MENU(ID_TERRAIN_FOG,		vtFrame::OnFog)
@@ -174,15 +174,15 @@ EVT_MENU(ID_TERRAIN_SAVEVEG,	vtFrame::OnSaveVeg)
 EVT_MENU(ID_TERRAIN_SAVESTRUCT,	vtFrame::OnSaveStruct)
 EVT_MENU(ID_TERRAIN_FOUNDATIONS, vtFrame::OnToggleFoundations)
 
-EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC, vtFrame::OnUpdateDynamic)
+EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC,	vtFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
-EVT_UPDATE_UI(ID_TERRAIN_SKY,	vtFrame::OnUpdateSky)
-EVT_UPDATE_UI(ID_TERRAIN_OCEAN,	vtFrame::OnUpdateOcean)
-EVT_UPDATE_UI(ID_TERRAIN_TREES,	vtFrame::OnUpdateTrees)
+EVT_UPDATE_UI(ID_TERRAIN_SKY,		vtFrame::OnUpdateSky)
+EVT_UPDATE_UI(ID_TERRAIN_OCEAN,		vtFrame::OnUpdateOcean)
+EVT_UPDATE_UI(ID_TERRAIN_PLANTS,	vtFrame::OnUpdatePlants)
 EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, vtFrame::OnUpdateStructures)
-EVT_UPDATE_UI(ID_TERRAIN_ROADS,	vtFrame::OnUpdateRoads)
-EVT_UPDATE_UI(ID_TERRAIN_FOG,	vtFrame::OnUpdateFog)
-EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS,	vtFrame::OnUpdateFoundations)
+EVT_UPDATE_UI(ID_TERRAIN_ROADS,		vtFrame::OnUpdateRoads)
+EVT_UPDATE_UI(ID_TERRAIN_FOG,		vtFrame::OnUpdateFog)
+EVT_UPDATE_UI(ID_TERRAIN_FOUNDATIONS, vtFrame::OnUpdateFoundations)
 
 EVT_MENU(ID_EARTH_SHOWSHADING,	vtFrame::OnEarthShowShading)
 EVT_MENU(ID_EARTH_SHOWAXES,		vtFrame::OnEarthShowAxes)
@@ -283,7 +283,7 @@ void vtFrame::CreateMenus()
 	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _T("Select"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _T("Fences"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _T("Routes"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_TREES, _T("Trees"));
+	toolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _T("Plants"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _T("Instances"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _T("Move Objects"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _T("Navigate"));
@@ -353,7 +353,7 @@ void vtFrame::CreateMenus()
 	terrainMenu->AppendSeparator();
 	terrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _T("Show Sky\tF4"));
 	terrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _T("Show Ocean\tF5"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_TREES, _T("Show Trees\tF6"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_PLANTS, _T("Show Plants\tF6"));
 	terrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _T("Show Structures\tF7"));
 	terrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF8"));
 	terrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF9"));
@@ -399,7 +399,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_TOOLS_SELECT, wxBITMAP(select), _("Select"), true);
 	ADD_TOOL(ID_TOOLS_FENCES, wxBITMAP(fence), _("Create Fences"), true);
 	ADD_TOOL(ID_TOOLS_ROUTES, wxBITMAP(route), _("Create Routes"), true);
-	ADD_TOOL(ID_TOOLS_TREES, wxBITMAP(tree), _("Create Plants"), true);
+	ADD_TOOL(ID_TOOLS_PLANTS, wxBITMAP(tree), _("Create Plants"), true);
 //	ADD_TOOL(ID_TOOLS_MOVE, wxBITMAP(move), _("Move Objects"), true);	// not yet
 	ADD_TOOL(ID_TOOLS_INSTANCES, wxBITMAP(instances), _("Create Instances"), true);
 	ADD_TOOL(ID_TOOLS_NAVIGATE, wxBITMAP(nav), _("Navigate"), true);
@@ -961,12 +961,12 @@ void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
 	event.Check(g_App.m_mode == MM_ROUTES);
 }
 
-void vtFrame::OnToolsTrees(wxCommandEvent& event)
+void vtFrame::OnToolsPlants(wxCommandEvent& event)
 {
 	SetMode(MM_PLANTS);
 }
 
-void vtFrame::OnUpdateToolsTrees(wxUpdateUIEvent& event)
+void vtFrame::OnUpdateToolsPlants(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_mode == MM_PLANTS);
@@ -1147,13 +1147,13 @@ void vtFrame::OnUpdateOcean(wxUpdateUIEvent& event)
 	event.Check(on);
 }
 
-void vtFrame::OnTrees(wxCommandEvent& event)
+void vtFrame::OnPlants(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	if (t) t->SetFeatureVisible(TFT_VEGETATION, !t->GetFeatureVisible(TFT_VEGETATION));
 }
 
-void vtFrame::OnUpdateTrees(wxUpdateUIEvent& event)
+void vtFrame::OnUpdatePlants(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
