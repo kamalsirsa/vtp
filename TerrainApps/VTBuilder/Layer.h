@@ -157,6 +157,8 @@ public:
 	RGBi m_LineColor;
 	RGBi m_FillColor;
 	bool m_bFill;
+	int m_MarkerShape;	// 0 = circle, 1 = crosshair, this should be an enum
+	int m_MarkerSize;	// in pixels
 };
 
 ////////////////////
