@@ -200,3 +200,38 @@ bool PathIsAbsolute(const char *szPath)
 	return false;
 }
 
+#include <fstream>
+using namespace std;
+//
+// helper
+//
+vtString get_line_from_stream(ifstream &input)
+{
+	char buf[80];
+	input.getline(buf, 80);
+	int len = strlen(buf);
+
+	// trim trailing CR and LF characters
+	while (len > 0 && (buf[len-1] == '\r' || buf[len-1] == '\n'))
+	{
+		buf[len-1] = '\0';
+		len--;
+	}
+	return vtString(buf);
+}
+
+/* alternate version
+vtString get_line_from_stream(ifstream &input)
+{
+	char buf[80];
+	// eat leading LF
+	if (input.peek() == '\n') {
+		input.ignore();
+		buf[0] = '\0';
+	} else {
+		input >> buf;
+	}
+	return vtString(buf);
+}
+*/
+

@@ -10,6 +10,7 @@ bool vtCreateDir(const char *dirname);
 void vtDestroyDir(const char *dirname);
 const char *StartOfFilename(const char *szFullPath);
 bool PathIsAbsolute(const char *szPath);
+vtString get_line_from_stream(std::ifstream &input);
 
 #endif // FILEPATHH
 
