@@ -23,3 +23,4 @@ TerrainSceneWP &GetTerrainScene();
 vtTerrain *GetCurrentTerrain();
 
 #endif
+
