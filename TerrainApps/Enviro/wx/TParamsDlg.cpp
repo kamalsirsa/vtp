@@ -745,7 +745,7 @@ bool TParamsDlg::TransferDataToWindow()
 
 		if (ltype == TERR_LTYPE_STRUCTURE)
 			m_pStructFiles->Append(fname2);
-		if (ltype == TERR_LTYPE_RAW)
+		if (ltype == TERR_LTYPE_ABSTRACT)
 			m_pRawFiles->Append(fname2);
 	}
 	m_pStructFiles->Append(_("(double-click to add files)"));
@@ -769,9 +769,7 @@ bool TParamsDlg::TransferDataFromWindow()
 
 void TParamsDlg::UpdateColorControl()
 {
-	wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_BgColor);
-	GetColorBitmap()->SetBitmap(*pBitmap);
-	delete pBitmap;
+	FillWithColor(GetColorBitmap(), m_BgColor);
 }
 
 void TParamsDlg::OnTextureNone( wxCommandEvent &event )
@@ -912,7 +910,7 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 	if (result.Cmp(_T(""))) // user selected something
 	{
 		vtTagArray lay;
-		lay.SetValueString("Type", TERR_LTYPE_RAW, true);
+		lay.SetValueString("Type", TERR_LTYPE_ABSTRACT, true);
 		lay.SetValueString("Filename", result.vt_str(), true);
 		m_Layers.push_back(lay);
 		TransferDataToWindow();
@@ -965,10 +963,10 @@ void TParamsDlg::OnStyle( wxCommandEvent &event )
 		return;
 
 	StyleDlg dlg(this, -1, _("Feature Style"));
-	dlg.SetRawLayer(m_datapaths, m_Layers[idx]);
+	dlg.SetOptions(m_datapaths, m_Layers[idx]);
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		dlg.GetRawLayer(m_Layers[idx]);
+		dlg.GetOptions(m_Layers[idx]);
 	}
 }
 
