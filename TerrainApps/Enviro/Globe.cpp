@@ -309,7 +309,7 @@ void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
 		fname.Format("%s%02d%02d.png", (const char *)base, f1, f2);
 
 		vtString msg;
-		msg.Format("\t texture: %s\n", fname);
+		msg.Format("\t texture: %s\n", (const char *)fname);
 		g_App._Log(msg);
 
 		int index = m_mats->AddTextureMaterial2(fname,
