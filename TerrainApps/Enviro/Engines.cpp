@@ -8,7 +8,8 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/Route.h"
+#include "TerrainSceneWP.h"
 #include "Engines.h"
 #include "Hawaii.h"
 #include "Globe.h"
@@ -371,6 +372,62 @@ void TriggerEngine::Eval()
 		 m_pswapEng->TriggerHit(m_pterrain, m_jump_index);
 }
 */
+
+//
+// RouteFollowerEngine
+//
+RouteFollowerEngine::RouteFollowerEngine(vtRoute* route, vtCamera* camera)
+{
+	m_pHeightField = GetCurrentTerrain()->GetHeightField();
+	m_bFollowerOn = false;
+	m_bFirstTime=true;
+	m_pRoute = route;
+	m_pCamera = camera;
+	m_lnext=0;
+
+	// set the initial camera position
+	vtStation st = (*m_pRoute)[0L];
+	DPoint3 dp = st.m_dpStationPoint;
+	FPoint3 fp;
+	g_Proj.ConvertFromEarth(dp, fp); 
+	m_pHeightField->FindAltitudeAtPoint(fp, fp.y);
+
+	m_pCamera->Identity();
+
+	m_pCamera->SetTrans(fp);
+	m_pCamera->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), -st.dRadAzimuth);
+	TParams &params = GetCurrentTerrain()->GetParams();
+	m_pCamera->TranslateLocal(FPoint3(-0.01f, params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
+}
+
+void RouteFollowerEngine::Eval()
+{
+	// Position the View to the beginning of the route
+	//	and follow the route with the camera.
+	if (m_bFollowerOn)
+	{
+		vtCamera* target = m_pCamera;
+		if (!target)
+			return;
+		if (!m_pRoute)
+			return;
+		target->Identity();
+
+		vtStation st = (*m_pRoute)[(++m_lnext)%m_pRoute->GetSize()];
+		DPoint3 dp = st.m_dpStationPoint;
+		FPoint3 fp;
+		g_Proj.ConvertFromEarth(dp, fp); 
+		m_pHeightField->FindAltitudeAtPoint(fp, fp.y);
+
+		target->SetTrans(fp);
+		m_pCamera->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), -st.dRadAzimuth);
+		TParams &params = GetCurrentTerrain()->GetParams();
+		m_pCamera->TranslateLocal(FPoint3(-0.01f, params.m_iMinHeight*WORLD_SCALE*2, 0.0f));
+
+		SetTarget(m_pCamera);
+	}
+}
+
 
 /*FollowerEngine::FollowerEngine(vtTransform* model, vtCamera* camera)
 {
