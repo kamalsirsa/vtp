@@ -51,6 +51,7 @@ vtProjection &vtProjection::operator=(const vtProjection &ref)
 	{
 		OGRSpatialReference *ref_copy = ref.Clone();
 		(*(OGRSpatialReference *)this) = *ref_copy;
+		delete ref_copy;
 	}
 	return *this;
 }
