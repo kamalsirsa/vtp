@@ -519,6 +519,7 @@ void vtElevLayer::RenderBitmap()
 	else
 		m_bHasMask = false;
 
+	m_pBitmap->ContentsChanged();
 	m_bBitmapRendered = true;
 
 	if (bProg)
