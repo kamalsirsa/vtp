@@ -240,8 +240,7 @@ void vtFrame::ReadINI()
 		if (strcmp(buf, STR_DATAPATH) == 0)
 		{
 			vtString string = get_line_from_stream(input);
-			vtString *path = new vtString(string);
-			m_DataPaths.Append(path);
+			m_DataPaths.push_back(vtString(string));
 		}
 	}
 }
