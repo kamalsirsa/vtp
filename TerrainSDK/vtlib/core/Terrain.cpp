@@ -16,6 +16,7 @@
 #include "TerrainSurface.h"
 #include "Fence3d.h"
 #include "Route.h"
+#include "vtTin.h"
 
 //#include "LKTerrain.h"
 #include "TVTerrain.h"
@@ -37,9 +38,6 @@ StringArray vtTerrain::m_DataPaths;
 
 vtTerrain::vtTerrain()
 {
-//	m_ocean_color.Set(8.0f/255, 0.0f/255, 74.0f/255);
-//	m_ocean_color.Set(8.0f/255, 0.0f/255, 99.0f/255);
-//	m_ocean_color.Set(194.0f/255, 0.0f/255, 112.0f/255);	// unshaded color
 	m_ocean_color.Set(40.0f/255, 75.0f/255, 124.0f/255);	// unshaded color
 
 	m_pTerrainGroup = NULL;
@@ -48,6 +46,7 @@ vtTerrain::vtTerrain()
 	m_pTerrApps1 = NULL;
 	m_pTerrApps2 = NULL;
 	m_pRoadMap = NULL;
+	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
 	m_pImage = NULL;
 	m_pLocalGrid = NULL;
@@ -62,6 +61,7 @@ vtTerrain::vtTerrain()
 
 	m_pDynGeom = NULL;
 	m_pTerrainGeom = NULL;
+	m_pTin = NULL;
 	m_pNext = NULL;
 
 	m_CamLocation.Identity();
@@ -70,16 +70,33 @@ vtTerrain::vtTerrain()
 vtTerrain::~vtTerrain()
 {
 	// some things need to be manually deleted
-	if (m_pCoverage) delete m_pCoverage;
-
-	if (m_pRoadMap) delete m_pRoadMap;
-
 	int i, size = m_PointsOfInterest.GetSize();
 	for (i = 0; i < size; i++)
 	{
 		POIPtr p = m_PointsOfInterest.GetAt(i);
 		delete p;
 	}
+
+	// Do not delete the PlantList, the application may be sharing the same
+	// list with several different terrains.
+//	delete m_pPlantList;
+
+	delete m_pLocalGrid;
+	delete m_pCoverage;
+	delete m_pImage;
+	delete m_pDIB;
+//	delete m_pTreeGroup;	// don't delete, same as m_pLodGrid
+	delete m_pRoadMap;
+	delete m_pRoadGroup;
+	delete m_pTerrApps1;
+	delete m_pTerrApps2;
+	delete m_pOceanGeom;
+	delete m_pLodGrid;
+//	delete m_pInputGrid;	// don't delete, copied to m_pLocalGrid
+	delete m_pTin;
+	delete m_pDynGeom;
+	delete m_pTerrainGeom;
+	delete m_pTerrainGroup;
 }
 
 
@@ -98,6 +115,27 @@ bool vtTerrain::LoadParams()
 	if (success)
 		SetParams(params);
 	return success;
+}
+
+/**
+ * This method allows you to give the terrain a grid to use directly
+ * instead of loading the BT file specified in the TParams.
+ *
+ * You must allocate this grid dynamically with 'new', since vtTerrain
+ * will 'delete' it after using it during initialization.
+ */
+void vtTerrain::SetLocalGrid(vtLocalGrid *pGrid)
+{
+	m_pInputGrid = pGrid;
+}
+
+/**
+ * This method allows you to give the terrain a TIN to use directly
+ * instead of loading a .tin file as specified in the TParams.
+ */
+void vtTerrain::SetTin(vtTin *pTin)
+{
+	m_pTin = pTin;
 }
 
 
@@ -579,10 +617,8 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	float width, depth;
 	int i, j;
 
-	FPoint2 world_size;
-	FRECT world_extents;
-	m_pHeightField->GetWorldSize(world_size);
-	m_pHeightField->GetWorldExtents(world_extents);
+	FRECT world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
+	FPoint2 world_size(world_extents.Width(), world_extents.Height());
 
 	width = (float) world_size.x;
 	depth = (float) world_size.y;
@@ -592,7 +628,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 		{
 			// don't need to do far corners
 			if ((i == -3 || i == 3) && (j == -3 || j == 3)) continue;
-			if (i == 0 && j == 1) {
+			if (i == 0 && j == 0) {
 				// center tile
 				if (!bCenter) continue;
 			}
@@ -623,21 +659,12 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 
 //
-// set global projection based on this terrain's elevation grid
+// set global projection based on this terrain's heightfield
 //
 void vtTerrain::SetGlobalProjection()
 {
-	if (!m_pHeightField)
-		return;
-
-	// set the base coordinate at the lower-left corner of the terrain
-	DRECT area;
-	m_pHeightField->GetEarthExtents(area);
-	vtProjection &proj = m_pHeightField->GetProjection();
-
-	SetLocalProjection(proj, DPoint2(area.left, area.bottom));
-
-	g_Proj.SetVerticalScale(WORLD_SCALE * m_Params.m_fVerticalExag);
+	if (m_pHeightField)
+		g_Conv = m_pHeightField->m_Conversion;
 }
 
 bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
@@ -775,9 +802,9 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos, bool b
 	FPoint3 wpos;
 
 	if (bGeo)
-		g_Proj.convert_latlon_to_local_xz(pos.y, pos.x, wpos.x, wpos.z);
+		g_Conv.convert_geo_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
 	else
-		g_Proj.convert_meters_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
+		g_Conv.convert_projected_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
 	m_pHeightField->FindAltitudeAtPoint(wpos, wpos.y);
 	model->SetTrans(wpos);
 }
@@ -817,6 +844,8 @@ void vtTerrain::create_culture(bool bSound)
 	}
 
 	// create trees
+	m_PIA.SetHeightField(m_pHeightField);
+	m_PIA.SetPlantList(m_pPlantList);
 	if (m_Params.m_bTrees)
 	{
 		// Read the VF file
@@ -827,8 +856,6 @@ void vtTerrain::create_culture(bool bSound)
 		if (success)
 		{
 			// Create the 3d plants
-			m_PIA.SetHeightField(m_pHeightField);
-			m_PIA.SetPlantList(m_pPlantList);
 			m_PIA.CreatePlantNodes();
 
 			int i, size = m_PIA.GetSize();
@@ -854,7 +881,7 @@ void vtTerrain::create_culture(bool bSound)
 	{
 		// No structures loaded, but the might create some later, so set
 		// the projection to match the terrain.
-		m_Structures.m_proj = m_pHeightField->GetProjection();
+		m_Structures.m_proj = m_proj;
 	}
 
 	// create utility structures (routes = towers and wires)
@@ -878,13 +905,11 @@ void vtTerrain::setup_LodGrid(float fLODDistance)
 	if (!m_pHeightField)
 		return;
 
-	FPoint2 world_size;
 	FRECT world_extents;
-	m_pHeightField->GetWorldSize(world_size);
-	m_pHeightField->GetWorldExtents(world_extents);
+	world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
 
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
-	FPoint3 size(world_size.x, 0.0f, -world_size.y);
+	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
 	m_pLodGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance * WORLD_SCALE, m_pHeightField);
 	m_pLodGrid->SetName2("LOD Grid");
@@ -943,48 +968,94 @@ void vtTerrain::create_floating_labels(const char *filename)
 
 bool vtTerrain::CreateStep1(int &iError)
 {
-//	ISMSurface::DoOptimize = false;
-
 	// create terrain group - this holds all surfaces for the terrain
 	m_pTerrainGroup = new vtGroup();
 	m_pTerrainGroup->SetName2("Terrain Group");
 
-	// Loading elevation grid...
-	vtString grid_fname = "Elevation/";
-	grid_fname += m_Params.m_strElevFile;
-	vtString grid_path = FindFileOnPaths(m_DataPaths, grid_fname);
-
-	m_pLocalGrid = new vtLocalGrid();
-	bool status = m_pLocalGrid->LoadFromBT(grid_path);
-	if (status != true)
+	if (m_pInputGrid)
+	{
+		m_pLocalGrid = m_pInputGrid;
+		return true;
+	}
+	vtString fname = "Elevation/";
+	fname += m_Params.m_strElevFile;
+	vtString fullpath = FindFileOnPaths(m_DataPaths, fname);
+	if (fullpath == "")
 	{
 		iError = TERRAIN_ERROR_NOTFOUND;
 		return false;
+	}
+	if (m_Params.m_bTin)
+	{
+		if (!m_pTin)
+		{
+			// if they did not provide us with a TIN, try to load it
+			m_pTin = new vtTin;
+			m_pTin->Read(fullpath);
+		}
+	}
+	else
+	{
+		// Loading elevation grid...
+		m_pLocalGrid = new vtLocalGrid();
+		bool status = m_pLocalGrid->LoadFromBT(fullpath);
+		if (status == false)
+		{
+			iError = TERRAIN_ERROR_NOTFOUND;
+			return false;
+		}
+		m_pLocalGrid->SetupConversion(m_Params.m_fVerticalExag);
 	}
 	return true;
 }
 
 bool vtTerrain::CreateStep2(int &iError)
 {
-	// set global projection based on this terrain
-	m_pLocalGrid->SetGlobalProjection();
-	g_Proj.SetVerticalScale(WORLD_SCALE * m_Params.m_fVerticalExag);
-
-	// set up ability to do terrain following on source array
-	m_pLocalGrid->Setup(m_Params.m_fVerticalExag);
-
-	vtString texture_fname = "GeoSpecific/";
-	if (m_Params.m_eTexture == TE_SINGLE)
-		texture_fname += m_Params.m_strTextureSingle;	// single texture
+	if (m_Params.m_bTin)
+	{
+		m_proj = m_pTin->m_proj;
+		g_Conv = m_pTin->m_Conversion;
+	}
 	else
-		texture_fname += m_Params.m_strTextureFilename;
-	vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
+	{
+		// set global projection based on this terrain
+		m_proj = m_pLocalGrid->GetProjection();
+		g_Conv = m_pLocalGrid->m_Conversion;
 
-	create_textures(4, texture_path);
+		vtString texture_fname = "GeoSpecific/";
+		if (m_Params.m_eTexture == TE_SINGLE)
+			texture_fname += m_Params.m_strTextureSingle;	// single texture
+		else
+			texture_fname += m_Params.m_strTextureFilename;
+		vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
+
+		if (texture_path != "")
+			create_textures(4, texture_path);
+	}
 	return true;
 }
 
 bool vtTerrain::CreateStep3(int &iError)
+{
+	if (m_Params.m_bTin)
+		return CreateFromTIN(iError);
+	else
+		return CreateFromGrid(iError);
+}
+
+bool vtTerrain::CreateFromTIN(int &iError)
+{
+	m_pHeightField = m_pTin;
+
+	bool bDropShadow = true;
+
+	// build heirarchy (add terrain to scene graph)
+	m_pTerrainGroup->AddChild(m_pTin->CreateGeometry(bDropShadow));
+
+	return true;
+}
+
+bool vtTerrain::CreateFromGrid(int &iError)
 {
 	float fOceanDepth;
 	if (m_Params.m_bDepressOcean)
@@ -992,10 +1063,9 @@ bool vtTerrain::CreateStep3(int &iError)
 	else
 		fOceanDepth = 0.0f;
 
-	// first, create brute-force regular terrain
-	//
 	if (m_Params.m_bRegular)
 	{
+		// first, create brute-force regular terrain
 		if (!create_regular_terrain(fOceanDepth))
 		{
 			//AfxMessageBox("Couldn't create regular terrain");
@@ -1009,10 +1079,10 @@ bool vtTerrain::CreateStep3(int &iError)
 		}
 	}
 
-	// then, the somewhat more elegant dynamic LOD terrain
 	//
 	if (m_Params.m_bDynamic)
 	{
+		// then, the somewhat more elegant dynamic LOD terrain
 		if (!create_dynamic_terrain(fOceanDepth, iError))
 		{
 			//AfxMessageBox("Couldn't create dynamic LOD terrain");
@@ -1024,25 +1094,6 @@ bool vtTerrain::CreateStep3(int &iError)
 			m_pHeightField = m_pDynGeom;
 		}
 	}
-
-#if 0
-	// create a box the size of the local grid
-	FRECT rect;
-	FPoint3 size;
-	m_pLocalGrid->GetWorldExtents(rect);
-	size.x = rect.Width();
-	size.z = fabs(rect.Height());
-	m_pLocalGrid->FindHeightExtents();
-	size.y = (m_pLocalGrid->m_fMaxHeight - m_pLocalGrid->m_fMinHeight)* WORLD_SCALE;
-	vtMesh *pMesh = new vtMesh(GL_TRIANGLE_FAN, 0, 4);
-//	pMesh->CreateBlock(size);
-	pMesh->CreateRectangle(size.x, size.z);
-	vtGeom *pGeom = new vtGeom();
-	pGeom->AddMesh(pMesh);
-	pGeom->SetName2("TerrainBoxGeom");
-	// add box to scene graph
-	m_pTerrainGroup->AddChild(pGeom);
-#endif
 
 	// we don't need the original grid any more
 	delete m_pLocalGrid;
@@ -1139,53 +1190,16 @@ void vtTerrain::GetTerrainBounds()
 		m_bound_sphere.Empty();
 }
 
-//
-// test whether a given point is within the current terrain
-//
-bool vtTerrain::PointIsInTerrainUTM(int utm_zone, float utm_x, float utm_y)
+/**
+ * Tests whether a given point (in Earth coordinates) is within the current
+ * extents of the terrain.
+ */
+bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 {
-	DPoint2 p(utm_x, utm_y);
-
-	if (!g_Proj.IsUTM() ||	// terrain is not UTM, must convert
-		(g_Proj.IsUTM() && g_Proj.GetUTMZone() != utm_zone))
-	{
-		vtProjection utmproj;
-		utmproj.SetUTMZone(utm_zone);
-		OCT *trans = OGRCreateCoordinateTransformation(&utmproj, &g_Proj);
-		if (!trans)
-			return false;
-		trans->Transform(1, &p.x, &p.y);
-		delete trans;
-	}
-
 	float x, z;
-	g_Proj.ConvertFromEarth(p, x,  z);	// convert earth -> XZ
+	g_Conv.ConvertFromEarth(p, x,  z);	// convert earth -> XZ
 	return m_pHeightField->PointIsInTerrain(x, z);
 }
-
-//
-// test whether a given point is within the current terrain
-//
-bool vtTerrain::PointIsInTerrainLL(float lat, float lon)
-{
-	DPoint2 p(lon, lat);
-
-	if (!g_Proj.IsGeographic())	// terrain is in UTM, must convert
-	{
-		vtProjection geoproj;
-		CreateSimilarGeographicProjection(g_Proj, geoproj);
-		OCT *trans = OGRCreateCoordinateTransformation(&geoproj, &g_Proj);
-		if (!trans)
-			return false;
-		trans->Transform(1, &p.x, &p.y);
-		delete trans;
-	}
-
-	float x, z;
-	g_Proj.ConvertFromEarth(p, x,  z);	// convert earth -> XZ
-	return m_pHeightField->PointIsInTerrain(x, z);
-}
-
 
 void vtTerrain::CreateCustomCulture(bool bDoSound)
 {
@@ -1217,15 +1231,19 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 {
 	switch (ftype)
 	{
-	case OCEAN:
+	case TFT_REGULAR:
+		if (m_pTerrainGeom)
+			m_pTerrainGeom->SetEnabled(bOn);
+		break;
+	case TFT_OCEAN:
 		if (m_pOceanGeom)
 			m_pOceanGeom->SetEnabled(bOn);
 		break;
-	case VEGETATION:
+	case TFT_VEGETATION:
 		if (m_pTreeGroup)
 			m_pTreeGroup->SetEnabled(bOn);
 		break;
-	case ROADS:
+	case TFT_ROADS:
 		if (m_pRoadGroup)
 			m_pRoadGroup->SetEnabled(bOn);
 		break;
@@ -1236,15 +1254,19 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 {
 	switch (ftype)
 	{
-	case OCEAN:
+	case TFT_REGULAR:
+		if (m_pTerrainGeom)
+			return m_pTerrainGeom->GetEnabled();
+		break;
+	case TFT_OCEAN:
 		if (m_pOceanGeom)
 			return m_pOceanGeom->GetEnabled();
 		break;
-	case VEGETATION:
+	case TFT_VEGETATION:
 		if (m_pTreeGroup)
 			return m_pTreeGroup->GetEnabled();
 		break;
-	case ROADS:
+	case TFT_ROADS:
 		if (m_pRoadGroup)
 			return m_pRoadGroup->GetEnabled();
 		break;
@@ -1486,16 +1508,14 @@ void vtTerrain::CreateChoppedAppearances2(vtMaterialArray *pApp1,
 	}
 #endif
 
-void vtTerrain::ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib,
-							 int xPatch, int yPatch, int nPatches)
+void vtTerrain::ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib)
 {
 	FPoint3 light_dir;
 	light_dir.Set(-1.0f, -1.0f, 0.0f);
 	light_dir.Normalize();
 
 	clock_t c1 = clock();
-	pLocalGrid->ShadeDibFromElevation(dib, light_dir, m_Params.m_fPreLightFactor,
-		 xPatch, yPatch, nPatches);
+	pLocalGrid->ShadeDibFromElevation(dib, light_dir, m_Params.m_fPreLightFactor);
 	clock_t c2 = clock();
 
 	clock_t c3 = c2 - c1;
@@ -1530,7 +1550,7 @@ vtPointOfInterest *vtTerrain::FindPointOfInterest(DPoint2 utm)
 	return NULL;
 }
 
-#define STEPS 20
+#define STEPS 40
 
 void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 {
@@ -1550,10 +1570,10 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	vtMesh *pGeom = new vtMesh(GL_LINES, 0, STEPS*4);
 
 	FPoint3 v1, v2, v3, v4, v;
-	g_Proj.convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
-	g_Proj.convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
-	g_Proj.convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
-	g_Proj.convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
+	g_Conv.convert_projected_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
+	g_Conv.convert_projected_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
+	g_Conv.convert_projected_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
+	g_Conv.convert_projected_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
 
 	int i;
 	for (i = 0; i < STEPS; i++)
@@ -1585,50 +1605,6 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		pGeom->AddVertex(v);
 	}
 
-#if 0
-	float vert1[3], vert2[3], vert3[3], vert4[3];
-
-	// top-left
-	convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.top, x, z);
-	v1.x = x;
-	v1.z = z;
-	m_pHeightField->FindAltitudeAtPoint(v1, v1.y);
-	vert1[0] = v1.x;
-	vert1[1] = v1.y;
-	vert1[2] = v1.z;
-
-	// top-right
-	convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.top, x, z);
-	v2.x = x;
-	v2.z = z;
-	m_pHeightField->FindAltitudeAtPoint(v2, v2.y);
-	vert2[0] = v2.x;
-	vert2[1] = v2.y;
-	vert2[2] = v2.z;
-
-	// bottom-right
-	convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, x, z);
-	v3.x = x;
-	v3.z = z;
-	m_pHeightField->FindAltitudeAtPoint(v2, v2.y);
-	vert3[0] = v3.x;
-	vert3[1] = v3.y;
-	vert3[2] = v3.z;
-
-	// bottom-left
-	convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, x, z);
-	v4.x = x;
-	v4.z = z;
-	m_pHeightField->FindAltitudeAtPoint(v2, v2.y);
-	vert4[0] = v4.x;
-	vert4[1] = v4.y;
-	vert4[2] = v4.z;
-
-	pGeom->AddVertices(vert1, 1);
-	pGeom->AddVertices(vert2, 1);
-	pGeom->AddVertices(vert3, 1);
-	pGeom->AddVertices(vert4, 1);
-#endif
 
 	poi->m_pGeom = new vtGeom();
 
@@ -1679,6 +1655,11 @@ void vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 
 	int num = m_PIA.Append(pi);
 	m_PIA.CreatePlantNode(num);
+
+	vtTransform *pTrans = m_PIA.GetPlantNode(num);
+
+	// add tree to scene graph
+	AddNodeToLodGrid(pTrans);
 }
 
 
@@ -1725,4 +1706,5 @@ void vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
 	if (m_pLodGrid)
 		m_pLodGrid->AppendToGrid(pGeom);
 }
+
 
