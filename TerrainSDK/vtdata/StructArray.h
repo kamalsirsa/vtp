@@ -1,7 +1,7 @@
 //
 // StructArray.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,8 +13,6 @@
 #include "Structure.h"
 #include <stdio.h>
 
-#define BCFVERSION_CURRENT		1.2f
-#define BCFVERSION_SUPPORTED	1.1f
 
 /**  The vtStructureArray class contains a list of Built Structures
  * (vtStructure objects).  It can be loaded and saved to VTST files

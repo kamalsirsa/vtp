@@ -21,6 +21,8 @@
 #include "Building.h"
 #include "Fence.h"
 
+#define BCFVERSION_SUPPORTED	1.1f
+
 //
 // Helper: find the index of a field in a DBF file, given the name of the field.
 // Returns -1 if not found.
