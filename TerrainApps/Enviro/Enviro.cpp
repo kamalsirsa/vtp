@@ -89,11 +89,21 @@ void Enviro::Startup()
 	m_pTerrainScene = new vtTerrainScene();
 
 	g_Log._StartLog("debug.txt");
-	VTLOG("\nEnviro\n\n");
+	VTLOG("\nEnviro\nBuild:");
+#if _DEBUG
+	VTLOG(" Debug");
+#else
+	VTLOG(" Release");
+#endif
+#if UNICODE
+	VTLOG(" Unicode");
+#endif
+	VTLOG("\n\n");
 }
 
 void Enviro::Shutdown()
 {
+	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
 	delete m_pTerrainScene;
 }

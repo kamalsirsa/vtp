@@ -1,7 +1,7 @@
 //
 // App.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,10 +22,19 @@ IMPLEMENT_APP(MyApp)
 bool MyApp::OnInit()
 {
 	g_Log._StartLog("debug.txt");
-	VTLOG("VTBuilder\n");
+	VTLOG("VTBuilder\nBuild:");
+#if DEBUG
+	VTLOG(" Debug");
+#else
+	VTLOG(" Release");
+#endif
+#if UNICODE
+	VTLOG(" Unicode");
+#endif
+	VTLOG("\n");
 
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, _T("VTBuilder"),
-							   wxPoint(50, 50), wxSize(700, 500));
+							   wxPoint(50, 50), wxSize(900, 500));
 
 	VTLOG(" Setting up the UI.\n");
 	frame->SetupUI();
