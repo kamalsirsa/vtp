@@ -75,7 +75,6 @@ public:
 	int FindLink(int roadID);			//returns internal number of road with given ID.  -1 if not found.
 	void AddLink(class Link *pR);		//adds a road to the node
 	void DetachLink(class Link *pR);	//detaches the road from the node.
-	double DistanceToPoint(DPoint2 target);  //distance from a point to the node
 	void DetermineLinkAngles();			//resulting angles > 0
 	void SortLinksByAngle();			//sorts the internal roads by angle.
 	DPoint2 find_adjacent_roadpoint2d(Link *pR);  //returns the 2nd point on the road from the node.
@@ -184,7 +183,6 @@ public:
 	vtRoadMap();
 	virtual ~vtRoadMap();
 
-	Node *FindNodeByID(int id);
 	void DeleteElements();
 	DRECT GetMapExtent();		// get the geographical extent of the road map
 	void ComputeExtents();
@@ -209,13 +207,15 @@ public:
 		m_pFirstLink = pLink;
 	}
 
+	Node *FindNodeByID(int id);
+	Node *FindNodeAtPoint(const DPoint2 &point, double epsilon);
+
 	// cleaning function: remove unused nodes, return the number removed
 	int RemoveUnusedNodes();
 
 	// Other clean up functions
 	void RemoveNode(Node *pNode);
 	void RemoveLink(Link *pLink);
-
 
 	bool ReadRMF(const char *filename, bool bHwy, bool bPaved, bool bDirt);
 	bool WriteRMF(const char *filename);

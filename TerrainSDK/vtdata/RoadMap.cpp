@@ -165,12 +165,6 @@ void Node::DetachLink(class Link *pR)
 	}
 }
 
-double Node::DistanceToPoint(DPoint2 target)
-{
-	DPoint2 point = m_p - target;
-	return point.Length();
-}
-
 //angles all > 0.
 void Node::DetermineLinkAngles()
 {
@@ -615,6 +609,31 @@ Node *vtRoadMap::FindNodeByID(int id)
 	return NULL;
 }
 
+/**
+ * Find the node closest to the indicated point.  Ignore nodes more than
+ * epsilon units away from the point.
+ */
+Node *vtRoadMap::FindNodeAtPoint(const DPoint2 &point, double epsilon)
+{
+	Node *closest = NULL;
+	double result, dist = 1E9;
+	bool found = false;
+
+	// a target rectangle, to quickly cull points too far away
+	DRECT target(point.x-epsilon, point.y+epsilon, point.x+epsilon, point.y-epsilon);
+	for (Node* curNode = GetFirstNode(); curNode; curNode = curNode->m_pNext)
+	{
+		if (!target.ContainsPoint(curNode->m_p))
+			continue;
+		result = (curNode->m_p - point).Length();
+		if (result < dist)
+		{
+			closest = curNode;
+			dist = result;
+		}
+	}
+	return closest;
+}
 
 int	vtRoadMap::NumLinks() const
 {
