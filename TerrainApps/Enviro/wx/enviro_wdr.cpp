@@ -652,10 +652,10 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item4->Add( item5, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxString *strs6 = (wxString*) NULL;
-    wxComboBox *item6 = new wxComboBox( parent, ID_TFILESINGLE, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs6, wxCB_DROPDOWN|wxCB_SORT );
-    item4->Add( item6, 0, wxALIGN_CENTRE|wxALL, 0 );
+    wxComboBox *item6 = new wxComboBox( parent, ID_TFILESINGLE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs6, wxCB_DROPDOWN|wxCB_SORT );
+    item4->Add( item6, 1, wxALIGN_CENTRE|wxALL, 0 );
 
-    item1->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item1->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxRadioButton *item7 = new wxRadioButton( parent, ID_DERIVED, _("Derive texture from elevation"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
@@ -674,8 +674,8 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Filename base: "), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_TFILEBASE, wxT(""), wxDefaultPosition, wxSize(100,-1), 0 );
-    item9->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_TFILEBASE, wxT(""), wxDefaultPosition, wxSize(220,-1), 0 );
+    item9->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("File Format:"), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
@@ -686,10 +686,10 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Filename: "), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item16, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_TFILENAME, wxT(""), wxDefaultPosition, wxSize(150,-1), 0 );
-    item9->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_TFILENAME, wxT(""), wxDefaultPosition, wxSize(220,-1), 0 );
+    item9->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item1->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item1->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxBoxSizer *item18 = new wxBoxSizer( wxHORIZONTAL );
 
