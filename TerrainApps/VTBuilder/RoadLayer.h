@@ -31,6 +31,7 @@ public:
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &strIn);
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
+	void OnLeftUp(BuilderView *pView, UIContext &ui);
 	void OnRightUp(BuilderView *pView, UIContext &ui);
 	void OnLeftDoubleClick(BuilderView *pView, UIContext &ui);
 

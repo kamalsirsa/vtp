@@ -300,6 +300,48 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	}
 }
 
+void vtRoadLayer::OnLeftUp(BuilderView *pView, UIContext &ui)
+{
+	if (ui.mode != LB_LinkEdit)
+		return;
+
+	if (ui.m_pEditingRoad != NULL && ui.m_iEditingPoint >= 0)
+	{
+		LinkEdit *le = ui.m_pEditingRoad;
+		pView->RefreshRoad(le);	// erase where it was
+		DPoint2 p = le->GetAt(ui.m_iEditingPoint);
+		p += (ui.m_CurLocation - ui.m_DownLocation);
+		le->SetAt(ui.m_iEditingPoint, p);
+		le->Dirtied();
+		pView->RefreshRoad(le);	// draw where it is now
+
+		// see if we changed the first or last point, affects some node
+		int num_points = le->GetSize();
+		NodeEdit *node = NULL;
+		if (ui.m_iEditingPoint == 0)
+			node = le->GetNode(0);
+		if (ui.m_iEditingPoint == num_points-1)
+			node = le->GetNode(1);
+		if (node)
+		{
+			node->m_p = p;
+			for (int i = 0; i < node->m_iLinks; i++)
+			{
+				LinkEdit *link = node->GetLink(i);
+				if (link->GetNode(0) == node)
+					link->SetAt(0, p);
+				if (link->GetNode(1) == node)
+					link->SetAt(link->GetSize()-1, p);
+				link->Dirtied();
+			}
+			pView->Refresh();
+		}
+		// We have changed the layer
+		SetModified(true);
+	}
+	ui.m_iEditingPoint = -1;
+}
+
 void vtRoadLayer::OnRightUp(BuilderView *pView, UIContext &ui)
 {
 	//if we are not clicked close to a single item, edit all selected items.
