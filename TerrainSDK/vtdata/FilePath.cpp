@@ -174,4 +174,22 @@ void vtDestroyDir(const char *dirname)
 	rmdir(dirname);
 }
 
+/**
+ * Given a full path containing a filename, return a pointer to
+ * the filename portion of the string.
+ */
+const char *StartOfFilename(const char *szFullPath)
+{
+	const char *tmp = szFullPath;
+	const char *tmp1 = strrchr(szFullPath, '/');
+	if (tmp1)
+		tmp = tmp1+1;
+	const char *tmp2 = strrchr(szFullPath, '\\');
+	if (tmp2 && tmp2 > tmp)
+		tmp = tmp2+1;
+	const char *tmp3 = strrchr(szFullPath, ':');
+	if (tmp3 && tmp3 > tmp)
+		tmp = tmp3+1;
+	return tmp;
+}
 
