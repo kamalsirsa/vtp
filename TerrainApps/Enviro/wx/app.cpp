@@ -65,28 +65,53 @@ void vtApp::Args(int argc, wxChar **argv)
 	}
 }
 
-//
-// Initialize the app object
-//
-bool vtApp::OnInit()
+
+WX_DECLARE_EXPORTED_STRING_HASH_MAP(wxString, wxMessagesHash);
+class MyMsgCatalogFile
 {
-#if WIN32 && defined(_MSC_VER) && DEBUG
-	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+public:
+    // fills the hash with string-translation pairs
+    void TestHash(bool convertEncoding)
+	{
+		wxCSConv *csConv = new wxCSConv(_T("iso-8859-1"));
 
-	g_Options.Read(STRING_APPNAME ".ini");
+		wxString key = wxString("Key1", *wxConvCurrent);
+		m_messages[key] = _T("Value1");
 
-	g_App.Startup();	// starts log
+		const wxChar *result = GetString(_T("Key1"));
+		VTLOG(result == NULL? "test1: bad\n" : "test1: good\n");
 
-	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
-#if WIN32
-	VTLOG(" Running on: ");
-	LogWindowsVersion();
-#endif
-	VTLOG("\n");
+		wxString key2 = wxString("Key2", *csConv);
+		m_messages[key2] = _T("Value2");
 
-	Args(argc, argv);
+		const wxChar *result2 = GetString(_T("Key2"));
+		VTLOG(result2 == NULL? "test2: bad\n" : "test2: good\n");
+	}
+	const wxChar *GetString(const wxChar *sz) const
+	{
+		wxMessagesHash::const_iterator i = m_messages.find(sz);
+		if ( i != m_messages.end() )
+		{
+			return i->second.c_str();
+		}
+		else
+			return NULL;
+	}
+	wxMessagesHash m_messages;
+};
+
+void TestLocale()
+{
+	MyMsgCatalogFile catfile;
+	catfile.TestHash(true);
+}
+
+void vtApp::SetupLocale()
+{
+	wxLog::SetVerbose(true);
+//	wxLog::AddTraceMask(_T("i18n"));
+
+	TestLocale();
 
 	// Locale stuff
 	VTLOG("\n");
@@ -121,13 +146,46 @@ bool vtApp::OnInit()
 	else
 		VTLOG("Locale info: unavailable.\n");
 
-	VTLOG("Attempting to load the 'Enviro.po' catalog for the current locale.\n");
+	VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
 	bool success = m_locale.AddCatalog(wxT("Enviro"));
 	if (success)
 		VTLOG(" succeeded.\n");
 	else
 		VTLOG(" not found.\n");
 	VTLOG("\n");
+
+	// Test it
+	wxString test = _("&File");
+
+	wxLog::SetVerbose(false);
+}
+
+
+//
+// Initialize the app object
+//
+bool vtApp::OnInit()
+{
+#if WIN32 && defined(_MSC_VER) && DEBUG
+	// sometimes, MSVC seems to need to be told to show unfreed memory on exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
+	g_Options.Read(STRING_APPNAME ".ini");
+
+	g_App.Startup();	// starts log
+
+	VTLOG("Specific application name: %s\n", STRING_APPNAME);
+	VTLOG("Application framework: wxWindows v" wxVERSION_NUM_DOT_STRING "\n");
+#if WIN32
+	VTLOG(" Running on: ");
+	LogWindowsVersion();
+#endif
+	VTLOG("\n");
+
+	Args(argc, argv);
+
+	SetupLocale();
 
 	// Look for all terrains on all data paths
 	RefreshTerrainList();
