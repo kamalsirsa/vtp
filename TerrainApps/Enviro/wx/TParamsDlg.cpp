@@ -64,6 +64,9 @@ void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
 // WDR: event table for TParamsDlg
 
 BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
+	EVT_INIT_DIALOG (TParamsDlg::OnInitDialog)
+
+	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBox )
 	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBox )
 	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBox )
 	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
@@ -114,6 +117,119 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
 	m_pBoxHandler = NULL;
+
+	m_pPreLightFactor = GetLightFactor();
+	m_pStructFiles = GetStructFiles();
+	m_pRoadFile = GetRoadfile();
+	m_pTreeFile = GetTreefile();
+	m_pTextureFileSingle = GetTfilesingle();
+	m_pDTName = GetDTName();
+	m_pLodMethod = GetLodmethod();
+	m_pFilename = GetFilename();
+	m_pFilenameTin = GetFilenameTin();
+	m_pLocFile = GetLocfile();
+	m_pShadowRez = GetChoiceShadowRez();
+	m_pSkyTexture = GetSkytexture();
+	m_pLabelFile = GetLabelFile();
+	m_pLabelField = GetLabelField();
+	m_pLocField = GetLocField();
+	m_pNavStyle = GetNavStyle();
+
+	m_pNone = GetNone();
+	m_pSingle = GetSingle();
+	m_pDerived = GetDerived();
+	m_pTiled = GetTiled();
+	m_pColorMap = GetColorMap();
+
+	// Create Validators To Attach C++ Members To WX Controls
+
+	// overall name
+	AddValidator(ID_TNAME, &m_strTerrainName);
+
+	// elevation
+	AddValidator(ID_FILENAME, &m_strFilename);
+	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
+	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
+	AddValidator(ID_USE_TIN, &m_bTin);
+
+	// nav
+	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
+	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
+	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
+	AddValidator(ID_LOCFILE, &m_strLocFile);
+	AddValidator(ID_INIT_LOCATION, &m_iInitLocation);
+	AddNumValidator(ID_HITHER, &m_fHither);
+	AddValidator(ID_ACCEL, &m_bAccel);
+
+	// LOD
+	AddValidator(ID_LODMETHOD, &m_iLodMethod);
+	AddNumValidator(ID_PIXELERROR, &m_fPixelError, 2);
+	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
+	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
+
+	// time
+	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
+	AddValidator(ID_TEXT_INIT_TIME, &m_strInitTime);
+	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
+
+	// texture
+	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
+	AddNumValidator(ID_TILESIZE, &m_iTilesize);
+	AddValidator(ID_TFILEBASE, &m_strTextureBase);
+	AddValidator(ID_JPEG, &m_bJPEG);
+	AddValidator(ID_TFILENAME, &m_strTextureFilename);
+	AddValidator(ID_MIPMAP, &m_bMipmap);
+	AddValidator(ID_16BIT, &m_b16bit);
+	AddValidator(ID_PRELIGHT, &m_bPreLight);
+	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
+	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
+	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
+
+	// detail texture
+	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
+	AddValidator(ID_DT_NAME, &m_strDetailName);
+	AddNumValidator(ID_DT_SCALE, &m_fDetailScale);
+	AddNumValidator(ID_DT_DISTANCE, &m_fDetailDistance);
+
+	// culture page
+	AddValidator(ID_PLANTS, &m_bPlants);
+	AddValidator(ID_TREEFILE, &m_strVegFile);
+	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
+
+	AddValidator(ID_ROADS, &m_bRoads);
+	AddValidator(ID_ROADFILE, &m_strRoadFile);
+	AddValidator(ID_HIGHWAYS, &m_bHwy);
+	AddValidator(ID_PAVED, &m_bPaved);
+	AddValidator(ID_DIRT, &m_bDirt);
+	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
+	AddNumValidator(ID_ROADDISTANCE, &m_fRoadDistance);
+	AddValidator(ID_TEXROADS, &m_bTexRoads);
+	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
+
+	AddValidator(ID_CONTENT_FILE, &m_strContent);
+	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
+	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
+	AddValidator(ID_CHOICE_SHADOW_REZ, &m_bStructureRez);
+	AddValidator(ID_VEHICLES, &m_bVehicles);
+
+	// Atmosphere and water page
+	AddValidator(ID_SKY, &m_bSky);
+	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
+	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
+	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
+	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
+	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
+	AddValidator(ID_HORIZON, &m_bHorizon);
+	AddValidator(ID_FOG, &m_bFog);
+	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
+
+	// Feature labels page
+	AddValidator(ID_LABELS, &m_bLabels);
+	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
+	AddValidator(ID_LABEL_FIELD, &m_Style.m_field_index);
+	AddNumValidator(ID_LABEL_HEIGHT, &m_Style.m_label_elevation);
+	AddNumValidator(ID_LABEL_SIZE, &m_Style.m_label_size);
+
 }
 
 TParamsDlg::~TParamsDlg()
@@ -531,29 +647,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bReady = false;
 	m_bSetting = true;
 
-	m_pPreLightFactor = GetLightFactor();
-	m_pStructFiles = GetStructFiles();
-	m_pRoadFile = GetRoadfile();
-	m_pTreeFile = GetTreefile();
-	m_pTextureFileSingle = GetTfilesingle();
-	m_pDTName = GetDTName();
-	m_pLodMethod = GetLodmethod();
-	m_pFilename = GetFilename();
-	m_pFilenameTin = GetFilenameTin();
-	m_pLocFile = GetLocfile();
-	m_pShadowRez = GetChoiceShadowRez();
-	m_pSkyTexture = GetSkytexture();
-	m_pLabelFile = GetLabelFile();
-	m_pLabelField = GetLabelField();
-	m_pLocField = GetLocField();
-	m_pNavStyle = GetNavStyle();
-
-	m_pNone = GetNone();
-	m_pSingle = GetSingle();
-	m_pDerived = GetDerived();
-	m_pTiled = GetTiled();
-	m_pColorMap = GetColorMap();
-
 	unsigned int i;
 	int sel;
 
@@ -669,93 +762,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUseTin()->SetValue(m_bTin);
 
 	UpdateTimeString();
-
-	// overall name
-	AddValidator(ID_TNAME, &m_strTerrainName);
-
-	// elevation
-	AddValidator(ID_FILENAME, &m_strFilename);
-	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
-	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
-	AddValidator(ID_USE_TIN, &m_bTin);
-
-	// nav
-	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
-	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
-	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
-	AddValidator(ID_LOCFILE, &m_strLocFile);
-	AddValidator(ID_INIT_LOCATION, &m_iInitLocation);
-	AddNumValidator(ID_HITHER, &m_fHither);
-	AddValidator(ID_ACCEL, &m_bAccel);
-
-	// LOD
-	AddValidator(ID_LODMETHOD, &m_iLodMethod);
-	AddNumValidator(ID_PIXELERROR, &m_fPixelError, 2);
-	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
-	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
-
-	// time
-	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
-	AddValidator(ID_TEXT_INIT_TIME, &m_strInitTime);
-	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
-
-	// texture
-	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
-	AddNumValidator(ID_TILESIZE, &m_iTilesize);
-	AddValidator(ID_TFILEBASE, &m_strTextureBase);
-	AddValidator(ID_JPEG, &m_bJPEG);
-	AddValidator(ID_TFILENAME, &m_strTextureFilename);
-	AddValidator(ID_MIPMAP, &m_bMipmap);
-	AddValidator(ID_16BIT, &m_b16bit);
-	AddValidator(ID_PRELIGHT, &m_bPreLight);
-	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
-	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
-	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
-
-	// detail texture
-	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
-	AddValidator(ID_DT_NAME, &m_strDetailName);
-	AddNumValidator(ID_DT_SCALE, &m_fDetailScale);
-	AddNumValidator(ID_DT_DISTANCE, &m_fDetailDistance);
-
-	// culture page
-	AddValidator(ID_PLANTS, &m_bPlants);
-	AddValidator(ID_TREEFILE, &m_strVegFile);
-	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
-
-	AddValidator(ID_ROADS, &m_bRoads);
-	AddValidator(ID_ROADFILE, &m_strRoadFile);
-	AddValidator(ID_HIGHWAYS, &m_bHwy);
-	AddValidator(ID_PAVED, &m_bPaved);
-	AddValidator(ID_DIRT, &m_bDirt);
-	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
-	AddNumValidator(ID_ROADDISTANCE, &m_fRoadDistance);
-	AddValidator(ID_TEXROADS, &m_bTexRoads);
-	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
-
-	AddValidator(ID_CONTENT_FILE, &m_strContent);
-	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
-	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
-	AddValidator(ID_CHOICE_SHADOW_REZ, &m_bStructureRez);
-	AddValidator(ID_VEHICLES, &m_bVehicles);
-
-	// Atmosphere and water page
-	AddValidator(ID_SKY, &m_bSky);
-	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
-	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
-	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
-	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
-	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
-	AddValidator(ID_HORIZON, &m_bHorizon);
-	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
-
-	// Feature labels page
-	AddValidator(ID_LABELS, &m_bLabels);
-	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
-	AddValidator(ID_LABEL_FIELD, &m_Style.m_field_index);
-	AddNumValidator(ID_LABEL_HEIGHT, &m_Style.m_label_elevation);
-	AddNumValidator(ID_LABEL_SIZE, &m_Style.m_label_size);
 
 	m_iInitLocation = m_pLocField->FindString(m_strInitLocation);
 	if (m_iInitLocation == -1)

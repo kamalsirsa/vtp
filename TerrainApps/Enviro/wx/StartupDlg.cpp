@@ -221,6 +221,7 @@ void StartupDlg::UpdateState()
 // WDR: event table for StartupDlg
 
 BEGIN_EVENT_TABLE(StartupDlg,AutoDialog)
+	EVT_INIT_DIALOG (StartupDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
 	EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
 	EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
@@ -236,6 +237,21 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	VTLOG("Constructing StartupDlg.\n");
 	StartupDialogFunc( this, TRUE );
+
+	AddValidator(ID_EARTHVIEW, &m_bStartEarth);
+	AddValidator(ID_TERRAIN, &m_bStartTerrain);
+
+	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
+//	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
+//	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
+	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
+//	AddValidator(ID_SHADOWS, &m_bShadows);
+
+	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
+	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
+
+	AddValidator(ID_IMAGE, &m_strImage);
+	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
 }
 
 void StartupDlg::RefreshTerrainChoices()
@@ -333,11 +349,9 @@ void StartupDlg::OnOK( wxCommandEvent &event )
 
 void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	int sel;
-
 	VTLOG("StartupDlg Init.\n");
 
-	// display OpenGL info, including max texture size
+	// log OpenGL info, including max texture size
 #ifdef WIN32
 	wxClientDC wdc(this);
 	HDC hdc = (HDC) wdc.GetHDC();
@@ -354,6 +368,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 */
 	m_psImage = GetImagetext();
 	m_pImage = GetImage();
+	int sel;
 
 	// Populate Earth Image files choices
 	vtStringArray &paths = g_Options.m_DataPaths;
@@ -380,26 +395,11 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	UpdateState();
 
-	AddValidator(ID_EARTHVIEW, &m_bStartEarth);
-	AddValidator(ID_TERRAIN, &m_bStartTerrain);
-
-	AddValidator(ID_FULLSCREEN, &m_bFullscreen);
-//	AddValidator(ID_HTML_PANE, &m_bHtmlpane);
-//	AddValidator(ID_FLOATING, &m_bFloatingToolbar);
-	AddValidator(ID_TEXTURE_COMPRESSION, &m_bTextureCompression);
-//	AddValidator(ID_SHADOWS, &m_bShadows);
-
-	AddValidator(ID_CHOICE_CONTENT, &m_iContentFile);
-	AddValidator(ID_CHOICE_CONTENT, &m_strContentFile);
-
 	// Terrain choices
 	RefreshTerrainChoices();
 	sel = GetTname()->FindString(m_strTName);
 	if (sel != -1)
 		GetTname()->Select(sel);
-
-	AddValidator(ID_IMAGE, &m_strImage);
-	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
 
 	wxWindow::OnInitDialog(event);
 }

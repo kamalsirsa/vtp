@@ -26,6 +26,7 @@
 // WDR: event table for DistanceDlg
 
 BEGIN_EVENT_TABLE(DistanceDlg,AutoDialog)
+	EVT_INIT_DIALOG (DistanceDlg::OnInitDialog)
 	EVT_CHOICE( ID_UNITS1, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS2, DistanceDlg::OnUnits )
 	EVT_CHOICE( ID_UNITS3, DistanceDlg::OnUnits )
@@ -38,6 +39,12 @@ DistanceDlg::DistanceDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	AutoDialog( parent, id, title, position, size, style )
 {
 	DistanceDialogFunc( this, TRUE );
+
+	AddValidator(ID_UNITS1, &m_iUnits1);
+	AddValidator(ID_UNITS2, &m_iUnits2);
+	AddValidator(ID_UNITS3, &m_iUnits3);
+	AddValidator(ID_UNITS4, &m_iUnits4);
+	AddValidator(ID_UNITS5, &m_iUnits5);
 }
 
 void DistanceDlg::SetProjection(const vtProjection &proj)
@@ -253,12 +260,6 @@ void DistanceDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUnits5()->Append(_T("Meters"));
 	GetUnits5()->Append(_T("Feet"));
 	GetUnits5()->Append(_T("US Survey Feet"));
-
-	AddValidator(ID_UNITS1, &m_iUnits1);
-	AddValidator(ID_UNITS2, &m_iUnits2);
-	AddValidator(ID_UNITS3, &m_iUnits3);
-	AddValidator(ID_UNITS4, &m_iUnits4);
-	AddValidator(ID_UNITS5, &m_iUnits5);
 
 	UpdateAvailableUnits();
 
