@@ -80,6 +80,7 @@ public:
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
 	bool SaveToSTM(const char *szFileName, void progress_callback(int) = NULL);
 	bool SaveToPlanet(const char *szFileName, void progress_callback(int) = NULL);
+	bool SaveToASC(const char *szFileName, void progress_callback(int) = NULL);
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);

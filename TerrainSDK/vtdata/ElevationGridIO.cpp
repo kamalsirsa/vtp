@@ -281,7 +281,8 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	// get dimension IDs
 	fgets(buf, 4000, fp);
 
-	int ncols, nrows, xllcorner, yllcorner, cellsize, nodata;
+	int ncols, nrows;
+	double xllcorner, yllcorner, cellsize, nodata;
 	int result = sscanf(buf, "ncols %d", &ncols);
 	if (result != 1)
 		return false;	// not an ASC file
@@ -290,16 +291,16 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	sscanf(buf, "nrows %d", &nrows);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "xllcorner %d", &xllcorner);
+	sscanf(buf, "xllcorner %lf", &xllcorner);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "yllcorner %d", &yllcorner);
+	sscanf(buf, "yllcorner %lf", &yllcorner);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "cellsize %d", &cellsize);
+	sscanf(buf, "cellsize %lf", &cellsize);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "%s %d", token, &nodata);
+	sscanf(buf, "%s %lf", token, &nodata);
 
 	m_iColumns = ncols;
 	m_iRows = nrows;
@@ -2052,6 +2053,94 @@ bool vtElevationGrid::SaveToPlanet(const char *szFileName, void progress_callbac
         m_EarthExtents.bottom, m_EarthExtents.bottom + m_iRows * spacing.y,
         spacing.x);		// must spacing be even in both directions?
     fclose(outfile);
+	return true;
+}
+
+
+/**
+ * Writes an Arc/Info compatible ASCII grid file.
+ * Projection is written to a corresponding .prj file.
+ *
+ * \returns \c true if the file was successfully opened and written.
+ */
+bool vtElevationGrid::SaveToASC(const char *szFileName,
+								void progress_callback(int))
+{
+	FILE *fp = fopen(szFileName, "wb");
+	if (!fp)
+		return false;
+
+	if (progress_callback != NULL) progress_callback(0);
+
+	// write dimension IDs
+	fprintf(fp, "ncols %d\n", m_iColumns);
+	fprintf(fp, "nrows %d\n", m_iRows);
+	fprintf(fp, "xllcorner %lf\n", m_EarthExtents.left);
+	fprintf(fp, "yllcorner %lf\n", m_EarthExtents.bottom);
+	fprintf(fp, "cellsize %lf\n", m_dXStep);
+
+	// Try to decrease filesize by choosing a nodata value appropriately
+	int nodata = INVALID_ELEVATION;
+	if (m_fMinHeight > -9999)
+		nodata = -9999;
+	if (m_fMinHeight > -999)
+		nodata = -999;
+	if (m_fMinHeight > -99)
+		nodata = -99;
+	if (m_fMinHeight > 1)
+		nodata = 0;
+	fprintf(fp, "nodata_value %d\n", nodata);
+
+	int i, j;
+	float z;
+	bool bWriteIntegers = (!m_bFloatMode && m_fVerticalScale == 1.0f);
+	if (!bWriteIntegers)
+	{
+		// We might be able to write integers anyway, as long as our
+		//  existing values are all actually integral.  It's worth taking
+		//  a second to scan, as it makes a much smaller output file.
+		bWriteIntegers = true;
+		for (i = 0; i < m_iRows; i++)
+		{
+			for (j = 0; j < m_iColumns; j++)
+			{
+				z = GetFValue(j, i);
+				if (z == INVALID_ELEVATION)
+					continue;
+				if ((int)z*100 != (int)(z*100))
+					bWriteIntegers= false;
+			}
+			if (!bWriteIntegers)
+				break;
+		}
+	}
+	// Now we can write the actual data
+	for (i = 0; i < m_iRows; i++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(i*100/m_iRows);
+
+		for (j = 0; j < m_iColumns; j++)
+		{
+			z = GetFValue(j, m_iRows-1-i);
+			if (z == INVALID_ELEVATION)
+				fprintf(fp, " %d", nodata);
+			else
+			{
+				if (bWriteIntegers)
+					fprintf(fp, " %d", (int) z);
+				else
+					fprintf(fp, " %f", z);
+			}
+		}
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+
+	// There is no projection info in a ASC file, but we can create
+	//  an accompanying .prj file, in the WKT-style .prj format.
+	m_proj.WriteProjFile(szFileName);
+
 	return true;
 }
 
