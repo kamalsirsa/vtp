@@ -584,14 +584,21 @@ void vtMaterialDescriptorArray3d::ReleaseMaterials()
 // Methods for vtStructure3d
 //
 
+bool vtStructure3d::s_bMaterialsLoaded = false;
+
 void vtStructure3d::InitializeMaterialArrays()
 {
-	s_MaterialDescriptors.InitializeMaterials();
+	if (!s_bMaterialsLoaded)
+	{
+		s_bMaterialsLoaded = true;
 
-	// Now load external materials (user-modifiable, user-extendable)
-	s_MaterialDescriptors.LoadExternalMaterials(vtGetDataPath());
+		s_MaterialDescriptors.InitializeMaterials();
 
-	SetGlobalMaterials(&s_MaterialDescriptors);
+		// Now load external materials (user-modifiable, user-extendable)
+		s_MaterialDescriptors.LoadExternalMaterials(vtGetDataPath());
+
+		SetGlobalMaterials(&s_MaterialDescriptors);
+	}
 }
 
 void vtStructure3d::ReleaseSharedMaterials()

@@ -112,6 +112,7 @@ protected:
 protected:
 	float ColorDiff(const RGBi &c1, const RGBi &c2);
 	static vtMaterialDescriptorArray3d s_MaterialDescriptors;
+	static bool s_bMaterialsLoaded;
 };
 
 
