@@ -79,7 +79,8 @@ public:
 	void DumpCameraInfo();
 	void SetSpeed(float x);
 	float GetSpeed();
-	void GetStatusText(vtString &str);
+	vtString GetStatusString(int which);
+//	void GetStatusText(vtString &str);
 
 	// go to space or a terrain
 	void FlyToSpace();
@@ -105,7 +106,7 @@ public:
 
 	vtString GetMessage() { return m_strMessage; }
 	void SetMessage(const char *msg, float time = 0.0f);
-	void FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units);
+	void FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units, bool seconds = false);
 	void DescribeCoordinates(vtString &str);
 	void DescribeCLOD(vtString &str);
 
