@@ -30,6 +30,7 @@ rd_edit			BITMAP "bitmaps/rd_edit.bmp"
 rd_shownodes	BITMAP "bitmaps/rd_shownodes.bmp"
 
 select			BITMAP "bitmaps/select.bmp"
+info			BITMAP "bitmaps/info.bmp"
 elev_box		BITMAP "bitmaps/elev_box.bmp"
 
 bld_edit		BITMAP "bitmaps/bld_edit.bmp"

@@ -240,6 +240,10 @@ SOURCE=.\ExtentDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\FeatInfoDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Frame.h
 # End Source File
 # Begin Source File
@@ -559,6 +563,10 @@ SOURCE=.\DistribVegDlg.cpp
 # Begin Source File
 
 SOURCE=.\ExtentDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FeatInfoDlg.cpp
 # End Source File
 # Begin Source File
 
