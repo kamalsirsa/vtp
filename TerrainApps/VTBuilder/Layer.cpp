@@ -14,6 +14,7 @@
 #include "Frame.h"
 #include "WaterLayer.h"
 #include "ElevLayer.h"
+#include "ImageLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
 #include "VegLayer.h"
@@ -218,17 +219,20 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 	vtLayer *pLayer = NULL;
 	switch (ltype)
 	{
+	case LT_RAW:
+		pLayer = new vtRawLayer();
+		break;
 	case LT_ELEVATION:
 		pLayer = new vtElevLayer();
+		break;
+	case LT_IMAGE:
+		pLayer = new vtImageLayer();
 		break;
 	case LT_ROAD:
 		pLayer = new vtRoadLayer();
 		break;
 	case LT_STRUCTURE:
 		pLayer = new vtStructureLayer();
-		break;
-	case LT_RAW:
-		pLayer = new vtRawLayer();
 		break;
 	case LT_UTILITY:
 		pLayer = new vtUtilityLayer();

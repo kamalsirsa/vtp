@@ -29,6 +29,7 @@ class vtDLGFile;
 class vtVegLayer;
 class vtRawLayer;
 class vtElevLayer;
+class vtImageLayer;
 class vtRoadLayer;
 class vtStructureLayer;
 class vtUtilityLayer;
@@ -296,6 +297,7 @@ public:
 	vtLayer *ImportFromDLG(wxString &strFileName, LayerType ltype);
 	vtLayer *ImportFromSHP(wxString &strFileName, LayerType ltype);
 	vtLayer *ImportElevation(wxString &strFileName);
+	vtLayer *ImportImage(wxString &strFileName);
 	vtLayer *ImportFromLULC(wxString &strFileName, LayerType ltype);
 	vtLayer *ImportVectorsWithOGR(wxString &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(wxString &strFileName);

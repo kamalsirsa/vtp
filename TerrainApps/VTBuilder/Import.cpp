@@ -21,6 +21,7 @@
 #include "StructLayer.h"
 #include "WaterLayer.h"
 #include "ElevLayer.h"
+#include "ImageLayer.h"
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "VegLayer.h"
@@ -83,6 +84,9 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName, bool b
 	{
 	case LT_ELEVATION:
 		pLayer = ImportElevation(strFileName);
+		break;
+	case LT_IMAGE:
+		pLayer = ImportImage(strFileName);
 		break;
 	case LT_ROAD:
 	case LT_WATER:
@@ -459,8 +463,23 @@ vtLayerPtr MainFrame::ImportElevation(wxString &strFileName)
 		delete pElev;
 		return NULL;
 	}
-};
+}
 
+vtLayerPtr MainFrame::ImportImage(wxString &strFileName)
+{
+	vtImageLayer *pLayer = new vtImageLayer();
+
+	pLayer->SetFilename(strFileName);
+	bool success = pLayer->OnLoad();
+
+	if (success)
+		return pLayer;
+	else
+	{
+		delete pLayer;
+		return NULL;
+	}
+}
 
 vtLayerPtr MainFrame::ImportFromLULC(wxString &strFileName, LayerType ltype)
 {

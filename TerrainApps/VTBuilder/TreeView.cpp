@@ -162,7 +162,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, "Elevation");
 #ifndef ELEVATION_ONLY
-//	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, "Images");
+	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, "Images");
 	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, "Structures");
 	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, "Roads");
 	wxTreeItemId vegId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Veg1, "Vegetation");
@@ -192,6 +192,9 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 				hItem = AppendItem(elevId, str, image, imageSel);
 				break;
 #ifndef ELEVATION_ONLY
+			case LT_IMAGE:
+				hItem = AppendItem(imageId, str, image, imageSel);
+				break;
 			case LT_ROAD:
 				hItem = AppendItem(roadId, str, image, imageSel);
 				break;
@@ -229,7 +232,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 	Expand(rootId);
 	Expand(elevId);
 #ifndef ELEVATION_ONLY
-//	Expand(imageId);
+	Expand(imageId);
 	Expand(roadId);
 	Expand(buildId);
 	Expand(vegId);
