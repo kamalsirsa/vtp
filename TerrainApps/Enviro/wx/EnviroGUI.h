@@ -24,6 +24,7 @@ public:
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 		float fGround, float fVertical);
 	virtual vtString GetPathFromGUI();
+	virtual bool OnTerrainSelect();
 };
 
 // global singleton

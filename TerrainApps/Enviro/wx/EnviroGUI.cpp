@@ -31,7 +31,7 @@ EnviroGUI g_App;
 // helper
 vtFrame *GetFrame()
 {
-	return (vtFrame *) (wxGetApp().GetTopWindow());
+	return dynamic_cast<vtFrame *>(wxGetApp().GetTopWindow());
 }
 
 EnviroGUI::EnviroGUI()
@@ -80,5 +80,10 @@ vtString EnviroGUI::GetPathFromGUI()
 {
 	wxString2 str = GetFrame()->m_pInstanceDlg->GetPath();
 	return str.mb_str();
+}
+
+bool EnviroGUI::OnTerrainSelect()
+{
+	return GetFrame()->OnTerrainSelect();
 }
 
