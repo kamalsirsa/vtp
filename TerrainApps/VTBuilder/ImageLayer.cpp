@@ -147,7 +147,7 @@ bool vtImageLayer::LoadFromGDAL()
 			throw "Unknown coordinate system.";
 
 		if (CE_None != pDataset->GetGeoTransform(affineTransform))
-			throw "Unknown coordinate system.";
+			throw "Dataset does not contain a valid affine transform.";
 
 		if (SpatialReference.IsGeographic())
 		{
@@ -186,17 +186,14 @@ bool vtImageLayer::LoadFromGDAL()
 		}
 		else
 		{
-			// Nut sure I need to do this conversion
-			// more thinking needed
-			// I have not fully checked if there is any dependency on these units
-			// being metres elsewhere
 			linearConversionFactor = SpatialReference.GetLinearUnits();
 
-			// Compute extent ujsing the top left and bottom right image co-ordinates
+			// Compute extent using the top left and bottom right image co-ordinates
 			m_Area.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * iPixelHeight) * linearConversionFactor;
 			m_Area.right = (affineTransform[0] + affineTransform[1] * iPixelWidth /*+ affineTransform[2] * 0*/) * linearConversionFactor;
 			m_Area.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * iPixelHeight) * linearConversionFactor;
 			m_Area.bottom = (affineTransform[3] + affineTransform[4] * iPixelWidth /*+ affineTransform[5] * 0*/) * linearConversionFactor;
+			m_Proj.SetSpatialReference(&SpatialReference);
 		}
 
 		// Set up bitmap
