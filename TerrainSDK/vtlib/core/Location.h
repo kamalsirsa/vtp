@@ -1,20 +1,21 @@
 //
 // Location classes
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef LOCATION_H
 #define LOCATION_H
 
+#include "vtdata/Projections.h"
+#include "vtdata/LocalConversion.h"
+
 /**
- * Currently, a location is represented as a world-coordinate
- * (not earth-coordinate) view matrix.  This should really be
- * improved to use separate:
- *	1. geographic location, potentially including datum etc.
- *  2. altitude
- *  3. orientation
+ * A location is represented as a earth-coordinate point, an elevation,
+ * and an orientation.  The point is always in Geographic coordinates
+ * (Latitude/Longitude, WGS84).  It should be converted to and from
+ * the actual, desired CS as appropriate.
  */
 class vtLocation
 {
@@ -24,12 +25,26 @@ public:
 	vtLocation &operator=(const vtLocation &v)
 	{
 		m_name = v.m_name;
-		m_mat = v.m_mat;
+		m_pos1 = v.m_pos1;
+		m_fElevation1 = v.m_fElevation1;
+		m_pos2 = v.m_pos2;
+		m_fElevation2 = v.m_fElevation2;
 		return *this;
 	}
 
 	vtString m_name;
-	FMatrix4 m_mat;
+
+	// Location and view direction are encoded as two 3D points.  The first
+	//  is the location, the second is the "Look At" point.  Heading and
+	//  pitch are implicit in the second point.
+	//
+	// The distance between the two points is arbitrary, but it should be
+	//  neither very small nor very large, to avoid numerical problems.
+	//
+	DPoint2	m_pos1;
+	float	m_fElevation1;
+	DPoint2 m_pos2;
+	float	m_fElevation2;
 };
 
 /**
@@ -41,23 +56,35 @@ public:
  */
 class vtLocationSaver
 {
+	friend class LocationVisitor;
 public:
 	vtLocationSaver();
 	vtLocationSaver(const char* fname);
 	~vtLocationSaver();
 
-	void SetTarget(vtTransform* target) { m_pTarget = target; }
 	bool Read(const char *fname);
 	bool Write(const char *fname = NULL);
-	void StoreTo(int num, const char *name = NULL);
-	void RecallFrom(int num);
 	void Remove(int num);
 	int GetNumLocations() { return m_loc.GetSize(); }
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }
+	void Empty();
+
+	// you must call these 3 methods before this class is useful
+	void SetTransform(vtTransform *trans) { m_pTransform = trans; }
+	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
+	void SetProjection(vtProjection proj) { m_proj = proj; }
+
+	void StoreTo(int num, const char *name = NULL);
+	void RecallFrom(int num);
+
+	// Store information necessary to convert from global earth CS
+	// to the 
+	vtLocalConversion	m_conv;
+	vtProjection		m_proj;
+	vtTransform			*m_pTransform;
 
 // Implementation
 protected:
-	vtTransform *m_pTarget;
 	vtString m_strFilename;
 
 	Array<vtLocation*> m_loc;
