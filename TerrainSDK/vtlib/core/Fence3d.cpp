@@ -138,6 +138,8 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
 	float fFenceHeightScaled = m_fHeight * s_fFenceScale;
 
+	if ((FT_WIRE == m_FenceType) || (FT_CHAINLINK == m_FenceType))
+	{
 	// first determine where the fence posts go, for this whole array
 	// of fences
 	for (i = 0; i < numfencepts; i++)
@@ -239,6 +241,52 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 			}
 			pMesh->AddStrip2(nposts * 2, 0);
 			m_pFenceGeom->AddMesh(pMesh, m_mi_chainlink);
+			}
+		}
+	}
+	else
+	{
+		// FT_HEDGEROW has no posts
+		if (numfencepts > 1)
+		{
+			float u = 0.0f;
+			FPoint3 pout;
+			vtMesh *pMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numfencepts * 2);
+			int vidx = 0;
+			for (i = 0; i < numfencepts; i++)
+			{
+				dp = m_pFencePts[i];
+				pHeightField->ConvertEarthToSurfacePoint(dp.x, dp.y, pout);
+
+				pMesh->SetVtxPUV(vidx++, pout, u, 1.0f);
+				pMesh->SetVtxPUV(vidx++, pout + FPoint3(0, fFenceHeightScaled, 0), u, 0.0f);
+
+				if (i < (numfencepts - 1))
+				{
+					// increment u based on the length of each fence segment
+					float length = (m_pFencePts[i+1] - dp).Length();
+					u += ((length / s_fFenceScale) * 0.5f);
+				}
+			}
+			pMesh->AddStrip2(numfencepts * 2, 0);
+			switch(m_FenceType)
+			{
+				case FT_HEDGEROW:
+					m_pFenceGeom->AddMesh(pMesh, m_mi_hedgerow);
+					break;
+				case FT_DRYSTONE:
+					m_pFenceGeom->AddMesh(pMesh, m_mi_drystone);
+					break;
+				case FT_PRIVET:
+					m_pFenceGeom->AddMesh(pMesh, m_mi_privet);
+					break;
+				case FT_STONE:
+					m_pFenceGeom->AddMesh(pMesh, m_mi_stone);
+					break;
+				case FT_BEECH:
+					m_pFenceGeom->AddMesh(pMesh, m_mi_beech);
+					break;
+			}
 		}
 	}
 }
