@@ -311,7 +311,6 @@ void SRTerrain::RenderPass()
 	float dz = eye_forward.z;
 
 	myfancnt = myvtxcnt = 0;
-	int size = m_iColumns;
 
 	// Convert the eye location to the unusual coordinate scheme of libMini.
 	ex -= (m_iColumns/2)*m_fXStep;
