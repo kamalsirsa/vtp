@@ -6,7 +6,12 @@
 // Free for all uses, see license.txt for details.
 //
 
-#include <GL/glut.h>
+#ifdef __DARWIN_OSX__
+ #import <glut.h>
+#else
+ #include <GL/glut.h>
+#endif
+
 #ifdef __FreeBSD__
 #  include <ieeefp.h>
 #endif
