@@ -152,13 +152,13 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 
 void BuilderView::DrawDymaxionOutline(wxDC *pDC)
 {
-	DPolyArray2 polys;
+	DLine2Array polys;
 
 	m_icosa.GetDymaxEdges(polys);
 
 	for (unsigned int i = 0; i < polys.size(); i++)
 	{
-		DrawDLine(pDC, polys[i], true);
+		DrawLine(pDC, polys[i], true);
 	}
 }
 
@@ -293,7 +293,6 @@ bool BuilderView::ImportWorldMap()
 {
 	SHPHandle	hSHP;
 	int			nShapeType, nShapeCount;
-	double		adfMinBound[4], adfMaxBound[4];
 	unsigned int i;
 	int j, k;
 
@@ -306,7 +305,7 @@ bool BuilderView::ImportWorldMap()
 		return false;
 
 	VTLOG(" Opened, reading worldmap.\n");
-	SHPGetInfo(hSHP, &nShapeCount, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nShapeCount, &nShapeType, NULL, NULL);
 	if (nShapeType != SHPT_POLYGON)
 		return false;
 	unsigned int iShapeCount = nShapeCount;
@@ -460,7 +459,7 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 
 	// Draw each poly in WMPolyDraw
 	for (unsigned int i = 0; i < m_iEntities; i++)
-		DrawDLine(pDC, WMPolyDraw[i], true);
+		DrawLine(pDC, WMPolyDraw[i], true);
 }
 
 //////////////////////////////////////////////////////////
@@ -621,8 +620,8 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 	if (pL->GetType() == LT_RAW)
 	{
 		vtRawLayer *pRL = (vtRawLayer *)pL;
-		changed = pRL->DoBoxSelect(m_world_rect, st);
-		selected = pRL->NumSelected();
+		changed = pRL->GetFeatureSet()->DoBoxSelect(m_world_rect, st);
+		selected = pRL->GetFeatureSet()->NumSelected();
 	}
 	wxString msg;
 	msg.Printf(_T("%hs %d entit%s, %d total selected"), verb, changed,
@@ -879,7 +878,7 @@ void BuilderView::DeselectAll()
 	vtRawLayer *pRawL = GetMainFrame()->GetActiveRawLayer();
 	if (pRawL)
 	{
-		pRawL->DeselectAll();
+		pRawL->GetFeatureSet()->DeselectAll();
 		Refresh(TRUE);
 		GetMainFrame()->OnSelectionChanged();
 	}

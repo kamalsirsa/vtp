@@ -206,8 +206,8 @@ protected:
 
 	// World Map
 	bool	m_bShowMap;
-	DPolyArray2		WMPoly;		// Original data from SHP file
-	DPolyArray2		WMPolyDraw; // This is the WM that is drawn
+	DLine2Array		WMPoly;		// Original data from SHP file
+	DLine2Array		WMPolyDraw; // This is the WM that is drawn
 	unsigned int	m_iEntities;
 	bool	m_bAttemptedLoad;
 	DymaxIcosa		m_icosa;
