@@ -8,6 +8,7 @@
 #ifndef VEGDLGH
 #define VEGDLGH
 
+#include "VTBuilder_wdr.h"
 #include "wx/splitter.h"
 #include "wx/treectrl.h"
 #include "wx/listctrl.h"
@@ -23,41 +24,44 @@
 #define WID_BIOREGIONS 300
 #define WID_BIOREGIONTREE 301
 
-class PlantListCtrl : public wxListCtrl
+// WDR: class declarations
+
+//----------------------------------------------------------------------------
+// SpeciesListDlg
+//----------------------------------------------------------------------------
+
+class SpeciesListDlg: public wxDialog
 {
 public:
-	PlantListCtrl(wxWindow *parent,
-		wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, 
-		const wxSize& size = wxDefaultSize, long style = wxLC_ICON, 
-		const wxValidator& validator = wxDefaultValidator, 
-		const wxString& name = _T("wxListCtrl")) 
-		: wxListCtrl (parent, id, pos, size, style, validator, name)
-	{
-	};
-
-//	virtual ~PlantListCtrl();
+	// constructors and destructors
+	SpeciesListDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
 	
-	void OnSelect(wxListEvent &event);
+protected:
+	// WDR: method declarations for SpeciesListDlg
+	void RefreshAppeances();
+	void AddAppeance(int idx);
 
+private:
+	// WDR: member variable declarations for SpeciesListDlg
+	wxSplitterWindow *m_PSplitter;
+	wxListCtrl *m_PSTable;
+	wxListCtrl *m_PATable;
+
+	int m_idx;
+	
+private:
+	// WDR: handler declarations for SpeciesListDlg
+	void OnSelect( wxListEvent &event );
+	void OnOK( wxCommandEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
+
+private:
 	DECLARE_EVENT_TABLE()
 };
 
-class PlantListDlg : public AutoDialog
-{
-public:
-	PlantListDlg(wxWindow *parent, wxWindowID id, const wxString& title,
-		const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-		long style = wxDEFAULT_DIALOG_STYLE)
-		: AutoDialog(parent, id, title, pos, size, style) {}
-
-	void OnInitDialog(wxInitDialogEvent& event);
-
-	wxDialog *m_PDialog;
-	wxSplitterWindow *m_PSplitter;
-	PlantListCtrl *m_PSTable;
-	wxListCtrl *m_PATable;
-
-};
 
 class BioRegionDlg : public AutoDialog
 {
