@@ -212,7 +212,7 @@ void vtTerrain::create_roads(const vtString &strRoadFile)
 		m_Params.m_bHwy != 0, m_Params.m_bPaved != 0, m_Params.m_bDirt != 0);
 	if (!success)
 	{
-		VTLOG("    read failed.\n");
+		VTLOG("	read failed.\n");
 		delete m_pRoadMap;
 		m_pRoadMap = NULL;
 		return;
@@ -1776,8 +1776,10 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
 }
 
+#include "vtdata/CubicSpline.h"
+
 float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
-									 float fOffset)
+									 float fOffset, bool bCurve)
 {
 	unsigned int i, j;
 	FPoint3 v1, v2, v;
@@ -1803,33 +1805,77 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 	float fTotalLength = 0.0f;
 	int iStart = pMesh->GetNumVertices();
 	int iVerts = 0;
-	for (i = 0; i < line.GetSize(); i++)
+	unsigned int points = line.GetSize();
+	if (bCurve)
 	{
-		v1 = v2;
-		g_Conv.convert_earth_to_local_xz(line.GetAt(i).x, line.GetAt(i).y, v2.x, v2.z);
-		if (i == 0)
-			continue;
+		DPoint3 p;
 
-		// estimate how many steps to subdivide this segment into
-		FPoint3 diff = v2 - v1;
-		float fLen = diff.Length();
-		unsigned int iSteps = (unsigned int) (fLen / fSpacing);
-		if (iSteps < 3) iSteps = 3;
+		CubicSpline spline;
+		for (i = 0; i < points; i++)
+		{
+			p.Set(line[i].x, line[i].y, 0);
+			spline.addPoint(p);
+		}
+		bool result = spline.generate();
+
+		// estimate how many steps to subdivide this line into
+		double dLinearLength = line.Length();
+		double full = (double) (points-1);
+		int iSteps = (unsigned int) (dLinearLength / fSpacing);
+		if (iSteps < 3)
+			iSteps = 3;
+		double dStep = full / iSteps;
 
 		FPoint3 last_v;
-		for (j = 0; j <= iSteps; j++)
+		double f;
+		for (f = 0; f <= full; f += dStep)
 		{
-			// simple linear interpolation of the ground coordinate
-			v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+			spline.interpolate(f, &p);
+
+			g_Conv.convert_earth_to_local_xz(p.x, p.y, v.x, v.z);
 			m_pHeightField->FindAltitudeAtPoint(v, v.y);
 			v.y += fOffset;
 			pMesh->AddVertex(v);
 			iVerts++;
 
 			// keep a running toal of approximate ground length
-			if (j > 0)
+			if (f > 0)
 				fTotalLength += (v - last_v).Length();
 			last_v = v;
+		}
+
+		spline.cleanup();
+	}
+	else
+	{
+		for (i = 0; i < points; i++)
+		{
+			v1 = v2;
+			g_Conv.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
+			if (i == 0)
+				continue;
+
+			// estimate how many steps to subdivide this segment into
+			FPoint3 diff = v2 - v1;
+			float fLen = diff.Length();
+			unsigned int iSteps = (unsigned int) (fLen / fSpacing);
+			if (iSteps < 3) iSteps = 3;
+
+			FPoint3 last_v;
+			for (j = 0; j <= iSteps; j++)
+			{
+				// simple linear interpolation of the ground coordinate
+				v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+				m_pHeightField->FindAltitudeAtPoint(v, v.y);
+				v.y += fOffset;
+				pMesh->AddVertex(v);
+				iVerts++;
+
+				// keep a running toal of approximate ground length
+				if (j > 0)
+					fTotalLength += (v - last_v).Length();
+				last_v = v;
+			}
 		}
 	}
 	pMesh->AddStrip2(iVerts, iStart);
