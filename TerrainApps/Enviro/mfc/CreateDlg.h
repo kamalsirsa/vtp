@@ -56,7 +56,6 @@ public:
 	CString	m_strTreeFile;
 	UINT	m_iVegDistance;
 	float	m_fFogDistance;
-	BOOL	m_bOverlay;
 	BOOL	m_bOceanPlane;
 	int		m_iMinHeight;
 	CString	m_strBuildingFile;

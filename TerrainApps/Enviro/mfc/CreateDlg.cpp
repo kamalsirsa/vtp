@@ -44,7 +44,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_strTreeFile = _T("");
 	m_iVegDistance = 10;
 	m_fFogDistance = 10;
-	m_bOverlay = FALSE;
 	m_bOceanPlane = FALSE;
 	m_iMinHeight = 10;
 	m_strBuildingFile = _T("");
@@ -129,7 +128,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_VEGDISTANCE, m_iVegDistance);
 	DDV_MinMaxUInt(pDX, m_iVegDistance, 10, 100000);
 	DDX_Text(pDX, IDC_FOGDISTANCE, m_fFogDistance);
-	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
 	DDX_Text(pDX, IDC_MINHEIGHT, m_iMinHeight);
 	DDX_CBString(pDX, IDC_BUILDINGFILE, m_strBuildingFile);
@@ -306,7 +304,6 @@ void CCreateDlg::SetParams(TParams &Params)
 
 	m_bSky =			Params.GetValueBool(STR_SKY);
 	m_bOceanPlane =		Params.GetValueBool(STR_OCEANPLANE);
-	m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
 }
 
 void CCreateDlg::GetParams(TParams &Params)
@@ -366,7 +363,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_SKY, m_bSky);
 
 	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
-//	Params.SetValueBool(STR_OVERLAY, m_bOverlay);
 }
 
 
