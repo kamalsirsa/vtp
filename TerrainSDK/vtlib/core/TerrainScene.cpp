@@ -99,7 +99,8 @@ void vtTerrainScene::CleanupScene()
 	{
 		vtTerrain *curr = GetTerrain(i);
 		vtGroup *group = curr->GetTopGroup();
-		m_pTop->RemoveChild(group);
+		if (m_pTop != NULL && group != NULL)
+			m_pTop->RemoveChild(group);
 		delete curr;
 	}
 	m_Terrains.clear();
