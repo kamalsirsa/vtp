@@ -293,7 +293,7 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 	m_red = m_mats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
 					 false, false, true);
 	m_yellow = m_mats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
-					 false, false, false);
+					 true, false, false);
 
 	for (pair = 0; pair < 10; pair++)
 	{
@@ -373,12 +373,6 @@ void IcoGlobe::SetLighting(bool bLight)
 
 void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 {
-	// create simple texture-mapped sphere
-	int res = 5;
-	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, res*res*2);
-	FPoint3 scale(1.0f, 1.0f, 1.0f);
-	mesh->CreateEllipsoid(scale, res);
-
 	int i, j, size;
 	Array<FSphere> spheres;
 
@@ -450,6 +444,27 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 	}
 	while (pops != 0);
 
+	// Now create and place the little geometry objects to represent the
+	// point data.
+
+#if 0
+	// create simple hemisphere mesh
+	int res = 6;
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, res*res*2);
+	FPoint3 scale(1.0f, 1.0f, 1.0f);
+	mesh->CreateEllipsoid(scale, res, true);
+#else
+	// create cylinder mesh instead
+	int res = 14;
+	int verts = res * 2;
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
+	mesh->CreateCylinder(1.0f, 1.0f, res, true, false, false);
+#endif
+
+	// use Area to show amount, otherwise height
+	bool bArea = true;
+
+	// create and place the geometries
 	size = points.GetSize();
 	for (i = 0; i < size; i++)
 	{
@@ -463,8 +478,16 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 		vtMovGeom *mgeom = new vtMovGeom(geom);
 		mgeom->SetName2("GlobeShape");
 
+		mgeom->PointTowards(spheres[i].center);
+		mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
 		mgeom->SetTrans(spheres[i].center);
-		mgeom->Scale3(spheres[i].radius, spheres[i].radius, spheres[i].radius);
+		if (bArea)
+			mgeom->Scale3(spheres[i].radius, 0.001f, spheres[i].radius);
+		else
+		{
+			double area = PIf * spheres[i].radius * spheres[i].radius;
+			mgeom->Scale3(0.002f, area*1000, 0.002f);
+		}
 		m_mgeom->AddChild(mgeom);
 	}
 
