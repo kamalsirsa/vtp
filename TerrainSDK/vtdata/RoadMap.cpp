@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "RoadMap.h"
+#include "vtLog.h"
 
 
 //
@@ -686,6 +687,8 @@ void vtRoadMap::ComputeExtents()
 //
 int vtRoadMap::RemoveUnusedNodes()
 {
+	VTLOG("   vtRoadMap::RemoveUnusedNodes: ");
+
 	Node *prev = NULL, *next;
 	Node *pN = m_pFirstNode;
 	int total = 0, unused = 0;
@@ -708,6 +711,7 @@ int vtRoadMap::RemoveUnusedNodes()
 			prev = pN;
 		pN = next;
 	}
+	VTLOG("   %d of %d removed\n", unused, total);
 	return unused;
 }
 
@@ -893,6 +897,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 
 	// Read the roads
+	int reject1 = 0, reject2 = 0, reject3 = 0;
 	for (i = 1; i <= numLinks; i++)
 	{
 		tmpLink = NewLink();
@@ -935,13 +940,25 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		tmpLink->SetNode(1, pNodeLookup[nodeNum]);
 
 		// check for inclusion
-		bool include = false;
-		if (bHwy && tmpLink->m_iHwy > 0) include = true;
-		if (bPaved && tmpLink->m_Surface == SURFT_PAVED) include = true;
-		if (bDirt && (tmpLink->m_Surface == SURFT_TRAIL ||
+		bool include = true;
+		if (!bHwy && tmpLink->m_iHwy > 0)
+		{
+			include = false;
+			reject1++;
+		}
+		if (include && !bPaved && tmpLink->m_Surface == SURFT_PAVED)
+		{
+			include = false;
+			reject2++;
+		}
+		if (include && !bDirt && (tmpLink->m_Surface == SURFT_TRAIL ||
 			tmpLink->m_Surface == SURFT_2TRACK ||
 			tmpLink->m_Surface == SURFT_DIRT ||
-			tmpLink->m_Surface == SURFT_GRAVEL)) include = true;
+			tmpLink->m_Surface == SURFT_GRAVEL))
+		{
+			include = false;
+			reject3++;
+		}
 
 		if (!include)
 		{
@@ -955,6 +972,14 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 		// Add to list
 		AddLink(tmpLink);
+	}
+	if (reject1 || reject2 || reject3)
+	{
+		VTLOG("  Ignored roads:");
+		if (reject1) VTLOG(" %d for being highways, ", reject1);
+		if (reject2) VTLOG(" %d for being paved, ", reject2);
+		if (reject3) VTLOG(" %d for being dirt, ", reject3);
+		VTLOG("done.\n");
 	}
 
 	// Read traffic control information
