@@ -968,6 +968,8 @@ void vtFrame::ZoomToModel(vtModel *model)
 
 	wxGetApp().m_pTrackball->SetRadius(dist);
 	wxGetApp().m_pTrackball->SetZoomScale(sph.radius);
+	wxGetApp().m_pTrackball->SetTransScale(sph.radius/2);
+	wxGetApp().m_pTrackball->SetTrans(FPoint3(0,0,0));
 
 	pCamera->SetYon(sph.radius * 100.0f);
 }
