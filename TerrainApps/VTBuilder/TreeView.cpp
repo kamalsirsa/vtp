@@ -100,8 +100,7 @@ void MyTreeCtrl::CreateImageList(int size)
 		if ( size == sizeOrig )
 			m_imageListNormal->Add(icons[i]);
 		else
-			m_imageListNormal->Add(wxImage(icons[i]).Rescale(size, size).
-				ConvertToBitmap());
+			m_imageListNormal->Add(wxImage(icons[i]).Rescale(size, size));
 	}
 
 	SetImageList(m_imageListNormal);

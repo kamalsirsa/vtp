@@ -83,7 +83,7 @@ wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 			pImage.SetRGB(i, j, color.Red(), color.Green(), color.Blue());
 		}
 
-	wxBitmap *pBitmap = new wxBitmap(pImage.ConvertToBitmap());
+	wxBitmap *pBitmap = new wxBitmap(pImage);
 	return pBitmap;
 }
 
@@ -490,7 +490,7 @@ void BuildingDlg::UpdateColorControl()
 				pImage.SetRGB(i, j, col.r, col.g, col.b);
 			}
 		}
-		wxBitmap *pBitmap = new wxBitmap(pImage.ConvertToBitmap());
+		wxBitmap *pBitmap = new wxBitmap(pImage);
 		m_pColorBitmapControl->SetBitmap(*pBitmap);
 	}
 	else
