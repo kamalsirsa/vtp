@@ -278,6 +278,7 @@ void Enviro::SetupGlobe()
 			SetMessage("Earth image (c) The GeoSphere Project", 3.0f);
 		else
 			SetMessage("Earth View");
+		m_pGlobePicker->SetEnabled(true);
 	}
 }
 
@@ -319,7 +320,10 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	{
 		// hide globe
 		if (m_pGlobeMGeom != NULL)
+		{
 			m_pGlobeMGeom->SetEnabled(false);
+			m_pGlobePicker->SetEnabled(false);
+		}
 
 		// remember camera position
 		vtCamera *pCam = vtGetScene()->GetCamera();
@@ -514,9 +518,9 @@ void Enviro::DescribeCoordinates(vtString &str)
 		FPoint3 campos = camera->GetTrans();
 
 		// Find corresponding UTM coordinates
-		g_Proj.ConvertToEarth(campos, epos);
+		g_Conv.ConvertToEarth(campos, epos);
 
-		FormatCoordString(str1, epos, !g_Proj.IsGeographic());
+		FormatCoordString(str1, epos, !g_Conv.m_bGeographic);
 		str += str1;
 		str1.Format(" elev %.1f", epos.z);
 		str += str1;
@@ -526,7 +530,7 @@ void Enviro::DescribeCoordinates(vtString &str)
 		bool bOn = m_pTerrainPicker->GetCurrentEarthPos(epos);
 		if (bOn)
 		{
-			FormatCoordString(str1, epos, !g_Proj.IsGeographic());
+			FormatCoordString(str1, epos, !g_Conv.m_bGeographic);
 			str += str1;
 			str1.Format(" elev %.1f", epos.z);
 			str += str1;
@@ -544,7 +548,7 @@ void Enviro::DescribeCLOD(vtString &str)
 	if (m_state != AS_Terrain) return;
 	vtTerrain *t = GetCurrentTerrain();
 	if (!t) return;
-	vtDynTerrainGeom *dtg = t->m_pDynGeom;
+	vtDynTerrainGeom *dtg = t->GetDynTerrain();
 	if (!dtg) return;
 
 	//
@@ -586,7 +590,7 @@ void Enviro::DoPickers()
 		str2 += str1;
 		m_pSprite2->SetText(str2);
 	}
-	if (m_state == AS_Terrain)
+	if (m_state == AS_Terrain && m_pCursorMGeom->GetEnabled())
 	{
 		if (m_pTerrainPicker != NULL)
 			m_bOnTerrain = m_pTerrainPicker->GetCurrentEarthPos(earthpos);
@@ -655,8 +659,8 @@ void Enviro::MakeGlobe()
 	m_pGlobePicker->SetGlobeMGeom(m_pGlobeMGeom);
 	vtGetScene()->AddEngine(m_pGlobePicker);
 	m_pGlobePicker->SetTarget(m_pCursorMGeom);
-	m_pCursorMGeom->SetEnabled(true);
 	m_pGlobePicker->SetRadius(1.0);
+	m_pGlobePicker->SetEnabled(false);
 
 	// create some stars around the earth
 	//
@@ -733,19 +737,6 @@ void Enviro::SetupScene1()
 	pScene->SetRoot(m_pRoot);
 
 	GetTerrainScene().SetupEngines();
-
-	// create picker object and picker engine
-	float size = 50 * WORLD_SCALE;
-	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/20));
-	m_pCursorMGeom->SetName2("Cursor");
-
-	GetTerrainScene().m_pTop->AddChild(m_pCursorMGeom);
-	m_pTerrainPicker = new TerrainPicker();
-	m_pTerrainPicker->SetName2("TerrainPicker");
-	vtGetScene()->AddEngine(m_pTerrainPicker);
-
-	m_pTerrainPicker->SetTarget((vtTransform *)m_pCursorMGeom);
-	m_pTerrainPicker->SetEnabled(true); // turn on at startup
 }
 
 void Enviro::SetupScene2()
@@ -774,6 +765,19 @@ void Enviro::SetupScene2()
 		m_nav = NT_Gravity;
 	else
 		m_nav = NT_Normal;
+
+	// create picker object and picker engine
+	float size = 50 * WORLD_SCALE;
+	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/20));
+	m_pCursorMGeom->SetName2("Cursor");
+
+	GetTerrainScene().m_pTop->AddChild(m_pCursorMGeom);
+	m_pTerrainPicker = new TerrainPicker();
+	m_pTerrainPicker->SetName2("TerrainPicker");
+	vtGetScene()->AddEngine(m_pTerrainPicker);
+
+	m_pTerrainPicker->SetTarget((vtTransform *)m_pCursorMGeom);
+	m_pTerrainPicker->SetEnabled(true); // turn on at startup
 
 	m_pSprite2 = new vtSprite();
 	m_pSprite2->SetName2("Sprite2");
@@ -928,6 +932,24 @@ void Enviro::SetMode(MouseMode mode)
 	m_msg.Format("SetMode %d\n", mode);
 	_Log(m_msg);
 
+	if (m_pCursorMGeom)
+	{
+		switch (mode)
+		{
+		case MM_SELECT:
+		case MM_FENCES:
+		case MM_ROUTES:
+		case MM_PLANTS:
+		case MM_MOVE:
+		case MM_LINEAR:
+			m_pCursorMGeom->SetEnabled(true);
+			break;
+		default:
+			m_pCursorMGeom->SetEnabled(false);
+			break;
+		}
+	}
+
 	m_bActiveFence = false;
 	m_mode = mode;
 }
@@ -977,7 +999,7 @@ void Enviro::SetFollowerCamera()
 	vtStation st = (*m_pCurRoute)[0L];
 	DPoint3 dp = st.m_dpStationPoint;
 	FPoint3 fp;
-	g_Proj.ConvertFromEarth(dp, fp);
+	g_Conv.ConvertFromEarth(dp, fp);
 	GetCurrentTerrain()->GetHeightField()->FindAltitudeAtPoint(fp, fp.y);;
 	m_pRouteFollowerCamera->Identity();
 
@@ -1029,14 +1051,14 @@ const char *Enviro::GetStatusText()
 #endif
 
 	vtTerrain *pTerrain = GetCurrentTerrain();
-	if (pTerrain && pTerrain->HasDynTerrain())
+	if (pTerrain && pTerrain->GetDynTerrain())
 	{
 		if (pTerrain->GetParams().m_eLodMethod == LM_MCNALLY)
-			sprintf(buf, " - Terrain: target %d", pTerrain->m_pDynGeom->GetPolygonCount());
+			sprintf(buf, " - Terrain: target %d", pTerrain->GetDynTerrain()->GetPolygonCount());
 		else
-			sprintf(buf, " - Terrain: err %.1f", pTerrain->m_pDynGeom->GetPixelError());
+			sprintf(buf, " - Terrain: err %.1f", pTerrain->GetDynTerrain()->GetPixelError());
 		strcat(msg, buf);
-		sprintf(buf, ", drawn %d", pTerrain->m_pDynGeom->GetNumDrawnTriangles());
+		sprintf(buf, ", drawn %d", pTerrain->GetDynTerrain()->GetNumDrawnTriangles());
 		strcat(msg, buf);
 	}
 
