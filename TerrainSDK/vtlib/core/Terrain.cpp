@@ -20,7 +20,6 @@
 #include "Route.h"
 #include "vtTin3d.h"
 
-//#include "LKTerrain.h"
 #include "TVTerrain.h"
 #include "SMTerrain.h"
 #include "CustomTerrain.h"
@@ -1826,9 +1825,8 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtDIB *dib,
 	light_dir.y=-sin(alt);
 #endif
 
-	// at midnight: below the earth, pointing up
-	light_dir.Set(0,1,0);
-
+	// Quick and dirty sunlight vector, simply rotate assuming sun will go
+	//  directly overhead.
 	float fraction = (float) time.GetSecondOfDay() / (24*60*60);
 	float angle = PID2f + fraction * PI2f;
 	light_dir.Set(cosf(angle), sinf(angle), 0);
