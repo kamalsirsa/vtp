@@ -96,7 +96,7 @@ public:
 
 	// override because we need to update width when flags change
 	virtual void SetFlag(int flag, bool value);
-	// call whenever the link's goemetry is changed
+	// call whenever the link's geometry is changed
 	void Dirtied();
 
 	NodeEdit *GetNode(int n) { return (NodeEdit *)m_pNode[n]; }
