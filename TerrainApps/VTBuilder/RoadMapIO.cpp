@@ -234,7 +234,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 	}
 	
 	//delete the lookup array.
-	delete pNodeLookup;
+	delete [] pNodeLookup;
 
 	GuessIntersectionTypes();
 }
@@ -582,7 +582,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 	NodeEdit *pN;
 	LinkEdit *pR;
-	NodeEditPtr *pNodeLookup;
+	NodeEditPtr *pNodeLookup = NULL;
 
 	// 
 	// Check if this data source is a USGS SDTS DLG
@@ -634,6 +634,8 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				//add to array
 				pNodeLookup[pN->m_id] = pN;
+
+				delete pFeature;
 			}
 		}
 		// Lines (Arcs, Roads) (from an SDTS DLG file)
@@ -651,6 +653,9 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
 			{
+				// make sure we delete the feature no matter how the loop exits
+				std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 				count++;
 				progress_callback(count * 100 / feature_count);
 
@@ -732,6 +737,8 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				// inform the Nodes to which it belongs
 				pR->GetNode(0)->AddLink(pR);
 				pR->GetNode(1)->AddLink(pR);
+
+				delete pFeature;
 			}
 		}
 		else if (!bIsSDTS)
@@ -742,6 +749,8 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 			break;
 		}
 	}
+	if (pNodeLookup)
+		delete [] pNodeLookup;
 	if (bIsSDTS)
 		GuessIntersectionTypes();
 }
@@ -794,6 +803,7 @@ bool RoadMapEdit::AppendFromOGRLayer(OGRLayer *pLayer)
 			pFeature = pLayer->GetNextFeature();
 			pGeom = pFeature->GetGeometryRef();
 			geom_type = pGeom->getGeometryType();
+			delete pFeature;
 			break;
 		default:
 			return false;	// don't know what to do with this geom type
@@ -810,6 +820,8 @@ bool RoadMapEdit::AppendFromOGRLayer(OGRLayer *pLayer)
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
 		pGeom = pFeature->GetGeometryRef();
+		delete pFeature;
+
 		if (!pGeom)
 			continue;
 
