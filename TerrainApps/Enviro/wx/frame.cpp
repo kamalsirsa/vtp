@@ -1197,9 +1197,14 @@ void ShowPopupMenu(const IPoint2 &pos)
 
 void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 {
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *sa = pTerr->GetStructures();
+	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
+
 	wxMenu *popmenu = new wxMenu;
 	popmenu->Append(ID_POPUP_PROPERTIES, _T("Properties"));
-	popmenu->Append(ID_POPUP_FLIP, _T("Flip Footprint Direction"));
+	if (sa && sa->NumSelected() != 0)
+		popmenu->Append(ID_POPUP_FLIP, _T("Flip Footprint Direction"));
 	popmenu->AppendSeparator();
 	popmenu->Append(ID_POPUP_DELETE, _T("Delete"));
 
@@ -1210,30 +1215,46 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 void vtFrame::OnPopupProperties(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
-	vtStructureArray3d *structures = pTerr->GetStructures();
+	vtStructureArray3d *sa = pTerr->GetStructures();
+	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 
-	int count = structures->GetSize();
-	vtStructure *str;
-	vtBuilding3d *bld;
-	vtFence3d *fen;
-	for (int i = 0; i < count; i++)
+	int i, count;
+	if (sa && sa->NumSelected() != 0)
 	{
-		str = structures->GetAt(i);
-		if (!str->IsSelected())
-			continue;
+		count = sa->GetSize();
+		vtStructure *str;
+		vtBuilding3d *bld;
+		vtFence3d *fen;
+		for (i = 0; i < count; i++)
+		{
+			str = sa->GetAt(i);
+			if (!str->IsSelected())
+				continue;
 
-		bld = structures->GetBuilding(i);
-		fen = structures->GetFence(i);
-		if (bld)
-		{
-			m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
-			m_pBuildingDlg->Show(true);
-			return;
+			bld = sa->GetBuilding(i);
+			fen = sa->GetFence(i);
+			if (bld)
+			{
+				m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
+				m_pBuildingDlg->Show(true);
+				return;
+			}
+			if (fen)
+			{
+				m_pFenceDlg->Show(true);
+				return;
+			}
 		}
-		if (fen)
+	}
+	if (plants.NumSelected() != 0)
+	{
+		count = plants.GetSize();
+		for (i = 0; i < count; i++)
 		{
-			m_pFenceDlg->Show(true);
-			return;
+			vtPlantInstance3d *inst3d = plants.GetInstance3d(i);
+			if (!inst3d->IsSelected())
+				continue;
+			// TODO: show properties for this plant
 		}
 	}
 }
@@ -1264,5 +1285,6 @@ void vtFrame::OnPopupDelete(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->DeleteSelectedStructures();
+	pTerr->DeleteSelectedPlants();
 }
 
