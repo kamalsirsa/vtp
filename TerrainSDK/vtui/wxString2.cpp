@@ -106,7 +106,7 @@ wxString2& wxString2::operator=(const wchar_t *psz)
 	char *buf = new char[len+1];
 	int result = wxWC2MB(buf, psz, len+1);
 	(void) wxString::operator=(buf);
-	delete buf;
+	delete [] buf;
 	return *this;
 }
 /*void wxString2::operator+=(const wchar_t *psz)
