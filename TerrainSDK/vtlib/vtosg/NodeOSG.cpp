@@ -330,11 +330,11 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		//  up, and the VTP uses OpenGL coordinates which has Y up.
 		float fRotation = -PID2f;
 
-		// Except for the OSG OBJ reader, which needs an additional rotation
-		//  offset, since it expect OBJ model to have Y up, but the ones i've
-		//  seen have Z up.
-		if (osgDB::getLowerCaseFileExtension( filename ) == "obj")
-			fRotation = -PIf;
+		// OSG expect OBJ models to have Y up.  I have seen model with Z up,
+		//  and we used to correct for that here (fRotation = -PIf).
+		//  However, over time it has appeared that there are more OBJ out
+		//  there with Y up than with Z up.  So, we now treat all models from
+		//  OSG the same.
 
 		osg::MatrixTransform *transform = new osg::MatrixTransform;
 		transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
