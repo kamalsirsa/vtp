@@ -28,38 +28,38 @@ public:
 	~vtMaterial();
 
 	void SetDiffuse(float r, float g, float b, float a = 1.0f);
-	RGBAf GetDiffuse();
+	RGBAf GetDiffuse() const;
 
 	void SetSpecular(float r, float g, float b);
-	RGBf GetSpecular();
+	RGBf GetSpecular() const;
 
 	void SetAmbient(float r, float g, float b);
-	RGBf GetAmbient();
+	RGBf GetAmbient() const;
 
 	void SetEmission(float r, float g, float b);
-	RGBf GetEmission();
+	RGBf GetEmission() const;
 
 	void SetCulling(bool bCulling);
-	bool GetCulling();
+	bool GetCulling() const;
 
 	void SetLighting(bool bLighting);
-	bool GetLighting();
+	bool GetLighting() const;
 
 	void SetTransparent(bool bOn, bool bAdd = false);
-	bool GetTransparent();
+	bool GetTransparent() const;
 
 	void SetWireframe(bool bOn);
-	bool GetWireframe();
+	bool GetWireframe() const;
 
 	void SetTexture(vtImage *pImage);
 	void SetTexture2(const char *szFilename);
-	vtImage	*GetTexture();
+	vtImage	*GetTexture() const;
 
 	void SetClamp(bool bClamp);
-	bool GetClamp();
+	bool GetClamp() const;
 
 	void SetMipMap(bool bMipMap);
-	bool GetMipMap();
+	bool GetMipMap() const;
 
 	void Apply();
 
@@ -86,6 +86,8 @@ public:
 	int AppendMaterial(vtMaterial *pMat);
 
 protected:
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
 	virtual ~vtMaterialArray();
 };
 
@@ -129,17 +131,17 @@ public:
 	RGBf GetVtxColor(int i) const;
 
 	void SetVtxTexCoord(int, const FPoint2&);
-	FPoint2 GetVtxTexCoord(int i);
+	FPoint2 GetVtxTexCoord(int i) const;
 
 	// Control rendering optimization ("display lists")
 	void ReOptimize();
 	void AllowOptimize(bool bAllow);
 
 	// Access values
-	int GetNumPrims();
-	int GetNumIndices() { return m_Index->size(); }
-	short GetIndex(int i) { return m_Index->at(i); }
-	int GetPrimLen(int i) { return dynamic_cast<osg::DrawArrayLengths*>(m_pPrimSet.get())->at(i); }
+	int GetNumPrims() const;
+	int GetNumIndices() const { return m_Index->size(); }
+	short GetIndex(int i) const { return m_Index->at(i); }
+	int GetPrimLen(int i) const { return dynamic_cast<const osg::DrawArrayLengths*>(m_pPrimSet.get())->at(i); }
 
 	void SetNormalsFromPrimitives();
 
@@ -164,6 +166,8 @@ protected:
 
 	osg::ref_ptr<osg::PrimitiveSet>	m_pPrimSet;
 
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
 	virtual ~vtMesh();
 };
 
@@ -205,6 +209,8 @@ public:
 	osg::ref_ptr<osgText::Text> m_pOsgText;
 
 protected:
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
 	~vtTextMesh();
 };
 

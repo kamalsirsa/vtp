@@ -67,7 +67,7 @@ void vtNode::SetEnabled(bool bOn)
 	m_pNode->setNodeMask(bOn ? 0xffffffff : 0);
 }
 
-bool vtNode::GetEnabled()
+bool vtNode::GetEnabled() const
 {
 	int mask = m_pNode->getNodeMask();
 	return (mask != 0);
@@ -131,7 +131,7 @@ void vtNode::SetName2(const char *name)
 		m_pNode->setName((char *)name);
 }
 
-const char *vtNode::GetName2()
+const char *vtNode::GetName2() const
 {
 	if (m_pNode != NULL)
 		return m_pNode->getName().c_str();
@@ -164,12 +164,12 @@ vtGroup::~vtGroup()
 {
 }
 
-vtNodeBase *vtGroup::FindDescendantByName(const char *name)
+const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
 {
 	if (!strcmp(GetName2(), name))
-		return (dynamic_cast<vtNode *>(this));
+		return (dynamic_cast<const vtNode *>(this));
 
-	vtGroupBase *pGroup = dynamic_cast<vtGroupBase *>(this);
+	const vtGroupBase *pGroup = dynamic_cast<const vtGroupBase *>(this);
 	if (pGroup)
 	{
 		for (int i = 0; i < pGroup->GetNumChildren(); i++)
@@ -178,7 +178,7 @@ vtNodeBase *vtGroup::FindDescendantByName(const char *name)
 			vtGroup *pGroupChild = dynamic_cast<vtGroup *>(pChild);
 			if (pGroupChild)
 			{
-				vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
+				const vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
 				if (pResult)
 					return pResult;
 			}
@@ -234,7 +234,7 @@ void vtGroup::RemoveChild(vtNodeBase *pChild)
 		m_pGroup->removeChild(pChildNode->GetOsgNode());
 }
 
-vtNode *vtGroup::GetChild(int num)
+vtNode *vtGroup::GetChild(int num) const
 {
 	int children = m_pGroup->getNumChildren();
 	if (num >= 0 && num < children)
@@ -246,7 +246,7 @@ vtNode *vtGroup::GetChild(int num)
 		return NULL;
 }
 
-int vtGroup::GetNumChildren()
+int vtGroup::GetNumChildren() const
 {
 	// shoudln't happen but... safety check anyway
 	if (m_pGroup == NULL)
@@ -254,7 +254,7 @@ int vtGroup::GetNumChildren()
 	return m_pGroup->getNumChildren();
 }
 
-bool vtGroup::ContainsChild(vtNodeBase *pNode)
+bool vtGroup::ContainsChild(vtNodeBase *pNode) const
 {
 	int i, children = GetNumChildren();
 	for (i = 0; i < children; i++)
@@ -629,14 +629,16 @@ void vtGeom::RemoveMesh(vtMesh *pMesh)
 	m_pGeode->removeDrawable(pMesh->m_pGeometry.get());
 }
 
-int vtGeom::GetNumMeshes()
+int vtGeom::GetNumMeshes() const
 {
 	return m_pGeode->getNumDrawables();
 }
 
-vtMesh *vtGeom::GetMesh(int i)
+vtMesh *vtGeom::GetMesh(int i) const
 {
-	Drawable *draw = m_pGeode->getDrawable(i);
+	// It is valid to return a non-const pointer to the mesh, since the mesh
+	//  can be modified entirely independently of the geometry.
+	Drawable *draw = const_cast<Drawable *>( m_pGeode->getDrawable(i) );
 	osg::Referenced *ref = draw->getUserData();
 
 	vtMesh *mesh = dynamic_cast<vtMesh*>(ref);
@@ -652,12 +654,12 @@ vtTextMesh *vtGeom::GetTextMesh(int i)
 	return mesh;
 }
 
-void vtGeom::SetMaterials(class vtMaterialArray *mats)
+void vtGeom::SetMaterials(const class vtMaterialArray *mats)
 {
 	m_pMaterialArray = mats;	// increases reference count
 }
 
-vtMaterialArray	*vtGeom::GetMaterials()
+const vtMaterialArray *vtGeom::GetMaterials() const
 {
 	return m_pMaterialArray.get();
 }

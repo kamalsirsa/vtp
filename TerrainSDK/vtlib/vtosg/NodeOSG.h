@@ -34,12 +34,12 @@ public:
 
 	// implement vtNodeBase methods
 	void SetEnabled(bool bOn);
-	bool GetEnabled();
+	bool GetEnabled() const;
 
 	/** Set the name of the node. */
 	void SetName2(const char *str);
 	/** Get the name of the node. */
-	const char *GetName2();
+	const char *GetName2() const;
 
 	/** Get the Bounding Box of the node, in world coordinates */
 	void GetBoundBox(FBox3 &box);
@@ -62,6 +62,8 @@ protected:
 	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
 	osg::ref_ptr<osg::Fog> m_pFog;
 
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
 	virtual ~vtNode();
 };
 
@@ -85,17 +87,17 @@ public:
 	void RemoveChild(vtNodeBase *pChild);
 
 	/** Return a child node, by index. */
-	vtNode *GetChild(int num);
+	vtNode *GetChild(int num) const;
 
 	/** Return the number of child nodes */
-	int GetNumChildren();
+	int GetNumChildren() const;
 
 	/** Looks for a descendent node with a given name.  If not found, NULL
 	 is returned. */
-	vtNodeBase *FindDescendantByName(const char *name);
+	const vtNodeBase *FindDescendantByName(const char *name) const;
 
 	/** Return true if the given node is a child of this group. */
-	bool ContainsChild(vtNodeBase *pNode);
+	bool ContainsChild(vtNodeBase *pNode) const;
 
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup.get(); }
@@ -239,22 +241,22 @@ public:
 	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx);
 
 	/** Return the number of contained meshes. */
-	int GetNumMeshes();
+	int GetNumMeshes() const;
 
 	/** Return a contained vtMesh by index. */
-	vtMesh *GetMesh(int i);
+	vtMesh *GetMesh(int i) const;
 
 	/** Return a contained vtTextMesh by index. */
 	vtTextMesh *GetTextMesh(int i);
 
-	virtual void SetMaterials(class vtMaterialArray *mats);
-	vtMaterialArray	*GetMaterials();
+	virtual void SetMaterials(const class vtMaterialArray *mats);
+	const vtMaterialArray	*GetMaterials() const;
 
 	vtMaterial *GetMaterial(int idx);
 
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
-	osg::ref_ptr<vtMaterialArray> m_pMaterialArray;
+	osg::ref_ptr<const vtMaterialArray> m_pMaterialArray;
 	osg::ref_ptr<osg::Geode> m_pGeode;	// the Geode is a container for Drawables
 
 protected:
@@ -413,6 +415,11 @@ protected:
 	virtual ~vtCamera();
 };
 
+/**
+ * A Sprite is a 2D object, which can contain text or an image.  It is
+ * drawn in window coordinates, rather than 3D coordinates.  It is currently
+ * unimplemented.
+ */
 class vtSprite : public vtNode
 {
 public:

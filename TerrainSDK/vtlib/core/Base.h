@@ -93,10 +93,10 @@ public:
 	virtual void		Release() = 0;
 
 	virtual void		SetEnabled(bool bOn) = 0;
-	virtual bool		GetEnabled() = 0;
+	virtual bool		GetEnabled() const = 0;
 
 	virtual void		SetName2(const char *str) = 0;
-	virtual const char*	GetName2() = 0;
+	virtual const char*	GetName2() const = 0;
 
 	virtual void	GetBoundBox(FBox3 &box) = 0;
 	virtual void	GetBoundSphere(FSphere &sphere, bool bGlobal = false) = 0;
@@ -118,10 +118,10 @@ class vtGroupBase
 public:
 	virtual void		AddChild(vtNodeBase* pChild) = 0;
 	virtual void		RemoveChild(vtNodeBase* pChild) = 0;
-	virtual vtNode*		GetChild(int num) = 0;
-	virtual int			GetNumChildren() = 0;
-	virtual bool		ContainsChild(vtNodeBase *pNode) = 0;
-	virtual vtNodeBase*	FindDescendantByName(const char *name) = 0;
+	virtual vtNode*		GetChild(int num) const = 0;
+	virtual int			GetNumChildren() const = 0;
+	virtual bool		ContainsChild(vtNodeBase *pNode) const = 0;
+	virtual const vtNodeBase*	FindDescendantByName(const char *name) const = 0;
 };
 
 /** Abstract base class for a scene graph node that can move. */
@@ -178,13 +178,13 @@ public:
 	}
 
 	// Accessors
-	virtual int GetNumVertices() { return m_iNumVertsUsed; }
-	GLenum GetPrimType() { return m_ePrimType; }
-	int GetVtxType() { return m_iVtxType; }
+	virtual int GetNumVertices() const { return m_iNumVertsUsed; }
+	GLenum GetPrimType() const { return m_ePrimType; }
+	int GetVtxType() const { return m_iVtxType; }
 	void GetBoundBox(FBox3 &box);
 
 	void SetMatIndex(int i) { m_iMatIdx = i; }
-	int GetMatIndex() { return m_iMatIdx; }
+	int GetMatIndex() const { return m_iMatIdx; }
 
 	// Adding vertices
 	int AddVertex(float x, float y, float z);
@@ -215,7 +215,7 @@ public:
 	virtual RGBf GetVtxColor(int i) const = 0;
 
 	virtual void SetVtxTexCoord(int, const FPoint2&) = 0;
-	virtual FPoint2 GetVtxTexCoord(int i) = 0;
+	virtual FPoint2 GetVtxTexCoord(int i) const = 0;
 
 	void SetVtxPUV(int i, const FPoint3 &pos, float u, float v)
 	{
@@ -241,6 +241,9 @@ public:
 	void CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 							  double theta1, double theta2,
 							  double r1, double r2, int res = 40);
+	void CreateRectangle(int iXQuads, int iZQuads,
+						 const FPoint3 &min, const FPoint3 &max,
+						 float fTiling);
 
 protected:
 	GLenum m_ePrimType;
@@ -283,40 +286,40 @@ public:
 	void CopyFrom(vtMaterial *pFrom);
 
 	virtual void SetDiffuse(float r, float g, float b, float a = 1.0f) = 0;
-	virtual RGBAf GetDiffuse() = 0;
+	virtual RGBAf GetDiffuse() const = 0;
 	void SetDiffuse1(const RGBAf &c) { SetDiffuse(c.r, c.g, c.b, c.a); }
 	void SetDiffuse2(float f) { SetDiffuse(f, f, f); }
 
 	virtual void SetSpecular(float r, float g, float b) = 0;
-	virtual RGBf GetSpecular() = 0;
+	virtual RGBf GetSpecular() const = 0;
 	void SetSpecular1(const RGBf &c) { SetSpecular(c.r, c.g, c.b); }
 	void SetSpecular2(float f) { SetSpecular(f, f, f); }
 
 	virtual void SetAmbient(float r, float g, float b) = 0;
-	virtual RGBf GetAmbient() = 0;
+	virtual RGBf GetAmbient() const = 0;
 	void SetAmbient1(const RGBf &c) { SetAmbient(c.r, c.g, c.b); }
 	void SetAmbient2(float f) { SetAmbient(f, f, f); }
 
 	virtual void SetEmission(float r, float g, float b) = 0;
-	virtual RGBf GetEmission() = 0;
+	virtual RGBf GetEmission() const = 0;
 	void SetEmission1(const RGBf &c) { SetEmission(c.r, c.g, c.b); }
 	void SetEmission2(float f) { SetEmission(f, f, f); }
 
 	virtual void SetCulling(bool bCulling) = 0;
-	virtual bool GetCulling() = 0;
+	virtual bool GetCulling() const = 0;
 
 	virtual void SetLighting(bool bLighting) = 0;
-	virtual bool GetLighting() = 0;
+	virtual bool GetLighting() const = 0;
 
 	virtual void SetTexture(class vtImage *pImage) = 0;
 
 	virtual void SetTransparent(bool bOn, bool bAdd = false) = 0;
-	virtual bool GetTransparent() = 0;
+	virtual bool GetTransparent() const = 0;
 
 	virtual void Apply() = 0;
 
 	void SetName(const vtString &name) { m_Name = name; }
-	const vtString& GetName() { return m_Name; }
+	const vtString &GetName() const { return m_Name; }
 
 protected:
 	vtString m_Name;
@@ -404,14 +407,17 @@ protected:
 // helper functions
 vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
-vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res);
-vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						   float hHeight, float fRadius, int res,
 						   bool bTop = true, bool bBottom = true,
 						   bool bCentered = true, int direction = 1);
-vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
-					   FPoint3 min1, FPoint3 max1, int steps);
+vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
+					   const FPoint3 &min1, const FPoint3 &max1, int steps);
+vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
+						const FPoint2 &base, const FPoint2 &size,
+						float fTiling, int steps);
 
 /*@}*/	// Group sg
 

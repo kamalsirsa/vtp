@@ -55,7 +55,7 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 /**
  * Get the diffuse color of this material.
  */
-RGBAf vtMaterial::GetDiffuse()
+RGBAf vtMaterial::GetDiffuse() const
 {
 	Vec4 col = m_pMaterial->getDiffuse(FAB);
 	return RGBAf(col[0], col[1], col[2], col[3]);
@@ -71,7 +71,7 @@ void vtMaterial::SetSpecular(float r, float g, float b)
 /**
  * Get the specular color of this material.
  */
-RGBf vtMaterial::GetSpecular()
+RGBf vtMaterial::GetSpecular() const
 {
 	Vec4 col = m_pMaterial->getSpecular(FAB);
 	return RGBf(col[0], col[1], col[2]);
@@ -87,7 +87,7 @@ void vtMaterial::SetAmbient(float r, float g, float b)
 /**
  * Get the ambient color of this material.
  */
-RGBf vtMaterial::GetAmbient()
+RGBf vtMaterial::GetAmbient() const
 {
 	Vec4 col = m_pMaterial->getAmbient(FAB);
 	return RGBf(col[0], col[1], col[2]);
@@ -103,7 +103,7 @@ void vtMaterial::SetEmission(float r, float g, float b)
 /**
  * Get the emissive color of this material.
  */
-RGBf vtMaterial::GetEmission()
+RGBf vtMaterial::GetEmission() const
 {
 	Vec4 col = m_pMaterial->getEmission(FAB);
 	return RGBf(col[0], col[1], col[2]);
@@ -119,7 +119,7 @@ void vtMaterial::SetCulling(bool bCulling)
 /**
  * Get the backface culling property of this material.
  */
-bool vtMaterial::GetCulling()
+bool vtMaterial::GetCulling() const
 {
 	StateAttribute::GLModeValue m;
 	m = m_pStateSet->getMode(GL_CULL_FACE);
@@ -136,7 +136,7 @@ void vtMaterial::SetLighting(bool bLighting)
 /**
  * Get the lighting property of this material.
  */
-bool vtMaterial::GetLighting()
+bool vtMaterial::GetLighting() const
 {
 	StateAttribute::GLModeValue m;
 	m = m_pStateSet->getMode(GL_LIGHTING);
@@ -182,7 +182,7 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 /**
  * Get the transparent property of this material.
  */
-bool vtMaterial::GetTransparent()
+bool vtMaterial::GetTransparent() const
 {
 	// OSG 0.8.45 and before
 //	StateAttribute::GLModeValue m = m_pStateSet->getMode(StateAttribute::TRANSPARENCY);
@@ -215,7 +215,7 @@ void vtMaterial::SetWireframe(bool bOn)
 /**
  * Get the wireframe property of this material.
  */
-bool vtMaterial::GetWireframe()
+bool vtMaterial::GetWireframe() const
 {
 	// OSG 0.9.0
 	StateAttribute::GLModeValue m;
@@ -267,9 +267,11 @@ void vtMaterial::SetTexture2(const char *szFilename)
 /**
  * Returns the texture (image) associated with a material.
  */
-vtImage	*vtMaterial::GetTexture()
+vtImage	*vtMaterial::GetTexture() const
 {
-	return m_pImage.get();
+	// It is valid to return a non-const pointer to the image, since the image
+	//  can be modified entirely independently of the material.
+	return const_cast<vtImage*>( m_pImage.get() );
 }
 
 
@@ -295,7 +297,7 @@ void vtMaterial::SetClamp(bool bClamp)
 /**
  * Get the texture clamping property of this material.
  */
-bool vtMaterial::GetClamp()
+bool vtMaterial::GetClamp() const
 {
 	if (!m_pTexture)
 		return false;
@@ -319,7 +321,7 @@ void vtMaterial::SetMipMap(bool bMipMap)
 /**
  * Get the texture mipmapping property of this material.
  */
-bool vtMaterial::GetMipMap()
+bool vtMaterial::GetMipMap() const
 {
 	if (!m_pTexture)
 		return false;
@@ -677,14 +679,14 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 /**
  * Get the texture coordinates of a vertex.
  */
-FPoint2 vtMesh::GetVtxTexCoord(int i)
+FPoint2 vtMesh::GetVtxTexCoord(int i) const
 {
 	FPoint2 p;
 	s2v( (Vec2)m_Tex->at(i), p);
 	return p;
 }
 
-int vtMesh::GetNumPrims()
+int vtMesh::GetNumPrims() const
 {
 	return m_pPrimSet->getNumPrimitives();
 }
