@@ -53,6 +53,9 @@ private:
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
 	float m_fFOVY;
+	float m_fAspect;
+	float m_fNear, m_fFar;
+	FPoint3 eye_up, eye_forward;
 
 	float m_fResolution;
 	float m_fHeightScale;

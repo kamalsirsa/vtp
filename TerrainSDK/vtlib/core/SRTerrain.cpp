@@ -160,14 +160,36 @@ void SRTerrain::SetVerticalExag(float fExag)
 //
 void SRTerrain::DoCulling(const vtCamera *pCam)
 {
-	// store for later
+	// Grab necessary values from the VTP Scene framework, store for later
 	m_eyepos_ogl = pCam->GetTrans();
 	m_window_size = vtGetScene()->GetWindowSize();
-	float aspect = (float)m_window_size.x / m_window_size.y;
+	m_fAspect = (float)m_window_size.x / m_window_size.y;
+	m_fNear = pCam->GetHither();
+	m_fFar = pCam->GetYon();
 
-	float fov = pCam->GetFOV();
-	float fov_y2 = atan(tan (fov/2) / aspect);
-	m_fFOVY = fov_y2 * 2.0f * 180 / PIf;
+	// Get up vector and direction vector from camera matrix
+	FMatrix4 mat;
+	pCam->GetTransform1(mat);
+	FPoint3 up(0.0f, 1.0f, 0.0f);
+	mat.TransformVector(up, eye_up);
+
+	FPoint3 forward(0.0f, 0.0f, -1.0f);
+	mat.TransformVector(forward, eye_forward);
+
+	if (pCam->IsOrtho())
+	{
+		// libMini reported supports orthographic viewing as of 5.0.
+		// A negative FOV value indicates to the library that the FOV is
+		//  actually the rothographic height of the camera.
+		m_fFOVY = pCam->GetWidth() / m_fAspect;
+		m_fFOVY = -m_fFOVY;
+	}
+	else
+	{
+		float fov = pCam->GetFOV();
+		float fov_y2 = atan(tan (fov/2) / m_fAspect);
+		m_fFOVY = fov_y2 * 2.0f * 180 / PIf;
+	}
 }
 
 
@@ -248,40 +270,16 @@ void SRTerrain::RenderSurface()
 
 void SRTerrain::RenderPass()
 {
-	// grab necessary values from the VTP Scene framework
-	vtScene *pScene = vtGetScene();
-	vtCamera *pCamera = pScene->GetCamera();
-	float nearp = pCamera->GetHither();
-	float farp = pCamera->GetYon();
-
-	float aspect = (float)m_window_size.x / m_window_size.y;
-
 	float ex = m_eyepos_ogl.x;
 	float ey = m_eyepos_ogl.y;
 	float ez = m_eyepos_ogl.z;
 
-	float fov;
-	if (pCamera->IsOrtho())
-	{
-		// libMini doesn't actually support orthographic viewing.
-		//  Can we try to fake it by estimating a sufficiently wide FOV?
-		//  Not really.
-		fov = m_fFOVY;
-	}
-	else
-		fov = m_fFOVY;
+	float fov = m_fFOVY;
 
-	// Get up vector and direction vector from camera matrix
-	FMatrix4 mat;
-	pCamera->GetTransform1(mat);
-	FPoint3 up(0.0f, 1.0f, 0.0f), eye_up;
-	mat.TransformVector(up, eye_up);
 	float ux = eye_up.x;
 	float uy = eye_up.y;
 	float uz = eye_up.z;
 
-	FPoint3 forward(0.0f, 0.0f, -1.0f), eye_forward;
-	mat.TransformVector(forward, eye_forward);
 	float dx = eye_forward.x;
 	float dy = eye_forward.y;
 	float dz = eye_forward.z;
@@ -297,8 +295,8 @@ void SRTerrain::RenderPass()
 				ex, ey, ez,
 				dx, dy, dz,
 				ux, uy, uz,
-				fov, aspect,
-				nearp, farp);
+				fov, m_fAspect,
+				m_fNear, m_fFar);
 
 	if (myfancnt>0) glEnd();
 
