@@ -1,7 +1,7 @@
 //
 // Engine.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -15,6 +15,22 @@ vtEngine::vtEngine() : vtEnabledBase()
 
 void vtEngine::Eval()
 {
+}
+
+void vtEngine::RemoveChild(vtEngine *pEngine)
+{
+	for (unsigned int i = 0; i < NumChildren(); i++)
+	{
+		if (m_Children[i] == pEngine)
+			m_Children.RemoveAt(i);
+	}
+}
+
+void vtEngine::AddChildrenToList(Array<vtEngine*> &list)
+{
+	list.Append(this);
+	for (unsigned int i = 0; i < NumChildren(); i++)
+		GetChild(i)->AddChildrenToList(list);
 }
 
 void vtEngine::OnMouse(vtMouseEvent &event)

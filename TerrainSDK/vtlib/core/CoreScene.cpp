@@ -42,27 +42,26 @@ vtSceneBase::vtSceneBase()
 	m_pCamera = NULL;
 	m_WindowSize.Set(0, 0);
 	m_pRoot = NULL;
+	m_pRootEngine = NULL;
 	m_piKeyState = NULL;
 }
 
 vtSceneBase::~vtSceneBase()
 {
 	// cleanup engines
-	int i, num = m_Engines.GetSize();
-	for (i = 0; i < num; i++)
-	{
-		vtEngine *eng = m_Engines.GetAt(i);
-		delete eng;
-	}
-	m_Engines.Empty();
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
+		delete list[i];
+	m_pRootEngine = NULL;
 }
 
 void vtSceneBase::OnMouse(vtMouseEvent &event)
 {
 	// Pass event to Engines
-	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
-		vtEngine *pEng = m_Engines.GetAt(i);
+		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled())
 			pEng->OnMouse(event);
 	}
@@ -71,9 +70,10 @@ void vtSceneBase::OnMouse(vtMouseEvent &event)
 void vtSceneBase::OnKey(int key, int flags)
 {
 	// Pass event to Engines
-	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
-		vtEngine *pEng = m_Engines.GetAt(i);
+		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled())
 			pEng->OnKey(key, flags);
 	}
@@ -92,9 +92,10 @@ void vtSceneBase::SetWindowSize(int w, int h)
 	m_WindowSize.Set(w, h);
 
 	// Pass event to Engines
-	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
-		vtEngine *pEng = m_Engines.GetAt(i);
+		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled())
 			pEng->OnWindowSize(w, h);
 	}
@@ -103,23 +104,21 @@ void vtSceneBase::SetWindowSize(int w, int h)
 void vtSceneBase::DoEngines()
 {
 	// Evaluate Engines
-	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
+	vtEngineArray list(m_pRootEngine);
+	for (unsigned int i = 0; i < list.GetSize(); i++)
 	{
-		vtEngine *pEng = m_Engines.GetAt(i);
+		vtEngine *pEng = list[i];
 		if (pEng->GetEnabled())
 			pEng->Eval();
 	}
 }
 
+// (for backward compatibility only)
 void vtSceneBase::AddEngine(vtEngine *ptr)
 {
-	m_Engines.Append(ptr);
-}
-
-void vtSceneBase::RemoveEngine(vtEngine *ptr)
-{
-	int index = m_Engines.Find(ptr);
-	if (index != -1)
-		m_Engines.RemoveAt(index);
+	if (m_pRootEngine)
+		m_pRootEngine->AddChild(ptr);
+	else
+		m_pRootEngine = ptr;
 }
 

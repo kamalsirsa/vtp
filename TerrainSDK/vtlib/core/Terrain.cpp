@@ -148,11 +148,6 @@ vtTerrain::~vtTerrain()
 	if (m_pTerrMats)
 		m_pTerrMats->Release();
 
-	if (m_pBBEngine)
-	{
-		vtGetScene()->RemoveEngine(m_pBBEngine);
-		delete m_pBBEngine;
-	}
 	delete m_pTextureColors;
 
 	if (m_pDetailMats)

@@ -359,17 +359,14 @@ public:
 
 	virtual void SetBgColor(RGBf color) = 0;
 
-	/// Add an Engine to the scene.
+	/// Set the top engine in the Engine graph
+	void SetRootEngine(vtEngine *ptr) { m_pRootEngine = ptr; }
+
+	/// Get the top engine in the Engine graph
+	vtEngine *GetRootEngine() { return m_pRootEngine; }
+
+	/// Add an Engine to the scene. (for backward compatibility only)
 	void AddEngine(vtEngine *ptr);
-
-	/// Remove an Engine from the scene.
-	void RemoveEngine(vtEngine *ptr);
-
-	/// Get the number of engines in the scene.
-	int GetNumEngines() { return m_Engines.GetSize(); }
-
-	/// Get an engine from the scene by index.
-	vtEngine *GetEngine(int i) { return m_Engines.GetAt(i); }
 
 	/** Set the camera associated with this scene.  The scene has
 	 * a default camera already supplied; you can use GetCamera()
@@ -394,11 +391,11 @@ public:
 protected:
 	void DoEngines();
 
-	Array<vtEngine *> m_Engines;
-	vtCamera *m_pCamera;
-	IPoint2	m_WindowSize;
-	vtGroup *m_pRoot;
-	bool *m_piKeyState;
+	vtCamera	*m_pCamera;
+	IPoint2		 m_WindowSize;
+	vtGroup		*m_pRoot;
+	vtEngine	*m_pRootEngine;
+	bool		*m_piKeyState;
 };
 
 // helper functions

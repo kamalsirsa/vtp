@@ -91,12 +91,6 @@ void vtTerrainScene::CleanupScene()
 
 	SetCurrentTerrain(NULL);
 
-	vtGetScene()->RemoveEngine(m_pTime);
-	vtGetScene()->RemoveEngine(m_pSkyTrack);
-
-	delete m_pTime;
-	delete m_pSkyTrack;
-
 	// no need to do this explicitly, it is done by releasing the scenegraph
 	// if (m_pSkyDome)
 	// 	m_pSkyDome->Destroy();

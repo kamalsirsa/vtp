@@ -36,21 +36,21 @@ public:
 	vtTarget *GetTarget(unsigned int which = 0)
 	{
 		if (which < NumTargets())
-			return m_pTargets.GetAt(which);
+			return m_Targets.GetAt(which);
 		else
 			return NULL;
 	}
 	/**
 	 * Adds a target to the engine.
 	 */
-	void AddTarget(vtTarget *ptr) { m_pTargets.Append(ptr); }
+	void AddTarget(vtTarget *ptr) { m_Targets.Append(ptr); }
 	/**
 	 * Sets a single target for this engine (for backward compatibility.)
 	 */
-	void SetTarget(vtTarget *ptr) { m_pTargets.SetAt(0, ptr); }
+	void SetTarget(vtTarget *ptr) { m_Targets.SetAt(0, ptr); }
 
 	/// Return the number of targets for this engine.
-	unsigned int NumTargets() { return m_pTargets.GetSize(); }
+	unsigned int NumTargets() { return m_Targets.GetSize(); }
 
 	void SetName2(const char *str) { m_strName = str; }
 	const char *GetName2() { return m_strName; }
@@ -69,9 +69,28 @@ public:
 	 */
 	virtual void Eval();
 
+	// Engine tree methods
+	void AddChild(vtEngine *pEngine) { m_Children.Append(pEngine); }
+	void RemoveChild(vtEngine *pEngine);
+	vtEngine *GetChild(unsigned int i) { return m_Children[i]; }
+	unsigned int NumChildren() { return m_Children.GetSize(); }
+
+	void AddChildrenToList(Array<vtEngine*> &list);
+
 protected:
-	Array<vtTarget*> m_pTargets;
+	Array<vtTarget*> m_Targets;
+	Array<vtEngine*> m_Children;
 	vtString		 m_strName;
+};
+
+class vtEngineArray : public Array<vtEngine*>
+{
+public:
+	vtEngineArray(vtEngine *pTop)
+	{
+		if (pTop)
+			pTop->AddChildrenToList(*this);
+	}
 };
 
 /**
