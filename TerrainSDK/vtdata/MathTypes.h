@@ -1114,6 +1114,10 @@ public:
 	RGBAi operator /(float s) const { return RGBAi((short)(r/s), (short)(g/s), (short)(b/s), (short)(a/s)); }
 	void operator *=(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); a=(short)(a*s); }
 	void operator /=(float s) { r=(short)(r/s); g=(short)(g/s); b=(short)(b/s); a=(short)(a/s); }
+
+	// generally it's useful to operate on the RGB alone and leave A unmodified
+	void MultRGB(float s) { r=(short)(r*s); g=(short)(g*s); b=(short)(b*s); }
+
 	void Crop();
 
 	// assignment
