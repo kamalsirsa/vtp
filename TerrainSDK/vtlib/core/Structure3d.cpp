@@ -209,6 +209,10 @@ vtStructInstance3d *vtStructure3d::GetInstance()
 
 vtBuilding *vtStructureArray3d::NewBuilding()
 {
+	// Make sure that subsequent operations on this building are done in with
+	// the correct local coordinate system
+	vtBuilding::s_Conv.Setup(m_proj.GetUnits(), DPoint2(0, 0));
+
 	return new vtBuilding3d;
 }
 
