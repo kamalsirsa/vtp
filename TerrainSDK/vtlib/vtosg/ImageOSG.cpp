@@ -33,16 +33,16 @@ vtImage::vtImage()
 	ref();
 }
 
-vtImage::vtImage(const char *fname, bool b16bit)
+vtImage::vtImage(const char *fname, bool bAllowCache)
 {
 	ref();
-	Read(fname, b16bit);
+	Read(fname, bAllowCache);
 }
 
-vtImage::vtImage(vtDIB *pDIB, bool b16bit)
+vtImage::vtImage(vtDIB *pDIB)
 {
 	ref();
-	m_b16bit = b16bit;
+	m_b16bit = false;
 	_CreateFromDIB(pDIB);
 }
 
@@ -76,7 +76,7 @@ bool vtImage::Create(int width, int height, int bitdepth, bool create_palette)
 	return true;
 }
 
-vtImage *vtImageRead(const char *fname, bool b16bit)
+vtImage *vtImageRead(const char *fname, bool bAllowCache)
 {
 	ImageCache::iterator iter;
 	vtImage *image;
@@ -86,7 +86,7 @@ vtImage *vtImageRead(const char *fname, bool b16bit)
 	{
 		// not found.  must try loading;
 		image = new vtImage();
-		if (image->Read(fname))
+		if (image->Read(fname, bAllowCache))
 		{
 			s_ImageCache[fname] = image; // store in cache
 			return image;
@@ -104,9 +104,9 @@ vtImage *vtImageRead(const char *fname, bool b16bit)
 	}
 }
 
-bool vtImage::Read(const char *fname, bool b16bit)
+bool vtImage::Read(const char *fname, bool bAllowCache)
 {
-	m_b16bit = b16bit;
+	m_b16bit = false;
 	m_strFilename = fname;
 
 #if !USE_OSG_FOR_BMP
@@ -160,8 +160,18 @@ bool vtImage::Read(const char *fname, bool b16bit)
 
 		opts = reg->getOptions();
 		if (!opts) opts = new OPTS;
-		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) |
-			OPTS::CACHE_IMAGES));
+		int before = (int) opts->getObjectCacheHint();
+		if (bAllowCache)
+		{
+			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) |
+				OPTS::CACHE_IMAGES));
+		}
+		else
+		{
+			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) &
+				~(OPTS::CACHE_IMAGES)));
+		}
+		int after = (int) opts->getObjectCacheHint();
 		reg->setOptions(opts);
 
 		// Call OSG to attempt image load.
@@ -177,21 +187,25 @@ bool vtImage::Read(const char *fname, bool b16bit)
 			_pixelFormat = pOsgImage->getPixelFormat();
 			_dataType = pOsgImage->getDataType();
 			_packing = pOsgImage->getPacking();
-			_data = 0L;
 			_modifiedTag = pOsgImage->getModifiedTag();
 			for (unsigned int k = 0; k < pOsgImage->getNumMipmapLevels()-1; k++)
 				_mipmapData.push_back(pOsgImage->getMipmapData(k) - pOsgImage->data());
 			if (pOsgImage->data())
 			{
-				// steal the data by copying
+				// Steal the data by copying
 //				int size = pOsgImage->getTotalSizeInBytesIncludingMipmaps();
 //				setData(new unsigned char [size],USE_NEW_DELETE);
 //				memcpy(_data,pOsgImage->data(),size);
 
-				// steal the data by grabbing the pointer
-				_allocationMode = pOsgImage->getAllocationMode();
-				pOsgImage->setAllocationMode(osg::Image::NO_DELETE);
-				_data = pOsgImage->data();
+				// Steal the data by grabbing the pointer
+				// beware - NO_DELETE means that OSG has given us the same image again
+				// so don't free the one we got before
+				osg::Image::AllocationMode mode = pOsgImage->getAllocationMode();
+				if (mode != osg::Image::NO_DELETE)
+				{
+					pOsgImage->setAllocationMode(osg::Image::NO_DELETE);
+					setData(pOsgImage->data(), mode);
+				}
 			}
 		}
 		m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);

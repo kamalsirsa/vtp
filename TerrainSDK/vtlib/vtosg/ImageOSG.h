@@ -18,12 +18,12 @@ class vtImage: public osg::Image, public vtBitmapBase
 {
 public:
 	vtImage();
-	vtImage(const char *fname, bool b16bit = false);
-	vtImage(class vtDIB *pDIB, bool b16bit = false);
+	vtImage(const char *fname, bool bAllowCache = true);
+	vtImage(class vtDIB *pDIB);
 	void Release();
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
-	bool Read(const char *fname, bool b16bit = false);
+	bool Read(const char *fname, bool bAllowCache = true);
 	bool HasData() { return _data != NULL; }
 
 	/// Return the name of the file, if any, from which the image was loaded.
@@ -56,7 +56,7 @@ protected:
 	int m_iRowSize;		// in bytes
 };
 
-vtImage *vtImageRead(const char *fname, bool b16bit = false);
+vtImage *vtImageRead(const char *fname, bool bAllowCache = true);
 void vtImageCacheClear();
 
 #endif	// VTOSG_IMAGEH
