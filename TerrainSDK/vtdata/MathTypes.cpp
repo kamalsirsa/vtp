@@ -182,7 +182,7 @@ bool DRECT::ContainsLine(const DLine2 &line) const
 /////////////////////////////////////////////////////////////////////////////
 // FQuat
 
-void FQuat::SetAxisAngle(const FPoint3 &axis, float angle)
+void FQuat::AxisAngle(const FPoint3 &axis, float angle)
 {
 	float inversenorm  = 1.0f/axis.Length();
 	float coshalfangle = cosf( 0.5f*angle );
@@ -197,10 +197,10 @@ void FQuat::SetAxisAngle(const FPoint3 &axis, float angle)
 /**
  * Set quaternion to be equivalent to specified matrix.
  */
-void FQuat::SetMatrix(const FMatrix3 &mat)
+void FQuat::SetFromMatrix(const FMatrix3 &mat)
 {
 	// Source: Gamasutra, Rotating Objects Using Quaternions
-	//http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+	//http://www.gamasutra.com/features/19980703/quaternions_01.htm
 	float  tr, s;
 	float  tq[4];
 	int	i, j, k;
@@ -215,9 +215,9 @@ void FQuat::SetMatrix(const FMatrix3 &mat)
 		s = (float)sqrt (tr + 1.0);
 		w = s / 2.0f;
 		s = 0.5f / s;
-		x = (mat(1,2) - mat(2,1)) * s;
-		y = (mat(2,0) - mat(0,2)) * s;
-		z = (mat(0,1) - mat(1,0)) * s;
+		x = (mat(2,1) - mat(1,2)) * s;
+		y = (mat(0,2) - mat(2,0)) * s;
+		z = (mat(1,0) - mat(0,1)) * s;
 	}
 	else
 	{
@@ -237,9 +237,9 @@ void FQuat::SetMatrix(const FMatrix3 &mat)
 		if (s != 0.0f)
 			s = 0.5f / s;
 
-		tq[3] = (mat(j,k) - mat(k,j)) * s;
-		tq[j] = (mat(i,j) + mat(j,i)) * s;
-		tq[k] = (mat(i,k) + mat(k,i)) * s;
+		tq[3] = (mat(k,j) - mat(j,k)) * s;
+		tq[j] = (mat(j,i) + mat(i,j)) * s;
+		tq[k] = (mat(k,i) + mat(i,k)) * s;
 
 		x = tq[0];
 		y = tq[1];
@@ -248,13 +248,20 @@ void FQuat::SetMatrix(const FMatrix3 &mat)
 	}
 }
 
+void FQuat::SetFromVectors(const FPoint3 &forward, const FPoint3 &up)
+{
+	FMatrix3 m3;
+	m3.SetFromVectors(forward, up);
+	SetFromMatrix(m3);
+}
+
 /**
  * Get the equivalent matrix for this quaternion.
  */
 void FQuat::GetMatrix(FMatrix3 &mat) const
 {
 	// Source: Gamasutra, Rotating Objects Using Quaternions
-	//http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+	//http://www.gamasutra.com/features/19980703/quaternions_01.htm
 	float wx, wy, wz, xx, yy, yz, xy, xz, zz, x2, y2, z2;
 
 	// calculate coefficients
@@ -275,23 +282,23 @@ void FQuat::GetMatrix(FMatrix3 &mat) const
 	wz = w * z2;
 
 	mat.Set(0, 0, 1.0f - (yy + zz));
-	mat.Set(1, 0, xy - wz);
-	mat.Set(2, 0, xz + wy);
-	mat.Set(3, 0, 0.0f);
+	mat.Set(0, 1, xy - wz);
+	mat.Set(0, 2, xz + wy);
+	mat.Set(0, 3, 0.0f);
 
-	mat.Set(0, 1, xy + wz);
+	mat.Set(1, 0, xy + wz);
 	mat.Set(1, 1, 1.0f - (xx + zz));
-	mat.Set(2, 1, yz - wx);
-	mat.Set(3, 1, 0.0f);
+	mat.Set(1, 2, yz - wx);
+	mat.Set(1, 3, 0.0f);
 
-	mat.Set(0, 2, xz - wy);
-	mat.Set(1, 2, yz + wx);
+	mat.Set(2, 0, xz - wy);
+	mat.Set(2, 1, yz + wx);
 	mat.Set(2, 2, 1.0f - (xx + yy));
-	mat.Set(3, 2, 0.0f);
+	mat.Set(2, 3, 0.0f);
 
-	mat.Set(0, 3, 0);
-	mat.Set(1, 3, 0);
-	mat.Set(2, 3, 0);
+	mat.Set(3, 0, 0);
+	mat.Set(3, 1, 0);
+	mat.Set(3, 2, 0);
 	mat.Set(3, 3, 1);
 }
 
@@ -302,7 +309,7 @@ void FQuat::GetMatrix(FMatrix3 &mat) const
 void FQuat::Slerp(const FQuat &from, const FQuat &to, float f)
 {
 	/// Reference: Shoemake at SIGGRAPH 89, See also:
-	/// http://www.gamasutra.com/features/programming/19980703/quaternions_01.htm
+	/// http://www.gamasutra.com/features/19980703/quaternions_01.htm
 
 	const double epsilon = 0.00001;
 	double omega, cosomega, sinomega, scale_from, scale_to;
@@ -338,6 +345,44 @@ void FQuat::Slerp(const FQuat &from, const FQuat &to, float f)
 	w = (float) (from.w * scale_from + quatTo.w * scale_to);
 }
 
+void FQuat::Invert()
+{
+	float l2 = LengthSquared();
+	x = -x / l2;
+	y = -y / l2;
+	z = -z / l2;
+	w = w / l2;
+}
+
+const FQuat FQuat::operator*(const FQuat &q) const
+{
+	return FQuat(q.w*x + q.x*w + q.y*z - q.z*y,
+				 q.w*y - q.x*z + q.y*w + q.z*x,
+				 q.w*z + q.x*y - q.y*x + q.z*w,
+				 q.w*w - q.x*x - q.y*y - q.z*z );
+}
+FQuat &FQuat::operator*=(const FQuat &q)
+{
+	float fx = q.w*x + q.x*w + q.y*z - q.z*y;
+	float fy = q.w*y - q.x*z + q.y*w + q.z*x;
+	float fz = q.w*z + q.x*y - q.y*x + q.z*w;
+	w =		   q.w*w - q.x*x - q.y*y - q.z*z;
+	z = fz;
+	y = fy;
+	x = fx;
+	return (*this);
+}
+
+const FQuat FQuat::operator/(const FQuat &q) const
+{
+	return ( (*this) * q.Inverse() );
+}
+
+FQuat &FQuat::operator/=(const FQuat &q)
+{
+	(*this) = (*this) * q.Inverse();
+	return (*this);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // RGBi
