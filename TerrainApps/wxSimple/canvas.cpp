@@ -25,18 +25,18 @@ DECLARE_APP(vtApp)
 /*
  * vtGLCanvas implementation
  */
-BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
-	EVT_CLOSE(vtGLCanvas::OnClose)
-	EVT_SIZE(vtGLCanvas::OnSize)
-	EVT_PAINT(vtGLCanvas::OnPaint)
-	EVT_CHAR(vtGLCanvas::OnChar)
-	EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
-	EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
+	BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
+EVT_CLOSE(vtGLCanvas::OnClose)
+EVT_SIZE(vtGLCanvas::OnSize)
+EVT_PAINT(vtGLCanvas::OnPaint)
+EVT_CHAR(vtGLCanvas::OnChar)
+EVT_MOUSE_EVENTS(vtGLCanvas::OnMouseEvent)
+EVT_ERASE_BACKGROUND(vtGLCanvas::OnEraseBackground)
 END_EVENT_TABLE()
 
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
-  wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
+wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
 	parent->Show(TRUE);
 	SetCurrent();
@@ -123,7 +123,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 #endif
 
 		m_bPainting = false;
-#endif VTLIB_PSM
+#endif // VTLIB_PSM
 	}
 
 	// Must allow some idle processing to occur - or the toolbars will not
@@ -164,10 +164,10 @@ void vtGLCanvas::OnSize(wxSizeEvent& event)
 void vtGLCanvas::OnChar(wxKeyEvent& event)
 {
 	long key = event.KeyCode();
-  
+
 	if ( key == WXK_ESCAPE || key == 'q' || key == 'Q' )
 		exit(0);
-			
+
 	// pass the char to the vtlib Scene
 	vtGetScene()->OnKey(key, 0);
 }
@@ -176,52 +176,52 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
-    wxEventType type = event1.GetEventType();
+	wxEventType type = event1.GetEventType();
 
-    if ( type == wxEVT_LEFT_DOWN )
-    {
+	if ( type == wxEVT_LEFT_DOWN )
+	{
 		event.type = VT_DOWN;
 		event.button = VT_LEFT;
-    }
-    else if ( type == wxEVT_LEFT_UP )
-    {
+	}
+	else if ( type == wxEVT_LEFT_UP )
+	{
 		event.type = VT_UP;
 		event.button = VT_LEFT;
-    }
-    else if ( type == wxEVT_MIDDLE_DOWN )
-    {
+	}
+	else if ( type == wxEVT_MIDDLE_DOWN )
+	{
 		event.type = VT_DOWN;
 		event.button = VT_MIDDLE;
-    }
-    else if ( type == wxEVT_MIDDLE_UP )
-    {
+	}
+	else if ( type == wxEVT_MIDDLE_UP )
+	{
 		event.type = VT_UP;
 		event.button = VT_MIDDLE;
-    }
-    else if ( type == wxEVT_RIGHT_DOWN )
-    {
+	}
+	else if ( type == wxEVT_RIGHT_DOWN )
+	{
 		event.type = VT_DOWN;
 		event.button = VT_RIGHT;
-    }
-    else if ( type == wxEVT_RIGHT_UP )
-    {
+	}
+	else if ( type == wxEVT_RIGHT_UP )
+	{
 		event.type = VT_UP;
 		event.button = VT_RIGHT;
-    }
-    else if ( type == wxEVT_MOTION )
-    {
+	}
+	else if ( type == wxEVT_MOTION )
+	{
 		event.type = VT_MOVE;
 		event.button = VT_NONE;
-    }
+	}
 	else
-    {
+	{
 		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
 		return;
 	}
 
 	event.flags = 0;
 	wxCoord xpos, ypos;
-    event1.GetPosition(&xpos, &ypos);
+	event1.GetPosition(&xpos, &ypos);
 	event.pos.Set(xpos, ypos);
 
 	if (event1.ControlDown())
@@ -237,4 +237,3 @@ void vtGLCanvas::OnEraseBackground(wxEraseEvent& event)
 {
 	// Do nothing, to avoid flashing.
 }
-
