@@ -100,6 +100,8 @@ public:
 
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 			int &structure, double &distance, bool bSkipBuildings = false);
+	bool FindClosestBuilding(const DPoint2 &point, double epsilon,
+			int &structure, double &closest);
 
 	bool IsEmpty() { return (GetSize() == 0); }
 	void GetExtents(DRECT &ext);
