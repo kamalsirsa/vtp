@@ -10,6 +10,7 @@
 
 #include "../EnviroEnum.h"
 #include "vtui/wxString2.h"
+#include "vtlib/core/Event.h"
 
 class SceneGraphDlg;
 class PlantDlg;
@@ -31,11 +32,11 @@ class vtFrame: public wxFrame
 {
 public:
 	vtFrame(wxFrame *frame, const wxString& title, const wxPoint& pos, const wxSize& size,
-		long style = wxDEFAULT_FRAME_STYLE);
+		long style = wxDEFAULT_FRAME_STYLE, bool bVerticalToolbar = false);
 	~vtFrame();
 
 	void CreateMenus();
-	void CreateToolbar();
+	void CreateToolbar(bool bVertical);
 
 	void SetMode(MouseMode mode);
 	void ToggleNavigate();
@@ -65,6 +66,7 @@ public:
 	void OnViewLocations(wxCommandEvent& event);
 	void OnViewSnapshot(wxCommandEvent& event);
 	void OnViewSnapAgain(wxCommandEvent& event);
+	void OnViewStatusBar(wxCommandEvent& event);
 
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
@@ -73,6 +75,7 @@ public:
 	void OnUpdateViewFramerate(wxUpdateUIEvent& event);
 	void OnUpdateViewFollowRoute(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
+	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);
 
 	void OnViewSlower(wxCommandEvent& event);
 	void OnViewFaster(wxCommandEvent& event);
@@ -167,6 +170,7 @@ public:
 	class vtGLCanvas	*m_canvas;
 	wxToolBar			*m_pToolbar;
 	wxMenuBar			*m_pMenuBar;
+	class MyStatusBar	*m_pStatusBar;
 
 	// Modeless dialogs
 	SceneGraphDlg		*m_pSceneGraphDlg;
