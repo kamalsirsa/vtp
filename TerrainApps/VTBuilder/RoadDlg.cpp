@@ -47,6 +47,7 @@ RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetSurfType()->Append(_("Dirt"));
 	GetSurfType()->Append(_("Paved"));
 	GetSurfType()->Append(_("Railroad"));
+	GetSurfType()->Append(_("Stone"));
 	GetSurfType()->Append(_("(multiple types)"));
 	GetSurfType()->SetSelection(0);
 
@@ -147,7 +148,7 @@ void RoadDlg::TransferStateToControls()
 		GetMargin()->SetSelection(m_iMargin);
 
 	if (m_iSurf == MULTIPLE)
-		GetSurfType()->SetSelection(7);
+		GetSurfType()->SetSelection(8);
 	else
 		GetSurfType()->SetSelection(m_iSurf);
 }
@@ -217,7 +218,7 @@ void RoadDlg::ApplyState(LinkEdit *pRoad)
 		pRoad->SetFlag(RF_MARGIN, (val != 0));
 
 	val = GetSurfType()->GetSelection();
-	if (val != 7)
+	if (val != 8)
 		pRoad->m_Surface = (SurfaceType) val;
 }
 
