@@ -151,12 +151,14 @@ EVT_MENU(ID_FEATURE_PICK,			MainFrame::OnFeaturePick)
 EVT_MENU(ID_FEATURE_TABLE,			MainFrame::OnFeatureTable)
 EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
+EVT_MENU(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnStructureEditLinear)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
 EVT_UPDATE_UI(ID_FEATURE_PICK,		MainFrame::OnUpdateFeaturePick)
 EVT_UPDATE_UI(ID_FEATURE_TABLE,		MainFrame::OnUpdateFeatureTable)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
+EVT_UPDATE_UI(ID_STRUCTURE_EDIT_LINEAR,	MainFrame::OnUpdateStructureEditLinear)
 
 EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
 EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
@@ -183,8 +185,8 @@ EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 
 EVT_SIZE(MainFrame::OnSize)
-
 EVT_CHAR(MainFrame::OnChar)
+EVT_CLOSE(MainFrame::OnClose)
 
 END_EVENT_TABLE()
 
@@ -331,6 +333,7 @@ void MainFrame::CreateMenus()
 	bldMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
 	bldMenu->Append(ID_STRUCTURE_EDIT_BLD, "Edit Buildings", "Edit Buildings", true);
 	bldMenu->Append(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features", "Add Linear Features", true);
+	bldMenu->Append(ID_STRUCTURE_EDIT_LINEAR, "Edit Linear Features", "Edit Linear Features", true);
 	m_pMenuBar->Append(bldMenu, "&Structures");
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
@@ -546,7 +549,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 
 void MainFrame::OnQuit(wxCommandEvent &event)
 {
-	Close(TRUE);
+	Close(FALSE);
 }
 
 //////////////////////////////////////////////////
@@ -664,8 +667,11 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 	if (pL)
 	{
 		pL->SetProjection(m_proj);
+		SetActiveLayer(pL);
+		m_pView->SetActiveLayer(pL);
 		AddLayer(pL);
 		m_pTree->RefreshTreeItems(this);
+		RefreshToolbar();
 	}
 }
 
@@ -1143,12 +1149,12 @@ void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
 
 void MainFrame::OnSelectLink(wxCommandEvent &event)
 {
-	m_pView->SetMode(LB_Road);
+	m_pView->SetMode(LB_Link);
 }
 
 void MainFrame::OnUpdateSelectLink(wxUpdateUIEvent& event)
 {
-	event.Check( m_pView->GetMode() == LB_Road );
+	event.Check( m_pView->GetMode() == LB_Link );
 }
 
 void MainFrame::OnSelectNode(wxCommandEvent &event)
@@ -1163,12 +1169,12 @@ void MainFrame::OnUpdateSelectNode(wxUpdateUIEvent& event)
 
 void MainFrame::OnSelectWhole(wxCommandEvent &event)
 {
-	m_pView->SetMode(LB_RoadExtend);
+	m_pView->SetMode(LB_LinkExtend);
 }
 
 void MainFrame::OnUpdateSelectWhole(wxUpdateUIEvent& event)
 {
-	event.Check( m_pView->GetMode() == LB_RoadExtend );
+	event.Check( m_pView->GetMode() == LB_LinkExtend );
 }
 
 void MainFrame::OnDirection(wxCommandEvent &event)
@@ -1768,11 +1774,9 @@ void MainFrame::OnUpdateTowerSelect(wxUpdateUIEvent &event)
 }
 void MainFrame::OnTowerEdit(wxCommandEvent& event)
 {
-	m_pView->SetMode(LB_TowerEdit);
 }
 void MainFrame::OnUpdateTowerEdit(wxUpdateUIEvent &event)
 {
-	event.Check(m_pView->GetMode() == LB_TowerEdit);
 }
 void MainFrame::OnTowerAdd(wxCommandEvent& event)
 {
@@ -1799,7 +1803,7 @@ void MainFrame::OnUpdateFeatureSelect(wxUpdateUIEvent& event)
 
 void MainFrame::OnFeaturePick(wxCommandEvent &event)
 {
-	m_pView->SetMode(LB_Info);
+	m_pView->SetMode(LB_FeatInfo);
 }
 
 void MainFrame::OnFeatureTable(wxCommandEvent &event)
@@ -1815,7 +1819,7 @@ void MainFrame::OnFeatureTable(wxCommandEvent &event)
 
 void MainFrame::OnUpdateFeaturePick(wxUpdateUIEvent& event)
 {
-	event.Check(m_pView->GetMode() == LB_Info);
+	event.Check(m_pView->GetMode() == LB_FeatInfo);
 }
 
 void MainFrame::OnUpdateFeatureTable(wxUpdateUIEvent& event)
@@ -1841,6 +1845,16 @@ void MainFrame::OnStructureAddLinear(wxCommandEvent &event)
 void MainFrame::OnUpdateStructureAddLinear(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_AddLinear);
+}
+
+void MainFrame::OnStructureEditLinear(wxCommandEvent &event)
+{
+	m_pView->SetMode(LB_EditLinear);
+}
+
+void MainFrame::OnUpdateStructureEditLinear(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode() == LB_EditLinear);
 }
 
 
@@ -1885,6 +1899,7 @@ void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
 	event.Enable(pRL != NULL && pRL->GetEntityType() == SHPT_POINT);
+	event.Check(m_pView->GetMode() == LB_AddPoints);
 }
 
 void MainFrame::OnRawAddPointText(wxCommandEvent& event)
