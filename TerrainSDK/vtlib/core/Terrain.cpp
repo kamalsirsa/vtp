@@ -269,13 +269,22 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 
 	if (eTex == TE_SINGLE || eTex == TE_TILED)	// load texture
 	{
-		vtString texture_fname = "GeoSpecific/";
+		vtString texname;
 		if (eTex == TE_SINGLE)
-			texture_fname += m_Params.GetValueString(STR_TEXTURESINGLE);
+		{
+			texname = m_Params.GetValueString(STR_TEXTURESINGLE);
+			VTLOG("  Single Texture: '%s'\n", (const char *) texname);
+		}
 		else
-			texture_fname += m_Params.CookTextureFilename();
+		{
+			texname = m_Params.CookTextureFilename();
+			VTLOG("  Tiled Texture: '%s'\n", (const char *) texname);
+		}
 
-		VTLOG("  Texture: %s\n", (const char *) texture_fname);
+		vtString texture_fname = "GeoSpecific/";
+		texture_fname += texname;
+
+		VTLOG("  Looking for: %s\n", (const char *) texture_fname);
 		vtString texture_path = FindFileOnPaths(s_DataPaths, texture_fname);
 		if (texture_path == "")
 		{

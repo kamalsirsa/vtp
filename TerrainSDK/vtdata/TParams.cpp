@@ -171,7 +171,7 @@ bool TParams::LoadFrom(const char *fname)
 
 bool TParams::LoadFromIniFile(const char *filename)
 {
-	VTLOG("Reading terrain params from file '%s'\n", filename);
+	VTLOG("\tReading TParams from '%s'\n", filename);
 
 	ifstream input(filename, ios::in | ios::binary);
 	if (!input.is_open())
@@ -319,7 +319,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 		}
 		else
 		{
-			VTLOG("Ignoring line %d from INI file: '%s'\n", linenum, buf);
+			VTLOG("\t Ignoring line %d from INI file: '%s'\n", linenum, buf);
 			get_line_from_stream(input);
 		}
 	}
@@ -339,7 +339,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 
 bool TParams::LoadFromXML(const char *fname)
 {
-	VTLOG("Reading terrain params from file '%s'\n", fname);
+	VTLOG("\tReading TParams from '%s'\n", fname);
 
 	bool success = vtTagArray::LoadFromXML(fname);
 	return success;

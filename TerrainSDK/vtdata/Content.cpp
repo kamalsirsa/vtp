@@ -110,6 +110,7 @@ void vtTagArray::SetValueString(const char *szTagName, const vtString &string)
 			return;
 
 		// if not, add it as a new tag
+		VTLOG("\tWarning: tag %s was not found, creating.\n", szTagName);
 		AddTag(szTagName, string);
 	}
 }
@@ -162,7 +163,10 @@ const char *vtTagArray::GetValueString(const char *szTagName) const
 	if (tag)
 		return tag->value;
 	else
+	{
+		VTLOG("\tWarning: could not get tag %s, not found.\n", szTagName);
 		return NULL;
+	}
 }
 
 bool vtTagArray::GetValueBool(const char *szTagName) const
