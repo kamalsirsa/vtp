@@ -74,7 +74,6 @@ public:
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL, bool bGZip = false);
 
 	void ComputeHeightExtents();
-	void GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 	void GetDimensions(int &nColumns, int &nRows) const;
 
 	// Set/Get height values
@@ -148,8 +147,6 @@ protected:
 	vtProjection	m_proj;		// a grid always has some projection
 
 private:
-	// minimum and maximum height values for the whole grid
-	float	m_fMinHeight, m_fMaxHeight;
 	char 	m_szOriginalDEMName[41];
 
 	void	_AllocateArray();

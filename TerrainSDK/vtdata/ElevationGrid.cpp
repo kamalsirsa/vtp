@@ -354,16 +354,6 @@ void vtElevationGrid::ComputeHeightExtents()
 	}
 }
 
-/** Gets the minimum and maximum height values.  The values are placed in the
- * arguments by reference.  You must have first called ComputeHeightExtents.
- */
-void vtElevationGrid::GetHeightExtents(float &fMinHeight, float &fMaxHeight) const
-{
-	fMinHeight = m_fMinHeight;
-	fMaxHeight = m_fMaxHeight;
-}
-
-
 /** Get the grid size of the grid.
  * The values are placed into the arguments by reference.
  * \param nColumns The number of columns (east-west)
