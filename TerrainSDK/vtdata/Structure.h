@@ -12,6 +12,7 @@
 #ifndef STRUCTUREH
 #define STRUCTUREH
 
+#include <iostream>
 #include "MathTypes.h"
 #include "Selectable.h"
 #include "Content.h"
