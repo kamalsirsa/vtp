@@ -34,7 +34,7 @@ BEGIN_EVENT_TABLE(PlantDlg,AutoDialog)
 	EVT_TEXT( ID_SIZEEDIT, PlantDlg::OnSizeEdit )
 	EVT_SLIDER( ID_SIZESLIDER, PlantDlg::OnSizeSlider )
 	EVT_CHOICE( ID_SPECIES, PlantDlg::OnSelChangeSpecies )
-	EVT_TEXT( ID_SPACINGEDIT, PlantDlg::OnSpacingEdit )
+	EVT_TEXT( ID_PLANT_SPACING_EDIT, PlantDlg::OnSpacingEdit )
 END_EVENT_TABLE()
 
 PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -107,7 +107,7 @@ void PlantDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	AddValidator(ID_SPECIES, &m_iSpecies);
 	AddNumValidator(ID_SIZEEDIT, &m_fSize);
-	AddNumValidator(ID_SPACINGEDIT, &m_fSpacing);
+	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_fSpacing);
 
 	m_iSpecies = 0;
 	m_fSize = 2.0f;
