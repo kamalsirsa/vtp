@@ -1,7 +1,7 @@
 //
 // Base.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -17,35 +17,6 @@
 #ifndef MIN
 #define MIN(a, b) (((a)>(b))?(b):(a))
 #endif
-
-enum vtMouseEventType
-{
-	VT_MOVE,
-	VT_DOWN,
-	VT_UP
-};
-
-#define VT_NONE		0
-#define VT_LEFT		1
-#define VT_RIGHT	2
-#define VT_MIDDLE	4
-
-// event flags: modifier keys for mouse and keyboard events
-#define VT_SHIFT	1
-#define VT_CONTROL	2
-#define VT_ALT		4
-
-/**
- * A Mouse Event is used by the VTP event handling system to inform
- * each Engine of mouse input.
- */
-struct vtMouseEvent
-{
-	vtMouseEventType type;
-	int button;
-	IPoint2 pos;
-	int flags;
-};
 
 /**
  * This class simply provides the ability to store whether an object is
@@ -71,6 +42,7 @@ class vtCamera;
 class vtGroup;
 class vtEngine;
 class vtGeom;
+struct vtMouseEvent;
 
 /** \defgroup sg Scene Graph
  * These classes are used for scene graph functionality: geometry, cameras,
