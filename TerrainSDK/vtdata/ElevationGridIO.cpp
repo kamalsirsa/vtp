@@ -232,15 +232,24 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		}
 		else
 		{
-			fseek(fp, 893, 0);	 	// Non-fixed-length record format
-			fscanf(fp, "%d", &iRow);
-			fscanf(fp, "%d", &iColumn);
-			if (iRow==1 && iColumn==1)	// File OK?
+			// might be the Non-fixed-length record format
+			// Record B can start anywhere from 892 to 1023
+			// Record B is identified by starting with the row/column
+			//  of its first profile, "     1     1"
+			char buffer[144];
+			fseek(fp, 892, 0);
+			fread(buffer, 144, 1, fp);
+			for (int i = 0; i < 144; i++)
 			{
-				bFixedLength = false;
-				iDataStartOffset = 893;
+				if (!strncmp(buffer+i, "     1     1", 12))
+				{
+					// Found it
+					bFixedLength = false;
+					iDataStartOffset = 892+i;
+					break;
+				}
 			}
-			else
+			if (i == 144)
 			{
 				// Not a DEM file
 				fclose(fp);
@@ -336,7 +345,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	if (bNewFormat)
 	{
 		// year of data compilation
-		fseek(fp, 876, 0);
+		fseek(fp, 876, 0);		// 0x36C
 		fread(szDateBuffer, 4, 1, fp);
 		szDateBuffer[4] = 0;
 
@@ -348,7 +357,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		// 5=Old Hawaii Datum
 		// 6=Puerto Rico Datum
 		int datum;
-		fseek(fp, 890, 0);
+		fseek(fp, 890, 0);	// 0x37A
 		fscanf(fp, "%d", &datum);
 		switch (datum) {
 			case 1: iDatum = EPSG_DATUM_NAD27; break;
