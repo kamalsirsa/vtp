@@ -98,8 +98,6 @@ public:
 	/// set the enabled state of the terrain (whether it is shown or not)
 	void Enable(bool bVisible);
 
-	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
-
 	/// load an external geometry file
 	vtTransform *LoadModel(const char *filename);
 
@@ -163,6 +161,9 @@ public:
 	// query
 	RGBf GetOceanColor() { return m_ocean_color; }
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
+	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
+	vtHeightField *GetHeightField() { return m_pHeightField; }
+	vtProjection &GetProjection() { return m_proj; }
 
 	// Points of interest
 	void AddPointOfInterest(double ulx, double uly, double brx, double bry,
@@ -176,8 +177,6 @@ public:
 	// Access the viewpoint associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
 	FMatrix4 &GetCamLocation() { return m_CamLocation; }
-
-	vtHeightField *GetHeightField() { return m_pHeightField; }
 
 	// linked list of terrains
 	void SetNext(vtTerrain *t) { m_pNext = t; }
@@ -240,7 +239,7 @@ protected:
 	TParams		m_Params;
 
 	// data grids
-	vtElevationGrid		*m_pInputGrid;	// if non-NULL, use instead of BT
+	vtElevationGrid	*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField	*m_pHeightField;
 	vtLodGrid		*m_pLodGrid;
 	bool			m_bPreserveInputGrid;
@@ -293,7 +292,7 @@ protected:
 	vtGroup			*m_pPOIGroup;
 
 	// only used during initialization
-	vtElevationGrid		*m_pElevGrid;
+	vtElevationGrid	*m_pElevGrid;
 
 	vtProjection	m_proj;
 };
