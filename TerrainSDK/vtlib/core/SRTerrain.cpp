@@ -289,10 +289,15 @@ void SRTerrain::RenderPass()
 }
 
 //
-// GetLocation is called when the framework needs to know the surface
+// These methods are called when the framework needs to know the surface
 // position of the terrain at a given grid point.  Supply the height
 // value from our own data structures.
 //
+float SRTerrain::GetElevation(int iX, int iZ) const
+{
+	return m_pMini->getheight(iX, iZ);
+}
+
 void SRTerrain::GetLocation(int i, int j, FPoint3 &p) const
 {
 	p.Set(m_fXLookup[i],

@@ -1131,6 +1131,11 @@ void SMTerrain::RenderSurface()
 }
 
 
+float SMTerrain::GetElevation(int iX, int iZ) const
+{
+	return m_pData[offset(iX,iZ)]*m_fZScale;
+}
+
 void SMTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));

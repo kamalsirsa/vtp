@@ -195,6 +195,11 @@ void BryanTerrain::RenderPass()
 */
 }
 
+float BryanTerrain::GetElevation(int iX, int iZ) const
+{
+	return m_pData[offset(iX,iZ)];
+}
+
 void BryanTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));

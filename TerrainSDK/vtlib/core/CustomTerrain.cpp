@@ -165,10 +165,15 @@ void CustomTerrain::RenderPass()
 }
 
 //
-// GetLocation is called when the framework needs to know the surface
+// These methods are called when the framework needs to know the surface
 // position of the terrain at a given grid point.  Supply the height
 // value from your own data structures.
 //
+float CustomTerrain::GetElevation(int iX, int iZ) const
+{
+	return m_pData[offset(iX,iZ)];
+}
+
 void CustomTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ1(iX, iZ));
