@@ -32,6 +32,7 @@ public:
 
 	bool ReadSHP(const char* pathname);
 	bool ReadBCF(const char* pathname);		// read a .bcf file
+	bool ReadBCF_Old(FILE *fp);				// support obsolete format
 	bool ReadXML(const char* pathname);
 
 	bool WriteSHP(const char* pathname);

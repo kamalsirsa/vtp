@@ -52,9 +52,9 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	fread(buf, 3, 1, fp);
 	if (strncmp(buf, "bcf", 3))
 	{
-		// not current bcf, fail
-		fclose(fp);
-		return false;
+		// not current bcf, try reading old format
+		rewind(fp);
+		return ReadBCF_Old(fp);
 	}
 
 	float version;
@@ -184,6 +184,26 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 		}
 		AddBuilding(bld);
 	}
+	fclose(fp);
+	return true;
+}
+
+bool vtStructureArray::ReadBCF_Old(FILE *fp)
+{
+	int ncoords;
+	int num = fscanf(fp, "%d\n", &ncoords);
+	if (num != 1)
+		return false;
+
+	DPoint2 point;
+	for (int i = 0; i < ncoords; i++)
+	{
+		fscanf(fp, "%lf %lf\n", &point.x, &point.y);
+		vtBuilding *bld = NewBuilding();
+		bld->SetLocation(point);
+		AddBuilding(bld);
+	}
+
 	fclose(fp);
 	return true;
 }
@@ -813,7 +833,15 @@ bool vtStructureArray::WriteXML(const char* filename)
 bool vtStructureArray::ReadXML(const char* pathname)
 {
 	StructureVisitor visitor(this);
-	readXML(pathname, visitor);
+	try
+	{
+		readXML(pathname, visitor);
+	}
+	catch (xh_io_exception &e)
+	{
+		// TODO: would be good to pass back the error message.
+		return false;
+	}
 	if (visitor.hasException())
 		throw visitor.getException();
 	return true;
