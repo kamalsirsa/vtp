@@ -101,12 +101,8 @@
       Strips/fans and Detail texture are enabled.</td>
   </tr>
   <tr>
-    <th width="170" valign="top" rowspan="4">&nbsp;</th>
+    <th width="170" valign="top" rowspan="3">&nbsp;</th>
     <td width="180" valign="top">Sky Dome</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr>
-    <td width="180" valign="top">Ocean Plane</td>
     <td>&nbsp;</td>
   </tr>
   <tr>
@@ -233,6 +229,36 @@
     <td width="180" valign="top" bgcolor="#B7CCB8">(Source file)</td>
     <td bgcolor="#B7CCB8">The filename should be a VTST (Built Structures) file,
       containing the Buildings, Fences etc. for this terrain.</td>
+  </tr>
+  <tr>
+    <th width="180" valign="top" bgcolor="#D2C8B5" rowspan="4">Ocean</th>
+    <td bgcolor="#D2C8B5" valign="top">Ocean Plane</td>
+    <td bgcolor="#D2C8B5">Set this option to create a single, large, flat
+      &quot;ocean&quot; surface which intersects the terrain.</td>
+  </tr>
+  <tr>
+    <td bgcolor="#D2C8B5" valign="top">Ocean Plane Level</td>
+    <td bgcolor="#D2C8B5">The is the elevation, in meters, at which the ocean
+      plane will appear.&nbsp; Normally you would set this to either 0 (exact
+      sea level) or slightly lower (e.g. -20) which can help to avoid Z-buffer
+      problems between the ocean place and some terrains.</td>
+  </tr>
+  <tr>
+    <td bgcolor="#D2C8B5" valign="top">Depress Ocean</td>
+    <td bgcolor="#D2C8B5">Set this option to change your elevation such that all
+      points at &quot;sea level&quot; (elevation = 0 meters exactly) are
+      artificially displaced.&nbsp; This can be useful combined with &quot;Ocean
+      Plane&quot;, since many Elevation data files represent the ocean as
+      &quot;sea level&quot;, this option will restore some &quot;depth&quot; to
+      the ocean, so that it will not intersect the Ocean Plane.<br>
+      Another useful effect of this option is that it produces a
+      &quot;cliff&quot; at the shoreline, which can help the CLOD algorithm to
+      maintain the shoreline.</td>
+  </tr>
+  <tr>
+    <td bgcolor="#D2C8B5" valign="top">Depress Ocean Level</td>
+    <td bgcolor="#D2C8B5">The level, in meters, to artificially depress the
+      ocean.&nbsp; -40 is a typical value.</td>
   </tr>
 </table>
 <ul>
