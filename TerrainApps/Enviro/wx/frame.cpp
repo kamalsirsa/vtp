@@ -35,6 +35,7 @@
 
 #include "frame.h"
 
+// dialogs
 #include "SceneGraphDlg.h"
 #include "PlantDlg.h"
 #include "LinearStructDlg3d.h"
@@ -42,9 +43,10 @@
 #include "CameraDlg.h"
 #include "LocationDlg.h"
 #include "BuildingDlg3d.h"
+#include "LayerDlg.h"
 
 #include "../Engines.h"
-#include "../Enviro.h"	// for GetCurrentTerrain
+#include "EnviroGUI.h"	// for GetCurrentTerrain
 
 #include "app.h"
 #include "canvas.h"
@@ -86,6 +88,7 @@ DECLARE_APP(vtApp);
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 EVT_CHAR(vtFrame::OnChar)
+EVT_MENU(ID_FILE_LAYERS,		vtFrame::OnFileLayers)
 EVT_MENU(wxID_EXIT, vtFrame::OnExit)
 EVT_CLOSE(vtFrame::OnClose)
 
@@ -227,13 +230,16 @@ wxFrame(parent, -1, title, pos, size, style)
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 
-	m_pPlantDlg = new PlantDlg(this, -1, _T("Plants"), wxDefaultPosition);
-	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _T("Linear Structures"), wxDefaultPosition);
-	m_pUtilDlg = new UtilDlg(this, -1, _T("Utility"), wxDefaultPosition);
-	m_pCameraDlg = new CameraDlg(this, -1, _T("Camera-View"), wxDefaultPosition);
+	m_pPlantDlg = new PlantDlg(this, -1, _T("Plants"));
+	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _T("Linear Structures"));
+	m_pUtilDlg = new UtilDlg(this, -1, _T("Utility"));
+	m_pCameraDlg = new CameraDlg(this, -1, _T("Camera-View"));
 	m_pLocationDlg = new LocationDlg(this, -1, _T("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
-	m_pBuildingDlg = new BuildingDlg3d(this, -1, _T("Building Properties"), wxDefaultPosition);
+	m_pBuildingDlg = new BuildingDlg3d(this, -1, _T("Building Properties"));
+	m_pLayerDlg = new LayerDlg(this, -1, _T("Layers"), wxDefaultPosition,
+		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pLayerDlg->SetSize(400, 400);
 
 	m_canvas->SetCurrent();
 }
@@ -254,6 +260,8 @@ void vtFrame::CreateMenus()
 {
 	// Make menus
 	wxMenu *fileMenu = new wxMenu;
+	fileMenu->Append(ID_FILE_LAYERS, _T("Layers"), _T("Layers"));
+	fileMenu->AppendSeparator();
 	fileMenu->Append(wxID_EXIT, _T("E&xit (Esc)"), _T("Exit"));
 
 	wxMenu *toolsMenu = new wxMenu;
@@ -649,6 +657,14 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 	wxMessageBox(str, _T("About ") WSTRING_APPORG);
 
 	EnableContinuousRendering(true);
+}
+
+
+//////////////////// File menu //////////////////////////
+
+void vtFrame::OnFileLayers(wxCommandEvent& event)
+{
+	m_pLayerDlg->Show(true);
 }
 
 
@@ -1321,8 +1337,6 @@ void vtFrame::OnEarthLinear(wxCommandEvent& event)
 //
 void SetTerrainToGUI(vtTerrain *pTerrain)
 {
-	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
-	pFrame->SetTerrainToGUI(pTerrain);
 }
 
 void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
@@ -1340,13 +1354,8 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 	}
 }
 
-///////////////////////////////////////////////////////////////////
 
-void ShowPopupMenu(const IPoint2 &pos)
-{
-	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
-	pFrame->ShowPopupMenu(pos);
-}
+///////////////////////////////////////////////////////////////////
 
 void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 {

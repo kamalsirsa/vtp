@@ -177,6 +177,9 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_LABEL_SIZE 10118
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_LAYER_TREE 10119
+wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

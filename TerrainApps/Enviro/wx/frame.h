@@ -18,6 +18,7 @@ class CameraDlg;
 class LocationDlg;
 class BuildingDlg3d;
 class UtilDlg;
+class LayerDlg;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -45,6 +46,8 @@ public:
 	// command handlers
 	void OnExit(wxCommandEvent& event);
 	void OnClose(wxCloseEvent &event);
+
+	void OnFileLayers(wxCommandEvent& event);
 
 	void OnViewMaintain(wxCommandEvent& event);
 	void OnViewWireframe(wxCommandEvent& event);
@@ -162,6 +165,7 @@ public:
 	CameraDlg			*m_pCameraDlg;
 	LocationDlg			*m_pLocationDlg;
 	BuildingDlg3d		*m_pBuildingDlg;
+	LayerDlg			*m_pLayerDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

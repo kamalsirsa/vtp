@@ -2,7 +2,9 @@
 // ID for the menu commands
 enum
 {
-	ID_TOOLS_SELECT = 1,
+	ID_FILE_LAYERS = 1,
+
+	ID_TOOLS_SELECT,
 	ID_TOOLS_FENCES,
 	ID_TOOLS_ROUTES,
 	ID_TOOLS_TREES,
