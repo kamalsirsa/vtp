@@ -555,23 +555,7 @@ SOURCE=.\PTerrain.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TransitTerrain.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
-
-# ADD BASE CPP /YX"vtlib/vtlib.h"
-# ADD CPP /YX"vtlib/vtlib.h"
-
-!ENDIF 
-
+SOURCE=.\SpecificTerrain.cpp
 # End Source File
 # Begin Source File
 
@@ -651,7 +635,7 @@ SOURCE=.\PTerrain.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\TransitTerrain.h
+SOURCE=.\SpecificTerrain.h
 # End Source File
 # Begin Source File
 
