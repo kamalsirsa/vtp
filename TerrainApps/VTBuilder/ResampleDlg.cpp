@@ -48,30 +48,11 @@ ResampleDlg::ResampleDlg( wxWindow *parent, wxWindowID id, const wxString &title
 {
 	ResampleDialogFunc( this, TRUE );
 	m_bSetting = false;
-}
-
-void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
-{
-	m_bNewLayer = true;
-	m_bToFile = false;
-
-	m_power = 8;
-	m_bConstraint = false;
-	m_fVUnits = 1.0f;
 
 	// output options
 	AddValidator(ID_RADIO_CREATE_NEW, &m_bNewLayer);
 	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
 	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
-
-	m_fAreaX = m_area.Width();
-	m_fAreaY = m_area.Height();
-
-	// initial value: based on estimate spacing
-	m_fSpacingX = m_fEstX;
-	m_fSpacingY = m_fEstY;
-	m_iSizeX = ((int) (m_fAreaX / m_fSpacingX + 0.5)) + 1;
-	m_iSizeY = ((int) (m_fAreaY / m_fSpacingY + 0.5)) + 1;
 
 	// sampling
 	spacing1 = AddNumValidator(ID_SPACINGX, &m_fSpacingX);
@@ -90,6 +71,25 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	AddNumValidator(ID_ESTX, &m_fEstX);
 	AddNumValidator(ID_ESTY, &m_fEstY);
+}
+
+void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	m_bNewLayer = true;
+	m_bToFile = false;
+
+	m_power = 8;
+	m_bConstraint = false;
+	m_fVUnits = 1.0f;
+
+	m_fAreaX = m_area.Width();
+	m_fAreaY = m_area.Height();
+
+	// initial value: based on estimate spacing
+	m_fSpacingX = m_fEstX;
+	m_fSpacingY = m_fEstY;
+	m_iSizeX = ((int) (m_fAreaX / m_fSpacingX + 0.5)) + 1;
+	m_iSizeY = ((int) (m_fAreaY / m_fSpacingY + 0.5)) + 1;
 
 	m_bSetting = true;
 	TransferDataToWindow();
