@@ -34,6 +34,7 @@ public:
 
 private:
 	wxWindow	*m_pLess, *m_pMore;
+	bool		m_bSetting;
 
 	void RecomputeSize();
 	void RecomputeSamples();
