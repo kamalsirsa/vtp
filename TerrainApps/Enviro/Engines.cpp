@@ -10,10 +10,10 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Route.h"
 #include "vtlib/core/Roads.h"
+#include "vtlib/core/Globe.h"
 
 #include "Engines.h"
 #include "Hawaii.h"
-#include "Globe.h"
 #include "Enviro.h"	// for GetCurrentTerrain
 
 //////////////////////////////////////////////////////////////
