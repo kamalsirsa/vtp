@@ -67,6 +67,8 @@
 #  include "route.xpm"
 #  include "select.xpm"
 #  include "sgraph.xpm"
+#  include "snap.xpm"
+#  include "snap_num.xpm"
 #  include "space.xpm"
 #  include "stop.xpm"
 #  include "sun.xpm"
@@ -383,6 +385,8 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
 	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(navroute), _("Follow Route"), true);
 	ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
+	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
+	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
 	m_pToolbar->AddSeparator();

@@ -25,6 +25,8 @@ stop	    BITMAP "bitmap/stop.bmp"
 faster	    BITMAP "bitmap/faster.bmp"
 axes	    BITMAP "bitmap/axes.bmp"
 tilt	    BITMAP "bitmap/tilt.bmp"
+snap	    BITMAP "bitmap/snap.bmp"
+snap_num    BITMAP "bitmap/snap_num.bmp"
 
 icon1   ICON "icons/camera.ico"
 icon2   ICON "icons/engine.ico"
