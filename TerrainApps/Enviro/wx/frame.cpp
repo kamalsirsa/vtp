@@ -871,7 +871,7 @@ void vtFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
 void vtFrame::OnSceneSave(wxCommandEvent& event)
 {
 #if VTLIB_OSG
-	vtRoot *pRoot = GetTerrainScene()->m_pTop;
+	vtRoot *pRoot = GetTerrainScene()->GetTop();
 	osgDB::Registry::instance()->writeNode(*pRoot->m_pOsgRoot, "scene.osg");
 #endif
 }
@@ -939,7 +939,7 @@ void vtFrame::OnCullOnce(wxCommandEvent& event)
 
 void vtFrame::OnSky(wxCommandEvent& event)
 {
-	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	sky->SetEnabled(!on);
@@ -947,7 +947,7 @@ void vtFrame::OnSky(wxCommandEvent& event)
 
 void vtFrame::OnUpdateSky(wxUpdateUIEvent& event)
 {
-	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	event.Check(on);
