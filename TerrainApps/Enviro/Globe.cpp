@@ -12,7 +12,7 @@
 
 #include "Globe.h"
 #include "TerrainSceneWP.h"
-
+#include "Enviro.h"		// for logging debug message
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 {
@@ -401,9 +401,14 @@ void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
 	m_mgeom = new vtMovGeom(m_geom);
 	m_mgeom->SetName2("GlobeShape");
 
-	m_apps = new vtMaterialArray();
+	m_mats = new vtMaterialArray();
 	bool bCulling = true;
 	bool bLighting = false;
+
+	m_red = m_mats->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
+					 false, false, true);
+	m_yellow = m_mats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
+					 false, false, false);
 
 	for (pair = 0; pair < 10; pair++)
 	{
@@ -418,26 +423,32 @@ void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
 		vtString fname;
 		fname.Format("%s%02d%02d.png", (const char *)base, f1, f2);
 
-		int index = m_apps->AddTextureMaterial2(fname,
+		vtString msg;
+		msg.Format("\t texture: %s\n", fname);
+		g_App._Log(msg);
+
+		int index = m_mats->AddTextureMaterial2(fname,
 						 bCulling, bLighting,
 						 false, false,				// transp, additive
 						 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
 						 false, true, false);		// texgen, clamp, mipmap
-		m_app = m_apps->GetAt(index);
+		msg.Format("\t\tindex: %d\n", index);
+		g_App._Log(msg);
+
+		if (index == -1)
+			m_globe_mat[pair] = m_red;
+		else
+			m_globe_mat[pair] = index;
 	}
 
-	m_red = m_apps->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f),	// red
-					 false, false, true);
-	m_yellow = m_apps->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
-					 false, false, false);
-	m_geom->SetMaterials(m_apps);
+	m_geom->SetMaterials(m_mats);
 
 	for (pair = 0; pair < 10; pair++)
 	{
 		int f1 = icos_face_pairs[pair][0];
 		int f2 = icos_face_pairs[pair][1];
-		m_geom->AddMesh(m_mesh[f1], pair);
-		m_geom->AddMesh(m_mesh[f2], pair);
+		m_geom->AddMesh(m_mesh[f1], m_globe_mat[pair]);
+		m_geom->AddMesh(m_mesh[f2], m_globe_mat[pair]);
 	}
 }
 
@@ -460,7 +471,7 @@ void IcoGlobe::SetLighting(bool bLight)
 {
 	for (int i = 0; i < 10; i++)
 	{
-		vtMaterial *pApp = m_apps->GetAt(i);
+		vtMaterial *pApp = m_mats->GetAt(m_globe_mat[i]);
 		if (bLight)
 		{
 			pApp->SetLighting(true);
@@ -489,7 +500,7 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 			continue;
 
 		vtGeom *geom = new vtGeom();
-		geom->SetMaterials(m_apps);
+		geom->SetMaterials(m_mats);
 		geom->AddMesh(mesh, m_yellow);
 
 		vtMovGeom *mgeom = new vtMovGeom(geom);
