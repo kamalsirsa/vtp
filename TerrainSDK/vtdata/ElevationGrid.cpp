@@ -668,9 +668,9 @@ float vtElevationGrid::GetFilteredValue2(double x, double y)
 		// do bilinear filtering
 		double diff_x = findex_x - index_x;
 		double diff_y = findex_y - index_y;
-		fData = (float) fDataBL + (fDataBR-fDataBL)*diff_x +
+		fData = (float) (fDataBL + (fDataBR-fDataBL)*diff_x +
 						  (fDataTL-fDataBL)*diff_y +
-						  (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y;
+						  (fDataTR-fDataTL-fDataBR+fDataBL)*diff_x*diff_y);
 	}
 	else if (valid == 3)
 	{
@@ -680,7 +680,7 @@ float vtElevationGrid::GetFilteredValue2(double x, double y)
 	else
 		fData = INVALID_ELEVATION;
 	
-	return (float) fData;
+	return fData;
 }
 
 DRECT vtElevationGrid::GetAreaExtents()
