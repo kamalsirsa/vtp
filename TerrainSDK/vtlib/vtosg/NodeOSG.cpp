@@ -31,6 +31,10 @@ vtNode::~vtNode()
 
 void vtNode::Release()
 {
+	// shouldn't happen but... safety check anyway
+	if (m_pNode == NULL)
+		return;
+
 	// remove the OSG node from its OSG group parent(s)
 	unsigned int parents = m_pNode->getNumParents();
 	if (parents)
@@ -211,6 +215,9 @@ vtNode *vtGroup::GetChild(int num)
 
 int vtGroup::GetNumChildren()
 {
+	// shoudln't happen but... safety check anyway
+	if (m_pGroup == NULL)
+		return 0;
 	return m_pGroup->getNumChildren();
 }
 
