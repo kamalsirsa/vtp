@@ -270,19 +270,38 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetAppearanceByHeight(float fHeight)
 
 	// find the appearance closest to that height
 	float closest_diff = m_fMaxHeight;
-	vtPlantAppearance *closest = NULL;
-
-	for (unsigned int i = 0; i < m_Apps.GetSize(); i++)
+	float closest_value;
+	unsigned int i, size = m_Apps.GetSize();
+	for (i = 0; i < size; i++)
 	{
 		vtPlantAppearance *pa = m_Apps[i];
 		float diff = fabsf(pa->m_height - fHeight);
 		if (diff < closest_diff)
 		{
 			closest_diff = diff;
-			closest = pa;
+			closest_value = pa->m_height;
 		}
 	}
-	return (vtPlantAppearance3d *)closest;
+
+	// If there is more than one appearance with the same height,
+	//  find them and pick of them at random.
+	std::vector<vtPlantAppearance *> close;
+	for (i = 0; i < size; i++)
+	{
+		vtPlantAppearance *pa = m_Apps[i];
+		if (pa->m_height == closest_value)
+			close.push_back(pa);
+	}
+	if (close.size() == 1)
+	{
+		// simple case
+		return (vtPlantAppearance3d *) close[0];
+	}
+	else
+	{
+		int which = rand() % close.size();
+		return (vtPlantAppearance3d *) close[which];
+	}
 }
 
 /**
