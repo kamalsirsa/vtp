@@ -377,11 +377,12 @@ void vtMeshBase::CreateEllipsoid(FPoint3 size, int res, bool hemi)
  * \param bBottom True to create the bottom of the cylinder.  You could set
  *		this to false, for example, if the cylinder is going to sit on a
  *		flat surface where you will never see its bottom.
- * \param bCentered True to create a cylinder centered around its original,
- *		false for a cylinder which begins at Y=0 and extends upward.
+ * \param bCentered True to create a cylinder centered around its origin,
+ *		false for a cylinder with its base at the origin that extends outward.
+ * \param direction An orientation, 0-2 corresponds to X, Y, Z.  Default is 1 (Y).
  */
 void vtMeshBase::CreateCylinder(float height, float radius, int res,
-								bool bTop, bool bBottom, bool bCentered)
+								bool bTop, bool bBottom, bool bCentered, int direction)
 {
 	// One way to model a cylinder is as a triangle/quad strip and
 	// a pair of triangle fans for the top and bottom, although that
@@ -711,8 +712,9 @@ vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
  *
  * \param pMats   The array of materials to use.
  * \param iMatIdx The index of the material to use.
- * \param iVertType Flags which indicate what type of information is stored with each
- *		vertex.  This can be any combination of the following bit flags:
+ * \param iVertType Flags which indicate what type of information is stored
+ *		with each vertex.  This can be any combination of the following bit
+ *		flags:
  *		- VT_Normals - a normal per vertex.
  *		- VT_Colors - a color per vertex.
  *		- VT_TexCoords - a texture coordinate (UV) per vertex.
@@ -723,12 +725,13 @@ vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
  * \param bBottom True to create the bottom of the cylinder.  You could set
  *		this to false, for example, if the cylinder is going to sit on a
  *		flat surface where you will never see its bottom.
- * \param bCentered True to create a cylinder centered around its original,
- *		false for a cylinder which begins at Y=0 and extends upward.
+ * \param bCentered True to create a cylinder centered around its origin,
+ *		false for a cylinder with its base at the origin that extends outward.
+ * \param direction An orientation, 0-2 corresponds to X, Y, Z.  Default is 1 (Y).
  */
 vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						   float fHeight, float fRadius, int res, bool bTop,
-						   bool bBottom, bool bCentered)
+						   bool bBottom, bool bCentered, int direction)
 {
 	// Vertex shading of both the sides and top/bottom requires twice as
 	// many vertices.
