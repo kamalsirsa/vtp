@@ -105,7 +105,7 @@ public:
 
 	// grid operations
 	void Resample(int iNewWidth, int iNewHeight);
-	void FillGaps();
+	bool FillGaps();
 	void DetermineMeterSpacing();
 
 	// TIN operations

@@ -960,20 +960,22 @@ void MainFrame::ResolveInstanceItem(vtStructInstance *inst)
 //
 // sample all elevation layers into this one
 //
-void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
+bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 {
+	// measure time
+	clock_t tm1 = clock();
+
 	DRECT area;
 	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->m_pGrid->GetSpacing();
 
-	double x, y;
 	int i, j, l, layers = m_Layers.GetSize();
 	float fData, fBestData;
 	int iColumns, iRows;
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Merging and Resampling Elevation Layers"));
+	OpenProgressDialog(_("Merging and Resampling Elevation Layers"), true);
 
 	int num_elev = LayersOfType(LT_ELEVATION);
 	vtElevLayer **elevs = new vtElevLayer *[num_elev];
@@ -986,13 +988,24 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	}
 
 	// iterate through the vertices of the new terrain
+	DPoint2 p;
+	wxString str;
 	for (i = 0; i < iColumns; i++)
 	{
-		UpdateProgressDialog(i*100/iColumns);
-		x = area.left + (i * step.x);
+		if ((i % 5) == 0)
+		{
+			str.Printf(_T("%d / %d"), i, iColumns);
+			if (UpdateProgressDialog(i*100/iColumns, str))
+			{
+				CloseProgressDialog();
+				return false;
+			}
+		}
+
+		p.x = area.left + (i * step.x);
 		for (j = 0; j < iRows; j++)
 		{
-			y = area.bottom + (j * step.y);
+			p.y = area.bottom + (j * step.y);
 
 			// find some data for this point
 			fBestData = INVALID_ELEVATION;
@@ -1003,28 +1016,24 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 				vtElevationGrid *grid = elev->m_pGrid;
 				vtTin2d *tin = elev->m_pTin;
 				if (grid)
-					fData = grid->GetFilteredValue2(x, y);
+					fData = grid->GetFilteredValue2(p);
 				else if (tin)
-					tin->FindAltitudeAtPoint2(DPoint2(x, y), fData);
+					tin->FindAltitudeAtPoint2(p, fData);
 
 				if (fData != INVALID_ELEVATION)
 					fBestData = fData;
-
-				// We used to have much more complicated logic here, though
-				//  i don't recall it's purpose, so i've removed it and just
-				//  done the simple thing instead.
-
-//				if (fData != INVALID_ELEVATION &&
-//						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
-//					fBestData = fData;
-//				if (fBestData != INVALID_ELEVATION && fBestData != 0)
-//					break;
 			}
 			pTarget->m_pGrid->SetFValue(i, j, fBestData);
 		}
 	}
 	CloseProgressDialog();
-	delete elevs;
+	delete [] elevs;
+
+	clock_t tm2 = clock();
+	float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
+	VTLOG("SampleCurrentTerrains: %.3f seconds.\n", time);
+
+	return true;
 }
 
 
@@ -1062,6 +1071,7 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 		if (UpdateProgressDialog(j*100/iRows))
 		{
 			// Cancel
+			CloseProgressDialog();
 			return false;
 		}
 		y = area.bottom + (j * step.y);
@@ -1379,9 +1389,10 @@ void MainFrame::ExportElevation()
 			vtElevLayer *el = (vtElevLayer *)l;
 			if (el->IsGrid())
 			{
-				if (el->m_pGrid->IsFloatMode())
+				vtElevationGrid *grid = el->m_pGrid;
+				if (grid->IsFloatMode() || grid->GetScale() != 1.0f)
 					floatmode = true;
-				spacing = el->m_pGrid->GetSpacing();
+				spacing = grid->GetSpacing();
 			}
 		}
 	}
@@ -1407,8 +1418,17 @@ void MainFrame::ExportElevation()
 			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
 
 	// fill in the value for pBig by merging samples from all other terrain
-	SampleCurrentTerrains(pOutput);
-	pOutput->FillGaps();
+	if (!SampleCurrentTerrains(pOutput))
+	{
+		delete pOutput;
+		return;
+	}
+	pOutput->m_pGrid->ComputeHeightExtents();
+	if (!pOutput->FillGaps())
+	{
+		delete pOutput;
+		return;
+	}
 
 	if (dlg.m_bToFile)
 	{

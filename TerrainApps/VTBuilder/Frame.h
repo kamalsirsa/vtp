@@ -327,7 +327,7 @@ public:
 	DistanceDlg *m_pDistanceDlg;
 
 	// Elevation
-	void SampleCurrentTerrains(vtElevLayer *pTarget);
+	bool SampleCurrentTerrains(vtElevLayer *pTarget);
 	float GetHeightFromTerrain(DPoint2 &p);
 	void ExportBitmap(RenderDlg &dlg);
 

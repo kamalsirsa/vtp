@@ -533,7 +533,7 @@ void vtElevLayer::RenderBitmap()
 	SetupDefaultColors(cmap);
 
 	bool has_invalid = m_pGrid->ColorDibFromElevation(m_pBitmap, &cmap,
-		progress_callback);
+		8000, progress_callback);
 
 	if (m_draw.m_bShading)
 	{
@@ -579,15 +579,15 @@ void vtElevLayer::ReImage()
 }
 
 
-void vtElevLayer::FillGaps()
+bool vtElevLayer::FillGaps()
 {
 	int i, j, ix, jx, surrounding;
-	bool gaps_exist = true;
+	int gaps = 1;
 	float value, value2, sum;
 	float *patch_column = new float[m_iRows];
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_("Filling Gaps"));
+	OpenProgressDialog(_("Filling Gaps"), true);
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
@@ -595,15 +595,29 @@ void vtElevLayer::FillGaps()
 	for (i = 0; i < m_iColumns; i++)
 		line_gap[i] = true;
 
-	while (gaps_exist)
+	wxString msg;
+	msg = _T("Gaps: Counting");
+	bool bShowProgress = true;
+
+	while (gaps > 0)
 	{
-		gaps_exist = false;
-		// iterate through the vertices of the new terrain
+		gaps = 0;
+		int lines_with_gaps = 0;
+
+		// iterate through the heixels of the new elevation grid
 		for (i = 0; i < m_iColumns; i++)
 		{
-			UpdateProgressDialog(i*100/m_iColumns);
+			if (bShowProgress && ((i % 50) == 0))
+			{
+				if (UpdateProgressDialog(i*100/m_iColumns, msg))
+				{
+					CloseProgressDialog();
+					return false;
+				}
+			}
 			if (!line_gap[i])
 				continue;
+			lines_with_gaps++;
 			line_gap[i] = false;
 
 			bool patches = false;
@@ -617,7 +631,7 @@ void vtElevLayer::FillGaps()
 					continue;
 
 				// else gap
-				gaps_exist = true;
+				gaps++;
 				line_gap[i] = true;
 
 				// look at surrounding pixels
@@ -650,6 +664,11 @@ void vtElevLayer::FillGaps()
 				}
 			}
 		}
+		if (lines_with_gaps < 50)	// too few to bother showing the user
+			bShowProgress = false;
+
+		msg.Printf(_T("Gaps: %d"), gaps);
+		UpdateProgressDialog(99, msg);
 	}
 	delete line_gap;
 	delete patch_column;
@@ -658,6 +677,7 @@ void vtElevLayer::FillGaps()
 	m_pGrid->ComputeHeightExtents();
 
 	CloseProgressDialog();
+	return true;
 }
 
 /**
@@ -706,7 +726,7 @@ vtHeightField *vtElevLayer::GetHeightField()
 float vtElevLayer::GetElevation(DPoint2 &p)
 {
 	if (m_pGrid)
-		return m_pGrid->GetFilteredValue(p.x, p.y);
+		return m_pGrid->GetFilteredValue(p);
 	if (m_pTin)
 	{
 		float fAltitude;
