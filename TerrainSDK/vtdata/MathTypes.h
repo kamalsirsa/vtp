@@ -262,6 +262,10 @@ public:
 	{
 		return x*rhs.x+y*rhs.y;
 	}
+	void Mult(const FPoint2 &factor) { x *= factor.x; y *= factor.y; }
+	void Mult(const float fx, const float fy) { x *= fx; y *= fy; }
+	void Div(const FPoint2 &factor) { x /= factor.x; y /= factor.y; }
+	void Div(const float fx, const float fy) { x /= fx; y /= fy; }
 
 	// assignment
 	FPoint2 &operator=(const FPoint2 &v) { x = v.x; y = v.y; return *this; }
@@ -302,6 +306,10 @@ public:
 	{
 		return x*rhs.x + y*rhs.y;
 	}
+	void Mult(const DPoint2 &factor) { x *= factor.x; y *= factor.y; }
+	void Mult(const double fx, const double fy) { x *= fx; y *= fy; }
+	void Div(const DPoint2 &factor) { x /= factor.x; y /= factor.y; }
+	void Div(const double fx, const double fy) { x /= fx; y /= fy; }
 	void Rotate(double radians)
 	{
 		double tempx = x;
