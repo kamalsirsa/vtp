@@ -287,14 +287,14 @@ bool ReqContext::DoQuery(vtBytes &data, int redirects)
 		// too long, give up
 		if (m_iVerbosity > 0)
 			VTLOG("  Timeout: more than %d seconds\n", DEFAULT_TIMEOUT);
-		return false;
 	}
 	if (s_last_status == HT_NO_DATA)	// "OK but no data was loaded"
 	{
 		if (m_iVerbosity > 0)
 			VTLOG("  OK but no data was loaded\n");
-		return false;
 	}
+	if (s_last_status < 0)	// all values less than zero are errors
+		return false;
 
 	char *dataptr = HTChunk_data(chunk);
 	int len = HTChunk_size(chunk);
