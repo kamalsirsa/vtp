@@ -27,6 +27,7 @@ EnviroOptions g_Options;
 #define STR_PLANTSHADOWS "PlantShadows"
 #define STR_SELECTIONCUTOFF "SelectionCutoff"
 #define STR_DISABLE_MODEL_MIPMAPS "DisableModelMipmaps"
+#define STR_CURSOR_THICKNESS "CursorThickness"
 
 EnviroOptions::EnviroOptions()
 {
@@ -35,6 +36,7 @@ EnviroOptions::EnviroOptions()
 	m_bStartInNeutral = false;
 	m_bDisableModelMipmaps = false;
 	m_bTextureCompression = true;
+	m_fCursorThickness = 0.025;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -92,6 +94,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_fSelectionCutoff;
 		else if (strcmp(buf, STR_DISABLE_MODEL_MIPMAPS) == 0)
 			input >> m_bDisableModelMipmaps;
+		else if (strcmp(buf, STR_CURSOR_THICKNESS) == 0)
+			input >> m_fCursorThickness;
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
@@ -109,9 +113,10 @@ bool EnviroOptions::Write()
 		vtString msg;
 		msg = "Couldn't write settings to file \"";
 		msg += m_strFilename;
-		msg += "\"\nPlease make sure it's writable.";
+		msg += "\"\nPlease make sure it's writable.\n";
 //		AfxMessageBox(msg);
 //		MessageBox(NULL, msg, "Note", MB_OK);
+		VTLOG(msg);
 		return false;
 	}
 
@@ -147,6 +152,8 @@ bool EnviroOptions::Write()
 	output << m_fSelectionCutoff << endl;
 	output << STR_DISABLE_MODEL_MIPMAPS << "\t";
 	output << m_bDisableModelMipmaps << endl;
+	output << STR_CURSOR_THICKNESS << "\t";
+	output << m_fCursorThickness << endl;
 
 	return true;
 }

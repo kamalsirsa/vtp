@@ -599,8 +599,8 @@ void Enviro::SetupScene2()
 	m_nav = NT_Normal;
 
 	// create picker object and picker engine
-	float size = 1.0;
-	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/35));
+	vtGeom *pCursor = Create3DCursor(1.0, g_Options.m_fCursorThickness);
+	m_pCursorMGeom = new vtMovGeom(pCursor);
 	m_pCursorMGeom->SetName2("Cursor");
 
 	m_pTerrainScene->GetTop()->AddChild(m_pCursorMGeom);

@@ -33,6 +33,7 @@ public:
 	bool	m_bShadows;
 	bool	m_bStartInNeutral;
 	bool	m_bDisableModelMipmaps;
+	float	m_fCursorThickness;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;
