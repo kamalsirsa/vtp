@@ -12,7 +12,7 @@
 #include "vtdata/Plants.h"
 #include "vtdata/LULC.h"
 #include "vtdata/FilePath.h"
-#include "vtlib/core/HeightField.h"
+#include "vtdata/HeightField.h"
 #include "vtlib/core/LodGrid.h"
 
 #if SUPPORT_XFROG

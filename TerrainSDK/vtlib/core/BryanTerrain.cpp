@@ -16,7 +16,7 @@ typedef long INT_32;
 // Macro used to determine the index of a vertex (element of the height
 // field) given it's (x,y) location in the grid
 //
-#define offset(x, y)  ((y) * m_iXPoints + (x))
+#define offset(x, y)  ((y) * m_iColumns + (x))
 
 //
 // Macro used to generate vertex locations from a heightfield index
@@ -48,7 +48,7 @@ BryanTerrain::~BryanTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool BryanTerrain::Init(vtLocalGrid *pGrid, float fZScale,
+bool BryanTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth, int &iError)
 {
 	// Initializes necessary field of the parent class
@@ -59,9 +59,9 @@ bool BryanTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	//
 	// (replace this with your own storage representation)
 	//
-	UINT_32 nPoints = m_iXPoints, nWidth;
-	if (m_iYPoints < m_iXPoints)		// Pick the smallest size..
-		nPoints = m_iYPoints;
+	UINT_32 nPoints = m_iColumns, nWidth;
+	if (m_iRows < m_iColumns)		// Pick the smallest size..
+		nPoints = m_iRows;
 
 	// Munge into a 2^n+1 size.
 	while ((nWidth+1) > nPoints)
@@ -73,9 +73,9 @@ bool BryanTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	m_pData = new float[nPoints * nPoints];
 	int i, j;
-	for (i = 0; i < m_iXPoints; i++)
+	for (i = 0; i < m_iColumns; i++)
 	{
-		for (j = 0; j < m_iYPoints; j++)
+		for (j = 0; j < m_iRows; j++)
 			m_pData[offset(i,j)] = pGrid->GetFValue(i, j);
 	}
 
@@ -181,10 +181,10 @@ void BryanTerrain::RenderPass()
 	// triangle strips.  (Replace with your own algorithm.)
 	//
 /*	int i, j;
-	for (i = 0; i < m_iXPoints-5; i+=4)
+	for (i = 0; i < m_iColumns-5; i+=4)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0; j < m_iYPoints; j+=4)
+		for (j = 0; j < m_iRows; j+=4)
 		{
 			glVertex3f(MAKE_XYZ2(i, j));
 			glVertex3f(MAKE_XYZ2(i+4, j));

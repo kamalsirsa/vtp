@@ -9,7 +9,7 @@
 #define TIN3DH
 
 #include "vtdata/vtTin.h"
-#include "HeightField.h"
+#include "vtdata/HeightField.h"
 
 /**
  * This class extends vtTin with the ability to call vtlib to create 3d

@@ -13,7 +13,7 @@
 // Macro used to determine the index of a vertex (element of the height
 // field) given it's (x,y) location in the grid
 //
-#define offset(x, y)  ((y) * m_iXPoints + (x))
+#define offset(x, y)  ((y) * m_iColumns + (x))
 
 //
 // Macros used to generate vertex locations from a heightfield index
@@ -42,7 +42,7 @@ CustomTerrain::~CustomTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool CustomTerrain::Init(vtLocalGrid *pGrid, float fZScale,
+bool CustomTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth, int &iError)
 {
 	// Initializes necessary field of the parent class
@@ -53,11 +53,11 @@ bool CustomTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	//
 	// (replace this with your own storage representation)
 	//
-	m_pData = new float[m_iXPoints * m_iYPoints];
+	m_pData = new float[m_iColumns * m_iRows];
 	int i, j;
-	for (i = 0; i < m_iXPoints; i++)
+	for (i = 0; i < m_iColumns; i++)
 	{
-		for (j = 0; j < m_iYPoints; j++)
+		for (j = 0; j < m_iRows; j++)
 			m_pData[offset(i,j)] = pGrid->GetFValue(i, j);
 	}
 
@@ -151,10 +151,10 @@ void CustomTerrain::RenderPass()
 	// triangle strips.  (Replace with your own algorithm.)
 	//
 	int i, j;
-	for (i = 0; i < m_iXPoints-5; i+=4)
+	for (i = 0; i < m_iColumns-5; i+=4)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0; j < m_iYPoints; j+=4)
+		for (j = 0; j < m_iRows; j+=4)
 		{
 			glVertex3f(MAKE_XYZ2(i, j));
 			glVertex3f(MAKE_XYZ2(i+4, j));

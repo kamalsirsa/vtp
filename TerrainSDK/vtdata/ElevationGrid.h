@@ -1,7 +1,7 @@
 //
 // vtElevationGrid.h
 //
-// Copyright (c) 2001 Virtual Terrain Project.
+// Copyright (c) 2001-2002 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,8 @@
 #include <limits.h>			// for SHRT_MIN
 #include "MathTypes.h"
 #include "Projections.h"
+#include "LocalConversion.h"
+#include "HeightField.h"
 
 class vtDIB;
 
@@ -26,7 +28,7 @@ class vtDIB;
  * To load a grid from a file, first create an empty grid, then call the
  * appropriated Load method.
  */
-class vtElevationGrid
+class vtElevationGrid : public vtHeightFieldGrid
 {
 public:
 	vtElevationGrid();
@@ -70,13 +72,6 @@ public:
 	void GetDimensions(int &nColumns, int &nRows) const;
 	DPoint2 GetSpacing() const;
 
-	/// Test if a point is within the extents of the grid.
-	bool ContainsPoint(double x, double y)
-	{
-		return (m_area.left <= x && x <= m_area.right &&
-				m_area.bottom <= y && y <= m_area.top);
-	}
-
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);
 	void  SetValue(int i, int j, short value);
@@ -92,15 +87,8 @@ public:
 	/** Return the embedded name of the DEM is it has one */
 	char *GetDEMName()	{ return m_szOriginalDEMName; }	
 
-	/** Return geographic extents of the grid. */
-	DRECT &GetGridExtents()				{ return m_area; }
-	const DRECT &GetGridExtents() const { return m_area; }
-
 	/** Return geographic extents of the *area* covered by grid. */
 	DRECT GetAreaExtents() const;
-
-	/** Set the geographic extents of the grid. */
-	void SetGridExtents(DRECT &ext)	{ m_area = ext; }
 
 	/** Get the data size of the grid: \c true if floating point (4-byte),
 	 * \c false if integer (2-byte).
@@ -129,10 +117,16 @@ public:
 	void SetScale(float sc) { m_fVMeters = sc; }
 	float GetScale() const { return m_fVMeters; }
 
+	// methods that deal with world coordinates
+	void SetupConversion(float fVerticalExag);
+	void GetWorldLocation(int i, int j, FPoint3 &loc) const;
+	float GetWorldValue(int i, int j);
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		FPoint3 *vNormal = NULL) const;
+	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
+							   float light_adj, void progress_callback(int) = NULL);
+
 protected:
-	DRECT	m_area;		// bounds in the original data space
-	int		m_iColumns;
-	int		m_iRows;
 	bool	m_bFloatMode;
 	short	*m_pData;
 	float	*m_pFData;
@@ -152,6 +146,31 @@ private:
 	void	_AllocateArray();
 	void	_Copy( const vtElevationGrid &Other );
 };
+
+
+/*
+class vtLocalGrid : public vtElevationGrid
+{
+public:
+	vtLocalGrid();
+	vtLocalGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
+		vtProjection &proj, float fVerticalExag = 1.0f);
+
+	void SetGlobalProjection();
+	float GetWorldValue(int i, int j);
+
+	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
+		float light_adj, void progress_callback(int) = NULL);
+	DPoint2 GetWorldSpacing();
+
+	void SetupConversion(float fVerticalExag);
+	vtLocalConversion	m_Conversion;
+	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
+
+protected:
+	float	m_fXStep, m_fZStep;
+}
+*/
 
 #endif	// ELEVATIONGRIDH
 

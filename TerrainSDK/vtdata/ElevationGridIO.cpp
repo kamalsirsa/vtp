@@ -358,13 +358,13 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	if (!bUTM)
 	{
 		// If it's in degrees, it's flush square, so we can simply
-		// derive the extents (m_area) from the quad corners (m_Corners)
+		// derive the extents (m_EarthExtents) from the quad corners (m_Corners)
 		ComputeExtentsFromCorners();
 		dMinY = min(corners[0].y, corners[3].y);
 	}
 	else
 	{
-		m_area.SetRect(1E9, -1E9, -1E9, 1E9);
+		m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
 
 		if (!bFixedLength)
 			fseek(fp, iDataStartOffset, 0);
@@ -382,9 +382,9 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			fscanf(fp, "%d", &iProfileCols);
 			start.x = DConvert(fp, 24);
 			start.y = DConvert(fp, 24);
-			m_area.GrowToContainPoint(start);
+			m_EarthExtents.GrowToContainPoint(start);
 			start.y += (iProfileRows * dydelta);
-			m_area.GrowToContainPoint(start);
+			m_EarthExtents.GrowToContainPoint(start);
 
 			if (bFixedLength)
 			{
@@ -407,18 +407,18 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 				}
 			}
 		}
-		dMinY = m_area.bottom;
+		dMinY = m_EarthExtents.bottom;
 	}
 
 	// Compute number of rows
 	if (bUTM)	// UTM
 	{
-		fRows = m_area.Height() / dydelta;
+		fRows = m_EarthExtents.Height() / dydelta;
 		m_iRows = (int)(fRows + 0.5) + 1;	// round to the nearest integer
 	}
 	else	// degrees
 	{
-		fRows = m_area.Height() * 1200.0f;
+		fRows = m_EarthExtents.Height() * 1200.0f;
 		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
 	}
 
@@ -532,10 +532,10 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 
 	m_proj.SetProjectionSimple(false, 0, WGS_84);
 
-	m_area.left = xrange[0];
-	m_area.right = xrange[1];
-	m_area.top = yrange[1];
-	m_area.bottom = yrange[0];
+	m_EarthExtents.left = xrange[0];
+	m_EarthExtents.right = xrange[1];
+	m_EarthExtents.top = yrange[1];
+	m_EarthExtents.bottom = yrange[0];
 
 	ComputeCornersFromExtents();
 
@@ -595,10 +595,10 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 
 	m_bFloatMode = false;
 
-	m_area.left = xllcorner;
-	m_area.right = xllcorner + (ncols - 1) * cellsize;
-	m_area.top = yllcorner + (nrows - 1) * cellsize;
-	m_area.bottom = yllcorner;
+	m_EarthExtents.left = xllcorner;
+	m_EarthExtents.right = xllcorner + (ncols - 1) * cellsize;
+	m_EarthExtents.top = yllcorner + (nrows - 1) * cellsize;
+	m_EarthExtents.bottom = yllcorner;
 
 	ComputeCornersFromExtents();
 	_AllocateArray();
@@ -713,10 +713,10 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 	fclose(fp);
 
 	// make up some extents, based on the scaling
-	m_area.left = 0;
-	m_area.right = (m_iColumns - 1) * scale.x;
-	m_area.top = (m_iRows - 1) * scale.y;
-	m_area.bottom = 0;
+	m_EarthExtents.left = 0;
+	m_EarthExtents.right = (m_iColumns - 1) * scale.x;
+	m_EarthExtents.top = (m_iRows - 1) * scale.y;
+	m_EarthExtents.bottom = 0;
 	ComputeCornersFromExtents();
 
 	return true;
@@ -927,10 +927,10 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	m_proj.SetProjectionSimple(false, 0, WGS_84);
 	m_bFloatMode = false;
 
-	m_area.left = gh.ULXMap;
-	m_area.top = gh.ULYMap;
-	m_area.right = m_area.left + (gh.XDim * (gh.NumCols-1));
-	m_area.bottom = m_area.top - (gh.YDim * (gh.NumRows-1));
+	m_EarthExtents.left = gh.ULXMap;
+	m_EarthExtents.top = gh.ULYMap;
+	m_EarthExtents.right = m_EarthExtents.left + (gh.XDim * (gh.NumCols-1));
+	m_EarthExtents.bottom = m_EarthExtents.top - (gh.YDim * (gh.NumRows-1));
 	ComputeCornersFromExtents();
 
 	// set up for an array of the indicated size
@@ -1004,10 +1004,10 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 
 	// set the corresponding vtElevationGrid info
 	m_bFloatMode = true;
-	m_area.left = xlo;
-	m_area.top = yhi;
-	m_area.right = xhi;
-	m_area.bottom = ylo;
+	m_EarthExtents.left = xlo;
+	m_EarthExtents.top = yhi;
+	m_EarthExtents.right = xhi;
+	m_EarthExtents.bottom = ylo;
 	ComputeCornersFromExtents();
 
 	m_iColumns = nx;
@@ -1097,10 +1097,10 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 
 	// set the corresponding vtElevationGrid info
 	m_bFloatMode = true;
-	m_area.left = 0;
-	m_area.top = ysize;
-	m_area.right = xsize;
-	m_area.bottom = 0;
+	m_EarthExtents.left = 0;
+	m_EarthExtents.top = ysize;
+	m_EarthExtents.right = xsize;
+	m_EarthExtents.bottom = 0;
 	ComputeCornersFromExtents();
 
 	m_iColumns = xsize;
@@ -1193,15 +1193,15 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 		// coordinate extents left-right
 		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_area.left = ftmp;
+		m_EarthExtents.left = ftmp;
 		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_area.right = ftmp;
+		m_EarthExtents.right = ftmp;
 
 		// coordinate extents bottom-top
 		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_area.bottom = ftmp;
+		m_EarthExtents.bottom = ftmp;
 		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-		m_area.top = ftmp;
+		m_EarthExtents.top = ftmp;
 
 		// is the data floating point or integers?
 		FRead(&m_bFloatMode, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
@@ -1227,10 +1227,10 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		FRead(&datum, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// coordinate extents
-		FRead(&m_area.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		FRead(&m_area.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		FRead(&m_area.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		FRead(&m_area.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_EarthExtents.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_EarthExtents.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_EarthExtents.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_EarthExtents.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
 
 		// External projection flag
 		FRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
@@ -1430,10 +1430,10 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 	fwrite(&datum, 2, 1, fp);		// Datum
 
 	// coordinate extents
-	fwrite(&m_area.left, 8, 1, fp);
-	fwrite(&m_area.right, 8, 1, fp);
-	fwrite(&m_area.bottom, 8, 1, fp);
-	fwrite(&m_area.top, 8, 1, fp);
+	fwrite(&m_EarthExtents.left, 8, 1, fp);
+	fwrite(&m_EarthExtents.right, 8, 1, fp);
+	fwrite(&m_EarthExtents.bottom, 8, 1, fp);
+	fwrite(&m_EarthExtents.top, 8, 1, fp);
 
 	fwrite(&external, 2, 1, fp);	// External projection specification
 	fwrite(&m_fVMeters, 4, 1, fp);	// External projection specification
@@ -1531,10 +1531,10 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 		return false;
 
 	// Upper left corner is adfGeoTransform[0], adfGeoTransform[3]
-	m_area.left = adfGeoTransform[0];
-	m_area.top = adfGeoTransform[3];
-	m_area.right = m_area.left + (adfGeoTransform[1] * m_iColumns);
-	m_area.bottom = m_area.top + (adfGeoTransform[5] * m_iRows);
+	m_EarthExtents.left = adfGeoTransform[0];
+	m_EarthExtents.top = adfGeoTransform[3];
+	m_EarthExtents.right = m_EarthExtents.left + (adfGeoTransform[1] * m_iColumns);
+	m_EarthExtents.bottom = m_EarthExtents.top + (adfGeoTransform[5] * m_iRows);
 	ComputeCornersFromExtents();
 
 	// Raster count should be 1 for elevation datasets
@@ -1653,10 +1653,10 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 
 	// set extents arbitrarily for now; if the user knows them, they can set
 	// them after loading
-	m_area.left = 0;
-	m_area.top = height;
-	m_area.right = width;
-	m_area.bottom = 0;
+	m_EarthExtents.left = 0;
+	m_EarthExtents.top = height;
+	m_EarthExtents.right = width;
+	m_EarthExtents.bottom = 0;
 	ComputeCornersFromExtents();
 
 	m_proj.SetProjectionSimple(true, 1, WGS_84);
@@ -1848,10 +1848,10 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 		break;
 	}
 
-	m_area.left = utm_x_lowerleft / scalefactor;
-	m_area.top = (utm_y_lowerleft + (ysize - 1) * yspacing) / scalefactor;
-	m_area.right = (utm_x_lowerleft + (xsize - 1) * xspacing) / scalefactor;
-	m_area.bottom = utm_y_lowerleft / scalefactor;
+	m_EarthExtents.left = utm_x_lowerleft / scalefactor;
+	m_EarthExtents.top = (utm_y_lowerleft + (ysize - 1) * yspacing) / scalefactor;
+	m_EarthExtents.right = (utm_x_lowerleft + (xsize - 1) * xspacing) / scalefactor;
+	m_EarthExtents.bottom = utm_y_lowerleft / scalefactor;
 
 	ComputeCornersFromExtents();
 

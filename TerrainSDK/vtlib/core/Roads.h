@@ -10,7 +10,7 @@
 
 #include "vtdata/FilePath.h"
 #include "vtdata/RoadMap.h"
-#include "vtlib/core/HeightField.h"
+#include "vtdata/HeightField.h"
 #include "vtlib/core/LodGrid.h"
 
 #define ROAD_CLUSTER	16

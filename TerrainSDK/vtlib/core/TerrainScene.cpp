@@ -226,7 +226,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// move the sky to fit the new current terrain
 	m_pSkyDome->SetEnabled(true);
-	FRECT world_ext = pTerrain->GetHeightField()->m_Conversion.m_WorldExtents;
+	FRECT world_ext = pTerrain->GetHeightField()->m_WorldExtents;
 	float radius = world_ext.Width() * 5.0;
 	float max_radius = 450000;
 	if (radius > max_radius)

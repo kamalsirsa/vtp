@@ -111,7 +111,7 @@ void NevadaTerrain::CreateWater()
 		true, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
 
-	FRECT world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
+	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 org, size;
 	org.x = (float) world_extents.left;
 	org.y = (float) world_extents.bottom;
@@ -220,7 +220,7 @@ void NevadaTerrain::CreatePast()
 	// setup Tree LOD Grid
 	float fLODDistance = 14000.0f;
 
-	FRECT world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
+	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint3 origin, size;
 	origin.x = (float) world_extents.left;
 	origin.y = 0.0f;

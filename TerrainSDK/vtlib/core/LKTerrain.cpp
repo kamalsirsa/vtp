@@ -76,7 +76,7 @@ LKTerrain::~LKTerrain()
 // Allocates an array of information for each vertex
 // Fills in the array with level and delta values
 //
-bool LKTerrain::Init(vtLocalGrid *pGrid, float fZScale,
+bool LKTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 			  float fOceanDepth, int &iError)
 {
 	int i, j;

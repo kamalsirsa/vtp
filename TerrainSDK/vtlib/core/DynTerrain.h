@@ -9,7 +9,7 @@
 #define DYNTERRAINH
 
 #include "vtdata/ElevationGrid.h"
-#include "HeightField.h"
+#include "vtdata/HeightField.h"
 #include "TerrainErr.h"
 
 /**
@@ -24,10 +24,10 @@ public:
 	vtDynTerrainGeom();
 	~vtDynTerrainGeom();
 
-	virtual bool Init(vtLocalGrid *pGrid, float fZScale,
+	virtual bool Init(vtElevationGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError) = 0;
 	virtual void Init2();
-	void BasicInit(vtLocalGrid *pLocalGrid);
+	void BasicInit(vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
 
 	void SetPixelError(float fPixelError);

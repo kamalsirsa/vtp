@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to the Big Island of Hawai`i.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,60 +13,6 @@
 #include "Hawaii.h"
 #include "Nevada.h"
 
-
-////////////////////////
-
-class TestMesh : public vtMesh
-{
-public:
-	TestMesh(GLenum PrimType, int VertType, int NumVertices) :
-	  vtMesh(PrimType, VertType, NumVertices) {};
-
-	void CreateSpecialConicalSurface(FPoint3 &tip, double fConeRadius,
-											 double theta1, double theta2,
-											 double r1, double r2);
-};
-
-#define RES		40
-
-void TestMesh::CreateSpecialConicalSurface(FPoint3 &tip, double cone_radius,
-											 double theta1, double theta2,
-											 double r1, double r2)
-{
-	int i, j, vidx;
-	double tan_cr = tan(cone_radius);
-	double theta, theta_step = (theta2 - theta1) / (RES - 1);
-	double r, r_step = (r2 - r1) / (RES - 1);
-
-	FPoint3 p, norm;
-
-	r = r1;
-	for (i = 0; i < RES; i++)
-	{
-		theta = theta1;
-		for (j = 0; j < RES; j++)
-		{
-			p.x = tip.x + cos(theta) * r;
-			p.z = tip.z - sin(theta) * r;
-			p.y = tip.y - (r / tan_cr);
-			vidx = AddVertex(p);
-
-			if (GetVtxType() & VT_Normals)
-			{
-				// compute vertex normal for lighting
-				norm.x = cos(theta) * r;
-				norm.y = 0.0f;
-				norm.z = sin(theta) * r;
-				norm.Normalize();
-				SetVtxNormal(vidx, norm);
-			}
-
-			theta += theta_step;
-		}
-		r += r_step;
-	}
-	CreateRectangularMesh(RES, RES);
-}
 
 ///////////////////////////////
 
@@ -126,7 +72,8 @@ vtGeom *make_test_cone()
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false);
 
 	////////////
-	TestMesh *pMesh = new TestMesh(GL_TRIANGLE_STRIP, VT_Normals, RES*RES);
+	int res = 40;
+	vtMesh *pMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals, res*res);
 
 	FPoint3 tip(0, 2000, 0);
 	double cone_radius = PId/4;
@@ -135,7 +82,7 @@ vtGeom *make_test_cone()
 	double r1 = 700;
 	double r2 = 1500;
 
-	pMesh->CreateSpecialConicalSurface(tip, cone_radius, theta1, theta2, r1, r2);
+	pMesh->CreateConicalSurface(tip, cone_radius, theta1, theta2, r1, r2, res);
 
 	vtGeom *pGeom = new vtGeom();
 	pGeom->SetMaterials(looks);
@@ -482,7 +429,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 							 true);			// mipmap
 			m_pDetailMat = m_pDetailMats->GetAt(index);
 
-			FRECT r = m_pHeightField->m_Conversion.m_WorldExtents;
+			FRECT r = m_pHeightField->m_WorldExtents;
 			float width_meters = r.Width();
 			m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
 		}

@@ -158,12 +158,12 @@ int TVTerrain::calcErr(vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p
 	y3 = p3[1];
 	z3 = pGrid->GetFValue(x3, y3);
 
-	assert(x1 < m_iXPoints);
-	assert(x2 < m_iXPoints);
-	assert(x3 < m_iXPoints);
-	assert(y1 < m_iYPoints);
-	assert(y2 < m_iYPoints);
-	assert(y3 < m_iYPoints);
+	assert(x1 < m_iColumns);
+	assert(x2 < m_iColumns);
+	assert(x3 < m_iColumns);
+	assert(y1 < m_iRows);
+	assert(y2 < m_iRows);
+	assert(y3 < m_iRows);
 
 	max_eps = 0.0;
 
@@ -409,14 +409,14 @@ int TVTerrain::inROD(Coord2d p1, Coord2d p2, Coord2d p3)
   int tymax = MAX(p1[1], MAX(p2[1], p3[1]));
   int tymin = MIN(p1[1], MIN(p2[1], p3[1]));
 
-  if (txmax > m_iXPoints - 1) {
-    if (txmin >= m_iXPoints - 1) {
+  if (txmax > m_iColumns - 1) {
+    if (txmin >= m_iColumns - 1) {
       r = 0;
     } else {
       r = PARTINROD;
     }
-  } else if (tymax > m_iYPoints - 1) {
-    if (tymin >= m_iYPoints - 1) {
+  } else if (tymax > m_iRows - 1) {
+    if (tymin >= m_iRows - 1) {
       r = 0;
     } else {
       r = PARTINROD;
@@ -586,8 +586,8 @@ int TVTerrain::init_ntriabove(int depth)
   rootL.x=0; rootL.y=0; rootL.depth=1; rootL.orient=NW; rootL.s=1;
   rootR.x=0; rootR.y=0; rootR.depth=1; rootR.orient=SE; rootR.s=2;
 
-  xm = m_iXPoints-2;	/* count squares (starting at (0,0)) */
-  ym = m_iYPoints-2;
+  xm = m_iColumns-2;	/* count squares (starting at (0,0)) */
+  ym = m_iRows-2;
   d = hierDepth = depth;
   while (d >= 1) {
     xmax[d] = xm;
@@ -696,13 +696,13 @@ void TVTerrain::getVerts(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3)
 void TVTerrain::mkscale(vtElevationGrid *pGrid)
 {
 	/* get dimensions in meters */
-	DRECT area = pGrid->GetGridExtents();
+	DRECT area = pGrid->GetEarthExtents();
 	xmeters = area.right - area.left;
 	ymeters = area.top - area.bottom;
 
 	/* get meters per elevation model cell */
-	xscale = xmeters / (m_iXPoints-1);
-	yscale = ymeters / (m_iYPoints-1);
+	xscale = xmeters / (m_iColumns-1);
+	yscale = ymeters / (m_iRows-1);
 
 	/* use the average of these to convert meters to EM grid coords */
 	m2grid = 1. / ((xscale + yscale) / 2.);
@@ -722,7 +722,7 @@ void TVTerrain::mkscale(vtElevationGrid *pGrid)
 //
 // fZScale converts from height values (meters) to world coordinates
 //
-bool TVTerrain::Init(vtLocalGrid *pGrid, float fZScale,
+bool TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 			  float fOceanDepth, int &iError)
 {
 	int i;
@@ -730,20 +730,20 @@ bool TVTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	BasicInit(pGrid);
 
 	// determine how many levels deep
-	int temp = m_iXPoints - 1;
+	int temp = m_iColumns - 1;
 	for (i = 0; temp > 1; i++)
 		temp >>= 1;
 	m_iLevels = i;
 
-	x_per_y = (double)m_iXPoints / (double)m_iYPoints;
-	y_per_x = (double)m_iYPoints / (double)m_iXPoints;
+	x_per_y = (double)m_iColumns / (double)m_iRows;
+	y_per_x = (double)m_iRows / (double)m_iColumns;
 
 	float fMin, fMax;
 	pGrid->GetHeightExtents(fMin, fMax);
 	errPerEm = (double)MAXERR / (double)fMax;
 
 	//	Define the size of the hierarchy(iDim)
-	int iDim = next2Power(MAX(m_iXPoints, m_iYPoints) - 1) + 1;
+	int iDim = next2Power(MAX(m_iColumns, m_iRows) - 1) + 1;
 
 	m_depth = 2*ceilingLog2(iDim-1) + 1;
 	m_numSurfTri = 0;
@@ -764,12 +764,12 @@ bool TVTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	m_fZScale = fZScale;
 
 	// allocate height field
-	m_pVertex = (float *)calloc(m_iXPoints * m_iYPoints, sizeof(float));
+	m_pVertex = (float *)calloc(m_iColumns * m_iRows, sizeof(float));
 
 	float value;
 	int j;
-	for (i = 0; i < m_iXPoints; i++)
-	for (j = 0; j < m_iYPoints; j++)
+	for (i = 0; i < m_iColumns; i++)
+	for (j = 0; j < m_iRows; j++)
 	{
 		value = pGrid->GetFValue(i, j);
 

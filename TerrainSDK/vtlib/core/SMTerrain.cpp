@@ -155,7 +155,7 @@ SMTerrain::~SMTerrain()
 //
 // fZScale converts from height values (meters) to world coordinates
 //
-bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
+bool SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 					 float fOceanDepth, int &iError)
 {
 	int i, j;
@@ -163,14 +163,14 @@ bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	BasicInit(pGrid);
 
 	// get size of array
-	m_iDim = m_iXPoints;
+	m_iDim = m_iColumns;
 
 	// compute n (log2 of grid size)
 	m_n = vt_log2(m_iDim - 1);
 
 	// ensure that the grid is size (1 << n) + 1
 	int required_size = (1<<m_n) + 1;
-	if (m_iXPoints != required_size || m_iYPoints != required_size)
+	if (m_iColumns != required_size || m_iRows != required_size)
 	{
 		iError = TERRAIN_ERROR_NOTPOWER2;
 		return false;
@@ -223,7 +223,7 @@ bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 #endif
 
 	// allocate arrays
-	m_pData = new HeightType[m_iXPoints * m_iYPoints];
+	m_pData = new HeightType[m_iColumns * m_iRows];
 
 	// this is potentially a big chunk of memory, so it may fail
 	if (!m_pData)
@@ -234,9 +234,9 @@ bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	// copy data from supplied elevation grid
 	float elev;
-	for (i = 0; i < m_iXPoints; i++)
+	for (i = 0; i < m_iColumns; i++)
 	{
-		for (j = 0; j < m_iYPoints; j++)
+		for (j = 0; j < m_iRows; j++)
 		{
 			elev = pGrid->GetFValue(i, j);
 			if (elev == 0.0f)
@@ -248,9 +248,9 @@ bool SMTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	// find indices of corner vertices
 	m_sw = offset(0, 0);
-	m_nw = offset(0, m_iYPoints-1);
-	m_ne = offset(m_iXPoints-1, m_iYPoints-1);
-	m_se = offset(m_iXPoints-1, 0);
+	m_nw = offset(0, m_iRows-1);
+	m_ne = offset(m_iColumns-1, m_iRows-1);
+	m_se = offset(m_iColumns-1, 0);
 
 	m_iPolygonTarget = DEFAULT_POLYGON_TARGET;
 	m_fQualityConstant= 0.1f;		// safe initial value

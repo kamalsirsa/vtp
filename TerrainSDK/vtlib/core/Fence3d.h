@@ -9,7 +9,7 @@
 #define FENCE3DH
 
 #include "vtdata/Fence.h"
-#include "HeightField.h"
+#include "vtdata/HeightField.h"
 
 class vtFence3d : public vtFence
 {

@@ -9,7 +9,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/HeightField.h"
+#include "vtdata/HeightField.h"
 #include "DynTerrain.h"
 
 vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom()
@@ -35,21 +35,21 @@ void vtDynTerrainGeom::Init2()
 {
 }
 
-void vtDynTerrainGeom::BasicInit(vtLocalGrid *pLocalGrid)
+void vtDynTerrainGeom::BasicInit(vtElevationGrid *pLocalGrid)
 {
 	// initialize the HeightField
 	Initialize(pLocalGrid);
 
 	// allocate and set the xz lookup tables
-	m_fXLookup = new float[m_iXPoints];
-	m_fZLookup = new float[m_iYPoints];
+	m_fXLookup = new float[m_iColumns];
+	m_fZLookup = new float[m_iRows];
 	int i;
-	for (i = 0; i < m_iXPoints; i++)
-		m_fXLookup[i] = m_Conversion.m_WorldExtents.left + i * m_fXStep;
-	for (i = 0; i < m_iYPoints; i++)
-		m_fZLookup[i] = m_Conversion.m_WorldExtents.bottom - i * m_fZStep;
+	for (i = 0; i < m_iColumns; i++)
+		m_fXLookup[i] = m_WorldExtents.left + i * m_fXStep;
+	for (i = 0; i < m_iRows; i++)
+		m_fZLookup[i] = m_WorldExtents.bottom - i * m_fZStep;
 
-	m_iTotalTriangles = m_iXPoints * m_iYPoints * 2;
+	m_iTotalTriangles = m_iColumns * m_iRows * 2;
 }
 
 
@@ -63,11 +63,11 @@ void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatc
 bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 									FPoint3 *vNormal) const
 {
-	int iX = (int)((p.x - m_Conversion.m_WorldExtents.left) / m_fXStep);
-	int iZ = (int)(-(p.z - m_Conversion.m_WorldExtents.bottom) / m_fZStep);
+	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
+	int iZ = (int)(-(p.z - m_WorldExtents.bottom) / m_fZStep);
 
 	// safety check
-	if (iX < 0 || iX >= m_iXPoints-1 || iZ < 0 || iZ >= m_iYPoints-1)
+	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
 	{
 		fAltitude = 0.0f;
 		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
@@ -205,7 +205,7 @@ void vtDynTerrainGeom::DoCalcBoundBox(FBox3 &box)
 
 	// units are those of the coordinate space below the transform
 	box.Set(0,			m_fMinHeight, 0,
-			m_iXPoints, m_fMaxHeight, m_iYPoints);
+			m_iColumns, m_fMaxHeight, m_iRows);
 }
 
 void vtDynTerrainGeom::DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov)
@@ -232,8 +232,8 @@ void vtDynTerrainGeom::DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fo
 
 void vtDynTerrainGeom::SetupTexGen(float fTiling)
 {
-	GLfloat sPlane[4] = { fTiling * 1.0f / (m_iXPoints-1), 0.0f, 0.0f, 0.0f };
-	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / -(m_iYPoints-1), 0.0f };
+	GLfloat sPlane[4] = { fTiling * 1.0f / (m_iColumns-1), 0.0f, 0.0f, 0.0f };
+	GLfloat tPlane[4] = { 0.0f, 0.0f, fTiling * 1.0f / -(m_iRows-1), 0.0f };
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
@@ -250,11 +250,11 @@ void vtDynTerrainGeom::SetupBlockTexGen(int a, int b)
 	// half-texel of buffer at the edge of each patch
 	float uv_offset = 1.0f / m_iTPatchSize / 2.0f;
 
-	float grid_offset_x = uv_offset * ((m_iXPoints-1)/4.0f) * 2.0f;
-	float grid_offset_y = uv_offset * (-(m_iYPoints-1)/4.0f) * 2.0f;
+	float grid_offset_x = uv_offset * ((m_iColumns-1)/4.0f) * 2.0f;
+	float grid_offset_y = uv_offset * (-(m_iRows-1)/4.0f) * 2.0f;
 
-	float factor_x = (float) (1.0 / ((m_iXPoints-1)/4.00+grid_offset_x));
-	float factor_y = (float) (1.0 / (-(m_iYPoints-1)/4.00+grid_offset_y));
+	float factor_x = (float) (1.0 / ((m_iColumns-1)/4.00+grid_offset_x));
+	float factor_y = (float) (1.0 / (-(m_iRows-1)/4.00+grid_offset_y));
 
 	GLfloat sPlane[4] = { factor_x, 0.00, 0.0, (a*2+1) * uv_offset };
 	GLfloat tPlane[4] = { 0.0, 0.00, factor_y, -(b*2+1) * uv_offset };

@@ -50,7 +50,7 @@ vtTerrain::vtTerrain()
 	m_pHeightField = NULL;
 	m_bPreserveInputGrid = false;
 	m_pImage = NULL;
-	m_pLocalGrid = NULL;
+	m_pElevGrid = NULL;
 	m_pLodGrid = NULL;
 
 	m_pOceanGeom = NULL;
@@ -85,7 +85,7 @@ vtTerrain::~vtTerrain()
 
 	if (!m_bPreserveInputGrid)
 	{
-		delete m_pLocalGrid;
+		delete m_pElevGrid;
 	}
 	delete m_pCoverage;
 	delete m_pImage;
@@ -97,7 +97,7 @@ vtTerrain::~vtTerrain()
 	delete m_pTerrApps2;
 	delete m_pOceanGeom;
 	delete m_pLodGrid;
-//	delete m_pInputGrid;	// don't delete, copied to m_pLocalGrid
+//	delete m_pInputGrid;	// don't delete, copied to m_pElevGrid
 	delete m_pTin;
 	delete m_pDynGeom;
 	delete m_pTerrainGeom;
@@ -135,7 +135,7 @@ bool vtTerrain::LoadParams()
  * otherwise false.
  *
  */
-void vtTerrain::SetLocalGrid(vtLocalGrid *pGrid, bool bPreserve)
+void vtTerrain::SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve)
 {
 	m_pInputGrid = pGrid;
 	m_bPreserveInputGrid = bPreserve;
@@ -249,19 +249,19 @@ void vtTerrain::create_textures()
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
 
 		int cols, rows;
-		m_pLocalGrid->GetDimensions(cols, rows);
+		m_pElevGrid->GetDimensions(cols, rows);
 
 		int tsize = cols-1;
 		if (tsize > tmax) tsize = tmax;
 
 		// derive color from elevation
 		m_pDIB = new vtDIB(tsize, tsize, 24, false);
-		m_pLocalGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
+		m_pElevGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
 	}
 
 	// apply pre-lighting (darkening)
 	if (m_Params.m_bPreLight && m_pDIB)
-		ApplyPreLight(m_pLocalGrid, m_pDIB);
+		ApplyPreLight(m_pElevGrid, m_pDIB);
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
@@ -274,7 +274,7 @@ void vtTerrain::create_textures()
 	{
 		m_pDIB->LeaveInternalDIB(false);
 
-		CreateChoppedTextures(m_pLocalGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
+		CreateChoppedTextures(m_pElevGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
 		if (m_Params.m_bRegular)
 			_CreateTiledMaterials1(m_pTerrApps1,
 							 iTiles, m_Params.m_iTilesize, ambient, diffuse,
@@ -365,7 +365,7 @@ bool  vtTerrain::create_regular_terrain(float fOceanDepth)
 	m_pTerrainGeom->SetName2("RegularTerrain");
 	m_pTerrainGeom->SetMaterials(m_pTerrApps1);
 
-	m_pTerrainGeom->CreateFromLocalGrid(m_pLocalGrid, VtxType,
+	m_pTerrainGeom->CreateFromLocalGrid(m_pElevGrid, VtxType,
 							m_Params.m_iSubsample, m_Params.m_iSubsample,
 							LARGEST_BLOCK_SIZE,	texture_patches,
 							false,
@@ -443,7 +443,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	m_pDynGeom->SetOptions(m_Params.m_bTriStrips != 0,
 		texture_patches, m_Params.m_iTilesize);
 
-	bool result = m_pDynGeom->Init(m_pLocalGrid,
+	bool result = m_pDynGeom->Init(m_pElevGrid,
 				   m_Params.m_fVerticalExag, fOceanDepth, iError);
 	if (result == false)
 	{
@@ -459,7 +459,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform();
 
-	DPoint2 spacing = m_pLocalGrid->GetWorldSpacing();
+	DPoint2 spacing = m_pElevGrid->GetWorldSpacing();
 	m_pDynGeomScale->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
 
 	m_pDynGeomScale->AddChild(m_pDynGeom);
@@ -579,7 +579,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	float width, depth;
 	int i, j;
 
-	FRECT world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
+	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
 
 	width = (float) world_size.x;
@@ -863,7 +863,7 @@ void vtTerrain::setup_LodGrid(float fLODDistance)
 		return;
 
 	FRECT world_extents;
-	world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
+	world_extents = m_pHeightField->m_WorldExtents;
 
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
@@ -938,7 +938,7 @@ bool vtTerrain::CreateStep1(int &iError)
 
 	if (m_pInputGrid)
 	{
-		m_pLocalGrid = m_pInputGrid;
+		m_pElevGrid = m_pInputGrid;
 		return true;
 	}
 	vtString fname = "Elevation/";
@@ -961,14 +961,14 @@ bool vtTerrain::CreateStep1(int &iError)
 	else
 	{
 		// Loading elevation grid...
-		m_pLocalGrid = new vtLocalGrid();
-		bool status = m_pLocalGrid->LoadFromBT(fullpath);
+		m_pElevGrid = new vtElevationGrid();
+		bool status = m_pElevGrid->LoadFromBT(fullpath);
 		if (status == false)
 		{
 			iError = TERRAIN_ERROR_NOTFOUND;
 			return false;
 		}
-		m_pLocalGrid->SetupConversion(m_Params.m_fVerticalExag);
+		m_pElevGrid->SetupConversion(m_Params.m_fVerticalExag);
 	}
 	return true;
 }
@@ -983,8 +983,8 @@ bool vtTerrain::CreateStep2(int &iError)
 	else
 	{
 		// set global projection based on this terrain
-		m_proj = m_pLocalGrid->GetProjection();
-		g_Conv = m_pLocalGrid->m_Conversion;
+		m_proj = m_pElevGrid->GetProjection();
+		g_Conv = m_pElevGrid->m_Conversion;
 
 		create_textures();
 	}
@@ -1058,8 +1058,8 @@ bool vtTerrain::CreateFromGrid(int &iError)
 	if (!m_bPreserveInputGrid)
 	{
 		// we don't need the original grid any more
-		delete m_pLocalGrid;
-		m_pLocalGrid = NULL;
+		delete m_pElevGrid;
+		m_pElevGrid = NULL;
 	}
 	return true;
 }
@@ -1171,7 +1171,7 @@ bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 {
 	float x, z;
 	g_Conv.ConvertFromEarth(p, x,  z);	// convert earth -> XZ
-	return m_pHeightField->PointIsInTerrain(x, z);
+	return m_pHeightField->ContainsWorldPoint(x, z);
 }
 
 void vtTerrain::CreateCustomCulture(bool bDoSound)
@@ -1248,7 +1248,7 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 }
 
 
-void vtTerrain::CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
+void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 									  int patches, int patch_size)
 {
 	int size = patch_size;
@@ -1378,7 +1378,7 @@ void vtTerrain::_CreateTiledMaterials2(vtMaterialArray *pApp1,
 }
 
 
-void vtTerrain::ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib)
+void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
 {
 	FPoint3 light_dir;
 	light_dir.Set(-1.0f, -1.0f, 0.0f);

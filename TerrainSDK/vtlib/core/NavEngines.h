@@ -8,7 +8,7 @@
 #ifndef NAVENGINESH
 #define NAVENGINESH
 
-#include "HeightField.h"
+#include "vtdata/HeightField.h"
 #include "Engine.h"
 
 ///////////////////////////////////////////////////
@@ -84,6 +84,7 @@ protected:
 	bool	m_bMaintain;
 };
 
+class vtTin3d;
 
 /**
  * This engine has the ability to do usefully constrained navigation over

@@ -11,7 +11,7 @@
 #define TERRAINSURFACEH
 
 #include "LocalGrid.h"
-#include "HeightField.h"
+#include "vtdata/HeightField.h"
 #include "TerrainPatch.h"
 
 class vtTextureCoverage
@@ -44,7 +44,7 @@ public:
 	vtTerrainGeom();
 	~vtTerrainGeom();
 
-	bool CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
+	bool CreateFromLocalGrid(vtElevationGrid *pGrid, int VtxType,
 		 int iEveryX = 1, int iEveryZ = 1,
 		 int largest_block_size = 16, int texture_patches = 2,
 		 bool bSuppressLand = false, float fOceanDepth = 0.0f,

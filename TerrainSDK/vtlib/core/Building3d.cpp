@@ -9,7 +9,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "HeightField.h"
+#include "vtdata/HeightField.h"
 #include "vtdata/Triangulate.h"
 #include "Building3d.h"
 #include "Terrain.h"

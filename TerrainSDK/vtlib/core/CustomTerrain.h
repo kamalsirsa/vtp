@@ -17,8 +17,8 @@ public:
 	~CustomTerrain();
 
 	// initialization
-	bool Init(vtLocalGrid *pGrid, float fZScale,
-				float fOceanDepth, int &iError);
+	bool Init(vtElevationGrid *pGrid, float fZScale,
+			  float fOceanDepth, int &iError);
 
 	// overrides
 	void DoRender();

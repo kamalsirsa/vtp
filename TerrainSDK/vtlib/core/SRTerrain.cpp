@@ -39,7 +39,7 @@ SRTerrain::~SRTerrain()
 // supports some functionality by callback, and the callback is only a
 // simple C function which has no context to tell us which terrain.
 //
-static vtLocalGrid *s_pGrid;
+static vtElevationGrid *s_pGrid;
 static SRTerrain *s_pSRTerrain;
 static int myfancnt, myvtxcnt;
 static float s_fOceanDepth;
@@ -91,7 +91,7 @@ float getelevation_vtp2(int i, int j, int size)
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale, 
+bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale, 
 					 float fOceanDepth, int &iError)
 {
 	// Initializes necessary field of the parent class
@@ -99,7 +99,7 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	m_fHeightScale = fZScale;
 
-	int size = m_iXPoints;
+	int size = m_iColumns;
 	float dim = m_fXStep;
 	float cellaspect = m_fZStep / m_fXStep;
 
@@ -124,7 +124,7 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	}
 
 	m_iDrawnTriangles = -1;
-	m_iBlockSize = m_iXPoints / 4;
+	m_iBlockSize = m_iColumns / 4;
 	return true;
 }
 
@@ -252,11 +252,11 @@ void SRTerrain::RenderPass()
 	float dz = eye_forward.z;
 
 	myfancnt = myvtxcnt = 0;
-	int size = m_iXPoints;
+	int size = m_iColumns;
 
 	// Convert the eye location to the unusual coordinate scheme of libMini.
-	ex-=(m_iXPoints/2)*m_fXStep;
-	ez+=(m_iYPoints/2)*m_fZStep;
+	ex-=(m_iColumns/2)*m_fXStep;
+	ez+=(m_iRows/2)*m_fZStep;
 
 	m_pMini->draw(m_fResolution,
 				ex, ey, ez,

@@ -9,31 +9,4 @@
 #define TERRAIN_LOCALGRIDH
 
 #include "vtdata/ElevationGrid.h"
-#include "vtdata/vtDIB.h"
-#include "LocalProjection.h"
-
-class vtLocalGrid : public vtElevationGrid
-{
-public:
-	vtLocalGrid();
-	vtLocalGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
-		vtProjection &proj, float fVerticalExag = 1.0f);
-
-	void SetGlobalProjection();
-	float GetWorldValue(int i, int j);
-	void GetWorldLocation(int i, int j, FPoint3 &loc) const;
-
-	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-		float light_adj, void progress_callback(int) = NULL);
-	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		FPoint3 *vNormal = NULL) const;
-	DPoint2 GetWorldSpacing();
-
-	void SetupConversion(float fVerticalExag);
-	vtLocalConversion	m_Conversion;
-
-protected:
-	float	m_fXStep, m_fZStep;
-};
-
 #endif

@@ -6,8 +6,8 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "LocalProjection.h"
-#include "HeightField.h"
+#include "vtdata/LocalConversion.h"
+#include "vtdata/HeightField.h"
 #include "LodGrid.h"
 
 #define index(a,b) ((a*m_dim)+b)

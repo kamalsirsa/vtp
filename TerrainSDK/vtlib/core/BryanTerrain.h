@@ -51,7 +51,7 @@ public:
 	~BryanTerrain();
 
 	// initialization
-	bool Init(vtLocalGrid *pGrid, float fZScale,
+	bool Init(vtElevationGrid *pGrid, float fZScale,
 				float fOceanDepth, int &iError);
 
 	// overrides

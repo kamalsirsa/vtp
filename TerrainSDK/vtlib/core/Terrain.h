@@ -22,6 +22,7 @@ class vtLodGrid;
 class vtDynTerrainGeom;
 class vtElevationGrid;
 class vtTin;
+class vtTin3d;
 
 typedef vtImage *vtImagePtr;
 
@@ -78,7 +79,7 @@ public:
 	vtString GetName() { return m_Params.m_strName; }
 
 	// you can alternately give it a grid to use instead of loading a BT
-	void SetLocalGrid(vtLocalGrid *pGrid, bool bPreserve);
+	void SetLocalGrid(vtElevationGrid *pGrid, bool bPreserve);
 	void SetTin(vtTin3d *pTin);
 	vtTin3d *GetTin() { return m_pTin; }
 
@@ -210,7 +211,7 @@ protected:
 	void create_culture(bool bSound);
 	void create_floating_labels(const char *filename);
 
-	void CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
+	void CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 								int patches, int patch_size);
 	void _CreateTiledMaterials1(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
@@ -218,7 +219,7 @@ protected:
 	void _CreateTiledMaterials2(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
-	void ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib);
+	void ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib);
 
 	/********************** Protected Data ******************/
 
@@ -239,7 +240,7 @@ protected:
 	TParams		m_Params;
 
 	// data grids
-	vtLocalGrid		*m_pInputGrid;	// if non-NULL, use instead of BT
+	vtElevationGrid		*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField	*m_pHeightField;
 	vtLodGrid		*m_pLodGrid;
 	bool			m_bPreserveInputGrid;
@@ -292,7 +293,7 @@ protected:
 	vtGroup			*m_pPOIGroup;
 
 	// only used during initialization
-	vtLocalGrid		*m_pLocalGrid;
+	vtElevationGrid		*m_pElevGrid;
 
 	vtProjection	m_proj;
 };

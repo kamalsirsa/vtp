@@ -31,10 +31,6 @@ using namespace std;
  */
 vtElevationGrid::vtElevationGrid()
 {
-	m_area.SetRect(0, 0, 0, 0);
-	m_iColumns = 0;
-	m_iRows = 0;
-
 	m_bFloatMode = false;
 	m_pData = NULL;
 	m_pFData = NULL;
@@ -61,7 +57,7 @@ vtElevationGrid::vtElevationGrid()
 vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 								 bool bFloat, vtProjection &proj)
 {
-	m_area = area;			// raw extents
+	m_EarthExtents = area;			// raw extents
 	m_iColumns = iColumns;
 	m_iRows = iRows;
 
@@ -201,8 +197,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 		double units_new = pDest->GetLinearUnits(NULL);
 		new_step = old_step * (units_old / units_new);
 	}
-	double fColumns = m_area.Width() / new_step.x;
-	double fRows = m_area.Height() / new_step.y;
+	double fColumns = m_EarthExtents.Width() / new_step.x;
+	double fRows = m_EarthExtents.Height() / new_step.y;
 
 	// round up to the nearest integer
 	m_iColumns = (int)(fColumns + 0.999);
@@ -232,8 +228,8 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 
 		for (j = 0; j < m_iRows; j++)
 		{
-			p.x = m_area.left + i * step.x;
-			p.y = m_area.bottom + j * step.y;
+			p.x = m_EarthExtents.left + i * step.x;
+			p.y = m_EarthExtents.bottom + j * step.y;
 
 			trans->Transform(1, &p.x, &p.y);
 
@@ -321,8 +317,8 @@ void vtElevationGrid::GetDimensions(int &nColumns, int &nRows) const
  */
 DPoint2 vtElevationGrid::GetSpacing() const
 {
-	return DPoint2(m_area.Width() / (m_iColumns - 1),
-				   m_area.Height() / (m_iRows - 1));
+	return DPoint2(m_EarthExtents.Width() / (m_iColumns - 1),
+				   m_EarthExtents.Height() / (m_iRows - 1));
 }
 
 /** Set an elevation value to the grid.
@@ -418,10 +414,10 @@ float vtElevationGrid::GetFValue(int i, int j)
 void vtElevationGrid::ComputeExtentsFromCorners()
 {
 	// find absolute extents of corner coordinates
-	m_area.left = min(m_Corners[0].x, m_Corners[1].x);
-	m_area.right = max(m_Corners[2].x, m_Corners[3].x);
-	m_area.bottom = min(m_Corners[0].y, m_Corners[3].y);
-	m_area.top = max(m_Corners[1].y, m_Corners[2].y);
+	m_EarthExtents.left = min(m_Corners[0].x, m_Corners[1].x);
+	m_EarthExtents.right = max(m_Corners[2].x, m_Corners[3].x);
+	m_EarthExtents.bottom = min(m_Corners[0].y, m_Corners[3].y);
+	m_EarthExtents.top = max(m_Corners[1].y, m_Corners[2].y);
 }
 
 
@@ -430,14 +426,14 @@ void vtElevationGrid::ComputeExtentsFromCorners()
  */
 void vtElevationGrid::ComputeCornersFromExtents()
 {
-	m_Corners[0].x = m_area.left;
-	m_Corners[0].y = m_area.bottom;
-	m_Corners[1].x = m_area.left;
-	m_Corners[1].y = m_area.top;
-	m_Corners[2].x = m_area.right;
-	m_Corners[2].y = m_area.top;
-	m_Corners[3].x = m_area.right;
-	m_Corners[3].y = m_area.bottom;
+	m_Corners[0].x = m_EarthExtents.left;
+	m_Corners[0].y = m_EarthExtents.bottom;
+	m_Corners[1].x = m_EarthExtents.left;
+	m_Corners[1].y = m_EarthExtents.top;
+	m_Corners[2].x = m_EarthExtents.right;
+	m_Corners[2].y = m_EarthExtents.top;
+	m_Corners[3].x = m_EarthExtents.right;
+	m_Corners[3].y = m_EarthExtents.bottom;
 }
 
 
@@ -474,8 +470,8 @@ void vtElevationGrid::_AllocateArray()
 void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc)
 {
 	DPoint2 spacing = GetSpacing();
-	loc.Set(m_area.left + i * spacing.x,
-			m_area.bottom + j * spacing.y,
+	loc.Set(m_EarthExtents.left + i * spacing.x,
+			m_EarthExtents.bottom + j * spacing.y,
 			GetFValue(i, j));
 }
 
@@ -563,8 +559,8 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
  */
 float vtElevationGrid::GetClosestValue(double x, double y)
 {
-	int ix = (int)((x - m_area.left) / m_area.Width() * m_iColumns);
-	int iy = (int)((y - m_area.bottom) / m_area.Height() * m_iRows);
+	int ix = (int)((x - m_EarthExtents.left) / m_EarthExtents.Width() * m_iColumns);
+	int iy = (int)((y - m_EarthExtents.bottom) / m_EarthExtents.Height() * m_iRows);
 	if (ix >= 0 && ix < m_iColumns && iy >= 0 && iy < m_iRows)
 		return GetFValue(ix, iy);
 	else
@@ -581,8 +577,8 @@ float vtElevationGrid::GetClosestValue(double x, double y)
 float vtElevationGrid::GetFilteredValue(double x, double y)
 {
 	// what data point in t is closest to (x,y)?
-	double local_x = (x - m_area.left) / (m_area.right - m_area.left);
-	double local_y = (y - m_area.bottom) / (m_area.top - m_area.bottom);
+	double local_x = (x - m_EarthExtents.left) / (m_EarthExtents.right - m_EarthExtents.left);
+	double local_y = (y - m_EarthExtents.bottom) / (m_EarthExtents.top - m_EarthExtents.bottom);
 
 	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
 	if (index_x < 0 || index_x >= m_iColumns)
@@ -663,7 +659,7 @@ float vtElevationGrid::GetFilteredValue2(double x, double y)
 	float fData;
 
 	// simple case, within the 
-	if (ContainsPoint(x, y))
+	if (ContainsEarthPoint(x, y))
 	{
 		fData = GetFilteredValue(x, y);
 		if (fData != INVALID_ELEVATION)
@@ -671,8 +667,8 @@ float vtElevationGrid::GetFilteredValue2(double x, double y)
 	}
 
 	// what data point in t is closest to (x,y)?
-	double local_x = (x - m_area.left) / (m_area.right - m_area.left);
-	double local_y = (y - m_area.bottom) / (m_area.top - m_area.bottom);
+	double local_x = (x - m_EarthExtents.left) / (m_EarthExtents.right - m_EarthExtents.left);
+	double local_y = (y - m_EarthExtents.bottom) / (m_EarthExtents.top - m_EarthExtents.bottom);
 
 	int index_x = (int) (local_x * (m_iColumns-1) + 0.0000000001);
 	int index_x2 = (int) (local_x * (m_iColumns-1) + 0.5);
@@ -739,10 +735,10 @@ float vtElevationGrid::GetFilteredValue2(double x, double y)
 DRECT vtElevationGrid::GetAreaExtents() const
 {
 	DPoint2 sample_size = GetSpacing();
-	return DRECT(m_area.left - (sample_size.x / 2.0f),
-				 m_area.top + (sample_size.y / 2.0f),
-				 m_area.right + (sample_size.x / 2.0f),
-				 m_area.bottom - (sample_size.y / 2.0f));
+	return DRECT(m_EarthExtents.left - (sample_size.x / 2.0f),
+				 m_EarthExtents.top + (sample_size.y / 2.0f),
+				 m_EarthExtents.right + (sample_size.x / 2.0f),
+				 m_EarthExtents.bottom - (sample_size.y / 2.0f));
 }
 
 bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo)
@@ -789,7 +785,7 @@ void vtElevationGrid::SetCorners(const DLine2 &line)
  */
 void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 {
-	m_area		 = Other.m_area;
+	m_EarthExtents		 = Other.m_EarthExtents;
 	m_iColumns   = Other.m_iColumns;
 	m_iRows		 = Other.m_iRows;
 	m_bFloatMode = Other.m_bFloatMode;
@@ -835,6 +831,186 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 		}
 		else
 			m_pData = NULL;
+	}
+}
+
+void vtElevationGrid::SetupConversion(float fVerticalExag)
+{
+	m_Conversion.Setup(m_proj.GetUnits(), m_EarthExtents);
+	m_Conversion.m_fVerticalScale = fVerticalExag;
+	Initialize(this);
+}
+
+void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
+{
+	if (m_bFloatMode)
+		loc.Set(m_WorldExtents.left + i * m_fXStep,
+				m_pFData[i*m_iRows+j] * m_Conversion.m_fVerticalScale,
+				m_WorldExtents.bottom - j * m_fZStep);
+	else
+		loc.Set(m_WorldExtents.left + i * m_fXStep,
+				m_pData[i*m_iRows+j] * m_Conversion.m_fVerticalScale,
+				m_WorldExtents.bottom - j * m_fZStep);
+}
+
+float vtElevationGrid::GetWorldValue(int i, int j)
+{
+	if (m_bFloatMode)
+		return m_pFData[i*m_iRows+j] * m_Conversion.m_fVerticalScale;
+	else
+		return m_pData[i*m_iRows+j] * m_Conversion.m_fVerticalScale;
+}
+
+/**
+ * Quick n' dirty special-case raycast for perfectly regular grid terrain
+ * Find altitude (y) and surface normal, given (x,z) local coordinates
+ *
+ * This approach is very straightforward, so it could be significantly
+ * sped up if needed.
+ */
+bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
+									  FPoint3 *vNormal) const
+{
+	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
+	int iZ = (int)((p.z - m_WorldExtents.bottom) / m_fZStep);
+
+	// safety check
+	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
+	{
+		fAltitude = 0.0f;
+		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
+		return false;
+	}
+
+	FPoint3 p0, p1, p2, p3;
+	GetWorldLocation(iX, iZ, p0);
+	GetWorldLocation(iX+1, iZ, p1);
+	GetWorldLocation(iX+1, iZ+1, p2);
+	GetWorldLocation(iX, iZ+1, p3);
+
+	// find fractional amount (0..1 across quad)
+	float fX = (p.x - p0.x) / m_fXStep;
+	float fZ = (p.z - p0.z) / m_fZStep;
+
+	// which of the two triangles in the quad is it?
+	if (fX + fZ < 1)
+	{
+		fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p3.y - p0.y);
+
+		if (vNormal)
+		{
+			// find normal also
+			FPoint3 edge0 = p1 - p0;
+			FPoint3 edge1 = p3 - p0;
+			*vNormal = edge0.Cross(edge1);
+			vNormal->Normalize();
+		}
+	}
+	else
+	{
+		fAltitude = p2.y + (1.0f-fX) * (p3.y - p2.y) + (1.0f-fZ) * (p1.y - p2.y);
+
+		if (vNormal)
+		{
+			// find normal also
+			FPoint3 edge0 = p3 - p2;
+			FPoint3 edge1 = p1 - p2;
+			*vNormal = edge0.Cross(edge1);
+			vNormal->Normalize();
+		}
+	}
+	return true;
+}
+
+void vtElevationGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
+									float light_adj, void progress_callback(int))
+{
+	FPoint3 p1, p2, p3;
+	FPoint3 v1, v2, v3;
+
+	light_dir = -light_dir;
+
+	int w = pDIB->GetWidth();
+	int h = pDIB->GetHeight();
+
+	int gw, gh;
+	GetDimensions(gw, gh);
+
+	int i, j;
+	int x, y;
+	int r, g, b;
+
+	float xFactor = (float)gw/(float)w;
+	float yFactor = (float)gh/(float)h;
+
+	bool mono = (pDIB->GetDepth() == 8);
+
+	// iterate over the texels
+	for (j = 0; j < h-1; j++)
+	{
+		if (progress_callback != NULL)
+		{
+			if ((j&7) == 0)
+				progress_callback(j * 100 / h);
+		}
+		// find corresponding location in terrain
+		y = (int) (j * yFactor);
+		for (i = 0; i < w-1; i++)
+		{
+			x = (int) (i * xFactor);
+
+			float shade;
+			if (x < gw-1)
+			{
+				// compute surface normal
+				GetWorldLocation(x, y, p1);
+				GetWorldLocation(x+1, y, p2);
+				GetWorldLocation(x, y+1, p3);
+				v1 = p2 - p1;
+				v2 = p3 - p1;
+				v3 = v1.Cross(v2);
+				v3.Normalize();
+
+				shade = v3.Dot(light_dir);	// shading 0 (dark) to 1 (light)
+				shade /= .7071f;
+				shade = 1.0f + ((shade - 1.0f) * 2.0f);
+				if (shade < 0.3f)	// clip - don't shade down below ambient level
+					shade = 0.3f;
+				else if (shade > 1.2f)
+					shade = 1.2f;
+			}
+			else
+				shade = 1.0f;
+
+			float diff = 1 - shade;
+			diff = diff * (1 - light_adj);
+			shade += diff;
+
+			if (mono)
+			{
+				unsigned int texel = pDIB->GetPixel8(i, h-1-j);
+				texel = (int) (texel * shade);
+				if (texel > 255) texel = 255;
+				pDIB->SetPixel8(i, h-1-j, texel);
+			}
+			else
+			{
+				// combine color and shading
+				unsigned long packed = pDIB->GetPixel24(i, h-1-j);
+				r = GetRValue(packed);
+				g = GetGValue(packed);
+				b = GetBValue(packed);
+
+				r = (int) (r * shade);
+				g = (int) (g * shade);
+				b = (int) (b * shade);
+				if (r > 255) r = 255;
+				if (g > 255) g = 255;
+				if (b > 255) b = 255;
+
+				pDIB->SetPixel24(i, h-1-j, RGB(r, g, b));
+			}
+		}
 	}
 }
 

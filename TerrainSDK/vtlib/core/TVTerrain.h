@@ -122,7 +122,7 @@ public:
 	~TVTerrain();
 
 	/// initialization
-	bool Init(vtLocalGrid *pGrid, float fZScale,
+	bool Init(vtElevationGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError);
 	static int MemoryRequired(int iDimension);
 

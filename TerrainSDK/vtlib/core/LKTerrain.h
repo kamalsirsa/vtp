@@ -88,7 +88,7 @@ public:
 	~LKTerrain();
 
 	/// initialization
-	bool Init(vtLocalGrid *pGrid, float fZScale, float fOceanDepth, int &iError);
+	bool Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth, int &iError);
 	static int MemoryRequired(int iDimension);
 
 	// overrides
