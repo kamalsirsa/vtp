@@ -314,16 +314,16 @@ void vtFrame::CreateMenus()
 	m_pFileMenu->Append(wxID_EXIT, _("E&xit (Esc)"), _("Exit"));
 	m_pMenuBar->Append(m_pFileMenu, _("&File"));
 
-	wxMenu *toolsMenu = new wxMenu;
-	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _("Select"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
-//	toolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
-	toolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
-	m_pMenuBar->Append(toolsMenu, _("&Tools"));
+	m_pToolsMenu = new wxMenu;
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _("Select"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _("Fences"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_ROUTES, _("Routes"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_PLANTS, _("Plants"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_INSTANCES, _("Instances"));
+//	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MOVE, _("Move Objects"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_NAVIGATE, _("Navigate"));
+	m_pToolsMenu->AppendCheckItem(ID_TOOLS_MEASURE, _("Measure Distances\tCtrl+D"));
+	m_pMenuBar->Append(m_pToolsMenu, _("&Tools"));
 
 	// shortcuts:
 	// Ctrl+A Show Axes
@@ -381,11 +381,11 @@ void vtFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _("&Status Bar"));
 	m_pMenuBar->Append(m_pViewMenu, _("&View"));
 
-	wxMenu *navMenu = new wxMenu;
-	navMenu->Append(ID_VIEW_SLOWER, _("Fly Slower (S)"));
-	navMenu->Append(ID_VIEW_FASTER, _("Fly Faster (F)"));
-	navMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _("Maintain height above ground (A)"));
-	m_pMenuBar->Append(navMenu, _("&Navigate"));
+	m_pNavMenu = new wxMenu;
+	m_pNavMenu->Append(ID_VIEW_SLOWER, _("Fly Slower (S)"));
+	m_pNavMenu->Append(ID_VIEW_FASTER, _("Fly Faster (F)"));
+	m_pNavMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _("Maintain height above ground (A)"));
+	m_pMenuBar->Append(m_pNavMenu, _("&Navigate"));
 
 		// submenu
 		wxMenu *navstyleMenu = new wxMenu;
@@ -394,7 +394,7 @@ void vtFrame::CreateMenus()
 		navstyleMenu->AppendCheckItem(ID_NAV_GRAB_PIVOT, _("Grab-Pivot"));
 //		navstyleMenu->AppendCheckItem(ID_NAV_QUAKE, _T("Keyboard Walk"));
 		navstyleMenu->AppendCheckItem(ID_NAV_PANO, _("Panoramic Flyer"));
-		navMenu->Append(0, _("Navigation Style"), navstyleMenu);
+		m_pNavMenu->Append(0, _("Navigation Style"), navstyleMenu);
 
 	m_pTerrainMenu = new wxMenu;
 	m_pTerrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _("LOD Terrain Surface\tF3"));
