@@ -26,11 +26,13 @@ enum SurfaceType {
 	ST_RAILROAD
 };
 
-//WARNING!!!! Do NOT change the order of the items in the enumeration.
+//
+// This enum describes how a single road meets a node.
+//
 enum IntersectionType {
 	IT_NONE,	// uncontrolled
-	IT_LIGHT,	// controlled intersection with at least one traffic light
-	IT_STOPSIGN,  // controlled intersection with at least one stop sign
+	IT_LIGHT,	// a traffic light
+	IT_STOPSIGN,  // a stop sign
 };
 
 enum LightStatus {
@@ -189,7 +191,7 @@ public:
 
 	// accessors for flag properties
 	void SetFlag(int flag, bool value);
-	bool GetFlag(int flag);
+	int GetFlag(int flag);
 
 	// Height (unused; these methods may be redesigned or removed)
 	float GetHeightAt(int i);		// height at node (0 or 1).
