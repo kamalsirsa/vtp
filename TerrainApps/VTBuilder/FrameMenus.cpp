@@ -25,6 +25,7 @@
 #include "RoadLayer.h"
 #include "StructLayer.h"
 #include "TowerLayer.h"
+#include "WaterLayer.h"
 // Dialogs
 #include "ElevDlg.h"
 #include "ExtentDlg.h"
@@ -227,7 +228,7 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_WORLDMAP, "World Map", "Show/Hide World Map", true);
 	viewMenu->Append(ID_VIEW_SHOWUTM, "Show UTM Boundaries", "Show UTM Boundaries", true);
 //	viewMenu->Append(ID_VIEW_SHOWGRID, "Show 7.5\" Grid", "Show 7.5\" Grid", true);
-	viewMenu->Append(ID_VIEW_SHOWMINUTES, "Show minutes and seconds");
+	viewMenu->Append(ID_VIEW_SHOWMINUTES, "Show minutes and seconds", "Show minutes and seconds", true);
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_ELEV_SHOW, "Show Terrain Elevation", "Show Terrain Elevation", true);
 	viewMenu->Append(ID_ELEV_SHADING, "Artificial Shading", "Artificial Shading", true);
