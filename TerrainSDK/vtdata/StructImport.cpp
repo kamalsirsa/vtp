@@ -570,7 +570,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 						pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories * num_stories;
 						pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
 						pLevel->SetEdgeColor(pDefBld->GetLevel(i)->m_Edges[0]->m_Color);
-						pLevel->SetEdgeMaterial(pDefBld->GetLevel(i)->m_Edges[0]->m_Material);
+						pLevel->SetEdgeMaterial(*pDefBld->GetLevel(i)->m_Edges[0]->m_pMaterial);
 						for (int j = 0; j < pLevel->GetNumEdges(); j++)
 							pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
 					}
@@ -823,7 +823,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories;
 				pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
 				pLevel->SetEdgeColor(pDefBld->GetLevel(i)->m_Edges[0]->m_Color);
-				pLevel->SetEdgeMaterial(pDefBld->GetLevel(i)->m_Edges[0]->m_Material);
+				pLevel->SetEdgeMaterial(*pDefBld->GetLevel(i)->m_Edges[0]->m_pMaterial);
 				for (int j = 0;  j < pLevel->GetNumEdges(); j++)
 					pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
 			}
@@ -898,7 +898,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				pNewLevel->m_fStoryHeight = fDiff;
 				pBld->InsertLevel(0, pNewLevel);
 				pBld->SetFootprint(0, footprint);
-				pNewLevel->SetEdgeMaterial(BMAT_PLAIN);
+				pNewLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
 				pNewLevel->SetEdgeColor(RGBi(128, 128, 128));
 			}
 			else

@@ -23,7 +23,7 @@ public:
 	int counter;
 	float number;
 	RGBi color;
-	BldMaterial material;
+	vtString material;
 	RoofType rooftype;
 };
 

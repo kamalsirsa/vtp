@@ -22,6 +22,7 @@
 #include "Fence.h"
 
 vtStructureArray g_DefaultStructures;
+vtMaterialNamesArray g_MaterialNames;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -793,7 +794,6 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		attval = atts.getValue("ElevationOffset");
 		if (attval)
 			m_pStructure->SetElevationOffset((float) atof(attval));
-		return;
 		attval = atts.getValue("OriginalElevation");
 		if (attval)
 			m_pStructure->SetOriginalElevation((float) atof(attval));
@@ -828,7 +828,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 
 			attval = atts.getValue("Material");
 			if (attval)
-				m_pEdge->m_Material = vtBuilding::GetMaterialValue(attval);
+				m_pEdge->m_pMaterial = &g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(attval));
 			attval = atts.getValue("Color");
 			if (attval)
 				m_pEdge->m_Color = ParseHexColor(attval);
@@ -1201,6 +1201,23 @@ bool vtStructureArray::ReadXML(const char* pathname)
 	return true;
 }
 
+// vtMaterialNamesArray member functions
+
+vtMaterialName& vtMaterialNamesArray::FindOrAppendMaterialName(const vtMaterialName& Name)
+{
+	int iIndex;
+	int iSize = GetSize();
+
+	for (iIndex = 0; iIndex < iSize; iIndex++)
+	{
+		vtMaterialName *pFoundName = GetAt(iIndex);
+		if (*pFoundName == Name)
+			return *pFoundName;
+	}
+	return *GetAt(Append(new vtMaterialName(Name)));
+}
+
+
 
 /////////////////////
 // Helpers
@@ -1289,14 +1306,14 @@ bool SetupDefaultStructures(const char *fname)
 	pLevel = pBld->CreateLevel(DefaultFootprint);
 	pLevel->m_iStories = 1;
 	pLevel->m_fStoryHeight = 3.20f;
-	pLevel->SetEdgeMaterial(BMAT_PLAIN);
+	pLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLevel->SetEdgeColor(RGBi(255,0,0)); // Red
 	pLevel->m_Edges[0]->m_iSlope = 90;
 	// Level 1
 	pLevel = pBld->CreateLevel(DefaultFootprint);
 	pLevel->m_iStories = 1;
 	pLevel->m_fStoryHeight = 3.20f;
-	pLevel->SetEdgeMaterial(BMAT_PLAIN);
+	pLevel->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLevel->SetEdgeColor(RGBi(255,240,225)); // Tan
 	pLevel->m_Edges[0]->m_iSlope = 0;		 // Flat
 

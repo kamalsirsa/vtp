@@ -20,6 +20,46 @@ class vtBuilding;
 class vtFence;
 class vtStructInstance;
 
+// Well known material strings
+
+class vtMaterialName : public vtString
+{
+public:
+	vtMaterialName()
+	{
+		m_bUIVisible = true;
+	}
+	vtMaterialName(const vtString &Name, bool bUIVisible = true) : vtString(Name)
+	{
+		m_bUIVisible = bUIVisible;
+	}
+	inline void SetUIVisible(const bool bUIVisible)
+	{
+		m_bUIVisible = bUIVisible;
+	}
+	inline const bool GetUIVisible() const
+	{
+		return m_bUIVisible;
+	}
+private:
+	bool m_bUIVisible;
+};
+
+extern const vtMaterialName BMAT_NAME_UNKNOWN;
+extern const vtMaterialName BMAT_NAME_PLAIN;
+extern const vtMaterialName BMAT_NAME_WOOD;
+extern const vtMaterialName BMAT_NAME_SIDING;
+extern const vtMaterialName BMAT_NAME_GLASS;
+extern const vtMaterialName BMAT_NAME_BRICK;
+extern const vtMaterialName BMAT_NAME_PAINTED_BRICK;
+extern const vtMaterialName BMAT_NAME_ROLLED_ROOFING;
+extern const vtMaterialName BMAT_NAME_CEMENT;
+extern const vtMaterialName BMAT_NAME_STUCCO;
+extern const vtMaterialName BMAT_NAME_CORRUGATED;
+extern const vtMaterialName BMAT_NAME_DOOR;
+extern const vtMaterialName BMAT_NAME_WINDOW;
+extern const vtMaterialName BMAT_NAME_WINDOWWALL;
+
 /**
  * Structure type.
  */

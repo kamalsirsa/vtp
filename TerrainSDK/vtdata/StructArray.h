@@ -130,7 +130,25 @@ protected:
 	int m_iEditEdge;
 };
 
+class vtMaterialNameElement : public vtMaterialName
+{
+	void* vtMaterialNameElement::operator new(size_t s, void* p) { return p; }
+};
+
+class vtMaterialNamesArray : public Array<vtMaterialName*>
+{
+public:
+	inline void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; i++)
+			delete GetAt(i);
+	}
+	vtMaterialName& FindOrAppendMaterialName(const vtMaterialName& Name);
+};
+
+
 extern vtStructureArray g_DefaultStructures;
+extern vtMaterialNamesArray g_MaterialNames;
 
 // Helpers
 int GetSHPType(const char *filename);

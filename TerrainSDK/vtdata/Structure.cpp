@@ -10,6 +10,22 @@
 #include "Building.h"
 #include "Fence.h"
 
+// Well known material strings
+const vtMaterialName BMAT_NAME_UNKNOWN = _T("Unknown");
+const vtMaterialName BMAT_NAME_PLAIN = _T("Plain");
+const vtMaterialName BMAT_NAME_WOOD = _T("Wood");
+const vtMaterialName BMAT_NAME_SIDING = _T("Siding");
+const vtMaterialName BMAT_NAME_GLASS = _T("Glass");
+const vtMaterialName BMAT_NAME_BRICK = _T("Brick");
+const vtMaterialName BMAT_NAME_PAINTED_BRICK = _T("Painted-Brick");
+const vtMaterialName BMAT_NAME_ROLLED_ROOFING = _T("Rolled-Roofing");
+const vtMaterialName BMAT_NAME_CEMENT = _T("Cement");
+const vtMaterialName BMAT_NAME_STUCCO = _T("Stucco");
+const vtMaterialName BMAT_NAME_CORRUGATED = _T("Corrugated");
+const vtMaterialName BMAT_NAME_DOOR = _T("Door");
+const vtMaterialName BMAT_NAME_WINDOW = _T("Window");
+const vtMaterialName BMAT_NAME_WINDOWWALL = _T("WindowWall");
+
 vtStructInstance::vtStructInstance() : vtStructure()
 {
 	SetType(ST_INSTANCE);
