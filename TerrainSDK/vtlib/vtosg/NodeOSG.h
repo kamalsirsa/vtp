@@ -46,7 +46,7 @@ public:
 
 	int GetTriCount() { return 0; }
 
-	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
+	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, enum FogType Type = FM_LINEAR);
 
 	// OSG access
 	void SetOsgNode(osg::Node *n);

@@ -123,7 +123,7 @@ class vtMesh : public vtMeshBase, public osg::Referenced
 	friend class vtGeom;
 
 public:
-	vtMesh(GLenum PrimType, int VertType, int NumVertices);
+	vtMesh(enum PrimType ePrimType, int VertType, int NumVertices);
 
 	// Override with ability to get OSG bounding box
 	void GetBoundBox(FBox3 &box);

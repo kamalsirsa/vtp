@@ -148,7 +148,7 @@ RGBf vtNodeBase::s_white(1, 1, 1);
  * \param iType Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
  *		increase of the fog density.
  */
-void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iType)
+void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type)
 {
 	osg::StateSet *set = GetOsgNode()->getStateSet();
 	if (!set)
@@ -161,11 +161,11 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 	if (bOn)
 	{
 		Fog::Mode eType;
-		switch (iType)
+		switch (Type)
 		{
-		case GL_LINEAR: eType = Fog::LINEAR; break;
-		case GL_EXP: eType = Fog::EXP; break;
-		case GL_EXP2: eType = Fog::EXP2; break;
+		case FM_LINEAR: eType = Fog::LINEAR; break;
+		case FM_EXP: eType = Fog::EXP; break;
+		case FM_EXP2: eType = Fog::EXP2; break;
 		default: return;
 		}
 		m_pFog = new Fog;
@@ -1375,7 +1375,7 @@ bool vtImageSprite::Create(const char *szTextureName, bool bBlending)
 	pImage->Release();
 
 	// default position of the mesh is just 0,0-1,1
-	m_pMesh = new vtMesh(GL_QUADS, VT_TexCoords, 4);
+	m_pMesh = new vtMesh(vtMesh::QUADS, VT_TexCoords, 4);
 	m_pMesh->AddVertexUV(FPoint3(0,0,0), FPoint2(0,0));
 	m_pMesh->AddVertexUV(FPoint3(1,0,0), FPoint2(1,0));
 	m_pMesh->AddVertexUV(FPoint3(1,1,0), FPoint2(1,1));

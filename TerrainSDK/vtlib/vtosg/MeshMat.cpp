@@ -417,8 +417,8 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
  *		efficient if you know the number at creation time and pass it in
  *		this parameter.
  */
-vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
-	vtMeshBase(PrimType, VertType, NumVertices)
+vtMesh::vtMesh(enum PrimType ePrimType, int VertType, int NumVertices) :
+	vtMeshBase(ePrimType, VertType, NumVertices)
 {
 	ref();		// artficially set refcount to 1
 
@@ -460,30 +460,30 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 		m_pGeometry->setTexCoordIndices(0, m_Index.get());
 	}
 
-	switch (PrimType)
+	switch (ePrimType)
 	{
-	case GL_POINTS:
+	case POINTS:
 		m_pPrimSet = new DrawArrays(PrimitiveSet::POINTS, 0, NumVertices);
 		break;
-	case GL_LINES:
+	case LINES:
 		m_pPrimSet = new DrawArrays(PrimitiveSet::LINES, 0, NumVertices);
 		break;
-	case GL_TRIANGLES:
+	case TRIANGLES:
 		m_pPrimSet = new DrawArrays(PrimitiveSet::TRIANGLES, 0, NumVertices);
 		break;
-	case GL_QUADS:
+	case QUADS:
 		m_pPrimSet = new DrawArrays(PrimitiveSet::QUADS, 0, NumVertices);
 		break;
-	case GL_LINE_STRIP:
+	case LINE_STRIP:
 		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::LINE_STRIP);
 		break;
-	case GL_TRIANGLE_STRIP:
+	case TRIANGLE_STRIP:
 		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_STRIP);
 		break;
-	case GL_TRIANGLE_FAN:
+	case TRIANGLE_FAN:
 		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::TRIANGLE_FAN);
 		break;
-	case GL_POLYGON:
+	case POLYGON:
 		m_pPrimSet = new DrawArrayLengths(PrimitiveSet::POLYGON);
 		break;
 	}
