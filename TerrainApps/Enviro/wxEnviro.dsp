@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxdll.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib ssg.lib sg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /out:"ReleaseDLL/isosurf.exe" /libpath:"\wx2\lib"
-# ADD LINK32 osg.lib osgDB.lib osgUtil.lib wx22_9.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib libMini.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
+# ADD LINK32 osg.lib osgDB.lib osgUtil.lib wx22_9.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib libMini.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
 
 !ENDIF 
 
