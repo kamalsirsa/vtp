@@ -83,7 +83,7 @@ bool vtScene::GetGlobalWireframe()
 	return false;
 }
 
-void vtScene::SetRoot(vtRoot *pRoot)
+void vtScene::SetRoot(vtGroup *pRoot)
 {
 	m_pRoot = pRoot;
 	m_pSsgRoot = pRoot->m_pSsgRoot;

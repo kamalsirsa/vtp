@@ -117,10 +117,6 @@ class vtTransform : public vtpsNode<PSModel, vtTransformBase>
 {
 };
 
-class vtRoot : public vtGroup
-{
-};
-
 class vtLight : public vtpsNode<PSLight, vtTransformBase>
 {
 public:

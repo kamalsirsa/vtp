@@ -24,8 +24,8 @@ public:
 	vtScene();
 	void		SetBgColor(RGBf color)	{ if (m_pPSS) m_pPSS->SetBackColor(PSCol4(color.r, color.g, color.b)); }
 	void		SetAmbient(RGBf color)	{ if (m_pPSS) m_pPSS->SetAmbient(PSCol4(color.r, color.g, color.b)); }
-	void		SetRoot(vtRoot *pRoot)	{ if (m_pPSS) m_pPSS->SetDynamic(pRoot); }
-	vtRoot*		GetRoot()				{ if (m_pPSS) return (vtRoot*) m_pPSS->GetDynamic(); else return NULL; }
+	void		SetRoot(vtGroup *pRoot)	{ if (m_pPSS) m_pPSS->SetDynamic(pRoot); }
+	vtGroup*	GetRoot()				{ if (m_pPSS) return (vtGroup*) m_pPSS->GetDynamic(); else return NULL; }
 	vtCamera*	GetCamera()				{ return m_pCamera; }
 	float		GetFrameRate()			{ return 1.0f / (float) frameSeconds(); }
 	void		SetCamera(vtCamera* c);

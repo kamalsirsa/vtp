@@ -111,18 +111,6 @@ protected:
 	FPoint3			m_Scale;
 };
 
-class vtRoot : public vtGroup
-{
-public:
-	vtRoot() : vtGroup()
-	{
-		m_pSsgRoot = new ssgRoot();
-		SetBranch(m_pSsgRoot);
-	}
-
-	ssgRoot	*m_pSsgRoot;
-};
-
 class vtLight : public vtNode
 {
 public:

@@ -20,7 +20,7 @@ public:
 
 	void SetBgColor(RGBf color);
 	void SetAmbient(RGBf color);
-	void SetRoot(vtRoot *pRoot);
+	void SetRoot(vtGroup *pRoot);
 	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir);
 
 	void SetGlobalWireframe(bool bWire);

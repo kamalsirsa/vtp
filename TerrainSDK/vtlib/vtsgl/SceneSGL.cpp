@@ -116,7 +116,7 @@ void vtScene::DoUpdate()
 	glFlush();
 }
 
-void vtScene::SetRoot(vtRoot *pRoot)
+void vtScene::SetRoot(vtGroup *pRoot)
 {
 	m_pSglRootNode = (sglScene *)pRoot;
 	m_pRoot = pRoot;

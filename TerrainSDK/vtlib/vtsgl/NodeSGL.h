@@ -96,12 +96,6 @@ protected:
 	FPoint3			m_Scale;
 };
 
-class vtRoot : public vtGroup, public sglScene
-{
-public:
-	vtRoot() : vtGroup() { SetSglGroup(this); }
-};
-
 class vtLight : public vtNode
 {
 public:

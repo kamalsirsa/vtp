@@ -17,7 +17,7 @@ public:
 
 	void SetBgColor(RGBf color);
 	void SetAmbient(RGBf color);
-	void SetRoot(vtRoot *pRoot);
+	void SetRoot(vtGroup *pRoot);
 	bool CameraRay(IPoint2 win, FPoint3 &pos, FPoint3 &dir);
 	float GetFrameRate();
 	void SetGlobalWireframe(bool bWire);
