@@ -70,10 +70,10 @@ bool DxfParser::RetreiveEntities(void progress_callback(int))
 			if (pair.m_iCode == 0 && pair.m_sValue == "SECTION")
 			{
 				if (!ReadCodeValue(pair))
-					throw exception("Unexpected end of file found.");
+					throw "Unexpected end of file found.";
 
 				if (pair.m_iCode != 2)
-					throw exception("Expecting section type, but none encountered.");
+					throw "Expecting section type, but none encountered.";
 
 				if (pair.m_sValue == "ENTITIES")
 					ReadEntitySection(progress_callback);
@@ -87,13 +87,13 @@ bool DxfParser::RetreiveEntities(void progress_callback(int))
 			}
 			else
 			{
-				throw exception("Expecting section, but none encountered.");
+				throw "Expecting section, but none encountered.";
 			}
 		}
 	}
-	catch (exception &e)
+	catch (const char *msg)
 	{
-		m_strMessage.Format("DXF Parse Error: %s.\nLine = %d\n", e.what(), m_iLine);
+		m_strMessage.Format("DXF Parse Error: %s\nLine = %d\n", msg, m_iLine);
 
 		fclose(m_pFile);
 		return false;
@@ -120,12 +120,12 @@ inline bool DxfParser::ReadCodeValue(DxfCodeValue & pair)
 	sVal.TrimRight();
 	sVal.TrimLeft();
 	if (!sVal.IsNumber())
-		throw exception("Non-numeric code encountered.");
+		throw "Non-numeric code encountered.";
 	pair.m_iCode = atoi(sVal);
 
 	// Read the value.
 	if (fgets(buf, 1024, m_pFile) == NULL)
-		throw exception("Unexpected end of line encountered.");
+		throw "Unexpected end of line encountered.";
 	sVal = buf;
 	sVal.TrimRight();
 	sVal.TrimLeft();
@@ -147,7 +147,7 @@ void DxfParser::SkipSection()
 		}
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of section.");
+		throw "Unable to find end of section.";
 }
 
 void DxfParser::ReadEntitySection(void progress_callback(int))
@@ -192,7 +192,7 @@ void DxfParser::ReadEntitySection(void progress_callback(int))
 		}
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of section.");
+		throw "Unable to find end of section.";
 }
 
 void DxfParser::ReadPoint()
@@ -248,7 +248,7 @@ void DxfParser::ReadPoint()
 		oldPos = ftell(m_pFile);
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of point entity.");
+		throw "Unable to find end of point entity.";
 }
 
 void DxfParser::ReadLine()
@@ -326,7 +326,7 @@ void DxfParser::ReadLine()
 		oldPos = ftell(m_pFile);
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of polyline entity.");
+		throw "Unable to find end of polyline entity.";
 }
 
 void DxfParser::ReadPolyline()
@@ -369,7 +369,7 @@ void DxfParser::ReadPolyline()
 		}
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of polyline entity.");
+		throw "Unable to find end of polyline entity.";
 }
 
 void DxfParser::ReadVertex(vector<DPoint3> & points)
@@ -416,7 +416,7 @@ void DxfParser::ReadVertex(vector<DPoint3> & points)
 		oldPos = ftell(m_pFile);
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of vertex entity.");
+		throw "Unable to find end of vertex entity.";
 }
 
 int DxfParser::GetLayerIndex(const vtString & sLayer)
@@ -497,7 +497,7 @@ void DxfParser::ReadLWPolyline()
 		oldPos = ftell(m_pFile);
 	}
 	if (!bFoundEnd)
-		throw exception("Unable to find end of lwpolyline entity.");
+		throw "Unable to find end of lwpolyline entity.";
 }
 
 void DxfParser::Read3DFace()
@@ -569,7 +569,7 @@ void DxfParser::Read3DFace()
 	}
 
 	if (!bFoundEnd)
-		throw exception("Unable to find end of polyline entity.");
+		throw "Unable to find end of polyline entity.";
 
 	// ...although the forth point may be the same as the third,
 	//  in which case ignore it and treat this as a triangle.
