@@ -12,7 +12,7 @@
 #ifndef STRUCTUREH
 #define STRUCTUREH
 
-#include "vtdata/MathTypes.h"
+#include "MathTypes.h"
 #include "Selectable.h"
 #include "Content.h"
 

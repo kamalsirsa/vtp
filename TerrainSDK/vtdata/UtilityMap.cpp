@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 #include "UtilityMap.h"
-#include "vtdata/shapelib/shapefil.h"
+#include "shapelib/shapefil.h"
 
 vtUtilityMap::vtUtilityMap()
 {

@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "vtdata/shapelib/shapefil.h"
+#include "shapelib/shapefil.h"
 #include "xmlhelper/easyxml.hpp"
 #include "StructArray.h"
 #include "Building.h"
