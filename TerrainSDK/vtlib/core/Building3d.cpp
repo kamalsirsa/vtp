@@ -746,7 +746,7 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 	vtMesh *mesh = FindMatMesh(pLev->m_Edges[0]->m_Material,
 		pLev->m_Edges[0]->m_Color, false);
 
-	if (pLev->GetNumEdges() > 4)
+	if (corners > 4)
 	{
 		// roof consists of a polygon which must be split into triangles
 		FLine2 roof;
@@ -787,8 +787,10 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 			FPoint3 p = pp[i];
 			idx[i] = mesh->AddVertexN(p, up);
 		}
-		mesh->AddTri(idx[0], idx[1], idx[2]);
-		mesh->AddTri(idx[2], idx[3], idx[0]);
+		if (corners > 2)
+			mesh->AddTri(idx[0], idx[1], idx[2]);
+		if (corners > 3)
+			mesh->AddTri(idx[2], idx[3], idx[0]);
 	}
 }
 
