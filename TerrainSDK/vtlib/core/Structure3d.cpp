@@ -106,104 +106,33 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 	}
 }
 
-
-///////////////////////////////////////////////////////////////////////
-
-vtStructure3d::vtStructure3d() : vtStructure()
+// implement vtStructure3d methods
+bool vtStructInstance3d::CreateNode(vtHeightField *hf, const char *options)
 {
-	m_pNode = NULL;
-}
-
-bool vtStructure3d::CreateNode(vtHeightField *hf, const char *options)
-{
-	if (m_type == ST_BUILDING)
+	bool bSuccess = CreateShape(hf);
+	if (!bSuccess)
 	{
-		vtBuilding3d *bld = (vtBuilding3d *) m_pBuilding;
-		bool roof = (strstr(options, "roof") != NULL);
-		bool walls = (strstr(options, "walls") != NULL);
-		bool details = (strstr(options, "detail") != NULL);
-		bld->CreateShape(hf, roof, walls, details);
-		return true;
-	}
-	if (m_type == ST_FENCE)
-	{
-		vtFence3d *fen = (vtFence3d *) m_pFence;
-		return fen->CreateShape(hf);
-	}
-	if (m_type == ST_INSTANCE)
-	{
-		vtStructInstance3d *inst = (vtStructInstance3d *) m_pInstance;
-		bool bSuccess = inst->CreateShape(hf);
-		if (!bSuccess)
+		// try again, looking on the standards data paths
+		vtTag *tag = FindTag("filename");
+		if (tag)
 		{
-			// try again, looking on the standards data paths
-			vtTag *tag = inst->FindTag("filename");
-			if (tag)
+			vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
+			if (fullpath != "")
 			{
-				vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
-				if (fullpath != "")
-				{
-					tag->value = fullpath;
-					// try again
-					bSuccess = inst->CreateShape(hf);
-				}
+				tag->value = fullpath;
+				// try again
+				bSuccess = CreateShape(hf);
 			}
 		}
-		return bSuccess;
 	}
-	return false;
+	return bSuccess;
 }
 
-vtTransform *vtStructure3d::GetTransform()
-{
-	if (m_type == ST_BUILDING)
-	{
-		vtBuilding3d *bld = (vtBuilding3d *) m_pBuilding;
-		return bld->GetTransform();
-	}
-	if (m_type == ST_INSTANCE)
-	{
-		vtStructInstance3d *inst = (vtStructInstance3d *) m_pInstance;
-		return inst->GetTransform();
-	}
-	return NULL;
-}
 
-vtGeom *vtStructure3d::GetGeom()
-{
-	if (m_type == ST_FENCE)
-	{
-		vtFence3d *fen = (vtFence3d *) m_pFence;
-		return fen->GetGeom();
-	}
-	return NULL;
-}
-
-void vtStructure3d::DeleteNode()
-{
-	// not needed for buildings - those are automatically deleted when needed
-	// is needed for fences:
-	if (m_type == ST_FENCE)
-	{
-		vtFence3d *fen = (vtFence3d *) m_pFence;
-		fen->DestroyGeometry();
-	}
-}
-
-vtBuilding3d *vtStructure3d::GetBuilding()
-{
-	return (vtBuilding3d *) vtStructure::GetBuilding();
-}
-
-vtFence3d *vtStructure3d::GetFence()
-{
-	return (vtFence3d *) vtStructure::GetFence();
-}
-
-vtStructInstance3d *vtStructure3d::GetInstance()
-{
-	return (vtStructInstance3d *) vtStructure::GetInstance();
-}
+///////////////////////////////////////////////////////////////////////
+//
+// vtStructure3d
+//
 
 /////////////////////////////////////////////////////////////////////
 
@@ -223,7 +152,24 @@ vtFence *vtStructureArray3d::NewFence()
 
 vtStructInstance *vtStructureArray3d::NewInstance()
 {
-	return new vtStructInstance3d;
+	vtStructInstance3d *pSI3d = new vtStructInstance3d;
+	return pSI3d;
+}
+
+vtStructure3d *vtStructureArray3d::GetStructure3d(int i)
+{
+	vtStructure *str = GetAt(i);
+
+	if (str->GetType() == ST_BUILDING)
+		return (vtStructure3d *) (vtBuilding3d *) str;
+
+	if (str->GetType() == ST_FENCE)
+		return (vtStructure3d *) (vtFence3d *) str;
+
+	if (str->GetType() == ST_INSTANCE)
+		return (vtStructure3d *) (vtStructInstance3d *) str;
+
+	return NULL;
 }
 
 bool vtStructureArray3d::ConstructStructure(vtStructure3d *str,
@@ -275,34 +221,22 @@ void vtStructureArray3d::VisualDeselectAll()
 {
 	for (int i = 0; i < GetSize(); i++)
 	{
-		vtStructure3d *str = (vtStructure3d *) GetAt(i);
+		vtStructure *str = (vtStructure *) GetAt(i);
+		vtStructure3d *str3d = (vtStructure3d *) GetAt(i);
+
+//		Selectable *sel = (Selectable *) GetAt(i);
+
 		str->Select(false);
-
-		vtBuilding3d *bld = str->GetBuilding();
-		if (bld)
-			bld->ShowBounds(false);
-
-		// TODO: visual highlighting of fences
-
-		vtStructInstance3d *inst = str->GetInstance();
-		if (inst)
-			inst->ShowBounds(false);
+		str3d->ShowBounds(false);
 	}
 }
 
-void vtStructureArray3d::VisualSelect(vtStructure3d *str)
+void vtStructureArray3d::VisualSelect(vtStructure3d *str3d)
 {
+	vtStructure *str = (vtStructure *) str3d;
 	str->Select(true);
 
-	vtBuilding3d *bld = str->GetBuilding();
-	if (bld)
-		bld->ShowBounds(true);
-
-	// TODO: visual highlighting of fences
-
-	vtStructInstance3d *inst = str->GetInstance();
-	if (inst)
-		inst->ShowBounds(true);
+	str3d->ShowBounds(true);
 }
 
 

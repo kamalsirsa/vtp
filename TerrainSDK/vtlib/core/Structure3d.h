@@ -4,7 +4,7 @@
 // Implements the vtStructure3d class which extends vtStructure with the
 // ability to create 3d geometry.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,59 +18,57 @@ class vtFence3d;
 class vtNode;
 class vtHeightField;
 
+
+/**
+ * This class contains the extra methods needed by a vtStructure to
+ * support the ability to construct and manage a 3d representations.
+ */
+class vtStructure3d
+{
+public:
+	vtStructure3d() { m_pContainer = NULL; }
+
+	vtTransform *GetTransform() { return m_pContainer; }
+
+	/// Create the node(s) and position them on the indicated heightfield
+	virtual bool CreateNode(vtHeightField *hf, const char *options = "") { return false; }
+
+	/// Access the Geometry node for this structure, if it has one
+	virtual vtGeom *GetGeom() { return NULL; }
+	virtual void DeleteNode() {}
+
+	/// Pass true to turn on a wireframe hightlight geometry for this instance
+	virtual void ShowBounds(bool bShow) {}
+
+protected:
+	vtTransform	*m_pContainer;	// The transform which is used to position the object
+};
+
+
 /**
  * This class extends vtStructInstance with the ability to construct and
  * manage 3d representations of the instance.
  */
-class vtStructInstance3d : public vtStructInstance
+class vtStructInstance3d : public vtStructInstance, public vtStructure3d
 {
 public:
 	vtStructInstance3d();
 
+	// implement vtStructure3d methods
+	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
+	virtual void ShowBounds(bool bShow);
+
 	/// Create the node(s) and position them on the indicated heightfield
 	bool CreateShape(vtHeightField *pHeightField);
-
-	/// Access the Transform node for this structure
-	vtTransform *GetTransform() { return m_pContainer; }
 
 	/// (Re-)position the instance on the indicated heightfield
 	void UpdateTransform(vtHeightField *pHeightField);
 
-	/// Pass true to turn on a wireframe hightlight geometry for this instance
-	void ShowBounds(bool bShow);
-
 protected:
-	vtTransform *m_pContainer;
 	vtGeom		*m_pHighlight;	// The wireframe highlight
 	vtNode		*m_pModel; // the contained model
 };
 
-/**
- * This class extends vtStructure with the ability to construct and
- * manage 3d representations of the structure.
- */
-class vtStructure3d : public vtStructure
-{
-public:
-	vtStructure3d();
-
-	/// Create the node(s) and position them on the indicated heightfield
-	bool CreateNode(vtHeightField *hf, const char *options = "");
-
-	/// Access the Transform node for this structure, if it has one
-	vtTransform *GetTransform();
-
-	/// Access the Geometry node for this structure, if it has one
-	vtGeom *GetGeom();
-	void DeleteNode();
-
-	vtBuilding3d *GetBuilding();
-	vtFence3d *GetFence();
-	vtStructInstance3d *GetInstance();
-
-protected:
-	vtTransform *m_pNode;
-};
 
 /**
  * This class extends vtStructureArray with the ability to construct and
@@ -79,12 +77,11 @@ protected:
 class vtStructureArray3d : public vtStructureArray
 {
 public:
-	virtual vtStructure *NewStructure() { return new vtStructure3d; }
 	virtual vtBuilding *NewBuilding();
 	virtual vtFence *NewFence();
 	virtual vtStructInstance *NewInstance();
 
-	vtStructure3d *GetStructure(int i) { return (vtStructure3d *) GetAt(i); }
+	vtStructure3d *GetStructure3d(int i);
 	vtBuilding3d *GetBuilding(int i) { return (vtBuilding3d *) GetAt(i)->GetBuilding(); }
 	vtFence3d *GetFence(int i) { return (vtFence3d *) GetAt(i)->GetFence(); }
 	vtStructInstance3d *GetInstance(int i) { return (vtStructInstance3d *) GetAt(i)->GetInstance(); }
