@@ -58,7 +58,7 @@ bool BryanTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	//
 	// (replace this with your own storage representation)
 	//
-	UINT_32 nPoints = m_iColumns, nWidth;
+	UINT_32 nPoints = m_iColumns, nWidth = 0;
 	if (m_iRows < m_iColumns)		// Pick the smallest size..
 		nPoints = m_iRows;
 
