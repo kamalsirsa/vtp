@@ -10,6 +10,7 @@
 
 #include "vtdata/HeightField.h"
 #include "Engine.h"
+#include "Event.h"
 
 /** \defgroup nav Navigation
  * These classes are used for navigation: moving a camera or similar object
@@ -45,6 +46,8 @@ public:
 	bool GetDOF(DOF dof) { return m_bDOF[dof]; }
 
 protected:
+	void DoKeyNavigation();
+
 	float	m_fSpeed;		// max units per frame of movement
 	bool	m_bDOF[6];		// six degrees of freedom
 	bool	m_bAlwaysMove;

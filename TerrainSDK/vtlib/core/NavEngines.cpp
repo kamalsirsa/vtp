@@ -9,7 +9,7 @@
 #include "vtlib/core/vtTin3d.h"
 #include "vtdata/vtLog.h"
 #include "NavEngines.h"
-
+#include "Event.h"
 
 #define GRAVITY_CONSTANT 9.81	// g = 9.81 meters/sec^2
 
@@ -95,8 +95,83 @@ void vtFlyer::Eval()
 		else if (m_bDOF[DOF_ROLL])
 			pTarget->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), -leftright);
 	}
+	DoKeyNavigation();
 }
 
+void vtFlyer::DoKeyNavigation()
+{
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (!pTarget)
+		return;
+
+	float elapsed = vtGetFrameTime();
+
+	vtScene *sc = vtGetScene();
+
+	// shift: move faster
+	float fMult = 1;
+	if (sc->GetKeyState(VTK_SHIFT))
+		fMult = 5;
+
+	bool up = sc->GetKeyState(VTK_UP);
+	bool down = sc->GetKeyState(VTK_DOWN);
+	bool right = sc->GetKeyState(VTK_RIGHT);
+	bool left = sc->GetKeyState(VTK_LEFT);
+
+	if (sc->GetKeyState(VTK_CONTROL))
+	{
+		//  With control key: translate up-down, left-right
+		if ((up || down) && m_bDOF[DOF_Y])
+		{
+			float updown = 0.2 * m_fSpeed * fMult * elapsed;
+			if (down)
+				updown = -updown;
+			pTarget->TranslateLocal(FPoint3(0, updown, 0.0f));
+		}
+		if ((right || left) && m_bDOF[DOF_X])
+		{
+			float leftright = 0.2 * m_fSpeed * fMult * elapsed;
+			if (left)
+				leftright = -leftright;
+			pTarget->TranslateLocal(FPoint3(leftright, 0, 0.0f));
+		}
+	}
+	else
+	{
+		if ((up || down) && m_bDOF[DOF_Z])
+		{
+			float trans = 0.2 * m_fSpeed * fMult * elapsed;
+			if (up)
+				trans = -trans;
+
+			pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, trans));
+		}
+
+		if ((right || left) && m_bDOF[DOF_YAW])
+		{
+			float rotate = 0.4 * fMult * elapsed;
+			if (right)
+				rotate = -rotate;
+
+			if (m_bDOF[DOF_ROLL])
+				pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+			else
+				pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+		}
+	}
+
+	// pitch
+	bool pup = sc->GetKeyState(VTK_PAGEUP);
+	bool pdown = sc->GetKeyState(VTK_PAGEDOWN);
+	if ((pup || pdown) && m_bDOF[DOF_PITCH])
+	{
+		float updown = 0.2 * fMult * elapsed;
+		if (pdown)
+			updown = -updown;
+		pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
+	}
+
+}
 
 //
 // Fly engine specifically for an orthographic camera (e.g. top-down view)
