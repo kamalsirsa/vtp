@@ -1,7 +1,7 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
@@ -1131,6 +1131,8 @@ bool BarycentricCoords(const DPoint2 &p1, const DPoint2 &p2,
 bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
 					   const FPlane &plane3, FPoint3 &result);
 double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &p3);
+void vtLogMatrix(const FMatrix4 &mat);
+void vtLogMatrix(const FMatrix3 &mat);
 
 #endif	// VTMATHTYPESH
 
