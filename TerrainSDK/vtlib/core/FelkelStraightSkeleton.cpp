@@ -129,7 +129,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 
 #ifdef EPS
 	extern ostream *epsStream;
-	
+
 	*epsStream << "%Hranice" << endl;
 	for (i = m_vl.begin (); i != m_vl.end (); i++)
 	{
@@ -302,9 +302,12 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 		C3DPoint& p1 = points[pi].m_Point;
 		C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
 
-		for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
+		CSkeleton::iterator s1;
+		for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
+		{
 			if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
 				break;
+		}
 		pNextEdge = &(*s1);
 		// Circumnavigate the right face
 		do
@@ -362,7 +365,7 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 	C3DPoint NewEdgeVector;
 	CNumber CosTheta;
 	CNumber HighestCosTheta = 0;
-	
+
 	if(*bReversed)
 	{
 		OldPoint = pEdge->m_lower.m_vertex->m_point;
@@ -449,8 +452,8 @@ CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C3DP
 	CNumber SegmentLength = (p2 - p1).LengthXZ();
 	CNumber U;
 
-    U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_z - p1.m_z) * (p2.m_z - p1.m_z))) /
-					(SegmentLength * SegmentLength);
+	U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_z - p1.m_z) * (p2.m_z - p1.m_z))) /
+		(SegmentLength * SegmentLength);
 
 	pIntersection.m_x = p1.m_x + U * (p2.m_x - p1.m_x);
 	pIntersection.m_z = p1.m_z + U * (p2.m_z - p1.m_z);
@@ -472,16 +475,15 @@ void CStraightSkeleton::Dump()
 	{
 		CSkeletonLine& db = (*s1);
 		sprintf(DebugString, "ID: %d lower leftID %d rightID %d vertexID %d (%f %f %f) higher leftID %d rightID %d vertexID %d (%f %f %f)\n",
-							db.m_ID,
-							db.m_lower.LeftID(),
-							db.m_lower.RightID(),
-							db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
-							db.m_higher.LeftID(),
-							db.m_higher.RightID(),
-							db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
+			db.m_ID,
+			db.m_lower.LeftID(),
+			db.m_lower.RightID(),
+			db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
+			db.m_higher.LeftID(),
+			db.m_higher.RightID(),
+			db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
 		OutputDebugString(DebugString);
 	}
 }
 #endif
-
 
