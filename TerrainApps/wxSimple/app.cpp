@@ -78,7 +78,7 @@ bool vtApp::CreateScene()
 	// Add the terrain to the scene, and contruct it
 	m_pTerrainScene->AppendTerrain(pTerr);
 	int iError;
-	if (!pTerr->CreateScene(false, iError))
+	if (!pTerr->CreateScene())
 	{
 		m_frame->m_canvas->m_bRunning = false;
 		wxMessageBox("Couldn't create the terrain.  Perhaps the elevation\n"

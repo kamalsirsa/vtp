@@ -248,8 +248,7 @@ bool CreateScene()
 
 	// Add the terrain to the scene, and contruct it
 	ts->AppendTerrain(pTerr);
-	int iError;
-	if (!pTerr->CreateScene(false, iError))
+	if (!pTerr->CreateScene())
 	{
 		AfxMessageBox("Terrain creation failed.");
 		return false;

@@ -168,10 +168,10 @@ bool CreateScene()
 
 	// Add the terrain to the scene, and contruct it
 	ts->AppendTerrain(pTerr);
-	int iError;
-	if (!pTerr->CreateScene(false, iError))
+	if (!pTerr->CreateScene())
 	{
-		printf("Terrain creation failed, error %d.\n", iError);
+		printf("Terrain creation failed: %s\n",
+			(const char *)pTerr->GetLastError());
 		return false;
 	}
 	ts->SetTerrain(pTerr);
