@@ -18,7 +18,17 @@ class vtDIB;
 class vtTin2d : public vtTin
 {
 public:
+	vtTin2d();
+
 	void DrawTin(wxDC* pDC, vtScaledView *pView);
+	void ComputeEdgeLengths();
+	void CullLongEdgeTris();
+	void FreeEdgeLengths();
+	void SetConstraint(bool bConstrain, double fMaxEdge);
+
+	double *m_fEdgeLen;
+	bool m_bConstrain;
+	double m_fMaxEdge;
 };
 
 //////////////////////////////////////////////////////////

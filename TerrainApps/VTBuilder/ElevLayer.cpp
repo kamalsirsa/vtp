@@ -22,6 +22,12 @@
 
 ////////////////////////////////////////////////////////////////////
 
+vtTin2d::vtTin2d()
+{
+	m_fEdgeLen = NULL;
+	m_bConstrain = false;
+}
+
 void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
 {
 	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);
@@ -32,6 +38,11 @@ void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
 	int tris = NumTris();
 	for (int j = 0; j < tris; j++)
 	{
+		if (m_bConstrain)
+		{
+			if (m_fEdgeLen[j] > m_fMaxEdge)
+				continue;
+		}
 		int v0 = m_tri[j*3+0];
 		int v1 = m_tri[j*3+1];
 		int v2 = m_tri[j*3+2];
@@ -44,6 +55,53 @@ void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
 		pDC->DrawLines(4, g_screenbuf);
 	}
 }
+
+void vtTin2d::SetConstraint(bool bConstrain, double fMaxEdge)
+{
+	m_bConstrain = bConstrain;
+	m_fMaxEdge = fMaxEdge;
+}
+
+void vtTin2d::ComputeEdgeLengths()
+{
+	int nTris = NumTris();
+	m_fEdgeLen = new double[nTris];
+	for (int i = 0; i < nTris; i++)
+		m_fEdgeLen[i] = GetTriMaxEdgeLength(i);
+}
+
+void vtTin2d::CullLongEdgeTris()
+{
+	if (!m_fEdgeLen)
+		return;
+	int nTris = NumTris();
+	int b1, b2;
+	int to = 0;
+	int kept = 0;
+	for (int i = 0; i < nTris; i++)
+	{
+		b1 = i * 3;
+		if (m_fEdgeLen[i] < m_fMaxEdge)
+		{
+			// keep
+			b2 = to * 3;
+			m_tri[b2] = m_tri[b1];
+			m_tri[b2+1] = m_tri[b1+1];
+			m_tri[b2+2] = m_tri[b1+2];
+			to++;
+			kept++;
+		}
+	}
+	m_tri.SetSize(kept*3);
+}
+
+
+void vtTin2d::FreeEdgeLengths()
+{
+	delete m_fEdgeLen;
+	m_fEdgeLen = NULL;
+}
+
 
 ////////////////////////////////////////////////////////////////////
 
