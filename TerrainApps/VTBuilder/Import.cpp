@@ -511,7 +511,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltyp
 	if (ltype == LT_WATER)
 	{
 		vtWaterLayer *pWL = (vtWaterLayer *)pLayer;
-//		pWL->AddElementsFromSDTSSource(datasource, progress_callback);
+		pWL->AddElementsFromOGR(datasource, progress_callback);
 	}
 
 	delete datasource;
@@ -545,7 +545,8 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 	OGRLineString   *pLineString;
 
 //	DPolyArray2		chain;
-	DLine2			*dline;
+//	DLine2			*dline;
+	vtWaterFeature	*wfeat;
 
 	// Assume that this data source is a TIGER/Line file
 	//
@@ -650,14 +651,19 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 			if (!strncmp(cfcc, "H", 1))
 			{
 				// Hydrography
+				wfeat = NULL;
 				int num = atoi(cfcc+1);
 				switch (num)
 				{
 				case 1:		// Shoreline of perennial water feature
 				case 2:		// Shoreline of intermittent water feature
+					break;
 				case 11:	// Perennial stream or river
 				case 12:	// Intermittent stream, river, or wash
 				case 13:	// Braided stream or river
+					wfeat = new vtWaterFeature();
+					wfeat->m_bIsBody = false;
+					break;
 				case 30:	// Lake or pond
 				case 31:	// Perennial lake or pond
 				case 32:	// Intermittent lake or pond
@@ -667,14 +673,19 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 				case 50:	// Bay, estuary, gulf, sound, sea, or ocean
 				case 51:	// Bay, estuary, gulf, or sound
 				case 52:	// Sea or ocean
-					dline = new DLine2();
-					dline->SetSize(num_points);
+					wfeat = new vtWaterFeature();
+					wfeat->m_bIsBody = false;
+					break;
+				}
+				if (wfeat)
+				{
+					wfeat->SetSize(num_points);
 					for (j = 0; j < num_points; j++)
 					{
-						dline->SetAt(j, DPoint2(pLineString->getX(j),
+						wfeat->SetAt(j, DPoint2(pLineString->getX(j),
 							pLineString->getY(j)));
 					}
-					pWL->AddLine(dline);
+					pWL->AddFeature(wfeat);
 				}
 			}
 
