@@ -325,7 +325,6 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		// Now do some OSG voodoo, which should spread the transform downward
 		//  through the loaded model, and delete the transform.
 		osg::Group *group = new osg::Group;
-		group->ref();
 		group->addChild(transform);
 
 		osgUtil::Optimizer optimizer;
@@ -336,12 +335,6 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 #if DEBUG_NODE_LOAD
 	VTLOG("group %lx (rc %d), ", node, node->referenceCount());
 #endif
-
-		if (bInCache)
-		{
-			// Clean up by deleting previously cached node
-			existing_node->unref();
-		}
 
 		// Store the node in the cache by filename so we'll know next
 		//  time that we have already have it
@@ -373,15 +366,8 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 
 void vtNode::ClearOsgModelCache()
 {
-	std::map<vtString, ref_ptr<osg::Node> >::iterator it;
-	for (it = m_ModelCache.begin(); it != m_ModelCache.end(); it++)
-	{
-		vtString fname = it->first;
-		ref_ptr<osg::Node> &noderef = it->second;
-		osg::Node *node = noderef.release();
-		if (node)
-			node->unref();
-	}
+	// Each model in the cache, at exit time, should have a refcount
+	//  of 1.  Deleting the cache will push them to 0 and delete them.
 	m_ModelCache.clear();
 }
 
