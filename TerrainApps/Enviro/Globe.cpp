@@ -672,7 +672,8 @@ int IcoGlobe::AddGlobePoints(const char *fname)
 			points.Append(point);
 		SHPDestroyObject(psShape);
 	}
-	AddPoints(points, 0.0015f);
+//	AddPoints(points, 0.0015f);	// this size works OK for the VTP recipients
+	AddPoints(points, 0.0005f);
 	SHPClose(hSHP);
 	return nEntities;
 }
