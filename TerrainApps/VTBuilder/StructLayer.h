@@ -48,7 +48,7 @@ public:
 	void OnLeftDownEditLinear(BuilderView *pView, UIContext &ui);
 	void UpdateMove(UIContext &ui);
 	void UpdateRotate(UIContext &ui);
-	void UpdateResizeScale(UIContext &ui);
+	void UpdateResizeScale(BuilderView *pView, UIContext &ui);
 
 	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
 	bool AddElementsFromSHP(const wxString2 &filename, const vtProjection &proj, DRECT rect);

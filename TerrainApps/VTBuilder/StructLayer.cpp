@@ -746,7 +746,7 @@ void vtStructureLayer::OnMouseMove(BuilderView *pView, UIContext &ui)
 		else if (ui.m_bRotate)
 			UpdateRotate(ui);
 		else
-			UpdateResizeScale(ui);
+			UpdateResizeScale(pView, ui);
 
 		DrawBuilding(&dc, pView, &ui.m_EditBuilding);
 	}
@@ -815,7 +815,7 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 	}
 }
 
-void vtStructureLayer::UpdateResizeScale(UIContext &ui)
+void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 {
 	DPoint2 moved_by = ui.m_CurLocation - ui.m_DownLocation;
 
@@ -829,11 +829,12 @@ void vtStructureLayer::UpdateResizeScale(UIContext &ui)
 	DPoint2 diff2 = ui.m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
 
+	int i, j;
 	DPoint2 p;
 	if (ui.m_bShift)
 	{
 		// Scale evenly
-		int i, j, levs = ui.m_pCurBuilding->GetNumLevels();
+		int levs = ui.m_pCurBuilding->GetNumLevels();
 		for (i = 0; i < levs; i++)
 		{
 			DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
@@ -850,12 +851,45 @@ void vtStructureLayer::UpdateResizeScale(UIContext &ui)
 	}
 	else
 	{
-		DLine2 dl = ui.m_pCurBuilding->GetFootprint(0);
 		// drag individual corner points
-		p = dl.GetAt(ui.m_iCurCorner);
-		p += moved_by;
-		dl.SetAt(ui.m_iCurCorner, p);
-		ui.m_EditBuilding.SetFootprint(0, dl);
+		DLine2 foot = ui.m_pCurBuilding->GetFootprint(0);
+		p = foot.GetAt(ui.m_iCurCorner);
+
+		int points = foot.GetSize();
+		if (pView->m_bConstrain && points > 3)
+		{
+			// Maintain angles
+			DPoint2 p0 = foot.GetSafePoint(ui.m_iCurCorner - 1);
+			DPoint2 p1 = foot.GetSafePoint(ui.m_iCurCorner + 1);
+			DPoint2 vec0 = (p - p0).Normalize();
+			DPoint2 vec1 = (p - p1).Normalize();
+			DPoint2 vec2 = vec0;
+			vec2.Rotate(PID2d);
+			DPoint2 vec3 = vec1;
+			vec3.Rotate(PID2d);
+
+			p += moved_by;
+			double a;
+
+			a = (p - p0).Dot(vec2);
+			foot.SetSafePoint(ui.m_iCurCorner - 1, p0 + (vec2 * a));
+			a = (p - p1).Dot(vec3);
+			foot.SetSafePoint(ui.m_iCurCorner + 1, p1 + (vec3 * a));
+			foot.SetAt(ui.m_iCurCorner, p);
+		}
+		else
+		{
+			p += moved_by;
+			foot.SetAt(ui.m_iCurCorner, p);
+		}
+		// Changing only the lowest level is near useless.  For the great
+		//  majority of cases, the user will want the footprints for all
+		//  levels to remain in sync.
+		for (i = 0; i < ui.m_EditBuilding.GetNumLevels(); i++)
+			ui.m_EditBuilding.SetFootprint(i, foot);
+
+		// A better guess might be to offset the footprint points of each
+		// level by the delta change; e.g. that would preserve roof overhangs.
 	}
 }
 
