@@ -276,7 +276,7 @@ void IcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
 		BuildSphericalLines(feat, fSize);
 
 	if (feat->GetGeomType() == wkbPolygon)
-		BuildSphericalLines(feat, fSize);
+		BuildSphericalPolygons(feat, fSize);
 }
 
 void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
@@ -445,6 +445,48 @@ void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 			mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
 			geom->AddMesh(mesh, m_yellow);
 			mesh->Release();	// pass ownership to Geometry
+		}
+	}
+	total += mesh->GetNumVertices();
+}
+
+void IcoGlobe::BuildSphericalPolygons(vtFeatureSet *feat, float fSize)
+{
+	vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon*>(feat);
+	if (!pSetPoly)
+		return;
+
+	int i, size;
+	size = feat->GetNumEntities();
+
+	vtGeom *geom = new vtGeom();
+	geom->SetName2("spherical lines");
+	geom->SetMaterials(m_mats);
+	m_SurfaceGroup->AddChild(geom);
+
+	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+	geom->AddMesh(mesh, m_yellow);
+	mesh->Release();	// pass ownership to Geometry
+
+	int total = 0;
+
+	DPoint2 p1, p2;
+	for (i = 0; i < size; i++)
+	{
+		const DPolygon2 &poly = pSetPoly->GetPolygon(i);
+		for (unsigned int ring = 0; ring < poly.size(); ring++)
+		{
+			const DLine2 &line = poly[ring];
+			AddSurfaceLineToMesh(mesh, &line);
+
+			// don't put too many vertices in any one mesh
+			if (mesh->GetNumVertices() > 10000)
+			{
+				total += mesh->GetNumVertices();
+				mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+				geom->AddMesh(mesh, m_yellow);
+				mesh->Release();	// pass ownership to Geometry
+			}
 		}
 	}
 	total += mesh->GetNumVertices();
