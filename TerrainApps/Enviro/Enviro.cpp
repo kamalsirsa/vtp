@@ -1562,9 +1562,11 @@ void Enviro::OnMouseRightUp(vtMouseEvent &event)
 			close_route();
 		if (m_mode == MM_SELECT)
 		{
-			vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+			vtTerrain *t = GetCurrentTerrain();
+			vtStructureArray3d *sa = t->GetStructures();
+			vtPlantInstanceArray3d &plants = t->GetPlantInstances();
 
-			if (sa->NumSelected() != 0)
+			if (sa->NumSelected() != 0 || plants.NumSelected() != 0)
 				ShowPopupMenu(event.pos);
 		}
 	}
