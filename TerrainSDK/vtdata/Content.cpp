@@ -4,7 +4,7 @@
 // Implements the ContentManager class, including the ability to read
 // and write the contents to an XML file.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project.
+// Copyright (c) 2001-2005 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -183,7 +183,7 @@ const char *vtTagArray::GetValueString(const char *szTagName, bool bUTF8ToAnsi, 
 	else
 	{
 		if (!bSuppressWarning)
-			VTLOG("\tWarning: could not get tag %s, not found.\n", szTagName);
+			VTLOG("\tWarning: could not get tag '%s', not found.\n", szTagName);
 		return NULL;
 	}
 }
