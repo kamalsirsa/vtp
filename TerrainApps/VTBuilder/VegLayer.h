@@ -38,17 +38,18 @@ public:
 	// Projection
 	vtProjection m_proj;
 
-	// Basics to overwrite vtLayer 
-	bool GetExtent(DRECT &rect);
-	void DrawLayer(wxDC* pDC, vtScaledView *pView);
+	// Basics to overwrite vtLayer / vtRawLayer
 	bool OnSave();
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
 	void GetPropertyText(wxString &str);
 	bool CanBeSaved();
+	wxString GetFileExtension();
+
+	void SetVegType(VegLayerType type);
+	VegLayerType GetVegType() { return m_VLType; }
 
 	// Importing data into veglayer
-	VegLayerType m_VLType;
 	void AddElementsFromLULC(vtLULCFile *pLULC);
 	bool AddElementsFromSHP_Polys(const wxString2 &filename, const vtProjection &proj,
 		int fieldindex, VegImportFieldType datatype);
@@ -63,12 +64,12 @@ public:
 	bool ExportToSHP(const char *fname);
 
 protected:
-	void DrawInstances(wxDC* pDC, vtScaledView *pView);
+	vtPlantInstanceArray *GetPIA() { return (vtPlantInstanceArray *) m_pSet; }
+	vtFeatureSetPolygon *GetPS() { return (vtFeatureSetPolygon *) m_pSet; }
+	VegLayerType m_VLType;
 
 	int	m_field_density;
 	int m_field_biotype;
-
-	vtPlantInstanceArray m_Pia;
 };
 
 #endif	// VEGLAYER_H
