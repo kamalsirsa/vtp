@@ -529,6 +529,7 @@ bool vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
 		// avoid numeric trouble with flat terrains by growing range
 		fMin -= 1;
 		fMax += 1;
+		fRange = fMax - fMin;
 	}
 
 	VTLOG("dib size %d %d, ", w, h);
