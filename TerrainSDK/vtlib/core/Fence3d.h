@@ -23,9 +23,8 @@ public:
 	vtGeom *GetGeom();
 	virtual void DeleteNode();
 
-	static void SetScale(float fScale) { m_fFenceScale = fScale; }
+	static void SetScale(float fScale) { s_fFenceScale = fScale; }
 
-	void BuildGeometry(vtHeightField *pHeightField);
 	void DestroyGeometry();
 
 protected:
@@ -34,7 +33,7 @@ protected:
 	void	AddFencepost(FPoint3 &p1, int iMatIdx);
 
 	// all fences share the same set of materials
-	static vtMaterialArray *m_pFenceMats;
+	static vtMaterialArray *s_pFenceMats;
 	static void CreateMaterials();
 	static int m_mi_woodpost;
 	static int m_mi_wire;
@@ -42,7 +41,7 @@ protected:
 	static int m_mi_metalpost;
 
 	// fence size is exaggerated by this amount
-	static float m_fFenceScale;
+	static float s_fFenceScale;
 
 	vtGeom		*m_pFenceGeom;
 	bool		m_bBuilt;

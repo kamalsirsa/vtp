@@ -13,8 +13,8 @@
 #include "Fence3d.h"
 
 // statics
-vtMaterialArray *vtFence3d::m_pFenceMats;
-float vtFence3d::m_fFenceScale;	// fence size is exaggerated by this amount
+vtMaterialArray *vtFence3d::s_pFenceMats;
+float vtFence3d::s_fFenceScale;	// fence size is exaggerated by this amount
 
 vtFence3d::vtFence3d() : vtFence()
 {
@@ -29,13 +29,7 @@ vtFence3d::vtFence3d(FenceType type, float fHeight, float fSpacing) : vtFence(ty
 void vtFence3d::Init()
 {
 	m_bBuilt = false;
-
-	m_pFenceGeom = new vtGeom;
-	m_pFenceGeom->SetName2("Fence");
-
-	if (m_pFenceMats == NULL)
-		CreateMaterials();
-	m_pFenceGeom->SetMaterials(m_pFenceMats);
+	m_pFenceGeom = NULL;
 }
 
 int vtFence3d::m_mi_woodpost;
@@ -45,13 +39,13 @@ int vtFence3d::m_mi_metalpost;
 
 void vtFence3d::CreateMaterials()
 {
-	m_pFenceMats = new vtMaterialArray();
+	s_pFenceMats = new vtMaterialArray();
 
 	// create wirefence post textured material (0)
 	vtString fname;
 
 	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/fencepost_64.bmp");
-	m_mi_woodpost = m_pFenceMats->AddTextureMaterial2(fname,
+	m_mi_woodpost = s_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,
 		TERRAIN_AMBIENT,
 		TERRAIN_DIFFUSE,
@@ -59,14 +53,14 @@ void vtFence3d::CreateMaterials()
 		TERRAIN_EMISSIVE);
 
 	// add wire material (1)
-	m_mi_wire = m_pFenceMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+	m_mi_wire = s_pFenceMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
 		RGBf(0.5f, 0.5f, 0.5f),	// ambient
 		false, true, false,		// culling, lighting, wireframe
 		0.6f);					// alpha
 
 	// chainlink material(2)
 	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/chain128-4.png");
-	m_mi_chainlink = m_pFenceMats->AddTextureMaterial2(fname,
+	m_mi_chainlink = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		1.0f,	// ambient
 		0.0f,	// diffuse
@@ -75,7 +69,7 @@ void vtFence3d::CreateMaterials()
 
 	// create chainfence post textured material (3)
 	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/chainpost32.bmp");
-	m_mi_metalpost = m_pFenceMats->AddTextureMaterial2(fname,
+	m_mi_metalpost = s_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT,
 		TERRAIN_DIFFUSE,
@@ -88,7 +82,7 @@ void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
 	// create fencepost block
 	vtMesh *pPostMesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
 
-	FPoint3 PostSizeScaled = m_PostSize * m_fFenceScale;
+	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
 	pPostMesh->CreateOptimizedBlock(PostSizeScaled );
 
 	// scoot over and upwards to put it above ground
@@ -108,8 +102,8 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 	int i, j, nposts;
 
 	int numfencepts = m_pFencePts.GetSize();
-	float fCurrentSpacing = m_fSpacing * m_fFenceScale;
-	FPoint3 PostSizeScaled = m_PostSize * m_fFenceScale;
+	float fCurrentSpacing = m_fSpacing * s_fFenceScale;
+	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
 
 	// first determine where the fence posts go, for this whole array
 	// of fences
@@ -211,27 +205,13 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 				{
 					// increment u based on the length of each fence segment
 					float length = (posts[i+1] - posts[i]).Length();
-					u += ((length / m_fFenceScale) * 2.0f);
+					u += ((length / s_fFenceScale) * 2.0f);
 				}
 			}
 			pMesh->AddStrip2(nposts * 2, 0);
 			m_pFenceGeom->AddMesh(pMesh, m_mi_chainlink);
 		}
 	}
-}
-
-//
-// Builds (or rebuilds) the geometry for a fence.
-//
-void vtFence3d::BuildGeometry(vtHeightField *pHeightField)
-{
-	if (m_bBuilt)
-		DestroyGeometry();
-
-	// create surface and shape
-	AddFenceMeshes(pHeightField);
-
-	m_bBuilt = true;
 }
 
 void vtFence3d::DestroyGeometry()
@@ -246,10 +226,31 @@ void vtFence3d::DestroyGeometry()
 	m_bBuilt = false;
 }
 
-// implement vtStructure3d methods
+/////////////////////////////////////
+// Implement vtStructure3d methods
+
+/**
+ * Build (or rebuild) the geometry for a fence.
+ */
 bool vtFence3d::CreateNode(vtHeightField *hf, const vtTagArray &options)
 {
-	BuildGeometry(hf);
+	if (!m_pFenceGeom)
+	{
+		if (s_pFenceMats == NULL)
+			CreateMaterials();
+
+		m_pFenceGeom = new vtGeom;
+		m_pFenceGeom->SetName2("Fence");
+		m_pFenceGeom->SetMaterials(s_pFenceMats);
+	}
+
+	if (m_bBuilt)
+		DestroyGeometry();
+
+	// create surface and shape
+	AddFenceMeshes(hf);
+
+	m_bBuilt = true;
 	return true;
 }
 
@@ -260,6 +261,11 @@ vtGeom *vtFence3d::GetGeom()
 
 void vtFence3d::DeleteNode()
 {
-	// is needed for fences:
-	DestroyGeometry();
+	if (m_pFenceGeom)
+	{
+		DestroyGeometry();
+		delete m_pFenceGeom;
+		m_pFenceGeom = NULL;
+	}
 }
+
