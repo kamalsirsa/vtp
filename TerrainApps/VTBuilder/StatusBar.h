@@ -36,6 +36,7 @@ private:
 		Field_Coord,
 		Field_Zone,
 		Field_Datum,
+		Field_HUnits,
 		Field_Mouse,
 		Field_Height,
 		Field_Max

@@ -19,7 +19,7 @@
 
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
-	static const int widths[Field_Max] = { -1, 38, 50, 65, 170, 76 };
+	static const int widths[Field_Max] = { -1, 38, 50, 65, 52, 170, 76 };
 
 	SetFieldsCount(Field_Max);
 	SetStatusWidths(Field_Max, widths);
@@ -70,6 +70,17 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	SetStatusText(str, Field_Zone);
 
 	SetStatusText(datumToStringShort(proj.GetDatum()), Field_Datum);
+
+	LinearUnits lu = proj.GetUnits();
+	const char *text;
+	switch (lu)
+	{
+	case LU_DEGREES:  text = "Degrees";    break;
+	case LU_METERS:	  text = "Meters";     break;
+	case LU_FEET_INT: text = "Feet"; break;
+	case LU_FEET_US:  text = "Feet (US)";  break;
+	}
+	SetStatusText(text, Field_HUnits);
 
 	DPoint2 p;
 	BuilderView *pView = frame->GetView();
