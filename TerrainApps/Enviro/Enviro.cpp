@@ -15,7 +15,6 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Globe.h"
 
-#include "vtdata/boost/directory.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 
@@ -148,18 +147,16 @@ void Enviro::LoadTerrainDescriptions()
 {
 	VTLOG("LoadTerrainDescriptions...");
 
-	using namespace boost::filesystem;
-
 	vtTerrain *pTerr;
 	for (unsigned int i = 0; i < g_Options.m_DataPaths.size(); i++)
 	{
 		vtString directory = g_Options.m_DataPaths[i] + "Terrains";
-		for (dir_it it((const char *)directory); it != dir_it(); ++it)
+		for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 		{
-			if (get<is_hidden>(it) || get<is_directory>(it))
+			if (it.is_hidden() || it.is_directory())
 				continue;
 
-			std::string name1 = *it;
+			std::string name1 = it.filename();
 			vtString name = name1.c_str();
 
 			// only look for ".ini" files

@@ -30,7 +30,6 @@
 #include "StartupDlg.h"
 #include "../Enviro.h"	// for GetCurrentTerrain
 #include "../Options.h"
-#include "vtdata/boost/directory.h"
 #include "vtdata/vtLog.h"
 
 #include "app.h"
@@ -45,16 +44,15 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 {
 //	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
 
-	using namespace boost::filesystem;
 	int entries = 0, matches = 0;
 
 	wxString2 wildstr = wildcard;
-	for (dir_it it((const char *)directory); it != dir_it(); ++it)
+	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
 	{
 		entries++;
-		std::string name1 = *it;
+		std::string name1 = it.filename();
 		//		VTLOG("   entry: '%s'", name1.c_str());
-		if (get<is_hidden>(it) || get<is_directory>(it))
+		if (it.is_hidden() || it.is_directory())
 			continue;
 
 		wxString2 name = name1.c_str();
