@@ -981,10 +981,10 @@ void vtFrame::Snapshot(bool bNumbered)
 		// save current directory
 		wxString path = wxGetCwd();
 
-		wxString filter = _T("JPEG Files (*.jpg)|*.jpg|")
-			_T("BMP Files (*.bmp)|*.bmp|")
-			_T("PNG Files (*.png)|*.png|")
-			_T("TIF Files (*.tif)|*.tif|");
+		wxString filter = _T("JPEG Files (*.jpg)|*.jpg") _T("|")
+			_T("BMP Files (*.bmp)|*.bmp") _T("|")
+			_T("PNG Files (*.png)|*.png") _T("|")
+			_T("TIF Files (*.tif)|*.tif");
 		EnableContinuousRendering(false);
 		wxFileDialog saveFile(NULL, _("Save View Snapshot"), _T(""), _T(""),
 			filter, wxSAVE);

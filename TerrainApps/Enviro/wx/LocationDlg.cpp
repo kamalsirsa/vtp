@@ -438,7 +438,7 @@ void LocationDlg::OnPlay( wxCommandEvent &event )
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 {
 	wxString2 filter = _("Polyline Data Sources");
-	filter += _T(" (*.vtap,*.shp,*.dxf,*.igc)|*.vtap;*.shp;*.dxf;*.igc|");
+	filter += _T(" (*.vtap,*.shp,*.dxf,*.igc)|*.vtap;*.shp;*.dxf;*.igc");
 	wxFileDialog loadFile(NULL, _("Load Animation Path"), _T(""), _T(""),
 		filter, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
