@@ -116,6 +116,8 @@ void PlantDlg::OnSelChangeSpecies( wxCommandEvent &event )
 
 void PlantDlg::OnHeightSlider( wxCommandEvent &event )
 {
+	if (!m_pPlantList) return;
+
 	m_iHeightSlider = m_pHeightSlider->GetValue();
 	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
@@ -136,6 +138,8 @@ void PlantDlg::OnHeightEdit( wxCommandEvent &event )
 
 void PlantDlg::HeightToSlider()
 {
+	if (!m_pPlantList) return;
+
 	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
 		m_iHeightSlider = (int) (m_opt.m_fHeight / pSpecies->GetMaxHeight() * 100.0f);
