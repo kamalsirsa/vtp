@@ -84,7 +84,7 @@ void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 	FPoint3 vNormal, center;
 	FPoint3 start_point;
 
-	//add some cars!
+	// add some cars!
 	if (m_pRoadMap)
 	{
 		NodeGeom *n = (NodeGeom*) m_pRoadMap->GetFirstNode();
@@ -144,6 +144,13 @@ VehicleType::VehicleType(const char *szName)
 	m_iLods = 0;
 }
 
+Vehicle::Vehicle()
+{
+	m_pLOD = new vtLOD();
+	AddChild(m_pLOD);
+}
+
+
 //
 // set filename and swap-out distance (in meters) for each LOD
 //
@@ -162,14 +169,12 @@ void VehicleType::AttemptModelLoad()
 	m_bAttemptedLoaded = true;
 	if (m_iLods < 1)
 		return;
-#if 0
-	// TODO
+
 	for (int i = 0; i < m_iLods; i++)
 	{
-		if (vtModel *pMod = vtLoadModel(m_strFilename[i]))			// can read file?
+		if (vtNode *pMod = vtLoadModel(m_strFilename[i]))			// can read file?
 			m_pModels.SetAt(i, pMod);
 	}
-#endif
 }
 
 Vehicle *VehicleType::CreateVehicle(RGBf &cColor, float fSize)
@@ -187,22 +192,18 @@ Vehicle *VehicleType::CreateVehicle(RGBf &cColor, float fSize)
 	// there is no distance at which the object should vanish for being too close
 	distances[0] = 0.0f;
 
-#if 0
 	for (int i = 0; i < m_iLods; i++)
 	{
 		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->CreateClone();
 		pNewVehicle->AddChild(pNewModel);
 		distances[i+1] = m_fDistance.GetAt(i) * fSize;
 	}
-	pNewVehicle->SetRanges(distances, m_iLods+1);
+	pNewVehicle->m_pLOD->SetRanges(distances, m_iLods+1);
 
 	float scale = 0.01f;	// models are in cm
 	pNewVehicle->m_fSize = fSize * scale;
 	ConvertPurpleToColor(pNewVehicle, cColor);
 
 	return pNewVehicle;
-#else
-	return NULL;
-#endif
 }
 

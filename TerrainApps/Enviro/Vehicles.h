@@ -4,12 +4,13 @@
 
 #define MAX_VEHICLE_LODS	5
 
-class Vehicle : public vtMovLOD
+class Vehicle : public vtTransform
 {
 public:
-	Vehicle(vtLOD *pContained = NULL) : vtMovLOD(pContained) {}
+	Vehicle();
 
 	float	m_fSize;	// this many times larger than real
+	vtLOD	*m_pLOD;
 };
 
 class VehicleType
@@ -30,7 +31,7 @@ public:
 	VehicleType *m_pNext;
 
 protected:
-	Array<vtTransform*> m_pModels;
+	Array<vtNode*> m_pModels;
 
 	bool m_bAttemptedLoaded;
 	void AttemptModelLoad();

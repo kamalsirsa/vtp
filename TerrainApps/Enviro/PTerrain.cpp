@@ -46,35 +46,31 @@ void PTerrain::SetupVehicles()
 {
 	VehicleType *bronco = new VehicleType("bronco");
 	vtString fname;
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/bronco_v2.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/bronco/bronco_v2.3ds");
 	bronco->SetModelLod(0, fname, 500);
 	AddVehicleType(bronco);
 
 	VehicleType *discovery = new VehicleType("discovery");
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD01.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery/discovery_LOD01.3ds");
 	discovery->SetModelLod(0, fname, 50);
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD02.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery/discovery_LOD02.3ds");
 	discovery->SetModelLod(1, fname, 100);
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD03.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery/discovery_LOD03.3ds");
 	discovery->SetModelLod(2, fname, 200);
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD04.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery/discovery_LOD04.3ds");
 	discovery->SetModelLod(3, fname, 500);
 	AddVehicleType(discovery);
 
 	VehicleType *hele_on = new VehicleType("bus");
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/bus991025-3.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/hele-on/bus020101.3ds");
 	hele_on->SetModelLod(0, fname, 800);
 	AddVehicleType(hele_on);
 
 	VehicleType *b747 = new VehicleType("747");
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD00.dsm");
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747/747-lod00.3ds");
 	b747->SetModelLod(0, fname, 200);
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD01.dsm");
-	b747->SetModelLod(1, fname, 1000);
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD02.dsm");
-	b747->SetModelLod(2, fname, 2000);
-	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD03.dsm");
-	b747->SetModelLod(3, fname, 5000);
+//	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD01.3ds");
+//	b747->SetModelLod(1, fname, 1000);
 	AddVehicleType(b747);
 }
 
