@@ -97,12 +97,8 @@ public:
 	bool FindClosestLinearCorner(const DPoint2 &point, double epsilon,
 						   int &structure, int &corner, double &distance);
 
-	/** Find the structure which is closest to the given point, if it is within
-	 * 'epsilon' distance.  The structure index and distance are returned by
-	 * reference.
-	 */
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
-			int &building, double &distance, bool bSkipBuildings = false);
+			int &structure, double &distance, bool bSkipBuildings = false);
 
 	bool IsEmpty() { return (GetSize() == 0); }
 	void GetExtents(DRECT &ext);
