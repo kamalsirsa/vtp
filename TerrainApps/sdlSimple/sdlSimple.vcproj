@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Debug/sdlSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -109,7 +109,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib SDLmain.lib SDL.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Release/sdlSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

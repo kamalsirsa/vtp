@@ -40,7 +40,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib libpng.lib zlib.lib glu32.lib opengl32.lib winmm.lib netcdf.lib gdal_i.lib libjpeg.lib"
+				AdditionalDependencies="osg.lib osgDB.lib osgUtil.lib osgText.lib libpng13.lib zlib1.lib glu32.lib opengl32.lib winmm.lib netcdf.lib gdal_i.lib libjpeg.lib"
 				OutputFile=".\Release-mfc/mfcEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -106,7 +106,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib libjpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib libjpeg.lib"
 				OutputFile=".\Debug-mfc/mfcEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -153,10 +153,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="mfc\res\Enviro.ico">
+				RelativePath="res\Enviro.ico">
 			</File>
 			<File
-				RelativePath="res\Enviro.ico">
+				RelativePath="mfc\res\Enviro.ico">
 			</File>
 			<File
 				RelativePath="mfc\Enviro.rc">
@@ -185,10 +185,10 @@
 				RelativePath="res\EnviroDoc.ico">
 			</File>
 			<File
-				RelativePath="mfc\res\Toolbar.bmp">
+				RelativePath="res\Toolbar.bmp">
 			</File>
 			<File
-				RelativePath="res\Toolbar.bmp">
+				RelativePath="mfc\res\Toolbar.bmp">
 			</File>
 			<File
 				RelativePath="res\treeimag.bmp">

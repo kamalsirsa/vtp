@@ -41,7 +41,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24d.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib opengl32.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="wxmsw24d.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib opengl32.lib netcdf.lib libpng13d.lib zlib1d.lib gdal_id.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Debug/wxSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -110,7 +110,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24.lib osg.lib osgUtil.lib osgDB.lib osgText.lib opengl32.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="wxmsw24.lib osg.lib osgUtil.lib osgDB.lib osgText.lib opengl32.lib netcdf.lib libpng13.lib zlib1.lib gdal_i.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Release/wxSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
