@@ -391,6 +391,43 @@ void vtNode::ClearOsgModelCache()
 	m_ModelCache.clear();
 }
 
+void DecorateVisit(osg::Node *node)
+{
+	if (!node) return;
+
+	vtNode *vnode = NULL;
+	osg::Group *group = NULL;
+	vtGroup *vgroup = NULL;
+
+	// first, determine if this node is already decorated
+	vnode = (vtNode *) (node->getUserData());
+	if (!vnode)
+	{
+		// needs decorating.  it is a group?
+		group = dynamic_cast<osg::Group*>(node);
+		if (group)
+		{
+			vgroup = new vtGroup(true);
+			vgroup->SetOsgGroup(group);
+			vnode = vgroup;
+		}
+		else
+		{
+			// decorate as plain native node
+			vnode = new vtNativeNode(node);
+		}
+	}
+	if (group)
+	{
+		for (unsigned int i = 0; i < group->getNumChildren(); i++)
+			DecorateVisit(group->getChild(i));
+	}
+}
+
+void vtNode::DecorateNativeGraph()
+{
+	DecorateVisit(m_pNode.get());
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vtGroup

@@ -55,6 +55,7 @@ public:
 	void SetOsgNode(osg::Node *n);
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
 	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
+	void DecorateNativeGraph();
 
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
 	static void ClearOsgModelCache();
@@ -121,13 +122,13 @@ public:
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup; }
 	const osg::Group *GetOsgGroup() const { return m_pGroup; }
+	void SetOsgGroup(osg::Group *g);
 
 protected:
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
 	virtual ~vtGroup() {}
 
-	void SetOsgGroup(osg::Group *g);
 	osg::Group *m_pGroup;
 };
 
