@@ -1256,7 +1256,8 @@ void MainFrame::ExportElevation()
 	SampleCurrentTerrains(pOutput);
 	pOutput->FillGaps();
 
-	bool success = pOutput->m_pGrid->SaveToBT(strPathName.mb_str());
+	bool gzip = (strPathName.Right(3).CmpNoCase(_T(".gz")) == 0);
+	bool success = pOutput->m_pGrid->SaveToBT(strPathName.mb_str(), NULL, gzip);
 	if (success)
 		DisplayAndLog("Successfully wrote BT file to '%s'", strPathName.mb_str());
 	else
