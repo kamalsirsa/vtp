@@ -112,22 +112,26 @@ int	vtProjection::GetUTMZone() const
 /**
  * Set the datum to an EPSG Datum code, a value in the range (6120 - 6904).
  */
-void vtProjection::SetDatum(int iDatum)
+OGRErr vtProjection::SetDatum(int iDatum)
 {
+	OGRErr err;
+
 	// OGR does not have functionality to change the Datum of an
 	// existing coordinate system.
 	//
 	if (IsGeographic() || GetRoot() == NULL)
 	{
 		// simple case: re-create the object with the new datum
-		SetGeogCSFromDatum(iDatum);
+		err = SetGeogCSFromDatum(iDatum);
 	}
 	else
 	{
 		// For a projected CS (PROJCS), we only want to change the geographic
 		// part (GEOGCS).  Step 1: create the desired GEOCS
 		vtProjection geo;
-		geo.SetGeogCSFromDatum(iDatum);
+		err = geo.SetGeogCSFromDatum(iDatum);
+		if (err != OGRERR_NONE)
+			return err;
 		OGR_SRSNode *clone = geo.GetRoot()->Clone();
 
 		// Step 2, find the GEOGCS part of the PROJCS
@@ -137,6 +141,7 @@ void vtProjection::SetDatum(int iDatum)
 		root->DestroyChild(1);
 		root->InsertChild(clone, 1);
 	}
+	return err;
 }
 
 /**
@@ -260,8 +265,9 @@ const char *vtProjection::GetProjectionNameShort() const
  * Set the projection to a fresh, new geographical coordinate system
  * based on the indicated Datum.
  */
-void vtProjection::SetGeogCSFromDatum(int iDatum)
+OGRErr vtProjection::SetGeogCSFromDatum(int iDatum)
 {
+	OGRErr err;
 	Clear();
 
 	// support old USGS datums for backward compatibility
@@ -270,40 +276,63 @@ void vtProjection::SetGeogCSFromDatum(int iDatum)
 		DATUM eDatum = (DATUM) iDatum;
 		switch (eDatum)
 		{
-			case ADINDAN:			SetWellKnownGeogCS( "EPSG:4201" ); break;
-			case ARC1950:			SetWellKnownGeogCS( "EPSG:4209" ); break;
-			case ARC1960:			SetWellKnownGeogCS( "EPSG:4210" ); break;
-			case AUSTRALIAN_GEODETIC_1966: SetWellKnownGeogCS( "EPSG:4202" ); break;
-			case AUSTRALIAN_GEODETIC_1984: SetWellKnownGeogCS( "EPSG:4203" ); break;
-			case CAPE:				SetWellKnownGeogCS( "EPSG:4222" ); break;
-			case EUROPEAN_DATUM_1950: SetWellKnownGeogCS( "EPSG:4230" ); break;
-			case GEODETIC_DATUM_1949: SetWellKnownGeogCS( "EPSG:4272" ); break;
-			case HU_TZU_SHAN:		SetWellKnownGeogCS( "EPSG:4236" ); break;
-		//	case INDIAN:			SetWellKnownGeogCS( "EPSG:" ); break;	// there are 3 Indian Datum
-			case NAD27:				SetWellKnownGeogCS( "NAD27" ); break;
-			case NAD83:				SetWellKnownGeogCS( "NAD83" ); break;
+			case ADINDAN:
+				err = SetWellKnownGeogCS( "EPSG:4201" ); break;
+			case ARC1950:
+				err = SetWellKnownGeogCS( "EPSG:4209" ); break;
+			case ARC1960:
+				err = SetWellKnownGeogCS( "EPSG:4210" ); break;
+			case AUSTRALIAN_GEODETIC_1966:
+				err = SetWellKnownGeogCS( "EPSG:4202" ); break;
+			case AUSTRALIAN_GEODETIC_1984:
+				err = SetWellKnownGeogCS( "EPSG:4203" ); break;
+			case CAPE:
+				err = SetWellKnownGeogCS( "EPSG:4222" ); break;
+			case EUROPEAN_DATUM_1950:
+				err = SetWellKnownGeogCS( "EPSG:4230" ); break;
+			case GEODETIC_DATUM_1949:
+				err = SetWellKnownGeogCS( "EPSG:4272" ); break;
+			case HU_TZU_SHAN:
+				err = SetWellKnownGeogCS( "EPSG:4236" ); break;
+		//	case INDIAN:
+		//		err = SetWellKnownGeogCS( "EPSG:" ); break;	// there are 3 Indian Datum
+			case NAD27:
+				err = SetWellKnownGeogCS( "NAD27" ); break;
+			case NAD83:
+				err = SetWellKnownGeogCS( "NAD83" ); break;
 
-			case OLD_HAWAIIAN_MEAN: SetWellKnownGeogCS( "EPSG:4135" ); break;
-			case OMAN:				SetWellKnownGeogCS( "EPSG:4232" ); break;	// Fahud
-			case ORDNANCE_SURVEY_1936: SetWellKnownGeogCS( "EPSG:4277" ); break;
-			case PUERTO_RICO:		SetWellKnownGeogCS( "EPSG:4139" ); break;
-			case PULKOVO_1942:		SetWellKnownGeogCS( "EPSG:4284" ); break;
-			case PROVISIONAL_S_AMERICAN_1956: SetWellKnownGeogCS( "EPSG:4248" ); break;
-			case TOKYO:				SetWellKnownGeogCS( "EPSG:4301" ); break;
+			case OLD_HAWAIIAN_MEAN:
+				err = SetWellKnownGeogCS( "EPSG:4135" ); break;
+			case OMAN:
+				err = SetWellKnownGeogCS( "EPSG:4232" ); break;	// Fahud
+			case ORDNANCE_SURVEY_1936:
+				err = SetWellKnownGeogCS( "EPSG:4277" ); break;
+			case PUERTO_RICO:
+				err = SetWellKnownGeogCS( "EPSG:4139" ); break;
+			case PULKOVO_1942:
+				err = SetWellKnownGeogCS( "EPSG:4284" ); break;
+			case PROVISIONAL_S_AMERICAN_1956:
+				err = SetWellKnownGeogCS( "EPSG:4248" ); break;
+			case TOKYO:
+				err = SetWellKnownGeogCS( "EPSG:4301" ); break;
 
-			case WGS_72:			SetWellKnownGeogCS( "WGS72" ); break;
-			case WGS_84:			SetWellKnownGeogCS( "WGS84" ); break;
+			case WGS_72:
+				err = SetWellKnownGeogCS( "WGS72" ); break;
+			case WGS_84:
+				err = SetWellKnownGeogCS( "WGS84" ); break;
 			default:
-				SetWellKnownGeogCS( "WGS84" );
+				err = SetWellKnownGeogCS( "WGS84" );
 		}
-		return;
 	}
-
-	// Turn the datum into a coord system
-	int iCoordSystem = iDatum - 2000;
-	char name[12];
-	sprintf(name, "EPSG:%d", iCoordSystem);
-	SetWellKnownGeogCS(name);
+	else
+	{
+		// Turn the datum into a coord system
+		int iCoordSystem = iDatum - 2000;
+		char name[12];
+		sprintf(name, "EPSG:%d", iCoordSystem);
+		err = SetWellKnownGeogCS(name);
+	}
+	return err;
 }
 
 

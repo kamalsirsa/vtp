@@ -65,11 +65,11 @@ public:
 
 	void	SetUTMZone(int iZone);
 	int		GetUTMZone() const;
-	void	SetDatum(int iDatum);
+	OGRErr	SetDatum(int iDatum);
 	int		GetDatum() const;
 	LinearUnits	GetUnits() const;
 
-	void	SetGeogCSFromDatum(int iDatum);
+	OGRErr	SetGeogCSFromDatum(int iDatum);
 
 	void	SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum);
 	void	SetSpatialReference(OGRSpatialReference *pRef);
