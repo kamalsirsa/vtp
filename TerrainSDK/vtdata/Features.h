@@ -1,0 +1,108 @@
+//
+// Features.h
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
+#ifndef VTDATA_FEATURES
+#define VTDATA_FEATURES
+
+#include "shapelib/shapefil.h"
+#include "MathTypes.h"
+#include "vtString.h"
+#include "Projections.h"
+
+/**
+ * This class is used to store values in memory loaded from DBF files.
+ * Alternately, we could use values directly from the DBF file instead,
+ * or eventually some combination where a window into the DBF is
+ * cached in memory to support very large files.
+ */
+class Field
+{
+public:
+	Field(const char *name, DBFFieldType ftype);
+	~Field();
+
+	int AddRecord();
+	void SetValue(int record, const char *string);
+	void SetValue(int record, int value);
+	void SetValue(int record, double value);
+	void CopyValue(int FromRecord, int ToRecord);
+
+	DBFFieldType m_type;
+	int m_width, m_decimals;	// these are for remembering SHP limitations
+	vtString m_name;
+
+	Array<int> m_int;
+	Array<double> m_double;
+	Array<vtString*> m_string;
+};
+
+/**
+ * vtFeatures contains a collection of features which are just abstract data,
+ * without any specific correspondence to any aspect of the physical world.
+ * This is the same as a traditional GIS file (e.g. ESRI Shapefile).
+ * In fact, SHP/DBF and 'shapelib' are used as the format and basic
+ * functionality for this class.
+ *
+ * Examples: political and property boundaries, geocoded addresses,
+ * flight paths, place names.
+ */
+class vtFeatures
+{
+public:
+	vtFeatures();
+	~vtFeatures();
+
+	// File IO
+	bool SaveToSHP(const char *filename);
+	bool LoadFromSHP(const char *filename);
+
+	// feature (entity) operations
+	int NumEntities();
+	int GetEntityType();
+	void SetEntityType(int type);
+	int AddPoint(const DPoint2 &p);
+	int AddPoint(const DPoint3 &p);
+	void GetPoint(int num, DPoint3 &p);
+	void CopyEntity(int from, int to);
+
+	// selection
+	void Select(int iEnt, bool set = true);
+	bool IsSelected(int iEnt);
+	int NumSelected();
+	void DeselectAll();
+	void InvertSelection();
+	int DoBoxSelect(const DRECT &rect, SelectionType st);
+	int SelectByCondition(int iField, int iCondition, const char *szValue);
+	void DeleteSelected();
+
+	// attribute (field) operations
+	int GetNumFields() { return m_fields.GetSize(); }
+	Field *GetField(int i) { return m_fields.GetAt(i); }
+	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
+	int AddRecord();
+	void SetValue(int record, int field, const char *string);
+	void SetValue(int record, int field, int value);
+	void SetValue(int record, int field, double value);
+	void GetValueAsString(int record, int field, vtString &str);
+
+protected:
+	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
+	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON
+	int			m_nSHPType;
+	DLine2		m_Point2;		// SHPT_POINT
+	DLine3		m_Point3;		// SHPT_POINTZ
+	DPolyArray2	m_LinePoly;		// SHPT_ARC, SHPT_POLYGON
+
+	Array<bool>	m_Selected;
+
+	Array<Field*> m_fields;
+
+	vtProjection	m_proj;
+};
+
+#endif // VTDATA_FEATURES
+
