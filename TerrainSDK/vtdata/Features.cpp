@@ -483,9 +483,9 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	int num_fields = defn->GetFieldCount();
 	OGRwkbGeometryType geom_type = defn->GetGeomType();
 
-	// Get the projection (SpatialReference) from this layer?  We may not
-	// be able to, because sometimes (e.g. for GML) the layer doesn't have
-	// it; must use the first Geometry instead.
+	// Get the projection (SpatialReference) from this layer, if we can.
+	// Sometimes (e.g. for GML) the layer doesn't have it; may have to
+	// use the first Geometry instead.
 	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
 	if (pSpatialRef)
 	{
@@ -499,28 +499,28 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	{
 		switch (geom_type)
 		{
-			case wkbPoint:
-				m_nSHPType = SHPT_POINT;
-				break;
-			case wkbLineString:
-			case wkbMultiLineString:
-				m_nSHPType = SHPT_ARC;
-				break;
-			case wkbPolygon:
-				m_nSHPType = SHPT_POLYGON;
-				break;
-			case wkbPoint25D:
-				m_nSHPType = SHPT_POINTZ;
-				break;
-			case wkbUnknown:
-				// This usually indicates that the file contains a mix of different
-				// geometry types.  Look at the first geometry.
-				pFeature = pLayer->GetNextFeature();
-				pGeom = pFeature->GetGeometryRef();
-				geom_type = pGeom->getGeometryType();
-				break;
-			default:
-				return false;	// don't know what to do with this geom type
+		case wkbPoint:
+			m_nSHPType = SHPT_POINT;
+			break;
+		case wkbLineString:
+		case wkbMultiLineString:
+			m_nSHPType = SHPT_ARC;
+			break;
+		case wkbPolygon:
+			m_nSHPType = SHPT_POLYGON;
+			break;
+		case wkbPoint25D:
+			m_nSHPType = SHPT_POINTZ;
+			break;
+		case wkbUnknown:
+			// This usually indicates that the file contains a mix of different
+			// geometry types.  Look at the first geometry.
+			pFeature = pLayer->GetNextFeature();
+			pGeom = pFeature->GetGeometryRef();
+			geom_type = pGeom->getGeometryType();
+			break;
+		default:
+			return false;	// don't know what to do with this geom type
 		}
 	}
 
