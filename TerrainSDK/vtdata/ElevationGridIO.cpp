@@ -730,13 +730,54 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 float get_dms8(FILE *fp)
 {
 	float f;
+	char hem;
+	float degrees, minutes, seconds;
 
 	char buf[8];
 	fread(buf, 8, 1, fp);
 
-	buf[3] = 0;
-	f = (float)atof(buf);
-	if (buf[7] == 'W') f = -f;
+	hem = buf[7];
+	buf[7] = '\0';
+	seconds = (float)atof(buf + 5);
+	buf[5] = '\0';
+	minutes = (float)atof(buf + 3);
+	buf[3] = '\0';
+	degrees = (float)atof(buf);
+
+	f = degrees + minutes/60 + seconds/3600;
+	if (hem == 'W') f = -f;
+
+	return f;
+}
+
+//
+// Helper for DTED reader: read an 4-byte number in the
+// return as integer
+//
+int get_dddd(FILE *fp)
+{
+	int i;
+
+	char buf[5];
+	buf[4] = '\0';
+	fread(buf, 4, 1, fp);
+	i = atoi(buf);
+
+	return i;
+}
+
+//
+// Helper for DTED reader: read an 4-byte number in the
+// form SSSS, decimal seconds
+// return as decimal degree
+//
+float get_ssss(FILE *fp)
+{
+	float f;
+
+	f = (float)get_dddd(fp);
+	f = f/36000;
+
 	return f;
 }
 
@@ -779,25 +820,26 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 		fclose(fp);
 		return false;
 	}
+
+	float xInterval = get_ssss(fp);
+	float yInterval = get_ssss(fp);
+
+	// get dimensions
+	fseek(fp, 47, 0);
+	m_iColumns = get_dddd(fp);
+	m_iRows = get_dddd(fp);
+
 	m_Corners[0].x = get_dms8(fp);
 	m_Corners[0].y = get_dms8(fp);
 
 	// imply other corners
 	m_Corners[1].x = m_Corners[0].x;
-	m_Corners[1].y = m_Corners[0].y + 1.0f;
-	m_Corners[2].x = m_Corners[0].x + 1.0f;
-	m_Corners[2].y = m_Corners[0].y + 1.0f;
-	m_Corners[3].x = m_Corners[0].x + 1.0f;
+	m_Corners[1].y = m_Corners[0].y + yInterval * (m_iRows - 1);
+	m_Corners[2].x = m_Corners[0].x + xInterval * (m_iColumns - 1);
+	m_Corners[2].y = m_Corners[0].y + yInterval * (m_iRows - 1);
+	m_Corners[3].x = m_Corners[0].x + xInterval * (m_iColumns - 1);
 	m_Corners[3].y = m_Corners[0].y;
 	ComputeExtentsFromCorners();
-
-	// get dimensions
-	fseek(fp, 47, 0);
-	fread(buf, 4, 1, fp);
-	buf[4] = 0;
-	m_iColumns = atoi(buf);
-	fread(buf, 4, 1, fp);
-	m_iRows = atoi(buf);
 
 	_AllocateArray();
 
