@@ -168,26 +168,11 @@ bool vtImage::_ReadPNG(const char *filename)
 
 #include "png.h"
 
-/* Transparency parameters */
-#define PNG_ALPHA		-2 /* Use alpha channel in PNG file, if there is one */
-#define PNG_SOLID		-1 /* No transparency								*/
-#define PNG_STENCIL		 0 /* Sets alpha to 0 for r=g=b=0, 1 otherwise	   */
-
-typedef struct {
-	unsigned int Width;
-	unsigned int Height;
-	unsigned int Depth;
-	unsigned int Alpha;
-} pngInfo;
-
 bool vtImage::_ReadPNG(const char *filename)
 {
 	m_pOsgImage = new osg::Image();
 
-	int trans = PNG_ALPHA;
 	FILE *fp = NULL;
-	pngInfo pInfo;
-	pngInfo *pinfo = &pInfo;
 
 	unsigned char header[8];
 	png_structp png;
@@ -223,32 +208,26 @@ bool vtImage::_ReadPNG(const char *filename)
 	png_read_info(png, info);
 	png_get_IHDR(png, info, &width, &height, &depth, &color, NULL, NULL, NULL);
 
-	if (pinfo != NULL) {
-		pinfo->Width  = width;
-		pinfo->Height = height;
-		pinfo->Depth  = depth;
-	}
-
 	if (color == PNG_COLOR_TYPE_GRAY || color == PNG_COLOR_TYPE_GRAY_ALPHA)
 		png_set_gray_to_rgb(png);
 
-	if (color&PNG_COLOR_MASK_ALPHA && trans != PNG_ALPHA)
-	{
-		png_set_strip_alpha(png);
-		color &= ~PNG_COLOR_MASK_ALPHA;
-	}
+	// never strip alpha
+//	{
+//		png_set_strip_alpha(png);
+//		color &= ~PNG_COLOR_MASK_ALPHA;
+//	}
 
-//	if (!(PalettedTextures && mipmap >= 0 && trans == PNG_SOLID))
-		if (color == PNG_COLOR_TYPE_PALETTE)
-			png_set_expand(png);
+	// Always expand paletted images
+	if (color == PNG_COLOR_TYPE_PALETTE)
+		png_set_expand(png);
 
 	/*--GAMMA--*/
 //	checkForGammaEnv();
 	double screenGamma = 2.2 / 1.0;
 #if 0
-		// Getting the gamma from the PNG file is disabled here, since
-		// PhotoShop writes bizarre gamma values like .227 (PhotoShop 5.0)
-		// or .45 (newer versions)
+	// Getting the gamma from the PNG file is disabled here, since
+	// PhotoShop writes bizarre gamma values like .227 (PhotoShop 5.0)
+	// or .45 (newer versions)
 	double	fileGamma;
 	if (png_get_gAMA(png, info, &fileGamma))
 		png_set_gamma(png, screenGamma, fileGamma);
@@ -274,31 +253,27 @@ bool vtImage::_ReadPNG(const char *filename)
 
 	int iBitCount;
 
-	if (trans == PNG_SOLID || trans == PNG_ALPHA || color == PNG_COLOR_TYPE_RGB_ALPHA || color == PNG_COLOR_TYPE_GRAY_ALPHA)
+	switch (color)
 	{
-		switch (color)
-		{
-			case PNG_COLOR_TYPE_GRAY:
-			case PNG_COLOR_TYPE_RGB:
-			case PNG_COLOR_TYPE_PALETTE:
-				iBitCount = 24;
-				if (pinfo != NULL) pinfo->Alpha = 0;
-				break;
+		case PNG_COLOR_TYPE_GRAY:
+		case PNG_COLOR_TYPE_RGB:
+		case PNG_COLOR_TYPE_PALETTE:
+			iBitCount = 24;
+			break;
 
-			case PNG_COLOR_TYPE_GRAY_ALPHA:
-			case PNG_COLOR_TYPE_RGB_ALPHA:
-				iBitCount = 32;
-				if (pinfo != NULL) pinfo->Alpha = 8;
-				break;
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+		case PNG_COLOR_TYPE_RGB_ALPHA:
+			iBitCount = 32;
+			break;
 
-			default:
-				return false;
-		}
+		default:
+			return false;
 	}
 
 	png_read_end(png, endinfo);
 	png_destroy_read_struct(&png, &info, &endinfo);
 
+	// Don't free the data, we're going to pass it to OSG
 //	free(m_pPngData);
 
 	if (fp)
