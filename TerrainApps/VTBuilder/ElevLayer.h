@@ -35,6 +35,34 @@ public:
 
 //////////////////////////////////////////////////////////
 
+class ElevDrawOptions
+{
+public:
+	ElevDrawOptions()
+	{
+		m_bShowElevation = true;
+		m_bShading = true;
+		m_bCastShadows = false;
+		m_bDoMask = true;
+		m_iCastAngle = 30;
+	}
+	bool operator != (const ElevDrawOptions &val)
+	{
+		return (m_bShowElevation != val.m_bShowElevation ||
+			m_bShading != val.m_bShading ||
+			m_bCastShadows != val.m_bCastShadows ||
+			m_bDoMask != val.m_bDoMask ||
+			m_iCastAngle != val.m_iCastAngle);
+	}
+	bool m_bShowElevation;
+	bool m_bShading;
+	bool m_bCastShadows;
+	bool m_bDoMask;
+	int m_iCastAngle;
+};
+
+//////////////////////////////////////////////////////////
+
 class vtElevLayer : public vtLayer 
 {
 public:
@@ -82,16 +110,13 @@ public:
 
 	// drawing
 	void PaintDibFromElevation(vtDIB *dib, bool bShade);
-	void GenerateShadedColor(int i, int j, int &r, int &g, int &b);
 	void GenerateColorFromGrid1(int i, int j, int &r, int &g, int &b);
 	void GenerateColorFromGrid2(int i, int j, int &r, int &g, int &b);
 	void ShadePixel(int i, int j, int &r, int &g, int &b, int bias);
 	void SetupBitmap(wxDC* pDC);
 	void RenderBitmap();
 
-	static bool	m_bShowElevation;
-	static bool	m_bShading;
-	static bool m_bDoMask;
+	static ElevDrawOptions m_draw;
 
 	vtElevationGrid	*m_pGrid;
 	vtTin2d *m_pTin;
