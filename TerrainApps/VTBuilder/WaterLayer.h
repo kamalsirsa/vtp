@@ -32,6 +32,8 @@ public:
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);
 
+	static bool	m_bFill;
+
 protected:
 	// data for rivers and water bodies
 	// eventually, should have vector+width data for rivers, area data for bodies

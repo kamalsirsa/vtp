@@ -77,6 +77,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
 	EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
 	EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
+	EVT_MENU(ID_VIEW_FILLWATER,		MainFrame::OnViewFillWater)
 
 	EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateToolbar)
 	EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
@@ -88,6 +89,8 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateElevBox)
 	EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 	EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
+	EVT_UPDATE_UI(ID_VIEW_SHOWMINUTES,	MainFrame::OnUpdateMinutes)
+	EVT_UPDATE_UI(ID_VIEW_FILLWATER,	MainFrame::OnUpdateFillWater)
 
 	EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectRoad)
 	EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
@@ -229,6 +232,8 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_ELEV_SHOW, "Show Terrain Elevation", "Show Terrain Elevation", true);
 	viewMenu->Append(ID_ELEV_SHADING, "Artificial Shading", "Artificial Shading", true);
 	viewMenu->Append(ID_ELEV_HIDE, "Hide Unknown Areas", "Hide Unknown Areas", true);
+	viewMenu->AppendSeparator();
+	viewMenu->Append(ID_VIEW_FILLWATER, "Show Water Bodies Filled", "Show Water Bodies Filled", true);
 
 	// Roads (4)
 	roadMenu = new wxMenu;
@@ -568,7 +573,7 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 
 	wxString title;
 	title += vtLayer::LayerTypeName[ltype];
-	title += " Layer Properties.";
+	title += " Layer Properties";
 	LayerPropDlg dlg(NULL, -1, title, wxDefaultPosition);
 
 	// Fill in initial values for the dialog
@@ -866,6 +871,16 @@ void MainFrame::OnViewMinutes()
 void MainFrame::OnUpdateMinutes(wxUpdateUIEvent& event)
 {
 	event.Check(m_bShowMinutes);
+}
+
+void MainFrame::OnViewFillWater()
+{
+	vtWaterLayer::m_bFill = !vtWaterLayer::m_bFill;
+}
+
+void MainFrame::OnUpdateFillWater(wxUpdateUIEvent& event)
+{
+	event.Check(vtWaterLayer::m_bFill);
 }
 
 //////////////////////////

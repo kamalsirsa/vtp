@@ -15,6 +15,8 @@
 #include "ScaledView.h"
 #include "Helper.h"
 
+bool vtWaterLayer::m_bFill = false;
+
 //////////////////////////////////////////////////////////////////////////
 
 vtWaterLayer::vtWaterLayer() : vtLayer(LT_WATER)
@@ -58,7 +60,7 @@ bool vtWaterLayer::ConvertProjection(vtProjection &proj_new)
 	return true;
 }
 
-#define MAXPOINTS 20000
+#define MAXPOINTS 10000
 static wxPoint roadbuf[MAXPOINTS];
 
 void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
@@ -70,10 +72,14 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	int num_lines = m_Lines.GetSize();
 	for (int i = 0; i < num_lines; i++)
 	{
-		for (int c = 0; c < m_Lines[i]->GetSize() && c < MAXPOINTS; c++)
+		int size = m_Lines[i]->GetSize();
+		for (int c = 0; c < size && c < MAXPOINTS; c++)
 			pView->screen(m_Lines[i]->GetAt(c), roadbuf[c]);
 
-		pDC->DrawLines(m_Lines[i]->GetSize(), roadbuf);
+		if (m_bFill)
+			pDC->DrawPolygon(c, roadbuf);
+		else
+			pDC->DrawLines(c, roadbuf);
 	}
 }
 
