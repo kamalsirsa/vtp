@@ -52,7 +52,9 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLayer->GetProjection(proj);
 
 	m_iFauxFields = 0;
-	OGRwkbGeometryType type = m_pLayer->GetGeomType();
+	vtFeatureSet *pSet = m_pLayer->GetFeatureSet();
+
+	OGRwkbGeometryType type = pSet->GetGeomType();
 	if (type == wkbPoint || type == wkbPoint25D)
 	{
 		if (proj.IsGeographic())
@@ -74,9 +76,9 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	wxString2 str;
-	for (unsigned int i = 0; i < m_pLayer->GetNumFields(); i++)
+	for (unsigned int i = 0; i < pSet->GetNumFields(); i++)
 	{
-		Field *field = m_pLayer->GetField(i);
+		Field *field = pSet->GetField(i);
 		str = field->m_name;
 		GetField()->Append(str, (void *) 0);
 	}
@@ -102,7 +104,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void SelectDlg::FillValuesControl()
 {
-	int i, values = 0;
+	int values = 0;
 	vtString str;
 	wxString2 str2;
 
@@ -114,9 +116,11 @@ void SelectDlg::FillValuesControl()
 		GetComboValue()->SetSelection(0);
 		return;
 	}
-	for (i = 0; i < m_pLayer->GetNumEntities(); i++)
+
+	vtFeatureSet *pSet = m_pLayer->GetFeatureSet();
+	for (unsigned int i = 0; i < pSet->GetNumEntities(); i++)
 	{
-		m_pLayer->GetValueAsString(i, m_iField, str);
+		pSet->GetValueAsString(i, m_iField, str);
 
 		str2 = str;
 		if (str2 == _T(""))
