@@ -769,7 +769,10 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 
 	if (!strExt.CmpNoCase("dem"))
 	{
-		success = m_pGrid->LoadFromDEM(strFileName, progress_callback);
+		if (first == '*')
+			success = m_pGrid->LoadFromMicroDEM(strFileName, progress_callback);
+		else
+			success = m_pGrid->LoadFromDEM(strFileName, progress_callback);
 	}
 	else if (!strExt.CmpNoCase("asc"))
 	{
