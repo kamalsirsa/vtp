@@ -68,11 +68,10 @@ private:
 /**
  * An unexpected fatal error.
  *
- * Methods and functions show throw this exception when something
- * very bad has happened (such as memory corruption or
- * a totally unexpected internal value).  Applications should catch
- * this exception only at the top level if at all, and should
- * normally terminate execution soon afterwards.
+ * Methods and functions show throw this exception when something very bad
+ * has happened (such as memory corruption or a totally unexpected internal
+ * value).  Applications should catch this exception only at the top level
+ * if at all, and should normally terminate execution soon afterwards.
  */
 class xh_error : public xh_throwable
 {
@@ -84,18 +83,16 @@ public:
 
 
 /**
- * Base class for all SimGear exceptions.
+ * Base class for all exceptions.
  *
- * Code should throw this exception only when no
- * more specific exception applies.  It may not be caught until
- * higher up in the application, where it is not possible to
- * resume normal operations if desired.
+ * Code should throw this exception only when no more specific exception
+ * applies.  It may not be caught until higher up in the application, where
+ * it is not possible to resume normal operations if desired.
  *
- * A caller can catch xh_exception by default to ensure that
- * all exceptions are caught.  Every SimGear exception can contain
- * a human-readable error message and a human-readable string
- * indicating the part of the application causing the exception
- * (as an aid to debugging, only).
+ * A caller can catch xh_exception by default to ensure that all exceptions
+ * are caught.  Every exception can contain a human-readable error message
+ * and a human-readable string indicating the part of the application
+ * causing the exception (as an aid to debugging, only).
  */
 class xh_exception : public xh_throwable
 {
@@ -107,11 +104,10 @@ public:
 
 
 /**
- * An I/O-related SimGear exception.
+ * An I/O-related exception.
  *
- * SimGear-based code should throw this exception when it fails
- * to read from or write to an external resource, such as a file,
- * socket, URL, or database.
+ * Code should throw this exception when it fails to read from or write to
+ * an external resource, such as a file, socket, URL, or database.
  *
  * In addition to the functionality of xh_exception, an
  * xh_io_exception may contain location information, such as the name
@@ -134,11 +130,10 @@ private:
 
 
 /**
- * A format-related SimGear exception.
+ * A format-related exception.
  *
- * SimGear-based code should throw this exception when a string
- * does not appear in the expected format (for example, a date
- * string does not conform to ISO 8601).
+ * Code should throw this exception when a string does not appear in the
+ * expected format (for example, a date string does not conform to ISO 8601).
  *
  * In addition to the functionality of xh_exception, an
  * xh_format_exception can contain a copy of the original malformated
@@ -159,13 +154,12 @@ private:
 
 
 /**
- * A range-related SimGear exception.
+ * A range-related exception.
  *
- * SimGear-based code should throw this exception when a value falls
- * outside the range where it can reasonably be handled; examples
- * include longitude outside the range -180:180, unrealistically high
- * forces or velocities, an illegal airport code, etc.  A range
- * exception usually means that something has gone wrong internally.
+ * Code should throw this exception when a value falls outside the range
+ * where it can reasonably be handled; examples include longitude outside
+ * the range -180:180, unrealistically high forces or velocities, etc.
+ * A range exception usually means that something has gone wrong internally.
  */
 class xh_range_exception : public xh_exception
 {
