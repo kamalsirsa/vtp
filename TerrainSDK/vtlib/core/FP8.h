@@ -16,22 +16,22 @@
 #  define INLINE inline
 #endif
 
-INLINE unsigned char EncodeFP8( unsigned short nErr )
+INLINE unsigned char EncodeFP8( unsigned short nVal )
 {
-	if( nErr < 64   ) return          nErr;
-	if( nErr < 128  ) return (0x40 | (nErr-  64)/2);
-	if( nErr < 256  ) return (0x60 | (nErr- 128)/4);
-	if( nErr < 512  ) return (0x80 | (nErr- 256)/8);
-	if( nErr < 1024 ) return (0xa0 | (nErr- 512)/16);
-	if( nErr < 2048 ) return (0xc0 | (nErr-1024)/32);
-	if( nErr < 4096 ) return (0xe0 | (nErr-2048)/64);
+	if( nVal < 64   ) return          nVal;
+	if( nVal < 128  ) return (0x40 | (nVal-  64)/2);
+	if( nVal < 256  ) return (0x60 | (nVal- 128)/4);
+	if( nVal < 512  ) return (0x80 | (nVal- 256)/8);
+	if( nVal < 1024 ) return (0xa0 | (nVal- 512)/16);
+	if( nVal < 2048 ) return (0xc0 | (nVal-1024)/32);
+	if( nVal < 4096 ) return (0xe0 | (nVal-2048)/64);
 	                  return  0xff;
 }
 
-INLINE unsigned short DecodeFP8( unsigned char nErr )
+INLINE unsigned short DecodeFP8( unsigned char nVal )
 {
-	int a = nErr >> 5;
-	int b = nErr & 31;
+	int a = nVal >> 5;
+	int b = nVal & 31;
 
 	if( a < 2 ) {
 		return b;
