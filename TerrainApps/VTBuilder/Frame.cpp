@@ -506,7 +506,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				str1,
 				(const char *) pLayer->GetFilename(),
 				str2);
-			int ret = wxMessageBox(msg, "Warning", wxYES_NO | wxCANCEL);
+			int ret = wxMessageBox(msg, "Convert Coordinate System?", wxYES_NO | wxCANCEL);
 			if (ret == wxNO)
 				keep = true;
 			if (ret == wxYES)
@@ -523,9 +523,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				}
 			}
 			if (!keep)
-			{
 				return false;
-			}
 		}
 	}
 	AddLayer(pLayer);
