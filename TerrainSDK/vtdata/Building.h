@@ -182,7 +182,6 @@ public:
 	DPoint2 GetLocation() const { return m_EarthPos; }
 
 	void SetRectangle(float fWidth, float fDepth, float fRotation = 0.0f);
-	bool GetRectangle(float &fWidth, float &fDepth) const;
 
 	void SetRadius(float fRad);
 	float GetRadius() const;

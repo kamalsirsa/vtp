@@ -613,18 +613,6 @@ void vtBuilding::SetRectangle(float fWidth, float fDepth, float fRotation)
 	RectToPoly(fWidth, fDepth, fRotation);
 }
 
-bool vtBuilding::GetRectangle(float &fWidth, float &fDepth) const
-{
-	DLine2 &fp = m_Levels[0]->GetFootprint();
-	if (fp.GetSize() == 4)
-	{
-		fWidth = (float) fp.SegmentLength(0);
-		fDepth = (float) fp.SegmentLength(1);
-		return true;
-	}
-	return false;
-}
-
 void vtBuilding::SetRadius(float fRad)
 {
 	DLine2 &fp = m_Levels[0]->GetFootprint();
