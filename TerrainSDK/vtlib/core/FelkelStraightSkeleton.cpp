@@ -140,7 +140,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		if (!(*i).m_done)
 		{
 			CIntersection is(m_vl, *i);
-			if (is.m_height != INFINITY)
+			if (is.m_height != CN_INFINITY)
 				m_iq.push(is);
 		}
 	}

@@ -32,27 +32,27 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	CNumber ar = v.m_axis.m_Angle - r.m_axis.m_Angle;
 	ar.NormalizeAngle();
 
-	C2DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C2DPoint(INFINITY, INFINITY) : v.m_axis.Intersection(l.m_axis);
-	C2DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C2DPoint(INFINITY, INFINITY) : v.m_axis.Intersection(r.m_axis);
+	C2DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
+	C2DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
 
 	CNumber d1 = v.m_point.Dist(i1);
 	CNumber d2 = v.m_point.Dist(i2);
 
 	CVertex *leftPointer, *rightPointer;
 	C2DPoint p;
-	CNumber d3 = INFINITY;
+	CNumber d3 = CN_INFINITY;
 	CNumber av = v.m_leftLine.m_Angle - v.m_rightLine.m_Angle;
 
 	av.NormalizeAngle();
-	if (av > 0.0 && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C2DPoint(INFINITY, INFINITY)))
+	if (av > 0.0 && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C2DPoint(CN_INFINITY, CN_INFINITY)))
 		d3 = v.NearestIntersection(vl, &leftPointer, &rightPointer, p);
 
 	if (d1 <= d2 && d1 <= d3) { m_leftVertex = &l; m_rightVertex = &v; m_poi = i1; m_type = CONVEX; m_height = v.m_leftLine.Dist(i1); }
 	else if (d2 <= d1 && d2 <= d3) { m_leftVertex = &v; m_rightVertex = &r; m_poi = i2; m_type = CONVEX; m_height = v.m_rightLine.Dist(i2); }
 	else if (d3 <= d1 && d3 <= d2) { m_poi = p; m_leftVertex = m_rightVertex = &v; m_type = NONCONVEX; m_height = d3; }
 
-	if (m_poi == C2DPoint (INFINITY, INFINITY)) m_height = INFINITY;
-	if (m_type == NONCONVEX && v.InvalidIntersection (vl, *this)) m_height = INFINITY;
+	if (m_poi == C2DPoint (CN_INFINITY, CN_INFINITY)) m_height = CN_INFINITY;
+	if (m_type == NONCONVEX && v.InvalidIntersection (vl, *this)) m_height = CN_INFINITY;
 }
 
 void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
@@ -61,18 +61,18 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 
 	CVertex *leftPointer, *rightPointer;
 	C2DPoint p;
-	CNumber d3 = INFINITY;
+	CNumber d3 = CN_INFINITY;
 
 	d3 = m_leftVertex->NearestIntersection(vl, &leftPointer, &rightPointer, p);
-	if (d3 == INFINITY) return;
+	if (d3 == CN_INFINITY) return;
 							
 	if (p != m_poi) return;
 							
 	CVertex v1 (p, *rightPointer, *m_rightVertex);
 	CVertex v2 (p, *m_leftVertex, *leftPointer);
 
-	assert (v1.m_point != C2DPoint(INFINITY, INFINITY));
-	assert (v2.m_point != C2DPoint(INFINITY, INFINITY));
+	assert (v1.m_point != C2DPoint(CN_INFINITY, CN_INFINITY));
+	assert (v2.m_point != C2DPoint(CN_INFINITY, CN_INFINITY));
 
 	m_leftVertex->m_done = true;
 	//  i.rightVertex -> done = true;
@@ -152,7 +152,7 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	else
 	{
 		CIntersection i1(vl, *v1Pointer);
-		if (m_height != INFINITY) iq.push (i1);
+		if (m_height != CN_INFINITY) iq.push (i1);
 	}
 	if (newNext2 == newPrev2)
 	{
@@ -177,7 +177,7 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	else
 	{
 		CIntersection i2 (vl, *v2Pointer);
-		if (i2.m_height != INFINITY)
+		if (i2.m_height != CN_INFINITY)
 			iq.push(i2);
 	}
 }
@@ -185,7 +185,7 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
 {
 	CVertex vtx (m_poi, *m_leftVertex, *m_rightVertex);
-	assert(vtx.m_point != C2DPoint(INFINITY, INFINITY));
+	assert(vtx.m_point != C2DPoint(CN_INFINITY, CN_INFINITY));
 
 	CVertex *newNext = m_rightVertex->m_nextVertex;
 	CVertex *newPrev = m_leftVertex->m_prevVertex;
@@ -207,7 +207,7 @@ void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl
 
 	CIntersection newI(vl, *vtxPointer);
 
-	if (newI.m_height != INFINITY)
+	if (newI.m_height != CN_INFINITY)
 		iq.push(newI);
 
 	skeleton.push_back(CSkeletonLine(*m_leftVertex, *vtxPointer));
@@ -257,14 +257,14 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	v2.m_done = true;
 	v3.m_done = true;
 
-	C2DPoint is1 = v1.m_axis.FacingTowards(v2.m_axis) ? C2DPoint(INFINITY, INFINITY) : v1.m_axis.Intersection(v2.m_axis);
-	C2DPoint is2 = v2.m_axis.FacingTowards(v3.m_axis) ? C2DPoint(INFINITY, INFINITY) : v2.m_axis.Intersection(v3.m_axis);
-	C2DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C2DPoint(INFINITY, INFINITY) : v3.m_axis.Intersection(v1.m_axis);
+	C2DPoint is1 = v1.m_axis.FacingTowards(v2.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v1.m_axis.Intersection(v2.m_axis);
+	C2DPoint is2 = v2.m_axis.FacingTowards(v3.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v2.m_axis.Intersection(v3.m_axis);
+	C2DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
 
 	C2DPoint is = m_poi;
-	//assert(is == is1 || is1 == C2DPoint(INFINITY, INFINITY));
-	//assert(is == is2 || is2 == C2DPoint(INFINITY, INFINITY));
-	//assert(is == is3 || is3 == C2DPoint(INFINITY, INFINITY));
+	//assert(is == is1 || is1 == C2DPoint(CN_INFINITY, CN_INFINITY));
+	//assert(is == is2 || is2 == C2DPoint(CN_INFINITY, CN_INFINITY));
+	//assert(is == is3 || is3 == C2DPoint(CN_INFINITY, CN_INFINITY));
 
 	CVertex v(is);
 

@@ -24,12 +24,10 @@
 
 using namespace std;
 
-#define M_PI			((CNumber ) 3.14159265358979323846)
-#define MAXDOUBLE		((CNumber ) 1.797693E+308)
-#define INFINITY		((CNumber ) MAXDOUBLE)
-//#define MIN_DIFF		0.00005
-// For vtp this gives about a 5 cm resolution
-#define MIN_DIFF		0.00005
+#define CN_PI			((CNumber ) 3.14159265358979323846)
+#define CN_INFINITY		((CNumber ) 1.797693E+308)
+
+#define MIN_DIFF		0.00005	// For vtp this gives about a 5 cm resolution
 #define MIN_ANGLE_DIFF	0.00005
 
 #define SIMILAR(a,b) ((a)-(b) < MIN_DIFF && (b)-(a) < MIN_DIFF)
@@ -46,19 +44,19 @@ public:
 	CNumber& operator = (const CNumber &x) { m_n = x.m_n; return *this; }
 	CNumber& operator = (const double &x) { m_n = x; return *this; }
 	operator double& (void) const { return (double &) m_n; }
-	operator == (const CNumber &x) const { return SIMILAR (m_n, x.m_n); }
-	operator != (const CNumber &x) const { return !SIMILAR (m_n, x.m_n); }
-	operator <= (const CNumber &x) const { return m_n < x.m_n || *this == x; }
-	operator >= (const CNumber &x) const { return m_n > x.m_n || *this == x; }
-	operator <  (const CNumber &x) const { return m_n < x.m_n && *this != x; }
-	operator >  (const CNumber &x) const { return m_n > x.m_n && *this != x; }
+	bool operator == (const CNumber &x) const { return SIMILAR (m_n, x.m_n); }
+	bool operator != (const CNumber &x) const { return !SIMILAR (m_n, x.m_n); }
+	bool operator <= (const CNumber &x) const { return m_n < x.m_n || *this == x; }
+	bool operator >= (const CNumber &x) const { return m_n > x.m_n || *this == x; }
+	bool operator <  (const CNumber &x) const { return m_n < x.m_n && *this != x; }
+	bool operator >  (const CNumber &x) const { return m_n > x.m_n && *this != x; }
 
-	operator == (const double x) const { return *this == CNumber (x); }
-	operator != (const double x) const { return *this != CNumber (x); }
-	operator <= (const double x) const { return *this <= CNumber (x); }
-	operator >= (const double x) const { return *this >= CNumber (x); }
-	operator <  (const double x) const { return *this <  CNumber (x); }
-	operator >  (const double x) const { return *this >  CNumber (x); }
+	bool operator == (const double x) const { return *this == CNumber (x); }
+	bool operator != (const double x) const { return *this != CNumber (x); }
+	bool operator <= (const double x) const { return *this <= CNumber (x); }
+	bool operator >= (const double x) const { return *this >= CNumber (x); }
+	bool operator <  (const double x) const { return *this <  CNumber (x); }
+	bool operator >  (const double x) const { return *this >  CNumber (x); }
 	// Functions
 	CNumber &NormalizeAngle();
 	CNumber NormalizedAngle();
@@ -79,7 +77,7 @@ public:
 	operator != (const C2DPoint &p) const { return m_x != p.m_x || m_y != p.m_y; }
 	C2DPoint operator - (const C2DPoint &p) const {return C2DPoint(m_x - p.m_x, m_y - p.m_y);}
 	C2DPoint operator * (const CNumber &n) const { return C2DPoint (n*m_x, n*m_y); }
-	bool IsInfinite (void) { return *this == C2DPoint (INFINITY, INFINITY) ? true : false; }
+	bool IsInfinite (void) { return *this == C2DPoint (CN_INFINITY, CN_INFINITY) ? true : false; }
 	CNumber Dist(const C2DPoint &p) {return sqrt ((m_x-p.m_x)*(m_x-p.m_x) + (m_y - p.m_y)*(m_y - p.m_y));}
 	CNumber Length() {return sqrt (m_x * m_x + m_y * m_y);}
 	CNumber Dot(const C2DPoint &p) const {return m_x * p.m_x + m_y * p.m_y; }
@@ -96,7 +94,7 @@ class CBisector
 public:
 	CBisector(const C2DPoint &p = C2DPoint (0, 0), const C2DPoint &q = C2DPoint(0, 0));
 	CBisector(const C2DPoint &p, const CNumber &a) : m_Origin (p), m_Angle (a) { };
-	CBisector Opaque(void) const { return CBisector (m_Origin, m_Angle + M_PI); }
+	CBisector Opaque(void) const { return CBisector (m_Origin, m_Angle + CN_PI); }
 	static CBisector AngleAxis (const C2DPoint &b, const C2DPoint &a, const C2DPoint &c);
 	C2DPoint Intersection(const CBisector &a);
 	C2DPoint IntersectionAnywhere (const CBisector& a) const;
