@@ -331,6 +331,9 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 					// for some reason, for SHPT_POLYGON, Shapelib duplicates
 					// the first point, so we need to ignore it
 					num_points--;
+					// Quick fix for multiple rings
+					if (psShape->nParts > 1)
+						num_points = psShape->panPartStart[1] - 1;
 				}
 				if (nShapeType == SHPT_ARC)
 				{
