@@ -8,7 +8,7 @@
 
 VTP_ROOT = $(shell cd ../..; pwd)
 EXEC = Enviro
-include $(VTP_ROOT)/TerrainApps/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(TERRAIN_SDK_DIR)       \
@@ -61,6 +61,12 @@ LIBS   +=  $(GLU_LIB) -lX11 \
 	  -lxmlhelper -lvtdata -lvtui -lvtosg \
 	  -lnetcdf                 
 
+LDIR   +=\
+	  $(VTDATA_INST_DIR)             \
+	  $(VTUI_INST_DIR)               \
+	  $(VTOSG_INST_DIR)              \
+	  $(XMLHELPER_INST_DIR)
+
 all : $(EXEC)
 endif
 
@@ -69,9 +75,6 @@ $(EXEC) : $(OBJS)
 
 $(OSX_APP) : $(OBJS) $(OSX_APPS)/$(EXEC).app
 	$(LD) -o $(OSX_APP) $(OBJS) $(LDFLAGS) $(LIBS)
-	sed -e "s/IDENTIFIER/`echo $(EXEC) | sed 's,/,.,g'`/" \
-		-e "s/EXECUTABLE/$(EXEC)/" \
-		-e "s/VERSION/2.4.0/" ./Info.plist.in > $(OSX_APPS)/$(EXEC).app/Contents/Info.plist
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files

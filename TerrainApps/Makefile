@@ -8,7 +8,7 @@
 
 VTP_ROOT = $(shell cd ..; pwd)
 
-include $(VTP_ROOT)/TerrainApps/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 APPS = glutSimple wxSimple prSimple VTBuilder Enviro
 
