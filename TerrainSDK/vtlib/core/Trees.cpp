@@ -468,7 +468,15 @@ int vtPlantInstanceArray3d::CreatePlantNodes()
 
 bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 {
+	// initially NULL until we successfully construct the instance
+	m_Instances3d.SetAt(i, NULL);
+
 	if (!m_pPlantList)
+		return false;
+
+	vtPlantInstance &pi = GetAt(i);
+
+	if (!m_pHeightField->ContainsEarthPoint(pi.m_p))
 		return false;
 
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
@@ -477,8 +485,6 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 		inst3d = new vtPlantInstance3d();
 		m_Instances3d.SetAt(i, inst3d);
 	}
-
-	vtPlantInstance &pi = GetAt(i);
 
 	vtPlantSpecies3d *ps = m_pPlantList->GetSpecies(pi.species_id);
 	if (!ps)
@@ -515,7 +521,10 @@ vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i)
 	if (i < 0 || i >= m_Instances3d.GetSize())
 		return NULL;
 
-	return m_Instances3d.GetAt(i)->m_pTransform;
+	vtPlantInstance3d *inst3d = GetInstance3d(i);
+	if (inst3d)
+		return inst3d->m_pTransform;
+	return NULL;
 }
 
 void vtPlantInstanceArray3d::VisualDeselectAll()
