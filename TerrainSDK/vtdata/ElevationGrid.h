@@ -136,7 +136,8 @@ public:
 	void SetupConversion(float fVerticalExag);
 	float GetWorldValue(int i, int j, bool bTrue = false) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, FPoint3 *vNormal = NULL) const;
+		bool bTrue = false, bool bIncludeCulture = false,
+		FPoint3 *vNormal = NULL) const;
 
 protected:
 	bool	m_bFloatMode;

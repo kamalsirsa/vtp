@@ -69,6 +69,12 @@ protected:
 };
 
 
+class CultureExtension
+{
+public:
+	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const = 0;
+};
+
 /**
  * This class extents vtHeightField with the abilty to operate in 'world'
  *  coordinates, that is, an artificial meters-based 3D coordinate system
@@ -78,6 +84,7 @@ protected:
 class vtHeightField3d : public vtHeightField
 {
 public:
+	vtHeightField3d();
 	virtual ~vtHeightField3d() {}
 
 	void Initialize(const LinearUnits units, const DRECT &earthextents,
@@ -88,7 +95,8 @@ public:
 
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, FPoint3 *vNormal = NULL) const = 0;
+		bool bTrue = false, bool bIncludeCulture = false,
+		FPoint3 *vNormal = NULL) const = 0;
 
 	/// Find the intersection point of a ray with the heightfield
 	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
@@ -96,14 +104,12 @@ public:
 
 	int PointIsAboveTerrain(const FPoint3 &p) const;
 
-	bool ConvertEarthToSurfacePoint(double ex, double ey, FPoint3 &p3);
-	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3)
-	{
-		return ConvertEarthToSurfacePoint(epos.x, epos.y, p3);
-	}
+	bool ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3, bool bIncludeCulture = false);
 
 	bool ContainsWorldPoint(float x, float z);
 	void GetCenter(FPoint3 &center);
+
+	void SetCulture(CultureExtension *ext) { m_pCulture = ext; }
 
 	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
 	vtLocalConversion	m_Conversion;
@@ -112,6 +118,7 @@ protected:
 	void UpdateWorldExtents();
 
 	float	m_fDiagonalLength;
+	CultureExtension *m_pCulture;
 };
 
 

@@ -27,7 +27,8 @@ public:
 
 	// implement HeightField3d virtual methods
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		bool bTrue = false, FPoint3 *vNormal = NULL) const;
+		bool bTrue = false, bool bIncludeCulture = false,
+		FPoint3 *vNormal = NULL) const;
 	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
 

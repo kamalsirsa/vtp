@@ -896,7 +896,7 @@ float vtElevationGrid::GetWorldValue(int i, int j, bool bTrue) const
  * sped up if needed.
  */
 bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-	bool bTrue, FPoint3 *vNormal) const
+	bool bTrue, bool bIncludeCulture, FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)((p.z - m_WorldExtents.bottom) / -m_fZStep);

@@ -236,13 +236,13 @@ int vtHeightField3d::PointIsAboveTerrain(const FPoint3 &p) const
  * Converts a earth coordinate (project or geographic) to a world coordinate
  * on the surface of the heightfield.
  */
-bool vtHeightField3d::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
+bool vtHeightField3d::ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3, bool bIncludeCulture)
 {
 	// convert earth -> XZ
-	m_Conversion.ConvertFromEarth(DPoint2(x, y), p3.x, p3.z);
+	m_Conversion.ConvertFromEarth(epos, p3.x, p3.z);
 
 	// look up altitude
-	return FindAltitudeAtPoint(p3, p3.y);
+	return FindAltitudeAtPoint(p3, p3.y, false, bIncludeCulture);
 }
 
 /**
@@ -266,6 +266,11 @@ void vtHeightField3d::GetCenter(FPoint3 &center)
 
 
 /////////////////////////////////////////////////////////////////////////////
+
+vtHeightField3d::vtHeightField3d()
+{
+	m_pCulture = NULL;
+}
 
 void vtHeightField3d::Initialize(const LinearUnits units,
 	const DRECT &earthextents, float fMinHeight, float fMaxHeight)
@@ -949,7 +954,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				{
 					// 3D elevation query to get slope
 					m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
-					FindAltitudeAtPoint(p3, p3.y, true, &normal);
+					FindAltitudeAtPoint(p3, p3.y, true, false, &normal);
 
 					//*****************************************
 					//*****************************************
@@ -1013,7 +1018,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 			// 3D elevation query to get slope
 			m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
-			FindAltitudeAtPoint(p3, p3.y, true, &normal);
+			FindAltitudeAtPoint(p3, p3.y, true, false, &normal);
 
 			//*****************************************
 			//*****************************************
