@@ -428,6 +428,8 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		vtRoadLayer *pRL = new vtRoadLayer();
 		if (pRL->Load(fname))
 			pLayer = pRL;
+		else
+			delete pRL;
 	}
 	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase(_T("tin")) == 0 ||
 		fname.Right(6).CmpNoCase(_T(".bt.gz")) == 0)
@@ -435,6 +437,8 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		vtElevLayer *pEL = new vtElevLayer();
 		if (pEL->Load(fname))
 			pLayer = pEL;
+		else
+			delete pEL;
 	}
 #if SUPPORT_TRANSIT
 	if (ext.CmpNoCase(_T("xml")) == 0)
@@ -449,18 +453,24 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		vtStructureLayer *pSL = new vtStructureLayer();
 		if (pSL->Load(fname))
 			pLayer = pSL;
+		else
+			delete pSL;
 	}
 	if (ext.CmpNoCase(_T("vf")) == 0)
 	{
 		vtVegLayer *pVL = new vtVegLayer();
 		if (pVL->Load(fname))
 			pLayer = pVL;
+		else
+			delete pVL;
 	}
 	if (ext.CmpNoCase(_T("utl")) == 0)
 	{
 		vtUtilityLayer *pTR = new vtUtilityLayer();
 		if(pTR->Load(fname))
 			pLayer = pTR;
+		else
+			delete pTR;
 	}
 	if (ext.CmpNoCase(_T("shp")) == 0 ||
 			ext.CmpNoCase(_T("gml")) == 0 ||
@@ -469,12 +479,17 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		vtRawLayer *pRL = new vtRawLayer();
 		if (pRL->Load(fname))
 			pLayer = pRL;
+		else
+			delete pRL;
  	}
-	if (ext.CmpNoCase(_T("tif")) == 0)
+	if (ext.CmpNoCase(_T("tif")) == 0 ||
+		ext.CmpNoCase(_T("img")) == 0)
 	{
 		vtImageLayer *pIL = new vtImageLayer();
 		if (pIL->Load(fname))
 			pLayer = pIL;
+		else
+			delete pIL;
 	}
 	if (pLayer)
 	{
