@@ -172,6 +172,7 @@ void Splitter2::SizeWindows()
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CHAR(vtFrame::OnChar)
+	EVT_CLOSE(vtFrame::OnClose)
 	EVT_MENU(wxID_OPEN, vtFrame::OnOpen)
 	EVT_MENU(wxID_SAVE, vtFrame::OnSave)
 	EVT_MENU(wxID_EXIT, vtFrame::OnExit)
@@ -373,6 +374,15 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		Destroy();
 	}
 }
+
+void vtFrame::OnClose(wxCloseEvent &event)
+{
+	m_canvas->m_bRunning = false;
+	delete m_canvas;
+	m_canvas = NULL;
+	event.Skip();
+}
+
 
 //
 // Intercept menu commands

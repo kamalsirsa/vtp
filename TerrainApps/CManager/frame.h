@@ -78,6 +78,7 @@ protected:
 	void WriteINI();
 
 	// command handlers
+	void OnClose(wxCloseEvent &event);
 	void OnOpen(wxCommandEvent& event);
 	void OnSave(wxCommandEvent& event);
 	void OnExit(wxCommandEvent& event);
