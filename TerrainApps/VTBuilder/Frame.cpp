@@ -1483,14 +1483,16 @@ void MainFrame::ExportElevation()
 
 	if (dlg.m_bToFile)
 	{
+		OpenProgressDialog(_T("Writing file"), true);
 		wxString2 fname = dlg.m_strToFile;
 		bool gzip = (fname.Right(3).CmpNoCase(_T(".gz")) == 0);
 		bool success = pOutput->m_pGrid->SaveToBT(fname.mb_str(), NULL, gzip);
+		delete pOutput;
+		CloseProgressDialog();
 		if (success)
 			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
 		else
-			DisplayAndLog("Couldn't open file for writing.");
-		delete pOutput;
+			DisplayAndLog("Did not successfully write file '%s'", fname.mb_str());
 	}
 	else
 		AddLayerWithCheck(pOutput);
