@@ -895,6 +895,8 @@ static const char *papszDatumEquiv[] =
 	"WGS_1972",
 	"European_Terrestrial_Reference_System_89",
 	"European_Reference_System_1989",
+	"Old_Hawaiian",
+	"D_Old_Hawaiian",
 	NULL
 };
 
