@@ -282,11 +282,11 @@ void vtTerrain::_CreateRoads()
 
 	m_pRoadMap->DetermineSurfaceAppearance();
 
-	m_pRoadMap->SetHeightOffGround(m_Params.GetValueInt(STR_ROADHEIGHT));
+	m_pRoadMap->SetHeightOffGround(m_Params.GetValueFloat(STR_ROADHEIGHT));
 	m_pRoadMap->DrapeOnTerrain(m_pHeightField);
 	m_pRoadMap->BuildIntersections();
 
-	m_pRoadMap->SetLodDistance(m_Params.GetValueInt(STR_ROADDISTANCE) * 1000);	// convert km to m
+	m_pRoadMap->SetLodDistance(m_Params.GetValueFloat(STR_ROADDISTANCE) * 1000);	// convert km to m
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.GetValueBool(STR_TEXROADS),
 		vtGetDataPath());
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
