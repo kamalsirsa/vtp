@@ -324,24 +324,15 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 					else
 						nyValid = yBlockSize;
 
-					for( int iY = 0; iY < nyValid; iY++ )
+					for (int iY = 0; iY < nyValid; iY++)
 					{
-						for( int iX = 0; iX < nxValid; iX++ )
+						for (int iX = 0; iX < nxValid; iX++)
 						{
-#ifdef DONTUSESECTION
-							*(m_data + (iY * m_stride) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
-							*(m_data + (iY * m_stride) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
-							*(m_data + (iY * m_stride) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
-#else
 							// Reverse the order for a DIB
 							q.rgbRed = pRedline[iY * xBlockSize + iX];
 							q.rgbGreen = pGreenline[iY * xBlockSize + iX];
 							q.rgbBlue = pBlueline[iY * xBlockSize + iX];
 							SetPixel24(x + iX, iPixelHeight - 1 - iY - y, q);
-//							*(m_data + ((iPixelHeight - 1 - iY - y) * m_stride) + ((x + iX) * 3)) = pBlueline[iY * xBlockSize + iX];
-//							*(m_data + ((iPixelHeight - 1 - iY - y) * m_stride) + ((x + iX) * 3) + 1) = pGreenline[iY * xBlockSize + iX];
-//							*(m_data + ((iPixelHeight - 1 - iY - y) * m_stride) + ((x + iX) * 3) + 2) = pRedline[iY * xBlockSize + iX];
-#endif
 						}
 					}
 				}
