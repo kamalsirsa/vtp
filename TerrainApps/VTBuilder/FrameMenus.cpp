@@ -929,7 +929,13 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	}
 	else if (!fname.Right(3).CmpNoCase(_T("csv")))
 	{
-//		feat.ImportDataFromCSV(fname.mb_str());
+		success = feat.LoadDataFromCSV(fname.mb_str());
+		if (success)
+		{
+			// ensure the points are initialized to zero
+			for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
+				feat.SetPoint(i, zero);
+		}
 	}
 
 	if (!success)
@@ -943,10 +949,6 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 
 	int rec, iKnown = 0, iFound = 0; // How many are already known
 	DPoint2 p;
-
-	if (dlg.m_bGeocodeUS)
-	{
-	}
 
 	// Used for geocode.us requests (when available)
 	ReqContext webcontext;
@@ -975,9 +977,6 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	bool bFound;
 	for (rec = 0; rec < iRecords; rec++)
 	{
-		if (progress_callback(rec*100/iRecords))
-			break;
-
 		feat.GetPoint(rec, p);
 		if (p != zero)
 		{
@@ -986,12 +985,18 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 		}
 
 		bFound = false;
-
 		feat.GetValueAsString(rec, 7, strStreet);
 		feat.GetValueAsString(rec, 8, strCity);
 		feat.GetValueAsString(rec, 9, strState);
 		feat.GetValueAsString(rec, 10, strCode);
 		feat.GetValueAsString(rec, 11, strCountry);
+
+		// show what we're working on in the progress dialog
+		wxString msg;
+		msg.Printf(_T("%d/%d: '%hs', '%hs'"), rec, iRecords,
+			(const char *)strCity, (const char *)strCountry);
+		if (UpdateProgressDialog(rec*100/iRecords, msg))
+			break;
 
 		// Try geocode.us first; it has the most detail
 		if (!bFound && dlg.m_bGeocodeUS &&
@@ -999,6 +1004,8 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 		{
 			bFound = FindWithGeocoderUS(webcontext, strStreet, strCity,
 				strState, p);
+
+			// pause to be nice to the server?
 		}
 
 		// Then (for US addresses) the gazetteer can look up a point for a
@@ -1025,7 +1032,8 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 		if (!bFound && bHaveGNS &&
 			strCountry.CompareNoCase("United States of America") != 0)
 		{
-			bFound = countries.FindPlaceWithGuess(strCountry, strCity, p);
+			bool bUTF = true;	// !!
+			bFound = countries.FindPlaceWithGuess(strCountry, strCity, p, bUTF);
 		}
 
 		if (bFound)
