@@ -1,3 +1,12 @@
+//
+// PTerrain.h
+//
+// A terrain subclass that adds Portalling (and some other test code).
+//
+// Copyright (c) 2001-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
 #ifndef PTERRAINH
 #define PTERRAINH
 
@@ -9,6 +18,7 @@ class PTerrain : public vtTerrain
 {
 public:
 	PTerrain();
+	~PTerrain();
 
 	void MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
 		char* name, int destination_index);
@@ -19,6 +29,7 @@ public:
 	void create_ground_vehicles(float fSize, float fSpeed); // dunno what to do to speed yet
 
 	void SetupVehicles();
+	void ReleaseVehicles();
 	void AddVehicleType(VehicleType *vt);
 	Vehicle *CreateVehicle(const char *szType, const RGBf &cColor, float fSize);
 #if 0
@@ -30,5 +41,5 @@ public:
 	VehicleType *m_pFirstVehicleType;
 };
 
-#endif
+#endif	// PTERRAINH
 

@@ -25,6 +25,11 @@ void dump_mat(const FMatrix3 &mat);
 
 IslandTerrain::IslandTerrain() : PTerrain()
 {
+	m_pDetailMats = NULL;
+	m_pDetailMat = NULL;
+	m_pSA = NULL;
+	m_pTelescopes = NULL;
+
 	// Points of Interest
 	// bottom left (x,y) then top right (x,y)
 	AddPointOfInterest(283376, 2181205, 287025, 2182614, "Hilo Airport",
@@ -94,10 +99,11 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		PlantModelAtPoint(container, mauna_loa);
 	}
 
-	if (m_Params.m_bVehicles)
+	if (m_Params.m_bVehicles || 1)
 	{
 		SetupVehicles();
-		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed, bDoSound);
+//		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed, bDoSound);
+		create_airplanes(1, m_Params.m_fVehicleSpeed, bDoSound);
 		create_ground_vehicles(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed);
 	}
 
@@ -511,17 +517,17 @@ void IslandTerrain::do_test_code()
 #endif
 }
 
-void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
+void IslandTerrain::create_airplanes(float fScale, float fSpeed, bool bDoSound)
 {
 	// make some planes
 	for (int i = 0; i < 6; i++)
-		create_airplane(i, fSize, fSpeed, bDoSound);
+		create_airplane(i, fScale, fSpeed, bDoSound);
 }
 
-void IslandTerrain::create_airplane(int i, float fSize, float fSpeed, bool bDoSound)
+void IslandTerrain::create_airplane(int i, float fScale, float fSpeed, bool bDoSound)
 {
 	RGBf red(1.0f, 1.0f, 0.0f);
-	vtTransform *copy = CreateVehicle("747", red, fSize);
+	vtTransform *copy = CreateVehicle("747", red, fScale);
 	AddNode(copy);
 
 	// make it bigger and faster than real life
@@ -531,7 +537,8 @@ void IslandTerrain::create_airplane(int i, float fSize, float fSpeed, bool bDoSo
 	AirportCodes code;
 	code = KOA;
 
-	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, code);
+	PlaneEngine *pEng = new PlaneEngine(fSpeedExag, fScale, code);
+	pEng->SetName2("Airplane Engine");
 	pEng->SetTarget(copy);
 	pEng->SetHoop(i);
 	AddEngine(pEng);

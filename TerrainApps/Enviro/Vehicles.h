@@ -1,8 +1,14 @@
+//
+// Vehicles.h
+//
+// Classes for describing and operating on vehicles.
+//
+// Copyright (c) 2001-2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef VEHICLEH
 #define VEHICLEH
-
-#define MAX_VEHICLE_LODS	5
 
 class Vehicle : public vtTransform
 {
@@ -17,15 +23,16 @@ class VehicleType
 {
 public:
 	VehicleType(const char *szName);
+	~VehicleType();
 
-	void SetModelLod(int lod, const char *filename, float fDistance);
+	void AddModel(const char *filename, float fScale, float fDistance);
 	Vehicle *CreateVehicle(const RGBf &cColor, float fSize);
+	void ReleaseModels();
 
-	//
-	int m_iLods;
 	vtString m_strTypeName;
 
-	vtString m_strFilename[MAX_VEHICLE_LODS];
+	vtStringArray m_strFilename;
+	Array<float> m_fScale;
 	Array<float> m_fDistance;
 
 	VehicleType *m_pNext;
@@ -37,4 +44,5 @@ protected:
 	void AttemptModelLoad();
 };
 
-#endif
+#endif	// VEHICLEH
+

@@ -142,7 +142,11 @@ VehicleType::VehicleType(const char *szName)
 	m_strTypeName = szName;
 	m_pNext = NULL;
 	m_bAttemptedLoaded = false;
-	m_iLods = 0;
+}
+
+VehicleType::~VehicleType()
+{
+	ReleaseModels();
 }
 
 Vehicle::Vehicle()
@@ -155,30 +159,38 @@ Vehicle::Vehicle()
 //
 // set filename and swap-out distance (in meters) for each LOD
 //
-void VehicleType::SetModelLod(int lod, const char *filename, float fDistance)
+void VehicleType::AddModel(const char *filename, float fScale, float fDistance)
 {
-	if (lod > MAX_VEHICLE_LODS)
-		return;
-	m_strFilename[lod] = filename;
-	if (m_iLods <= lod)
-		m_iLods = lod+1;
-	m_fDistance.SetAt(lod, fDistance);
+	m_strFilename.push_back(vtString(filename));
+	m_fScale.Append(fScale);
+	m_fDistance.Append(fDistance);
 }
 
 void VehicleType::AttemptModelLoad()
 {
 	m_bAttemptedLoaded = true;
-	if (m_iLods < 1)
-		return;
 
-	for (int i = 0; i < m_iLods; i++)
+	for (unsigned int i = 0; i < m_strFilename.size(); i++)
 	{
-		if (vtNodeBase *pMod = vtLoadModel(m_strFilename[i]))			// can read file?
-			m_pModels.SetAt(i, pMod);
+		// can we read the file?
+		vtString fname = m_strFilename[i];
+		if (vtNodeBase *pMod = vtLoadModel(fname))
+		{
+			vtTransform *trans = new vtTransform();
+			trans->AddChild(pMod);
+			if (fname.Right(3).CompareNoCase("3ds") == 0)
+			{
+				// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO)
+				trans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
+			}
+			float scale = m_fScale[i];
+			trans->Scale3(scale, scale, scale);
+			m_pModels.SetAt(i, trans);
+		}
 	}
 }
 
-Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fSize)
+Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fScale)
 {
 	// check if it's loaded yet
 	if (!m_bAttemptedLoaded)
@@ -193,18 +205,27 @@ Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fSize)
 	// there is no distance at which the object should vanish for being too close
 	distances[0] = 0.0f;
 
-	for (int i = 0; i < m_iLods; i++)
+	unsigned int iModels = m_pModels.GetSize();
+	for (unsigned int i = 0; i < iModels; i++)
 	{
 		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->Clone();
 		pNewVehicle->AddChild(pNewModel);
-		distances[i+1] = m_fDistance.GetAt(i) * fSize;
+		distances[i+1] = m_fDistance.GetAt(i) * fScale;
 	}
-	pNewVehicle->m_pLOD->SetRanges(distances, m_iLods+1);
+	pNewVehicle->m_pLOD->SetRanges(distances, iModels+1);
 
-	float scale = 0.01f;	// models are in cm
-	pNewVehicle->m_fSize = fSize * scale;
+	pNewVehicle->m_fSize = fScale;
 	ConvertPurpleToColor(pNewVehicle, cColor);
 
 	return pNewVehicle;
+}
+
+void VehicleType::ReleaseModels()
+{
+	for (unsigned int i = 0; i < m_pModels.GetSize(); i++)
+	{
+		m_pModels[i]->Release();
+	}
+	m_pModels.Empty();
 }
 

@@ -30,7 +30,7 @@ public:
 class PlaneEngine : public vtEngine
 {
 public:
-	PlaneEngine(float fSpeedExag, AirportCodes code);
+	PlaneEngine(float fSpeedExag, float fScale, AirportCodes code);
 	void Eval();
 	void SetHoop(int i);
 
@@ -43,6 +43,7 @@ public:
 	float	m_fSpeed;		// in meters/sec
 	float	m_fSpeedExag;	// this many times normal speed
 	float	m_fLastTime;
+	float	m_fScale;
 };
 
 ///////////////////////////////////////////////////

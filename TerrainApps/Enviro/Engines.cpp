@@ -35,9 +35,10 @@ float utm_points_koa[5][2] = {
 	{ 179963, 2179740 }		// E 4
 };
 
-PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
+PlaneEngine::PlaneEngine(float fSpeedExag, float fScale, AirportCodes code) : vtEngine()
 {
 	m_fSpeedExag = fSpeedExag;
+	m_fScale = fScale;
 
 	// set up some initial points
 	float x, y, z;
@@ -77,16 +78,21 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 	m_hoop_speed[1] = 150.0f;
 
 	// touchdown
-	// center of plane is 15m above ground + 1.5m airport above ground + .5m of runway thickness
-	utm_points[0].z = 17.0f;
+	// center of plane is 15m above ground + 2m airport above ground
+	// plus distance from center of plane to base of landing gear
+	double ground_offset = 17.0f + (m_fScale * 13.5f);
+
+	utm_points[0].z = ground_offset;
 	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[2]);
 	m_hoop_speed[2] = 25.0f;
 
 	// speeding up to takeoff point
+	utm_points[1].z = ground_offset;
 	g_Conv.ConvertFromEarth(utm_points[1], m_hoop_pos[3]);
 	m_hoop_speed[3] = 5.0f;
 
 	// takeoff to this point
+	utm_points[2].z = ground_offset;
 	g_Conv.ConvertFromEarth(utm_points[2], m_hoop_pos[4]);
 	m_hoop_speed[4] = 35.0f;
 

@@ -14,6 +14,11 @@ PTerrain::PTerrain() : vtTerrain()
 	m_pFirstVehicleType = NULL;
 }
 
+PTerrain::~PTerrain()
+{
+	ReleaseVehicles();
+}
+
 void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway, 
 						   char* name, int destination_index)
 {
@@ -45,34 +50,48 @@ void PTerrain::AddVehicleType(VehicleType *vt)
 
 void PTerrain::SetupVehicles()
 {
+	// the bronco is modeled in centimeters (0.01)
 	VehicleType *bronco = new VehicleType("bronco");
 	vtString fname;
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/bronco/bronco_v2.3ds");
-	bronco->SetModelLod(0, fname, 500);
+	bronco->AddModel(fname, 0.01f, 500);
 	AddVehicleType(bronco);
 
+	// the discovery is modeled in centimeters (0.01)
 	VehicleType *discovery = new VehicleType("discovery");
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD01.3ds");
-	discovery->SetModelLod(0, fname, 50);
+	discovery->AddModel(fname, 0.01f, 50);
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD02.3ds");
-	discovery->SetModelLod(1, fname, 100);
+	discovery->AddModel(fname, 0.01f, 100);
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD03.3ds");
-	discovery->SetModelLod(2, fname, 200);
+	discovery->AddModel(fname, 0.01f, 200);
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD04.3ds");
-	discovery->SetModelLod(3, fname, 500);
+	discovery->AddModel(fname, 0.01f, 500);
 	AddVehicleType(discovery);
 
+	// the bus is modeled in centimeters (0.01)
 	VehicleType *hele_on = new VehicleType("bus");
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/hele-on/bus020101.3ds");
-	hele_on->SetModelLod(0, fname, 800);
+	hele_on->AddModel(fname, 0.01f, 800);
 	AddVehicleType(hele_on);
 
+	// the 747 is modeled in meters (1.0)
 	VehicleType *b747 = new VehicleType("747");
 	fname = FindFileOnPaths(s_DataPaths, "Vehicles/747/747-lod00.3ds");
-	b747->SetModelLod(0, fname, 200);
+	b747->AddModel(fname, 1.0f, 200);
 //	fname = FindFileOnPaths(s_DataPaths, "Vehicles/747-LOD01.3ds");
-//	b747->SetModelLod(1, fname, 1000);
+//	b747->AddModelLod(1, fname, 1000);
 	AddVehicleType(b747);
+}
+
+void PTerrain::ReleaseVehicles()
+{
+	VehicleType *vt, *next;
+	for (vt = m_pFirstVehicleType; vt; vt=next)
+	{
+		next = vt->m_pNext;
+		delete vt;
+	}
 }
 
 Vehicle *PTerrain::CreateVehicle(const char *szType, const RGBf &cColor, float fSize)
