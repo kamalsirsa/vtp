@@ -379,7 +379,7 @@ void vtStructureLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		if (ui.m_pCurLinear == NULL)
 		{
 			ui.m_pCurLinear = NewFence();
-			ui.m_pCurLinear->SetOptions(GetMainFrame()->m_LSOptions);
+			ui.m_pCurLinear->SetParams(GetMainFrame()->m_LSOptions);
 			Append(ui.m_pCurLinear);
 			ui.m_bRubber = true;
 		}
