@@ -78,6 +78,7 @@ public:
 	bool SetTextDescription(const char *type, const char *value);
 
 	bool ReadProjFile(const char *filename);
+	bool WriteProjFile(const char *filename);
 
 protected:
 	DATUM	m_Datum;

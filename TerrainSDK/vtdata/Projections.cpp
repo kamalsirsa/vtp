@@ -370,6 +370,27 @@ bool vtProjection::ReadProjFile(const char *filename)
 }
 
 
+/**
+ * Write the projection to a .prj file.
+ * 
+ * \return true if successful.
+ */
+bool vtProjection::WriteProjFile(const char *filename)
+{
+	FILE *fp2 = fopen(filename, "wb");
+	if (!fp2)
+		return false;
+	char *wkt;
+	OGRErr err = exportToWkt(&wkt);
+	if (err != OGRERR_NONE)
+		return false;
+	fprintf(fp2, "%s\n", wkt);
+	fclose(fp2);
+	OGRFree(wkt);
+	return true;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
