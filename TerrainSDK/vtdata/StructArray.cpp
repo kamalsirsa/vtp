@@ -208,7 +208,8 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
 	return (structure != -1);
 }
 
-/** Find the structure which is closest to the given point, if it is within
+/**
+ * Find the structure which is closest to the given point, if it is within
  * 'epsilon' distance.  The structure index and distance are returned by
  * reference.
  */
@@ -974,7 +975,9 @@ void StructVisitorGML::endElement(const char *name)
 	else if (m_state == 1 && (!strcmp(name, "SRS")))
 	{
 		m_pSA->m_proj.SetTextDescription("wkt", m_data.c_str());
-		g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
+
+		// This seems wrong - why would each .vtst file reset the global projection?
+		// g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
 	}
 	else if (m_state == 10)
 	{
