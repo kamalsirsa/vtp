@@ -1,7 +1,7 @@
 //
 // Fence3d.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,7 +14,7 @@
 
 /**
  * This class extends vtFence with the abiliity to construct and
- * operate on a 3D model of a parametric fence or wall.
+ * operate on a 3D model of a linear structore (parametric fence or wall.)
  */
 class vtFence3d : public vtFence, public vtStructure3d
 {
