@@ -286,7 +286,8 @@ bool  vtTerrain::create_regular_terrain(float fOceanDepth)
 	m_pTerrainGeom->CreateFromLocalGrid(m_pLocalGrid, VtxType,
 							m_Params.m_iSubsample, m_Params.m_iSubsample,
 							LARGEST_BLOCK_SIZE,	texture_patches,
-							m_Params.m_bSuppressLand != 0, fOceanDepth * WORLD_SCALE, bLighting);
+							m_Params.m_bSuppressLand,
+							fOceanDepth * WORLD_SCALE, bLighting);
 
 	switch (m_Params.m_eTexture)
 	{
@@ -705,12 +706,32 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 	}
 }
 
-///////////////////////////////////////////////////////////////////
-//// Tranmission towers
+/**
+ * Loads an external 3d model as a movable node.  The file will be looked for
+ * on the Terrain's data path, and wrapped with a vtTransform so that it can
+ * be moved.
+ *
+ * To add the model to the Terrain's scene graph, use <b>AddModel</b> or
+ * <b>AddModelToLodGrid</b>.  To plant the model on the terrain, use
+ * <b>PlantModel</b> or <b>PlantModelAtPoint</b>.
+ *
+ * You should also make sure that your model is displayed at the correct
+ * scale.  If the units are of the model are meters, you should scale by
+ * <b>WORLD_SCALE</b> to that it matches the units of the Terrain:
+ *
+ * \par Example:
+	\code
+MyTerrain::CreateCustomCulture(bool bSound)
+{
+	vtTransform *pFountain = LoadModel("Culture/fountain.3ds");
 
-//
-// Load an external 3d model from the data path
-//
+	pFountain->Scale3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
+
+	PlantModelAtPoint(pFountain, DPoint2(217690, 4123475));
+	AddModel(pFountain);
+}
+	\endcode
+ */
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
 	vtNode *node = vtLoadModel(m_strDataPath + filename);
@@ -725,6 +746,13 @@ vtTransform *vtTerrain::LoadModel(const char *filename)
 }
 
 
+/**
+ * "Plants" a model on the ground.  This is done by moving the model directly
+ * up or down such that its local origin is at the height of the terrain.
+ *
+ * Note: this function does not add the model to the terrain's scene
+ * graph.  Use <b>AddNode</b> for that operation.
+ */
 void vtTerrain::PlantModel(vtTransform *model)
 {
 	FPoint3 pos;
@@ -734,23 +762,30 @@ void vtTerrain::PlantModel(vtTransform *model)
 }
 
 
-void vtTerrain::PlantModelUTM(vtTransform *model, double utm_x, double utm_y)
+/**
+ * "Plants" a model on the ground.  This is done by moving the node to the
+ * indicated earth coordinate, then moving it directly up or down such that
+ * its local origin is at the height of the terrain.
+ *
+ * \param model The model to be placed on the terrain.
+ * \param pos The position (in earth coordinates) at which to place it.
+ * \param bGeo true if the position is given in geographic coordinates
+ * (longitude, latitude), otherwise it is assumed to be in the meters-based
+ * projection that the Terrain is using.
+ *
+ * Note: this function does not add the model to the terrain's scene
+ * graph.  Use <b>AddNode</b> for that operation.
+ */
+void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos, bool bGeo)
 {
-	FPoint3 pos;
+	FPoint3 wpos;
 
-	g_Proj.convert_utm_to_local_xz(utm_x, utm_y, pos.x, pos.z);
-	m_pHeightField->FindAltitudeAtPoint(pos, pos.y);
-	model->SetTrans(pos);
-}
-
-
-void vtTerrain::PlantModelLL(vtTransform *model, double lon, double lat)
-{
-	FPoint3 pos;
-
-	g_Proj.convert_latlon_to_local_xz(lat, lon, pos.x, pos.z);
-	m_pHeightField->FindAltitudeAtPoint(pos, pos.y);
-	model->SetTrans(pos);
+	if (bGeo)
+		g_Proj.convert_latlon_to_local_xz(pos.y, pos.x, wpos.x, wpos.z);
+	else
+		g_Proj.convert_meters_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
+	m_pHeightField->FindAltitudeAtPoint(wpos, wpos.y);
+	model->SetTrans(wpos);
 }
 
 
@@ -1061,6 +1096,15 @@ vtGroup *vtTerrain::CreateScene(bool bSound, int &iError)
 	return m_pTerrainGroup;
 }
 
+bool vtTerrain::IsCreated()
+{
+	return m_pTerrainGroup != NULL;
+}
+
+void vtTerrain::Enable(bool bVisible)
+{
+	m_pTerrainGroup->SetEnabled(bVisible);
+}
 
 FPoint3 vtTerrain::GetCenter()
 {
@@ -1495,10 +1539,10 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	vtMesh *pGeom = new vtMesh(GL_LINES, 0, STEPS*4);
 
 	FPoint3 v1, v2, v3, v4, v;
-	g_Proj.convert_utm_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
-	g_Proj.convert_utm_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
-	g_Proj.convert_utm_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
-	g_Proj.convert_utm_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
+	g_Proj.convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
+	g_Proj.convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
+	g_Proj.convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
+	g_Proj.convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
 
 	int i;
 	for (i = 0; i < STEPS; i++)
@@ -1534,7 +1578,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	float vert1[3], vert2[3], vert3[3], vert4[3];
 
 	// top-left
-	convert_utm_to_local_xz(poi->m_rect.left, poi->m_rect.top, x, z);
+	convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.top, x, z);
 	v1.x = x;
 	v1.z = z;
 	m_pHeightField->FindAltitudeAtPoint(v1, v1.y);
@@ -1543,7 +1587,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	vert1[2] = v1.z;
 
 	// top-right
-	convert_utm_to_local_xz(poi->m_rect.right, poi->m_rect.top, x, z);
+	convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.top, x, z);
 	v2.x = x;
 	v2.z = z;
 	m_pHeightField->FindAltitudeAtPoint(v2, v2.y);
@@ -1552,7 +1596,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	vert2[2] = v2.z;
 
 	// bottom-right
-	convert_utm_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, x, z);
+	convert_meters_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, x, z);
 	v3.x = x;
 	v3.z = z;
 	m_pHeightField->FindAltitudeAtPoint(v2, v2.y);
@@ -1561,7 +1605,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	vert3[2] = v3.z;
 
 	// bottom-left
-	convert_utm_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, x, z);
+	convert_meters_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, x, z);
 	v4.x = x;
 	v4.z = z;
 	m_pHeightField->FindAltitudeAtPoint(v2, v2.y);
@@ -1666,5 +1710,31 @@ void vtTerrain::CreatePlantInstance(int i)
 	m_pLodGrid->AppendToGrid(pTrans);
 
 	m_PlantGeoms.SetAt(i, pTrans);
+}
+
+/**
+ * Adds a node to the terrain.
+ * The node will be added directly, so it is always in the scene whenever
+ * the terrain is visible.
+ *
+ * \sa AddNodeToLodGrid
+ */
+void vtTerrain::AddNode(vtNode *pNode)
+{
+	m_pTerrainGroup->AddChild(pNode);
+}
+
+/**
+ * Adds a node to the terrain.
+ * The node will be added to the LOD Grid of the terrain, so it will be
+ * culled when it is far from the viewer.  This is usually desirable when
+ * the models are complicated or there are lot of them.
+ *
+ * \sa AddNode
+ */
+void vtTerrain::AddNodeToLodGrid(vtNode *pNode)
+{
+	if (m_pLodGrid)
+		m_pLodGrid->AddChild(pNode);
 }
 

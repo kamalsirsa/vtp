@@ -79,7 +79,7 @@ public:
 	void SetName(vtString str) { m_Params.m_strName = str; }
 	vtString GetName() { return m_Params.m_strName; }
 
-	// main creation function
+	/// primary creation function
 	vtGroup *CreateScene(bool bSound, int &iError);
 	bool CreateStep1(int &iError);
 	bool CreateStep2(int &iError);
@@ -88,17 +88,25 @@ public:
 	bool CreateStep5(bool bSound, int &iError);
 	const char *DesribeError(int iError);
 
-	// load an external geometry file
+	/// return true if the terrain has been created
+	bool IsCreated();
+
+	/// set the enabled state of the terrain (whether it is shown or not)
+	void Enable(bool bVisible);
+
+	/// load an external geometry file
 	vtTransform *LoadModel(const char *filename);
 
-	// place a model on the terrain
+	/// add a model (or any node) to the terrain
+	void AddNode(vtNode *pNode);
+
+	/// add a model (or any node) to the LOD grid of the terrain 
+	void AddNodeToLodGrid(vtNode *pNode);
+
+	/// place a model on the terrain
 	void PlantModel(vtTransform *model);
-	void PlantModelUTM(vtTransform *model, double utm_x, double utm_y);
-	void PlantModelUTM(vtTransform *model, DPoint2 &p)
-	{
-		PlantModelUTM(model, p.x, p.y);
-	}
-	void PlantModelLL(vtTransform *model, double lat, double lon);
+	/// place a model on the terrain at a specific point
+	void PlantModelAtPoint(vtTransform *model, const DPoint2 &p, bool bGeo = false);
 
 	// test whether a given point is within the current terrain
 	bool PointIsInTerrainUTM(int utm_zone, float utm_x, float utm_y);
