@@ -234,6 +234,10 @@ void vtTerrain::create_textures()
 											 true, !m_Params.m_bPreLit);	// for shaded white
 				m_Params.m_eTexture = TE_NONE;
 			}
+			if (eTex == TE_SINGLE)
+			{
+				// TODO: check that DIB size is power of two, and warn if not
+			}
 		}
 	}
 	if (eTex == TE_DERIVED)
