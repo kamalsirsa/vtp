@@ -395,7 +395,7 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
  * Construct a Mesh.
  * A Mesh is a container for a set of vertices and primitives.
  *
- * \param PrimType The type of primitive this mesh will contain.  Allowed
+ * \param ePrimType The type of primitive this mesh will contain.  Allowed
  *		values are:
  *		- GL_POINTS
  *		- GL_LINES

@@ -168,7 +168,7 @@ RGBf vtNodeBase::s_white(1, 1, 1);
  *		is the point at which it becomes totally opaque.
  * \param color The color of the fog.  All geometry will be faded toward this
  *		color.
- * \param iType Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
+ * \param Type Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
  *		increase of the fog density.
  */
 void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, enum FogType Type)
