@@ -337,7 +337,6 @@ void vtFrame::CreateMenus()
 
 void vtFrame::CreateToolbar()
 {
-return;
 	// tool bar
 	m_pToolbar = CreateToolBar(wxTB_HORIZONTAL | wxNO_BORDER | wxTB_DOCKABLE);
 	m_pToolbar->SetMargins(2, 2);
