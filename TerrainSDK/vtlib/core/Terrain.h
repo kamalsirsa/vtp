@@ -1,0 +1,276 @@
+//
+// Terrain.h
+//
+// Copyright (c) 2001 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
+
+#ifndef TERRAINH
+#define TERRAINH
+
+#include "TParams.h"
+#include "Trees.h"
+#include "Structure3d.h"
+
+class vtTerrainGeom;
+class vtTextureCoverage;
+class vtFence3d;
+class vtRoadMap3d;
+class vtLodGrid;
+
+#include "LKTerrain.h"
+#include "TVTerrain.h"
+#include "SMTerrain.h"
+#include "CustomTerrain.h"
+#include "BryanTerrain.h"
+// add your own LOD method header here!
+
+typedef vtImage *vtImagePtr;
+
+class vtPointOfInterest
+{
+public:
+	vtPointOfInterest() { m_pGeom = NULL; }
+
+	DRECT m_rect;
+	vtString m_name;
+	vtString m_url;
+	vtGeom *m_pGeom;
+};
+typedef class vtPointOfInterest *POIPtr;
+
+// Terrain Feature Types
+enum TFType
+{
+	OCEAN,
+	VEGETATION,
+	ROADS
+};
+
+
+/**  The vtTerrain class represents a rectangular area of terrain.
+ * \par
+ * It is described by a set of parameters such as elevation, vegetation,
+ * and time of day.  These terrain parameters are contained in the class TParams.
+ * \par
+ * To create a new terrain, first construct a vtTerrain and set its
+ * parameters with SetParams() or SetParamFile().  Then call CreateScene()
+ * to build the visual representation, which returns a vtGroup which can be
+ * added to a scene graph.
+ */
+class vtTerrain
+{
+public:
+	vtTerrain();
+	~vtTerrain();
+
+	/********************** Public Methods ******************/
+
+	// parameters for terrain creation
+	bool SetParamFile(const char *fname);
+	bool LoadParams();
+	vtString GetParamFile()  { return m_strParamFile; }
+	void SetParams(TParams &pParams) { m_Params = pParams; }
+	TParams &GetParams() { return m_Params; }
+
+	// each terrain can have a long descriptive name
+	void SetName(vtString str) { m_Params.m_strName = str; }
+	vtString GetName() { return m_Params.m_strName; }
+
+	// main creation function
+	vtGroup *CreateScene(bool bSound, int &iError);
+	bool CreateStep1(int &iError);
+	bool CreateStep2(int &iError);
+	bool CreateStep3(int &iError);
+	bool CreateStep4(int &iError);
+	bool CreateStep5(bool bSound, int &iError);
+	const char *DesribeError(int iError);
+
+	// load an external geometry file
+	vtNode *LoadModel(const char *filename);
+
+	// place a model on the terrain
+	void PlantModel(vtTransform *model);
+	void PlantModelUTM(vtTransform *model, double utm_x, double utm_y);
+	void PlantModelUTM(vtTransform *model, DPoint2 &p)
+	{
+		PlantModelUTM(model, p.x, p.y);
+	}
+	void PlantModelLL(vtTransform *model, double lat, double lon);
+
+	// test whether a given point is within the current terrain
+	bool PointIsInTerrainUTM(int utm_zone, float utm_x, float utm_y);
+	bool PointIsInTerrainLL(float lat, float lon);
+
+	// set global projection based on this terrain's elevation grid
+	void SetGlobalProjection();
+
+	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
+
+	// fences
+	void AddFence(vtFence3d *f);
+	void AddFencepoint(vtFence3d *f, const DPoint2 &utm);
+	void RedrawFence(vtFence3d *f);
+
+	// plants
+	void AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
+	void SetPlantList(vtPlantList3d *pPlantList) { m_pPlantList = pPlantList; }
+	void CreatePlantsFromPIA();
+	void CreatePlantInstance(int i);
+	vtPlantInstanceArray	m_PIA;
+
+	// buildings
+	vtStructureArray3d &GetStructures() { return m_Structures; }
+
+	// overridable by subclasses to extend culture
+	virtual void CreateCustomCulture(bool bDoSound);
+
+	// manage engines specific to this terrain
+	void AddEngine(vtEngine *pE);
+	void ActivateEngines(bool bActive);
+
+	// reports world coordinates
+	FPoint3 GetCenter();
+	float GetRadius();
+	void GetTerrainBounds();
+
+	// turn various features on/off
+	void SetFeatureVisible(TFType ftype, bool bOn);
+	bool GetFeatureVisible(TFType ftype);
+
+	// query
+	vtString GetScriptFilename() { return m_strDataPath + m_Params.m_strMotionScript; }
+	vtString GetFenceFilename() { return m_strDataPath + "FenceData/test.fmf"; } // fix this
+	RGBf GetOceanColor() { return m_ocean_color; }
+	bool HasDynTerrain() { return m_pDynGeom != NULL; }
+
+	// Points of interest
+	void AddPointOfInterest(double ulx, double uly, double brx, double bry,
+							  const char *name, const char *url);
+	vtPointOfInterest *FindPointOfInterest(DPoint2 utm);
+	void SetShowPOI( bool flag ) { m_bShowPOI = flag; }
+	bool GetShowPOI() { return m_bShowPOI; }
+	void ShowPOI(vtPointOfInterest *poi, bool bShow);
+	void HideAllPOI();
+
+	// Access the viewpoint associated with this terrain
+	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
+	FMatrix4 &GetCamLocation() { return m_CamLocation; }
+
+	vtHeightField *GetHeightField() { return m_pHeightField; }
+
+	// linked list of terrains
+	void SetNext(vtTerrain *t) { m_pNext = t; }
+	vtTerrain *GetNext() { return m_pNext; }
+
+	/********************** Public Data ******************/
+
+	// main scene graph outline
+	vtGroup		*m_pTerrainGroup;
+
+	// regular terrain (brute-force)
+	vtTerrainGeom	*m_pTerrainGeom;
+
+	// dynamic terrain (CLOD)
+	vtDynTerrainGeom *m_pDynGeom;
+
+	// polygon containing geo corners of terrain area
+	DLine2		m_Corners_geo;
+
+	/********************** Statics ******************/
+
+	// during creation, all data will be looked for on the data path
+	static void SetDataPath(const char *path) { m_strDataPath = path; }
+	static vtString	m_strDataPath;
+
+protected:
+	/********************** Protected Methods ******************/
+
+	// internal creation functions
+	void create_roads(vtString strRoadFile);
+	void setup_LodGrid(float fLODDistance);
+	void create_textures(int iTiles, const char *szTextureFile);
+	bool create_regular_terrain(float fOceanDepth);
+	bool create_dynamic_terrain(float fOceanDepth, int &iError);
+	void create_artificial_horizon(bool bWater, bool bHorizon,
+		bool bCenter, float fTransparency);
+	void CreateStructuresFromXML(vtString strFilename);
+	void create_culture(bool bSound);
+	void create_floating_labels(const char *filename);
+
+	void CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
+								int patches, int patch_size);
+	void CreateChoppedAppearances1(vtMaterialArray *pApp1,
+							 int patches, int patch_size, float ambient,
+							 float diffuse, float emmisive);
+	void CreateChoppedAppearances2(vtMaterialArray *pApp1,
+							 int patches, int patch_size, float ambient,
+							 float diffuse, float emmisive);
+	void ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib,
+						int xPatch = 0, int yPatch = 0, int nPatches = 1);
+
+	/********************** Protected Data ******************/
+
+	// construction parameters used to create this terrain
+	TParams		m_Params;
+
+	// data grids
+	vtHeightField	*m_pHeightField;
+	vtLodGrid		*m_pLodGrid;
+
+	// if we're switching between multiple terrains, we can remember where
+	// the camera was in each one
+	FMatrix4		m_CamLocation;
+
+	// ocean
+	vtMovGeom		*m_pOceanGeom;
+
+	// built structures, e.g. buildings and fences
+	vtStructureArray3d	m_Structures;
+
+	vtMaterialArray		*m_pTerrApps1;	// for 'regular' terrain
+	vtMaterialArray		*m_pTerrApps2;	// for dynamic LOD terrain
+
+	// roads
+	vtGroup			*m_pRoadGroup;
+	vtRoadMap3d		*m_pRoadMap;
+
+	// plants
+	vtGroup				*m_pTreeGroup;
+	vtPlantList3d		*m_pPlantList;
+	Array<vtTransform*>	m_PlantGeoms;
+
+	// ground texture
+	vtDIB				*m_pDIB;
+	Array<vtImagePtr>	m_Images;
+	vtImage				*m_pImage;
+	vtTextureCoverage	*m_pCoverage;
+
+	FSphere			m_bound_sphere;		// bounding sphere of terrain
+									// (without surrounding ocean)
+	RGBf			m_ocean_color;
+	vtString		m_strParamFile;
+
+	// keep a list of all the engines specific to this terrain
+	Array<vtEngine*>  m_Engines;
+
+	// maintain a linked list
+	vtTerrain		*m_pNext;
+
+	Array<POIPtr>	m_PointsOfInterest;
+	bool			m_bShowPOI;
+
+	vtGroup			*m_pPOIGroup;
+
+	// only used during initialization
+	vtLocalGrid		*m_pLocalGrid;
+};
+
+//helpers
+vtGeom *CreatePlaneGeom(FPoint2 org, FPoint2 size,
+						   float xTiling, float zTiling, int steps);
+vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res);
+vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
+					   FPoint3 min1, FPoint3 max1, int steps);
+
+#endif
