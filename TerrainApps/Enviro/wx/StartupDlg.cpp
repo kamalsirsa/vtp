@@ -373,7 +373,7 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	AddValidator(ID_TNAME, &m_strTName);
 	AddValidator(ID_IMAGE, &m_strImage);
-	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale);
+	AddNumValidator(ID_PLANTSIZE, &m_fPlantScale, 2);
 
 	wxWindow::OnInitDialog(event);
 }
