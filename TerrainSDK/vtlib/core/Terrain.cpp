@@ -1098,34 +1098,26 @@ bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgb
 void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname,
 									 const PointStyle &style)
 {
+	unsigned int features = feat.GetNumEntities();
+	if (features == 0)
+		return;
+
 	// create container group
 	vtGroup *pPlaceNames = new vtGroup();
 	pPlaceNames->SetName2("Place Names");
 	m_pTerrainGroup->AddChild(pPlaceNames);
 
-	vtString font_path = FindFileOnPaths(s_DataPaths, fontname);
-	if (font_path == "")
-	{
-		VTLOG("Couldn't find font file '%s'\n", fontname);
-		return;
-	}
-
-	int features = feat.GetNumEntities();
-	if (features == 0)
-		return;
-
-	int i;
-	vtString str;
-	RGBAf rgba;
+	// Create materials.
 	vtMaterialArray *pLabelMats = new vtMaterialArray();
 
-	int common_material_index = -1;
 	int field_index_color = feat.GetFieldIndex("color");
 
 	// default case: common label color
-	common_material_index = pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
+	int common_material_index = pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
 
 #if 0
+	// It turns out that we don't have to do this, because OSG lets us
+	//  specify text color directly, rather than using materials.
 	if (field_index_color != -1)
 	{
 		// go through all the features collecting unique colors
@@ -1144,6 +1136,13 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 	}
 #endif
 
+	// Find and load the font.
+	vtString font_path = FindFileOnPaths(s_DataPaths, fontname);
+	if (font_path == "")
+	{
+		VTLOG("Couldn't find font file '%s'\n", fontname);
+		return;
+	}
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
 	if (success)
@@ -1154,14 +1153,19 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 		return;
 	}
 
+	// We support both 2D and 3D points
 	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
 	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
 
+	unsigned int i;
 	DPoint2 p2;
 	DPoint3 p3;
 	FPoint3 fp3;
+	vtString str;
+	RGBAf rgba;
 	for (i = 0; i < features; i++)
 	{
+		// Get the earth location of the label
 		if (pSetP2)
 			p2 = pSetP2->GetPoint(i);
 		else if (pSetP3)
@@ -1173,28 +1177,35 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2.x, p2.y, fp3))
 			continue;
 
-		if (pSetP3)
-			fp3.y += (style.m_label_elevation + p3.z);
+		// Elevate the location by the desired vertical offset
+		fp3.y += style.m_label_elevation;
 
-		vtTransform *bb = new vtTransform();
+		// If we have a 3D point, we can use the Z component of the point
+		//  to further affect the elevation.
+		if (pSetP3)
+			fp3.y += p3.z;
+
+		// Create the vtTextMesh
 		vtTextMesh *text = new vtTextMesh(font, style.m_label_size, true);	// center
 
 		feat.GetValueAsString(i, style.m_field_index, str);
 #if SUPPORT_WSTRING
-		// text might be UTF-8
+		// Text might be UTF-8
 		wstring2 wide_string;
 		wide_string.from_utf8(str);
 		text->SetText(wide_string);
 #else
-		// hope it isn't
+		// Hope that it isn't
 		text->SetText(str);
 #endif
 
+		// Create the vtGeom object to contain the vtTextMesh
 		vtGeom *geom = new vtGeom();
 		geom->SetName2(str);
 		geom->SetMaterials(pLabelMats);
 
 #if 0
+		// This is the material code that we don't (apparently) need.
 		int material_index;
 		if (field_index_color == -1)
 			material_index = common_material_index;
@@ -1217,12 +1228,11 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontn
 		geom->AddTextMesh(text, common_material_index);
 #endif
 
-		// TODO: add a billboarding transform so that the labels turn
+		// Add to a billboarding transform so that the labels turn
 		// toward the viewer
+		vtTransform *bb = new vtTransform();
 		bb->AddChild(geom);
-
 		m_pBBEngine->AddTarget(bb);
-//		bb->Scale3(style.m_label_size, style.m_label_size, 1.0f);
 
 		bb->SetTrans(fp3);
 		pPlaceNames->AddChild(bb);
