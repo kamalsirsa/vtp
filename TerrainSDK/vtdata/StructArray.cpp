@@ -640,7 +640,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			// absolute height in meters
 			const char *abs_str = atts.getValue("abs");
 			if (abs_str)
-				fen->SetHeight(atof(abs_str));
+				fen->SetHeight((float)atof(abs_str));
 		}
 		if (string(name) == (string)"posts")
 		{
@@ -659,7 +659,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 
 			const char *spacing = atts.getValue("spacing");
 			if (spacing)
-				fen->SetSpacing(atof(spacing));
+				fen->SetSpacing((float)atof(spacing));
 		}
 		if (string(name) == (string)"connect")
 		{
@@ -694,7 +694,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *rot = atts.getValue("rot");
 			if (rot)
 			{
-				bld->SetRotation(atof(rot));
+				bld->SetRotation((float)atof(rot));
 			}
 		}
 		if (string(name) == (string)"circle")
@@ -711,7 +711,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *radius = atts.getValue("radius");
 			if (radius)
 			{
-				bld->SetRadius(atof(radius));
+				bld->SetRadius((float)atof(radius));
 			}
 		}
 		if (string(name) == (string)"poly")
@@ -822,7 +822,7 @@ bool vtStructureArray::ReadXML(const char* pathname)
 	{
 		readXML(pathname, visitor);
 	}
-	catch (xh_exception &e)
+	catch (xh_exception &)
 	{
 		// TODO: would be good to pass back the error message.
 		return false;

@@ -319,7 +319,7 @@ void PlantListVisitor::startElement (const char * name, const XMLAttributes &att
 				pItem->SetSciName(attval);
 			attval = atts.getValue("max_height");
 			if (attval != NULL)
-				pItem->SetMaxHeight(atof(attval));
+				pItem->SetMaxHeight((float)atof(attval));
 
 			push_state(pItem, "species");
 		}
@@ -352,16 +352,16 @@ void PlantListVisitor::startElement (const char * name, const XMLAttributes &att
 				filename = attval;
 			attval = atts.getValue("width");
 			if (attval != NULL)
-				width = atof(attval);
+				width = (float)atof(attval);
 			attval = atts.getValue("height");
 			if (attval != NULL)
-				height = atof(attval);
+				height = (float)atof(attval);
 			attval = atts.getValue("shadow_radius");
 			if (attval != NULL)
-				shadow_radius = atof(attval);
+				shadow_radius = (float)atof(attval);
 			attval = atts.getValue("shadow_darkness");
 			if (attval != NULL)
-				shadow_darkness = atof(attval);
+				shadow_darkness = (float)atof(attval);
 			pItem->AddAppearance(type, filename, width, height, shadow_radius, shadow_darkness);
 		}
 		return;
@@ -394,7 +394,7 @@ bool vtPlantList::ReadXML(const char* pathname)
 	{
 		readXML(pathname, visitor);
 	}
-	catch (xh_exception &e)
+	catch (xh_exception &)
 	{
 		// TODO: would be good to pass back the error message.
 		return false;
