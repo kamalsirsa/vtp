@@ -12,6 +12,7 @@
 #endif
 
 #include "wx/progdlg.h"
+#include "vtui/wxString2.h"
 #include "vtdata/MathTypes.h"
 #include "vtdata/vtLog.h"
 #include "Helper.h"
@@ -124,6 +125,26 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect)
 int GuessZoneFromLongitude(double longitude)
 {
 	return (int) (((longitude + 180.0) / 6.0) + 1.0);
+}
+
+//////////////////////////////////////
+
+//
+// Display a message to the user, and also send it to the log file.
+//
+void DisplayAndLog(const char *pFormat, ...)
+{
+	va_list va;
+	va_start(va, pFormat);
+
+	char ach[1024];
+	vsprintf(ach, pFormat, va);
+
+	wxString2 msg = ach;
+	wxMessageBox(msg);
+
+	strcat(ach, "\n");
+	g_Log._Log(ach);
 }
 
 //////////////////////////////////////

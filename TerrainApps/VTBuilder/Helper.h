@@ -29,6 +29,13 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect);
 
 int GuessZoneFromLongitude(double longitude);
 
+/////
+
+// Display a message to the user, and also send it to the log file.
+void DisplayAndLog(const char *pFormat, ...);
+
+/////
+
 #if WIN32
 /**
  * Win32 allows us to do a real StrectBlt operation, although it still won't
