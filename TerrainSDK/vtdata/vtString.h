@@ -20,6 +20,18 @@
 #  define WIN_UNIX_CDECL
 #endif
 
+#ifdef WIN32
+#  define stricmp _stricmp   // MBCS/Unicode aware
+#else
+#  define stricmp strcasecmp
+#endif
+
+#ifdef WIN32
+#  define stricoll _stricoll
+#else
+#  define stricoll strcoll	/*  Doesn't exist on UNIX  */
+#endif
+
 // pointer to const char
 typedef char *pchar;
 typedef const char *pcchar;
@@ -110,10 +122,6 @@ public:
 	int Compare(pcchar lpsz) const;
 	// compare ignoring case
 	int CompareNoCase(pcchar lpsz) const;
-	// NLS aware comparison, case sensitive
-	int Collate(pcchar lpsz) const;
-	// NLS aware comparison, case insensitive
-	int CollateNoCase(pcchar lpsz) const;
 
 	// simple sub-string extraction
 

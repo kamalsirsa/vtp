@@ -454,30 +454,8 @@ void vtString::MakeReverse()
 
 int vtString::CompareNoCase(pcchar lpsz) const
 {
-#ifdef WIN32
-#  define stricmp _stricmp   // MBCS/Unicode aware
-#else
-#  define stricmp strcasecmp
-#endif
 	return stricmp(m_pchData, lpsz);
 }
-
-// vtString::Collate is often slower than Compare but is MBSC/Unicode
-//  aware as well as locale-sensitive with respect to sort order.
-inline int vtString::Collate(pcchar lpsz) const
-{
-	return strcoll(m_pchData, lpsz);	// locale sensitive
-}
-inline int vtString::CollateNoCase(pcchar lpsz) const
-#ifdef WIN32
-#  define stricoll _stricoll
-#else
-#  define stricoll strcoll             /*  Doesn't exist on UNIX  */
-#endif
-{
-	return stricoll(m_pchData, lpsz);   // locale sensitive
-}
-
 
 void vtString::SetAt(int nIndex, char ch)
 {
