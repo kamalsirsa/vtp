@@ -504,7 +504,7 @@ void vtMesh::Release()
 
 
 // Override with ability to get OSG bounding box
-void vtMesh::GetBoundBox(FBox3 &box)
+void vtMesh::GetBoundBox(FBox3 &box) const
 {
 	const BoundingBox &osg_box = m_pGeometry->getBound();
 	s2v(osg_box, box);
@@ -957,6 +957,14 @@ void vtTextMesh::Release()
 		//  also occur implicitly in the destructor
 		m_pOsgText = NULL;
 }
+
+// Override with ability to get OSG bounding box
+void vtTextMesh::GetBoundBox(FBox3 &box) const
+{
+	const BoundingBox &osg_box = m_pOsgText->getBound();
+	s2v(osg_box, box);
+}
+
 
 void vtTextMesh::SetText(const char *text)
 {

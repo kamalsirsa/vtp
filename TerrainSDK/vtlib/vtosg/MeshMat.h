@@ -125,11 +125,11 @@ class vtMesh : public vtMeshBase, public osg::Referenced
 public:
 	vtMesh(enum PrimType ePrimType, int VertType, int NumVertices);
 
-	// Override with ability to get OSG bounding box
-	void GetBoundBox(FBox3 &box);
-
 	/// Use this method instead of delete, when you are done with this object.
 	void Release();
+
+	// Override with ability to get OSG bounding box
+	void GetBoundBox(FBox3 &box) const;
 
 	// Adding primitives
 	void AddTri(int p0, int p1, int p2);
@@ -219,6 +219,9 @@ public:
 
 	/// Use this method instead of delete, when you are done with this object.
 	void Release();
+
+	// Override with ability to get OSG bounding box
+	void GetBoundBox(FBox3 &box) const;
 
 	/// Set the text string that this TextMesh should display
 	void SetText(const char *text);
