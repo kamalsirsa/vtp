@@ -11,6 +11,7 @@
 #include "MathTypes.h"
 #include "Projections.h"
 #include "Structure.h"
+#include "HeightField.h"
 #include <stdio.h>
 
 
@@ -23,11 +24,20 @@ public:
 	DRECT			rect;
 	bool			bInsideOnly;
 	bool			bFlip;
+	bool			bBuildFoundations;
+	bool			bUse25DForElevation;
+
+	vtString		m_strLayerName;
 
 	vtString		m_strFieldNameHeight;
 	enum HeightType { STORIES, METERS, FEET } m_HeightType;
 
+	vtString		m_strFieldNameElevation;
+	enum ElevationType { ETMETERS, ETFEET } m_ElevationType;
+
 	vtString		m_strFieldNameFile;
+
+	vtHeightField	*pHeightField;
 };
 
 
@@ -50,6 +60,11 @@ public:
 	bool ReadSHP(const char *pathname, StructImportOptions &opt,
 		void progress_callback(int) = NULL);
 	void AddElementsFromOGR(class OGRDataSource *datasource,
+		StructImportOptions &opt, void progress_callback(int) = NULL);
+
+	void AddElementsFromOGR_SDTS(class OGRDataSource *datasource,
+		void progress_callback(int) = NULL);
+	void AddElementsFromOGR_RAW(class OGRDataSource *datasource,
 		StructImportOptions &opt, void progress_callback(int) = NULL);
 
 	bool ReadBCF(const char *pathname);		// read a .bcf file

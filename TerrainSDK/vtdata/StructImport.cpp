@@ -409,6 +409,15 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 		StructImportOptions &opt, void progress_callback(int))
 {
+	if (opt.m_strLayerName != "")
+		AddElementsFromOGR_SDTS(pDatasource, progress_callback);
+	else
+		AddElementsFromOGR_RAW(pDatasource, opt, progress_callback);
+}
+
+void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
+		void progress_callback(int))
+{
 	int i, j, feature_count, count;
 	OGRLayer		*pLayer;
 	OGRFeature		*pFeature;
@@ -419,14 +428,16 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 	DPoint2			point;
 	DLine2 foot;
 	OGRLinearRing *ring;
-	OGRLineString *pLineString;
 	int num_points;
+	OGRFeatureDefn *pLayerDefn;
+
+	int num_layers = pDatasource->GetLayerCount();
+
 	//
 	// Iterate through the layers looking
 	// Test for known USGS SDTS DLG layer names
 	// Treat unknown ones as containing feature polygons
 	//
-	int num_layers = pDatasource->GetLayerCount();
 	for (i = 0; i < num_layers; i++)
 	{
 		pLayer = pDatasource->GetLayer(i);
@@ -435,11 +446,12 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 		feature_count = pLayer->GetFeatureCount();
   		pLayer->ResetReading();
-		OGRFeatureDefn *defn = pLayer->GetLayerDefn();
-		if (!defn)
-			continue;
 
-		const char *layer_name = defn->GetName();
+		pLayerDefn = pLayer->GetLayerDefn();
+		if (!pLayerDefn)
+			return;
+
+		const char *layer_name = pLayerDefn->GetName();
 
 		// Nodes
 		if (!strcmp(layer_name, "NO01"))
@@ -449,7 +461,7 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 		else if (!strcmp(layer_name, "NE01"))
 		{
 			// get field indices
-			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+			int index_entity = pLayerDefn->GetFieldIndex("ENTITY_LABEL");
 
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
@@ -477,13 +489,8 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 		// Areas (buildings, built-up areas, other areas like golf courses)
 		else if (!strcmp(layer_name, "PC01"))
 		{
-			// Get the projection (SpatialReference) from this layer
-			OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
-			if (pSpatialRef)
-				m_proj.SetSpatialReference(pSpatialRef);
-
 			// get field indices
-			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
+			int index_entity = pLayerDefn->GetFieldIndex("ENTITY_LABEL");
 
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
@@ -570,97 +577,220 @@ void vtStructureArray::AddElementsFromOGR(OGRDataSource *pDatasource,
 				Append(pBld);
 			}
 		}
+	}
+}
+
+void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
+		StructImportOptions &opt, void progress_callback(int))
+{
+	int i, j, feature_count, count;
+	OGRLayer		*pLayer;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRPolygon		*pPolygon;
+	vtBuilding		*pBld;
+	vtLevel         *pLevel, *pNewLevel;
+	DPoint2			point;
+	DLine2 foot;
+	OGRLinearRing *ring;
+	OGRLineString *pLineString;
+	int num_points;
+	OGRwkbGeometryType GeometryType;
+	int iHeightIndex;
+	int iElevationIndex;
+	int iFilenameIndex;
+	OGRFeatureDefn *pLayerDefn;
+	float fMinZ, fMaxZ, fTotalZ;
+	float dAverageZ;
+	float fOriginalElevation;
+	int iVertices;
+	float fMin, fMax, fDiff, fElev;
+
+	pLayer = pDatasource->GetLayerByName(opt.m_strLayerName);
+	if (!pLayer)
+		return;
+
+	feature_count = pLayer->GetFeatureCount();
+  	pLayer->ResetReading();
+
+	pLayerDefn = pLayer->GetLayerDefn();
+	if (!pLayerDefn)
+		return;
+
+	GeometryType = pLayerDefn->GetGeomType();
+
+	// Get the projection (SpatialReference) from this layer
+	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+	if (pSpatialRef)
+		m_proj.SetSpatialReference(pSpatialRef);
+
+	const char *layer_name = pLayerDefn->GetName();
+
+	// Use the schema provided in the UI
+	iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
+	iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
+	iFilenameIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameFile);
+
+	count = 0;
+	while( (pFeature = pLayer->GetNextFeature()) != NULL )
+	{
+		count++;
+		progress_callback(count * 100 / feature_count);
+
+
+		pGeom = pFeature->GetGeometryRef();
+		if (!pGeom)
+			continue;
+
+		// For the moment ignore multi polygons .. although we could
+		// treat them as multiple buildings !!
+		switch(wkbFlatten(GeometryType))
+		{
+			case wkbPolygon:
+				pPolygon = (OGRPolygon *) pGeom;
+				
+
+				ring = pPolygon->getExteriorRing();
+				num_points = ring->getNumPoints();
+
+				foot.SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+					foot.SetAt(j, DPoint2(ring->getX(j), ring->getY(j)));
+				break;
+
+			case wkbLineString:
+				pLineString = (OGRLineString *) pGeom;
+				
+				num_points = pLineString->getNumPoints();
+
+				// Ignore last point if it is the same as the first
+				if (DPoint2(pLineString->getX(0), pLineString->getY(0)) == DPoint2(pLineString->getX(num_points - 1), pLineString->getY(num_points - 1)))
+					num_points--;
+
+				foot.SetSize(num_points);
+				fMaxZ = -1E9;
+				fMinZ = 1E9;
+				fTotalZ = 0;
+				for (j = 0; j < num_points; j++)
+				{
+#ifdef _DEBUG
+					double dx = pLineString->getX(j);
+					double dy = pLineString->getY(j);
+#endif
+					double dz = pLineString->getZ(j);
+					if (dz > fMaxZ)
+						fMaxZ = (float) dz;
+					if (dz < fMinZ)
+						fMinZ = (float) dz;
+					fTotalZ += (float) dz;
+					foot.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
+				}
+				dAverageZ = fTotalZ/num_points;
+				break;
+
+			case wkbPoint:
+				break;
+
+			default:
+				continue;
+		}
+
+		pBld = NewBuilding();
+		if (!pBld)
+			return;
+
+
+		pBld->SetFootprint(0, foot);
+
+		vtBuilding *pDefBld = GetClosestDefault(pBld);
+		if (!pDefBld)
+		{
+			pBld->SetStories(1);
+		}
 		else
 		{
-			// Just look for footprints and assume they are buildings
-			// Get the projection (SpatialReference) from this layer
-			OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
-			if (pSpatialRef)
-				m_proj.SetSpatialReference(pSpatialRef);
+			pBld->SetElevationOffset(pDefBld->GetElevationOffset());
 
-			count = 0;
-			while( (pFeature = pLayer->GetNextFeature()) != NULL )
+			for (i = 0; i < pDefBld->GetNumLevels(); i++)
 			{
-				count++;
-				progress_callback(count * 100 / feature_count);
-
-
-				pGeom = pFeature->GetGeometryRef();
-				if (!pGeom)
-					continue;
-
-				// For the moment ignore multi polygons .. although we could
-				// treat them as multiple buildings !!
-				switch(wkbFlatten(pGeom->getGeometryType()))
-				{
-					case wkbPolygon:
-						pPolygon = (OGRPolygon *) pGeom;
-						
-
-						ring = pPolygon->getExteriorRing();
-						num_points = ring->getNumPoints();
-
-						foot.SetSize(num_points);
-						for (j = 0; j < num_points; j++)
-							foot.SetAt(j, DPoint2(ring->getX(j), ring->getY(j)));
-						break;
-
-					case wkbLineString:
-						pLineString = (OGRLineString *) pGeom;
-						
-						num_points = pLineString->getNumPoints();
-
-						if (DPoint2(pLineString->getX(0), pLineString->getY(0)) == DPoint2(pLineString->getX(num_points - 1), pLineString->getY(num_points - 1)))
-							num_points--;
-
-						foot.SetSize(num_points);
-						// Ignore last point if it is the same as the first
-						for (j = 0; j < num_points; j++)
-						{
-#ifdef _DEBUG
-							double dx = pLineString->getX(j);
-							double dy = pLineString->getY(j);
-#endif
-							foot.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
-						}
-						break;
-
-					default:
-						continue;
-				}
-
-				pBld = NewBuilding();
-				if (!pBld)
-					return;
-
-
-				pBld->SetFootprint(0, foot);
-
-				vtBuilding *pDefBld = GetClosestDefault(pBld);
-				if (!pDefBld)
-				{
-					pBld->SetStories(1);
-				}
-				else
-				{
-					pBld->SetElevationOffset(pDefBld->GetElevationOffset());
-
-					for (int i = 0; i < pDefBld->GetNumLevels(); i++)
-					{
-						if (i != 0)
-							pBld->CreateLevel(foot);
-						vtLevel *pLevel = pBld->GetLevel(i);
-						pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories;
-						pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
-						pLevel->SetEdgeColor(pDefBld->GetLevel(i)->m_Edges[0]->m_Color);
-						pLevel->SetEdgeMaterial(pDefBld->GetLevel(i)->m_Edges[0]->m_Material);
-						for (int j = 0;  j < pLevel->GetNumEdges(); j++)
-							pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
-					}
-				}
-				Append(pBld);
+				if (i != 0)
+					pBld->CreateLevel(foot);
+				vtLevel *pLevel = pBld->GetLevel(i);
+				pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories;
+				pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
+				pLevel->SetEdgeColor(pDefBld->GetLevel(i)->m_Edges[0]->m_Color);
+				pLevel->SetEdgeMaterial(pDefBld->GetLevel(i)->m_Edges[0]->m_Material);
+				for (int j = 0;  j < pLevel->GetNumEdges(); j++)
+					pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
 			}
 		}
+		// Modify the height of the building if neccessary
+		if (iHeightIndex != -1)
+		{
+			float fTotalHeight = 0;
+			float fScaleFactor;
+			for (i = 0; i < pBld->GetNumLevels(); i++)
+				fTotalHeight += pBld->GetLevel(i)->m_fStoryHeight;
+			fScaleFactor = (float)pFeature->GetFieldAsDouble(iHeightIndex)/fTotalHeight;
+			for (i = 0; i < pBld->GetNumLevels(); i++)
+				pBld->GetLevel(i)->m_fStoryHeight *= fScaleFactor;
+		}
+		// Modify elevation of building
+		fOriginalElevation = -1E9;
+		if ((GeometryType & wkb25DBit) && (opt.bUse25DForElevation))
+			fOriginalElevation = dAverageZ;
+		else if (iElevationIndex != -1)
+			fOriginalElevation = (float) pFeature->GetFieldAsDouble(iElevationIndex);
+		// Add foundation
+		if ((opt.bBuildFoundations) && (NULL != opt.pHeightField))
+		{
+			// Get the footprint of the lowest level
+			pLevel = pBld->GetLevel(0);
+			foot = pLevel->GetFootprint();
+			iVertices = foot.GetSize();
+
+			fMin = 1E9;
+			fMax = -1E9;
+			for (j = 0; j < iVertices; j++)
+			{
+				if (!opt.pHeightField->FindAltitudeAtPoint2(foot.GetAt(j), fElev))
+					continue;
+
+				if (fElev < fMin)
+					fMin = fElev;
+				if (fElev > fMax)
+					fMax = fElev;
+			}
+			if (fOriginalElevation != 1E9)
+			{
+				// I have a valid elevation
+				if (fOriginalElevation > fMin)
+					// Build foundation to elevation level
+					fDiff = fOriginalElevation - fMin;
+				else
+				{
+					// Sink building into the ground for the time being
+					fDiff = 0.0;
+					pBld->SetElevationOffset((float)fOriginalElevation - fMin);
+				}
+			}
+			else
+				fDiff = fMax - fMin;
+
+			if (0.0 != fDiff)
+			{
+				// Create and add a foundation level
+				pNewLevel = new vtLevel();
+				pNewLevel->m_iStories = 1;
+				pNewLevel->m_fStoryHeight = fDiff;
+				pBld->InsertLevel(0, pNewLevel);
+				pBld->SetFootprint(0, foot);
+				pNewLevel->SetEdgeMaterial(BMAT_CEMENT);
+				pNewLevel->SetEdgeColor(RGBi(255, 255, 255));
+			}
+		}
+		// Until I agree it with Ben set the offset to zero
+		Append(pBld);
 	}
 }
 
