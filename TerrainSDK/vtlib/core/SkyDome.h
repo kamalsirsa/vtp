@@ -1,109 +1,33 @@
 //
 // SkyDome.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTLIB_SKYDOMEH
 #define VTLIB_SKYDOMEH
 
-#include <time.h>
-
-/// Convert a time (hours, minutes, seconds) to a single value (seconds)
-inline const int TIME_TO_INT(const double hr, const double min, const double sec)
-{
-	return (int)((hr * 60 + min) * 60 + sec);
-}
-
-
-/**
- * A DayDome is a hemisphere which is colored according to the time of day:
- * shades of blue, plus yellow-orange at dawn and dusk.  The intended use is
- * to make it large and far away from the camera, so that it is always behind
- * all the terrain and objects in the world.  It also contains an image of the
- * Sun (as a texture billboard).  The Sun is moved and sky is colored
- * appropriately for the time of day (set with SetTimeOfDay).
- */
-class vtDayDome : public vtTransform
-{
-public:
-	vtDayDome();
-	~vtDayDome();
-
-	void	Create(int depth, float radius,
-					const char *sun_texture = NULL);
-
-	void	ApplyDayColors();
-	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
-	void	SetTimeOfDay(int time, bool bFullRefresh);
-	void	SetDawnTimes(int start_hr, int start_min, int end_hr, int end_min);
-	void	SetDuskTimes(int start_hr, int start_min, int end_hr, int end_min);
-	void	SetSunsetColor(const RGBf &sunset);
-	void	SetInterpCutoff(float cutoff);
-	void	SetRadius(float radius);
-	bool	SetTexture(const char *filename);
-
-	/// As measured from horizon to max of 90deg at azimuth - default = 30deg
-	void	SetMaxSunsetAngle(float sunset_angle);
-	void	SetSunModifier(float sunpct);
-
-	float	GetSkyBrightness() { return m_fademod; }
-	void	SetSunColor(const RGBf &color);
-
-private:
-	RGBf 	DayHorizonCol, DayAzimuthCol, SunsetCol;
-	float	Radius;
-	float	Cutoff, MaxSunsetAngle, SunTimePctMod;
-
-	int		m_iTimeOfDay, MaxTimeOfDay;
-	int		DuskStartTime, DuskEndTime, DawnStartTime, DawnEndTime;
-	float	DawnDuration, DuskDuration;
-
-	float	DawnSeqStart, DuskSeqEnd;
-	float	DuskMidSeq, DuskMidSeqTime, DawnMidSeq, DawnMidSeqTime;
-
-	int		NumVertices;
-	FPoint3	*SphVertices;
-
-	float	m_fademod;
-	void	ConvertVertices();
-
-	vtGeom			*m_pDomeGeom;
-
-	vtMaterialArray *m_pMats;
-	vtMaterial		*m_pMat;
-	vtMesh			*m_pDomeMesh;
-
-	vtMovGeom		*m_pSunShape;
-	vtMaterial		*m_pSunMat;
-	vtImage			*m_pSunImage;
-
-	bool		m_bHasTexture;
-};
-
+#include <vtdata/vtTime.h>
 
 /**
  * A StarDome is a sphere of stars, based on real star data, implemented as
  * Points.  The intended use is to make it large and far away from the camera,
  * so that it is always behind all the terrain and objects in the world.
  * It also contains an image of the Moon (as a texture billboard).  The Moon
- * and Stars are moved appropriately for the time of day (set with SetTimeOfDay).
+ * and Stars are moved appropriately for the time (set with SetTime).
  */
-class vtStarDome : public vtTransform
+class vtStarDome : public vtGroup
 {
 public:
 	vtStarDome();
 	~vtStarDome();
 
-	void	Create(const char *starfile, float radius, float brightness,
+	void	Create(const char *starfile, float brightness,
 					const char *moon_texture = NULL);
 
-	void	SetTimeOfDay(int time);
-	void	SetDawnTimes(int start_hr, int start_min, int end_hr, int end_min);
-	void	SetDuskTimes(int start_hr, int start_min, int end_hr, int end_min);
+	void	SetTime(const vtTime &time);
 	void	SetStarFile(char *starpath);
-	void	SetRadius(float radius);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 	struct Star
@@ -117,22 +41,20 @@ public:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
+	vtGeom		*m_pStarGeom;
+	vtMesh		*m_pStarMesh;
+	vtMovGeom	*m_pMoonGeom;
+	vtMaterialArray *m_pMats;
+	vtImage		*m_pMoonImage;
 
-	float	Radius;
+	vtTime	m_time;
 	float	RelativeBrightness;
-
-	int		m_iTimeOfDay, MaxTimeOfDay;
-	int		DuskStartTime, DuskEndTime;
-	int		DawnStartTime, DawnEndTime;
-	float	DawnPct, DuskPct;
-	float	DawnDuration, DuskDuration;
-
-	float	HighMag, LowMag, MagRange;
 
 	/// Star array and the number of stars in the array
 	int		NumStars;
 	Star	*Starfield;
 	char	StarFile[100];
+	float	HighMag, LowMag, MagRange;
 
 	/// Read star data from file - returns number of stars read into array
 	bool	ReadStarData(const char *starfile);
@@ -142,52 +64,75 @@ private:
 	void	AddConstellation(vtMesh *geo);
 	void	FadeStars();
 
-	vtGeom		*m_pStarGeom;
-	vtMesh		*m_pStarMesh;
-	vtMovGeom	*m_pMoonGeom;
-	vtMaterialArray *m_pMats;
-	vtImage		*m_pMoonImage;
 };
 
-
 /**
- * A SkyDome is comprised of a vtDayDome and a vtStarDome.  It contains and
- * controls the two domes appropriately.  It also supplies a real Light (vtLight)
- * which simulates the actual color, direction and intensity of sunlight.
+ * A SkyDome is a hemisphere which is colored according to the time of day:
+ * shades of blue, plus yellow-orange at dawn and dusk.  The intended use is
+ * to make it large and far away from the camera, so that it is always behind
+ * all the terrain and objects in the world.  It also contains an image of
+ * the Sun (as a texture billboard).  The Sun is moved and sky is colored
+ * appropriately for the time of day (set with SetTime).  It also supplies
+ * a real Light (vtLight) which approximates the actual color, direction and
+ * intensity of sunlight.
  */
 class vtSkyDome : public vtTransform
 {
 public:
 	vtSkyDome();
+	~vtSkyDome();
 
 	void	Create(const char *starfile, int depth, float radius,
 					const char *sun_texture = NULL, const char *moon_texture = NULL);
 
-	void	SetRadius(float radius);
-	void	SetTimeOfDay(int hr, int min, int sec);
-	void	SetTimeOfDay(int time, bool bFullRefresh = false);
+	void	SetGeoLocation(const DPoint2 &geo) { m_geo = geo; }
+	void	SetTime(const vtTime &time, bool bFullRefresh = false);
 	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
-	void	SetDawnTimes(int start_hr, int start_min, int end_hr, int end_min);
-	void	SetDuskTimes(int start_hr, int start_min, int end_hr, int end_min);
 	void 	SetSunsetColor(const RGBf &sunset);
-	void	SetMaxSunsetAngle(float sunset_angle);
 	void	SetInterpCutoff(float cutoff);
 	void	SetSunLight(vtMovLight *light) { m_pSunLight = light; }
 	bool	SetTexture(const char *filename);
 
 protected:
-	vtDayDome	*m_pDayDome;
+	void	ApplyDomeColors();
+	void	ConvertVertices();
+
+	DPoint2		m_geo;		// The earth location in lon-lat
+	vtTime		m_time;		// Local time at this location
+
+	float		m_fSunAlt, m_fSunAzi;	// in Degrees
+
 	vtStarDome	*m_pStarDome;
 	vtMovLight	*m_pSunLight;
 
-private:
-	float	Radius;
+	RGBf 	DayHorizonCol, DayAzimuthCol, SunsetCol;
+	float	Cutoff;
 
-	int		m_iTimeOfDay, MaxTimeOfDay;
-	int		DuskStartTime, DuskEndTime;
-	int		DawnStartTime, DawnEndTime;
-	float	HighMag, LowMag, MagRange;
+	int		NumVertices;
+	FPoint3	*SphVertices;
+
+	float	m_fademod;
+
+	vtTransform		*m_pCelestial;
+	vtGeom			*m_pDomeGeom;
+
+	vtMaterialArray *m_pMats;
+	vtMaterial		*m_pMat;
+	vtMesh			*m_pDomeMesh;
+
+	vtMovGeom		*m_pSunGeom;
+	vtMaterial		*m_pSunMat;
+	vtImage			*m_pSunImage;
+
+	bool		m_bHasTexture;
+
+	// Test markers:
+	vtTransform		*m_pGreenMarker;
+	vtTransform		*m_pRedMarker;
 };
+
+// Helper: creates a movable cross-hair for pointing out something on the sky
+vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color);
 
 #endif	// VTLIB_SKYDOMEH
 
