@@ -130,6 +130,9 @@ EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	vtFrame::OnUpdateViewFullscreen)
 EVT_MENU(ID_VIEW_TOPDOWN,			vtFrame::OnViewTopDown)
 EVT_UPDATE_UI(ID_VIEW_TOPDOWN,		vtFrame::OnUpdateViewTopDown)
 EVT_MENU(ID_VIEW_FRAMERATE,			vtFrame::OnViewFramerate)
+EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
+EVT_MENU(ID_VIEW_ELEV_LEGEND,		vtFrame::OnViewElevLegend)
+EVT_UPDATE_UI(ID_VIEW_ELEV_LEGEND,	vtFrame::OnUpdateViewElevLegend)
 EVT_MENU(ID_VIEW_SETTINGS,			vtFrame::OnViewSettings)
 EVT_MENU(ID_VIEW_FOLLOW_ROUTE,		vtFrame::OnViewFollowRoute)
 EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
@@ -140,7 +143,6 @@ EVT_MENU(ID_VIEW_SNAP_AGAIN,		vtFrame::OnViewSnapAgain)
 EVT_MENU(ID_VIEW_STATUSBAR,			vtFrame::OnViewStatusBar)
 EVT_UPDATE_UI(ID_VIEW_STATUSBAR,	vtFrame::OnUpdateViewStatusBar)
 
-EVT_UPDATE_UI(ID_VIEW_FRAMERATE,vtFrame::OnUpdateViewFramerate)
 EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
 EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
 EVT_MENU(ID_VIEW_FASTER,		vtFrame::OnViewFaster)
@@ -376,6 +378,7 @@ void vtFrame::CreateMenus()
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _("Fullscreen\tCtrl+F"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _("Top-Down Camera\tCtrl+T"));
 	m_pViewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _("Framerate Chart\tCtrl+Z"));
+	m_pViewMenu->AppendCheckItem(ID_VIEW_ELEV_LEGEND, _("Elevation Legend"));
 	m_pViewMenu->AppendSeparator();
 	m_pViewMenu->Append(ID_VIEW_SETTINGS, _("Camera - View Settings\tCtrl+S"));
 	m_pViewMenu->Append(ID_VIEW_LOCATIONS, _("Store/Recall Locations\tCtrl+L"));
@@ -916,6 +919,17 @@ void vtFrame::OnViewFramerate(wxCommandEvent& event)
 void vtFrame::OnUpdateViewFramerate(wxUpdateUIEvent& event)
 {
 	event.Check(m_canvas && m_canvas->m_bShowFrameRateChart);
+}
+
+void vtFrame::OnViewElevLegend(wxCommandEvent& event)
+{
+	g_App.ShowElevationLegend(!g_App.GetShowElevationLegend());
+}
+
+void vtFrame::OnUpdateViewElevLegend(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.GetShowElevationLegend());
 }
 
 void vtFrame::OnViewSlower(wxCommandEvent& event)
