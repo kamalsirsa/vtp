@@ -39,12 +39,7 @@ public:
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	int AddGlobePoints(const char *fname);
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
-
-	vtGroup		*m_group;
-	vtMovGeom	*m_mgeom;
-	vtGeom		*m_geom;
-	int		m_red;
-	int		m_yellow;
+	vtTransform *GetTop() { return m_mgeom; }
 
 protected:
 	// these methods create a mesh for each face composed of strips
@@ -58,6 +53,11 @@ protected:
 								   bool flip, int depth, float f);
 	void refresh_face_positions(vtMesh *mesh, int face, float f);
 
+	int		m_red;
+	int		m_yellow;
+
+	vtMovGeom	*m_mgeom;
+	vtGeom		*m_geom;
 	vtMaterialArray	*m_mats;
 	int		m_globe_mat[10];
 	vtMesh	*m_mesh[21];

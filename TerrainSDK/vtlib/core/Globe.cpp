@@ -479,7 +479,7 @@ void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
 	m_geom->SetMaterials(m_mats);
 
 	m_mgeom = new vtMovGeom(m_geom);
-	m_mgeom->SetName2("GlobeShape");
+	m_mgeom->SetName2("GlobeXForm");
 
 	for (pair = 0; pair < 10; pair++)
 	{
