@@ -888,9 +888,18 @@ void vtElevationGrid::_Copy(const vtElevationGrid &Other)
 
 void vtElevationGrid::SetupConversion(float fVerticalExag)
 {
-	m_Conversion.Setup(m_proj.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	if (m_fMinHeight == INVALID_ELEVATION ||
+		m_fMaxHeight == INVALID_ELEVATION)
+	{
+		// we need height extents, so force them to be computed
+		ComputeHeightExtents();
+	}
+
+    // initialize parent class
+	Initialize(m_proj.GetUnits(), m_EarthExtents, m_fMinHeight, m_fMaxHeight,
+        m_iColumns, m_iRows);
+
 	m_fVerticalScale = fVerticalExag;
-	Initialize(this);
 }
 
 void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const

@@ -2,10 +2,10 @@
 #ifndef HEIGHTFIELDH
 #define HEIGHTFIELDH
 
+#include <limits.h>			// for SHRT_MIN
 #include "LocalConversion.h"
 
-class vtElevationGrid;
-class vtTin;
+#define INVALID_ELEVATION	SHRT_MIN
 
 /**
  * A heightfield is any collection of surfaces such that, given a horizontal
@@ -16,11 +16,8 @@ class vtHeightField
 public:
 	vtHeightField();
 
-	/// Initialize this object from an Elevation Grid
-	void Initialize(vtElevationGrid *pGrid);
-
-	/// Initialize this object from a Tin
-	void Initialize(vtTin *pTin);
+	// Initialize the vtHeightField
+	void Initialize(const DRECT &earthcover, float fMinHeight, float fMaxHeight);
 
 	/// Return an MD5 checksum for this heightfield
 	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
@@ -52,11 +49,8 @@ protected:
 class vtHeightField3d : public vtHeightField
 {
 public:
-	/// Initialize this object from an Elevation Grid
-	void Initialize3d(vtElevationGrid *pGrid);
-
-	/// Initialize this object from a Tin
-	void Initialize3d(vtTin *pTin);
+	void Initialize(const LinearUnits units, const DRECT &earthextents,
+		float fMinHeight, float fMaxHeight);
 
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -94,7 +88,8 @@ class vtHeightFieldGrid3d : public vtHeightField3d
 public:
 	vtHeightFieldGrid3d();
 
-	void Initialize(vtElevationGrid *pGrid);
+	void Initialize(const LinearUnits units, const DRECT &earthextents,
+		float fMinHeight, float fMaxHeight, int cols, int rows);
 
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;

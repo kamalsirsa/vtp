@@ -6,32 +6,18 @@
 //
 
 #include "HeightField.h"
-#include "ElevationGrid.h"
-#include "vtTin.h"
 
 vtHeightField::vtHeightField()
 {
 	m_EarthExtents.SetRect(0, 0, 0, 0);
 }
 
-void vtHeightField::Initialize(vtElevationGrid *pGrid)
+void vtHeightField::Initialize(const DRECT &earthcover, float fMinHeight,
+							   float fMaxHeight)
 {
-	m_EarthExtents = pGrid->GetEarthExtents();
-
-	// minimum and maximum height values for the whole grid
-	pGrid->GetHeightExtents(m_fMinHeight, m_fMaxHeight);
-
-	if (m_fMinHeight == INVALID_ELEVATION ||
-		m_fMaxHeight == INVALID_ELEVATION)
-	{
-		// we need height extents, so force them to be computed
-		pGrid->ComputeHeightExtents();
-		pGrid->GetHeightExtents(m_fMinHeight, m_fMaxHeight);
-	}
-}
-
-void vtHeightField::Initialize(vtTin *pTin)
-{
+	m_EarthExtents = earthcover;
+	m_fMinHeight = fMinHeight;
+	m_fMaxHeight = fMaxHeight;
 }
 
 /** Gets the minimum and maximum height values.  The values are placed in the
@@ -151,31 +137,23 @@ void vtHeightField3d::GetCenter(FPoint3 &center)
 
 /////////////////////////////////////////////////////////////////////////////
 
-void vtHeightField3d::Initialize3d(vtElevationGrid *pGrid)
+void vtHeightField3d::Initialize(const LinearUnits units,
+	const DRECT &earthextents, float fMinHeight, float fMaxHeight)
 {
-	m_Conversion = pGrid->m_Conversion;
+	vtHeightField::Initialize(earthextents, fMinHeight, fMaxHeight);
 
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
-		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.right,
-		m_EarthExtents.top, m_WorldExtents.right, m_WorldExtents.top);
+	m_Conversion.Setup(units,
+		DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
 
-	FPoint2 hypo(m_WorldExtents.Width(),
-				 m_WorldExtents.Height());
-	m_fDiagonalLength = hypo.Length();
-}
+	m_Conversion.convert_earth_to_local_xz(
+		m_EarthExtents.left, m_EarthExtents.bottom, 
+		m_WorldExtents.left, m_WorldExtents.bottom);
 
-void vtHeightField3d::Initialize3d(vtTin *pTin)
-{
-	m_Conversion.Setup(pTin->m_proj.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	m_Conversion.convert_earth_to_local_xz(
+		m_EarthExtents.right, m_EarthExtents.top, 
+		m_WorldExtents.right, m_WorldExtents.top);
 
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
-		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.right,
-		m_EarthExtents.top, m_WorldExtents.right, m_WorldExtents.top);
-
-	FPoint2 hypo(m_WorldExtents.Width(),
-				 m_WorldExtents.Height());
+	FPoint2 hypo(m_WorldExtents.Width(), m_WorldExtents.Height());
 	m_fDiagonalLength = hypo.Length();
 }
 
@@ -191,16 +169,20 @@ vtHeightFieldGrid3d::vtHeightFieldGrid3d()
 	m_fZStep = 0.0f;
 }
 
-void vtHeightFieldGrid3d::Initialize(vtElevationGrid *pGrid)
+void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
+	const DRECT& earthextents, float fMinHeight, float fMaxHeight,
+	int cols, int rows)
 {
-	// first initialize parents
-	vtHeightField::Initialize(pGrid);
-	Initialize3d(pGrid);
+	// first initialize parent
+	vtHeightField3d::Initialize(units, earthextents, fMinHeight, fMaxHeight);
 
-	pGrid->GetDimensions(m_iColumns, m_iRows);
+	m_iColumns = cols; 
+	m_iRows = rows;
+
 	m_fXStep = m_WorldExtents.Width() / (m_iColumns-1);
 	m_fZStep = -m_WorldExtents.Height() / (m_iRows-1);
 }
+
 
 /** Get the grid spacing, the width of each column and row.
  */

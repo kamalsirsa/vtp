@@ -28,8 +28,8 @@ bool vtTin3d::Read(const char *fname)
 
 	ComputeExtents();
 
-	// set up the parent class (vtHeightField)
-	Initialize(this);
+	// No need to initialize
+	//Initialize(this);
 
 	return true;
 }

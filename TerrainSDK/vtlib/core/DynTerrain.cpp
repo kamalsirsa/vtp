@@ -35,10 +35,18 @@ void vtDynTerrainGeom::Init2()
 {
 }
 
-void vtDynTerrainGeom::BasicInit(vtElevationGrid *pLocalGrid)
+void vtDynTerrainGeom::BasicInit(vtElevationGrid *pGrid)
 {
-	// initialize the HeightField
-	Initialize(pLocalGrid);
+	// initialize the HeightFieldGrid3D
+	const LinearUnits units = pGrid->GetProjection().GetUnits();
+
+	float fMinHeight, fMaxHeight;
+	pGrid->GetHeightExtents(fMinHeight, fMaxHeight);
+
+	int cols, rows;
+	pGrid->GetDimensions(cols, rows);
+
+	Initialize(units, pGrid->GetEarthExtents(), fMinHeight, fMaxHeight, cols, rows);
 
 	// allocate and set the xz lookup tables
 	m_fXLookup = new float[m_iColumns];
