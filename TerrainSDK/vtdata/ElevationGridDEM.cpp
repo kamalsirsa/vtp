@@ -405,7 +405,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	m_fVMeters = (float) (fVertUnits * dzdelta);
 	ComputeHeightExtents();
 	if (m_fMinHeight != dElevMin || m_fMaxHeight != dElevMax)
-		VTLOG("Warning: elevation extents in .dem don't match data.\n");
+		VTLOG("DEM Reader: elevation extents in .dem (%.1f, %.1f) don't match data (%.1f, %.1f).\n",
+		dElevMin, dElevMax, m_fMinHeight, m_fMaxHeight);
 
 	return true;
 }
