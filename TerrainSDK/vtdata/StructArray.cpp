@@ -41,7 +41,7 @@ vtBuilding *vtStructureArray::NewBuilding()
 {
 	// Make sure that subsequent operations on this building are done in with
 	// the correct local coordinate system
-	vtBuilding::s_Conv.Setup(m_proj.GetUnits(), DPoint2(0, 0));
+	vtBuilding::s_Conv.Setup(m_proj.GetUnits(), DRECT(0, 1, 1, 0));
 
 	return new vtBuilding;
 }
@@ -559,7 +559,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *type  = atts.getValue("type");
 			const char *value = atts.getValue("value");
 			m_pSA->m_proj.SetTextDescription(type, value);
-			g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
+			g_Conv.Setup(m_pSA->m_proj.GetUnits(), DRECT(0,1,1,0));
 		}
 		else if (string(name) == (string)"structures")
 		{

@@ -28,14 +28,15 @@ vtLocalConversion::vtLocalConversion()
 	SetOrigin(DPoint2(0, 0));
 }
 
-void vtLocalConversion::Setup(LinearUnits units, const DPoint2 &origin)
+void vtLocalConversion::Setup(LinearUnits units, const DRECT &earthextents)
 {
 	m_units = units;
 
-	SetOrigin(origin);
+	SetOrigin(DPoint2(earthextents.left, earthextents.bottom));
 	if (units == LU_DEGREES)
 	{
-		double fMetersPerLongitude = EstimateDegreesToMeters(origin.y);
+		double middle = (earthextents.bottom + earthextents.top) / 2;
+		double fMetersPerLongitude = EstimateDegreesToMeters(middle);
 		m_scale.x = fMetersPerLongitude;
 		m_scale.y = METERS_PER_LATITUDE;
 	}

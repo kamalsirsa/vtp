@@ -277,8 +277,7 @@ void vtHeightField3d::Initialize(const LinearUnits units,
 {
 	vtHeightField::Initialize(earthextents, fMinHeight, fMaxHeight);
 
-	m_Conversion.Setup(units,
-		DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	m_Conversion.Setup(units, m_EarthExtents);
 	UpdateWorldExtents();
 }
 

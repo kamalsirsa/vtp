@@ -27,7 +27,7 @@ class vtLocalConversion
 public:
 	vtLocalConversion();
 
-	void Setup(LinearUnits units, const DPoint2 &origin);
+	void Setup(LinearUnits units, const DRECT &earthextents);
 	void SetOrigin(const DPoint2 &origin);
 
 	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z) const;
