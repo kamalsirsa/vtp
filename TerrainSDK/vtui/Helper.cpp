@@ -1,7 +1,7 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,14 +11,29 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/image.h>
 #include "wxString2.h"
 #include "vtdata/FilePath.h"	// for dir_iter
 #include "vtdata/vtLog.h"
 
-//
-// This function is used to find all files in a given directory,
-// and if they match a wildcard, add them to a combo box.
-//
+wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
+{
+	wxImage pImage(xsize, ysize);
+	int i, j;
+	for (i = 0; i < xsize; i++)
+		for (j = 0; j < ysize; j++)
+		{
+			pImage.SetRGB(i, j, color.Red(), color.Green(), color.Blue());
+		}
+
+	wxBitmap *pBitmap = new wxBitmap(pImage);
+	return pBitmap;
+}
+
+/**
+ * This function is used to find all files in a given directory,
+ * and if they match a wildcard, add them to a combo box.
+*/
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars)
 {
@@ -49,10 +64,10 @@ int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	return matches;
 }
 
-//
-// This function is used to find all files in a given directory,
-// and if they match a wildcard, add them to a combo box.
-//
+/**
+ * This function is used to find all files in a given directory,
+ * and if they match a wildcard, add them to a combo box.
+*/
 int AddFilenamesToChoice(wxChoice *choice, const char *directory,
 	const char *wildcard, int omit_chars)
 {
