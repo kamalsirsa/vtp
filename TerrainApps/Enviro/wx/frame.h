@@ -84,7 +84,6 @@ public:
 	void OnUpdateSceneSpace(wxUpdateUIEvent& event);
 	void OnSceneSave(wxCommandEvent& event);
 
-	void OnRegular(wxCommandEvent& event);
 	void OnDynamic(wxCommandEvent& event);
 	void OnCullEvery(wxCommandEvent& event);
 	void OnCullOnce(wxCommandEvent& event);
@@ -98,7 +97,6 @@ public:
 	void OnSaveVeg(wxCommandEvent& event);
 	void OnSaveStruct(wxCommandEvent& event);
 
-	void OnUpdateRegular(wxUpdateUIEvent& event);
 	void OnUpdateDynamic(wxUpdateUIEvent& event);
 	void OnUpdateCullEvery(wxUpdateUIEvent& event);
 	void OnUpdateSky(wxUpdateUIEvent& event);

@@ -28,7 +28,6 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/DynTerrain.h"
-#include "vtlib/core/TerrainSurface.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
 #include "vtdata/vtLog.h"
@@ -126,7 +125,6 @@ EVT_UPDATE_UI(ID_SCENE_SPACE, vtFrame::OnUpdateSceneSpace)
 EVT_MENU(ID_SCENE_SAVE, vtFrame::OnSceneSave)
 #endif
 
-EVT_MENU(ID_TERRAIN_REGULAR, vtFrame::OnRegular)
 EVT_MENU(ID_TERRAIN_DYNAMIC, vtFrame::OnDynamic)
 EVT_MENU(ID_TERRAIN_CULLEVERY, vtFrame::OnCullEvery)
 EVT_MENU(ID_TERRAIN_CULLONCE, vtFrame::OnCullOnce)
@@ -140,7 +138,6 @@ EVT_MENU(ID_TERRAIN_DECREASE, vtFrame::OnDecrease)
 EVT_MENU(ID_TERRAIN_SAVEVEG, vtFrame::OnSaveVeg)
 EVT_MENU(ID_TERRAIN_SAVESTRUCT, vtFrame::OnSaveStruct)
 
-EVT_UPDATE_UI(ID_TERRAIN_REGULAR, vtFrame::OnUpdateRegular)
 EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC, vtFrame::OnUpdateDynamic)
 EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
 EVT_UPDATE_UI(ID_TERRAIN_SKY, vtFrame::OnUpdateSky)
@@ -268,8 +265,7 @@ void vtFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
 
 	wxMenu *terrainMenu = new wxMenu;
-	terrainMenu->AppendCheckItem(ID_TERRAIN_REGULAR, _T("Regular Terrain\tF2"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("Dynamic LOD Terrain\tF3"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("LOD Terrain Surface\tF3"));
 	terrainMenu->AppendCheckItem(ID_TERRAIN_CULLEVERY, _T("Cull every frame\tCtrl+C"));
 	terrainMenu->Append(ID_TERRAIN_CULLONCE, _T("Cull once\tCtrl+K"));
 	terrainMenu->AppendSeparator();
@@ -786,43 +782,20 @@ void vtFrame::OnSceneSave(wxCommandEvent& event)
 
 /////////////////////// Terrain menu ///////////////////////////
 
-void vtFrame::OnRegular(wxCommandEvent& event)
-{
-	vtTerrain *t = GetCurrentTerrain();
-	if (!t) return;
-	bool on = t->GetFeatureVisible(TFT_REGULAR);
-
-	t->SetFeatureVisible(TFT_REGULAR, !on);
-}
-
-void vtFrame::OnUpdateRegular(wxUpdateUIEvent& event)
-{
-	vtTerrain *t = GetCurrentTerrain();
-	if (!t) return;
-	bool on = t->GetFeatureVisible(TFT_REGULAR);
-
-	event.Enable(true);
-	event.Check(on);
-}
-
 void vtFrame::OnDynamic(wxCommandEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->GetDynTerrain()) return;
-	bool on = t->GetDynTerrain()->GetEnabled();
+	if (!t) return;
+	bool on = t->GetFeatureVisible(TFT_TERRAINSURFACE);
 
-	t->GetDynTerrain()->SetEnabled(!on);
+	t->SetFeatureVisible(TFT_TERRAINSURFACE, !on);
 }
 
 void vtFrame::OnUpdateDynamic(wxUpdateUIEvent& event)
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->GetDynTerrain())
-	{
-		event.Enable(false);
-		return;
-	}
-	bool on = t->GetDynTerrain()->GetEnabled();
+	if (!t) return;
+	bool on = t->GetFeatureVisible(TFT_TERRAINSURFACE);
 
 	event.Enable(true);
 	event.Check(on);
@@ -1081,7 +1054,7 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 		fen = structures.GetFence(i);
 		if (bld)
 		{
-			m_pBuildingDlg->Setup(bld);
+			m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
 			m_pBuildingDlg->Show(true);
 			return;
 		}

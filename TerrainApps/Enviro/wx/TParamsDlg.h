@@ -46,9 +46,6 @@ public:
 	wxString2	m_strFilenameTin;
 	float   m_fVerticalExag;
 	bool	m_bTin;
-	bool	m_bRegular;
-	int		m_iSubsample;
-	bool	m_bDynamic;
 	float   m_fPixelError;
 	int		m_iTriCount;
 	bool	m_bTimeOn;
@@ -73,7 +70,6 @@ public:
 	wxString2	m_strTreeFile;
 	int		m_iTreeDistance;
 	int		m_iFogDistance;
-	bool	m_bVertexColors;
 //  bool	m_bOverlay;
 
 	bool	m_bOceanPlane;

@@ -48,9 +48,6 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
 
-	EVT_CHECKBOX( ID_REGULAR, TParamsDlg::OnCheckBox )
-	EVT_CHECKBOX( ID_DYNAMIC, TParamsDlg::OnCheckBox )
-
 	EVT_CHECKBOX( ID_BUILDINGS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_TREES, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
@@ -89,10 +86,6 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_fNavSpeed = Params.m_fNavSpeed;
 	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
 
-	m_bRegular = Params.m_bRegular;
-	m_iSubsample = Params.m_iSubsample;
-
-	m_bDynamic = Params.m_bDynamic;
 	m_iLodMethod = Params.m_eLodMethod;
 	m_fPixelError = Params.m_fPixelError;
 	m_iTriCount = Params.m_iTriCount;
@@ -142,7 +135,6 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bSky = Params.m_bSky;
 	m_strSkyTexture = wxString::FromAscii((const char *)Params.m_strSkyTexture);
 	m_bHorizon = Params.m_bHorizon;
-	m_bVertexColors = Params.m_bVertexColors;
 //  m_bOverlay = Params.m_bOverlay;
 	m_bLabels = Params.m_bLabels;
 	m_strLabelFile = Params.m_strLabelFile;
@@ -182,10 +174,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_fNavSpeed = m_fNavSpeed;
 	Params.m_strLocFile = m_strLocFile.mb_str();
 
-	Params.m_bRegular = m_bRegular;
-	Params.m_iSubsample = m_iSubsample;
-
-	Params.m_bDynamic = m_bDynamic;
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
 	Params.m_fPixelError = m_fPixelError;
 	Params.m_iTriCount = m_iTriCount;
@@ -236,7 +224,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_strSkyTexture = m_strSkyTexture.mb_str();
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_bHorizon = m_bHorizon;
-	Params.m_bVertexColors = m_bVertexColors;
 //  Params.m_bOverlay = m_bOverlay;
 	Params.m_bLabels = m_bLabels;
 	Params.m_strLabelFile = m_strLabelFile.mb_str();
@@ -272,15 +259,13 @@ void TParamsDlg::UpdateEnableState()
 	GetFilename()->Enable(!m_bTin);
 	GetFilenameTin()->Enable(m_bTin);
 
-	FindWindow(ID_SUBSAMPLE)->Enable(m_bRegular);
-	FindWindow(ID_VERTEXCOLORS)->Enable(m_bRegular);
+	FindWindow(ID_LODMETHOD)->Enable(!m_bTin);
+	FindWindow(ID_PIXELERROR)->Enable(!m_bTin);
+	FindWindow(ID_TRICOUNT)->Enable(!m_bTin);
+	FindWindow(ID_TRISTRIPS)->Enable(!m_bTin);
+	FindWindow(ID_DETAILTEXTURE)->Enable(!m_bTin);
 
-	FindWindow(ID_LODMETHOD)->Enable(m_bDynamic);
-	FindWindow(ID_PIXELERROR)->Enable(m_bDynamic);
-	FindWindow(ID_TRICOUNT)->Enable(m_bDynamic);
-	FindWindow(ID_TRISTRIPS)->Enable(m_bDynamic);
-	FindWindow(ID_DETAILTEXTURE)->Enable(m_bDynamic);
-
+	FindWindow(ID_TFILESINGLE)->Enable(m_iTexture == TE_SINGLE);
 	FindWindow(ID_TILESIZE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILEBASE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_JPEG)->Enable(m_iTexture == TE_TILED);
@@ -440,19 +425,16 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	AddValidator(ID_FILENAME, &m_strFilename);
 	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
-	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag);
+	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
 
 	AddValidator(ID_USE_TIN, &m_bTin);
 
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
 	AddNumValidator(ID_INITTIME, &m_iInitTime);
-	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed);
+	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
 
-	AddValidator(ID_REGULAR, &m_bRegular);
-	AddNumValidator(ID_SUBSAMPLE, &m_iSubsample);
-	AddValidator(ID_DYNAMIC, &m_bDynamic);
 	AddValidator(ID_LODMETHOD, &m_iLodMethod);
-	AddNumValidator(ID_PIXELERROR, &m_fPixelError);
+	AddNumValidator(ID_PIXELERROR, &m_fPixelError, 2);
 	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
@@ -468,7 +450,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
 	AddValidator(ID_PRELIGHT, &m_bPreLight);
-	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor);
+	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 	AddValidator(ID_PRELIT, &m_bPreLit);
 
 	AddValidator(ID_ROADS, &m_bRoads);
@@ -477,7 +459,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TREES, &m_bTrees);
 	AddValidator(ID_TREEFILE, &m_strTreeFile);
 	AddNumValidator(ID_TREEDISTANCE, &m_iTreeDistance);
-	AddValidator(ID_VERTEXCOLORS, &m_bVertexColors);
 	AddValidator(ID_HORIZON, &m_bHorizon);
 	AddValidator(ID_LABELS, &m_bLabels);
 	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
@@ -491,7 +472,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_HIGHWAYS, &m_bHwy);
 	AddNumValidator(ID_ROADDISTANCE, &m_fRoadDistance);
 	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
-	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed);
+	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
 	AddValidator(ID_AIRPORTS, &m_bAirports);
