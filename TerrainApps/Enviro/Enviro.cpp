@@ -320,6 +320,9 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	if (pT)
 		pT->SaveRoute();
 
+	// Load the species file and check which appearances are available
+	LoadSpeciesList();
+
 	m_state = AS_MovingIn;
 	m_pTargetTerrain = pTerr;
 	m_iInitStep = 0;
@@ -347,11 +350,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 3)
 	{
-		// The first time we try to a contruct a terrain with plants,
-		//  try to load the plants.
-		if (pTerr->GetParams().GetValueBool(STR_TREES))
-			LoadPlants();
-
 		pTerr->SetPlantList(m_pPlantList);
 		if (!pTerr->CreateStep1())
 		{
@@ -546,7 +544,7 @@ void Enviro::SetupScene1()
 {
 	VTLOG("SetupScene1\n");
 
-	// Set some global peroperties
+	// Set some global properties
 	SetDataPath(g_Options.m_DataPaths);
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
@@ -649,39 +647,41 @@ void Enviro::SetupScene2()
 	m_pPanoFlyer->SetTarget(m_pNormalCamera);
 }
 
-void Enviro::LoadPlants()
+//
+// Load the species file and check which appearances are available
+//
+void Enviro::LoadSpeciesList()
 {
-	if (!m_bPlantsLoaded)
+	if (m_bPlantsLoaded)
+		return;
+
+	VTLOG("LoadSpeciesList\n");
+
+	// First look for species.xml with terrain name prepended, otherwise fall
+	//  back on just "species.xml"
+	vtString species_fname = "PlantData/" + g_Options.m_strInitTerrain + "-species.xml";
+	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, species_fname);
+	if (species_path == "")
+		species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
+
+	vtSpeciesList pl;
+	if (species_path != "" && pl.ReadXML(species_path))
 	{
-		SetupCommonCulture();
-		m_bPlantsLoaded = true;
-		if (GetCurrentTerrain())
-			GetCurrentTerrain()->SetPlantList(m_pPlantList);
+		VTLOG(" Using species file: '%s'\n", (const char *) species_path);
+		m_pPlantList = new vtSpeciesList3d();
+		*m_pPlantList = pl;
+
+		// global options
+		vtPlantAppearance3d::s_fPlantScale = g_Options.m_fPlantScale;
+		vtPlantAppearance3d::s_bPlantShadows = g_Options.m_bShadows;
+
+		// Don't load all the plant appearances now, just check which are available
+//			m_pPlantList->CreatePlantSurfaces();
+		int available = m_pPlantList->CheckAvailability();
+		VTLOG(" %d plant appearances available.\n", available);
 	}
-}
 
-void Enviro::SetupCommonCulture()
-{
-	VTLOG("SetupCommonCulture\n");
-
-	if (m_bDoPlants)
-	{
-		// First look for species.xml with terrain name prepended, otherwise fall
-		//  back on just "species.xml"
-		vtString species_fname = "PlantData/" + g_Options.m_strInitTerrain + "-species.xml";
-		vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, species_fname);
-		if (species_path == "")
-			species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
-
-		vtSpeciesList pl;
-		if (species_path != "" && pl.ReadXML(species_path))
-		{
-			m_pPlantList = new vtSpeciesList3d();
-			*m_pPlantList = pl;
-			m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
-				g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
-		}
-	}
+	m_bPlantsLoaded = true;
 }
 
 void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)

@@ -57,7 +57,7 @@ public:
 	// methods
 	void Startup();
 	void Shutdown();
-	void StartupArgument(int i, const char *str);
+	virtual void StartupArgument(int i, const char *str);
 
 	void LoadTerrainDescriptions();
 	void StartControlEngine();
@@ -159,7 +159,7 @@ public:
 	void SetRouteOptions(const vtString &sStructType);
 
 	// plants
-	void LoadPlants();
+	void LoadSpeciesList();
 	vtSpeciesList3d	*GetPlantList() { return m_pPlantList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
 	bool PlantATree(const DPoint2 &epos);
@@ -211,7 +211,6 @@ protected:
 	void SetupScene1();
 	void SetupScene2();
 	virtual void SetupScene3() {}
-	void SetupCommonCulture();
 	void DoCursorOnEarth();
 	void DoCursorOnTerrain();
 	void MakeGlobe();
