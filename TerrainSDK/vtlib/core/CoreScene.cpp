@@ -45,7 +45,8 @@ void vtSceneBase::OnMouse(vtMouseEvent &event)
 	for (int i = 0; i < m_Engines.GetSize(); i++)
 	{
 		vtEngine *pEng = m_Engines.GetAt(i);
-		pEng->OnMouse(event);
+		if (pEng->GetEnabled())
+			pEng->OnMouse(event);
 	}
 }
 
@@ -55,7 +56,8 @@ void vtSceneBase::OnKey(int key, int flags)
 	for (int i = 0; i < m_Engines.GetSize(); i++)
 	{
 		vtEngine *pEng = m_Engines.GetAt(i);
-		pEng->OnKey(key, flags);
+		if (pEng->GetEnabled())
+			pEng->OnKey(key, flags);
 	}
 }
 
