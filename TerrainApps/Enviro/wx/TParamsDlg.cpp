@@ -114,6 +114,8 @@ TParamsDlg::~TParamsDlg()
 
 //
 // Set the values in the dialog from the supplied paramter structure.
+// Note that TParams uses UTF8 for all its strings, so we need to use
+//  from_utf8() when copying to wxString.
 //
 void TParamsDlg::SetParams(const TParams &Params)
 {
@@ -123,8 +125,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_strTerrainName.from_utf8(Params.GetValueString(STR_NAME));
 
 	// elevation
-	m_strFilename =		Params.GetValueString(STR_ELEVFILE);
-	m_strFilenameTin =	Params.GetValueString(STR_ELEVFILE);
+	m_strFilename.from_utf8(Params.GetValueString(STR_ELEVFILE));
+	m_strFilenameTin.from_utf8(Params.GetValueString(STR_ELEVFILE));
 	m_fVerticalExag =	Params.GetValueFloat(STR_VERTICALEXAG);
 	m_bTin =			Params.GetValueBool(STR_TIN);
 
@@ -132,7 +134,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_iMinHeight =		Params.GetValueInt(STR_MINHEIGHT);
 	m_iNavStyle =		Params.GetValueInt(STR_NAVSTYLE);
 	m_fNavSpeed =		Params.GetValueFloat(STR_NAVSPEED);
-	m_strLocFile =		Params.GetValueString(STR_LOCFILE);
+	m_strLocFile.from_utf8(Params.GetValueString(STR_LOCFILE));
 	m_strInitLocation.from_utf8(Params.GetValueString(STR_INITLOCATION));
 	m_fHither =			Params.GetValueFloat(STR_HITHER);
 	m_bAccel =			Params.GetValueBool(STR_ACCEL);
@@ -152,10 +154,10 @@ void TParamsDlg::SetParams(const TParams &Params)
 	// texture
 	m_iTexture =		Params.GetTextureEnum();
 	m_iTilesize =		Params.GetValueInt(STR_TILESIZE);
-	m_strTextureSingle = Params.GetValueString(STR_TEXTURESINGLE);
-	m_strTextureBase =	Params.GetValueString(STR_TEXTUREBASE);
+	m_strTextureSingle.from_utf8(Params.GetValueString(STR_TEXTURESINGLE));
+	m_strTextureBase.from_utf8(Params.GetValueString(STR_TEXTUREBASE));
 	m_bJPEG =			(Params.GetValueBool(STR_TEXTUREFORMAT) == 1);
-	m_strTextureFilename = Params.CookTextureFilename();
+	m_strTextureFilename.from_utf8(Params.CookTextureFilename());
 	m_bMipmap =			Params.GetValueBool(STR_MIPMAP);
 	m_b16bit =			Params.GetValueBool(STR_REQUEST16BIT);
 	m_bPreLight =		Params.GetValueBool(STR_PRELIGHT);
@@ -164,7 +166,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// culture
 	m_bRoads =			Params.GetValueBool(STR_ROADS);
-	m_strRoadFile =		Params.GetValueString(STR_ROADFILE);
+	m_strRoadFile.from_utf8(Params.GetValueString(STR_ROADFILE));
 	m_bHwy =			Params.GetValueBool(STR_HWY);
 	m_bPaved =			Params.GetValueBool(STR_PAVED);
 	m_bDirt =			Params.GetValueBool(STR_DIRT);
@@ -174,7 +176,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bRoadCulture =	Params.GetValueBool(STR_ROADCULTURE);
 
 	m_bPlants =			Params.GetValueBool(STR_TREES);
-	m_strVegFile =		Params.GetValueString(STR_TREEFILE);
+	m_strVegFile.from_utf8(Params.GetValueString(STR_TREEFILE));
 	m_iVegDistance =	Params.GetValueInt(STR_VEGDISTANCE);
 
 	m_bFog =			Params.GetValueBool(STR_FOG);
@@ -182,7 +184,11 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	unsigned int i, num = Params.m_strStructFiles.size();
 	for (i = 0; i < num; i++)
-		m_strStructFiles.Append(new wxString2(Params.m_strStructFiles[i]));
+	{
+		wxString2 *ws = new wxString2();
+		ws->from_utf8(Params.m_strStructFiles[i]);
+		m_strStructFiles.Append(ws);
+	}
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
 
 	m_bVehicles =		Params.GetValueBool(STR_VEHICLES);
@@ -191,7 +197,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 //  m_iNumCars =		Params.GetValueInt(STR_NUMCARS);
 
 	m_bSky =			Params.GetValueBool(STR_SKY);
-	m_strSkyTexture =	Params.GetValueString(STR_SKYTEXTURE);
+	m_strSkyTexture.from_utf8(Params.GetValueString(STR_SKYTEXTURE));
 	m_bOceanPlane =		Params.GetValueBool(STR_OCEANPLANE);
 	m_fOceanPlaneLevel = Params.GetValueFloat(STR_OCEANPLANELEVEL);
 	m_bDepressOcean =	Params.GetValueBool(STR_DEPRESSOCEAN);
@@ -199,11 +205,11 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bHorizon =		Params.GetValueBool(STR_HORIZON);
 //  m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
 	m_bLabels =			Params.GetValueBool(STR_LABELS);
-	m_strLabelFile =	Params.GetValueString(STR_LABELFILE);
+	m_strLabelFile.from_utf8(Params.GetValueString(STR_LABELFILE));
 	m_Style =			Params.GetPointStyle();
 
 	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
-	m_strRouteFile =	Params.GetValueString(STR_ROUTEFILE);
+	m_strRouteFile.from_utf8(Params.GetValueString(STR_ROUTEFILE));
 
 	// Safety check
 	if (m_iTriCount < 500 || m_iTriCount > 100000)
@@ -222,9 +228,9 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	// elevation
 	if (m_bTin)
-		Params.SetValueString(STR_ELEVFILE, m_strFilenameTin.mb_str());
+		Params.SetValueString(STR_ELEVFILE, m_strFilenameTin.to_utf8());
 	else
-		Params.SetValueString(STR_ELEVFILE, m_strFilename.mb_str());
+		Params.SetValueString(STR_ELEVFILE, m_strFilename.to_utf8());
 	Params.SetValueFloat(STR_VERTICALEXAG, m_fVerticalExag);
 	Params.SetValueBool(STR_TIN, m_bTin);
 
@@ -232,7 +238,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueInt(STR_MINHEIGHT, m_iMinHeight);
 	Params.SetValueInt(STR_NAVSTYLE, m_iNavStyle);
 	Params.SetValueFloat(STR_NAVSPEED, m_fNavSpeed);
-	Params.SetValueString(STR_LOCFILE, m_strLocFile.mb_str());
+	Params.SetValueString(STR_LOCFILE, m_strLocFile.to_utf8());
 	Params.SetValueString(STR_INITLOCATION, m_strInitLocation.to_utf8());
 	Params.SetValueFloat(STR_HITHER, m_fHither);
 	Params.SetValueBool(STR_ACCEL, m_bAccel);
@@ -252,10 +258,10 @@ void TParamsDlg::GetParams(TParams &Params)
 	// texture
 	Params.SetTextureEnum((enum TextureEnum)m_iTexture);
 	Params.SetValueInt(STR_TILESIZE, m_iTilesize);
-	Params.SetValueString(STR_TEXTURESINGLE, m_strTextureSingle.mb_str());
-	Params.SetValueString(STR_TEXTUREBASE, m_strTextureBase.mb_str());
+	Params.SetValueString(STR_TEXTURESINGLE, m_strTextureSingle.to_utf8());
+	Params.SetValueString(STR_TEXTUREBASE, m_strTextureBase.to_utf8());
 	Params.SetValueInt(STR_TEXTUREFORMAT, (int) m_bJPEG);
-//	Params.SetValueString(TextureFilename, m_strTextureFilename.mb_str());
+//	Params.SetValueString(TextureFilename, m_strTextureFilename.to_utf8());
 	Params.SetValueBool(STR_MIPMAP, m_bMipmap);
 	Params.SetValueBool(STR_REQUEST16BIT, m_b16bit);
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
@@ -263,7 +269,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_CAST_SHADOWS, m_bCastShadows);
 
 	Params.SetValueBool(STR_ROADS, m_bRoads);
-	Params.SetValueString(STR_ROADFILE, m_strRoadFile.mb_str());
+	Params.SetValueString(STR_ROADFILE, m_strRoadFile.to_utf8());
 	Params.SetValueBool(STR_HWY, m_bHwy);
 	Params.SetValueBool(STR_PAVED, m_bPaved);
 	Params.SetValueBool(STR_DIRT, m_bDirt);
@@ -273,7 +279,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_ROADCULTURE, m_bRoadCulture);
 
 	Params.SetValueBool(STR_TREES, m_bPlants);
-	Params.SetValueString(STR_TREEFILE, m_strVegFile.mb_str());
+	Params.SetValueString(STR_TREEFILE, m_strVegFile.to_utf8());
 	Params.SetValueInt(STR_VEGDISTANCE, m_iVegDistance);
 
 	Params.SetValueBool(STR_FOG, m_bFog);
@@ -292,7 +298,7 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.SetValueInt(STR_NUMCARS, m_iNumCars);
 
 	Params.SetValueBool(STR_SKY, m_bSky);
-	Params.SetValueString(STR_SKYTEXTURE, m_strSkyTexture.mb_str());
+	Params.SetValueString(STR_SKYTEXTURE, m_strSkyTexture.to_utf8());
 
 	Params.SetValueBool(STR_OCEANPLANE, m_bOceanPlane);
 	Params.SetValueFloat(STR_OCEANPLANELEVEL, m_fOceanPlaneLevel);
@@ -302,11 +308,11 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.SetValueBool(STR_OVERLAY, m_bOverlay);
 
 	Params.SetValueBool(STR_LABELS, m_bLabels);
-	Params.SetValueString(STR_LABELFILE, m_strLabelFile.mb_str());
+	Params.SetValueString(STR_LABELFILE, m_strLabelFile.to_utf8());
 	Params.SetPointStyle(m_Style);
 
 	Params.SetValueBool(STR_ROUTEENABLE, m_bRouteEnable);
-	Params.SetValueString(STR_ROUTEFILE, m_strRouteFile.mb_str());
+	Params.SetValueString(STR_ROUTEFILE, m_strRouteFile.to_utf8());
 }
 
 void TParamsDlg::UpdateTiledTextureFilename()
