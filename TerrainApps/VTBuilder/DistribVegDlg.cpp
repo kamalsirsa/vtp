@@ -52,5 +52,3 @@ void DistribVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 
 
-
-
