@@ -557,6 +557,23 @@ void vtPlantInstanceArray::GetPlant(int iNum, float &size, short &species_id)
 	species_id = GetShortValue(iNum, m_SpeciesField);
 }
 
+/**
+ * Given a species index, return the number of instances which are of that species.
+ */
+unsigned int vtPlantInstanceArray::InstancesOfSpecies(short species_id)
+{
+	unsigned int i, count = 0, numinstances = GetNumEntities();
+	float size;
+	short species;
+	for (i = 0; i < numinstances; i++)
+	{
+		GetPlant(i, size, species);
+		if (species == species_id)
+			count++;
+	}
+	return count;
+}
+
 /*void vtPlantInstanceArray::AppendFrom(const vtPlantInstanceArray &from)
 {
 	// TODO: match actual species
