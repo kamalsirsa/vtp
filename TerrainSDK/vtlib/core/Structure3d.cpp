@@ -95,13 +95,6 @@ void vtStructInstance3d::ShowBounds(bool bShow)
 // implement vtStructure3d methods
 bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 {
-	if (!m_pContainer)
-	{
-		// constructing for the first time
-		m_pContainer = new vtTransform();
-		m_pContainer->SetName2("instance container");
-	}
-
 	// if previously created, destroy to re-create
 	bool bRecreating = false;
 	if (m_pModel)
@@ -149,6 +142,12 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 
 		if (!m_pModel)
 			return false;
+	}
+	if (!m_pContainer)
+	{
+		// constructing for the first time
+		m_pContainer = new vtTransform();
+		m_pContainer->SetName2("instance container");
 	}
 	m_pContainer->AddChild(m_pModel);
 
