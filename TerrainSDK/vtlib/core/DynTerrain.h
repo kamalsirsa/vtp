@@ -1,7 +1,7 @@
 //
 // DynTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,6 +12,12 @@
 #include "HeightField.h"
 #include "TerrainErr.h"
 
+/**
+ * This class provides a framework for implementing any kind of dynamic
+ * geometry for a heightfield terrain grid.  It is the parent class which
+ * contains common fuctionality used by each of the terrain CLOD
+ * implementations.
+ */
 class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid
 {
 public:
