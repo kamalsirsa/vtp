@@ -25,7 +25,7 @@ public:
 	CSkeleton& MakeSkeleton(ContourVector &contours);
 	CSkeleton& MakeSkeleton(Contour &points);
 	CSkeleton CompleteWingedEdgeStructure(ContourVector &contours);
-#ifdef _DEBUG
+#ifdef FELKELDEBUG
 	void Dump();
 #endif
 

@@ -19,16 +19,17 @@
 CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 {
 #ifdef FELKELDEBUG
-	char DebugString[1024];
-#endif
 	assert (v.m_prevVertex == NULL || v.m_leftLine.FacingTowards (v.m_prevVertex -> m_rightLine));
 	assert (v.m_nextVertex == NULL || v.m_rightLine.FacingTowards (v.m_nextVertex -> m_leftLine));
+#endif
 
 	CVertex &l = *v.m_prevVertex;
 	CVertex &r = *v.m_nextVertex;
 
+#ifdef FELKELDEBUG
 	assert (v.m_leftLine.m_Angle == v.m_leftVertex -> m_leftLine.m_Angle);
 	assert (v.m_rightLine.m_Angle == v.m_rightVertex -> m_rightLine.m_Angle);
+#endif
 
 	CNumber al = v.m_axis.m_Angle - l.m_axis.m_Angle;
 	al.NormalizeAngle();
@@ -37,16 +38,13 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	ar.NormalizeAngle();
 
 	C3DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
+	i1.m_y = v.m_leftLine.Dist(i1) * tan(v.m_leftLine.m_Slope);;
 	C3DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
+	i2.m_y = v.m_rightLine.Dist(i2) * tan(v.m_rightLine.m_Slope);
 
 	CNumber d1 = v.m_point.DistXZ(i1);
 	CNumber d2 = v.m_point.DistXZ(i2);
 
-#ifdef FELKELDEBUG
-	sprintf(DebugString, "New Intersection\n al %e ar %e\ni1.x %e i1.y %e i1.z %e\ni2.x %e i2.y %e i2.z %e\nd1 %e d2 %e\n",
-		al, ar, i1.m_x, i1.m_y, i1.m_z, i2.m_x, i2.m_y, i2.m_z, d1, d2);
-	OutputDebugString(DebugString);
-#endif
 
 	CVertex *leftPointer, *rightPointer;
 	C3DPoint p;
@@ -54,8 +52,25 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	CNumber av = v.m_leftLine.m_Angle - v.m_rightLine.m_Angle;
 
 	av.NormalizeAngle();
-	if (av > 0.0 && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+	if ((av >= 0.0 || av == - CN_PI) && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
 		d3 = v.NearestIntersection(vl, &leftPointer, &rightPointer, p);
+
+#ifdef FELKELDEBUG
+	VTLOG("New Intersection\n al %e ar %e\ni1.x %e i1.y %e i1.z %e\ni2.x %e i2.y %e i2.z %e\np.m_x %e p.m_y %e p.m_z %e\nd1 %e d2 %e d3 %e\n",
+		al, ar, i1.m_x, i1.m_y, i1.m_z, i2.m_x, i2.m_y, i2.m_z, p.m_x, p.m_y, p.m_z, d1, d2, d3);
+#endif
+
+	if (d3 <= d1 && d3 <= d2)
+	{
+		m_poi = p;
+		m_leftVertex = m_rightVertex = &v;
+		m_type = NONCONVEX;
+		if (v.InvalidIntersection (vl, *this))
+		{
+			d3 = CN_INFINITY;
+			m_poi == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
+		}
+	}
 
 	if (d1 <= d2 && d1 <= d3)
 	{
@@ -63,7 +78,6 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 		m_rightVertex = &v;
 		m_poi = i1;
 		m_type = CONVEX;
-		m_poi.m_y = m_height = v.m_leftLine.Dist(i1) * tan(v.m_leftLine.m_Slope);
 	}
 	else if (d2 <= d1 && d2 <= d3)
 	{
@@ -71,51 +85,58 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 		m_rightVertex = &r;
 		m_poi = i2;
 		m_type = CONVEX;
-		m_poi.m_y = m_height = v.m_rightLine.Dist(i2) * tan(v.m_rightLine.m_Slope);
-	}
-	else if (d3 <= d1 && d3 <= d2)
-	{
-		m_poi = p;
-		m_leftVertex = m_rightVertex = &v;
-		m_type = NONCONVEX;
-		m_poi.m_y = m_height = d3;
 	}
 
 	if (m_poi == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY))
-		m_poi.m_y = m_height = CN_INFINITY;
-	if (m_type == NONCONVEX && v.InvalidIntersection (vl, *this))
-		m_poi.m_y = m_height = CN_INFINITY;
+		m_height = CN_INFINITY;
+	else
+		m_height = m_poi.m_y;
+
 #ifdef FELKELDEBUG
-	sprintf(DebugString, "New Intersection %d %d x %e y %e z %e height %e\n",
+	VTLOG("New %s Intersection %d %d x %e y %e z %e height %e\n",
+		m_type == CONVEX ? "CONVEX" : "NONCONVEX",
 		m_leftVertex->m_ID, m_rightVertex->m_ID, m_poi.m_x, m_poi.m_y, m_poi.m_z, m_height);
-	OutputDebugString(DebugString);
 #endif
 }
 
 void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
 {
 #ifdef FELKELDEBUG
-	char DebugString[1024];
+	VTLOG("ApplyNonconvexIntersection\n");
 
-	sprintf(DebugString, "ApplyNonconvexIntersection\n");
-	OutputDebugString(DebugString);
-#endif
+	// Left and right vertices must always be the same point
 	assert (m_leftVertex == m_rightVertex);
+	// Check to see of they are the same data structure RFJ !!!
+	assert (m_leftVertex->m_ID == m_rightVertex->m_ID);
+#endif
 
 	CVertex *leftPointer, *rightPointer;
 	C3DPoint p;
 	CNumber d3 = CN_INFINITY;
 
 	d3 = m_leftVertex->NearestIntersection(vl, &leftPointer, &rightPointer, p);
-	if (d3 == CN_INFINITY) return;
+	if (d3 == CN_INFINITY)
+		return;
 							   
-	if (p != m_poi) return;
-							   
+	if (p != m_poi)
+		return;
+
+#ifdef FELKELDEBUG
+	VTLOG("left vertex %d left ptr %d right ptr %d right vertex %d\n",
+		m_leftVertex->m_ID,
+		leftPointer->m_ID,
+		rightPointer->m_ID,
+		m_rightVertex->m_ID);
+#endif
+
+	// Treat as a split event
 	CVertex v1 (p, *rightPointer, *m_rightVertex);
 	CVertex v2 (p, *m_leftVertex, *leftPointer);
 
+#ifdef FELKELDEBUG
 	assert (v1.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
 	assert (v2.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+#endif
 
 	m_leftVertex->m_done = true;
 	//  i.rightVertex -> done = true;
@@ -195,8 +216,10 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	else
 	{
 		CIntersection i1(vl, *v1Pointer);
-		if (m_height != CN_INFINITY) iq.push (i1);
+		if (i1.m_height != CN_INFINITY)
+			iq.push (i1);
 	}
+
 	if (newNext2 == newPrev2)
 	{
 		v2Pointer->m_done = true;
@@ -228,14 +251,13 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
 {
 #ifdef FELKELDEBUG
-	char DebugString[1024];
-
-	sprintf(DebugString, "ApplyConvexIntersection\n");
-	OutputDebugString(DebugString);
+	VTLOG("ApplyConvexIntersection\n");
 #endif
 	// create new vertex and link into current contour
 	CVertex vtx (m_poi, *m_leftVertex, *m_rightVertex);
+#ifdef FELKELDEBUG
 	assert(vtx.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+#endif
 
 	// Link vertex into overall chain
 	CVertex *newNext = m_rightVertex->m_nextVertex;
@@ -300,15 +322,12 @@ void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl
 void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 {
 #ifdef FELKELDEBUG
-	char DebugString[1024];
-
-	sprintf(DebugString, "ApplyLast3\n");
-	OutputDebugString(DebugString);
-#endif
+	VTLOG("ApplyLast3\n");
 	assert(m_leftVertex->m_nextVertex == m_rightVertex);
 	assert(m_rightVertex->m_prevVertex == m_leftVertex);
 	assert(m_leftVertex->m_prevVertex->m_prevVertex == m_rightVertex);
 	assert(m_rightVertex->m_nextVertex->m_nextVertex == m_leftVertex);
+#endif
 
 	CVertex &v1 = *m_leftVertex;
 	CVertex &v2 = *m_rightVertex;
@@ -323,9 +342,11 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	C3DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
 
 	C3DPoint is = m_poi;
+#ifdef FELKELDEBUG
 	assert(is == is1 || is1 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
 	assert(is == is2 || is2 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
 	assert(is == is3 || is3 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+#endif
 
 	CVertex v(is);
 
@@ -381,4 +402,3 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	v2.m_advancingSkeletonLine = line2Ptr;
 	v3.m_advancingSkeletonLine = line3Ptr;
 }
-

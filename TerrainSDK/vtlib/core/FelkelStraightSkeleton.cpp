@@ -12,14 +12,6 @@
 
 #include "FelkelStraightSkeleton.h"
 
-#ifdef EPS
-#include <fstream>
-#include <limits>
-using namespace std;
-#endif
-
-#define EPSILON numeric_limits<double>epsilon()
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -36,9 +28,6 @@ CStraightSkeleton::~CStraightSkeleton()
 
 CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 {
-#ifdef FELKELDEBUG
-	char DebugString[1024];
-#endif
 
 	while (m_iq.size ())
 		m_iq.pop (); 	
@@ -127,24 +116,8 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 	}
 
 
-#ifdef EPS
-	extern ostream *epsStream;
-
-	*epsStream << "%Hranice" << endl;
-	for (i = m_vl.begin (); i != m_vl.end (); i++)
-	{
-		if (!(*i).m_done)
-		{
-			*epsStream << (*i).m_point.m_x << ' ' << (*i).m_point.m_z << " moveto ";
-			*epsStream << (*i).m_nextVertex ->m_point.m_x << ' ' << (*i).m_nextVertex->m_point.m_z << " lineto\n";
-		}
-	}
-	*epsStream << "%Vnitrek" << endl;
-#endif
-
 #ifdef FELKELDEBUG
-	sprintf(DebugString, "Building initial intersection queue\n");
-	OutputDebugString(DebugString);
+	VTLOG("Building initial intersection queue\n");
 #endif
 	for (i = m_vl.begin(); i != m_vl.end (); i++)
 	{
@@ -157,8 +130,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 	}
 
 #ifdef FELKELDEBUG
-	sprintf(DebugString, "Processing intersection queue\n");
-	OutputDebugString(DebugString);
+	VTLOG("Processing intersection queue\n");
 #endif
 	while (m_iq.size ())
 	{
@@ -167,9 +139,8 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		m_iq.pop ();
 
 #ifdef FELKELDEBUG
-		sprintf(DebugString, "Processing %d %d left done %d right done %d\n",
+		VTLOG("Processing %d %d left done %d right done %d\n",
 			i.m_leftVertex->m_ID, i.m_rightVertex->m_ID, i.m_leftVertex->m_done, i.m_rightVertex->m_done);
-		OutputDebugString(DebugString);
 #endif
 		if (i.m_leftVertex->m_done && i.m_rightVertex->m_done)
 			continue;
@@ -182,8 +153,10 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 			continue;
 		}
 
+#ifdef FELKELDEBUG
 		assert(i.m_leftVertex->m_prevVertex != i.m_rightVertex);
 		assert(i.m_rightVertex->m_nextVertex != i.m_leftVertex);
+#endif
 		if (i.m_type == CIntersection::CONVEX)
 			if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
 				i.ApplyLast3(m_skeleton, m_vl); 
@@ -192,11 +165,9 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		if (i.m_type == CIntersection :: NONCONVEX)
 			i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq);
 	}
-
 #ifdef FELKELDEBUG
 	Dump();
 #endif
-
 	return m_skeleton;
 }
 
@@ -302,12 +273,9 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 		C3DPoint& p1 = points[pi].m_Point;
 		C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
 
-		CSkeleton::iterator s1;
-		for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-		{
+		for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 			if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
 				break;
-		}
 		pNextEdge = &(*s1);
 		// Circumnavigate the right face
 		do
@@ -323,14 +291,18 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to higher
+#ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left));
+#endif
 					pPrevEdge->m_lower.m_left = pNextEdge;
 					pNextEdge->m_higher.m_left = pPrevEdge;
 				}
 				else
 				{
 					// Joing higher to higher
+#ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left));
+#endif
 					pPrevEdge->m_higher.m_right = pNextEdge;
 					pNextEdge->m_higher.m_left = pPrevEdge;
 				}
@@ -340,14 +312,18 @@ void CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to lower
+#ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right));
+#endif
 					pPrevEdge->m_lower.m_left = pNextEdge;
 					pNextEdge->m_lower.m_right = pPrevEdge;
 				}
 				else
 				{
 					// Joining higher to lower
+#ifdef FELKELDEBUG
 					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right));
+#endif
 					pPrevEdge->m_higher.m_right = pNextEdge;
 					pNextEdge->m_lower.m_right = pPrevEdge;
 				}
@@ -365,7 +341,7 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 	C3DPoint NewEdgeVector;
 	CNumber CosTheta;
 	CNumber HighestCosTheta = 0;
-
+	
 	if(*bReversed)
 	{
 		OldPoint = pEdge->m_lower.m_vertex->m_point;
@@ -452,8 +428,8 @@ CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C3DP
 	CNumber SegmentLength = (p2 - p1).LengthXZ();
 	CNumber U;
 
-	U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_z - p1.m_z) * (p2.m_z - p1.m_z))) /
-		(SegmentLength * SegmentLength);
+    U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_z - p1.m_z) * (p2.m_z - p1.m_z))) /
+					(SegmentLength * SegmentLength);
 
 	pIntersection.m_x = p1.m_x + U * (p2.m_x - p1.m_x);
 	pIntersection.m_z = p1.m_z + U * (p2.m_z - p1.m_z);
@@ -464,25 +440,22 @@ CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C3DP
 #ifdef FELKELDEBUG
 void CStraightSkeleton::Dump()
 {
-	char DebugString[1024];
 	int i;
 
-	sprintf(DebugString, "Skeleton:\n");
-	OutputDebugString(DebugString);
+	VTLOG("Skeleton:\n");
 
 	i = 0;
 	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 	{
 		CSkeletonLine& db = (*s1);
-		sprintf(DebugString, "ID: %d lower leftID %d rightID %d vertexID %d (%f %f %f) higher leftID %d rightID %d vertexID %d (%f %f %f)\n",
-			db.m_ID,
-			db.m_lower.LeftID(),
-			db.m_lower.RightID(),
-			db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
-			db.m_higher.LeftID(),
-			db.m_higher.RightID(),
-			db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
-		OutputDebugString(DebugString);
+		VTLOG("ID: %d lower leftID %d rightID %d vertexID %d (%f %f %f) higher leftID %d rightID %d vertexID %d (%f %f %f)\n",
+							db.m_ID,
+							db.m_lower.LeftID(),
+							db.m_lower.RightID(),
+							db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
+							db.m_higher.LeftID(),
+							db.m_higher.RightID(),
+							db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
 	}
 }
 #endif

@@ -904,6 +904,7 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 
 float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 {
+	PolyChecker PolyChecker;
 	CStraightSkeleton StraightSkeleton;
 	CSkeleton Skeleton;
 	float fMaxHeight = 0.0;
@@ -915,7 +916,7 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 	CSkeletonLine *pNextEdge;
 	bool bEdgeReversed;
 	float EaveY = EavePolygon[0].y;
-#ifdef _DEBUG
+#ifdef FELKELDEBUG
 	float DebugX;
 	float DebugY;
 	float DebugZ;
@@ -929,8 +930,16 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 	// outer polygon the roof edges. It must be clockwise oriented!
 	RoofEaves.push_back(Contour());
 
-	for (i = 0; i < iVertices; i++)
-		RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, pLev->m_Edges[i]->m_iSlope / 180.0f * PIf));
+	if (PolyChecker.IsClockwisePolygon(EavePolygon))
+	{
+		for (i = 0; i < iVertices; i++)
+			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, pLev->m_Edges[i]->m_iSlope / 180.0f * PIf));
+	}
+	else
+	{
+		for (i = iVertices - 1; i >= 0; i--)
+			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, pLev->m_Edges[i]->m_iSlope / 180.0f * PIf));
+	}
 
 	// Now build the skeleton
 	StraightSkeleton.MakeSkeleton(RoofEaves);
@@ -982,7 +991,7 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 			{
 				if (bEdgeReversed)
 				{
-#ifdef _DEBUG
+#ifdef FELKELDEBUG
 					DebugX = pEdge->m_higher.m_vertex->m_point.m_x;
 					DebugY = pEdge->m_higher.m_vertex->m_point.m_y;
 					DebugZ = pEdge->m_higher.m_vertex->m_point.m_z;
@@ -999,7 +1008,7 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 				}
 				else
 				{
-#ifdef _DEBUG
+#ifdef FELKELDEBUG
 					DebugX = pEdge->m_lower.m_vertex->m_point.m_x;
 					DebugY = pEdge->m_lower.m_vertex->m_point.m_y;
 					DebugZ = pEdge->m_lower.m_vertex->m_point.m_z;

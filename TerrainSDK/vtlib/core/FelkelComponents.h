@@ -18,6 +18,10 @@
 #include <vector>
 #include <list>
 
+#ifdef FELKELDEBUG
+#include "vtdata\vtlog.h"
+#endif
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)	// prevent common warning about templates
 #endif
@@ -50,26 +54,28 @@ public:
 	CNumber& operator = (const CNumber &x) { m_n = x.m_n; return *this; }
 	CNumber& operator = (const double &x) { m_n = x; return *this; }
 	operator double& (void) const { return (double &) m_n; }
-	bool operator == (const CNumber &x) const { return SIMILAR (m_n, x.m_n); }
-	bool operator != (const CNumber &x) const { return !SIMILAR (m_n, x.m_n); }
-	bool operator <= (const CNumber &x) const { return m_n < x.m_n || *this == x; }
-	bool operator >= (const CNumber &x) const { return m_n > x.m_n || *this == x; }
-	bool operator <  (const CNumber &x) const { return m_n < x.m_n && *this != x; }
-	bool operator >  (const CNumber &x) const { return m_n > x.m_n && *this != x; }
+	operator == (const CNumber &x) const { return SIMILAR (m_n, x.m_n); }
+	operator != (const CNumber &x) const { return !SIMILAR (m_n, x.m_n); }
+	operator <= (const CNumber &x) const { return m_n < x.m_n || *this == x; }
+	operator >= (const CNumber &x) const { return m_n > x.m_n || *this == x; }
+	operator <  (const CNumber &x) const { return m_n < x.m_n && *this != x; }
+	operator >  (const CNumber &x) const { return m_n > x.m_n && *this != x; }
 
-	bool operator == (const double x) const { return *this == CNumber (x); }
-	bool operator != (const double x) const { return *this != CNumber (x); }
-	bool operator <= (const double x) const { return *this <= CNumber (x); }
-	bool operator >= (const double x) const { return *this >= CNumber (x); }
-	bool operator <  (const double x) const { return *this <  CNumber (x); }
-	bool operator >  (const double x) const { return *this >  CNumber (x); }
+	operator == (const double x) const { return *this == CNumber (x); }
+	operator != (const double x) const { return *this != CNumber (x); }
+	operator <= (const double x) const { return *this <= CNumber (x); }
+	operator >= (const double x) const { return *this >= CNumber (x); }
+	operator <  (const double x) const { return *this <  CNumber (x); }
+	operator >  (const double x) const { return *this >  CNumber (x); }
 	// Functions
 	CNumber &NormalizeAngle();
 	CNumber NormalizedAngle();
-	bool Similar(const CNumber &x);
 private:
 	double m_n;
 };
+
+// This is not really a 3D class beware !!!!!!
+// Most things only work on x and z co-ords
 
 // This is not really a 3D class beware !!!!!!
 // Most things only work on x and z co-ords
@@ -79,16 +85,12 @@ class C3DPoint
 public:
 	C3DPoint (void) : m_x(0), m_y(0), m_z(0) { }
 	C3DPoint (CNumber X, CNumber Y, CNumber Z) : m_x (X), m_y (Y), m_z(Z) { }
-//	bool operator == (const C3DPoint &p) const { return m_x == p.m_x && m_y == p.m_y && m_z == p.m_z; }
-//	bool operator != (const C3DPoint &p) const { return m_x != p.m_x || m_y != p.m_y || m_z != p.m_z; }
-//	C3DPoint operator - (const C3DPoint &p) const {return C3DPoint(m_x - p.m_x, m_y - p.m_y, m_z - p.m_z);}
-//	C3DPoint operator * (const CNumber &n) const { return C3DPoint (n*m_x, n*m_y, n*m_z); }
-	bool operator == (const C3DPoint &p) const { return m_x == p.m_x && m_z == p.m_z; }
-	bool operator != (const C3DPoint &p) const { return m_x != p.m_x || m_z != p.m_z; }
+	operator == (const C3DPoint &p) const { return m_x == p.m_x && m_z == p.m_z; }
+	operator != (const C3DPoint &p) const { return m_x != p.m_x || m_z != p.m_z; }
 	C3DPoint operator - (const C3DPoint &p) const {return C3DPoint(m_x - p.m_x, m_y, m_z - p.m_z);}
 	C3DPoint operator * (const CNumber &n) const { return C3DPoint (n*m_x, m_y, n*m_z); }
 	bool IsInfiniteXZ (void) { return *this == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY) ? true : false; }
-	CNumber DistXZ(const C3DPoint &p) {return sqrt ((m_x-p.m_x)*(m_x-p.m_x) + (m_z - p.m_z)*(m_z - p.m_z));}
+	CNumber DistXZ(const C3DPoint &p) const {return sqrt ((m_x-p.m_x)*(m_x-p.m_x) + (m_z - p.m_z)*(m_z - p.m_z));}
 	CNumber LengthXZ() {return sqrt (m_x * m_x + m_z * m_z);}
 	CNumber DotXZ(const C3DPoint &p) const {return m_x * p.m_x + m_z * p.m_z; }
 	CNumber CrossXZ(const C3DPoint &p) {return (m_x * p.m_z - m_z * p.m_x);} // 2D pseudo cross
@@ -99,16 +101,8 @@ public:
 class CEdge
 {
 public:
-	CEdge (CNumber X, CNumber Y, CNumber Z, CNumber Slope) : m_Point(X, Y, Z), m_Slope(Slope)
-	{
-		// Clamp the slope
-		m_Slope.NormalizeAngle();
-		if (m_Slope > CN_SLOPE_MAX)
-			m_Slope = CN_SLOPE_MAX;
-		else if (m_Slope < CN_SLOPE_MIN)
-			m_Slope = CN_SLOPE_MIN;
-	};
-	bool operator == (const CEdge &p) const { return m_Point == p.m_Point; }
+	CEdge (CNumber X, CNumber Y, CNumber Z, CNumber Slope) : m_Point(X, Y, Z), m_Slope(Slope) {};
+	operator == (const CEdge &p) const { return m_Point == p.m_Point; }
 	C3DPoint m_Point;
 	CNumber m_Slope;
 };
@@ -120,7 +114,7 @@ class CRidgeLine
 {
 public:
 	CRidgeLine(const C3DPoint &p = C3DPoint (0, 0, 0), const C3DPoint &q = C3DPoint(0, 0, 0), const CNumber &Slope = -1, const bool IsRidgeLine = false);
-	CRidgeLine(const C3DPoint &p, const CNumber &a, const CNumber &Slope, const bool IsRidgeLine = false) : m_Origin (p), m_Angle (a), m_Slope(Slope), m_IsRidgeLine(IsRidgeLine)
+	CRidgeLine(const C3DPoint &p, const CNumber &a, const CNumber &Slope, const bool IsRidgeLine = true) : m_Origin (p), m_Angle (a), m_Slope(Slope), m_IsRidgeLine(IsRidgeLine)
 	{
 		m_Angle.NormalizeAngle();
 	};
@@ -137,7 +131,7 @@ public:
 	{ 
 		return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin)) ? true : false;
 	}
-	CNumber Dist(const C3DPoint &p);
+	CNumber Dist(const C3DPoint &p) const;
 
 
 	C3DPoint m_Origin;
@@ -155,14 +149,14 @@ class CVertex
 public:
 	CVertex (void) : m_ID (-1) { };
 	CVertex (const C3DPoint &p, const C3DPoint &prev = C3DPoint (), const CNumber &prevslope = -1, const C3DPoint &next = C3DPoint (), const CNumber &nextslope = -1)
-	: m_point (p), m_axis (CRidgeLine::AngleAxis (p, prev, prevslope,  next, nextslope)), m_leftLine (p, prev, prevslope), m_rightLine (p, next, nextslope), m_higher (NULL),
-	m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
-	m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
+		: m_point (p), m_axis (CRidgeLine::AngleAxis (p, prev, prevslope,  next, nextslope)), m_leftLine (p, prev, prevslope), m_rightLine (p, next, nextslope), m_higher (NULL),
+		m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
+		m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
 	CVertex (const C3DPoint &p, CVertex &left, CVertex &right);
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
-	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
-	bool operator < (const CVertex &) const { assert (false); return false; } 
+	operator == (const CVertex &v) const { return m_point == v.m_point; }
+	operator < (const CVertex &) const { assert (false); return false; } 
 	C3DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
@@ -170,7 +164,7 @@ public:
 	// data
 	C3DPoint m_point;                      
 	CRidgeLine m_axis;  // the axis (ridgeline) for this vertex                       
-	CRidgeLine m_leftLine, m_rightLine; // vectors for left and right current contour
+	CRidgeLine m_leftLine, m_rightLine; // vectors for the original left and right edge contour lines
 	CVertex *m_leftVertex, *m_rightVertex; // Current contour chain (List of active vertices)
 	CVertex *m_nextVertex, *m_prevVertex; // Overall vertex list
 	CVertex *m_higher; // chain to next higher point in the skeleton (set when intersection is applied)
@@ -187,18 +181,19 @@ public:
 	iterator next (const iterator &i) { iterator tmp (i); tmp ++; if (tmp == end ()) tmp = begin (); return tmp; }
 	void push_back (const CVertex& x)
 	{
+#ifdef FELKELDEBUG
 		assert (x.m_prevVertex == NULL || x.m_leftLine.FacingTowards (x.m_prevVertex -> m_rightLine));
 		assert (x.m_nextVertex == NULL || x.m_rightLine.FacingTowards (x.m_nextVertex -> m_leftLine));
-		((CVertex &)x).m_ID = size ();       // automaticke cislovani
+#endif
+		((CVertex &)x).m_ID = size ();       // automatic ID generation
 		list <CVertex> :: push_back (x);
 #ifdef FELKELDEBUG
-		{
-			char DebugString[1024];
-
-			sprintf(DebugString, "Vertex %d x %f y %f z %f angle %f added to list\n",
-				((CVertex &)x).m_ID, ((CVertex &)x).m_point.m_x, ((CVertex &)x).m_point.m_y, ((CVertex &)x).m_point.m_z, ((CVertex &)x).m_axis.m_Angle);
-			OutputDebugString(DebugString);
-		}
+		VTLOG("Vertex %d x %f y %f z %f angle %f\n left %d right %d prev %d next %d added to list\n",
+			((CVertex &)x).m_ID, ((CVertex &)x).m_point.m_x, ((CVertex &)x).m_point.m_y, ((CVertex &)x).m_point.m_z, ((CVertex &)x).m_axis.m_Angle,
+			(((CVertex &)x).m_leftVertex == NULL) ? -999 : ((CVertex &)x).m_leftVertex->m_ID,
+			(((CVertex &)x).m_rightVertex == NULL) ? -999 : ((CVertex &)x).m_rightVertex->m_ID,
+			(((CVertex &)x).m_prevVertex == NULL) ? -999 : ((CVertex &)x).m_prevVertex->m_ID,
+			(((CVertex &)x).m_nextVertex == NULL) ? -999 : ((CVertex &)x).m_nextVertex->m_ID);
 #endif
 	}
 };
@@ -231,11 +226,11 @@ public:
 		int RightID (void) const { if (!m_right) return -1; return m_right -> m_ID; }
 		int VertexID (void) const { if (!m_vertex) return -1; return m_vertex -> m_ID; }
 	} m_lower, m_higher;
-	bool operator == (const CSkeletonLine &s) const
+	operator == (const CSkeletonLine &s) const
 	{
 		return m_higher.m_vertex -> m_ID == s.m_higher.m_vertex -> m_ID  && m_lower.m_vertex -> m_ID  == s.m_lower.m_vertex -> m_ID ;
 	}
-	bool operator < (const CSkeletonLine &) const { assert (false); return false; }
+	operator < (const CSkeletonLine &) const { assert (false); return false; }
 	int m_ID;
 };
 
@@ -245,13 +240,15 @@ class CSkeleton : public list <CSkeletonLine>
 public:
 	void push_back (const CSkeletonLine &x)
 	{
-#ifdef EPS
-		extern ostream *epsStream;
-
-		*epsStream << x.m_lower.m_vertex -> m_point.m_x << ' ' << x.m_lower.m_vertex -> m_point.m_y << " moveto ";
-		*epsStream << x.m_higher.m_vertex -> m_point.m_x << ' ' << x.m_higher.m_vertex -> m_point.m_y << " lineto\n";
+		((CSkeletonLine &)x).m_ID = size ();     // automatically assign the ID number
+#ifdef FELKELDEBUG
+		{
+			VTLOG("New skeleton line %d lower %d higher %d\n",
+				((CSkeletonLine &)x).m_ID,
+				((CSkeletonLine &)x).m_lower.m_vertex->m_ID,
+				((CSkeletonLine &)x).m_higher.m_vertex->m_ID);
+		}
 #endif
-		((CSkeletonLine &)x).m_ID = size ();     // automaticke cislovani
 		list <CSkeletonLine> :: push_back (x);
 	}
 };
