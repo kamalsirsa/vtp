@@ -31,15 +31,20 @@ using namespace std;
  */
 vtElevationGrid::vtElevationGrid()
 {
-	m_pData = NULL;
-	m_pFData = NULL;
+	m_area.SetRect(0, 0, 0, 0);
 	m_iColumns = 0;
 	m_iRows = 0;
-	m_bFloatMode = false;
 
-	m_fMinHeight = m_fMaxHeight = 0.0f;
-	m_szOriginalDEMName[0] = 0;
+	m_bFloatMode = false;
+	m_pData = NULL;
+	m_pFData = NULL;
 	m_fVMeters = 1.0f;
+
+	for (int i = 0; i < 4; i++)
+		m_Corners[i].Set(0, 0);
+
+	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
+	m_szOriginalDEMName[0] = 0;
 }
 
 /**
@@ -59,12 +64,16 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 	m_area = area;			// raw extents
 	m_iColumns = iColumns;
 	m_iRows = iRows;
+
 	m_bFloatMode = bFloat;
-	m_proj = proj;
-	m_szOriginalDEMName[0] = 0;
+	_AllocateArray();
 	m_fVMeters = 1.0f;
 
-	_AllocateArray();
+	ComputeCornersFromExtents();
+
+	m_fMinHeight = m_fMaxHeight = INVALID_ELEVATION;
+	m_proj = proj;
+	m_szOriginalDEMName[0] = 0;
 }
 
 /**
