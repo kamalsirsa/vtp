@@ -346,8 +346,8 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_FILLIN, _T("&Fill In Unknown Areas"));
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("E&xport to TerraGen"));            
-	elevMenu->Append(ID_ELEV_EXPORT_GEOTIFF, _T("Export to &GeoTIFF"));            
+	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("E&xport to TerraGen"));
+	elevMenu->Append(ID_ELEV_EXPORT_GEOTIFF, _T("Export to &GeoTIFF"));
 	elevMenu->Append(ID_ELEV_EXPORT_BMP, _T("Export to &BMP"));
 	elevMenu->Append(ID_ELEV_BITMAP, _T("Re&nder and Save Bitmap"));
 	elevMenu->AppendSeparator();
@@ -1248,7 +1248,7 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 	for (int i = 0; i < layers; i++)
 	{
 		vtLayer *lp = m_Layers.GetAt(i);
-		bool success = lp->ConvertProjection(proj);
+		bool success = lp->TransformCoords(proj);
 		if (success)
 			succeeded++;
 	}

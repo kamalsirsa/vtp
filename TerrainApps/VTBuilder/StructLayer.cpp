@@ -222,7 +222,7 @@ void vtStructureLayer::SetProjection(const vtProjection &proj)
 	m_proj = proj;
 }
 
-bool vtStructureLayer::ConvertProjection(vtProjection &proj)
+bool vtStructureLayer::TransformCoords(vtProjection &proj)
 {
 	if (proj == m_proj)
 		return true;

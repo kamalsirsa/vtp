@@ -136,7 +136,7 @@ void vtUtilityLayer::SetProjection(const vtProjection &proj)
 	m_proj = proj;
 }
 
-bool vtUtilityLayer::ConvertProjection(vtProjection &proj)
+bool vtUtilityLayer::TransformCoords(vtProjection &proj)
 {
 	if (proj == m_proj)
 		return true;

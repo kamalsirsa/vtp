@@ -168,7 +168,7 @@ void vtRoadLayer::MoveSelectedNodes(const DPoint2 &offset)
 	}
 }
 
-bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
+bool vtRoadLayer::TransformCoords(vtProjection &proj_new)
 {
 	// Create conversion object
 	vtProjection Source;

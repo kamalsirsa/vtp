@@ -118,7 +118,7 @@ void vtTransitLayer::KludgeRefPosApply(bool bForward)
 	}
 }
 
-bool vtTransitLayer::ConvertProjection(vtProjection &proj_new)
+bool vtTransitLayer::TransformCoords(vtProjection &proj_new)
 {
 	// unimplemented
 	return false;

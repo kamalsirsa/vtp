@@ -21,7 +21,7 @@ public:
 #if SUPPORT_TRANSIT
 	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, vtScaledView *pView);
-	bool ConvertProjection(vtProjection &proj);
+	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);

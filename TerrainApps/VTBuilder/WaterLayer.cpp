@@ -41,7 +41,7 @@ bool vtWaterLayer::OnLoad()
 	return true;
 }
 
-bool vtWaterLayer::ConvertProjection(vtProjection &proj_new)
+bool vtWaterLayer::TransformCoords(vtProjection &proj_new)
 {
 	// Create conversion object
 	OCT *trans = CreateCoordTransform(&m_proj, &proj_new);

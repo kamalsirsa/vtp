@@ -96,7 +96,7 @@ public:
 	// these must be implemented
 	virtual bool GetExtent(DRECT &rect) = 0;
 	virtual void DrawLayer(wxDC* pDC, vtScaledView *pView) = 0;
-	virtual bool ConvertProjection(vtProjection &proj) = 0;
+	virtual bool TransformCoords(vtProjection &proj) = 0;
 	virtual bool OnSave() = 0;
 	virtual bool OnLoad() = 0;
 	virtual bool AppendDataFrom(vtLayer *pL) = 0;

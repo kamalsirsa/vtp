@@ -40,7 +40,7 @@ public:
 	bool GetExtent(DRECT &rect);
 	bool GetAreaExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, class vtScaledView *pView);
-	bool ConvertProjection(vtProjection &proj);
+	bool TransformCoords(vtProjection &proj);
 	bool OnSave();
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);

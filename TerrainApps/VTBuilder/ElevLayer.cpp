@@ -184,7 +184,7 @@ bool vtElevLayer::OnLoad()
 	return success;
 }
 
-bool vtElevLayer::ConvertProjection(vtProjection &proj_new)
+bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 {
 	vtProjection proj_old;
 	GetProjection(proj_old);

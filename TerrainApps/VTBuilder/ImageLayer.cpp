@@ -220,7 +220,7 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-bool vtImageLayer::ConvertProjection(vtProjection &proj)
+bool vtImageLayer::TransformCoords(vtProjection &proj)
 {
 	return false;
 }
