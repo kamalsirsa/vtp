@@ -167,8 +167,12 @@ void ContourConverter::Flush()
 {
 	if (m_line.GetSize() > 2)
 	{
-		m_pTerrain->AddSurfaceLineToMesh2(m_pMF, m_line, m_fHeight,
-			false, true);	// use true elevation, not scaled
+		bool bInterpolate = false;		// no need; it already hugs the ground
+		bool bCurve = false;			// no need; it's already quite smooth
+		bool bUseTrueElevation = true;	// use true elevation, not scaled
+
+		m_pTerrain->AddSurfaceLineToMesh(m_pMF, m_line, m_fHeight,
+			bInterpolate, bCurve, bUseTrueElevation);
 	}
 	m_line.Empty();
 }
