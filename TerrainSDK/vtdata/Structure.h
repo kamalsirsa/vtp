@@ -41,6 +41,7 @@ public:
 
 	DPoint2	m_p;			// earth position
 	float	m_fRotation;	// in radians
+	float	m_fScale;		// meters per unit
 };
 
 /**
