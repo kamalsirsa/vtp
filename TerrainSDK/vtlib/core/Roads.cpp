@@ -980,14 +980,15 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 void vtRoadMap3d::_GatherExtents()
 {
-	// find extents of area covered by roads
+	// Find extents of area covered by roads
 	m_extents.InsideOut();
 
-	// examine the range of the roadmap area
-	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
-		m_extents.GrowToContainPoint(pN->m_p3);
+	// Examine the range of the roadmap area
+	for (LinkGeom *pL = GetFirstLink(); pL; pL = pL->GetNext())
+		m_extents.GrowToContainLine(pL->m_centerline);
 
-	// expand slightly for safety
+	// Expand slightly for safety - in case we allow dragging road nodes
+	//  interactively in the future.
 	FPoint3 diff = m_extents.max - m_extents.min;
 	m_extents.min -= (diff / 20.0f);
 	m_extents.max += (diff / 20.0f);
