@@ -41,7 +41,7 @@ public:
 	void Eval();
 
 protected:
-	float	m_fSpeed;	// max units per frame of movement
+	float	m_fSpeed;		// max units per frame of movement
 	bool	m_bPreventRoll;
 	bool	m_bAlwaysMove;
 };
@@ -98,6 +98,9 @@ public:
 	// override
 	void Eval();
 
+	/// Current speed (meters/second as of the most recent frame)
+	float GetCurrentSpeed() { return m_fCurrentSpeed; }
+
 protected:
 	void KeepAboveGround();
 
@@ -108,6 +111,7 @@ protected:
 	bool	m_bFollow;
 	float	m_fMaintainHeight;
 	bool	m_bMaintain;
+	float	m_fCurrentSpeed; // current speed (most recent frame)
 };
 
 

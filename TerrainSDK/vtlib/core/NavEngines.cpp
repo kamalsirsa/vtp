@@ -30,11 +30,11 @@ void vtFlyer::SetAlwaysMove(bool bMove)
 
 void vtFlyer::Eval()
 {
-	float elapsed = vtGetFrameTime();
-
 	vtTransform *pTarget = (vtTransform*) GetTarget();
 	if (!pTarget)
 		return;
+
+	float elapsed = vtGetFrameTime();
 
 	float mx, my;
 	GetNormalizedMouseCoords(mx, my);
@@ -134,6 +134,7 @@ vtTerrainFlyer::vtTerrainFlyer(float fSpeed, float fHeightAboveTerrain, bool bMi
 	m_pHeightField = NULL;
 	m_bMaintain = false;
 	m_fMaintainHeight = 0;
+	m_fCurrentSpeed = 0;
 }
 
 void vtTerrainFlyer::FollowTerrain(bool bFollow)
@@ -143,8 +144,19 @@ void vtTerrainFlyer::FollowTerrain(bool bFollow)
 
 void vtTerrainFlyer::Eval()
 {
+	float elapsed = vtGetFrameTime();
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+
+	if (elapsed == 0 || !pTarget) // safety check
+		return;
+
+	FPoint3 previous_pos = pTarget->GetTrans();
+
 	vtFlyer::Eval();
 	KeepAboveGround();
+
+	FPoint3 current_pos = pTarget->GetTrans();
+	m_fCurrentSpeed = (current_pos - previous_pos).Length() / elapsed;
 }
 
 //
