@@ -49,6 +49,9 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 void FeatInfoDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 {
+	if (m_pFeatures == pFeatures)
+		return;
+
 	m_pFeatures = pFeatures;
 
 	GetList()->ClearAll();  // clears all items and columns
@@ -92,7 +95,9 @@ void FeatInfoDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 	{
 		Field *pField = m_pFeatures->GetField(i);
 		wxString2 name = pField->m_name;
-		int width = pField->m_width * 4;
+		int width1 = pField->m_width * 6;
+		int width2 = name.Length() * 8;
+		int width = max(width1, width2);
 		if (width < 20)
 			width = 20;
 		GetList()->InsertColumn(field++, name, wxLIST_FORMAT_LEFT, width);
