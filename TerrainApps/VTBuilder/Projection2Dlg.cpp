@@ -332,46 +332,6 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 		m_proj.SetLinearUnits(SRS_UL_US_FOOT, GetMetersPerUnit(iUnits));
 	}
 
-	// It appears that the EPSG values for false easting and false northing
-	// are in meters.  So, if we are converting to another horizontal unit,
-	// we need to convert the easting/northing as well.
-	//
-	// At least, this was true for California data i've encoutered.  Then,
-	// i found some Washington data that needed the EPSG easting/northing to be
-	// in survey feet in order to produce the right results!
-	//
-	if (iUnits > 0 && previous > 0)
-	{
-		double factor = GetMetersPerUnit(previous) / GetMetersPerUnit(iUnits);
-
-		OGR_SRSNode *root = m_proj.GetRoot();
-		OGR_SRSNode *node, *par1, *par2;
-		const char *value;
-		int children = root->GetChildCount();
-		int i, item = 0;
-
-		for (i = 0; i < children; i++)
-		{
-			node = root->GetChild(i);
-			value = node->GetValue();
-			if (!strcmp(value, "PARAMETER"))
-			{
-				par1 = node->GetChild(0);
-				par2 = node->GetChild(1);
-				value = par1->GetValue();
-				if (!strcmp(value, "false_easting") ||
-					!strcmp(value, "false_northing"))
-				{
-					value = par2->GetValue();
-					double d = atof(value);
-					d *= factor;
-					char newval[80];
-					sprintf(newval, "%lf", d);
-					par2->SetValue(newval);
-				}
-			}
-		}
-	}
 	TransferDataToWindow();
 	UpdateControlStatus();
 }
