@@ -463,13 +463,13 @@ bool vtTerrain::_CreateDynamicTerrain(float fOceanDepth)
 		m_pDynGeom = new SRTerrain();
 		m_pDynGeom->SetName2("Roettger Geom");
 	}
+	// else if (method == LM_YOURMETHOD)
+	//	add your own LOD method here!
 	if (!m_pDynGeom)
 	{
 		_SetErrorMessage("Unknown LOD method.");
 		return false;
 	}
-
-	// add your own LOD method here!
 
 	m_pDynGeom->SetOptions(m_Params.GetValueBool(STR_TRISTRIPS),
 		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
@@ -1693,6 +1693,19 @@ bool vtTerrain::CreateStep5()
 bool vtTerrain::IsCreated()
 {
 	return m_pTerrainGroup != NULL;
+}
+
+/**
+ * You can change the vertical exaggeration factor at runtime, by changing
+ * the STR_VERTICALEXAG terrain parameter, then calling this method.
+ */
+void vtTerrain::ApplyVerticalExag()
+{
+	if (m_pDynGeom)
+	{
+		float fExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
+		m_pDynGeom->SetVerticalExag(fExag);
+	}
 }
 
 void vtTerrain::Enable(bool bVisible)

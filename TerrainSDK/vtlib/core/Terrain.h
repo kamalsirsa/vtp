@@ -106,10 +106,11 @@ public:
 	vtString GetLastError() { return m_strErrorMsg; }
 
 	/** Set the array of colors to be used when automatically generating the
-		terrain texture from the elevation values.  The colors go from the
-		lowest elevation value to the highest. */
+		terrain texture from the elevation values.  The colors brackets go
+		from the lowest elevation value to the highest. */
 	void SetTextureColors(Array<RGBi> *brackets) { m_pTextureColors = brackets; }
 	virtual void CustomizeDib() {}
+	void ApplyVerticalExag();
 
 	/// return true if the terrain has been created
 	bool IsCreated();
