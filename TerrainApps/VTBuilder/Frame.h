@@ -397,13 +397,14 @@ public:
 	void ImportDataFromS57(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
-	// Export
+	// Elevation Export
 	void ExportASC();
 	void ExportGeoTIFF();
 	void ExportTerragen();
 	void ExportBMP();
 	void ExportSTM();
 	void ExportPlanet();
+	void ExportVRML();
 
 	// area tool
 	void ExportElevation();

@@ -1912,16 +1912,17 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	if (!GetActiveElevLayer())
 		return;
 
-	wxString choices[6];
+	wxString choices[7];
 	choices[0] = _T("ArcInfo ASCII Grid");
 	choices[1] = _T("GeoTIFF");
 	choices[2] = _T("TerraGen");
 	choices[3] = _T("BMP");
 	choices[4] = _T("STM");
 	choices[5] = _T("MSI Planet");
+	choices[6] = _T("VRML ElevationGrid");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 6, choices);
+		_("Export to file format:"), 7, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -1933,6 +1934,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 3: ExportBMP(); break;
 	case 4: ExportSTM(); break;
 	case 5: ExportPlanet(); break;
+	case 6: ExportVRML(); break;
 	}
 }
 
@@ -2046,6 +2048,18 @@ void MainFrame::ExportPlanet()
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(strDirName.mb_str());
 	if (success)
 		DisplayAndLog("Successfully wrote Planet dataset to '%s'", (const char *) strDirName.mb_str());
+	else
+		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::ExportVRML()
+{
+	vtString fname = GetExportFilename(FSTRING_WRL);
+	if (fname == "")
+		return;
+	bool success = GetActiveElevLayer()->m_pGrid->SaveToVRML(fname);
+	if (success)
+		DisplayAndLog("Successfully wrote file '%s'", (const char *) fname);
 	else
 		DisplayAndLog("Error writing file.");
 }
