@@ -125,6 +125,18 @@ SOURCE=..\core\Engine.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\FelkelComponents.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelIntersection.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelStraightSkeleton.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\Fence3d.cpp
 # End Source File
 # Begin Source File
@@ -246,6 +258,18 @@ SOURCE=..\core\DynTerrain.h
 # Begin Source File
 
 SOURCE=..\core\Engine.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelComponents.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelIntersection.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelStraightSkeleton.h
 # End Source File
 # Begin Source File
 
