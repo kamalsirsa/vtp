@@ -785,15 +785,17 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 }
 
 
-vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
+vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
+									   const vtString &strDataPath)
 {
 	m_pMats = new vtMaterialArray();
 
 	// road textures
 	if (do_texture)
 	{
-		m_mi_roadside = m_pMats->AddTextureMaterial2("Data/GeoTypical/roadside_32.png",
-			TEXTURE_ARGS(true));
+		vtString path;
+		path = strDataPath + "GeoTypical/roadside_32.png";
+		m_mi_roadside = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
 #if 0
 		// 1
 		m_pMats->AddTextureMaterial2("Data/GeoTypical/margin_32.bmp",
@@ -826,8 +828,8 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture)
 		m_pMats->AddTextureMaterial2("Data/GeoTypical/water.bmp",
 			TEXTURE_ARGS(false));
 #endif
-		m_mi_roads = m_pMats->AddTextureMaterial2("Data/GeoTypical/roadset_1k.bmp",
-			TEXTURE_ARGS(false));
+		path = strDataPath + "GeoTypical/roadset_1k.bmp";
+		m_mi_roads = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(false));
 		m_mi_4wd = m_pMats->AddTextureMaterial2(ROADTEXTURE_4WD,
 			TEXTURE_ARGS(true));
 		m_mi_trail = m_pMats->AddTextureMaterial2(ROADTEXTURE_TRAIL,

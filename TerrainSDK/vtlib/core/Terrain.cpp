@@ -119,7 +119,8 @@ void vtTerrain::create_roads(vtString strRoadFile)
 	m_pRoadMap->BuildIntersections();
 
 	m_pRoadMap->SetLodDistance(m_Params.m_fRoadDistance * 1000);	// convert km to m
-	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.m_bTexRoads != 0);
+	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.m_bTexRoads != 0,
+		m_strDataPath);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 	if (m_Params.m_bRoadCulture)
 		m_pRoadMap->GenerateSigns(m_pLodGrid);

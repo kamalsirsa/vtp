@@ -140,7 +140,7 @@ public:
 	void BuildIntersections();
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
 	void GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max);
-	vtGroup *GenerateGeometry(bool do_texture);
+	vtGroup *GenerateGeometry(bool do_texture, const vtString &strDataPath);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetLodDistance(float fDistance) { m_fLodDistance = fDistance; }
