@@ -509,7 +509,6 @@ void vtFrame::CreateToolbar(bool bVertical)
 
 void vtFrame::Setup3DScene()
 {
-	m_pLocationDlg->SetEngineContainer(g_App.m_pLocEngines);
 }
 
 //
@@ -1520,6 +1519,7 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 	if (pTerrain)
 	{
 		m_pLocationDlg->SetLocSaver(pTerrain->GetLocSaver());
+		m_pLocationDlg->SetAnimContainer(pTerrain->GetAnimContainer());
 
 		// Only do this the first time:
 		if (!pTerrain->IsVisited())
