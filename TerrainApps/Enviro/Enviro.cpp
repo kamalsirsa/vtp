@@ -1515,7 +1515,6 @@ void Enviro::PlantInstance()
 	vtStructureArray3d *structs = pTerr->GetStructures();
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
 	inst->CopyTagsFrom(*tags);
-//	inst->SetValueString("filename", path);
 	inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
 	VTLOG("  at %.7g, %.7g: ", m_EarthPos.x, m_EarthPos.y);
 
@@ -1530,6 +1529,7 @@ void Enviro::PlantInstance()
 	{
 		// creation failed
 		VTLOG(" failed.\n");
+		ShowMessage("Could not create instance.");
 		inst->Select(true);
 		structs->DeleteSelected();
 		return;
