@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2004.01.08
+AppVerName=VTP Software 2004.06.08
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -55,8 +55,17 @@ Source: "C:\VTP\TerrainApps\VTBuilder\VTBuilder.ini"; DestDir: "{app}\Apps"; Fla
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\*.html"; DestDir: "{app}\Docs\VTBuilder\Docs"; Flags: ignoreversion; Components: docs
 Source: "C:\VTP\TerrainApps\VTBuilder\Docs\images\*"; DestDir: "{app}\Docs\VTBuilder\Docs\images"; Flags: ignoreversion; Components: docs
 
+; Translation files
+Source: "C:\VTP\TerrainApps\Enviro\af\Enviro.mo"; DestDir: "{app}\Apps\af"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\de\Enviro.mo"; DestDir: "{app}\Apps\de"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\hu\Enviro.mo"; DestDir: "{app}\Apps\hu"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\pt\Enviro.mo"; DestDir: "{app}\Apps\pt"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\ro\Enviro.mo"; DestDir: "{app}\Apps\ro"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\sv\Enviro.mo"; DestDir: "{app}\Apps\sv"; Flags: ignoreversion; Components: main
+
 ; Core Data
 Source: "C:\VTP\TerrainApps\VTBuilder\WorldMap\gnv19.*"; DestDir: "{app}\Apps\WorldMap"; Flags: ignoreversion; Components: data
+Source: "C:\VTP\TerrainApps\Data\common_content.vtco"; DestDir: "{app}\Data"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\BuildingModels\*.jpg"; DestDir: "{app}\Data\BuildingModels"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\Culture\*"; DestDir: "{app}\Data\Culture"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\Culture\UtilityStructures\*"; DestDir: "{app}\Data\Culture\UtilityStructures"; Flags: ignoreversion; Components: data
@@ -66,7 +75,6 @@ Source: "C:\VTP\TerrainApps\Data\PlantData\species.xml"; DestDir: "{app}\Data\Pl
 Source: "C:\VTP\TerrainApps\Data\PlantModels\*.png"; DestDir: "{app}\Data\PlantModels"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\PointData\vtp-users-04*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\Sky\*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Terrains\Generic.ini"; DestDir: "{app}\Data\Terrains"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_1024_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_512_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 
@@ -78,10 +86,10 @@ Source: "C:\VTP\gdal\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; 
 Source: "C:\VTP\proj\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
-Source: "C:\APIs\gdal119\bin\gdal11.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal119\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal120\bin\gdal12.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal120\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-0.9.6-2-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\osg-0.9.6-3-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libwww\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.4.2\lib\wxmsw24.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\xerces-c_2_3_0-win32\bin\xerces-c_2_3_0.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
