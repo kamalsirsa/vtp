@@ -1317,46 +1317,12 @@ void vtFrame::OnDecrease(wxCommandEvent& event)
 
 void vtFrame::OnSaveVeg(wxCommandEvent& event)
 {
-	// save current directory
-	wxString path = wxGetCwd();
-
-	EnableContinuousRendering(false);
-	wxFileDialog saveFile(NULL, _("Save Vegetation Data"), _T(""), _T(""),
-		_("Vegetation Files (*.vf)|*.vf|"), wxSAVE);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	EnableContinuousRendering(true);
-	if (!bResult)
-	{
-		wxSetWorkingDirectory(path);	// restore
-		return;
-	}
-	wxString2 str = saveFile.GetPath();
-
-	vtTerrain *pTerr = GetCurrentTerrain();
-	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
-	pia.WriteVF(str.mb_str());
+	g_App.SaveVegetation();
 }
 
 void vtFrame::OnSaveStruct(wxCommandEvent& event)
 {
-	// save current directory
-	wxString path = wxGetCwd();
-
-	EnableContinuousRendering(false);
-	wxFileDialog saveFile(this, _("Save Built Structures Data"), _T(""),
-		_T(""), _("Structure Files (*.vtst)|*.vtst|"), wxSAVE | wxOVERWRITE_PROMPT);
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	EnableContinuousRendering(true);
-	if (!bResult)
-	{
-		wxSetWorkingDirectory(path);	// restore
-		return;
-	}
-	wxString2 str = saveFile.GetPath();
-
-	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
-	sa->SetFilename(str.mb_str());
-	sa->WriteXML(str.mb_str());
+	g_App.SaveStructures();
 
 	// update the displayed filename
 	m_pLayerDlg->RefreshTreeContents();

@@ -15,9 +15,11 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtlib/core/Terrain.h"
 #include "EnviroGUI.h"
 #include "app.h"
 #include "frame.h"
+#include "canvas.h"
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
@@ -95,5 +97,51 @@ void EnviroGUI::SetupScene3()
 void EnviroGUI::SetTimeEngineToGUI(class TimeEngine *pEngine)
 {
 	GetFrame()->SetTimeEngine(pEngine);
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void EnviroGUI::SaveVegetation()
+{
+	// save current directory
+	wxString path = wxGetCwd();
+
+	EnableContinuousRendering(false);
+	wxFileDialog saveFile(NULL, _("Save Vegetation Data"), _T(""), _T(""),
+		_("Vegetation Files (*.vf)|*.vf|"), wxSAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
+	if (!bResult)
+	{
+		wxSetWorkingDirectory(path);	// restore
+		return;
+	}
+	wxString2 str = saveFile.GetPath();
+
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
+	pia.WriteVF(str.mb_str());
+}
+
+void EnviroGUI::SaveStructures()
+{
+	// save current directory
+	wxString path = wxGetCwd();
+
+	EnableContinuousRendering(false);
+	wxFileDialog saveFile(NULL, _("Save Built Structures Data"), _T(""),
+		_T(""), _("Structure Files (*.vtst)|*.vtst|"), wxSAVE | wxOVERWRITE_PROMPT);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	EnableContinuousRendering(true);
+	if (!bResult)
+	{
+		wxSetWorkingDirectory(path);	// restore
+		return;
+	}
+	wxString2 str = saveFile.GetPath();
+
+	vtStructureArray3d *sa = GetCurrentTerrain()->GetStructures();
+	sa->SetFilename(str.mb_str());
+	sa->WriteXML(str.mb_str());
 }
 

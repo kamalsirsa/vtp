@@ -26,8 +26,11 @@ public:
 	virtual vtTagArray *GetInstanceFromGUI();
 	virtual bool OnMouseEvent(vtMouseEvent &event);
 	virtual void SetupScene3();
-
 	virtual void SetTimeEngineToGUI(class TimeEngine *pEngine);
+
+	// The following are useful methods
+	void SaveVegetation();
+	void SaveStructures();
 };
 
 // global singleton
