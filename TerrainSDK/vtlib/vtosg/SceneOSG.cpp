@@ -74,7 +74,7 @@ void vtScene::SetAmbient(RGBf color)
 
 float vtScene::GetFrameRate()
 {
-	return m_FrameTimer.frameRateAverge();
+	return (float) frameRate();
 }
 
 void vtScene::Init()
@@ -90,7 +90,8 @@ void vtScene::Init()
 
 	m_bInitialized = true;
 
-	m_FrameTimer.Init();
+    _initialTick = _timer.tick();
+    _frameTick = _initialTick;
 }
 
 void vtScene::AddMovLight(vtMovLight *pML)
@@ -103,6 +104,9 @@ void vtScene::DoUpdate()
 {
 	if (!m_bInitialized)
 		return;
+
+    _lastFrameTick = _frameTick;
+    _frameTick = _timer.tick();
 
 	DoEngines();
 
@@ -136,8 +140,6 @@ void vtScene::DoUpdate()
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
 	m_pOsgSceneView->cull();
 	m_pOsgSceneView->draw();
-
-	m_FrameTimer.updateFrameTick();
 }
 
 void vtScene::SetRoot(vtRoot *pRoot)
