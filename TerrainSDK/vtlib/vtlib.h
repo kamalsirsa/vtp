@@ -83,7 +83,7 @@
 #if VTLIB_OSG
 	#include <osgUtil/SceneView>
 	#include <osg/Billboard>
-	#include <osg/GeoSet>
+	#include <osg/Geometry>
 	#include <osg/Image>
 	#include <osg/LOD>
 	#include <osg/Material>
