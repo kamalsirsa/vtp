@@ -21,7 +21,8 @@ enum ProjType
 {
 	PT_ALBERS,
 	PT_GEO,
-	PT_LAMBERT,
+	PT_LAEA,	// Lambert Azimuthal Equal-Area
+	PT_LCC,		// Lambert Conformal Conic
 	PT_NZMG,
 	PT_OS,
 	PT_PS,

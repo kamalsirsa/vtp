@@ -81,6 +81,7 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_pProjCtrl->Append(_T("Albers Equal Area Conic"));
 	m_pProjCtrl->Append(_T("Geographic"));
+	m_pProjCtrl->Append(_T("Lambert Azimuthal Equal-Area"));
 	m_pProjCtrl->Append(_T("Lambert Conformal Conic"));
 	m_pProjCtrl->Append(_T("New Zealand Map Grid"));
 	m_pProjCtrl->Append(_T("Oblique Stereographic"));
@@ -172,7 +173,8 @@ void Projection2Dlg::UpdateControlStatus()
 		}
 		break;
 	case PT_ALBERS:
-	case PT_LAMBERT:
+	case PT_LCC:
+	case PT_LAEA:
 	case PT_NZMG:
 	case PT_TM:
 	case PT_SINUS:
@@ -298,7 +300,10 @@ void Projection2Dlg::SetUIFromProjection()
 			SetProjectionUI(PT_ALBERS);
 
 		if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
-			SetProjectionUI(PT_LAMBERT);
+			SetProjectionUI(PT_LCC);
+
+		if (!strcmp(proj_string, SRS_PT_LAMBERT_AZIMUTHAL_EQUAL_AREA))
+			SetProjectionUI(PT_LAEA);
 
 		if (!strcmp(proj_string, SRS_PT_NEW_ZEALAND_MAP_GRID))
 			SetProjectionUI(PT_NZMG);
@@ -472,12 +477,19 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		m_proj.SetUTMZone(1);
 		break;
 	case PT_ALBERS:
+		// Put in some default values
 		m_proj.SetACEA( 60.0, 68.0, 59.0, -132.5, 500000, 500000 );
 		break;
-	case PT_LAMBERT:
+	case PT_LAEA:
+		// Put in some default values
 		m_proj.SetLAEA( 51, -150, 1000000, 0 );
 		break;
+	case PT_LCC:
+		// Put in some default values
+		m_proj.SetLCC( 10, 20, 0, 15, 0, 0 );
+		break;
 	case PT_NZMG:
+		// Put in some default values
 		m_proj.SetNZMG( 41, 173, 2510000, 6023150 );
 		break;
 	case PT_TM:
