@@ -756,6 +756,18 @@ protected:
 	float data[4][4];
 };
 
+/////////////////////////////////////////////////////////////
+// Quaternion class
+
+class FQuat
+{
+public:
+	FQuat(const FPoint3 &axis, float angle) { makeRotate(axis,angle); }
+
+	void makeRotate(const FPoint3 &axis, float angle);
+
+	float x, y, z, w;
+};
 
 /**
  * An RGB class for handling color operations.
