@@ -801,6 +801,12 @@ LayerType MainFrame::AskLayerType()
 		return LT_UNKNOWN;
 }
 
+vtFeatureSet *MainFrame::GetActiveFeatureSet()
+{
+	if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_RAW)
+		return ((vtRawLayer *)m_pActiveLayer)->GetFeatureSet();
+	return NULL;
+}
 
 FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 {

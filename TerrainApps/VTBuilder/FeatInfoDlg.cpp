@@ -42,11 +42,12 @@ FeatInfoDlg::FeatInfoDlg( wxWindow *parent, wxWindowID id, const wxString &title
 {
 	m_iShow = 1;
 	m_iVUnits = 0;
+	m_pLayer = NULL;
 	m_pFeatures = NULL;
 	FeatInfoDialogFunc( this, TRUE ); 
 }
 
-void FeatInfoDlg::SetFeatureSet(vtRawLayer *pFeatures)
+void FeatInfoDlg::SetFeatureSet(vtFeatureSet *pFeatures)
 {
 	if (m_pFeatures == pFeatures)
 		return;
@@ -162,8 +163,6 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 {
 	wxString2 str;
 	int field = 0;
-	DPoint3 p;
-	m_pFeatures->GetPoint(iFeat, p);
 
 	wxString strFormat;
 	if (m_bGeo)
@@ -172,17 +171,28 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 		strFormat = _T("%.2lf");
 
 	OGRwkbGeometryType type = m_pFeatures->GetGeomType();
-	if (type == wkbPoint || type == wkbPoint25D)
+	if (type == wkbPoint)
 	{
-		str.Printf(strFormat, p.x);
+		DPoint3 p2;
+		((vtFeatureSetPoint3D *)m_pFeatures)->GetPoint(iFeat, p2);
+
+		str.Printf(strFormat, p2.x);
 		GetList()->SetItem(iItem, field++, str);
-		str.Printf(strFormat, p.y);
+		str.Printf(strFormat, p2.y);
 		GetList()->SetItem(iItem, field++, str);
 	}
 	if (type == wkbPoint25D)
 	{
+		DPoint3 p3;
+		((vtFeatureSetPoint3D *)m_pFeatures)->GetPoint(iFeat, p3);
+
+		str.Printf(strFormat, p3.x);
+		GetList()->SetItem(iItem, field++, str);
+		str.Printf(strFormat, p3.y);
+		GetList()->SetItem(iItem, field++, str);
+
 		double scale = GetMetersPerUnit((LinearUnits) (m_iVUnits+1));
-		str.Printf(_T("%.2lf"), p.z / scale);
+		str.Printf(_T("%.2lf"), p3.z / scale);
 		GetList()->SetItem(iItem, field++, str);
 	}
 
@@ -290,7 +300,7 @@ void FeatInfoDlg::OnDeleteHighlighted( wxCommandEvent &event )
 	}
 	if (iDeleted > 0)
 	{
-		m_pFeatures->SetModified(true);
+		m_pLayer->SetModified(true);
 		m_pFeatures->ApplyDeletion();
 		m_pView->Refresh();
 		RefreshItems();
@@ -341,7 +351,7 @@ void FeatInfoDlg::OnListRightClick( wxListEvent &event )
 			if (EditValue(iFeat, i))
 			{
 				// Refresh the display
-				m_pFeatures->SetModified(true);
+				m_pLayer->SetModified(true);
 				UpdateFeatureText(iItem, iFeat);
 			}
 			return;

@@ -35,7 +35,8 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	void SetView(BuilderView *pView) { m_pView = pView; }
-	void SetFeatureSet(vtRawLayer *pFeatures);
+	void SetFeatureSet(vtFeatureSet *pFeatures);
+	void SetLayer(vtLayer *pLayer) { m_pLayer = pLayer; }
 	void Clear();
 	void ShowSelected();
 	void ShowPicked();
@@ -55,7 +56,8 @@ public:
 private:
 	// WDR: member variable declarations for FeatInfoDlg
 	BuilderView *m_pView;
-	vtRawLayer *m_pFeatures;
+	vtLayer *m_pLayer;
+	vtFeatureSet *m_pFeatures;
 	int m_iShow;
 	int m_iVUnits;
 	int	m_iCoordColumns;

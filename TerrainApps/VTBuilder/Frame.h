@@ -41,6 +41,7 @@ class vtRoadLayer;
 class vtStructureLayer;
 class vtUtilityLayer;
 class BuilderView;
+class vtFeatureSet;
 
 // dialogs
 class SpeciesListDlg;
@@ -298,6 +299,8 @@ public:
 	int NumModifiedLayers();
 	DRECT GetExtents();
 	LayerType AskLayerType();
+
+	vtFeatureSet *GetActiveFeatureSet();
 
 	// UI
 	void RefreshTreeStatus();
