@@ -1,3 +1,11 @@
+//
+// WFSClient.h
+//
+// Web Feature Server Client
+//
+// Copyright (c) 2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef VTDATA_WFSCLIENT_H
 #define VTDATA_WFSCLIENT_H
@@ -9,7 +17,6 @@
 
 typedef struct _HTRequest HTRequest;
 typedef struct _HTAnchor	HTAnchor;
-typedef struct _HTCookie	HTCookie;
 
 class ReqContext
 {
@@ -27,10 +34,6 @@ public:
 	HTRequest *	m_request;
 	HTAnchor *	m_anchor;
 	char *		m_cwd;				  /* Current dir URL */
-
-//	char *		realm;			/* For automated authentication */
-//	char *		user;
-//	char *		password;
 
 	static bool s_bFirst;
 	int m_iVerbosity;

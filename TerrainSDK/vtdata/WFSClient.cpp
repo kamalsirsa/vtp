@@ -3,11 +3,9 @@
 //
 // Web Feature Server Client
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-// C:\APIs\w3c-libwww-5.4.0\Library\src
 
 #include "Features.h"
 #include "config_vtdata.h"
@@ -18,12 +16,16 @@
 // The dependency on Libwww is optional.  If not desired, skip this file.
 #if SUPPORT_HTTP
 
+//
 // Includes for libwww (used for HTTP requests)
+//
+
 // first, avoid preprocessor conflicts between GDAL(cpl) and WWWLib
 #undef HAVE_VPRINTF
 #undef STDC_HEADERS
 // avoid preprocessor conflict between MSVC errno.h and WWWlib
 #undef EINVAL
+
 #include "WWWLib.h"
 #include "WWWInit.h"
 
@@ -37,10 +39,8 @@
 #pragma comment(lib, "wwwhttp.lib")
 #endif
 
-#define DEFAULT_TIMEOUT	90				  /* timeout in secs */
+#define DEFAULT_TIMEOUT	90		// timeout in secs
 #define MILLIES			1000
-
-#include "xmlhelper/easyxml.hpp"
 
 struct MyCookie
 {
@@ -91,22 +91,22 @@ PRIVATE int term_handler (HTRequest * request, HTResponse * response,
 {
 	ReqContext *context = (ReqContext *) HTRequest_context(request);
 
-	/* Check for status */
+	// Check for status
 	if (context->m_iVerbosity > 0)
 		VTLOG("status %d\n", status);
 
 	s_last_status = status;
 	new_anchor = HTResponse_redirection(response);
 
-	/* we're not handling other requests */
+	// we're not handling other requests
 	HTEventList_stopLoop ();
 
-	/* stop here */
+	// stop here
 	return HT_ERROR;
 }
 
 
-PRIVATE BOOL setCookie (HTRequest * request, HTCookie * cookie, void * param)
+PRIVATE BOOL setCookie(HTRequest * request, HTCookie * cookie, void * param)
 {
 	ReqContext *context = (ReqContext *) HTRequest_context(request);
 
@@ -152,7 +152,7 @@ PRIVATE HTAssocList *findCookie(HTRequest * request, void * param)
 	if (context->m_iVerbosity > 1)
 		VTLOG(" findCookie %s:\n", param);
 
-	HTAssocList * alist = HTAssocList_new();	/* Is deleted by the cookie module */
+	HTAssocList * alist = HTAssocList_new(); // is deleted by the cookie module
 	unsigned int i;
 	for (i = 0; i < g_cookies.size(); i++)
 	{
@@ -166,11 +166,9 @@ PRIVATE HTAssocList *findCookie(HTRequest * request, void * param)
 }
 
 
-
-//-------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // ReqContext class
 //
-
 
 bool ReqContext::s_bFirst = true;
 
@@ -183,13 +181,14 @@ ReqContext::ReqContext()
 
 	m_cwd = HTGetCurrentDirectoryURL();
 
-	/* Bind the ConLine object together with the Request Object */
+	// Bind the ConLine object together with the Request Object
 	m_request = HTRequest_new();
 	HTRequest_setOutputFormat(m_request, WWW_SOURCE);
 
 	// Setting preemptive to NO doesn't seem to make a difference
 	HTRequest_setPreemptive(m_request, YES);
 
+	// Set a backpointer so we can find ourselves later
 	HTRequest_setContext(m_request, this);
 }
 
@@ -202,11 +201,11 @@ ReqContext::~ReqContext()
 
 void ReqContext::InitializeLibrary()
 {
-	// This one call does most of the work?
+	// This one call does most of the work
 	HTProfile_newPreemptiveRobot("vtdata", __DATE__);
-//	HTProfile_newNoCacheClient("vtdata", "1.0");
+//	HTProfile_newNoCacheClient("vtdata", __DATE__);
 
-	/* Need our own trace and print functions */
+	// Need our own trace and print functions
 	HTPrint_setCallback(printer);
 	HTTrace_setCallback(tracer);
 
@@ -214,13 +213,14 @@ void ReqContext::InitializeLibrary()
 	HTAlert_setInteractive(NO);
 
 #ifdef WIN32
+	// This is important!  Things don't work right on Windows without it.
 	HTEventInit();
 #endif
 
-	/* Add our own filter to handle termination */
+	// Add our own filter to handle termination
 	HTNet_addAfter(term_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
 
-	/* Setup cookies */
+	// Setup cookies
 	HTCookie_init();
 	HTCookie_setCallbacks(setCookie, NULL, findCookie, NULL);
 
@@ -228,7 +228,7 @@ void ReqContext::InitializeLibrary()
 	//	HTCookieMode mode = HTCookie_cookieMode();
 	HTCookie_setCookieMode((HTCookieMode) (HT_COOKIE_ACCEPT | HT_COOKIE_SEND));
 
-	/* Setting event timeout */
+	// Set event timeout
 	int timer = DEFAULT_TIMEOUT*MILLIES;
 	HTHost_setEventTimeout(timer);
 
@@ -253,12 +253,11 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 
 	HTChunk *chunk = HTLoadAnchorToChunk(m_anchor, m_request);
 
-	/* chunk had better not be NULL, that's where the data will go */
+	// chunk had better not be NULL, that's where the data will go
 	if (!chunk)
 		return;
 
-	char *string;
-	/* wait until the request is over */
+	// wait until the request is over
 	HTEventList_loop(m_request);
 
 	// check status - redirect?
@@ -272,7 +271,7 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 
 		m_anchor = new_anchor;
 
-		/* Delete any auth credendials as they get regenerated */
+		// Delete any auth credendials as they get regenerated
 		HTRequest_deleteCredentialsAll(m_request);
 		HTRequest_deleteExtraHeaderAll(m_request);
 
@@ -287,7 +286,7 @@ void ReqContext::DoQuery(vtString &str, int redirects)
 		return;
 	}
 
-	string = HTChunk_toCString(chunk);
+	char *string = HTChunk_toCString(chunk);
 	str = string;
 	HT_FREE(string);
 }
@@ -337,6 +336,8 @@ bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layern
 ////////////////////////////////////////////////////////////////////////
 // Visitor class, for XML parsing of WFS Layer List files.
 //
+
+#include "xmlhelper/easyxml.hpp"
 
 class LayerListVisitor : public XMLVisitor
 {
