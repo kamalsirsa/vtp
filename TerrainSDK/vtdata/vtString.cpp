@@ -1,7 +1,7 @@
 //
-// String.cpp
+// vtString.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -301,6 +301,12 @@ const vtString& vtString::operator+=(pcchar lpsz)
 const vtString& vtString::operator+=(const vtString& string)
 {
 	ConcatInPlace(string.GetData()->nDataLength, string.m_pchData);
+	return *this;
+}
+
+const vtString& vtString::operator+=(char ch)
+{
+	ConcatInPlace(1, &ch);
 	return *this;
 }
 
@@ -746,3 +752,34 @@ int vtString::Find(pcchar szSub, int nStart) const
 
 
 ///////////////////////////////////////////////////////////////////////////////
+
+vtString EscapeStringForXML(const char *input)
+{
+	vtString output;
+	const char *p1 = input;
+	for (; ('\0' != *p1); p1++)
+	{
+		switch (*p1)
+		{
+		case '<':
+			output += "&lt;";
+			break;
+		case '&':
+			output += "&amp;";
+			break;
+		case '>':
+			output += "&gt;";
+			break;
+		case '"':
+			output += "&quot;";
+			break;
+		case '\'':
+			output += "&apos;";
+			break;
+		default:
+			output += *p1;
+		}
+	}
+	return output;
+}
+
