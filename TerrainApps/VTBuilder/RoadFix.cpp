@@ -237,7 +237,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				dist = fmin(dist1, dist2, dist3, dist4);
 				
 				int i;
-				int aFirst, aLast, bFirst, bLast, aStep, bStep;
+				int aFirst=0, aLast=0, bFirst=0, bLast=0, aStep=0, bStep=0;
 				if (dist == dist1) {
 					//connection: aLink->m_p[0] - bLink->m_p[0];
 					aFirst = aLink->GetSize()-1;
@@ -453,7 +453,7 @@ int RoadMapEdit::FixOverlappedLinks(bool bDegrees)
 	int fixed = 0, roads;
 	DPoint2 p0, p1, diff;
 	int i, j;
-	LinkEdit *pR1, *pR2;
+	LinkEdit *pR1=NULL, *pR2=NULL;
 
 	double tolerance;
 	if (bDegrees)
@@ -530,7 +530,7 @@ float angle_diff(float a1, float a2)
 int RoadMapEdit::FixExtraneousParallels()
 {
 	int removed = 0, i, j, roads;
-	LinkEdit *pR1, *pR2;
+	LinkEdit *pR1=NULL, *pR2=NULL;
 
 	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
 	{
@@ -583,7 +583,7 @@ int RoadMapEdit::FixExtraneousParallels()
 			{
 				// dangerous case: both road look valid, yet meet at
 				// a very close angle
-				int foo = 1;
+				;	// a spot to put a breakpoint
 			}
 		}
 	}

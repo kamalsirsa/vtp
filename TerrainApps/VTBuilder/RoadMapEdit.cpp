@@ -420,7 +420,6 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 
 RoadMapEdit::~RoadMapEdit() 
 {
-	int foo = 1;
 }
 
 //merges the 2 selected nodes

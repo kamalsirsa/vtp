@@ -806,11 +806,9 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 	ui.m_pCurBuilding->GetBaseLevelCenter(origin);
 
 	DPoint2 original_vector = ui.m_DownLocation - origin;
-	double length1 = original_vector.Length();
 	double angle1 = atan2(original_vector.y, original_vector.x);
 
 	DPoint2 cur_vector = ui.m_CurLocation - origin;
-	double length2 = cur_vector.Length();
 	double angle2 = atan2(cur_vector.y, cur_vector.x);
 
 	double angle_diff = angle2 - angle1;
@@ -835,9 +833,6 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 {
 	DPoint2 moved_by = ui.m_CurLocation - ui.m_DownLocation;
-
-	if (ui.m_bShift)
-		int foo = 1;
 
 	DPoint2 origin;
 	ui.m_pCurBuilding->GetBaseLevelCenter(origin);
@@ -916,7 +911,7 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 bool vtStructureLayer::EditBuildingProperties()
 {
 	int count = 0;
-	vtBuilding *bld_selected;
+	vtBuilding *bld_selected=NULL;
 
 	int size = GetSize();
 	for (int i = 0; i < size; i++)

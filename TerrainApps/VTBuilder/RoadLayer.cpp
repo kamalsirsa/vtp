@@ -33,7 +33,6 @@ vtRoadLayer::vtRoadLayer() : vtLayer(LT_ROAD)
 
 vtRoadLayer::~vtRoadLayer()
 {
-	int foo = 1;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -254,7 +253,7 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	if (ui.mode == LB_LinkEdit && ui.m_pEditingRoad)
 	{
 		double closest = 1E8;
-		int closest_i;
+		int closest_i=-1;
 		for (unsigned int i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
 		{
 			DPoint2 diff = ui.m_DownLocation - ui.m_pEditingRoad->GetAt(i);
@@ -288,7 +287,6 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	{
 		// see if there is a road or node at m_DownPoint
 		float error = pView->odx(5);
-		bool redraw = false;
 
 		LinkEdit *pRoad = FindLink(ui.m_DownLocation, error);
 		if (pRoad != ui.m_pEditingRoad)
@@ -447,7 +445,7 @@ bool vtRoadLayer::EditLinkProperties(const DPoint2 &point, float error,
 bool vtRoadLayer::EditNodesProperties()
 {
 	int count = 0;
-	NodeEdit* node;
+	NodeEdit *node=NULL;
 
 	for (NodeEdit* n = GetFirstNode(); n; n = n->GetNext())
 	{
@@ -470,7 +468,7 @@ bool vtRoadLayer::EditNodesProperties()
 bool vtRoadLayer::EditLinksProperties()
 {
 	int count = 0;
-	LinkEdit* link;
+	LinkEdit *link=NULL;
 
 	//only bring up dialog is there is a selected road.
 	for (LinkEdit* r = GetFirstLink(); r; r = r->GetNext())
@@ -500,7 +498,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 		selected = SelectNodes(box, true);
 		wxString str = wxString::Format(_("Selected %d nodes"), selected);
 		if (selected) SetMessageText(str);
-		return (selected != 0);
+		ret = (selected != 0);
 	}
 	else
 	{
@@ -511,7 +509,7 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 
 		wxString str = wxString::Format(_("Selected %d roads"), selected);
 		if (selected) SetMessageText(str);
-		return (selected != 0);
+		ret = (selected != 0);
 	}
 	return ret;
 }

@@ -86,7 +86,6 @@ vtLayer::vtLayer(LayerType type)
 
 vtLayer::~vtLayer()
 {
-	int foo = 1;
 }
 
 bool vtLayer::Save(const wxString &filename)

@@ -60,7 +60,6 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 	pDC->SetPen(greenPen);
 	pDC->SetBrush(*wxTRANSPARENT_BRUSH);
-	bool bSel = false;
 
 	m_size = pView->sdx(20);
 	if (m_size > 5) m_size = 5;
@@ -171,7 +170,7 @@ bool vtUtilityLayer::AppendDataFrom(vtLayer *pL)
 	if (pL->GetType() != LT_UTILITY)
 		return false;
 
-	vtUtilityLayer *pFrom = (vtUtilityLayer *)pL;
+//	vtUtilityLayer *pFrom = (vtUtilityLayer *)pL;
 
 /*	int count = pFrom->GetSize();
 	for (int i = 0; i < count; i++)

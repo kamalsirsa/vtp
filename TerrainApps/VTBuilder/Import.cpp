@@ -448,7 +448,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 //
 LayerType MainFrame::GuessLayerTypeFromDLG(vtDLGFile *pDLG)
 {
-	LayerType ltype;
+	LayerType ltype = LT_UNKNOWN;
 	DLGType dtype = pDLG->GuessFileType();
 
 	// convert the DLG type to one of our layer types
@@ -739,7 +739,6 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 
 vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 {
-	bool bFirst = (m_Layers.GetSize() == 0);
 	wxString strExt = strFileName.AfterLast('.');
 
 	vtElevLayer *pElev = new vtElevLayer();
@@ -786,7 +785,7 @@ vtLayerPtr MainFrame::ImportFromLULC(const wxString2 &strFileName, LayerType lty
 	}
 
 	// If layer type unknown, assume it's veg type
-	if (ltype = LT_UNKNOWN)
+	if (ltype == LT_UNKNOWN)
 		ltype=LT_VEG;
 
 	pLULC->ProcessLULCPolys();
@@ -961,8 +960,8 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 		if (!defn)
 			continue;
 
-#if 1
-		//Debug:
+#if 0
+		// Debug: iterate through the fields
 		int field_count1 = defn->GetFieldCount();
 		for (j = 0; j < field_count1; j++)
 		{
@@ -1180,7 +1179,6 @@ void MainFrame::ImportDataFromNTF(const wxString2 &strFileName)
 		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
 		if (!defn)
 			continue;
-		OGRwkbGeometryType geom_type = defn->GetGeomType();
 		vtString layer_name = defn->GetName();
 
 		// We depend on feature codes
@@ -1299,8 +1297,8 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 		if (!defn)
 			continue;
 
-#if 1
-		//Debug:
+#if 0
+		//Debug: interate throught the fields
 		int field_count1 = defn->GetFieldCount();
 		for (j = 0; j < field_count1; j++)
 		{

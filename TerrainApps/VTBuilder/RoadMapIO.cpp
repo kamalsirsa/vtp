@@ -163,7 +163,6 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		pNodeLookup[pN->m_id] = pN;
 	}
 	LinkEdit *pR;
-	int count = 0;
 	for (i = 0; i < pDlg->m_iLines; i++)
 	{
 		DLGLine &dline = pDlg->m_lines[i];
@@ -457,8 +456,7 @@ void RoadMapEdit::AddElementsFromSHP(const wxString2 &filename, const vtProjecti
 		fields = DBFGetFieldCount(db);
 		for (i = 0; i < fields; i++)
 		{
-			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
-				pszFieldName, pnWidth, pnDecimals );
+			DBFGetFieldInfo(db, i, pszFieldName, pnWidth, pnDecimals );
 			if (!strcmp(pszFieldName, "CFCC"))
 				cfcc = i;
 		}
@@ -647,7 +645,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 			int index_enid = defn->GetFieldIndex("ENID");
 			int index_entity = defn->GetFieldIndex("ENTITY_LABEL");
 			int index_lanes = defn->GetFieldIndex("LANES");
-			int index_class = defn->GetFieldIndex("FUNCTIONAL_CLASS");
+			//int index_class = defn->GetFieldIndex("FUNCTIONAL_CLASS");
 			int index_route = defn->GetFieldIndex("ROUTE_NUMBER");
 			int index_rtype = defn->GetFieldIndex("ROUTE_TYPE");
 
@@ -706,7 +704,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				}
 				if (pFeature->IsFieldSet(index_rtype))
 				{
-					const char *str_rtype = pFeature->GetFieldAsString(index_rtype);
+					//const char *str_rtype = pFeature->GetFieldAsString(index_rtype);
 				}
 
 				int num_points = pLineString->getNumPoints();

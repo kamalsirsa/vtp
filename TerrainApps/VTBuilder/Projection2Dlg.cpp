@@ -419,7 +419,6 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 
 	m_iUnits = m_pHorizCtrl->GetSelection();
 
-	LinearUnits previous = m_proj.GetUnits();
 	LinearUnits iUnits = (LinearUnits) (int) m_pHorizCtrl->GetClientData(m_iUnits);
 
 	if (iUnits == LU_METERS)

@@ -283,11 +283,7 @@ bool vtRawLayer::OnSave()
 
 bool vtRawLayer::OnLoad()
 {
-	if (m_pSet != NULL)
-	{
-		// Shouldn't happen!
-		int warning = 1;
-	}
+	assert(m_pSet == NULL);	// Shouldn't happen!
 
 	vtFeatureLoader loader;
 
