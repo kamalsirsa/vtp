@@ -245,8 +245,10 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 	//  it is in the OSG object cache.  If it is in the cache, then we musn't
 	//  apply the rotation below, because it's already been applied to the
 	//  one in the cache that we've gotten again.
-	Node *node, *existing_node = m_ModelCache[fname].get();
-	bool bInCache = (existing_node != NULL);
+	Node *node, *existing_node = NULL;
+	bool bInCache = (m_ModelCache.count(fname) != 0);
+	if (bInCache)
+		existing_node = m_ModelCache[fname].get();
 
 	bool bDoLoad = (!bInCache || !bAllowCache);
 	if (bDoLoad)
@@ -356,6 +358,15 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 
 void vtNode::ClearOsgModelCache()
 {
+	std::map<vtString, ref_ptr<osg::Node> >::iterator it;
+	for (it = m_ModelCache.begin(); it != m_ModelCache.end(); it++)
+	{
+		vtString fname = it->first;
+		ref_ptr<osg::Node> &noderef = it->second;
+		osg::Node *node = noderef.release();
+		if (node)
+			node->unref();
+	}
 	m_ModelCache.clear();
 }
 
