@@ -23,7 +23,6 @@
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
 
-#include "Projection2Dlg.h"
 #include "ExtentDlg.h"
 
 ////////////////////////////////////////////////////////////////////
@@ -902,29 +901,10 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	else
 		pProj = &m_pTin->m_proj;
 
-	if (!pProj->GetRoot())
-	{
-		// No projection.
-		wxString2 msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
-		int res = wxMessageBox(msg, _("Elevation Import"), wxYES_NO | wxCANCEL);
-		if (res == wxYES)
-		{
-			vtProjection frame_proj;
-			GetMainFrame()->GetProjection(frame_proj);
-			Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
-			dlg.SetProjection(frame_proj);
+	// We should ask for a CRS before asking for extents
+	if (!GetMainFrame()->ConfirmValidCRS(pProj))
+		return false;
 
-			if (dlg.ShowModal() == wxID_CANCEL)
-				return false;
-			dlg.GetProjection(*pProj);
-		}
-		if (res == wxNO)
-		{
-			GetMainFrame()->GetProjection(*pProj);
-		}
-		if (res == wxCANCEL)
-			return false;
-	}
 	if (m_pGrid != NULL)
 	{
 		if (m_pGrid->GetEarthExtents().IsEmpty())

@@ -427,46 +427,32 @@ bool vtImageLayer::LoadFromGDAL()
 		OriginalSize.x = m_iXSize;
 		OriginalSize.y = m_iYSize;
 
+		vtProjection temp;
 		bool bHaveProj = false;
 		pProjectionString = pDataset->GetProjectionRef();
 		if (pProjectionString)
 		{
-			err = m_proj.importFromWkt((char**)&pProjectionString);
+			err = temp.importFromWkt((char**)&pProjectionString);
 			if (err == OGRERR_NONE)
+			{
+				m_proj = temp;
 				bHaveProj = true;
+			}
 		}
 		if (!bHaveProj)
 		{
 			// check for existence of .prj file
-			bool bSuccess = m_proj.ReadProjFile(GetLayerFilename().mb_str());
+			bool bSuccess = temp.ReadProjFile(GetLayerFilename().mb_str());
 			if (bSuccess)
+			{
+				m_proj = temp;
 				bHaveProj = true;
+			}
 		}
 		// if we still don't have it
 		if (!bHaveProj)
 		{
-			wxString2 msg = _("File lacks a projection.  Would you like to specify one?\n");
-			msg += _("Yes - specify projection\n");
-			msg += _("No - use current projection\n");
-			VTLOG(msg.mb_str());
-			int res = wxMessageBox(msg, _("Image Import"), wxYES_NO | wxCANCEL);
-			if (res == wxYES)
-			{
-				VTLOG("Yes.\n");
-				GetMainFrame()->GetProjection(m_proj);
-				Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
-				dlg.SetProjection(m_proj);
-
-				if (dlg.ShowModal() == wxID_CANCEL)
-					throw "Import Cancelled";
-				dlg.GetProjection(m_proj);
-			}
-			if (res == wxNO)
-			{
-				VTLOG("No.\n");
-				GetMainFrame()->GetProjection(m_proj);
-			}
-			if (res == wxCANCEL)
+			if (!GetMainFrame()->ConfirmValidCRS(&m_proj))
 				throw "Import Cancelled.";
 		}
 
