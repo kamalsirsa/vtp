@@ -109,6 +109,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_BioRegionDlg = NULL;
 	m_pFeatInfoDlg = NULL;
 	m_pDistanceDlg = NULL;
+	m_szIniFilename = "VTBuilder.ini";
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -273,7 +274,8 @@ void MainFrame::RefreshToolbar()
 		case LT_RAW:
 			toolBar_main->AddSeparator();
 			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
-			ADD_TOOL(ID_FEATURE_INFO, wxBITMAP(info), _("Feature Info"), true);
+			ADD_TOOL(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), true);
+			ADD_TOOL(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), true);
 	}
 	toolBar_main->Realize();
 
@@ -632,7 +634,7 @@ vtLayer *MainFrame::FindLayerOfType(LayerType lt)
 //
 bool MainFrame::ReadINI()
 {
-	m_fpIni = fopen("VTBuilder.ini", "rb+");
+	m_fpIni = fopen(m_szIniFilename, "rb+");
 
 	if (m_fpIni)
 	{
@@ -648,7 +650,7 @@ bool MainFrame::ReadINI()
 
 		return true;
 	}
-	m_fpIni = fopen("VTBuilder.ini", "wb");
+	m_fpIni = fopen(m_szIniFilename, "wb");
 	return false;
 }
 
@@ -850,8 +852,15 @@ void MainFrame::SetProjection(vtProjection &p)
 		m_pDistanceDlg->SetProjection(&m_proj);
 }
 
+void MainFrame::OnSelectionChanged()
+{
+	if (m_pFeatInfoDlg && m_pFeatInfoDlg->IsShown())
+		m_pFeatInfoDlg->ShowSelected();
+}
+
+
 ////////////////////////////////////////////////////////////////
-// Project ops
+// Project operations
 
 void MainFrame::LoadProject(const wxString &strPathName)
 {

@@ -164,11 +164,13 @@ public:
 	void OnVegBioregions(wxCommandEvent& event);
 
 	void OnFeatureSelect(wxCommandEvent& event);
-	void OnFeatureInfo(wxCommandEvent& event);
+	void OnFeaturePick(wxCommandEvent& event);
+	void OnFeatureTable(wxCommandEvent& event);
 	void OnBuildingEdit(wxCommandEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
-	void OnUpdateFeatureInfo(wxUpdateUIEvent& event);
+	void OnUpdateFeaturePick(wxUpdateUIEvent& event);
+	void OnUpdateFeatureTable(wxUpdateUIEvent& event);
 	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
 
@@ -243,15 +245,14 @@ public:
 	int LayersOfType(LayerType lt);
 	vtLayer *FindLayerOfType(LayerType lt);
 	DRECT GetExtents();
+	LayerType AskLayerType();
 
-	// 
+	// UI
 	void RefreshTreeStatus();
 	void RefreshTreeView();
 	void RefreshStatusBar();
-	LayerType AskLayerType();
 	BuilderView *GetView() { return m_pView; }
-	void StretchArea();
-	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
+	void OnSelectionChanged();
 
 	// Projection
 	void SetProjection(vtProjection &p);
@@ -295,8 +296,10 @@ public:
 	vtLayer *ImportVectorsWithOGR(wxString &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(wxString &strFileName);
 	void ImportDataFromTIGER(wxString &strDirName);
+	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
 	// export
+	void StretchArea();
 	void ExportElevation();
 
 	// Application Data
@@ -308,6 +311,7 @@ protected:
 	bool ReadINI();
 	bool WriteINI();
 	FILE *m_fpIni;
+	const char *m_szIniFilename;
 
 	// Application Data
 	vtLayerPtr	m_pActiveLayer;
@@ -339,7 +343,7 @@ protected:
 	// menu numbers, for each layer type that has a corresponding menu
 	int		m_iLayerMenu[LAYER_TYPES];
 
-DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 class DnDFile : public wxFileDropTarget
