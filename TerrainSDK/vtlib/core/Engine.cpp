@@ -25,6 +25,9 @@ void vtEngine::OnKey(int key, int flags)
 {
 }
 
+void vtEngine::OnWindowSize(int width, int height)
+{
+}
 
 //
 // vtLastMouse

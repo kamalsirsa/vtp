@@ -1,7 +1,7 @@
 //
 // Engine.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,6 +43,7 @@ public:
 
 	virtual void OnMouse(vtMouseEvent &event);
 	virtual void OnKey(int key, int flags);
+	virtual void OnWindowSize(int width, int height);
 	virtual void Eval();
 
 protected:
