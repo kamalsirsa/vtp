@@ -190,6 +190,12 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 	int res = EditTerrainParameters(this, GetCurrentTerrainPath().mb_str());
 	if (res == wxID_OK)
 	{
+		// They might have changed an .ini to .xml
+		TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(m_Selected);
+		vtString str = data->m_strIniFile;
+		if (GetExtension(str) == ".ini")
+			data->m_strIniFile = str.Left(str.GetLength()-4)+".xml";
+
 		// They might have changed the terrain name
 		RefreshTreeText();
 	}
@@ -253,10 +259,19 @@ void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 
 void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 {
+#if 0
+	// This is nice in that it allows you to type a relative path
 	wxString2 msg = "Please enter an absolute or relative path.";
 	wxString2 str = wxGetTextFromUser(msg, _T("Add Path"));
 	if (str == _T(""))
 		return;
+#endif
+	// Ask the user for a directory (can only be absolute)
+	wxDirDialog getDir(NULL, _T("Specify Data Directory"));
+	bool bResult = (getDir.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString str = getDir.GetPath();
 
 	// Make sure there is a trailing slash
 	if (str.Length() > 1)
