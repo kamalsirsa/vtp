@@ -2,11 +2,12 @@
 #ifndef ENVIROH
 #define ENVIROH
 
+#include "vtdata/Fence.h"
+#include "vtdata/Projections.h"
 #include "vtlib/core/Engine.h"
 #include "EnviroEnum.h"
 
 // Use forward declarations to minimize rebuild dependencies
-enum FenceType;
 class vtTerrainScene;
 class vtTerrain;
 class TerrainPicker;
@@ -71,7 +72,7 @@ public:
 
 	vtString GetMessage() { return m_strMessage; }
 	void SetMessage(const char *msg, float time = 0.0f);
-	void FormatCoordString(vtString &str, const DPoint3 &coord, enum LinearUnits units);
+	void FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units);
 	void DescribeCoordinates(vtString &str);
 	void DescribeCLOD(vtString &str);
 
