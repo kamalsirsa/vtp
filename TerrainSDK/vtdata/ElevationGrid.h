@@ -147,10 +147,8 @@ protected:
 	DPoint2		m_Corners[4];	// data corners, in the projection of this terrain
 	vtProjection	m_proj;		// a grid always has some projection
 
-private:
-	vtString	m_strOriginalDEMName;
-
 	void	_AllocateArray();
+	vtString	m_strOriginalDEMName;
 };
 
 #endif	// ELEVATIONGRIDH
