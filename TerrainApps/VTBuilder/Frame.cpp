@@ -233,46 +233,33 @@ void MainFrame::DeleteContents()
 	FreeContentFiles();
 }
 
+// GDAL header
+#include "cpl_csv.h"
+
 void MainFrame::CheckForGDALAndWarn()
 {
 	// check for correctly set up environment variables and locatable files
-	bool has1 = true, has2 = true, has3 = true;
+	bool has1 = false, has2 = false, has3 = false;
 
-	const char *gdal = getenv("GEOTIFF_CSV");
-	if (!gdal)
-	{
-		has1 = false;
-		has2 = false;
-	}
-	else
-	{
-		vtString fname = gdal;
-		fname += "/pcs.csv";	// this should always be there
-		FILE *fp = fopen((const char *)fname, "rb");
-		if (fp)
-			fclose(fp);
-		else
-			has1 = false;
-		fname = gdal;
-		fname += "/gdal_datum.csv";	// this should be there if data is current
-		fp = fopen((const char *)fname, "rb");
-		if (fp)
-			fclose(fp);
-		else
-			has2 = false;
-	}
+	const char *gdal1 = CSVFilename("pcs.csv");	// this should always be there
+	if (gdal1 != NULL)
+		has1 = true;
+
+	const char *gdal2 = CSVFilename("gdal_datum.csv");	// this should be there if data is current
+	if (gdal2 != NULL)
+		has2 = true;
+
 	const char *proj4 = getenv("PROJ_LIB");
-	if (!proj4)
-		has3 = true;
-	else
+	if (proj4)
 	{
 		vtString fname = proj4;
 		fname += "/nad83";		// this should always be there
 		FILE *fp = fopen((const char *)fname, "rb");
 		if (fp)
+		{
 			fclose(fp);
-		else
-			has3 = false;
+			has3 = true;
+		}
 	}
 	if (has1 && !has2)
 	{
