@@ -95,21 +95,16 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	const char *filename = GetValue("filename");
 	if (filename)
 	{
-		m_pModel = vtLoadModel(filename);
-		if (!m_pModel)
+		// relative path: look on the standards data paths
+		vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
+		if (fullpath != "")
 		{
-			// try again, looking on the standards data paths
-			vtString fullpath = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
-			if (fullpath != "")
-			{
-				// try again
-				m_pModel = vtLoadModel(fullpath);
-				if (m_pModel)
-					SetValue("filename", fullpath);
-			}
-			if (!m_pModel)
-				return false;
+			m_pModel = vtLoadModel(fullpath);
+			if (m_pModel)
+				SetValue("filename", fullpath);
 		}
+		if (!m_pModel)
+			return false;
 	}
 	const char *itemname = GetValue("itemname");
 	if (itemname)

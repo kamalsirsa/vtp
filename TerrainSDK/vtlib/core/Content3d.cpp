@@ -55,16 +55,19 @@ bool vtItem3d::LoadModels(StringArray *pDataPaths)
 	for (i = 0; i < models; i++)
 	{
 		vtModel *model = GetModel(i);
-		vtNodeBase *pNode = vtLoadModel(model->m_filename);
+		vtNodeBase *pNode;
 
-		// if at first it's not found, and there are some data path(s) to search
-		if (!pNode && pDataPaths != NULL)
+		// if there are some data path(s) to search, use them
+		if (pDataPaths != NULL)
 		{
-			// perhaps it's a relative path
 			vtString fullpath = FindFileOnPaths(*pDataPaths, model->m_filename);
 			if (fullpath != "")
 				pNode = vtLoadModel(fullpath);
 		}
+		else
+			// perhaps it's directly resolvable
+			pNode = vtLoadModel(model->m_filename);
+
 		if (!pNode)
 		{
 			VTLOG("Couldn't load model from %hs\n",

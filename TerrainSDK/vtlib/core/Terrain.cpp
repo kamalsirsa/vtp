@@ -766,7 +766,7 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
 }
 
 /**
- * Loads an external 3d model as a movable node.  The file will be looked for
+ * Loads an external 3D model as a movable node.  The file will be looked for
  * on the Terrain's data path, and wrapped with a vtTransform so that it can
  * be moved.
  *
@@ -794,15 +794,15 @@ MyTerrain::CreateCustomCulture(bool bSound)
  */
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
-	vtNodeBase *node = vtLoadModel(filename);
-	if (!node)
+	vtNodeBase *node = NULL;
+	vtString path = FindFileOnPaths(m_DataPaths, filename);
+	if (path == "")
 	{
-		vtString path = FindFileOnPaths(m_DataPaths, filename);
-		if (path != "")
-		{
-			node = vtLoadModel(path);
-		}
+		VTLOG("Couldn't locate file '%s'\n", filename);
 	}
+	else
+		node = vtLoadModel(path);
+
 	if (node)
 	{
 		vtTransform *trans = new vtTransform();
