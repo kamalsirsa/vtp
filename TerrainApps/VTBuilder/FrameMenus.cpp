@@ -275,25 +275,25 @@ void MainFrame::CreateMenus()
 
 	// View
 	viewMenu = new wxMenu;
-	viewMenu->AppendCheckItem(ID_VIEW_SHOWLAYER, _T("Current Layer Visible"),
+	viewMenu->AppendCheckItem(ID_VIEW_SHOWLAYER, _T("Current Layer &Visible"),
 		_T("Toggle Visibility of the current Layer"));
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_ZOOMIN, _T("Zoom In\tCtrl++"));
+	viewMenu->Append(ID_VIEW_ZOOMIN, _T("Zoom &In\tCtrl++"));
 	viewMenu->Append(ID_VIEW_ZOOMOUT, _T("Zoom Out\tCtrl+-"));
-	viewMenu->Append(ID_VIEW_ZOOMALL, _T("Zoom All"));
-	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _T("Zoom to Current Layer"));
-	viewMenu->Append(ID_VIEW_FULLVIEW, _T("Zoom to Full Res (1:1)"));
+	viewMenu->Append(ID_VIEW_ZOOMALL, _T("Zoom &All"));
+	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _T("Zoom to Current &Layer"));
+	viewMenu->Append(ID_VIEW_FULLVIEW, _T("Zoom to &Full Res (1:1)"));
 	viewMenu->AppendSeparator();
-	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _T("Magnifier\tZ"));
-	viewMenu->AppendCheckItem(ID_VIEW_PAN, _T("Pan\t<Space>"));
-	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, _T("Obtain Distance"));
-	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, _T("Area Tool"));
+	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _T("&Magnifier\tZ"));
+	viewMenu->AppendCheckItem(ID_VIEW_PAN, _T("&Pan\tSPACE"));
+	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, _T("Obtain &Distance"));
+	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, _T("Area &Tool"));
 	viewMenu->AppendSeparator();
-	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, _T("World Map"), _T("Show/Hide World Map"));
-	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _T("Show UTM Boundaries"));
+	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, _T("&World Map"), _T("Show/Hide World Map"));
+	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _T("Show &UTM Boundaries"));
 //	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, _T("Show 7.5\" Grid"), _T("Show 7.5\" Grid"), true);
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_OPTIONS, _T("Options"));
+	viewMenu->Append(ID_VIEW_OPTIONS, _T("&Options"));
 	m_pMenuBar->Append(viewMenu, _T("&View"));
 	menu_num++;
 
@@ -418,18 +418,6 @@ void MainFrame::CreateMenus()
 	menu_num++;
 
 	SetMenuBar(m_pMenuBar);
-
-#if 0
-	// Accelerators
-	wxAcceleratorEntry entries[5];
-	entries[0].Set(wxACCEL_CTRL, (int) 'O', ID_FILE_OPEN);
-	entries[1].Set(wxACCEL_CTRL, (int) 'S', ID_FILE_SAVE);
-	entries[2].Set(wxACCEL_CTRL, (int) '+', ID_VIEW_ZOOMIN);
-	entries[3].Set(wxACCEL_CTRL, (int) '-', ID_VIEW_ZOOMOUT);
-	entries[4].Set(wxACCEL_NORMAL,  WXK_DELETE, ID_EDIT_DELETE);
-	wxAcceleratorTable accel(5, entries);
-	SetAcceleratorTable(accel);
-#endif
 }
 
 ////////////////////////////////////////////////////////////////
