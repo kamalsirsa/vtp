@@ -296,6 +296,7 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 	m_yellow = m_mats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 					 true, false, false);
 
+	int index;
 	for (pair = 0; pair < 10; pair++)
 	{
 		int f1 = icos_face_pairs[pair][0];
@@ -314,13 +315,12 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 
 		vtString fullpath = FindFileOnPaths(paths, (const char *)fname);
 
-		int index = m_mats->AddTextureMaterial2(fullpath,
-						 bCulling, bLighting,
-						 false, false,				// transp, additive
-						 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
-						 false, true, false);		// texgen, clamp, mipmap
-		msg.Format("\t\tindex: %d\n", index);
-		g_Log._Log(msg);
+		index = m_mats->AddTextureMaterial2(fullpath,
+					 bCulling, bLighting,
+					 false, false,				// transp, additive
+					 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
+					 false, true, false);		// texgen, clamp, mipmap
+//		g_Log.Printf("\t\tindex: %d\n", index);
 
 		if (index == -1)
 			m_globe_mat[pair] = m_red;
