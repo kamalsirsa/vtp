@@ -790,7 +790,7 @@ bool vtDIB::WritePNG(const char *fname)
 	* PNG_INTERLACE_ADAM7, and the compression_type and filter_type MUST
 	* currently be PNG_COMPRESSION_TYPE_BASE and PNG_FILTER_TYPE_BASE. REQUIRED
 	*/
-	int color_type;
+	int color_type=0;	// set to 0 to avoid compiler warning
 	int png_bit_depth;
 	if (m_iBitCount <= 8)
 	{

@@ -358,7 +358,7 @@ bool vtString::Matches(pcchar lpsz) const
 	const char *string = (const char *) m_pchData;
 	const char *wild = lpsz;
 
-	const char *cp, *mp;
+	const char *cp=0, *mp=0;	// set to 0 to avoid compiler warning
 	
 	while ((*string) && (*wild != '*'))
 	{

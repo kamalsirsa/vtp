@@ -48,7 +48,11 @@ bool vtUtilityMap::ImportPolesFromSHP(const char *fname)
 
 vtPole *vtUtilityMap::ClosestPole(const DPoint2 &p)
 {
-	int k, ret, npoles = m_Poles.GetSize();
+	unsigned int npoles = m_Poles.GetSize();
+	if (npoles == 0)
+		return NULL;
+
+	unsigned int k, ret=0;
 	double	dist, closest = 1E9;
 
 	for (k = 0; k < npoles; k++)

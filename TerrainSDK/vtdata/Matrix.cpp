@@ -150,7 +150,7 @@ void DMatrix4::AxisAngle(const DPoint3 &vec, double theta)
 static void Full_Inverse_Xform3(const double b[4][4], double a[4][4])
 {
 	long indxc[4], indxr[4], ipiv[4];
-	long i, icol, irow, j, ir, ic;
+	long i, icol=0, irow=0, j, ir, ic;	// set to 0 to avoid compiler warning
 	double big, dum, pivinv, temp, bb;
 	ipiv[0] = -1;
 	ipiv[1] = -1;
@@ -737,7 +737,7 @@ void FMatrix4::PostMult(const FMatrix4 &mat)
 static void Full_Inverse_Xform3(const float b[4][4], float a[4][4])
 {
 	long indxc[4], indxr[4], ipiv[4];
-	long i, icol, irow, j, ir, ic;
+	long i, icol=0, irow=0, j, ir, ic;	// set to 0 to avoid compiler warning
 	float big, dum, pivinv, temp, bb;
 	ipiv[0] = -1;
 	ipiv[1] = -1;
