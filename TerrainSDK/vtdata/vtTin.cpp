@@ -119,6 +119,8 @@ bool vtTin::Read(const char *fname)
  */
 bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 {
+	VTLOG("vtTin::ReadDXF():\n");
+
 	std::vector<DxfEntity> entities;
 	std::vector<vtString> layers;
 
@@ -131,6 +133,7 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 	}
 
 	int vtx = 0;
+	int faces = 0;
 	for (unsigned int i = 0; i < entities.size(); i++)
 	{
 		const DxfEntity &ent = entities[i];
@@ -148,9 +151,16 @@ bool vtTin::ReadDXF(const char *fname, bool progress_callback(int))
 				}
 				AddTri(vtx, vtx+1, vtx+2);
 				vtx += 3;
+				faces ++;
 			}
 		}
 	}
+	VTLOG("  Found %d entities of type 3DFace.\n", faces);
+
+	// If we didn't find any surfaces, we haven't got a TIN
+	if (faces == 0)
+		return false;
+
 	// Test each triangle for clockwisdom, fix if needed
 	CleanupClockwisdom();
 
