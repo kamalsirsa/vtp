@@ -185,7 +185,7 @@ public:
 		assert (x.m_prevVertex == NULL || x.m_leftLine.FacingTowards (x.m_prevVertex -> m_rightLine));
 		assert (x.m_nextVertex == NULL || x.m_rightLine.FacingTowards (x.m_nextVertex -> m_leftLine));
 #endif
-		((CVertex &)x).m_ID = size ();       // automatic ID generation
+		((CVertex &)x).m_ID = size ();	// automatic ID generation
 		list <CVertex> :: push_back (x);
 #ifdef FELKELDEBUG
 		VTLOG("Vertex %d x %f y %f z %f angle %f\n left %d right %d prev %d next %d added to list\n",
@@ -240,7 +240,7 @@ class CSkeleton : public list <CSkeletonLine>
 public:
 	void push_back (const CSkeletonLine &x)
 	{
-		((CSkeletonLine &)x).m_ID = size ();     // automatically assign the ID number
+		((CSkeletonLine &)x).m_ID = size ();	// automatically assign the ID number
 #ifdef FELKELDEBUG
 		{
 			VTLOG("New skeleton line %d lower %d higher %d\n",

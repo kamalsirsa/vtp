@@ -855,17 +855,17 @@ double GetMetersPerUnit(LinearUnits lu)
 
 static const char *papszDatumEquiv[] =
 {
-    "Militar_Geographische_Institut",
-    "Militar_Geographische_Institute",
-    "World_Geodetic_System_1984",
-    "WGS_1984",
-    "WGS_72_Transit_Broadcast_Ephemeris",
-    "WGS_1972_Transit_Broadcast_Ephemeris",
-    "World_Geodetic_System_1972",
-    "WGS_1972",
-    "European_Terrestrial_Reference_System_89",
-    "European_Reference_System_1989",
-    NULL
+	"Militar_Geographische_Institut",
+	"Militar_Geographische_Institute",
+	"World_Geodetic_System_1984",
+	"WGS_1984",
+	"WGS_72_Transit_Broadcast_Ephemeris",
+	"WGS_1972_Transit_Broadcast_Ephemeris",
+	"World_Geodetic_System_1972",
+	"WGS_1972",
+	"European_Terrestrial_Reference_System_89",
+	"European_Reference_System_1989",
+	NULL
 };
 
 /**
@@ -880,50 +880,50 @@ static void WKTMassageDatum(vtString &strDatum )
 {
 	char		szDatum[80];
 	strcpy(szDatum, (const char *)strDatum);
-	char        *pszDatum = szDatum;
-    int         i, j;
+	char		*pszDatum = szDatum;
+	int		 i, j;
 
 /* -------------------------------------------------------------------- */
-/*      Translate non-alphanumeric values to underscores.               */
+/*	  Translate non-alphanumeric values to underscores.			   */
 /* -------------------------------------------------------------------- */
-    for( i = 0; pszDatum[i] != '\0'; i++ )
-    {
-        if( !(pszDatum[i] >= 'A' && pszDatum[i] <= 'Z')
-            && !(pszDatum[i] >= 'a' && pszDatum[i] <= 'z')
-            && !(pszDatum[i] >= '0' && pszDatum[i] <= '9') )
-        {
-            pszDatum[i] = '_';
-        }
-    }
+	for( i = 0; pszDatum[i] != '\0'; i++ )
+	{
+		if( !(pszDatum[i] >= 'A' && pszDatum[i] <= 'Z')
+			&& !(pszDatum[i] >= 'a' && pszDatum[i] <= 'z')
+			&& !(pszDatum[i] >= '0' && pszDatum[i] <= '9') )
+		{
+			pszDatum[i] = '_';
+		}
+	}
 
 /* -------------------------------------------------------------------- */
-/*      Remove repeated and trailing underscores.                       */
+/*	  Remove repeated and trailing underscores.					   */
 /* -------------------------------------------------------------------- */
-    for( i = 1, j = 0; pszDatum[i] != '\0'; i++ )
-    {
-        if( pszDatum[j] == '_' && pszDatum[i] == '_' )
-            continue;
+	for( i = 1, j = 0; pszDatum[i] != '\0'; i++ )
+	{
+		if( pszDatum[j] == '_' && pszDatum[i] == '_' )
+			continue;
 
-        pszDatum[++j] = pszDatum[i];
-    }
-    if( pszDatum[j] == '_' )
-        pszDatum[j] = '\0';
-    else
-        pszDatum[j+1] = '\0';
+		pszDatum[++j] = pszDatum[i];
+	}
+	if( pszDatum[j] == '_' )
+		pszDatum[j] = '\0';
+	else
+		pszDatum[j+1] = '\0';
 	strDatum = pszDatum;
 
 /* -------------------------------------------------------------------- */
-/*      Search for datum equivelences.  Specific massaged names get     */
-/*      mapped to OpenGIS specified names.                              */
+/*	  Search for datum equivelences.  Specific massaged names get	 */
+/*	  mapped to OpenGIS specified names.							  */
 /* -------------------------------------------------------------------- */
-    for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
-    {
-        if( !strcmp(pszDatum,papszDatumEquiv[i]) )
-        {
+	for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
+	{
+		if( !strcmp(pszDatum,papszDatumEquiv[i]) )
+		{
 			strDatum = papszDatumEquiv[i+1];
-            break;
-        }
-    }
+			break;
+		}
+	}
 }
 
 //
@@ -932,14 +932,14 @@ static void WKTMassageDatum(vtString &strDatum )
 static void MassageDatumFromWKT(vtString &strDatum )
 {
 	int i;
-    for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
-    {
-        if( !strcmp((const char *)strDatum,papszDatumEquiv[i+1]) )
-        {
+	for( i = 0; papszDatumEquiv[i] != NULL; i += 2 )
+	{
+		if( !strcmp((const char *)strDatum,papszDatumEquiv[i+1]) )
+		{
 			strDatum = papszDatumEquiv[i];
-            break;
-        }
-    }
+			break;
+		}
+	}
 	int len = strDatum.GetLength();
 	for (i = 0; i < len; i++)
 	{

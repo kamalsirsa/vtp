@@ -366,7 +366,7 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 
 	CSkeletonLine *line3Ptr = &skeleton.back ();
 
-	line1Ptr->m_higher.m_right = line2Ptr;                             // zapojeni okridlenych hran
+	line1Ptr->m_higher.m_right = line2Ptr;	// zapojeni okridlenych hran
 	line2Ptr->m_higher.m_right = line3Ptr;
 	line3Ptr->m_higher.m_right = line1Ptr;
 
