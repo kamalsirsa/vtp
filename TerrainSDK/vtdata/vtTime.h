@@ -9,6 +9,7 @@
 #define VTTIMEH
 
 #include <time.h>
+#include "vtString.h"
 
 ///////////////////////////////////////////////////
 
@@ -22,10 +23,6 @@ class vtTime
 public:
 	vtTime();
 
-	void _UpdateTM();
-
-	void GetSystemTime();
-
 	void SetDate(int year, int month, int day);
 	void GetDate(int &year, int &month, int &day) const;
 
@@ -35,7 +32,16 @@ public:
 	int GetSecondOfDay() const;
 
 	time_t GetTime() const;
+	const tm &GetTM() const { return m_tm; }
 	void Increment(int secs);
+
+	bool SetFromString(const vtString &str);
+	vtString GetAsString();
+
+	void GetSystemTime();
+
+protected:
+	void _UpdateTM();
 
 	tm m_tm;			// always stores GMT
 	time_t m_time;		// always stores GMT

@@ -42,6 +42,27 @@ void vtTime::Increment(int secs)
 	_UpdateTM();
 }
 
+bool vtTime::SetFromString(const vtString &str)
+{
+	const char *sz = str;
+	int num = sscanf(sz, "%d %d %d %d %d %d", &m_tm.tm_year, &m_tm.tm_mon,
+		&m_tm.tm_mday, &m_tm.tm_hour, &m_tm.tm_min, &m_tm.tm_sec);
+	if (num != 6)
+		return false;
+
+	m_time = mktime(&m_tm);
+	m_time += s_DifferenceFromGMT;
+	return true;
+}
+
+vtString vtTime::GetAsString()
+{
+	vtString str;
+	str.Format("%d %d %d %d %d %d", m_tm.tm_year, m_tm.tm_mon,
+		m_tm.tm_mday, m_tm.tm_hour, m_tm.tm_min, m_tm.tm_sec);
+	return str;
+}
+
 void vtTime::GetSystemTime()
 {
 	time(&m_time);
