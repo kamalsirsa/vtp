@@ -14,7 +14,6 @@
 #include "vtdata/Plants.h"	// for vtPlantList
 
 #include "StatusBar.h"
-#include "VegDlg.h"
 #include "Layer.h"
 
 // some shortcuts
@@ -32,6 +31,11 @@ class vtRoadLayer;
 class vtStructureLayer;
 class vtUtilityLayer;
 class BuilderView;
+
+// dialogs
+class PlantListDlg;
+class BioRegionDlg;
+class FeatInfoDlg;
 
 class MainFrame: public wxFrame
 {
@@ -166,9 +170,11 @@ public:
 	void OnVegBioregions(wxCommandEvent& event);
 
 	void OnFeatureSelect(wxCommandEvent& event);
+	void OnFeatureInfo(wxCommandEvent& event);
 	void OnBuildingEdit(wxCommandEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
+	void OnUpdateFeatureInfo(wxUpdateUIEvent& event);
 	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
 
@@ -203,8 +209,13 @@ public:
 	void SaveProject(const wxString &strPathName);
 
 	// Layer methods
-	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
+	void LoadLayer(const wxString &fname);
+	void AddLayer(vtLayer *lp);
+	bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh);
+	void RemoveLayer(vtLayer *lp);
+	void DeleteLayer(vtLayer *lp);
 	void SetActiveLayer(vtLayer *lp, bool refresh = false);
+	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
 	vtElevLayer *GetActiveElevLayer()
 	{
 		if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_ELEVATION)
@@ -235,14 +246,9 @@ public:
 			return (vtUtilityLayer *)m_pActiveLayer;
 		return NULL;
 	}
-	void LoadLayer(const wxString &fname);
-	void AddLayer(vtLayer *lp);
-	void RemoveLayer(vtLayer *lp);
-	void DeleteLayer(vtLayer *lp);
 	int LayersOfType(LayerType lt);
 	vtLayer *FindLayerOfType(LayerType lt);
 	DRECT GetExtents();
-	bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh);
 
 	// 
 	void RefreshTreeStatus();
@@ -257,6 +263,10 @@ public:
 	void SetProjection(vtProjection &p);
 	void GetProjection(vtProjection &p) { p = m_proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
+
+	// Raw features
+	FeatInfoDlg	*ShowFeatInfoDlg();
+	FeatInfoDlg	*m_pFeatInfoDlg;
 
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);

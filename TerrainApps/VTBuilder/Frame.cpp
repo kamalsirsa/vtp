@@ -33,6 +33,7 @@
 #include "UtilityLayer.h"
 // Dialogs
 #include "ResampleDlg.h"
+#include "FeatInfoDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "bld_edit.xpm"
@@ -83,6 +84,7 @@ DECLARE_APP(MyApp)
 #define WID_SPLITTER	100
 #define WID_FRAME		101
 #define WID_MAINVIEW	102
+#define WID_FEATINFO	103
 
 
 //////////////////////////////////////////////////////////////////
@@ -104,6 +106,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_pActiveLayer = NULL;
 	m_PlantListDlg = NULL;
 	m_BioRegionDlg = NULL;
+	m_pFeatInfoDlg = NULL;
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -270,6 +273,7 @@ void MainFrame::RefreshToolbar()
 		case LT_RAW:
 			toolBar_main->AddSeparator();
 			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
+			ADD_TOOL(ID_FEATURE_INFO, wxBITMAP(info), _("Feature Info"), true);
 	}
 	toolBar_main->Realize();
 
@@ -470,6 +474,11 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	}
 }
 
+void MainFrame::AddLayer(vtLayer *lp)
+{
+	m_Layers.Append(lp);
+}
+
 bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 {
 	vtProjection proj;
@@ -532,11 +541,6 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 		RefreshStatusBar();
 	}
 	return true;
-}
-
-void MainFrame::AddLayer(vtLayer *lp)
-{
-	m_Layers.Append(lp);
 }
 
 void MainFrame::RemoveLayer(vtLayer *lp)
@@ -733,6 +737,19 @@ LayerType MainFrame::AskLayerType()
 	}
 	else
 		return LT_UNKNOWN;
+}
+
+
+FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
+{
+	if (!m_pFeatInfoDlg)
+	{
+		// Create new Bioregion Dialog
+		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, "Feature Info",
+				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	}
+	m_pFeatInfoDlg->Show(true);
+	return m_pFeatInfoDlg;
 }
 
 //

@@ -25,6 +25,8 @@
 #include "RoadLayer.h"
 #include "StructLayer.h"
 #include "UtilityLayer.h"
+// Dialogs
+#include "FeatInfoDlg.h"
 
 #include "cpl_error.h"
 
@@ -981,6 +983,10 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 		BeginBox();
 		break;
 
+	case LB_Info:
+		OnLButtonClickInfo();
+		break;
+
 	case LB_Box:
 		BeginArea();
 		break;
@@ -1053,7 +1059,7 @@ void BuilderView::OnLeftDownEditShape(const wxMouseEvent& event)
 	if (!pSL)
 		return;
 
-	double error = sdx(6);  //calculate what 6 pixels is as world coord
+	double error = odx(6);  //calculate what 6 pixels is as world coord
 
 	int building1, building2, corner;
 	double dist1, dist2;
@@ -1118,7 +1124,7 @@ void BuilderView::OnLeftDownTowerEdit(const wxMouseEvent &event)
 	if (!pTL)
 		return;
 /*
-	double error = sdx(6);  //calculate what 6 pixels is as world coord
+	double error = odx(6);  //calculate what 6 pixels is as world coord
 
 	int tower1;
 	double dist1;
@@ -1522,6 +1528,33 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 	else if (pL->GetType() == LT_RAW)
 	{
 		vtRawLayer *pRL = (vtRawLayer *)pL;
+	}
+}
+
+void BuilderView::OnLButtonClickInfo()
+{
+	vtRawLayer *pRL = GetMainFrame()->GetActiveRawLayer();
+	if (!pRL)
+		return;
+	int etype = pRL->GetEntityType();
+	if (etype != SHPT_POINT && etype != SHPT_POINTZ)
+		return;
+
+	double epsilon = odx(6);  // calculate what 6 pixels is as world coord
+
+	int iEnt = pRL->FindClosestPoint(m_DownLocation, epsilon);
+	if (iEnt != -1)
+	{
+		DPoint2 loc;
+		pRL->GetPoint(iEnt, loc);
+		Array<int> found;
+		pRL->FindAllPointsAtLocation(loc, found);
+
+		FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
+		fdlg->Clear();
+		fdlg->SetFeatureSet(pRL);
+		for (int i = 0; i < found.GetSize(); i++)
+			fdlg->ShowFeature(found[i]);
 	}
 }
 

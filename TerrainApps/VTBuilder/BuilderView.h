@@ -42,7 +42,8 @@ enum LBMode {
 	LB_AddPoints,	// add raw points
 	LB_TowerSelect,	// selectTowers
 	LB_TowerEdit,	// edit towers
-	LB_TowerAdd		// Add Tower to layer
+	LB_TowerAdd,	// Add Tower to layer
+	LB_Info			// Get info about features by picking them
 };
 
 // A useful class to contain an array of bools
@@ -136,6 +137,7 @@ protected:
 	void OnLButtonClickFeature(vtLayer *pL);
 	void OnLButtonClickTowerEdit(vtUtilityLayer *TL);
 	void OnLButtonClickTowerAdd(vtUtilityLayer *pTL, const DPoint2 &point);
+	void OnLButtonClickInfo();
 	void OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point);
 	void OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point);
 	void OnRightUpRoad(vtRoadLayer *pRL);
