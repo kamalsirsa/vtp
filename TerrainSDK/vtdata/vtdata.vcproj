@@ -328,6 +328,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\CubicSpline.cpp">
+			</File>
+			<File
 				RelativePath="DLG.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -1541,6 +1544,9 @@
 			</File>
 			<File
 				RelativePath="Content.h">
+			</File>
+			<File
+				RelativePath=".\CubicSpline.h">
 			</File>
 			<File
 				RelativePath="DLG.h">
