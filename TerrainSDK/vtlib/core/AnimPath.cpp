@@ -337,47 +337,77 @@ void vtAnimPathEngine::Reset()
 
 ///////////////////////////////////////////////////////////////////////
 
-void vtAnimPath::CreateFromLineString(const vtProjection &proj,
-										vtFeatureSetLineString3D &lines)
+bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
+										vtFeatureSet *pSet)
 {
+	vtFeatureSetLineString *pSetLS2 = dynamic_cast<vtFeatureSetLineString *>(pSet);
+	vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<vtFeatureSetLineString3D *>(pSet);
+	if (!pSetLS2 && !pSetLS3)
+		return false;
+
 	// Clear our control points because we're going to fill it 
 	m_TimeControlPointMap.clear();
 
 	OCT *trans = NULL;
-	vtProjection &line_proj = lines.GetAtProjection();
+	vtProjection &line_proj = pSet->GetAtProjection();
 	if (!proj.IsSame(&line_proj))
 	{
 		// need transformation from feature CRS to terrain CRS
 		trans = CreateCoordTransform(&line_proj, &proj, true);
 	}
 
-	DPoint3 current, previous(1E9,1E9,1E9);
 	FPoint3 pos;
-
 //	for (unsigned int i = 0; i < GetNumEntities(); i++)
 	unsigned int i = 0, j;	// only first entity
 
-	const DLine3 &dline = lines.GetPolyLine(i);
 	FLine3 fline;
-	for (j = 0; j < dline.GetSize(); j++)
+	if (pSetLS2)
 	{
-		current = dline[j];
+		DPoint2 current, previous(1E9,1E9);
+		const DLine2 &dline2 = pSetLS2->GetPolyLine(i);
+		for (j = 0; j < dline2.GetSize(); j++)
+		{
+			current = dline2[j];
 
-		// Must skip redundant points, smooth (spline) paths don't like them
-		if (current == previous)
-			continue;
+			// Must skip redundant points, smooth (spline) paths don't like them
+			if (current == previous)
+				continue;
 
-		// Transform 1: feature CRS to terrain CRS
-		if (trans)
-			trans->Transform(1, &current.x, &current.y);
+			// Transform 1: feature CRS to terrain CRS
+			if (trans)
+				trans->Transform(1, &current.x, &current.y);
 
-		// Transform 2: earth CRS to world CRS
-		g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
-		pos.y = current.z;
+			// Transform 2: earth CRS to world CRS
+			g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
+			pos.y = 0;
 
-		fline.Append(pos);
+			fline.Append(pos);
+			previous = current;
+		}
+	}
+	else if (pSetLS3)
+	{
+		DPoint3 current, previous(1E9,1E9,1E9);
+		const DLine3 &dline3 = pSetLS3->GetPolyLine(i);
+		for (j = 0; j < dline3.GetSize(); j++)
+		{
+			current = dline3[j];
 
-		previous = current;
+			// Must skip redundant points, smooth (spline) paths don't like them
+			if (current == previous)
+				continue;
+
+			// Transform 1: feature CRS to terrain CRS
+			if (trans)
+				trans->Transform(1, &current.x, &current.y);
+
+			// Transform 2: earth CRS to world CRS
+			g_Conv.convert_earth_to_local_xz(current.x, current.y, pos.x, pos.z);
+			pos.y = current.z;
+
+			fline.Append(pos);
+			previous = current;
+		}
 	}
 	double time = 0;
 	for (j = 0; j < fline.GetSize(); j++)
@@ -408,5 +438,7 @@ void vtAnimPath::CreateFromLineString(const vtProjection &proj,
 
 	// Set up spline, in case they want smooth motion
 	ProcessPoints();
+
+	return true;
 }
 

@@ -104,7 +104,7 @@ public:
 	void SetLoop(bool bFlag);
 	bool GetLoop() const { return m_bLoop; }
 
-	void CreateFromLineString(const vtProjection &proj, vtFeatureSetLineString3D &lines);
+	bool CreateFromLineString(const vtProjection &proj, vtFeatureSet *pSet);
 
 protected:
 	void InterpolateControlPoints(TimeControlPointMap::const_iterator &a,
