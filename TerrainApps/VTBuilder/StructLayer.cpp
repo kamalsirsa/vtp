@@ -413,26 +413,27 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 /////////////////////////////////////////////////////////////////////////////
 // Import methods
 
-void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
+bool vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 {
 	wxString choices[3];
 	choices[0] = "Buildings (parametric by center or footprint)";
 	choices[1] = "Linear Structures (fences)";
 	choices[2] = "Instances (external model references)";
 
-	wxSingleChoiceDialog dialog(NULL, "These are your choices",
-		"Please indicate the type of structures in this SHP file:",
+	wxSingleChoiceDialog dialog(NULL, "Please indicate the type of structures in this SHP file:",
+		"SHP File Import",
 		3, (const wxString *)choices);
 	if (dialog.ShowModal() != wxID_OK)
-		return;
+		return false;
 
 	vtStructureType type = (vtStructureType) dialog.GetSelection();
 
 	bool success = ReadSHP(filename, type);
 	if (!success)
-		return;
+		return false;
 
 	m_proj = proj;	// Set projection
+	return true;
 }
 
 void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
