@@ -50,34 +50,19 @@ typedef struct
 
 // ************** DConvert - DEM Helper function ****************
 
-double DConvert(FILE *fp, int nmax)
+double DConvert(FILE *fp, int length)
 {
-	int  np;
-	char cChar;
-	char szCharString [64];
+	char szCharString[64];
 
-	np=0;
-	while ((cChar=fgetc(fp)) == ' ')
-	{
-		szCharString[np] = cChar;
-		np++;
-	}
-
-	szCharString[np] = cChar;
-	np++;
-
-	while ((cChar=fgetc(fp)) != ' ')
-	{
-		if (cChar=='D') cChar='E';
-		szCharString[np] = cChar;
-		np++;
-		if (np==nmax) break;
-	}
-	szCharString[np] = 0;
+	fread(szCharString, length, 1, fp);
+	szCharString[length] = 0;
 
 	return atof(szCharString);
 }
 
+#ifndef min
+#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 /**
  * Loads elevation from a USGS DEM file.
@@ -112,6 +97,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	double	dLocalDatumElev, dProfileMin, dProfileMax;
 	int		ygap;
 	DPoint2 start;
+	double	dMinY;
 
 	if (progress_callback != NULL) progress_callback(0);
 
@@ -205,8 +191,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fseek(fp, 546, 0);
 	for (i = 0; i < 4; i++)
 	{
-		corners[i].x = DConvert(fp, 48);
-		corners[i].y = DConvert(fp, 48);
+		corners[i].x = DConvert(fp, 24);
+		corners[i].y = DConvert(fp, 24);
 	}
 
 	if (bUTM)	// UTM
@@ -224,8 +210,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		}
 	}
 
-	dElevMin = DConvert(fp, 48);
-	dElevMax = DConvert(fp, 48);
+	dElevMin = DConvert(fp, 24);
+	dElevMax = DConvert(fp, 24);
 
 	int rows;
 	fseek(fp, 852, 0);
@@ -271,6 +257,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		// If it's in degrees, it's flush square, so we can simply
 		// derive the extents (m_area) from the quad corners (m_Corners)
 		ComputeExtentsFromCorners();
+		dMinY = min(corners[0].y, corners[3].y);
 	}
 	else
 	{
@@ -284,8 +271,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			fseek(fp, iDataStartOffset + (record * 1024) + 12, 0);
 			fscanf(fp, "%d", &iProfileRows);
 			fscanf(fp, "%d", &iProfileCols);
-			start.x = DConvert(fp, 48);
-			start.y = DConvert(fp, 48);
+			start.x = DConvert(fp, 24);
+			start.y = DConvert(fp, 24);
 			m_area.GrowToContainPoint(start);
 			start.y += (iProfileRows * dydelta);
 			m_area.GrowToContainPoint(start);
@@ -298,6 +285,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 				record++;
 			}
 		}
+		dMinY = m_area.bottom;
 	}
 
 	// Compute number of rows
@@ -326,16 +314,17 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		fscanf(fp, "%d", &iColumn);
 		fscanf(fp, "%d", &iProfileRows);
 		fscanf(fp, "%d", &iProfileCols);
-		start.x = DConvert(fp, 48);
-		start.y = DConvert(fp, 48);
-		dLocalDatumElev = DConvert(fp, 48);
-		dProfileMin = DConvert(fp, 48);
-		dProfileMax = DConvert(fp, 48);
+		start.x = DConvert(fp, 24);
+		start.y = DConvert(fp, 24);
+		dLocalDatumElev = DConvert(fp, 24);
+		dProfileMin = DConvert(fp, 24);
+		dProfileMax = DConvert(fp, 24);
 
-		ygap = (int)((start.y - m_area.bottom)/dydelta);
+		ygap = (int)((start.y - dMinY)/dydelta);
 
 		for (j = ygap; j < (ygap + iProfileRows); j++)
 		{
+//			assert(j < m_iRows);	// useful safety check
 			fscanf(fp, "%d", &iElev);
 			SetValue(i, j, iElev);
 		}
@@ -1671,9 +1660,11 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	// everything to WGS84?
 	m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
 
-	switch (spacing_unit)
+	switch (elev_unit_type)
 	{
-	case 1:	// feet
+	case 0: // Meters
+		break;
+	case 1:	// Feet
 		SetScale(0.3084f);
 		break;
 	case 5:	// Decimeters
