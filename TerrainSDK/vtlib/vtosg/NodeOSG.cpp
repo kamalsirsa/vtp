@@ -56,7 +56,7 @@ const char *vtNode::GetName2()
 		return NULL;
 }
 
-void vtNode::SetOsgNode(osg::Node *n, bool bGroup )
+void vtNode::SetOsgNode(Node *n, bool bGroup )
 {
 	m_pNode = n;
 	if (m_pNode.valid())
@@ -136,7 +136,7 @@ vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 
 void vtTransform::Identity()
 {
-	m_pTransform->setMatrix(osg::Matrix::identity());
+	m_pTransform->setMatrix(Matrix::identity());
 }
 
 FPoint3 vtTransform::GetTrans()
@@ -158,7 +158,7 @@ void vtTransform::Translate1(const FPoint3 &pos)
 //	matrix.postTrans(pos.x, pos.y, pos.z);
 //	m_pTransform->dirtyBound();
 	// 0.8.43
-	m_pTransform->postMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
+	m_pTransform->postMult(Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void vtTransform::TranslateLocal(const FPoint3 &pos)
@@ -168,7 +168,7 @@ void vtTransform::TranslateLocal(const FPoint3 &pos)
 //	matrix.preTrans(pos.x, pos.y, pos.z);
 //	m_pTransform->dirtyBound();
 	// 0.8.43
-	m_pTransform->preMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
+	m_pTransform->preMult(Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void vtTransform::Rotate2(const FPoint3 &axis, float angle)
@@ -178,7 +178,7 @@ void vtTransform::Rotate2(const FPoint3 &axis, float angle)
 //	matrix.postRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
 //	m_pTransform->dirtyBound();
 	// 0.8.43
-	m_pTransform->postMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
+	m_pTransform->postMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void vtTransform::RotateLocal(const FPoint3 &axis, float angle)
@@ -188,16 +188,16 @@ void vtTransform::RotateLocal(const FPoint3 &axis, float angle)
 //	matrix.preRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
 //	m_pTransform->dirtyBound();
 	// 0.8.43
-	m_pTransform->preMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
+	m_pTransform->preMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void vtTransform::RotateParent(const FPoint3 &axis, float angle)
 {
 	// 0.8.43
-	osg::Vec3 trans = m_pTransform->getMatrix().getTrans();
-	m_pTransform->postMult(osg::Matrix::translate(-trans)*
-		      osg::Matrix::rotate(angle, axis.x, axis.y, axis.z)*
-		      osg::Matrix::translate(trans));
+	Vec3 trans = m_pTransform->getMatrix().getTrans();
+	m_pTransform->postMult(Matrix::translate(-trans)*
+		      Matrix::rotate(angle, axis.x, axis.y, axis.z)*
+		      Matrix::translate(trans));
 }
 
 void vtTransform::Scale3(float x, float y, float z)
@@ -207,7 +207,7 @@ void vtTransform::Scale3(float x, float y, float z)
 //	matrix.preScale(x, y, z);
 //	m_pTransform->dirtyBound();
 	// 0.8.43
-	m_pTransform->preMult(osg::Matrix::scale(x, y, z));
+	m_pTransform->preMult(Matrix::scale(x, y, z));
 }
 
 void vtTransform::SetTransform1(const FMatrix4 &mat)
@@ -243,9 +243,9 @@ void vtTransform::PointTowards(const FPoint3 &point)
 	float phi = asinf(diff.y() / dist);
 
 	matrix.makeIdentity();
-	matrix.preMult(osg::Matrix::rotate(theta, 0.0f, 1.0f, 0.0f));
-	matrix.preMult(osg::Matrix::rotate(phi, 1.0f, 0.0f, 0.0f));
-	matrix.postMult(osg::Matrix::translate(trans));
+	matrix.preMult(Matrix::rotate(theta, 0.0f, 1.0f, 0.0f));
+	matrix.preMult(Matrix::rotate(phi, 1.0f, 0.0f, 0.0f));
+	matrix.postMult(Matrix::translate(trans));
 
 	m_pTransform->setMatrix(matrix);
 }
@@ -454,6 +454,14 @@ void vtLOD::SetCenter(FPoint3 &center)
 // vtDynGeom
 //
 
+vtDynMesh::vtDynMesh()
+{
+	// The following line code is a workaround provided by Robert Osfield himself
+	// create an empty stateset, to force the traversers
+	// to nest any state above it in the inheritance path.
+	setStateSet(new StateSet);
+}
+
 const bool vtDynMesh::computeBound() const
 {
 	FBox3 box;
@@ -527,6 +535,7 @@ void vtDynGeom::CalcCullPlanes()
 	m_cullPlanes[3].Set(center, norm_b);
 #else
 	// "get the view frustum clipping in model coordinates"
+	// directly from OSG
 	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
 	const ClippingVolume::PlaneList &planes = clipvol.getPlaneList();
 

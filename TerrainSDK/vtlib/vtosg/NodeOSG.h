@@ -219,6 +219,8 @@ public:
 class vtDynMesh : public osg::Drawable
 {
 public:
+	vtDynMesh();
+
 	// overrides
 	virtual osg::Object* clone() const { return new vtDynMesh(); }
 	virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const vtDynMesh*>(obj)!=NULL; }
