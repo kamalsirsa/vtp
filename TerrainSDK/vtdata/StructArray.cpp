@@ -837,7 +837,7 @@ bool vtStructureArray::ReadXML(const char* pathname)
 	{
 		readXML(pathname, visitor);
 	}
-	catch (xh_io_exception &e)
+	catch (xh_exception &e)
 	{
 		// TODO: would be good to pass back the error message.
 		return false;
