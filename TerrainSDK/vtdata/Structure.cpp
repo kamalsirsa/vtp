@@ -53,31 +53,31 @@ void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t</structure>\n");
 }
 
-void vtStructInstance::WriteXML(FILE *fp, bool bDegrees)
+void vtStructInstance::WriteXML(GZOutput &out, bool bDegrees)
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
-	fprintf(fp, "\t<Imported>\n");
+	gfprintf(out, "\t<Imported>\n");
 
 	// first write the placement
-	fprintf(fp, "\t\t<Location>\n");
-	fprintf(fp, "\t\t\t<gml:coordinates>");
-	fprintf(fp, coord_format, m_p.x);
-	fprintf(fp, ",");
-	fprintf(fp, coord_format, m_p.y);
-	fprintf(fp, "</gml:coordinates>\n");
-	fprintf(fp, "\t\t</Location>\n");
+	gfprintf(out, "\t\t<Location>\n");
+	gfprintf(out, "\t\t\t<gml:coordinates>");
+	gfprintf(out, coord_format, m_p.x);
+	gfprintf(out, ",");
+	gfprintf(out, coord_format, m_p.y);
+	gfprintf(out, "</gml:coordinates>\n");
+	gfprintf(out, "\t\t</Location>\n");
 
 	if (m_fRotation != 0.0f)
 	{
-		fprintf(fp, "\t\t<Rotation>%g</Rotation>\n", m_fRotation);
+		gfprintf(out, "\t\t<Rotation>%g</Rotation>\n", m_fRotation);
 	}
 	if (m_fScale != 1.0f)
 	{
-		fprintf(fp, "\t\t<Scale>%g</Scale>\n", m_fScale);
+		gfprintf(out, "\t\t<Scale>%g</Scale>\n", m_fScale);
 	}
-	WriteTags(fp);
-	fprintf(fp, "\t</Imported>\n");
+	WriteTags(out);
+	gfprintf(out, "\t</Imported>\n");
 }
 
 bool vtStructInstance::GetExtents(DRECT &rect) const
@@ -118,13 +118,13 @@ vtStructure::~vtStructure()
 	m_type = ST_NONE;
 }
 
-void vtStructure::WriteTags(FILE *fp)
+void vtStructure::WriteTags(GZOutput &out)
 {
 	// now write all extra tags (attributes) for this structure
 	for (unsigned int i = 0; i < NumTags(); i++)
 	{
 		vtTag *tag = GetTag(i);
-		fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
+		gfprintf(out, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
 			(const char *)tag->value, (const char *)tag->name);
 	}
 }

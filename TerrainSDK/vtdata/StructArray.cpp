@@ -21,6 +21,7 @@
 #include "Building.h"
 #include "Fence.h"
 #include "vtLog.h"
+#include "FilePath.h"
 
 vtStructureArray g_DefaultStructures;
 
@@ -1223,59 +1224,58 @@ bool vtStructureArray::WriteXML_Old(const char* filename)
 /////////////////////////////////////////////////////////////////////////
 
 
-bool vtStructureArray::WriteXML(const char* filename)
+bool vtStructureArray::WriteXML(const char* filename, bool bGZip)
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	unsigned int i;
-	FILE *fp = fopen(filename, "wb");
-	if (!fp)
+	GZOutput out(bGZip);
+	if (!gfopen(out, filename))
 	{
 		throw xh_io_exception("Failed to open file", xh_location(filename),
 				"XML Writer");
 	}
 
-	fprintf(fp, "<?xml version=\"1.0\"?>\n");
-	fprintf(fp, "\n");
+	gfprintf(out, "<?xml version=\"1.0\"?>\n");
+	gfprintf(out, "\n");
 
-	fprintf(fp, "<StructureCollection xmlns=\"http://www.openplans.net\"\n"
+	gfprintf(out, "<StructureCollection xmlns=\"http://www.openplans.net\"\n"
 		"\t\t\t\t\t xmlns:gml=\"http://www.opengis.net/gml\"\n"
 		"\t\t\t\t\t xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
 		"\t\t\t\t\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
 		"\t\t\t\t\t xsi:schemaLocation=\"http://www.openplans.net/buildings.xsd\">\n");
-	fprintf(fp, "\n");
+	gfprintf(out, "\n");
 
 	// Write the extents (required by gml:StructureCollection)
 	DRECT ext;
 	GetExtents(ext);
-	fprintf(fp, "\t<gml:boundedBy>\n");
-	fprintf(fp, "\t\t<gml:Box>\n");
-	fprintf(fp, "\t\t\t<gml:coordinates>");
-	fprintf(fp, "%.9lf,%.9lf %.9lf,%.9lf", ext.left, ext.bottom, ext.right, ext.top);
-	fprintf(fp, "</gml:coordinates>\n");
-	fprintf(fp, "\t\t</gml:Box>\n");
-	fprintf(fp, "\t</gml:boundedBy>\n");
-	fprintf(fp, "\n");
+	gfprintf(out, "\t<gml:boundedBy>\n");
+	gfprintf(out, "\t\t<gml:Box>\n");
+	gfprintf(out, "\t\t\t<gml:coordinates>");
+	gfprintf(out, "%.9lf,%.9lf %.9lf,%.9lf", ext.left, ext.bottom, ext.right, ext.top);
+	gfprintf(out, "</gml:coordinates>\n");
+	gfprintf(out, "\t\t</gml:Box>\n");
+	gfprintf(out, "\t</gml:boundedBy>\n");
+	gfprintf(out, "\n");
 
 	// Write projection
 	char *wkt;
 	OGRErr err = m_proj.exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
-	fprintf(fp, "\t<SRS>%s</SRS>\n", wkt);
-	fprintf(fp, "\n");
+	gfprintf(out, "\t<SRS>%s</SRS>\n", wkt);
+	gfprintf(out, "\n");
 	OGRFree(wkt);
 
 	bool bDegrees = (m_proj.IsGeographic() == 1);
 
-	for (i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
-		str->WriteXML(fp, bDegrees);
+		str->WriteXML(out, bDegrees);
 	}
-	fprintf(fp, "</StructureCollection>\n");
-	fclose(fp);
+	gfprintf(out, "</StructureCollection>\n");
+	gfclose(out);
 	return true;
 }
 

@@ -1,9 +1,9 @@
 //
 // FilePath.cpp
 //
-// Functions for helping with management of directories and file paths
+// Functions for helping with management of directories and file paths.
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -411,3 +411,50 @@ vtString get_line_from_stream(ifstream &input)
 	return vtString(buf);
 }
 */
+
+
+//
+// Encapsulation for Zlib's gzip output functions.  These wrappers allow
+//  you to do stdio file output to a compressed _or_ uncompressed file
+//  with one set of functions.
+//
+GZOutput::GZOutput(bool bCompressed)
+{
+	fp = NULL;
+	gfp = NULL;
+	bGZip = bCompressed;
+}
+
+bool gfopen(GZOutput &out, const char *fname)
+{
+	if (out.bGZip)
+	{
+		out.gfp = gzopen(fname, "wb");
+		return (out.gfp != NULL);
+	}
+	else
+	{
+		out.fp = fopen(fname, "wb");
+		return out.fp != NULL;
+	}
+}
+
+int gfprintf(GZOutput &out, const char *pFormat, ...)
+{
+	va_list va;
+	va_start(va, pFormat);
+
+	if (out.bGZip)
+		return gzprintf(out.gfp, pFormat, va);
+	else
+		return vfprintf(out.fp, pFormat, va);
+}
+
+void gfclose(GZOutput &out)
+{
+	if (out.bGZip)
+		gzclose(out.gfp);
+	else
+		fclose(out.fp);
+}
+

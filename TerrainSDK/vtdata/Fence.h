@@ -1,7 +1,7 @@
 //
 // Fences.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -65,7 +65,7 @@ public:
 	bool GetExtents(DRECT &rect) const;
 
 	void WriteXML_Old(FILE *fp, bool bDegrees);
-	void WriteXML(FILE *fp, bool bDegrees);
+	void WriteXML(GZOutput &out, bool bDegrees);
 
 	bool IsContainedBy(const DRECT &rect) const;
 

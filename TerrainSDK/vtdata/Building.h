@@ -3,7 +3,7 @@
 //
 // Implements the vtBuilding class which represents a single built structure.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -221,7 +221,7 @@ public:
 	void Offset(const DPoint2 &delta);
 	double GetDistanceToInterior(const DPoint2 &point) const;
 
-	void WriteXML(FILE *fp, bool bDegrees);
+	void WriteXML(GZOutput &out, bool bDegrees);
 	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();

@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1307,100 +1307,100 @@ void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t</structure>\n");
 }
 
-void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
+void vtBuilding::WriteXML(GZOutput &out, bool bDegrees)
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
-	fprintf(fp, "\t<Building");
+	gfprintf(out, "\t<Building");
 	if (m_fElevationOffset != 0.0)
-		fprintf(fp, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
+		gfprintf(out, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
 	if (m_fOriginalElevation != -1E9)
-		fprintf(fp, " OriginalElevation=\"%.2f\"", m_fOriginalElevation);
-	fprintf(fp, ">\n");
+		gfprintf(out, " OriginalElevation=\"%.2f\"", m_fOriginalElevation);
+	gfprintf(out, ">\n");
 
 	int i, j, k;
 	int levels = GetNumLevels();
 	for (i = 0; i < levels; i++)
 	{
 		vtLevel *lev = GetLevel(i);
-		fprintf(fp, "\t\t<Level FloorHeight=\"%f\" StoryCount=\"%d\">\n",
+		gfprintf(out, "\t\t<Level FloorHeight=\"%f\" StoryCount=\"%d\">\n",
 			lev->m_fStoryHeight, lev->m_iStories);
 
 		const DLine2 &foot = lev->GetAtFootprint();
 		int points = foot.GetSize();
-		fprintf(fp, "\t\t\t<Footprint>\n");
-		fprintf(fp, "\t\t\t\t<gml:MultiPolygon>\n");
-		fprintf(fp, "\t\t\t\t\t<gml:polygonMember>\n");
-		fprintf(fp, "\t\t\t\t\t\t<gml:Polygon>\n");
-		fprintf(fp, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
-		fprintf(fp, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
-		fprintf(fp, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
+		gfprintf(out, "\t\t\t<Footprint>\n");
+		gfprintf(out, "\t\t\t\t<gml:MultiPolygon>\n");
+		gfprintf(out, "\t\t\t\t\t<gml:polygonMember>\n");
+		gfprintf(out, "\t\t\t\t\t\t<gml:Polygon>\n");
+		gfprintf(out, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
+		gfprintf(out, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
+		gfprintf(out, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
 		for (j = 0; j < points; j++)
 		{
 			DPoint2 p = foot.GetAt(j);
-			fprintf(fp, coord_format, p.x);
-			fprintf(fp, ",");
-			fprintf(fp, coord_format, p.y);
+			gfprintf(out, coord_format, p.x);
+			gfprintf(out, ",");
+			gfprintf(out, coord_format, p.y);
 			if (j != points-1)
-				fprintf(fp, " ");
+				gfprintf(out, " ");
 		}
-		fprintf(fp, "</gml:coordinates>\n");
-		fprintf(fp, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
-		fprintf(fp, "\t\t\t\t\t\t\t</gml:outerBoundaryIs>\n");
-		fprintf(fp, "\t\t\t\t\t\t</gml:Polygon>\n");
-		fprintf(fp, "\t\t\t\t\t</gml:polygonMember>\n");
-		fprintf(fp, "\t\t\t\t</gml:MultiPolygon>\n");
-		fprintf(fp, "\t\t\t</Footprint>\n");
+		gfprintf(out, "</gml:coordinates>\n");
+		gfprintf(out, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
+		gfprintf(out, "\t\t\t\t\t\t\t</gml:outerBoundaryIs>\n");
+		gfprintf(out, "\t\t\t\t\t\t</gml:Polygon>\n");
+		gfprintf(out, "\t\t\t\t\t</gml:polygonMember>\n");
+		gfprintf(out, "\t\t\t\t</gml:MultiPolygon>\n");
+		gfprintf(out, "\t\t\t</Footprint>\n");
 
 		int edges = lev->NumEdges();
 		for (j = 0; j < edges; j++)
 		{
 			vtEdge *edge = lev->GetEdge(j);
-			fprintf(fp, "\t\t\t<Edge");
+			gfprintf(out, "\t\t\t<Edge");
 
 			if (edge->m_pMaterial)
-				fprintf(fp, " Material=\"%s\"",
+				gfprintf(out, " Material=\"%s\"",
 					(const char *)*edge->m_pMaterial);
 
-			fprintf(fp, " Color=\"%02x%02x%02x\"",
+			gfprintf(out, " Color=\"%02x%02x%02x\"",
 				edge->m_Color.r, edge->m_Color.g, edge->m_Color.b);
 
 			if (edge->m_iSlope != 90)
-				fprintf(fp, " Slope=\"%d\"", edge->m_iSlope);
+				gfprintf(out, " Slope=\"%d\"", edge->m_iSlope);
 
 			if (edge->m_fEaveLength != 0.0f)
-				fprintf(fp, " EaveLength=\"%f\"", edge->m_fEaveLength);
+				gfprintf(out, " EaveLength=\"%f\"", edge->m_fEaveLength);
 
 			if (!edge->m_Facade.IsEmpty())
-				fprintf(fp, " Facade=\"%s\"", (pcchar)edge->m_Facade);
+				gfprintf(out, " Facade=\"%s\"", (pcchar)edge->m_Facade);
 
-			fprintf(fp, ">\n");
+			gfprintf(out, ">\n");
 
 			int features = edge->NumFeatures();
 			for (k = 0; k < features; k++)
 			{
-				fprintf(fp, "\t\t\t\t<EdgeElement");
+				gfprintf(out, "\t\t\t\t<EdgeElement");
 
 				const vtEdgeFeature &feat = edge->m_Features[k];
-				fprintf(fp, " Type=\"%s\"",
+				gfprintf(out, " Type=\"%s\"",
 					vtBuilding::GetEdgeFeatureString(feat.m_code));
 
 				if (feat.m_vf1 != 0.0f)
-					fprintf(fp, " Begin=\"%.3f\"", feat.m_vf1);
+					gfprintf(out, " Begin=\"%.3f\"", feat.m_vf1);
 
 				if (feat.m_vf2 != 1.0f)
-					fprintf(fp, " End=\"%.3f\"", feat.m_vf2);
+					gfprintf(out, " End=\"%.3f\"", feat.m_vf2);
 
-				fprintf(fp, "/>\n");
+				gfprintf(out, "/>\n");
 			}
 
-			fprintf(fp, "\t\t\t</Edge>\n");
+			gfprintf(out, "\t\t\t</Edge>\n");
 		}
-		fprintf(fp, "\t\t</Level>\n");
+		gfprintf(out, "\t\t</Level>\n");
 	}
 
-	WriteTags(fp);
-	fprintf(fp, "\t</Building>\n");
+	WriteTags(out);
+	gfprintf(out, "\t</Building>\n");
 }
 
 void vtBuilding::AddDefaultDetails()

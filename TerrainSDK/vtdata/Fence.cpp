@@ -3,7 +3,7 @@
 //
 // Implemented vtFence;
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -236,39 +236,39 @@ void vtFence::WriteXML_Old(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t</structure>\n");
 }
 
-void vtFence::WriteXML(FILE *fp, bool bDegrees)
+void vtFence::WriteXML(GZOutput &out, bool bDegrees)
 {
 	int i;
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	// Write the XML to describe this fence to a built-structure XML file.
-	fprintf(fp, "\t<Linear Height=\"%.2f\">\n", m_fHeight);
+	gfprintf(out, "\t<Linear Height=\"%.2f\">\n", m_fHeight);
 
-	fprintf(fp, "\t\t<Path>\n");
-	fprintf(fp, "\t\t\t<gml:coordinates>");
+	gfprintf(out, "\t\t<Path>\n");
+	gfprintf(out, "\t\t\t<gml:coordinates>");
 	int points = m_pFencePts.GetSize();
 	for (i = 0; i < points; i++)
 	{
 		DPoint2 p = m_pFencePts.GetAt(i);
-		fprintf(fp, coord_format, p.x);
-		fprintf(fp, ",");
-		fprintf(fp, coord_format, p.y);
+		gfprintf(out, coord_format, p.x);
+		gfprintf(out, ",");
+		gfprintf(out, coord_format, p.y);
 		if (i != points-1)
-			fprintf(fp, " ");
+			gfprintf(out, " ");
 	}
-	fprintf(fp, "</gml:coordinates>\n");
-	fprintf(fp, "\t\t</Path>\n");
+	gfprintf(out, "</gml:coordinates>\n");
+	gfprintf(out, "\t\t</Path>\n");
 
 	// This must be expanded when we support more than 2 kinds of fence!
 	const char *post_type = (m_FenceType == FT_WIRE) ? "wood" : "steel";
 	const char *conn_type = (m_FenceType == FT_WIRE) ? "wire" : "chain-link";
 
-	fprintf(fp, "\t\t<Posts Type=\"%s\" Size=\"%.2f,%.2f\" Spacing=\"%.2f\" />\n",
+	gfprintf(out, "\t\t<Posts Type=\"%s\" Size=\"%.2f,%.2f\" Spacing=\"%.2f\" />\n",
 		post_type, m_PostSize.x, m_PostSize.z, m_fSpacing);
-	fprintf(fp, "\t\t<Connect Type=\"%s\" />\n", conn_type);
+	gfprintf(out, "\t\t<Connect Type=\"%s\" />\n", conn_type);
 
-	WriteTags(fp);
-	fprintf(fp, "\t</Linear>\n");
+	WriteTags(out);
+	gfprintf(out, "\t</Linear>\n");
 }
 
 

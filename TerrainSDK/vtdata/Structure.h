@@ -3,7 +3,7 @@
 //
 // Implements the vtStructure class which represents a single built structure.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Structure.h */
@@ -16,6 +16,7 @@
 #include "MathTypes.h"
 #include "Selectable.h"
 #include "Content.h"
+#include "FilePath.h"
 
 class vtBuilding;
 class vtFence;
@@ -219,10 +220,10 @@ public:
 
 	virtual bool GetExtents(DRECT &rect) const = 0;
 	virtual bool IsContainedBy(const DRECT &rect) const = 0;
-	virtual void WriteXML(FILE *fp, bool bDegrees) = 0;
+	virtual void WriteXML(GZOutput &out, bool bDegrees) = 0;
 	virtual void WriteXML_Old(FILE *fp, bool bDegrees) = 0;
 
-	void WriteTags(FILE *fp);
+	void WriteTags(GZOutput &out);
 
 // VIAVTDATA
 	bool m_bIsVIAContributor;
@@ -267,7 +268,7 @@ class vtStructInstance : public vtStructure
 public:
 	vtStructInstance();
 
-	void WriteXML(FILE *fp, bool bDegrees);
+	void WriteXML(GZOutput &out, bool bDegrees);
 	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void Offset(const DPoint2 &delta);
 

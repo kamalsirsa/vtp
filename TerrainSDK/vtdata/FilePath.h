@@ -11,6 +11,8 @@
 #include "vtString.h"
 #include "Array.h"
 
+#include "zlib.h"
+
 #if WIN32
   #include <io.h>
 #else
@@ -78,4 +80,18 @@ vtString get_line_from_stream(std::ifstream &input);
 void RemoveFileExtensions(vtString &fname);
 vtString GetExtension(const vtString &fname, bool bFull = true);
 
+// Encapsulation for Zlib's gzip output functions.
+class GZOutput
+{
+public:
+	GZOutput(bool bCompressed);
+	bool bGZip;
+	FILE *fp;
+	gzFile gfp;
+};
+bool gfopen(GZOutput &out, const char *fname);
+int gfprintf(GZOutput &out, const char *pFormat, ...);
+void gfclose(GZOutput &out);
+
 #endif // FILEPATHH
+
