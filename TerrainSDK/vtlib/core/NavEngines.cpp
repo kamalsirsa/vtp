@@ -27,6 +27,7 @@ vtFlyer::vtFlyer(float fSpeed, bool bPreventRoll) : vtLastMouse()
 		m_bDOF[i] = true;
 
 	m_bDOF[DOF_ROLL] = !bPreventRoll;
+	m_fCurrentSpeed = 0;
 }
 
 void vtFlyer::SetAlwaysMove(bool bMove)
@@ -44,6 +45,8 @@ void vtFlyer::Eval()
 
 	float mx, my;
 	GetNormalizedMouseCoords(mx, my);
+
+	FPoint3 previous_pos = pTarget->GetTrans();
 
 	//	Left button: forward-backward, yaw
 	if (m_bAlwaysMove ||
@@ -97,6 +100,10 @@ void vtFlyer::Eval()
 		else if (m_bDOF[DOF_ROLL])
 			pTarget->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), -leftright);
 	}
+
+	FPoint3 current_pos = pTarget->GetTrans();
+	m_fCurrentSpeed = (current_pos - previous_pos).Length() / elapsed;
+
 	DoKeyNavigation();
 }
 
@@ -216,94 +223,42 @@ void vtOrthoFlyer::Eval()
 //
 // Fly engine specifically for following terrain
 //
-vtTerrainFlyer::vtTerrainFlyer(float fSpeed, float fMinHeight, bool bMin)
- : vtFlyer(fSpeed, true)
+vtTerrainFlyer::vtTerrainFlyer(float fSpeed) : vtFlyer(fSpeed, true)
 {
-	m_fMinHeight = fMinHeight;
-	m_bMin = bMin;
-	m_bFollow = true;
 	m_pHeightField = NULL;
-	m_bMaintain = false;
-	m_fMaintainHeight = 0;
-	m_fCurrentSpeed = 0;
 	m_bExag = false;
-}
-
-void vtTerrainFlyer::FollowTerrain(bool bFollow)
-{
-	m_bFollow = bFollow;
 }
 
 void vtTerrainFlyer::Eval()
 {
-	float elapsed = vtGetFrameTime();
 	vtTransform *pTarget = (vtTransform*) GetTarget();
-
-	if (elapsed == 0 || !pTarget) // safety check
+	if (!pTarget) // safety check
 		return;
-
-	FPoint3 previous_pos = pTarget->GetTrans();
-
-	if (m_bExag)
-	{
-		// Linear scaling
-		SetMultiplier(1.0 + (m_fAboveGround / 100));
-
-		// Exponential scaling - didn't like it as well
-//		SetMultiplier(pow(2.0, (double) (m_fAboveGround / 1000)));
-	}
 
 	vtFlyer::Eval();
-	KeepAboveGround();
-
-	FPoint3 current_pos = pTarget->GetTrans();
-	m_fCurrentSpeed = (current_pos - previous_pos).Length() / elapsed;
-}
-
-//
-// Keep the target above the the terrain surface.
-//
-void vtTerrainFlyer::KeepAboveGround()
-{
-	if (!m_pHeightField)
-		return;
-
-	vtTransform *pTarget = (vtTransform*) GetTarget();
-	if (!pTarget)
-		return;
-
-	FPoint3 pos = pTarget->GetTrans();
-
-	float fGroundAltitude;
-	bool bOverTerrain = m_pHeightField->FindAltitudeAtPoint(pos, fGroundAltitude);
-
-	if (bOverTerrain)
+	if (m_bExag)
 	{
-		// set y value based on location
-		if (m_bMaintain)
+		FPoint3 pos = pTarget->GetTrans();
+		float fGroundAltitude;
+		bool bOverTerrain = m_pHeightField->FindAltitudeAtPoint(pos, fGroundAltitude);
+		if (bOverTerrain)
 		{
-			if (m_fMaintainHeight == 0)
-				m_fMaintainHeight = pos.y - fGroundAltitude;
-			pos.y = fGroundAltitude + m_fMaintainHeight;
+			float fAboveGround = pos.y - fGroundAltitude;
+
+			// Linear scaling
+			SetMultiplier(1.0 + (fAboveGround / 100));
+
+			// Exponential scaling - didn't like it as well
+		 //	SetMultiplier(pow(2.0, (double) (m_fAboveGround / 1000)));
 		}
-		else if (!m_bMin)
-			pos.y = fGroundAltitude + m_fMinHeight;
-		else
-		{
-			if (pos.y <= fGroundAltitude + m_fMinHeight)
-				pos.y = fGroundAltitude + m_fMinHeight;
-		}
-		pTarget->SetTrans(pos);
 	}
-	m_fAboveGround = pos.y - fGroundAltitude;
 }
 
 
 //
 // vtPanoFlyer: moves target based on mouse position, like a QTVR or other panorama viewer
 //
-vtPanoFlyer::vtPanoFlyer(float fSpeed, float fMinHeight, bool bMin)
- : vtTerrainFlyer(fSpeed, fMinHeight, bMin)
+vtPanoFlyer::vtPanoFlyer(float fSpeed) : vtTerrainFlyer(fSpeed)
 {
 	m_Velocity = 0.0f;
 }
@@ -367,8 +322,6 @@ void vtPanoFlyer::Eval()
 	{
 	}
 
-	KeepAboveGround();
-
 	FPoint3 current_pos = pTarget->GetTrans();
 	m_fCurrentSpeed = (current_pos - previous_pos).Length() / elapsed;
 }
@@ -383,7 +336,6 @@ vtTinFlyer::vtTinFlyer(float fSpeed) : vtLastMouse()
 {
 	m_pTin = NULL;
 	m_fSpeed = fSpeed;
-	m_fMinHeight = 1.0f;
 	m_fPitch = 0.0f;
 }
 
@@ -472,8 +424,8 @@ void vtTinFlyer::Eval()
 // VFlyer
 //
 
-VFlyer::VFlyer(float scale, float fMinHeight, bool bMin)
- : vtTerrainFlyer(0.4f, fMinHeight, bMin)	// hardcode scale override
+VFlyer::VFlyer(float scale)
+ : vtTerrainFlyer(0.4f)	// hardcode scale override
 {
 	m_Velocity.Set(0, 0, 0);
 	m_last_time = -1.0f;
@@ -544,6 +496,7 @@ void VFlyer::Eval()
 		temp = 0;
 	}*/
 
+#if 0
 	// allow the user to move up-down even in maintain-height mode
 	bool bPreserveMaintain=false;
 	if (bUpDown)
@@ -554,6 +507,7 @@ void VFlyer::Eval()
 	KeepAboveGround();
 	if (bUpDown)
 		m_bMaintain = bPreserveMaintain;
+#endif
 }
 
 void VFlyer::SetVerticalVelocity(float velocity)
@@ -565,8 +519,8 @@ void VFlyer::SetVerticalVelocity(float velocity)
 ///////////////////////////////////////////////
 // Quake-style navigation
 //
-QuakeFlyer::QuakeFlyer(float scale, float fMinHeight, bool bMin)
- : vtTerrainFlyer(0.4f, fMinHeight, bMin)	// hardcode scale override
+QuakeFlyer::QuakeFlyer(float scale)
+ : vtTerrainFlyer(0.4f)	// hardcode scale override
 {
 	m_sWrap = 0;
 	m_bNavEnable = true;
@@ -576,12 +530,6 @@ void QuakeFlyer::Eval()
 {
 	if (!m_bNavEnable)
 		return;
-
-	if (!m_bFollow)
-	{
-		vtFlyer::Eval();
-		return;
-	}
 
 	if (!m_pHeightField)
 		return;
@@ -635,9 +583,6 @@ void QuakeFlyer::Eval()
 	{
 		pTarget->Translate1(FPoint3(0.0f, 0.1f, 0.0f));
 	}
-
-	// conform to terrain
-	KeepAboveGround();
 }
 
 //
@@ -705,10 +650,51 @@ void QuakeFlyer::OnKey(int key, int flags)
 			pTarget->TranslateLocal(FPoint3(m_fSpeed, 0, 0));
 			break;
 	}
-
-	// conform to terrain
-	KeepAboveGround();
 }
+
+vtHeightConstrain::vtHeightConstrain(float fMinHeight)
+{
+	m_pHF = NULL;
+	m_fMinGroundOffset = fMinHeight;
+	m_bMaintain = false;
+	m_fMaintainHeight = 0;
+}
+
+//
+// Keep the target above the the terrain surface.
+//
+void vtHeightConstrain::Eval()
+{
+	if (!m_pHF)
+		return;
+
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (!pTarget)
+		return;
+
+	FPoint3 pos = pTarget->GetTrans();
+
+	float fGroundAltitude;
+	bool bOverTerrain = m_pHF->FindAltitudeAtPoint(pos, fGroundAltitude);
+
+	if (bOverTerrain)
+	{
+		// set y value based on location
+		if (m_bMaintain)
+		{
+			if (m_fMaintainHeight == 0)
+				m_fMaintainHeight = pos.y - fGroundAltitude;
+			pos.y = fGroundAltitude + m_fMaintainHeight;
+		}
+		else
+		{
+			if (pos.y <= fGroundAltitude + m_fMinGroundOffset)
+				pos.y = fGroundAltitude + m_fMinGroundOffset;
+		}
+		pTarget->SetTrans(pos);
+	}
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -46,6 +46,9 @@ public:
 	void SetDOF(DOF dof, bool bTrue) { m_bDOF[dof] = bTrue; }
 	bool GetDOF(DOF dof) { return m_bDOF[dof]; }
 
+	/// Current speed (meters/second as of the most recent frame)
+	float GetCurrentSpeed() { return m_fCurrentSpeed; }
+
 protected:
 	void DoKeyNavigation();
 
@@ -53,6 +56,7 @@ protected:
 	float	m_fMult;		// multiply speed by this factor
 	bool	m_bDOF[6];		// six degrees of freedom
 	bool	m_bAlwaysMove;
+	float	m_fCurrentSpeed; // current speed (most recent frame)
 };
 
 /**
@@ -72,57 +76,26 @@ public:
 };
 
 /**
- * This engine extends vtFlyer with the ability to do terrain following
- * (keeping the target "above the ground" relative to a given heightfield).
- *
- * You can set minimum height above the ground.
+ * This engine extends vtFlyer with the ability to scale speed with
+ * height above the terrain.
  */
 class vtTerrainFlyer : public vtFlyer
 {
 public:
-	vtTerrainFlyer(float fSpeed, float fMinHeight, bool bMin);
+	vtTerrainFlyer(float fSpeed);
 
 	/// Set the heightfield on which to do the terrain following.
-	void SetHeightField(vtHeightField3d *pGrid) { m_pHeightField = pGrid; }
-
-	/// Enables whether to do terrain following or not.  Default is true.
-	void FollowTerrain(bool bFollow);
-
-	/// Set the desired minimum height above the terrain.
-	void SetMinHeight(float fMinHeight) { m_fMinHeight = fMinHeight; }
-
-	/// Get the minimum height about the terrain.
-	float GetHeight() { return m_fMinHeight; }
-
-	/// If true, the current height above the terrain is maintained.  Default is false.
-	void SetMaintain(bool bMaintain) { m_bMaintain = bMaintain; }
-	bool GetMaintain() { return m_bMaintain; }
+	void SetHeightField(vtHeightField3d *pHF) { m_pHeightField = pHF; }
 
 	// If true, exaggerate the speed of the view by height above ground
 	void SetExag(bool bDo) { m_bExag = bDo; }
 	bool GetExag() { return m_bExag; }
 
-	/// Set the height about the terrain to maintain, or pass 0 to use the current value.
-	void SetMaintainHeight(float fheight) { m_fMaintainHeight = fheight; }
-
 	// override
 	void Eval();
 
-	/// Current speed (meters/second as of the most recent frame)
-	float GetCurrentSpeed() { return m_fCurrentSpeed; }
-
-protected:
-	void KeepAboveGround();
-
 protected:
 	vtHeightField3d *m_pHeightField;
-	float	m_fAboveGround;	// height above the ground as of last frame
-	float	m_fMinHeight;
-	bool	m_bMin;
-	bool	m_bFollow;
-	float	m_fMaintainHeight;
-	bool	m_bMaintain;
-	float	m_fCurrentSpeed; // current speed (most recent frame)
 	bool	m_bExag;		// exaggerate speed based on height
 };
 
@@ -141,7 +114,7 @@ protected:
 class vtPanoFlyer : public vtTerrainFlyer
 {
 public:
-	vtPanoFlyer(float fSpeed, float fMinHeight, bool bMin);
+	vtPanoFlyer(float fSpeed);
 
 	void Eval();
 
@@ -167,22 +140,13 @@ public:
 	/// Set the TIN heightfield to which to constrain
 	void SetTin(vtTin3d *pTin);
 
-	/// Set the desired minimum height above the terrain.
-	void SetMinHeight(float fMinHeight) { m_fMinHeight = fMinHeight; }
-
-	/// Get the minimum height about the terrain.
-	float GetHeight() { return m_fMinHeight; }
-
 	// implementation override
 	void Eval();
 
 protected:
 	float	m_fSpeed;	// max units per frame of movement
 	vtTin3d	*m_pTin;
-	float	m_fMinHeight;
 	float	m_fPitch;
-
-	void KeepAboveGround();
 };
 
 
@@ -193,7 +157,7 @@ protected:
 class VFlyer : public vtTerrainFlyer
 {
 public:
-	VFlyer(float scale, float fMinHeight, bool bMin);
+	VFlyer(float scale);
 
 	void SetVerticalVelocity(float velocity);
 
@@ -213,7 +177,7 @@ protected:
 class QuakeFlyer : public vtTerrainFlyer
 {
 public:
-	QuakeFlyer(float scale, float fMinHeight, bool bMin);
+	QuakeFlyer(float scale);
 	void Eval();
 
 	// override
@@ -226,6 +190,37 @@ protected:
 	bool	m_bNavEnable;
 };
 
+
+/**
+ * Constrain the height of a target over a heightfield.
+ */
+class vtHeightConstrain : public vtEngine
+{
+public:
+	vtHeightConstrain(float fMinHeight);
+
+	/// Set the heightfield on which to do the terrain following.
+	void SetHeightField(vtHeightField3d *pHF) { m_pHF = pHF; }
+
+	/// Set the height above the terrain to maintain
+	void SetMinGroundOffset(float fMeters) { m_fMinGroundOffset = fMeters; }
+
+	/// Set the height above the terrain to maintain
+	float GetMinGroundOffset(float fMeters) { return m_fMinGroundOffset; }
+
+	/// If true, the current height above the terrain is maintained.  Default is false.
+	void SetMaintain(bool bMaintain) { m_bMaintain = bMaintain; }
+	bool GetMaintain() { return m_bMaintain; }
+	void SetMaintainHeight(float fHeight) { m_fMaintainHeight = fHeight; }
+
+	void Eval();
+
+protected:
+	bool	m_bMaintain;
+	float	m_fMaintainHeight;
+	vtHeightField3d *m_pHF;
+	float m_fMinGroundOffset;
+};
 
 //////////////////////////////////////////////////
 
