@@ -149,6 +149,8 @@ protected:
 class vtStructureArray3d : public vtStructureArray
 {
 public:
+	vtStructureArray3d();
+
 	virtual vtBuilding *NewBuilding();
 	virtual vtFence *NewFence();
 	virtual vtStructInstance *NewInstance();

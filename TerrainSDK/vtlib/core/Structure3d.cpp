@@ -179,6 +179,11 @@ void vtStructInstance3d::DeleteNode()
 // vtStructureArray3d
 //
 
+vtStructureArray3d::vtStructureArray3d() : vtStructureArray()
+{
+	m_pTerrain = NULL;
+}
+
 vtBuilding *vtStructureArray3d::NewBuilding()
 {
 	// Make sure that subsequent operations on this building are done in with
