@@ -29,6 +29,7 @@
 #include "ExtentDlg.h"
 #include "LayerPropDlg.h"
 #include "ProjectionDlg.h"
+#include "DistribVegDlg.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
@@ -614,7 +615,8 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 		if (layers == 1)
 			str.Printf("Failed to convert.");
 		else
-			str.Printf("Failed to convert %d of %d layers.", layers-succeeded, layers);
+			str.Printf("Failed to convert %d of %d layers.",
+				layers-succeeded, layers);
 		wxMessageBox(str);
 	}
 
@@ -675,8 +677,11 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 
 //		TRACE("Merging layer %s/%x with %s/%x\n",
 //			pL->GetFilename(), pL, pActive->GetFilename(), pActive);
-		pActive->AppendDataFrom(pL);
-		RemoveLayer(pL);
+		if (pActive->AppendDataFrom(pL))
+		{
+			// successfully merged contents, so second layer can be deleted
+			RemoveLayer(pL);
+		}
 	}
 
 	wxString newname = "untitled";
@@ -799,7 +804,8 @@ void MainFrame::OnViewFull(wxCommandEvent& event)
 void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 {
 	vtLayer *lp = GetActiveLayer();
-	event.Enable(lp && (lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
+	event.Enable(lp &&
+		(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
 }
 
 void MainFrame::OnViewWorldMap()
@@ -934,7 +940,8 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	}
 
 	UpdateProgressDialog(20, "Merging redundant nodes");
-	count = pRL->MergeRedundantNodes(progress_callback); // potentially takes a long time...
+	// potentially takes a long time...
+	count = pRL->MergeRedundantNodes(progress_callback);
 	if (count)
 	{
 		str = wxString::Format("Merged %d redundant roads", count);
@@ -1168,7 +1175,8 @@ void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 
 void MainFrame::OnAreaExportBitmap(wxCommandEvent& event)
 {
-	wxTextEntryDialog dlg(this, "Please enter pixel size of bitmap", "Export Bitmap", "");
+	wxTextEntryDialog dlg(this, "Please enter pixel size of bitmap",
+		"Export Bitmap", "");
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -1262,7 +1270,8 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	if (!m_PlantListDlg)
 	{
 		// Use file dialog to open plant list text file.
-		wxFileDialog loadFile(NULL, "Load Plant Info", "", "", PLANTS_FILTER, wxOPEN);
+		wxFileDialog loadFile(NULL, "Load Plant Info", "", "", PLANTS_FILTER,
+			wxOPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
@@ -1270,7 +1279,8 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		// Read Plantlist file.
 		if (!GetPlantList()->Read(loadFile.GetPath()))
 		{
-			wxMessageBox("Couldn't read plant list from that file.", "Error", wxOK, this);
+			wxMessageBox("Couldn't read plant list from that file.", "Error",
+				wxOK, this);
 			return;
 		}
 
@@ -1290,7 +1300,8 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 	if (!m_BioRegionDlg)
 	{
 		// Use file dialog to open bioregion text file.
-		wxFileDialog loadFile(NULL, "Load BioRegion Info", "", "", BIOREGIONS_FILTER, wxOPEN);
+		wxFileDialog loadFile(NULL, "Load BioRegion Info", "", "",
+			BIOREGIONS_FILTER, wxOPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
@@ -1298,7 +1309,8 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 		// Read bioregions, data kept on frame with m_pBioRegion.
 		if (!GetBioRegion()->Read(loadFile.GetPath()))
 		{
-			wxMessageBox("Couldn't read bioregion list from that file.", "Error", wxOK, this);
+			wxMessageBox("Couldn't read bioregion list from that file.",
+				"Error", wxOK, this);
 			return;
 		}
 
@@ -1315,22 +1327,28 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 void MainFrame::OnVegGenerate(wxCommandEvent& event)
 {
 	// Open File Save Dialog
-	wxFileDialog saveFile(NULL, "Save Vegetation File", "", "", "Vegetation Files (*.vf)|*.vf|",
-		wxSAVE | wxOVERWRITE_PROMPT );
+	wxFileDialog saveFile(NULL, "Save Vegetation File", "", "",
+		"Vegetation Files (*.vf)|*.vf|", wxSAVE | wxOVERWRITE_PROMPT);
 
-	bool bResult = (saveFile.ShowModal() == wxID_OK);
-	if (!bResult)
+	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString strPathName = saveFile.GetPath();
+
+	DistribVegDlg dlg(this, -1, "Vegetation Distribution Options");
+	dlg.m_fSampling = 40.0f;
+	dlg.m_fScarcity = 0.001f;
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
 
 	// Generate the plants
 	vtVegLayer *Density = NULL, *BioMap = NULL;
 	FindVegLayers(&Density, &BioMap);
 
-	float fTreeSpacing = 40.0f;
-	float fTreeScarcity = 0.001f;
+	float fTreeSpacing = dlg.m_fSampling;
+	float fTreeScarcity = dlg.m_fScarcity;
 
-	GenerateVegetation(strPathName, m_area, Density, BioMap, fTreeSpacing, fTreeScarcity);
+	GenerateVegetation(strPathName, m_area, Density, BioMap, fTreeSpacing,
+		fTreeScarcity);
 }
 
 void MainFrame::OnUpdateVegGenerate(wxUpdateUIEvent& event)
@@ -1416,7 +1434,8 @@ void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 
 void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 {
-	wxString str = wxGetTextFromUser("(X, Y) in current projection", "Enter coordinate");
+	wxString str = wxGetTextFromUser("(X, Y) in current projection",
+		"Enter coordinate");
 	if (str == "")
 		return;
 	double x, y;
