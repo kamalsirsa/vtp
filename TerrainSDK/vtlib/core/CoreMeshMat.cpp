@@ -361,6 +361,57 @@ vtGeom *Create3DCursor(float fSize, float fSmall)
 	return pGeom;
 }
 
+#define SPHERE_STEPS 24
+
+vtGeom *CreateBoundSphereGeom(const FSphere &sphere)
+{
+	vtGeom *pGeom = new vtGeom();
+	vtMaterialArray *pMats = new vtMaterialArray();
+	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
+	pGeom->SetMaterials(pMats);
+
+	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, (SPHERE_STEPS+1)*3*2);
+
+	float radius = sphere.radius * 0.9f;
+
+	FPoint3 p;
+	int i, j;
+	float a;
+
+	for (i = 0; i < 2; i++)
+	{
+		for (j = 0; j <= SPHERE_STEPS; j++)
+		{
+			a = j * PI2f / SPHERE_STEPS;
+			p.x = sin(a) * radius;
+			p.y = cos(a) * radius;
+			p.z = i ? radius * 0.05f : radius * -0.05f;
+			pMesh->AddVertex(p + sphere.center);
+		}
+		for (j = 0; j <= SPHERE_STEPS; j++)
+		{
+			a = j * PI2f / SPHERE_STEPS;
+			p.y = sin(a) * radius;
+			p.z = cos(a) * radius;
+			p.x = i ? radius * 0.05f : radius * -0.05f;
+			pMesh->AddVertex(p + sphere.center);
+		}
+		for (j = 0; j <= SPHERE_STEPS; j++)
+		{
+			a = j * PI2f / SPHERE_STEPS;
+			p.z = sin(a) * radius;
+			p.x = cos(a) * radius;
+			p.y = i ? radius * 0.08f : radius * -0.08f;
+			pMesh->AddVertex(p + sphere.center);
+		}
+	}
+	for (i = 0; i < 6; i++)
+		pMesh->AddStrip2((SPHERE_STEPS+1), (SPHERE_STEPS+1) * i);
+
+	pGeom->AddMesh(pMesh, 0);
+	return pGeom;
+}
+
 ////////////////////////////////////////////////////////////////////
 
 int vtMaterialArrayBase::AddTextureMaterial(vtImage *pImage,

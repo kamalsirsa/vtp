@@ -342,5 +342,6 @@ protected:
 
 // global functions
 vtGeom *Create3DCursor(float fSize, float fSmall);
+vtGeom *CreateBoundSphereGeom(const FSphere &sphere);
 
 #endif
