@@ -19,7 +19,7 @@
 #include "vtlib/vtlib.h"
 #include "CameraDlg.h"
 #include "../Enviro.h"
-#include "vtlib/core/LocalProjection.h"
+#include "vtdata/LocalConversion.h"
 
 // WDR: class implementations
 
