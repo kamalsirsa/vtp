@@ -20,7 +20,7 @@ public:
 
 	void SetupVehicles();
 	void AddVehicleType(VehicleType *vt);
-	Vehicle *CreateVehicle(const char *szType, RGBf &cColor, float fSize);
+	Vehicle *CreateVehicle(const char *szType, const RGBf &cColor, float fSize);
 #if 0
 	void AddCarEngine(vtTransform *pVehicleModel,
 					  float fSpeed, Node *pNode = NULL);

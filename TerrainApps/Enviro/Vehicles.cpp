@@ -177,7 +177,7 @@ void VehicleType::AttemptModelLoad()
 	}
 }
 
-Vehicle *VehicleType::CreateVehicle(RGBf &cColor, float fSize)
+Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fSize)
 {
 	// check if it's loaded yet
 	if (!m_bAttemptedLoaded)

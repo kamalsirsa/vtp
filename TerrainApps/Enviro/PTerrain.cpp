@@ -74,7 +74,7 @@ void PTerrain::SetupVehicles()
 	AddVehicleType(b747);
 }
 
-Vehicle *PTerrain::CreateVehicle(const char *szType, RGBf &cColor, float fSize)
+Vehicle *PTerrain::CreateVehicle(const char *szType, const RGBf &cColor, float fSize)
 {
 	//if vehicles haven't been created yet...
 	if (m_pFirstVehicleType == NULL) {

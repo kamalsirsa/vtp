@@ -19,7 +19,7 @@ public:
 	VehicleType(const char *szName);
 
 	void SetModelLod(int lod, const char *filename, float fDistance);
-	Vehicle *CreateVehicle(RGBf &cColor, float fSize);
+	Vehicle *CreateVehicle(const RGBf &cColor, float fSize);
 
 	//
 	int m_iLods;

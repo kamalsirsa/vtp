@@ -432,7 +432,8 @@ void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 	// make some planes
 	for (int i = 0; i < 6; i++)
 	{
-		vtTransform *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f), fSize);
+		RGBf red(1.0f, 1.0f, 0.0f);
+		vtTransform *copy = CreateVehicle("747", red, fSize);
 		AddNode(copy);
 
 		// make it bigger and faster than real life
