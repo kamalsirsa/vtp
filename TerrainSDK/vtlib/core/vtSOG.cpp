@@ -180,7 +180,8 @@ void OutputSOG::WriteMaterial(FILE *fp, vtMaterial *pMat)
 	vtImage *pImage;
 	short components = 7;
 
-	pImage = pMat->GetTexture();
+//	pImage = pMat->GetTexture();
+	pImage = NULL;
 	if (pImage)
 		components += 2;
 
