@@ -149,8 +149,6 @@ void IcoGlobe::SetUnfolding(float f)
 		m_mface[i].xform->SetTrans(pos);
 		m_mface[i].xform->RotateLocal(m_mface[i].axis, -f * dih);
 	}
-	// deflate as we unfold
-	SetInflation(1.0f-f);
 
 	// gradually undo the current top rotation
 	FQuat qnull(0,0,0,1);
