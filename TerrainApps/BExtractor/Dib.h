@@ -1,8 +1,7 @@
-////////////////////////////////////////////////////////////////
-// Copyright 1996 Microsoft Systems Journal. 
-// If this code works, it was written by Paul DiLascia.
-// If not, I don't know who wrote it.
-// See dib.cpp
+//
+// Parts of this module were derived from example code in the
+// 1996 Microsoft Systems Journal, by Paul DiLascia.
+//
 
 #ifndef BEXTRACTOR_DIB_H
 #define BEXTRACTOR_DIB_H
@@ -14,7 +13,6 @@
 
 class GDALRasterBand;
 class GDALDataset;
-class CGBM;
 
 // global functions for ordinary CBitmap too
 //
@@ -23,7 +21,7 @@ extern BOOL  DrawBitmap(CDC& dc, CBitmap* pBitmap,
 	const CRect* rcDst=NULL, const CRect* rcSrc=NULL);
 
 ////////////////
-// CDib implements Device Independent Bitmaps as a form of CBitmap. 
+// CDib implements Device Independent Bitmaps as a form of CBitmap.
 //
 class CDib : public CBitmap
 {
@@ -43,9 +41,11 @@ public:
 	CDib();
 	~CDib();
 
-	bool Setup(CDC* pDC, CGBM *pGBM, HDRAWDIB hdd);
-	bool Setup(CDC* pDC, int width, int height, int bits_per_pixel, HDRAWDIB hdd, RGBQUAD *colors = NULL);
-	bool Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd);
+	bool Setup(CDC* pDC, int width, int height, int bits_per_pixel,
+		HDRAWDIB hdd, RGBQUAD *colors = NULL);
+
+	bool Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
+		void progress_callback(int) = NULL);
 
 	CSize	GetSize() { return CSize(m_bm.bmWidth, m_bm.bmHeight); }
 	BOOL Attach(HGDIOBJ hbm);
@@ -75,6 +75,6 @@ public:
 	char	*GetData() { return (char *) m_data; }
 };
 
-CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd);
+CDib *CreateMonoDib(CDC *pDC, CDib *pDib, HDRAWDIB hdd, void progress_callback(int) = NULL);
 
 #endif // BEXTRACTOR_DIB_H
