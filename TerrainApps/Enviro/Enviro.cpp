@@ -230,14 +230,17 @@ void Enviro::SetupGlobe()
 
 		m_pGlobeMGeom->SetEnabled(true);
 		m_pRoot->AddChild(m_pGlobeMGeom);
-
+		m_pCursorMGeom->Identity();
+	}
+	if (m_iInitStep == 4)
+	{
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		pCam->SetHither(0.01f);
 		pCam->SetYon(50.0f);
 		pCam->SetFOV(60 * (PIf / 180.0f));
-
-		m_pCursorMGeom->Identity();
-
+	}
+	if (m_iInitStep == 5)
+	{
 		time_t ltime;
 		struct tm *gmt;
 		time( &ltime );
@@ -246,14 +249,14 @@ void Enviro::SetupGlobe()
 
 		SetShowTime(false);
 	}
-	if (m_iInitStep == 4)
+	if (m_iInitStep == 6)
 	{
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		pCam->SetTransform1(m_SpaceCamLocation);
 
 		m_pTrackball->SetEnabled(true);
 	}
-	if (m_iInitStep == 5)
+	if (m_iInitStep == 7)
 	{
 		m_state = AS_Orbit;
 		SetMode(MM_SELECT);
@@ -405,6 +408,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		// "Finish" terrain scene
 		SetupCameras();
+
+		_Log("Finishing Terrain Scene\n");
 		GetTerrainScene().Finish(g_Options.m_strDataPath);
 
 		if (g_Options.m_bSpeedTest)
@@ -889,12 +894,13 @@ void Enviro::SetMode(MouseMode mode)
 
 void Enviro::SetupCameras()
 {
-	_Log("SetupCameras\n");
+	_Log("SetupCameras: Creating normal camera\n");
 
 	// create normal camera
 	m_pNormalCamera = vtGetScene()->GetCamera();
 	float fov = m_pNormalCamera->GetFOV();
 
+	_Log("Setting hither and yon\n");
 	FPoint3 pos = m_pNormalCamera->GetTrans();
 	m_pNormalCamera->SetHither(5.0f * WORLD_SCALE);		// 10 m
 	//m_pNormalCamera->SetYon(500000.0f * WORLD_SCALE);	// 500 km
@@ -904,6 +910,7 @@ void Enviro::SetupCameras()
 	// Create second camera (for Top-Down view)
 	if (m_pTopDownCamera == NULL)
 	{
+		_Log("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera();
 		m_pTopDownCamera->SetOrtho(10000.0f * WORLD_SCALE);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
