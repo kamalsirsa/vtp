@@ -250,23 +250,38 @@ vtString vtApp::GetIniFileForTerrain(const vtString &name)
 
 int EditTerrainParameters(wxWindow *parent, const char *filename)
 {
+	vtString fname = filename;
+
 	TParamsDlg dlg(parent, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
 	dlg.SetDataPaths(g_Options.m_DataPaths);
 
 	TParams Params;
-	if (Params.LoadFrom(filename))
-		dlg.SetParams(Params);
-
+	if (!Params.LoadFrom(fname))
+	{
+		wxMessageBox("Couldn't load from that file.");
+		return wxID_CANCEL;
+	}
+	dlg.SetParams(Params);
 	dlg.CenterOnParent();
 	int result = dlg.ShowModal();
 	if (result == wxID_OK)
 	{
 		dlg.GetParams(Params);
-		if (!Params.WriteToXML(filename, STR_TPARAMS_FORMAT_NAME))
+
+		vtString ext = GetExtension(fname);
+		if (ext.CompareNoCase(".ini") == 0)
+		{
+			wxMessageBox("Upgrading the .ini to a .xml file.\n"
+				"Please remember to remove the old .ini file.");
+			fname = fname.Left(fname.GetLength()-4) + ".xml";
+		}
+
+		if (!Params.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
 		{
 			wxString str;
 			str.Printf(_T("Couldn't save to file %hs.\n")
-				_T("Please make sure the file is not read-only."), filename);
+				_T("Please make sure the file is not read-only."),
+				(const char *)fname);
 			wxMessageBox(str);
 			result = wxID_CANCEL;
 		}
