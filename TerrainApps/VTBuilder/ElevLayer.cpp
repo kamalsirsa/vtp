@@ -472,6 +472,10 @@ void vtElevLayer::RenderBitmap()
 		OpenProgressDialog(_T("Rendering Bitmap"), true);
 #endif
 
+	// safety check
+	if (m_iImageWidth == 0 || m_iImageHeight == 0)
+		return;
+
 	UpdateProgressDialog(0, _T("Generating colors..."));
 	DetermineMeterSpacing();
 
@@ -905,8 +909,16 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 	bool success = false;
 
-	if (m_pGrid == NULL)
-		m_pGrid = new vtElevationGrid();
+	if (!strExt.CmpNoCase(_T("dxf")))
+	{
+		m_pTin = new vtTin2d();
+		success = m_pTin->ReadDXF(strFileName.mb_str(), progress_callback);
+	}
+	else
+	{
+		if (m_pGrid == NULL)
+			m_pGrid = new vtElevationGrid();
+	}
 
 	if (!strExt.CmpNoCase(_T("dem")))
 	{
@@ -1014,8 +1026,13 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	if (!success)
 		return false;
 
-	vtProjection &proj = m_pGrid->GetProjection();
-	if (!proj.GetRoot())
+	vtProjection *pProj;
+	if (m_pGrid)
+		pProj = &m_pGrid->GetProjection();
+	else
+		pProj = &m_pTin->m_proj;
+
+	if (!pProj->GetRoot())
 	{
 		// No projection.
 		wxString2 msg = "File lacks a projection.  "
@@ -1032,58 +1049,61 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return false;
-			dlg.GetProjection(proj);
+			dlg.GetProjection(*pProj);
 		}
 		if (res == wxNO)
 		{
-			GetMainFrame()->GetProjection(proj);
+			GetMainFrame()->GetProjection(*pProj);
 		}
 		if (res == wxCANCEL)
 			return false;
 	}
-	if (m_pGrid->GetEarthExtents().IsEmpty())
+	if (m_pGrid != NULL)
 	{
-		// No extents.
-		wxString2 msg = "File lacks geographic location (extents).  "
-			"Would you like to specify extents?\n"
-			"Yes - specify extents\n"
-			"No - use some default values\n";
-		int res = wxMessageBox(msg, _T("Elevation Import"), wxYES_NO | wxCANCEL);
-		if (res == wxYES)
+		if (m_pGrid->GetEarthExtents().IsEmpty())
 		{
-			DRECT ext;
-			ext.Empty();
-			ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
-			dlg.SetArea(ext, (proj.IsGeographic() != 0));
-			if (dlg.ShowModal() == wxID_OK)
-				m_pGrid->SetEarthExtents(dlg.m_area);
-			else
+			// No extents.
+			wxString2 msg = "File lacks geographic location (extents).  "
+				"Would you like to specify extents?\n"
+				"Yes - specify extents\n"
+				"No - use some default values\n";
+			int res = wxMessageBox(msg, _T("Elevation Import"), wxYES_NO | wxCANCEL);
+			if (res == wxYES)
+			{
+				DRECT ext;
+				ext.Empty();
+				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
+				dlg.SetArea(ext, (pProj->IsGeographic() != 0));
+				if (dlg.ShowModal() == wxID_OK)
+					m_pGrid->SetEarthExtents(dlg.m_area);
+				else
+					return false;
+			}
+			if (res == wxNO)
+			{
+				// Just make up some fake extents, assuming a regular even grid
+				int xsize, ysize;
+				m_pGrid->GetDimensions(xsize, ysize);
+
+				DRECT ext;
+				ext.left = ext.bottom = 0;
+				if (pProj->IsGeographic())
+				{
+					ext.right = xsize * (1.0/3600);	// arc second
+					ext.top = ysize * (1.0/3600);
+				}
+				else
+				{
+					ext.right = xsize * 10;	// 10 linear units (meters, feet..)
+					ext.top = ysize * 10;
+				}
+				m_pGrid->SetEarthExtents(ext);
+			}
+			if (res == wxCANCEL)
 				return false;
 		}
-		if (res == wxNO)
-		{
-			// Just make up some fake extents, assuming a regular even grid
-			int xsize, ysize;
-			m_pGrid->GetDimensions(xsize, ysize);
-
-			DRECT ext;
-			ext.left = ext.bottom = 0;
-			if (proj.IsGeographic())
-			{
-				ext.right = xsize * (1.0/3600);	// arc second
-				ext.top = ysize * (1.0/3600);
-			}
-			else
-			{
-				ext.right = xsize * 10;	// 10 linear units (meters, feet..)
-				ext.top = ysize * 10;
-			}
-			m_pGrid->SetEarthExtents(ext);
-		}
-		if (res == wxCANCEL)
-			return false;
+		m_pGrid->SetupConversion(1.0f);
 	}
-	m_pGrid->SetupConversion(1.0f);
 	return true;
 }
 
@@ -1202,6 +1222,10 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		int verts = m_pTin->NumVerts();
 		int tris = m_pTin->NumTris();
 		str.Printf(_T("TIN\nVertices: %d\nTriangles: %d\n"), verts, tris);
+		result += str;
+		float minh, maxh;
+		m_pTin->GetHeightExtents(minh, maxh);
+		str.Printf(_T("Min/max elevation: %.2f, %.2f\n"), minh, maxh);
 		result += str;
 	}
 	strIn = result;
