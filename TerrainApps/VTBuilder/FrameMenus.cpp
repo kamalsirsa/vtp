@@ -772,7 +772,7 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 	if (pRawL)
 	{
 		vtFeatureSet *pSet = pRawL->GetFeatureSet();
-		if (pSet->NumSelected() != 0)
+		if (pSet && pSet->NumSelected() != 0)
 		{
 			pSet->DeleteSelected();
 			pRawL->SetModified(true);
@@ -2463,8 +2463,9 @@ void MainFrame::OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event)
 void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
+	vtFeatureSet *pFS = pRL->GetFeatureSet();
 
-	if (pRL->GetFeatureSet()->GetNumFields() == 0)
+	if (!pFS || pFS->GetNumFields() == 0)
 	{
 		DisplayAndLog("Can't select by condition because the current\n"
 					  "layer has no fields defined.");
@@ -2475,7 +2476,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		wxString2 str = dlg.m_strValue;
-		int selected = pRL->GetFeatureSet()->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
+		int selected = pFS->SelectByCondition(dlg.m_iField, dlg.m_iCondition,
 			str.mb_str());
 
 		wxString2 msg;
