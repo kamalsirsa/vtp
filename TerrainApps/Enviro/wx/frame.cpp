@@ -1599,22 +1599,6 @@ void vtFrame::UpdateStatus()
 
 	if (m_pLocationDlg && m_pLocationDlg->IsShown())
 		m_pLocationDlg->Update();
-
-#if 0
-	vtString vs;
-	g_App.GetStatusText(vs);
-
-	wxString2 str;
-#if SUPPORT_WSTRING && UNICODE
-	wstring2 ws;
-	ws.from_utf8(vs);
-	str = ws.c_str();
-#else
-	str = vs;
-#endif
-
-	SetStatusText(str);
-#endif
 }
 
 
