@@ -25,14 +25,22 @@ type 1 ff00ff <optional description, ignored>
 #include <stdio.h>
 #include "AttribMap.h"
 
-
-AttribMap::AttribMap(const char *fname_att, const char *fname_bmp) : vtDIB(fname_bmp)
+AttribMap::AttribMap()
 {
+}
+
+bool AttribMap::Load(const char *fname_att, const char *fname_bmp)
+{
+	bool result = ReadBMP(fname_bmp);
+	if (!result)
+		return false;
+
 	m_AttribTable = NULL;
 
 	// also read attribute description file
 	FILE *fp = fopen(fname_att, "r");
-	if (!fp) return;
+	if (!fp)
+		return false;
 
 	fscanf(fp, "west: %d\n", &m_xmin);
 	fscanf(fp, "east: %d\n", &m_xmax);
@@ -53,6 +61,7 @@ AttribMap::AttribMap(const char *fname_att, const char *fname_bmp) : vtDIB(fname
 		m_AttribTable[i].rgb = rgb;
 	}
 	fclose(fp);
+	return true;
 }
 
 AttribMap::~AttribMap()

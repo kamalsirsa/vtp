@@ -18,9 +18,10 @@ struct AttribTableEntry {
 class AttribMap : public vtDIB
 {
 public:
-	AttribMap(const char *fname_att, const char *fname_bmp);
+	AttribMap();
 	~AttribMap();
 
+	bool Load(const char *fname_att, const char *fname_bmp);
 	int GetAttribute(float utm_x, float utm_y);
 
 	int m_iNumAttribs;
