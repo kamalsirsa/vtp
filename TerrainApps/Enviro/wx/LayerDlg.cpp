@@ -271,6 +271,8 @@ void LayerDlg::OnLayerRemove( wxCommandEvent &event )
 void LayerDlg::OnLayerCreate( wxCommandEvent &event )
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
+	if (!pTerr)
+		return;
 
 	vtStructureArray3d *sa = pTerr->NewStructureArray();
 	sa->SetFilename("Untitled.vtst");
