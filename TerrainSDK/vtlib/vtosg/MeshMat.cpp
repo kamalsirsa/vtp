@@ -602,6 +602,17 @@ void vtMesh::AddLine(int p0, int p1)
 }
 
 /**
+ * Add a single line primitive to a mesh.
+ *	\param pos1, pos2	The positions of the two vertices of the line.
+ */
+void vtMesh::AddLine(const FPoint3 &pos1, const FPoint3 &pos2)
+{
+	int p0 = AddVertex(pos1);
+	int p1 = AddVertex(pos2);
+	AddLine(p0, p1);
+}
+
+/**
  * Add a triangle.
  *  p0, p1, p2 are the indices of the vertices of the triangle.
  */
