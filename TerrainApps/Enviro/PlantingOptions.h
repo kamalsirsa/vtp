@@ -7,7 +7,7 @@ struct PlantingOptions
 	int		m_iMode;
 	int		m_iSpecies;
 	float	m_fHeight;
-    int		m_iVariance;
+	int		m_iVariance;
 	float	m_fSpacing;
 };
 

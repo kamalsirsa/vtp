@@ -21,7 +21,7 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 	char *fname;
 	int number = (num++)%3;
 	if (number == 0)		fname = "Nevada/butterfly1_v3.png";
-    else if (number == 1)	fname = "Nevada/butterfly2_v1.png";
+	else if (number == 1)	fname = "Nevada/butterfly2_v1.png";
 	else if (number == 2)	fname = "Nevada/butterfly3_v2.png";
 
 	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, fname);

@@ -72,7 +72,7 @@ Enviro::Enviro()
 	m_PlantOpt.m_iMode = 0;
 	m_PlantOpt.m_iSpecies = 0;
 	m_PlantOpt.m_fHeight = 2.0f;
-    m_PlantOpt.m_iVariance = 20;
+	m_PlantOpt.m_iVariance = 20;
 	m_PlantOpt.m_fSpacing = 2.0f;
 
 	m_bDragging = false;

@@ -578,7 +578,7 @@ void geo_to_xyz(double radius, const DPoint2 &geo, DPoint3 &p)
 
 double radians(double degrees)
 {
-    return degrees / 180.0 * PId;
+	return degrees / 180.0 * PId;
 }
 
 void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
