@@ -112,7 +112,7 @@ public:
 	/// place a model on the terrain
 	void PlantModel(vtTransform *model);
 	/// place a model on the terrain at a specific point
-	void PlantModelAtPoint(vtTransform *model, const DPoint2 &p, bool bGeo = false);
+	void PlantModelAtPoint(vtTransform *model, const DPoint2 &p);
 
 	// test whether a given point is within the current terrain
 	bool PointIsInTerrain(const DPoint2 &p);

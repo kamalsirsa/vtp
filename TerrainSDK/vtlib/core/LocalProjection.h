@@ -12,7 +12,7 @@
 #define VTLIB_LOCALPROJECTIONH
 
 // global conversion factor
-#define WORLD_SCALE				0.001f	// 1 meter = 0.001 units
+#define WORLD_SCALE				1.0f	// 1 meter = 1.0 units
 
 //
 // The following class represents a mapping between real earth coordinates
@@ -24,9 +24,7 @@ class vtLocalConversion
 public:
 	vtLocalConversion();
 
-	void Setup(bool bGeo, const DRECT &earth_extents);
-	void SetDegreeOrigin(const DPoint2 &degrees);
-	void SetMeterOrigin(const DPoint2 &meters);
+	void Setup(enum LinearUnits units, const DRECT &earth_extents);
 	void SetVerticalScale(float scale);
 
 	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth);
@@ -35,18 +33,16 @@ public:
 	void ConvertFromEarth(const DPoint2 &earth, float &x, float &z);
 	void ConvertFromEarth(const DPoint3 &earth, FPoint3 &world);
 
-	void convert_geo_to_local_xz(double lon, double lat, float &x, float &z);
-	void convert_projected_to_local_xz(double px, double py, float &x, float &z);
-	void convert_local_xz_to_projected(float x, float z, double &px, double &py);
-	void convert_local_xz_to_geo(float x, float y, double &lon, double &lat);
+	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z);
+	void convert_local_xz_to_earth(float x, float z, double &ex, double &ey);
 
-	bool	m_bGeographic;
 	FRECT	m_WorldExtents;		// cooked (OpenGL) extents (in the XZ plane)
 	float	m_fVerticalScale;
+	enum LinearUnits m_units;
 
 protected:
 	DPoint2	m_EarthOrigin;
-	float	m_fMetersPerLongitude;
+	DPoint2	m_scale;
 };
 
 extern vtLocalConversion g_Conv;

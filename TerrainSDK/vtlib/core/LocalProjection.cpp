@@ -25,43 +25,35 @@ vtLocalConversion g_Conv;
 
 vtLocalConversion::vtLocalConversion()
 {
-	m_bGeographic = true;
 	m_EarthOrigin.Set(0, 0);
 	m_fVerticalScale = WORLD_SCALE;
-	m_fMetersPerLongitude = (float) EstimateDegreesToMeters(0);
 }
 
-void vtLocalConversion::Setup(bool bGeo, const DRECT &earth_extents)
+void vtLocalConversion::Setup(LinearUnits units, const DRECT &earth_extents)
 {
-	DPoint2 origin(earth_extents.left, earth_extents.bottom);
-	if (bGeo)
+	m_units = units;
+
+	m_EarthOrigin.Set(earth_extents.left, earth_extents.bottom);
+	if (units == LU_DEGREES)
 	{
-		SetDegreeOrigin(origin);
-		convert_geo_to_local_xz(earth_extents.left, earth_extents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-		convert_geo_to_local_xz(earth_extents.right, earth_extents.top, m_WorldExtents.right, m_WorldExtents.top);
+		double fMetersPerLongitude = EstimateDegreesToMeters(earth_extents.bottom);
+		m_scale.x = fMetersPerLongitude;
+		m_scale.y = METERS_PER_LATITUDE;
 	}
-	else
+	else if (units == LU_METERS)
 	{
-		SetMeterOrigin(origin);
-		convert_projected_to_local_xz(earth_extents.left, earth_extents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
-		convert_projected_to_local_xz(earth_extents.right, earth_extents.top, m_WorldExtents.right, m_WorldExtents.top);
+		m_scale.x = m_scale.y = 1.0;
 	}
-}
-void vtLocalConversion::SetDegreeOrigin(const DPoint2 &degrees)
-{
-	m_EarthOrigin = degrees;
-
-	// estimate meters per degree of longitude, using the terrain origin
-	m_fMetersPerLongitude = (float) EstimateDegreesToMeters(degrees.y);
-
-	m_bGeographic = true;
-}
-
-void vtLocalConversion::SetMeterOrigin(const DPoint2 &meters)
-{
-	m_EarthOrigin = meters;
-
-	m_bGeographic = false;
+	else if (units == LU_FEET_INT)
+	{
+		m_scale.x = m_scale.y = 0.3048;
+	}
+	else if (units == LU_FEET_US)
+	{
+		m_scale.x = m_scale.y = (1200.0/3937.0);
+	}
+	convert_earth_to_local_xz(earth_extents.left, earth_extents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
+	convert_earth_to_local_xz(earth_extents.right, earth_extents.top, m_WorldExtents.right, m_WorldExtents.top);
 }
 
 void vtLocalConversion::SetVerticalScale(float scale)
@@ -69,36 +61,18 @@ void vtLocalConversion::SetVerticalScale(float scale)
 	m_fVerticalScale = scale;
 }
 
-void vtLocalConversion::convert_geo_to_local_xz(double lon, double lat,
-												float &x, float &z)
+void vtLocalConversion::convert_earth_to_local_xz(double ex, double ey,
+												  float &x, float &z)
 {
-	if (m_bGeographic)
-	{
-		x = (float) ((lon - m_EarthOrigin.x) * m_fMetersPerLongitude * WORLD_SCALE);
-		z = (float) -((lat - m_EarthOrigin.y) * METERS_PER_LATITUDE * WORLD_SCALE);
-	}
-	// TODO: what if not geographic?
+	x = (float) ((ex - m_EarthOrigin.x) * m_scale.x * WORLD_SCALE);
+	z = (float) -((ey - m_EarthOrigin.y) * m_scale.y * WORLD_SCALE);
 }
 
-void vtLocalConversion::convert_projected_to_local_xz(double px, double py,
-													  float &x, float &z)
+void vtLocalConversion::convert_local_xz_to_earth(float x, float z,
+												  double &ex, double &ey)
 {
-	x = (float) (px - m_EarthOrigin.x) * WORLD_SCALE;
-	z = (float) -(py - m_EarthOrigin.y) * WORLD_SCALE;
-}
-
-void vtLocalConversion::convert_local_xz_to_projected(float x, float z,
-													  double &px, double &py)
-{
-	px = (x / WORLD_SCALE + m_EarthOrigin.x);
-	py = (-z / WORLD_SCALE + m_EarthOrigin.y);
-}
-
-void vtLocalConversion::convert_local_xz_to_geo(float x, float z,
-												double &lon, double &lat)
-{
-	lon = m_EarthOrigin.x + (x / m_fMetersPerLongitude / WORLD_SCALE);
-	lat = m_EarthOrigin.y + (-z / METERS_PER_LATITUDE / WORLD_SCALE);
+	ex = m_EarthOrigin.x + (x / m_scale.x / WORLD_SCALE);
+	ey = m_EarthOrigin.y + (-z / m_scale.y / WORLD_SCALE);
 }
 
 //
@@ -107,35 +81,23 @@ void vtLocalConversion::convert_local_xz_to_geo(float x, float z,
 //
 void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
 {
-	if (m_bGeographic)
-		convert_local_xz_to_geo(world.x, world.z, earth.x, earth.y);
-	else
-		convert_local_xz_to_projected(world.x, world.z, earth.x, earth.y);
+	convert_local_xz_to_earth(world.x, world.z, earth.x, earth.y);
 	earth.z = world.y / m_fVerticalScale;
 }
 
 void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
 {
-	if (m_bGeographic)
-		convert_geo_to_local_xz(earth.x, earth.y, world.x, world.y);
-	else
-		convert_projected_to_local_xz(earth.x, earth.y, world.x, world.z);
+	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.y);
 	world.y = (float) (earth.z * m_fVerticalScale);
 }
 
 void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth)
 {
-	if (m_bGeographic)
-		convert_local_xz_to_geo(x, z, earth.x, earth.y);
-	else
-		convert_local_xz_to_projected(x, z, earth.x, earth.y);
+	convert_local_xz_to_earth(x, z, earth.x, earth.y);
 }
 
 void vtLocalConversion::ConvertFromEarth(const DPoint2 &earth, float &x, float &z)
 {
-	if (m_bGeographic)
-		convert_geo_to_local_xz(earth.x, earth.y, x, z);
-	else
-		convert_projected_to_local_xz(earth.x, earth.y, x, z);
+	convert_earth_to_local_xz(earth.x, earth.y, x, z);
 }
 

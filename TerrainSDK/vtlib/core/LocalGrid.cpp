@@ -33,7 +33,7 @@ void vtLocalGrid::SetGlobalProjection()
 
 void vtLocalGrid::SetupConversion(float fVerticalExag)
 {
-	m_Conversion.Setup(m_proj.IsGeographic(), m_area);
+	m_Conversion.Setup(m_proj.GetUnits(), m_area);
 	m_Conversion.m_fVerticalScale = WORLD_SCALE * fVerticalExag;
 
 	// determine step size between each height sample
