@@ -14,6 +14,7 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 
 class EnviroOptions;
 
@@ -57,8 +58,8 @@ private:
     bool    m_bQuakeNavigation;
     bool    m_bStartEarth;
     bool    m_bStartTerrain;
-    wxString    m_strTName;
-    wxString    m_strImage;
+    wxString2    m_strTName;
+    wxString2    m_strImage;
     float       m_fPlantScale;
     bool        m_bShadows;
 

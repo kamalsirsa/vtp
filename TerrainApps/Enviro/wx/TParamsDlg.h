@@ -14,6 +14,7 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "vtlib/core/TParams.h"
 
 // WDR: class declarations
@@ -41,8 +42,8 @@ public:
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
 
-	wxString	m_strFilename;
-	wxString	m_strFilenameTin;
+	wxString2	m_strFilename;
+	wxString2	m_strFilenameTin;
 	float   m_fVerticalExag;
 	bool	m_bTin;
 	bool	m_bRegular;
@@ -54,22 +55,22 @@ public:
 	int		m_iInitTime;
 	float   m_fTimeSpeed;
 	bool	m_bSky;
-	wxString	m_strSkyTexture;
+	wxString2	m_strSkyTexture;
 	bool	m_bFog;
 	int		m_iTexture;
 	int		m_iTilesize;
-	wxString	m_strTextureSingle;
-	wxString	m_strTextureBase;
+	wxString2	m_strTextureSingle;
+	wxString2	m_strTextureBase;
 	bool	m_bJPEG;
-	wxString	m_strTextureFilename;
+	wxString2	m_strTextureFilename;
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bRoads;
-	wxString	m_strRoadFile;
+	wxString2	m_strRoadFile;
 	float   m_fWidthExag;
 	bool	m_bTexRoads;
 	bool	m_bTrees;
-	wxString	m_strTreeFile;
+	wxString2	m_strTreeFile;
 	int		m_iTreeDistance;
 	int		m_iFogDistance;
 	bool	m_bVertexColors;
@@ -84,11 +85,11 @@ public:
 	bool	m_bLabels;
 	int		m_iMinHeight;
 	bool	m_bBuildings;
-	wxString	m_strBuildingFile;
+	wxString2	m_strBuildingFile;
 //  bool	m_bVehicles;
 //  float   m_fVehicleSize;
 	bool	m_bTriStrips;
-//  wxString	m_strMemRequired;
+//  wxString2	m_strMemRequired;
 	bool	m_bDetailTexture;
 	bool	m_bPreLight;
 	bool	m_bDirt;
@@ -97,7 +98,7 @@ public:
 	float   m_fRoadDistance;
 	float   m_fRoadHeight;
 	float   m_fNavSpeed;
-	wxString	m_strLocFile;
+	wxString2	m_strLocFile;
 	float   m_fPreLightFactor;
 //  int		m_iNumCars;
 	bool	m_bRoadCulture;
@@ -106,9 +107,9 @@ public:
 	bool	m_bPreLit;
 	bool	m_bAirports;
 	bool	m_bRouteEnable;
-	wxString m_strRouteFile;
+	wxString2 m_strRouteFile;
 
-	wxString m_strInitTime;
+	wxString2 m_strInitTime;
 
 	// WDR: method declarations for TParamsDlg
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }

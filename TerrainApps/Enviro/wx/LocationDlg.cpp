@@ -21,7 +21,6 @@
 #include "canvas.h"
 #include "LocationDlg.h"
 
-
 void BlockingMessageBox(const char *msg)
 {
 	EnableContinuousRendering(false);
@@ -70,7 +69,7 @@ void LocationDlg::SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
 	m_pSaver->SetProjection(proj);
 }
 
-void LocationDlg::SetLocFile(const char *fname)
+void LocationDlg::SetLocFile(const wstring2 &fname)
 {
 	m_pSaver->Empty();
 	if (!m_pSaver->Read(fname))
@@ -90,25 +89,9 @@ void LocationDlg::RefreshList()
 	int num = m_pSaver->GetNumLocations();
 	for (int i = 0; i < num; i++)
 	{
-		const char *tmp;
-
 		vtLocation *loc = m_pSaver->GetLocation(i);
 
-		str = _T("Simple Literal");
-		tmp = str.mb_str();
-
-		str.Printf(_T("Printf Literal"));
-		tmp = str.mb_str();
-
-		str.Printf(_T("%d. %s"), i+1, (const char *)loc->m_name);
-		tmp = str.mb_str();
-
-		str.Printf(_T("%d"), i+1);
-		tmp = str.mb_str();
-
-		str.Printf(_T("%s"), (const char *)loc->m_name);
-		tmp = str.mb_str();
-
+		str.Printf(_T("%d. %s"), i+1, loc->m_strName.c_str());
 		m_pLocList->Append(str);
 	}
 }
@@ -143,7 +126,8 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	SetLocFile(loadFile.GetPath().mb_str());
+	wxString path = loadFile.GetPath();
+	SetLocFile(path.c_str());
 }
 
 void LocationDlg::OnSave( wxCommandEvent &event )
@@ -155,7 +139,7 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 		return;
 
 	wxString str = saveFile.GetPath();
-	if (!m_pSaver->Write(str.mb_str()))
+	if (!m_pSaver->Write(str.c_str()))
 		return;  // couldn't write
 }
 
@@ -171,7 +155,7 @@ void LocationDlg::OnStoreAs( wxCommandEvent &event )
 		return;
 
 	str = dlg.GetValue();
-	bool success = m_pSaver->StoreTo(num, str.mb_str());
+	bool success = m_pSaver->StoreTo(num, str.c_str());
 	if (success)
 	{
 		RefreshList();

@@ -1,5 +1,5 @@
 //
-// Name:        LocationDlg.h
+// Name:		LocationDlg.h
 //
 // Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -9,7 +9,7 @@
 #define __LocationDlg_H__
 
 #ifdef __GNUG__
-    #pragma interface "LocationDlg.cpp"
+	#pragma interface "LocationDlg.cpp"
 #endif
 
 #include "enviro_wdr.h"
@@ -26,47 +26,47 @@ class vtLocationSaver;
 class LocationDlg: public wxDialog
 {
 public:
-    // constructors and destructors
-    LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos = wxDefaultPosition,
-        const wxSize& size = wxDefaultSize,
-        long style = wxDEFAULT_DIALOG_STYLE );
-    
-    // WDR: method declarations for LocationDlg
-    wxButton* GetStoreas()  { return (wxButton*) FindWindow( ID_STOREAS ); }
-    wxButton* GetStore()  { return (wxButton*) FindWindow( ID_STORE ); }
-    wxButton* GetRecall()  { return (wxButton*) FindWindow( ID_RECALL ); }
-    wxListBox* GetLoclist()  { return (wxListBox*) FindWindow( ID_LOCLIST ); }
-    wxButton* GetRemove()  { return (wxButton*) FindWindow( ID_REMOVE ); }
+	// constructors and destructors
+	LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize,
+		long style = wxDEFAULT_DIALOG_STYLE );
+	
+	// WDR: method declarations for LocationDlg
+	wxButton* GetStoreas()  { return (wxButton*) FindWindow( ID_STOREAS ); }
+	wxButton* GetStore()  { return (wxButton*) FindWindow( ID_STORE ); }
+	wxButton* GetRecall()  { return (wxButton*) FindWindow( ID_RECALL ); }
+	wxListBox* GetLoclist()  { return (wxListBox*) FindWindow( ID_LOCLIST ); }
+	wxButton* GetRemove()  { return (wxButton*) FindWindow( ID_REMOVE ); }
 	void RefreshList();
-    void SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
+	void SetTarget(vtTransformBase *pTarget, const vtProjection &proj,
 				   const vtLocalConversion &conv);
-    void SetLocFile(const char *fname);
+	void SetLocFile(const wstring2 &fname);
 	void RefreshButtons();
 
 private:
-    // WDR: member variable declarations for LocationDlg
-    vtLocationSaver *m_pSaver;
+	// WDR: member variable declarations for LocationDlg
+	vtLocationSaver *m_pSaver;
 
-    wxButton* m_pStoreAs;
-    wxButton* m_pStore;
-    wxButton* m_pRecall;
-    wxButton* m_pRemove;
-    wxListBox* m_pLocList;
+	wxButton* m_pStoreAs;
+	wxButton* m_pStore;
+	wxButton* m_pRecall;
+	wxButton* m_pRemove;
+	wxListBox* m_pLocList;
    
 private:
-    // WDR: handler declarations for LocationDlg
-    void OnRemove( wxCommandEvent &event );
-    void OnListDblClick( wxCommandEvent &event );
-    void OnLoad( wxCommandEvent &event );
-    void OnSave( wxCommandEvent &event );
-    void OnStoreAs( wxCommandEvent &event );
-    void OnStore( wxCommandEvent &event );
-    void OnRecall( wxCommandEvent &event );
-    void OnLocList( wxCommandEvent &event );
+	// WDR: handler declarations for LocationDlg
+	void OnRemove( wxCommandEvent &event );
+	void OnListDblClick( wxCommandEvent &event );
+	void OnLoad( wxCommandEvent &event );
+	void OnSave( wxCommandEvent &event );
+	void OnStoreAs( wxCommandEvent &event );
+	void OnStore( wxCommandEvent &event );
+	void OnRecall( wxCommandEvent &event );
+	void OnLocList( wxCommandEvent &event );
 
 private:
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

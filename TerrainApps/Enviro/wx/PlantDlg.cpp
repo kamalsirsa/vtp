@@ -20,6 +20,7 @@
 #include "PlantDlg.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Trees.h"
+#include "vtui/wxString2.h"
 #include "../Enviro.h"
 
 // WDR: class implementations
@@ -59,10 +60,12 @@ void PlantDlg::SetPlantList(vtPlantList3d *plants)
 	if (!plants) return;
 
 	m_pSpecies->Clear();
+	wxString2 str;
 	for (int i = 0; i < plants->NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *plant = plants->GetSpecies(i);
-		m_pSpecies->Append(wxString::FromAscii(plant->GetCommonName()));
+		str = plant->GetCommonName();
+		m_pSpecies->Append(str);
 	}
 }
 

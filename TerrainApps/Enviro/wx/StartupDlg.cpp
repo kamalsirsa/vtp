@@ -44,14 +44,14 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 {
 	using namespace boost::filesystem;
 
-	wxString wildstr = wxString::FromAscii(wildcard);
+	wxString2 wildstr = wildcard;
 	for (dir_it it((const char *)directory); it != dir_it(); ++it)
 	{
 		if (get<is_hidden>(it) || get<is_directory>(it))
 			continue;
 
 		std::string name1 = *it;
-		wxString name = wxString::FromAscii(name1.c_str());
+		wxString2 name = name1.c_str();
 		if (name.Matches(wildstr))
 		{
 			if (omit_chars)
@@ -159,8 +159,8 @@ static void ShowOGLInfo()
 		value = 0;
 
 	wxString str;
-	str.Printf(_T("OpenGL Version: %s\nVendor: %s\nRenderer: %s\n")
-		_T("Maximum Texture Dimension: %d\nExtensions: %s"),
+	str.Printf(_T("OpenGL Version: %hs\nVendor: %hs\nRenderer: %hs\n")
+		_T("Maximum Texture Dimension: %d\nExtensions: %hs"),
 		glGetString(GL_VERSION), glGetString(GL_VENDOR),
 		glGetString(GL_RENDERER), value, glGetString(GL_EXTENSIONS));
 
@@ -263,7 +263,7 @@ void StartupDlg::EditParameters(const char *filename)
 		if (!Params.SaveToFile(filename))
 		{
 			wxString str;
-			str.Printf(_T("Couldn't save to file %s.\n")
+			str.Printf(_T("Couldn't save to file %hs.\n")
 					   _T("Please make sure the file is not read-only."), filename);
 			wxMessageBox(str);
 		}

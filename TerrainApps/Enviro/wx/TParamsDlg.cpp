@@ -256,7 +256,7 @@ void TParamsDlg::GetParams(TParams &Params)
 
 void TParamsDlg::UpdateTiledTextureFilename()
 {
-	m_strTextureFilename.Printf(_T("%s%d"), m_strTextureBase.mb_str(),
+	m_strTextureFilename.Printf(_T("%s%d"), m_strTextureBase.c_str(),
 		NTILES * (m_iTilesize-1) + 1);
 	if (m_bJPEG)
 		m_strTextureFilename += _T(".jpg");
