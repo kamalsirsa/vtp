@@ -1,7 +1,7 @@
 //
 // Name: RawDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,7 +34,7 @@ BEGIN_EVENT_TABLE(RawDlg,AutoDialog)
 END_EVENT_TABLE()
 
 RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
-        const wxPoint& pos, const wxSize& size, long style ) :
+		const wxPoint& pos, const wxSize& size, long style ) :
 	AutoDialog(parent, id, title, pos, size, style)
 {
     RawDialogFunc( this, TRUE );
