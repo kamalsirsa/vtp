@@ -81,6 +81,17 @@ void ItemGroup::AttachModels(vtFont *font)
 	}
 	UpdateCrosshair(sph);
 	UpdateRulers(font, sph);
+
+	// Update the item's approximate extents
+	FRECT ext;
+	m_pGroup->GetBoundSphere(sph);
+	ext.left = sph.center.x - sph.radius;
+	ext.right = sph.center.x + sph.radius;
+	// the XY extents of the extents have Y pointing up, whereas the
+	//  world coords have Z pointing down.
+	ext.top = -sph.center.z + sph.radius;
+	ext.bottom = -sph.center.z - sph.radius;
+	m_pItem->m_extents = ext;
 }
 
 void ItemGroup::UpdateCrosshair(const FSphere &sph)
