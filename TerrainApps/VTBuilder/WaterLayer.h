@@ -27,10 +27,12 @@ public:
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
+	void SetProjection(vtProjection &proj);
 	void Offset(const DPoint2 &p);
 
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);
+	void AddLine(DLine2 *pDLine);
 
 	static bool	m_bFill;
 
