@@ -92,22 +92,24 @@ public:
 	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
 
 	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
+	bool AddElementsFromDLG(class vtDLGFile *pDLG);
 
 	// feature (entity) operations
 	int NumEntities() const;
 	int GetEntityType() const;
 	void SetEntityType(int type);
 
+	// geometric primitives
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
-	int AddPolyLine(DLine2* pl);
+	int AddPolyLine(const DLine2 &pl);
 	void GetPoint(int num, DPoint3 &p) const;
 	void GetPoint(int num, DPoint2 &p) const;
+	const DLine2 &GetLine(int num) { return m_LinePoly[num]; }
+
 	void CopyEntity(int from, int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
 	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
-
-	const DLine2 *GetLine(int num) { return m_LinePoly[num]; }
 
 	void SetToDelete(int iFeature);
 	void ApplyDeletion();

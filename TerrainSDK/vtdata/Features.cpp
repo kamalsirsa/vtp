@@ -8,6 +8,7 @@
 #include "Features.h"
 #include "xmlhelper/easyxml.hpp"
 #include "vtLog.h"
+#include "DLG.h"
 
 //
 // Construct / Destruct
@@ -76,22 +77,22 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 	}
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
-		size = m_LinePoly.GetSize();
+		size = m_LinePoly.size();
 		for (i = 0; i < size; i++)	//for each polyline
 		{
-			DLine2 *dl = m_LinePoly.GetAt(i);
-			double* dX = new double[dl->GetSize()];
-			double* dY = new double[dl->GetSize()];
+			const DLine2 &dl = m_LinePoly[i];
+			double* dX = new double[dl.GetSize()];
+			double* dY = new double[dl.GetSize()];
 
-			for (j=0;j<dl->GetSize();j++) //for each vertex
+			for (j=0; j < dl.GetSize(); j++) //for each vertex
 			{
-				DPoint2 pt = dl->GetAt(j);
+				DPoint2 pt = dl.GetAt(j);
 				dX[j] = pt.x;
 				dY[j] = pt.y;
 
 			}
 			// Save to SHP
-			obj = SHPCreateSimpleObject(m_nSHPType, dl->GetSize(),
+			obj = SHPCreateSimpleObject(m_nSHPType, dl.GetSize(),
 				dX, dY, NULL);
 
 			delete dX;
@@ -233,14 +234,14 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		break;
 	case SHPT_ARC:
 	case SHPT_POLYGON:
-		m_LinePoly.SetSize(m_iSHPElems);
+		m_LinePoly.reserve(m_iSHPElems);
 		break;
 	}
 
 	// Read Data from SHP into memory
 	DPoint2 p2;
 	DPoint3 p3;
-	DLine2 *new_poly;
+	DLine2 dline;
 	for (int i = 0; i < m_iSHPElems; i++)
 	{
 		// Get the i-th Shape in the SHP file
@@ -263,8 +264,7 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 				break;
 			case SHPT_ARC:
 			case SHPT_POLYGON:
-				new_poly = new DLine2();
-				m_LinePoly.SetAt(i, new_poly);
+				m_LinePoly[i] = dline;
 				break;
 			}
 		}
@@ -285,16 +285,15 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 				break;
 			case SHPT_ARC:
 			case SHPT_POLYGON:
-				new_poly = new DLine2();
-				new_poly->SetSize(psShape->nVertices);
-				m_LinePoly.SetAt(i, new_poly);
+				dline.SetSize(psShape->nVertices);
+				m_LinePoly[i] = dline;
 
 				// Store each coordinate
 				for (int j = 0; j < psShape->nVertices; j++)
 				{
 					p2.x = psShape->padfX[j];
 					p2.y = psShape->padfY[j];
-					new_poly->SetAt(j, p2);
+					dline.SetAt(j, p2);
 				}
 				break;
 			}
@@ -603,7 +602,7 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		break;
 	case SHPT_ARC:
 	case SHPT_POLYGON:
-		m_LinePoly.SetMaxSize(feature_count);
+		m_LinePoly.reserve(feature_count);
 		break;
 	}
 
@@ -611,7 +610,6 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	DPoint2 p2;
 	DPoint3 p3;
 	int num_geoms, num_points;
-	DLine2 *new_poly;
 	OGRPoint		*pPoint;
 	OGRPolygon		*pPolygon;
 	OGRLinearRing	*pRing;
@@ -645,6 +643,8 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		geom_type = pGeom->getGeometryType();
 		num_geoms = 1;
 
+		DLine2 dline;
+
 		switch (geom_type)
 		{
 		case wkbPoint:
@@ -663,14 +663,13 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		case wkbLineString:
 			pLineString = (OGRLineString *) pGeom;
 			num_points = pLineString->getNumPoints();
-			new_poly = new DLine2();
-			new_poly->SetSize(num_points);
+			dline.SetSize(num_points);
 			for (j = 0; j < num_points; j++)
 			{
 				p2.Set(pLineString->getX(j), pLineString->getY(j));
-				new_poly->SetAt(j, p2);
+				dline.SetAt(j, p2);
 			}
-			m_LinePoly.Append(new_poly);
+			m_LinePoly.push_back(dline);
 			break;
 		case wkbMultiLineString:
 			pMulti = (OGRMultiLineString *) pGeom;
@@ -679,27 +678,25 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 			{
 				pLineString = (OGRLineString *) pMulti->getGeometryRef(i);
 				num_points = pLineString->getNumPoints();
-				new_poly = new DLine2();
-				new_poly->SetSize(num_points);
+				dline.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
 				{
 					p2.Set(pLineString->getX(j), pLineString->getY(j));
-					new_poly->SetAt(j, p2);
+					dline.SetAt(j, p2);
 				}
-				m_LinePoly.Append(new_poly);
+				m_LinePoly.push_back(dline);
 			}
 			break;
 		case wkbPolygon:
 			pPolygon = (OGRPolygon *) pGeom;
 			pRing = pPolygon->getExteriorRing();
 			num_points = pRing->getNumPoints();
-			new_poly = new DLine2();
-			new_poly->SetSize(num_points);
+			dline.SetSize(num_points);
 			for (j = 0; j < num_points; j++)
 			{
-				new_poly->SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
+				dline.SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
 			}
-			m_LinePoly.Append(new_poly);
+			m_LinePoly.push_back(dline);
 			break;
 		case wkbMultiPoint:
 		case wkbMultiPolygon:
@@ -747,6 +744,42 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	return true;
 }
 
+
+bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
+{
+	// A DLG file can be fairly directly interpreted as features, since
+	// it consists of nodes, areas, and lines.  However, topology is lost
+	// and we must pick which of the three to display.
+
+	int i;
+	int nodes = pDLG->m_iNodes, areas = pDLG->m_iAreas, lines = pDLG->m_iLines;
+	if (nodes > lines)
+	{
+		SetEntityType(SHPT_POINT);
+		for (i = 0; i < nodes; i++)
+			AddPoint(pDLG->m_nodes[i].m_p);
+	}
+/*
+	else if (areas >= nodes && areas >= lines)
+	{
+		// "Areas" in a DLG area actually points which indicate an interior
+		//  point in a polygon defined by some of the "lines"
+		SetEntityType(SHPT_POLYGON);
+		for (i = 0; i < areas; i++)
+			AddPolyLine(&pDLG->m_areas[i].m_p);
+	}
+*/
+	else
+	{
+		SetEntityType(SHPT_ARC);
+		for (i = 0; i < areas; i++)
+			AddPolyLine(pDLG->m_lines[i].m_p);
+	}
+	m_proj = pDLG->GetProjection();
+	return true;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // feature (entity) operations
@@ -759,7 +792,7 @@ int vtFeatures::NumEntities() const
 	else if (m_nSHPType == SHPT_POINTZ)
 		return m_Point3.GetSize();
 	else if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
-		return m_LinePoly.GetSize();
+		return m_LinePoly.size();
 	else
 		return -1;
 }
@@ -814,12 +847,13 @@ int vtFeatures::AddPoint(const DPoint3 &p)
 	return rec;
 }
 
-int vtFeatures::AddPolyLine(DLine2* pl)
+int vtFeatures::AddPolyLine(const DLine2 &pl)
 {
 	int rec = -1;
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
-		rec = m_LinePoly.Append(pl);
+		m_LinePoly.push_back(pl);
+		rec = m_LinePoly.size()-1;
 		AddRecord();
 	}
 	return rec;
@@ -949,7 +983,7 @@ int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 			bIn = rect.ContainsPoint(DPoint2(m_Point3[i].x, m_Point3[i].y));
 
 		if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
-			bIn = rect.ContainsLine(*m_LinePoly[i]);
+			bIn = rect.ContainsLine(m_LinePoly[i]);
 
 		if (!bIn)
 			continue;
@@ -1152,7 +1186,7 @@ void vtFeatures::_ShrinkGeomArraySize(int size)
 	// TODO: check this, it might leak some memory by not freeing
 	//  the linepoly which is dropped off the end
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
-		m_LinePoly.SetSize(size);
+		m_LinePoly.resize(size);
 }
 
 void vtFeatures::CopyEntity(int from, int to)
