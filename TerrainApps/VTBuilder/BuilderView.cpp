@@ -1401,10 +1401,42 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		utf8 = str3.to_utf8();
 		VTLOG("Twice converted: %s\n", utf8);
 #endif
-#if 1
+#if 0
 		vtRoadLayer *pR = (vtRoadLayer *)GetMainFrame()->FindLayerOfType(LT_ROAD);
 		vtElevLayer *pE = (vtElevLayer *)GetMainFrame()->FindLayerOfType(LT_ELEVATION);
 		pR->CarveRoadway(pE, 2.0);
+#endif
+#if 1
+		DBFHandle db = DBFOpen("E:/GreenMaps/map_locations_v1.dbf", "rb");
+		DBFHandle db2 = DBFCreate("E:/GreenMaps/map_locations_v1d.dbf");
+		if (db != NULL && db2 != NULL)
+		{
+			int f1 = DBFAddField(db2, "X", FTDouble, 12, 6);
+			int f2 = DBFAddField(db2, "Y", FTDouble, 12, 6);
+
+			int iEntities = DBFGetRecordCount(db);
+			int deg, min;
+			double val;
+			const char *sz;
+			for (int i = 0; i < iEntities; i++)
+			{
+				sz = DBFReadStringAttribute(db, i, 0);
+				deg = min = 0;
+				sscanf(sz, "%d %d", &deg, &min);
+				val = abs(deg) + (double)min / 60.0;
+				if (deg < 0) val = -val;
+				DBFWriteDoubleAttribute(db2, i, f1, val);
+
+				sz = DBFReadStringAttribute(db, i, 1);
+				deg = min = 0;
+				sscanf(sz, "%d %d", &deg, &min);
+				val = abs(deg) + (double)min / 60.0;
+				if (deg < 0) val = -val;
+				DBFWriteDoubleAttribute(db2, i, f2, val);
+			}
+			DBFClose(db);
+			DBFClose(db2);
+		}
 #endif
 	}
 	else
