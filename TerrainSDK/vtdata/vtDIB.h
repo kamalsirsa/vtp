@@ -38,6 +38,8 @@ public:
 	~vtDIB();
 
 	bool Create(int width, int height, int bitdepth, bool create_palette = false);
+	bool Create24From8bit(const vtDIB &from);
+
 	bool Read(const char *fname);
 	bool ReadBMP(const char *fname);
 	bool WriteBMP(const char *fname);
@@ -45,29 +47,30 @@ public:
 	bool ReadJPEG(const char *fname);
 	bool WritePNG(const char *fname);
 
-	unsigned long GetPixel24(int x, int y);
-	void GetPixel24(int x, int y, RGBi &rgb);
+	unsigned long GetPixel24(int x, int y) const;
+	void GetPixel24(int x, int y, RGBi &rgb) const;
+	void GetPixel24From8bit(int x, int y, RGBi &rgb) const;
 	void SetPixel24(int x, int y, dword color);
 	void SetPixel24(int x, int y, const RGBi &rgb);
 
-	void GetPixel32(int x, int y, RGBAi &rgba);
+	void GetPixel32(int x, int y, RGBAi &rgba) const;
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
-	unsigned char GetPixel8(int x, int y);
+	unsigned char GetPixel8(int x, int y) const;
 	void SetPixel8(int x, int y, byte color);
 
-	bool GetPixel1(int x, int y);
+	bool GetPixel1(int x, int y) const;
 	void SetPixel1(int x, int y, bool color);
 
 	void SetColor(const RGBi &rgb);
 
-	int GetWidth() { return m_iWidth; }
-	int GetHeight() { return m_iHeight; }
-	int GetDepth() { return m_iBitCount; }
+	int GetWidth() const { return m_iWidth; }
+	int GetHeight() const { return m_iHeight; }
+	int GetDepth() const { return m_iBitCount; }
 
-	void *GetHandle() { return m_pDIB; }
-	BITMAPINFOHEADER *GetDIBHeader() { return m_Hdr; }
-	void *GetDIBData() { return m_Data; }
+	void *GetHandle() const { return m_pDIB; }
+	BITMAPINFOHEADER *GetDIBHeader() const { return m_Hdr; }
+	void *GetDIBData() const { return m_Data; }
 
 	void Lock();
 	void Unlock();

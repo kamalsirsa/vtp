@@ -154,6 +154,24 @@ bool vtDIB::Create(int xsize, int ysize, int bitdepth, bool create_palette)
 	return true;
 }
 
+bool vtDIB::Create24From8bit(const vtDIB &from)
+{
+	if (!Create(from.GetWidth(), from.GetHeight(), 24))
+		return false;
+
+	RGBi rgb;
+	int i, j;
+	for (i = 0; i < m_iWidth; i++)
+	{
+		for (j = 0; j < m_iHeight; j++)
+		{
+			from.GetPixel24From8bit(i, j, rgb);
+			SetPixel24(i, j, rgb);
+		}
+	}
+	return true;
+}
+
 
 /**
  * Read a image file into the DIB.  This method will check to see if the
@@ -787,7 +805,6 @@ bool vtDIB::WritePNG(const char *fname)
 	return true;
 }
 
-
 void vtDIB::_ComputeByteWidth()
 {
 	m_iByteWidth = (((m_iWidth)*(m_iBitCount) + 31) / 32 * 4);
@@ -805,7 +822,7 @@ void vtDIB::LeaveInternalDIB(bool bLeaveIt)
 /**
  * Get a 24-bit RGB value from a 24-bit bitmap.
  */
-dword vtDIB::GetPixel24(int x, int y)
+dword vtDIB::GetPixel24(int x, int y) const
 {
 	register byte* adr;
 
@@ -817,7 +834,7 @@ dword vtDIB::GetPixel24(int x, int y)
 		   (*(byte *)(adr+2));
 }
 
-void vtDIB::GetPixel24(int x, int y, RGBi &rgb)
+void vtDIB::GetPixel24(int x, int y, RGBi &rgb) const
 {
 	register byte* adr;
 
@@ -829,7 +846,19 @@ void vtDIB::GetPixel24(int x, int y, RGBi &rgb)
 	rgb.r = *((byte *)(adr+2));
 }
 
-void vtDIB::GetPixel32(int x, int y, RGBAi &rgba)
+void vtDIB::GetPixel24From8bit(int x, int y, RGBi &rgb) const
+{
+	register byte* adr;
+	adr = ((byte *)m_Data) + (m_iHeight-y-1)*m_iByteWidth + x;
+	unsigned char val = *adr;
+
+	RGBQUAD *palette=(RGBQUAD*)((char*)m_Hdr + sizeof(BITMAPINFOHEADER));
+	rgb.b = palette[val].rgbBlue;
+	rgb.g = palette[val].rgbGreen;
+	rgb.r = palette[val].rgbRed;
+}
+
+void vtDIB::GetPixel32(int x, int y, RGBAi &rgba) const
 {
 	register byte* adr;
 
@@ -887,7 +916,7 @@ void vtDIB::SetPixel32(int x, int y, const RGBAi &rgba)
 /**
  * Get a single byte from an 8-bit bitmap.
  */
-byte vtDIB::GetPixel8(int x, int y)
+byte vtDIB::GetPixel8(int x, int y) const
 {
 	register byte* adr;
 
@@ -910,7 +939,7 @@ void vtDIB::SetPixel8(int x, int y, byte value)
 /**
  * Get a single bit from a 1-bit bitmap.
  */
-bool vtDIB::GetPixel1(int x, int y)
+bool vtDIB::GetPixel1(int x, int y) const
 {
 	// untested - just my guess
 	register int byte_offset = x/8;
