@@ -72,6 +72,7 @@ and distributed under a completely free <a href="../../license.txt">open source 
         <li>DymaxIcosa</li>
 		<li>Countries</li>
 		<li>dir_iter</li>
+		<li>LocaleWrap</li>
       </ul>
     </td>
     <td valign="top">

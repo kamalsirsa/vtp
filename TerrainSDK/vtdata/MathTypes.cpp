@@ -528,6 +528,7 @@ void RGBi::Crop()
 	else if (b > 255) b = 255;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////
 // RGBAi
 
@@ -542,6 +543,25 @@ void RGBAi::Crop()
 	if (a < 0) a = 0;
 	else if (a > 255) a = 255;
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+// LocaleWrap
+
+LocaleWrap::LocaleWrap(int category, const char *locale_string)
+{
+	// Store and override
+	m_old_locale = setlocale(category, NULL);
+	setlocale(category, locale_string);
+}
+
+LocaleWrap::~LocaleWrap()
+{
+	// Restore
+	if (m_old_locale.size() > 0)
+		setlocale(LC_NUMERIC, m_old_locale.c_str());
+}
+
 
 ///////////////////////////
 // useful helper functions

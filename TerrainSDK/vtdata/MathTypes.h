@@ -10,6 +10,7 @@
 #define VTMATHTYPESH
 
 #include <math.h>
+#include <locale.h>
 #include <vector>
 #include "Array.h"
 
@@ -1134,6 +1135,30 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
 	b = v.b;
 	return *this;
 }
+
+/**
+ * The locale might be set to something strange, ala European. that
+ * interprets '.' as ',' and vice versa.  That terribly breaks VTP's usage
+ * of printf/sscanf/atof to encode and parse numbers.
+ *
+ * This handy class encapsulates overriding the locale.  Use it like this
+ * for 'standard' numbers:
+ *
+ * \example
+ *		LocaleWrap normal_numbers(LC_NUMERIC, "C");
+ *
+ * The locale will be restored when the LocaleWrap object goes out of scope.
+ */
+class LocaleWrap
+{
+public:
+	/// See the C function setlocale() for an explanation of the arguments.
+	LocaleWrap(int category, const char *locale_string);
+	~LocaleWrap();
+
+protected:
+	std::string m_old_locale;
+};
 
 
 ///////////////////////////////////////////////////////////////////////
