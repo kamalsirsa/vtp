@@ -465,40 +465,53 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item5->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Item:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
     item5->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs7 = (wxString*) NULL;
-    wxChoice *item7 = new wxChoice( parent, ID_CHOICE_ITEM, wxDefaultPosition, wxSize(220,-1), 0, strs7, 0 );
+    wxChoice *item7 = new wxChoice( parent, ID_CHOICE_TYPE, wxDefaultPosition, wxSize(200,-1), 0, strs7, 0 );
     item5->Add( item7, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxRadioButton *item8 = new wxRadioButton( parent, ID_RADIO_MODEL, _("Instance from 3D Model File"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+    item8->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item9->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Item:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_MODEL_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item9->Add( item10, 1, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs10 = (wxString*) NULL;
+    wxChoice *item10 = new wxChoice( parent, ID_CHOICE_ITEM, wxDefaultPosition, wxSize(220,-1), 0, strs10, 0 );
+    item8->Add( item10, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item11 = new wxButton( parent, ID_BROWSE_MODEL_FILE, _("..."), wxDefaultPosition, wxSize(30,-1), 0 );
-    item11->SetFont( wxFont( 12, wxROMAN, wxNORMAL, wxBOLD ) );
-    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    item0->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxRadioButton *item11 = new wxRadioButton( parent, ID_RADIO_MODEL, _("Instance from 3D Model File"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Location:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+    item12->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_LOCATION, wxT(""), wxDefaultPosition, wxSize(200,-1), 0 );
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_MODEL_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item12->Add( item13, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item14 = new wxButton( parent, ID_BROWSE_MODEL_FILE, _("..."), wxDefaultPosition, wxSize(30,-1), 0 );
+    item14->SetFont( wxFont( 12, wxROMAN, wxNORMAL, wxNORMAL ) );
     item12->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Location:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_LOCATION, wxT(""), wxDefaultPosition, wxSize(200,-1), 0 );
+    item15->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item15, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
