@@ -30,7 +30,6 @@ public:
 	bool GetLighting();
 
 	void SetTexture(class vtImage *pImage);
-	vtImage *GetTexture();
 
 	void SetTransparent(bool bOn, bool bAdd = false);
 	bool GetTransparent();

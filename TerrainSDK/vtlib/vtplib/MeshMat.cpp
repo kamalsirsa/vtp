@@ -114,10 +114,6 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	setTexture(pImage->m_pTexture);
 	m_pImage = pImage;
 }
-vtImage *vtMaterial::GetTexture()
-{
-	return m_pImage;
-}
 
 void vtMaterial::SetClamp(bool bClamp)
 {
