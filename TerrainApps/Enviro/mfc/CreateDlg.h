@@ -10,7 +10,7 @@
 
 #include <afxdtctl.h>
 #include "resource.h"
-#include "vtlib/core/TParams.h"
+#include "vtdata/TParams.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CCreateDlg dialog

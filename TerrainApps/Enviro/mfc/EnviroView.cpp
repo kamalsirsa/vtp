@@ -264,12 +264,14 @@ void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroShowfog() 
 {
-	GetTerrainScene()->ToggleFog();
+	vtTerrain *t = GetCurrentTerrain();
+	if (t) t->SetFog(!t->GetFog());
 }
 
 void EnviroView::OnUpdateEnviroShowfog(CCmdUI* pCmdUI) 
 {
-	pCmdUI->SetCheck(GetTerrainScene()->GetFog());
+	vtTerrain *t = GetCurrentTerrain();
+	pCmdUI->SetCheck(t && t->GetFog());
 }
 
 void EnviroView::OnEnviroShowtrees() 
@@ -363,19 +365,13 @@ void EnviroView::OnViewFlyslower()
 
 void EnviroView::OnViewMaintainheight() 
 {
-	m_bMaintainHeight = !m_bMaintainHeight;
-
-	if (g_App.m_pTFlyer != NULL)
-	{
-		g_App.m_pTFlyer->MaintainHeight(m_bMaintainHeight);
-		g_App.m_pTFlyer->SetMaintainHeight(0);
-	}
+	g_App.SetMaintain(!g_App.GetMaintain());
 }
 
 void EnviroView::OnUpdateViewMaintainheight(CCmdUI* pCmdUI) 
 {
 	pCmdUI->Enable(g_App.m_state == AS_Terrain);
-	pCmdUI->SetCheck(m_bMaintainHeight);
+	pCmdUI->SetCheck(g_App.GetMaintain());
 }
 
 void EnviroView::OnToolsNavigateOriginalnavengin() 
