@@ -166,9 +166,9 @@ void vtFence::WriteXML_Old(FILE *fp, bool bDegrees)
 	int i;
 	const char *coord_format;
 	if (bDegrees)
-		coord_format = "%lg";
+		coord_format = "%.9lg";
 	else
-		coord_format = "%.2lf";
+		coord_format = "%.2lg";
 
 	// Write the XML to describe this fence to a built-structure XML file.
 	fprintf(fp, "\t<structure type=\"linear\">\n");
@@ -245,9 +245,9 @@ void vtFence::WriteXML(FILE *fp, bool bDegrees)
 	int i;
 	const char *coord_format;
 	if (bDegrees)
-		coord_format = "%lg";
+		coord_format = "%.9lg";
 	else
-		coord_format = "%.2lf";
+		coord_format = "%.2lg";
 
 	// Write the XML to describe this fence to a built-structure XML file.
 	fprintf(fp, "\t<Linear Height=\"%.2f\">\n", m_fHeight);

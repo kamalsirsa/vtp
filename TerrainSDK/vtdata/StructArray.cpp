@@ -1244,7 +1244,7 @@ bool vtStructureArray::WriteXML(const char* filename)
 	fprintf(fp, "\t<gml:boundedBy>\n");
 	fprintf(fp, "\t\t<gml:Box>\n");
 	fprintf(fp, "\t\t\t<gml:coordinates>");
-	fprintf(fp, "%lf,%lf %lf,%lf", ext.left, ext.bottom, ext.right, ext.top);
+	fprintf(fp, "%.9lf,%.9lf %.9lf,%.9lf", ext.left, ext.bottom, ext.right, ext.top);
 	fprintf(fp, "</gml:coordinates>\n");
 	fprintf(fp, "\t\t</gml:Box>\n");
 	fprintf(fp, "\t</gml:boundedBy>\n");
