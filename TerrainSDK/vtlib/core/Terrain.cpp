@@ -440,9 +440,9 @@ void vtTerrain::RedrawRoute(vtRoute *f)
 	f->BuildGeometry(m_pHeightField);
 }
 
-void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpacing
-						  , float fRouteOffL, float fRouteOffR, float fRouteStInc
-						  , vtString sRouteName)
+void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpacing,
+						  float fRouteOffL, float fRouteOffR, float fRouteStInc,
+						  vtString sRouteName)
 {
 	if(!m_Params.m_bRouteEnable 
 		|| m_Params.m_strRouteFile[0] == '\0') return; //don't load it.
@@ -456,7 +456,8 @@ void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpa
 	strcpy(holder, m_Params.m_strRouteFile);
 	if ((end = strstr(holder, ".p3D"))!=0)
 		holder[end-holder]='\0';
-	else return;
+	else
+		return;
 	filename = m_strDataPath + "RouteData/";
 	filename += holder;
 	vtString logFile = filename+".xyz";
