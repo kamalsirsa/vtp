@@ -1046,7 +1046,11 @@ bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
 	// formula for result: P = (d1(n2 X n3) + d2(n3 X n1) + d3(n1 X n2)) / n1 . (n2 X n3)
 	FPoint3 numer = n2.Cross(n3) * d1 + n3.Cross(n1) * d2 + n1.Cross(n2) * d3;
 	float denom = n1.Dot(n2.Cross(n3));
-	if (fabsf(denom) < 3E-8)
+
+	// The following epsilon value was chosen carefully from empirical
+	// results.  If you have buildings whose roofs are being drawn
+	// incorrectly, this value can be increased, but do so with care.
+	if (fabsf(denom) < 1E-7)
 		return false;
 
 	result = numer / denom;
