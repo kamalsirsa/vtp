@@ -152,7 +152,7 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 	}
 	if (m_nSHPType == SHPT_POINTZ)
 	{
-		for (i = 0; i < m_Point2.GetSize(); i++)
+		for (i = 0; i < m_Point3.GetSize(); i++)
 			trans->Transform(1, &m_Point3[i].x, &m_Point3[i].y);
 	}
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
