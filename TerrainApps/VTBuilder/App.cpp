@@ -54,6 +54,8 @@ bool MyApp::OnInit()
 */
 //	frame->LoadProject("E:/Locations/Romania/giurgiu.vtb");
 //	frame->ImportDataFromFile(LT_ELEVATION, "E:/Earth/NOAA Globe/g10g.hdr", false);
+//	wxString str("E:/VTP User's Data/Mike Flaxman/catrct_nur.tif");
+//	frame->LoadLayer(str);
 
 	frame->GetView()->ZoomAll();
 
