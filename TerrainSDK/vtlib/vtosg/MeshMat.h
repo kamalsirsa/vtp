@@ -13,6 +13,7 @@
 #include <osg/Material>
 #include <osg/AlphaFunc>
 #include <osg/PrimitiveSet>
+#include <osg/Geometry>
 
 class vtImage;
 
@@ -137,7 +138,7 @@ public:
 	void AddFan(int *idx, int iNVerts);
 	void AddStrip(int iNVerts, unsigned short *pIndices);
 	void AddLine(int p0, int p1);
-	void AddLine(const FPoint3 &pos1, const FPoint3 &pos2);
+	int  AddLine(const FPoint3 &pos1, const FPoint3 &pos2);
 	void AddQuad(int p0, int p1, int p2, int p3);
 
 	// Access vertex properties
@@ -190,7 +191,7 @@ protected:
 
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
-	virtual ~vtMesh();
+	virtual ~vtMesh() {}
 };
 
 /**

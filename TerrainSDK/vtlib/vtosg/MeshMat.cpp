@@ -8,7 +8,6 @@
 #include "vtlib/vtlib.h"
 #include "vtdata/vtLog.h"
 
-#include <osg/Geometry>
 #include <osg/LineWidth>
 #include <osg/PolygonMode>
 using namespace osg;
@@ -491,10 +490,6 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	m_pGeometry->addPrimitiveSet(m_pPrimSet.get());
 }
 
-vtMesh::~vtMesh()
-{
-}
-
 void vtMesh::Release()
 {
 	unref();	// trigger self-deletion if no more references
@@ -610,12 +605,14 @@ void vtMesh::AddLine(int p0, int p1)
 /**
  * Add a single line primitive to a mesh.
  *	\param pos1, pos2	The positions of the two vertices of the line.
+ *  \return The index of the first vertex added.
  */
-void vtMesh::AddLine(const FPoint3 &pos1, const FPoint3 &pos2)
+int vtMesh::AddLine(const FPoint3 &pos1, const FPoint3 &pos2)
 {
 	int p0 = AddVertex(pos1);
 	int p1 = AddVertex(pos2);
 	AddLine(p0, p1);
+	return p0;
 }
 
 /**
@@ -712,13 +709,16 @@ FPoint3 vtMesh::GetVtxNormal(int i) const
  */
 void vtMesh::SetVtxColor(int i, const RGBf &color)
 {
-	Vec4 s;
-	v2s(color, s);
+	if (m_iVtxType & VT_Colors)
+	{
+		Vec4 s;
+		v2s(color, s);
 
-	if (i >= (int)m_Color->size())
-		m_Color->resize(i + 1);
+		if (i >= (int)m_Color->size())
+			m_Color->resize(i + 1);
 
-	m_Color->at(i) = s;
+		m_Color->at(i) = s;
+	}
 }
 
 /**
@@ -726,9 +726,13 @@ void vtMesh::SetVtxColor(int i, const RGBf &color)
  */
 RGBf vtMesh::GetVtxColor(int i) const
 {
-	RGBf p;
-	s2v( (Vec4)m_Color->at(i), p);
-	return p;
+	if (m_iVtxType & VT_Colors)
+	{
+		RGBf p;
+		s2v( (Vec4)m_Color->at(i), p);
+		return p;
+	}
+	return RGBf(0,0,0);
 }
 
 /**
@@ -742,13 +746,17 @@ RGBf vtMesh::GetVtxColor(int i) const
  */
 void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
 {
-	Vec2 s;
-	v2s(uv, s);
-	// Not sure whether I need this
-	if (i >= (int)m_Tex->size())
-		m_Tex->resize(i + 1);
+	if (m_iVtxType & VT_TexCoords)
+	{
+		Vec2 s;
+		v2s(uv, s);
 
-	m_Tex->insert(m_Tex->begin() + i, s);
+		// Not sure whether I need this
+		if (i >= (int)m_Tex->size())
+			m_Tex->resize(i + 1);
+
+		m_Tex->insert(m_Tex->begin() + i, s);
+	}
 }
 
 /**
@@ -756,9 +764,13 @@ void vtMesh::SetVtxTexCoord(int i, const FPoint2 &uv)
  */
 FPoint2 vtMesh::GetVtxTexCoord(int i) const
 {
-	FPoint2 p;
-	s2v( (Vec2)m_Tex->at(i), p);
-	return p;
+	if (m_iVtxType & VT_TexCoords)
+	{
+		FPoint2 p;
+		s2v( (Vec2)m_Tex->at(i), p);
+		return p;
+	}
+	return FPoint2(0,0);
 }
 
 int vtMesh::GetNumPrims() const
