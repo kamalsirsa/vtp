@@ -981,11 +981,6 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	return true;
 }
 
-void vtElevationGrid::GetChecksum(unsigned char **ppChecksum) const
-{
-	// TODO
-}
-
 bool vtElevationGrid::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
 										  bool bTrue) const
 {

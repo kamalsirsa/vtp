@@ -25,13 +25,32 @@ vtStructInstance::vtStructInstance() : vtStructure()
 	m_pItem = NULL;
 }
 
-void vtStructInstance::WriteXML(GZOutput &out, bool bDegrees)
+/**
+ * Asignment operator, which makes an explicit copy the entire building
+ * including each level.
+ */
+vtStructInstance &vtStructInstance::operator=(const vtStructInstance &v)
+{
+	// copy parent data
+	vtStructure::CopyFrom(v);
+
+	// copy class data
+	m_p = v.m_p;
+	m_fRotation = v.m_fRotation;
+	m_fScale = v.m_fScale;
+	m_pItem = v.m_pItem;
+	return *this;
+}
+
+void vtStructInstance::WriteXML(GZOutput &out, bool bDegrees) const
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	gfprintf(out, "\t<Imported");
 	if (m_fElevationOffset != 0.0f)
 		gfprintf(out, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
+	if (m_bAbsolute)
+		gfprintf(out, " Absolute=\"true\"");
 	gfprintf(out, ">\n");
 
 	// first write the placement
@@ -63,12 +82,6 @@ bool vtStructInstance::GetExtents(DRECT &rect) const
 	return true;
 }
 
-void vtStructInstance::Offset(const DPoint2 &delta)
-{
-	m_p += delta;
-}
-
-
 bool vtStructInstance::IsContainedBy(const DRECT &rect) const
 {
 	return rect.ContainsPoint(m_p);
@@ -87,7 +100,7 @@ vtStructure::vtStructure()
 {
 	m_type = ST_NONE;
 	m_fElevationOffset = 0.0f;
-	m_fOriginalElevation = -1E9;
+	m_bAbsolute = false;
 #ifdef VIAVTDATA
 	m_bIsVIAContributor = false;
 	m_bIsVIATarget = false;
@@ -99,12 +112,23 @@ vtStructure::~vtStructure()
 	m_type = ST_NONE;
 }
 
-void vtStructure::WriteTags(GZOutput &out)
+void vtStructure::CopyFrom(const vtStructure &v)
+{
+	// copy parent members
+	CopyTagsFrom(v);
+
+	// copy structure members
+	m_type = v.m_type;
+	m_fElevationOffset = v.m_fElevationOffset;
+	m_bAbsolute = v.m_bAbsolute;
+}
+
+void vtStructure::WriteTags(GZOutput &out) const
 {
 	// now write all extra tags (attributes) for this structure
 	for (unsigned int i = 0; i < NumTags(); i++)
 	{
-		vtTag *tag = GetTag(i);
+		const vtTag *tag = GetTag(i);
 		gfprintf(out, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
 			(const char *)tag->value, (const char *)tag->name);
 	}

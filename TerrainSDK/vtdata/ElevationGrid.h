@@ -126,7 +126,6 @@ public:
 	float GetScale() const { return m_fVMeters; }
 
 	// Implement vtHeightField methods
-	void GetChecksum(unsigned char **ppChecksum) const;
 	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// Implement vtHeightField3d methods

@@ -354,7 +354,7 @@ void vtLevel::SetEdgeColor(RGBi color)
 		m_Edges[i]->m_Color = color;
 }
 
-vtEdge *vtLevel::GetEdge(unsigned int i)
+vtEdge *vtLevel::GetEdge(unsigned int i) const
 {
 	if (i < m_Edges.GetSize())		// safety check
 		return m_Edges[i];
@@ -740,13 +740,13 @@ vtBuilding::vtBuilding() : vtStructure()
 
 vtBuilding::~vtBuilding()
 {
-	DeleteStories();
+	DeleteLevels();
 }
 
 /**
- * Delete all the stories (all levels) for this building.
+ * Delete all the levels for this building.
  */
-void vtBuilding::DeleteStories()
+void vtBuilding::DeleteLevels()
 {
 	for (unsigned int i = 0; i < m_Levels.GetSize(); i++)
 		delete m_Levels.GetAt(i);
@@ -759,14 +759,13 @@ void vtBuilding::DeleteStories()
  */
 vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
-	DeleteStories();
+	// copy parent data
+	vtStructure::CopyFrom(v);
 
+	// copy class data
+	DeleteLevels();
 	for (unsigned int i = 0; i < v.m_Levels.GetSize(); i++)
 		m_Levels.Append(new vtLevel(* v.m_Levels.GetAt(i)));
-
-	SetElevationOffset(v.GetElevationOffset());
-	SetOriginalElevation(v.GetOriginalElevation());
-
 	return *this;
 }
 
@@ -1254,22 +1253,22 @@ double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
 	return closest;
 }
 
-void vtBuilding::WriteXML(GZOutput &out, bool bDegrees)
+void vtBuilding::WriteXML(GZOutput &out, bool bDegrees) const
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	gfprintf(out, "\t<Building");
 	if (m_fElevationOffset != 0.0)
 		gfprintf(out, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
-	if (m_fOriginalElevation != -1E9)
-		gfprintf(out, " OriginalElevation=\"%.2f\"", m_fOriginalElevation);
+	if (m_bAbsolute)
+		gfprintf(out, " Absolute=\"true\"");
 	gfprintf(out, ">\n");
 
 	int i, j, k;
 	int levels = GetNumLevels();
 	for (i = 0; i < levels; i++)
 	{
-		vtLevel *lev = GetLevel(i);
+		const vtLevel *lev = GetLevel(i);
 		gfprintf(out, "\t\t<Level FloorHeight=\"%f\" StoryCount=\"%d\">\n",
 			lev->m_fStoryHeight, lev->m_iStories);
 

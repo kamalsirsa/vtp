@@ -701,7 +701,7 @@ void vtContentManager::ReadXML(const char *filename)
  *
  * \param filename A string containing the file path.
  */
-void vtContentManager::WriteXML(const char *filename)
+void vtContentManager::WriteXML(const char *filename) const
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");

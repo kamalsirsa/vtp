@@ -238,13 +238,16 @@ public:
 	vtStructure();
 	virtual ~vtStructure();
 
+	// use an explicit method to avoid assignment operator
+	void CopyFrom(const vtStructure &v);
+
 	void SetType(vtStructureType t) { m_type = t; }
 	vtStructureType GetType() { return m_type; }
 
 	void SetElevationOffset(float fOffset) { m_fElevationOffset = fOffset; }
 	float GetElevationOffset() const { return m_fElevationOffset; }
-	void SetOriginalElevation(float fOffset) { m_fOriginalElevation = fOffset; }
-	float GetOriginalElevation() const { return m_fOriginalElevation; }
+	void SetAbsolute(bool b) { m_bAbsolute = b; }
+	bool GetAbsolute() const { return m_bAbsolute; }
 
 	vtBuilding *GetBuilding() { if (m_type == ST_BUILDING) return (vtBuilding *)this; else return NULL; }
 	vtFence *GetFence() { if (m_type == ST_LINEAR) return (vtFence *)this; else return NULL; }
@@ -252,14 +255,14 @@ public:
 
 	virtual bool GetExtents(DRECT &rect) const = 0;
 	virtual bool IsContainedBy(const DRECT &rect) const = 0;
-	virtual void WriteXML(GZOutput &out, bool bDegrees) = 0;
+	virtual void WriteXML(GZOutput &out, bool bDegrees) const = 0;
 
-	void WriteTags(GZOutput &out);
+	void WriteTags(GZOutput &out) const;
 
-// VIAVTDATA
+#ifdef VIAVTDATA
 	bool m_bIsVIAContributor;
 	bool m_bIsVIATarget;
-// VIAVTDATA
+#endif
 
 protected:
 	vtStructureType m_type;
@@ -269,16 +272,16 @@ protected:
 	// for buildings this is (lowest corner of its base footprint)
 	// for linear features this is the lowest point of the feature.
 	// for instances this is the datum point
-	float		m_fElevationOffset;
+	float m_fElevationOffset;
 
-	// Original elevation information if any (meters)
-	float		m_fOriginalElevation;
+	// If true, elevation offset is relative to sealevel, not to the
+	//  heightfield surface.
+	bool m_bAbsolute;
 
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
-	// define them,
-
+	// define them:
 	vtStructure( const vtStructure & );
 	vtStructure &operator=( const vtStructure & );
 };
@@ -299,14 +302,27 @@ class vtStructInstance : public vtStructure
 public:
 	vtStructInstance();
 
-	void WriteXML(GZOutput &out, bool bDegrees);
-	void Offset(const DPoint2 &delta);
+	// copy operator
+	vtStructInstance &operator=(const vtStructInstance &v);
+
+	void WriteXML(GZOutput &out, bool bDegrees) const;
+	void Offset(const DPoint2 &delta) { m_p += delta; }
 
 	bool GetExtents(DRECT &rect) const;
 	bool IsContainedBy(const DRECT &rect) const;
 
 	virtual double DistanceToPoint(const DPoint2 &p, float fMaxRadius) const;
 
+	void SetPoint(const DPoint2 &p) { m_p = p; }
+	DPoint2 GetPoint() const { return m_p; }
+	void SetRotation(float f) { m_fRotation = f; }
+	float GetRotation() const { return m_fRotation; }
+	void SetScale(float f) { m_fScale = f; }
+	float GetScale() const { return m_fScale; }
+	void SetItem(vtItem *pItem) { m_pItem = pItem; }
+	vtItem *GetItem() { return m_pItem; }
+
+protected:
 	DPoint2	m_p;			// earth position
 	float	m_fRotation;	// in radians
 	float	m_fScale;		// meters per unit

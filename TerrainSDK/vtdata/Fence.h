@@ -35,7 +35,7 @@ public:
 	void Defaults();
 	void Blank();
 	void ApplyStyle(vtLinearStyle style);
-	void WriteXML(GZOutput &out);
+	void WriteXML(GZOutput &out) const;
 
 	// Posts
 	vtString	m_PostType;	// wood, steel, none
@@ -69,7 +69,7 @@ public:
 	bool GetExtents(DRECT &rect) const;
 
 	// IO
-	void WriteXML(GZOutput &out, bool bDegrees);
+	void WriteXML(GZOutput &out, bool bDegrees) const;
 
 	// style
 	void ApplyStyle(vtLinearStyle style);

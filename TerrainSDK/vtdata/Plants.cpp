@@ -104,7 +104,7 @@ vtSpeciesList::~vtSpeciesList()
 	}
 }
 
-bool vtSpeciesList::WriteXML(const char *fname)
+bool vtSpeciesList::WriteXML(const char *fname) const
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");

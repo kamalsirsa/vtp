@@ -116,8 +116,8 @@ public:
 
 	void DeleteEdge(int iEdge);
 	bool AddEdge(int iEdge, DPoint2 &Point);
-	int NumEdges() { return m_Edges.GetSize(); }
-	vtEdge *GetEdge(unsigned int i);
+	int NumEdges() const { return m_Edges.GetSize(); }
+	vtEdge *GetEdge(unsigned int i) const;
 	float GetEdgeLength(unsigned int i);
 	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
@@ -141,7 +141,7 @@ public:
 	void SetFootprint(const DLine2 &dl);
 	void SetFootprint(const OGRPolygon *poly);
 	DLine2 GetFootprint() { return m_Footprint; }
-	const DLine2 &GetAtFootprint() { return m_Footprint; }
+	const DLine2 &GetAtFootprint() const { return m_Footprint; }
 
 	void DetermineLocalFootprint(float fHeight);
 	const FLine3 &GetLocalFootprint() { return m_LocalFootprint; }
@@ -212,6 +212,7 @@ public:
 
 	unsigned int GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
+	const vtLevel *GetLevel(int i) const { return (i < (int)m_Levels.GetSize()) ? m_Levels[i] : NULL; }
 	vtLevel *CreateLevel(const DLine2 &footprint);
 	vtLevel *CreateLevel();
 	void InsertLevel(int iLev, vtLevel *pLev);
@@ -221,7 +222,7 @@ public:
 	void Offset(const DPoint2 &delta);
 	double GetDistanceToInterior(const DPoint2 &point) const;
 
-	void WriteXML(GZOutput &out, bool bDegrees);
+	void WriteXML(GZOutput &out, bool bDegrees) const;
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
 	const FLine3 &GetLocalFootprint(int i) { return m_Levels[i]->GetLocalFootprint(); }
@@ -239,7 +240,7 @@ protected:
 	Array<vtLevel *> m_Levels;
 
 private:
-	void DeleteStories();
+	void DeleteLevels();
 };
 
 typedef vtBuilding *vtBuildingPtr;

@@ -45,7 +45,6 @@ public:
 	bool ConvertProjection(const vtProjection &proj_new);
 
 	// Implement required vtHeightField methods
-	virtual void GetChecksum(unsigned char **ppChecksum) const;
 	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// Avoid implementing HeightField3d virtual methods

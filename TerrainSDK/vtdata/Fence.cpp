@@ -132,7 +132,7 @@ void vtLinearParams::ApplyStyle(vtLinearStyle style)
 	}
 }
 
-void vtLinearParams::WriteXML(GZOutput &out)
+void vtLinearParams::WriteXML(GZOutput &out) const
 {
 	if (m_PostType != "none")
 	{
@@ -163,10 +163,12 @@ vtFence::vtFence() : vtStructure()
 
 vtFence &vtFence::operator=(const vtFence &v)
 {
+	// copy parent data
+	vtStructure::CopyFrom(v);
+
+	// copy class data
 	m_Params = v.m_Params;
 	m_pFencePts = v.m_pFencePts;
-	SetElevationOffset(v.GetElevationOffset());
-	SetOriginalElevation(v.GetOriginalElevation());
 	return *this;
 }
 
@@ -246,7 +248,7 @@ double vtFence::GetDistanceToLine(const DPoint2 &point)
 	return closest;
 }
 
-void vtFence::WriteXML(GZOutput &out, bool bDegrees)
+void vtFence::WriteXML(GZOutput &out, bool bDegrees) const
 {
 	int i;
 	const char *coord_format = "%.9lg";	// up to 9 significant digits

@@ -43,8 +43,6 @@ public:
 	// Initialize the vtHeightField
 	void Initialize(const DRECT &extents, float fMinHeight, float fMaxHeight);
 
-	// Return an MD5 checksum for this heightfield
-	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
 	virtual bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const = 0;
 
 	/** Test if a point is within the extents of the grid. */

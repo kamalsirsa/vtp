@@ -92,7 +92,7 @@ public:
 	bool ReadXML(const char *pathname);
 
 	bool WriteSHP(const char *pathname);
-	bool WriteXML(const char *pathname, bool bGZip = false);
+	bool WriteXML(const char *pathname, bool bGZip = false) const;
 
 	bool FindClosestBuildingCorner(const DPoint2 &point, double epsilon,
 						   int &building, int &corner, double &distance);
@@ -107,7 +107,7 @@ public:
 			int &structure, double &closest);
 
 	bool IsEmpty() { return (GetSize() == 0); }
-	void GetExtents(DRECT &ext);
+	void GetExtents(DRECT &ext) const;
 	void Offset(const DPoint2 &delta);
 
 	int AddFoundations(vtHeightField *pHF);

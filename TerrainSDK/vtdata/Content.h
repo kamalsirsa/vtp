@@ -190,7 +190,7 @@ public:
 	virtual ~vtContentManager();
 
 	void ReadXML(const char *filename);
-	void WriteXML(const char *filename);
+	void WriteXML(const char *filename) const;
 
 	void Empty();
 	void AddItem(vtItem *item) { m_items.Append(item); }

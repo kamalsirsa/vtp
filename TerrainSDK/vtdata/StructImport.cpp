@@ -370,8 +370,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 		if (opt.type == ST_INSTANCE)
 		{
 			vtStructInstance *inst = NewInstance();
-			inst->m_p.x = psShape->padfX[0];
-			inst->m_p.y = psShape->padfY[0];
+			inst->SetPoint(DPoint2(psShape->padfX[0], psShape->padfY[0]));
 			// attempt to get properties from the DBF
 			const char *string;
 			vtTag tag;
@@ -402,7 +401,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			if (field_rotation != -1)
 			{
 				double rotation = DBFReadDoubleAttribute(db, i, field_rotation);
-				inst->m_fRotation = (float) (rotation / 180.0 * PId);
+				inst->SetRotation((float)rotation / 180.0f * PIf);
 			}
 			Append(inst);
 		}
@@ -636,7 +635,6 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 	float fMinZ, fMaxZ, fTotalZ;
 	float fAverageZ;
 	float fZ;
-	float fOriginalElevation;
 	float fMin, fMax, fDiff, fElev;
 	PolyChecker PolyChecker;
 	SchemaType Schema = SCHEMA_UI;
@@ -833,15 +831,6 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				pBld->GetLevel(i)->m_fStoryHeight *= fScaleFactor;
 		}
 
-		// Modify elevation of building
-		fOriginalElevation = -1E9;
-		if ((GeometryType & wkb25DBit) && (opt.bUse25DForElevation))
-			fOriginalElevation = fAverageZ;
-		else if (iElevationIndex != -1)
-			fOriginalElevation = (float) pFeature->GetFieldAsDouble(iElevationIndex);
-		if (fOriginalElevation != -1E9)
-			pBld->SetOriginalElevation(fOriginalElevation);
-
 		// Add foundation
 		if ((opt.bBuildFoundations) && (NULL != opt.pHeightField))
 		{
@@ -862,12 +851,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 				if (fElev > fMax)
 					fMax = fElev;
 			}
-			if (fOriginalElevation != -1E9)
-				// I have a valid elevation
-				fDiff = fOriginalElevation - fMin;
-			else
-				fDiff = fMax - fMin;
-
+			fDiff = fMax - fMin;
 			if (fDiff > MINIMUM_BASEMENT_SIZE)
 			{
 				// Create and add a foundation level
@@ -910,7 +894,6 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 	float fZ;
 	vtFence *pFence;
 	vtFence *pDefaultFence;
-	float fOriginalElevation;
 	int iHeightIndex = -1;
 	int iElevationIndex = -1;
 
@@ -1013,16 +996,6 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 			pFence->GetParams().m_fPostHeight = f;
 			pFence->GetParams().m_fConnectTop = f;
 		}
-
-		// Modify elevation of fence
-		fOriginalElevation = -1E9;
-		if ((GeometryType & wkb25DBit) && (opt.bUse25DForElevation))
-			fOriginalElevation = fAverageZ;
-		else if (iElevationIndex != -1)
-			fOriginalElevation = (float) pFeature->GetFieldAsDouble(iElevationIndex);
-		if (fOriginalElevation != -1E9)
-			pFence->SetOriginalElevation(fOriginalElevation);
-
 		Append(pFence);
 	}
 }
@@ -1102,10 +1075,10 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 		vtStructInstance *pDefaultInstance = GetClosestDefault(pInstance);
 		if (NULL != pDefaultInstance)
 		{
-			pInstance->m_fRotation = pDefaultInstance->m_fRotation;
-			pInstance->m_fScale = pDefaultInstance->m_fScale;
+			pInstance->SetRotation(pDefaultInstance->GetRotation());
+			pInstance->SetScale(pDefaultInstance->GetScale());
 		}
-		pInstance->m_p = p2;
+		pInstance->SetPoint(p2);
 
 		Append(pInstance);
 	}

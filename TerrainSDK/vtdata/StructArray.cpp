@@ -303,7 +303,7 @@ bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
 }
 
 
-void vtStructureArray::GetExtents(DRECT &rect)
+void vtStructureArray::GetExtents(DRECT &rect) const
 {
 	if (GetSize() == 0)
 		return;
@@ -343,7 +343,7 @@ void vtStructureArray::Offset(const DPoint2 &delta)
 		}
 		vtStructInstance *inst = str->GetInstance();
 		if (inst)
-			inst->m_p += delta;
+			inst->Offset(delta);
 	}
 }
 
@@ -731,10 +731,18 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		{
 			const char *loc = atts.getValue("location");
 			if (loc)
-				sscanf(loc, "%lf %lf", &inst->m_p.x, &inst->m_p.y);
+			{
+				DPoint2 p;
+				sscanf(loc, "%lf %lf", &p.x, &p.y);
+				inst->SetPoint(p);
+			}
 			const char *rot = atts.getValue("rotation");
 			if (rot)
-				sscanf(rot, "%f", &inst->m_fRotation);
+			{
+				float fRot;
+				sscanf(rot, "%f", &fRot);
+				inst->SetRotation(fRot);
+			}
 		}
 		else
 			_data = "";
@@ -938,9 +946,9 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		attval = atts.getValue("ElevationOffset");
 		if (attval)
 			m_pStructure->SetElevationOffset((float) atof(attval));
-		attval = atts.getValue("OriginalElevation");
+		attval = atts.getValue("Absolute");
 		if (attval)
-			m_pStructure->SetOriginalElevation((float) atof(attval));
+			m_pStructure->SetAbsolute(*attval == 't');
 		return;
 	}
 
@@ -1175,11 +1183,15 @@ void StructVisitorGML::endElement(const char *name)
 		}
 		else if (!strcmp(name, "Rotation"))
 		{
-			sscanf(data, "%f", &m_pInstance->m_fRotation);
+			float fRot;
+			sscanf(data, "%f", &fRot);
+			m_pInstance->SetRotation(fRot);
 		}
 		else if (!strcmp(name, "Scale"))
 		{
-			sscanf(data, "%f", &m_pInstance->m_fScale);
+			float fScale;
+			sscanf(data, "%f", &fScale);
+			m_pInstance->SetScale(fScale);
 		}
 		else
 			bGrabAttribute = true;
@@ -1190,7 +1202,7 @@ void StructVisitorGML::endElement(const char *name)
 		{
 			double x, y;
 			sscanf(data, "%lf,%lf", &x, &y);
-			m_pInstance->m_p.Set(x,y);
+			m_pInstance->SetPoint(DPoint2(x,y));
 		}
 		else if (!strcmp(name, "Location"))
 			m_state = 20;
@@ -1215,7 +1227,7 @@ void StructVisitorGML::data(const char *s, int length)
 /////////////////////////////////////////////////////////////////////////
 
 
-bool vtStructureArray::WriteXML(const char* filename, bool bGZip)
+bool vtStructureArray::WriteXML(const char* filename, bool bGZip) const
 {
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
@@ -1251,7 +1263,8 @@ bool vtStructureArray::WriteXML(const char* filename, bool bGZip)
 
 	// Write projection
 	char *wkt;
-	OGRErr err = m_proj.exportToWkt(&wkt);
+	vtProjection *hack = const_cast<vtProjection *>(&m_proj);
+	OGRErr err = hack->exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
 	gfprintf(out, "\t<SRS>%s</SRS>\n", wkt);
