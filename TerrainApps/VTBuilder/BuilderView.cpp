@@ -50,6 +50,7 @@ EVT_MOTION(BuilderView::OnMouseMove)
 EVT_CHAR(BuilderView::OnChar)
 EVT_IDLE(BuilderView::OnIdle)
 EVT_SIZE(BuilderView::OnSize)
+EVT_ERASE_BACKGROUND(BuilderView::OnEraseBackground)
 END_EVENT_TABLE()
 
 /////////////////////////////////////////////////////////////////
@@ -1471,3 +1472,7 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		event.Skip();
 }
 
+void BuilderView::OnEraseBackground( wxEraseEvent& event )
+{
+	event.Skip();
+}
