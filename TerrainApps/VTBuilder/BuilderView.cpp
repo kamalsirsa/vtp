@@ -362,6 +362,9 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 {
 	int i, j;
 
+	if (!WMPoly)
+		return;
+
 	vtProjection &dproj = (vtProjection &)proj;
 
 	const char *proj_name = dproj.GetProjectionNameShort();
