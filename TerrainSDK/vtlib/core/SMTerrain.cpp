@@ -23,6 +23,8 @@
 
 #define ASSUME_LOWEST_LEVEL	1	// Saves memory and increases strip length
 
+#define DETAIL_FADE_DISTANCE 1000	// in world coords (meters)
+
 #if INTEGER_HEIGHT
 #define PACK_SCALE	4.0f	// use .25 meter spacing
 #else
@@ -984,8 +986,8 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 	if (hack_detail_pass)
 	{
 		// fade out over 1 km
-		if (pTri->m_distance > 1000.0f) return;
-		glColor4f(1.0f, 1.0f, 1.0f, 0.5f - pTri->m_distance / 1000.0f);
+		if (pTri->m_distance > DETAIL_FADE_DISTANCE) return;
+		glColor4f(1.0f, 1.0f, 1.0f, 0.5f - pTri->m_distance / DETAIL_FADE_DISTANCE);
 	}
 #endif
 	Begin(GL_TRIANGLES);
