@@ -431,22 +431,17 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 9)
 	{
-		if (g_Options.m_bSpeedTest)
-		{
-			// Benchmark engine - removed, need a better one
-			// m_pBench = new BenchEngine();
-		}
-		else
-		{
-			VTLOG("Setting Camera Location\n");
-			m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
-		}
+		VTLOG("Setting Camera Location\n");
+		m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
 		SetMessage("Switching to Terrain");
 	}
 	if (m_iInitStep == 10)
 	{
 		// make first terrain active
 		SetTerrain(pTerr);
+
+		// ensure that sunlight is active
+		GetSunLight()->SetEnabled(true);
 
 		m_pCurRoute=pTerr->GetLastRoute();	// Error checking needed here.
 
