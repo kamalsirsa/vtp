@@ -40,8 +40,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /D SUPPORT_SDTS=1 /YX /FD /c
 # ADD BASE RSC /l 0x409
@@ -65,8 +65,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /Z7 /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
 # ADD CPP /nologo /MDd /W3 /GX /Zi /Od /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /FR /YX /FD /c
 # ADD BASE RSC /l 0x409
@@ -173,6 +173,10 @@ SOURCE=.\vtDIB.cpp
 
 SOURCE=.\vtString.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\vtTin.cpp
+# End Source File
 # End Group
 # Begin Group "Headers"
 
@@ -276,6 +280,10 @@ SOURCE=.\vtDIB.h
 # Begin Source File
 
 SOURCE=.\vtString.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\vtTin.h
 # End Source File
 # End Group
 # Begin Group "Boost"
