@@ -176,7 +176,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		int idx = -1;
 
 		m_pSunImage = new vtImage(sun_texture);
-		if (m_pSunImage->LoadedOK())
+		if (m_pSunImage->HasData())
 		{
 			idx = m_pMats->AddTextureMaterial(m_pSunImage,
 							 false, false,	// culling, lighting
@@ -504,7 +504,7 @@ bool vtSkyDome::SetTexture(const char *filename)
 	VTLOG("   SkyDome: Set Texture to '%s'.. ", filename);
 
 	vtImage *pImage = new vtImage(filename);
-	if (!pImage->LoadedOK())
+	if (!pImage->HasData())
 	{
 		VTLOG("failed.\n");
 		return false;
@@ -703,7 +703,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 	{
 		int idx = -1;
 		m_pMoonImage = new vtImage(moon_texture);
-		if (m_pMoonImage->LoadedOK())
+		if (m_pMoonImage->HasData())
 		{
 			idx = m_pMats->AddTextureMaterial(m_pMoonImage,
 								 false, false,	// culling, lighting
