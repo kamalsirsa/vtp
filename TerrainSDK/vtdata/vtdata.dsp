@@ -187,6 +187,10 @@ SOURCE=.\UtilityMap.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Vocab.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\vtDIB.cpp
 # End Source File
 # Begin Source File
@@ -312,6 +316,10 @@ SOURCE=.\Unarchive.h
 # Begin Source File
 
 SOURCE=.\UtilityMap.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Vocab.h
 # End Source File
 # Begin Source File
 
