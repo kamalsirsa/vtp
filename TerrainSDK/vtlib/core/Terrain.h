@@ -231,10 +231,8 @@ public:
 	void HideAllPOI();
 
 	// symbols and labels for abstract data
-	float AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
-		float fOffset, bool bCurve = false, bool bTrue = false);
-	float AddSurfaceLineToMesh2(vtMeshFactory *pMF, const DLine2 &line,
-		float fOffset, bool bCurve = false, bool bTrue = false);
+	float AddSurfaceLineToMesh(vtMeshFactory *pMF, const DLine2 &line,
+		float fOffset, bool bInterp, bool bCurve = false, bool bTrue = false);
 	void CreateStyledFeatures(const vtFeatureSet &feat,  const vtTagArray &style);
 	void CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style);
 	void CreateFeatureLabels(const vtFeatureSet &feat,   const vtTagArray &style);
