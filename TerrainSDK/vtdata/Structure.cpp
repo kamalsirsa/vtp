@@ -17,8 +17,6 @@ vtStructInstance::vtStructInstance() : vtStructure()
 	m_p.Set(0, 0);
 	m_fRotation = 0.0f;
 	m_fScale = 1.0f;
-	m_fElevationOffset = 0.0f;
-	m_fOriginalElevation = -1E9;
 }
 
 void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)
@@ -107,6 +105,8 @@ bool vtStructInstance::IsContainedBy(const DRECT &rect) const
 vtStructure::vtStructure()
 {
 	m_type = ST_NONE;
+	m_fElevationOffset = 0.0f;
+	m_fOriginalElevation = -1E9;
 #ifdef VIAVTDATA
 	m_bIsVIAContributor = false;
 	m_bIsVIATarget = false;
