@@ -830,13 +830,20 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	}
 	else if (!strExt.CmpNoCase(_T("grd")))
 	{
-		// might by CDF, might be GRD
+		// might by CDF, might be Surfer GRD
 		if (first == 'D')
+		{
+			VTLOG("First character is 'D', attempting load as a Surfer Grid file.\n");
 			success = m_pGrid->LoadFromGRD(strFileName.mb_str(), progress_callback);
+		}
 		else
+		{
+			VTLOG("First character is not 'D', attempting load as a netCDF file.\n");
 			success = m_pGrid->LoadFromCDF(strFileName.mb_str(), progress_callback);
+		}
 		if (!success)
 		{
+			VTLOG("Didn't load successfully, attempting load with GDAL.\n");
 			// Might be 'Arc Binary Grid', try GDAL
 			success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 		}
