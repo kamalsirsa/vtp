@@ -447,6 +447,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 				   m_Params.m_fVerticalExag, fOceanDepth, iError);
 	if (result == false)
 	{
+		delete m_pDynGeom;
 		m_pDynGeom = NULL;
 		return false;
 	}
