@@ -81,7 +81,7 @@ public:
 	virtual void AppendDataFrom(vtLayer *pL) = 0;
 	virtual void GetProjection(vtProjection &proj);
 	virtual void SetProjection(vtProjection &proj) {}
-	virtual void Offset(DPoint2 p);
+	virtual void Offset(const DPoint2 &p);
 	virtual void GetPropertyText(wxString &str) {}
 
 	static char *LayerTypeName[];

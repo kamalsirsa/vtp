@@ -6,8 +6,13 @@
 //
 
 #include <wx/wxprec.h>
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "VegDlg.h"
-#include "frame.h"
+#include "Frame.h"
 
 ////////////////////////////////////////////////////////////////
 
@@ -36,7 +41,7 @@ void PlantListCtrl::OnSelect(wxListEvent &event)
 		long item1;
 		str1.Printf("%d", app->m_bBillboard);
 		item1 = apps->InsertItem(j, str1, 0);
-		str1.Printf("%s", app->m_filename);
+		str1 = app->m_filename;
 		item1 = apps->SetItem(j, 1, str1);
 		str1.Printf("%4.2f", app->m_width);
 		item1 = apps->SetItem(j, 2, str1);
@@ -123,7 +128,7 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 
 			str1.Printf("%d", app->m_bBillboard);
 			item1 = m_PATable->InsertItem(j, str1, 0);
-			str1.Printf("%s", app->m_filename);
+			str1 = app->m_filename;
 			item1 = m_PATable->SetItem(j, 1, str1);
 			str1.Printf("%4.2f", app->m_width);
 			item1 = m_PATable->SetItem(j, 2, str1);
@@ -174,7 +179,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 			// Display all species and it's density under each biotype as level 2 of tree.
 			wxString s;
 			s.Printf("%s (%1.4f /m^2)",
-				br->m_Types[i]->m_Densities[j]->m_common_name, 
+				(const char *) br->m_Types[i]->m_Densities[j]->m_common_name,
 				br->m_Types[i]->m_Densities[j]->m_plant_per_m2);
 
 			wxTreeItemId specie = m_BTree->AppendItem(region, s);

@@ -26,7 +26,7 @@ public:
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
 	void AppendDataFrom(vtLayer *pL);
-	void Offset(DPoint2 p);
+	void Offset(const DPoint2 &p);
 
 	static bool GetDrawNodes() { return m_bDrawNodes; }
 	static void SetDrawNodes(bool d) { m_bDrawNodes = d; }
@@ -36,13 +36,13 @@ public:
 	int GetSelectedNodes();
 	int GetSelectedRoads();
 	void ToggleRoadDirection(RoadEdit *pRoad);
-	bool SelectArea(DRECT box, bool nodemode, bool crossSelect);
-	void MoveSelectedNodes(DPoint2 offset);
+	bool SelectArea(const DRECT &box, bool nodemode, bool crossSelect);
+	void MoveSelectedNodes(const DPoint2 &offset);
 
 	//edit a single node
-	bool EditNodeProperties(DPoint2 point, float error, DRECT &bound);
+	bool EditNodeProperties(const DPoint2 &point, float error, DRECT &bound);
 	//edit a single road
-	bool EditRoadProperties(DPoint2 point, float error, DRECT &bound);
+	bool EditRoadProperties(const DPoint2 &point, float error, DRECT &bound);
 	//edit all selected nodes
 	bool EditNodesProperties();
 	//edit all selected roads

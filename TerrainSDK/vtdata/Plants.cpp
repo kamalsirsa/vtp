@@ -242,7 +242,8 @@ bool vtBioRegion::Write(const char *fname)
 		fprintf(fp, "species: %d\n", num2);
 		for (int j = 0; j < num2; j++)
 		{
-			fprintf(fp, "\t%s %f\n", bt->m_Densities[j]->m_common_name,
+			const char *common = bt->m_Densities[j]->m_common_name;
+			fprintf(fp, "\t%s %f\n", common,
 				bt->m_Densities[j]->m_plant_per_m2);
 		}
 	}

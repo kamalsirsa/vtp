@@ -6,12 +6,17 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "RoadMapEdit.h"
 #include "assert.h"
 #include "NodeDlg.h"
 #include "RoadDlg.h"
 #include "RoadLayer.h"
-#include "frame.h"
+#include "Frame.h"
 
 #define NODE_RADIUS 5
 
@@ -76,7 +81,7 @@ bool NodeEdit::Draw(wxDC* pDC, vtScaledView *pView)
 bool NodeEdit::EditProperties(vtLayer *pLayer)
 {
 	CNodeDlg dlg(this, pLayer);
-	BOOL success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
+	bool success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
 	//popup the dialog
 	return (dlg.ShowModal() == wxID_OK);
 }
@@ -303,7 +308,7 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection)
 		int r = 0;
 
 		diff.x = diff.y = 0;
-		while (abs(diff.x) < 2 && abs(diff.y) < 2)
+		while (fabs(diff.x) < 2 && fabs(diff.y) < 2)
 		{
 			p0.x = roadbuf[mid-r].x;
 			p0.y = roadbuf[mid-r].y;
@@ -352,7 +357,7 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection)
 bool RoadEdit::EditProperties(vtLayer *pLayer)
 {
 	CRoadDlg dlg(this, pLayer);
-	BOOL success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
+	bool success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
 	//popup the dialog
 	return (dlg.ShowModal() == wxID_OK);
 }

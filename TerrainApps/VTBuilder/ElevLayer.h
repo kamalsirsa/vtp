@@ -47,7 +47,7 @@ public:
 	void Resample(int iNewWidth, int iNewHeight);
 	void FillGaps();
 	void DetermineMeterSpacing();
-	void Offset(DPoint2 p);
+	void Offset(const DPoint2 &p);
 	DRECT GetExtents();
 	bool ImportFromFile(wxString &strFileName, void progress_callback(int am));
 
@@ -80,3 +80,4 @@ protected:
 };
 
 #endif
+

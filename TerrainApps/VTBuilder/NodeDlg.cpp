@@ -6,9 +6,14 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "NodeDlg.h"
 #include "dialog4.h"
-#include "frame.h"
+#include "Frame.h"
 #include "BuilderView.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -185,6 +190,7 @@ bool CNodeDlg::OnOKMultiple()
 
 bool CNodeDlg::OnOKSingle()
 {
+	int i;
 	bool bMod = false;	// check for modification
 
 	// remember previous state
@@ -194,7 +200,7 @@ bool CNodeDlg::OnOKSingle()
 	int numLights = 0;
 	int numStopSigns = 0;
 	int numNone = 0;
-	for (int i = 0; i < m_pTempNode->m_iRoads; i++)
+	for (i = 0; i < m_pTempNode->m_iRoads; i++)
 	{
 		if (m_pTempNode->GetIntersectType(i) == IT_NONE)
 			numNone++;

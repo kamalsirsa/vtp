@@ -9,6 +9,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "RoadMapEdit.h"
 #include "assert.h"
 
@@ -69,11 +74,13 @@ int RoadMapEdit::MergeRedundantNodes(void progress_callback(int))
 	int total = nodes * nodes / 2;
 	int count = 0;
 
-	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = next)
+	NodeEdit *pN, *pN2;
+
+	for (pN = GetFirstNode(); pN && pN->m_pNext; pN = next)
 	{
 		next = pN->GetNext();
 		bool remove = false;
-		for (NodeEdit *pN2 = next; pN2; pN2 = pN2->GetNext())
+		for (pN2 = next; pN2; pN2 = pN2->GetNext())
 		{
 			count++;
 			if ((count % 1000) == 0)

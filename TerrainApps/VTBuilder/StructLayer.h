@@ -26,7 +26,7 @@ public:
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
 	void AppendDataFrom(vtLayer *pL);
-	void Offset(DPoint2 p);
+	void Offset(const DPoint2 &p);
 
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);
 	void AddElementsFromSHPPoints(SHPHandle hSHP, int nElem);
@@ -46,3 +46,4 @@ protected:
 };
 
 #endif
+

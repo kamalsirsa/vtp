@@ -8,8 +8,11 @@
 // Free for all uses, see license.txt for details.
 //
 
-#pragma warning( disable : 4786 )  
+#ifdef _MSC_VER
+#pragma warning( disable : 4786 )
+#endif
 
+#include <stdio.h>
 #include "xmlhelper/easyxml.hpp"
 #include "Content.h"
 
@@ -341,22 +344,29 @@ void vtContentManager::WriteXML(const char *filename)
 	for (i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
-		fprintf(fp, "\t<item name=\"%s\">\n", pItem->m_name);
+		const char *name = pItem->m_name;
+		fprintf(fp, "\t<item name=\"%s\">\n", name);
 		if (pItem->m_type != "")
 		{
-			fprintf(fp, "\t\t<classification type=\"%s\"", pItem->m_type);
+			const char *type = pItem->m_type;
+			fprintf(fp, "\t\t<classification type=\"%s\"", type);
 			if (pItem->m_subtype != "")
-				fprintf(fp, " subtype=\"%s\"", pItem->m_subtype);
+			{
+				const char *subtype = pItem->m_subtype;
+				fprintf(fp, " subtype=\"%s\"", subtype);
+			}
 			fprintf(fp, " />\n");
 		}
 		if (pItem->m_url != "")
 		{
-			fprintf(fp, "\t\t<link utl=\"%s\" />\n", pItem->m_url);
+			const char *url = pItem->m_url;
+			fprintf(fp, "\t\t<link utl=\"%s\" />\n", url);
 		}
 		for (j = 0; j < pItem->NumModels(); j++)
 		{
 			vtModel *pMod = pItem->GetModel(j);
-			fprintf(fp, "\t\t<model filename=\"%s\"", pMod->m_filename);
+			const char *filename = pMod->m_filename;
+			fprintf(fp, "\t\t<model filename=\"%s\"", filename);
 			if (pMod->m_distance != 0.0f)
 				fprintf(fp, " distance=\"%g\"", pMod->m_distance);
 			fprintf(fp, " />\n");

@@ -110,7 +110,7 @@ public:
 
 	bool GetExtents(DRECT &rect);
 	void SetCenterFromPoly();
-	void Offset(DPoint2 &p);
+	void Offset(const DPoint2 &p);
 	void RectToPoly();
 
 	void WriteXML(FILE *fp, bool bDegrees);

@@ -6,9 +6,14 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "RoadDlg.h"
 #include "dialog5.h"
-#include "frame.h"
+#include "Frame.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CRoadDlg dialog
@@ -29,12 +34,12 @@ CRoadDlg::CRoadDlg(class RoadEdit *road, vtLayer *pLayer, bool bMultiple)
 }
 
 BEGIN_EVENT_TABLE(CRoadDlg, AutoDialog)
-EVT_CHECKBOX(IDC_ROAD_ENABLE_LANES, OnRoadEnableLanes)
-EVT_CHECKBOX(IDC_ROAD_ENABLE_HWYNUM, OnRoadEnableHwynum)
-EVT_CHECKBOX(IDC_ROAD_SIDEWALK, OnRoadSideWalk)
-EVT_CHECKBOX(IDC_ROAD_PARKING, OnRoadParking)
-EVT_CHECKBOX(IDC_ROAD_MARGIN, OnRoadMargin)
-EVT_BUTTON(wxID_OK, OnOK)
+EVT_CHECKBOX(IDC_ROAD_ENABLE_LANES, CRoadDlg::OnRoadEnableLanes)
+EVT_CHECKBOX(IDC_ROAD_ENABLE_HWYNUM, CRoadDlg::OnRoadEnableHwynum)
+EVT_CHECKBOX(IDC_ROAD_SIDEWALK, CRoadDlg::OnRoadSideWalk)
+EVT_CHECKBOX(IDC_ROAD_PARKING, CRoadDlg::OnRoadParking)
+EVT_CHECKBOX(IDC_ROAD_MARGIN, CRoadDlg::OnRoadMargin)
+EVT_BUTTON(wxID_OK, CRoadDlg::OnOK)
 END_EVENT_TABLE()
 
 /////////////////////////////////////////////////////////////////////////////

@@ -9,6 +9,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "TransitLayer.h"
 #include "ScaledView.h"
 #include "Helper.h"
@@ -123,7 +128,7 @@ bool vtTransitLayer::ConvertProjection(vtProjection &proj_new)
 
 void vtTransitLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	wxPen TransitPen(wxColor(255,0,0), 2, PS_SOLID);
+	wxPen TransitPen(wxColor(255,0,0), 2, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(TransitPen);
 
@@ -182,7 +187,7 @@ void vtTransitLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtTransitLayer::Offset(DPoint2 p)
+void vtTransitLayer::Offset(const DPoint2 &p)
 {
 	for (int i = 1; i <= g_sim.NumSegments(); i++)
 	{

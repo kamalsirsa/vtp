@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "RoadLayer.h"
 #include "NodeDlg.h"
 #include "RoadDlg.h"
@@ -150,7 +155,7 @@ void vtRoadLayer::ToggleRoadDirection(RoadEdit *pRoad)
 	SetModified(true);
 }
 
-void vtRoadLayer::MoveSelectedNodes(DPoint2 offset)
+void vtRoadLayer::MoveSelectedNodes(const DPoint2 &offset)
 {
 	for (NodeEdit *n = GetFirstNode(); n; n=n->GetNext())
 	{
@@ -188,7 +193,7 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	return true;
 }
 
-void vtRoadLayer::Offset(DPoint2 p)
+void vtRoadLayer::Offset(const DPoint2 &p)
 {
 	for (Road *r = GetFirstRoad(); r; r=r->m_pNext)
 	{
@@ -205,7 +210,8 @@ void vtRoadLayer::Offset(DPoint2 p)
 	m_bValidExtents = false;
 }
 
-bool vtRoadLayer::EditNodeProperties(DPoint2 point, float error, DRECT &bound)
+bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float error,
+									 DRECT &bound)
 {
 	NodeEdit* bestNSoFar = NULL;
 	float dist = (float)error;
@@ -231,7 +237,8 @@ bool vtRoadLayer::EditNodeProperties(DPoint2 point, float error, DRECT &bound)
 	return false; 
 }
 
-bool vtRoadLayer::EditRoadProperties(DPoint2 point, float error, DRECT &bound)
+bool vtRoadLayer::EditRoadProperties(const DPoint2 &point, float error,
+									 DRECT &bound)
 {
 	RoadEdit* bestRSoFar = NULL;
 	float dist = (float)error;
@@ -279,13 +286,13 @@ bool vtRoadLayer::EditNodesProperties()
 	}
 	if (count == 1) {
 		CNodeDlg dlg(node, this, false);
-		BOOL success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
+		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
 		return (dlg.ShowModal() == wxID_OK);
 	}
 	else
 	{
 		CNodeDlg dlg(GetFirstNode(), this, true);
-		BOOL success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
+		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
 		return (dlg.ShowModal() == wxID_OK);
 	}
 }
@@ -311,18 +318,18 @@ bool vtRoadLayer::EditRoadsProperties()
 	if (count == 1)
 	{
 		CRoadDlg dlg(road, this, false);
-		BOOL success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
+		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
 		return (dlg.ShowModal() == wxID_OK);
 	}
 	else
 	{
 		CRoadDlg dlg((RoadEdit*)m_pFirstRoad, this, true);
-		BOOL success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
+		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
 		return (dlg.ShowModal() == wxID_OK);
 	}
 }
 
-bool vtRoadLayer::SelectArea(DRECT box, bool nodemode, bool crossSelect)
+bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 {
 	bool ret = false;
 	int selected;

@@ -93,8 +93,8 @@ void vtFence::WriteXML(FILE *fp, bool bDegrees)
 	fprintf(fp, "\" />\n");
 
 	// This must be expanded when we support more than 2 kinds of fence!
-	char *post_type = (m_FenceType == FT_WIRE) ? "wood" : "steel";
-	char *conn_type = (m_FenceType == FT_WIRE) ? "wire" : "chain-link";
+	const char *post_type = (m_FenceType == FT_WIRE) ? "wood" : "steel";
+	const char *conn_type = (m_FenceType == FT_WIRE) ? "wire" : "chain-link";
 
 	fprintf(fp, "\t\t<height abs=\"%.2f\" />\n", m_fHeight);
 	fprintf(fp, "\t\t<posts type=\"%s\" size=\"%.2f, %.2f\" spacing=\"%.2f\" />\n",

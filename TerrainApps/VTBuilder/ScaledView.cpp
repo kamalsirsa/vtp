@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "ScaledView.h"
 #include "Frame.h"
 
@@ -24,7 +29,7 @@ void vtScaledView::ZoomAll()
 	ZoomToRect(extents, 0.1f);
 }
 
-void vtScaledView::ZoomToRect(DRECT &geo_rect, float margin)
+void vtScaledView::ZoomToRect(const DRECT &geo_rect, float margin)
 {
 	wxRect client;
 	GetClientSize(&client.width, &client.height);
@@ -37,7 +42,7 @@ void vtScaledView::ZoomToRect(DRECT &geo_rect, float margin)
 	DPoint2 scale;
 	scale.x = (float) client.GetWidth() / geo_rect.Width();
 	scale.y = (float) client.GetHeight() / geo_rect.Height();
-	m_fScale = min(scale.x, scale.y);
+	m_fScale = (scale.x < scale.y ? scale.x : scale.y);		// min
 	m_fScale *= (1.0f - margin);
 	UpdateRanges();
 
@@ -46,7 +51,7 @@ void vtScaledView::ZoomToRect(DRECT &geo_rect, float margin)
 	ZoomToPoint(center);
 }
 
-void vtScaledView::ZoomOutToRect(DRECT &geo_rect)
+void vtScaledView::ZoomOutToRect(const DRECT &geo_rect)
 {
 	// Get current earth extents of the view
 	DPoint2 p1, p2;
@@ -58,7 +63,7 @@ void vtScaledView::ZoomOutToRect(DRECT &geo_rect)
 	DPoint2 scale;
 	scale.x = geo_rect.Width() / outer_rect.Width();
 	scale.y = geo_rect.Height() / outer_rect.Height();
-	float delta = min(scale.x, scale.y);
+	float delta = (scale.x < scale.y ? scale.x : scale.y);	// min
 
 	DPoint2 center1, center2, diff;
 	geo_rect.GetCenter(center1);
@@ -73,7 +78,7 @@ void vtScaledView::ZoomOutToRect(DRECT &geo_rect)
 	ZoomToPoint(new_center);
 }
 
-void vtScaledView::ZoomToPoint(FPoint2 p)
+void vtScaledView::ZoomToPoint(const FPoint2 &p)
 {
 	wxPoint offset;
 
@@ -96,7 +101,7 @@ void vtScaledView::ZoomToPoint(FPoint2 p)
 	Refresh();
 }
 
-wxRect vtScaledView::WorldToCanvas(DRECT r)
+wxRect vtScaledView::WorldToCanvas(const DRECT &r)
 {
 	wxRect sr;
 
@@ -108,7 +113,7 @@ wxRect vtScaledView::WorldToCanvas(DRECT r)
 	return sr;
 }
 
-wxRect vtScaledView::WorldToWindow(DRECT r)
+wxRect vtScaledView::WorldToWindow(const DRECT &r)
 {
 	wxRect sr;
 	int right, bottom;
@@ -121,7 +126,7 @@ wxRect vtScaledView::WorldToWindow(DRECT r)
 	return sr;
 }
 
-wxRect vtScaledView::PointsToRect(wxPoint &p1, wxPoint &p2)
+wxRect vtScaledView::PointsToRect(const wxPoint &p1, const wxPoint &p2)
 {
 	wxRect rect;
 	rect.x = p1.x;
@@ -131,7 +136,7 @@ wxRect vtScaledView::PointsToRect(wxPoint &p1, wxPoint &p2)
 	return rect;
 }
 
-DRECT vtScaledView::CanvasToWorld(wxRect &r)
+DRECT vtScaledView::CanvasToWorld(const wxRect &r)
 {
 	DRECT rect;
 	rect.left = ox(r.x);
@@ -200,7 +205,7 @@ void vtScaledView::UpdateRanges()
 	SetScrollbars(1, 1, h_range, v_range, 0, 0, TRUE);
 }
 
-void vtScaledView::GetCanvasPosition(wxMouseEvent &event, wxPoint &pos)
+void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 {
 	wxPoint p = event.GetPosition();
 	CalcUnscrolledPosition(p.x, p.y, &pos.x, &pos.y);

@@ -53,7 +53,7 @@ public:
 	void AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
 	void SetProjection(vtProjection &proj);
-	void Offset(DPoint2 p);
+	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &strIn);
 
 	int GetEntityType();

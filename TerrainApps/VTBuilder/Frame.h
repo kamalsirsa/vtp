@@ -75,12 +75,14 @@ public:
 
 	void OnUpdateLayerSave(wxUpdateUIEvent& event);
 	void OnUpdateLayerSaveAs(wxUpdateUIEvent& event);
+	void OnUpdateLayerProperties(wxUpdateUIEvent& event);
 	void OnUpdateLayerExport(wxUpdateUIEvent& event);
 	void OnUpdateLayerConvert(wxUpdateUIEvent& event);
 	void OnUpdateLayerFlatten(wxUpdateUIEvent& event);
 
 	void OnViewToolbar(wxCommandEvent& event);
 	void OnLayerShow(wxCommandEvent& event);
+	void OnViewLayerPaths(wxCommandEvent& event);
 	void OnViewMagnifier(wxCommandEvent& event);
 	void OnViewPan(wxCommandEvent& event);
 	void OnViewDistance(wxCommandEvent& event);
@@ -94,6 +96,7 @@ public:
 
 	void OnUpdateToolbar(wxUpdateUIEvent& event);
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
+	void OnUpdateLayerPaths(wxUpdateUIEvent& event);
 	void OnUpdateMagnifier(wxUpdateUIEvent& event);
 	void OnUpdatePan(wxUpdateUIEvent& event);
 	void OnUpdateDistance(wxUpdateUIEvent& event);
@@ -171,8 +174,8 @@ public:
 	void OnChar(wxKeyEvent& event);
 
 	// project
-	void LoadProject(wxString &strPathName);
-	void SaveProject(wxString &strPathName);
+	void LoadProject(const wxString &strPathName);
+	void SaveProject(const wxString &strPathName);
 
 	// Layer methods
 	vtLayer *GetActiveLayer() { return m_pActiveLayer; }
@@ -201,7 +204,7 @@ public:
 			return (vtStructureLayer *)m_pActiveLayer;
 		return NULL;
 	}
-	void LoadLayer(wxString &fname);
+	void LoadLayer(const wxString &fname);
 	void AddLayer(vtLayer *lp);
 	void RemoveLayer(vtLayer *lp);
 	void DeleteLayer(vtLayer *lp);

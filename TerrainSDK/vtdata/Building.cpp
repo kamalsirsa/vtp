@@ -237,7 +237,7 @@ void vtBuilding::SetCenterFromPoly()
 	SetLocation(p);
 }
 
-void vtBuilding::Offset(DPoint2 &p)
+void vtBuilding::Offset(const DPoint2 &p)
 {
 	m_EarthPos += p;
 

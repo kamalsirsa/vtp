@@ -11,6 +11,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "RawLayer.h"
 #include "ScaledView.h"
 
@@ -55,7 +60,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	//set the pen options
 	//single pixel solid white pen
-	wxPen DefPen(wxColor(255,255,0), 1, PS_SOLID);
+	wxPen DefPen(wxColor(255,255,0), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(DefPen);
 	int i, j, size, size2;
@@ -251,7 +256,7 @@ void vtRawLayer::SetProjection(vtProjection &proj)
 	m_proj = proj;
 }
 
-void vtRawLayer::Offset(DPoint2 p)
+void vtRawLayer::Offset(const DPoint2 &p)
 {
 	// TODO
 }

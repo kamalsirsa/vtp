@@ -26,7 +26,7 @@ public:
 	bool OnLoad();
 	void AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
-	void Offset(DPoint2 p);
+	void Offset(const DPoint2 &p);
 
 protected:
 	// data for rivers and water bodies

@@ -6,10 +6,20 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "Frame.h"
 #include "StructLayer.h"
 #include "ScaledView.h"
 #include "BuildingDlg.h"
+
+#ifndef _MSC_VER	// for non-MSVC
+#include <string.h>
+#define stricmp strcasecmp
+#endif
 
 wxPen orangePen;
 wxPen yellowPen;
@@ -104,6 +114,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *
 {
 	DPoint2 corner[4];
 	float fWidth, fDepth, fRotation;
+	int j;
 
 	wxPoint origin;
 	pView->screen(bld->GetLocation(), origin);
@@ -115,7 +126,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *
 	{
 		DLine2 &dl = bld->GetFootprint();
 		int size = dl.GetSize();
-		for (int j = 0; j < size && j < MAX_SIDES-1; j++)
+		for (j = 0; j < size && j < MAX_SIDES-1; j++)
 			pView->screen(dl.GetAt(j), array[j]);
 		pView->screen(dl.GetAt(0), array[j++]);
 
@@ -217,7 +228,7 @@ void vtStructureLayer::AppendDataFrom(vtLayer *pL)
 	}
 }
 
-void vtStructureLayer::Offset(DPoint2 p)
+void vtStructureLayer::Offset(const DPoint2 &p)
 {
 	int npoints = GetSize();
 	if (!npoints)

@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "Frame.h"
 #include "WaterLayer.h"
 #include "ElevLayer.h"
@@ -190,7 +195,7 @@ void vtLayer::GetProjection(vtProjection &proj)
 	// shouldn't get here.
 }
 
-void vtLayer::Offset(DPoint2 p)
+void vtLayer::Offset(const DPoint2 &p)
 {
 	// shouldn't get here unless a layer is incapable of offset
 }

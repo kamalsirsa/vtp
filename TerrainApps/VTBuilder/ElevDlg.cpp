@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "wx/resource.h"
 #include <wx/valgen.h>
 #include "dialog1.h"
@@ -81,8 +86,8 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 	else
 	{
 		m_strSaveArea = wxString::Format("%s x %s",
-			DegreeToString(m_area.Width()),
-			DegreeToString(m_area.Height()));
+			(const char *) DegreeToString(m_area.Width()),
+			(const char *) DegreeToString(m_area.Height()));
 	}
 	RecomputeSamples();
 	RecomputeSize();

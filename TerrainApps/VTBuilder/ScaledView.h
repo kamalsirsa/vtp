@@ -20,17 +20,17 @@ public:
 	double GetScale();
 
 	void ZoomAll();
-	void ZoomToPoint(FPoint2 p);
-	void ZoomToRect(DRECT &geo_rect, float margin);
-	void ZoomOutToRect(DRECT &geo_rect);
+	void ZoomToPoint(const FPoint2 &p);
+	void ZoomToRect(const DRECT &geo_rect, float margin);
+	void ZoomOutToRect(const DRECT &geo_rect);
 
-	wxRect WorldToCanvas(DRECT r);
-	wxRect WorldToWindow(DRECT r);
-	DRECT CanvasToWorld(wxRect &r);
+	wxRect WorldToCanvas(const DRECT &r);
+	wxRect WorldToWindow(const DRECT &r);
+	DRECT CanvasToWorld(const wxRect &r);
 
-	void GetCanvasPosition(wxMouseEvent &event, wxPoint &pos);
+	void GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos);
 	DRECT GetWorldRect();
-	wxRect PointsToRect(wxPoint &p1, wxPoint &p2);
+	wxRect PointsToRect(const wxPoint &p1, const wxPoint &p2);
 
 	// transform object space -> screen space
 	int	sx(double x) { return (int)(x*m_fScale - m_limits.x); }
@@ -44,7 +44,7 @@ public:
 	int	sdx(double x) { return (int)(x*m_fScale); }
 	int	sdy(double y) { return (int)(-y*m_fScale); }
 
-	wxPoint screen_delta(DPoint2 &p) const
+	wxPoint screen_delta(const DPoint2 &p) const
 	{
 		wxPoint sp;
 		sp.x = (int)(p.x*m_fScale);
@@ -55,7 +55,7 @@ public:
 	// transform screen space -> object space
 	double ox(int x) { return (x + m_limits.x) / m_fScale; }
 	double oy(int y) { return -(y + m_limits.y) / m_fScale; }
-	void object(wxPoint &sp, DPoint2 &p) const
+	void object(const wxPoint &sp, DPoint2 &p) const
 	{
 		p.x = (sp.x + m_limits.x) / m_fScale;
 		p.y = -(sp.y + m_limits.y) / m_fScale;
