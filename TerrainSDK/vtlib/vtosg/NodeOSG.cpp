@@ -634,7 +634,7 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 {
 	if (!m_pMaterialArray.valid())
 		return NULL;
-	if (idx < 0 || idx >= m_pMaterialArray->GetSize())
+	if (idx < 0 || idx >= (int) m_pMaterialArray->GetSize())
 		return NULL;
 	return m_pMaterialArray->GetAt(idx);
 }

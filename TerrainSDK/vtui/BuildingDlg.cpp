@@ -224,7 +224,7 @@ void BuildingDlg::OnLevelUp( wxCommandEvent &event )
 
 void BuildingDlg::OnLevelDown( wxCommandEvent &event )
 {
-	if (m_iLevel < m_pBuilding->GetNumLevels() - 1)
+	if (m_iLevel < (int) m_pBuilding->GetNumLevels() - 1)
 	{
 		m_pBuilding->SwapLevels(m_iLevel, m_iLevel+1);
 		RefreshLevelsBox();
@@ -465,7 +465,7 @@ void BuildingDlg::SetLevel(int iLev)
 
 	// enable up/down
 	GetLevelUp()->Enable(m_iLevel > 0);
-	GetLevelDown()->Enable(m_iLevel < m_pBuilding->GetNumLevels()-1);
+	GetLevelDown()->Enable(m_iLevel < (int) m_pBuilding->GetNumLevels()-1);
 	GetLevelDel()->Enable(m_pBuilding->GetNumLevels() > 1);
 	GetLevelCopy()->Enable(true);
 }
