@@ -24,7 +24,7 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect);
 
 /////
 
-int GuessZoneFromLongitude(double longitude);
+int GuessZoneFromGeo(const DPoint2 &pos);
 
 /////
 

@@ -116,9 +116,12 @@ void DrawRectangle(wxDC* pDC, const wxRect &rect)
 
 //////////////////////////////////////
 
-int GuessZoneFromLongitude(double longitude)
+int GuessZoneFromGeo(const DPoint2 &pos)
 {
-	return (int) (((longitude + 180.0) / 6.0) + 1.0);
+	int zone = (int) (((pos.x + 180.0) / 6.0) + 1.0);
+	if (pos.y < 0)
+		zone = -zone;
+	return zone;
 }
 
 //////////////////////////////////////
