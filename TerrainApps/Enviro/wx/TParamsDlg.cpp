@@ -304,14 +304,14 @@ void TParamsDlg::UpdateEnableState()
 
 void TParamsDlg::OnTextureFileBase( wxCommandEvent &event )
 {
-	if (!m_bReady) return;
+	if (m_bSetting || !m_bReady) return;
 	TransferDataFromWindow();
 	UpdateTiledTextureFilename();
 }
 
 void TParamsDlg::OnTileSize( wxCommandEvent &event )
 {
-	if (!m_bReady) return;
+	if (m_bSetting || !m_bReady) return;
 	TransferDataFromWindow();
 	UpdateTiledTextureFilename();
 }

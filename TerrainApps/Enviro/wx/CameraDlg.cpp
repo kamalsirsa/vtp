@@ -88,14 +88,14 @@ void CameraDlg::GetValues()
 
 void CameraDlg::SetValues()
 {
-	if (m_bSet)
-	{
-		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->SetFOV(m_fFov / 180.0f * PIf);
-		pCam->SetHither(m_fNear);
-		pCam->SetYon(m_fFar);
-		g_App.SetFlightSpeed(m_fSpeed);
-	}
+	if (!m_bSet)
+		return;
+
+	vtCamera *pCam = vtGetScene()->GetCamera();
+	pCam->SetFOV(m_fFov / 180.0f * PIf);
+	pCam->SetHither(m_fNear);
+	pCam->SetYon(m_fFar);
+	g_App.SetFlightSpeed(m_fSpeed);
 }
 
 void CameraDlg::TransferToWindow()
@@ -126,6 +126,8 @@ void CameraDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void CameraDlg::OnSpeedSlider( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	SlidersToValues(4);
 	SetValues();
@@ -134,6 +136,8 @@ void CameraDlg::OnSpeedSlider( wxCommandEvent &event )
 
 void CameraDlg::OnFarSlider( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	SlidersToValues(3);
 	SetValues();
@@ -142,6 +146,8 @@ void CameraDlg::OnFarSlider( wxCommandEvent &event )
 
 void CameraDlg::OnNearSlider( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	SlidersToValues(2);
 	SetValues();
@@ -150,6 +156,8 @@ void CameraDlg::OnNearSlider( wxCommandEvent &event )
 
 void CameraDlg::OnFovSlider( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	SlidersToValues(1);
 	SetValues();
@@ -158,6 +166,8 @@ void CameraDlg::OnFovSlider( wxCommandEvent &event )
 
 void CameraDlg::OnSpeed( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	ValuesToSliders();
 	SetValues();
@@ -166,6 +176,8 @@ void CameraDlg::OnSpeed( wxCommandEvent &event )
 
 void CameraDlg::OnFar( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	ValuesToSliders();
 	SetValues();
@@ -174,6 +186,8 @@ void CameraDlg::OnFar( wxCommandEvent &event )
 
 void CameraDlg::OnNear( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	ValuesToSliders();
 	SetValues();
@@ -182,6 +196,8 @@ void CameraDlg::OnNear( wxCommandEvent &event )
 
 void CameraDlg::OnFov( wxCommandEvent &event )
 {
+	if (!m_bSet)
+		return;
 	TransferDataFromWindow();
 	ValuesToSliders();
 	SetValues();
