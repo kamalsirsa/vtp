@@ -244,7 +244,7 @@ void vtFrame::CreateMenus()
 	wxMenu *sceneMenu = new wxMenu;
 	sceneMenu->Append(ID_SCENE_SCENEGRAPH, "Scene Graph");
 	sceneMenu->AppendSeparator();
-	sceneMenu->Append(ID_SCENE_TERRAIN, "Go to Terain...");
+	sceneMenu->Append(ID_SCENE_TERRAIN, "Go to Terrain...");
 	sceneMenu->Append(ID_SCENE_SPACE, "Go to Space");
 #if VTLIB_OSG
 	sceneMenu->AppendSeparator();
