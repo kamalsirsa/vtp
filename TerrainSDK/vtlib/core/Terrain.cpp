@@ -40,7 +40,7 @@
 vtTerrain::vtTerrain()
 {
 	m_ocean_color.Set(40.0f/255, 75.0f/255, 124.0f/255);	// unshaded color
-	m_fog_color.Set(-1.0f, -1.0f, -1.0f);
+	m_fog_color.Set(1.0f, 1.0f, 1.0f);
 
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pDIB = NULL;
@@ -177,6 +177,11 @@ void vtTerrain::SetParams(const TParams &pParams)
 	{
 		if (color.r != -1)
 			m_fog_color = color;
+	}
+	if (m_Params.GetValueRGBi(STR_BGCOLOR, color))
+	{
+		if (color.r != -1)
+			m_background_color = color;
 	}
 }
 
@@ -1363,10 +1368,7 @@ void vtTerrain::SetFog(bool fog)
 			m_pTerrainGroup->SetFog(true, 0, dist);
 	}
 	else
-	{
 		m_pTerrainGroup->SetFog(false);
-		vtGetScene()->SetBgColor(m_ocean_color);
-	}
 }
 
 void vtTerrain::SetFogColor(const RGBf &color)
@@ -1381,6 +1383,11 @@ void vtTerrain::SetFogDistance(float fMeters)
 	m_Params.SetValueInt(STR_FOGDISTANCE, (int) (fMeters / 1000));
 	if (m_bFog)
 		SetFog(true);
+}
+
+void vtTerrain::SetBgColor(const RGBf &color)
+{
+	m_background_color = color;
 }
 
 

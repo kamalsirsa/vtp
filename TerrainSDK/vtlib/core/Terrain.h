@@ -191,7 +191,6 @@ public:
 	float GetLODDistance(TFType ftype);
 
 	// query
-	RGBf GetOceanColor() { return m_ocean_color; }
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
 	vtHeightField3d *GetHeightField();
@@ -215,11 +214,13 @@ public:
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
 	FMatrix4 &GetCamLocation() { return m_CamLocation; }
 
-	// Fog
+	// Sky and Fog
 	void SetFog(bool fog);
 	void SetFogColor(const RGBf &color);
 	void SetFogDistance(float fMeters);
 	bool GetFog() { return m_bFog; }
+	void SetBgColor(const RGBf &color);
+	RGBf GetBgColor() { return m_background_color; }
 
 	// linked list of terrains
 	void SetNext(vtTerrain *t) { m_pNext = t; }
@@ -294,6 +295,7 @@ protected:
 	vtMovGeom		*m_pOceanGeom;
 	bool			m_bFog;
 	RGBf			m_fog_color;
+	RGBf			m_background_color;
 
 	// built structures, e.g. buildings and fences
 	StructureSet	m_StructureSet;
