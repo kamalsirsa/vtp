@@ -19,9 +19,6 @@
 
 #include <wx/intl.h>
 
-// Custom source
-#include "HeightGrid.h"
-
 // Implement window functions
 
 wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
@@ -397,47 +394,38 @@ wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
-    CHeightGrid *item2 = new CHeightGrid( parent, ID_HEIGHTGRID, wxDefaultPosition, wxSize(420,160), wxWANTS_CHARS );
-    item2->CreateGrid( 0, 10, wxGrid::wxGridSelectCells );
+    wxGrid *item2 = new wxGrid( parent, ID_HEIGHTGRID, wxDefaultPosition, wxSize(483,300), wxWANTS_CHARS );
+    item2->CreateGrid( 0, 5, wxGrid::wxGridSelectCells );
     item1->Add( item2, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxString strs4[] = 
-    {
-        _("Evenly"), 
-        _("From Bottom"), 
-        _("From Top")
-    };
-    wxRadioBox *item4 = new wxRadioBox( parent, ID_SCALERADIOBOX, _("Scale Layers"), wxDefaultPosition, wxDefaultSize, 3, strs4, 1, wxRA_SPECIFY_ROWS );
+    wxButton *item4 = new wxButton( parent, ID_RECALCULATEHEIGHTS, _("Recalculate Heights"), wxDefaultPosition, wxDefaultSize, 0 );
     item3->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item5 = new wxButton( parent, ID_RECALCULATEHEIGHTS, _("Recalculate Heights"), wxDefaultPosition, wxDefaultSize, 0 );
-    item3->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item7 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item6 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item8 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item7 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item6->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+    item5->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item6->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
+    item5->Add( 20, 20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Baseline offset"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Baseline offset"), wxDefaultPosition, wxDefaultSize, 0 );
+    item5->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_BASELINEOFFSET, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item6->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_BASELINEOFFSET, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item5->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {

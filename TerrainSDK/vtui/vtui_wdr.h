@@ -69,30 +69,29 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool s
 wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_HEIGHTGRID 10032
-#define ID_SCALERADIOBOX 10033
-#define ID_RECALCULATEHEIGHTS 10034
-#define ID_BASELINEOFFSET 10035
+#define ID_RECALCULATEHEIGHTS 10033
+#define ID_BASELINEOFFSET 10034
 wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_RADIO_CONTENT 10036
-#define ID_CHOICE_FILE 10037
-#define ID_CHOICE_ITEM 10038
-#define ID_RADIO_MODEL 10039
-#define ID_MODEL_FILE 10040
-#define ID_BROWSE_MODEL_FILE 10041
-#define ID_LOCATION 10042
+#define ID_RADIO_CONTENT 10035
+#define ID_CHOICE_FILE 10036
+#define ID_CHOICE_ITEM 10037
+#define ID_RADIO_MODEL 10038
+#define ID_MODEL_FILE 10039
+#define ID_BROWSE_MODEL_FILE 10040
+#define ID_LOCATION 10041
 wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_MAP_OFFSET 10043
-#define ID_UNITS1 10044
-#define ID_MAP_DIST 10045
-#define ID_UNITS2 10046
-#define ID_GEOD_DIST 10047
-#define ID_UNITS3 10048
-#define ID_GROUND_DIST 10049
-#define ID_UNITS4 10050
-#define ID_VERTICAL 10051
-#define ID_UNITS5 10052
+#define ID_MAP_OFFSET 10042
+#define ID_UNITS1 10043
+#define ID_MAP_DIST 10044
+#define ID_UNITS2 10045
+#define ID_GEOD_DIST 10046
+#define ID_UNITS3 10047
+#define ID_GROUND_DIST 10048
+#define ID_UNITS4 10049
+#define ID_VERTICAL 10050
+#define ID_UNITS5 10051
 wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

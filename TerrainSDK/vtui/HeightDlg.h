@@ -19,20 +19,6 @@
 #include "vtdata/Building.h"
 #include "vtdata/HeightField.h"
 
-#define BASELINE_COL 0
-#define ACTIVE_COL 1
-#define STOREYS_COL 2
-#define HEIGHT_COL 3
-
-enum
-{
-    SCALE_EVENLY = 0,
-    SCALE_FROM_BOTTOM,
-    SCALE_FROM_TOP
-};
-
-
-class CHeightGrid;
 
 // WDR: class declarations
 
@@ -51,27 +37,30 @@ public:
 
     void Setup(vtBuilding * const pBuilding, vtHeightField *pHeightField);
     void OnLeftClickGrid( wxGridEvent &event );
-    void OnGridEditorHidden( wxGridEvent &event );
+    void OnGridCellChange( wxGridEvent &event );
 
     // WDR: method declarations for CHeightDialog
+    wxGrid* GetHeightgrid()  { return (wxGrid*) FindWindow( ID_HEIGHTGRID ); }
     wxTextCtrl* GetBaselineoffset()  { return (wxTextCtrl*) FindWindow( ID_BASELINEOFFSET ); }
-    wxRadioBox* GetScaleradiobox()  { return (wxRadioBox*) FindWindow( ID_SCALERADIOBOX ); }
-    CHeightGrid* GetHeightgrid()  { return (CHeightGrid*) FindWindow( ID_HEIGHTGRID ); }
 
 protected:
     // WDR: member variable declarations for CHeightDialog
 
 protected:
+    void ValidateGrid();
     // WDR: handler declarations for CHeightDialog
+    void OnCancel( wxCommandEvent &event );
     void OnBaselineOffset( wxCommandEvent &event );
     void OnOK( wxCommandEvent &event );
     void OnRecalculateHeights( wxCommandEvent &event );
     void OnInitDialog(wxInitDialogEvent& event);
+    void OnClose(wxCloseEvent& event);
 
 private:
+    enum {BASELINE_COL = 0, RELATIVE_COL, ACTIVE_COL, STOREYS_COL, HEIGHT_COL};
+    enum {SCALE_EVENLY = 0, SCALE_FROM_BOTTOM, SCALE_FROM_TOP};
     bool m_bGridModified;
-    CHeightGrid *m_pHeightGrid;
-    wxRadioBox *m_pScaleradiobox;
+    wxGrid *m_pHeightGrid;
     vtBuilding *m_pBuilding;
     vtHeightField *m_pHeightField;
     wxTextCtrl* m_pBaselineOffset;
@@ -79,6 +68,7 @@ private:
     int m_BottomRow;
     int m_NumLevels;
     double m_dBaseLine;
+    vtBuilding m_OldBuilding;
     DECLARE_EVENT_TABLE()
 };
 
