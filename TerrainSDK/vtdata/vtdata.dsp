@@ -119,6 +119,10 @@ SOURCE=.\Fence.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\FilePath.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Icosa.cpp
 # End Source File
 # Begin Source File
@@ -200,6 +204,10 @@ SOURCE=.\ElevationGrid.h
 # Begin Source File
 
 SOURCE=.\Fence.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FilePath.h
 # End Source File
 # Begin Source File
 
