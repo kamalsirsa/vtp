@@ -30,7 +30,7 @@ public:
 	void AddBuilding(vtBuilding *bld);
 	void DeleteSelected();
 
-	bool ReadSHP(const char* pathname);
+	bool ReadSHP(const char* pathname, vtStructureType type);
 	bool ReadBCF(const char* pathname);		// read a .bcf file
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format
 	bool ReadXML(const char* pathname);
@@ -63,6 +63,7 @@ public:
 	virtual vtStructure *NewStructure() { return new vtStructure; }
 	virtual vtBuilding *NewBuilding();
 	virtual vtFence *NewFence();
+	virtual vtStructInstance *NewInstance();
 
 	vtProjection m_proj;
 protected:

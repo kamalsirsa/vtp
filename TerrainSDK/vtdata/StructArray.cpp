@@ -18,6 +18,28 @@
 #include "Building.h"
 #include "Fence.h"
 
+//
+// Helper: find the index of a field in a DBF file, given the name of the field.
+// Returns -1 if not found.
+//
+int FindDBField(DBFHandle db, const char *field_name)
+{
+	int count = DBFGetFieldCount(db);
+	for (int i = 0; i < count; i++)
+	{
+		int pnWidth, pnDecimals;
+		char pszFieldName[80];
+		DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
+			pszFieldName, &pnWidth, &pnDecimals );
+		if (!stricmp(field_name, pszFieldName))
+			return i;
+	}
+	return -1;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+
 void vtStructureArray::AddBuilding(vtBuilding *bld)
 {
 	vtStructure *s = NewStructure();
@@ -34,6 +56,11 @@ vtBuilding *vtStructureArray::NewBuilding()
 vtFence *vtStructureArray::NewFence()
 {
 	return new vtFence;
+}
+
+vtStructInstance *vtStructureArray::NewInstance()
+{
+	return new vtStructInstance;
 }
 
 void vtStructureArray::DestructItems(int first, int last)
@@ -208,32 +235,157 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 	return true;
 }
 
-bool vtStructureArray::ReadSHP(const char* pathname)
+/**
+ * Import structure information from a Shapefile.
+ *
+ * \param pathname A resolvable filename of a Shapefile (.shp)
+ * \param type The type of structure to expect (Buildings, Fences, or Instances)
+ */
+bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type)
 {
 	SHPHandle hSHP = SHPOpen(pathname, "rb");
 	if (hSHP == NULL)
 		return false;
 
-    int		nEntities, nShapeType;
-    double 	adfMinBound[4], adfMaxBound[4];
+	int		nEntities, nShapeType;
+	double 	adfMinBound[4], adfMaxBound[4];
 	DPoint2 point;
+	DLine2	line;
+	int		i, j;
+	int		field_stories = -1;
+	int		field_filename = -1;
+	int		field_itemname = -1;
+	int		field_scale = -1;
+	int		field_rotation = -1;
 
 	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
-	if (nShapeType != SHPT_POINT)
-		return false;
 
-	for (int i = 0; i < nEntities; i++)
+	// Open DBF File & Get DBF Info:
+	DBFHandle db = DBFOpen(pathname, "rb");
+
+	// Make sure that entities are of the expected type
+	if (type == ST_BUILDING)
+	{
+		if (nShapeType != SHPT_POINT && nShapeType != SHPT_POLYGON)
+			return false;
+		// Check for field with number of stories
+		if (db != NULL)
+			field_stories = FindDBField(db, "stories");
+	}
+	if (type == ST_INSTANCE)
+	{
+		if (nShapeType != SHPT_POINT)
+			return false;
+		if (db != NULL)
+		{
+			field_filename = FindDBField(db, "filename");
+			if (field_filename == -1)
+				field_filename = FindDBField(db, "modelfile");
+			field_itemname = FindDBField(db, "itemname");
+			field_scale = FindDBField(db, "scale");
+			field_rotation = FindDBField(db, "rotation");
+		}
+	}
+	if (type == ST_FENCE)
+	{
+		if (nShapeType != SHPT_ARC && nShapeType != SHPT_POLYGON)
+			return false;
+	}
+
+	for (i = 0; i < nEntities; i++)
 	{
 		SHPObject *psShape = SHPReadObject(hSHP, i);
-		point.x = psShape->padfX[0];
-		point.y = psShape->padfY[0];
-		vtBuilding *bld = NewBuilding();
-		bld->SetLocation(point);
+		int num_points = psShape->nVertices-1;
 		vtStructure *s = NewStructure();
-		s->SetBuilding(bld);
+		if (type == ST_BUILDING)
+		{
+			vtBuilding *bld = NewBuilding();
+			if (nShapeType == SHPT_POINT)
+			{
+				bld->SetShape(SHAPE_RECTANGLE);
+				point.x = psShape->padfX[0];
+				point.y = psShape->padfY[0];
+				bld->SetLocation(point);
+			}
+			if (nShapeType == SHPT_POLYGON)
+			{
+				bld->SetShape(SHAPE_POLY);
+				DLine2 foot;
+				foot.SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+					foot.SetAt(j, DPoint2(psShape->padfX[j], psShape->padfY[j]));
+				bld->SetFootprint(foot);
+				bld->SetCenterFromPoly();
+			}
+			s->SetBuilding(bld);
+
+			int num_stories = 1;
+			if (field_stories != -1)
+			{
+				// attempt to get number of stories from the DBF
+				num_stories = DBFReadIntegerAttribute(db, i, field_stories);
+				if (num_stories < 1)
+					num_stories = 1;
+			}
+			bld->SetStories(num_stories);
+		}
+		if (type == ST_INSTANCE)
+		{
+			vtStructInstance *inst = NewInstance();
+			inst->m_p.x = psShape->padfX[0];
+			inst->m_p.y = psShape->padfY[0];
+			// attempt to get properties from the DBF
+			const char *string;
+			vtTag *tag;
+			if (field_filename != -1)
+			{
+				string = DBFReadStringAttribute(db, i, field_filename);
+				tag = new vtTag;
+				tag->name = "filename";
+				tag->value = string;
+				inst->AddTag(tag);
+			}
+			if (field_itemname != -1)
+			{
+				string = DBFReadStringAttribute(db, i, field_itemname);
+				tag = new vtTag;
+				tag->name = "itemname";
+				tag->value = string;
+				inst->AddTag(tag);
+			}
+			if (field_scale != -1)
+			{
+				double scale = DBFReadDoubleAttribute(db, i, field_scale);
+				if (scale != 1.0)
+				{
+					tag = new vtTag;
+					tag->name = "scale";
+					tag->value.Format("%lf", scale);
+					inst->AddTag(tag);
+				}
+			}
+			if (field_rotation != -1)
+			{
+				double rotation = DBFReadDoubleAttribute(db, i, field_rotation);
+				inst->m_fRotation = (float) (rotation / 180.0 * PI);
+			}
+			s->SetInstance(inst);
+		}
+		if (type == ST_FENCE)
+		{
+			vtFence *fen = NewFence();
+			for (j = 0; j < num_points; j++)
+			{
+				point.x = psShape->padfX[j];
+				point.y = psShape->padfY[j];
+				fen->AddPoint(point);
+			}
+			s->SetFence(fen);
+		}
 		Append(s);
 		SHPDestroyObject(psShape);
 	}
+	DBFClose(db);
 	SHPClose(hSHP);
 	return true;
 }
@@ -242,8 +394,8 @@ bool vtStructureArray::WriteSHP(const char* pathname)
 {
 	char *ext = strrchr(pathname, '.');
 
-    SHPHandle hSHP = SHPCreate ( pathname, SHPT_POINT );
-    if (!hSHP)
+	SHPHandle hSHP = SHPCreate ( pathname, SHPT_POINT );
+	if (!hSHP)
 		return false;
 
 	int count = GetSize();
@@ -541,6 +693,12 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 					pItem = m_pSA->NewStructure();
 					pItem->SetFence(fen);
 				}
+				if (string(attval) == (string)"instance")
+				{
+					vtStructInstance *inst = m_pSA->NewInstance();
+					pItem = m_pSA->NewStructure();
+					pItem->SetInstance(inst);
+				}
 			}
 			push_state(pItem, "structure");
 		}
@@ -558,6 +716,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		return;
 	vtFence *fen = pItem->GetFence();
 	vtBuilding *bld = pItem->GetBuilding();
+	vtStructInstance *inst = pItem->GetInstance();
 
 	if (_level == 3 && bld != NULL)
 	{
@@ -668,11 +827,22 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		}
 		return;
 	}
+	if (_level == 3 && inst != NULL)
+	{
+		if (string(name) == (string)"placement")
+		{
+			const char *loc = atts.getValue("location");
+			if (loc)
+				sscanf(loc, "%lf %lf", &inst->m_p.x, &inst->m_p.y);
+			const char *rot = atts.getValue("rotation");
+			if (rot)
+				sscanf(rot, "%f", &inst->m_fRotation);
+		}
+		else
+			_data = "";
+	}
 	if (_level == 4 && bld != NULL)
 	{
-		vtStructure *pItem = st.item;
-		vtBuilding *bld = pItem->GetBuilding();
-
 		if (string(name) == (string)"rect")
 		{
 			bld->SetShape(SHAPE_RECTANGLE);
@@ -743,6 +913,8 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 void StructureVisitor::endElement(const char * name)
 {
 	State &st = state();
+	vtStructure *pItem = st.item;
+	vtStructInstance *inst = pItem ? pItem->GetInstance() : NULL;
 
 	if (string(name) == (string)"structures")
 	{
@@ -756,13 +928,25 @@ void StructureVisitor::endElement(const char * name)
 	}
 	if (string(name) == (string)"shapes")
 	{
-		// currentl, wall information is not saved or restored, so we must
-		// manually indicate that walls should be implied upon loading
+		// currently, building wall information is not saved or restored, so
+		// we must manually indicate that walls should be implied upon loading
 		vtStructure *pItem = st.item;
 		vtBuilding *bld = pItem->GetBuilding();
 		bld->RebuildWalls();
 
 		pop_state();
+	}
+	if (_level == 3 && inst != NULL)
+	{
+		if (string(name) != (string)"placement")
+		{
+			// save all other tags as literal strings
+			vtTag *tag = new vtTag;
+			tag->name = name;
+			tag->value = _data.c_str();
+
+			inst->AddTag(tag);
+		}
 	}
 }
 
@@ -806,6 +990,9 @@ bool vtStructureArray::WriteXML(const char* filename)
 		vtFence *fen = str->GetFence();
 		if (fen)
 			fen->WriteXML(fp, bDegrees);
+		vtStructInstance *inst = str->GetInstance();
+		if (inst)
+			inst->WriteXML(fp, bDegrees);
 		// TODO: a more elegant solution; e.g. a common base class with a
 		// virtual Serialize method?
 	}
