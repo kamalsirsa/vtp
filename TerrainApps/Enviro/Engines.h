@@ -9,7 +9,7 @@
 #include "vtlib/core/Engine.h"
 
 class NodeGeom;
-class RoadGeom;
+class LinkGeom;
 class vtRoute;
 class vtHeightField;
 
@@ -52,12 +52,12 @@ public:
 	RoadFollowEngine(NodeGeom *pStartNode);
 	void Eval();
 
-	void	PickRoad(RoadGeom *last_road);
+	void	PickRoad(LinkGeom *last_road);
 
 	float	fAmount;
 //	RoadMap	*m_pRoadMap;
 	NodeGeom	*m_pLastNode;
-	RoadGeom	*m_pCurrentRoad;
+	LinkGeom	*m_pCurrentRoad;
 	float	m_pCurrentRoadLength;
 	bool	forwards;
 };

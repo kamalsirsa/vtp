@@ -157,7 +157,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		//add to array
 		pNodeLookup[pN->m_id] = pN;
 	}
-	RoadEdit *pR;
+	LinkEdit *pR;
 	int count = 0;
 	for (i = 0; i < pDlg->m_iLines; i++)
 	{
@@ -170,7 +170,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 			continue;
 
 		// create new road
-		pR = new RoadEdit();
+		pR = new LinkEdit();
 		pR->m_fWidth = 1.0f;
 		pR->m_Surface = stype;
 		pR->m_iLanes = lanes;
@@ -223,11 +223,11 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		pR->m_iHwy = pDLine->HighwayNumber();
 
 		// add to list
-		AddRoad(pR);
+		AddLink(pR);
 
 		// inform the Nodes to which it belongs
-		pR->GetNode(0)->AddRoad(pR);
-		pR->GetNode(1)->AddRoad(pR);
+		pR->GetNode(0)->AddLink(pR);
+		pR->GetNode(1)->AddLink(pR);
 		pR->m_fLength = pR->Length();	
 	}
 	
@@ -246,27 +246,27 @@ void RoadMapEdit::GuessIntersectionTypes()
 	NodeEdit *pN;
 
 	pN = GetFirstNode();
-	RoadEdit* curRoad;
+	LinkEdit* curRoad;
 	while (pN)
 	{
-		if (pN->m_iRoads <= 2)
+		if (pN->m_iLinks <= 2)
 		{
 			pN->SetVisual(VIT_NONE);
-			if (pN->m_iRoads > 0)
+			if (pN->m_iLinks > 0)
 				assert(pN->SetIntersectType(0,IT_NONE));
-			if (pN->m_iRoads == 2)
+			if (pN->m_iLinks == 2)
 				assert(pN->SetIntersectType(1,IT_NONE));
 		}
 		else
 		{
-			int topPriority = ((RoadEdit*)(pN->GetRoad(0)))->m_iPriority;
+			int topPriority = ((LinkEdit*)(pN->GetLink(0)))->m_iPriority;
 			int topCount = 0;
 			int lowPriority = topPriority;
 
 			//analyze the roads intersecting at the node
-			for (i = 0; i < pN->m_iRoads; i++)
+			for (i = 0; i < pN->m_iLinks; i++)
 			{
-				curRoad = (RoadEdit*)(pN->GetRoad(i));
+				curRoad = (LinkEdit*)(pN->GetLink(i));
 				if (curRoad->m_iPriority == topPriority) {
 					topCount++;
 				} else if (curRoad->m_iPriority < topPriority) {
@@ -279,7 +279,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 
 			IntersectionType bType;
 			//all roads have same priority
-			if (topCount == pN->m_iRoads)
+			if (topCount == pN->m_iLinks)
 			{
 				if (topPriority <= 2) {
 					//big roads.  use lights
@@ -294,7 +294,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 					bType = IT_STOPSIGN;
 					pN->SetVisual(VIT_ALLSTOPS);
 				}
-				for (i = 0; i < pN->m_iRoads; i++)
+				for (i = 0; i < pN->m_iLinks; i++)
 				{
 					pN->SetIntersectType(i, bType);
 				}
@@ -306,7 +306,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 				{
 					//big roads, use lights
 					pN->SetVisual(VIT_ALLLIGHTS);
-					for (i = 0; i < pN->m_iRoads; i++)
+					for (i = 0; i < pN->m_iLinks; i++)
 					{
 						pN->SetIntersectType(i, IT_LIGHT);
 					}
@@ -315,9 +315,9 @@ void RoadMapEdit::GuessIntersectionTypes()
 				{
 					//top priority roads have right of way
 					pN->SetVisual(VIT_STOPSIGN);
-					for (i = 0; i < pN->m_iRoads; i++)
+					for (i = 0; i < pN->m_iLinks; i++)
 					{
-						curRoad = (RoadEdit*)(pN->GetRoad(i));
+						curRoad = (LinkEdit*)(pN->GetLink(i));
 						if (curRoad->m_iPriority == topPriority) {
 							//higher priority road.
 							pN->SetIntersectType(i, IT_NONE);
@@ -330,7 +330,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 			}
 		}
 
-		for (i = 0; i< pN->m_iRoads; i++) {
+		for (i = 0; i< pN->m_iLinks; i++) {
 			pN->SetLightStatus(i, LT_INVALID);
 		}
 		pN->AdjustForLights();
@@ -339,7 +339,7 @@ void RoadMapEdit::GuessIntersectionTypes()
 	}
 }
 
-bool RoadMapEdit::ApplyCFCC(RoadEdit *pR, const char *str)
+bool RoadMapEdit::ApplyCFCC(LinkEdit *pR, const char *str)
 {
 	bool bReject = false;
 
@@ -468,7 +468,7 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 	m_proj = proj;
 
 	NodeEdit *pN1, *pN2;
-	RoadEdit *pR;
+	LinkEdit *pR;
 	int i, j, npoints;
 
 	for (i = 0; i < nEntities; i++)
@@ -499,7 +499,7 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 		AddNode(pN2);
 
 		// create new road
-		pR = new RoadEdit();
+		pR = new LinkEdit();
 		pR->m_fWidth = 1.0f;
 		pR->m_Surface = SURFT_PAVED;
 		pR->m_iLanes = 2;
@@ -528,11 +528,11 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 		pR->ComputeExtent();
 
 		// add to list
-		AddRoad(pR);
+		AddLink(pR);
 
 		// inform the Nodes to which it belongs
-		pR->GetNode(0)->AddRoad(pR);
-		pR->GetNode(1)->AddRoad(pR);
+		pR->GetNode(0)->AddLink(pR);
+		pR->GetNode(1)->AddLink(pR);
 		pR->m_fLength = pR->Length();
 
 		SHPDestroyObject(psShape);
@@ -647,7 +647,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 	OGRLineString   *pLineString;
 
 	NodeEdit *pN;
-	RoadEdit *pR;
+	LinkEdit *pR;
 	NodeEditPtr *pNodeLookup;
 
 	// Assume that this data source is a USGS SDTS DLG
@@ -734,7 +734,7 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				if (!pGeom) continue;
 				pLineString = (OGRLineString *) pGeom;
 
-				pR = new RoadEdit();
+				pR = new LinkEdit();
 				pR->m_fWidth = 1.0f;	// defaults
 				pR->m_Surface = stype;
 				pR->m_iLanes = lanes;		// defaults
@@ -790,11 +790,11 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 #endif
 				pR->ComputeExtent();
 
-				AddRoad(pR);
+				AddLink(pR);
 
 				// inform the Nodes to which it belongs
-				pR->GetNode(0)->AddRoad(pR);
-				pR->GetNode(1)->AddRoad(pR);
+				pR->GetNode(0)->AddLink(pR);
+				pR->GetNode(1)->AddLink(pR);
 			}
 		}
 	}

@@ -31,7 +31,7 @@ NodeEdit::NodeEdit() : Node()
 	m_bSelect = false;
 	m_iPathIndex = 0;
 	m_pPrevPathNode = NULL;
-	m_pPrevPathRoad = NULL;
+	m_pPrevPathLink = NULL;
 	m_iVisual = VIT_UNKNOWN;
 }
 
@@ -124,9 +124,9 @@ void NodeEdit::Translate(DPoint2 offset)
 	m_p += offset;
 
 	// also move the endpoint of all the roads that end here
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
-		Road *pR = m_r[i];
+		Link *pR = m_r[i];
 		if (pR->GetNode(0) == this)
 			pR->SetAt(0, m_p);
 		else
@@ -134,21 +134,21 @@ void NodeEdit::Translate(DPoint2 offset)
 	}
 }
 
-void NodeEdit::DetermineVisualFromRoads()
+void NodeEdit::DetermineVisualFromLinks()
 {
 	IntersectionType it;
 
 	int nlights = 0, nstops = 0;
 
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		it = GetIntersectType(i);
 		if (it == IT_LIGHT) nlights++;
 		if (it == IT_STOPSIGN) nstops++;
 	}
-	if (nlights == m_iRoads)
+	if (nlights == m_iLinks)
 		m_iVisual = VIT_ALLLIGHTS;
-	else if (nstops == m_iRoads)
+	else if (nstops == m_iLinks)
 		m_iVisual = VIT_ALLSTOPS;
 	else if (nlights > 0)
 		m_iVisual = VIT_LIGHTS;
@@ -161,7 +161,7 @@ void NodeEdit::DetermineVisualFromRoads()
 
 ///////////////////////////////////////////////////////////////////
 
-RoadEdit::RoadEdit() : Road(), Selectable()
+LinkEdit::LinkEdit() : Link(), Selectable()
 {
 	m_extent.SetRect(0,0,0,0);
 	m_iPriority = 3;
@@ -173,16 +173,16 @@ RoadEdit::RoadEdit() : Road(), Selectable()
 //
 // Equality operator
 //
-bool RoadEdit::operator==(RoadEdit &ref)
+bool LinkEdit::operator==(LinkEdit &ref)
 {
-	if (! ((*((Road *)this)) == ref))
+	if (! ((*((Link *)this)) == ref))
 		return false;
 
 	return (m_iPriority == ref.m_iPriority &&
 		m_fLength == ref.m_fLength);
 }
 
-void RoadEdit::ComputeExtent()
+void LinkEdit::ComputeExtent()
 {
 	int size = GetSize();
 
@@ -193,7 +193,7 @@ void RoadEdit::ComputeExtent()
 		m_extent.GrowToContainPoint(GetAt(i));
 }
 
-void RoadEdit::ComputeDisplayedRoadWidth(const DPoint2 &ToMeters)
+void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 {
 	// also refresh the parallel left and right road edges
 	DPoint2 p, p2, vec, norm, p3;
@@ -219,14 +219,14 @@ void RoadEdit::ComputeDisplayedRoadWidth(const DPoint2 &ToMeters)
 	}
 }
 
-bool RoadEdit::WithinExtent(DRECT target)
+bool LinkEdit::WithinExtent(DRECT target)
 {
 	return (target.left < m_extent.right && target.right > m_extent.left && 
 		target.top > m_extent.bottom && target.bottom < m_extent.top);
 }
 
 //is extent of the road in "bound"
-bool RoadEdit::InBounds(DRECT bound)
+bool LinkEdit::InBounds(DRECT bound)
 {
 	//eliminate easy cases.
 	if (m_extent.top < bound.bottom ||
@@ -248,7 +248,7 @@ bool RoadEdit::InBounds(DRECT bound)
 }
 
 //is extent of the road in "bound"
-bool RoadEdit::PartiallyInBounds(DRECT bound)
+bool LinkEdit::PartiallyInBounds(DRECT bound)
 {
 	//eliminate easy cases.
 	if (m_extent.top < bound.bottom || 
@@ -273,7 +273,7 @@ bool RoadEdit::PartiallyInBounds(DRECT bound)
 }
 
 
-bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
+bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	bool bShowWidth) 
 {
 	// base road color on type of road
@@ -369,7 +369,7 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	return true;
 }
 
-bool RoadEdit::EditProperties(vtRoadLayer *pLayer)
+bool LinkEdit::EditProperties(vtRoadLayer *pLayer)
 {
 	RoadDlg dlg(NULL, -1, "Road Properties");
 	dlg.SetRoad(this, pLayer);
@@ -477,7 +477,7 @@ bool RoadMapEdit::Merge2Nodes() {
 		delete pN;
 
 		// for the roads that now end in pN2, move their end points
-		pN2->EnforceRoadEndpoints();
+		pN2->EnforceLinkEndpoints();
 		removed = true;
 	}
 	return removed;
@@ -501,20 +501,20 @@ void RoadMapEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bNodes)
 	bool bShowWidth = vtRoadLayer::GetDrawWidth();
 	bool bShowDir = vtRoadLayer::GetShowDirection();
 
-	for (RoadEdit *curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit *curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (!curRoad->m_bSidesComputed)
+		if (!curLink->m_bSidesComputed)
 		{
 			if (bGeo)
 			{
-				curRoad->m_extent.GetCenter(center);
+				curLink->m_extent.GetCenter(center);
 				ToMeters.x = EstimateDegreesToMeters(center.y);
 				ToMeters.y = METERS_PER_LATITUDE;
 			}
-			curRoad->ComputeDisplayedRoadWidth(ToMeters);
-			curRoad->m_bSidesComputed = true;
+			curLink->ComputeDisplayedLinkWidth(ToMeters);
+			curLink->m_bSidesComputed = true;
 		}
-		curRoad->Draw(pDC, pView, bShowDir, bShowWidth);
+		curLink->Draw(pDC, pView, bShowDir, bShowWidth);
 	}
 }
 
@@ -523,7 +523,7 @@ void RoadMapEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bNodes)
 //
 DRECT *RoadMapEdit::DeleteSelected(int &nBounds)
 {
-	int n = NumSelectedRoads();
+	int n = NumSelectedLinks();
 
 	DRECT* array = new DRECT[n];
 	nBounds = n;
@@ -532,45 +532,45 @@ DRECT *RoadMapEdit::DeleteSelected(int &nBounds)
 	}
 	n = 0;
 
-	RoadEdit *prevRoad = NULL;
-	RoadEdit *tmpRoad;
-	RoadEdit *curRoad = GetFirstRoad();
+	LinkEdit *prevLink = NULL;
+	LinkEdit *tmpLink;
+	LinkEdit *curLink = GetFirstLink();
 	Node *tmpNode;
 
-	while (curRoad)
+	while (curLink)
 	{
-		tmpRoad = curRoad;
-		curRoad = curRoad->GetNext();
-		if (tmpRoad->IsSelected())
+		tmpLink = curLink;
+		curLink = curLink->GetNext();
+		if (tmpLink->IsSelected())
 		{
 			//delete the road
-			array[n] = tmpRoad->m_extent;
+			array[n] = tmpLink->m_extent;
 			n++;
 
-			if (prevRoad)
-				prevRoad->m_pNext = curRoad;
+			if (prevLink)
+				prevLink->m_pNext = curLink;
 			else
-				m_pFirstRoad = curRoad;
+				m_pFirstLink = curLink;
 
-			tmpNode = tmpRoad->GetNode(0);
+			tmpNode = tmpLink->GetNode(0);
 			if (tmpNode)
-				tmpNode->DetachRoad(tmpRoad);
-			tmpNode = tmpRoad->GetNode(1);
+				tmpNode->DetachLink(tmpLink);
+			tmpNode = tmpLink->GetNode(1);
 			if (tmpNode)
-				tmpNode->DetachRoad(tmpRoad);
-			delete tmpRoad;
+				tmpNode->DetachLink(tmpLink);
+			delete tmpLink;
 		}
 		else
-			prevRoad = tmpRoad;
+			prevLink = tmpLink;
 	}
 	m_bValidExtents = false;
 
 	return array;
 }
 
-bool RoadMapEdit::SelectRoad(DPoint2 point, float error, DRECT &bound)
+bool RoadMapEdit::SelectLink(DPoint2 point, float error, DRECT &bound)
 {
-	RoadEdit* road = SelectRoad(point, error, true, false);
+	LinkEdit* road = SelectLink(point, error, true, false);
 	if (road)
 	{
 		bound = road->m_extent;
@@ -580,31 +580,31 @@ bool RoadMapEdit::SelectRoad(DPoint2 point, float error, DRECT &bound)
 	return false;
 }
 
-int RoadMapEdit::SelectRoads(DRECT bound, bool bval)
+int RoadMapEdit::SelectLinks(DRECT bound, bool bval)
 {
 	int found = 0;
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad->InBounds(bound)) {
-			curRoad->Select(bval);
+		if (curLink->InBounds(bound)) {
+			curLink->Select(bval);
 			found++;
 		}
 	}
 	return found;
 }
 
-bool RoadMapEdit::SelectAndExtendRoad(DPoint2 utmCoord, float error, DRECT &bound)
+bool RoadMapEdit::SelectAndExtendLink(DPoint2 utmCoord, float error, DRECT &bound)
 {
-	RoadEdit* originalRoad = SelectRoad(utmCoord, error, false, true);
-	if (originalRoad == NULL) {
+	LinkEdit* originalLink = SelectLink(utmCoord, error, false, true);
+	if (originalLink == NULL) {
 		return false;
 	}
-	bound = originalRoad->m_extent;
+	bound = originalLink->m_extent;
 	//extend the given road
 	NodeEdit* node;
-	RoadEdit* road = originalRoad;
+	LinkEdit* road = originalLink;
 	//run twice.  once in node 0 direction.  once in node 1 direction
-	node = (NodeEdit*) originalRoad->GetNode(0);
+	node = (NodeEdit*) originalLink->GetNode(0);
 	bool search;
 	for (int i = 0; i < 2; i++) {
 		search = true;
@@ -613,20 +613,20 @@ bool RoadMapEdit::SelectAndExtendRoad(DPoint2 utmCoord, float error, DRECT &boun
 			int index = -1;
 			int j;
 			float bestAngle = PI2f;
-			int bestRoadIndex = -1;
-			if (node->m_iRoads > 1) {
-				node->SortRoadsByAngle();
+			int bestLinkIndex = -1;
+			if (node->m_iLinks > 1) {
+				node->SortLinksByAngle();
 				//find index for current road
-				for (j=0; j < node->m_iRoads; j++) {
-					if (road == node->GetRoad(j)) {
+				for (j=0; j < node->m_iLinks; j++) {
+					if (road == node->GetLink(j)) {
 						index = j;	
 					}
 				}
 
 				//compare index with all the other roads at the node.
-				for (j = 0; j < node->m_iRoads; j++) {
+				for (j = 0; j < node->m_iLinks; j++) {
 					if (j != index) {
-						float newAngle  = node->m_fRoadAngle[j] - (node->m_fRoadAngle[index] + PIf);
+						float newAngle  = node->m_fLinkAngle[j] - (node->m_fLinkAngle[index] + PIf);
 						//adjust to value between 180 and -180 degrees
 						while (newAngle > PIf) {
 							newAngle -= PI2f;
@@ -637,31 +637,31 @@ bool RoadMapEdit::SelectAndExtendRoad(DPoint2 utmCoord, float error, DRECT &boun
 						newAngle = fabsf(newAngle);
 
 						//same highway number
-						if (road->m_iHwy > 0 && road->m_iHwy == node->GetRoad(j)->m_iHwy) {
-							bestRoadIndex = j;
+						if (road->m_iHwy > 0 && road->m_iHwy == node->GetLink(j)->m_iHwy) {
+							bestLinkIndex = j;
 							bestAngle = 0;
 							break;
 						}
 						if (newAngle < bestAngle) {
 							bestAngle = newAngle;
-							bestRoadIndex = j;
+							bestLinkIndex = j;
 						}
 					}
 				}
-				//wxLogMessage("best angle:%f, road: %i\n", bestAngle, bestRoadIndex);
+				//wxLogMessage("best angle:%f, road: %i\n", bestAngle, bestLinkIndex);
 				//ignore result if angle is too big
-				if (bestAngle > PIf/6 && node->m_iRoads > 2) {
-					bestRoadIndex = -1;
-				} else if (road->m_iHwy > 0 && road->m_iHwy != node->GetRoad(bestRoadIndex)->m_iHwy) {
+				if (bestAngle > PIf/6 && node->m_iLinks > 2) {
+					bestLinkIndex = -1;
+				} else if (road->m_iHwy > 0 && road->m_iHwy != node->GetLink(bestLinkIndex)->m_iHwy) {
 					//highway must match with same highway number
-					bestRoadIndex = -1;
-				} else if (road->m_iHwy < 0 && node->GetRoad(bestRoadIndex)->m_iHwy > 0) {
+					bestLinkIndex = -1;
+				} else if (road->m_iHwy < 0 && node->GetLink(bestLinkIndex)->m_iHwy > 0) {
 					//non-highway can't pair with a highway
-					bestRoadIndex = -1;
+					bestLinkIndex = -1;
 				}
-				if (bestRoadIndex != -1) {
+				if (bestLinkIndex != -1) {
 					//select the road
-					road = node->GetRoad(bestRoadIndex);
+					road = node->GetLink(bestLinkIndex);
 					if (node == road->GetNode(0)) {
 						node = road->GetNode(1);
 					} else {
@@ -673,19 +673,19 @@ bool RoadMapEdit::SelectAndExtendRoad(DPoint2 utmCoord, float error, DRECT &boun
 					if (road->m_extent.bottom < bound.bottom) bound.bottom = road->m_extent.bottom;
 					if (road->m_extent.right > bound.right) bound.right = road->m_extent.right;
 					if (road->m_extent.top > bound.top) bound.top = road->m_extent.top;
-					if (road == originalRoad) {
-						bestRoadIndex = -1;
+					if (road == originalLink) {
+						bestLinkIndex = -1;
 					}
 				} 
 			}
-			if (bestRoadIndex == -1) {
+			if (bestLinkIndex == -1) {
 				//wxLogMessage("Stop!\n");
 				search = false;
 			}
 		}
 		//search in node(1) direction.
-		node = (NodeEdit*) originalRoad->GetNode(1);
-		road = originalRoad;
+		node = (NodeEdit*) originalLink->GetNode(1);
+		road = originalLink;
 	}
 	return true;
 }
@@ -693,23 +693,23 @@ bool RoadMapEdit::SelectAndExtendRoad(DPoint2 utmCoord, float error, DRECT &boun
 bool RoadMapEdit::SelectHwyNum(int num)
 {
 	bool found = false;
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad->m_iHwy == num) {
-			curRoad->Select(true);
+		if (curLink->m_iHwy == num) {
+			curLink->Select(true);
 			found = true;
 		}
 	}
 	return found;
 }
 
-bool RoadMapEdit::CrossSelectRoads(DRECT bound, bool bval)
+bool RoadMapEdit::CrossSelectLinks(DRECT bound, bool bval)
 {
 	bool found = false;
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad->PartiallyInBounds(bound)) {
-			curRoad->Select(bval);
+		if (curLink->PartiallyInBounds(bound)) {
+			curLink->Select(bval);
 			found = true;
 		}
 	}
@@ -721,8 +721,8 @@ void RoadMapEdit::InvertSelection()
 	for (NodeEdit* curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
 		curNode->Select(!curNode->IsSelected());
 
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
-		curRoad->Select(!curRoad->IsSelected());
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
+		curLink->Select(!curLink->IsSelected());
 }
 
 //
@@ -762,11 +762,11 @@ int RoadMapEdit::NumSelectedNodes()
 	return n;
 }
 
-int RoadMapEdit::NumSelectedRoads()
+int RoadMapEdit::NumSelectedLinks()
 {
 	int n = 0;
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
-		if (curRoad->IsSelected())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
+		if (curLink->IsSelected())
 			n++;
 	return n;
 }
@@ -779,7 +779,7 @@ DRECT *RoadMapEdit::DeSelectAll(int &numRegions)
 	// count the number of regions (number of selected elements)
 	int n = 0;
 	n += NumSelectedNodes();
-	n += NumSelectedRoads();
+	n += NumSelectedLinks();
 	numRegions = n;
 
 	// make an array large enough to hold them all
@@ -794,11 +794,11 @@ DRECT *RoadMapEdit::DeSelectAll(int &numRegions)
 			curNode->Select(false);
 		}
 	}
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad->IsSelected()) {
-			array[n++] = curRoad->m_extent;
-			curRoad->Select(false);
+		if (curLink->IsSelected()) {
+			array[n++] = curLink->m_extent;
+			curLink->Select(false);
 		}
 	}
 	return array;
@@ -843,20 +843,20 @@ NodeEdit* RoadMapEdit::SelectNode(DPoint2 point, float error, bool toggle, bool 
 }
 
 
-RoadEdit *RoadMapEdit::FindRoad(DPoint2 point, float error)
+LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
 {
-	RoadEdit *bestSoFar = NULL;
+	LinkEdit *bestSoFar = NULL;
 	float dist = (float)error;
 	float result;
 
 	//a backwards rectangle, to provide greater flexibility for finding the road.
 	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad->WithinExtent(target)) {
-			result = curRoad->DistanceToPoint(point);
+		if (curLink->WithinExtent(target)) {
+			result = curLink->DistanceToPoint(point);
 			if (result < dist) {
-				bestSoFar = curRoad;
+				bestSoFar = curLink;
 				dist = result;
 			}
 		}
@@ -868,17 +868,17 @@ RoadEdit *RoadMapEdit::FindRoad(DPoint2 point, float error)
 //toggle:	toggles the select value
 //selectVal: what to assign the select value.
 // toggle has precendence over selectVal.
-RoadEdit* RoadMapEdit::SelectRoad(DPoint2 point, float error, bool toggle, bool selectVal)
+LinkEdit* RoadMapEdit::SelectLink(DPoint2 point, float error, bool toggle, bool selectVal)
 {
-	RoadEdit *pPickedRoad = FindRoad(point, error);
-	if (pPickedRoad)
+	LinkEdit *pPickedLink = FindLink(point, error);
+	if (pPickedLink)
 	{
 		if (toggle)
-			pPickedRoad->ToggleSelect();
+			pPickedLink->ToggleSelect();
 		else
-			pPickedRoad->Select(selectVal);
+			pPickedLink->Select(selectVal);
 	}
-	return pPickedRoad;
+	return pPickedLink;
 }
 
 
@@ -887,28 +887,28 @@ NodeEdit* RoadMapEdit::GetNode(DPoint2 point, float error)
 	return SelectNode(point, error, false, true);
 }
 
-RoadEdit* RoadMapEdit::GetRoad(DPoint2 point, float error)
+LinkEdit* RoadMapEdit::GetLink(DPoint2 point, float error)
 {
-	return SelectRoad(point, error, false, true);
+	return SelectLink(point, error, false, true);
 }
 
-void RoadMapEdit::DeleteSingleRoad(RoadEdit *pDeleteRoad)
+void RoadMapEdit::DeleteSingleLink(LinkEdit *pDeleteLink)
 {
-	RoadEdit *prev = NULL;
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	LinkEdit *prev = NULL;
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad == pDeleteRoad)
+		if (curLink == pDeleteLink)
 		{
 			if (prev)
-				prev->m_pNext = curRoad->GetNext();
+				prev->m_pNext = curLink->GetNext();
 			else
-				m_pFirstRoad = curRoad->GetNext();
-			curRoad->GetNode(0)->DetachRoad(curRoad);
-			curRoad->GetNode(1)->DetachRoad(curRoad);
-			delete curRoad;
+				m_pFirstLink = curLink->GetNext();
+			curLink->GetNode(0)->DetachLink(curLink);
+			curLink->GetNode(1)->DetachLink(curLink);
+			delete curLink;
 			return;
 		}
-		prev = curRoad;
+		prev = curLink;
 	}
 }
 
@@ -917,12 +917,12 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 	bool lights = false;
 	IntersectionType type = IT_NONE;
 
-	while (Road *pR = pN->GetRoad(0))
+	while (Link *pR = pN->GetLink(0))
 	{
 		if (pR->GetNode(0) == pN)
 		{
 			pR->SetNode(0, pN2);
-			pN2->AddRoad(pR);
+			pN2->AddLink(pR);
 			type = pN->GetIntersectType(pR);
 			pN2->SetIntersectType(pR, type);
 			if (type == IT_LIGHT) {
@@ -932,23 +932,23 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 		if (pR->GetNode(1) == pN)
 		{
 			pR->SetNode(1, pN2);
-			pN2->AddRoad(pR);
+			pN2->AddLink(pR);
 			type = pN->GetIntersectType(pR);
 			pN2->SetIntersectType(pR, type);
 			if (type == IT_LIGHT) {
 				lights = true;
 			}
 		}
-		pN->DetachRoad(pR);
+		pN->DetachLink(pR);
 	}
 	if (lights)
 		pN2->AdjustForLights();
 }
 
-class RoadEdit *NodeEdit::GetRoad(int n)
+class LinkEdit *NodeEdit::GetLink(int n)
 {
-	if (m_r && n < m_iRoads)	// safety check
-		return (RoadEdit *)m_r[n];
+	if (m_r && n < m_iLinks)	// safety check
+		return (LinkEdit *)m_r[n];
 	else
 		return NULL;
 }

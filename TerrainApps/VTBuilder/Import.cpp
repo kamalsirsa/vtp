@@ -664,8 +664,8 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 			if (!strncmp(cfcc, "A", 1))
 			{
 				// Road: implicit nodes at start and end
-				RoadEdit *r = (RoadEdit *) pRL->NewRoad();
-				bool bReject = pRL->ApplyCFCC((RoadEdit *)r, cfcc);
+				LinkEdit *r = (LinkEdit *) pRL->NewLink();
+				bool bReject = pRL->ApplyCFCC((LinkEdit *)r, cfcc);
 				if (bReject)
 				{
 					delete r;
@@ -686,13 +686,13 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 				pRL->AddNode(n2);
 				r->SetNode(0, n1);
 				r->SetNode(1, n2);
-				n1->AddRoad(r);
-				n2->AddRoad(r);
+				n1->AddLink(r);
+				n2->AddLink(r);
 
 				//set bounding box for the road
 				r->ComputeExtent();
 
-				pRL->AddRoad(r);
+				pRL->AddLink(r);
 			}
 
 			if (!strncmp(cfcc, "H", 1))
@@ -750,7 +750,7 @@ void MainFrame::ImportDataFromTIGER(wxString &strDirName)
 	// Set visual properties
 	for (NodeEdit *pN = pRL->GetFirstNode(); pN; pN = pN->GetNext())
 	{
-		pN->DetermineVisualFromRoads();
+		pN->DetermineVisualFromLinks();
 	}
 
 	bool success;

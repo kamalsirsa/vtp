@@ -31,12 +31,12 @@ float fmin(float a, float b, float c, float d)
 }
 
 //makes sure road end points same as node point
-void NodeEdit::EnforceRoadEndpoints()
+void NodeEdit::EnforceLinkEndpoints()
 {
 	//for the roads that now end in pN2, move it's end point as well.
-	for (int k = 0; k < m_iRoads; k++)
+	for (int k = 0; k < m_iLinks; k++)
 	{
-		Road *r = GetRoad(k);
+		Link *r = GetLink(k);
 		if (r->GetNode(0) == this)
 			r->SetAt(0, m_p);
 		else if (r->GetNode(1) == this)
@@ -44,7 +44,7 @@ void NodeEdit::EnforceRoadEndpoints()
 		else
 			assert(0);	// bad case!
 
-		((RoadEdit*)r)->m_fLength = r->Length();
+		((LinkEdit*)r)->m_fLength = r->Length();
 	}
 }
 
@@ -125,7 +125,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
 			delete pN;
 
 			// for the roads that now end in pN2, move their end points
-			pN2->EnforceRoadEndpoints();
+			pN2->EnforceLinkEndpoints();
 			removed++;
 		}
 		else
@@ -137,21 +137,21 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
 
 
 //
-// Remove roads which start and end at the same node, yet don't
+// Remove links which start and end at the same node, yet don't
 // have enough points (less than 3) to be a valid loop
 //
-// There are many other ways a road can be degenerate, but we
+// There are many other ways a link can be degenerate, but we
 // don't check for them (yet).
 //
-// Returns the number of roads removed.
+// Returns the number of links removed.
 //
-int RoadMapEdit::RemoveDegenerateRoads()
+int RoadMapEdit::RemoveDegenerateLinks()
 {
 	int count = 0;
 
-	RoadEdit *prevR = NULL, *nextR;
+	LinkEdit *prevR = NULL, *nextR;
 
-	for (RoadEdit *pR = GetFirstRoad(); pR; pR = nextR)
+	for (LinkEdit *pR = GetFirstLink(); pR; pR = nextR)
 	{
 		nextR = pR->GetNext();
 		if (pR->GetNode(0) == pR->GetNode(1) && pR->GetSize() < 3)
@@ -161,11 +161,11 @@ int RoadMapEdit::RemoveDegenerateRoads()
 			if (prevR)
 				prevR->m_pNext = nextR;
 			else
-				m_pFirstRoad = nextR;
+				m_pFirstLink = nextR;
 
 			// notify the nodes that the road is gone
-			pR->GetNode(0)->DetachRoad(pR);
-			pR->GetNode(1)->DetachRoad(pR);
+			pR->GetNode(0)->DetachLink(pR);
+			pR->GetNode(1)->DetachLink(pR);
 
 			delete pR;
 		}
@@ -184,37 +184,37 @@ int RoadMapEdit::RemoveDegenerateRoads()
 */
 int RoadMapEdit::RemoveUnnecessaryNodes()
 {
-	Road* aRoad;
-	Road* bRoad;
+	Link* aLink;
+	Link* bLink;
 	Node *curNode = m_pFirstNode;
 	Node *prevNode = NULL;
 	int count = 0;
 	int total = NumNodes();
 	while (curNode != NULL)
 	{
-		if (curNode->m_iRoads == 2 && !curNode->IsControlled())
+		if (curNode->m_iLinks == 2 && !curNode->IsControlled())
 		{
-			aRoad = curNode->GetRoad(0);
-			bRoad = curNode->GetRoad(1);
+			aLink = curNode->GetLink(0);
+			bLink = curNode->GetLink(1);
 			//see if the 2 roads have equivalent characteristics.
 			//and the roads are NOT the same!
-			if (aRoad != bRoad &&
-				aRoad->m_fWidth == bRoad->m_fWidth &&
-				aRoad->m_iLanes == bRoad->m_iLanes &&
-				aRoad->m_Surface == bRoad->m_Surface &&
-				aRoad->m_iHwy == bRoad->m_iHwy &&
-				aRoad->m_iFlags == bRoad->m_iFlags)
+			if (aLink != bLink &&
+				aLink->m_fWidth == bLink->m_fWidth &&
+				aLink->m_iLanes == bLink->m_iLanes &&
+				aLink->m_Surface == bLink->m_Surface &&
+				aLink->m_iHwy == bLink->m_iHwy &&
+				aLink->m_iFlags == bLink->m_iFlags)
 			{
 				
 				//merge the 2 roads into one.
-				RoadEdit* newRoad = new RoadEdit();
+				LinkEdit* newLink = new LinkEdit();
 				//make the new road the same as the old roads...
-				newRoad->m_fWidth = bRoad->m_fWidth;
-				newRoad->m_iLanes = bRoad->m_iLanes;
-				newRoad->m_Surface = bRoad->m_Surface;
-				newRoad->m_iHwy = bRoad->m_iHwy;
-				newRoad->m_iFlags = bRoad->m_iFlags;
-				newRoad->SetSize(aRoad->GetSize() + bRoad->GetSize() - 1);  //subtract one for overlapping middle point
+				newLink->m_fWidth = bLink->m_fWidth;
+				newLink->m_iLanes = bLink->m_iLanes;
+				newLink->m_Surface = bLink->m_Surface;
+				newLink->m_iHwy = bLink->m_iHwy;
+				newLink->m_iFlags = bLink->m_iFlags;
+				newLink->SetSize(aLink->GetSize() + bLink->GetSize() - 1);  //subtract one for overlapping middle point
 
 				//extract road coordinates
 				//where/how do we connect road a to road b?
@@ -222,13 +222,13 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				double dist, dist1, dist2, dist3, dist4;
 
 				//find distance between endpoints
-				diff1 = aRoad->GetAt(0) - bRoad->GetAt(0);
+				diff1 = aLink->GetAt(0) - bLink->GetAt(0);
 				dist1 = diff1.Length();
-				diff2 = aRoad->GetAt(0) - bRoad->GetAt(bRoad->GetSize()-1);
+				diff2 = aLink->GetAt(0) - bLink->GetAt(bLink->GetSize()-1);
 				dist2 = diff2.Length();
-				diff3 = aRoad->GetAt(aRoad->GetSize()-1) - bRoad->GetAt(0);
+				diff3 = aLink->GetAt(aLink->GetSize()-1) - bLink->GetAt(0);
 				dist3 = diff3.Length();
-				diff4 = aRoad->GetAt(aRoad->GetSize()-1) - bRoad->GetAt(bRoad->GetSize()-1);
+				diff4 = aLink->GetAt(aLink->GetSize()-1) - bLink->GetAt(bLink->GetSize()-1);
 				dist4 = diff4.Length();
 
 				//shortest distance is connection point
@@ -237,35 +237,35 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				int i;
 				int aFirst, aLast, bFirst, bLast, aStep, bStep;
 				if (dist == dist1) {
-					//connection: aRoad->m_p[0] - bRoad->m_p[0];
-					aFirst = aRoad->GetSize()-1;
+					//connection: aLink->m_p[0] - bLink->m_p[0];
+					aFirst = aLink->GetSize()-1;
 					aLast = 1;
 					aStep = -1;
 					bFirst = 0;
-					bLast = bRoad->GetSize()-1;
+					bLast = bLink->GetSize()-1;
 					bStep = 1;
 				} else if (dist == dist2) {
-					//connection: aRoad->m_p[0] - bRoad->m_p[bRoad->GetSize()-1];
-					aFirst = aRoad->GetSize()-1;
+					//connection: aLink->m_p[0] - bLink->m_p[bLink->GetSize()-1];
+					aFirst = aLink->GetSize()-1;
 					aLast = 1;
 					aStep = -1;
-					bFirst = bRoad->GetSize()-1;
+					bFirst = bLink->GetSize()-1;
 					bLast = 0;
 					bStep = -1;
 				} else if (dist == dist3) {
-					//connection: m_p[aRoad->GetSize()-1] - bRoad->m_p[0];
+					//connection: m_p[aLink->GetSize()-1] - bLink->m_p[0];
 					aFirst = 0;
-					aLast = aRoad->GetSize()-2;
+					aLast = aLink->GetSize()-2;
 					aStep = 1;
 					bFirst = 0;
-					bLast = bRoad->GetSize()-1;
+					bLast = bLink->GetSize()-1;
 					bStep = 1;
 				} else if (dist == dist4) {
-					//connection: m_p[aRoad->GetSize()-1] - bRoad->m_p[bRoad->GetSize()-1];
+					//connection: m_p[aLink->GetSize()-1] - bLink->m_p[bLink->GetSize()-1];
 					aFirst = 0;
-					aLast = aRoad->GetSize()-2;
+					aLast = aLink->GetSize()-2;
 					aStep = 1;
-					bFirst = bRoad->GetSize()-1;
+					bFirst = bLink->GetSize()-1;
 					bLast = 0;
 					bStep = -1;
 				}
@@ -274,12 +274,12 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				//which direction to traverse the first road?
 				if (aStep < 0) {
 					for (i = aFirst; i >= aLast; i--) {
-						newRoad->SetAt(index, aRoad->GetAt(i));
+						newLink->SetAt(index, aLink->GetAt(i));
 						index++;
 					}
 				} else {
 					for (i = aFirst; i <= aLast; i++) {
-						newRoad->SetAt(index, aRoad->GetAt(i));
+						newLink->SetAt(index, aLink->GetAt(i));
 						index++;
 					}
 				}
@@ -287,61 +287,61 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				//which direction to traverse the second road?
 				if (bStep < 0) {
 					for (i = bFirst; i >= bLast; i--) {
-						newRoad->SetAt(index, bRoad->GetAt(i));
+						newLink->SetAt(index, bLink->GetAt(i));
 						index++;
 					}
 				} else {
 					for (i = bFirst; i <= bLast; i++) {
-						newRoad->SetAt(index, bRoad->GetAt(i));
+						newLink->SetAt(index, bLink->GetAt(i));
 						index++;
 					}
 				}
 
 				Node* tmpNode;
 				//replace roads at endpoints with new road
-				if (aRoad->GetNode(0) == curNode) {
+				if (aLink->GetNode(0) == curNode) {
 					index = 1;
 				} else {
 					index = 0;
 				}
-				tmpNode = aRoad->GetNode(index);
-				newRoad->SetNode(0, tmpNode);
-				tmpNode->AddRoad(newRoad);
-				tmpNode->SetIntersectType(newRoad,tmpNode->GetIntersectType(aRoad));
-				aRoad->GetNode(index)->DetachRoad(aRoad);
-				if (bRoad->GetNode(0) == curNode) {
+				tmpNode = aLink->GetNode(index);
+				newLink->SetNode(0, tmpNode);
+				tmpNode->AddLink(newLink);
+				tmpNode->SetIntersectType(newLink,tmpNode->GetIntersectType(aLink));
+				aLink->GetNode(index)->DetachLink(aLink);
+				if (bLink->GetNode(0) == curNode) {
 					index = 1;
 				} else {
 					index = 0;
 				}
-				tmpNode = bRoad->GetNode(index);
-				newRoad->SetNode(1, tmpNode);
-				tmpNode->AddRoad(newRoad);
-				tmpNode->SetIntersectType(newRoad,tmpNode->GetIntersectType(bRoad));
-				tmpNode->DetachRoad(bRoad);
+				tmpNode = bLink->GetNode(index);
+				newLink->SetNode(1, tmpNode);
+				tmpNode->AddLink(newLink);
+				tmpNode->SetIntersectType(newLink,tmpNode->GetIntersectType(bLink));
+				tmpNode->DetachLink(bLink);
 
-				newRoad->ComputeExtent();
-				((RoadEdit*)newRoad)->m_fLength = newRoad->Length();
+				newLink->ComputeExtent();
+				((LinkEdit*)newLink)->m_fLength = newLink->Length();
 
 				//insert new road...
-				newRoad->m_pNext = m_pFirstRoad;
-				m_pFirstRoad = newRoad;
+				newLink->m_pNext = m_pFirstLink;
+				m_pFirstLink = newLink;
 
 				//remove old roads...
-				Road* curRoad = m_pFirstRoad->m_pNext;
-				Road* prevRoad = m_pFirstRoad;
-				while (curRoad) {
-					if (curRoad == bRoad) {
-						prevRoad->m_pNext = curRoad->m_pNext;
-						curRoad = curRoad->m_pNext;
-						delete bRoad;
-					} else if (curRoad == aRoad) {
-						prevRoad->m_pNext = curRoad->m_pNext;
-						curRoad = curRoad->m_pNext;
-						delete aRoad;
+				Link* curLink = m_pFirstLink->m_pNext;
+				Link* prevLink = m_pFirstLink;
+				while (curLink) {
+					if (curLink == bLink) {
+						prevLink->m_pNext = curLink->m_pNext;
+						curLink = curLink->m_pNext;
+						delete bLink;
+					} else if (curLink == aLink) {
+						prevLink->m_pNext = curLink->m_pNext;
+						curLink = curLink->m_pNext;
+						delete aLink;
 					} else {
-						prevRoad = curRoad;	
-						curRoad = curRoad->m_pNext;
+						prevLink = curLink;	
+						curLink = curLink->m_pNext;
 					}
 				}
 
@@ -356,7 +356,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 				}
 				count++;
 				delete tmpNode;
-				//newRoad->m_bTest = true;
+				//newLink->m_bTest = true;
 			} else {
 				prevNode = curNode;
 				curNode = (NodeEdit*)(curNode->m_pNext);
@@ -368,7 +368,7 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 	}
 
 //	wxLogMessage("Eliminated %i of %i nodes\n", count, total);
-//	wxLogMessage("There are now %i nodes and %i roads\n", NumNodes(),NumRoads());
+//	wxLogMessage("There are now %i nodes and %i roads\n", NumNodes(),NumLinks());
 	return count;
 }
 
@@ -381,14 +381,14 @@ int RoadMapEdit::RemoveUnnecessaryNodes()
 //		then remove one of them.
 // Returns the number of road points affected.
 //
-int RoadMapEdit::CleanRoadPoints()
+int RoadMapEdit::CleanLinkPoints()
 {
 	int count = 0;
 
 	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
-		pN->EnforceRoadEndpoints();
+		pN->EnforceLinkEndpoints();
 
-	for (RoadEdit *pR = GetFirstRoad(); pR; pR = pR->GetNext())
+	for (LinkEdit *pR = GetFirstLink(); pR; pR = pR->GetNext())
 	{
 		for (int i = 1; i < pR->GetSize(); i++)
 		{
@@ -411,11 +411,11 @@ int RoadMapEdit::CleanRoadPoints()
 //		have the same start and end nodes and have less than 4 points
 //		have less than 2 points, regardless of start or end nodes.
 //
-int RoadMapEdit::DeleteDanglingRoads()
+int RoadMapEdit::DeleteDanglingLinks()
 {
 	NodeEdit *pN1, *pN2;
-	RoadEdit *pR = GetFirstRoad();
-	RoadEdit *prev = NULL, *next;
+	LinkEdit *pR = GetFirstLink();
+	LinkEdit *prev = NULL, *next;
 	int count = 0;
 	while (pR)
 	{
@@ -429,10 +429,10 @@ int RoadMapEdit::DeleteDanglingRoads()
 			if (prev)
 				prev->m_pNext = next;
 			else
-				m_pFirstRoad = next;
+				m_pFirstLink = next;
 
-			pN1->DetachRoad(pR);
-			pN2->DetachRoad(pR);
+			pN1->DetachLink(pR);
+			pN2->DetachLink(pR);
 			delete pR;
 			count++;
 		}
@@ -446,12 +446,12 @@ int RoadMapEdit::DeleteDanglingRoads()
 
 
 // fix when two different roads meet at the same node along the same path
-int RoadMapEdit::FixOverlappedRoads(bool bDegrees)
+int RoadMapEdit::FixOverlappedLinks(bool bDegrees)
 {
 	int fixed = 0, roads;
 	DPoint2 p0, p1, diff;
 	int i, j;
-	RoadEdit *pR1, *pR2;
+	LinkEdit *pR1, *pR2;
 
 	double tolerance;
 	if (bDegrees)
@@ -461,18 +461,18 @@ int RoadMapEdit::FixOverlappedRoads(bool bDegrees)
 
 	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
 	{
-		roads = pN->m_iRoads;
+		roads = pN->m_iLinks;
 
 		if (roads < 2) continue;
 
 		bool bad = false;
 		for (i = 0; i < roads-1 && !bad; i++)
 		{
-			pR1 = pN->GetRoad(i);
+			pR1 = pN->GetLink(i);
 			p0 = pN->find_adjacent_roadpoint2d(pR1);
 			for (j = i+1; j < roads; j++)
 			{
-				pR2 = pN->GetRoad(j);
+				pR2 = pN->GetLink(j);
 
 				if (pR1 == pR2) continue;	// don't worry about loops
 
@@ -498,8 +498,8 @@ int RoadMapEdit::FixOverlappedRoads(bool bDegrees)
 		else
 			pR2->RemovePoint(pR2->GetSize()-2);	// road ends here
 		fixed++;
-		((RoadEdit*)pR1)->m_fLength = pR1->Length();
-		((RoadEdit*)pR2)->m_fLength = pR2->Length();
+		((LinkEdit*)pR1)->m_fLength = pR1->Length();
+		((LinkEdit*)pR2)->m_fLength = pR2->Length();
 
 	}
 	return fixed;
@@ -528,24 +528,24 @@ float angle_diff(float a1, float a2)
 int RoadMapEdit::FixExtraneousParallels()
 {
 	int removed = 0, i, j, roads;
-	RoadEdit *pR1, *pR2;
+	LinkEdit *pR1, *pR2;
 
 	for (NodeEdit *pN = GetFirstNode(); pN && pN->m_pNext; pN = pN->GetNext())
 	{
-		roads = pN->m_iRoads;
+		roads = pN->m_iLinks;
 
 		if (roads < 3) continue;
 
 		bool bad = false;
-		pN->DetermineRoadAngles();
+		pN->DetermineLinkAngles();
 		for (i = 0; i < roads-1 && !bad; i++)
 		{
-			pR1 = pN->GetRoad(i);
+			pR1 = pN->GetLink(i);
 			for (j = i+1; j < roads; j++)
 			{
-				pR2 = pN->GetRoad(j);
+				pR2 = pN->GetLink(j);
 				if (pR2 == pR1) break;		// ignore loops
-				float diff = angle_diff(pN->m_fRoadAngle[i], pN->m_fRoadAngle[j]);
+				float diff = angle_diff(pN->m_fLinkAngle[i], pN->m_fLinkAngle[j]);
 				if (diff < 0.3f)
 				{
 					// pR1 and pR2 are suspiciously close
@@ -558,23 +558,23 @@ int RoadMapEdit::FixExtraneousParallels()
 		{
 			int leads_to[2];
 			if (pR1->GetNode(0) == pN)
-				leads_to[0] = pR1->GetNode(1)->m_iRoads;
+				leads_to[0] = pR1->GetNode(1)->m_iLinks;
 			else
-				leads_to[0] = pR1->GetNode(0)->m_iRoads;
+				leads_to[0] = pR1->GetNode(0)->m_iLinks;
 			if (pR2->GetNode(0) == pN)
-				leads_to[1] = pR2->GetNode(1)->m_iRoads;
+				leads_to[1] = pR2->GetNode(1)->m_iLinks;
 			else
-				leads_to[1] = pR2->GetNode(0)->m_iRoads;
+				leads_to[1] = pR2->GetNode(0)->m_iLinks;
 			if (leads_to[0] == 1 && leads_to[1] > 1)
 			{
 				// delete R1
-				DeleteSingleRoad(pR1);
+				DeleteSingleLink(pR1);
 				removed++;
 			}
 			else if (leads_to[0] > 1 && leads_to[1] == 1)
 			{
 				// delete R2;
-				DeleteSingleRoad(pR2);
+				DeleteSingleLink(pR2);
 				removed++;
 			}
 			else
@@ -590,46 +590,46 @@ int RoadMapEdit::FixExtraneousParallels()
 
 //if a road starts and ends at the same node, split it into 2 roads (at the middle point.)
 //will create a new uncontrolled node in the middle.
-int RoadMapEdit::SplitLoopingRoads() {
+int RoadMapEdit::SplitLoopingLinks() {
 	int count = 0;
-	RoadEdit *curRoad = GetFirstRoad();
+	LinkEdit *curLink = GetFirstLink();
 	NodeEdit *curNode;
-	RoadEdit *roadA, *roadB, *tmpRoad;
+	LinkEdit *roadA, *roadB, *tmpLink;
 
-	while (curRoad) {
-		if (curRoad->GetNode(0) == curRoad->GetNode(1)) {
+	while (curLink) {
+		if (curLink->GetNode(0) == curLink->GetNode(1)) {
 			//we have a looping road.  split it in half.
-			curNode = curRoad->GetNode(0);
+			curNode = curLink->GetNode(0);
 
 			//create 2 new roads.
-			int switchPoint = curRoad->GetSize()/2 + 1;
+			int switchPoint = curLink->GetSize()/2 + 1;
 			int i = 0;
-			roadA = new RoadEdit();
+			roadA = new LinkEdit();
 			roadA->SetSize(switchPoint);
-			roadB = new RoadEdit();
-			roadB->SetSize(curRoad->GetSize() - switchPoint + 1);
+			roadB = new LinkEdit();
+			roadB->SetSize(curLink->GetSize() - switchPoint + 1);
 			for (; i < switchPoint; i++)
-				roadA->SetAt(i, curRoad->GetAt(i));
+				roadA->SetAt(i, curLink->GetAt(i));
 
 			int j = 0;
 			i--;
-			for (; i < curRoad->GetSize(); i++)
+			for (; i < curLink->GetSize(); i++)
 			{
-				roadB->SetAt(j, curRoad->GetAt(i));
+				roadB->SetAt(j, curLink->GetAt(i));
 				j++;
 			}
 			//equal characteristics
-			roadA->m_iFlags = curRoad->m_iFlags;
-			roadA->m_iHwy = curRoad->m_iHwy;
-			roadA->m_iLanes = curRoad->m_iLanes;
-			roadA->m_Surface = curRoad->m_Surface;
+			roadA->m_iFlags = curLink->m_iFlags;
+			roadA->m_iHwy = curLink->m_iHwy;
+			roadA->m_iLanes = curLink->m_iLanes;
+			roadA->m_Surface = curLink->m_Surface;
 			roadA->ComputeExtent();
 			roadA->m_fLength = roadA->Length();
 			
-			roadB->m_iFlags = curRoad->m_iFlags;
-			roadB->m_iHwy = curRoad->m_iHwy;
-			roadB->m_iLanes = curRoad->m_iLanes;
-			roadB->m_Surface = curRoad->m_Surface;
+			roadB->m_iFlags = curLink->m_iFlags;
+			roadB->m_iHwy = curLink->m_iHwy;
+			roadB->m_iLanes = curLink->m_iLanes;
+			roadB->m_Surface = curLink->m_Surface;
 			roadB->ComputeExtent();
 			roadB->m_fLength = roadB->Length();
 
@@ -638,14 +638,14 @@ int RoadMapEdit::SplitLoopingRoads() {
 
 			//add roads to node;
 			roadA->SetNode(0, curNode);
-			curNode->AddRoad(roadA);
+			curNode->AddLink(roadA);
 			roadA->SetNode(1, node);
-			node->AddRoad(roadA);
+			node->AddLink(roadA);
 
 			roadB->SetNode(1, curNode);
-			curNode->AddRoad(roadB);
+			curNode->AddLink(roadB);
 			roadB->SetNode(0, node);
-			node->AddRoad(roadB);
+			node->AddLink(roadB);
 
 			node->SetIntersectType(0, IT_NONE);
 			node->SetIntersectType(1, IT_NONE);
@@ -654,30 +654,30 @@ int RoadMapEdit::SplitLoopingRoads() {
 			node->m_pNext = m_pFirstNode;
 			m_pFirstNode = node;
 			//add roads to road map
-			roadA->m_pNext = m_pFirstRoad;
-			m_pFirstRoad = roadA;
-			roadB->m_pNext = m_pFirstRoad;
-			m_pFirstRoad = roadB;
+			roadA->m_pNext = m_pFirstLink;
+			m_pFirstLink = roadA;
+			roadB->m_pNext = m_pFirstLink;
+			m_pFirstLink = roadB;
 
 			//set traffic behavior
 //			node->m_Behavior = IT_NONE;
 			node->SetVisual(VIT_NONE);
 
-			curNode->SetIntersectType(roadA, curNode->GetIntersectType(curRoad));
-			curNode->SetIntersectType(roadB, curNode->GetIntersectType(curRoad));
+			curNode->SetIntersectType(roadA, curNode->GetIntersectType(curLink));
+			curNode->SetIntersectType(roadB, curNode->GetIntersectType(curLink));
 
 			//delete the old road
-			tmpRoad = curRoad;
-			curRoad = (RoadEdit*) curRoad->m_pNext;
+			tmpLink = curLink;
+			curLink = (LinkEdit*) curLink->m_pNext;
 			//delete the old road.
-			DeleteSingleRoad(tmpRoad);
+			DeleteSingleLink(tmpLink);
 
 			//adjust traffic signals as necessary
 			curNode->AdjustForLights();			
 
 			count++;
 		} else {
-			curRoad = (RoadEdit*) curRoad->m_pNext;
+			curLink = (LinkEdit*) curLink->m_pNext;
 		}
 	}
 	return count;

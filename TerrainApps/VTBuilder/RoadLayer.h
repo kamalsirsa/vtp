@@ -37,19 +37,19 @@ public:
 	static void SetDrawWidth(bool d) { m_bDrawWidth = d; }
 
 	int GetSelectedNodes();
-	int GetSelectedRoads();
-	void ToggleRoadDirection(RoadEdit *pRoad);
+	int GetSelectedLinks();
+	void ToggleLinkDirection(LinkEdit *pLink);
 	bool SelectArea(const DRECT &box, bool nodemode, bool crossSelect);
 	void MoveSelectedNodes(const DPoint2 &offset);
 
 	//edit a single node
 	bool EditNodeProperties(const DPoint2 &point, float error, DRECT &bound);
 	//edit a single road
-	bool EditRoadProperties(const DPoint2 &point, float error, DRECT &bound);
+	bool EditLinkProperties(const DPoint2 &point, float error, DRECT &bound);
 	//edit all selected nodes
 	bool EditNodesProperties();
 	//edit all selected roads
-	bool EditRoadsProperties();
+	bool EditLinksProperties();
 
 protected:
 	static bool	m_bDrawNodes;

@@ -39,7 +39,7 @@ vtRoadLayer::~vtRoadLayer()
 
 bool vtRoadLayer::GetExtent(DRECT &rect)
 {
-	if (NumNodes() == 0 && NumRoads() == 0)
+	if (NumNodes() == 0 && NumLinks() == 0)
 		return false;
 
 	rect = GetMapExtent();
@@ -65,11 +65,11 @@ bool vtRoadLayer::OnLoad()
 	// Set visual properties
 	for (NodeEdit *pN = GetFirstNode(); pN; pN = pN->GetNext())
 	{
-		pN->DetermineVisualFromRoads();
+		pN->DetermineVisualFromLinks();
 	}
 
 	// Pre-process some road attributes
-	for (RoadEdit *pR = GetFirstRoad(); pR; pR = pR->GetNext())
+	for (LinkEdit *pR = GetFirstLink(); pR; pR = pR->GetNext())
 	{
 		pR->m_fLength = pR->Length();
 
@@ -106,15 +106,15 @@ bool vtRoadLayer::AppendDataFrom(vtLayer *pL)
 		n = next;
 	}
 	// add roads to our list
-	Road *r = pFrom->GetFirstRoad();
+	Link *r = pFrom->GetFirstLink();
 	while (r)
 	{
-		Road *next = r->m_pNext;
-		r->m_pNext = m_pFirstRoad;
-		m_pFirstRoad = r;
+		Link *next = r->m_pNext;
+		r->m_pNext = m_pFirstLink;
+		m_pFirstLink = r;
 		r = next;
 	}
-	pFrom->m_pFirstRoad = NULL;
+	pFrom->m_pFirstLink = NULL;
 	pFrom->m_pFirstNode = NULL;
 
 	ComputeExtents();
@@ -132,27 +132,27 @@ int vtRoadLayer::GetSelectedNodes()
 	return count;
 }
 
-int vtRoadLayer::GetSelectedRoads()
+int vtRoadLayer::GetSelectedLinks()
 {
 	int count = 0;
-	for (RoadEdit *n = GetFirstRoad(); n; n = n->GetNext())
+	for (LinkEdit *n = GetFirstLink(); n; n = n->GetNext())
 		if (n->IsSelected()) count++;
 	return count;
 }
 
-void vtRoadLayer::ToggleRoadDirection(RoadEdit *pRoad)
+void vtRoadLayer::ToggleLinkDirection(LinkEdit *pLink)
 {
-	switch (pRoad->m_iFlags & (RF_FORWARD|RF_REVERSE))
+	switch (pLink->m_iFlags & (RF_FORWARD|RF_REVERSE))
 	{
 		case RF_FORWARD:
-			pRoad->m_iFlags &= ~RF_FORWARD;
-			pRoad->m_iFlags |= RF_REVERSE;
+			pLink->m_iFlags &= ~RF_FORWARD;
+			pLink->m_iFlags |= RF_REVERSE;
 			break;
 		case RF_REVERSE:
-			pRoad->m_iFlags |= RF_FORWARD;
+			pLink->m_iFlags |= RF_FORWARD;
 			break;
 		case (RF_FORWARD|RF_REVERSE):
-			pRoad->m_iFlags &= ~RF_REVERSE;
+			pLink->m_iFlags &= ~RF_REVERSE;
 			break;
 	}
 	SetModified(true);
@@ -177,9 +177,9 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	RoadEdit *r;
+	LinkEdit *r;
 	NodeEdit *n;
-	for (r = GetFirstRoad(); r; r=r->GetNext())
+	for (r = GetFirstLink(); r; r=r->GetNext())
 	{
 		for (int i = 0; i < r->GetSize(); i++)
 			trans->Transform(1, &(r->GetAt(i).x), &(r->GetAt(i).y));
@@ -190,7 +190,7 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	delete trans;
 
 	// recompute road extents
-	for (r = GetFirstRoad(); r; r=r->GetNext())
+	for (r = GetFirstLink(); r; r=r->GetNext())
 		r->ComputeExtent();
 
 	// set the vtRoadMap projection
@@ -207,7 +207,7 @@ void vtRoadLayer::SetProjection(vtProjection &proj)
 
 void vtRoadLayer::Offset(const DPoint2 &p)
 {
-	for (Road *r = GetFirstRoad(); r; r=r->m_pNext)
+	for (Link *r = GetFirstLink(); r; r=r->m_pNext)
 	{
 		for (int i = 0; i < r->GetSize(); i++)
 			r->GetAt(i) += p;
@@ -216,7 +216,7 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 		n->m_p += p;
 
 	// recompute road extents
-	for (RoadEdit *r2 = GetFirstRoad(); r2; r2=r2->GetNext())
+	for (LinkEdit *r2 = GetFirstLink(); r2; r2=r2->GetNext())
 		r2->ComputeExtent();
 
 	m_bValidExtents = false;
@@ -249,24 +249,24 @@ bool vtRoadLayer::EditNodeProperties(const DPoint2 &point, float error,
 	return false; 
 }
 
-bool vtRoadLayer::EditRoadProperties(const DPoint2 &point, float error,
+bool vtRoadLayer::EditLinkProperties(const DPoint2 &point, float error,
 									 DRECT &bound)
 {
-	RoadEdit* bestRSoFar = NULL;
+	LinkEdit* bestRSoFar = NULL;
 	float dist = (float)error;
 	float result;
 	bool RFound = false;
 
 	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
 
-	for (RoadEdit* curRoad = GetFirstRoad(); curRoad; curRoad = curRoad->GetNext())
+	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curRoad->WithinExtent(target))
+		if (curLink->WithinExtent(target))
 		{
-			result = curRoad->DistanceToPoint(point);
+			result = curLink->DistanceToPoint(point);
 			if (result < dist)
 			{
-				bestRSoFar = curRoad;
+				bestRSoFar = curLink;
 				dist = result;
 				RFound = true;
 			}
@@ -305,25 +305,25 @@ bool vtRoadLayer::EditNodesProperties()
 	return (dlg.ShowModal() == wxID_OK);
 }
 
-bool vtRoadLayer::EditRoadsProperties()
+bool vtRoadLayer::EditLinksProperties()
 {
 	int count = 0;
-	RoadEdit* road;
+	LinkEdit* link;
 
 	//only bring up dialog is there is a selected road.
-	for (RoadEdit* r = GetFirstRoad(); r; r = r->GetNext())
+	for (LinkEdit* r = GetFirstLink(); r; r = r->GetNext())
 	{
 		if (!r->IsSelected())
 			continue;
 		count++;
-		road = r;
+		link = r;
 	}
 	if (count == 0)
 		return false;
 
-	RoadDlg dlg(NULL, -1, "Road Properties");
+	RoadDlg dlg(NULL, -1, "Link Properties");
 	if (count == 1)
-		dlg.SetRoad(road, this);	//only one road found
+		dlg.SetRoad(link, this);	//only one road found
 	else
 		dlg.SetRoad(NULL, this);
 	return (dlg.ShowModal() == wxID_OK);
@@ -344,9 +344,9 @@ bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
 	else
 	{
 		if (crossSelect)
-			selected = CrossSelectRoads(box, true);
+			selected = CrossSelectLinks(box, true);
 		else
-			selected = SelectRoads(box, true);
+			selected = SelectLinks(box, true);
 
 		wxString str = wxString::Format("Selected %d road%s", selected,
 			selected == 1 ? "" : "s");

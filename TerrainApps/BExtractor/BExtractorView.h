@@ -47,7 +47,7 @@ public:
 	void DrawRoadNodes(CDC *pDC);
 	void DrawRoadNode(CDC *pDC, Node *pNode);
 	void DrawRoads(CDC *pDC);
-	void DrawRoad(CDC *pDC, Road *pRoad);
+	void DrawRoad(CDC *pDC, Link *pLink);
 	bool FindNearestRoadNode(CPoint &point, Node **pNearestNode);
 	bool ReadINIFile();
 	bool WriteINIFile();
@@ -100,7 +100,7 @@ protected:
 	COLORREF m_roadColor;
 
 	// Current road when plotting roads
-	Road *m_pCurrentRoad;
+	Link *m_pCurrentRoad;
 
 	// Directory path at startup, used to locate the .ini file
 	char m_directory[MAX_PATH];

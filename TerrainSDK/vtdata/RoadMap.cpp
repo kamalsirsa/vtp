@@ -44,26 +44,26 @@ float diffAngle(float a, float b)
 Node::Node()
 {
 	m_pNext = NULL;
-	m_iRoads = 0;
+	m_iLinks = 0;
 	m_r = NULL;
 	m_IntersectTypes = NULL;
 	m_Lights = NULL;
-	m_fRoadAngle = NULL;
+	m_fLinkAngle = NULL;
 }
 
 Node::~Node()
 {
 	if (m_r) delete m_r;
-	if (m_fRoadAngle) delete m_fRoadAngle;
+	if (m_fLinkAngle) delete m_fLinkAngle;
 	if (m_IntersectTypes) delete m_IntersectTypes;
 	if (m_Lights) delete m_Lights;
 }
 
 bool Node::operator==(Node &ref)
 {
-	if (m_iRoads != ref.m_iRoads)
+	if (m_iLinks != ref.m_iLinks)
 		return false;
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		if (m_IntersectTypes[i] != ref.m_IntersectTypes[i])
 			return false;
@@ -76,19 +76,19 @@ bool Node::operator==(Node &ref)
 void Node::Copy(Node *node)
 {
 	m_p = node->m_p;
-	m_iRoads = node->m_iRoads;
+	m_iLinks = node->m_iLinks;
 	m_id = node->m_id;
 
-	if (node->m_fRoadAngle)
-		m_fRoadAngle = new float[m_iRoads];
+	if (node->m_fLinkAngle)
+		m_fLinkAngle = new float[m_iLinks];
 
-	m_IntersectTypes = new IntersectionType[m_iRoads];
-	m_Lights = new LightStatus[m_iRoads];
-	m_r = new Road*[m_iRoads];
-	for (int i = 0; i < m_iRoads; i++)
+	m_IntersectTypes = new IntersectionType[m_iLinks];
+	m_Lights = new LightStatus[m_iLinks];
+	m_r = new Link*[m_iLinks];
+	for (int i = 0; i < m_iLinks; i++)
 	{
-		if (node->m_fRoadAngle)
-			m_fRoadAngle[i] = node->m_fRoadAngle[i];
+		if (node->m_fLinkAngle)
+			m_fLinkAngle[i] = node->m_fLinkAngle[i];
 
 		m_IntersectTypes[i] = node->m_IntersectTypes[i];
 		m_Lights[i] = node->m_Lights[i];
@@ -99,16 +99,16 @@ void Node::Copy(Node *node)
 	m_pNext = NULL;
 }
 
-Road* Node::GetRoad(int n)
+Link* Node::GetLink(int n)
 {
-	if (m_r && n < m_iRoads)	// safety check
+	if (m_r && n < m_iLinks)	// safety check
 		return m_r[n];
 	else
 		return NULL;
 }
 
-int Node::FindRoad(int roadID) {
-	for (int i = 0; i < m_iRoads; i++) {
+int Node::FindLink(int roadID) {
+	for (int i = 0; i < m_iLinks; i++) {
 		if (m_r[i]->m_id == roadID) {
 			return i;
 		}
@@ -116,22 +116,22 @@ int Node::FindRoad(int roadID) {
 	return -1;
 }
 
-void Node::AddRoad(class Road *pR)
+void Node::AddLink(class Link *pR)
 {
 	int i;
 
-	m_iRoads++;
+	m_iLinks++;
 
-	RoadPtr *old_roads = m_r;
+	LinkPtr *old_roads = m_r;
 	IntersectionType *iTypes = m_IntersectTypes;
 	LightStatus *lights = m_Lights;
 
-	m_r = new RoadPtr[m_iRoads];
-	m_IntersectTypes = new IntersectionType[m_iRoads];
-	m_Lights = new LightStatus[m_iRoads];
+	m_r = new LinkPtr[m_iLinks];
+	m_IntersectTypes = new IntersectionType[m_iLinks];
+	m_Lights = new LightStatus[m_iLinks];
 
 	// copy data from previous array
-	for (i = 0; i < m_iRoads-1; i++) {
+	for (i = 0; i < m_iLinks-1; i++) {
 		m_r[i] = old_roads[i];
 		m_IntersectTypes[i] = iTypes[i];
 		m_Lights[i] = lights[i];
@@ -147,18 +147,18 @@ void Node::AddRoad(class Road *pR)
 	delete lights;
 }
 
-void Node::DetachRoad(class Road *pR)
+void Node::DetachLink(class Link *pR)
 {
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		if (m_r[i] == pR)
 		{
-			for (int j = i; j < m_iRoads-1; j++) {
+			for (int j = i; j < m_iLinks-1; j++) {
 				m_r[j] = m_r[j+1];
 				m_IntersectTypes[j] = m_IntersectTypes[j+1];
 				m_Lights[j] = m_Lights[j+1];
 			}
-			m_iRoads--;
+			m_iLinks--;
 			return;
 		}
 	}
@@ -171,61 +171,61 @@ double Node::DistanceToPoint(DPoint2 target)
 }
 
 //angles all > 0.
-void Node::DetermineRoadAngles()
+void Node::DetermineLinkAngles()
 {
-	if (m_fRoadAngle)
-		delete m_fRoadAngle;
-	m_fRoadAngle = new float[m_iRoads];
+	if (m_fLinkAngle)
+		delete m_fLinkAngle;
+	m_fLinkAngle = new float[m_iLinks];
 
 	DPoint2 pn0, pn1, diff;
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		pn0 = m_p;
 		pn1 = find_adjacent_roadpoint2d(m_r[i]);
 
 		diff = pn1 - pn0;
 
-		m_fRoadAngle[i] = atan2f((float)diff.y, (float)diff.x);
-		if (m_fRoadAngle[i] < 0.0f) m_fRoadAngle[i] += PI2f;
+		m_fLinkAngle[i] = atan2f((float)diff.y, (float)diff.x);
+		if (m_fLinkAngle[i] < 0.0f) m_fLinkAngle[i] += PI2f;
 	}
 }
 
-void Node::SortRoadsByAngle()
+void Node::SortLinksByAngle()
 {
 	float ftmp;
 
 	// first determine the angle of each road
-	DetermineRoadAngles();
+	DetermineLinkAngles();
 
 	// sort roads by radial angle (make them counter-clockwise)
 	// use a bubble sort
 	bool sorted = false;
-	Road* tmpRoad;
+	Link* tmpLink;
 	IntersectionType intersectType;
 	LightStatus lightStatus;
 	while (!sorted)
 	{
 		sorted = true;
-		for (int i = 0; i < m_iRoads-1; i++)
+		for (int i = 0; i < m_iLinks-1; i++)
 		{
-			if (m_fRoadAngle[i] > m_fRoadAngle[i+1])
+			if (m_fLinkAngle[i] > m_fLinkAngle[i+1])
 			{
 				//save info to be replaced
-				tmpRoad = m_r[i];
+				tmpLink = m_r[i];
 				intersectType = m_IntersectTypes[i];
 				lightStatus = m_Lights[i];
-				ftmp = m_fRoadAngle[i];
+				ftmp = m_fLinkAngle[i];
 
 				//move info over
 				m_r[i] = m_r[i+1];
-				m_r[i+1] = tmpRoad;
+				m_r[i+1] = tmpLink;
 				m_IntersectTypes[i] = m_IntersectTypes[i+1];
 				m_IntersectTypes[i+1] = intersectType;
 				m_Lights[i] = m_Lights[i+1];
 				m_Lights[i+1] = lightStatus;
 
-				m_fRoadAngle[i] = m_fRoadAngle[i+1];
-				m_fRoadAngle[i+1] = ftmp;
+				m_fLinkAngle[i] = m_fLinkAngle[i+1];
+				m_fLinkAngle[i+1] = ftmp;
 
 				sorted = false;
 			}
@@ -233,7 +233,7 @@ void Node::SortRoadsByAngle()
 	}
 }
 
-DPoint2 Node::find_adjacent_roadpoint2d(Road *pR)
+DPoint2 Node::find_adjacent_roadpoint2d(Link *pR)
 {
 	if (pR->GetNode(0) == this)
 		return (*pR)[1];			// roads starts here
@@ -243,8 +243,8 @@ DPoint2 Node::find_adjacent_roadpoint2d(Road *pR)
 
 
 //traffic control
-bool Node::SetIntersectType(Road *road, IntersectionType type){
-	for (int i = 0; i < m_iRoads; i++) {
+bool Node::SetIntersectType(Link *road, IntersectionType type){
+	for (int i = 0; i < m_iLinks; i++) {
 		if (m_r[i] == road) {
 			m_IntersectTypes[i] = type;
 			return true;
@@ -254,17 +254,17 @@ bool Node::SetIntersectType(Road *road, IntersectionType type){
 }
 
 bool Node::SetIntersectType(int roadNum, IntersectionType type) {
-	if (roadNum >= m_iRoads || roadNum < 0) {
+	if (roadNum >= m_iLinks || roadNum < 0) {
 		return false;
 	}
 	m_IntersectTypes[roadNum] = type;
 	return true;
 }
 
-IntersectionType Node::GetIntersectType(Road *road)
+IntersectionType Node::GetIntersectType(Link *road)
 {
 #if 1
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		if (m_r[i] == road) {
 			return m_IntersectTypes[i];
@@ -277,14 +277,14 @@ IntersectionType Node::GetIntersectType(Road *road)
 }
 
 IntersectionType Node::GetIntersectType(int roadNum) {
-	if (roadNum >= m_iRoads || roadNum < 0) {
+	if (roadNum >= m_iLinks || roadNum < 0) {
 		return IT_NONE;
 	}
 	return m_IntersectTypes[roadNum];
 }
 
-LightStatus Node::GetLightStatus(Road *road) {
-	for (int i = 0; i < m_iRoads; i++) {
+LightStatus Node::GetLightStatus(Link *road) {
+	for (int i = 0; i < m_iLinks; i++) {
 		if (m_r[i] == road) {
 			return m_Lights[i];
 		}
@@ -293,14 +293,14 @@ LightStatus Node::GetLightStatus(Road *road) {
 }
 
 LightStatus Node::GetLightStatus(int roadNum) {
-	if (roadNum >= m_iRoads || roadNum < 0) {
+	if (roadNum >= m_iLinks || roadNum < 0) {
 		return LT_INVALID;
 	}
 	return m_Lights[roadNum];
 }
 
-bool Node::SetLightStatus(Road *road, LightStatus light) {
-	for (int i = 0; i < m_iRoads; i++) {
+bool Node::SetLightStatus(Link *road, LightStatus light) {
+	for (int i = 0; i < m_iLinks; i++) {
 		if (m_r[i] == road) {
 			m_Lights[i] = light;
 			return true;
@@ -310,7 +310,7 @@ bool Node::SetLightStatus(Road *road, LightStatus light) {
 }
 
 bool Node::SetLightStatus(int roadNum, LightStatus light) {
-	if (roadNum >= m_iRoads || roadNum < 0) {
+	if (roadNum >= m_iLinks || roadNum < 0) {
 		return false;
 	}
 	m_Lights[roadNum] = light;
@@ -319,7 +319,7 @@ bool Node::SetLightStatus(int roadNum, LightStatus light) {
 
 bool Node::HasLights()
 {
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		if (GetIntersectType(i) == IT_LIGHT)
 			return true;
@@ -329,7 +329,7 @@ bool Node::HasLights()
 
 bool Node::IsControlled()
 {
-	for (int i = 0; i < m_iRoads; i++)
+	for (int i = 0; i < m_iLinks; i++)
 	{
 		if (GetIntersectType(i) != IT_NONE)
 			return true;
@@ -346,13 +346,13 @@ void Node::AdjustForLights()
 	if (m_Lights) {
 		delete m_Lights;
 	}
-	m_Lights = new LightStatus[m_iRoads];
-	for (i = 0; i< m_iRoads; i++) {
+	m_Lights = new LightStatus[m_iLinks];
+	for (i = 0; i< m_iLinks; i++) {
 		SetLightStatus(i, LT_GREEN);
 		SetIntersectType(i, IT_LIGHT);
 	}
 //if the intersection has signal lights, determine light relationships.
-	switch (m_iRoads) {
+	switch (m_iLinks) {
 	case 0:
 	case 1:
 	case 2:
@@ -360,7 +360,7 @@ void Node::AdjustForLights()
 		break;
 	case 3:
 	case 4:
-		SortRoadsByAngle();
+		SortLinksByAngle();
 		float bestAngle = PI2f;
 		int bestChoiceA = 0;
 		int bestChoiceB = 0;
@@ -368,14 +368,14 @@ void Node::AdjustForLights()
 
 		//go through all road pairs and see what is the difference of their angles.
 		//we're shooting for difference of PI.
-		for (i = 0; i < m_iRoads - 1; i++)
+		for (i = 0; i < m_iLinks - 1; i++)
 		{
 			//since angles are sorted, angle i < angle j (not sure if that helps.)
-			for (int j = i+1; j < m_iRoads; j++)
+			for (int j = i+1; j < m_iLinks; j++)
 			{
 				if (i != j)
 				{
-					newAngle  = m_fRoadAngle[j] - (m_fRoadAngle[i]+ PIf);
+					newAngle  = m_fLinkAngle[j] - (m_fLinkAngle[i]+ PIf);
 					//get absolute value
 					if (newAngle < 0) {
 						newAngle = -newAngle;
@@ -388,7 +388,7 @@ void Node::AdjustForLights()
 					if (newAngle < 0) {
 						newAngle = -newAngle;
 					}
-					printf("%i:%f, %i:%f, %f, %f", i,m_fRoadAngle[i], j,m_fRoadAngle[j], newAngle, bestAngle);
+					printf("%i:%f, %i:%f, %f, %f", i,m_fLinkAngle[i], j,m_fLinkAngle[j], newAngle, bestAngle);
 					if (newAngle < bestAngle) {
 						bestChoiceA = i;
 						bestChoiceB = j;
@@ -406,9 +406,9 @@ void Node::AdjustForLights()
 
 
 //
-// Roads
+// Links
 //
-Road::Road()
+Link::Link()
 {
 	// Provide default values
 	m_fWidth = 1.0f;
@@ -427,17 +427,17 @@ Road::Road()
 //
 // Copy constructor
 //
-Road::Road(Road &ref)
+Link::Link(Link &ref)
 {
 	*this = ref;
 //	DLine2::DLine2(ref);	// need to do this?
 }
 
-Road::~Road()
+Link::~Link()
 {
 }
 
-bool Road::operator==(Road &ref)
+bool Link::operator==(Link &ref)
 {
 	return (m_fWidth == ref.m_fWidth &&
 		m_iLanes == ref.m_iLanes &&
@@ -446,7 +446,7 @@ bool Road::operator==(Road &ref)
 		m_iFlags == ref.m_iFlags);
 }
 
-void Road::SetFlag(int flag, bool value)
+void Link::SetFlag(int flag, bool value)
 {
 	if (value)
 		m_iFlags |= flag;
@@ -454,13 +454,13 @@ void Road::SetFlag(int flag, bool value)
 		m_iFlags &= ~flag;
 }
 
-int Road::GetFlag(int flag)
+int Link::GetFlag(int flag)
 {
 	return (m_iFlags & flag) != 0;
 }
 
 //closet distance from target to the road
-double Road::DistanceToPoint(DPoint2 target)
+double Link::DistanceToPoint(DPoint2 target)
 {
 	DPoint2 delta;
 	double bestDistance = -1;
@@ -504,12 +504,12 @@ double Road::DistanceToPoint(DPoint2 target)
 	return bestDistance;
 }
 
-float Road::GetHeightAt(int i)
+float Link::GetHeightAt(int i)
 {
 	return m_fHeight[i];
 }
 
-float Road::GetHeightAt(Node *node)
+float Link::GetHeightAt(Node *node)
 {
 	if (m_pNode[0] == node)
 		return m_fHeight[0];
@@ -522,12 +522,12 @@ float Road::GetHeightAt(Node *node)
 	return 0;
 }
 
-void Road::SetHeightAt(int i, float height)
+void Link::SetHeightAt(int i, float height)
 {
 	m_fHeight[i] = height;
 }
 
-void Road::SetHeightAt(Node *node, float height)
+void Link::SetHeightAt(Node *node, float height)
 {
 	if (m_pNode[0] == node)
 	{
@@ -541,7 +541,7 @@ void Road::SetHeightAt(Node *node, float height)
 	}
 }
 
-float Road::Length()
+float Link::Length()
 {
 	double dist = 0;
 	DPoint2 tmp;
@@ -553,7 +553,7 @@ float Road::Length()
 	return (float) dist;
 }
 
-float Road::EstimateWidth(bool bIncludeSidewalk)
+float Link::EstimateWidth(bool bIncludeSidewalk)
 {
 	float width = m_iLanes * LANE_WIDTH;
 	if (GetFlag(RF_PARKING))
@@ -575,7 +575,7 @@ vtRoadMap::vtRoadMap()
 	// provide inital values for extent
 	m_bValidExtents = false;
 
-	m_pFirstRoad = NULL;
+	m_pFirstLink = NULL;
 	m_pFirstNode = NULL;
 }
 
@@ -587,12 +587,12 @@ vtRoadMap::~vtRoadMap()
 
 void vtRoadMap::DeleteElements()
 {
-	Road *nextR;
-	while (m_pFirstRoad)
+	Link *nextR;
+	while (m_pFirstLink)
 	{
-		nextR = m_pFirstRoad->m_pNext;
-		delete m_pFirstRoad;
-		m_pFirstRoad = nextR;
+		nextR = m_pFirstLink->m_pNext;
+		delete m_pFirstLink;
+		m_pFirstLink = nextR;
 	}
 
 	Node *nextN;
@@ -615,10 +615,10 @@ Node *vtRoadMap::FindNodeByID(int id)
 }
 
 
-int	vtRoadMap::NumRoads() const
+int	vtRoadMap::NumLinks() const
 {
 	int count = 0;
-	for (Road *pR = m_pFirstRoad; pR; pR = pR->m_pNext)
+	for (Link *pR = m_pFirstLink; pR; pR = pR->m_pNext)
 		count++;
 	return count;
 }
@@ -644,7 +644,7 @@ DRECT vtRoadMap::GetMapExtent()
 
 void vtRoadMap::ComputeExtents()
 {
-	if (NumRoads() == 0)
+	if (NumLinks() == 0)
 	{
 		m_bValidExtents = false;
 		return;
@@ -652,7 +652,7 @@ void vtRoadMap::ComputeExtents()
 
 	// iterate through all elements accumulating extents
 	m_extents.SetRect(1E9, -1E9, -1E9, 1E9);
-	for (Road *pR = m_pFirstRoad; pR; pR = pR->m_pNext)
+	for (Link *pR = m_pFirstLink; pR; pR = pR->m_pNext)
 	{
 		// roads are a subclass of line, so we can treat them as lines
 		DLine2 *dl = pR;
@@ -674,7 +674,7 @@ int vtRoadMap::RemoveUnusedNodes()
 	{
 		total++;
 		next = pN->m_pNext;
-		if (pN->m_iRoads == 0)
+		if (pN->m_iLinks == 0)
 		{
 			// delete it
 			if (prev)
@@ -722,21 +722,21 @@ void vtRoadMap::RemoveNode(Node *pNode)
 //
 // Remove a road - use with caution
 //
-void vtRoadMap::RemoveRoad(Road *pRoad)
+void vtRoadMap::RemoveLink(Link *pLink)
 {
-	Road *prev = NULL, *next;
-	Road *pR = m_pFirstRoad;
+	Link *prev = NULL, *next;
+	Link *pR = m_pFirstLink;
 
 	while (pR)
 	{
 		next = pR->m_pNext;
-		if (pRoad == pR)
+		if (pLink == pR)
 		{
 			// delete it
 			if (prev)
 				prev->m_pNext = next;
 			else
-				m_pFirstRoad = next;
+				m_pFirstLink = next;
 			delete pR;
 			// I assume that a node cannot be on the list more than once!!!
 			break;
@@ -765,9 +765,9 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		return false;
 	}
 
-	int numNodes, numRoads, i, j, nodeNum, dummy;
+	int numNodes, numLinks, i, j, nodeNum, dummy;
 	Node* tmpNode;
-	Road* tmpRoad;
+	Link* tmpLink;
 
 	// Is it a RMF File? and check version number
 	fread(buffer,11,1,fp);
@@ -830,7 +830,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 	//get number of nodes and roads
 	fread(&numNodes, intSize, 1, fp);
-	fread(&numRoads, intSize, 1, fp);
+	fread(&numLinks, intSize, 1, fp);
 
 	fread(buffer,7,1,fp);
 	if (strcmp(buffer, "Nodes:"))
@@ -875,68 +875,68 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 
 	// Read the roads
-	for (i = 1; i <= numRoads; i++)
+	for (i = 1; i <= numLinks; i++)
 	{
-		tmpRoad = NewRoad();
+		tmpLink = NewLink();
 		float tmp;
-		fread(&(tmpRoad->m_id), intSize, 1, fp);		//id
-		fread(&(tmpRoad->m_iHwy), intSize, 1, fp);		//highway number
-		fread(&(tmpRoad->m_fWidth), floatSize, 1, fp);	//width
-		fread(&(tmpRoad->m_iLanes), intSize, 1, fp);	//number of lanes
-		fread(&(tmpRoad->m_Surface), intSize, 1, fp);	//surface type
-		fread(&(tmpRoad->m_iFlags), intSize, 1, fp);	//FLAG
+		fread(&(tmpLink->m_id), intSize, 1, fp);		//id
+		fread(&(tmpLink->m_iHwy), intSize, 1, fp);		//highway number
+		fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
+		fread(&(tmpLink->m_iLanes), intSize, 1, fp);	//number of lanes
+		fread(&(tmpLink->m_Surface), intSize, 1, fp);	//surface type
+		fread(&(tmpLink->m_iFlags), intSize, 1, fp);	//FLAG
 		fread(&tmp, floatSize, 1, fp);		//height of road at node 0
-		tmpRoad->SetHeightAt(0, tmp);
+		tmpLink->SetHeightAt(0, tmp);
 		fread(&tmp, floatSize, 1, fp);		//height of road at node 1
-		tmpRoad->SetHeightAt(1, tmp);
+		tmpLink->SetHeightAt(1, tmp);
 
 		int size;
 		fread(&size, intSize, 1, fp);	// number of coordinates making the road
-		tmpRoad->SetSize(size);
+		tmpLink->SetSize(size);
 
-		for (j = 0; j < tmpRoad->GetSize(); j++)
+		for (j = 0; j < tmpLink->GetSize(); j++)
 		{
 			if (version < 1.8f)
 			{
 				fread(&ivalue, intSize, 1, fp);
-				(*tmpRoad)[j].x = ivalue;
+				(*tmpLink)[j].x = ivalue;
 				fread(&ivalue, intSize, 1, fp);
-				(*tmpRoad)[j].y = ivalue;
+				(*tmpLink)[j].y = ivalue;
 			}
 			else
 			{
-				fread(&((*tmpRoad)[j].x), doubleSize, 1, fp);
-				fread(&((*tmpRoad)[j].y), doubleSize, 1, fp);
+				fread(&((*tmpLink)[j].x), doubleSize, 1, fp);
+				fread(&((*tmpLink)[j].y), doubleSize, 1, fp);
 			}
 		}
 
 		//set the end points
 		fread(&nodeNum, intSize, 1, fp);
-		tmpRoad->SetNode(0, pNodeLookup[nodeNum]);
+		tmpLink->SetNode(0, pNodeLookup[nodeNum]);
 		fread(&nodeNum, intSize, 1, fp);
-		tmpRoad->SetNode(1, pNodeLookup[nodeNum]);
+		tmpLink->SetNode(1, pNodeLookup[nodeNum]);
 
 		// check for inclusion
 		bool include = false;
-		if (bHwy && tmpRoad->m_iHwy > 0) include = true;
-		if (bPaved && tmpRoad->m_Surface == SURFT_PAVED) include = true;
-		if (bDirt && (tmpRoad->m_Surface == SURFT_TRAIL ||
-			tmpRoad->m_Surface == SURFT_2TRACK ||
-			tmpRoad->m_Surface == SURFT_DIRT ||
-			tmpRoad->m_Surface == SURFT_GRAVEL)) include = true;
+		if (bHwy && tmpLink->m_iHwy > 0) include = true;
+		if (bPaved && tmpLink->m_Surface == SURFT_PAVED) include = true;
+		if (bDirt && (tmpLink->m_Surface == SURFT_TRAIL ||
+			tmpLink->m_Surface == SURFT_2TRACK ||
+			tmpLink->m_Surface == SURFT_DIRT ||
+			tmpLink->m_Surface == SURFT_GRAVEL)) include = true;
 
 		if (!include)
 		{
-			delete tmpRoad;
+			delete tmpLink;
 			continue;
 		}
 
 		// Inform the Nodes to which it belongs
-		tmpRoad->GetNode(0)->AddRoad(tmpRoad);
-		tmpRoad->GetNode(1)->AddRoad(tmpRoad);
+		tmpLink->GetNode(0)->AddLink(tmpLink);
+		tmpLink->GetNode(1)->AddLink(tmpLink);
 
 		// Add to list
-		AddRoad(tmpRoad);
+		AddLink(tmpLink);
 	}
 
 	// Read traffic control information
@@ -949,7 +949,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 	for (i = 0; i < numNodes; i++)
 	{
-		int id, numRoads;
+		int id, numLinks;
 
 		fread(&id, intSize, 1, fp);  //node ID
 		// safety check
@@ -961,10 +961,10 @@ bool vtRoadMap::ReadRMF(const char *filename,
 
 		tmpNode = pNodeLookup[id];
 		fread(&dummy, intSize, 1, fp);
-		fread(&numRoads, intSize, 1, fp);
+		fread(&numLinks, intSize, 1, fp);
 
 		//get specifics for each road at the intersection:
-		for (j = 0; j < numRoads; j++)
+		for (j = 0; j < numLinks; j++)
 		{
 			//match road number
 			IntersectionType type;
@@ -974,7 +974,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 			fread(&type, intSize, 1, fp);
 			fread(&lStatus, intSize, 1, fp);
 			//now figure out which roads at the node get what behavior
-			id = tmpNode->FindRoad(id);
+			id = tmpNode->FindLink(id);
 			if (id >= 0)
 			{
 				tmpNode->SetIntersectType(id, type);
@@ -1003,9 +1003,9 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	int i;
 
 	Node *curNode = GetFirstNode();
-	Road *curRoad = GetFirstRoad();
+	Link *curLink = GetFirstLink();
 	int numNodes = NumNodes();
-	int numRoads = NumRoads();
+	int numLinks = NumLinks();
 
 	// must have nodes, or saving will fail
 	if (numNodes == 0)
@@ -1025,13 +1025,13 @@ bool vtRoadMap::WriteRMF(const char *filename)
 		curNode = curNode->m_pNext;
 	}
 	i=1;
-	while (curRoad) {
-		curRoad->m_id = i++;
-		curRoad = curRoad->m_pNext;
+	while (curLink) {
+		curLink->m_id = i++;
+		curLink = curLink->m_pNext;
 	}
 	
 	curNode = GetFirstNode();
-	curRoad = GetFirstRoad();
+	curLink = GetFirstLink();
 
 	FWrite(RMFVERSION_STRING, 11);
 
@@ -1054,7 +1054,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	FWrite(&le, intSize);
 	FWrite(&bo, intSize);
 	FWrite(&numNodes, intSize);  // number of nodes
-	FWrite(&numRoads, intSize);  // number of roads
+	FWrite(&numLinks, intSize);  // number of roads
 	FWrite("Nodes:",7);	
 	//write nodes
 	while (curNode) 
@@ -1066,33 +1066,33 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	}
 	FWrite("Roads:",7);	
 	//write roads
-	while (curRoad)
+	while (curLink)
 	{
 		float tmp;
-		FWrite(&(curRoad->m_id), intSize);		//id
-		FWrite(&(curRoad->m_iHwy), intSize);		//highway number
-		FWrite(&(curRoad->m_fWidth), floatSize);	//width
-		FWrite(&(curRoad->m_iLanes), intSize);	//number of lanes
-		FWrite(&(curRoad->m_Surface), intSize);	//surface type
-		FWrite(&(curRoad->m_iFlags), intSize);	//FLAG
-		tmp = curRoad->GetHeightAt(0);
+		FWrite(&(curLink->m_id), intSize);		//id
+		FWrite(&(curLink->m_iHwy), intSize);		//highway number
+		FWrite(&(curLink->m_fWidth), floatSize);	//width
+		FWrite(&(curLink->m_iLanes), intSize);	//number of lanes
+		FWrite(&(curLink->m_Surface), intSize);	//surface type
+		FWrite(&(curLink->m_iFlags), intSize);	//FLAG
+		tmp = curLink->GetHeightAt(0);
 		FWrite(&tmp, floatSize); //height of the road at node 0
-		tmp = curRoad->GetHeightAt(1);
+		tmp = curLink->GetHeightAt(1);
 		FWrite(&tmp, floatSize); //height of the road at node 1
 
-		int size = curRoad->GetSize();
+		int size = curLink->GetSize();
 		FWrite(&size, intSize);//number of coordinates making the road
 		for (i = 0; i < size; i++)
 		{
 			//coordinates that make the road
-			FWrite(&curRoad->GetAt(i).x, doubleSize);
-			FWrite(&curRoad->GetAt(i).y, doubleSize);
+			FWrite(&curLink->GetAt(i).x, doubleSize);
+			FWrite(&curLink->GetAt(i).y, doubleSize);
 		}
 		//nodes (endpoints)
-		FWrite(&(curRoad->GetNode(0)->m_id), intSize);	//what road is at the end point?
-		FWrite(&(curRoad->GetNode(1)->m_id), intSize);
+		FWrite(&(curLink->GetNode(0)->m_id), intSize);	//what road is at the end point?
+		FWrite(&(curLink->GetNode(1)->m_id), intSize);
 		
-		curRoad = curRoad->m_pNext;
+		curLink = curLink->m_pNext;
 	}
 
 	int dummy = 0;
@@ -1108,11 +1108,11 @@ bool vtRoadMap::WriteRMF(const char *filename)
 
 		FWrite(&(curNode->m_id), intSize);	//node ID
 		FWrite(&(dummy), intSize); //node traffic behavior
-		FWrite(&(curNode->m_iRoads), intSize); //node traffic behavior
-		for (i = 0; i < curNode->m_iRoads; i++) {
+		FWrite(&(curNode->m_iLinks), intSize); //node traffic behavior
+		for (i = 0; i < curNode->m_iLinks; i++) {
 			IntersectionType type = curNode->GetIntersectType(i);
 			LightStatus lStatus = curNode->GetLightStatus(i);
-			FWrite(&(curNode->GetRoad(i)->m_id), intSize);  //road ID	
+			FWrite(&(curNode->GetLink(i)->m_id), intSize);  //road ID	
 			FWrite(&type, intSize);  //get the intersection type associated with that road
 			FWrite(&lStatus,intSize);
 		}

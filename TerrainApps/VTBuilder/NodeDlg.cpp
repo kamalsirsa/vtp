@@ -34,7 +34,7 @@
 BEGIN_EVENT_TABLE(NodeDlg,AutoDialog)
     EVT_PAINT(NodeDlg::OnPaint)
     EVT_LISTBOX( ID_INTTYPE, NodeDlg::OnIntType )
-    EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnRoadNum )
+    EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnLinkNum )
     EVT_LISTBOX( ID_BEHAVIOR, NodeDlg::OnBehavior )
 END_EVENT_TABLE()
 
@@ -55,21 +55,21 @@ void NodeDlg::SetNode(NodeEdit *pSingleNode, vtRoadLayer *pLayer)
 
 void NodeDlg::OnBehavior( wxCommandEvent &event )
 {
-	int sel = GetRoadNum()->GetSelection();
+	int sel = GetLinkNum()->GetSelection();
 	//select new behavior and redraw it on the dialog.
 	int itype = GetBehavior()->GetSelection();
 	m_pNode->SetIntersectType(sel, (IntersectionType)itype );
 
 	// this may have changed the VIT, so check
-	m_pNode->DetermineVisualFromRoads();
+	m_pNode->DetermineVisualFromLinks();
     GetIntType()->SetSelection(m_pNode->GetVisual());
 
 	Refresh();
 }
 
-void NodeDlg::OnRoadNum( wxCommandEvent &event )
+void NodeDlg::OnLinkNum( wxCommandEvent &event )
 {
-	int sel = GetRoadNum()->GetSelection();
+	int sel = GetLinkNum()->GetSelection();
 	//update what the behavior shows to match that of the road
 	GetBehavior()->SetSelection(m_pNode->GetIntersectType(sel));
 }
@@ -109,21 +109,21 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 	{
 	case VIT_NONE:
 		//make all intersections uncontrolled
-		for (i = 0; i < m_pNode->m_iRoads; i++) {
+		for (i = 0; i < m_pNode->m_iLinks; i++) {
 			pNode->SetIntersectType(i, IT_NONE);
 		}
 		GetBehavior()->SetSelection(IT_NONE);
 		break;
 	case VIT_ALLSTOPS:
 		//make all intersections stop signs
-		for (i = 0; i < m_pNode->m_iRoads; i++) {
+		for (i = 0; i < m_pNode->m_iLinks; i++) {
 			pNode->SetIntersectType(i, IT_STOPSIGN);
 		}
 		GetBehavior()->SetSelection(IT_STOPSIGN);
 		break;
 	case VIT_ALLLIGHTS:
 		//make all intersections lights
-		for (i = 0; i < m_pNode->m_iRoads; i++) {
+		for (i = 0; i < m_pNode->m_iLinks; i++) {
 			pNode->SetIntersectType(i, IT_LIGHT);
 		}
 		GetBehavior()->SetSelection(IT_LIGHT);
@@ -150,7 +150,7 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
     // editing abilities
     if (!m_pNode)
     {
-        GetRoadNum()->Enable(false);
+        GetLinkNum()->Enable(false);
         GetBehavior()->Enable(false);
 
         // Accumulate state
@@ -175,12 +175,12 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
     {
         // single road
         wxString string;
-        for (int i = 0; i < m_pNode->m_iRoads; i++)
+        for (int i = 0; i < m_pNode->m_iLinks; i++)
         {
             string.Printf("%i", i);
-            GetRoadNum()->Append(string);
+            GetLinkNum()->Append(string);
         }
-        GetRoadNum()->SetSelection(0);
+        GetLinkNum()->SetSelection(0);
         GetIntType()->SetSelection(m_pNode->GetVisual());
         int itype = m_pNode->GetIntersectType(0);
         GetBehavior()->SetSelection(itype);
@@ -214,9 +214,9 @@ void NodeDlg::OnDraw(wxDC &dc)
     m_pNode->Draw(&dc, pView);
 
     wxString string;
-    for (int i = 0; i < m_pNode->m_iRoads; i++)
+    for (int i = 0; i < m_pNode->m_iLinks; i++)
     {
-        RoadEdit *pR = m_pNode->GetRoad(i);
+        LinkEdit *pR = m_pNode->GetLink(i);
         pR->Draw(&dc, pView);
 
         //we need to use the original node here because the roads point to it.

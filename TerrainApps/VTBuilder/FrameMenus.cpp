@@ -94,7 +94,7 @@ EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
 
-EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectRoad)
+EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectLink)
 EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
 EVT_MENU(ID_ROAD_SELECTWHOLE,	MainFrame::OnSelectWhole)
 EVT_MENU(ID_ROAD_DIRECTION,		MainFrame::OnDirection)
@@ -105,7 +105,7 @@ EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
 EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
 EVT_MENU(ID_ROAD_GUESS,			MainFrame::OnRoadGuess)
 
-EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectRoad)
+EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectLink)
 EVT_UPDATE_UI(ID_ROAD_SELECTNODE,	MainFrame::OnUpdateSelectNode)
 EVT_UPDATE_UI(ID_ROAD_SELECTWHOLE,	MainFrame::OnUpdateSelectWhole)
 EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
@@ -555,7 +555,7 @@ void MainFrame::OnQuit(wxCommandEvent &event)
 void MainFrame::OnEditDelete(wxCommandEvent &event)
 {
 	vtRoadLayer *pRL = GetActiveRoadLayer();
-	if (pRL && (pRL->NumSelectedNodes() != 0 || pRL->NumSelectedRoads() != 0))
+	if (pRL && (pRL->NumSelectedNodes() != 0 || pRL->NumSelectedLinks() != 0))
 	{
 		m_pView->DeleteSelected(pRL);
 		pRL->SetModified(true);
@@ -1141,12 +1141,12 @@ void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
 //////////////////////////
 // Road
 
-void MainFrame::OnSelectRoad(wxCommandEvent &event)
+void MainFrame::OnSelectLink(wxCommandEvent &event)
 {
 	m_pView->SetMode(LB_Road);
 }
 
-void MainFrame::OnUpdateSelectRoad(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateSelectLink(wxUpdateUIEvent& event)
 {
 	event.Check( m_pView->GetMode() == LB_Road );
 }
@@ -1183,12 +1183,12 @@ void MainFrame::OnUpdateDirection(wxUpdateUIEvent& event)
 
 void MainFrame::OnRoadEdit(wxCommandEvent &event)
 {
-	m_pView->SetMode(LB_RoadEdit);
+	m_pView->SetMode(LB_LinkEdit);
 }
 
 void MainFrame::OnUpdateRoadEdit(wxUpdateUIEvent& event)
 {
-	event.Check( m_pView->GetMode() == LB_RoadEdit );
+	event.Check( m_pView->GetMode() == LB_LinkEdit );
 }
 
 void MainFrame::OnRoadShowNodes(wxCommandEvent &event)
@@ -1338,7 +1338,7 @@ void MainFrame::OnRoadGuess(wxCommandEvent &event)
 	pRL->GuessIntersectionTypes();
 
 	for (NodeEdit *pN = pRL->GetFirstNode(); pN; pN = pN->GetNext())
-		pN->DetermineVisualFromRoads();
+		pN->DetermineVisualFromLinks();
 
 	m_pView->Refresh();
 }

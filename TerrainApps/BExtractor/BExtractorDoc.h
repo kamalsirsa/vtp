@@ -31,7 +31,7 @@ public:
 	CBImage *m_pImage;
 	bool m_picLoaded;
 	vtStructureArray	m_Buildings;
-	vtRoadMap m_Roads;
+	vtRoadMap m_Links;
 
 	float m_fScale;
 

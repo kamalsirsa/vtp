@@ -40,7 +40,7 @@ RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	RoadPropDialogFunc( this, TRUE ); 
 }
 
-void RoadDlg::SetRoad(RoadEdit *pSingleRoad, vtRoadLayer *pLayer)
+void RoadDlg::SetRoad(LinkEdit *pSingleRoad, vtRoadLayer *pLayer)
 {
 	m_pRoad = pSingleRoad;
 	m_pLayer = pLayer;
@@ -56,7 +56,7 @@ void RoadDlg::ClearState()
 	m_iSurf = -1;
 }
 
-void RoadDlg::AccumulateState(RoadEdit *pRoad)
+void RoadDlg::AccumulateState(LinkEdit *pRoad)
 {
 	if (m_iLanes == -1)
 		m_iLanes = pRoad->m_iLanes;
@@ -158,8 +158,8 @@ void RoadDlg::OnInitDialog(wxInitDialogEvent& event)
 		AccumulateState(m_pRoad);
 	else
 	{
-		RoadEdit *pRoad;
-		for (pRoad = m_pLayer->GetFirstRoad(); pRoad; pRoad=pRoad->GetNext())
+		LinkEdit *pRoad;
+		for (pRoad = m_pLayer->GetFirstLink(); pRoad; pRoad=pRoad->GetNext())
 		{
 			if (pRoad->IsSelected())
 				AccumulateState(pRoad);
@@ -176,8 +176,8 @@ void RoadDlg::OnOK( wxCommandEvent &event )
 		ApplyState(m_pRoad);
 	else
 	{
-		RoadEdit *pRoad;
-		for (pRoad = m_pLayer->GetFirstRoad(); pRoad; pRoad=pRoad->GetNext())
+		LinkEdit *pRoad;
+		for (pRoad = m_pLayer->GetFirstLink(); pRoad; pRoad=pRoad->GetNext())
 		{
 			if (pRoad->IsSelected())
 				ApplyState(pRoad);
@@ -189,7 +189,7 @@ void RoadDlg::OnOK( wxCommandEvent &event )
 //
 // Apply the state directly from the controls to a given road.
 //
-void RoadDlg::ApplyState(RoadEdit *pRoad)
+void RoadDlg::ApplyState(LinkEdit *pRoad)
 {
 	wxString str;
 	int val;

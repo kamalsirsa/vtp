@@ -186,34 +186,34 @@ RoadFollowEngine::RoadFollowEngine(NodeGeom *pStartNode)
 	PickRoad(NULL);
 }
 
-void RoadFollowEngine::PickRoad(RoadGeom *last_road)
+void RoadFollowEngine::PickRoad(LinkGeom *last_link)
 {
 	int i = 0;
 	NodeGeom *node = m_pLastNode;
 
-	if (node->m_iRoads != 1 && last_road != NULL)
+	if (node->m_iLinks != 1 && last_link != NULL)
 	{
-		i = node->m_iRoads;
+		i = node->m_iLinks;
 
 		// pick next available road
-		if (last_road->m_iHwy > 0)
+		if (last_link->m_iHwy > 0)
 		{
 			// special logic: follow the highway
-			for (i = 0; i < node->m_iRoads; i++)
+			for (i = 0; i < node->m_iLinks; i++)
 			{
-				if (node->GetRoad(i) != last_road && node->GetRoad(i)->m_iHwy > 0)
+				if (node->GetRoad(i) != last_link && node->GetRoad(i)->m_iHwy > 0)
 					break;
 			}
 			// if no highway, do normal logic
 		}
-		if (i == node->m_iRoads)
+		if (i == node->m_iLinks)
 		{
-			for (i = 0; i < node->m_iRoads; i++)
+			for (i = 0; i < node->m_iLinks; i++)
 			{
-				if (node->GetRoad(i) == last_road)
+				if (node->GetRoad(i) == last_link)
 				{
 					i++;
-					i %= node->m_iRoads;
+					i %= node->m_iLinks;
 					break;
 				}
 			}

@@ -15,7 +15,7 @@
 #include "VTBuilder_wdr.h"
 #include "AutoDialog.h"
 
-class RoadEdit;
+class LinkEdit;
 class vtRoadLayer;
 
 // WDR: class declarations
@@ -33,11 +33,11 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	void SetRoad(RoadEdit *pSingleRoad, vtRoadLayer *pLayer);
+	void SetRoad(LinkEdit *pSingleRoad, vtRoadLayer *pLayer);
 	void ClearState();
-	void AccumulateState(RoadEdit *pRoad);
+	void AccumulateState(LinkEdit *pRoad);
 	void TransferStateToControls();
-	void ApplyState(RoadEdit *pRoad);
+	void ApplyState(LinkEdit *pRoad);
 
 	// WDR: method declarations for RoadDlg
 	wxListBox* GetSurfType()  { return (wxListBox*) FindWindow( ID_SURFTYPE ); }
@@ -49,7 +49,7 @@ public:
 	
 private:
 	// WDR: member variable declarations for RoadDlg
-	RoadEdit *m_pRoad;
+	LinkEdit *m_pRoad;
 	vtRoadLayer *m_pLayer;
 
 	// State

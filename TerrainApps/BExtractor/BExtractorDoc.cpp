@@ -133,7 +133,7 @@ void BExtractorDoc::DeleteContents()
 		m_pImage = NULL;
 	}
 	m_Buildings.Empty();
-	m_Roads.DeleteElements();
+	m_Links.DeleteElements();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -418,17 +418,17 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 		case 0: // UTM
 			m_proj.SetUTMZone(dlg.m_iZone);
 			m_Buildings.m_proj.SetUTMZone(dlg.m_iZone);
-			m_Roads.GetProjection().SetUTMZone(dlg.m_iZone);
+			m_Links.GetProjection().SetUTMZone(dlg.m_iZone);
 			break;
 		case 1: // OSGB
 			m_proj.SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
 			m_Buildings.m_proj.SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
-			m_Roads.GetProjection().SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
+			m_Links.GetProjection().SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
 			break;
 		default: // default to UTM
 			m_proj.SetUTMZone(dlg.m_iZone);
 			m_Buildings.m_proj.SetUTMZone(dlg.m_iZone);
-			m_Roads.GetProjection().SetUTMZone(dlg.m_iZone);
+			m_Links.GetProjection().SetUTMZone(dlg.m_iZone);
 			break;
 		}
 	}
@@ -438,7 +438,7 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 		// I should have a valid projection
 		m_proj.SetSpatialReference(m_pImage->m_pSpatialReference);
 		m_Buildings.m_proj.SetSpatialReference(m_pImage->m_pSpatialReference);
-		m_Roads.GetProjection().SetSpatialReference(m_pImage->m_pSpatialReference);
+		m_Links.GetProjection().SetSpatialReference(m_pImage->m_pSpatialReference);
 	}
 
 	// is image >50 million pixels?
@@ -463,7 +463,7 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 
 	// Tell the view to zoom to the freshly loaded bitmap
 	m_Buildings.Empty(); //clear out any old buildings we have lying around
-	m_Roads.DeleteElements();
+	m_Links.DeleteElements();
 	GetView()->ZoomToImage(m_pImage);
 }
 
@@ -495,7 +495,7 @@ void BExtractorDoc::OnRmfOpen()
 	CString str = openDialog.GetPathName();
 	const char *szPathName = str;
 
-	if (!m_Roads.ReadRMF(szPathName, true, true, true))
+	if (!m_Links.ReadRMF(szPathName, true, true, true))
 	{
 		string str = "Problem reading file: ";
 		AfxMessageBox(str.c_str());
@@ -513,8 +513,8 @@ void BExtractorDoc::OnRmfSave()
 		OnRmfSaveAs();
 	else
 	{
-		m_Roads.ComputeExtents();
-		if (!m_Roads.WriteRMF(m_roadFileName))
+		m_Links.ComputeExtents();
+		if (!m_Links.WriteRMF(m_roadFileName))
 		{
 			string str = "Problem writing file: ";
 			AfxMessageBox(str.c_str());
@@ -532,8 +532,8 @@ void BExtractorDoc::OnRmfSaveAs()
 	CString str = saveAsDialog.GetPathName();
 	const char *szPathName = str;
 	
-	m_Roads.ComputeExtents();
-	if (!m_Roads.WriteRMF(szPathName))
+	m_Links.ComputeExtents();
+	if (!m_Links.WriteRMF(szPathName))
 	{
 		string str = "Problem writing file: ";
 		AfxMessageBox(str.c_str());

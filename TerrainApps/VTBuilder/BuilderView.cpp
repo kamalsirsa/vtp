@@ -164,7 +164,7 @@ void BuilderView::SetMode(LBMode m)
 			}
 			break;
 	}
-	if (m_mode != LB_RoadEdit)
+	if (m_mode != LB_LinkEdit)
 	{
 		if (m_pEditingRoad)
 		{
@@ -793,7 +793,7 @@ void BuilderView::SetCorrectCursor()
 		SetCursor(wxCURSOR_CROSS);break; // add a tower to the location
 	case LB_Path:	// pick points on a path
 	case LB_Dir:		// show/change road direction
-	case LB_RoadEdit:	// edit road points
+	case LB_LinkEdit:	// edit road points
 	case LB_RoadExtend: //extend a road selection
 	case LB_TSelect:
 	case LB_Box:
@@ -1002,8 +1002,8 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 		BeginLine();
 		break;
 
-	case LB_RoadEdit:
-		OnLeftDownRoadEdit();
+	case LB_LinkEdit:
+		OnLeftDownLinkEdit();
 		break;
 
 	case LB_BldEdit:
@@ -1030,7 +1030,7 @@ void BuilderView::OnLeftDown(const wxMouseEvent& event)
 	}
 }
 
-void BuilderView::OnLeftDownRoadEdit()
+void BuilderView::OnLeftDownLinkEdit()
 {
 	vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
 	if (!pRL)
@@ -1265,8 +1265,8 @@ void BuilderView::OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point)
 	}
 	else
 	{
-		pRL->SelectRoad(point, error, bound2);
-		pRL->EditRoadProperties(point, error, world_bound);
+		pRL->SelectLink(point, error, bound2);
+		pRL->EditLinkProperties(point, error, world_bound);
 	}
 	wxRect screen_bound = WorldToWindow(world_bound);
 	IncreaseRect(screen_bound, BOUNDADJUST);
@@ -1302,8 +1302,8 @@ void BuilderView::OnLButtonClick(const wxMouseEvent& event)
 		case LB_Dir:
 			OnLButtonClickDirection((vtRoadLayer *)pL);
 			break;
-		case LB_RoadEdit:
-			OnLButtonClickRoadEdit((vtRoadLayer *)pL);
+		case LB_LinkEdit:
+			OnLButtonClickLinkEdit((vtRoadLayer *)pL);
 			break;
 		}
 	}
@@ -1338,8 +1338,8 @@ void BuilderView::OnLButtonDragRelease(const wxMouseEvent& event)
 
 	if (m_mode == LB_Dist)
 		OnDragDistance();
-	if (m_mode == LB_RoadEdit)
-		OnDragRoadEdit();
+	if (m_mode == LB_LinkEdit)
+		OnDragLinkEdit();
 }
 
 void BuilderView::OnDragDistance()
@@ -1352,7 +1352,7 @@ void BuilderView::OnDragDistance()
 	pDlg->SetPoints(p1, p2);
 }
 
-void BuilderView::OnDragRoadEdit()
+void BuilderView::OnDragLinkEdit()
 {
 	if (m_pEditingRoad != NULL && m_iEditingPoint >= 0)
 	{
@@ -1386,9 +1386,9 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 	if (m_mode == LB_Node)
 		returnVal = pRL->SelectNode(m_DownLocation, error, world_bound);
 	else if (m_mode == LB_Road)
-		returnVal = pRL->SelectRoad(m_DownLocation, error, world_bound);
+		returnVal = pRL->SelectLink(m_DownLocation, error, world_bound);
 	else if (m_mode == LB_RoadExtend)
-		returnVal = pRL->SelectAndExtendRoad(m_DownLocation, error, world_bound);
+		returnVal = pRL->SelectAndExtendLink(m_DownLocation, error, world_bound);
 
 	if (returnVal)
 	{
@@ -1397,7 +1397,7 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 		Refresh(TRUE, &screen_bound);
 		wxString str = wxString::Format("Selected 1 %s (%d total)",
 			m_mode == LB_Node ? "Node" : "Road",
-			m_mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedRoads());
+			m_mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
 		GetMainFrame()->SetStatusText(str);
 	}
 	else
@@ -1414,21 +1414,21 @@ void BuilderView::OnLButtonClickDirection(vtRoadLayer *pRL)
 	// error is how close to the road can we be off by?
 	float error = BoundaryPixels();
 
-	RoadEdit *pRoad = pRL->FindRoad(m_DownLocation, error);
+	LinkEdit *pRoad = pRL->FindLink(m_DownLocation, error);
 	if (pRoad)
 	{
-		pRL->ToggleRoadDirection(pRoad);
+		pRL->ToggleLinkDirection(pRoad);
 		RefreshRoad(pRoad);
 	}
 }
 
-void BuilderView::OnLButtonClickRoadEdit(vtRoadLayer *pRL)
+void BuilderView::OnLButtonClickLinkEdit(vtRoadLayer *pRL)
 {
 	// see if there is a road or node at m_DownPoint
 	float error = BoundaryPixels();
 	bool redraw = false;
 
-	RoadEdit *pRoad = pRL->FindRoad(m_DownLocation, error);
+	LinkEdit *pRoad = pRL->FindLink(m_DownLocation, error);
 	if (pRoad != m_pEditingRoad)
 	{
 		if (m_pEditingRoad)
@@ -1445,7 +1445,7 @@ void BuilderView::OnLButtonClickRoadEdit(vtRoadLayer *pRL)
 	}
 }
 
-void BuilderView::RefreshRoad(RoadEdit *pRoad)
+void BuilderView::RefreshRoad(LinkEdit *pRoad)
 {
 	DRECT world_bound = pRoad->m_extent;
 	wxRect screen_bound = WorldToWindow(world_bound);
@@ -1576,7 +1576,7 @@ void BuilderView::OnRightUpRoad(vtRoadLayer *pRL)
 	if (m_mode == LB_Node)
 		status = pRL->EditNodesProperties();
 	else
-		status = pRL->EditRoadsProperties();
+		status = pRL->EditLinksProperties();
 	if (status)
 		Refresh();
 }

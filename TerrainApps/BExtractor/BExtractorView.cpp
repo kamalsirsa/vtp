@@ -317,7 +317,7 @@ void BExtractorView::DrawRoadNodes(CDC *pDC)
 	CPen bgPen( PS_SOLID, 1, color); 
 	pDC->SelectObject(bgPen);
 
-	for (pNode = pDoc->m_Roads.GetFirstNode(); NULL != pNode; pNode = pNode->m_pNext)
+	for (pNode = pDoc->m_Links.GetFirstNode(); NULL != pNode; pNode = pNode->m_pNext)
 	{
 		DrawRoadNode(pDC, pNode);
 	}
@@ -338,36 +338,36 @@ void BExtractorView::DrawRoads(CDC *pDC)
 {
 
 	BExtractorDoc* pDoc = GetDocument();
-	Road *pRoad;
+	Link *pLink;
 
 	COLORREF color;
 	color = m_roadColor;
 	CPen bgPen( PS_SOLID, 1, color); 
 	pDC->SelectObject(bgPen);
 
-	for (pRoad = pDoc->m_Roads.GetFirstRoad(); NULL != pRoad; pRoad = pRoad->m_pNext)
+	for (pLink = pDoc->m_Links.GetFirstLink(); NULL != pLink; pLink = pLink->m_pNext)
 	{
-		DrawRoad(pDC, pRoad);
+		DrawRoad(pDC, pLink);
 	}
 }
 
-void BExtractorView::DrawRoad(CDC *pDC, Road *pRoad)
+void BExtractorView::DrawRoad(CDC *pDC, Link *pLink)
 {
 	CPoint point;
 	int i, size;
 	Node *pNode;
 
-	if (NULL != (pNode = pRoad->GetNode(0)))
+	if (NULL != (pNode = pLink->GetNode(0)))
 	{
 		UTM_s(pNode->m_p, point);
 		pDC->MoveTo(point);
-		size = pRoad->GetSize();
+		size = pLink->GetSize();
 		for (i = 0; i < size; i++)
 		{
-			UTM_s(pRoad->GetAt(i), point);
+			UTM_s(pLink->GetAt(i), point);
 			pDC->LineTo(point);
 		}
-		if (NULL != (pNode = pRoad->GetNode(1)))
+		if (NULL != (pNode = pLink->GetNode(1)))
 		{
 			UTM_s(pNode->m_p, point);
 			pDC->LineTo(point);
@@ -385,7 +385,7 @@ bool BExtractorView::FindNearestRoadNode(CPoint &point, Node **pNearestNode)
 
 	s_UTM(point, geoPoint);
 
-	pNode = pDoc->m_Roads.GetFirstNode();
+	pNode = pDoc->m_Links.GetFirstNode();
 	
 	for (pNearest = pNode; NULL != pNode; pNode = pNode->m_pNext)
 	{
@@ -685,13 +685,13 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 		// Starting a road
 		if (FindNearestRoadNode(nodePoint, &pNode))
 		{
-			m_pCurrentRoad = pDoc->m_Roads.NewRoad();
+			m_pCurrentRoad = pDoc->m_Links.NewLink();
 			m_pCurrentRoad->m_iLanes = 2;
 			m_pCurrentRoad->SetSize(1);
 			(*m_pCurrentRoad)[0] = pNode->m_p;
-			pDoc->m_Roads.AddRoad(m_pCurrentRoad);
+			pDoc->m_Links.AddLink(m_pCurrentRoad);
 			m_pCurrentRoad->SetNode(0, pNode);
-			pNode->AddRoad(m_pCurrentRoad);
+			pNode->AddLink(m_pCurrentRoad);
 			m_bRubber = true;
 			m_p1 = m_p0 = nodePoint;
 			OnMouseMove(nFlags, point);
@@ -706,7 +706,7 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 			m_pCurrentRoad->SetNode(1, pNode);
 			if (pNode != m_pCurrentRoad->GetNode(0))
 			{
-				pNode->AddRoad(m_pCurrentRoad);
+				pNode->AddLink(m_pCurrentRoad);
 				m_pCurrentRoad->SetSize(m_pCurrentRoad->GetSize() + 1);
 				(*m_pCurrentRoad)[m_pCurrentRoad->GetSize() - 1] = pNode->m_p;
 			}
@@ -975,8 +975,8 @@ void BExtractorView::OnLButtonUpEditRoadNodes(CPoint point)
 			return;
 
 		// create and new road node
-		Node *pNode = pDoc->m_Roads.NewNode();
-		pDoc->m_Roads.AddNode(pNode);
+		Node *pNode = pDoc->m_Links.NewNode();
+		pDoc->m_Links.AddNode(pNode);
 		pNode->m_p = imagepoint;
 
 		int size = UTM_sdx(15.0f);
@@ -1410,7 +1410,7 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 
 	drect.Sort();
 
-	pNode = doc->m_Roads.GetFirstNode();
+	pNode = doc->m_Links.GetFirstNode();
 	
 	while (NULL != pNode)
 	{
@@ -1418,18 +1418,18 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 		if (drect.ContainsPoint(pNode->m_p))
 		{
 			// Remove any roads starting or terminating at this node
-			numRoads = pNode->m_iRoads;
+			numRoads = pNode->m_iLinks;
 			for (int i = 0; i < numRoads; i++)
 			{
-				Road *pRoad = pNode->GetRoad(0);
-				pNode->DetachRoad(pRoad);
-				if (pRoad->GetNode(0) == pNode)
-					pRoad->GetNode(1)->DetachRoad(pRoad);
+				Link *pLink = pNode->GetLink(0);
+				pNode->DetachLink(pLink);
+				if (pLink->GetNode(0) == pNode)
+					pLink->GetNode(1)->DetachLink(pLink);
 				else
-					pRoad->GetNode(0)->DetachRoad(pRoad);
-				doc->m_Roads.RemoveRoad(pRoad);
+					pLink->GetNode(0)->DetachLink(pLink);
+				doc->m_Links.RemoveLink(pLink);
 			}
-			doc->m_Roads.RemoveNode(pNode);
+			doc->m_Links.RemoveNode(pNode);
 		}
 		else
 			pPreviousNode = pNode;

@@ -24,9 +24,9 @@ public:
 	NodeGeom();
 	~NodeGeom();
 
-	class RoadGeom *GetRoad(int n) { return (class RoadGeom *)m_r[n]; }
+	class LinkGeom *GetRoad(int n) { return (class LinkGeom *)m_r[n]; }
 	void BuildIntersection();
-	void FindVerticesForRoad(Road *pR, FPoint3 &p0, FPoint3 &p1);
+	void FindVerticesForRoad(Link *pR, FPoint3 &p0, FPoint3 &p1);
 	vtMesh *GenerateGeometry();
 	FPoint3 GetRoadVector(int i);
 	FPoint3 GetUnitRoadVector(int i);
@@ -97,11 +97,11 @@ enum RoadVTIndices
 //
 // a series of points, connecting one node to another
 //
-class RoadGeom : public Road
+class LinkGeom : public Link
 {
 public:
-	RoadGeom();
-	~RoadGeom();
+	LinkGeom();
+	~LinkGeom();
 
 	FPoint3 FindPointAlongRoad(float fDistance);
 	float	Length();	// find 2D length in world units
@@ -117,7 +117,7 @@ public:
 	void GenerateGeometry(class vtRoadMap3d *rmgeom);
 
 	NodeGeom *GetNode(int n) { return (NodeGeom *)m_pNode[n]; }
-	RoadGeom *GetNext() { return (RoadGeom *)m_pNext; }
+	LinkGeom *GetNext() { return (LinkGeom *)m_pNext; }
 
 	int m_vti;
 	FPoint3 *m_p3;
@@ -132,10 +132,10 @@ public:
 	~vtRoadMap3d();
 
 	// overrides for virtual methods
-	RoadGeom	*GetFirstRoad() { return (RoadGeom *) m_pFirstRoad; }
+	LinkGeom	*GetFirstLink() { return (LinkGeom *) m_pFirstLink; }
 	NodeGeom	*GetFirstNode() { return (NodeGeom *) m_pFirstNode; }
 	Node		*NewNode() { return new NodeGeom; }
-	Road		*NewRoad() { return new RoadGeom; }
+	Link		*NewLink() { return new LinkGeom; }
 
 	void DrapeOnTerrain(vtHeightField *pHeightField);
 	void BuildIntersections();
@@ -174,7 +174,7 @@ protected:
 
 // Useful typedefs
 typedef NodeGeom *NodeGeomPtr;
-typedef RoadGeom *RoadGeomPtr;
+typedef LinkGeom *LinkGeomPtr;
 
 #endif
 

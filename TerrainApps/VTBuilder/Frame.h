@@ -114,7 +114,7 @@ public:
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
 
-	void OnSelectRoad(wxCommandEvent& event);
+	void OnSelectLink(wxCommandEvent& event);
 	void OnSelectNode(wxCommandEvent& event);
 	void OnSelectWhole(wxCommandEvent& event);
 	void OnDirection(wxCommandEvent& event);
@@ -125,7 +125,7 @@ public:
 	void OnRoadClean(wxCommandEvent& event);
 	void OnRoadGuess(wxCommandEvent& event);
 
-	void OnUpdateSelectRoad(wxUpdateUIEvent& event);
+	void OnUpdateSelectLink(wxUpdateUIEvent& event);
 	void OnUpdateSelectNode(wxUpdateUIEvent& event);
 	void OnUpdateSelectWhole(wxUpdateUIEvent& event);
 	void OnUpdateDirection(wxUpdateUIEvent& event);

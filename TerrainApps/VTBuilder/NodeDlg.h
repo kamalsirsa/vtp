@@ -31,12 +31,12 @@ public:
         const wxSize& size = wxDefaultSize,
         long style = wxDEFAULT_DIALOG_STYLE );
     
-    void SetNode(NodeEdit *pSingleRoad, vtRoadLayer *pLayer);
+    void SetNode(NodeEdit *pSingleLink, vtRoadLayer *pLayer);
 	void ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype);
 
     // WDR: method declarations for NodeDlg
     wxListBox* GetBehavior()  { return (wxListBox*) FindWindow( ID_BEHAVIOR ); }
-    wxListBox* GetRoadNum()  { return (wxListBox*) FindWindow( ID_ROADNUM ); }
+    wxListBox* GetLinkNum()  { return (wxListBox*) FindWindow( ID_ROADNUM ); }
     wxListBox* GetIntType()  { return (wxListBox*) FindWindow( ID_INTTYPE ); }
     
 private:
@@ -47,7 +47,7 @@ private:
 private:
     // WDR: handler declarations for NodeDlg
     void OnBehavior( wxCommandEvent &event );
-    void OnRoadNum( wxCommandEvent &event );
+    void OnLinkNum( wxCommandEvent &event );
     void OnIntType( wxCommandEvent &event );
     void OnOK( wxCommandEvent &event );
     void OnInitDialog(wxInitDialogEvent& event);

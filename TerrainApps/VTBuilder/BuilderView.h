@@ -17,7 +17,7 @@ class vtRoadLayer;
 class vtElevLayer;
 class vtStructureLayer;
 class vtUtilityLayer;
-class RoadEdit;
+class LinkEdit;
 
 //
 // Left-button modes
@@ -32,7 +32,7 @@ enum LBMode {
 	LB_Mag,		// zoom into rectangle
 	LB_Path,	// pick points on a path
 	LB_Dir,		// show/change road direction
-	LB_RoadEdit,	// edit the points of a road centerline
+	LB_LinkEdit,	// edit the points of a road centerline
 	LB_RoadExtend,  //extend a road selection,
 	LB_TSelect,		// select elevation layer
 	LB_Box,			// set area box
@@ -98,7 +98,7 @@ protected:
 	void UpdateResizeScale();
 	void UpdateRotate();
 	void OnDragDistance();
-	void OnDragRoadEdit();
+	void OnDragLinkEdit();
 
 	// Elevation
 	void CheckForTerrainSelect(const DPoint2 &loc);
@@ -133,7 +133,7 @@ protected:
 	void OnLButtonDragRelease(const wxMouseEvent& event);
 	void OnLButtonClickElement(vtRoadLayer *pRL);
 	void OnLButtonClickDirection(vtRoadLayer *pRL);
-	void OnLButtonClickRoadEdit(vtRoadLayer *pRL);
+	void OnLButtonClickLinkEdit(vtRoadLayer *pRL);
 	void OnLButtonClickFeature(vtLayer *pL);
 	void OnLButtonClickTowerEdit(vtUtilityLayer *TL);
 	void OnLButtonClickTowerAdd(vtUtilityLayer *pTL, const DPoint2 &point);
@@ -143,7 +143,7 @@ protected:
 	void OnRightUpRoad(vtRoadLayer *pRL);
 	void OnRightUpStructure(vtStructureLayer *pSL);
 	void OnRightUpUtility(vtUtilityLayer *pTL);
-	void OnLeftDownRoadEdit();
+	void OnLeftDownLinkEdit();
 
 	void OnMouseMove(const wxMouseEvent& event);
 	void OnMouseMoveLButton(const wxPoint &point);
@@ -192,8 +192,8 @@ protected:
 //	vtTower *m_pCurTower, m_EditTower;
 
 	// Used while editing roads
-	RoadEdit *m_pEditingRoad;
-	void RefreshRoad(RoadEdit *pRoad);
+	LinkEdit *m_pEditingRoad;
+	void RefreshRoad(LinkEdit *pRoad);
 	int		m_iEditingPoint;
 
 	wxCursor	*m_pCursorPan;
