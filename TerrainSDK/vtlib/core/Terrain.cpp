@@ -440,13 +440,9 @@ void vtTerrain::RedrawRoute(vtRoute *f)
 	f->BuildGeometry(m_pHeightField);
 }
 
-void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpacing,
-						  float fRouteOffL, float fRouteOffR, float fRouteStInc,
-						  vtString sRouteName)
+void vtTerrain::LoadRoute(float fRouteOffL, float fRouteOffR,
+						  float fRouteStInc, vtString sRouteName)
 {
-	if(!m_Params.m_bRouteEnable 
-		|| m_Params.m_strRouteFile[0] == '\0') return; //don't load it.
-
 	vtRoute *pRoute;
 	bool stop = false;
 
@@ -458,7 +454,7 @@ void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpa
 		holder[end-holder]='\0';
 	else
 		return;
-	filename = m_strDataPath + "RouteData/";
+	vtString filename = m_strDataPath + "RouteData/";
 	filename += holder;
 	vtString logFile = filename+".xyz";
 	vtString p3DFile = filename+".p3D";
@@ -470,9 +466,9 @@ void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpa
 	if (!fpp3D)
 		return;
 
-	pRoute = new vtRoute(fRouteHeight, fRouteSpacing, fRouteOffL,
-						 fRouteOffR, fRouteStInc, sRouteName, this);
-//	if (pRoute->TestReader(fp))
+	pRoute = new vtRoute(fRouteOffL, fRouteOffR, fRouteStInc, sRouteName,
+		this);
+
 	if (pRoute->logReader(fplog))
 	{
 		if (pRoute->p3DReader(fpp3D))
@@ -498,8 +494,7 @@ void vtTerrain::LoadRoute(vtString filename, float fRouteHeight, float fRouteSpa
 //		if (strncmp(buf, "Begin", 5) == 0) // begin building route
 //		{
 //			// default for now? (TODO)
-//			pRoute = new vtRoute(fRouteHeight, fRouteSpacing, fRouteOffL
-//								, fRouteOffR, fRouteStInc, sRouteName);
+//			pRoute = new vtRoute(fRouteOffL, fRouteOffR, fRouteStInc, sRouteName);
 //			stop = pRoute->load(fp);
 //			AddRoute(pRoute);
 //			pRoute->BuildGeometry(m_pHeightField);
@@ -823,16 +818,12 @@ void vtTerrain::create_culture(bool bSound)
 		m_Structures.m_proj = m_pHeightField->GetProjection();
 	}
 
-#if 0
-	// create fences
-	if (m_Params.m_bFences)
+	// create utility structures (routes = towers and wires)
+	if (m_Params.m_bRouteEnable && m_Params.m_strRouteFile[0] != '\0')
 	{
-		vtString fence_fname = m_strDataPath;
-		fence_fname += "FenceData/";
-		fence_fname += m_Params.m_strFenceFile;
-		LoadFences(fence_fname);
+//		LoadRoute(m_fRouteOffL, m_fRouteOffR, m_fRouteStInc, m_sRouteName);
+		LoadRoute(0.0f, 0.0f, 0.0f, "route1");
 	}
-#endif
 
 	CreateCustomCulture(bSound);
 }
