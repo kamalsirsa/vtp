@@ -2201,11 +2201,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 	}
 	catch (const char *msg)
 	{
-		if (strcmp(msg, "done"))
-		{
-			VTLOG("Error in LoadFromNTF5: ");
-			VTLOG(msg);
-		}
+		VTLOG("LoadFromNTF5 result: %s.\n", msg);
 	}
 	delete pFeature;
 	delete pDatasource;
