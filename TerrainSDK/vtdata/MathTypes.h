@@ -137,6 +137,7 @@ public:
 	DPoint3(const FPoint3 &p);
 
 	double Length() const { return sqrt(x*x+y*y+z*z); }
+	double LengthSquared() const { return x*x+y*y+z*z; }
 	DPoint3 &Normalize()
 	{
 		double s = 1.0/Length();
@@ -230,6 +231,7 @@ public:
 	FPoint2(const DPoint2 &d);
 
 	float Length() const { return sqrtf(x*x+y*y); }
+	float LengthSquared() const { return x*x+y*y; }
 	FPoint2 &Normalize() { float s = 1.0f/Length(); x*=s; y*=s; return (*this); }
 	void Set(float fx, float fy) { x=fx; y=fy; }
 	float Dot(const FPoint2 &rhs) const
@@ -378,10 +380,11 @@ public:
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
 	double SegmentLength(unsigned int i) const;
-	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection);
-	double NearestPoint(const DPoint2 &Point, int &iIndex);
-	DPoint2 GetSafePoint(int index);
+	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection) const;
+	double NearestPoint(const DPoint2 &Point, int &iIndex) const;
+	DPoint2 GetSafePoint(int index) const;
 	void SetSafePoint(int index, const DPoint2 &p);
+	double Length() const;
 };
 
 /**

@@ -91,7 +91,7 @@ bool DLine2::ContainsPoint(const DPoint2 &p) const
  * Returns the index of the first point of the nearest line segment
  * that has a normal to the specified point
  */
-double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Intersection)
+double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Intersection) const
 {
 	int iNumPoints = GetSize();
 	int i;
@@ -131,7 +131,7 @@ double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Inters
 /**
  * Return the nearest point
  */
-double DLine2::NearestPoint(const DPoint2 &Point, int &iIndex)
+double DLine2::NearestPoint(const DPoint2 &Point, int &iIndex) const
 {
 	int iNumPoints = GetSize();
 	int i;
@@ -159,7 +159,7 @@ double DLine2::NearestPoint(const DPoint2 &Point, int &iIndex)
  * Get a point on the line, safely wrapping around to the end or beginning
  * for index values that are out of range.
  */
-DPoint2 DLine2::GetSafePoint(int index)
+DPoint2 DLine2::GetSafePoint(int index) const
 {
 	int points = GetSize();
 	if (index < 0)
@@ -190,6 +190,21 @@ double DLine2::SegmentLength(unsigned int i) const
 	unsigned int j = (i < GetSize()-1) ? i+1 : 0;
 	return (GetAt(j) - GetAt(i)).Length();
 }
+
+double DLine2::Length() const
+{
+	unsigned int i, iNumPoints = GetSize();
+	double length = 0.0;
+
+	if (!iNumPoints)
+		return 0.0;
+
+	for (i = 0; i < iNumPoints-1; i++)
+		length += (GetAt(i+1) - GetAt(i)).Length();
+
+	return length;
+}
+
 
 //
 // DRECT methods
