@@ -486,7 +486,7 @@ bool TParams::GetOverlay(vtString &fname, int &x, int &y) const
 	const char *ystr = strtok(NULL, ",");
 	if (!fname || !xstr || !ystr)
 		return false;
-	fname = name; 
+	fname = name;
 	x = atoi(xstr);
 	y = atoi(ystr);
 	return true;

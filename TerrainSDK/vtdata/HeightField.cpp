@@ -823,7 +823,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		return;
 	}
 
-	// Create array to hold flags 
+	// Create array to hold flags
 	LightMap lightmap(w, h);
 
 	// This factor is used when applying shading to non-shadowed areas to
@@ -894,14 +894,14 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	int x, z;
 	float shade;
 
-	for (j = j_init; j != j_final; j += j_incr) 
+	for (j = j_init; j != j_final; j += j_incr)
 	{
    		if (progress_callback != NULL)
 		{
 			if ((j&7) == 0)
 				progress_callback(abs(j-j_init) * 100 / h);
 		}
-		for (i = i_init; i != i_final; i += i_incr) 
+		for (i = i_init; i != i_final; i += i_incr)
 		{
 			pos = GridPos(texel_base, texel_size, i, j);
 			FindAltitudeAtPoint2(pos, shadowheight, true);
@@ -914,13 +914,13 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			}
 
 			bool Under_Out = false;
-			for (int k = 1; Under_Out == false; k++) 
+			for (int k = 1; Under_Out == false; k++)
 			{
 				x = (int) (i + grid_light_dir.x*k + 0.5f);
 				z = (int) (j + grid_light_dir.z*k + 0.5f);
 				shadowheight += grid_light_dir.y * HScale;
 
-				if ((x<0) || (x>w-1) || (z<0) || (z>h-1)) 
+				if ((x<0) || (x>w-1) || (z<0) || (z>h-1))
 				{
 					Under_Out = true; // Out of the grid
 					break;
@@ -933,12 +933,12 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				if (elevation == INVALID_ELEVATION)
 					continue;
 
-				if (elevation - shadowheight > 0) 
+				if (elevation - shadowheight > 0)
 				{ 	
 					if (k>1)
-						Under_Out = true; // Under the terrain 
+						Under_Out = true; // Under the terrain
 					break;
-				} 
+				}
 
 				// Combine color and shading.
 				// Only do shadow if we have not shaded this i,j before.
@@ -966,8 +966,8 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					if (darkest_shadow > shade)
 						darkest_shadow = shade;
 
-					//Rather than doing the shading at this point we may want to 
-					//simply save the value into the LightMap array. Then apply 
+					//Rather than doing the shading at this point we may want to
+					//simply save the value into the LightMap array. Then apply
 					//some anti-aliasing or edge softening algorithm to the LightMap.
 					//Once that's done, apply the whole LightMap to the DIB.
 					if (b8bit)
@@ -1046,8 +1046,8 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			diff = diff * (1 - light_factor);
 			shade += diff;
 
-			// Rather than doing the shading at this point we may want to 
-			// simply save the value into the LightMap array. Then apply 
+			// Rather than doing the shading at this point we may want to
+			// simply save the value into the LightMap array. Then apply
 			// some anti-aliasing or edge softening algorithm to the LightMap.
 			// Once that's done, apply the whole LightMap to the DIB.
 			// LightMap[I][J]= shade; // set to value of the shading - see comment above)

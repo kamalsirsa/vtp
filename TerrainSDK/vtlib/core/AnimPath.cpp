@@ -490,7 +490,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	if (!pSetLS2 && !pSetLS3)
 		return false;
 
-	// Clear our control points because we're going to fill it 
+	// Clear our control points because we're going to fill it
 	m_TimeControlPointMap.clear();
 
 	OCT *trans = NULL;

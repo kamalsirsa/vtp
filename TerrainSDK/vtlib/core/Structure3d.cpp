@@ -323,7 +323,7 @@ void vtStructureArray3d::SetEnabled(bool bTrue)
 		if (str3d)
 		{
 			vtNode *pThing = str3d->GetContained();
-			if (pThing) 
+			if (pThing)
 				pThing->SetEnabled(bTrue);
 		}
 	}

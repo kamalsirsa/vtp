@@ -105,7 +105,7 @@ protected:
 	osg::ref_ptr<osg::Material>  m_material;
 
 	// we need this to get round the order dependance
-	// of eye linear tex gen...    
+	// of eye linear tex gen...
 	class MyTexGen : public osg::TexGen
 	{
 	public:

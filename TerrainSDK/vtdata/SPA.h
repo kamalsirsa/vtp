@@ -1,5 +1,5 @@
 //-------------------------------------------
-// For convenient integration into the VTP 
+// For convenient integration into the VTP
 // the altitude variable and SunAltAzi prototype
 // were added this file.
 //
@@ -63,7 +63,7 @@ public:
 	int year;			//4-digit year
 	int month;			//2-digit month (1-12)
 	int day;			//2-digit day (1-31)
-	int hour;			//observer local hour 
+	int hour;			//observer local hour
 	int minute;			//observer local minute
 	int second;			//observer local second
 	
@@ -77,10 +77,10 @@ public:
 	float temperature;	//annual average local temperature [degrees celcius]
 
 	float slope;		//surface slope (measured from the horizontal plane) [degrees]
-	float azm_rotation;	//surface azimuth rotation (measured from south to projection of 
+	float azm_rotation;	//surface azimuth rotation (measured from south to projection of
 						//surface normal on horizontal plane, negative west) [degrees]
 	
-	float atmos_refract; //atmospheric refraction at sunrise and sunset [degrees] 
+	float atmos_refract; //atmospheric refraction at sunrise and sunset [degrees]
 						 //0.5667 degrees is typical
 	
 	//-----------------Intermediate OUTPUT VALUES--------------------
@@ -133,7 +133,7 @@ public:
 	
 	double zenith;		//topocentric zenith angle [degrees]
 	double azimuth180;	//topocentric azimuth angle (westward from south) [-180 to 180 degrees]
-	double azimuth;		//topocentric azimuth angle (eastward from north) [0 to 360 degrees] 
+	double azimuth;		//topocentric azimuth angle (eastward from north) [0 to 360 degrees]
 	double incidence;	//surface incidence angle [degrees]
 	double altitude;	//***KMB topocentric altitude angle of the sun	
 	
@@ -147,7 +147,7 @@ public:
 void SetCommonValues(spa_data &spa, float longitude, float latitude,
 		int year, int month, int day, int hour, int minute, int second,
 		float timezone, float elevation);
-void spa_calculate(spa_data *spa); 
+void spa_calculate(spa_data *spa);
 
 #endif	// SPA_H_INCLUDED
 

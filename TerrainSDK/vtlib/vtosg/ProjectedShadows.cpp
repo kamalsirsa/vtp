@@ -78,7 +78,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node &node,
 
 	cv.pushStateSet(m_shadowedState.get());
 
-		// must traverse the shadowed 
+		// must traverse the shadowed
 		traverse(&node,&cv);
 
 	cv.popStateSet();
@@ -298,7 +298,7 @@ void CreateProjectedShadowTextureCullCallback::operator()(osg::Node* node, osg::
     }
     else
     {
-        // must traverse the shadower 
+        // must traverse the shadower
         traverse(node,nv);
     }
 }

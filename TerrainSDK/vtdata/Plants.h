@@ -121,7 +121,7 @@ public:
 	vtString	m_name;
 };
 
-/** 
+/**
  * A species list is a list of species.
  */
 class vtSpeciesList

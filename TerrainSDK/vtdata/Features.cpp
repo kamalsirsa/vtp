@@ -364,7 +364,7 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 		if (buf[0] == 'B')	// 'Fix' record which contains elevation
 		{
 			// 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3
-			// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 
+			// 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
 			// B H H M M S S D D M M M M M N D D D M M M M M E V P P P P P G G G G G CR LF
 			DPoint3 p;
 			int deg;

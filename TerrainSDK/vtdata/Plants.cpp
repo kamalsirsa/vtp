@@ -61,7 +61,7 @@ vtPlantSpecies::~vtPlantSpecies()
 
 /**
  * Set the common name for this species.  Language is options.
- * 
+ *
  \param Name The common name in UTF-8.  Example: "Colorado Blue Spruce".
  \param Lang The language, as a lower-case two-character ISO 639 standard language code.
  *	Examples: en for English, de for German, zh for Chinese.
