@@ -8,7 +8,7 @@
 #ifndef TERRAINH
 #define TERRAINH
 
-#include "TParams.h"
+#include "vtdata/TParams.h"
 #include "Trees.h"
 #include "Structure3d.h"
 #include "vtdata/FilePath.h"

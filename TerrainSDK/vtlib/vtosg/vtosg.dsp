@@ -42,8 +42,8 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
 # ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -67,8 +67,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I ".." /I "..\.." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -92,8 +92,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug_Unicode"
 # PROP Intermediate_Dir "Debug_Unicode"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I ".." /I "..\.." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I ".." /I "..\.." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /D "_UNICODE" /D "UNICODE" /FR /YX"vtlib/vtlib.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -117,8 +117,8 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Release_Unicode"
 # PROP Intermediate_Dir "Release_Unicode"
 # PROP Target_Dir ""
-MTL=midl.exe
 F90=df.exe
+MTL=midl.exe
 # ADD BASE CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /FR /YX"vtlib/vtlib.h" /FD /c
 # ADD CPP /nologo /MD /W3 /GR /GX /Zd /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_OSG=1 /D "_UNICODE" /D "UNICODE" /FR /YX"vtlib/vtlib.h" /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -311,13 +311,6 @@ SOURCE=..\core\TimeEngines.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\TParams.cpp
-
-# ADD CPP /Zm150
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\Trees.cpp
 # End Source File
 # Begin Source File
@@ -455,10 +448,6 @@ SOURCE=..\core\TerrainScene.h
 # Begin Source File
 
 SOURCE=..\core\TimeEngines.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\TParams.h
 # End Source File
 # Begin Source File
 
