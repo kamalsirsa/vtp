@@ -293,6 +293,9 @@ void vtBuilding3d::DestroyGeometry()
 {
 	m_pContainer->RemoveChild(m_pGeom);
 	delete m_pGeom;
+	for (int i = 0; i < m_Mesh.GetSize(); i++)
+		delete m_Mesh[i].m_pMesh;
+	m_Mesh.Empty();
 }
 
 vtTransform *vtBuilding3d::GetTransform()
