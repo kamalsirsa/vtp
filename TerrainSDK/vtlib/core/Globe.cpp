@@ -642,6 +642,7 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line)
 // Internal methods
 //
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 // This array describes the configuration and topology of the subfaces in
 // the flattened dymaxion map.
 struct dymax_info
@@ -651,8 +652,10 @@ struct dymax_info
 	int parent_face;
 	int parent_mface;
 	int parentedge;
-}
-dymax_subfaces[22] =
+};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+dymax_info dymax_subfaces[22] =
 {
 	{  0, 1<<6 | 1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1, -1, -1, -1 }, // 0
 
