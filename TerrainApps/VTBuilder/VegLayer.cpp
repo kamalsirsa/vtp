@@ -269,6 +269,9 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 										  const vtProjection &proj,
 										  int iField, VegImportFieldType datatype)
 {
+	// When working with float field data, must use C locale
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
