@@ -5,13 +5,28 @@
 // Free for all uses, see license.txt for details.
 //
 
+#include <fstream>
+
+#include "xmlhelper/easyxml.hpp"
 #include "vtlib/vtlib.h"
+#include "vtdata/vtlog.h"
 
 #include "Structure3d.h"
 #include "Building3d.h"
 #include "Fence3d.h"
 #include "Terrain.h"
 
+const vtMaterialName BMAT_NAME_HIGHLIGHT = _T("Highlight");
+
+// Static memebers
+vtMaterialArray vtStructure3d::s_Materials;
+vtMaterialDescriptorArray vtStructure3d::s_MaterialDescriptors;
+bool vtStructure3d::s_MaterialArraysInitialised = false;
+
+// There is a single array of materials, shared by all buildings.
+// This is done to save memory.  For a list of 16000+ buildings, this can
+//  save about 200MB of RAM.
+RGBf vtStructure3d::s_Colors[COLOR_SPREAD];
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -267,4 +282,335 @@ void vtStructureArray3d::DestroyStructure(int i)
 	vtStructure3d *st3d = GetStructure3d(i);
 	st3d->DeleteNode();
 }
+
+// Methods for vtStructure3d
+void vtStructure3d::InitializeMaterialArrays()
+{
+	vtString path;
+	int i, j, k;
+	RGBf color;
+	vtMaterial *pMat;
+	int count = 0;
+	int divisions = 6;
+	float start = .25f;
+	float step = (1.0f-start)/(divisions-1);
+	int iSize;
+	vtImage *pImage;
+	//
+	if (s_MaterialArraysInitialised)
+		return;
+
+
+	// set up colour spread
+	for (i = 0; i < divisions; i++) {
+		for (j = 0; j < divisions; j++) {
+			for (k = 0; k < divisions; k++) {
+				s_Colors[count++].Set(start+i*step, start+j*step, start+k*step);
+			}
+		}
+	}
+
+	s_Materials.SetMaxSize(500);
+/*
+	// Uncooment this to make a default textures file
+	// remember to create an empty file in the correct place first (for FindFileOnPaths)
+
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_PLAIN),
+									"",
+									VT_MATERIAL_COLOURED,
+									1.0f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_SIDING),
+									"BuildingModels/siding64.jpg",
+									VT_MATERIAL_COLOURABLE_TEXTURE,
+									1.0f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WINDOW),
+									"BuildingModels/window.jpg",
+									VT_MATERIAL_SELFCOLOURED_TEXTURE,
+									1.0f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_DOOR),
+									"BuildingModels/door.jpg",
+									VT_MATERIAL_SELFCOLOURED_TEXTURE,
+									1.0f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WOOD),
+									"BuildingModels/wood1_256.jpg",
+									VT_MATERIAL_SELFCOLOURED_TEXTURE,
+									0.6f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_CEMENT),
+									"BuildingModels/cement_block1_256.jpg",
+									VT_MATERIAL_SELFCOLOURED_TEXTURE,
+									1.0f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_BRICK),
+									"BuildingModels/brick1_256.jpg",
+									VT_MATERIAL_BRICK,
+									0.8f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_BRICK),
+									"BuildingModels/brick2_256.jpg",
+									VT_MATERIAL_BRICK,
+									0.8f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_PAINTED_BRICK),
+									"BuildingModels/brick_mono_256.jpg",
+									VT_MATERIAL_COLOURABLE_TEXTURE,
+									0.8f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_ROLLED_ROOFING),
+									"BuildingModels/roofing1_256.jpg",
+									VT_MATERIAL_COLOURABLE_TEXTURE,
+									1.0f));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WINDOWWALL),
+									"BuildingModels/window_wall128.jpg",
+									VT_MATERIAL_COLOURABLE_TEXTURE,
+									1.0f,
+									false));
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_HIGHLIGHT),
+									"",
+									VT_MATERIAL_HIGHLIGHT,
+									1.0f,
+									false));
+
+	{
+		std::ofstream ops(FindFileOnPaths(vtTerrain::m_DataPaths, "GeoTypical/textures.xml"));
+
+		ops << s_MaterialDescriptors;
+
+		ops.close();
+	}
+*/
+
+	s_MaterialDescriptors.Load(FindFileOnPaths(vtTerrain::m_DataPaths, "GeoTypical/textures.xml"));
+
+	iSize = s_MaterialDescriptors.GetSize();
+
+	for (j = 0; j < iSize; j++)
+	{
+		vtMaterialDescriptor& Descriptor = *s_MaterialDescriptors.GetAt(j);
+
+		switch(Descriptor.GetMaterialType())
+		{
+			case VT_MATERIAL_COLOURED:
+				for (i = 0; i < COLOR_SPREAD; i++)
+				{
+					pMat = MakeMaterial(s_Colors[i], true);
+					if (i == 0)
+						Descriptor.SetMaterialIndex(s_Materials.AppendMaterial(pMat));
+					else
+						s_Materials.AppendMaterial(pMat);
+				}
+				break;
+
+			case VT_MATERIAL_SELFCOLOURED_TEXTURE:
+			case VT_MATERIAL_BRICK:
+				color.Set(1.0f, 1.0f, 1.0f);
+				pMat = MakeMaterial(color, true);
+				path = FindFileOnPaths(vtTerrain::m_DataPaths, Descriptor.GetSourceName());
+				pMat->SetTexture2(path);
+				pMat->SetClamp(false);
+				Descriptor.SetMaterialIndex(s_Materials.AppendMaterial(pMat));
+				break;
+
+			case VT_MATERIAL_COLOURABLE_TEXTURE:
+				path = FindFileOnPaths(vtTerrain::m_DataPaths, Descriptor.GetSourceName());
+				pImage = new vtImage(path);
+				if (NULL == pImage)
+					throw "Out of memory";
+				divisions = 6;
+				start = .25f;
+				step = (1.0f-start)/(divisions-1);
+				for (i = 0; i < COLOR_SPREAD; i++)
+				{
+					pMat = MakeMaterial(s_Colors[i], true);
+					pMat->SetTexture(pImage);
+					pMat->SetClamp(false);
+					if (i == 0)
+						Descriptor.SetMaterialIndex(s_Materials.AppendMaterial(pMat));
+					else
+						s_Materials.AppendMaterial(pMat);
+				}
+				break;
+			case VT_MATERIAL_HIGHLIGHT:
+				Descriptor.SetMaterialIndex(s_Materials.AddRGBMaterial1(RGBf(1,1,1), false, false, true));
+				s_Materials.AddRGBMaterial1(RGBf(1,0,0), false, false, true);
+				break;
+		}
+	}
+/*
+	int total = s_Materials.GetSize();
+	// window, door, wood, cement_block, windowwall
+	int expectedtotal = COLOR_SPREAD + COLOR_SPREAD +	// plain, siding
+		1 + 1 + 1 + 1 +		// window, door, wood, cement
+		1 + 1 +				// brick1, brick2
+		COLOR_SPREAD + COLOR_SPREAD +	// painted brick, window-wall
+		COLOR_SPREAD +		// rolled roofing
+		1 + 1;				// highlight colors
+	assert(total == expectedtotal);
+*/
+	s_MaterialArraysInitialised = true;
+}
+
+//
+// Takes the building material and color, and tries to find the closest
+// existing vtMaterial.
+//
+int vtStructure3d::FindMatIndex(const vtMaterialName& Material, RGBi inputColor)
+{
+	if (!s_MaterialArraysInitialised)
+		return -1;
+	
+	vtMaterialDescriptor const *pMaterialDescriptor = FindMaterialDescriptor(Material);
+	if (pMaterialDescriptor == NULL)
+		return -1;
+	int iIndex = pMaterialDescriptor->GetMaterialIndex();
+	vtMaterialTypeEnum Type = pMaterialDescriptor->GetMaterialType();
+
+	if (Type == VT_MATERIAL_SELFCOLOURED_TEXTURE)
+		return iIndex;
+
+	if (Type == VT_MATERIAL_BRICK)
+	{
+		// choose one of our (currently 2) unpainted brick textures
+		RGBi b1(159, 100, 83);	// (reddish medium brown)
+		RGBi b2(183, 178, 171);	// (slightly pinkish grey)
+		if (ColorDiff(inputColor, b1) < ColorDiff(inputColor, b2))
+			return iIndex;
+		else
+			return iIndex + 1;
+	}
+
+	if (Type == VT_MATERIAL_HIGHLIGHT)
+	{
+		// Choose the correct highlight
+		if (inputColor == RGBi(255,255,255))
+			return iIndex;
+		else
+			return iIndex + 1;
+	}
+
+	// match the closest color.
+	float bestError = 1E8;
+	int bestMatch = -1;
+	float error;
+
+	for (int i = 0; i < COLOR_SPREAD; i++)
+	{
+		error = ColorDiff(s_Colors[i], inputColor);
+		if (error < bestError)
+		{
+			bestMatch  = iIndex + i;
+			bestError = error;
+		}
+	}
+	return bestMatch;
+}
+
+vtMaterialDescriptor *vtStructure3d::FindMaterialDescriptor(const vtMaterialName& MaterialName)
+{
+	int iIndex;
+	int iSize = s_MaterialDescriptors.GetSize();
+
+	for (iIndex = 0;  iIndex < iSize; iIndex++)
+	{
+		vtMaterialDescriptor *ptr = s_MaterialDescriptors.GetAt(iIndex);
+		if (ptr->GetName() == MaterialName)
+			return ptr;
+	}
+	return NULL; 
+}
+
+
+//
+// Helper to make a material
+//
+vtMaterial *vtStructure3d::MakeMaterial(RGBf &color, bool culling)
+{
+	vtMaterial *pMat = new vtMaterial();
+	pMat->SetDiffuse1(color * 0.7f);
+	pMat->SetAmbient1(color * 0.4f);
+	pMat->SetSpecular2(0.0f);
+	pMat->SetCulling(culling);
+	pMat->SetLighting(true);
+	return pMat;
+}
+
+// Linear distance in RGB space
+float vtStructure3d::ColorDiff(const RGBi &c1, const RGBi &c2)
+{
+	FPoint3 diff;
+	diff.x = (c1.r - c2.r);
+	diff.y = (c1.g - c2.g);
+	diff.z = (c1.b - c2.b);
+	return diff.Length();
+}
+
+// XML parser for MaterialDescriptorArray
+
+class MaterialDescriptorArrayVisitor : public XMLVisitor
+{
+public:
+	MaterialDescriptorArrayVisitor(vtMaterialDescriptorArray *MDA) : m_state(0), m_pMDA(MDA) {}
+	void startXML() { m_state = 0; }
+	void endXML() { m_state = 0; }
+	void startElement(const char *name, const XMLAttributes &atts);
+
+private:
+	int m_state;
+
+	vtMaterialDescriptorArray *m_pMDA;
+};
+
+void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAttributes &atts)
+{
+	const char *attval;
+
+	if (m_state == 0 && !strcmp(name, "MaterialDescriptorArray"))
+		m_state = 1;
+	else if (m_state == 1)
+	{
+		if (!strcmp(name, "MaterialDescriptor"))
+		{
+			vtMaterialDescriptor *pDescriptor = new vtMaterialDescriptor;
+			if (NULL == pDescriptor)
+				throw "Out of memory";
+			attval = atts.getValue("Name");
+			if (attval)
+				pDescriptor->SetName(g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(attval)));
+			attval = atts.getValue("Type");
+			if (attval)
+				pDescriptor->SetMaterialType((vtMaterialTypeEnum)atoi(attval));
+			attval = atts.getValue("Source");
+			if (attval)
+				pDescriptor->SetSourceName(attval);
+			attval = atts.getValue("Scale");
+			if (attval)
+				pDescriptor->SetUVScale((float)atof(attval));
+			attval = atts.getValue("UIVisible");
+			if (attval)
+				pDescriptor->SetUIVisible(0 == atoi(attval)? false : true);
+			attval = atts.getValue("RGB");
+			if (attval)
+			{
+				short r, g, b;
+				sscanf(attval, "%hu %hu %hu", &r, &g, &b);
+				pDescriptor->SetRGB(RGBi(r, g, b));
+			}
+			m_pMDA->Append(pDescriptor);
+		}
+	}
+}
+
+// Methods for MaterialDescriptorArray
+
+bool vtMaterialDescriptorArray::Load(const char *FileName)
+{
+	MaterialDescriptorArrayVisitor Visitor(this);
+	try
+	{
+		readXML(FileName, Visitor);
+	}
+	catch (xh_exception &e)
+	{
+		// TODO: would be good to pass back the error message.
+		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage());
+		return false;
+	}
+	return true;
+}
+
 

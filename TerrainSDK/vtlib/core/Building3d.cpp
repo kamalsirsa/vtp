@@ -17,48 +17,6 @@
 #include "Terrain.h"
 #include "FelkelStraightSkeleton.h"
 
-// There is a single array of materials, shared by all buildings.
-// This is done to save memory.  For a list of 16000+ buildings, this can
-//  save about 200MB of RAM.
-vtMaterialArray *vtBuilding3d::s_Materials = NULL;
-RGBf vtBuilding3d::s_Colors[COLOR_SPREAD];
-
-#define PLAIN_MAT_START		0	// start index for plain colors
-#define PLAIN_MAT_END		PLAIN_MAT_START + COLOR_SPREAD - 1
-#define SIDING_MAT_START	PLAIN_MAT_END + 1
-#define SIDING_MAT_END		SIDING_MAT_START + COLOR_SPREAD - 1
-#define WINDOW_MAT			SIDING_MAT_END + 1
-#define DOOR_MAT			WINDOW_MAT + 1
-#define WOOD_MAT			DOOR_MAT + 1
-#define CEMENT_MAT			WOOD_MAT + 1
-#define BRICK_MAT1			CEMENT_MAT + 1
-#define BRICK_MAT2			BRICK_MAT1 + 1
-#define PBRICK_MAT_START	BRICK_MAT2 + 1
-#define PBRICK_MAT_END		PBRICK_MAT_START + COLOR_SPREAD - 1
-#define RROOFING_MAT_START	PBRICK_MAT_END + 1
-#define RROOFING_MAT_END	RROOFING_MAT_START + COLOR_SPREAD - 1
-#define WINDOWWALL_MAT_START RROOFING_MAT_END + 1
-#define WINDOWWALL_MAT_END	WINDOWWALL_MAT_START + COLOR_SPREAD - 1
-#define HIGHLIGHT_MAT		WINDOWWALL_MAT_END + 1
-
-//
-// Each textured material has a different scale (ratio of texels to meters)
-//
-static float s_MatScaleUV[TOTAL_BUILDING_MATS];
-
-//
-// Helper to make a material
-//
-vtMaterial *makeMaterial(RGBf &color, bool culling)
-{
-	vtMaterial *pMat = new vtMaterial();
-	pMat->SetDiffuse1(color * 0.7f);
-	pMat->SetAmbient1(color * 0.4f);
-	pMat->SetSpecular2(0.0f);
-	pMat->SetCulling(culling);
-	pMat->SetLighting(true);
-	return pMat;
-}
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -80,162 +38,6 @@ vtBuilding3d &vtBuilding3d::operator=(const vtBuilding &v)
 	// just call the copy method of the parent class
 	*((vtBuilding*)this) = v;
 	return *this;
-}
-
-void vtBuilding3d::CreateSharedMaterials()
-{
-	vtString path;
-	int i, j, k;
-	RGBf color;
-	vtMaterial *pMat;
-	s_Materials = new vtMaterialArray();
-	s_Materials->SetMaxSize(500);
-
-	int count = 0;
-	int divisions = 6;
-	float start = .25f;
-	float step = (1.0f-start)/(divisions-1);
-	for (i = 0; i < divisions; i++) {
-		for (j = 0; j < divisions; j++) {
-			for (k = 0; k < divisions; k++) {
-				s_Colors[count++].Set(start+i*step, start+j*step, start+k*step);
-			}
-		}
-	}
-
-	// plain materials
-	for (i = 0; i < COLOR_SPREAD; i++)
-	{
-		pMat = makeMaterial(s_Colors[i], true);
-		s_Materials->AppendMaterial(pMat);
-	}
-
-	// siding materials
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/siding64.jpg");
-	vtImage *pImageSiding = new vtImage(path);
-	divisions = 6;
-	start = .25f;
-	step = (1.0f-start)/(divisions-1);
-	for (i = 0; i < COLOR_SPREAD; i++)
-	{
-		pMat = makeMaterial(s_Colors[i], true);
-		pMat->SetTexture(pImageSiding);
-		pMat->SetClamp(false);
-		s_Materials->AppendMaterial(pMat);
-	}
-
-	// others are literal textures - use white for diffuse
-	color.Set(1.0f, 1.0f, 1.0f);
-
-	// window material
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.jpg");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	s_Materials->Append(pMat);
-
-	// door material
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/door.jpg");
-	pMat->SetTexture2(path);
-	s_Materials->Append(pMat);
-
-	// wood material
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/wood1_256.jpg");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	s_Materials->Append(pMat);
-
-	// cement block material
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/cement_block1_256.jpg");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	s_Materials->Append(pMat);
-
-	// brick material 1
-	// measured average brick color: 159, 100, 83 (reddish medium brown)
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick1_256.jpg");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	s_Materials->Append(pMat);
-
-	// brick material 2
-	// measured average brick color: 183, 178, 171 (slightly pinkish grey)
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick2_256.jpg");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	s_Materials->Append(pMat);
-
-	// painted brick material: no brick color, can be colorized for any shade
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick_mono_256.jpg");
-	vtImage *pPaintedBrick = new vtImage(path);
-	for (i = 0; i < COLOR_SPREAD; i++)
-	{
-		pMat = makeMaterial(s_Colors[i], true);
-		pMat->SetTexture(pPaintedBrick);
-		pMat->SetClamp(false);
-		s_Materials->Append(pMat);
-	}
-
-	// rolled roofing material: no brick color, can be colorized for any shade
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/roofing1_256.jpg");
-	vtImage *pRolledRoofing = new vtImage(path);
-	for (i = 0; i < COLOR_SPREAD; i++)
-	{
-		pMat = makeMaterial(s_Colors[i], true);
-		pMat->SetTexture(pRolledRoofing);
-		pMat->SetClamp(false);
-		s_Materials->Append(pMat);
-	}
-
-	// create window-wall materials
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.jpg");
-	vtImage *pImageWindowWall = new vtImage(path);
-	for (i = 0; i < COLOR_SPREAD; i++)
-	{
-		pMat = makeMaterial(s_Colors[i], true);
-		pMat->SetTexture(pImageWindowWall);
-		pMat->SetClamp(false);
-		s_Materials->AppendMaterial(pMat);
-	}
-
-	s_Materials->AddRGBMaterial1(RGBf(1,1,1), false, false, true);
-	s_Materials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
-
-	int total = s_Materials->GetSize();
-	// window, door, wood, cement_block, windowwall
-	int expectedtotal = COLOR_SPREAD + COLOR_SPREAD +	// plain, siding
-		1 + 1 + 1 + 1 +		// window, door, wood, cement
-		1 + 1 +				// brick1, brick2
-		COLOR_SPREAD + COLOR_SPREAD +	// painted brick, window-wall
-		COLOR_SPREAD +		// rolled roofing
-		1 + 1;				// highlight colors
-	assert(total == expectedtotal);
-
-	// Set material UV scales
-	s_MatScaleUV[BMAT_PLAIN] = 1.0f;
-	s_MatScaleUV[BMAT_WOOD] = 0.6f;
-	s_MatScaleUV[BMAT_SIDING] = 1.0f;
-	s_MatScaleUV[BMAT_GLASS] = 1.0f;
-	s_MatScaleUV[BMAT_BRICK] = 0.8f;
-	s_MatScaleUV[BMAT_PAINTED_BRICK] = 0.8f;
-	s_MatScaleUV[BMAT_ROLLED_ROOFING] = 0.1f;
-	s_MatScaleUV[BMAT_CEMENT] = 1.0f;
-	s_MatScaleUV[BMAT_STUCCO] = 1.0f;
-	s_MatScaleUV[BMAT_CORRUGATED] = 1.0f;
-	s_MatScaleUV[BMAT_DOOR] = 1.0f;
-	s_MatScaleUV[BMAT_WINDOW] = 1.0f;
-	s_MatScaleUV[BMAT_WINDOWWALL] = 1.0f;
-}
-
-void vtBuilding3d::FindMaterialIndices()
-{
-	if (s_Materials == NULL)
-		CreateSharedMaterials();
 }
 
 
@@ -360,7 +162,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	bool bDoWalls = true;
 
 	// make sure we've got materials first
-	FindMaterialIndices();
+	InitializeMaterialArrays();
 
 	UpdateWorldLocation(pHeightField);
 
@@ -438,7 +240,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	// wrap in a shape and set materials
 	m_pGeom = new vtGeom();
 	m_pGeom->SetName2("building-geom");
-	m_pGeom->SetMaterials(s_Materials);
+	m_pGeom->SetMaterials(GetSharedMaterialArray());
 
 	for (i = 0; i < m_Mesh.GetSize(); i++)
 	{
@@ -466,7 +268,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 // Since each set of primitives with a specific material requires its own
 // mesh, this method looks up or creates the mesh as needed.
 //
-vtMesh *vtBuilding3d::FindMatMesh(BldMaterial bm, RGBi color, int iPrimType)
+vtMesh *vtBuilding3d::FindMatMesh(const vtMaterialName &Material, RGBi color, int iPrimType)
 {
 	int mi;
 	int VertType;
@@ -474,16 +276,13 @@ vtMesh *vtBuilding3d::FindMatMesh(BldMaterial bm, RGBi color, int iPrimType)
 	// wireframe is a special case, used for highlight materials
 	if (iPrimType == GL_LINE_STRIP)
 	{
-		if (color == RGBi(255,255,255))
-			mi = HIGHLIGHT_MAT;
-		else
-			mi = HIGHLIGHT_MAT+1;
+		mi = FindMatIndex(BMAT_NAME_HIGHLIGHT, color);
 		VertType = 0;
 	}
 	else
 	{
 		// otherwise, find normal stored material
-		mi = FindMatIndex(bm, color);
+		mi = FindMatIndex(Material, color);
 		VertType = VT_Normals | VT_TexCoords;
 	}
 
@@ -609,7 +408,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	FPoint3 p3 = quad[2];
 	FPoint3 p2 = quad[3];
 
-	vtMesh *mesh = FindMatMesh(BMAT_PLAIN, RGBi(255,255,255), GL_LINE_STRIP);
+	vtMesh *mesh = FindMatMesh(BMAT_NAME_PLAIN, RGBi(255,255,255), GL_LINE_STRIP);
 
 	// determine normal (not used for shading)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -639,7 +438,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	mesh->AddFan(start, start+1);
 
 	norm *= 0.95f;
-	mesh = FindMatMesh(BMAT_PLAIN, RGBi(255,0,0), GL_LINE_STRIP);
+	mesh = FindMatMesh(BMAT_NAME_PLAIN, RGBi(255,0,0), GL_LINE_STRIP);
 	start =
 		mesh->AddVertex(p0 + norm);
 	mesh->AddVertex(p1 + norm);
@@ -653,7 +452,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
  * Builds a wall, given material index, starting and end points, height, and
  * starting height.
  */
-void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
+void vtBuilding3d::AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
 	const FLine3 &quad,
 	float vf1, float vf2, float hf1)
 {
@@ -665,7 +464,7 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(bmat, pEdge->m_Color, GL_TRIANGLE_FAN);
+	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, GL_TRIANGLE_FAN);
 
 	// determine normal and primary axes of the face
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -676,7 +475,7 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 
 	// determine UVs - special case for window-wall texture
 	FPoint2 uv0, uv1, uv2, uv3;
-	if (bmat == BMAT_WINDOWWALL)
+	if (Material == BMAT_NAME_WINDOWWALL)
 	{
 		uv0.Set(0, 0);
 		uv1.Set(hf1, 0);
@@ -689,14 +488,15 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 		float u2 = (p2 - p0).Dot(axis0);
 		float u3 = (p3 - p0).Dot(axis0);
 		float v2 = (p2 - p0).Dot(axis1);
+		float fUVScale = FindMaterialDescriptor(Material) == NULL ? 1.0f : FindMaterialDescriptor(Material)->GetUVScale();
 		uv0.Set(0, 0);
 		uv1.Set(u1, 0);
 		uv2.Set(u2, v2);
 		uv3.Set(u3, v2);
-		uv0 *= s_MatScaleUV[bmat];
-		uv1 *= s_MatScaleUV[bmat];
-		uv2 *= s_MatScaleUV[bmat];
-		uv3 *= s_MatScaleUV[bmat];
+		uv0 *= fUVScale;
+		uv1 *= fUVScale;
+		uv2 *= fUVScale;
+		uv3 *= fUVScale;
 	}
 
 	int start =
@@ -713,7 +513,7 @@ void vtBuilding3d::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
 {
 	float vf1 = pFeat->m_vf1;
 	float vf2 = pFeat->m_vf2;
-	AddWallSection(pEdge, pEdge->m_Material, quad, vf1, vf2);
+	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, vf1, vf2);
 }
 
 /**
@@ -734,7 +534,7 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(BMAT_DOOR, pEdge->m_Color, GL_TRIANGLE_FAN);
+	vtMesh *mesh = FindMatMesh(BMAT_NAME_DOOR, pEdge->m_Color, GL_TRIANGLE_FAN);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -748,7 +548,7 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	mesh->AddFan(start, start+1, start+2, start+3);
 
 	//add wall above door
-	AddWallSection(pEdge, pEdge->m_Material, quad, vf2, 1.0f);
+	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, vf2, 1.0f);
 }
 
 //builds a window section.  builds the wall below and above a window too.
@@ -759,10 +559,10 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	float vf2 = pFeat->m_vf2;
 
 	// build wall to base of window.
-	AddWallSection(pEdge, pEdge->m_Material, quad, 0, vf1);
+	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, 0, vf1);
 
 	// build wall above window
-	AddWallSection(pEdge, pEdge->m_Material, quad, vf2, 1.0f);
+	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, vf2, 1.0f);
 
 	// determine 4 points at corners of section
 	FPoint3 up1 = (quad[2] - quad[0]);
@@ -772,7 +572,7 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(BMAT_WINDOW, pEdge->m_Color, GL_TRIANGLE_FAN);
+	vtMesh *mesh = FindMatMesh(BMAT_NAME_WINDOW, pEdge->m_Color, GL_TRIANGLE_FAN);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -794,8 +594,8 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 	int i, j;
 	FPoint2 uv;
 
-	BldMaterial bmat = pLev->m_Edges[0]->m_Material;
-	vtMesh *mesh = FindMatMesh(bmat, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
+	const vtMaterialName& Material = *pLev->m_Edges[0]->m_pMaterial;
+	vtMesh *mesh = FindMatMesh(Material, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
 
 	if (corners > 4)
 	{
@@ -826,7 +626,7 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 				gp = result[i*3+j];
 				p.Set(gp.x, roof_y, gp.y);
 				uv.Set(gp.x, gp.y);
-				uv *= s_MatScaleUV[bmat];
+				uv *= FindMaterialDescriptor(Material) == NULL ? 1.0f : FindMaterialDescriptor(Material)->GetUVScale();
 				ind[j] = mesh->AddVertexNUV(p, up, uv);
 			}
 			mesh->AddTri(ind[0], ind[2], ind[1]);
@@ -839,7 +639,7 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 		{
 			FPoint3 p = pp[i];
 			uv.Set(p.x, p.z);
-			uv *= s_MatScaleUV[bmat];
+			uv *= FindMaterialDescriptor(Material) == NULL ? 1.0f : FindMaterialDescriptor(Material)->GetUVScale();
 			idx[i] = mesh->AddVertexNUV(p, up, uv);
 		}
 		if (corners > 2)
@@ -884,9 +684,9 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 		{
 			int iSlope = pLev->m_Edges[i]->m_iSlope;
 			if (iSlope > 89)
-				iSlope = 89;
+				iSlope = 90;
 			else if (iSlope < 1)
-				iSlope = 1;
+				iSlope = 0;
 			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, iSlope / 180.0f * PIf));
 		}
 	}
@@ -896,9 +696,9 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 		{
 			int iSlope = pLev->m_Edges[i]->m_iSlope;
 			if (iSlope > 89)
-				iSlope = 89;
+				iSlope = 90;
 			else if (iSlope < 1)
-				iSlope = 1;
+				iSlope = 0;
 			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, iSlope / 180.0f * PIf));
 		}
 	}
@@ -921,7 +721,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 		{
 			// For each boundary edge zip round the polygon anticlockwise
 			// and build the vertex array
-			BldMaterial bmat = pLev->m_Edges[0]->m_Material;
+			const vtMaterialName bmat = *pLev->m_Edges[0]->m_pMaterial;
 			vtMesh *pMesh = FindMatMesh(bmat, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
 			FLine2 RoofSection2D;
 			FLine2 TriangulatedRoofSection2D;
@@ -1093,7 +893,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 
 		float h1 = 0.0f;
 		float h2 = pLev->m_iStories;
-		AddWallSection(pEdge, BMAT_WINDOWWALL, quad, h1, h2,
+		AddWallSection(pEdge, BMAT_NAME_WINDOWWALL, quad, h1, h2,
 			pEdge->NumFeaturesOfCode(WFC_WINDOW));
 
 		if (i == iHighlightEdge)
@@ -1124,7 +924,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	if (fname == "")
 		return false;
 
-	mm.m_iMatIdx = s_Materials->AddTextureMaterial2(fname,
+	mm.m_iMatIdx = GetSharedMaterialArray()->AddTextureMaterial2(fname,
 			true, true, false, false,
 			TERRAIN_AMBIENT,
 			TERRAIN_DIFFUSE,
@@ -1192,89 +992,6 @@ void vtBuilding3d::Randomize(int iStories)
 }
 
 
-// Linear distance in RGB space
-float ColorDiff(const RGBi &c1, const RGBi &c2)
-{
-	FPoint3 diff;
-	diff.x = (c1.r - c2.r);
-	diff.y = (c1.g - c2.g);
-	diff.z = (c1.b - c2.b);
-	return diff.Length();
-}
-
-//
-// Takes the building material and color, and tries to find the closest
-// existing vtMaterial.
-//
-int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
-{
-	if (s_Materials == NULL)
-		return -1;
-
-	if (bldMat == BMAT_WINDOW)	// only one kind of window
-		return WINDOW_MAT;
-	if (bldMat == BMAT_DOOR)	// only one door
-		return DOOR_MAT;
-	if (bldMat == BMAT_WOOD)	// only one wood
-		return WOOD_MAT;
-	if (bldMat == BMAT_CEMENT)	// only one cement
-		return CEMENT_MAT;
-	if (bldMat == BMAT_BRICK)
-	{
-		// choose one of our (currently 2) unpainted brick textures
-		RGBi b1(159, 100, 83);	// (reddish medium brown)
-		RGBi b2(183, 178, 171);	// (slightly pinkish grey)
-		if (ColorDiff(inputColor, b1) < ColorDiff(inputColor, b2))
-			return BRICK_MAT1;
-		else
-			return BRICK_MAT2;
-	}
-
-	// get the appropriate range in the indices
-	int start = 0;
-	int end = 0;
-	switch (bldMat)
-	{
-		case BMAT_PLAIN:
-			start = PLAIN_MAT_START;
-			end = PLAIN_MAT_END;
-			break;
-		case BMAT_SIDING:
-			start = SIDING_MAT_START;
-			end = SIDING_MAT_END;
-			break;
-		case BMAT_WINDOWWALL:
-			start = WINDOWWALL_MAT_START;
-			end = WINDOWWALL_MAT_END;
-			break;
-		case BMAT_PAINTED_BRICK:
-			start = PBRICK_MAT_START;
-			end = PBRICK_MAT_END;
-			break;
-		case BMAT_ROLLED_ROOFING:
-			start = RROOFING_MAT_START;
-			end = RROOFING_MAT_END;
-			break;
-	}
-
-	// match the closest color.
-	float bestError = 1E8;
-	int bestMatch = -1;
-	float error;
-
-	for (int i = 0; i < COLOR_SPREAD; i++)
-	{
-		error = ColorDiff(s_Colors[i], inputColor);
-		if (error < bestError)
-		{
-			bestMatch  = start + i;
-			bestError = error;
-		}
-	}
-	return bestMatch;
-}
-
-
 /**
  * Creates the geometry for the building.
  * Capable of several levels of detail (defaults to full detail).
@@ -1307,7 +1024,7 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 
 vtGeom *vtBuilding3d::GetGeom()
 {
-	return NULL;
+	return m_pGeom;
 }
 
 void vtBuilding3d::DeleteNode()

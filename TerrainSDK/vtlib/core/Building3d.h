@@ -14,8 +14,6 @@
 
 class vtHeightField;
 
-#define COLOR_SPREAD	216		// 216 color variations
-
 struct MatMesh
 {
 	int		m_iMatIdx;
@@ -39,9 +37,6 @@ public:
 	// copy
 	vtBuilding3d &operator=(const vtBuilding &v);
 
-	//looks up materials for the building
-	void FindMaterialIndices();
-
 	void DestroyGeometry();
 	bool CreateGeometry(vtHeightField3d *pHeightField);
 	void AdjustHeight(vtHeightField3d *pHeightField);
@@ -50,20 +45,14 @@ public:
 	void Randomize(int iStories);
 
 protected:
-	int FindMatIndex(BldMaterial bldApp, RGBi inputColor=RGBi(0,0,0));
-	void CreateSharedMaterials();
 	bool MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories);
 
 protected:
-	// material
-	static vtMaterialArray *s_Materials;
-	static RGBf s_Colors[COLOR_SPREAD];
 
 	// the geometry is composed of several meshes, one for each potential material used
 	Array<MatMesh>	m_Mesh;
 
-	vtMesh *FindMatMesh(BldMaterial bm, RGBi color, int iPrimType);
-
+	vtMesh *FindMatMesh(const vtMaterialName &Material, RGBi color, int iPrimType);
 	// center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
 	FPoint3 m_center;
@@ -81,7 +70,7 @@ protected:
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(vtEdge *pEdge, BldMaterial bmat,
+	void AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
 		const FLine3 &quad, float h1, float h2, float hf1 = -1.0f);
 
 	void AddHighlightSection(vtEdge *pEdge, const FLine3 &quad);
