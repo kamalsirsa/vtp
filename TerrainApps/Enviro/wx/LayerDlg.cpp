@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,29 +12,15 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#include "LayerDlg.h"
-
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/Globe.h"
 #include "vtui/wxString2.h"
 #include "EnviroGUI.h"  // for GetCurrentTerrain
 
+#include "LayerDlg.h"
 
 /////////////////////////////
-
-class LayerItemData : public wxTreeItemData
-{
-public:
-	LayerItemData(vtStructureArray3d *sa, int item)
-	{
-		m_sa = sa;
-		m_item = item;
-	}
-	vtStructureArray3d *m_sa;
-	int m_item;
-};
-
 
 // WDR: class implementations
 
@@ -82,8 +68,30 @@ vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item)
 	if (!data)
 		return NULL;
 
+	if (data->m_item == -1)
+		return NULL;
 	vtStructure3d *str3d = data->m_sa->GetStructure3d(data->m_item);
 	return str3d->GetContained();
+}
+
+vtStructureArray3d *LayerDlg::GetStructureArray3dFromItem(wxTreeItemId item)
+{
+	if (!item.IsOk())
+		return NULL;
+	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
+	if (!data)
+		return NULL;
+	if (data->m_item == -1)
+		return data->m_sa;
+	return NULL;
+}
+
+LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item)
+{
+	if (!item.IsOk())
+		return NULL;
+	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
+	return data;
 }
 
 void LayerDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -140,6 +148,7 @@ void LayerDlg::RefreshTreeTerrain()
 		wxTreeItemId hLayer = m_pTree->AppendItem(hRoot, str, -1, -1);
 		if (sa == terr->GetStructures())
 			m_pTree->SetItemBold(hLayer, true);
+		m_pTree->SetItemData(hLayer, new LayerItemData(sa, -1));
 
 		wxTreeItemId hItem;
 		if (m_bShowAll)
@@ -264,10 +273,29 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 void LayerDlg::OnVisible( wxCommandEvent &event )
 {
 	bool bVis = event.IsChecked();
+	wxTreeItemId item = m_pTree->GetSelection();
 
-	vtNodeBase *pThing = GetNodeFromItem(m_pTree->GetSelection());
-	if (pThing)
+	vtNodeBase *pThing = GetNodeFromItem(item);
+	if (pThing) {
 		pThing->SetEnabled(bVis);
+		return;
+	}
+
+	vtStructureArray3d *sa = GetStructureArray3dFromItem(item);
+	if (sa) {
+		for (unsigned int j = 0; j < sa->GetSize(); j++) {
+			vtStructure3d *str3d = sa->GetStructure3d(j);
+			if (str3d) {
+				pThing = str3d->GetContained();
+				if (pThing) 
+					pThing->SetEnabled(bVis);
+			}
+		}
+		LayerItemData *data = GetLayerDataFromItem(item);
+		if (data) {
+			data->last_visible = bVis;
+		}
+	}
 }
 
 void LayerDlg::OnShowAll( wxCommandEvent &event )
@@ -286,11 +314,19 @@ void LayerDlg::OnSelChanged( wxTreeEvent &event )
 {
 	wxTreeItemId item = event.GetItem();
 	vtNodeBase *pThing = GetNodeFromItem(item);
+	vtStructureArray3d *sa = GetStructureArray3dFromItem(item);
 
 	GetZoomTo()->Enable(pThing != NULL);
-	GetVisible()->Enable(pThing != NULL);
+	GetVisible()->Enable((pThing != NULL) || (sa != NULL));
 
 	if (pThing)
 		GetVisible()->SetValue(pThing->GetEnabled());
+	if (sa) {
+		LayerItemData *data = GetLayerDataFromItem(item);
+		if (data) {
+			GetVisible()->SetValue(data->last_visible);
+		}
+	}
 }
+
 

@@ -1,7 +1,7 @@
 //
 // Name: LayerDlg.h
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,10 +13,25 @@
 #endif
 
 #include "enviro_wdr.h"
+#include "vtlib/core/Structure3d.h"
 
 class vtNodeBase;
 
 // WDR: class declarations
+class LayerItemData : public wxTreeItemData
+{
+public:
+	LayerItemData(vtStructureArray3d *sa, int item)
+	{
+		m_sa = sa;
+		m_item = item;
+	}
+	vtStructureArray3d *m_sa;
+	int m_item;
+	bool last_visible;
+};
+
+
 
 //----------------------------------------------------------------------------
 // LayerDlg
@@ -49,7 +64,9 @@ private:
 
 private:
 	vtNodeBase *LayerDlg::GetNodeFromItem(wxTreeItemId item);
-
+	vtStructureArray3d *LayerDlg::GetStructureArray3dFromItem(wxTreeItemId item);
+	LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item);
+	void ToggleVisible(bool bVis, wxTreeItemId id);
 	// WDR: handler declarations for LayerDlg
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
