@@ -46,7 +46,7 @@ public:
 
 	void SetPixelError(float fPixelError);
 	float GetPixelError();
-	void SetPolygonCount(int iPolygonCount);
+	virtual void SetPolygonCount(int iPolygonCount);
 	int GetPolygonCount();
 
 	int GetNumDrawnTriangles();
