@@ -22,7 +22,16 @@
 MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
 	VTLOG(" Creating Status Bar.\n");
-	static const int widths[Field_Max] = { -1, 38, 55, 65, 52, 170, 76 };
+	static const int widths[Field_Max] =
+	{
+		-1,		// main message area
+		38,		// Geo or short projection identifier
+		55,		// Zone
+		65,		// Datum
+		58,		// Units
+		170,	// Coordinates of cursor
+		76		// Elevation under cursor
+	};
 
 	SetFieldsCount(Field_Max);
 	SetStatusWidths(Field_Max, widths);
