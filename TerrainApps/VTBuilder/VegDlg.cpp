@@ -153,7 +153,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 	// Create tree control window as child of dialog.
 	int width, height;
 	GetClientSize(&width, &height);
-	m_BTree = new wxTreeCtrl(this, WID_BTREE, wxPoint(10, 10), 
+	m_BTree = new wxTreeCtrl(this, WID_BIOREGIONTREE, wxPoint(10, 10), 
 		wxSize(width - 20, height - 20), wxTR_EDIT_LABELS | wxTR_MULTIPLE);
 
 	// Create root of tree.
@@ -161,7 +161,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 	rootId = m_BTree->AddRoot("BioRegions");
 	m_BTree->SetItemBold(rootId);
 
-	vtBioRegion* br = GetMainFrame()->GetBioRegion();
+	vtBioRegion *br = GetMainFrame()->GetBioRegion();
 
 	// Read data imported from bioregion file and display on tree.
 	int numregions = br->m_Types.GetSize();

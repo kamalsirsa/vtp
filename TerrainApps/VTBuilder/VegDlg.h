@@ -19,7 +19,7 @@
 #define WID_PSTABLE 202
 #define WID_PATABLE 203
 #define WID_BIOREGIONS 300
-#define WID_BTREE 301
+#define WID_BIOREGIONTREE 301
 
 class PlantListCtrl : public wxListCtrl
 {
