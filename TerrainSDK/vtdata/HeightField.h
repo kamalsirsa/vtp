@@ -39,7 +39,7 @@ public:
 	vtHeightField();
 
 	// Initialize the vtHeightField
-	void Initialize(const DRECT &earthcover, float fMinHeight, float fMaxHeight);
+	void Initialize(const DRECT &extents, float fMinHeight, float fMaxHeight);
 
 	// Return an MD5 checksum for this heightfield
 	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
@@ -57,7 +57,7 @@ public:
 	const DRECT &GetEarthExtents() const { return m_EarthExtents; }
 
 	/** Set the geographic extents of the grid. */
-	void SetEarthExtents(const DRECT &ext)	{ m_EarthExtents = ext; }
+	virtual void SetEarthExtents(const DRECT &ext);
 	void GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 
 protected:
@@ -79,6 +79,9 @@ class vtHeightField3d : public vtHeightField
 public:
 	void Initialize(const LinearUnits units, const DRECT &earthextents,
 		float fMinHeight, float fMaxHeight);
+
+	// override heightfield method
+	virtual void SetEarthExtents(const DRECT &ext);
 
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
@@ -103,6 +106,8 @@ public:
 	vtLocalConversion	m_Conversion;
 
 protected:
+	void UpdateWorldExtents();
+
 	float	m_fDiagonalLength;
 };
 
@@ -118,6 +123,9 @@ public:
 
 	void Initialize(const LinearUnits units, const DRECT &earthextents,
 		float fMinHeight, float fMaxHeight, int cols, int rows);
+
+	// override heightfield method
+	virtual void SetEarthExtents(const DRECT &ext);
 
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;

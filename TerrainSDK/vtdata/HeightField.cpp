@@ -118,15 +118,21 @@ vtHeightField::vtHeightField()
 	m_EarthExtents.SetRect(0, 0, 0, 0);
 }
 
-void vtHeightField::Initialize(const DRECT &earthcover, float fMinHeight,
+void vtHeightField::Initialize(const DRECT &extents, float fMinHeight,
 							   float fMaxHeight)
 {
-	m_EarthExtents = earthcover;
+	m_EarthExtents = extents;
 	m_fMinHeight = fMinHeight;
 	m_fMaxHeight = fMaxHeight;
 }
 
-/** Gets the minimum and maximum height values.  The values are placed in the
+void vtHeightField::SetEarthExtents(const DRECT &ext)
+{
+	m_EarthExtents = ext;
+}
+
+/**
+ * Gets the minimum and maximum height values.  The values are placed in the
  * arguments by reference.  You must have first called ComputeHeightExtents.
  */
 void vtHeightField::GetHeightExtents(float &fMinHeight, float &fMaxHeight) const
@@ -193,7 +199,18 @@ void vtHeightField3d::Initialize(const LinearUnits units,
 
 	m_Conversion.Setup(units,
 		DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	UpdateWorldExtents();
+}
 
+void vtHeightField3d::SetEarthExtents(const DRECT &ext)
+{
+	vtHeightField::SetEarthExtents(ext);
+	m_Conversion.SetOrigin(DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
+	UpdateWorldExtents();
+}
+
+void vtHeightField3d::UpdateWorldExtents()
+{
 	m_Conversion.convert_earth_to_local_xz(
 		m_EarthExtents.left, m_EarthExtents.bottom,
 		m_WorldExtents.left, m_WorldExtents.bottom);
@@ -235,6 +252,14 @@ void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
 	m_dYStep = m_EarthExtents.Height() / (m_iRows-1);
 }
 
+void vtHeightFieldGrid3d::SetEarthExtents(const DRECT &ext)
+{
+	vtHeightField3d::SetEarthExtents(ext);
+
+	// update step values
+	m_dXStep = m_EarthExtents.Width() / (m_iColumns-1);
+	m_dYStep = m_EarthExtents.Height() / (m_iRows-1);
+}
 
 /** Get the grid spacing, the width of each column and row.
  */
