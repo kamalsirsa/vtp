@@ -1165,6 +1165,7 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 	popmenu->Append(ID_POPUP_DELETE, _T("Delete"));
 
 	m_canvas->PopupMenu(popmenu, pos.x, pos.y);
+	delete popmenu;
 }
 
 void vtFrame::OnPopupProperties(wxCommandEvent& event)
