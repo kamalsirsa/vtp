@@ -41,6 +41,7 @@ public:
 	CSkeleton m_skeleton;
 	CSkeleton m_boundaryedges;
 	int m_NumberOfBoundaryVertices;
+	int m_NumberOfBoundaryEdges;
 private:
 	bool IsClockwise(Contour& points);
 	bool FixSkeleton(Contour& points);

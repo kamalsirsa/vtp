@@ -85,6 +85,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 	}
 
 	m_NumberOfBoundaryVertices = m_vl.size();
+	m_NumberOfBoundaryEdges = m_boundaryedges.size();
 
 	if (m_vl.size() < 3)
 		return m_skeleton;
@@ -152,9 +153,11 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 			continue;
 		}
 
-#ifdef FELKELDEBUG
-		assert(i.m_leftVertex->m_prevVertex != i.m_rightVertex);
-		assert(i.m_rightVertex->m_nextVertex != i.m_leftVertex);
+#ifdef _DEBUG
+		if (!(i.m_leftVertex->m_prevVertex != i.m_rightVertex))
+			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+		if (!(i.m_rightVertex->m_nextVertex != i.m_leftVertex))
+			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 		if (i.m_type == CIntersection::CONVEX)
 			if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
@@ -292,8 +295,9 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to higher
-#ifdef FELKELDEBUG
-					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left));
+#ifdef _DEBUG
+					if (!((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left)))
+						VTLOG("%s %d Assert failed prev lower left %x next higher left %x\n", __FILE__, __LINE__, pPrevEdge->m_lower.m_left, pNextEdge->m_higher.m_left);
 #else
 					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_higher.m_left))
 						return false;
@@ -304,8 +308,9 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				else
 				{
 					// Joing higher to higher
-#ifdef FELKELDEBUG
-					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left));
+#ifdef _DEBUG
+					if (!((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left)))
+						VTLOG("%s %d Assert failed prev higher right %x next higher left %x\n", __FILE__, __LINE__, pPrevEdge->m_higher.m_right, pNextEdge->m_higher.m_left);
 #else
 					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_higher.m_left))
 						return false;
@@ -319,8 +324,9 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to lower
-#ifdef FELKELDEBUG
-					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right));
+#ifdef _DEBUG
+					if (!((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right)))
+						VTLOG("%s %d Assert failed prev lower left %x next lower right %x\n", __FILE__, __LINE__, pPrevEdge->m_lower.m_left, pNextEdge->m_lower.m_right);
 #else
 					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_lower.m_right))
 						return false;
@@ -331,8 +337,9 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				else
 				{
 					// Joining higher to lower
-#ifdef FELKELDEBUG
-					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right));
+#ifdef _DEBUG
+					if (!((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right)))
+						VTLOG("%s %d Assert failed prev higher right %x next lower right %x\n", __FILE__, __LINE__, pPrevEdge->m_higher.m_right, pNextEdge->m_lower.m_right);
 #else
 					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_lower.m_right))
 						return false;
@@ -351,62 +358,58 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 {
 	CSkeletonLine* pNextEdge;
 	C3DPoint OldPoint;
-	C3DPoint OldEdgeVector;
-	C3DPoint NewEdgeVector;
-	CNumber CosTheta;
-	CNumber HighestCosTheta = 0;
+	CRidgeLine OldEdge;
+	CRidgeLine NewEdge;
+	CNumber Angle;
+	CNumber LowestAngle = CN_INFINITY;
+	bool bBoundaryEdge = pEdge->m_ID < m_NumberOfBoundaryEdges;
 
 	if(*bReversed)
 	{
 		OldPoint = pEdge->m_lower.m_vertex->m_point;
-		OldEdgeVector = OldPoint - pEdge->m_higher.m_vertex->m_point;
+		OldEdge = CRidgeLine(pEdge->m_higher.m_vertex->m_point, OldPoint);
 	}
 	else
 	{
 		OldPoint = pEdge->m_higher.m_vertex->m_point;
-		OldEdgeVector = OldPoint - pEdge->m_lower.m_vertex->m_point;
+		OldEdge = CRidgeLine(pEdge->m_lower.m_vertex->m_point, OldPoint);
 	}
 
 	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 	{
-#ifdef FELKELDEBUG
-		CSkeletonLine& db = (*s1);
-		double Cross, Dot, l1, l2;
-#endif
 		if ((*s1).m_ID != pEdge->m_ID)
 		{
-			if (((*s1).m_lower.m_vertex->m_point == OldPoint) || ((*s1).m_higher.m_vertex->m_point == OldPoint))
+			if ((((*s1).m_lower.m_vertex->m_point == OldPoint) || ((*s1).m_higher.m_vertex->m_point == OldPoint)) &&
+				// If current edge is a boundary edge then skip any candidates that are also boundaries
+				!(bBoundaryEdge && (*s1).m_ID < m_NumberOfBoundaryEdges))
 			{
+				// Current edge is not a boundary edge then skip any candidates were I am
+				// considering the higher vertex of the boundary edge
+				if (!bBoundaryEdge && 
+						(*s1).m_ID < m_NumberOfBoundaryEdges &&
+						(OldPoint == (*s1).m_higher.m_vertex->m_point))
+					continue;
+
 				bool bTemp;
 
 				if ((*s1).m_lower.m_vertex->m_point == OldPoint)
 				{
 					// matched the lower vertex of an edge
-					NewEdgeVector = (*s1).m_higher.m_vertex->m_point - OldPoint;
+					NewEdge = CRidgeLine(OldPoint, (*s1).m_higher.m_vertex->m_point);
 					bTemp = false;
 				}
 				else
 				{
-					NewEdgeVector = (*s1).m_lower.m_vertex->m_point - OldPoint;
+					NewEdge = CRidgeLine(OldPoint, (*s1).m_lower.m_vertex->m_point);
 					bTemp = true;
 				}
-				CosTheta = OldEdgeVector.DotXZ(NewEdgeVector)/(OldEdgeVector.LengthXZ() * NewEdgeVector.LengthXZ());
-				if ((double)OldEdgeVector.CrossXZ(NewEdgeVector) < 0)
-					CosTheta = 3 - CosTheta;
-				else
-					CosTheta += 1;
-				if (CosTheta > HighestCosTheta)
+				Angle = CNumber(NewEdge.m_Angle - OldEdge.m_Angle).NormalizedAngle() + CN_PI;
+				if (Angle < LowestAngle)
 				{
-					HighestCosTheta = CosTheta;
+					LowestAngle = Angle;
 					pNextEdge = &(*s1);
 					*bReversed = bTemp;
 				}
-#ifdef FELKELDEBUG
-				Cross = (double)OldEdgeVector.CrossXZ(NewEdgeVector);
-				Dot = (double)OldEdgeVector.DotXZ(NewEdgeVector);
-				l1 = (double)OldEdgeVector.LengthXZ();
-				l2 = (double)NewEdgeVector.LengthXZ();
-#endif
 			}
 		}
 	}
@@ -462,7 +465,7 @@ void CStraightSkeleton::Dump()
 	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 	{
 		CSkeletonLine& db = (*s1);
-		VTLOG("ID: %d lower leftID %d rightID %d vertexID %d (%f %f %f) higher leftID %d rightID %d vertexID %d (%f %f %f)\n",
+		VTLOG("ID: %d lower leftID %d rightID %d vertexID %d (%f %f %f)\nhigher leftID %d rightID %d vertexID %d (%f %f %f)\n",
 			db.m_ID,
 			db.m_lower.LeftID(),
 			db.m_lower.RightID(),

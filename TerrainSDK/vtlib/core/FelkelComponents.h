@@ -20,12 +20,11 @@
 #include <vector>
 #include <list>
 
-#ifdef FELKELDEBUG
 #include "vtdata\vtlog.h"
-#endif
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)	// prevent common warning about templates
+#include <limits>
 #endif
 
 #ifdef EPS
@@ -35,7 +34,12 @@
 using namespace std;
 
 #define CN_PI			((CNumber ) 3.14159265358979323846)
+#ifdef _MSC_VER
+//#define CN_INFINITY		((CNumber ) std::numeric_limits<double>::infinity())
+#define CN_INFINITY		((CNumber ) DBL_MAX)
+#else
 #define CN_INFINITY		((CNumber ) 1.797693E+308)
+#endif
 #define CN_SLOPE_MAX	((CNumber ) CN_PI * 89 /180)
 #define CN_SLOPE_MIN	((CNumber ) CN_PI / 180)
 
@@ -131,7 +135,13 @@ public:
 	}
 	inline bool FacingTowards (const CRidgeLine &a) const
 	{
-		return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin)) ? true : false;
+//		return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin)) ? true : false;
+		if (m_IsRidgeLine != a.m_IsRidgeLine)
+			VTLOG("%s %d m_IsRidgeLine %d\n", __FILE__, __LINE__, m_IsRidgeLine);
+		if (m_IsRidgeLine)
+			return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin) && SIMILAR(m_Slope, 0.0) && SIMILAR(m_Slope, 0.0)) ? true : false;
+		else
+			return (a.PointOnRidgeLine(m_Origin) && PointOnRidgeLine(a.m_Origin) && !(m_Origin == a.m_Origin)) ? true : false;
 	}
 	CNumber Dist(const C3DPoint &p) const;
 
@@ -158,7 +168,7 @@ public:
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
 	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
-	bool operator < (const CVertex &) const { assert (false); return false; }
+	bool operator < (const CVertex &) const { if (true) VTLOG("%s %d Assert failed\n", __FILE__, __LINE__); return false; }
 	C3DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
@@ -183,9 +193,11 @@ public:
 	iterator next (const iterator &i) { iterator tmp (i); tmp ++; if (tmp == end ()) tmp = begin (); return tmp; }
 	void push_back (const CVertex& x)
 	{
-#ifdef FELKELDEBUG
-		assert (x.m_prevVertex == NULL || x.m_leftLine.FacingTowards (x.m_prevVertex -> m_rightLine));
-		assert (x.m_nextVertex == NULL || x.m_rightLine.FacingTowards (x.m_nextVertex -> m_leftLine));
+#ifdef _DEBUG
+		if (!(x.m_prevVertex == NULL || x.m_leftLine.FacingTowards (x.m_prevVertex -> m_rightLine)))
+			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+		if (!(x.m_nextVertex == NULL || x.m_rightLine.FacingTowards (x.m_nextVertex -> m_leftLine)))
+			VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 		((CVertex &)x).m_ID = size ();	// automatic ID generation
 		list <CVertex> :: push_back (x);
@@ -232,7 +244,7 @@ public:
 	{
 		return m_higher.m_vertex -> m_ID == s.m_higher.m_vertex -> m_ID  && m_lower.m_vertex -> m_ID  == s.m_lower.m_vertex -> m_ID ;
 	}
-	bool operator < (const CSkeletonLine &) const { assert (false); return false; }
+	bool operator < (const CSkeletonLine &) const { if (true) VTLOG("%s %d Assert failed\n", __FILE__, __LINE__); return false; }
 	int m_ID;
 };
 

@@ -10,6 +10,7 @@
 // by Roger James (www.beardandsandals.co.uk)
 //
 
+
 #include "FelkelIntersection.h"
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -20,17 +21,21 @@
 
 CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 {
-#ifdef FELKELDEBUG
-	assert (v.m_prevVertex == NULL || v.m_leftLine.FacingTowards (v.m_prevVertex -> m_rightLine));
-	assert (v.m_nextVertex == NULL || v.m_rightLine.FacingTowards (v.m_nextVertex -> m_leftLine));
+#ifdef _DEBUG
+	if (!(v.m_prevVertex == NULL || v.m_leftLine.FacingTowards (v.m_prevVertex -> m_rightLine)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(v.m_nextVertex == NULL || v.m_rightLine.FacingTowards (v.m_nextVertex -> m_leftLine)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	CVertex &l = *v.m_prevVertex;
 	CVertex &r = *v.m_nextVertex;
 
-#ifdef FELKELDEBUG
-	assert (v.m_leftLine.m_Angle == v.m_leftVertex -> m_leftLine.m_Angle);
-	assert (v.m_rightLine.m_Angle == v.m_rightVertex -> m_rightLine.m_Angle);
+#ifdef _DEBUG
+	if (!(v.m_leftLine.m_Angle == v.m_leftVertex -> m_leftLine.m_Angle))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(v.m_rightLine.m_Angle == v.m_rightVertex -> m_rightLine.m_Angle))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	CNumber al = v.m_axis.m_Angle - l.m_axis.m_Angle;
@@ -40,9 +45,19 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	ar.NormalizeAngle();
 
 	C3DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
-	i1.m_y = v.m_leftLine.Dist(i1) * tan(v.m_leftLine.m_Slope);;
+	i1.m_y = v.m_leftLine.Dist(i1) * abs(tan(v.m_leftLine.m_Slope));
 	C3DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
-	i2.m_y = v.m_rightLine.Dist(i2) * tan(v.m_rightLine.m_Slope);
+	i2.m_y = v.m_rightLine.Dist(i2) * abs(tan(v.m_rightLine.m_Slope));
+	if (SIMILAR(v.m_axis.m_Slope, CN_PI/2))
+	{
+		i1.m_y = C3DPoint(i1 - l.m_point).LengthXZ() * abs(tan(l.m_axis.m_Slope)) + l.m_point.m_y;
+		i2.m_y = C3DPoint(i2 - r.m_point).LengthXZ() * abs(tan(r.m_axis.m_Slope)) + r.m_point.m_y;
+	}
+	else
+	{
+		i1.m_y = C3DPoint(i1 - v.m_point).LengthXZ() * abs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
+		i2.m_y = C3DPoint(i2 - v.m_point).LengthXZ() * abs(tan(v.m_axis.m_Slope)) + v.m_point.m_y;
+	}
 
 	CNumber d1 = v.m_point.DistXZ(i1);
 	CNumber d2 = v.m_point.DistXZ(i2);
@@ -105,11 +120,15 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 {
 #ifdef FELKELDEBUG
 	VTLOG("ApplyNonconvexIntersection\n");
+#endif
 
+#ifdef _DEBUG
 	// Left and right vertices must always be the same point
-	assert (m_leftVertex == m_rightVertex);
+	if (!(m_leftVertex == m_rightVertex))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 	// Check to see of they are the same data structure RFJ !!!
-	assert (m_leftVertex->m_ID == m_rightVertex->m_ID);
+	if (!(m_leftVertex->m_ID == m_rightVertex->m_ID))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	CVertex *leftPointer, *rightPointer;
@@ -135,9 +154,11 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 	CVertex v1 (p, *rightPointer, *m_rightVertex);
 	CVertex v2 (p, *m_leftVertex, *leftPointer);
 
-#ifdef FELKELDEBUG
-	assert (v1.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
-	assert (v2.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+#ifdef _DEBUG
+	if (!(v1.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(v2.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	m_leftVertex->m_done = true;
@@ -257,8 +278,9 @@ void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl
 #endif
 	// create new vertex and link into current contour
 	CVertex vtx (m_poi, *m_leftVertex, *m_rightVertex);
-#ifdef FELKELDEBUG
-	assert(vtx.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+#ifdef _DEBUG
+	if(!(vtx.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	// Link vertex into overall chain
@@ -325,10 +347,16 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 {
 #ifdef FELKELDEBUG
 	VTLOG("ApplyLast3\n");
-	assert(m_leftVertex->m_nextVertex == m_rightVertex);
-	assert(m_rightVertex->m_prevVertex == m_leftVertex);
-	assert(m_leftVertex->m_prevVertex->m_prevVertex == m_rightVertex);
-	assert(m_rightVertex->m_nextVertex->m_nextVertex == m_leftVertex);
+#endif
+#ifdef _DEBUG
+	if (!(m_leftVertex->m_nextVertex == m_rightVertex))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(m_rightVertex->m_prevVertex == m_leftVertex))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(m_leftVertex->m_prevVertex->m_prevVertex == m_rightVertex))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(m_rightVertex->m_nextVertex->m_nextVertex == m_leftVertex))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	CVertex &v1 = *m_leftVertex;
@@ -344,10 +372,13 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	C3DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
 
 	C3DPoint is = m_poi;
-#ifdef FELKELDEBUG
-	assert(is == is1 || is1 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
-	assert(is == is2 || is2 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
-	assert(is == is3 || is3 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+#ifdef _DEBUG
+	if (!(is == is1 || is1 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(is == is2 || is2 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
+	if (!(is == is3 || is3 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
+		VTLOG("%s %d Assert failed\n", __FILE__, __LINE__);
 #endif
 
 	CVertex v(is);
