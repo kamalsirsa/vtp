@@ -982,8 +982,9 @@ void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
 	vtLayer *lp = GetActiveLayer();
 	event.Enable(lp &&
 			(lp->GetType() == LT_ROAD ||
-				lp->GetType() == LT_VEG ||
-				lp->GetType() == LT_STRUCTURE));
+			 lp->GetType() == LT_VEG ||
+			 lp->GetType() == LT_STRUCTURE ||
+			 lp->GetType() == LT_RAW));
 }
 
 ////////////////////////////////////////////////////////////
