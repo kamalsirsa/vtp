@@ -262,6 +262,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 
 	// Latest header, version 1.2
 	short datasize = m_bFloatMode ? 4 : 2;
+	DataType datatype = m_bFloatMode ? DT_FLOAT : DT_SHORT;
 
 	if (bGZip == false)
 	{
@@ -271,22 +272,22 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			return false;
 
 		fwrite("binterr1.3", 10, 1, fp);
-		fwrite(&w, 4, 1, fp);
-		fwrite(&h, 4, 1, fp);
-		fwrite(&datasize, 2, 1, fp);
-		fwrite(&isfloat, 2, 1, fp);
-		fwrite(&hunits, 2, 1, fp);		// Horizontal Units (0, 1, 2, 3)
-		fwrite(&zone, 2, 1, fp);		// UTM zone
-		fwrite(&datum, 2, 1, fp);		// Datum
+		FWrite(&w, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&h, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&datasize, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&isfloat, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&hunits,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);	// Horizontal Units (0, 1, 2, 3)
+		FWrite(&zone,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);		// UTM zone
+		FWrite(&datum,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);	// Datum
 
 		// coordinate extents
-		fwrite(&m_EarthExtents.left, 8, 1, fp);
-		fwrite(&m_EarthExtents.right, 8, 1, fp);
-		fwrite(&m_EarthExtents.bottom, 8, 1, fp);
-		fwrite(&m_EarthExtents.top, 8, 1, fp);
+		FWrite(&m_EarthExtents.left,	DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&m_EarthExtents.right,	DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&m_EarthExtents.bottom,	DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FWrite(&m_EarthExtents.top,		DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
 
-		fwrite(&external, 2, 1, fp);	// External projection specification
-		fwrite(&m_fVMeters, 4, 1, fp);	// External projection specification
+		FWrite(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);		// External projection specification
+		FWrite(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);	// Vertical scale factor (meters/units)
 
 		// now write the data: always starts at offset 256
 		fseek(fp, 256, SEEK_SET);
@@ -300,10 +301,10 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			{
 				if (m_bFloatMode) {
 					fvalue = GetFValue(i, j);
-					fwrite(&fvalue, datasize, 1, fp);
+					FWrite(&fvalue, datatype, 1, fp, BO_LITTLE_ENDIAN);
 				} else {
 					svalue = GetValue(i, j);
-					fwrite(&svalue, datasize, 1, fp);
+					FWrite(&svalue, datatype, 1, fp, BO_LITTLE_ENDIAN);
 				}
 			}
 		}
@@ -314,7 +315,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			for (int i = 0; i < w; i++)
 			{
 				if (progress_callback != NULL) progress_callback(i * 100 / w);
-				fwrite(m_pFData + (i * m_iRows), 4, m_iRows, fp);
+				FWrite(m_pFData + (i * m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 		else
@@ -322,7 +323,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			for (int i = 0; i < w; i++)
 			{
 				if (progress_callback != NULL) progress_callback(i * 100 / w);
-				fwrite(m_pData + (i * m_iRows), 2, m_iRows, fp);
+				FWrite(m_pData + (i * m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 #endif
@@ -336,22 +337,22 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			return false;
 
 		gzwrite(fp, (void *)"binterr1.3", 10);
-		gzwrite(fp, &w, 4);
-		gzwrite(fp, &h, 4);
-		gzwrite(fp, &datasize, 2);
-		gzwrite(fp, &isfloat, 2);
-		gzwrite(fp, &hunits, 2);		// Horizontal Units (0, 1, 2, 3)
-		gzwrite(fp, &zone, 2);		// UTM zone
-		gzwrite(fp, &datum, 2);		// Datum
+		GZFWrite(&w, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&h, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&datasize,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&isfloat,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&hunits,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);		// Horizontal Units (0, 1, 2, 3)
+		GZFWrite(&zone,		DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);		// UTM zone
+		GZFWrite(&datum,	DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);		// Datum
 
 		// coordinate extents
-		gzwrite(fp, &m_EarthExtents.left, 8);
-		gzwrite(fp, &m_EarthExtents.right, 8);
-		gzwrite(fp, &m_EarthExtents.bottom, 8);
-		gzwrite(fp, &m_EarthExtents.top, 8);
+		GZFWrite(&m_EarthExtents.left,		DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&m_EarthExtents.right,		DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&m_EarthExtents.bottom,	DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFWrite(&m_EarthExtents.top,		DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
 
-		gzwrite(fp, &external, 2);	// External projection specification
-		gzwrite(fp, &m_fVMeters, 4);	// External projection specification
+		GZFWrite(&external,		DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);	// External projection specification
+		GZFWrite(&m_fVMeters,	DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);	// Vertical scale factor (meters/units)
 
 		// now write the data: always starts at offset 256
 		gzseek(fp, 256, SEEK_SET);
@@ -362,7 +363,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			for (int i = 0; i < w; i++)
 			{
 				if (progress_callback != NULL) progress_callback(i * 100 / w);
-				gzwrite(fp, m_pFData + (i * m_iRows), 4 * m_iRows);
+				GZFWrite(m_pFData + (i * m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 		else
@@ -370,7 +371,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 			for (int i = 0; i < w; i++)
 			{
 				if (progress_callback != NULL) progress_callback(i * 100 / w);
-				gzwrite(fp, m_pData + (i * m_iRows), 2 * m_iRows);
+				GZFWrite(m_pData + (i * m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
 		gzclose(fp);
