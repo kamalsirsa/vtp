@@ -1161,7 +1161,11 @@ void MainFrame::SetProjection(const vtProjection &p)
 void MainFrame::OnSelectionChanged()
 {
 	if (m_pFeatInfoDlg && m_pFeatInfoDlg->IsShown())
+	{
+		vtRawLayer *pRL = GetActiveRawLayer();
+		m_pFeatInfoDlg->SetFeatureSet(pRL->GetFeatureSet());
 		m_pFeatInfoDlg->ShowSelected();
+	}
 }
 
 
