@@ -95,6 +95,7 @@ bool vtApp::CreateScene()
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
 
+	printf("Done creating scene.\n");
 	return true;
 }
 

@@ -13,7 +13,9 @@
 #endif
 #include "wx/image.h"
 
+#include "vtdata/vtLog.h"
 #include "vtBitmap.h"
+
 
 vtBitmap::vtBitmap()
 {
@@ -100,6 +102,8 @@ void vtBitmap::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned c
 	*(m_pScanline + (y * m_iScanlineWidth) + (x * 3) + 1) = g;
 	*(m_pScanline + (y * m_iScanlineWidth) + (x * 3) + 2) = r;
 #else
+	if (x == 0 && y == 0)
+		VTLOG(" Setting pixel 0 0 to %d %d %d\n", r, g, b);
 	m_pImage->SetRGB(x, y, r, g, b);
 #endif
 }
@@ -125,6 +129,7 @@ void vtBitmap::GetRGB(int x, int y, RGBi &rgb)
 void vtBitmap::ContentsChanged()
 {
 #if !USE_DIBSECTIONS
+	VTLOG("Updating Bitmap Contents from Image Data\n");
 	if (!m_pImage)
 		return;
 	if (m_pBitmap)

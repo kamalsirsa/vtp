@@ -707,6 +707,7 @@ bool vtImageLayer::LoadFromGDAL()
 		if (!bDefer)
 		{
 			// Read the data
+			VTLOG("Reading the image data (%d x %d pixels)\n", m_iXSize, m_iYSize);
 			for (int iy = 0; iy < m_iYSize; iy++ )
 			{
 				ReadScanline(iy, 0);
