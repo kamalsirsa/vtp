@@ -69,8 +69,6 @@ public:
 	vtString(pcchar lpch, int nLength);
 	// from unsigned characters
 	vtString(const unsigned char* psz);
-	// for constructing from user-allocated memory
-	void* operator new(size_t size, void* p)	{ return p; }
 
 // Attributes & Operations
 
