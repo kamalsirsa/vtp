@@ -789,7 +789,10 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 void vtMaterialArrayBase::DestructItems(int first, int last)
 {
 	for (int i = first; i <= last; i++)
-		delete GetAt(i);
+	{
+		vtMaterial *pMat = GetAt(i);
+		delete pMat;
+	}
 }
 
 /**
@@ -894,7 +897,10 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 	vtImage *pImage = new vtImage(fname);
 #if !VTLIB_PSM	// PSM loads asynchronously so we can't tell if it failed until later
 	if (!pImage->LoadedOK())
+	{
+		delete pImage;
 		return -1;
+	}
 #endif
 
 	return AddTextureMaterial(pImage, bCulling, bLighting,
