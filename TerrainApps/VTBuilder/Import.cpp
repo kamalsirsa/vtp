@@ -34,6 +34,7 @@
 #include "ImportVegDlg.h"
 #include "VegFieldsDlg.h"
 #include "Projection2Dlg.h"
+#include "ImportStructDlgOGR.h"
 
 #include "ogrsf_frmts.h"
 
@@ -785,7 +786,6 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 	}
 	if (ltype == LT_STRUCTURE)
 	{
-#ifdef ENVIRON
 		ImportStructDlgOGR ImportDialog(GetMainFrame(), -1, _T("Import Structures"));
 
 		ImportDialog.SetDatasource(datasource);
@@ -829,11 +829,6 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &fname_in, LayerType ltype)
 			dlg.GetProjection(Projection);
 			pSL->SetProjection(Projection);
 		}
-#else
-		StructImportOptions dummy;
-		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
-		pSL->AddElementsFromOGR(datasource, dummy, progress_callback);
-#endif
 	}
 
 	delete datasource;
