@@ -16,7 +16,7 @@ public:
 	~vtFrame();
 
 	// command handlers
-	void OnExit(wxCommandEvent& event);
+	void OnClose(wxCloseEvent &event);
 
 public:
 	class vtGLCanvas	*m_canvas;

@@ -28,7 +28,7 @@
 DECLARE_APP(vtApp)
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
-	EVT_MENU(wxID_EXIT, vtFrame::OnExit)
+	EVT_CLOSE(vtFrame::OnClose)
 END_EVENT_TABLE()
 
 // My frame constructor
@@ -64,9 +64,11 @@ vtFrame::~vtFrame()
 // Intercept commands
 //
 
-void vtFrame::OnExit(wxCommandEvent& event)
+void vtFrame::OnClose(wxCloseEvent &event)
 {
 	m_canvas->m_bRunning = false;
-	Destroy();
+	delete m_canvas;
+	m_canvas = NULL;
+	event.Skip();
 }
 
