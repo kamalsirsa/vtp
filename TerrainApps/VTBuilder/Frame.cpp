@@ -275,7 +275,7 @@ void MainFrame::RefreshToolbar()
 		toolBar_main->AddSeparator();
 		ADD_TOOL(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), true);
 		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
-		ADD_TOOL(ID_ELEV_EXPORT, wxBITMAP(layer_export), _("Export Data"), false);
+		ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"), false);
 		break;
 	case LT_IMAGE:
 		toolBar_main->AddSeparator();
@@ -892,8 +892,8 @@ void MainFrame::ExportElevation()
 	wxString strPathName = saveFile.GetPath();
 
 	// Make new terrain
-	vtElevLayer *pBig = new vtElevLayer(dlg.m_area, dlg.m_iXSamples, dlg.m_iYSamples,
-		floatmode, m_proj);
+	vtElevLayer *pBig = new vtElevLayer(dlg.m_area, dlg.m_iXSamples,
+		dlg.m_iYSamples, floatmode, m_proj);
 	pBig->SetFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain

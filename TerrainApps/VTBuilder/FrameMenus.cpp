@@ -104,7 +104,6 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateShowNodes)
 
 	EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
-	EVT_MENU(ID_ELEV_EXPORT,			MainFrame::OnLayerExport)
 	EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
 	EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 	EVT_MENU(ID_ELEV_SCALEELEVATION,	MainFrame::OnScaleElevation)
@@ -112,9 +111,9 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_ELEV_SHOW,				MainFrame::OnElevShow)
 	EVT_MENU(ID_ELEV_SHADING,			MainFrame::OnElevShading)
 	EVT_MENU(ID_ELEV_HIDE,				MainFrame::OnElevHide)
+	EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 
 	EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
-	EVT_UPDATE_UI(ID_ELEV_EXPORT,		MainFrame::OnUpdateLayerExport)
 	EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateRemoveAboveSea)
 	EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateFillIn)
 	EVT_UPDATE_UI(ID_ELEV_SCALEELEVATION, MainFrame::OnUpdateScaleElevation)
@@ -122,17 +121,17 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
 	EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
 	EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
+	EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateExportBitmap)
 
 	EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 	EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
-	EVT_MENU(ID_VEG_GENERATE,			MainFrame::OnVegGenerate)
-	EVT_UPDATE_UI(ID_VEG_GENERATE,		MainFrame::OnUpdateVegGenerate)
 
 	EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
+	EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
+	EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
+
 	EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
-	EVT_MENU(ID_STRUCTURE_EDIT_BLD,			MainFrame::OnBuildingEdit)
 	EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
-	EVT_MENU(ID_STRUCTURE_ADD_LINEAR,		MainFrame::OnStructureAddLinear)
 	EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 
 	EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
@@ -140,10 +139,14 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 	EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 
-	EVT_MENU(ID_AREA_STRETCH,		MainFrame::OnAreaStretch)
-	EVT_UPDATE_UI(ID_AREA_STRETCH,	MainFrame::OnUpdateAreaStretch)
-	EVT_MENU(ID_AREA_TYPEIN,		MainFrame::OnAreaTypeIn)
-	EVT_MENU(ID_AREA_BITMAP,		MainFrame::OnAreaExportBitmap)
+	EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
+	EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
+	EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
+	EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
+
+	EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
+	EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
+	EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 
 	EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 
@@ -236,14 +239,15 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_FILLIN, "Fill in unknown areas");
 	elevMenu->Append(ID_ELEV_SCALEELEVATION, "Scale Elevation");            
 	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, "Export to TerraGen");            
-	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_EXPORT, "&Merge Area and Save to BT", "Merge Area and Save to BT");
+	elevMenu->Append(ID_ELEV_BITMAP, "Generate && Export Bitmap");
+//	elevMenu->AppendSeparator();
+//	elevMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge Area and Export");
 
 	// Vegetation (6)
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, "Plants List", "View/Edit list of available plant species");
 	vegMenu->Append(ID_VEG_BIOREGIONS, "BioRegions", "View/Edit list of species & density for each BioRegion");
-	vegMenu->Append(ID_VEG_GENERATE, "Generate", "Generate Vegetation File (*.vf) containg plant local & info");
+//	vegMenu->Append(ID_AREA_GENERATE_VEG, "Generate");
 
 	// Structures (7)
 	bldMenu = new wxMenu;
@@ -263,7 +267,9 @@ void MainFrame::CreateMenus()
 	areaMenu->Append(ID_AREA_STRETCH, "Set to Extents");
 	areaMenu->Append(ID_AREA_TYPEIN, "Numeric Values");
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_BITMAP, "Export Bitmap");
+	areaMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge && Export Elevation");
+	areaMenu->Append(ID_AREA_GENERATE_VEG, "Generate && Export Vegetation",
+		"Generate Vegetation File (*.vf) containg plant distribution");
 
 	// Help (10)
 	helpMenu = new wxMenu;
@@ -565,19 +571,14 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 	}
 }
 
-void MainFrame::OnLayerExport(wxCommandEvent &event)
+void MainFrame::OnAreaExportElev(wxCommandEvent &event)
 {
-	vtLayer *lp = GetActiveLayer();
-	LayerType ltype = lp->GetType();
-	if (ltype == LT_ELEVATION)
-	{
-		ExportElevation();
-	}
+	ExportElevation();
 }
 
-void MainFrame::OnUpdateLayerExport(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveLayer() != NULL);
+	event.Enable(LayersOfType(LT_ELEVATION) > 0 && !m_area.IsEmpty());
 }
 
 void MainFrame::OnLayerConvert(wxCommandEvent &event)
@@ -1152,6 +1153,51 @@ void MainFrame::OnUpdateExportTerragen(wxUpdateUIEvent& event)
 	event.Enable(GetActiveElevLayer() != NULL);
 }
 
+void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
+{
+	int size = 0;
+	while (size < 32 || size > 8192)
+	{
+		wxTextEntryDialog dlg(this, "Please enter pixel size of bitmap",
+			"Export Bitmap", "");
+		if (dlg.ShowModal() != wxID_OK)
+			return;
+
+		wxString str = dlg.GetValue();
+		sscanf(str, "%d", &size);
+	}
+
+	// Ask for file name
+	wxFileDialog loadFile(NULL, "Output filename for bitmap", "", "",
+		"Bitmap Files (*.bmp)|*.bmp|", wxSAVE|wxOVERWRITE_PROMPT);
+
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	OpenProgressDialog("Generating Bitmap");
+
+	wxString fname = loadFile.GetPath();
+	vtDIB dib(size, size, 24, false);
+
+	vtElevLayer *pEL = GetActiveElevLayer();
+
+	pEL->PaintDibFromElevation(&dib, true);
+
+	UpdateProgressDialog(100, "Writing bitmap to file.");
+	bool success = dib.WriteBMP(fname);
+	CloseProgressDialog();
+}
+
+void MainFrame::OnUpdateExportBitmap(wxUpdateUIEvent& event)
+{
+	event.Enable(GetActiveElevLayer() != NULL);
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// Area Menu
+//
+
 void MainFrame::OnAreaStretch(wxCommandEvent &event)
 {
 	m_pView->AreaStretch();
@@ -1171,47 +1217,6 @@ void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 		m_area = dlg.m_area;
 		m_pView->Refresh();
 	}
-}
-
-void MainFrame::OnAreaExportBitmap(wxCommandEvent& event)
-{
-	wxTextEntryDialog dlg(this, "Please enter pixel size of bitmap",
-		"Export Bitmap", "");
-	if (dlg.ShowModal() != wxID_OK)
-		return;
-
-	int size;
-	wxString str = dlg.GetValue();
-	sscanf(str, "%d", &size);
-	if (size < 64 || size > 8192)
-		return;
-
-	// Ask for file name
-	wxFileDialog loadFile(NULL, "Output filename for bitmap", "", "",
-		"Bitmap Files (*.bmp)|*.bmp|", wxSAVE|wxOVERWRITE_PROMPT);
-
-	if (loadFile.ShowModal() != wxID_OK)
-		return;
-
-	OpenProgressDialog("Generating Bitmap");
-
-	wxString fname = loadFile.GetPath();
-	vtDIB dib(size, size, 24, false);
-
-	for (int l = 0; l < m_Layers.GetSize(); l++)
-	{
-		vtLayer *pL = m_Layers.GetAt(l);
-		if (pL->GetType() == LT_ELEVATION)
-		{
-			vtElevLayer *pEL = (vtElevLayer *)pL;
-
-			pEL->PaintDibFromElevation(&dib, true);
-			break;	// only use first elevation
-		}
-	}
-	UpdateProgressDialog(100, "Writing bitmap to file.");
-	bool success = dib.WriteBMP(fname);
-	CloseProgressDialog();
 }
 
 void MainFrame::OnElevShow(wxCommandEvent &event)
@@ -1324,7 +1329,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 }
 
 
-void MainFrame::OnVegGenerate(wxCommandEvent& event)
+void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 {
 	// Open File Save Dialog
 	wxFileDialog saveFile(NULL, "Save Vegetation File", "", "",
@@ -1351,13 +1356,14 @@ void MainFrame::OnVegGenerate(wxCommandEvent& event)
 		fTreeScarcity);
 }
 
-void MainFrame::OnUpdateVegGenerate(wxUpdateUIEvent& event)
+void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 {
 	vtVegLayer *Density = NULL, *BioMap = NULL;
 
 	FindVegLayers(&Density, &BioMap);
 
-	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap);
+	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap &&
+		!m_area.IsEmpty());
 }
 
 

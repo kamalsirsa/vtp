@@ -68,7 +68,6 @@ public:
 	void OnLayerSaveAs(wxCommandEvent& event);
 	void OnLayerImport(wxCommandEvent& event);
 	void OnLayerProperties(wxCommandEvent& event);
-	void OnLayerExport(wxCommandEvent& event);
 	void OnLayerConvert(wxCommandEvent& event);
 	void OnLayerSetProjection(wxCommandEvent& event);
 	void OnLayerFlatten(wxCommandEvent& event);
@@ -76,7 +75,6 @@ public:
 	void OnUpdateLayerSave(wxUpdateUIEvent& event);
 	void OnUpdateLayerSaveAs(wxUpdateUIEvent& event);
 	void OnUpdateLayerProperties(wxUpdateUIEvent& event);
-	void OnUpdateLayerExport(wxUpdateUIEvent& event);
 	void OnUpdateLayerConvert(wxUpdateUIEvent& event);
 	void OnUpdateLayerFlatten(wxUpdateUIEvent& event);
 
@@ -131,6 +129,7 @@ public:
 	void OnElevShow(wxCommandEvent& event);
 	void OnElevShading(wxCommandEvent& event);
 	void OnElevHide(wxCommandEvent& event);
+	void OnElevExportBitmap(wxCommandEvent& event);
 
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);
 	void OnUpdateElevBox(wxUpdateUIEvent& event);
@@ -141,32 +140,34 @@ public:
 	void OnUpdateElevShow(wxUpdateUIEvent& event);
 	void OnUpdateElevShading(wxUpdateUIEvent& event);
 	void OnUpdateElevHide(wxUpdateUIEvent& event);
+	void OnUpdateExportBitmap(wxUpdateUIEvent& event);
 
 	void OnVegPlants(wxCommandEvent& event);
 	void OnVegBioregions(wxCommandEvent& event);
-	void OnVegGenerate(wxCommandEvent& event);
-
-	void OnUpdateVegGenerate(wxUpdateUIEvent& event);
 
 	void OnFeatureSelect(wxCommandEvent& event);
-	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
 	void OnBuildingEdit(wxCommandEvent& event);
-	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
+	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
+	void OnUpdateBuildingEdit(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
 
 	void OnRawSetType(wxCommandEvent& event);
 	void OnRawAddPoints(wxCommandEvent& event);
-	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);
 	void OnRawAddPointText(wxCommandEvent& event);
-	void OnUpdateRawAddPointText(wxUpdateUIEvent& event);
 	void OnRawAddPointsGPS(wxCommandEvent& event);
+	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);
+	void OnUpdateRawAddPointText(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
 
 	void OnAreaStretch(wxCommandEvent& event);
-	void OnUpdateAreaStretch(wxUpdateUIEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
-	void OnAreaExportBitmap(wxCommandEvent& event);
+	void OnAreaExportElev(wxCommandEvent& event);
+	void OnAreaGenerateVeg(wxCommandEvent& event);
+
+	void OnUpdateAreaStretch(wxUpdateUIEvent& event);
+	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
+	void OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);
 
