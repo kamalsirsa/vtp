@@ -14,8 +14,6 @@
 #define RMFVERSION_CURRENT 1.8f
 #define RMFVERSION_SUPPORTED 1.7f	// oldest supported version
 
-#define SWITCH 0
-
 enum SurfaceType {
 	SURFT_NONE,
 	SURFT_GRAVEL,
@@ -58,65 +56,6 @@ enum LightStatus {
 #define LANE_WIDTH			3.3f
 #define PARKING_WIDTH		LANE_WIDTH
 
-//incomplete code for a node switch that tells which lanes connect to other
-//lanes on other roads.
-#if SWITCH
-// Info in a node that directs traffic flow.
-// Tells which lanes can turn into which lanes.
-class LaneIO {
-public:
-	LaneIO();
-	~LaneIO();
-	void AddChoice(class Road *road, int lane);
-	int GetRoadNum(class Road *road);
-	//number of choices to choose from reaching end of this lane
-	int m_iChoices;
-	//possible roads
-	class Road **m_pRoads;
-	//corresponding lane to road choice
-	int *m_iLane;
-private:
-	// Don't let unsuspecting users stumble into assuming that object
-	// copy semantics will work.  Declare them private and never
-	// define them,
-	LaneIO( const LaneIO & );
-	LaneIO &operator=( const LaneIO & );
-};
-
-class RoadIO {
-public:
-	RoadIO(int lanes);
-	~RoadIO();
-	int m_iLanes;
-	LaneIO **m_pLaneIO;
-};
-
-class Switch
-{
-public:
-	Switch(int r, class Road **roads);
-	~Switch();
-	//return possible road choices given current road and lane.
-	Road** RoadChoices(Road *curRoad, int curLane);
-	//return possible lane to follow given destination road and current road and lane
-	int LaneChoice(Road *curRoad, int curLane, Road* destRoad);
-	int LaneChoice(Road *curRoad, int curLane, int destRoad);
-
-	int m_iRoads;
-	//roads
-	class Road **m_pRoads;  //points to node's roads
-	//structure to hold lanes associated with the road
-	RoadIO **m_pRoadIO;
-private:
-	// Don't let unsuspecting users stumble into assuming that object
-	// copy semantics will work.  Declare them private and never
-	// define them,
-	
-	Switch( const Switch & );
-	Switch &operator=( const Switch & );
-};
-#endif //SWITCH
-
 /**
  * A 'Node' is a place where 2 or more roads meet.
  */
@@ -157,14 +96,6 @@ public:
 	//adjust the light relationship of the roads at the node (if the intersection is has a signal light.)
 	void AdjustForLights();
 
-#if SWITCH
-	void SetupSwitch();
-	//i is index to current road
-	void DetermineOptions(int i, int *in,
-						int &right, int &straight, int &left, int &uturn);
-	Switch *m_pSwitch;
-#endif //SWITCH
-
 	DPoint2 m_p;	// utm coordinates of center
 	int m_iRoads;	// number of roads meeting here
 	int m_id;		// only used for reading from DLG/RMF
@@ -177,6 +108,7 @@ protected:
 	IntersectionType *m_IntersectTypes;	//intersection types of the roads at this node.
 	LightStatus *m_Lights;  //lights of the roads at this node.
 	class Road **m_r;  //array of roads that intersect this node.
+
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
