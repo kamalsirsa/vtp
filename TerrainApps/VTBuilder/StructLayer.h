@@ -29,7 +29,7 @@ public:
 	bool AppendDataFrom(vtLayer *pL);
 	void Offset(const DPoint2 &p);
 
-	bool AddElementsFromSHP(const char *filename, vtProjection &proj);
+	bool AddElementsFromSHP(const char *filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,

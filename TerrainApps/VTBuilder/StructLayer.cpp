@@ -19,6 +19,7 @@
 #include "StructLayer.h"
 #include "ScaledView.h"
 #include "BuildingDlg.h"
+#include "Helper.h"
 
 wxPen orangePen;
 wxPen yellowPen;
@@ -413,7 +414,8 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 /////////////////////////////////////////////////////////////////////////////
 // Import methods
 
-bool vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
+bool vtStructureLayer::AddElementsFromSHP(const char *filename,
+										  vtProjection &proj, DRECT rect)
 {
 	wxString choices[3];
 	choices[0] = "Buildings (parametric by center or footprint)";
@@ -425,10 +427,21 @@ bool vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &pr
 		3, (const wxString *)choices);
 	if (dialog.ShowModal() != wxID_OK)
 		return false;
-
 	vtStructureType type = (vtStructureType) dialog.GetSelection();
 
-	bool success = ReadSHP(filename, type);
+	bool bRestrict = false;
+	if (!rect.IsEmpty())
+	{
+		int res = wxMessageBox("Would you like to restrict the imported "
+			"features\nto exclude those outside your Area tool?",
+			"SHP File Import", wxYES_NO);
+		if (res == wxNO)
+			rect.Empty();
+	}
+
+//	OpenProgressDialog("SHP File Import");
+	bool success = ReadSHP(filename, type, rect, progress_callback);
+//	CloseProgressDialog();
 	if (!success)
 		return false;
 
