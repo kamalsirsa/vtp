@@ -659,7 +659,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 #endif
 		break;
 
-	case 4:	// Ctrl-D
+	case 'D':	// Ctrl-D
 		// dump camera info
 		g_App.DumpCameraInfo();
 		break;
@@ -904,6 +904,7 @@ void vtFrame::OnViewTopDown(wxCommandEvent& event)
 
 void vtFrame::OnUpdateViewTopDown(wxUpdateUIEvent& event)
 {
+	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(m_bTopDown);
 }
 
@@ -1559,6 +1560,13 @@ void vtFrame::SetTimeEngine(TimeEngine *pEngine)
 void vtFrame::EarthPosUpdated(const DPoint3 &pos)
 {
 	m_pInstanceDlg->SetLocation(DPoint2(pos.x, pos.y));
+}
+
+void vtFrame::CameraChanged()
+{
+	// we are dealing with a new camera, so update with its values
+	if (m_pCameraDlg && m_pCameraDlg->IsShown())
+		m_pCameraDlg->CameraChanged();
 }
 
 void vtFrame::UpdateStatus()
