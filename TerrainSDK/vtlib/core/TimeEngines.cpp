@@ -8,6 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "TimeEngines.h"
 #include "TerrainScene.h"
+#include "SkyDome.h"
 
 ///////////////////////////////////////////////////////
 
@@ -76,6 +77,6 @@ void TimeEngine::Eval()
 	}
 	if (hours >= 24) hours -= 24;
 
-	m_pTerrainScene->SetTimeOfDay(hours * 3600 + minutes * 60 + seconds);
+	m_pTerrainScene->SetTimeOfDay(TIME_TO_INT(hours, minutes, seconds));
 }
 
