@@ -1,0 +1,28 @@
+/* XPM */
+static char *transit_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 6 1",
+"  c #000000000000003f",
+". c blue",
+"X c lime",
+"o c red",
+"O c white",
+"+ c None",
+/* pixels */
+"OOOOOOOOOOOOOOOO",
+"+OOO++O+++O+++++",
+"OOOOOOOOOOOO   O",
+"+++++++O   +++++",
+"OOOO    OOXXXXOO",
+"+++++++OOOO+++++",
+"OO....OOO   OOOO",
+"+++++++OO O+++++",
+"O   OO OOO OOOOO",
+"++++++++o++O++++",
+"OOOOOOO oo OOOOO",
+"++++++++o++O++++",
+"OOOOOOOO OO OOOO",
+"++++++++ ++ ++++",
+"OOOOOOOO OO OOOO",
+"++++++++++++++++"
+};
