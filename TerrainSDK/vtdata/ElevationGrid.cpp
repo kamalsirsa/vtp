@@ -869,7 +869,7 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
-	int iZ = -(int)((p.z - m_WorldExtents.bottom) / m_fZStep);
+	int iZ = (int)((p.z - m_WorldExtents.bottom) / -m_fZStep);
 
 	// safety check
 	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
@@ -879,42 +879,60 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 		return false;
 	}
 
-	FPoint3 p0, p1, p2, p3;
-	GetWorldLocation(iX, iZ, p0);
-	GetWorldLocation(iX+1, iZ, p1);
-	GetWorldLocation(iX+1, iZ+1, p2);
-	GetWorldLocation(iX, iZ+1, p3);
-
-	// find fractional amount (0..1 across quad)
-	float fX = (p.x - p0.x) / m_fXStep;
-	float fZ = (p.z - p0.z) / m_fZStep;
-
-	// which of the two triangles in the quad is it?
-	if (fX + fZ < 1)
+	if (vNormal != NULL)
 	{
-		fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p3.y - p0.y);
+		FPoint3 p0, p1, p2, p3;
+		GetWorldLocation(iX, iZ, p0);
+		GetWorldLocation(iX+1, iZ, p1);
+		GetWorldLocation(iX+1, iZ+1, p2);
+		GetWorldLocation(iX, iZ+1, p3);
 
-		if (vNormal)
+		// find fractional amount (0..1 across quad)
+		float fX = (p.x - p0.x) / m_fXStep;
+		float fZ = (p.z - p0.z) / -m_fZStep;
+
+		// which of the two triangles in the quad is it?
+		if (fX + fZ < 1)
 		{
+			fAltitude = p0.y + fX * (p1.y - p0.y) + fZ * (p3.y - p0.y);
+
 			// find normal also
 			FPoint3 edge0 = p1 - p0;
 			FPoint3 edge1 = p3 - p0;
 			*vNormal = edge0.Cross(edge1);
 			vNormal->Normalize();
 		}
-	}
-	else
-	{
-		fAltitude = p2.y + (1.0f-fX) * (p3.y - p2.y) + (1.0f-fZ) * (p1.y - p2.y);
-
-		if (vNormal)
+		else
 		{
+			fAltitude = p2.y + (1.0f-fX) * (p3.y - p2.y) + (1.0f-fZ) * (p1.y - p2.y);
+
 			// find normal also
 			FPoint3 edge0 = p3 - p2;
 			FPoint3 edge1 = p1 - p2;
 			*vNormal = edge0.Cross(edge1);
 			vNormal->Normalize();
 		}
+	}
+	else
+	{
+		// It's faster to simpler to operate only the elevations, if we don't
+		//  need to compute a normal vector.
+		float alt0 = GetFValue(iX, iZ);
+		float alt1 = GetFValue(iX+1, iZ);
+		float alt2 = GetFValue(iX+1, iZ+1);
+		float alt3 = GetFValue(iX, iZ+1);
+
+		// find fractional amount (0..1 across quad)
+		float fX = (p.x - (m_WorldExtents.left + iX * m_fXStep)) / m_fXStep;
+		float fY = (p.z - (m_WorldExtents.bottom - iZ * m_fZStep)) / -m_fZStep;
+
+		// which of the two triangles in the quad is it?
+		if (fX + fY < 1)
+			fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt3 - alt0));
+		else
+			fAltitude = (float) (alt2 + (1.0f-fX) * (alt3 - alt2) + (1.0f-fY) * (alt1 - alt2));
+
+		fAltitude *= m_fVerticalScale;
 	}
 	return true;
 }
