@@ -1129,6 +1129,7 @@ void MainFrame::OnViewMinutes()
 
 void MainFrame::OnUpdateMinutes(wxUpdateUIEvent& event)
 {
+	event.Enable(m_proj.IsGeographic());
 	event.Check(m_bShowMinutes);
 }
 
