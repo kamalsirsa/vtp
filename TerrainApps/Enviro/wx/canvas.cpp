@@ -257,6 +257,8 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 
 void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 {
+	static bool bCapture = false;
+
 	// turn WX mouse event into a VT mouse event
 	vtMouseEvent event;
 	wxEventType  ev = event1.GetEventType();
@@ -287,9 +289,18 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	}
 
 	if (ev == wxEVT_LEFT_DOWN || ev == wxEVT_MIDDLE_DOWN || ev == wxEVT_RIGHT_DOWN)
+	{
 		CaptureMouse();
+		bCapture = true;
+	}
 	if (ev == wxEVT_LEFT_UP || ev == wxEVT_MIDDLE_UP || ev == wxEVT_RIGHT_UP)
-		ReleaseMouse();
+	{
+		if (bCapture)
+		{
+			ReleaseMouse();
+			bCapture = false;
+		}
+	}
 
 	event.flags = 0;
 	wxCoord xpos, ypos;
