@@ -7,7 +7,7 @@
 //
 
 #ifdef __DARWIN_OSX__
- #import <glut.h>
+ #import <GLUT/glut.h>
 #else
  #include <GL/glut.h>
 #endif
