@@ -196,12 +196,12 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	LULCSection *section;
 	LULCPoly *poly;
 
+	SetVegType(VLT_Density);
+
 	//set projections
 	vtProjection proj_new;
 	proj_new.SetProjectionSimple(0, -1, EPSG_DATUM_WGS84);
 	SetProjection(proj_new);
-
-	SetVegType(VLT_Density);
 
 	// figure out the number of polygons in file 
 	unsigned int size = 0;
@@ -245,8 +245,6 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 					density = 0.0f;
 					break;
 			}
-			m_pSet->SetValue(count, m_field_density, density);
-
 			DLine2 dline;
 			dline.SetSize(poly->m_iCoords);
 
@@ -258,6 +256,8 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 			dpoly.push_back(dline);
 
 			GetPS()->SetPolygon(count, dpoly);
+			m_pSet->SetValue(count, m_field_density, density);
+
 			count++;
 		}
 	}
