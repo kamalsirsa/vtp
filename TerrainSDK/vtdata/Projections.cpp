@@ -416,7 +416,10 @@ bool vtProjection::SetTextDescription(const char *type, const char *value)
 			if (datum[strlen(datum)-1] == ',')
 				datum[strlen(datum)-1] = 0;
 			SetWellKnownGeogCS(datum);
-			SetUTM( iUTMZone, TRUE );
+			if (iUTMZone > 0)
+				SetUTM( iUTMZone, TRUE);
+			else
+				SetUTM( -iUTMZone, FALSE);
 			return true;
 		}
 	}
