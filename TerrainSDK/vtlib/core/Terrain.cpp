@@ -754,21 +754,17 @@ void vtTerrain::PlantModel(vtTransform *model)
  *
  * \param model The model to be placed on the terrain.
  * \param pos The position (in earth coordinates) at which to place it.
- * \param bGeo true if the position is given in geographic coordinates
- * (longitude, latitude), otherwise it is assumed to be in the meters-based
- * projection that the Terrain is using.
+ * This position is assumed to be in the same coordinate system that
+ * the Terrain is using.
  *
  * Note: this function does not add the model to the terrain's scene
  * graph.  Use <b>AddNode</b> for that operation.
  */
-void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos, bool bGeo)
+void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 {
 	FPoint3 wpos;
 
-	if (bGeo)
-		g_Conv.convert_geo_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
-	else
-		g_Conv.convert_projected_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
+	g_Conv.convert_earth_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
 	m_pHeightField->FindAltitudeAtPoint(wpos, wpos.y);
 	model->SetTrans(wpos);
 }
@@ -896,34 +892,49 @@ void vtTerrain::create_floating_labels(const char *filename)
 	int meter_height;
 	FPoint3 p3;
 
+	vtString font_path = FindFileOnPaths(m_DataPaths, "Fonts/Arial.ttf");
+	if (font_path == "")
+		return;
+
+	vtMaterialArray *pMats = new vtMaterialArray();
+	int index = pMats->AddRGBMaterial1(RGBf(1,1,1), false, false);
+	vtFont *font = new vtFont;
+	bool success = font->LoadFont(font_path);
+
 	while( !feof(fp) )
 	{
 		int ret = fscanf(fp, "%f %f %d %s\n", &utm_x, &utm_y, &meter_height, string);
 		if (!ret) break;
 
+		vtTransform *bb = new vtTransform();
 #if 0
 		vtBillBoard *bb = new vtBillBoard();
 		bb->SetName2(string);
-#if 0
 		bb->SetText(string);
 		bb->SetForeColor(RGBf(1.0f, 1.0f, 0.0f));
 		bb->SetTextFont("Data/Fonts/default.txf");
 		bb->SetKind(BB_Axial);
-#endif
 		FPoint3 yvec(0.0f, 1.0f, 0.0f);
 		bb->SetAxis(yvec);
+#endif
+		vtTextMesh *text = new vtTextMesh(font, true);	// center
+		text->SetText(string);
+		vtGeom *geom = new vtGeom();
+		geom->SetName2(string);
+		geom->SetMaterials(pMats);
+		geom->AddText(text, index);
 
-		// For some reason, Z scale must be set the same as X scale?
-		float width = 1000.0f * WORLD_SCALE;
+		bb->AddChild(geom);
+
+		float width = 250.0f * WORLD_SCALE;
 		float height = 250.0f * WORLD_SCALE;
-		float scale_x = width;
-		bb->Scale2(scale_x, height, scale_x);
+//		float scale_x = width;
+		bb->Scale3(width/20, height/20, 1.0f);
 
 		m_pHeightField->ConvertEarthToSurfacePoint(utm_x, utm_y, p3);
 		p3.y += ((200.0f + meter_height) * WORLD_SCALE);
 		bb->SetTrans(p3);
 		pPlaceNames->AddChild(bb);
-#endif
 	}
 	fclose(fp);
 }
@@ -1092,8 +1103,9 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 
 	if (m_Params.m_bLabels)
 	{
-		vtString labels_path = FindFileOnPaths(m_DataPaths, "places.txt");
-		create_floating_labels(labels_path);
+		vtString labels_path = FindFileOnPaths(m_DataPaths, "PointData/places.txt");
+		if (labels_path != "")
+			create_floating_labels(labels_path);
 	}
 
 	return true;
@@ -1538,10 +1550,10 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	vtMesh *pGeom = new vtMesh(GL_LINES, 0, STEPS*4);
 
 	FPoint3 v1, v2, v3, v4, v;
-	g_Conv.convert_projected_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
-	g_Conv.convert_projected_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
-	g_Conv.convert_projected_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
-	g_Conv.convert_projected_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
+	g_Conv.convert_earth_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
+	g_Conv.convert_earth_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
+	g_Conv.convert_earth_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
+	g_Conv.convert_earth_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
 
 	int i;
 	for (i = 0; i < STEPS; i++)
