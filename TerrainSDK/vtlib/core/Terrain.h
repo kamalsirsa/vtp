@@ -29,6 +29,7 @@ class vtFeatures;
 class SimpleBillboardEngine;
 
 typedef vtImage *vtImagePtr;
+typedef Array<vtStructureArray3d *> StructureSet;
 
 class vtPointOfInterest
 {
@@ -144,6 +145,7 @@ public:
 	bool AddNodeToVegGrid(vtTransform *pTrans);
 
 	// structures
+	StructureSet &GetStructureSet() { return m_StructureSet; }
 	vtStructureArray3d *GetStructures();
 	vtStructureArray3d *NewStructureArray();
 	vtStructureArray3d *CreateStructuresFromXML(const vtString &strFilename);
@@ -273,7 +275,7 @@ protected:
 	RGBf			m_fog_color;
 
 	// built structures, e.g. buildings and fences
-	Array<vtStructureArray3d *> m_StructureSet;
+	StructureSet	m_StructureSet;
 	int				m_iStructSet;
 	vtLodGrid		*m_pStructGrid;
 
