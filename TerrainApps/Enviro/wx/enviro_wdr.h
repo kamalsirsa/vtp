@@ -194,11 +194,9 @@ wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer
 #define ID_SPIN_HOUR 10129
 #define ID_SPIN_MINUTE 10130
 #define ID_SPIN_SECOND 10131
-#define ID_STOP 10132
-#define ID_GO 10133
-#define ID_TEXT_SPEED 10134
-#define ID_SLIDER_SPEED 10135
-#define ID_APPLY 10136
+#define ID_TEXT_SPEED 10132
+#define ID_SLIDER_SPEED 10133
+#define ID_STOP 10134
 wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
