@@ -919,6 +919,12 @@ void vtTerrain::_CreateCulture(bool bSound)
 	// create trees
 	m_PIA.SetHeightField(m_pHeightField);
 	m_PIA.SetPlantList(m_pPlantList);
+
+	// In case we don't load any plants, or fail to load, we will start with
+	// an empty plant array, which needs to match the projection of the rest
+	// of the terrain.
+	m_PIA.SetProjection(GetProjection());
+
 	if (m_Params.m_bTrees)
 	{
 		// Read the VF file
