@@ -915,6 +915,7 @@ void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 	{
 		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.shp");
 		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.igc");
+		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.dxf");
 	}
 
 	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
