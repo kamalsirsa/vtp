@@ -129,6 +129,7 @@ void PropDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTagList->SetColumnWidth(1, 120);
 
 	AddValidator(ID_ITEM, &m_strItem);
+	AddValidator(ID_TYPECHOICE, &m_strType);
 }
 
 void PropDlg::OnChoiceType( wxCommandEvent &event )
