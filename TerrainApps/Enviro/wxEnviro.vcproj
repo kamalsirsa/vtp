@@ -489,6 +489,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\EnviroGUI.cpp">
+			</File>
+			<File
 				RelativePath="wx\frame.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -528,6 +531,9 @@
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\wx\LayerDlg.cpp">
 			</File>
 			<File
 				RelativePath="wx\LinearStructDlg3d.cpp">
@@ -831,7 +837,13 @@
 				RelativePath="wx\enviro_wdr.h">
 			</File>
 			<File
+				RelativePath=".\wx\EnviroGUI.h">
+			</File>
+			<File
 				RelativePath="wx\frame.h">
+			</File>
+			<File
+				RelativePath=".\wx\LayerDlg.h">
 			</File>
 			<File
 				RelativePath="wx\LinearStructDlg3d.h">
