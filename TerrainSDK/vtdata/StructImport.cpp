@@ -226,8 +226,11 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	// Make sure that entities are of the expected type
 	if (opt.type == ST_BUILDING)
 	{
-		if (nShapeType != SHPT_POINT && nShapeType != SHPT_POLYGON &&
-			nShapeType != SHPT_ARC && nShapeType != SHPT_POLYGONZ)
+		if (nShapeType != SHPT_POINT &&
+			nShapeType != SHPT_POINTZ && 
+			nShapeType != SHPT_POLYGON &&
+			nShapeType != SHPT_ARC &&
+			nShapeType != SHPT_POLYGONZ)
 			return false;
 		// Check for field with number of stories
 		if (db != NULL)
@@ -235,7 +238,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	}
 	if (opt.type == ST_INSTANCE)
 	{
-		if (nShapeType != SHPT_POINT)
+		if (nShapeType != SHPT_POINT &&
+			nShapeType != SHPT_POINTZ)
 			return false;
 		if (db == NULL)
 			return false;
