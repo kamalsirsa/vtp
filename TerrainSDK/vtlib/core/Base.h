@@ -69,8 +69,15 @@ class vtRoot;
 class vtEngine;
 class vtGeom;
 
+class vtTarget
+{
+public:
+	// need at least one method to make this class polymorphic
+	virtual void PlaceHolder() {}
+};
+
 /** Virtual base class for vtNode implementation. */
-class vtNodeBase
+class vtNodeBase : public vtTarget
 {
 public:
 	virtual vtNodeBase*	CreateClone() = 0;
