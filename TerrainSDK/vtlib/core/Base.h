@@ -370,7 +370,7 @@ public:
 	bool GetKeyState(int key);
 	void DoEngines();
 
-	void SetWindowSize(int w, int h) { m_WindowSize.Set(w, h); }
+	void SetWindowSize(int w, int h);
 	IPoint2 GetWindowSize() { return m_WindowSize; }
 
 	virtual void SetRoot(vtGroup *pRoot) = 0;

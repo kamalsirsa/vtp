@@ -87,6 +87,19 @@ bool vtSceneBase::GetKeyState(int key)
 		return false;
 }
 
+void vtSceneBase::SetWindowSize(int w, int h)
+{
+	m_WindowSize.Set(w, h);
+
+	// Pass event to Engines
+	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
+	{
+		vtEngine *pEng = m_Engines.GetAt(i);
+		if (pEng->GetEnabled())
+			pEng->OnWindowSize(w, h);
+	}
+}
+
 void vtSceneBase::DoEngines()
 {
 	// Evaluate Engines
