@@ -6,7 +6,7 @@
 #ifndef __WDR_cmanager_H__
 #define __WDR_cmanager_H__
 
-#ifdef __GNUG__
+#if defined(__GNUG__) && !defined(__APPLE__)
     #pragma interface "cmanager_wdr.h"
 #endif
 
