@@ -14,7 +14,7 @@ all :
 	cd vtdata     ; $(MAKE) all
 	cd xmlhelper  ; $(MAKE) all
 	cd vtlib/vtosg; $(MAKE) all
- 	cd vtui       ; $(MAKE) all
+	cd vtui       ; $(MAKE) all
   
 clean :
 	cd vtdata     ; $(MAKE) clean
