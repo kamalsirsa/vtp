@@ -14,6 +14,10 @@
 
 #include "wx/resource.h"
 
+#include "vtdata/Unarchive.h"
+#include "vtdata/FilePath.h"
+#include "vtdata/boost/directory.h"
+
 #include "Frame.h"
 #include "SplitterWin.h"
 #include "TreeView.h"
@@ -95,6 +99,7 @@ DECLARE_APP(MyApp)
 #define WID_SPLITTER	100
 #define WID_FRAME		101
 #define WID_MAINVIEW	102
+
 
 //////////////////////////////////////////////////////////////////
 
@@ -310,18 +315,114 @@ void MainFrame::RefreshToolbar()
 	menuBar->EnableTop(9, lt == LT_RAW);
 }
 
+
+// Helper
+void GetTempFolderName(char *path, const char *base)
+{
+	const char *tmp = base;
+	const char *tmp1 = strrchr(base, '/');
+	if (tmp1)
+		tmp = tmp1+1;
+	const char *tmp2 = strrchr(base, '\\');
+	if (tmp2 && tmp2 > tmp)
+		tmp = tmp2+1;
+	const char *tmp3 = strrchr(base, ':');
+	if (tmp3 && tmp3 > tmp)
+		tmp = tmp3+1;
+
+	const char *temp = getenv("TEMP");
+	if (temp)
+		strcpy(path, temp);
+	else
+		strcpy(path, "C:/TEMP");
+	strcat(path, "/");
+	strcat(path, tmp);
+	strcat(path, "_temp");
+}
+
 ////////////////////////////////////////////////////////////////
 // Application Methods
 
 //
 // Load a layer from a file without knowing its type
 //
-void MainFrame::LoadLayer(const wxString &fname)
+void MainFrame::LoadLayer(const wxString &fname_in)
 {
 	// check file extension
+	wxString fname = fname_in;
 	wxString ext = fname.AfterLast('.');
 
 	bool bFirst = (m_Layers.GetSize() == 0);
+
+	using namespace boost::filesystem;
+
+	// check if it's an archive
+	bool bExpandedArchive = false;
+	char prepend_path[1024];
+	GetTempFolderName(prepend_path, fname_in);
+
+	if (ext.CmpNoCase("gz") == 0 || ext.CmpNoCase("tgz") == 0 ||
+		ext.CmpNoCase("tar") == 0)
+	{
+		// try to uncompress
+		const char *input_filename = fname;
+
+		int result;
+		result = vtCreateDir(prepend_path);
+		if (result == 0 && errno != EEXIST)
+		{
+			wxMessageBox("Couldn't create temporary directory to hold contents of archive.");
+			return;
+		}
+		strcat(prepend_path, "/");
+
+		result = ExpandTGZ(input_filename, prepend_path);
+		if (result < 1)
+		{
+			wxMessageBox("Couldn't expand archive.");
+			return;
+		}
+		else if (result == 1)
+		{
+			// the archive contained a single file
+			for (dir_it it(prepend_path); it != dir_it(); ++it)
+			{
+				if (get<is_directory>(it))
+					continue;
+				std::string name1 = *it;
+				fname = prepend_path;
+				fname += name1.c_str();
+				break;
+			}
+		}
+		else if (result > 1)
+		{
+			// probably SDTS, look for the catalog file
+			bool found = false;
+			for (dir_it it(prepend_path); it != dir_it(); ++it)
+			{
+				std::string name1 = *it;
+				wxString fname2 = name1.c_str();
+				if (fname2.Right(8).CmpNoCase("catd.ddf") == 0)
+				{
+					fname = prepend_path;
+					fname += fname2;
+					found= true;
+					break;
+				}
+			}
+			if (!found)
+			{
+				wxMessageBox("Don't know what to do with contents of archive.");
+				return;
+			}
+		}
+
+		// extension has certainly changed
+		wxString ext = fname.AfterLast('.');
+
+		bExpandedArchive = true;
+	}
 
 	vtLayer *pLayer = NULL;
 	if (ext.CmpNoCase("rmf") == 0)
@@ -368,16 +469,24 @@ void MainFrame::LoadLayer(const wxString &fname)
 		if (pRL->Load(fname))
 			pLayer = pRL;
 	}
-	if (!pLayer)
+	if (pLayer)
+	{
+		bool success = AddLayerWithCheck(pLayer, true);
+		if (!success)
+			delete pLayer;
+	}
+	else
 	{
 		// try importing
 		ImportDataFromFile(LT_UNKNOWN, fname, true);
-		return;
 	}
 
-	bool success = AddLayerWithCheck(pLayer, true);
-	if (!success)
-		delete pLayer;
+	if (bExpandedArchive)
+	{
+		// clean up after ourselves
+		GetTempFolderName(prepend_path, fname_in);
+		vtDestroyDir(prepend_path);
+	}
 }
 
 bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
