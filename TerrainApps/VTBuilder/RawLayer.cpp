@@ -22,6 +22,7 @@
 #include "xmlhelper/easyxml.hpp"
 // Dialogs
 #include "FeatInfoDlg.h"
+#include "Projection2Dlg.h"
 
 ////////////////////////////////////////////////////////////////////
 
@@ -302,6 +303,23 @@ bool vtRawLayer::OnLoad()
 		m_pSet = loader.LoadFromSHP(fname.mb_str());
 //		return LoadWithOGR(fname.mb_str());
 	}
+	if (m_pSet)
+	{
+		vtProjection proj = m_pSet->GetAtProjection();
+		if (!proj.GetRoot())
+		{
+			// ask user for a projection
+			Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
+			GetMainFrame()->GetProjection(proj);
+			dlg.SetProjection(proj);
+
+			if (dlg.ShowModal() == wxID_CANCEL)
+				return NULL;
+			dlg.GetProjection(proj);
+			m_pSet->SetProjection(proj);
+		}
+	}
+
 	return (m_pSet != NULL);
 }
 
