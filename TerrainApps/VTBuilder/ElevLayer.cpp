@@ -849,6 +849,10 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	{
 		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
 	}
+	else if (!strExt.CmpNoCase("mem"))
+	{
+		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
+	}
 	else if (!strExt.CmpNoCase("ter"))
 	{
 		success = m_pGrid->LoadFromTerragen(strFileName, progress_callback);

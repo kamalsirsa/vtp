@@ -30,6 +30,7 @@
 #define FSTRING_GML		"GML Files (*.gml, *.xml)|*.gml;*.xml|"
 #define FSTRING_GTOPO	"GTOPO30 Files (*.hdr)|*.hdr|"	
 #define FSTRING_LULC	"LULC Files (*.gir)|*.gir|"
+#define FSTRING_MEM		"Japanese DEM Files (*.mem)|*.mem|"
 #define FSTRING_PGM		"PGM Files (*.pgm)|*.pgm|"
 #define FSTRING_PNG		"PNG Files (*.png)|*.png|"
 #define FSTRING_RAW		"Raw raster files (*.raw)|*.raw|"
