@@ -251,6 +251,7 @@ public:
 	void SetPivotPoint(const FPoint3 &pos) { m_Pivot = pos; }
 	void SetDirection(float fTheta, float fPhi);
 	void MoveDirection(float fTheta, float fPhi);
+	void SetTrans(const FPoint3 &trans) { m_Trans = trans; }
 
 	void OnMouse(vtMouseEvent &event);
 	void Eval();
