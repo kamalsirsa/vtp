@@ -303,7 +303,7 @@ void vtStructureArray3d::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 
 void vtStructureArray3d::DestroyStructure(int i)
 {
-	// Need to destroy the 3d geometry for this structure
+	// Need to destroy the 3D geometry for this structure
 	vtStructure3d *st3d = GetStructure3d(i);
 	st3d->DeleteNode();
 }

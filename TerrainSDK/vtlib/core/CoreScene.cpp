@@ -19,7 +19,7 @@ source license</a>.
 
 <b>vtlib</b> contains an abstraction of a Scene Graph API, built on top of
 OpenGL and other lower-level APIs such as OSG and SGL.
-Because it is higher-level, <b>vtlib</b> lets you construct 3d geometry
+Because it is higher-level, <b>vtlib</b> lets you construct 3D geometry
 and simulations much faster and easier than using the lower-level libraries
 directly.
 

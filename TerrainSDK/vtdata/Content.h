@@ -103,7 +103,7 @@ protected:
  * along with information about what they are and how they should be loaded.
  * It consists of a set of Content Items (vtItem) which each represent a
  * particular object, which in turn consist of Models (vtModel) which are a
- * particular 3d geometry for that Item.  An Item can have several Models
+ * particular 3D geometry for that Item.  An Item can have several Models
  * which represent different levels of detail (LOD).
  * \par
  * To load a set of content  from a file, first create a
