@@ -1454,10 +1454,8 @@ vtStructInstance *GetClosestDefault(vtStructInstance *pInstance)
 	return NULL;
 }
 
-bool SetupDefaultStructures(const char *fname)
+bool SetupDefaultStructures(const vtString &fname)
 {
-	if (!fname)
-		fname = "DefaultStructures.vtst";
 	if (g_DefaultStructures.ReadXML(fname))
 		return true;
 

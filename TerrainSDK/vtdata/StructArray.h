@@ -149,7 +149,7 @@ extern vtStructureArray g_DefaultStructures;
 // Helpers
 int GetSHPType(const char *filename);
 
-bool SetupDefaultStructures(const char *fname = NULL);
+bool SetupDefaultStructures(const vtString &fname);
 vtBuilding *GetClosestDefault(vtBuilding *pBld);
 vtFence *GetClosestDefault(vtFence *pFence);
 vtStructInstance *GetClosestDefault(vtStructInstance *pInstance);
