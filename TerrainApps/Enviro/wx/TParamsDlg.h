@@ -27,7 +27,11 @@
 class wxListBoxEventHandler: public wxEvtHandler
 {
 public:
-	wxListBoxEventHandler(class TParamsDlg *dlg, wxListBox *box);
+	wxListBoxEventHandler(class TParamsDlg *dlg, wxListBox *pBox)
+	{
+		m_pDlg = dlg;
+		m_pBox = pBox;
+	}
 	void OnChar(wxKeyEvent& event);
 
 private:
@@ -60,11 +64,12 @@ public:
 	void SetDataPaths(const vtStringArray &paths) { m_datapaths = paths; }
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
-	void RefreshLabelFields();
 	void RefreshLocationFields();
 	void UpdateTimeString();
 	void UpdateColorControl();
 	void UpdateColorMapChoice();
+	void DeleteItem(wxListBox *pBox);
+	int FindLayerByFilename(const wxString2 &fname);
 
 	// overall name
 	wxString2   m_strTerrainName;
@@ -134,7 +139,8 @@ public:
 	bool	m_bFog;
 	float   m_fFogDistance;
 
-	wxStringArray   m_strStructFiles;
+//	wxStringArray   m_strStructFiles;
+	std::vector<vtTagArray> m_Layers;
 	int	   m_iStructDistance;
 	bool   m_bStructureShadows;
 	int    m_bStructureRez;
@@ -149,10 +155,6 @@ public:
 	bool	m_bHorizon;
 //  bool	m_bOverlay;
 	wxColor	m_BgColor;
-
-	bool	m_bLabels;
-	wxString2   m_strLabelFile;
-	PointStyle  m_Style;
 
 	bool	m_bVehicles;
 //  float   m_fVehicleSize;
@@ -191,10 +193,9 @@ public:
 	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
 	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
-	wxComboBox* GetLabelFile()  { return (wxComboBox*) FindWindow( ID_LABEL_FILE ); }
 	wxChoice* GetLocField()  { return (wxChoice*) FindWindow( ID_INIT_LOCATION ); }
-	wxChoice* GetLabelField()  { return (wxChoice*) FindWindow( ID_LABEL_FIELD ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
+	wxListBox* GetRawFiles()  { return (wxListBox*) FindWindow( ID_RAWFILES ); }
 
 	bool	m_bReady;
 	bool	m_bSetting;
@@ -202,6 +203,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
+	wxListBox* m_pRawFiles;
 	wxComboBox* m_pDTName;
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
@@ -218,8 +220,6 @@ private:
 	wxRadioButton* m_pTiled;
 	wxComboBox* m_pLocFile;
 	wxComboBox* m_pSkyTexture;
-	wxComboBox* m_pLabelFile;
-	wxChoice* m_pLabelField;
 	wxChoice* m_pLocField;
 	wxListBoxEventHandler *m_pBoxHandler;
 	wxChoice* m_pShadowRez;
@@ -236,11 +236,12 @@ private:
 	void OnTextureTiled( wxCommandEvent &event );
 	void OnEditColors( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
-	void OnListDblClick( wxCommandEvent &event );
-	void OnChoiceLabelFile( wxCommandEvent &event );
+	void OnListDblClickStructure( wxCommandEvent &event );
+	void OnListDblClickRaw( wxCommandEvent &event );
 	void OnChoiceLocFile( wxCommandEvent &event );
 	void OnChoiceInitLocation( wxCommandEvent &event );
 	void OnSetInitTime( wxCommandEvent &event );
+	void OnStyle( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

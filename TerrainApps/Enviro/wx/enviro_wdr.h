@@ -202,45 +202,52 @@ wxSizer *TerrManFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = T
 #define ID_BGCOLOR 10144
 wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LABELS 10145
-#define ID_LABEL_FILE 10146
-#define ID_LABEL_FIELD 10147
-#define ID_LABEL_HEIGHT 10148
-#define ID_LABEL_SIZE 10149
+#define ID_RAWFILES 10145
+#define ID_STYLE 10146
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 extern wxSizer *g_pLayerSizer1;
 extern wxSizer *g_pLayerSizer2;
-#define ID_LAYER_ACTIVE 10150
-#define ID_LAYER_VISIBLE 10151
-#define ID_SHADOW_VISIBLE  10152
-#define ID_LAYER_ZOOM_TO 10153
-#define ID_LAYER_SAVE 10154
-#define ID_LAYER_CREATE 10155
-#define ID_LAYER_REMOVE 10156
-#define ID_SHOW_ALL 10157
-#define ID_LAYER_TREE 10158
+#define ID_LAYER_ACTIVE 10147
+#define ID_LAYER_VISIBLE 10148
+#define ID_SHADOW_VISIBLE  10149
+#define ID_LAYER_ZOOM_TO 10150
+#define ID_LAYER_SAVE 10151
+#define ID_LAYER_CREATE 10152
+#define ID_LAYER_REMOVE 10153
+#define ID_SHOW_ALL 10154
+#define ID_LAYER_TREE 10155
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPIN_YEAR 10159
-#define ID_SPIN_MONTH 10160
-#define ID_SPIN_DAY 10161
-#define ID_SPIN_HOUR 10162
-#define ID_SPIN_MINUTE 10163
-#define ID_SPIN_SECOND 10164
-#define ID_TEXT_SPEED 10165
-#define ID_SLIDER_SPEED 10166
+#define ID_SPIN_YEAR 10156
+#define ID_SPIN_MONTH 10157
+#define ID_SPIN_DAY 10158
+#define ID_SPIN_HOUR 10159
+#define ID_SPIN_MINUTE 10160
+#define ID_SPIN_SECOND 10161
+#define ID_TEXT_SPEED 10162
+#define ID_SLIDER_SPEED 10163
 wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FULLSCREEN 10167
-#define ID_TEXTURE_COMPRESSION 10168
-#define ID_DISABLE_MIPMAPS 10169
-#define ID_SELECTION_CUTOFF 10170
-#define ID_SELECTION_RADIUS 10171
-#define ID_PLANTSIZE 10172
-#define ID_ONLY_AVAILABLE_SPECIES 10173
-#define ID_CHOICE_CONTENT 10174
+#define ID_FULLSCREEN 10164
+#define ID_TEXTURE_COMPRESSION 10165
+#define ID_DISABLE_MIPMAPS 10166
+#define ID_SELECTION_CUTOFF 10167
+#define ID_SELECTION_RADIUS 10168
+#define ID_PLANTSIZE 10169
+#define ID_ONLY_AVAILABLE_SPECIES 10170
+#define ID_CHOICE_CONTENT 10171
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_FEATURE_TYPE 10172
+#define ID_GEOMETRY 10173
+#define ID_COLOR 10174
+#define ID_TEXT_LABELS 10175
+#define ID_TEXT_FIELD 10176
+#define ID_COLOR_FIELD 10177
+#define ID_LABEL_HEIGHT 10178
+#define ID_LABEL_SIZE 10179
+wxSizer *StyleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 

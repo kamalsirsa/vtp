@@ -20,12 +20,13 @@
 #include <wx/colordlg.h>
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Location.h"
-#include "vtdata/Features.h"		// for RefreshLabelFields()
 #include "vtdata/FilePath.h"		// for FindFileOnPaths()
 #include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"
+
 #include "TParamsDlg.h"
 #include "TimeDlg.h"
+#include "StyleDlg.h"
 
 #define NTILES 4
 
@@ -35,12 +36,6 @@ BEGIN_EVENT_TABLE(wxListBoxEventHandler, wxEvtHandler)
 	EVT_CHAR(wxListBoxEventHandler::OnChar)
 END_EVENT_TABLE()
 
-wxListBoxEventHandler::wxListBoxEventHandler(TParamsDlg *dlg, wxListBox *box) : wxEvtHandler()
-{
-	m_pDlg = dlg;
-	m_pBox = box;
-}
-
 void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
 {
 	if (event.KeyCode() == WXK_DELETE)
@@ -48,8 +43,8 @@ void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
 		int sel = m_pBox->GetSelection();
 		if (sel != -1 && sel < m_pBox->GetCount()-1)
 		{
-			m_pBox->Delete(sel);
-			m_pDlg->TransferDataFromWindow();
+			m_pDlg->DeleteItem(m_pBox);
+			m_pDlg->TransferDataToWindow();
 		}
 	}
 	event.Skip();
@@ -87,20 +82,20 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_CHECK_STRUCTURE_SHADOWS, TParamsDlg::OnCheckBox )
 
-	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClick )
+	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClickStructure )
+	EVT_LISTBOX_DCLICK( ID_RAWFILES, TParamsDlg::OnListDblClickRaw )
 
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
-	EVT_CHECKBOX( ID_LABELS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
 	EVT_BUTTON( ID_BGCOLOR, TParamsDlg::OnBgColor )
 
-	EVT_TEXT( ID_LABEL_FILE, TParamsDlg::OnChoiceLabelFile )
 	EVT_TEXT( ID_LOCFILE, TParamsDlg::OnChoiceLocFile )
 	EVT_CHOICE( ID_INIT_LOCATION, TParamsDlg::OnChoiceInitLocation )
 
 	EVT_BUTTON( ID_SET_INIT_TIME, TParamsDlg::OnSetInitTime )
+	EVT_BUTTON( ID_STYLE, TParamsDlg::OnStyle )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -118,10 +113,9 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	wxNotebook *notebook = (wxNotebook*) FindWindow( ID_NOTEBOOK );
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
-	m_pBoxHandler = NULL;
-
 	m_pPreLightFactor = GetLightFactor();
 	m_pStructFiles = GetStructFiles();
+	m_pRawFiles = GetRawFiles();
 	m_pRoadFile = GetRoadfile();
 	m_pTreeFile = GetTreefile();
 	m_pTextureFileSingle = GetTfilesingle();
@@ -132,8 +126,6 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_pLocFile = GetLocfile();
 	m_pShadowRez = GetChoiceShadowRez();
 	m_pSkyTexture = GetSkytexture();
-	m_pLabelFile = GetLabelFile();
-	m_pLabelField = GetLabelField();
 	m_pLocField = GetLocField();
 	m_pNavStyle = GetNavStyle();
 
@@ -225,23 +217,16 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_FOG, &m_bFog);
 	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
 
-	// Feature labels page
-	AddValidator(ID_LABELS, &m_bLabels);
-	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
-	AddValidator(ID_LABEL_FIELD, &m_Style.m_field_index);
-	AddNumValidator(ID_LABEL_HEIGHT, &m_Style.m_label_elevation);
-	AddNumValidator(ID_LABEL_SIZE, &m_Style.m_label_size);
-
 	// It's somewhat roundabout, but this lets us capture events on the
-	// listbox control without having to subclass it.
-	m_pBoxHandler = new wxListBoxEventHandler(this, m_pStructFiles);
-	m_pStructFiles->PushEventHandler(m_pBoxHandler);
+	// listbox controls without having to subclass.
+	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
+	m_pRawFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pRawFiles));
 }
 
 TParamsDlg::~TParamsDlg()
 {
-	if (m_pBoxHandler)
-		m_pStructFiles->PopEventHandler(true);
+	m_pStructFiles->PopEventHandler(true);
+	m_pRawFiles->PopEventHandler(true);
 }
 
 //
@@ -320,14 +305,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bFog =			Params.GetValueBool(STR_FOG);
 	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
 
-	unsigned int i, num = Params.m_strStructFiles.size();
-	for (i = 0; i < num; i++)
-	{
-		wxString2 *ws = new wxString2();
-		const ParamStructLayer &psl = Params.m_strStructFiles[i];
-		ws->from_utf8(psl.m_strStructFile);
-		m_strStructFiles.Append(ws);
-	}
+	// Layers and structure stuff
+	m_Layers = Params.m_Layers;
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
 	m_bStructureShadows = Params.GetValueBool(STR_STRUCT_SHADOWS);
 	m_bStructureRez = vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
@@ -348,10 +327,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 //  m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
 	RGBi col = 			Params.GetValueRGBi(STR_BGCOLOR);
 	m_BgColor.Set(col.r, col.g, col.b);
-
-	m_bLabels =		 Params.GetValueBool(STR_LABELS);
-	m_strLabelFile.from_utf8(Params.GetValueString(STR_LABELFILE));
-	m_Style =		   Params.GetPointStyle();
 
 	m_bRouteEnable =	Params.GetValueBool(STR_ROUTEENABLE);
 	m_strRouteFile.from_utf8(Params.GetValueString(STR_ROUTEFILE));
@@ -438,14 +413,9 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
 	// (fog color not exposed in UI)
 
-	Params.m_strStructFiles.clear();
-	int i, num = m_strStructFiles.GetSize();
-	for (i = 0; i < num; i++)
-	{
-		ParamStructLayer psl;
-		psl.m_strStructFile = m_strStructFiles[i]->to_utf8();
-		Params.m_strStructFiles.push_back(psl);
-	}
+	// Layers and structure stuff
+	Params.m_Layers = m_Layers;
+
 	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
 	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
 	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_bStructureRez+8));
@@ -467,10 +437,6 @@ void TParamsDlg::GetParams(TParams &Params)
 //  Params.SetValueBool(STR_OVERLAY, m_bOverlay);
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
 	Params.SetValueRGBi(STR_BGCOLOR, col);
-
-	Params.SetValueBool(STR_LABELS, m_bLabels);
-	Params.SetValueString(STR_LABELFILE, m_strLabelFile.to_utf8());
-	Params.SetPointStyle(m_Style);
 
 	Params.SetValueBool(STR_ROUTEENABLE, m_bRouteEnable);
 	Params.SetValueString(STR_ROUTEFILE, m_strRouteFile.to_utf8());
@@ -536,39 +502,6 @@ void TParamsDlg::UpdateEnableState()
 	GetSkytexture()->Enable(m_bSky);
 	GetSkytexture()->Enable(m_bSky);
 	GetFogDistance()->Enable(m_bFog);
-
-	GetLabelFile()->Enable(m_bLabels);
-	FindWindow(ID_LABEL_FIELD)->Enable(m_bLabels);
-	FindWindow(ID_LABEL_HEIGHT)->Enable(m_bLabels);
-	FindWindow(ID_LABEL_SIZE)->Enable(m_bLabels);
-}
-
-void TParamsDlg::RefreshLabelFields()
-{
-	m_pLabelField->Clear();
-
-	vtString fname = "PointData/";
-	fname += m_strLabelFile.mb_str();
-	vtString fpath = FindFileOnPaths(m_datapaths, fname);
-
-	vtFeatureSetPoint2D points;
-	if (!points.LoadFieldInfoFromDBF(fpath))
-		return;
-
-	int i, num = points.GetNumFields();
-	for (i = 0; i < num; i++)
-	{
-		Field *field = points.GetField(i);
-		wxString2 field_name = field->m_name;
-		m_pLabelField->Append(field_name);
-	}
-	if (num)
-	{
-		if (m_Style.m_field_index < 0)
-			m_Style.m_field_index = 0;
-		if (m_Style.m_field_index > num-1)
-			m_Style.m_field_index = num-1;
-	}
 }
 
 void TParamsDlg::RefreshLocationFields()
@@ -614,6 +547,23 @@ void TParamsDlg::UpdateColorMapChoice()
 		if (sel != -1)
 			m_pColorMap->SetSelection(sel);
 	}
+}
+
+void TParamsDlg::DeleteItem(wxListBox *pBox)
+{
+	wxString2 fname1 = pBox->GetStringSelection();
+	int idx = FindLayerByFilename(fname1);
+	if (idx != -1)
+		m_Layers.erase(m_Layers.begin()+idx);
+}
+
+int TParamsDlg::FindLayerByFilename(const wxString2 &fname)
+{
+	vtString fname2 = fname.vt_str();
+	for (unsigned int i = 0; i < m_Layers.size(); i++)
+		if (fname2 == m_Layers[i].GetValueString("Filename"))
+			return (int) i;
+	return -1;
 }
 
 
@@ -721,12 +671,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		sel = m_pSkyTexture->FindString(m_strSkyTexture);
 		if (sel != -1)
 			m_pSkyTexture->SetSelection(sel);
-
-		// fill in PointData files
-		AddFilenamesToComboBox(m_pLabelFile, paths[i] + "PointData", "*.shp");
-		sel = m_pLabelFile->FindString(m_strLabelFile);
-		if (sel != -1)
-			m_pLabelFile->SetSelection(sel);
 	}
 	UpdateColorMapChoice();
 
@@ -755,7 +699,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 //  m_pNavStyle->Append(_("Quake-Style Walk"));
 	m_pNavStyle->Append(_("Panoramic Flyer"));
 
-	RefreshLabelFields();
 	RefreshLocationFields();
 
 //  DetermineTerrainSizeFromBT();
@@ -792,10 +735,21 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pTiled->SetValue(m_iTexture == TE_TILED);
 
 	m_pStructFiles->Clear();
-	int i, num = m_strStructFiles.GetSize();
-	for (i = 0; i < num; i++)
-		m_pStructFiles->Append(*m_strStructFiles[i]);
+	m_pRawFiles->Clear();
+	for (unsigned int i = 0; i < m_Layers.size(); i++)
+	{
+		vtString ltype = m_Layers[i].GetValueString("Type");
+		vtString fname = m_Layers[i].GetValueString("Filename");
+		wxString2 fname2;
+		fname2.from_utf8(fname);
+
+		if (ltype == TERR_LTYPE_STRUCTURE)
+			m_pStructFiles->Append(fname2);
+		if (ltype == TERR_LTYPE_RAW)
+			m_pRawFiles->Append(fname2);
+	}
 	m_pStructFiles->Append(_("(double-click to add files)"));
+	m_pRawFiles->Append(_("(double-click to add files)"));
 
 	bool result = wxDialog::TransferDataToWindow();
 	m_bSetting = false;
@@ -809,11 +763,6 @@ bool TParamsDlg::TransferDataFromWindow()
 	if (m_pSingle->GetValue()) m_iTexture = TE_SINGLE;
 	if (m_pDerived->GetValue()) m_iTexture = TE_DERIVED;
 	if (m_pTiled->GetValue()) m_iTexture = TE_TILED;
-
-	m_strStructFiles.Empty();
-	int i, num = m_pStructFiles->GetCount();
-	for (i = 0; i < num-1; i++)	 // skip last
-		m_strStructFiles.Append(new wxString2(m_pStructFiles->GetString(i)));
 
 	return wxDialog::TransferDataFromWindow();
 }
@@ -925,7 +874,7 @@ void AddFilenamesToArray(wxArrayString &array, const char *directory,
 	}
 }
 
-void TParamsDlg::OnListDblClick( wxCommandEvent &event )
+void TParamsDlg::OnListDblClickStructure( wxCommandEvent &event )
 {
 	unsigned int i;
 	wxArrayString strings;
@@ -933,29 +882,40 @@ void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 	for (i = 0; i < m_datapaths.size(); i++)
 		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst*");
 
-	// int num = m_pLocList->GetSelection();  // no care
-	wxString result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
+	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
 		strings, this);
 
 	if (result.Cmp(_T(""))) // user selected something
 	{
-		m_strStructFiles.Append(new wxString2(result));
+		vtTagArray lay;
+		lay.SetValueString("Type", TERR_LTYPE_STRUCTURE, true);
+		lay.SetValueString("Filename", result.vt_str(), true);
+		m_Layers.push_back(lay);
 		TransferDataToWindow();
 	}
 }
 
-void TParamsDlg::OnChoiceLabelFile( wxCommandEvent &event )
+void TParamsDlg::OnListDblClickRaw( wxCommandEvent &event )
 {
-	if (m_bSetting || !m_bReady) return;
+	unsigned int i;
+	wxArrayString strings;
 
-	wxString2 prev = m_strLabelFile;
-	TransferDataFromWindow();
-	if (m_strLabelFile != prev)
+	for (i = 0; i < m_datapaths.size(); i++)
 	{
-		RefreshLabelFields();
-		m_bSetting = true;
+		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.shp");
+		AddFilenamesToArray(strings, m_datapaths[i] + "PointData", "*.igc");
+	}
+
+	wxString2 result = wxGetSingleChoice(_("One of the following to add:"), _("Choose a structure file"),
+		strings, this);
+
+	if (result.Cmp(_T(""))) // user selected something
+	{
+		vtTagArray lay;
+		lay.SetValueString("Type", TERR_LTYPE_RAW, true);
+		lay.SetValueString("Filename", result.vt_str(), true);
+		m_Layers.push_back(lay);
 		TransferDataToWindow();
-		m_bSetting = false;
 	}
 }
 
@@ -994,6 +954,21 @@ void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
 		m_bSetting = true;
 		TransferDataToWindow();
 		m_bSetting = false;
+	}
+}
+
+void TParamsDlg::OnStyle( wxCommandEvent &event )
+{
+	wxString2 str = GetRawFiles()->GetStringSelection();
+	int idx = FindLayerByFilename(str);
+	if (idx == -1)
+		return;
+
+	StyleDlg dlg(this, -1, _("Feature Style"));
+	dlg.SetRawLayer(m_datapaths, m_Layers[idx]);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetRawLayer(m_Layers[idx]);
 	}
 }
 
