@@ -141,4 +141,20 @@ double GetMetersPerUnit(LinearUnits lu);
 
 ///////////////////////////
 
+// Stick this here for now, although it really belongs in its own module
+class GDALWrapper
+{
+public:
+	GDALWrapper();
+	~GDALWrapper();
+
+	void RequestGDALFormats();
+	void RequestOGRFormats();
+
+protected:
+	bool m_bGDALFormatsRegistered;
+	bool m_bOGRFormatsRegistered;
+};
+extern GDALWrapper g_GDALWrapper;
+
 #endif	// PROJECTIONSH

@@ -316,8 +316,9 @@ void vtProjection::SetGeogCSFromDatum(int iDatum)
 
 			case WGS_72:			SetWellKnownGeogCS( "WGS72" ); break;
 			case WGS_84:			SetWellKnownGeogCS( "WGS84" ); break;
+			default:
+				SetWellKnownGeogCS( "WGS84" );
 		}
-		SetWellKnownGeogCS( "WGS84" );
 		return;
 	}
 
@@ -963,3 +964,52 @@ static void MassageDatumFromWKT(vtString &strDatum )
 }
 
 
+/////////////////////////////////////////////////////////
+
+// GDAL
+#include "gdal_priv.h"
+
+// OGR
+#include <ogrsf_frmts.h>
+
+// A singleton for this class
+GDALWrapper g_GDALWrapper;
+
+GDALWrapper::GDALWrapper()
+{
+	m_bGDALFormatsRegistered = false;
+	m_bOGRFormatsRegistered = false;
+}
+
+GDALWrapper::~GDALWrapper()
+{
+	// Destroying the regsitered format drivers only needs to be done
+	// once at exit.
+	if (m_bGDALFormatsRegistered)
+	{
+		GDALDestroyDriverManager();
+	}
+	if (m_bOGRFormatsRegistered)
+	{
+		OGRSFDriverRegistrar *reg = OGRSFDriverRegistrar::GetRegistrar();
+		delete reg;
+	}
+}
+
+void GDALWrapper::RequestGDALFormats()
+{
+	if (!m_bGDALFormatsRegistered)
+	{
+		GDALAllRegister();
+		m_bGDALFormatsRegistered = true;
+	}
+}
+
+void GDALWrapper::RequestOGRFormats()
+{
+	if (!m_bOGRFormatsRegistered)
+	{
+		OGRRegisterAll();
+		m_bOGRFormatsRegistered = true;
+	}
+}
