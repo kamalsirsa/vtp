@@ -230,17 +230,6 @@ protected:
 	ssgRangeSelector	m_Selector;
 };
 
-class vtMovLOD : public vtTransform
-{
-public:
-	vtMovLOD(vtLOD *pContained) : vtTransform()
-	{
-		m_pLOD = pContained;
-		AddChild(m_pLOD);
-	}
-	vtLOD	*m_pLOD;
-};
-
 class vtCamera : public vtTransform
 {
 public:
