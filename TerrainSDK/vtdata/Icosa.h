@@ -5,7 +5,7 @@
 // Buckminster Fuller Institute (http://www.bfi.org/) for notes, references,
 // permission, and ancestral source for the following implementation.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -58,5 +58,9 @@ protected:
 	icoface m_face[21];
 	double m_edge_length;	// edge length of icosahedron (~1.05 for unit radius)
 };
+
+// vertex indices for each face of the icosahedron
+extern int icosa_face_v[21][3];
+extern int icosa_face_pairs[10][2];
 
 #endif
