@@ -105,6 +105,7 @@ public:
 	 */
 	bool  IsFloatMode()	const { return m_bFloatMode; }
 
+	void FillWithSingleValue(float fValue);
 	void GetEarthLocation(int i, int j, DPoint3 &loc) const;
 
 	vtProjection &GetProjection() { return m_proj; }

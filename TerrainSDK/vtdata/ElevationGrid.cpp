@@ -563,23 +563,28 @@ void vtElevationGrid::_AllocateArray()
 		m_pData = (short *)malloc(m_iColumns * m_iRows * sizeof(short));
 		m_pFData = NULL;
 	}
-
 	// Initially no data
+	FillWithSingleValue(INVALID_ELEVATION);
+}
+
+void vtElevationGrid::FillWithSingleValue(float fValue)
+{
 	int i, j;
 	if (m_bFloatMode)
 	{
 		for (i = 0; i < m_iColumns; i++)
 			for (j = 0; j < m_iRows; j++)
-				SetFValue(i, j, INVALID_ELEVATION);
+				SetFValue(i, j, fValue);
 	}
 	else
 	{
 		for (i = 0; i < m_iColumns; i++)
 			for (j = 0; j < m_iRows; j++)
-				SetValue(i, j, INVALID_ELEVATION);
+				SetValue(i, j, (short) fValue);
 	}
+	m_fMinHeight = fValue;
+	m_fMaxHeight = fValue;
 }
-
 
 void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc) const
 {
