@@ -9,33 +9,8 @@
 #include "xmlhelper/easyxml.hpp"
 
 //
-// Fields
-//
-Field::Field(const char *name, DBFFieldType ftype)
-{
-	m_name = name;
-	m_type = ftype;
-}
-
-Field::~Field()
-{
-	// string memory must be freed manually
-	if (m_type == FTString)
-	{
-		int size = m_string.GetSize();
-		for (int i = 0; i < size; i++)
-		{
-			vtString *string = m_string.GetAt(i);
-			delete string;
-		}
-	}
-}
-
-
-//
 // Construct / Destruct
 //
-
 vtFeatures::vtFeatures()
 {
 }
@@ -50,7 +25,6 @@ vtFeatures::~vtFeatures()
 	}
 	m_fields.SetSize(0);
 }
-
 
 //
 // File IO
@@ -1236,6 +1210,29 @@ double vtFeatures::GetDoubleValue(int iRecord, int iField) const
 }
 
 /////////////////////////////////////////////////
+
+//
+// Fields
+//
+Field::Field(const char *name, DBFFieldType ftype)
+{
+	m_name = name;
+	m_type = ftype;
+}
+
+Field::~Field()
+{
+	// string memory must be freed manually
+	if (m_type == FTString)
+	{
+		int size = m_string.GetSize();
+		for (int i = 0; i < size; i++)
+		{
+			vtString *string = m_string.GetAt(i);
+			delete string;
+		}
+	}
+}
 
 int Field::AddRecord()
 {
