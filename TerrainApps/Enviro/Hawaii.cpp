@@ -35,9 +35,9 @@ IslandTerrain::~IslandTerrain()
 void IslandTerrain::create_telescopes()
 {
 #if 0
-	// this works, but overrides the structures indicates in TParams
-	// we can do something like this once we have support for multiple
-	// structure layers
+	// This works, but overrides the structures indicated in TParams.
+	// We can do something like this once we have support for multiple
+	// structure layers.
 	CreateStructuresFromXML(m_strDataPath + "BuildingData/tscope_loc.vtst");
 #elif 1
 	vtStructureArray3d sa;
@@ -164,7 +164,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 				AddNodeToLodGrid(house);
 			}
 		}
-#if 1
 		//import the lighthouses
 		vtTransform *lighthouse1 = LoadModel("BuildingModels/mahukonalthse.dsm");
 		if (lighthouse1)
@@ -180,7 +179,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 // 			AddNode(lighthouse1);
 			AddNodeToLodGrid(lighthouse1);
 		}
-#endif
 	}
 #endif
 
@@ -212,9 +210,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		vtGeom *thebox = make_red_cube();
 	}
 #endif
-
-//	if (m_Params.m_bRoads && m_Params.m_bVehicles)
-//		create_road_vehicles(pScene);
 
 	if (m_Params.m_bVehicles)
 	{
@@ -248,23 +243,13 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	}
 }
 
+
 ///////////////////////////////////////
-
-#if 0
-	// Test xfrog plant geometry
-	XfrogModel_ptr tree = LoadXFrogTree(m_strDataPath + "PlantModels/papaya1.xfr");
-	vtGeom *pPlantShape = CreateShapeFromXfrogTree(tree, 1.0f);
-	pPlantShape->SetName2("Plant");
-
-	for (int i = 0; i < m_br.m_Types.GetSize(); i++)
-		LookupPlantIndices(m_br.m_Types[i]);
-#endif
-
 
 void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 {
 #if 0
-	// make x planes
+	// make some planes
 	for (int i = 0; i < 6; i++)
 	{
 		vtTransform *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f), fSize);
@@ -275,10 +260,7 @@ void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 
 		// attach engine
 		AirportCodes code;
-//		if (i < 3)
-			code = KOA;
-//		else
-//			code = ITO;
+		code = KOA;
 
 		PlaneEngine *pEng = new PlaneEngine(fSpeedExag, code);
 		pEng->SetTarget(copy);

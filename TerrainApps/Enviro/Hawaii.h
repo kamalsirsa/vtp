@@ -32,7 +32,6 @@ public:
 	vtGeom *make_red_cube();
 	void create_airports();
 	void create_telescopes();
-	void create_road_vehicles();
 	void create_airplanes(float fSize, float fSpeed, bool bDoSound);
 
 	vtMaterialArray *m_pDetailMats;

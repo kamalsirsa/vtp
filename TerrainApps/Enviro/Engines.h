@@ -40,7 +40,6 @@ public:
 
 	FPoint3	m_pos, m_dir;
 	float	m_fSpeed;		// in meters/sec
-//	float	m_fSizeExag;	//  exaggerate size by this amount
 	float	m_fSpeedExag;	// this many times normal speed
 	float	m_fLastTime;
 };
@@ -139,7 +138,6 @@ class TerrainPicker : public vtLastMouse
 {
 public:
 	TerrainPicker();
-//	void OnMouse(vtMouseEvent &event);
 	void Eval();
 	void SetHeightField(vtHeightField *pHeight) { m_pHeightField = pHeight; }
 
@@ -159,7 +157,6 @@ class GlobePicker : public vtLastMouse
 {
 public:
 	GlobePicker();
-//	void OnMouse(vtMouseEvent &event);
 	void Eval();
 	void SetRadius(double fRadius) { m_fRadius = fRadius; }
 	void SetGlobeMGeom(vtMovGeom *pMG) { m_pGlobeMGeom = pMG; }
@@ -175,4 +172,5 @@ protected:
 	vtMovGeom	*m_pGlobeMGeom;
 };
 
-#endif
+#endif	// ENVIRO_ENGINESH
+

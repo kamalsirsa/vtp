@@ -78,13 +78,6 @@ void ConvertPurpleToColor(vtGroup *pModel, RGBf replace)
 
 /////////////////////////////////////////
 
-void IslandTerrain::create_road_vehicles()
-{
-	// must have roads for them to drive on
-	if (!m_pRoadMap)
-		return;
-}
-
 
 void PTerrain::create_ground_vehicles(float fSize, float fSpeed)
 {
