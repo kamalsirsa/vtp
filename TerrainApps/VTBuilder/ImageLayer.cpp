@@ -11,6 +11,9 @@
 #include "wx/wx.h"
 #endif
 
+#if ROGER
+#include "gdalwarper.h"
+#endif
 #include "ogr_spatialref.h"
 #include "gdal_priv.h"
 #include "ScaledView.h"
@@ -272,6 +275,13 @@ bool vtImageLayer::SaveToFile(const char *fname)
 }
 
 
+static int WarpProgress(double dfComplete, const char *pszMessage, void *pProgressArg)
+{
+	int amount = (int)(99.0 * dfComplete);
+	return !UpdateProgressDialog(amount, wxString(pszMessage));
+}
+
+
 bool vtImageLayer::LoadFromGDAL()
 {
 	OGRErr err;
@@ -344,6 +354,109 @@ bool vtImageLayer::LoadFromGDAL()
 			if (res == wxCANCEL)
 				throw "Import Cancelled.";
 		}
+
+#if ROGER
+		if ((fabs(affineTransform[1]) != fabs(affineTransform[5])) || (affineTransform[2] != 0.0) || (affineTransform[4] != 0.0))
+		{
+			if (wxYES == wxMessageBox(_T("Image pixels are not square or image is rotated\nDo you want to create a realigned image?"),
+										wxMessageBoxCaptionStr, wxYES_NO|wxCENTRE))
+			{
+				wxFileDialog saveRealigned(NULL, _T("Save realigned image as"), _T(""), _T(""), _T("GeoTiff files (*.tif)|*.tif"), wxSAVE|wxOVERWRITE_PROMPT);
+
+				if (wxID_OK == saveRealigned.ShowModal())
+				{
+					GDALDriverH hDriver;
+					void *hTransformArg;
+					char *pWkt;
+					double adfDstGeoTransform[6];
+					int nPixels=0, nLines=0;
+					GDALDataset *pDstDataset;
+					GDALWarpOptions *psWarpOptions;
+					GDALWarpOperation oOperation;
+
+					if (OGRERR_NONE != m_proj.exportToWkt(&pWkt))
+						throw "Unable to get projection string";
+
+					if (NULL == (hDriver = GDALGetDriverByName("GTiff")))
+						throw "unable to get GTiff driver handle";
+
+					if (NULL == (hTransformArg = GDALCreateGenImgProjTransformer((GDALDatasetH)pDataset, pWkt, NULL, pWkt, FALSE, 0, 1 )))
+						throw "unable to create transform argument";
+
+					if (CE_None != GDALSuggestedWarpOutput( (GDALDatasetH)pDataset, GDALGenImgProjTransform, hTransformArg, adfDstGeoTransform, &nPixels, &nLines))
+						throw "Unable to get suggested warp output";
+
+					GDALDestroyGenImgProjTransformer(hTransformArg);
+
+					if (NULL == (pDstDataset = (GDALDataset *)GDALCreate(hDriver,
+										saveRealigned.GetPath(),
+										nPixels,
+										nLines,
+										pDataset->GetRasterCount(),
+										pDataset->GetRasterBand(1)->GetRasterDataType(),
+										NULL)))
+						throw "Unable to create destination dataset";
+
+					pDstDataset->SetProjection(pWkt);
+					pDstDataset->SetGeoTransform(adfDstGeoTransform);
+
+					GDALColorTable *pCT;
+
+					pCT = pDataset->GetRasterBand(1)->GetColorTable();
+					if (pCT != NULL)
+						pDstDataset->GetRasterBand(1)->SetColorTable(pCT); 
+
+					if (NULL == (psWarpOptions = GDALCreateWarpOptions()))
+						throw "Unable to create WarpOptions";
+
+					psWarpOptions->hSrcDS = (GDALDatasetH)pDataset;
+					psWarpOptions->hDstDS = (GDALDatasetH)pDstDataset;
+
+					psWarpOptions->nBandCount = 0;
+
+					// Assume a non cancellable progress dialog is already open
+					// more work needed to clean up after cancel
+					psWarpOptions->pfnProgress = WarpProgress;   
+
+					if (NULL == (psWarpOptions->pTransformerArg = GDALCreateGenImgProjTransformer( (GDALDatasetH)pDataset,
+																					pWkt, 
+																					(GDALDatasetH)pDstDataset,
+																					pWkt, 
+																					FALSE, 0.0, 1 )))
+						throw "Unable to create GenImgProTransformer";
+
+					psWarpOptions->pfnTransformer = GDALGenImgProjTransform;
+
+					// Initialize and execute the warp operation. 
+
+					oOperation.Initialize(psWarpOptions);
+					
+					if (CE_None != oOperation.ChunkAndWarpImage( 0, 0, pDstDataset->GetRasterXSize(), pDstDataset->GetRasterYSize()))
+						throw "Warp operation failed";
+
+					GDALDestroyGenImgProjTransformer(psWarpOptions->pTransformerArg);
+					GDALDestroyWarpOptions(psWarpOptions);
+
+					// Clean up
+					OGRFree(pWkt);
+					// rror handling, close original, setup new
+					m_strFilename = saveRealigned.GetPath();
+					GDALClose((GDALDatasetH)pDataset);
+
+#if 0				// Roger says this is a workaround for GDAL oddness
+					pDataset = pDstDataset;
+#else
+					GDALClose((GDALDatasetH)pDstDataset);
+					pDataset = (GDALDataset *) GDALOpen(m_strFilename.mb_str(), GA_ReadOnly);
+#endif
+					m_iXSize = pDataset->GetRasterXSize();
+					m_iYSize = pDataset->GetRasterYSize();
+					if (CE_None != pDataset->GetGeoTransform(affineTransform))
+						throw "New dataset does not contain a valid affine transform.";
+				}
+			}
+		}
+#endif
 
 		if (m_proj.IsGeographic())
 		{
@@ -452,7 +565,7 @@ bool vtImageLayer::LoadFromGDAL()
 		for(int iy = 0; iy < m_iYSize; iy++ )
 		{
 			ReadScanline(iy, 0);
-			progress_callback(iy * 100 / m_iYSize);
+			progress_callback(iy * 99 / m_iYSize);
 			for(int iX = 0; iX < m_iXSize; iX++ )
 			{
 				RGBi rgb = m_row[0].m_data[iX];
