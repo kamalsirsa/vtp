@@ -15,6 +15,7 @@
 #include "ScaledView.h"
 #include "Helper.h"
 #include "RawDlg.h"
+#include "vtBitmap.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
@@ -130,11 +131,6 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 
 vtElevLayer::~vtElevLayer()
 {
-	if (m_bHasImage)
-	{
-		delete m_pImage;
-		m_pImage = NULL;
-	}
 	if (m_bBitmapRendered)
 	{
 		delete m_pBitmap;
@@ -232,7 +228,7 @@ bool vtElevLayer::NeedsDraw()
 {
 	if (m_bNeedsDraw)
 		return true;
-	if (m_bHasImage && m_bShowElevation && !m_bBitmapRendered)
+	if (m_pBitmap != NULL && m_bShowElevation && !m_bBitmapRendered)
 		return true;
 	return false;
 }
@@ -257,15 +253,10 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	if (!m_pGrid)
 		return;
 
-	if (!m_bHasImage)
+	if (m_pBitmap == NULL)
 		SetupBitmap(pDC);
 
-	if (!m_pImage || !m_pImage->Ok())
-	{
-		DrawLayerOutline(pDC, pView);
-		return;
-	}
-	if (!m_pBitmap || !m_pBitmap->Ok())
+	if (m_pBitmap == NULL)
 	{
 		DrawLayerOutline(pDC, pView);
 		return;
@@ -329,19 +320,29 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	}
 #endif
 
-	// scale and draw the bitmap
-	// must use SetUserScale since StretchBlt is not supported
-	double scale_x = 1.0/ratio_x;
-	double scale_y = 1.0/ratio_y;
-	pDC->SetUserScale(scale_x, scale_y);
 #if WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
 #endif
-	pDC->DrawBitmap(*m_pBitmap, (int) (destRect.x/scale_x),
+
+#if 0
+	// Using StretchBlit is much faster and has less scaling/roundoff
+	//  problems than using the wx method DrawBitmap.  However, GDI
+	//  won't stretch and mask at the same time!
+	wxDC2 *pDC2 = (wxDC2 *) pDC;
+	pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
+		destRect.width, destRect.height);
+#else
+	// scale and draw the bitmap
+	// must use SetUserScale since wxWindows doesn't provide StretchBlt
+	double scale_x = 1.0/ratio_x;
+	double scale_y = 1.0/ratio_y;
+	pDC->SetUserScale(scale_x, scale_y);
+	pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
 		(int) (destRect.y/scale_y), m_bHasMask);
 
 	// restore
 	pDC->SetUserScale(1.0, 1.0);
+#endif
 
 #if 0
 	// This is how we used to do it, with raw Win32 calls
@@ -408,22 +409,17 @@ bool vtElevLayer::AppendDataFrom(vtLayer *pL)
 void vtElevLayer::SetupDefaults()
 {
 	m_bNeedsDraw = false;
-	m_bHasImage = false;
 	m_bBitmapRendered = false;
 	m_strFilename = _T("Untitled");
 	m_bPreferGZip = false;
 
 	m_pBitmap = NULL;
 	m_pMask = NULL;
-	m_pImage = NULL;
 }
 
 
 void vtElevLayer::SetupBitmap(wxDC* pDC)
 {
-	// flag as having a bitmap
-	m_bHasImage = true;
-
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 
 	m_iImageWidth = m_iColumns;
@@ -438,7 +434,13 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 		m_iImageHeight = m_iRows / div;
 	}
 
-	m_pImage = new wxImage(m_iImageWidth, m_iImageHeight);
+	m_pBitmap = new vtBitmap();
+	if (!m_pBitmap->Allocate(m_iImageWidth, m_iImageHeight))
+	{
+		DisplayAndLog("Couldn't create bitmap, probably too large.");
+		delete m_pBitmap;
+		m_pBitmap = NULL;
+	}
 	m_bNeedsDraw = true;
 }
 
@@ -465,7 +467,7 @@ void vtElevLayer::RenderBitmap()
 	int r, g, b;
 	int stepx = m_iColumns / m_iImageWidth;
 	int stepy = m_iRows / m_iImageHeight;
-	unsigned char *data = m_pImage->GetData();
+
 	bool has_invalid = false;
 	for (j = 0; j < m_iImageHeight; j++)
 	{
@@ -473,7 +475,8 @@ void vtElevLayer::RenderBitmap()
 		{
 			if (UpdateProgressDialog(j*80/m_iImageHeight))
 			{
-				if (wxMessageBox(_T("Turn off displayed elevation for elevation layers?"), _T(""), wxYES_NO) == wxYES)
+				wxString2 msg = "Turn off displayed elevation for elevation layers?";
+				if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
 				{
 					m_bShowElevation = false;
 					CloseProgressDialog();
@@ -492,22 +495,16 @@ void vtElevLayer::RenderBitmap()
 				has_invalid = true;
 			GenerateShadedColor(x, y, r, g, b);
 //			GenerateColorFromGrid2(i, m_iRows-1-j, r, g, b);
-			*data++ = r;
-			*data++ = g;
-			*data++ = b;
+
+			m_pBitmap->SetRGB(i, j, r, g, b);
 		}
 	}
-	UpdateProgressDialog(80, _T("Generating bitmap..."));
-	m_pBitmap = new wxBitmap(m_pImage);
-	int ok = m_pBitmap->Ok();
-	if (!ok)
-		DisplayAndLog("Couldn't create bitmap, probably too large.");
 
-	if (ok && has_invalid && m_bDoMask)
+	if (has_invalid && m_bDoMask)
 	{
 		UpdateProgressDialog(90, _T("Hiding unknown areas..."));
-		m_pMask = new wxMask(*m_pBitmap, wxColour(255, 0, 0));
-		m_pBitmap->SetMask(m_pMask);
+		m_pMask = new wxMask(*m_pBitmap->m_pBitmap, wxColour(255, 0, 0));
+		m_pBitmap->m_pBitmap->SetMask(m_pMask);
 		m_bHasMask = true;
 	}
 	else
@@ -521,12 +518,12 @@ void vtElevLayer::RenderBitmap()
 
 void vtElevLayer::ReImage()
 {
-	if (m_pImage)
+	if (m_pBitmap)
 	{
-		delete m_pImage;
-		m_pImage = NULL;
+		delete m_pBitmap;
+		m_pBitmap = NULL;
 	}
-	m_bHasImage = m_bBitmapRendered = false;
+	m_bBitmapRendered = false;
 }
 
 #define LEVELS 14

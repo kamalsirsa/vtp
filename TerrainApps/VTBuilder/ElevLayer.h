@@ -15,6 +15,7 @@
 class vtHeightField;
 class vtElevationGrid;
 class vtDIB;
+class vtBitmap;
 
 class vtTin2d : public vtTin
 {
@@ -99,7 +100,6 @@ public:
 
 protected:
 	bool	m_bNeedsDraw;
-	bool	m_bHasImage;
 	bool	m_bBitmapRendered;
 	bool	m_bHasMask;
 	float	m_fSpacing;
@@ -108,9 +108,8 @@ protected:
 	int m_iColumns, m_iRows;
 	int m_iImageWidth, m_iImageHeight;
 
-	wxBitmap	*m_pBitmap;
+	vtBitmap	*m_pBitmap;
 	wxMask		*m_pMask;
-	wxImage		*m_pImage;
 };
 
 #endif	// ELEVLAYER_H
