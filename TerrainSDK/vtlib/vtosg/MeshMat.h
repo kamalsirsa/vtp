@@ -221,7 +221,12 @@ public:
 	// Implementation
 	osg::ref_ptr<osgText::Text> m_pOsgText;
 
+	void SetMatIndex(int i) { m_iMatIdx = i; }
+	int GetMatIndex() const { return m_iMatIdx; }
+
 protected:
+	int	m_iMatIdx;
+
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
 	~vtTextMesh();
