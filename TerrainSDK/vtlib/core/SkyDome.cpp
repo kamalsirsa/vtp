@@ -72,6 +72,7 @@ vtTransform *CreateMarker(vtMaterialArray *pMats, const RGBf &color)
 	mesh->AddLine(0, 1);
 	mesh->AddLine(2, 3);
 	vtGeom *geom = new vtGeom();
+	geom->SetName2("sky marker");
 	geom->SetMaterials(pMats);
 	geom->AddMesh(mesh, matidx);
 	mesh->Release();	// pass ownership to Geometry
@@ -189,8 +190,9 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 		m_pSunMat = m_pMats->GetAt(idx);
 
 		vtGeom *pGeom = new vtGeom();
+		pGeom->SetName2("Sun geom");
 		m_pSunGeom = new vtMovGeom(pGeom);
-		m_pSunGeom->SetName2("Sun");
+		m_pSunGeom->SetName2("Sun xform");
 
 		vtMesh *SunMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
@@ -715,15 +717,16 @@ void vtStarDome::Create(const char *starfile, float brightness,
 
 		// Create moon
 		vtGeom *pGeom = new vtGeom();
+		pGeom->SetName2("Moon geom");
 		m_pMoonGeom = new vtMovGeom(pGeom);
+		m_pMoonGeom->SetName2("Moon xform");
+
 		vtMesh *MoonMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
 		MoonMesh->CreateRectangle(0.1f, 0.1f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(MoonMesh, idx);
 		MoonMesh->Release();	// pass ownership to Geometry
-
-		m_pMoonGeom->SetName2("Moon");
 
 		// Y translation
 		FMatrix4 trans;
