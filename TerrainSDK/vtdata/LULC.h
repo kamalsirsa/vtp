@@ -88,16 +88,19 @@ private:
 	LULCSection &operator=( const LULCSection & );
 };
 
+/**
+ * Implements reading data from a USGS LULC file.
+ */
 class vtLULCFile
 {
 public:
-	// constructor - pass it the name of a LULC (GIRAS) file
+	/// constructor - pass it the name of a LULC (GIRAS) file
 	vtLULCFile(const char *fname);
 
-	// destructor
+	/// destructor
 	~vtLULCFile();
 
-	// attempt to determine the mapping from local to latlon
+	/// attempt to determine the mapping from local to latlon
 	void SetupMapping();
 
 	// read a section (there are usually 4 sections)
@@ -114,9 +117,9 @@ public:
 	void ProcessLULCPoly(LULCSection *pSection, LULCPoly *pPoly);
 	int FindAttribute(double utm_x, double utm_y);
 
-	// return error type if it didn't load successfully
+	/// return error type if it didn't load successfully
 	int m_iError;
-	// if an error occured, return it as an English message
+	/// if an error occured, return it as an English message
 	const char *GetErrorMessage();
 
 	// extent of control points, in local coordinates
@@ -128,8 +131,9 @@ public:
 	// latitude and longitude of control points
 	DPoint2 m_Corners[6];
 
-	// access
+	/// access sections
 	unsigned int NumSections() { return m_iNumSections; };
+	/// access sections
 	LULCSection *GetSection(int i) { return m_pSection+i; };
 
 	// used for making a list of these files

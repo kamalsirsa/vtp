@@ -50,6 +50,7 @@ and distributed under a completely free <a href="../../license.txt">open source 
         <li>RGBi</li>
         <li>RGBf</li>
         <li>RGBAf</li>
+        <li>CubicSpline</li>
       </ul>
       <p>Math: Array Types</p>
       <ul>

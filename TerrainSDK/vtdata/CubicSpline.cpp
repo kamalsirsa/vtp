@@ -19,11 +19,11 @@ CubicSpline::~CubicSpline()
 	Cleanup();
 }
 
-/** re-initialization */
+/** Re-initialization. */
 void CubicSpline::Cleanup()
 {
-	if (m_veclist.size()>0)
-	m_veclist.erase(m_veclist.begin(), m_veclist.end());
+	if (m_veclist.size() > 0)
+		m_veclist.erase(m_veclist.begin(), m_veclist.end());
 
 	if (m_pCoeff0!=NULL)
 		delete [] m_pCoeff0;
@@ -38,7 +38,7 @@ void CubicSpline::Cleanup()
 	m_iPoints = 0;
 }
 
-/** accumlate interporation point */
+/** Adds an interpolation point. */
 int CubicSpline::AddPoint(const DPoint3 &vec)
 {
 	// TO DO: error check
@@ -47,7 +47,7 @@ int CubicSpline::AddPoint(const DPoint3 &vec)
 	return npar;
 }
 
-/** generate spline coeffs */
+/** Generate the spline coeffs. */
 bool CubicSpline::Generate()
 {
 	int i;
@@ -200,7 +200,16 @@ bool CubicSpline::Generate()
 	return true;
 }
 
-/** perform interpolation */
+/**
+ * Perform interpolation.
+ *
+ * \param par The interpolation parameter, in the range of 0 to N, where
+ *		N is the number of segments (one less than the number of control
+ *		points that define the curve).
+ * \param vec The point that results from the interpolation.
+ * \param dvec Tangential vector (optional).
+ * \param ddvec Curvature vector (optional).
+ */
 bool CubicSpline::Interpolate(double par, DPoint3 *vec,
 							  DPoint3 *dvec /*= NULL*/,
 							  DPoint3 *ddvec /*= NULL*/)

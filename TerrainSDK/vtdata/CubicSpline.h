@@ -13,27 +13,23 @@
 #include <list>
 #include "MathTypes.h"
 
+/**
+ * Implements interpolation of a cubic spline curved, defined by a set
+ * of control points.  The curve will pass through each control point.
+ */
 class CubicSpline
 {
 public:
 	CubicSpline();
-
 	virtual ~CubicSpline();
 
-	/** re-initialization */
 	void Cleanup();
-
-	/** accumlate interporation point */
 	int AddPoint(const DPoint3 &vec);
-
-	/** generate spline coeffs */
 	bool Generate();
-
-	/** perform interpolation */
-	bool Interpolate(double f, DPoint3 *vec,
+	bool Interpolate(double par, DPoint3 *vec,
 					DPoint3 *dvec = NULL, DPoint3 *ddvec = NULL);
-
-	int getPoints() const { return m_nPoints; }
+	/** Return number of control points that define this curve. */
+	int NumPoints() const { return m_iPoints; }
 
 private:
 	std::list<DPoint3> m_veclist;
