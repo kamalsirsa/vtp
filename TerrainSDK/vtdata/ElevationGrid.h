@@ -103,7 +103,7 @@ public:
 	void GetEarthLocation(int i, int j, DPoint3 &loc);
 	void GetEarthLocation(int i, int j, FPoint3 &loc);
 
-	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean);
+	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean, bool bZeroIsOcean = true);
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,float light_adj);
 
 	vtProjection &GetProjection() { return m_proj; }

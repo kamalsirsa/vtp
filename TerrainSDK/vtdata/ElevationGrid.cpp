@@ -442,7 +442,8 @@ void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc)
  * \param pDIB The bitmap to color.
  * \param color_ocean The color to use for areas at sea level.
  */
-void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean)
+void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
+											bool bZeroIsOcean)
 {
 	int w = pDIB->GetWidth();
 	int h = pDIB->GetHeight();
@@ -477,11 +478,11 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean)
 			float elev = m - fMin;
 
 			color.r = color.g = color.b = 0;
-			if (m == 0.0f)
+			if (bZeroIsOcean && m == 0.0f)
 			{
 				color = color_ocean;
 			}
-			else
+			else if (bracket_size != 0.0f)
 			{
 				bracket = (int) (elev / bracket_size);
 				if (bracket < 0)
@@ -494,6 +495,10 @@ void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean)
 				}
 				else
 					color = colors[num-1];
+			}
+			else
+			{
+				color.Set(20, 230, 20);	// flat green
 			}
 			pDIB->SetPixel24(i, h-1-j, RGB(color.r, color.g, color.b));
 		}
