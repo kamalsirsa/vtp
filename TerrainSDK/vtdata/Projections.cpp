@@ -519,7 +519,7 @@ bool vtProjection::ReadProjFile(const char *filename)
 	//  handling modern-style .prj files with WKT SRS in them.
 	OGRErr eErr;
 	char **papszPrj = CSLLoad( prj_name );
-/*	if (!strncmp(papszPrj[0], "GEOGCS", 6) ||
+	if (!strncmp(papszPrj[0], "GEOGCS", 6) ||
 		!strncmp(papszPrj[0], "PROJCS", 6) ||
 		!strncmp(papszPrj[0], "LOCAL_CS", 8))
 	{
@@ -527,9 +527,9 @@ bool vtProjection::ReadProjFile(const char *filename)
  		eErr = importFromWkt(&pszWKT);
 	}
 	else
-	{ */
+	{
 		eErr = importFromESRI(papszPrj);
-//	}
+	}
 	CSLDestroy( papszPrj );
 
 	return (eErr == OGRERR_NONE);
