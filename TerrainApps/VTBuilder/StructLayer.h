@@ -9,6 +9,7 @@
 #define STRUCTLAYER_H
 
 #include "vtdata/shapelib/shapefil.h"
+#include "vtdata/Features.h"
 #include "vtdata/StructArray.h"
 #include "Layer.h"
 
@@ -70,5 +71,5 @@ protected:
 	int m_size;	// size in pixels of the small crosshair at building center
 };
 
-#endif
+#endif	// STRUCTLAYER_H
 
