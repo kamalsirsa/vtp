@@ -31,6 +31,7 @@
 #define IDC_STATIC1                     1017
 #define IDC_DATE                        1018
 #define IDC_UTMZONE                     1019
+#define IDC_PROJECTION                  1022
 #define ID_ERODE                        32771
 #define ID_DILATE                       32772
 #define ID_B_EXTRACT                    32773
@@ -56,6 +57,12 @@
 #define ID_MODES_RECTANGLE              32814
 #define ID_MODES_CIRCLE                 32816
 #define ID_MODES_MOVERESIZE             32819
+#define ID_MODES_ROADNODE               32820
+#define ID_CHANGE_ROAD_COLOR            32821
+#define ID_RMF_OPEN                     32822
+#define ID_RMF_SAVE                     32823
+#define ID_RMF_SAVE_AS                  32824
+#define ID_MODES_ROAD_EDIT              32825
 #define CGS_KERNEL                      61446
 
 // Next default values for new objects
@@ -63,9 +70,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        135
-#define _APS_NEXT_COMMAND_VALUE         32820
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_RESOURCE_VALUE        136
+#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

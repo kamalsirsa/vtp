@@ -81,7 +81,7 @@ IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  21, 21
+IDR_MAINFRAME TOOLBAR DISCARDABLE  23, 24
 BEGIN
     BUTTON      ID_IMPORTIMAGE
     BUTTON      ID_FILE_OPEN
@@ -94,6 +94,9 @@ BEGIN
     BUTTON      ID_MODES_RECTANGLE
     BUTTON      ID_MODES_CIRCLE
     BUTTON      ID_MODES_MOVERESIZE
+    SEPARATOR
+    BUTTON      ID_MODES_ROADNODE
+    BUTTON      ID_MODES_ROAD_EDIT
     SEPARATOR
     BUTTON      ID_HAND
     BUTTON      ID_ZOOM_IN
@@ -116,6 +119,9 @@ BEGIN
         MENUITEM "&Open VTST\tCtrl+O",          ID_FILE_OPEN
         MENUITEM "&Save VTST\tCtrl+S",          ID_FILE_SAVE
         MENUITEM "Save VTST &As\tCtrl+A",       ID_FILE_SAVE_AS
+        MENUITEM "Open &RMF\tCtrl+R",           ID_RMF_OPEN
+        MENUITEM "Save R&MF\tCtrl+M",           ID_RMF_SAVE
+        MENUITEM "Save RM&F As\tCtrl+F",        ID_RMF_SAVE_AS
         MENUITEM SEPARATOR
         MENUITEM "Recent File",                 ID_FILE_MRU_FILE1
         MENUITEM SEPARATOR
@@ -144,6 +150,7 @@ BEGIN
         MENUITEM "View &Full Resolution Image\tCtrl+F", ID_FULLRES
         MENUITEM SEPARATOR
         MENUITEM "Change Building Color",       ID_COLORCHANGE
+        MENUITEM "Change Road Color",           ID_CHANGE_ROAD_COLOR
     END
     POPUP "Modes"
     BEGIN
@@ -151,6 +158,9 @@ BEGIN
         MENUITEM "Add by Footprint\tF",         ID_MODES_FOOTPRINT
         MENUITEM "Add by Rectangle\tR",         ID_MODES_RECTANGLE
         MENUITEM "Add by Circle\tC",            ID_MODES_CIRCLE
+        MENUITEM SEPARATOR
+        MENUITEM "Add/Remove Road Nodes",       ID_MODES_ROADNODE
+        MENUITEM "Edit Roads",                  ID_MODES_ROAD_EDIT
         MENUITEM SEPARATOR
         MENUITEM "Move/Resize/Rotate\tM",       ID_MODES_MOVERESIZE
     END
@@ -176,14 +186,17 @@ BEGIN
     "E",            ID_FUNCTIONS_CONVOLVE,  VIRTKEY, CONTROL, NOINVERT
     "F",            ID_MODES_FOOTPRINT,     VIRTKEY, NOINVERT
     "F",            ID_FULLRES,             VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_RMF_SAVE_AS,         VIRTKEY, CONTROL, NOINVERT
     "H",            ID_HAND,                VIRTKEY, CONTROL, NOINVERT
     "I",            ID_IMPORTIMAGE,         VIRTKEY, CONTROL, NOINVERT
     "L",            ID_CLEARSCREEN,         VIRTKEY, CONTROL, NOINVERT
     "M",            ID_MODES_MOVERESIZE,    VIRTKEY, NOINVERT
+    "M",            ID_RMF_SAVE,            VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
     "R",            ID_MODES_RECTANGLE,     VIRTKEY, NOINVERT
+    "R",            ID_RMF_OPEN,            VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     "V",            ID_VIEW_CURRENT,        VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
@@ -280,17 +293,18 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,82,68,50,14
 END
 
-IDD_ZONEDLG DIALOG DISCARDABLE  0, 0, 186, 94
+IDD_ZONEDLG DIALOG DISCARDABLE  0, 0, 123, 86
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "UTM Zone"
+CAPTION "Projection"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    LTEXT           "That TIF file includes a TFW (TIFF World File) which provides geographic extents but not the UTM Zone.  If you know the UTM Zone, please enter it here:",
-                    IDC_STATIC,7,7,114,42
-    LTEXT           "UTM Zone (1-60) :",IDC_STATIC,17,63,61,10
-    EDITTEXT        IDC_UTMZONE,83,61,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,65,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,66,65,50,14
+    LTEXT           "UTM Zone (1-60) :",IDC_STATIC,7,34,61,10
+    EDITTEXT        IDC_UTMZONE,7,44,40,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_PROJECTION,8,17,108,107,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Projection",IDC_STATIC,7,7,109,9
 END
 
 
@@ -388,12 +402,27 @@ BEGIN
     IDD_ZONEDLG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 179
+        RIGHTMARGIN, 116
         TOPMARGIN, 7
-        BOTTOMMARGIN, 87
+        BOTTOMMARGIN, 79
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_ZONEDLG DLGINIT
+BEGIN
+    IDC_PROJECTION, 0x403, 4, 0
+0x5455, 0x004d, 
+    IDC_PROJECTION, 0x403, 5, 0
+0x534f, 0x4247, "\000" 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -427,8 +456,8 @@ BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open Built Structures File (VTST)\nOpen VTST"
     ID_FILE_CLOSE           "Close the active document\nClose"
-    ID_FILE_SAVE            "Save the current buildings to a VTST file\nSave"
-    ID_FILE_SAVE_AS         "Save current buildings\nSave As"
+    ID_FILE_SAVE            "Save the current buildings to a VTST file\nSave VTST"
+    ID_FILE_SAVE_AS         "Save current buildings\nSave VSTS As"
     ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
     ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
     ID_FILE_PRINT           "Print the active DRG\nPrint"
@@ -561,6 +590,12 @@ STRINGTABLE DISCARDABLE
 BEGIN
     ID_MODES_CIRCLE         "Add Buildings by Dragging their Circle\nAdd by Circle"
     ID_MODES_MOVERESIZE     "Move/Resize/Rotate Buildings\nMove/Resize/Rotate (M)"
+    ID_MODES_ROADNODE       "Add/Remove Road Nodes by Clicking, Remove by Dragging\nAdd/Remove Road Nodes"
+    ID_CHANGE_ROAD_COLOR    "Change the color of the road node mark#"
+    ID_RMF_OPEN             "Open Road File (RMF)\nOpen RMF"
+    ID_RMF_SAVE             "Save the current roads to a RMF file\nSave RMF"
+    ID_RMF_SAVE_AS          "Save current roads\nSave RMF As"
+    ID_MODES_ROAD_EDIT      "Click on two nodes to add a road\nAdd road"
 END
 
 #endif    // English (U.S.) resources
