@@ -18,6 +18,7 @@
 
 #include "HeightDlg.h"
 #include "HeightGrid.h"
+#include "BuildingDlg.h"
 
 // WDR: class implementations
 
@@ -293,7 +294,6 @@ void CHeightDialog::OnRecalculateHeights( wxCommandEvent &event )
 							m_pHeightGrid->SetCellValue(m_NumLevels - 1 - j, HEIGHT_COL, str);
 						}
 						break;
-						break;
 				}
 			}
 			dBaseLine = dNewBaseLine;
@@ -302,7 +302,9 @@ void CHeightDialog::OnRecalculateHeights( wxCommandEvent &event )
 		}
 		fCurrentHeight += pLevel->m_fStoryHeight * pLevel->m_iStories;
 	}
+	m_pBuilding->DetermineLocalFootprints();
 	m_bGridModified = false;
+	((BuildingDlg*)GetParent())->Modified();
 }
 
 void CHeightDialog::OnInitDialog(wxInitDialogEvent& event)
