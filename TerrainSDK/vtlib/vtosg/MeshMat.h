@@ -61,6 +61,8 @@ public:
 class GeoSet2 : public osg::GeoSet
 {
 public:
+	GeoSet2();
+	~GeoSet2();
 	class vtMesh *m_pMesh;
 };
 

@@ -129,17 +129,14 @@ int vtGroup::GetNumChildren()
 
 vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 {
-	m_pTransform = new Transform;
+	m_pTransform = new CustomTransform;
 	m_pTransform->ref();
 	SetOsgGroup(m_pTransform);
 }
 
 void vtTransform::Identity()
 {
-	Matrix xform;
-	xform.makeIdent();
-	m_pTransform->setMatrix(xform);
-	m_pTransform->dirtyBound();
+	m_pTransform->setMatrix(osg::Matrix::identity());
 }
 
 FPoint3 vtTransform::GetTrans()
@@ -156,50 +153,61 @@ void vtTransform::SetTrans(const FPoint3 &pos)
 
 void vtTransform::Translate1(const FPoint3 &pos)
 {
-	Matrix &xform = m_pTransform->getMatrix();
-	xform.postTrans(pos.x, pos.y, pos.z);
-	m_pTransform->dirtyBound();
+	// 0.8.42
+//	Matrix &matrix = m_pTransform->getMatrix();
+//	matrix.postTrans(pos.x, pos.y, pos.z);
+//	m_pTransform->dirtyBound();
+	// 0.8.43
+	m_pTransform->postMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void vtTransform::TranslateLocal(const FPoint3 &pos)
 {
-	Matrix &xform = m_pTransform->getMatrix();
-	xform.preTrans(pos.x, pos.y, pos.z);
-	m_pTransform->dirtyBound();
+	// 0.8.42
+//	Matrix &matrix = m_pTransform->getMatrix();
+//	matrix.preTrans(pos.x, pos.y, pos.z);
+//	m_pTransform->dirtyBound();
+	// 0.8.43
+	m_pTransform->preMult(osg::Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void vtTransform::Rotate2(const FPoint3 &axis, float angle)
 {
-	Matrix &xform = m_pTransform->getMatrix();
-	xform.postRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
-	m_pTransform->dirtyBound();
+	// 0.8.42
+//	Matrix &matrix = m_pTransform->getMatrix();
+//	matrix.postRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
+//	m_pTransform->dirtyBound();
+	// 0.8.43
+	m_pTransform->postMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void vtTransform::RotateLocal(const FPoint3 &axis, float angle)
 {
-	Matrix &xform = m_pTransform->getMatrix();
-	xform.preRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
-	m_pTransform->dirtyBound();
+	// 0.8.42
+//	Matrix &matrix = m_pTransform->getMatrix();
+//	matrix.preRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
+//	m_pTransform->dirtyBound();
+	// 0.8.43
+	m_pTransform->preMult(osg::Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void vtTransform::RotateParent(const FPoint3 &axis, float angle)
 {
-	Matrix &xform = m_pTransform->getMatrix();
-	float *mat = (float *) xform._mat[3];
-	Vec3 trans(mat[0], mat[1], mat[2]);
-	mat[0] = mat[1] = mat[2] = 0.0f;
-	xform.postRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
-	mat[0] = trans.x();
-	mat[1] = trans.y();
-	mat[2] = trans.z();
-	m_pTransform->dirtyBound();
+	// 0.8.43
+	osg::Vec3 trans = m_pTransform->getMatrix().getTrans();
+	m_pTransform->postMult(osg::Matrix::translate(-trans)*
+		      osg::Matrix::rotate(angle, axis.x, axis.y, axis.z)*
+		      osg::Matrix::translate(trans));
 }
 
 void vtTransform::Scale3(float x, float y, float z)
 {
-	Matrix &xform = m_pTransform->getMatrix();
-	xform.preScale(x, y, z);
-	m_pTransform->dirtyBound();
+	// 0.8.42
+//	Matrix &matrix = m_pTransform->getMatrix();
+//	matrix.preScale(x, y, z);
+//	m_pTransform->dirtyBound();
+	// 0.8.43
+	m_pTransform->preMult(osg::Matrix::scale(x, y, z));
 }
 
 void vtTransform::SetTransform1(const FMatrix4 &mat)
@@ -220,10 +228,10 @@ void vtTransform::GetTransform1(FMatrix4 &mat)
 
 void vtTransform::PointTowards(const FPoint3 &point)
 {
-	Matrix &xform = m_pTransform->getMatrix();
+	// 0.8.43
+	Matrix matrix = m_pTransform->getMatrix();
 
-	float *mat = (float *) xform._mat[3];
-	Vec3 trans(mat[0], mat[1], mat[2]);
+	Vec3 trans = matrix.getTrans();
 
 	Vec3 p;
 	v2s(point, p);
@@ -234,12 +242,12 @@ void vtTransform::PointTowards(const FPoint3 &point)
 	float theta = atan2f(-diff.z(), diff.x()) - PID2f;
 	float phi = asinf(diff.y() / dist);
 
-	xform.makeIdent();
-	xform.preRot(-theta * 180.0f / PIf, 0.0f, 1.0f, 0.0f);
-	xform.preRot(-phi * 180.0f / PIf, 1.0f, 0.0f, 0.0f);
+	matrix.makeIdentity();
+	matrix.preMult(osg::Matrix::rotate(theta, 0.0f, 1.0f, 0.0f));
+	matrix.preMult(osg::Matrix::rotate(phi, 1.0f, 0.0f, 0.0f));
+	matrix.postMult(osg::Matrix::translate(trans));
 
-	xform.postTrans(trans.x(), trans.y(), trans.z());
-	m_pTransform->dirtyBound();
+	m_pTransform->setMatrix(matrix);
 }
 
 
@@ -282,6 +290,10 @@ vtCamera::vtCamera() : vtTransform()
 
 	// Increase reference count so it won't get undesirably deleted later
 	m_pOsgCamera->ref();
+
+	// Tell OSG to use our transform as the location of the camera
+	m_pOsgCamera->attachTransform(Camera::EYE_TO_MODEL,
+		&m_pTransform->getMatrix());
 }
 
 void vtCamera::SetHither(float f)
@@ -311,15 +323,26 @@ float vtCamera::GetYon()
 void vtCamera::SetFOV(float fov_x)
 {
 	float aspect = m_pOsgCamera->calc_aspectRatio();
-	float fov_y2 = atan(tan (fov_x/2) / aspect);
 
-	m_pOsgCamera->setPerspective(fov_y2 * 2 * 180.0f / PIf,
-		aspect, m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
+	// osg 0.8.42
+//	float fov_y2 = atan(tan (fov_x/2) / aspect);
+//	m_pOsgCamera->setPerspective(fov_y2 * 2 * 180.0f / PIf,
+//		aspect, m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
+
+	// osg 0.8.43
+	float fov_y2 = atan(tan (fov_x/2) / aspect);
+	m_pOsgCamera->setFOV(fov_x * 180.0f / PIf, fov_y2 * 2.0f * 180.0f / PIf,
+		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 }
 
 float vtCamera::GetFOV()
 {
 	float fov_x = m_pOsgCamera->calc_fovx();
+
+	// osg 0.8.42
+//	return (fov_x / 180.0f * PIf);
+
+	// osg 0.8.43
 	return (fov_x / 180.0f * PIf);
 }
 

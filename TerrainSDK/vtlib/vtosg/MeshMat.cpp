@@ -89,7 +89,7 @@ void vtMaterial::SetLighting(bool bLighting)
 }
 bool vtMaterial::GetLighting()
 {
-	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::LIGHTING);
+	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::LIGHT);
 	return (m == GEO_ON);
 }
 
@@ -191,10 +191,24 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 
 //////////////////////////////////////////////////////////////
 
+GeoSet2::GeoSet2()
+{
+	m_pMesh = NULL;
+}
+
+GeoSet2::~GeoSet2()
+{
+}
+
+//////////////////////////////////////////////////////////////
+
 vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	vtMeshBase(PrimType, VertType, NumVertices)
 {
 	m_pGeoSet = new GeoSet2();
+
+	// We own the array allocation, so tell OSG not to try to free it
+	m_pGeoSet->setAttributeDeleteFunctor(NULL);
 
 	// TEMPORARY FOR TESTING!
 //	m_pGeoSet->setUseDisplayList(false);

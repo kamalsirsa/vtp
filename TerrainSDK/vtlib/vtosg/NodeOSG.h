@@ -13,12 +13,14 @@
 namespace osg
 {
 	class Node;
+	class Referenced;
+	class Matrix;
 }
 
 //////////////////////
 // wrapper classes
 
-class vtNode : public vtNodeBase, public vtEnabledBase
+class vtNode : public vtNodeBase, public vtEnabledBase, public osg::Referenced
 {
 public:
 	// implement vtEnabledBase methods
@@ -63,6 +65,12 @@ protected:
 	osg::Group *m_pGroup;
 };
 
+class CustomTransform : public osg::Transform
+{
+public:
+	inline osg::Matrix& getMatrix() { return *_matrix; }
+};
+
 class vtTransform : public vtGroup, public vtTransformBase
 {
 public:
@@ -85,7 +93,7 @@ public:
 
 	// OSG-specific Implementation
 public:
-	osg::Transform	*m_pTransform;
+	CustomTransform	*m_pTransform;
 	FPoint3			m_Scale;
 };
 
