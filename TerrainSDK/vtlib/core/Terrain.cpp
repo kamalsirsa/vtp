@@ -36,6 +36,7 @@
 // use a grid of LOD cells of size LOD_GRIDSIZE x LOD_GRIDSIZE
 #define LOD_GRIDSIZE		192
 
+
 //////////////////////////////////////////////////////////////////////
 
 vtTerrain::vtTerrain()
@@ -748,6 +749,10 @@ bool vtTerrain::_CreateDynamicTerrain()
 
 	m_pDynGeomScale->AddChild(m_pDynGeom);
 	m_pTerrainGroup->AddChild(m_pDynGeomScale);
+
+	// the Dynamic terrain will be the heightfield used at runtime, so extend
+	//  it with the terrain's culture
+	m_pDynGeom->SetCulture(this);
 
 	return true;
 }
@@ -1701,7 +1706,7 @@ void vtTerrain::CreateFeatureLabels(const vtFeatureSet &feat, const vtTagArray &
 			p2.Set(p3.x, p3.y);
 		}
 
-		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2.x, p2.y, fp3))
+		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2, fp3))
 			continue;
 
 		// Elevate the location by the desired vertical offset
@@ -2315,6 +2320,39 @@ vtHeightFieldGrid3d *vtTerrain::GetHeightFieldGrid3d()
 	return NULL;	// no grid to return, possible because it's a TIN
 }
 
+bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
+{
+	// beware - OSG can be picking about the length of this segment.  It
+	//  might be a numerical precision issue.  If we use 1E9,-1E9 then it
+	//  fails to find some objects.
+	FPoint3 start(p3.x, 1E5, p3.z);
+	FPoint3 end(p3.x, -1E5, p3.z);
+
+	bool hit = false;
+	vtHitList hlist;
+	int num = vtIntersect(m_pTerrainGroup, start, end, hlist);
+	for (int i = 0; i < num; i++)
+	{
+		vtString name = hlist[i].node->GetName2();
+
+		bool bIsRoad = (name.Find("road") != -1) || (name.Find("gmodell") != -1);
+		if (bIsRoad || name == "building-geom")
+		{
+			FPoint3 point = hlist[i].point;
+			if (name != "road")
+			{
+				// things that aren't roads might have a transform to worry about
+				hlist[i].node->LocalToWorld(point);
+			}
+			// take first match encountered
+			fAltitude =  point.y;
+			hit = true;
+			break;
+		}
+	}
+	return hit;
+}
+
 void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 {
 	clock_t r1 = clock();
@@ -2411,7 +2449,7 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib
 		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor);
 	}
 	else
-        pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor);
+		pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor);
 
 	clock_t c2 = clock();
 

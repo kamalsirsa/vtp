@@ -62,6 +62,7 @@ enum TFType
 	TFT_ROADS
 };
 
+
 /**
  * The vtTerrain class represents a terrain, which is a part of the surface
  *  of the earth.
@@ -74,7 +75,7 @@ enum TFType
  * terrain using the CreateStep methods, or add it to a vtTerrainScene
  * and use vtTerrainScene::BuildTerrain.
  */
-class vtTerrain
+class vtTerrain : public CultureExtension
 {
 public:
 	vtTerrain();
@@ -218,6 +219,7 @@ public:
 	vtHeightField3d *GetHeightField();
 	vtHeightFieldGrid3d *GetHeightFieldGrid3d();
 	vtProjection &GetProjection() { return m_proj; }
+	virtual bool FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const;
 
 	// Points of interest
 	void AddPointOfInterest(double left, double bottom, double right,
