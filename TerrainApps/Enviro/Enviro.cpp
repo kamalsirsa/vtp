@@ -526,7 +526,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	{
 		SetMessage("Setting hither/yon");
 		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->SetHither(5.0f);
+		pCam->SetHither(pTerr->GetParams().m_fHither);
 		pCam->SetYon(500000.0f);
 	}
 	if (m_iInitStep == 9)
@@ -1831,10 +1831,12 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	return true;
 }
 
+// this was a quick hack for the PW conference.  if we ever need a real
+// 'logo' functionality, it should be re-done.
 void Enviro::ToggleLogo()
 {
 	if (!logo) return;
-	static st = 1;
+	static int st = 1;
 
 	st++;
 	if (st == 3)
