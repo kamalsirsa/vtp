@@ -801,26 +801,29 @@ void vtGeom::CopyFrom(const vtGeom *rhs)
 
 void vtGeom::Release()
 {
-	// Release the meshes we contain, which will delete them if there are no
-	//  other references to them.
-	int i, num = m_pGeode->getNumDrawables();
-	for (i = 0; i < num; i++)
+	if (m_pGeode != NULL)
 	{
-		vtMesh *mesh = GetMesh(i);
-		if (mesh)
-			mesh->Release();
-		else
+		// Release the meshes we contain, which will delete them if there are no
+		//  other references to them.
+		int i, num = m_pGeode->getNumDrawables();
+		for (i = 0; i < num; i++)
 		{
-			vtTextMesh *textmesh = GetTextMesh(i);
-			if (textmesh)
-				textmesh->Release();
+			vtMesh *mesh = GetMesh(i);
+			if (mesh)
+				mesh->Release();
+			else
+			{
+				vtTextMesh *textmesh = GetTextMesh(i);
+				if (textmesh)
+					textmesh->Release();
+			}
 		}
-	}
-	m_pGeode->removeDrawable(0, num);
+		m_pGeode->removeDrawable(0, num);
 
-	// dereference
+		// dereference
+		m_pGeode = NULL;
+	}
 	m_pMaterialArray = NULL;
-	m_pGeode = NULL;
 
 	vtNode::Release();
 }
@@ -1217,8 +1220,19 @@ vtSprite::~vtSprite()
 
 void vtSprite::Release()
 {
+	if (m_geode != NULL)
+	{
+		// Release the meshes we contain, which will delete them if there are no
+		//  other references to them.
+		if (m_pMesh)
+		{
+			m_pMesh->Release();
+			m_geode->removeDrawable(0, 1);
+		}
+		// dereference
+		m_geode = NULL;
+	}
 	// Destroy itself
-	m_geode = NULL;			// decrease refcount
 	m_projection = NULL;	// decrease refcount
 	vtNode::Release();
 }
@@ -1226,6 +1240,9 @@ void vtSprite::Release()
 void vtSprite::AddMesh(vtMesh *pMesh)
 {
 	m_geode->addDrawable(pMesh->m_pGeometry.get());
+
+	// The vtSprite owns/references the meshes it contains
+	pMesh->ref();
 }
 
 void vtSprite::AddTextMesh(vtTextMesh *pTextMesh)
@@ -1272,6 +1289,7 @@ void vtSprite::SetImage(vtImage *pImage)
 	stateset->setRenderingHint(StateSet::TRANSPARENT_BIN);
 
 	AddMesh(m_pMesh);
+	m_pMesh->Release();	// pass ownership
 }
 
 void vtSprite::SetPosition(bool bPixels, float l, float t, float r, float b)
