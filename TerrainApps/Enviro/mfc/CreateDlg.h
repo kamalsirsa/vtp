@@ -61,7 +61,6 @@ public:
 	BOOL	m_bOceanPlane;
 	BOOL	m_bLabels;
 	int		m_iMinHeight;
-	BOOL	m_bBuildings;
 	CString	m_strBuildingFile;
 	BOOL	m_bVehicles;
 	float	m_fVehicleSize;
@@ -82,7 +81,6 @@ public:
 	int		m_iLodMethod;
 	float	m_fVehicleSpeed;
 	BOOL	m_bPreLit;
-	BOOL	m_bAirports;
 	//}}AFX_DATA
 	int		m_iTerrainSize;		// size of input BT
 	int		m_iTerrainDepth;	// in bytes/point

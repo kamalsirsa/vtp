@@ -39,7 +39,7 @@
 #define IDC_WIDTHEXAG                   1020
 #define IDC_ROADHEIGHT                  1020
 #define IDC_TFILESINGLE                 1021
-#define IDC_TREEDISTANCE                1022
+#define IDC_VEGDISTANCE                1022
 #define IDC_SIZEEXAG                    1023
 #define IDC_TIMEOFDAY                   1024
 #define IDC_INITTIME                    1025

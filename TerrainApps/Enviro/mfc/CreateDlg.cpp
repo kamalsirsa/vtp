@@ -43,13 +43,12 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_bTexRoads = TRUE;
 	m_bTrees = FALSE;
 	m_strTreeFile = _T("");
-	m_iTreeDistance = 10;
+	m_iVegDistance = 10;
 	m_iFogDistance = 10;
 	m_bOverlay = FALSE;
 	m_bOceanPlane = FALSE;
 	m_bLabels = FALSE;
 	m_iMinHeight = 10;
-	m_bBuildings = FALSE;
 	m_strBuildingFile = _T("");
 	m_bVehicles = FALSE;
 	m_fVehicleSize = 1.0f;
@@ -70,7 +69,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_iLodMethod = 0;
 	m_fVehicleSpeed = 1.0f;
 	m_bPreLit = FALSE;
-	m_bAirports = FALSE;
 	//}}AFX_DATA_INIT
 
 	// Beware: we need to store and display the same time on all
@@ -132,14 +130,13 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_TEXROADS, m_bTexRoads);
 	DDX_Check(pDX, IDC_TREES, m_bTrees);
 	DDX_CBString(pDX, IDC_TREEFILE, m_strTreeFile);
-	DDX_Text(pDX, IDC_TREEDISTANCE, m_iTreeDistance);
-	DDV_MinMaxUInt(pDX, m_iTreeDistance, 1, 500);
+	DDX_Text(pDX, IDC_VEGDISTANCE, m_iVegDistance);
+	DDV_MinMaxUInt(pDX, m_iVegDistance, 1, 500);
 	DDX_Text(pDX, IDC_FOGDISTANCE, m_iFogDistance);
 	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
 	DDX_Check(pDX, IDC_LABELS, m_bLabels);
 	DDX_Text(pDX, IDC_MINHEIGHT, m_iMinHeight);
-	DDX_Check(pDX, IDC_BUILDINGS, m_bBuildings);
 	DDX_CBString(pDX, IDC_BUILDINGFILE, m_strBuildingFile);
 	DDX_Check(pDX, IDC_VEHICLES, m_bVehicles);
 	DDX_Text(pDX, IDC_VEHICLESIZE, m_fVehicleSize);
@@ -163,7 +160,6 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_VEHICLESPEED, m_fVehicleSpeed);
 	DDV_MinMaxFloat(pDX, m_fVehicleSpeed, 1.e-002f, 1000.f);
 	DDX_Check(pDX, IDC_PRELIT, m_bPreLit);
-	DDX_Check(pDX, IDC_AIRPORTS, m_bAirports);
 	//}}AFX_DATA_MAP
 }
 
@@ -296,13 +292,12 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bRoadCulture = Params.m_bRoadCulture;
 
 	m_bTrees = Params.m_bTrees;
-	m_strTreeFile = Params.m_strTreeFile;
-	m_iTreeDistance = Params.m_iTreeDistance;
+	m_strTreeFile = Params.m_strVegFile;
+	m_iVegDistance = Params.m_iVegDistance;
 
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
-	m_bBuildings = Params.m_bBuildings;
 	m_strBuildingFile = Params.m_strBuildingFile;
 
 	m_bVehicles = Params.m_bVehicles;
@@ -318,8 +313,6 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bPreLight = Params.m_bPreLight;
 	m_bPreLit = Params.m_bPreLit;
 	m_fPreLightFactor = Params.m_fPreLightFactor;
-
-	m_bAirports = Params.m_bAirports;
 }
 
 void CCreateDlg::GetParams(TParams &Params)
@@ -360,13 +353,12 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bRoadCulture = m_bRoadCulture;
 
 	Params.m_bTrees = m_bTrees;
-	Params.m_strTreeFile = m_strTreeFile;
-	Params.m_iTreeDistance = m_iTreeDistance;
+	Params.m_strVegFile = m_strTreeFile;
+	Params.m_iVegDistance = m_iVegDistance;
 
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
-	Params.m_bBuildings = m_bBuildings;
 	Params.m_strBuildingFile = m_strBuildingFile;
 
 	Params.m_bVehicles = m_bVehicles;
@@ -382,8 +374,6 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bPreLight = m_bPreLight;
 	Params.m_bPreLit = m_bPreLit;
 	Params.m_fPreLightFactor = m_fPreLightFactor;
-
-	Params.m_bAirports = m_bAirports;
 }
 
 
