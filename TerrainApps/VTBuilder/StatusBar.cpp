@@ -1,7 +1,7 @@
 //
 // Status bar implementation
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -52,7 +52,7 @@ wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 	}
 	else	// something meters-based
 	{
-		str.Printf("%.0f", coord);
+		str.Printf(_T("%.0f"), coord);
 	}
 	return str;
 }
@@ -64,56 +64,59 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	vtProjection &proj = frame->GetAtProjection();
 	bool bGeo = (proj.IsGeographic() != 0);
 
-	SetStatusText(proj.GetProjectionNameShort(), Field_Coord);
-
 	wxString str;
+	str.FromAscii(proj.GetProjectionNameShort());
+	SetStatusText(str, Field_Coord);
+
 	int zone = proj.GetUTMZone();
 	if (zone != 0)
-		str.Printf("Zone %d", zone);
+		str.Printf(_T("Zone %d"), zone);
 	else
-		str = "";
+		str = _T("");
 	SetStatusText(str, Field_Zone);
 
-	SetStatusText(datumToStringShort(proj.GetDatum()), Field_Datum);
+	str.FromAscii(datumToStringShort(proj.GetDatum()));
+	SetStatusText(str, Field_Datum);
 
 	LinearUnits lu = proj.GetUnits();
-	const char *text;
 	switch (lu)
 	{
-	case LU_DEGREES:  text = "Degrees";    break;
-	case LU_METERS:	  text = "Meters";     break;
-	case LU_FEET_INT: text = "Feet"; break;
-	case LU_FEET_US:  text = "Feet (US)";  break;
+	case LU_DEGREES:  str = _T("Degrees");    break;
+	case LU_METERS:	  str = _T("Meters");     break;
+	case LU_FEET_INT: str = _T("Feet");		  break;
+	case LU_FEET_US:  str = _T("Feet (US)");  break;
 	}
-	SetStatusText(text, Field_HUnits);
+	SetStatusText(str, Field_HUnits);
 
 	DPoint2 p;
 	BuilderView *pView = frame->GetView();
 	if (pView)
 	{
 		pView->GetMouseLocation(p);
-		str.Printf("Mouse: %s, %s",
-				(const char *) FormatCoord(bGeo, p.x),
-				(const char *) FormatCoord(bGeo, p.y));
+		str = _T("Mouse: ");
+		str += FormatCoord(bGeo, p.x);
+		str += _T(", ");
+		str += FormatCoord(bGeo, p.y);
+
 		SetStatusText(str, Field_Mouse);
 //		VTLOG(" '%s' ", (const char *)str);
 
 		float height = frame->GetHeightFromTerrain(p);
 		if (height == INVALID_ELEVATION)
-			str = "";
+			str = _T("");
 		else
 		{
 			if (m_ShowVertUnits == LU_METERS)
-				str.Printf("%.2f m", height);
+				str.Printf(_T("%.2f m"), height);
 			else
-				str.Printf("%.2f ft", height / GetMetersPerUnit(m_ShowVertUnits));
+				str.Printf(_T("%.2f ft"), height / GetMetersPerUnit(m_ShowVertUnits));
 		}
 		SetStatusText(str, Field_Height);
 	}
 	else
 	{
-		SetStatusText("Mouse", Field_Mouse);
-		SetStatusText("", Field_Height);
+		SetStatusText(_T("Mouse"), Field_Mouse);
+		SetStatusText(_T(""), Field_Height);
 	}
 //	VTLOG(" Done.\n");
 }

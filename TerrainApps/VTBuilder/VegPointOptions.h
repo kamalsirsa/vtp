@@ -1,6 +1,9 @@
 //
 // Name: VegFieldsDlg.h
 //
+// Copyright (c) 2003 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __VegPointOptions_H__
 #define __VegPointOptions_H__
@@ -13,7 +16,7 @@ class VegPointOptions
 {
 public:
 	bool bFixedSpecies;
-	vtString strFixedSpeciesName;
+	wxString strFixedSpeciesName;
 
 	int iSpeciesFieldIndex;
 

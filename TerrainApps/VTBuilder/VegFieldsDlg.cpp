@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -44,7 +44,7 @@ VegFieldsDlg::VegFieldsDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 	VegFieldsDialogFunc( this, TRUE ); 
 }
 
-void VegFieldsDlg::SetShapefileName(const char *filename)
+void VegFieldsDlg::SetShapefileName(const wxString &filename)
 {
 	m_filename = filename;
 }
@@ -77,12 +77,13 @@ void VegFieldsDlg::RefreshEnabled()
 void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	int i;
+	wxString str;
 
 	// Open the SHP File
-	m_hSHP = SHPOpen(m_filename, "rb");
+	m_hSHP = SHPOpen(m_filename.mb_str(), "rb");
 	if (m_hSHP == NULL)
 	{
-		wxMessageBox("Couldn't open shapefile.");
+		wxMessageBox(_T("Couldn't open shapefile."));
 		return;
 	}
 
@@ -91,10 +92,10 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	SHPGetInfo(m_hSHP, &m_nElem, &m_nShapeType, adfMinBound, adfMaxBound);
 
 	// Open DBF File
-	DBFHandle m_db = DBFOpen(m_filename, "rb");
+	DBFHandle m_db = DBFOpen(m_filename.mb_str(), "rb");
 	if (m_db == NULL)
 	{
-		wxMessageBox("Couldn't open DBF file.");
+		wxMessageBox(_T("Couldn't open DBF file."));
 		return;
 	}
 
@@ -104,7 +105,8 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < pl->NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = pl->GetSpecies(i);
-		GetSpeciesChoice()->Append(spe->GetSciName());
+		str.FromAscii(spe->GetSciName());
+		GetSpeciesChoice()->Append(str);
 	}
 
 	// Fill the DBF field names into the "Use Field" controls
@@ -116,12 +118,13 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		fieldtype = DBFGetFieldInfo(m_db, i,
 			pszFieldName, pnWidth, pnDecimals );
+		str.FromAscii(pszFieldName);
 
 		if (fieldtype == FTString || fieldtype == FTInteger)
-			GetSpeciesField()->Append(pszFieldName);
+			GetSpeciesField()->Append(str);
 
 		if (fieldtype == FTInteger || fieldtype == FTDouble)
-			GetHeightField()->Append(pszFieldName);
+			GetHeightField()->Append(str);
 	}
 
 	m_bUseSpecies = true;

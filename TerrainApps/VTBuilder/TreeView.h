@@ -1,7 +1,7 @@
 //
 // TreeView.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -52,7 +52,7 @@ public:
 	void CreateImageList(int size = 16);
 	wxString MakeItemName(vtLayerPtr lp);
 
-	wxTreeItemId AddRootItem(int image, const char *text);
+	wxTreeItemId AddRootItem(int image, const wxString &text);
 	void RefreshTreeItems(MainFrame *pFrame);
 	void RefreshTreeStatus(MainFrame *pFrame);
 

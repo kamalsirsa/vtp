@@ -1,7 +1,7 @@
 //
 // StructLayer.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -34,7 +34,7 @@ static bool g_bInitializedPens = false;
 
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
-	m_strFilename = "Untitled.vtst";
+	m_strFilename = _T("Untitled.vtst");
 
 	if (!g_bInitializedPens)
 	{
@@ -193,12 +193,12 @@ void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 
 bool vtStructureLayer::OnSave()
 {
-	return WriteXML(m_strFilename);
+	return WriteXML(m_strFilename.mb_str());
 }
 
 bool vtStructureLayer::OnLoad()
 {
-	return ReadXML(m_strFilename);
+	return ReadXML(m_strFilename.mb_str());
 }
 
 void vtStructureLayer::GetProjection(vtProjection &proj)
@@ -316,7 +316,7 @@ void vtStructureLayer::GetPropertyText(wxString &strIn)
 
 	int i, size = GetSize();
 
-	str.Printf("Number of structures: %d\n", size);
+	str.Printf(_T("Number of structures: %d\n"), size);
 	strIn += str;
 
 	int bld = 0, lin = 0, ins = 0;
@@ -327,14 +327,14 @@ void vtStructureLayer::GetPropertyText(wxString &strIn)
 		else if (sp->GetFence()) lin++;
 		else if (sp->GetInstance()) ins++;
 	}
-	str.Printf("\t%d Buildings (procedural)\n", bld);
+	str.Printf(_T("\t%d Buildings (procedural)\n"), bld);
 	strIn += str;
-	str.Printf("\t%d Linear (fences/walls)\n", lin);
+	str.Printf(_T("\t%d Linear (fences/walls)\n"), lin);
 	strIn += str;
-	str.Printf("\t%d Instances (imported models)\n", ins);
+	str.Printf(_T("\t%d Instances (imported models)\n"), ins);
 	strIn += str;
 
-	str.Printf("Number of selected structures: %d\n", NumSelected());
+	str.Printf(_T("Number of selected structures: %d\n"), NumSelected());
 	strIn += str;
 }
 
@@ -657,7 +657,7 @@ bool vtStructureLayer::EditBuildingProperties()
 	// the building (pessimistic)
 	SetModified(true);
 
-	BuildingDlg dlg(NULL, -1, "Building Properties", wxDefaultPosition);
+	BuildingDlg dlg(NULL, -1, _T("Building Properties"), wxDefaultPosition);
 	dlg.Setup(this, bld_selected);
 
 	dlg.ShowModal();
@@ -720,7 +720,7 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 		built++;
 	}
 	wxString str;
-	str.Printf("Added a foundation level to %d buildings.\n", built);
+	str.Printf(_T("Added a foundation level to %d buildings.\n"), built);
 	wxMessageBox(str);
 }
 
@@ -806,10 +806,10 @@ void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 /////////////////////////////////////////////////////////////////////////////
 // Import methods
 
-bool vtStructureLayer::AddElementsFromSHP(const char *filename,
+bool vtStructureLayer::AddElementsFromSHP(const wxString &filename,
 										  vtProjection &proj, DRECT rect)
 {
-	ImportStructDlg dlg(NULL, -1, "Import Structures");
+	ImportStructDlg dlg(NULL, -1, _T("Import Structures"));
 
 	dlg.SetFileName(filename);
 	if (dlg.ShowModal() != wxID_OK)
@@ -822,7 +822,7 @@ bool vtStructureLayer::AddElementsFromSHP(const char *filename,
 
 	dlg.m_opt.rect = rect;
 
-	bool success = ReadSHP(filename, dlg.m_opt, progress_callback);
+	bool success = ReadSHP(filename.mb_str(), dlg.m_opt, progress_callback);
 	if (!success)
 		return false;
 

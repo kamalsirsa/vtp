@@ -1,7 +1,7 @@
 //
 // StructureLayer.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -47,7 +47,7 @@ public:
 	void UpdateResizeScale(UIContext &ui);
 
 	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
-	bool AddElementsFromSHP(const char *filename, vtProjection &proj, DRECT rect);
+	bool AddElementsFromSHP(const wxString &filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,

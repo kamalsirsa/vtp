@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -38,7 +38,7 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	void SetShapefileName(const char *filename);
+	void SetShapefileName(const wxString &filename);
 	void SetVegLayer(vtVegLayer *pLayer) { m_pLayer = pLayer; }
 
 	// WDR: method declarations for VegFieldsDlg

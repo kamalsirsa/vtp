@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -127,7 +127,7 @@ int MyTreeCtrl::OnCompareItems(const wxTreeItemId& item1,
 
 wxTreeItemId rootId;
 
-wxTreeItemId MyTreeCtrl::AddRootItem(int image, const char *text)
+wxTreeItemId MyTreeCtrl::AddRootItem(int image, const wxString &text)
 {
 	wxTreeItemId id = AppendItem(rootId, text, image);
 	SetItemBold(id);
@@ -138,7 +138,7 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 {
 	wxString str;
 	if (lp->GetModified())
-		str += "(*) ";
+		str += _T("(*) ");
 	wxString fullpath = lp->GetFilename();
 	if (!m_bShowPaths)
 	{
@@ -159,24 +159,24 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 	DeleteAllItems();
 
-	rootId = AddRoot("Layers");
+	rootId = AddRoot(_T("Layers"));
 	SetItemBold(rootId);
 
 	int	image, imageSel;
 
-	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, "Elevation");
+	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, _T("Elevation"));
 #ifndef ELEVATION_ONLY
-	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, "Images");
-	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, "Structures");
-	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, "Roads");
-	wxTreeItemId vegId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Veg1, "Vegetation");
-	wxTreeItemId waterId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Water, "Water");
+	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, _T("Images"));
+	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, _T("Structures"));
+	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, _T("Roads"));
+	wxTreeItemId vegId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Veg1, _T("Vegetation"));
+	wxTreeItemId waterId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Water, _T("Water"));
 #if SUPPORT_TRANSIT
-	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, "Transit");
+	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, _T("Transit"));
 #endif
-	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, "Utilities");
+	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, _T("Utilities"));
 #endif
-	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, "Raw");
+	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _T("Raw"));
 
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;

@@ -1,7 +1,7 @@
 //
 // VegDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -39,17 +39,17 @@ void PlantListCtrl::OnSelect(wxListEvent &event)
 		vtPlantAppearance* app = ps->GetAppearance(j);
 		wxString str1;
 		long item1;
-		str1.Printf("%d", app->m_eType == AT_BILLBOARD);
+		str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
 		item1 = apps->InsertItem(j, str1, 0);
-		str1 = app->m_filename;
+		str1.FromAscii((const char *) app->m_filename);
 		item1 = apps->SetItem(j, 1, str1);
-		str1.Printf("%4.2f", app->m_width);
+		str1.Printf(_T("%4.2f"), app->m_width);
 		item1 = apps->SetItem(j, 2, str1);
-		str1.Printf("%4.2f", app->m_height);
+		str1.Printf(_T("%4.2f"), app->m_height);
 		item1 = apps->SetItem(j, 3, str1);
-		str1.Printf("%4.2f", app->m_shadow_radius);
+		str1.Printf(_T("%4.2f"), app->m_shadow_radius);
 		item1 = apps->SetItem(j, 4, str1);
-		str1.Printf("%4.2f", app->m_shadow_darkness);
+		str1.Printf(_T("%4.2f"), app->m_shadow_darkness);
 		item1 = apps->SetItem(j, 5, str1);
 	}
 }
@@ -60,7 +60,7 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	// Setup Splitter Window.
 	m_PSplitter = new wxSplitterWindow(this, WID_PSPLITTER, wxPoint(0,0), wxSize(950,400),
-		wxSP_FULLSASH | wxSP_NOBORDER, "Plant List Dialog Splitter");
+		wxSP_FULLSASH | wxSP_NOBORDER, _T("Plant List Dialog Splitter"));
 	
 	int z = 0;
 
@@ -69,13 +69,13 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 		wxLC_REPORT | wxLC_ALIGN_TOP);
 	m_PSTable->ClearAll();
 	m_PSTable->SetSingleStyle(wxLC_REPORT);
-	m_PSTable->InsertColumn(0, "SID");
+	m_PSTable->InsertColumn(0, _T("SID"));
 	m_PSTable->SetColumnWidth(0, 30);
-	m_PSTable->InsertColumn(1, "Common Name");
+	m_PSTable->InsertColumn(1, _T("Common Name"));
 	m_PSTable->SetColumnWidth(1, 110);
-	m_PSTable->InsertColumn(2, "Scientific Name");
+	m_PSTable->InsertColumn(2, _T("Scientific Name"));
 	m_PSTable->SetColumnWidth(2, 150);
-	m_PSTable->InsertColumn(3, "Max Height");
+	m_PSTable->InsertColumn(3, _T("Max Height"));
 	m_PSTable->SetColumnWidth(3, 80);
 
 	// Setup right side with each plant appearance's attributes.
@@ -83,17 +83,17 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 		wxLC_REPORT | wxLC_ALIGN_TOP);
 	m_PATable->ClearAll();
 	m_PATable->SetSingleStyle(wxLC_REPORT);
-	m_PATable->InsertColumn(0, "Billboard");
+	m_PATable->InsertColumn(0, _T("Billboard"));
 	m_PATable->SetColumnWidth(0, 60);
-	m_PATable->InsertColumn(1, "FileName");
+	m_PATable->InsertColumn(1, _T("FileName"));
 	m_PATable->SetColumnWidth(1, 150);
-	m_PATable->InsertColumn(2, "Width");
+	m_PATable->InsertColumn(2, _T("Width"));
 	m_PATable->SetColumnWidth(2, 60);
-	m_PATable->InsertColumn(3, "Height");
+	m_PATable->InsertColumn(3, _T("Height"));
 	m_PATable->SetColumnWidth(3, 60);
-	m_PATable->InsertColumn(4, "Shadow Radius");
+	m_PATable->InsertColumn(4, _T("Shadow Radius"));
 	m_PATable->SetColumnWidth(4, 100);
-	m_PATable->InsertColumn(5, "Shadow Darkness");
+	m_PATable->InsertColumn(5, _T("Shadow Darkness"));
 	m_PATable->SetColumnWidth(5, 100);
 
 	// Initialize the splitter window.
@@ -110,13 +110,13 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 		long item;
 		vtPlantSpecies *spe = pl->GetSpecies(i);
 
-		str.Printf("%d", spe->GetSpecieID() );
+		str.Printf(_T("%d"), spe->GetSpecieID() );
         item = m_PSTable->InsertItem(i, str, 0);
-		str.Printf("%s", spe->GetCommonName() );
+		str.Printf(_T("%s"), spe->GetCommonName() );
         item = m_PSTable->SetItem(i, 1, str);
-		str.Printf("%s", spe->GetSciName() );
+		str.Printf(_T("%s"), spe->GetSciName() );
         item = m_PSTable->SetItem(i, 2, str);
-		str.Printf("%4.2f m", spe->GetMaxHeight() );
+		str.Printf(_T("%4.2f m"), spe->GetMaxHeight() );
         item = m_PSTable->SetItem(i, 3, str);
 		
 		// Display plant appearances per species in right table.
@@ -126,17 +126,17 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 			wxString str1;
 			long item1;
 
-			str1.Printf("%d", app->m_eType == AT_BILLBOARD);
+			str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
 			item1 = m_PATable->InsertItem(j, str1, 0);
-			str1 = app->m_filename;
+			str1.FromAscii((const char *) app->m_filename);
 			item1 = m_PATable->SetItem(j, 1, str1);
-			str1.Printf("%4.2f", app->m_width);
+			str1.Printf(_T("%4.2f"), app->m_width);
 			item1 = m_PATable->SetItem(j, 2, str1);
-			str1.Printf("%4.2f", app->m_height);
+			str1.Printf(_T("%4.2f"), app->m_height);
 			item1 = m_PATable->SetItem(j, 3, str1);
-			str1.Printf("%4.2f", app->m_shadow_radius);
+			str1.Printf(_T("%4.2f"), app->m_shadow_radius);
 			item1 = m_PATable->SetItem(j, 4, str1);
-			str1.Printf("%4.2f", app->m_shadow_darkness);
+			str1.Printf(_T("%4.2f"), app->m_shadow_darkness);
 			item1 = m_PATable->SetItem(j, 5, str1);
 		}
 	}
@@ -158,7 +158,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Create root of tree.
 	wxTreeItemId rootId;
-	rootId = m_BTree->AddRoot("BioRegions");
+	rootId = m_BTree->AddRoot(_T("BioRegions"));
 	m_BTree->SetItemBold(rootId);
 
 	vtBioRegion *br = GetMainFrame()->GetBioRegion();
@@ -170,7 +170,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 		// Display biotype as level 1 of tree.
 		wxTreeItemId region;
 		wxString bt;
-		bt.Printf("Type %d", i);
+		bt.Printf(_T("Type %d"), i);
 		region = m_BTree->AppendItem(rootId, bt);
 
 		int numspecies = br->m_Types[i]->m_Densities.GetSize();
@@ -178,7 +178,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 		{
 			// Display all species and it's density under each biotype as level 2 of tree.
 			wxString s;
-			s.Printf("%s (%1.4f /m^2)",
+			s.Printf(_T("%s (%1.4f /m^2)"),
 				(const char *) br->m_Types[i]->m_Densities[j]->m_common_name,
 				br->m_Types[i]->m_Densities[j]->m_plant_per_m2);
 

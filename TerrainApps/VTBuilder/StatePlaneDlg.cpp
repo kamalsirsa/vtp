@@ -1,7 +1,7 @@
 //
 // Name:        StatePlaneDlg.cpp
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -43,9 +43,11 @@ void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)
     StatePlaneInfo *plane_info = GetStatePlaneTable();
 
     wxString *choices = new wxString[num_planes];
+	wxString str;
     for (int i = 0; i < num_planes; i++)
     {
-        GetStatePlanes()->Append(plane_info[i].name, (void *) plane_info[i].usgs_code);
+		str.FromAscii(plane_info[i].name);
+        GetStatePlanes()->Append(str, (void *) plane_info[i].usgs_code);
     }
 
     m_iStatePlane = 1;

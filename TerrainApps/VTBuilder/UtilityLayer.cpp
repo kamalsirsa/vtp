@@ -23,7 +23,7 @@ static bool g_bInitializedPens = false;
 
 vtUtilityLayer::vtUtilityLayer() : vtLayer(LT_UTILITY)
 {
-	m_strFilename = "Untitled.utl";
+	m_strFilename = _T("Untitled.utl");
 
 	if (!g_bInitializedPens)
 	{

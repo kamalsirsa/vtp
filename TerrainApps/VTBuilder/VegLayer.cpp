@@ -1,7 +1,7 @@
 //
 // VegLayer.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -175,16 +175,16 @@ void vtVegLayer::Offset(const DPoint2 &p)
 
 void vtVegLayer::GetPropertyText(wxString &str)
 {
-	vtString s;
-	str = "Vegetion layer type: ";
+	wxString s;
+	str = _T("Vegetion layer type: ");
 	switch (m_VLType)
 	{
-	case VLT_None: str += "None\n"; break;
-	case VLT_Density: str += "Density\n"; break;
-	case VLT_BioMap: str += "BioMap\n"; break;
+	case VLT_None: str += _T("None\n"); break;
+	case VLT_Density: str += _T("Density\n"); break;
+	case VLT_BioMap: str += _T("BioMap\n"); break;
 	case VLT_Instances:
-		str += "Plant Instances\n";
-		s.Format("Number of Instances: %d\n", m_Pia.GetSize());
+		str += _T("Plant Instances\n");
+		s.Printf(_T("Number of Instances: %d\n"), m_Pia.GetSize());
 		str += s;
 		break;
 	}
@@ -202,14 +202,14 @@ bool vtVegLayer::OnSave()
 {
 	// currently we can load and save VF files (Plant Instances)
 	if (m_VLType == VLT_Instances)
-		return m_Pia.WriteVF(m_strFilename);
+		return m_Pia.WriteVF(m_strFilename.mb_str());
 	return false;
 }
 
 bool vtVegLayer::OnLoad()
 {
 	// currently we can load and save VF files (Plant Instances)
-	if (m_Pia.ReadVF(m_strFilename))
+	if (m_Pia.ReadVF(m_strFilename.mb_str()))
 	{
 		m_VLType = VLT_Instances;
 		return true;
@@ -534,7 +534,7 @@ void vtVegLayer::AddElementsFromSHP_Points(const char *filename,
 		// Read DBF Attributes per point
 		pi.species_id = -1;
 		if (opt.bFixedSpecies)
-			pi.species_id = pPlantList->GetSpeciesIdByName(opt.strFixedSpeciesName);
+			pi.species_id = pPlantList->GetSpeciesIdByName(opt.strFixedSpeciesName.mb_str());
 		else
 		{
 			switch (opt.iInterpretSpeciesField)

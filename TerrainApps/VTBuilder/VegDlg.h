@@ -1,5 +1,7 @@
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// VegDlg.h
+//
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,8 +14,8 @@
 #include "wx/dialog.h"
 #include "vtui/AutoDialog.h"
 
-#define PLANTS_FILTER "Plant Species List Files (*.xml)|*.xml|"
-#define BIOREGIONS_FILTER "Plant List Files (*.txt)|*.txt|"
+#define PLANTS_FILTER _T("Plant Species List Files (*.xml)|*.xml|")
+#define BIOREGIONS_FILTER _T("Plant List Files (*.txt)|*.txt|")
 #define WID_PLANTS 200
 #define WID_PSPLITTER 201
 #define WID_PSTABLE 202
