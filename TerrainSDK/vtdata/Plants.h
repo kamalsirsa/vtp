@@ -181,6 +181,9 @@ public:
 		int &plant, double &distance);
 	bool GetExtent(DRECT &rect);
 
+	void GetProjection(vtProjection &proj) const { proj = m_proj; }
+	void SetProjection(const vtProjection &proj) { m_proj = proj; }
+
 protected:
 	vtPlantList *m_pPlantList;
 	vtProjection m_proj;
