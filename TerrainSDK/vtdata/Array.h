@@ -9,6 +9,8 @@
 #ifndef ARRAYH
 #define ARRAYH
 
+//#include "vtLog.h"
+
 #include <stdlib.h>	// for free()
 #include <memory.h>	// for memcpy()
 #include <assert.h>	// for assert()
@@ -18,11 +20,32 @@
  * entities.
  *
  * Note that construction and destruction is not done automatically
- * if the entities are class objects.  You can provide this ability
- * yourself by overriding the ConstructItems and DestructItems methods,
- * but it is easier to use this template for objects with simple
- * value semantics such as basic types (int, float..), structs, and
- * pointers.
+ * if the entities are class objects.  You can provide this destruction
+ * yourself by overriding the DestructItems method, but it is easier to use
+ * this template for objects with simple value semantics such as basic types
+ * (int, float..), structs, and pointers.  If you do create a subclass like
+ * this:
+\code
+	class MyArray : public Array<MyObject *> {};
+\endcode
+ * note that you will need to provide not only a DestructItems()
+ * implementation, but also a destructor.  This is because the default
+ * Array destructor is not smart enough to call your DestructItems()
+ * method (it will call the base DestructItems() instead, which does
+ * nothing).
+ *
+ * A full working example is:
+\code
+	class MyArray : public Array<MyObject *>
+	{
+		virtual ~MyArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+		virtual	void DestructItems(int first, int last)
+		{
+			for (int i = first; i <= last; i++)
+				delete GetAt(i);
+		}
+	};
+\endcode
  */
 template <class E> class Array
 {
@@ -55,7 +78,6 @@ public:
 protected:
 //	Internal functions
 	virtual bool	Grow(int);
-	virtual void	ConstructItems(int first, int last);
 	virtual	void	DestructItems(int first, int last);
 
 //	Data members
@@ -92,39 +114,6 @@ template <class E> Array<E>::Array(int size)
 
 
 /**
- *	Called by the array implementation when new array items are created.
- *	The default implementation does _not_ call the constructors for the
- *	array items, it just fills the data with zeros. This will not work if
- *	your array elements use virtual functions.
- *
- *	Override this function to explicitly call the constructors properly if
- *	you need this functionality. In order to call the constructors without
- *	allocating memory, you need to supply a special version of operator new
- *	for your array elements.
- *
- * \param first		Index of first element to make.
- * \param last		Index of last element to make.
- *
- * \par Example:
-\code
-	// Overrides ConstructItems to call constructors
-	void* MyElem::operator new(size_t s, void* p) { return p; }
-	typedef Array<MyElem> MyArray;
-	inline void MyArray::ConstructItems(int first, int last)
-	{
-		for (int i = first; i <= last; ++i)
-		   new (GetData() + i) MyElem();
-	}
-\endcode
- * \sa Array::Grow Array::DestructItems
- *
- */
-template <class E> inline void Array<E>::ConstructItems(int first, int last)
-{
-	memset(m_Data + first, 0, (last - first + 1) * sizeof(E));
-}
-
-/**
  *	Called by the array implementation when array items are deleted.
  *	The default implementation does _not_ call the destructors for the
  *	array items. This will not work if your array elements do memory
@@ -133,8 +122,8 @@ template <class E> inline void Array<E>::ConstructItems(int first, int last)
  *	Override this function to explicitly call the destructors properly if
  *	you need this functionality.
  *
- *	\param start	index of first element to destroy
- *	\param nitems	number of elements to destroy
+ *	\param first	Index of first element to destroy
+ *	\param last		Index of last element to destroy
  *
  * \par Example:
 \code
@@ -142,14 +131,13 @@ template <class E> inline void Array<E>::ConstructItems(int first, int last)
 	inline void MyArray::DestructItems(int first, int last)
 	{
 		for (int i = first; i <= last; ++i)
-		   (GetData() + i)->~MyElem();
+		   delete GetAt(i);
 	}
 \endcode
- * \sa Array::Grow Array::ConstructItems
- *
  */
-template <class E> inline void Array<E>::DestructItems(int start, int nitems)
+template <class E> inline void Array<E>::DestructItems(int first, int last)
 {
+	//VTLOG("base DestructItems, %d %d\n", start, nitems);
 }
 
 
@@ -158,6 +146,7 @@ template <class E> inline void Array<E>::DestructItems(int start, int nitems)
  */
 template <class E> inline Array<E>::~Array()
 {
+	//VTLOG("~Array, size %d, max %d\n", m_Size, m_MaxSize);
 	Empty();
 	free(m_Data);
 	m_Data = NULL;
@@ -204,7 +193,6 @@ template <class E> bool Array<E>::Grow(int growto)
 				return false;
 		}
 		m_MaxSize = growto;					// remember new size
-		ConstructItems(m_Size, m_MaxSize - 1);
 	}
 	return true;
 }
@@ -473,6 +461,7 @@ template <class E> int Array<E>::Append(const Array<E>& src)
  */
 template <class E> void Array<E>::Empty()
 {
+	//VTLOG("Empty, size %d\n", m_Size);
 	DestructItems(0, m_Size - 1);
 	m_Size = 0;
 }
