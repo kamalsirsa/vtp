@@ -476,7 +476,7 @@ void vtDynGeom::CalcCullPlanes()
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCam = pScene->GetCamera();
 
-#if 1
+#if 0
 	// Non-API-Specific code - will work correctly as long as the Camera
 	// methods are fully functional.
 	FMatrix4 mat;
@@ -531,17 +531,20 @@ void vtDynGeom::CalcCullPlanes()
 	m_cullPlanes[2].Set(center, norm_t);
 	m_cullPlanes[3].Set(center, norm_b);
 #else
-	// "get the view frustum clipping in model coordinates"
-	// directly from OSG
+	// Get the view frustum clipping directly from OSG
 
 	// OSG 0.8.44
 //	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
 	// OSG 0.8.45
 //	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
 	// OSG 0.9.0
-	const Polytope &clipvol = hack_global_state->getViewFrustum();
+	const Polytope &clipvol1 = pCam->m_pOsgCamera->getViewFrustum();
+	const Polytope &clipvol2 = hack_global_state->getViewFrustum();
 
-	const Polytope::PlaneList &planes = clipvol.getPlaneList();
+	// clipvol1 is the global camera frustum (in world coordinates)
+	// clipvol2 is the camera's frustum after it's been transformed to the
+	//		local coordinates.
+	const Polytope::PlaneList &planes = clipvol1.getPlaneList();
 
 	int i = 0;
 	for (Polytope::PlaneList::const_iterator itr=planes.begin();
@@ -552,7 +555,7 @@ void vtDynGeom::CalcCullPlanes()
 
 		// extract the OSG plane to our own structure
 		Vec4 pvec = plane.asVec4();
-		m_cullPlanes[i++].Set(pvec.x(), pvec.y(), pvec.z(), pvec.w());
+		m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
 	}
 #endif
 }
