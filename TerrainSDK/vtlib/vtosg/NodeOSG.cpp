@@ -373,15 +373,15 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 #endif
 
 	// The final resulting node is the container of that operation
-	vtNode *pNode = new vtNode();
-	pNode->SetOsgNode(container_group);
-	pNode->SetName2(fname);
+	vtGroup *pGroup = new vtGroup(true);
+	pGroup->SetOsgGroup(container_group);
+	pGroup->SetName2(fname);
 
 #if DEBUG_NODE_LOAD
-	VTLOG("VTP node %lx\n", pNode);
+	VTLOG("VTP node %lx\n", pGroup);
 #endif
 
-	return pNode;
+	return pGroup;
 }
 
 void vtNode::ClearOsgModelCache()
@@ -401,10 +401,10 @@ void DecorateVisit(osg::Node *node)
 
 	// first, determine if this node is already decorated
 	vnode = (vtNode *) (node->getUserData());
+	group = dynamic_cast<osg::Group*>(node);
 	if (!vnode)
 	{
 		// needs decorating.  it is a group?
-		group = dynamic_cast<osg::Group*>(node);
 		if (group)
 		{
 			vgroup = new vtGroup(true);
