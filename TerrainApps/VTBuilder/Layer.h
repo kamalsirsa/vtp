@@ -17,7 +17,7 @@
 #define FSTRING_BT		"BT Files (*.bt)|*.bt|"
 #define FSTRING_RMF		"RMF Files (*.rmf)|*.rmf|"
 #define FSTRING_BCF		"BCF Files (*.bcf)|*.bcf|"
-#define FSTRING_TIN		"TIN Files (*.tin)|*.tin|"
+#define FSTRING_TIN		"TIN Files (*.itf)|*.itf|"
 
 #define FSTRING_ADF		"Arc Data Files (*.adf)|*.adf|"
 #define FSTRING_ASC		"ArcInfo ASCII grid (*.asc)|*.asc|"
