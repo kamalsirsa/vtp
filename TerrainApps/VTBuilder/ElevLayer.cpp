@@ -320,34 +320,39 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	}
 #endif
 
+	bool bDrawNormal = true;
 #if WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
-#endif
 
-#if 0
-	// Using StretchBlit is much faster and has less scaling/roundoff
-	//  problems than using the wx method DrawBitmap.  However, GDI
-	//  won't stretch and mask at the same time!
-	wxDC2 *pDC2 = (wxDC2 *) pDC;
-	pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
-		destRect.width, destRect.height);
-#else
-	// scale and draw the bitmap
-	// must use SetUserScale since wxWindows doesn't provide StretchBlt
-	double scale_x = 1.0/ratio_x;
-	double scale_y = 1.0/ratio_y;
-	pDC->SetUserScale(scale_x, scale_y);
-	pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
-		(int) (destRect.y/scale_y), m_bHasMask);
-
-	// restore
-	pDC->SetUserScale(1.0, 1.0);
+	if (!m_bHasMask && 0)
+	{
+		// Using StretchBlit is much faster and has less scaling/roundoff
+		//  problems than using the wx method DrawBitmap.  However, GDI
+		//  won't stretch and mask at the same time!
+		wxDC2 *pDC2 = (wxDC2 *) pDC;
+		pDC2->StretchBlit(*m_pBitmap->m_pBitmap, destRect.x, destRect.y,
+			destRect.width, destRect.height, srcRect.x, srcRect.y,
+			srcRect.width, srcRect.height);
+		bDrawNormal = false;
+	}
 #endif
+	if (bDrawNormal)
+	{
+		// scale and draw the bitmap
+		// must use SetUserScale since wxWindows doesn't provide StretchBlt
+		double scale_x = 1.0/ratio_x;
+		double scale_y = 1.0/ratio_y;
+		pDC->SetUserScale(scale_x, scale_y);
+		pDC->DrawBitmap(*m_pBitmap->m_pBitmap, (int) (destRect.x/scale_x),
+			(int) (destRect.y/scale_y), m_bHasMask);
+
+		// restore
+		pDC->SetUserScale(1.0, 1.0);
+	}
 
 #if 0
 	// This is how we used to do it, with raw Win32 calls
 	t->d_pDIBSection->Draw( pDC, destRect.left, destRect.top);
-	pDC->SetStretchBltMode( HALFTONE );
 	m_bitmap.d_pDIBSection->DrawScaled( pDC, destRect, srcRect);
 #endif
 }
