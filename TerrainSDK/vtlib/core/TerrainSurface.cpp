@@ -67,7 +67,7 @@ FPoint3 *vtTerrainGeom::ComputeNormals(FPoint3 *pLocations)
 		if (i > 0 && j < m_iYPoints-1)
 			c += (v4.Cross(v1));
 #if 1
-		// exaggerate X and Z componets for heightened shading effect
+		// exaggerate X and Z components for heightened shading effect
 		c.Normalize();
 		c.x *= 3.0f;
 		c.z *= 3.0f;
