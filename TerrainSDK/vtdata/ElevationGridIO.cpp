@@ -1965,12 +1965,12 @@ bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback
 
 #define MAGIC_VALUE 0x04030201
 typedef union {
-    unsigned int val;
-    unsigned char bytes[4];
+	unsigned int val;
+	unsigned char bytes[4];
 } bitTest;
-#define SWAP(a,b)  { a^=b; b^=a; a^=b; }
-#define BYTE    unsigned char
-#define BSWAP_W(w) SWAP( (((BYTE *)&w)[0]), (((BYTE *)&w)[1]) )
+#define SWAP(a,b)	{ a^=b; b^=a; a^=b; }
+#define BYTE		unsigned char
+#define BSWAP_W(w)	SWAP( (((BYTE *)&w)[0]), (((BYTE *)&w)[1]) )
 
 /**
  * Write elevation to the STM (Simple Terrain Model) format created by Michael
@@ -2018,48 +2018,72 @@ bool vtElevationGrid::SaveToSTM(const char *szFileName, void progress_callback(i
  */
 bool vtElevationGrid::SaveToPlanet(const char *szDirName, void progress_callback(int))
 {
-	DPoint2 spacing = GetSpacing();
+	DRECT area;
 
-    // create name of binary file and write it to disk
-	vtString fname_dat = szDirName;
-	fname_dat += "/binarydem.dat";
-    FILE *outfile = fopen(fname_dat, "wb");
-	if (!outfile)
-		return false;
-
-	short* pixels = new short[m_iColumns * m_iRows];
-	int idx = 0;
-	for (int j = 0; j < m_iRows; j++)
-	{
-		if ((j % 5) == 0 && progress_callback != NULL)
-			progress_callback(j * 100 / m_iRows);
-
-		for (int i = 0; i < m_iColumns; i++)
-		{
-			short val = GetValue(i, m_iRows-1-j);
-			BSWAP_W(val);
-			pixels[idx++] = val;
-		}
-	}
-	fwrite(pixels, sizeof(short) * m_iColumns, m_iRows, outfile);
-	delete [] pixels;
-    fclose(outfile);
-
-    // create index file
+	// create index file
 	vtString fname_txt = szDirName;
 	fname_txt += "/index.txt";
-    outfile = fopen(fname_txt, "wb");
-	if (!outfile)
+	FILE *indexfile = fopen(fname_txt, "wb");
+	if (!indexfile)
 		return false;
 
-	vtString fname2 = StartOfFilename(fname_dat);
+	const int TILE_SIZE = 2048;
+	int xtiles = (m_iColumns + TILE_SIZE - 1) / TILE_SIZE;
+	int ytiles = (m_iRows + TILE_SIZE - 1) / TILE_SIZE;
 
-    fprintf(outfile, "%s %g %g %g %g %g\n",
-        (const char *) fname2,
-        m_EarthExtents.left,   m_EarthExtents.left + m_iColumns * spacing.x, 
-        m_EarthExtents.bottom, m_EarthExtents.bottom + m_iRows * spacing.y,
-        spacing.x);		// apparently spacing must be even in both directions
-    fclose(outfile);
+	for (int xtile = 0; xtile < xtiles; xtile++)
+	for (int ytile = 0; ytile < ytiles; ytile++)
+	{
+		// create name of binary file and write it to disk
+		vtString fname_dat;
+		fname_dat.Format("%s/binarydem%02d%02d.dat", szDirName, xtile, ytile);
+		FILE *outfile = fopen(fname_dat, "wb");
+		if (!outfile)
+			return false;
+
+		int xbase = xtile * TILE_SIZE;
+		int ybase = ytile * TILE_SIZE;
+		int xsize = (xtile < xtiles-1) ? TILE_SIZE : m_iColumns-xbase;
+		int ysize = (ytile < ytiles-1) ? TILE_SIZE : m_iRows-ybase;
+
+		short* pixels = new short[xsize * ysize];
+		int idx = 0;
+		for (int j = 0; j < ysize; j++)
+		{
+			if ((j % 5) == 0 && progress_callback != NULL)
+				progress_callback(j * 100 / m_iRows);
+
+			int y = ybase + ysize - 1 - j;	// flip order within block
+			for (int i = 0; i < xsize; i++)
+			{
+				int x = xbase + i;
+				short val = GetValue(x, y);
+				BSWAP_W(val);
+				pixels[idx++] = val;
+			}
+		}
+		fwrite(pixels, sizeof(short) * xsize, ysize, outfile);
+		fclose(outfile);
+		delete [] pixels;
+
+		// Planet uses cell-edge, not cell-center for its extents.  That is,
+		//  the area affected by the elevation grid points.
+		area.left = m_EarthExtents.left + (xbase * m_dXStep) - (m_dXStep / 2.0f);
+		area.right = area.left + (xsize * m_dXStep);
+
+		area.bottom = m_EarthExtents.bottom + (ybase * m_dYStep) - (m_dYStep / 2.0f);
+		area.top = area.bottom + (ysize * m_dYStep);
+
+		vtString fname2 = StartOfFilename(fname_dat);
+
+		fprintf(indexfile, "%s %g %g %g %g %g\n",
+			(const char *) fname2,
+			area.left,   area.right, 
+			area.bottom, area.top,
+			m_dXStep);		// apparently spacing must be even in both directions
+	}
+	fclose(indexfile);
+
 	return true;
 }
 
