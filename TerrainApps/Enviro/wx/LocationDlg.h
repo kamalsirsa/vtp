@@ -30,7 +30,6 @@ class AnimEntry
 public:
 	AnimEntry() { m_pAnim = NULL; m_pEngine = NULL; }
 	~AnimEntry() {
-		vtGetScene()->RemoveEngine(m_pEngine);
 		delete m_pEngine; } // engine owns path
 	vtAnimPath *m_pAnim;
 	vtAnimPathEngine *m_pEngine;
@@ -75,6 +74,7 @@ public:
 	void RefreshList();
 	void SetTarget(vtTransform *pTarget, const vtProjection &proj,
 				   const vtLocalConversion &conv);
+	void SetEngineContainer(vtEngine *pContainer);
 	void SetLocFile(const vtString &fname);
 	void RefreshButtons();
 	void RecallFrom(const vtString &locname);
@@ -97,6 +97,7 @@ private:
 
 	wxListBox* m_pLocList;
 
+	vtEngine *m_pContainer;
 	Array<AnimEntry *> m_Entries;
 
 	vtAnimPath *GetAnim(int i) { return m_Entries.GetAt(i)->m_pAnim; }

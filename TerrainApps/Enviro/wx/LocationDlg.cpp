@@ -111,7 +111,15 @@ LocationDlg::~LocationDlg()
 
 	unsigned int i;
 	for (i = 0; i < m_Entries.GetSize(); i++)
+	{
+		m_pContainer->RemoveChild(m_Entries[i]->m_pEngine);
 		delete m_Entries[i];
+	}
+}
+
+void LocationDlg::SetEngineContainer(vtEngine *pContainer)
+{
+	m_pContainer = pContainer;
 }
 
 void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
@@ -217,7 +225,7 @@ void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
 	vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
 	engine->SetTarget(m_pSaver->GetTransform());
 	engine->SetEnabled(false);
-	vtGetScene()->AddEngine(engine);
+	m_pContainer->AddChild(engine);
 
 	AnimEntry *entry = new AnimEntry();
 	entry->m_pAnim = anim;

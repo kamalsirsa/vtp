@@ -516,6 +516,11 @@ void vtFrame::CreateToolbar(bool bVertical)
 //	m_pToolbar->Refresh();
 }
 
+void vtFrame::Setup3DScene()
+{
+	m_pLocationDlg->SetEngineContainer(g_App.m_pLocEngines);
+}
+
 //
 // Utility methods
 //

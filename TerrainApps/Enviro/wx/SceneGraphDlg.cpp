@@ -141,13 +141,17 @@ void SceneGraphDlg::RefreshTreeContents()
 
 	// Fill in the tree with nodes
 	m_bFirst = true;
-	vtNodeBase *pRoot = scene->GetRoot();
+	vtNode *pRoot = scene->GetRoot();
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
 	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, _("Engines"), 7, 7);
 
-	// Fill in the tree with engines
+	vtEngine *pEngine = scene->GetRootEngine();
+	if (pEngine) AddEnginesRecursively(hEngRoot, pEngine, 0);
+	m_pTree->Expand(hEngRoot);
+
+/*	// Fill in the tree with engines
 	int num = scene->GetNumEngines();
 	vtTarget *target;
 	for (int i = 0; i < num; i++)
@@ -179,7 +183,7 @@ void SceneGraphDlg::RefreshTreeContents()
 		m_pTree->SetItemData(hEng, new MyTreeItemData(NULL, pEng));
 	}
 	m_pTree->Expand(hEngRoot);
-
+*/
 	m_pSelectedEngine = NULL;
 	m_pSelectedNode = NULL;
 }
@@ -308,6 +312,51 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		m_pTree->Expand(hNewItem);
 }
 
+void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
+										vtEngine *pEng, int depth)
+{
+	wxTreeItemId hNewItem;
+
+	if (!pEng) return;
+
+	wxString2 str = pEng->GetName2();
+	if (str == "")
+		str = "unnamed";
+
+	int targets = pEng->NumTargets();
+	vtTarget *target = pEng->GetTarget();
+	if (target)
+	{
+		str += _T(" -> ");
+		vtNodeBase *node = dynamic_cast<vtNodeBase*>(target);
+		if (node)
+		{
+			str += _T("\"");
+			str += wxString::FromAscii(node->GetName2());
+			str += _T("\"");
+		}
+		else
+			str += _("(non-node)");
+	}
+	if (targets > 1)
+	{
+		wxString2 plus;
+		plus.Printf(_(" (%d targets total)"), targets);
+		str += plus;
+	}
+
+	hNewItem = m_pTree->AppendItem(hParentItem, str, 1, 1);
+	m_pTree->SetItemData(hNewItem, new MyTreeItemData(NULL, pEng));
+
+	for (unsigned int i = 0; i < pEng->NumChildren(); i++)
+	{
+		vtEngine *pChild = pEng->GetChild(i);
+		AddEnginesRecursively(hNewItem, pChild, depth+1);
+	}
+
+	// always expand engines
+	m_pTree->Expand(hNewItem);
+}
 
 // WDR: handler implementations for SceneGraphDlg
 

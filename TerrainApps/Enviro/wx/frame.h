@@ -52,7 +52,7 @@ public:
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
-	virtual void Setup3DScene() {}
+	virtual void Setup3DScene();
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 	virtual void FrameArgument(int i, const char *str) { }
 
