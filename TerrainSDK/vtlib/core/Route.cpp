@@ -186,7 +186,7 @@ void vtRoute::_CreateStruct(int iNode)
 	m_pTheTerrain->PlantModelAtPoint(node->m_pTrans, node->m_Point);
 
 	if (add)
-		m_pTheTerrain->AddNodeToLodGrid(node->m_pTrans);
+		m_pTheTerrain->AddNodeToStructGrid(node->m_pTrans);
 }
 
 
