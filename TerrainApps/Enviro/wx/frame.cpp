@@ -995,7 +995,8 @@ void vtFrame::OnRoads(wxCommandEvent& event)
 
 void vtFrame::OnFog(wxCommandEvent& event)
 {
-	GetTerrainScene()->ToggleFog();
+	vtTerrain *t = GetCurrentTerrain();
+	if (t) t->SetFog(!t->GetFog());
 }
 
 void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
@@ -1010,7 +1011,8 @@ void vtFrame::OnUpdateRoads(wxUpdateUIEvent& event)
 
 void vtFrame::OnUpdateFog(wxUpdateUIEvent& event)
 {
-	event.Check(GetTerrainScene()->GetFog());
+	vtTerrain *t = GetCurrentTerrain();
+	event.Check(t && t->GetFog());
 }
 
 void vtFrame::OnIncrease(wxCommandEvent& event)
