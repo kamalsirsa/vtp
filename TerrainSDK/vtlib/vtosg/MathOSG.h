@@ -30,11 +30,11 @@ inline osg::Vec4 v2s(const RGBf &f)
 	return s;
 }
 
-inline void s2v(osg::Vec3 &s, FPoint3 &f) { f.x = s[0]; f.y = s[1]; f.z = s[2]; }
-inline void s2v(osg::Vec2 &s, FPoint2 &f) { f.x = s[0]; f.y = s[1]; }
-inline void s2v(osg::Vec4 &s, RGBf &f) { f.r = s[0]; f.g = s[1]; f.b = s[2]; }
+inline void s2v(const osg::Vec3 &s, FPoint3 &f) { f.x = s[0]; f.y = s[1]; f.z = s[2]; }
+inline void s2v(const osg::Vec2 &s, FPoint2 &f) { f.x = s[0]; f.y = s[1]; }
+inline void s2v(const osg::Vec4 &s, RGBf &f) { f.r = s[0]; f.g = s[1]; f.b = s[2]; }
 
-inline void s2v(osg::BoundingSphere &bs, FSphere &sph)
+inline void s2v(const osg::BoundingSphere &bs, FSphere &sph)
 {
 	s2v(bs._center, sph.center);
 	sph.radius = bs._radius;
