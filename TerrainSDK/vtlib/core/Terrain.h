@@ -99,6 +99,9 @@ public:
 	vtTin3d *GetTin() { return m_pTin; }
 	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
 
+	/// pass true to draw the underside of the terrain as well
+	void SetBothSides(bool bFlag) { m_bBothSides = bFlag; }
+
 	// You can use these methods to build a terrain step by step,
 	// or simply use the method vtTerrainScene::BuildTerrain.
 	bool CreateStep1();
@@ -336,6 +339,7 @@ protected:
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
 	vtMaterialArray *m_pDetailMats;
+	bool			m_bBothSides;
 
 	// roads
 	vtGroup			*m_pRoadGroup;

@@ -46,6 +46,8 @@ vtTerrain::vtTerrain()
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pImage = NULL;
 	m_pTerrMats = NULL;
+	m_bBothSides = false;
+
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
@@ -472,7 +474,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 			vtImage *pImage = m_Images[0];
 			bool bTransp = (pImage->GetDepth() == 32);
 			m_pTerrMats->AddTextureMaterial(pImage,
-				true,		// culling
+				!m_bBothSides,		// culling
 				false,		// lighting
 				bTransp,	// transparency blending
 				false,		// additive
@@ -2380,7 +2382,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 		{
 			vtImage *image = m_Images.GetAt(i*patches+j);
 			pMat1->AddTextureMaterial(image,
-				true, 		// culling
+				!m_bBothSides, 	// culling
 				false,		// lighting
 				false,		// transparency
 				false,		// additive
