@@ -339,6 +339,9 @@ double GetMinutes(const char *buf)
 
 vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 {
+	// Must use "C" locale because we use atof()
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG(" FeatureLoader LoadFromIGC\n");
 
 	FILE *fp = fopen(filename, "rb");
