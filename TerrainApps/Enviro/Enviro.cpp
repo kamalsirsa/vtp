@@ -1528,9 +1528,14 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	structures->VisualDeselectAll();
 	m_bSelectedStruct = false;
 
+	// SelectionCutoff is in meters, but the picking functions work in
+	//  Earth coordinates.  Try to convert it to earth horiz units.
+	DPoint2 eoffset;
+	g_Conv.ConvertVectorToEarth(g_Options.m_fSelectionCutoff, 0, eoffset);
+	double epsilon = eoffset.x;
+
 	int structure;		// index of closest structure
-	bool result1 = pTerr->FindClosestStructure(gpos,
-		g_Options.m_fSelectionCutoff, structure, dist1);
+	bool result1 = pTerr->FindClosestStructure(gpos, epsilon, structure, dist1);
 	vtStructureArray3d *structures_picked = pTerr->GetStructures();
 
 	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
@@ -1538,15 +1543,15 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	m_bSelectedPlant = false;
 
 	int plant;		// index of closest plant
-	plant = plants.FindClosestPoint(gpos, g_Options.m_fSelectionCutoff);
+	plant = plants.FindClosestPoint(gpos, epsilon);
 	bool result2 = (plant != -1);
 	if (result2)
 		dist2 = (gpos - plants.GetPoint(plant)).Length();
 
 	vtRouteMap &routes = pTerr->GetRouteMap();
 	m_bSelectedUtil = false;
-	bool result3 = routes.FindClosestUtilNode(gpos,
-		g_Options.m_fSelectionCutoff, m_pSelRoute, m_pSelUtilNode, dist3);
+	bool result3 = routes.FindClosestUtilNode(gpos, epsilon, m_pSelRoute,
+		m_pSelUtilNode, dist3);
 
 	bool click_struct = (result1 && dist1 < dist2 && dist1 < dist3);
 	bool click_plant = (result2 && dist2 < dist1 && dist2 < dist3);
