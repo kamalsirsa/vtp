@@ -878,3 +878,32 @@ class LinkEdit *NodeEdit::GetLink(int n)
 		return NULL;
 }
 
+LinkEdit *RoadMapEdit::AddRoadSegment(OGRLineString *pLineString)
+{
+	// Road: implicit nodes at start and end
+	LinkEdit *r = NewLink();
+	int num_points = pLineString->getNumPoints();
+	for (int j = 0; j < num_points; j++)
+	{
+		r->Append(DPoint2(pLineString->getX(j),	pLineString->getY(j)));
+	}
+	Node *n1 = NewNode();
+	n1->m_p.Set(pLineString->getX(0), pLineString->getY(0));
+
+	Node *n2 = NewNode();
+	n2->m_p.Set(pLineString->getX(num_points-1), pLineString->getY(num_points-1));
+
+	AddNode(n1);
+	AddNode(n2);
+	r->SetNode(0, n1);
+	r->SetNode(1, n2);
+	n1->AddLink(r);
+	n2->AddLink(r);
+
+	//set bounding box for the road
+	r->ComputeExtent();
+
+	AddLink(r);
+	return r;
+}
+

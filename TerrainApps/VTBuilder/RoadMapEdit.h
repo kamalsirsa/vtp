@@ -120,8 +120,8 @@ public:
 	// overrides for virtual methods
 	LinkEdit *GetFirstLink() { return (LinkEdit *)m_pFirstLink; }
 	NodeEdit *GetFirstNode() { return (NodeEdit *)m_pFirstNode; }
-	Node *NewNode() { return new NodeEdit; }
-	Link *NewLink() { return new LinkEdit; }
+	NodeEdit *NewNode() { return new NodeEdit; }
+	LinkEdit *NewLink() { return new LinkEdit; }
 
 	// Import from DLG
 	void AddElementsFromDLG(vtDLGFile *pDlg);
@@ -134,6 +134,7 @@ public:
 	// Import from SDTS via OGR
 	void AddElementsFromOGR(class OGRDataSource *datasource,
 		bool progress_callback(int) = NULL);
+	LinkEdit *AddRoadSegment(class OGRLineString *pLineString);
 
 	//cleaning functions-------------------------
 	// merge nodes that are near each other
