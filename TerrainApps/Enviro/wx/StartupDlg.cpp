@@ -28,45 +28,13 @@
 #include "StartupDlg.h"
 #include "../Options.h"
 #include "vtdata/vtLog.h"
+#include "vtui/Helper.h"	// for AddFilenamesToComboBox
 
 #include "app.h"
 #include "TParamsDlg.h"
 #include "TerrManDlg.h"
 
 DECLARE_APP(vtApp);
-
-//
-// This function is used to find all files in a given directory,
-// and if they match a wildcard, add them to a combo box.
-//
-void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
-	const char *wildcard, int omit_chars)
-{
-//  VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
-
-	int entries = 0, matches = 0;
-
-	wxString2 wildstr = wildcard;
-	for (dir_iter it((const char *)directory); it != dir_iter(); ++it)
-	{
-		entries++;
-		std::string name1 = it.filename();
-		//	VTLOG("   entry: '%s'", name1.c_str());
-		if (it.is_hidden() || it.is_directory())
-			continue;
-
-		wxString2 name = name1.c_str();
-		if (name.Matches(wildstr))
-		{
-			if (omit_chars)
-				box->Append(name.Left(name.Length()-omit_chars));
-			else
-				box->Append(name);
-			matches++;
-		}
-	}
-//  VTLOG(" %d entries, %d matches\n", entries, matches);
-}
 
 //
 // Helper: find the largest texture size supported by OpenGL

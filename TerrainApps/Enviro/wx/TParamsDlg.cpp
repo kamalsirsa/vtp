@@ -21,12 +21,10 @@
 #include "vtlib/core/Location.h"
 #include "vtdata/Features.h"		// for RefreshLabelFields()
 #include "vtdata/FilePath.h"		// for FindFileOnPaths()
+#include "vtui/Helper.h"
 #include "TParamsDlg.h"
 
 #define NTILES 4
-
-extern void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
-							const char *wildcard, int omit_chars = 0);
 
 //---------------------------------------------------------------------------
 
