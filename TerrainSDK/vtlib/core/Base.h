@@ -111,7 +111,7 @@ public:
 	virtual void Identity() = 0;
 
 	// translation
-	virtual FPoint3 GetTrans() = 0;
+	virtual FPoint3 GetTrans() const = 0;
 	virtual void SetTrans(const FPoint3 &pos) = 0;
 	virtual void Translate1(const FPoint3 &pos) = 0;
 	virtual void TranslateLocal(const FPoint3 &pos) = 0;
