@@ -86,4 +86,5 @@ protected:
 extern const char *ItemTypeNames[NUM_ITEMTYPES];
 extern const char *SubTypeNames[NUM_SUBTYPES];
 
-#endif VTDATA_CONTENTH
+#endif // VTDATA_CONTENTH
+
