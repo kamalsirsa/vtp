@@ -89,6 +89,10 @@
 
 ///////////////////////////////// OSG //////////////////////////////
 #if VTLIB_OSG
+	#ifdef _MSC_VER
+	  #pragma warning(disable: 4511) // turn off warning about copy constructors
+	  #pragma warning(disable: 4512) // turn off warning about assignment operators
+	#endif
 	#include "vtosg/ImageOSG.h"
 	#include "vtosg/MathOSG.h"
 	#include "vtosg/MeshMat.h"
