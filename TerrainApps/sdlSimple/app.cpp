@@ -131,7 +131,8 @@ bool App::CreateScene()
 
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
-	pCamera->SetHither(20);		// 20 meters
+	pCamera->SetHither(10);
+	pCamera->SetYon(100000);
 
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
