@@ -27,6 +27,7 @@ public:
 
 protected:
     wxLocale m_locale; // locale we'll be using
+	vtString m_locale_name;
 };
 
 // helpers

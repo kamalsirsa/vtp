@@ -57,6 +57,8 @@ void vtApp::Args(int argc, wxChar **argv)
 			m_bShowStartupDialog = false;
 		else if (!strncmp(cstr, "-terrain=", 9))
 			m_bShowStartupDialog = false;
+		else if (!strncmp(cstr, "-locale=", 8))
+			m_locale_name = cstr+8;
 
 		// also let the core application check the command line
 		g_App.StartupArgument(i, cstr);
@@ -82,12 +84,50 @@ bool vtApp::OnInit()
 	VTLOG(" Running on: ");
 	LogWindowsVersion();
 #endif
-
-	m_locale.Init();
-//	m_locale.Init(wxLANGUAGE_SWEDISH);
-    bool success = m_locale.AddCatalog(wxT("Enviro"));
+	VTLOG("\n");
 
 	Args(argc, argv);
+
+	// Locale stuff
+	VTLOG("\n");
+	int lang = wxLANGUAGE_DEFAULT;
+	if (m_locale_name != "")
+	{
+		VTLOG("Initializing locale to language: %s\n", (const char *) m_locale_name);
+		if (m_locale_name == "swedish")
+			lang = wxLANGUAGE_SWEDISH;
+		else
+		{
+			VTLOG(" Unknown, falling back on default language.\n");
+			lang = wxLANGUAGE_DEFAULT;
+		}
+		if (lang != wxLANGUAGE_DEFAULT)
+			m_locale.Init(lang);
+	}
+	if (lang == wxLANGUAGE_DEFAULT)
+	{
+		// auto detect the language
+		lang = m_locale.GetSystemLanguage();
+		VTLOG("Initializing locale to default language: %d\n", lang);
+		m_locale.Init(wxLANGUAGE_DEFAULT);
+	}
+
+	const wxLanguageInfo *info = m_locale.GetLanguageInfo(lang);
+	if (info)
+	{
+		VTLOG("Locale info: Canonical name '%s', Description: '%s'\n",
+			info->CanonicalName.mb_str(), info->Description.mb_str());
+	}
+	else
+		VTLOG("Locale info: unavailable.\n");
+
+	VTLOG("Attempting to load the 'Enviro.po' catalog for the current locale.\n");
+	bool success = m_locale.AddCatalog(wxT("Enviro"));
+	if (success)
+		VTLOG(" succeeded.\n");
+	else
+		VTLOG(" not found.\n");
+	VTLOG("\n");
 
 	// Look for all terrains on all data paths
 	RefreshTerrainList();
