@@ -222,12 +222,13 @@ vtMovGeom *CreatePlaneMGeom(vtMaterialArray *pMats, int iMatIdx,
 							float xTiling, float zTiling, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
-	TerrainPatch *geo = new TerrainPatch(VT_Normals | VT_TexCoords, steps * steps);
-	geo->MakeGrid(steps, steps, size.x/steps, size.y/steps,
+	TerrainPatch *mesh = new TerrainPatch(VT_Normals | VT_TexCoords, steps * steps);
+	mesh->MakeGrid(steps, steps, size.x/steps, size.y/steps,
 		org.x, org.y,
 		xTiling, zTiling);		// tiling
 	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(geo, iMatIdx);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership
 	return new vtMovGeom(pGeom);
 }
 
@@ -235,13 +236,14 @@ vtGeom *CreatePlaneGeom(int iMatIdx, FPoint2 org, FPoint2 size,
 						   float xTiling, float zTiling, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
-	TerrainPatch *geo = new TerrainPatch(VT_Normals | VT_TexCoords,
+	TerrainPatch *mesh = new TerrainPatch(VT_Normals | VT_TexCoords,
 		(steps+1)*(steps+1));
-	geo->MakeGrid(steps, steps,
+	mesh->MakeGrid(steps, steps,
 		size.x/steps, size.y/steps,
 		org.x, org.y,
 		xTiling, zTiling);		// tiling
-	pGeom->AddMesh(geo, iMatIdx);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership
 	return pGeom;
 }
 

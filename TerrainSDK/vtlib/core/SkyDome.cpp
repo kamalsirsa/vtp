@@ -427,6 +427,7 @@ bool vtDayDome::SetTexture(const char *filename)
 
 	// create and apply the texture material
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
+	pImage->Release();	// pass ownership to the Material
 
 	// set the UV values to cylindrically project the texture onto the hemisphere
 	int i, j;

@@ -712,10 +712,11 @@ vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res)
 {
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*res*2);
-	geo->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*res*2);
+	mesh->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
 	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(geo, iMatIdx);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership to the Geometry
 	return pGeom;
 }
 
@@ -754,10 +755,11 @@ vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
 		verts = res * 2;
 
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*2);
-	geo->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, iVertType, res*2);
+	mesh->CreateCylinder(fHeight, fRadius, res, bTop, bBottom, bCentered);
 	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(geo, iMatIdx);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership to the Geometry
 	return pGeom;
 }
 
@@ -765,7 +767,7 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 						   FPoint3 min1, FPoint3 max1, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
-	vtMesh *geo = new vtMesh(GL_LINES, 0, (steps+1)*4);
+	vtMesh *mesh = new vtMesh(GL_LINES, 0, (steps+1)*4);
 
 	FPoint3 p, diff = max1 - min1, step = diff / (float)steps;
 	p.y = diff.y;
@@ -774,24 +776,25 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 	{
 		p.x = min1.x + step.x * i;
 		p.z = min1.z;
-		geo->AddVertex(p);
+		mesh->AddVertex(p);
 		p.z = max1.z;
-		geo->AddVertex(p);
-		geo->AddLine(idx, idx+1);
+		mesh->AddVertex(p);
+		mesh->AddLine(idx, idx+1);
 		idx += 2;
 	}
 	for (i = 0; i < steps+1; i++)
 	{
 		p.z = min1.z + step.z * i;
 		p.x = min1.x;
-		geo->AddVertex(p);
+		mesh->AddVertex(p);
 		p.x = max1.x;
-		geo->AddVertex(p);
-		geo->AddLine(idx, idx+1);
+		mesh->AddVertex(p);
+		mesh->AddLine(idx, idx+1);
 		idx += 2;
 	}
 	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(geo, iMatIdx);
+	pGeom->AddMesh(mesh, iMatIdx);
+	mesh->Release();	// pass ownership to the Geometry
 	return pGeom;
 }
 

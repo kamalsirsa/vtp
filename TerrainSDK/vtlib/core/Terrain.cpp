@@ -582,7 +582,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	pGeom->SetMaterials(pMat_Ocean);
 	pMat_Ocean->Release();
 
-	TerrainPatch *geo;
+	TerrainPatch *mesh;
 	float width, depth;
 	int i, j;
 
@@ -605,12 +605,13 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 				if (!bHorizon) continue;
 			}
 
-			geo = new TerrainPatch(VtxType, 4);
-			geo->MakeGrid(1, 1, width/1, depth/1,
+			mesh = new TerrainPatch(VtxType, 4);
+			mesh->MakeGrid(1, 1, width/1, depth/1,
 				world_extents.left + (i * width),
 				world_extents.bottom - (j * depth), 5.0f, 5.0f);
 
-			pGeom->AddMesh(geo, 0);	// actually add
+			pGeom->AddMesh(mesh, 0);	// actually add
+			mesh->Release();	// pass ownership to the Geometry
 		}
 	}
 
@@ -1739,6 +1740,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	poi->m_pGeom->SetMaterials(pMat);
 	poi->m_pGeom->SetName2("POI Geom");
 	poi->m_pGeom->AddMesh(mesh, 0);
+	mesh->Release();	// pass ownership to the Geometry
 	pMat->Release();
 
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
