@@ -35,6 +35,8 @@ public:
 	void AddPlant(int i, const char *common_name, float plant_per_m2);
 
 	Array<vtPlantDensity *> m_Densities;
+
+	vtString	m_name;
 };
 
 class vtBioRegion
@@ -46,6 +48,7 @@ public:
 	bool Read(const char *fname);
 	bool Write(const char *fname);
 	void AddType(vtBioType *bt) { m_Types.Append(bt); }
+	int FindBiotypeIdByName(const char *name);
 
 	Array<vtBioType *> m_Types;
 };

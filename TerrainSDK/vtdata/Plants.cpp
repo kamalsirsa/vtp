@@ -251,6 +251,18 @@ bool vtBioRegion::Write(const char *fname)
 	return true;
 }
 
+int vtBioRegion::FindBiotypeIdByName(const char *name)
+{
+	int num = m_Types.GetSize();
+	for (int i = 0; i < num; i++)
+	{
+		vtBioType *bt = m_Types[i];
+		if (bt->m_name == name)
+			return i;
+	}
+	return -1;
+}
+
 ///////////////////////////////////////////////////////////////////////
 
 vtBioType::vtBioType()
