@@ -46,10 +46,10 @@ public:
 	void ChangeTerrainDetail(bool bIncrease);
 	void SetFullScreen(bool bFull);
 	void ShowPopupMenu(const IPoint2 &pos);
-	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	void SetTimeEngine(TimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
 	void CameraChanged();
+	virtual void SetTerrainToGUI(vtTerrain *pTerrain);
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
