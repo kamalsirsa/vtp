@@ -33,7 +33,7 @@ vtMaterialArray *Butterfly::m_pMats;
 
 #define DETAIL_TILING	1200.0f
 
-#define ENABLE_TREES 1
+#define ENABLE_TREES 0
 
 #define HORIZON_FOG		RGBi(200, 227, 255)
 
