@@ -50,8 +50,6 @@ protected:
 	bool _ReadTin(FILE *fp);
 	bool _ReadTinOld(FILE *fp);
 
-//	void _ChangeVertRefs(int from, int to);
-//	void _RemoveVert(int kill);
 	void _UpdateIndicesInInBin(int bin);
 	void _CompareBins(int bin1, int bin2);
 
