@@ -8,8 +8,8 @@
 #ifndef FRAMEH
 #define FRAMEH
 
-#include <wx/dnd.h>
-#include <wx/splitter.h>
+#include <wx/dnd.h>			// for wxFileDropTarget
+#include <wx/splitter.h>	// for wxSplitterWindow
 #include "vtdata/Content.h"
 #include "vtdata/FilePath.h"
 #include "vtui/wxString2.h"
@@ -25,6 +25,7 @@ class ModelDlg;
 class vtGroup;
 class vtLOD;
 class vtGeom;
+class ItemGroup;
 
 class Splitter2 : public wxSplitterWindow
 {
@@ -44,27 +45,6 @@ public:
 	int m_last;
 };
 
-//////////////////////////////////////////////////////////////////////////
-// ItemGroup
-//
-class ItemGroup
-{
-public:
-	ItemGroup(vtItem *pItem) { m_pItem = pItem; }
-	void CreateNodes();
-	void AttemptToLoadModels();
-	void AttachModels();
-	void ShowLOD(bool bTrue);
-	void SetRanges();
-
-	vtItem	*m_pItem;
-	vtGroup	*m_pTop;
-	vtGroup *m_pGroup;
-	vtLOD	*m_pLOD;
-	vtGeom	*m_pCage;
-
-	float m_ranges[20];		// One LOD distance for each child
-};
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
