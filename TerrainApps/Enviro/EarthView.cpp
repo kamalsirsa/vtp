@@ -693,11 +693,6 @@ void Enviro::DescribeCoordinatesEarth(vtString &str)
 	m_pGlobePicker->GetCurrentEarthPos(epos);
 	FormatCoordString(str1, epos, LU_DEGREES);
 	str += str1;
-	if (m_mode == MM_MEASURE && (m_fArcLength != 0.0 || m_bDragging))
-	{
-		str1.Format(", arc = %.0lf meters", m_fArcLength);
-		str += str1;
-	}
 }
 
 // this was a quick hack for the PW conference.  if we ever need a real
