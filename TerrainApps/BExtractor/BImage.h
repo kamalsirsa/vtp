@@ -2,7 +2,6 @@
 #ifndef CBIMAGE_H
 #define CBIMAGE_H
 
-class CGBM;
 class CDib;
 class OGRSpatialReference;
 
@@ -20,8 +19,6 @@ private:
 
 public:
 	OGRSpatialReference *m_pSpatialReference;
-	CGBM	*m_pSourceGBM;
-//	CGBM	*m_pMonoGBM;
 	CDib	*m_pSourceDIB, *m_pMonoDIB, *m_pCurrentDIB;
 	CBitmap m_bmp;
 	bool	m_initialized;

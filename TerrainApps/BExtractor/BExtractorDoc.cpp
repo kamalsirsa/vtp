@@ -1,11 +1,11 @@
 //
 // BExtractorDoc.cpp : implementation of the BExtractorDoc class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "BExtractor.h"
 #include "BExtractorDoc.h"
 #include "BExtractorView.h"
@@ -15,10 +15,6 @@
 #include "ProgDlg.h"
 #include "Dib.h"
 #include "xmlhelper/easyxml.hpp"
-
-// GBM
-#include "GBMWrapper.h"
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,37 +37,6 @@ void ShowErrorMessage(int error)
 				  (LPTSTR) &lpMsgBuf,	0,	NULL );
 	MessageBox( NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
 	LocalFree( lpMsgBuf );
-}
-
-CGBM *CreateMonoBitmap(CGBM *pGBM)
-{
-	CProgressDlg prog(CG_IDS_PROGRESS_CAPTION);
-	prog.Create(NULL);	// top level
-	prog.SetPos(0);
-
-	int w = pGBM->GetWidth();
-	int h = pGBM->GetHeight();
-	CGBM *pNew = new CGBM(w, h, 8);
-
-	int x, y;
-	GBMRGB rgb;
-	byte color8;
-
-	for (y = 0; y < h; y++)
-	{
-		prog.SetPos(y*200/h);
-		for (x = 0; x < w; x++)
-		{
-			pGBM->GetPixel24(x, y, rgb);
-			 //if color is black, white, or gray, don't change it
-			if (rgb.r == rgb.g && rgb.g == rgb.b)
-				color8 = rgb.b;
-			else
-				color8 = 0xff;
-			pNew->SetPixel8(x, y, color8);
-		}
-	}
-	return pNew;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -186,23 +151,24 @@ void BExtractorDoc::PreFloodFillDIB(CDib *bm)
 		{
 			if (bm->GetPixel8(i,j) == target)
 			{
-				result = Fill(bm, i, j, 0x00, 0x22, width, height, 0); //0x22=arbitrary value
+				//0x22=arbitrary value
+				result = Fill(bm, i, j, 0x00, 0x22, width, height, 0);
 
+				// We may have something too big to be a building.
+				// The reason this # had to be 80 and not something
+				// slightly larger than building size (~30) is because sometimes
+				// the building pixels bleed into some thin lines made up
+				// of black pixels that get added to the overall count.
+				// So to avoid losing these buildings (or buildings whose
+				// black pixels bleed into each other), the number is
+				// bigger.
+
+				// This is also why the Fill method takes the diag
+				// parameter, it tells it whether include pixels diagonal
+				// to each other in the flood fill count (lines tend to
+				// be diagonal)
 				if (result > 80)
 				{
-					// We have something too big to be a building.
-					// The reason this # had to be 80 and not something
-					// slightly larger than building size (~30) is because sometimes
-					// the building pixels bleed into some thin lines made up
-					// of black pixels that get added to the overall count.
-					// So to avoid losing these buildings (or buildings whose
-					// black pixels bleed into each other), the number is
-					// bigger.
-
-					// This is also why the Fill method takes the diag
-					// parameter, it tells it whether include pixels diagonal
-					// to each other in the flood fill count (lines tend to
-					// be diagonal)
 					result2 = Fill(bm, i, j, 0x22, 0xff, width, height, 0); //get rid of it
 				}
 				else
@@ -412,7 +378,7 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 		if (dlg.DoModal() != IDOK)
 			return;
 
-		switch(dlg.m_iProjection)
+		switch (dlg.m_iProjection)
 		{
 		case 0: // UTM
 			m_proj.SetUTMZone(dlg.m_iZone);
@@ -441,20 +407,21 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 	}
 
 	// is image >50 million pixels?
-	if (m_pImage->m_PixelSize.x * m_pImage->m_PixelSize.y > 50000000)
+	if (m_pImage->m_PixelSize.x * m_pImage->m_PixelSize.y > 45000000)
 	{
 		CString str;
 		str.Format("Warning!  That image is really large (%d * %d)\n"
 			"You can save memory by disabling color display.\n"
 			"Do you want to do this?",
 			m_pImage->m_PixelSize.x, m_pImage->m_PixelSize.y);
+
 		int result = AfxMessageBox(str, MB_YESNO);
 		if (result == IDYES)
 		{
-			if (NULL != m_pImage->m_pSourceGBM)
+			if (NULL != m_pImage->m_pSourceDIB)
 			{
-				delete m_pImage->m_pSourceGBM;
-				m_pImage->m_pSourceGBM = NULL;
+				delete m_pImage->m_pSourceDIB;
+				m_pImage->m_pSourceDIB = NULL;
 			}
 		}
 	}
@@ -486,7 +453,8 @@ void BExtractorDoc::OnUpdateFullres(CCmdUI* pCmdUI)
 
 void BExtractorDoc::OnRmfOpen()
 {
-	CFileDialog openDialog(TRUE, "rmf", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "RMF Files (*.rmf)|*.rmf||");
+	CFileDialog openDialog(TRUE, "rmf", NULL,
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "RMF Files (*.rmf)|*.rmf||");
 
 	if (openDialog.DoModal() != IDOK)
 		return;
@@ -523,7 +491,8 @@ void BExtractorDoc::OnRmfSave()
 
 void BExtractorDoc::OnRmfSaveAs()
 {
-	CFileDialog saveAsDialog(FALSE, "rmf", NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "RMF Files (*.rmf)|*.rmf||");
+	CFileDialog saveAsDialog(FALSE, "rmf", NULL,
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, "RMF Files (*.rmf)|*.rmf||");
 
 	if (saveAsDialog.DoModal() != IDOK)
 		return;
