@@ -24,14 +24,14 @@ enum NavType {
 
 enum MouseMode
 {
-	MM_SELECT,
 	MM_NAVIGATE,
+	MM_SELECT,
 	MM_FENCES,
 	MM_ROUTES,
 	MM_PLANTS,
 	MM_MOVE,
-	MM_FLYROUTE,
 	MM_LINEAR,
+	MM_FLYROUTE,
 
 	MM_NONE
 };
