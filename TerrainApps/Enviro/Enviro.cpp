@@ -341,7 +341,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 2)
 	{
-		if (pTerr->m_pTerrainGroup != NULL)
+		if (pTerr->IsCreated())
 			m_iInitStep = 8;	// already made, skip ahead
 		else
 			SetMessage("Loading Elevation");

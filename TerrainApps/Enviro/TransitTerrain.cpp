@@ -28,14 +28,14 @@ void TransitTerrain::CreateCustomCulture(bool bDoSound)
 	// TODO
 	//
 	vtGeom *pblock = MakeBlockGeom(FPoint3(1.0f, 4.0f, 9.0f));
-	m_pTerrainGroup->AddChild(pblock);
+	AddNode(pblock);
 
 #if 0
-	m_pTerrainGroup->AddChild(campus);
+	AddNode(campus);
 	campus->Scale3(scale, scale, scale);
 	campus->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -PIf*63/180);
 
-	PlantModelUTM(campus, 591849, 4138117);
+	PlantModelAtPoint(campus, DPoint2(591849, 4138117));
 	campus->Translate2(FPoint3(0.0f, 2.0f*WORLD_SCALE, 0.0f));
 #endif
 }

@@ -23,7 +23,7 @@ void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
 	float sc = WORLD_SCALE * scale;		// larger than real life
 	gateway->Scale3(sc, sc, sc);
 	gateway->SetName2(name);
-	m_pTerrainGroup->AddChild(gateway);
+	AddNode(gateway);
 
 #if 0
 	float ws = 500.0f * sc;		// convert to 3d system units
@@ -43,14 +43,14 @@ void PTerrain::MakePortalUTM(vtTerrain* pTargetTerrain, vtTransform* gateway,
 						   char* name, float utm_x, float utm_y, int destination_index)
 {
 	MakePortal(pTargetTerrain, gateway, name, destination_index);
-	PlantModelUTM(gateway, utm_x, utm_y);
+	PlantModelAtPoint(gateway, DPoint2(utm_x, utm_y));
 }
 
 void PTerrain::MakePortalLL(vtTerrain* pTargetTerrain, vtTransform* gateway, 
 							 char* name, float lat, float lon, int destination_index)
 {
 	MakePortal(pTargetTerrain, gateway, name, destination_index);
-	PlantModelLL(gateway, lat, lon);
+	PlantModelAtPoint(gateway, DPoint2(lon, lat), true);
 }
 
 

@@ -73,7 +73,7 @@ void IslandTerrain::create_telescopes()
 		{
 			tscope->RotateLocal(FPoint3(1,0,0), -PID2f);
 			tscope->Scale3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
-			PlantModelUTM(tscope, tscope_utm[t][0], tscope_utm[t][1]);
+			PlantModelAtPoint(tscope, DPoint2(tscope_utm[t][0], tscope_utm[t][1]));
 			m_pLodGrid->AppendToGrid(tscope);
 		}
 	}
@@ -112,60 +112,28 @@ void IslandTerrain::create_airports()
 	if (ITO)
 	{
 		ITO->Scale2(scale, scale, scale);
-		PlantModelUTM(ITO, 283575, 2181163); 
- 		m_pTerrainGroup->AddChild(ITO);
+		PlantModelAtPoint(ITO, DPoint2(283575, 2181163();
+ 		AddNode(ITO);
 	}
 	if (KOA)
 	{
 		KOA->Scale2(scale, scale, scale);
-		PlantModelUTM(KOA, 180290, 2184990); 
- 		m_pTerrainGroup->AddChild(KOA);
+		PlantModelAtPoint(KOA, DPoint2(180290, 2184990));
+ 		AddNode(KOA);
 	}
 	if (MUE)
 	{
 		MUE->Scale2(scale, scale, scale);
-		PlantModelUTM(MUE, 219990, 2213505); 
- 		m_pTerrainGroup->AddChild(MUE);
+		PlantModelAtPoint(MUE, DPoint2(219990, 2213505));
+ 		AddNode(MUE);
 	}
-
-	/*vtTransform *Marker1 = LoadModel("Culture/Marker.dsm");
-	if (Marker1)
-	{
-		float scale = WORLD_SCALE;
-		Marker1->Scale2(scale, scale, scale);
-		PlantModelUTM(Marker1, 283681, 2181340); 
- 		m_pTerrainGroup->AddChild(Marker1);
-	}*/
-
-/*
-// these are test markers for the plane...
-
-	vtTransform *Marker2 = LoadModel("Culture/Marker.dsm");
-	vtTransform *Marker3 = LoadModel("Culture/Marker.dsm");
-
-	if (Marker2)
-	{
-		float scale = WORLD_SCALE;
-		Marker2->Scale2(scale, scale, scale);
-		PlantModelUTM(Marker2, 283682, 2182194); 
- 	    m_pTerrainGroup->AddChild(Marker2);
-	}
-
-	if (Marker3)
-	{
-		float scale = WORLD_SCALE;
-		Marker3->Scale2(scale, scale, scale);
-		PlantModelUTM(Marker3, 286820, 2182140); 
- 	    m_pTerrainGroup->AddChild(Marker3);
-	}
-*/
 
 /*	float fSizeExag = m_Params.m_fVehicleSize, fSpeedExag = m_Params.m_fVehicleSpeed;
 
 	for (int i = 0; i < 3; i++)
 	{
 		vtTransform *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f));
-		m_pTerrainGroup->AddChild(copy);
+		AddNode(copy);
 
 		PlaneEngine *pEng = new PlaneEngine(fSizeExag, fSpeedExag, ITO);
 		pEng->SetTarget(copy);
@@ -205,11 +173,10 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 				house->Scale2(scale, scale, scale);
 
 				// plant it on the ground
-				PlantModelUTM(house, bound[7].x, bound[7].y);
+				PlantModelAtPoint(house, bound[7]);
 
-//  			m_pTerrainGroup->AddChild(house);
-//				m_pTreeGroup->AddChild(house);
-				m_pLodGrid->AppendToGrid(house);
+//  			AddNode(house);
+				AddNodeToLodGrid(house);
 			}
 		}
 #if 1
@@ -223,11 +190,10 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 			lighthouse1->Scale2(scale, scale, scale);
 
 			// plant it on the ground
-			PlantModelUTM(lighthouse1, 197389, 2230283);
+			PlantModelAtPoint(lighthouse1, DPoint2(197389, 2230283));
 
-//  			m_pTerrainGroup->AddChild(lighthouse1);
-//				m_pTreeGroup->AddChild(lighthouse1);
-			m_pLodGrid->AppendToGrid(lighthouse1);
+// 			AddNode(lighthouse1);
+			AddNodeToLodGrid(lighthouse1);
 		}
 #endif
 	}
@@ -249,7 +215,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		{
 			float scale = 3.0f * 0.01f * WORLD_SCALE;
 			bench->Scale3(scale, scale*1.1f, scale);
-			PlantModelUTM(bench, 234900, 2185840); 
+			PlantModelAtPoint(bench, DPoint2(234900, 2185840));
 			m_pLodGrid->AppendToGrid(bench);
 		}
 	}
@@ -319,7 +285,7 @@ void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 	for (int i = 0; i < 6; i++)
 	{
 		vtTransform *copy = CreateVehicle("747", RGBf(1.0f, 1.0f, 0.0f), fSize);
-		m_pTerrainGroup->AddChild(copy);
+		AddNode(copy);
 
 		// make it bigger and faster than real life
 		float fSpeedExag = fSpeed;

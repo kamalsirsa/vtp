@@ -82,7 +82,7 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 	pEE->SetName2("Epoch Engine");
 	pEE->SetTarget(vtGetScene()->GetCamera());
 	AddEngine(pEE);
-//	m_pTerrainGroup->AddChild(pEE->m_pSprite);
+//	AddNode(pEE->m_pSprite);
 
 #if 0
 	// Buildings
@@ -91,7 +91,7 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 	{
 		dome->Scale2(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
 		m_Future.AddChild(dome);
-		PlantModelLL(dome, MAN_LONLAT);
+		PlantModelAtPoint(dome, DPoint2(MAN_LONLAT), true);
 	}
 #endif
 }
@@ -125,13 +125,13 @@ void NevadaTerrain::CreateWater()
 	// create water plane
 	m_pWaterShape = CreatePlaneMGeom(pMats, 0, org, size, 125.0f, 125.0f, 10);	// appidx 0
 	m_pWaterShape->SetName2("WaterSurface");
-	m_pTerrainGroup->AddChild(m_pWaterShape);
+	AddNode(m_pWaterShape);
 
 	// and another plane
 	m_pWaterShape2 = CreatePlaneMGeom(pMats, 1, org, size, 260.3f, 260.3f, 10);	// appidx 1
 	m_pWaterShape2->SetName2("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
-	m_pWaterShape->AddChild(m_pWaterShape2);
+	AddNode(m_pWaterShape2);
 }
 
 
@@ -171,7 +171,7 @@ void NevadaTerrain::CreateDetailTextures()
 
 void NevadaTerrain::CreatePast()
 {
-	m_pTerrainGroup->AddChild(&m_Past);
+	AddNode(&m_Past);
 	m_Past.SetName2("Past");
 	m_Past.SetEnabled(false);
 
@@ -283,7 +283,7 @@ void NevadaTerrain::CreatePast()
 		vtTransform *bigmike = LoadModel("Nevada/parameciummike.dsm");
 		float sc = WORLD_SCALE * 0.05f;	// abstract units, scale to taste
 		m_Past.AddChild(bigmike);
-		PlantModelLL(bigmike, MAN_LONLAT);
+		PlantModelAtPoint(bigmike, DPoint2(MAN_LONLAT), true);
 		bigmike->Translate2(FPoint3(0.0f, i * 800.0f * WORLD_SCALE, 0.0f));
 
 		JumpingEngine *pJumper = new JumpingEngine(bigmike->GetTrans(),
@@ -299,7 +299,7 @@ void NevadaTerrain::CreatePast()
 
 void NevadaTerrain::CreatePresent()
 {
-	m_pTerrainGroup->AddChild(&m_Present);
+	AddNode(&m_Present);
 	m_Present.SetName2("Present");
 	m_Present.SetEnabled(false);
 
@@ -313,7 +313,7 @@ void NevadaTerrain::CreatePresent()
 #endif
 	man->Scale2(sc, sc, sc);
 	m_Present.AddChild(man);
-	PlantModelLL(man, MAN_LONLAT);
+	PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 
 	sc = overall_scale * 0.01f * WORLD_SCALE;		// cm
 	vtTransform *lamppost = LoadModel("Nevada/lamppost_v2.dsm");
@@ -339,7 +339,7 @@ void NevadaTerrain::CreatePresent()
 		for (i = 0; i < 17; i++)
 		{
 			copy = (vtTransform *)pLampLod->CreateClone();
-			PlantModelLL(copy, MAN_LONLAT);
+			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_Present.AddChild(copy);
 
 			float radius = 638;
@@ -353,7 +353,7 @@ void NevadaTerrain::CreatePresent()
 		for (i = 0; i < 17; i++)
 		{
 			copy = (vtTransform *)pLampLod->CreateClone();
-			PlantModelLL(copy, MAN_LONLAT);
+			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_Present.AddChild(copy);
 
 			float radius = 78.0f + (i * (600.0f - 78.0f) / 17);
@@ -366,7 +366,7 @@ void NevadaTerrain::CreatePresent()
 			PlantModel(copy);
 
 			copy = (vtTransform *)pLampLod->CreateClone();
-			PlantModelLL(copy, MAN_LONLAT);
+			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_Present.AddChild(copy);
 			copy->Translate2(FPoint3(x, 0.0f, -y));
 			copy->Translate2(FPoint3(-8.0f * WORLD_SCALE, 0.0f, 0.0f));
@@ -381,7 +381,7 @@ void NevadaTerrain::CreatePresent()
 
 void NevadaTerrain::CreateFuture()
 {
-	m_pTerrainGroup->AddChild(&m_Future);
+	AddNode(&m_Future);
 	m_Future.SetName2("Future");
 	m_Future.SetEnabled(false);
 }
