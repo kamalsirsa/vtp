@@ -2086,119 +2086,130 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 {
 	OGREnvelope Extent;
 	bool bRet = false;
+	OGRFeature *pFeature = NULL;
+	OGRDataSource *pDatasource = NULL;
 
+	// let GDAL know we're going to use its OGR format drivers
 	g_GDALWrapper.RequestOGRFormats();
 
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(szFileName);
-	if (NULL == pDatasource)
-		goto Exit;
-
-	if (1 != pDatasource->GetLayerCount())
-		goto Exit;
-
-	OGRLayer *pLayer = pDatasource->GetLayer(0);
-	if (NULL == pLayer)
-		goto Exit;
-
-	OGRFeatureDefn *pFeatureDefn = pLayer->GetLayerDefn();
-	if (NULL == pFeatureDefn)
-		goto Exit;
-
-	if (0 != strncmp(pFeatureDefn->GetName(), "DTM_", 4))
-		goto Exit;
-
-	if (wkbPoint25D != pFeatureDefn->GetGeomType())
-		goto Exit;
-
-	if (1 != pFeatureDefn->GetFieldCount())
-		goto Exit;
-
-	OGRFieldDefn *pFieldDefn = pFeatureDefn->GetFieldDefn(0);
-	if (NULL == pFieldDefn)
-		goto Exit;
-
-	if (0 != strcmp(pFieldDefn->GetNameRef(), "HEIGHT"))
-		goto Exit;
-
-	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
-	if (NULL == pSpatialRef)
-		goto Exit;
-
-	pLayer->GetExtent(&Extent);
-
-	// Get number of features. In this case the total number of cells
-	// in the elevation matrix
-	int iTotalCells = pLayer->GetFeatureCount();
-
-  	pLayer->ResetReading();
-
-	// Prescan the features to calculate the x and y intervals
-	// this is a horrible kludge
-	int iRowCount = 0;
-	OGRFeature *pFeature = NULL;
-	OGRPoint *pPoint;
-	double dX;
-	while ( (pFeature = pLayer->GetNextFeature()) != NULL )
+	try
 	{
-		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
-			goto Exit;
-//		if (wkbPoint25D != pPoint->getGeometryType())
-		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
-			goto Exit;
-		if (0 == iRowCount)
-			dX = pPoint->getX();
-		else
-			if (pPoint->getX() != dX)
-			{
-				delete pFeature;
-				pFeature = NULL;
-				break;
-			}
-		delete pFeature;
-		pFeature = NULL;
-		iRowCount++;
+		OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(szFileName);
+		if (NULL == pDatasource)
+			throw "No datasource";
+
+		if (1 != pDatasource->GetLayerCount())
+			throw "Layer count isn't 1";
+
+		OGRLayer *pLayer = pDatasource->GetLayer(0);
+		if (NULL == pLayer)
+			throw "Couldn't get layer";
+
+		OGRFeatureDefn *pFeatureDefn = pLayer->GetLayerDefn();
+		if (NULL == pFeatureDefn)
+			throw "Couldn't get feature definition";
+
+		if (0 != strncmp(pFeatureDefn->GetName(), "DTM_", 4))
+			throw "Feature definition doesn't start with 'DTM_'";
+
+		if (wkbPoint25D != pFeatureDefn->GetGeomType())
+			throw "Feature type isn't Point25D";
+
+		if (1 != pFeatureDefn->GetFieldCount())
+			throw "Field count isn't 1";
+
+		OGRFieldDefn *pFieldDefn = pFeatureDefn->GetFieldDefn(0);
+		if (NULL == pFieldDefn)
+			throw "Couldn't get field definition";
+
+		if (0 != strcmp(pFieldDefn->GetNameRef(), "HEIGHT"))
+			throw "Couldn't get HEIGHT field";
+
+		OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+		if (NULL == pSpatialRef)
+			throw "Couldn't get spatial reference";
+
+		pLayer->GetExtent(&Extent);
+
+		// Get number of features. In this case the total number of cells
+		// in the elevation matrix
+		int iTotalCells = pLayer->GetFeatureCount();
+
+  		pLayer->ResetReading();
+
+		// Prescan the features to calculate the x and y intervals
+		// this is a horrible kludge
+		int iRowCount = 0;
+		OGRPoint *pPoint;
+		double dX;
+		while ( (pFeature = pLayer->GetNextFeature()) != NULL )
+		{
+			if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
+				throw "Couldn't get point feature";
+	//		if (wkbPoint25D != pPoint->getGeometryType())
+			if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))	// RJ fix 03.11.21
+				throw "Couldn't flatten point feature";
+			if (0 == iRowCount)
+				dX = pPoint->getX();
+			else
+				if (pPoint->getX() != dX)
+				{
+					delete pFeature;
+					pFeature = NULL;
+					break;
+				}
+			delete pFeature;
+			pFeature = NULL;
+			iRowCount++;
+		}
+
+		int iColCount = iTotalCells / iRowCount;
+
+		m_iColumns = iColCount;
+		m_iRows = iRowCount;
+		m_proj.SetSpatialReference(pSpatialRef);
+		m_bFloatMode = true;
+		m_EarthExtents.left = Extent.MinX;
+		m_EarthExtents.top = Extent.MaxY;
+		m_EarthExtents.right = Extent.MaxX;
+		m_EarthExtents.bottom = Extent.MinY;
+		ComputeCornersFromExtents();
+
+		_AllocateArray();
+
+  		pLayer->ResetReading();
+
+		int i;
+		for (i = 0; i < iTotalCells; i++)
+		{
+			if (NULL == (pFeature = pLayer->GetNextFeature()))
+				throw "Couldn't get next feature";
+			if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
+				throw "Couldn't get point feature";
+			if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))
+				throw "Couldn't flatten point feature";
+			SetFValue(i / iRowCount, i % iRowCount, (float)pPoint->getZ());
+			delete pFeature;
+			pFeature = NULL;
+			if (progress_callback != NULL)
+				progress_callback(i * 100 / iTotalCells);
+		}
+
+		ComputeHeightExtents();
+		bRet = true;
+		throw "done";
 	}
-
-	int iColCount = iTotalCells / iRowCount;
-
-	m_iColumns = iColCount;
-	m_iRows = iRowCount;
-	m_proj.SetSpatialReference(pSpatialRef);
-	m_bFloatMode = true;
-	m_EarthExtents.left = Extent.MinX;
-	m_EarthExtents.top = Extent.MaxY;
-	m_EarthExtents.right = Extent.MaxX;
-	m_EarthExtents.bottom = Extent.MinY;
-	ComputeCornersFromExtents();
-
-	_AllocateArray();
-
-  	pLayer->ResetReading();
-
-	int i;
-	for (i = 0; i < iTotalCells; i++)
+	catch (const char *msg)
 	{
-		if (NULL == (pFeature = pLayer->GetNextFeature()))
-			goto Exit;
-		if (NULL == (pPoint = (OGRPoint*)pFeature->GetGeometryRef()))
-			goto Exit;
-		if (wkbPoint != wkbFlatten(pPoint->getGeometryType()))
-			goto Exit;
-		SetFValue(i / iRowCount, i % iRowCount, (float)pPoint->getZ());
-		delete pFeature;
-		pFeature = NULL;
-		if (progress_callback != NULL)
-			progress_callback(i * 100 / iTotalCells);
+		if (strcmp(msg, "done"))
+		{
+			VTLOG("Error in LoadFromNTF5: ");
+			VTLOG(msg);
+		}
 	}
+	delete pFeature;
+	delete pDatasource;
 
-	ComputeHeightExtents();
-	bRet = true;
-
-Exit:
-	if (NULL != pFeature)
-		delete pFeature;
-	if (NULL != pDatasource)
-		delete pDatasource;
 	return bRet;
 }
 
