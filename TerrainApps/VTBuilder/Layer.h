@@ -25,7 +25,7 @@
 #define FSTRING_DEM		"DEM Files (*.dem)|*.dem|"
 #define FSTRING_DLG		"USGS DLG Files (*.dlg, *.opt)|*.dlg;*.opt|"
 #define FSTRING_DOQ		"USGS DOQ Files (*.jpg, *.doq, *.coq)|*.doq;*.coq;*.jpg|"
-#define FSTRING_DTED	"DTED Files (*.dte, *.dt0)|*.dte;*.dt0|"
+#define FSTRING_DTED	"DTED Files (*.dte, *.dt0, *.dt1, *.dt2)|*.dte;*.dt0;*.dt1;*.dt2|"
 #define FSTRING_GTOPO	"GTOPO30 Files (*.hdr)|*.hdr|"	
 #define FSTRING_LULC	"LULC Files (*.gir)|*.gir|"
 #define FSTRING_PGM		"PGM Files (*.pgm)|*.pgm|"

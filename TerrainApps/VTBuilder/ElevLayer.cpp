@@ -691,7 +691,9 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		success = m_pGrid->LoadFromGTOPO30(strFileName, progress_callback);
 	}
 	else if (!strExt.CmpNoCase("dte") ||
-			!strExt.CmpNoCase("dt0"))
+			!strExt.CmpNoCase("dt0") ||
+			!strExt.CmpNoCase("dt1") ||
+			!strExt.CmpNoCase("dt2"))
 	{
 		success = m_pGrid->LoadFromDTED(strFileName, progress_callback);
 	}
