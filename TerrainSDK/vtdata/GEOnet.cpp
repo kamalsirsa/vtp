@@ -189,6 +189,20 @@ vtString RemoveAccents(const vtString &strInput)
 	return strOutput;
 }
 
+//
+// Helper Function: Convert all accented characters to unaccented.
+//
+vtString RemoveAccentsUTF8(const vtString &strInput)
+{
+	wstring2 str;
+	str.from_utf8(strInput);
+	vtString vs(str.eb_str());
+	return RemoveAccents(vs);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Country class
 
 Country::Country()
 {
@@ -775,12 +789,31 @@ bool Countries::FindPlace(const char *country_val, const char *place_val,
 	return false;
 }
 
+/**
+ * Find a location given its country and placename.
+ * If successful, it returns true and places the coordinate in 'geo'.
+ *
+ * \param country Country input
+ * \param place Place intput - this is generally a town or city
+ * \param geo If successful, receives the resulting point
+ * \param bUTF8 Important!  If your country and place names are UTF8 strings,
+ *		pass true.  Otherwise they are assumed to be ANSI (western europe).
+ */
 bool Countries::FindPlaceWithGuess(const char *country, const char *place,
-									 DPoint2 &geo)
+									 DPoint2 &geo, bool bUTF8)
 {
 	// country should never have accents in it
-	vtString strCountry = RemoveAccents(country);
-	vtString strCity = RemoveAccents(place);
+	vtString strCountry, strCity;
+	if (bUTF8)
+	{
+		strCountry = RemoveAccentsUTF8(country);
+		strCity = RemoveAccentsUTF8(place);
+	}
+	else
+	{
+		strCountry = RemoveAccents(country);
+		strCity = RemoveAccents(place);
+	}
 
 	// Australia
 	if (!strCountry.CompareNoCase("Australia"))
