@@ -227,7 +227,7 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 	{
 		p.Set(0,0,0);
 
-		mesh = new vtMesh(GL_LINES, VT_Normals, 24);
+		mesh = new vtMesh(vtMesh::LINES, VT_Normals, 24);
 
 		if (i == 0) { wide = &p.x; thin = &p.z; }
 		if (i == 1) { wide = &p.y; thin = &p.x; }
