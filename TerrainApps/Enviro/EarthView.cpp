@@ -37,7 +37,7 @@ void Enviro::FlyToSpace()
 	}
 
 	// turn off terrain, if any
-	m_pTerrainScene->SetTerrain(NULL);
+	SetCurrentTerrain(NULL);
 	EnableFlyerEngine(false);
 
 	m_state = AS_MovingOut;
@@ -73,7 +73,7 @@ void Enviro::SetupGlobe()
 	if (m_iInitStep == 3)
 	{
 		// put the light where the sun should be
-		vtMovLight *pSunLight = m_pTerrainScene->GetSunLight();
+		vtMovLight *pSunLight = GetSunLight();
 		pSunLight->Identity();
 		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
@@ -361,7 +361,7 @@ void Enviro::LookUpTerrainLocations()
 
 	// look up the earth location of each known terrain
 	vtTerrain *pTerr;
-	for (pTerr = m_pTerrainScene->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
 	{
 		VTLOG("\tlooking up: %s\n", (const char *) pTerr->GetName());
 
@@ -482,7 +482,7 @@ vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
 {
 	vtTerrain *t, *smallest = NULL;
 	float diag, smallest_diag = 1E7;
-	for (t = m_pTerrainScene->GetFirstTerrain(); t; t=t->GetNext())
+	for (t = GetFirstTerrain(); t; t=t->GetNext())
 	{
 		if (t->m_Corners_geo.ContainsPoint(p))
 		{
@@ -528,7 +528,7 @@ void Enviro::SetEarthShading(bool bShade)
 {
 	m_bEarthShade = bShade;
 
-	vtMovLight *pMovLight = m_pTerrainScene->GetSunLight();
+	vtMovLight *pMovLight = GetSunLight();
 
 	pMovLight->SetEnabled(bShade);
 	m_pIcoGlobe->SetLighting(bShade);

@@ -6,16 +6,9 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Building3d.h"
-#include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/Fence3d.h"
 #include "vtlib/core/Globe.h"
-#include "vtlib/core/NavEngines.h"
-#include "vtlib/core/Route.h"
 #include "vtlib/core/SkyDome.h"
-#include "vtlib/core/TerrainScene.h"
-
-#include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
 
 #include "Enviro.h"
@@ -33,7 +26,7 @@ int pwdemo = 0;
 
 Enviro *Enviro::s_pApp = NULL;
 
-Enviro::Enviro()
+Enviro::Enviro() : vtTerrainScene()
 {
 	s_pApp = this;
 
@@ -95,8 +88,6 @@ Enviro::~Enviro()
 
 void Enviro::Startup()
 {
-	m_pTerrainScene = new vtTerrainScene();
-
 	g_Log._StartLog("debug.txt");
 	VTLOG("\nEnviro\nBuild:");
 #if _DEBUG || DEBUG
@@ -125,7 +116,10 @@ void Enviro::Shutdown()
 		m_pTopDownCamera->Release();
 	if (m_pCursorMGeom)
 		m_pCursorMGeom->Release();
-	delete m_pTerrainScene;
+
+	// Clean up the rest of the TerrainScene container
+	CleanupScene();
+
 	delete m_pIcoGlobe;
 }
 
@@ -197,7 +191,7 @@ void Enviro::LoadTerrainDescriptions()
 				pTerr = new vtTerrain();
 
 			if (pTerr->SetParamFile(directory + "/" + name))
-				m_pTerrainScene->AppendTerrain(pTerr);
+				AppendTerrain(pTerr);
 			count++;
 
 			// TEMP TEST
@@ -282,7 +276,7 @@ void Enviro::DoControl()
 
 bool Enviro::SwitchToTerrain(const char *name)
 {
-	vtTerrain *pTerr = m_pTerrainScene->FindTerrainByName(name);
+	vtTerrain *pTerr = FindTerrainByName(name);
 	if (pTerr)
 	{
 		SwitchToTerrain(pTerr);
@@ -348,8 +342,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 3)
 	{
-		pTerr->LoadParams();
-
 		// The first time we try to a contruct a terrain with plants,
 		//  try to load the plants.
 		if (pTerr->GetParams().GetValueBool(STR_TREES))
@@ -366,7 +358,14 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 4)
 	{
-		if (!pTerr->CreateStep2())
+		// Tell the skydome where on the planet we are
+		DPoint2 geo = pTerr->GetCenterGeoLocation();
+		m_pSkyDome->SetGeoLocation(geo);
+
+		// Set time to that of the new terrain
+		m_pSkyDome->SetTime(pTerr->GetInitialTime(), true);
+
+		if (!pTerr->CreateStep2(GetSunLight()))
 		{
 			m_state = AS_Error;
 			SetMessage(pTerr->GetLastError());
@@ -552,7 +551,7 @@ void Enviro::SetupScene1()
 	vtCamera *pCamera = pScene->GetCamera();
 	if (pCamera) pCamera->SetName2("Standard Camera");
 
-	m_pRoot = m_pTerrainScene->BeginTerrainScene();
+	m_pRoot = BeginTerrainScene();
 	pScene->SetRoot(m_pRoot);
 }
 
@@ -604,7 +603,7 @@ void Enviro::SetupScene2()
 	m_pCursorMGeom = new vtMovGeom(pCursor);
 	m_pCursorMGeom->SetName2("Cursor");
 
-	m_pTerrainScene->GetTop()->AddChild(m_pCursorMGeom);
+	GetTop()->AddChild(m_pCursorMGeom);
 	m_pTerrainPicker = new TerrainPicker();
 	m_pTerrainPicker->SetName2("TerrainPicker");
 	vtGetScene()->AddEngine(m_pTerrainPicker);
@@ -752,10 +751,11 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	if (!pHF)
 		return;
 
-	m_pTerrainScene->SetTerrain(pTerrain);
+	// Inform the container that this new terrain is current
+	SetCurrentTerrain(pTerrain);
 
+	// Inform the UI that this new terrain is current
 	TParams &param = pTerrain->GetParams();
-
 	SetNavType((enum NavType) param.GetValueInt(STR_NAVSTYLE));
 
 	EnableFlyerEngine(true);
@@ -935,8 +935,7 @@ void Enviro::DumpCameraInfo()
 {
 	vtCamera *cam = m_pNormalCamera;
 	FPoint3 pos = cam->GetTrans();
-	FPoint3 dir;
-	cam->GetDirection(dir);
+	FPoint3 dir = cam->GetDirection();
 	VTLOG("Camera: pos %f %f %f, dir %f %f %f\n",
 		pos.x, pos.y, pos.z, dir.x, dir.y, dir.z);
 }
@@ -1612,10 +1611,11 @@ void ControlEngine::Eval()
 
 vtTerrain *GetCurrentTerrain()
 {
-	return Enviro::s_pApp->m_pTerrainScene->GetCurrentTerrain();
+	return Enviro::s_pApp->GetCurrentTerrain();
 }
 
 vtTerrainScene *GetTerrainScene()
 {
-	return Enviro::s_pApp->m_pTerrainScene;
+	return Enviro::s_pApp;
 }
+

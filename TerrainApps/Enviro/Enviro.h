@@ -8,10 +8,11 @@
 #ifndef ENVIROH
 #define ENVIROH
 
+#include "vtlib/core/TerrainScene.h"
+
 #include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
 #include "vtlib/core/Engine.h"
-#include "vtlib/core/TimeEngines.h"
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
 
@@ -47,7 +48,7 @@ public:
 	void Eval();
 };
 
-class Enviro
+class Enviro : public vtTerrainScene
 {
 public:
 	Enviro();
@@ -131,8 +132,6 @@ public:
 	GrabFlyer		*m_pGFlyer;
 	FlatFlyer		*m_pFlatFlyer;
 	vtPanoFlyer		*m_pPanoFlyer;
-
-	vtTerrainScene	*m_pTerrainScene;
 
 	// event handlers
 	void OnMouse(vtMouseEvent &event);
