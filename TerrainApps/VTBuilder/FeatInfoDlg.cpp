@@ -225,13 +225,9 @@ bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
 		int iField = iColumn - m_iCoordColumns;
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeature, iField, vs);
-#if SUPPORT_WSTRING
-		wstring2 wide;
-		wide.from_utf8(vs);
-		wxString2 str = wide.c_str();
-#else
-		wxString2 str = vs;
-#endif
+
+		wxString2 str;
+		str.from_utf8(vs);
 
 		Field *pField = m_pFeatures->GetField(iField);
 
@@ -242,11 +238,8 @@ bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
 		str = wxGetTextFromUser(message, caption, str, this);
 		if (str != _T(""))
 		{
-#if wxUSE_UNICODE
-			wide = str.c_str();
-			str = wide.to_utf8();
-#endif
-			m_pFeatures->SetValueFromString(iFeature, iField, (const char *) str);
+			vs = str.to_utf8();
+			m_pFeatures->SetValueFromString(iFeature, iField, vs);
 			return true;
 		}
 	}
