@@ -314,10 +314,10 @@ bool vtImageLayer::LoadFromGDAL()
 			linearConversionFactor = m_proj.GetLinearUnits();
 
 			// Compute extent using the top left and bottom right image co-ordinates
-			m_Extents.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * m_iYSize) * linearConversionFactor;
-			m_Extents.right = (affineTransform[0] + affineTransform[1] * m_iXSize /*+ affineTransform[2] * 0*/) * linearConversionFactor;
-			m_Extents.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * m_iYSize) * linearConversionFactor;
-			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * m_iXSize /*+ affineTransform[5] * 0*/) * linearConversionFactor;
+			m_Extents.left = affineTransform[0]  * linearConversionFactor;
+			m_Extents.top = affineTransform[3] * linearConversionFactor;
+			m_Extents.right = (affineTransform[0] + affineTransform[1] * m_iXSize + affineTransform[2] * m_iYSize) * linearConversionFactor;
+			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * m_iXSize + affineTransform[5] * m_iYSize) * linearConversionFactor;
 		}
 
 		// Prepare scanline buffers
