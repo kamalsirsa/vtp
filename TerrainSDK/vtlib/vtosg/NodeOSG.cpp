@@ -189,10 +189,38 @@ void vtNode::SetOsgNode(Node *n)
 		m_pNode->setUserData((vtNode *)this);
 }
 
-vtNode *vtNode::LoadModel(const char *filename)
+// Walk an OSG scenegraph looking for Texture states, and disable mipmap.
+class MipmapVisitor : public NodeVisitor
 {
-	// Temporary workaround for OSG OBJ-MTL reader which doesn't like
-	// backslashes in the version we're using
+public:
+	MipmapVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+    virtual void apply(osg::Geode& geode)
+	{
+		for (unsigned i=0; i<geode.getNumDrawables(); ++i)
+		{
+			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode.getDrawable(i));
+			if (!geo) continue;
+
+			StateSet *stateset = geo->getStateSet();
+			if (!stateset) continue;
+
+			StateAttribute *state = stateset->getTextureAttribute(0, StateAttribute::TEXTURE);
+			if (!state) continue;
+
+			Texture2D *texture = dynamic_cast<Texture2D *>(state);
+			if (texture)
+				texture->setFilter(Texture::MIN_FILTER, Texture::LINEAR);
+		}
+		NodeVisitor::apply(geode);
+	}
+};
+
+bool vtNode::s_bDisableMipmaps = false;
+
+vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
+{
+	// Workaround for OSG's OBJ-MTL reader which doesn't like backslashes
+	//  in the version we're using.
 	char newname[500];
 	strcpy(newname, filename);
 	for (unsigned int i = 0; i < strlen(filename); i++)
@@ -200,7 +228,7 @@ vtNode *vtNode::LoadModel(const char *filename)
 		if (newname[i] == '\\') newname[i] = '/';
 	}
 
-	// We must insert a 'Normalize' state above the geometry objets
+	// We must insert a 'Normalize' state above the geometry objects
 	// that we load, otherwise when they are scaled, the vertex normals
 	// will cause strange lighting.  Fortunately, we only need to create
 	// a single State object which is shared by all loaded models.
@@ -212,17 +240,21 @@ vtNode *vtNode::LoadModel(const char *filename)
 	}
 
 	Node *node = osgDB::readNodeFile(newname);
-	if (node)
-	{
-		node->setStateSet(normstate);
-
-		vtNode *pNode = new vtNode();
-		pNode->SetOsgNode(node);
-		pNode->SetName2(newname);
-		return pNode;
-	}
-	else
+	if (!node)
 		return NULL;
+
+	node->setStateSet(normstate);
+
+	if (bDisableMipmaps || s_bDisableMipmaps)
+	{
+		MipmapVisitor visitor;
+		node->accept(visitor);
+	}
+
+	vtNode *pNode = new vtNode();
+	pNode->SetOsgNode(node);
+	pNode->SetName2(newname);
+	return pNode;
 }
 
 

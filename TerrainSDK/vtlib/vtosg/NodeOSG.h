@@ -55,7 +55,8 @@ public:
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
 	vtNodeBase *Clone() { return NULL; }
 
-	static vtNode *LoadModel(const char *filename);
+	static vtNode *LoadModel(const char *filename, bool bDisableMipmaps = false);
+	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
 protected:
 	osg::ref_ptr<osg::Node> m_pNode;
