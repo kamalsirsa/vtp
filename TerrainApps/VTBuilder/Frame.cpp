@@ -109,6 +109,12 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	SetIcon(wxICON(vtbuilder));
 }
 
+void MainFrame::CreateView()
+{
+	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
+			wxPoint(0, 0), wxSize(200, 400), "MainView" );
+}
+
 void MainFrame::SetupUI()
 {
 	m_statbar = new MyStatusBar(this);
@@ -133,8 +139,7 @@ void MainFrame::SetupUI()
 			wxNO_BORDER);
 	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
-	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
-			wxPoint(0, 0), wxSize(200, 400), "MainView" );
+	CreateView();
 	m_pView->SetBackgroundColour(*wxLIGHT_GREY);
 	m_pView->Show(FALSE);
 
