@@ -29,7 +29,7 @@ bool TerrainPatch::MakeGrid(int iXQuads, int iZQuads,
 							float xTiling, float zTiling)
 {
 	FPoint3	p;
-    int		i, j, iNVerts;
+	int		i, j, iNVerts;
 
 	// safety check
 	if (iXQuads < 1) iXQuads = 1;		// min x = 1, z = 1
@@ -49,7 +49,7 @@ bool TerrainPatch::MakeGrid(int iXQuads, int iZQuads,
 	//
 	for (i = 0; i < m_iXVerts; i++)
 	{
-	    for (j = 0; j < m_iZVerts; j++)
+		for (j = 0; j < m_iZVerts; j++)
 		{
 			p.Set(fXOffset + i*fXSize, 0.0, fZOffset + j*fZSize);
 			int vidx = AddVertex(p);
@@ -69,7 +69,7 @@ bool TerrainPatch::MakeGrid(int iXQuads, int iZQuads,
 		}
 	}
 	CreateRectangularMesh(m_iXVerts, m_iZVerts);
-    return true;
+	return true;
 }
 
 
