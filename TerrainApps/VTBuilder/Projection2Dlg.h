@@ -26,7 +26,8 @@ enum ProjType
     PT_GEO,
     PT_UTM,
     PT_ALBERS,
-    PT_LAMBERT
+    PT_LAMBERT,
+	PT_TM
 };
 #endif
 

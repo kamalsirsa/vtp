@@ -84,13 +84,13 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl->Append("UTM");
 	m_pProjCtrl->Append("Albers Equal Area Conic");
 	m_pProjCtrl->Append("Lambert Conformal Conic");
+	m_pProjCtrl->Append("Transverse Mercator");
 
 	// Fill in choices for Datum
 	for (i = NO_DATUM; i <= WGS_84; i++)
 	{
 		m_pDatumCtrl->Append(datumToString((DATUM) i), (void *) (i+CHOICE_OFFSET));
 	}
-	m_pDatumCtrl->SetStringSelection(datumToString((DATUM)m_iDatum));
 
 	m_pParamCtrl->ClearAll();
 	m_pParamCtrl->InsertColumn(0, "Attribute");
@@ -155,6 +155,10 @@ void Projection2Dlg::UpdateControlStatus()
 		m_pZoneCtrl->Enable(false);
 		break;
 	case PT_LAMBERT:
+		m_pParamCtrl->Enable(true);
+		m_pZoneCtrl->Enable(false);
+		break;
+	case PT_TM:
 		m_pParamCtrl->Enable(true);
 		m_pZoneCtrl->Enable(false);
 		break;
@@ -231,9 +235,13 @@ void Projection2Dlg::SetUIFromProjection()
 	else
 	{
 		const char *proj_string = m_proj.GetProjectionName();
+
 		if (!strcmp(proj_string, SRS_PT_TRANSVERSE_MERCATOR))
 		{
-			SetProjectionUI(PT_UTM);
+			if (m_proj.GetUTMZone() != 0)
+				SetProjectionUI(PT_UTM);
+			else
+				SetProjectionUI(PT_TM);
 		}
 		if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
 		{
@@ -416,6 +424,11 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		break;
 	case PT_LAMBERT:
 		m_proj.SetLAEA( 51, -150, 1000000, 0 );
+		break;
+	case PT_TM:
+		// Put in some default values
+		// These are for the OSGB projection, a common case
+		m_proj.SetTM(49.0, -2.0, 0.999601272, 400000, -100000);
 		break;
 	}
 
