@@ -873,7 +873,8 @@ bool vtPlantInstanceArray::FindClosestPlant(const DPoint2 &point, double error_m
 
 	double dist;
 
-	for (int i = 0; i < GetSize(); i++)
+	int i, size = GetSize();
+	for (i = 0; i < size; i++)
 	{
 		vtPlantInstance &pi = GetAt(i);
 		dist = (pi.m_p - point).Length();
