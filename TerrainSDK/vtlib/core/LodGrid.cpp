@@ -106,21 +106,31 @@ vtGroup *vtLodGrid::FindCellParent(const FPoint3 &point)
 	return (vtGroup *)m_pCells[i]->GetChild(0);
 }
 
-void vtLodGrid::AppendToGrid(vtTransform *pTNode)
+bool vtLodGrid::AppendToGrid(vtTransform *pTNode)
 {
 	vtGroup *pGroup = FindCellParent(pTNode->GetTrans());
 	if (pGroup)
+	{
 		pGroup->AddChild(pTNode);
+		return true;
+	}
+	else
+		return false;
 }
 
-void vtLodGrid::AppendToGrid(vtGeom *pGNode)
+bool vtLodGrid::AppendToGrid(vtGeom *pGNode)
 {
 	FSphere sph;
 	pGNode->GetBoundSphere(sph);
 
 	vtGroup *pGroup = FindCellParent(sph.center);
 	if (pGroup)
+	{
 		pGroup->AddChild(pGNode);
+		return true;
+	}
+	else
+		return false;
 }
 
 void vtLodGrid::RemoveFromGrid(vtTransform *pTNode)

@@ -20,8 +20,8 @@ public:
 	void Destroy();
 
 	// methods
-	void AppendToGrid(vtTransform *pTrans);
-	void AppendToGrid(vtGeom *pGeom);
+	bool AppendToGrid(vtTransform *pTrans);
+	bool AppendToGrid(vtGeom *pGeom);
 	void RemoveFromGrid(vtTransform *pTNode);
 	void RemoveFromGrid(vtGeom *pModel);
 	void RemoveNodeFromGrid(vtNode *pNode);
