@@ -196,3 +196,43 @@ vtString wxString2::vt_str() const
 }
 
 
+/**
+ * Return a copy of the string that has forward slashes converted to backslashes
+ * and also trims multiple slashes into single slashes.
+ *
+ * This is useful for passing paths and filenames to the file dialog on WIN32.
+ */
+wxString2 wxString2::ToBackslash() const
+{
+	wxString2 	dir;
+	size_t 	i, len = length();
+	dir.reserve(len);
+	for ( i = 0; i < len; i++ )
+	{
+		wxChar ch = GetChar(i);
+		switch ( ch )
+		{
+		case _T('/'):
+			ch = _T('\\');	// convert to backslash
+			// fall through
+		case _T('\\'):
+			while ( i < len - 1 )
+			{
+				wxChar chNext = GetChar(i + 1);
+				if ( chNext != _T('\\') && chNext != _T('/') )
+					break;
+
+				// ignore the next one, unless it is at the start of a UNC path
+				if (i > 0)
+					i++;
+				else
+					break;	
+			}
+			// fall through
+		default:
+			dir += ch;	// normal char
+		}
+	}
+	return dir;
+}
+

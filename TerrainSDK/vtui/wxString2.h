@@ -65,6 +65,9 @@ public:
 	const char *to_utf8() const;
 	void from_utf8(const char *input);
 
+	// Useful methods
+	wxString2 ToBackslash() const;
+
 #if wxUSE_UNICODE
 	// explicit conversion to C string
 	const char *mb_str() const;
