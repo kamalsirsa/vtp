@@ -90,6 +90,7 @@ public:
 	int NumEntities();
 	int GetEntityType();
 	void SetEntityType(int type);
+
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
 	int AddPolyLine(DLine2* pl);
@@ -98,6 +99,9 @@ public:
 	void CopyEntity(int from, int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
 	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
+
+	const DLine2 *GetLine(int num) { return m_LinePoly[num]; }
+
 	void SetToDelete(int iFeature);
 	void ApplyDeletion();
 
