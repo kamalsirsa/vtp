@@ -58,7 +58,7 @@ typedef int Coord2d[2];
 #define BORDER(t) (m_info[(t)->s] & PARTINROD)
 #define INROD(t) (m_info[(t)->s] & ALLINROD)
 #define PUTONSURFACE(t) \
-    m_info[(t)->s] = (m_info[(t)->s]&(ALLINROD|PARTINROD))|SURFACE
+	m_info[(t)->s] = (m_info[(t)->s]&(ALLINROD|PARTINROD))|SURFACE
 #define ONSURFACE(t) (m_info[(t)->s] & SURFACE)
 #define INFOV(t) (m_info[(t)->s] & (ALLINFOV | PARTINFOV))
 #define SMALLN1(t) (m_info[(t)->s] & SMALLER1)
@@ -168,11 +168,11 @@ private:
 	float	m_fXScale, m_fYScale, m_fZScale;
 
 /* heirarchy data */
-    int m_depth;			/* maximum depth */
-    int m_size;				/* number of triangles in hierarchy */
-    int m_numSurfTri;		/* number of triangles on surface */
-    unsigned short *m_err;	/* error of triangles */
-    unsigned char *m_info;	/* surface,neighbor,infov of triangles */
+	int m_depth;			/* maximum depth */
+	int m_size;				/* number of triangles in hierarchy */
+	int m_numSurfTri;		/* number of triangles on surface */
+	unsigned short *m_err;	/* error of triangles */
+	unsigned char *m_info;	/* surface,neighbor,infov of triangles */
 	int m_iLevels;
 
 	double x_per_y, y_per_x, errPerEm;
