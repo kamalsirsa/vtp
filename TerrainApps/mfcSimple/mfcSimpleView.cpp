@@ -11,6 +11,7 @@
 #include "mfcSimpleView.h"
 
 bool CreateScene();
+void CleanupScene();
 
 // Header for the vtlib library
 #include "vtlib/vtlib.h"
@@ -165,6 +166,8 @@ BOOL CSimpleView::CreateViewGLContext(HDC hDC)
 
 void CSimpleView::OnDestroy() 
 {
+	CleanupScene();
+
 	if (wglGetCurrentContext() != NULL)
 		wglMakeCurrent(NULL,NULL);	
 	if (m_hGLContext != NULL)
@@ -209,6 +212,9 @@ void CSimpleView::OnPaint()
 }
 
 //-----------------------The Following is VTerrain Code-----------------
+
+vtTerrainScene *ts = NULL;
+
 //
 // Create the 3d scene
 //
@@ -230,7 +236,7 @@ bool CreateScene()
 
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
-	vtTerrainScene *ts = new vtTerrainScene();
+	ts = new vtTerrainScene();
 	vtRoot *pTopGroup = ts->BeginTerrainScene(false);
 
 	// Tell the scene graph to point to this terrain scene
@@ -248,6 +254,7 @@ bool CreateScene()
 		AfxMessageBox("Terrain creation failed.");
 		return false;
 	}
+
 	ts->Finish(paths);
 	ts->SetTerrain(pTerr);
 
@@ -260,6 +267,12 @@ bool CreateScene()
 	pScene->AddEngine(pFlyer);
 
 	return true;
+}
+
+void CleanupScene()
+{
+	if (ts)
+		delete ts;
 }
 
 //--------------Mouse EVENTS-----------------
