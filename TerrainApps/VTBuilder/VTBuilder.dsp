@@ -356,6 +356,10 @@ SOURCE=.\VegDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\VegFieldsDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\VegLayer.h
 # End Source File
 # Begin Source File
@@ -631,6 +635,10 @@ SOURCE=.\StatePlaneDlg.cpp
 # Begin Source File
 
 SOURCE=.\VegDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\VegFieldsDlg.cpp
 # End Source File
 # End Group
 # End Target
