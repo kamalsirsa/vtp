@@ -56,7 +56,9 @@ VTBuilder<br>
     <li>Load your Species with the menu command &quot;Vegetation: Plants File&quot;.</li>
     <li>Load your Bioregion (list of Biotypes) with the menu command 
     &quot;Vegetation: BioRegions&quot;.&nbsp; An example file is in <code>VTP/Enviro/Data/PlantData/bioregion.txt</code></li>
-    <li>Import at least one layer with <b>Biotype</b></li>
+    <li>Import at least one layer with <b>Biotype</b>.&nbsp; Biotype is by 
+    0-based index, so a integer field with values of 0, 1, 2, 3 etc. indicates 
+    which biotype.</li>
     <li>If you have polygon data for plant density, import that layer as <b>Density</b>.&nbsp; 
     This can be the same GIS file that contains the Biotype, or a separate file 
     such as a LULC file.&nbsp; If you don't have a data file, the default of 
