@@ -9,9 +9,10 @@
 VTP_ROOT = $(shell cd ../..; pwd)
 LIB_NAME = vtui
 
-include $(VTP_ROOT)/TerrainSDK/Make.defs
+include $(VTP_ROOT)/Make.defs
 
-IFLAGS = $(shell /usr/local/bin/wx-config --cflags) \
+
+IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	-I$(GDAL_INC) \
 	-I$(TERRAIN_SDK_DIR)
 

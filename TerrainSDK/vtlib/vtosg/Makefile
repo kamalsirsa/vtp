@@ -9,7 +9,7 @@
 VTP_ROOT = $(shell cd ../../..; pwd)
 LIB_NAME = vtosg
 
-include $(VTP_ROOT)/TerrainSDK/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 SWITCHES += -DVTLIB_OSG=1
 override CXXSRC = $(wildcard *.cpp) $(wildcard ../core/*.cpp) 

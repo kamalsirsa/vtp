@@ -9,7 +9,7 @@
 VTP_ROOT = $(shell cd ../..; pwd)
 LIB_NAME = vtdata
 
-include $(VTP_ROOT)/TerrainSDK/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 IFLAGS = -I./shapelib \
          -I$(NETCDF_INC) \

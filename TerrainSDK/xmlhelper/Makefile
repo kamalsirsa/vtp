@@ -9,7 +9,7 @@
 VTP_ROOT = $(shell cd ../..; pwd)
 LIB_NAME = xmlhelper
 
-include $(VTP_ROOT)/TerrainSDK/Make.defs
+include $(VTP_ROOT)/Make.defs
 
 IFLAGS =
 
