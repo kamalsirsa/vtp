@@ -1072,6 +1072,14 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 		str.Printf(_T("Grid size: %d x %d\n"), cols, rows);
 		strIn += str;
 
+		bool bGeo = (m_pGrid->GetProjection().IsGeographic() != 0);
+		strIn += _T("Grid spacing: ");
+		DPoint2 spacing = m_pGrid->GetSpacing();
+		strIn += FormatCoord(bGeo, spacing.x);
+		strIn += _T(" x ");
+		strIn += FormatCoord(bGeo, spacing.y);
+		strIn += _T("\n");
+
 		str.Printf(_T("Floating point: %hs\n"), m_pGrid->IsFloatMode() ? "Yes" : "No");
 		strIn += str;
 

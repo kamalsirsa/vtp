@@ -95,7 +95,7 @@ wxString FormatCoord(bool bGeo, double val, bool minsec)
 			str.Printf(_T("%3.6lf"), val);	// decimal degrees
 	}
 	else
-		str.Printf(_T("%8.2lf"), val);	// meters-based
+		str.Printf(_T("%.2lf"), val);	// meters-based
 	return str;
 }
 
