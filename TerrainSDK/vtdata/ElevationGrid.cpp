@@ -52,8 +52,8 @@ vtElevationGrid::vtElevationGrid()
  *
  * The grid will initially have no data in it (all values are INVALID_ELEVATION).
  */
-vtElevationGrid::vtElevationGrid(DRECT area, int iColumns, int iRows,
-								 bool bFloat, vtProjection proj)
+vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
+								 bool bFloat, vtProjection &proj)
 {
 	m_area = area;			// raw extents
 	m_iColumns = iColumns;
@@ -63,6 +63,12 @@ vtElevationGrid::vtElevationGrid(DRECT area, int iColumns, int iRows,
 	m_szOriginalDEMName[0] = 0;
 
 	AllocateArray();
+}
+
+// helper
+double MetersPerLongitude(double latitude)
+{
+	return meters_per_latitude * cos(latitude / 180.0 * PId);
 }
 
 
@@ -114,17 +120,19 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	DPoint2 old_step = pOld->GetSpacing();
 	DPoint2 new_step;
 
+	double meters_per_longitude = MetersPerLongitude(pOld->m_Corners[0].y);
+
 	if (bOldGeo && !bNewGeo)
 	{
 		// convert degrees to meters (approximately)
-		new_step.x = old_step.x * meters_per_latitude * cos(pOld->m_Corners[0].y / 180.0 * PId);
+		new_step.x = old_step.x * meters_per_longitude;
 		new_step.y = old_step.y * meters_per_latitude;
 	}
 	else if (!bOldGeo && bNewGeo)
 	{
 		// convert meters to degrees (approximately)
-		new_step.x = old_step.x / (meters_per_latitude * cos(m_Corners[0].y / 180.0 * PId));
-		new_step.y = old_step.y / (meters_per_latitude);	// convert degrees to meters (approximately)
+		new_step.x = old_step.x / meters_per_longitude;
+		new_step.y = old_step.y / meters_per_latitude;	// convert degrees to meters (approximately)
 	}
 	else
 	{
@@ -349,14 +357,24 @@ void vtElevationGrid::AllocateArray()
 }
 
 
-static RGBi color_base(255, 233, 184);
-static RGBi color_hill(168, 154, 112);
+void vtElevationGrid::GetEarthLocation(int i, int j, DPoint3 &loc)
+{
+	DPoint2 spacing = GetSpacing();
+	if (m_bFloatMode)
+		loc.Set(m_area.left + i * spacing.x,
+				m_area.bottom + j * spacing.y,
+				m_pFData[i*m_iRows+j]);
+	else
+		loc.Set(m_area.left + i * spacing.x,
+				m_area.bottom + j * spacing.y,
+				m_pData[i*m_iRows+j]);
+}
 
 /** Use the height data in the grid to fill a bitmap with a shaded color image.
  * \param pDIB The bitmap to color.
  * \param color_ocean The color to use for areas at sea level.
  */
-void vtElevationGrid::ColorDibFromElevation1(vtDIB *pDIB, RGBi color_ocean)
+void vtElevationGrid::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean)
 {
 	int w = pDIB->GetWidth();
 	int h = pDIB->GetHeight();
@@ -369,9 +387,14 @@ void vtElevationGrid::ColorDibFromElevation1(vtDIB *pDIB, RGBi color_ocean)
 	RGBi color;
 
 	float fMin, fMax;
-	fMin = m_fMinHeight;
-	fMax = m_fMaxHeight;
-	float low_elev = 100.0f;
+	GetHeightExtents(fMin, fMax);
+
+	Array<RGBi> colors;
+	colors.Append(RGBi(75, 155, 75));
+	colors.Append(RGBi(180, 160, 120));
+	colors.Append(RGBi(128, 128, 128));
+	int bracket, num = colors.GetSize();
+	float bracket_size = (fMax - fMin) / (num - 1);
 
 	// iterate over the texels
 	for (i = 0; i < w; i++)
@@ -390,22 +413,21 @@ void vtElevationGrid::ColorDibFromElevation1(vtDIB *pDIB, RGBi color_ocean)
 			{
 				color = color_ocean;
 			}
-			else if (elev < low_elev)
-			{
-				color = color_base;
-			}
-			else if (elev < low_elev*2)
-			{
-				float scale = (elev - low_elev) / low_elev;
-				RGBi diff = (color_hill - color_base);
-				RGBi offset = (diff * scale);
-				color = color_base + offset;
-			}
 			else
 			{
-				color = color_hill;
+				bracket = (int) (elev / bracket_size);
+				if (bracket < 0)
+					color = colors[0];
+				else if (bracket < num-1)
+				{
+					float fraction = (elev / bracket_size) - bracket;
+					RGBi diff = (colors[bracket+1] - colors[bracket]);
+					color = colors[bracket] + (diff * fraction);
+				}
+				else
+					color = colors[num-1];
 			}
-			pDIB->SetPixel24(i, h-1-j, RGB(color.b, color.g, color.r));
+			pDIB->SetPixel24(i, h-1-j, RGB(color.r, color.g, color.b));
 		}
 	}
 }
@@ -515,20 +537,10 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo)
 	else
 	{
 		// must convert from whatever we are, to geo
-		OGRSpatialReference *pSource, Dest;
-		pSource = &m_proj;
-
+		vtProjection Dest;
 		Dest.SetWellKnownGeogCS("WGS84");
 
-		// TODO - 
-		// We can't convert datum yet.  Force assumption that destination
-		// datum is the same as the source.
-		const char *datum_string = m_proj.GetAttrValue("DATUM");
-		const char *ellipsoid_string = m_proj.GetAttrValue("SPHEROID");
-		Dest.SetGeogCS("WGS84", datum_string, ellipsoid_string,
-			6378137, 298.257223563);
-
-		OCT *trans = OGRCreateCoordinateTransformation(pSource, &Dest);
+		OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
 		if (!trans)
 		{
 			// inconvertible projections

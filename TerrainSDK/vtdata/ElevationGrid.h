@@ -30,7 +30,8 @@ class vtElevationGrid
 {
 public:
 	vtElevationGrid();
-	vtElevationGrid(DRECT area, int iColumns, int iRows, bool bFloat, vtProjection proj);
+	vtElevationGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
+		vtProjection &proj);
 	~vtElevationGrid();
 
 	bool ConvertProjection(vtElevationGrid *pOld, vtProjection &NewProj, void progress_callback(int) = NULL);
@@ -50,7 +51,7 @@ public:
 	bool LoadBTHeader(const char *szFileName);
 
 	// Use GDAL to read a file
-	bool LoadWithGDAL(const char *szFileName, void progress_callback(int));
+	bool LoadWithGDAL(const char *szFileName, void progress_callback(int) = NULL);
 
 	// Save
 	bool SaveToTerragen(const char *szFileName);
@@ -96,7 +97,11 @@ public:
 	 */
 	bool  IsFloatMode()	{ return m_bFloatMode; }
 
-	void ColorDibFromElevation1(vtDIB *pDIB, RGBi color_ocean);
+	void GetEarthLocation(int i, int j, DPoint3 &loc);
+	void GetEarthLocation(int i, int j, FPoint3 &loc);
+
+	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean);
+	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,float light_adj);
 
 	vtProjection &GetProjection() { return m_proj; }
 	void SetProjection(vtProjection &proj) { m_proj = proj; }
