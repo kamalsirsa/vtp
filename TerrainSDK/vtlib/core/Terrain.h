@@ -108,6 +108,7 @@ public:
 
 	/// Set the colors to be used in a derived texture.
 	void SetTextureColors(ColorMap *colors);
+	ColorMap *GetTextureColors() { return m_pTextureColors; }
 
 	/// Sets the texture colors to be a set of black contour stripes.
 	void SetTextureContours(float fInterval, float fSize);
