@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtLog.h"
 #include "Frame.h"
 #include "WaterLayer.h"
 #include "ElevLayer.h"
@@ -98,12 +99,17 @@ bool vtLayer::Save(const wxString &filename)
 		if (!AskForSaveFilename())
 			return false;
 	}
+	VTLOG("Saving data...");
 	bool success = OnSave();
 	if (success)
 	{
+		VTLOG("OK.\n");
 		m_bNative = true;
 		SetModified(false);
 	}
+	else
+		VTLOG("Failed.\n");
+
 	return success;
 }
 
@@ -134,9 +140,12 @@ void vtLayer::SetModified(bool bModified)
 
 void vtLayer::SetFilename(const wxString &fname)
 {
-	bool bNeedRefresh = (m_strFilename.Cmp(fname) != 0);
-	m_strFilename = fname;
-	GetMainFrame()->RefreshTreeStatus();
+	wxString2 fname_in = fname;
+	VTLOG("Setting layer filename to '%s'\n", fname_in.mb_str());
+	bool bNeedRefresh = (m_strFilename.Cmp(fname_in) != 0);
+	m_strFilename = fname_in;
+	if (bNeedRefresh)
+		GetMainFrame()->RefreshTreeStatus();
 }
 
 wxString vtLayer::GetFileDialogFilter()
@@ -160,12 +169,16 @@ bool vtLayer::AskForSaveFilename()
 	wxString filter = GetFileDialogFilter();
 	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), _T(""), filter, wxSAVE);
 
+	VTLOG("Asking user for file name\n");
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return false;
 
-	wxString name = saveFile.GetPath();
-	wxString ext(GetFileExtension(), wxConvCurrent);
+	wxString2 name = saveFile.GetPath();
+	VTLOG("Got filename: '%s'\n", name.mb_str());
+
+	// Add file extension if user didn't specify it
+	wxString2 ext = GetFileExtension();
 	if (name.Len() < ext.Len() ||
 		name.Right(ext.Len()) != ext)
 	{
@@ -178,7 +191,7 @@ bool vtLayer::AskForSaveFilename()
 
 wxString vtLayer::GetFileExtension()
 {
-	return LayerFileExtension[GetType()];
+	return (wxString) LayerFileExtension[GetType()];
 }
 
 void vtLayer::SetMessageText(const wxString &msg)

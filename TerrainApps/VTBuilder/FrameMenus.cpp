@@ -16,6 +16,7 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
 #include "vtdata/vtDIB.h"
+#include "vtdata/vtLog.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"
@@ -895,14 +896,18 @@ void MainFrame::OnLayerSave(wxCommandEvent &event)
 		if (!lp->AskForSaveFilename())
 			return;
 	}
-	wxString msg = _T("Saving layer to file ") + lp->GetFilename();
+	wxString2 msg = _T("Saving layer to file ") + lp->GetFilename();
 	SetStatusText(msg);
+	VTLOG(msg.mb_str());
+	VTLOG("\n");
 
 	if (lp->Save())
 		msg = _T("Saved layer to file ") + lp->GetFilename();
 	else
 		msg = _T("Save failed.");
 	SetStatusText(msg);
+	VTLOG(msg.mb_str());
+	VTLOG("\n");
 }
 
 void MainFrame::OnUpdateLayerSave(wxUpdateUIEvent& event)
