@@ -12,6 +12,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "vtlib/vtlib.h"
 #include "LocationDlg.h"
 #include "vtlib/core/Location.h"

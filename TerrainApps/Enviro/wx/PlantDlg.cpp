@@ -12,6 +12,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "PlantDlg.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Trees.h"
