@@ -429,8 +429,8 @@ void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 	DPoint2 p1, p2;
 	for (i = 0; i < size; i++)
 	{
-		const DLine2 *line = feat->GetLine(i);
-		AddSurfaceLineToMesh(mesh, line);
+		const DLine2 &line = feat->GetLine(i);
+		AddSurfaceLineToMesh(mesh, &line);
 
 		// don't put too many vertices in any one mesh
 		if (mesh->GetNumVertices() > 10000)
