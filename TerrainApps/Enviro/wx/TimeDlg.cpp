@@ -44,7 +44,7 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	// WDR: dialog function TimeDialogFunc for TimeDlg
-	TimeDialogFunc( this, TRUE ); 
+	m_pTop = TimeDialogFunc( this, TRUE ); 
 
 	m_bGoing = false;
 	m_iSpeed = 0;
@@ -58,7 +58,27 @@ TimeDlg::TimeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	minute = 0;
 	second = 0;
 
+	GetSliderSpeed()->Enable(false);
+	GetTextSpeed()->Enable(false);
+	GetStop()->Enable(false);
+
 	m_pTimeEngine = NULL;
+}
+
+void TimeDlg::AddOkCancel()
+{
+	wxBoxSizer *item25 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item26 = new wxButton( this, wxID_OK, _("OK"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item25->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item27 = new wxButton( this, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxSize(70,-1), 0 );
+    item25->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    m_pTop->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    m_pTop->Fit( this );
+    m_pTop->SetSizeHints( this );
 }
 
 void TimeDlg::PullTime()
@@ -89,7 +109,8 @@ void TimeDlg::PushTime()
 
 void TimeDlg::SetTime(const vtTime &time)
 {
-	m_fSpeed = m_pTimeEngine->GetSpeed();
+	if (m_pTimeEngine)
+		m_fSpeed = m_pTimeEngine->GetSpeed();
 	m_bGoing = (m_fSpeed != 0.0f);
 
 	UpdateSlider();
@@ -97,6 +118,12 @@ void TimeDlg::SetTime(const vtTime &time)
 	UpdateEnabling();
 
 	SetTimeControls(time);
+}
+
+void TimeDlg::GetTime(vtTime &time)
+{
+	time.SetDate(year, month, day);
+	time.SetTimeOfDay(hour, minute, second);
 }
 
 void TimeDlg::SetTimeEngine(TimeEngine *pEngine)
@@ -114,6 +141,10 @@ void TimeDlg::SetTimeEngine(TimeEngine *pEngine)
 	}
 	if (!bFound)
 		pEngine->AddTarget(self);
+
+	GetSliderSpeed()->Enable(true);
+	GetTextSpeed()->Enable(true);
+	GetStop()->Enable(true);
 }
 
 void TimeDlg::SetTimeControls(const vtTime &time)
@@ -186,12 +217,14 @@ void TimeDlg::OnTextSpeed( wxCommandEvent &event )
 	TransferDataFromWindow();
 	UpdateSlider();
 
-	m_pTimeEngine->SetSpeed(m_fSpeed);
+	if (m_pTimeEngine)
+		m_pTimeEngine->SetSpeed(m_fSpeed);
 }
 
 void TimeDlg::OnStop( wxCommandEvent &event )
 {
-	m_pTimeEngine->SetSpeed(0.0f);
+	if (m_pTimeEngine)
+		m_pTimeEngine->SetSpeed(0.0f);
 	UpdateEnabling();
 }
 

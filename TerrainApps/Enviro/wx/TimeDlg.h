@@ -31,6 +31,7 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
+	void AddOkCancel();
 	
 	void OnInitDialog(wxInitDialogEvent& event);
 
@@ -48,6 +49,7 @@ public:
 	// implement TimeTarget method, to catch events from the engine
 	void SetTime(const vtTime &time);
 	void SetTimeEngine(TimeEngine *pEngine);
+	void GetTime(vtTime &time);
 
 private:
 	void PullTime();
@@ -67,6 +69,8 @@ private:
 	bool m_bSetting;
 
 	TimeEngine	*m_pTimeEngine;
+
+	wxSizer *m_pTop;
 
 private:
 	// WDR: handler declarations for TimeDlg
