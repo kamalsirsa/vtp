@@ -14,9 +14,9 @@
 
 <table border="1" cellspacing="0" cellpadding="2">
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8">Elevation Grid</th>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Grid Filename</td>
-    <td bgcolor="#B7CCB8">The BT file to use for elevation.</td>
+    <th width="170" valign="top" bgcolor="#D2C8B5">Elevation Grid</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Grid Filename</td>
+    <td bgcolor="#D2C8B5">The BT file to use for elevation.</td>
   </tr>
   <tr>
     <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="5">Terrain LOD</th>
@@ -115,10 +115,10 @@
       lighting more pronounced or more subtle.&nbsp; 1.0 is the standard value.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#D2C8B5">Pre-lit</td>
-    <td bgcolor="#D2C8B5">Set this option if the texture contains the lighting
-      (shadows).&nbsp; This option is automatically set when you request
-      Precomputed lighting.</td>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Cast Shadows</td>
+    <td bgcolor="#D2C8B5">If true, then the terrain shading will use a 
+    ray-casting approach, so that the terrain casts shadows onto itself.&nbsp; 
+    If false, then simpler (dot-product) shading is used.</td>
   </tr>
 </table>
 
@@ -166,14 +166,22 @@
     <td bgcolor="#D2C8B5">You can indicate a subset of the roads to create.</td>
   </tr>
   <tr>
-    <th width="170" valign="top" bgcolor="#B7CCB8" rowspan="2">Structure Files</th>
-    <td width="180" valign="top" bgcolor="#B7CCB8">(Source files)</td>
-    <td bgcolor="#B7CCB8">Any number of VTST (Built Structures) files,
-      containing the Buildings, Fences etc. for this terrain.</td>
+    <th width="170" valign="top" bgcolor="#B7CCB8">&nbsp;</th>
+    <td width="180" valign="top" bgcolor="#B7CCB8">Terrain-specific Content</td>
+    <td bgcolor="#B7CCB8">A content file (.vtco) which contains additional 
+    content items specific to this terrain.&nbsp; For example, if the terrain is 
+    in Australia, you might have a set of Australian content items specific 
+    here, &quot;Australia.vtco&quot;.</td>
   </tr>
   <tr>
-    <td width="180" valign="top" bgcolor="#B7CCB8">Visibility distance</td>
-    <td bgcolor="#B7CCB8">Distance at which structures are visible.&nbsp; 
+    <th width="170" valign="top" bgcolor="#D2C8B5" rowspan="2">Structure Files</th>
+    <td width="180" valign="top" bgcolor="#D2C8B5">(Source files)</td>
+    <td bgcolor="#D2C8B5">Any number of VTST (.vtst, Built Structures) files,
+      containing the Buildings, Instances, and Fences for this terrain.</td>
+  </tr>
+  <tr>
+    <td width="180" valign="top" bgcolor="#D2C8B5">Visibility distance</td>
+    <td bgcolor="#D2C8B5">Distance at which structures are visible.&nbsp; 
     Structures further than this distance from the camera will not be rendered.</td>
   </tr>
   </table>
