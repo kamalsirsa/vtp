@@ -196,7 +196,7 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 		vtMesh *SunMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
-		SunMesh->CreateRectangle(0.50f, 0.50f);
+		SunMesh->AddRectangleXZ(0.50f, 0.50f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(SunMesh, idx);
 		SunMesh->Release();	// pass ownership to Geometry
@@ -720,7 +720,7 @@ void vtStarDome::Create(const char *starfile, float brightness,
 
 		vtMesh *MoonMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
-		MoonMesh->CreateRectangle(0.1f, 0.1f);
+		MoonMesh->AddRectangleXZ(0.1f, 0.1f);
 		pGeom->SetMaterials(m_pMats);
 		pGeom->AddMesh(MoonMesh, idx);
 		MoonMesh->Release();	// pass ownership to Geometry
