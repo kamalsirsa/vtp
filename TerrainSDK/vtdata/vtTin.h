@@ -28,8 +28,8 @@ typedef Array<int> Bin;
 class vtTin : public vtHeightField3d
 {
 public:
-	int NumVerts() const { return m_vert.GetSize(); }
-	int NumTris() const { return m_tri.GetSize()/3; }
+	unsigned int NumVerts() const { return m_vert.GetSize(); }
+	unsigned int NumTris() const { return m_tri.GetSize()/3; }
 
 	void AddVert(const DPoint2 &p, float z);
 	void AddTri(int i1, int i2, int i3);
@@ -52,7 +52,8 @@ public:
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const { return false; }
 
-	double GetTriMaxEdgeLength(int iTri);
+	void CleanupClockwisdom();
+	double GetTriMaxEdgeLength(int iTri) const;
 	void MergeSharedVerts(void progress_callback(int) = NULL);
 
 	vtProjection	m_proj;

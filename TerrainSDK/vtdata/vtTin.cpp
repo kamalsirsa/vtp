@@ -152,6 +152,8 @@ bool vtTin::ReadDXF(const char *fname, void progress_callback(int))
 			}
 		}
 	}
+	// Test each triangle for clockwisdom, fix if needed
+	CleanupClockwisdom();
 
 	ComputeExtents();
 	return true;
@@ -301,10 +303,42 @@ bool vtTin::ConvertProjection(const vtProjection &proj_new)
 	return true;
 }
 
+
+/**
+ * Test each triangle for clockwisdom, fix if needed.  The result should
+ *  be a TIN with consistent vertex ordering, such that all face normals
+ *  point up rather than down, that is, counter-clockwise.
+ */
+void vtTin::CleanupClockwisdom()
+{
+	DPoint2 p1, p2, p3;		// 2D points
+	int v0, v1, v2;
+	unsigned int tris = NumTris();
+	for (int i = 0; i < tris; i++)
+	{
+		v0 = m_tri[i*3];
+		v1 = m_tri[i*3+1];
+		v2 = m_tri[i*3+2];
+		// get 2D points
+		p1 = m_vert.GetAt(v0);
+		p2 = m_vert.GetAt(v1);
+		p3 = m_vert.GetAt(v2);
+
+		// The so-called 2D cross product
+		double cross2d = (p2-p1).Cross(p3-p1);
+		if (cross2d < 0)
+		{
+			// flip
+			m_tri[i*3+1] = v2;
+			m_tri[i*3+2] = v1;
+		}
+	}
+}
+
 /**
  * Return the length of the longest edge of a specific triangle.
  */
-double vtTin::GetTriMaxEdgeLength(int iTri)
+double vtTin::GetTriMaxEdgeLength(int iTri) const
 {
 	int tris = NumTris();
 	if (iTri < 0 || iTri >= tris)
@@ -419,7 +453,7 @@ void vtTin::MergeSharedVerts(void progress_callback(int))
 
 			// copy old to new
 			m_vert[v_new] = vertcopy->GetAt(v_old);
-			m_z[v_new] = m_z[v_old];
+			m_z[v_new] = zcopy[v_old];
 
 			unsigned int bintris = m_tribin[bin].GetSize();
 			for (j = 0; j < bintris; j++)
