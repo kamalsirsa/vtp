@@ -401,6 +401,8 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	vtMeshBase(PrimType, VertType, NumVertices)
 {
+	ref();		// artficially set refcount to 1
+
 	m_pGeometry = new Geometry();
 
 	// set backpointer so we can find ourselves later
@@ -475,9 +477,11 @@ vtMesh::~vtMesh()
 
 void vtMesh::Release()
 {
-	// explicit dereference. if Release is not called, this dereference should
-	//  also occur implicitly in the destructor
-	m_pGeometry = NULL;
+	unref();	// trigger self-deletion if no more references
+	if (_refCount == 1)	// no more references except from m_pGeometry
+		// explicit dereference. if Release is not called, this dereference should
+		//  also occur implicitly in the destructor
+		m_pGeometry = NULL;
 }
 
 /**
