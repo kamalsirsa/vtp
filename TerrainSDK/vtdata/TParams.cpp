@@ -57,7 +57,6 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_PIXELERROR, "2.0");
 	AddTag(STR_TRICOUNT, "10000");
 	AddTag(STR_TRISTRIPS, "true");
-	AddTag(STR_DETAILTEXTURE, "false");
 
 	AddTag(STR_TIN, "false");
 
@@ -77,6 +76,11 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_PRELIGHTFACTOR, "1.0");
 	AddTag(STR_CAST_SHADOWS, "false");
 	AddTag(STR_COLOR_MAP, "");
+
+	AddTag(STR_DETAILTEXTURE, "false");
+	AddTag(STR_DTEXTURE_NAME, "");
+	AddTag(STR_DTEXTURE_SCALE, "1");
+	AddTag(STR_DTEXTURE_DISTANCE, "1000");
 
 	AddTag(STR_ROADS, "false");
 	AddTag(STR_ROADFILE, "");
@@ -226,8 +230,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 		else if (strcmp(buf, STR_LODMETHOD) == 0 ||
 				 strcmp(buf, STR_PIXELERROR) == 0 ||
 				 strcmp(buf, STR_TRICOUNT) == 0 ||
-				 strcmp(buf, STR_TRISTRIPS) == 0 ||
-				 strcmp(buf, STR_DETAILTEXTURE) == 0)
+				 strcmp(buf, STR_TRISTRIPS) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 
 		// time
@@ -251,6 +254,13 @@ bool TParams::LoadFromIniFile(const char *filename)
 			SetValueString(buf, get_line_from_stream(input));
 		else if (strcmp(buf, STR_16BIT) == 0)
 			SetValueString(STR_REQUEST16BIT, get_line_from_stream(input));
+
+		// detail texture
+		else if (strcmp(buf, STR_DETAILTEXTURE) == 0 ||
+				 strcmp(buf, STR_DTEXTURE_NAME) == 0 ||
+				 strcmp(buf, STR_DTEXTURE_SCALE) == 0 ||
+				 strcmp(buf, STR_DTEXTURE_DISTANCE) == 0)
+			SetValueString(buf, get_line_from_stream(input));
 
 		// culture
 		else if (strcmp(buf, STR_ROADS) == 0 ||

@@ -99,7 +99,6 @@ private:
 #define STR_PIXELERROR "Pixel_Error"
 #define STR_TRICOUNT "Tri_Count"
 #define STR_TRISTRIPS "Tristrips"
-#define STR_DETAILTEXTURE "Detail_Texture"
 
 #define STR_TIN "Is_TIN"
 
@@ -119,6 +118,11 @@ private:
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
 #define STR_CAST_SHADOWS "Cast_Shadows"
 #define STR_COLOR_MAP "Color_Map"
+
+#define STR_DETAILTEXTURE "Detail_Texture"
+#define STR_DTEXTURE_NAME "DTexture_Name"
+#define STR_DTEXTURE_SCALE "DTexture_Scale"
+#define STR_DTEXTURE_DISTANCE "DTexture_Distance"
 
 #define STR_ROADS "Roads"
 #define STR_ROADFILE "Road_File"
