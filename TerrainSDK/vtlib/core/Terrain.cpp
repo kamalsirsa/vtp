@@ -57,8 +57,8 @@ vtTerrain::vtTerrain()
 
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pDIB = NULL;
-	m_pTerrApps1 = NULL;
-	m_pTerrApps2 = NULL;
+	m_pTerrMats1 = NULL;
+	m_pTerrMats2 = NULL;
 	m_pRoadMap = NULL;
 	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
@@ -147,8 +147,8 @@ vtTerrain::~vtTerrain()
 		m_pDynGeomScale->Destroy();
 	}
 #ifndef VTLIB_PSM
-	delete m_pTerrApps1;
-	delete m_pTerrApps2;
+	delete m_pTerrMats1;
+	delete m_pTerrMats2;
 #endif
 	delete m_pTin;
 	if (m_pTerrainGroup != (vtGroup*) NULL)
@@ -243,8 +243,8 @@ void vtTerrain::create_textures()
 	int iTiles = 4;		// fixed for now
 	TextureEnum eTex = m_Params.m_eTexture;
 
-	m_pTerrApps1 = new vtMaterialArray();
-	m_pTerrApps2 = new vtMaterialArray();
+	m_pTerrMats1 = new vtMaterialArray();
+	m_pTerrMats2 = new vtMaterialArray();
 
 	float ambient, diffuse, emmisive;
 	if (m_Params.m_bPreLit)
@@ -279,10 +279,10 @@ void vtTerrain::create_textures()
 			bool result = m_pDIB->Read(texture_path);
 			if (! result)
 			{
-				m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+				m_pTerrMats1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 											 RGBf(0.2f, 0.2f, 0.2f),
 											 true, !m_Params.m_bPreLit);	// for shaded white
-				m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+				m_pTerrMats2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 											 RGBf(0.2f, 0.2f, 0.2f),
 											 true, !m_Params.m_bPreLit);	// for shaded white
 				m_Params.m_eTexture = TE_NONE;
@@ -332,17 +332,17 @@ void vtTerrain::create_textures()
 	if (eTex == TE_TILED && m_pDIB)
 	{
 		CreateChoppedTextures(m_pElevGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
-		_CreateTiledMaterials2(m_pTerrApps2,
+		_CreateTiledMaterials2(m_pTerrMats2,
 						 iTiles, m_Params.m_iTilesize, ambient, diffuse,
 						 emmisive);
 	}
 	if (eTex == TE_NONE || m_pDIB == NULL)	// none or failed to find texture
 	{
 		// no texture: create plain white material
-		m_pTerrApps1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+		m_pTerrMats1->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
 									 true, !m_Params.m_bPreLit);
-		m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
+		m_pTerrMats2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
 									 true, !m_Params.m_bPreLit);
 		return;
@@ -357,7 +357,7 @@ void vtTerrain::create_textures()
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
-		m_pTerrApps1->AddTextureMaterial(m_pImage,
+		m_pTerrMats1->AddTextureMaterial(m_pImage,
 			true,		// culling
 			!m_Params.m_bPreLit,	// lighting
 			false,		// transparent
@@ -368,7 +368,7 @@ void vtTerrain::create_textures()
 			false,		// texgen
 			false,		// clamp
 			m_Params.m_bMipmap);
-		m_pTerrApps2->AddTextureMaterial(m_pImage,
+		m_pTerrMats2->AddTextureMaterial(m_pImage,
 			true,		// culling
 			!m_Params.m_bPreLit,	// lighting
 			false,		// transparent
@@ -466,7 +466,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 	m_pDynGeom->SetPixelError(m_Params.m_fPixelError);
 	m_pDynGeom->SetPolygonCount(m_Params.m_iTriCount);
-	m_pDynGeom->SetMaterials(m_pTerrApps2);
+	m_pDynGeom->SetMaterials(m_pTerrMats2);
 
 	// build heirarchy (add terrain to scene graph)
 	m_pDynGeomScale = new vtTransform();
@@ -557,13 +557,13 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 {
 	int VtxType;
 
-	vtMaterialArray *pApp_Ocean = new vtMaterialArray();
+	vtMaterialArray *pMat_Ocean = new vtMaterialArray();
 
 	if (bWater)
 	{
 		// create ocean material: texture waves
 		vtString fname = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.jpg");
-		pApp_Ocean->AddTextureMaterial2(fname,
+		pMat_Ocean->AddTextureMaterial2(fname,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha
 			false,				// additive
@@ -579,13 +579,13 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	}
 	else
 	{
-		pApp_Ocean->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),	// tan ground
+		pMat_Ocean->AddRGBMaterial1(RGBf(1.0f, 0.8f, 0.6f),	// tan ground
 			false, true, false);		// cull, light, wire
 		VtxType = VT_Normals;
 	}
 
 	vtGeom *pGeom = new vtGeom();
-	pGeom->SetMaterials(pApp_Ocean);
+	pGeom->SetMaterials(pMat_Ocean);
 
 	TerrainPatch *geo;
 	float width, depth;
@@ -1540,7 +1540,7 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 /*
  * Creates an array of materials for the dynamic LOD terrain geometry.
  */
-void vtTerrain::_CreateTiledMaterials2(vtMaterialArray *pApp1,
+void vtTerrain::_CreateTiledMaterials2(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive)
 {
@@ -1551,7 +1551,7 @@ void vtTerrain::_CreateTiledMaterials2(vtMaterialArray *pApp1,
 		for (j = 0; j < patches; j++)
 		{
 			vtImage *image = m_Images.GetAt(i*patches+j);
-			pApp1->AddTextureMaterial(image,
+			pMat1->AddTextureMaterial(image,
 				true, 		// culling
 				!m_Params.m_bPreLit, // lighting
 				false,		// transparency
@@ -1667,10 +1667,10 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 
 	poi->m_pGeom = new vtGeom();
 
-	vtMaterialArray *pApp = new vtMaterialArray();
-	pApp->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
+	vtMaterialArray *pMat = new vtMaterialArray();
+	pMat->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
 
-	poi->m_pGeom->SetMaterials(pApp);
+	poi->m_pGeom->SetMaterials(pMat);
 	poi->m_pGeom->SetName2("POI Geom");
 	poi->m_pGeom->AddMesh(mesh, 0);
 

@@ -230,7 +230,7 @@ protected:
 
 	void CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 								int patches, int patch_size);
-	void _CreateTiledMaterials2(vtMaterialArray *pApp1,
+	void _CreateTiledMaterials2(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
 	void ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib);
@@ -267,8 +267,8 @@ protected:
 	int				m_iStructSet;
 	vtLodGrid		*m_pStructGrid;
 
-	vtMaterialArray	*m_pTerrApps1;	// for 'regular' terrain
-	vtMaterialArray	*m_pTerrApps2;	// for dynamic LOD terrain
+	vtMaterialArray	*m_pTerrMats1;	// for 'regular' terrain
+	vtMaterialArray	*m_pTerrMats2;	// for dynamic LOD terrain
 
 	// roads
 	vtGroup			*m_pRoadGroup;
