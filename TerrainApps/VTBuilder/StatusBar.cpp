@@ -68,7 +68,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		str = "";
 	SetStatusText(str, Field_Zone);
 
-	SetStatusText(datumToString(proj.GetDatum()), Field_Datum);
+	SetStatusText(datumToStringShort(proj.GetDatum()), Field_Datum);
 
 	DPoint2 p;
 	BuilderView *pView = frame->GetView();
