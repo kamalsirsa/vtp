@@ -27,10 +27,10 @@ public:
 	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const = 0;
 
 	/// Test if a point is within the extents of the grid.
-	bool ContainsEarthPoint(double x, double y) const
+	bool ContainsEarthPoint(const DPoint2 &p) const
 	{
-		return (m_EarthExtents.left <= x && x <= m_EarthExtents.right &&
-				m_EarthExtents.bottom <= y && y <= m_EarthExtents.top);
+		return (m_EarthExtents.left <= p.x && p.x <= m_EarthExtents.right &&
+				m_EarthExtents.bottom <= p.y && p.y <= m_EarthExtents.top);
 	}
 
 	/** Return geographic extents of the grid. */

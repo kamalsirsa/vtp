@@ -717,7 +717,7 @@ float vtElevationGrid::GetFilteredValue2(double x, double y) const
 	float fData;
 
 	// simple case, within the
-	if (ContainsEarthPoint(x, y))
+	if (ContainsEarthPoint(DPoint2(x, y)))
 	{
 		fData = GetFilteredValue(x, y);
 		if (fData != INVALID_ELEVATION)
