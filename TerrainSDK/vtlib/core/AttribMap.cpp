@@ -22,6 +22,7 @@ type 1 ff00ff <optional description, ignored>
 ... for each type
 */
 
+#include <vtlib/vtlib.h>
 #include <stdio.h>
 #include "AttribMap.h"
 
