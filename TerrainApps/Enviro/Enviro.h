@@ -3,14 +3,13 @@
 #define ENVIROH
 
 #include "vtlib/core/Engine.h"
+#include "vtlib/core/Fence3d.h"
+#include "EnviroEnum.h"
 
 // Use forward declarations to minimize rebuild dependencies
 class vtTerrain;
 class TerrainPicker;
 class IcoGlobe;
-
-class vtFence3d;
-enum FenceType;
 
 // Engines
 class vtTerrainFlyer;
@@ -29,37 +28,10 @@ class vtPlantList3d;
 #define LOWER_RIGHT_X		0.075f
 #define LOWER_RIGHT_Y		1.0f
 
-// States in which the application can be in:
-enum AppState {
-	AS_Initializing,	// still setting up
-	AS_Orbit,			// full view of the earth
-	AS_MovingIn,		// moving in toward a specific terrain
-	AS_Terrain,			// inside a terrain
-	AS_MovingOut,		// moving out to orbit
-	AS_Error
-};
-
-enum NavType {
-	NT_Normal,
-	NT_Gravity,
-	NT_Quake
-};
-
 class ControlEngine : public vtEngine
 {
 public:
 	void Eval();
-};
-
-enum MouseMode
-{
-	MM_SELECT,
-	MM_NAVIGATE,
-	MM_FENCES,
-	MM_PLANTS,
-	MM_MOVE,
-
-	MM_NONE
 };
 
 class Enviro
