@@ -769,6 +769,10 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (pRL && (pRL->NumSelectedNodes() != 0 || pRL->NumSelectedLinks() != 0))
 	{
+		wxString str;
+		str.Printf(_T("Deleting road selection: %d nodes and %d roads"),
+			pRL->NumSelectedNodes(), pRL->NumSelectedLinks());
+		SetStatusText(str);
 		m_pView->DeleteSelected(pRL);
 		pRL->SetModified(true);
 		return;
@@ -817,18 +821,18 @@ void MainFrame::OnEditInvertSelection(wxCommandEvent &event)
 	if (pRL) {
 		pRL->InvertSelection();
 		m_pView->Refresh(false);
-	}	
+	}
 	vtStructureLayer *pSL = GetActiveStructureLayer();
 	if (pSL) {
 		pSL->InvertSelection();
 		m_pView->Refresh(false);
-	}	
+	}
 	vtRawLayer *pRawL = GetActiveRawLayer();
 	if (pRawL) {
 		pRawL->InvertSelection();
 		m_pView->Refresh(false);
 		OnSelectionChanged();
-	}	
+	}
 }
 
 void MainFrame::OnEditCrossingSelection(wxCommandEvent &event)
@@ -1929,7 +1933,7 @@ void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)
 	event.Enable(pEL && !pEL->IsGrid());
 }
 
-	
+
 //////////////////////////////////////////////////////////////////////////
 // Area Menu
 //
