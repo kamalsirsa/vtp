@@ -614,7 +614,7 @@ void FMatrix4::SetFromVectors(const FPoint3 &pos, const FPoint3 &forward, const 
 	Translate(pos);
 }
 
-void FMatrix4::SetFromMatrix3(const class FMatrix3 &mat)
+void FMatrix4::SetFromMatrix3(const FMatrix3 &mat)
 {
 	SetRow(0, mat(0,0), mat(1,0), mat(2,0), 0);
 	SetRow(1, mat(0,1), mat(1,1), mat(2,1), 0);

@@ -720,6 +720,8 @@ protected:
 
 //////////////
 
+class FMatrix4;
+
 /**
  * A 3x3 matrix class, single-precision.
  */
@@ -727,7 +729,7 @@ class FMatrix3
 {
 public:
 	FMatrix3() {}
-	FMatrix3(const class FMatrix4 &mat) { SetFromMatrix4(mat); }
+	FMatrix3(const FMatrix4 &mat) { SetFromMatrix4(mat); }
 
 	void  Set(int col, int row, float v) { data[col][row] = v; }
 	float Get(int col, int row) const { return data[col][row]; }
@@ -739,11 +741,11 @@ public:
 	void SetFromVectors(const FPoint3 &forward, const FPoint3 &up);
 
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
-	void SetFromMatrix4(const class FMatrix4 &mat);
+	void SetFromMatrix4(const FMatrix4 &mat);
 
 	// operators
 	float operator()(int col, int row) const { return data[col][row]; }
-	FMatrix3 &operator=(const class FMatrix4 &mat);
+	FMatrix3 &operator=(const FMatrix4 &mat);
 
 protected:
 	float data[3][3];
@@ -777,7 +779,7 @@ public:
 	void SetTrans(FPoint3 pos);
 	void SetFromVectors(const FPoint3 &pos, const FPoint3 &forward,
 		const FPoint3 &up);
-	void SetFromMatrix3(const class FMatrix3 &mat);
+	void SetFromMatrix3(const FMatrix3 &mat);
 
 	void PreMult(const FMatrix4 &mat);
 	void PostMult(const FMatrix4 &mat);
@@ -788,18 +790,18 @@ public:
 
 	// operators
 	float operator()(int col, int row) const { return data[col][row]; }
-	FMatrix4 &operator=(const class FMatrix3 &mat);
+	FMatrix4 &operator=(const FMatrix3 &mat);
 
 protected:
 	float data[4][4];
 };
 
-inline FMatrix3 &FMatrix3::operator=(const class FMatrix4 &mat)
+inline FMatrix3 &FMatrix3::operator=(const FMatrix4 &mat)
 {
 	SetFromMatrix4(mat);
 	return (*this);
 }
-inline FMatrix4 &FMatrix4::operator=(const class FMatrix3 &mat)
+inline FMatrix4 &FMatrix4::operator=(const FMatrix3 &mat)
 {
 	SetFromMatrix3(mat);
 	return (*this);

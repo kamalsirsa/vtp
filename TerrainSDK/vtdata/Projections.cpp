@@ -331,7 +331,7 @@ void vtProjection::SetGeogCSFromDatum(int iDatum)
  * \param bUTM true for UTM, false for Geographic.
  * \param iUTMZone If UTM, this is the zone: 1 through 60 in the northern
  *		hemisphere, -1 through -60 for the southern hemisphere.
- * \param eDatum The Datum as an enumeration (see DATUM)
+ * \param iDatum The Datum as either an old USGS code or an EPSG code
  */
 void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
 {

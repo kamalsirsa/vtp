@@ -119,9 +119,9 @@ template <class E> Array<E>::Array(int size)
  * \sa Array::Grow Array::DestructItems
  *
  */
-template <class E> inline void Array<E>::ConstructItems(int start, int last)
+template <class E> inline void Array<E>::ConstructItems(int first, int last)
 {
-	memset(m_Data + start, 0, (last - start + 1) * sizeof(E));
+	memset(m_Data + first, 0, (last - first + 1) * sizeof(E));
 }
 
 /**
@@ -133,8 +133,8 @@ template <class E> inline void Array<E>::ConstructItems(int start, int last)
  *	Override this function to explicitly call the destructors properly if
  *	you need this functionality.
  *
- *	\param first	index of first element to destroy
- *	\param last		index of last element to destroy
+ *	\param start	index of first element to destroy
+ *	\param nitems	number of elements to destroy
  *
  * \par Example:
 \code
