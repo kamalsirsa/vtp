@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "ScaledView.h"
 #include "VegLayer.h"
 #include "Helper.h"
@@ -44,7 +49,7 @@ void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	int i, j, k;
 
 	//set the pen options
-	wxPen VegPen(wxColor(0,100,0), 1, PS_SOLID);  //single pixel solid green pen
+	wxPen VegPen(wxColor(0,100,0), 1, wxSOLID);  //single pixel solid green pen
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(VegPen);
 

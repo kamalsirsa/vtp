@@ -1,5 +1,5 @@
 //
-//  The main Frame window of the VTBuilder application
+// The main Frame window of the VTBuilder application
 //
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -7,11 +7,16 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "wx/resource.h"
 
 #include "Frame.h"
 #include "SplitterWindow.h"
-#include "Treeview.h"
+#include "TreeView.h"
 #include "MenuEnum.h"
 #include "App.h"
 #include "Helper.h"
@@ -40,6 +45,44 @@ static char *dialog5 = NULL;
 #include "dialog5.wxr"
 #endif
 
+#if defined(__WXGTK__) || defined(__WXMOTIF__)
+#  include "bld_edit.xpm"
+#  include "distance.xpm"
+#  include "edit_crossing.xpm"
+#  include "edit_delete.xpm"
+#  include "edit_offset.xpm"
+#  include "elev_box.xpm"
+
+#  include "layer_export.xpm"
+#  include "layer_import.xpm"
+#  include "layer_new.xpm"
+#  include "layer_open.xpm"
+#  include "layer_save.xpm"
+#  include "layer_show.xpm"
+
+#  include "loadimage.xpm"
+
+#  include "proj_new.xpm"
+#  include "proj_open.xpm"
+#  include "proj_save.xpm"
+
+#  include "rd_direction.xpm"
+#  include "rd_edit.xpm"
+#  include "rd_select_node.xpm"
+#  include "rd_select_road.xpm"
+#  include "rd_select_whole.xpm"
+#  include "rd_shownodes.xpm"
+
+#  include "select.xpm"
+#  include "str_add_linear.xpm"
+
+#  include "view_hand.xpm"
+#  include "view_mag.xpm"
+#  include "view_minus.xpm"
+#  include "view_plus.xpm"
+#  include "view_zoomall.xpm"
+#  include "view_zoomexact.xpm"
+#endif
 
 DECLARE_APP(MyApp)
 
@@ -260,7 +303,7 @@ void MainFrame::RefreshToolbar()
 //
 // Load a layer from a file without knowing its type
 //
-void MainFrame::LoadLayer(wxString &fname)
+void MainFrame::LoadLayer(const wxString &fname)
 {
 	// check file extension
 	wxString ext = fname.AfterLast('.');
@@ -339,7 +382,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				"is using:\n     %s\n"
 				"Would you like to attempt to convert it now to the existing projection?",
 				str1,
-				pLayer->GetFilename(),
+				(const char *) pLayer->GetFilename(),
 				str2);
 			int ret = wxMessageBox(msg, "Warning", wxYES_NO | wxCANCEL);
 			if (ret == wxNO)
@@ -641,6 +684,7 @@ double MainFrame::GetHeightFromTerrain(double lx, double ly)
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() != LT_ELEVATION) continue;
 		vtElevLayer *pTerr = (vtElevLayer *)l;
+		if (!pTerr->m_pGrid) continue;
 
 		height = pTerr->m_pGrid->GetFilteredValue(lx, ly);
 		if (height != INVALID_ELEVATION)
@@ -658,14 +702,15 @@ void MainFrame::SetProjection(vtProjection &p)
 ////////////////////////////////////////////////////////////////
 // Project ops
 
-void MainFrame::LoadProject(wxString &strPathName)
+void MainFrame::LoadProject(const wxString &strPathName)
 {
 	// read project file
 	wxString str;
 	FILE *fp = fopen(strPathName, "rb");
 	if (!fp)
 	{
-		str = wxString::Format("Couldn't open project file: %s", strPathName);
+		str = "Couldn't open project file: ";
+		str += strPathName;
 		wxMessageBox(str);
 		return;
 	}
@@ -689,7 +734,8 @@ void MainFrame::LoadProject(wxString &strPathName)
 	if (count < 1)
 	{
 		fclose(fp);
-		str = wxString::Format("Empty or invalid project file: %s", strPathName);
+		str = "Empty or invalid project file: ";
+		str += strPathName;
 		wxMessageBox(str);
 		return;
 	}
@@ -746,7 +792,7 @@ void MainFrame::LoadProject(wxString &strPathName)
 	RefreshToolbar();
 }
 
-void MainFrame::SaveProject(wxString &strPathName)
+void MainFrame::SaveProject(const wxString &strPathName)
 {
 	// write project file
 	FILE *fp = fopen(strPathName, "wb");
@@ -769,7 +815,7 @@ void MainFrame::SaveProject(wxString &strPathName)
 		lp = m_Layers.GetAt(i);
 
 		fprintf(fp, "type %d, %s\n", lp->GetType(), lp->IsNative() ? "native" : "import");
-		fprintf(fp, "%s\n", lp->GetFilename());
+		fprintf(fp, "%s\n", (const char *) lp->GetFilename());
 	}
 
 	// write area
@@ -862,7 +908,8 @@ void MainFrame::ExportElevation()
 		return;
 	}
 
-	wxString str = wxString::Format("Successfully wrote BT file %s", strPathName);
+	wxString str = "Successfully wrote BT file ";
+	str += strPathName;
 	wxMessageBox(str);
 	delete pBig;
 }

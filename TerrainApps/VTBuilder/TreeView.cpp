@@ -8,6 +8,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "App.h"
 #include "TreeView.h"
 #include "MenuEnum.h"	// for TreeTest_Ctrl
@@ -16,14 +20,22 @@
 
 DECLARE_APP(MyApp)
 
-// under Windows the icons are in the .rc file
+// Under Windows, the icons are in the .rc file; on Unix, they are included
+// from .xpm files.
 #ifndef __WXMSW__
-	#include "icon1.xpm"
-	#include "icon2.xpm"
-	#include "icon3.xpm"
-	#include "icon4.xpm"
-	#include "icon5.xpm"
-	#include "mondrian.xpm"
+	#include "building.xpm"
+	#include "file1.xpm"
+	#include "file2.xpm"
+	#include "folder1.xpm"
+	#include "folder2.xpm"
+	#include "folder3.xpm"
+
+	#include "grid.xpm"
+	#include "image.xpm"
+	#include "raw.xpm"
+	#include "road.xpm"
+	#include "veg1.xpm"
+	#include "water.xpm"
 #endif
 
 /////////////////////////////////////////////////
@@ -37,8 +49,9 @@ MyTreeCtrl::MyTreeCtrl(wxWindow *parent, const wxWindowID id,
 					   long style)
 		  : wxTreeCtrl(parent, id, pos, size, style)
 {
-	m_reverseSort = FALSE;
+	m_reverseSort = false;
 	m_imageListNormal = NULL;
+	m_bShowPaths = true;
 
 	CreateImageList(16);
 
@@ -53,7 +66,6 @@ void MyTreeCtrl::CreateImageList(int size)
 	if ( size == -1 )
 	{
 		m_imageListNormal = NULL;
-
 		return;
 	}
 
@@ -62,19 +74,19 @@ void MyTreeCtrl::CreateImageList(int size)
 
 	// should correspond to TreeCtrlIcon_xxx enum
 	wxIcon icons[13];
-	icons[0] = wxICON(icon1);
-	icons[1] = wxICON(icon2);
-	icons[2] = wxICON(icon3);
-	icons[3] = wxICON(icon4);
-	icons[4] = wxICON(icon5);
-	icons[5] = wxICON(icon6);
-	icons[6] = wxICON(icon7);
-	icons[7] = wxICON(icon8);
-	icons[8] = wxICON(icon9);
-	icons[9] = wxICON(icon10);
-	icons[10] = wxICON(icon11);
-	icons[11] = wxICON(icon12);
-	icons[12] = wxICON(icon13);
+	icons[0] = wxICON(file1);
+	icons[1] = wxICON(file2);
+	icons[2] = wxICON(folder1);
+	icons[3] = wxICON(folder2);
+	icons[4] = wxICON(folder3);
+	icons[5] = wxICON(building);
+	icons[6] = wxICON(road);
+	icons[7] = wxICON(grid);
+	icons[8] = wxICON(image);
+	icons[9] = wxICON(veg1);
+	icons[10] = wxICON(water);
+	icons[11] = wxICON(transit);
+	icons[12] = wxICON(raw);
 
 	int sizeOrig = icons[0].GetWidth();
 	for ( size_t i = 0; i < WXSIZEOF(icons); i++ )
@@ -122,7 +134,17 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 	wxString str;
 	if (lp->GetModified())
 		str += "(*) ";
-	str += lp->GetFilename();
+	wxString fullpath = lp->GetFilename();
+	if (!m_bShowPaths)
+	{
+		if (fullpath.Find('/') != -1)
+			fullpath = fullpath.AfterLast('/');
+		if (fullpath.Find('\\') != -1)
+			fullpath = fullpath.AfterLast('\\');
+		if (fullpath.Find(':') != -1)
+			fullpath = fullpath.AfterLast(':');
+	}
+	str += fullpath;
 	return str;
 }
 

@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "WaterLayer.h"
 #include "ScaledView.h"
 #include "Helper.h"
@@ -58,7 +63,7 @@ static wxPoint roadbuf[MAXPOINTS];
 
 void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	wxPen WaterPen(wxColor(0,40,160), 1, PS_SOLID);
+	wxPen WaterPen(wxColor(0,40,160), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(WaterPen);
 
@@ -172,7 +177,7 @@ void vtWaterLayer::GetProjection(vtProjection &proj)
 	proj = m_proj;
 }
 
-void vtWaterLayer::Offset(DPoint2 p)
+void vtWaterLayer::Offset(const DPoint2 &p)
 {
 	int size = m_Lines.GetSize();
 	for (int i = 0; i < size; i++)
