@@ -121,12 +121,9 @@ TParams::TParams() : vtTagArray()
 
 	AddTag(STR_ROUTEENABLE, "false");
 	AddTag(STR_ROUTEFILE, "");
-}
 
-TParams::~TParams()
-{
+	AddTag(STR_DIST_TOOL_HEIGHT, "5");
 }
-
 
 //
 // copy constructor

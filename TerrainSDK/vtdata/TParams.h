@@ -47,7 +47,6 @@ class TParams : public vtTagArray
 {
 public:
 	TParams();
-	~TParams();
 
 	// copy constructor and assignment operator
 	TParams(const TParams& paramsSrc);
@@ -165,6 +164,8 @@ private:
 
 #define STR_ROUTEENABLE "Route_Enable"
 #define STR_ROUTEFILE "Route_File"
+
+#define STR_DIST_TOOL_HEIGHT "Distance_Tool_Height"
 
 #endif	// TPARAMSH
 
