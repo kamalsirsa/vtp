@@ -220,8 +220,18 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	m_pTexture->setImage(pImage->m_pOsgImage);
 
-	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(),
-		SA_ON);
+	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
+	// *after* a glTextImage2D?
+	// By default the OSG doesn't do it bacause the user may actually want to
+	// do things with the image after its been bound.  You can make the
+	// osg::Texture classes unref their images automatically by doing:
+	// texture->setUnRefImageDataAfterApply(true);
+
+	// So i tried this, but it doesn't seem to have any affect on runtime memory
+	//  footprint:
+	// m_pTexture->setUnRefImageDataAfterApply(true);
+
+	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(), SA_ON);
 }
 
 /**
