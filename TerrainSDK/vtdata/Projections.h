@@ -74,7 +74,7 @@ public:
 
 	OGRErr	SetGeogCSFromDatum(int iDatum);
 
-	void	SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum);
+	bool	SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum);
 	void	SetSpatialReference(OGRSpatialReference *pRef);
 
 	const char *GetProjectionName() const;

@@ -391,11 +391,14 @@ OGRErr vtProjection::SetGeogCSFromDatum(int iDatum)
  *		hemisphere, -1 through -60 for the southern hemisphere.
  * \param iDatum The Datum as either an old USGS code or an EPSG code
  */
-void vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
+bool vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
 {
-	SetGeogCSFromDatum(iDatum);
+	OGRErr err = SetGeogCSFromDatum(iDatum);
+	if (err != OGRERR_NONE)
+		return false;
 	if (bUTM)
 		SetUTMZone(iUTMZone);
+	return true;
 }
 
 /**
