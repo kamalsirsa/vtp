@@ -67,3 +67,10 @@ I18N_SOURCES = \
 update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o VTBuilder.pot $(I18N_SOURCES)
 
+publish-zh:
+	cp zh/VTBuilder.pox zh/VTBuilder.po
+	msgfmt zh/VTBuilder.po -o zh/VTBuilder.mo
+
+update-zh:
+	msgmerge --no-fuzzy-matching zh/VTBuilder.po VTBuilder.pot -o zh/VTBuilder.pox
+
