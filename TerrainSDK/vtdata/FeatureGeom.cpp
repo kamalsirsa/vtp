@@ -497,6 +497,184 @@ void vtFeatureSetLineString::LoadGeomFromSHP(SHPHandle hSHP)
 
 
 /////////////////////////////////////////////////////////////////////////////
+// vtFeatureSetLineString
+//
+
+vtFeatureSetLineString3D::vtFeatureSetLineString3D() : vtFeatureSet()
+{
+	m_eGeomType = wkbLineString25D;
+}
+
+unsigned int vtFeatureSetLineString3D::GetNumEntities() const
+{
+	return m_Line.size();
+}
+
+void vtFeatureSetLineString3D::SetNumGeometries(int iNum)
+{
+	m_Line.resize(iNum);
+}
+
+void vtFeatureSetLineString3D::Reserve(int iNum)
+{
+	m_Line.reserve(iNum);
+}
+
+bool vtFeatureSetLineString3D::ComputeExtent(DRECT &rect) const
+{
+	int i, entities = GetNumEntities();
+
+	if (!entities)
+		return false;
+
+	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	for (i = 0; i < entities; i++)
+		rect.GrowToContainLine(m_Line[i]);
+
+	return true;
+}
+
+void vtFeatureSetLineString3D::Offset(const DPoint2 &p)
+{
+	for (unsigned int i = 0; i < m_Line.size(); i++)
+		m_Line[i].Add(p);
+}
+
+bool vtFeatureSetLineString3D::TransformCoords(OCT *pTransform)
+{
+	unsigned int i, j, pts, bad = 0, size = m_Line.size();
+	for (i = 0; i < size; i++)
+	{
+		DLine3 &dline = m_Line[i];
+		pts = dline.GetSize();
+		for (j = 0; j < pts; j++)
+		{
+			DPoint3 &p = dline.GetAt(j);
+			int success = pTransform->Transform(1, &p.x, &p.y);
+			if (success != 1)
+				bad++;
+		}
+	}
+	if (bad)
+		VTLOG("Warning: %d of %d coordinates did not transform correctly.\n", bad, size);
+	return (bad == 0);
+}
+
+bool vtFeatureSetLineString3D::AppendGeometryFrom(vtFeatureSet *pFromSet)
+{
+	vtFeatureSetLineString3D *pFrom = dynamic_cast<vtFeatureSetLineString3D*>(pFromSet);
+	if (!pFrom)
+		return false;
+
+	for (unsigned int i = 0; i < pFrom->GetNumEntities(); i++)
+		m_Line.push_back(pFrom->m_Line[i]);
+	return true;
+}
+
+int vtFeatureSetLineString3D::AddPolyLine(const DLine3 &pl)
+{
+	int rec = m_Line.size();
+	m_Line.push_back(pl);
+	AddRecord();
+	return rec;
+}
+
+bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
+{
+	unsigned int count = m_Line.size();
+	if (!count)
+		return false;
+
+	fmin = 1E9;
+	fmax = -1E9;
+	for (unsigned int i = 0; i < count; i++)
+	{
+		const DLine3 &dl = m_Line[i];
+		int num = dl.GetSize();
+		for (int j = 0; j < num; j++)
+		{
+			DPoint3 &p3 = dl.GetAt(j);
+			if ((float)p3.z > fmax) fmax = (float)p3.z;
+			if ((float)p3.z < fmin) fmin = (float)p3.z;
+		}
+	}
+	return true;
+}
+
+bool vtFeatureSetLineString3D::IsInsideRect(int iElem, const DRECT &rect)
+{
+	return rect.ContainsLine(m_Line[iElem]);
+}
+
+void vtFeatureSetLineString3D::CopyGeometry(unsigned int from, unsigned int to)
+{
+	// copy geometry
+	m_Line[to] = m_Line[from];
+}
+
+void vtFeatureSetLineString3D::SaveGeomToSHP(SHPHandle hSHP) const
+{
+	unsigned int i, j, size = m_Line.size();
+	for (i = 0; i < size; i++)
+	{
+		const DLine3 &dl = m_Line[i];
+		double* dX = new double[dl.GetSize()];
+		double* dY = new double[dl.GetSize()];
+		double* dZ = new double[dl.GetSize()];
+
+		for (j = 0; j < dl.GetSize(); j++) //for each vertex
+		{
+			DPoint3 pt = dl.GetAt(j);
+			dX[j] = pt.x;
+			dY[j] = pt.y;
+			dZ[j] = pt.z;
+		}
+		// Save to SHP
+		SHPObject *obj = SHPCreateSimpleObject(SHPT_ARCZ, dl.GetSize(),
+			dX, dY, dZ);
+
+		delete dX;
+		delete dY;
+		delete dZ;
+
+		SHPWriteObject(hSHP, -1, obj);
+		SHPDestroyObject(obj);
+	}
+}
+
+void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
+{
+	int nElems;
+	SHPGetInfo(hSHP, &nElems, NULL, NULL, NULL);
+
+	m_Line.reserve(nElems);
+
+	// Read Data from SHP into memory
+	for (int i = 0; i < nElems; i++)
+	{
+		DLine3 dline;
+
+		// Get the i-th Shape in the SHP file
+		SHPObject *pObj = SHPReadObject(hSHP, i);
+
+		// Beware: it is possible for the shape to not actually have vertices
+		if (pObj->nVertices == 0)
+			m_Line[i] = dline;
+		else
+		{
+			// Store each coordinate
+			dline.SetSize(pObj->nVertices);
+			for (int j = 0; j < pObj->nVertices; j++)
+				dline.SetAt(j, DPoint3(pObj->padfX[j], pObj->padfY[j], pObj->padfZ[j]));
+
+			m_Line.push_back(dline);
+		}
+		SHPDestroyObject(pObj);
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // vtFeatureSetPolygon
 //
 

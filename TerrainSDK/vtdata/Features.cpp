@@ -174,6 +174,9 @@ vtFeatureSet *vtFeatureLoader::LoadHeaderFromSHP(const char *filename)
 	case SHPT_ARC:
 		pSet = new vtFeatureSetLineString();
 		break;
+	case SHPT_ARCZ:
+		pSet = new vtFeatureSetLineString3D();
+		break;
 	case SHPT_POLYGON:
 		pSet = new vtFeatureSetPolygon();
 		break;
@@ -400,6 +403,9 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 	case wkbLineString:
 		pSet = new vtFeatureSetLineString();
 		break;
+	case wkbLineString25D:
+		pSet = new vtFeatureSetLineString3D();
+		break;
 	case wkbPolygon:
 		pSet = new vtFeatureSetPolygon();
 		break;
@@ -483,6 +489,7 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(this);
 	vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(this);
 	vtFeatureSetLineString *pSetLine = dynamic_cast<vtFeatureSetLineString *>(this);
+	vtFeatureSetLineString3D *pSetLine3 = dynamic_cast<vtFeatureSetLineString3D *>(this);
 	vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon *>(this);
 
 	pLayer->ResetReading();
@@ -513,7 +520,8 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 		OGRwkbGeometryType geom_type = pGeom->getGeometryType();
 		num_geoms = 1;
 
-		DLine2 dline;
+		DLine2 dline2;
+		DLine3 dline3;
 		DPolygon2 dpoly;
 
 		switch (geom_type)
@@ -535,13 +543,28 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 			if (pSetLine)
 			{
 				num_points = pLineString->getNumPoints();
-				dline.SetSize(num_points);
+				dline2.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
 				{
 					p2.Set(pLineString->getX(j), pLineString->getY(j));
-					dline.SetAt(j, p2);
+					dline2.SetAt(j, p2);
 				}
-				pSetLine->AddPolyLine(dline);
+				pSetLine->AddPolyLine(dline2);
+			}
+			break;
+
+		case wkbLineString25D:
+			pLineString = (OGRLineString *) pGeom;
+			if (pSetLine3)
+			{
+				num_points = pLineString->getNumPoints();
+				dline3.SetSize(num_points);
+				for (j = 0; j < num_points; j++)
+				{
+					p3.Set(pLineString->getX(j), pLineString->getY(j), pLineString->getZ(j));
+					dline3.SetAt(j, p3);
+				}
+				pSetLine3->AddPolyLine(dline3);
 			}
 			break;
 
@@ -554,13 +577,13 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 				{
 					pLineString = (OGRLineString *) pMulti->getGeometryRef(i);
 					num_points = pLineString->getNumPoints();
-					dline.SetSize(num_points);
+					dline2.SetSize(num_points);
 					for (j = 0; j < num_points; j++)
 					{
 						p2.Set(pLineString->getX(j), pLineString->getY(j));
-						dline.SetAt(j, p2);
+						dline2.SetAt(j, p2);
 					}
-					pSetLine->AddPolyLine(dline);
+					pSetLine->AddPolyLine(dline2);
 				}
 			}
 			break;
@@ -573,8 +596,8 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 			dpoly.resize(0);
 
 			// do exterior ring
-			dline.SetSize(0);
-			dline.SetMaxSize(num_points);
+			dline2.SetSize(0);
+			dline2.SetMaxSize(num_points);
 			for (j = 0; j < num_points; j++)
 			{
 				p2.Set(pRing->getX(j), pRing->getY(j));
@@ -585,17 +608,17 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 				if (j == num_points-1 && p2 == first_p2)
 					continue;
 
-				dline.Append(p2);
+				dline2.Append(p2);
 			}
-			dpoly.push_back(dline);
+			dpoly.push_back(dline2);
 
 			// do interior ring(s)
 			for (i = 0; i < pPolygon->getNumInteriorRings(); i++)
 			{
 				pRing = pPolygon->getInteriorRing(i);
 				num_points = pRing->getNumPoints();
-				dline.SetSize(0);
-				dline.SetMaxSize(num_points);
+				dline2.SetSize(0);
+				dline2.SetMaxSize(num_points);
 				for (j = 0; j < num_points; j++)
 				{
 					p2.Set(pRing->getX(j), pRing->getY(j));
@@ -606,9 +629,9 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 					if (j == num_points-1 && p2 == first_p2)
 						continue;
 
-					dline.Append(p2);
+					dline2.Append(p2);
 				}
-				dpoly.push_back(dline);
+				dpoly.push_back(dline2);
 			}
 			if (pSetPoly)
 				pSetPoly->AddPolygon(dpoly);

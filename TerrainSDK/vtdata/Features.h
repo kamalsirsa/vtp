@@ -316,6 +316,38 @@ protected:
 };
 
 /**
+ * A set of 3D linestring features, also known as "polylines."  Each
+ *  linestring is basically a simple set of 3D points.
+ */
+class vtFeatureSetLineString3D : public vtFeatureSet
+{
+public:
+	vtFeatureSetLineString3D();
+
+	unsigned int GetNumEntities() const;
+	void SetNumGeometries(int iNum);
+	void Reserve(int iNum);
+	bool ComputeExtent(DRECT &rect) const;
+	void Offset(const DPoint2 &p);
+	bool TransformCoords(OCT *pTransform);
+	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
+
+	int AddPolyLine(const DLine3 &pl);
+	const DLine3 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
+	DLine3 &GetPolyLine(unsigned int num) { return m_Line[num]; }
+	bool ComputeHeightRange(float &fmin, float &fmax);
+
+	// implement necessary virtual methods
+	virtual bool IsInsideRect(int iElem, const DRECT &rect);
+	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+
+protected:
+	std::vector<DLine3>	m_Line;		// wkbLineString25D
+};
+
+/**
  * A set of polygon features.  Each polygon is a DPolygon2 object,
  *  which consists of a number of rings: one external ring, and any
  *  number of internal rings (holes).
