@@ -1715,9 +1715,12 @@ bool vtTerrain::CreateStep1()
  */
 bool vtTerrain::CreateStep2(vtTransform *pSunLight)
 {
+	// if we aren't going to produce the terrain surface, nothing to do
+	if (m_Params.GetValueBool(STR_SUPPRESS))
+		return true;
+
 	if (!m_Params.GetValueBool(STR_TIN))
 		_CreateTextures(pSunLight->GetDirection());
-
 	return true;
 }
 
@@ -1726,6 +1729,10 @@ bool vtTerrain::CreateStep2(vtTransform *pSunLight)
  */
 bool vtTerrain::CreateStep3()
 {
+	// if we aren't going to produce the terrain surface, nothing to do
+	if (m_Params.GetValueBool(STR_SUPPRESS))
+		return true;
+
 	if (m_Params.GetValueBool(STR_TIN))
 		return CreateFromTIN();
 	else
