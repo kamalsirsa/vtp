@@ -982,8 +982,12 @@ int vtBuilding::GetStories() const
 	// this method assume each building must have at least two levels: one
 	// for the walls and one for the roof.
 	int stories = 0;
-	for (unsigned int i = 0; i < m_Levels.GetSize() - 1; i++)
-		stories += m_Levels[i]->m_iStories;
+	unsigned int levs = m_Levels.GetSize();
+	if (levs > 0)
+	{
+		for (unsigned int i = 0; i < levs - 1; i++)
+			stories += m_Levels[i]->m_iStories;
+	}
 	return stories;
 }
 
