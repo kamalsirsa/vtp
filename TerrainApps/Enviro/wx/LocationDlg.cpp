@@ -185,7 +185,7 @@ void LocationDlg::UpdateSlider()
 		// time slider
 		float fTotalTime = GetAnim(m_iAnim)->GetLastTime();
 		float fTime = GetEngine(m_iAnim)->GetTime();
-		m_iPos = (fTime / fTotalTime * 1000);
+		m_iPos = (int) (fTime / fTotalTime * 1000);
 		GetAnimPos()->SetValue(m_iPos);
 	}
 }
