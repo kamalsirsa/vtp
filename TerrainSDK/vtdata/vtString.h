@@ -359,7 +359,7 @@ void EscapeStringForXML(const std::wstring &input, std::wstring &output);
 
 #if SUPPORT_WSTRING
 
-#define MAX_WSTRING2_SIZE 2048
+#define MAX_WSTRING2_SIZE 4096
 
 /**
  * Another string class.  This one always stores string internally as 16-bit
