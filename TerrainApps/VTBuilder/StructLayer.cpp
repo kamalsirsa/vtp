@@ -743,6 +743,7 @@ void vtStructureLayer::OnRightDown(BuilderView *pView, UIContext &ui)
 		pView->Refresh(true);
 		ui.m_pCurLinear = NULL;
 		ui.m_bRubber = false;
+		SetModified(true);
 	}
 }
 
