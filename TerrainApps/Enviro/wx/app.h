@@ -26,7 +26,7 @@ public:
 	vtStringArray terrain_names;
 
 protected:
-    wxLocale m_locale; // locale we'll be using
+	wxLocale m_locale; // locale we'll be using
 	vtString m_locale_name;
 };
 

@@ -427,7 +427,7 @@ void vtFrame::CreateMenus()
 
 void vtFrame::CreateToolbar(bool bVertical)
 {
-    SetToolBar(NULL);
+	SetToolBar(NULL);
 
 	long style = wxNO_BORDER | wxTB_DOCKABLE;
 	if (bVertical)
@@ -676,7 +676,7 @@ void vtFrame::SetFullScreen(bool bFull)
 		ShowFullScreen(false);
 #else
   /*  FIXME - ShowFullScreen not implemented in wxGTK 2.2.5.  */
-  /*    Do full-screen another way.                           */
+  /*   Do full-screen another way.                           */
 #endif
 }
 
