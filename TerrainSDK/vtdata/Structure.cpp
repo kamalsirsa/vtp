@@ -59,7 +59,10 @@ void vtStructInstance::WriteXML(GZOutput &out, bool bDegrees)
 {
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
-	gfprintf(out, "\t<Imported>\n");
+	gfprintf(out, "\t<Imported");
+	if (m_fElevationOffset != 0.0f)
+		gfprintf(out, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
+	gfprintf(out, ">\n");
 
 	// first write the placement
 	gfprintf(out, "\t\t<Location>\n");
