@@ -117,13 +117,17 @@ bool vtFeatureSet::SaveToSHP(const char *filename) const
 
 bool vtFeatureSet::LoadFromSHP(const char *fname)
 {
-	VTLOG(" LoadFromSHP\n");
+	VTLOG(" LoadFromSHP '%s': ", fname);
 
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(fname, "rb");
 	if (hSHP == NULL)
+	{
+		VTLOG("Couldn't open.\n");
 		return false;
+	}
 
+	VTLOG("Opened.\n");
 	LoadGeomFromSHP(hSHP);
 	SHPClose(hSHP);
 
