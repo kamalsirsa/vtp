@@ -484,8 +484,10 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 
 void vtTerrain::AddFence(vtFence3d *fen)
 {
+	vtTagArray options;
+
 	m_Structures.Append(fen);
-	fen->CreateNode(m_pHeightField);
+	fen->CreateNode(m_pHeightField, options);
 
 	// Add to LOD grid
 	AddNodeToLodGrid(fen->GetGeom());
@@ -669,12 +671,8 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 		vtStructure *str = (vtStructure *) m_Structures.GetAt(i);
 		vtStructure3d *str3d = m_Structures.GetStructure3d(i);
 
-		const char *options = NULL;
-		if (str->GetType() == ST_BUILDING)
-			options = "roof walls detail";
-
 		// Construct
-		bool bSuccess = m_Structures.ConstructStructure(str3d, options);
+		bool bSuccess = m_Structures.ConstructStructure(str3d);
 		if (!bSuccess)
 			continue;
 

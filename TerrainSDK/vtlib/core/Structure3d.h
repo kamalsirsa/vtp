@@ -31,7 +31,7 @@ public:
 	vtTransform *GetTransform() { return m_pContainer; }
 
 	/// Create the node(s) and position them on the indicated heightfield
-	virtual bool CreateNode(vtHeightField *hf, const char *options = "") { return false; }
+	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options) { return false; }
 
 	/// Access the Geometry node for this structure, if it has one
 	virtual vtGeom *GetGeom() { return NULL; }
@@ -56,7 +56,7 @@ public:
 
 	// implement vtStructure3d methods
 	/// Create the node(s) and position them on the indicated heightfield
-	virtual bool CreateNode(vtHeightField *hf, const char *options = "");
+	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options);
 	virtual void ShowBounds(bool bShow);
 
 	/// (Re-)position the instance on the indicated heightfield
@@ -88,12 +88,15 @@ public:
 	void SetHeightField(vtHeightField *hf) { m_pHeightField = hf; }
 
 	/// Construct an individual structure, return true if successful
-	bool ConstructStructure(vtStructure3d *str, const char *options = "");
-	void ReConstructStructure(vtStructure3d *str, const char *options);
+	bool ConstructStructure(vtStructure3d *str);
+	void ReConstructStructure(vtStructure3d *str);
 	void OffsetSelectedStructures(const DPoint2 &offset);
 
 	/// Deselect all structures including turning off their visual highlights
 	void VisualDeselectAll();
+
+	// Be informed of edit hightlighting
+	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 
 protected:
 	vtHeightField *m_pHeightField;
