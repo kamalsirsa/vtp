@@ -28,4 +28,18 @@ void IncreaseRect(wxRect &rect, int adjust);
 
 int GuessZoneFromLongitude(double longitude);
 
-#endif
+#if WIN32
+/**
+ * Win32 allows us to do a real StrectBlt operation, although it still won't
+ * do a StrectBlt with a mask.
+ */
+class wxDC2 : public wxDC
+{
+public:
+	void StretchBlit(const wxBitmap &bmp, wxCoord x, wxCoord y,
+		wxCoord width, wxCoord height);
+};
+#endif	// WIN32
+
+#endif	// HELPERH
+
