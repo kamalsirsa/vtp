@@ -58,7 +58,7 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bCommonNames = true;
 	m_iLanguage = 0;
 	m_iSpeciesChoice = -1;
-	m_strLang = "en";
+	m_strLang = _T("en");
 
 	m_opt.m_fSpacing = 2;
 
@@ -166,7 +166,7 @@ void PlantDlg::UpdatePlantNames()
 			{
 				vtPlantSpecies::CommonName cname = plant->GetCommonName(j);
 
-				if ((const char *) cname.m_strLang == m_strLang)
+				if (cname.m_strLang == m_strLang.mb_str())
 				{
 					str.from_utf8(cname.m_strName);
 					m_pSpecies->Append(str, plant);

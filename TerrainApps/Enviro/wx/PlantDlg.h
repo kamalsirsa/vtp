@@ -14,6 +14,7 @@
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
+#include "vtui/wxString2.h"
 #include "../PlantingOptions.h"
 #include "vtdata/Array.h"
 
@@ -72,7 +73,7 @@ private:
 	int  m_iHeightSlider;
 	int  m_iVarianceSlider;
 	int  m_iSpeciesChoice;
-	wxString m_strLang;
+	wxString2 m_strLang;
 
 	wxSlider		*m_pHeightSlider;
 	wxChoice		*m_pSpecies;
