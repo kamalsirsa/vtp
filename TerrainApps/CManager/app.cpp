@@ -74,7 +74,7 @@ bool vtApp::OnInit(void)
 	// make a yellow sphere
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
-	vtGeom *pGeom = CreateSphereGeom(pMats, 0, 0.5, 16);
+	vtGeom *pGeom = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
 	pGeom->SetName2("Yellow Sphere");
 
 	OutputSOG osog;
