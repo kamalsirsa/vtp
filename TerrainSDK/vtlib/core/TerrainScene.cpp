@@ -86,6 +86,8 @@ vtTerrainScene::~vtTerrainScene()
 
 void vtTerrainScene::CleanupScene()
 {
+	SetCurrentTerrain(NULL);
+
 	vtGetScene()->RemoveEngine(m_pTime);
 	vtGetScene()->RemoveEngine(m_pSkyTrack);
 
@@ -98,9 +100,14 @@ void vtTerrainScene::CleanupScene()
 
 	while (m_pFirstTerrain)
 	{
-		vtTerrain *del = m_pFirstTerrain;
+		vtTerrain *curr = m_pFirstTerrain;
 		m_pFirstTerrain = m_pFirstTerrain->GetNext();
-		delete del;
+
+		vtGroup *group = curr->GetTopGroup();
+		if (group)
+			m_pTop->RemoveChild(group);
+
+		delete curr;
 	}
 	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
@@ -257,16 +264,22 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	}
 	m_pCurrentTerrain = pTerrain;
 
-	// if setting to no terrain nothing more to do
+	// if setting to no terrain, then nothing more to do
 	if (!pTerrain)
 	{
-		m_pSkyDome->SetEnabled(false);
-		m_pTime->SetEnabled(false);
+		if (m_pSkyDome)
+			m_pSkyDome->SetEnabled(false);
+		if (m_pTime)
+			m_pTime->SetEnabled(false);
 		return;
 	}
 
-	// switch
-	m_pTop->AddChild(m_pCurrentTerrain->GetTopGroup());
+	// switch: add the terrain's node to the scene graph
+	vtGroup *pTerrainGroup = m_pCurrentTerrain->GetTopGroup();
+	if (!m_pTop->ContainsChild(pTerrainGroup))
+		m_pTop->AddChild(pTerrainGroup);
+
+	// make the new terrain visible
 	m_pCurrentTerrain->Enable(true);
 
 	TParams &param = m_pCurrentTerrain->GetParams();
