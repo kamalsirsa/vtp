@@ -59,8 +59,8 @@ class vtStructureArray : public Array<vtStructure*>
 {
 public:
 	vtStructureArray() { m_pEditBuilding = NULL; }
-	~vtStructureArray() { Empty(); }
-	virtual void DestructItems(int first, int last);	// override
+	virtual ~vtStructureArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual void DestructItems(int first, int last);
 
 	void DeleteSelected();
 	virtual void DestroyStructure(int i) {}
@@ -138,7 +138,8 @@ class vtMaterialNameElement : public vtMaterialName
 class vtMaterialNamesArray : public Array<vtMaterialName*>
 {
 public:
-	inline void DestructItems(int first, int last)
+	virtual ~vtMaterialNamesArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	void DestructItems(int first, int last)
 	{
 		for (int i = first; i <= last; i++)
 			delete GetAt(i);
