@@ -874,27 +874,38 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item1, 1, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxTOP, 5 );
 
-    wxStaticBox *item35 = new wxStaticBox( parent, -1, _("Structure Files") );
-    wxStaticBoxSizer *item34 = new wxStaticBoxSizer( item35, wxVERTICAL );
+    wxBoxSizer *item34 = new wxBoxSizer( wxVERTICAL );
 
-    wxString *strs36 = (wxString*) NULL;
-    wxListBox *item36 = new wxListBox( parent, ID_STRUCTFILES, wxDefaultPosition, wxSize(80,120), 0, strs36, wxLB_SINGLE );
-    item34->Add( item36, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item36 = new wxStaticBox( parent, -1, _("Structure Files") );
+    wxStaticBoxSizer *item35 = new wxStaticBoxSizer( item36, wxVERTICAL );
 
-    wxBoxSizer *item37 = new wxBoxSizer( wxHORIZONTAL );
+    wxString *strs37 = (wxString*) NULL;
+    wxListBox *item37 = new wxListBox( parent, ID_STRUCTFILES, wxDefaultPosition, wxSize(80,120), 0, strs37, wxLB_SINGLE );
+    item35->Add( item37, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item38 = new wxStaticText( parent, ID_TEXT, _(" Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item37->Add( item38, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+    wxBoxSizer *item38 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item39 = new wxTextCtrl( parent, ID_STRUCT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item37->Add( item39, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxStaticText *item39 = new wxStaticText( parent, ID_TEXT, _(" Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item38->Add( item39, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
-    wxStaticText *item40 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
-    item37->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item40 = new wxTextCtrl( parent, ID_STRUCT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item38->Add( item40, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item34->Add( item37, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticText *item41 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+    item38->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item34, 0, wxALL, 5 );
+    item35->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item34->Add( item35, 0, wxALL, 5 );
+
+    wxBoxSizer *item42 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item43 = new wxCheckBox( parent, ID_VEHICLES, _("Enable Vehicles"), wxDefaultPosition, wxDefaultSize, 0 );
+    item42->Add( item43, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item34->Add( item42, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item0->Add( item34, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
 
     if (set_sizer)
     {

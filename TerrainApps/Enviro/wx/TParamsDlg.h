@@ -139,7 +139,7 @@ public:
 	wxString2	m_strLabelFile;
 	PointStyle	m_Style;
 
-//  bool	m_bVehicles;
+	bool	m_bVehicles;
 //  float   m_fVehicleSize;
 //  float   m_fVehicleSpeed;
 //  int		m_iNumCars;

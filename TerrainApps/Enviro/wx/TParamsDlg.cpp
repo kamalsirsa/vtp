@@ -179,7 +179,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 		m_strStructFiles.Append(new wxString2(Params.m_strStructFiles[i]));
 	m_iStructDistance = Params.m_iStructDistance;
 
-//  m_bVehicles = Params.m_bVehicles;
+	m_bVehicles = Params.m_bVehicles;
 //  m_fVehicleSize = Params.m_fVehicleSize;
 //  m_fVehicleSpeed = Params.m_fVehicleSpeed;
 //  m_iNumCars = Params.m_iNumCars;
@@ -278,7 +278,7 @@ void TParamsDlg::GetParams(TParams &Params)
 		Params.m_strStructFiles.push_back(vtString(m_strStructFiles[i]->mb_str()));
 	Params.m_iStructDistance = m_iStructDistance;
 
-//  Params.m_bVehicles = m_bVehicles;
+	Params.m_bVehicles = m_bVehicles;
 //  Params.m_fVehicleSize = m_fVehicleSize;
 //  Params.m_fVehicleSpeed = m_fVehicleSpeed;
 //  Params.m_iNumCars = m_iNumCars;
@@ -558,7 +558,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// elevation
 	AddValidator(ID_FILENAME, &m_strFilename);
-
 	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
 	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
 	AddValidator(ID_USE_TIN, &m_bTin);
@@ -595,7 +594,11 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_PRELIT, &m_bPreLit);
 	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 
-	// culture
+	// culture page
+	AddValidator(ID_TREES, &m_bTrees);
+	AddValidator(ID_TREEFILE, &m_strVegFile);
+	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
+
 	AddValidator(ID_ROADS, &m_bRoads);
 	AddValidator(ID_ROADFILE, &m_strRoadFile);
 	AddValidator(ID_HIGHWAYS, &m_bHwy);
@@ -606,15 +609,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_TEXROADS, &m_bTexRoads);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
 
-	AddValidator(ID_TREES, &m_bTrees);
-	AddValidator(ID_TREEFILE, &m_strVegFile);
-	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
-
-	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
-
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
+	AddValidator(ID_VEHICLES, &m_bVehicles);
 
+	// Atmosphere and water page
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
@@ -622,7 +620,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
 	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
 	AddValidator(ID_HORIZON, &m_bHorizon);
+	AddValidator(ID_FOG, &m_bFog);
+	AddNumValidator(ID_FOG_DISTANCE, &m_fFogDistance);
 
+	// Feature labels page
 	AddValidator(ID_LABELS, &m_bLabels);
 	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
 	AddValidator(ID_LABEL_FIELD, &m_Style.m_field_index);
