@@ -66,6 +66,8 @@ vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
 			bFloats, proj);
 	m_pGrid->SetScale(fScale);
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
+
+	m_pTin = NULL;
 }
 
 vtElevLayer::~vtElevLayer()
