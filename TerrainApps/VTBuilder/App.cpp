@@ -14,6 +14,7 @@
 
 #include "App.h"
 #include "Frame.h"
+#include "BuilderView.h"
 
 IMPLEMENT_APP(MyApp)
 
@@ -26,6 +27,8 @@ bool MyApp::OnInit()
 	frame->Show(TRUE);
 
 	SetTopWindow(frame);
+
+	frame->GetView()->ZoomAll();
 
 	return TRUE;
 }
