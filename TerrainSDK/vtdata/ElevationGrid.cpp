@@ -369,6 +369,8 @@ void vtElevationGrid::GetDimensions(int &nColumns, int &nRows) const
  */
 void vtElevationGrid::SetValue(int i, int j, short value)
 {
+	assert(i >= 0 && i < m_iColumns);
+	assert(j >= 0 && j < m_iRows);
 	if (m_bFloatMode)
 	{
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
@@ -391,6 +393,8 @@ void vtElevationGrid::SetValue(int i, int j, short value)
  */
 void vtElevationGrid::SetFValue(int i, int j, float value)
 {
+	assert(i >= 0 && i < m_iColumns);
+	assert(j >= 0 && j < m_iRows);
 	if (m_bFloatMode)
 	{
 		if (m_fVMeters == 1.0f || value == INVALID_ELEVATION)
