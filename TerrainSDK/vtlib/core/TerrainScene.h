@@ -49,6 +49,7 @@ public:
 
 	void ToggleFog();
 	void SetFog(bool fog);
+	bool GetFog() { return m_bFog; }
 	void SetTimeOfDay(unsigned int time, bool bFullRefresh = false);
 
 	// main scene graph outline
@@ -57,7 +58,6 @@ public:
 
 protected:
 	void _CreateSkydome(const StringArray &datapath);
-	void _CreateFog();
 	void _CreateEngines(bool bDoSound);
 
 	vtGroup		*m_pAtmosphereGroup;

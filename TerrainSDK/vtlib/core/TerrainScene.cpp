@@ -123,29 +123,6 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 	return NULL;
 }
 
-void vtTerrainScene::_CreateFog()
-{
-#if 0
-	int dist = m_pFirstTerrain->m_Params.m_iFogDistance;
-
-	m_pFog = new vtFog();
-	m_pFog->SetStart(1.0f);  // only useful for linear - broken
-	m_pFog->SetEnd(dist * 1000.0f);
-
-	// 1 / ( dist / slope + max )
-	// dist = visability distance
-	// slope = how fast density varies by dist, smaller = see farther (guessing)
-	// max = max density of fog = (2 - max), so 1.2 = max density of 0.8
-
-	m_pFog->SetDensity( 1.0f / (dist/4.0f + 1.3f) ); // vis dis function of density
-
-	m_pFog->SetColor(horizon_color);
-	//m_pFog->SetKind(FOG_Exponential2 | FOG_Pixel); // from linear
-	m_pFog->SetKind(FOG_Linear); // from linear
-#endif
-}
-
-
 void vtTerrainScene::_CreateEngines(bool bDoSound)
 {
 	// Set Time in motion
@@ -204,10 +181,6 @@ void vtTerrainScene::Finish(const StringArray &datapath)
 {
 	_CreateSkydome(datapath);
 
-	// create fog AFTER the shapes
-//	if (m_pFirstTerrain != NULL)
-//		_CreateFog();
-
 	// start out with no scene active
 	for (vtTerrain *t = m_pFirstTerrain; t != NULL; t=t->GetNext())
 		t->ActivateEngines(false);
@@ -243,6 +216,8 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pTop->AddChild(m_pCurrentTerrain->GetTopGroup());
 	m_pCurrentTerrain->Enable(true);
 
+	TParams &param = m_pCurrentTerrain->GetParams();
+
 	// switch to the projection of this terrain
 	m_pCurrentTerrain->SetGlobalProjection();
 
@@ -262,7 +237,6 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pCurrentTerrain->ActivateEngines(true);
 
 	// set the time to the time of the new terrain
-	TParams &param = m_pCurrentTerrain->GetParams();
 	int time = param.m_iInitTime * 3600;
 	SetTimeOfDay(time, true);
 
@@ -291,19 +265,18 @@ void vtTerrainScene::ToggleFog()
 
 void vtTerrainScene::SetFog(bool fog)
 {
-#if 0
 	m_bFog = fog;
 	if (m_bFog)
 	{
-		vtGetScene()->SetFog(m_pFog);
-		vtGetScene()->SetBackColor(horizon_color);
+		TParams &param = m_pCurrentTerrain->GetParams();
+		m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, param.m_iFogDistance * 1000);
+		vtGetScene()->SetBgColor(horizon_color);
 	}
 	else
 	{
-		vtGetScene()->SetFog(NULL);
-		vtScene::SetBgColor(m_pCurrentTerrain->GetOceanColor());
+		m_pCurrentTerrain->GetTopGroup()->SetFog(false);
+		vtGetScene()->SetBgColor(m_pCurrentTerrain->GetOceanColor());
 	}
-#endif
 }
 
 void vtTerrainScene::SetTimeOfDay(unsigned int time, bool fFullRefresh)
