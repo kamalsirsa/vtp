@@ -14,5 +14,7 @@ public:
 };
 
 vtString FindFileOnPaths(const StringArray &paths, const char *filename);
+bool vtCreateDir(const char *dirname);
+void vtDestroyDir(const char *dirname);
 
 #endif // FILEPATHH
