@@ -171,6 +171,8 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 	m_fWidth = EstimateWidth();
 	double half_width = (m_fWidth / 2);
 	int i, size = GetSize();
+	m_Left.SetSize(size);
+	m_Right.SetSize(size);
 	for (i = 0; i < size; i++)
 	{
 		p = GetAt(i);
