@@ -458,6 +458,95 @@ void ProjectionDialogFunc( wxPanel *parent, bool call_fit )
     }
 }
 
+void ImportVegFunc( wxPanel *parent, bool call_fit )
+{
+    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxSizer *item1 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Field to use:", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxString *strs3 = (wxString*) NULL;
+    wxComboBox *item3 = new wxComboBox( parent, ID_FIELD, "", wxDefaultPosition, wxSize(160,100), 0, strs3, wxCB_DROPDOWN|wxCB_READONLY );
+    item1->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxSizer *item4 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "Interpretation of the field:", wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxRadioButton *item6 = new wxRadioButton( parent, ID_DENSITY, "Density (0 to 1) (double)", wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+
+    wxRadioButton *item7 = new wxRadioButton( parent, ID_BIOTYPE1, "Biotype by name (string)", wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+
+    wxRadioButton *item8 = new wxRadioButton( parent, ID_BIOTYPE2, "Biotype by ID (integer)", wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT, 5 );
+
+    item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item10 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item11 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    parent->SetAutoLayout( TRUE );
+    parent->SetSizer( item0 );
+    if (call_fit)
+    {
+        item0->Fit( parent );
+        item0->SetSizeHints( parent );
+    }
+}
+
+void DistribVegFunc( wxPanel *parent, bool call_fit )
+{
+    wxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxSizer *item1 = new wxFlexGridSizer( 2, 0, 0 );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Grid spacing of sampling, in meters:", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item3 = new wxTextCtrl( parent, IDC_SAMPLING, "", wxDefaultPosition, wxSize(80,-1), 0 );
+    item1->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, "Artificial scarcity, set to 1.0 for full density:", wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item5 = new wxTextCtrl( parent, IDC_SCARCITY, "", wxDefaultPosition, wxSize(80,-1), 0 );
+    item1->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item7 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item8 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    parent->SetAutoLayout( TRUE );
+    parent->SetSizer( item0 );
+    if (call_fit)
+    {
+        item0->Fit( parent );
+        item0->SetSizeHints( parent );
+    }
+}
+
 // Implement bitmap functions
 
 wxBitmap MyBitmapsFunc( size_t index )

@@ -78,6 +78,16 @@ void ElevPropDialogFunc( wxPanel *parent, bool call_fit = TRUE );
 #define ID_DATUM 10038
 void ProjectionDialogFunc( wxPanel *parent, bool call_fit = TRUE );
 
+#define ID_FIELD 10039
+#define ID_DENSITY 10040
+#define ID_BIOTYPE1 10041
+#define ID_BIOTYPE2 10042
+void ImportVegFunc( wxPanel *parent, bool call_fit = TRUE );
+
+#define IDC_SAMPLING 10043
+#define IDC_SCARCITY 10044
+void DistribVegFunc( wxPanel *parent, bool call_fit = TRUE );
+
 // Declare bitmap functions
 
 wxBitmap MyBitmapsFunc( size_t index );
