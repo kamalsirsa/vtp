@@ -780,10 +780,10 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _(" Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
     item8->Add( item9, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_TREEDISTANCE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_VEGDISTANCE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
     item8->Add( item10, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("km"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
     item8->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item3->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -861,105 +861,105 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item1->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
+    wxCheckBox *item34 = new wxCheckBox( parent, ID_LABELS, _("Floating labels"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item35 = new wxBoxSizer( wxHORIZONTAL );
+
+    item35->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
+
+    wxString *strs36 = (wxString*) NULL;
+    wxComboBox *item36 = new wxComboBox( parent, ID_LABEL_FILE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs36, wxCB_DROPDOWN );
+    item35->Add( item36, 1, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item1->Add( item35, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
     item0->Add( item1, 1, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxBoxSizer *item34 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item37 = new wxBoxSizer( wxVERTICAL );
 
-    wxCheckBox *item35 = new wxCheckBox( parent, ID_BUILDINGS, _("Structures: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item35, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticBox *item39 = new wxStaticBox( parent, -1, _("Structure Files") );
+    wxStaticBoxSizer *item38 = new wxStaticBoxSizer( item39, wxVERTICAL );
 
-    wxBoxSizer *item36 = new wxBoxSizer( wxHORIZONTAL );
+    wxString *strs40 = (wxString*) NULL;
+    wxListBox *item40 = new wxListBox( parent, ID_STRUCTFILES, wxDefaultPosition, wxSize(80,70), 0, strs40, wxLB_SINGLE );
+    item38->Add( item40, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item36->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
+    wxBoxSizer *item41 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxString *strs37 = (wxString*) NULL;
-    wxComboBox *item37 = new wxComboBox( parent, ID_BUILDINGFILE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs37, wxCB_DROPDOWN|wxCB_SORT );
-    item36->Add( item37, 1, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxStaticText *item42 = new wxStaticText( parent, ID_TEXT, _(" Visibility distance: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item42, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
-    item34->Add( item36, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxTextCtrl *item43 = new wxTextCtrl( parent, ID_STRUCT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item41->Add( item43, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxCheckBox *item38 = new wxCheckBox( parent, ID_OCEANPLANE, _("Ocean plane"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item38, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item44 = new wxStaticText( parent, ID_TEXT, _("m"), wxDefaultPosition, wxDefaultSize, 0 );
+    item41->Add( item44, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxBoxSizer *item39 = new wxBoxSizer( wxHORIZONTAL );
+    item38->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item39->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
+    item37->Add( item38, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item40 = new wxStaticText( parent, ID_TEXT, _("Level (meters)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item39->Add( item40, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxCheckBox *item45 = new wxCheckBox( parent, ID_OCEANPLANE, _("Ocean plane"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item45, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item41 = new wxTextCtrl( parent, ID_OCEANPLANEOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item39->Add( item41, 0, wxALIGN_CENTRE|wxALL, 0 );
+    wxBoxSizer *item46 = new wxBoxSizer( wxHORIZONTAL );
 
-    item34->Add( item39, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item46->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxCheckBox *item42 = new wxCheckBox( parent, ID_DEPRESSOCEAN, _("Depress Ocean"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item42, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item47 = new wxStaticText( parent, ID_TEXT, _("Level (meters)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item46->Add( item47, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxBoxSizer *item43 = new wxBoxSizer( wxHORIZONTAL );
+    wxTextCtrl *item48 = new wxTextCtrl( parent, ID_OCEANPLANEOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item46->Add( item48, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    item43->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
+    item37->Add( item46, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxStaticText *item44 = new wxStaticText( parent, ID_TEXT, _("Level (meters)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item43->Add( item44, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxTextCtrl *item45 = new wxTextCtrl( parent, ID_DEPRESSOCEANOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item43->Add( item45, 0, wxALIGN_CENTRE|wxALL, 0 );
-
-    item34->Add( item43, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-
-    wxCheckBox *item46 = new wxCheckBox( parent, ID_LABELS, _("Floating labels"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item46, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxBoxSizer *item47 = new wxBoxSizer( wxHORIZONTAL );
-
-    item47->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
-
-    wxString *strs48 = (wxString*) NULL;
-    wxComboBox *item48 = new wxComboBox( parent, ID_LABEL_FILE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs48, wxCB_DROPDOWN );
-    item47->Add( item48, 1, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    item34->Add( item47, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
-
-    wxCheckBox *item49 = new wxCheckBox( parent, ID_SKY, _("Sky dome"), wxDefaultPosition, wxDefaultSize, 0 );
-    item34->Add( item49, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item49 = new wxCheckBox( parent, ID_DEPRESSOCEAN, _("Depress Ocean"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item49, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item50 = new wxBoxSizer( wxHORIZONTAL );
 
-    item50->Add( 20, 20, 0, wxALIGN_CENTRE, 5 );
+    item50->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxString *strs51 = (wxString*) NULL;
-    wxComboBox *item51 = new wxComboBox( parent, ID_SKYTEXTURE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs51, wxCB_DROPDOWN );
-    item50->Add( item51, 1, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxStaticText *item51 = new wxStaticText( parent, ID_TEXT, _("Level (meters)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item50->Add( item51, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    item34->Add( item50, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 0 );
+    wxTextCtrl *item52 = new wxTextCtrl( parent, ID_DEPRESSOCEANOFFSET, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item50->Add( item52, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxBoxSizer *item52 = new wxBoxSizer( wxVERTICAL );
+    item37->Add( item50, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxCheckBox *item53 = new wxCheckBox( parent, ID_HORIZON, _("Artificial Horizon"), wxDefaultPosition, wxDefaultSize, 0 );
-    item52->Add( item53, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item53 = new wxCheckBox( parent, ID_SKY, _("Sky dome"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item53, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item54 = new wxCheckBox( parent, ID_AIRPORTS, _("Airports"), wxDefaultPosition, wxDefaultSize, 0 );
-    item52->Add( item54, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item54 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxCheckBox *item55 = new wxCheckBox( parent, ID_FOG, _("Fog"), wxDefaultPosition, wxDefaultSize, 0 );
-    item52->Add( item55, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item54->Add( 20, 20, 0, wxALIGN_CENTRE, 5 );
 
-    item34->Add( item52, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxString *strs55 = (wxString*) NULL;
+    wxComboBox *item55 = new wxComboBox( parent, ID_SKYTEXTURE, wxT(""), wxDefaultPosition, wxDefaultSize, 0, strs55, wxCB_DROPDOWN );
+    item54->Add( item55, 1, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item56 = new wxBoxSizer( wxHORIZONTAL );
+    item37->Add( item54, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 0 );
 
-    item56->Add( 20, 20, 0, wxALIGN_CENTRE, 5 );
+    wxCheckBox *item56 = new wxCheckBox( parent, ID_HORIZON, _("Artificial Horizon"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item56, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item57 = new wxStaticText( parent, ID_TEXT, _("Distance (km)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item56->Add( item57, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxBoxSizer *item57 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item58 = new wxTextCtrl( parent, ID_FOG_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item56->Add( item58, 0, wxALIGN_CENTRE, 5 );
+    wxCheckBox *item58 = new wxCheckBox( parent, ID_FOG, _("Fog"), wxDefaultPosition, wxDefaultSize, 0 );
+    item57->Add( item58, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item34->Add( item56, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText *item59 = new wxStaticText( parent, ID_TEXT, _("Distance (km)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item57->Add( item59, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    item0->Add( item34, 1, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxTextCtrl *item60 = new wxTextCtrl( parent, ID_FOG_DISTANCE, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item57->Add( item60, 0, wxALIGN_CENTRE, 5 );
+
+    item37->Add( item57, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item37, 1, wxALIGN_CENTER_HORIZONTAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     if (set_sizer)
     {

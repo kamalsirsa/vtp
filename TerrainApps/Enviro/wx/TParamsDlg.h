@@ -67,10 +67,12 @@ public:
 	float   m_fWidthExag;
 	bool	m_bTexRoads;
 	bool	m_bTrees;
-	wxString2	m_strTreeFile;
-	int		m_iTreeDistance;
+	wxString2	m_strVegFile;
+	int		m_iVegDistance;
 	int		m_iFogDistance;
-//  bool	m_bOverlay;
+
+	wxStringArray	m_strStructFiles;
+	int		m_iStructDistance;
 
 	bool	m_bOceanPlane;
 	float	m_fOceanPlaneLevel;
@@ -81,12 +83,7 @@ public:
 	bool	m_bLabels;
 	wxString2	m_strLabelFile;
 	int		m_iMinHeight;
-	bool	m_bBuildings;
-	wxString2	m_strBuildingFile;
-//  bool	m_bVehicles;
-//  float   m_fVehicleSize;
 	bool	m_bTriStrips;
-//  wxString2	m_strMemRequired;
 	bool	m_bDetailTexture;
 	bool	m_bPreLight;
 	bool	m_bDirt;
@@ -97,16 +94,19 @@ public:
 	float   m_fNavSpeed;
 	wxString2	m_strLocFile;
 	float   m_fPreLightFactor;
-//  int		m_iNumCars;
 	bool	m_bRoadCulture;
 	int		m_iLodMethod;
-//  float   m_fVehicleSpeed;
 	bool	m_bPreLit;
-	bool	m_bAirports;
 	bool	m_bRouteEnable;
 	wxString2 m_strRouteFile;
+//  int		m_iNumCars;
+//  bool	m_bVehicles;
+//  float   m_fVehicleSize;
+//  float   m_fVehicleSpeed;
+//  bool	m_bOverlay;
 
 	wxString2 m_strInitTime;
+//  wxString2	m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
@@ -117,7 +117,6 @@ public:
 	wxRadioButton* GetSingle()  { return (wxRadioButton*) FindWindow( ID_SINGLE ); }
 	wxRadioButton* GetNone()  { return (wxRadioButton*) FindWindow( ID_NONE ); }
 	wxTextCtrl* GetLightFactor()  { return (wxTextCtrl*) FindWindow( ID_LIGHT_FACTOR ); }
-	wxComboBox* GetBuildingfile()  { return (wxComboBox*) FindWindow( ID_BUILDINGFILE ); }
 	wxComboBox* GetRoadfile()  { return (wxComboBox*) FindWindow( ID_ROADFILE ); }
 	wxComboBox* GetTreefile()  { return (wxComboBox*) FindWindow( ID_TREEFILE ); }
 	wxComboBox* GetTfilesingle()  { return (wxComboBox*) FindWindow( ID_TFILESINGLE ); }
@@ -129,6 +128,7 @@ public:
 	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxComboBox* GetLabelFile()  { return (wxComboBox*) FindWindow( ID_LABEL_FILE ); }
+	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
 
 	bool	m_bReady;
 	bool	m_bSetting;
@@ -136,7 +136,7 @@ public:
 private:
 	// WDR: member variable declarations for TParamsDlg
 	wxTextCtrl* m_pPreLightFactor;
-	wxComboBox* m_pBuildingFile;
+	wxListBox* m_pStructFiles;
 	wxComboBox* m_pRoadFile;
 	wxComboBox* m_pTreeFile;
 	wxComboBox* m_pTextureFileSingle;
@@ -160,6 +160,7 @@ private:
 	void OnTextureDerived( wxCommandEvent &event );
 	void OnTextureTiled( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
+	void OnListDblClick( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

@@ -127,7 +127,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 
 #define ID_TREES 10075
 #define ID_TREEFILE 10076
-#define ID_TREEDISTANCE 10077
+#define ID_VEGDISTANCE 10077
 #define ID_ROADS 10078
 #define ID_ROADFILE 10079
 #define ID_ROADHEIGHT 10080
@@ -137,28 +137,27 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_HIGHWAYS 10084
 #define ID_PAVED 10085
 #define ID_DIRT 10086
-#define ID_BUILDINGS 10087
-#define ID_BUILDINGFILE 10088
-#define ID_OCEANPLANE 10089
-#define ID_OCEANPLANEOFFSET 10090
-#define ID_DEPRESSOCEAN 10091
-#define ID_DEPRESSOCEANOFFSET 10092
-#define ID_LABELS 10093
-#define ID_LABEL_FILE 10094
+#define ID_LABELS 10087
+#define ID_LABEL_FILE 10088
+#define ID_STRUCTFILES 10089
+#define ID_STRUCT_DISTANCE 10090
+#define ID_OCEANPLANE 10091
+#define ID_OCEANPLANEOFFSET 10092
+#define ID_DEPRESSOCEAN 10093
+#define ID_DEPRESSOCEANOFFSET 10094
 #define ID_SKY 10095
 #define ID_SKYTEXTURE 10096
 #define ID_HORIZON 10097
-#define ID_AIRPORTS 10098
-#define ID_FOG 10099
-#define ID_FOG_DISTANCE 10100
+#define ID_FOG 10098
+#define ID_FOG_DISTANCE 10099
 wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_MINHEIGHT 10101
-#define ID_NAVSPEED 10102
-#define ID_LOCFILE 10103
-#define ID_INITTIME 10104
-#define ID_TIMEMOVES 10105
-#define ID_TIMESPEED 10106
+#define ID_MINHEIGHT 10100
+#define ID_NAVSPEED 10101
+#define ID_LOCFILE 10102
+#define ID_INITTIME 10103
+#define ID_TIMEMOVES 10104
+#define ID_TIMESPEED 10105
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

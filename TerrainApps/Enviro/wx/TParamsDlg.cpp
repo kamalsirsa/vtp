@@ -18,6 +18,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtdata/boost/directory.h"
 #include "TParamsDlg.h"
 #include "../Options.h"
 
@@ -25,6 +26,45 @@
 
 extern void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 							const char *wildcard, int omit_chars = 0);
+
+//---------------------------------------------------------------------------
+/**
+ * wxListBoxEventHandler is a roudabout way of catching events on our
+ * listboxes, to implement the "Delete" key operation on them.
+ */
+class wxListBoxEventHandler: public wxEvtHandler
+{
+public:
+	wxListBoxEventHandler(TParamsDlg *dlg, wxListBox *box) : wxEvtHandler()
+	{
+		m_pDlg = dlg;
+		m_pBox = box;
+	}
+	void OnChar(wxKeyEvent& event);
+
+private:
+	TParamsDlg *m_pDlg;
+	wxListBox *m_pBox;
+	DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(wxListBoxEventHandler, wxEvtHandler)
+	EVT_CHAR(wxListBoxEventHandler::OnChar)
+END_EVENT_TABLE()
+
+void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
+{
+	if (event.KeyCode() == WXK_DELETE)
+	{
+		int sel = m_pBox->GetSelection();
+		if (sel != -1 && sel < m_pBox->GetCount()-1)
+		{
+			m_pBox->Delete(sel);
+			m_pDlg->TransferDataFromWindow();
+		}
+	}
+	event.Skip();
+}
 
 // WDR: class implementations
 
@@ -48,11 +88,11 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
 
-	EVT_CHECKBOX( ID_BUILDINGS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_TREES, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
 
-	EVT_CHECKBOX( ID_BUILDINGS, TParamsDlg::OnCheckBox )
+	EVT_LISTBOX_DCLICK( ID_STRUCTFILES, TParamsDlg::OnListDblClick )
+
 	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
@@ -119,14 +159,16 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bRoadCulture = Params.m_bRoadCulture;
 
 	m_bTrees = Params.m_bTrees;
-	m_strTreeFile = wxString::FromAscii((const char *)Params.m_strTreeFile);
-	m_iTreeDistance = Params.m_iTreeDistance;
+	m_strVegFile = wxString::FromAscii((const char *)Params.m_strVegFile);
+	m_iVegDistance = Params.m_iVegDistance;
 
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
-	m_bBuildings = Params.m_bBuildings;
-	m_strBuildingFile = wxString::FromAscii((const char *)Params.m_strBuildingFile);
+	int i, num = Params.m_strStructFiles.GetSize();
+	for (i = 0; i < num; i++)
+		m_strStructFiles.Append(new wxString2(Params.m_strStructFiles[i]));
+	m_iStructDistance = Params.m_iStructDistance;
 
 //  m_bVehicles = Params.m_bVehicles;
 //  m_fVehicleSize = Params.m_fVehicleSize;
@@ -148,8 +190,6 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_bPreLight = Params.m_bPreLight;
 	m_bPreLit = Params.m_bPreLit;
 	m_fPreLightFactor = Params.m_fPreLightFactor;
-
-	m_bAirports = Params.m_bAirports;
 
 	m_strRouteFile = wxString::FromAscii((const char *)Params.m_strRouteFile);
 	m_bRouteEnable = Params.m_bRouteEnable;
@@ -207,25 +247,28 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bRoadCulture = m_bRoadCulture;
 
 	Params.m_bTrees = m_bTrees;
-	Params.m_strTreeFile = m_strTreeFile.mb_str();
-	Params.m_iTreeDistance = m_iTreeDistance;
+	Params.m_strVegFile = m_strVegFile.mb_str();
+	Params.m_iVegDistance = m_iVegDistance;
 
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
-	Params.m_bBuildings = m_bBuildings;
-	Params.m_strBuildingFile = m_strBuildingFile.mb_str();
+	Params.m_strStructFiles.Empty();
+	int i, num = m_strStructFiles.GetSize();
+	for (i = 0; i < num; i++)
+		Params.m_strStructFiles.Append(new vtString(m_strStructFiles[i]->mb_str()));
+	Params.m_iStructDistance = m_iStructDistance;
 
 //  Params.m_bVehicles = m_bVehicles;
 //  Params.m_fVehicleSize = m_fVehicleSize;
 //  Params.m_fVehicleSpeed = m_fVehicleSpeed;
 //  Params.m_iNumCars = m_iNumCars;
+//  Params.m_bOverlay = m_bOverlay;
 
 	Params.m_bSky = m_bSky;
 	Params.m_strSkyTexture = m_strSkyTexture.mb_str();
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_bHorizon = m_bHorizon;
-//  Params.m_bOverlay = m_bOverlay;
 	Params.m_bLabels = m_bLabels;
 	Params.m_strLabelFile = m_strLabelFile.mb_str();
 
@@ -237,8 +280,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bPreLight = m_bPreLight;
 	Params.m_bPreLit = m_bPreLit;
 	Params.m_fPreLightFactor = m_fPreLightFactor;
-
-	Params.m_bAirports = m_bAirports;
 
 	Params.m_strRouteFile = m_strRouteFile.mb_str();
 	Params.m_bRouteEnable = m_bRouteEnable;
@@ -279,7 +320,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_PRELIT)->Enable(m_iTexture != TE_NONE);
 
 	FindWindow(ID_TREEFILE)->Enable(m_bTrees);
-	FindWindow(ID_TREEDISTANCE)->Enable(m_bTrees);
+//	FindWindow(ID_VEGDISTANCE)->Enable(m_bTrees); // user might want to adjust
 
 	FindWindow(ID_ROADFILE)->Enable(m_bRoads);
 	FindWindow(ID_ROADHEIGHT)->Enable(m_bRoads);
@@ -290,7 +331,6 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_PAVED)->Enable(m_bRoads);
 	FindWindow(ID_DIRT)->Enable(m_bRoads);
 
-	GetBuildingfile()->Enable(m_bBuildings);
 	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
 	GetDepressOceanOffset()->Enable(m_bDepressOcean);
 	GetSkytexture()->Enable(m_bSky);
@@ -322,7 +362,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_bSetting = true;
 
 	m_pPreLightFactor = GetLightFactor();
-	m_pBuildingFile = GetBuildingfile();
+	m_pStructFiles = GetStructFiles();
 	m_pRoadFile = GetRoadfile();
 	m_pTreeFile = GetTreefile();
 	m_pTextureFileSingle = GetTfilesingle();
@@ -376,15 +416,9 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pRoadFile->SetSelection(sel);
 
-		// fill in Building files
-		AddFilenamesToComboBox(m_pBuildingFile, *paths[i] + "BuildingData", "*.vtst");
-		sel = m_pBuildingFile->FindString(m_strBuildingFile);
-		if (sel != -1)
-			m_pBuildingFile->SetSelection(sel);
-
 		// fill in Vegetation files
 		AddFilenamesToComboBox(m_pTreeFile, *paths[i] + "PlantData", "*.vf");
-		sel = m_pTreeFile->FindString(m_strTreeFile);
+		sel = m_pTreeFile->FindString(m_strVegFile);
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
 
@@ -398,15 +432,13 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		// fill in PointData files
 		AddFilenamesToComboBox(m_pLabelFile, *paths[i] + "PointData", "*.shp");
-		sel = m_pTreeFile->FindString(m_strTreeFile);
+		sel = m_pTreeFile->FindString(m_strVegFile);
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
-
 	}
-
+	
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append(_T("Roettger"));
-//	m_pLodMethod->Append(_T("Lindstrom-Koller"));
 	m_pLodMethod->Append(_T("TopoVista"));
 	m_pLodMethod->Append(_T("McNally"));
 	m_pLodMethod->Append(_T("Demeter"));
@@ -441,7 +473,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_FOG, &m_bFog);
-	AddNumValidator(ID_FOG_DISTANCE, &m_iFogDistance);
 
 	// texture
 	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
@@ -459,14 +490,15 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_ROADFILE, &m_strRoadFile);
 	AddValidator(ID_TEXROADS, &m_bTexRoads);
 	AddValidator(ID_TREES, &m_bTrees);
-	AddValidator(ID_TREEFILE, &m_strTreeFile);
-	AddNumValidator(ID_TREEDISTANCE, &m_iTreeDistance);
+	AddValidator(ID_TREEFILE, &m_strVegFile);
+	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
+	AddNumValidator(ID_FOG_DISTANCE, &m_iFogDistance);
+	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
+
 	AddValidator(ID_HORIZON, &m_bHorizon);
 	AddValidator(ID_LABELS, &m_bLabels);
 	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
 	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
-	AddValidator(ID_BUILDINGS, &m_bBuildings);
-	AddValidator(ID_BUILDINGFILE, &m_strBuildingFile);
 	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
 	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
 	AddValidator(ID_DIRT, &m_bDirt);
@@ -477,7 +509,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
 	AddValidator(ID_LOCFILE, &m_strLocFile);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
-	AddValidator(ID_AIRPORTS, &m_bAirports);
 	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
 	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
 	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
@@ -489,6 +520,10 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_bReady = true;
 	m_bSetting = false;
+
+	// It's somewhat roundabout, but this lets us capture events on the
+	// listbox control without having to subclass it.
+	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
 }
 
 bool TParamsDlg::TransferDataToWindow()
@@ -499,6 +534,12 @@ bool TParamsDlg::TransferDataToWindow()
 	m_pSingle->SetValue(m_iTexture == TE_SINGLE);
 	m_pDerived->SetValue(m_iTexture == TE_DERIVED);
 	m_pTiled->SetValue(m_iTexture == TE_TILED);
+
+	m_pStructFiles->Clear();
+	int i, num = m_strStructFiles.GetSize();
+	for (i = 0; i < num; i++)
+		m_pStructFiles->Append(*m_strStructFiles[i]);
+	m_pStructFiles->Append(_T("(double-click to add files)"));
 
 	bool result = wxDialog::TransferDataToWindow();
 	m_bSetting = false;
@@ -512,6 +553,11 @@ bool TParamsDlg::TransferDataFromWindow()
 	if (m_pSingle->GetValue()) m_iTexture = TE_SINGLE;
 	if (m_pDerived->GetValue()) m_iTexture = TE_DERIVED;
 	if (m_pTiled->GetValue()) m_iTexture = TE_TILED;
+
+	m_strStructFiles.Empty();
+	int i, num = m_pStructFiles->GetCount();
+	for (i = 0; i < num-1; i++)		// skip last
+		m_strStructFiles.Append(new wxString2(m_pStructFiles->GetString(i)));
 
 	return wxDialog::TransferDataFromWindow();
 }
@@ -567,5 +613,56 @@ void TParamsDlg::OnCheckBox( wxCommandEvent &event )
 	TransferDataFromWindow();
 	UpdateEnableState();
 	UpdateTiledTextureFilename();
+}
+
+//
+// This function is used to find all files in a given directory,
+// and if they match a wildcard, add them to a combo box.
+//
+void AddFilenamesToArray(wxArrayString &array, const char *directory,
+	const char *wildcard)
+{
+	using namespace boost::filesystem;
+	int entries = 0, matches = 0;
+
+	wxString2 wildstr = wildcard;
+	for (dir_it it((const char *)directory); it != dir_it(); ++it)
+	{
+		entries++;
+		std::string name1 = *it;
+		//		VTLOG("   entry: '%s'", name1.c_str());
+		if (get<is_hidden>(it) || get<is_directory>(it))
+			continue;
+
+		wxString2 name = name1.c_str();
+		if (name.Matches(wildstr))
+		{
+			array.Add(name);
+			matches++;
+		}
+	}
+}
+
+
+void TParamsDlg::OnListDblClick( wxCommandEvent &event )
+{
+	int i;
+    wxArrayString strings;
+
+	StringArray &paths = g_Options.m_DataPaths;
+	for (i = 0; i < paths.GetSize(); i++)
+		AddFilenamesToArray(strings, *paths[i] + "BuildingData", "*.vtst");
+
+	int num = strings.Count();
+
+	// int num = m_pLocList->GetSelection();  // no care
+	wxString result = wxGetSingleChoice(_T("one of the following to add:"), _T("Choose a structure file"),
+		strings, this);
+
+	if (result.Cmp(_T("")))	// user selected something
+	{
+		m_strStructFiles.Append(new wxString2(result));
+		TransferDataToWindow();
+	}
 }
 
