@@ -67,6 +67,27 @@ bool vtFence::GetExtents(DRECT &rect)
 	return true;
 }
 
+/**
+ * Given a 2d point, return the fence point closest to it.
+ */
+void vtFence::GetClosestPoint(const DPoint2 &point, DPoint2 &closest_point)
+{
+	DPoint2 pos, diff;
+	double dist, closest = 1E8;
+
+	int size = m_pFencePts.GetSize();
+	for (int i = 0; i < size; i++)
+	{
+		pos = m_pFencePts.GetAt(i);
+		dist = (pos - point).Length();
+		if (dist < closest)
+		{
+			closest = dist;
+			closest_point = pos;
+		}
+	}
+}
+
 void vtFence::WriteXML(FILE *fp, bool bDegrees)
 {
 	int i;

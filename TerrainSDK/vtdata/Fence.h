@@ -34,6 +34,7 @@ public:
 	FenceType GetFenceType() { return m_FenceType; }
 
 	DLine2 &GetFencePoints() { return m_pFencePts; }
+	void GetClosestPoint(const DPoint2 &point, DPoint2 &closest);
 
 	void SetHeight(float meters) { m_fHeight = meters; }
 	float GetHeight() { return m_fHeight; }
