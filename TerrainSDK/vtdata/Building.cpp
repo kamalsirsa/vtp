@@ -400,6 +400,8 @@ bool vtLevel::IsUniform()
 			return false;
 //		if (edge->m_Color != RGBi(255, 255, 255))
 //			return false;
+		if (edge->m_Material != BMAT_SIDING)
+			return false;
 	}
 	return true;
 }
