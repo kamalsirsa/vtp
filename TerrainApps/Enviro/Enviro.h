@@ -66,6 +66,9 @@ public:
 	void SetTerrain(vtTerrain *pTerrain);
 	vtGroup *GetRoot() { return m_pRoot; }
 
+	void ShowElevationLegend(bool bShow);
+	bool GetShowElevationLegend();
+
 	// navigation and camera
 	void SetFlightSpeed(float speed);
 	float GetFlightSpeed();
@@ -223,6 +226,7 @@ protected:
 	void FreeArc();
 	void FreeArcMesh();
 	void SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2);
+	void CreateElevationLegend();
 
 	// plants
 	vtSpeciesList3d	*m_pPlantList;
@@ -277,6 +281,7 @@ protected:
 	vtSprite	*m_pSprite2;
 	float			m_fMessageStart, m_fMessageTime;
 	ControlEngine	*m_pControlEng;
+	vtHUD		*m_pHUD;
 
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
