@@ -863,5 +863,5 @@ void vtTextMesh::SetPosition(const FPoint3 &pos)
 
 void vtTextMesh::SetAlignment(int align)
 {
-	m_pOsgText->setAlignment((osgText::Text::AlignmentType) align);
+	m_pOsgText->setAxisAlignment((osgText::Text::AxisAlignment) align);
 }
