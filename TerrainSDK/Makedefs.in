@@ -22,6 +22,21 @@ includedir 	= @includedir@
 libdir  	= @libdir@
 
 
+# Figure out what to build based on a .dsp file (Windows build project
+# file) to stay in sync.
+
+DSP_HDR_LINES	= $(shell grep "^SOURCE=.*.h$$" $(DSP_FILE))
+TARGET_HDRS	= $(subst SOURCE=,,$(subst \,/,$(DSP_HDR_LINES)))
+
+DSP_C_LINES	= $(shell grep "^SOURCE=.*.c$$" $(DSP_FILE))
+CFILES		= $(subst SOURCE=,,$(subst \,/,$(DSP_C_LINES)))
+
+DSP_CXX_LINES	= $(shell grep "^SOURCE=.*.cpp$$" $(DSP_FILE))
+CXXFILES	= $(subst SOURCE=,,$(subst \,/,$(DSP_CXX_LINES)))
+
+OBJS   		= $(CFILES:%.c=%.o) $(CXXFILES:%.cpp=%.o)
+
+
 # Compiler info:
 
 CC 	 = @CC@
@@ -35,8 +50,7 @@ CXXFLAGS = @CXXFLAGS@ @X_CFLAGS@
 INSTALL = @INSTALL@
 
 # We expect the makefile that includes us to define a target library
-# to install, and optionally some headers, and a subdir to put the the
-# headers in.
+# to install, and a subdir to put headers in.
 
 INSTALLED_LIB 	= $(libdir)/$(TARGET_LIB)
 
@@ -69,7 +83,13 @@ clobber: clean
 
 uninstall:
 	$(RM) $(INSTALLED_LIB)
+	$(RM) $(INSTALLED_HDRS)
+
+# Mainly for debugging:
+
+print_dsp_targets:
+	@echo ".dsp Headers: " $(TARGET_HDRS)
+	@echo ".dsp Modules: " $(CXXFILES)
 
 
-
-.PHONY: all install uninstall clean clobber
+.PHONY: all install uninstall clean clobber print_dsp_targets

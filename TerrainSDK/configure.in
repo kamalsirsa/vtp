@@ -1,3 +1,11 @@
+dnl
+dnl configure.in
+dnl
+dnl Copyright (c) 2002 Darren Erik Vengroff.  All rights reserved.
+dnl
+dnl $Id$
+dnl
+
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(vtlib/core/Base.h)
 
@@ -13,6 +21,8 @@ dnl Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS(limits.h sys/time.h unistd.h)
+dnl AC_CHECK_HEADERS( WWWLib.h w3c-libwww/WWWLib.h, break )
+dnl AC_CHECK_HEADERS( WWWInit.h w3c-libwww/WWWInit.h, break )
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -31,4 +41,5 @@ AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(gettimeofday mkdir rmdir strdup strstr strtod uname)
 
+dnl AC_CONFIG_HEADER( config_auto.h )
 AC_OUTPUT(Makefile Makedefs vtdata/Makefile xmlhelper/Makefile vtlib/core/Makefile vtlib/vtosg/Makefile)

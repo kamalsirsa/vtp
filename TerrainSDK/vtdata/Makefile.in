@@ -9,73 +9,15 @@
 ########################################################################
 
 
-# What we need to compile.
+# All info about what to compile and what headers to install comes
+# from the .dsp file, since this project is primarily developed on
+# Win.
 
-CXXFILES = 	Building.cpp			\
-		ByteOrder.cpp			\
-		Content.cpp			\
-		DLG.cpp				\
-		ElevationGrid.cpp		\
-		ElevationGridIO.cpp		\
-		Features.cpp			\
-		Fence.cpp			\
-		FilePath.cpp			\
-		Geodesic.cpp			\
-		GEOnet.cpp			\
-		Icosa.cpp			\
-		LULC.cpp			\
-		MathTypes.cpp			\
-		Plants.cpp			\
-		Projections.cpp			\
-		RoadMap.cpp			\
-		StructArray.cpp			\
-		Structure.cpp			\
-		Triangulate.cpp			\
-		Unarchive.cpp			\
-		UtilityMap.cpp			\
-		vtDIB.cpp			\
-		vtString.cpp			\
-		vtTin.cpp			\
-		WFSClient.cpp
-
-OBJS   		= $(CXXFILES:%.cpp=%.o)
-TARGET_LIB    	= libvtdata.so
-
-
-# Headers to install
-
-TARGET_HDRS 	= Array.h			\
-		  Building.h			\
-		  ByteOrder.h			\
-		  config_vtdata.h		\
-		  Content.h			\
-		  DLG.h				\
-		  ElevationGrid.h		\
-		  Features.h			\
-		  Fence.h			\
-		  FilePath.h			\
-		  GEOnet.h			\
-		  Icosa.h			\
-		  LULC.h			\
-		  Mainpage.h			\
-		  MathTypes.h			\
-		  Plants.h			\
-		  Projections.h			\
-		  RoadMap.h			\
-		  Selectable.h			\
-		  SOG.h				\
-		  StatePlane.h			\
-		  StructArray.h			\
-		  Structure.h			\
-		  Triangulate.h			\
-		  Unarchive.h			\
-		  UtilityMap.h			\
-		  vtDIB.h			\
-		  vtString.h			\
-		  vtTin.h
+DSP_FILE   	  = vtdata.dsp
 
 TARGET_HDR_SUBDIR = vtdata
 
+TARGET_LIB    	  = libvtdata.so
 
 # FIX - Get rid of the -DUNIX in favor of a config.h methodology that
 # will look for features.  Do this once the basic autoconf works
