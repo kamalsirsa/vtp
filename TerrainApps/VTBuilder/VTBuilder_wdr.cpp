@@ -585,7 +585,7 @@ wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit, bool set_sizer 
     item0->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxListCtrl *item12 = new wxListCtrl( parent, ID_PROJPARAM, wxDefaultPosition, wxSize(230,120), wxLC_REPORT|wxSUNKEN_BORDER );
-    item0->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item12, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxButton *item13 = new wxButton( parent, ID_STATEPLANE, _("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );

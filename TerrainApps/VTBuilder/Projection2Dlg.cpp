@@ -53,7 +53,7 @@ END_EVENT_TABLE()
 
 Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
 	m_bInitializedUI = false;
 	m_bShowAllDatums = false;
