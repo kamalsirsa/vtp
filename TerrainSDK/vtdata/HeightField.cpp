@@ -439,6 +439,24 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	float sun =  0.7f;
 	float amb =  0.45f;
 
+	// If we have light that's pointing UP, rather than down at the terrain,
+	//  then it's only going to take a really long time to produce a
+	//  completely dark terrain.  We can catch this case up front.
+	if (light_dir.y > 0)
+	{
+		for (i = 0; i < w; i++)
+		{
+			for (j = 0; j < h; j++)
+			{
+				if (b8bit)
+					pBM->ScalePixel8(i, j, amb);
+				else
+					pBM->ScalePixel24(i, j, amb);
+			}
+		}
+		return;
+	}
+
 	// Create array to hold flags 
 	LightMap lightmap(w, h);
 
