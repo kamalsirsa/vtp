@@ -132,10 +132,9 @@ void Enviro::LoadTerrainDescriptions()
 	VTLOG("Done.\n");
 }
 
-void Enviro::StartControlEngine(const char *filename)
+void Enviro::StartControlEngine()
 {
 	VTLOG("StartControlEngine\n");
-	m_bSuppliedFilename = (filename != NULL);
 
 	m_pControlEng = new ControlEngine();
 	m_pControlEng->SetName2("Control Engine");

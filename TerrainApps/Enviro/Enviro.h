@@ -45,7 +45,7 @@ public:
 	void Shutdown();
 
 	void LoadTerrainDescriptions();
-	void StartControlEngine(const char *filename);
+	void StartControlEngine();
 	void DoControl();
 	void SetFlightSpeed(float speed);
 	float GetFlightSpeed();
@@ -187,7 +187,6 @@ protected:
 	float			m_fMessageStart, m_fMessageTime;
 	ControlEngine	*m_pControlEng;
 
-	bool		m_bSuppliedFilename;	// true if there was a command line
 	int			m_iInitStep;			// initialization stage
 	vtTerrain	*m_pTargetTerrain;		// terrain we are switching to
 };
