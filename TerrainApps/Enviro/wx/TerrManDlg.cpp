@@ -123,7 +123,7 @@ void TerrainManagerDlg::RefreshTreeText()
 		{
 			TMTreeItemData *data = (TMTreeItemData *) m_pTree->GetItemData(i2);
 			wxString2 path = data->m_strDir + "/" + data->m_strIniFile;
-			if (params.LoadFromFile(path))
+			if (params.LoadFromFile(path.mb_str()))
 			{
 				data->m_strName = params.m_strName;
 				wstr = data->m_strIniFile;

@@ -55,7 +55,7 @@ void vtApp::Args(int argc, wxChar **argv)
 		const char *cstr = str.mb_str();
 		if (!strcmp(cstr, "-no_startup_dialog"))
 			m_bShowStartupDialog = false;
-		else if (!strncmp(str, "-terrain=", 9))
+		else if (!strncmp(cstr, "-terrain=", 9))
 			m_bShowStartupDialog = false;
 
 		// also let the core application check the command line
