@@ -123,6 +123,12 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	SetIcon(wxICON(vtbuilder));
 }
 
+MainFrame::~MainFrame()
+{
+	WriteINI();
+	DeleteContents();
+}
+
 void MainFrame::CreateView()
 {
 	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
@@ -154,6 +160,8 @@ void MainFrame::SetupUI()
 			wxTR_HAS_VARIABLE_ROW_HEIGHT |
 #endif
 			wxNO_BORDER);
+
+	// The following makes the views match, but it looks funny on Linux
 //	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
 	CreateView();
@@ -170,44 +178,7 @@ void MainFrame::SetupUI()
 	m_pView->Show(TRUE);
 	m_splitter->SplitVertically( m_pTree, m_pView, 200);
 
-	// check for correctly set up environment variables
-	bool warn = false;
-	const char *gdal = getenv("GEOTIFF_CSV");
-	if (!gdal)
-		warn = true;
-	else
-	{
-		vtString fname = gdal;
-		fname += "/pcs.csv";
-		FILE *fp = fopen((const char *)fname, "rb");
-		if (fp)
-			fclose(fp);
-		else
-			warn = true;
-	}
-	const char *proj4 = getenv("PROJ_LIB");
-	if (!proj4)
-		warn = true;
-	else
-	{
-		vtString fname = proj4;
-		fname += "/nad83";
-		FILE *fp = fopen((const char *)fname, "rb");
-		if (fp)
-			fclose(fp);
-		else
-			warn = true;
-	}
-	if (warn)
-	{
-		wxMessageBox(_T("Unable to locate the necessary files for full coordinate\n")
-			_T(" system support.  Check that the environment variables GEOTIFF_CSV\n")
-			_T(" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n")
-			_T(" data files.  If you don't need full support for coordinate systems\n")
-			_T(" including converting between different projections, you can ignore\n")
-			_T(" this warning."), _T(APPNAME) _T("Warning"));
-		VTLOG("Warning! Couldn't find GDAL/PROJ data files.\n");
-	}
+	CheckForGDALAndWarn();
 
 	vtProjection proj;
 	proj.SetWellKnownGeogCS("WGS84");
@@ -220,16 +191,71 @@ void MainFrame::SetupUI()
 	SetStatusText(_T("Ready"));
 }
 
-MainFrame::~MainFrame()
-{
-	WriteINI();
-	DeleteContents();
-}
-
 void MainFrame::DeleteContents()
 {
 	m_Layers.Empty();
 	m_pActiveLayer = NULL;
+}
+
+void MainFrame::CheckForGDALAndWarn()
+{
+	// check for correctly set up environment variables and locatable files
+	bool has1 = true, has2 = true, has3 = true;
+
+	const char *gdal = getenv("GEOTIFF_CSV");
+	if (!gdal)
+	{
+		has1 = false;
+		has2 = false;
+	}
+	else
+	{
+		vtString fname = gdal;
+		fname += "/pcs.csv";	// this should always be there
+		FILE *fp = fopen((const char *)fname, "rb");
+		if (fp)
+			fclose(fp);
+		else
+			has1 = false;
+		fname = gdal;
+		fname += "/gdal_datum.csv";	// this should be there if data is current
+		fp = fopen((const char *)fname, "rb");
+		if (fp)
+			fclose(fp);
+		else
+			has2 = false;
+	}
+	const char *proj4 = getenv("PROJ_LIB");
+	if (!proj4)
+		has3 = true;
+	else
+	{
+		vtString fname = proj4;
+		fname += "/nad83";		// this should always be there
+		FILE *fp = fopen((const char *)fname, "rb");
+		if (fp)
+			fclose(fp);
+		else
+			has3 = false;
+	}
+	if (has1 && !has2)
+	{
+		DisplayAndLog("The GDAL-data on your computer is out of date.  You will need\n"
+			" the latest files in order for full coordinate system support.\n"
+			" If you don't need full support for coordinate systems\n"
+			" including converting between different projections, you can\n"
+			" ignore this warning.  Otherwise, get the latest (gdal-data-119.zip)\n"
+			" from the VTP website or CD.");
+	}
+	else if (!has1 || !has3)
+	{
+		DisplayAndLog("Unable to locate the necessary files for full coordinate\n"
+			" system support.  Check that the environment variables GEOTIFF_CSV\n"
+			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n"
+			" data files.  If you don't need full support for coordinate systems\n"
+			" including converting between different projections, you can ignore\n"
+			" this warning.");
+	}
 }
 
 void MainFrame::OnClose(wxCloseEvent &event)

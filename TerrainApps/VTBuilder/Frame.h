@@ -59,6 +59,7 @@ public:
 
 	virtual void CreateView();
 	void SetupUI();
+	void CheckForGDALAndWarn();
 	virtual void CreateMenus();
 	void CreateToolbar();
 	void RefreshToolbar();
