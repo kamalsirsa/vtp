@@ -50,6 +50,21 @@ DECLARE_APP(vtApp)
 #define WID_MODELDLG	105
 #define WID_SPLITTER2	106
 
+//
+// Blank window class to use in bottom half of splitter2
+//
+class Blank: public wxWindow
+{
+public:
+	Blank(wxWindow *parent) : wxWindow(parent, -1) {}
+	void OnPaint( wxPaintEvent &event ) { wxPaintDC dc(this); }
+	DECLARE_EVENT_TABLE()
+};
+BEGIN_EVENT_TABLE(Blank,wxWindow)
+    EVT_PAINT( Blank::OnPaint )
+END_EVENT_TABLE()
+
+
 //////////////////////////////////////////////////////////////////////////
 // Splitter window management
 
@@ -143,11 +158,12 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	SetIcon(wxICON(cmanager));
 
 	VTLOG(" creating component windows\n");
-	// splitter
+	// splitters
 	m_splitter = new wxSplitterWindow(this, WID_SPLITTER, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D /*| wxSP_LIVE_UPDATE*/);
 	m_splitter2 = new Splitter2(m_splitter, WID_SPLITTER2, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D | wxSP_LIVE_UPDATE);
+	m_blank = new Blank(m_splitter2); // (wxWindowID) -1, _T("blank"), wxDefaultPosition);
 
 	m_pTree = new MyTreeCtrl(m_splitter2, ID_TREECTRL,
 		wxPoint(0, 0), wxSize(200, 400),
@@ -186,7 +202,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_canvas->Show(TRUE);
 	m_splitter->SplitVertically( m_splitter2, m_canvas, 260);
 
-	m_splitter2->SplitHorizontally( m_pTree, m_pPropDlg, 200);
+	m_splitter2->SplitHorizontally( m_pTree, m_blank, 200);
 	m_pPropDlg->Show(TRUE);
 	m_pPropDlg->InitDialog();
 
@@ -213,6 +229,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	osgDB::Registry::instance()->writeNode(*node, "out.osg");
 #endif
 
+	SetCurrentItemAndModel(NULL, NULL);
+	
 	m_pTree->RefreshTreeItems(this);
 }
 
@@ -322,13 +340,13 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->SetMargins(2, 2);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
-	ADD_TOOL(wxID_OPEN, wxBITMAP(contents_open), _("Select"), false);
+	ADD_TOOL(wxID_OPEN, wxBITMAP(contents_open), _("Open Contents File"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_NEW, wxBITMAP(item_new), _("Select"), false);
-	ADD_TOOL(ID_ITEM_DEL, wxBITMAP(item_rem), _("Select"), false);
+	ADD_TOOL(ID_ITEM_NEW, wxBITMAP(item_new), _("New Item"), false);
+	ADD_TOOL(ID_ITEM_DEL, wxBITMAP(item_rem), _("Delete Item"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(item_addmodel), _("Select"), false);
-	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(item_remmodel), _("Select"), false);
+	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(item_addmodel), _("Add Model"), false);
+	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(item_remmodel), _("Remove Model"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_VIEW_ORIGIN, wxBITMAP(show_axes), _("Show Axes"), true);
 	ADD_TOOL(ID_VIEW_RULERS, wxBITMAP(show_rulers), _("Show Rulers"), true);
@@ -760,9 +778,12 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	{
 		wxString2 str;
 		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);
+		VTLOG(str.mb_str());
 		DisplayMessageBox(str);
 		return NULL;
 	}
+	else
+		VTLOG("  Loaded OK.\n");
 
 	// check
 	FSphere sphere;
@@ -782,25 +803,27 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 {
-	m_splitter2->bResetting = true;
-	m_splitter2->Unsplit();
-	m_splitter2->bResetting = false;
+	m_blank->Show(item == NULL && model == NULL);
+	m_pModelDlg->Show(item != NULL && model != NULL);
+	m_pPropDlg->Show(item != NULL && model == NULL);
+
 	if (item != NULL && model == NULL)
 	{
 		SetCurrentItem(item);
 		SetCurrentModel(model);
 		DisplayCurrentItem();
-		m_splitter2->SplitHorizontally( m_pTree, m_pPropDlg, m_splitter2->m_last);
-		m_pPropDlg->Show(TRUE);
+		m_splitter2->ReplaceWindow(m_splitter2->GetWindow2(), m_pPropDlg);
 		ZoomToCurrentItem();
 	}
 	else if (item != NULL && model != NULL)
 	{
 		SetCurrentItem(item);
 		SetCurrentModel(model);
-		m_splitter2->SplitHorizontally( m_pTree, m_pModelDlg, m_splitter2->m_last);
-		m_pModelDlg->Show(TRUE);
+
+		m_splitter2->ReplaceWindow(m_splitter2->GetWindow2(), m_pModelDlg);
 	}
+	else
+		m_splitter2->ReplaceWindow(m_splitter2->GetWindow2(), m_blank);
 }
 
 void vtFrame::SetCurrentItem(vtItem *item)

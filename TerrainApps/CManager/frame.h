@@ -101,6 +101,7 @@ public:
 
 	wxSplitterWindow *m_splitter;
 	Splitter2		 *m_splitter2;
+	wxWindow		*m_blank;
 	MyTreeCtrl		*m_pTree;		// left child of splitter
 
 	// Modeless dialogs
