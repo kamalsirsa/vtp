@@ -241,8 +241,8 @@ public:
 	virtual bool isSameKindAs(const osg::Object* obj) const { return dynamic_cast<const vtDynMesh*>(obj)!=NULL; }
 	virtual const char* className() const { return "vtDynMesh"; }
 
-	virtual const bool computeBound() const;
-	virtual void drawImmediateMode(osg::State& state);
+	virtual bool computeBound() const;
+	virtual void drawImplementation(osg::State& state) const;
 
 	class vtDynGeom		*m_pDynGeom;
 };

@@ -475,8 +475,16 @@ vtMesh *vtGeom::GetMesh(int i)
 
 void vtLOD::SetRanges(float *ranges, int nranges)
 {
-	for (int i = 0; i < nranges; i++)
-		m_pLOD->setRange(i, ranges[i]);
+	int i;
+	float next;
+	for (i = 0; i < nranges; i++)
+	{
+		if (i < nranges - 1)
+			next = ranges[i+1];
+		else
+			next = 1E10;
+		m_pLOD->setRange(i, ranges[i], next);
+	}
 }
 
 void vtLOD::SetCenter(FPoint3 &center)
@@ -499,7 +507,7 @@ vtDynMesh::vtDynMesh()
 	setStateSet(new StateSet);
 }
 
-const bool vtDynMesh::computeBound() const
+bool vtDynMesh::computeBound() const
 {
 	FBox3 box;
 	m_pDynGeom->DoCalcBoundBox(box);
@@ -602,7 +610,7 @@ void vtDynGeom::CalcCullPlanes()
 #endif
 }
 
-void vtDynMesh::drawImmediateMode(State& state)
+void vtDynMesh::drawImplementation(State& state) const
 {
 	hack_global_state = &state;
 
