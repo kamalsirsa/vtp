@@ -140,7 +140,6 @@ public:
 	void OnDirection(wxCommandEvent& event);
 	void OnRoadEdit(wxCommandEvent& event);
 	void OnRoadShowNodes(wxCommandEvent& event);
-	void OnRoadShowWidth(wxCommandEvent& event);
 	void OnSelectHwy(wxCommandEvent& event);
 	void OnRoadClean(wxCommandEvent& event);
 	void OnRoadGuess(wxCommandEvent& event);
@@ -152,7 +151,6 @@ public:
 	void OnUpdateDirection(wxUpdateUIEvent& event);
 	void OnUpdateRoadEdit(wxUpdateUIEvent& event);
 	void OnUpdateRoadShowNodes(wxUpdateUIEvent& event);
-	void OnUpdateRoadShowWidth(wxUpdateUIEvent& event);
 	void OnUpdateRoadFlatten(wxUpdateUIEvent& event);
 
 	void OnElevSelect(wxCommandEvent& event);
@@ -163,9 +161,6 @@ public:
 	void OnExportTerragen(wxCommandEvent& event);
 	void OnExportGeoTIFF(wxCommandEvent& event);
 	void OnExportBMP(wxCommandEvent& event);
-	void OnElevShow(wxCommandEvent& event);
-	void OnElevShading(wxCommandEvent& event);
-	void OnElevHide(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 
@@ -173,9 +168,6 @@ public:
 	void OnUpdateViewSetArea(wxUpdateUIEvent& event);
 	void OnUpdateElevSetUnknown(wxUpdateUIEvent& event);
 	void OnUpdateScaleElevation(wxUpdateUIEvent& event);
-	void OnUpdateElevShow(wxUpdateUIEvent& event);
-	void OnUpdateElevShading(wxUpdateUIEvent& event);
-	void OnUpdateElevHide(wxUpdateUIEvent& event);
 	void OnUpdateElevMergeTin(wxUpdateUIEvent& event);
 	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
