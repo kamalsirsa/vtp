@@ -354,7 +354,8 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		/////////////////////////////////////////
 		bld->SetCenterFromPoly();
 
-		bool success = bld->CreateNode(m_pHeightField, "roof walls detail");
+		vtTagArray options;
+		bool success = bld->CreateNode(m_pHeightField, options);
 		vtTransform *trans = bld->GetTransform();
 		trans->SetName2("Test House");
 		AddNode(trans);

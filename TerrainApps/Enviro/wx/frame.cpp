@@ -400,7 +400,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			width -= 1;
 //			depth -= 1;
 			bld->SetRectangle(width, depth);
-			sa.ReConstructStructure(bld, "roof walls detail");
+			sa.ReConstructStructure(bld);
 		}
 	}
 	if (key == 'Z')
@@ -418,7 +418,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			width += 1;
 //			depth += 1;
 			bld->SetRectangle(width, depth);
-			sa.ReConstructStructure(bld, "roof walls detail");
+			sa.ReConstructStructure(bld);
 		}
 	}
 }
