@@ -64,6 +64,7 @@ public:
 	void RefreshLocationFields();
 	void UpdateTimeString();
 	void UpdateColorControl();
+	void UpdateColorMapChoice();
 
 	// overall name
 	wxString2   m_strTerrainName;
@@ -108,6 +109,7 @@ public:
 	bool	m_bPreLight;
 	float   m_fPreLightFactor;
 	bool	m_bCastShadows;
+	wxString2   m_strColorMap;
 
 	// culture
 	bool	m_bRoads;
@@ -159,6 +161,7 @@ public:
 //  wxString2   m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 	wxChoice* GetChoiceShadowRez()  { return (wxChoice*) FindWindow( ID_CHOICE_SHADOW_REZ ); }
 	wxCheckBox* GetCheckStructureShadows()  { return (wxCheckBox*) FindWindow( ID_CHECK_STRUCTURE_SHADOWS ); }
@@ -213,6 +216,7 @@ private:
 	wxChoice* m_pLocField;
 	wxListBoxEventHandler *m_pBoxHandler;
 	wxChoice* m_pShadowRez;
+	wxChoice* m_pColorMap;
 
 private:
 	// WDR: handler declarations for TParamsDlg
@@ -223,6 +227,7 @@ private:
 	void OnTextureSingle( wxCommandEvent &event );
 	void OnTextureDerived( wxCommandEvent &event );
 	void OnTextureTiled( wxCommandEvent &event );
+	void OnEditColors( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
 	void OnListDblClick( wxCommandEvent &event );
 	void OnChoiceLabelFile( wxCommandEvent &event );

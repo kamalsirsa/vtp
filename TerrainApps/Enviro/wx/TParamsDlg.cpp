@@ -22,6 +22,7 @@
 #include "vtlib/core/Location.h"
 #include "vtdata/Features.h"		// for RefreshLabelFields()
 #include "vtdata/FilePath.h"		// for FindFileOnPaths()
+#include "vtui/ColorMapDlg.h"
 #include "vtui/Helper.h"
 #include "TParamsDlg.h"
 #include "TimeDlg.h"
@@ -74,6 +75,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
 	EVT_RADIOBUTTON( ID_TILED, TParamsDlg::OnTextureTiled )
 
+	EVT_BUTTON( ID_EDIT_COLORS, TParamsDlg::OnEditColors )
 	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
 
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
@@ -168,6 +170,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bPreLight =	   Params.GetValueBool(STR_PRELIGHT);
 	m_fPreLightFactor = Params.GetValueFloat(STR_PRELIGHTFACTOR);
 	m_bCastShadows =	Params.GetValueBool(STR_CAST_SHADOWS);
+	m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
 
 	// culture
 	m_bRoads =		  Params.GetValueBool(STR_ROADS);
@@ -278,6 +281,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_PRELIGHT, m_bPreLight);
 	Params.SetValueFloat(STR_PRELIGHTFACTOR, m_fPreLightFactor);
 	Params.SetValueBool(STR_CAST_SHADOWS, m_bCastShadows);
+	Params.SetValueString(STR_COLOR_MAP, m_strColorMap.to_utf8());
 
 	// culture
 	Params.SetValueBool(STR_ROADS, m_bRoads);
@@ -355,6 +359,8 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_DETAILTEXTURE)->Enable(!m_bTin);
 
 	FindWindow(ID_TFILESINGLE)->Enable(m_iTexture == TE_SINGLE);
+	FindWindow(ID_CHOICE_COLORS)->Enable(m_iTexture == TE_DERIVED);
+	FindWindow(ID_EDIT_COLORS)->Enable(m_iTexture == TE_DERIVED);
 	FindWindow(ID_TILESIZE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILEBASE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_JPEG)->Enable(m_iTexture == TE_TILED);
@@ -449,6 +455,21 @@ void TParamsDlg::RefreshLocationFields()
 	}
 }
 
+void TParamsDlg::UpdateColorMapChoice()
+{
+	m_pColorMap->Clear();
+	vtStringArray &paths = m_datapaths;
+	for (unsigned int i = 0; i < paths.size(); i++)
+	{
+		// fill the "colormap" control with available colormap files
+		AddFilenamesToChoice(m_pColorMap, paths[i] + "GeoTypical", "*.cmt");
+		int sel = m_pColorMap->FindString(m_strColorMap);
+		if (sel != -1)
+			m_pColorMap->SetSelection(sel);
+	}
+}
+
+
 // WDR: handler implementations for TParamsDlg
 
 void TParamsDlg::OnBgColor( wxCommandEvent &event )
@@ -505,6 +526,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pSingle = GetSingle();
 	m_pDerived = GetDerived();
 	m_pTiled = GetTiled();
+	m_pColorMap = GetColorMap();
 
 	unsigned int i;
 	int sel;
@@ -573,6 +595,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pLabelFile->SetSelection(sel);
 	}
+	UpdateColorMapChoice();
 
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append(_T("Roettger"));
@@ -654,6 +677,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_PRELIGHT, &m_bPreLight);
 	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
 	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
+	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
 
 	// culture page
 	AddValidator(ID_PLANTS, &m_bPlants);
@@ -800,6 +824,28 @@ void TParamsDlg::OnTextureTiled( wxCommandEvent &event )
 		return;
 	TransferDataFromWindow();
 	UpdateEnableState();
+}
+
+void TParamsDlg::OnEditColors( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+
+	// Look on data paths, to give a complete path to the dialog
+	vtString name = "GeoTypical/";
+	name += m_strColorMap.mb_str();
+	name = FindFileOnPaths(m_datapaths, name);
+	if (name == "")
+	{
+		wxMessageBox("Couldn't locate file.");
+		return;
+	}
+
+	ColorMapDlg dlg(this, -1, _("ColorMap"));;
+	dlg.SetFile(name);
+	dlg.ShowModal();
+
+	// They may have added or removed some color map files on the data path
+	UpdateColorMapChoice();
 }
 
 void TParamsDlg::OnCheckBox( wxCommandEvent &event )
