@@ -68,6 +68,21 @@ bool MyApp::OnInit()
 
 	SetTopWindow(frame);
 
+	VTLOG(" Initializing GDAL.");
+	g_GDALWrapper.RequestGDALFormats();
+
+	VTLOG(" GDAL-supported formats:");
+	GDALDriverManager *poDM = GetGDALDriverManager();
+    for( int iDriver = 0; iDriver < poDM->GetDriverCount(); iDriver++ )
+    {
+		if ((iDriver % 13) == 0)
+			VTLOG("\n  ");
+        GDALDriver *poDriver = poDM->GetDriver( iDriver );
+		const char *name = poDriver->GetDescription();
+		VTLOG("%s ", name);
+	}
+	VTLOG("\n");
+
 	// Stuff for testing
 //	wxString str("E:/Earth Imagery/NASA BlueMarble/MOD09A1.E.interpol.cyl.retouched.topo.3x00054x00027-N.bmp");
 //	wxString str("E:/Data-USA/Elevation/crater_0513.bt");
@@ -105,5 +120,6 @@ bool MyApp::OnInit()
 
 int MyApp::OnExit()
 {
+	VTLOG("App Exit\n");
 	return wxApp::OnExit();
 }
