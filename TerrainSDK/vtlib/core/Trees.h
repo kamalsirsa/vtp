@@ -104,8 +104,8 @@ class vtPlantInstanceArray3d : public vtPlantInstanceArray
 public:
 	vtPlantInstanceArray3d();
 
-	void CreatePlantNodes();
-	void CreatePlantNode(int i);
+	int CreatePlantNodes();
+	bool CreatePlantNode(int i);
 
 	vtTransform *GetPlantNode(int i);
 	vtPlantInstance3d *GetInstance3d(int i);

@@ -14,6 +14,7 @@
 #include "vtlib/vtlib.h"
 #include "Trees.h"
 #include "vtlib/core/Light.h"
+#include "vtdata/vtLog.h"
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
@@ -63,6 +64,7 @@ void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
 	{
 		vtString name = "PlantModels/";
 		name += m_filename;
+		VTLOG("\tLoading plant texture '%s' ", name);
 		vtString fname = FindFileOnPaths(paths, name);
 
 		m_pMats = new vtMaterialArray();
@@ -73,6 +75,11 @@ void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
 			TREE_AMBIENT, TREE_DIFFUSE,
 			1.0f,		// alpha
 			TREE_EMISSIVE);
+
+		if (m_iMatIdx == -1)
+			VTLOG(" Failed.\n");
+		else
+			VTLOG(" OK.\n");
 
 		if (bShadows)
 		{
@@ -229,6 +236,7 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetRandomAppearance()
 	return GetAppearanceByHeight(height);
 }
 
+
 /////////////////////////////////////////////////////
 // vtPlantSpecies3d
 //
@@ -261,38 +269,13 @@ void vtPlantSpecies3d::AddAppearance(AppearType type, const char *filename,
 	m_Apps.Append(pApp);
 }
 
+
 /////////////////////////////////////////////////////
 // vtPlantList3d
 //
 
 vtPlantList3d::vtPlantList3d()
 {
-#if 0
-	char buf[80];
-	int iApps, j, apptype, iNumSpecies;
-	float f1, f2, f3, f4;
-
-	FILE *fp = fopen(filename, "r");
-	if (!fp) return;
-
-	fscanf(fp, "total species: %d\n", &iNumSpecies);
-	for (int i = 0; i < iNumSpecies; i++)
-	{
-		fscanf(fp, "species: %s\n", buf);
-		fscanf(fp, "max height: %f\n", &f1);
-
-		AddSpecies(buf, f1);
-		vtPlantSpecies *pSpecies = GetSpecies(i);
-
-		fscanf(fp, "appearances: %d\n", &iApps);
-		for (j = 0; j < iApps; j++)
-		{
-			fscanf(fp, "%d %s %f %f %f %f\n", &apptype, buf, &f1, &f2, &f3, &f4);
-			pSpecies->AddAppearance(apptype == 1, buf, f1, f2, f3, f4);
-		}
-	}
-	fclose(fp);
-#endif
 }
 
 // copy
@@ -325,36 +308,6 @@ void vtPlantList3d::AddSpecies(const char *common_name, float max_height)
 	pSpe->SetMaxHeight(max_height);
 	m_Species.Append(pSpe);
 }
-
-/*vtGeom *vtPlantList3d::plant_nursery(vtHeightField *pHeightField, float lat, float lon)
-{
-	int i;
-	float latitude, longitude;
-
-	// create nursery containing one of each plant
-	SimpleLOD *pNursery = new SimpleLOD();
-	pNursery->SetName("Tree Nursery");
-	pNursery->SetRange(200.0f);
-	for (i = 0; i < NumSpecies(); i++)
-	{
-		vtPlantSpecies3d *pSpecies = GetSpecies(i);
-		int iApps = pSpecies->NumAppearances();
-		for (int j = 0; j < iApps; j++)
-		{
-			vtPlantAppearance3d *pApp = pSpecies->GetAppearance(j);
-
-			longitude = lon + (0.0006f * i);
-			latitude = lat + (0.0002f * i);
-
-			plant_tree_latlon(pHeightField, longitude, latitude,
-						pNursery, pApp->m_pSurf, pApp->m_pMats,
-						0.0f,	// spacing variability
-						0.0f,	// size variability
-						pSpecies->GetCommonName());
-		}
-	}
-	return pNursery;
-}*/
 
 ////////////
 
@@ -479,18 +432,23 @@ vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(int i)
 	return m_Instances3d.GetAt(i);
 }
 
-void vtPlantInstanceArray3d::CreatePlantNodes()
+int vtPlantInstanceArray3d::CreatePlantNodes()
 {
 	int size = GetSize();
+	int created = 0;
 
 	for (int i = 0; i < size; i++)
-		CreatePlantNode(i);
+	{
+		if (CreatePlantNode(i))
+			created++;
+	}
+	return created;
 }
 
-void vtPlantInstanceArray3d::CreatePlantNode(int i)
+bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 {
 	if (!m_pPlantList)
-		return;
+		return false;
 
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (!inst3d)
@@ -503,11 +461,11 @@ void vtPlantInstanceArray3d::CreatePlantNode(int i)
 
 	vtPlantSpecies3d *ps = m_pPlantList->GetSpecies(pi.species_id);
 	if (!ps)
-		return;
+		return false;
 
 	vtPlantAppearance3d *pApp = ps->GetAppearanceByHeight(pi.size);
 	if (!pApp)
-		return;
+		return false;
 
 	inst3d->m_pTransform = pApp->GenerateGeom();
 	inst3d->m_pGeom = (vtGeom *) inst3d->m_pTransform->GetChild(0);
@@ -521,6 +479,7 @@ void vtPlantInstanceArray3d::CreatePlantNode(int i)
 	float random_rotation = random(PI2f);
 	inst3d->m_pTransform->RotateLocal(FPoint3(0,1,0), random_rotation);
 #endif
+	return true;
 }
 
 vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i)
