@@ -19,9 +19,9 @@
 
 // WDR: class declarations
 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // ExtentDlg
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 class ExtentDlg: public AutoDialog
 {
@@ -33,17 +33,22 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for ExtentDlg
+	wxCheckBox* GetDMS()  { return (wxCheckBox*) FindWindow( ID_DMS ); }
 	void SetArea(DRECT area, bool bMeters);
-	
-	wxString2	m_strAll;
-	wxString2	m_strEast;
-	wxString2	m_strNorth;
-	wxString2	m_strSouth;
-	wxString2	m_strWest;
+	void FormatExtent(wxString &str, double value);
+	double GetValueFrom(const wxString2 &str);
+
+	wxString2   m_strAll;
+	wxString2   m_strEast;
+	wxString2   m_strNorth;
+	wxString2   m_strSouth;
+	wxString2   m_strWest;
 
 	DRECT m_area;
-	bool m_bMeters;
+	bool m_bDegrees;
 	bool m_bSetting;
+	bool m_bDMS;	// Degrees Minutes Seconds
+	wxString m_fs;  // Format string depends on coordiante scheme
 
 private:
 	// WDR: member variable declarations for ExtentDlg
@@ -55,6 +60,7 @@ private:
 	void OnExtentE( wxCommandEvent &event );
 	void OnExtentW( wxCommandEvent &event );
 	void OnExtentN( wxCommandEvent &event );
+	void OnDMS( wxCommandEvent &event );
 
 	void FormatStrings(int which);
 	void OnInitDialog(wxInitDialogEvent& event);
@@ -63,5 +69,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __ExtentDlg_H__
+#endif  // __ExtentDlg_H__
 
