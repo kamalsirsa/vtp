@@ -110,17 +110,19 @@ EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
 EVT_MENU(ID_VIEW_LOCATIONS, vtFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS, vtFrame::OnUpdateViewLocations)
 
-EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
-EVT_MENU(ID_VIEW_SLOWER, vtFrame::OnViewSlower)
+EVT_UPDATE_UI(ID_VIEW_FRAMERATE,vtFrame::OnUpdateViewFramerate)
+EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
 EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
-EVT_MENU(ID_VIEW_FASTER, vtFrame::OnViewFaster)
+EVT_MENU(ID_VIEW_FASTER,		vtFrame::OnViewFaster)
 EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
-EVT_MENU(ID_NAV_NORMAL, vtFrame::OnNavNormal)
+EVT_MENU(ID_NAV_NORMAL,			vtFrame::OnNavNormal)
 EVT_UPDATE_UI(ID_NAV_NORMAL,	vtFrame::OnUpdateNavNormal)
-EVT_MENU(ID_NAV_VELO, vtFrame::OnNavVelo)
-EVT_UPDATE_UI(ID_NAV_VELO,	vtFrame::OnUpdateNavVelo)
-EVT_MENU(ID_NAV_GRAB_PIVOT, vtFrame::OnNavGrabPivot)
-EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,	vtFrame::OnUpdateNavGrabPivot)
+EVT_MENU(ID_NAV_VELO,			vtFrame::OnNavVelo)
+EVT_UPDATE_UI(ID_NAV_VELO,		vtFrame::OnUpdateNavVelo)
+EVT_MENU(ID_NAV_GRAB_PIVOT,		vtFrame::OnNavGrabPivot)
+EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,vtFrame::OnUpdateNavGrabPivot)
+EVT_MENU(ID_NAV_PANO,			vtFrame::OnNavPano)
+EVT_UPDATE_UI(ID_NAV_PANO,		vtFrame::OnUpdateNavPano)
 
 EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
 EVT_MENU(ID_SCENE_TERRAIN, vtFrame::OnSceneTerrain)
@@ -189,7 +191,6 @@ wxFrame(parent, -1, title, pos, size, style)
 	SetIcon(wxIcon(_T("enviro")));
 
 	m_bCulleveryframe = true;
-	m_bMaintainHeight = false;
 	m_bAlwaysMove = false;
 	m_bFullscreen = false;
 	m_bTopDown = false;
@@ -244,6 +245,7 @@ void vtFrame::CreateMenus()
 	wxMenu *fileMenu = new wxMenu;
 	fileMenu->Append(wxID_EXIT, _T("E&xit\tEsc"), _T("Exit"));
 
+
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _T("Select"));
 	toolsMenu->AppendCheckItem(ID_TOOLS_FENCES, _T("Fences"));
@@ -265,13 +267,15 @@ void vtFrame::CreateMenus()
 	sceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
 	sceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
 
+
+
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
 	viewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
 	viewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _T("Top-Down Camera\tCtrl+T"));
 	viewMenu->AppendCheckItem(ID_VIEW_FRAMERATE, _T("Framerate Chart\tCtrl+R"));
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings"));
+	viewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings\tCtrl+S"));
 	viewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
 
 	wxMenu *navMenu = new wxMenu;
@@ -283,6 +287,7 @@ void vtFrame::CreateMenus()
 		navstyleMenu->AppendCheckItem(ID_NAV_NORMAL, _T("Normal Terrain Flyer"));
 		navstyleMenu->AppendCheckItem(ID_NAV_VELO, _T("Flyer with Velocity"));
 		navstyleMenu->AppendCheckItem(ID_NAV_GRAB_PIVOT, _T("Grab-Pivot"));
+		navstyleMenu->AppendCheckItem(ID_NAV_PANO, _T("Panoramic Flyer"));
 //		navstyleMenu->AppendCheckItem(ID_NAV_QUAKE, _T("Keyboard Walk"));
 		navMenu->Append(0, _T("Navigation Style"), navstyleMenu);
 
@@ -304,6 +309,7 @@ void vtFrame::CreateMenus()
 	terrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
 	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
 
+
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _T("&Show Axes\tCtrl+A"));
@@ -312,6 +318,7 @@ void vtFrame::CreateMenus()
 	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
 	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
 	earthMenu->Append(ID_EARTH_LINEAR, _T("Add &Linear Features...\tCtrl+L"));
+
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Enviro..."));
@@ -330,6 +337,7 @@ void vtFrame::CreateMenus()
 
 void vtFrame::CreateToolbar()
 {
+return;
 	// tool bar
 	m_pToolbar = CreateToolBar(wxTB_HORIZONTAL | wxNO_BORDER | wxTB_DOCKABLE);
 	m_pToolbar->SetMargins(2, 2);
@@ -395,12 +403,14 @@ void vtFrame::OnChar(wxKeyEvent& event)
 {
 	long key = event.KeyCode();
 
+
 	if (key == 27)
 	{
 		// Esc: exit application
 		m_canvas->m_bRunning = false;
 		Destroy();
 	}
+
 	if (key == ' ')
 	{
 		if (g_App.m_state == AS_Terrain)
@@ -409,14 +419,8 @@ void vtFrame::OnChar(wxKeyEvent& event)
 
 	// Keyboard shortcuts ("accelerators")
 	if (key == 'a')
-	{
-		m_bMaintainHeight = !m_bMaintainHeight;
-		if (g_App.m_pTFlyer != NULL)
-		{
-			g_App.m_pTFlyer->MaintainHeight(m_bMaintainHeight);
-			g_App.m_pTFlyer->SetMaintainHeight(0);
-		}
-	}
+		g_App.SetMaintain(!g_App.GetMaintain());
+
 	// Toggle grab-pivot
 	if (key == 'd')
 	{
@@ -573,21 +577,21 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;	// stop rendering
 
-	wxString str = _T("VTP Enviro\n");
-	str += _T("The runtime environment for the Virtual Terrain Project\n\n");
-	str += _T("Please read the HTML documentation and license.\n\n");
-	str += _T("Send feedback to: ben@vterrain.org\n\n");
-	str += _T("This version was built with the ");
-#if VTLIB_DSM
-	str += _T("DSM");
-#elif VTLIB_OSG
-	str += _T("OSG");
-#elif VTLIB_SGL
-	str += _T("SGL");
-#elif VTLIB_SSG
-	str += _T("SSG");
-#endif
-	str += _T(" Library.\n\n");
+ 	wxString str = _T("VTP Enviro\n");
+ 	str += _T("The runtime environment for the Virtual Terrain Project\n\n");
+ 	str += _T("Please read the HTML documentation and license.\n\n");
+ 	str += _T("Send feedback to: ben@vterrain.org\n\n");
+ 	str += _T("This version was built with the ");
+ #if VTLIB_DSM
+ 	str += _T("DSM");
+ #elif VTLIB_OSG
+ 	str += _T("OSG");
+ #elif VTLIB_SGL
+ 	str += _T("SGL");
+ #elif VTLIB_SSG
+ 	str += _T("SSG");
+ #endif
+ 	str += _T(" Library.\n\n");
 	str += _T("Build date: ");
 	str += _T(__DATE__);
 	wxMessageBox(str, _T("About VTP Enviro"));
@@ -601,19 +605,13 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 
 void vtFrame::OnViewMaintain(wxCommandEvent& event)
 {
-	m_bMaintainHeight = !m_bMaintainHeight;
-
-	if (g_App.m_pTFlyer != NULL)
-	{
-		g_App.m_pTFlyer->MaintainHeight(m_bMaintainHeight);
-		g_App.m_pTFlyer->SetMaintainHeight(0);
-	}
+	g_App.SetMaintain(!g_App.GetMaintain());
 }
 
 void vtFrame::OnUpdateViewMaintain(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
-	event.Check(m_bMaintainHeight);
+	event.Check(g_App.GetMaintain());
 }
 
 void vtFrame::OnNavNormal(wxCommandEvent& event)
@@ -647,6 +645,17 @@ void vtFrame::OnUpdateNavGrabPivot(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_nav == NT_Grab);
+}
+
+void vtFrame::OnNavPano(wxCommandEvent& event)
+{
+	g_App.SetNavType(NT_Pano);
+}
+
+void vtFrame::OnUpdateNavPano(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_nav == NT_Pano);
 }
 
 void vtFrame::OnViewWireframe(wxCommandEvent& event)

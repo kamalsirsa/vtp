@@ -33,6 +33,7 @@ class GrabFlyer;
 class FlatFlyer;
 class vtTrackball;
 class GlobePicker;
+class vtPanoFlyer;
 
 // Plants
 class vtPlantList3d;
@@ -57,13 +58,18 @@ public:
 	void LoadTerrainDescriptions();
 	void StartControlEngine();
 	void DoControl();
+	void SetTerrain(vtTerrain *pTerrain);
+
+	// navigation and camera
 	void SetFlightSpeed(float speed);
 	float GetFlightSpeed();
 	void SetTopDown(bool bTopDown);
-	void SetTerrain(vtTerrain *pTerrain);
+	void SetCurrentNavigator(vtTerrainFlyer *pE);
 	void EnableFlyerEngine(bool bEnable);
 	void SetNavType(NavType nav);
-	void SetCurrentNavigator(vtTerrainFlyer *pE);
+	void SetMaintain(bool bOn);
+	bool GetMaintain();
+
 	void SetMode(MouseMode mode);
 	void SetRouteFollower(bool bOn);
 	bool GetRouteFollower();
@@ -112,6 +118,7 @@ public:
 	vtTerrainFlyer	*m_pCurrentFlyer;
 	GrabFlyer		*m_pGFlyer;
 	FlatFlyer		*m_pFlatFlyer;
+	vtPanoFlyer		*m_pPanoFlyer;
 
 	vtTerrainScene	*m_pTerrainScene;
 

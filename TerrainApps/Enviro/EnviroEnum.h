@@ -19,7 +19,8 @@ enum NavType {
 	NT_Normal,
 	NT_Velo,
 	NT_Grab,
-	NT_Quake
+	NT_Quake,
+	NT_Pano
 };
 
 enum MouseMode

@@ -64,7 +64,8 @@ public:
 	float GetHeight() { return m_fHeightAboveTerrain; }
 
 	/// If true, the current height above the terrain is maintained.  Default is false.
-	void MaintainHeight(bool bMaintain) { m_bMaintain = bMaintain; }
+	void SetMaintain(bool bMaintain) { m_bMaintain = bMaintain; }
+	bool GetMaintain() { return m_bMaintain; }
 
 	/// Set the height about the terrain to maintain, or pass 0 to use the current value.
 	void SetMaintainHeight(float fheight) { m_fMaintainHeight = fheight; }
@@ -83,6 +84,30 @@ protected:
 	float	m_fMaintainHeight;
 	bool	m_bMaintain;
 };
+
+
+/**
+ *  This engine looks the viewpoint around using the mouse position.
+ *  Movement is only done when left mouse button is pressed.
+ *  Right mouse button is a holdover from vtFlyer.
+ *
+ *	No buttons: pitch, yaw
+ *  Left button: forward
+ *  Right button: up/dn, left/right
+ *
+ *  Position is considered relative to the center of the window.
+ */
+class vtPanoFlyer : public vtTerrainFlyer
+{
+public:
+	vtPanoFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin);
+
+	void Eval();
+
+protected:
+	float	m_Velocity;
+};
+
 
 class vtTin3d;
 

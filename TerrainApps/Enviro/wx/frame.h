@@ -65,12 +65,14 @@ public:
 	void OnNavNormal(wxCommandEvent& event);
 	void OnNavVelo(wxCommandEvent& event);
 	void OnNavGrabPivot(wxCommandEvent& event);
+	void OnNavPano(wxCommandEvent& event);
 
 	void OnUpdateViewSlower(wxUpdateUIEvent& event);
 	void OnUpdateViewFaster(wxUpdateUIEvent& event);
 	void OnUpdateNavNormal(wxUpdateUIEvent& event);
 	void OnUpdateNavVelo(wxUpdateUIEvent& event);
 	void OnUpdateNavGrabPivot(wxUpdateUIEvent& event);
+	void OnUpdateNavPano(wxUpdateUIEvent& event);
 
 	void OnToolsSelect(wxCommandEvent& event);
 	void OnUpdateToolsSelect(wxUpdateUIEvent& event);
@@ -156,7 +158,6 @@ public:
 	MouseMode			m_ToggledMode;
 
 protected:
-	bool m_bMaintainHeight;
 	bool m_bAlwaysMove;
 	bool m_bCulleveryframe;
 	bool m_bFullscreen;

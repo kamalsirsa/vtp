@@ -487,6 +487,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pNavStyle->Append(_T("Terrain Flyer with Velocity"));
 	m_pNavStyle->Append(_T("Grab-Pivot"));
 	m_pNavStyle->Append(_T("Quake-Style Walk"));
+	m_pNavStyle->Append(_T("Panoramic Flyer"));
 
 	RefreshLabelFields();
 

@@ -1034,6 +1034,11 @@ void Enviro::SetupScene2()
 	vtGetScene()->AddEngine(m_pFlatFlyer);
 	m_pFlatFlyer->SetEnabled(false);
 
+	m_pPanoFlyer = new vtPanoFlyer(1.0f, 1.0f, true);
+	m_pPanoFlyer->SetName2("Panoramic Flyer");
+	m_pPanoFlyer->SetEnabled(false);
+	vtGetScene()->AddEngine(m_pPanoFlyer);
+
 	m_nav = NT_Normal;
 
 	// create picker object and picker engine
@@ -1078,6 +1083,7 @@ void Enviro::SetupScene2()
 	m_pTFlyer->SetTarget(m_pNormalCamera);
 	m_pGFlyer->SetTarget(m_pNormalCamera);
 	m_pFlatFlyer->SetTarget(m_pNormalCamera);
+	m_pPanoFlyer->SetTarget(m_pNormalCamera);
 }
 
 void Enviro::SetupCommonCulture()
@@ -1132,6 +1138,8 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 			SetCurrentNavigator(m_pGFlyer);
 		if (m_nav == NT_Quake)
 			SetCurrentNavigator(m_pQuakeFlyer);
+		if (m_nav == NT_Pano)
+			SetCurrentNavigator(m_pPanoFlyer);
 	}
 	else
 		SetCurrentNavigator(NULL);
@@ -1144,6 +1152,22 @@ void Enviro::SetNavType(NavType nav)
 	m_nav = nav;
 	if (m_mode == MM_NAVIGATE)
 		EnableFlyerEngine(true);
+}
+
+void Enviro::SetMaintain(bool bOn)
+{
+	if (m_pCurrentFlyer != NULL)
+	{
+		m_pCurrentFlyer->SetMaintain(bOn);
+		m_pCurrentFlyer->SetMaintainHeight(0);
+	}
+}
+
+bool Enviro::GetMaintain()
+{
+	if (m_pCurrentFlyer == NULL)
+		return false;
+	return m_pCurrentFlyer->GetMaintain();
 }
 
 extern void SetTerrainToGUI(vtTerrain *pTerrain);
@@ -1172,6 +1196,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pCurrentFlyer->SetHeight(param.m_iMinHeight);
 	m_pTFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pVFlyer->SetSpeed(param.m_fNavSpeed);
+	m_pPanoFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pCurrentFlyer->SetEnabled(true);
 
 	// TODO: a more elegant way of keeping all nav engines current
@@ -1179,6 +1204,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pVFlyer->SetHeightField(pHF);
 	m_pTFlyer->SetHeightField(pHF);
 	m_pGFlyer->SetHeightField(pHF);
+	m_pPanoFlyer->SetHeightField(pHF);
 
 #if 1
 	// set the top-down viewpoint to a point over
