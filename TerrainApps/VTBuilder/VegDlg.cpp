@@ -64,14 +64,12 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_PSTable = (wxListCtrl *) FindWindow( ID_LISTCTRL_SPECIES );
 	m_PSTable->ClearAll();
 	m_PSTable->SetSingleStyle(wxLC_REPORT);
-	m_PSTable->InsertColumn(0, _T("SID"));
-	m_PSTable->SetColumnWidth(0, 34);
+	m_PSTable->InsertColumn(0, _("Scientific Name"));
+	m_PSTable->SetColumnWidth(0, 160);
 	m_PSTable->InsertColumn(1, _("Common Name"));
 	m_PSTable->SetColumnWidth(1, 115);
-	m_PSTable->InsertColumn(2, _("Scientific Name"));
-	m_PSTable->SetColumnWidth(2, 160);
-	m_PSTable->InsertColumn(3, _("Max Height"));
-	m_PSTable->SetColumnWidth(3, 80);
+	m_PSTable->InsertColumn(2, _("Max Height"));
+	m_PSTable->SetColumnWidth(2, 80);
 
 	// Setup right side with each plant appearance's attributes.
 	m_PATable = (wxListCtrl *) FindWindow( ID_LISTCTRL_APPEARANCES );
@@ -94,7 +92,7 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	vtSpeciesList* pl = GetMainFrame()->GetPlantList();
 
 	long item1 = m_PSTable->InsertItem(0, _T(""), 0);
-	m_PSTable->SetItem(item1, 1, _("(All species)"));
+	m_PSTable->SetItem(item1, 0, _("(All species)"));
 
 	for (unsigned int i = 0; i < pl->NumSpecies(); i++)
 	{
@@ -103,14 +101,14 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 		long item;
 		vtPlantSpecies *spe = pl->GetSpecies(i);
 
-		str.Printf(_T("%d"), spe->GetSpecieID() );
-		item = m_PSTable->InsertItem(i+1, str, 0);
-		str.from_utf8(spe->GetCommonName());
-		item = m_PSTable->SetItem(i+1, 1, str);
 		str.Printf(_T("%hs"), spe->GetSciName() );
-		item = m_PSTable->SetItem(i+1, 2, str);
+		item = m_PSTable->InsertItem(i+1, str, 0);
+
+		str.from_utf8(spe->GetCommonName().m_strName);
+		item = m_PSTable->SetItem(i+1, 1, str);
+
 		str.Printf(_T("%4.2f m"), spe->GetMaxHeight() );
-		item = m_PSTable->SetItem(i+1, 3, str);
+		item = m_PSTable->SetItem(i+1, 2, str);
 	}
 
 	// Start out with "All Species" selected
@@ -135,7 +133,7 @@ void SpeciesListDlg::AddAppeance(int idx)
 {
 	vtSpeciesList *pl = GetMainFrame()->GetPlantList();
 	vtPlantSpecies *spe = pl->GetSpecies(idx);
-	for (int j = 0; j < spe->NumAppearances(); j++)
+	for (unsigned int j = 0; j < spe->NumAppearances(); j++)
 	{
 		vtPlantAppearance* app = spe->GetAppearance(j);
 		wxString2 str1;
@@ -191,7 +189,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 			//  level 2 of the tree.
 			wxString s;
 			vtPlantDensity *pd = br->m_Types[i]->m_Densities[j];
-			const char *common = pd->m_pSpecies->GetCommonName();
+			const char *common = pd->m_pSpecies->GetCommonName().m_strName;
 			s.Printf(_T("%hs (%1.4f /m^2)"), common, pd->m_plant_per_m2);
 
 			wxTreeItemId specie = m_BTree->AppendItem(region, s);

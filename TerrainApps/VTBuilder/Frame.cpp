@@ -1737,7 +1737,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 			{
 				pd = bio->m_Densities[k];
 				str.Printf(_("    Plant %d: %hs: %d generated.\n"), k,
-					(const char *) pd->m_pSpecies->GetCommonName(), pd->m_iNumPlanted);
+					(const char *) pd->m_pSpecies->GetCommonName().m_strName, pd->m_iNumPlanted);
 				msg += str;
 			}
 		}
