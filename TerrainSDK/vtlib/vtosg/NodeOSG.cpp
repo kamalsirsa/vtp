@@ -259,13 +259,19 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		osgDB::Registry *reg = osgDB::Registry::instance();
 		HINT hint = reg->getUseObjectCacheHint();
 		if (bAllowCache)
-			hint = (HINT) (hint | (osgDB::Registry::CACHE_OBJECTS));
+			hint = (HINT) (hint | (osgDB::Registry::CACHE_NODES));
 		else
-			hint = (HINT) (hint & ~(osgDB::Registry::CACHE_OBJECTS));
+			hint = (HINT) (hint & ~(osgDB::Registry::CACHE_NODES));
 		reg->setUseObjectCacheHint(hint);
 
 		// Now actually request the node from OSG
+#if _DEBUG
+		VTLOG("[");
+#endif
 		node = osgDB::readNodeFile((const char *)fname);
+#if _DEBUG
+		VTLOG("]");
+#endif
 		if (!node)
 			return NULL;
 	}
