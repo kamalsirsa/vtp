@@ -8,7 +8,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include <osg/ClippingVolume>
+#include <osg/Polytope>
 
 using namespace osg;
 
@@ -514,7 +514,7 @@ void vtDynGeom::CalcCullPlanes()
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCam = pScene->GetCamera();
 
-#if 0
+#if 1
 	// Non-API-Specific code - will work correctly as long as the Camera
 	// methods are fully functional.
 	FMatrix4 mat;
@@ -573,14 +573,16 @@ void vtDynGeom::CalcCullPlanes()
 	// directly from OSG
 
 	// OSG 0.8.44
-	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
+//	const ClippingVolume &clipvol = pCam->m_pOsgCamera->getClippingVolume();
 	// OSG 0.8.45
 //	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
+	// OSG 0.9.0
+	const Polytope &clipvol = pCam->m_pOsgCamera->getPolytope();
 
-	const ClippingVolume::PlaneList &planes = clipvol.getPlaneList();
+	const Polytope::PlaneList &planes = clipvol.getPlaneList();
 
 	int i = 0;
-	for (ClippingVolume::PlaneList::const_iterator itr=planes.begin();
+	for (Polytope::PlaneList::const_iterator itr=planes.begin();
 		itr!=planes.end(); ++itr)
 	{
 		// make a copy of the clipping plane

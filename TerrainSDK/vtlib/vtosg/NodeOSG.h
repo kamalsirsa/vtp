@@ -92,7 +92,7 @@ protected:
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-class CustomTransform : public osg::Transform
+class CustomTransform : public osg::MatrixTransform
 {
 public:
 	inline osg::Matrix& getMatrix() { return *_matrix; }

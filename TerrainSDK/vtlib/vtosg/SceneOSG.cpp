@@ -84,19 +84,24 @@ void vtScene::Init()
 
 	m_pOsgSceneView = new osgUtil::SceneView();
 	m_pOsgSceneView->setDefaults();
-	m_pOsgSceneView->setCalcNearFar(false);
+
+	// OSG 0.8.45 and before
+//	m_pOsgSceneView->setCalcNearFar(false);
+
+	// OSG 0.9.0
+	m_pOsgSceneView->setComputeNearFarMode(osgUtil::CullVisitor::DO_NOT_COMPUTE_NEAR_FAR);
 
 	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::SKY_LIGHT);
 //	m_pOsgSceneView->setLightingMode(osgUtil::SceneView::NO_SCENEVIEW_LIGHT);
 	osgUtil::CullVisitor *cvis = m_pOsgSceneView->getCullVisitor();
 
 	// OSG 0.8.44
-	osgUtil::CullViewState::CullingMode mode = cvis->getCullingMode();
-	mode &= ~(osgUtil::CullViewState::SMALL_FEATURE_CULLING);
+//	osgUtil::CullViewState::CullingMode mode = cvis->getCullingMode();
+//	mode &= ~(osgUtil::CullViewState::SMALL_FEATURE_CULLING);
 
 	// OSG 0.8.45
-//	osgUtil::CullVisitor::CullingMode mode = cvis->getCullingMode();
-//	mode &= ~(osgUtil::CullVisitor::SMALL_FEATURE_CULLING);
+	osgUtil::CullVisitor::CullingMode mode = cvis->getCullingMode();
+	mode &= ~(osgUtil::CullVisitor::SMALL_FEATURE_CULLING);
 
 	cvis->setCullingMode(mode);
 
@@ -146,7 +151,7 @@ void vtScene::DoUpdate()
 	Camera *pOsgCam = m_pCamera->m_pOsgCamera;
 
 	// let the OSG Camera know that its transform has (probably) changed
-	pOsgCam->dirtyTransform();	// no longer needed as of OSG 0.8.45?
+//	pOsgCam->dirtyTransform();	// no longer needed as of OSG 0.8.45?
 
 	m_pOsgSceneView->setCamera(pOsgCam);
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);

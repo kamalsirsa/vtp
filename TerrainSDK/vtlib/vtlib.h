@@ -81,7 +81,7 @@
 	#include <osg/Material>
 	#include <osg/Texture>
 	#include <osg/Transparency>
-	#include <osg/Transform>
+	#include <osg/MatrixTransform>
 	#include <osg/Vec2>
 
 	#include "vtosg/ImageOSG.h"

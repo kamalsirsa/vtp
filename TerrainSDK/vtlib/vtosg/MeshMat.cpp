@@ -156,7 +156,10 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
  */
 bool vtMaterial::GetTransparent()
 {
-	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::TRANSPARENCY);
+	// OSG 0.8.45 and before
+//	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::TRANSPARENCY);
+	// OSG 0.9.0
+	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::BLENDFUNC);
 	return (m == GEO_ON);
 }
 
