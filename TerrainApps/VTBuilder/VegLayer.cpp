@@ -536,7 +536,7 @@ float vtVegLayer::FindDensity(const DPoint2 &p)
 	if (m_VLType != VLT_Density)
 		return -1;
 
-	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindSimplePolygon(p);
+	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindPolygon(p);
 	if (poly != -1)
 		return m_pSet->GetFloatValue(poly, m_field_density);
 	else
@@ -548,7 +548,7 @@ int vtVegLayer::FindBiotype(const DPoint2 &p)
 	if (m_VLType != VLT_BioMap)
 		return -1;
 
-	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindSimplePolygon(p);
+	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindPolygon(p);
 	if (poly != -1)
 		return m_pSet->GetIntegerValue(poly, m_field_biotype);
 	else
