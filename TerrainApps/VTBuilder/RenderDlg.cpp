@@ -30,7 +30,8 @@
 
 // WDR: event table for RenderDlg
 
-BEGIN_EVENT_TABLE(RenderDlg,AutoDialog)
+BEGIN_EVENT_TABLE(RenderDlg, AutoDialog)
+	EVT_INIT_DIALOG (RenderDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_RADIO_CREATE_NEW, RenderDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_TO_FILE, RenderDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_GEOTIFF, RenderDlg::OnRadio )

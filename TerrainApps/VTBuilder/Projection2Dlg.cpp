@@ -39,7 +39,8 @@
 
 // WDR: event table for Projection2Dlg
 
-BEGIN_EVENT_TABLE(Projection2Dlg,AutoDialog)
+BEGIN_EVENT_TABLE(Projection2Dlg, AutoDialog)
+	EVT_INIT_DIALOG (Projection2Dlg::OnInitDialog)
 	EVT_CHOICE( ID_PROJ, Projection2Dlg::OnProjChoice )
 	EVT_BUTTON( ID_STATEPLANE, Projection2Dlg::OnSetStatePlane )
 	EVT_CHOICE( ID_ZONE, Projection2Dlg::OnZone )
@@ -57,18 +58,9 @@ Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString 
 {
 	m_bInitializedUI = false;
 	m_bShowAllDatums = false;
+
 	ProjectionDialog2Func( this, TRUE ); 
-}
 
-void Projection2Dlg::SetProjection(const vtProjection &proj)
-{
-	m_proj = proj;
-
-	SetUIFromProjection();
-}
-
-void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
-{
 	m_pParamCtrl = GetProjparam();
 	m_pZoneCtrl = GetZonechoice();
 	m_pHorizCtrl = GetHorizchoice();
@@ -102,9 +94,17 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pParamCtrl->SetColumnWidth(1, 85);
 
 	m_bInitializedUI = true;
+}
 
+void Projection2Dlg::SetProjection(const vtProjection &proj)
+{
+	m_proj = proj;
 	SetUIFromProjection();
+}
 
+void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	SetUIFromProjection();
 	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
 }
 

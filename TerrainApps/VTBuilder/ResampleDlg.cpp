@@ -12,10 +12,6 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
-
 #include "ResampleDlg.h"
 #include "Layer.h"
 
@@ -27,7 +23,8 @@
 
 // WDR: event table for ResampleDlg
 
-BEGIN_EVENT_TABLE(ResampleDlg,AutoDialog)
+BEGIN_EVENT_TABLE(ResampleDlg, AutoDialog)
+	EVT_INIT_DIALOG (ResampleDlg::OnInitDialog)
 	EVT_BUTTON( ID_SMALLER, ResampleDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, ResampleDlg::OnBigger )
 	EVT_CHECKBOX( ID_CONSTRAIN, ResampleDlg::OnConstrain )

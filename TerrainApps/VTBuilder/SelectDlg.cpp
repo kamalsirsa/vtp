@@ -23,7 +23,8 @@
 
 // WDR: event table for SelectDlg
 
-BEGIN_EVENT_TABLE(SelectDlg,AutoDialog)
+BEGIN_EVENT_TABLE(SelectDlg, AutoDialog)
+	EVT_INIT_DIALOG (SelectDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, SelectDlg::OnOK )
 	EVT_LISTBOX( ID_FIELD, SelectDlg::OnChoiceField )
 END_EVENT_TABLE()
@@ -33,8 +34,22 @@ SelectDlg::SelectDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	SelectDialogFunc( this, TRUE );
-	m_bSetting = true;
+
 	m_pLayer = NULL;
+	m_iField = 0;
+	m_iCondition = 0;
+	m_strValue = _T("");
+
+	AddValidator(ID_CONDITION, &m_iCondition);
+
+	// The order of these must not change
+	GetCondition()->Append(_T(" = "));
+	GetCondition()->Append(_T(" > "));
+	GetCondition()->Append(_T(" < "));
+	GetCondition()->Append(_T(" >= "));
+	GetCondition()->Append(_T(" <= "));
+	GetCondition()->Append(_T(" <> "));
+	GetCondition()->SetSelection(0);
 }
 
 void SelectDlg::SetRawLayer(vtRawLayer *pRL)
@@ -44,10 +59,6 @@ void SelectDlg::SetRawLayer(vtRawLayer *pRL)
 
 void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	m_iField = 0;
-	m_iCondition = 0;
-	m_strValue = _T("");
-
 	vtProjection proj;
 	m_pLayer->GetProjection(proj);
 
@@ -75,30 +86,18 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_iFauxFields = 3;
 	}
 
-	wxString2 str;
 	for (unsigned int i = 0; i < pSet->GetNumFields(); i++)
 	{
 		Field *field = pSet->GetField(i);
-		str = field->m_name;
+		wxString2 str = field->m_name;
 		GetField()->Append(str, (void *) 0);
 	}
 	GetField()->SetSelection(0);
 
-	// The order of these must not change
-	GetCondition()->Append(_T(" = "));
-	GetCondition()->Append(_T(" > "));
-	GetCondition()->Append(_T(" < "));
-	GetCondition()->Append(_T(" >= "));
-	GetCondition()->Append(_T(" <= "));
-	GetCondition()->Append(_T(" <> "));
-	GetCondition()->SetSelection(0);
-
 	FillValuesControl();
 
-	AddValidator(ID_CONDITION, &m_iCondition);
-
+	m_bSetting = true;
 	wxDialog::OnInitDialog(event);	// calls TransferValuesToWindow
-
 	m_bSetting = false;
 }
 

@@ -12,10 +12,6 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
-
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
@@ -32,7 +28,8 @@
 
 // WDR: event table for RawDlg
 
-BEGIN_EVENT_TABLE(RawDlg,AutoDialog)
+BEGIN_EVENT_TABLE(RawDlg, AutoDialog)
+	EVT_INIT_DIALOG (RawDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_EXT_SPACING, RawDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_EXT_EXACT, RawDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_CRS_SIMPLE, RawDlg::OnRadio )
@@ -54,6 +51,20 @@ RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_bCrsExact = false;
 
 	RawDialogFunc( this, TRUE );
+
+	AddNumValidator(ID_BYTES, &m_iBytes);
+	AddNumValidator(ID_WIDTH, &m_iWidth);
+	AddNumValidator(ID_HEIGHT, &m_iHeight);
+	AddNumValidator(ID_VUNITS, &m_fVUnits);
+	AddNumValidator(ID_SPACING, &m_fSpacing);
+	AddValidator(ID_BIG_ENDIAN, &m_bBigEndian);
+
+	AddValidator(ID_EXT_SPACING, &m_bExtSpacing);
+	AddValidator(ID_EXT_EXACT, &m_bExtExact);
+
+	AddValidator(ID_CRS_SIMPLE, &m_bCrsSimple);
+	AddValidator(ID_CRS_CURRENT, &m_bCrsCurrent);
+	AddValidator(ID_CRS_EXACT, &m_bCrsExact);
 }
 
 // WDR: handler implementations for RawDlg
@@ -85,20 +96,6 @@ void RawDlg::OnRadio( wxCommandEvent &event )
 
 void RawDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	AddNumValidator(ID_BYTES, &m_iBytes);
-	AddNumValidator(ID_WIDTH, &m_iWidth);
-	AddNumValidator(ID_HEIGHT, &m_iHeight);
-	AddNumValidator(ID_VUNITS, &m_fVUnits);
-	AddNumValidator(ID_SPACING, &m_fSpacing);
-	AddValidator(ID_BIG_ENDIAN, &m_bBigEndian);
-
-	AddValidator(ID_EXT_SPACING, &m_bExtSpacing);
-	AddValidator(ID_EXT_EXACT, &m_bExtExact);
-
-	AddValidator(ID_CRS_SIMPLE, &m_bCrsSimple);
-	AddValidator(ID_CRS_CURRENT, &m_bCrsCurrent);
-	AddValidator(ID_CRS_EXACT, &m_bCrsExact);
-
 	UpdateEnabling();
 	UpdateExtents();
 	UpdateProjection();

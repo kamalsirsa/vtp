@@ -22,7 +22,8 @@
 
 // WDR: event table for OptionsDlg
 
-BEGIN_EVENT_TABLE(OptionsDlg,AutoDialog)
+BEGIN_EVENT_TABLE(OptionsDlg, AutoDialog)
+	EVT_INIT_DIALOG (OptionsDlg::OnInitDialog)
 	EVT_RADIOBUTTON( ID_RADIO_OUTLINE_ONLY, OptionsDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_COLOR, OptionsDlg::OnRadio )
 	EVT_RADIOBUTTON( ID_RADIO_NO_SHADING, OptionsDlg::OnRadio )
@@ -35,6 +36,26 @@ OptionsDlg::OptionsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	OptionsDialogFunc( this, TRUE ); 
+
+	GetElevUnit()->Append(_("Meters"));
+	GetElevUnit()->Append(_("Feet (International)"));
+	GetElevUnit()->Append(_("Feet (U.S. Survey)"));
+
+	AddValidator(ID_TOOLBAR, &m_bShowToolbar);
+	AddValidator(ID_MINUTES, &m_bShowMinutes);
+	AddValidator(ID_ELEVUNIT, &m_iElevUnits);
+
+	AddValidator(ID_RADIO_OUTLINE_ONLY, &m_bShowOutlines);
+	AddValidator(ID_RADIO_COLOR, &m_bColor);
+	AddValidator(ID_RADIO_NO_SHADING, &m_bNoShading);
+	AddValidator(ID_RADIO_SIMPLE_SHADING, &m_bSimpleShading);
+	AddValidator(ID_RADIO_CAST_SHADOWS, &m_bCastShadows);
+	AddValidator(ID_SPIN_CAST_ANGLE, &m_iCastAngle);
+	AddValidator(ID_SPIN_CAST_DIRECTION, &m_iCastDirection);
+	AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_bHideUnknown);
+
+	AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
+	AddValidator(ID_PATHNAMES, &m_bShowPath);
 }
 
 // WDR: handler implementations for OptionsDlg
@@ -57,29 +78,7 @@ void OptionsDlg::UpdateEnables()
 
 void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetElevUnit()->Clear();
-	GetElevUnit()->Append(_("Meters"));
-	GetElevUnit()->Append(_("Feet (International)"));
-	GetElevUnit()->Append(_("Feet (U.S. Survey)"));
-
-	AddValidator(ID_TOOLBAR, &m_bShowToolbar);
-	AddValidator(ID_MINUTES, &m_bShowMinutes);
-	AddValidator(ID_ELEVUNIT, &m_iElevUnits);
-
-	AddValidator(ID_RADIO_OUTLINE_ONLY, &m_bShowOutlines);
-	AddValidator(ID_RADIO_COLOR, &m_bColor);
-	AddValidator(ID_RADIO_NO_SHADING, &m_bNoShading);
-	AddValidator(ID_RADIO_SIMPLE_SHADING, &m_bSimpleShading);
-	AddValidator(ID_RADIO_CAST_SHADOWS, &m_bCastShadows);
-	AddValidator(ID_SPIN_CAST_ANGLE, &m_iCastAngle);
-	AddValidator(ID_SPIN_CAST_DIRECTION, &m_iCastDirection);
-	AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_bHideUnknown);
-
-	AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
-	AddValidator(ID_PATHNAMES, &m_bShowPath);
-
 	UpdateEnables();
-
 	wxDialog::OnInitDialog(event);
 }
 

@@ -1,7 +1,7 @@
 //
 // Name: SampleImageDlg.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,10 +11,6 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
 
 #include "SampleImageDlg.h"
 
@@ -26,7 +22,8 @@
 
 // WDR: event table for SampleImageDlg
 
-BEGIN_EVENT_TABLE(SampleImageDlg,AutoDialog)
+BEGIN_EVENT_TABLE(SampleImageDlg, AutoDialog)
+	EVT_INIT_DIALOG (SampleImageDlg::OnInitDialog)
 	EVT_BUTTON( ID_SMALLER, SampleImageDlg::OnSmaller )
 	EVT_BUTTON( ID_BIGGER, SampleImageDlg::OnBigger )
 	EVT_CHECKBOX( ID_CONSTRAIN, SampleImageDlg::OnConstrain )
@@ -41,26 +38,12 @@ SampleImageDlg::SampleImageDlg( wxWindow *parent, wxWindowID id, const wxString 
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	SampleImageDialogFunc( this, TRUE ); 
-	m_bSetting = false;
-}
-
-// WDR: handler implementations for SampleImageDlg
-
-void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
-{
 	m_power = 8;
 	m_bConstraint = false;
 	m_bTiling = false;
+	m_bSetting = false;
 
-	m_fAreaX = m_area.Width();
-	m_fAreaY = m_area.Height();
-
-	// initial value: based on estimate spacing
-	m_fSpacingX = m_fEstX;
-	m_fSpacingY = m_fEstY;
-	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
-	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
+	SampleImageDialogFunc( this, TRUE ); 
 
 	// sampling
 	AddNumValidator(ID_SPACINGX, &m_fSpacingX);
@@ -76,6 +59,20 @@ void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	AddNumValidator(ID_ESTX, &m_fEstX);
 	AddNumValidator(ID_ESTY, &m_fEstY);
+}
+
+// WDR: handler implementations for SampleImageDlg
+
+void SampleImageDlg::OnInitDialog(wxInitDialogEvent& event)
+{
+	m_fAreaX = m_area.Width();
+	m_fAreaY = m_area.Height();
+
+	// initial value: based on estimate spacing
+	m_fSpacingX = m_fEstX;
+	m_fSpacingY = m_fEstY;
+	m_iSizeX = (int) (m_fAreaX / m_fSpacingX);
+	m_iSizeY = (int) (m_fAreaY / m_fSpacingY);
 
 	m_bSetting = true;
 	TransferDataToWindow();

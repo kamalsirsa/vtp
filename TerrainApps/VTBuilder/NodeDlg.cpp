@@ -31,7 +31,8 @@
 
 // WDR: event table for NodeDlg
 
-BEGIN_EVENT_TABLE(NodeDlg,AutoDialog)
+BEGIN_EVENT_TABLE(NodeDlg, AutoDialog)
+	EVT_INIT_DIALOG (NodeDlg::OnInitDialog)
 	EVT_PAINT(NodeDlg::OnPaint)
 	EVT_LISTBOX( ID_INTTYPE, NodeDlg::OnIntType )
 	EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnLinkNum )
@@ -43,6 +44,18 @@ NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	NodePropDialogFunc( this, TRUE ); 
+
+	GetIntType()->Append(_("Unknown"));
+	GetIntType()->Append(_("Uncontrolled"));
+	GetIntType()->Append(_("All Signal Light(s)"));
+	GetIntType()->Append(_("All Stop Sign(s)"));
+	GetIntType()->Append(_("Signal Light(s)"));
+	GetIntType()->Append(_("Stop Sign(s)"));
+	GetIntType()->Append(_("(multiple)"));
+
+	GetBehavior()->Append(_("Uncontrolled"));	// IT_NONE
+	GetBehavior()->Append(_("Signal Light"));	// IT_LIGHT
+	GetBehavior()->Append(_("Stop Sign"));		// IT_STOPSIGN
 }
 
 void NodeDlg::SetNode(NodeEdit *pSingleNode, vtRoadLayer *pLayer)
@@ -134,18 +147,6 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 
 void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetIntType()->Append(_("Unknown"));
-	GetIntType()->Append(_("Uncontrolled"));
-	GetIntType()->Append(_("All Signal Light(s)"));
-	GetIntType()->Append(_("All Stop Sign(s)"));
-	GetIntType()->Append(_("Signal Light(s)"));
-	GetIntType()->Append(_("Stop Sign(s)"));
-	GetIntType()->Append(_("(multiple)"));
-
-	GetBehavior()->Append(_("Uncontrolled"));	// IT_NONE
-	GetBehavior()->Append(_("Signal Light"));	// IT_LIGHT
-	GetBehavior()->Append(_("Stop Sign"));		// IT_STOPSIGN
-
 	// if we are editing multiple nodes at once, disable some of the
 	// editing abilities
 	if (!m_pNode)

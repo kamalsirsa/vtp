@@ -29,7 +29,8 @@
 
 // WDR: event table for RoadDlg
 
-BEGIN_EVENT_TABLE(RoadDlg,AutoDialog)
+BEGIN_EVENT_TABLE(RoadDlg, AutoDialog)
+	EVT_INIT_DIALOG (RoadDlg::OnInitDialog)
 	EVT_BUTTON( wxID_OK, RoadDlg::OnOK )
 END_EVENT_TABLE()
 
@@ -38,6 +39,31 @@ RoadDlg::RoadDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	RoadPropDialogFunc( this, TRUE ); 
+
+	GetSurfType()->Append(_("None"));
+	GetSurfType()->Append(_("Gravel"));
+	GetSurfType()->Append(_("Trail"));
+	GetSurfType()->Append(_("2 Track"));
+	GetSurfType()->Append(_("Dirt"));
+	GetSurfType()->Append(_("Paved"));
+	GetSurfType()->Append(_("Railroad"));
+	GetSurfType()->Append(_("(multiple types)"));
+	GetSurfType()->SetSelection(0);
+
+	GetSidewalk()->Append(_("No"));
+	GetSidewalk()->Append(_("Yes"));
+	GetSidewalk()->Append(_("(multiple)"));
+	GetSidewalk()->SetSelection(0);
+
+	GetParking()->Append(_("No"));
+	GetParking()->Append(_("Yes"));
+	GetParking()->Append(_("(multiple)"));
+	GetParking()->SetSelection(0);
+
+	GetMargin()->Append(_("No"));
+	GetMargin()->Append(_("Yes"));
+	GetMargin()->Append(_("(multiple)"));
+	GetMargin()->SetSelection(0);
 }
 
 void RoadDlg::SetRoad(LinkEdit *pSingleRoad, vtRoadLayer *pLayer)
@@ -128,31 +154,6 @@ void RoadDlg::TransferStateToControls()
 
 void RoadDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetSurfType()->Append(_("None"));
-	GetSurfType()->Append(_("Gravel"));
-	GetSurfType()->Append(_("Trail"));
-	GetSurfType()->Append(_("2 Track"));
-	GetSurfType()->Append(_("Dirt"));
-	GetSurfType()->Append(_("Paved"));
-	GetSurfType()->Append(_("Railroad"));
-	GetSurfType()->Append(_("(multiple types)"));
-	GetSurfType()->SetSelection(0);
-
-	GetSidewalk()->Append(_("No"));
-	GetSidewalk()->Append(_("Yes"));
-	GetSidewalk()->Append(_("(multiple)"));
-	GetSidewalk()->SetSelection(0);
-
-	GetParking()->Append(_("No"));
-	GetParking()->Append(_("Yes"));
-	GetParking()->Append(_("(multiple)"));
-	GetParking()->SetSelection(0);
-
-	GetMargin()->Append(_("No"));
-	GetMargin()->Append(_("Yes"));
-	GetMargin()->Append(_("(multiple)"));
-	GetMargin()->SetSelection(0);
-
 	ClearState();
 	if (m_pRoad)
 		AccumulateState(m_pRoad);
