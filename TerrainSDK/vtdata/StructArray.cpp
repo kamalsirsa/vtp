@@ -26,6 +26,13 @@ vtStructureArray g_DefaultStructures;
 
 /////////////////////////////////////////////////////////////////////////////
 
+vtStructureArray::vtStructureArray()
+{
+	m_strFilename = "Untitled.vtst";
+	m_pEditBuilding = NULL;
+}
+
+
 // Factories
 vtBuilding *vtStructureArray::NewBuilding()
 {
@@ -1252,12 +1259,15 @@ bool vtStructureArray::WriteXML(const char* filename)
 	return true;
 }
 
-bool vtStructureArray::ReadXML(const char* pathname)
+bool vtStructureArray::ReadXML(const char *pathname)
 {
 	// check to see if it's old or new format
 	bool bOldFormat = false;
 	FILE *fp = fopen(pathname, "r");
 	if (!fp) return false;
+
+	m_strFilename = pathname;
+
 	fseek(fp, 24, SEEK_SET);
 	char buf[10];
 	fread(buf, 10, 1, fp);

@@ -59,9 +59,12 @@ typedef enum
 class vtStructureArray : public Array<vtStructure*>
 {
 public:
-	vtStructureArray() { m_pEditBuilding = NULL; }
+	vtStructureArray();
 	virtual ~vtStructureArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 	virtual void DestructItems(int first, int last);
+
+	void SetFilename(const vtString &str) { m_strFilename = str; }
+	vtString GetFilename() { return m_strFilename; }
 
 	void DeleteSelected();
 	virtual void DestroyStructure(int i) {}
@@ -130,6 +133,8 @@ public:
 	vtProjection m_proj;
 
 protected:
+	vtString	m_strFilename;
+
 	// used to indicate which edge should be hightlighted during editing
 	vtBuilding *m_pEditBuilding;
 	int m_iEditLevel;
