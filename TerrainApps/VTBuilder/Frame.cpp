@@ -899,14 +899,6 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	LayerType ltype;
 
 	fscanf(fp, "layers: %d\n", &count);
-	if (count < 1)
-	{
-		fclose(fp);
-		str = "Empty or invalid project file: ";
-		str += strPathName;
-		wxMessageBox(str);
-		return;
-	}
 	for (int i = 0; i < count; i++)
 	{
 		char buf2[80];
