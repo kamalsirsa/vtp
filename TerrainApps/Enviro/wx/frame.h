@@ -110,6 +110,7 @@ public:
 	void OnEarthShowTime(wxCommandEvent& event);
 	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 	void OnEarthFlatten(wxCommandEvent& event);
+	void OnEarthUnfold(wxCommandEvent& event);
 	void OnEarthPoints(wxCommandEvent& event);
 	void OnEarthLinear(wxCommandEvent& event);
 

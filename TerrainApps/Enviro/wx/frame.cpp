@@ -147,12 +147,15 @@ EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
 EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
 
 EVT_MENU(ID_EARTH_SHOWTIME, vtFrame::OnEarthShowTime)
-EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
 EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
-EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
+EVT_MENU(ID_EARTH_UNFOLD, vtFrame::OnEarthUnfold)
 EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
-EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
 EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
+
+EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_UNFOLD, vtFrame::OnUpdateInOrbit)
+EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_LINEAR, vtFrame::OnUpdateInOrbit)
 
 EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
@@ -285,6 +288,7 @@ void vtFrame::CreateMenus()
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWTIME, _T("&Show Time of Day\tCtrl+I"));
 	earthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
+	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
 	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
 	earthMenu->Append(ID_EARTH_LINEAR, _T("Add &Linear Features...\tCtrl+L"));
 
@@ -432,6 +436,11 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			vtBuilding3d *bld = sa.GetBuilding(i);
 			sa.ConstructStructure(bld);
 		}
+	}
+	if (key == 1)	// Ctrl-A
+	{
+		// dump camera info
+		g_App.DumpCameraInfo();
 	}
 }
 
@@ -971,6 +980,11 @@ void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
 void vtFrame::OnEarthFlatten(wxCommandEvent& event)
 {
 	g_App.SetEarthShape(!g_App.GetEarthShape());
+}
+
+void vtFrame::OnEarthUnfold(wxCommandEvent& event)
+{
+	g_App.SetEarthUnfold(!g_App.GetEarthUnfold());
 }
 
 void vtFrame::OnEarthPoints(wxCommandEvent& event)
