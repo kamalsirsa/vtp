@@ -4,7 +4,7 @@
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -100,5 +100,25 @@ void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth) const
 void vtLocalConversion::ConvertFromEarth(const DPoint2 &earth, float &x, float &z) const
 {
 	convert_earth_to_local_xz(earth.x, earth.y, x, z);
+}
+
+/**
+ * Convert a vector from the coordinate system of the virtual world (x,y,z)
+ * to actual earth coodinates (map coordinates, altitude in meters)
+ */
+void vtLocalConversion::ConvertVectorToEarth(float x, float z, DPoint2 &earth) const
+{
+	earth.x = (x / m_scale.x);
+	earth.y = (-z / m_scale.y);
+}
+
+/**
+ * Convert a vector from earth coodinates (map coordinates, altitude in
+ * meters) to the coordinate system of the virtual world (x,y,z)
+ */
+void vtLocalConversion::ConvertVectorFromEarth(const DPoint2 &earth, float &x, float &z) const
+{
+	x = (float) (earth.x * m_scale.x);
+	z = (float) -(earth.y * m_scale.y);
 }
 

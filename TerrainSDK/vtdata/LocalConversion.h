@@ -4,7 +4,7 @@
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -30,14 +30,17 @@ public:
 	void Setup(LinearUnits units, const DPoint2 &origin);
 	void SetOrigin(const DPoint2 &origin);
 
+	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z) const;
+	void convert_local_xz_to_earth(float x, float z, double &ex, double &ey) const;
+
 	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth) const;
 	void ConvertToEarth(float x, float z, DPoint2 &earth) const;
 
 	void ConvertFromEarth(const DPoint2 &earth, float &x, float &z) const;
 	void ConvertFromEarth(const DPoint3 &earth, FPoint3 &world) const;
 
-	void convert_earth_to_local_xz(double ex, double ey, float &x, float &z) const;
-	void convert_local_xz_to_earth(float x, float z, double &ex, double &ey) const;
+	void ConvertVectorToEarth(float x, float z, DPoint2 &earth) const;
+	void ConvertVectorFromEarth(const DPoint2 &earth, float &x, float &z) const;
 
 	LinearUnits GetUnits() const { return m_units; }
 
