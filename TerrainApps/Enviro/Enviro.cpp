@@ -1496,6 +1496,9 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	{
 		m_EarthPosDown = m_EarthPos;
 		m_bDragging = true;
+		DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
+		SetTerrainMeasure(g1, g1);
+		ShowDistance(g1, g1, 0, 0);
 	}
 }
 
