@@ -45,7 +45,7 @@ class Enviro : public vtTerrainScene
 {
 public:
 	Enviro();
-	~Enviro();
+	virtual ~Enviro();
 
 	// methods
 	void Startup();
