@@ -156,7 +156,10 @@ int vtApp::OnExit(void)
 	vtCamera *pCamera = vtGetScene()->GetCamera();
 	pCamera->Release();
 
+	vtGetScene()->SetRoot(NULL);
 	m_pRoot->Release();
+
+	vtGetScene()->Shutdown();
 	return 0;
 }
 
