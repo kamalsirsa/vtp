@@ -66,7 +66,8 @@ void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
 BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBox )
 	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBox )
-
+	EVT_CHOICE( ID_LODMETHOD, TParamsDlg::OnCheckBox )
+		
 	EVT_TEXT( ID_TILESIZE, TParamsDlg::OnTileSize )
 	EVT_TEXT( ID_TFILEBASE, TParamsDlg::OnTextureFileBase )
 
@@ -354,9 +355,9 @@ void TParamsDlg::UpdateEnableState()
 	GetFilenameTin()->Enable(m_bTin);
 
 	FindWindow(ID_LODMETHOD)->Enable(!m_bTin);
-	FindWindow(ID_PIXELERROR)->Enable(!m_bTin);
-	FindWindow(ID_TRICOUNT)->Enable(!m_bTin);
-	FindWindow(ID_TRISTRIPS)->Enable(!m_bTin);
+	FindWindow(ID_PIXELERROR)->Enable(!m_bTin && m_iLodMethod == LM_TOPOVISTA);
+	FindWindow(ID_TRICOUNT)->Enable(!m_bTin && m_iLodMethod != LM_TOPOVISTA);
+	FindWindow(ID_TRISTRIPS)->Enable(!m_bTin && m_iLodMethod == LM_MCNALLY);
 	FindWindow(ID_DETAILTEXTURE)->Enable(!m_bTin);
 
 	FindWindow(ID_TFILESINGLE)->Enable(m_iTexture == TE_SINGLE);

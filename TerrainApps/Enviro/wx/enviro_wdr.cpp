@@ -608,23 +608,17 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxString *strs5 = (wxString*) NULL;
     wxComboBox *item5 = new wxComboBox( parent, ID_FILENAME, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs5, wxCB_DROPDOWN|wxCB_SORT );
-    item3->Add( item5, 1, wxALIGN_CENTER|wxALL, 0 );
+    item3->Add( item5, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item1->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Terrain LOD Method:"), wxDefaultPosition, wxDefaultSize, 0 );
     item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxString strs8[] = 
-    {
-        _("Item"), 
-        _("Item"), 
-        _("Item"), 
-        _("Item")
-    };
-    wxChoice *item8 = new wxChoice( parent, ID_LODMETHOD, wxDefaultPosition, wxSize(120,-1), 4, strs8, 0 );
+    wxString *strs8 = (wxString*) NULL;
+    wxChoice *item8 = new wxChoice( parent, ID_LODMETHOD, wxDefaultPosition, wxSize(120,-1), 0, strs8, 0 );
     item6->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item6, 0, wxALIGN_CENTER, 5 );
@@ -635,57 +629,49 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item9->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxTextCtrl *item11 = new wxTextCtrl( parent, ID_TRICOUNT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item9->Add( item11, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Pixel Error Bound: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_PIXELERROR, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item9->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item9, 0, wxALIGN_CENTER, 5 );
 
-    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("Pixel Error Bound: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item12->Add( item13, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-
-    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_PIXELERROR, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item12->Add( item14, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
-
-    item1->Add( item12, 0, wxALIGN_CENTER, 5 );
-
-    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxCheckBox *item16 = new wxCheckBox( parent, ID_TRISTRIPS, _("Use strips/fans"), wxDefaultPosition, wxDefaultSize, 0 );
-    item15->Add( item16, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    item1->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item14 = new wxCheckBox( parent, ID_TRISTRIPS, _("Use strips/fans"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 10 );
 
-    wxStaticBox *item18 = new wxStaticBox( parent, -1, _("Elevation TIN") );
-    wxStaticBoxSizer *item17 = new wxStaticBoxSizer( item18, wxVERTICAL );
+    wxStaticBox *item16 = new wxStaticBox( parent, -1, _("Elevation TIN") );
+    wxStaticBoxSizer *item15 = new wxStaticBoxSizer( item16, wxVERTICAL );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxRadioButton *item20 = new wxRadioButton( parent, ID_USE_TIN, _("TIN Filename:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
+    wxRadioButton *item18 = new wxRadioButton( parent, ID_USE_TIN, _("TIN Filename:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item18, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT, 5 );
 
-    wxString *strs21 = (wxString*) NULL;
-    wxComboBox *item21 = new wxComboBox( parent, ID_FILENAME_TIN, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs21, wxCB_DROPDOWN|wxCB_SORT );
-    item19->Add( item21, 1, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs19 = (wxString*) NULL;
+    wxComboBox *item19 = new wxComboBox( parent, ID_FILENAME_TIN, wxT(""), wxDefaultPosition, wxSize(180,-1), 0, strs19, wxCB_DROPDOWN|wxCB_SORT );
+    item17->Add( item19, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item17->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
+    item15->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 
-    item0->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 10 );
+    item0->Add( item15, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 10 );
 
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Vertical Exaggeration:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, _("Vertical Exaggeration:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item24 = new wxTextCtrl( parent, ID_VERTEXAG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
-    item22->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_VERTEXAG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item20->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item25, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item23, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item0->Add( item22, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    item0->Add( item20, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
