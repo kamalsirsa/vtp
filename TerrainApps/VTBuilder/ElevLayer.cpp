@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "Frame.h"
 #include "ElevLayer.h"
 #include "ScaledView.h"
 #include "Helper.h"
@@ -19,6 +20,9 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+
+#include "Projection2Dlg.h"
+#include "ExtentDlg.h"
 
 #define SHADING_BIAS	200
 
@@ -977,8 +981,9 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		}
 		if (success)
 		{
-			m_pGrid->m_EarthExtents.top = dlg.m_iHeight * dlg.m_fSpacing;
-			m_pGrid->m_EarthExtents.right = dlg.m_iWidth * dlg.m_fSpacing;
+			DRECT ext = m_pGrid->GetEarthExtents();
+			ext.top = dlg.m_iHeight * dlg.m_fSpacing;
+			ext.right = dlg.m_iWidth * dlg.m_fSpacing;
 		}
 	}
 	else if (!strExt.CmpNoCase(_T("ntf")))
@@ -988,9 +993,79 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	if (!success)
 	{
 		DisplayAndLog("Couldn't import data from that file.");
+		return false;
 	}
 
-	return success;
+	vtProjection &proj = m_pGrid->GetProjection();
+	if (!proj.GetRoot())
+	{
+		// No projection.
+		wxString2 msg = "File lacks a projection.  "
+			"Would you like to specify one?\n"
+			"Yes - specify projection\n"
+			"No - use current projection\n";
+		int res = wxMessageBox(msg, _T("Elevation Import"), wxYES_NO | wxCANCEL);
+		if (res == wxYES)
+		{
+			vtProjection frame_proj;
+			GetMainFrame()->GetProjection(frame_proj);
+			Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
+			dlg.SetProjection(frame_proj);
+
+			if (dlg.ShowModal() == wxID_CANCEL)
+				return false;
+			dlg.GetProjection(proj);
+		}
+		if (res == wxNO)
+		{
+			GetMainFrame()->GetProjection(proj);
+		}
+		if (res == wxCANCEL)
+			return false;
+	}
+	if (m_pGrid->GetEarthExtents().IsEmpty())
+	{
+		// No extents.
+		wxString2 msg = "File lacks geographic location (extents).  "
+			"Would you like to specify extents?\n"
+			"Yes - specify extents\n"
+			"No - use some default values\n";
+		int res = wxMessageBox(msg, _T("Elevation Import"), wxYES_NO | wxCANCEL);
+		if (res == wxYES)
+		{
+			DRECT ext;
+			ext.Empty();
+			ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
+			dlg.SetArea(ext, (proj.IsGeographic() != 0));
+			if (dlg.ShowModal() == wxID_OK)
+				m_pGrid->SetEarthExtents(dlg.m_area);
+			else
+				return false;
+		}
+		if (res == wxNO)
+		{
+			// Just make up some fake extents, assuming a regular even grid
+			int xsize, ysize;
+			m_pGrid->GetDimensions(xsize, ysize);
+
+			DRECT ext;
+			ext.left = ext.bottom = 0;
+			if (proj.IsGeographic())
+			{
+				ext.right = xsize * (1.0/3600);	// arc second
+				ext.top = ysize * (1.0/3600);
+			}
+			else
+			{
+				ext.right = xsize * 10;	// 10 linear units (meters, feet..)
+				ext.top = ysize * 10;
+			}
+			m_pGrid->SetEarthExtents(ext);
+		}
+		if (res == wxCANCEL)
+			return false;
+	}
+	return true;
 }
 
 void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
