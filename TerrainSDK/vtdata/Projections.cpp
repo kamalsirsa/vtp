@@ -848,24 +848,63 @@ OCT *CreateConversionIgnoringDatum(const vtProjection *pSource, vtProjection *pT
 		enode2->GetChild(2)->SetValue(enode1->GetChild(2)->GetValue());
 	}
 
-#if DEBUG && 0
-	// Debug: Check texts in PROJ4
-	char *str3, *str4;
-	pSource->exportToProj4(&str3);
-	DummyTarget.exportToProj4(&str4);
-
-	char *wkt1, *wkt2;
-	OGRErr err = pSource->exportToWkt(&wkt1);
-	err = DummyTarget.exportToWkt(&wkt2);
-
-	OGRFree(wkt1);
-	OGRFree(wkt2);
+#if DEBUG
+	bool bLog = true;
+#else
+	bool bLog = false;
 #endif
-
-	return OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
-		(OGRSpatialReference *)&DummyTarget);
+	return CreateCoordTransform(pSource, &DummyTarget, bLog);
 }
 
+/**
+ * Support for converting to and from the Dymaxion projection is
+ * implemented by overriding _and_ containing an OCT object.
+ *
+ * The contained OCT transforms to/from WGS84 Geographic coords.
+ * The subclassing is used to implement the Transform() method
+ * which does the additional Dymaxion conversion.
+ */
+class DymaxOCT : public OCT
+{
+public:
+	DymaxOCT(OCT *pStandard, bool bDirection)
+	{
+		m_pStandardConversion = pStandard;
+		m_bDirection = bDirection;
+	}
+
+	OGRSpatialReference *GetSourceCS() { return m_pStandardConversion->GetSourceCS(); }
+	OGRSpatialReference *GetTargetCS() { return m_pStandardConversion->GetTargetCS(); }
+
+	int Transform(int nCount, double *x, double *y, double *z = NULL);
+
+	OCT *m_pStandardConversion;
+	bool m_bDirection;		// true: to dymax, false: from dymax
+};
+
+int DymaxOCT::Transform(int nCount, double *x, double *y, double *z)
+{
+	int iConverted = 0;
+	for (int i = 0; i < nCount; i++)
+	{
+		DPoint2 p(x[i], y[i]);
+
+		// TOD0: call conversion
+
+		x[i] = p.x;
+		y[i] = p.y;
+		iConverted++;
+	}
+	return iConverted;
+}
+
+/**
+ * Use this function instead of OGRCreateCoordinateTransformation to create
+ * a transformation between two vtProjections.  Not only does it get around
+ * the 'const' issue with the arguments to the OGR function, but it also
+ * has a handy logging option, and can deal with any additional projections
+ * that vtProjection adds to OGRSpatialReference.
+ */
 OCT *CreateCoordTransform(const vtProjection *pSource,
 						  const vtProjection *pTarget, bool bLog)
 {
@@ -880,13 +919,24 @@ OCT *CreateCoordTransform(const vtProjection *pSource,
 		OGRFree(wkt1);
 		OGRFree(wkt2);
 	}
+
 	OCT *result = OGRCreateCoordinateTransformation((OGRSpatialReference *)pSource,
 		(OGRSpatialReference *)pTarget);
 	if (bLog)
 	{
 		VTLOG(" Conversion: %s\n", result ? "succeeded" : "failed");
 	}
-	return result;
+
+	if (!pSource->IsDymaxion() && pTarget->IsDymaxion())
+	{
+		return new DymaxOCT(result, true);
+	}
+	else if (!pSource->IsDymaxion() && pTarget->IsDymaxion())
+	{
+		return new DymaxOCT(result, false);
+	}
+	else
+		return result;
 }
 
 
