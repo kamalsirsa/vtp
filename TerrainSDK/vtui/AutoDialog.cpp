@@ -45,7 +45,20 @@ wxNumericValidator::wxNumericValidator(double *val, int digits) : wxValidator()
 
 wxNumericValidator::wxNumericValidator(const wxNumericValidator& val)
 {
+	Initialize();
 	Copy(val);
+}
+
+/*
+  Called by constructors to initialize ALL data members
+*/
+void wxNumericValidator::Initialize()
+{
+	m_pValInt = NULL;
+	m_pValFloat = NULL;
+	m_pValDouble = NULL;
+	m_iDigits = 0;
+	m_bEnabled = true;
 }
 
 bool wxNumericValidator::Copy(const wxNumericValidator& val)
@@ -157,17 +170,6 @@ bool wxNumericValidator::TransferFromWindow()
 		return TRUE;
 	}
 	return FALSE;
-}
-
-/*
-  Called by constructors to initialize ALL data members
-*/
-void wxNumericValidator::Initialize()
-{
-	m_pValInt = NULL;
-	m_pValFloat = NULL;
-	m_pValDouble = NULL;
-	m_bEnabled = true;
 }
 
 /////////////////////////////////////////////////
