@@ -314,7 +314,11 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 		{
 			for (int i = 0; i < w; i++)
 			{
-				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				if (progress_callback != NULL)
+				{
+					if (progress_callback(i * 100 / w))
+					{ fclose(fp); return false; }
+				}
 				FWrite(m_pFData + (i * m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
@@ -322,7 +326,11 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 		{
 			for (int i = 0; i < w; i++)
 			{
-				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				if (progress_callback != NULL)
+				{
+					if (progress_callback(i * 100 / w))
+					{ fclose(fp); return false; }
+				}
 				FWrite(m_pData + (i * m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
@@ -362,7 +370,11 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 		{
 			for (int i = 0; i < w; i++)
 			{
-				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				if (progress_callback != NULL)
+				{
+					if (progress_callback(i * 100 / w))
+					{ gzclose(fp); return false; }
+				}
 				GZFWrite(m_pFData + (i * m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
@@ -370,7 +382,11 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 		{
 			for (int i = 0; i < w; i++)
 			{
-				if (progress_callback != NULL) progress_callback(i * 100 / w);
+				if (progress_callback != NULL)
+				{
+					if (progress_callback(i * 100 / w))
+					{ gzclose(fp); return false; }
+				}
 				GZFWrite(m_pData + (i * m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 			}
 		}
