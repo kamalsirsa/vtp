@@ -259,14 +259,6 @@ vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 }
 
 // helpers
-int GetInt(const char *buf, int len)
-{
-	char copy[20];
-	strncpy(copy, buf, len);
-	copy[len] = 0;
-	return atoi(copy);
-}
-
 double GetMinutes(const char *buf)
 {
 	char copy[20];
@@ -307,14 +299,14 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 			int deg;
 			double min;
 
-			deg = GetInt(buf+7, 2);
+			deg = GetIntFromString(buf+7, 2);
 			min = GetMinutes(buf+9);
 			if (buf[14] == 'N')
 				p.y = deg + (min / 60.0);
 			else if (buf[14] == 'S')
 				p.y = -(deg + (min / 60.0));
 
-			deg = GetInt(buf+15, 3);
+			deg = GetIntFromString(buf+15, 3);
 			min = GetMinutes(buf+18);
 			if (buf[23] == 'E')
 				p.x = deg + (min / 60.0);
@@ -323,11 +315,11 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 
 			// Pressure altitude
 			// "to the ICAO ISA above the 1013.25 HPa sea level datum, valid characters 0-9"
-			int alt_pressure = GetInt(buf+25, 5);
+			int alt_pressure = GetIntFromString(buf+25, 5);
 
 			// GPS altitude
 			// "Altitude above the WGS84 ellipsoid, valid characters 0-9"
-			int alt_gnss = GetInt(buf+30, 5);
+			int alt_gnss = GetIntFromString(buf+30, 5);
 
 			p.z = alt_pressure;
 
@@ -1690,5 +1682,16 @@ vtString MakeDBFName(const char *filename)
 	fname = fname.Left(fname.GetLength() - 4);
 	fname += ".dbf";
 	return fname;
+}
+
+//
+// Extract an integer with known character length from a string.
+//
+int GetIntFromString(const char *buf, int len)
+{
+	char copy[32];
+	strncpy(copy, buf, len);
+	copy[len] = 0;
+	return atoi(copy);
 }
 
