@@ -1119,7 +1119,7 @@ void SMTerrain::RenderSurface()
 float SMTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
 	if (bTrue)
-		return m_pData[offset(iX,iZ)];
+		return ((float) m_pData[offset(iX,iZ)]) / PACK_SCALE;
 	else
 		return m_pData[offset(iX,iZ)]*m_fZScale;
 }
@@ -1127,6 +1127,11 @@ float SMTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 void SMTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));
+}
+
+void SMTerrain::SetVerticalExag(float fExag)
+{
+	m_fZScale = fExag / PACK_SCALE;
 }
 
 

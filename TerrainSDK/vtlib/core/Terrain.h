@@ -113,7 +113,6 @@ public:
 	/** Override this method to customize the Dib, before it is turned into
 	 * a vtImage.  The default implementation colors from elevation. */
 	virtual void PaintDib();
-	void ApplyVerticalExag();
 
 	/// return true if the terrain has been created
 	bool IsCreated();
@@ -199,6 +198,8 @@ public:
 	// control LOD
 	void SetLODDistance(TFType ftype, float fDistance);
 	float GetLODDistance(TFType ftype);
+	void SetVerticalExag(float fExag);
+	float GetVerticalExag() { return m_fVerticalExag; }
 
 	// query
 	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
@@ -286,6 +287,7 @@ protected:
 	// dynamic terrain (CLOD)
 	vtDynTerrainGeom *m_pDynGeom;
 	vtTransform		 *m_pDynGeomScale;
+	float			m_fVerticalExag;
 
 	// triangulated irregular network (TIN)
 	vtTin3d		*m_pTin;

@@ -1,5 +1,5 @@
 //
-// SRTerrain class : a subclass of vtDynTerrainGeom which exposes
+// SRTerrain class : a subclass of vtDynTerrainGeom which encapsulates
 //  Stefan Roettger's CLOD algorithm.
 //
 // utilizes: Roettger's MINI library implementation
@@ -14,13 +14,6 @@
 
 #include "mini.h"
 #include "ministub.hpp"
-
-class myministub : public ministub
-{
-public:
-	// work around access to protected 'SCALE' member
-	void SetScale(float fScale) { SCALE = fScale; }
-};
 
 using namespace mini;
 #ifdef _MSC_VER
@@ -107,8 +100,6 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	if (m_iColumns != m_iRows)
 		return DTErr_NOTSQUARE;
 
-	m_fHeightScale = fZScale;
-
 	// compute n (log2 of grid size)
 	// ensure that the grid is size (1 << n) + 1
 	int n = vt_log2(m_iColumns - 1);
@@ -121,20 +112,40 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	float cellaspect = m_fZStep / m_fXStep;
 
 	s_pGrid = pGrid;
+	m_fHeightScale = fZScale;
+
+	// Totally strange but repeatable behavior: runtime exit in Release-mode
+	//  libMini with values over a certain level.  Workaround here!
+	// Exit happens if (scale * maximum_height / dim > 967)
+	//
+	// 	scale * maximum_height / dim > 967
+	//	scale > dim * 967 / maximum_height
+	//
+	float fMin, fMax;
+	pGrid->GetHeightExtents(fMin, fMax);
+	// Avoid trouble with fMax small or zero
+	if (fMax < 10) fMax = 10;
+	// compute the largest supported value for MaxScale
+	float fMaxMax = dim * 960 / fMax;
+	// values greater than 10 are unnecessarily large
+	if (fMaxMax > 10)
+		fMaxMax = 10;
+
+	m_fMaximumScale = fMaxMax;
 
 	if (pGrid->IsFloatMode())
 	{
 		float *image = NULL;
-		m_pMini = (myministub *) new ministub(image,
-				&size, &dim, fZScale, cellaspect,
+		m_pMini = new ministub(image,
+				&size, &dim, m_fMaximumScale, cellaspect,
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp2);
 	}
 	else
 	{
 		short *image = NULL;
-		m_pMini = (myministub *) new ministub(image,
-				&size, &dim, fZScale, cellaspect,
+		m_pMini = new ministub(image,
+				&size, &dim, m_fMaximumScale, cellaspect,
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp1);
 	}
@@ -147,7 +158,11 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 
 void SRTerrain::SetVerticalExag(float fExag)
 {
-	m_pMini->SetScale(fExag);
+	m_fHeightScale = fExag;
+
+	// safety check
+	if (m_fHeightScale > m_fMaximumScale)
+		m_fHeightScale = m_fMaximumScale;
 }
 
 
@@ -288,15 +303,17 @@ void SRTerrain::RenderPass()
 	int size = m_iColumns;
 
 	// Convert the eye location to the unusual coordinate scheme of libMini.
-	ex-=(m_iColumns/2)*m_fXStep;
-	ez+=(m_iRows/2)*m_fZStep;
+	ex -= (m_iColumns/2)*m_fXStep;
+	ez += (m_iRows/2)*m_fZStep;
 
+	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 	m_pMini->draw(m_fResolution,
 				ex, ey, ez,
 				dx, dy, dz,
 				ux, uy, uz,
 				fov, m_fAspect,
-				m_fNear, m_fFar);
+				m_fNear, m_fFar,
+				m_fDrawScale);
 
 	if (myfancnt>0) glEnd();
 
@@ -329,15 +346,20 @@ void SRTerrain::RenderPass()
 float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
 	if (bTrue)
-		return m_pMini->getheight(iX, iZ) / m_fHeightScale;
+		return m_pMini->getheight(iX, iZ) * m_fDrawScale;
 	else
 		return m_pMini->getheight(iX, iZ);
 }
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p) const
 {
+	float height = m_pMini->getheight(i, j);
+
+	// workaround
+	height *= m_fDrawScale;
+
 	p.Set(m_fXLookup[i],
-		  m_pMini->getheight(i, j),
+		  height,
 		  m_fZLookup[j]);
 }
 

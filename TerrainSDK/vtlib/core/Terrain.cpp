@@ -482,7 +482,43 @@ void vtTerrain::PaintDib()
 			m_pTextureColors = new ColorMap(cmap);
 	}
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
+
 	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors);
+
+#if 0
+	// TEMP TEST
+	ColorMap cmap;
+	cmap.m_bBlend = true;
+	cmap.m_bRelative = false;
+
+	RGBi white(255,255,255);
+	RGBi black(0,0,0);
+
+	float fMin, fMax, fRange;
+	pHFGrid->GetHeightExtents(fMin, fMax);
+	fRange = fMax - fMin;
+	float fInc = 10;
+	float fSize = 0.5;
+	int start = (int) (fMin / fInc);
+	int stop = (int) (fMax / fInc);
+
+	cmap.Add(fMin, white);
+	for (int i = start; i < stop; i++)
+	{
+//		cmap.Add(i * fInc, black);
+//		cmap.Add(i * fInc + fSize, white);
+
+#if 1
+		cmap.Add(i * fInc - fSize, white);
+		cmap.Add(i * fInc - fSize/2, black);
+		cmap.Add(i * fInc + fSize/2, black);
+		cmap.Add(i * fInc + fSize, white);
+#endif
+//		cmap.Add(i * fInc, white);
+//		cmap.Add(i * fInc + (fInc/2), black);
+	}
+	pHFGrid->ColorDibFromElevation(m_pDIB, &cmap);
+#endif
 }
 
 
@@ -555,8 +591,8 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeom->SetOptions(m_Params.GetValueBool(STR_TRISTRIPS),
 		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
-	float fExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
-	DTErr result = m_pDynGeom->Init(m_pElevGrid, fExag);
+	m_fVerticalExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
+	DTErr result = m_pDynGeom->Init(m_pElevGrid, m_fVerticalExag);
 	if (result != DTErr_OK)
 	{
 		m_pDynGeom->Release();
@@ -576,12 +612,26 @@ bool vtTerrain::_CreateDynamicTerrain()
 	m_pDynGeomScale->SetName2("Dynamic Geometry Container");
 
 	FPoint2 spacing = m_pElevGrid->GetWorldSpacing();
-	m_pDynGeomScale->Scale3(spacing.x, fExag, -spacing.y);
+	m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
 
 	m_pDynGeomScale->AddChild(m_pDynGeom);
 	m_pTerrainGroup->AddChild(m_pDynGeomScale);
 
 	return true;
+}
+
+void vtTerrain::SetVerticalExag(float fExag)
+{
+	m_fVerticalExag = fExag;
+
+	if (m_pDynGeom != NULL)
+	{
+		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
+		m_pDynGeomScale->Identity();
+		m_pDynGeomScale->Scale3(spacing.x, m_fVerticalExag, -spacing.y);
+
+		m_pDynGeom->SetVerticalExag(m_fVerticalExag);
+	}
 }
 
 void vtTerrain::_CreateErrorMessage(DTErr error, vtElevationGrid *pGrid)
@@ -1779,19 +1829,6 @@ bool vtTerrain::CreateStep5()
 bool vtTerrain::IsCreated()
 {
 	return m_pTerrainGroup != NULL;
-}
-
-/**
- * You can change the vertical exaggeration factor at runtime, by changing
- * the STR_VERTICALEXAG terrain parameter, then calling this method.
- */
-void vtTerrain::ApplyVerticalExag()
-{
-	if (m_pDynGeom)
-	{
-		float fExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
-		m_pDynGeom->SetVerticalExag(fExag);
-	}
 }
 
 void vtTerrain::Enable(bool bVisible)

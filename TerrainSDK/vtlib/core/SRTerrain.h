@@ -48,7 +48,7 @@ protected:
 	virtual ~SRTerrain();
 
 private:
-	class myministub *m_pMini;
+	class ministub *m_pMini;
 
 	IPoint2 m_window_size;
 	FPoint3 m_eyepos_ogl;
@@ -59,6 +59,8 @@ private:
 
 	float m_fResolution;
 	float m_fHeightScale;
+	float m_fMaximumScale;
+	float m_fDrawScale;
 };
 
 #endif	// SRTerrain
