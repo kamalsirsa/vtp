@@ -8,7 +8,7 @@
 #ifndef CUSTOMTERRAINH
 #define CUSTOMTERRAINH
 
-/** \addtogroup dynterr
+/** \addtogroup dynterr */
 /*@{*/
 
 #include "DynTerrain.h"
