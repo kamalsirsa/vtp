@@ -11,6 +11,7 @@
 #define TPARAMSH
 
 #include <time.h>	// for time_t
+#include "MathTypes.h"
 
 typedef unsigned int unint;
 
