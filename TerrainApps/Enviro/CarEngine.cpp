@@ -223,7 +223,7 @@ void CarEngine::Eval()
 			}
 	}
 	// spin the wheels, adjusted for speed.
-	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius); 
+	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);
 	m_fPrevTime = t;
 }
 

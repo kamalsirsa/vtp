@@ -190,7 +190,7 @@ void Enviro::LoadTerrainDescriptions()
 		}
 		VTLOG(" %d terrains.\n", count);
 	}
-	VTLOG("Done.\n");
+	VTLOG(" Done.\n");
 }
 
 void Enviro::StartControlEngine()
