@@ -733,7 +733,7 @@ void vtMesh::_AddStripNormals()
 {
 	int prims = GetNumPrims();
 	int i, j, len, idx;
-	unsigned short v0, v1, v2;
+	unsigned short v0 = 0, v1 = 0, v2 = 0;
 	osg::Vec3 p0, p1, p2, d0, d1, norm;
 
 	idx = 0;
