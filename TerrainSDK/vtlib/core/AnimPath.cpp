@@ -119,17 +119,6 @@ bool vtAnimPath::GetInterpolatedControlPoint(double time, ControlPoint &controlP
 	return true;
 }
 
-void vtAnimPathEngine::SetEnabled(bool bOn)
-{
-	bool bWas = m_bEnabled;
-	vtEnabledBase::SetEnabled(bOn);
-	if (!bWas && bOn)
-	{
-		// turning this engine on
-		m_fLastTime = vtGetTime();
-	}
-}
-
 /*void vtAnimPath::Read(std::istream &in)
 {
 	while (!in.eof())
@@ -159,6 +148,17 @@ void vtAnimPath::Write(std::ostream &fout) const
 
 	fout.precision(prec);
 }*/
+
+void vtAnimPathEngine::SetEnabled(bool bOn)
+{
+	bool bWas = m_bEnabled;
+	vtEnabledBase::SetEnabled(bOn);
+	if (!bWas && bOn)
+	{
+		// turning this engine on
+		m_fLastTime = vtGetTime();
+	}
+}
 
 void vtAnimPathEngine::Eval()
 {
@@ -202,16 +202,18 @@ void vtAnimPathEngine::Reset()
 
 ///////////////////////////////////////////////////////////////////////
 
-void vtAnimPath3d::TransformToTerrain(const vtProjection &proj)
+void vtAnimPath::CreateFromLineString(const vtProjection &proj,
+										vtFeatureSetLineString3D &lines)
 {
 	// Clear our control points because we're going to fill it 
 	m_TimeControlPointMap.clear();
 
 	OCT *trans = NULL;
-	if (!proj.IsSame(&m_proj))
+	vtProjection &line_proj = lines.GetAtProjection();
+	if (!proj.IsSame(&line_proj))
 	{
 		// need transformation from feature CRS to terrain CRS
-		trans = CreateCoordTransform(&m_proj, &proj, true);
+		trans = CreateCoordTransform(&line_proj, &proj, true);
 	}
 
 	DPoint3 current, previous(1E9,1E9,1E9);
@@ -220,7 +222,7 @@ void vtAnimPath3d::TransformToTerrain(const vtProjection &proj)
 //	for (unsigned int i = 0; i < GetNumEntities(); i++)
 	unsigned int i = 0, j;	// only first entity
 
-	const DLine3 &dline = GetPolyLine(i);
+	const DLine3 &dline = lines.GetPolyLine(i);
 	FLine3 fline;
 	for (j = 0; j < dline.GetSize(); j++)
 	{

@@ -118,6 +118,8 @@ public:
 /*	void Read(std::istream &in);
 	void Write(std::ostream &out) const; */
 
+	void CreateFromLineString(const vtProjection &proj, vtFeatureSetLineString3D &lines);
+
 protected:
 	TimeControlPointMap m_TimeControlPointMap;
 	bool	            m_bLoop;
@@ -137,7 +139,7 @@ public:
 		m_pAnimationPath(NULL),
 		m_fTimeMultiplier(1.0),
 		m_fLastTime(DBL_MAX),
-		m_fTime(1.0f),
+		m_fTime(0.0f),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
 
@@ -145,7 +147,7 @@ public:
 		m_pAnimationPath(ap),
 		m_fTimeMultiplier(timeMultiplier),
 		m_fLastTime(DBL_MAX),
-		m_fTime(1.0f),
+		m_fTime(0.0f),
 		m_bPosOnly(false),
 		m_fSpeed(1.0f) {}
 
@@ -173,6 +175,8 @@ public:
 	virtual void Eval();
 	virtual void SetEnabled(bool bOn);
 
+	float GetTime() { return m_fTime; }
+
 public:
 	vtAnimPath *m_pAnimationPath;
 	double	m_fTimeMultiplier;
@@ -182,12 +186,4 @@ public:
 	float	m_fSpeed;
 };
 
-/**
- * vtAnimPath3d extends vtAnimPath with the ability to operate on both
- */
-class vtAnimPath3d : public vtAnimPath, public vtFeatureSetLineString3D
-{
-public:
-	void TransformToTerrain(const vtProjection &proj);
-};
 
