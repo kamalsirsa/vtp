@@ -28,7 +28,11 @@
 #endif
 
 #if !VTLIB_PSM
-  #include <GL/gl.h>
+  #ifdef __DARWIN_OSX__
+	#include <OpenGL/gl.h>
+  #else
+    #include <GL/gl.h>
+  #endif
 //
 // Base classes from which the API-specific implementation
 // classes are derived.
