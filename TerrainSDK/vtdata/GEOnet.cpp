@@ -1,7 +1,7 @@
 //
 // GEOnet.cpp
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -350,6 +350,12 @@ bool Country::WriteSHP(const char *fname)
 /////////////////////////////////////////////////////////////////////////////
 //
 
+Countries::~Countries()
+{
+	// manually free memory
+	Free();
+}
+
 bool Countries::ReadCountryList(const char *fname)
 {
 	FILE *fp = fopen(fname, "rb");
@@ -400,11 +406,14 @@ bool Countries::WriteSHPPerCountry(const char *prefix)
 	return true;
 }
 
-void Countries::Free()
+void Countries::Free(bool progress_callback(int))
 {
-	int unsigned num = m_countries.GetSize();
-	for (int unsigned i = 0; i < num; i++)
+	// manually free memory
+	unsigned int size = m_countries.GetSize();
+	for (int unsigned i = 0; i < size; i++)
 	{
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / size);
 		Country *country = m_countries[i];
 		delete country;
 	}
@@ -701,11 +710,11 @@ void Countries::WriteGCF(const char *fname)
 	fclose(fp);
 }
 
-void Countries::ReadGCF(const char *fname, bool progress_callback(int))
+bool Countries::ReadGCF(const char *fname, bool progress_callback(int))
 {
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)
-		return;
+		return false;
 
 	int num;
 	fread(&num, sizeof(int), 1, fp);
@@ -736,6 +745,7 @@ void Countries::ReadGCF(const char *fname, bool progress_callback(int))
 		}
 	}
 	fclose(fp);
+	return true;
 }
 
 bool Countries::FindPlace(const char *country_val, const char *place_val,
@@ -1017,7 +1027,7 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	}
 
 	// Serbia - GEOnet doesn't know "Serbia"
-	if (!strCountry.CompareNoCase("Serbia"))
+	if (!strCountry.Left(6).CompareNoCase("Serbia"))
 		strCountry = "Yugoslavia";
 
 	// Spain
@@ -1051,12 +1061,12 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	}
 
 	// Tanzania
-	if (!strCity.CompareNoCase("Beysukent"))
-		strCity = "Ankara";
-
-	// Turkey
 	if (!strCity.CompareNoCase("Dar-es-Salaam"))
 		strCity = "Dar es Salaam";
+
+	// Turkey
+	if (!strCity.CompareNoCase("Beysukent"))
+		strCity = "Ankara";
 
 	// Ukraine
 	if (!strCity.CompareNoCase("Donetsk"))
@@ -1071,6 +1081,8 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	// UK
 	if (!strCountry.CompareNoCase("United Kingdom"))
 	{
+		if (!strCity.CompareNoCase("St Leonards on Sea"))
+			strCity = "Saint Leonards";
 		if (!strCity.CompareNoCase("Walton-On-Thames"))
 			strCity = "Walton upon Thames";
 		if (!strCity.CompareNoCase("Prenton"))
@@ -1078,7 +1090,7 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	}
 
 	// (South) Korea
-	if (!strCountry.CompareNoCase("Korea (Repulic of)"))
+	if (!strCountry.CompareNoCase("Korea (Republic of)"))
 		strCountry = "South Korea";
 	if (!strCity.CompareNoCase("In'choen"))
 		strCity = "Incheon";
@@ -1203,11 +1215,195 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 	if (bFound)
 		VTLOG("  Found: %3.2lf, %3.2lf\n\n", geo.x, geo.y);
 	else
-		VTLOG("  Failed.\n\n");
+		VTLOG("  Failed.\n");
 
 	return bFound;
 }
 
-
 #endif // SUPPORT_WSTRING
+
+
+///////////////////////////////////////////////////////////////////////
+// Gazetteer class: a table of US cities.
+
+vtString Grab(const char *str, int start, int len)
+{
+	char *buf = new char[len+1];
+	strncpy(buf, str+start, len);
+	buf[len] = 0;
+	vtString vstr = buf;
+	delete [] buf;
+	return vstr;
+}
+
+bool Gazetteer::ReadPlaces(const char *fname)
+{
+	// safety checks
+	if (!fname)
+		return false;
+	if (*fname == 0)
+		return false;
+
+	FILE *fp = fopen(fname, "rb");
+	if (!fp)
+		return false;
+
+	char buf[999];
+	while (fgets(buf, 999, fp) != NULL)
+	{
+		Place p;
+		p.m_state = Grab(buf, 0, 2);
+		p.m_name = Grab(buf, 9, 60);
+		p.m_name.TrimRight();
+
+		if (p.m_name.Right(10) == " (balance)")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 10);
+
+		if (p.m_name.Right(5) == " city")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 5);
+		else if (p.m_name.Right(5) == " town")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 5);
+		else if (p.m_name.Right(4) == " CDP")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 4);
+		else if (p.m_name.Right(13) == " municipality")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 13);
+		else if (p.m_name.Right(17) == " city and borough")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 17);
+		else if (p.m_name.Right(8) == " borough")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 8);
+		else if (p.m_name.Right(8) == " village")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 8);
+		else if (p.m_name.Right(10) == " comunidad")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 10);
+		else if (p.m_name.Right(12) == " zona urbana")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 12);
+		else if (p.m_name.Right(7) == " urbana")
+			p.m_name = p.m_name.Left(p.m_name.GetLength() - 7);
+		else
+		{
+			int foo = 1;
+		}
+		double x = atof(buf+153);
+		double y = atof(buf+143);
+		p.geo.Set(x, y);
+
+		m_places.push_back(p);
+	}
+	fclose(fp);
+	return true;
+}
+
+bool Gazetteer::ReadZips(const char *fname)
+{
+	// safety checks
+	if (!fname)
+		return false;
+	if (*fname == 0)
+		return false;
+
+	FILE *fp = fopen(fname, "rb");
+	if (!fp)
+		return false;
+
+	vtString str;
+	char buf[999];
+	while (fgets(buf, 999, fp) != NULL)
+	{
+		Zip p;
+
+		str = Grab(buf, 2, 5);
+		if (str[4] == 'H' || str[4] == 'X')
+			continue;
+
+		p.m_zip = atoi(str);
+
+		double x = atof(buf+146);
+		double y = atof(buf+136);
+		p.geo.Set(x, y);
+
+		m_zips.push_back(p);
+	}
+
+	fclose(fp);
+	return true;
+}
+
+bool Gazetteer::FindPlace(const vtString &state, const vtString &place_org, DPoint2 &geo)
+{
+	vtString place = place_org;
+	if (!place.CompareNoCase("Saint Paul"))
+		place = "St. Paul";
+	if (!place.CompareNoCase("Essex Jct."))
+		place = "Essex Junction";
+	if (!place.CompareNoCase("Boise"))
+		place = "Boise City";
+	if (!place.CompareNoCase("Moon Township"))
+		place = "Carnot-Moon";
+	if (!place.CompareNoCase("Brick"))	// New Jersey
+		place = "Laurelton";
+	if (!place.CompareNoCase("Point Mugu"))	// California
+		place = "Port Hueneme";		// nearest town
+	if (!place.CompareNoCase("N. Massapequa"))
+		place = "North Massapequa";
+	if (!place.CompareNoCase("Clinton Township"))
+		place = "Clinton";
+	if (!place.CompareNoCase("Ft. Rucker"))
+		place = "Fort Rucker";
+	if (!place.CompareNoCase("Ft. Knox"))
+		place = "Fort Know";
+	if (!place.CompareNoCase("Tampa Bay"))
+		place = "Tampa";
+	if (!place.CompareNoCase("Ft. Lauderdale"))
+		place = "Fort Lauderdale";
+	if (!state.Compare("GA") && !place.CompareNoCase("Augusta"))
+		place = "Augusta-Richmond County";
+	if (!state.Compare("CA") && !place.CompareNoCase("Paso Robles"))
+		place = "El Paso de Robles (Paso Robles)";
+	if (!place.CompareNoCase("Urbana/Champaign"))
+		place = "Urbana";
+	if (!state.Compare("ME") && !place.CompareNoCase("Rockport"))
+		place = "Camden";	// closest known town
+	if (!state.Compare("CA") && !place.CompareNoCase("Cardiff-by-the-sea"))
+		place = "Encinitas";	// closest known town
+	if (!state.Compare("UT") && !place.CompareNoCase("Salt Lake"))
+		place = "Salt Lake City";
+	if (!state.Compare("MA") && !place.CompareNoCase("Littleton"))
+		place = "Littleton Common";
+
+	// Some missing places:
+	// Valley, WA
+	// Brooklyn, NY
+	// Long Island City, NY
+	// Redstone, CO
+	// La Jolla, CA		(neighboorhood of San Diego)
+	// Littleton, MA
+	// Saunderstown, RI
+	// Ashburn, VA		(speck outside DC)
+
+	for (unsigned int i = 0; i < m_places.size(); i++)
+	{
+		const Place &p = m_places[i];
+		if (p.m_state.Compare(state) == 0 && p.m_name.CompareNoCase(place) == 0)
+		{
+			geo = p.geo;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Gazetteer::FindZip(int zip, DPoint2 &geo)
+{
+	for (unsigned int i = 0; i < m_zips.size(); i++)
+	{
+		const Zip &p = m_zips[i];
+		if (p.m_zip == zip)
+		{
+			geo = p.geo;
+			return true;
+		}
+	}
+	return false;
+}
+
 
