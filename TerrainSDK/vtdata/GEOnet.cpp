@@ -10,6 +10,8 @@
 #include "vtdata/vtLog.h"
 #include <stdio.h>
 
+#if SUPPORT_WSTRING
+
 //
 // Helper Function: Convert all accented characters to unaccented.
 //
@@ -183,8 +185,6 @@ vtString RemoveAccents(const vtString &strInput)
 	return strOutput;
 }
 
-
-#if SUPPORT_WSTRING
 
 Country::Country()
 {
