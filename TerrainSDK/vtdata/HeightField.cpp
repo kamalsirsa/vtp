@@ -230,6 +230,9 @@ void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
 
 	m_fXStep = m_WorldExtents.Width() / (m_iColumns-1);
 	m_fZStep = -m_WorldExtents.Height() / (m_iRows-1);
+
+	m_dXStep = m_EarthExtents.Width() / (m_iColumns-1);
+	m_dYStep = m_EarthExtents.Height() / (m_iRows-1);
 }
 
 
@@ -237,8 +240,7 @@ void vtHeightFieldGrid3d::Initialize(const LinearUnits units,
  */
 DPoint2 vtHeightFieldGrid3d::GetSpacing() const
 {
-	return DPoint2(m_EarthExtents.Width() / (m_iColumns - 1),
-		m_EarthExtents.Height() / (m_iRows - 1));
+	return DPoint2(m_dXStep, m_dYStep);
 }
 
 FPoint2 vtHeightFieldGrid3d::GetWorldSpacing() const

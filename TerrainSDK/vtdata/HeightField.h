@@ -140,6 +140,7 @@ public:
 protected:
 	int		m_iColumns, m_iRows;
 	float	m_fXStep, m_fZStep;	// step size between the World grid points
+	double	m_dXStep, m_dYStep;	// step size between the Earth grid points
 };
 
 #endif	// HEIGHTFIELDH
