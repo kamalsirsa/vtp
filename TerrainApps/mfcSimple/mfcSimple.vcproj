@@ -43,7 +43,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib glaux.lib osg.lib osgUtil.lib osgDB.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib jpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib glaux.lib osg.lib osgUtil.lib osgDB.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib libjpeg.lib"
 				OutputFile=".\Release/mfcSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -111,7 +111,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib glaux.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib jpeg.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib glaux.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib libjpeg.lib"
 				OutputFile=".\Debug/mfcSimple.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

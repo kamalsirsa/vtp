@@ -39,7 +39,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib jpeg.lib"
+				AdditionalDependencies="wxmsw24d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Debug/CManager.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -110,7 +110,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib jpeg.lib"
+				AdditionalDependencies="wxmsw24ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="Debug_Unicode/CManager_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -182,7 +182,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib jpeg.lib"
+				AdditionalDependencies="wxmsw24u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile="Release_Unicode/CManager_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -250,7 +250,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib jpeg.lib"
+				AdditionalDependencies="wxmsw24.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Release/CManager.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
