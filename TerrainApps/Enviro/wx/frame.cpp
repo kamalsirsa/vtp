@@ -275,7 +275,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pPlantDlg->ShowOnlyAvailableSpecies(g_Options.m_bOnlyAvailableSpecies);
 
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
-	m_pUtilDlg = new UtilDlg(this, -1, _("Utility"));
+	m_pUtilDlg = new UtilDlg(this, -1, _("Routes"));
 	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
 	m_pLocationDlg = new LocationDlg(this, -1, _("Locations"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
