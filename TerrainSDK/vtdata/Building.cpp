@@ -5,7 +5,7 @@
 // This is can be a single building, or any single artificial structure
 // such as a wall or fence.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,7 +13,7 @@
 
 /////////////////////////////////////
 
-void vtWall::Set(int iDoors, int iWindows, WallType Type)
+void vtWall::Set(int iDoors, int iWindows, WallMaterial Type)
 {
 	m_iDoors = iDoors;
 	m_iWindows = iWindows;
@@ -22,23 +22,25 @@ void vtWall::Set(int iDoors, int iWindows, WallType Type)
 
 /////////////////////////////////////
 
-vtStory::vtStory()
+vtLevel::vtLevel()
 {
+	m_iStories = 1;
+	m_fHeightPerStory = 3.5f;
 }
 
-vtStory::~vtStory()
+vtLevel::~vtLevel()
 {
 	DeleteWalls();
 }
 
-void vtStory::DeleteWalls()
+void vtLevel::DeleteWalls()
 {
 	for (int i = 0; i < m_Wall.GetSize(); i++)
 		delete m_Wall.GetAt(i);
 	m_Wall.SetSize(0);
 }
 
-vtStory &vtStory::operator=(const vtStory &v)
+vtLevel &vtLevel::operator=(const vtLevel &v)
 {
 	DeleteWalls();
 	m_Wall.SetSize(v.m_Wall.GetSize());
@@ -50,13 +52,13 @@ vtStory &vtStory::operator=(const vtStory &v)
 	}
 	return *this;
 }
-void vtStory::SetWalls(int n)
+void vtLevel::SetWalls(int n)
 {
 	DeleteWalls();
 	for (int i = 0; i < n; i++)
 	{
 		vtWall *pnew = new vtWall;
-		pnew->Set(0, 0, WALL_FLAT);
+		pnew->Set(0, 0, vtWall::UNKNOWN);
 		m_Wall.Append(pnew);
 	}
 }
@@ -85,6 +87,13 @@ vtBuilding::~vtBuilding()
 {
 	DeleteStories();
 	//m_Footprint.Empty(); don't need to do this, it happens automatically
+}
+
+float vtBuilding::GetRadius() const
+{
+	// determine radius from the polyline
+	// TODO
+	return 0.0f;
 }
 
 void vtBuilding::DeleteStories()
@@ -173,7 +182,7 @@ void vtBuilding::SetStories(int iStories)
 	{
 		// added some stories
 		for (s = previous; s < iStories; s++)
-			m_Story[s] = new vtStory();
+			m_Story[s] = new vtLevel();
 	}
 	if (previous)
 	{
@@ -195,7 +204,7 @@ void vtBuilding::SetFootprint(DLine2 &dl)
 	{
 		// must rebuild stories and walls
 //		delete m_pStory;
-//		m_pStory = new vtStory[m_iStories];
+//		m_pStory = new vtLevel[m_iStories];
 		RebuildWalls();
 	}
 };
@@ -218,8 +227,8 @@ void vtBuilding::RebuildWalls()
 		}
 		for (int w = 0; w < m_Story[s]->m_Wall.GetSize(); w++)
 		{
-			// Doors, Windows, WallType, Awning
-			m_Story[s]->m_Wall[w]->Set(0, 2, WALL_SIDING);
+			// Doors, Windows, WallMaterial, Awning
+			m_Story[s]->m_Wall[w]->Set(0, 2, vtWall::SIDING);
 		}
 	}
 }

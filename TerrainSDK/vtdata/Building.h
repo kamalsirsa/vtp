@@ -15,10 +15,6 @@
 
 ////////////////////////////////////////////////////
 
-enum WallType
-{
-	WALL_FLAT, WALL_SIDING, WALL_GLASS
-};
 enum RoofType
 {
 	ROOF_FLAT, ROOF_SHED, ROOF_GABLE, ROOF_HIP, NUM_ROOFTYPES
@@ -42,31 +38,40 @@ enum BldColor
 class vtWall
 {
 public:
-	void Set(int iDoors, int iWindows, WallType m_Type);
+	enum WallMaterial {
+		UNKNOWN, WOOD, SIDING, GLASS, BRICK, CEMENT, STUCCO
+	};
+	
+	void Set(int iDoors, int iWindows, WallMaterial m_Type);
+
+	WallMaterial m_Type;
 
 	int		m_iDoors;
 	int		m_iWindows;
-	WallType m_Type;
 };
 
 #define MAX_WALLS	24	// the largest number of walls
 						// (largest number of points in a poly-shaped building)
 
-class vtStory
+class vtLevel
 {
 public:
-	vtStory();
-	vtStory(const vtStory &from) { *this = from; }
-	~vtStory();
+	vtLevel();
+	vtLevel(const vtLevel &from) { *this = from; }
+	~vtLevel();
 
 	// assignment operator
-	vtStory &operator=(const vtStory &v);
+	vtLevel &operator=(const vtLevel &v);
 
 	void DeleteWalls();
 	void SetWalls(int n);
 
 	Array<vtWall *> m_Wall;
-//	float	m_fHeight;	// TODO
+	int		m_iStories;
+	float	m_fHeightPerStory;
+
+	// footprint of these stories
+	DLine2		m_Footprint;
 };
 
 class vtBuilding
@@ -91,7 +96,7 @@ public:
 		fDepth = m_fDepth;
 	}
 	void SetRadius(float fRad) { m_fRadius = fRad; }
-	float GetRadius() const { return m_fRadius; }
+	float GetRadius() const;
 
 	void SetFootprint(DLine2 &dl);
 	DLine2 &GetFootprint() { return m_Footprint; }
@@ -128,7 +133,7 @@ protected:
 	RGBi		m_MouldingColor;	// color of trim
 
 	// information about each story
-	Array<vtStory *> m_Story;
+	Array<vtLevel *> m_Story;
 
 	// fields that affect placement
 	DPoint2		m_EarthPos;			// location of building center

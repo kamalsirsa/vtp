@@ -448,11 +448,11 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 	//choose wall material
 	switch (pWall->m_Type)
 	{
-	case WALL_FLAT:
+	case vtWall::UNKNOWN:
 		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_PLAIN, m_Color); break;
-	case WALL_SIDING:
+	case vtWall::SIDING:
 		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_SIDING, m_Color); break;
-	case WALL_GLASS:
+	case vtWall::GLASS:
 		m_iMatIdx[BM_WALL] = FindMatIndex(BAP_SIDING, m_Color); break;  //unsupported for now
 	}
 
@@ -1018,7 +1018,7 @@ void vtBuilding3d::Randomize(int iStories, bool bRotation)
 
 	int s, w;
 	//whether or not to have siding.
-	WallType walltype = rand() %4 ? WALL_SIDING : WALL_FLAT;
+	vtWall::WallMaterial walltype = rand() %4 ? vtWall::SIDING : vtWall::UNKNOWN;
 	for (s = 0; s < iStories; s++)
 	{
 		for (w = 0; w < m_Story[s]->m_Wall.GetSize(); w++) {
