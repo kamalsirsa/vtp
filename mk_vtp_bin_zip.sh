@@ -41,7 +41,9 @@ mv VTP/TerrainApps/Enviro/Enviro_dev.ini VTP/TerrainApps/Enviro/Enviro.ini
 # Enviro locale files
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/af/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/de/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/es/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/hu/Enviro.mo
+zip $DIST_FILE3 VTP/TerrainApps/Enviro/it/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/pt/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/ro/Enviro.mo
 zip $DIST_FILE3 VTP/TerrainApps/Enviro/sv/Enviro.mo
