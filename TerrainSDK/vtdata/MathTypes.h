@@ -1,13 +1,17 @@
 //
 // Basic data type definitions shared by all the VTP software.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file MathTypes.h */
 
 #ifndef VTDATATYPESH
 #define VTDATATYPESH
+
+#ifdef _MSC_VER
+#pragma warning( disable : 4786 )
+#endif
 
 #include <math.h>
 #include "Array.h"
