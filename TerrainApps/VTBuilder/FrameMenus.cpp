@@ -27,6 +27,7 @@
 #include "Helper.h"
 // Layers
 #include "ElevLayer.h"
+#include "ImageLayer.h"
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
@@ -42,6 +43,7 @@
 #include "OptionsDlg.h"
 #include "Projection2Dlg.h"
 #include "SelectDlg.h"
+#include "TSDlg.h"
 #include "VegDlg.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
@@ -199,6 +201,7 @@ EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
 EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
+EVT_MENU(ID_AREA_REQUEST_TSERVE,	MainFrame::OnAreaRequestTServe)
 
 EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
@@ -407,6 +410,7 @@ void MainFrame::CreateMenus()
 		_T("Generate Vegetation File (*.vf) containg plant distribution."));
 	areaMenu->Append(ID_AREA_REQUEST_LAYER, _T("Request Layer from WFS"));
 	areaMenu->Append(ID_AREA_REQUEST_WMS, _T("Request Image from WMS"));
+	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _T("Request Image from Terraserver"));
 #endif
 	m_pMenuBar->Append(areaMenu, _T("&Area Tool"));
 	menu_num++;
@@ -2091,7 +2095,6 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 {
 #if SUPPORT_HTTP
-
 	MapServerDlg dlg(this, -1, _T("WMS Request"));
 
 	dlg.m_area = m_area;
@@ -2110,6 +2113,55 @@ void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 	else
 		delete pRL;
 */
+#endif
+}
+
+void MainFrame::OnAreaRequestTServe(wxCommandEvent& event)
+{
+	int zone = m_proj.GetUTMZone();
+	if (zone == 0 || m_area.IsEmpty())
+	{
+		wxMessageBox(
+			_T("In order to request data from Terraserver, first set your CRS to\n")
+			_T("a UTM zone (4 through 19) and use the Area Tool to indicate the\n")
+			_T("area that you want to download."),
+			_T("Note"));
+		return;
+	}
+
+	TSDialog dlg(this, -1, _("Terraserver"));
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	if (dlg.m_strToFile == _T(""))
+		return;
+
+	OpenProgressDialog(_("Requesting data from Terraserver..."));
+
+	vtImageLayer *pIL = new vtImageLayer();
+	bool success = pIL->ReadFeaturesFromTerraserver(m_area, dlg.m_iTheme,
+		dlg.m_iMetersPerPixel, m_proj.GetUTMZone(), dlg.m_strToFile.mb_str());
+
+	CloseProgressDialog();
+
+	if (success)
+		wxMessageBox(_("Successfully wrote file."));
+	if (!success)
+	{
+		wxMessageBox(_("Unable to download."));
+	}
+	delete pIL;
+	return;
+#if 0
+	if (dlg.m_bNewLayer)
+	{
+		if (!AddLayerWithCheck(pIL))
+			delete pIL;
+	}
+	else
+	{
+		pIL->SaveToFile(dlg.m_strToFile.mb_str());
+		delete pIL;
+	}
 #endif
 }
 
