@@ -23,7 +23,6 @@ void vtTin::AddTri(int i1, int i2, int i3)
 	m_tri.Append(i3);
 }
 
-
 bool vtTin::_ReadTinOld(FILE *fp)
 {
 	int i, num;
@@ -196,7 +195,12 @@ void vtTin::Offset(const DPoint2 &p)
 	}
 }
 
-bool vtTin::FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude) const
+void vtTin::GetChecksum(unsigned char **ppChecksum) const
+{
+	// TODO
+}
+
+bool vtTin::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
 {
 	DPoint2 p1, p2, p3;		// 2d points
 	bool good;
