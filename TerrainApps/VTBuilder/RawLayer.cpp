@@ -503,7 +503,7 @@ void vtRawLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 		}
 
 		// In case more than one geometry was encountered, we need to add
-		// a record w/ attributes for each one.
+		// a record with attributes for each one.
 		for (i = 0; i < num_geoms; i++)
 		{
 			AddRecord();
@@ -526,6 +526,8 @@ void vtRawLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 			}
 			count++;
 		}
+		// track total features
+		feature_count += (num_geoms-1);
 	}
 }
 
