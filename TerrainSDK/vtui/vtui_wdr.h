@@ -100,11 +100,12 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_CHANGE_COLOR 10055
 #define ID_DELETE_ELEVATION 10056
 #define ID_RELATIVE 10057
-#define ID_HEIGHT 10058
+#define ID_HEIGHT_TO_ADD 10058
 #define ID_ADD 10059
 #define ID_SAVE_CMAP 10060
-#define ID_LOAD_CMAP 10061
-#define ID_LINE1 10062
+#define ID_SAVE_AS_CMAP 10061
+#define ID_LOAD_CMAP 10062
+#define ID_LINE1 10063
 wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

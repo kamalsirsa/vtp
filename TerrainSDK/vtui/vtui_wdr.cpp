@@ -597,19 +597,19 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
 wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
-    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item2 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("File:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, _("File:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item3 = new wxTextCtrl( parent, ID_CMAP_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item1->Add( item3, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item4 = new wxTextCtrl( parent, ID_CMAP_FILE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item2->Add( item4, 1, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    item1->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticBox *item6 = new wxStaticBox( parent, -1, _("Colors") );
     wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
@@ -636,7 +636,7 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
     item12->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_HEIGHT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_HEIGHT_TO_ADD, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
     item12->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item16 = new wxButton( parent, ID_ADD, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -644,28 +644,28 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item5->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item1->Add( item5, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    item0->Add( item1, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
+    item4->Add( item5, 1, wxGROW|wxALL, 5 );
 
     wxBoxSizer *item17 = new wxBoxSizer( wxVERTICAL );
 
     wxButton *item18 = new wxButton( parent, ID_SAVE_CMAP, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
     item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item19 = new wxButton( parent, ID_LOAD_CMAP, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item19 = new wxButton( parent, ID_SAVE_AS_CMAP, _("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
     item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticLine *item20 = new wxStaticLine( parent, ID_LINE1, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    wxButton *item20 = new wxButton( parent, ID_LOAD_CMAP, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
     item17->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item21 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticLine *item21 = new wxStaticLine( parent, ID_LINE1, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
     item17->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item22 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxButton *item22 = new wxButton( parent, wxID_OK, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
     item17->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+    item4->Add( item17, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    item0->Add( item4, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     if (set_sizer)
     {
