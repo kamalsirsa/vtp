@@ -112,8 +112,9 @@ bool vtTin::Read(const char *fname)
 		success = _ReadTinOld(fp);
 		if (success)
 		{
-			// now try to read projection from corresponding .prj file
-			bool success = m_proj.ReadProjFile(fname);
+			// Now try to read projection from corresponding .prj file.
+			// No need to check for failure; there's nothing we can do about it.
+			m_proj.ReadProjFile(fname);
 		}
 	}
 	fclose(fp);
@@ -132,6 +133,11 @@ bool vtTin::Write(const char *fname)
 
 	char *wkt;
 	OGRErr err = m_proj.exportToWkt(&wkt);
+	if (err != OGRERR_NONE)
+	{
+		fclose(fp);
+		return false;
+	}
 	int proj_len = strlen(wkt);
 	int data_start = 5 + 4 + 4 + 4 + + 4 + proj_len;
 
@@ -145,6 +151,7 @@ bool vtTin::Write(const char *fname)
 	fwrite(&data_start, 4, 1, fp);
 	fwrite(&proj_len, 4, 1, fp);
 	fwrite(wkt, proj_len, 1, fp);
+	OGRFree(wkt);
 	// room for future extention: you can add fields here, as long as you
 	// increase the data_start offset above accordingly
 
