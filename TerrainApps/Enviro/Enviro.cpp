@@ -543,6 +543,7 @@ void Enviro::SetupScene1()
 
 	// Set some global peroperties
 	SetDataPath(g_Options.m_DataPaths);
+	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
 

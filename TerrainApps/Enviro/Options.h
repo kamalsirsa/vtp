@@ -34,6 +34,7 @@ public:
 	bool	m_bStartInNeutral;
 	bool	m_bDisableModelMipmaps;
 	float	m_fCursorThickness;
+	float	m_fCatenaryFactor;
 	vtString	m_strContentFile;
 
 	// filename (with path) from which ini was read

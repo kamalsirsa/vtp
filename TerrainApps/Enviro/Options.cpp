@@ -30,6 +30,7 @@ EnviroOptions g_Options;
 #define STR_DISABLE_MODEL_MIPMAPS "DisableModelMipmaps"
 #define STR_CURSOR_THICKNESS "CursorThickness"
 #define STR_CONTENT_FILE "ContentFile"
+#define STR_CATENARY_FACTOR "CatenaryFactor"
 
 EnviroOptions::EnviroOptions()
 {
@@ -39,6 +40,7 @@ EnviroOptions::EnviroOptions()
 	m_bDisableModelMipmaps = false;
 	m_bTextureCompression = true;
 	m_fCursorThickness = 0.025;
+	m_fCatenaryFactor = 140.0f;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -54,6 +56,7 @@ bool EnviroOptions::Read(const char *szFilename)
 		return false;
 
 	char buf[80];
+	bool bFoundContentFile = false;
 
 	while (!input.eof())
 	{
@@ -98,14 +101,24 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_bDisableModelMipmaps;
 		else if (strcmp(buf, STR_CURSOR_THICKNESS) == 0)
 			input >> m_fCursorThickness;
+		else if (strcmp(buf, STR_CATENARY_FACTOR) == 0)
+			input >> m_fCatenaryFactor;
 		else if (strcmp(buf, STR_CONTENT_FILE) == 0)
+		{
 			m_strContentFile = get_line_from_stream(input);
+			bFoundContentFile = true;
+		}
 		else
 		{
 //			cout << "Input from INI file unrecognized.\n";
 			get_line_from_stream(input);
 		}
 	}
+
+	// if we have an old file, provide the modern default
+	if (!bFoundContentFile)
+		m_strContentFile = "common_content.vtco";
+
 	return true;
 }
 
@@ -156,6 +169,8 @@ bool EnviroOptions::Write()
 	output << m_bDisableModelMipmaps << endl;
 	output << STR_CURSOR_THICKNESS << "\t";
 	output << m_fCursorThickness << endl;
+	output << STR_CATENARY_FACTOR << "\t";
+	output << m_fCatenaryFactor << endl;
 	output << STR_CONTENT_FILE << "\t\t";
 	output << (const char *)m_strContentFile << endl;
 
