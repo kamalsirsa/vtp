@@ -93,14 +93,14 @@ void vtBuilding3d::CreateSharedMaterials()
 		}
 	}
 
-	// create plain materials
+	// plain materials
 	for (i = 0; i < COLOR_SPREAD; i++)
 	{
-		pMat = makeMaterial(s_Colors[i], false);
+		pMat = makeMaterial(s_Colors[i], true);
 		s_Materials->AppendMaterial(pMat);
 	}
 
-	//create siding materials (bright colors only)
+	// siding materials
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/siding64.bmp");
 	vtImage *pImageSiding = new vtImage(path);
 	divisions = 6;
@@ -118,27 +118,27 @@ void vtBuilding3d::CreateSharedMaterials()
 	color.Set(1.0f, 1.0f, 1.0f);
 
 	// window material
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// door material
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/door.bmp");
 	pMat->SetTexture2(path);
 	s_Materials->Append(pMat);
 
 	// wood material
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/wood1_256.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// cement block material
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/cement_block1_256.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
@@ -146,7 +146,7 @@ void vtBuilding3d::CreateSharedMaterials()
 
 	// brick material 1
 	// measured average brick color: 159, 100, 83 (reddish medium brown)
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick1_256.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
@@ -154,7 +154,7 @@ void vtBuilding3d::CreateSharedMaterials()
 
 	// brick material 2
 	// measured average brick color: 183, 178, 171 (slightly pinkish grey)
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick2_256.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
@@ -165,7 +165,7 @@ void vtBuilding3d::CreateSharedMaterials()
 	vtImage *pPaintedBrick = new vtImage(path);
 	for (i = 0; i < COLOR_SPREAD; i++)
 	{
-		pMat = makeMaterial(s_Colors[i], false);
+		pMat = makeMaterial(s_Colors[i], true);
 		pMat->SetTexture(pPaintedBrick);
 		pMat->SetClamp(false);
 		s_Materials->Append(pMat);
@@ -296,7 +296,9 @@ void vtBuilding3d::DestroyGeometry()
 {
 	m_pContainer->RemoveChild(m_pGeom);
 	delete m_pGeom;
-	for (int i = 0; i < m_Mesh.GetSize(); i++)
+	m_pGeom = NULL;
+	int i, size = m_Mesh.GetSize();
+	for (i = 0; i < size; i++)
 		delete m_Mesh[i].m_pMesh;
 	m_Mesh.Empty();
 }
@@ -804,7 +806,7 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 				p.Set(gp.x, roof_y, gp.y);
 				ind[j] = mesh->AddVertexN(p, up);
 			}
-			mesh->AddTri(ind[0], ind[1], ind[2]);
+			mesh->AddTri(ind[0], ind[2], ind[1]);
 		}
 	}
 	else
