@@ -56,7 +56,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 appframed.lib terraind.lib XFrogCore.lib libfrog.lib libimage.lib glu32.lib opengl32.lib ltdis_n.lib ltfil_n.lib ltkrn_n.lib winmm.lib smldism.lib gconv32.lib \dev\TFormats\Debug\TFormatsd.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /pdbtype:sept /libpath:"\dism\xfrog\libs" /libpath:"\dism\libs"
 # SUBTRACT BASE LINK32 /profile
-# ADD LINK32 osg.lib osgDB.lib osgUtil.lib libpng.lib zlib.lib glu32.lib opengl32.lib winmm.lib ws2_32.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /pdbtype:sept
+# ADD LINK32 osg.lib osgDB.lib osgUtil.lib libpng.lib zlib.lib glu32.lib opengl32.lib winmm.lib ws2_32.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept
 # SUBTRACT LINK32 /profile
 
 !ELSEIF  "$(CFG)" == "mfcEnviro - Win32 Release"
@@ -169,16 +169,6 @@ SOURCE=.\Options.cpp
 # Begin Source File
 
 SOURCE=.\PTerrain.cpp
-# ADD CPP /YX"vtlib/vtlib.h"
-# End Source File
-# Begin Source File
-
-SOURCE=.\SwapEngine.cpp
-# ADD CPP /YX"vtlib/vtlib.h"
-# End Source File
-# Begin Source File
-
-SOURCE=.\TerrainSceneWP.cpp
 # ADD CPP /YX"vtlib/vtlib.h"
 # End Source File
 # Begin Source File
@@ -359,14 +349,6 @@ SOURCE=.\Options.h
 # Begin Source File
 
 SOURCE=.\PTerrain.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\SwapEngine.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\TerrainSceneWP.h
 # End Source File
 # Begin Source File
 
