@@ -193,42 +193,22 @@ void MainFrame::CreateToolbar()
 	RefreshToolbar();
 }
 
-#define NUM_MAIN_TOOLBARS 21
-
 void MainFrame::RefreshToolbar()
 {
 	int count = toolBar_main->GetToolsCount();
-	// remove any existing buttons
-	while (count > NUM_MAIN_TOOLBARS)
+
+	// the first time, add the original buttons
+	if (count == 0)
 	{
-		toolBar_main->DeleteToolByPos(NUM_MAIN_TOOLBARS);
-		count = toolBar_main->GetToolsCount();
+		AddMainToolbars();
+		m_iMainButtons = toolBar_main->GetToolsCount();
 	}
 
-	// now add new buttons
-	if (count < NUM_MAIN_TOOLBARS)
+	// remove any existing extra buttons
+	while (count > m_iMainButtons)
 	{
-		ADD_TOOL(ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"), false);
-		ADD_TOOL(ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"), false);
-		ADD_TOOL(ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"), false);
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"), false);
-		ADD_TOOL(ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"), false);
-		ADD_TOOL(ID_LAYER_SAVE, wxBITMAP(layer_save), _("Save Layer"), false);
-		ADD_TOOL(ID_LAYER_IMPORT, wxBITMAP(layer_import), _("Import Data"), false);
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"), false);
-		ADD_TOOL(ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"), false);
-		ADD_TOOL(ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), true);
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"), false);
-		ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"), false);
-		ADD_TOOL(ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"), false);
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), true);
-		ADD_TOOL(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), true);
-		ADD_TOOL(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), true);
-		ADD_TOOL(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Set Export Area"), true);
+		toolBar_main->DeleteToolByPos(m_iMainButtons);
+		count = toolBar_main->GetToolsCount();
 	}
 
 	vtLayer *pLayer = GetActiveLayer();
@@ -287,6 +267,31 @@ void MainFrame::RefreshToolbar()
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_STRUCTURE], lt == LT_STRUCTURE);
 	m_pMenuBar->EnableTop(m_iLayerMenu[LT_RAW], lt == LT_RAW);
 #endif
+}
+
+void MainFrame::AddMainToolbars()
+{
+	ADD_TOOL(ID_FILE_NEW, wxBITMAP(proj_new), _("New Project"), false);
+	ADD_TOOL(ID_FILE_OPEN, wxBITMAP(proj_open), _("Open Project"), false);
+	ADD_TOOL(ID_FILE_SAVE, wxBITMAP(proj_save), _("Save Project"), false);
+	toolBar_main->AddSeparator();
+	ADD_TOOL(ID_LAYER_NEW, wxBITMAP(layer_new), _("New Layer"), false);
+	ADD_TOOL(ID_LAYER_OPEN, wxBITMAP(layer_open), _("Open Layer"), false);
+	ADD_TOOL(ID_LAYER_SAVE, wxBITMAP(layer_save), _("Save Layer"), false);
+	ADD_TOOL(ID_LAYER_IMPORT, wxBITMAP(layer_import), _("Import Data"), false);
+	toolBar_main->AddSeparator();
+	ADD_TOOL(ID_EDIT_DELETE, wxBITMAP(edit_delete), _("Delete"), false);
+	ADD_TOOL(ID_EDIT_OFFSET, wxBITMAP(edit_offset), _("Offset"), false);
+	ADD_TOOL(ID_VIEW_SHOWLAYER, wxBITMAP(layer_show), _("Layer Visibility"), true);
+	toolBar_main->AddSeparator();
+	ADD_TOOL(ID_VIEW_ZOOMIN, wxBITMAP(view_plus), _("Zoom In"), false);
+	ADD_TOOL(ID_VIEW_ZOOMOUT, wxBITMAP(view_minus), _("Zoom Out"), false);
+	ADD_TOOL(ID_VIEW_ZOOMALL, wxBITMAP(view_zoomall), _("Zoom All"), false);
+	toolBar_main->AddSeparator();
+	ADD_TOOL(ID_VIEW_MAGNIFIER, wxBITMAP(view_mag), _("Magnifier"), true);
+	ADD_TOOL(ID_VIEW_PAN, wxBITMAP(view_hand), _("Pan"), true);
+	ADD_TOOL(ID_VIEW_DISTANCE, wxBITMAP(distance), _("Distance"), true);
+	ADD_TOOL(ID_VIEW_SETAREA, wxBITMAP(elev_box), _("Set Export Area"), true);
 }
 
 

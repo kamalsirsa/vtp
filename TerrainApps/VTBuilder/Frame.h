@@ -19,6 +19,8 @@
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)     \
     toolBar_main->AddTool(id, bmp, wxNullBitmap, tog, -1, -1, (wxObject *)0, tooltip, tooltip)
+#define INSERT_TOOL(place, id, bmp, tooltip, tog)     \
+    toolBar_main->InsertTool(place, id, bmp, wxNullBitmap, tog, (wxObject *)0, tooltip, tooltip)
 
 class MyTreeCtrl;
 class MySplitterWindow;
@@ -50,6 +52,7 @@ public:
 	virtual void CreateMenus();
 	void CreateToolbar();
 	void RefreshToolbar();
+	virtual void AddMainToolbars();
 
 	void OnSize(wxSizeEvent& event);
 	void DeleteContents();
@@ -333,6 +336,7 @@ protected:
 	wxToolBar *toolBar_main;
 	wxToolBar *toolBar_road;
 	MyStatusBar *m_statbar;
+	int		m_iMainButtons;
 
 	MySplitterWindow *m_splitter;
 	MyTreeCtrl	*m_pTree;		// left child of splitter
