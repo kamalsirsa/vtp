@@ -255,7 +255,7 @@ void vtTerrain::create_textures()
 	}
 
 	// apply pre-lighting (darkening)
-	if (m_Params.m_bPreLight)
+	if (m_Params.m_bPreLight && m_pDIB)
 		ApplyPreLight(m_pLocalGrid, m_pDIB);
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
