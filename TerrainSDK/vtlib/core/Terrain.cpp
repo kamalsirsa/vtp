@@ -495,6 +495,9 @@ void vtTerrain::_CreateErrorMessage(DTErr error, vtElevationGrid *pGrid)
 	case DTErr_OK:
 		m_strErrorMsg = "No Error";
 		break;
+	case DTErr_EMPTY_EXTENTS:
+		m_strErrorMsg.Format("The elevation has empty extents.");
+		break;
 	case DTErr_NOTSQUARE:
 		m_strErrorMsg.Format("The elevation grid (%d x %d) is not square.", x, y);
 		break;
@@ -1424,14 +1427,26 @@ bool vtTerrain::CreateStep1()
 			_SetErrorMessage("Grid load failed.");
 			return false;
 		}
-		else
-		{
-			int col, row;
-			m_pElevGrid->GetDimensions(col, row);
-			VTLOG("\tGrid load succeeded, size %d x %d.\n", col, row);
-		}
+
+		VTLOG("\tGrid load succeeded.\n");
+
+		int col, row;
+		m_pElevGrid->GetDimensions(col, row);
+		VTLOG("\t\tSize: %d x %d.\n", col, row);
+		DRECT rect = m_pElevGrid->GetEarthExtents();
+		VTLOG("\t\tEarth Extents LRTB: %lf %lf %lf %lf\n",
+			rect.left, rect.right, rect.top, rect.bottom);
+
 		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
+
+		FRECT frect = m_pElevGrid->m_WorldExtents;
+		VTLOG("\t\tWorld Extents LRTB: %f %f %f %f\n",
+			frect.left, frect.right, frect.top, frect.bottom);
 	}
+	char type[10], value[2048];
+	m_proj.GetTextDescription(type, value);
+	VTLOG(" Projection of the terrain: %s, '%s'\n", type, value);
+
 	return true;
 }
 
@@ -1455,9 +1470,6 @@ bool vtTerrain::CreateStep2()
 		terraintime.SetTimeOfDay(m_Params.GetValueInt(STR_INITTIME), 0, 0);
 		_CreateTextures(terraintime);
 	}
-	char type[10], value[2048];
-	m_proj.GetTextDescription(type, value);
-	VTLOG(" Projection of the terrain: %s, '%s'\n", type, value);
 	return true;
 }
 
