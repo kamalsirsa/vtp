@@ -16,6 +16,7 @@
 
 #define NUM_WIRE_SEGMENTS	160
 #define METERS_PER_FOOT		0.3048f	// meters per foot
+#define CATENARY_FACTOR		140.0
 
 vtMaterialArray *vtRoute::m_pRouteMats;
 
@@ -256,7 +257,7 @@ void vtRoute::_StringWires(long ll, vtHeightField *pHeightField)
 		rot.Transform(offset, wire1);
 		FPoint3 wire_end = fp1 + wire1;
 
-		_DrawCat(wire_start, wire_end, 1.00, numiterations, pWireMesh);
+		_DrawCat(wire_start, wire_end, CATENARY_FACTOR, numiterations, pWireMesh);
 
 		pWireMesh->AddVertex(wire_end);
 
