@@ -283,7 +283,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 		if (opt.type == ST_BUILDING)
 		{
 			vtBuilding *bld = NewBuilding();
-			if (nShapeType == SHPT_POINT)
+			if (nShapeType == SHPT_POINT || nShapeType == SHPT_POINTZ)
 			{
 				point.x = psShape->padfX[0];
 				point.y = psShape->padfY[0];
