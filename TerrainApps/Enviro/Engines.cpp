@@ -589,14 +589,15 @@ void GlobePicker::Eval()
 		vtTransform *pTarget = (vtTransform *) GetTarget();
 		if (pTarget)
 		{
+			float sc = 0.01f;
+			pTarget->Identity();
 			pTarget->SetTrans(m_GroundPoint);
 			pTarget->PointTowards(m_GroundPoint * 2);
+			pTarget->Scale3(sc, sc, sc);
 		}
 
-		// Find corresponding UTM coordinates
+		// Find corresponding geographic coordinates
 		xyz_to_geo(m_fRadius, m_GroundPoint, m_EarthPos);
-
-		int foo = 1;
 	}
 }
 
