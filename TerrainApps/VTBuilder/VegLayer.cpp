@@ -56,6 +56,10 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 	{
 		int vbuflength = 0;
 		int num_points = m_Poly[i]->GetSize();
+
+		// safety check
+		assert (num_points < 30000);
+
 		for (j = 0; j < num_points; j++)
 			pbNoLine[j] = false;
 
@@ -173,9 +177,12 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 	int i, j;
 	for (i = 0; i < m_Poly.GetSize(); i++)
 	{
-		for (j = 0; j < m_Poly[i]->GetSize(); j++)
+		DLine2 *poly = m_Poly[i];
+		int size = poly->GetSize();
+		for (j = 0; j < size; j++)
 		{
-			trans->Transform(1, &(m_Poly[i]->GetAt(j).x), &(m_Poly[i]->GetAt(j).y));
+			DPoint2 &p = poly->GetAt(j);
+			trans->Transform(1, &(p.x), &(p.y));
 		}
 	}
 	delete trans;
