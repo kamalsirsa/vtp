@@ -520,11 +520,13 @@ void vtElevLayer::RenderBitmap()
 	{
 		FPoint3 light_dir;
 
-		// Quick and dirty sunlight vector, simply rotate assuming sun will
-		//  go directly overhead.
-		float degrees = m_draw.m_iCastAngle;
-		float angle = degrees / 180.0f * PIf;
-		light_dir.Set(-cosf(angle), -sinf(angle), 0);
+		// Quick and simple sunlight vector
+		float phi = m_draw.m_iCastAngle / 180.0f * PIf;
+		float theta = m_draw.m_iCastDirection / 180.0f * PIf;
+
+		light_dir.x = (-sin(theta)*cos(phi));
+		light_dir.z = (-cos(theta)*cos(phi));
+		light_dir.y = -sin(phi);
 
 		m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
 	}

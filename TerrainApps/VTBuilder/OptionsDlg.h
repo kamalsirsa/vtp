@@ -32,6 +32,7 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	// WDR: method declarations for OptionsDlg
+	wxSpinCtrl* GetSpinCastDirection()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_CAST_DIRECTION ); }
 	wxSpinCtrl* GetSpinCastAngle()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_CAST_ANGLE ); }
 	wxCheckBox* GetCheckHideUnknown()  { return (wxCheckBox*) FindWindow( ID_CHECK_HIDE_UNKNOWN ); }
 	wxRadioButton* GetRadioCastShadows()  { return (wxRadioButton*) FindWindow( ID_RADIO_CAST_SHADOWS ); }
@@ -54,6 +55,7 @@ public:
 	bool m_bSimpleShading;
 	bool m_bCastShadows;
 	int m_iCastAngle;
+	int m_iCastDirection;
 	bool m_bHideUnknown;
 
 	bool m_bShowRoadWidth;

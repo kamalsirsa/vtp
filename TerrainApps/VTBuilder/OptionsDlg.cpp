@@ -52,6 +52,7 @@ void OptionsDlg::UpdateEnables()
 	GetRadioCastShadows()->Enable(m_bColor);
 	GetRadioCastShadows()->Enable(m_bColor);
 	GetSpinCastAngle()->Enable(m_bColor && m_bCastShadows);
+	GetSpinCastDirection()->Enable(m_bColor && m_bCastShadows);
 }
 
 void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
@@ -71,6 +72,7 @@ void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_RADIO_SIMPLE_SHADING, &m_bSimpleShading);
 	AddValidator(ID_RADIO_CAST_SHADOWS, &m_bCastShadows);
 	AddValidator(ID_SPIN_CAST_ANGLE, &m_iCastAngle);
+	AddValidator(ID_SPIN_CAST_DIRECTION, &m_iCastDirection);
 	AddValidator(ID_CHECK_HIDE_UNKNOWN, &m_bHideUnknown);
 
 	AddValidator(ID_CHECK_SHOW_ROAD_WIDTH, &m_bShowRoadWidth);
@@ -89,6 +91,7 @@ void OptionsDlg::SetElevDrawOptions(const ElevDrawOptions &opt)
 	m_bSimpleShading = opt.m_bShading && !opt.m_bCastShadows;
 	m_bCastShadows = opt.m_bShading && opt.m_bCastShadows;
 	m_iCastAngle = opt.m_iCastAngle;
+	m_iCastDirection = opt.m_iCastDirection;
 	m_bHideUnknown = opt.m_bDoMask;
 }
 
@@ -98,6 +101,7 @@ void OptionsDlg::GetElevDrawOptions(ElevDrawOptions &opt)
 	opt.m_bShading = !m_bNoShading;
 	opt.m_bCastShadows = m_bCastShadows;
 	opt.m_iCastAngle = m_iCastAngle;
+	opt.m_iCastDirection = m_iCastDirection;
 	opt.m_bDoMask = m_bHideUnknown;
 }
 
