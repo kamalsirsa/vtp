@@ -12,6 +12,7 @@
 #endif
 
 #include "vtdata/shapelib/shapefil.h"
+#include "vtdata/vtLog.h"
 #include "ScaledView.h"
 #include "VegLayer.h"
 #include "Helper.h"
@@ -457,7 +458,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
  * The 'opt' parameter contains a description of how the fields in the
  * imported file are to be interpreted.
  */
-void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
+bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 										   vtProjection &proj,
 										   VegPointOptions &opt)
 {
@@ -470,7 +471,7 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
 	if (hSHP == NULL)
-		return;
+		return false;
 
 	// Get number of points and type of data
 	int		nElem;
@@ -481,16 +482,16 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 
 	// Check Shape Type, Veg Layer should be Point data
 	if (nShapeType != SHPT_POINT)
-		return;
+		return false;
 
 	// Open DBF File
 	DBFHandle db = DBFOpen(filename.mb_str(), "rb");
 	if (db == NULL)
-		return;
+		return false;
 
 	// Confirm that the field types are correct
 	int *pnWidth = 0, *pnDecimals = 0;
-	char *pszFieldName = NULL;
+	char pszFieldName[80];
 	DBFFieldType fieldtype;
 
 	if (!opt.bFixedSpecies)
@@ -501,12 +502,20 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 		if (opt.iInterpretSpeciesField == 0 || opt.iInterpretSpeciesField == 3)
 		{
 			if (fieldtype != FTInteger)
-				return;
+			{
+				DisplayAndLog("Can't import field '%hs' as an integer, it is type %d.",
+					pszFieldName, fieldtype);
+				return false;
+			}
 		}
 		else
 		{
 			if (fieldtype != FTString)
-				return;
+			{
+				DisplayAndLog("Can't import field '%hs' as a string, it is type %d.",
+					pszFieldName, fieldtype);
+				return false;
+			}
 		}
 	}
 
@@ -522,6 +531,8 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	const char *str;
 	int biotype;
 	vtBioType *pBioType;
+
+	int unfound = 0;
 
 	for (int i = 0; i < nElem; i++)
 	{
@@ -545,10 +556,14 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 			case 1:
 				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
 				pi.species_id = pPlantList->GetSpeciesIdByName(str);
+				if (pi.species_id == -1)
+					unfound++;
 				break;
 			case 2:
 				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
 				pi.species_id = pPlantList->GetSpeciesIdByCommonName(str);
+				if (pi.species_id == -1)
+					unfound++;
 				break;
 			case 3:
 				biotype = DBFReadIntegerAttribute(db, i, opt.iSpeciesFieldIndex);
@@ -582,9 +597,14 @@ void vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 		// If we get here, there is a valid plant to append
 		m_Pia.Append(pi);
 	}
+	if (unfound)
+		DisplayAndLog("Couldn't find species for %d out of %d instances.", unfound, nElem);
+	else
+		DisplayAndLog("Imported %d plant instances.", nElem);
 
 	DBFClose(db);
 	SHPClose(hSHP);
+	return true;
 }
 
 float vtVegLayer::FindDensity(const DPoint2 &p)
