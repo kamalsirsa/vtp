@@ -28,7 +28,7 @@ MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 		46,		// Geo or short projection identifier
 		65,		// Zone
 		65,		// Datum
-		62,		// Units
+		200,	// Units
 		208,	// Coordinates of cursor
 		86		// Elevation under cursor
 	};
@@ -86,14 +86,20 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	str = DatumToStringShort(proj.GetDatum());
 	SetStatusText(str, Field_Datum);
 
-	LinearUnits lu = proj.GetUnits();
-	str = GetLinearUnitName(lu);
-	SetStatusText(str, Field_HUnits);
-
 	DPoint2 p;
 	BuilderView *pView = frame->GetView();
 	if (pView)
 	{
+		// Scale and units
+		double scale = pView->GetScale();
+		LinearUnits lu = proj.GetUnits();
+		if (lu == LU_DEGREES)
+			str.Printf(_T("1 Pixel = %.6lg "), 1.0/scale);
+		else
+			str.Printf(_T("1 Pixel = %.2lf "), 1.0/scale);
+		str += GetLinearUnitName(lu);
+		SetStatusText(str, Field_HUnits);
+
 		pView->GetMouseLocation(p);
 		str = _("Mouse");
 		str += _T(": ");
