@@ -66,6 +66,32 @@ void vtStructInstance::Offset(const DPoint2 &delta)
 
 ///////////////////////////////////////////////////////////////////////
 
+vtStructure::vtStructure()
+{
+	m_type = ST_NONE;
+	m_pBuilding = NULL;
+}
+
+vtStructure::~vtStructure()
+{
+	switch (m_type)
+	{
+	case ST_BUILDING:
+		delete m_pBuilding;
+		break;
+
+	case ST_FENCE:
+		delete m_pFence;
+		break;
+
+	case ST_INSTANCE:
+		delete m_pInstance;
+		break;
+	}
+	m_type = ST_NONE;
+	m_pBuilding = NULL;
+}
+
 bool vtStructure::GetExtents(DRECT &rect)
 {
 	switch (m_type)

@@ -50,7 +50,8 @@ enum vtStructureType
 {
 	ST_BUILDING,	/**< A Building (vtBuilding) */
 	ST_FENCE,		/**< A Fence (vtFence) */
-	ST_INSTANCE		/**< A Structure Instance (vtStructInstance) */
+	ST_INSTANCE,	/**< A Structure Instance (vtStructInstance) */
+	ST_NONE
 };
 
 /**
@@ -72,7 +73,8 @@ enum vtStructureType
 class vtStructure : public Selectable
 {
 public:
-	vtStructure() {}
+	vtStructure();
+	~vtStructure();
 
 	void SetBuilding(vtBuilding *bld) { m_pBuilding = bld; m_type = ST_BUILDING; }
 	void SetFence(vtFence *fen) { m_pFence = fen; m_type = ST_FENCE; }
