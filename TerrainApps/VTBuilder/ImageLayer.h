@@ -29,6 +29,7 @@ public:
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
+	DPoint2 GetSpacing();
 
 private:
 	bool LoadFromGDAL();

@@ -1287,6 +1287,9 @@ void MainFrame::OnViewFull(wxCommandEvent& event)
 	vtElevLayer *pEL = GetActiveElevLayer();
 	if (pEL)
 		m_pView->MatchZoomToElev(pEL);
+	vtImageLayer *pIL = GetActiveImageLayer();
+	if (pIL)
+		m_pView->MatchZoomToImage(pIL);
 }
 
 void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)

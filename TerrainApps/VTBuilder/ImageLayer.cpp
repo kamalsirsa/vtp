@@ -63,10 +63,10 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	wxRect destRect = screenrect;
 	wxRect srcRect(0, 0, m_pImage->GetWidth(), m_pImage->GetHeight());
 
-	wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
+/*	wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(yellow);
-	pDC->DrawRectangle(screenrect.x, screenrect.y, screenrect.width, screenrect.height);
+	pDC->DrawRectangle(screenrect.x, screenrect.y, screenrect.width, screenrect.height); */
 
 #if WIN32
 	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
@@ -76,7 +76,7 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		destRect.width, destRect.height);
 #else
 	// scale and draw the bitmap
-	// must use SetUserScale since StretchBlt is not supported
+	// must use SetUserScale since StretchBlt is not available
 	double ratio_x = (double) srcRect.GetWidth() / destRect.GetWidth();
 	double ratio_y = (double) srcRect.GetHeight() / destRect.GetHeight();
 
@@ -119,6 +119,15 @@ void vtImageLayer::GetProjection(vtProjection &proj)
 void vtImageLayer::SetProjection(const vtProjection &proj)
 {
 	m_Proj = proj;
+}
+
+DPoint2 vtImageLayer::GetSpacing()
+{
+	if (!m_pImage)
+		return DPoint2(0,0);
+
+	return DPoint2(m_Extents.Width() / (m_pImage->GetWidth() - 1),
+		m_Extents.Height() / (m_pImage->GetHeight() - 1));
 }
 
 #include "vtdata/vtDIB.h"

@@ -16,6 +16,7 @@
 class vtLayer;
 class vtRoadLayer;
 class vtElevLayer;
+class vtImageLayer;
 class vtStructureLayer;
 class vtUtilityLayer;
 class LinkEdit;
@@ -123,6 +124,7 @@ public:
 	void DeleteSelected(vtRoadLayer *pRL);
 	void SetActiveLayer(vtLayer *lp);
 	void MatchZoomToElev(vtElevLayer *pEL);
+	void MatchZoomToImage(vtImageLayer *pEL);
 	void SetShowMap(bool bShow);
 	bool GetShowMap() { return m_bShowMap; }
 

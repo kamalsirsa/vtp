@@ -22,6 +22,7 @@
 #include "VTBuilder_wdr.h"
 // Layers
 #include "ElevLayer.h"
+#include "ImageLayer.h"
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
@@ -908,11 +909,26 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 	DPoint2 spacing = pEL->m_pGrid->GetSpacing();
 	SetScale(1.0f / spacing.x);
 
-	FPoint2 center;
+	DPoint2 center;
 	DRECT area;
 	pEL->GetExtent(area);
-	center.x = (float) (area.left + area.right) / 2;
-	center.y = (float) (area.bottom + area.top) / 2;
+	area.GetCenter(center);
+	ZoomToPoint(center);
+
+	Refresh();
+}
+void BuilderView::MatchZoomToImage(vtImageLayer *pIL)
+{
+	if (!pIL)
+		return;
+
+	DPoint2 spacing = pIL->GetSpacing();
+	SetScale(1.0f / spacing.x);
+
+	DPoint2 center;
+	DRECT area;
+	pIL->GetExtent(area);
+	area.GetCenter(center);
 	ZoomToPoint(center);
 
 	Refresh();

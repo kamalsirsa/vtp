@@ -242,6 +242,12 @@ public:
 			return (vtElevLayer *)m_pActiveLayer;
 		return NULL;
 	}
+	vtImageLayer *GetActiveImageLayer()
+	{
+		if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_IMAGE)
+			return (vtImageLayer *)m_pActiveLayer;
+		return NULL;
+	}
 	vtRoadLayer *GetActiveRoadLayer()
 	{
 		if (m_pActiveLayer && m_pActiveLayer->GetType() == LT_ROAD)
