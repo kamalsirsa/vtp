@@ -171,9 +171,11 @@ bool Country::WriteSHP(const char *fname)
 /////////////////////////////////////////////////////////////////////////////
 //
 
-void Countries::ReadCountryList(const char *fname)
+bool Countries::ReadCountryList(const char *fname)
 {
 	FILE *fp = fopen(fname, "rb");
+	if (!fp)
+		return false;
 
 	int off;
 	vtString str, name, abb;
@@ -188,35 +190,52 @@ void Countries::ReadCountryList(const char *fname)
 		m_countries.Append(country);
 	}
 	fclose(fp);
+	return true;
 }
 
-void Countries::ParseRawCountryFiles(const char *path_prefix)
+void Countries::ParseRawCountryFiles(const char *path_prefix, bool bNativeNames)
 {
 	m_path = path_prefix;
 
-	int num = m_countries.GetSize();
-	for (int i = 0; i < num; i++)
-//	for (int i = 184; i < 190; i++)	// TEMP TEST
-	{
-		ParseRawCountry(i);
+	unsigned int num = m_countries.GetSize();
+	for (int unsigned i = 0; i < num; i++)
+		ParseRawCountry(i, bNativeNames);
+}
 
+bool Countries::WriteSHPPerCountry(const char *prefix)
+{
+	int unsigned num = m_countries.GetSize();
+	for (int unsigned i = 0; i < num; i++)
+	{
 		Country *country = m_countries[i];
 
 		if (country->m_places.GetSize() > 0)
 		{
-			vtString outpath = "shp/";
-			outpath += country->m_abb;
-			outpath += ".shp";
-			country->WriteSHP(outpath);
+			vtString out_path = prefix;
+			out_path += country->m_abb;
+			out_path += ".shp";
+			if (!country->WriteSHP(out_path))
+				return false;
 		}
+	}
+	return true;
+}
 
+void Countries::Free()
+{
+	int unsigned num = m_countries.GetSize();
+	for (int unsigned i = 0; i < num; i++)
+	{
+		Country *country = m_countries[i];
 		delete country;
 	}
+	m_countries.SetSize(0);
 }
+
 
 #include "GnsCodes.h"
 
-void GNS_to_wstring(int region, char *word, std::wstring &output)
+void GNS_to_wstring(int region, const char *word, std::wstring &output)
 {
 	int len = strlen(word);
 	unsigned char ch;
@@ -294,25 +313,13 @@ void GNS_to_wstring(int region, char *word, std::wstring &output)
 	24 MODIFY_DATE
 */
 
-void Countries::ParseRawCountry(int which)
+void Countries::ParseRawCountry(int which, bool bNativeNames)
 {
 	Country *country = m_countries[which];
 
 	printf("Parsing %s...", (const char *) country->m_full);
 
-	char fc;	// feature classification, P = populated palce
-	char pc;	// Populated Place Classification
-	DPoint2 point;
-	char *p, *w;
-	int i;
-	char buf[4000];
-	char word[200];	// some place names in Russia are more than 100 chars!
-	Place *place;
-	int region;
-
-	int num_important[7];
-	int line_number = 0;
-
+	int i, num_important[7];
 	for (i = 0; i < 7; i++)
 		num_important[i] = 0;
 
@@ -322,8 +329,23 @@ void Countries::ParseRawCountry(int which)
 		printf("couldn't open.\n");
 		return;
 	}
+
+	DPoint2 point;
+	char fc;	// feature classification, P = populated palce
+	char pc;	// Populated Place Classification
+	char nt;	// Name Type
+	char *p, *w;
+	vtString fullname, fullname_nd;
+	char buf[4000];
+	char word[200];	// some place names in Russia are more than 100 chars!
+	int line_number = 0;
+	Place *place;
+	int region;
+	bool bSkip;
+
 	while (fgets(buf, 4000, fp) != NULL)
 	{
+		bSkip = false;
 		line_number++;
 		i = 0;
 		w = word;
@@ -342,28 +364,14 @@ void Countries::ParseRawCountry(int which)
 				if (i == 9)
 					fc = word[0];
 				if (i == 11)
-				{
 					pc = word[0] ? word[0] - '0' : 6;	// "importance" 1-5, 1 most
-				}
-				if (fc == 'P')	// populated place
-				{
-					if (i == 22)	// FULL_NAME
-					{
-						// count how many of each importance
-						if (pc >= 1 && pc <= 6) num_important[pc] ++;
+				if (i == 17)	// Name Type
+					nt = word[0];
+				if (i == 22)	// FULL_NAME
+					fullname = word;
+				if (i == 23)	// FULL_NAME_ND
+					fullname_nd = word;
 
-						place = new Place();
-						place->m_pos = point;
-						place->m_ppc = pc;
-						country->m_places.Append(place);
-
-						GNS_to_wstring(region, word, place->m_fullname);
-					}
-					if (i == 23)	// FULL_NAME_ND
-					{
-						place->m_fullname_nd = word;
-					}
-				}
 				i++;
 				w = word;
 			}
@@ -373,6 +381,24 @@ void Countries::ParseRawCountry(int which)
 				w++;
 			}
 		}
+		if (fc != 'P')	// populated place
+			bSkip = true;
+		if (nt != 'N' && bNativeNames == true)
+			bSkip = true;
+
+		if (bSkip)
+			continue;
+
+		// count how many of each importance
+		if (pc >= 1 && pc <= 6) num_important[pc] ++;
+
+		place = new Place();
+		place->m_pos = point;
+		place->m_ppc = pc;
+		country->m_places.Append(place);
+
+		GNS_to_wstring(region, fullname, place->m_fullname);
+		place->m_fullname_nd = fullname_nd; 
 	}
 	fclose(fp);
 	int size = country->m_places.GetSize();
@@ -399,7 +425,7 @@ void ReadString(FILE *fp, vtString &str)
 	str = buf;
 }
 
-bool Countries::WriteSHP(const char *fname)
+bool Countries::WriteSingleSHP(const char *fname)
 {
 	SHPHandle hSHP = SHPCreate(fname, SHPT_POINT);
 	if (!hSHP)

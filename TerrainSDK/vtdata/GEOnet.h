@@ -8,6 +8,8 @@
 #ifndef GEONET_H
 #define GEONET_H
 
+#include "config_vtdata.h"
+
 #if SUPPORT_WSTRING
 
 #include "MathTypes.h"
@@ -64,11 +66,13 @@ class Countries
 {
 public:
 	// create GCF from raw GEOnet Names Server (GNS) files
-	void ReadCountryList(const char *fname);
-	void ParseRawCountryFiles(const char *path_prefix);
-	void ParseRawCountry(int i);
+	bool ReadCountryList(const char *fname);
+	void ParseRawCountryFiles(const char *path_prefix, bool bNativeNames);
+	void ParseRawCountry(int i, bool bNativeNames);
 	void WriteGCF(const char *fname);
-	bool WriteSHP(const char *fname);
+	bool WriteSingleSHP(const char *fname);
+	bool WriteSHPPerCountry(const char *prefix);
+	void Free();
 
 	// load and use GCF
 	void ReadGCF(const char *fname, void progress_callback(int) = NULL);
