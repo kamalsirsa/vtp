@@ -50,6 +50,7 @@ vtTerrain::vtTerrain()
 	m_pHeightField = NULL;
 	m_bPreserveInputGrid = false;
 	m_pElevGrid = NULL;
+	m_pTextureColors = NULL;
 
 	m_pOceanGeom = NULL;
 	m_pRoadGroup = NULL;
@@ -337,8 +338,12 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		// derive color from elevation
 		m_pDIB = new vtDIB();
 		m_pDIB->Create(tsize, tsize, 24, false);
-		pHFGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
+		pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, RGBi(m_ocean_color));
 	}
+
+	// Allow subclasses to customize the Dib, before we turn it into an vtImage
+	if (m_pDIB)
+		CustomizeDib();
 
 	// apply pre-lighting (darkening)
 	if (m_Params.GetValueBool(STR_PRELIGHT) && m_pDIB)

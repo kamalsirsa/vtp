@@ -105,6 +105,12 @@ public:
 	bool CreateStep5();
 	vtString GetLastError() { return m_strErrorMsg; }
 
+	/** Set the array of colors to be used when automatically generating the
+		terrain texture from the elevation values.  The colors go from the
+		lowest elevation value to the highest. */
+	void SetTextureColors(Array<RGBi> *brackets) { m_pTextureColors = brackets; }
+	virtual void CustomizeDib() {}
+
 	/// return true if the terrain has been created
 	bool IsCreated();
 
@@ -320,6 +326,7 @@ protected:
 	// ground texture
 	vtDIB			*m_pDIB;
 	Array<vtImage*>	m_Images;
+	Array<RGBi>		*m_pTextureColors;
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)
