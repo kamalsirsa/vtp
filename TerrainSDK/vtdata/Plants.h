@@ -131,6 +131,7 @@ public:
 		m_Species.Append(pSpecies);
 	}
 	int FindSpeciesId(vtPlantSpecies *ps);
+	void Clear() { m_Species.Empty(); }
 
 protected:
 	Array<vtPlantSpecies*> m_Species;
@@ -149,6 +150,7 @@ public:
 	vtBioType *GetBioType(int i) const { return m_Types[i]; }
 	int FindBiotypeIdByName(const char *name) const;
 	void ResetAmounts();
+	void Clear() { m_Types.Empty(); }
 
 	Array<vtBioType *> m_Types;
 };
