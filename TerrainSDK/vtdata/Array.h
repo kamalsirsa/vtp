@@ -1,7 +1,7 @@
 //
 // Array.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 /** \file Array.h */
@@ -9,7 +9,9 @@
 #ifndef ARRAYH
 #define ARRAYH
 
-//#include "vtLog.h"
+#ifdef _MSC_VER
+#pragma warning( disable : 4786 )
+#endif
 
 #include <stdlib.h>	// for free()
 #include <memory.h>	// for memcpy()
