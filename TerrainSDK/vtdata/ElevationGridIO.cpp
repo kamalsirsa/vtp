@@ -1626,6 +1626,9 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	char spacing_unit;
 	char hemi;
 	short elev;
+	char digitize_datum;
+	double scalefactor;
+	int i, j;
 
 	/* open input file */
 	if ((fp = fopen(szFileName, "rb")) == NULL)
@@ -1659,8 +1662,8 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	fread(buf, 3, 1, fp);			// "OSquareID"
 	fread(&max_elev, 2, 1, fp);
 	fread(&min_elev, 2, 1, fp);
-	fread(&xspacing, 1, 1, fp);		// x data point spacing, in sec, min, or m
-	fread(&yspacing, 1, 1, fp);		// y data point spacing, in sec, min, or m
+	fread(&yspacing, 1, 1, fp);		// N-S data point spacing, in sec, min, or m
+	fread(&xspacing, 1, 1, fp);		// E-W data point spacing, in sec, min, or m
 	fread(buf, 20, 1, fp);			// unused
 	fread(&utm_x_lowerleft, 4, 1, fp);
 	fread(&utm_y_lowerleft, 4, 1, fp);
@@ -1673,7 +1676,7 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	fread(&dem_type, 1, 1, fp);		// 0 = UTM DEM, 1 = ArcSecond DEM
 	fread(&spacing_unit, 1, 1, fp);	// Meters,Seconds,Minutes,KM,100m,Feet
 		// KFeet,Degrees,HundredthSecond,MercProj100m,PolarStereo100m,100
-	fread(buf, 1, 1, fp);			// unused "USGS standard" = 1
+	fread(&digitize_datum, 1, 1, fp);	// (WGS72, WGS84, NAD27, NAD83, Spherical, Local)
 	fread(buf, 12, 1, fp);			// unused
 	fread(&hemi, 1, 1, fp);			// hemisphere 'N' or 'S'
 	// rest of header unused
@@ -1681,9 +1684,82 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 	// Read data
 	fseek(fp, offset_to_data, SEEK_SET);
 
-	// Set the projection - what is Datum? MicroDEM appears to convert
-	// everything to WGS84?
-	m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
+	// Set the projection
+	switch (digitize_datum)
+	{
+	case 0: //WGS72
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_72);
+		break;
+	case 1: //WGS84
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
+		break;
+	case 2: //NAD27
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, NAD27);
+		break;
+	case 3: //NAD83
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, NAD83);
+		break;
+	case 4: //Spherical
+	case 5: //Local
+	default:
+		m_proj.SetProjectionSimple(dem_type==0, utm_zone, WGS_84);
+		break;
+	}
+
+	// convert extents to degrees or metres
+	switch (spacing_unit) //Meters,Seconds,Minutes,KM,100m, Feet,KFeet, Degrees,HundredthSecond,
+	  // MercProj100m,  PolarStereo100m,10m,TenthSecond
+	{
+	case 0: // Metres
+		scalefactor = 1.0;
+		break;
+	case 1: // Arc Seconds
+		scalefactor = 3600.0;
+		break;
+	case 2: // Arc Minutes
+		scalefactor = 60.0;
+		break;
+	case 3: // Kilometres
+		scalefactor = 0.001;
+		break;
+	case 4: // 100 Metres
+		scalefactor = 0.01;
+		break;
+	case 5: // Feet
+		scalefactor = 0.3048;
+		break;
+	case 6: // 1000 Feet
+		scalefactor = 0.0003048;
+		break;
+	case 7: // Degrees
+		scalefactor = 1;
+		break;
+	case 8: // .01 Arc Second
+		scalefactor = 360000.0;
+		break;
+	case 9: // Mercator projection 100M
+		scalefactor = 0.01;
+		break;
+	case 10: // PolarStereo 100M
+		scalefactor = 0.01;
+		break;
+	case 11: // .1 Arc Second
+		scalefactor = 36000.0;
+		break;
+	default:
+		scalefactor = 1;
+		break;
+	}
+
+	m_area.left = utm_x_lowerleft / scalefactor;
+	m_area.top = (utm_y_lowerleft + (ysize - 1) * yspacing) / scalefactor;
+	m_area.right = (utm_x_lowerleft + (xsize - 1) * xspacing) / scalefactor;
+	m_area.bottom = utm_y_lowerleft / scalefactor;
+
+	ComputeCornersFromExtents();
+
+	// set the corresponding vtElevationGrid info
+	m_bFloatMode = false;
 
 	switch (elev_unit_type)
 	{
@@ -1703,31 +1779,11 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 		break;
 	}
 
-	// set the corresponding vtElevationGrid info
-	m_bFloatMode = false;
-	if (dem_type == 0)
-	{
-		m_area.left = utm_x_lowerleft;
-		m_area.top = utm_y_lowerleft + (ysize-1) * yspacing;
-		m_area.right = utm_x_lowerleft + (xsize-1) * xspacing;
-		m_area.bottom = utm_y_lowerleft;
-	}
-	else
-	{
-		// convert extents from arcminutes to degrees
-		m_area.left = utm_x_lowerleft / 3600.0;
-		m_area.top = (utm_y_lowerleft + (ysize-1) * yspacing) / 3600.0;
-		m_area.right = (utm_x_lowerleft + (xsize-1) * xspacing) / 3600.0;
-		m_area.bottom = utm_y_lowerleft / 3600.0;
-	}
-	ComputeCornersFromExtents();
-
 	m_iColumns = xsize;
 	m_iRows = ysize;
 
 	_AllocateArray();
 
-	int i, j;
 	for (i = 0; i < xsize; i++)
 	{
 		if (progress_callback != NULL) progress_callback(i * 100 / xsize);
