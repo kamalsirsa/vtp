@@ -609,12 +609,12 @@ public:
 class DPolyArray : public std::vector<DPolygon2>
 {
 public:
-	DPolyArray() { m_previous_poly = -1; }
+	DPolyArray() { s_previous_poly = -1; }
 
-	int FindPoly(const DPoint2 &p);
+	int FindPoly(const DPoint2 &p) const;
 
 	// for speed, remember the polygon that we found last time
-	int m_previous_poly;
+	static int s_previous_poly;
 };
 
 

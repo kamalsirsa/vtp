@@ -1,12 +1,14 @@
 //
 // Implementation of methods for the basic data classes
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "MathTypes.h"
 #include "vtLog.h"
+
+int DPolyArray::s_previous_poly = -1;
 
 /**
  * Return the index of the polygon at a specified point, or -1 if
@@ -15,12 +17,12 @@
  * For speed, it first test the polygon which was found last time.
  * For spatially linear testing, this can be a 10x speedup.
  */
-int DPolyArray::FindPoly(const DPoint2 &p)
+int DPolyArray::FindPoly(const DPoint2 &p) const
 {
-	if (m_previous_poly != -1)
+	if (s_previous_poly != -1)
 	{
-		if (at(m_previous_poly).ContainsPoint(p))
-			return m_previous_poly;
+		if (at(s_previous_poly).ContainsPoint(p))
+			return s_previous_poly;
 	}
 	int num = size();
 	for (int i = 0; i < num; i++)
@@ -35,12 +37,12 @@ int DPolyArray::FindPoly(const DPoint2 &p)
 		if (poly.ContainsPoint(p))
 		{
 			// found
-			m_previous_poly = i;
+			s_previous_poly = i;
 			return i;
 		}
 	}
 	// not found
-	m_previous_poly = -1;
+	s_previous_poly = -1;
 	return -1;
 }
 
@@ -227,8 +229,26 @@ bool DRECT::ContainsLine(const DLine2 &line) const
 
 bool DPolygon2::ContainsPoint(const DPoint2 &p) const
 {
-	// TODO
-	return false;
+	// We don't have a point-in-polygon test which actually takes multiple
+	//  rings as input.  So, there are two options, both inefficient:
+	//
+	// 1. Unwind the rings into a temporary array with all the vertices
+	//    present, and test against that.
+	//
+	// 2. Test against each ring: inside the outside ring, and outside of
+	//    each internal ring.  (This is what GEOS does.)
+	//
+	// Here we take option 1.  TODO: make this faster and more efficient!!
+
+	if (size() > 1)
+	{
+		DLine2 all_vertices;
+		GetAsDLine2(all_vertices);
+
+		return all_vertices.ContainsPoint(p);
+	}
+	else
+		return at(0).ContainsPoint(p);
 }
 
 /**
@@ -254,14 +274,18 @@ void DPolygon2::Add(const DPoint2 &p)
  */
 void DPolygon2::GetAsDLine2(DLine2 &dline) const
 {
-	unsigned int i;
-	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	unsigned int i, total = 0, ringnum;
+
+	for (ringnum = 0; ringnum < size(); ringnum++)
+		total += (at(ringnum).GetSize() + 1);
+
+	dline.SetMaxSize(total);
+
+	for (ringnum = 0; ringnum < size(); ringnum++)
 	{
 		const DLine2 &ring = at(ringnum);
 		for (i = 0; i < ring.GetSize(); i++)
-		{
 			dline.Append(ring[i]);
-		}
 
 		// close each ring by repeating the first point of the ring
 		dline.Append(ring[0]);
@@ -567,9 +591,9 @@ int vt_log2(int n)
  */
 bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point)
 {
-	register int	j, yflag0, yflag1, xflag0;
+	register int j;
 	register double ty, tx;
-	register bool inside_flag;
+	register bool inside_flag, yflag0, yflag1, xflag0;
 	const DPoint2 *vertex0, *vertex1;
 
 	tx = point.x;
