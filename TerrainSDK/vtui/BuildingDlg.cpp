@@ -62,6 +62,7 @@ BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	m_pHeightField = NULL;
 	m_bSetting = false;
 	m_bEdges = false;
 	BuildingDialogFunc( this, TRUE );
@@ -145,6 +146,9 @@ void BuildingDlg::OnModifyFacade( wxCommandEvent &event )
 
 void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 {
+	if (!m_pHeightField)
+		return;
+
 	CHeightDialog HeightDialog(this, -1, _T("Baseline Editor"));
 
 	HeightDialog.Setup(m_pBuilding, m_pHeightField);
