@@ -21,12 +21,14 @@ class vtNodeBase;
 class LayerItemData : public wxTreeItemData
 {
 public:
-	LayerItemData(vtStructureArray3d *sa, int item)
+	LayerItemData(vtStructureArray3d *sa, int index, int item)
 	{
 		m_sa = sa;
+		m_index = index;
 		m_item = item;
 	}
 	vtStructureArray3d *m_sa;
+	int m_index;
 	int m_item;
 	bool last_visible;
 };
@@ -47,8 +49,12 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	// WDR: method declarations for LayerDlg
-	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_ZOOM_TO ); }
-	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_VISIBLE ); }
+	wxButton* GetLayerRemove()  { return (wxButton*) FindWindow( ID_LAYER_REMOVE ); }
+	wxButton* GetLayerCreate()  { return (wxButton*) FindWindow( ID_LAYER_CREATE ); }
+	wxButton* GetLayerSave()  { return (wxButton*) FindWindow( ID_LAYER_SAVE ); }
+	wxButton* GetLayerActivate()  { return (wxButton*) FindWindow( ID_LAYER_ACTIVE ); }
+	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_LAYER_ZOOM_TO ); }
+	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_LAYER_VISIBLE ); }
 	wxCheckBox* GetShowAll()  { return (wxCheckBox*) FindWindow( ID_SHOW_ALL ); }
 	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
@@ -56,10 +62,12 @@ public:
 	void RefreshTreeSpace();
 
 	void SetShowAll(bool bTrue);
+	void UpdateEnabling();
 
 private:
 	// WDR: member variable declarations for LayerDlg
 	wxTreeCtrl *m_pTree;
+	wxTreeItemId m_item;
 	bool	m_bShowAll;
 
 private:
@@ -68,6 +76,10 @@ private:
 	LayerItemData *LayerDlg::GetLayerDataFromItem(wxTreeItemId item);
 	void ToggleVisible(bool bVis, wxTreeItemId id);
 	// WDR: handler declarations for LayerDlg
+	void OnLayerRemove( wxCommandEvent &event );
+	void OnLayerCreate( wxCommandEvent &event );
+	void OnLayerSave( wxCommandEvent &event );
+	void OnLayerActivate( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
 	void OnShowAll( wxCommandEvent &event );

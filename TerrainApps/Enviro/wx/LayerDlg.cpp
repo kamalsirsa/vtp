@@ -34,8 +34,12 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_INIT_DIALOG (LayerDlg::OnInitDialog)
 	EVT_TREE_SEL_CHANGED( ID_LAYER_TREE, LayerDlg::OnSelChanged )
 	EVT_CHECKBOX( ID_SHOW_ALL, LayerDlg::OnShowAll )
-	EVT_CHECKBOX( ID_VISIBLE, LayerDlg::OnVisible )
-	EVT_BUTTON( ID_ZOOM_TO, LayerDlg::OnZoomTo )
+	EVT_CHECKBOX( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
+	EVT_BUTTON( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
+	EVT_BUTTON( ID_LAYER_ACTIVE, LayerDlg::OnLayerActivate )
+	EVT_BUTTON( ID_LAYER_SAVE, LayerDlg::OnLayerSave )
+	EVT_BUTTON( ID_LAYER_CREATE, LayerDlg::OnLayerCreate )
+	EVT_BUTTON( ID_LAYER_REMOVE, LayerDlg::OnLayerRemove )
 END_EVENT_TABLE()
 
 LayerDlg::LayerDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -99,6 +103,8 @@ void LayerDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTree = GetTree();
 
 	RefreshTreeContents();
+	m_item = m_pTree->GetSelection();
+	UpdateEnabling();
 
 	wxWindow::OnInitDialog(event);
 }
@@ -110,8 +116,6 @@ void LayerDlg::RefreshTreeContents()
 
 	// start with a blank slate
 	m_pTree->DeleteAllItems();
-	GetVisible()->Enable(false);
-	GetZoomTo()->Enable(false);
 
 	switch (g_App.m_state)
 	{
@@ -148,7 +152,7 @@ void LayerDlg::RefreshTreeTerrain()
 		wxTreeItemId hLayer = m_pTree->AppendItem(hRoot, str, -1, -1);
 		if (sa == terr->GetStructures())
 			m_pTree->SetItemBold(hLayer, true);
-		m_pTree->SetItemData(hLayer, new LayerItemData(sa, -1));
+		m_pTree->SetItemData(hLayer, new LayerItemData(sa, i, -1));
 
 		wxTreeItemId hItem;
 		if (m_bShowAll)
@@ -175,7 +179,7 @@ void LayerDlg::RefreshTreeTerrain()
 					}
 					hItem = m_pTree->AppendItem(hLayer, str, -1, -1);
 				}
-				m_pTree->SetItemData(hItem, new LayerItemData(sa, j));
+				m_pTree->SetItemData(hItem, new LayerItemData(sa, i, j));
 			}
 		}
 		else
@@ -250,13 +254,55 @@ void LayerDlg::RefreshTreeSpace()
 
 // WDR: handler implementations for LayerDlg
 
+void LayerDlg::OnLayerRemove( wxCommandEvent &event )
+{
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (!data)
+		return;
+
+	if (data->m_sa != NULL)
+	{
+		GetCurrentTerrain()->DeleteStructureSet(data->m_index);
+		RefreshTreeContents();
+	}
+}
+
+void LayerDlg::OnLayerCreate( wxCommandEvent &event )
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+
+	vtStructureArray3d *sa = pTerr->NewStructureArray();
+	sa->SetFilename("Untitled.vtst");
+	sa->m_proj = pTerr->GetProjection();
+	RefreshTreeContents();
+}
+
+void LayerDlg::OnLayerSave( wxCommandEvent &event )
+{
+	g_App.SaveStructures();
+	RefreshTreeContents();
+}
+
+void LayerDlg::OnLayerActivate( wxCommandEvent &event )
+{
+	LayerItemData *data = GetLayerDataFromItem(m_item);
+	if (!data)
+		return;
+
+	if (data->m_sa != NULL)
+	{
+		GetCurrentTerrain()->SetStructureIndex(data->m_index);
+		RefreshTreeContents();
+	}
+}
+
 void LayerDlg::OnZoomTo( wxCommandEvent &event )
 {
-	vtNodeBase *pThing = GetNodeFromItem(m_pTree->GetSelection());
+	vtNodeBase *pThing = GetNodeFromItem(m_item);
 	if (pThing)
 	{
 		FSphere sphere;
-		pThing->GetBoundSphere(sphere, true);	// get global bounds
+		pThing->GetBoundSphere(sphere, true);   // get global bounds
 		vtCamera *pCam = vtGetScene()->GetCamera();
 
 		// Put the camera a bit back from the sphere; sufficiently so that
@@ -273,15 +319,14 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 void LayerDlg::OnVisible( wxCommandEvent &event )
 {
 	bool bVis = event.IsChecked();
-	wxTreeItemId item = m_pTree->GetSelection();
 
-	vtNode *pThing = GetNodeFromItem(item);
+	vtNode *pThing = GetNodeFromItem(m_item);
 	if (pThing) {
 		pThing->SetEnabled(bVis);
 		return;
 	}
 
-	vtStructureArray3d *sa = GetStructureArray3dFromItem(item);
+	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
 	if (sa) {
 		for (unsigned int j = 0; j < sa->GetSize(); j++) {
 			vtStructure3d *str3d = sa->GetStructure3d(j);
@@ -291,10 +336,9 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 					pThing->SetEnabled(bVis);
 			}
 		}
-		LayerItemData *data = GetLayerDataFromItem(item);
-		if (data) {
+		LayerItemData *data = GetLayerDataFromItem(m_item);
+		if (data)
 			data->last_visible = bVis;
-		}
 	}
 }
 
@@ -302,31 +346,35 @@ void LayerDlg::OnShowAll( wxCommandEvent &event )
 {
 	m_bShowAll = event.IsChecked();
 	RefreshTreeContents();
-	if (!m_bShowAll)
-	{
-		GetVisible()->SetValue(false);
-		GetVisible()->Enable(false);
-		GetZoomTo()->Enable(false);
-	}
+	m_item = m_pTree->GetSelection();
+	UpdateEnabling();
 }
 
 void LayerDlg::OnSelChanged( wxTreeEvent &event )
 {
-	wxTreeItemId item = event.GetItem();
-	vtNodeBase *pThing = GetNodeFromItem(item);
-	vtStructureArray3d *sa = GetStructureArray3dFromItem(item);
+	m_item = event.GetItem();
+	UpdateEnabling();
+}
+
+void LayerDlg::UpdateEnabling()
+{
+	vtNode *pThing = GetNodeFromItem(m_item);
+	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
+	LayerItemData *data = GetLayerDataFromItem(m_item);
 
 	GetZoomTo()->Enable(pThing != NULL);
 	GetVisible()->Enable((pThing != NULL) || (sa != NULL));
 
 	if (pThing)
 		GetVisible()->SetValue(pThing->GetEnabled());
-	if (sa) {
-		LayerItemData *data = GetLayerDataFromItem(item);
-		if (data) {
+	if (sa)
+	{
+		if (data)
 			GetVisible()->SetValue(data->last_visible);
-		}
 	}
-}
 
+	GetLayerActivate()->Enable(sa != NULL);
+	GetLayerRemove()->Enable(sa != NULL);
+	GetLayerSave()->Enable(sa != NULL);
+}
 
