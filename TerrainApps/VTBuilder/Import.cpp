@@ -398,9 +398,16 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 			else
 				pLayer = ImportVectorsWithOGR(strFileName, ltype);
 		}
-		else if (!strExt.CmpNoCase(_T("shp")))
+		else if (!strExt.CmpNoCase(_T("shp")) ||
+				 !strExt.CmpNoCase(_T("igc")))
 		{
-			pLayer = ImportFromSHP(strFileName, ltype);
+			pLayer = new vtRawLayer();
+			pLayer->SetLayerFilename(strFileName);
+			if (!pLayer->OnLoad())
+			{
+				delete pLayer;
+				pLayer = NULL;
+			}
 		}
 		else if (!strExt.CmpNoCase(_T("bcf")))
 		{
