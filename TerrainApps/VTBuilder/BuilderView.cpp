@@ -258,12 +258,12 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 		// try to speed up a bit by avoiding zones off the screen
 		object(wxPoint(0, height/2), proj_point);
 		trans->Transform(1, &proj_point.x, &proj_point.y);
-		zone = GuessZoneFromLongitude(proj_point.x);
+		zone = GuessZoneFromGeo(proj_point);
 		if (zone-1 > zone_start) zone_start = zone-1;
 
 		object(wxPoint(width, height/2), proj_point);
 		trans->Transform(1, &proj_point.x, &proj_point.y);
-		zone = GuessZoneFromLongitude(proj_point.x);
+		zone = GuessZoneFromGeo(proj_point);
 		if (zone+1 < zone_end) zone_end = zone+1;
 
 		delete trans;
@@ -450,7 +450,13 @@ void BuilderView::DrawWorldMap(wxDC *pDC)
 	if (m_iEntities == 0 && !m_bAttemptedLoad)
 	{
 		m_bAttemptedLoad = true;
-		if (!ImportWorldMap())
+		if (ImportWorldMap())
+		{
+			vtProjection proj;
+			GetMainFrame()->GetProjection(proj);
+			SetWMProj(proj);
+		}
+		else
 		{
 			m_bShowMap = false;
 			return;
