@@ -4,11 +4,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include <string.h>
-
-#ifdef UNIX
-#  define stricmp strcasecmp
-#endif
+#include "vtdata/vtString.h"
 
 vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 {

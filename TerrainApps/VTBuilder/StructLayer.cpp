@@ -17,11 +17,6 @@
 #include "ScaledView.h"
 #include "BuildingDlg.h"
 
-#ifndef _MSC_VER	// for non-MSVC
-#include <string.h>
-#define stricmp strcasecmp
-#endif
-
 wxPen orangePen;
 wxPen yellowPen;
 static bool g_bInitializedPens = false;
