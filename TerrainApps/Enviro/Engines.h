@@ -80,6 +80,23 @@ public:
 
 //////////////////////////////////////////////////
 
+// Follow the current route
+class RouteFollowerEngine : public vtEngine
+{
+public:
+	RouteFollowerEngine(vtRoute* route, vtCamera* camera);
+	void Eval();
+
+	vtHeightField* m_pHeightField;
+	vtRoute* m_pRoute;
+	vtCamera* m_pCamera;
+	bool m_bFollowerOn;
+	bool m_bFirstTime;
+	long m_lnext;
+};
+
+//////////////////////////////////////////////////
+
 class FollowerEngine : public vtEngine
 {
 public:
