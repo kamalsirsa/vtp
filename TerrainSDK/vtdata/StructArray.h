@@ -130,11 +130,6 @@ protected:
 	int m_iEditEdge;
 };
 
-class vtMaterialNameElement : public vtMaterialName
-{
-	void* vtMaterialNameElement::operator new(size_t s, void* p) { return p; }
-};
-
 class vtMaterialNamesArray : public Array<vtMaterialName*>
 {
 public:
