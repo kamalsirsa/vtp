@@ -38,7 +38,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="wxmsw24d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Debug-wx/wxEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -107,7 +107,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="wxmsw24u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib"
 				OutputFile="Release_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -174,7 +174,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="wxmsw24ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng13d.lib zlib1d.lib netcdf.lib gdal_id.lib glu32.lib libjpeg.lib"
 				OutputFile="Debug_Unicode/wxEnviro_u.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -242,7 +242,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wxmsw24.lib osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib"
+				AdditionalDependencies="wxmsw24.lib osg.lib osgDB.lib osgUtil.lib osgText.lib opengl32.lib libpng13.lib zlib1.lib netcdf.lib gdal_i.lib glu32.lib libjpeg.lib"
 				OutputFile=".\Release-wx/wxEnviro.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
