@@ -251,11 +251,11 @@ void SRTerrain::RenderPass()
 	ex-=(m_iXPoints/2)*m_fXStep;
 	ez+=(m_iYPoints/2)*m_fZStep;
 
-	m_pMini->draw(m_fResolution, 
-				ex, ey, ez, 
-				dx, dy, dz, 
-				ux, uy, uz, 
-				m_fFOVY * 1.05, aspect,		// exaggerate by 5%
+	m_pMini->draw(m_fResolution,
+				ex, ey, ez,
+				dx, dy, dz,
+				ux, uy, uz,
+				m_fFOVY * 1.06, aspect,		// 6% exageration workaround
 				nearp, farp);
 
 	if (myfancnt>0) glEnd();
