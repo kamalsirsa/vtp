@@ -54,7 +54,7 @@ static FPoint2 t[4] =
  * vertices.  Result is placed in the 'box' parameter.  If there
  * are no vertices, then 'box' is unchanged.
  */
-void vtMeshBase::GetBoundBox(FBox3 &box)
+void vtMeshBase::GetBoundBox(FBox3 &box) const
 {
 	int num = GetNumVertices();
 	if (num == 0)

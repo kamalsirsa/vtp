@@ -159,7 +159,7 @@ public:
 	virtual int GetNumVertices() const { return m_iNumVertsUsed; }
 	PrimType GetPrimType() const { return m_ePrimType; }
 	int GetVtxType() const { return m_iVtxType; }
-	virtual void GetBoundBox(FBox3 &box);
+	virtual void GetBoundBox(FBox3 &box) const;
 
 	void SetMatIndex(int i) { m_iMatIdx = i; }
 	int GetMatIndex() const { return m_iMatIdx; }
