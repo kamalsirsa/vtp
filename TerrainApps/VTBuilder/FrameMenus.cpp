@@ -213,7 +213,9 @@ void MainFrame::CreateMenus()
 	editMenu->AppendSeparator();
 	editMenu->Append(ID_EDIT_DESELECTALL, "Deselect All", "Clears selection.");
 	editMenu->Append(ID_EDIT_INVERTSELECTION, "Invert Selection", "Invert Selection.");
+#ifndef ELEVATION_ONLY
 	editMenu->Append(ID_EDIT_CROSSINGSELECTION, "Crossing Selection", "Crossing Selection.", true);
+#endif
 	m_pMenuBar->Append(editMenu, "&Edit");
 	menu_num++;
 
@@ -568,6 +570,14 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 		m_pView->Refresh();
 		return;
 	}
+	vtRawLayer *pRawL = GetActiveRawLayer();
+	if (pRawL && pRawL->NumSelected() != 0)
+	{
+		pRawL->DeleteSelected();
+		pRawL->SetModified(true);
+		m_pView->Refresh();
+		return;
+	}
 
 	vtLayer *pL = GetActiveLayer();
 	if (pL)
@@ -594,12 +604,17 @@ void MainFrame::OnEditInvertSelection(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (pRL) {
 		pRL->InvertSelection();
-		m_pView->Refresh();
+		m_pView->Refresh(FALSE);
 	}	
 	vtStructureLayer *pSL = GetActiveStructureLayer();
 	if (pSL) {
 		pSL->InvertSelection();
-		m_pView->Refresh();
+		m_pView->Refresh(FALSE);
+	}	
+	vtRawLayer *pRawL = GetActiveRawLayer();
+	if (pRawL) {
+		pRawL->InvertSelection();
+		m_pView->Refresh(FALSE);
 	}	
 }
 
