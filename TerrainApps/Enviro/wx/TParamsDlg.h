@@ -69,15 +69,15 @@ public:
 
 	// navigation
 	int		m_iMinHeight;
-	int     m_iNavStyle;
-	float   m_fNavSpeed;
+	int		m_iNavStyle;
+	float	m_fNavSpeed;
 	wxString2	m_strLocFile;
 	int		m_iInitLocation;	wxString2	m_strInitLocation;
-	float   m_fHither;
+	float	m_fHither;
 
 	// LOD
 	int		m_iLodMethod;
-	float   m_fPixelError;
+	float	m_fPixelError;
 	int		m_iTriCount;
 	bool	m_bTriStrips;
 	bool	m_bDetailTexture;

@@ -748,7 +748,7 @@ void AddFilenamesToArray(wxArrayString &array, const char *directory,
 void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 {
 	unsigned int i;
-    wxArrayString strings;
+	wxArrayString strings;
 
 	for (i = 0; i < m_datapaths.size(); i++)
 		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst");
