@@ -45,7 +45,7 @@ ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
 	AutoDialog( parent, id, title, position, size, style | wxRESIZE_BORDER )
 {
 	// WDR: dialog function ColorMapDialogFunc for ColorMapDlg
-	ColorMapDialogFunc( this, TRUE ); 
+	ColorMapDialogFunc( this, TRUE );
 
 	AddValidator(ID_CMAP_FILE, &m_strFile);
 	AddNumValidator(ID_HEIGHT_TO_ADD, &m_fHeight);
