@@ -45,6 +45,24 @@ protected:
 	bool m_bSimple;
 };
 
+
+/**
+ * The vtDimension class creates a 'dimension' object, which draws an arrow
+ * connecting two points in space along with a text label, which is useful
+ * for describing the length of the line (or any other string).
+ */
+class vtDimension : public vtGeom
+{
+public:
+	vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
+		const RGBf &color, vtFont *font, const char *message);
+
+	vtMaterialArray *m_pMats;
+	vtMesh *m_pLines;
+	vtTextMesh *m_pLabel;
+};
+
+
 // helper functions
 vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
 vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
@@ -59,6 +77,7 @@ vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
 vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
 						const FPoint2 &base, const FPoint2 &size,
 						float fTiling, int steps);
+
 
 /*@}*/	// Group sg
 
