@@ -66,7 +66,7 @@ public:
 	void DrawUTMBounds(wxDC *pDC);
 
 	// World Map
-	void SetWMProj(vtProjection &p);
+	void SetWMProj(const vtProjection &p);
 
 	// Key handler
 	void OnChar(wxKeyEvent& event);
@@ -84,9 +84,9 @@ public:
 
 protected:
 	// Edit
-	void OnLeftDownEditShape(wxMouseEvent& event);
-	void OnLeftDownAddPoint(wxMouseEvent& event);
-	void OnLeftDownAddLinear(wxMouseEvent& event);
+	void OnLeftDownEditShape(const wxMouseEvent& event);
+	void OnLeftDownAddPoint(const wxMouseEvent& event);
+	void OnLeftDownAddLinear(const wxMouseEvent& event);
 	void UpdateMove();
 	void UpdateResizeScale();
 	void UpdateRotate();
@@ -94,7 +94,7 @@ protected:
 	void OnDragRoadEdit();
 
 	// Elevation
-	void CheckForTerrainSelect(DPoint2 loc);
+	void CheckForTerrainSelect(const DPoint2 &loc);
 	void HighlightTerrain(wxDC* pDC, vtElevLayer *t);
 
 	// Pan handlers
@@ -104,7 +104,7 @@ protected:
 
 	// Box handlers
 	void BeginBox();
-	void EndBox(wxMouseEvent& event);
+	void EndBox(const wxMouseEvent& event);
 	void DoBox(wxPoint point);
 	void BeginArea();
 	void DoArea(wxPoint point);
@@ -113,31 +113,31 @@ protected:
 	void BeginLine();
 
 	// Mouse handlers
-	void OnLeftDown(wxMouseEvent& event);	
-	void OnLeftUp(wxMouseEvent& event);
-	void OnLeftDoubleClick(wxMouseEvent& event);
-	void OnMiddleDown(wxMouseEvent& event);
-	void OnMiddleUp(wxMouseEvent& event);
-	void OnRightDown(wxMouseEvent& event);
-	void OnRightUp(wxMouseEvent& event);
+	void OnLeftDown(const wxMouseEvent& event);	
+	void OnLeftUp(const wxMouseEvent& event);
+	void OnLeftDoubleClick(const wxMouseEvent& event);
+	void OnMiddleDown(const wxMouseEvent& event);
+	void OnMiddleUp(const wxMouseEvent& event);
+	void OnRightDown(const wxMouseEvent& event);
+	void OnRightUp(const wxMouseEvent& event);
 
 	void OnLButtonClick();
-	void OnLButtonDragRelease(wxMouseEvent& event);
+	void OnLButtonDragRelease(const wxMouseEvent& event);
 	void OnLButtonClickElement(vtRoadLayer *pRL);
 	void OnLButtonClickDirection(vtRoadLayer *pRL);
 	void OnLButtonClickRoadEdit(vtRoadLayer *pRL);
 	void OnLButtonClickFeature(vtLayer *pL);
-	void OnDblClickElement(vtRoadLayer *pRL, DPoint2 &point);
-	void OnDblClickElement(vtStructureLayer *pSL, DPoint2 &point);
-	void OnRightUp(vtRoadLayer *pRL);
-	void OnRightUp(vtStructureLayer *pBL);
+	void OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point);
+	void OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point);
+	void OnRightUpRoad(vtRoadLayer *pRL);
+	void OnRightUpStructure(vtStructureLayer *pBL);
 	void OnLeftDownRoadEdit();
 
-	void OnMouseMove(wxMouseEvent& event);
-	void OnMouseMoveLButton(wxPoint &point);
+	void OnMouseMove(const wxMouseEvent& event);
+	void OnMouseMoveLButton(const wxPoint &point);
 
-	void InvertRect(wxDC *pDC, wxRect &r, bool bDashed = false);
-	void InvertRect(wxDC *pDC, wxPoint &one, wxPoint &two, bool bDashed = false);
+	void InvertRect(wxDC *pDC, const wxRect &r, bool bDashed = false);
+	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
 	void DrawArea(wxDC *pDC);
 	float BoundaryPixels();
 
@@ -180,7 +180,7 @@ protected:
 	void RefreshRoad(RoadEdit *pRoad);
 	int		m_iEditingPoint;
 
-	wxCursor	cursorPan;
+	wxCursor	*m_pCursorPan;
 
 	// World Map
 	DLine2	*WMPoly;	 // Original data from SHP file

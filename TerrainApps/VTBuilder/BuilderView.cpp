@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "vtdata/shapelib/shapefil.h"
 
 #include "BuilderView.h"
@@ -42,8 +47,7 @@ END_EVENT_TABLE()
 
 BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 						 const wxSize& size, const wxString& name) :
-	vtScaledView(parent, id, pos, size, name ),
-	cursorPan("cursors/panhand.cur", wxBITMAP_TYPE_CUR)
+	vtScaledView(parent, id, pos, size, name )
 {
 	m_bPanning = false;
 	m_bBoxing = false;
@@ -59,6 +63,17 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	// road point editing
 	m_pEditingRoad = NULL;
 	m_iEditingPoint = -1;
+
+	// Cursors are a little messy, since support is not even across platforms
+#if __WXMSW__
+	m_pCursorPan = new wxCursor("cursors/panhand.cur", wxBITMAP_TYPE_CUR);
+//#elif __WXMOTIF__
+//	m_pCursorPan = new wxCursor("cursors/panhand.xbm", wxBITMAP_TYPE_XBM);
+#else
+	// the predefined "hand" cursor isn't quite correct, since it is a image
+	// of a hand with a pointing finger, not a closed, grasping hand.
+	m_pCursorPan = new wxCursor(wxCURSOR_HAND);
+#endif
 
 	// Import world map SHP file
 	WMPoly = NULL;
@@ -165,7 +180,7 @@ float BuilderView::BoundaryPixels()
 
 void BuilderView::DrawUTMBounds(wxDC *pDC)
 {
-	wxPen orange(wxColor(255,128,0), 1, PS_SOLID);
+	wxPen orange(wxColor(255,128,0), 1, wxSOLID);
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(orange);
 
@@ -341,11 +356,13 @@ void myErrorHandler(CPLErr err, int i, const char*str)
 	wxLogDebug(str);
 }
 
-void BuilderView::SetWMProj(vtProjection &proj)
+void BuilderView::SetWMProj(const vtProjection &proj)
 {
 	int i, j;
 
-	const char *proj_name = proj.GetProjectionNameShort();
+	vtProjection &dproj = (vtProjection &)proj;
+
+	const char *proj_name = dproj.GetProjectionNameShort();
 	if (!strcmp(proj_name, "Geo"))
 	{
 		// the data is already in latlon so just use WMPoly
@@ -356,13 +373,13 @@ void BuilderView::SetWMProj(vtProjection &proj)
 
 	// Otherwise, must convert from Geo to whatever project is desired
 	vtProjection Source;
-	CreateSimilarGeographicProjection(proj, Source);
+	CreateSimilarGeographicProjection(dproj, Source);
 
 #if DEBUG
 	// Check projection text
 	char *str1, *str2;
 	Source.exportToWkt(&str1);
-	proj.exportToWkt(&str2);
+	dproj.exportToWkt(&str2);
 	wxLogDebug(str1);
 	wxLogDebug(str2);
 
@@ -370,13 +387,13 @@ void BuilderView::SetWMProj(vtProjection &proj)
 	char *str3, *str4;
 	Source.exportToProj4(&str3);
 	wxLogDebug(str3);
-	proj.exportToProj4(&str4);
+	dproj.exportToProj4(&str4);
 	wxLogDebug(str4);
 #endif
 
 	CPLPushErrorHandler(myErrorHandler);
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(&Source, &proj);
+	OCT *trans = OGRCreateCoordinateTransformation(&Source, &dproj);
 	CPLPopErrorHandler();
 
 	if (!trans)
@@ -406,7 +423,7 @@ static wxPoint wmbuf[MAXPOINTS];
 void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 {
 	// Set pen options
-	wxPen WMPen(wxColor(0,0,0), 1, PS_SOLID);  //solid black pen
+	wxPen WMPen(wxColor(0,0,0), 1, wxSOLID);  //solid black pen
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(WMPen);
 
@@ -449,7 +466,7 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 void BuilderView::BeginPan()
 {
 	m_bPanning = true;
-	SetCursor(cursorPan);
+	SetCursor(*m_pCursorPan);
 }
 
 void BuilderView::EndPan()
@@ -473,14 +490,14 @@ void BuilderView::DoPan(wxPoint point)
 //////////////////////////////////////////////////////////
 // Box handlers
 
-void BuilderView::InvertRect(wxDC *pDC, wxRect &r, bool bDashed)
+void BuilderView::InvertRect(wxDC *pDC, const wxRect &r, bool bDashed)
 {
 	InvertRect(pDC, wxPoint(r.x, r.y),
 		wxPoint(r.x + r.width, r.y + r.height), bDashed);
 }
 
-void BuilderView::InvertRect(wxDC *pDC, wxPoint &one, wxPoint &two,
-							 bool bDashed)
+void BuilderView::InvertRect(wxDC *pDC, const wxPoint &one,
+							 const wxPoint &two, bool bDashed)
 {
 	wxPen pen(*wxBLACK_PEN);
 	if (bDashed)
@@ -508,7 +525,7 @@ void BuilderView::BeginBox()
 	m_bBoxing = true;
 }
 
-void BuilderView::EndBox(wxMouseEvent& event)
+void BuilderView::EndBox(const wxMouseEvent& event)
 {
 	m_bBoxing = false;
 
@@ -613,7 +630,7 @@ void BuilderView::BeginLine()
 ////////////////////////////////////////////////////////////
 // Elevation
 
-void BuilderView::CheckForTerrainSelect(DPoint2 loc)
+void BuilderView::CheckForTerrainSelect(const DPoint2 &loc)
 {
 	MainFrame *pFrame = GetMainFrame();
 
@@ -665,7 +682,7 @@ void BuilderView::SetActiveLayer(vtLayerPtr lp)
 
 void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
 {
-	wxPen bgPen(wxDOT, 3, RGB(0xff, 0xff, 0xff));
+	wxPen bgPen(wxColor(255,255,255), 3, wxSOLID);
 	pDC->SetPen(bgPen);
 	pDC->SetLogicalFunction(wxINVERT);
 
@@ -717,7 +734,7 @@ void BuilderView::SetCorrectCursor()
 	case LB_Move:	// move selected nodes
 		SetCursor(wxCURSOR_ARROW); break;
 	case LB_Pan:	// pan the view
-		SetCursor(cursorPan); break;
+		SetCursor(*m_pCursorPan); break;
 	case LB_Dist:	// measure distance
 		SetCursor(wxCURSOR_CROSS); break;
 	case LB_Mag:	// zoom into rectangle
@@ -855,6 +872,9 @@ void BuilderView::DeleteSelected(vtRoadLayer *pRL)
 
 void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 {
+	if (!pEL || !pEL->m_pGrid)
+		return;
+
 	DPoint2 spacing = pEL->m_pGrid->GetSpacing();
 	SetScale(1.0f / spacing.x);
 
@@ -870,7 +890,7 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 /////////////////////////////////////////////////////////////
 // Mouse handlers
 
-void BuilderView::OnLeftDown(wxMouseEvent& event)
+void BuilderView::OnLeftDown(const wxMouseEvent& event)
 {
 	m_bLMouseButton = true;
 	m_bMouseMoved = false;	
@@ -960,7 +980,7 @@ void BuilderView::OnLeftDownRoadEdit()
 		m_iEditingPoint = -1;
 }
 
-void BuilderView::OnLeftDownEditShape(wxMouseEvent& event)
+void BuilderView::OnLeftDownEditShape(const wxMouseEvent& event)
 {
 	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
 	if (!pSL)
@@ -1009,21 +1029,21 @@ void BuilderView::OnLeftDownEditShape(wxMouseEvent& event)
 	}
 }
 
-void BuilderView::OnLeftDownAddPoint(wxMouseEvent &event)
+void BuilderView::OnLeftDownAddPoint(const wxMouseEvent &event)
 {
 	vtRawLayer *pRL = GetMainFrame()->GetActiveRawLayer();
 	pRL->AddPoint(m_DownLocation);
 	Refresh();
 }
 
-void BuilderView::OnLeftDownAddLinear(wxMouseEvent &event)
+void BuilderView::OnLeftDownAddLinear(const wxMouseEvent &event)
 {
 	vtStructureLayer *pSL = GetMainFrame()->GetActiveStructureLayer();
 //	pRL->AddPoint(m_DownLocation); // TODO
 	Refresh();
 }
 
-void BuilderView::OnLeftUp(wxMouseEvent& event)
+void BuilderView::OnLeftUp(const wxMouseEvent& event)
 {
 	ReleaseMouse();
 
@@ -1058,7 +1078,7 @@ void BuilderView::OnLeftUp(wxMouseEvent& event)
 	m_bLMouseButton = false;	// left mouse button no longer down
 }
 
-void BuilderView::OnLeftDoubleClick(wxMouseEvent& event)
+void BuilderView::OnLeftDoubleClick(const wxMouseEvent& event)
 {
 	GetCanvasPosition(event, m_DownPoint);
 	m_CurPoint = m_LastPoint = m_DownPoint;
@@ -1089,7 +1109,7 @@ void BuilderView::OnLeftDoubleClick(wxMouseEvent& event)
 	}
 }
 
-void BuilderView::OnDblClickElement(vtRoadLayer *pRL, DPoint2 &point)
+void BuilderView::OnDblClickElement(vtRoadLayer *pRL, const DPoint2 &point)
 {
 	DRECT world_bound, bound2;
 
@@ -1112,7 +1132,7 @@ void BuilderView::OnDblClickElement(vtRoadLayer *pRL, DPoint2 &point)
 	Refresh(TRUE, &screen_bound);
 }
 
-void BuilderView::OnDblClickElement(vtStructureLayer *pSL, DPoint2 &point)
+void BuilderView::OnDblClickElement(vtStructureLayer *pSL, const DPoint2 &point)
 {
 }
 
@@ -1146,7 +1166,7 @@ void BuilderView::OnLButtonClick()
 		OnLButtonClickFeature(pL);
 }
 
-void BuilderView::OnLButtonDragRelease(wxMouseEvent& event)
+void BuilderView::OnLButtonDragRelease(const wxMouseEvent& event)
 {
 	if (m_bPanning)
 		EndPan();
@@ -1207,13 +1227,13 @@ void BuilderView::OnDragDistance()
 
 	wxString str1, str2, str3;
 	str1.Printf("%s, %s",
-		FormatCoord(false, diff_meters.x),
-		FormatCoord(false, diff_meters.y));
+		(const char *)FormatCoord(false, diff_meters.x),
+		(const char *)FormatCoord(false, diff_meters.y));
 	str2.Printf("%s, %s",
-		FormatCoord(true, diff_degrees.x), 
-		FormatCoord(true, diff_degrees.y));
+		(const char *)FormatCoord(true, diff_degrees.x), 
+		(const char *)FormatCoord(true, diff_degrees.y));
 	str3.Printf("%s",
-		FormatCoord(false, diff_meters.Length()));
+		(const char *)FormatCoord(false, diff_meters.Length()));
 
 	wxDialog dlg(NULL, -1, "Distance", wxDefaultPosition);
 	DistanceDialogFunc(&dlg, TRUE ); 
@@ -1341,7 +1361,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 
 ////////////////
 
-void BuilderView::OnMiddleDown(wxMouseEvent& event)
+void BuilderView::OnMiddleDown(const wxMouseEvent& event)
 {
 	m_bMMouseButton = true;
 	m_bMouseMoved = false;	
@@ -1356,7 +1376,7 @@ void BuilderView::OnMiddleDown(wxMouseEvent& event)
 	BeginPan();
 }
 
-void BuilderView::OnMiddleUp(wxMouseEvent& event)
+void BuilderView::OnMiddleUp(const wxMouseEvent& event)
 {
 	if (m_bPanning)
 		EndPan();
@@ -1364,13 +1384,13 @@ void BuilderView::OnMiddleUp(wxMouseEvent& event)
 	ReleaseMouse();
 }
 
-void BuilderView::OnRightDown(wxMouseEvent& event)
+void BuilderView::OnRightDown(const wxMouseEvent& event)
 {
 	m_bRMouseButton = true;
 	CaptureMouse();			// capture mouse
 }
 
-void BuilderView::OnRightUp(wxMouseEvent& event)
+void BuilderView::OnRightUp(const wxMouseEvent& event)
 {
 	m_bRMouseButton = false;	//right mouse button no longer down
 	ReleaseMouse();
@@ -1382,15 +1402,15 @@ void BuilderView::OnRightUp(wxMouseEvent& event)
 	switch (pL->GetType())
 	{
 	case LT_ROAD:
-		OnRightUp((vtRoadLayer *)pL);
+		OnRightUpRoad((vtRoadLayer *)pL);
 		break;
 	case LT_STRUCTURE:
-		OnRightUp((vtStructureLayer *)pL);
+		OnRightUpStructure((vtStructureLayer *)pL);
 		break;
 	}
 }
 
-void BuilderView::OnRightUp(vtRoadLayer *pRL) 
+void BuilderView::OnRightUpRoad(vtRoadLayer *pRL) 
 {
 	//if we are not clicked close to a single item, edit all selected items.
 	bool status;
@@ -1402,14 +1422,14 @@ void BuilderView::OnRightUp(vtRoadLayer *pRL)
 		Refresh();
 }
 
-void BuilderView::OnRightUp(vtStructureLayer *pSL) 
+void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 
 {
 	bool status = pSL->EditBuildingProperties();
 	if (status)
 		Refresh();
 }
 
-void BuilderView::OnMouseMove(wxMouseEvent& event)
+void BuilderView::OnMouseMove(const wxMouseEvent& event)
 {
 	wxPoint point = event.GetPosition();
 	static wxPoint lastpoint;
