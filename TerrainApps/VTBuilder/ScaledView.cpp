@@ -1,7 +1,7 @@
 //
 // ScaledView.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -28,13 +28,6 @@ vtScaledView::vtScaledView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	m_limits.x = m_limits.y = -200;
 	m_limits.width = m_limits.height = 100;
 	m_fScale = 1.0f;
-}
-
-void vtScaledView::ZoomAll()
-{
-	VTLOG("Zoom All\n");
-	DRECT extents = GetMainFrame()->GetExtents();
-	ZoomToRect(extents, 0.1f);
 }
 
 void vtScaledView::ZoomToRect(const DRECT &geo_rect, float margin)

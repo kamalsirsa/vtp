@@ -1,7 +1,7 @@
 //
 // ScaledView.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,6 @@ public:
 	void SetScale(double scale);
 	double GetScale();
 
-	void ZoomAll();
 	void ZoomToPoint(const FPoint2 &p);
 	void ZoomToRect(const DRECT &geo_rect, float margin);
 	void ZoomOutToRect(const DRECT &geo_rect);
