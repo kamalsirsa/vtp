@@ -64,7 +64,14 @@ vtTerrainScene::vtTerrainScene()
 
 vtTerrainScene::~vtTerrainScene()
 {
-	// delete all the terrains that were appended
+	while (m_pFirstTerrain)
+	{
+		vtTerrain *del = m_pFirstTerrain;
+		m_pFirstTerrain = m_pFirstTerrain->GetNext();
+		delete del;
+	}
+	m_pFirstTerrain = NULL;
+	m_pCurrentTerrain = NULL;
 	// TODO: proper cleanup
 }
 
@@ -216,7 +223,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	}
 
 	// switch
-	m_pTop->AddChild(m_pCurrentTerrain->m_pTerrainGroup);
+	m_pTop->AddChild(m_pCurrentTerrain->GetTopGroup());
 	m_pCurrentTerrain->Enable(true);
 
 	// switch to the projection of this terrain
@@ -224,7 +231,8 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// move the sky to fit the new current terrain
 	m_pSkyDome->SetEnabled(true);
-	float radius = pTerrain->GetRadius() * 2.9f;
+	FRECT world_ext = pTerrain->GetHeightField()->m_Conversion.m_WorldExtents;
+	float radius = world_ext.Width() * 5.0;
 	float max_radius = (450000 * WORLD_SCALE);
 	if (radius > max_radius)
 		radius = max_radius;
