@@ -578,6 +578,11 @@ public:
 		return (p.x > left && p.x < right && p.y > bottom && p.y < top);
 	}
 	bool ContainsLine(const DLine2 &line) const;
+	bool ContainsRect(const DRECT &r2) const
+	{
+		return (r2.left >= left && r2.right <= right &&
+				r2.bottom >= bottom && r2.top <= top);
+	}
 	void GrowToContainPoint(const DPoint2 &p)
 	{
 		if (p.x < left)		left = p.x;
