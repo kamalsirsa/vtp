@@ -41,7 +41,7 @@ vtBuilding3d &vtBuilding3d::operator=(const vtBuilding &v)
 
 
 //
-// Convert the footprint for each level into world coordinates
+// Convert the building's reference point into world coordinates.
 //
 void vtBuilding3d::UpdateWorldLocation(vtHeightField3d *pHeightField)
 {
