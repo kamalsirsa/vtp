@@ -184,8 +184,7 @@ void vtTerrain::create_textures(int iTiles,
 	{
 		// derive color from elevation
 		m_pDIB = new vtDIB(1024, 1024, 24, false);
-		m_pLocalGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color.r * 255,
-			m_ocean_color.g * 255, m_ocean_color.b * 255));
+		m_pLocalGrid->ColorDibFromElevation(m_pDIB, RGBi(m_ocean_color));
 	}
 
 	// apply pre-lighting (darkening)

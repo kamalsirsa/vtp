@@ -39,3 +39,5 @@ INLINE unsigned short DecodeFP8( unsigned char nErr )
 		return (b + 32) << (a-1);
 	}
 }
+
+

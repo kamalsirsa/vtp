@@ -299,7 +299,7 @@ void vtRoute::save(FILE *fp)
 		for (long ll = 0; ll < m_StationArray.GetSize(); ll++)
 		{
 			fprintf(fp, "! %s   !  %12.2f  !  %12.2f  !  %12.2f  !  %12.2f  !  %12.2f  ! %d \n",
-				m_sBranchName,
+				(const char *) m_sBranchName,
 				m_StationArray[ll].m_dpStationPoint.x,
 				m_StationArray[ll].m_dpStationPoint.y,
 				m_StationArray[ll].m_dpOffsetElevations.x,

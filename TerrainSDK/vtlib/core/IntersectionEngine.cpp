@@ -79,3 +79,4 @@ void IntersectionEngine::Eval() {
 		m_fNextChange = t + offset;
 	}
 }
+
