@@ -17,6 +17,7 @@
 #include "vtdata/Icosa.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/WFSClient.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"
@@ -1853,7 +1854,7 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 	WFSLayerArray layers;
 	success = GetLayersFromWFS(server, layers);
 
-	int numlayers = layers.GetSize();
+	int numlayers = layers.size();
 	wxString choices[100];
 	for (int i = 0; i < numlayers; i++)
 		choices[i] = wxString::FromAscii(layers[i]->GetValue("Name"));
