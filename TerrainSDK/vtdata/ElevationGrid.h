@@ -99,6 +99,7 @@ public:
 	void ColorDibFromElevation1(vtDIB *pDIB, RGBi color_ocean);
 
 	vtProjection &GetProjection() { return m_proj; }
+	void SetProjection(vtProjection &proj) { m_proj = proj; }
 
 	bool GetCorners(DLine2 &line, bool bGeo);
 	void SetCorners(const DLine2 &line);
