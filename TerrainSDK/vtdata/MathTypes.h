@@ -916,6 +916,7 @@ public:
 	void SetFromVectors(const FPoint3 &pos, const FPoint3 &forward,
 		const FPoint3 &up);
 	void SetFromMatrix3(const FMatrix3 &mat);
+	void MakeScale(float x, float y, float z);
 
 	void PreMult(const FMatrix4 &mat);
 	void PostMult(const FMatrix4 &mat);

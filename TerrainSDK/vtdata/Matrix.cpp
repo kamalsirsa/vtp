@@ -638,6 +638,14 @@ void FMatrix4::SetFromMatrix3(const FMatrix3 &mat)
 	SetRow(3, 0, 0, 0, 1);
 }
 
+void FMatrix4::MakeScale(float x, float y, float z)
+{
+	SetRow(0, x, 0, 0, 0 );
+	SetRow(1, 0, y, 0, 0 );
+	SetRow(2, 0, 0, z, 0 );
+	SetRow(3, 0, 0, 0, 1 );
+}
+
 #define INNER_PRODUCT(a, b, c, r) \
 	 ((a).data[0][r] * (b).data[c][0]) \
 	+((a).data[1][r] * (b).data[c][1]) \
