@@ -74,9 +74,9 @@ vtStructInstance *vtStructureArray::AddNewInstance()
 	return ni;
 }
 
-void vtStructureArray::DestructItems(int first, int last)
+void vtStructureArray::DestructItems(unsigned int first, unsigned int last)
 {
-	for (int i = first; i <= last; i++)
+	for (unsigned int i = first; i <= last; i++)
 		delete GetAt(i);
 }
 

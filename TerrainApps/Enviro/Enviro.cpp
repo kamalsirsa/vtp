@@ -1864,7 +1864,7 @@ void Enviro::SetPlantOptions(PlantingOptions &opt)
 	if (m_mode == MM_SELECT)
 	{
 		vtPlantInstanceArray3d &pia = GetCurrentTerrain()->GetPlantInstances();
-		for (int i = 0; i < pia.GetSize(); i++)
+		for (unsigned int i = 0; i < pia.GetSize(); i++)
 		{
 			vtPlantInstance3d *inst3d = pia.GetInstance3d(i);
 			if (inst3d->IsSelected())

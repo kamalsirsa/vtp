@@ -79,7 +79,7 @@ void LayerDlg::RefreshTreeTerrain()
 
 	wxTreeItemId hRoot = m_pTree->AddRoot(_T("Layers"));
 
-	int i, j;
+	unsigned int i, j;
 	StructureSet &set = terr->GetStructureSet();
 	vtStructureArray3d *sa;
 	for (i = 0; i < set.GetSize(); i++)
@@ -129,7 +129,7 @@ void LayerDlg::RefreshTreeSpace()
 	wxTreeItemId hRoot = m_pTree->AddRoot(_T("Layers"));
 
 	vtFeaturesSet &feats = globe->GetFeaturesSet();
-	for (int i = 0; i < feats.GetSize(); i++)
+	for (unsigned int i = 0; i < feats.GetSize(); i++)
 	{
 		wxString2 str;
 		vtFeatures *feat = feats[i];

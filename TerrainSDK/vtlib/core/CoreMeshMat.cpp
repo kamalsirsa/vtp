@@ -806,9 +806,9 @@ vtMaterialArrayBase::~vtMaterialArrayBase()
 	Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0;
 }
 
-void vtMaterialArrayBase::DestructItems(int first, int last)
+void vtMaterialArrayBase::DestructItems(unsigned int first, unsigned int last)
 {
-	for (int i = first; i <= last; i++)
+	for (unsigned int i = first; i <= last; i++)
 	{
 		vtMaterial *pMat = GetAt(i);
 		delete pMat;

@@ -332,7 +332,7 @@ class vtMaterialArrayBase : public Array<vtMaterial *>
 public:
 	~vtMaterialArrayBase();
 
-	void DestructItems(int first, int last);
+	void DestructItems(unsigned int first, unsigned int last);
 
 	int AddTextureMaterial(class vtImage *pImage,
 						 bool bCulling, bool bLighting,

@@ -155,7 +155,7 @@ void PropDlg::UpdateTagList()
 
 	int item;
 	vtTag *tag;
-	for (int i = 0; i < m_pCurrentItem->NumTags(); i++)
+	for (unsigned int i = 0; i < m_pCurrentItem->NumTags(); i++)
 	{
 		tag = m_pCurrentItem->GetTag(i);
 		if (!tag->name.Compare("type"))

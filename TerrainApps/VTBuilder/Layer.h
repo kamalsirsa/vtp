@@ -144,7 +144,7 @@ class LayerArray : public Array<vtLayerPtr>
 {
 public:
 	// don't need explicit destructor here because Empty() is always called
-	virtual void DestructItems(int first, int last);
+	virtual void DestructItems(unsigned int first, unsigned int last);
 };
 
 ////////////////////

@@ -48,9 +48,9 @@
 	class MyArray : public Array<MyObject *>
 	{
 		virtual ~MyArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-		virtual	void DestructItems(int first, int last)
+		virtual	void DestructItems(unsigned int first, unsigned int last)
 		{
-			for (int i = first; i <= last; i++)
+			for (unsigned int i = first; i <= last; i++)
 				delete GetAt(i);
 		}
 	};
@@ -137,9 +137,9 @@ template <class E> Array<E>::Array(unsigned int size)
  * \par Example:
 \code
 	// Overrides DestructItems to call constructors
-	inline void MyArray::DestructItems(int first, int last)
+	inline void MyArray::DestructItems(unsigned int first, unsigned int last)
 	{
-		for (int i = first; i <= last; ++i)
+		for (unsigned int i = first; i <= last; ++i)
 		   delete GetAt(i);
 	}
 \endcode
@@ -471,7 +471,8 @@ template <class E> int Array<E>::Append(const Array<E>& src)
 template <class E> void Array<E>::Empty()
 {
 	//VTLOG("Empty, size %d\n", m_Size);
-	DestructItems(0, m_Size - 1);
+	if (m_Size > 0)
+		DestructItems(0, m_Size - 1);
 	m_Size = 0;
 }
 

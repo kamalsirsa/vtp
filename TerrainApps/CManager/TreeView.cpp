@@ -110,10 +110,10 @@ void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 
 	vtContentManager *pMan = &(pFrame->m_Man);
 
-	int i, j;
+	unsigned int i, j;
 	wxString2 str, str2;
 
-	int iItems = pMan->NumItems();
+	unsigned int iItems = pMan->NumItems();
 	for (i = 0; i < iItems; i++)
 	{
 		vtItem *pItem = pMan->GetItem(i);

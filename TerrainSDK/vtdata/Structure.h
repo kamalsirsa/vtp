@@ -148,9 +148,9 @@ class vtMaterialDescriptorArray : public Array<vtMaterialDescriptor*>
 {
 public:
 	virtual ~vtMaterialDescriptorArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	void DestructItems(int first, int last)
+	void DestructItems(unsigned int first, unsigned int last)
 	{
-		for (int i = first; i <= last; i++)
+		for (unsigned int i = first; i <= last; i++)
 			delete GetAt(i);
 	}
 

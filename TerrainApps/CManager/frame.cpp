@@ -404,7 +404,7 @@ void vtFrame::LoadContentsFile(const wxString2 &fname)
 void vtFrame::FreeContents()
 {
 	VTLOG("FreeContents\n");
-	for (int i = 0; i < m_Man.NumItems(); i++)
+	for (unsigned int i = 0; i < m_Man.NumItems(); i++)
 	{
 		vtItem *item = m_Man.GetItem(i);
 		ItemGroup *ig = m_itemmap[item];

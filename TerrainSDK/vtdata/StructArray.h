@@ -61,7 +61,7 @@ class vtStructureArray : public Array<vtStructure*>
 public:
 	vtStructureArray();
 	virtual ~vtStructureArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	virtual void DestructItems(int first, int last);
+	virtual void DestructItems(unsigned int first, unsigned int last);
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() { return m_strFilename; }

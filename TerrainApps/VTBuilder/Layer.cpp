@@ -254,9 +254,9 @@ vtLayer *vtLayer::CreateNewLayer(LayerType ltype)
 ////////////////////////////////////////////////
 
 
-void LayerArray::DestructItems(int first, int last)
+void LayerArray::DestructItems(unsigned int first, unsigned int last)
 {
-	for (int i = first; i <= last; ++i)
+	for (unsigned int i = first; i <= last; ++i)
 	{
 		vtLayerPtr lp = GetAt(i);
 

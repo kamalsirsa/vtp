@@ -86,9 +86,9 @@ class wxStringArray : public Array<wxString2 *>
 {
 public:
 	virtual ~wxStringArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	virtual	void DestructItems(int first, int last)
+	virtual	void DestructItems(unsigned int first, unsigned int last)
 	{
-		for (int i = first; i <= last; ++i)
+		for (unsigned int i = first; i <= last; ++i)
 			delete GetAt(i);
 	}
 	// handy direct access to an element as reference
