@@ -40,6 +40,8 @@
 #include "vtui/LinearStructDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "bld_add_points.xpm"
+#  include "bld_delete_points.xpm"
 #  include "bld_edit.xpm"
 #  include "distance.xpm"
 #  include "edit_crossing.xpm"
@@ -47,6 +49,7 @@
 #  include "edit_offset.xpm"
 #  include "elev_box.xpm"
 
+#  include "info.xpm"
 #  include "layer_export.xpm"
 #  include "layer_import.xpm"
 #  include "layer_new.xpm"
@@ -72,6 +75,7 @@
 #  include "str_edit_linear.xpm"
 #  include "raw_add_point.xpm"
 
+#  include "table.xpm"
 #  include "twr_edit.xpm"
 
 #  include "view_hand.xpm"
@@ -80,8 +84,6 @@
 #  include "view_plus.xpm"
 #  include "view_zoomall.xpm"
 #  include "view_zoomexact.xpm"
-#  include "info.xpm"
-#  include "table.xpm"
 
 #	include "VTBuilder.xpm"
 #endif
