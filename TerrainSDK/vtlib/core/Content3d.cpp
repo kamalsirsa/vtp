@@ -31,6 +31,8 @@ vtItem3d::~vtItem3d()
  */
 bool vtItem3d::LoadModels()
 {
+	VTLOG(" Loading models for item.\n");
+
 	if (m_pNode)
 		return true;	// already loaded
 
@@ -63,9 +65,11 @@ bool vtItem3d::LoadModels()
 				pNode = vtNode::LoadModel(fullpath);
 		}
 
-		if (!pNode)
+		if (pNode)
+			VTLOG(" Loaded successfully.\n");
+		else
 		{
-			VTLOG("Couldn't load model from %hs\n",
+			VTLOG(" Couldn't load model from %hs\n",
 				(const char *) model->m_filename);
 			return false;
 		}
