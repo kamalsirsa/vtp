@@ -121,8 +121,8 @@ void vtImage::CreateFromDIB(vtDIB *pDIB)
 		internalFormat = m_internalformat;	// use specific
 
 	m_pOsgImage->setImage(w, h, 1,
-       internalFormat,		// int internalFormat,
-       pixelFormat,			// unsigned int pixelFormat,
+	   internalFormat,		// int internalFormat,
+	   pixelFormat,			// unsigned int pixelFormat,
 	   GL_UNSIGNED_BYTE, 	// unsigned int dataType,
 	   image);
 }
@@ -135,9 +135,9 @@ void vtImage::CreateFromDIB(vtDIB *pDIB)
 #include "png.h"
 
 /* Transparency parameters */
-#define PNG_ALPHA     -2 /* Use alpha channel in PNG file, if there is one */
-#define PNG_SOLID     -1 /* No transparency                                */
-#define PNG_STENCIL    0 /* Sets alpha to 0 for r=g=b=0, 1 otherwise       */
+#define PNG_ALPHA		-2 /* Use alpha channel in PNG file, if there is one */
+#define PNG_SOLID		-1 /* No transparency								*/
+#define PNG_STENCIL		 0 /* Sets alpha to 0 for r=g=b=0, 1 otherwise	   */
 
 typedef struct {
 	unsigned int Width;
@@ -277,8 +277,8 @@ bool vtImage::ReadPNG(const char *filename)
 		internalFormat = m_internalformat;	// use specific
 
 	m_pOsgImage->setImage(width, height, 1,
-       internalFormat,		// int internalFormat,
-       pixelFormat,			// unsigned int pixelFormat
+	   internalFormat,		// int internalFormat,
+	   pixelFormat,			// unsigned int pixelFormat
 	   GL_UNSIGNED_BYTE,	// unsigned int dataType
 	   m_pPngData);
 

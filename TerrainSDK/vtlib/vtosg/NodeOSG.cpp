@@ -205,8 +205,8 @@ void vtTransform::RotateParent(const FPoint3 &axis, float angle)
 	// 0.8.43
 	Vec3 trans = m_pTransform->getMatrix().getTrans();
 	m_pTransform->postMult(Matrix::translate(-trans)*
-		      Matrix::rotate(angle, axis.x, axis.y, axis.z)*
-		      Matrix::translate(trans));
+			  Matrix::rotate(angle, axis.x, axis.y, axis.z)*
+			  Matrix::translate(trans));
 }
 
 void vtTransform::Scale3(float x, float y, float z)
@@ -479,8 +479,8 @@ const bool vtDynMesh::computeBound() const
 	v2s(box.min, _bbox._min);
 	v2s(box.max, _bbox._max);
 
-    _bbox_computed=true;
-    return true;
+	_bbox_computed=true;
+	return true;
 }
 
 void vtDynGeom::CalcCullPlanes()
@@ -550,8 +550,8 @@ void vtDynGeom::CalcCullPlanes()
 
 	int i = 0;
 	for (ClippingVolume::PlaneList::const_iterator itr=planes.begin();
-        itr!=planes.end(); ++itr)
-    {
+		itr!=planes.end(); ++itr)
+	{
 		// make a copy of the clipping plane
 		Plane plane = *itr;
 
