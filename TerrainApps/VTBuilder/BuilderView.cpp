@@ -563,7 +563,7 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	case LB_Node:
 	case LB_Road:
 		{
-			//select everything in the highlighted box.
+			// select everything in the highlighted box.
 			vtRoadLayer *pRL = GetMainFrame()->GetActiveRoadLayer();
 			if (pRL->SelectArea(m_world_rect, (m_mode == LB_Node),
 				m_bCrossSelect))
@@ -585,48 +585,61 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 	case LB_TowerSelect:
 		{
 			vtUtilityLayer *pTR = GetMainFrame()->GetActiveUtilityLayer();
-			int selected =0;
-/*			for (int i=0;i<pTR->GetSize();i++)
-			{
-				vtTower *twr = pTR->GetAt(i);
-				if(!twr)
-					continue;
-				bool bSelect =world_rect.ContainsPoint(twr->GetLocation());
-				twr->Select(bSelect);
-				if(bSelect) selected++;
-			}
-*/
-			wxString msg;
-			msg.Printf("Selected %d tower%s", selected, selected == 1 ? "y" : "s");
-			GetMainFrame()->SetStatusText(msg);
-			Refresh(FALSE);
+			// TODO
 		}
 		break;
 	case LB_FSelect:
-		EndBoxFeatureSelect();
+		EndBoxFeatureSelect(event);
 	}
 }
 
-void BuilderView::EndBoxFeatureSelect()
+void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 {
 	vtLayer *pL = GetMainFrame()->GetActiveLayer();
 	if (!pL) return;
 
-	int selected;
+	const char *verb;
+	SelectionType st;
+	// operation may be select, add (shift), subtract (alt), toggle (ctrl)
+	if (event.ShiftDown())
+	{
+		st = ST_ADD;
+		verb = "Added";
+	}
+	else if (event.AltDown())
+	{
+		st = ST_SUBTRACT;
+		verb = "Subtracted";
+	}
+	else if (event.ControlDown())
+	{
+		st = ST_TOGGLE;
+		verb = "Toggled";
+	}
+	else
+	{
+		st = ST_NORMAL;
+		verb = "Selected";
+	}
+
+	int changed, selected;
 	if (pL->GetType() == LT_STRUCTURE)
 	{
 		vtStructureLayer *pSL = (vtStructureLayer *)pL;
-		selected = pSL->DoBoxSelect(m_world_rect);
+		changed = pSL->DoBoxSelect(m_world_rect, st);
+		selected = pSL->NumSelected();
 	}
 	if (pL->GetType() == LT_RAW)
 	{
 		vtRawLayer *pRL = (vtRawLayer *)pL;
-		selected = pRL->DoBoxSelect(m_world_rect);
+		changed = pRL->DoBoxSelect(m_world_rect, st);
+		selected = pRL->NumSelected();
 	}
 	wxString msg;
-	msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
+	msg.Printf("%s %d entit%s, %d total selected", verb, changed,
+		changed == 1 ? "y" : "ies", selected);
 	GetMainFrame()->SetStatusText(msg);
-	Refresh(FALSE);
+	Refresh(false);
 }
 
 void BuilderView::DoBox(wxPoint point)
@@ -1495,7 +1508,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 		if (str)
 			str->Select(!str->IsSelected());
 
-		Refresh(FALSE);
+		Refresh(false);
 	}
 	else if (pL->GetType() == LT_UTILITY)
 	{
@@ -1506,7 +1519,7 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 /*		vtTower *twr = pTL->FindTower(m_DownLocation, odx(12));
 		if(twr)
 			twr->Select(!twr->IsSelected()); */
-		Refresh(FALSE);
+		Refresh(false);
 	}
 	else if (pL->GetType() == LT_RAW)
 	{

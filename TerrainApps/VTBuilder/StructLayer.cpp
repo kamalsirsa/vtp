@@ -389,18 +389,43 @@ void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &pr
 	m_proj = proj;	// Set projection
 }
 
-int vtStructureLayer::DoBoxSelect(const DRECT &rect)
+int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 {
-	int selected = 0;
+	int affected = 0;
+	bool bWas;
+
 	for (int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
-		bool bSelect = str->IsContainedBy(rect);
-		str->Select(bSelect);
-		if (bSelect)
-			selected++;
+
+		bWas = str->IsSelected();
+		if (st == ST_NORMAL)
+			str->Select(false);
+
+		if (!str->IsContainedBy(rect))
+			continue;
+
+		switch (st)
+		{
+		case ST_NORMAL:
+			str->Select(true);
+			affected++;
+			break;
+		case ST_ADD:
+			str->Select(true);
+			if (!bWas) affected++;
+			break;
+		case ST_SUBTRACT:
+			str->Select(false);
+			if (bWas) affected++;
+			break;
+		case ST_TOGGLE:
+			str->Select(!bWas);
+			affected++;
+			break;
+		}
 	}
-	return selected;
+	return affected;
 }
 
 

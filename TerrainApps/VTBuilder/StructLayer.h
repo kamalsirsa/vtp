@@ -39,7 +39,7 @@ public:
 	// inverts selection values on all structures.
 	void InvertSelection();
 	void DeselectAll();
-	int DoBoxSelect(const DRECT &rect);
+	int DoBoxSelect(const DRECT &rect, SelectionType st);
 
 protected:
 	int m_size;	// size in pixels of the small crosshair at building center

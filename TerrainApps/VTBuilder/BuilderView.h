@@ -11,7 +11,6 @@
 #include "ScaledView.h"
 #include "vtdata/Projections.h"
 #include "vtdata/Building.h"
-//#include "vtdata/Tower.h"
 
 class vtLayer;
 class vtRoadLayer;
@@ -112,7 +111,7 @@ protected:
 	// Box handlers
 	void BeginBox();
 	void EndBox(const wxMouseEvent& event);
-	void EndBoxFeatureSelect();
+	void EndBoxFeatureSelect(const wxMouseEvent& event);
 	void DoBox(wxPoint point);
 	void BeginArea();
 	void DoArea(wxPoint point);
