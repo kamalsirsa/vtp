@@ -697,6 +697,7 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
 vtFeatureSetPolygon::vtFeatureSetPolygon() : vtFeatureSet()
 {
 	m_eGeomType = wkbPolygon;
+	m_iLastFound = -1;
 }
 
 unsigned int vtFeatureSetPolygon::GetNumEntities() const
@@ -792,12 +793,21 @@ int vtFeatureSetPolygon::AddPolygon(const DPolygon2 &poly)
  */
 int vtFeatureSetPolygon::FindPolygon(const DPoint2 &p) const
 {
+	if (m_iLastFound != -1)	// try last successful result
+	{
+		if (m_Poly[m_iLastFound].ContainsPoint(p))
+			return m_iLastFound;		// found
+	}
 	int num = m_Poly.size();
 	for (int i = 0; i < num; i++)
 	{
 		if (m_Poly[i].ContainsPoint(p))
+		{
+			const_cast<vtFeatureSetPolygon*>(this)->m_iLastFound = i;
 			return i;		// found
+		}
 	}
+	const_cast<vtFeatureSetPolygon*>(this)->m_iLastFound = -1;
 	return -1;	// not found
 }
 

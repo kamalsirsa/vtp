@@ -379,6 +379,7 @@ public:
 
 protected:
 	DPolyArray	m_Poly;		// wkbPolygon
+	int m_iLastFound;
 };
 
 class vtFeatureLoader
