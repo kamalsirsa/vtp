@@ -129,18 +129,21 @@ void RenderDlg::OnEditColors( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	// Look on data paths, to give a complete path to the dialog
-	vtString name = "GeoTypical/";
-	name += m_strColorMap.mb_str();
-	name = FindFileOnPaths(m_datapaths, name);
-	if (name == "")
-	{
-		wxMessageBox(_("Couldn't locate file."));
-		return;
-	}
-
 	ColorMapDlg dlg(this, -1, _("ColorMap"));
-	dlg.SetFile(name);
+
+	// Look on data paths, to give a complete path to the dialog
+	if (m_strColorMap != _T(""))
+	{
+		vtString name = "GeoTypical/";
+		name += m_strColorMap.mb_str();
+		name = FindFileOnPaths(m_datapaths, name);
+		if (name == "")
+		{
+			wxMessageBox(_("Couldn't locate file."));
+			return;
+		}
+		dlg.SetFile(name);
+	}
 	dlg.ShowModal();
 
 	// They may have added or removed some color map files on the data path
