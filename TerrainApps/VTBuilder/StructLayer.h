@@ -30,9 +30,9 @@ public:
 	void Offset(const DPoint2 &p);
 
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);
-	void AddElementsFromSHPPoints(SHPHandle hSHP, int nElem);
-	void AddElementsFromSHPPolygons(const char *filename,
-									SHPHandle hSHP, int nElem);
+//	void AddElementsFromSHPPoints(SHPHandle hSHP, int nElem);
+//	void AddElementsFromSHPPolygons(const char *filename,
+//									SHPHandle hSHP, int nElem);
 
 	vtStructure *FindBuilding(DPoint2 &point, double epsilon);
 	bool EditBuildingProperties();
