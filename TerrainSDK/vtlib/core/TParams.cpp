@@ -23,6 +23,7 @@ TParams::TParams()
 	m_fVerticalExag = 1.0f;
 	m_bRegular = false;
 	m_bDynamic = false;
+	m_bTin = false;
 	m_iTriCount = 10000;
 	m_fPixelError = 2.0f;
 	m_fTimeSpeed = 1;
@@ -63,6 +64,8 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_iTriCount = rhs.m_iTriCount;
 	m_bTriStrips = rhs.m_bTriStrips;
 	m_bDetailTexture = rhs.m_bDetailTexture;
+
+	m_bTin = rhs.m_bTin;
 
 	m_bTimeOn = rhs.m_bTimeOn;
 	m_iInitTime = rhs.m_iInitTime;
@@ -180,6 +183,8 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_TRICOUNT "Tri_Count"
 #define STR_TRISTRIPS "Tristrips"
 #define STR_DETAILTEXTURE "Detail_Texture"
+
+#define STR_TIN "Is_TIN"
 
 #define STR_TIMEON "Time_On"
 #define STR_INITTIME "Init_Time"
@@ -396,6 +401,8 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bTriStrips;
 		else if (strcmp(buf, STR_DETAILTEXTURE) == 0)
 			input >> m_bDetailTexture;
+		else if (strcmp(buf, STR_TIN) == 0)
+			input >> m_bTin;
 		else if (strcmp(buf, STR_PRELIGHTFACTOR) == 0)
 			input >> m_fPreLightFactor;
 		else if (strcmp(buf, STR_AIRPORTS) == 0)
@@ -456,6 +463,10 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bTriStrips << endl;
 	output << STR_DETAILTEXTURE << "\t";
 	output << m_bDetailTexture << endl;
+
+	output << "\n";
+	output << STR_TIN << "\t\t\t";
+	output << m_bTin << endl;
 
 	output << "\n";
 	output << STR_TIMEON << "\t\t\t";

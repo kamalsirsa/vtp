@@ -61,6 +61,8 @@ public:
 	bool		m_bTriStrips;
 	bool		m_bDetailTexture;
 
+	bool		m_bTin;
+
 	bool		m_bTimeOn;
 	unint		m_iInitTime;
 	float		m_fTimeSpeed;
