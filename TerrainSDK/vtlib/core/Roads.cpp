@@ -868,6 +868,9 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 		m_vt[VTI_RAIL].m_idx = m_mi_roads;
 		m_vt[VTI_RAIL].m_rect.SetRect(992.0f/ROAD_REZ, 1, 1248.0f/ROAD_REZ, 0);
 
+		m_vt[VTI_STONE].m_idx = m_mi_roads;
+		m_vt[VTI_STONE].m_rect.SetRect(1248.0f/ROAD_REZ, 1, 1440.0f/ROAD_REZ, 0);
+
 		m_vt[VTI_4WD].m_idx = m_mi_4wd;
 		m_vt[VTI_4WD].m_rect.SetRect(0, 0, 1, 1);
 
@@ -1040,6 +1043,9 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 			break;
 		case SURFT_RAILROAD:
 			pR->m_vti = VTI_RAIL;
+			break;
+		case SURFT_STONE:
+			pR->m_vti = VTI_STONE;
 			break;
 		}
 	}
