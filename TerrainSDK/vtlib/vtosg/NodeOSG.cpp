@@ -362,29 +362,39 @@ void vtGroup::CopyFrom(const vtGroup *rhs)
 
 void vtGroup::Release()
 {
-	// Release children depth-first
-	int children = GetNumChildren();
-	vtNode *pChild;
-
-	for (int i = 0; i < children; i++)
+	// Check if there are no more external references to this group node.
+	// If so, clean up the VTP side of the scene graph.
+	int count = m_pGroup.get()->referenceCount();
+	if (count == 2)
 	{
-		if (NULL == (pChild = GetChild(0)))
+		// Release children depth-first
+		int children = GetNumChildren();
+		vtNode *pChild;
+
+		for (int i = 0; i < children; i++)
 		{
-			// Probably a raw osg node Group, access it directly.
-			Node *node = m_pGroup->getChild(0);
-			// This deletes the node as well as there is no outer vtNode
-			// holding a reference.
-			m_pGroup->removeChild(node);
+			if (NULL == (pChild = GetChild(0)))
+			{
+				// Probably a raw osg node Group, access it directly.
+				Node *node = m_pGroup->getChild(0);
+				// This deletes the node as well as there is no outer vtNode
+				// holding a reference.
+				m_pGroup->removeChild(node);
+			}
+			else
+			{
+				m_pGroup->removeChild(pChild->GetOsgNode());
+				pChild->Release();
+			}
 		}
-		else
-		{
-			m_pGroup->removeChild(pChild->GetOsgNode());
-			pChild->Release();
-		}
+		// Now destroy itself
+		m_pGroup = NULL;	// decrease refcount
+		vtNode::Release();
 	}
-	// Now destroy itself
-	m_pGroup = NULL;	// decrease refcount
-	vtNode::Release();
+	else
+	{
+		int foo = 1;
+	}
 }
 
 const vtNodeBase *vtGroup::FindDescendantByName(const char *name) const
@@ -416,18 +426,16 @@ void vtGroup::SetOsgGroup(Group *g)
 	SetOsgNode(g);
 }
 
-void vtGroup::AddChild(vtNodeBase *pChild)
+void vtGroup::AddChild(vtNode *pChild)
 {
-	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
-	if (pChildNode)
-		m_pGroup->addChild(pChildNode->GetOsgNode());
+	if (pChild)
+		m_pGroup->addChild(pChild->GetOsgNode());
 }
 
-void vtGroup::RemoveChild(vtNodeBase *pChild)
+void vtGroup::RemoveChild(vtNode *pChild)
 {
-	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
-	if (pChildNode)
-		m_pGroup->removeChild(pChildNode->GetOsgNode());
+	if (pChild)
+		m_pGroup->removeChild(pChild->GetOsgNode());
 }
 
 vtNode *vtGroup::GetChild(int num) const
@@ -450,7 +458,7 @@ int vtGroup::GetNumChildren() const
 	return m_pGroup->getNumChildren();
 }
 
-bool vtGroup::ContainsChild(vtNodeBase *pNode) const
+bool vtGroup::ContainsChild(vtNode *pNode) const
 {
 	int i, children = GetNumChildren();
 	for (i = 0; i < children; i++)
@@ -495,8 +503,18 @@ void vtTransform::CopyFrom(const vtTransform *rhs)
 
 void vtTransform::Release()
 {
-	m_pTransform = NULL;
-	vtGroup::Release();
+	// Check if there are no more external references to this transform node.
+	// If so, clean up the VTP side of the scene graph.
+	int count = m_pTransform.get()->referenceCount();
+	if (count == 3)
+	{
+		m_pTransform = NULL;
+		vtGroup::Release();
+	}
+	else
+	{
+		int foo = 1;
+	}
 }
 
 void vtTransform::Identity()

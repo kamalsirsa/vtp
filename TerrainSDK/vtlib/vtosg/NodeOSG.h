@@ -86,11 +86,11 @@ public:
 	// implement vtGroupBase methods
 
 	/** Add a node as a child of this Group. */
-	void AddChild(vtNodeBase *pChild);
+	void AddChild(vtNode *pChild);
 
 	/** Remove a node as a child of this Group.  If the indicated node is not
 	 a child, then this method has no effect. */
-	void RemoveChild(vtNodeBase *pChild);
+	void RemoveChild(vtNode *pChild);
 
 	/** Return a child node, by index. */
 	vtNode *GetChild(int num) const;
@@ -103,7 +103,7 @@ public:
 	const vtNodeBase *FindDescendantByName(const char *name) const;
 
 	/** Return true if the given node is a child of this group. */
-	bool ContainsChild(vtNodeBase *pNode) const;
+	bool ContainsChild(vtNode *pNode) const;
 
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup.get(); }
