@@ -42,6 +42,7 @@ SRTerrain::~SRTerrain()
 static vtLocalGrid *s_pGrid;
 static SRTerrain *s_pSRTerrain;
 static int myfancnt, myvtxcnt;
+static float s_fOceanDepth;
 
 void beginfan_vtp()
 {
@@ -70,12 +71,20 @@ void notify_vtp(int i, int j, int size)
 
 short int getelevation_vtp1(int i, int j, int size)
 {
-	return s_pGrid->GetValue(i, j);
+	short elev = s_pGrid->GetValue(i, j);
+	if (elev == 0)
+		return (short) s_fOceanDepth;
+	else
+		return elev;
 }
 
 float getelevation_vtp2(int i, int j, int size)
 {
-	return s_pGrid->GetFValue(i, j);
+	float elev = s_pGrid->GetFValue(i, j);
+	if (elev == 0.0f)
+		return s_fOceanDepth;
+	else
+		return elev;
 }
 
 //
@@ -95,6 +104,7 @@ bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	float cellaspect = m_fZStep / m_fXStep;
 
 	s_pGrid = pGrid;
+	s_fOceanDepth = fOceanDepth;
 
 	if (pGrid->IsFloatMode())
 	{
