@@ -52,6 +52,7 @@ void TagDlg::OnInitDialog(wxInitDialogEvent& event)
 	pName->Append(_T("model-name"));
 	pName->Append(_T("model-year"));
 	pName->Append(_T("url"));
+	pName->Append(_T("wire_info"));
 
 	pWin = FindWindow(ID_TAGTEXT);
 	gv = new wxGenericValidator(&m_strValue);
