@@ -155,6 +155,7 @@ void SceneGraphDlg::RefreshTreeContents()
 	{
 		vtEngine *pEng = scene->GetEngine(i);
 		wxString2 str = pEng->GetName2();
+		int targets = pEng->NumTargets();
 		target = pEng->GetTarget();
 		if (target)
 		{
@@ -168,6 +169,12 @@ void SceneGraphDlg::RefreshTreeContents()
 			}
 			else
 				str += _T("(non-node)");
+		}
+		if (targets > 1)
+		{
+			wxString2 plus;
+			plus.Printf(_T(" (%d targets total)"), targets);
+			str += plus;
 		}
 		wxTreeItemId hEng = m_pTree->AppendItem(hEngRoot, str, 1, 1);
 		m_pTree->SetItemData(hEng, new MyTreeItemData(NULL, pEng));
