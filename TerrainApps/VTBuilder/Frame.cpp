@@ -886,7 +886,7 @@ void MainFrame::LoadProject(const wxString &strPathName)
 	FILE *fp = fopen(strPathName.mb_str(), "rb");
 	if (!fp)
 	{
-		str.FromAscii("Couldn't open project file: ");
+		str = wxString::FromAscii("Couldn't open project file: ");
 		str += strPathName;
 		wxMessageBox(str);
 		return;

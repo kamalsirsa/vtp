@@ -79,7 +79,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < m_pLayer->GetNumFields(); i++)
 	{
 		Field *field = m_pLayer->GetField(i);
-		str.FromAscii( (const char *) field->m_name );
+		str = wxString::FromAscii( (const char *) field->m_name );
 		GetField()->Append(str, (void *) 0);
 	}
 	GetField()->SetSelection(0);
@@ -120,7 +120,7 @@ void SelectDlg::FillValuesControl()
 	{
 		m_pLayer->GetValueAsString(i, m_iField, str);
 
-		str2.FromAscii((const char *) str);
+		str2 = wxString::FromAscii((const char *) str);
 		if (str2 == _T(""))
 			continue;
 

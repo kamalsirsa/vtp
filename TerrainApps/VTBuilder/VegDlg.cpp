@@ -41,7 +41,7 @@ void PlantListCtrl::OnSelect(wxListEvent &event)
 		long item1;
 		str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
 		item1 = apps->InsertItem(j, str1, 0);
-		str1.FromAscii((const char *) app->m_filename);
+		str1 = wxString::FromAscii((const char *) app->m_filename);
 		item1 = apps->SetItem(j, 1, str1);
 		str1.Printf(_T("%4.2f"), app->m_width);
 		item1 = apps->SetItem(j, 2, str1);
@@ -128,7 +128,7 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 
 			str1.Printf(_T("%d"), app->m_eType == AT_BILLBOARD);
 			item1 = m_PATable->InsertItem(j, str1, 0);
-			str1.FromAscii((const char *) app->m_filename);
+			str1 = wxString::FromAscii((const char *) app->m_filename);
 			item1 = m_PATable->SetItem(j, 1, str1);
 			str1.Printf(_T("%4.2f"), app->m_width);
 			item1 = m_PATable->SetItem(j, 2, str1);

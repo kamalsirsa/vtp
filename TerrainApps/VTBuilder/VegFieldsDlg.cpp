@@ -105,7 +105,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	for (i = 0; i < pl->NumSpecies(); i++)
 	{
 		vtPlantSpecies *spe = pl->GetSpecies(i);
-		str.FromAscii(spe->GetSciName());
+		str = wxString::FromAscii(spe->GetSciName());
 		GetSpeciesChoice()->Append(str);
 	}
 
@@ -118,7 +118,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		fieldtype = DBFGetFieldInfo(m_db, i,
 			pszFieldName, pnWidth, pnDecimals );
-		str.FromAscii(pszFieldName);
+		str = wxString::FromAscii(pszFieldName);
 
 		if (fieldtype == FTString || fieldtype == FTInteger)
 			GetSpeciesField()->Append(str);

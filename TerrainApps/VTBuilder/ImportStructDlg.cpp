@@ -134,7 +134,7 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 		{
 			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
 				pszFieldName, pnWidth, pnDecimals );
-			str.FromAscii(pszFieldName);
+			str = wxString::FromAscii(pszFieldName);
 
 			if (fieldtype == FTString)
 				GetChoiceFileField()->Append(str);

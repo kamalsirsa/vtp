@@ -46,7 +46,7 @@ void StatePlaneDlg::OnInitDialog(wxInitDialogEvent& event)
 	wxString str;
     for (int i = 0; i < num_planes; i++)
     {
-		str.FromAscii(plane_info[i].name);
+		str = wxString::FromAscii(plane_info[i].name);
         GetStatePlanes()->Append(str, (void *) plane_info[i].usgs_code);
     }
 

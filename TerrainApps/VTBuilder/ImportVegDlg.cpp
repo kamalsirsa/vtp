@@ -95,7 +95,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
         fieldtype = DBFGetFieldInfo(db, iField,
             pszFieldName, pnWidth, pnDecimals );
         str.Printf(_T("%d: "), i);
-		fieldname.FromAscii(pszFieldName);
+		fieldname = wxString::FromAscii(pszFieldName);
         str += fieldname;
 
         if (fieldtype == FTString)

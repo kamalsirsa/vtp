@@ -377,7 +377,7 @@ void BuildingDlg::SetEdge(int iEdge)
 	m_iEdge = iEdge;
 	m_pEdge = m_pLevel->GetEdge(iEdge);
 	m_iEdgeSlope = m_pEdge->m_iSlope;
-	m_strFacade.FromAscii((const char *) m_pEdge->m_Facade);
+	m_strFacade = wxString::FromAscii((const char *) m_pEdge->m_Facade);
 
 	// material
 	UpdateMaterialControl();
@@ -447,7 +447,7 @@ void BuildingDlg::UpdateMaterialControl()
 	else
 		mat = m_pEdge->m_Material;
 
-	m_strMaterial.FromAscii(vtBuilding::GetMaterialString(mat));
+	m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(mat));
 }
 
 void BuildingDlg::UpdateColorControl()
@@ -601,7 +601,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	for (i = BMAT_PLAIN; i < BMAT_DOOR; i++)
 	{
 		bm = (BldMaterial) i;
-		choices[i-1].FromAscii(vtBuilding::GetMaterialString(bm));
+		choices[i-1] = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
 	}
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
@@ -621,7 +621,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	else
 		m_pLevel->SetEdgeMaterial(bm);
 
-	m_strMaterial.FromAscii(vtBuilding::GetMaterialString(bm));
+	m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;

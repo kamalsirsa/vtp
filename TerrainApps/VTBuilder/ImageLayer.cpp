@@ -349,7 +349,7 @@ bool vtImageLayer::LoadFromGDAL()
 	catch (const char *msg)
 	{
 		wxString str;
-		str.FromAscii(msg);
+		str = wxString::FromAscii(msg);
 		wxMessageBox(str);
 		bRet = false;
 	}

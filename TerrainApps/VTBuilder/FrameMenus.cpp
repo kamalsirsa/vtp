@@ -1793,7 +1793,7 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 	int numlayers = layers.GetSize();
 	wxString choices[100];
 	for (int i = 0; i < numlayers; i++)
-		choices[i].FromAscii(layers[i]->GetValue("Name"));
+		choices[i] = wxString::FromAscii(layers[i]->GetValue("Name"));
 
 	wxSingleChoiceDialog dlg2(this, _T("Choice Layer"),
 		_T("Please indicate layer:"), numlayers, (const wxString *)choices);
@@ -2093,7 +2093,7 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 	static int types[4] = { SHPT_NULL, SHPT_POINT, SHPT_ARC, SHPT_POLYGON };
 	wxString choices[4];
 	for (int i = 0; i < 4; i++)
-		choices[i].FromAscii(SHPTypeName(types[i]));
+		choices[i] = wxString::FromAscii(SHPTypeName(types[i]));
 
 	int n = 4;
 	int cur_type = 0;

@@ -73,7 +73,7 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 	{
 		Field *pField = m_pFeatures->GetField(i);
 		wxString name;
-		name.FromAscii(pField->m_name);
+		name = wxString::FromAscii(pField->m_name);
 		int width = pField->m_width * 4;
 		if (width < 20)
 			width = 20;
@@ -180,7 +180,7 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);
-		str.FromAscii((const char *) vs);
+		str = wxString::FromAscii((const char *) vs);
 		GetList()->SetItem(next, field++, str);
 	}
 }

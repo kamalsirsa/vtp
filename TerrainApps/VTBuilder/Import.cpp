@@ -17,6 +17,7 @@
 #include "vtdata/Unarchive.h"
 #include "vtdata/boost/directory.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/vtLog.h"
 
 #include "Frame.h"
 #include "Helper.h"
@@ -60,7 +61,7 @@ wxString GetTempFolderName(const char *base)
 
 	const char *temp = getenv("TEMP");
 	if (temp)
-		path.FromAscii(temp);
+		path = wxString::FromAscii(temp);
 	else
 #if WIN32
 		path = _T("C:/TEMP");
@@ -70,7 +71,7 @@ wxString GetTempFolderName(const char *base)
 	path += _T("/");
 
 	wxString base2;
-	base2.FromAscii(tmp);
+	base2 = wxString::FromAscii(tmp);
 	path += base2;
 
 	path += _T("_temp");
@@ -150,7 +151,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 				std::string name1 = *it;
 				fname = prepend_path;
 				wxString tmp;
-				tmp.FromAscii(name1.c_str());
+				tmp = wxString::FromAscii(name1.c_str());
 				fname += tmp;
 				break;
 			}
@@ -174,7 +175,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 			{
 				std::string name1 = *it;
 				wxString fname2;
-				fname2.FromAscii(name1.c_str());
+				fname2 = wxString::FromAscii(name1.c_str());
 				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 				{
 					fname = prepend_path;
@@ -206,14 +207,21 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_in,
 void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 								   bool bRefresh)
 {
+
 	// check to see if the file is readable
 	FILE *fp = fopen(strFileName.mb_str(), "rb");
 	if (!fp)
-		return;	// Cannot Open File
+	{
+		// Cannot Open File
+		VTLOG("Couldn't open file %s\n", strFileName.mb_str());
+		return;
+	}
 	fclose(fp);
 
 	wxString msg = _T("Importing Data from ");
 	msg += strFileName;
+	VTLOG(msg.mb_str());
+	VTLOG("...");
 	OpenProgressDialog(msg);
 
 	// check the file extension
@@ -352,8 +360,11 @@ void MainFrame::ImportDataFromFile(LayerType ltype, wxString strFileName,
 	if (!pLayer)
 	{
 		// import failed
+		VTLOG(" failed/cancelled.\n");
+		wxMessageBox(_T("Did not import any data from that file."));
 		return;
 	}
+	VTLOG(" succeeded.\n");
 	pLayer->SetFilename(strFileName);
 	pLayer->SetModified(true);
 
@@ -479,7 +490,7 @@ vtLayerPtr MainFrame::ImportFromDLG(wxString &strFileName, LayerType ltype)
 	if (!success)
 	{
 		wxString msg;
-		msg.FromAscii(pDLG->GetErrorMessage());
+		msg = wxString::FromAscii(pDLG->GetErrorMessage());
 		wxMessageBox(msg);
 		delete pDLG;
 		return NULL;
@@ -669,7 +680,7 @@ vtLayerPtr MainFrame::ImportFromLULC(wxString &strFileName, LayerType ltype)
 	if (pLULC->m_iError)
 	{
 		wxString msg;
-		msg.FromAscii(pLULC->GetErrorMessage());
+		msg = wxString::FromAscii(pLULC->GetErrorMessage());
 		wxMessageBox(msg);
 		delete pLULC;
 		return NULL;
