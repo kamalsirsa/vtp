@@ -1412,32 +1412,55 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		pR->CarveRoadway(pE, 2.0);
 #endif
 #if 1
-		DBFHandle db = DBFOpen("E:/GreenMaps/map_locations_v1.dbf", "rb");
-		DBFHandle db2 = DBFCreate("E:/GreenMaps/map_locations_v1d.dbf");
+		DBFHandle db = DBFOpen("E:/GreenMaps/Locations/map_locations_v4.dbf", "rb");
+		DBFHandle db2 = DBFCreate("E:/GreenMaps/Locations/map_locations_v4d.dbf");
 		if (db != NULL && db2 != NULL)
 		{
+			int iEntities = DBFGetRecordCount(db);
+			int iFields = DBFGetFieldCount(db);
+
 			int f1 = DBFAddField(db2, "X", FTDouble, 12, 6);
 			int f2 = DBFAddField(db2, "Y", FTDouble, 12, 6);
 
-			int iEntities = DBFGetRecordCount(db);
+			DBFFieldType type;
+			char fieldname[80];
+			int width, decimals;
+			for (int field = 2; field < iFields; field++)
+			{
+				type = DBFGetFieldInfo(db, field, fieldname, &width, &decimals);
+				DBFAddField(db2, fieldname, type, width, decimals);
+			}
+
 			int deg, min;
 			double val;
 			const char *sz;
 			for (int i = 0; i < iEntities; i++)
 			{
-				sz = DBFReadStringAttribute(db, i, 0);
-				deg = min = 0;
-				sscanf(sz, "%d %d", &deg, &min);
-				val = abs(deg) + (double)min / 60.0;
-				if (deg < 0) val = -val;
-				DBFWriteDoubleAttribute(db2, i, f1, val);
+				for (int field = 0; field < iFields; field++)
+				{
+					sz = DBFReadStringAttribute(db, i, field);
 
-				sz = DBFReadStringAttribute(db, i, 1);
-				deg = min = 0;
-				sscanf(sz, "%d %d", &deg, &min);
-				val = abs(deg) + (double)min / 60.0;
-				if (deg < 0) val = -val;
-				DBFWriteDoubleAttribute(db2, i, f2, val);
+					if (field == 0)
+					{
+						deg = min = 0;
+						sscanf(sz, "%d %d", &deg, &min);
+						val = abs(deg) + (double)min / 60.0;
+						if (deg < 0) val = -val;
+						DBFWriteDoubleAttribute(db2, i, f1, val);
+					}
+					else if (field == 1)
+					{
+						deg = min = 0;
+						sscanf(sz, "%d %d", &deg, &min);
+						val = abs(deg) + (double)min / 60.0;
+						if (deg < 0) val = -val;
+						DBFWriteDoubleAttribute(db2, i, f2, val);
+					}
+					else
+					{
+						DBFWriteStringAttribute(db2, i, field, sz);
+					}
+				}
 			}
 			DBFClose(db);
 			DBFClose(db2);
