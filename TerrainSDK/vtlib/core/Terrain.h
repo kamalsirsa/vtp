@@ -221,7 +221,8 @@ public:
 	void HideAllPOI();
 
 	// symbols and labels for abstract data
-	float AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line, float fOffset, bool bCurve = false);
+	float AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
+		float fOffset, bool bCurve = false, bool bTrue = false);
 	void CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname, const PointStyle &style);
 
 	// Access the viewpoint associated with this terrain

@@ -365,12 +365,16 @@ float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 		return height * m_fDrawScale;
 }
 
-void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p) const
+void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 {
 	float height = m_pMini->getheight(i, j);
 
-	// convert stored value to drawn value
-	height *= m_fDrawScale;
+	if (bTrue)
+		// convert stored value to true value
+		height /= m_fMaximumScale;
+	else
+		// convert stored value to drawn value
+		height *= m_fDrawScale;
 
 	p.Set(m_fXLookup[i],
 		  height,

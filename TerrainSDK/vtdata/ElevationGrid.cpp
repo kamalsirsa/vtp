@@ -845,16 +845,28 @@ float vtElevationGrid::GetElevation(int iX, int iZ, bool bTrue) const
 	return GetFValue(iX, iZ);
 }
 
-void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
+void vtElevationGrid::GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue) const
 {
-	loc.Set(m_WorldExtents.left + i * m_fXStep,
-		GetFValue(i,j) * m_fVerticalScale,
-		m_WorldExtents.bottom - j * m_fZStep);
+	if (bTrue)
+	{
+		loc.Set(m_WorldExtents.left + i * m_fXStep,
+			GetFValue(i,j),
+			m_WorldExtents.bottom - j * m_fZStep);
+	}
+	else
+	{
+		loc.Set(m_WorldExtents.left + i * m_fXStep,
+			GetFValue(i,j) * m_fVerticalScale,
+			m_WorldExtents.bottom - j * m_fZStep);
+	}
 }
 
-float vtElevationGrid::GetWorldValue(int i, int j) const
+float vtElevationGrid::GetWorldValue(int i, int j, bool bTrue) const
 {
-	return GetFValue(i, j) * m_fVerticalScale;
+	if (bTrue)
+		return GetFValue(i, j);
+	else
+		return GetFValue(i, j) * m_fVerticalScale;
 }
 
 
@@ -866,7 +878,7 @@ float vtElevationGrid::GetWorldValue(int i, int j) const
  * sped up if needed.
  */
 bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-	FPoint3 *vNormal) const
+	bool bTrue, FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)((p.z - m_WorldExtents.bottom) / -m_fZStep);
@@ -882,10 +894,10 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	if (vNormal != NULL)
 	{
 		FPoint3 p0, p1, p2, p3;
-		GetWorldLocation(iX, iZ, p0);
-		GetWorldLocation(iX+1, iZ, p1);
-		GetWorldLocation(iX+1, iZ+1, p2);
-		GetWorldLocation(iX, iZ+1, p3);
+		GetWorldLocation(iX, iZ, p0, bTrue);
+		GetWorldLocation(iX+1, iZ, p1, bTrue);
+		GetWorldLocation(iX+1, iZ+1, p2, bTrue);
+		GetWorldLocation(iX, iZ+1, p3, bTrue);
 
 		// find fractional amount (0..1 across quad)
 		float fX = (p.x - p0.x) / m_fXStep;
@@ -932,7 +944,8 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 		else
 			fAltitude = (float) (alt2 + (1.0f-fX) * (alt3 - alt2) + (1.0f-fY) * (alt1 - alt2));
 
-		fAltitude *= m_fVerticalScale;
+		if (!bTrue)
+			fAltitude *= m_fVerticalScale;
 	}
 	return true;
 }

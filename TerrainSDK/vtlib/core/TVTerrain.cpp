@@ -362,6 +362,7 @@ int TVTerrain::calcErr(const vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coo
 
 #define MAKE_XYZ(point) m_fXLookup[point[0]], m_pVertex[offset(point[0], point[1])] * m_fZScale, m_fZLookup[point[1]]
 #define MAKE_XYZ2(x, y) m_fXLookup[x], m_pVertex[offset(x, y)] * m_fZScale, m_fZLookup[y]
+#define MAKE_XYZ2_TRUE(x, y) m_fXLookup[x], m_pVertex[offset(x, y)], m_fZLookup[y]
 
 #define emitVertex(p) glVertex3f(p[0], m_pVertex[offset(p[0], p[1])], p[1])
 
@@ -800,9 +801,12 @@ float TVTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 		return m_pVertex[offset(iX, iZ)];
 }
 
-void TVTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
+void TVTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 {
-	p.Set(MAKE_XYZ2(iX, iZ));
+	if (bTrue)
+		p.Set(MAKE_XYZ2_TRUE(iX, iZ));
+	else
+		p.Set(MAKE_XYZ2(iX, iZ));
 }
 
 

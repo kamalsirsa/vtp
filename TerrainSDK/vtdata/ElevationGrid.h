@@ -127,13 +127,13 @@ public:
 
 	// Implement vtHeightField3d methods
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const;
-	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const;
+	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const;
 
 	// methods that deal with world coordinates
 	void SetupConversion(float fVerticalExag);
-	float GetWorldValue(int i, int j) const;
+	float GetWorldValue(int i, int j, bool bTrue = false) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		FPoint3 *vNormal = NULL) const;
+		bool bTrue = false, FPoint3 *vNormal = NULL) const;
 
 protected:
 	bool	m_bFloatMode;

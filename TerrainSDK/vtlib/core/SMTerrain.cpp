@@ -50,6 +50,7 @@ static int verts_in_buffer = 0;
 
 #define MAKE_XYZ(index) LOCX(index), LOCY(index), LOCZ(index)
 #define MAKE_XYZ2(x,y) m_fXLookup[x], m_pData[offset(x,y)]*m_fZScale, m_fZLookup[y]
+#define MAKE_XYZ2_TRUE(x,y) m_fXLookup[x], (float)m_pData[offset(x,y)]/PACK_SCALE, m_fZLookup[y]
 
 /*
 Seumas said:
@@ -1124,14 +1125,16 @@ float SMTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 		return m_pData[offset(iX,iZ)]*m_fZScale;
 }
 
-void SMTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
+void SMTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 {
-	p.Set(MAKE_XYZ2(iX, iZ));
+	if (bTrue)
+		p.Set(MAKE_XYZ2_TRUE(iX, iZ));
+	else
+		p.Set(MAKE_XYZ2(iX, iZ));
 }
 
 void SMTerrain::SetVerticalExag(float fExag)
 {
 	m_fZScale = fExag / PACK_SCALE;
 }
-
 

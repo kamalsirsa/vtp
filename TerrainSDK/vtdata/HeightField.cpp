@@ -832,7 +832,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				{
 					// 3D elevation query to get slope
 					m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
-					FindAltitudeAtPoint(p3, p3.y, &normal);
+					FindAltitudeAtPoint(p3, p3.y, true, &normal);
 
 					//*****************************************
 					//*****************************************
@@ -896,7 +896,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 
 			// 3D elevation query to get slope
 			m_Conversion.ConvertFromEarth(pos, p3.x, p3.z);
-			FindAltitudeAtPoint(p3, p3.y, &normal);
+			FindAltitudeAtPoint(p3, p3.y, true, &normal);
 
 			//*****************************************
 			//*****************************************

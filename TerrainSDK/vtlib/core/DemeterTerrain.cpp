@@ -27,6 +27,7 @@ using namespace Demeter;
 //
 #define offset(x, y)  ((y) * m_iColumns + (x))
 #define MAKE_XYZ1(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))]*m_fZScale, m_fZLookup[(y)]
+#define MAKE_XYZ1_TRUE(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))], m_fZLookup[(y)]
 
 
 //
@@ -184,9 +185,12 @@ void DemeterTerrain::RenderPass()
 // position of the terrain at a given grid point.  Supply the height
 // value from your own data structures.
 //
-void DemeterTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
+void DemeterTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 {
-	p.Set(MAKE_XYZ1(iX, iZ));
+	if (bTrue)
+		p.Set(MAKE_XYZ1_TRUE(iX, iZ));
+	else
+		p.Set(MAKE_XYZ1(iX, iZ));
 }
 
 #endif

@@ -1,7 +1,7 @@
 //
 // DemeterTerrain class
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -29,7 +29,7 @@ public:
 	// overrides
 	void DoRender();
 	void DoCulling(const vtCamera *pCam);
-	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
+	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
 
 protected:
 	// rendering

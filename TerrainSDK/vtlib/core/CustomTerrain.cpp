@@ -19,6 +19,7 @@
 // (You don't have to use them, especially for height)
 //
 #define MAKE_XYZ1(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))]*m_fZScale, m_fZLookup[(y)]
+#define MAKE_XYZ1_TRUE(x,y) m_fXLookup[(x)], m_pData[offset((x),(y))], m_fZLookup[(y)]
 #define MAKE_XYZ2(x,y) (float)(x), m_pData[offset((x),(y))], (float)(y)
 
 
@@ -178,9 +179,12 @@ float CustomTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 	return f;
 }
 
-void CustomTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
+void CustomTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 {
-	p.Set(MAKE_XYZ1(iX, iZ));
+	if (bTrue)
+		p.Set(MAKE_XYZ1_TRUE(iX, iZ));
+	else
+		p.Set(MAKE_XYZ1(iX, iZ));
 }
 
 

@@ -2260,7 +2260,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 #include "vtdata/CubicSpline.h"
 
 float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
-									 float fOffset, bool bCurve)
+									 float fOffset, bool bCurve, bool bTrue)
 {
 	unsigned int i, j;
 	FPoint3 v1, v2, v;
@@ -2314,12 +2314,12 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 			spline.Interpolate(f, &p);
 
 			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p.x, p.y, v.x, v.z);
-			m_pHeightField->FindAltitudeAtPoint(v, v.y);
+			m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 			v.y += fOffset;
 			pMesh->AddVertex(v);
 			iVerts++;
 
-			// keep a running toal of approximate ground length
+			// keep a running total of approximate ground length
 			if (f > 0)
 				fTotalLength += (v - last_v).Length();
 			last_v = v;
@@ -2347,7 +2347,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 			{
 				// simple linear interpolation of the ground coordinate
 				v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
-				m_pHeightField->FindAltitudeAtPoint(v, v.y);
+				m_pHeightField->FindAltitudeAtPoint(v, v.y, bTrue);
 				v.y += fOffset;
 				pMesh->AddVertex(v);
 				iVerts++;

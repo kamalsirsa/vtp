@@ -62,7 +62,7 @@ public:
 
 	// overrides for HeightField3d
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		FPoint3 *vNormal = NULL) const;
+		bool bTrue = false, FPoint3 *vNormal = NULL) const;
 
 	// overridables
 	virtual void DoCulling(const vtCamera *pCam) = 0;

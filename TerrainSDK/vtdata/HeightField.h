@@ -85,7 +85,7 @@ public:
 
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		FPoint3 *vNormal = NULL) const = 0;
+		bool bTrue = false, FPoint3 *vNormal = NULL) const = 0;
 
 	/// Find the intersection point of a ray with the heightfield
 	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
@@ -136,7 +136,7 @@ public:
 
 	// all grids must be able to return the elevation at a grid point
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const = 0;
-	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const = 0;
+	virtual void GetWorldLocation(int i, int j, FPoint3 &loc, bool bTrue = false) const = 0;
 
 	void ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
 		void progress_callback(int) = NULL);

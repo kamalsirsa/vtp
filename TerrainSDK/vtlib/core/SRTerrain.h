@@ -5,7 +5,7 @@
 // utilizes: Roettger's MINI library implementation
 // http://wwwvis.informatik.uni-stuttgart.de/~roettger
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,7 +31,7 @@ public:
 	void DoRender();
 	void DoCulling(const vtCamera *pCam);
 	float GetElevation(int iX, int iZ, bool bTrue = false) const;
-	void GetWorldLocation(int iX, int iZ, FPoint3 &p) const;
+	void GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue = false) const;
 	void SetVerticalExag(float fExag);
 
 	void LoadSingleMaterial();

@@ -28,6 +28,7 @@ typedef long INT_32;
 #define LOCZ(index) m_fZLookup[index / m_iDim]
 #define MAKE_XYZ(index) LOCX(index), LOCY(index), LOCZ(index)
 #define MAKE_XYZ2(x,y) m_fXLookup[x], m_pData[offset(x,y)]*m_fZScale, m_fZLookup[y]
+#define MAKE_XYZ2_TRUE(x,y) m_fXLookup[x], m_pData[offset(x,y)], m_fZLookup[y]
 
 
 //
@@ -205,9 +206,12 @@ float BryanTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 	return f;
 }
 
-void BryanTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p) const
+void BryanTerrain::GetWorldLocation(int iX, int iZ, FPoint3 &p, bool bTrue) const
 {
-	p.Set(MAKE_XYZ2(iX, iZ));
+	if (bTrue)
+		p.Set(MAKE_XYZ2_TRUE(iX, iZ));
+	else
+		p.Set(MAKE_XYZ2(iX, iZ));
 }
 
 // -------------------------------------------------------------

@@ -109,7 +109,7 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, 
 }
 
 bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-									FPoint3 *vNormal) const
+									bool bTrue, FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)(-(p.z - m_WorldExtents.bottom) / m_fZStep);
@@ -123,10 +123,10 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	}
 
 	FPoint3 p0, p1, p2, p3;
-	GetWorldLocation(iX, iZ, p0);
-	GetWorldLocation(iX+1, iZ, p1);
-	GetWorldLocation(iX+1, iZ+1, p2);
-	GetWorldLocation(iX, iZ+1, p3);
+	GetWorldLocation(iX, iZ, p0, bTrue);
+	GetWorldLocation(iX+1, iZ, p1, bTrue);
+	GetWorldLocation(iX+1, iZ+1, p2, bTrue);
+	GetWorldLocation(iX, iZ+1, p3, bTrue);
 
 	// find fractional amount (0..1 across quad)
 	float fX = (float)  (p.x - p0.x) / m_fXStep;
