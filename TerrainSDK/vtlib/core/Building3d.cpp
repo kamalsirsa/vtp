@@ -663,13 +663,15 @@ void vtBuilding3d::AddFlatRoof(Array<FPoint3> &pp, float height)
 		// use the results.
 		int tcount = result.GetSize()/3;
 		int ind[3];
+		FPoint2 gp;
+		FPoint3 p;
 
 		for (i=0; i<tcount; i++)
 		{
 			for (j = 0; j < 3; j++)
 			{
-				FPoint2 gp = result[i*3+j];
-				FPoint3 p(gp.x, roof_y, gp.y);
+				gp = result[i*3+j];
+				p.Set(gp.x, roof_y, gp.y);
 				ind[j] = m_pMesh[BM_ROOF]->AddVertexN(p, up);
 			}
 			m_pMesh[BM_ROOF]->AddTri(ind[0], ind[1], ind[2]);
