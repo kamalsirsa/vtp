@@ -19,7 +19,6 @@ vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 {
 	// create simple texture-mapped sphere
 	vtMesh *mesh = new vtMesh(GL_QUADS, VT_Normals | VT_TexCoords, 20*20*2);
-	int appidx = 0;
 	int res = 20;
 	FPoint3 size(1.0f, 1.0f, 1.0f);
 	mesh->CreateEllipsoid(size, res);
@@ -69,10 +68,14 @@ int icos_face_pairs[10][2] =
 	{ 15, 20 }
 };
 
+IcoGlobe::IcoGlobe()
+{
+}
+
 //
 // argument "f" goes from 0 (icosahedron) to 1 (sphere)
 //
-void IcoGlobe::set_face_verts(vtMesh *mesh, int face, float f)
+void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 {
 	int i, j;
 
@@ -95,10 +98,12 @@ void IcoGlobe::set_face_verts(vtMesh *mesh, int face, float f)
 			len = p0.Length();
 			p0 = p0 / len * (f * mag + (1 - f) * len);
 
-			fp0 = p0;	// convert doubles -> floats
+			// convert doubles -> floats
+			fp0 = p0;
 
 			mesh->SetVtxPos(idx, fp0);
-			mesh->SetVtxNormal(idx, fp0);	// for f == 1.0
+			// for a spheroid (f == 1), this is correct:
+			mesh->SetVtxNormal(idx, fp0);
 
 			idx += 1;
 		}
@@ -138,7 +143,23 @@ void IcoGlobe::set_face_verts(vtMesh *mesh, int face, float f)
 	}
 }
 
-void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
+//
+// argument "f" goes from 0 (icosahedron) to 1 (sphere)
+//
+void IcoGlobe::set_face_verts2(vtMesh *mesh, int face, float f)
+{
+	int pair;
+	for (pair = 0; pair < 10; pair++)
+	{
+		int f1 = icos_face_pairs[pair][0];
+		int f2 = icos_face_pairs[pair][1];
+
+		refresh_face_positions(m_mesh[f1], f1, f);
+		refresh_face_positions(m_mesh[f2], f2, f);
+	}
+}
+
+void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 {
 	float f = 1.0f;
 	int i, j;
@@ -147,10 +168,12 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 	DPoint3 v1 = m_verts[icosa_face_v[face][1]];
 	DPoint3 v2 = m_verts[icosa_face_v[face][2]];
 	DPoint3 vec0 = (v1 - v0)/m_freq, vec1 = (v2 - v0)/m_freq;
-	double len;
+	DPoint3 p0;
+	FPoint3 vp0;
+	double len, mag = 1.0;
 
 #if 0
-	// old way - no strips, no vertex sharing, independent triangles
+	// naive way - no strips, no vertex sharing, independent triangles
 	int size = 3;
 	DPoint3 p0, p1, p2;
 	FPoint3 vp0, vp1, vp2;
@@ -192,13 +215,10 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 		}
 	}
 #else
-	// new way, two passes
+	// better way, two passes
 	// first pass: create the vertices
 	int idx = 0;
 	int vtx_base = 0;
-	DPoint3 p0;
-	FPoint3 vp0;
-	double mag = 1.0;
 	for (j = 0; j <= m_freq; j++)
 	{
 		for (i = 0; i <= (m_freq-j); i++)
@@ -213,7 +233,7 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 			vp0 = p0;
 
 			mesh->SetVtxPos(idx, vp0);
-			// for a spheroid, this is correct:
+			// for a spheroid (f == 1), this is correct:
 			mesh->SetVtxNormal(idx, vp0);
 
 			FPoint2 coord;
@@ -258,6 +278,127 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 #endif
 }
 
+void IcoGlobe::add_face2(vtMesh *mesh, int face, bool second, float f)
+{
+	int i;
+	int depth = 3;
+	IcoVert v0, v1, v2, e0, e1, e2, center;
+
+	v0.p = m_verts[icosa_face_v[face][0]];
+	v1.p  = m_verts[icosa_face_v[face][1]];
+	v2.p  = m_verts[icosa_face_v[face][2]];
+
+	// find edges and center
+	e0.p = (v0.p + v1.p) / 2;
+	e1.p = (v1.p + v2.p) / 2;
+	e2.p = (v2.p + v0.p) / 2;
+	center.p = (v0.p + v1.p + v2.p) / 3;
+
+	FPoint2 uv[3], edge_uv[3], center_uv;
+	if (second == false)
+	{
+		v0.uv.Set(0, 0);
+		v1.uv.Set(1, 0);
+		v2.uv.Set(0, 1);
+	}
+	else
+	{
+		v0.uv.Set(1, 1);
+		v1.uv.Set(0, 1);
+		v2.uv.Set(1, 0);
+	}
+	// find edge and center uv
+	e0.uv = (v0.uv + v1.uv) / 2;
+	e1.uv = (v1.uv + v2.uv) / 2;
+	e2.uv = (v2.uv + v0.uv) / 2;
+	center.uv = (v0.uv + v1.uv + v2.uv) / 3;
+
+	m_rtv[face].Append(v0);
+	m_rtv[face].Append(v1);
+	m_rtv[face].Append(v2);
+	m_rtv[face].Append(e0);	// 3
+	m_rtv[face].Append(e1);	// 4
+	m_rtv[face].Append(e2);	// 5
+	m_rtv[face].Append(center); // 6
+	m_vert = 7;
+
+	for (i = 0; i < 7; i++)
+		mesh->AddVertexNUV(m_rtv[face][i].p, m_rtv[face][i].p, m_rtv[face][i].uv);
+
+	// iterate the 6 subfaces
+	add_subface(mesh, face, 0, 3, 6, false, depth, f);
+	add_subface(mesh, face, 1, 3, 6, true, depth, f);
+
+	add_subface(mesh, face, 1, 4, 6, false, depth, f);
+	add_subface(mesh, face, 2, 4, 6, true, depth, f);
+
+	add_subface(mesh, face, 2, 5, 6, false, depth, f);
+	add_subface(mesh, face, 0, 5, 6, true, depth, f);
+
+	// now, deal with curvature
+	refresh_face_positions(mesh, face, f);
+}
+
+void IcoGlobe::refresh_face_positions(vtMesh *mesh, int face, float f)
+{
+	int i;
+	double len;
+	FPoint3 fp;
+	int total = m_rtv[face].GetSize();
+	for (i = 0; i < total; i++)
+	{
+		// do interpolation between icosa face and sphere
+		len = m_rtv[face][i].p.Length();
+		fp = m_rtv[face][i].p / len * (f + (1 - f) * len);
+		mesh->SetVtxPos(i, fp);
+	}
+}
+
+void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
+										 bool flip, int depth, float f)
+{
+	if (depth > 0)
+	{
+		IcoVert p3, p4;
+
+		p3.p = m_rtv[face][v1].p - (m_rtv[face][v1].p - m_rtv[face][v0].p) / 3;
+		p4.p = (m_rtv[face][v0].p + m_rtv[face][v2].p) / 2;
+
+		p3.uv = m_rtv[face][v1].uv - (m_rtv[face][v1].uv - m_rtv[face][v0].uv) / 3;
+		p4.uv = (m_rtv[face][v0].uv + m_rtv[face][v2].uv) / 2;
+
+		int v3 = m_vert++;
+		int v4 = m_vert++;
+
+		m_rtv[face].Append(p3);
+		m_rtv[face].Append(p4);
+
+		mesh->AddVertexNUV(m_rtv[face][v3].p, m_rtv[face][v3].p, m_rtv[face][v3].uv);
+		mesh->AddVertexNUV(m_rtv[face][v4].p, m_rtv[face][v4].p, m_rtv[face][v4].uv);
+
+		add_subface(mesh, face, v0, v4, v3, !flip, depth - 1, f);
+		add_subface(mesh, face, v2, v4, v3,  flip, depth - 1, f);
+		add_subface(mesh, face, v2, v1, v3, !flip, depth - 1, f);
+		return;
+	}
+
+	unsigned short Indices[3];
+	if (flip)
+	{
+		Indices[0] = v2;
+		Indices[1] = v1;
+		Indices[2] = v0;
+	}
+	else
+	{
+		Indices[0] = v0;
+		Indices[1] = v1;
+		Indices[2] = v2;
+	}
+	mesh->AddStrip(3, Indices);
+}
+
+
 void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefix)
 {
 	VTLOG("IcoGlobe::Create\n");
@@ -279,8 +420,10 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 		int f1 = icos_face_pairs[pair][0];
 		int f2 = icos_face_pairs[pair][1];
 
-		add_face(m_mesh[f1], f1, pair, false);
-		add_face(m_mesh[f2], f2, pair, true);
+//		add_face1(m_mesh[f1], f1, false);
+//		add_face1(m_mesh[f2], f2, true);
+		add_face2(m_mesh[f1], f1, false, 1);
+		add_face2(m_mesh[f2], f2, true, 1);
 	}
 
 	m_geom = new vtGeom();
@@ -365,8 +508,8 @@ void IcoGlobe::SetInflation(float f)
 		int f1 = icos_face_pairs[pair][0];
 		int f2 = icos_face_pairs[pair][1];
 
-		set_face_verts(m_mesh[f1], f1, f);
-		set_face_verts(m_mesh[f2], f2, f);
+		set_face_verts2(m_mesh[f1], f1, f);
+		set_face_verts2(m_mesh[f2], f2, f);
 	}
 }
 

@@ -11,9 +11,17 @@
 #include "vtdata/Icosa.h"
 #include "vtdata/FilePath.h"
 
+struct IcoVert
+{
+	DPoint3 p;
+	FPoint2 uv;
+};
+
 class IcoGlobe : public DymaxIcosa
 {
 public:
+	IcoGlobe();
+
 	void Create(int freq, const StringArray &paths, vtString strImagePrefix);
 	void SetInflation(float f);
 	void SetLighting(bool bLight);
@@ -29,12 +37,20 @@ public:
 	int		m_yellow;
 
 protected:
-	void set_face_verts(vtMesh *geom, int face, float f);
-	void add_face(vtMesh *geom, int face, int appidx, bool second);
+	void set_face_verts1(vtMesh *geom, int face, float f);
+	void set_face_verts2(vtMesh *geom, int face, float f);
+
+	void add_face1(vtMesh *mesh, int face, bool second);
+	void add_face2(vtMesh *mesh, int face, bool second, float f);
+	void add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
+								   bool flip, int depth, float f);
+	void refresh_face_positions(vtMesh *mesh, int face, float f);
 
 	vtMaterialArray	*m_mats;
 	int		m_globe_mat[10];
 	vtMesh	*m_mesh[21];
+	int		m_vert;
+	Array<IcoVert>	m_rtv[21];	// right-triangle vertices
 
 	int		m_freq;	// tesselation frequency
 };
