@@ -99,6 +99,27 @@ void vtImage::Release()
 	unref();
 }
 
+int vtImage::GetWidth() const
+{
+	if (m_pOsgImage == NULL)
+		return -1;
+	return m_pOsgImage->s();
+}
+
+int vtImage::GetHeight() const
+{
+	if (m_pOsgImage == NULL)
+		return -1;
+	return m_pOsgImage->t();
+}
+
+int vtImage::GetDepth() const
+{
+	if (m_pOsgImage == NULL)
+		return -1;
+	return m_pOsgImage->getPixelSizeInBits();
+}
+
 void vtImage::_CreateFromDIB(vtDIB *pDIB)
 {
 	m_pOsgImage = new osg::Image();

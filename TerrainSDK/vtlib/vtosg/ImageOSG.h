@@ -20,6 +20,10 @@ public:
 	vtImage(class vtDIB *pDIB, int internalformat = -1);
 	void Release();
 
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetDepth() const;
+
 	// Implementation
 	osg::ref_ptr<osg::Image>	m_pOsgImage;
 
