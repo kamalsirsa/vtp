@@ -30,21 +30,30 @@ public:
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
-	
+
 	// WDR: method declarations for BuildingDlg
+	wxTextCtrl* GetFeatures()  { return (wxTextCtrl*) FindWindow( ID_FEATURES ); }
 	wxButton* GetLevelCopy()  { return (wxButton*) FindWindow( ID_LEVEL_COPY ); }
 	wxButton* GetLevelDel()  { return (wxButton*) FindWindow( ID_LEVEL_DEL ); }
 	wxButton* GetLevelDown()  { return (wxButton*) FindWindow( ID_LEVEL_DOWN ); }
 	wxButton* GetLevelUp()  { return (wxButton*) FindWindow( ID_LEVEL_UP ); }
-	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR ); }
+	wxStaticBitmap* GetColorBitmap1()  { return (wxStaticBitmap*) FindWindow( ID_COLOR1 ); }
+	wxStaticBitmap* GetColorBitmap2()  { return (wxStaticBitmap*) FindWindow( ID_COLOR2 ); }
 	wxListBox* GetLevelCtrl()  { return (wxListBox*) FindWindow( ID_LEVEL ); }
+	wxListBox* GetEdgeCtrl()  { return (wxListBox*) FindWindow( ID_EDGE ); }
 	void Setup(vtBuilding *bld);
 	void EditColor();
 	void SetLevel(int i);
+	void SetEdge(int i);
 	void UpdateSlopes();
 	void RefreshLevelsBox();
+	void RefreshEdgesBox();
 	void HighlightSelectedLevel();
+	void HighlightSelectedEdge();
+	void UpdateMaterialControl();
 	void UpdateColorControl();
+	void UpdateFeatures();
+	void SetupControls();
 
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
@@ -52,23 +61,35 @@ public:
 protected:
 	// WDR: member variable declarations for BuildingDlg
 	vtBuilding  *m_pBuilding;
-	vtLevel     *m_pLevel;
+	vtLevel	 *m_pLevel;
+	vtEdge	  *m_pEdge;
 
-	int		    m_iLevel;
-	int		    m_iStories;
-	float	    m_fStoryHeight;
+	int		 m_iLevel;
+	int		 m_iEdge;
+	int		 m_iStories;
+	float	   m_fStoryHeight;
 	wxString	m_strMaterial;
 	wxString	m_strEdgeSlopes;
+	wxString	m_strFeatures;
 	wxColour	m_Color;
+	int		 m_iEdgeSlope;
 
 	wxStaticBitmap  *m_pColorBitmapControl;
-	wxListBox	*m_pLevelListBox;
+	wxListBox   *m_pLevelListBox;
+	wxListBox   *m_pEdgeListBox;
 
 	bool m_bSetting;
+	bool m_bEdges;
 
 protected:
 	// WDR: handler declarations for BuildingDlg
+	void OnFeatDoor( wxCommandEvent &event );
+	void OnFeatWindow( wxCommandEvent &event );
+	void OnFeatWall( wxCommandEvent &event );
+	void OnFeatClear( wxCommandEvent &event );
+	void OnEdgeSlope( wxCommandEvent &event );
 	void OnLevelDown( wxCommandEvent &event );
+	void OnEdges( wxCommandEvent &event );
 	void OnLevelDelete( wxCommandEvent &event );
 	void OnLevelUp( wxCommandEvent &event );
 	void OnLevelCopy( wxCommandEvent &event );
@@ -78,6 +99,7 @@ protected:
 	virtual void OnOK( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnLevel( wxCommandEvent &event );
+	void OnEdge( wxCommandEvent &event );
 	void OnSetEdgeSlopes( wxCommandEvent &event );
 	void OnSetMaterial( wxCommandEvent &event );
 
