@@ -51,10 +51,6 @@ public:
 	float		m_fNavSpeed;
 	vtString	m_strLocFile;
 
-	bool		m_bRegular;
-	unint		m_iSubsample;
-
-	bool		m_bDynamic;
 	LodMethodEnum m_eLodMethod;
 	float		m_fPixelError;
 	int			m_iTriCount;
@@ -116,7 +112,6 @@ public:
 	bool		m_bDepressOcean;
 	float		m_fDepressOceanLevel;
 	bool		m_bHorizon;
-	bool		m_bVertexColors;
 	bool		m_bOverlay;
 
 	bool		m_bLabels;

@@ -24,10 +24,6 @@ TParams::TParams()
 	m_iMinHeight = 20;
 	m_fNavSpeed = 100;
 
-	m_bRegular = false;
-	m_iSubsample = 4;
-
-	m_bDynamic = false;
 	m_eLodMethod = LM_ROETTGER;
 	m_fPixelError = 2.0f;
 	m_iTriCount = 10000;
@@ -82,7 +78,6 @@ TParams::TParams()
 	m_bDepressOcean = false;
 	m_fDepressOceanLevel = -40.0f;
 	m_bHorizon = false;
-	m_bVertexColors = false;
 	m_bOverlay = false;
 	m_bLabels = false;
 	m_strLabelFile = "";
@@ -111,10 +106,6 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_fNavSpeed = rhs.m_fNavSpeed;
 	m_strLocFile = rhs.m_strLocFile;
 
-	m_bRegular = rhs.m_bRegular;
-	m_iSubsample = rhs.m_iSubsample;
-
-	m_bDynamic = rhs.m_bDynamic;
 	m_eLodMethod = rhs.m_eLodMethod;
 	m_fPixelError = rhs.m_fPixelError;
 	m_iTriCount = rhs.m_iTriCount;
@@ -173,7 +164,6 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bDepressOcean = rhs.m_bDepressOcean;
 	m_fDepressOceanLevel = rhs.m_fDepressOceanLevel;
 	m_bHorizon = rhs.m_bHorizon;
-	m_bVertexColors = rhs.m_bVertexColors;
 	m_bOverlay = rhs.m_bOverlay;
 	m_bLabels = rhs.m_bLabels;
 	m_strLabelFile = rhs.m_strLabelFile;
@@ -232,10 +222,6 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_NAVSPEED "Nav_Speed"
 #define STR_LOCFILE "Locations_File"
 
-#define STR_REGULAR "Regular"
-#define STR_SUBSAMPLE "Subsample"
-
-#define STR_DYNAMIC "Dynamic"
 #define STR_LODMETHOD "LOD_Method"
 #define STR_PIXELERROR "Pixel_Error"
 #define STR_TRICOUNT "Tri_Count"
@@ -297,7 +283,6 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_DEPRESSOCEAN "Depress_Ocean"
 #define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
 #define STR_HORIZON "Horizon"
-#define STR_VERTEXCOLORS "Vertex_Colors"
 #define STR_OVERLAY	"Overlay"
 
 #define STR_LABELS "Labels"
@@ -343,12 +328,6 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_iMinHeight;
 		else if (strcmp(buf, STR_NAVSPEED) == 0)
 			input >> m_fNavSpeed;
-		else if (strcmp(buf, STR_REGULAR) == 0)
-			input >> m_bRegular;
-		else if (strcmp(buf, STR_SUBSAMPLE) == 0)
-			input >> m_iSubsample;
-		else if (strcmp(buf, STR_DYNAMIC) == 0)
-			input >> m_bDynamic;
 		else if (strcmp(buf, STR_LODMETHOD) == 0)
 		{
 			int dummy;
@@ -421,8 +400,6 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_iTreeDistance;
 		else if (strcmp(buf, STR_FOGDISTANCE) == 0)
 			input >> m_iFogDistance;
-		else if (strcmp(buf, STR_VERTEXCOLORS) == 0)
-			input >> m_bVertexColors;
 		else if (strcmp(buf, STR_OVERLAY) == 0)
 			input >> m_bOverlay;
 		else if (strcmp(buf, STR_OCEANPLANE) == 0)
@@ -509,16 +486,6 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_fNavSpeed << endl;
 
 	output << "\n";
-	output << STR_REGULAR << "\t\t\t";
-	output << m_bRegular << endl;
-	output << STR_SUBSAMPLE << "\t\t";
-	output << m_iSubsample << endl;
-	output << STR_VERTEXCOLORS << "\t";
-	output << m_bVertexColors << endl;
-
-	output << "\n";
-	output << STR_DYNAMIC << "\t\t\t";
-	output << m_bDynamic << endl;
 	output << STR_LODMETHOD << "\t\t";
 	output << m_eLodMethod << endl;
 	output << STR_PIXELERROR << "\t\t";
