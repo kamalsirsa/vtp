@@ -38,7 +38,7 @@ IMPLEMENT_APP(vtApp)
 //
 // Initialize the app object
 //
-bool vtApp::OnInit(void)
+bool vtApp::OnInit()
 {
 	Args(argc, argv);
 
