@@ -180,6 +180,11 @@ public:
 		is the direction the object is facing. */
 	FPoint3 GetDirection() const;
 
+	/** Set the direction, which by convention is shorthand for the -Z axis
+		of the local frame.  For oriented objects such as the camera, this
+		is the direction the object is facing. */
+	void SetDirection(const FPoint3 &point, bool bPitch = true);
+
 	/** Scale (stretch) by given factors in the x,y,z dimensions. */
 	void Scale3(float x, float y, float z);
 
@@ -211,8 +216,8 @@ public:
 	void CopyFrom(const vtLight *rhs);
 	void Release();
 
-	void SetColor(const RGBf &color);
-	RGBf GetColor() const;
+	void SetDiffuse(const RGBf &color);
+	RGBf GetDiffuse() const;
 	void SetAmbient(const RGBf &color);
 	RGBf GetAmbient() const;
 

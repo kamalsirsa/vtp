@@ -639,6 +639,27 @@ FPoint3 vtTransform::GetDirection() const
 	return FPoint3(-ptr[2], -ptr[6], -ptr[10]);
 }
 
+void vtTransform::SetDirection(const FPoint3 &point, bool bPitch)
+{
+	// get current matrix
+	FMatrix4 m4;
+	GetTransform1(m4);
+
+	// remember where it is now
+	FPoint3 trans = m4.GetTrans();
+
+	// orient it in the desired direction
+	FMatrix3 m3;
+	m3.MakeOrientation(point, bPitch);
+	m4.SetFromMatrix3(m3);
+
+	// restore translation
+	m4.SetTrans(trans);
+
+	// set current matrix
+	SetTransform1(m4);
+}
+
 void vtTransform::Scale3(float x, float y, float z)
 {
 	// OSG 0.8.43 and later
@@ -663,23 +684,7 @@ void vtTransform::GetTransform1(FMatrix4 &mat) const
 
 void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 {
-	// get current matrix
-	FMatrix4 m4;
-	GetTransform1(m4);
-
-	// remember where it is now
-	FPoint3 trans = m4.GetTrans();
-
-	// orient it in the direction of the desired point
-	FMatrix3 m3;
-	m3.MakeOrientation(point - GetTrans(), bPitch);
-	m4.SetFromMatrix3(m3);
-
-	// restore translation
-	m4.SetTrans(trans);
-
-	// set current matrix
-	SetTransform1(m4);
+	SetDirection(point - GetTrans(), bPitch);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -711,7 +716,7 @@ vtNodeBase *vtLight::Clone()
 void vtLight::CopyFrom(const vtLight *rhs)
 {
 	// copy attributes
-	SetColor(rhs->GetColor());
+	SetDiffuse(rhs->GetDiffuse());
 	SetAmbient(rhs->GetAmbient());
 }
 
@@ -722,12 +727,12 @@ void vtLight::Release()
 	vtNode::Release();
 }
 
-void vtLight::SetColor(const RGBf &color)
+void vtLight::SetDiffuse(const RGBf &color)
 {
 	m_pLight->setDiffuse(v2s(color));
 }
 
-RGBf vtLight::GetColor() const
+RGBf vtLight::GetDiffuse() const
 {
 	return s2v(m_pLight->getDiffuse());
 }

@@ -444,7 +444,7 @@ void vtSkyDome::UpdateSunLight()
 	}
 
 	color *= intensity;
-	m_pSunLight->m_pLight->SetColor(color);
+	m_pSunLight->m_pLight->SetDiffuse(color);
 	m_pSunLight->m_pLight->SetAmbient(RGBf(ambient, ambient, ambient));
 
 	// Don't actually color the sun geometry, because we use a sun texture now.
