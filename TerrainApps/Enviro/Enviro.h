@@ -201,6 +201,10 @@ protected:
 	vtTrackball	*m_pTrackball;
 	vtGeom		*m_pSpaceAxes;
 
+	// flattened globe view
+	FPQ			m_SpaceLoc;
+	FPQ			m_FlatLoc;
+
 	vtSprite	*m_pMessageSprite;
 	vtSprite	*m_pSprite2;
 	float			m_fMessageStart, m_fMessageTime;

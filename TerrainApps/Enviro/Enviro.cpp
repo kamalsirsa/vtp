@@ -254,6 +254,12 @@ void Enviro::DoControl()
 			m_pIcoGlobe->SetCulling(true);
 		}
 		m_pIcoGlobe->SetUnfolding(m_fFolding);
+
+		FPQ pq;
+		pq.Interpolate(m_SpaceLoc, m_FlatLoc, m_fFolding);
+		FMatrix4 m4;
+		pq.ToMatrix(m4);
+		m_pNormalCamera->SetTransform1(m4);
 	}
 }
 
@@ -1464,7 +1470,14 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 	if (m_bGlobeUnfolded)
 	{
 		// Enter Flat View
-		m_pNormalCamera->SetTrans(FPoint3(0.85f,-0.75f,5.6));
+		FMatrix4 m4;
+		m_pNormalCamera->GetTransform1(m4);
+		m_SpaceLoc.FromMatrix(m4);
+
+		m_FlatLoc.p.Set(0.85f,-0.75f,5.6);
+		m_FlatLoc.q.Init();
+
+//		m_pNormalCamera->SetTrans(m_FlatPos);
 		m_pNormalCamera->PointTowards(FPoint3(0.85f,-0.75f,0));
 		m_pTrackball->SetEnabled(false);
 
