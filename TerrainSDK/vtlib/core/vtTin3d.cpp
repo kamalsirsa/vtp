@@ -122,7 +122,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			j = i * 3;
 			gp = (m_vert[m_tri[j]] + m_vert[m_tri[j+1]] + m_vert[m_tri[j+2]]) / 3;
 			bx = (int) (divx * (gp.x - rect.left) / sizex);
-			by = (int) (divx * (gp.y - rect.bottom) / sizey);
+			by = (int) (divy * (gp.y - rect.bottom) / sizey);
 
 			Bin &bref = bins[bx * divy + by];
 			bref.Append(i);
