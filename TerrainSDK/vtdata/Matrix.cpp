@@ -526,15 +526,26 @@ void FMatrix4::AxisAngle(const FPoint3 &vec, double theta)
 	asin = vec.x * sint;
 	bsin = vec.y * sint;
 	csin = vec.z * sint;
+
 	data[0][0] = (float) (a2 * mcos + cost);
 	data[0][1] = (float) (abm - csin);
 	data[0][2] = (float) (acm + bsin);
+	data[0][3] = 0;
+
 	data[1][0] = (float) (abm + csin);
 	data[1][1] = (float) (b2 * mcos + cost);
 	data[1][2] = (float) (bcm - asin);
+	data[1][3] = 0;
+
 	data[2][0] = (float) (acm - bsin);
 	data[2][1] = (float) (bcm + asin);
 	data[2][2] = (float) (c2 * mcos + cost);
+	data[2][3] = 0;
+
+	data[3][0] = 0;
+	data[3][1] = 0;
+	data[3][2] = 0;
+	data[3][3] = 1;
 }
 
 void FMatrix4::SetFromVectors(const FPoint3 &pos, const FPoint3 &forward, const FPoint3 &up)
@@ -558,6 +569,41 @@ void FMatrix4::SetFromMatrix3(const class FMatrix3 &mat)
 	SetRow(1, mat(0,1), mat(1,1), mat(2,1), 0);
 	SetRow(2, mat(0,2), mat(1,2), mat(2,2), 0);
 	SetRow(3, 0, 0, 0, 1);
+}
+
+#define INNER_PRODUCT(a, b, c, r) \
+     ((a).data[0][r] * (b).data[c][0]) \
+    +((a).data[1][r] * (b).data[c][1]) \
+    +((a).data[2][r] * (b).data[c][2]) \
+    +((a).data[3][r] * (b).data[c][3])
+
+void FMatrix4::PreMult(const FMatrix4 &mat)
+{
+    float t[4];
+    for (int col = 0; col < 4; ++col)
+	{
+        t[0] = INNER_PRODUCT(mat, *this, col, 0);
+        t[1] = INNER_PRODUCT(mat, *this, col, 1);
+        t[2] = INNER_PRODUCT(mat, *this, col, 2);
+        t[3] = INNER_PRODUCT(mat, *this, col, 3);
+        data[col][0] = t[0];
+        data[col][1] = t[1];
+        data[col][2] = t[2];
+        data[col][3] = t[3];
+    }
+}
+
+void FMatrix4::PostMult(const FMatrix4 &mat)
+{
+    float t[4];
+    for (int row = 0; row < 4; ++row)
+    {
+        t[0] = INNER_PRODUCT(*this, mat, 0, row);
+        t[1] = INNER_PRODUCT(*this, mat, 1, row);
+        t[2] = INNER_PRODUCT(*this, mat, 2, row);
+        t[3] = INNER_PRODUCT(*this, mat, 3, row);
+        SetRow(row, t[0], t[1], t[2], t[3]);
+    }
 }
 
 static float Dot3f(const float *d1, const float *d2)

@@ -763,6 +763,9 @@ public:
 	void SetFromVectors(const FPoint3 &pos, const FPoint3 &forward, const FPoint3 &up);
 	void SetFromMatrix3(const class FMatrix3 &mat);
 
+	void PreMult(const FMatrix4 &mat);
+	void PostMult(const FMatrix4 &mat);
+
 	// apply to vectors
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
 	void TransformVector(const FPoint3 &tmp, FPoint3 &dst) const;
