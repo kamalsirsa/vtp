@@ -937,11 +937,11 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 			vtGeom *shape = NULL;
 			if (pN->GetIntersectType(r) == IT_STOPSIGN && stopsign)
 			{
-				shape = (vtGeom *)stopsign->CreateClone();
+				shape = (vtGeom *)stopsign->Clone();
 			}
 			if (pN->GetIntersectType(r) == IT_LIGHT && stoplight)
 			{
-				shape = (vtGeom *)stoplight->CreateClone();
+				shape = (vtGeom *)stoplight->Clone();
 			}
 			if (!shape) continue;
 

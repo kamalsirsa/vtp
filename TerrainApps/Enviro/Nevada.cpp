@@ -79,7 +79,7 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 
 #if 0
 	vtTransform *gateway1 = LoadModel("Culture/portal1.dsm");
-	vtTransform *copy = (vtTransform *) gateway1->CreateClone();
+	vtTransform *copy = (vtTransform *) gateway1->Clone();
 
 	vtTerrain *pIsland = GetTerrainScene()->FindTerrainByName("Big Island");
 
@@ -365,7 +365,7 @@ void NevadaTerrain::CreatePresent()
 	{
 		for (i = 0; i < 17; i++)
 		{
-			copy = (vtTransform *)pLampLod->CreateClone();
+			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_pPresent->AddChild(copy);
 
@@ -379,7 +379,7 @@ void NevadaTerrain::CreatePresent()
 		}
 		for (i = 0; i < 17; i++)
 		{
-			copy = (vtTransform *)pLampLod->CreateClone();
+			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_pPresent->AddChild(copy);
 
@@ -392,7 +392,7 @@ void NevadaTerrain::CreatePresent()
 			copy->Translate2(FPoint3(8.0f, 0.0f, 0.0f));
 			PlantModel(copy);
 
-			copy = (vtTransform *)pLampLod->CreateClone();
+			copy = (vtTransform *)pLampLod->Clone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_pPresent->AddChild(copy);
 			copy->Translate2(FPoint3(x, 0.0f, -y));

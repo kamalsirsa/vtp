@@ -195,7 +195,7 @@ Vehicle *VehicleType::CreateVehicle(const RGBf &cColor, float fSize)
 
 	for (int i = 0; i < m_iLods; i++)
 	{
-		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->CreateClone();
+		vtTransform *pNewModel = (Vehicle *)m_pModels.GetAt(i)->Clone();
 		pNewVehicle->AddChild(pNewModel);
 		distances[i+1] = m_fDistance.GetAt(i) * fSize;
 	}

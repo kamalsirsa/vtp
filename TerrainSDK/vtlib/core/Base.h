@@ -93,7 +93,7 @@ public:
 class vtNodeBase : public vtTarget
 {
 public:
-	virtual vtNodeBase*	CreateClone() = 0;
+	virtual vtNodeBase*	Clone() = 0;
 	virtual void		Release() = 0;
 
 	virtual void		SetEnabled(bool bOn) = 0;
