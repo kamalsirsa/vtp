@@ -824,7 +824,7 @@ void vtFrame::Snapshot(bool bNumbered)
 		wxString start, number, extension;
 		start = m_strSnapshotFilename.BeforeLast(_T('.'));
 		extension = m_strSnapshotFilename.AfterLast(_T('.'));
-		number.Printf("_%03d.", m_iSnapshotNumber);
+		number.Printf(_T("_%03d."), m_iSnapshotNumber);
 		m_iSnapshotNumber++;
 		use_name = start + number + extension;
 	}

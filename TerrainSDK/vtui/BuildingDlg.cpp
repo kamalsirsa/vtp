@@ -575,7 +575,7 @@ void BuildingDlg::UpdateSlopes()
 {
 	if (m_bEdges == false)
 	{
-		wxString str;
+		wxString2 str;
 		m_strEdgeSlopes = _T("");
 		int i, edges = m_pLevel->NumEdges();
 		for (i = 0; i < edges; i++)

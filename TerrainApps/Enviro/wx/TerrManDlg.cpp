@@ -170,7 +170,7 @@ void TerrainManagerDlg::OnCopy( wxCommandEvent &event )
 	TParams params;
 	params.LoadFromFile(GetCurrentTerrainPath().mb_str());
 
-	wxString newpath = GetCurrentPath();
+	wxString2 newpath = GetCurrentPath();
 	newpath += "Terrains/";
 	newpath += str;
 	params.SaveToFile(newpath.mb_str());
@@ -227,7 +227,7 @@ void TerrainManagerDlg::OnAddTerrain( wxCommandEvent &event )
 	if (str == _T(""))
 		return;
 
-	if (str.Right(4).CmpNoCase(".ini"))
+	if (str.Right(4).CmpNoCase(_T(".ini")))
 		str += ".ini";
 
 	wxString2 path = m_pTree->GetItemText(m_Selected);
