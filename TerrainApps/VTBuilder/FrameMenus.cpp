@@ -365,8 +365,8 @@ void MainFrame::CreateMenus()
 	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_BLD, _T("Edit Buildings"));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_POINTS, _T("Add points to building footprints"), _T(""));
 	bldMenu->AppendCheckItem(ID_STRUCTURE_DELETE_POINTS, _T("Delete points from building footprints"), _T(""));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, _T("Add Linear Features"));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _T("Edit Linear Features"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, _T("Add Linear Structures"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _T("Edit Linear Structures"));
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _T("Add Foundation Levels to Buildings"), _T(""));
 	bldMenu->AppendSeparator();
