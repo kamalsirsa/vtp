@@ -84,7 +84,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wx22_1d.lib netcdfs.lib vtdatad.lib ProjectionLib.lib gctpc.lib gdi32.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcpd.lib" /pdbtype:sept /libpath:"\TerrainSDK\vtdata\Debug" /libpath:"\APIs\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Debug" /libpath:"\TerrainSDK\gctpc\Debug" /libpath:"\TerrainSDK\shapelib\Debug" /libpath:"\TerrainSDK\sdtsxx\builder\Debug" /libpath:"\TerrainSDK\sdtsxx\container\Debug" /libpath:"\TerrainSDK\sdtsxx\io\Debug"
-# ADD LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i_dbg.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug Unicode"
 
@@ -111,7 +111,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
-# ADD LINK32 wxmsw240ud.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/VTBuilder_u.exe" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 wxmsw240ud.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i_dbg.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/VTBuilder_u.exe" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Release Unicode"
 

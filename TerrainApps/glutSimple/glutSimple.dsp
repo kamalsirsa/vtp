@@ -75,7 +75,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib jpeg.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\libpng-1.0.8" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i_dbg.lib jpeg.lib /nologo /subsystem:console /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\libpng-1.0.8" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 # SUBTRACT LINK32 /verbose
 
 !ENDIF 
