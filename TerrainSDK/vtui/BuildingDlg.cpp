@@ -55,6 +55,7 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_CHAR_HOOK(BuildingDlg::OnCharHook)
 	EVT_TEXT_ENTER( ID_FACADE, BuildingDlg::OnFacadeEnter )
 	EVT_BUTTON( ID_EDITHEIGHTS, BuildingDlg::OnEditHeights )
+	EVT_BUTTON( ID_MODIFY_FACADE, BuildingDlg::OnModifyFacade )
 END_EVENT_TABLE()
 
 BuildingDlg::BuildingDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -122,6 +123,25 @@ void BuildingDlg::HighlightSelectedEdge()
 }
 
 // WDR: handler implementations for BuildingDlg
+
+void BuildingDlg::OnModifyFacade( wxCommandEvent &event )
+{
+	wxFileDialog SelectFile(this, _T("Choose facade texture"),
+							_T(""),
+							_T(""),
+							_T("Jpeg files (*.jpg)|*.jpg|PNG files(*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files(*.*)|*.*"),
+							wxOPEN);
+
+	if (SelectFile.ShowModal() != wxID_OK)
+		return;
+
+	m_strFacade = SelectFile.GetFilename();
+
+	UpdateFacade();
+
+	SetEdgeFacade();
+
+}
 
 void BuildingDlg::OnEditHeights( wxCommandEvent &event )
 {
@@ -492,6 +512,7 @@ void BuildingDlg::UpdateColorControl()
 		}
 		wxBitmap *pBitmap = new wxBitmap(pImage);
 		m_pColorBitmapControl->SetBitmap(*pBitmap);
+		delete pBitmap;
 	}
 	else
 	{
@@ -500,6 +521,7 @@ void BuildingDlg::UpdateColorControl()
 		m_Color.Set(color.r, color.g, color.b);
 		wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_Color);
 		m_pColorBitmapControl->SetBitmap(*pBitmap);
+		delete pBitmap;
 	}
 }
 
@@ -635,7 +657,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 
 		pChoices[iShown] = matname;
 		if (pChoices[iShown] == m_strMaterial)
-			iInitialSelection = i;
+			iInitialSelection = iShown;
 		iShown++;
 	}
 
