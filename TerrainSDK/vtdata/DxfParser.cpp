@@ -444,7 +444,7 @@ void DxfParser::ReadLWPolyline()
 	bool bFoundEnd = false;
 	bool bFoundLayer = false;
 	bool bFoundType = false;
-	size_t iCurrIndex = -1;
+	size_t iCurrIndex = 0;
 
 	while (ReadCodeValue(pair))
 	{
@@ -455,7 +455,7 @@ void DxfParser::ReadLWPolyline()
 			// save the entity off if it has everything.
 			if (bFoundElevation && bFoundLayer && bFoundType && entity.m_points.size() > 0)
 			{
-				for (size_t i = 0; i <= iCurrIndex; ++i)
+				for (size_t i = 0; i < iCurrIndex; ++i)
 					entity.m_points[i].z = dElevation;
 				m_entities.push_back(entity);
 			}
@@ -582,4 +582,3 @@ void DxfParser::Read3DFace()
 	if (bFoundLayer)
 		m_entities.push_back(entity);
 }
-
