@@ -59,6 +59,10 @@ bool vtStructInstance::GetExtents(DRECT &rect)
 	return true;
 }
 
+void vtStructInstance::Offset(const DPoint2 &delta)
+{
+	m_p += delta;
+}
 
 ///////////////////////////////////////////////////////////////////////
 

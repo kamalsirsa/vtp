@@ -35,6 +35,7 @@ public:
 
 	void WriteXML(FILE *fp, bool bDegrees);
 	bool GetExtents(DRECT &rect);
+	void Offset(const DPoint2 &delta);
 
 	DPoint2	m_p;			// earth position
 	float	m_fRotation;	// in radians
