@@ -13,14 +13,19 @@
 
 // ************** DConvert - DEM Helper function ****************
 
-double DConvert(FILE *fp, int length)
+double DConvert(FILE *fp, int length, bool bDebug=false)
 {
 	char szCharString[64];
 
 	fread(szCharString, length, 1, fp);
 	szCharString[length] = 0;
 
-	return atof(szCharString);
+	double value = atof(szCharString);
+
+	if (bDebug)
+		VTLOG(" DConvert '%s' -> %lf\n", szCharString, value);
+
+	return value;
 }
 
 int IConvert(FILE *fp, int length)
@@ -231,22 +236,23 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	fseek(fp, 816, 0);
-	DConvert(fp, 12);	// dxdelta (unused)
-	double dydelta = DConvert(fp, 12);
-	double dzdelta = DConvert(fp, 12);
+	DConvert(fp, 12, DEBUG);	// dxdelta (unused)
+	double dydelta = DConvert(fp, 12, DEBUG);
+	double dzdelta = DConvert(fp, 12, DEBUG);
 
 	m_bFloatMode = false;
 
 	// Read the coordinates of the 4 corners
-	VTLOG("DEM corners:");
+	VTLOG("DEM corners:\n");
 	DPoint2	corners[4];			// SW, NW, NE, SE
 	fseek(fp, 546, 0);
 	for (i = 0; i < 4; i++)
 	{
-		corners[i].x = DConvert(fp, 24);
-		corners[i].y = DConvert(fp, 24);
-		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
+		corners[i].x = DConvert(fp, 24, DEBUG);
+		corners[i].y = DConvert(fp, 24, DEBUG);
 	}
+	for (i = 0; i < 4; i++)
+		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
 	VTLOG("\n");
 
 	if (bGeographic)
@@ -265,8 +271,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			m_Corners[i] = corners[i];
 	}
 
-	double dElevMin = DConvert(fp, 24);
-	double dElevMax = DConvert(fp, 24);
+	double dElevMin = DConvert(fp, 24, DEBUG);
+	double dElevMax = DConvert(fp, 24, DEBUG);
 
 	fseek(fp, 852, 0);
 	IConvert(fp, 6);	// This "Rows" value will always be 1
