@@ -29,29 +29,16 @@ extern void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 							const char *wildcard, int omit_chars = 0);
 
 //---------------------------------------------------------------------------
-/**
- * wxListBoxEventHandler is a roudabout way of catching events on our
- * listboxes, to implement the "Delete" key operation on them.
- */
-class wxListBoxEventHandler: public wxEvtHandler
-{
-public:
-	wxListBoxEventHandler(TParamsDlg *dlg, wxListBox *box) : wxEvtHandler()
-	{
-		m_pDlg = dlg;
-		m_pBox = box;
-	}
-	void OnChar(wxKeyEvent& event);
-
-private:
-	TParamsDlg *m_pDlg;
-	wxListBox *m_pBox;
-	DECLARE_EVENT_TABLE()
-};
 
 BEGIN_EVENT_TABLE(wxListBoxEventHandler, wxEvtHandler)
 	EVT_CHAR(wxListBoxEventHandler::OnChar)
 END_EVENT_TABLE()
+
+wxListBoxEventHandler::wxListBoxEventHandler(TParamsDlg *dlg, wxListBox *box) : wxEvtHandler()
+{
+	m_pDlg = dlg;
+	m_pBox = box;
+}
 
 void wxListBoxEventHandler::OnChar(wxKeyEvent& event)
 {
@@ -115,8 +102,15 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// including the children of the notebook
 	wxNotebook *notebook = (wxNotebook*) FindWindow( ID_NOTEBOOK );
 	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
+	m_pBoxHandler = NULL;
 }
 
+TParamsDlg::~TParamsDlg()
+{
+	if (m_pBoxHandler)
+		m_pStructFiles->PopEventHandler(true);
+}
 
 //
 // set the values in the dialog from the supplied paramter structure
@@ -583,7 +577,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// It's somewhat roundabout, but this lets us capture events on the
 	// listbox control without having to subclass it.
-	m_pStructFiles->PushEventHandler(new wxListBoxEventHandler(this, m_pStructFiles));
+	m_pBoxHandler = new wxListBoxEventHandler(this, m_pStructFiles);
+	m_pStructFiles->PushEventHandler(m_pBoxHandler);
 }
 
 bool TParamsDlg::TransferDataToWindow()
