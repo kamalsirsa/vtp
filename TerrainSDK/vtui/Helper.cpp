@@ -33,7 +33,7 @@ wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 
 void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color)
 {
-	wxBitmap bm = pStaticBitmap->GetBitmap();
+	const wxBitmap &bm = pStaticBitmap->GetBitmap();
 
 	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), color);
 	pStaticBitmap->SetBitmap(*pNewBitmap);
@@ -42,7 +42,7 @@ void FillWithColor(wxStaticBitmap *pStaticBitmap, const wxColour &color)
 
 void FillWithColor(wxBitmapButton *pBitmapButton, const wxColour &color)
 {
-	wxBitmap bm = pBitmapButton->GetBitmapLabel();
+	const wxBitmap &bm = pBitmapButton->GetBitmapLabel();
 
 	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), color);
 	pBitmapButton->SetBitmapLabel(*pNewBitmap);
