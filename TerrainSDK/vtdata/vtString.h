@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -292,8 +292,6 @@ inline vtString::vtString(const unsigned char* lpsz)
 	{ Init(); *this = (pcchar)lpsz; }
 inline const vtString& vtString::operator=(const unsigned char* lpsz)
 	{ *this = (pcchar)lpsz; return *this; }
-inline const vtString& vtString::operator+=(char ch)
-	{ *this += (char)ch; return *this; }
 inline const vtString& vtString::operator=(char ch)
 	{ *this = (char)ch; return *this; }
 
@@ -358,6 +356,9 @@ inline bool WIN_UNIX_STDCALL operator>=(const vtString& s1, pcchar s2)
 	{ return s1.Compare(s2) >= 0; }
 inline bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2)
 	{ return s2.Compare(s1) <= 0; }
+
+// helper
+vtString EscapeStringForXML(const char *input);
 
 #endif
 
