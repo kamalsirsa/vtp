@@ -146,7 +146,7 @@ public:
 	void start_new_fence();
 	void finish_fence();
 	void close_fence();
-	void SetFenceOptions(FenceType type, float fHeight, float fSpacing);
+	void SetFenceOptions(const vtLinearParams &param);
 
 	// route methods
 	void start_new_route();
@@ -231,8 +231,7 @@ protected:
 	// fence members
 	bool		m_bActiveFence, m_bFenceClosed;
 	vtFence3d	*m_pCurFence;
-	FenceType	m_CurFenceType;
-	float		m_fFenceHeight, m_fFenceSpacing;
+	vtLinearParams m_FenceParams;
 
 	// route members
 	bool		m_bActiveRoute;

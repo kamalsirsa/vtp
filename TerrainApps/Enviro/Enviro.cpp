@@ -37,9 +37,7 @@ Enviro::Enviro() : vtTerrainScene()
 
 	m_bActiveFence = false;
 	m_pCurFence = NULL;
-	m_CurFenceType = FT_WIRE;
-	m_fFenceHeight = 1.5f;
-	m_fFenceSpacing = 2.5f;
+	m_FenceParams.Defaults();
 
 	m_bOnTerrain = false;
 	m_bEarthShade = false;
@@ -185,7 +183,7 @@ void Enviro::LoadTerrainDescriptions()
 			//  class, for a particular config file, rather than the default
 			//  vtTerrain.
 			vtTerrain *pTerr;
-			if (before_dot == "Hawai`i" || before_dot == "Hawaii" || before_dot == "Honoka`a" || before_dot == "Kealakekua" )
+			if (before_dot == "Hawai`i" || before_dot == "Hawai'i" || before_dot == "Hawaii" || before_dot == "Honoka`a" || before_dot == "Kealakekua" )
 				pTerr = new IslandTerrain();
 			else if (before_dot == "Nevada")
 				pTerr = new NevadaTerrain();
@@ -551,7 +549,6 @@ void Enviro::SetupScene1()
 	m_fCatenaryFactor = g_Options.m_fCatenaryFactor;
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
-	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
@@ -1356,7 +1353,8 @@ void Enviro::SetTerrainMeasure(const DPoint2 &g1, const DPoint2 &g2)
 
 void Enviro::start_new_fence()
 {
-	vtFence3d *fence = new vtFence3d(m_CurFenceType, m_fFenceHeight, m_fFenceSpacing);
+	vtFence3d *fence = new vtFence3d();
+	fence->SetParams(m_FenceParams);
 	if (GetCurrentTerrain()->AddFence(fence))
 	{
 		m_pCurFence = fence;
@@ -1388,11 +1386,9 @@ void Enviro::close_fence()
 	m_bActiveFence = false;
 }
 
-void Enviro::SetFenceOptions(FenceType type, float fHeight, float fSpacing)
+void Enviro::SetFenceOptions(const vtLinearParams &param)
 {
-	m_CurFenceType = type;
-	m_fFenceHeight = fHeight;
-	m_fFenceSpacing = fSpacing;
+	m_FenceParams = param;
 	finish_fence();
 }
 

@@ -23,7 +23,8 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
-	virtual void OnSetOptions(LinStructOptions &opt);
+	virtual void OnSetOptions(const vtLinearParams &param);
 };
 
 #endif	// __LinearStructureDlg3d_H__
+

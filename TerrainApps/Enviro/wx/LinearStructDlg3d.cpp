@@ -31,10 +31,11 @@ LinearStructureDlg3d::LinearStructureDlg3d( wxWindow *parent, wxWindowID id, con
 	const wxPoint &position, const wxSize& size, long style ) :
 	LinearStructureDlg( parent, id, title, position, size, style )
 {
+	m_param.Defaults();
 }
 
-void LinearStructureDlg3d::OnSetOptions(LinStructOptions &opt)
+void LinearStructureDlg3d::OnSetOptions(const vtLinearParams &param)
 {
-	g_App.SetFenceOptions(opt.eType, opt.fHeight, opt.fSpacing);
+	g_App.SetFenceOptions(param);
 }
 

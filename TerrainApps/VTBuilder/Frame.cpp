@@ -874,7 +874,7 @@ public:
 	LinearStructureDlg2d(wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos, const wxSize& size, long style) :
 	LinearStructureDlg(parent, id, title, pos, size, style) {}
-	void OnSetOptions(LinStructOptions &opt)
+	void OnSetOptions(const vtLinearParams &opt)
 	{
 		m_pFrame->m_LSOptions = opt;
 	}

@@ -350,7 +350,7 @@ public:
 	// Structures
 	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);
 	LinearStructureDlg2d *m_pLinearStructureDlg;
-	LinStructOptions m_LSOptions;
+	vtLinearParams m_LSOptions;
 	InstanceDlg *ShowInstanceDlg(bool bShow);
 	InstanceDlg *m_pInstanceDlg;
 
