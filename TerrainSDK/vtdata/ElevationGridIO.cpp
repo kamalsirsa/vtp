@@ -770,6 +770,7 @@ float get_dms8(FILE *fp)
 
 	f = degrees + minutes/60 + seconds/3600;
 	if (hem == 'W') f = -f;
+	if (hem == 'S') f = -f;
 
 	return f;
 }
