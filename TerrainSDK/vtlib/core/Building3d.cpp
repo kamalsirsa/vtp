@@ -20,6 +20,8 @@ vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 
 #define PLAIN_MATS	216		//216 plain colors
 #define SIDING_MATS 216		//216 colors with siding texture
+#define WINDOWWALL_MATS 216	//216 colors with window-wall texture
+
 #define PLAIN_MAT_START		0	//start index for plain colors
 #define PLAIN_MAT_END		PLAIN_MAT_START + PLAIN_MATS - 1
 #define SIDING_MAT_START	PLAIN_MAT_START + PLAIN_MATS
@@ -28,7 +30,8 @@ vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 #define DOOR_MAT			WINDOW_MAT + 1
 #define WOOD_MAT			DOOR_MAT + 1
 #define CEMENT_MAT			WOOD_MAT + 1
-#define WINDOWWALL_MAT		CEMENT_MAT + 1
+#define WINDOWWALL_MAT_START CEMENT_MAT + 1
+#define WINDOWWALL_MAT_END WINDOWWALL_MAT_START + WINDOWWALL_MATS - 1
 
 //helper to make a material
 vtMaterial *makeMaterial(RGBf &color, bool culling)
@@ -67,6 +70,7 @@ vtBuilding3d &vtBuilding3d::operator=(const vtBuilding &v)
 void vtBuilding3d::CreateSharedMaterials()
 {
 	//create the shared materials if they haven't been already.
+	vtString path;
 	int i, j, k, divisions;
 	float start, step;
 	RGBf color;
@@ -89,7 +93,6 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	//create siding materials (bright colors only)
-	vtString path;
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/siding64.bmp");
 	vtImage *pImageSiding = new vtImage(path);
 	divisions = 6;
@@ -137,15 +140,35 @@ void vtBuilding3d::CreateSharedMaterials()
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
+	// create window-wall materials (bright colors only)
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
+	vtImage *pImageWindowWall = new vtImage(path);
+	divisions = 6;
+	start = .25f;
+	step = (1.0f-start)/(divisions-1);
+	for (i = 0; i < divisions; i++) {
+		for (j = 0; j < divisions; j++) {
+			for (k = 0; k < divisions; k++) {
+				color.Set(start+i*step, start+j*step, start+k*step);
+				pMat = makeMaterial(color, true);
+				pMat->SetTexture(pImageWindowWall);
+				pMat->SetClamp(false);
+				s_Materials->AppendMaterial(pMat);
+			}
+		}
+	}
+
+#if 0
 	//  window-wall material
-	pMat = makeMaterial(color, false);
+	pMat = makeMaterial(color, true);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
+#endif
 
 	int total = s_Materials->GetSize();
-	int expectedtotal = PLAIN_MATS + SIDING_MATS + 1 + 1 + 1 + 1 + 1;	// window, door, wood, cement_block, windowwall
+	int expectedtotal = PLAIN_MATS + SIDING_MATS + WINDOWWALL_MATS + 1 + 1 + 1 + 1;	// window, door, wood, cement_block, windowwall
 	assert(total == expectedtotal);
 }
 
@@ -165,6 +188,7 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField *pHeightField)
 	int levs = GetNumLevels();
 	FPoint3 p3;
 
+	m_lfp.Empty();
 	for (i = 0; i < levs; i++)
 	{
 		vtLevel *lev = m_Levels[i];
@@ -380,6 +404,7 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 			else if (lev->IsUniform())
 			{
 				CreateUniformLevel(i, fHeight);
+				fHeight += lev->m_iStories * lev->m_fStoryHeight;
 				continue;
 			}
 			else
@@ -519,7 +544,7 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 
 	FLine3 quad(4);
 
-	vtEdge	*pWall = pLev->m_Edges[iWall];
+	vtEdge	*pEdge = pLev->m_Edges[iWall];
 
 	// start with the whole wall section
 	quad[0] = poly1[i];
@@ -528,7 +553,7 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 	quad[3] = poly2[j];
 
 	// figure out how many features we have
-	int totalfeatures = pWall->NumFeatures();
+	int totalfeatures = pEdge->NumFeatures();
 
 	// length of the edge
 	FPoint3 dir1 = quad[1] - quad[0];
@@ -541,16 +566,16 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 	// How wide should each feature be?
 	// Determine how much space we have for the proportional features after
 	// accounting for the fixed-width features
-	float fixed_width = pWall->FixedFeaturesWidth();
-	float total_prop = pWall->ProportionTotal();
+	float fixed_width = pEdge->FixedFeaturesWidth();
+	float total_prop = pEdge->ProportionTotal();
 	float dyn_width = total_length1 - fixed_width;
 
 	// build the edge features.
 	// point[0] is the first starting point of a panel.
-	int features = pWall->NumFeatures();
-	for (i = 0; i < pWall->NumFeatures(); i++)
+	int features = pEdge->NumFeatures();
+	for (i = 0; i < pEdge->NumFeatures(); i++)
 	{
-		vtEdgeFeature &feat = pWall->m_Features[i];
+		vtEdgeFeature &feat = pEdge->m_Features[i];
 
 		// determine real width
 		float meter_width = 0.0f;
@@ -563,7 +588,7 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 
 		if (feat.m_code == WFC_WALL)
 		{
-			AddWallNormal(pLev, pWall, &feat, quad);
+			AddWallNormal(pEdge, &feat, quad);
 		}
 		if (feat.m_code == WFC_GAP)
 		{
@@ -575,11 +600,11 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 		}
 		if (feat.m_code == WFC_WINDOW)
 		{
-			AddWindowSection(pLev, pWall, &feat, quad);
+			AddWindowSection(pEdge, &feat, quad);
 		}
 		if (feat.m_code == WFC_DOOR)
 		{
-			AddDoorSection(pLev, pWall, &feat, quad);
+			AddDoorSection(pEdge, &feat, quad);
 		}
 		quad[0] = quad[1];
 		quad[2] = quad[3];
@@ -590,7 +615,7 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
  * Builds a wall, given material index, starting and end points, height, and
  * starting height.
  */
-void vtBuilding3d::AddWallSection(vtLevel *pLev, BldMaterial bmat,
+void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 								  const FLine3 &quad,
 								  float vf1, float vf2, float hf1)
 {
@@ -602,7 +627,7 @@ void vtBuilding3d::AddWallSection(vtLevel *pLev, BldMaterial bmat,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(bmat, pLev->m_Color, true);
+	vtMesh *mesh = FindMatMesh(bmat, pEdge->m_Color, true);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -633,21 +658,19 @@ void vtBuilding3d::AddWallSection(vtLevel *pLev, BldMaterial bmat,
 	mesh->AddFan(start, start+1, start+2, start+3);
 }
 
-void vtBuilding3d::AddWallNormal(vtLevel *pLev, vtEdge *pWall,
-								 vtEdgeFeature *pFeat,
+void vtBuilding3d::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
 								 const FLine3 &quad)
 {
 	float h1 = pFeat->m_vf1;
 	float h2 = pFeat->m_vf2;
-	AddWallSection(pLev, pWall->m_Material, quad, h1, h2);
+	AddWallSection(pEdge, pEdge->m_Material, quad, h1, h2);
 }
 
 /**
  * Builds a door section.  will also build the wall above the door to ceiling
  * height.
  */
-void vtBuilding3d::AddDoorSection(vtLevel *pLev, vtEdge *pWall,
-								  vtEdgeFeature *pFeat,
+void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 								  const FLine3 &quad)
 {
 	float vf1 = 0;
@@ -661,7 +684,7 @@ void vtBuilding3d::AddDoorSection(vtLevel *pLev, vtEdge *pWall,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(BMAT_DOOR, pLev->m_Color, true);
+	vtMesh *mesh = FindMatMesh(BMAT_DOOR, pEdge->m_Color, true);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -675,22 +698,21 @@ void vtBuilding3d::AddDoorSection(vtLevel *pLev, vtEdge *pWall,
 	mesh->AddFan(start, start+1, start+2, start+3);
 
 	//add wall above door
-	AddWallSection(pLev, pWall->m_Material, quad, vf2, 1.0f);
+	AddWallSection(pEdge, pEdge->m_Material, quad, vf2, 1.0f);
 }
 
 //builds a window section.  builds the wall below and above a window too.
-void vtBuilding3d::AddWindowSection(vtLevel *pLev, vtEdge *pWall,
-									vtEdgeFeature *pFeat,
+void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 									const FLine3 &quad)
 {
 	float vf1 = pFeat->m_vf1;
 	float vf2 = pFeat->m_vf2;
 
 	// build wall to base of window.
-	AddWallSection(pLev, pWall->m_Material, quad, 0, vf1);
+	AddWallSection(pEdge, pEdge->m_Material, quad, 0, vf1);
 
 	// build wall above window
-	AddWallSection(pLev, pWall->m_Material, quad, vf2, 1.0f);
+	AddWallSection(pEdge, pEdge->m_Material, quad, vf2, 1.0f);
 
 	// determine 4 points at corners of section
 	FPoint3 up1 = (quad[2] - quad[0]);
@@ -700,7 +722,7 @@ void vtBuilding3d::AddWindowSection(vtLevel *pLev, vtEdge *pWall,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(BMAT_WINDOW, pLev->m_Color, true);
+	vtMesh *mesh = FindMatMesh(BMAT_WINDOW, pEdge->m_Color, true);
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -722,7 +744,7 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 	int i, j;
 
 	vtMesh *mesh = FindMatMesh(pLev->m_Edges[0]->m_Material,
-		pLev->m_Color, false);
+		pLev->m_Edges[0]->m_Color, false);
 
 	if (pLev->GetNumEdges() > 4)
 	{
@@ -779,7 +801,7 @@ void vtBuilding3d::AddShedRoof(FLine3 &pp, vtLevel *pLev, float height)
 	}
 
 	vtMesh *mesh = FindMatMesh(pLev->m_Edges[0]->m_Material,
-		pLev->m_Color, false);
+		pLev->m_Edges[0]->m_Color, false);
 
 	FPoint3 norm;
 	int corners = pp.GetSize();
@@ -805,7 +827,7 @@ void vtBuilding3d::AddShedRoof(FLine3 &pp, vtLevel *pLev, float height)
 
 	vtEdge *pWall;
 	pWall = pLev->m_Edges[0];
-	mesh = FindMatMesh(pWall->m_Material, pLev->m_Color, false);
+	mesh = FindMatMesh(pWall->m_Material, pWall->m_Color, false);
 
 	// Add front
 	norm = Normal(p[0], p[1], p[5]);
@@ -816,7 +838,7 @@ void vtBuilding3d::AddShedRoof(FLine3 &pp, vtLevel *pLev, float height)
 	mesh->AddFan(idx, 4);
 
 	pWall = pLev->m_Edges[3];
-	mesh = FindMatMesh(pWall->m_Material, pLev->m_Color, false);
+	mesh = FindMatMesh(pWall->m_Material, pWall->m_Color, false);
 
 	// Add left
 	norm = Normal(p[3], p[0], p[4]);
@@ -826,7 +848,7 @@ void vtBuilding3d::AddShedRoof(FLine3 &pp, vtLevel *pLev, float height)
 	mesh->AddFan(idx, 3);
 
 	pWall = pLev->m_Edges[1];
-	mesh = FindMatMesh(pWall->m_Material, pLev->m_Color, false);
+	mesh = FindMatMesh(pWall->m_Material, pWall->m_Color, false);
 
 	// Add right
 	norm = Normal(p[1], p[2], p[5]);
@@ -1081,7 +1103,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight)
 
 		float h1 = 0.0f;
 		float h2 = pLev->m_iStories;
-		AddWallSection(pLev, BMAT_WINDOWWALL, quad, h1, h2,
+		AddWallSection(pWall, BMAT_WINDOWWALL, quad, h1, h2,
 			pWall->NumFeaturesOfCode(WFC_WINDOW));
 	}
 }
@@ -1142,8 +1164,6 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 	if (s_Materials == NULL)
 		return -1;
 
-	if (bldMat == BMAT_WINDOWWALL)	// only one kind of window-wall
-		return WINDOWWALL_MAT;
 	if (bldMat == BMAT_WINDOW)	// only one kind of window
 		return WINDOW_MAT;
 	if (bldMat == BMAT_DOOR)	// only one door
@@ -1166,10 +1186,14 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 		start = SIDING_MAT_START;
 		end = SIDING_MAT_END + 1;
 		break;
+	case BMAT_WINDOWWALL:
+		start = WINDOWWALL_MAT_START;
+		end = WINDOWWALL_MAT_END + 1;
+		break;
 	}
 
 	// match the closest color.
-	vtMaterial *app;
+	vtMaterial *mat;
 	RGBf colorD;
 	RGBf colorA;
 	RGBf color;
@@ -1182,8 +1206,8 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 
 	for (int i = start; i < end; i++)
 	{
-		app = s_Materials->GetAt(i);
-		color = app->GetDiffuse();
+		mat = s_Materials->GetAt(i);
+		color = mat->GetDiffuse();
 		diff.x = (color.r - color2.r)*100;
 		diff.y = (color.g - color2.g)*100;
 		diff.z = (color.b - color2.b)*100;

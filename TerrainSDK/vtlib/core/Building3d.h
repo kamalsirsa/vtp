@@ -13,9 +13,19 @@
 
 class vtHeightField;
 
+typedef Array<FLine3 *> Footprints3d;
+// Overrides DestructItems to call constructors
+inline void Footprints3d::DestructItems(int first, int last)
+{
+	for (int i = first; i <= last; ++i)
+	{
+		FLine3 *pFL = GetAt(i);
+		delete pFL;
+	}
+}
+
 struct MatMesh
 {
-//	vtMaterial	*m_pMat;
 	int			m_iMatIdx;
 	vtMesh		*m_pMesh;
 	bool		m_bFans;
@@ -66,7 +76,7 @@ protected:
 	FPoint3 m_center;
 
 	// Local-coordinate Footprints, one per level
-	Array<FLine3 *> m_lfp;
+	Footprints3d m_lfp;
 
 	// internal methods
 	void DetermineWorldFootprints(vtHeightField *pHeightField);
@@ -81,18 +91,18 @@ protected:
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(vtLevel *pLev, BldMaterial bmat,
+	void AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 		const FLine3 &quad, float h1, float h2, float hf1 = 1.0f);
 
 	//adds a wall section with a door
-	void AddDoorSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
+	void AddDoorSection(vtEdge *pWall, vtEdgeFeature *pFeat,
 		const FLine3 &quad);
 
 	//adds a wall section with a window
-	void AddWindowSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
+	void AddWindowSection(vtEdge *pWall, vtEdgeFeature *pFeat,
 		const FLine3 &quad);
 
-	void AddWallNormal(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
+	void AddWallNormal(vtEdge *pWall, vtEdgeFeature *pFeat,
 			const FLine3 &quad);
 
 	void AddFlatRoof(FLine3 &pp, vtLevel *pLev);
