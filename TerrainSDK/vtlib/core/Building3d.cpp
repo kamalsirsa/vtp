@@ -270,6 +270,9 @@ float vtBuilding3d::GetHeightOfStories()
 
 void vtBuilding3d::DestroyGeometry()
 {
+	if (!m_pGeom)	// safety check
+		return;
+
 	m_pContainer->RemoveChild(m_pGeom);
 	m_pGeom->Destroy();
 	m_pGeom = NULL;
