@@ -85,6 +85,10 @@ and distributed under a completely free <a href="../../license.txt">open source 
       <ul>
         <li>vtProjection</li>
       </ul>
+      <p>Raw Features</p>
+      <ul>
+        <li>vtFeatures</li>
+      </ul>
       <p>Vector/Polygonal Data Formats</p>
       <ul>
         <li>vtDLGFile</li>
