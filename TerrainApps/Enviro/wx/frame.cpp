@@ -367,7 +367,10 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		Destroy();
 	}
 	if (key == ' ')
-		ToggleNavigate();
+	{
+		if (g_App.m_state == AS_Terrain)
+			ToggleNavigate();
+	}
 
 	// Keyboard shortcuts ("accelerators")
 	if (key == 'a')
