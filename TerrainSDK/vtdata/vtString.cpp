@@ -669,6 +669,51 @@ void vtString::FormatV(pcchar lpszFormat, va_list argList)
 	va_end(argListSave);
 }
 
+void vtString::TrimRight()
+{
+	// find beginning of trailing spaces by starting at beginning
+	CopyBeforeWrite();
+	char *lpsz = m_pchData;
+	char *lpszLast = NULL;
+
+	while (*lpsz != '\0')
+	{
+		if (isspace(*lpsz))
+		{
+			if (lpszLast == NULL)
+				lpszLast = lpsz;
+		}
+		else
+			lpszLast = NULL;
+		lpsz++;
+	}
+
+	if (lpszLast != NULL)
+	{
+		// truncate at trailing space start
+		*lpszLast = '\0';
+		GetData()->nDataLength = lpszLast - m_pchData;
+	}
+}
+
+
+void vtString::TrimLeft()
+{
+	// find first non-space character
+	CopyBeforeWrite();
+	char *lpsz = m_pchData;
+
+	while (isspace(*lpsz))
+		lpsz++;
+
+	if (lpsz != m_pchData)
+	{
+		// fix up data and length
+		int nDataLength = GetData()->nDataLength - (lpsz - m_pchData);
+		memmove(m_pchData, lpsz, (nDataLength+1)*sizeof(char));
+		GetData()->nDataLength = nDataLength;
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // Very simple sub-string extraction
