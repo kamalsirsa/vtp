@@ -150,7 +150,6 @@ private:
 	vtString	m_strOriginalDEMName;
 
 	void	_AllocateArray();
-	void	_Copy( const vtElevationGrid &Other );
 };
 
 #endif	// ELEVATIONGRIDH
