@@ -166,6 +166,11 @@ void vtImageLayer::SetProjection(const vtProjection &proj)
 	m_proj = proj;
 }
 
+void vtImageLayer::GetPropertyText(wxString &str)
+{
+	str.Printf(_T("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
+}
+
 DPoint2 vtImageLayer::GetSpacing()
 {
 	return DPoint2(m_Extents.Width() / (m_iXSize - 1),

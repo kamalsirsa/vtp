@@ -42,6 +42,10 @@ public:
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
+
+	// optional overrides
+	void GetPropertyText(wxString &str);
+
 	DPoint2 GetSpacing();
 
 	void GetDimensions(int &xsize, int &ysize)
