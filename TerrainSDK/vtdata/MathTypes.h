@@ -868,5 +868,7 @@ bool BarycentricCoords(const FPoint2 &p1, const FPoint2 &p2,
 					   const FPoint2 &p3, const FPoint2 &p, float fBary[3]);
 bool BarycentricCoords(const DPoint2 &p1, const DPoint2 &p2,
 					   const DPoint2 &p3, const DPoint2 &p, double fBary[3]);
+bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
+					   const FPlane &plane3, FPoint3 &result);
 
 #endif

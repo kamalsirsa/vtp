@@ -1026,3 +1026,29 @@ bool BarycentricCoords(const DPoint2 &p1, const DPoint2 &p2,
 	return true;
 }
 
+/**
+ * Find the intersection of 3 planes.
+ *
+ * \return true if there was a valid intersection point.  The function
+ * will fail and return false for any degenerate case, e.g. when any two
+ * of the planes are parallel.
+ */
+bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
+					   const FPlane &plane3, FPoint3 &result)
+{
+	FPoint3 n1 = plane1;
+	FPoint3 n2 = plane2;
+	FPoint3 n3 = plane3;
+	float d1 = -plane1.w;
+	float d2 = -plane2.w;
+	float d3 = -plane3.w;
+
+	// formula for result: P = (d1(n2 X n3) + d2(n3 X n1) + d3(n1 X n2)) / n1 . (n2 X n3)
+	FPoint3 numer = n2.Cross(n3) * d1 + n3.Cross(n1) * d2 + n1.Cross(n2) * d3;
+	float denom = n1.Dot(n2.Cross(n3));
+	if (fabsf(denom) < 3E-8)
+		return false;
+
+	result = numer / denom;
+	return true;
+}
