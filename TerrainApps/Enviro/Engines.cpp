@@ -333,18 +333,20 @@ void TerrainPicker::Eval()
 
 	// test whether we hit the heightfield
 	m_bOnTerrain = m_pHeightField->CastRayToSurface(pos, dir, result);
-	if (m_bOnTerrain)
+	if (!m_bOnTerrain)
+		return;
+
+	for (int i = 0; i < NumTargets(); i++)
 	{
-		vtTransform *pTarget = (vtTransform *) GetTarget();
-		if (pTarget)
-			pTarget->SetTrans(result);
-
-		// save result
-		m_GroundPoint = result;
-
-		// Find corresponding earth coordinates
-		g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos); 
+		vtTransform *pTarget = (vtTransform *) GetTarget(i);
+		pTarget->SetTrans(result);
 	}
+
+	// save result
+	m_GroundPoint = result;
+
+	// Find corresponding earth coordinates
+	g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos); 
 }
 
 bool TerrainPicker::GetCurrentPoint(FPoint3 &p)
