@@ -787,7 +787,7 @@ vtTransform *vtTerrain::LoadModel(const char *filename)
 		vtString path = FindFileOnPaths(m_DataPaths, filename);
 		if (path != "")
 		{
-			vtNodeBase *node = vtLoadModel(path);
+			node = vtLoadModel(path);
 		}
 	}
 	if (node)
