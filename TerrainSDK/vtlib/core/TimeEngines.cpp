@@ -52,10 +52,13 @@ void TimeEngine::SetDate(int year, int month, int day)
 
 void TimeEngine::SetLocalTime(int hr, int min, int sec)
 {
-	m_tm.tm_hour = hr;
-	m_tm.tm_min = min;
-	m_tm.tm_sec = sec;
-	m_time = mktime(&m_tm);
+	struct tm tm_local = *localtime(&m_time);
+
+	tm_local.tm_hour = hr;
+	tm_local.tm_min = min;
+	tm_local.tm_sec = sec;
+
+	m_time = mktime(&tm_local);
 	_UpdateTM();
 }
 
