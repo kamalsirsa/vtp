@@ -206,7 +206,7 @@ public:
 	void SetMinGroundOffset(float fMeters) { m_fMinGroundOffset = fMeters; }
 
 	/// Set the height above the terrain to maintain
-	float GetMinGroundOffset(float fMeters) { return m_fMinGroundOffset; }
+	float GetMinGroundOffset() { return m_fMinGroundOffset; }
 
 	/// If true, the current height above the terrain is maintained.  Default is false.
 	void SetMaintain(bool bMaintain) { m_bMaintain = bMaintain; }
