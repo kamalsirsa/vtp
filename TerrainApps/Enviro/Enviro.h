@@ -188,6 +188,7 @@ public:
 	vtRoute		*m_pSelRoute;
 	IPoint2		m_MouseDown;
 	float		m_StartRotation;
+	vtEngine	*m_pLocEngines;
 
 	// handle to the singleton
 	static Enviro *s_pEnviro;
@@ -256,6 +257,7 @@ protected:
 	vtCamera	*m_pNormalCamera;
 	vtCamera	*m_pTopDownCamera;
 	bool		m_bTopDown;
+	vtEngine	*m_pNavEngines;
 
 	vtGroup		*m_pRoot;		// top of the scene graph
 

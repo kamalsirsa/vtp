@@ -562,42 +562,45 @@ void Enviro::SetupScene2()
 {
 	VTLOG("SetupScene2\n");
 
+	m_pNavEngines = new vtEngine();
+	m_pNavEngines->SetName2("Navigation Engines");
+	vtGetScene()->GetRootEngine()->AddChild(m_pNavEngines);
+
 	// Make navigation engines
 	m_pOrthoFlyer = new vtOrthoFlyer(1.0f);
 	m_pOrthoFlyer->SetName2("Orthographic View Flyer");
 	m_pOrthoFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pOrthoFlyer);
+	m_pNavEngines->AddChild(m_pOrthoFlyer);
 
 	m_pQuakeFlyer = new QuakeFlyer(1.0f, 1.0f, true);
 	m_pQuakeFlyer->SetName2("Quake-Style Flyer");
 	m_pQuakeFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pQuakeFlyer);
+	m_pNavEngines->AddChild(m_pQuakeFlyer);
 
 	m_pVFlyer = new VFlyer(1.0f, 1.0f, true);
 	m_pVFlyer->SetName2("Velocity-Gravity Flyer");
 	m_pVFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pVFlyer);
+	m_pNavEngines->AddChild(m_pVFlyer);
 
 	m_pTFlyer = new vtTerrainFlyer(1.0f, 1.0f, true);
 	m_pTFlyer->SetName2("Terrain-following Flyer");
 	m_pTFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pTFlyer);
+	m_pNavEngines->AddChild(m_pTFlyer);
 
 	m_pGFlyer = new GrabFlyer(1.0f, 1.0f, true);
 	m_pGFlyer->SetName2("Grab-Pivot Flyer");
 	m_pGFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pGFlyer);
+	m_pNavEngines->AddChild(m_pGFlyer);
 
 	m_pFlatFlyer = new FlatFlyer();
 	m_pFlatFlyer->SetName2("Flat Flyer");
 	m_pFlatFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pFlatFlyer);
-	m_pFlatFlyer->SetEnabled(false);
+	m_pNavEngines->AddChild(m_pFlatFlyer);
 
 	m_pPanoFlyer = new vtPanoFlyer(1.0f, 1.0f, true);
 	m_pPanoFlyer->SetName2("Panoramic Flyer");
 	m_pPanoFlyer->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pPanoFlyer);
+	m_pNavEngines->AddChild(m_pPanoFlyer);
 
 	m_nav = NT_Normal;
 
@@ -636,6 +639,10 @@ void Enviro::SetupScene2()
 	m_pGFlyer->SetTarget(m_pNormalCamera);
 	m_pFlatFlyer->SetTarget(m_pNormalCamera);
 	m_pPanoFlyer->SetTarget(m_pNormalCamera);
+
+	m_pLocEngines = new vtEngine();
+	m_pLocEngines->SetName2("Location Engines");
+	vtGetScene()->GetRootEngine()->AddChild(m_pLocEngines);
 }
 
 //
