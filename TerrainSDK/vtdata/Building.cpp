@@ -1149,6 +1149,7 @@ const char *vtBuilding::GetMaterialString(BldMaterial mat)
 	case BMAT_GLASS: return "Glass"; break;
 	case BMAT_BRICK: return "Brick"; break;
 	case BMAT_PAINTED_BRICK: return "Painted-Brick"; break;
+	case BMAT_ROLLED_ROOFING: return "Rolled-Roofing"; break;
 	case BMAT_CEMENT: return "Cement"; break;
 	case BMAT_STUCCO: return "Stucco"; break;
 	case BMAT_CORRUGATED: return "Corrugated"; break;
@@ -1173,6 +1174,8 @@ BldMaterial vtBuilding::GetMaterialValue(const char *value)
 		return BMAT_BRICK;
 	else if (!strcmp(value, "Painted-Brick"))
 		return BMAT_PAINTED_BRICK;
+	else if (!strcmp(value, "Rolled-Roofing"))
+		return BMAT_ROLLED_ROOFING;
 	else if (!strcmp(value, "Cement"))
 		return BMAT_CEMENT;
 	else if (!strcmp(value, "Stucco"))

@@ -567,7 +567,7 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 {
 	int i;
 	BldMaterial bm;
-	wxString choices[9];
+	wxString choices[EXPOSED_BUILDING_MATS];
 
 	for (i = BMAT_PLAIN; i < BMAT_DOOR; i++)
 	{

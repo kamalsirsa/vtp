@@ -36,14 +36,19 @@ enum BldMaterial {
 	BMAT_GLASS,
 	BMAT_BRICK,
 	BMAT_PAINTED_BRICK,
+	BMAT_ROLLED_ROOFING,
 	BMAT_CEMENT,
 	BMAT_STUCCO,
 	BMAT_CORRUGATED,
 	BMAT_DOOR,
 	BMAT_WINDOW,
-	BMAT_WINDOWWALL
+	BMAT_WINDOWWALL,
+	TOTAL_BUILDING_MATS
 };
 
+// When giving the user a choice of building materials, omit "unknown",
+// "door", "window", and "window-wall"
+#define EXPOSED_BUILDING_MATS	TOTAL_BUILDING_MATS-4
 
 // Edge feature codes
 #define WFC_WALL		1
