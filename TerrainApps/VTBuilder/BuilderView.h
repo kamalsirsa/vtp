@@ -44,6 +44,7 @@ enum LBMode {
 	LB_BldDeletePoints,		// delete footprint points
 	LB_AddLinear,	// structures: add linear features
 	LB_EditLinear,	// structures: add linear features
+	LB_AddInstance,	// structures: add structure instances
 	LB_AddPoints,	// add raw points
 	LB_TowerSelect,	// selectTowers
 	LB_TowerAdd,	// Add Tower to layer

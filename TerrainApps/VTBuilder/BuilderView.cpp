@@ -198,6 +198,9 @@ void BuilderView::SetMode(LBMode m)
 	// Show this dialog only in AddLinear mode
 	GetMainFrame()->ShowLinearStructureDlg(m_ui.mode == LB_AddLinear);
 
+	// Show this dialog only in AddInstance mode
+	GetMainFrame()->ShowInstanceDlg(m_ui.mode == LB_AddInstance);
+
 	if (m_ui.mode != LB_LinkEdit)
 	{
 		if (m_ui.m_pEditingRoad)
