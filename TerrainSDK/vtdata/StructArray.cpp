@@ -224,7 +224,7 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
  * reference.
  */
 bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon,
-					   int &structure, double &closest, bool bSkipBuildings)
+					   int &structure, double &closest, float fMaxInstRadius, bool bSkipBuildings)
 {
 	structure = -1;
 	closest = 1E8;
@@ -256,7 +256,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		// or an instance
 		vtStructInstance *inst = str->GetInstance();
 		if (inst)
-			dist = inst->DistanceToPoint(point);
+			dist = inst->DistanceToPoint(point, fMaxInstRadius);
 
 		if (dist > epsilon)
 			continue;

@@ -103,7 +103,7 @@ public:
 						   int &structure, int &corner, double &distance);
 
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
-			int &structure, double &distance, bool bSkipBuildings = false);
+			int &structure, double &distance, float fMaxInstRadius = 1E9f, bool bSkipBuildings = false);
 	bool FindClosestBuilding(const DPoint2 &point, double epsilon,
 			int &structure, double &closest);
 

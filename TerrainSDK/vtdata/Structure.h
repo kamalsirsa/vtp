@@ -275,7 +275,7 @@ public:
 	bool GetExtents(DRECT &rect) const;
 	bool IsContainedBy(const DRECT &rect) const;
 
-	virtual double DistanceToPoint(const DPoint2 &p) const;
+	virtual double DistanceToPoint(const DPoint2 &p, float fMaxRadius) const;
 
 	DPoint2	m_p;			// earth position
 	float	m_fRotation;	// in radians

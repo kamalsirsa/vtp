@@ -104,7 +104,7 @@ bool vtStructInstance::IsContainedBy(const DRECT &rect) const
 	return rect.ContainsPoint(m_p);
 }
 
-double vtStructInstance::DistanceToPoint(const DPoint2 &p) const
+double vtStructInstance::DistanceToPoint(const DPoint2 &p, float fMaxRadius) const
 {
 	// simple distance from the origin of this instance to the given point
 	return (m_p - p).Length();
