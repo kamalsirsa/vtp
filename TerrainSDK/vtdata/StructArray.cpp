@@ -387,7 +387,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 					stories = (int) (height / 3.2);
 					if (stories < 1)
 						stories = 1;
-					bld->SetStories((int) height);
+					bld->SetStories((int) stories);
 					bld->GetLevel(0)->m_fStoryHeight = (float) (height / stories);
 					break;
 				}
