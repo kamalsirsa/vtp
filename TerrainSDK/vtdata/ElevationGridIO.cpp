@@ -1813,22 +1813,28 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	const char *str1 = poDataset->GetProjectionRef();
 	char *str2 = (char *) str1;
 	OGRErr err = m_proj.importFromWkt(&str2);
-	if (err == OGRERR_CORRUPT_DATA)
+	if (err != OGRERR_NONE)
 	{
-		// just assume that it's geographic
-		m_proj.SetWellKnownGeogCS("WGS84");
+		// No projection info; just assume that it's geographic
+		m_proj.Clear();
 	}
 
 	// Get spacing and extents
 	double		adfGeoTransform[6];
-	if (poDataset->GetGeoTransform(adfGeoTransform) != CE_None)
-		return false;
+	if (poDataset->GetGeoTransform(adfGeoTransform) == CE_None)
+	{
+		// Upper left corner is adfGeoTransform[0], adfGeoTransform[3]
+		m_EarthExtents.left = adfGeoTransform[0];
+		m_EarthExtents.top = adfGeoTransform[3];
+		m_EarthExtents.right = m_EarthExtents.left + (adfGeoTransform[1] * m_iColumns);
+		m_EarthExtents.bottom = m_EarthExtents.top + (adfGeoTransform[5] * m_iRows);
+	}
+	else
+	{
+		// No projections.
+		m_EarthExtents.Empty();
+	}
 
-	// Upper left corner is adfGeoTransform[0], adfGeoTransform[3]
-	m_EarthExtents.left = adfGeoTransform[0];
-	m_EarthExtents.top = adfGeoTransform[3];
-	m_EarthExtents.right = m_EarthExtents.left + (adfGeoTransform[1] * m_iColumns);
-	m_EarthExtents.bottom = m_EarthExtents.top + (adfGeoTransform[5] * m_iRows);
 	ComputeCornersFromExtents();
 
 	// Raster count should be 1 for elevation datasets
