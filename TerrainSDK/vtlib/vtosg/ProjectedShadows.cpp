@@ -208,7 +208,7 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 		// shadower node should be a lod grid
 		// this needs more work if other lod grids further down the tree
 		vtLodGrid *pGrid = dynamic_cast<vtLodGrid*>(m_shadower->getUserData());
-		float fOldDistance;
+		float fOldDistance=0;
 
 		if (NULL != pGrid)
 		{
@@ -238,7 +238,6 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 		}
 #endif
 		
-
  		if (NULL != pGrid)
 			pGrid->SetDistance(fOldDistance);
 

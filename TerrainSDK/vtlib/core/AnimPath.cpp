@@ -70,7 +70,7 @@ void vtAnimPath::SetLoop(bool bFlag)
 void vtAnimPath::SetTimeFromLinearDistance()
 {
 	FPoint3 pos, last;
-	float fTime;
+	float fTime=0;
 
 	TimeControlPointMap newmap;
 
@@ -78,11 +78,7 @@ void vtAnimPath::SetTimeFromLinearDistance()
 		it != m_TimeControlPointMap.end(); it++)
 	{
 		pos = it->second.m_Position;
-		if (it == m_TimeControlPointMap.begin())
-		{
-			fTime = 0;
-		}
-		else
+		if (it != m_TimeControlPointMap.begin())
 		{
 			float dist = (pos - last).Length();
 			fTime += dist;
@@ -166,10 +162,6 @@ void vtAnimPath::InterpolateControlPoints(TimeControlPointMap::const_iterator &a
 										  double time,
 										  ControlPoint &result) const
 {
-	// debug
-	double atime = a->first;
-	double btime = b->first;
-
 	double delta_time = b->first - a->first;
 	if (delta_time == 0.0)
 		result = a->second;

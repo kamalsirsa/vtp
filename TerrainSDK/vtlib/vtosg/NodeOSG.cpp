@@ -1205,11 +1205,8 @@ int vtDynGeom::IsVisible(const FSphere &sphere) const
  */
 bool vtDynGeom::IsVisible(const FPoint3& point) const
 {
-	unsigned int vis = 0;
-
 	// cull against standard frustum
-	int i;
-	for (i = 0; i < 4; i++)
+	for (unsigned i = 0; i < 4; i++)
 	{
 		float dist = m_pPlanes[i].Distance(point);
 		if (dist > 0.0f)

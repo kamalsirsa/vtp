@@ -411,9 +411,6 @@ void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
 		m_pShadowVisitor->SetInitialLightPosition(v2s(-(pLight->GetDirection()) * 10000));
 		pTransform->GetOsgNode()->setCullCallback(m_pShadowVisitor.get());
 		m_pShadowVisitor->SetEnabled(true);
-		
-		osg::Node *node = pShadowNode->GetOsgNode();
-
 #ifdef _DEBUG
 	{
 		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();

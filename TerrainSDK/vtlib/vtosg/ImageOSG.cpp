@@ -137,7 +137,6 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	data = (char *) pDIB->GetDIBData();
 
 	int SizeImage = w * h * (bpp / 8);
-	int SizeRow = w * (bpp / 8);
 
 	GLubyte *image = new GLubyte[SizeImage];
 
@@ -148,6 +147,7 @@ void vtImage::_CreateFromDIB(vtDIB *pDIB)
 	// OSG and OpenGL expect the bitmap to be top-down.
 	// (Why is this not required?? It should be, but it works correctly
 	//  if we don't do the flip.)
+	int SizeRow = w * (bpp / 8);
 	for (i = 0; i < h; i++)
 		memcpy(image + i * SizeRow, data + (h-1-i) * SizeRow, SizeRow);
 #endif
