@@ -1,0 +1,78 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Export Area</title>
+</head>
+
+<body bgcolor="#CCCCCC">
+
+<h3 align="center">
+VTBuilder<br>
+<a href="index.html">back to top</a>
+</h3>
+<h2>Export Area Tool</h2>
+The export area is a tool you can use to indicate a rectangular area of
+interest.&nbsp; You can then use this area to indicate where you want to
+generate and export elevation or vegetation.
+<p>Menus:</p>
+
+<ul>
+  <li><b>Export Area</b>
+    <ul>
+      <li>Set to Extents
+        <ul>
+          <li>Moves the black lines to surround all of the currently loaded
+            terrains.</li>
+        </ul>
+      </li>
+      <li>Numeric Values
+        <ul>
+          <li>Allows you to examine and manually enter the range of the export
+            area.</li>
+        </ul>
+      </li>
+      <li>Merge &amp; Export Elevation
+        <ul>
+          <li>Displays the <b>Merge and Resample</b> dialog (see below) and then
+            asks for a filename to export elevation to.</li>
+        </ul>
+      </li>
+      <li>Generate &amp; Export Vegetation
+        <ul>
+          <li>see <a href="vegetation.html">Vegetation</a> for an description of
+            how to use this command</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><b>Merge and Resample Dialog</b></p>
+<blockquote>
+  <p>This dialog displays:</p>
+  <ul>
+    <li>The size of the <b>Save Area</b>, in either meters or degrees</li>
+    <li>An estimated <b>Sample factor</b>, which is a guess based on looking at
+      the X spacing of the first elevation layer.</li>
+    <li>The projected <b>Size at that density</b>, which is the size of a grid
+      that would result from sampling the area at the indicated sample
+      factor.&nbsp; Assuming that your input layers are of the same density
+      (spacing), this indicates the approximate grid size of the indicated area.</li>
+  </ul>
+  <p>You can change the sample factor to see the projected size change.&nbsp;
+  Once you have a good idea of what output size you want, specify it in the
+  &quot;<b>X size</b>&quot; and &quot;<b>Y size</b>&quot; fields.</p>
+  <p>Note that there is a helpful &quot;<b>Powers of 2 + 1</b>&quot; constraint
+  you can use to limit the output to sizes which are supported by Terrain LOD,
+  which is highly desirable at visualization runtime.</p>
+  <p>For effective visualization, it is recommended that you pick a output size
+  that is at least as large as your input data, but within the limits of your
+  computer's RAM. </p>
+</blockquote>
+
+</body>
+
+</html>
