@@ -55,3 +55,21 @@ clean :
 
 clobber :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure
+
+#
+# Internationalization steps for Swedish
+#
+
+create:
+	xgettext -k_ -o Enviro.pot wx/frame.cpp
+	mkdir sv
+	cp Enviro.pot sv/Enviro.pox
+
+publish:
+	cp sv/Enviro.pox sv/Enviro.po
+	msgfmt sv/Enviro.po -o sv/Enviro.mo
+
+update:
+	xgettext -k_ -o Enviro.pot wx/frame.cpp
+	msgmerge sv/Enviro.po Enviro.pot -o sv/Enviro.pox
+
