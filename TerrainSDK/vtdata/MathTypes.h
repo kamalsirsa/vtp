@@ -377,6 +377,7 @@ class DLine2 : public Array<DPoint2>
 {
 public:
 	DLine2() {}
+	DLine2(int size) { SetSize(size); }
 	// copy constructor
 	DLine2(const DLine2 &ref) : Array<DPoint2>() { *this = ref; }
 
@@ -392,6 +393,7 @@ public:
 	double SegmentLength(unsigned int i) const;
 	void NearestPoint(const DPoint2 &Point, int &iIndex, double &dist) const;
 	bool NearestSegment(const DPoint2 &Point, int &iIndex, double &dist, DPoint2 &Intersection) const;
+	void ReverseOrder();
 
 	DPoint2 &GetSafePoint(int index) const;
 	void SetSafePoint(int index, const DPoint2 &p);
@@ -406,6 +408,7 @@ class FLine2 : public Array<FPoint2>
 {
 public:
 	FLine2() {}
+	FLine2(int size) { SetSize(size); }
 	// copy constructor
 	FLine2(const FLine2 &ref) : Array<FPoint2>() { *this = ref; }
 

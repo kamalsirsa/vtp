@@ -216,6 +216,18 @@ double DLine2::Length() const
 	return length;
 }
 
+void DLine2::ReverseOrder()
+{
+	DPoint2 p;
+	int i, size = GetSize();
+	for (i = 0; i < size/2; i++)
+	{
+		p = GetAt(i);
+		SetAt(i, GetAt(size-1-i));
+		SetAt(size-1-i, p);
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // DLine3 methods
