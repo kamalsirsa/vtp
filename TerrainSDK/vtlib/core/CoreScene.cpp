@@ -37,6 +37,14 @@ vtSceneBase::vtSceneBase()
 
 vtSceneBase::~vtSceneBase()
 {
+	// cleanup engines
+	int i, num = m_Engines.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtEngine *eng = m_Engines.GetAt(i);
+		delete eng;
+	}
+	m_Engines.Empty();
 }
 
 void vtSceneBase::OnMouse(vtMouseEvent &event)
