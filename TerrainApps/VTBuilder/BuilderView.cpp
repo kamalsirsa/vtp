@@ -630,9 +630,9 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 	}
 	wxString msg;
 	if (changed == 1)
-		msg.Printf(_("1 entity, %d total selected"), verb, selected);
+		msg.Printf(_("1 entity, %d total selected"), selected);
 	else
-		msg.Printf(_("%d entities, %d total selected"), verb, changed, selected);
+		msg.Printf(_("%d entities, %d total selected"), changed, selected);
 	verb += _T(" ");
 	verb += msg;
 	GetMainFrame()->SetStatusText(verb);
@@ -1499,7 +1499,7 @@ void BuilderView::OnKeyDown(wxKeyEvent& event)
 	int code = event.GetKeyCode();
 	bool ctrl = event.ControlDown();
 #if DEBUG
-	VTLOG("KeyDown %d (%c) ctrl:%d\n", code, event.GetKeyCode(), ctrl);
+//	VTLOG("KeyDown %d (%c) ctrl:%d\n", code, event.GetKeyCode(), ctrl);
 #endif
 
 	wxCommandEvent dummy;
