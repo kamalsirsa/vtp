@@ -201,6 +201,7 @@ public:
 	virtual vtTagArray *GetInstanceFromGUI() { return NULL; }
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void SetTimeEngineToGUI(TimeEngine *pEngine) {}
+	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
