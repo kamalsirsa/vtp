@@ -20,8 +20,11 @@
 #include "ScaledView.h"
 #include "ImageLayer.h"
 #include "Helper.h"
-#include "Projection2Dlg.h"
 #include "Frame.h"
+
+#include "ExtentDlg.h"
+#include "Projection2Dlg.h"
+
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
@@ -224,7 +227,7 @@ bool vtImageLayer::ConvertProjection(vtProjection &proj)
 
 bool vtImageLayer::OnSave()
 {
-	return false;
+	return SaveToFile(m_strFilename);
 }
 
 bool vtImageLayer::OnLoad()
@@ -364,7 +367,6 @@ bool vtImageLayer::LoadFromGDAL()
 	double affineTransform[6];
 	const char *pProjectionString;
 	OGRErr err;
-	double linearConversionFactor;
 	bool bRet = true;
 	bool bDefer = false;
 	int i;
@@ -399,9 +401,6 @@ bool vtImageLayer::LoadFromGDAL()
 		// the same adjustment is done in CwxBitmapSection::CreateSectionFromGDAL
 		// where the image is padded out to the right with junk
 		m_iXSize = (m_iXSize + 11)/12 * 12;
-
-		if (CE_None != pDataset->GetGeoTransform(affineTransform))
-			throw "Dataset does not contain a valid affine transform.";
 
 		bool bHaveProj = false;
 		pProjectionString = pDataset->GetProjectionRef();
@@ -441,6 +440,54 @@ bool vtImageLayer::LoadFromGDAL()
 			}
 			if (res == wxCANCEL)
 				throw "Import Cancelled.";
+		}
+
+		if (pDataset->GetGeoTransform(affineTransform) == CE_None)
+		{
+			m_Extents.left = affineTransform[0];
+			m_Extents.right = m_Extents.left + affineTransform[1] * (m_iXSize-1);
+			m_Extents.top = affineTransform[3];
+			m_Extents.bottom = m_Extents.top + affineTransform[5] * (m_iYSize-1);
+
+#if ROGER
+			// Roger thinks that this special case is needed for
+			//  non-geographic projections, but i don't think so.  I think
+			//  transforms are entirely independent of choice of projection,
+			//  and hence transform coeficients are expressed in the same
+			//  units as the coordinate system.
+			if (!m_proj.IsGeographic())
+			{
+				double linearConversionFactor = m_proj.GetLinearUnits();
+
+				// Compute extent using the top left and bottom right image co-ordinates
+				m_Extents.left = affineTransform[0]  * linearConversionFactor;
+				m_Extents.top = affineTransform[3] * linearConversionFactor;
+				m_Extents.right = (affineTransform[0] + affineTransform[1] * m_iXSize + affineTransform[2] * m_iYSize) * linearConversionFactor;
+				m_Extents.bottom = (affineTransform[3] + affineTransform[4] * m_iXSize + affineTransform[5] * m_iYSize) * linearConversionFactor;
+			}
+#endif // ROGER
+		}
+		else
+		{
+			VTLOG("Dataset does not contain a valid affine transform.");
+			// No extents.
+			m_Extents.Empty();
+			wxString2 msg = "File lacks geographic location (extents).  "
+				"Would you like to specify extents?\n";
+			int res = wxMessageBox(msg, _T("Import Import"), wxYES | wxCANCEL);
+			if (res == wxYES)
+			{
+				DRECT ext;
+				ext.Empty();
+				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
+				dlg.SetArea(ext, (m_proj.IsGeographic() != 0));
+				if (dlg.ShowModal() == wxID_OK)
+					m_Extents = dlg.m_area;
+				else
+					throw "Import Cancelled.";;
+			}
+			if (res == wxCANCEL)
+				throw "Import Cancelled.";;
 		}
 
 #if ROGER
@@ -531,9 +578,10 @@ bool vtImageLayer::LoadFromGDAL()
 					m_strFilename = saveRealigned.GetPath();
 					GDALClose((GDALDatasetH)pDataset);
 
-#if 0				// Roger says this is a workaround for GDAL oddness
+#if 0
 					pDataset = pDstDataset;
 #else
+					// Roger says this is a workaround for GDAL oddness
 					GDALClose((GDALDatasetH)pDstDataset);
 					pDataset = (GDALDataset *) GDALOpen(m_strFilename.mb_str(), GA_ReadOnly);
 #endif
@@ -545,24 +593,6 @@ bool vtImageLayer::LoadFromGDAL()
 			}
 		}
 #endif
-
-		if (m_proj.IsGeographic())
-		{
-			m_Extents.left = affineTransform[0];
-			m_Extents.right = m_Extents.left + affineTransform[1] * (m_iXSize-1);
-			m_Extents.top = affineTransform[3];
-			m_Extents.bottom = m_Extents.top + affineTransform[5] * (m_iYSize-1);
-		}
-		else
-		{
-			linearConversionFactor = m_proj.GetLinearUnits();
-
-			// Compute extent using the top left and bottom right image co-ordinates
-			m_Extents.left = affineTransform[0]  * linearConversionFactor;
-			m_Extents.top = affineTransform[3] * linearConversionFactor;
-			m_Extents.right = (affineTransform[0] + affineTransform[1] * m_iXSize + affineTransform[2] * m_iYSize) * linearConversionFactor;
-			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * m_iXSize + affineTransform[5] * m_iYSize) * linearConversionFactor;
-		}
 
 		// Prepare scanline buffers
 		for (i = 0; i < BUF_SCANLINES; i++)
@@ -640,27 +670,35 @@ bool vtImageLayer::LoadFromGDAL()
 		}
 
 		// don't try to load giant image?
-//		if (m_iXSize * m_iYSize > (4096 * 4096))
-//		{
-//			bDefer = true;
-//			throw "Deferring load of large image";
-//		}
-
-		m_pBitmap = new vtBitmap();
-		if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
+		wxString2 msg;
+		if (m_iXSize * m_iYSize > (6000 * 6000))
 		{
-			delete m_pBitmap;
-			m_pBitmap = NULL;
-			wxString2 msg;
-			msg.Printf(_T("Couldn't allocate bitmap of size %d x %d.  Would you like\n")
+			msg.Printf(_T("Image is very large (%d x %d).  Would you like\n")
 				_T("to create the layer using out-of-memory access to the image?"),
 				m_iXSize, m_iYSize);
 			VTLOG(msg.mb_str());
 			int result = wxMessageBox(msg, _T("Question"), wxYES_NO);
 			if (result == wxYES)
 				bDefer = true;
-			else
-				throw "Couldn't allocate bitmap";
+		}
+
+		if (!bDefer)
+		{
+			m_pBitmap = new vtBitmap();
+			if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
+			{
+				delete m_pBitmap;
+				m_pBitmap = NULL;
+				msg.Printf(_T("Couldn't allocate bitmap of size %d x %d.  Would you like\n")
+					_T("to create the layer using out-of-memory access to the image?"),
+					m_iXSize, m_iYSize);
+				VTLOG(msg.mb_str());
+				int result = wxMessageBox(msg, _T("Question"), wxYES_NO);
+				if (result == wxYES)
+					bDefer = true;
+				else
+					throw "Couldn't allocate bitmap";
+			}
 		}
 
 		if (!bDefer)
