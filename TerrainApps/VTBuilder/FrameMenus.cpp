@@ -395,7 +395,7 @@ void MainFrame::CreateMenus()
 
 	// Help
 	helpMenu = new wxMenu;
-	helpMenu->Append(wxID_HELP, _T("&About"), "About " APPNAME);
+	helpMenu->Append(wxID_HELP, _T("&About"), _T("About ") _T(APPNAME));
 	m_pMenuBar->Append(helpMenu, _T("&Help"));
 	menu_num++;
 
@@ -432,7 +432,7 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	SetProjection(p);
 }
 
-#define PROJECT_FILTER _T(APPNAME "Project Files (*.vtb)|*.vtb|")
+#define PROJECT_FILTER _T(APPNAME) _T(" Project Files (*.vtb)|*.vtb|")
 
 void MainFrame::OnProjectOpen(wxCommandEvent &event)
 {
@@ -2255,6 +2255,6 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _T("Send feedback to: ben@vterrain.org\n");
 	str += _T("Build date: ");
 	str += _(__DATE__);
-	wxMessageBox(str, _T("About " APPNAME));
+	wxMessageBox(str, _T("About ") _T(APPNAME));
 #endif
 }

@@ -114,7 +114,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_pFeatInfoDlg = NULL;
 	m_pDistanceDlg = NULL;
 	m_pLinearStructureDlg = NULL;
-	m_szIniFilename = "VTBuilder.ini";
+	m_szIniFilename = APPNAME ".ini";
 	m_bDrawDisabled = false;
 
 	// frame icon
@@ -203,7 +203,7 @@ void MainFrame::SetupUI()
 			_T(" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n")
 			_T(" data files.  If you don't need full support for coordinate systems\n")
 			_T(" including converting between different projections, you can ignore\n")
-			_T(" this warning."), _T("VTBuilder Warning"));
+			_T(" this warning."), _T(APPNAME) _T("Warning"));
 	}
 
 	vtProjection proj;
@@ -311,6 +311,8 @@ void MainFrame::RefreshToolbar()
 			toolBar_main->AddSeparator();
 			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
 			ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
+			ADD_TOOL(ID_STRUCTURE_ADD_POINTS, wxBITMAP(bld_add_points), _("Add points to building footprints"), true);
+			ADD_TOOL(ID_STRUCTURE_DELETE_POINTS, wxBITMAP(bld_delete_points), _("Delete points from building footprints"), true);
 			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
 			ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
 			break;

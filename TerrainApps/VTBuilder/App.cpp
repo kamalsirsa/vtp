@@ -17,19 +17,12 @@
 #include "BuilderView.h"
 #include "vtdata/vtLog.h"
 
-#ifdef ENVIRON
-  #define APPNAME "EnvironBuilder"
-#else
-  #define APPNAME "VTBuilder"
-#endif
-
-
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
 {
 	g_Log._StartLog("debug.txt");
-	VTLOG("%s\nBuild:", APPNAME);
+	VTLOG(APPNAME "\nBuild:");
 #if DEBUG
 	VTLOG(" Debug");
 #else
