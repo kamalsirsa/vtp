@@ -23,6 +23,7 @@ using namespace std;
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
+#include "vtui/wxString2.h"
 #include "SceneGraphDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
@@ -151,8 +152,7 @@ void SceneGraphDlg::RefreshTreeContents()
 	for (int i = 0; i < num; i++)
 	{
 		vtEngine *pEng = scene->GetEngine(i);
-		wxString str;
-		str += wxString::FromAscii(pEng->GetName2());
+		wxString2 str = pEng->GetName2();
 		vtNode *target = (vtNode *) pEng->GetTarget();
 		if (target)
 		{
@@ -264,7 +264,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
 				case GL_POLYGON: mtype = "Polygon"; break;
 				}
-				str.Printf(_T("Mesh %d, %s, %d prims"), i, mtype, iNumPrim);
+				str.Printf(_T("Mesh %d, %hs, %d prims"), i, mtype, iNumPrim);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 			}
 			else

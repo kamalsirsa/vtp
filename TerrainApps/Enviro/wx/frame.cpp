@@ -1,8 +1,8 @@
 //
 // Name:	 frame.cpp
-// Purpose:  The frame class for the wxWindows application.
+// Purpose:  The frame class for the wxEnviro application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -755,7 +755,7 @@ void vtFrame::OnSceneTerrain(wxCommandEvent& event)
 		g_App.SwitchToTerrain(fname);
 	}
 #else
-	wxString str;
+	wxString2 str;
 	if (AskForTerrainName(this, str))
 		g_App.SwitchToTerrain(str.mb_str());
 #endif
@@ -951,7 +951,7 @@ void vtFrame::OnSaveVeg(wxCommandEvent& event)
 		wxSetWorkingDirectory(path);	// restore
 		return;
 	}
-	wxString str = saveFile.GetPath();
+	wxString2 str = saveFile.GetPath();
 
 	vtPlantInstanceArray &pia = GetCurrentTerrain()->GetPlantInstances();
 	pia.WriteVF(str.mb_str());
@@ -970,7 +970,7 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 		wxSetWorkingDirectory(path);	// restore
 		return;
 	}
-	wxString str = saveFile.GetPath();
+	wxString2 str = saveFile.GetPath();
 
 	vtStructureArray3d &SA = GetCurrentTerrain()->GetStructures();
 	SA.WriteXML(str.mb_str());
@@ -1009,7 +1009,7 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 		return;
 	}
 
-	wxString str = loadFile.GetPath();
+	wxString2 str = loadFile.GetPath();
 
 	int ret = g_App.AddGlobePoints(str.mb_str());
 	if (ret == -1)
@@ -1039,7 +1039,7 @@ void SetTerrainToGUI(vtTerrain *pTerrain)
 	loc += pTerrain->GetParams().m_strLocFile;
 	vtString path = FindFileOnPaths(pTerrain->m_DataPaths, loc);
 	if (path != "")
-		pFrame->m_pLocationDlg->SetLocFile(path);
+		pFrame->m_pLocationDlg->SetLocFile((const char *)path);
 }
 
 

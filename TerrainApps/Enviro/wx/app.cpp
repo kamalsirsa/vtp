@@ -119,7 +119,7 @@ bool AskForTerrainName(wxWindow *pParent, wxString &str)
 	int first_idx = 0;
 	for (pTerr = pFirst; pTerr; pTerr=pTerr->GetNext())
 	{
-		choices[num] = wxString::FromAscii((const char *)(pTerr->GetName()));
+		choices[num] = wxString2(pTerr->GetName());
 		if (str == choices[num]) first_idx = num;
 		num++;
 	}
