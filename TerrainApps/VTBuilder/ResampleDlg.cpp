@@ -74,8 +74,8 @@ void ResampleDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_iSizeY = ((int) (m_fAreaY / m_fSpacingY + 0.5)) + 1;
 
 	// sampling
-	AddNumValidator(ID_SPACINGX, &m_fSpacingX);
-	AddNumValidator(ID_SPACINGY, &m_fSpacingY);
+	spacing1 = AddNumValidator(ID_SPACINGX, &m_fSpacingX);
+	spacing2 = AddNumValidator(ID_SPACINGY, &m_fSpacingY);
 	AddNumValidator(ID_SIZEX, &m_iSizeX);
 	AddNumValidator(ID_SIZEY, &m_iSizeY);
 	AddValidator(ID_CONSTRAIN, &m_bConstraint);
@@ -181,7 +181,11 @@ void ResampleDlg::OnSpacingXY( wxCommandEvent &event )
 	m_iSizeY = (int) (m_fAreaY / m_fSpacingY)+1;
 
 	m_bSetting = true;
+	spacing1->Enable(false);
+	spacing2->Enable(false);
 	TransferDataToWindow();
+	spacing1->Enable(true);
+	spacing2->Enable(true);
 	m_bSetting = false;
 }
 

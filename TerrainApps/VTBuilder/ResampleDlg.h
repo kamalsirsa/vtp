@@ -72,6 +72,7 @@ public:
 
 private:
 	// WDR: member variable declarations for ResampleDlg
+	wxNumericValidator *spacing1, *spacing2;
 	
 private:
 	// WDR: handler declarations for ResampleDlg
