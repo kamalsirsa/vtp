@@ -151,6 +151,7 @@ vtTerrain::~vtTerrain()
 		vtGetScene()->RemoveEngine(m_pBBEngine);
 		delete m_pBBEngine;
 	}
+	delete m_pTextureColors;
 }
 
 
@@ -410,6 +411,27 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 //
 void vtTerrain::PaintDib()
 {
+	if (!m_pTextureColors)
+	{
+		// If this member hasn't been set by a subclass, then we can go ahead
+		//  and use the info from the terrain parameters
+		ColorMap cmap;
+		vtString name = m_Params.GetValueString(STR_COLOR_MAP);
+		if (name != "")
+		{
+			if (!cmap.Load(name))
+			{
+				// Look on data paths
+				vtString name2 = "GeoTypical/";
+				name2 += name;
+				name2 = FindFileOnPaths(vtGetDataPath(), name2);
+				if (name2 != "")
+					cmap.Load(name2);
+			}
+		}
+		if (cmap.Num() != 0)
+			m_pTextureColors = new ColorMap(cmap);
+	}
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
 	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors);
 }
