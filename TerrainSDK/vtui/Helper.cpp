@@ -1,17 +1,15 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "wx/wxprec.h"
 
-#ifndef WX_PRECOMP
-#include "wx/wx.h"
-#endif
+#include "wx/image.h"
+#include "wx/progdlg.h"
 
-#include <wx/image.h>
 #include "wxString2.h"
 #include "vtdata/FilePath.h"	// for dir_iter
 #include "vtdata/vtLog.h"
@@ -384,4 +382,67 @@ enum wxLanguage GetLangFromName(const wxString &name)
 	}
 	return wxLANGUAGE_UNKNOWN;
 }
+
+
+///////////////////////////////////////////////////////////////////////
+// Shared Progress Dialog Functionality
+//
+
+static bool s_bOpen = false;
+wxProgressDialog *g_pProg = NULL;
+
+bool progress_callback(int amount)
+{
+	bool value = false;
+	// Update() returns false if the Cancel button has been pushed
+	// but this functions return _true_ if user wants to cancel
+	if (g_pProg)
+		value = (g_pProg->Update(amount) == false);
+	return value;
+}
+
+void OpenProgressDialog(const wxString &title, bool bCancellable, wxWindow *pParent)
+{
+	if (s_bOpen)
+		return;
+
+	// force the window to be wider by giving a dummy string
+	wxString message = _T("___________________________________");
+	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL;
+	if (bCancellable)
+		style |= wxPD_CAN_ABORT;
+
+	s_bOpen = true;
+	g_pProg = new wxProgressDialog(title, message, 100, pParent, style);
+	g_pProg->Show(true);
+	g_pProg->Update(0, _T(" "));
+}
+
+void CloseProgressDialog()
+{
+	if (g_pProg)
+	{
+		g_pProg->Destroy();
+		g_pProg = NULL;
+		s_bOpen = false;
+	}
+}
+
+void ResumeProgressDialog()
+{
+	if (g_pProg)
+		g_pProg->Resume();
+}
+
+//
+// returns true if the user pressed the "Cancel" button
+//
+bool UpdateProgressDialog(int amount, const wxString& newmsg)
+{
+	bool value = false;
+	if (g_pProg)
+		value = (g_pProg->Update(amount, newmsg) == false);
+	return value;
+}
+
 

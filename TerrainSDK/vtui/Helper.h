@@ -1,7 +1,7 @@
 //
 // Some useful standalone functions for use with wxWindows.
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -23,6 +23,14 @@ int AddFilenamesToStringArray(vtStringArray &array, const char *directory,
 bool LogWindowsVersion();
 vtString FormatCoord(bool bGeo, double val, bool minsec = false);
 enum wxLanguage GetLangFromName(const wxString &name);
+
+////////
+
+extern bool progress_callback(int amount);
+void OpenProgressDialog(const wxString &title, bool bCancellable = false, wxWindow *pParent = NULL);
+void CloseProgressDialog();
+bool UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));
+void ResumeProgressDialog();
 
 /////
 
