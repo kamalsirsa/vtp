@@ -117,7 +117,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	// init app data
 	m_pView = NULL;
 	m_pActiveLayer = NULL;
-	m_PlantListDlg = NULL;
+	m_SpeciesListDlg = NULL;
 	m_BioRegionDlg = NULL;
 	m_pFeatInfoDlg = NULL;
 	m_pDistanceDlg = NULL;

@@ -43,7 +43,7 @@ class vtUtilityLayer;
 class BuilderView;
 
 // dialogs
-class PlantListDlg;
+class SpeciesListDlg;
 class BioRegionDlg;
 class FeatInfoDlg;
 class DistanceDlg;
@@ -335,7 +335,7 @@ public:
 	vtString m_strPlantListFilename;
 	vtPlantList m_PlantList;
 	vtPlantList *GetPlantList() { return &m_PlantList; }
-	PlantListDlg *m_PlantListDlg;
+	SpeciesListDlg *m_SpeciesListDlg;
 	bool LoadPlantFile(const char *fname);
 
 	vtBioRegion m_BioRegions;

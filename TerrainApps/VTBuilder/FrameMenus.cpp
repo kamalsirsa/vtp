@@ -2182,15 +2182,15 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		if (!LoadPlantFile(str.mb_str()))
 			return;
 	}
-	if (!m_PlantListDlg)
+	if (!m_SpeciesListDlg)
 	{
 		// Create new Plant List Dialog
-		m_PlantListDlg = new PlantListDlg(this, WID_PLANTS, _T("Plants List"), 
-				wxPoint(140, 100), wxSize(950, 400), wxSYSTEM_MENU | wxCAPTION);
+		m_SpeciesListDlg = new SpeciesListDlg(this, WID_PLANTS, _T("Plants List"), 
+				wxPoint(140, 100), wxSize(950, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	}
 
 	// Display plant list data, calling OnInitDialog.
-	m_PlantListDlg->Show(true);
+	m_SpeciesListDlg->Show(true);
 }
 
 
@@ -2278,7 +2278,7 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 	FindVegLayers(&Density, &BioMap);
 
 	// density is now optional, defaults to 1 if there is no density layer
-	event.Enable(m_PlantListDlg && m_BioRegionDlg && BioMap &&
+	event.Enable(m_SpeciesListDlg && m_BioRegionDlg && BioMap &&
 			!m_area.IsEmpty());
 }
 
