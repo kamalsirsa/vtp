@@ -110,25 +110,6 @@ protected:
 			const FLine3 &quad);
 
 	void AddFlatRoof(FLine3 &pp, vtLevel *pLev);
-	void AddShedRoof(FLine3 &pp, vtLevel *pLev, float height);
-	/*	Top view:
-		Hip Roof:			Gable Roof:
-		_______				_______
-		|\   /|				|  |  |
-		| \ / |				|  |  |
-		|  |  |				|  |  |
-		|  |  |				|  |  |
-		| / \ |				|  |  |
-		|/___\|				|__|__|
-		Side view:
-		  ______			___________
-		 /      \           |         |
-		/________\			|_________| 
-		(triangular from the other side.)
-	*/
-	void	AddHipRoof(FLine3 &pp, vtLevel *pLev, float height);
-	void	AddGableRoof(FLine3 &pp, vtLevel *pLev, float height);
-	void	BuildRoofPanel(FPoint3 *v, int n, ...);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
 	vtGeom		*m_pGeom;		// The geometry node which contains the building geometry
