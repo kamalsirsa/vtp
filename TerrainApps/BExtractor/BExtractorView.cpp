@@ -1471,7 +1471,7 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 	int counter = 0;
 	CRect screen_rect;
 
-	for (int i = 0; i < num_points; )
+	for (int i = 0; i < num_points; i++)
 	{
 		vtBuilding *bld = doc->m_Buildings.GetAt(i)->GetBuilding();
 		if (!bld)
@@ -1496,8 +1496,8 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 			counter++;
 			i = 0;
 			num_points = doc->m_Buildings.GetSize();
+			i--;
 		}
-		else i++;
 	}
 	screen_rect = screen(drect);
 	screen_rect.InflateRect(1, 1);
