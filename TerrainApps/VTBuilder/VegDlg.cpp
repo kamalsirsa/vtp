@@ -190,9 +190,9 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 			// Display all species and it's density under each biotype as
 			//  level 2 of the tree.
 			wxString s;
-			s.Printf(_T("%hs (%1.4f /m^2)"),
-				(const char *) br->m_Types[i]->m_Densities[j]->m_common_name,
-				br->m_Types[i]->m_Densities[j]->m_plant_per_m2);
+			vtPlantDensity *pd = br->m_Types[i]->m_Densities[j];
+			const char *common = pd->m_pSpecies->GetCommonName();
+			s.Printf(_T("%hs (%1.4f /m^2)"), common, pd->m_plant_per_m2);
 
 			wxTreeItemId specie = m_BTree->AppendItem(region, s);
 			m_BTree->Expand(specie);

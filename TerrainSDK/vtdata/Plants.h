@@ -11,51 +11,6 @@
 #include "Array.h"
 #include "Features.h"
 
-class vtPlantDensity
-{
-public:
-	void ResetAmounts() { m_amount = 0.0f; m_iNumPlanted = 0; }
-
-	vtString	m_common_name;
-	float		m_plant_per_m2;
-
-	int			m_list_index;		// for faster lookup
-
-	float		m_amount;			// these two fields are using during the
-	int			m_iNumPlanted;		// plant distribution process
-};
-
-class vtBioType
-{
-public:
-	vtBioType();
-	~vtBioType();
-
-	void AddPlant(int i, const char *common_name, float plant_per_m2);
-	void ResetAmounts();
-	int GetWeightedRandomPlant();
-
-	Array<vtPlantDensity *> m_Densities;
-
-	vtString	m_name;
-};
-
-class vtBioRegion
-{
-public:
-	vtBioRegion();
-	~vtBioRegion();
-
-	bool Read(const char *fname);
-	bool Write(const char *fname);
-	void AddType(vtBioType *bt) { m_Types.Append(bt); }
-	vtBioType *GetBioType(int i) { return m_Types[i]; }
-	int FindBiotypeIdByName(const char *name);
-	void ResetAmounts();
-
-	Array<vtBioType *> m_Types;
-};
-
 enum AppearType {
 	AT_UNKNOWN,
 	AT_BILLBOARD,
@@ -120,6 +75,33 @@ protected:
 };
 
 
+class vtPlantDensity
+{
+public:
+	void ResetAmounts() { m_amount = 0.0f; m_iNumPlanted = 0; }
+
+	vtPlantSpecies	*m_pSpecies;
+	float		m_plant_per_m2;
+
+	float		m_amount;			// these two fields are using during the
+	int			m_iNumPlanted;		// plant distribution process
+};
+
+class vtBioType
+{
+public:
+	vtBioType();
+	~vtBioType();
+
+	void AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2);
+	void ResetAmounts();
+	int GetWeightedRandomPlant();
+
+	Array<vtPlantDensity *> m_Densities;
+
+	vtString	m_name;
+};
+
 class vtSpeciesList
 {
 public:
@@ -132,7 +114,6 @@ public:
 	bool ReadXML(const char *fname);
 	bool WriteXML(const char *fname);
 
-	void LookupPlantIndices(vtBioType *pvtBioType);
 	unsigned int NumSpecies() const { return m_Species.GetSize();  }
 	vtPlantSpecies *GetSpecies(unsigned int i) const
 	{
@@ -141,19 +122,36 @@ public:
 		else
 			return NULL;
 	}
-	int GetSpeciesIdByName(const char *name);
-	int GetSpeciesIdByCommonName(const char *name);
+	int GetSpeciesIdByName(const char *name) const;
+	int GetSpeciesIdByCommonName(const char *name) const;
 	virtual void AddSpecies(int SpecieID, const char *common_name,
 		const char *SciName, float max_height);
 	void Append(vtPlantSpecies *pSpecies)
 	{
 		m_Species.Append(pSpecies);
 	}
+	int FindSpeciesId(vtPlantSpecies *ps);
 
 protected:
 	Array<vtPlantSpecies*> m_Species;
 };
 
+class vtBioRegion
+{
+public:
+	vtBioRegion();
+	~vtBioRegion();
+
+	bool Read(const char *fname, const vtSpeciesList &species);
+	bool Write(const char *fname) const;
+	int AddType(vtBioType *bt) { return m_Types.Append(bt); }
+	int NumTypes() const { return m_Types.GetSize(); }
+	vtBioType *GetBioType(int i) const { return m_Types[i]; }
+	int FindBiotypeIdByName(const char *name) const;
+	void ResetAmounts();
+
+	Array<vtBioType *> m_Types;
+};
 
 class vtPlantInstanceArray : public vtFeatureSetPoint2D
 {
@@ -162,6 +160,7 @@ public:
 
 	void SetPlantList(vtSpeciesList *list) { m_pPlantList = list; }
 	int AddPlant(const DPoint2 &pos, float size, short species_id);
+	int AddPlant(const DPoint2 &pos, float size, vtPlantSpecies *ps);
 	void SetPlant(int iNum, float size, short species_id);
 	void GetPlant(int iNum, float &size, short &species_id);
 

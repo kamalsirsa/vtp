@@ -213,6 +213,16 @@ void vtSpeciesList::AddSpecies(int SpecieID, const char *CommonName,
 	m_Species.Append(pSpecie);
 }
 
+int vtSpeciesList::FindSpeciesId(vtPlantSpecies *ps)
+{
+	for (unsigned int i = 0; i < m_Species.GetSize(); i++)
+	{
+		if (m_Species[i] == ps)
+			return i;
+	}
+	return -1;
+}
+
 vtString RemSpaces(const vtString &str)
 {
 	vtString out;
@@ -224,7 +234,7 @@ vtString RemSpaces(const vtString &str)
 	return out;
 }
 
-void vtSpeciesList::LookupPlantIndices(vtBioType *bt)
+/*void vtSpeciesList::LookupPlantIndices(vtBioType *bt)
 {
 	for (unsigned int i = 0; i < bt->m_Densities.GetSize(); i++)
 	{
@@ -241,9 +251,9 @@ void vtSpeciesList::LookupPlantIndices(vtBioType *bt)
 			}
 		}
 	}
-}
+}*/
 
-int vtSpeciesList::GetSpeciesIdByName(const char *name)
+int vtSpeciesList::GetSpeciesIdByName(const char *name) const
 {
 	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
@@ -253,11 +263,18 @@ int vtSpeciesList::GetSpeciesIdByName(const char *name)
 	return -1;
 }
 
-int vtSpeciesList::GetSpeciesIdByCommonName(const char *name)
+int vtSpeciesList::GetSpeciesIdByCommonName(const char *name) const
 {
 	for (unsigned int j = 0; j < NumSpecies(); j++)
 	{
 		if (!strcmp(name, m_Species[j]->GetCommonName()))
+			return j;
+	}
+	// also, for backward compatibility, look for a match without spaces
+	for (unsigned int j = 0; j < NumSpecies(); j++)
+	{
+		vtString nospace = RemSpaces(m_Species[j]->GetCommonName());
+		if (!strcmp(name, nospace))
 			return j;
 	}
 	return -1;
@@ -418,8 +435,11 @@ vtBioRegion::~vtBioRegion()
 	}
 }
 
-bool vtBioRegion::Read(const char *fname)
+bool vtBioRegion::Read(const char *fname, const vtSpeciesList &species)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "r");
 	if (!fp) return false;
 
@@ -442,7 +462,9 @@ bool vtBioRegion::Read(const char *fname)
 			char common_name[80];
 			float plant_per_m2;
 			fscanf(fp, "\t%s %f\n", common_name, &plant_per_m2);
-			bt->AddPlant(j, common_name, plant_per_m2);
+			int snum = species.GetSpeciesIdByCommonName(common_name);
+			if (snum != -1)
+				bt->AddPlant(species.GetSpecies(snum), plant_per_m2);
 		}
 		m_Types.Append(bt);
 	}
@@ -450,9 +472,10 @@ bool vtBioRegion::Read(const char *fname)
 	return true;
 }
 
-bool vtBioRegion::Write(const char *fname)
+bool vtBioRegion::Write(const char *fname) const
 {
-	FILE *fp = fopen(fname, "wb");
+	// TODO: replace with XML format
+/*	FILE *fp = fopen(fname, "wb");
 	if (!fp) return false;
 
 	int num = m_Types.GetSize();
@@ -472,10 +495,11 @@ bool vtBioRegion::Write(const char *fname)
 		}
 	}
 	fclose(fp);
+	*/
 	return true;
 }
 
-int vtBioRegion::FindBiotypeIdByName(const char *name)
+int vtBioRegion::FindBiotypeIdByName(const char *name) const
 {
 	int num = m_Types.GetSize();
 	for (int i = 0; i < num; i++)
@@ -509,10 +533,10 @@ vtBioType::~vtBioType()
 		delete m_Densities[i];
 }
 
-void vtBioType::AddPlant(int i, const char *common_name, float plant_per_m2)
+void vtBioType::AddPlant(vtPlantSpecies *pSpecies, float plant_per_m2)
 {
 	vtPlantDensity *pd = new vtPlantDensity;
-	pd->m_common_name = common_name;
+	pd->m_pSpecies = pSpecies;
 	pd->m_plant_per_m2 = plant_per_m2;
 	pd->m_amount = 0.0f;
 	pd->m_iNumPlanted = 0;
@@ -569,6 +593,15 @@ int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
 	SetValue(index, m_SizeField, size);
 	SetValue(index, m_SpeciesField, species_id);
 	return index;
+}
+
+int vtPlantInstanceArray::AddPlant(const DPoint2 &pos, float size,
+									vtPlantSpecies *ps)
+{
+	int species_id = m_pPlantList->FindSpeciesId(ps);
+	if (species_id == -1)
+		return -1;
+	return AddPlant(pos, size, species_id);
 }
 
 void vtPlantInstanceArray::SetPlant(int iNum, float size, short species_id)
