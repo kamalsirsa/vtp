@@ -175,7 +175,8 @@ void AutoDialog::AddValidator(long id, wxString *sptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	wxGenericValidator *gv = new wxGenericValidator(sptr);
-	pWin->SetValidator(*gv);
+	pWin->SetValidator(*gv);	// actually clones the one we pass in
+	delete gv;
 }
 
 void AutoDialog::AddValidator(long id, bool *bptr)
@@ -183,7 +184,8 @@ void AutoDialog::AddValidator(long id, bool *bptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	wxGenericValidator *gv = new wxGenericValidator(bptr);
-	pWin->SetValidator(*gv);
+	pWin->SetValidator(*gv);	// actually clones the one we pass in
+	delete gv;
 }
 
 void AutoDialog::AddValidator(long id, int *iptr)
@@ -191,7 +193,8 @@ void AutoDialog::AddValidator(long id, int *iptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	wxGenericValidator *gv = new wxGenericValidator(iptr);
-	pWin->SetValidator(*gv);
+	pWin->SetValidator(*gv);	// actually clones the one we pass in
+	delete gv;
 }
 
 void AutoDialog::AddNumValidator(long id, int *iptr)
@@ -200,7 +203,8 @@ void AutoDialog::AddNumValidator(long id, int *iptr)
 	if (pWin)
 	{
 		wxNumericValidator *gv = new wxNumericValidator(iptr);
-		pWin->SetValidator(*gv);
+		pWin->SetValidator(*gv);	// actually clones the one we pass in
+		delete gv;
 	}
 }
 
@@ -210,7 +214,8 @@ void AutoDialog::AddNumValidator(long id, float *fptr, int digits)
 	if (pWin)
 	{
 		wxNumericValidator *gv = new wxNumericValidator(fptr, digits);
-		pWin->SetValidator(*gv);
+		pWin->SetValidator(*gv);	// actually clones the one we pass in
+		delete gv;
 	}
 }
 
@@ -220,7 +225,8 @@ void AutoDialog::AddNumValidator(long id, double *dptr, int digits)
 	if (pWin)
 	{
 		wxNumericValidator *gv = new wxNumericValidator(dptr, digits);
-		pWin->SetValidator(*gv);
+		pWin->SetValidator(*gv);	// actually clones the one we pass in
+		delete gv;
 	}
 }
 
@@ -237,7 +243,8 @@ void AutoPanel::AddValidator(long id, wxString *sptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	wxGenericValidator *gv = new wxGenericValidator(sptr);
-	pWin->SetValidator(*gv);
+	pWin->SetValidator(*gv);	// actually clones the one we pass in
+	delete gv;
 }
 
 void AutoPanel::AddValidator(long id, bool *bptr)
@@ -245,7 +252,8 @@ void AutoPanel::AddValidator(long id, bool *bptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	wxGenericValidator *gv = new wxGenericValidator(bptr);
-	pWin->SetValidator(*gv);
+	pWin->SetValidator(*gv);	// actually clones the one we pass in
+	delete gv;
 }
 
 void AutoPanel::AddValidator(long id, int *iptr)
@@ -253,7 +261,8 @@ void AutoPanel::AddValidator(long id, int *iptr)
 	wxWindow *pWin = FindWindow(id);
 	if (!pWin) return;
 	wxGenericValidator *gv = new wxGenericValidator(iptr);
-	pWin->SetValidator(*gv);
+	pWin->SetValidator(*gv);	// actually clones the one we pass in
+	delete gv;
 }
 
 void AutoPanel::AddNumValidator(long id, int *iptr)
@@ -262,7 +271,8 @@ void AutoPanel::AddNumValidator(long id, int *iptr)
 	if (pWin)
 	{
 		wxNumericValidator *gv = new wxNumericValidator(iptr);
-		pWin->SetValidator(*gv);
+		pWin->SetValidator(*gv);	// actually clones the one we pass in
+		delete gv;
 	}
 }
 
@@ -272,7 +282,8 @@ void AutoPanel::AddNumValidator(long id, float *fptr)
 	if (pWin)
 	{
 		wxNumericValidator *gv = new wxNumericValidator(fptr);
-		pWin->SetValidator(*gv);
+		pWin->SetValidator(*gv);	// actually clones the one we pass in
+		delete gv;
 	}
 }
 
@@ -282,7 +293,8 @@ void AutoPanel::AddNumValidator(long id, double *dptr)
 	if (pWin)
 	{
 		wxNumericValidator *gv = new wxNumericValidator(dptr);
-		pWin->SetValidator(*gv);
+		pWin->SetValidator(*gv);	// actually clones the one we pass in
+		delete gv;
 	}
 }
 
