@@ -100,6 +100,7 @@ const char *datumToString(DATUM d);
 StatePlaneInfo *GetStatePlaneTable();
 int GetNumStatePlanes();
 void CreateSimilarGeographicProjection(vtProjection &source, vtProjection &geo);
+OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget);
 
 ///////////////////////////
 

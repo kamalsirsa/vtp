@@ -323,9 +323,6 @@ const char *datumToString(DATUM d)
 }
 
 
-//////////////////////////////////////////////////////////////////////////
-// Helper functions
-
 /**
  * Determine an approximate conversion from degrees of longitude to meters,
  * given a latitude in degrees.
@@ -337,4 +334,45 @@ double EstimateDegreesToMeters(double latitude)
 	double circ = 2.0 * r0 * PI;
 	return circ / 360.0f;
 }
+
+/**
+ * Create a conversion between projections, making the assumption that
+ * the Datum of the target is the same as the Datum of the source.
+ */
+OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget)
+{
+	vtProjection DummyTarget = *pTarget;
+
+	const char *datum_string = pSource->GetAttrValue("DATUM");
+
+	OGR_SRSNode *dnode = DummyTarget.GetAttrNode("DATUM");
+	if (dnode)
+		dnode->GetChild(0)->SetValue(datum_string);
+
+	OGR_SRSNode *enode1 = pSource->GetAttrNode("SPHEROID");
+	OGR_SRSNode *enode2 = DummyTarget.GetAttrNode("SPHEROID");
+	if (enode1 && enode2)
+	{
+		enode2->GetChild(0)->SetValue(enode1->GetChild(0)->GetValue());
+		enode2->GetChild(1)->SetValue(enode1->GetChild(1)->GetValue());
+		enode2->GetChild(2)->SetValue(enode1->GetChild(2)->GetValue());
+	}
+
+#if DEBUG && 0
+	// Debug: Check texts in PROJ4
+	char *str3, *str4;
+	pSource->exportToProj4(&str3);
+	DummyTarget.exportToProj4(&str4);
+
+	char *wkt1, *wkt2;
+	OGRErr err = pSource->exportToWkt(&wkt1);
+	err = DummyTarget.exportToWkt(&wkt2);
+
+	OGRFree(wkt1);
+	OGRFree(wkt2);
+#endif
+
+	return OGRCreateCoordinateTransformation(pSource, &DummyTarget);
+}
+
 
