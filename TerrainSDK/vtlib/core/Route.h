@@ -131,7 +131,6 @@ protected:
 
 	vtLOD		*m_pLOD;
 	vtGeom		*m_pRouteGeom;
-//	DLine2		m_pRoutePts;	// in earth coordinates
 	Array<PolePlacement>  m_aRoutePlaces;
 	vtTerrain*	m_pTheTerrain;
 	vtStructureObj* structObjList;
