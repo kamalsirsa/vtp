@@ -31,6 +31,9 @@
 #if INFRA
 #include "Infra/InfraFrame.h"
 #define FRAME_NAME InfraFrame
+#elif VIDEOTRACK
+#include "../VideoTrack/VTrackFrame.h"
+#define FRAME_NAME VideoTrackerFrame
 #else
 #define FRAME_NAME vtFrame
 #define LoadAppCatalog(locale)
