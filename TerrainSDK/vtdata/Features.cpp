@@ -292,7 +292,7 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 		DBFClose(db);
 
 	// allocate selection array
-	m_Selected.SetSize(nElem);
+	m_Flags.SetSize(nElem);
 	return true;
 }
 
@@ -428,36 +428,26 @@ void vtFeatures::FindAllPointsAtLocation(const DPoint2 &loc, Array<int> &found)
 /////////////////////////////////////////////////////////////////////////////
 // Selection of Entities
 
-void vtFeatures::Select(int iEnt, bool set)
-{
-	m_Selected[iEnt] = set;
-}
-
-bool vtFeatures::IsSelected(int iEnt)
-{
-	return m_Selected[iEnt];
-}
-
 int vtFeatures::NumSelected()
 {
 	int count = 0;
-	int size = m_Selected.GetSize();
+	int size = m_Flags.GetSize();
 	for (int i = 0; i < size; i++)
-		if (m_Selected[i])
+		if (m_Flags[i] & FF_SELECTED)
 			count++;
 	return count;
 }
 
 void vtFeatures::DeselectAll()
 {
-	for (int i = 0; i < m_Selected.GetSize(); i++)
-		m_Selected[i] = false;
+	for (int i = 0; i < m_Flags.GetSize(); i++)
+		m_Flags[i] &= ~FF_SELECTED;
 }
 
 void vtFeatures::InvertSelection()
 {
-	for (int i = 0; i < m_Selected.GetSize(); i++)
-		m_Selected[i] = !m_Selected[i];
+	for (int i = 0; i < m_Flags.GetSize(); i++)
+		m_Flags[i] ^= FF_SELECTED;
 }
 
 int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
@@ -469,7 +459,7 @@ int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 	bool bWas;
 	for (int i = 0; i < entities; i++)
 	{
-		bWas = m_Selected[i];
+		bWas = (m_Flags[i] & FF_SELECTED);
 		if (st == ST_NORMAL)
 			Select(i, false);
 
@@ -615,29 +605,55 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 void vtFeatures::DeleteSelected()
 {
 	int i, entities = NumEntities();
+	for (i = 0; i < entities; i++)
+	{
+		if (IsSelected(i))
+		{
+			Select(i, false);
+			SetToDelete(i);
+		}
+	}
+	ApplyDeletion();
+}
+
+void vtFeatures::SetToDelete(int iFeature)
+{
+	m_Flags[iFeature] |= FF_DELETE;
+}
+
+void vtFeatures::ApplyDeletion()
+{
+	int i, entities = NumEntities();
 
 	int target = 0;
 	int newtotal = entities;
 	for (i = 0; i < entities; i++)
 	{
-		if (!m_Selected[i])
+		if (! (m_Flags[i] & FF_DELETE))
 		{
 			if (target != i)
 			{
 				CopyEntity(i, target);
-				m_Selected[target] = false;
+				m_Flags[target] = m_Flags[i];
 			}
 			target++;
 		}
 		else
 			newtotal--;
 	}
+	_ShrinkGeomArraySize(newtotal);
+}
+
+void vtFeatures::_ShrinkGeomArraySize(int size)
+{
 	if (m_nSHPType == SHPT_POINT)
-		m_Point2.SetSize(newtotal);
+		m_Point2.SetSize(size);
 	if (m_nSHPType == SHPT_POINTZ)
-		m_Point3.SetSize(newtotal);
+		m_Point3.SetSize(size);
+	// TODO: check this, it might leak some memory by not freeing
+	//  the linepoly which is dropped off the end
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
-		m_LinePoly.SetSize(newtotal);
+		m_LinePoly.SetSize(size);
 }
 
 void vtFeatures::CopyEntity(int from, int to)
@@ -661,6 +677,14 @@ void vtFeatures::CopyEntity(int from, int to)
 		m_fields[i]->CopyValue(from, to);
 	}
 }
+
+void vtFeatures::DePickAll()
+{
+	int i, entities = NumEntities();
+	for (i = 0; i < entities; i++)
+		m_Flags[i] &= ~FF_PICKED;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Data Fields
@@ -704,7 +728,7 @@ int vtFeatures::AddRecord()
 	{
 		recs = m_fields[i]->AddRecord();
 	}
-	m_Selected.Append(false);
+	m_Flags.Append(0);
 	return recs;
 }
 

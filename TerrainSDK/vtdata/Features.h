@@ -45,6 +45,11 @@ public:
 	Array<vtString*> m_string;
 };
 
+// feature flags (bit flags)
+#define FF_SELECTED		1
+#define FF_PICKED		2
+#define FF_DELETE		4
+
 /**
  * vtFeatures contains a collection of features which are just abstract data,
  * without any specific correspondence to any aspect of the physical world.
@@ -76,16 +81,41 @@ public:
 	void CopyEntity(int from, int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
 	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
+	void SetToDelete(int iFeature);
+	void ApplyDeletion();
 
 	// selection
-	void Select(int iEnt, bool set = true);
-	bool IsSelected(int iEnt);
+	void Select(int iEnt, bool set = true)
+	{
+		if (set)
+			m_Flags[iEnt] |= FF_SELECTED;
+		else
+			m_Flags[iEnt] &= ~FF_SELECTED;
+	}
+	bool IsSelected(int iEnt)
+	{
+		return ((m_Flags[iEnt] & FF_SELECTED) != 0);
+	}
 	int NumSelected();
 	void DeselectAll();
 	void InvertSelection();
 	int DoBoxSelect(const DRECT &rect, SelectionType st);
 	int SelectByCondition(int iField, int iCondition, const char *szValue);
 	void DeleteSelected();
+
+	// picking (alternate form of selection)
+	void Pick(int iEnt, bool set = true)
+	{
+		if (set)
+			m_Flags[iEnt] |= FF_PICKED;
+		else
+			m_Flags[iEnt] &= ~FF_PICKED;
+	}
+	bool IsPicked(int iEnt)
+	{
+		return ((m_Flags[iEnt] & FF_PICKED) != 0);
+	}
+	void DePickAll();
 
 	// attribute (field) operations
 	int GetNumFields() { return m_fields.GetSize(); }
@@ -102,6 +132,8 @@ public:
 	vtProjection &GetAtProjection() { return m_proj; }
 
 protected:
+	void _ShrinkGeomArraySize(int size);
+
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
 	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON
 	int			m_nSHPType;
@@ -109,7 +141,7 @@ protected:
 	DLine3		m_Point3;		// SHPT_POINTZ
 	DPolyArray2	m_LinePoly;		// SHPT_ARC, SHPT_POLYGON
 
-	Array<bool>	m_Selected;
+	Array<unsigned char> m_Flags;
 
 	Array<Field*> m_fields;
 
