@@ -1538,8 +1538,10 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 	m_bSelectedPlant = false;
 
 	int plant;		// index of closest plant
-	bool result2 = plants.FindClosestPlant(gpos,
-		g_Options.m_fSelectionCutoff, plant, dist2);
+	plant = plants.FindClosestPoint(gpos, g_Options.m_fSelectionCutoff);
+	bool result2 = (plant != -1);
+	if (result2)
+		dist2 = (gpos - plants.GetPoint(plant)).Length();
 
 	vtRouteMap &routes = pTerr->GetRouteMap();
 	m_bSelectedUtil = false;
@@ -1976,14 +1978,11 @@ void Enviro::SetPlantOptions(PlantingOptions &opt)
 	if (m_mode == MM_SELECT)
 	{
 		vtPlantInstanceArray3d &pia = GetCurrentTerrain()->GetPlantInstances();
-		for (unsigned int i = 0; i < pia.GetSize(); i++)
+		for (unsigned int i = 0; i < pia.GetNumEntities(); i++)
 		{
-			vtPlantInstance3d *inst3d = pia.GetInstance3d(i);
-			if (inst3d->IsSelected())
+			if (pia.IsSelected(i))
 			{
-				vtPlantInstance &inst = pia.GetAt(i);
-				inst.species_id = opt.m_iSpecies;
-				inst.size = opt.m_fHeight;
+				pia.SetPlant(i, opt.m_fHeight, opt.m_iSpecies);
 				pia.CreatePlantNode(i);
 			}
 		}
@@ -2004,7 +2003,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 	// check distance from other plants
 	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
-	int size = pia.GetSize();
+	int size = pia.GetNumEntities();
 	double len, closest = 1E8;
 	DPoint2 diff;
 
@@ -2013,7 +2012,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 	{
 		for (int i = 0; i < size; i++)
 		{
-			diff = epos - pia.GetAt(i).m_p;
+			diff = epos - pia.GetPoint(i);
 			len = diff.Length();
 
 			if (len < closest) closest = len;

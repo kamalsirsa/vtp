@@ -1490,11 +1490,10 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 	if (plants.NumSelected() != 0)
 	{
 		int found = -1;
-		unsigned int count = plants.GetSize();
+		unsigned int count = plants.GetNumEntities();
 		for (unsigned int i = 0; i < count; i++)
 		{
-			vtPlantInstance3d *inst3d = plants.GetInstance3d(i);
-			if (inst3d->IsSelected())
+			if (plants.IsSelected(i))
 			{
 				found = i;
 				break;
@@ -1505,8 +1504,11 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 			// TODO: show properties for this plant
 			PlantingOptions &opt = g_App.GetPlantOptions();
 
-			opt.m_iSpecies = plants[found].species_id;
-			opt.m_fHeight = plants[found].size;
+			float size;
+			short species_id;
+			plants.GetPlant(found, size, species_id);
+			opt.m_iSpecies = species_id;
+			opt.m_fHeight = size;
 
 			m_pPlantDlg->SetPlantList(g_App.GetPlantList());
 			m_pPlantDlg->SetPlantOptions(opt);

@@ -956,9 +956,9 @@ void vtTerrain::_CreateCulture(bool bSound)
 				// Create the 3d plants
 				VTLOG("\tLoaded plants file.\n");
 				int created = m_PIA.CreatePlantNodes();
-				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetSize());
+				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
 
-				int i, size = m_PIA.GetSize();
+				int i, size = m_PIA.GetNumEntities();
 				for (i = 0; i < size; i++)
 				{
 					vtTransform *pTrans = m_PIA.GetPlantNode(i);
@@ -1934,12 +1934,7 @@ For example, 513x513 and 1025x105 are supported sizes.";
 
 bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 {
-	vtPlantInstance pi;
-	pi.m_p = pos;
-	pi.species_id = iSpecies;
-	pi.size = fSize;
-
-	int num = m_PIA.Append(pi);
+	int num = m_PIA.AddPlant(pos, fSize, iSpecies);
 	if (!m_PIA.CreatePlantNode(num))
 		return false;
 
@@ -1956,10 +1951,9 @@ bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 void vtTerrain::DeleteSelectedPlants()
 {
 	// first remove them from the terrain
-	for (unsigned int i = 0; i < m_PIA.GetSize(); i++)
+	for (unsigned int i = 0; i < m_PIA.GetNumEntities(); i++)
 	{
-		vtPlantInstance3d *inst3d = m_PIA.GetInstance3d(i);
-		if (inst3d->IsSelected())
+		if (m_PIA.IsSelected(i))
 		{
 			vtTransform *pTrans = m_PIA.GetPlantNode(i);
 			m_pVegGrid->RemoveFromGrid(pTrans);
