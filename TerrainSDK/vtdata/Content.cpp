@@ -203,7 +203,7 @@ void ContentVisitor::startElement (const char * name, const XMLAttributes &atts)
 			attval = atts.getValue("distance");
 			if (attval && *attval)
 			{
-				pModel->m_distance = atof(attval);
+				pModel->m_distance = (float)atof(attval);
 			}
 			else
 				pModel->m_distance = 0.0f;
