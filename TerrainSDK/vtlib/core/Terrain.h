@@ -128,6 +128,8 @@ public:
 
 	/// Add a model (or any node) to the terrain.
 	void AddNode(vtNode *pNode);
+	/// Remove a node from the terrain's scene graph.
+	void RemoveNode(vtNode *pNode);
 
 	/// Place a model on the terrain.
 	void PlantModel(vtTransform *model);

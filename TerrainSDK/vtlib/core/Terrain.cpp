@@ -2652,6 +2652,21 @@ bool vtTerrain::AddNodeToStructGrid(vtGeom *pGeom)
 }
 
 
+/**
+ * Removes a node from the terrain.
+ *
+ * \sa RemoveNodeFromStructGrid
+ */
+void vtTerrain::RemoveNode(vtNode *pNode)
+{
+	m_pTerrainGroup->RemoveChild(pNode);
+}
+
+/** 
+ * Removes a node from the terrain's structure LOD grid.
+ *
+ * \sa RemoveNode
+ */
 void vtTerrain::RemoveNodeFromStructGrid(vtNode *pNode)
 {
 	if (m_pStructGrid)
