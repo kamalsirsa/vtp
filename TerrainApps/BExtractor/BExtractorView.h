@@ -212,7 +212,6 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnZoomIn();
 	afx_msg void OnZoomOut();
-	afx_msg void OnFunctionsTestIPL();
 	afx_msg void OnMButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
