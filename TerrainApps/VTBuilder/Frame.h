@@ -50,6 +50,7 @@ class FeatInfoDlg;
 class DistanceDlg;
 class LinearStructureDlg;
 class LinearStructureDlg2d;
+class InstanceDlg;
 
 class MainFrame: public wxFrame
 {
@@ -71,6 +72,7 @@ public:
 	virtual void AddMainToolbars();
 	bool DrawDisabled() { return m_bDrawDisabled; }
 
+protected:
 	void OnClose(wxCloseEvent &event);
 	void DeleteContents();
 
@@ -115,8 +117,10 @@ public:
 	void OnViewPan(wxCommandEvent& event);
 	void OnViewDistance(wxCommandEvent& event);
 	void OnViewSetArea(wxCommandEvent& event);
+public:
 	void OnViewZoomIn(wxCommandEvent& event);
 	void OnViewZoomOut(wxCommandEvent& event);
+protected:
 	void OnViewZoomAll(wxCommandEvent& event);
 	void OnViewZoomToLayer(wxCommandEvent& event);
 	void OnViewFull(wxCommandEvent& event);
@@ -158,9 +162,7 @@ public:
 	void OnElevSetUnknown(wxCommandEvent& event);
 	void OnFillIn(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);
-	void OnExportTerragen(wxCommandEvent& event);
-	void OnExportGeoTIFF(wxCommandEvent& event);
-	void OnExportBMP(wxCommandEvent& event);
+	void OnElevExport(wxCommandEvent& event);
 	void OnElevExportBitmap(wxCommandEvent& event);
 	void OnElevMergeTin(wxCommandEvent& event);
 
@@ -192,6 +194,7 @@ public:
 	void OnBuildingDeletePoints(wxCommandEvent& event);
 	void OnStructureAddLinear(wxCommandEvent& event);
 	void OnStructureEditLinear(wxCommandEvent& event);
+	void OnStructureAddInstances(wxCommandEvent& event);
 	void OnStructureAddFoundation(wxCommandEvent& event);
 	void OnStructureConstrain(wxCommandEvent& event);
 	void OnUpdateFeatureSelect(wxUpdateUIEvent& event);
@@ -201,6 +204,7 @@ public:
 	void OnUpdateBuildingAddPoints(wxUpdateUIEvent& event);
 	void OnUpdateBuildingDeletePoints(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddLinear(wxUpdateUIEvent& event);
+	void OnUpdateStructureAddInstances(wxUpdateUIEvent& event);
 	void OnUpdateStructureEditLinear(wxUpdateUIEvent& event);
 	void OnUpdateStructureAddFoundation(wxUpdateUIEvent& event);
 	void OnUpdateStructureConstrain(wxUpdateUIEvent& event);
@@ -236,6 +240,7 @@ public:
 	// keys (used for shortcuts)
 	void OnChar(wxKeyEvent& event);
 
+public:
 	// project
 	void LoadProject(const wxString2 &strPathName);
 	void SaveProject(const wxString2 &strPathName);
@@ -331,6 +336,14 @@ public:
 	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);
 	LinearStructureDlg2d *m_pLinearStructureDlg;
 	LinStructOptions m_LSOptions;
+	InstanceDlg *ShowInstanceDlg(bool bShow);
+	InstanceDlg *m_pInstanceDlg;
+
+	// Content items (can be referenced as structures)
+	void LookForContentFiles();
+	void FreeContentFiles();
+	void ResolveInstanceItem(vtStructInstance *inst);
+	std::vector<vtContentManager*> m_contents;
 
 	// Vegetation
 	vtString m_strSpeciesFilename;
@@ -366,6 +379,12 @@ public:
 	void ImportDataFromTIGER(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
+	// Export
+	void ExportTerragen();
+	void ExportGeoTIFF();
+	void ExportBMP();
+	void ExportSTM();
+
 	// area tool
 	void StretchArea();
 	void ExportElevation();
@@ -373,6 +392,7 @@ public:
 
 	// Application Data
 	DRECT		m_area;
+	vtStringArray	m_datapaths;
 
 protected:
 	// INI File

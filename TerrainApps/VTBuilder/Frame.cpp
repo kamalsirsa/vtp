@@ -15,6 +15,7 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
+#include "xmlhelper/exception.hpp"
 #include <fstream>
 
 #include "Frame.h"
@@ -24,6 +25,7 @@
 #include "App.h"
 #include "Helper.h"
 #include "BuilderView.h"
+#include "vtui/Helper.h"
 // Layers
 #include "ElevLayer.h"
 #include "ImageLayer.h"
@@ -38,6 +40,7 @@
 #include "FeatInfoDlg.h"
 #include "vtui/DistanceDlg.h"
 #include "vtui/LinearStructDlg.h"
+#include "vtui/InstanceDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "bld_add_points.xpm"
@@ -51,6 +54,8 @@
 #  include "elev_box.xpm"
 
 #  include "info.xpm"
+#  include "instances.xpm"
+
 #  include "layer_export.xpm"
 #  include "layer_import.xpm"
 #  include "layer_new.xpm"
@@ -123,6 +128,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_pFeatInfoDlg = NULL;
 	m_pDistanceDlg = NULL;
 	m_pLinearStructureDlg = NULL;
+	m_pInstanceDlg = NULL;
 	m_szIniFilename = APPNAME ".ini";
 	m_bDrawDisabled = false;
 
@@ -200,14 +206,16 @@ void MainFrame::SetupUI()
 	RefreshStatusBar();
 
 	// Load structure defaults
-	vtStringArray paths;
-	ReadEnviroPaths(paths);
-	bool foundmaterials = LoadGlobalMaterials(paths);
+	ReadEnviroPaths(m_datapaths);
+	bool foundmaterials = LoadGlobalMaterials(m_datapaths);
 	if (!foundmaterials)
 		DisplayAndLog("The building materials file (Culture/materials.xml) was not found\n"
 			" on your Data Path.  Without this file, materials will not be handled\n"
 			" correctly.  Please check your Data Paths to avoid this problem.");
 	SetupDefaultStructures();
+
+	// Load content files, which might be referenced by structure layers
+	LookForContentFiles();
 
 	SetStatusText(_T("Ready"));
 }
@@ -217,6 +225,7 @@ void MainFrame::DeleteContents()
 	m_Layers.Empty();
 	m_pActiveLayer = NULL;
 	FreeGlobalMaterials();
+	FreeContentFiles();
 }
 
 void MainFrame::CheckForGDALAndWarn()
@@ -371,6 +380,7 @@ void MainFrame::RefreshToolbar()
 			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
 			ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
 			ADD_TOOL(ID_STRUCTURE_CONSTRAIN, wxBITMAP(bld_corner), _("Constrain Angles"), true);
+			ADD_TOOL(ID_STRUCTURE_ADD_INST, wxBITMAP(instances), _("Add Instances"), true);
 			break;
 		case LT_UTILITY:
 			toolBar_main->AddSeparator();
@@ -864,7 +874,7 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 	if (bShow && !m_pLinearStructureDlg)
 	{
 		// Create new Distance Dialog
-		m_pLinearStructureDlg = new LinearStructureDlg2d(this, WID_DISTANCE,
+		m_pLinearStructureDlg = new LinearStructureDlg2d(this, -1,
 			_T("Linear Structures"), wxPoint(120, 80), wxSize(600, 200),
 			wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pLinearStructureDlg->m_pFrame = this;
@@ -872,6 +882,79 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 	if (m_pLinearStructureDlg)
 		m_pLinearStructureDlg->Show(bShow);
 	return m_pLinearStructureDlg;
+}
+
+
+InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
+{
+	if (bShow && !m_pInstanceDlg)
+	{
+		// Create new Distance Dialog
+		m_pInstanceDlg = new InstanceDlg(this, -1,
+			_T("Structure Instances"), wxPoint(120, 80), wxSize(600, 200));
+
+		for (unsigned int i = 0; i < m_contents.size(); i++)
+			m_pInstanceDlg->AddContent(m_contents[i]);
+		m_pInstanceDlg->SetProjection(m_proj);
+	}
+	if (m_pInstanceDlg)
+		m_pInstanceDlg->Show(bShow);
+	return m_pInstanceDlg;
+}
+
+void MainFrame::LookForContentFiles()
+{
+	for (unsigned int i = 0; i < m_datapaths.size(); i++)
+	{
+		vtStringArray array;
+		AddFilenamesToStringArray(array, m_datapaths[i], "*.vtco");
+
+		for (unsigned int j = 0; j < array.size(); j++)
+		{
+			vtString path = m_datapaths[i];
+			path += array[j];
+
+			bool success = true;
+			vtContentManager *mng = new vtContentManager;
+			try
+			{
+				mng->ReadXML(path);
+			}
+			catch (xh_io_exception &ex)
+			{
+				// display (or at least log) error message here
+				VTLOG("XML error:");
+				VTLOG(ex.getFormattedMessage().c_str());
+				success = false;
+				delete mng;
+			}
+			if (success)
+				m_contents.push_back(mng);
+		}
+	}
+}
+
+void MainFrame::FreeContentFiles()
+{
+	for (unsigned int i = 0; i < m_contents.size(); i++)
+		delete m_contents[i];
+	m_contents.clear();
+}
+
+void MainFrame::ResolveInstanceItem(vtStructInstance *inst)
+{
+	vtString name;
+	if (!inst->GetValueString("itemname", name))
+		return;
+	for (unsigned int j = 0; j < m_contents.size(); j++)
+	{
+		vtItem *item = m_contents[j]->FindItemByName(name);
+		if (item)
+		{
+			inst->m_pItem = item;
+			break;
+		}
+	}
 }
 
 
@@ -1025,6 +1108,8 @@ void MainFrame::SetProjection(const vtProjection &p)
 	GetView()->SetWMProj(p);
 	if (m_pDistanceDlg)
 		m_pDistanceDlg->SetProjection(m_proj);
+	if (m_pInstanceDlg)
+		m_pInstanceDlg->SetProjection(m_proj);
 }
 
 void MainFrame::OnSelectionChanged()
