@@ -3,7 +3,7 @@
 //
 // Creates fence geometry, drapes on a terrain
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -260,7 +260,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 		float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
 
 		float u = 0.0f;
-		float v1 = 0.0f, v2;
+		float v1, v2;
 		for (int i = 0; i < 3; i++)
 		{
 			float y1, y2;
@@ -271,17 +271,25 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 			switch (i)
 			{
 			case 0:
-			case 2:
+				v1 = 0.0f;
 				if (uvscale.y == -1)
 					v2 = 1.0f;
 				else
 					v2 = vertical_meters / uvscale.y;
 				break;
 			case 1:
+				v1 = 0.0f;
 				if (uvscale.y == -1)
 					v2 = 1.0f;
 				else
 					v2 = m_Params.m_fConnectWidth / uvscale.y;
+				break;
+			case 2:
+				v2 = 0.0f;
+				if (uvscale.y == -1)
+					v1 = 1.0f;
+				else
+					v1 = vertical_meters / uvscale.y;
 				break;
 			}
 
