@@ -327,7 +327,7 @@ void vtTerrain::_CreateRoads()
 
 ///////////////////
 
-void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
+void vtTerrain::_CreateTextures(const FPoint3 &light_dir, bool progress_callback(int))
 {
 	// measure total texture processing time
 	clock_t c1 = clock();
@@ -433,7 +433,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 	if (m_Params.GetValueBool(STR_PRELIGHT))
 	{
 		// apply pre-lighting (darkening)
-		_ApplyPreLight(pHFGrid, m_pImage, light_dir);
+		_ApplyPreLight(pHFGrid, m_pImage, light_dir, progress_callback);
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
@@ -468,7 +468,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 				}
 			}
 		}
-		_CreateChoppedTextures(iTiles, iTileSize);
+		_CreateChoppedTextures(iTiles, iTileSize, progress_callback);
 		if (bFirstTime)
 			_CreateTiledMaterials(m_pTerrMats, iTiles, iTileSize, ambient,
 				diffuse, emmisive);
@@ -658,9 +658,9 @@ void vtTerrain::SetTextureContours(float fInterval, float fSize)
 /**
  * Experimental only!!!
  */
-void vtTerrain::recreate_textures(vtTransform *pSunLight)
+void vtTerrain::RecreateTextures(vtTransform *pSunLight, bool progress_callback(int))
 {
-	_CreateTextures(pSunLight->GetDirection());
+	_CreateTextures(pSunLight->GetDirection(), progress_callback);
 }
 
 
@@ -2384,7 +2384,8 @@ bool vtTerrain::FindAltitudeOnCulture(const FPoint3 &p3, float &fAltitude) const
 	return hit;
 }
 
-void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
+void vtTerrain::_CreateChoppedTextures(int patches, int patch_size,
+									   bool progress_callback(int))
 {
 	clock_t r1 = clock();
 
@@ -2405,6 +2406,9 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 		x_off = i * (size - 1);
 		for (j = 0; j < patches; j++)
 		{
+			if (progress_callback != NULL)
+				progress_callback(((i*patches)+j)*100 / (patches*patches));
+
 			y_off = j * (size - 1);
 
 			vtImage *target = m_Images[i*iTiles+j];
@@ -2467,7 +2471,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 
 
 void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib,
-							  const FPoint3 &light_dir)
+							  const FPoint3 &light_dir, bool progress_callback(int))
 {
 	VTLOG("  Prelighting texture: ");
 
@@ -2479,12 +2483,12 @@ void vtTerrain::_ApplyPreLight(vtHeightFieldGrid3d *pElevGrid, vtBitmapBase *dib
 	if (m_Params.GetValueBool(STR_CAST_SHADOWS))
 	{
 		// A more accurate shading, still a little experimental
-		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor);
+		pElevGrid->ShadowCastDib(dib, light_dir, shade_factor, progress_callback);
 	}
 	else if (bQuick)
-		pElevGrid->ShadeQuick(dib, shade_factor, bTrue);
+		pElevGrid->ShadeQuick(dib, shade_factor, bTrue, progress_callback);
 	else
-		pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor, bTrue);
+		pElevGrid->ShadeDibFromElevation(dib, light_dir, shade_factor, bTrue, progress_callback);
 
 	clock_t c2 = clock();
 

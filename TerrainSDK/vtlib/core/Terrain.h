@@ -270,8 +270,8 @@ public:
 	// polygon containing geo corners of terrain area
 	DLine2		m_Corners_geo;
 
-	// Experimental! Completely unoptimized!
-	void recreate_textures(vtTransform *pSunLight);
+	// Experimental!
+	void RecreateTextures(vtTransform *pSunLight, bool progress_callback(int) = NULL);
 
 protected:
 	/********************** Protected Methods ******************/
@@ -286,7 +286,7 @@ protected:
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateAbstractLayers();
-	void _CreateTextures(const FPoint3 &light_dir);
+	void _CreateTextures(const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _CreateDetailTexture();
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
@@ -294,12 +294,12 @@ protected:
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 
-	void _CreateChoppedTextures(int patches, int patch_size);
+	void _CreateChoppedTextures(int patches, int patch_size, bool progress_callback(int) = NULL);
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
 	void _ApplyPreLight(vtHeightFieldGrid3d *pLocalGrid, vtBitmapBase *dib,
-		const FPoint3 &light_dir);
+		const FPoint3 &light_dir, bool progress_callback(int) = NULL);
 	void _ComputeCenterLocation();
 	void GetTerrainBounds();
 
