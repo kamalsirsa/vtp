@@ -258,7 +258,7 @@ bool vtTagArray::GetValueRGBi(const char *szTagName, RGBi &color) const
 	if (tag)
 	{
 		RGBi cval;
-		if (sscanf(tag->value, "%d %d %d", &color.r, &color.g, &color.b) == 3)
+		if (sscanf(tag->value, "%d %d %d", &cval.r, &cval.g, &cval.b) == 3)
 			color = cval;
 		else
 			return false;
