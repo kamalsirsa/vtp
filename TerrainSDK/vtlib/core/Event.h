@@ -51,8 +51,8 @@ enum vtKeyCode
     VTK_MENU,
     VTK_PAUSE,
     VTK_CAPITAL,
-    VTK_PRIOR,  // Page up
-    VTK_NEXT,   // Page down
+    VTK_PAGEUP,		// 'Prior'
+    VTK_PAGEDOWN,   // 'Next'
     VTK_END,
     VTK_HOME,
     VTK_LEFT,
@@ -106,9 +106,7 @@ enum vtKeyCode
     VTK_F23,
     VTK_F24,
     VTK_NUMLOCK,
-    VTK_SCROLL,
-    VTK_PAGEUP,
-    VTK_PAGEDOWN
+    VTK_SCROLL
 };
 
 #endif // VTLIB_EVENTH
