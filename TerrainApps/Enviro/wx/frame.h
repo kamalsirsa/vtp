@@ -54,6 +54,7 @@ public:
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void Setup3DScene() {}
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
+	virtual void FrameArgument(int i, const char *str) { }
 
 	// command handlers
 	void OnExit(wxCommandEvent& event);

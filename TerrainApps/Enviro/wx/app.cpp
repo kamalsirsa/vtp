@@ -293,6 +293,13 @@ bool vtApp::OnInit()
 	vtFrame *frame = new FRAME_NAME(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 
+	// Also let the frame see the command-line arguments
+	for (int i = 0; i < argc; i++)
+	{
+		wxString2 str = argv[i];
+		frame->FrameArgument(i, str.mb_str());
+	}
+
 	bool go = true;
 	while (go)
 		go = ProcessIdle();
