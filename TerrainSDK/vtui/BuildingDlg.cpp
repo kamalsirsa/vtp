@@ -163,6 +163,8 @@ void BuildingDlg::OnFeatClear( wxCommandEvent &event )
 
 void BuildingDlg::OnEdgeSlope( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
 	TransferDataFromWindow();
 	m_pEdge->m_iSlope = m_iEdgeSlope;
 	Modified();

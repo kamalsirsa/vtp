@@ -231,7 +231,7 @@ void vtStructureArray3d::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 {
 	vtStructure3d *str1, *str2;
 
-	if (m_pEditBuilding)
+	if (m_pEditBuilding && m_pEditBuilding != bld)
 	{
 		m_pEditBuilding->RemoveTag("level");
 		m_pEditBuilding->RemoveTag("edge");
