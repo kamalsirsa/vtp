@@ -226,7 +226,7 @@ vtGeom *IslandTerrain::make_test_cone()
 vtGeom *IslandTerrain::make_red_cube()
 {
 	vtGeom *thebox = new vtGeom();
-	float ws = 100.0f;	// convert 100m to 3d system units
+	float ws = 100.0f;	// meters
 
 	//code to make it a Shape
 	vtMesh *mesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
