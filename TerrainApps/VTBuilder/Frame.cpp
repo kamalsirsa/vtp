@@ -85,6 +85,8 @@ static char *dialog5 = NULL;
 #  include "view_plus.xpm"
 #  include "view_zoomall.xpm"
 #  include "view_zoomexact.xpm"
+
+#	include "VTBuilder.xpm"
 #endif
 
 DECLARE_APP(MyApp)
@@ -96,7 +98,7 @@ DECLARE_APP(MyApp)
 
 //////////////////////////////////////////////////////////////////
 
-MainFrame *GetMainFrame()
+	MainFrame *GetMainFrame()
 {
 	return (MainFrame *) wxGetApp().GetTopWindow();
 }
@@ -105,8 +107,8 @@ MainFrame *GetMainFrame()
 // Frame constructor
 //
 MainFrame::MainFrame(wxFrame* frame, const wxString& title,
-				 const wxPoint& pos, const wxSize& size) :
-	wxFrame(frame, WID_FRAME, title, pos, size)
+	const wxPoint& pos, const wxSize& size) :
+wxFrame(frame, WID_FRAME, title, pos, size)
 {
 	// init app data
 	m_pView = NULL;
@@ -141,10 +143,10 @@ MainFrame::MainFrame(wxFrame* frame, const wxString& title,
 	SetIcon(wxICON(vtbuilder));
 
 	m_statbar = new MyStatusBar(this);
-    SetStatusBar(m_statbar);
-    m_statbar->Show();
+	SetStatusBar(m_statbar);
+	m_statbar->Show();
 	m_statbar->SetTexts(this);
-    PositionStatusBar();
+	PositionStatusBar();
 
 	CreateMenus();
 	CreateToolbar();
@@ -155,17 +157,17 @@ MainFrame::MainFrame(wxFrame* frame, const wxString& title,
 	m_splitter = new MySplitterWindow(this, WID_SPLITTER);
 
 	m_pTree = new MyTreeCtrl(m_splitter, TreeTest_Ctrl,
-		wxPoint(0, 0), wxSize(200, 400),
+			wxPoint(0, 0), wxSize(200, 400),
 //		wxTR_HAS_BUTTONS |
 //		wxTR_EDIT_LABELS |
 #ifndef NO_VARIABLE_HEIGHT
-		wxTR_HAS_VARIABLE_ROW_HEIGHT |
+			wxTR_HAS_VARIABLE_ROW_HEIGHT |
 #endif
-		wxNO_BORDER);
+			wxNO_BORDER);
 	m_pTree->SetBackgroundColour(*wxLIGHT_GREY);
 
 	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
-		wxPoint(0, 0), wxSize(200, 400), "MainView" );
+			wxPoint(0, 0), wxSize(200, 400), "MainView" );
 	m_pView->SetBackgroundColour(*wxLIGHT_GREY);
 	m_pView->Show(FALSE);
 
@@ -264,39 +266,39 @@ void MainFrame::RefreshToolbar()
 
 	switch (lt)
 	{
-	case LT_ROAD:
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), true);
-		ADD_TOOL(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), true);
-		ADD_TOOL(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), true);
-		ADD_TOOL(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), true);
-		ADD_TOOL(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), true);
-		ADD_TOOL(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), true);
-		ADD_TOOL(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), true);
-		break;
-	case LT_ELEVATION:
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), true);
-		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
-		ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"), false);
-		break;
-	case LT_IMAGE:
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
-		break;
-	case LT_STRUCTURE:
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
-		ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
-		ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Features"), true);
-		break;
-	case LT_UTILITY:
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), true);
-		toolBar_main->AddSeparator();
-		ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
-		ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
-		break;
+		case LT_ROAD:
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_ROAD_SELECTROAD, wxBITMAP(rd_select_road), _("Select Roads"), true);
+			ADD_TOOL(ID_ROAD_SELECTNODE, wxBITMAP(rd_select_node), _("Select Nodes"), true);
+			ADD_TOOL(ID_ROAD_SELECTWHOLE, wxBITMAP(rd_select_whole), _("Select Whole Roads"), true);
+			ADD_TOOL(ID_ROAD_DIRECTION, wxBITMAP(rd_direction), _("Set Road Direction"), true);
+			ADD_TOOL(ID_ROAD_EDIT, wxBITMAP(rd_edit), _("Edit Road Points"), true);
+			ADD_TOOL(ID_ROAD_SHOWNODES, wxBITMAP(rd_shownodes), _("Show Nodes"), true);
+			ADD_TOOL(ID_EDIT_CROSSINGSELECTION, wxBITMAP(edit_crossing), _("Crossing Selection"), true);
+			break;
+		case LT_ELEVATION:
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_ELEV_SELECT, wxBITMAP(select), _("Select Elevation"), true);
+			ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
+			ADD_TOOL(ID_AREA_EXPORT_ELEV, wxBITMAP(layer_export), _("Export Elevation"), false);
+			break;
+		case LT_IMAGE:
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_VIEW_FULLVIEW, wxBITMAP(view_zoomexact), _("Zoom to Full Detail"), false);
+			break;
+		case LT_STRUCTURE:
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
+			ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
+			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Features"), true);
+			break;
+		case LT_UTILITY:
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_TOWER_ADD,wxBITMAP(rd_select_node), _("Add Tower"), true);
+			toolBar_main->AddSeparator();
+			ADD_TOOL(ID_TOWER_SELECT,wxBITMAP(select),_("Select Towers"), true);
+			ADD_TOOL(ID_TOWER_EDIT, wxBITMAP(twr_edit), _("Edit Towers"),true);
+			break;
 	}
 	toolBar_main->Realize();
 
@@ -395,9 +397,9 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 			bool keep = false;
 			wxString msg;
 			msg.Printf("The data already loaded is in:\n     %s\n"
-				"but the file you are attempting to load:\n     %s\n"
-				"is using:\n     %s\n"
-				"Would you like to attempt to convert it now to the existing projection?",
+					"but the file you are attempting to load:\n     %s\n"
+					"is using:\n     %s\n"
+					"Would you like to attempt to convert it now to the existing projection?",
 				str1,
 				(const char *) pLayer->GetFilename(),
 				str2);
@@ -412,7 +414,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 				else
 				{
 					ret = wxMessageBox("Couldn't convert projection.\n"
-						"Proceed anyway?", "Warning", wxYES_NO);
+							"Proceed anyway?", "Warning", wxYES_NO);
 					if (ret == wxYES)
 						keep = true;
 				}
@@ -617,15 +619,15 @@ LayerType MainFrame::AskLayerType()
 	for (int i = 0; i < LAYER_TYPES; i++)
 		choices[i] = vtLayer::LayerTypeName[i];
 
-    int n = LAYER_TYPES;
+	int n = LAYER_TYPES;
 	static int cur_type = 0;	// remember the choice for next time
 
-    wxSingleChoiceDialog dialog(this, "These are your choices",
-        "Please indicate layer type", n, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, "These are your choices",
+		"Please indicate layer type", n, (const wxString *)choices);
 
-    dialog.SetSelection(cur_type);
+	dialog.SetSelection(cur_type);
 
-    if (dialog.ShowModal() == wxID_OK)
+	if (dialog.ShowModal() == wxID_OK)
 	{
 		cur_type = dialog.GetSelection();
 		return (LayerType) cur_type;
@@ -682,7 +684,7 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 				fData = grid->GetFilteredValue(x, y);
 				if (fData != INVALID_ELEVATION &&
-					(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
+						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
 					fBestData = fData;
 				if (fBestData != INVALID_ELEVATION && fBestData != 0)
 					break;
@@ -858,16 +860,16 @@ void MainFrame::SaveProject(const wxString &strPathName)
 
 bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 {
-    size_t nFiles = filenames.GetCount();
-    for ( size_t n = 0; n < nFiles; n++ )
+	size_t nFiles = filenames.GetCount();
+	for ( size_t n = 0; n < nFiles; n++ )
 	{
 		wxString str = filenames[n];
 		if (!str.Right(3).CmpNoCase("vtb"))
 			GetMainFrame()->LoadProject(str);
 		else
 			GetMainFrame()->LoadLayer(str);
-    }
-    return TRUE;
+	}
+	return TRUE;
 }
 
 //////////////////////////
@@ -913,7 +915,7 @@ void MainFrame::ExportElevation()
 
 	// Make new terrain
 	vtElevLayer *pBig = new vtElevLayer(dlg.m_area, dlg.m_iXSamples,
-		dlg.m_iYSamples, floatmode, m_proj);
+			dlg.m_iYSamples, floatmode, m_proj);
 	pBig->SetFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
@@ -957,8 +959,8 @@ void MainFrame::FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap)
 }
 
 void MainFrame::GenerateVegetation(const char *vf_file, DRECT area, 
-								   vtVegLayer *pLandUse, vtVegLayer *pVegType,
-								   float fTreeSpacing, float fTreeScarcity)
+	vtVegLayer *pLandUse, vtVegLayer *pVegType,
+	float fTreeSpacing, float fTreeScarcity)
 {
 	int i, j;
 	DPoint2 p, p2;
