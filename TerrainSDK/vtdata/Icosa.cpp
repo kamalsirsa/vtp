@@ -433,7 +433,7 @@ bool DymaxIcosa::GeoToDymax(const DPoint2 &geo, DPoint2 &dymax)
 	return true;
 }
 
-void DymaxIcosa::AddFlatTri(DPolyArray2 &polys, int a, int b, int c, int d)
+void DymaxIcosa::AddFlatTri(DLine2Array &polys, int a, int b, int c, int d)
 {
 	DLine2 poly;
 	poly.Append(m_flatverts[a]);
@@ -444,7 +444,7 @@ void DymaxIcosa::AddFlatTri(DPolyArray2 &polys, int a, int b, int c, int d)
 	polys.push_back(poly);
 }
 
-void DymaxIcosa::GetDymaxEdges(DPolyArray2 &polys)
+void DymaxIcosa::GetDymaxEdges(DLine2Array &polys)
 {
 	AddFlatTri(polys, 5, 9, 8);
 	AddFlatTri(polys, 0, 1, 9);

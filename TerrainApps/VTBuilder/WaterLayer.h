@@ -55,7 +55,7 @@ protected:
 	// data for rivers and water bodies
 	// eventually, should have vector+width data for rivers, area data for bodies
 	// for now, just use plain vectors for everything
-	DPolyArray2		m_Lines;
+	DLine2Array		m_Lines;
 	std::vector<bool>	m_IsBody;
 	vtProjection	m_proj;
 };

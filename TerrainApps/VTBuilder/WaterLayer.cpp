@@ -78,7 +78,7 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	{
 		const vtWaterFeature &feat = GetFeature(i);
 
-		pView->DrawDLine(pDC, feat, false);
+		pView->DrawLine(pDC, feat, false);
 	}
 }
 
@@ -201,9 +201,7 @@ void vtWaterLayer::AddElementsFromSHP(const wxString2 &filename, const vtProject
 	//  Get number of polys (m_iNumPolys) and type of data (nShapeType)
 	int		nElem;
 	int		nShapeType;
-	double	adfMinBound[4], adfMaxBound[4];
-	FPoint2 point;
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nElem, &nShapeType, NULL, NULL);
 
 	//  Check Shape Type, Water Layer should be Poly or Line data
 	if (nShapeType != SHPT_ARC && nShapeType != SHPT_POLYGON)

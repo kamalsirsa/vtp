@@ -56,10 +56,10 @@ public:
 
 	double DihedralAngle();
 
-	void GetDymaxEdges(DPolyArray2 &polys);
+	void GetDymaxEdges(DLine2Array &polys);
 
 protected:
-	void AddFlatTri(DPolyArray2 &polys, int a, int b, int c, int d=-1);
+	void AddFlatTri(DLine2Array &polys, int a, int b, int c, int d=-1);
 
 	// icosahedron data
 	DPoint3 m_verts[12];
