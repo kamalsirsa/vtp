@@ -16,6 +16,8 @@
 #include <osg/Depth>
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
+#include <osgDB/FileNameUtils>
+#include <osgUtil/Optimizer>
 
 using namespace osg;
 
@@ -224,13 +226,16 @@ vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// Workaround for OSG's OBJ-MTL reader which doesn't like backslashes
-	//  in the version we're using.
 	char newname[500];
 	strcpy(newname, filename);
 	for (unsigned int i = 0; i < strlen(filename); i++)
 	{
 		if (newname[i] == '\\') newname[i] = '/';
 	}
+
+	Node *node = osgDB::readNodeFile(newname);
+	if (!node)
+		return NULL;
 
 	// We must insert a 'Normalize' state above the geometry objects
 	// that we load, otherwise when they are scaled, the vertex normals
@@ -242,11 +247,6 @@ vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
 		normstate = new StateSet;
 		normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
 	}
-
-	Node *node = osgDB::readNodeFile(newname);
-	if (!node)
-		return NULL;
-
 	node->setStateSet(normstate);
 
 	if (bDisableMipmaps || s_bDisableMipmaps)
@@ -255,8 +255,34 @@ vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
 		node->accept(visitor);
 	}
 
+	// We must insert a rotation transform above the model, because OSG's file
+	//  loaders (now mostly consistently) tweak the model to put Z up, and
+	//  the VTP uses OpenGL coordinates which has Y up.
+	float fRotation = -PID2f;
+
+	// Except for the OSG OBJ reader, which needs an additional rotation
+	//  offset, since it expect OBJ model to have Y up, but the ones i've
+	//  seen have Z up.
+	if (osgDB::getLowerCaseFileExtension( filename ) == "obj")
+		fRotation = -PIf;
+
+	osg::MatrixTransform *transform = new osg::MatrixTransform;
+	transform->setMatrix(osg::Matrix::rotate(fRotation, Vec3(1,0,0)));
+	transform->addChild(node);
+	// it's not going to change, so tell OSG that it can be optimized
+    transform->setDataVariance(osg::Object::STATIC);
+
+	// Now do some OSG voodoo, which should spread the transform downward
+	//  through the loaded model, and delete the transform.
+	osg::Group *group = new osg::Group;
+	group->addChild(transform);
+
+	osgUtil::Optimizer optimizer;
+	optimizer.optimize(group, osgUtil::Optimizer::FLATTEN_STATIC_TRANSFORMS);
+
+	// The final resulting node is the container of that operation
 	vtNode *pNode = new vtNode();
-	pNode->SetOsgNode(node);
+	pNode->SetOsgNode(group);
 	pNode->SetName2(newname);
 	return pNode;
 }
