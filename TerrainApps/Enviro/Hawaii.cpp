@@ -76,13 +76,14 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	if (PointIsInTerrain(park_location)) // if area includes saddle
 	{
 		// Here is an example of how to load a model directly and plant it
-		//	on the terrain.
+		//	on the terrain.  Because it is not part of a vtStructure, the
+		//	user won't be able to select and operate on it.
 		vtTransform *table = LoadModel("Culture/picnictable.3ds");
 		if (table)
 		{
 			// model is at .1 inch per unit
 			float scale = .1f * 2.54f / 100;
-			scale *= 10;	// Make it temporarily larger for testing purposes
+			scale *= 10;	// Exaggerate its size to make it easier to find
 			table->Scale3(scale, scale, scale);
 			// Must rotate by 90 degrees for 3DS MAX -> OpenGL
 			table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
@@ -180,7 +181,7 @@ void IslandTerrain::create_telescopes()
 {
 	// We can do something like this once we have support for multiple
 	// structure layers.
-	vtString path = FindFileOnPaths(m_DataPaths, "BuildingData/tscope_loc.vtst");
+	vtString path = FindFileOnPaths(m_DataPaths, "BuildingData/MaunaKea.vtst");
 	if (path != "")
 		CreateStructuresFromXML(path);
 }
