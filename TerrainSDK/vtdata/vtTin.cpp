@@ -9,6 +9,7 @@
 
 #include "vtTin.h"
 
+
 void vtTin::AddVert(const DPoint2 &p, float z)
 {
 	m_vert.Append(p);
@@ -255,12 +256,41 @@ bool vtTin::ConvertProjection(vtProjection &proj_new)
 	return true;
 }
 
+/**
+ * Return the length of the longest edge of a specific triangle.
+ */
+double vtTin::GetTriMaxEdgeLength(int iTri)
+{
+	int tris = NumTris();
+	if (iTri < 0 || iTri >= tris)
+		return 0.0;
+
+	// get points
+	int v0 = m_tri[iTri*3];
+	int v1 = m_tri[iTri*3+1];
+	int v2 = m_tri[iTri*3+2];
+	DPoint2 p1 = m_vert.GetAt(v0);
+	DPoint2 p2 = m_vert.GetAt(v1);
+	DPoint2 p3 = m_vert.GetAt(v2);
+
+	// check lengths
+	double len1 = (p2 - p1).Length();
+	double len2 = (p3 - p2).Length();
+	double len3 = (p1 - p3).Length();
+	return len1 > len2 ?
+		(len1 > len3 ? len1 : len3) :
+		(len2 > len3 ? len2 : len3);
+}
 
 // Number of bins used by the merge algorithm.  Time is roughly proportional
 // to N*N/BINS, where N is the number of vertices, so increase BINS for speed.
 //
 #define BINS	4000
 
+/**
+ * Combine all vertices which are at the same location.  By removing these
+ * redundant vertices, the mesh will consume less space in memory and on disk.
+ */
 void vtTin::MergeSharedVerts(void progress_callback(int))
 {
 	int verts = NumVerts();
@@ -327,7 +357,7 @@ void vtTin::MergeSharedVerts(void progress_callback(int))
 	for (i = 0; i < m_z.GetSize(); i++)
 		zcopy[i] = m_z[i];
 
-	int inew = 0;	// index into brand new array (actuall re-using old)
+	int inew = 0;	// index into brand new array (actually re-using old)
 
 	for (bin = 0; bin < BINS; bin++)
 	{

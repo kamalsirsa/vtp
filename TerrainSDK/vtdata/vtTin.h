@@ -41,6 +41,7 @@ public:
 	bool FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude);
 	bool ConvertProjection(vtProjection &proj_new);
 
+	double GetTriMaxEdgeLength(int iTri);
 	void MergeSharedVerts(void progress_callback(int) = NULL);
 
 	vtProjection	m_proj;
