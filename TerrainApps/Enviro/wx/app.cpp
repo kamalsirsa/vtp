@@ -20,7 +20,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
-#include "../TerrainSceneWP.h"
+#include "vtlib/core/TerrainScene.h"
 #include "../Enviro.h"		// for g_App, GetTerrainScene
 #include "../Options.h"
 

@@ -6,7 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "TerrainSceneWP.h"
+#include "vtlib/core/Roads.h"
 #include "Engines.h"
 #include "Hawaii.h"
 

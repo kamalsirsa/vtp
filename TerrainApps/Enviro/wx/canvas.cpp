@@ -15,8 +15,8 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TimeEngines.h"
-#include "../TerrainSceneWP.h"	// for GetTerrainScene
-#include "../Enviro.h"			// for g_App
+#include "vtlib/core/TerrainScene.h"
+#include "../Enviro.h"			// for g_App, GetTerrainScene
 #include "canvas.h"
 #include "frame.h"
 #include "app.h"
@@ -99,7 +99,7 @@ void StatusTimer::Notify()
 
 	// get time of day
 	int hr, min, sec;
-	GetTerrainScene().m_pTime->GetTime(hr, min, sec);
+	GetTerrainScene()->m_pTime->GetTime(hr, min, sec);
 
 	vtString str, str2;
 	str.Format("fps %3.1f, time %02d:%02d:%02d, ", fps, hr, min, sec);

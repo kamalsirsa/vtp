@@ -12,8 +12,6 @@
 #include "vtlib/core/DynTerrain.h"
 #include "Hawaii.h"
 #include "Nevada.h"
-#include "SwapEngine.h"
-#include "TerrainSceneWP.h"
 
 
 ///////////////////////////////

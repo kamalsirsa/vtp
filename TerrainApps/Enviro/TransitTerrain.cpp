@@ -9,7 +9,6 @@
 
 #include "vtlib/vtlib.h"
 #include "TransitTerrain.h"
-#include "TerrainSceneWP.h"
 #include "Engines.h"
 
 ///////////////////////////////

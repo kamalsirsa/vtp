@@ -16,8 +16,6 @@
 #include "Engines.h"
 #include "Wings.h"
 #include "Hawaii.h"
-#include "SwapEngine.h"
-#include "TerrainSceneWP.h"
 
 vtMaterialArray *Butterfly::m_pApps;
 
@@ -68,7 +66,7 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 	vtTransform *gateway1 = LoadModel("Culture/portal1.dsm");
 	vtTransform *copy = (vtTransform *) gateway1->CreateClone();
 
-	vtTerrain *pIsland = GetTerrainScene().FindTerrainByName("Big Island");
+	vtTerrain *pIsland = GetTerrainScene()->FindTerrainByName("Big Island");
 
 	if (pIsland && gateway1)
 	{

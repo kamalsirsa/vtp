@@ -18,7 +18,8 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
-#include "../TerrainSceneWP.h"
+#include "vtlib/core/TerrainScene.h"
+#include "../Enviro.h"			// for GetTerrainScene
 #include "ChooseDlg.h"
 
 // WDR: class implementations
@@ -54,7 +55,7 @@ void ChooseTerrainDlg::OnInitDialog(wxInitDialogEvent& event)
 
     // list each known terrain
     vtTerrain *pTerr;
-    for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+    for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
     {
         m_pTList->Append((const char *)(pTerr->GetName()));
     }

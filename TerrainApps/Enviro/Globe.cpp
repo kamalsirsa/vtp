@@ -7,11 +7,11 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
+#include "vtlib/core/TerrainScene.h"
 
 #include "vtdata/shapelib/shapefil.h"
 
 #include "Globe.h"
-#include "TerrainSceneWP.h"
 #include "Enviro.h"		// for logging debug message
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath)
@@ -514,7 +514,7 @@ void IcoGlobe::AddTerrainRectangles()
 {
 	FPoint3 p;
 
-	for (vtTerrain *pTerr = GetTerrainScene().m_pFirstTerrain; pTerr;
+	for (vtTerrain *pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr;
 			pTerr=pTerr->GetNext())
 	{
 		// skip if undefined
