@@ -45,6 +45,7 @@ static void ShowOGLInfo(bool bLog, HDC hdc)
 static void ShowOGLInfo(bool bLog)
 #endif
 {
+	VTLOG("Opening an OpenGL context: ");
 #if defined(WIN32)
 	PIXELFORMATDESCRIPTOR pfd =
 	{
@@ -62,19 +63,23 @@ static void ShowOGLInfo(bool bLog)
 		PFD_MAIN_PLANE,   // main layer
 		0, 0, 0, 0		  // reserved, layer masks ignored
 	};
-	int  iPixelFormat;
 
 	// get the best available match of pixel format for the device context 
-	iPixelFormat = ChoosePixelFormat(hdc, &pfd);
+	VTLOG("ChoosePixelFormat, ");
+	int iPixelFormat = ChoosePixelFormat(hdc, &pfd);
+
 	// make that the pixel format of the device context
+	VTLOG("SetPixelFormat, ");
 	SetPixelFormat(hdc, iPixelFormat, &pfd);
 
+	VTLOG("wglCreateContext, ");
 	HGLRC device = wglCreateContext(hdc);
 	if (device == NULL)
 	{
 		DWORD lasterror = GetLastError();
 		// 2000 The pixel format is invalid.  ERROR_INVALID_PIXEL_FORMAT
 	}
+	VTLOG("wglMakeCurrent.\n");
 	wglMakeCurrent(hdc, device);
 #elif defined(UNIX)
 	static int dblBuf[] =  {GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
