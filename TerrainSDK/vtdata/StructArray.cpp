@@ -694,43 +694,34 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			// absolute height in meters
 			const char *abs_str = atts.getValue("abs");
 			if (abs_str)
-				fen->SetHeight((float)atof(abs_str));
+				fen->GetParams().m_fPostHeight = (float)atof(abs_str);
 		}
 		if (string(name) == (string)"posts")
 		{
 			// this linear structure has posts
 			const char *type = atts.getValue("type");
 			if (0 == strcmp(type, "wood"))
-				fen->SetFenceType(FT_WIRE);
+				fen->ApplyFenceStyle(FS_WOOD_POSTS_WIRE);
 			else if (0 == strcmp(type, "steel"))
-				fen->SetFenceType(FT_CHAINLINK);
-			else if (0 == strcmp(type, "hedgerow"))
-				fen->SetFenceType(FT_HEDGEROW);
-			else if (0 == strcmp(type, "drystone"))
-				fen->SetFenceType(FT_DRYSTONE);
-			else if (0 == strcmp(type, "privet"))
-				fen->SetFenceType(FT_PRIVET);
-			else if (0 == strcmp(type, "stone"))
-				fen->SetFenceType(FT_STONE);
-			else if (0 == strcmp(type, "beech"))
-				fen->SetFenceType(FT_BEECH);
+				fen->ApplyFenceStyle(FS_CHAINLINK);
 			else
-				fen->SetFenceType(FT_WIRE);
+				fen->ApplyFenceStyle(FS_METAL_POSTS_WIRE);
 
 			const char *size = atts.getValue("size");
 			FPoint3 postsize;
-			postsize.y = fen->GetHeight();
+			postsize.y = fen->GetParams().m_fPostHeight;
 			sscanf(size, "%f, %f", &postsize.x, &postsize.z);
-			fen->SetPostSize(postsize);
+			fen->GetParams().m_fPostWidth = postsize.x;
+			fen->GetParams().m_fPostDepth = postsize.z;
 
 			const char *spacing = atts.getValue("spacing");
 			if (spacing)
-				fen->SetSpacing((float)atof(spacing));
+				fen->GetParams().m_fPostSpacing = (float)atof(spacing);
 		}
 		if (string(name) == (string)"connect")
 		{
 			attval = atts.getValue("type");
-			// not yet supported; currently implied by post type
+			// not supported here
 		}
 		return;
 	}
@@ -901,6 +892,7 @@ private:
 void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 {
 	const char *attval;
+	float f;
 
 	// clear data at the start of each element
 	m_data = "";
@@ -925,10 +917,14 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			m_pFence = m_pSA->NewFence();
 			m_pStructure = m_pFence;
 
+			// support obsolete attribute
 			attval = atts.getValue("Height");
 			if (attval)
-				m_pFence->SetHeight((float) atof(attval));
-
+			{
+				f = (float) atof(attval);
+				m_pFence->GetParams().m_fPostHeight = f;
+				m_pFence->GetParams().m_fConnectTop = f;
+			}
 			m_state = 10;
 		}
 		else if (!strcmp(name, "Imported"))
@@ -1032,36 +1028,45 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		{
 			// this linear structure has posts
 			const char *type = atts.getValue("Type");
-			if (0 == strcmp(type, "wood"))
-				m_pFence->SetFenceType(FT_WIRE);
-			else if (0 == strcmp(type, "steel"))
-				m_pFence->SetFenceType(FT_CHAINLINK);
-			else if (0 == strcmp(type, "hedgerow"))
-				m_pFence->SetFenceType(FT_HEDGEROW);
-			else if (0 == strcmp(type, "drystone"))
-				m_pFence->SetFenceType(FT_DRYSTONE);
-			else if (0 == strcmp(type, "privet"))
-				m_pFence->SetFenceType(FT_PRIVET);
-			else if (0 == strcmp(type, "stone"))
-				m_pFence->SetFenceType(FT_STONE);
-			else if (0 == strcmp(type, "beech"))
-				m_pFence->SetFenceType(FT_BEECH);
+			if (type)
+				m_pFence->GetParams().m_PostType = type;
 			else
-				m_pFence->SetFenceType(FT_WIRE);
-
-			const char *size = atts.getValue("Size");
-			FPoint3 postsize;
-			postsize.y = m_pFence->GetHeight();
-			sscanf(size, "%f, %f", &postsize.x, &postsize.z);
-			m_pFence->SetPostSize(postsize);
+				m_pFence->GetParams().m_PostType = "none";
 
 			const char *spacing = atts.getValue("Spacing");
 			if (spacing)
-				m_pFence->SetSpacing((float)atof(spacing));
+				m_pFence->GetParams().m_fPostSpacing = (float)atof(spacing);
+
+			const char *height = atts.getValue("Height");
+			if (height)
+				m_pFence->GetParams().m_fPostHeight = (float)atof(height);
+
+			const char *size = atts.getValue("Size");
+			if (size)
+			{
+				FPoint3 postsize;
+				sscanf(size, "%f, %f", &postsize.x, &postsize.z);
+				m_pFence->GetParams().m_fPostWidth = postsize.x;
+				m_pFence->GetParams().m_fPostDepth = postsize.z;
+			}
 		}
 		else if (!strcmp(name, "Connect"))
 		{
-			// not yet supported; currently implied by post type
+			const char *type = atts.getValue("Type");
+			if (type)
+				m_pFence->GetParams().m_ConnectType = type;
+			else
+				m_pFence->GetParams().m_ConnectType = "none";
+
+			attval = atts.getValue("Top");
+			if (attval)
+				m_pFence->GetParams().m_fConnectTop = (float)atof(attval);
+			attval = atts.getValue("Bottom");
+			if (attval)
+				m_pFence->GetParams().m_fConnectBottom = (float)atof(attval);
+			attval = atts.getValue("Width");
+			if (attval)
+				m_pFence->GetParams().m_fConnectWidth = (float)atof(attval);
 		}
 	}
 	if (m_state == 20)	// Imported
@@ -1205,46 +1210,6 @@ void StructVisitorGML::data(const char *s, int length)
 {
 	m_data.append(string(s, length));
 }
-
-/////////////////////////////////////////////////////////////////////////
-
-
-bool vtStructureArray::WriteXML_Old(const char* filename)
-{
-	unsigned int i;
-	FILE *fp = fopen(filename, "wb");
-	if (!fp)
-	{
-		throw xh_io_exception("Failed to open file", xh_location(filename),
-				"XML Writer");
-	}
-
-	fprintf(fp, "<?xml version=\"1.0\"?>\n\n");
-	fprintf(fp, "<structures-file file-format-version=\"1.0\">\n");
-
-	// Write projection
-	char type[20], tempvalue[2000];
-	//RFJ This needs to be processed !!!!!!!
-	m_proj.GetTextDescription(type, tempvalue);
-	vtString value = EscapeStringForXML(tempvalue);
-
-	fprintf(fp, "<coordinates type=\"%s\" value=\"%s\" />\n", type,
-		(const char *) value);
-
-	bool bDegrees = (m_proj.IsGeographic() == 1);
-
-	fprintf(fp, "<structures>\n");
-	for (i = 0; i < GetSize(); i++)
-	{
-		vtStructure *str = GetAt(i);
-		str->WriteXML_Old(fp, bDegrees);
-	}
-	fprintf(fp, "</structures>\n");
-	fprintf(fp, "</structures-file>\n");
-	fclose(fp);
-	return true;
-}
-
 
 /////////////////////////////////////////////////////////////////////////
 

@@ -93,7 +93,6 @@ public:
 
 	bool WriteSHP(const char *pathname);
 	bool WriteXML(const char *pathname, bool bGZip = false);
-	bool WriteXML_Old(const char *pathname);
 
 	bool FindClosestBuildingCorner(const DPoint2 &point, double epsilon,
 						   int &building, int &corner, double &distance);

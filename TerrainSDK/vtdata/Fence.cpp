@@ -3,7 +3,7 @@
 //
 // Implemented vtFence;
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -13,30 +13,135 @@
 
 ///////////////////
 
-vtFence::vtFence() : vtStructure()
+void vtLinearParams::Defaults()
 {
-	SetType(ST_LINEAR);
-
-	m_FenceType = FT_WIRE;
-	m_fHeight = FENCE_DEFAULT_HEIGHT;
-	m_fSpacing = FENCE_DEFAULT_SPACING;
+	ApplyFenceStyle(FS_WOOD_POSTS_WIRE);
 }
 
-vtFence::vtFence(FenceType type, float fHeight, float fSpacing)
+void vtLinearParams::ApplyFenceStyle(FenceStyle style)
 {
-	SetType(ST_LINEAR);
+	switch (style)
+	{
+	case FS_WOOD_POSTS_WIRE:
+		//
+		m_PostType = "wood";
+		m_fPostSpacing = 2.5f;
+		m_fPostHeight = 1.2f;
+		m_fPostWidth = 0.13f;
+		m_fPostDepth = 0.13f;
+		//
+		m_ConnectType = "wire";
+		m_fConnectTop = 1.1f;
+		m_fConnectBottom = 0.5f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_METAL_POSTS_WIRE:
+		//
+		m_PostType = "steel";
+		m_fPostSpacing = 2.5f;
+		m_fPostHeight = 1.2f;
+		m_fPostWidth = 0.05f;
+		m_fPostDepth = 0.05f;
+		//
+		m_ConnectType = "wire";
+		m_fConnectTop = 1.1f;
+		m_fConnectBottom = 0.5f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_CHAINLINK:
+		//
+		m_PostType = "steel";
+		m_fPostSpacing = 3.0f;
+		m_fPostHeight = 2.0f;
+		m_fPostWidth = 0.05f;
+		m_fPostDepth = 0.05f;
+		//
+		m_ConnectType = "chain-link";
+		m_fConnectTop = m_fPostHeight;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_DRYSTONE:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "drystone";
+		m_fConnectTop = 1.5f;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.3f;
+		break;
+	case FS_PRIVET:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "privet";
+		m_fConnectTop = 1.5f;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.5f;
+		break;
+	case FS_RAILING_ROW:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "railing_pipe";
+		m_fConnectTop = 0.70f;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_RAILING_CABLE:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "railing_wire";
+		m_fConnectTop = 0.70f;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.0f;
+		break;
+	case FS_RAILING_EU:
+		//
+		m_PostType = "none";
+		//
+		m_ConnectType = "railing_eu";
+		m_fConnectTop = 0.70f;
+		m_fConnectBottom = 0.0f;
+		m_fConnectWidth = 0.0f;
+		break;
+	}
+}
 
-	SetFenceType(type);
-	m_fHeight = fHeight;
-	m_fSpacing = fSpacing;
-	m_PostSize.y = m_fHeight;
+void vtLinearParams::WriteXML(GZOutput &out)
+{
+	if (m_PostType != "none")
+	{
+		gfprintf(out, "\t\t<Posts Type=\"%s\" Spacing=\"%.2f\" Height=\"%.2f\" Size=\"%.2f,%.2f\"",
+			m_PostType, m_fPostSpacing, m_fPostHeight, m_fPostWidth, m_fPostDepth);
+		gfprintf(out, " />\n");
+	}
+	if (m_ConnectType != "none")
+	{
+		gfprintf(out, "\t\t<Connect Type=\"%s\"", m_ConnectType);
+		if (m_fConnectTop != m_fPostHeight)
+			gfprintf(out, " Top=\"%.2f\"", m_fConnectTop);
+		if (m_fConnectBottom != 0.0f)
+			gfprintf(out, " Bottom=\"%.2f\"", m_fConnectBottom);
+		if (m_fConnectWidth != 0.0f)
+			gfprintf(out, " Width=\"%.2f\"", m_fConnectWidth);
+		gfprintf(out, " />\n");
+	}
+}
+
+
+///////////////////
+
+vtFence::vtFence() : vtStructure()
+{
+	SetType(ST_LINEAR);	// structure type
+	m_Params.Defaults();
 }
 
 vtFence &vtFence::operator=(const vtFence &v)
 {
-	SetFenceType(v.m_FenceType);
-	m_fHeight = v.m_fHeight;
-	m_fSpacing = v.m_fSpacing;
+	m_Params = v.m_Params;
 	m_pFencePts = v.m_pFencePts;
 	SetElevationOffset(v.GetElevationOffset());
 	SetOriginalElevation(v.GetOriginalElevation());
@@ -62,51 +167,9 @@ void vtFence::AddPoint(const DPoint2 &epos)
 		m_pFencePts.Append(epos);
 }
 
-void vtFence::SetOptions(const LinStructOptions &opt)
+void vtFence::ApplyFenceStyle(FenceStyle style)
 {
-	SetFenceType(opt.eType);
-	m_fHeight = opt.fHeight;
-	m_fSpacing = opt.fSpacing;
-	m_PostSize.y = opt.fHeight;
-}
-
-void vtFence::SetFenceType(const FenceType type)
-{
-	m_FenceType = type;
-
-	switch (m_FenceType)
-	{
-	case FT_WIRE:
-		m_PostSize.Set(0.13f, m_fHeight, 0.13f);
-		break;
-
-	case FT_CHAINLINK:
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
-		break;
-
-	case FT_HEDGEROW:
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
-		break;
-
-	case FT_DRYSTONE:
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
-		break;
-
-	case FT_PRIVET:
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
-		break;
-
-	case FT_STONE:
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
-		break;
-
-	case FT_BEECH:
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
-
-	default:
-		m_PostSize.Set(0.13f, m_fHeight, 0.13f);
-		break;
-	}
+	m_Params.ApplyFenceStyle(style);
 }
 
 bool vtFence::GetExtents(DRECT &rect) const
@@ -161,88 +224,13 @@ double vtFence::GetDistanceToLine(const DPoint2 &point)
 	return closest;
 }
 
-void vtFence::WriteXML_Old(FILE *fp, bool bDegrees)
-{
-	int i;
-	const char *coord_format = "%.9lg";	// up to 9 significant digits
-
-	// Write the XML to describe this fence to a built-structure XML file.
-	fprintf(fp, "\t<structure type=\"linear\">\n");
-
-	int points = m_pFencePts.GetSize();
-	fprintf(fp, "\t\t<points num=\"%d\" coords=\"", points);
-	for (i = 0; i < points; i++)
-	{
-		DPoint2 p = m_pFencePts.GetAt(i);
-		fprintf(fp, coord_format, p.x);
-		fprintf(fp, " ");
-		fprintf(fp, coord_format, p.y);
-		if (i != points-1)
-			fprintf(fp, " ");
-	}
-	fprintf(fp, "\" />\n");
-
-	// This must be expanded when we support more than 2 kinds of fence!
-	const char *post_type;
-	const char *conn_type;
-	switch (m_FenceType)
-	{
-	case FT_WIRE:
-		post_type = "wood";
-		conn_type = "wire";
-		break;
-
-	case FT_CHAINLINK:
-		post_type = "steel";
-		conn_type = "chain-link";
-		break;
-
-	case FT_HEDGEROW:
-		post_type = "hedgerow";
-		conn_type = "hedgerow";
-		break;
-
-	case FT_DRYSTONE:
-		post_type = "drystone";
-		conn_type = "drystone";
-		break;
-
-	case FT_PRIVET:
-		post_type = "privet";
-		conn_type = "privet";
-		break;
-
-	case FT_STONE:
-		post_type = "stone";
-		conn_type = "stone";
-		break;
-
-	case FT_BEECH:
-		post_type = "beech";
-		conn_type = "beech";
-		break;
-
-	default:
-		post_type = "wood";
-		conn_type = "wire";
-		break;
-	}
-
-	fprintf(fp, "\t\t<height abs=\"%.2f\" />\n", m_fHeight);
-	fprintf(fp, "\t\t<posts type=\"%s\" size=\"%.2f, %.2f\" spacing=\"%.2f\" />\n",
-		post_type, m_PostSize.x, m_PostSize.z, m_fSpacing);
-	fprintf(fp, "\t\t<connect type=\"%s\" />\n", conn_type);
-
-	fprintf(fp, "\t</structure>\n");
-}
-
 void vtFence::WriteXML(GZOutput &out, bool bDegrees)
 {
 	int i;
 	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	// Write the XML to describe this fence to a built-structure XML file.
-	gfprintf(out, "\t<Linear Height=\"%.2f\">\n", m_fHeight);
+	gfprintf(out, "\t<Linear>\n");
 
 	gfprintf(out, "\t\t<Path>\n");
 	gfprintf(out, "\t\t\t<gml:coordinates>");
@@ -259,13 +247,7 @@ void vtFence::WriteXML(GZOutput &out, bool bDegrees)
 	gfprintf(out, "</gml:coordinates>\n");
 	gfprintf(out, "\t\t</Path>\n");
 
-	// This must be expanded when we support more than 2 kinds of fence!
-	const char *post_type = (m_FenceType == FT_WIRE) ? "wood" : "steel";
-	const char *conn_type = (m_FenceType == FT_WIRE) ? "wire" : "chain-link";
-
-	gfprintf(out, "\t\t<Posts Type=\"%s\" Size=\"%.2f,%.2f\" Spacing=\"%.2f\" />\n",
-		post_type, m_PostSize.x, m_PostSize.z, m_fSpacing);
-	gfprintf(out, "\t\t<Connect Type=\"%s\" />\n", conn_type);
+	m_Params.WriteXML(out);
 
 	WriteTags(out);
 	gfprintf(out, "\t</Linear>\n");

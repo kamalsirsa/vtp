@@ -1,7 +1,7 @@
 //
 // Fences.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,70 +12,73 @@
 #include "MathTypes.h"
 #include "Structure.h"
 
-enum FenceType
+enum FenceStyle
 {
-	FT_WIRE,
-	FT_CHAINLINK,
-	FT_HEDGEROW,
-	FT_DRYSTONE,
-	FT_PRIVET,
-	FT_BEECH,
-	FT_STONE
+	FS_WOOD_POSTS_WIRE,
+	FS_METAL_POSTS_WIRE,
+	FS_CHAINLINK,
+	FS_DRYSTONE,
+	FS_PRIVET,
+	FS_RAILING_ROW,
+	FS_RAILING_CABLE,
+	FS_RAILING_EU,
+	FS_TOTAL
 };
 
 #define FENCE_DEFAULT_HEIGHT	1.2f
 #define FENCE_DEFAULT_SPACING	2.5f
 
-/**
- * An encapsulation of the various paramters used to create a linear structure.
- */
-struct LinStructOptions
+class vtLinearParams
 {
-	FenceType eType;
-	float fHeight;
-	float fSpacing;
+public:
+	void Defaults();
+	void ApplyFenceStyle(FenceStyle style);
+	void WriteXML(GZOutput &out);
+
+	// Posts
+	vtString	m_PostType;	// wood, steel, none
+	float	m_fPostHeight;
+	float	m_fPostSpacing;
+	float	m_fPostWidth;
+	float	m_fPostDepth;
+
+	// Connect
+	vtString	m_ConnectType;	// wire, chain-link, privet, drystone, none
+	float	m_fConnectTop;
+	float	m_fConnectBottom;
+	float	m_fConnectWidth;
+	// ConnectWidth assumed same at top and bottom
 };
 
 class vtFence : public vtStructure
 {
 public:
 	vtFence();
-	vtFence(FenceType type, float fHeight, float fSpacing);
 
 	// copy operator
 	vtFence &operator=(const vtFence &v);
 
+	// geometry methods
 	void AddPoint(const DPoint2 &epos);
-	void SetOptions(const LinStructOptions &opt);
-	void SetPostSize(FPoint3 size ) { m_PostSize = size; }
-
-	void SetFenceType(const FenceType type);
-	FenceType GetFenceType() { return m_FenceType; }
-
 	DLine2 &GetFencePoints() { return m_pFencePts; }
 	void GetClosestPoint(const DPoint2 &point, DPoint2 &closest);
 	double GetDistanceToLine(const DPoint2 &point);
-
-	void SetHeight(float meters) { m_fHeight = meters; }
-	float GetHeight() { return m_fHeight; }
-
-	void SetSpacing(float meters) { m_fSpacing = meters; }
-	float GetSpacing() { return m_fSpacing; }
-
+	bool IsContainedBy(const DRECT &rect) const;
 	bool GetExtents(DRECT &rect) const;
 
-	void WriteXML_Old(FILE *fp, bool bDegrees);
+	// IO
 	void WriteXML(GZOutput &out, bool bDegrees);
 
-	bool IsContainedBy(const DRECT &rect) const;
+	// style
+	void ApplyFenceStyle(FenceStyle style);
+	vtLinearParams &GetParams() { return m_Params; }
+	void SetParams(const vtLinearParams &params) { m_Params = params; }
 
 protected:
 	DLine2		m_pFencePts;	// in earth coordinates
-	FenceType	m_FenceType;
-	FPoint3		m_PostSize;
 
-	float	m_fHeight;
-	float	m_fSpacing;
+	vtLinearParams	m_Params;
 };
 
-#endif
+#endif	// FENCESH
+
