@@ -533,7 +533,7 @@ bool vtLevel::IsUniform()
 			return false;
 //		if (edge->m_Color != RGBi(255, 255, 255))
 //			return false;
-		if (*edge->m_pMaterial != BMAT_NAME_SIDING)
+		if (edge->m_pMaterial != NULL && *edge->m_pMaterial != BMAT_NAME_SIDING)
 			return false;
 	}
 	return true;
@@ -650,6 +650,8 @@ const vtString vtLevel::GetOverallEdgeMaterial()
 	{
 		vtEdge *pEdge = GetEdge(i);
 		const vtString *mat = pEdge->m_pMaterial;
+		if (mat == NULL)
+			continue;
 		if (most == NULL)
 			most = mat;
 		else if (*most != *mat)
@@ -1352,8 +1354,9 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 			vtEdge *edge = lev->GetEdge(j);
 			fprintf(fp, "\t\t\t<Edge");
 
-			fprintf(fp, " Material=\"%s\"",
-				(const char *)*edge->m_pMaterial);
+			if (edge->m_pMaterial)
+				fprintf(fp, " Material=\"%s\"",
+					(const char *)*edge->m_pMaterial);
 
 			fprintf(fp, " Color=\"%02x%02x%02x\"",
 				edge->m_Color.r, edge->m_Color.g, edge->m_Color.b);
