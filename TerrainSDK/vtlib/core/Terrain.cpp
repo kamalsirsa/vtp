@@ -1097,11 +1097,10 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 {
 	FPoint3 wpos;
 
-	g_Conv.convert_earth_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
+	m_pHeightField->m_Conversion.convert_earth_to_local_xz(pos.x, pos.y, wpos.x, wpos.z);
 	m_pHeightField->FindAltitudeAtPoint(wpos, wpos.y);
 	model->SetTrans(wpos);
 }
-
 
 void vtTerrain::_CreateCulture()
 {
@@ -1260,6 +1259,7 @@ void vtTerrain::_CreateCulture()
 		// TODO
 	}
 
+	// Let any terrain subclasses provide their own culture
 	CreateCustomCulture();
 }
 
@@ -1685,7 +1685,6 @@ bool vtTerrain::CreateStep1()
 
 		// set global projection based on this terrain
 		m_proj = m_pElevGrid->GetProjection();
-		g_Conv = m_pElevGrid->m_Conversion;
 
 		int col, row;
 		m_pElevGrid->GetDimensions(col, row);
@@ -1695,6 +1694,7 @@ bool vtTerrain::CreateStep1()
 			rect.left, rect.right, rect.top, rect.bottom);
 
 		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
+		g_Conv = m_pElevGrid->m_Conversion;
 
 		FRECT frect = m_pElevGrid->m_WorldExtents;
 		VTLOG("\t\tWorld Extents LRTB: %f %f %f %f\n",
@@ -1863,7 +1863,7 @@ void vtTerrain::GetTerrainBounds()
 bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 {
 	float x, z;
-	g_Conv.ConvertFromEarth(p, x,  z);	// convert earth -> XZ
+	m_pHeightField->m_Conversion.ConvertFromEarth(p, x,  z);	// convert earth -> XZ
 	return m_pHeightField->ContainsWorldPoint(x, z);
 }
 
@@ -2198,8 +2198,8 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		//  different (more correct) algorithm for draping, just estimate.
 		DRECT ext = m_pTin->GetEarthExtents();
 		FPoint2 p1, p2;
-		g_Conv.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
-		g_Conv.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
+		m_pHeightField->m_Conversion.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
 		fSpacing = (p2 - p1).Length() / 1000.0f;
 	}
 
@@ -2233,7 +2233,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		{
 			spline.Interpolate(f, &p);
 
-			g_Conv.convert_earth_to_local_xz(p.x, p.y, v.x, v.z);
+			m_pHeightField->m_Conversion.convert_earth_to_local_xz(p.x, p.y, v.x, v.z);
 			m_pHeightField->FindAltitudeAtPoint(v, v.y);
 			v.y += fOffset;
 			pMesh->AddVertex(v);
@@ -2252,7 +2252,7 @@ float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
 		for (i = 0; i < points; i++)
 		{
 			v1 = v2;
-			g_Conv.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
+			m_pHeightField->m_Conversion.convert_earth_to_local_xz(line[i].x, line[i].y, v2.x, v2.z);
 			if (i == 0)
 				continue;
 
