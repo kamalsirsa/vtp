@@ -1,16 +1,12 @@
 //
 // Name: DistribVegDlg.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __DistribVegDlg_H__
 #define __DistribVegDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "DistribVegDlg.cpp"
-#endif
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"

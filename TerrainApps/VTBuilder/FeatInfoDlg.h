@@ -1,16 +1,12 @@
 //
 // Name: FeatInfoDlg.h
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __FeatInfoDlg_H__
 #define __FeatInfoDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "FeatInfoDlg.cpp"
-#endif
 
 #include "VTBuilder_wdr.h"
 #include "RawLayer.h"

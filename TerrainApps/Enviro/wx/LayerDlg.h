@@ -1,16 +1,12 @@
 //
 // Name: LayerDlg.h
 //
-// Copyright (c) 2003-2004 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LayerDlg_H__
 #define __LayerDlg_H__
-
-#ifdef __GNUG__
-	#pragma interface "LayerDlg.cpp"
-#endif
 
 #include "enviro_wdr.h"
 #include "vtlib/core/Structure3d.h"

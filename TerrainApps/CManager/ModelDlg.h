@@ -1,13 +1,12 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:	ModelDlg.h
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: ModelDlg.h
+//
+// Copyright (c) 2004-2005 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __ModelDlg_H__
 #define __ModelDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "ModelDlg.cpp"
-#endif
 
 #include "cmanager_wdr.h"
 #include "vtui/AutoDialog.h"

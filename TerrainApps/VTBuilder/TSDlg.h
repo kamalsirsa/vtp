@@ -1,16 +1,12 @@
 //
 // Name: TSDlg.cpp
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TSDlg_H__
 #define __TSDlg_H__
-
-#ifdef __GNUG__
-	#pragma interface "TSDlg.cpp"
-#endif
 
 #include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
@@ -63,7 +59,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+#endif	// __TSDlg_H__
 
-
-
-#endif

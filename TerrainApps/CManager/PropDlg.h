@@ -1,13 +1,12 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:	PropDlg.h
-/////////////////////////////////////////////////////////////////////////////
+//
+// Name: PropDlg.h
+//
+// Copyright (c) 2004-2005 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef __PropDlg_H__
 #define __PropDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "PropDlg.cpp"
-#endif
 
 #include "cmanager_wdr.h"
 #include "vtui/AutoDialog.h"

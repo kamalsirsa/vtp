@@ -2,14 +2,9 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for a wxWindows application.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
-
-#ifdef __GNUG__
-#pragma implementation
-#pragma interface
-#endif
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"

@@ -1,16 +1,12 @@
 //
 // Name: OptionsDlg.h
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __OptionsDlg_H__
 #define __OptionsDlg_H__
-
-#ifdef __GNUG__
-	#pragma interface "OptionsDlg.cpp"
-#endif
 
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"

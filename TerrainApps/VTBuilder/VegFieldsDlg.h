@@ -1,20 +1,12 @@
 //
 // Name:		VegFieldsDlg.h
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __VegFieldsDlg_H__
 #define __VegFieldsDlg_H__
-
-#ifdef __GNUG__
-	#pragma interface "VegFieldsDlg.cpp"
-#endif
-
-#ifndef WX_PRECOMP
-	#include "wx/wx.h"
-#endif
 
 #include "VTBuilder_wdr.h"
 #include "vtdata/shapelib/shapefil.h"
@@ -85,7 +77,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+#endif	// __VegFieldsDlg_H__
 
-
-
-#endif

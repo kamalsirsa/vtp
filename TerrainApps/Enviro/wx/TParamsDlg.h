@@ -1,16 +1,12 @@
 //
 // Name: TParamsDlg.h
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __TParamsDlg_H__
 #define __TParamsDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "TParamsDlg.cpp"
-#endif
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"

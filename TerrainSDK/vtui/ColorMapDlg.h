@@ -1,16 +1,12 @@
 //
 // Name: ColorMapDlg.h
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __ColorMapDlg_H__
 #define __ColorMapDlg_H__
-
-#ifdef __GNUG__
-	#pragma interface "ColorMapDlg.cpp"
-#endif
 
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"

@@ -1,16 +1,12 @@
 //
 // HeightDlg.h
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __HeightDlg_H__
 #define __HeightDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "HeightDlg.cpp"
-#endif
 
 #ifndef WX_PRECOMP
 	#include "wx/wx.h"

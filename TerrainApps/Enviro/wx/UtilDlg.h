@@ -1,16 +1,12 @@
 //
-// Name:		UtilDlg.h
+// Name: UtilDlg.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __UtilDlg_H__
 #define __UtilDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "UtilDlg.cpp"
-#endif
 
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
@@ -48,7 +44,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
+#endif	// __UtilDlg_H__
 
-
-
-#endif

@@ -1,21 +1,17 @@
 //
 // Name:		LinearStructureDlg3d.h
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __LinearStructureDlg3d_H__
 #define __LinearStructureDlg3d_H__
 
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "LinearStructureDlg3d.cpp"
-#endif
-
 #include "vtui/LinearStructDlg.h"
 
 //----------------------------------------------------------------------------
-// FenceDlg
+// LinearStructureDlg3d
 //----------------------------------------------------------------------------
 
 class LinearStructureDlg3d: public LinearStructureDlg
@@ -30,4 +26,4 @@ public:
 	virtual void OnSetOptions(LinStructOptions &opt);
 };
 
-#endif
+#endif	// __LinearStructureDlg3d_H__

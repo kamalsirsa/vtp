@@ -1,16 +1,12 @@
 //
 // Name: SampleImageDlg.h
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __SampleImageDlg_H__
 #define __SampleImageDlg_H__
-
-#if defined(__GNUG__) && !defined(__APPLE__)
-	#pragma interface "SampleImageDlg.cpp"
-#endif
 
 #include "VTBuilder_wdr.h"
 #include "vtui/AutoDialog.h"

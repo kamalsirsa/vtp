@@ -1,16 +1,12 @@
 //
 // InstanceDlg.h
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef __InstanceDlg_H__
 #define __InstanceDlg_H__
-
-#ifdef __GNUG__
-	#pragma interface "InstanceDlg.cpp"
-#endif
 
 #include "vtui_wdr.h"
 #include "AutoDialog.h"
