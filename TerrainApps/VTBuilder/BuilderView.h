@@ -191,6 +191,7 @@ protected:
 	void RefreshRoad(LinkEdit *pRoad);
 
 	wxCursor	*m_pCursorPan;
+	bool		m_bMouseCaptured;
 
 	// World Map
 	DLine2	*WMPoly;	 // Original data from SHP file

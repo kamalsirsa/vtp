@@ -55,13 +55,16 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 vtScaledView(parent, id, pos, size, name )
 {
 	VTLOG(" Constructing BuilderView\n");
+
+	m_bCrossSelect = false;
+	m_bShowMap = true;
+	m_bShowUTMBounds = false;
+
+	m_bMouseMoved = false;
 	m_bPanning = false;
 	m_bBoxing = false;
 	m_iDragSide = 0;
-	m_bCrossSelect = false;
-	m_bMouseMoved = false;
-	m_bShowMap = true;
-	m_bShowUTMBounds = false;
+	m_bMouseCaptured = false;
 
 	m_ui.m_bRubber = false;
 	m_ui.mode = LB_None;
@@ -271,10 +274,14 @@ void BuilderView::ImportWorldMap()
 	double		adfMinBound[4], adfMaxBound[4];
 	int			i, j;
 
+	const char *filename = "WorldMap/gnv19.shp";
+	VTLOG(" Attempting to open %s\n", filename);
+
 	// Open SHP file
-	hSHP = SHPOpen( "WorldMap/gnv19.shp", "rb");
+	hSHP = SHPOpen(filename, "rb");
 	if (hSHP == NULL) return;
 
+	VTLOG(" Opened, reading worldmap.\n");
 	SHPGetInfo(hSHP, &m_iEntities, &nShapeType, adfMinBound, adfMaxBound);
 	if (nShapeType != SHPT_POLYGON) return;
 
@@ -963,7 +970,11 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 
 	// We must 'capture' the mouse in order to receive button-up events
 	// in the case where the cursor leaves the window.
-	CaptureMouse();
+	if (!m_bMouseCaptured)
+	{
+		CaptureMouse();
+		m_bMouseCaptured = true;
+	}
 
 	vtLayerPtr pL = GetMainFrame()->GetActiveLayer();
 	switch (m_ui.mode)
@@ -998,7 +1009,11 @@ void BuilderView::OnLeftDown(wxMouseEvent& event)
 
 void BuilderView::OnLeftUp(wxMouseEvent& event)
 {
-	ReleaseMouse();
+	if (m_bMouseCaptured)
+	{
+		ReleaseMouse();
+		m_bMouseCaptured = false;
+	}
 
 	if (!m_bMouseMoved)
 		OnLButtonClick(event);
@@ -1178,7 +1193,11 @@ void BuilderView::OnMiddleDown(wxMouseEvent& event)
 
 	GetCanvasPosition(event, m_ui.m_DownPoint);
 	m_ui.m_CurPoint = m_ui.m_DownPoint;
-	CaptureMouse();			// capture mouse
+	if (!m_bMouseCaptured)
+	{
+		CaptureMouse();
+		m_bMouseCaptured = true;
+	}
 
 	BeginPan();
 }
@@ -1188,13 +1207,21 @@ void BuilderView::OnMiddleUp(wxMouseEvent& event)
 	if (m_bPanning)
 		EndPan();
 
-	ReleaseMouse();
+	if (m_bMouseCaptured)
+	{
+		ReleaseMouse();
+		m_bMouseCaptured = false;
+	}
 }
 
 void BuilderView::OnRightDown(wxMouseEvent& event)
 {
 	m_ui.m_bRMouseButton = true;
-	CaptureMouse();			// capture mouse
+	if (!m_bMouseCaptured)
+	{
+		CaptureMouse();
+		m_bMouseCaptured = true;
+	}
 
 	// Dispatch to the layer
 	vtLayer *pL = GetMainFrame()->GetActiveLayer();
@@ -1205,7 +1232,11 @@ void BuilderView::OnRightDown(wxMouseEvent& event)
 void BuilderView::OnRightUp(wxMouseEvent& event)
 {
 	m_ui.m_bRMouseButton = false;	//right mouse button no longer down
-	ReleaseMouse();
+	if (m_bMouseCaptured)
+	{
+		ReleaseMouse();
+		m_bMouseCaptured = false;
+	}
 
 	vtLayer *pL = GetMainFrame()->GetActiveLayer();
 	if (!pL)
