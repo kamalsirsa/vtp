@@ -29,13 +29,22 @@ public:
 
 	// methods
 	void CreateCustomCulture(bool bDoSound);
+
+	vtGeom *make_test_cone();
 	vtGeom *make_red_cube();
 	void create_airports();
 	void create_telescopes();
+	void create_building_manually();
+	void do_test_code();
 	void create_airplanes(float fSize, float fSpeed, bool bDoSound);
+	void create_airplane(int i, float fSize, float fSpeed, bool bDoSound);
 
 	vtMaterialArray *m_pDetailMats;
 	vtMaterial *m_pDetailMat;
+
+	vtStructureArray3d *m_pSA;
+	vtStructureArray3d *m_pTelescopes;
 };
 
-#endif
+#endif // ISLANDH
+
