@@ -456,10 +456,10 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	bool do_roadside = true;
 	switch (m_Surface)
 	{
-	case ST_DIRT:
-	case ST_2TRACK:
-	case ST_TRAIL:
-	case ST_GRAVEL:
+	case SURFT_DIRT:
+	case SURFT_2TRACK:
+	case SURFT_TRAIL:
+	case SURFT_GRAVEL:
 		do_roadside = false;
 		break;
 	}
@@ -1008,24 +1008,24 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 					   (pR->m_iFlags & RF_REVERSE);
 		switch (pR->m_Surface)
 		{
-		case ST_NONE:
+		case SURFT_NONE:
 //			pR->m_vti = 3;
 			pR->m_vti = 0;
 			break;
-		case ST_GRAVEL:
+		case SURFT_GRAVEL:
 //			pR->m_vti = APPIDX_GRAVEL;
 			pR->m_vti = 0;
 			break;
-		case ST_TRAIL:
+		case SURFT_TRAIL:
 //			pR->m_vti = APPIDX_TRAIL;
 			pR->m_vti = 0;
 			break;
-		case ST_2TRACK:
-		case ST_DIRT:
+		case SURFT_2TRACK:
+		case SURFT_DIRT:
 //			pR->m_vti = APPIDX_4WD;
 			pR->m_vti = 0;
 			break;
-		case ST_PAVED:
+		case SURFT_PAVED:
 			switch (pR->m_iLanes)
 			{
 			case 1:

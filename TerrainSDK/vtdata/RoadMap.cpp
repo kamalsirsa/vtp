@@ -764,7 +764,7 @@ Road::Road()
 	// Provide default values
 	m_fWidth = 1.0f;
 	m_iLanes = 0;
-	m_Surface = ST_PAVED;
+	m_Surface = SURFT_PAVED;
 	m_iHwy = -1;
 	m_pNext = NULL;
 	m_id = 0;
@@ -1214,11 +1214,11 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		// check for inclusion
 		bool include = false;
 		if (bHwy && tmpRoad->m_iHwy > 0) include = true;
-		if (bPaved && tmpRoad->m_Surface == ST_PAVED) include = true;
-		if (bDirt && (tmpRoad->m_Surface == ST_TRAIL ||
-			tmpRoad->m_Surface == ST_2TRACK ||
-			tmpRoad->m_Surface == ST_DIRT ||
-			tmpRoad->m_Surface == ST_GRAVEL)) include = true;
+		if (bPaved && tmpRoad->m_Surface == SURFT_PAVED) include = true;
+		if (bDirt && (tmpRoad->m_Surface == SURFT_TRAIL ||
+			tmpRoad->m_Surface == SURFT_2TRACK ||
+			tmpRoad->m_Surface == SURFT_DIRT ||
+			tmpRoad->m_Surface == SURFT_GRAVEL)) include = true;
 
 		if (!include)
 		{
