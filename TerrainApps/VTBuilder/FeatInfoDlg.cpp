@@ -44,12 +44,16 @@ void FeatInfoDlg::SetFeatureSet(vtFeatures *pFeatures)
 
 	GetList()->ClearAll();		// clears all items and columns
 
+	GetList()->InsertColumn(0, "X coordinate", wxLIST_FORMAT_LEFT, 80);
+	GetList()->InsertColumn(1, "Y coordinate", wxLIST_FORMAT_LEFT, 80);
+	GetList()->InsertColumn(2, "Z coordinate", wxLIST_FORMAT_LEFT, 80);
+
 	int i;
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *field = m_pFeatures->GetField(i);
 		const char *name = field->m_name;
-		GetList()->InsertColumn(i, name, wxLIST_FORMAT_LEFT, 80);
+		GetList()->InsertColumn(i+3, name, wxLIST_FORMAT_LEFT, 80);
 	}
 }
 
@@ -66,11 +70,20 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	next = GetList()->GetItemCount();
 	GetList()->InsertItem(next, "temp");
 
+	DPoint3 p;
+	m_pFeatures->GetPoint(iFeat, p);
+	str.Format("%.2lf", p.x);
+	GetList()->SetItem(next, 0, (const char *) str);
+	str.Format("%.2lf", p.y);
+	GetList()->SetItem(next, 1, (const char *) str);
+	str.Format("%.2lf", p.z);
+	GetList()->SetItem(next, 2, (const char *) str);
+
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *field = m_pFeatures->GetField(i);
 		m_pFeatures->GetValueAsString(iFeat, i, str);
-		GetList()->SetItem(next, i, (const char *) str);
+		GetList()->SetItem(next, i+3, (const char *) str);
 	}
 }
 
