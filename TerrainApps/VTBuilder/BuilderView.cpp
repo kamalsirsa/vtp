@@ -1576,7 +1576,11 @@ void BuilderView::OnRightUpRoad(vtRoadLayer *pRL)
 	else
 		status = pRL->EditLinksProperties();
 	if (status)
+	{
+		pRL->SetModified(true);
 		Refresh();
+		GetMainFrame()->RefreshTreeStatus();
+	}
 }
 
 void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 
