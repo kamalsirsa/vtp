@@ -1315,7 +1315,7 @@ void vtTerrain::SetFogColor(const RGBf &color)
 
 void vtTerrain::SetFogDistance(float fMeters)
 {
-	m_Params.SetValueInt(STR_FOGDISTANCE, fMeters / 1000);
+	m_Params.SetValueInt(STR_FOGDISTANCE, (int) (fMeters / 1000));
 	if (m_bFog)
 		SetFog(true);
 }
