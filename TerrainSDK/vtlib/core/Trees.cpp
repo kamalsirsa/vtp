@@ -15,6 +15,7 @@
 
 #include "vtlib/vtlib.h"
 #include "Trees.h"
+#include "vtlib/core/Terrain.h"
 #include "vtlib/core/Light.h"
 #include "vtdata/vtLog.h"
 
@@ -29,17 +30,17 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 	 float width, float height, float shadow_radius, float shadow_darkness)
 	: vtPlantAppearance(type, filename, width, height, shadow_radius, shadow_darkness)
 {
-	m_pMats = NULL;
-	m_pMesh = NULL;
-#if SUPPORT_XFROG
-	m_pFrogModel = NULL;
-#endif
+	_Defaults();
 }
 
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
-	m_pMesh->Release();
-	m_pMats->Release();
+	if (m_pMesh)
+		m_pMesh->Release();
+	if (m_pMats)
+		m_pMats->Release();
+	if (m_pExternal)
+		m_pExternal->Release();
 
 #if SUPPORT_XFROG
 	if (m_pFrogModel) delete m_pFrogModel;
@@ -48,11 +49,7 @@ vtPlantAppearance3d::~vtPlantAppearance3d()
 
 vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 {
-	m_pMats = NULL;
-	m_pMesh = NULL;
-#if SUPPORT_XFROG
-	m_pFrogModel = NULL;
-#endif
+	_Defaults();
 
 	m_eType = v.m_eType;
 	m_filename = v.m_filename;
@@ -60,6 +57,16 @@ vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 	m_height = v.m_height;
 	m_shadow_radius	= v.m_shadow_radius;
 	m_shadow_darkness = v.m_shadow_darkness;
+}
+
+void vtPlantAppearance3d::_Defaults()
+{
+	m_pMats = NULL;
+	m_pMesh = NULL;
+#if SUPPORT_XFROG
+	m_pFrogModel = NULL;
+#endif
+	m_pExternal = NULL;
 }
 
 void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
@@ -97,7 +104,7 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 		// create a surface object to represent the tree
 		m_pMesh = CreateTreeMesh(fTreeScale, bShadows, bBillboards);
 	}
-	else
+	else if (m_eType == AT_XFROG)
 	{
 #if SUPPORT_XFROG
 		char pname[160];
@@ -107,6 +114,31 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 		// xfrog plant
 		m_pFrogModel = new CFrogModel(pname, m_filename);
 #endif
+	}
+	else if (m_eType == AT_MODEL)
+	{
+		m_pExternal = vtLoadModel(m_filename);
+		if (!m_pExternal)
+		{
+			vtString fname = "PlantModels/";
+			fname += m_filename;
+			// if not directly resolvable, look on data paths
+			vtString fullpath = FindFileOnPaths(vtTerrain::s_DataPaths, fname);
+			if (fullpath != "")
+				m_pExternal = vtLoadModel(fullpath);
+		}
+		if (!m_pExternal)
+			return;
+		if (m_filename.Right(3).CompareNoCase("3ds") == 0)
+		{
+			// Wrap in a transform node so that we can correct for 3ds problem
+			vtTransform *pTrans = new vtTransform();
+			pTrans->AddChild(m_pExternal);
+			pTrans->Identity();
+			// Must rotate by 90 degrees for 3DS -> OpenGL (or Lightwave LWO?)
+			pTrans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
+			m_pExternal = pTrans;
+		}
 	}
 }
 
@@ -202,10 +234,9 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 	}
 	else if (m_eType == AT_MODEL)
 	{
-		vtNodeBase *node = vtLoadModel(m_filename);
-		if (node)
+		if (m_pExternal)
 		{
-			container->AddChild(node);
+			container->AddChild(m_pExternal);
 			return true;
 		}
 	}
@@ -538,10 +569,13 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 	float scale = pi.size / pApp->m_height;
 	inst3d->m_pContainer->Scale3(scale, scale, scale);
 
-	// Since the billboard are symmetric, a small rotation helps provide
-	//  a more natural look.
-	float random_rotation = random(PI2f);
-	inst3d->m_pContainer->RotateLocal(FPoint3(0,1,0), random_rotation);
+	if (pApp->m_eType == AT_BILLBOARD)
+	{
+		// Since the billboard are symmetric, a small rotation helps provide
+		//  a more natural look.
+		float random_rotation = random(PI2f);
+		inst3d->m_pContainer->RotateLocal(FPoint3(0,1,0), random_rotation);
+	}
 
 	return true;
 }

@@ -37,10 +37,12 @@ public:
 protected:
 	vtMesh *CreateTreeMesh(float fTreeScale, bool bShadows,
 						   bool bBillboards);
+	void _Defaults();
 
 	vtMaterialArray	*m_pMats;
 	vtMesh			*m_pMesh;
 	int				m_iMatIdx;
+	vtNodeBase		*m_pExternal;
 #if SUPPORT_XFROG
 	CFrogModel		*m_pFrogModel;
 #endif
