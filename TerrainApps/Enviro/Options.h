@@ -24,13 +24,10 @@ public:
 	vtString	m_strImage;
 	vtString	m_strInitTerrain;
 	bool	m_bFullscreen;
-	bool	m_bGravity;
 	bool	m_bHtmlpane;
 	bool	m_bFloatingToolbar;
 	bool	m_bSound;
-	bool	m_bVCursor;
 	bool	m_bSpeedTest;
-	bool	m_bQuakeNavigation;
 	float	m_fPlantScale;
 	bool	m_bShadows;
 

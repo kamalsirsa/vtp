@@ -21,13 +21,10 @@ EnviroOptions g_Options;
 #define STR_EARTHIMAGE "EarthImage"
 #define STR_INITTERRAIN "InitialTerrain"
 #define STR_FULLSCREEN "FullScreen"
-#define STR_GRAVITY "Gravity"
 #define STR_HTMLPANE "HTMLPane"
 #define STR_FLOATBAR "FloatingToolBar"
 #define STR_SOUND "Sound"
-#define STR_VCURSOR "VirtualCursor"
 #define STR_SPEEDTEST "SpeedTest"
-#define STR_QUAKE "QuakeNavigation"
 #define STR_PLANTSIZE "PlantSize"
 #define STR_PLANTSHADOWS "PlantShadows"
 
@@ -78,20 +75,14 @@ bool EnviroOptions::Read(const char *szFilename)
 			m_strInitTerrain = get_line_from_stream(input);
 		else if (strcmp(buf, STR_FULLSCREEN) == 0)
 			input >> m_bFullscreen;
-		else if (strcmp(buf, STR_GRAVITY) == 0)
-			input >> m_bGravity;
 		else if (strcmp(buf, STR_HTMLPANE) == 0)
 			input >> m_bHtmlpane;
 		else if (strcmp(buf, STR_FLOATBAR) == 0)
 			input >> m_bFloatingToolbar;
 		else if (strcmp(buf, STR_SOUND) == 0)
 			input >> m_bSound;
-		else if (strcmp(buf, STR_VCURSOR) == 0)
-			input >> m_bVCursor;
 		else if (strcmp(buf, STR_SPEEDTEST) == 0)
 			input >> m_bSpeedTest;
-		else if (strcmp(buf, STR_QUAKE) == 0)
-			input >> m_bQuakeNavigation;
 		else if (strcmp(buf, STR_PLANTSIZE) == 0)
 			input >> m_fPlantScale;
 		else if (strcmp(buf, STR_PLANTSHADOWS) == 0)
@@ -134,8 +125,6 @@ bool EnviroOptions::Write()
 
 	output << STR_FULLSCREEN << "\t\t";
 	output << m_bFullscreen << endl;
-	output << STR_GRAVITY << "\t\t\t";
-	output << m_bGravity << endl;
 	output << STR_HTMLPANE << "\t\t";
 	output << m_bHtmlpane << endl;
 	output << STR_FLOATBAR << "\t";
@@ -143,12 +132,8 @@ bool EnviroOptions::Write()
 
 	output << STR_SOUND << "\t\t\t";
 	output << m_bSound << endl;
-	output << STR_VCURSOR << "\t";
-	output << m_bVCursor << endl;
 	output << STR_SPEEDTEST << "\t\t";
 	output << m_bSpeedTest << endl;
-	output << STR_QUAKE << "\t";
-	output << m_bQuakeNavigation << endl;
 	output << STR_PLANTSIZE << "\t\t";
 	output << m_fPlantScale << endl;
 	output << STR_PLANTSHADOWS << "\t";
