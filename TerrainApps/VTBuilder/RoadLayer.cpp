@@ -255,6 +255,7 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 		{
 			// begin dragging point
 			ui.m_iEditingPoint = closest_i;
+			return;
 		}
 		else
 			ui.m_iEditingPoint = -1;
