@@ -546,7 +546,7 @@ float Link::Length()
 {
 	double dist = 0;
 	DPoint2 tmp;
-	for (int i = 1; i < GetSize(); i++)
+	for (unsigned int i = 1; i < GetSize(); i++)
 	{
 		tmp = GetAt(i-1) - GetAt(i);
 		dist += tmp.Length();

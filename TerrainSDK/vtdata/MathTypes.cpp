@@ -184,9 +184,9 @@ void DLine2::SetSafePoint(int index, const DPoint2 &p)
  * between points N and N+1.  If the length of the last segment is requested,
  * a closed polygon is assumed.
  */
-double DLine2::SegmentLength(int i) const
+double DLine2::SegmentLength(unsigned int i) const
 {
-	int j = (i < GetSize()-1) ? i+1 : 0;
+	unsigned int j = (i < GetSize()-1) ? i+1 : 0;
 	return (GetAt(j) - GetAt(i)).Length();
 }
 
@@ -196,7 +196,7 @@ double DLine2::SegmentLength(int i) const
 
 bool DRECT::ContainsLine(const DLine2 &line) const
 {
-	for (int i = 0; i < line.GetSize(); i++)
+	for (unsigned int i = 0; i < line.GetSize(); i++)
 	{
 		if (!ContainsPoint(line[i]))
 			return false;

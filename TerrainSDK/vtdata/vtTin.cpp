@@ -303,9 +303,9 @@ double vtTin::GetTriMaxEdgeLength(int iTri)
  */
 void vtTin::MergeSharedVerts(void progress_callback(int))
 {
-	int verts = NumVerts();
+	unsigned int verts = NumVerts();
 
-	int i, j;
+	unsigned int i, j;
 	int bin;
 
 	DRECT rect;
@@ -331,7 +331,7 @@ void vtTin::MergeSharedVerts(void progress_callback(int))
 		bin = (int) (BINS * (m_vert[i].x - rect.left) / width);
 		m_vertbin[bin].Append(i);
 	}
-	int trisize = m_tri.GetSize();
+	unsigned int trisize = m_tri.GetSize();
 	for (i = 0; i < trisize; i++)
 	{
 		// find the correct bin, and add the index of this index to it
@@ -374,7 +374,7 @@ void vtTin::MergeSharedVerts(void progress_callback(int))
 		if (progress_callback != NULL)
 			progress_callback(bin * 100 / BINS);
 
-		int binverts = m_vertbin[bin].GetSize();
+		unsigned int binverts = m_vertbin[bin].GetSize();
 		for (i = 0; i < binverts; i++)
 		{
 			int v_old = m_vertbin[bin].GetAt(i);
@@ -387,7 +387,7 @@ void vtTin::MergeSharedVerts(void progress_callback(int))
 			m_vert[v_new] = vertcopy->GetAt(v_old);
 			m_z[v_new] = m_z[v_old];
 
-			int bintris = m_tribin[bin].GetSize();
+			unsigned int bintris = m_tribin[bin].GetSize();
 			for (j = 0; j < bintris; j++)
 			{
 				int trindx = m_tribin[bin].GetAt(j);

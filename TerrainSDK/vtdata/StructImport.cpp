@@ -559,7 +559,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				{
 					pBld->SetElevationOffset(pDefBld->GetElevationOffset());
 
-					for (int i = 0; i < pDefBld->GetNumLevels(); i++)
+					for (unsigned int i = 0; i < pDefBld->GetNumLevels(); i++)
 					{
 						if (i != 0)
 							pBld->CreateLevel(foot);
@@ -619,9 +619,9 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		StructImportOptions &opt, void progress_callback(int))
 {
-	int i, j, feature_count, count;
+	unsigned int	i, j;
+	int				count;
 	OGRFeature		*pFeature;
-	OGRGeometry		*pGeom;
 	OGRPolygon		*pPolygon;
 	vtBuilding		*pBld;
 	vtLevel         *pLevel, *pNewLevel;
@@ -629,7 +629,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 	DLine2 footprint;
 	OGRLinearRing *pRing;
 	OGRLineString *pLineString;
-	int num_points;
+	unsigned int num_points;
 	OGRwkbGeometryType GeometryType;
 	int iHeightIndex = -1;
 	int iElevationIndex = -1;
@@ -638,14 +638,13 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 	float fAverageZ;
 	float fZ;
 	float fOriginalElevation;
-	int iVertices;
 	float fMin, fMax, fDiff, fElev;
 	PolyChecker PolyChecker;
 	SchemaType Schema = SCHEMA_UI;
 	int iFeatureCode;
 	DPoint2 dPoint;
 
-	feature_count = pLayer->GetFeatureCount();
+	int feature_count = pLayer->GetFeatureCount();
   	pLayer->ResetReading();
 
 	pLayerDefn = pLayer->GetLayerDefn();
@@ -694,7 +693,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		}
 
 
-		pGeom = pFeature->GetGeometryRef();
+		OGRGeometry *pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
 			continue;
 		GeometryType = pGeom->getGeometryType();
@@ -832,7 +831,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		{
 			float fTotalHeight = 0;
 			float fScaleFactor;
-			int iNumLevels = pBld->GetNumLevels();
+			unsigned int iNumLevels = pBld->GetNumLevels();
 			RoofType eRoofType = pBld->GetRoofType();
 			float fRoofHeight = pBld->GetLevel(iNumLevels - 1)->m_fStoryHeight;
 
@@ -865,7 +864,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			// Get the footprint of the lowest level
 			pLevel = pBld->GetLevel(0);
 			footprint = pLevel->GetFootprint();
-			iVertices = footprint.GetSize();
+			unsigned int iVertices = footprint.GetSize();
 
 			fMin = 1E9;
 			fMax = -1E9;
@@ -974,7 +973,6 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 				break;
 		}
 
-
 		pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
 			continue;
@@ -1044,29 +1042,21 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 		StructImportOptions &opt, void progress_callback(int))
 {
-	int iFeatureCount;
-	OGRFeatureDefn *pLayerDefn;
-	const char *pLayerName;
-	SchemaType eSchema = SCHEMA_UI;
-	int iCount;
-	int iFeatureCode;
-	OGRFeature		*pFeature;
-	OGRGeometry		*pGeom;
-	OGRwkbGeometryType GeometryType;
-	float fAverageZ;
-	vtStructInstance *pInstance;
-	vtStructInstance *pDefaultInstance;
-	int iFilenameIndex = -1;
-	DPoint2 dPoint;
+	int			iCount, iFeatureCount;
+	SchemaType	eSchema = SCHEMA_UI;
+	OGRFeature	*pFeature;
+	OGRGeometry	*pGeom;
+	float		fAverageZ;
+	int			iFilenameIndex = -1;
 
 	iFeatureCount = pLayer->GetFeatureCount();
   	pLayer->ResetReading();
 
-	pLayerDefn = pLayer->GetLayerDefn();
+	OGRFeatureDefn *pLayerDefn = pLayer->GetLayerDefn();
 	if (!pLayerDefn)
 		return;
 
-	pLayerName = pLayerDefn->GetName();
+	const char *pLayerName = pLayerDefn->GetName();
 
 	// Check for layers with known schemas
 	if (!strcmp(pLayerName, "osgb:TopographicArea"))
@@ -1079,6 +1069,7 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 	if (-1 == iFilenameIndex)
 		return;
 
+	int iFeatureCode;
 	iCount = 0;
 	while((pFeature = pLayer->GetNextFeature()) != NULL )
 	{
@@ -1104,29 +1095,29 @@ void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
 		pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
 			continue;
-		GeometryType = pGeom->getGeometryType();
+		OGRwkbGeometryType GeometryType = pGeom->getGeometryType();
 
 		if (wkbPoint != wkbFlatten(GeometryType))
 			continue;
 
-		dPoint = DPoint2(((OGRPoint *)pGeom)->getX(), ((OGRPoint *)pGeom)->getY());
+		DPoint2 p2(((OGRPoint *)pGeom)->getX(), ((OGRPoint *)pGeom)->getY());
 		fAverageZ = (float)((OGRPoint *)pGeom)->getZ();
 
-		if (opt.bInsideOnly && !opt.rect.ContainsPoint(dPoint))
+		if (opt.bInsideOnly && !opt.rect.ContainsPoint(p2))
 			// Exclude instances outside the indicated extents
 			continue;
 
-		pInstance = NewInstance();
+		vtStructInstance *pInstance = NewInstance();
 		if (!pInstance)
 			return;
 
-		pDefaultInstance = GetClosestDefault(pInstance);
+		vtStructInstance *pDefaultInstance = GetClosestDefault(pInstance);
 		if (NULL != pDefaultInstance)
 		{
 			pInstance->m_fRotation = pDefaultInstance->m_fRotation;
 			pInstance->m_fScale = pDefaultInstance->m_fScale;
 		}
-		pInstance->m_p = dPoint;
+		pInstance->m_p = p2;
 
 		Append(pInstance);
 	}

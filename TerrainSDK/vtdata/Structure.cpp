@@ -129,8 +129,7 @@ vtStructure::~vtStructure()
 void vtStructure::WriteTags(FILE *fp)
 {
 	// now write all extra tags (attributes) for this structure
-	int i;
-	for (i = 0; i < NumTags(); i++)
+	for (unsigned int i = 0; i < NumTags(); i++)
 	{
 		vtTag *tag = GetTag(i);
 		fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,

@@ -59,40 +59,40 @@
 template <class E> class Array
 {
 public:
-	Array(int size = 0);
+	Array(unsigned int size = 0);
 	Array(const Array<E>&);
 	virtual ~Array();
 
 //	Accessors
-	int		GetSize() const;
-	int		GetMaxSize() const;
-	bool	SetSize(int);
-	bool	SetMaxSize(int);
-	int		GetElemSize() const;
-	E*		GetData() const;
-	bool	IsEmpty() const;
-	E&		GetAt(int i) const;
-	bool	SetAt(int i, E);
+	unsigned int	GetSize() const;
+	unsigned int	GetMaxSize() const;
+	bool		SetSize(unsigned int);
+	bool		SetMaxSize(unsigned int);
+	unsigned int	GetElemSize() const;
+	E*			GetData() const;
+	bool		IsEmpty() const;
+	E&			GetAt(unsigned int i) const;
+	bool		SetAt(unsigned int i, E);
 
 //	Other operations
 	Array<E>& operator=(const Array<E>&);
-	E&			operator[](int i);
-	const E&	operator[](int i) const;
+	E&			operator[](unsigned int i);
+	const E&	operator[](unsigned int i) const;
 	void		Empty();
-	bool		RemoveAt(int i, int n = 1);
-	int		Append(const E&);
-	int		Append(const Array<E>&);
-	int		Find(const E&) const;
+	bool		RemoveAt(unsigned int i, int n = 1);
+	int			Append(const E&);
+	int			Append(const Array<E>&);
+	unsigned int Find(const E&) const;
 
 protected:
 //	Internal functions
-	virtual bool	Grow(int);
-	virtual	void	DestructItems(int first, int last);
+	virtual bool	Grow(unsigned int);
+	virtual	void	DestructItems(unsigned int first, unsigned int last);
 
 //	Data members
-	int		m_Size;		// number of elements added so far
-	int		m_MaxSize;	// maximum number of elements we have room for
-	E*		m_Data;		// data area for array
+	unsigned int	m_Size;		// number of elements added so far
+	unsigned int	m_MaxSize;	// maximum number of elements we have room for
+	E*				m_Data;		// data area for array
 };
 
 
@@ -112,7 +112,7 @@ protected:
 \endcode
  *
  */
-template <class E> Array<E>::Array(int size)
+template <class E> Array<E>::Array(unsigned int size)
 {
 	m_Size = 0;				// empty to start
 	m_MaxSize = 0;			// remember the size
@@ -144,7 +144,7 @@ template <class E> Array<E>::Array(int size)
 	}
 \endcode
  */
-template <class E> inline void Array<E>::DestructItems(int first, int last)
+template <class E> inline void Array<E>::DestructItems(unsigned int first, unsigned int last)
 {
 	//VTLOG("base DestructItems, %d %d\n", start, nitems);
 }
@@ -175,7 +175,7 @@ template <class E> inline Array<E>::~Array()
  *
  * \sa Array::SetData Array::SetMaxSize
  */
-template <class E> bool Array<E>::Grow(int growto)
+template <class E> bool Array<E>::Grow(unsigned int growto)
 {
 	int	n = growto - m_MaxSize;
 	E*		old_data;
@@ -224,17 +224,17 @@ template <class E> inline E* Array<E>::GetData() const
  *
  * \sa Array::SetData Array::SetSize Array::GetElemSize Array::Grow
  */
-template <class E> bool Array<E>::SetMaxSize(int s)
+template <class E> bool Array<E>::SetMaxSize(unsigned int s)
 {
 	if (s > m_MaxSize)			// enlarge array
 		return Grow(s);			// if we can
 	return true;
 }
 
-template <class E> inline int	Array<E>::GetMaxSize() const
+template <class E> inline unsigned int	Array<E>::GetMaxSize() const
 	{ return m_MaxSize; }
 
-template <class E> inline int	Array<E>::GetElemSize() const
+template <class E> inline unsigned int	Array<E>::GetElemSize() const
 	{ return sizeof(E); }
 
 /**
@@ -259,7 +259,7 @@ template <class E> inline int	Array<E>::GetElemSize() const
 \endcode
  *
  */
-template <class E> bool inline Array<E>::SetSize(int s)
+template <class E> bool inline Array<E>::SetSize(unsigned int s)
 {
 	assert(s >= 0);
 	if (s > m_MaxSize)
@@ -269,7 +269,7 @@ template <class E> bool inline Array<E>::SetSize(int s)
 	return true;
 }
 
-template <class E> inline int	Array<E>::GetSize() const
+template <class E> inline unsigned int Array<E>::GetSize() const
 	{ return m_Size; }
 
 /**
@@ -293,11 +293,11 @@ template <class E> inline int	Array<E>::GetSize() const
 	cols.SetAt(17, RGBi(0,1,1));	// causes array growth
 \endcode
  */
-template <class E> bool Array<E>::SetAt(int i, E val)
+template <class E> bool Array<E>::SetAt(unsigned int i, E val)
 {
 	if (i >= m_MaxSize)			// need to extend array?
 	   {
-		int n = m_MaxSize;
+		unsigned int n = m_MaxSize;
 		n += (n >> 1);			// grow to 1 1/2 times current size
 		if (n <= i) n = i + 1;	// unless user wants more
 		if (!Grow(n))			// extend failure
@@ -319,13 +319,13 @@ template <class E> bool Array<E>::SetAt(int i, E val)
  *
  * \return element accessed
  */
-template <class E> inline E& Array<E>::GetAt(int i) const
+template <class E> inline E& Array<E>::GetAt(unsigned int i) const
 	{ return m_Data[i]; }
 
-template <class E> inline const E& Array<E>::operator[](int i) const
+template <class E> inline const E& Array<E>::operator[](unsigned int i) const
 	{ return m_Data[i]; }
 
-template <class E> inline E& Array<E>::operator[](int i)
+template <class E> inline E& Array<E>::operator[](unsigned int i)
 	{ return m_Data[i]; }
 
 /**
@@ -352,11 +352,11 @@ template <class E> inline E& Array<E>::operator[](int i)
 \endcode
  *
  */
-template <class E> int Array<E>::Find(const E& elem) const
+template <class E> unsigned int Array<E>::Find(const E& elem) const
 {
 	const E* p = m_Data;
 
-	for (int i = 0; i < m_Size; ++i)	// look for matching element
+	for (unsigned int i = 0; i < m_Size; ++i)	// look for matching element
 		if (*p++ == elem)
 			return i;					// found it
 	return -1;
@@ -414,7 +414,7 @@ template <class E> int inline Array<E>::Append(const E& v)
 	zot.RemoveAt(-1);	 // returns false
 \endcode
  */
-template <class E> bool Array<E>::RemoveAt(int i, int n)
+template <class E> bool Array<E>::RemoveAt(unsigned int i, int n)
 {
 	E*	elem;
 	int	shuffle;

@@ -151,7 +151,7 @@ public:
 	float EstimateWidth(bool bIncludeSidewalk = true);
 
 	float	m_fWidth;		// road width in meters
-	short	m_iLanes;		// number of lanes
+	unsigned short m_iLanes; // number of lanes
 	SurfaceType m_Surface;
 	short	m_iHwy;			// highway number: -1 for normal roads
 	Link	*m_pNext;		// the next Link, if roads are maintained in link list form

@@ -182,7 +182,7 @@ vtLevel::~vtLevel()
 
 void vtLevel::DeleteEdges()
 {
-	for (int i = 0; i < m_Edges.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 		delete m_Edges.GetAt(i);
 	m_Edges.SetSize(0);
 }
@@ -194,7 +194,7 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 
 	DeleteEdges();
 	m_Edges.SetSize(v.m_Edges.GetSize());
-	for (int i = 0; i < v.m_Edges.GetSize(); i++)
+	for (unsigned int i = 0; i < v.m_Edges.GetSize(); i++)
 	{
 		vtEdge *pnew = new vtEdge(*v.m_Edges[i]);
 		m_Edges.SetAt(i, pnew);
@@ -346,13 +346,13 @@ void vtLevel::SynchFromOGR()
 void vtLevel::SetEdgeMaterial(const char *matname)
 {
 	const vtString *str = GetGlobalMaterials()->FindName(matname);
-	for (int i = 0; i < m_Edges.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 		m_Edges[i]->m_pMaterial = str;
 }
 
 void vtLevel::SetEdgeColor(RGBi color)
 {
-	for (int i = 0; i < m_Edges.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 		m_Edges[i]->m_Color = color;
 }
 
@@ -378,7 +378,7 @@ void vtLevel::SetWalls(int n)
 
 bool vtLevel::HasSlopedEdges()
 {
-	for (int i = 0; i < m_Edges.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 	{
 		if (m_Edges[i]->m_iSlope != 90)
 			return true;
@@ -388,7 +388,7 @@ bool vtLevel::HasSlopedEdges()
 
 bool vtLevel::IsHorizontal()
 {
-	for (int i = 0; i < m_Edges.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Edges.GetSize(); i++)
 	{
 		if (m_Edges[i]->m_iSlope == 0)
 			return true;
@@ -750,7 +750,7 @@ vtBuilding::~vtBuilding()
  */
 void vtBuilding::DeleteStories()
 {
-	for (int i = 0; i < m_Levels.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Levels.GetSize(); i++)
 		delete m_Levels.GetAt(i);
 	m_Levels.SetSize(0);
 }
@@ -763,7 +763,7 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
 	DeleteStories();
 
-	for (int i = 0; i < v.m_Levels.GetSize(); i++)
+	for (unsigned int i = 0; i < v.m_Levels.GetSize(); i++)
 		m_Levels.Append(new vtLevel(* v.m_Levels.GetAt(i)));
 
 	SetElevationOffset(v.GetElevationOffset());
@@ -780,7 +780,7 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 void vtBuilding::FlipFootprintDirection()
 {
 	// Flip the direction (clockwisdom) of each level
-	for (int i = 0; i < m_Levels.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Levels.GetSize(); i++)
 		m_Levels[i]->FlipFootprintDirection();
 }
 
@@ -810,7 +810,7 @@ float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
  */
 void vtBuilding::TransformCoords(OCT *trans)
 {
-	int i, j;
+	unsigned int i, j;
 	DPoint2 p;
 
 	for (i = 0; i < m_Levels.GetSize(); i++)
@@ -818,7 +818,7 @@ void vtBuilding::TransformCoords(OCT *trans)
 		vtLevel *pLev = m_Levels[i];
 
 		DLine2 foot = pLev->GetFootprint();
-		int iSize = foot.GetSize();
+		unsigned int iSize = foot.GetSize();
 
 		for (j = 0; j < iSize; j++)
 		{
@@ -982,7 +982,7 @@ int vtBuilding::GetStories() const
 	// this method assume each building must have at least two levels: one
 	// for the walls and one for the roof.
 	int stories = 0;
-	for (int i = 0; i < m_Levels.GetSize() - 1; i++)
+	for (unsigned int i = 0; i < m_Levels.GetSize() - 1; i++)
 		stories += m_Levels[i]->m_iStories;
 	return stories;
 }
@@ -1097,7 +1097,7 @@ bool vtBuilding::GetBaseLevelCenter(DPoint2 &p) const
 
 void vtBuilding::Offset(const DPoint2 &p)
 {
-	int i;
+	unsigned int i;
 
 	DLine2 foot;
 	for (i = 0; i < m_Levels.GetSize(); i++)
@@ -1118,8 +1118,8 @@ void vtBuilding::Offset(const DPoint2 &p)
 //
 bool vtBuilding::GetExtents(DRECT &rect) const
 {
-	int i, j;
-	int levs = m_Levels.GetSize();
+	unsigned int i, j;
+	unsigned int levs = m_Levels.GetSize();
 	if (levs == 0)
 		return false;
 

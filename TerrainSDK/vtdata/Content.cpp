@@ -51,7 +51,7 @@ vtTag *vtTagArray::GetTag(int index)
 	return &m_tags[index];
 }
 
-int vtTagArray::NumTags()
+unsigned int vtTagArray::NumTags()
 {
 	return m_tags.size();
 }
@@ -144,7 +144,7 @@ vtItem::~vtItem()
 
 void vtItem::Empty()
 {
-	for (int i = 0; i < m_models.GetSize(); i++)
+	for (unsigned int i = 0; i < m_models.GetSize(); i++)
 	{
 		delete m_models.GetAt(i);
 	}
@@ -346,7 +346,7 @@ vtContentManager::~vtContentManager()
 
 void vtContentManager::Empty()
 {
-	for (int i = 0; i < m_items.GetSize(); i++)
+	for (unsigned int i = 0; i < m_items.GetSize(); i++)
 	{
 		delete m_items.GetAt(i);
 	}
@@ -362,7 +362,7 @@ void vtContentManager::RemoveItem(vtItem *item)
 
 vtItem *vtContentManager::FindItemByName(const char *name)
 {
-	for (int i = 0; i < m_items.GetSize(); i++)
+	for (unsigned int i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
 		if (!pItem->m_name.CompareNoCase(name))
@@ -373,7 +373,7 @@ vtItem *vtContentManager::FindItemByName(const char *name)
 
 vtItem *vtContentManager::FindItemByType(const char *type, const char *subtype)
 {
-	for (int i = 0; i < m_items.GetSize(); i++)
+	for (unsigned int i = 0; i < m_items.GetSize(); i++)
 	{
 		vtItem *pItem = m_items.GetAt(i);
 		vtTag *tag1 = pItem->FindTag("type");
@@ -419,7 +419,7 @@ void vtContentManager::ReadXML(const char *filename)
  */
 void vtContentManager::WriteXML(const char *filename)
 {
-	int i, j;
+	unsigned int i, j;
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
 	{

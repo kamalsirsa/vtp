@@ -135,7 +135,7 @@ public:
 	void SetRoofType(RoofType rt, int iSlopeDegrees);
 	void SetEaveLength(float fMeters);
 
-	int		m_iStories;
+	unsigned int m_iStories;
 	float	m_fStoryHeight;
 
 	void SetFootprint(const DLine2 &dl);
@@ -210,7 +210,7 @@ public:
 	void SetStories(int i);
 	int GetStories() const;
 
-	int GetNumLevels() const { return m_Levels.GetSize(); }
+	unsigned int GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return m_Levels[i]; }
 	vtLevel *CreateLevel(const DLine2 &footprint);
 	vtLevel *CreateLevel();

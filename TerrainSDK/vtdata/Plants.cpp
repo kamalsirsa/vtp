@@ -53,7 +53,7 @@ vtPlantSpecies::vtPlantSpecies()
 
 vtPlantSpecies::~vtPlantSpecies()
 {
-	for (int i = 0; i < m_Apps.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Apps.GetSize(); i++)
 	{
 		delete m_Apps[i];
 	}
@@ -79,7 +79,7 @@ vtPlantList::vtPlantList()
 
 vtPlantList::~vtPlantList()
 {
-	for (int i = 0; i < m_Species.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Species.GetSize(); i++)
 	{
 		delete m_Species[i];
 	}
@@ -199,7 +199,7 @@ void vtPlantList::AddSpecies(int SpecieID, const char *CommonName,
 
 void vtPlantList::LookupPlantIndices(vtBioType *bt)
 {
-	for (int i = 0; i < bt->m_Densities.GetSize(); i++)
+	for (unsigned int i = 0; i < bt->m_Densities.GetSize(); i++)
 	{
 		const char *common_name = bt->m_Densities[i]->m_common_name;
 
@@ -382,7 +382,7 @@ vtBioRegion::vtBioRegion()
 
 vtBioRegion::~vtBioRegion()
 {
-	for (int i = 0; i < m_Types.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Types.GetSize(); i++)
 	{
 		delete m_Types[i];
 	}
@@ -475,7 +475,7 @@ vtBioType::vtBioType()
 
 vtBioType::~vtBioType()
 {
-	for (int i = 0; i < m_Densities.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Densities.GetSize(); i++)
 		delete m_Densities[i];
 }
 
@@ -491,7 +491,7 @@ void vtBioType::AddPlant(int i, const char *common_name, float plant_per_m2)
 
 void vtBioType::ResetAmounts()
 {
-	for (int i = 0; i < m_Densities.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Densities.GetSize(); i++)
 		m_Densities[i]->ResetAmounts();
 }
 

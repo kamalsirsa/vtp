@@ -369,7 +369,7 @@ public:
 	void InsertPointAfter(int iInsertAfter, DPoint2 &Point);
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
-	double SegmentLength(int i) const;
+	double SegmentLength(unsigned int i) const;
 	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection);
 	double NearestPoint(const DPoint2 &Point, int &iIndex);
 	DPoint2 GetSafePoint(int index);

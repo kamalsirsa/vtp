@@ -38,20 +38,20 @@ public:
 
 	int AddRecord();
 
-	void SetValue(int record, const char *string);
-	void SetValue(int record, int value);
-	void SetValue(int record, double value);
-	void SetValue(int record, bool value);
+	void SetValue(unsigned int iRecord, const char *string);
+	void SetValue(unsigned int iRecord, int value);
+	void SetValue(unsigned int iRecord, double value);
+	void SetValue(unsigned int iRecord, bool value);
 
-	void GetValue(int record, vtString &string);
-	void GetValue(int record, int &value);
-	void GetValue(int record, double &value);
-	void GetValue(int record, bool &value);
+	void GetValue(unsigned int iRecord, vtString &string);
+	void GetValue(unsigned int iRecord, int &value);
+	void GetValue(unsigned int iRecord, double &value);
+	void GetValue(unsigned int iRecord, bool &value);
 
-	void CopyValue(int FromRecord, int ToRecord);
-	void GetValueAsString(int iRecord, vtString &str);
-	void SetValueFromString(int iRecord, const vtString &str);
-	void SetValueFromString(int iRecord, const char *str);
+	void CopyValue(unsigned int FromRecord, int ToRecord);
+	void GetValueAsString(unsigned int iRecord, vtString &str);
+	void SetValueFromString(unsigned int iRecord, const vtString &str);
+	void SetValueFromString(unsigned int iRecord, const char *str);
 
 	DBFFieldType m_type;
 	int m_width, m_decimals;	// these are for remembering SHP limitations
@@ -106,11 +106,11 @@ public:
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
 	int AddPolyLine(const DLine2 &pl);
-	void GetPoint(int num, DPoint3 &p) const;
-	void GetPoint(int num, DPoint2 &p) const;
-	const DLine2 &GetLine(int num) { return m_LinePoly[num]; }
+	void GetPoint(unsigned int num, DPoint3 &p) const;
+	void GetPoint(unsigned int num, DPoint2 &p) const;
+	const DLine2 &GetLine(unsigned int num) { return m_LinePoly[num]; }
 
-	void CopyEntity(int from, int to);
+	void CopyEntity(unsigned int from, unsigned int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
 	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
 
@@ -118,14 +118,14 @@ public:
 	void ApplyDeletion();
 
 	// selection
-	void Select(int iEnt, bool set = true)
+	void Select(unsigned int iEnt, bool set = true)
 	{
 		if (set)
 			m_Flags[iEnt] |= FF_SELECTED;
 		else
 			m_Flags[iEnt] &= ~FF_SELECTED;
 	}
-	bool IsSelected(int iEnt)
+	bool IsSelected(unsigned int iEnt)
 	{
 		return ((m_Flags[iEnt] & FF_SELECTED) != 0);
 	}
@@ -137,14 +137,14 @@ public:
 	void DeleteSelected();
 
 	// picking (alternate form of selection)
-	void Pick(int iEnt, bool set = true)
+	void Pick(unsigned int iEnt, bool set = true)
 	{
 		if (set)
 			m_Flags[iEnt] |= FF_PICKED;
 		else
 			m_Flags[iEnt] &= ~FF_PICKED;
 	}
-	bool IsPicked(int iEnt)
+	bool IsPicked(unsigned int iEnt)
 	{
 		return ((m_Flags[iEnt] & FF_PICKED) != 0);
 	}
@@ -157,18 +157,18 @@ public:
 	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
 	int AddRecord();
 
-	void SetValue(int record, int field, const char *string);
-	void SetValue(int record, int field, int value);
-	void SetValue(int record, int field, double value);
-	void SetValue(int record, int field, bool value);
+	void SetValue(unsigned int record, unsigned int field, const char *string);
+	void SetValue(unsigned int record, unsigned int field, int value);
+	void SetValue(unsigned int record, unsigned int field, double value);
+	void SetValue(unsigned int record, unsigned int field, bool value);
 
-	void GetValueAsString(int record, int field, vtString &str) const;
-	void SetValueFromString(int iRecord, int iField, const vtString &str);
-	void SetValueFromString(int iRecord, int iField, const char *str);
+	void GetValueAsString(unsigned int record, unsigned int field, vtString &str) const;
+	void SetValueFromString(unsigned int iRecord, unsigned int iField, const vtString &str);
+	void SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str);
 
-	int GetIntegerValue(int iRecord, int iField) const;
-	double GetDoubleValue(int iRecord, int iField) const;
-	bool GetBoolValue(int iRecord, int iField) const;
+	int GetIntegerValue(unsigned int iRecord, unsigned int iField) const;
+	double GetDoubleValue(unsigned int iRecord, unsigned int iField) const;
+	bool GetBoolValue(unsigned int iRecord, unsigned int iField) const;
 
 	vtProjection &GetAtProjection() { return m_proj; }
 

@@ -136,9 +136,9 @@ public:
 
 	void LookupPlantIndices(vtBioType *pvtBioType);
 	int NumSpecies() const { return m_Species.GetSize();  }
-	vtPlantSpecies *GetSpecies(int i) const
+	vtPlantSpecies *GetSpecies(unsigned int i) const
 	{
-		if (i >= 0 && i < m_Species.GetSize())
+		if (i < m_Species.GetSize())
 			return m_Species[i];
 		else
 			return NULL;

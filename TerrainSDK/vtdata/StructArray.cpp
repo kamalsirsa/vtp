@@ -121,7 +121,7 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 	double dist;
 	closest = 1E8;
 
-	int i, j;
+	unsigned int i, j;
 	for (i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
@@ -161,7 +161,7 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 	double dist;
 	closest = 1E8;
 
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
@@ -186,7 +186,7 @@ bool vtStructureArray::FindClosestLinearCorner(const DPoint2 &point, double epsi
 {
 	DPoint2 loc;
 	double dist;
-	int i, j;
+	unsigned int i, j;
 
 	structure = -1;
 	corner = -1;
@@ -232,7 +232,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 	DPoint2 loc;
 	double dist;
 
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 
@@ -284,7 +284,7 @@ bool vtStructureArray::FindClosestBuilding(const DPoint2 &point,
 	DPoint2 loc;
 	double dist;
 
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
@@ -392,7 +392,7 @@ void vtStructureArray::RemoveFoundations()
 int vtStructureArray::NumSelected()
 {
 	int sel = 0;
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		if (GetAt(i)->IsSelected()) sel++;
 	}
@@ -401,13 +401,13 @@ int vtStructureArray::NumSelected()
 
 void vtStructureArray::DeselectAll()
 {
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 		GetAt(i)->Select(false);
 }
 
 void vtStructureArray::DeleteSelected()
 {
-	for (int i = 0; i < GetSize();)
+	for (unsigned int i = 0; i < GetSize();)
 	{
 		vtStructure *str = GetAt(i);
 		if (str->IsSelected())
@@ -1168,7 +1168,7 @@ void StructVisitorGML::data(const char *s, int length)
 
 bool vtStructureArray::WriteXML_Old(const char* filename)
 {
-	int i;
+	unsigned int i;
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
 	{
@@ -1208,7 +1208,7 @@ bool vtStructureArray::WriteXML_Old(const char* filename)
 
 bool vtStructureArray::WriteXML(const char* filename)
 {
-	int i;
+	unsigned int i;
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
 	{

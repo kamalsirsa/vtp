@@ -68,7 +68,7 @@ double getdegree(const char *buf)
 vtLULCFile::vtLULCFile(const char *fname)
 {
 	char buf[80];
-	int i;
+	unsigned int i;
 
 	m_pNext = NULL;
 	m_iError = 0;
@@ -228,7 +228,7 @@ void vtLULCFile::SetupMapping()
 void vtLULCFile::ReadSection(LULCSection *pSection, FILE *fp)
 {
 	char buf[80];
-	int i;
+	unsigned int i;
 
 	// subfile B - section header
 	if (!GetRecord(fp, buf)) return;
@@ -392,11 +392,11 @@ int vtLULCFile::FindAttribute(double world_x, double world_z)
 		if (CrossingsTest(previous_poly->m_p, previous_poly->m_iCoords, pos2))
 			return previous_poly->Attribute;
 	}
-	for (int s = 0; s < NumSections(); s++)
+	for (unsigned int s = 0; s < NumSections(); s++)
 	{
 		LULCSection *section = GetSection(s);
 
-		for (int p = 0; p < section->m_iNumPolys; p++)
+		for (unsigned int p = 0; p < section->m_iNumPolys; p++)
 		{
 			LULCPoly *poly = section->m_pPoly+p;
 
@@ -418,11 +418,11 @@ int vtLULCFile::FindAttribute(double world_x, double world_z)
 
 void vtLULCFile::ProcessLULCPolys()
 {
-	for (int s = 0; s < NumSections(); s++)
+	for (unsigned int s = 0; s < NumSections(); s++)
 	{
 		LULCSection *section = GetSection(s);
 
-		for (int p = 0; p < section->m_iNumPolys; p++)
+		for (unsigned int p = 0; p < section->m_iNumPolys; p++)
 		{
 			LULCPoly *poly = section->m_pPoly+p;
 

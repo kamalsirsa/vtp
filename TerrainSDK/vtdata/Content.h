@@ -59,7 +59,7 @@ public:
 
 	vtTag *FindTag(const char *szTagName);
 	vtTag *GetTag(int index);
-	int NumTags();
+	unsigned int NumTags();
 	void RemoveTag(int index);
 	void RemoveTag(const char *szTagName);
 
@@ -89,7 +89,7 @@ public:
 	void Empty();
 	void AddModel(vtModel *item) { m_models.Append(item); }
 	void RemoveModel(vtModel *model);
-	int NumModels() { return m_models.GetSize(); }
+	unsigned int NumModels() { return m_models.GetSize(); }
 	vtModel *GetModel(int i) { return m_models.GetAt(i); }
 
 	vtString		m_name;
