@@ -248,8 +248,7 @@ void vtFrame::CreateMenus()
 {
 	// Make menus
 	wxMenu *fileMenu = new wxMenu;
-	fileMenu->Append(wxID_EXIT, _T("E&xit\tEsc"), _T("Exit"));
-
+	fileMenu->Append(wxID_EXIT, _T("E&xit (Esc)"), _T("Exit"));
 
 	wxMenu *toolsMenu = new wxMenu;
 	toolsMenu->AppendCheckItem(ID_TOOLS_SELECT, _T("Select"));
@@ -271,8 +270,6 @@ void vtFrame::CreateMenus()
 	sceneMenu->AppendSeparator();
 	sceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
 	sceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
-
-
 
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
@@ -314,7 +311,6 @@ void vtFrame::CreateMenus()
 	terrainMenu->Append(ID_TERRAIN_SAVEVEG, _T("Save Vegetation As..."));
 	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
 
-
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
 	earthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _T("&Show Axes\tCtrl+A"));
@@ -323,7 +319,6 @@ void vtFrame::CreateMenus()
 	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
 	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
 	earthMenu->Append(ID_EARTH_LINEAR, _T("Add &Linear Features...\tCtrl+L"));
-
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Enviro..."));
@@ -405,30 +400,45 @@ void vtFrame::SetMode(MouseMode mode)
 
 void vtFrame::OnChar(wxKeyEvent& event)
 {
+	static NavType prev = NT_Normal;
+	vtTerrain *pTerr = GetCurrentTerrain();
 	long key = event.KeyCode();
 
-
-	if (key == 27)
+	// Keyboard shortcuts ("accelerators")
+	switch (key)
 	{
+	case 27:
 		// Esc: exit application
 		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
 		Destroy();
-	}
+		break;
 
-	if (key == ' ')
-	{
+	case ' ':
 		if (g_App.m_state == AS_Terrain)
 			ToggleNavigate();
-	}
+		break;
 
-	// Keyboard shortcuts ("accelerators")
-	if (key == 'a')
+	case 'f':
+		ChangeFlightSpeed(1.8f);
+		break;
+	case 's':
+		ChangeFlightSpeed(1.0f / 1.8f);
+		break;
+	case 'a':
 		g_App.SetMaintain(!g_App.GetMaintain());
+		break;
 
-	// Toggle grab-pivot
-	if (key == 'd')
-	{
-		static NavType prev = NT_Normal;
+	case '+':
+		ChangeTerrainDetail(true);
+		break;
+	case '-':
+		ChangeTerrainDetail(false);
+		break;
+
+	case 'd':
+		// Toggle grab-pivot
 		if (g_App.m_nav == NT_Grab)
 			g_App.SetNavType(prev);
 		else
@@ -436,25 +446,15 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			prev = g_App.m_nav;
 			g_App.SetNavType(NT_Grab);
 		}
-	}
+		break;
 
-	if (key == 'f')
-		ChangeFlightSpeed(1.8f);
-	if (key == 's')
-		ChangeFlightSpeed(1.0f / 1.8f);
-	if (key == 'w')
-	{
+	case 'w':
 		m_bAlwaysMove = !m_bAlwaysMove;
 		if (g_App.m_pTFlyer != NULL)
 			g_App.m_pTFlyer->SetAlwaysMove(m_bAlwaysMove);
-	}
-	if (key == '+')
-		ChangeTerrainDetail(true);
-	if (key == '-')
-		ChangeTerrainDetail(false);
-	if (key == 'z')
-	{
-		vtTerrain *pTerr = GetCurrentTerrain();
+		break;
+
+	case 'z':
 		if (pTerr && g_App.m_bSelectedStruct)
 		{
 			vtStructureArray3d *sa = pTerr->GetStructures();
@@ -465,29 +465,21 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			// (Do something to the building as a test)
 			sa->ConstructStructure(bld);
 		}
-	}
-	if (key == 'Z')
-	{
-		vtTerrain *pTerr = GetCurrentTerrain();
-		if (pTerr && g_App.m_bSelectedStruct)
-		{
-			vtStructureArray3d *sa = pTerr->GetStructures();
-			int i = 0;
-			while (!sa->GetAt(i)->IsSelected())
-				i++;
-			vtBuilding3d *bld = sa->GetBuilding(i);
-			sa->ConstructStructure(bld);
-		}
-	}
-	if (key == 4)	// Ctrl-D
-	{
+		break;
+
+	case 4:	// Ctrl-D
 		// dump camera info
 		g_App.DumpCameraInfo();
-	}
-	if (key == 2)	// Ctrl-B
-	{
+		break;
+
+	case 2:	// Ctrl-B
 		// toggle logo
 		g_App.ToggleLogo();
+		break;
+
+	default:
+		event.Skip();
+		break;
 	}
 }
 
@@ -507,6 +499,8 @@ void vtFrame::ChangeFlightSpeed(float factor)
 {
 	float speed = g_App.GetFlightSpeed();
 	g_App.SetFlightSpeed(speed * factor);
+
+	VTLOG("Change flight speed to %f\n", speed * factor);
 
 	m_pCameraDlg->GetValues();
 	m_pCameraDlg->ValuesToSliders();
