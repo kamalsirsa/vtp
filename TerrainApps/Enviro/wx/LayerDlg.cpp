@@ -214,7 +214,7 @@ void LayerDlg::RefreshTreeSpace()
 	for (unsigned int i = 0; i < feats.GetSize(); i++)
 	{
 		wxString2 str;
-		vtFeatures *feat = feats[i];
+		vtFeatureSet *feat = feats[i];
 
 		str = feat->GetFilename();
 		wxTreeItemId hItem = m_pTree->AppendItem(hRoot, str, -1, -1);

@@ -1067,20 +1067,24 @@ void vtTerrain::_CreateLabels()
 		return;
 	}
 
-	vtFeatures feat;
-	if (!feat.LoadFrom(labels_path))
+	vtFeatureLoader loader;
+
+	vtFeatureSet *feat = loader.LoadFrom(labels_path);
+	if (!feat)
 	{
 		VTLOG("Couldn't read features from file '%s'\n", (const char *) labels_path);
 		return;
 	}
 	VTLOG("Read features from file '%s'\n", (const char *) labels_path);
 
-	CreateStyledFeatures(feat, "Fonts/Arial.ttf", m_Params.m_Style);
+	CreateStyledFeatures(*feat, "Fonts/Arial.ttf", m_Params.m_Style);
+
+	delete feat;
 }
 
 
 // Helper for CreateStyledFeatures
-bool GetColorField(const vtFeatures &feat, int iRecord, int iField, RGBAf &rgba)
+bool GetColorField(const vtFeatureSet &feat, int iRecord, int iField, RGBAf &rgba)
 {
 	vtString str;
 	float r, g, b;
@@ -1091,7 +1095,7 @@ bool GetColorField(const vtFeatures &feat, int iRecord, int iField, RGBAf &rgba)
 	return true;
 }
 
-void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontname,
+void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname,
 									 const PointStyle &style)
 {
 	// create container group
@@ -1150,14 +1154,27 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		return;
 	}
 
-	DPoint3 p;
-	FPoint3 p3;
+	const vtFeatureSetPoint2D *pSetP2 = dynamic_cast<const vtFeatureSetPoint2D*>(&feat);
+	const vtFeatureSetPoint3D *pSetP3 = dynamic_cast<const vtFeatureSetPoint3D*>(&feat);
+
+	DPoint2 p2;
+	DPoint3 p3;
+	FPoint3 fp3;
 	for (i = 0; i < features; i++)
 	{
-		feat.GetPoint(i, p);
-		if (!m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3))
+		if (pSetP2)
+			p2 = pSetP2->GetPoint(i);
+		else if (pSetP3)
+		{
+			p3 = pSetP3->GetPoint(i);
+			p2.Set(p3.x, p3.y);
+		}
+
+		if (!m_pHeightField->ConvertEarthToSurfacePoint(p2.x, p2.y, fp3))
 			continue;
-		p3.y += (style.m_label_elevation + p.z);
+
+		if (pSetP3)
+			fp3.y += (style.m_label_elevation + p3.z);
 
 		vtTransform *bb = new vtTransform();
 		vtTextMesh *text = new vtTextMesh(font, style.m_label_size, true);	// center
@@ -1207,7 +1224,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		m_pBBEngine->AddTarget(bb);
 //		bb->Scale3(style.m_label_size, style.m_label_size, 1.0f);
 
-		bb->SetTrans(p3);
+		bb->SetTrans(fp3);
 		pPlaceNames->AddChild(bb);
 	}
 	delete font;

@@ -26,7 +26,7 @@ class vtDynTerrainGeom;
 class vtElevationGrid;
 class vtTin;
 class vtTin3d;
-class vtFeatures;
+class vtFeatureSet;
 class SimpleBillboardEngine;
 
 typedef Array<vtStructureArray3d *> StructureSet;
@@ -201,7 +201,7 @@ public:
 
 	// symbols and labels for abstract data
 	float AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line, float fOffset, bool bCurve = false);
-	void CreateStyledFeatures(const vtFeatures &feat, const char *fontname, const PointStyle &style);
+	void CreateStyledFeatures(const vtFeatureSet &feat, const char *fontname, const PointStyle &style);
 
 	// Access the viewpoint associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }

@@ -252,14 +252,13 @@ void IcoGlobe::ShowAxis(bool bShow)
 
 int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
 {
-	vtFeatures *feat = new vtFeatures();
-	bool success = feat->LoadFromSHP(fname);
+	vtFeatureLoader loader;
 
-	if (!success)
-	{
-		delete feat;
+	vtFeatureSet *feat = loader.LoadFromSHP(fname);
+
+	if (!feat)
 		return -1;
-	}
+
 	m_features.Append(feat);
 
 	BuildSphericalFeatures(feat, fSize);
@@ -268,7 +267,7 @@ int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
 	return feat->GetNumEntities();
 }
 
-void IcoGlobe::BuildSphericalFeatures(vtFeatures *feat, float fSize)
+void IcoGlobe::BuildSphericalFeatures(vtFeatureSet *feat, float fSize)
 {
 	if (feat->GetGeomType() == wkbPoint)
 		BuildSphericalPoints(feat, fSize);
@@ -280,7 +279,7 @@ void IcoGlobe::BuildSphericalFeatures(vtFeatures *feat, float fSize)
 		BuildSphericalLines(feat, fSize);
 }
 
-void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
+void IcoGlobe::BuildSphericalPoints(vtFeatureSet *feat, float fSize)
 {
 	int i, j, size;
 	Array<FSphere> spheres;
@@ -288,10 +287,14 @@ void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
 	size = feat->GetNumEntities();
 	spheres.SetSize(size);
 
+	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(feat);
+	if (!pSetP2)
+		return;
+
 	DPoint2 p;
 	for (i = 0; i < size; i++)
 	{
-		feat->GetPoint(i, p);
+		pSetP2->GetPoint(i, p);
 
 		if (p.x == 0.0 && p.y == 0.0)	// ignore some
 			continue;
@@ -409,8 +412,12 @@ void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
 	mesh->Release();
 }
 
-void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
+void IcoGlobe::BuildSphericalLines(vtFeatureSet *feat, float fSize)
 {
+	vtFeatureSetLineString *pSetLS = dynamic_cast<vtFeatureSetLineString*>(feat);
+	if (!pSetLS)
+		return;
+
 	int i, size;
 	size = feat->GetNumEntities();
 
@@ -428,7 +435,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 	DPoint2 p1, p2;
 	for (i = 0; i < size; i++)
 	{
-		const DLine2 &line = feat->GetLine(i);
+		const DLine2 &line = pSetLS->GetPolyLine(i);
 		AddSurfaceLineToMesh(mesh, &line);
 
 		// don't put too many vertices in any one mesh
@@ -443,7 +450,7 @@ void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 	total += mesh->GetNumVertices();
 }
 
-void IcoGlobe::BuildFlatFeatures(vtFeatures *feat, float fSize)
+void IcoGlobe::BuildFlatFeatures(vtFeatureSet *feat, float fSize)
 {
 	if (feat->GetGeomType() == wkbPoint)
 	{
@@ -464,14 +471,18 @@ void IcoGlobe::BuildFlatFeatures(vtFeatures *feat, float fSize)
 	}
 }
 
-void IcoGlobe::BuildFlatPoint(vtFeatures *feat, int i, float fSize)
+void IcoGlobe::BuildFlatPoint(vtFeatureSet *feat, int i, float fSize)
 {
+	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(feat);
+	if (!pSetP2)
+		return;
+
 	// create and place the geometries
 	DPoint2 p;
 	int face, subface;
 	DPoint3 p_out;
 
-	feat->GetPoint(i, p);
+	pSetP2->GetPoint(i, p);
 
 	if (p.x == 0.0 && p.y == 0.0)	// ignore some
 		return;

@@ -15,7 +15,7 @@
 
 class vtTerrainScene;
 
-typedef Array<vtFeatures*> vtFeaturesSet;
+typedef Array<vtFeatureSet*> vtFeaturesSet;
 
 
 /**
@@ -79,11 +79,11 @@ protected:
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 	int GetMFace(int face, int subface);
-	void BuildSphericalFeatures(vtFeatures *feat, float fSize);
-	void BuildSphericalPoints(vtFeatures *feat, float fSize);
-	void BuildSphericalLines(vtFeatures *feat, float fSize);
-	void BuildFlatFeatures(vtFeatures *feat, float fSize);
-	void BuildFlatPoint(vtFeatures *feat, int i, float fSize);
+	void BuildSphericalFeatures(vtFeatureSet *feat, float fSize);
+	void BuildSphericalPoints(vtFeatureSet *feat, float fSize);
+	void BuildSphericalLines(vtFeatureSet *feat, float fSize);
+	void BuildFlatFeatures(vtFeatureSet *feat, float fSize);
+	void BuildFlatPoint(vtFeatureSet *feat, int i, float fSize);
 	void CreateMaterials(const vtStringArray &paths, const vtString &strImagePrefix);
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);

@@ -21,6 +21,7 @@
 
 void Romania::CreateCustomCulture(bool bDoSound)
 {
+#if 0
 	vtString fname = "PointData/";
 	fname += "RO.shp";
 //	fname += "RO-subset.shp";
@@ -28,7 +29,6 @@ void Romania::CreateCustomCulture(bool bDoSound)
 	if (path == "")
 		return;
 
-#if 1
 	vtFeatures feat;
 	if (!feat.LoadFrom(path))
 		return;

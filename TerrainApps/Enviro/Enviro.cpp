@@ -844,15 +844,16 @@ if (pwdemo){
 	rainbow->Release();
 	Globe2->GetTop()->AddChild(tg);
 
-	vtFeatures ft;
-	ft.LoadFromSHP("../Data/PointData/vtp-users-020519.shp");
-	int half = ft.GetNumEntities() / 2;
+	vtFeatureLoader loader;
+	vtFeatureSet *feat1 = loader.LoadFromSHP("../Data/PointData/vtp-users-020519.shp");
+	vtFeatureSetPoint2D *ft = (vtFeatureSetPoint2D *) feat1;
+
+	int half = ft->GetNumEntities() / 2;
 	int foo = 0;
 	for (i = 0; i < half; i++)
 	{
-		DPoint2 p1, p2;
-		ft.GetPoint(i, p1);
-		ft.GetPoint(i+half, p2);
+		DPoint2 p1 = ft->GetPoint(i);
+		DPoint2 p2 = ft->GetPoint(i+half);
 		if (p1 == DPoint2(0,0) || p2 == DPoint2(0,0))
 			continue;
 		if (p1.y > 0 && p2.y > 0)
