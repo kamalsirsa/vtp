@@ -43,7 +43,7 @@
 void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars)
 {
-	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
+//	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
 
 	using namespace boost::filesystem;
 	int entries = 0, matches = 0;
@@ -67,7 +67,7 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 			matches++;
 		}
 	}
-	VTLOG(" %d entries, %d matches\n", entries, matches);
+//	VTLOG(" %d entries, %d matches\n", entries, matches);
 }
 
 //
