@@ -187,7 +187,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 					dl.SetAt(j, p);
 				}
 				fscanf(fp, "\n");
-				bld->SetFootprint(dl);
+				bld->SetFootprint(0, dl);
 			}
 			else if (!strcmp(key, "trim"))
 			{
@@ -336,7 +336,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 						k = j;
 					foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
 				}
-				bld->SetFootprint(foot);
+				bld->SetFootprint(0, foot);
 				bld->SetCenterFromPoly();
 			}
 			s->SetBuilding(bld);
@@ -458,7 +458,7 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 			continue;
 		vtBuilding *bld = str->GetBuilding();
 
-		DLine2 &dl = bld->GetFootprint();
+		DLine2 &dl = bld->GetFootprint(0);
 		for (j = 0; j < dl.GetSize(); j++)
 		{
 			dist = (dl.GetAt(j) - point).Length();
@@ -933,8 +933,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 			const char *num = atts.getValue("num");
 			points = atoi(num);
 
-			DLine2 &foot = bld->GetFootprint();
-
+			DLine2 foot;
 			DPoint2 loc;
 			const char *coords = atts.getValue("coords");
 			const char *cp = coords;
@@ -947,6 +946,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				cp = strchr(cp, ' ');
 				cp++;
 			}
+			bld->SetFootprint(0, foot);
 			bld->SetCenterFromPoly();
 		}
 	}
@@ -970,11 +970,13 @@ void StructureVisitor::endElement(const char * name)
 	}
 	if (string(name) == (string)"shapes")
 	{
+#if 0
 		// currently, building wall information is not saved or restored, so
 		// we must manually indicate that walls should be implied upon loading
 		vtStructure *pItem = st.item;
 		vtBuilding *bld = pItem->GetBuilding();
 		bld->RebuildWalls();
+#endif
 
 		pop_state();
 	}
