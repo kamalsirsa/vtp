@@ -228,11 +228,18 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	}
 	else if (iRasterCount == 3)
 	{
+		bool bSupported = true;
 		for (i = 1; i <= 3; i++)
 		{
 			pBand = pDataset->GetRasterBand(i);
+			GDALDataType type = pBand->GetRasterDataType();
+			GDALColorInterp interp = pBand->GetColorInterpretation();
+
+			VTLOG(" Band %d: type %d, interpretation %d\n",
+				i, type, interp);
+
 			// Check data type - it's either integer or float
-			if (GDT_Byte != pBand->GetRasterDataType())
+			if (GDT_Byte != type)
 			{
 				VTLOG("  RasterDataType is not Byte\n");
 				bRet = false;
@@ -243,27 +250,24 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 			switch(i)
 			{
 			case 1:
-				if (GCI_RedBand != pBand->GetColorInterpretation())
-				{
-					bRet = false;
-					goto Exit;
-				}
+				if (GCI_RedBand != interp)
+					bSupported = false;
 				break;
 			case 2:
-				if (GCI_GreenBand != pBand->GetColorInterpretation())
-				{
-					bRet = false;
-					goto Exit;
-				}
+				if (GCI_GreenBand != interp)
+					bSupported = false;
 				break;
 			case 3:
-				if (GCI_BlueBand != pBand->GetColorInterpretation())
-				{
-					bRet = false;
-					goto Exit;
-				}
+				if (GCI_BlueBand != interp)
+					bSupported = false;
 				break;
 			}
+		}
+		if (!bSupported)
+		{
+			VTLOG(" Don't support bands of those types in that order.\n");
+			bRet = false;
+			goto Exit;
 		}
 	}
 	else
