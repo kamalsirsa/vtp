@@ -117,7 +117,7 @@ void StatusTimer::Notify()
 
 	// get time of day
 	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
-	if (te->GetEnabled())
+	if (te && te->GetEnabled())
 	{
 		int hr, min, sec;
 		te->GetTime(hr, min, sec);
