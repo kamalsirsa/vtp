@@ -1,28 +1,27 @@
 /* XPM */
 static char *icon5_xpm[] = {
-/* width height ncolors chars_per_pixel */
+/* columns rows colors chars-per-pixel */
 "16 16 5 1",
-/* colors */
-"` c #000000",
-"a c #C0C0C0",
-"b c #FFFFFF",
-"c c #FFFF00",
-"d c #808000",
+"  c black",
+". c #808000",
+"X c yellow",
+"o c #C0C0C0",
+"O c None",
 /* pixels */
-"bbbbbbbbbbbbbbbb",
-"bbbbdbbbbbbbdbbb",
-"dbbbbd````bdbbbb",
-"bdbbb`bbcb`bbbbb",
-"bbdd`bbcccb`bbbb",
-"bbbb`bcbcbc`dddd",
-"bbbb`cccbcb`bbbb",
-"bbdd`ccccbc`dbbb",
-"ddbb`bccccc`bddb",
-"bbbbb`bccb`bbbbd",
-"bbbbdb````bbdbbb",
-"bbbdbb````bbbdbb",
-"bbbdbb````bbbdbb",
-"bbdbbb````bbbbdb",
-"bbbbbba``abbbbbb",
-"bbbbbbbbbbbbbbbb"
+"OOOOOOOOOOOOOOOO",
+"OOOO.OOOOOOO.OOO",
+".OOOO.    O.OOOO",
+"O.OOO OOXO OOOOO",
+"OO.. OOXXXO OOOO",
+"OOOO OXOXOX ....",
+"OOOO XXXOXO OOOO",
+"OO.. XXXXOX .OOO",
+"..OO OXXXXX O..O",
+"OOOOO OXXO OOOO.",
+"OOOO.O    OO.OOO",
+"OOO.OO    OOO.OO",
+"OOO.OO    OOO.OO",
+"OO.OOO    OOOO.O",
+"OOOOOOo  oOOOOOO",
+"OOOOOOOOOOOOOOOO"
 };

@@ -1,29 +1,28 @@
 /* XPM */
 static char *icon1_xpm[] = {
-/* width height ncolors chars_per_pixel */
+/* columns rows colors chars-per-pixel */
 "16 16 6 1",
-/* colors */
-"` c #000000",
-"a c #C0C0C0",
-"b c #FF0000",
-"c c #FFFFFF",
-"d c #FFFF00",
-"e c #808000",
+"  c black",
+". c red",
+"X c #808000",
+"o c yellow",
+"O c #C0C0C0",
+"+ c None",
 /* pixels */
-"cccccccccccccccc",
-"cccccccccceddecc",
-"ccccccccceddddec",
-"ccbbbcccceddddec",
-"cc```cccceddddec",
-"a`````````edde`a",
-"``````accca`````",
-"``aaa`ccccc`````",
-"`````ccccccc````",
-"``````ccccc`````",
-"``````accca`````",
-"a``````````````a",
-"ca````````````ac",
-"cccccccccccccccc",
-"cccccccccccccccc",
-"cccccccccccccccc"
+"++++++++++++++++",
+"++++++++++XooX++",
+"+++++++++XooooX+",
+"++...++++XooooX+",
+"++   ++++XooooX+",
+"O         XooX O",
+"      O+++O     ",
+"  OOO +++++     ",
+"     +++++++    ",
+"      +++++     ",
+"      O+++O     ",
+"O              O",
+"+O            O+",
+"++++++++++++++++",
+"++++++++++++++++",
+"++++++++++++++++"
 };
