@@ -42,6 +42,7 @@
 #include "MapServerDlg.h"
 #include "OptionsDlg.h"
 #include "Projection2Dlg.h"
+#include "RenderDlg.h"
 #include "SelectDlg.h"
 #include "TSDlg.h"
 #include "VegDlg.h"
@@ -338,7 +339,7 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_EXPORT, _("E&xport To..."));
-	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder and Save Bitmap"));
+	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder to Bitmap..."));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
 	m_pMenuBar->Append(elevMenu, _("Elev&ation"));
@@ -2045,34 +2046,103 @@ void MainFrame::ExportPlanet()
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 {
-	int size = 0;
-	while (size < 32 || size > 8192)
-	{
-		wxTextEntryDialog dlg(this, _("Please enter pixel size of bitmap"),
-			_("Export Bitmap"), _T(""));
-		if (dlg.ShowModal() != wxID_OK)
-			return;
+	RenderDlg dlg(this, -1, _("Render Elevation to Bitmap"));
+	dlg.m_datapaths = m_datapaths;
 
-		wxString2 str = dlg.GetValue();
-		sscanf(str.mb_str(), "%d", &size);
-	}
-
-	// Ask for file name
-	wxFileDialog loadFile(NULL, _("Output filename for bitmap"), _T(""), _T(""),
-		_("Bitmap Files (*.bmp)|*.bmp|"), wxSAVE|wxOVERWRITE_PROMPT);
-
-	if (loadFile.ShowModal() != wxID_OK)
+	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
 	OpenProgressDialog(_("Generating Bitmap"));
+	ExportBitmap(dlg);
+	CloseProgressDialog();
+}
 
-	wxString2 fname = loadFile.GetPath();
-	vtDIB dib;
-	dib.Create(size, size, 24, false);
+void MainFrame::ExportBitmap(RenderDlg &dlg)
+{
+	int xsize = dlg.m_iSizeX;
+	int ysize = dlg.m_iSizeY;
 
 	vtElevLayer *pEL = GetActiveElevLayer();
 
-	pEL->PaintDibFromElevation(&dib, true);
+	ColorMap cmap;
+	vtString fname = dlg.m_strColorMap.vt_str();
+	vtString path = FindFileOnPaths(m_datapaths, "GeoTypical/" + fname);
+	if (path == "")
+	{
+		DisplayAndLog("Couldn't load color map.");
+		return;
+	}
+	if (!cmap.Load(path))
+	{
+		DisplayAndLog("Couldn't load color map.");
+		return;
+	}
+
+	// Get attributes of existing layer
+	DRECT area;
+	vtProjection proj;
+	pEL->GetExtent(area);
+	pEL->GetProjection(proj);
+
+	vtImageLayer *pOutput = NULL;
+	vtBitmapBase *pBitmap = NULL;
+	vtDIB dib;
+
+	if (dlg.m_bToFile)
+	{
+		if (!dib.Create(xsize, ysize, 24))
+		{
+			DisplayAndLog("Failed to create bitmap.");
+			return;
+		}
+		pBitmap = &dib;
+	}
+	else
+	{
+		pOutput = new vtImageLayer(area, xsize, ysize, proj);
+		pBitmap = pOutput->GetBitmap();
+	}
+
+	pEL->m_pGrid->ColorDibFromElevation(pBitmap, &cmap, progress_callback);
+	if (dlg.m_bShading)
+	{
+		// Quick and simple sunlight vector
+		FPoint3 light_dir = LightDirection(vtElevLayer::m_draw.m_iCastAngle,
+			vtElevLayer::m_draw.m_iCastDirection);
+
+		if (vtElevLayer::m_draw.m_bCastShadows)
+			pEL->m_pGrid->ShadowCastDib(pBitmap, light_dir, 1.0, progress_callback);
+		else
+			pEL->m_pGrid->ShadeDibFromElevation(pBitmap, light_dir, 1.0, progress_callback);
+	}
+
+	if (dlg.m_bToFile)
+	{
+		wxString2 fname = dlg.m_strToFile;
+		bool success;
+		if (dlg.m_bJPEG)
+			success = dib.WriteJPEG(fname.mb_str(), 99);
+		else
+			success = dib.WriteTIF(fname.mb_str());
+		if (success)
+			DisplayAndLog("Successfully wrote to file '%s'", fname.mb_str());
+		else
+			DisplayAndLog("Couldn't open file for writing.");
+	}
+	else
+	{
+		AddLayerWithCheck(pOutput);
+	}
+#if 0
+	int percent, last = -1;
+	percent = i * 100 / w;
+	if (percent != last)
+	{
+		wxString str;
+		str.Printf(_T("%d%%"), percent);
+		UpdateProgressDialog(percent, str);
+		last = percent;
+	}
 
 	// TEST - try coloring from water polygons
 	int layers = m_Layers.GetSize();
@@ -2085,7 +2155,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 
 	UpdateProgressDialog(100, _("Writing bitmap to file."));
 	bool success = dib.WriteBMP(fname.mb_str());
-	CloseProgressDialog();
+#endif
 }
 
 void MainFrame::OnElevMergeTin(wxCommandEvent& event)
