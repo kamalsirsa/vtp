@@ -1589,6 +1589,9 @@
 				RelativePath="LULC.h">
 			</File>
 			<File
+				RelativePath=".\Mainpage.h">
+			</File>
+			<File
 				RelativePath="MathTypes.h">
 			</File>
 			<File
