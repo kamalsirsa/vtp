@@ -176,6 +176,7 @@ public:
 	virtual void AddFan(int *idx, int iNVerts) = 0;
 	void AddStrip2(int iNVerts, int iStartIndex);
 	virtual void AddStrip(int iNVerts, unsigned short *pIndices) = 0;
+	virtual void AddQuad(int p0, int p1, int p2, int p3) = 0;
 
 	// Access vertex properties
 	virtual void SetVtxPos(int, const FPoint3&) = 0;
@@ -210,7 +211,11 @@ public:
 	void CreateCylinder(float height, float radius, int res,
 		bool bTop = true, bool bBottom = true, bool bCentered = true,
 		int direction = 1);
-	void CreateRectangle(float xsize, float ysize);
+
+	void AddRectangleXZ(float xsize, float zsize);
+	void AddRectangleXY(float x, float y, float xsize, float ysize,
+		float z=0.0f, bool bCentered=false);
+
 	void CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 							  double theta1, double theta2,
 							  double r1, double r2, int res = 40);

@@ -493,14 +493,43 @@ void vtMeshBase::CreateCylinder(float height, float radius, int res,
 /**
  * Adds the vertices and a fan primitive for a single flat rectangle.
  */
-void vtMeshBase::CreateRectangle(float xsize, float ysize)
+void vtMeshBase::AddRectangleXZ(float xsize, float zsize)
 {
 	int vidx =
-	AddVertexUV(-xsize/2, 0.0f, -ysize/2,	0.0f, 0.0f);
-	AddVertexUV( xsize/2, 0.0f, -ysize/2,	1.0f, 0.0f);
-	AddVertexUV( xsize/2, 0.0f,  ysize/2,	1.0f, 1.0f);
-	AddVertexUV(-xsize/2, 0.0f,  ysize/2,	0.0f, 1.0f);
+	AddVertexUV(-xsize/2, 0.0f, -zsize/2,	0.0f, 0.0f);
+	AddVertexUV( xsize/2, 0.0f, -zsize/2,	1.0f, 0.0f);
+	AddVertexUV( xsize/2, 0.0f,  zsize/2,	1.0f, 1.0f);
+	AddVertexUV(-xsize/2, 0.0f,  zsize/2,	0.0f, 1.0f);
 	AddFan(vidx, vidx+1, vidx+2, vidx+3);
+}
+
+/**
+ * Adds the vertices and a fan primitive for a single flat rectangle.
+ */
+void vtMeshBase::AddRectangleXY(float x, float y, float xsize, float ysize,
+								float z, bool bCentered)
+{
+	int vidx;
+	if (bCentered)
+	{
+		vidx =
+		AddVertexUV(-xsize/2, -ysize/2,	z, 0.0f, 0.0f);
+		AddVertexUV( xsize/2, -ysize/2,	z, 1.0f, 0.0f);
+		AddVertexUV( xsize/2,  ysize/2,	z, 1.0f, 1.0f);
+		AddVertexUV(-xsize/2,  ysize/2,	z, 0.0f, 1.0f);
+	}
+	else
+	{
+		vidx =
+		AddVertexUV(x,		 y,			z, 0.0f, 0.0f);
+		AddVertexUV(x+xsize, y,			z, 1.0f, 0.0f);
+		AddVertexUV(x+xsize, y+ysize,	z, 1.0f, 1.0f);
+		AddVertexUV(x,		 y+ysize,	z, 0.0f, 1.0f);
+	}
+	if (m_ePrimType == GL_TRIANGLE_FAN)
+		AddFan(vidx, vidx+1, vidx+2, vidx+3);
+	else if (m_ePrimType == GL_QUADS)
+		AddQuad(vidx, vidx+1, vidx+2, vidx+3);
 }
 
 /**
