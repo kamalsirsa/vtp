@@ -1694,44 +1694,15 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		return;
 	}
 
-	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, STEPS*4);
+	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, STEPS*4);
 
-	FPoint3 v1, v2, v3, v4, v;
-	g_Conv.convert_earth_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
-	g_Conv.convert_earth_to_local_xz(poi->m_rect.right, poi->m_rect.top, v2.x, v2.z);
-	g_Conv.convert_earth_to_local_xz(poi->m_rect.right, poi->m_rect.bottom, v3.x, v3.z);
-	g_Conv.convert_earth_to_local_xz(poi->m_rect.left, poi->m_rect.bottom, v4.x, v4.z);
-
-	int i;
-	for (i = 0; i < STEPS; i++)
-	{
-		v.Set(v1.x + (v2.x - v1.x) / STEPS * i, 0.0f, v1.z + (v2.z - v1.z) / STEPS * i);
-		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += 10.0f;
-		mesh->AddVertex(v);
-	}
-	for (i = 0; i < STEPS; i++)
-	{
-		v.Set(v2.x + (v3.x - v2.x) / STEPS * i, 0.0f, v2.z + (v3.z - v2.z) / STEPS * i);
-		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += 10.0f;
-		mesh->AddVertex(v);
-	}
-	for (i = 0; i < STEPS; i++)
-	{
-		v.Set(v3.x + (v4.x - v3.x) / STEPS * i, 0.0f, v3.z + (v4.z - v3.z) / STEPS * i);
-		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += 10.0f;
-		mesh->AddVertex(v);
-	}
-	for (i = 0; i < STEPS; i++)
-	{
-		v.Set(v4.x + (v1.x - v4.x) / STEPS * i, 0.0f, v4.z + (v1.z - v4.z) / STEPS * i);
-		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += 10.0f;
-		mesh->AddVertex(v);
-	}
-	mesh->AddStrip2(STEPS * 4, 0);
+	DLine2 dline;
+	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
+	dline.Append(DPoint2(poi->m_rect.right, poi->m_rect.top));
+	dline.Append(DPoint2(poi->m_rect.right, poi->m_rect.bottom));
+	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.bottom));
+	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
+	AddSurfaceLineToMesh(pMesh, dline, 10.0f);
 
 	poi->m_pGeom = new vtGeom();
 
@@ -1740,13 +1711,72 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 
 	poi->m_pGeom->SetMaterials(pMat);
 	poi->m_pGeom->SetName2("POI Geom");
-	poi->m_pGeom->AddMesh(mesh, 0);
-	mesh->Release();	// pass ownership to the Geometry
+	poi->m_pGeom->AddMesh(pMesh, 0);
+	pMesh->Release();	// pass ownership to the Geometry
 	pMat->Release();
 
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
 }
 
+float vtTerrain::AddSurfaceLineToMesh(vtMesh *pMesh, const DLine2 &line,
+									 float fOffset)
+{
+	unsigned int i, j;
+	FPoint3 v1, v2, v;
+
+	// try to guess how finely to tesselate our line
+	float fSpacing;
+	if (m_pDynGeom)
+	{
+		FPoint2 spacing = m_pDynGeom->GetWorldSpacing();
+		fSpacing = std::min(spacing.x, spacing.y) / 2;
+	}
+	else if (m_pTin)
+	{
+		// TINs don't have a grid spacing.  In lieu of using a completely
+		//  different (more correct) algorithm for draping, just estimate.
+		DRECT ext = m_pTin->GetEarthExtents();
+		FPoint2 p1, p2;
+		g_Conv.convert_earth_to_local_xz(ext.left, ext.bottom, p1.x, p1.y);
+		g_Conv.convert_earth_to_local_xz(ext.right, ext.top, p2.x, p2.y);
+		fSpacing = (p2 - p1).Length() / 1000.0f;
+	}
+
+	float fTotalLength = 0.0f;
+	int iStart = pMesh->GetNumVertices();
+	int iVerts = 0;
+	for (i = 0; i < line.GetSize(); i++)
+	{
+		v1 = v2;
+		g_Conv.convert_earth_to_local_xz(line.GetAt(i).x, line.GetAt(i).y, v2.x, v2.z);
+		if (i == 0)
+			continue;
+
+		// estimate how many steps to subdivide this segment into
+		FPoint3 diff = v2 - v1;
+		float fLen = diff.Length();
+		unsigned int iSteps = (unsigned int) (fLen / fSpacing);
+		if (iSteps < 3) iSteps = 3;
+
+		FPoint3 last_v;
+		for (j = 0; j <= iSteps; j++)
+		{
+			// simple linear interpolation of the ground coordinate
+			v.Set(v1.x + diff.x / iSteps * j, 0.0f, v1.z + diff.z / iSteps * j);
+			m_pHeightField->FindAltitudeAtPoint(v, v.y);
+			v.y += fOffset;
+			pMesh->AddVertex(v);
+			iVerts++;
+
+			// keep a running toal of approximate ground length
+			if (j > 0)
+				fTotalLength += (v - last_v).Length();
+			last_v = v;
+		}
+	}
+	pMesh->AddStrip2(iVerts, iStart);
+	return fTotalLength;
+}
 
 void vtTerrain::HideAllPOI()
 {
