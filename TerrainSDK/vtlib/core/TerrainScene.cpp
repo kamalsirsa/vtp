@@ -65,8 +65,7 @@ vtTerrainScene::vtTerrainScene()
 vtTerrainScene::~vtTerrainScene()
 {
 	// delete all the terrains that were appended
-	// due to magic of reference counting, this is sufficient:
-//	m_pFirstTerrain->Delete();	// TODO: proper cleanup
+	// TODO: proper cleanup
 }
 
 void vtTerrainScene::create_skydome(vtString datapath)
@@ -77,8 +76,8 @@ void vtTerrainScene::create_skydome(vtString datapath)
 	// create a day-night dome
 	m_pSkyDome = new vtSkyDome();
 	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
-	m_pSkyDome->SetDawnTimes(5, 0, 0, 7, 0, 0);
-	m_pSkyDome->SetDuskTimes(17, 0, 0, 19, 0, 0);
+	m_pSkyDome->SetDawnTimes(5, 0, 7, 0);
+	m_pSkyDome->SetDuskTimes(17, 0, 19, 0);
 	m_pSkyDome->Create(datapath + "Sky/bsc.data", 3,
 					   1.0f,		// initially unit radius
 					   datapath + "Sky/glow2.png",
@@ -285,13 +284,6 @@ void vtTerrainScene::SetTimeOfDay(unsigned int time, bool fFullRefresh)
 		m_pSkyDome->SetTimeOfDay(time, fFullRefresh);
 //		m_pSkyDome->ApplyDayColors();
 	}
-
-#if SET_FOG_EACH_FRAME
-	float brightness = m_pSkyDome->GetDayDome()->GetSkyBrightness();
-	if (m_pFog != NULL)
-	{
-		m_pFog->SetColor(horizon_color * brightness);
-	}
-#endif
+	// TODO? Update the fog color to match the color of the horizon.
 }
 
