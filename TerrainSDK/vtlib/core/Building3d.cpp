@@ -496,15 +496,19 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, bool bUniform,
 		float u3 = (p3 - p0).Dot(axis0);
 		float v2 = (p2 - p0).Dot(axis1);
 		vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(*pEdge->m_pMaterial, pEdge->m_Color);
-		float fUVScale = md == NULL ? 1.0f : md->GetUVScale();
 		uv0.Set(0, 0);
 		uv1.Set(u1, 0);
 		uv2.Set(u2, v2);
 		uv3.Set(u3, v2);
-		uv0 *= fUVScale;
-		uv1 *= fUVScale;
-		uv2 *= fUVScale;
-		uv3 *= fUVScale;
+		if (md != NULL)
+		{
+			// divide meters by [meters/uv] to get uv
+			FPoint2 UVScale = md->GetUVScale();
+			uv0.Div(UVScale);
+			uv1.Div(UVScale);
+			uv2.Div(UVScale);
+			uv3.Div(UVScale);
+		}
 	}
 
 	int start =
@@ -635,8 +639,9 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 			{
 				gp = result[i*3+j];
 				p.Set(gp.x, roof_y, gp.y);
-				uv.Set(gp.x, gp.y);
-				uv *= (md == NULL) ? 1.0f : md->GetUVScale();
+				uv = gp;
+				if (md)
+					uv.Div(md->GetUVScale());	// divide meters by [meters/uv] to get uv
 				ind[j] = mesh->AddVertexNUV(p, up, uv);
 			}
 			mesh->AddTri(ind[0], ind[2], ind[1]);
@@ -649,7 +654,8 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 		{
 			FPoint3 p = pp[i];
 			uv.Set(p.x, p.z);
-			uv *= (md == NULL) ? 1.0f : md->GetUVScale();
+			if (md)
+				uv.Div(md->GetUVScale());	// divide meters by [meters/uv] to get uv
 			idx[i] = mesh->AddVertexNUV(p, up, uv);
 		}
 		if (corners > 2)
