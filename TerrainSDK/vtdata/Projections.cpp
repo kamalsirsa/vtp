@@ -127,6 +127,8 @@ void vtProjection::SetDatum(DATUM datum)
 			dnode->GetChild(0)->SetValue("WGS_1984"); break;
 		}
 	}
+	// TODO: also change SPHEROID to match desired DATUM
+//	OGR_SRSNode *enode1 = pSource->GetAttrNode("SPHEROID");
 }
 
 /**
@@ -490,6 +492,38 @@ bool vtProjection::WriteProjFile(const char *filename)
 	return true;
 }
 
+/**
+ * Given two geographic coordinates (longitude/latitude in degrees),
+ * return the geodesic arc distance in meters.  The WGS84 spheroid
+ * is used.
+ */
+double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2)
+{
+	// We don't have direct access to the PROJ.4 library from this module,
+	// so we can't set the exact coordinate system (in particular, the
+	// spheroid) using exportToProj4() and pj_init().
+	//
+	// Instead, fill in the values directly for WGS84, which in practice
+	// shouldn't give distance values significantly different from other
+	// spheroids.
+
+	Geodesic gd;
+	gd.a = 6378137.0000000;
+	gd.onef = 0.99664718933525;
+	gd.f = 1.0 - gd.onef;
+	gd.f2 = gd.f / 2.0;
+	gd.f4 = gd.f / 4.0;
+	gd.f64 = gd.f * gd.f / 64.0;
+
+	// Now fill in the start and end points, convert to lon/lat in radians
+	gd.lam1 = geo1.x / 180.0 * PId;
+	gd.phi1 = geo1.y / 180.0 * PId;
+	gd.lam2 = geo2.x / 180.0 * PId;
+	gd.phi2 = geo2.y / 180.0 * PId;
+
+	gd.CalculateInverse();
+	return gd.S;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Helper functions

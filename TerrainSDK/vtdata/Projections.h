@@ -19,12 +19,8 @@
 #define EARTH_RADIUS		6378000.0f		// in meters
 #define METERS_PER_LATITUDE	111317.1f
 
-/**
- * Determine an approximate conversion from degrees of longitude to meters,
- * given a latitude in degrees.
- */
-double EstimateDegreesToMeters(double latitude);
-
+// Some class names are just too long!
+#define OCT OGRCoordinateTransformation
 
 /**
  * Enumeration of the Datum types
@@ -51,13 +47,9 @@ enum LinearUnits
 	LU_UNKNOWN
 };
 
-/**
- * Return the number of meters for a given type of linear units
- */
-double GetMetersPerUnit(LinearUnits lu);
-
 
 #include "ogr_spatialref.h"
+#include "MathTypes.h"
 
 ///////////////////////////
 
@@ -98,6 +90,8 @@ public:
 	bool ReadProjFile(const char *filename);
 	bool WriteProjFile(const char *filename);
 
+	double GeodesicDistance(const DPoint2 &in, DPoint2 &out);
+
 protected:
 	DATUM	m_Datum;
 };
@@ -109,10 +103,18 @@ struct StatePlaneInfo
 	int usgs_code;
 };
 
-//////////////////////////////
+class Geodesic
+{
+public:
+	void CalculateInverse();
 
-// Some class names are just too long!
-#define OCT OGRCoordinateTransformation
+	double	a;
+	double	lam1, phi1;
+	double	lam2, phi2;
+	double	S;
+	double	onef, f, f2, f4, f64;
+};
+
 
 //////////////////////////////
 // Helper functions
@@ -124,6 +126,17 @@ StatePlaneInfo *GetStatePlaneTable();
 int GetNumStatePlanes();
 void CreateSimilarGeographicProjection(vtProjection &source, vtProjection &geo);
 OCT *CreateConversionIgnoringDatum(vtProjection *pSource, vtProjection *pTarget);
+
+/**
+ * Determine an approximate conversion from degrees of longitude to meters,
+ * given a latitude in degrees.
+ */
+double EstimateDegreesToMeters(double latitude);
+
+/**
+ * Return the number of meters for a given type of linear units
+ */
+double GetMetersPerUnit(LinearUnits lu);
 
 ///////////////////////////
 
