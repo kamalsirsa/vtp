@@ -319,45 +319,51 @@ void vtMeshFactory::PrimEnd()
 vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 						 const RGBf &color, vtFont *font, const char *message)
 {
+	// We can't orient the text message in space without a transform, so that's
+	//  why we're subclassed from vtTransform.
+	m_pGeom = new vtGeom;
+	AddChild(m_pGeom);
+
 	// create materials and meshes
 	m_pMats = new vtMaterialArray;
 	m_pMats->AddRGBMaterial1(color, false, false);	// plain, no culling
-	SetMaterials(m_pMats);
+	m_pGeom->SetMaterials(m_pMats);
 	m_pMats->Release();
 
 	m_pLines = new vtMesh(vtMesh::LINES, 0, 12);
-	AddMesh(m_pLines, 0);
+	m_pGeom->AddMesh(m_pLines, 0);
 	m_pLines->Release();
 
-	m_pLabel = new vtTextMesh(font, height, true);
-	AddTextMesh(m_pLabel, 0);
-	m_pLabel->Release();
-
 	// Now determine the points in space which define the geometry.
-	// Lines in 3d space have no 'up', but we can determine a usable convention
-	//  by taking the cross product with the X vector, except in the special
-	//  case where the line lies on the X vector itself.
 	FPoint3 diff = p2 - p1;
-	FPoint3 up;
-	float fSmall = 0.0001f;
-	bool bSpecial = (fabs(diff.y) < fSmall && fabs(diff.z) < fSmall);
-	if (bSpecial)
-		up = diff.Cross(FPoint3(0,0,1));
-	else
-		up = diff.Cross(FPoint3(1,0,0));
-	up.Normalize();
-	FPoint3 perp(up * (height / 2));
-	FPoint3 along(diff / diff.Length() * (height/2));
+
+	FPoint3 q1(0, 0, 0), q2(0, 0, -diff.Length());
+	FPoint3 perp(0, height/2, 0);
+	FPoint3 along(0, 0, -height/2);
 
 	// Put the points and primitives into the mesh
-	m_pLines->AddLine(p1+perp, p1-perp);
-	m_pLines->AddLine(p1, p1+perp+along);
-	m_pLines->AddLine(p1, p1-perp+along);
+	m_pLines->AddLine(q1+perp, q1-perp);
+	m_pLines->AddLine(q1, q1+perp+along);
+	m_pLines->AddLine(q1, q1-perp+along);
 
-	m_pLines->AddLine(p2+perp, p2-perp);
-	m_pLines->AddLine(p2, p2+perp-along);
-	m_pLines->AddLine(p2, p2-perp-along);
+	m_pLines->AddLine(q2+perp, q2-perp);
+	m_pLines->AddLine(q2, q2+perp-along);
+	m_pLines->AddLine(q2, q2-perp-along);
 
-	m_pLines->AddLine(p1, p2);
+	m_pLines->AddLine(q1, q2);
+
+	// add the text object. unfortunately we can't orient...
+	m_pLabel = new vtTextMesh(font, height, true);
+	m_pGeom->AddTextMesh(m_pLabel, 0);
+	m_pLabel->Release();
+
+	m_pLabel->SetText(message);
+	m_pLabel->SetColor(color);
+	m_pLabel->SetAlignment(1);	// 1 = align to XZ axis
+	m_pLabel->SetPosition(FPoint3(0, 0, -diff.Length()/2));
+
+	// Now, orient it into the desired location
+	PointTowards(diff);
+	SetTrans(p1);
 }
 

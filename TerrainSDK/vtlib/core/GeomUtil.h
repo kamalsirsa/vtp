@@ -51,12 +51,13 @@ protected:
  * connecting two points in space along with a text label, which is useful
  * for describing the length of the line (or any other string).
  */
-class vtDimension : public vtGeom
+class vtDimension : public vtTransform
 {
 public:
 	vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 		const RGBf &color, vtFont *font, const char *message);
 
+	vtGeom *m_pGeom;
 	vtMaterialArray *m_pMats;
 	vtMesh *m_pLines;
 	vtTextMesh *m_pLabel;
