@@ -18,7 +18,7 @@ class vtElevLayer : public vtLayer
 {
 public:
 	vtElevLayer();
-	vtElevLayer(DRECT area, int iColumns, int iRows,
+	vtElevLayer(const DRECT &area, int iColumns, int iRows,
 		bool bFloats, vtProjection proj);
 	virtual ~vtElevLayer();
 
@@ -80,4 +80,3 @@ protected:
 };
 
 #endif
-
