@@ -130,6 +130,7 @@ public:
 	virtual void Offset(const DPoint2 &p, bool bSelectedOnly = false) = 0;
 	virtual bool TransformCoords(OCT *pTransform) = 0;
 	virtual bool AppendGeometryFrom(vtFeatureSet *pFromSet) = 0;
+	virtual int NumTotalVertices() const { return 0; }
 
 	// deletion
 	void SetToDelete(int iFeature);
@@ -303,6 +304,7 @@ public:
 	int AddPolyLine(const DLine2 &pl);
 	const DLine2 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
 	DLine2 &GetPolyLine(unsigned int num) { return m_Line[num]; }
+	int NumTotalVertices() const;
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
@@ -335,7 +337,7 @@ public:
 	const DLine3 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
 	DLine3 &GetPolyLine(unsigned int num) { return m_Line[num]; }
 	bool ComputeHeightRange(float &fmin, float &fmax);
-	int NumPointsTotal() const;
+	int NumTotalVertices() const;
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);

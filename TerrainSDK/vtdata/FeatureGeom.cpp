@@ -445,6 +445,14 @@ int vtFeatureSetLineString::AddPolyLine(const DLine2 &pl)
 	return rec;
 }
 
+int vtFeatureSetLineString::NumTotalVertices() const
+{
+	int total = 0;
+	for (unsigned int i = 0; i < m_Line.size(); i++)
+		total += m_Line[i].GetSize();
+	return total;
+}
+
 bool vtFeatureSetLineString::IsInsideRect(int iElem, const DRECT &rect)
 {
 	return rect.ContainsLine(m_Line[iElem]);
@@ -629,7 +637,7 @@ bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
 	return true;
 }
 
-int vtFeatureSetLineString3D::NumPointsTotal() const
+int vtFeatureSetLineString3D::NumTotalVertices() const
 {
 	int total = 0;
 	for (unsigned int i = 0; i < m_Line.size(); i++)
