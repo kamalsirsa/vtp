@@ -122,6 +122,8 @@ void Enviro::Shutdown()
 {
 	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
+	if (m_pNormalCamera)
+		m_pNormalCamera->Release();
 	if (m_pTopDownCamera)
 		m_pTopDownCamera->Release();
 	if (m_pCursorMGeom)
@@ -1067,16 +1069,15 @@ void Enviro::SetupScene2()
 
 	VTLOG("Setting up Cameras\n");
 	m_pNormalCamera = vtGetScene()->GetCamera();
-#if 1
+
 	// Create second camera (for Top-Down view)
 	if (m_pTopDownCamera == NULL)
 	{
 		VTLOG("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera();
-		m_pTopDownCamera->SetOrtho(10000.0f);
+		m_pTopDownCamera->SetOrtho(true, 10000.0f);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
 	}
-#endif
 
 	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
 	m_pVFlyer->SetTarget(m_pNormalCamera);
@@ -1206,7 +1207,6 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pGFlyer->SetHeightField(pHF);
 	m_pPanoFlyer->SetHeightField(pHF);
 
-#if 1
 	// set the top-down viewpoint to a point over
 	//  the center of the new terrain
 	FPoint3 middle;
@@ -1214,10 +1214,8 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	middle.y = ORTHO_HEIGHT;
 	m_pTopDownCamera->SetTrans(middle);
 	m_pTopDownCamera->RotateLocal(TRANS_XAxis, -PID2f);
-	m_pTopDownCamera->SetHither(0.1f);
-	m_pTopDownCamera->SetYon(1000.0f);
-//	m_pTopDownCamera->SetHeight(ORTHO_HEIGHT);
-#endif
+	m_pTopDownCamera->SetHither(5.0f);
+	m_pTopDownCamera->SetYon(middle.y * 2.0f);
 
 	if (m_pTerrainPicker != NULL)
 		m_pTerrainPicker->SetHeightField(pHF);
