@@ -20,7 +20,7 @@
 #include "Light.h"
 #include "Route.h"
 #include "Terrain.h"
-#include "Tower3D.h"
+#include "Tower3d.h"
 
 #define ROUTE_POLE_SPACING	(100f * m_fRouteScale)	// 100 meters
 
