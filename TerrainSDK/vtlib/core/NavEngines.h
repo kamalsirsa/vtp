@@ -68,10 +68,7 @@ class vtOrthoFlyer : public vtFlyer
 {
 public:
 	vtOrthoFlyer(float fSpeed);
-
 	void Eval();
-
-protected:
 };
 
 /**
