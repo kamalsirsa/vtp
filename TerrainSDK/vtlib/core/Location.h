@@ -53,7 +53,7 @@ public:
 	void RecallFrom(int num);
 	void Remove(int num);
 	int GetNumLocations() { return m_loc.GetSize(); }
-	vtLocation *GetLocation(int num) { return m_loc[num]; }
+	vtLocation *GetLocation(int num) const { return m_loc[num]; }
 
 // Implementation
 protected:
