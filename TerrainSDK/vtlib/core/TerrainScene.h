@@ -14,6 +14,7 @@
 class vtSkyDome;
 class vtTerrain;
 class TimeEngine;
+class vtSkyTrackEngine;
 
 //
 // Container class for all of the terrains loaded
@@ -31,7 +32,6 @@ public:
 	// atmospherics
 	RGBf		horizon_color, azimuth_color;
 	vtSkyDome	*m_pSkyDome;
-//	Ref<ISMFog>	m_pFog;
 	bool		m_bFog;
 
 	// start of a linked list
@@ -41,7 +41,8 @@ public:
 	vtTerrain	*m_pCurrentTerrain;
 
 	// engines
-	TimeEngine	*m_pTime;
+	TimeEngine		 *m_pTime;
+	vtSkyTrackEngine *m_pSkyTrack;
 
 	void create_skydome(const StringArray &datapath);
 	void create_fog();
