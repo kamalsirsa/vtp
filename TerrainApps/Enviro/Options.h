@@ -23,20 +23,27 @@ public:
 	bool		m_bEarthView;
 	vtString	m_strEarthImage;
 	vtString	m_strInitTerrain;
+
+	bool	m_bStartInNeutral;
+
 	bool	m_bFullscreen;
 	bool	m_bHtmlpane;
 	bool	m_bFloatingToolbar;
 	bool	m_bTextureCompression;
-	bool	m_bSpeedTest;
-	float	m_fPlantScale;
-	float	m_fSelectionCutoff;
-	bool	m_bShadows;
-	bool	m_bStartInNeutral;
 	bool	m_bDisableModelMipmaps;
-	float	m_fCursorThickness;
-	float	m_fCatenaryFactor;
-	vtString	m_strContentFile;
+	bool	m_bSpeedTest;
+
+	float	m_fSelectionCutoff;
 	float	m_fMaxPickableInstanceRadius;
+	float	m_fCursorThickness;
+
+	float	m_fPlantScale;
+	bool	m_bShadows;
+	bool	m_bOnlyAvailableSpecies;
+
+	float	m_fCatenaryFactor;
+
+	vtString	m_strContentFile;
 
 	// filename (with path) from which ini was read
 	vtString m_strFilename;

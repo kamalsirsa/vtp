@@ -26,6 +26,7 @@ EnviroOptions g_Options;
 #define STR_SPEEDTEST "SpeedTest"
 #define STR_PLANTSIZE "PlantSize"
 #define STR_PLANTSHADOWS "PlantShadows"
+#define STR_ONLY_AVAILABLE_SPECIES "ShowOnlyAvailableSpecies"
 #define STR_SELECTIONCUTOFF "SelectionCutoff"
 #define STR_DISABLE_MODEL_MIPMAPS "DisableModelMipmaps"
 #define STR_CURSOR_THICKNESS "CursorThickness"
@@ -36,13 +37,18 @@ EnviroOptions g_Options;
 EnviroOptions::EnviroOptions()
 {
 	m_strEarthImage = "ev11656_512";
-	m_fSelectionCutoff = 15.0f;
+
 	m_bStartInNeutral = false;
 	m_bDisableModelMipmaps = false;
 	m_bTextureCompression = true;
-	m_fCursorThickness = 0.025;
+
+	m_fSelectionCutoff = 10.0f;
+	m_fMaxPickableInstanceRadius = 200.0f;
+	m_fCursorThickness = 0.025f;
+
+	m_fPlantScale = 1.0f;
+	m_bOnlyAvailableSpecies = true;
 	m_fCatenaryFactor = 140.0f;
-	m_fMaxPickableInstanceRadius = 200;
 }
 
 EnviroOptions::~EnviroOptions()
@@ -97,6 +103,8 @@ bool EnviroOptions::Read(const char *szFilename)
 			input >> m_fPlantScale;
 		else if (strcmp(buf, STR_PLANTSHADOWS) == 0)
 			input >> m_bShadows;
+		else if (strcmp(buf, STR_ONLY_AVAILABLE_SPECIES) == 0)
+			input >> m_bOnlyAvailableSpecies;
 		else if (strcmp(buf, STR_SELECTIONCUTOFF) == 0)
 			input >> m_fSelectionCutoff;
 		else if (strcmp(buf, STR_DISABLE_MODEL_MIPMAPS) == 0)
@@ -167,6 +175,8 @@ bool EnviroOptions::Write()
 	output << m_fPlantScale << endl;
 	output << STR_PLANTSHADOWS << "\t";
 	output << m_bShadows << endl;
+	output << STR_ONLY_AVAILABLE_SPECIES << "\t";
+	output << m_bOnlyAvailableSpecies << endl;
 	output << STR_SELECTIONCUTOFF << "\t";
 	output << m_fSelectionCutoff << endl;
 	output << STR_DISABLE_MODEL_MIPMAPS << "\t";
