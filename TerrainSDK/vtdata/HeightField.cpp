@@ -43,7 +43,7 @@ void vtHeightField::Initialize(vtElevationGrid *pGrid)
 
 void vtHeightField::Initialize(vtTin *pTin)
 {
-	m_Conversion.Setup(pTin->m_proj.GetUnits(), m_EarthExtents);
+	m_Conversion.Setup(pTin->m_proj.GetUnits(), DPoint2(m_EarthExtents.left, m_EarthExtents.bottom));
 
 	m_Conversion.convert_earth_to_local_xz(m_EarthExtents.left,
 		m_EarthExtents.bottom, m_WorldExtents.left, m_WorldExtents.bottom);
