@@ -24,6 +24,8 @@ enum ProjType
 	PT_ALBERS,
 	PT_LAMBERT,
 	PT_TM,
+	PT_STEREO,
+	PT_OS,
 	PT_PS
 };
 #endif

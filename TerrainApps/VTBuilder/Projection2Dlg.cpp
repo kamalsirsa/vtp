@@ -81,6 +81,8 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl->Append(_T("Albers Equal Area Conic"));
 	m_pProjCtrl->Append(_T("Lambert Conformal Conic"));
 	m_pProjCtrl->Append(_T("Transverse Mercator"));
+	m_pProjCtrl->Append(_T("Stereographic"));
+	m_pProjCtrl->Append(_T("Oblique Stereographic"));
 	m_pProjCtrl->Append(_T("Polar Stereographic"));
 
 	// Fill in choices for Datum
@@ -167,6 +169,8 @@ void Projection2Dlg::UpdateControlStatus()
 	case PT_ALBERS:
 	case PT_LAMBERT:
 	case PT_TM:
+	case PT_STEREO:
+	case PT_OS:
 	case PT_PS:
 		m_pParamCtrl->Enable(true);
 		m_pZoneCtrl->Enable(false);
@@ -266,17 +270,19 @@ void Projection2Dlg::SetUIFromProjection()
 				SetProjectionUI(PT_TM);
 		}
 		if (!strcmp(proj_string, SRS_PT_ALBERS_CONIC_EQUAL_AREA))
-		{
 			SetProjectionUI(PT_ALBERS);
-		}
+
 		if (!strcmp(proj_string, SRS_PT_LAMBERT_CONFORMAL_CONIC_2SP))
-		{
 			SetProjectionUI(PT_LAMBERT);
-		}
+
+		if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
+			SetProjectionUI(PT_STEREO);
+
+		if (!strcmp(proj_string, SRS_PT_OBLIQUE_STEREOGRAPHIC))
+			SetProjectionUI(PT_OS);
+
 		if (!strcmp(proj_string, SRS_PT_POLAR_STEREOGRAPHIC))
-		{
 			SetProjectionUI(PT_PS);
-		}
 	}
 }
 
@@ -402,6 +408,15 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		// Put in some default values
 		// These are for the OSGB projection, a common case
 		m_proj.SetTM(49.0, -2.0, 0.999601272, 400000, -100000);
+		break;
+	case PT_STEREO:
+		// Put in some default values
+		m_proj.SetStereographic( 0.0, 0.0, 1.0, 0.0, 0.0);
+		break;
+	case PT_OS:
+		// Put in some default values
+		// These are for Stereo70 (Romania)
+		m_proj.SetOS(45.0, 25.0, 0.999750,500000, 500000);
 		break;
 	case PT_PS:
 		// Put in some default values
