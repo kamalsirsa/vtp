@@ -71,7 +71,7 @@ I18N_SOURCES = \
 	../../TerrainSDK/vtui/BuildingDlg.cpp
 
 update-pot:
-	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
+	xgettext --from-code=iso-8859-1 -k_ -o Enviro.pot $(I18N_SOURCES)
 
 #----------
 
