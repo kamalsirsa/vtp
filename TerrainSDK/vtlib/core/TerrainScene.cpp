@@ -68,7 +68,6 @@ vtTerrainScene::vtTerrainScene()
 
 	m_pTop = NULL;
 	m_pSkyDome = NULL;
-	m_pFirstTerrain = NULL;
 	m_pCurrentTerrain = NULL;
 	m_pTime = NULL;
 	m_pSkyTrack = NULL;
@@ -102,18 +101,12 @@ void vtTerrainScene::CleanupScene()
 	// if (m_pSkyDome)
 	// 	m_pSkyDome->Destroy();
 
-	while (m_pFirstTerrain)
+	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{
-		vtTerrain *curr = m_pFirstTerrain;
-		m_pFirstTerrain = m_pFirstTerrain->GetNext();
-
-		vtGroup *group = curr->GetTopGroup();
-		if (group)
-			m_pTop->RemoveChild(group);
-
-		delete curr;
+		vtGroup *group = GetTerrain(i)->GetTopGroup();
+		m_pTop->RemoveChild(group);
 	}
-	m_pFirstTerrain = NULL;
+	m_Terrains.clear();
 	m_pCurrentTerrain = NULL;
 
 	// get anything left at the top of the scene graph
@@ -169,11 +162,9 @@ void vtTerrainScene::_CreateSky()
  */
 vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 {
-	for (vtTerrain *pTerr = m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
-	{
-		if (pTerr->GetName() == name)
-			return pTerr;
-	}
+	for (unsigned int i = 0; i < NumTerrains(); i++)
+		if (m_Terrains[i]->GetName() == name)
+			return m_Terrains[i];
 	return NULL;
 }
 
@@ -211,9 +202,7 @@ vtGroup *vtTerrainScene::BeginTerrainScene()
  */
 void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 {
-	// add to linked list
-	pTerrain->SetNext(m_pFirstTerrain);
-	m_pFirstTerrain = pTerrain;
+	m_Terrains.push_back(pTerrain);
 }
 
 

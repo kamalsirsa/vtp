@@ -236,10 +236,6 @@ public:
 	void SetBgColor(const RGBf &color);
 	RGBf GetBgColor() { return m_background_color; }
 
-	// linked list of terrains
-	void SetNext(vtTerrain *t) { m_pNext = t; }
-	vtTerrain *GetNext() { return m_pNext; }
-
 	// Time
 	vtTime GetInitialTime();
 	void TranslateToGMT(vtTime &time);
@@ -348,9 +344,6 @@ protected:
 	Array<vtEngine*>  m_Engines;
 	SimpleBillboardEngine	*m_pBBEngine;
 
-	// maintain a linked list of vtTerrain objects
-	vtTerrain		*m_pNext;
-
 	Array<POIPtr>	m_PointsOfInterest;
 	bool			m_bShowPOI;
 	vtGroup			*m_pPOIGroup;
@@ -360,7 +353,7 @@ protected:
 
 	// A useful value for computing "local time", the location of the
 	//  center of the terrain in Geographic coords.
-	DPoint2			m_CenterGeoLocation;;
+	DPoint2			m_CenterGeoLocation;
 	int m_iDifferenceFromGMT;
 
 	// hold an informative message in case anything goes wrong

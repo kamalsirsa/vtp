@@ -66,8 +66,9 @@ public:
 	vtGroup *GetTop() { return m_pTop; }
 	vtSkyDome *GetSkyDome() { return m_pSkyDome; }
 
-	/// Get the first terrain in the list.
-	vtTerrain *GetFirstTerrain() { return m_pFirstTerrain; }
+	/// Access the terrains in the list.
+	unsigned int NumTerrains() { return m_Terrains.size(); }
+	vtTerrain *GetTerrain(unsigned int i) { return m_Terrains[i]; }
 
 	/// Get the terrain currently being shown.
 	vtTerrain *GetCurrentTerrain() { return m_pCurrentTerrain; }
@@ -109,8 +110,8 @@ protected:
 
 	vtGroup		*m_pAtmosphereGroup;
 
-	// start of a linked list
-	vtTerrain	*m_pFirstTerrain;
+	// array of terrain objects
+	std::vector<vtTerrain*> m_Terrains;
 
 	// the terrain that is currently active
 	vtTerrain	*m_pCurrentTerrain;

@@ -420,9 +420,9 @@ void Enviro::LookUpTerrainLocations()
 	VTLOG("LookUpTerrainLocations\n");
 
 	// look up the earth location of each known terrain
-	vtTerrain *pTerr;
-	for (pTerr = GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
+	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{
+		vtTerrain *pTerr = GetTerrain(i);
 		VTLOG("\tlooking up: %s\n", (const char *) pTerr->GetName());
 
 		vtElevationGrid grid;
@@ -547,8 +547,10 @@ vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
 {
 	vtTerrain *t, *smallest = NULL;
 	float diag, smallest_diag = 1E7;
-	for (t = GetFirstTerrain(); t; t=t->GetNext())
+
+	for (unsigned int i = 0; i < NumTerrains(); i++)
 	{
+		t = GetTerrain(i);
 		if (t->m_Corners_geo.ContainsPoint(p))
 		{
 			// normally, doing comparison on latlon coordinates wouldn't be

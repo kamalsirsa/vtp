@@ -568,9 +568,9 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	m_pRectangles->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(m_pRectangles);
 
-	for (vtTerrain *pTerr = pTerrainScene->GetFirstTerrain(); pTerr;
-			pTerr=pTerr->GetNext())
+	for (unsigned int a = 0; a < pTerrainScene->NumTerrains(); a++)
 	{
+		vtTerrain *pTerr = pTerrainScene->GetTerrain(a);
 		// skip if undefined
 		if (pTerr->m_Corners_geo.GetSize() == 0)
 			continue;

@@ -374,8 +374,9 @@ bool vtApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 	int num = 0, first_idx = 0;
 	std::vector<wxString> choices;
 
-	for (vtTerrain *terr = ts->GetFirstTerrain(); terr; terr=terr->GetNext())
+	for (unsigned int i = 0; i < ts->NumTerrains(); i++)
 	{
+		vtTerrain *terr = ts->GetTerrain(i);
 		wxString2 wstr;
 		wstr.from_utf8(terr->GetName());
 		choices.push_back(wstr);

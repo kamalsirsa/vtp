@@ -67,7 +67,6 @@ vtTerrain::vtTerrain()
 	m_pDynGeom = NULL;
 	m_pDynGeomScale = NULL;
 	m_pTin = NULL;
-	m_pNext = NULL;
 
 	// structures
 	m_iStructSet = 0;

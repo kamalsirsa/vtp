@@ -52,9 +52,9 @@ BOOL CChooseDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// list each known terrain
-	vtTerrain *pTerr;
-	for (pTerr = vtGetTS()->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
+	for (unsigned int i = 0; i < vtGetTS()->NumTerrains(); i++)
 	{
+		vtTerrain *pTerr = vtGetTS()->GetTerrain(i);
 		vtString str = pTerr->GetName();
 		m_lbList.AddString((const char *)str);
 	}
