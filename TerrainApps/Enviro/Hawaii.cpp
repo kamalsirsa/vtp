@@ -20,9 +20,6 @@
 
 ///////////////////////////////
 
-void dump_mat(const FMatrix4 &mat);
-void dump_mat(const FMatrix3 &mat);
-
 IslandTerrain::IslandTerrain() : PTerrain()
 {
 	m_pDetailMats = NULL;
@@ -448,8 +445,45 @@ void IslandTerrain::create_building_manually()
 
 ///////////////////////////////////////
 
+class MyGeom : public vtDynGeom
+{
+public:
+	// these are overrides for virtual methods
+	void DoRender();
+	void DoCalcBoundBox(FBox3 &box);
+	void DoCull(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov) {}
+};
+
+void MyGeom::DoRender()
+{
+	// an example: draw a red-green axis in X and Y
+	glColor3f(1, 0, 0);
+	glBegin(GL_LINES);
+	glVertex3f(-1000,0,0);
+	glVertex3f( 1000,0,0);
+	glEnd();
+
+	glColor3f(0, 1, 0);
+	glBegin(GL_LINES);
+	glVertex3f(0,-1000,0);
+	glVertex3f(0, 1000,0);
+	glEnd();
+}
+
+void MyGeom::DoCalcBoundBox(FBox3 &box)
+{
+	// provide the bounding box of your geometry
+	box.min.Set(-1000, -1000, 0);
+	box.max.Set(1000, 1000, 0);
+}
+
 void IslandTerrain::do_test_code()
 {
+#if 0
+	MyGeom *geom = new MyGeom();
+	vtGetScene()->GetRoot()->AddChild(geom);
+#endif
+
 #if 0
 	float x, y;
 	DPoint3 p;
@@ -491,7 +525,7 @@ void IslandTerrain::do_test_code()
 	x->Translate1(FPoint3(0, 2, 0));
 	x->RotateLocal(FPoint3(1,0,0), 45.0f/180.0f*PIf);
 	x->GetTransform1(mat);
-	dump_mat(mat);
+	vtLogMatrix(mat);
 
 	x->Destroy();
 
@@ -503,17 +537,17 @@ void IslandTerrain::do_test_code()
 	up.Normalize();
 
 	mat.SetFromVectors(pos, forward, up);
-	dump_mat(mat);
+	vtLogMatrix(mat);
 */
 	FMatrix3 m3;
 	m3.AxisAngle(FPoint3(0,1,0), 45.0f/180.0f*PIf);
-	dump_mat(m3);
+	vtLogMatrix(m3);
 
 	FQuat q;
 //	q.SetAxisAngle(FPoint3(0,1,0), 45.0f/180.0f*PIf);
 	q.SetFromMatrix(m3);
 	q.GetMatrix(m3);
-	dump_mat(m3);
+	vtLogMatrix(m3);
 #endif
 }
 
@@ -558,27 +592,4 @@ void IslandTerrain::create_airplane(int i, float fScale, float fSpeed, bool bDoS
 #endif
 	}
 }
-
-void dump_mat(const FMatrix4 &mat)
-{
-	VTLOG("\nMat: %f %f %f %f\n"
-		  "     %f %f %f %f\n"
-		  "     %f %f %f %f\n"
-		  "     %f %f %f %f\n",
-		  mat(0,0), mat(1,0), mat(2,0), mat(3,0),
-		  mat(0,1), mat(1,1), mat(2,1), mat(3,1),
-		  mat(0,2), mat(1,2), mat(2,2), mat(3,2),
-		  mat(0,3), mat(1,3), mat(2,3), mat(3,3));
-}
-
-void dump_mat(const FMatrix3 &mat)
-{
-	VTLOG("\nMat: %f %f %f\n"
-		  "     %f %f %f\n"
-		  "     %f %f %f\n",
-		  mat(0,0), mat(1,0), mat(2,0),
-		  mat(0,1), mat(1,1), mat(2,1),
-		  mat(0,2), mat(1,2), mat(2,2));
-}
-
 
