@@ -19,6 +19,7 @@
 #include <wx/colordlg.h>
 #include "ColorMapDlg.h"
 #include "vtdata/FilePath.h"
+#include "vtui/Helper.h"
 
 // WDR: class implementations
 
@@ -50,12 +51,13 @@ ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
 	AddNumValidator(ID_HEIGHT_TO_ADD, &m_fHeight);
 	AddValidator(ID_RELATIVE, &m_bRelative);
 
-	GetList()->InsertColumn(0, _T("Color"));
-	GetList()->InsertColumn(1, _T("Elevation"));
-
 	m_iItem = -1;
 	m_fHeight = 0.0f;
+
+	GetList()->SetImageList(&m_imlist, wxIMAGE_LIST_SMALL);
+	GetList()->InsertColumn(0, _T(""), wxLIST_FORMAT_LEFT, 180);
 }
+
 
 // WDR: handler implementations for ColorMapDlg
 
@@ -78,18 +80,27 @@ void ColorMapDlg::UpdateItems()
 {
 	GetList()->DeleteAllItems();
 
-	wxString2 str;
-	int num = m_cmap.Num();
-	for (int i = 0; i < num; i++)
+	unsigned int i, num = m_cmap.Num();
+
+	// First refresh the color bitmaps
+	m_imlist.RemoveAll();
+	wxColour color;
+	m_imlist.Create(32, 16);
+	for (i = 0; i < num; i++)
 	{
-		GetList()->InsertItem(i, "", 0);
-
 		RGBi c = m_cmap.m_color[i];
-		str.Printf("%d.%d.%d", c.r, c.g, c.b);
-		GetList()->SetItem(i, 0, str);
+		color.Set(c.r, c.g, c.b);
+		wxBitmap *bitmap = MakeColorBitmap(32, 16, color);
+		m_imlist.Add(*bitmap);
+		delete bitmap;
+	}
+	GetList()->SetImageList(&m_imlist, wxIMAGE_LIST_SMALL);
 
+	wxString2 str;
+	for (i = 0; i < num; i++)
+	{
 		str.Printf("%.2f meters", m_cmap.m_elev[i]);
-		GetList()->SetItem(i, 1, str);
+		int item = GetList()->InsertItem(i, str, i);
 	}
 }
 
@@ -151,12 +162,12 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 
 bool ColorMapDlg::AskColor(RGBi &rgb)
 {
-	wxColourData data;
-	wxColourDialog dlg(this, &data);
+	m_ColorData.SetColour(wxColour(rgb.r, rgb.g, rgb.b));
+	wxColourDialog dlg(this, &m_ColorData);
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		data = dlg.GetColourData();
-		wxColour c1 = data.GetColour();
+		m_ColorData = dlg.GetColourData();
+		wxColour c1 = m_ColorData.GetColour();
 		rgb.Set(c1.Red(), c1.Green(), c1.Blue());
 		return true;
 	}
@@ -183,10 +194,10 @@ void ColorMapDlg::OnDeleteColor( wxCommandEvent &event )
 
 void ColorMapDlg::OnChangeColor( wxCommandEvent &event )
 {
-	RGBi result;
-	if (AskColor(result))
+	RGBi rgb = m_cmap.m_color[m_iItem];
+	if (AskColor(rgb))
 	{
-		m_cmap.m_color[m_iItem] = result;
+		m_cmap.m_color[m_iItem] = rgb;
 		UpdateItems();
 	}
 }

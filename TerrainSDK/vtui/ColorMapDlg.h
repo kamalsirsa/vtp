@@ -54,7 +54,10 @@ private:
 	float		m_fHeight;
 	bool		m_bRelative;
 	long		m_iItem;
-	
+	wxColourData m_ColorData;
+	wxColour	m_Color;
+	wxImageList m_imlist;
+
 private:
 	// WDR: handler declarations for ColorMapDlg
 	void OnLoad( wxCommandEvent &event );
