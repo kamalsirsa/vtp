@@ -1,7 +1,7 @@
 //
 // class Enviro: Main functionality of the Enviro application
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1246,6 +1246,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pPanoFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pOrthoFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pCurrentFlyer->SetEnabled(true);
+	m_pCurrentFlyer->SetExag(param.m_bAccel);
 
 	// TODO: a more elegant way of keeping all nav engines current
 	m_pQuakeFlyer->SetHeightField(pHF);
@@ -1326,6 +1327,16 @@ float Enviro::GetFlightSpeed()
 		return m_pCurrentFlyer->GetSpeed();
 	else
 		return 0.0f;
+}
+
+void Enviro::SetFlightAccel(bool bAccel)
+{
+	m_pCurrentFlyer->SetExag(bAccel);
+}
+
+bool Enviro::GetFlightAccel()
+{
+	return m_pCurrentFlyer->GetExag();
 }
 
 void Enviro::SetMode(MouseMode mode)

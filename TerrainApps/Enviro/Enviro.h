@@ -64,6 +64,8 @@ public:
 	// navigation and camera
 	void SetFlightSpeed(float speed);
 	float GetFlightSpeed();
+	void SetFlightAccel(bool bAccel);
+	bool GetFlightAccel();
 	void SetTopDown(bool bTopDown);
 	void SetCurrentNavigator(vtTerrainFlyer *pE);
 	void EnableFlyerEngine(bool bEnable);
