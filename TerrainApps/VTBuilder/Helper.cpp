@@ -21,7 +21,7 @@
 
 static bool s_bOpen = false;
 wxProgressDialog *g_pProg = NULL;
-		
+
 void progress_callback(int amount)
 {
 	if (g_pProg)
@@ -34,7 +34,7 @@ void OpenProgressDialog(const wxString &title, bool bCancellable)
 		return;
 
 	BuilderView *pView = GetMainFrame()->GetView();
-	
+
 	// force the window to be wider by giving a dummy string
 	wxString message = _T("___________________________________");
 	int style = wxPD_AUTO_HIDE | wxPD_APP_MODAL;
@@ -43,7 +43,7 @@ void OpenProgressDialog(const wxString &title, bool bCancellable)
 
 	s_bOpen = true;
 	g_pProg = new wxProgressDialog(title, message, 100, pView, style);
-	g_pProg->Show(TRUE);
+	g_pProg->Show(true);
 	g_pProg->Update(0, _T(" "));
 }
 
