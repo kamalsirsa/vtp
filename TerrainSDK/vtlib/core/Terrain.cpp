@@ -1097,7 +1097,10 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 	if (success)
 		VTLOG("Read font from file '%s'\n", fontname);
 	else
-		VTLOG("Couldn't read font from file '%s'\n", fontname);
+	{
+		VTLOG("Couldn't read font from file '%s', not creating labels.\n", fontname);
+		return;
+	}
 
 	DPoint3 p;
 	FPoint3 p3;
