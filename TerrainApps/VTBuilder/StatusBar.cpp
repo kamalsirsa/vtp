@@ -48,7 +48,7 @@ wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 	}
 	else	// something meters-based
 	{
-		str = wxString::Format("%.0f", coord);
+		str.Printf("%.0f", coord);
 	}
 	return str;
 }
@@ -61,29 +61,30 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	SetStatusText(proj.GetProjectionNameShort(), Field_Coord);
 
 	wxString str;
-	if (proj.IsUTM())
-		str = wxString::Format("Zone %d", proj.GetUTMZone());
+	int zone = proj.GetUTMZone();
+	if (zone != 0)
+		str.Printf("Zone %d", zone);
 	else
 		str = "";
 	SetStatusText(str, Field_Zone);
 
 	SetStatusText(datumToString(proj.GetDatum()), Field_Datum);
 
-	double lx, ly;
+	DPoint2 p;
 	BuilderView *pView = frame->GetView();
 	if (pView)
 	{
-		pView->GetMouseLocation(lx, ly);
-		str = wxString::Format("Mouse: %s, %s",
-				(const char *) FormatCoord(bGeo, lx),
-				(const char *) FormatCoord(bGeo, ly));
+		pView->GetMouseLocation(p);
+		str.Printf("Mouse: %s, %s",
+				(const char *) FormatCoord(bGeo, p.x),
+				(const char *) FormatCoord(bGeo, p.y));
 		SetStatusText(str, Field_Mouse);
 
-		float height = frame->GetHeightFromTerrain(lx, ly);
+		float height = frame->GetHeightFromTerrain(p);
 		if (height == INVALID_ELEVATION)
 			str = "";
 		else
-			str = wxString::Format( "%.2f m", height);
+			str.Printf( "%.2f m", height);
 		SetStatusText(str, Field_Height);
 	}
 	else
