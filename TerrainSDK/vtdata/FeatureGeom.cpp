@@ -697,7 +697,7 @@ void vtFeatureSetLineString3D::LoadGeomFromSHP(SHPHandle hSHP)
 vtFeatureSetPolygon::vtFeatureSetPolygon() : vtFeatureSet()
 {
 	m_eGeomType = wkbPolygon;
-	m_iLastFound = -1;
+	m_pIndex = NULL;
 }
 
 unsigned int vtFeatureSetPolygon::GetNumEntities() const
@@ -785,6 +785,76 @@ int vtFeatureSetPolygon::AddPolygon(const DPolygon2 &poly)
 	return rec;
 }
 
+SpatialIndex::SpatialIndex(int iSize)
+{
+	m_iLastFound = -1;
+	m_iSize = iSize;
+
+	m_pArray = new IntVectorPtr [m_iSize];
+	for (int i = 0; i < m_iSize; i++)
+	{
+		m_pArray[i] = new IntVector [m_iSize];
+	}
+}
+
+SpatialIndex::~SpatialIndex()
+{
+	for (int i = 0; i < m_iSize; i++)
+	{
+		delete [] m_pArray[i];
+	}
+	delete [] m_pArray;
+}
+
+void SpatialIndex::GenerateIndices(const class vtFeatureSetPolygon *feat)
+{
+	feat->ComputeExtent(m_Extent);
+
+	// Increase extents slightly to avoid numerical edge conditions
+	m_Extent.Grow(0.001, 0.001);
+
+	// A tightly optimized index grid would place each feature exactly into
+	//  the index cells it overlaps.  That's a rather sophisticated operation
+	//  that i don't have code handy to do, so instead we place features into
+	//  the index using their extents.
+
+	m_base.Set(m_Extent.left, m_Extent.bottom);
+	m_step.Set(m_Extent.Width() / m_iSize, m_Extent.Height() / m_iSize);
+	DRECT ext;
+	int x1, x2, y1, y2;
+	unsigned int e;
+	int i, j;
+
+	for (e = 0; e < feat->GetNumEntities(); e++)
+	{
+		const DPolygon2 &poly = feat->GetPolygon(e);
+		poly.ComputeExtents(ext);
+		x1 = (int) ((ext.left	- m_base.x) / m_step.x);
+		x2 = (int) ((ext.right	- m_base.x) / m_step.x);
+		y1 = (int) ((ext.bottom	- m_base.y) / m_step.y);
+		y2 = (int) ((ext.top	- m_base.y) / m_step.y);
+		for (i = x1; i <= x2; i++)
+		{
+			for (j = y1; j <= y2; j++)
+			{
+				IntVectorPtr ptr = m_pArray[i];
+				ptr[j].push_back(e);
+			}
+		}
+	}
+}
+
+const IntVector *SpatialIndex::GetIndexForPoint(const DPoint2 &p) const
+{
+	int x = (int) ((p.x	- m_base.x) / m_step.x);
+	int y = (int) ((p.y	- m_base.y) / m_step.y);
+	if (x < 0 || x >= m_iSize || y < 0 || y >= m_iSize)
+		return NULL;
+
+	IntVectorPtr ptr = m_pArray[x];
+	return &(ptr[y]);
+}
+
 /**
  * Find the first polygon in this feature set which contains the given
  * point.
@@ -793,23 +863,56 @@ int vtFeatureSetPolygon::AddPolygon(const DPolygon2 &poly)
  */
 int vtFeatureSetPolygon::FindPolygon(const DPoint2 &p) const
 {
-	if (m_iLastFound != -1)	// try last successful result
+	unsigned int num, i;
+
+	if (m_pIndex != NULL)
 	{
-		if (m_Poly[m_iLastFound].ContainsPoint(p))
-			return m_iLastFound;		// found
-	}
-	int num = m_Poly.size();
-	for (int i = 0; i < num; i++)
-	{
-		if (m_Poly[i].ContainsPoint(p))
+		// use Index
+		if (m_pIndex->m_iLastFound != -1)	// try last successful result
 		{
-			const_cast<vtFeatureSetPolygon*>(this)->m_iLastFound = i;
-			return i;		// found
+			if (m_Poly[m_pIndex->m_iLastFound].ContainsPoint(p))
+				return m_pIndex->m_iLastFound;		// found
+		}
+		const IntVector *index = m_pIndex->GetIndexForPoint(p);
+		if (index)
+		{
+			num = index->size();
+			for (i = 0; i < num; i++)
+			{
+				int e = index->at(i);
+				if (m_Poly[e].ContainsPoint(p))
+				{
+					m_pIndex->m_iLastFound = e;
+					return e;		// found
+				}
+			}
+			m_pIndex->m_iLastFound = -1;
 		}
 	}
-	const_cast<vtFeatureSetPolygon*>(this)->m_iLastFound = -1;
+	else
+	{
+		num = m_Poly.size();
+		for (i = 0; i < num; i++)
+		{
+			if (m_Poly[i].ContainsPoint(p))
+				return i;		// found
+		}
+	}
 	return -1;	// not found
 }
+
+void vtFeatureSetPolygon::CreateIndex(int iSize)
+{
+	m_pIndex = new SpatialIndex(iSize);
+	m_pIndex->GenerateIndices(this);
+}
+
+void vtFeatureSetPolygon::FreeIndex()
+{
+	delete m_pIndex;
+	m_pIndex = NULL;
+}
+
 
 /**
  * Find the first polygon in this feature set which contains the given

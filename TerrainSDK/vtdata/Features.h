@@ -346,6 +346,29 @@ protected:
 	std::vector<DLine3>	m_Line;		// wkbLineString25D
 };
 
+
+typedef std::vector<int> IntVector;
+typedef IntVector *IntVectorPtr;
+
+//
+// A utility class to speed up polygon testing operations
+class SpatialIndex
+{
+public:
+	SpatialIndex(int iSize);
+	~SpatialIndex();
+
+	void GenerateIndices(const class vtFeatureSetPolygon *feat);
+	const IntVector *GetIndexForPoint(const DPoint2 &p) const;
+	int m_iLastFound;
+
+protected:
+	int m_iSize;
+	IntVectorPtr *m_pArray;
+	DPoint2 m_base, m_step;
+	DRECT m_Extent;
+};
+
 /**
  * A set of polygon features.  Each polygon is a DPolygon2 object,
  *  which consists of a number of rings: one external ring, and any
@@ -371,6 +394,10 @@ public:
 	int FindSimplePolygon(const DPoint2 &p) const;
 	int FindPolygon(const DPoint2 &p) const;
 
+	// speed optimization
+	void CreateIndex(int iSize);
+	void FreeIndex();
+
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
 	virtual void CopyGeometry(unsigned int from, unsigned int to);
@@ -379,7 +406,9 @@ public:
 
 protected:
 	DPolyArray	m_Poly;		// wkbPolygon
-	int m_iLastFound;
+
+	// speed optimization
+	SpatialIndex *m_pIndex;
 };
 
 class vtFeatureLoader
