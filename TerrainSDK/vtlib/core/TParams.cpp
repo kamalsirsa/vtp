@@ -28,6 +28,10 @@ TParams::TParams()
 	m_fTimeSpeed = 1;
 	m_bTransTowers = false;
 	m_bRouteEnable = false;
+	m_bOceanPlane = false;
+	m_fOceanPlaneLevel = -20.0f;
+	m_bDepressOcean = false;
+	m_fDepressOceanLevel = -40.0f;
 }
 
 //
@@ -104,6 +108,9 @@ const TParams &TParams::operator = (const TParams &rhs)
 
 	m_bSky = rhs.m_bSky;
 	m_bOceanPlane = rhs.m_bOceanPlane;
+	m_fOceanPlaneLevel = rhs.m_fOceanPlaneLevel;
+	m_bDepressOcean = rhs.m_bDepressOcean;
+	m_fDepressOceanLevel = rhs.m_fDepressOceanLevel;
 	m_bHorizon = rhs.m_bHorizon;
 	m_bVertexColors = rhs.m_bVertexColors;
 	m_bOverlay = rhs.m_bOverlay;
@@ -166,15 +173,18 @@ vtString get_line_from_stream(ifstream &input)
 
 #define STR_REGULAR "Regular"
 #define STR_SUBSAMPLE "Subsample"
+
 #define STR_DYNAMIC "Dynamic"
 #define STR_LODMETHOD "LOD_Method"
 #define STR_PIXELERROR "Pixel_Error"
 #define STR_TRICOUNT "Tri_Count"
+#define STR_TRISTRIPS "Tristrips"
+#define STR_DETAILTEXTURE "Detail_Texture"
+
 #define STR_TIMEON "Time_On"
 #define STR_INITTIME "Init_Time"
 #define STR_TIMESPEED "Time_Speed"
-#define STR_SKY "Sky"
-#define STR_FOG "Fog"
+
 #define STR_TEXTURE "Texture"
 #define STR_NTILES "Num_Tiles"
 #define STR_TILESIZE "Tile_Size"
@@ -184,6 +194,8 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_16BIT "16_Bit"
 #define STR_PRELIGHT "Pre-Light"
 #define STR_PRELIT "Pre-Lit"
+#define STR_PRELIGHTFACTOR "PreLight_Factor"
+
 #define STR_ROADS "Roads"
 #define STR_ROADFILE "Road_File"
 #define STR_HWY "Highway"
@@ -193,31 +205,38 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_ROADDISTANCE "Road_Distance"
 #define STR_TEXROADS "Road_Texture"
 #define STR_ROADCULTURE "Road_Culture"
+
 #define STR_TREES "Trees"
 #define STR_TREEFILE "Tree_File"
 #define STR_TREEDISTANCE "Tree_Distance"
+#define STR_AGRICULTURE "Agriculture"
+#define STR_WILDVEG	"Wild_Vegetation"
+
+#define STR_FOG "Fog"
 #define STR_FOGDISTANCE "Fog_Distance"
-#define STR_DOMOTION "Do_Motion"
-#define STR_MOTIONSCRIPT "Motion_Script"
-#define STR_VERTEXCOLORS "Vertex_Colors"
-#define STR_OVERLAY	"Overlay"
-#define STR_SUPPRESSLAND "Suppress_Land"
-#define STR_OCEANPLANE "Ocean_Plane"
-#define STR_HORIZON "Horizon"
-#define STR_LABELS "Labels"
+
 #define STR_BUILDINGS "Buildings"
 #define STR_BUILDINGFILE "Building_File"
-#define STR_TOWERS "Transmission Towers"
+
+#define STR_TOWERS "Trans_Towers"
 #define	STR_TOWERFILE "Tower File"
+
 #define STR_VEHICLES "Vehicles"
 #define STR_VEHICLESIZE "Vehicle_Size"
 #define STR_VEHICLESPEED "Vehicle_Speed"
 #define STR_NUMCARS "Number_of_Cars"
-#define STR_AGRICULTURE "Agriculture"
-#define STR_WILDVEG	"Wild_Vegetation"
-#define STR_TRISTRIPS "Tristrips"
-#define STR_DETAILTEXTURE "Detail_Texture"
-#define STR_PRELIGHTFACTOR "PreLight_Factor"
+
+#define STR_SKY "Sky"
+#define STR_OCEANPLANE "Ocean_Plane"
+#define STR_OCEANPLANELEVEL "Ocean_Plane_Level"
+#define STR_DEPRESSOCEAN "Depress_Ocean"
+#define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
+#define STR_HORIZON "Horizon"
+#define STR_VERTEXCOLORS "Vertex_Colors"
+#define STR_OVERLAY	"Overlay"
+#define STR_SUPPRESSLAND "Suppress_Land"
+#define STR_LABELS "Labels"
+
 #define STR_AIRPORTS "Airports"
 #define STR_ROUTEFILE "Route_File"
 #define STR_ROUTEENABLE "Route_Enable"
@@ -343,6 +362,12 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bSuppressLand;
 		else if (strcmp(buf, STR_OCEANPLANE) == 0)
 			input >> m_bOceanPlane;
+		else if (strcmp(buf, STR_OCEANPLANELEVEL) == 0)
+			input >> m_fOceanPlaneLevel;
+		else if (strcmp(buf, STR_DEPRESSOCEAN) == 0)
+			input >> m_bDepressOcean;
+		else if (strcmp(buf, STR_DEPRESSOCEANLEVEL) == 0)
+			input >> m_fDepressOceanLevel;
 		else if (strcmp(buf, STR_HORIZON) == 0)
 			input >> m_bHorizon;
 		else if (strcmp(buf, STR_LABELS) == 0)
@@ -507,7 +532,7 @@ bool TParams::SaveToFile(const char *filename)
 	output << (const char *) m_strBuildingFile << endl;
 
 	output << "\n";
-	output << STR_TOWERS << "\t\t";
+	output << STR_TOWERS << "\t";
 	output << m_bTransTowers<<endl;
 	output << STR_TOWERFILE <<"\t";
 	output << (const char *) m_strTowerFile<<endl;
@@ -527,7 +552,13 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bSky << endl;
 	output << STR_OCEANPLANE << "\t\t";
 	output << m_bOceanPlane << endl;
-	output << STR_HORIZON << "\t\t";
+	output << STR_OCEANPLANELEVEL << "\t";
+	output << m_fOceanPlaneLevel << endl;
+	output << STR_DEPRESSOCEAN << "\t\t";
+	output << m_bDepressOcean << endl;
+	output << STR_DEPRESSOCEANLEVEL << "\t";
+	output << m_fDepressOceanLevel << endl;
+	output << STR_HORIZON << "\t\t\t";
 	output << m_bHorizon << endl;
 	output << STR_OVERLAY << "\t\t\t";
 	output << m_bOverlay << endl;
@@ -541,7 +572,7 @@ bool TParams::SaveToFile(const char *filename)
 
 	output << STR_ROUTEFILE << "\t\t";
 	output << (const char *) m_strRouteFile << endl;
-	output << STR_ROUTEENABLE << "\t\t";
+	output << STR_ROUTEENABLE << "\t";
 	output << m_bRouteEnable << endl;
 
 	return true;

@@ -22,7 +22,8 @@ enum TextureEnum {
 };
 
 enum LodMethodEnum {
-	LM_LINDSTROMKOLLER,
+//	LM_LINDSTROMKOLLER,
+	LM_ROETTGER,
 	LM_TOPOVISTA,
 	LM_MCNALLY,
 	LM_CUSTOM,
@@ -60,8 +61,8 @@ public:
 	bool		m_bTriStrips;
 	bool		m_bDetailTexture;
 
-	unint		m_iInitTime;
 	bool		m_bTimeOn;
+	unint		m_iInitTime;
 	float		m_fTimeSpeed;
 
 	TextureEnum	m_eTexture;
@@ -71,6 +72,9 @@ public:
 	vtString	m_strTextureFilename;
 	bool		m_bMipmap;
 	bool		m_b16bit;
+	bool		m_bPreLight;
+	bool		m_bPreLit;
+	float		m_fPreLightFactor;
 
 	bool		m_bRoads;
 	vtString	m_strRoadFile;
@@ -104,20 +108,18 @@ public:
 
 	bool		m_bSky;
 	bool		m_bOceanPlane;
+	float		m_fOceanPlaneLevel;
+	bool		m_bDepressOcean;
+	float		m_fDepressOceanLevel;
 	bool		m_bHorizon;
 	bool		m_bVertexColors;
 	bool		m_bOverlay;
 	bool		m_bSuppressLand;
 	bool		m_bLabels;
 
-	bool		m_bPreLight;
-	bool		m_bPreLit;
-	float		m_fPreLightFactor;
-
 	bool		m_bAirports;
 	vtString	m_strRouteFile;
 	bool		m_bRouteEnable;
-
 };
 
 #endif
