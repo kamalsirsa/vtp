@@ -445,10 +445,15 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			sa->ConstructStructure(bld);
 		}
 	}
-	if (key == 3)	// Ctrl-C
+	if (key == 4)	// Ctrl-D
 	{
 		// dump camera info
 		g_App.DumpCameraInfo();
+	}
+	if (key == 2)	// Ctrl-B
+	{
+		// toggle logo
+		g_App.ToggleLogo();
 	}
 }
 

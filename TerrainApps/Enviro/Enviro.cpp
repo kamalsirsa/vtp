@@ -31,6 +31,7 @@
 #define UNFOLD_SPEED		0.01f
 
 extern int pwdemo;
+vtGeom *tg = NULL;
 
 
 //
@@ -241,6 +242,9 @@ void Enviro::DoControl()
 		m_fFolding += m_fFoldDir;
 		if (m_fFoldDir > 0.0f && m_fFolding > 1.0f)
 		{
+			// all the way flattened
+			m_pFlatFlyer->SetEnabled(true);
+
 			m_fFolding = 1.0f;
 			m_fFoldDir = 0.0f;
 		}
@@ -774,6 +778,50 @@ if (pwdemo){
 	GeomAddRectMesh(geom, rect, 1.14, 1);
 	logo->AddChild(geom);
 	Globe2->SetTime(m_pGlobeTime->GetTime());
+
+	int i;
+	vtMaterialArray *rainbow = new vtMaterialArray;
+	rainbow->AddRGBMaterial1(RGBf(0.5,0,0), false, true, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0.5,0.5,0), false, true, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0,0.5,0), false, true, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0,0.5,0.5), false, true, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0,0,0.5), false, true, false, 0.5f);
+	rainbow->AddRGBMaterial1(RGBf(0.5,0,0.5), false, true, false, 0.5f);
+	for (i = 0; i < 6; i++)
+	{
+		vtMaterial *mat = rainbow->GetAt(i);
+		mat->SetTransparent(true, true);
+	}
+	tg = new vtGeom();
+	tg->SetMaterials(rainbow);
+	Globe2->GetTop()->AddChild(tg);
+
+	vtFeatures ft;
+	ft.LoadFromSHP("../Data/PointData/vtp-users-020519.shp");
+	int half = ft.NumEntities() / 2;
+	int foo = 0;
+	for (i = 0; i < half; i++)
+	{
+		DPoint2 p1, p2;
+		ft.GetPoint(i, p1);
+		ft.GetPoint(i+half, p2);
+		if (p1 == DPoint2(0,0) || p2 == DPoint2(0,0))
+			continue;
+		if (p1.y > 0 && p2.y > 0)
+		{
+			foo++;
+			if ((foo%20)<19)
+				continue;
+		}
+		if (p1.y < 0 && p2.y < 0)
+			continue;
+
+		vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 20);
+		Globe2->AddSurfaceLineToMesh(mesh, p1, p2);
+		tg->AddMesh(mesh, i%6);
+	}
+	tg->SetEnabled(false);
+
 }else{
 	logo = NULL;
 }
@@ -787,6 +835,8 @@ if (pwdemo){
 	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
 	m_pTrackball->SetName2("Trackball2");
 	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
+	m_pTrackball->SetRotateButton(VT_RIGHT, 0);
+	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
 	vtGetScene()->AddEngine(m_pTrackball);
 
 	// determine where the terrains are, and show them as red rectangles
@@ -954,6 +1004,12 @@ void Enviro::SetupScene2()
 	m_pGFlyer->SetEnabled(false);
 	vtGetScene()->AddEngine(m_pGFlyer);
 
+	m_pFlatFlyer = new FlatFlyer();
+	m_pFlatFlyer->SetName2("Flat Flyer");
+	m_pFlatFlyer->SetEnabled(false);
+	vtGetScene()->AddEngine(m_pFlatFlyer);
+	m_pFlatFlyer->SetEnabled(false);
+
 	if (g_Options.m_bQuakeNavigation)
 		m_nav = NT_Quake;
 	else if (g_Options.m_bGravity)
@@ -1000,6 +1056,7 @@ void Enviro::SetupScene2()
 	m_pVFlyer->SetTarget(m_pNormalCamera);
 	m_pTFlyer->SetTarget(m_pNormalCamera);
 	m_pGFlyer->SetTarget(m_pNormalCamera);
+	m_pFlatFlyer->SetTarget(m_pNormalCamera);
 }
 
 void Enviro::SetupCommonCulture()
@@ -1568,7 +1625,11 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 	}
 	else
 	{
+		if (m_fFolding == 1.0f)
+			m_FlatLoc.p = m_pNormalCamera->GetTrans();
 		m_fFoldDir = -UNFOLD_SPEED;
+
+		m_pFlatFlyer->SetEnabled(false);
 	}
 }
 
@@ -1719,7 +1780,27 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 void Enviro::ToggleLogo()
 {
-	logo->SetEnabled(!logo->GetEnabled());
+	if (!logo) return;
+	static st = 1;
+
+	st++;
+	if (st == 3)
+		st = 0;
+	if (st == 0)
+	{
+		logo->SetEnabled(false);
+		tg->SetEnabled(false);
+	}
+	if (st == 1)
+	{
+		logo->SetEnabled(true);
+		tg->SetEnabled(false);
+	}
+	if (st == 2)
+	{
+		logo->SetEnabled(true);
+		tg->SetEnabled(true);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////

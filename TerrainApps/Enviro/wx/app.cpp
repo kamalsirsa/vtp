@@ -30,9 +30,13 @@
 #include "frame.h"
 #include "StartupDlg.h"
 
+int pwdemo = 0;
+
 static void Args(int argc, wxChar **argv)
 {
-   return;
+	if (argc > 1 && argv[1][1] == _T('p'))
+		pwdemo = 1;
+	return;
 }
 
 IMPLEMENT_APP(vtApp)
