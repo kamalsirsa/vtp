@@ -896,7 +896,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 //
 void Enviro::SetMessage(const char *msg, float fTime)
 {
-	VTLOG("  SetMessage: %s\n", m_msg);
+	VTLOG("  SetMessage: %s\n", msg);
 
 	vtString str = msg;
 
