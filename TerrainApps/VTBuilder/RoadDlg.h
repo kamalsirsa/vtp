@@ -47,7 +47,9 @@ protected:
 	bool		m_bMultiple;  //true if we are editing multiple roads at once
 	vtLayer		*m_pLayer;
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif
+
+
