@@ -421,7 +421,7 @@ vtBioRegion::~vtBioRegion()
 
 bool vtBioRegion::Read(const char *fname)
 {
-	FILE *fp = fopen(fname, "rb");
+	FILE *fp = fopen(fname, "r");
 	if (!fp) return false;
 
 	int num = 0;
@@ -488,6 +488,16 @@ int vtBioRegion::FindBiotypeIdByName(const char *name)
 	return -1;
 }
 
+void vtBioRegion::ResetAmounts()
+{
+	int num = m_Types.GetSize();
+	for (int i = 0; i < num; i++)
+	{
+		m_Types[i]->ResetAmounts();
+	}
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 
 vtBioType::vtBioType()
@@ -497,9 +507,7 @@ vtBioType::vtBioType()
 vtBioType::~vtBioType()
 {
 	for (int i = 0; i < m_Densities.GetSize(); i++)
-	{
 		delete m_Densities[i];
-	}
 }
 
 void vtBioType::AddPlant(int i, const char *common_name, float plant_per_m2)
@@ -510,6 +518,12 @@ void vtBioType::AddPlant(int i, const char *common_name, float plant_per_m2)
 	pd->m_amount = 0.0f;
 	pd->m_iNumPlanted = 0;
 	m_Densities.Append(pd);
+}
+
+void vtBioType::ResetAmounts()
+{
+	for (int i = 0; i < m_Densities.GetSize(); i++)
+		m_Densities[i]->ResetAmounts();
 }
 
 ///////////////////////////////////////////////////////////////////////
