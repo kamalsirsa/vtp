@@ -29,11 +29,12 @@
 #include "UtilityLayer.h"
 #include "WaterLayer.h"
 // Dialogs
+#include "DistribVegDlg.h"
 #include "ExtentDlg.h"
+#include "FeatInfoDlg.h"
 #include "LayerPropDlg.h"
 #include "OptionsDlg.h"
 #include "Projection2Dlg.h"
-#include "DistribVegDlg.h"
 #include "SelectDlg.h"
 #include "VegDlg.h"
 
@@ -145,12 +146,14 @@ EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
 
 EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
-EVT_MENU(ID_FEATURE_INFO,			MainFrame::OnFeatureInfo)
+EVT_MENU(ID_FEATURE_PICK,			MainFrame::OnFeaturePick)
+EVT_MENU(ID_FEATURE_TABLE,			MainFrame::OnFeatureTable)
 EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
-EVT_UPDATE_UI(ID_FEATURE_INFO,		MainFrame::OnUpdateFeatureInfo)
+EVT_UPDATE_UI(ID_FEATURE_PICK,		MainFrame::OnUpdateFeaturePick)
+EVT_UPDATE_UI(ID_FEATURE_TABLE,		MainFrame::OnUpdateFeatureTable)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 
@@ -334,7 +337,8 @@ void MainFrame::CreateMenus()
 	// Raw
 	rawMenu = new wxMenu;
 	rawMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
-	rawMenu->Append(ID_FEATURE_INFO, "Feature Info", "Feature Info", true);
+	rawMenu->Append(ID_FEATURE_PICK, "Pick Features", "Pick Features", true);
+	rawMenu->Append(ID_FEATURE_TABLE, "Show Attribute Table", "Show Attribute Table", true);
 #ifndef ELEVATION_ONLY
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SETTYPE, "Set Entity Type", "Set Entity Type");
@@ -568,6 +572,7 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 		pRawL->DeleteSelected();
 		pRawL->SetModified(true);
 		m_pView->Refresh();
+		OnSelectionChanged();
 		return;
 	}
 
@@ -607,6 +612,7 @@ void MainFrame::OnEditInvertSelection(wxCommandEvent &event)
 	if (pRawL) {
 		pRawL->InvertSelection();
 		m_pView->Refresh(false);
+		OnSelectionChanged();
 	}	
 }
 
@@ -1753,14 +1759,30 @@ void MainFrame::OnUpdateFeatureSelect(wxUpdateUIEvent& event)
 	event.Check(m_pView->GetMode() == LB_FSelect);
 }
 
-void MainFrame::OnFeatureInfo(wxCommandEvent &event)
+void MainFrame::OnFeaturePick(wxCommandEvent &event)
 {
 	m_pView->SetMode(LB_Info);
 }
 
-void MainFrame::OnUpdateFeatureInfo(wxUpdateUIEvent& event)
+void MainFrame::OnFeatureTable(wxCommandEvent &event)
+{
+	if (m_pFeatInfoDlg && m_pFeatInfoDlg->IsShown())
+		m_pFeatInfoDlg->Show(false);
+	else
+	{
+		ShowFeatInfoDlg();
+		m_pFeatInfoDlg->SetFeatureSet(GetActiveRawLayer());
+	}
+}
+
+void MainFrame::OnUpdateFeaturePick(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_Info);
+}
+
+void MainFrame::OnUpdateFeatureTable(wxUpdateUIEvent& event)
+{
+	event.Check(m_pFeatInfoDlg && m_pFeatInfoDlg->IsShown());
 }
 
 void MainFrame::OnBuildingEdit(wxCommandEvent &event)
@@ -1885,6 +1907,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 			msg.Printf("Selected %d entit%s", selected, selected == 1 ? "y" : "ies");
 		SetStatusText(msg);
 		m_pView->Refresh(false);
+		OnSelectionChanged();
 	}
 }
 
