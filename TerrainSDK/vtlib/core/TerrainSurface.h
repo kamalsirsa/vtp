@@ -10,8 +10,7 @@
 #ifndef TERRAINSURFACEH
 #define TERRAINSURFACEH
 
-#include "LocalGrid.h"
-#include "vtdata/HeightField.h"
+#include "vtdata/ElevationGrid.h"
 #include "TerrainPatch.h"
 
 class vtTextureCoverage

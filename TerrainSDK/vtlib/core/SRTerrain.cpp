@@ -11,7 +11,6 @@
 
 #include "vtlib/vtlib.h"
 #include "SRTerrain.h"
-#include "LocalGrid.h"
 
 using namespace mini;
 #ifdef _MSC_VER

@@ -7,7 +7,6 @@
 
 #include "vtlib/vtlib.h"
 #include "BryanTerrain.h"
-#include "LocalGrid.h"
 
 typedef unsigned long UINT_32;
 typedef long INT_32;
