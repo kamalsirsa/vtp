@@ -405,7 +405,7 @@ void GlobePicker::Eval()
 	FPoint3 akPoint[2];
 	int riQuantity;
 
-	m_bOnTerrain = FindIntersection(pos, dir, sphere, riQuantity, akPoint);
+	m_bOnTerrain = RaySphereIntersection(pos, dir, sphere, riQuantity, akPoint);
 	if (m_bOnTerrain)
 	{
 		// save result
