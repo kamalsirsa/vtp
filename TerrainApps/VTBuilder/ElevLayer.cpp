@@ -1,7 +1,7 @@
 //
 // ElevLayer.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -112,9 +112,8 @@ void vtTin2d::FreeEdgeLengths()
 
 ////////////////////////////////////////////////////////////////////
 
-bool vtElevLayer::m_bShowElevation = true;
-bool vtElevLayer::m_bShading = true;
-bool vtElevLayer::m_bDoMask = true;
+ElevDrawOptions vtElevLayer::m_draw;
+
 
 vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
@@ -172,6 +171,8 @@ bool vtElevLayer::OnLoad()
 		m_pGrid = new vtElevationGrid();
 		success = m_pGrid->LoadFromBT(fname.mb_str(), progress_callback);
 		m_pGrid->GetDimensions(m_iColumns, m_iRows);
+
+		m_pGrid->SetupConversion(1.0f);
 	}
 	else if (!fname.Right(4).CmpNoCase(_T(".tin")) ||
 			 !fname.Right(4).CmpNoCase(_T(".itf")))
@@ -179,6 +180,7 @@ bool vtElevLayer::OnLoad()
 		m_pTin = new vtTin2d();
 		success = m_pTin->Read(fname.mb_str());
 	}
+
 
 	CloseProgressDialog();
 	return success;
@@ -234,7 +236,7 @@ bool vtElevLayer::NeedsDraw()
 {
 	if (m_bNeedsDraw)
 		return true;
-	if (m_pBitmap != NULL && m_bShowElevation && !m_bBitmapRendered)
+	if (m_pBitmap != NULL && m_draw.m_bShowElevation && !m_bBitmapRendered)
 		return true;
 	return false;
 }
@@ -243,7 +245,7 @@ void vtElevLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
 	if (m_pGrid)
 	{
-		if (m_bShowElevation)
+		if (m_draw.m_bShowElevation)
 			DrawLayerBitmap(pDC, pView);
 		else
 			DrawLayerOutline(pDC, pView);
@@ -488,7 +490,7 @@ void vtElevLayer::RenderBitmap()
 				wxString2 msg = "Turn off displayed elevation for elevation layers?";
 				if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
 				{
-					m_bShowElevation = false;
+					m_draw.m_bShowElevation = false;
 					CloseProgressDialog();
 					return;
 				}
@@ -501,16 +503,32 @@ void vtElevLayer::RenderBitmap()
 		{
 			x = (i * stepx);
 
-			if (!has_invalid && (m_pGrid->GetValue(x, y) == INVALID_ELEVATION))
+			bool bIsInvalid = (m_pGrid->GetValue(x, y) == INVALID_ELEVATION);
+			if (bIsInvalid)
 				has_invalid = true;
-			GenerateShadedColor(x, y, r, g, b);
-//			GenerateColorFromGrid2(i, m_iRows-1-j, r, g, b);
 
-			m_pBitmap->SetRGB(i, j, r, g, b);
+			GenerateColorFromGrid1(x, y, r, g, b);
+		//	GenerateColorFromGrid2(x, y, r, g, b);
+			if (m_draw.m_bShading && !bIsInvalid && !m_draw.m_bCastShadows)
+				ShadePixel(x, y, r, g, b, SHADING_BIAS);
+
+			m_pBitmap->SetPixel24(i, j, r, g, b);
 		}
 	}
+	if (m_draw.m_bCastShadows)
+	{
+		FPoint3 light_dir;
 
-	if (has_invalid && m_bDoMask)
+		// Quick and dirty sunlight vector, simply rotate assuming sun will
+		//  go directly overhead.
+		float degrees = m_draw.m_iCastAngle;
+		float angle = degrees / 180.0f * PIf;
+		light_dir.Set(-cosf(angle), -sinf(angle), 0);
+
+		m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
+	}
+
+	if (has_invalid && m_draw.m_bDoMask)
 	{
 		UpdateProgressDialog(90, _T("Hiding unknown areas..."));
 		m_pMask = new wxMask(*m_pBitmap->m_pBitmap, wxColour(255, 0, 0));
@@ -573,13 +591,9 @@ int bathy_colors[LEVELS][3] = {
 //	{ 255, 255, 255 }
 };
 
-void vtElevLayer::GenerateShadedColor(int i, int j, int &r, int &g, int &b)
-{
-	GenerateColorFromGrid1(i, j, r, g, b);
-	if (m_bShading)
-		ShadePixel(i, j, r, g, b, SHADING_BIAS);
-}
-
+//
+// This method produces a set of bright, highly visible artificial colors
+//
 void vtElevLayer::GenerateColorFromGrid1(int i, int j, int &r, int &g, int &b)
 {
 	float value = m_pGrid->GetFValue(i, j);
@@ -627,18 +641,6 @@ void vtElevLayer::GenerateColorFromGrid1(int i, int j, int &r, int &g, int &b)
 
 #define RANGES	8
 int ranges[RANGES] = { 0, 150, 400, 800, 1600, 2800, 4000, 5000 };
-#if 0
-int colors[RANGES][3] = {
-	{ 132, 165, 115 },
-	{ 156, 173, 132 },
-	{ 189, 189, 148 },
-	{ 214, 214, 165 },
-	{ 231, 198, 140 },
-	{ 214, 189, 123 },
-	{ 189, 189, 189 },
-	{ 125, 125, 125 }
-};
-#else
 int colors[RANGES][3] = {
 	{ 221, 188, 140 },
 	{ 156, 173, 132 },
@@ -649,8 +651,10 @@ int colors[RANGES][3] = {
 	{ 189, 189, 189 },
 	{ 125, 125, 125 }
 };
-#endif
 
+//
+// This method produces a set of earthy, vaguely realistic 'ground' colors
+//
 void vtElevLayer::GenerateColorFromGrid2(int i, int j, int &r, int &g, int &b)
 {
 	float value = m_pGrid->GetFValue(i, j);
@@ -1076,6 +1080,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		if (res == wxCANCEL)
 			return false;
 	}
+	m_pGrid->SetupConversion(1.0f);
 	return true;
 }
 
