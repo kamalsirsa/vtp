@@ -692,12 +692,48 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 	{
 		for (i = 0; i < iVertices; i++)
 		{
+			FPoint3 CurrentPoint = EavePolygon[i];
+			FPoint3 NextPoint = EavePolygon[(i+1)%iVertices];
+			FPoint3 PreviousPoint = EavePolygon[(iVertices+i-1)%iVertices];
 			int iSlope = pLev->GetEdge(i)->m_iSlope;
 			if (iSlope > 89)
 				iSlope = 90;
 			else if (iSlope < 1)
 				iSlope = 0;
-			RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, iSlope / 180.0f * PIf));
+			int iPrevSlope = pLev->GetEdge((iVertices+i-1)%iVertices)->m_iSlope;
+			if (iPrevSlope > 89)
+				iPrevSlope = 90;
+			else if (iPrevSlope < 1)
+				iPrevSlope = 0;
+			// If edges are in line and slopes are different then 
+			if ((iPrevSlope != iSlope)
+				&& Collinear2d(PreviousPoint, CurrentPoint, NextPoint))
+			{
+				// Duplicate the current edge vector
+				FPoint3 OldEdge = NextPoint - CurrentPoint;
+				FPoint3 NewEdge;
+				int iNewSlope;
+				if (iSlope > iPrevSlope)
+				{
+					// Rotate new vertex inwards (clockwise)
+					NewEdge.x = OldEdge.z;
+					NewEdge.z = -OldEdge.x;
+					iNewSlope = iPrevSlope;
+				}
+				else
+				{
+					// Rotate new vertext outwards (anticlockwise)
+					NewEdge.x = -OldEdge.z;
+					NewEdge.z = OldEdge.x;
+					iNewSlope = iSlope;
+				}
+				// Scale to .01 of a co-ord unit
+				NewEdge.Normalize();
+				NewEdge = NewEdge/100.0f;
+				NewEdge += CurrentPoint;
+				RoofEaves[0].push_back(CEdge(NewEdge.x, 0, NewEdge.z, iNewSlope / 180.0f * PIf));
+			}
+			RoofEaves[0].push_back(CEdge(CurrentPoint.x, 0, CurrentPoint.z, iSlope / 180.0f * PIf));
 		}
 	}
 	else
@@ -722,6 +758,9 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 	if (0 == Skeleton.size())
 		return -1.0;
 
+#ifdef FELKELDEBUG
+	VTLOG("Building Geometry\n");
+#endif
 	// TODO - texture co-ordinates
 	// Build the geometry
 	for (size_t ci = 0; ci < RoofEaves.size(); ci++)
@@ -733,9 +772,8 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 			// and build the vertex array
 			const vtString bmat = *pLev->GetEdge(0)->m_pMaterial;
 			vtMesh *pMesh = FindMatMesh(bmat, pLev->GetEdge(0)->m_Color, GL_TRIANGLES);
-			FLine2 RoofSection2D;
-			FLine2 TriangulatedRoofSection2D;
 			FLine3 RoofSection3D;
+			FLine3 TriangulatedRoofSection3D;
 			int iTriangleCount = 0;
 			FPoint3 PanelNormal;
 			FPoint3 EaveAxis;
@@ -759,6 +797,9 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 			pStartEdge = &(*s1);
 			pEdge = pStartEdge;
 			bEdgeReversed = false;
+#ifdef FELKELDEBUG
+			VTLOG("Building panel\n");
+#endif
 			do
 			{
 				if (bEdgeReversed)
@@ -770,7 +811,6 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 #endif
 					if (pEdge->m_higher.m_vertex->m_point.m_z > (double)fMaxHeight)
 						fMaxHeight = pEdge->m_higher.m_vertex->m_point.m_z;
-					RoofSection2D.Append(FPoint2(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_z));
 					RoofSection3D.Append(FPoint3(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_y + EaveY, pEdge->m_higher.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_higher.m_left;
 					if (pEdge->m_higher.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
@@ -787,7 +827,6 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 #endif
 					if (pEdge->m_lower.m_vertex->m_point.m_z > (double)fMaxHeight)
 						fMaxHeight = pEdge->m_lower.m_vertex->m_point.m_z;
-					RoofSection2D.Append(FPoint2(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_z));
 					RoofSection3D.Append(FPoint3(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_y + EaveY, pEdge->m_lower.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_lower.m_right;
 					if (pEdge->m_lower.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
@@ -795,23 +834,42 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 					else
 						bEdgeReversed = false;
 				}
+#ifdef FELKELDEBUG
+				VTLOG("Adding point x %e y %e z %e\n", DebugX, DebugY, DebugZ);
+#endif
 				pEdge = pNextEdge;
 			}
 			// For some reason the pointers dont end up quite the same
 			// I will work it out someday
 			while (pEdge->m_ID != pStartEdge->m_ID);
 
-			//  Invoke the triangulator to triangulate this polygon.
-			Triangulate_f::Process(RoofSection2D, TriangulatedRoofSection2D);
-			iTriangleCount = TriangulatedRoofSection2D.GetSize() / 3;
 
 			// determine normal and primary axes of the face
 			j = RoofSection3D.GetSize();
 			PanelNormal = Normal(RoofSection3D[1], RoofSection3D[0], RoofSection3D[j-1]);
+#ifdef FELKELDEBUG
+			VTLOG("Panel normal x %e y %e z %e\n", PanelNormal.x, PanelNormal.y, PanelNormal.z);
+#endif
+			// Build transform to rotate plane parallel to the xz plane.
+			float fHypot = sqrtf(PanelNormal.x * PanelNormal.x + PanelNormal.z * PanelNormal.z);
+			FMatrix3 Transform;
+			Transform.SetRow(0, PanelNormal.x * PanelNormal.y / fHypot, PanelNormal.x, -PanelNormal.z / fHypot);
+			Transform.SetRow(1, -fHypot, PanelNormal.y, 0);
+			Transform.SetRow(2, PanelNormal.z * PanelNormal.y / fHypot, PanelNormal.z, PanelNormal.x / fHypot);
 
 			// Build vertex list
 			for (i = 0; i < j; i++)
 				iaVertices.Append(pMesh->AddVertexNUV(RoofSection3D[i], PanelNormal, FPoint2(0, 0)));
+
+			for (i = 0; i < j; i++)
+			{
+				// Source and dest cannot be the same
+				FPoint3 Temp = RoofSection3D[i];
+				Transform.Transform(Temp, RoofSection3D[i]);
+			}
+
+			Triangulate_f::Process(RoofSection3D, TriangulatedRoofSection3D);
+			iTriangleCount = TriangulatedRoofSection3D.GetSize() / 3;
 
 			for (i = 0; i < iTriangleCount; i++)
 			{
@@ -819,19 +877,42 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 
 				for (j = 0; j < 3; j++)
 				{
-					FPoint2 Point2D = TriangulatedRoofSection2D[i * 3 + j];
-					iaIndex[j] = FindVertex(Point2D, RoofSection3D, iaVertices);
+					FPoint3 Point = TriangulatedRoofSection3D[i * 3 + j];
+					iaIndex[j] = FindVertex(Point, RoofSection3D, iaVertices);
 				}
 				pMesh->AddTri(iaIndex[0], iaIndex[2], iaIndex[1]);
+#ifdef FELKELDEBUG
+				VTLOG("AddTri1 %d %d %d\n", iaIndex[0], iaIndex[2], iaIndex[1]);
+#endif
 			}
-
 		}
 	}
 
 	return fMaxHeight;
 }
 
-int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D,
+bool vtBuilding3d::Collinear2d(const FPoint3& p1, const FPoint3& p2, const FPoint3& p3)
+{
+	// Collinear in x/z plane
+	const FPoint3 l1 = p2 - p1;
+	const FPoint3 l2 = p3 - p1;
+	float fDet = l1.x * l2.z - l1.z * l2.x;
+	float fDet2 = p1.x * (p2.z - p3.z) + p2.x * (p3.z - p1.z) + p3.x * (p1.z - p2.z);
+
+	// If determinant is zero then collinear
+	// Maybe I should check for epsilon * x here, I don't like equalities on floats
+#ifdef NOTDEF
+#define FUDGE 10.0f
+	if (fabs(fDet) > FUDGE * FLT_EPSILON
+#else
+	if (fDet)
+#endif
+		return false;
+	else
+		return true;
+}
+
+int vtBuilding3d::FindVertex(FPoint3 Point, FLine3 &RoofSection3D,
 	Array<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
@@ -839,7 +920,9 @@ int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D,
 	int i;
 	for (i = 0; i < iSize; i++)
 	{
-		if ((Point.x == RoofSection3D[i].x) && (Point.y == RoofSection3D[i].z))
+		if ((Point.x == RoofSection3D[i].x) &&
+			(Point.y == RoofSection3D[i].y) &&
+			(Point.z == RoofSection3D[i].z))
 			break;
 	}
 	if (i < iSize)
