@@ -35,17 +35,15 @@ using namespace mini;
 
 /////////////////////////////////////////////////////////////////////////////
 
-float SRTerrain::s_fAdaptationSpeed = .0002f;		// speed at which detail converges
-
 //
 // Constructor/destructor
 //
 SRTerrain::SRTerrain() : vtDynTerrainGeom()
 {
-	m_fResolution = 10000.0f;
+	m_fResolution	= 10000.0f;
+	m_fHResolution	= 20000.0f;
+	m_fLResolution	=     0.0f;
 	m_pMini = NULL;
-	m_iLastDiff = 0;
-	m_fDamping = 0;
 }
 
 SRTerrain::~SRTerrain()
@@ -349,40 +347,41 @@ void SRTerrain::RenderPass()
 	// the desired polygon (vertex) count target
 	int diff = m_iDrawnTriangles - m_iPolygonTarget;
 	int iRange = m_iPolygonTarget / 10;		// ensure within 10%
-	float adjust = 1.0f;
 
+	// If we aren't within the triangle count range adjust the input resolution
+	// like a binary search
 	if (diff < -iRange || diff > iRange)
 	{
-		// the amount we change resolution is proportional to how much we
-		//  missed our triangle count target
-		float change_by = -diff * s_fAdaptationSpeed;
-
-		// avoid hysteresis by using additional damping on direction change
-		if ((m_iLastDiff > 0 && diff < 0) ||
-			(m_iLastDiff < 0 && diff > 0))
+//		VTLOG("diff %d, ", diff);
+		if (diff < -iRange)
 		{
-//			VTLOG("Changing dir, diff %d, previous %d\n", diff, previous_diff);
-			m_fDamping = -0.9;	// 90% damping
+			m_fLResolution = m_fResolution;
+			
+			// if the high end isn't high enough, double it
+			if (m_fLResolution + 5 >= m_fHResolution)
+			{
+//				VTLOG("increase HRes, ");
+				m_fHResolution *= 10;
+			}
 		}
-		change_by *= (1.0 + m_fDamping);
+		else
+		{
+			m_fHResolution = m_fResolution;
+			if (m_fLResolution + 5 >= m_fHResolution)
+			{
+//				VTLOG("decrease LRes, ");
+				m_fLResolution = 0;
+			}
+		}
+		m_fResolution = m_fLResolution + (m_fHResolution - m_fLResolution) / 2;
+//		VTLOG("rez: [%.1f, %.1f, %.1f] (%d/%d)\n", m_fLResolution, m_fResolution, m_fHResolution, m_iDrawnTriangles, m_iPolygonTarget);
 
-		// exponential response factor
-		adjust = pow(2.0, (double)change_by);
-
-		// clamp, to avoid extreme cases
-		if (adjust > 100.0f) adjust = 100.0f;
-		if (adjust < 0.01f) adjust = 0.01f;
+		// keep the error within reasonable bounds
+		if (m_fResolution < 5.0f)
+			m_fResolution = 5.0f;
+		if (m_fResolution > 4E7)
+			m_fResolution = 4E7;
 	}
-	m_iLastDiff = diff;	// remember for next frame
-	m_fDamping /= 2;	// damping falls off rapidly
-
-	m_fResolution *= adjust;
-
-	// keep the error within reasonable bounds
-	if (m_fResolution < 1.0f)
-		m_fResolution = 1.0f;
-	if (m_fResolution > 4E7)
-		m_fResolution = 4E7;
 }
 
 //
@@ -419,6 +418,14 @@ void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p, bool bTrue) const
 	p.Set(m_fXLookup[i],
 		  height,
 		  m_fZLookup[j]);
+}
+
+void SRTerrain::SetPolygonCount(int iPolygonCount)
+{
+	vtDynTerrainGeom::SetPolygonCount(iPolygonCount);
+	m_fResolution = iPolygonCount * 5;
+	m_fHResolution = 2 * m_fResolution;
+	m_fLResolution = 0;
 }
 
 #endif	// VTLIB_NI
