@@ -591,6 +591,8 @@ void vtElevLayer::ShadePixel(int i, int j, int &r, int &g, int &b, int bias)
 	{
 		float value2 = m_pGrid->GetFValue(i+1, j);
 		int diff = (int) ((value2 - value) / m_fSpacing * bias);
+
+		// clip to keep values under control
 		if (diff > 128)
 			diff = 128;
 		else if (diff < -128)
@@ -700,9 +702,9 @@ void vtElevLayer::DetermineMeterSpacing()
 	}
 	else
 	{
-		// Meters-based projections are much simpler
+		// Linear units-based projections are much simpler
 		DPoint2 spacing = m_pGrid->GetSpacing();
-		m_fSpacing = spacing.x;
+		m_fSpacing = spacing.x * GetMetersPerUnit(proj.GetUnits());
 	}
 }
 
