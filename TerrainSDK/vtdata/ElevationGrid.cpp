@@ -294,7 +294,7 @@ DPoint2 vtElevationGrid::GetSpacing()
 }
 
 /** Set an elevation value to the grid.
- * \param i, j Location in the grid.
+ * \param i, j Column and row location in the grid.
  * \param value The value in (integer) meters.
  */
 void vtElevationGrid::SetValue(int i, int j, short value)
@@ -316,7 +316,7 @@ void vtElevationGrid::SetValue(int i, int j, short value)
 }
 
 /** Set an elevation value to the grid.
- * \param i, j Location in the grid.
+ * \param i, j Column and row location in the grid.
  * \param value The value in (float) meters.
  */
 void vtElevationGrid::SetFValue(int i, int j, float value)
@@ -338,7 +338,7 @@ void vtElevationGrid::SetFValue(int i, int j, float value)
 }
 
 /** Get an elevation value from the grid.
- * \param i, j Location in the grid.
+ * \param i, j Column and row location in the grid.
  * \return The value in (integer) meters.
  */
 int vtElevationGrid::GetValue(int i, int j)
@@ -359,7 +359,7 @@ int vtElevationGrid::GetValue(int i, int j)
 }
 
 /** Get an elevation value from the grid.
- * \param i, j Location in the grid.
+ * \param i, j Column and row location in the grid.
  * \return The value in (float) meters.
  */
 float vtElevationGrid::GetFValue(int i, int j)
