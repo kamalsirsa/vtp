@@ -659,6 +659,12 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 {
 	VTLOG("Reading VF file '%s'\n", fname);
 
+	if (m_pPlantList == NULL)
+	{
+		VTLOG(" can't read, because there are no known species.\n");
+		return false;
+	}
+
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
