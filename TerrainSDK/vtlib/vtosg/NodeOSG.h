@@ -434,8 +434,7 @@ protected:
 
 /**
  * A Sprite is a 2D object, which can contain text or an image.  It is
- * drawn in window coordinates, rather than 3D coordinates.  It is currently
- * unimplemented.
+ * drawn in window coordinates, rather than 3D coordinates.
  */
 class vtSprite : public vtNode
 {
