@@ -47,16 +47,8 @@ typedef struct
 	double			YDim;				//	y dimension of a pixel in geographic units (decimal degrees).
 } GTOPOHeader;
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
 
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
-
-// ************** DConvert - DEM Helper fn ****************
+// ************** DConvert - DEM Helper function ****************
 
 double DConvert(FILE *fp, int nmax)
 {
@@ -87,40 +79,39 @@ double DConvert(FILE *fp, int nmax)
 }
 
 
-/** Loads elevation from a USGS DEM file.
- * If the data from DEM is in meters, then values are stored as shorts.
- * If DEM data is in feet, then height data will be stored in float, to
- * preserve the precision of the original data.
+/**
+ * Loads elevation from a USGS DEM file.
+ *
  * Some non-standard variations of the DEM format are supported.
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 								  void progress_callback(int))
 {
-	int		i, j;
 	FILE	*fp;
-	long	lygap;
-	int		njunk, nCPoints;
-	double	djunk, dxStart, dyStart;
-	int		nRow, nColumn;
-	int		nElev;
-	int		nVUnit, nGUnit;
-	double	flRows;
+	int		i, j;
+	int		iRow, iColumn;
+	int		iElev;
+	int		iVUnit, iGUnit;
+	double	fRows;
+	double	fVertUnits;
 	double 	dxdelta, dydelta, dzdelta;
 	double	dElevMax, dElevMin;
 	bool	bNewFormat;
-	int		nCoordSystem;
-	int		nProfiles;
+	int		iCoordSystem;
+	int		iProfiles;
 	char	szName[41];
 	char	szDateBuffer[5];
 	DPoint2	corners[4];			// SW, NW, NE, SE
-	DPoint2	extent_min, extent_max;
-	double	fGMeters;			// vertical units
+	double	fGMeters;			// ground (horizontal) units
 	int		iDataStartOffset;
-	double	fVRes;
 	bool	bUTM;
 	int		iUTMZone;
 	DATUM	eDatum;
+	int		iProfileRows, iProfileCols;
+	double	dLocalDatumElev, dProfileMin, dProfileMax;
+	int		ygap;
+	DPoint2 start;
 
 	if (progress_callback != NULL) progress_callback(0);
 
@@ -131,21 +122,21 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// check for version of DEM format
-	fseek(fp, 864, 0);			 			// Read DEM into matrix
-	fscanf(fp, "%d", &nRow);
-	fscanf(fp, "%d", &nColumn);
-	bNewFormat = ((nRow!=1)||(nColumn!=1));
+	fseek(fp, 864, 0);
+	fscanf(fp, "%d", &iRow);
+	fscanf(fp, "%d", &iColumn);
+	bNewFormat = ((iRow!=1)||(iColumn!=1));
 	if (bNewFormat)
 	{
 		fseek(fp, 1024, 0); 	// New Format
 		fscanf(fp, "%d", &i);
 		fscanf(fp, "%d", &j);
-		if ((i!=1)||(j!=1))			// File OK?
+		if ((i!=1)||(j!=1))		// File OK?
 		{
-			fseek(fp, 893, 0); 	// Undocumented Format
+			fseek(fp, 893, 0);	 	// Undocumented Format
 			fscanf(fp, "%d", &i);
 			fscanf(fp, "%d", &j);
-			if ((i!=1)||(j!=1))			// File OK?
+			if ((i!=1)||(j!=1))		// File OK?
 			{
 				// Not a DEM file
 				fclose(fp);
@@ -158,7 +149,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			iDataStartOffset = 1024;
 	}
 	else
-		iDataStartOffset = 864;
+		iDataStartOffset = 1024;	// 1024 is record length
 
 	// Read the embedded DEM name
 	fseek(fp, 0, 0);
@@ -172,23 +163,23 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	strcpy(m_szOriginalDEMName, szName);
 
 	fseek(fp, 156, 0);
-	fscanf(fp, "%d", &nCoordSystem);
+	fscanf(fp, "%d", &iCoordSystem);
 	fscanf(fp, "%d", &iUTMZone);
 
-	if (nCoordSystem == 0)	// geographic (lat-lon)
+	if (iCoordSystem == 0)	// geographic (lat-lon)
 	{
 		bUTM = false;
 		iUTMZone = -1;
 	}
-	if (nCoordSystem == 1)	// utm
+	if (iCoordSystem == 1)	// utm
 		bUTM = true;
 
 	fseek(fp, 528, 0);
-	fscanf(fp, "%d", &nGUnit);
-	fscanf(fp, "%d", &nVUnit);
+	fscanf(fp, "%d", &iGUnit);
+	fscanf(fp, "%d", &iVUnit);
 
 	// Ground Units in meters
-	switch (nGUnit)
+	switch (iGUnit)
 	{
 	case 1: fGMeters = 0.3048;	break;	// 1 = feet
 	case 2: fGMeters = 1.0;		break;	// 2 = meters
@@ -196,11 +187,11 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// Vertical Units in meters
-	switch (nVUnit)
+	switch (iVUnit)
 	{
-	case 1:  m_fVMeters = 0.3048f; break;	// feet to meter conversion
-	case 2:  m_fVMeters = 1.0f;	   break;	// meters == meters
-	default: m_fVMeters = 1.0f;	   break;	// anything else, assume meters
+	case 1:  fVertUnits = 0.3048f; break;	// feet to meter conversion
+	case 2:  fVertUnits = 1.0f;	   break;	// meters == meters
+	default: fVertUnits = 1.0f;	   break;	// anything else, assume meters
 	}
 
 	fseek(fp, 816, 0);
@@ -208,12 +199,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	dydelta = DConvert(fp, 12);
 	dzdelta = DConvert(fp, 12);
 
-	fVRes = dzdelta;
-
-	if (nVUnit==1 || fVRes < 1.0)
-		m_bFloatMode = true;	//store elevation values as floats.
-	else
-		m_bFloatMode = false;
+	m_bFloatMode = false;
 
 	// Read the coordinates of the 4 corners
 	fseek(fp, 546, 0);
@@ -222,12 +208,6 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		corners[i].x = DConvert(fp, 48);
 		corners[i].y = DConvert(fp, 48);
 	}
-
-	// find absolute extents of raw vales
-	extent_min.x = min(corners[0].x, corners[1].x);
-	extent_max.x = max(corners[2].x, corners[3].x);
-	extent_min.y = min(corners[0].y, corners[3].y);
-	extent_max.y = max(corners[1].y, corners[2].y);
 
 	if (bUTM)	// UTM
 	{
@@ -247,8 +227,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	dElevMin = DConvert(fp, 48);
 	dElevMax = DConvert(fp, 48);
 
-	fseek(fp, 858, 0);
-	fscanf(fp, "%d", &nProfiles);
+	int rows;
+	fseek(fp, 852, 0);
+	fscanf(fp, "%d", &rows);
+	fscanf(fp, "%d", &iProfiles);
 
 	eDatum = NAD27;	// default
 
@@ -282,54 +264,85 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 
 	// Set up the projection
 	m_proj.SetProjectionSimple(bUTM, iUTMZone, eDatum);
+	m_iColumns = iProfiles;
 
-	ComputeExtentsFromCorners();
-
-	// Compute number of columns and rows
-	m_iColumns = nProfiles;
-	if (bUTM)	// UTM
+	if (!bUTM)
 	{
-		flRows = (m_area.top - m_area.bottom)/dydelta;
-		m_iRows = (int)(flRows + 0.9999999);	// round up to the nearest integer
+		// If it's in degrees, it's flush square, so we can simply
+		// derive the extents (m_area) from the quad corners (m_Corners)
+		ComputeExtentsFromCorners();
 	}
 	else
 	{
-		flRows = (float)(m_area.top - m_area.bottom) * 1200.0f;
-		m_iRows = (int)flRows + 1;	// 1 more than you might expect
+		m_area.SetRect(1E9, -1E9, -1E9, 1E9);
+		// Need to scan over all the profiles, accumulating the TRUE
+		// extents of the actual data points.
+		int record = 0;
+		int data_len;
+		for (i = 0; i < iProfiles; i++)
+		{
+			fseek(fp, iDataStartOffset + (record * 1024) + 12, 0);
+			fscanf(fp, "%d", &iProfileRows);
+			fscanf(fp, "%d", &iProfileCols);
+			start.x = DConvert(fp, 48);
+			start.y = DConvert(fp, 48);
+			m_area.GrowToContainPoint(start);
+			start.y += (iProfileRows * dydelta);
+			m_area.GrowToContainPoint(start);
+
+			record++;
+			data_len = 144 + (iProfileRows * 6);
+			while (data_len > 1020)	// max bytes in a record
+			{
+				data_len -= 1020;
+				record++;
+			}
+		}
 	}
 
-	AllocateArray();
+	// Compute number of rows
+	if (bUTM)	// UTM
+	{
+		fRows = m_area.Height() / dydelta;
+		m_iRows = (int)(fRows + 0.5) + 1;	// round to the nearest integer
+	}
+	else	// degrees
+	{
+		fRows = m_area.Height() * 1200.0f;
+		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
+	}
+
+	_AllocateArray();
 
 	// jump to start of actual data
 	fseek(fp, iDataStartOffset, 0);
 
-	bool bad = false;
-	for (i = 0; i < nProfiles; i++)
+	for (i = 0; i < iProfiles; i++)
 	{
-		if (progress_callback != NULL) progress_callback(i*100/m_iColumns);
-		fscanf(fp, "%d", &njunk);
-		fscanf(fp, "%d", &njunk);
-		fscanf(fp, "%d", &nCPoints);
-		fscanf(fp, "%d", &njunk);
-		dxStart = DConvert(fp, 48);
-		dyStart = DConvert(fp, 48);
-		djunk = DConvert(fp, 48);
-		djunk = DConvert(fp, 48);
-		djunk = DConvert(fp, 48);
+		if (progress_callback != NULL)
+			progress_callback(i*100/m_iColumns);
 
-		lygap = (long)((dyStart-extent_min.y)/dydelta);
+		fscanf(fp, "%d", &iRow);
+		fscanf(fp, "%d", &iColumn);
+		fscanf(fp, "%d", &iProfileRows);
+		fscanf(fp, "%d", &iProfileCols);
+		start.x = DConvert(fp, 48);
+		start.y = DConvert(fp, 48);
+		dLocalDatumElev = DConvert(fp, 48);
+		dProfileMin = DConvert(fp, 48);
+		dProfileMax = DConvert(fp, 48);
 
-		for (j=(int)lygap; j<(nCPoints+(int)lygap); j++)
+		ygap = (int)((start.y - m_area.bottom)/dydelta);
+
+		for (j = ygap; j < (ygap + iProfileRows); j++)
 		{
-			fscanf(fp, "%d", &nElev);
-			if (j < 0 || j > m_iRows-1)
-				bad = true;
-			else
-				SetFValue(i, j, (float)(nElev*m_fVMeters*fVRes));
+			fscanf(fp, "%d", &iElev);
+			SetValue(i, j, iElev);
 		}
 	}
 	fclose(fp);
 
+	m_fVMeters = (float) (fVertUnits * dzdelta);
 	ComputeHeightExtents();
 
 	return true;
@@ -393,7 +406,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	m_iRows = dimension[1];
 
 	m_bFloatMode = false;
-	AllocateArray();
+	_AllocateArray();
 	if (progress_callback != NULL) progress_callback(80);
 
 	int i, j;
@@ -477,7 +490,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	m_area.bottom = yllcorner;
 
 	ComputeCornersFromExtents();
-	AllocateArray();
+	_AllocateArray();
 
 	int i, j, z;
 	for (i = 0; i < nrows; i++)
@@ -570,7 +583,7 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 			fread(&HeightScale, 2, 1, fp);
 			fread(&BaseHeight, 2, 1, fp);
 
-			AllocateArray();
+			_AllocateArray();
 			for (j = 0; j < m_iRows; j++)
 			{
 				if (progress_callback != NULL) progress_callback(j*100/m_iRows);
@@ -675,7 +688,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	fread(buf, 4, 1, fp);
 	m_iRows = atoi(buf);
 
-	AllocateArray();
+	_AllocateArray();
 
 	int line_length = 12 + 2 * m_iRows;
 	unsigned char *linebuf = new unsigned char[line_length];
@@ -813,7 +826,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 	m_iColumns = gh.NumCols;
 	m_iRows = gh.NumRows;
 
-	AllocateArray();
+	_AllocateArray();
 
 	// read the file
 	int i, j;
@@ -889,7 +902,7 @@ bool vtElevationGrid::LoadFromGRD(const char *szFileName,
 	m_iColumns = nx;
 	m_iRows = ny;
 
-	AllocateArray();
+	_AllocateArray();
 
 	int x, y;
 	float z;
@@ -982,7 +995,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 	m_iColumns = xsize;
 	m_iRows = ysize;
 
-	AllocateArray();
+	_AllocateArray();
 
 	if (bBinary)
 	{
@@ -1024,6 +1037,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, void progress_callback
 bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 {
 	short svalue, proj_type, zone, datum, external;
+	int ivalue;
 	char buf[11];
 	float ftmp;
 
@@ -1044,92 +1058,82 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	sscanf(buf+7, "%f", &version);
 
 	/*  NOTE:  BT format is little-endian  */
-	FRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN );
-	FRead(&m_iRows,    DT_INT, 1, fp, BO_LITTLE_ENDIAN );
+	FRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	FRead(&m_iRows,    DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 	// Default to internal projection
 	external = 0;
 
 	if (version == 1.0f)
 	{
-		FRead(&m_iDataSize, DT_INT, 1, fp, BO_LITTLE_ENDIAN );
+		// data size
+		FRead(&ivalue, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// UTM flag
-		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 		proj_type = (svalue == 1);
 
 		// UTM zone
-		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// 1.0 didn't support Datum, assume WGS84
 		datum = WGS_84;
 
 		// coordinate extents left-right
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_area.left = ftmp;
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_area.right = ftmp;
 
 		// coordinate extents bottom-top
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_area.bottom = ftmp;
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_area.top = ftmp;
 
 		// is the data floating point or integers?
-		FRead(&m_bFloatMode, DT_INT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&m_bFloatMode, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 		if (m_bFloatMode != true)
 			m_bFloatMode = false;
 	}
-	else if (version == 1.1f || version == 1.2f)
+	else if (version == 1.1f || version == 1.2f || version == 1.3f)
 	{
-		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
-		m_iDataSize = svalue;
+		// data size
+		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// Is floating point data?
-		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 		m_bFloatMode = (svalue == 1);
 
 		// Projection (0 = geo, 1 = utm, 2 = use external .prj file)
-		FRead(&proj_type, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&proj_type, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// UTM zone (ignore unless projection == 1)
-		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// Datum (ignore unless projection == 0 or 1)
-		FRead(&datum, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&datum, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// coordinate extents
-		FRead(&m_area.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN );
-		FRead(&m_area.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN );
-		FRead(&m_area.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN );
-		FRead(&m_area.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&m_area.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_area.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_area.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		FRead(&m_area.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
 
 		// External projection flag
-		FRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
+		FRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 	}
-	else
+	if (version == 1.3f)
 	{
-		fclose(fp);
-		return false;		// unknown version
+		FRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 	}
 
 	// Set up projection
 	if (external == 1)
 	{
 		// Read external projection (.prj) file
-		char prj_name[256];
-		strcpy(prj_name, szFileName);
-		strcpy(prj_name + strlen(prj_name) - 3, ".prj");
-		FILE *fp2 = fopen(prj_name, "rb");
-		if (!fp2)
+		if (!m_proj.ReadProjFile(szFileName))
 			return false;
-		char wkt_buf[2000], *wkt = wkt_buf;
-		fgets(wkt, 2000, fp2);
-		OGRErr err = m_proj.importFromWkt((char **) &wkt);
-		if (err != OGRERR_NONE)
-			return false;
-		fclose(fp2);
 	}
 	else
 	{
@@ -1164,7 +1168,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 	// elevation data always starts at offset 256
 	fseek(fp, 256, SEEK_SET);
 
-	AllocateArray();
+	_AllocateArray();
 
 #if 0
 	// slow way
@@ -1176,19 +1180,13 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		for (j = 0; j < m_iRows; j++)
 		{
 			if (m_bFloatMode) {
-				FRead(&fvalue, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN );
+				FRead(&fvalue, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 				SetFValue(i, j, fvalue);
-			} else {
-				if (m_iDataSize == 4)
-				{
-					FRead(&value, DT_INT, 1, fp, BO_LITTLE_ENDIAN );
-					SetValue(i, j, value);
-				}
-				else if (m_iDataSize == 2)
-				{
-					FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN );
-					SetValue(i, j, svalue);
-				}
+			}
+			else
+			{
+				FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+				SetValue(i, j, svalue);
 			}
 		}
 	}
@@ -1199,7 +1197,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
-			FRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN );
+			FRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 		}
 	}
 	else
@@ -1207,7 +1205,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
-			FRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN );
+			FRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 		}
 	}
 #endif
@@ -1304,21 +1302,17 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 	short isfloat = (short) IsFloatMode();
 	short external = 1;		// always true: we always write an external .prj file
 
-	short projection;
-	if (m_proj.IsGeographic())
-		projection = 0;
-	else
-		projection = 1;
+	short hunits = m_proj.GetUnits();
 
 	// Latest header, version 1.2
 	short datasize = m_bFloatMode ? 4 : 2;
 
-	fwrite("binterr1.2", 10, 1, fp);
+	fwrite("binterr1.3", 10, 1, fp);
 	fwrite(&w, 4, 1, fp);
 	fwrite(&h, 4, 1, fp);
 	fwrite(&datasize, 2, 1, fp);
 	fwrite(&isfloat, 2, 1, fp);
-	fwrite(&projection, 2, 1, fp);	// Projection (0, 1, 2)
+	fwrite(&hunits, 2, 1, fp);		// Horizontal Units (0, 1, 2, 3)
 	fwrite(&zone, 2, 1, fp);		// UTM zone
 	fwrite(&datum, 2, 1, fp);		// Datum
 
@@ -1329,6 +1323,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName, void progress_callback(in
 	fwrite(&m_area.top, 8, 1, fp);
 
 	fwrite(&external, 2, 1, fp);	// External projection specification
+	fwrite(&m_fVMeters, 4, 1, fp);	// External projection specification
 
 	// now write the data: always starts at offset 256
 	fseek(fp, 256, SEEK_SET);
@@ -1463,7 +1458,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 		m_bFloatMode = true;
 	}
 
-	AllocateArray();
+	_AllocateArray();
 
 	short *pasScanline;
 	short elev;
@@ -1539,7 +1534,7 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	else
 		m_bFloatMode = false;
 
-	AllocateArray();
+	_AllocateArray();
 
 	int i, j, z;
 	void *data = &z;
