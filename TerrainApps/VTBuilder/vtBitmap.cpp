@@ -95,7 +95,7 @@ bool vtBitmap::Allocate(int iXSize, int iYSize)
 	return true;
 }
 
-void vtBitmap::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b)
+void vtBitmap::SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b)
 {
 #if USE_DIBSECTIONS
 	*(m_pScanline + (y * m_iScanlineWidth) + (x * 3)) = b;
@@ -108,7 +108,7 @@ void vtBitmap::SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned c
 #endif
 }
 
-void vtBitmap::GetRGB(int x, int y, RGBi &rgb)
+void vtBitmap::GetPixel24(int x, int y, RGBi &rgb) const
 {
 #if USE_DIBSECTIONS
 	rgb.b = *(m_pScanline + (y * m_iScanlineWidth) + (x * 3));
@@ -119,6 +119,33 @@ void vtBitmap::GetRGB(int x, int y, RGBi &rgb)
 	rgb.g = m_pImage->GetGreen(x, y);
 	rgb.b = m_pImage->GetBlue(x, y);
 #endif
+}
+
+unsigned char vtBitmap::GetPixel8(int x, int y) const
+{
+	// unimplemented
+	return 0;
+}
+
+void vtBitmap::SetPixel8(int x, int y, unsigned char color)
+{
+	// unimplemented
+}
+
+unsigned int vtBitmap::GetWidth() const
+{
+	return m_pBitmap->GetWidth();
+}
+
+unsigned int vtBitmap::GetHeight() const
+{
+	return m_pBitmap->GetHeight();
+}
+
+unsigned int vtBitmap::GetDepth() const
+{
+	// not fully implemented
+	return 24;
 }
 
 //

@@ -8,7 +8,7 @@
 #ifndef VTBITMAP_H
 #define VTBITMAP_H
 
-#include "vtdata/MathTypes.h"
+#include "vtdata/vtDIB.h"
 
 /**
  * This class provides an encapsulation of "bitmap" behavior, which can
@@ -16,19 +16,27 @@
  *
  * Set USE_DIBSECTIONS to 1 to get the DIBSection functionality.
  */
-class vtBitmap
+class vtBitmap : public vtBitmapBase
 {
 public:
 	vtBitmap();
 	~vtBitmap();
 
 	bool Allocate(int iXSize, int iYSize);
-	void SetRGB(int x, int y, unsigned char r, unsigned char g, unsigned char b);
-	void SetRGB(int x, int y, const RGBi &rgb)
+	void SetPixel24(int x, int y, unsigned char r, unsigned char g, unsigned char b);
+	void SetPixel24(int x, int y, const RGBi &rgb)
 	{
-		SetRGB(x, y, rgb.r, rgb.g, rgb.b);
+		SetPixel24(x, y, rgb.r, rgb.g, rgb.b);
 	}
-	void GetRGB(int x, int y, RGBi &rgb);
+	void GetPixel24(int x, int y, RGBi &rgb) const;
+
+	unsigned char GetPixel8(int x, int y) const;
+	void SetPixel8(int x, int y, unsigned char color);
+
+	unsigned int GetWidth() const;
+	unsigned int GetHeight() const;
+	unsigned int GetDepth() const;
+
 	void ContentsChanged();
 
 	wxBitmap	*m_pBitmap;
