@@ -1,82 +1,29 @@
 //
 // vtDIB.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTDATA_DIBH
 #define VTDATA_DIBH
 
-// for non-Win32 systems (or code which does include the Win32 headers),
+#include "MathTypes.h"
+
+// for non-Win32 systems (or code which doesn't include the Win32 headers),
 // define some Microsoft types used by the DIB code
 #ifdef _WINGDI_
-
-typedef DWORD dword;
-
+	typedef DWORD dword;
 #else
-
-typedef unsigned long dword;
-typedef unsigned short word;
-typedef unsigned char byte;
-
-#ifdef _MSC_VER
-#include <pshpack2.h>
+	typedef unsigned long dword;
+	typedef unsigned short word;
+	typedef unsigned char byte;
+	typedef struct tagBITMAPINFOHEADER BITMAPINFOHEADER;
+	#define RGB(r,g,b)		  ((dword)(((byte)(r)|((word)((byte)(g))<<8))|(((dword)(byte)(b))<<16)))
+	#define GetRValue(rgb)	  ((byte)(rgb))
+	#define GetGValue(rgb)	  ((byte)(((word)(rgb)) >> 8))
+	#define GetBValue(rgb)	  ((byte)((rgb)>>16))
 #endif
-
-#ifdef __GNUC__
-#  define PACKED __attribute__((packed))
-#else
-#  define PACKED
-#endif
-
-typedef struct tagBITMAPFILEHEADER {
-	word	bfType;
-	dword   bfSize;
-	word	bfReserved1;
-	word	bfReserved2;
-	dword   bfOffBits;
-} PACKED BITMAPFILEHEADER;
-
-#ifdef _MSC_VER
-#include <poppack.h>
-#endif
-
-typedef struct tagBITMAPINFOHEADER{
-	dword	biSize;
-	long	biWidth;
-	long	biHeight;
-	word	biPlanes;
-	word	biBitCount;
-	dword	biCompression;
-	dword	biSizeImage;
-	long	biXPelsPerMeter;
-	long	biYPelsPerMeter;
-	dword	biClrUsed;
-	dword	biClrImportant;
-} PACKED BITMAPINFOHEADER;
-
-typedef struct tagRGBQUAD {
-	byte	rgbBlue;
-	byte	rgbGreen;
-	byte	rgbRed;
-	byte	rgbReserved;
-} PACKED RGBQUAD;
-
-/* constants for the biCompression field */
-#define BI_RGB			0L
-#define BI_RLE8			1L
-#define BI_RLE4			2L
-#define BI_BITFIELDS	3L
-
-#define RGB(r,g,b)		  ((dword)(((byte)(r)|((word)((byte)(g))<<8))|(((dword)(byte)(b))<<16)))
-
-#define GetRValue(rgb)	  ((byte)(rgb))
-#define GetGValue(rgb)	  ((byte)(((word)(rgb)) >> 8))
-#define GetBValue(rgb)	  ((byte)((rgb)>>16))
-
-#endif // #ifndef _WINGDI_
-
 
 /**
  * A DIB is a Device-Independent Bitmap.  It is a way of representing a
@@ -87,10 +34,10 @@ class vtDIB
 {
 public:
 	vtDIB();
-	vtDIB(void *pDIB);				// wrap an existing DIB
+	vtDIB(void *pDIB);	// wrap an existing DIB
 	~vtDIB();
 
-	bool Create(int width, int height, int bitdepth, bool create_palette);
+	bool Create(int width, int height, int bitdepth, bool create_palette = false);
 	bool Read(const char *fname);
 	bool ReadBMP(const char *fname);
 	bool WriteBMP(const char *fname);
@@ -98,7 +45,9 @@ public:
 	bool ReadJPEG(const char *fname);
 
 	unsigned long GetPixel24(int x, int y);
+	void GetPixel24(int x, int y, RGBi &rgb);
 	void SetPixel24(int x, int y, dword color);
+	void SetPixel24(int x, int y, const RGBi &rgb);
 
 	unsigned char GetPixel8(int x, int y);
 	void SetPixel8(int x, int y, byte color);

@@ -10,6 +10,59 @@
 #include "vtDIB.h"
 #include "ByteOrder.h"
 
+#ifndef _WINGDI_
+
+#ifdef _MSC_VER
+#include <pshpack2.h>
+#endif
+
+#ifdef __GNUC__
+#  define PACKED __attribute__((packed))
+#else
+#  define PACKED
+#endif
+
+typedef struct tagBITMAPFILEHEADER {
+	word	bfType;
+	dword   bfSize;
+	word	bfReserved1;
+	word	bfReserved2;
+	dword   bfOffBits;
+} PACKED BITMAPFILEHEADER;
+
+#ifdef _MSC_VER
+#include <poppack.h>
+#endif
+
+typedef struct tagBITMAPINFOHEADER{
+	dword	biSize;
+	long	biWidth;
+	long	biHeight;
+	word	biPlanes;
+	word	biBitCount;
+	dword	biCompression;
+	dword	biSizeImage;
+	long	biXPelsPerMeter;
+	long	biYPelsPerMeter;
+	dword	biClrUsed;
+	dword	biClrImportant;
+} PACKED BITMAPINFOHEADER;
+
+typedef struct tagRGBQUAD {
+	byte	rgbBlue;
+	byte	rgbGreen;
+	byte	rgbRed;
+	byte	rgbReserved;
+} PACKED RGBQUAD;
+
+/* constants for the biCompression field */
+#define BI_RGB			0L
+#define BI_RLE8			1L
+#define BI_RLE4			2L
+#define BI_BITFIELDS	3L
+
+#endif // #ifndef _WINGDI_
+
 // Headers for JPEG support, which uses the library "libjpeg"
 extern "C" {
 #include "jpeglib.h"
@@ -381,6 +434,18 @@ dword vtDIB::GetPixel24(int x, int y)
 		   (*(byte *)(adr+2));
 }
 
+void vtDIB::GetPixel24(int x, int y, RGBi &rgb)
+{
+	register byte* adr;
+
+	// note: Most processors don't support unaligned int/float reads, and on
+	//	   those that do, it's slower than aligned reads.
+	adr = ((byte *)m_Data) + (m_iHeight-y-1)*m_iByteWidth + x+x+x;
+	rgb.b = *((byte *)(adr+0));
+	rgb.g = *((byte *)(adr+1));
+	rgb.r = *((byte *)(adr+2));
+}
+
 
 /**
  * Set a 24-bit RGB value in a 24-bit bitmap.
@@ -395,6 +460,18 @@ void vtDIB::SetPixel24(int x, int y, dword color)
 	*((byte *)(adr+0)) = (unsigned char) (color >> 16);
 	*((byte *)(adr+1)) = (unsigned char) (color >>  8);
 	*((byte *)(adr+2)) = (unsigned char) color;
+}
+
+void vtDIB::SetPixel24(int x, int y, const RGBi &rgb)
+{
+	register byte* adr;
+
+	// note: Most processors don't support unaligned int/float writes, and on
+	//	   those that do, it's slower than unaligned writes.
+	adr = ((byte *)m_Data) + (m_iHeight-y-1)*m_iByteWidth + x+x+x;
+	*((byte *)(adr+0)) = rgb.b;
+	*((byte *)(adr+1)) = rgb.g;
+	*((byte *)(adr+2)) = rgb.r;
 }
 
 /**
