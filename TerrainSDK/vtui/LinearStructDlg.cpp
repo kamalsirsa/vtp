@@ -101,11 +101,15 @@ void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	ValuesToSliders();
 
+	// NB -- these must match the FT_ enum in order
 	m_pFenceChoice->Clear();
 	m_pFenceChoice->Append("Wooden posts, 3 wires");
-//	m_pFenceChoice->SetClientData(0, FT_WIRE);
 	m_pFenceChoice->Append("Metal poles, chain-link");
-//	m_pFenceChoice->SetClientData(1, FT_CHAINLINK);
+	m_pFenceChoice->Append("English Hedgerow");
+	m_pFenceChoice->Append("English Drystone");
+	m_pFenceChoice->Append("English Privet");
+	m_pFenceChoice->Append("Stone");
+	m_pFenceChoice->Append("English Beech");
 
 	TransferDataToWindow();
 

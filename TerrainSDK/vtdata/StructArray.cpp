@@ -882,10 +882,22 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		{
 			// this linear structure has posts
 			const char *type = atts.getValue("type");
-			if (!strcmp(type, "wood"))
+			if (0 == strcmp(type, "wood"))
 				fen->SetFenceType(FT_WIRE);
-			else
+			else if (0 == strcmp(type, "steel"))
 				fen->SetFenceType(FT_CHAINLINK);
+			else if (0 == strcmp(type, "hedgerow"))
+				fen->SetFenceType(FT_HEDGEROW);
+			else if (0 == strcmp(type, "drystone"))
+				fen->SetFenceType(FT_DRYSTONE);
+			else if (0 == strcmp(type, "privet"))
+				fen->SetFenceType(FT_PRIVET);
+			else if (0 == strcmp(type, "stone"))
+				fen->SetFenceType(FT_STONE);
+			else if (0 == strcmp(type, "beech"))
+				fen->SetFenceType(FT_BEECH);
+			else
+				fen->SetFenceType(FT_WIRE);
 
 			const char *size = atts.getValue("size");
 			FPoint3 postsize;
@@ -1189,10 +1201,22 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		{
 			// this linear structure has posts
 			const char *type = atts.getValue("Type");
-			if (!strcmp(type, "wood"))
+			if (0 == strcmp(type, "wood"))
 				m_pFence->SetFenceType(FT_WIRE);
-			else
+			else if (0 == strcmp(type, "steel"))
 				m_pFence->SetFenceType(FT_CHAINLINK);
+			else if (0 == strcmp(type, "hedgerow"))
+				m_pFence->SetFenceType(FT_HEDGEROW);
+			else if (0 == strcmp(type, "drystone"))
+				m_pFence->SetFenceType(FT_DRYSTONE);
+			else if (0 == strcmp(type, "privet"))
+				m_pFence->SetFenceType(FT_PRIVET);
+			else if (0 == strcmp(type, "stone"))
+				m_pFence->SetFenceType(FT_STONE);
+			else if (0 == strcmp(type, "beech"))
+				m_pFence->SetFenceType(FT_BEECH);
+			else
+				m_pFence->SetFenceType(FT_WIRE);
 
 			const char *size = atts.getValue("Size");
 			FPoint3 postsize;
@@ -1365,7 +1389,7 @@ bool vtStructureArray::WriteXML_Old(const char* filename)
 
 	// Write projection
 	char type[20], tempvalue[2000];
-	//RFJ This need to be processed !!!!!!!
+	//RFJ This needs to be processed !!!!!!!
 	m_proj.GetTextDescription(type, tempvalue);
 	vtString value = EscapeStringForXML(tempvalue);
 
@@ -1402,7 +1426,7 @@ bool vtStructureArray::WriteXML(const char* filename)
 
 	fprintf(fp, "<?xml version=\"1.0\"?>\n");
 	fprintf(fp, "\n");
-	
+
 	fprintf(fp, "<StructureCollection xmlns=\"http://www.openplans.net\"\n"
 		"\t\t\t\t\t xmlns:gml=\"http://www.opengis.net/gml\"\n"
 		"\t\t\t\t\t xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
