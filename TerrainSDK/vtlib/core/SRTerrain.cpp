@@ -104,6 +104,16 @@ bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 
 	m_fHeightScale = fZScale;
 
+	// compute n (log2 of grid size)
+	// ensure that the grid is size (1 << n) + 1
+	int n = vt_log2(m_iColumns - 1);
+	int required_size = (1<<n) + 1;
+	if (m_iColumns != required_size || m_iRows != required_size)
+	{
+		iError = TERRAIN_ERROR_NOTPOWER2;
+		return false;
+	}
+
 	int size = m_iColumns;
 	float dim = m_fXStep;
 	float cellaspect = m_fZStep / m_fXStep;
