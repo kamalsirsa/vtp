@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -35,7 +35,7 @@
 #define FSTRING_GTOPO	_T("GTOPO30 Files (*.hdr)|*.hdr|")	
 #define FSTRING_HGT		_T("HGT SRTM Files (*.hgt)|*.hgt|")
 #define FSTRING_IMG		_T("IMG Files (*.img)|*.img|")
-#define FSTRING_JPEG	_T("JPEG Files (*.jpg)|*.jpg|")
+#define FSTRING_JPEG	_T("JPEG Files (*.jpeg, *.jpg)|*.jpeg;*.jpg|")
 #define FSTRING_LULC	_T("LULC Files (*.gir)|*.gir|")
 #define FSTRING_MEM		_T("Japanese DEM Files (*.mem)|*.mem|")
 #define FSTRING_MI		_T("MapInfo Files (*.tab, *.mif)|*.tab;*.mif|")
