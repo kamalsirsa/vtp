@@ -1025,7 +1025,10 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	fname += pEdge->m_Facade;
 	fname = FindFileOnPaths(vtGetDataPath(), (pcchar)fname);
 	if (fname == "")
+	{
+		VTLOG(" Couldn't find facade texture '%s'\n", (const char*)pEdge->m_Facade);
 		return false;
+	}
 
 	mm.m_iMatIdx = GetSharedMaterialArray()->AddTextureMaterial2(fname,
 			true, true, false, false,
