@@ -248,7 +248,7 @@ ifeq ($(OS),Darwin)
 #	See TerrainSDK/Make.defs
 #	-cp -Rf $(FRAMEWORKS) $(OSX_APPS)/$(EXEC).app/Contents
 	if [ -e osx/$(EXEC).plist ]; then \
-		cp $(EXEC).plist $(OSX_APPS)/$(EXEC).app/Contents/Info.plist; \
+		cp osg/$(EXEC).plist $(OSX_APPS)/$(EXEC).app/Contents/Info.plist; \
 	fi
 	echo -n "APPL????" > $(OSX_APPS)/$(EXEC).app/Contents/PkgInfo
 	if [ -e osx/$(EXEC).rsrc ]; then \
