@@ -63,8 +63,9 @@ you want to start with, and you can switch at any time.</p>
 
 <ul>
   <li>Use &quot;Select&quot; to choose from the known terrain.</li>
-  <li>Use &quot;Edit Properties&quot; to adjust the properties of the currently
-    chosen terrain (see <b>Terrain Creation Parameters</b> below)</li>
+  <li>Use &quot;Edit Properties&quot; to view or edit the properties of the currently
+    chosen terrain (the <b><a href="terrain_creation.html">Terrain Creation Parameters</a></b> 
+    dialog)</li>
 </ul>
 <p>Press &quot;OK&quot;.&nbsp; The terrain will now load, which may take up to a
 minute.&nbsp; Messages in the status bar will inform you of the loading
@@ -76,21 +77,6 @@ progress.</p>
   <li>Here's a handy guide for <a href="Navigation/index.html">using
     the mouse to navigate</a> in Terrain View.</li>
 </ul>
-
-</blockquote>
-
-<h3>Terrain Creation Parameters</h3>
-
-<blockquote>
-
-<p>Here are some <a href="defaults.html"> good default values</a> for the parameters dialog, to try first to get Enviro
-working.</p>
-
-</blockquote>
-<blockquote>
-  After your installation of Enviro passes this initial test, run the
-    program again - try
-    turning on roads, trees, roads, etc., by editing the terrain properties.
 
 </blockquote>
 
@@ -188,7 +174,7 @@ working.</p>
     or absolute, and should leave on a trailing slash.&nbsp; For example, the
     default path is:<br>
     <code>&nbsp;&nbsp;&nbsp; DataPath		Data/</code><br>
-    You could change it to paths like this:<br>
+    You could change it to paths such as these, depending on your platform:<br>
     <code>&nbsp;&nbsp;&nbsp; DataPath ../../Data/<br>
     </code><code>&nbsp;&nbsp;&nbsp; DataPath C:\MyData\<br>
     </code><code>&nbsp;&nbsp;&nbsp; DataPath /</code><code>home/me/mydata/</code></li>
@@ -197,12 +183,13 @@ working.</p>
 
   <ul>
     <li>If you want to fully customize the terrain, such as adding your own
-      objects and behaviors to the scene, or to add a number of different
-      terrain, it will require re-compiling Enviro
-      <ul>
-        <li>in <code>Enviro.cpp,</code> add a line to the function <code>DeclareAllTerrain()</code>
-          for each terrain you want, then rebuild.</li>
-      </ul>
+      custom objects and behaviors to the scene
+      <ol>
+        <li>create a sub-class of <code>vtTerrain</code>, using one of the
+          existing subclasses (like <code>TransitTerrain</code>) as an example</li>
+        <li>in <code>Enviro.cpp,</code> add a line to the function <code>LoadTerrainDescriptions</code><code>()</code>,
+          so that your .ini file will be constructed with your terrain class</li>
+      </ol>
     </li>
   </ul>
 <p>We apologize that the Enviro documentation is still very small.<br>
