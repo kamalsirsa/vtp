@@ -6,13 +6,13 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
+#include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TerrainSurface.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/TimeEngines.h"
 
-#include "../TerrainSceneWP.h"
 #include "../Enviro.h"
 #include "../Engines.h"
 
@@ -130,7 +130,7 @@ void EnviroView::OnDraw(CDC* pDC)
 void EnviroView::OnEnviroTimeon() 
 {
 	m_bTimeOn = !m_bTimeOn;
-	GetTerrainScene().m_pTime->SetEnabled(m_bTimeOn);
+	GetTerrainScene()->m_pTime->SetEnabled(m_bTimeOn);
 }
 
 void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI) 
@@ -141,21 +141,21 @@ void EnviroView::OnUpdateEnviroTimeon(CCmdUI* pCmdUI)
 void EnviroView::OnEnviroRegularterrain() 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pTerrainGeom) return;
-	bool on = t->m_pTerrainGeom->GetEnabled();
+	if (!t) return;
+	bool on = t->GetFeatureVisible(TFT_REGULAR);
 
-	t->m_pTerrainGeom->SetEnabled(!on);
+	t->SetFeatureVisible(TFT_REGULAR, !on);
 }
 
 void EnviroView::OnUpdateEnviroRegularterrain(CCmdUI* pCmdUI) 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pTerrainGeom)
+	if (!t)
 	{
 		pCmdUI->Enable(false);
 		return;
 	}
-	bool on = t->m_pTerrainGeom->GetEnabled();
+	bool on = t->GetFeatureVisible(TFT_REGULAR);
 
 	pCmdUI->Enable(true);
 	pCmdUI->SetCheck(on);
@@ -164,21 +164,21 @@ void EnviroView::OnUpdateEnviroRegularterrain(CCmdUI* pCmdUI)
 void EnviroView::OnEnviroLodterrain() 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pDynGeom) return;
-	bool on = t->m_pDynGeom->GetEnabled();
+	if (!t || !t->GetDynTerrain()) return;
+	bool on = t->GetDynTerrain()->GetEnabled();
 
-	t->m_pDynGeom->SetEnabled(!on);
+	t->GetDynTerrain()->SetEnabled(!on);
 }
 
 void EnviroView::OnUpdateEnviroLodterrain(CCmdUI* pCmdUI) 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (!t || !t->m_pDynGeom)
+	if (!t || !t->GetDynTerrain())
 	{
 		pCmdUI->Enable(false);
 		return;
 	}
-	bool on = t->m_pDynGeom->GetEnabled();
+	bool on = t->GetDynTerrain()->GetEnabled();
 
 	pCmdUI->Enable(true);
 	pCmdUI->SetCheck(on);
@@ -187,7 +187,7 @@ void EnviroView::OnUpdateEnviroLodterrain(CCmdUI* pCmdUI)
 void EnviroView::OnEnviroCulleveryframe() 
 {
 	m_bCulleveryframe = !m_bCulleveryframe;
-	GetCurrentTerrain()->m_pDynGeom->SetCull(m_bCulleveryframe);
+	GetCurrentTerrain()->GetDynTerrain()->SetCull(m_bCulleveryframe);
 }
 
 void EnviroView::OnUpdateEnviroCulleveryframe(CCmdUI* pCmdUI) 
@@ -198,7 +198,7 @@ void EnviroView::OnUpdateEnviroCulleveryframe(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroCullonce() 
 {
-	GetCurrentTerrain()->m_pDynGeom->CullOnce();
+	GetCurrentTerrain()->GetDynTerrain()->CullOnce();
 }
 
 void EnviroView::OnUpdateEnviroCullonce(CCmdUI* pCmdUI) 
@@ -208,7 +208,7 @@ void EnviroView::OnUpdateEnviroCullonce(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroIncrease() 
 {
-	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->m_pDynGeom;
+	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
 	{
 		pTerr->SetPixelError(pTerr->GetPixelError()+0.1f);
@@ -218,7 +218,7 @@ void EnviroView::OnEnviroIncrease()
 
 void EnviroView::OnEnviroDecrease() 
 {
-	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->m_pDynGeom;
+	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	if (pTerr)
 	{
 		pTerr->SetPixelError(pTerr->GetPixelError()-0.1f);
@@ -243,7 +243,7 @@ void EnviroView::OnUpdateEnviroDriveroads(CCmdUI* pCmdUI)
 void EnviroView::OnEnviroShowroads() 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(ROADS, !t->GetFeatureVisible(ROADS));
+	if (t) t->SetFeatureVisible(TFT_ROADS, !t->GetFeatureVisible(TFT_ROADS));
 }
 
 void EnviroView::OnUpdateEnviroShowroads(CCmdUI* pCmdUI) 
@@ -251,7 +251,7 @@ void EnviroView::OnUpdateEnviroShowroads(CCmdUI* pCmdUI)
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
 	if (t)
-		on = t->GetFeatureVisible(ROADS);
+		on = t->GetFeatureVisible(TFT_ROADS);
 
 	pCmdUI->Enable(t != NULL);
 	pCmdUI->SetCheck(on);
@@ -260,7 +260,7 @@ void EnviroView::OnUpdateEnviroShowroads(CCmdUI* pCmdUI)
 void EnviroView::OnEnviroShowocean() 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(OCEAN, !t->GetFeatureVisible(OCEAN));
+	if (t) t->SetFeatureVisible(TFT_OCEAN, !t->GetFeatureVisible(TFT_OCEAN));
 }
 
 void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI) 
@@ -268,7 +268,7 @@ void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI)
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
 	if (t)
-		on = t->GetFeatureVisible(OCEAN);
+		on = t->GetFeatureVisible(TFT_OCEAN);
 
 	pCmdUI->Enable(t != NULL);
 	pCmdUI->SetCheck(on);
@@ -276,7 +276,7 @@ void EnviroView::OnUpdateEnviroShowocean(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroShowsky() 
 {
-	vtSkyDome *sky = GetTerrainScene().m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	sky->SetEnabled(!on);
@@ -284,7 +284,7 @@ void EnviroView::OnEnviroShowsky()
 
 void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI) 
 {
-	vtSkyDome *sky = GetTerrainScene().m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	pCmdUI->SetCheck(on);
@@ -292,7 +292,7 @@ void EnviroView::OnUpdateEnviroShowsky(CCmdUI* pCmdUI)
 
 void EnviroView::OnEnviroShowfog() 
 {
-	GetTerrainScene().ToggleFog();
+	GetTerrainScene()->ToggleFog();
 }
 
 void EnviroView::OnUpdateEnviroShowfog(CCmdUI* pCmdUI) 
@@ -308,14 +308,14 @@ void EnviroView::OnUpdateEnviroShowfog(CCmdUI* pCmdUI)
 		pCmdUI->Enable(false);
 	}
 	else
-		pCmdUI->SetCheck(!GetTerrainScene().m_bFog);
+		pCmdUI->SetCheck(!GetTerrainScene()->m_bFog);
 #endif
 }
 
 void EnviroView::OnEnviroShowtrees() 
 {
 	vtTerrain *t = GetCurrentTerrain();
-	if (t) t->SetFeatureVisible(VEGETATION, !t->GetFeatureVisible(VEGETATION));
+	if (t) t->SetFeatureVisible(TFT_VEGETATION, !t->GetFeatureVisible(TFT_VEGETATION));
 }
 
 void EnviroView::OnUpdateEnviroShowtrees(CCmdUI* pCmdUI) 
@@ -323,7 +323,7 @@ void EnviroView::OnUpdateEnviroShowtrees(CCmdUI* pCmdUI)
 	vtTerrain *t = GetCurrentTerrain();
 	bool on = false;
 	if (t)
-		on = t->GetFeatureVisible(VEGETATION);
+		on = t->GetFeatureVisible(TFT_VEGETATION);
 
 	pCmdUI->Enable(t != NULL);
 	pCmdUI->SetCheck(on);
@@ -344,18 +344,18 @@ void EnviroView::OnUpdateEnviroTopdownview(CCmdUI* pCmdUI)
 
 void EnviroView::OnShowdetailtexture() 
 {
-	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->m_pDynGeom;
+	vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 	pTerr->EnableDetail(!pTerr->GetDetail());
 }
 
 void EnviroView::OnUpdateShowdetailtexture(CCmdUI* pCmdUI) 
 {
-	bool bHasIt = (GetCurrentTerrain() && GetCurrentTerrain()->m_pDynGeom != NULL);
+	bool bHasIt = (GetCurrentTerrain() && GetCurrentTerrain()->GetDynTerrain() != NULL);
 
 	pCmdUI->Enable(bHasIt && g_App.m_state == AS_Terrain);
 	if (bHasIt)
 	{
-		vtDynTerrainGeom *pTerr = GetCurrentTerrain()->m_pDynGeom;
+		vtDynTerrainGeom *pTerr = GetCurrentTerrain()->GetDynTerrain();
 		pCmdUI->SetCheck(pTerr->GetDetail());
 	}
 	else

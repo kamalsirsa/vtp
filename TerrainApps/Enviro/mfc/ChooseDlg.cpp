@@ -7,7 +7,8 @@
 #include "ChooseDlg.h"
 #include "CreateDlg.h"
 #include "vtlib/core/Terrain.h"
-#include "../TerrainSceneWP.h"
+#include "vtlib/core/TerrainScene.h"
+#include "../Enviro.h"	// for GetTerrainScene
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -51,7 +52,7 @@ END_MESSAGE_MAP()
 
 void CChooseDlg::OnEdit() 
 {
-	vtTerrain *pTerr = GetTerrainScene().FindTerrainByName(m_strTName);
+	vtTerrain *pTerr = GetTerrainScene()->FindTerrainByName(m_strTName);
 	if (pTerr)
 		EditParameters(pTerr->GetParamFile());
 }
@@ -62,7 +63,7 @@ BOOL CChooseDlg::OnInitDialog()
 
 	// list each known terrain
 	vtTerrain *pTerr;
-	for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+	for (pTerr = GetTerrainScene()->m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 	{
 		vtString str = pTerr->GetName();
 		m_lbList.AddString((const char *)str);
@@ -78,7 +79,7 @@ BOOL CChooseDlg::OnInitDialog()
 void CChooseDlg::EditParameters(const char *filename) 
 {
 	TParams Params;
-	CCreateDlg dlg((const char *) g_Options.m_strDataPath);
+	CCreateDlg dlg;
 
 	if (Params.LoadFromFile(filename))
 		dlg.SetParams(Params);

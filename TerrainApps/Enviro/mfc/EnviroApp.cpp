@@ -9,8 +9,7 @@
 #include "CameraDlg.h"
 #include "EnviroView.h"
 #include "EnviroFrame.h"
-#include "../Enviro.h"
-#include "../TerrainSceneWP.h"	// for GetCurrentTerrain
+#include "../Enviro.h"	// for GetCurrentTerrain
 
 
 /////////////////////////////////////////////////////////////////////////////
