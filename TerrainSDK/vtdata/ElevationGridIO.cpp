@@ -84,6 +84,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 {
 	vtString FileName(szFileName);
 	vtString FileExt = FileName.Right(3);
+	vtString FileExtGZ = FileName.Right(6);
 
 	if (FileExt == "")
 		return false;
@@ -98,7 +99,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 
 	bool Success = false;
 
-	if (!FileExt.CompareNoCase(".bt"))
+	if ((!FileExt.CompareNoCase(".bt")) || (!FileExtGZ.CompareNoCase(".bt.gz")))
 	{
 		Success = LoadFromBT(szFileName, progress_callback);
 	}
@@ -1325,16 +1326,19 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	char buf[11];
 	float ftmp;
 
-	FILE *fp = fopen(szFileName, "rb");
+	// The gz functions (gzopen etc.) behave exactly like the stdlib
+	//  functions (fopen etc.) in the case where the input file is not in
+	//  gzip format, so we can simply use them without worry.
+	gzFile fp = gzopen(szFileName, "rb");
 	if (!fp)
 		return false;		// Cannot Open File
 
-	fread(buf, 10, 1, fp);
+	gzread(fp, buf, 10);
 	buf[10] = '\0';
 
 	if (strncmp(buf, "binterr", 7))
 	{
-		fclose(fp);
+		gzclose(fp);
 		return false;		// Not a current BT file
 	}
 
@@ -1342,8 +1346,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	sscanf(buf+7, "%f", &version);
 
 	/*  NOTE:  BT format is little-endian  */
-	FRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
-	FRead(&m_iRows,	   DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	GZFRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	GZFRead(&m_iRows,	   DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 	// Default to internal projection
 	external = 0;
@@ -1351,65 +1355,65 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	if (version == 1.0f)
 	{
 		// data size
-		FRead(&ivalue, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&ivalue, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// UTM flag
-		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 		proj_type = (svalue == 1);
 
 		// UTM zone
-		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// 1.0 didn't support Datum, so assume WGS84
 		datum = EPSG_DATUM_WGS84;
 
 		// coordinate extents left-right
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_EarthExtents.left = ftmp;
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_EarthExtents.right = ftmp;
 
 		// coordinate extents bottom-top
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_EarthExtents.bottom = ftmp;
-		FRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&ftmp, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 		m_EarthExtents.top = ftmp;
 
 		// is the data floating point or integers?
-		FRead(&m_bFloatMode, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&m_bFloatMode, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 		if (m_bFloatMode != true)
 			m_bFloatMode = false;
 	}
 	else if (version == 1.1f || version == 1.2f || version == 1.3f)
 	{
 		// data size
-		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// Is floating point data?
-		FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 		m_bFloatMode = (svalue == 1);
 
 		// Projection (0 = geo, 1 = utm, 2 = feet, 3 = u.s. feet)
-		FRead(&proj_type, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&proj_type, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// UTM zone (ignore unless projection == 1)
-		FRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&zone, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// Datum (ignore unless projection == 0 or 1)
-		FRead(&datum, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&datum, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
 		// coordinate extents
-		FRead(&m_EarthExtents.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		FRead(&m_EarthExtents.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		FRead(&m_EarthExtents.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
-		FRead(&m_EarthExtents.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&m_EarthExtents.left, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&m_EarthExtents.right, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&m_EarthExtents.bottom, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&m_EarthExtents.top, DT_DOUBLE, 1, fp, BO_LITTLE_ENDIAN);
 
 		// External projection flag
-		FRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 	}
 	if (version == 1.3f)
 	{
-		FRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
+		GZFRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 	}
 
 	// Set up projection
@@ -1427,7 +1431,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 	ComputeCornersFromExtents();
 
-	fclose(fp);
+	gzclose(fp);
 	return true;
 }
 
@@ -1445,12 +1449,12 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 	if (!LoadBTHeader(szFileName))
 		return false;
 
-	FILE *fp = fopen(szFileName, "rb");
+	gzFile fp = gzopen(szFileName, "rb");
 	if (!fp)
 		return false;		// Cannot Open File
 
 	// elevation data always starts at offset 256
-	fseek(fp, 256, SEEK_SET);
+	gzseek(fp, 256, SEEK_SET);
 
 	_AllocateArray();
 
@@ -1464,12 +1468,12 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		for (j = 0; j < m_iRows; j++)
 		{
 			if (m_bFloatMode) {
-				FRead(&fvalue, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
+				GZFRead(&fvalue, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 				SetFValue(i, j, fvalue);
 			}
 			else
 			{
-				FRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+				GZFRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 				SetValue(i, j, svalue);
 			}
 		}
@@ -1481,7 +1485,7 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
-			FRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
+			GZFRead(m_pFData + (i*m_iRows), DT_FLOAT, m_iRows, fp, BO_LITTLE_ENDIAN);
 		}
 	}
 	else
@@ -1489,13 +1493,13 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (progress_callback != NULL) progress_callback(i * 100 / m_iColumns);
-			FRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
+			GZFRead(m_pData + (i*m_iRows), DT_SHORT, m_iRows, fp, BO_LITTLE_ENDIAN);
 		}
 	}
 #endif
 
 	// be sure to close the file!
-	fclose(fp);
+	gzclose(fp);
 
 	ComputeHeightExtents();
 	return true;
