@@ -88,6 +88,8 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	LocationDialogFunc( this, TRUE );
 
 	m_pSaver = NULL;
+	m_pAnimPaths = NULL;
+
 	m_pLocList = GetLoclist();
 
 	AddValidator(ID_ACTIVE, &m_bActive);
@@ -109,17 +111,6 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 
 LocationDlg::~LocationDlg()
 {
-	unsigned int i;
-	for (i = 0; i < m_Entries.GetSize(); i++)
-	{
-		m_pContainer->RemoveChild(m_Entries[i]->m_pEngine);
-		delete m_Entries[i];
-	}
-}
-
-void LocationDlg::SetEngineContainer(vtEngine *pContainer)
-{
-	m_pContainer = pContainer;
 }
 
 void LocationDlg::SetLocSaver(vtLocationSaver *saver)
@@ -127,6 +118,15 @@ void LocationDlg::SetLocSaver(vtLocationSaver *saver)
 	m_pSaver = saver;
 	RefreshList();
 	RefreshButtons();
+}
+
+void LocationDlg::SetAnimContainer(vtAnimContainer *ac)
+{
+	m_pAnimPaths = ac;
+	m_iAnim = -1;
+	RefreshAnims();
+	UpdateSlider();
+	UpdateEnabling();
 }
 
 void LocationDlg::Update()
@@ -155,7 +155,7 @@ void LocationDlg::RefreshList()
 void LocationDlg::RefreshAnims()
 {
 	GetAnims()->Clear();
-	unsigned int i, num = m_Entries.GetSize();
+	unsigned int i, num = m_pAnimPaths->GetSize();
 	for (i = 0; i < num; i++)
 		GetAnims()->Append(_T("anim"));
 
@@ -165,10 +165,10 @@ void LocationDlg::RefreshAnims()
 void LocationDlg::RefreshAnimsText()
 {
 	wxString str;
-	unsigned int i, num = m_Entries.GetSize();
+	unsigned int i, num = m_pAnimPaths->GetSize();
 	for (i = 0; i < num; i++)
 	{
-		AnimEntry *entry = m_Entries[i];
+		vtAnimEntry *entry = m_pAnimPaths->GetAt(i);
 		vtAnimPath *anim = GetAnim(i);
 		vtAnimPathEngine *eng = GetEngine(i);
 
@@ -214,22 +214,22 @@ void LocationDlg::UpdateEnabling()
 void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
 {
 	vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
+	engine->SetName2("AnimPathEngine");
 	engine->SetTarget(m_pSaver->GetTransform());
 	engine->SetEnabled(false);
-	m_pContainer->AddChild(engine);
 
-	AnimEntry *entry = new AnimEntry();
+	vtAnimEntry *entry = new vtAnimEntry();
 	entry->m_pAnim = anim;
 	entry->m_pEngine = engine;
 	entry->m_Name = name;
-	m_Entries.Append(entry);
+	m_pAnimPaths->AppendEntry(entry);
 }
 
 vtAnimPath *LocationDlg::CreateAnimPath()
 {
 	vtAnimPath *anim = new vtAnimPath();
 
-	// Ensure that anim knows the project
+	// Ensure that anim knows the projection
 	const vtProjection &proj = m_pSaver->GetAtProjection();
 	anim->SetProjection(proj);
 

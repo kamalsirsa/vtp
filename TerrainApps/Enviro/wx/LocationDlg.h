@@ -28,17 +28,6 @@ class vtLocationSaver;
 // LocationDlg
 //----------------------------------------------------------------------------
 
-class AnimEntry
-{
-public:
-	AnimEntry() { m_pAnim = NULL; m_pEngine = NULL; }
-	~AnimEntry() {
-		delete m_pEngine; } // engine owns path
-	vtAnimPath *m_pAnim;
-	vtAnimPathEngine *m_pEngine;
-	vtString m_Name;
-};
-
 class LocationDlg: public AutoDialog
 {
 public:
@@ -77,7 +66,7 @@ public:
 
 	void RefreshList();
 	void SetLocSaver(vtLocationSaver *saver);
-	void SetEngineContainer(vtEngine *pContainer);
+	void SetAnimContainer(vtAnimContainer *ac);
 	void RefreshButtons();
 	void RecallFrom(const vtString &locname);
 
@@ -98,13 +87,10 @@ private:
 	// WDR: member variable declarations for LocationDlg
 	vtLocationSaver *m_pSaver;
 
-	wxListBox* m_pLocList;
+	vtAnimContainer *m_pAnimPaths;
 
-	vtEngine *m_pContainer;
-	Array<AnimEntry *> m_Entries;
-
-	vtAnimPath *GetAnim(int i) { return m_Entries.GetAt(i)->m_pAnim; }
-	vtAnimPathEngine *GetEngine(int i) { return m_Entries.GetAt(i)->m_pEngine; }
+	vtAnimPath *GetAnim(int i) { return m_pAnimPaths->GetAt(i)->m_pAnim; }
+	vtAnimPathEngine *GetEngine(int i) { return m_pAnimPaths->GetAt(i)->m_pEngine; }
 
 	bool m_bActive;
 	bool m_bLoop;
@@ -119,6 +105,8 @@ private:
 	float m_fRecordSpacing;
 	bool m_bRecordLinear;
 	bool m_bRecordInterval;
+
+	wxListBox* m_pLocList;
 
 private:
 	// WDR: handler declarations for LocationDlg
