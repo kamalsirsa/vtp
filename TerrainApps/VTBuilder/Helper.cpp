@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "wx/progdlg.h"
 #include "vtdata/MathTypes.h"
 #include "Helper.h"
