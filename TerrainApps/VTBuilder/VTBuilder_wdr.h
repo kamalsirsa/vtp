@@ -7,7 +7,7 @@
 #define __WDR_VTBuilder_H__
 
 #ifdef __GNUG__
-    #pragma interface "VTBuilder_wdr.cpp"
+    #pragma interface "VTBuilder_wdr.h"
 #endif
 
 // Include wxWindows' headers

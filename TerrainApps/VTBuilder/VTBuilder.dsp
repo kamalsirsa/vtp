@@ -20,6 +20,7 @@ CFG=VTBuilder - Win32 Debug Unicode
 !MESSAGE "VTBuilder - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "VTBuilder - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "VTBuilder - Win32 Debug Unicode" (based on "Win32 (x86) Application")
+!MESSAGE "VTBuilder - Win32 Release Unicode" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -110,7 +111,36 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
-# ADD LINK32 wxmsw240ud.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 wxmsw240ud.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/VTBuilderu.exe" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+
+!ELSEIF  "$(CFG)" == "VTBuilder - Win32 Release Unicode"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "VTBuilder___Win32_Release_Unicode"
+# PROP BASE Intermediate_Dir "VTBuilder___Win32_Release_Unicode"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Release_Unicode"
+# PROP Intermediate_Dir "Release_Unicode"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /Yu"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D "_UNICODE" /D "UNICODE" /Yu"wx/wxprec.h" /FD /c
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
+# ADD BASE RSC /l 0x809 /i "\APIs\wx2\include" /d "NDEBUG"
+# ADD RSC /l 0x809 /i "\APIs\wx2\include" /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 wxmsw240.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# SUBTRACT BASE LINK32 /debug
+# ADD LINK32 wxmsw240u.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib libpng.lib zlib.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"Release_Unicode/VTBuilderu.exe" /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# SUBTRACT LINK32 /debug
 
 !ENDIF 
 
@@ -119,6 +149,7 @@ LINK32=link.exe
 # Name "VTBuilder - Win32 Release"
 # Name "VTBuilder - Win32 Debug"
 # Name "VTBuilder - Win32 Debug Unicode"
+# Name "VTBuilder - Win32 Release Unicode"
 # Begin Group "Source"
 
 # PROP Default_Filter ".cpp"
