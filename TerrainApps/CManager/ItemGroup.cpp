@@ -260,8 +260,10 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 				text->SetPosition(p);
 				if (i == 0)
 					text->SetAlignment(0);
-				else
-					text->SetAlignment(1);
+				if (i == 1)
+					text->SetAlignment(2);
+				if (i == 3)
+					text->SetAlignment(0);
 				text->SetText(str);
 				pGeom->AddTextMesh(text, 0);
 				text->Release();
