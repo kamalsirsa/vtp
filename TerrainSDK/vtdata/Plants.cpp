@@ -213,6 +213,16 @@ void vtPlantList::LookupPlantIndices(vtBioType *bt)
 	}
 }
 
+int vtPlantList::GetSpeciesIdByName(const char *name)
+{
+	for (int j = 0; j < NumSpecies(); j++)
+	{
+		if (!strcmp(name, m_Species[j]->GetSciName()))
+			return j;
+	}
+	return -1;
+}
+
 int vtPlantList::GetSpeciesIdByCommonName(const char *name)
 {
 	for (int j = 0; j < NumSpecies(); j++)
@@ -481,6 +491,32 @@ void vtBioType::ResetAmounts()
 	for (int i = 0; i < m_Densities.GetSize(); i++)
 		m_Densities[i]->ResetAmounts();
 }
+
+/**
+ * Request a plant (species ID) from this biotype.  Returns a random plant,
+ *  weighted by the relative densities of each species in this biotype.
+ */
+int vtBioType::GetWeightedRandomPlant()
+{
+	// The species are weighted by multiplying a random number against each
+	//  density.  The species with the highest resulting value is chosen.
+	float highest = 0;
+	int picked = -1;
+	float val;
+
+	int densities = m_Densities.GetSize();
+	for (int i = 0; i < densities; i++)
+	{
+		val = random(m_Densities[i]->m_plant_per_m2);
+		if (val > highest)
+		{
+			highest = val;
+			picked = i;
+		}
+	}
+	return picked;
+}
+
 
 ///////////////////////////////////////////////////////////////////////
 

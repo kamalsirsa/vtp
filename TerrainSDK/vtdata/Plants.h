@@ -35,6 +35,7 @@ public:
 
 	void AddPlant(int i, const char *common_name, float plant_per_m2);
 	void ResetAmounts();
+	int GetWeightedRandomPlant();
 
 	Array<vtPlantDensity *> m_Densities;
 
@@ -50,6 +51,7 @@ public:
 	bool Read(const char *fname);
 	bool Write(const char *fname);
 	void AddType(vtBioType *bt) { m_Types.Append(bt); }
+	vtBioType *GetBioType(int i) { return m_Types[i]; }
 	int FindBiotypeIdByName(const char *name);
 	void ResetAmounts();
 
@@ -140,6 +142,7 @@ public:
 		else
 			return NULL;
 	}
+	int GetSpeciesIdByName(const char *name);
 	int GetSpeciesIdByCommonName(const char *name);
 	virtual void AddSpecies(int SpecieID, const char *common_name,
 		const char *SciName, float max_height);
