@@ -383,12 +383,13 @@ bool vtImageLayer::SaveToFile(const char *fname)
 }
 
 
+#if ROGER
 static int WarpProgress(double dfComplete, const char *pszMessage, void *pProgressArg)
 {
 	int amount = (int)(99.0 * dfComplete);
 	return !UpdateProgressDialog(amount, wxString2(pszMessage));
 }
-
+#endif
 
 bool vtImageLayer::LoadFromGDAL()
 {
@@ -947,8 +948,6 @@ vtString TileURL(int easting, int northing)
 	url.Format("http://terraserver-usa.com/tile.ashx?S=%d&T=%d&X=%d&Y=%d&Z=%d",
 		TileScaleId, TileThemeId, x, y, TerrainZone);
 	return url;
-
-	return url;
 }
 
 // generate the filename of a locally-cached image tile
@@ -967,8 +966,8 @@ bool DownloadATile(int easting, int northing)
 	vtString filename = TileFileName(easting, northing);
 
 	// check if file exists
-	FILE *fp;
-	if (fp = fopen(filename, "rb"))
+	FILE *fp = fopen(filename, "rb");
+	if (fp)
 	{
 		fclose(fp);
 		VTLOG("already have %s\n", (const char *) filename);
@@ -1024,7 +1023,6 @@ bool DownloadAllTiles()
 bool MosaicAllTiles(vtBitmapBase &output)
 {
 	vtString tilelist, cmd;
-	int firsttile = 1;
 
 	int startn = TerrainNorthingS / MetersPerTile * MetersPerTile;
 	for (int n = startn; n < TerrainNorthingN; n += MetersPerTile)

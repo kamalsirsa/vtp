@@ -209,7 +209,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 
 	// get each poly from LULC file
 	unsigned int i, s, p, count = 0;
-	float density;
+	float density=0;
 	for (s = 0; s < pLULC->NumSections(); s++)
 	{
 		section = pLULC->GetSection(s);
@@ -345,6 +345,7 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	SHPClose(hSHP);
 
 	// Read fields
+	int biotype_id;
 	for (unsigned int i = 0; i < (unsigned int) nElem; i++)
 	{
 		int record = m_pSet->AddRecord();
@@ -357,13 +358,13 @@ bool vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 		if (datatype == VIFT_BiotypeName)
 		{
 			const char *str = DBFReadStringAttribute(db, i, iField);
-			// TODO
-//			m_pAttrib[i] = m_BioRegions.FindBiotypeIdByName(str);
-			m_pSet->SetValue(record, m_field_biotype, -1);
+			biotype_id = GetMainFrame()->GetBioRegion()->FindBiotypeIdByName(str);
+			m_pSet->SetValue(record, m_field_biotype, biotype_id);
 		}
 		if (datatype == VIFT_BiotypeID)
 		{
-			m_pSet->SetValue(record, m_field_biotype, DBFReadIntegerAttribute(db, i, iField));
+			biotype_id = DBFReadIntegerAttribute(db, i, iField);
+			m_pSet->SetValue(record, m_field_biotype, biotype_id);
 		}
 	}
 	DBFClose(db);

@@ -167,7 +167,7 @@ void BuilderApp::SetupLocale()
 	VTLOG("Default language: %d (%s)\n",
 		default_lang, info->Description.mb_str());
 
-	bool bSuccess;
+	bool bSuccess=false;
 	if (m_locale_name != "")
 	{
 		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);

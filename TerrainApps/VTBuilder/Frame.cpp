@@ -449,8 +449,6 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	wxString fname = fname_in;
 	wxString ext = fname.AfterLast('.');
 
-	bool bFirst = (m_Layers.GetSize() == 0);
-
 	vtLayer *pLayer = NULL;
 	if (ext.CmpNoCase(_T("rmf")) == 0)
 	{
@@ -989,7 +987,7 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	DPoint2 step = pTarget->m_pGrid->GetSpacing();
 
 	int i, j, l, layers = m_Layers.GetSize();
-	float fData, fBestData;
+	float fData=0, fBestData;
 	int iColumns, iRows;
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
 
@@ -1370,7 +1368,7 @@ bool MainFrame::LoadSpeciesFile(const char *fname)
 
 bool MainFrame::LoadBiotypesFile(const char *fname)
 {
-	if (!m_BioRegions.Read(fname, m_PlantList))
+	if (!m_BioRegion.Read(fname, m_PlantList))
 	{
 		DisplayAndLog("Couldn't read bioregion list from file '%s'.", fname);
 		return false;
@@ -1557,7 +1555,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 		// simply use a single species
 		vtPlantSpecies *ps = m_PlantList.GetSpecies(opt.m_iSingleSpecies);
 		SingleBiotype.AddPlant(ps, opt.m_fFixedDensity);
-		opt.m_iSingleBiotype = m_BioRegions.AddType(&SingleBiotype);
+		opt.m_iSingleBiotype = m_BioRegion.AddType(&SingleBiotype);
 	}
 
 	// Create some optimization indices to speed it up
@@ -1577,7 +1575,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	// clean up temporary biotype
 	if (opt.m_iSingleSpecies != -1)
 	{
-		m_BioRegions.m_Types.RemoveAt(opt.m_iSingleBiotype);
+		m_BioRegion.m_Types.RemoveAt(opt.m_iSingleBiotype);
 	}
 
 	clock_t time2 = clock();
@@ -1594,14 +1592,12 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	unsigned int i, j, k;
 	DPoint2 p, p2;
 
-	int tree_count = 0;
-
 	float x_size = (area.right - area.left);
 	float y_size = (area.top - area.bottom);
 	unsigned int x_trees = (unsigned int)(x_size / opt.m_fSampling);
 	unsigned int y_trees = (unsigned int)(y_size / opt.m_fSampling);
 
-	int bio_type;
+	int bio_type=0;
 	float density_scale;
 
 	vtPlantInstanceArray pia;
@@ -1614,7 +1610,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	GetProjection(proj);
 	pia.SetProjection(proj);
 
-	m_BioRegions.ResetAmounts();
+	m_BioRegion.ResetAmounts();
 	pia.SetPlantList(&m_PlantList);
 
 	// Iterate over the whole area, creating plant instances
@@ -1668,7 +1664,7 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 				}
 			}
 			// look at veg_type to decide which BioType to use
-			bio = m_BioRegions.m_Types[bio_type];
+			bio = m_BioRegion.m_Types[bio_type];
 
 			float square_meters = opt.m_fSampling * opt.m_fSampling;
 			float factor = density_scale * square_meters * opt.m_fScarcity;
@@ -1718,9 +1714,9 @@ void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area,
 	int unplanted = 0;
 	wxString2 msg, str;
 	msg = _("Vegetation distribution results:\n");
-	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
+	for (i = 0; i < m_BioRegion.m_Types.GetSize(); i++)
 	{
-		bio = m_BioRegions.m_Types[i];
+		bio = m_BioRegion.m_Types[i];
 
 		int total_this_type = 0;
 		for (k = 0; k < bio->m_Densities.GetSize(); k++)

@@ -296,7 +296,7 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				// values such as number of lanes, etc.
 				const char *str_entity = pFeature->GetFieldAsString(index_entity);
 				int numEntity = atoi(str_entity);
-				int iMajorAttr = numEntity / 10000;
+				//int iMajorAttr = numEntity / 10000;
 				int iMinorAttr = numEntity % 10000;
 
 				bool bSkip = true;
@@ -347,7 +347,7 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				// values such as number of lanes, etc.
 				const char *str_entity = pFeature->GetFieldAsString(index_entity);
 				int numEntity = atoi(str_entity);
-				int iMajorAttr = numEntity / 10000;
+				//int iMajorAttr = numEntity / 10000;
 				int iMinorAttr = numEntity % 10000;
 
 				bool bSkip = true;

@@ -368,7 +368,6 @@ bool BuilderView::ImportWorldMap()
 
 void myErrorHandler(CPLErr err, int i, const char*str)
 {
-	int foo = err;
 	VTLOG(str);
 }
 
@@ -618,7 +617,7 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 		verb = _("Selected");
 	}
 
-	int changed, selected;
+	int changed=0, selected=0;
 	if (pL->GetType() == LT_STRUCTURE)
 	{
 		vtStructureLayer *pSL = (vtStructureLayer *)pL;
@@ -1189,13 +1188,13 @@ void BuilderView::OnLButtonClickFeature(vtLayerPtr pL)
 	}
 	else if (pL->GetType() == LT_UTILITY)
 	{
-		vtUtilityLayer *pTL = (vtUtilityLayer *)pL;
 		// TODO? single click selection of utility features
+		//vtUtilityLayer *pTL = (vtUtilityLayer *)pL;
 	}
 	else if (pL->GetType() == LT_RAW)
 	{
-		vtRawLayer *pRL = (vtRawLayer *)pL;
 		// TODO? single click selection of raw features
+		//vtRawLayer *pRL = (vtRawLayer *)pL;
 	}
 }
 

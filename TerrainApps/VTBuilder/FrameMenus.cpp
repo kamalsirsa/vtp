@@ -455,7 +455,7 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	m_strSpeciesFilename = "";
 	m_strBiotypesFilename = "";
 	m_PlantList.Clear();
-	m_BioRegions.Clear();
+	m_BioRegion.Clear();
 
 	RefreshTreeView();
 	RefreshToolbar();
@@ -1103,7 +1103,6 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 	if (!fp)
 		return;
 
-	vtRawLayer *pRL;
 	Array<vtRawLayer *> layers;
 	char buf[200];
 	bool bUTM = false;
@@ -1117,6 +1116,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 	bool bGotSRS = false;
 	char ch;
 	int i;
+	vtRawLayer *pRL=NULL;
 
 	while (fgets(buf, 200, fp))	// get a line
 	{
@@ -2519,9 +2519,7 @@ void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 
 void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 {
-	vtVegLayer *Density = NULL, *BioMap = NULL;
-
-	// density is now optional, defaults to 1 if there is no density layer
+	// we needs some species, and an area to plant them in
 	event.Enable(m_strSpeciesFilename != "" && !m_area.IsEmpty());
 }
 

@@ -366,8 +366,8 @@ public:
 	bool LoadSpeciesFile(const char *fname);
 	bool LoadBiotypesFile(const char *fname);
 
-	vtBioRegion m_BioRegions;
-	vtBioRegion *GetBioRegion() { return &m_BioRegions; }
+	vtBioRegion m_BioRegion;
+	vtBioRegion *GetBioRegion() { return &m_BioRegion; }
 	BioRegionDlg *m_BioRegionDlg;
 
 	void GenerateVegetation(const char *vf_file, DRECT area, VegGenOptions &opt);

@@ -207,7 +207,7 @@ void wxDC2::StretchBlit(const wxBitmap &bmp,
 
 	HGDIOBJ hOldBitmap = ::SelectObject( memdc, hbitmap );
 
-	int bwidth = bmp.GetWidth(), bheight = bmp.GetHeight();
+//	int bwidth = bmp.GetWidth(), bheight = bmp.GetHeight();
 	::StretchBlt( cdc, x, y, width, height, memdc, src_x, src_y, src_width, src_height, SRCCOPY);
 
 	::SelectObject( memdc, hOldBitmap );
