@@ -35,7 +35,9 @@ public:
 	vtGroup *BeginTerrainScene();
 	void AppendTerrain(vtTerrain *pTerrain);
 	void Finish(const vtStringArray &datapath) {}	// dummy; obsolete method
-	void SetTerrain(vtTerrain *pTerrain);
+	void SetCurrentTerrain(vtTerrain *pTerrain);
+	vtGroup *BuildTerrain(vtTerrain *pTerrain);
+	void CleanupScene();
 
 	vtGroup *GetTop() { return m_pTop; }
 	vtSkyDome *GetSkyDome() { return m_pSkyDome; }
@@ -57,11 +59,13 @@ public:
 	RGBf		horizon_color, azimuth_color;
 
 protected:
+	void _UpdateSkydomeForTerrain(vtTerrain *pTerrain);
+
 	// main scene graph outline
 	vtGroup		*m_pTop;
 	vtSkyDome	*m_pSkyDome;
 
-	void _CreateSkydome(const vtStringArray &datapath);
+	void _CreateSky(const vtStringArray &datapath);
 	void _CreateEngines();
 
 	vtGroup		*m_pAtmosphereGroup;
