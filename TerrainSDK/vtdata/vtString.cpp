@@ -172,12 +172,12 @@ vtString::vtString(pcchar szStr)
 //////////////////////////////////////////////////////////////////////////////
 // Assignment operators
 //  All assign a new value to the string
-//      (a) first see if the buffer is big enough
-//      (b) if enough room, copy on top of old buffer, set size and type
-//      (c) otherwise free old string data, and create a new one
+//	  (a) first see if the buffer is big enough
+//	  (b) if enough room, copy on top of old buffer, set size and type
+//	  (c) otherwise free old string data, and create a new one
 //
 //  All routines return the new string (but as a 'const vtString&' so that
-//      assigning it again will cause a copy, eg: s1 = s2 = "hi there".
+//	  assigning it again will cause a copy, eg: s1 = s2 = "hi there".
 //
 
 void vtString::AssignCopy(int nSrcLen, pcchar szSrcData)
@@ -220,11 +220,11 @@ const vtString& vtString::operator=(pcchar lpsz)
 // concatenation
 
 // NOTE: "operator+" is done as friend functions for simplicity
-//      There are three variants:
-//          vtString + vtString
+//	  There are three variants:
+//		  vtString + vtString
 // and for ? = char, pcchar
-//          vtString + ?
-//          ? + vtString
+//		  vtString + ?
+//		  ? + vtString
 
 void vtString::ConcatCopy(int nSrc1Len, pcchar szSrc1Data,
 	int nSrc2Len, pcchar szSrc2Data)

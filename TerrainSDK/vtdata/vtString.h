@@ -39,12 +39,12 @@ typedef const unsigned char *pcuchar;
 
 struct vtStringData
 {
-	long nRefs;             // reference count
-	int nDataLength;        // length of data (including terminator)
-	int nAllocLength;       // length of allocation
+	long nRefs;			// reference count
+	int nDataLength;	// length of data (including terminator)
+	int nAllocLength;	// length of allocation
 	// char data[nAllocLength]
 
-	char* data()           // char* to managed data
+	char* data()		// char* to managed data
 		{ return (char*)(this+1); }
 };
 
@@ -310,7 +310,7 @@ inline int WIN_UNIX_STDCALL vtString::SafeStrlen(pcchar lpsz)
 
 // vtString support (windows specific)
 inline int vtString::Compare(pcchar lpsz) const
-	{ return strcmp(m_pchData, lpsz); }    // MBCS/Unicode aware
+	{ return strcmp(m_pchData, lpsz); }	// MBCS/Unicode aware
 
 
 inline char vtString::GetAt(int nIndex) const
