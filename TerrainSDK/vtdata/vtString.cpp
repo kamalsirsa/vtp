@@ -669,8 +669,10 @@ void vtString::TrimRight()
 {
 	// find beginning of trailing spaces by starting at beginning
 	CopyBeforeWrite();
-	char *lpsz = m_pchData;
-	char *lpszLast = NULL;
+
+	// beware trouble with signed characters being cast to negative ints
+	unsigned char *lpsz = (unsigned char *) m_pchData;
+	unsigned char *lpszLast = NULL;
 
 	while (*lpsz != '\0')
 	{
@@ -688,7 +690,7 @@ void vtString::TrimRight()
 	{
 		// truncate at trailing space start
 		*lpszLast = '\0';
-		GetData()->nDataLength = lpszLast - m_pchData;
+		GetData()->nDataLength = lpszLast - (unsigned char *) m_pchData;
 	}
 }
 
