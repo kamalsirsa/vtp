@@ -19,6 +19,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtdata/boost/directory.h"
+#include "vtdata/Features.h"
 #include "TParamsDlg.h"
 #include "../Options.h"
 
@@ -98,6 +99,8 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_LABELS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
+
+	EVT_TEXT( ID_LABEL_FILE, TParamsDlg::OnChoiceLabelFile )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -125,6 +128,7 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_fVerticalExag = Params.m_fVerticalExag;
 	m_iMinHeight = Params.m_iMinHeight;
 	m_fNavSpeed = Params.m_fNavSpeed;
+	m_iNavStyle = Params.m_iNavStyle;
 	m_strLocFile = wxString::FromAscii((const char *)Params.m_strLocFile);
 
 	m_iLodMethod = Params.m_eLodMethod;
@@ -181,6 +185,7 @@ void TParamsDlg::SetParams(TParams &Params)
 //  m_bOverlay = Params.m_bOverlay;
 	m_bLabels = Params.m_bLabels;
 	m_strLabelFile = Params.m_strLabelFile;
+	m_Style = Params.m_Style;
 
 	m_bOceanPlane = Params.m_bOceanPlane;
 	m_fOceanPlaneLevel = Params.m_fOceanPlaneLevel;
@@ -213,6 +218,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_fVerticalExag = m_fVerticalExag;
 	Params.m_iMinHeight = m_iMinHeight;
 	Params.m_fNavSpeed = m_fNavSpeed;
+	Params.m_iNavStyle = m_iNavStyle;
 	Params.m_strLocFile = m_strLocFile.mb_str();
 
 	Params.m_eLodMethod = (enum LodMethodEnum) m_iLodMethod;
@@ -271,6 +277,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_bHorizon = m_bHorizon;
 	Params.m_bLabels = m_bLabels;
 	Params.m_strLabelFile = m_strLabelFile.mb_str();
+	Params.m_Style = m_Style;
 
 	Params.m_bOceanPlane = m_bOceanPlane;
 	Params.m_fOceanPlaneLevel = m_fOceanPlaneLevel;
@@ -335,10 +342,40 @@ void TParamsDlg::UpdateEnableState()
 	GetDepressOceanOffset()->Enable(m_bDepressOcean);
 	GetSkytexture()->Enable(m_bSky);
 	GetSkytexture()->Enable(m_bSky);
-	GetLabelFile()->Enable(m_bLabels);
 	GetFogDistance()->Enable(m_bFog);
+
+	GetLabelFile()->Enable(m_bLabels);
+	FindWindow(ID_LABEL_FIELD)->Enable(m_bLabels);
+	FindWindow(ID_LABEL_HEIGHT)->Enable(m_bLabels);
+	FindWindow(ID_LABEL_SIZE)->Enable(m_bLabels);
 }
 
+void TParamsDlg::RefreshLabelFields()
+{
+	m_pLabelField->Clear();
+	vtFeatures feat;
+
+	vtString fname = "PointData/";
+	fname += m_strLabelFile.mb_str();
+	vtString fpath = FindFileOnPaths(g_Options.m_DataPaths, fname);
+	if (!feat.LoadHeaderFromSHP(fpath))
+		return;
+
+	int i, num = feat.GetNumFields();
+	for (i = 0; i < num; i++)
+	{
+		Field *field = feat.GetField(i);
+		wxString2 field_name = field->m_name;
+		m_pLabelField->Append(field_name);
+	}
+	if (num)
+	{
+		if (m_Style.m_field_index < 0)
+			m_Style.m_field_index = 0;
+		if (m_Style.m_field_index > num-1)
+			m_Style.m_field_index = num-1;
+	}
+}
 
 // WDR: handler implementations for TParamsDlg
 
@@ -372,6 +409,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pLocFile = GetLocfile();
 	m_pSkyTexture = GetSkytexture();
 	m_pLabelFile = GetLabelFile();
+	m_pLabelField = GetLabelField();
+	m_pNavStyle = GetNavStyle();
 
 	m_pNone = GetNone();
 	m_pSingle = GetSingle();
@@ -436,7 +475,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
 	}
-	
+
 	m_pLodMethod->Clear();
 	m_pLodMethod->Append(_T("Roettger"));
 	m_pLodMethod->Append(_T("TopoVista"));
@@ -448,6 +487,14 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	m_pLodMethod->SetSelection(m_iLodMethod);
 
+	m_pNavStyle->Clear();
+	m_pNavStyle->Append(_T("Normal Terrain Flyer"));
+	m_pNavStyle->Append(_T("Terrain Flyer with Velocity"));
+	m_pNavStyle->Append(_T("Grab-Pivot"));
+	m_pNavStyle->Append(_T("Quake-Style Walk"));
+
+	RefreshLabelFields();
+
 //  DetermineTerrainSizeFromBT();
 //  DetermineSizeFromBMP();
 
@@ -458,21 +505,28 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUseTin()->SetValue(m_bTin);
 
 	AddValidator(ID_FILENAME, &m_strFilename);
+
 	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
 	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag, 2);
-
 	AddValidator(ID_USE_TIN, &m_bTin);
 
-	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
-	AddNumValidator(ID_INITTIME, &m_iInitTime);
-	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
+	// nav
+	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
+	AddValidator(ID_NAV_STYLE, &m_iNavStyle);
+	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
+	AddValidator(ID_LOCFILE, &m_strLocFile);
 
+	// LOD
 	AddValidator(ID_LODMETHOD, &m_iLodMethod);
 	AddNumValidator(ID_PIXELERROR, &m_fPixelError, 2);
 	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
-	AddValidator(ID_SKY, &m_bSky);
-	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
-	AddValidator(ID_FOG, &m_bFog);
+	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
+	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
+
+	// time
+	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
+	AddNumValidator(ID_INITTIME, &m_iInitTime);
+	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
 
 	// texture
 	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
@@ -483,36 +537,42 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
 	AddValidator(ID_PRELIGHT, &m_bPreLight);
-	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 	AddValidator(ID_PRELIT, &m_bPreLit);
+	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 
+	// culture
 	AddValidator(ID_ROADS, &m_bRoads);
 	AddValidator(ID_ROADFILE, &m_strRoadFile);
+	AddValidator(ID_HIGHWAYS, &m_bHwy);
+	AddValidator(ID_PAVED, &m_bPaved);
+	AddValidator(ID_DIRT, &m_bDirt);
+	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
+	AddNumValidator(ID_ROADDISTANCE, &m_fRoadDistance);
 	AddValidator(ID_TEXROADS, &m_bTexRoads);
+	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
+
 	AddValidator(ID_TREES, &m_bTrees);
 	AddValidator(ID_TREEFILE, &m_strVegFile);
 	AddNumValidator(ID_VEGDISTANCE, &m_iVegDistance);
+
+	AddValidator(ID_FOG, &m_bFog);
 	AddNumValidator(ID_FOG_DISTANCE, &m_iFogDistance);
+
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
 
-	AddValidator(ID_HORIZON, &m_bHorizon);
-	AddValidator(ID_LABELS, &m_bLabels);
-	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
-	AddNumValidator(ID_MINHEIGHT, &m_iMinHeight);
-	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
-	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
-	AddValidator(ID_DIRT, &m_bDirt);
-	AddValidator(ID_PAVED, &m_bPaved);
-	AddValidator(ID_HIGHWAYS, &m_bHwy);
-	AddNumValidator(ID_ROADDISTANCE, &m_fRoadDistance);
-	AddNumValidator(ID_ROADHEIGHT, &m_fRoadHeight);
-	AddNumValidator(ID_NAVSPEED, &m_fNavSpeed, 2);
-	AddValidator(ID_LOCFILE, &m_strLocFile);
-	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
+	AddValidator(ID_SKY, &m_bSky);
+	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
 	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
 	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
 	AddNumValidator(ID_DEPRESSOCEANOFFSET, &m_fDepressOceanLevel);
+	AddValidator(ID_HORIZON, &m_bHorizon);
+
+	AddValidator(ID_LABELS, &m_bLabels);
+	AddValidator(ID_LABEL_FILE, &m_strLabelFile);
+	AddValidator(ID_LABEL_FIELD, &m_Style.m_field_index);
+	AddNumValidator(ID_LABEL_HEIGHT, &m_Style.m_label_elevation);
+	AddNumValidator(ID_LABEL_SIZE, &m_Style.m_label_size);
 
 	wxWindow::OnInitDialog(event);
 
@@ -643,7 +703,6 @@ void AddFilenamesToArray(wxArrayString &array, const char *directory,
 	}
 }
 
-
 void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 {
 	int i;
@@ -663,6 +722,21 @@ void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 	{
 		m_strStructFiles.Append(new wxString2(result));
 		TransferDataToWindow();
+	}
+}
+
+void TParamsDlg::OnChoiceLabelFile( wxCommandEvent &event )
+{
+	if (m_bSetting || !m_bReady) return;
+
+	wxString2 prev = m_strLabelFile;
+	TransferDataFromWindow();
+	if (m_strLabelFile != prev)
+	{
+		RefreshLabelFields();
+		m_bSetting = true;
+		TransferDataToWindow();
+		m_bSetting = false;
 	}
 }
 

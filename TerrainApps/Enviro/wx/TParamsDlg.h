@@ -41,74 +41,91 @@ public:
 	void GetParams(TParams &Params);
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
+	void RefreshLabelFields();
 
 	wxString2	m_strFilename;
 	wxString2	m_strFilenameTin;
 	float   m_fVerticalExag;
 	bool	m_bTin;
+
+	// navigation
+	int		m_iMinHeight;
+	int     m_iNavStyle;
+	float   m_fNavSpeed;
+	wxString2	m_strLocFile;
+
+	// LOD
+	int		m_iLodMethod;
 	float   m_fPixelError;
 	int		m_iTriCount;
+	bool	m_bTriStrips;
+	bool	m_bDetailTexture;
+
+	// time
 	bool	m_bTimeOn;
 	int		m_iInitTime;
 	float   m_fTimeSpeed;
-	bool	m_bSky;
-	wxString2	m_strSkyTexture;
-	bool	m_bFog;
+
+	// texture
 	int		m_iTexture;
 	int		m_iTilesize;
 	wxString2	m_strTextureSingle;
 	wxString2	m_strTextureBase;
-	bool	m_bJPEG;
 	wxString2	m_strTextureFilename;
+	bool	m_bJPEG;
 	bool	m_bMipmap;
 	bool	m_b16bit;
+	bool	m_bPreLight;
+	bool	m_bPreLit;
+	float   m_fPreLightFactor;
+
+	// culture
 	bool	m_bRoads;
 	wxString2	m_strRoadFile;
-	float   m_fWidthExag;
+	bool	m_bHwy;
+	bool	m_bPaved;
+	bool	m_bDirt;
+	float   m_fRoadHeight;
+	float   m_fRoadDistance;
 	bool	m_bTexRoads;
+	bool	m_bRoadCulture;
+
 	bool	m_bTrees;
 	wxString2	m_strVegFile;
 	int		m_iVegDistance;
+
+	bool	m_bFog;
 	int		m_iFogDistance;
 
 	wxStringArray	m_strStructFiles;
 	int		m_iStructDistance;
 
+	bool	m_bSky;
+	wxString2	m_strSkyTexture;
 	bool	m_bOceanPlane;
 	float	m_fOceanPlaneLevel;
 	bool	m_bDepressOcean;
 	float	m_fDepressOceanLevel;
-
 	bool	m_bHorizon;
+//  bool	m_bOverlay;
+
 	bool	m_bLabels;
 	wxString2	m_strLabelFile;
-	int		m_iMinHeight;
-	bool	m_bTriStrips;
-	bool	m_bDetailTexture;
-	bool	m_bPreLight;
-	bool	m_bDirt;
-	bool	m_bHwy;
-	bool	m_bPaved;
-	float   m_fRoadDistance;
-	float   m_fRoadHeight;
-	float   m_fNavSpeed;
-	wxString2	m_strLocFile;
-	float   m_fPreLightFactor;
-	bool	m_bRoadCulture;
-	int		m_iLodMethod;
-	bool	m_bPreLit;
-	bool	m_bRouteEnable;
-	wxString2 m_strRouteFile;
-//  int		m_iNumCars;
+	PointStyle	m_Style;
+
 //  bool	m_bVehicles;
 //  float   m_fVehicleSize;
 //  float   m_fVehicleSpeed;
-//  bool	m_bOverlay;
+//  int		m_iNumCars;
+
+	bool	m_bRouteEnable;
+	wxString2 m_strRouteFile;
 
 	wxString2 m_strInitTime;
 //  wxString2	m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxChoice* GetNavStyle()  { return (wxChoice*) FindWindow( ID_NAV_STYLE ); }
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
 	wxRadioButton* GetUseTin()  { return (wxRadioButton*) FindWindow( ID_USE_TIN ); }
 	wxComboBox* GetLocfile()  { return (wxComboBox*) FindWindow( ID_LOCFILE ); }
@@ -128,6 +145,7 @@ public:
 	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
 	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 	wxComboBox* GetLabelFile()  { return (wxComboBox*) FindWindow( ID_LABEL_FILE ); }
+	wxChoice* GetLabelField()  { return (wxChoice*) FindWindow( ID_LABEL_FIELD ); }
 	wxListBox* GetStructFiles()  { return (wxListBox*) FindWindow( ID_STRUCTFILES ); }
 
 	bool	m_bReady;
@@ -135,6 +153,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
+	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
 	wxListBox* m_pStructFiles;
 	wxComboBox* m_pRoadFile;
@@ -150,6 +169,7 @@ private:
 	wxComboBox* m_pLocFile;
 	wxComboBox* m_pSkyTexture;
 	wxComboBox* m_pLabelFile;
+	wxChoice* m_pLabelField;
 
 private:
 	// WDR: handler declarations for TParamsDlg
@@ -161,6 +181,7 @@ private:
 	void OnTextureTiled( wxCommandEvent &event );
 	void OnCheckBox( wxCommandEvent &event );
 	void OnListDblClick( wxCommandEvent &event );
+	void OnChoiceLabelFile( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()
