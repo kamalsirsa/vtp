@@ -53,13 +53,13 @@ bool vtApp::OnInit()
 	g_App.Startup();	// starts log
 	g_App.LoadTerrainDescriptions();
 
-	class AA { public: virtual void func() {} };
+/*	class AA { public: virtual void func() {} };
 	class BB : public AA {};
 	VTLOG("Testing the ability to use dynamic_cast to downcast...\n");
 	BB *b = new BB;
 	AA *a = (AA *) b;
 	BB *result1 = dynamic_cast<BB *>(a);
-	VTLOG("  successful (%lx)\n", result1);
+	VTLOG("  successful (%lx)\n", result1); */
 
 	//
 	// Create and show the Startup Dialog
