@@ -40,6 +40,7 @@ public:
 		const wxPoint& pos, const wxSize& size);
 	virtual ~MainFrame();
 
+	virtual void CreateView();
 	void SetupUI();
 	virtual void CreateMenus();
 	void CreateToolbar();
