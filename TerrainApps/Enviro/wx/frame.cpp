@@ -13,6 +13,7 @@
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
+#include "wx/image.h"
 
 #ifdef UNIX
 #include <unistd.h>
@@ -279,7 +280,7 @@ void vtFrame::CreateMenus()
 
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->Append(ID_EARTH_SHOWTIME, "&Show Time of Day\tCtrl+I", "Show Time of Day", true);
-	earthMenu->Append(ID_EARTH_FLATTEN, "&Flatten\tCtrl+F", "Flatten", true);
+	earthMenu->Append(ID_EARTH_FLATTEN, "&Flatten\tCtrl+E", "Flatten", true);
 	earthMenu->Append(ID_EARTH_POINTS, "&Load Point Data...\tCtrl+P");
 	earthMenu->Append(ID_EARTH_LINEAR, "Add &Linear Features...\tCtrl+L");
 
