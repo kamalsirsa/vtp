@@ -194,6 +194,7 @@ vtGeom *CreateRulers(float fSize)
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
 	pGeom->SetMaterials(pMats);
+	pMats->Release();
 
 	int up = 0;
 	float interval = 0.001f;
