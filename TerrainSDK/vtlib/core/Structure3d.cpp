@@ -478,11 +478,11 @@ void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *
 	{
 		vtMaterial *pMat = MakeMaterial(descriptor, m_Colors[i]);
 		pMat->SetTexture2(path);
+		pMat->SetMipMap(true);
 		pMat->SetClamp(false);
+		int index = m_pMaterials->AppendMaterial(pMat);
 		if (i == 0)
-			descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
-		else
-			m_pMaterials->AppendMaterial(pMat);
+			descriptor->SetMaterialIndex(index);
 	}
 }
 
