@@ -97,17 +97,27 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 
 void vtGroup::Destroy()
 {
-	// destroy children depth-first
+	// Destroy children depth-first
 	int children = GetNumChildren();
 	vtNode *pChild;
 
 	for (int i = 0; i < children; i++)
 	{
-		pChild = GetChild(0);
-		m_pGroup->removeChild(pChild->GetOsgNode());
-		pChild->Destroy();
+		if (NULL == (pChild = GetChild(0)))
+		{
+			// Probably a raw osg node Group, access it directly.
+			Node *node = m_pGroup->getChild(0);
+			// This deletes the node as well as there is no outer vtNode
+			// holding a reference.
+			m_pGroup->removeChild(node);
+		}
+		else
+		{
+			m_pGroup->removeChild(pChild->GetOsgNode());
+			pChild->Destroy();
+		}
 	}
-	// now destroy itself
+	// Now destroy itself
 	vtNode::Destroy();
 }
 
