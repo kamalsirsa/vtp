@@ -104,10 +104,10 @@ public:
 
 	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
-	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-							   float light_adj, void progress_callback(int) = NULL);
-	void ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
-		float light_adj, void progress_callback(int) = NULL);
+	void ShadeDibFromElevation(vtDIB *pDIB, const FPoint3 &light_dir,
+							   float light_factor, void progress_callback(int) = NULL);
+	void ShadowCastDib(vtDIB *pDIB, const FPoint3 &ight_dir,
+		float light_factor, void progress_callback(int) = NULL);
 
 protected:
 	int		m_iColumns, m_iRows;
