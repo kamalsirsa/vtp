@@ -695,8 +695,10 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	m_iColumns = ncols;
 	m_iRows = nrows;
 
-	// There is no projection info in a ASC file
-	m_proj.Clear();
+	// There is no projection info in a ASC file, but there might be
+	//  an accompanying .prj file, in the old ESRI .prj format.
+	if (!m_proj.ReadProjFile(szFileName))
+		m_proj.Clear();
 
 	// Some ASC files contain integer data, some contain floating point.
 	// There's no way for us to know in advance, so just assume float.
