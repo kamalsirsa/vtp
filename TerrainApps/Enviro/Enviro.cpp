@@ -13,6 +13,8 @@
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/Route.h"
 #include "vtlib/core/SkyDome.h"
+#include "vtlib/core/DynTerrain.h"
+
 #include "vtdata/boost/directory.h"
 
 #include "Enviro.h"
@@ -528,8 +530,21 @@ void Enviro::DescribeCLOD(vtString &str)
 	vtDynTerrainGeom *dtg = t->m_pDynGeom;
 	if (!dtg) return;
 
-	str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
-		dtg->GetNumDrawnTriangles());
+	//
+	// McNally CLOD algo uses a triangle count target, all other current
+	// implementations use a floating point factor relating to error/detail
+	//
+	if (t->GetParams().m_eLodMethod == LM_MCNALLY ||
+		t->GetParams().m_eLodMethod == LM_ROETTGER)
+	{
+		str.Format("CLOD: target %d, drawn %d ", dtg->GetPolygonCount(),
+			dtg->GetNumDrawnTriangles());
+	}
+	else
+	{
+		str.Format("CLOD detail: %.1f, drawn %d", dtg->GetPixelError(),
+			dtg->GetNumDrawnTriangles());
+	}
 }
 
 //
