@@ -1445,11 +1445,20 @@ bool vtStructureArray::ReadXML(const char* pathname)
 	bool bOldFormat = false;
 	FILE *fp = fopen(pathname, "r");
 	if (!fp) return false;
-	fseek(fp, 24, 0);
+	fseek(fp, 24, SEEK_SET);
 	char buf[10];
 	fread(buf, 10, 1, fp);
 	if (!strncmp(buf, "structures", 10))
 		bOldFormat = true;
+	else
+	{
+		// RFJ quick hack for extra carriage returns
+		fseek(fp, 26, SEEK_SET);
+		fread(buf, 10, 1, fp);
+		if (!strncmp(buf, "structures", 10))
+			bOldFormat = true;
+	}
+
 	fclose(fp);
 
 	if (bOldFormat)
