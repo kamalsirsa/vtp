@@ -238,27 +238,6 @@ protected:
 };
 
 /**
- * This class provides basic methods for the vtImage class.
- */
-class vtImageBase
-{
-public:
-	vtImageBase() { m_bLoaded = false; }
-	vtImageBase(const char *fname) { m_bLoaded = false; }
-
-	/// Call after construction to see whether an image load succeeded.
-	bool LoadedOK() { return m_bLoaded; }
-
-	/// Return the name of the file, if any, from which the image was loaded.
-	vtString GetFilename() { return m_strFilename; }
-
-protected:
-	bool m_bLoaded;
-	vtString m_strFilename;
-};
-
-
-/**
  * This class provides the base methods for vtMaterial.
  */
 class vtMaterialBase
