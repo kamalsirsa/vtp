@@ -150,6 +150,7 @@ vtRoot *vtTerrainScene::BeginTerrainScene(bool bDoSound)
 
 	// create the sun
 	vtLight *pLight = new vtLight();
+	pLight->SetName2("Main Light");
 	m_pSunLight = new vtMovLight(pLight);
 
 	// default location: over our right shoulder, pointing downward
