@@ -325,15 +325,12 @@ void vtTerrain::create_textures()
 		if (m_pDIB != NULL)
 		{
 			// single texture
-			m_pDIB->LeaveInternalDIB(true);
 			m_pImage = new vtImage(m_pDIB,
 				(m_pDIB->GetDepth() > 8 && m_Params.m_b16bit) ? GL_RGB5 : -1);
 		}
 	}
 	if (eTex == TE_TILED && m_pDIB)
 	{
-		m_pDIB->LeaveInternalDIB(false);
-
 		CreateChoppedTextures(m_pElevGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
 		_CreateTiledMaterials2(m_pTerrApps2,
 						 iTiles, m_Params.m_iTilesize, ambient, diffuse,
