@@ -954,7 +954,7 @@ void vtStructureLayer::AddFoundations(vtElevLayer *pEL)
 		pNewLev->SetEdgeColor(RGBi(255, 255, 255));
 		built++;
 	}
-	DisplayAndLog("Added a foundation level to %d buildings.\n", built);
+	DisplayAndLog("Added a foundation level to %d buildings.", built);
 }
 
 void vtStructureLayer::InvertSelection()
