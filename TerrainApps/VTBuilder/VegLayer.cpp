@@ -401,8 +401,6 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	DBFFieldType fieldtype = DBFGetFieldInfo(db, iField,
 		pszFieldName, pnWidth, pnDecimals );
 
-	SetProjection(proj);
-
 	if (datatype == 0)
 	{
 		if (fieldtype != FTDouble)
@@ -425,6 +423,8 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 		m_VLType = VLT_BioMap;
 		m_Biotype.SetSize(nElem);
 	}
+
+	SetProjection(proj);
 
 	// Initialize arrays
 	m_Poly.resize(nElem);
