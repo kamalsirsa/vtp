@@ -50,7 +50,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 
 	m_bPainting = false;
 	m_bRunning = true;
-	m_bShowFrameRateChart = true;
+	m_bShowFrameRateChart = false;
 
 	s_canvas = this;
 }
