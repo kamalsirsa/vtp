@@ -327,7 +327,7 @@ public:
 
 	// Elevation
 	void SampleCurrentTerrains(vtElevLayer *pTarget);
-	double GetHeightFromTerrain(DPoint2 &p);
+	float GetHeightFromTerrain(DPoint2 &p);
 
 	// Images
 	bool SampleCurrentImages(vtImageLayer *pTarget);

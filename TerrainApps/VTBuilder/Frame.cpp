@@ -1089,9 +1089,9 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 }
 
 
-double MainFrame::GetHeightFromTerrain(DPoint2 &p)
+float MainFrame::GetHeightFromTerrain(DPoint2 &p)
 {
-	double height = INVALID_ELEVATION;
+	float height = INVALID_ELEVATION;
 
 	int layers = m_Layers.GetSize();
 	for (int i = 0; i < layers; i++)
