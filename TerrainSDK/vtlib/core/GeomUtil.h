@@ -10,10 +10,7 @@
 #ifndef GEOMUTILH
 #define GEOMUTILH
 
-/** \defgroup sg Scene Graph
- * These classes are used for scene graph functionality: geometry, cameras,
- * rendering, LOD, and simulation.
- */
+/** \addtogroup sg */
 /*@{*/
 
 /**
