@@ -21,6 +21,8 @@
 #  include <sys/resource.h>
 #endif
 
+using namespace osg;
+
 ///////////////////////////////////////////////////////////////
 
 // There is always and only one global vtScene object
@@ -59,7 +61,7 @@ float vtGetTime()
 
 void vtScene::SetBgColor(RGBf color)
 {
-	osg::Vec4 color2;
+	Vec4 color2;
 	v2s(color, color2);
 	m_pOsgSceneView->setBackgroundColor(color2);
 }
@@ -125,7 +127,7 @@ void vtScene::DoUpdate()
 //		l->m_pLight->setDirection(v2s(dir));
 	}
 
-	osg::Camera *pOsgCam = m_pCamera->m_pOsgCamera;
+	Camera *pOsgCam = m_pCamera->m_pOsgCamera;
 
 	// let the OSG Camera know that its transform has (probably) changed
 	pOsgCam->dirtyTransform();
@@ -151,7 +153,7 @@ void vtScene::SetRoot(vtRoot *pRoot)
 //
 bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir)
 {
-	osg::Vec3 near_point, far_point, diff;
+	Vec3 near_point, far_point, diff;
 
 	// call the handy OSG function
 	m_pOsgSceneView->projectWindowXYIntoObject(win.x, m_WindowSize.y-win.y, near_point, far_point);
@@ -199,13 +201,13 @@ void vtScene::SetGlobalWireframe(bool bWire)
 	// Set the scene's global PolygonMode attribute, which will affect all
 	// other materials in the scene, except those which explicitly override
 	// the attribute themselves.
-	osg::StateSet *global_state = m_pOsgSceneView->getGlobalStateSet();
-	osg::PolygonMode *npm = new osg::PolygonMode();
+	StateSet *global_state = m_pOsgSceneView->getGlobalStateSet();
+	PolygonMode *npm = new PolygonMode();
 	if (m_bWireframe)
-		npm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
 	else
-		npm->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
-	global_state->setAttributeAndModes(npm, osg::StateAttribute::ON);
+		npm->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::FILL);
+	global_state->setAttributeAndModes(npm, StateAttribute::ON);
 }
 
 bool vtScene::GetGlobalWireframe()
@@ -218,15 +220,15 @@ bool vtScene::GetGlobalWireframe()
 
 vtNode *vtLoadModel(const char *filename)
 {
-	static 	osg::StateSet *normstate = NULL;
+	static 	StateSet *normstate = NULL;
 
 	if (!normstate)
 	{
-		normstate = new osg::StateSet;
-		normstate->setMode(GL_NORMALIZE, osg::StateAttribute::ON);
+		normstate = new StateSet;
+		normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
 	}
 
-	osg::Node *node = osgDB::readNodeFile(filename);
+	Node *node = osgDB::readNodeFile(filename);
 	if (node)
 	{
 		vtGroup *pGroup = new vtGroup();
