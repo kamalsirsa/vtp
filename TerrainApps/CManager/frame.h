@@ -75,6 +75,10 @@ protected:
 	void OnItemRemoveModel(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
 	void OnSceneGraph(wxCommandEvent& event);
+	void OnViewOrigin(wxCommandEvent& event);
+	void OnUpdateViewOrigin(wxUpdateUIEvent& event);
+	void OnViewRulers(wxCommandEvent& event);
+	void OnUpdateViewRulers(wxUpdateUIEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 
 	void OnUpdateItemAddModel(wxUpdateUIEvent& event);
@@ -124,6 +128,7 @@ public:
 	void		DisplayCurrentModel();
 	void		ZoomToCurrentModel();
 	void		ZoomToModel(vtModel *model);
+	void		UpdateWidgets();
 
 	void		DisplayCurrentItem();
 	void		ZoomToCurrentItem();
@@ -135,7 +140,10 @@ public:
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;
 
-	StringArray m_DataPaths;
+	static StringArray m_DataPaths;
+
+	bool m_bShowOrigin;
+	bool m_bShowRulers;
 
 	DECLARE_EVENT_TABLE()
 };

@@ -66,6 +66,8 @@ void Splitter2::SizeWindows()
 // vtFrame class implementation
 //
 
+StringArray vtFrame::m_DataPaths;
+
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CHAR(vtFrame::OnChar)
 	EVT_CLOSE(vtFrame::OnClose)
@@ -82,6 +84,12 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_ITEM_REMOVEMODEL, vtFrame::OnItemRemoveModel)
 	EVT_UPDATE_UI(ID_ITEM_REMOVEMODEL, vtFrame::OnUpdateItemRemoveModel)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
+
+	EVT_MENU(ID_VIEW_ORIGIN, vtFrame::OnViewOrigin)
+	EVT_UPDATE_UI(ID_VIEW_ORIGIN, vtFrame::OnUpdateViewOrigin)
+	EVT_MENU(ID_VIEW_RULERS, vtFrame::OnViewRulers)
+	EVT_UPDATE_UI(ID_VIEW_RULERS, vtFrame::OnUpdateViewRulers)
+
 	EVT_UPDATE_UI(ID_ITEM_SAVESOG, vtFrame::OnUpdateItemSaveSOG)
 	EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 END_EVENT_TABLE()
@@ -109,6 +117,9 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	m_pCurrentModel = NULL;
 	m_pCurrentItem = NULL;
+
+	m_bShowOrigin = true;
+	m_bShowRulers = false;
 
 	CreateMenus();
 	CreateToolbar();
@@ -229,20 +240,24 @@ void vtFrame::CreateMenus()
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_SCENE_SCENEGRAPH, _T("Scene Graph"));
 	fileMenu->AppendSeparator();
-	fileMenu->Append(ID_TEST_XML, _T("Test XML"), _T("Test XML"));
+	fileMenu->Append(ID_TEST_XML, _T("Test XML"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_SET_DATA_PATH, _T("Set Data Path"));
 	fileMenu->AppendSeparator();
 	fileMenu->Append(wxID_EXIT, _T("E&xit\tEsc"), _T("Exit"));
 
 	wxMenu *itemMenu = new wxMenu;
-	itemMenu->Append(ID_ITEM_NEW, _T("New Item"), _T("New Item"));
-	itemMenu->Append(ID_ITEM_DEL, _T("Delete Item"), _T("Delete Item"));
+	itemMenu->Append(ID_ITEM_NEW, _T("New Item"));
+	itemMenu->Append(ID_ITEM_DEL, _T("Delete Item"));
 	itemMenu->AppendSeparator();
-	itemMenu->Append(ID_ITEM_ADDMODEL, _T("Add Model"), _T("Add Model"));
-	itemMenu->Append(ID_ITEM_REMOVEMODEL, _T("Remove Model"), _T("Remove Model"));
+	itemMenu->Append(ID_ITEM_ADDMODEL, _T("Add Model"));
+	itemMenu->Append(ID_ITEM_REMOVEMODEL, _T("Remove Model"));
 	itemMenu->AppendSeparator();
-	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"), _T("Save Model as SOG"));
+	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
+
+	wxMenu *viewMenu = new wxMenu;
+	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
+	viewMenu->AppendCheckItem(ID_VIEW_RULERS, _T("Show Rulers"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Content Manager..."));
@@ -250,6 +265,7 @@ void vtFrame::CreateMenus()
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(fileMenu, _T("&File"));
 	menuBar->Append(itemMenu, _T("&Item"));
+	menuBar->Append(viewMenu, _T("&View"));
 	menuBar->Append(helpMenu, _T("&Help"));
 	SetMenuBar(menuBar);
 }
@@ -268,6 +284,9 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_ITEM_ADDMODEL, wxBITMAP(item_addmodel), _("Select"), false);
 	ADD_TOOL(ID_ITEM_REMOVEMODEL, wxBITMAP(item_remmodel), _("Select"), false);
+	m_pToolbar->AddSeparator();
+	ADD_TOOL(ID_VIEW_ORIGIN, wxBITMAP(show_axes), _("Show Axes"), true);
+	ADD_TOOL(ID_VIEW_RULERS, wxBITMAP(show_rulers), _("Show Rulers"), true);
 
 	m_pToolbar->Realize();
 }
@@ -469,6 +488,44 @@ void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
 	event.Enable(enable);
 }
 
+void vtFrame::UpdateWidgets()
+{
+	if (!m_pCurrentItem)
+		return;
+	ItemGroup *ig = m_itemmap[m_pCurrentItem];
+	if (ig)
+	{
+		ig->ShowOrigin(m_bShowOrigin);
+		ig->ShowRulers(m_bShowRulers);
+	}
+}
+
+void vtFrame::OnViewOrigin(wxCommandEvent& event)
+{
+	m_bShowOrigin = !m_bShowOrigin;
+	if (m_bShowOrigin)
+		m_bShowRulers = false;
+	UpdateWidgets();
+}
+
+void vtFrame::OnUpdateViewOrigin(wxUpdateUIEvent& event)
+{
+	event.Check(m_bShowOrigin);
+}
+
+void vtFrame::OnViewRulers(wxCommandEvent& event)
+{
+	m_bShowRulers = !m_bShowRulers;
+	if (m_bShowRulers)
+		m_bShowOrigin = false;
+	UpdateWidgets();
+}
+
+void vtFrame::OnUpdateViewRulers(wxUpdateUIEvent& event)
+{
+	event.Check(m_bShowRulers);
+}
+
 void vtFrame::OnHelpAbout(wxCommandEvent& event)
 {
 	m_canvas->m_bRunning = false;	// stop rendering
@@ -657,6 +714,8 @@ void vtFrame::UpdateItemGroup(vtItem *item)
 	ItemGroup *ig = GetItemGroup(item);
 	ig->AttemptToLoadModels();
 	ig->AttachModels();
+	ig->ShowOrigin(m_bShowOrigin);
+	ig->ShowRulers(m_bShowRulers);
 	ig->SetRanges();
 }
 
