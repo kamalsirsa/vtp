@@ -1,7 +1,7 @@
 //
 // Roads.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,7 +12,7 @@
  * These classes are used for transportation - roads, trails and rails.
  * Transportation in the vtlib library consists of subclassing the vtdata
  * transportation classes to extend them with the ability to create and
- * operate on 3D geometry of the plants.
+ * operate on 3D geometry of the roads.
  */
 /*@{*/
 

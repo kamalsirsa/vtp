@@ -1105,7 +1105,7 @@ void vtDIB::SetPixel32(int x, int y, const RGBAi &rgba)
 /**
  * Get a single byte from an 8-bit bitmap.
  */
-byte vtDIB::GetPixel8(int x, int y) const
+unsigned char vtDIB::GetPixel8(int x, int y) const
 {
 	register byte* adr;
 
@@ -1117,7 +1117,7 @@ byte vtDIB::GetPixel8(int x, int y) const
 /**
  * Set a single byte in an 8-bit bitmap.
  */
-void vtDIB::SetPixel8(int x, int y, byte value)
+void vtDIB::SetPixel8(int x, int y, unsigned char value)
 {
 	register byte* adr;
 

@@ -364,8 +364,8 @@ inline DPoint2 &DPoint2::operator=(const class FPoint2 &v)
 }
 
 /**
- * A series of 2d points.  This is useful for representing either a series of
- * points, line segments or a closed polygon.  Double-precision.
+ * A series of 2D points.  This is useful for representing either a series of
+ * points, line segments or a simple closed polygon.  Double-precision.
  */
 class DLine2 : public Array<DPoint2>
 {
@@ -392,7 +392,7 @@ public:
 };
 
 /**
- * A series of 2d points.  This is useful for representing either a series of
+ * A series of 2D points.  This is useful for representing either a series of
  * points, line segments or a closed polygon.  Single-precision.
  */
 class FLine2 : public Array<FPoint2>
@@ -462,7 +462,7 @@ inline FLine2 &FLine2::operator=(const class DLine2 &v)
 /////////////////////////////////////
 
 /**
- * A series of 3d points.  This is useful for representing either a series of
+ * A series of 3D points.  This is useful for representing either a series of
  * points, line segments or a closed polygon.  Double-precision.
  */
 class DLine3 : public Array<DPoint3>
@@ -480,7 +480,7 @@ public:
 };
 
 /**
- * A series of 3d points.  This is useful for representing either a series of
+ * A series of 3D points.  This is useful for representing either a series of
  * points, line segments or a closed polygon.  Single-precision.
  */
 class FLine3 : public Array<FPoint3>

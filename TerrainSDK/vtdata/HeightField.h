@@ -20,18 +20,18 @@ public:
 	// Initialize the vtHeightField
 	void Initialize(const DRECT &earthcover, float fMinHeight, float fMaxHeight);
 
-	/// Return an MD5 checksum for this heightfield
+	// Return an MD5 checksum for this heightfield
 	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
 	virtual bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const = 0;
 
-	/// Test if a point is within the extents of the grid.
+	/** Test if a point is within the extents of the grid. */
 	bool ContainsEarthPoint(const DPoint2 &p) const
 	{
 		return (m_EarthExtents.left <= p.x && p.x <= m_EarthExtents.right &&
 				m_EarthExtents.bottom <= p.y && p.y <= m_EarthExtents.top);
 	}
 
-	/** Return geographic extents of the grid. */
+	/** Returns the geographic extents of the grid. */
 	DRECT &GetEarthExtents()			{ return m_EarthExtents; }
 	const DRECT &GetEarthExtents() const { return m_EarthExtents; }
 
@@ -47,6 +47,12 @@ protected:
 };
 
 
+/**
+ * This class extents vtHeightField with the abilty to operate in 'world'
+ *  coordinates, that is, an artificial meters-based 3D coordinate system
+ *  which is much better suited for many tasks than trying to operate
+ *  directly on the raw 2D 'earth' coordinates.
+ */
 class vtHeightField3d : public vtHeightField
 {
 public:
@@ -81,7 +87,7 @@ protected:
 
 
 /**
- * vtHeightFieldGrid extends vtHeightField with the knowledge of operating
+ * This class extends vtHeightField3d with the knowledge of operating
  * on a regular grid of elevation values.
  */
 class vtHeightFieldGrid3d : public vtHeightField3d

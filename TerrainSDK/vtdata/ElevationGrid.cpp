@@ -342,6 +342,8 @@ bool vtElevationGrid::ReprojectExtents(const vtProjection &proj_new)
  * \param fScale	The desired scale, e.g. 1.0 produces no change in scale.
  * \param bDirect	If true, scale the stored height values directly.
  *		Otherwise, only the height scale (vertical meters per unit) is scaled.
+ * \param bRecomputeExtents  If true, recompute the height extents.
+ *		Default is true.
  */
 void vtElevationGrid::Scale(float fScale, bool bDirect, bool bRecomputeExtents)
 {

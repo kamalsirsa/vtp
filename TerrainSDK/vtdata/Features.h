@@ -36,10 +36,10 @@ enum FieldType
 };
 
 /**
- * This class is used to store values in memory loaded from DBF files.
- * Alternately, we could use values directly from the DBF file instead,
- * or eventually some combination where a window into the DBF is
- * cached in memory to support very large files.
+ * This class is used to store values in memory for each record.
+ *
+ * Someday, we could use values directly from a database files instead,
+ * or even some interface for accessing very large or remote databases.
  */
 class Field
 {
@@ -216,6 +216,9 @@ protected:
 	vtString	m_strFilename;
 };
 
+/**
+ * A set of 2D point features.
+ */
 class vtFeatureSetPoint2D : public vtFeatureSet
 {
 public:
@@ -248,6 +251,9 @@ protected:
 	DLine2	m_Point2;	// wkbPoint
 };
 
+/**
+ * A set of 3D point features.
+ */
 class vtFeatureSetPoint3D : public vtFeatureSet
 {
 public:
@@ -277,6 +283,10 @@ protected:
 	DLine3	m_Point3;	// wkbPoint25D
 };
 
+/**
+ * A set of 2D linestring features, also known as "polylines."  Each
+ *  linestring is basically a simple set of 2D points.
+ */
 class vtFeatureSetLineString : public vtFeatureSet
 {
 public:
@@ -304,6 +314,11 @@ protected:
 	DLine2Array	m_Line;		// wkbLineString
 };
 
+/**
+ * A set of polygon features.  Each polygon is a DPolygon2 object,
+ *  which consists of a number of rings: one external ring, and any
+ *  number of internal rings (holes).
+ */
 class vtFeatureSetPolygon : public vtFeatureSet
 {
 public:
@@ -343,7 +358,6 @@ public:
 	vtFeatureSet *LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
 
 	vtFeatureSet *ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
-//	vtFeatureSet *CreateFromDLG(class vtDLGFile *pDLG);
 };
 
 // Helpers

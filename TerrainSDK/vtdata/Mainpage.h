@@ -14,8 +14,8 @@ and distributed under a completely free <a href="../../license.txt">open source 
         <li>vtStructure</li>
         <li>vtStructInstance</li>
         <li>vtBuilding</li>
-        <li>vtWall</li>
-        <li>vtStory</li>
+        <li>vtEdge</li>
+        <li>vtLevel</li>
         <li>vtFence</li>
         <li>vtStructureArray</li>
       </ul>
@@ -32,8 +32,13 @@ and distributed under a completely free <a href="../../license.txt">open source 
       <p>Roads / Transportation</p>
       <ul>
         <li>Node</li>
-        <li>Road</li>
+        <li>Link</li>
         <li>vtRoadMap</li>
+      </ul>
+      <p>Vector/Polygonal Data Formats</p>
+      <ul>
+        <li>vtDLGFile</li>
+        <li>vtLULCFile</li>
       </ul>
     </td>
     <td valign="top">
@@ -56,13 +61,17 @@ and distributed under a completely free <a href="../../license.txt">open source 
       <ul>
         <li>FLine2 / DLine2</li>
         <li>FLine3 / DLine3</li>
-        <li>DPolyArray2</li>
+        <li>DPolygon2</li>
+        <li>DPolyArray</li>
       </ul>
       <p>Miscellaneous</p>
       <ul>
-        <li>Triangulate_f / Triangulate_d</li>
         <li>vtString</li>
+        <li>vtTime</li>
+        <li>Triangulate_f / Triangulate_d</li>
         <li>DymaxIcosa</li>
+		<li>Countries</li>
+		<li>dir_iter</li>
       </ul>
     </td>
     <td valign="top">
@@ -75,25 +84,29 @@ and distributed under a completely free <a href="../../license.txt">open source 
       </ul>
       <p>Elevation</p>
       <ul>
+        <li>vtHeightField</li>
+        <li>vtHeightField3d</li>
+        <li>vtHeightFieldGrid3d</li>
         <li>vtElevationGrid</li>
         <li>vtTin</li>
       </ul>
       <p>Bitmaps</p>
       <ul>
+        <li>vtBitmapBase</li>
         <li>vtDIB</li>
       </ul>
       Projections
       <ul>
         <li>vtProjection</li>
+        <li>vtLocalConversion</li>
       </ul>
       <p>Raw Features</p>
       <ul>
-        <li>vtFeatures</li>
-      </ul>
-      <p>Vector/Polygonal Data Formats</p>
-      <ul>
-        <li>vtDLGFile</li>
-        <li>vtLULCFile</li>
+        <li>vtFeatureSet</li>
+        <li>vtFeatureSetPoint2D</li>
+        <li>vtFeatureSetPoint3D</li>
+        <li>vtFeatureSetLineString</li>
+        <li>vtFeatureSetPolygon</li>
       </ul>
     </td>
   </tr>

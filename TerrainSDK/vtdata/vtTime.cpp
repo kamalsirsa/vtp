@@ -13,7 +13,7 @@ time_t vtTime::s_DifferenceFromGMT = (time_t) -1;
 
 vtTime::vtTime()
 {
-	// default to current time
+	// default to "current" time
 	GetSystemTime();
 }
 

@@ -157,8 +157,8 @@ void vtHeightFieldGrid3d::GetDimensions(int &nColumns, int &nRows) const
 /**
  * Tests a ray against a heightfield grid.
  *
- * Note: this algorithm is not guaranteed to give absolutely correct results,
- * but it is reasonably fast or efficient.  It checks a series of PICK_DISTANCE
+ * Note: This algorithm is not guaranteed to give absolutely correct results,
+ * but it is reasonably fast and efficient.  It checks a series of PICK_DISTANCE
  * points along the ray against the terrain.  When a pair of points (segment)
  * is found to straddle the terrain, it refines the segment in a binary fashion.
  *
@@ -390,15 +390,26 @@ public:
 	int m_w, m_h;
 };
 
+
 /**
  * ShadowCastDib - method to create shadows over the terrain based on the
  * angle of the sun.
  *
- * Core code contributed by Kevin Behilo, 2/20/04
- * Possible TODO: add code to soften and blend shadow edges
- *  (see aliasing comments below).
+ * \param pBM	An interface to the bitmap to be shaded.
+ * \param light_dir	The direction of the light, in world coordinates, coming
+ *		down toward the terrain.  For example, (-1,-1,0) is pointing down
+ *		where the sun would be at 9AM on the equator.  Despite this example,
+ *		light_dir should be normalized to unit length.
+ * \param light_factor	Amount of shading, from 0 to 1.  A value of 0 means
+ *		no lighting, 1 means full lighting.
+ * \param progress_callback	Optional callback for progress notification.
+ */
+/* Core code contributed by Kevin Behilo, 2/20/04.
  *
- * Definitely TODO: the whole thing can be sped up by precalculating the
+ * Possible TODO: add code to soften and blend shadow edges
+ *  (see aliasing comments in source).
+ *
+ * Definite TODO: the whole thing can be sped up by precalculating the
  *  surface normals once.  In fact that should be placed in a separate Shading
  *  Context, so that it could be re-used for quickly re-shading multiple times.
  */

@@ -29,10 +29,8 @@ public:
 	void SetDate(int year, int month, int day);
 	void GetDate(int &year, int &month, int &day) const;
 
-//	void SetLocalTime(int hr, int min, int sec);
 	void SetTimeOfDay(int hr, int min, int sec);
 
-//	void SetTime(time_t time);
 	void GetTimeOfDay(int &hr, int &min, int &sec) const;
 	int GetSecondOfDay() const;
 

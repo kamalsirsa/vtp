@@ -16,12 +16,12 @@
 
 #include "Projections.h"		// for LinearUnits
 
-//
-// The following class represents a mapping between real earth coordinates
-// (geographic or projected, elevation in meters) and a local, meters-based
-// 3D coordinate system, which uses the right-handed OpenGL axis convention
-// (X right, Y up, Z backwards)
-//
+/**
+ * The following class represents a mapping between real earth coordinates
+ * (geographic or projected, elevation in meters) and a local, meters-based
+ * 3D coordinate system, which uses the right-handed OpenGL axis convention
+ * (X right, Y up, Z backwards)
+ */
 class vtLocalConversion
 {
 public:

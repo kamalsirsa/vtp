@@ -92,7 +92,7 @@ public:
 	/** Return the embedded name of the DEM is it has one */
 	const char *GetDEMName()	{ return m_strOriginalDEMName; }
 
-	/** Return geographic extents of the *area* covered by grid. */
+	/** Returns the geographic extents of the *area* covered by grid. */
 	DRECT GetAreaExtents() const;
 
 	/** Get the data size of the grid: \c true if floating point (4-byte),

@@ -780,7 +780,7 @@ OGRwkbGeometryType vtFeatureSet::GetGeomType() const
 /**
  * Set the type of geometry that each feature will have.
  *
- * \param type
+ * \param eGeomType
  *		- wkbPoint for 2D points
  *		- wkbPoint25D fpr 3D points
  *		- wkbLineString for 2D polylines
