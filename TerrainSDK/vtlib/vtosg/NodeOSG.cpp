@@ -30,9 +30,6 @@ using namespace osg;
 
 vtNode::vtNode()
 {
-	// Artificially increment our own reference count, so that OSG
-	// won't try to delete us when it removes its reference to us.
-//	ref();
 }
 
 vtNode::~vtNode()
@@ -45,26 +42,32 @@ void vtNode::Release()
 	if (m_pNode == NULL)
 		return;
 
-	// remove the OSG node from its OSG group parent(s)
-	unsigned int parents = m_pNode->getNumParents();
-	if (parents)
+	if (m_pNode->referenceCount() == 1)
 	{
-		Group *parent = m_pNode->getParent(0);
-		parent->removeChild(m_pNode.get());
-	}
-
-	m_pFogStateSet = NULL;
-	m_pFog = NULL;
+		m_pFogStateSet = NULL;
+		m_pFog = NULL;
 
 #if DEBUG_NODE_LOAD
-	VTLOG("Deleting Node: %lx (\"%s\")\n", this, m_pNode->getName().c_str());
+		VTLOG("Deleting Node: %lx (\"%s\")\n", this, m_pNode->getName().c_str());
 #endif
+		// Tell OSG that we're through with this node.
+		// The following statement calls unref() on m_pNode, which deletes
+		//  the OSG node, which decrements its reference to us, which
+		//  deletes us.
+		m_pNode = NULL;
+	}
+}
 
-	// Tell OSG that we're through with this node
-	// The following statement calls unref() on m_pNode, which deletes
-	//  the OSG node, which decrements its reference to us, which
-	//  deletes us.
-	m_pNode = NULL;
+void vtNode::SetOsgNode(Node *n)
+{
+	// set refptr to the OSG node, which bumps its refcount
+	m_pNode = n;
+
+	if (m_pNode.valid())
+	{
+		// set its user data back to use, which bumps our refcount
+		m_pNode->setUserData((vtNode *)this);
+	}
 }
 
 void vtNode::SetEnabled(bool bOn)
@@ -189,13 +192,6 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 		// turn fog off
 		set->setModeToInherit(GL_FOG);
 	}
-}
-
-void vtNode::SetOsgNode(Node *n)
-{
-	m_pNode = n;
-	if (m_pNode.valid())
-		m_pNode->setUserData((vtNode *)this);
 }
 
 // Walk an OSG scenegraph looking for Texture states, and disable mipmap.
@@ -423,6 +419,7 @@ void vtGroup::Release()
 	int count = m_pGroup.get()->referenceCount();
 	if (count == 2)
 	{
+		// it's over for this node, start the destruction process
 		// Release children depth-first
 		int children = GetNumChildren();
 		vtNode *pChild;
@@ -443,14 +440,10 @@ void vtGroup::Release()
 				pChild->Release();
 			}
 		}
-		// Now destroy itself
-		m_pGroup = NULL;	// decrease refcount
-		vtNode::Release();
+		m_pGroup = NULL;
 	}
-	else
-	{
-		int foo = 1;
-	}
+	// Now release itself
+	vtNode::Release();
 }
 
 vtNode *FindNodeByName(vtNode *node, const char *name)
@@ -562,16 +555,12 @@ void vtTransform::Release()
 {
 	// Check if there are no more external references to this transform node.
 	// If so, clean up the VTP side of the scene graph.
-	int count = m_pTransform.get()->referenceCount();
-	if (count == 3)
+	if (m_pNode->referenceCount() == 3)
 	{
+		// it's over for this node, start the destruction process
 		m_pTransform = NULL;
-		vtGroup::Release();
 	}
-	else
-	{
-		int foo = 1;
-	}
+	vtGroup::Release();
 }
 
 void vtTransform::Identity()
@@ -722,8 +711,11 @@ void vtLight::CopyFrom(const vtLight *rhs)
 
 void vtLight::Release()
 {
-	m_pLight = NULL;	// explicit refcount decrement
-	m_pLightSource = NULL;
+	if (m_pNode->referenceCount() == 2)
+	{
+		m_pLight = NULL;	// explicit refcount decrement
+		m_pLightSource = NULL;
+	}
 	vtNode::Release();
 }
 
@@ -835,6 +827,16 @@ float vtCamera::GetFOV() const
 	return m_fFOV;
 }
 
+float vtCamera::GetVertFOV() const
+{
+	IPoint2 size = vtGetScene()->GetWindowSize();
+	float aspect = (float) size.x / size.y;
+
+	double a = tan(m_fFOV/2);
+	double b = a / aspect;
+	return atan(b) * 2;
+}
+
 void vtCamera::ZoomToSphere(const FSphere &sphere)
 {
 	Identity();
@@ -912,10 +914,11 @@ void vtGeom::CopyFrom(const vtGeom *rhs)
 
 void vtGeom::Release()
 {
-	if (m_pGeode != NULL)
+	if (m_pNode->referenceCount() == 2)
 	{
-		// Release the meshes we contain, which will delete them if there are no
-		//  other references to them.
+		// Clean up this geom, it is going away.
+		// Release the meshes we contain, which will delete them if there
+		//  are no other references to them.
 		int i, num = m_pGeode->getNumDrawables();
 		for (i = 0; i < num; i++)
 		{
@@ -933,9 +936,8 @@ void vtGeom::Release()
 
 		// dereference
 		m_pGeode = NULL;
+		m_pMaterialArray = NULL;
 	}
-	m_pMaterialArray = NULL;
-
 	vtNode::Release();
 }
 
@@ -1069,7 +1071,11 @@ vtLOD::~vtLOD()
 
 void vtLOD::Release()
 {
-	m_pLOD = NULL;
+	if (m_pNode->referenceCount() == 3)
+	{
+		// Clean up this node, it is going away.
+		m_pLOD = NULL;
+	}
 	vtGroup::Release();
 }
 
@@ -1327,20 +1333,19 @@ vtSprite::~vtSprite()
 
 void vtSprite::Release()
 {
-	if (m_geode != NULL)
+	if (m_pNode->referenceCount() == 2)
 	{
-		// Release the meshes we contain, which will delete them if there are no
-		//  other references to them.
+		// Release the meshes we contain, which will delete them if there
+		//  are no other references to them.
 		if (m_pMesh)
 		{
 			m_pMesh->Release();
 			m_geode->removeDrawable(0, 1);
 		}
-		// dereference
-		m_geode = NULL;
+		m_geode = NULL;			// dereference
+		m_projection = NULL;	// dereference
 	}
-	// Destroy itself
-	m_projection = NULL;	// decrease refcount
+	// Check parent
 	vtNode::Release();
 }
 
