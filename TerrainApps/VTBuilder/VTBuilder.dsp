@@ -301,6 +301,10 @@ SOURCE=.\ImportStructDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ImportStructDlgOGR.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ImportVegDlg.h
 # End Source File
 # Begin Source File
@@ -628,6 +632,10 @@ SOURCE=.\FeatInfoDlg.cpp
 # Begin Source File
 
 SOURCE=.\ImportStructDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ImportStructDlgOGR.cpp
 # End Source File
 # Begin Source File
 
