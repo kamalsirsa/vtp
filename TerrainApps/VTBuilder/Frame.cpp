@@ -15,7 +15,7 @@
 #include "wx/resource.h"
 
 #include "Frame.h"
-#include "SplitterWindow.h"
+#include "SplitterWin.h"
 #include "TreeView.h"
 #include "MenuEnum.h"
 #include "App.h"
