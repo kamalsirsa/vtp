@@ -10,6 +10,8 @@
 #include <osgText/Text>
 #include <osg/BlendFunc>
 
+class vtImage;
+
 /**
  * A material is a description of how a surface should be rendered.  For a
  * good description of how Materials work, see the opengl.org website or
@@ -48,7 +50,8 @@ public:
 	void SetWireframe(bool bOn);
 	bool GetWireframe();
 
-	void SetTexture(class vtImage *pImage);
+	void SetTexture(vtImage *pImage);
+	vtImage	*GetTexture();
 
 	void SetClamp(bool bClamp);
 	bool GetClamp();
@@ -57,6 +60,9 @@ public:
 	bool GetMipMap();
 
 	void Apply();
+
+	// remember this for convenience
+	vtImage	*m_pImage;
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;
@@ -68,7 +74,7 @@ public:
 /**
  * Contains an array of materials.  Provides useful methods for creating material easily.
  */
-class vtMaterialArray : public vtMaterialArrayBase
+class vtMaterialArray : public vtMaterialArrayBase, public osg::Referenced
 {
 public:
 	int AppendMaterial(vtMaterial *pMat);
@@ -76,18 +82,6 @@ public:
 
 
 /////////////////////////////////////////////
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-class GeoSet2 : public osg::GeoSet
-{
-public:
-	GeoSet2() { m_pMesh = NULL; }
-	~GeoSet2();
-	class vtMesh *m_pMesh;
-};
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /**
  * A Mesh is a set of graphical primitives (such as lines, triangles,
@@ -100,7 +94,7 @@ public:
  * Most of the useful methods of this class are defined on its parent
  *	class, vtMeshBase.
  */
-class vtMesh : public vtMeshBase
+class vtMesh : public vtMeshBase, public osg::Referenced
 {
 	friend class vtGeom;
 
@@ -144,7 +138,7 @@ public:
 protected:
 	// Implementation
 	void _AddStripNormals();
-	osg::ref_ptr<GeoSet2> m_pGeoSet;
+	osg::ref_ptr<osg::GeoSet> m_pGeoSet;
 
 	// GeoSet doesn't actually know or care about how many vertices
 	// it contains - it just needs a pointer to the beginning of
@@ -170,10 +164,13 @@ public:
 	osg::ref_ptr<osgText::Font> m_pOsgFont;
 };
 
-class vtTextMesh
+class vtTextMesh : public osg::Referenced
 {
 public:
 	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);
+	~vtTextMesh();
+
+	void Destroy();
 
 	void SetText(const char *text);
 	void SetText(const wchar_t *text);

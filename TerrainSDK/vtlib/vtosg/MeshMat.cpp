@@ -22,10 +22,17 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 
 	// Not sure why this is required (should be the default!)
 	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
+
+	m_pImage = NULL;
 }
 
 vtMaterial::~vtMaterial()
 {
+	// do these manually, although it's not really required
+	m_pMaterial = NULL;
+	m_pTexture = NULL;
+	m_pStateSet = NULL;
+	m_pBlendFunc = NULL;
 }
 
 /**
@@ -114,7 +121,7 @@ void vtMaterial::SetCulling(bool bCulling)
 bool vtMaterial::GetCulling()
 {
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(StateAttribute::CULLFACE);
+	m = m_pStateSet->getMode(GL_CULL_FACE);
 	return (m == SA_ON);
 }
 
@@ -131,7 +138,7 @@ void vtMaterial::SetLighting(bool bLighting)
 bool vtMaterial::GetLighting()
 {
 	StateAttribute::GLModeValue m;
-	m = m_pStateSet->getMode(StateAttribute::LIGHT);
+	m = m_pStateSet->getMode(GL_LIGHTING);
 	return (m == SA_ON);
 }
 
@@ -224,6 +231,9 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	m_pTexture->setImage(pImage->m_pOsgImage.get());
 
+	// store this for convenience
+	m_pImage = pImage;
+
 	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
 	// *after* a glTextImage2D?
 	// By default the OSG doesn't do it bacause the user may actually want to
@@ -233,10 +243,19 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	// So i tried this, but it doesn't seem to have any affect on runtime memory
 	//  footprint:
-	m_pTexture->setUnRefImageDataAfterApply(true);
+//	m_pTexture->setUnRefImageDataAfterApply(true);
 
 	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(), SA_ON);
 }
+
+/**
+ * Returns the texture (image) associated with a material.
+ */
+vtImage	*vtMaterial::GetTexture()
+{
+	return m_pImage;
+}
+
 
 /**
  * Set the texture clamping property for this material.
@@ -321,15 +340,6 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 // vtMesh
 //
 
-GeoSet2::~GeoSet2()
-{
-	if (m_pMesh)
-	{
-		delete m_pMesh;
-		m_pMesh = NULL;
-	}
-}
-
 /**
  * Construct a Mesh.
  * A Mesh is a container for a set of vertices and primitives.
@@ -361,7 +371,10 @@ GeoSet2::~GeoSet2()
 vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	vtMeshBase(PrimType, VertType, NumVertices)
 {
-	m_pGeoSet = new GeoSet2();
+	m_pGeoSet = new GeoSet();
+
+	// set backpointer so we can find ourselves later
+	m_pGeoSet->setUserData(this);
 
 	// We own the array allocation, so tell OSG not to try to free it
 	m_pGeoSet->setAttributeDeleteFunctor(NULL);
@@ -375,9 +388,6 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 
 	m_pGeoSet->setCoords(m_Vert.GetData(), m_Index.GetData());
 	m_pGeoSet->setPrimLengths(m_PrimLen.GetData());
-
-	// set backpointer so we can find ourselves later
-	m_pGeoSet->m_pMesh = this;
 
 	if (VertType & VT_Normals)
 	{
@@ -800,6 +810,9 @@ vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 	m_pOsgText = new osgText::Text;
 	m_pOsgText->setFont(font->m_pOsgFont.get());
 
+	// set backpointer so we can find ourselves later
+	m_pOsgText->setUserData(this);
+
 	// Set the Font reference width and height resolution in texels.
 	m_pOsgText->setFontSize(32,32);
 
@@ -808,6 +821,15 @@ vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 
 	if (bCenter)
 		m_pOsgText->setAlignment(osgText::Text::CENTER_BOTTOM);
+}
+
+vtTextMesh::~vtTextMesh()
+{
+}
+
+void vtTextMesh::Destroy()
+{
+	m_pOsgText = NULL;	// dereference
 }
 
 void vtTextMesh::SetText(const char *text)
