@@ -28,6 +28,7 @@ public:
 	vtLocalConversion();
 
 	void Setup(LinearUnits units, const DPoint2 &origin);
+	void SetOrigin(const DPoint2 &origin);
 
 	void ConvertToEarth(const FPoint3 &world, DPoint3 &earth);
 	void ConvertToEarth(float x, float z, DPoint2 &earth);

@@ -45,6 +45,11 @@ void vtLocalConversion::Setup(LinearUnits units, const DPoint2 &origin)
 	}
 }
 
+void vtLocalConversion::SetOrigin(const DPoint2 &origin)
+{
+	m_EarthOrigin = origin;
+}
+
 void vtLocalConversion::convert_earth_to_local_xz(double ex, double ey,
 												  float &x, float &z)
 {
