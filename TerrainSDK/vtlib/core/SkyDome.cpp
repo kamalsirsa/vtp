@@ -46,6 +46,13 @@ inline void PT_SPHERE_TO_CART(const FPoint3& A, FPoint3& B) {
 // SkyDome
 //
 
+vtSkyDome::vtSkyDome()
+{
+	m_pDayDome = NULL;
+	m_pStarDome = NULL;
+	m_pSunLight = NULL;
+}
+
 /**
  * Creates a complete SkyDome, which includes a DayDome and a StarDome.
  */
@@ -76,8 +83,10 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 
 void vtSkyDome::Destroy()
 {
-	m_pDayDome->Destroy();
-	m_pStarDome->Destroy();
+	// not necessary to destroy explicitly, they are destroyed as child nodes
+//	m_pDayDome->Destroy();
+//	m_pStarDome->Destroy();
+
 	vtTransform::Destroy();
 }
 
@@ -233,13 +242,6 @@ void vtSkyDome::SetDawnTimes(int start_hr, int start_min,
 }
 
 
-vtSkyDome::vtSkyDome()
-{
-	m_pDayDome = NULL;
-	m_pStarDome = NULL;
-	m_pSunLight = NULL;
-}
-
 //
 //
 void vtSkyDome::SetDayColors(const RGBf &horizon, const RGBf &azimuth)
@@ -303,7 +305,8 @@ vtDayDome::vtDayDome()
 	m_pDomeGeom = NULL;
 	m_pDomeMesh = NULL;
 	m_pSunShape = NULL;
-	m_SunApp = NULL;
+	m_pSunMat = NULL;
+	m_pSunImage = NULL;
 	SphVertices = NULL;
 	m_bHasTexture = false;
 }
@@ -356,12 +359,17 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 
 	if (sun_texture && *sun_texture)
 	{
-//		vtImage *pImage = new vtImage(sun_texture, GL_RGBA4);
-		int idx = m_pMats->AddTextureMaterial2(sun_texture,
+		int idx = -1;
+
+		m_pSunImage = new vtImage(sun_texture);
+		if (m_pSunImage->LoadedOK())
+		{
+			idx = m_pMats->AddTextureMaterial(m_pSunImage,
 							 false, false,	// culling, lighting
 							 true, true,	// transp, additive
 							 1.0f,			// diffuse
 							 1.0f, 1.0f);	// alpha, emmisive
+		}
 		if (idx == -1)
 			return;		// could not load texture, cannot have sun
 
@@ -370,7 +378,7 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 		m_pSunShape = new vtMovGeom(pGeom);
 		vtMesh *SunMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, 4);
 
-		m_SunApp = m_pMats->GetAt(idx);
+		m_pSunMat = m_pMats->GetAt(idx);
 
 		SunMesh->CreateRectangle(0.50f, 0.50f);
 		pGeom->SetMaterials(m_pMats);
@@ -391,8 +399,13 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 void vtDayDome::Destroy()
 {
 	if (SphVertices) delete[] SphVertices;
+	delete m_pSunImage;
+	if (m_pMats)
+	{
+		delete m_pMats;
+		m_pMats = NULL;
+	}
 	vtTransform::Destroy();
-	delete m_pMats;
 }
 
 //
@@ -534,11 +547,11 @@ void vtDayDome::SetTimeOfDay(int time, bool bFullRefresh)
 void vtDayDome::SetSunColor(const RGBf &color)
 {
 #ifdef VTLIB_PSM
-	if (m_SunApp)
-		m_SunApp->SetDiffuse1(color);
+	if (m_pSunMat)
+		m_pSunMat->SetDiffuse1(color);
 #else
-	if (m_SunApp)
-		m_SunApp->vtMaterialBase::SetDiffuse1(color);
+	if (m_pSunMat)
+		m_pSunMat->vtMaterialBase::SetDiffuse1(color);
 #endif
 }
 
@@ -679,7 +692,9 @@ void vtDayDome::SetDawnTimes(int start_hr, int start_min,
 //
 vtStarDome::vtStarDome()
 {
+	m_pMats = NULL;
 	Starfield = NULL;
+	m_pMoonImage = NULL;
 }
 
 void vtStarDome::Create(const char *starfile, float radius, float brightness,
@@ -697,10 +712,9 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 	ReadStarData(starfile);
 
 	m_pMats = new vtMaterialArray();
-	int index = m_pMats->AddRGBMaterial1(RGBf(0,0,0), false, false);
-	vtMaterial *pMat = m_pMats->GetAt(index);
+	int star_mat = m_pMats->AddRGBMaterial1(RGBf(0,0,0), false, false);
+	vtMaterial *pMat = m_pMats->GetAt(star_mat);
 	pMat->SetTransparent(true, true);
-	int star_mat = m_pMats->Append(pMat);
 
 	// Need a material?
 	m_pStarGeom->SetMaterials(m_pMats);
@@ -718,12 +732,17 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 
 	if (moon_texture && *moon_texture)
 	{
-		int moon_mat = m_pMats->AddTextureMaterial2(moon_texture,
-							 false, false,	// culling, lighting
-							 true, true,	// transparent, additive
-							 1.0f,			// diffuse
-							 1.0f, 1.0f);	// alpha, emmisive
-		if (moon_mat == -1)
+		int idx = -1;
+		m_pMoonImage = new vtImage(moon_texture);
+		if (m_pMoonImage->LoadedOK())
+		{
+			idx = m_pMats->AddTextureMaterial(m_pMoonImage,
+								 false, false,	// culling, lighting
+								 true, true,	// transparent, additive
+								 1.0f,			// diffuse
+								 1.0f, 1.0f);	// alpha, emmisive
+		}
+		if (idx == -1)
 			return;		// could not load texture, cannot have sun
 
 		// Create moon
@@ -733,7 +752,7 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 
 		MoonMesh->CreateRectangle(0.1f, 0.1f);
 		pGeom->SetMaterials(m_pMats);
-		pGeom->AddMesh(MoonMesh, moon_mat);
+		pGeom->AddMesh(MoonMesh, idx);
 
 		m_pMoonGeom->SetName2("Moon");
 
@@ -752,8 +771,13 @@ void vtStarDome::Destroy()
 {
 	if (Starfield)
 		delete[] Starfield;
+	delete m_pMoonImage;
+	if (m_pMats)
+	{
+		delete m_pMats;
+		m_pMats = NULL;
+	}
 	vtTransform::Destroy();
-	delete m_pMats;
 }
 
 //

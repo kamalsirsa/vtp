@@ -92,7 +92,8 @@ private:
 	vtMesh			*m_pDomeMesh;
 
 	vtMovGeom		*m_pSunShape;
-	vtMaterial		*m_SunApp;
+	vtMaterial		*m_pSunMat;
+	vtImage			*m_pSunImage;
 
 	bool		m_bHasTexture;
 };
@@ -149,6 +150,7 @@ private:
 	vtMesh		*m_pStarMesh;
 	vtMovGeom	*m_pMoonGeom;
 	vtMaterialArray *m_pMats;
+	vtImage		*m_pMoonImage;
 };
 
 
