@@ -15,6 +15,8 @@
 #include "LocalConversion.h"
 #include "Structure.h"
 
+class vtHeightField;
+
 ////////////////////////////////////////////////////
 
 enum RoofType
@@ -185,6 +187,7 @@ public:
 
 	void SetRectangle(float fWidth, float fDepth, float fRotation = 0.0f);
 	void FlipFootprintDirection();
+	float CalculateBaseElevation(vtHeightField *pHeightField);
 
 	void SetRadius(float fRad);
 	float GetRadius() const;
@@ -228,8 +231,8 @@ public:
 	bool IsContainedBy(const DRECT &rect) const;
 	void SwapLevels(int lev1, int lev2);
 
-	void SetBaseElevation(float fElev) { m_fBaseElevation = fElev; }
-	double GetBaseElevation() const { return m_fBaseElevation; }
+	void SetElevationOffset(float fOffset) { m_fElevationOffset = fOffset; }
+	float GetElevationOffset() const { return m_fElevationOffset; }
 
 protected:
 	// information about each story
@@ -238,16 +241,15 @@ protected:
 	// fields that affect placement
 	DPoint2		m_EarthPos;			// location of building center
 
-	// geo z co-ordinate (elevation) of bottom of this building relative
-	//	to the lowest corner of its base footprint
-	float		m_fBaseElevation;
+	// Offset that the building should be moved up or down relative to its
+	// default position on the ground (lowest corner of its base footprint)
+	float		m_fElevationOffset;
 
 private:
 	void DeleteStories();
 };
 
 typedef vtBuilding *vtBuildingPtr;
-
 
 ///////////////////////////////////////////////////////////////////////
 

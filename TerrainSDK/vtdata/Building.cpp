@@ -10,6 +10,7 @@
 //
 
 #include "Building.h"
+#include "HeightField.h"
 #include "LocalConversion.h"
 
 // Defaults
@@ -599,7 +600,7 @@ void vtLevel::FlipFootprintDirection()
 vtBuilding::vtBuilding() : vtStructure()
 {
 	SetType(ST_BUILDING);
-	m_fBaseElevation = 0.0f;
+	m_fElevationOffset = 0.0f;
 }
 
 vtBuilding::~vtBuilding()
@@ -636,6 +637,26 @@ void vtBuilding::FlipFootprintDirection()
 	// Flip the direction (clockwisdom) of each level
 	for (int i = 0; i < m_Levels.GetSize(); i++)
 		m_Levels[i]->FlipFootprintDirection();
+}
+
+/**
+ * Calculate the elevation at which this building should be placed
+ * on a given heightfield.
+ */
+float vtBuilding::CalculateBaseElevation(vtHeightField *pHeightField)
+{
+	DLine2 &Footprint = m_Levels[0]->GetFootprint();
+	int iSize = Footprint.GetSize();
+	float fLowest = 1E9f;
+	FPoint3 Point;
+
+	for (int i = 0; i < iSize; i++)
+	{
+		pHeightField->ConvertEarthToSurfacePoint(Footprint[i], Point);
+		if (Point.y < fLowest)
+			fLowest = Point.y;
+	}
+	return fLowest + m_fElevationOffset;
 }
 
 void vtBuilding::SetRadius(float fRad)
@@ -1048,8 +1069,8 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 		coord_format = "%.2lf";
 
 	fprintf(fp, "\t<Building");
-	if (m_fBaseElevation != 0.0f)
-		fprintf(fp, " Elevation=\"%.2f\"", m_fBaseElevation);
+	if (m_fElevationOffset != 0.0f)
+		fprintf(fp, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
 	fprintf(fp, ">\n");
 
 	int i, j, k;
