@@ -344,8 +344,8 @@ void MainFrame::CreateMenus()
 	// Elevation
 	elevMenu = new wxMenu;
 	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _("Se&lect Elevation Layer"));
-	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
 	elevMenu->AppendSeparator();
+	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
 	elevMenu->Append(ID_ELEV_REMOVERANGE, _("&Remove Elevation Range..."));
 	elevMenu->Append(ID_ELEV_FILLIN, _("&Fill In Unknown Areas"));
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _("&Set Unknown Areas"));
