@@ -129,7 +129,7 @@ public:
 	GlobePicker();
 	void Eval();
 	void SetRadius(double fRadius) { m_fRadius = fRadius; }
-	void SetGlobeMGeom(vtMovGeom *pMG) { m_pGlobeMGeom = pMG; }
+	void SetGlobeMGeom(vtTransform *pMG) { m_pGlobeXForm = pMG; }
 
 	bool GetCurrentPoint(FPoint3 &p);
 	bool GetCurrentEarthPos(DPoint3 &p);
@@ -139,7 +139,7 @@ protected:
 	DPoint3		m_EarthPos;
 	bool		m_bOnTerrain;
 	double		m_fRadius;
-	vtMovGeom	*m_pGlobeMGeom;
+	vtTransform	*m_pGlobeXForm;
 };
 
 ///////////////////////////////////////////////////

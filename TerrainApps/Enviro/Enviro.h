@@ -175,7 +175,7 @@ protected:
 	vtCamera	*m_pTopDownCamera;
 
 	vtRoot		*m_pRoot;		// top of the scene graph
-	vtMovGeom	*m_pGlobeMGeom;
+	vtTransform	*m_pGlobeXForm;
 	IcoGlobe	*m_pIcoGlobe;
 	bool		m_bShowTime;
 	bool		m_bGlobeFlat;

@@ -256,7 +256,7 @@ void Enviro::SetupGlobe()
 	}
 	if (m_iInitStep == 2)
 	{
-		if (m_pGlobeMGeom == NULL)
+		if (m_pGlobeXForm == NULL)
 		{
 			MakeGlobe();
 			m_SpaceCamLocation.Identity();
@@ -268,8 +268,8 @@ void Enviro::SetupGlobe()
 	{
 		vtGetScene()->SetBgColor(RGBf(0.15f, 0.15f, 0.15f));
 
-		m_pGlobeMGeom->SetEnabled(true);
-		m_pRoot->AddChild(m_pGlobeMGeom);
+		m_pGlobeXForm->SetEnabled(true);
+		m_pRoot->AddChild(m_pGlobeXForm);
 		m_pCursorMGeom->Identity();
 	}
 	if (m_iInitStep == 4)
@@ -345,9 +345,9 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 	if (m_state == AS_Orbit)
 	{
 		// hide globe
-		if (m_pGlobeMGeom != NULL)
+		if (m_pGlobeXForm != NULL)
 		{
-			m_pGlobeMGeom->SetEnabled(false);
+			m_pGlobeXForm->SetEnabled(false);
 			m_pGlobePicker->SetEnabled(false);
 		}
 
@@ -674,13 +674,13 @@ void Enviro::MakeGlobe()
 	VTLOG("MakeGlobe\n");
 #if 0
 	// simple globe
-	m_pGlobeMGeom = CreateSimpleEarth(g_Options.m_DataPaths);
+	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
 #else
 	// fancy icosahedral globe
 	m_pIcoGlobe = new IcoGlobe();
 	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strImage,
 		IcoGlobe::RIGHT_TRIANGLE);
-	m_pGlobeMGeom = m_pIcoGlobe->m_mgeom;
+	m_pGlobeXForm = m_pIcoGlobe->GetTop();
 #endif
 
 	VTLOG("\tcreating Trackball\n");
@@ -700,7 +700,7 @@ void Enviro::MakeGlobe()
 	//
 	m_pGlobePicker = new GlobePicker();
 	m_pGlobePicker->SetName2("GlobePicker");
-	m_pGlobePicker->SetGlobeMGeom(m_pGlobeMGeom);
+	m_pGlobePicker->SetGlobeMGeom(m_pGlobeXForm);
 	vtGetScene()->AddEngine(m_pGlobePicker);
 	m_pGlobePicker->SetTarget(m_pCursorMGeom);
 	m_pGlobePicker->SetRadius(1.0);
@@ -713,7 +713,7 @@ void Enviro::MakeGlobe()
 	if (bsc_file != "")
 	{
 		pStars->Create(bsc_file, 10.0f, 5.0f);	// radius, brightness
-		m_pGlobeMGeom->AddChild(pStars);
+		m_pGlobeXForm->AddChild(pStars);
 	}
 }
 
@@ -1325,7 +1325,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	if (!m_pArc)
 	{
 		m_pArc = new vtGeom();
-		m_pGlobeMGeom->AddChild(m_pArc);
+		m_pGlobeXForm->AddChild(m_pArc);
 		vtMaterialArray *pMats = new vtMaterialArray();
 		int yellow = pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 						 false, false, false);

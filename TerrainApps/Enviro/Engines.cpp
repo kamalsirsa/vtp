@@ -393,7 +393,7 @@ GlobePicker::GlobePicker() : vtLastMouse()
 {
 	m_fRadius = 1.0;
 	m_bOnTerrain = false;
-	m_pGlobeMGeom = NULL;
+	m_pGlobeXForm = NULL;
 }
 
 void GlobePicker::Eval()
@@ -413,11 +413,11 @@ void GlobePicker::Eval()
 		// save result
 		m_GroundPoint = akPoint[0];
 
-		if (m_pGlobeMGeom)
+		if (m_pGlobeXForm)
 		{
 			// rotate to find position relative to globe's rotation
 			FMatrix4 rot;
-			m_pGlobeMGeom->GetTransform1(rot);
+			m_pGlobeXForm->GetTransform1(rot);
 			FMatrix4 inverse;
 			inverse.Invert(rot);
 			FPoint3 newpoint;
