@@ -68,54 +68,15 @@ void IslandTerrain::create_telescopes()
 	{
 		vtString str("BuildingModels/");
 		str += tscope_filename[t];
-		vtNode *tscope_node = LoadModel(str);
-		if (tscope_node)
+		vtTransform *tscope = LoadModel(str);
+		if (tscope)
 		{
-			vtTransform *tscope = new vtTransform();
-			tscope->AddChild(tscope_node);
 			tscope->RotateLocal(FPoint3(1,0,0), -PID2f);
 			tscope->Scale3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
 			PlantModelUTM(tscope, tscope_utm[t][0], tscope_utm[t][1]);
 			m_pLodGrid->AppendToGrid(tscope);
 		}
 	}
-#else
-	// read from shapefile
-	SHPHandle hSHP;
-	hSHP = SHPOpen("Data/Unique/theme1.shp", "rb");
-	if (hSHP == NULL)
-		return;
-	DBFHandle db = DBFOpen("Data/Unique/theme1.dbf", "rb");
-	if (db == NULL)
-		return;
-
-	int numEnt, nType;
-	double minbound[4], maxbound[4];
-	SHPGetInfo(hSHP, &numEnt, &nType, minbound, maxbound);
-
-	for (int i = 1; i < numEnt; i++)
-	{
-		SHPObject *psShape = SHPReadObject(hSHP, i);
-
-		vtString fname	= DBFReadStringAttribute(db, i, 1);
-
-		vtString str("BuildingModels/");
-		str += fname;
-#if 0
-		vtTransform *tscope = LoadModel(str);
-		double utm_x, utm_y;
-		if (tscope)
-		{
-			double lon = psShape->padfX[0], lat = psShape->padfY[0];
-			tscope->Scale2(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
-			PlantModelLL(tscope, lat, lon);
-			m_pLodGrid->AppendToGrid(tscope);
-		}
-#endif
-		SHPDestroyObject(psShape);
-	}
-	DBFClose(db);
-	SHPClose(hSHP);
 #endif
 }
 
@@ -218,63 +179,6 @@ void IslandTerrain::create_airports()
 
 void IslandTerrain::CreateCustomCulture(bool bDoSound)
 {
-/*	FILE *fp = fopen(m_strDataPath + "Hawaii.POI", "r"); // TODO fix this hardcode...
-	if (fp)
-	{
-		char buf[10];
-		char temp[100];
-		char* name;
-        char* url;
-		int index;
-		float utmx1, utmy1, utmx2, utmy2;
-
-		fread(buf, 1, 1, fp);
-		while (strncmp(buf, "$", 1) != 0) 
-			fread(buf, 1, 1, fp);
-
-		fread(buf, 1, 1, fp);
-
-		// read name
-		index = 0;
-		do
-		{
-			fread(buf, 1, 1, fp);
-			temp[index++] = buf[0];
-		}
-		while(strncmp(buf, "\n", 1) != 0);
-
-		name = temp;
-
-		//read UTMs
-		fread(buf, 6, 1, fp); // utmx
-		utmx1 = (float) atof(buf);
-		fread(buf, 1, 1, fp); //space
-		fread(buf, 8, 1, fp); // utmy
-		utmy1 = (float) atof(buf);
-
-		fread(buf, 6, 1, fp); // utmx
-		utmx2 = (float) atof(buf);
-		fread(buf, 1, 1, fp); //space
-		fread(buf, 8, 1, fp); // utmy
-		utmy2 = (float) atof(buf);
-
-		// read URL
-		index = 0;
-		do
-		{
-			fread(buf, 1, 1, fp);
-			temp[index++] = buf[0];
-		}
-		while(strncmp(buf, "\n", 1) != 0);
-
-		url = temp;
-
-		AddPointOfInterest(utmx1, utmy1, utmx2, utmy2, name, url);
-
-		fclose(fp);
-	}
-*/
-
 	DPoint2 bound[8];
 	bound[0].Set(237387, 2219678);
 	bound[1] = bound[0] + DPoint2(0.0, -96.64);
@@ -284,23 +188,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	bound[5] = bound[4] + DPoint2(-178.2 + 37.44f, 0.0);
 	bound[6] = bound[5] + DPoint2(0.0, 96.64f - 30.48);
 	bound[7] = bound[2] + DPoint2(0.0, 12.2);
-
-/*
-	if (m_Params.m_bFences)
-	{
-		// put fences next to roads anywhere they go through pasture/rangeland?
-		// just a few test fences for now
-		setup_fence();
-
-		// test real estate parcel
-		// coordinates for parcel boundaries, in UTM coordinate (meters)
-		// fence: 0 - 1 - 3 - 4 - 5 - 6
-		create_fence_utm(bound[0], bound[1]);
-		create_fence_utm(bound[1], bound[3]);
-		create_fence_utm(bound[3], bound[4]);
-		create_fence_utm(bound[4], bound[5]);
-		create_fence_utm(bound[5], bound[6]);
-	}*/
 
 #if 0
 	if (m_Params.m_bBuildings)
@@ -388,22 +275,26 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	if (m_Params.m_bDetailTexture)
 	{
 		m_pDetailMats = new vtMaterialArray();
-		vtImage *pDetailTexture = new vtImage("Data/GeoTypical/grass_repeat2_512.bmp");
-		int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
-						 true,	// culling
-						 false,	// lighting
-						 true,	// transp: blend
-						 false,	// additive
-						 0.0f, 1.0f,	// ambient, diffuse
-						 0.5f, 0.0f,	// alpha, emmisive
-						 true, false,	// texgen, clamp
-						 true);			// mipmap
-		m_pDetailMat = m_pDetailMats->GetAt(index);
+		vtString path = m_strDataPath + "GeoTypical/grass_repeat2_512.bmp";
+		vtImage *pDetailTexture = new vtImage(path);
+		if (pDetailTexture->LoadedOK())
+		{
+			int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
+							 true,	// culling
+							 false,	// lighting
+							 true,	// transp: blend
+							 false,	// additive
+							 0.0f, 1.0f,	// ambient, diffuse
+							 0.5f, 0.0f,	// alpha, emmisive
+							 true, false,	// texgen, clamp
+							 true);			// mipmap
+			m_pDetailMat = m_pDetailMats->GetAt(index);
 
-		DRECT r;
-		m_pHeightField->GetEarthExtents(r);
-		float width_meters = (float) r.Width();
-		m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
+			DRECT r;
+			m_pHeightField->GetEarthExtents(r);
+			float width_meters = (float) r.Width();
+			m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
+		}
 	}
 }
 
@@ -411,7 +302,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 
 #if 0
 	// Test xfrog plant geometry
-	XfrogModel_ptr tree = LoadXFrogTree("Data/PlantModels/papaya1.xfr");
+	XfrogModel_ptr tree = LoadXFrogTree(m_strDataPath + "PlantModels/papaya1.xfr");
 	vtGeom *pPlantShape = CreateShapeFromXfrogTree(tree, 1.0f);
 	pPlantShape->SetName2("Plant");
 	m_pTreeGroup->AddChild(pPlantShape);
@@ -449,7 +340,7 @@ void IslandTerrain::create_airplanes(float fSize, float fSpeed, bool bDoSound)
 		if (bDoSound)
 		{
 			//sound stuff
-			vtSound3D* plane = new vtSound3D("Data/Vehicles/Airport-trim1.wav");
+			vtSound3D* plane = new vtSound3D(m_strDataPath + "Vehicles/Airport-trim1.wav");
 			plane->Initialize();
 			plane->SetName2("Plane Sound");
 			plane->SetModel(1,1,200,200);	//set limit of how far away sound can be heard
