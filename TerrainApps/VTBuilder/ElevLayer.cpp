@@ -132,8 +132,8 @@ void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 	wxRect destRect = screenrect;
 	wxRect srcRect(0, 0, iColumns, iRows);
 
-	float ratio_x = (float) srcRect.GetWidth() / destRect.GetWidth();
-	float ratio_y = (float) srcRect.GetHeight() / destRect.GetHeight();
+	double ratio_x = (float) srcRect.GetWidth() / destRect.GetWidth();
+	double ratio_y = (float) srcRect.GetHeight() / destRect.GetHeight();
 
 #if 0
 	//clip stuff, so we only blit what we need
@@ -806,9 +806,9 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 	m_pGrid->ComputeHeightExtents();
 	float fMin, fMax;
 	m_pGrid->GetHeightExtents(fMin, fMax);
-	str.Printf("Minimum elevation: %f\n", fMin);
+	str.Printf("Minimum elevation: %.2f\n", fMin);
 	strIn += str;
-	str.Printf("Maximum elevation: %f\n", fMax);
+	str.Printf("Maximum elevation: %.2f\n", fMax);
 	strIn += str;
 
 	const char *dem_name = m_pGrid->GetDEMName();
