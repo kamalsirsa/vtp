@@ -4,6 +4,7 @@
 // Copyright (c) 2001 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
+/** \file MathTypes.h */
 
 #ifndef VTDATATYPESH
 #define VTDATATYPESH
@@ -27,6 +28,9 @@
 
 class DPoint3;
 
+/**
+ * A 3-component vector class, single-precision (float).
+ */
 class FPoint3 {
 public:
 	FPoint3() { x = y = z = 0.0f; }
@@ -73,6 +77,9 @@ public:
 	float x, y, z;
 };
 
+/**
+ * A 3-component vector class, double-precision.
+ */
 class DPoint3 {
 public:
 	DPoint3() { x = y = z = 0.0f; }
@@ -119,6 +126,9 @@ inline DPoint3 &DPoint3::operator=(const FPoint3 &v) { x = v.x; y = v.y; z = v.z
 
 /////////////////////////////////////////////
 
+/**
+ * A class representing an infinite plane, single-precision (float).
+ */
 class FPlane : public FPoint3
 {
 public:
@@ -153,6 +163,9 @@ public:
 class FPoint2;
 class DPoint2;
 
+/**
+ * A 2-component vector class, single-precision (float).
+ */
 class FPoint2 {
 public:
 	FPoint2() { x = y = 0.0f; }
@@ -187,6 +200,9 @@ public:
 	float x, y;
 };
 
+/**
+ * A 2-component vector class, double-precision.
+ */
 class DPoint2 {
 public:
 	DPoint2() { x = y = 0.0f; }
@@ -199,6 +215,10 @@ public:
 	double LengthSquared() const { return (x*x+y*y); }
 	void Normalize() { double s = 1.0/Length(); x*=s; y*=s; }
 	void Set(double fx, double fy) { x=fx; y=fy; }
+	double Dot(const DPoint2 &rhs) const
+	{
+		return x*rhs.x+y*rhs.y;
+	}
 	void Rotate(double radians)
 	{
 		double tempx = x;
@@ -231,6 +251,10 @@ inline FPoint2::FPoint2(const DPoint2 &d) { x=(float)d.x; y=(float)d.y; }
 inline DPoint2::DPoint2(const FPoint2 &f) { x=f.x; y=f.y; }
 
 
+/**
+ * A 2-component vector class, integer.  Useful for representing discrete
+ * coordinates and sizes such as pixels and grids.
+ */
 class IPoint2 {
 public:
 	IPoint2() {}
@@ -267,10 +291,10 @@ inline DPoint2 &DPoint2::operator=(const class FPoint2 &v)
 	return *this;
 }
 
-//
-// a series of points, which can represent either a series of line
-//  segments or a closed polygon
-//
+/**
+ * A series of 2d points.  This is useful for representing either a series of
+ * points, line segments or a closed polygon.  Double-precision.
+ */
 class DLine2 : public Array<DPoint2>
 {
 public:
@@ -286,6 +310,10 @@ public:
 	bool ContainsPoint(const DPoint2 &p);
 };
 
+/**
+ * A series of 2d points.  This is useful for representing either a series of
+ * points, line segments or a closed polygon.  Single-precision.
+ */
 class FLine2 : public Array<FPoint2>
 {
 public:
@@ -352,6 +380,10 @@ inline FLine2 &FLine2::operator=(const class DLine2 &v)
 
 /////////////////////////////////////
 
+/**
+ * A series of 3d points.  This is useful for representing either a series of
+ * points, line segments or a closed polygon.  Double-precision.
+ */
 class DLine3 : public Array<DPoint3>
 {
 public:
@@ -366,6 +398,10 @@ public:
 	void RemovePoint(int i);
 };
 
+/**
+ * A series of 3d points.  This is useful for representing either a series of
+ * points, line segments or a closed polygon.  Single-precision.
+ */
 class FLine3 : public Array<FPoint3>
 {
 public:
@@ -400,6 +436,10 @@ inline FLine3 &FLine3::operator=(const class FLine3 &v)
 
 /////////////////////////////////////
 
+/**
+ * A 3d box.  Useful for representing an rectangular space such as extents
+ * or a bounding box.  Single-precision.
+ */
 class FBox3
 {
 public:
@@ -418,6 +458,9 @@ public:
 
 /////////////////////////////////////////////
 
+/**
+ * A sphere, represented as a center and radius.  Single-precision.
+ */
 class FSphere
 {
 public:
@@ -450,9 +493,9 @@ public:
 
 /////////////////////////////////////
 
-//
-// a collection of polygons
-//
+/**
+ * A collection of 2d polygons.  Double-precision.
+ */
 class DPolyArray2 : public Array<DLine2 *>
 {
 public:
@@ -465,13 +508,16 @@ public:
 };
 
 
-//
-// DRECT / FRECT
-//
-// These rectangle classes are meant to be used for geographical areas,
-// or texture coordinates, which assume that the vertical axis increases
-// upward, not like typical screen coordinates which increase downwards.
-//
+/**
+ * DRECT / FRECT
+ *
+ * These rectangle classes are meant to be used for geographical areas,
+ * or texture coordinates, which assume that the vertical axis increases
+ * upward, not like typical screen coordinates which increase downwards.
+ *
+ * This means that the Height() method returns top-bottom, not bottom-top
+ * as would be the case with downward-increasing coordinates.
+ */
 class DRECT
 {
 public:
@@ -556,6 +602,16 @@ public:
 	double	bottom;
 };
 
+/**
+ * DRECT / FRECT
+ *
+ * These rectangle classes are meant to be used for geographical areas,
+ * or texture coordinates, which assume that the vertical axis increases
+ * upward, not like typical screen coordinates which increase downwards.
+ *
+ * This means that the Height() method returns top-bottom, not bottom-top
+ * as would be the case with downward-increasing coordinates.
+ */
 class FRECT
 {
 public:
@@ -589,6 +645,9 @@ public:
 class DMatrix3;
 class DMatrix4;
 
+/**
+ * A 3x3 matrix class, double-precision.
+ */
 class DMatrix3
 {
 public:
@@ -601,6 +660,10 @@ public:
 protected:
 	double data[3][3];
 };
+
+/**
+ * A 4x4 matrix class, double-precision.
+ */
 class DMatrix4
 {
 public:
@@ -617,6 +680,9 @@ protected:
 
 //////////////
 
+/**
+ * A 3x3 matrix class, single-precision.
+ */
 class FMatrix3
 {
 public:
@@ -630,6 +696,9 @@ protected:
 	float data[3][3];
 };
 
+/**
+ * A 4x4 matrix class, double-precision.
+ */
 class FMatrix4
 {
 public:
@@ -653,12 +722,12 @@ protected:
 	float data[4][4];
 };
 
-//////////////////////////////////////////////////////////////
-//
-// rgb class for handling color operations
-//
-// this one handles colors with integer components (0-255)
-//
+
+/**
+ * An RGB class for handling color operations.
+ *
+ * This one handles colors with integer components (0-255)
+ */
 class RGBi
 {
 public:
@@ -683,9 +752,11 @@ public:
 	short r, g, b;
 };
 
-//
-// this one handles colors with float components (0-1)
-//
+/**
+ * An RGB class for handling color operations.
+ *
+ * This one handles colors with float components (0.0 - 1.0)
+ */
 class RGBf
 {
 public:
@@ -729,9 +800,12 @@ inline RGBf &RGBf::operator=(const class RGBi &v)
 	return *this;
 }
 
-//////////
-// And one with alpha value support
 
+/**
+ * An RGBA class for handling color operations with alpha support.
+ *
+ * This one handles colors with float components (0.0 - 1.0)
+ */
 class RGBAf
 {
 public:
@@ -767,10 +841,14 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
 //
 float random_offset(float x);
 float random(float x);
-bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point);
+bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point);
 bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
 					 const FPoint2 &p3);
+bool PointInTriangle(const DPoint2 &p, const DPoint2 &p1, const DPoint2 &p2,
+					 const DPoint2 &p3);
 bool BarycentricCoords(const FPoint2 &p1, const FPoint2 &p2,
 					   const FPoint2 &p3, const FPoint2 &p, float fBary[3]);
+bool BarycentricCoords(const DPoint2 &p1, const DPoint2 &p2,
+					   const DPoint2 &p3, const DPoint2 &p, double fBary[3]);
 
 #endif
