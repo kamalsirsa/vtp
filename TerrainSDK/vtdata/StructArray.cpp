@@ -516,13 +516,14 @@ bool vtStructureArray::FindClosestBuildingCenter(const DPoint2 &point,
 bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double error,
 					   int &structure, double &closest)
 {
+	structure = -1;
+	closest = 1E8;
+
 	if (IsEmpty())
 		return false;
 
-	structure = -1;
 	DPoint2 loc;
 	double dist;
-	closest = 1E8;
 
 	for (int i = 0; i < GetSize(); i++)
 	{
