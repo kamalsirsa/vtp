@@ -486,7 +486,7 @@ void vtElevLayer::RenderBitmap()
 	{
 		if (bProg)
 		{
-			if (UpdateProgressDialog(j*80/m_iImageHeight))
+			if (UpdateProgressDialog(j*100/m_iImageHeight))
 			{
 				wxString2 msg = "Turn off displayed elevation for elevation layers?";
 				if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
