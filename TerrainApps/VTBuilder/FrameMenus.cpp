@@ -68,6 +68,7 @@ EVT_MENU(ID_LAYER_SAVE,			MainFrame::OnLayerSave)
 EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
 EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
 EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
+EVT_MENU(ID_LAYER_IMPORTNTF,	MainFrame::OnLayerImportNTF)
 EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
 EVT_MENU(ID_LAYER_IMPORT_MS,	MainFrame::OnLayerImportMapSource)
 EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
@@ -263,6 +264,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_IMPORT, _("Import Data\tCtrl+I"), _("Import Data"));
 #ifndef ELEVATION_ONLY
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
+	layerMenu->Append(ID_LAYER_IMPORTNTF, _("Import Data From NTF"), _("Import Data From TIGER"));
 	layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilites From SHP"), _("Import Utilites From SHP"));
 	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import from MapSource file"));
 #endif
@@ -878,20 +880,30 @@ void MainFrame::OnUpdateEditOffset(wxUpdateUIEvent& event)
 
 void MainFrame::OnLayerNew(wxCommandEvent &event)
 {
-	LayerType t = AskLayerType();
-	if (t == LT_UNKNOWN)
+	LayerType lt = AskLayerType();
+	if (lt == LT_UNKNOWN)
 		return;
 
-	vtLayer *pL = vtLayer::CreateNewLayer(t);
-	if (pL)
+	vtLayer *pL = vtLayer::CreateNewLayer(lt);
+	if (!pL)
+		return;
+
+	if (lt == LT_ELEVATION)
+	{
+		vtElevLayer *pEL = (vtElevLayer *)pL;
+		pEL->m_pGrid = new vtElevationGrid(m_area, 1025, 1025, false, m_proj);
+		pEL->m_pGrid->FillWithSingleValue(1000);
+	}
+	else
 	{
 		pL->SetProjection(m_proj);
-		SetActiveLayer(pL);
-		m_pView->SetActiveLayer(pL);
-		AddLayer(pL);
-		m_pTree->RefreshTreeItems(this);
-		RefreshToolbar();
 	}
+
+	SetActiveLayer(pL);
+	m_pView->SetActiveLayer(pL);
+	AddLayer(pL);
+	m_pTree->RefreshTreeItems(this);
+	RefreshToolbar();
 }
 
 void MainFrame::OnLayerOpen(wxCommandEvent &event)
@@ -1016,6 +1028,19 @@ void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 	wxString strDirName = getDir.GetPath();
 
 	ImportDataFromTIGER(strDirName);
+}
+
+void MainFrame::OnLayerImportNTF(wxCommandEvent &event)
+{
+	// Use file dialog to open plant list text file.
+	wxFileDialog loadFile(NULL, _("Import Layers from NTF File"), _T(""), _T(""),
+		_("NTF Files (*.ntf)|*.ntf|"), wxOPEN);
+
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+
+	wxString2 str = loadFile.GetPath();
+	ImportDataFromNTF(str);
 }
 
 void MainFrame::OnLayerImportUtil(wxCommandEvent &event)

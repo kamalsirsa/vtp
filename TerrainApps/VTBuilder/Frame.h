@@ -101,6 +101,7 @@ protected:
 	void OnLayerSaveAs(wxCommandEvent& event);
 	void OnLayerImport(wxCommandEvent& event);
 	void OnLayerImportTIGER(wxCommandEvent& event);
+	void OnLayerImportNTF(wxCommandEvent& event);
 	void OnLayerImportUtil(wxCommandEvent& event);
 	void OnLayerImportMapSource(wxCommandEvent& event);
 	void OnLayerProperties(wxCommandEvent& event);
@@ -381,6 +382,7 @@ public:
 	vtLayer *ImportVectorsWithOGR(const wxString2 &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(const wxString2 &strFileName);
 	void ImportDataFromTIGER(const wxString2 &strDirName);
+	void ImportDataFromNTF(const wxString2 &strFileName);
 	void ImportDataFromS57(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 

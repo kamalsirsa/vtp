@@ -17,6 +17,7 @@
 #include "vtdata/Unarchive.h"
 #include "vtdata/FilePath.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/Building.h"
 
 #include "Frame.h"
 #include "Helper.h"
@@ -409,8 +410,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 	case LT_RAW:
 		if (!strExt.CmpNoCase(_T("shp")))
 			pLayer = ImportFromSHP(strFileName, ltype);
-		else if (!strExt.CmpNoCase(_T("mif")) ||
-				 !strExt.CmpNoCase(_T("tab")))
+		else
 		{
 			pLayer = ImportRawFromOGR(strFileName);
 		}
@@ -490,6 +490,7 @@ wxString GetImportFilterString(LayerType ltype)
 		// shp
 		AddType(filter, FSTRING_SHP);
 		AddType(filter, FSTRING_MI);
+		AddType(filter, FSTRING_NTF);
 		break;
 	case LT_ELEVATION:
 		// dem, etc.
@@ -996,6 +997,9 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 		int fcount = 0;
 		while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
 		{
+			// make sure we delete the feature no matter how the loop exits
+			std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 			UpdateProgressDialog(100 * fcount / feature_count);
 
 			pGeom = pFeature->GetGeometryRef();
@@ -1112,6 +1116,151 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 }
 
 
+void MainFrame::ImportDataFromNTF(const wxString2 &strFileName)
+{
+	g_GDALWrapper.RequestOGRFormats();
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strFileName.mb_str());
+	if (!pDatasource)
+		return;
+
+	// Progress Dialog
+	OpenProgressDialog(_T("Importing from NTF..."));
+
+	OGRFeature *pFeature;
+	OGRGeometry		*pGeom;
+	OGRLineString   *pLineString;
+	OGRSpatialReference *pSpatialRef = NULL;
+
+	// create the (potential) new layers
+	vtRoadLayer *pRL = new vtRoadLayer;
+	pRL->SetLayerFilename(strFileName + _T(";roads"));
+	pRL->SetModified(true);
+
+	vtStructureLayer *pSL = new vtStructureLayer;
+	pSL->SetLayerFilename(strFileName + _T(";structures"));
+	pSL->SetModified(true);
+
+	// Iterate through the layers looking for the ones we care about?
+	//
+	int i, num_layers = pDatasource->GetLayerCount();
+	for (i = 0; i < num_layers; i++)
+	{
+		OGRLayer *pOGRLayer = pDatasource->GetLayer(i);
+		if (!pOGRLayer)
+			continue;
+
+		if (pSpatialRef == NULL)
+		{
+			pSpatialRef = pOGRLayer->GetSpatialRef();
+			if (pSpatialRef)
+			{
+				vtProjection proj;
+				proj.SetSpatialReference(pSpatialRef);
+				pRL->SetProjection(proj);
+				pSL->SetProjection(proj);
+			}
+		}
+#if 0
+		// Simply create a raw layer from each OGR layer
+		vtRawLayer *pRL = new vtRawLayer();
+		if (pRL->CreateFromOGRLayer(pOGRLayer))
+		{
+			wxString2 layname = strFileName;
+			layname += wxString2::Format(_T(";%d"), i);
+			pRL->SetLayerFilename(layname);
+
+			bool success = AddLayerWithCheck(pRL, true);
+		}
+		else
+			delete pRL;
+#else
+		int feature_count = pOGRLayer->GetFeatureCount();
+  		pOGRLayer->ResetReading();
+		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
+		if (!defn)
+			continue;
+		OGRwkbGeometryType geom_type = defn->GetGeomType();
+		vtString layer_name = defn->GetName();
+
+		// We depend on feature codes
+		int index_fc = defn->GetFieldIndex("FEAT_CODE");
+		if (index_fc == -1)
+			continue;
+
+		// Points
+		if (layer_name == "LANDLINE_POINT" || layer_name == "LANDLINE99_POINT")
+		{
+		}
+		// Lines
+		if (layer_name == "LANDLINE_LINE" || layer_name == "LANDLINE99_LINE")
+		{
+			int fcount = 0;
+			while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
+			{
+				// make sure we delete the feature no matter how the loop exits
+				std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
+				UpdateProgressDialog(100 * fcount / feature_count);
+				fcount++;
+
+				pGeom = pFeature->GetGeometryRef();
+				if (!pGeom) continue;
+
+				if (!pFeature->IsFieldSet(index_fc))
+					continue;
+
+				vtString fc = pFeature->GetFieldAsString(index_fc);
+
+				pLineString = (OGRLineString *) pGeom;
+
+				if (fc == "0001")	// Building outline
+				{
+					vtBuilding *bld = pSL->AddBuildingFromLineString(pLineString);
+					if (bld)
+					{
+						vtBuilding *pDefBld = GetClosestDefault(bld);
+						if (pDefBld)
+							bld->CopyFromDefault(pDefBld, true);
+						else
+						{
+							bld->SetStories(1);
+							bld->SetRoofType(ROOF_FLAT);
+						}
+					}
+				}
+				if (fc == "0098")	// Road centerline
+				{
+					LinkEdit *pLE = pRL->AddRoadSegment(pLineString);
+					// some defaults..
+					pLE->m_iLanes = 2;
+					pLE->m_fWidth = 6.0f;
+					pLE->SetFlag(RF_MARGIN, true);
+				}
+			}
+		}
+		// Names
+		if (layer_name == "LANDLINE_NAME" || layer_name == "LANDLINE99_NAME")
+		{
+		}
+#endif
+	}
+
+	bool success;
+	success = AddLayerWithCheck(pRL, true);
+	if (!success)
+		delete pRL;
+
+	success = AddLayerWithCheck(pSL, true);
+	if (!success)
+		delete pSL;
+
+	delete pDatasource;
+
+	CloseProgressDialog();
+}
+
+
 void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 {
 	g_GDALWrapper.RequestOGRFormats();
@@ -1125,24 +1274,15 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 	pWL->SetLayerFilename(strDirName + _T("/water"));
 	pWL->SetModified(true);
 
-	vtRoadLayer *pRL = new vtRoadLayer;
-	pRL->SetLayerFilename(strDirName + _T("/roads"));
-	pRL->SetModified(true);
-
-	vtElevLayer *pEL = new vtElevLayer;
-	pEL->SetLayerFilename(strDirName + _T("/elev"));
-	pEL->SetModified(true);
-
 	int i, j, feature_count;
 	OGRLayer		*pOGRLayer;
 	OGRFeature		*pFeature;
 	OGRGeometry		*pGeom;
-//	OGRPoint		*pPoint;
 	OGRLineString   *pLineString;
 
 	vtWaterFeature	wfeat;
 
-	// Assume that this data source is a TIGER/Line file
+	// Assume that this data source is a S57 file
 	//
 	// Iterate through the layers looking for the ones we care about
 	//
@@ -1180,7 +1320,6 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 			vtProjection proj;
 			proj.SetSpatialReference(pSpatialRef);
 			pWL->SetProjection(proj);
-			pRL->SetProjection(proj);
 		}
 
 		// Progress Dialog
@@ -1191,90 +1330,42 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 		if (strcmp(layer_name, "Line"))
 			continue;
 
-//		int index_cfcc = defn->GetFieldIndex("CFCC");
 		int fcount = 0;
 		while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
 		{
+			// make sure we delete the feature no matter how the loop exits
+			std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 			UpdateProgressDialog(100 * fcount / feature_count);
 
 			pGeom = pFeature->GetGeometryRef();
 			if (!pGeom) continue;
 
-//			if (!pFeature->IsFieldSet(index_cfcc))
-//				continue;
-
-//			const char *cfcc = pFeature->GetFieldAsString(index_cfcc);
-
 			pLineString = (OGRLineString *) pGeom;
 			int num_points = pLineString->getNumPoints();
 
-//			if (!strncmp(cfcc, "A", 1))
 			if (!strcmp(layer_name, "Line"))
 			{
 				// Hydrography
-/*				int num = atoi(cfcc+1);
-				bool bSkip = true;
-				switch (num)
+				wfeat.SetSize(num_points);
+				for (j = 0; j < num_points; j++)
 				{
-				case 1:		// Shoreline of perennial water feature
-				case 2:		// Shoreline of intermittent water feature
-					break;
-				case 11:	// Perennial stream or river
-				case 12:	// Intermittent stream, river, or wash
-				case 13:	// Braided stream or river
-					wfeat.m_bIsBody = false;
-					bSkip = false;
-					break;
-				case 30:	// Lake or pond
-				case 31:	// Perennial lake or pond
-				case 32:	// Intermittent lake or pond
-				case 40:	// Reservoir
-				case 41:	// Perennial reservoir
-				case 42:	// Intermittent reservoir
-				case 50:	// Bay, estuary, gulf, sound, sea, or ocean
-				case 51:	// Bay, estuary, gulf, or sound
-				case 52:	// Sea or ocean
-					wfeat.m_bIsBody = true;
-					bSkip = false;
-					break;
-				}*/
-//				if (!bSkip)
-				{
-					wfeat.SetSize(num_points);
-					for (j = 0; j < num_points; j++)
-					{
-						wfeat.SetAt(j, DPoint2(pLineString->getX(j),
-							pLineString->getY(j)));
-					}
-					pWL->AddFeature(wfeat);
+					wfeat.SetAt(j, DPoint2(pLineString->getX(j),
+						pLineString->getY(j)));
 				}
+				pWL->AddFeature(wfeat);
 			}
 
 			fcount++;
 		}
 		CloseProgressDialog();
 	}
-
 	delete pDatasource;
-
-	// Merge nodes
-//	OpenProgressDialog("Removing redundant nodes...");
-//	pRL->MergeRedundantNodes(true, progress_callback);
-
-	// Set visual properties
-	for (NodeEdit *pN = pRL->GetFirstNode(); pN; pN = pN->GetNext())
-	{
-		pN->DetermineVisualFromLinks();
-	}
 
 	bool success;
 	success = AddLayerWithCheck(pWL, true);
 	if (!success)
 		delete pWL;
-
-	success = AddLayerWithCheck(pRL, true);
-	if (!success)
-		delete pRL;
 }
 
 
