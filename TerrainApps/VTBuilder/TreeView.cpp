@@ -14,7 +14,7 @@
 
 #include "App.h"
 #include "TreeView.h"
-#include "MenuEnum.h"	// for TreeTest_Ctrl
+#include "MenuEnum.h"	// for LayerTree_Ctrl
 #include "Frame.h"
 #include "BuilderView.h"
 
@@ -391,20 +391,20 @@ void MyTreeCtrl::OnRMouseDClick(wxMouseEvent& event)
 /////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(MyTreeCtrl, wxTreeCtrl)
-EVT_TREE_BEGIN_DRAG(TreeTest_Ctrl, MyTreeCtrl::OnBeginDrag)
-EVT_TREE_BEGIN_RDRAG(TreeTest_Ctrl, MyTreeCtrl::OnBeginRDrag)
-EVT_TREE_END_DRAG(TreeTest_Ctrl, MyTreeCtrl::OnEndDrag)
-EVT_TREE_BEGIN_LABEL_EDIT(TreeTest_Ctrl, MyTreeCtrl::OnBeginLabelEdit)
-EVT_TREE_END_LABEL_EDIT(TreeTest_Ctrl, MyTreeCtrl::OnEndLabelEdit)
-EVT_TREE_DELETE_ITEM(TreeTest_Ctrl, MyTreeCtrl::OnDeleteItem)
-EVT_TREE_SET_INFO(TreeTest_Ctrl, MyTreeCtrl::OnSetInfo)
-EVT_TREE_ITEM_EXPANDED(TreeTest_Ctrl, MyTreeCtrl::OnItemExpanded)
-EVT_TREE_ITEM_EXPANDING(TreeTest_Ctrl, MyTreeCtrl::OnItemExpanding)
-EVT_TREE_ITEM_COLLAPSED(TreeTest_Ctrl, MyTreeCtrl::OnItemCollapsed)
-EVT_TREE_ITEM_COLLAPSING(TreeTest_Ctrl, MyTreeCtrl::OnItemCollapsing)
-EVT_TREE_SEL_CHANGED(TreeTest_Ctrl, MyTreeCtrl::OnSelChanged)
-EVT_TREE_SEL_CHANGING(TreeTest_Ctrl, MyTreeCtrl::OnSelChanging)
-EVT_TREE_KEY_DOWN(TreeTest_Ctrl, MyTreeCtrl::OnTreeKeyDown)
-EVT_TREE_ITEM_ACTIVATED(TreeTest_Ctrl, MyTreeCtrl::OnItemActivated)
+EVT_TREE_BEGIN_DRAG(LayerTree_Ctrl, MyTreeCtrl::OnBeginDrag)
+EVT_TREE_BEGIN_RDRAG(LayerTree_Ctrl, MyTreeCtrl::OnBeginRDrag)
+EVT_TREE_END_DRAG(LayerTree_Ctrl, MyTreeCtrl::OnEndDrag)
+EVT_TREE_BEGIN_LABEL_EDIT(LayerTree_Ctrl, MyTreeCtrl::OnBeginLabelEdit)
+EVT_TREE_END_LABEL_EDIT(LayerTree_Ctrl, MyTreeCtrl::OnEndLabelEdit)
+EVT_TREE_DELETE_ITEM(LayerTree_Ctrl, MyTreeCtrl::OnDeleteItem)
+EVT_TREE_SET_INFO(LayerTree_Ctrl, MyTreeCtrl::OnSetInfo)
+EVT_TREE_ITEM_EXPANDED(LayerTree_Ctrl, MyTreeCtrl::OnItemExpanded)
+EVT_TREE_ITEM_EXPANDING(LayerTree_Ctrl, MyTreeCtrl::OnItemExpanding)
+EVT_TREE_ITEM_COLLAPSED(LayerTree_Ctrl, MyTreeCtrl::OnItemCollapsed)
+EVT_TREE_ITEM_COLLAPSING(LayerTree_Ctrl, MyTreeCtrl::OnItemCollapsing)
+EVT_TREE_SEL_CHANGED(LayerTree_Ctrl, MyTreeCtrl::OnSelChanged)
+EVT_TREE_SEL_CHANGING(LayerTree_Ctrl, MyTreeCtrl::OnSelChanging)
+EVT_TREE_KEY_DOWN(LayerTree_Ctrl, MyTreeCtrl::OnTreeKeyDown)
+EVT_TREE_ITEM_ACTIVATED(LayerTree_Ctrl, MyTreeCtrl::OnItemActivated)
 EVT_RIGHT_DCLICK(MyTreeCtrl::OnRMouseDClick)
 END_EVENT_TABLE()
