@@ -455,49 +455,91 @@ int Link::GetFlag(int flag)
 	return (m_iFlags & flag) != 0;
 }
 
-//closet distance from target to the road
-double Link::DistanceToPoint(DPoint2 target)
+/**
+ * Find closest lateral distance from a given point to the road.
+ */
+double Link::DistanceToPoint(const DPoint2 &point, bool bAllowEnds)
 {
-	DPoint2 delta;
-	double bestDistance = -1;
-	double dist;
+	double a, b;
+	DPoint2 dummy1;
+	int dummy2;
+	float dummy3;
+	GetLinearCoordinates(point, a, b, dummy1, dummy2, dummy3, bAllowEnds);
+	return fabs(b);
+}
 
-	double u, ux, uy,un, ud;
-	DPoint2 p1, p2, p3 = target;
+/**
+ * Produces the "linear coordinates" a and b, where a is the distance
+ * along the road, and b is the signed lateral distance orthogonal to
+ * the road at that point.
+ *
+ * \param p The input point.
+ * \param result_a	The resulting distance along the link.
+ * \param result_b  The signed lateral (or absolute) distance to the link.
+ * \param closest	The closest point on the link.
+ * \param roadpoint	Index into the roads points just before the closest point.
+ * \param fractional Fractional distance between this road point and the next.
+ * \param bAllowEnds	If true, then for cases where the the closest
+ *		point is either end of the link, the distance to that point
+ *		is returned.  Otherwise, only laterial distances are returned.
+ */
+double Link::GetLinearCoordinates(const DPoint2 &p, double &result_a,
+								  double &result_b, DPoint2 &closest,
+								  int &roadpoint, float &fractional,
+								  bool bAllowEnds)
+{
+	double u, b, length, traversed = 0, min_dist = 1E10;
+	DPoint2 p1, p2, diff, vec_a, vec_b, delta;
 
-	for (int i=0; i < GetSize()-1; i++)
+	int points = GetSize();
+	for (int i=0; i < points-1; i++)
 	{
 		p1 = GetAt(i);
 		p2 = GetAt(i+1);
 
-		u = .5;
+		// check distance to line segment
+		diff = p - p1;
+		vec_a = p2 - p1;
+		vec_b.Set(vec_a.y, -vec_a.x);
 
-		//check distance to line segment
-		ux = p2.x - p1.x;
-		uy = p2.y - p1.y;
-		un = (p3.x - p1.x)*(p2.x - p1.x) + (p3.y-p1.y)*(p2.y-p1.y);
-		ud = ux*ux + uy*uy;
-		u = un/ud;
+		length = vec_a.Length();
+		vec_a /= length;
+		vec_b.Normalize();
+		u = diff.Dot(vec_a);
 
-		delta.x = (p1.x + u*ux) - p3.x;
-		delta.y = (p1.y + u*uy) - p3.y;
-
-		dist = delta.Length();
-
-		//if u >1 or u <0, then point is not closest to line within the
-		//given line segment.  use the end points.
-		if (u > 1 || u < 0)
+		// if u >1 or u <0, then point is not closest to line within the
+		// given line segment.  use the end points.
+		if ((bAllowEnds || (i > 0)) && u < 0)
+//		if (u < 0)
 		{
-			delta = target - GetAt(i);
-			dist = delta.Length();
+			u = 0;
+			b = (p - p1).Length();
+		}
+		else if ((bAllowEnds || (i < points-2)) && u > length)
+//		else if (u > length)
+		{
+			u = length;
+			b = (p - p2).Length();
+		}
+		else
+		{
+			b = diff.Dot(vec_b);
 		}
 
-		if (dist < bestDistance || bestDistance == -1) {
-			bestDistance = dist;
-			//TRACE ("%i, %.3f, %.3f:\t%.3f\n",m_id, x,y, dist);
+		if (fabs(b) < min_dist)
+		{
+			min_dist = fabs(b);
+			result_a = traversed + u;
+			result_b = b;
+			closest = p1 + (vec_a * u);
+			roadpoint = i;
+			fractional = (float) (u/length);
 		}
+		traversed += length;
 	}
-	return bestDistance;
+
+	// 'traversed' now contains the total length of the link
+	return traversed;
 }
 
 float Link::GetHeightAt(int i)

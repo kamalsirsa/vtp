@@ -134,8 +134,10 @@ public:
 	void SetNode(int n, Node *pNode) { m_pNode[n] = pNode; }
 	Node *GetNode(int n) { return m_pNode[n]; }
 
-	// closest distance from target to the road
-	double DistanceToPoint(DPoint2 target);
+	// closest distance from point to the road
+	double GetLinearCoordinates(const DPoint2 &p, double &a, double &b,
+		DPoint2 &closest, int &roadpoint, float &fractional, bool bAllowEnds = true);
+	double DistanceToPoint(const DPoint2 &point, bool bAllowEnds = true);
 
 	// is the road a loop?
 	bool IsLoop() { return (m_pNode[0] == m_pNode[1]); }
