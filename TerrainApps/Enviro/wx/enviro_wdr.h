@@ -163,16 +163,15 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_HORIZON 10106
 #define ID_AIRPORTS 10107
 #define ID_FOG 10108
-#define ID_ROUTEENABLE 10109
-#define ID_ROUTEFILE 10110
+#define ID_FOG_DISTANCE 10109
 wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_MINHEIGHT 10111
-#define ID_NAVSPEED 10112
-#define ID_LOCFILE 10113
-#define ID_INITTIME 10114
-#define ID_TIMEMOVES 10115
-#define ID_TIMESPEED 10116
+#define ID_MINHEIGHT 10110
+#define ID_NAVSPEED 10111
+#define ID_LOCFILE 10112
+#define ID_INITTIME 10113
+#define ID_TIMEMOVES 10114
+#define ID_TIMESPEED 10115
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
