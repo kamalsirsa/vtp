@@ -566,19 +566,17 @@ vtStructureLayer *MainFrame::ImportFromBCF(wxString &strFileName)
 
 vtLayerPtr MainFrame::ImportRawFromOGR(wxString &strFileName)
 {
-	OGRRegisterAll();
-
-	OGRDataSource *datasource = OGRSFDriverRegistrar::Open( strFileName );
-	if (!datasource)
-		return NULL;
-
 	// create the new layer
 	vtRawLayer *pRL = new vtRawLayer();
-	pRL->AddElementsFromOGR(datasource, progress_callback);
+	bool success = pRL->LoadWithOGR((const char *)strFileName, progress_callback);
 
-	delete datasource;
-
-	return pRL;
+	if (success)
+		return pRL;
+	else
+	{
+		delete pRL;
+		return NULL;
+	}
 }
 
 vtLayerPtr MainFrame::ImportVectorsWithOGR(wxString &strFileName, LayerType ltype)
