@@ -28,6 +28,13 @@
 // WDR: event table for ImportStructDlg
 
 BEGIN_EVENT_TABLE(ImportStructDlg,AutoDialog)
+	EVT_RADIOBUTTON( ID_TYPE_CENTER, ImportStructDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_TYPE_FOOTPRINT, ImportStructDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_TYPE_LINEAR, ImportStructDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_TYPE_INSTANCE, ImportStructDlg::OnRadio )
+	EVT_CHOICE( ID_CHOICE_HEIGHT_FIELD, ImportStructDlg::OnChoiceHeightField )
+	EVT_CHOICE( ID_CHOICE_HEIGHT_TYPE, ImportStructDlg::OnChoiceHeightType )
+	EVT_CHOICE( ID_CHOICE_FILE_FIELD, ImportStructDlg::OnChoiceFileField )
 END_EVENT_TABLE()
 
 ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -36,21 +43,126 @@ ImportStructDlg::ImportStructDlg( wxWindow *parent, wxWindowID id, const wxStrin
 {
 	ImportStructFunc( this, TRUE );
 	m_iType = 0;
-	m_bFlip = false;
 }
+
+bool ImportStructDlg::GetRadio(int id)
+{
+	wxRadioButton *button = (wxRadioButton*) FindWindow(id);
+	if (!button)
+		return false;
+	return button->GetValue();
+}
+
 
 // WDR: handler implementations for ImportStructDlg
 
+void ImportStructDlg::OnChoiceFileField( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_opt.m_strFieldNameFile = GetChoiceFileField()->GetStringSelection();
+}
+
+void ImportStructDlg::OnChoiceHeightType( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_opt.m_HeightType = (StructImportOptions::HeightType) m_iHeightType;
+}
+
+void ImportStructDlg::OnChoiceHeightField( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_opt.m_strFieldNameHeight = GetChoiceHeightField()->GetStringSelection();
+}
+
+void ImportStructDlg::OnRadio( wxCommandEvent &event )
+{
+	if (GetRadio(ID_TYPE_CENTER)) m_iType = 0;
+	if (GetRadio(ID_TYPE_FOOTPRINT)) m_iType = 1;
+	if (GetRadio(ID_TYPE_LINEAR)) m_iType = 2;
+	if (GetRadio(ID_TYPE_INSTANCE)) m_iType = 3;
+	UpdateEnables();
+}
 
 void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	AddValidator(ID_TYPE_CENTER, &m_iType);
-	AddValidator(ID_FLIP, &m_bFlip);
-	AddValidator(ID_INSIDE_AREA, &m_bInsideOnly);
+	int i;
 
-	int nShapeType = GetSHPType(m_filename);
-	GetTypeCenter()->Enable(nShapeType == SHPT_POINT);
-	GetTypeFootprint()->Enable(nShapeType == SHPT_POLYGON ||
-		nShapeType == SHPT_POLYGONZ);
+	m_iHeightType = 0;
+	m_opt.bFlip = false;
+	m_opt.bInsideOnly = false;
+
+	AddValidator(ID_FLIP, &m_opt.bFlip);
+	AddValidator(ID_INSIDE_AREA, &m_opt.bInsideOnly);
+	AddValidator(ID_CHOICE_HEIGHT_TYPE, &m_iHeightType);
+
+	m_nShapeType = GetSHPType(m_filename);
+	UpdateEnables();
+
+	// Select one of the radio buttons, whichever is enabled
+	if (GetTypeCenter()->IsEnabled())
+	{
+		GetTypeCenter()->SetValue(true);
+		m_iType = 0;
+	}
+	else
+	if (GetTypeFootprint()->IsEnabled())
+	{
+		GetTypeFootprint()->SetValue(true);
+		m_iType = 1;
+	}
+	else
+	if (GetTypeLinear()->IsEnabled())
+	{
+		GetTypeLinear()->SetValue(true);
+		m_iType = 2;
+	}
+	UpdateEnables();
+
+	GetChoiceHeightField()->Append("(none)");
+	GetChoiceFileField()->Append("(none)");
+
+	// Open DBF File
+	DBFHandle db = DBFOpen(m_filename, "rb");
+	if (db != NULL)
+	{
+		// Fill the DBF field names into the "Use Field" controls
+		int *pnWidth = 0, *pnDecimals = 0;
+		char pszFieldName[20];
+		int iFields = DBFGetFieldCount(db);
+		for (i = 0; i < iFields; i++)
+		{
+			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
+				pszFieldName, pnWidth, pnDecimals );
+
+			if (fieldtype == FTString)
+				GetChoiceFileField()->Append(pszFieldName);
+			if (fieldtype == FTInteger || fieldtype == FTDouble)
+				GetChoiceHeightField()->Append(pszFieldName);
+		}
+	}
+	GetChoiceFileField()->SetSelection(0);
+	GetChoiceHeightField()->SetSelection(0);
+
+	TransferDataToWindow();
+}
+
+void ImportStructDlg::UpdateEnables()
+{
+	GetTypeCenter()->Enable(m_nShapeType == SHPT_POINT);
+
+	GetTypeFootprint()->Enable(m_nShapeType == SHPT_POLYGON ||
+		m_nShapeType == SHPT_POLYGONZ);
+
+	GetTypeLinear()->Enable(m_nShapeType == SHPT_ARC ||
+		m_nShapeType == SHPT_POLYGON);
+
+	GetTypeInstance()->Enable(m_nShapeType == SHPT_POINT ||
+		m_nShapeType == SHPT_POINTZ);
+
+	GetFlip()->Enable(m_iType == 1);
+	GetChoiceHeightField()->Enable(m_iType == 1);
+	GetChoiceHeightType()->Enable(m_iType == 1);
+
+	GetChoiceFileField()->Enable(m_iType == 3);
 }
 
