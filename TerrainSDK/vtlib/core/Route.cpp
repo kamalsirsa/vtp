@@ -287,6 +287,7 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 
 UtilStructName s_Names[NUM_STRUCT_NAMES] =
 {
+	// brief name, full name, filename
 	{ "A1", "Steel Poles Tangent", "a1" },
 	{ "A2", "Guyed Tangent", "a2" },
 	{ "A3", "Light Angle", "a3" },
@@ -363,9 +364,6 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 	// scale to match world units
 	float sc = (float) METERS_PER_FOOT;
 	stnew->m_pTower->Scale3(sc, sc, sc);
-
-	// rotate it until it's upright
-	stnew->m_pTower->RotateLocal(FPoint3(1,0,0), -PIf);
 
 	stnew->m_sStructName = sname;
 	int j = m_StructObjs.Append(stnew);
