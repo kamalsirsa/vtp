@@ -28,7 +28,7 @@ MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 		46,		// Geo or short projection identifier
 		65,		// Zone
 		65,		// Datum
-		58,		// Units
+		62,		// Units
 		208,	// Coordinates of cursor
 		86		// Elevation under cursor
 	};
