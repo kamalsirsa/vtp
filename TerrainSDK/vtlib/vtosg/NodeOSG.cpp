@@ -1240,138 +1240,8 @@ int vtDynGeom::IsVisible(const FPoint3 &point, float radius)
 }
 
 
-///////////////////////////////////////////////////////////////////////
-// vtSprite.  TODO: clean up the code, it's very messy.
-
-vtSprite::vtSprite()
-{
-	m_pMesh = NULL;
-
-	m_geode = new osg::Geode();
-
-	// Turn lighting off for the sprite
-	osg::StateSet* stateset = m_geode->getOrCreateStateSet();
-	stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-
-	// To ensure the sprite appears on top we can use osg::Depth to force
-	//  the depth fragments to be placed at the front of the screen.
-	stateset->setAttribute(new osg::Depth(osg::Depth::LESS,0.0,0.0001));
-
-	osg::MatrixTransform* modelview_abs = new osg::MatrixTransform;
-	modelview_abs->setReferenceFrame(osg::Transform::RELATIVE_TO_ABSOLUTE);
-	modelview_abs->setMatrix(osg::Matrix::identity());
-	modelview_abs->addChild(m_geode.get());
-
-	// We can set the projection to pixels (0,width,0,height) or
-	//	normalized (0,1,0,1)
-	vtScene *pScene = vtGetScene();
-	IPoint2 winsize = pScene->GetWindowSize();
-
-	m_projection = new osg::Projection;
-	m_projection->setMatrix(osg::Matrix::ortho2D(0, winsize.x, 0, winsize.y));
-	m_projection->addChild(modelview_abs);
-
-	SetOsgNode(m_projection);
-}
-
-void vtSprite::Release()
-{
-	if (m_pNode->referenceCount() == 1)
-	{
-		// Release the meshes we contain, which will delete them if there
-		//  are no other references to them.
-		if (m_pMesh)
-		{
-			m_pMesh->Release();
-			m_geode->removeDrawable(0, 1);
-		}
-		m_geode = NULL;			// dereference
-		m_projection = NULL;
-	}
-	// Check parent
-	vtNode::Release();
-}
-
-void vtSprite::AddMesh(vtMesh *pMesh)
-{
-	m_geode->addDrawable(pMesh->m_pGeometry.get());
-
-	// The vtSprite owns/references the meshes it contains
-	pMesh->ref();
-}
-
-void vtSprite::AddTextMesh(vtTextMesh *pTextMesh)
-{
-	m_geode->addDrawable(pTextMesh->m_pOsgText.get());
-}
-
-vtNodeBase *vtSprite::Clone()
-{
-//	sprite->CopyFrom(this);		// TODO
-	return new vtSprite;
-}
-
-void vtSprite::SetText(const char *szText)
-{
-}
-
-void vtSprite::SetImage(vtImage *pImage)
-{
-	m_pMesh = new vtMesh(GL_QUADS, VT_TexCoords, 4);
-	m_pMesh->AddVertexUV(FPoint3(0,0,0), FPoint2(0,0));
-	m_pMesh->AddVertexUV(FPoint3(0.5,0,0), FPoint2(1,0));
-	m_pMesh->AddVertexUV(FPoint3(0.5,1,0), FPoint2(1,1));
-	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
-	m_pMesh->AddQuad(0, 1, 2, 3);
-
-	osg::StateSet* stateset = m_geode->getOrCreateStateSet();
-
-	osg::Texture2D *texture = new osg::Texture2D();
-	texture->setImage(pImage->m_pOsgImage.get());
-	stateset->setTextureAttributeAndModes(0, texture, StateAttribute::ON);
-
-	osg::BlendFunc *pBlendFunc = new BlendFunc;
-	stateset->setAttributeAndModes(pBlendFunc, StateAttribute::ON);
-
-	osg::AlphaFunc *pAlphaFunc = new AlphaFunc;
-	pAlphaFunc->setFunction(AlphaFunc::GEQUAL,0.05f);
-	stateset->setAttributeAndModes(pAlphaFunc, StateAttribute::ON );
-	stateset->setRenderingHint(StateSet::TRANSPARENT_BIN);
-
-	AddMesh(m_pMesh);
-	m_pMesh->Release();	// pass ownership
-}
-
-void vtSprite::SetPosition(bool bPixels, float l, float t, float r, float b)
-{
-	if (!m_pMesh)
-		return;
-
-	vtScene *pScene = vtGetScene();
-	IPoint2 size = pScene->GetWindowSize();
-
-	if (!bPixels)
-	{
-		l *= size.x;
-		r *= size.x;
-		t *= size.y;
-		b *= size.y;
-	}
-	m_pMesh->SetVtxPos(0, FPoint3(l, size.y-1 - b, 0));
-	m_pMesh->SetVtxPos(1, FPoint3(r, size.y-1 - b, 0));
-	m_pMesh->SetVtxPos(2, FPoint3(r, size.y-1 - t, 0));
-	m_pMesh->SetVtxPos(3, FPoint3(l, size.y-1 - t, 0));
-
-	m_pMesh->ReOptimize();
-}
-
-void vtSprite::SetWindowSize(int x, int y)
-{
-	m_projection->setMatrix(osg::Matrix::ortho2D(0,x,0,y));
-}
-
-
-//////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// vtHUD
 
 /**
  * Create a HUD node.  A HUD ("heads-up display") is a group whose whose
@@ -1448,5 +1318,62 @@ void vtHUD::SetWindowSize(int w, int h)
 {
 	if (m_bPixelCoords)
 		m_projection->setMatrix(osg::Matrix::ortho2D(0, w, 0, h));
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// vtImageSprite
+
+/**
+ * Create a vtImageSprite.
+ *
+ * \param szTextureName The filename of a texture image.
+ * \param bBlending Set to true for alpha-blending, which produces smooth
+ *		edges on transparent textures.
+ */
+vtImageSprite::vtImageSprite(const char *szTextureName, bool bBlending)
+{
+	// set up material and geometry container
+	m_pMats = new vtMaterialArray;
+	m_pGeom = new vtGeom;
+	m_pGeom->SetMaterials(m_pMats);
+	m_pMats->Release();
+	m_pMats->AddTextureMaterial2(szTextureName, false, false, bBlending);
+
+	// default position of the mesh is just 0,0-1,1
+	m_pMesh = new vtMesh(GL_QUADS, VT_TexCoords, 4);
+	m_pMesh->AddVertexUV(FPoint3(0,0,0), FPoint2(0,0));
+	m_pMesh->AddVertexUV(FPoint3(1,0,0), FPoint2(1,0));
+	m_pMesh->AddVertexUV(FPoint3(1,1,0), FPoint2(1,1));
+	m_pMesh->AddVertexUV(FPoint3(0,1,0), FPoint2(0,1));
+	m_pMesh->AddQuad(0, 1, 2, 3);
+	m_pGeom->AddMesh(m_pMesh, 0);
+	m_pMesh->Release();
+}
+
+void vtImageSprite::Release()
+{
+	if (m_pGeom)
+		m_pGeom->Release();
+	m_pGeom = NULL;
+}
+
+/**
+ * Set the XY position of the sprite.  These are in world coordinates,
+ *  unless this sprite is the child of a vtHUD, in which case they are
+ *  pixel coordinates measured from the lower-left corner of the window.
+ *
+ * \param l Left.
+ * \param t Top.
+ * \param r Right.
+ * \param b Bottom.
+ */
+void vtImageSprite::SetPosition(float l, float t, float r, float b)
+{
+	m_pMesh->SetVtxPos(0, FPoint3(l, b, 0));
+	m_pMesh->SetVtxPos(1, FPoint3(r, b, 0));
+	m_pMesh->SetVtxPos(2, FPoint3(r, t, 0));
+	m_pMesh->SetVtxPos(3, FPoint3(l, t, 0));
+	m_pMesh->ReOptimize();
 }
 

@@ -456,35 +456,6 @@ protected:
 };
 
 /**
- * A Sprite is a 2D object, which can contain text or an image.  It is
- * drawn in window coordinates, rather than 3D coordinates.
- */
-class vtSprite : public vtNode
-{
-public:
-	vtSprite();
-
-	vtNodeBase *Clone();
-	void Release();
-
-	void SetText(const char *szText);
-	void SetImage(vtImage *pImage);
-	void SetPosition(bool bPixels, float l, float t, float r, float b);
-	void SetWindowSize(int x, int y);
-
-	void AddMesh(vtMesh *pMesh);
-	void AddTextMesh(vtTextMesh *pTextMesh);
-
-protected:
-	vtMesh *m_pMesh;
-
-	osg::ref_ptr<osg::Geode> m_geode;
-	osg::Projection *m_projection;
-
-	virtual ~vtSprite() {}
-};
-
-/**
  * A HUD ("heads-up display") is a group whose whose children are transformed
  * to be drawn in window coordinates, rather than world coordinates.
  */
@@ -504,6 +475,32 @@ protected:
 	bool m_bPixelCoords;
 
 	virtual ~vtHUD() {}
+};
+
+/**
+ * This class which contains a geometry with a single textured rectangle
+ *  mesh.  It is particularly useful in conjunction with vtHUD, for
+ *  superimposing a single image on the window.
+ */
+class vtImageSprite
+{
+public:
+	vtImageSprite(const char *szTextureName, bool bBlending = false);
+	void SetPosition(float l, float t, float r, float b);
+	vtNode *GetNode() { return m_pGeom; }
+	void Release();
+
+protected:
+	~vtImageSprite() {}
+	vtMaterialArray *m_pMats;
+	vtGeom *m_pGeom;
+	vtMesh *m_pMesh;
+};
+
+class vtTextSprite
+{
+public:
+	void SetText(const char *dummy) {}	// TODO
 };
 
 /*@}*/	// Group sg
