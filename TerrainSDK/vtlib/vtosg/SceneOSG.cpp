@@ -298,9 +298,9 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 		Fog::Mode eType;
 		switch (iType)
 		{
-		case GL_LINEAR: eType = Fog::Mode::LINEAR; break;
-		case GL_EXP: eType = Fog::Mode::EXP; break;
-		case GL_EXP2: eType = Fog::Mode::EXP2; break;
+		case GL_LINEAR: eType = Fog::LINEAR; break;
+		case GL_EXP: eType = Fog::EXP; break;
+		case GL_EXP2: eType = Fog::EXP2; break;
 		default: return;
 		}
 		Fog *fog = new Fog;

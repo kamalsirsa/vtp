@@ -173,7 +173,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	m_pTexture->setImage(pImage->m_pOsgImage);
 
-	m_pStateSet->setAttributeAndModes(m_pTexture.get(), osg::StateAttribute::ON);
+	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(), osg::StateAttribute::ON);
 }
 
 /**
