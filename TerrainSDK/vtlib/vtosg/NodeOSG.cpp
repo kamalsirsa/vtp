@@ -1487,7 +1487,23 @@ void vtImageSprite::SetPosition(float l, float t, float r, float b)
 
 #include <osgUtil/IntersectVisitor>
 
-int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end, vtHitList &hitlist)
+/**
+ * Check for surface intersections along a line segment in space.
+ *
+ * \param pTop The top of the scene graph that you want to search for
+ *		intersections.  This can be the root node if you want to seach your
+ *		entire scene, or any other node to search a subgraph.
+ * \param start The start point (world coordinates) of the line segment.
+ * \param end	The end point (world coordinates) of the line segment.
+ * \param hitlist The results.  If there are intersections (hits), they are
+ *		placed in this list, which is simply a std::vector of vtHit objects.
+ *		Each vtHit object gives information about the hit point.
+ * \param bLocalCoords Pass true to get your results in local coordinates
+ *		(in the frame of the object which was hit).  Otherwise, result points
+ *		are in world coordinates.
+ */
+int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
+				vtHitList &hitlist, bool bLocalCoords)
 {
 	// set up intersect visitor and create the line segment
 	osgUtil::IntersectVisitor visitor;
@@ -1549,7 +1565,14 @@ int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end, vtHitLis
 		// put it on the list of hit results
 		vtHit hit;
 		hit.node = vnode;
-		hit.point = s2v(hitr->getLocalIntersectPoint());
+		if (bLocalCoords)
+		{
+			hit.point = s2v(hitr->getLocalIntersectPoint());
+		}
+		else
+		{
+			hit.point = s2v(hitr->getWorldIntersectPoint());
+		}
 		hitlist.push_back(hit);
 	}
 	return hitlist.size();

@@ -504,7 +504,8 @@ protected:
 /* Intersection method */
 struct vtHit { vtNode *node; /*const char *name;*/ FPoint3 point; };
 typedef std::vector<vtHit> vtHitList;
-int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end, vtHitList &hitlist);
+int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end,
+				vtHitList &hitlist, bool bLocalCoords = false);
 
 /*@}*/	// Group sg
 
