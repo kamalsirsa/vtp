@@ -13,6 +13,7 @@
 #endif
 
 #include "VTBuilder_wdr.h"
+#include "AutoDialog.h"
 
 class vtFeatures;
 
@@ -22,7 +23,7 @@ class vtFeatures;
 // FeatInfoDlg
 //----------------------------------------------------------------------------
 
-class FeatInfoDlg: public wxDialog
+class FeatInfoDlg: public AutoDialog
 {
 public:
 	// constructors and destructors
@@ -33,18 +34,32 @@ public:
 
 	void SetFeatureSet(vtFeatures *pFeatures);
 	void Clear();
+	void ShowSelected();
+	void ShowPicked();
+	void ShowAll();
 	void ShowFeature(int iFeat);
 
 	// WDR: method declarations for FeatInfoDlg
+	wxStaticText* GetTextVertical()  { return (wxStaticText*) FindWindow( ID_TEXT_VERTICAL ); }
+	wxButton* GetDelHigh()  { return (wxButton*) FindWindow( ID_DEL_HIGH ); }
+	wxChoice* GetChoiceVertical()  { return (wxChoice*) FindWindow( ID_CHOICE_VERTICAL ); }
+	wxChoice* GetChoiceShow()  { return (wxChoice*) FindWindow( ID_CHOICE_SHOW ); }
 	wxListCtrl* GetList()  { return (wxListCtrl*) FindWindow( ID_LIST ); }
 	
 private:
 	// WDR: member variable declarations for FeatInfoDlg
 	vtFeatures *m_pFeatures;
+	int	 m_iShow;
+	int	 m_iVUnits;
 
 private:
 	// WDR: handler declarations for FeatInfoDlg
+	void OnDeleteHighlighted( wxCommandEvent &event );
+	void OnChoiceVertical( wxCommandEvent &event );
+	void OnChoiceShow( wxCommandEvent &event );
+	void OnListRightClick( wxListEvent &event );
 	void OnItemSelected( wxListEvent &event );
+	void OnInitDialog(wxInitDialogEvent& event);
 
 private:
 	DECLARE_EVENT_TABLE()
