@@ -30,6 +30,9 @@ public:
 	// methods
 	void CreateCustomCulture();
 
+	// override for texture tests
+	void PaintDib();
+
 	vtGeom *make_test_cone();
 	vtGeom *make_red_cube();
 	void create_state_park();

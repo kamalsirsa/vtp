@@ -20,6 +20,7 @@
 #include "Hawaii.h"
 
 ///////////////////////////////
+bool g_bLineOfSightTest = false;
 
 IslandTerrain::IslandTerrain() : PTerrain()
 {
@@ -44,8 +45,42 @@ IslandTerrain::~IslandTerrain()
 {
 }
 
+void IslandTerrain::PaintDib()
+{
+	if (g_bLineOfSightTest)
+	{
+		// test Line Of Sight feature on texture recalculation
+		vtHeightFieldGrid3d *pGrid = GetHeightFieldGrid3d();
+
+		FPoint3 campos = vtGetScene()->GetCamera()->GetTrans();
+
+		int width = m_pDIB->GetWidth();
+		int height = m_pDIB->GetHeight();
+
+		FPoint3 tpos;
+		int i, j;
+		for (i = 0; i < width; i++)
+		{
+			for (j = 0; j < height; j++)
+			{
+				pGrid->GetWorldLocation(i, height-1-j, tpos);
+				tpos.y += 1;
+				if (pGrid->LineOfSight(campos, tpos))
+					m_pDIB->SetPixel24(i, j, RGBi(255,128,128));
+				else
+					m_pDIB->SetPixel24(i, j, RGBi(128,128,255));
+			}
+		}
+	}
+	else
+		vtTerrain::PaintDib();
+}
+
 void IslandTerrain::CreateCustomCulture()
 {
+	// Enable this to test Line Of Sight feature on texture recalculation
+//	g_bLineOfSightTest = true;
+
 	// create a container for the Hawai'i-specific structures
 	m_pSA = NewStructureArray();
 	m_pSA->SetFilename("Hawai'i Dynamic Structures");
