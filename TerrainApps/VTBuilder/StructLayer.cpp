@@ -23,9 +23,6 @@
 #include "vtui/BuildingDlg.h"
 #include "Helper.h"
 #include "ImportStructDlg.h"
-#ifdef ENVIRON
-#include "LevelSelectDlg.h"
-#endif
 
 wxPen orangePen;
 wxPen yellowPen;
@@ -542,21 +539,31 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 		pView->Refresh(TRUE, &Redraw);
 
 		// Find out the level to work on
+#if 0
 		CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
-
 		LevelSelectionDialog.SetBuilding(pBuilding);
-
-		if (LevelSelectionDialog.ShowModal()!= wxID_OK)
+		if (LevelSelectionDialog.ShowModal() != wxID_OK)
 		{
 			m_pEditBuilding = NULL;
 			pView->Refresh(TRUE, &Redraw);
 			return;
 		}
+		iLevel = LevelSelectionDialog.GetLevel();
+#else
+		int iLevels = pBuilding->GetNumLevels();
+		wxString msg;
+		msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
+		iLevel = wxGetNumberFromUser(msg, "Level", "Enter Value", 0, 0, iLevels);
+		if (iLevel == -1)
+		{
+			m_pEditBuilding = NULL;
+			pView->Refresh(TRUE, &Redraw);
+			return;
+		}
+#endif
 		
 		m_pEditBuilding = NULL;
 		pView->Refresh(TRUE, &Redraw);
-
-		iLevel = LevelSelectionDialog.GetLevel();
 
 		if (-1 == iLevel)
 		{
@@ -637,22 +644,30 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 		pView->Refresh(TRUE, &Redraw);
 
 		// Find out the level to work on
+#if 0
 		CLevelSelectionDialog LevelSelectionDialog(pView, -1, _T("Select level to edit"));
-
 		LevelSelectionDialog.SetBuilding(pBuilding);
-
 		if (LevelSelectionDialog.ShowModal()!= wxID_OK)
 		{
 			m_pEditBuilding = NULL;
 			pView->Refresh(TRUE, &Redraw);
 			return;
 		}
-		
+		iLevel = LevelSelectionDialog.GetLevel();
+#else
+		int iLevels = pBuilding->GetNumLevels();
+		wxString msg;
+		msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
+		iLevel = wxGetNumberFromUser(msg, "Level", "Enter Value", 0, 0, iLevels);
+		if (iLevel == -1)
+		{
+			m_pEditBuilding = NULL;
+			pView->Refresh(TRUE, &Redraw);
+			return;
+		}
+#endif
 		m_pEditBuilding = NULL;
 		pView->Refresh(TRUE, &Redraw);
-
-		iLevel = LevelSelectionDialog.GetLevel();
-
 
 		if (-1 == iLevel)
 		{
