@@ -45,106 +45,109 @@ wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_EXTENT_ALL 10012
 wxSizer *ExtentDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_XY 10013
-#define ID_DUMMY 10014
-#define ID_DIST 10015
+#define ID_MAP_OFFSET 10013
+#define ID_UNITS1 10014
+#define ID_MAP_DIST 10015
+#define ID_UNITS2 10016
+#define ID_GEOD_DIST 10017
+#define ID_UNITS3 10018
 wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_BYTES 10016
-#define ID_WIDTH 10017
-#define ID_HEIGHT 10018
-#define ID_UTM 10019
-#define ID_FLOATING 10020
-#define ID_VUNITS 10021
-#define ID_SPACING 10022
+#define ID_BYTES 10019
+#define ID_WIDTH 10020
+#define ID_HEIGHT 10021
+#define ID_UTM 10022
+#define ID_FLOATING 10023
+#define ID_VUNITS 10024
+#define ID_SPACING 10025
 wxSizer *RawDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_PROPS 10023
-#define ID_LEFT 10024
-#define ID_TOP 10025
-#define ID_RIGHT 10026
-#define ID_BOTTOM 10027
+#define ID_PROPS 10026
+#define ID_LEFT 10027
+#define ID_TOP 10028
+#define ID_RIGHT 10029
+#define ID_BOTTOM 10030
 wxSizer *ElevPropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CAPTION 10028
-#define ID_GEO 10029
-#define ID_UTMZONE 10030
-#define ID_ALBERS 10031
-#define ID_PAR1 10032
-#define ID_PAR2 10033
-#define ID_MERIDIAN 10034
-#define ID_STATEPLANE 10035
-#define ID_SPCHOICE 10036
-#define ID_LINE 10037
-#define ID_DATUM 10038
+#define ID_CAPTION 10031
+#define ID_GEO 10032
+#define ID_UTMZONE 10033
+#define ID_ALBERS 10034
+#define ID_PAR1 10035
+#define ID_PAR2 10036
+#define ID_MERIDIAN 10037
+#define ID_STATEPLANE 10038
+#define ID_SPCHOICE 10039
+#define ID_LINE 10040
+#define ID_DATUM 10041
 wxSizer *ProjectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_FIELD 10039
-#define ID_DENSITY 10040
-#define ID_BIOTYPE1 10041
-#define ID_BIOTYPE2 10042
+#define ID_FIELD 10042
+#define ID_DENSITY 10043
+#define ID_BIOTYPE1 10044
+#define ID_BIOTYPE2 10045
 wxSizer *ImportVegFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define IDC_SAMPLING 10043
-#define IDC_SCARCITY 10044
+#define IDC_SAMPLING 10046
+#define IDC_SCARCITY 10047
 wxSizer *DistribVegFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TOWER_XY 10045
-#define ID_TOWER_TYPE 10046
-#define ID_TOWER_MATERIAL 10047
-#define ID_TOWER_ELEV 10048
+#define ID_TOWER_XY 10048
+#define ID_TOWER_TYPE 10049
+#define ID_TOWER_MATERIAL 10050
+#define ID_TOWER_ELEV 10051
 wxSizer *TowerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_PROJ 10049
-#define ID_HORUNITS 10050
-#define ID_ZONE 10051
-#define ID_PROJPARAM 10052
+#define ID_PROJ 10052
+#define ID_HORUNITS 10053
+#define ID_ZONE 10054
+#define ID_PROJPARAM 10055
 wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_STATEPLANES 10053
-#define ID_NAD27 10054
-#define ID_NAD83 10055
+#define ID_STATEPLANES 10056
+#define ID_NAD27 10057
+#define ID_NAD83 10058
 wxSizer *StatePlaneDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_NUMLANES 10056
-#define ID_HWYNAME 10057
-#define ID_SIDEWALK 10058
-#define ID_PARKING 10059
-#define ID_MARGIN 10060
-#define ID_SURFTYPE 10061
+#define ID_NUMLANES 10059
+#define ID_HWYNAME 10060
+#define ID_SIDEWALK 10061
+#define ID_PARKING 10062
+#define ID_MARGIN 10063
+#define ID_SURFTYPE 10064
 wxSizer *RoadPropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_INTTYPE 10062
-#define ID_ROADNUM 10063
-#define ID_BEHAVIOR 10064
+#define ID_INTTYPE 10065
+#define ID_ROADNUM 10066
+#define ID_BEHAVIOR 10067
 wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPACINGX 10065
-#define ID_SPACINGY 10066
-#define ID_SIZEX 10067
-#define ID_SIZEY 10068
-#define ID_CONSTRAIN 10069
-#define ID_SMALLER 10070
-#define ID_BIGGER 10071
-#define ID_FLOATS 10072
-#define ID_SHORTS 10073
-#define ID_AREAX 10074
-#define ID_AREAY 10075
-#define ID_ESTX 10076
-#define ID_ESTY 10077
+#define ID_SPACINGX 10068
+#define ID_SPACINGY 10069
+#define ID_SIZEX 10070
+#define ID_SIZEY 10071
+#define ID_CONSTRAIN 10072
+#define ID_SMALLER 10073
+#define ID_BIGGER 10074
+#define ID_FLOATS 10075
+#define ID_SHORTS 10076
+#define ID_AREAX 10077
+#define ID_AREAY 10078
+#define ID_ESTX 10079
+#define ID_ESTY 10080
 wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CONDITION 10078
-#define ID_COMBO_VALUE 10079
+#define ID_CONDITION 10081
+#define ID_COMBO_VALUE 10082
 wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LIST 10080
+#define ID_LIST 10083
 wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TOOLBAR 10081
-#define ID_MINUTES 10082
-#define ID_ELEVUNIT 10083
-#define ID_PATHNAMES 10084
+#define ID_TOOLBAR 10084
+#define ID_MINUTES 10085
+#define ID_ELEVUNIT 10086
+#define ID_PATHNAMES 10087
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

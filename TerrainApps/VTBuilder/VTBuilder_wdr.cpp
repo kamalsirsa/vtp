@@ -185,44 +185,38 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 {
     wxFlexGridSizer *item0 = new wxFlexGridSizer( 3, 0, 0 );
 
-    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, "Horizontal Offset X, Y", wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, "Map Offset", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item2 = new wxTextCtrl( parent, ID_XY, "", wxDefaultPosition, wxSize(200,-1), 0 );
+    wxTextCtrl *item2 = new wxTextCtrl( parent, ID_MAP_OFFSET, "", wxDefaultPosition, wxSize(180,-1), 0 );
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxString *strs3 = (wxString*) NULL;
+    wxChoice *item3 = new wxChoice( parent, ID_UNITS1, wxDefaultPosition, wxSize(100,-1), 0, strs3, 0 );
+    item0->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
-
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, "Map Distance", wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_DUMMY, "", wxDefaultPosition, wxSize(200,-1), 0 );
+    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_MAP_DIST, "", wxDefaultPosition, wxSize(180,-1), 0 );
     item0->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item6 = new wxStaticText( parent, ID_TEXT, "degrees longitude, latitude", wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxString *strs6 = (wxString*) NULL;
+    wxChoice *item6 = new wxChoice( parent, ID_UNITS2, wxDefaultPosition, wxSize(100,-1), 0, strs6, 0 );
+    item0->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, "Horizontal Distance", wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item7, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, "Geodesic Distance", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_DIST, "", wxDefaultPosition, wxSize(200,-1), 0 );
-    item0->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxTextCtrl *item8 = new wxTextCtrl( parent, ID_GEOD_DIST, "", wxDefaultPosition, wxSize(180,-1), 0 );
+    item0->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxBoxSizer *item10 = new wxBoxSizer( wxHORIZONTAL );
-
-    item0->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxButton *item11 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
-
-    item0->Add( item12, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxString strs9[] = 
+    {
+        "ChoiceItem"
+    };
+    wxChoice *item9 = new wxChoice( parent, ID_UNITS3, wxDefaultPosition, wxSize(100,-1), 1, strs9, 0 );
+    item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     if (set_sizer)
     {
