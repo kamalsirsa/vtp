@@ -1,0 +1,29 @@
+/* XPM */
+static char *table_xpm[] = {
+/* columns rows colors chars-per-pixel */
+"20 20 3 1",
+"  c black",
+". c #bfbf00",
+"X c #c0c0c0",
+/* pixels */
+"XXXXXXXXXXXXXXXXXXXX",
+"X                  X",
+"X .... .... .... ..X",
+"X .... .... .... ..X",
+"X                  X",
+"X XXXX XXXX XXXX XXX",
+"X XXXX XXXX XXXX XXX",
+"X                  X",
+"X XXXX XXXX XXXX XXX",
+"X XXXX XXXX XXXX XXX",
+"X                  X",
+"X XXXX XXXX XXXX XXX",
+"X XXXX XXXX XXXX XXX",
+"X                  X",
+"X XXXX XXXX XXXX XXX",
+"X XXXX XXXX XXXX XXX",
+"X                  X",
+"X XXXX XXXX XXXX XXX",
+"X XXXX XXXX XXXX XXX",
+"XXXXXXXXXXXXXXXXXXXX"
+};
