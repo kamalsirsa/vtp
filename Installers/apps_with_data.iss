@@ -3,7 +3,7 @@
 
 [Setup]
 AppName=VTP Software
-AppVerName=VTP Software 2004.08.05
+AppVerName=VTP Software 2004.10.01
 AppPublisher=Virtual Terrain Project
 AppPublisherURL=http://vterrain.org/
 AppSupportURL=http://vterrain.org/
@@ -63,24 +63,26 @@ Source: "C:\VTP\TerrainApps\Enviro\hu\Enviro.mo"; DestDir: "{app}\Apps\hu"; Flag
 Source: "C:\VTP\TerrainApps\Enviro\pt\Enviro.mo"; DestDir: "{app}\Apps\pt"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\ro\Enviro.mo"; DestDir: "{app}\Apps\ro"; Flags: ignoreversion; Components: main
 Source: "C:\VTP\TerrainApps\Enviro\sv\Enviro.mo"; DestDir: "{app}\Apps\sv"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\Enviro\zh\Enviro.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
+Source: "C:\VTP\TerrainApps\VTBuilder\zh\VTBuilder.mo"; DestDir: "{app}\Apps\zh"; Flags: ignoreversion; Components: main
 
 ; Core Data
 Source: "C:\VTP\TerrainApps\VTBuilder\WorldMap\gnv19.*"; DestDir: "{app}\Apps\WorldMap"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\common_content.vtco"; DestDir: "{app}\Data"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\BuildingModels\*.jpg"; DestDir: "{app}\Data\BuildingModels"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Culture\*"; DestDir: "{app}\Data\Culture"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Culture\UtilityStructures\*"; DestDir: "{app}\Data\Culture\UtilityStructures"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Fonts\Arial.ttf"; DestDir: "{app}\Data\Fonts"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\GeoTypical\*"; DestDir: "{app}\Data\GeoTypical"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\PlantData\species.xml"; DestDir: "{app}\Data\PlantData"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\PlantModels\*.png"; DestDir: "{app}\Data\PlantModels"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\PointData\vtp-users-04*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Sky\bsc.data"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Sky\*.png"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Sky\philo*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\Sky\skydome*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_1024_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
-Source: "C:\VTP\TerrainApps\Data\WholeEarth\ev11656_512_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\common_content.vtco"; DestDir: "{app}\Data"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\BuildingModels\*.jpg"; DestDir: "{app}\Data\BuildingModels"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Culture\*"; DestDir: "{app}\Data\Culture"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Culture\UtilityStructures\*"; DestDir: "{app}\Data\Culture\UtilityStructures"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Fonts\Arial.ttf"; DestDir: "{app}\Data\Fonts"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\GeoTypical\*"; DestDir: "{app}\Data\GeoTypical"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\PlantData\species.xml"; DestDir: "{app}\Data\PlantData"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\PlantModels\*.png"; DestDir: "{app}\Data\PlantModels"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\PointData\vtp-users-04*"; DestDir: "{app}\Data\PointData"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Sky\bsc.data"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Sky\*.png"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Sky\philo*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\Sky\skydome*"; DestDir: "{app}\Data\Sky"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\WholeEarth\ev11656_1024_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
+Source: "E:\Data-Distro\WholeEarth\ev11656_512_*.jpg"; DestDir: "{app}\Data\WholeEarth"; Flags: ignoreversion; Components: data
 
 ; overview docs
 Source: "C:\VTP\Docs\*.html"; DestDir: "{app}\Docs"; Flags: ignoreversion; Components: docs
@@ -90,17 +92,17 @@ Source: "C:\VTP\gdal\data\*"; DestDir: "{app}\GDAL-data"; Flags: ignoreversion; 
 Source: "C:\VTP\proj\nad\*"; DestDir: "{app}\PROJ4-data"; Flags: ignoreversion; Components: proj
 
 ; DLLs
-Source: "C:\APIs\gdal120\bin\gdal12.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\gdal120\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal123\bin\gdal12.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\gdal123\bin\proj.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\netcdf-3.5.0.win32bin\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
-Source: "C:\APIs\osg-0.9.6-3-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
+Source: "C:\APIs\osg-0.9.7-bin\bin-rel-only\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\libwww\bin\*.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\wx2.4.2\lib\wxmsw24u.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 Source: "C:\APIs\xerces-c_2_3_0-win32\bin\xerces-c_2_3_0.dll"; DestDir: "{app}\Apps"; Flags: ignoreversion; Components: dlls
 
 ; Microsoft DLLs
-Source: "C:\Windows\System32\msvcp71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
-Source: "C:\Windows\System32\msvcr71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
+Source: "C:\VTP\Installers\Redistributable_MS_DLLs\msvcp71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
+Source: "C:\VTP\Installers\Redistributable_MS_DLLs\msvcr71.dll"; DestDir: "{sys}"; Flags: onlyifdoesntexist uninsneveruninstall; Components: dlls
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
