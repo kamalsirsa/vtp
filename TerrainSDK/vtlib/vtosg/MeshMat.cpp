@@ -24,6 +24,10 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
 }
 
+vtMaterial::~vtMaterial()
+{
+}
+
 /**
  * Set the diffuse color of this material.
  *
@@ -218,7 +222,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	if (!m_pTexture)
 		m_pTexture = new Texture2D();
 
-	m_pTexture->setImage(pImage->m_pOsgImage);
+	m_pTexture->setImage(pImage->m_pOsgImage.get());
 
 	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
 	// *after* a glTextImage2D?
@@ -229,7 +233,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	// So i tried this, but it doesn't seem to have any affect on runtime memory
 	//  footprint:
-	// m_pTexture->setUnRefImageDataAfterApply(true);
+	m_pTexture->setUnRefImageDataAfterApply(true);
 
 	m_pStateSet->setTextureAttributeAndModes(0, m_pTexture.get(), SA_ON);
 }
@@ -316,6 +320,15 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 /////////////////////////////////////////////////////////////////////////////
 // vtMesh
 //
+
+GeoSet2::~GeoSet2()
+{
+	if (m_pMesh)
+	{
+		delete m_pMesh;
+		m_pMesh = NULL;
+	}
+}
 
 /**
  * Construct a Mesh.
@@ -417,6 +430,16 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 		break;
 	}
 	SendPointersToOSG();
+}
+
+vtMesh::~vtMesh()
+{
+}
+
+void vtMesh::Destroy()
+{
+	// dereference
+	m_pGeoSet = NULL;
 }
 
 /**

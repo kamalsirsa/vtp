@@ -473,7 +473,27 @@ void vtSprite::SetText(const char *msg)
 vtGeom::vtGeom() : vtGeomBase(), vtNode()
 {
 	m_pGeode = new Geode();
-	SetOsgNode(m_pGeode);
+	SetOsgNode(m_pGeode.get());
+}
+
+vtGeom::~vtGeom()
+{
+}
+
+void vtGeom::Destroy()
+{
+	// try to destroy meshes?
+	int i, num = m_pGeode->getNumDrawables();
+	for (i = 0; i < num; i++)
+	{
+		vtMesh *mesh = GetMesh(i);
+		if (mesh)
+			mesh->Destroy();
+	}
+	m_pGeode->removeDrawable(0, num);
+
+	m_pGeode = NULL;
+	vtNode::Destroy();
 }
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)

@@ -22,6 +22,7 @@ class vtMaterial : public vtMaterialBase
 {
 public:
 	vtMaterial();
+	~vtMaterial();
 
 	void SetDiffuse(float r, float g, float b, float a = 1.0f);
 	RGBAf GetDiffuse();
@@ -82,7 +83,7 @@ class GeoSet2 : public osg::GeoSet
 {
 public:
 	GeoSet2() { m_pMesh = NULL; }
-	~GeoSet2() {}
+	~GeoSet2();
 	class vtMesh *m_pMesh;
 };
 
@@ -105,6 +106,8 @@ class vtMesh : public vtMeshBase
 
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
+	~vtMesh();
+	void Destroy();
 
 	// Adding primitives
 	void AddTri(int p0, int p1, int p2);

@@ -19,15 +19,14 @@
 vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 {
 	m_pPngData = NULL;
-	m_pOsgImage = NULL;
 	m_internalformat = internalformat;
 	m_strFilename = fname;
 
-	vtDIB pDIB;
 
 #if !USE_OSG_FOR_BMP
 	if (!stricmp(fname + strlen(fname) - 3, "bmp"))
 	{
+		vtDIB pDIB;
 		if (pDIB.ReadBMP(fname))
 		{
 			_CreateFromDIB(&pDIB);
@@ -40,6 +39,7 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 #if !USE_OSG_FOR_JPG
 	if (!stricmp(fname + strlen(fname) - 3, "jpg"))
 	{
+		vtDIB pDIB;
 		if (pDIB.ReadJPEG(fname))
 		{
 			_CreateFromDIB(&pDIB);
@@ -60,7 +60,7 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 	// try to load with OSG (osgPlugins libraries)
 	{
 		m_pOsgImage = osgDB::readImageFile(fname);
-		if (m_pOsgImage)
+		if (m_pOsgImage != NULL)
 			m_bLoaded = true;
 	}
 }
@@ -75,6 +75,7 @@ vtImage::vtImage(vtDIB *pDIB, int internalformat)
 
 vtImage::~vtImage()
 {
+	m_pOsgImage = NULL;	// dereference
 	if (m_pPngData) free(m_pPngData);
 }
 

@@ -199,6 +199,7 @@ class vtGeom : public vtGeomBase, public vtNode
 {
 public:
 	vtGeom();
+	~vtGeom();
 
 	/** Add a mesh to this geometry.
 		\param pMesh The mesh to add
@@ -224,7 +225,9 @@ public:
 
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
-	osg::Geode	*m_pGeode;	// the Geode is a container for Drawables
+	void Destroy();
+
+	osg::ref_ptr<osg::Geode> m_pGeode;	// the Geode is a container for Drawables
 };
 
 class vtMovGeom : public vtTransform

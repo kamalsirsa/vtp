@@ -16,7 +16,7 @@ public:
 	~vtImage();
 
 	// Implementation
-	osg::Image	*m_pOsgImage;
+	osg::ref_ptr<osg::Image>	m_pOsgImage;
 
 protected:
 	int		m_internalformat;
