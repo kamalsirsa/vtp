@@ -1,11 +1,11 @@
 //
 // BExtractorView.cpp : implementation of the BExtractorView class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "BExtractor.h"
 
 #include "BExtractorDoc.h"
@@ -13,7 +13,6 @@
 #include "FloodDialog.h"
 #include "ConvolveDialog.h"
 #include "KernelDialog.h"
-#include "GBMWrapper.h"
 #include "gdal_priv.h"
 #include "BImage.h"
 #include "Dib.h"
@@ -35,8 +34,8 @@ static char THIS_FILE[] = __FILE__;
 // their values reduced by not matching with n3, n1. Notice that if two
 // buildings have less than two white pixels between them, they will also
 // have their values reduced and will probably not show up in the final
-// building count. 
-#define n3 -5			
+// building count.
+#define n3 -5
 #define n1 -1
 #define n2 10	//12 black pixels of this type in a perfect building
 #define n4 15	// 9 black pixels of this type in a perfect building
@@ -65,7 +64,6 @@ BEGIN_MESSAGE_MAP(BExtractorView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_COMMAND(ID_ZOOM_IN, OnZoomIn)
 	ON_COMMAND(ID_ZOOM_OUT, OnZoomOut)
-	ON_COMMAND(ID_FUNCTIONS_TESTIPL, OnFunctionsTestIPL)
 	ON_WM_MBUTTONUP()
 	ON_WM_MBUTTONDOWN()
 	ON_WM_KEYDOWN()
@@ -231,7 +229,7 @@ void BExtractorView::OnDraw(CDC* pDC)
 		srcRect.bottom -= (long)(diff * ratio_y);
 	}
 
-	CRect destRect(dest_offset.x, dest_offset.y, dest_offset.x + dest_size.x, 
+	CRect destRect(dest_offset.x, dest_offset.y, dest_offset.x + dest_size.x,
 					 dest_offset.y + dest_size.y);
 	pImage->m_pCurrentDIB->Draw(*pDC, &destRect, &srcRect, TRUE, NULL, FALSE);
 
@@ -262,7 +260,7 @@ void BExtractorView::DrawBuildings(CDC *pDC)
 
 	COLORREF color;
 	color = m_buildingColor;
-	CPen bgPen( PS_SOLID, 1, color); 
+	CPen bgPen( PS_SOLID, 1, color);
 	pDC->SelectObject(bgPen);
 
 	DPoint2 temp;
@@ -314,7 +312,7 @@ void BExtractorView::DrawRoadNodes(CDC *pDC)
 
 	COLORREF color;
 	color = m_roadColor;
-	CPen bgPen( PS_SOLID, 1, color); 
+	CPen bgPen( PS_SOLID, 1, color);
 	pDC->SelectObject(bgPen);
 
 	for (pNode = pDoc->m_Links.GetFirstNode(); NULL != pNode; pNode = pNode->m_pNext)
@@ -342,7 +340,7 @@ void BExtractorView::DrawRoads(CDC *pDC)
 
 	COLORREF color;
 	color = m_roadColor;
-	CPen bgPen( PS_SOLID, 1, color); 
+	CPen bgPen( PS_SOLID, 1, color);
 	pDC->SelectObject(bgPen);
 
 	for (pLink = pDoc->m_Links.GetFirstLink(); NULL != pLink; pLink = pLink->m_pNext)
@@ -416,7 +414,7 @@ BExtractorDoc* BExtractorView::GetDocument() // non-debug version is inline
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 
-void BExtractorView::OnInitialUpdate() 
+void BExtractorView::OnInitialUpdate()
 {
 	CView::OnInitialUpdate();	
 }
@@ -447,7 +445,7 @@ void BExtractorView::UpdateScrollPos()
 	SetScrollPos(SB_VERT, m_scrollposV);
 }
 
-void BExtractorView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void BExtractorView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	CRect r;
 	GetClientRect(r);
@@ -457,16 +455,16 @@ void BExtractorView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	switch (nSBCode)
 	{
 		case SB_LINELEFT:	
-			delta = -SCROLL_MULT; 
+			delta = -SCROLL_MULT;
 			break;
 		case SB_LINERIGHT:	
-			delta = SCROLL_MULT; 
+			delta = SCROLL_MULT;
 			break;
 		case SB_PAGELEFT:	
 			delta = -window_width;
 			break;
 		case SB_PAGERIGHT:	
-			delta = window_width; 
+			delta = window_width;
 			break;
 		case SB_THUMBPOSITION:
 			break;
@@ -495,7 +493,7 @@ void BExtractorView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	}
 }
 
-void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 
+void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	CRect r;
 	GetClientRect(r);
@@ -505,16 +503,16 @@ void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	switch (nSBCode)
 	{
 		case SB_LINEUP:		
-			delta = -SCROLL_MULT; 
+			delta = -SCROLL_MULT;
 			break;
 		case SB_LINEDOWN:	
-			delta = SCROLL_MULT; 
+			delta = SCROLL_MULT;
 			break;
 		case SB_PAGEUP:		
-			delta = -screen_height; 
+			delta = -screen_height;
 			break;
 		case SB_PAGEDOWN:	
-			delta = screen_height; 
+			delta = screen_height;
 			break;
 		case SB_THUMBPOSITION:
 			break;
@@ -542,7 +540,7 @@ void BExtractorView::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	}
 }
 
-void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point) 
+void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	m_downPoint = point;	//save the point where they started
 	s_UTM(m_downPoint, m_downLocation);
@@ -560,7 +558,7 @@ void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point)
 		SetCapture();
 		break;
 
-	case LB_Rectangle: 
+	case LB_Rectangle:
 		if (m_iStep == 0)
 		{
 			m_bRubber = true;
@@ -581,7 +579,7 @@ void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		break;
 
-	case LB_Circle: 
+	case LB_Circle:
 		m_bRubber = true;
 		m_fPixelRadius = 0.0f;
 		break;
@@ -603,7 +601,8 @@ void BExtractorView::OnLButtonDown(UINT nFlags, CPoint point)
 
 void BExtractorView::OnLButtonDownEditShape(UINT nFlags, CPoint point)
 {
-	double error = s_UTMdx(UTM_ERROR);  //calculate what UTM_ERROR pixels are as scaled UTM coord
+	//calculate what UTM_ERROR pixels are as scaled UTM coord
+	double error = s_UTMdx(UTM_ERROR);
 
 	BExtractorDoc* pDoc = GetDocument();
 	int building1, building2, corner;
@@ -718,7 +717,7 @@ void BExtractorView::OnLButtonDownEditRoad(UINT nFlags, CPoint point)
 }
 
 
-void BExtractorView::OnMButtonDown(UINT nFlags, CPoint point) 
+void BExtractorView::OnMButtonDown(UINT nFlags, CPoint point)
 {
 	SetCapture();				//capture mouse
 	m_downPoint = point;
@@ -726,7 +725,7 @@ void BExtractorView::OnMButtonDown(UINT nFlags, CPoint point)
 	m_bPanning = true;
 }
 
-void BExtractorView::OnRButtonDown(UINT nFlags, CPoint point) 
+void BExtractorView::OnRButtonDown(UINT nFlags, CPoint point)
 {
 	m_bPanning = false;
 	if (m_mode == LB_Footprint)
@@ -746,7 +745,7 @@ void BExtractorView::OnRButtonDown(UINT nFlags, CPoint point)
 	}
 }
 
-void BExtractorView::OnLButtonUp(UINT nFlags, CPoint point) 
+void BExtractorView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	switch (m_mode)
 	{
@@ -801,7 +800,7 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 	int points = m_poly.GetSize();
 	if (points > 2)
 	{
-		// continuing poly 
+		// continuing poly
 		// did they click back near the first point?
 		CPoint screenpoint;
 		UTM_s(m_poly[0], screenpoint);
@@ -979,18 +978,19 @@ void BExtractorView::OnLButtonUpEditRoadNodes(CPoint point)
 		DPoint2 UTM_start, UTM_end;
 		UTM_start = m_downLocation;
 
-		//cycle through the current nodes/roads, removing any that are in the selected area
+		//cycle through the current nodes/roads, removing any that are in
+		// the selected area
 		MopRemoveRoadNodes(UTM_start, imagepoint);
 	}
 }
 
-void BExtractorView::OnMButtonUp(UINT nFlags, CPoint point) 
+void BExtractorView::OnMButtonUp(UINT nFlags, CPoint point)
 {
 	m_bPanning = false;
 	ReleaseCapture();			//release the mouse
 }
 
-void BExtractorView::OnMouseMove(UINT nFlags, CPoint point) 
+void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	m_lastMousePoint = point;
 
@@ -1002,7 +1002,8 @@ void BExtractorView::OnMouseMove(UINT nFlags, CPoint point)
 	if (m_maybeRect)
 	{
 		//check to see if they are mopping
-		if ((abs(point.x - m_downPoint.x) > 2) && (abs(point.y - m_downPoint.y) > 2))
+		if ((abs(point.x - m_downPoint.x) > 2) &&
+			(abs(point.y - m_downPoint.y) > 2))
 		{
 			m_bRubber = true; //definitely mopping
 			m_maybeRect = false;  //reset this	
@@ -1311,7 +1312,8 @@ void BExtractorView::DrawRect(CDC *pDC, CPoint one, CPoint two)
 
 bool BExtractorView::SelectionOnPicture(DPoint2 point)
 {
-	//if the user has selected a point off the TIF, returns false. On the TIF, returns true.
+	//if the user has selected a point off the TIF, returns false. On the
+	// TIF, returns true.
 	if (GetDocument()->m_picLoaded)
 	{
 		CBImage* pImage = GetDocument()->m_pImage;
@@ -1364,7 +1366,7 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 
 			//this point was in the user-selected area, remove it
 			doc->m_Buildings.RemoveAt(i, 1);
-			if (firstpt) 
+			if (firstpt)
 			{
 				firstpt = false;
 			}
@@ -1423,13 +1425,13 @@ void BExtractorView::MopRemoveRoadNodes(DPoint2 start, DPoint2 end)
 	Invalidate();
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
-// BExtractorView : Functions to do the REAL work
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
 
-void BExtractorView::OnFunctionsConvolve() 
+/////////////////////////////////////////////////////////////////////////////
+// BExtractorView : Functions to do the REAL work
+/////////////////////////////////////////////////////////////////////////////
+
+
+void BExtractorView::OnFunctionsConvolve()
 {
     BExtractorDoc* doc = GetDocument();
 	if (!doc->m_picLoaded)
@@ -1443,24 +1445,9 @@ void BExtractorView::OnFunctionsConvolve()
 	if (fdlg.DoModal() == IDCANCEL)
 		return;
 
-	switch (fdlg.m_iSelection)
+	if (fdlg.m_iSelection == 0)
 	{
-		case 0:
-		{
-//			HCURSOR cursor = LoadCursor(NULL, IDC_WAIT);
-//			HCURSOR old_cursor = SetCursor(cursor);
-
-//			SetCursor(LoadCursor(NULL, IDC_WAIT));
-
-//			HCURSOR cursor = LoadImage(NULL,OCR_WAIT,IMAGE_CURSOR,0,0,LR_DEFAULTSIZE); 
-//			HCURSOR old_cursor = SetCursor(cursor);
-			doc->PreFloodFillDIB(bm);
-//			SetCursor(old_cursor);
-//			SetCursor(LoadCursor(NULL, IDC_ARROW));
-			break;
-		}
-		case 1: break;
-		default: break;
+		doc->PreFloodFillDIB(bm);
 	}
 
 	BITMAPINFOHEADER *Hdr = bm->GetDIBHeader();
@@ -1482,7 +1469,7 @@ void BExtractorView::OnFunctionsConvolve()
 		NULL, // no image ID
 		NULL); // not tiled
 
-	iplConvertFromDIBSep(Hdr, bm->GetData(), i1); 
+	iplConvertFromDIBSep(Hdr, bm->GetData(), i1);
 	IplImage* i2 = iplCloneImage(i1);
 
 	//do the image manipulation
@@ -1553,61 +1540,60 @@ void BExtractorView::OnFunctionsConvolve()
 	dlg.DoModal();
 	switch (dlg.m_iSelection)
 	{
-	//	If you have a data file that has very closely-packed 
-	//	buildings, you should use a lower threshold (finds more 
-	//	buildings, but also more false hits) 
-	
+		//	If you have a data file that has very closely-packed
+		//	buildings, you should use a lower threshold (finds more
+		//	buildings, but also more false hits)
 		case 0:	
 			{
-				iplThreshold(i1, i2, 46155); 
+				iplThreshold(i1, i2, 46155);
 				// (181/255 on an 8-bit scale)	
 				break;
 			}
-		case 1: 
+		case 1:
 			{
-				iplThreshold(i1, i2, 47175); 
+				iplThreshold(i1, i2, 47175);
 				// (185/255 on an 8-bit scale)	
 				break;
 			}
 		case 2:
 			{
-				iplThreshold(i1, i2, 48195); 
-				// (189/255 on an 8-bit scale) 
+				iplThreshold(i1, i2, 48195);
+				// (189/255 on an 8-bit scale)
 				break;
 			}
 		case 3:
 			{
-				iplThreshold(i1, i2, 49215); 
-				// (193/255 on an 8-bit scale) 
+				iplThreshold(i1, i2, 49215);
+				// (193/255 on an 8-bit scale)
 				break;
 			}
 		case 4:	
 			{
-				iplThreshold(i1, i2, 50235); 
+				iplThreshold(i1, i2, 50235);
 				// (197/255 on an 8-bit scale)	
 				break;
 			}
-		case 5: 
+		case 5:
 			{
-				iplThreshold(i1, i2, 51255); 
+				iplThreshold(i1, i2, 51255);
 				// (201/255 on an 8-bit scale)
 				break;
 			}
 		case 6:
 			{
-				iplThreshold(i1, i2, 52275); 
-				// (205/255 on an 8-bit scale) 
+				iplThreshold(i1, i2, 52275);
+				// (205/255 on an 8-bit scale)
 				break;
 			}
 		case 7:
 			{
-				iplThreshold(i1, i2, 53295); 
-				// (209/255 on an 8-bit scale) 
+				iplThreshold(i1, i2, 53295);
+				// (209/255 on an 8-bit scale)
 				break;
 			}
-		default: 
+		default:
 			{
-				iplThreshold(i1, i2, 50235); 
+				iplThreshold(i1, i2, 50235);
 				break;
 			}
 	}
@@ -1615,14 +1601,14 @@ void BExtractorView::OnFunctionsConvolve()
 	iplNot(i2, i1);
 
 	CPaintDC cDC(this), *pDC = &cDC;
-	//convert IPLImage -> DIB 
+	//convert IPLImage -> DIB
 	CDib ResultDib;
 	ResultDib.Setup(pDC, bm->GetWidth(), bm->GetHeight(), 8, GetDocument()->m_hdd);
 
     iplConvertToDIBSep(i1, ResultDib.GetDIBHeader(), (char *) ResultDib.m_data, IPL_DITHER_NONE, IPL_PALCONV_NONE);
 
 	//distinguish individual buildings and label them
-	doc->FloodFillDIB(&ResultDib); 
+	doc->FloodFillDIB(&ResultDib);
 
 	//loop through the building coordinates, remove any that are too close to one another
 	int l;
@@ -1632,13 +1618,13 @@ void BExtractorView::OnFunctionsConvolve()
 	for (int k = 0; k < num; )
 	{
 		vtBuilding *bld = doc->m_Buildings.GetAt(k)->GetBuilding();
-		DPoint2 point = bld->GetLocation(); 
+		DPoint2 point = bld->GetLocation();
 		for (l = 0; (!match)&&(l < num); l++)
 		{
 			if (l!=k)
 			{
 				vtBuilding *bld2 = doc->m_Buildings.GetAt(l)->GetBuilding();
-				DPoint2 point2 = bld2->GetLocation(); 
+				DPoint2 point2 = bld2->GetLocation();
 
 				if ( (fabs(point.x - point2.x) < 11) && (fabs(point.y - point2.y) < 7))
 					match = true;
@@ -1655,110 +1641,41 @@ void BExtractorView::OnFunctionsConvolve()
 	CString NumberBuildings;
 	NumberBuildings.Format("Building Extraction is finished. %d buildings were extracted", num);
 
-	AfxMessageBox(NumberBuildings,MB_ICONINFORMATION);
+	AfxMessageBox(NumberBuildings, MB_ICONINFORMATION);
 
-//	doc->m_pImage->m_initialized = false;
 	Invalidate(); //redraw picture
 
 }
 
-void BExtractorView::OnUpdateFunctionsConvolve(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateFunctionsConvolve(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 }
 
-void BExtractorView::OnFunctionsTestIPL() 
-{
-#if 0
-	// testing IPL things here
-    BExtractorDoc* doc = GetDocument();
-	if (!doc->m_picLoaded)
-		return;
 
-	CGBM *bm = doc->m_pImage->m_pMonoGBM;
-	BITMAPINFOHEADER *Hdr = bm->GetDIBHeader();
-
-	IplImage* i1 = iplCreateImageHeader(
-											1, // number of channels
-											0, // no alpha channel
-											IPL_DEPTH_16U, // data of byte type
-//											IPL_DEPTH_8U, // data of byte type
-											"GRAY", // color model
-											"GRAY", // color order
-											IPL_DATA_ORDER_PIXEL,
-											IPL_ORIGIN_BL,
-											IPL_ALIGN_QWORD, // 8 bytes align
-											Hdr->biWidth, // image width
-											Hdr->biHeight, // image height
-											NULL, // no ROI
-											NULL, // no mask ROI
-											NULL, // no image ID
-											NULL); // not tiled
-
-	//convert DIB -> IPLImage
-	iplConvertFromDIB(Hdr, i1); 
-
-//new stuff...testing erode!
-	IplImage* i2 = iplCloneImage(i1);
-	iplNot(i1,i2);  //make black 0xff
-	iplErode(i2,i1,1); //erode 1 iteration
-	iplNot(i1,i2);
-	iplConvertToDIB(i2, bm->GetDIBHeader(), IPL_DITHER_NONE, IPL_PALCONV_NONE);
-	doc->m_pImage->m_initialized = false;
-//	iplConvertToDIB(i1, ResultDib.GetDIBHeader(), IPL_DITHER_NONE, IPL_PALCONV_NONE);
-	int x, y;
-	short val16;
-	byte val8;
-	for (y = 0; y < i1->height; y++)
-		for (x = 0; x < i1->width; x++)
-		{
-#if 1
-			iplGetPixel(i1, x, y, &val16);
-			val8 = (val16 >> 8);
-//			iplGetPixel(i1, x, y, &val8);
-#else
-			short i = *((short *) (i1->imageData + y*i1->widthStep + x));
-			val8 = (i >> 8);
-#endif
-			bm->SetPixel8(x, y, val8);
-		}
-
-//	m_bbitmapUpdateNeeded = true;
-	Invalidate(); //redraw picture
-#endif
-}
-
-/////////////////////////////////////////////////////////////////////////////////
-////////////////////////MessageBox
-///////////////////////////////////////////////////
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // BExtractorView : MODE handlers
-/////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
-void BExtractorView::OnAddRemove() 
+void BExtractorView::OnAddRemove()
 {
 	m_mode = LB_AddRemove;
 }
 
-void BExtractorView::OnUpdateAddRemove(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateAddRemove(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 	pCmdUI->SetCheck(m_mode == LB_AddRemove);
 }
 
-void BExtractorView::OnHand() 
+void BExtractorView::OnHand()
 {
 	m_mode = LB_Hand;
 }
 
-void BExtractorView::OnUpdateHand(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateHand(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
@@ -1839,7 +1756,7 @@ void BExtractorView::ChangeScale(double fFactor)
 }
 
 
-void BExtractorView::OnZoomIn() 
+void BExtractorView::OnZoomIn()
 {
 	BExtractorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -1847,7 +1764,7 @@ void BExtractorView::OnZoomIn()
 		ChangeScale(0.7f);
 }
 
-void BExtractorView::OnZoomOut() 
+void BExtractorView::OnZoomOut()
 {
 	BExtractorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -1855,33 +1772,33 @@ void BExtractorView::OnZoomOut()
 		ChangeScale(1.0f/0.7f);
 }
 
-void BExtractorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) 
+void BExtractorView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	if (nChar == VK_UP) 
+	if (nChar == VK_UP)
 	{
 		if (GetKeyState(VK_SHIFT)&0x8000)
 			OnVScroll(SB_PAGEUP, 0, NULL);
-		else 
+		else
 			OnVScroll(SB_LINEUP, 0, NULL);
 	}
 	else if (nChar == VK_DOWN)
 	{
 		if (GetKeyState(VK_SHIFT)&0x8000)
 			OnVScroll(SB_PAGEDOWN, 0, NULL);
-		else 
+		else
 			OnVScroll(SB_LINEDOWN, 0, NULL);
 	}
-	else if (nChar == VK_LEFT) 
+	else if (nChar == VK_LEFT)
 	{
 		if (GetKeyState(VK_SHIFT)&0x8000)
 			OnHScroll(SB_PAGELEFT, 0, NULL);
-		else 
+		else
 			OnHScroll(SB_LINELEFT, 0, NULL);
 	}
-	else if (nChar == VK_RIGHT) 
+	else if (nChar == VK_RIGHT)
 	{	if (GetKeyState(VK_SHIFT)&0x8000)
 			OnHScroll(SB_PAGERIGHT, 0, NULL);
-		else 
+		else
 			OnHScroll(SB_LINERIGHT, 0, NULL);
 	}
 	else if (nChar == VK_SPACE) ZoomToBuilding();
@@ -1907,7 +1824,7 @@ void BExtractorView::ZoomToBuilding()
 		{
 			m_zoomed = true;
 			
-			m_fSavedScale = m_fScale;	//save scale 
+			m_fSavedScale = m_fScale;	//save scale
 			m_SavedOffset = m_offset;		//save offset
 
 			//find mouse location in utm coords
@@ -1921,7 +1838,8 @@ void BExtractorView::ZoomToBuilding()
 			CPoint screen_new;
 			UTM_s(utm_mouse, screen_new);
 
-			// compensate by the difference (keep mouse point where it was, just bigger image)
+			// compensate by the difference (keep mouse point where it was,
+			// just bigger image)
 			CPoint diff;
 			diff = screen_new - m_lastMousePoint;
 			m_offset -= diff;
@@ -1976,7 +1894,7 @@ bool BExtractorView::WriteINIFile()
 	return true;
 }
 
-void BExtractorView::OnClearscreenofBuildings() 
+void BExtractorView::OnClearscreenofBuildings()
 {
 	CRect r;
 	GetClientRect(r);
@@ -1991,11 +1909,12 @@ void BExtractorView::OnClearscreenofBuildings()
 	topleft.x = UTM_start.x; topleft.y = UTM_start.y;
 	botright.x = UTM_end.x; botright.y = UTM_end.y;
 
-	// cycle through the selected buildings, removing any that are in the given area
+	// cycle through the selected buildings, removing any that are in the
+	// given area
 	MopRemove(topleft, botright);
 }
 
-void BExtractorView::OnUndo() 
+void BExtractorView::OnUndo()
 {
 	BExtractorDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -2004,12 +1923,12 @@ void BExtractorView::OnUndo()
 	Invalidate();
 }
 
-void BExtractorView::OnUpdateUndo(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateUndo(CCmdUI* pCmdUI)
 {
 	pCmdUI->Enable(FALSE);
 }
 
-void BExtractorView::OnViewViewfullcolorimage() 
+void BExtractorView::OnViewViewfullcolorimage()
 {
 	BExtractorDoc* pDoc = GetDocument();
 	CBImage *pImage = pDoc->m_pImage;
@@ -2023,7 +1942,7 @@ void BExtractorView::OnViewViewfullcolorimage()
 	Invalidate();
 }
 
-void BExtractorView::OnUpdateViewViewfullcolorimage(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateViewViewfullcolorimage(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	CBImage *pImage = pDoc->m_pImage;
@@ -2033,54 +1952,54 @@ void BExtractorView::OnUpdateViewViewfullcolorimage(CCmdUI* pCmdUI)
 		pImage->m_pCurrentDIB == pImage->m_pSourceDIB);
 }
 
-void BExtractorView::OnModesFootprintMode() 
+void BExtractorView::OnModesFootprintMode()
 {
 	m_mode = LB_Footprint;
 }
 
-void BExtractorView::OnUpdateModesFootprintmode(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateModesFootprintmode(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 	pCmdUI->SetCheck(m_mode == LB_Footprint);
 }
 
-void BExtractorView::OnModesRectangle() 
+void BExtractorView::OnModesRectangle()
 {
 	m_mode = LB_Rectangle;
 }
 
-void BExtractorView::OnUpdateModesRectangle(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateModesRectangle(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 	pCmdUI->SetCheck(m_mode == LB_Rectangle);
 }
 
-void BExtractorView::OnModesCircle() 
+void BExtractorView::OnModesCircle()
 {
 	m_mode = LB_Circle;
 }
 
-void BExtractorView::OnUpdateModesCircle(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateModesCircle(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 	pCmdUI->SetCheck(m_mode == LB_Circle);
 }
 
-void BExtractorView::OnUpdateFileSave(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateFileSave(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_Buildings.GetSize() != 0);
 }
 
-void BExtractorView::OnModesMoveresize() 
+void BExtractorView::OnModesMoveresize()
 {
 	m_mode = LB_EditShape;
 }
 
-void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
@@ -2088,20 +2007,20 @@ void BExtractorView::OnUpdateModesMoveresize(CCmdUI* pCmdUI)
 }
 
 
-void BExtractorView::OnModesRoadnode() 
+void BExtractorView::OnModesRoadnode()
 {
 	m_mode = LB_EditRoadNodes;
 	
 }
 
-void BExtractorView::OnUpdateModesRoadnode(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateModesRoadnode(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
 	pCmdUI->SetCheck(m_mode == LB_EditRoadNodes);
 }
 
-void BExtractorView::OnChangeRoadColor() 
+void BExtractorView::OnChangeRoadColor()
 {
 	CColorDialog dlgColor(m_roadColor);
 	if (dlgColor.DoModal() == IDOK)
@@ -2112,12 +2031,12 @@ void BExtractorView::OnChangeRoadColor()
 	}
 }
 
-void BExtractorView::OnModesRoadEdit() 
+void BExtractorView::OnModesRoadEdit()
 {
 	m_mode = LB_EditRoad;	
 }
 
-void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI) 
+void BExtractorView::OnUpdateModesRoadEdit(CCmdUI* pCmdUI)
 {
 	BExtractorDoc* pDoc = GetDocument();
 	pCmdUI->Enable(pDoc->m_picLoaded);
