@@ -168,6 +168,8 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 		}
 	}
 	delete trans;
+
+	m_proj = proj;
 	return true;
 }
 
