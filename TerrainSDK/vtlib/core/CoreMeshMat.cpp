@@ -1107,6 +1107,13 @@ void vtMaterialArrayBase::CopyFrom(vtMaterialArrayBase *pFrom)
 	}
 }
 
+void vtMaterialArrayBase::RemoveMaterial(vtMaterial *pMat)
+{
+	int num = Find(pMat);
+	if (num != -1)
+		RemoveAt(num);
+}
+
 /**
  * Find a material in an array by looking for a specific diffuse color.
  *
