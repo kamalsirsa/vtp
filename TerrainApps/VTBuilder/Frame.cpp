@@ -1490,19 +1490,26 @@ using namespace std;
 
 void MainFrame::ReadEnviroPaths(vtStringArray &paths)
 {
+	VTLOG("Getting data paths from Enviro.\n");
 	wxString2 IniPath = wxGetCwd();
 
 	ifstream input;
-	IniPath += _T("Enviro.ini");
+	IniPath += _T("/Enviro.ini");
+	VTLOG("  Looking for '%s'\n", IniPath.mb_str());
 	input.open(IniPath, ios::in | ios::binary);
 	if (!input.is_open())
 	{
 		input.clear();
 		IniPath = wxGetCwd() + _T("/../Enviro/Enviro.ini");
+		VTLOG("  Not there.  Looking for '%s'\n", IniPath.mb_str());
 		input.open(IniPath, ios::in | ios::binary);
 	}
 	if (!input.is_open())
+	{
+		VTLOG("  Not found.\n");
 		return;
+	}
+	VTLOG(" found it.\n");
 
 	char buf[80];
 	while (!input.eof())
