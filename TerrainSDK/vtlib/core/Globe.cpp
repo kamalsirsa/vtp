@@ -212,8 +212,8 @@ void IcoGlobe::SetTime(const vtTime &time)
 	{
 		FPoint3 xvector(1,0,0), seasonal_axis;
 
-		// Seasonal axis rotation (days since winter solstice)
-		float season = (time.m_tm.tm_yday + 10) / 365.0f * PI2f;
+		// Seasonal axis rotation (days since winter solstice, approximate)
+		float season = (time.GetTM().tm_yday + 10) / 365.0f * PI2f;
 		tmp.AxisAngle(FPoint3(0,1,0), season);
 		tmp.Transform(xvector, seasonal_axis);
 
