@@ -171,7 +171,7 @@ void PropDlg::SetCurrentItem(vtItem *item)
 	if (item)
 	{
 		m_strItem = item->m_name;
-		const char *type = item->GetValue("type");
+		const char *type = item->GetValueString("type");
 		if (type)
 			m_strType = type;
 		else
@@ -204,7 +204,7 @@ void PropDlg::UpdateFromControls()
 	if (m_pCurrentItem)
 	{
 		m_pCurrentItem->m_name = m_strItem.mb_str();
-		m_pCurrentItem->SetValue("type", m_strType.mb_str());
+		m_pCurrentItem->SetValueString("type", m_strType.mb_str());
 	}
 }
 
