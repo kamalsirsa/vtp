@@ -942,16 +942,19 @@ void Enviro::DumpCameraInfo()
 
 void Enviro::SetSpeed(float x)
 {
-	if (!m_pGlobeTime)
-		return;
-	m_pGlobeTime->SetSpeed(x);
+	if (m_state == AS_Orbit && m_pGlobeTime)
+		m_pGlobeTime->SetSpeed(x);
+	else if (m_state == AS_Terrain)
+		GetTerrainScene()->GetTimeEngine()->SetSpeed(x);
 }
 
 float Enviro::GetSpeed()
 {
-	if (!m_pGlobeTime)
-		return 0.0f;
-	return m_pGlobeTime->GetSpeed();
+	if (m_state == AS_Orbit && m_pGlobeTime)
+		return m_pGlobeTime->GetSpeed();
+	else if (m_state == AS_Terrain)
+		return GetTerrainScene()->GetTimeEngine()->GetSpeed();
+	return 0;
 }
 
 void Enviro::OnMouse(vtMouseEvent &event)
