@@ -79,8 +79,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 gbm.lib ipl.lib vfw32.lib gdal_i.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"libcmtd.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept /libpath:"\APIs\GBM" /libpath:"\Program Files\Intel\plsuite\lib\msvc"
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 gbm.lib ipl.lib vfw32.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmtd.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept /libpath:"\APIs\GBM" /libpath:"\Program Files\Intel\plsuite\lib\msvc"
+# SUBTRACT LINK32 /pdb:none /incremental:no
 
 !ENDIF 
 
