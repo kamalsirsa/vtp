@@ -46,6 +46,7 @@ public:
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
 	void SetProjection(const vtProjection &proj);
+	void Offset(const DPoint2 &delta);
 
 	// optional overrides
 	void GetPropertyText(wxString &str);

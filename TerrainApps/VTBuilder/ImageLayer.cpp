@@ -264,6 +264,15 @@ void vtImageLayer::SetProjection(const vtProjection &proj)
 	m_proj = proj;
 }
 
+void vtImageLayer::Offset(const DPoint2 &delta)
+{
+	// Shifting an image is as easy as shifting its extents
+	m_Extents.left += delta.x;
+	m_Extents.right += delta.x;
+	m_Extents.top += delta.y;
+	m_Extents.bottom += delta.y;
+}
+
 void vtImageLayer::GetPropertyText(wxString &str)
 {
 	str.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
