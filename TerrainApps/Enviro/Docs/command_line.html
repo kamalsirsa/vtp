@@ -14,24 +14,39 @@
 <blockquote>
   <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" id="AutoNumber1">
     <tr>
-      <td width="300" valign="top"><b><font size="4"><code>-no_plants</code></font></b></td>
+      <td width="260" valign="top"><b><font size="4"><code>-no_plants</code></font></b></td>
       <td valign="top">This will suppress loading of the plant library; plants will not be 
       available, but Enviro launches faster.</td>
     </tr>
     <tr>
-      <td width="300" valign="top"><b><font size="4"><code>-no_startup_dialog</code></font></b></td>
+      <td width="260" valign="top"><b><font size="4"><code>-no_startup_dialog</code></font></b></td>
       <td valign="top">This will suppress the startup dialog, Enviro will simply use the 
-      contents of the .ini files, proceeding as if the startup dialog had opened and the user 
+      contents of the Enviro.ini file, proceeding as if the startup dialog had opened and the user 
       pressed &quot;OK.&quot;</td>
     </tr>
     <tr>
-      <td width="300" valign="top"><b><font size="4"><code>-fullscreen</code></font></b></td>
+      <td width="260" valign="top"><b><font size="4"><code>-fullscreen</code></font></b></td>
       <td valign="top">Start up in full screen mode.</td>
     </tr>
     <tr>
-      <td width="300" valign="top"><b><font size="4"><code>-terrain=<i>name</i></code></font></b></td>
+      <td width="260" valign="top"><b><font size="4"><code>-terrain=<i>name</i></code></font></b></td>
       <td valign="top">Start up in Terrain View with the indicated terrain.&nbsp; 
       This also suppresses the startup dialog.</td>
+    </tr>
+    <tr>
+      <td width="260" valign="top"><b><font size="4"><code>-locale=<i>name</i></code></font></b></td>
+      <td valign="top">Tells Enviro what language to use for the Menus and 
+      Dialogs.&nbsp; This can be either a full English language name, or a 
+      two-character standard abbreviation.<p>Examples:</p>
+      <ul>
+        <li>-locale=Swedish</li>
+        <li>-locale=sv</li>
+        <li>-locale=Russian</li>
+        <li>-locale=ru</li>
+      </ul>
+      <p>Note that if your computer is set to a non-English language, Enviro 
+      will detect it and try to use it automatically, so this command-line 
+      option is only needed to override the default behavior.</td>
     </tr>
   </table>
 </blockquote>
