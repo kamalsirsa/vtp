@@ -164,6 +164,18 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_s
 #define ID_INSIDE_AREA 10101
 wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_LAYERNAME 10102
+#define ID_ELEVATION_FIELDNAME 10103
+#define ID_ELEVATION_UNITS 10104
+#define ID_TYPE_BUILDING 10105
+#define ID_BUILD_FOUNDATIONS 10106
+#define ID_USE_25D 10107
+wxSizer *ImportStructFuncOGR( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_LEVEL_CHOICE 10108
+#define ID_BUTTON 10109
+wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
