@@ -124,10 +124,6 @@ SOURCE=.\DistribVegDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ElevDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ElevLayer.cpp
 # End Source File
 # Begin Source File
@@ -200,6 +196,10 @@ SOURCE=.\RawLayer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResampleDlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\RoadDlg.cpp
 # End Source File
 # Begin Source File
@@ -221,6 +221,10 @@ SOURCE=.\RoadMapIO.cpp
 # Begin Source File
 
 SOURCE=.\ScaledView.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StatePlaneDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -280,31 +284,7 @@ SOURCE=.\BuildingDlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\dialog1.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog2.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog3.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog4.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog5.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\DistribVegDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ElevDlg.h
 # End Source File
 # Begin Source File
 
@@ -360,6 +340,10 @@ SOURCE=.\RawLayer.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\ResampleDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\RoadDlg.h
 # End Source File
 # Begin Source File
@@ -377,6 +361,10 @@ SOURCE=.\ScaledView.h
 # Begin Source File
 
 SOURCE=.\splitterwindow.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StatePlaneDlg.h
 # End Source File
 # Begin Source File
 
@@ -420,95 +408,7 @@ SOURCE=.\WaterLayer.h
 # PROP Default_Filter "rc;cur;ico"
 # Begin Source File
 
-SOURCE=.\wx\msw\blank.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\bullseye.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog1.wxr
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog2.wxr
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog3.wxr
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog4.wxr
-# End Source File
-# Begin Source File
-
-SOURCE=.\dialog5.wxr
-# End Source File
-# Begin Source File
-
-SOURCE=.\cursors\dropcurs.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\error.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\hand.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\info.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\magnif1.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\noentry.cur
-# End Source File
-# Begin Source File
-
 SOURCE=.\cursors\panhand.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pbrush.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pencil.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pntleft.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pntright.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\query.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\question.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\roller.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\size.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\tip.ico
 # End Source File
 # Begin Source File
 
@@ -516,21 +416,9 @@ SOURCE=.\icons\VTBuilder.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\VTBuilder.ico
-# End Source File
-# Begin Source File
-
 SOURCE=.\VTBuilder.rc
 # ADD BASE RSC /l 0x409 /i "\wx2\include"
 # ADD RSC /l 0x409 /i "\wx2\include"
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\warning.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\watch1.cur
 # End Source File
 # End Group
 # Begin Group "Toolbar Bitmap"
