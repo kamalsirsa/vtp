@@ -738,6 +738,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\wx\StatusBar.cpp">
+			</File>
+			<File
 				RelativePath=".\wx\TerrManDlg.cpp">
 			</File>
 			<File
@@ -863,6 +866,9 @@
 			</File>
 			<File
 				RelativePath="wx\StartupDlg.h">
+			</File>
+			<File
+				RelativePath=".\wx\StatusBar.h">
 			</File>
 			<File
 				RelativePath=".\wx\TerrManDlg.h">
