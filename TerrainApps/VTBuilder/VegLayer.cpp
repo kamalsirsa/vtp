@@ -147,7 +147,7 @@ void vtVegLayer::GetProjection(vtProjection &proj)
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
 		proj = m_proj;
 	else if (m_VLType == VLT_Instances)
-		proj = m_Pia.m_proj;
+		m_Pia.GetProjection(proj);
 }
 
 void vtVegLayer::SetProjection(const vtProjection &proj)
@@ -155,7 +155,7 @@ void vtVegLayer::SetProjection(const vtProjection &proj)
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
 		m_proj = proj;
 	else if (m_VLType == VLT_Instances)
-		m_Pia.m_proj = proj;
+		m_Pia.SetProjection(proj);
 }
 
 void vtVegLayer::Offset(const DPoint2 &p)
