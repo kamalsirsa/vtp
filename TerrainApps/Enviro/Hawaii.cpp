@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/DynTerrain.h"
+#include "vtdata/Features.h"
 #include "Hawaii.h"
 #include "Nevada.h"
 
@@ -18,6 +19,9 @@
 
 IslandTerrain::IslandTerrain() : PTerrain()
 {
+	// TEMP TEST
+//	char *foo = new char[1234];
+
 	// Points of Interest
 	// top left (x,y) then bottom right (x,y)
 
@@ -153,6 +157,31 @@ void IslandTerrain::create_airports()
 
 void IslandTerrain::CreateCustomCulture(bool bDoSound)
 {
+#if 0
+	float x, y;
+	DPoint3 p;
+	int meter_height;
+	char string[80];
+	vtFeatures feat;
+	feat.SetEntityType(SHPT_POINTZ);
+	feat.AddField("Text", FTString);
+	feat.GetAtProjection() = m_proj;
+	vtString labels_path = FindFileOnPaths(m_DataPaths, "PointData/places.txt");
+	FILE *fp = fopen(labels_path, "r");
+	while( !feof(fp) )
+	{
+		int ret = fscanf(fp, "%f %f %d %s\n", &x, &y, &meter_height, string);
+		if (!ret) break;
+		p.x = x;
+		p.y = y;
+		p.z = meter_height;
+		int rec = feat.AddPoint(p);
+		feat.SetValue(rec, 0, string);
+	}
+	fclose(fp);
+	feat.SaveToSHP("../Data/PointData/hawai`i.shp");
+#endif
+
 #if 0
 	// test vtDIB JPEG
 	vtDIB dib;
