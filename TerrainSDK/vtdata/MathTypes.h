@@ -757,6 +757,7 @@ public:
 
 	void Set(short _r, short _g, short _b) { r = _r; g = _g; b = _b; }
 	RGBi operator +(const RGBi &v) const { return RGBi(r+v.r, g+v.g, b+v.b); }
+	RGBi operator +(const class RGBAi &v) const;
 	RGBi operator -(const RGBi &v) const { return RGBi(r-v.r, g-v.g, b-v.b); }
 	RGBi operator *(float s) const { return RGBi((short)(r*s), (short)(g*s), (short)(b*s)); }
 	RGBi operator /(float s) const { return RGBi((short)(r/s), (short)(g/s), (short)(b/s)); }
@@ -806,6 +807,7 @@ public:
 };
 
 inline void RGBi::operator +=(const class RGBAi &v) { r+=v.r; g+=v.g; b+=v.b; }
+inline RGBi RGBi::operator +(const class RGBAi &v) const { return RGBi(r+v.r, g+v.g, b+v.b); }
 
 /**
  * An RGB class for handling color operations.
