@@ -101,6 +101,39 @@ void vtBitmapBase::ScalePixel8(int x, int y, float fScale)
 	SetPixel8(x, y, texel);
 }
 
+void vtBitmapBase::BlitTo(vtBitmapBase &target, int x, int y)
+{
+	int depth = GetDepth();
+	int tdepth = target.GetDepth();
+
+	unsigned int w = GetWidth();
+	unsigned int h = GetHeight();
+	unsigned int tw = target.GetWidth();
+	unsigned int th = target.GetHeight();
+
+	unsigned int i, j;
+	RGBi rgb;
+	for (i = 0; i < w; i++)
+	{
+		for (j = 0; j < h; j++)
+		{
+			int tx = i+x, ty = j+y;
+			if (tx < 0 || tx > tw-1 || ty < 0 || ty > th-1)
+				continue;
+
+			if (depth == 8 && tdepth == 8)
+			{
+				unsigned char value = GetPixel8(i, j);
+				target.SetPixel8(tx, ty, value);
+			}
+			else if (tdepth == 24)
+			{
+				GetPixel24(i, j, rgb);
+				target.SetPixel24(tx, ty, rgb);
+			}
+		}
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Class vtDIB
@@ -1025,6 +1058,12 @@ unsigned int vtDIB::GetPixel24(int x, int y) const
 
 void vtDIB::GetPixel24(int x, int y, RGBi &rgb) const
 {
+	if (m_iBitCount == 8)
+	{
+		GetPixel24From8bit(x, y, rgb);
+		return;
+	}
+
 	register byte* adr;
 
 	// note: Most processors don't support unaligned int/float reads, and on

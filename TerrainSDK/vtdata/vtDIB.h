@@ -29,6 +29,7 @@ public:
 
 	void ScalePixel24(int x, int y, float fScale);
 	void ScalePixel8(int x, int y, float fScale);
+	void BlitTo(vtBitmapBase &target, int x, int y);
 };
 
 // for non-Win32 systems (or code which doesn't include the Win32 headers),
