@@ -1103,6 +1103,22 @@ void vtMaterialArrayBase::CopyFrom(vtMaterialArrayBase *pFrom)
 	}
 }
 
+/**
+ * Find a material in an array by looking for a specific diffuse color.
+ *
+ * \return The index of the material if found, otherwise -1.
+ */
+int vtMaterialArrayBase::FindByDiffuse(const RGBAf &rgba)
+{
+	for (unsigned int i = 0; i < GetSize(); i++)
+	{
+		if (rgba == GetAt(i)->GetDiffuse())
+			return i;
+	}
+	return -1;
+}
+
+
 ///////////////////////////////////////////////////////////
 
 vtMaterialBase::vtMaterialBase()
