@@ -611,7 +611,8 @@ void IcoGlobe::AddTerrainRectangles()
 {
 	FPoint3 p;
 
-	for (vtTerrain *pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
+	for (vtTerrain *pTerr = GetTerrainScene().m_pFirstTerrain; pTerr;
+			pTerr=pTerr->GetNext())
 	{
 		// skip if undefined
 		if (pTerr->m_Corners_geo.GetSize() == 0)
