@@ -746,6 +746,17 @@ bool vtFeatureSet::LoadAttributesFromDBF()
 	return true;
 }
 
+void vtFeatureSet::SetNumEntities(int iNum)
+{
+	// First set the number of geometries
+	SetNumGeometries(iNum);
+
+	// Then set the number of records for each field
+	for (unsigned int iField = 0; iField < GetNumFields(); iField++)
+		m_fields[iField]->SetNumRecords(iNum);
+}
+
+
 /**
  * Returns the type of geometry that each feature has.
  *
@@ -1216,6 +1227,17 @@ Field::~Field()
 {
 }
 
+void Field::SetNumRecords(int iNum)
+{
+	switch (m_type)
+	{
+	case FT_Boolean: m_bool.SetSize(iNum);	break;
+	case FT_Integer: m_int.SetSize(iNum);	break;
+	case FT_Double:	m_double.SetSize(iNum);	break;
+	case FT_String: m_string.resize(iNum); break;
+	}
+}
+
 int Field::AddRecord()
 {
 	int index = 0;
@@ -1375,6 +1397,20 @@ const char *DescribeFieldType(FieldType type)
 	case FT_Double: return "Double";
 	case FT_String: return "String";
 	case FT_Unknown:
+	default:
+		return "Unknown";
+	}
+}
+
+const char *DescribeFieldType(DBFFieldType type)
+{
+	switch (type)
+	{
+	case FTString: return "String";
+	case FTInteger: return "Integer";
+	case FTDouble: return "Double";
+	case FTLogical: return "Logical";
+	case FTInvalid:
 	default:
 		return "Unknown";
 	}

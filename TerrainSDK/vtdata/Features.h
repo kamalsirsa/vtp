@@ -47,6 +47,7 @@ public:
 	~Field();
 
 	int AddRecord();
+	void SetNumRecords(int iNum);
 
 	void SetValue(unsigned int iRecord, const char *string);
 	void SetValue(unsigned int iRecord, int value);
@@ -77,6 +78,7 @@ public:
 
 // Helpers
 const char *DescribeFieldType(FieldType type);
+const char *DescribeFieldType(DBFFieldType type);
 DBFFieldType ConvertFieldType(FieldType type);
 FieldType ConvertFieldType(DBFFieldType type);
 
@@ -111,7 +113,7 @@ public:
 
 	// feature (entity) operations
 	virtual unsigned int GetNumEntities() const = 0;
-	virtual void SetNumEntities(int iNum) = 0;
+	void SetNumEntities(int iNum);
 	OGRwkbGeometryType GetGeomType() const;
 	void SetGeomType(OGRwkbGeometryType eGeomType);
 	bool AppendDataFrom(vtFeatureSet *pFromSet);
@@ -193,6 +195,7 @@ protected:
 	virtual bool IsInsideRect(int iElem, const DRECT &rect) = 0;
 	virtual void CopyGeometry(unsigned int from, unsigned int to) = 0;
 	virtual void SaveGeomToSHP(SHPHandle hSHP) const = 0;
+	virtual void SetNumGeometries(int iNum) = 0;
 
 	void CopyEntity(unsigned int from, unsigned int to);
 
@@ -215,7 +218,7 @@ public:
 	vtFeatureSetPoint2D();
 
 	unsigned int GetNumEntities() const;
-	void SetNumEntities(int iNum);
+	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p);
@@ -247,7 +250,7 @@ public:
 	vtFeatureSetPoint3D();
 
 	unsigned int GetNumEntities() const;
-	void SetNumEntities(int iNum);
+	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p);
@@ -276,7 +279,7 @@ public:
 	vtFeatureSetLineString();
 
 	unsigned int GetNumEntities() const;
-	void SetNumEntities(int iNum);
+	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p);
@@ -303,7 +306,7 @@ public:
 	vtFeatureSetPolygon();
 
 	unsigned int GetNumEntities() const;
-	void SetNumEntities(int iNum);
+	void SetNumGeometries(int iNum);
 	void Reserve(int iNum);
 	bool ComputeExtent(DRECT &rect) const;
 	void Offset(const DPoint2 &p);
