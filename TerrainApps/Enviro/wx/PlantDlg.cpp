@@ -60,6 +60,8 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	m_iSpeciesChoice = -1;
 	m_strLang = "en";
 
+	m_opt.m_fSpacing = 2;
+
 	AddValidator(ID_SPECIES, &m_iSpeciesChoice);
 	AddValidator(ID_COMMON_NAMES, &m_bCommonNames);
 	AddValidator(ID_LANGUAGE, &m_iLanguage);
@@ -77,6 +79,39 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 	m_pPlantList = plants;
 	UpdatePlantSizes();
 	UpdatePlantNames();
+}
+
+void PlantDlg::SetPlantOptions(PlantingOptions &opt)
+{
+	m_opt = opt;
+
+	if (m_opt.m_iSpecies == -1)
+	{
+		// select first plant
+		m_iSpeciesChoice = 0;
+		SpeciesIndexToSpeciesId();
+		UpdateHeightFromSpecies();
+	}
+
+	// safety check
+	if (m_opt.m_fHeight < 0)
+		m_opt.m_fHeight = 0;
+
+	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+	if (ps)
+	{
+		float size = ps->GetMaxHeight();
+		if (m_opt.m_fHeight > size)		// safety check
+			m_opt.m_fHeight = size * 0.80f;
+	}
+	SpeciesIdToSpeciesIndex();
+
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+
+	// Set them back again, to confirm we're in synch
+	g_App.SetPlantOptions(m_opt);
 }
 
 void PlantDlg::UpdatePlantSizes()
@@ -113,6 +148,17 @@ void PlantDlg::UpdatePlantNames()
 	for (unsigned int i = 0; i < m_pPlantList->NumSpecies(); i++)
 	{
 		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
+
+		// filter
+		if (m_bOnlyAvailableSpecies)
+		{
+			vtPlantSpecies3d *plant3d = dynamic_cast<vtPlantSpecies3d *>(plant);
+			if (plant3d != NULL)
+			{
+				if (plant3d->NumAvailableInstances() == 0)
+					continue;
+			}
+		}
 
 		if (m_bCommonNames)
 		{
@@ -162,31 +208,31 @@ void PlantDlg::UpdateEnabling()
 	GetLanguage()->Enable(m_bCommonNames);
 }
 
-void PlantDlg::SetPlantOptions(PlantingOptions &opt)
+void PlantDlg::SpeciesIdToSpeciesIndex()
 {
-	m_opt = opt;
-
-	// safety check
-	if (m_opt.m_fHeight < 0)
-		m_opt.m_fHeight = 0;
-
-	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
-	if (pSpecies)
-	{
-		float size = pSpecies->GetMaxHeight();
-		if (m_opt.m_fHeight > size)
-			m_opt.m_fHeight = size * 0.80f;
-	}
-
 	// look up corresponding species choice index
+	vtPlantSpecies *ps = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	for (int i = 0; i < m_pSpecies->GetCount(); i++)
 	{
-		if (pSpecies == m_pSpecies->GetClientData(i))
+		if (ps == m_pSpecies->GetClientData(i))
 		{
 			m_iSpeciesChoice = i;
 			break;
 		}
 	}
+}
+void PlantDlg::SpeciesIndexToSpeciesId()
+{
+	// convert displayed species index to a real species id
+	vtPlantSpecies *ps = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
+	m_opt.m_iSpecies = m_pPlantList->FindSpeciesId(ps);
+}
+
+void PlantDlg::UpdateHeightFromSpecies()
+{
+	// show a reasonable value for the height
+	m_opt.m_fHeight = m_PreferredSizes[m_opt.m_iSpecies];
+	HeightToSlider();
 }
 
 
@@ -270,13 +316,8 @@ void PlantDlg::OnSelChangeSpecies( wxCommandEvent &event )
 
 	TransferDataFromWindow();
 
-	// convert displayed species index to a real species id
-	vtPlantSpecies *ps = (vtPlantSpecies *) m_pSpecies->GetClientData(m_iSpeciesChoice);
-	m_opt.m_iSpecies = m_pPlantList->FindSpeciesId(ps);
-
-	// show a reasonable value for the height
-	m_opt.m_fHeight = m_PreferredSizes[m_opt.m_iSpecies];
-	HeightToSlider();
+	SpeciesIndexToSpeciesId();
+	UpdateHeightFromSpecies();
 
 	m_bSetting = true;
 	TransferDataToWindow();

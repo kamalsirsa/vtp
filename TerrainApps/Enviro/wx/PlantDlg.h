@@ -37,6 +37,7 @@ public:
 	
 	void SetPlantList(vtSpeciesList3d *plants);
 	void SetPlantOptions(PlantingOptions &opt);
+	void ShowOnlyAvailableSpecies(bool bFlag) { m_bOnlyAvailableSpecies = bFlag; }
 
 	// WDR: method declarations for PlantDlg
 	wxChoice* GetLanguage()  { return (wxChoice*) FindWindow( ID_LANGUAGE ); }
@@ -54,11 +55,14 @@ protected:
 	void UpdatePlantNames();
 	void HeightToSlider();
 	void ModeToRadio();
+	void SpeciesIdToSpeciesIndex();
+	void SpeciesIndexToSpeciesId();
+	void UpdateHeightFromSpecies();
 
 private:
 	// WDR: member variable declarations for PlantDlg
-//  vtPlantInstance3d *m_pPlant;
 	bool m_bSetting;
+	bool m_bOnlyAvailableSpecies;
 
 	// planting options
 	PlantingOptions m_opt;

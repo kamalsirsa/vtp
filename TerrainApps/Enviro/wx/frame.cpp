@@ -51,6 +51,7 @@
 #include "TimeDlg.h"
 
 #include "../Engines.h"
+#include "../Options.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
 
 #include "app.h"
@@ -269,6 +270,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pSceneGraphDlg->SetSize(450, 600);
 
 	m_pPlantDlg = new PlantDlg(this, -1, _("Plants"));
+	m_pPlantDlg->ShowOnlyAvailableSpecies(g_Options.m_bOnlyAvailableSpecies);
+
 	m_pFenceDlg = new LinearStructureDlg3d(this, -1, _("Linear Structures"));
 	m_pUtilDlg = new UtilDlg(this, -1, _("Utility"));
 	m_pCameraDlg = new CameraDlg(this, -1, _("Camera-View"));
