@@ -1,14 +1,11 @@
-/*++++
- *
+/*
  * Name: EnviroFrame
  * Parent: CFrameWnd
  *
- * Description:
- * ...
- *
- ----*/
-#if !defined(AFX_ENVIROFRAME_H__E06EA355_14EC_11D1_89F6_00A0C90696BB__INCLUDED_)
-#define AFX_ENVIROFRAME_H__E06EA355_14EC_11D1_89F6_00A0C90696BB__INCLUDED_
+ */
+
+#ifndef _ENVIROFRAME_H_INCLUDED_
+#define _ENVIROFRAME_H_INCLUDED_
 
 #include "PlantDlg.h"
 #include "FenceDlg.h"
@@ -23,12 +20,14 @@ protected: // create from serialization only
 // Attributes
 protected:
 	CSplitterWnd m_wndSplitter;
+	CStatusBar	m_wndStatusBar;
 	CToolBar	m_wndToolBar;
 	CPlantDlg	m_wndPlants;
 	CFenceDlg	m_wndFences;
 
 public:
 	void SetMode(MouseMode mode);
+	void UpdateStatusBar();
 
 // Operations
 public:
@@ -81,4 +80,5 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Developer Studio will insert additional declarations immediately before the previous line.
 
-#endif
+#endif	// _ENVIROFRAME_H_INCLUDED_
+

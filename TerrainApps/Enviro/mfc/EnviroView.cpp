@@ -15,6 +15,7 @@
 #include "../Enviro.h"
 #include "../Engines.h"
 
+#include "EnviroFrame.h"
 #include "EnviroView.h"
 #include "EnviroApp.h"
 #include "SimpleDoc.h"
@@ -615,6 +616,19 @@ void EnviroView::OnPaint()
 		vtGetScene()->DoUpdate();
 
 		SwapBuffers(dc.m_ps.hdc);
+	}
+
+	// update the status bar every 1/10 of a second
+	static float last_stat = 0.0f;
+	static vtString last_msg;
+	float cur = vtGetTime();
+	if (cur - last_stat > 0.1f || g_App.GetMessage() != last_msg)
+	{
+		last_msg = g_App.GetMessage();
+		last_stat = cur;
+	
+		EnviroFrame *pFrame = (EnviroFrame *) AfxGetMainWnd();
+		pFrame->UpdateStatusBar();
 	}
 
 	// try to let MFC do some of its idle processing

@@ -3,6 +3,9 @@
 
 #include "StdAfx.h"
 #include "vtlib/vtlib.h"
+#include "vtlib/core/TerrainScene.h"
+#include "vtdata/vtLog.h"
+
 #include "EnviroApp.h"
 #include "EnviroFrame.h"
 #include "ChooseDlg.h"
@@ -42,6 +45,15 @@ BEGIN_MESSAGE_MAP(EnviroFrame, CFrameWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+static UINT indicators[] =
+{
+	ID_SEPARATOR,	// status line indicator
+	ID_INDICATOR_CAPS,
+	ID_INDICATOR_NUM,
+	ID_INDICATOR_SCRL,
+};
+
+
 /////////////////////////////////////////////////////////////////////////////
 // EnviroFrame construction/destruction
 
@@ -61,7 +73,15 @@ int EnviroFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (!m_wndToolBar.Create(this) ||
 		!m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
 	{
-		TRACE0("Failed to create toolbar\n");
+		VTLOG("Failed to create toolbar\n");
+		return -1;	// fail to create
+	}
+
+	if (!m_wndStatusBar.Create(this) ||
+		!m_wndStatusBar.SetIndicators(indicators,
+		  sizeof(indicators)/sizeof(UINT)))
+	{
+		VTLOG("Failed to create status bar\n");
 		return -1;	// fail to create
 	}
 
@@ -111,6 +131,15 @@ BOOL EnviroFrame::OnCreateClient( LPCREATESTRUCT lpcs,
 	}
 	return TRUE;
 }
+
+void EnviroFrame::UpdateStatusBar()
+{
+	vtString vs;
+	g_App.GetStatusText(vs);
+
+	m_wndStatusBar.SetPaneText(0, (const char *) vs);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // EnviroFrame message handlers
