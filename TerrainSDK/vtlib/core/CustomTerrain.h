@@ -18,7 +18,6 @@ public:
 	// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 			  float fOceanDepth, int &iError);
-	void Destroy();
 
 	// overrides
 	void DoRender();
@@ -27,6 +26,8 @@ public:
 	void GetLocation(int iX, int iZ, FPoint3 &p) const;
 
 protected:
+	virtual ~CustomTerrain();
+
 	// rendering
 	void RenderSurface();
 	void RenderPass();

@@ -69,6 +69,7 @@ public:
 	void BuildGeometry(vtHeightField3d *pHeightField);
 	void DestroyGeometry();
 	void Dirty();
+	static void ReleaseMaterials();
 
 	vtGeom *GetGeom() { return m_pWireGeom; }
 

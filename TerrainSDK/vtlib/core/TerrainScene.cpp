@@ -74,8 +74,10 @@ vtTerrainScene::~vtTerrainScene()
 
 	delete m_pTime;
 	delete m_pSkyTrack;
-	if (m_pSkyDome)
-		m_pSkyDome->Destroy();
+
+	// no need to do this explicitly, it is done by releasing the scenegraph
+	// if (m_pSkyDome)
+	// 	m_pSkyDome->Destroy();
 
 	while (m_pFirstTerrain)
 	{
@@ -88,10 +90,11 @@ vtTerrainScene::~vtTerrainScene()
 
 	// get anything left at the top of the scene graph
 	if (m_pTop)
-		m_pTop->Destroy();
+		m_pTop->Release();
 
 	// free some statics
-	vtTerrain::m_DataPaths.Wipe();
+	vtStructure3d::ReleaseSharedMaterials();
+	vtRoute::ReleaseMaterials();
 }
 
 void vtTerrainScene::_CreateSkydome(const StringArray &datapath)

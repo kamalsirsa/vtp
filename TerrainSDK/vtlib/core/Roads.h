@@ -22,7 +22,7 @@ class NodeGeom : public Node
 {
 public:
 	NodeGeom();
-	~NodeGeom();
+	virtual ~NodeGeom();
 
 	class LinkGeom *GetRoad(int n) { return (class LinkGeom *)m_r[n]; }
 	void BuildIntersection();
@@ -101,7 +101,7 @@ class LinkGeom : public Link
 {
 public:
 	LinkGeom();
-	~LinkGeom();
+	virtual ~LinkGeom();
 
 	FPoint3 FindPointAlongRoad(float fDistance);
 	float	Length();	// find 2D length in world units

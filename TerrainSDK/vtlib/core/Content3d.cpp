@@ -20,7 +20,7 @@ vtItem3d::vtItem3d()
 vtItem3d::~vtItem3d()
 {
 	if (m_pGroup)
-		m_pGroup->Destroy();
+		m_pGroup->Release();
 	m_pGroup = NULL;
 }
 

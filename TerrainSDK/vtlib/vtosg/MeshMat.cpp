@@ -22,8 +22,6 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 
 	// Not sure why this is required (should be the default!)
 	m_pStateSet->setMode(GL_DEPTH_TEST, SA_ON);
-
-	m_pImage = NULL;
 }
 
 vtMaterial::~vtMaterial()
@@ -33,6 +31,9 @@ vtMaterial::~vtMaterial()
 	m_pTexture = NULL;
 	m_pStateSet = NULL;
 	m_pBlendFunc = NULL;
+
+	// more dereferencing
+	m_pImage = NULL;
 }
 
 /**
@@ -231,7 +232,7 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	m_pTexture->setImage(pImage->m_pOsgImage.get());
 
-	// store this for convenience
+	// store a reference so that it won't get deleted without this material's permission
 	m_pImage = pImage;
 
 	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
@@ -249,11 +250,25 @@ void vtMaterial::SetTexture(vtImage *pImage)
 }
 
 /**
+ * Loads and sets the texture for a material.
+ */
+void vtMaterial::SetTexture2(const char *szFilename)
+{
+	vtImage *image = new vtImage(szFilename);
+	if (image->LoadedOK())
+	{
+		SetTexture(image);
+	}
+	image->Release();	// don't hold on to it; it will either be owned by this material, or deleted
+}
+
+
+/**
  * Returns the texture (image) associated with a material.
  */
 vtImage	*vtMaterial::GetTexture()
 {
-	return m_pImage;
+	return m_pImage.get();
 }
 
 
@@ -324,6 +339,20 @@ void vtMaterial::Apply()
 // vtMaterialArray
 //
 
+vtMaterialArray::vtMaterialArray()
+{
+	ref();		// artficially set refcount to 1
+}
+
+vtMaterialArray::~vtMaterialArray()
+{
+}
+
+void vtMaterialArray::Release()
+{
+	unref();	// trigger self-deletion if no more references
+}
+
 /**
  * Adds a material to this material array.
  *
@@ -374,6 +403,7 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	m_pGeoSet = new GeoSet();
 
 	// set backpointer so we can find ourselves later
+	// also increases our own refcount
 	m_pGeoSet->setUserData(this);
 
 	// We own the array allocation, so tell OSG not to try to free it
@@ -446,9 +476,10 @@ vtMesh::~vtMesh()
 {
 }
 
-void vtMesh::Destroy()
+void vtMesh::Release()
 {
-	// dereference
+	// explicit dereference. if Release is not called, this dereference should
+	//  also occur implicitly in the destructor
 	m_pGeoSet = NULL;
 }
 
@@ -827,7 +858,7 @@ vtTextMesh::~vtTextMesh()
 {
 }
 
-void vtTextMesh::Destroy()
+void vtTextMesh::Release()
 {
 	m_pOsgText = NULL;	// dereference
 }

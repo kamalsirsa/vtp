@@ -207,6 +207,8 @@ public:
 		return s_MaterialDescriptors;
 	}
 
+	static void ReleaseSharedMaterials();
+
 protected:
 	// material
 	void InitializeMaterialArrays();

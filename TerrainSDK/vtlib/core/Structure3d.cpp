@@ -102,7 +102,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	// if previously created, destroy to re-create
 	if (m_pModel)
 	{
-		m_pModel->Destroy();
+		m_pModel->Release();
 		m_pModel = NULL;
 	}
 
@@ -282,7 +282,11 @@ void vtStructureArray3d::DestroyStructure(int i)
 	st3d->DeleteNode();
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
 // Methods for vtStructure3d
+//
+
 void vtStructure3d::InitializeMaterialArrays()
 {
 	if (s_pMaterials != NULL)	// already initialized
@@ -297,7 +301,6 @@ void vtStructure3d::InitializeMaterialArrays()
 	float start = .25f;
 	float step = (1.0f-start)/(divisions-1);
 	int iSize;
-	vtImage *pImage;
 
 	// set up colour spread
 	for (i = 0; i < divisions; i++) {
@@ -413,16 +416,13 @@ void vtStructure3d::InitializeMaterialArrays()
 
 			case VT_MATERIAL_COLOURABLE_TEXTURE:
 				path = FindFileOnPaths(vtTerrain::m_DataPaths, Descriptor.GetSourceName());
-				pImage = new vtImage(path);
-				if (NULL == pImage)
-					throw "Out of memory";
 				divisions = 6;
 				start = .25f;
 				step = (1.0f-start)/(divisions-1);
 				for (i = 0; i < COLOR_SPREAD; i++)
 				{
 					pMat = MakeMaterial(s_Colors[i], true);
-					pMat->SetTexture(pImage);
+					pMat->SetTexture2(path);
 					pMat->SetClamp(false);
 					if (i == 0)
 						Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
@@ -448,6 +448,16 @@ void vtStructure3d::InitializeMaterialArrays()
 	assert(total == expectedtotal);
 */
 }
+
+void vtStructure3d::ReleaseSharedMaterials()
+{
+	if (s_pMaterials)
+	{
+		s_pMaterials->Release();
+		s_pMaterials = NULL;
+	}
+}
+
 
 //
 // Takes the building material and color, and tries to find the closest

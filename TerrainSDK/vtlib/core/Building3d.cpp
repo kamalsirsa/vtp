@@ -75,11 +75,13 @@ void vtBuilding3d::DestroyGeometry()
 		return;
 
 	m_pContainer->RemoveChild(m_pGeom);
-	m_pGeom->Destroy();
+	m_pGeom->Release();
 	m_pGeom = NULL;
-	int i, size = m_Mesh.GetSize();
-	for (i = 0; i < size; i++)
-		delete m_Mesh[i].m_pMesh;
+//	int i, size = m_Mesh.GetSize();
+//	for (i = 0; i < size; i++)
+//	{
+//		m_Mesh[i].m_pMesh->Release();
+//	}
 	m_Mesh.Empty();
 }
 
@@ -249,6 +251,8 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	if (m_pHighlight)
 	{
 		m_pContainer->RemoveChild(m_pHighlight);
+		m_pHighlight->Release();
+
 		FSphere sphere;
 		m_pGeom->GetBoundSphere(sphere);
 		m_pHighlight = CreateBoundSphereGeom(sphere);
@@ -1028,7 +1032,7 @@ void vtBuilding3d::DeleteNode()
 	if (m_pContainer)
 	{
 		DestroyGeometry();
-		m_pContainer->Destroy();
+		m_pContainer->Release();
 		m_pContainer = NULL;
 	}
 }

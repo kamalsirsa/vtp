@@ -137,7 +137,6 @@ public:
 	/// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 				float fOceanDepth, int &iError);
-	void Destroy();
 	static int MemoryRequired(int iDimension);
 
 	// overrides
@@ -175,6 +174,9 @@ protected:
 	void render_triangle_single(BinTri *pTri, int v0, int v1, int va);
 	void flush_buffer(int type);
 	inline float DistanceToTriangle(int num);
+
+	// cleanup
+	virtual ~SMTerrain();
 
 private:
 	HeightType *m_pData;		// the elevation height array

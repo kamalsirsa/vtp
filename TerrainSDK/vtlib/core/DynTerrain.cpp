@@ -25,6 +25,12 @@ vtDynTerrainGeom::vtDynTerrainGeom() : vtDynGeom()
 	m_fXLookup = m_fZLookup = NULL;
 }
 
+vtDynTerrainGeom::~vtDynTerrainGeom()
+{
+	delete m_fXLookup;
+	delete m_fZLookup;
+}
+
 void vtDynTerrainGeom::Init2()
 {
 }
@@ -52,13 +58,6 @@ void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatc
 	m_bUseTriStrips = bUseTriStrips;
 	m_iTPatchDim = iTPatchDim;
 	m_iTPatchSize = iTPatchSize;
-}
-
-void vtDynTerrainGeom::Destroy()
-{
-	delete m_fXLookup;
-	delete m_fZLookup;
-	vtDynGeom::Destroy();
 }
 
 // overrides for HeightField

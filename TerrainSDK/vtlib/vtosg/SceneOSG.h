@@ -34,6 +34,8 @@ public:
 	bool GetGlobalWireframe();
 
 	bool Init();
+	void Shutdown();
+
 	void DoUpdate();
 	float GetFrameRate()
 	{

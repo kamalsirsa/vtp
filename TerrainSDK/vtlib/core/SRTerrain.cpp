@@ -28,14 +28,13 @@ SRTerrain::SRTerrain() : vtDynTerrainGeom()
 	m_pMini = NULL;
 }
 
-void SRTerrain::Destroy()
+SRTerrain::~SRTerrain()
 {
 	if (m_pMini)
 	{
 		delete m_pMini;
 		m_pMini = NULL;
 	}
-	vtDynTerrainGeom::Destroy();
 }
 
 /////////////////////////////////////////////////////////////////////////////

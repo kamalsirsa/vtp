@@ -22,13 +22,13 @@ class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid3d
 {
 public:
 	vtDynTerrainGeom();
+	~vtDynTerrainGeom();
 
 	virtual bool Init(vtElevationGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError) = 0;
 	virtual void Init2();
 	void BasicInit(vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
-	void Destroy();
 
 	void SetPixelError(float fPixelError);
 	float GetPixelError();

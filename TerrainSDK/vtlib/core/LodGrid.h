@@ -17,7 +17,7 @@ class vtLodGrid : public vtGroup
 public:
 	vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
 		int iDimension, float fLODDistance, vtHeightField3d *pHF = NULL);
-	void Destroy();
+	void Release();
 
 	// methods
 	bool AppendToGrid(vtTransform *pTrans);

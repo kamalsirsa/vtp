@@ -38,8 +38,9 @@ vtPlantAppearance3d::vtPlantAppearance3d(AppearType type, const char *filename,
 
 vtPlantAppearance3d::~vtPlantAppearance3d()
 {
-	// don't delete materials or meshes here, they are deleted when they're
-	//  removed or dereferenced elsewhere.
+	m_pMesh->Release();
+	m_pMats->Release();
+
 #if SUPPORT_XFROG
 	if (m_pFrogModel) delete m_pFrogModel;
 #endif
@@ -433,6 +434,16 @@ vtPlantInstanceArray3d::vtPlantInstanceArray3d()
 {
 	m_pHeightField = NULL;
 	m_pPlantList = NULL;
+}
+
+vtPlantInstanceArray3d::~vtPlantInstanceArray3d()
+{
+	int i, num = m_Instances3d.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtPlantInstance3d *pi = m_Instances3d[i];
+		delete pi;
+	}
 }
 
 vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(int i)

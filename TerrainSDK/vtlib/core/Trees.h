@@ -103,6 +103,7 @@ class vtPlantInstanceArray3d : public vtPlantInstanceArray
 {
 public:
 	vtPlantInstanceArray3d();
+	~vtPlantInstanceArray3d();
 
 	int CreatePlantNodes();
 	bool CreatePlantNode(int i);

@@ -8,12 +8,12 @@
 
 #include "vtdata/vtDIB.h"
 
-class vtImage: public vtImageBase
+class vtImage: public vtImageBase, public osg::Referenced
 {
 public:
 	vtImage(const char *fname, int internalformat = -1);
 	vtImage(class vtDIB *pDIB, int internalformat = -1);
-	~vtImage();
+	void Release();
 
 	// Implementation
 	osg::ref_ptr<osg::Image>	m_pOsgImage;
@@ -24,6 +24,10 @@ protected:
 
 	void _CreateFromDIB(vtDIB *pDIB);
 	bool _ReadPNG(const char *filename);
+
+private:
+	virtual ~vtImage();
 };
 
-#endif
+#endif	// VTOSG_IMAGEH
+

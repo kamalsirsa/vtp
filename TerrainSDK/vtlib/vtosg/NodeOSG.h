@@ -25,10 +25,10 @@ namespace osg
 class vtNode : public vtNodeBase, public osg::Referenced
 {
 public:
-	~vtNode();
+	vtNode();
 
 	virtual vtNodeBase *CreateClone();
-	virtual void Destroy();
+	virtual void Release();
 
 	// implement vtNodeBase methods
 	void SetEnabled(bool bOn);
@@ -55,6 +55,8 @@ protected:
 	osg::ref_ptr<osg::Node> m_pNode;
 	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
 	osg::ref_ptr<osg::Fog> m_pFog;
+
+	virtual ~vtNode();
 };
 
 /**
@@ -65,7 +67,7 @@ class vtGroup : public vtNode, public vtGroupBase
 public:
 	vtGroup(bool suppress = false);
 
-	virtual void Destroy();
+	virtual void Release();
 
 	// implement vtGroupBase methods
 
@@ -94,6 +96,7 @@ public:
 
 protected:
 	void SetOsgGroup(osg::Group *g);
+	virtual ~vtGroup();
 
 	osg::ref_ptr<osg::Group> m_pGroup;
 };
@@ -116,8 +119,7 @@ class vtTransform : public vtGroup, public vtTransformBase
 {
 public:
 	vtTransform();
-	~vtTransform();
-	void Destroy();
+	void Release();
 
 	// implement vtTransformBase methods
 
@@ -151,25 +153,29 @@ public:
 public:
 	osg::ref_ptr<CustomTransform> m_pTransform;
 	FPoint3			m_Scale;
+
+protected:
+	virtual ~vtTransform();
 };
 
 class vtRoot : public vtGroup
 {
 public:
 	vtRoot();
-	~vtRoot();
-	void Destroy();
+	void Release();
 
 	osg::ref_ptr<osg::Group> m_pOsgRoot;
+
+protected:
+	virtual ~vtRoot();
 };
 
 class vtLight : public vtNode
 {
 public:
 	vtLight();
-	~vtLight();
 
-	void vtLight::Destroy();
+	void Release();
 
 	void SetColor2(const RGBf &color);
 	void SetAmbient2(const RGBf &color);
@@ -179,6 +185,9 @@ public:
 
 	osg::ref_ptr<osg::LightSource> m_pLightSource;
 	osg::ref_ptr<osg::Light> m_pLight;
+
+protected:
+	virtual ~vtLight();
 };
 
 class vtMovLight : public vtTransform
@@ -206,7 +215,7 @@ class vtGeom : public vtGeomBase, public vtNode
 {
 public:
 	vtGeom();
-	~vtGeom();
+	void Release();
 
 	/** Add a mesh to this geometry.
 		\param pMesh The mesh to add
@@ -240,10 +249,11 @@ public:
 
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
-	void Destroy();
-
 	osg::ref_ptr<vtMaterialArray> m_pMaterialArray;
 	osg::ref_ptr<osg::Geode> m_pGeode;	// the Geode is a container for Drawables
+
+protected:
+	virtual ~vtGeom();
 };
 
 class vtMovGeom : public vtTransform
@@ -272,6 +282,9 @@ public:
 	virtual void drawImplementation(osg::State& state) const;
 
 	class vtDynGeom		*m_pDynGeom;
+
+protected:
+	virtual ~vtDynMesh();
 };
 
 /**
@@ -337,26 +350,22 @@ protected:
 class vtLOD : public vtGroup
 {
 public:
-	vtLOD() : vtGroup(true)
-	{
-		m_pLOD = new osg::LOD();
-		m_pLOD->setCenter(osg::Vec3(0, 0, 0));
-		SetOsgGroup(m_pLOD.get());
-	}
+	vtLOD();
+	void Release();
 
 	void SetRanges(float *ranges, int nranges);
 	void SetCenter(FPoint3 &center);
 
 protected:
 	osg::ref_ptr<osg::LOD>	m_pLOD;
+	virtual ~vtLOD();
 };
 
 class vtCamera : public vtTransform
 {
 public:
 	vtCamera();
-	~vtCamera();
-	void Destroy();
+	void Release();
 
 	void SetHither(float f);
 	float GetHither();
@@ -372,6 +381,9 @@ public:
 	void SetOrtho(float fWidth);
 
 	osg::ref_ptr<osg::Camera> m_pOsgCamera;
+
+protected:
+	virtual ~vtCamera();
 };
 
 class vtSprite : public vtGroup
@@ -381,4 +393,5 @@ public:
 	void SetWindowRect(float l, float t, float r, float b) {}
 };
 
-#endif
+#endif	// VTOSG_NODEH
+

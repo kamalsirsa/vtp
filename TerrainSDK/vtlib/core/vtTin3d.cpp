@@ -62,6 +62,7 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 
 	m_pGeom = new vtGeom();
 	m_pGeom->SetMaterials(pMats);
+	pMats->Release();
 
 	int i, j, k;
 	int verts = NumVerts();

@@ -123,7 +123,6 @@ public:
 	/// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError);
-	void Destroy();
 	static int MemoryRequired(int iDimension);
 
 	// overrides
@@ -163,6 +162,10 @@ protected:
 	void emitDFS(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
 	void emitTri(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
 	void getNormal(int,int,double,int,int,double,int,int,double,double*,double*,double*);
+
+protected:
+	// cleanup
+	virtual ~TVTerrain();
 
 private:
 	float	m_fXScale, m_fYScale, m_fZScale;

@@ -51,6 +51,7 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 			vtMaterialArray *pApps2 = new vtMaterialArray();
 			pApps2->CopyFrom(pApps);
 			pShape->SetMaterials(pApps2);
+			pApps2->Release();
 			for (i = 0; i < pApps2->GetSize(); i++)
 			{
 				pApp = pApps2->GetAt(i);

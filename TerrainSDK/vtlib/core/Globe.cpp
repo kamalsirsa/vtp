@@ -32,6 +32,12 @@ IcoGlobe::IcoGlobe()
 	m_cylinder = NULL;
 }
 
+IcoGlobe::~IcoGlobe()
+{
+	m_mats->Release();
+}
+
+
 /**
  * Create the globe's geometry and nodes.
  *
@@ -1230,6 +1236,7 @@ void IcoGlobe::CreateUnfoldableDymax()
 	m_pAxisGeom->SetName2("AxisGeom");
 	m_pAxisGeom->SetMaterials(pMats);
 	m_pAxisGeom->SetEnabled(false);
+	pMats->Release();
 
 	vtMesh *pMesh = new vtMesh(GL_LINES, 0, 6);
 	pMesh->AddVertex(FPoint3(0,2,0));
@@ -1400,9 +1407,10 @@ vtTransform *WireAxis(RGBf color, float len)
 	vtGeom *geom = new vtGeom();
 	geom->SetName2("axis");
 
-	vtMaterialArray *mats = new vtMaterialArray();
-	int index = mats->AddRGBMaterial1(color, false, false);
-	geom->SetMaterials(mats);
+	vtMaterialArray *pMats = new vtMaterialArray();
+	int index = pMats->AddRGBMaterial1(color, false, false);
+	geom->SetMaterials(pMats);
+	pMats->Release();
 
 	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
 	mesh->AddVertex(FPoint3(-len,0,0));
@@ -1442,13 +1450,14 @@ vtMovGeom *CreateSimpleEarth(vtString strDataPath)
 	vtMovGeom *mgeom = new vtMovGeom(geom);
 	mgeom->SetName2("GlobeGeom");
 
-	vtMaterialArray *apps = new vtMaterialArray();
+	vtMaterialArray *pMats = new vtMaterialArray();
 	bool bCulling = false;
 	bool bLighting = false;
 	bool bTransp = false;
-	apps->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
+	pMats->AddTextureMaterial2(strDataPath + "WholeEarth/earth2k_free.jpg",
 						 bCulling, bLighting, bTransp);
-	geom->SetMaterials(apps);
+	geom->SetMaterials(pMats);
+	pMats->Release();
 
 	geom->AddMesh(mesh, 0);
 

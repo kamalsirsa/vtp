@@ -18,11 +18,18 @@ using namespace osg;
 // vtNode
 //
 
+vtNode::vtNode()
+{
+	// Artificially increment our own reference count, so that OSG
+	// won't try to delete us when it removes its reference to us.
+//	ref();
+}
+
 vtNode::~vtNode()
 {
 }
 
-void vtNode::Destroy()
+void vtNode::Release()
 {
 	// remove the OSG node from its OSG group parent(s)
 	unsigned int parents = m_pNode->getNumParents();
@@ -44,7 +51,7 @@ void vtNode::Destroy()
 
 	// Artificially decrement our own "reference count", should trigger
 	// self-deletion
-	unref();
+//	unref();
 
 	// This allows us to control deletion
 //	delete this;
@@ -122,12 +129,7 @@ void vtNode::SetOsgNode(Node *n)
 {
 	m_pNode = n;
 	if (m_pNode.valid())
-	{
-		// Artificially increment our own "reference count", so that OSG
-		// won't try to delete us when it removes its reference to us.
-		ref();
 		m_pNode->setUserData((vtNode *)this);
-	}
 }
 
 
@@ -138,13 +140,19 @@ void vtNode::SetOsgNode(Node *n)
 vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 {
 	if (!suppress)
+	{
 		m_pGroup = new Group;
-	SetOsgNode(m_pGroup.get());
+		SetOsgNode(m_pGroup.get());
+	}
 }
 
-void vtGroup::Destroy()
+vtGroup::~vtGroup()
 {
-	// Destroy children depth-first
+}
+
+void vtGroup::Release()
+{
+	// Release children depth-first
 	int children = GetNumChildren();
 	vtNode *pChild;
 
@@ -161,12 +169,12 @@ void vtGroup::Destroy()
 		else
 		{
 			m_pGroup->removeChild(pChild->GetOsgNode());
-			pChild->Destroy();
+			pChild->Release();
 		}
 	}
 	// Now destroy itself
 	m_pGroup = NULL;	// decrease refcount
-	vtNode::Destroy();
+	vtNode::Release();
 }
 
 void vtGroup::SetOsgGroup(Group *g)
@@ -231,10 +239,10 @@ vtTransform::~vtTransform()
 {
 }
 
-void vtTransform::Destroy()
+void vtTransform::Release()
 {
 	m_pTransform = NULL;
-	vtGroup::Destroy();
+	vtGroup::Release();
 }
 
 void vtTransform::Identity()
@@ -348,10 +356,10 @@ vtRoot::~vtRoot()
 {
 }
 
-void vtRoot::Destroy()
+void vtRoot::Release()
 {
 	m_pOsgRoot = NULL;
-	vtGroup::Destroy();
+	vtGroup::Release();
 }
 
 
@@ -374,11 +382,11 @@ vtLight::~vtLight()
 {
 }
 
-void vtLight::Destroy()
+void vtLight::Release()
 {
 	m_pLight = NULL;	// explicit refcount decrement
 	m_pLightSource = NULL;
-	vtNode::Destroy();
+	vtNode::Release();
 }
 
 void vtLight::SetColor2(const RGBf &color)
@@ -434,10 +442,10 @@ vtCamera::~vtCamera()
 {
 }
 
-void vtCamera::Destroy()
+void vtCamera::Release()
 {
 	m_pOsgCamera = NULL;
-	vtTransform::Destroy();
+	vtTransform::Release();
 }
 
 void vtCamera::SetHither(float f)
@@ -537,7 +545,7 @@ vtGeom::~vtGeom()
 {
 }
 
-void vtGeom::Destroy()
+void vtGeom::Release()
 {
 	// try to destroy meshes?
 	int i, num = m_pGeode->getNumDrawables();
@@ -545,12 +553,12 @@ void vtGeom::Destroy()
 	{
 		vtMesh *mesh = GetMesh(i);
 		if (mesh)
-			mesh->Destroy();
+			mesh->Release();
 		else
 		{
 			vtTextMesh *textmesh = GetTextMesh(i);
 			if (textmesh)
-				textmesh->Destroy();
+				textmesh->Release();
 		}
 	}
 	m_pGeode->removeDrawable(0, num);
@@ -559,7 +567,7 @@ void vtGeom::Destroy()
 	m_pMaterialArray = NULL;
 	m_pGeode = NULL;
 
-	vtNode::Destroy();
+	vtNode::Release();
 }
 
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
@@ -660,6 +668,23 @@ vtMaterial *vtGeom::GetMaterial(int idx)
 // vtLOD
 //
 
+vtLOD::vtLOD() : vtGroup(true)
+{
+	m_pLOD = new osg::LOD();
+	m_pLOD->setCenter(osg::Vec3(0, 0, 0));
+	SetOsgGroup(m_pLOD.get());
+}
+
+vtLOD::~vtLOD()
+{
+}
+
+void vtLOD::Release()
+{
+	m_pLOD = NULL;
+	vtGroup::Release();
+}
+
 void vtLOD::SetRanges(float *ranges, int nranges)
 {
 	int i;
@@ -692,6 +717,10 @@ vtDynMesh::vtDynMesh()
 	// create an empty stateset, to force the traversers
 	// to nest any state above it in the inheritance path.
 	setStateSet(new StateSet);
+}
+
+vtDynMesh::~vtDynMesh()
+{
 }
 
 bool vtDynMesh::computeBound() const

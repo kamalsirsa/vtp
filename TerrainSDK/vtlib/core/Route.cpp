@@ -18,7 +18,7 @@
 #define METERS_PER_FOOT		0.3048f	// meters per foot
 #define CATENARY_FACTOR		140.0
 
-vtMaterialArray *vtRoute::m_pRouteMats;
+vtMaterialArray *vtRoute::m_pRouteMats = NULL;
 
 ///////////////////
 
@@ -154,6 +154,15 @@ void vtRoute::_CreateMaterials()
 		RGBf(1.5f, 1.5f, 1.5f),	// ambient bright white
 		false, true, false,		// culling, lighting, wireframe
 		1.0f);					// alpha
+}
+
+void vtRoute::ReleaseMaterials()
+{
+	if (m_pRouteMats)
+	{
+		m_pRouteMats->Release();
+		m_pRouteMats = NULL;
+	}
 }
 
 void vtRoute::_CreateStruct(int iNode)

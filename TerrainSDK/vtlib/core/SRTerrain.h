@@ -30,7 +30,6 @@ public:
 	// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 				float fOceanDepth, int &iError);
-	void Destroy();
 
 	// overrides
 	void DoRender();
@@ -42,10 +41,14 @@ public:
 	void LoadBlockMaterial(int a, int b);
 
 	int		m_iBlockSize;
+
 protected:
 	// rendering
 	void RenderSurface();
 	void RenderPass();
+
+	// cleanup
+	virtual ~SRTerrain();
 
 private:
 	ministub *m_pMini;

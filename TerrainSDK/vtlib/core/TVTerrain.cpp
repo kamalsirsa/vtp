@@ -74,11 +74,10 @@ TVTerrain::TVTerrain() : vtDynTerrainGeom()
 	distThresh = IDISTTHRESH;
 }
 
-void TVTerrain::Destroy()
+TVTerrain::~TVTerrain()
 {
-	vtDynTerrainGeom::Destroy();
+	free(m_pVertex);
 }
-
 
 void leftChild(TriIndex *t, TriIndex *lt)
 {

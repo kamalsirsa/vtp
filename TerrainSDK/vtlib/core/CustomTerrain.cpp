@@ -30,11 +30,10 @@ CustomTerrain::CustomTerrain() : vtDynTerrainGeom()
 	m_pData = NULL;
 }
 
-void CustomTerrain::Destroy()
+CustomTerrain::~CustomTerrain()
 {
 	if (m_pData)
 		delete m_pData;
-	vtDynTerrainGeom::Destroy();
 }
 
 

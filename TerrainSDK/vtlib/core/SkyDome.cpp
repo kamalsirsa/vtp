@@ -81,15 +81,6 @@ void vtSkyDome::Create(const char *starfile, int depth, float radius,
 	MaxTimeOfDay = TIME_TO_INT(24, 0, 0);
 }
 
-void vtSkyDome::Destroy()
-{
-	// not necessary to destroy explicitly, they are destroyed as child nodes
-//	m_pDayDome->Destroy();
-//	m_pStarDome->Destroy();
-
-	vtTransform::Destroy();
-}
-
 int dawn_start = TIME_TO_INT(4, 30, 0);
 int dawn_middle = TIME_TO_INT(5, 30, 0);
 int dawn_end = TIME_TO_INT(6, 30, 0);
@@ -311,6 +302,14 @@ vtDayDome::vtDayDome()
 	m_bHasTexture = false;
 }
 
+vtDayDome::~vtDayDome()
+{
+	if (SphVertices) delete[] SphVertices;
+	m_pSunImage->Release();
+	if (m_pMats)
+		m_pMats->Release();
+}
+
 void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 {
 	SetName2("DayDome");
@@ -394,13 +393,6 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 
 		AddChild(m_pSunShape);
 	}
-}
-
-void vtDayDome::Destroy()
-{
-	if (SphVertices) delete[] SphVertices;
-	delete m_pSunImage;
-	vtTransform::Destroy();
 }
 
 //
@@ -692,6 +684,15 @@ vtStarDome::vtStarDome()
 	m_pMoonImage = NULL;
 }
 
+vtStarDome::~vtStarDome()
+{
+	if (Starfield)
+		delete[] Starfield;
+	m_pMoonImage->Release();
+	if (m_pMats)
+		m_pMats->Release();
+}
+
 void vtStarDome::Create(const char *starfile, float radius, float brightness,
 					  const char *moon_texture)
 {
@@ -760,14 +761,6 @@ void vtStarDome::Create(const char *starfile, float radius, float brightness,
 		AddChild(m_pMoonGeom);
 	}
 	SetRadius(radius);
-}
-
-void vtStarDome::Destroy()
-{
-	if (Starfield)
-		delete[] Starfield;
-	delete m_pMoonImage;
-	vtTransform::Destroy();
 }
 
 //

@@ -554,6 +554,7 @@ bool InputSOG::ReadContents(FILE *fp, vtGroup *Parent)
 		vtGeom *pGeom = ReadGeometry(fp, pMats);
 		Parent->AddChild(pGeom);
 	}
+	pMats->Release();
 
 	return true;
 }

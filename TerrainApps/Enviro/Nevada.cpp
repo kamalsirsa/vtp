@@ -124,6 +124,8 @@ void NevadaTerrain::CreateWater()
 	m_pWaterShape2->SetName2("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
 	AddNode(m_pWaterShape2);
+
+	pMats->Release();
 }
 
 
@@ -160,6 +162,7 @@ void NevadaTerrain::CreateDetailTextures()
 					 true);			// texgen
 	m_pDetailMat2 = pDetailApps->GetAt(1);
 	m_pDynGeom->SetDetailMaterial(m_pDetailMat, DETAIL_TILING);
+	pDetailApps->Release();
 }
 
 

@@ -437,7 +437,10 @@ bool TParams::LoadFromFile(const char *filename)
 		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
 		{
 			vtString *strFile = new vtString(get_line_from_stream(input));
-			m_strStructFiles.Append(strFile);
+			if (*strFile == "")
+				delete strFile;
+			else
+				m_strStructFiles.Append(strFile);
 		}
 		else if (strcmp(buf, STR_STRUCTDIST) == 0)
 			input >> m_iStructDistance;

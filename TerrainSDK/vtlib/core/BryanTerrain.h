@@ -52,7 +52,6 @@ public:
 	// initialization
 	bool Init(vtElevationGrid *pGrid, float fZScale,
 				float fOceanDepth, int &iError);
-	void Destroy();
 
 	// overrides
 	void DoRender();
@@ -79,6 +78,9 @@ protected:
 	void MakeBlendedVertex( UINT_32 x, UINT_32 y, float heightOne, float heightTwo, float fBlend, UINT_32 NW_X, UINT_32 NW_Y );
 
 	float HeightField( UINT_32 y, UINT_32 x );
+
+protected:
+	virtual ~BryanTerrain();
 
 private:
 	// Basic Engine Variables

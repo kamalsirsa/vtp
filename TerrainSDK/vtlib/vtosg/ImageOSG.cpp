@@ -18,10 +18,11 @@
 
 vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 {
+	ref();
+
 	m_pPngData = NULL;
 	m_internalformat = internalformat;
 	m_strFilename = fname;
-
 
 #if !USE_OSG_FOR_BMP
 	if (!stricmp(fname + strlen(fname) - 3, "bmp"))
@@ -59,6 +60,8 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 
 	// try to load with OSG (osgPlugins libraries)
 	{
+//		std::string fname2 = "../Data/PlantModels/koahaole1_v2_256.png";
+//		fname2 = fname;
 		m_pOsgImage = osgDB::readImageFile(fname);
 		if (m_pOsgImage != NULL)
 			m_bLoaded = true;
@@ -67,6 +70,8 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 
 vtImage::vtImage(vtDIB *pDIB, int internalformat)
 {
+	ref();
+
 	m_pPngData = NULL;
 	m_internalformat = internalformat;
 
@@ -77,6 +82,11 @@ vtImage::~vtImage()
 {
 	m_pOsgImage = NULL;	// dereference
 	if (m_pPngData) free(m_pPngData);
+}
+
+void vtImage::Release()
+{
+	unref();
 }
 
 void vtImage::_CreateFromDIB(vtDIB *pDIB)

@@ -713,6 +713,8 @@ vtRoadMap3d::vtRoadMap3d()
 
 vtRoadMap3d::~vtRoadMap3d()
 {
+	if (m_pMats)
+		m_pMats->Release();
 }
 
 void vtRoadMap3d::BuildIntersections()

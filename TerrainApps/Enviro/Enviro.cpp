@@ -123,9 +123,9 @@ void Enviro::Shutdown()
 	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
 	if (m_pTopDownCamera)
-		m_pTopDownCamera->Destroy();
+		m_pTopDownCamera->Release();
 	if (m_pCursorMGeom)
-		m_pCursorMGeom->Destroy();
+		m_pCursorMGeom->Release();
 	delete m_pTerrainScene;
 }
 
@@ -790,6 +790,7 @@ if (pwdemo){
 	mats->AddTextureMaterial2("Planetwork/logo3.png", false, false, true);
 	mats->AddTextureMaterial2("Planetwork/logo2.png", false, false, true);
 	geom->SetMaterials(mats);
+	mats->Release();
 	float width = 1.9, height = .22;
 	FRECT rect(-width/2, height/2, width/2, -height/2);
 	GeomAddRectMesh(geom, rect, 1.15, 0);
@@ -813,6 +814,7 @@ if (pwdemo){
 	}
 	tg = new vtGeom();
 	tg->SetMaterials(rainbow);
+	rainbow->Release();
 	Globe2->GetTop()->AddChild(tg);
 
 	vtFeatures ft;
@@ -893,6 +895,8 @@ if (pwdemo){
 	m_pSpaceAxes = new vtGeom();
 	m_pSpaceAxes->SetName2("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
+	pMats->Release();
+
 	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
 	mesh->AddVertex(FPoint3(0,0,200));
 	mesh->AddVertex(FPoint3(0,0,0));
@@ -1047,11 +1051,13 @@ void Enviro::SetupScene2()
 	// Connect to the GrabFlyer
 	m_pGFlyer->SetTerrainPicker(m_pTerrainPicker);
 
+#if 0
 	m_pSprite2 = new vtSprite();
 	m_pSprite2->SetName2("Sprite2");
 	m_pSprite2->SetWindowRect(0.73f, 0.90f, 1.00f, 1.00f);
 	m_pSprite2->SetText("...");
-//	m_pRoot->AddChild(m_pSprite2);
+	m_pRoot->AddChild(m_pSprite2);
+#endif
 
 	VTLOG("Setting up Cameras\n");
 	m_pNormalCamera = vtGetScene()->GetCamera();
@@ -1663,12 +1669,13 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 		int yellow = pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 						 false, false, false);
 		m_pArc->SetMaterials(pMats);
+		pMats->Release();
 	}
 	// re-create mesh if not the first time
 	if (m_pArcMesh)
 	{
 		m_pArc->RemoveMesh(m_pArcMesh);
-		delete m_pArcMesh;
+		m_pArcMesh->Release();
 	}
 	// set the points of the arc
 	m_pArcMesh = new vtMesh(GL_LINE_STRIP, 0, 12);

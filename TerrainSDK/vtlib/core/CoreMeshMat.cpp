@@ -622,6 +622,10 @@ vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha)
 	pGeom->SetMaterials(pMats);
 	pGeom->SetName2("3D Crosshair");
 
+	// release material array here, so that it will be automatically deleted
+	// later when it's no longer needed.
+	pMats->Release();
+
 	for (i = 0; i < 3; i++)
 		pGeom->AddMesh(mesh[i], i);
 
@@ -638,6 +642,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f), false, false, true);
 	pGeom->SetMaterials(pMats);
+	pMats->Release();	// pass ownership to the geom
 
 	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, (res+1)*3*2);
 
@@ -900,16 +905,15 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 						 bool bMipMap)
 {
 	vtImage *pImage = new vtImage(fname);
-#if !VTLIB_PSM	// PSM loads asynchronously so we can't tell if it failed until later
 	if (!pImage->LoadedOK())
 	{
-		delete pImage;
+		pImage->Release();
 		return -1;
 	}
-#endif
-
-	return AddTextureMaterial(pImage, bCulling, bLighting,
+	int index = AddTextureMaterial(pImage, bCulling, bLighting,
 		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen, bClamp);
+	pImage->Release();
+	return index;
 }
 
 /**
@@ -1037,14 +1041,6 @@ void vtMaterialArrayBase::CopyFrom(vtMaterialArrayBase *pFrom)
 
 vtMaterialBase::vtMaterialBase()
 {
-}
-
-/**
- * Loads and sets the texture for a material.
- */
-void vtMaterialBase::SetTexture2(const char *szFilename)
-{
-	SetTexture(new vtImage(szFilename));
 }
 
 /**

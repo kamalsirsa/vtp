@@ -35,7 +35,7 @@ vtLodGrid::vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
 	m_pHeightField = pHF;
 }
 
-void vtLodGrid::Destroy()
+void vtLodGrid::Release()
 {
 	// get rid of children first
 	vtLOD *lod;
@@ -48,7 +48,7 @@ void vtLodGrid::Destroy()
 			if (lod != NULL)
 			{
 				RemoveChild(lod);
-				lod->Destroy();
+				lod->Release();
 			}
 		}
 	}
@@ -56,7 +56,7 @@ void vtLodGrid::Destroy()
 	m_pCells = NULL;
 
 	// now self-destruct
-	vtGroup::Destroy();
+	vtGroup::Release();
 }
 
 

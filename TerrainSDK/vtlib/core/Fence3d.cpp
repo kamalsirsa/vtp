@@ -13,7 +13,7 @@
 #include "Fence3d.h"
 
 // statics
-vtMaterialArray *vtFence3d::s_pFenceMats;
+vtMaterialArray *vtFence3d::s_pFenceMats = NULL;
 float vtFence3d::s_fFenceScale;	// fence size is exaggerated by this amount
 
 vtFence3d::vtFence3d() : vtFence()
@@ -297,6 +297,7 @@ void vtFence3d::DestroyGeometry()
 	{
 		vtMesh *pMesh = m_pFenceGeom->GetMesh(0);
 		m_pFenceGeom->RemoveMesh(pMesh);
+		pMesh->Release();
 	}
 
 	m_bBuilt = false;
@@ -312,12 +313,19 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 {
 	if (!m_pFenceGeom)
 	{
+		bool bFirstTime = false;
 		if (s_pFenceMats == NULL)
+		{
+			bFirstTime = true;
 			CreateMaterials();
+		}
 
 		m_pFenceGeom = new vtGeom;
 		m_pFenceGeom->SetName2("Fence");
 		m_pFenceGeom->SetMaterials(s_pFenceMats);
+
+		if (bFirstTime)
+			s_pFenceMats->Release();
 	}
 
 	if (m_bBuilt)
@@ -340,7 +348,7 @@ void vtFence3d::DeleteNode()
 	if (m_pFenceGeom)
 	{
 		DestroyGeometry();
-		delete m_pFenceGeom;
+		m_pFenceGeom->Release();
 		m_pFenceGeom = NULL;
 	}
 }

@@ -22,8 +22,8 @@
 void Romania::CreateCustomCulture(bool bDoSound)
 {
 	vtString fname = "PointData/";
-//	fname += "RO.shp";
-	fname += "RO-subset.shp";
+	fname += "RO.shp";
+//	fname += "RO-subset.shp";
 	vtString path = FindFileOnPaths(m_DataPaths, fname);
 	if (path == "")
 		return;
@@ -91,6 +91,7 @@ vtGeom *TransitTerrain::MakeBlockGeom(FPoint3 size)
 	// create a Geometry and add the mesh and material
 	vtGeom *thebox = new vtGeom();
 	thebox->SetMaterials(looks);
+	looks->Release();
 	thebox->AddMesh(mesh, 0);
 
 	return thebox;

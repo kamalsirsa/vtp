@@ -50,6 +50,7 @@ public:
 
 	// construction
 	IcoGlobe();
+	~IcoGlobe();
 	void Create(int iTriangleCount, const StringArray &paths,
 		const vtString &strImagePrefix, Style style = GEODESIC);
 	vtTransform *GetTop() { return m_top; }

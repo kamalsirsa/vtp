@@ -228,9 +228,8 @@ protected:
 		bool bCenter, float fTransparency);
 	void create_culture(bool bSound);
 
-	void CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
-								int patches, int patch_size);
-	void _CreateTiledMaterials2(vtMaterialArray *pMat1,
+	void _CreateChoppedTextures(int patches, int patch_size);
+	void _CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
 	void ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib);
@@ -285,7 +284,6 @@ protected:
 	// ground texture
 	vtDIB			*m_pDIB;
 	Array<vtImage*>	m_Images;
-	vtImage			*m_pImage;
 
 	FSphere			m_bound_sphere;	// bounding sphere of terrain
 									// (without surrounding ocean)
@@ -301,8 +299,6 @@ protected:
 	Array<POIPtr>	m_PointsOfInterest;
 	bool			m_bShowPOI;
 	vtGroup			*m_pPOIGroup;
-
-	vtMaterialArray *m_pLabelMats;
 
 	// only used during initialization
 	vtElevationGrid	*m_pElevGrid;

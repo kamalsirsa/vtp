@@ -41,6 +41,8 @@ IslandTerrain::IslandTerrain() : PTerrain()
 
 IslandTerrain::~IslandTerrain()
 {
+	if (m_pDetailMats)
+		m_pDetailMats->Release();
 }
 
 void IslandTerrain::CreateCustomCulture(bool bDoSound)
@@ -213,6 +215,7 @@ vtGeom *IslandTerrain::make_test_cone()
 
 	vtGeom *pGeom = new vtGeom();
 	pGeom->SetMaterials(looks);
+	looks->Release();
 	pGeom->AddMesh(pMesh, 0);
 	/////////////
 
@@ -233,6 +236,7 @@ vtGeom *IslandTerrain::make_red_cube()
 	vtMaterialArray *looks = new vtMaterialArray();
 	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), true);
 	thebox->SetMaterials(looks);
+	looks->Release();
 	thebox->AddMesh(mesh, 0);
 
 	return thebox;

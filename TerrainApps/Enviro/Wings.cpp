@@ -52,6 +52,8 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 	SetName2("ButterflyWing2");
 	AddChild(m_pWing2);
 
+	m_pApps->Release();
+
 	//make the FlyingCritter engine
 	FlyingCritterEngine *pFCE;
 	pFCE = new FlyingCritterEngine(this, terrain, center, speed, height,

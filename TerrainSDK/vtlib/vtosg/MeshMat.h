@@ -51,6 +51,7 @@ public:
 	bool GetWireframe();
 
 	void SetTexture(vtImage *pImage);
+	void SetTexture2(const char *szFilename);
 	vtImage	*GetTexture();
 
 	void SetClamp(bool bClamp);
@@ -62,7 +63,7 @@ public:
 	void Apply();
 
 	// remember this for convenience
-	vtImage	*m_pImage;
+	osg::ref_ptr<vtImage>	m_pImage;
 
 	// the VT material object includes texture
 	osg::ref_ptr<osg::Material>		m_pMaterial;
@@ -77,7 +78,13 @@ public:
 class vtMaterialArray : public vtMaterialArrayBase, public osg::Referenced
 {
 public:
+	vtMaterialArray();
+	void Release();
+
 	int AppendMaterial(vtMaterial *pMat);
+
+protected:
+	virtual ~vtMaterialArray();
 };
 
 
@@ -100,8 +107,7 @@ class vtMesh : public vtMeshBase, public osg::Referenced
 
 public:
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
-	~vtMesh();
-	void Destroy();
+	void Release();
 
 	// Adding primitives
 	void AddTri(int p0, int p1, int p2);
@@ -152,6 +158,8 @@ protected:
 
 	// Point OSG to the vertex and primitive data that we maintain
 	void	SendPointersToOSG();
+
+	virtual ~vtMesh();
 };
 
 class vtFont
@@ -168,9 +176,8 @@ class vtTextMesh : public osg::Referenced
 {
 public:
 	vtTextMesh(vtFont *font, float fSize = 1, bool bCenter = false);
-	~vtTextMesh();
 
-	void Destroy();
+	void Release();
 
 	void SetText(const char *text);
 	void SetText(const wchar_t *text);
@@ -180,6 +187,9 @@ public:
 
 	// Implementation
 	osg::ref_ptr<osgText::Text> m_pOsgText;
+
+protected:
+	~vtTextMesh();
 };
 
 #endif	// VTOSG_MESHMATH

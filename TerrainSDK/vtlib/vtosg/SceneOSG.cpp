@@ -60,7 +60,7 @@ vtScene::vtScene() : vtSceneBase()
 vtScene::~vtScene()
 {
 	if (m_pCamera)
-		m_pCamera->Destroy();
+		m_pCamera->Release();
 }
 
 vtScene *vtGetScene()
@@ -126,6 +126,11 @@ bool vtScene::Init()
 	_frameTick = _initialTick;
 
 	return true;
+}
+
+void vtScene::Shutdown()
+{
+	osgDB::Registry::instance()->clearObjectCache();
 }
 
 void vtScene::DoUpdate()

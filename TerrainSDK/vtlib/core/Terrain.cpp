@@ -62,7 +62,6 @@ vtTerrain::vtTerrain()
 	m_pInputGrid = NULL;
 	m_pHeightField = NULL;
 	m_bPreserveInputGrid = false;
-	m_pImage = NULL;
 	m_pElevGrid = NULL;
 
 	m_pOceanGeom = NULL;
@@ -73,7 +72,6 @@ vtTerrain::vtTerrain()
 
 	m_bShowPOI = true;
 	m_pPOIGroup = NULL;
-	m_pLabelMats = NULL;
 
 	m_pPlantList = NULL;
 
@@ -114,45 +112,47 @@ vtTerrain::~vtTerrain()
 	{
 		delete m_pElevGrid;
 	}
-	delete m_pImage;
 	delete m_pDIB;
 	delete m_pRoadMap;
 	if (m_pRoadGroup)
 	{
 		m_pTerrainGroup->RemoveChild(m_pRoadGroup);
-		m_pRoadGroup->Destroy();
+		m_pRoadGroup->Release();
 	}
 	if (m_pOceanGeom)
 	{
 		m_pTerrainGroup->RemoveChild(m_pOceanGeom);
-		m_pOceanGeom->Destroy();
+		m_pOceanGeom->Release();
 	}
 	if (m_pStructGrid)
 	{
 		m_pTerrainGroup->RemoveChild(m_pStructGrid);
-		m_pStructGrid->Destroy();
+		m_pStructGrid->Release();
 	}
 	if (m_pVegGrid)
 	{
 		m_pTerrainGroup->RemoveChild(m_pVegGrid);
-		m_pVegGrid->Destroy();
+		m_pVegGrid->Release();
 	}
 //	delete m_pInputGrid;	// don't delete, copied to m_pElevGrid
 	if (m_pDynGeom)
 	{
 		m_pDynGeomScale->RemoveChild(m_pDynGeom);
-		m_pDynGeom->Destroy();
+		m_pDynGeom->Release();
 	}
 	if (m_pDynGeomScale)
 	{
 		m_pTerrainGroup->RemoveChild(m_pDynGeomScale);
-		m_pDynGeomScale->Destroy();
+		m_pDynGeomScale->Release();
 	}
 
 	delete m_pTin;
 
 	if (m_pTerrainGroup != (vtGroup*) NULL)
-		m_pTerrainGroup->Destroy();
+		m_pTerrainGroup->Release();
+
+	if (m_pTerrMats)
+		m_pTerrMats->Release();
 }
 
 
@@ -321,14 +321,15 @@ void vtTerrain::create_textures()
 		if (m_pDIB != NULL)
 		{
 			// single texture
-			m_pImage = new vtImage(m_pDIB,
+			vtImage *pImage = new vtImage(m_pDIB,
 				(m_pDIB->GetDepth() > 8 && m_Params.m_b16bit) ? GL_RGB5 : -1);
+			m_Images.Append(pImage);
 		}
 	}
 	if (eTex == TE_TILED && m_pDIB)
 	{
-		CreateChoppedTextures(m_pElevGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
-		_CreateTiledMaterials2(m_pTerrMats,
+		_CreateChoppedTextures(iTiles, m_Params.m_iTilesize);
+		_CreateTiledMaterials(m_pTerrMats,
 						 iTiles, m_Params.m_iTilesize, ambient, diffuse,
 						 emmisive);
 	}
@@ -350,7 +351,8 @@ void vtTerrain::create_textures()
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
-		m_pTerrMats->AddTextureMaterial(m_pImage,
+		vtImage *pImage = m_Images[0];
+		m_pTerrMats->AddTextureMaterial(pImage,
 			true,		// culling
 			!m_Params.m_bPreLit,	// lighting
 			false,		// transparent
@@ -362,6 +364,10 @@ void vtTerrain::create_textures()
 			false,		// clamp
 			m_Params.m_bMipmap);
 	}
+	// All texture images have now been passed to their materials, so don't hold on to them.
+	int i, num = m_Images.GetSize();
+	for (i = 0; i < num; i++)
+		m_Images[i]->Release();
 }
 
 
@@ -568,6 +574,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 	vtGeom *pGeom = new vtGeom();
 	pGeom->SetMaterials(pMat_Ocean);
+	pMat_Ocean->Release();
 
 	TerrainPatch *geo;
 	float width, depth;
@@ -1039,8 +1046,7 @@ void vtTerrain::_CreateLabels()
 	}
 	VTLOG("Read features from file '%s'\n", (const char *) labels_path);
 
-	PointStyle default_style;
-	CreateStyledFeatures(feat, "Fonts/Arial.ttf", default_style);
+	CreateStyledFeatures(feat, "Fonts/Arial.ttf", m_Params.m_Style);
 }
 
 void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontname,
@@ -1058,11 +1064,14 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		return;
 	}
 
-	if (!m_pLabelMats)
-		m_pLabelMats = new vtMaterialArray();
+	int features = feat.NumEntities();
+	if (features == 0)
+		return;
+
+	vtMaterialArray *pLabelMats = new vtMaterialArray();
 
 	// TODO: it would be smarter to share materials of the same color
-	int index = m_pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
+	int index = pLabelMats->AddRGBMaterial1(style.m_label_color, false, false);
 
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
@@ -1071,7 +1080,6 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 	else
 		VTLOG("Couldn't read font from file '%s'\n", fontname);
 
-	int features = feat.NumEntities();
 	DPoint3 p;
 	FPoint3 p3;
 	vtString str;
@@ -1090,7 +1098,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 
 		vtGeom *geom = new vtGeom();
 		geom->SetName2(str);
-		geom->SetMaterials(m_pLabelMats);
+		geom->SetMaterials(pLabelMats);
 		geom->AddTextMesh(text, index);
 
 		// TODO: add a billboarding transform so that the labels turn
@@ -1105,6 +1113,7 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 		pPlaceNames->AddChild(bb);
 	}
 	delete font;
+	pLabelMats->Release();
 
 	VTLOG("Created %d text labels\n", features);
 }
@@ -1468,11 +1477,10 @@ float vtTerrain::GetLODDistance(TFType ftype)
 	return 0.0f;
 }
 
-void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
-									  int patches, int patch_size)
+void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 {
 	int size = patch_size;
-	bool mono = (dib1->GetDepth() == 8);
+	bool mono = (m_pDIB->GetDepth() == 8);
 
 	int x_off, y_off, x, y, i, j;
 
@@ -1485,7 +1493,7 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 
 			// make a tile
 			vtDIB *dib2 = new vtDIB();
-			dib2->Create(size, size, dib1->GetDepth(), mono);
+			dib2->Create(size, size, m_pDIB->GetDepth(), mono);
 
 			unsigned long pixel;
 			if (mono)
@@ -1493,7 +1501,7 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 				for (x = 0; x < size; x++)
 					for (y = 0; y < size; y++)
 					{
-						pixel = dib1->GetPixel8(x_off + x, y_off + y);
+						pixel = m_pDIB->GetPixel8(x_off + x, y_off + y);
 						dib2->SetPixel8(x, y, pixel);
 					}
 			}
@@ -1502,7 +1510,7 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 				for (x = 0; x < size; x++)
 					for (y = 0; y < size; y++)
 					{
-						pixel = dib1->GetPixel24(x_off + x, y_off + y);
+						pixel = m_pDIB->GetPixel24(x_off + x, y_off + y);
 						dib2->SetPixel24(x, y, pixel);
 					}
 			}
@@ -1528,7 +1536,7 @@ void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 /*
  * Creates an array of materials for the dynamic LOD terrain geometry.
  */
-void vtTerrain::_CreateTiledMaterials2(vtMaterialArray *pMat1,
+void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive)
 {
@@ -1661,6 +1669,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	poi->m_pGeom->SetMaterials(pMat);
 	poi->m_pGeom->SetName2("POI Geom");
 	poi->m_pGeom->AddMesh(mesh, 0);
+	pMat->Release();
 
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
 }
