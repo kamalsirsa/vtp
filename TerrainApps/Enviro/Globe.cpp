@@ -380,6 +380,7 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 	size = points.GetSize();
 	spheres.SetSize(size);
 
+	int n = 0, s = 0;
 	for (i = 0; i < size; i++)
 	{
 		DPoint2 p = points[i];
@@ -388,6 +389,11 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 
 		FPoint3 loc;
 		geo_to_xyz(1.0, points[i], loc);
+
+		if (loc.y > 0)
+			n++;
+		else
+			s++;
 
 		spheres[i].center = loc;
 		spheres[i].radius = fSize;
