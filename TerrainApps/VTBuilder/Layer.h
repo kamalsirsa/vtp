@@ -16,6 +16,7 @@
 // Filename filter strings
 //
 #define FSTRING_BT		_T("BT Files (*.bt)|*.bt|")
+#define FSTRING_BTGZ	_T("Gzipped BT Files (*.bt.gz)|*.bt.gz|")
 #define FSTRING_RMF		_T("RMF Files (*.rmf)|*.rmf|")
 #define FSTRING_BCF		_T("BCF Files (*.bcf)|*.bcf|")
 #define FSTRING_TIN		_T("TIN Files (*.itf)|*.itf|")
@@ -117,10 +118,10 @@ public:
 
 	static wxChar *LayerTypeName[];
 	static wxChar *LayerFileExtension[];
-	bool AskForSaveFilename();
+	virtual bool AskForSaveFilename();
 
 protected:
-	wxString GetFileDialogFilter();
+	wxString GetSaveFileDialogFilter();
 	void SetMessageText(const wxString &msg);
 
 	wxString2	m_strFilename;

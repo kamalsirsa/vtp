@@ -148,7 +148,7 @@ void vtLayer::SetFilename(const wxString &fname)
 		GetMainFrame()->RefreshTreeStatus();
 }
 
-wxString vtLayer::GetFileDialogFilter()
+wxString vtLayer::GetSaveFileDialogFilter()
 {
 	wxString str;
 
@@ -166,8 +166,9 @@ wxString vtLayer::GetFileDialogFilter()
 
 bool vtLayer::AskForSaveFilename()
 {
-	wxString filter = GetFileDialogFilter();
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), _T(""), filter, wxSAVE);
+	wxString filter = GetSaveFileDialogFilter();
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), m_strFilename,
+		filter, wxSAVE | wxOVERWRITE_PROMPT);
 
 	VTLOG("Asking user for file name\n");
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
@@ -179,8 +180,7 @@ bool vtLayer::AskForSaveFilename()
 
 	// Add file extension if user didn't specify it
 	wxString2 ext = GetFileExtension();
-	if (name.Len() < ext.Len() ||
-		name.Right(ext.Len()) != ext)
+	if (name.Len() < ext.Len() || name.Right(ext.Len()) != ext)
 	{
 		name += ext;
 	}

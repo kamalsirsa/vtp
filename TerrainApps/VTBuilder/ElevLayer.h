@@ -52,6 +52,7 @@ public:
 	void SetProjection(const vtProjection &proj);
 	void GetPropertyText(wxString &str);
 	wxString GetFileExtension();
+	bool AskForSaveFilename();
 
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
@@ -102,6 +103,7 @@ protected:
 	bool	m_bBitmapRendered;
 	bool	m_bHasMask;
 	float	m_fSpacing;
+	bool	m_bPreferGZip;	// user wants their elevation treated as a .gz file
 
 	int m_iColumns, m_iRows;
 	int m_iImageWidth, m_iImageHeight;

@@ -149,7 +149,7 @@ vtElevLayer::~vtElevLayer()
 bool vtElevLayer::OnSave()
 {
 	if (m_pGrid)
-		return m_pGrid->SaveToBT(m_strFilename.mb_str());
+		return m_pGrid->SaveToBT(m_strFilename.mb_str(), NULL, m_bPreferGZip);
 	if (m_pTin)
 		return m_pTin->Write(m_strFilename.mb_str());
 	return false;
@@ -161,8 +161,12 @@ bool vtElevLayer::OnLoad()
 
 	bool success = false;
 
-	if (!m_strFilename.Right(3).CmpNoCase(_T(".bt")))
+	if (m_strFilename.Contains(_T(".bt")))
 	{
+		// remember whether this layer was read from a compressed file
+		if (!m_strFilename.Right(6).CmpNoCase(_T(".bt.gz")))
+			m_bPreferGZip = true;
+
 		m_pGrid = new vtElevationGrid();
 		success = m_pGrid->LoadFromBT(m_strFilename.mb_str(), progress_callback);
 		m_pGrid->GetDimensions(m_iColumns, m_iRows);
@@ -407,6 +411,7 @@ void vtElevLayer::SetupDefaults()
 	m_bHasImage = false;
 	m_bBitmapRendered = false;
 	m_strFilename = _T("Untitled");
+	m_bPreferGZip = false;
 
 	m_pBitmap = NULL;
 	m_pMask = NULL;
@@ -1101,6 +1106,64 @@ wxString vtElevLayer::GetFileExtension()
 	if (m_pTin)
 		return 	_T(".itf");
 	else
-		return 	_T(".bt");
+	{
+		if (m_bPreferGZip)
+			return 	_T(".bt.gz");
+		else
+			return 	_T(".bt");
+	}
 }
 
+//
+// Elevations are slightly more complicated than other layers, because there
+// are two formats allowed for saving.  This gets a bit messy, especially since
+// wxWindows does not support our double extension (.bt.gz) syntax.
+//
+bool vtElevLayer::AskForSaveFilename()
+{
+	wxString filter;
+
+	if (m_pTin)
+		filter = FSTRING_TIN;
+	else
+	{
+		filter = _T("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz|");
+//		AddType(filter, _T(""));
+	}
+
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), m_strFilename,
+		filter, wxSAVE | wxOVERWRITE_PROMPT);
+
+	if (m_pGrid && m_bPreferGZip)
+		saveFile.SetFilterIndex(1);
+	else
+		saveFile.SetFilterIndex(0);
+
+	VTLOG("Asking user for elevation file name\n");
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return false;
+
+	wxString2 name = saveFile.GetPath();
+	VTLOG("Got filename: '%s'\n", name.mb_str());
+
+	if (m_pGrid)
+	{
+		m_bPreferGZip = (saveFile.GetFilterIndex() == 1);
+
+		// work around incorrect extension(s) that wxFileDialog added
+		if (!name.Right(3).CmpNoCase(_T(".gz")))
+			name = name.Left(name.Len()-3);
+		if (!name.Right(3).CmpNoCase(_T(".bt")))
+			name = name.Left(name.Len()-3);
+
+		if (m_bPreferGZip)
+			name += _T(".bt.gz");
+		else
+			name += _T(".bt");
+	}
+
+	SetFilename(name);
+	m_bNative = true;
+	return true;
+}

@@ -880,6 +880,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	wxString filter = _T("Native Layer Formats||");
 
 	AddType(filter, FSTRING_BT);	// elevation
+	AddType(filter, FSTRING_BTGZ);	// compressed elevation
 	AddType(filter, FSTRING_TIN);	// elevation
 #ifndef ELEVATION_ONLY
 	AddType(filter, FSTRING_RMF);	// roads

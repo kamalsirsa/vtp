@@ -429,7 +429,8 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		if (pRL->Load(fname))
 			pLayer = pRL;
 	}
-	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase(_T("tin")) == 0)
+	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase(_T("tin")) == 0 ||
+		fname.Right(6).CmpNoCase(_T(".bt.gz")) == 0)
 	{
 		vtElevLayer *pEL = new vtElevLayer();
 		if (pEL->Load(fname))
@@ -1170,6 +1171,7 @@ void MainFrame::ExportElevation()
 
 	wxString filter = _T("All Files|*.*|");
 	AddType(filter, FSTRING_BT);
+	AddType(filter, FSTRING_BTGZ);
 
 	// ask the user for a filename
 	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
