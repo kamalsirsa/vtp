@@ -301,7 +301,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
 	ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
 	ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
-	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(nav_route), _("Follow Route"), true);
+	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(navroute), _("Follow Route"), true);
 	ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
