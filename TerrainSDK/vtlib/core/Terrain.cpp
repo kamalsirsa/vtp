@@ -827,7 +827,18 @@ void vtTerrain::create_culture(bool bSound)
 		if (success)
 		{
 			// Create the 3d plants
-			CreatePlantsFromPIA();
+			m_PIA.SetHeightField(m_pHeightField);
+			m_PIA.SetPlantList(m_pPlantList);
+			m_PIA.CreatePlantNodes();
+
+			int i, size = m_PIA.GetSize();
+			for (i = 0; i < size; i++)
+			{
+				vtTransform *pTrans = m_PIA.GetPlantNode(i);
+
+				// add tree to scene graph
+				AddNodeToLodGrid(pTrans);
+			}
 		}
 	}
 
@@ -1667,50 +1678,9 @@ void vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 	pi.size = fSize;
 
 	int num = m_PIA.Append(pi);
-	CreatePlantInstance(num);
+	m_PIA.CreatePlantNode(num);
 }
 
-void vtTerrain::CreatePlantsFromPIA()
-{
-	int size = m_PIA.GetSize();
-
-	for (int i = 0; i < size; i++)
-		CreatePlantInstance(i);
-}
-
-void vtTerrain::CreatePlantInstance(int i)
-{
-	if (!m_pPlantList)
-		return;
-
-	float size_variability = 0.3f;
-	FPoint3 p3;
-
-	vtPlantInstance pi = m_PIA.GetAt(i);
-
-	vtPlantSpecies3d *ps = m_pPlantList->GetSpecies(pi.species_id);
-	if (!ps)
-		return;
-
-	vtPlantAppearance3d *pApp = ps->GetAppearanceByHeight(pi.size);
-	if (!pApp)
-		return;
-
-	vtTransform *pTrans = pApp->GenerateGeom();
-	m_pHeightField->ConvertEarthToSurfacePoint(pi.m_p, p3);
-
-	pTrans->SetTrans(p3);
-#if 1
-	float random_scale = 1.0f + random_offset(size_variability);
-	pTrans->Scale3(random_scale, random_scale, random_scale);
-	float random_rotation = random(PI2f);
-	pTrans->RotateLocal(FPoint3(0,1,0), random_rotation);
-#endif
-	// add tree to scene graph
-	AddNodeToLodGrid(pTrans);
-
-	m_PlantGeoms.SetAt(i, pTrans);
-}
 
 /**
  * Adds a node to the terrain.

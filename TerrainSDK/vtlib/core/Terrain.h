@@ -130,11 +130,9 @@ public:
 	// plants
 	void AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
 	void SetPlantList(vtPlantList3d *pPlantList) { m_pPlantList = pPlantList; }
-	void CreatePlantsFromPIA();
-	void CreatePlantInstance(int i);
-	vtPlantInstanceArray	m_PIA;
+	vtPlantInstanceArray3d &GetPlantInstances() { return m_PIA; }
 
-	// buildings
+	// structures
 	vtStructureArray3d &GetStructures() { return m_Structures; }
 
 	// overridable by subclasses to extend culture
@@ -250,9 +248,9 @@ protected:
 	vtRoadMap3d		*m_pRoadMap;
 
 	// plants
+	vtPlantInstanceArray3d	m_PIA;
 	vtGroup				*m_pTreeGroup;
 	vtPlantList3d		*m_pPlantList;
-	Array<vtTransform*>	m_PlantGeoms;
 
 	// routes
 	Array<vtRoute *>	m_pRoutes;
