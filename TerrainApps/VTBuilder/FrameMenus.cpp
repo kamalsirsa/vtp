@@ -728,7 +728,7 @@ void MainFrame::OnLayerSave(wxCommandEvent &event)
 void MainFrame::OnUpdateLayerSave(wxUpdateUIEvent& event)
 {
 	vtLayer *lp = GetActiveLayer();
-	event.Enable(lp != NULL && lp->GetModified());
+	event.Enable(lp != NULL && lp->GetModified() && lp->CanBeSaved());
 }
 
 void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
@@ -757,7 +757,8 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 
 void MainFrame::OnUpdateLayerSaveAs(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveLayer() != NULL);
+	vtLayer *lp = GetActiveLayer();
+	event.Enable(lp != NULL && lp->CanBeSaved());
 }
 
 void MainFrame::OnUpdateLayerProperties(wxUpdateUIEvent& event)

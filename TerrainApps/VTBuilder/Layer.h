@@ -1,7 +1,7 @@
 //
 // Layer.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -101,6 +101,7 @@ public:
 	// these may be optionally implemented
 	virtual void GetPropertyText(wxString &str) {}
 	virtual char *GetFileExtension();
+	virtual bool CanBeSaved() { return true; }
 
 	// UI event handlers which can be implemented if desired
 	virtual void OnLeftDown(BuilderView *pView, UIContext &ui) {}

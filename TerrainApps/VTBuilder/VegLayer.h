@@ -41,6 +41,7 @@ public:
 	void SetProjection(const vtProjection &proj);
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
+	bool CanBeSaved();
 
 	// Importing data into veglayer
 	VegLayerType m_VLType;

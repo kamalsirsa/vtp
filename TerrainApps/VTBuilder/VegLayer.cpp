@@ -190,6 +190,13 @@ void vtVegLayer::GetPropertyText(wxString &str)
 	}
 }
 
+bool vtVegLayer::CanBeSaved()
+{
+	if (m_VLType == VLT_Instances)
+		return true;
+	else
+		return false;
+}
 
 bool vtVegLayer::OnSave()
 {
