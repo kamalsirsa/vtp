@@ -110,6 +110,65 @@ int ColorMap::Num() const
 	return m_elev.size();
 }
 
+void ColorMap::GenerateColors(std::vector<RGBi> &table, int iTableSize,
+							  float fMin, float fMax) const
+{
+	float fRange = fMax - fMin;
+	float elev = fMin, step = fRange/iTableSize;
+
+	int current = 0;
+	int num = Num();
+	RGBi c1, c2;
+	float base, next, bracket_size, fraction;
+
+	if (m_bRelative == true)
+	{
+		bracket_size = fRange / (num - 1);
+		current = -1;
+	}
+
+	RGBi c3;
+	for (int i = 0; i < iTableSize; i++)
+	{
+		if (m_bRelative)
+		{
+			// use regular divisions
+			int bracket = (int) ((elev-fMin) / fRange * (num-1));
+			if (bracket != current)
+			{
+				current = bracket;
+				base = fMin + bracket * bracket_size;
+				c1 = m_color[current];
+				c2 = m_color[current+1];
+			}
+		}
+		else
+		{
+			// use absolute elevations
+			while (current < num-1 && elev >= m_elev[current+1])
+			{
+				current++;
+				c1 = m_color[current];
+				c2 = m_color[current+1];
+				base = m_elev[current];
+				next = m_elev[current+1];
+				bracket_size = next - base;
+			}
+		}
+		if (m_bBlend)
+		{
+			fraction = (elev - base) / bracket_size;
+			c3 = c1 * (1-fraction) + c2 * fraction;
+		}
+		else
+			c3 = c1;
+		table.push_back(c3);
+		elev += step;
+	}
+
+	// Add one to catch top data
+	table.push_back(table[iTableSize-1]);
+}
 
 /////////////////////
 
@@ -421,8 +480,8 @@ bool vtHeightFieldGrid3d::LineOfSight(const FPoint3 &point1,
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
  */
-void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMap *cmap,
-	void progress_callback(int))
+void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM,
+	const ColorMap *cmap, void progress_callback(int))
 {
 	ColorMap defaults;
 	if (!cmap)
@@ -454,61 +513,11 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	//  a color lookup table once - should be faster in nearly all cases.
 	std::vector<RGBi> table;
 	const int TABLE_SIZE = 2000;
-	float elev = fMin, step = fRange/TABLE_SIZE;
-	int current = 0;
-	int num = cmap->Num();
-	RGBi c1, c2;
-	float base, next, bracket_size, fraction;
-
-	if (cmap->m_bRelative == true)
-	{
-		bracket_size = fRange / (num - 1);
-		current = -1;
-	}
-
-	RGBi c3;
-	for (i = 0; i < TABLE_SIZE; i++)
-	{
-		if (cmap->m_bRelative)
-		{
-			// use regular divisions
-			int bracket = (int) ((elev-fMin) / fRange * (num-1));
-			if (bracket != current)
-			{
-				current = bracket;
-				base = fMin + bracket * bracket_size;
-				c1 = cmap->m_color[current];
-				c2 = cmap->m_color[current+1];
-			}
-		}
-		else
-		{
-			// use absolute elevations
-			while (current < num-1 && elev >= cmap->m_elev[current+1])
-			{
-				current++;
-				c1 = cmap->m_color[current];
-				c2 = cmap->m_color[current+1];
-				base = cmap->m_elev[current];
-				next = cmap->m_elev[current+1];
-				bracket_size = next - base;
-			}
-		}
-		if (cmap->m_bBlend)
-		{
-			fraction = (elev - base) / bracket_size;
-			c3 = c1 * (1-fraction) + c2 * fraction;
-		}
-		else
-			c3 = c1;
-		table.push_back(c3);
-		elev += step;
-	}
-
-	// Add one to catch top data
-	table.push_back(table[TABLE_SIZE-1]);
+	cmap->GenerateColors(table, TABLE_SIZE, fMin, fMax);
 
 	// now iterate over the texels
+	float elev;
+	RGBi c3;
 	for (i = 0; i < w; i++)
 	{
 		if (progress_callback != NULL)

@@ -21,6 +21,7 @@ public:
 	void Add(float elev, const RGBi &color);
 	void RemoveAt(int num);
 	int Num() const;
+	void GenerateColors(std::vector<RGBi> &table, int iTableSize, float fMin, float fMax) const;
 
 	bool m_bBlend;
 	bool m_bRelative;
