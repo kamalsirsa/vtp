@@ -220,9 +220,20 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
  */
-void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, RGBi color_ocean,
-	bool bZeroIsOcean, void progress_callback(int))
+void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, Array<RGBi> *brackets,
+	RGBi color_ocean, bool bZeroIsOcean, void progress_callback(int))
 {
+	Array<RGBi> defaults;
+	defaults.Append(RGBi(0x50, 0xFF, 0x50));	// greenish
+	defaults.Append(RGBi(0xFF, 0xFF, 0xAA));	// tanish
+
+	Array<RGBi> *colors1;
+	if (brackets)
+		colors1 = brackets;
+	else
+		colors1 = &defaults;
+	Array<RGBi> &colors = *colors1;
+
 	int w = pBM->GetWidth();
 	int h = pBM->GetHeight();
 
@@ -232,10 +243,6 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, RGBi color_oc
 	float fMin, fMax;
 	GetHeightExtents(fMin, fMax);
 
-	Array<RGBi> colors;
-	colors.Append(RGBi(75, 155, 75));
-	colors.Append(RGBi(180, 160, 120));
-	colors.Append(RGBi(128, 128, 128));
 	int bracket, num = colors.GetSize();
 	float bracket_size = (fMax - fMin) / (num - 1);
 
