@@ -633,6 +633,7 @@ void EpochEngine::Eval()
 		}
 	}
 
+#if 0
 	// update the displayed year
 	if (m_iShownYear != m_iYear)
 	{
@@ -644,6 +645,7 @@ void EpochEngine::Eval()
 			str.Format("%d BC", -m_iShownYear);
 		m_pSprite->SetText(str);
 	}
+#endif
 }
 
 
