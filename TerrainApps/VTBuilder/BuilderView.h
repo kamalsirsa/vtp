@@ -111,6 +111,7 @@ public:
 
 	// UTM zone boundary display
 	void DrawUTMBounds(wxDC *pDC);
+	void DrawDymaxionOutline(wxDC *pDC);
 
 	// World Map
 	void SetWMProj(const vtProjection &p);

@@ -111,6 +111,14 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	vtLayerPtr lp;
 	int i, iLayers = pFrame->NumLayers();
 
+	// Draw 'interrupted projection outline' for current projection
+	vtProjection proj;
+	GetMainFrame()->GetProjection(proj);
+	if (proj.IsDymaxion())
+	{
+		DrawDymaxionOutline(&dc);
+	}
+
 	// Draw the world map SHP file of country outline polys in latlon
 	if (m_bShowMap)
 		DrawWorldMap(&dc, this);
@@ -140,6 +148,10 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 		DrawUTMBounds(&dc);
 
 	DrawArea(&dc);
+}
+
+void BuilderView::DrawDymaxionOutline(wxDC *pDC)
+{
 }
 
 void BuilderView::GetMouseLocation(DPoint2 &p)
@@ -227,7 +239,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 		vtProjection geo;
 		CreateSimilarGeographicProjection(proj, geo);
 
-		OCT *trans = OGRCreateCoordinateTransformation(&proj, &geo);
+		OCT *trans = CreateCoordTransform(&proj, &geo);
 
 		// try to speed up a bit by avoiding zones off the screen
 		object(wxPoint(0, height/2), proj_point);
@@ -244,7 +256,7 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 
 		// Now convert the longitude lines (boundaries between the UTM zones)
 		// to the current projection
-		trans = OGRCreateCoordinateTransformation(&geo, &proj);
+		trans = CreateCoordTransform(&geo, &proj);
 
 		for (zone = zone_start; zone < zone_end; zone++)
 		{
@@ -395,8 +407,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 
 	CPLPushErrorHandler(myErrorHandler);
 	// Create conversion object
-	OCT *trans = OGRCreateCoordinateTransformation(
-		(OGRSpatialReference *)&Source, (OGRSpatialReference *)&proj);
+	OCT *trans = CreateCoordTransform(&Source, &proj);
 	CPLPopErrorHandler();
 
 	if (!trans)
