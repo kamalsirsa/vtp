@@ -407,6 +407,9 @@ float vtCamera::GetYon()
 	return m_pOsgCamera->zFar();
 }
 
+/**
+ * Set the camera's horizontal field of view (FOV) in radians.
+ */
 void vtCamera::SetFOV(float fov_x)
 {
 	float aspect = m_pOsgCamera->calc_aspectRatio();
@@ -421,6 +424,9 @@ void vtCamera::SetFOV(float fov_x)
 		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 }
 
+/**
+ * Return the camera's horizontal field of view (FOV) in radians.
+ */
 float vtCamera::GetFOV()
 {
 	float fov_x = m_pOsgCamera->calc_fovx();
