@@ -299,10 +299,13 @@ void vtTerrain::create_textures()
 
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)
 	{
-		// single texture
-		m_pDIB->LeaveInternalDIB(true);
-		m_pImage = new vtImage(m_pDIB,
-			(m_pDIB->GetDepth() > 8 && m_Params.m_b16bit) ? GL_RGB5 : -1);
+		if (m_pDIB != NULL)
+		{
+			// single texture
+			m_pDIB->LeaveInternalDIB(true);
+			m_pImage = new vtImage(m_pDIB,
+				(m_pDIB->GetDepth() > 8 && m_Params.m_b16bit) ? GL_RGB5 : -1);
+		}
 	}
 	if (eTex == TE_TILED && m_pDIB)
 	{
@@ -327,6 +330,7 @@ void vtTerrain::create_textures()
 		m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
 									 true, !m_Params.m_bPreLit);
+		return;
 	}
 	// We're not going to use it anymore, so we're done with the DIB
 	if (m_pDIB != NULL)
