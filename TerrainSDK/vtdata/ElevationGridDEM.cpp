@@ -346,7 +346,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	if (bGeographic)
 	{
 		// degrees
-		fRows = m_EarthExtents.Height() / dxdelta * 3600.0f;
+		fRows = m_EarthExtents.Height() / dydelta * 3600.0f;
 		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
 	}
 	else
