@@ -25,7 +25,7 @@ CStartupDlg g_StartDlg;
 void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
 	m_iLaunch = (opt.m_bEarthView ? 0 : 1);
-	m_strImage = opt.m_strImage;
+	m_strImage = opt.m_strEarthImage;
 	m_strTName = opt.m_strInitTerrain;
 	m_bFullscreen = opt.m_bFullscreen;
 	m_bHtmlpane = opt.m_bHtmlpane;
@@ -38,7 +38,7 @@ void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 void CStartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
 	opt.m_bEarthView = (m_iLaunch == 0);
-	opt.m_strImage = m_strImage;
+	opt.m_strEarthImage = m_strImage;
 	opt.m_strInitTerrain = m_strTName;
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
