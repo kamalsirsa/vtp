@@ -10,7 +10,7 @@
 
 #include <wx/dnd.h>			// for wxFileDropTarget
 #include <wx/splitter.h>	// for wxSplitterWindow
-#include "vtdata/Content.h"
+#include "vtlib/core/Content3d.h"
 #include "vtdata/FilePath.h"
 #include "vtui/wxString2.h"
 #include <map>
@@ -126,6 +126,7 @@ public:
 	void		UpdateScale(vtModel *model);
 	void		UpdateTransform(vtModel *model);
 	void		RefreshTreeItems();
+	void		SetItemName(vtItem *item, const vtString &name);
 
 	// Models
 	void		SetCurrentItemAndModel(vtItem *item, vtModel *model);
@@ -145,7 +146,7 @@ public:
 	void		DisplayCurrentItem();
 	void		ZoomToCurrentItem();
 
-	vtContentManager	m_Man;
+	vtContentManager3d	m_Man;
 	vtItem				*m_pCurrentItem;
 	vtModel				*m_pCurrentModel;
 	vtFont				*m_pFont;

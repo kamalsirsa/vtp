@@ -12,6 +12,8 @@
 #pragma warning( disable : 4786 ) 
 #endif
 
+#include "vtlib/vtlib.h"
+
 #include "App.h"
 #include "TreeView.h"
 #include "menu_id.h"
@@ -238,33 +240,34 @@ void MyTreeCtrl::OnEndDrag(wxTreeEvent& event)
 
 void MyTreeCtrl::OnBeginLabelEdit(wxTreeEvent& event)
 {
-#if 0
-	wxLogMessage("OnBeginLabelEdit");
+	VTLOG("OnBeginLabelEdit\n");
 
-	// for testing, prevent this items label editing
+	// If not an item prevent this items label editing
 	wxTreeItemId itemId = event.GetItem();
-	if ( IsTestItem(itemId) )
+	MyTreeItemData *data = (MyTreeItemData *)GetItemData(itemId);
+	if (data != NULL && data->m_pItem != NULL && data->m_pModel == NULL)
 	{
-		wxMessageBox("You can't edit this item.");
-
+		// allow edit
+	}
+	else
+	{
+		VTLOG("You can't edit this item.\n");
 		event.Veto();
 	}
-#endif
 }
 
 void MyTreeCtrl::OnEndLabelEdit(wxTreeEvent& event)
 {
-#if 0
-	wxLogMessage("OnEndLabelEdit");
+	VTLOG("OnEndLabelEdit\n");
 
-	// don't allow anything except letters in the labels
-	if ( !event.GetLabel().IsWord() )
+	wxString2 result = event.GetLabel();
+	wxTreeItemId itemId = event.GetItem();
+	MyTreeItemData *data = (MyTreeItemData *)GetItemData(itemId);
+	if (data != NULL && data->m_pItem != NULL)
 	{
-		wxMessageBox("The label should contain only letters.");
-
-		event.Veto();
+//		RefreshTreeStatus(frame);	// no need; tree already updated
+		GetMainFrame()->SetItemName(data->m_pItem, result.vt_str());
 	}
-#endif
 }
 
 void MyTreeCtrl::OnItemCollapsing(wxTreeEvent& event)

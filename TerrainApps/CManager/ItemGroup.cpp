@@ -34,7 +34,9 @@ void ItemGroup::CreateNodes()
 	m_pRulers = NULL;
 	m_pGroup = new vtGroup();
 	m_pLOD = new vtLOD();
+	m_pLOD->SetName2("LOD Container");
 	m_pTop = new vtGroup;
+	m_pLOD->SetName2("Individual Container");
 	m_pTop->SetName2("ItemGroupTop");
 	m_pTop->AddChild(m_pLOD);
 	m_pTop->AddChild(m_pGroup);
@@ -67,7 +69,9 @@ void ItemGroup::AttachModels(vtFont *font)
 
 	// re-attach
 	int i, num_models = m_pItem->NumModels();
-	FSphere sph(FPoint3(0,0,0), 1.0f);
+	FSphere sph(FPoint3(0,0,0), 0.001f);
+	FSphere largest_sph = sph;
+
 	for (i = 0; i < num_models; i++)
 	{
 		vtModel *mod = m_pItem->GetModel(i);
@@ -77,10 +81,13 @@ void ItemGroup::AttachModels(vtFont *font)
 			m_pGroup->AddChild(node);
 			m_pLOD->AddChild(node);
 			node->GetBoundSphere(sph);
+			if (sph.radius > largest_sph.radius)
+				largest_sph = sph;
 		}
 	}
-	UpdateCrosshair(sph);
-	UpdateRulers(font, sph);
+
+	UpdateCrosshair(largest_sph);
+	UpdateRulers(font, largest_sph);
 
 	// Update the item's approximate extents
 	FRECT ext;

@@ -809,6 +809,7 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 	// Wrap in a transform node so that we can scale/rotate the node
 	vtTransform *pTrans = new vtTransform();
+	pTrans->SetName2("Scaling Transform");
 	pTrans->AddChild(pNode);
 
 	// Add to map of model -> nodes
@@ -825,21 +826,17 @@ void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 	m_pModelDlg->Show(item != NULL && model != NULL);
 	m_pPropDlg->Show(item != NULL && model == NULL);
 
+	SetCurrentItem(item);
+	SetCurrentModel(model);
+
 	if (item != NULL && model == NULL)
 	{
-		SetCurrentItem(item);
-		SetCurrentModel(model);
 		DisplayCurrentItem();
 		m_splitter2->ReplaceWindow(m_splitter2->GetWindow2(), m_pPropDlg);
 		ZoomToCurrentItem();
 	}
 	else if (item != NULL && model != NULL)
-	{
-		SetCurrentItem(item);
-		SetCurrentModel(model);
-
 		m_splitter2->ReplaceWindow(m_splitter2->GetWindow2(), m_pModelDlg);
-	}
 	else
 		m_splitter2->ReplaceWindow(m_splitter2->GetWindow2(), m_blank);
 }
@@ -1013,6 +1010,13 @@ void vtFrame::RefreshTreeItems()
 {
 	m_pTree->RefreshTreeItems(this);
 }
+
+void vtFrame::SetItemName(vtItem *item, const vtString &name)
+{
+	item->m_name = name;
+	m_pPropDlg->SetCurrentItem(item);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 
