@@ -45,13 +45,14 @@ ContourConverter::~ContourConverter()
 	delete m_pGrid;
 }
 
-void ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color)
+void ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 {
 	// Make a note of this terrain and its attributes
 	m_pTerrain = pTerr;
 	m_pHF = pTerr->GetHeightFieldGrid3d();
 	m_ext = m_pHF->GetEarthExtents();
 	m_spacing = m_pHF->GetSpacing();
+	m_fHeight = fHeight;
 
 	// Create material and geometry to contain the vector geometry
 	vtMaterialArray *pMats = new vtMaterialArray();
@@ -139,7 +140,7 @@ void ContourConverter::Finish()
 void ContourConverter::Flush()
 {
 	if (m_line.GetSize() > 2)
-		m_pTerrain->AddSurfaceLineToMesh(m_pMesh, m_line, 10, false);
+		m_pTerrain->AddSurfaceLineToMesh(m_pMesh, m_line, m_fHeight, false);
 	m_line.Empty();
 }
 

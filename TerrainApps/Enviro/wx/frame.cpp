@@ -627,7 +627,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 #endif
 		{
 			ContourConverter cc;
-			cc.Setup(pTerr, RGBf(1,1,0));
+			cc.Setup(pTerr, RGBf(1,1,0), 10);
 			cc.GenerateContours(100);
 			cc.Finish();
 		}
