@@ -88,7 +88,7 @@ void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
 	// create fencepost block
 	vtMesh *pPostMesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
 
-	FPoint3 PostSizeScaled = m_PostSize * (WORLD_SCALE * m_fFenceScale);
+	FPoint3 PostSizeScaled = m_PostSize * m_fFenceScale;
 	pPostMesh->CreateOptimizedBlock(PostSizeScaled );
 
 	// scoot over and upwards to put it above ground
@@ -109,7 +109,7 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 
 	int numfencepts = m_pFencePts.GetSize();
 	float fCurrentSpacing = m_fSpacing * m_fFenceScale;
-	FPoint3 PostSizeScaled = m_PostSize * (WORLD_SCALE * m_fFenceScale);
+	FPoint3 PostSizeScaled = m_PostSize * m_fFenceScale;
 
 	// first determine where the fence posts go, for this whole array
 	// of fences
@@ -151,8 +151,8 @@ void vtFence3d::AddFenceMeshes(vtHeightField *pHeightField)
 		if (i > 0 && i < nposts-1)
 		{
 			// randomly offset by up to 4% of fence spacing, for "realism"
-			x += random_offset(0.04f * fCurrentSpacing * WORLD_SCALE);
-			z += random_offset(0.04f * fCurrentSpacing * WORLD_SCALE);
+			x += random_offset(0.04f * fCurrentSpacing);
+			z += random_offset(0.04f * fCurrentSpacing);
 		}
 
 		// plant the fencepost on the terrain

@@ -154,7 +154,7 @@ void VehicleType::SetModelLod(int lod, const char *filename, float fDistance)
 	m_strFilename[lod] = filename;
 	if (m_iLods <= lod)
 		m_iLods = lod+1;
-	m_fDistance.SetAt(lod, fDistance * WORLD_SCALE);
+	m_fDistance.SetAt(lod, fDistance);
 }
 
 void VehicleType::AttemptModelLoad()
@@ -196,7 +196,7 @@ Vehicle *VehicleType::CreateVehicle(RGBf &cColor, float fSize)
 	}
 	pNewVehicle->SetRanges(distances, m_iLods+1);
 
-	float scale = 0.01f * WORLD_SCALE;	// models are in cm
+	float scale = 0.01f;	// models are in cm
 	pNewVehicle->m_fSize = fSize * scale;
 	ConvertPurpleToColor(pNewVehicle, cColor);
 

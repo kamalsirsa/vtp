@@ -35,7 +35,7 @@ void TransitTerrain::CreateCustomCulture(bool bDoSound)
 	campus->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -PIf*63/180);
 
 	PlantModelAtPoint(campus, DPoint2(591849, 4138117));
-	campus->Translate2(FPoint3(0.0f, 2.0f*WORLD_SCALE, 0.0f));
+	campus->Translate2(FPoint3(0.0f, 2.0f, 0.0f));
 #endif
 }
 
@@ -44,7 +44,6 @@ vtGeom *TransitTerrain::MakeBlockGeom(FPoint3 size)
 	// create a Mesh
 	vtMesh *mesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
 
-	size *= WORLD_SCALE;		// convert meters -> scene
 	FPoint3 half = size / 2;	// Block() will double the size
 
 	mesh->CreateBlock(half);

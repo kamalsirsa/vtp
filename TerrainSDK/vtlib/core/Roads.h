@@ -145,7 +145,7 @@ public:
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetLodDistance(float fDistance) { m_fLodDistance = fDistance; }
-	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight * WORLD_SCALE; }
+	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }
 	void DetermineSurfaceAppearance();
 
 public:

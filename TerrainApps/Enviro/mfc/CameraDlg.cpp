@@ -102,12 +102,12 @@ void CCameraDlg::UpdateValues()
 
 void CCameraDlg::SetFlightspeed()
 {
-	g_App.SetFlightSpeed(m_fFlightSpeed * WORLD_SCALE);
+	g_App.SetFlightSpeed(m_fFlightSpeed);
 }
 
 void CCameraDlg::GetFlightspeed()
 {
-	m_fFlightSpeed = g_App.GetFlightSpeed() / WORLD_SCALE;
+	m_fFlightSpeed = g_App.GetFlightSpeed();
 }
 
 void CCameraDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) 

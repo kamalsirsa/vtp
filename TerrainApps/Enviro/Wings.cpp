@@ -68,7 +68,7 @@ FlyingCritterEngine::FlyingCritterEngine(Butterfly* critter, vtTerrain* terrain,
 	m_terrain = terrain;
 	m_num = 0;
 
-	m_fSpeed = (speed * WORLD_SCALE) * 1000/60/60; 
+	m_fSpeed = speed * 1000/60/60; 
 	m_vCenterPos = center;
 //	m_fCircleRadius = sqrt(pow(m_vCurPos.x - m_vCenterPos.x,2) + pow(m_vCurPos.z - m_vCenterPos.z,2));
 	m_fCircleRadius = radius;

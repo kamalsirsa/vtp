@@ -9,7 +9,7 @@
 //accelertion in meters per second^2 (for the car.)
 #define ACCELERATION 25
 
-#define ACCEL ACCELERATION*WORLD_SCALE*1000/60/60
+#define ACCEL (ACCELERATION*1000/60/60)
 
 //defined in ismapp.cc
 extern void ism_printf(char *format, ...);
@@ -69,7 +69,7 @@ CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed,
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
 	m_pCurNode = n;
-	m_fRoadHeight = roadheight*WORLD_SCALE;
+	m_fRoadHeight = roadheight;
 	m_vCurPos.x = ((NodeGeom*)n)->m_p3.x;
 	m_vCurPos.y = ((NodeGeom*)n)->m_p3.y + m_fRoadHeight;
 	m_vCurPos.z = ((NodeGeom*)n)->m_p3.z;
@@ -86,14 +86,14 @@ void CarEngine::SharedConstructor(FPoint3 pos, vtHeightField*  grid, float targe
 	m_pHeightField = grid;
 
 	//convert speed to units/second (from km/h)
-	m_fTargetSpeed = (target_speed * WORLD_SCALE) *1000/60/60;
+	m_fTargetSpeed = target_speed *1000/60/60;
 	m_fSpeed = 0;
 
 	m_fWheelSteerRotation = 0;
 	m_fCurRotation = PID2f;
 	m_fCurPitch = 0;
 	m_vAxis = XAXIS;
-	m_fWheelRadius = wRadius * WORLD_SCALE;
+	m_fWheelRadius = wRadius;
 
 	m_bFirstTime = true;
 
@@ -327,8 +327,6 @@ float CarEngine::SetOrientation()
 	}
 	*/
 	return (fM.y+rM.y)/2;
-	//return m_vCurPos.y + (6.0f * WORLD_SCALE);
-
 }
 
 // assume that the car is ALWAYS going forward.
@@ -808,7 +806,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 
 	//if we're getting close, look at the next point to reach.
 	float threshold;
-	threshold = 2.5f*WORLD_SCALE;
+	threshold = 2.5f;
 
 	//ism_printf("%f", m_fRDistance);
 	if (dist < threshold || (dist > 1.125f*m_fRDistance  && m_fRDistance >=0)) {
@@ -865,8 +863,8 @@ void CarEngine::TurnToward(FPoint3 target, float time) {
 
 	/* can't navigate some of the turns with this limit.
 	//15000/60/60 = 4.167
-	if (speed > 12.0f * WORLD_SCALE) {
-		speed = 12.0f * WORLD_SCALE;
+	if (speed > 12.0f) {
+		speed = 12.0f;
 	}
 	*/
 	float angleRange = 10.0f*PIf*time*speed;
@@ -875,10 +873,10 @@ void CarEngine::TurnToward(FPoint3 target, float time) {
 
 	if (diff > angleRange) {
 		newangle = m_fCurRotation + angleRange;
-		m_fSpeed -= ACCEL * time * WORLD_SCALE;
+		m_fSpeed -= ACCEL * time;
 	} else if (diff < -angleRange) {
 		newangle = m_fCurRotation - angleRange;
-		m_fSpeed -= ACCEL * time * WORLD_SCALE;
+		m_fSpeed -= ACCEL * time;
 	}
 
 	newangle = angleNormal(newangle);
@@ -994,7 +992,7 @@ void CarEngine::AdjustSpeed(float fDeltaTime) {
 	}
 	//don't actually stop completely.
 	if (m_fSpeed < 0) {
-		m_fSpeed = .1f*WORLD_SCALE*1000/60/60;
+		m_fSpeed = .1f*1000/60/60;
 	}
 }
 

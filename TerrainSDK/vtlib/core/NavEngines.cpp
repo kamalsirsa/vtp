@@ -9,7 +9,7 @@
 #include "vtlib/core/vtTin3d.h"
 #include "NavEngines.h"
 
-#define GRAVITY_CONSTANT 9.81*WORLD_SCALE  //g = 9.81 meters/sec^2
+#define GRAVITY_CONSTANT 9.81	// g = 9.81 meters/sec^2
 
 //
 // vtFlyer: basic class, moves target based on mouse position
@@ -211,14 +211,14 @@ void vtTinFlyer::Eval()
 
 	if (m_pTin)
 	{
-		float mini = (m_pTin->m_fMinHeight - 4.5)*WORLD_SCALE;
-		float maxi = (m_pTin->m_fMaxHeight + 100)*WORLD_SCALE;
+		float mini = (m_pTin->m_fMinHeight - 4.5);
+		float maxi = (m_pTin->m_fMaxHeight + 100);
 		if (maintain_y < mini) maintain_y = mini;
 		if (maintain_y > maxi) maintain_y = maxi;
 
 		FPoint3 vec = m_pTin->FindVectorToClosestVertex(pos);
 		float horiz_dist = sqrt(vec.x*vec.x + vec.z*vec.z);
-		if (horiz_dist > (100.0f * WORLD_SCALE))
+		if (horiz_dist > 100.0f)
 		{
 			vec *= 0.05f;
 			pos += vec;

@@ -77,9 +77,9 @@ void CameraDlg::GetValues()
 {
 	vtCamera *pCam = vtGetScene()->GetCamera();
 	m_fFov = pCam->GetFOV() * 180.0f / PIf;
-	m_fNear = pCam->GetHither() / WORLD_SCALE;
-	m_fFar = pCam->GetYon() / WORLD_SCALE;
-	m_fSpeed = g_App.GetFlightSpeed() / WORLD_SCALE;
+	m_fNear = pCam->GetHither();
+	m_fFar = pCam->GetYon();
+	m_fSpeed = g_App.GetFlightSpeed();
 }
 
 void CameraDlg::SetValues()
@@ -88,9 +88,9 @@ void CameraDlg::SetValues()
 	{
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		pCam->SetFOV(m_fFov / 180.0f * PIf);
-		pCam->SetHither(m_fNear * WORLD_SCALE);
-		pCam->SetYon(m_fFar * WORLD_SCALE);
-		g_App.SetFlightSpeed(m_fSpeed * WORLD_SCALE);
+		pCam->SetHither(m_fNear);
+		pCam->SetYon(m_fFar);
+		g_App.SetFlightSpeed(m_fSpeed);
 	}
 }
 

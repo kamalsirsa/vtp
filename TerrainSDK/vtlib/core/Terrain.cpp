@@ -359,7 +359,7 @@ bool  vtTerrain::create_regular_terrain(float fOceanDepth)
 							m_Params.m_iSubsample, m_Params.m_iSubsample,
 							LARGEST_BLOCK_SIZE,	texture_patches,
 							m_Params.m_bSuppressLand,
-							fOceanDepth * WORLD_SCALE, bLighting);
+							fOceanDepth, bLighting);
 
 	switch (m_Params.m_eTexture)
 	{
@@ -447,7 +447,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		texture_patches, m_Params.m_iTilesize);
 
 	bool result = m_pDynGeom->Init(m_pLocalGrid,
-				   WORLD_SCALE * m_Params.m_fVerticalExag, fOceanDepth, iError);
+				   m_Params.m_fVerticalExag, fOceanDepth, iError);
 	if (result == false)
 	{
 		m_pDynGeom = NULL;
@@ -462,7 +462,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	vtTransform *trans = new vtTransform();
 
 	DPoint2 spacing = m_pLocalGrid->GetWorldSpacing();
-	trans->Scale3(spacing.x, WORLD_SCALE * m_Params.m_fVerticalExag, -spacing.y);
+	trans->Scale3(spacing.x, m_Params.m_fVerticalExag, -spacing.y);
 
 	trans->AddChild(m_pDynGeom);
 	m_pTerrainGroup->AddChild(trans);
@@ -615,8 +615,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 
 	// fudge ocean downward, to reduce z-buffer collision with near-sea-level
 	// areas of land near the ocean
-	float level = m_Params.m_fOceanPlaneLevel * WORLD_SCALE;
-	m_pOceanGeom->Translate1(FPoint3(0.0f, level, 0.0f));
+	m_pOceanGeom->Translate1(FPoint3(0.0f, m_Params.m_fOceanPlaneLevel, 0.0f));
 
 	m_pTerrainGroup->AddChild(m_pOceanGeom);
 }
@@ -693,16 +692,17 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
  * <b>PlantModel</b> or <b>PlantModelAtPoint</b>.
  *
  * You should also make sure that your model is displayed at the correct
- * scale.  If the units are of the model are meters, you should scale by
- * <b>WORLD_SCALE</b> to that it matches the units of the Terrain:
+ * scale.  If the units are of the model are not meters, you should scale
+ * the correct factor so that it matches the units of the Terrain:
  *
  * \par Example:
 	\code
 MyTerrain::CreateCustomCulture(bool bSound)
 {
+	// model is in centimeters (cm)
 	vtTransform *pFountain = LoadModel("Culture/fountain.3ds");
 
-	pFountain->Scale3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
+	pFountain->Scale3(.01f, .01f, .01f);
 
 	PlantModelAtPoint(pFountain, DPoint2(217690, 4123475));
 	AddModel(pFountain);
@@ -870,7 +870,7 @@ void vtTerrain::setup_LodGrid(float fLODDistance)
 	FPoint3 org(world_extents.left, 0.0f, world_extents.bottom);
 	FPoint3 size(world_extents.right, 0.0f, world_extents.top);
 
-	m_pLodGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance * WORLD_SCALE, m_pHeightField);
+	m_pLodGrid = new vtLodGrid(org, size, LOD_GRIDSIZE, fLODDistance, m_pHeightField);
 	m_pLodGrid->SetName2("LOD Grid");
 	m_pTerrainGroup->AddChild(m_pLodGrid);
 	m_pTreeGroup = m_pLodGrid;
@@ -926,13 +926,13 @@ void vtTerrain::create_floating_labels(const char *filename)
 
 		bb->AddChild(geom);
 
-		float width = 250.0f * WORLD_SCALE;
-		float height = 250.0f * WORLD_SCALE;
+		float width = 250.0f;
+		float height = 250.0f;
 //		float scale_x = width;
 		bb->Scale3(width/20, height/20, 1.0f);
 
 		m_pHeightField->ConvertEarthToSurfacePoint(utm_x, utm_y, p3);
-		p3.y += ((200.0f + meter_height) * WORLD_SCALE);
+		p3.y += (200.0f + meter_height);
 		bb->SetTrans(p3);
 		pPlaceNames->AddChild(bb);
 	}
@@ -1560,28 +1560,28 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 	{
 		v.Set(v1.x + (v2.x - v1.x) / STEPS * i, 0.0f, v1.z + (v2.z - v1.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += (10.0f * WORLD_SCALE);
+		v.y += 10.0f;
 		pGeom->AddVertex(v);
 	}
 	for (i = 0; i < STEPS; i++)
 	{
 		v.Set(v2.x + (v3.x - v2.x) / STEPS * i, 0.0f, v2.z + (v3.z - v2.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += (10.0f * WORLD_SCALE);
+		v.y += 10.0f;
 		pGeom->AddVertex(v);
 	}
 	for (i = 0; i < STEPS; i++)
 	{
 		v.Set(v3.x + (v4.x - v3.x) / STEPS * i, 0.0f, v3.z + (v4.z - v3.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += (10.0f * WORLD_SCALE);
+		v.y += 10.0f;
 		pGeom->AddVertex(v);
 	}
 	for (i = 0; i < STEPS; i++)
 	{
 		v.Set(v4.x + (v1.x - v4.x) / STEPS * i, 0.0f, v4.z + (v1.z - v4.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
-		v.y += (10.0f * WORLD_SCALE);
+		v.y += 10.0f;
 		pGeom->AddVertex(v);
 	}
 

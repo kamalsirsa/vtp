@@ -335,7 +335,7 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 	stnew->m_pTower->SetName2(sname);
 
 	// scale to match world units
-	float sc = (float) (WORLD_SCALE*METERS_PER_FOOT);
+	float sc = (float) METERS_PER_FOOT;
 	stnew->m_pTower->Scale3(sc, sc, sc);
 
 	// rotate it until it's upright
@@ -379,13 +379,13 @@ bool vtRoute::_WireReader(const char *filename, vtUtilStruct *st)
 		fscanf(f, "%f", &a2);
 		fscanf(f, "%f", &a3);
 		fpTemp.Set(-a2, a3, a1);
-		fpTemp *= (WORLD_SCALE * METERS_PER_FOOT);
+		fpTemp *= METERS_PER_FOOT;
 		st->m_fpWireAtt1[icount] = fpTemp;
 		fscanf(f, "%f", &a1);
 		fscanf(f, "%f", &a2);
 		fscanf(f, "%f", &a3);
 		fpTemp.Set(-a2, a3, a1);
-		fpTemp *= (WORLD_SCALE * METERS_PER_FOOT);
+		fpTemp *= METERS_PER_FOOT;
 		st->m_fpWireAtt2[icount++] = fpTemp;
 	}
 
@@ -427,7 +427,7 @@ void vtRoute::_DrawCat(FPoint3 pt0, FPoint3 pt1, double catenary,
 
 		ptNew = pt0 + ptCur;
 		pHeightField->FindAltitudeAtPoint(ptNew, ground);
-		ground += (0.5 * WORLD_SCALE);
+		ground += 0.5;
 		if (ptNew.y < ground)
 			ptNew.y = ground;
 

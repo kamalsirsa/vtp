@@ -26,7 +26,7 @@ vtLocalConversion g_Conv;
 vtLocalConversion::vtLocalConversion()
 {
 	m_EarthOrigin.Set(0, 0);
-	m_fVerticalScale = WORLD_SCALE;
+	m_fVerticalScale = 1.0f;
 }
 
 void vtLocalConversion::Setup(LinearUnits units, const DRECT &earth_extents)
@@ -64,15 +64,15 @@ void vtLocalConversion::SetVerticalScale(float scale)
 void vtLocalConversion::convert_earth_to_local_xz(double ex, double ey,
 												  float &x, float &z)
 {
-	x = (float) ((ex - m_EarthOrigin.x) * m_scale.x * WORLD_SCALE);
-	z = (float) -((ey - m_EarthOrigin.y) * m_scale.y * WORLD_SCALE);
+	x = (float) ((ex - m_EarthOrigin.x) * m_scale.x);
+	z = (float) -((ey - m_EarthOrigin.y) * m_scale.y);
 }
 
 void vtLocalConversion::convert_local_xz_to_earth(float x, float z,
 												  double &ex, double &ey)
 {
-	ex = m_EarthOrigin.x + (x / m_scale.x / WORLD_SCALE);
-	ey = m_EarthOrigin.y + (-z / m_scale.y / WORLD_SCALE);
+	ex = m_EarthOrigin.x + (x / m_scale.x);
+	ey = m_EarthOrigin.y + (-z / m_scale.y);
 }
 
 //

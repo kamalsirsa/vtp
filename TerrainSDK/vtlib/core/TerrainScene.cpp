@@ -53,7 +53,7 @@ vtTerrainScene::vtTerrainScene()
 	horizon_color.Set(0.70f, 0.85f, 1.0f);
 	azimuth_color.Set(0.12f, 0.32f, 0.70f);
 
-	m_yondist = 1000.0f * WORLD_SCALE;
+	m_yondist = 1000.0f;
 
 	m_pSkyDome = NULL;
 	m_pFirstTerrain = NULL;
@@ -132,7 +132,7 @@ void vtTerrainScene::create_fog()
 
 	m_pFog = new vtFog();
 	m_pFog->SetStart(1.0f);  // only useful for linear - broken
-	m_pFog->SetEnd(dist * 1000.0f * WORLD_SCALE);
+	m_pFog->SetEnd(dist * 1000.0f);
 
 	// 1 / ( dist / slope + max )
 	// dist = visability distance
@@ -240,7 +240,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pSkyDome->SetEnabled(true);
 	FRECT world_ext = pTerrain->GetHeightField()->m_Conversion.m_WorldExtents;
 	float radius = world_ext.Width() * 5.0;
-	float max_radius = (450000 * WORLD_SCALE);
+	float max_radius = 450000;
 	if (radius > max_radius)
 		radius = max_radius;
 	m_pSkyDome->SetRadius(radius);
@@ -282,8 +282,7 @@ void vtTerrainScene::SetFog(bool fog)
 	{
 		vtGetScene()->SetFog(m_pFog);
 		vtGetScene()->SetBackColor(horizon_color);
-//		vtGetScene()->GetCamera()->GetYon(m_pFirstTerrain
-		vtGetScene()->GetCamera()->SetYon(m_pFirstTerrain->m_Params.m_iFogDistance	* 1000.0f * WORLD_SCALE);
+		vtGetScene()->GetCamera()->SetYon(m_pFirstTerrain->m_Params.m_iFogDistance	* 1000.0f);
 	}
 	else
 	{

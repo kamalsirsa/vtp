@@ -219,7 +219,7 @@ void vtBuilding3d::DetermineBaseCorners(vtHeightField *pHeightField,
 			lowest = i;
 		}
 	}
-	if ((ymax - ymin) > (1.0f * WORLD_SCALE))	// it's on a slope
+	if ((ymax - ymin) > 1.0f)	// it's on a slope
 	{
 		// do something about it - like deform the ground or build
 		//  some posts on which to set the building
@@ -338,7 +338,7 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 		}
 	}
 
-	float roof_height = (CEILING_HEIGHT * m_Story.GetSize()) * WORLD_SCALE;
+	float roof_height = CEILING_HEIGHT * m_Story.GetSize();
 
 	// create the roof
 	if (bDoRoof)
@@ -420,8 +420,8 @@ void vtBuilding3d::ShowBounds(bool bShow)
 void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 									  int iWall, bool details)
 {
-	float fFloor = (iStory * CEILING_HEIGHT) * WORLD_SCALE;
-	float fCeiling = ((iStory+1) * CEILING_HEIGHT) * WORLD_SCALE;
+	float fFloor = iStory * CEILING_HEIGHT;
+	float fCeiling = (iStory+1) * CEILING_HEIGHT;
 
 	int num_walls = m_Story[iStory]->m_Wall.GetSize();
 
@@ -467,8 +467,8 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 	// how wide should each wall section be?
 	// this is how much space we have for the walls after accounting for
 	// doors and windows
-	float sectionLength = dist - (numDoors * DOOR_WIDTH * WORLD_SCALE +
-								numWindows * WINDOW_WIDTH * WORLD_SCALE);
+	float sectionLength = dist - (numDoors * DOOR_WIDTH +
+								numWindows * WINDOW_WIDTH);
 
 	if (sectionLength < 0) {
 //		assert(false);  //uh oh!  our features are wider than the wall.
@@ -485,7 +485,7 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 	{
 		if (bMoulding) {
 			//account for moulding.
-			sectionLength -= MOULDING_WIDTH * 2.0f * WORLD_SCALE;
+			sectionLength -= MOULDING_WIDTH * 2.0f;
 			//now sectionLength equals length per wall panel
 			sectionLength = sectionLength/(totalfeatures+1);
 			totalsections = totalfeatures * 2 + 3;
@@ -511,8 +511,8 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 		//add moulding if necessary (only at beginning or end)
 		if (bMoulding && (i == 0 || i == totalsections - 1))
 		{
-			point[1] = point[0] + direction*MOULDING_WIDTH*WORLD_SCALE;
-			AddWallSection(BM_TRIM, point[0], point[1], CEILING_HEIGHT * WORLD_SCALE, 0);
+			point[1] = point[0] + direction*MOULDING_WIDTH;
+			AddWallSection(BM_TRIM, point[0], point[1], CEILING_HEIGHT, 0);
 			continue;
 		}
 
@@ -521,7 +521,7 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 			(i%2 == 1 && bMoulding))
 		{
 			point[1] = point[0] + direction*sectionLength;
-			AddWallSection(BM_WALL, point[0], point[1], CEILING_HEIGHT * WORLD_SCALE, 0);
+			AddWallSection(BM_WALL, point[0], point[1], CEILING_HEIGHT, 0);
 		}
 		else
 		{
@@ -541,14 +541,14 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, int iStory,
 
 			if (makedoor)
 			{
-				point[1] = point[0] + direction*DOOR_WIDTH*WORLD_SCALE;
-				AddDoorSection(point[0], point[1], CEILING_HEIGHT * WORLD_SCALE);
+				point[1] = point[0] + direction*DOOR_WIDTH;
+				AddDoorSection(point[0], point[1], CEILING_HEIGHT);
 				doorcount++;
 				//made a door.  door should not be next
 				door = false;
 			} else {
-				point[1] = point[0] + direction*WINDOW_WIDTH*WORLD_SCALE;
-				AddWindowSection(point[0], point[1], CEILING_HEIGHT * WORLD_SCALE);
+				point[1] = point[0] + direction*WINDOW_WIDTH;
+				AddWindowSection(point[0], point[1], CEILING_HEIGHT);
 				windowcount++;
 				//made a window.  door should be next
 				door = true;
@@ -573,9 +573,9 @@ void vtBuilding3d::AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1, flo
 	FPoint3 norm = Normal(p0,p1,p2);
 
 	//make the texture map look right.  adjust it so it matches other walls.
-	base_height = (CEILING_HEIGHT*WORLD_SCALE) - (base_height + height);
-	float f1 = base_height/(CEILING_HEIGHT * WORLD_SCALE);
-	float f2 = (base_height + height)/(CEILING_HEIGHT * WORLD_SCALE);
+	base_height = CEILING_HEIGHT - (base_height + height);
+	float f1 = base_height / CEILING_HEIGHT;
+	float f2 = (base_height + height) / CEILING_HEIGHT;
 
 	int start =
 	m_pMesh[bm]->AddVertexNUV(p0, norm, FPoint2(1.0f, f2));
@@ -594,8 +594,8 @@ void vtBuilding3d::AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height)
 {
 	// determine 2 points at top of wall
 	FPoint3 p2 = p1, p3 = p0;
-	p2.y += DOOR_HEIGHT * WORLD_SCALE;
-	p3.y += DOOR_HEIGHT * WORLD_SCALE;
+	p2.y += DOOR_HEIGHT;
+	p3.y += DOOR_HEIGHT;
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -609,20 +609,20 @@ void vtBuilding3d::AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height)
 	m_pMesh[BM_DOOR]->AddFan(start, start+1, start+2, start+3);
 
 	//add wall above door
-	AddWallSection(BM_WALL, p3, p2, (CEILING_HEIGHT - DOOR_HEIGHT)*WORLD_SCALE, DOOR_HEIGHT);
+	AddWallSection(BM_WALL, p3, p2, CEILING_HEIGHT - DOOR_HEIGHT, DOOR_HEIGHT);
 }
 
 //builds a window section.  builds the wall below and above a window too.
 void vtBuilding3d::AddWindowSection(FPoint3 p0, FPoint3 p1, float height)
 {
 	// build wall to base of window.
-	AddWallSection(BM_WALL, p0, p1, WINDOW_BOTTOM*WORLD_SCALE, 0);
+	AddWallSection(BM_WALL, p0, p1, WINDOW_BOTTOM, 0);
 	// determine 2 points at top of wall
-	p0.y += WINDOW_BOTTOM*WORLD_SCALE;
-	p1.y += WINDOW_BOTTOM*WORLD_SCALE;
+	p0.y += WINDOW_BOTTOM;
+	p1.y += WINDOW_BOTTOM;
 	FPoint3 p2 = p1, p3 = p0;
-	p2.y += WINDOW_HEIGHT*WORLD_SCALE;
-	p3.y += WINDOW_HEIGHT*WORLD_SCALE;
+	p2.y += WINDOW_HEIGHT;
+	p3.y += WINDOW_HEIGHT;
 
 	// determine normal (flat shading, all vertices have the same normal)
 	FPoint3 norm = Normal(p0,p1,p2);
@@ -636,7 +636,9 @@ void vtBuilding3d::AddWindowSection(FPoint3 p0, FPoint3 p1, float height)
 	m_pMesh[BM_WINDOW]->AddFan(start, start+1, start+2, start+3);
 
 	// build wall above window
-	AddWallSection(BM_WALL, p3, p2, (CEILING_HEIGHT - WINDOW_HEIGHT - WINDOW_BOTTOM)*WORLD_SCALE, (WINDOW_HEIGHT + WINDOW_BOTTOM)*WORLD_SCALE);
+	AddWallSection(BM_WALL, p3, p2,
+		(CEILING_HEIGHT - WINDOW_HEIGHT - WINDOW_BOTTOM),
+		(WINDOW_HEIGHT + WINDOW_BOTTOM));
 }
 
 
@@ -819,7 +821,7 @@ void vtBuilding3d::AddHipRoof(Array<FPoint3> &pp, float height)
 
 #if 1
 			//adjust points for roof overhang
-			adjust = .6f*WORLD_SCALE;
+			adjust = .6f;
 			FPoint3 offset;
 
 			offset = - (short_edge * adjust) - (long_edge * adjust);
@@ -877,7 +879,7 @@ void vtBuilding3d::AddGableRoof(Array<FPoint3> &pp, float height)
 	switch (m_BldShape) {
 	case SHAPE_RECTANGLE:
 		{
-			roofheight = m_fWidth*WORLD_SCALE/4;
+			roofheight = m_fWidth/4;
 			//the longer side is 0->1, 2->3
 			//the shorter side is 0->3, 1->2
 			//add top points of roof.
@@ -915,7 +917,7 @@ void vtBuilding3d::AddGableRoof(Array<FPoint3> &pp, float height)
 #if 1
 			//adjust points for roof overhang
 			//add to right;
-			adjust = .6f*WORLD_SCALE;
+			adjust = .6f;
 			v[top_right] += (axis1 * adjust);
 			v[bottom_right] += (axis1 * adjust);
 			//subtract from left;

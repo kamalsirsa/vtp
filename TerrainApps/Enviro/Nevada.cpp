@@ -50,9 +50,9 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 {
 	m_pHeightField->ConvertEarthToSurfacePoint(MAN_LONLAT, man_location);
 
-	m_fGround = 1200 * m_Params.m_fVerticalExag * WORLD_SCALE;
-	m_fHigh = m_fGround + (50 * WORLD_SCALE);
-	m_fLow = m_fGround - (50 * WORLD_SCALE);
+	m_fGround = 1200 * m_Params.m_fVerticalExag;
+	m_fHigh = m_fGround + (50);
+	m_fLow = m_fGround - (50);
 
 	if (m_Params.m_bDetailTexture)
 		CreateDetailTextures();
@@ -88,7 +88,6 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 	vtTransform *dome = LoadModel("Nevada/bluedometent.dsm");
 	if (dome)
 	{
-		dome->Scale2(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
 		m_Future.AddChild(dome);
 		PlantModelAtPoint(dome, DPoint2(MAN_LONLAT), true);
 	}
@@ -176,8 +175,7 @@ void NevadaTerrain::CreatePast()
 	m_Past.SetName2("Past");
 	m_Past.SetEnabled(false);
 
-//  float height = (float) m_Params.m_iMinHeight + 1.0f*WORLD_SCALE;
-	float height = 80.0f * WORLD_SCALE;
+	float height = 80.0f;
 	FPoint3 center;
 	g_Conv.convert_earth_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
 
@@ -232,29 +230,29 @@ void NevadaTerrain::CreatePast()
 	size.z = (float) -world_extents.Height();
 
 	// use a 12x12 grid of LOD cells
-	m_pTreeGrid = new vtLodGrid(origin, size, 12, fLODDistance * WORLD_SCALE);
+	m_pTreeGrid = new vtLodGrid(origin, size, 12, fLODDistance);
 	m_pTreeGrid->SetName2("Tree Grid");
 	m_Past.AddChild(m_pTreeGrid);
 
 	//populate with trees.  set initial size to zero?
 	int tcount = 0, ccount = 0;
 	float x, z;
-	for (x = world_extents.left; x < world_extents.right; x += (150.f * WORLD_SCALE))
+	for (x = world_extents.left; x < world_extents.right; x += 150.f)
 	{
-		for (z = world_extents.top; z < world_extents.bottom; z += (150.f * WORLD_SCALE))
+		for (z = world_extents.top; z < world_extents.bottom; z += 150.f)
 		{
 			ccount++;
-			p3.x = x + random_offset(70.f * WORLD_SCALE);
-			p3.z = z + random_offset(70.f * WORLD_SCALE);
+			p3.x = x + random_offset(70.f);
+			p3.z = z + random_offset(70.f);
 			if (!m_pHeightField->FindAltitudeAtPoint(p3, p3.y))
 				continue;
-			if (p3.y < (m_fHigh + 75 * WORLD_SCALE))
+			if (p3.y < (m_fHigh + 75))
 				continue;
 			FPoint3 dist = p3 - man_location;
 			float len = dist.Length();
-			if (len > 8000*WORLD_SCALE)
+			if (len > 8000)
 				continue;
-			if (len > 5000*WORLD_SCALE)
+			if (len > 5000)
 			{
 				if (ccount&1)
 					continue;
@@ -281,10 +279,10 @@ void NevadaTerrain::CreatePast()
 	{
 //		vtTransform *bigmike = LoadModel("Nevada/bigmikev2.dsm");
 		vtTransform *bigmike = LoadModel("Nevada/parameciummike.dsm");
-		float sc = WORLD_SCALE * 0.05f;	// abstract units, scale to taste
+		float sc = 0.05f;	// abstract units, scale to taste
 		m_Past.AddChild(bigmike);
 		PlantModelAtPoint(bigmike, DPoint2(MAN_LONLAT), true);
-		bigmike->Translate2(FPoint3(0.0f, i * 800.0f * WORLD_SCALE, 0.0f));
+		bigmike->Translate2(FPoint3(0.0f, i * 800.0f, 0.0f));
 
 		JumpingEngine *pJumper = new JumpingEngine(bigmike->GetTrans(),
 			sc, m_fGround, 100.f, i * PIf * 2.0f / MIKE_COUNT);
@@ -305,7 +303,7 @@ void NevadaTerrain::CreatePresent()
 
 #if 0
 	float overall_scale = 1.5f;	// 3x larger than real life
-	float sc = overall_scale * WORLD_SCALE;	// meters
+	float sc = overall_scale;	// meters
 #if 0
 	vtTransform *man = LoadModel("Nevada/earlyman.dsm");
 #else
@@ -315,7 +313,7 @@ void NevadaTerrain::CreatePresent()
 	m_Present.AddChild(man);
 	PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 
-	sc = overall_scale * 0.01f * WORLD_SCALE;		// cm
+	sc = overall_scale * 0.01f;		// cm
 	vtTransform *lamppost = LoadModel("Nevada/lamppost_v2.dsm");
 	lamppost->Scale2(sc, sc, sc);
 
@@ -326,9 +324,9 @@ void NevadaTerrain::CreatePresent()
 	pLampLod->AddChild(lamppost);
 	pLampLod->AddChild(lamppost2);
 	float ranges[3];
-	ranges[0] = 1.0f * WORLD_SCALE;
-	ranges[1] = 40.0f * WORLD_SCALE;
-	ranges[2] = 300.0f * WORLD_SCALE;
+	ranges[0] = 1.0f;
+	ranges[1] = 40.0f;
+	ranges[2] = 300.0f;
 	pLampLod->SetRanges(ranges, 3);
 
 	vtTransform *copy;
@@ -345,8 +343,8 @@ void NevadaTerrain::CreatePresent()
 			float radius = 638;
 			float deg = 30.0f - (i * 15.0f);
 			float angle = deg * PIf / 180.0f;
-			float x = cosf(angle) * radius * WORLD_SCALE;
-			float y = sinf(angle) * radius * WORLD_SCALE;
+			float x = cosf(angle) * radius;
+			float y = sinf(angle) * radius;
 			copy->Translate2(FPoint3(x, 0.0f, -y));
 			PlantModel(copy);
 		}
@@ -359,17 +357,17 @@ void NevadaTerrain::CreatePresent()
 			float radius = 78.0f + (i * (600.0f - 78.0f) / 17);
 			float deg = -90;
 			float angle = deg * PIf / 180.0f;
-			float x = cosf(angle) * radius * WORLD_SCALE;
-			float y = sinf(angle) * radius * WORLD_SCALE;
+			float x = cosf(angle) * radius;
+			float y = sinf(angle) * radius;
 			copy->Translate2(FPoint3(x, 0.0f, -y));
-			copy->Translate2(FPoint3(8.0f * WORLD_SCALE, 0.0f, 0.0f));
+			copy->Translate2(FPoint3(8.0f, 0.0f, 0.0f));
 			PlantModel(copy);
 
 			copy = (vtTransform *)pLampLod->CreateClone();
 			PlantModelAtPoint(man, DPoint2(MAN_LONLAT), true);
 			m_Present.AddChild(copy);
 			copy->Translate2(FPoint3(x, 0.0f, -y));
-			copy->Translate2(FPoint3(-8.0f * WORLD_SCALE, 0.0f, 0.0f));
+			copy->Translate2(FPoint3(-8.0f, 0.0f, 0.0f));
 			PlantModel(copy);
 		}
 	}
@@ -400,7 +398,7 @@ void NevadaTerrain::SetWaterOn(bool on)
 
 ////////////////////////////////////////////////////////
 
-#define UPWARD_VELOCITY (6 * WORLD_SCALE)
+#define UPWARD_VELOCITY (6)
 
 JumpingEngine::JumpingEngine(FPoint3 center, float fScale, float fBase,
 							 float fJumpHeight, float fPhase)
@@ -430,13 +428,13 @@ bool JumpingEngine::Eval(float t)
 	else
 	{
 		// gravity
-		m_vel.y -= (0.15f * WORLD_SCALE);
+		m_vel.y -= (0.15f);
 		pos += m_vel;
 	}
 
 	// move in a circle
-	pos.x = m_center.x + sinf(t/50.0f + m_fPhase) * 300.0f * WORLD_SCALE;
-	pos.z = m_center.z + cosf(t/50.0f + m_fPhase) * 300.0f * WORLD_SCALE;
+	pos.x = m_center.x + sinf(t/50.0f + m_fPhase) * 300.0f;
+	pos.z = m_center.z + cosf(t/50.0f + m_fPhase) * 300.0f;
 
 	pTarget->Identity();
 	pTarget->Scale3(m_fScale, m_fScale, m_fScale);
@@ -487,16 +485,16 @@ EpochEngine::EpochEngine(NevadaTerrain *pNevada, float fLow, float fHigh,
 #if 0
 	// create overwater haze (fog)
 	m_pFog1 = new vtFog();
-	m_pFog1->SetStart(1.0f * WORLD_SCALE);	// 1 m
-	m_pFog1->SetEnd(5000.0f * WORLD_SCALE);	// 5 km
+	m_pFog1->SetStart(1.0f);	// 1 m
+	m_pFog1->SetEnd(5000.0f);	// 5 km
 //	m_pFog1->SetColor(RGBf(255.0f/255, 240.0f/255, 225.0f/255));	// tan
 	m_pFog1->SetColor(RGBf(176.0f/255, 215.0f/255, 255.0f/255));	// blue horizon color
 	m_pFog1->SetKind(FOG_Linear);
 
 	// create underwater murk (fog)
 	m_pFog2 = new vtFog();
-	m_pFog2->SetStart(1.0f * WORLD_SCALE);	// 1 m
-	m_pFog2->SetEnd(50.0f * WORLD_SCALE);	// 50 m
+	m_pFog2->SetStart(1.0f);	// 1 m
+	m_pFog2->SetEnd(50.0f);	// 50 m
 	m_pFog2->SetColor(RGBf(70.0f/255, 70.0f/255, 145.0f/255));
 	m_pFog2->SetKind(FOG_Linear);
 #endif
@@ -519,7 +517,7 @@ void EpochEngine::Eval()
 	vtGetScene()->GetFog()->SetChanged(true);
 #else
 	// keep head above water
-	float minimum = m_fWaterHeight + (15.0f * WORLD_SCALE);
+	float minimum = m_fWaterHeight + 15.0f;
 	if (campos.y < minimum)
 	{
 		campos.y = minimum;

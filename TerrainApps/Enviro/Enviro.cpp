@@ -431,8 +431,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	if (m_iInitStep == 8)
 	{
 		vtCamera *pCam = vtGetScene()->GetCamera();
-		pCam->SetHither(5.0f * WORLD_SCALE);
-		pCam->SetYon(500000.0f * WORLD_SCALE);
+		pCam->SetHither(5.0f);
+		pCam->SetYon(500000.0f);
 		SetMessage("Switching to Terrain");
 	}
 	if (m_iInitStep == 9)
@@ -625,7 +625,7 @@ void Enviro::DoPickers()
 			if (m_pTerrainPicker->GetCurrentPoint(gpos))
 			{
 				FPoint3 campos = vtGetScene()->GetCamera()->GetTrans();
-				float distance = (gpos - campos).Length() / WORLD_SCALE;
+				float distance = (gpos - campos).Length();
 				float sc = (float) sqrt(distance) / 1.0f;
 				FPoint3 pos = m_pCursorMGeom->GetTrans();
 				m_pCursorMGeom->Identity();
@@ -785,7 +785,7 @@ void Enviro::SetupScene2()
 		m_nav = NT_Normal;
 
 	// create picker object and picker engine
-	float size = 1.0 * WORLD_SCALE;
+	float size = 1.0;
 	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/30));
 	m_pCursorMGeom->SetName2("Cursor");
 
@@ -867,8 +867,8 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	// inform the navigation engine of the new terrain
 	m_pCurrentFlyer->SetTarget(m_pNormalCamera);
 	m_pCurrentFlyer->SetHeightField(pHF);
-	m_pCurrentFlyer->SetHeight(param.m_iMinHeight * WORLD_SCALE);
-	m_pCurrentFlyer->SetSpeed(param.m_fNavSpeed * WORLD_SCALE);
+	m_pCurrentFlyer->SetHeight(param.m_iMinHeight);
+	m_pCurrentFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pCurrentFlyer->SetEnabled(true);
 
 #if 1
@@ -876,12 +876,12 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	//  the center of the new terrain
 	FPoint3 middle;
 	pHF->GetCenter(middle);
-	middle.y = ORTHO_HEIGHT * WORLD_SCALE;
+	middle.y = ORTHO_HEIGHT;
 	m_pTopDownCamera->SetTrans(middle);
 	m_pTopDownCamera->RotateLocal(TRANS_XAxis, -PID2f);
 	m_pTopDownCamera->SetHither(0.1f);
 	m_pTopDownCamera->SetYon(1000.0f);
-//	m_pTopDownCamera->SetHeight(ORTHO_HEIGHT * WORLD_SCALE);
+//	m_pTopDownCamera->SetHeight(ORTHO_HEIGHT);
 #endif
 
 	if (m_pTerrainPicker != NULL)
@@ -981,9 +981,9 @@ void Enviro::SetupCameras()
 
 	_Log("Setting hither and yon\n");
 	FPoint3 pos = m_pNormalCamera->GetTrans();
-	m_pNormalCamera->SetHither(5.0f * WORLD_SCALE);		// 10 m
-	//m_pNormalCamera->SetYon(500000.0f * WORLD_SCALE);	// 500 km
-	m_pTerrainScene->SetYon(500000.0f * WORLD_SCALE);	// 500 km
+	m_pNormalCamera->SetHither(5.0f);		// 10 m
+	//m_pNormalCamera->SetYon(500000.0f);	// 500 km
+	m_pTerrainScene->SetYon(500000.0f);	// 500 km
 
 #if 1
 	// Create second camera (for Top-Down view)
@@ -991,7 +991,7 @@ void Enviro::SetupCameras()
 	{
 		_Log("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera();
-		m_pTopDownCamera->SetOrtho(10000.0f * WORLD_SCALE);
+		m_pTopDownCamera->SetOrtho(10000.0f);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
 	}
 #endif

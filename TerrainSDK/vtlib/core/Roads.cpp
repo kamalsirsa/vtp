@@ -193,7 +193,7 @@ void NodeGeom::BuildIntersection()
 			float offset_next = w_avg / tanf(a_next / 2.0f);
 			float offset_prev = w_avg / tanf(a_prev / 2.0f);
 			float offset_largest = MAX(offset_next, offset_prev);
-			offset_largest += (2.0f * WORLD_SCALE);
+			offset_largest += 2.0f;
 
 			pn0 = m_p3;
 			pn0 += (v * (offset_largest / 2.0f));
@@ -370,7 +370,7 @@ void RoadGeom::SetupBuildInfo(RoadBuildInfo &bi)
 			v.z = m_p3[j].z - m_p3[j-1].z;
 			length += v.Length();
 		}
-		bi.fvLength[j] = (length / WORLD_SCALE);
+		bi.fvLength[j] = length;
 
 		// we will add 2 vertices to the road mesh
 		FPoint3 p0, p1;
@@ -486,26 +486,26 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 
 	float offset = -m_fWidth/2;
 	if (m_iFlags & RF_MARGIN)
-		offset -= (MARGIN_WIDTH * WORLD_SCALE);
+		offset -= MARGIN_WIDTH;
 	if (m_iFlags & RF_PARKING)
-		offset -= (PARKING_WIDTH * WORLD_SCALE);
+		offset -= PARKING_WIDTH;
 	if (m_iFlags & RF_SIDEWALK)
-		offset -= (SIDEWALK_WIDTH * WORLD_SCALE);
+		offset -= SIDEWALK_WIDTH;
 	if (do_roadside)
-		offset -= (ROADSIDE_WIDTH * WORLD_SCALE);
+		offset -= ROADSIDE_WIDTH;
 
 #if 0
 	// create left roadside strip
 	if (do_roadside)
 	{
 		AddRoadStrip(pMesh, bi,
-					offset, offset+(ROADSIDE_WIDTH * WORLD_SCALE),
+					offset, offset+ROADSIDE_WIDTH,
 					ROADSIDE_DEPTH,
-					(m_iFlags & RF_SIDEWALK) ? (CURB_HEIGHT * WORLD_SCALE) : 0.0f,
+					(m_iFlags & RF_SIDEWALK) ? CURB_HEIGHT : 0.0f,
 					rmgeom->m_vt[],
 					0.02f, 0.98f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += (ROADSIDE_WIDTH * WORLD_SCALE);
+		offset += ROADSIDE_WIDTH;
 	}
 #endif
 
@@ -514,16 +514,16 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + (SIDEWALK_WIDTH * WORLD_SCALE),
-					(CURB_HEIGHT * WORLD_SCALE), (CURB_HEIGHT * WORLD_SCALE),
+					offset + SIDEWALK_WIDTH,
+					CURB_HEIGHT, CURB_HEIGHT,
 					rmgeom->m_vt[VTI_SIDEWALK],
 					0.0f, 0.93f, UV_SCALE_SIDEWALK,
 					ND_UP);
-		offset += (SIDEWALK_WIDTH * WORLD_SCALE);
+		offset += SIDEWALK_WIDTH;
 		AddRoadStrip(pMesh, bi,
 					offset,
 					offset,
-					(CURB_HEIGHT * WORLD_SCALE), 0.0f,
+					CURB_HEIGHT, 0.0f,
 					rmgeom->m_vt[VTI_SIDEWALK],
 					0.93f, 1.0f, UV_SCALE_SIDEWALK,
 					ND_RIGHT);
@@ -533,24 +533,24 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + (PARKING_WIDTH * WORLD_SCALE),
+					offset + PARKING_WIDTH,
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_1LANE],
 					0.0f, 1.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += (PARKING_WIDTH * WORLD_SCALE);
+		offset += PARKING_WIDTH;
 	}
 	// create left margin
 	if (m_iFlags & RF_MARGIN)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + (MARGIN_WIDTH * WORLD_SCALE),
+					offset + MARGIN_WIDTH,
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_MARGIN],
 					0.0f, 1.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += (MARGIN_WIDTH * WORLD_SCALE);
+		offset += MARGIN_WIDTH;
 	}
 
 	// create main road surface
@@ -567,24 +567,24 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + (MARGIN_WIDTH * WORLD_SCALE),
+					offset + MARGIN_WIDTH,
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_MARGIN],
 					1.0f, 0.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += (MARGIN_WIDTH * WORLD_SCALE);
+		offset += MARGIN_WIDTH;
 	}
 	// create left parking lane
 	if (m_iFlags & RF_PARKING)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + (PARKING_WIDTH * WORLD_SCALE),
+					offset + PARKING_WIDTH,
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_1LANE],
 					0.0f, 1.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += (PARKING_WIDTH * WORLD_SCALE);
+		offset += PARKING_WIDTH;
 	}
 
 	// create right sidwalk
@@ -593,18 +593,18 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 		AddRoadStrip(pMesh, bi,
 					offset,
 					offset,
-					0.0f, (CURB_HEIGHT * WORLD_SCALE),
+					0.0f, CURB_HEIGHT,
 					rmgeom->m_vt[VTI_SIDEWALK],
 					1.0f, 0.93f, UV_SCALE_SIDEWALK,
 					ND_LEFT);
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + (SIDEWALK_WIDTH * WORLD_SCALE),
-					(CURB_HEIGHT * WORLD_SCALE), (CURB_HEIGHT * WORLD_SCALE),
+					offset + SIDEWALK_WIDTH,
+					CURB_HEIGHT, CURB_HEIGHT,
 					rmgeom->m_vt[VTI_SIDEWALK],
 					0.93f, 0.0f, UV_SCALE_SIDEWALK,
 					ND_UP);
-		offset += (SIDEWALK_WIDTH * WORLD_SCALE);
+		offset += SIDEWALK_WIDTH;
 	}
 
 #if 0
@@ -612,8 +612,8 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		// create left roadside strip
 		AddRoadStrip(pMesh, bi,
-					offset, offset+(ROADSIDE_WIDTH * WORLD_SCALE),
-					(m_iFlags & RF_SIDEWALK) ? (CURB_HEIGHT * WORLD_SCALE) : 0.0f,
+					offset, offset+ROADSIDE_WIDTH,
+					(m_iFlags & RF_SIDEWALK) ? CURB_HEIGHT : 0.0f,
 					ROADSIDE_DEPTH,
 					APPIDX_ROADSIDE,
 					0.98f, 0.02f, UV_SCALE_ROAD,
@@ -630,7 +630,7 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 		for (int i = 0; i < m_iLanes; i++)
 		{
 			float offset = -((float)(m_iLanes-1) / 2.0f) + i;
-			offset *= (LANE_WIDTH * WORLD_SCALE);
+			offset *= LANE_WIDTH;
 			FPoint3 offset_diff = bi.crossvector[j] * offset;
 			m_pLanes[i].m_p3[j] = bi.center[j] + offset_diff;
 		}
@@ -756,7 +756,7 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 	{
 		float fDist[2];
 		fDist[0] = 0.0f;
-		fDist[1] = m_fLodDistance * WORLD_SCALE;
+		fDist[1] = m_fLodDistance;
 
 		m_pRoads[a][b] = new vtLOD();
 		m_pRoads[a][b]->SetRanges(fDist, 2);
@@ -769,7 +769,7 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 		m_pRoads[a][b]->SetCenter(lod_center);
 
 #if 0
-		vtGeom *pSphere = CreateSphereGeom(m_pMats, m_mi_red, 1000.0f*WORLD_SCALE, 8);
+		vtGeom *pSphere = CreateSphereGeom(m_pMats, m_mi_red, 1000.0f, 8);
 		vtMovGeom *pSphere2 = new vtMovGeom(pSphere);
 		m_pGroup->AddChild(pSphere2);
 		pSphere2->SetTrans(lod_center);
@@ -927,7 +927,7 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 	if (stopsign && stoplight)
 	{
-		float sc = 0.01f * WORLD_SCALE;	// cm -> world
+		float sc = 0.01f;	// cm
 		stopsign->Scale2(sc, sc, sc);
 		stoplight->Scale2(sc, sc, sc);
 	}
@@ -955,11 +955,11 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 			if (pN->GetIntersectType(r) == IT_STOPSIGN)
 			{
-				offset = pN->m_p3 + (unit * 6.0f * WORLD_SCALE) + (perp * (road->m_fWidth/2.0f));
+				offset = pN->m_p3 + (unit * 6.0f) + (perp * (road->m_fWidth/2.0f));
 			}
 			if (pN->GetIntersectType(r) == IT_LIGHT)
 			{
-				offset = pN->m_p3 - (unit * 6.0f * WORLD_SCALE) + (perp * (road->m_fWidth/2.0f));;
+				offset = pN->m_p3 - (unit * 6.0f) + (perp * (road->m_fWidth/2.0f));;
 			}
 			shape->Translate2(FPoint3(offset.x, offset.y + s_fHeight, offset.z));
 			pLodGrid->AppendToGrid(shape);
@@ -1090,7 +1090,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField *pHeightField)
 		if (pN->m_iRoads > 0)
 		{
 			height = pN->GetRoad(0)->GetHeightAt(pN);
-			pN->m_p3.y += (height * WORLD_SCALE);
+			pN->m_p3.y += height;
 		}
 #endif
 	}
@@ -1105,10 +1105,9 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField *pHeightField)
 			pR->m_p3[j].z = p.z;
 		}
 		// ignore width from file - imply from properties
-		pR->m_fWidth = pR->m_iLanes * (LANE_WIDTH * WORLD_SCALE);
-		if (pR->m_fWidth==0) {
-			pR->m_fWidth = 10.0f * WORLD_SCALE;
-		}
+		pR->m_fWidth = pR->m_iLanes * LANE_WIDTH;
+		if (pR->m_fWidth == 0)
+			pR->m_fWidth = 10.0f;
 	}
 }
 

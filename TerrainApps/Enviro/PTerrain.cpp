@@ -17,9 +17,9 @@ PTerrain::PTerrain() : vtTerrain()
 void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway, 
 						   char* name, int destination_index)
 {
+	// larger than real life
 	float scale = 0.01f * (m_Params.m_iMinHeight*0.33f);
-	float sc = WORLD_SCALE * scale;		// larger than real life
-	gateway->Scale3(sc, sc, sc);
+	gateway->Scale3(scale, scale, scale);
 	gateway->SetName2(name);
 	AddNode(gateway);
 

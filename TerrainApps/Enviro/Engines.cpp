@@ -62,44 +62,44 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 	// a typical flight speed, 450 mph = 725 kmph
 	// 1 kmph = 16.66 meters per minute = .2777777 meters per second
 	// 725 kmph = 200 meter per second, slowing to 25 m/s at touchdown
-	x = 10000.0f * WORLD_SCALE;
-	y = 5000.0f * WORLD_SCALE;
-	z = -130000.0f * WORLD_SCALE;
+	x = 10000.0f;
+	y = 5000.0f;
+	z = -130000.0f;
 
 	m_hoop_pos[0].Set(x, y, z);
-	m_hoop_speed[0] = 200.0f * WORLD_SCALE;
+	m_hoop_speed[0] = 200.0f;
 	// done setting initial positions and speed
 
 	// begin approach
 	utm_points[3].z = 800.0f;
 	g_Conv.ConvertFromEarth(utm_points[3], m_hoop_pos[1]);
-	m_hoop_speed[1] = 150.0f * WORLD_SCALE;
+	m_hoop_speed[1] = 150.0f;
 
 	// touchdown
 	// center of plane is 15m above ground + 1.5m airport above ground + .5m of runway thickness
 	utm_points[0].z = 17.0f;
 	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[2]);
-	m_hoop_speed[2] = 25.0f * WORLD_SCALE;
+	m_hoop_speed[2] = 25.0f;
 
 	// speeding up to takeoff point
 	g_Conv.ConvertFromEarth(utm_points[1], m_hoop_pos[3]);
-	m_hoop_speed[3] = 5.0f * WORLD_SCALE;
+	m_hoop_speed[3] = 5.0f;
 
 	// takeoff to this point
 	g_Conv.ConvertFromEarth(utm_points[2], m_hoop_pos[4]);
-	m_hoop_speed[4] = 35.0f * WORLD_SCALE;
+	m_hoop_speed[4] = 35.0f;
 
 	// point to loop to
 	utm_points[4].z = 800.0f;
 	g_Conv.ConvertFromEarth(utm_points[4], m_hoop_pos[5]);
-	m_hoop_speed[5] = 150.0f * WORLD_SCALE;
+	m_hoop_speed[5] = 150.0f;
 
 	// saving last hoop info
-	x = 2000.0f * WORLD_SCALE;
-	y = 5000.0f * WORLD_SCALE;
-	z = -40000.0f * WORLD_SCALE;
+	x = 2000.0f;
+	y = 5000.0f;
+	z = -40000.0f;
 	m_hoop_pos[6].Set(x, y, z);
-	m_hoop_speed[6] = 200.0f * WORLD_SCALE;
+	m_hoop_speed[6] = 200.0f;
 
 	m_hoops = 7;
 	m_hoop = 0;
@@ -235,7 +235,7 @@ void RoadFollowEngine::Eval()
 
 	if (!m_pCurrentRoad) return;
 
-	float fInc = 25.0f * WORLD_SCALE;
+	float fInc = 25.0f;
 	fAmount += fInc;
 	float fRightAmount = forwards ? fAmount : (m_pCurrentRoadLength - fAmount);
 
@@ -380,7 +380,7 @@ void RouteFollowerEngine::Eval()
 	target->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), angle);
 
 	TParams &params = GetCurrentTerrain()->GetParams();
-	target->TranslateLocal(FPoint3(0.0f, params.m_iMinHeight*WORLD_SCALE*3, 0.0f));
+	target->TranslateLocal(FPoint3(0.0f, params.m_iMinHeight*3, 0.0f));
 
 	m_inc += 0.03f;
 
@@ -411,7 +411,7 @@ void FollowerEngine::Eval()
 
 	FMatrix4 model_loc;
 	model_loc.Copy(m_model->GetTransform());
-	model_loc.Translate(FPoint3(0.0f, 5.0f * WORLD_SCALE, 0.0f * WORLD_SCALE));
+	model_loc.Translate(FPoint3(0.0f, 5.0f, 0.0f));
 
 	//make a matrix and move it so it will be behind and above the target afterwards
 //	FMatrix4* matrix = new FMatrix4f();

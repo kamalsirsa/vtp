@@ -69,7 +69,7 @@ void IslandTerrain::create_telescopes()
 vtGeom *IslandTerrain::make_red_cube()
 {
 	vtGeom *thebox = new vtGeom();
-	float ws = 100.0f * WORLD_SCALE;	// convert 100m to 3d system units
+	float ws = 100.0f;	// convert 100m to 3d system units
 
 	//code to make it a Shape
 	vtMesh *mesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals, 24);
@@ -92,23 +92,18 @@ void IslandTerrain::create_airports()
 	vtTransform *KOA = LoadModel("Culture/KOA.dsm");
 	vtTransform *MUE = LoadModel("Culture/MUE.dsm");
 
-	float scale = WORLD_SCALE;
-
 	if (ITO)
 	{
-		ITO->Scale2(scale, scale, scale);
 		PlantModelAtPoint(ITO, DPoint2(283575, 2181163();
  		AddNode(ITO);
 	}
 	if (KOA)
 	{
-		KOA->Scale2(scale, scale, scale);
 		PlantModelAtPoint(KOA, DPoint2(180290, 2184990));
  		AddNode(KOA);
 	}
 	if (MUE)
 	{
-		MUE->Scale2(scale, scale, scale);
 		PlantModelAtPoint(MUE, DPoint2(219990, 2213505));
  		AddNode(MUE);
 	}
@@ -151,16 +146,14 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 			vtTransform *house = LoadModel("BuildingModels/house3.dsm");
 			if (house)
 			{
-				// scale was one unit = 1 i
-				// so adjust to fit our units, one unit = (1/WORLD_SCALE) meters
+				// scale was one unit = 1 inch
 				// 1 inch = 2.54 centimeters = .0254 meters
-				float scale = .0254f * WORLD_SCALE;
+				float scale = .0254f;
 				house->Scale2(scale, scale, scale);
 
 				// plant it on the ground
 				PlantModelAtPoint(house, bound[7]);
 
-//  			AddNode(house);
 				AddNodeToLodGrid(house);
 			}
 		}
@@ -169,14 +162,9 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		if (lighthouse1)
 		{
 			// scale was one unit = 1 m
-
-			float scale = WORLD_SCALE;
-			lighthouse1->Scale2(scale, scale, scale);
-
 			// plant it on the ground
 			PlantModelAtPoint(lighthouse1, DPoint2(197389, 2230283));
 
-// 			AddNode(lighthouse1);
 			AddNodeToLodGrid(lighthouse1);
 		}
 	}
@@ -196,7 +184,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		vtTransform *bench = LoadModel("Culture/parkbench.3ds");
 		if (bench)
 		{
-			float scale = 3.0f * 0.01f * WORLD_SCALE;
+			float scale = 3.0f * 0.01f;
 			bench->Scale3(scale, scale*1.1f, scale);
 			PlantModelAtPoint(bench, DPoint2(234900, 2185840));
 			m_pLodGrid->AppendToGrid(bench);
@@ -237,7 +225,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 			m_pDetailMat = m_pDetailMats->GetAt(index);
 
 			FRECT r = m_pHeightField->m_Conversion.m_WorldExtents;
-			float width_meters = r.Width() / WORLD_SCALE;
+			float width_meters = r.Width();
 			m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
 		}
 	}

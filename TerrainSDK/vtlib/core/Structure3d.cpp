@@ -48,7 +48,6 @@ bool vtStructInstance3d::CreateShape(vtHeightField *pHeightField)
 void vtStructInstance3d::UpdateTransform(vtHeightField *pHeightField)
 {
 	m_pContainer->Identity();
-	m_pContainer->Scale3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE);
 
 	// try to work around 3DS coordinate axes difference problem
 	vtString fname2 = GetValue("filename");

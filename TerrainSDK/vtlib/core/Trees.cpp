@@ -113,8 +113,8 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 	vtMesh *pTreeMesh = new vtMesh(GL_TRIANGLE_FAN, VT_TexCoords, vtx_count);
 
 	// size of textured, upright portion
-	float w2 = (m_width * WORLD_SCALE * fTreeScale) / 2.0f;
-	float h = m_height * WORLD_SCALE * fTreeScale;
+	float w2 = (m_width * fTreeScale) / 2.0f;
+	float h = m_height * fTreeScale;
 
 	// keep a count of how many vertices we've added
 	int vcount = 0, vstart;
@@ -127,7 +127,7 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 		// shadow, on the ground
 		float h1 = w2 * m_shadow_radius * 2.0f;
 		float h2 = w2 * m_shadow_radius;
-		float gr = SHADOW_HEIGHT * WORLD_SCALE;
+		float gr = SHADOW_HEIGHT;
 		pTreeMesh->SetVtxPos(vcount++, FPoint3(-h1, gr,  h2));
 		pTreeMesh->SetVtxPos(vcount++, FPoint3(0.0f, gr,  h1));
 		pTreeMesh->SetVtxPos(vcount++, FPoint3(h1, gr,  h2));
@@ -183,7 +183,7 @@ vtTransform *vtPlantAppearance3d::GenerateGeom()
 	{
 #if SUPPORT_XFROG
 		pGeom = m_pFrogModel->CreateShape(1.0f);
-		float factor = WORLD_SCALE * s_fTreeScale;
+		float factor = s_fTreeScale;
 		pGeom->Scale(factor, factor, factor);
 #endif
 	}

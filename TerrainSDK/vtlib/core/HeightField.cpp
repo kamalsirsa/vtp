@@ -27,7 +27,7 @@ void vtHeightField::Initialize(vtLocalGrid *pLocalGrid)
 void vtHeightField::Initialize(vtTin3d *pTin)
 {
 	m_Conversion.Setup(pTin->m_proj.GetUnits(), m_EarthExtents);
-	m_Conversion.m_fVerticalScale = WORLD_SCALE;
+	m_Conversion.m_fVerticalScale;
 
 	FPoint2 hypo(m_Conversion.m_WorldExtents.Width(),
 				 m_Conversion.m_WorldExtents.Height());

@@ -131,7 +131,7 @@ bool App::CreateScene()
 
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
-	pCamera->SetHither(20 * WORLD_SCALE);		// 20 meters
+	pCamera->SetHither(20);		// 20 meters
 
 	// Create a new terrain scene.  This will contain all the terrain
 	// that are created.
@@ -159,7 +159,7 @@ bool App::CreateScene()
 	// Create a navigation engine to move around on the terrain
 	// Flight speed is 400 m/frame
 	// Height over terrain is 100 m
-	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(400*WORLD_SCALE, 100*WORLD_SCALE, true);
+	vtTerrainFlyer *pFlyer = new vtTerrainFlyer(400, 100, true);
 	pFlyer->SetTarget(pCamera);
 	pFlyer->SetHeightField(pTerr->GetHeightField());
 	pScene->AddEngine(pFlyer);
