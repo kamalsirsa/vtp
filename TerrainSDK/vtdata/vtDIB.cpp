@@ -1193,3 +1193,37 @@ void vtDIB::Invert()
 	}
 }
 
+/*
+ * A slow, completely unoptimized copy from this bitmap to another.
+ */
+void vtDIB::Blit(vtDIB &target, int x, int y)
+{
+	int depth = GetDepth();
+	if (depth != target.GetDepth())
+		return;
+	int tw = target.GetWidth();
+	int th = target.GetHeight();
+
+	unsigned int i, j;
+	for (i = 0; i < m_iWidth; i++)
+	{
+		for (j = 0; j < m_iHeight; j++)
+		{
+			int tx = i+x, ty = j+y;
+			if (tx < 0 || tx > tw-1 || ty < 0 || ty > th-1)
+				continue;
+
+			if (depth == 8)
+			{
+				unsigned char value = GetPixel8(i, j);
+				target.SetPixel8(tx, ty, value);
+			}
+			else if (depth == 24)
+			{
+				unsigned int value2 = GetPixel24(i, j);
+				target.SetPixel24(tx, ty, value2);
+			}
+		}
+	}
+}
+

@@ -92,6 +92,7 @@ public:
 
 	void SetColor(const RGBi &rgb);
 	void Invert();
+	void Blit(vtDIB &target, int x, int y);
 
 	unsigned int GetWidth() const { return m_iWidth; }
 	unsigned int GetHeight() const { return m_iHeight; }
