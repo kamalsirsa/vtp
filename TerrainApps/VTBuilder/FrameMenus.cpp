@@ -38,6 +38,7 @@
 #include "DistribVegDlg.h"
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
+#include "ImageMapDlg.h"
 #include "LayerPropDlg.h"
 #include "MapServerDlg.h"
 #include "OptionsDlg.h"
@@ -189,12 +190,16 @@ EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
 EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
 EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 EVT_MENU(ID_RAW_SELECTCONDITION,	MainFrame::OnRawSelectCondition)
+EVT_MENU(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnRawExportImageMap)
+EVT_MENU(ID_RAW_STYLE,				MainFrame::OnRawStyle)
 
 EVT_UPDATE_UI(ID_RAW_SETTYPE,			MainFrame::OnUpdateRawSetType)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS,			MainFrame::OnUpdateRawAddPoints)
 EVT_UPDATE_UI(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnUpdateRawAddPointText)
 EVT_UPDATE_UI(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnUpdateRawAddPointsGPS)
-EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawSelectCondition)
+EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_EXPORT_IMAGEMAP,	MainFrame::OnUpdateRawIsActive)
+EVT_UPDATE_UI(ID_RAW_STYLE,				MainFrame::OnUpdateRawIsActive)
 
 EVT_MENU(ID_AREA_ZOOM_ALL,			MainFrame::OnAreaZoomAll)
 EVT_MENU(ID_AREA_ZOOM_LAYER,		MainFrame::OnAreaZoomLayer)
@@ -392,9 +397,11 @@ void MainFrame::CreateMenus()
 	rawMenu->AppendCheckItem(ID_RAW_ADDPOINTS, _("Add Points with Mouse"));
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, _("Add Point with Text\tCtrl+T"), _("Add point"));
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _("Add Points with GPS"), _("Add points with GPS"));
+	rawMenu->Append(ID_RAW_STYLE, _("Style..."));
 #endif
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
+	rawMenu->Append(ID_RAW_EXPORT_IMAGEMAP, _("Export as HTML ImageMap"));
 	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
@@ -2676,6 +2683,12 @@ void MainFrame::OnUpdateStructureConstrain(wxUpdateUIEvent& event)
 ///////////////////////////////////
 // Raw menu
 
+void MainFrame::OnUpdateRawIsActive(wxUpdateUIEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+	event.Enable(pRL != NULL);
+}
+
 void MainFrame::OnRawSetType(wxCommandEvent& event)
 {
 	static OGRwkbGeometryType types[5] = {
@@ -2800,10 +2813,141 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 	}
 }
 
-void MainFrame::OnUpdateRawSelectCondition(wxUpdateUIEvent& event)
+void CapWords(vtString &str)
+{
+	bool bStart = true;
+	for (int i = 0; i < str.GetLength(); i++)
+	{
+		char ch = str.GetAt(i);
+		if (bStart)
+			ch = toupper(ch);
+		else
+			ch = tolower(ch);
+		str.SetAt(i, ch);
+
+		if (ch == ' ')
+			bStart = true;
+		else
+			bStart = false;
+	}
+}
+
+void MainFrame::OnRawExportImageMap(wxCommandEvent& event)
 {
 	vtRawLayer *pRL = GetActiveRawLayer();
-	event.Enable(pRL != NULL);
+	if (!pRL)
+		return;
+
+	OGRwkbGeometryType type = pRL->GetGeomType();
+	if (type != wkbPolygon)
+		return;
+
+	// First grab image
+	BuilderView *view = GetView();
+	int xsize, ysize;
+	view->GetClientSize(&xsize, &ysize);
+
+	wxClientDC dc(view);
+	view->PrepareDC(dc);
+
+	vtDIB dib;
+	dib.Create(xsize, ysize, 24);
+
+	int x, y;
+	int xx, yy;
+	wxColour color;
+	for (x = 0; x < xsize; x++)
+	{
+		for (y = 0; y < ysize; y++)
+		{
+			view->CalcUnscrolledPosition(x, y, &xx, &yy);
+			dc.GetPixel(xx, yy, &color);
+			dib.SetPixel24(x, y, RGBi(color.Red(), color.Green(), color.Blue()));
+		}
+	}
+
+	vtFeatureSet *fset = pRL->GetFeatureSet();
+
+	ImageMapDlg dlg(this, -1, _("Export Image Map"));
+	dlg.SetFields(fset);
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	wxFileDialog loadFile(NULL, _("Save to Image File"), _T(""), _T(""),
+		FSTRING_PNG, wxSAVE);
+	if (loadFile.ShowModal() != wxID_OK)
+		return;
+	vtString fullname = loadFile.GetPath().mb_str();
+	vtString filename = loadFile.GetFilename().mb_str();
+
+	dib.WritePNG(fullname);
+
+	// Then write imagemap
+	wxFileDialog loadFile2(NULL, _("Save to Image File"), _T(""), _T(""),
+		FSTRING_HTML, wxSAVE);
+	if (loadFile2.ShowModal() != wxID_OK)
+		return;
+	vtString htmlname = loadFile2.GetPath().mb_str();
+
+	FILE *fp = fopen(htmlname, "wb");
+	if (!fp)
+		return;
+	fprintf(fp, "<html>\n");
+	fprintf(fp, "<body>\n");
+	fprintf(fp, "<map name=\"ImageMap\">\n");
+
+	vtFeatureSetPolygon *polyset = (vtFeatureSetPolygon *) fset;
+	unsigned int i, num = polyset->GetNumEntities();
+	wxPoint sp;		// screen point
+
+	for (i = 0; i < num; i++)
+	{
+		vtString str;
+		polyset->GetValueAsString(i, dlg.m_iField, str);
+
+//		CapWords(str);
+//		str += ".sid";
+
+		fprintf(fp, "<area href=\"%s\" shape=\"polygon\" coords=\"",
+			(const char *) str);
+
+		const DPolygon2 &poly = polyset->GetPolygon(i);
+
+		DLine2 dline;
+		poly.GetAsDLine2(dline);
+
+		unsigned int j, points = dline.GetSize();
+		for (j = 0; j < points; j++)
+		{
+			DPoint2 p = dline[j];
+			if (j == points-1 && p == dline[0])
+				continue;
+
+			if (j > 0)
+				fprintf(fp, ", ");
+
+			view->screen(p, sp);
+			view->CalcScrolledPosition(sp.x, sp.y, &xx, &yy);
+
+			fprintf(fp, "%d, %d", xx, yy);
+		}
+		fprintf(fp, "\">\n");
+	}
+	fprintf(fp, "</map>\n");
+	fprintf(fp, "<img border=\"0\" src=\"%s\" usemap=\"#ImageMap\" width=\"%d\" height=\"%d\">\n",
+		(const char *) filename, xsize, ysize);
+	fprintf(fp, "</body>\n");
+	fprintf(fp, "</html>\n");
+	fclose(fp);
+}
+
+void MainFrame::OnRawStyle(wxCommandEvent& event)
+{
+	vtRawLayer *pRL = GetActiveRawLayer();
+
+	DrawStyle style = pRL->GetDrawStyle();
+	style.m_LineColor.Set(0,0,0);
+	pRL->SetDrawStyle(style);
 }
 
 

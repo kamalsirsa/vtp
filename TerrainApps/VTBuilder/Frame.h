@@ -219,12 +219,14 @@ protected:
 	void OnRawAddPointText(wxCommandEvent& event);
 	void OnRawAddPointsGPS(wxCommandEvent& event);
 	void OnRawSelectCondition(wxCommandEvent& event);
+	void OnRawExportImageMap(wxCommandEvent& event);
+	void OnRawStyle(wxCommandEvent& event);
 
 	void OnUpdateRawSetType(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPoints(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointText(wxUpdateUIEvent& event);
 	void OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event);
-	void OnUpdateRawSelectCondition(wxUpdateUIEvent& event);
+	void OnUpdateRawIsActive(wxUpdateUIEvent& event);
 
 	void OnAreaZoomAll(wxCommandEvent& event);
 	void OnAreaZoomLayer(wxCommandEvent& event);
