@@ -482,9 +482,13 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 		mgeom->RotateLocal(FPoint3(1,0,0), -PID2f);
 		mgeom->SetTrans(spheres[i].center);
 		if (bArea)
+		{
+			// scale just the radius of the cylinder
 			mgeom->Scale3(spheres[i].radius, 0.001f, spheres[i].radius);
+		}
 		else
 		{
+			// scale just the height of the cylinder
 			double area = PIf * spheres[i].radius * spheres[i].radius;
 			mgeom->Scale3(0.002f, area*1000, 0.002f);
 		}
