@@ -1328,6 +1328,9 @@
 				RelativePath="TreeView.h">
 			</File>
 			<File
+				RelativePath=".\TSDlg.h">
+			</File>
+			<File
 				RelativePath="UtilityLayer.h">
 			</File>
 			<File
@@ -2174,6 +2177,9 @@
 						PreprocessorDefinitions=""
 						BrowseInformation="1"/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\TSDlg.cpp">
 			</File>
 			<File
 				RelativePath="VegDlg.cpp">
