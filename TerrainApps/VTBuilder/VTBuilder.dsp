@@ -46,7 +46,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O1 /Ob2 /I "\wx2\include" /I "\TerrainSDK\vtdata" /I "\TerrainSDK\ProjectionLib" /I "\TerrainSDK\shapelib" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /Yu"wx/wxprec.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /Yu"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D USE_DIBSECTIONS=1 /Yu"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -101,7 +101,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /FR /Yu"wx/wxprec.h" /FD /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D DEBUG=1 /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D "_UNICODE" /D "UNICODE" /FR /Yu"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /Zi /Od /I "..\..\TerrainSDK" /D "_DEBUG" /D DEBUG=1 /D "_UNICODE" /D "UNICODE" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D USE_DIBSECTIONS=1 /FR /Yu"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /i "\APIs\wx2\include" /d "_DEBUG"
@@ -128,7 +128,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /Yu"wx/wxprec.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D "_UNICODE" /D "UNICODE" /Yu"wx/wxprec.h" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O1 /Ob2 /I "..\..\TerrainSDK" /D "NDEBUG" /D "_UNICODE" /D "UNICODE" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D WXUSINGDLL=1 /D SUPPORT_TRANSIT=0 /D USE_DIBSECTIONS=1 /Yu"wx/wxprec.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /i "\APIs\wx2\include" /d "NDEBUG"
