@@ -22,6 +22,7 @@ class UtilDlg;
 class LayerDlg;
 class InstanceDlg;
 class DistanceDlg;
+class TimeDlg;
 class vtTerrain;
 
 // some shortcuts
@@ -117,6 +118,7 @@ public:
 	void OnUpdateSceneSpace(wxUpdateUIEvent& event);
 	void OnSceneSave(wxCommandEvent& event);
 
+	void OnTimeDialog(wxCommandEvent& event);
 	void OnTimeStop(wxCommandEvent& event);
 	void OnTimeFaster(wxCommandEvent& event);
 
@@ -191,6 +193,7 @@ public:
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
 	DistanceDlg			*m_pDistanceDlg;
+	TimeDlg				*m_pTimeDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

@@ -47,6 +47,7 @@
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
+#include "vtui/TimeDlg.h"
 
 #include "../Engines.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
@@ -158,6 +159,7 @@ EVT_UPDATE_UI(ID_SCENE_SPACE,	vtFrame::OnUpdateSceneSpace)
 #if VTLIB_OSG
 EVT_MENU(ID_SCENE_SAVE,			vtFrame::OnSceneSave)
 #endif
+EVT_MENU(ID_TIME_DIALOG,		vtFrame::OnTimeDialog)
 EVT_MENU(ID_TIME_STOP,			vtFrame::OnTimeStop)
 EVT_MENU(ID_TIME_FASTER,		vtFrame::OnTimeFaster)
 
@@ -271,6 +273,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_pInstanceDlg = new InstanceDlg(this, -1, _("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pDistanceDlg = new DistanceDlg(this, -1, _("Distance"));
+	m_pTimeDlg = new TimeDlg(this, -1, _("Time"));
 
 	m_canvas->SetCurrent();
 }
@@ -328,6 +331,7 @@ void vtFrame::CreateMenus()
 		m_pSceneMenu->Append(ID_SCENE_SAVE, _T("Save scene graph to .osg"));
 #endif
 		m_pSceneMenu->AppendSeparator();
+		m_pSceneMenu->Append(ID_TIME_DIALOG, _T("Time...\tCtrl+T"));
 		m_pSceneMenu->Append(ID_TIME_STOP, _T("Time Stop"));
 		m_pSceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
 		m_pMenuBar->Append(m_pSceneMenu, _T("&Scene"));
@@ -1133,6 +1137,11 @@ void vtFrame::OnSceneSave(wxCommandEvent& event)
 	vtGroup *pRoot = GetTerrainScene()->GetTop();
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");
 #endif
+}
+
+void vtFrame::OnTimeDialog(wxCommandEvent& event)
+{
+	m_pTimeDlg->Show(true);
 }
 
 void vtFrame::OnTimeStop(wxCommandEvent& event)
