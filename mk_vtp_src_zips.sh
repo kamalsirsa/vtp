@@ -15,8 +15,8 @@ DIST_FILE2=${TARGETDIR}/vtp-srcdocs-${DATE}.zip
 # Create the archive containing the Source
 rm -f $DIST_FILE1
 
-zip $DIST_FILE1 VTP/TerrainSDK/configure
-zip $DIST_FILE1 VTP/TerrainSDK/configure.in
+# zip $DIST_FILE1 VTP/TerrainSDK/configure
+# zip $DIST_FILE1 VTP/TerrainSDK/configure.in
 zip $DIST_FILE1 VTP/TerrainSDK/install-sh
 zip $DIST_FILE1 VTP/TerrainSDK/Make.defs
 zip $DIST_FILE1 VTP/TerrainSDK/Makedefs.in
@@ -35,8 +35,8 @@ zip $DIST_FILE1 VTP/TerrainSDK/xmlhelper/include/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtui/*
 
-zip $DIST_FILE1 VTP/TerrainApps/configure
-zip $DIST_FILE1 VTP/TerrainApps/configure.in
+# zip $DIST_FILE1 VTP/TerrainApps/configure
+# zip $DIST_FILE1 VTP/TerrainApps/configure.in
 zip $DIST_FILE1 VTP/TerrainApps/install-sh
 zip $DIST_FILE1 VTP/TerrainApps/Make.defs
 zip $DIST_FILE1 VTP/TerrainApps/Makedefs.in
