@@ -15,7 +15,7 @@
  * For speed, it first test the polygon which was found last time.
  * For spatially linear testing, this can be a 10x speedup.
  */
-int DPolyArray2::FindPoly(const DPoint2 &p)
+int DPolyArray::FindPoly(const DPoint2 &p)
 {
 	if (m_previous_poly != -1)
 	{
@@ -25,7 +25,7 @@ int DPolyArray2::FindPoly(const DPoint2 &p)
 	int num = size();
 	for (int i = 0; i < num; i++)
 	{
-		const DLine2 &poly = at(i);
+		const DPolygon2 &poly = at(i);
 #if 0
 		// possible further speed test: first test against extents
 		if (world_x < poly->xmin || world_x > poly->xmax ||
@@ -56,7 +56,7 @@ void DLine2::Add(const DPoint2 &p)
 		GetAt(i) += p;
 }
 
-void  DLine2::InsertPointAfter(int iInsertAfter, DPoint2 &Point)
+void  DLine2::InsertPointAfter(int iInsertAfter, const DPoint2 &Point)
 {
 	int iNumPoints = GetSize();
 	int iIndex;
@@ -72,13 +72,13 @@ void  DLine2::InsertPointAfter(int iInsertAfter, DPoint2 &Point)
 
 void DLine2::RemovePoint(int i)
 {
-//	int size = GetSize();
-//	for (int x=i; x < size-1; x++)
-//		SetAt(x, GetAt(x+1));
-//	SetSize(GetSize()-1);
 	RemoveAt(i);
 }
 
+/**
+ * With the assumption that this set of points defines a closed polygon, test
+ * whether the polygon contains a given point.
+ */
 bool DLine2::ContainsPoint(const DPoint2 &p) const
 {
 	if (GetData() != NULL)
@@ -206,7 +206,7 @@ double DLine2::Length() const
 }
 
 
-//
+/////////////////////////////////////////////////////////////////////////////
 // DRECT methods
 //
 
@@ -222,7 +222,54 @@ bool DRECT::ContainsLine(const DLine2 &line) const
 
 
 /////////////////////////////////////////////////////////////////////////////
-// FQuat
+// DPolygon2 methods
+//
+
+bool DPolygon2::ContainsPoint(const DPoint2 &p) const
+{
+	// TODO
+	return false;
+}
+
+/**
+ * Add the given amount to all coordinates of the polygon.  Spatially, this
+ * offsets the location of the polygon.
+ */
+void DPolygon2::Add(const DPoint2 &p)
+{
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		DLine2 &ring = at(ringnum);
+		for (unsigned int i = 0; i < ring.GetSize(); i++)
+			ring[i] += p;
+	}
+}
+
+/**
+ * Normally the polygon is stored as a series of rings.  Sometimes it is
+ * necessary to access the polygon as a single array of points instead.
+ *
+ * This method fills a provided DLine2 with all the points of all rings
+ * of the polygon.
+ */
+void DPolygon2::GetAsDLine2(DLine2 &dline) const
+{
+	unsigned int i;
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		const DLine2 &ring = at(ringnum);
+		for (i = 0; i < ring.GetSize(); i++)
+		{
+			dline.Append(ring[i]);
+		}
+
+		// close each ring by repeating the first point of the ring
+		dline.Append(ring[0]);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// FQuat methods
 
 void FQuat::AxisAngle(const FPoint3 &axis, float angle)
 {
@@ -523,30 +570,30 @@ bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point)
 	register int	j, yflag0, yflag1, xflag0;
 	register double ty, tx;
 	register bool inside_flag;
-	const DPoint2 *vtx0, *vtx1;
+	const DPoint2 *vertex0, *vertex1;
 
 	tx = point.x;
 	ty = point.y;
 
-	vtx0 = pgon + (numverts-1);
+	vertex0 = pgon + (numverts-1);
 	/* get test bit for above/below X axis */
-	yflag0 = (vtx0->y >= ty);
-	vtx1 = pgon;
+	yflag0 = (vertex0->y >= ty);
+	vertex1 = pgon;
 
 	inside_flag = false;
 	for (j = numverts+1; --j;)
 	{
-		yflag1 = (vtx1->y >= ty);
+		yflag1 = (vertex1->y >= ty);
 		/* check if endpoints straddle (are on opposite sides) of X axis
 		 * (i.e. the Y's differ); if so, +X ray could intersect this edge.
 		 */
 		if (yflag0 != yflag1)
 		{
-			xflag0 = (vtx0->x >= tx);
+			xflag0 = (vertex0->x >= tx);
 			/* check if endpoints are on same side of the Y axis (i.e. X's
 			 * are the same); if so, it's easy to test if edge hits or misses.
 			 */
-			if (xflag0 == (vtx1->x >= tx))
+			if (xflag0 == (vertex1->x >= tx))
 			{
 				/* if edge's X values both right of the point, must hit */
 				if (xflag0) inside_flag = !inside_flag;
@@ -556,23 +603,23 @@ bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point)
 				/* compute intersection of pgon segment with +X ray, note
 				 * if >= point's X; if so, the ray hits it.
 				 */
-				if ((vtx1->x - (vtx1->y-ty)*
-					 (vtx0->x-vtx1->x)/(vtx0->y-vtx1->y)) >= tx) {
+				if ((vertex1->x - (vertex1->y-ty) *
+					 (vertex0->x - vertex1->x)/(vertex0->y - vertex1->y)) >= tx) {
 					inside_flag = !inside_flag;
 				}
 			}
 		}
 		/* move to next pair of vertices, retaining info as possible */
 		yflag0 = yflag1;
-		vtx0 = vtx1;
-		vtx1 += 1;
+		vertex0 = vertex1;
+		vertex1 += 1;
 	}
 
 	return inside_flag;
 }
 
 /**
- * 2d point in triangle containment test.
+ * 2D point in triangle containment test.
  *
  * \return true if the point is inside the triangle, otherwise false.
  */
@@ -587,7 +634,7 @@ bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
 }
 
 /**
- * 2d point in triangle containment test.
+ * 2D point in triangle containment test.
  *
  * \return true if the point is inside the triangle, otherwise false.
  */
@@ -602,7 +649,7 @@ bool PointInTriangle(const DPoint2 &p, const DPoint2 &p1, const DPoint2 &p2,
 }
 
 /**
- * Compute the 3 barycentric coordinates of a 2d point in a 2d triangle.
+ * Compute the 3 barycentric coordinates of a 2D point in a 2D triangle.
  *
  * \return false if a problem was encountered (e.g. degenerate triangle),
  * otherwise true.
@@ -632,7 +679,7 @@ bool BarycentricCoords(const FPoint2 &p1, const FPoint2 &p2,
 
 
 /**
- * Compute the 3 barycentric coordinates of a 2d point in a 2d triangle.
+ * Compute the 3 barycentric coordinates of a 2D point in a 2D triangle.
  *
  * \return false if a problem was encountered (e.g. degenerate triangle),
  * otherwise true.

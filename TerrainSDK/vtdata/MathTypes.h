@@ -378,7 +378,7 @@ public:
 
 	void Add(const DPoint2 &p);
 
-	void InsertPointAfter(int iInsertAfter, DPoint2 &Point);
+	void InsertPointAfter(int iInsertAfter, const DPoint2 &Point);
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
 	double SegmentLength(unsigned int i) const;
@@ -587,13 +587,29 @@ public:
 
 /////////////////////////////////////
 
+typedef std::vector<DLine2> DLine2Array;
+
 /**
- * A collection of 2d polygons.  Double-precision.
+ * We represent a polygon as a collection of closed rings, each of which
+ * is represented by a DLine2.  The first DLine2 is the 'outside' ring,
+ * any subsequent DLine2 are 'inside' rings, which are holes.
  */
-class DPolyArray2 : public std::vector<DLine2>
+class DPolygon2 : public DLine2Array
 {
 public:
-	DPolyArray2() { m_previous_poly = -1; }
+	bool ContainsPoint(const DPoint2 &p) const;
+	void Add(const DPoint2 &p);
+
+	void GetAsDLine2(DLine2 &dline) const;
+};
+
+/**
+ * A collection of DPolygon2 objects.
+ */
+class DPolyArray : public std::vector<DPolygon2>
+{
+public:
+	DPolyArray() { m_previous_poly = -1; }
 
 	int FindPoly(const DPoint2 &p);
 
