@@ -272,11 +272,11 @@ void vtTerrain::create_textures()
 
 		CreateChoppedTextures(m_pLocalGrid, m_pDIB, iTiles, m_Params.m_iTilesize);
 		if (m_Params.m_bRegular)
-			CreateChoppedAppearances1(m_pTerrApps1,
+			_CreateTiledMaterials1(m_pTerrApps1,
 							 iTiles, m_Params.m_iTilesize, ambient, diffuse,
 							 emmisive);
 		if (m_Params.m_bDynamic)
-			CreateChoppedAppearances2(m_pTerrApps2,
+			_CreateTiledMaterials2(m_pTerrApps2,
 							 iTiles, m_Params.m_iTilesize, ambient, diffuse,
 							 emmisive);
 	}
@@ -289,9 +289,8 @@ void vtTerrain::create_textures()
 		m_pTerrApps2->AddRGBMaterial(RGBf(1.0f, 1.0f, 1.0f),
 									 RGBf(0.2f, 0.2f, 0.2f),
 									 true, !m_Params.m_bPreLit);
-		return;
 	}
-	// We're not going to use it for tree planting, we're done with the DIB
+	// We're not going to use it anymore, so we're done with the DIB
 	if (m_pDIB != NULL)
 	{
 		delete m_pDIB;
@@ -404,19 +403,6 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		bLighting = !m_Params.m_bPreLit;
 		bTextured = true;
 	}
-
-#if 0
-	/*
-	 * Set the debug-heap flag to keep freed blocks in the
-	 * heap's linked list - This will allow us to catch any
-	 * inadvertent use of freed memory
-	 */
-	int tmpDbgFlag;
-	tmpDbgFlag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
-	tmpDbgFlag |= _CRTDBG_CHECK_ALWAYS_DF;
-	tmpDbgFlag |= _CRTDBG_LEAK_CHECK_DF;
-	_CrtSetDbgFlag(tmpDbgFlag);
-#endif
 
 //	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
 //	{
@@ -1265,92 +1251,6 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 	return false;
 }
 
-/////////////////////
-// helpers
-
-vtGeom *CreatePlaneGeom(int iMatIdx, FPoint2 org, FPoint2 size,
-						   float xTiling, float zTiling, int steps)
-{
-	vtGeom *pGeom = new vtGeom();
-	TerrainPatch *geo = new TerrainPatch(VT_Normals | VT_TexCoords, (steps+1)*(steps+1));
-	geo->MakeGrid(steps, steps,
-		size.x/steps, size.y/steps,
-		org.x, org.y,
-		xTiling, zTiling);		// tiling
-	pGeom->AddMesh(geo, iMatIdx);
-	return pGeom;
-}
-
-vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res)
-{
-	vtGeom *pGeom = new vtGeom();
-	vtMesh *geo = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, res*res*2);
-	geo->CreateEllipsoid(FPoint3(fRadius, fRadius, fRadius), res);
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(geo, iMatIdx);
-	return pGeom;
-}
-
-vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
-						   FPoint3 min1, FPoint3 max1, int steps)
-{
-	vtGeom *pGeom = new vtGeom();
-	vtMesh *geo = new vtMesh(GL_LINES, 0, (steps+1)*4);
-
-	FPoint3 p, diff = max1 - min1, step = diff/steps;
-	p.y = diff.y;
-	int i, idx = 0;
-	for (i = 0; i < steps+1; i++)
-	{
-		p.x = min1.x + step.x * i;
-		p.z = min1.z;
-		geo->AddVertex(p);
-		p.z = max1.z;
-		geo->AddVertex(p);
-		geo->AddLine(idx, idx+1);
-		idx += 2;
-	}
-	for (i = 0; i < steps+1; i++)
-	{
-		p.z = min1.z + step.z * i;
-		p.x = min1.x;
-		geo->AddVertex(p);
-		p.x = max1.x;
-		geo->AddVertex(p);
-		geo->AddLine(idx, idx+1);
-		idx += 2;
-	}
-	pGeom->SetMaterials(pMats);
-	pGeom->AddMesh(geo, iMatIdx);
-	return pGeom;
-}
-
-
-/////////////////////
-
-#if 0
-	// what sizes can we support?
-	int d, size, n, tsize, mem, mem_mm;
-	for (d = 8; d <= 10; d++)
-	{
-		for (n = 1; n <= 8; n++)
-		{
-			size = 1 << d;
-			tsize = n * (size-1) + 1;
-			mem = n * n * size * size * 4;
-			mem_mm = mem * 4 / 3;
-
-			// print potential sizes
-			if (mem <= 64 * 1024 * 1024)
-//				TRACE("n = %d  size = %4d  tsize = %4d  mem = %5dK  MM = %5dK\n",
-				TRACE("<tr> <td>%d</td>  <td>%d</td>  <td>%d</td>  <td>%d</td>  <td>%d</td> </tr>\n",
-					n, size, tsize, mem/1024, mem_mm/1024);
-		}
-	}
-#endif
-
-
-///////////////////
 
 void vtTerrain::CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
 									  int patches, int patch_size)
@@ -1403,8 +1303,10 @@ void vtTerrain::CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
 }
 
 
-
-void vtTerrain::CreateChoppedAppearances1(vtMaterialArray *pApp1,
+/*
+ * Creates an array of materials for the brute force terrain geometry.
+ */
+void vtTerrain::_CreateTiledMaterials1(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive)
 {
@@ -1450,7 +1352,10 @@ void vtTerrain::CreateChoppedAppearances1(vtMaterialArray *pApp1,
 }
 
 
-void vtTerrain::CreateChoppedAppearances2(vtMaterialArray *pApp1,
+/*
+ * Creates an array of materials for the dynamic LOD terrain geometry.
+ */
+void vtTerrain::_CreateTiledMaterials2(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive)
 {
@@ -1476,28 +1381,6 @@ void vtTerrain::CreateChoppedAppearances2(vtMaterialArray *pApp1,
 	}
 }
 
-
-
-#if 0
-	// what sizes can we support?
-	int d, size, n, tsize, mem, mem_mm;
-	for (d = 8; d <= 10; d++)
-	{
-		for (n = 1; n <= 8; n++)
-		{
-			size = 1 << d;
-			tsize = n * (size-1) + 1;
-			mem = n * n * size * size * 4;
-			mem_mm = mem * 4 / 3;
-
-			// print potential sizes
-			if (mem <= 64 * 1024 * 1024)
-//				TRACE("n = %d  size = %4d  tsize = %4d  mem = %5dK  MM = %5dK\n",
-				TRACE("<tr> <td>%d</td>  <td>%d</td>  <td>%d</td>  <td>%d</td>  <td>%d</td> </tr>\n",
-					n, size, tsize, mem/1024, mem_mm/1024);
-		}
-	}
-#endif
 
 void vtTerrain::ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib)
 {

@@ -212,10 +212,10 @@ protected:
 
 	void CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
 								int patches, int patch_size);
-	void CreateChoppedAppearances1(vtMaterialArray *pApp1,
+	void _CreateTiledMaterials1(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
-	void CreateChoppedAppearances2(vtMaterialArray *pApp1,
+	void _CreateTiledMaterials2(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
 	void ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib);
@@ -297,11 +297,4 @@ protected:
 	vtProjection	m_proj;
 };
 
-//helpers
-vtGeom *CreatePlaneGeom(FPoint2 org, FPoint2 size,
-						   float xTiling, float zTiling, int steps);
-vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, float fRadius, int res);
-vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
-					   FPoint3 min1, FPoint3 max1, int steps);
-
-#endif
+#endif	// TERRAINH
