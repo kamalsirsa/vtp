@@ -140,9 +140,10 @@ public:
 	float   m_fFogDistance;
 
 	std::vector<vtTagArray> m_Layers;
-	int	   m_iStructDistance;
-	bool   m_bStructureShadows;
-	int    m_bStructureRez;
+	int		m_iStructDistance;
+	bool	m_bStructureShadows;
+	int		m_iStructureRez;
+	float	m_fDarkness;
 	wxString2 m_strContent;
 
 	bool	m_bSky;

@@ -76,6 +76,7 @@ public:
 	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform, int iRez);
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
+	void SetShadowDarkness(float fDarkness);
 	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 	void ShadowVisibleNode(vtNode *node, bool bVis);
 

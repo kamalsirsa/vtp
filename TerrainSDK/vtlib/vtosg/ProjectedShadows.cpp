@@ -27,10 +27,9 @@
 
 CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallback(
 	osg::Node *shadower, int iRez, const osg::Vec3& position,
-	const osg::Vec4 &ambientLightColor, unsigned int textureUnit) :
+	unsigned int textureUnit) :
 		m_shadower(shadower),
 		m_position(position),
-		m_ambientLightColor(ambientLightColor),
 		m_unit(textureUnit),
 		m_shadowState(new osg::StateSet),
 		m_shadowedState(new osg::StateSet)
@@ -47,6 +46,7 @@ CreateProjectedShadowTextureCullCallback::CreateProjectedShadowTextureCullCallba
 	m_texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
 	m_bRecomputeShadows = false;
 	m_iRez = iRez;
+	m_fShadowDarkness = 0.8f;
 
 	shadow_ignore_nodes = new Array<osg::Node *>;
 }
@@ -173,15 +173,15 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 			osg::Matrix::scale(0.5f,0.5f,0.5f);
 
 	// make the material black for a shadow.
-	osg::Material* material = new osg::Material;
-	material->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
-	material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
+	m_material = new osg::Material;
+	m_material->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
+	m_material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,m_fShadowDarkness));
 //		material->setEmission(osg::Material::FRONT_AND_BACK,m_ambientLightColor);
 	// Do not pick up the emmissive colour from the sun light ambient or else
 	// we will lose shadows when the ambient peaks in the middle of the day
-	material->setEmission(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
-	material->setShininess(osg::Material::FRONT_AND_BACK,0.0f);
-	m_shadowState->setAttribute(material,SA_OVERRIDE);
+	m_material->setEmission(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,1.0f));
+	m_material->setShininess(osg::Material::FRONT_AND_BACK,0.0f);
+	m_shadowState->setAttribute(m_material.get(), SA_OVERRIDE);
 
 #if 1
 	// Roger suggested this code on 2004.05.27, to avoid the shadows cast by
@@ -190,6 +190,13 @@ void CreateProjectedShadowTextureCullCallback::DoRecomputeShadows(osg::Node& nod
 	pCullFace->setMode(osg::CullFace::FRONT);
 	m_shadowState->setAttribute(pCullFace.get(), SA_ON|SA_OVERRIDE);
 	m_shadowState->setMode(GL_CULL_FACE, SA_ON|SA_OVERRIDE);
+#endif
+
+#if 1
+	// This blend function lets us vary the darkness of the shadow with the
+	//  alpha component of the diffure color of the material.
+	osg::ref_ptr<osg::BlendFunc>	pBlendFunc = new osg::BlendFunc;
+	m_shadowState->setAttributeAndModes(pBlendFunc.get(), SA_ON|SA_OVERRIDE);
 #endif
 
 	// Kill any textures
@@ -311,3 +318,9 @@ void CreateProjectedShadowTextureCullCallback::SetLightPosition(const osg::Vec3&
 	}
 }
 
+void CreateProjectedShadowTextureCullCallback::SetShadowDarkness(float fDarkness)
+{
+	m_fShadowDarkness = fDarkness;
+	if (m_material.valid())
+		m_material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(0.0f,0.0f,0.0f,m_fShadowDarkness));
+}

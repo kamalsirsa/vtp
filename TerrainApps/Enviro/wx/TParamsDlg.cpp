@@ -207,7 +207,8 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AddValidator(ID_CONTENT_FILE, &m_strContent);
 	AddNumValidator(ID_STRUCT_DISTANCE, &m_iStructDistance);
 	AddValidator(ID_CHECK_STRUCTURE_SHADOWS, &m_bStructureShadows);
-	AddValidator(ID_CHOICE_SHADOW_REZ, &m_bStructureRez);
+	AddValidator(ID_CHOICE_SHADOW_REZ, &m_iStructureRez);
+	AddNumValidator(ID_DARKNESS, &m_fDarkness);
 	AddValidator(ID_VEHICLES, &m_bVehicles);
 
 	// Atmosphere and water page
@@ -318,7 +319,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_Layers = Params.m_Layers;
 	m_iStructDistance = Params.GetValueInt(STR_STRUCTDIST);
 	m_bStructureShadows = Params.GetValueBool(STR_STRUCT_SHADOWS);
-	m_bStructureRez = vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
+	m_iStructureRez = vt_log2(Params.GetValueInt(STR_SHADOW_REZ))-8;
+	m_fDarkness =		Params.GetValueFloat(STR_SHADOW_DARKNESS);
 	m_strContent =	  Params.GetValueString(STR_CONTENT_FILE);
 
 	m_bVehicles =	   Params.GetValueBool(STR_VEHICLES);
@@ -430,7 +432,8 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	Params.SetValueInt(STR_STRUCTDIST, m_iStructDistance);
 	Params.SetValueBool(STR_STRUCT_SHADOWS, m_bStructureShadows);
-	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_bStructureRez+8));
+	Params.SetValueInt(STR_SHADOW_REZ, 1 << (m_iStructureRez+8));
+	Params.SetValueFloat(STR_SHADOW_DARKNESS, m_fDarkness);
 	Params.SetValueString(STR_CONTENT_FILE, m_strContent.to_utf8());
 
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
@@ -509,6 +512,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_DIRT)->Enable(m_bRoads);
 
 	FindWindow(ID_CHOICE_SHADOW_REZ)->Enable(m_bStructureShadows);
+	FindWindow(ID_DARKNESS)->Enable(m_bStructureShadows);
 
 	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
 	GetDepressOceanOffset()->Enable(m_bDepressOcean);
