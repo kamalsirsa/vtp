@@ -14,6 +14,7 @@
 using namespace std;
 
 #include "config_vtdata.h"
+#include "vtdata/vtLog.h"
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
 #include "vtString.h"
@@ -503,15 +504,24 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 	if (progress_callback != NULL) progress_callback(0);
 
 	// get dimension IDs
-	int id_side, id_xysize;
+	int id_side = 0, id_xysize = 0;
 	nc_inq_dimid(id, "side", &id_side);
-	nc_inq_dimid(id, "xysize", &id_xysize);
-	size_t xysize_length;
+	status = nc_inq_dimid(id, "xysize", &id_xysize);
+	if (status != NC_NOERR)
+	{
+		// Error messages can be turned into strings with nc_strerror
+		VTLOG("Could not determine size of CDF file. Error: ");
+		VTLOG(nc_strerror(status));
+		nc_close(id);				// close netCDF dataset
+		return false;
+	}
+
+	size_t xysize_length = 0;
 	nc_inq_dimlen(id, id_xysize, &xysize_length);
 
 	// get variable IDs
-	int id_xrange, id_yrange, id_zrange;
-	int id_spacing, id_dimension, id_z;
+	int id_xrange = 0, id_yrange = 0, id_zrange = 0;
+	int id_spacing = 0, id_dimension = 0, id_z = 0;
 	nc_inq_varid(id, "x_range", &id_xrange);
 	nc_inq_varid(id, "y_range", &id_yrange);
 	nc_inq_varid(id, "z_range", &id_zrange);
@@ -521,7 +531,7 @@ bool vtElevationGrid::LoadFromCDF(const char *szFileName,
 
 	// get values of variables
 	double xrange[2], yrange[2], zrange[2], spacing[2];
-	int dimension[2];
+	int dimension[2] = { 0, 0 };
 	nc_get_var_double(id, id_xrange, xrange);
 	nc_get_var_double(id, id_yrange, yrange);
 	nc_get_var_double(id, id_zrange, zrange);
