@@ -348,21 +348,15 @@ void LayerDlg::OnVisible( wxCommandEvent &event )
 	bool bVis = event.IsChecked();
 
 	vtNode *pThing = GetNodeFromItem(m_item);
-	if (pThing) {
+	if (pThing)
+	{
 		pThing->SetEnabled(bVis);
 		return;
 	}
-
 	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
-	if (sa) {
-		for (unsigned int j = 0; j < sa->GetSize(); j++) {
-			vtStructure3d *str3d = sa->GetStructure3d(j);
-			if (str3d) {
-				pThing = str3d->GetContained();
-				if (pThing) 
-					pThing->SetEnabled(bVis);
-			}
-		}
+	if (sa)
+	{
+		sa->SetEnabled(bVis);
 		LayerItemData *data = GetLayerDataFromItem(m_item);
 		if (data)
 			data->last_visible = bVis;
