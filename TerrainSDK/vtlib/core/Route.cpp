@@ -246,11 +246,8 @@ void vtRoute::_StringWires(long ll, vtHeightField3d *pHeightField)
 	FPoint3 offset, wire0, wire1;
 
 	vtMesh *pWireMesh;
-	for (int j = 0; j< 7; j++)	//7== max number of wires per structure.
+	for (int j = 0; j < st1->m_iNumWires; j++)
 	{
-		if (j >= st1->m_iNumWires)
-			continue;	// skip if no wire.
-
 		pWireMesh = new vtMesh(GL_LINE_STRIP, 0, numiterations+1);
 
 		offset = st0->m_fpWireAtt1[j];
