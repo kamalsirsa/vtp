@@ -312,31 +312,7 @@ void RouteFollowerEngine::Eval()
 }
 
 
-//////////////////////////////////////////////////////////////////////
-
-SimpleBBEngine::SimpleBBEngine(vtTransform* model, vtCamera* camera)
-{
-	m_model = model;
-	SetTarget(camera);
-	m_pCamera = camera;
-	m_fAngle = 0;
-}
-
-void SimpleBBEngine::Eval()
-{
-	//get the target and it's location
-	vtCamera* pTarget = (vtCamera*) GetTarget();
-	if (!pTarget)
-		return;
-	FPoint3 target_loc = m_pCamera->GetTrans();
-	FPoint3 model_loc = m_model->GetTrans();
-
-	float angle = atan2f(-(target_loc.z - model_loc.z), target_loc.x - model_loc.x);
-
-	m_model->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), angle - m_fAngle);
-	m_fAngle = angle;
-}
-
+/////////////////////////////////////////////////////////////////////////////
 
 //
 // Terrain picking ability

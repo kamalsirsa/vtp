@@ -91,17 +91,6 @@ public:
 	vtCamera *m_pCamera;
 };
 
-class SimpleBBEngine : public vtEngine
-{
-public:
-	SimpleBBEngine(vtTransform* model, vtCamera* camera);
-	void Eval();
-
-	vtTransform *m_model;
-	vtCamera *m_pCamera;
-	float m_fAngle;
-};
-
 ///////////////////////////////////////////////////
 
 class TerrainPicker : public vtLastMouse
