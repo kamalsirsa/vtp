@@ -16,6 +16,7 @@
 #include "vtui/AutoDialog.h"
 #include "vtui/wxString2.h"
 #include "vtdata/TParams.h"
+#include "vtdata/vtTime.h"
 
 // WDR: class declarations
 
@@ -90,7 +91,7 @@ public:
 
 	// time
 	bool	m_bTimeOn;
-	int		m_iInitTime;
+	vtTime	m_InitTime;
 	float   m_fTimeSpeed;
 
 	// texture
@@ -215,6 +216,7 @@ private:
 	void OnChoiceLabelFile( wxCommandEvent &event );
 	void OnChoiceLocFile( wxCommandEvent &event );
 	void OnChoiceInitLocation( wxCommandEvent &event );
+	void OnSetInitTime( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

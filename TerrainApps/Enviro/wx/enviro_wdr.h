@@ -149,54 +149,55 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_LOCFILE 10096
 #define ID_INIT_LOCATION 10097
 #define ID_HITHER 10098
-#define ID_INITTIME 10099
-#define ID_TIMEMOVES 10100
-#define ID_TIMESPEED 10101
+#define ID_TEXT_INIT_TIME 10099
+#define ID_SET_INIT_TIME 10100
+#define ID_TIMEMOVES 10101
+#define ID_TIMESPEED 10102
 wxSizer *TParams4Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TREECTRL 10102
-#define ID_ADD_PATH 10103
-#define ID_ADD_TERRAIN 10104
-#define ID_COPY 10105
-#define ID_DELETE 10106
-#define ID_EDIT_PARAMS 10107
+#define ID_TREECTRL 10103
+#define ID_ADD_PATH 10104
+#define ID_ADD_TERRAIN 10105
+#define ID_COPY 10106
+#define ID_DELETE 10107
+#define ID_EDIT_PARAMS 10108
 wxSizer *TerrManFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_OCEANPLANE 10108
-#define ID_OCEANPLANEOFFSET 10109
-#define ID_DEPRESSOCEAN 10110
-#define ID_DEPRESSOCEANOFFSET 10111
-#define ID_SKY 10112
-#define ID_SKYTEXTURE 10113
-#define ID_HORIZON 10114
-#define ID_FOG 10115
-#define ID_FOG_DISTANCE 10116
+#define ID_OCEANPLANE 10109
+#define ID_OCEANPLANEOFFSET 10110
+#define ID_DEPRESSOCEAN 10111
+#define ID_DEPRESSOCEANOFFSET 10112
+#define ID_SKY 10113
+#define ID_SKYTEXTURE 10114
+#define ID_HORIZON 10115
+#define ID_FOG 10116
+#define ID_FOG_DISTANCE 10117
 wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LABELS 10117
-#define ID_LABEL_FILE 10118
-#define ID_LABEL_FIELD 10119
-#define ID_LABEL_HEIGHT 10120
-#define ID_LABEL_SIZE 10121
+#define ID_LABELS 10118
+#define ID_LABEL_FILE 10119
+#define ID_LABEL_FIELD 10120
+#define ID_LABEL_HEIGHT 10121
+#define ID_LABEL_SIZE 10122
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 extern wxSizer *g_pLayerSizer1;
-#define ID_LAYER_TREE 10122
+#define ID_LAYER_TREE 10123
 extern wxSizer *g_pLayerSizer2;
-#define ID_SHOW_ALL 10123
-#define ID_VISIBLE 10124
-#define ID_ZOOM_TO 10125
+#define ID_SHOW_ALL 10124
+#define ID_VISIBLE 10125
+#define ID_ZOOM_TO 10126
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPIN_YEAR 10126
-#define ID_SPIN_MONTH 10127
-#define ID_SPIN_DAY 10128
-#define ID_SPIN_HOUR 10129
-#define ID_SPIN_MINUTE 10130
-#define ID_SPIN_SECOND 10131
-#define ID_TEXT_SPEED 10132
-#define ID_SLIDER_SPEED 10133
-#define ID_STOP 10134
+#define ID_SPIN_YEAR 10127
+#define ID_SPIN_MONTH 10128
+#define ID_SPIN_DAY 10129
+#define ID_SPIN_HOUR 10130
+#define ID_SPIN_MINUTE 10131
+#define ID_SPIN_SECOND 10132
+#define ID_TEXT_SPEED 10133
+#define ID_SLIDER_SPEED 10134
+#define ID_STOP 10135
 wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

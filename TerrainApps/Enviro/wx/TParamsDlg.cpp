@@ -23,6 +23,7 @@
 #include "vtdata/FilePath.h"		// for FindFileOnPaths()
 #include "vtui/Helper.h"
 #include "TParamsDlg.h"
+#include "TimeDlg.h"
 
 #define NTILES 4
 
@@ -88,6 +89,8 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 	EVT_TEXT( ID_LABEL_FILE, TParamsDlg::OnChoiceLabelFile )
 	EVT_TEXT( ID_LOCFILE, TParamsDlg::OnChoiceLocFile )
 	EVT_CHOICE( ID_INIT_LOCATION, TParamsDlg::OnChoiceInitLocation )
+
+	EVT_BUTTON( ID_SET_INIT_TIME, TParamsDlg::OnSetInitTime )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -148,7 +151,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 
 	// time
 	m_bTimeOn =			Params.GetValueBool(STR_TIMEON);
-	m_iInitTime =		Params.GetValueInt(STR_INITTIME);
+	m_InitTime.SetFromString(Params.GetValueString(STR_INITTIME));
 	m_fTimeSpeed =		Params.GetValueFloat(STR_TIMESPEED);
 
 	// texture
@@ -252,7 +255,7 @@ void TParamsDlg::GetParams(TParams &Params)
 
 	// time
 	Params.SetValueBool(STR_TIMEON, m_bTimeOn);
-	Params.SetValueInt(STR_INITTIME, m_iInitTime);
+	Params.SetValueString(STR_INITTIME, m_InitTime.GetAsString());
 	Params.SetValueFloat(STR_TIMESPEED, m_fTimeSpeed);
 
 	// texture
@@ -567,6 +570,8 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	GetUseGrid()->SetValue(!m_bTin);
 	GetUseTin()->SetValue(m_bTin);
 
+	m_strInitTime = asctime(&m_InitTime.GetTM());
+
 	// overall name
 	AddValidator(ID_TNAME, &m_strTerrainName);
 
@@ -594,7 +599,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// time
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
-	AddNumValidator(ID_INITTIME, &m_iInitTime);
+	AddValidator(ID_TEXT_INIT_TIME, &m_strInitTime);
 	AddNumValidator(ID_TIMESPEED, &m_fTimeSpeed, 2);
 
 	// texture
@@ -831,5 +836,20 @@ void TParamsDlg::OnChoiceInitLocation( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	m_strInitLocation = m_pLocField->GetString(m_iInitLocation);
+}
+
+void TParamsDlg::OnSetInitTime( wxCommandEvent &event )
+{
+	TimeDlg dlg(this, -1, _("Set Initial Time"));
+	dlg.AddOkCancel();
+	dlg.SetTime(m_InitTime);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		dlg.GetTime(m_InitTime);
+		m_strInitTime = asctime(&m_InitTime.GetTM());
+		m_bSetting = true;
+		TransferDataToWindow();
+		m_bSetting = false;
+	}
 }
 
