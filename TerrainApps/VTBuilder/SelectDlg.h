@@ -39,7 +39,7 @@ public:
 	// WDR: method declarations for SelectDlg
 	wxComboBox* GetComboValue()  { return (wxComboBox*) FindWindow( ID_COMBO_VALUE ); }
 	wxChoice* GetCondition()  { return (wxChoice*) FindWindow( ID_CONDITION ); }
-	wxChoice* GetField()  { return (wxChoice*) FindWindow( ID_FIELD ); }
+	wxListBox* GetField()  { return (wxListBox*) FindWindow( ID_FIELD ); }
 	void FillValuesControl();
 	void SetRawLayer(vtRawLayer *pRL);
 
@@ -56,6 +56,7 @@ private:
 	// WDR: handler declarations for SelectDlg
 	void OnChoiceField( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
+	void OnOK( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

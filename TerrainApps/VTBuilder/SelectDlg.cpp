@@ -21,7 +21,8 @@
 // WDR: event table for SelectDlg
 
 BEGIN_EVENT_TABLE(SelectDlg,AutoDialog)
-	EVT_CHOICE( ID_FIELD, SelectDlg::OnChoiceField )
+    EVT_BUTTON( wxID_OK, SelectDlg::OnOK )
+	EVT_LISTBOX( ID_FIELD, SelectDlg::OnChoiceField )
 END_EVENT_TABLE()
 
 SelectDlg::SelectDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -46,10 +47,25 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_iCondition = 0;
 	m_strValue = "";
 
+	vtProjection proj;
+	m_pLayer->GetProjection(proj);
+
+	if (proj.IsGeographic())
+	{
+		GetField()->Append("X (longitude)", (void *) 900);
+		GetField()->Append("Y (latitude)", (void *) 901);
+		GetField()->Append("Z (altitude)", (void *) 902);
+	}
+	else
+	{
+		GetField()->Append("X (easting)", (void *) 900);
+		GetField()->Append("Y (northing)", (void *) 901);
+		GetField()->Append("Z (altitude)", (void *) 902);
+	}
 	for (i = 0; i < m_pLayer->GetNumFields(); i++)
 	{
 		Field *field = m_pLayer->GetField(i);
-		GetField()->Append((const char *) field->m_name);
+		GetField()->Append((const char *) field->m_name, (void *) 0);
 	}
 	GetField()->SetSelection(0);
 
@@ -64,9 +80,9 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	FillValuesControl();
 
-	AddValidator(ID_FIELD, &m_iField);
+//	AddValidator(ID_FIELD, &m_iField);
 	AddValidator(ID_CONDITION, &m_iCondition);
-	AddValidator(ID_COMBO_VALUE, &m_strValue);
+//	AddValidator(ID_COMBO_VALUE, &m_strValue);
 
 	wxDialog::OnInitDialog(event);	// calls TransferValuesToWindow
 
@@ -81,6 +97,12 @@ void SelectDlg::FillValuesControl()
 
 	GetComboValue()->Clear();
 
+	if (m_iField < 0)
+	{
+		GetComboValue()->Append("0.0");
+		GetComboValue()->SetSelection(0);
+		return;
+	}
 	for (i = 0; i < m_pLayer->NumEntities(); i++)
 	{
 		m_pLayer->GetValueAsString(i, m_iField, str);
@@ -108,7 +130,30 @@ void SelectDlg::OnChoiceField( wxCommandEvent &event )
 	if (m_bSetting)
 		return;
 
+	m_iField = GetField()->GetSelection();
+
+	// work around the 3 "special" items
+	void *data = GetField()->GetClientData(m_iField);
+	if (data == (void*) 900)
+		m_iField = -1;
+	else if (data == (void*) 901)
+		m_iField = -2;
+	else if (data == (void*) 902)
+		m_iField = -3;
+	else
+		m_iField -= 3;
+
 	TransferDataFromWindow();
 	FillValuesControl();
 }
+
+void SelectDlg::OnOK( wxCommandEvent &event )
+{
+	// Using a validator for Combo Box doesn't work perfectly in last version
+	// of wxWindows.  Get the value directly instead.
+	m_strValue = GetComboValue()->GetValue();
+
+	wxDialog::OnOK(event);
+}
+
 
