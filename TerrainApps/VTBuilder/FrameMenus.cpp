@@ -477,8 +477,8 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 				uvw.y = v;
 				ico.faceuv_to_latlon(face, uvw, lat, lon);
 
-				int source_x = (int) (lon / PI2 * input_x);
-				int source_y = (int) (lat / PI * input_y);
+				int source_x = (int) (lon / PI2d * input_x);
+				int source_y = (int) (lat / PId * input_y);
 
 				r = img.GetRed(source_x, source_y);
 				g = img.GetGreen(source_x, source_y);
@@ -608,11 +608,12 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 {
 	wxString filter = "Native Layer Formats||";
 
-	AddType(filter, FSTRING_RMF);	// roads
 	AddType(filter, FSTRING_BT);	// elevation
+	AddType(filter, FSTRING_RMF);	// roads
 	AddType(filter, FSTRING_SHP);	// raw
+	AddType(filter, FSTRING_UTL);	// utility towers
 	AddType(filter, FSTRING_VTST);	// structures
-	AddType(filter, FSTRING_UTL);	//utility towers
+	AddType(filter, FSTRING_VF);	// vegetation files
 
 	// ask the user for a filename
 	wxFileDialog loadFile(NULL, "Open Layer", "", "", filter, wxOPEN);

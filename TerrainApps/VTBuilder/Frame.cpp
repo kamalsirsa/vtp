@@ -350,6 +350,12 @@ void MainFrame::LoadLayer(const wxString &fname)
 		if (pSL->Load(fname))
 			pLayer = pSL;
 	}
+	if (ext.CmpNoCase("vf") == 0)
+	{
+		vtVegLayer *pVL = new vtVegLayer();
+		if (pVL->Load(fname))
+			pLayer = pVL;
+	}
 	if (ext.CmpNoCase("utl") == 0)
 	{
 		vtUtilityLayer *pTR = new vtUtilityLayer();
