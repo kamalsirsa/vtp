@@ -378,7 +378,7 @@ void TagVisitor::startElement(const char *name, const XMLAttributes &atts)
 void TagVisitor::endElement(const char *name)
 {
 	if (m_level == 2)
-		m_pArray->SetValueString(name, m_data.c_str());
+		m_pArray->SetValueString(name, m_data.c_str(), true);
 	m_level--;
 }
 
