@@ -10,6 +10,7 @@
 #include "vtdata/vtLog.h"
 #include "vtdata/SPA.h"
 #include "SkyDome.h"
+#include "GeomUtil.h"	// for CreateBoundSphereGeom
 
 // minimum and maximum ambient light values
 const float MIN_AMB = 0.0f;
