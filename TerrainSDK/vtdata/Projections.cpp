@@ -117,66 +117,33 @@ void vtProjection::SetDatum(int iDatum)
 	// OGR does not have functionality to change the Datum of an
 	// existing coordinate system.
 	//
-	// Try to fake it by just changing the DATUM node.  This is not
-	// good enough for all purposes, since it doesn't change the
-	// underlying properties such as spheroid, but it appears to suffice
-	// to make coordinate transformations work (which use PROJ.4)
-
 	if (IsGeographic())
 	{
-		// re-create the object with the new datum
+		// simple case: re-create the object with the new datum
 		SetGeogCSFromDatum(iDatum);
-	}
-	else if (iDatum < 24)
-	{
-		DATUM datum = (DATUM) iDatum;
-		// Convert the DATUM enumeration to a Datum string
-		OGR_SRSNode *dnode = GetAttrNode("DATUM");
-		if (!dnode)
-			return;
-		switch (datum)
-		{
-			case AUSTRALIAN_GEODETIC_1966:
-				dnode->GetChild(0)->SetValue("Australian_Geodetic_Datum_1966"); break;
-			case AUSTRALIAN_GEODETIC_1984:
-				dnode->GetChild(0)->SetValue("Australian_Geodetic_Datum_1984"); break;
-			case EUROPEAN_DATUM_1950:
-				dnode->GetChild(0)->SetValue("European_Datum_1950"); break;
-			case NAD27:
-				dnode->GetChild(0)->SetValue("North_American_Datum_1927"); break;
-			case NAD83:
-				dnode->GetChild(0)->SetValue("North_American_Datum_1983"); break;
-			case OLD_HAWAIIAN_MEAN:
-				dnode->GetChild(0)->SetValue("Old_Hawaiian"); break;
-			case ORDNANCE_SURVEY_1936:
-				dnode->GetChild(0)->SetValue("OSGB_1936"); break;
-			case PUERTO_RICO:
-				dnode->GetChild(0)->SetValue("Puerto_Rico"); break;
-			case WGS_72:
-				dnode->GetChild(0)->SetValue("WGS_1972"); break;
-			default:
-			case WGS_84:
-				dnode->GetChild(0)->SetValue("WGS_1984"); break;
-		}
 	}
 	else
 	{
-		OGR_SRSNode *dnode = GetAttrNode("DATUM");
-		if (!dnode)
-			return;
-		vtString str = DatumToString(iDatum);
-		WKTMassageDatum(str);
-		dnode->GetChild(0)->SetValue((const char *)str);
+		// For a projected CS (PROJCS), we only want to change the geographic
+		// part (GEOGCS).  Step 1: create the desired GEOCS
+		vtProjection geo;
+		geo.SetGeogCSFromDatum(iDatum);
+		OGR_SRSNode *clone = geo.GetRoot()->Clone();
+
+		// Step 2, find the GEOGCS part of the PROJCS
+		OGR_SRSNode *root = GetRoot();
+
+		// Step 3, replace it
+		root->DestroyChild(1);
+		root->InsertChild(clone, 1);
 	}
-	// TODO: also change SPHEROID node to match desired DATUM?
-//	OGR_SRSNode *enode1 = pSource->GetAttrNode("SPHEROID");
 }
 
 /**
  * Return the datum as an EPSG code (an integer in the range of 6120 - 6904),
  * or -1 if the datum could not be determined.
  */
-int vtProjection::GetDatum()
+int vtProjection::GetDatum() const
 {
 	// Convert new DATUM string to old Datum enum
 	const char *datum_string = GetAttrValue("DATUM");
@@ -204,7 +171,7 @@ int vtProjection::GetDatum()
 	- LU_FEET_INT - Feet (International Foot)
 	- LU_FEET_US - Feet (U.S. Survey Foot)
  */
-LinearUnits vtProjection::GetUnits()
+LinearUnits vtProjection::GetUnits() const
 {
 	if( IsGeographic() )
 		return LU_DEGREES;  // degrees
@@ -548,6 +515,29 @@ double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2,
 	return gd.S;
 }
 
+void vtProjection::LogDescription() const
+{
+	LinearUnits lu = GetUnits();
+
+	VTLOG("Units: %s\n", GetLinearUnitName(lu));
+	VTLOG("WTK: ");
+
+	// work around GDAL problem: exportToWkt is not yet const
+	OGRSpatialReference *self = (OGRSpatialReference *)this;
+
+	char *wkt;
+	OGRErr err = self->exportToWkt(&wkt);
+	if (err != OGRERR_NONE)
+		VTLOG("Error\n");
+	else
+	{
+		g_Log._Log(wkt);
+		g_Log._Log("\n");
+		OGRFree(wkt);
+	}
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // Helper functions
 
@@ -869,6 +859,17 @@ double GetMetersPerUnit(LinearUnits lu)
 	return 1.0;
 };
 
+const char *GetLinearUnitName(LinearUnits lu)
+{
+	switch (lu)
+	{
+	case LU_DEGREES:  return "Degrees";
+	case LU_METERS:	  return "Meters";
+	case LU_FEET_INT: return "Feet";
+	case LU_FEET_US:  return "Feet (US)";
+	}
+	return "Unknown";
+}
 
 static const char *papszDatumEquiv[] =
 {
