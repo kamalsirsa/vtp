@@ -1143,10 +1143,9 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			m_pStructure = m_pBuilding;
 			m_state = 2;
 			m_iLevel = 0;
-
-			attval = atts.getValue("Elevation");
+			attval = atts.getValue("ElevationOffset");
 			if (attval)
-				m_pBuilding->SetBaseElevation((float) atof(attval));
+				m_pBuilding->SetElevationOffset((float) atof(attval));
 		}
 		else if (!strcmp(name, "Linear"))
 		{
