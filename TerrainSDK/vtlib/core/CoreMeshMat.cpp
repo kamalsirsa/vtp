@@ -561,6 +561,41 @@ void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 }
 
 /**
+ * Adds an rectangular surface to this mesh.
+ *
+ * \param tip The top point of the cone.
+ */
+void vtMeshBase::CreateRectangle(int iXQuads, int iZQuads,
+								 const FPoint3 &base, const FPoint3 &size,
+								 float fTiling)
+{
+	int iXVerts = iXQuads + 1;
+	int iZVerts = iZQuads + 1;
+	int i, j;
+
+	FPoint3 pos, up(0, 1, 0);
+	for (i = 0; i < iXVerts; i++)
+	{
+		for (j = 0; j < iZVerts; j++)
+		{
+			pos = base + FPoint3((i * size.x), 0, (j * size.z));
+			int vidx = AddVertex(pos);
+
+			if (GetVtxType() & VT_Normals)
+				SetVtxNormal(vidx, up);
+
+			if (GetVtxType() & VT_TexCoords)		/* compute tex coords */
+			{
+				FPoint2 tc((float) i/iXQuads * fTiling,
+							(float) j/iZQuads * fTiling);
+				SetVtxTexCoord(vidx, tc);
+			}
+		}
+	}
+	CreateRectangularMesh(iXVerts, iZVerts);
+}
+
+/**
  * Transform all the vertices of the mesh by the indicated matrix.
  */
 void vtMeshBase::TransformVertices(FMatrix4 &mat)
@@ -693,6 +728,23 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
 	return pGeom;
 }
 
+vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
+						const FPoint2 &base, const FPoint2 &size,
+						float fTiling, int steps)
+{
+	vtGeom *pGeom = new vtGeom();
+	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, steps * steps);
+
+	mesh->CreateRectangle(steps, steps, FPoint3(base.x, 0, base.y),
+		FPoint3(size.x / steps, 0, size.y / steps), fTiling);
+
+	pGeom->SetMaterials(pMats);
+	pGeom->AddMesh(mesh, iMatIdx);
+
+	mesh->Release();	// pass ownership
+	return pGeom;
+}
+
 
 /**
  * Create a sphere geometry with the indicated material, radius and resolution.
@@ -708,7 +760,7 @@ vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res)
  * \param res	  The resolution (tesselation) of the sphere.  The number of
  *		vertices in the result will be res*res*2.
  */
-vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						 float fRadius, int res)
 {
 	vtGeom *pGeom = new vtGeom();
@@ -742,7 +794,7 @@ vtGeom *CreateSphereGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
  *		false for a cylinder with its base at the origin that extends outward.
  * \param direction An orientation, 0-2 corresponds to X, Y, Z.  Default is 1 (Y).
  */
-vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
+vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
 						   float fHeight, float fRadius, int res, bool bTop,
 						   bool bBottom, bool bCentered, int direction)
 {
@@ -763,8 +815,8 @@ vtGeom *CreateCylinderGeom(vtMaterialArray *pMats, int iMatIdx, int iVertType,
 	return pGeom;
 }
 
-vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
-						   FPoint3 min1, FPoint3 max1, int steps)
+vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
+						   const FPoint3 &min1, const FPoint3 &max1, int steps)
 {
 	vtGeom *pGeom = new vtGeom();
 	vtMesh *mesh = new vtMesh(GL_LINES, 0, (steps+1)*4);
