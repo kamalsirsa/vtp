@@ -380,7 +380,11 @@ void GetTempFolderName(char *path, const char *base)
 	if (temp)
 		strcpy(path, temp);
 	else
+#if WIN32
 		strcpy(path, "C:/TEMP");
+#else
+		strcpy(path, "/tmp");
+#endif
 	strcat(path, "/");
 	strcat(path, tmp);
 	strcat(path, "_temp");
