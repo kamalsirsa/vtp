@@ -347,7 +347,7 @@ void vtMesh::SetVtxPos(int i, const FPoint3&p)
 	m_vertices->set(s, i);
 }
 
-FPoint3 vtMesh::GetVtxPos(int i)
+FPoint3 vtMesh::GetVtxPos(int i) const
 {
 	FPoint3 p;
 	s2v( m_vertices->get(i), p);
@@ -361,7 +361,7 @@ void vtMesh::SetVtxNormal(int i, const FPoint3&p)
 	m_normals->set(s, i);
 }
 
-FPoint3 vtMesh::GetVtxNormal(int i)
+FPoint3 vtMesh::GetVtxNormal(int i) const
 {
 	FPoint3 p;
 	s2v( m_normals->get(i), p);
@@ -375,7 +375,7 @@ void vtMesh::SetVtxColor(int i, const RGBf&p)
 	m_colours->set(s, i);
 }
 
-RGBf vtMesh::GetVtxColor(int i)
+RGBf vtMesh::GetVtxColor(int i) const
 {
 	RGBf p;
 	s2v( m_colours->get(i), p);

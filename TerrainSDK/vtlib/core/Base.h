@@ -171,13 +171,13 @@ public:
 	virtual void AddQuadStrip(int iNVerts, int iStartIndex) = 0;
 
 	virtual void SetVtxPos(int, const FPoint3&) = 0;
-	virtual FPoint3 GetVtxPos(int i) = 0;
+	virtual FPoint3 GetVtxPos(int i) const = 0;
 
 	virtual void SetVtxNormal(int, const FPoint3&) = 0;
-	virtual FPoint3 GetVtxNormal(int i) = 0;
+	virtual FPoint3 GetVtxNormal(int i) const = 0;
 
 	virtual void SetVtxColor(int, const RGBf&) = 0;
-	virtual RGBf GetVtxColor(int i) = 0;
+	virtual RGBf GetVtxColor(int i) const = 0;
 
 	virtual void SetVtxTexCoord(int, const FPoint2&) = 0;
 	virtual FPoint2 GetVtxTexCoord(int i) = 0;

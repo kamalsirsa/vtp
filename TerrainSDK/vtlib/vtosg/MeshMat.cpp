@@ -451,7 +451,7 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 	m_Vert.SetAt(i, s);
 }
 
-FPoint3 vtMesh::GetVtxPos(int i)
+FPoint3 vtMesh::GetVtxPos(int i) const
 {
 	FPoint3 p;
 	s2v( m_Vert.GetAt(i), p);
@@ -465,7 +465,7 @@ void vtMesh::SetVtxNormal(int i, const FPoint3 &p)
 	m_Norm.SetAt(i, s);
 }
 
-FPoint3 vtMesh::GetVtxNormal(int i)
+FPoint3 vtMesh::GetVtxNormal(int i) const
 {
 	FPoint3 p;
 	s2v( m_Norm.GetAt(i), p);
@@ -479,7 +479,7 @@ void vtMesh::SetVtxColor(int i, const RGBf &p)
 	m_Color.SetAt(i, s);
 }
 
-RGBf vtMesh::GetVtxColor(int i)
+RGBf vtMesh::GetVtxColor(int i) const
 {
 	RGBf p;
 	s2v( m_Color.GetAt(i), p);

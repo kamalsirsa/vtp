@@ -76,13 +76,13 @@ public:
 	void AddLine(int p0, int p1);
 
 	void SetVtxPos(int, const FPoint3&);
-	FPoint3 GetVtxPos(int i);
+	FPoint3 GetVtxPos(int i) const;
 
 	void SetVtxNormal(int, const FPoint3&);
-	FPoint3 GetVtxNormal(int i);
+	FPoint3 GetVtxNormal(int i) const;
 
 	void SetVtxColor(int, const RGBf&);
-	RGBf GetVtxColor(int i);
+	RGBf GetVtxColor(int i) const;
 
 	void SetVtxTexCoord(int, const FPoint2&);
 	FPoint2 GetVtxTexCoord(int i);
