@@ -70,7 +70,7 @@ void NevadaTerrain::CreateCustomCulture(bool bDoSound)
 
 	if (pIsland && gateway1)
 	{
-		MakePortalLL(pIsland, gateway1, "Gateway to Hawaii",
+		MakePortal(pIsland, gateway1, "Gateway to Hawaii",
 			MAN_LONLAT + 0.002f, 1);
 	}
 #endif
@@ -179,7 +179,7 @@ void NevadaTerrain::CreatePast()
 //  float height = (float) m_Params.m_iMinHeight + 1.0f*WORLD_SCALE;
 	float height = 80.0f * WORLD_SCALE;
 	FPoint3 center;
-	g_Conv.convert_geo_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
+	g_Conv.convert_earth_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
 
 #if 0
 	//butterfly: circle radius, speed, height above ground, center, size_exag
