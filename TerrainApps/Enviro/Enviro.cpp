@@ -17,7 +17,7 @@
 #include "Nevada.h"
 #include "SpecificTerrain.h"
 
-#define ORTHO_HEIGHT		20000	// 20 km in the air
+#define ORTHO_HITHER	50	// 50m above highest point on terrain
 
 int pwdemo = 0;
 
@@ -631,7 +631,6 @@ void Enviro::SetupScene2()
 		VTLOG("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera();
 		m_pTopDownCamera->SetOrtho(true);
-		m_pTopDownCamera->SetWidth(10000.0f);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
 		m_pOrthoFlyer->SetTarget(m_pTopDownCamera);
 	}
@@ -684,19 +683,25 @@ void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
 	if (m_pCurrentFlyer != NULL)
 	{
 		const char *name = m_pCurrentFlyer->GetName2();
+		VTLOG("Disabling '%s'\n", name);
+
 		m_pCurrentFlyer->SetEnabled(false);
 	}
 	m_pCurrentFlyer = pE;
 	if (m_pCurrentFlyer != NULL)
 	{
+		const char *name = m_pCurrentFlyer->GetName2();
+		VTLOG(" Enabling '%s'\n", name);
+
 		m_pCurrentFlyer->SetEnabled(true);
 	}
 }
 
 void Enviro::EnableFlyerEngine(bool bEnable)
 {
-	if (bEnable)
+	if (bEnable && !m_bTopDown)
 	{
+		// enable normal navigation
 		if (m_nav == NT_Normal)
 			SetCurrentNavigator(m_pTFlyer);
 		if (m_nav == NT_Velo)
@@ -710,6 +715,9 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 	}
 	else
 		SetCurrentNavigator(NULL);
+
+	if (m_bTopDown)
+		m_pOrthoFlyer->SetEnabled(bEnable);
 }
 
 void Enviro::SetNavType(NavType nav)
@@ -776,21 +784,25 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	m_pGFlyer->SetHeightField(pHF);
 	m_pPanoFlyer->SetHeightField(pHF);
 
-	// set the top-down viewpoint to a point over
-	//  the center of the new terrain
+	// Set the top-down viewpoint to a point over the center of the new
+	//  terrain, with near and far planes derived from the height extents.
 	FPoint3 middle;
-	pHF->GetCenter(middle);		// Gets XZ center; Y is zero
+	pHF->GetCenter(middle);		// Gets XZ center
 
-	middle.y = ORTHO_HEIGHT;
-//	float fmin, fmax;
-//	pHF->GetHeightExtents(fmin, fmax);
-//	middle.y = fmax + 500;		// heuristic: highest value + 100 meters
+	float fMin, fMax;
+	pHF->GetHeightExtents(fMin, fMax);
+	middle.y = fMax + ORTHO_HITHER;		// highest value + hither
 	m_pTopDownCamera->SetTrans(middle);
 
 	// point it straight down
 	m_pTopDownCamera->RotateLocal(TRANS_XAxis, -PID2f);
-	m_pTopDownCamera->SetHither(5.0f);
-	m_pTopDownCamera->SetYon(middle.y * 2.0f);
+	m_pTopDownCamera->SetHither(ORTHO_HITHER);
+	m_pTopDownCamera->SetYon(fMax - fMin + ORTHO_HITHER + ORTHO_HITHER);
+
+	// pick an arbitrary amount of detail to show initially:
+	//  1/4 the terrain width, with proportional speed
+	m_pTopDownCamera->SetWidth(middle.x / 2);
+	m_pOrthoFlyer->SetSpeed(middle.x / 5);
 
 	if (m_pTerrainPicker != NULL)
 		m_pTerrainPicker->SetHeightField(pHF);
@@ -940,8 +952,8 @@ void Enviro::SetTopDown(bool bTopDown)
 		m_pSkyDome->SetEnabled(bWas);
 	}
 
-	m_pOrthoFlyer->SetEnabled(bTopDown);
-	EnableFlyerEngine(!bTopDown);
+	// set mode again, to put everything in the right state
+	SetMode(m_mode);
 }
 
 void Enviro::DumpCameraInfo()
