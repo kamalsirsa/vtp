@@ -33,6 +33,8 @@ public:
 	void GetValue(int record, int &value);
 	void GetValue(int record, double &value);
 	void CopyValue(int FromRecord, int ToRecord);
+	void GetValueAsString(int iRecord, vtString &str);
+	void SetValueFromString(int iRecord, vtString &str);
 
 	DBFFieldType m_type;
 	int m_width, m_decimals;	// these are for remembering SHP limitations
@@ -70,7 +72,10 @@ public:
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
 	void GetPoint(int num, DPoint3 &p);
+	void GetPoint(int num, DPoint2 &p);
 	void CopyEntity(int from, int to);
+	int FindClosestPoint(const DPoint2 &p, double epsilon);
+	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
 
 	// selection
 	void Select(int iEnt, bool set = true);
@@ -92,6 +97,7 @@ public:
 	void SetValue(int record, int field, int value);
 	void SetValue(int record, int field, double value);
 	void GetValueAsString(int record, int field, vtString &str);
+	void SetValueFromString(int iRecord, int iField, vtString &str);
 
 protected:
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,

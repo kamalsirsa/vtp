@@ -353,6 +353,69 @@ void vtFeatures::GetPoint(int num, DPoint3 &p)
 	}
 }
 
+void vtFeatures::GetPoint(int num, DPoint2 &p)
+{
+	if (m_nSHPType == SHPT_POINTZ)
+	{
+		DPoint3 p3 = m_Point3.GetAt(num);
+		p.x = p3.x;
+		p.y = p3.y;
+	}
+	if (m_nSHPType == SHPT_POINT)
+	{
+		p = m_Point2.GetAt(num);
+	}
+}
+
+int vtFeatures::FindClosestPoint(const DPoint2 &p, double epsilon)
+{
+	int entities = NumEntities();
+	double dist, closest = 1E9;
+	int found = -1;
+	DPoint2 diff;
+
+	int i;
+	for (i = 0; i < entities; i++)
+	{
+		if (m_nSHPType == SHPT_POINT)
+			diff = p - m_Point2.GetAt(i);
+		if (m_nSHPType == SHPT_POINTZ)
+		{
+			DPoint3 p3 = m_Point3.GetAt(i);
+			diff.x = p.x - p3.x;
+			diff.y = p.y - p3.y;
+		}
+		dist = diff.Length();
+		if (dist < closest && dist < epsilon)
+		{
+			closest = dist;
+			found = i;
+		}
+	}
+	return found;
+}
+
+void vtFeatures::FindAllPointsAtLocation(const DPoint2 &loc, Array<int> &found)
+{
+	int entities = NumEntities();
+
+	int i;
+	for (i = 0; i < entities; i++)
+	{
+		if (m_nSHPType == SHPT_POINT)
+		{
+			if (loc == m_Point2.GetAt(i))
+				found.Append(i);
+		}
+		if (m_nSHPType == SHPT_POINTZ)
+		{
+			DPoint3 p3 = m_Point3.GetAt(i);
+			if (loc.x == p3.x && loc.y == p3.y)
+				found.Append(i);
+		}
+	}
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 // Selection of Entities
@@ -655,18 +718,13 @@ void vtFeatures::SetValue(int record, int field, double value)
 void vtFeatures::GetValueAsString(int iRecord, int iField, vtString &str)
 {
 	Field *field = m_fields[iField];
-	switch (field->m_type)
-	{
-	case FTString:
-		str = *(field->m_string[iRecord]);
-		break;
-	case FTInteger:
-		str.Format("%d", field->m_int[iRecord]);
-		break;
-	case FTDouble:
-		str.Format("%lf", field->m_double[iRecord]);
-		break;
-	}
+	field->GetValueAsString(iRecord, str);
+}
+
+void vtFeatures::SetValueFromString(int iRecord, int iField, vtString &str)
+{
+	Field *field = m_fields[iField];
+	field->SetValueFromString(iRecord, str);
 }
 
 /////////////////////////////////////////////////
@@ -739,5 +797,51 @@ void Field::CopyValue(int FromRecord, int ToRecord)
 	// avoid memory tracking issues
 	if (m_type == FTString)
 		*m_string[ToRecord] = *m_string[FromRecord];
+}
+
+void Field::GetValueAsString(int iRecord, vtString &str)
+{
+	switch (m_type)
+	{
+	case FTString:
+		str = *(m_string[iRecord]);
+		break;
+	case FTInteger:
+		str.Format("%d", m_int[iRecord]);
+		break;
+	case FTDouble:
+		str.Format("%lf", m_double[iRecord]);
+		break;
+	}
+}
+
+void Field::SetValueFromString(int iRecord, vtString &str)
+{
+	int i;
+	double d;
+
+	switch (m_type)
+	{
+	case FTString:
+		if (iRecord < m_string.GetSize())
+			*(m_string[iRecord]) = str;
+		else
+			m_string.Append(new vtString(str));
+		break;
+	case FTInteger:
+		i = atoi((const char *) str);
+		if (iRecord < m_int.GetSize())
+			m_int[iRecord] = i;
+		else
+			m_int.Append(i);
+		break;
+	case FTDouble:
+		d = atof((const char *) str);
+		if (iRecord < m_double.GetSize())
+			m_double[iRecord] = d;
+		else
+			m_double.Append(d);
+		break;
+	}
 }
 
