@@ -64,27 +64,39 @@ void vtLocalConversion::convert_local_xz_to_earth(float x, float z,
 	ey = m_EarthOrigin.y + (-z / m_scale.y);
 }
 
-//
-// Convert from the coordinate system of the virtual world (x,y,z) to actual
-// earth coodinates (map coordinates, altitude in meters)
-//
+/**
+ * Convert from the coordinate system of the virtual world (x,y,z) to actual
+ * earth coodinates (map coordinates, altitude in meters)
+ */
 void vtLocalConversion::ConvertToEarth(const FPoint3 &world, DPoint3 &earth)
 {
 	convert_local_xz_to_earth(world.x, world.z, earth.x, earth.y);
 	earth.z = world.y;
 }
 
+/**
+ * Convert from earth coodinates (map coordinates, altitude in meters) to
+ * the coordinate system of the virtual world (x,y,z)
+ */
 void vtLocalConversion::ConvertFromEarth(const DPoint3 &earth, FPoint3 &world)
 {
 	convert_earth_to_local_xz(earth.x, earth.y, world.x, world.z);
 	world.y = (float) earth.z;
 }
 
+/**
+ * Convert from the coordinate system of the virtual world (x,y,z) to actual
+ * earth coodinates (map coordinates, altitude in meters)
+ */
 void vtLocalConversion::ConvertToEarth(float x, float z, DPoint2 &earth)
 {
 	convert_local_xz_to_earth(x, z, earth.x, earth.y);
 }
 
+/**
+ * Convert from earth coodinates (map coordinates, altitude in meters) to
+ * the coordinate system of the virtual world (x,y,z)
+ */
 void vtLocalConversion::ConvertFromEarth(const DPoint2 &earth, float &x, float &z)
 {
 	convert_earth_to_local_xz(earth.x, earth.y, x, z);
