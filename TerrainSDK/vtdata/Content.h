@@ -85,7 +85,7 @@ public:
 	void SetValueRGBi(const char *szTagName, const RGBi &value);
 
 	// Get value directly
-	const char *GetValueString(const char *szTagName) const;
+	const char *GetValueString(const char *szTagName, bool bUTF8ToAnsi = false) const;
 	bool GetValueBool(const char *szTagName) const;
 	int GetValueInt(const char *szTagName) const;
 	float GetValueFloat(const char *szTagName) const;
