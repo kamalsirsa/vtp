@@ -153,6 +153,14 @@ void IslandTerrain::create_airports()
 
 void IslandTerrain::CreateCustomCulture(bool bDoSound)
 {
+#if 0
+	// test vtDIB JPEG
+	vtDIB dib;
+	bool result = dib.ReadJPEG("C:/APIs/jpeg-6b/8bit.jpg");
+	if (result == true)
+		dib.WriteBMP("C:/APIs/jpeg-6b/8bit.bmp");
+#endif
+
 	DPoint2 bound[7], c1;
 	bound[0].Set(237257, 2219644);
 	bound[1] = bound[0] + DPoint2(0.0, -96.64);
