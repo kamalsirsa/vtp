@@ -1597,7 +1597,7 @@ bool vtTerrain::CreateFromTIN()
 }
 
 // for timing how long the CLOD takes to initialize
-clock_t tm;
+clock_t tm1;
 
 bool vtTerrain::CreateFromGrid()
 {
@@ -1608,7 +1608,7 @@ bool vtTerrain::CreateFromGrid()
 	else
 		fOceanDepth = 0.0f;
 
-	tm = clock();
+	tm1 = clock();
 
 	// create elegant dynamic LOD terrain
 	if (!_CreateDynamicTerrain(fOceanDepth))
@@ -1641,7 +1641,7 @@ bool vtTerrain::CreateStep4()
 		m_pDynGeom->Init2();
 
 		clock_t tm2 = clock();
-		float time = ((float)tm2 - tm)/CLOCKS_PER_SEC;
+		float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
 		VTLOG("CLOD construction: %.3f seconds.\n", time);
 	}
 	return true;
