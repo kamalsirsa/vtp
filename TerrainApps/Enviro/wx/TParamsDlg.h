@@ -90,7 +90,6 @@ public:
 	float   m_fPixelError;
 	int	 m_iTriCount;
 	bool	m_bTriStrips;
-	bool	m_bDetailTexture;
 
 	// time
 	bool	m_bTimeOn;
@@ -110,6 +109,12 @@ public:
 	float   m_fPreLightFactor;
 	bool	m_bCastShadows;
 	wxString2   m_strColorMap;
+
+	// detail texture
+	bool	m_bDetailTexture;
+	wxString2 m_strDetailName;
+	float	m_fDetailScale;
+	float	m_fDetailDistance;
 
 	// culture
 	bool	m_bRoads;
@@ -161,6 +166,7 @@ public:
 //  wxString2   m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxComboBox* GetDTName()  { return (wxComboBox*) FindWindow( ID_DT_NAME ); }
 	wxChoice* GetColorMap()  { return (wxChoice*) FindWindow( ID_CHOICE_COLORS ); }
 	wxStaticBitmap* GetColorBitmap()  { return (wxStaticBitmap*) FindWindow( ID_COLOR3 ); }
 	wxChoice* GetChoiceShadowRez()  { return (wxChoice*) FindWindow( ID_CHOICE_SHADOW_REZ ); }
@@ -196,6 +202,7 @@ public:
 
 private:
 	// WDR: member variable declarations for TParamsDlg
+	wxComboBox* m_pDTName;
 	wxChoice* m_pNavStyle;
 	wxTextCtrl* m_pPreLightFactor;
 	wxListBox* m_pStructFiles;

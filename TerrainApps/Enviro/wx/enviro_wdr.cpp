@@ -799,8 +799,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item31->Add( item33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxString *strs34 = (wxString*) NULL;
-    wxChoice *item34 = new wxChoice( parent, ID_DT_CHOICE, wxDefaultPosition, wxSize(100,-1), 0, strs34, 0 );
-    item34->Enable( FALSE );
+    wxComboBox *item34 = new wxComboBox( parent, ID_DT_NAME, wxT(""), wxDefaultPosition, wxSize(100,-1), 0, strs34, wxCB_DROPDOWN );
     item31->Add( item34, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item35 = new wxBoxSizer( wxHORIZONTAL );
@@ -809,7 +808,6 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item35->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item37 = new wxTextCtrl( parent, ID_DT_SCALE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item37->Enable( FALSE );
     item35->Add( item37, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     item31->Add( item35, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -819,11 +817,10 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item39 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item40 = new wxStaticText( parent, ID_DT_DISTANCE, _("Distance"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item40 = new wxStaticText( parent, ID_TEXT, _("Distance"), wxDefaultPosition, wxDefaultSize, 0 );
     item39->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item41 = new wxTextCtrl( parent, ID_TEXTCTRL, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item41->Enable( FALSE );
+    wxTextCtrl *item41 = new wxTextCtrl( parent, ID_DT_DISTANCE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
     item39->Add( item41, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item31->Add( item39, 0, wxALIGN_CENTER_VERTICAL, 5 );

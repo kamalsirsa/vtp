@@ -78,6 +78,7 @@ BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
 
 	EVT_BUTTON( ID_EDIT_COLORS, TParamsDlg::OnEditColors )
 	EVT_CHECKBOX( ID_JPEG, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_DETAILTEXTURE, TParamsDlg::OnCheckBox )
 
 	EVT_CHECKBOX( ID_PLANTS, TParamsDlg::OnCheckBox )
 	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
@@ -153,7 +154,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fPixelError =	 Params.GetValueFloat(STR_PIXELERROR);
 	m_iTriCount =	   Params.GetValueInt(STR_TRICOUNT);
 	m_bTriStrips =	  Params.GetValueBool(STR_TRISTRIPS);
-	m_bDetailTexture =  Params.GetValueBool(STR_DETAILTEXTURE);
 
 	// time
 	m_bTimeOn =		 Params.GetValueBool(STR_TIMEON);
@@ -173,6 +173,12 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fPreLightFactor = Params.GetValueFloat(STR_PRELIGHTFACTOR);
 	m_bCastShadows =	Params.GetValueBool(STR_CAST_SHADOWS);
 	m_strColorMap.from_utf8(Params.GetValueString(STR_COLOR_MAP));
+
+	// detail texture
+	m_bDetailTexture =  Params.GetValueBool(STR_DETAILTEXTURE);
+	m_strDetailName.from_utf8(Params.GetValueString(STR_DTEXTURE_NAME));
+	m_fDetailScale = Params.GetValueFloat(STR_DTEXTURE_SCALE);
+	m_fDetailDistance = Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
 
 	// culture
 	m_bRoads =		  Params.GetValueBool(STR_ROADS);
@@ -264,7 +270,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_PIXELERROR, m_fPixelError);
 	Params.SetValueInt(STR_TRICOUNT, m_iTriCount);
 	Params.SetValueBool(STR_TRISTRIPS, m_bTriStrips);
-	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
 
 	// time
 	Params.SetValueBool(STR_TIMEON, m_bTimeOn);
@@ -284,6 +289,12 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_PRELIGHTFACTOR, m_fPreLightFactor);
 	Params.SetValueBool(STR_CAST_SHADOWS, m_bCastShadows);
 	Params.SetValueString(STR_COLOR_MAP, m_strColorMap.to_utf8());
+
+	// detail texture
+	Params.SetValueBool(STR_DETAILTEXTURE, m_bDetailTexture);
+	Params.SetValueString(STR_DTEXTURE_NAME, m_strDetailName.to_utf8());
+	Params.SetValueFloat(STR_DTEXTURE_SCALE, m_fDetailScale);
+	Params.SetValueFloat(STR_DTEXTURE_DISTANCE, m_fDetailDistance);
 
 	// culture
 	Params.SetValueBool(STR_ROADS, m_bRoads);
@@ -373,6 +384,11 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE);
+
+	FindWindow(ID_DETAILTEXTURE)->Enable(m_iLodMethod == LM_MCNALLY);
+	FindWindow(ID_DT_NAME)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
+	FindWindow(ID_DT_SCALE)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
+	FindWindow(ID_DT_DISTANCE)->Enable(m_iLodMethod == LM_MCNALLY && m_bDetailTexture);
 
 	FindWindow(ID_TREEFILE)->Enable(m_bPlants);
 //  FindWindow(ID_VEGDISTANCE)->Enable(m_bPlants); // user might want to adjust
@@ -515,6 +531,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pRoadFile = GetRoadfile();
 	m_pTreeFile = GetTreefile();
 	m_pTextureFileSingle = GetTfilesingle();
+	m_pDTName = GetDTName();
 	m_pLodMethod = GetLodmethod();
 	m_pFilename = GetFilename();
 	m_pFilenameTin = GetFilenameTin();
@@ -559,6 +576,14 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		sel = m_pTextureFileSingle->FindString(m_strTextureSingle);
 		if (sel != -1)
 			m_pTextureFileSingle->SetSelection(sel);
+
+		// fill the "detail texture" control with available bitmap files
+		AddFilenamesToComboBox(m_pDTName, paths[i] + "GeoTypical", "*.bmp");
+		AddFilenamesToComboBox(m_pDTName, paths[i] + "GeoTypical", "*.jpg");
+		AddFilenamesToComboBox(m_pDTName, paths[i] + "GeoTypical", "*.png");
+		sel = m_pDTName->FindString(m_strDetailName);
+		if (sel != -1)
+			m_pDTName->SetSelection(sel);
 
 		// fill the Location files
 		AddFilenamesToComboBox(m_pLocFile, paths[i] + "Locations", "*.loc");
@@ -663,7 +688,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_PIXELERROR, &m_fPixelError, 2);
 	AddNumValidator(ID_TRICOUNT, &m_iTriCount);
 	AddValidator(ID_TRISTRIPS, &m_bTriStrips);
-	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
 
 	// time
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
@@ -682,6 +706,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
 	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 	AddValidator(ID_CHOICE_COLORS, &m_strColorMap);
+
+	// detail texture
+	AddValidator(ID_DETAILTEXTURE, &m_bDetailTexture);
+	AddValidator(ID_DT_NAME, &m_strDetailName);
+	AddNumValidator(ID_DT_SCALE, &m_fDetailScale);
+	AddNumValidator(ID_DT_DISTANCE, &m_fDetailDistance);
 
 	// culture page
 	AddValidator(ID_PLANTS, &m_bPlants);
