@@ -22,6 +22,7 @@
 #include "Fence.h"
 #include "vtLog.h"
 #include "FilePath.h"
+#include "PolyChecker.h"
 
 vtStructureArray g_DefaultStructures;
 
@@ -1368,6 +1369,51 @@ bool vtStructureArray::ReadXML(const char *pathname)
 	}
 
 	return success;
+}
+
+vtBuilding *vtStructureArray::AddBuildingFromLineString(OGRLineString *pLineString)
+{
+	int num_points = pLineString->getNumPoints();
+	int j;
+
+	// Ignore last point if it is the same as the first
+	DPoint2 p1(pLineString->getX(0), pLineString->getY(0));
+	DPoint2 p2(pLineString->getX(num_points - 1), pLineString->getY(num_points - 1));
+	if (p1 == p2)
+		num_points--;
+
+	// Copy from OGR
+	DLine2 footprint(num_points);
+	for (j = 0; j < num_points; j++)
+		footprint.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
+
+	PolyChecker PolyChecker;
+
+	// Remove redundant points
+	double dEpsilon = 1;
+	for (j = 0; j < num_points && num_points > 2; j++)
+	{
+		DPoint2 p0 = footprint.GetSafePoint(j-1);
+		DPoint2 p1 = footprint.GetSafePoint(j);
+		DPoint2 p2 = footprint.GetSafePoint(j+1);
+		if (PolyChecker.AreaSign(p0, p1, p2, dEpsilon) == 0)
+		{
+			footprint.RemoveAt(j);
+			num_points--;
+			j--;
+		}
+	}
+
+	if (num_points < 3)
+		return NULL;
+
+	// Force footprint anticlockwise
+	if (PolyChecker.IsClockwisePolygon(footprint))
+		footprint.ReverseOrder();
+
+	vtBuilding *bld = AddNewBuilding();
+	bld->SetFootprint(0, footprint);
+	return bld;
 }
 
 

@@ -129,6 +129,8 @@ public:
 	vtFence *AddNewFence();
 	vtStructInstance *AddNewInstance();
 
+	vtBuilding *AddBuildingFromLineString(class OGRLineString *pLineString);
+
 	// override to catch edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 
