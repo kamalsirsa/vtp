@@ -31,10 +31,10 @@ typedef unsigned char byte;
 #endif
 
 typedef struct tagBITMAPFILEHEADER {
-	word    bfType;
+	word	bfType;
 	dword   bfSize;
-	word    bfReserved1;
-	word    bfReserved2;
+	word	bfReserved1;
+	word	bfReserved2;
 	dword   bfOffBits;
 } PACKED BITMAPFILEHEADER;
 
@@ -64,20 +64,25 @@ typedef struct tagRGBQUAD {
 } PACKED RGBQUAD;
 
 /* constants for the biCompression field */
-#define BI_RGB        0L
-#define BI_RLE8       1L
-#define BI_RLE4       2L
-#define BI_BITFIELDS  3L
+#define BI_RGB			0L
+#define BI_RLE8			1L
+#define BI_RLE4			2L
+#define BI_BITFIELDS	3L
 
-#define RGB(r,g,b)          ((dword)(((byte)(r)|((word)((byte)(g))<<8))|(((dword)(byte)(b))<<16)))
+#define RGB(r,g,b)		  ((dword)(((byte)(r)|((word)((byte)(g))<<8))|(((dword)(byte)(b))<<16)))
 
-#define GetRValue(rgb)      ((byte)(rgb))
-#define GetGValue(rgb)      ((byte)(((word)(rgb)) >> 8))
-#define GetBValue(rgb)      ((byte)((rgb)>>16))
+#define GetRValue(rgb)	  ((byte)(rgb))
+#define GetGValue(rgb)	  ((byte)(((word)(rgb)) >> 8))
+#define GetBValue(rgb)	  ((byte)((rgb)>>16))
 
 #endif // #ifndef _WINGDI_
 
 
+/**
+ * A DIB is a Device-Independent Bitmap.  It is a way of representing a
+ * bitmap in memory which has its origins in early MS Windows usage, but
+ * is entirely applicable to normal bitmap operations.
+ */
 class vtDIB
 {
 public:
@@ -115,7 +120,7 @@ public:
 	bool	m_bLoadedSuccessfully;
 
 private:
-	void ComputeByteWidth();
+	void _ComputeByteWidth();
 
 	bool	m_bLeaveIt;
 
