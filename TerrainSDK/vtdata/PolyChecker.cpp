@@ -76,13 +76,13 @@ double PolyChecker::Area2(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 	return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
 
-int PolyChecker::AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
+int PolyChecker::AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c, double dEpsilon)
 {
 	double area2 = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 
-	if (area2 >  POLYEPSILON )
+	if (area2 > dEpsilon )
 		return 1;
-	else if (area2 < -POLYEPSILON )
+	else if (area2 < -dEpsilon )
 		return -1;
 	else
 		return 0;
@@ -177,13 +177,13 @@ float PolyChecker::Area2(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 	return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
 
-int PolyChecker::AreaSign(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
+int PolyChecker::AreaSign(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, float dEpsilon)
 {
 	float area2 = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 
-	if (area2 >  POLYEPSILON )
+	if (area2 > dEpsilon )
 		return 1;
-	else if (area2 < -POLYEPSILON )
+	else if (area2 < -dEpsilon )
 		return -1;
 	else
 		return 0;

@@ -27,7 +27,7 @@ public:
 	bool LeftOn(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
 	bool Collinear(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
 	double Area2(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
-	int AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	int AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c, double dEpsilon = POLYEPSILON);
 	bool IsSimplePolygon(const DLine2 &vertices);
 	bool IsSimplePolygon(const DLine3 &vertices);
 	bool IsClockwisePolygon(const DLine2 &vertices);
@@ -40,7 +40,7 @@ public:
 	bool LeftOn(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
 	bool Collinear(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
 	float Area2(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
-	int AreaSign(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	int AreaSign(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, float dEpsilon = POLYEPSILON);
 	bool IsSimplePolygon(const FLine2 &vertices);
 	bool IsSimplePolygon(const FLine3 &vertices);
 	bool IsClockwisePolygon(const FLine2 &vertices);
