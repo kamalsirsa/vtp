@@ -629,6 +629,14 @@ bool vtFeatureSetLineString3D::ComputeHeightRange(float &fmin, float &fmax)
 	return true;
 }
 
+int vtFeatureSetLineString3D::NumPointsTotal() const
+{
+	int total = 0;
+	for (unsigned int i = 0; i < m_Line.size(); i++)
+		total += m_Line[i].GetSize();
+	return total;
+}
+
 bool vtFeatureSetLineString3D::IsInsideRect(int iElem, const DRECT &rect)
 {
 	return rect.ContainsLine(m_Line[iElem]);

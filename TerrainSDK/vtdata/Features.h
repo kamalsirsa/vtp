@@ -335,6 +335,7 @@ public:
 	const DLine3 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
 	DLine3 &GetPolyLine(unsigned int num) { return m_Line[num]; }
 	bool ComputeHeightRange(float &fmin, float &fmax);
+	int NumPointsTotal() const;
 
 	// implement necessary virtual methods
 	virtual bool IsInsideRect(int iElem, const DRECT &rect);
