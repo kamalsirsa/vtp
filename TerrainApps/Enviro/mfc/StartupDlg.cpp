@@ -258,7 +258,7 @@ void CStartupDlg::OnEditProp()
 	{
 		dlg.GetParams(Params);
 
-		vtString ext = GetExtension(fname);
+		vtString ext = GetExtension(fname, false);
 		if (ext.CompareNoCase(".ini") == 0)
 		{
 			AfxMessageBox("Upgrading the .ini to a .xml file.\n"

@@ -171,7 +171,7 @@ void Enviro::LoadTerrainDescriptions()
 			vtString name = name1.c_str();
 
 			// only look ".ini" and ".xml" files
-			vtString ext = GetExtension(name);
+			vtString ext = GetExtension(name, false);
 			if (ext.CompareNoCase(".ini") != 0 &&
 				ext.CompareNoCase(".xml") != 0)
 				continue;

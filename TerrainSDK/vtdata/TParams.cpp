@@ -153,7 +153,7 @@ TParams &TParams::operator = (const TParams &rhs)
 
 bool TParams::LoadFrom(const char *fname)
 {
-	vtString ext = GetExtension(fname);
+	vtString ext = GetExtension(fname, false);
 
 	bool success = false;
 
