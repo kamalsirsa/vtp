@@ -217,7 +217,7 @@ inline float BryanTerrain::HeightField( UINT_32 y, UINT_32 x )
 // -------------------------------------------------------------
 inline void BryanTerrain::MakeVertex( UINT_32 x, UINT_32 y, float height, UINT_32 NW_X, UINT_32 NW_Y )
 {
-	glVertex3f(	m_fXLookup[NW_X + (x)],																	// Send the vertex to the graphics card
+	glVertex3f(	m_fXLookup[NW_X + (x)],	// Send the vertex to the graphics card
 				height,
 				m_fZLookup[NW_Y + (y)] );
 }
@@ -225,9 +225,10 @@ inline void BryanTerrain::MakeVertex( UINT_32 x, UINT_32 y, float height, UINT_3
 // -------------------------------------------------------------
 //
 // -------------------------------------------------------------
-inline void BryanTerrain::MakeBlendedVertex( UINT_32 x, UINT_32 y, float heightOne, float heightTwo, float fBlend, UINT_32 NW_X, UINT_32 NW_Y )
+inline void BryanTerrain::MakeBlendedVertex(UINT_32 x, UINT_32 y,
+	float heightOne, float heightTwo, float fBlend,	UINT_32 NW_X, UINT_32 NW_Y)
 {
-	float height = (UINT_32) ( ((fBlend) * heightOne) + ((1.0f-fBlend) * heightTwo) );
+	float height = (fBlend * heightOne) + ((1.0f-fBlend) * heightTwo);
 	MakeVertex( x, y, height, NW_X, NW_Y );
 }
 
@@ -238,10 +239,10 @@ void BryanTerrain::Split( UINT16 nNode )
 {
 	QuadNodeStruc *pNode = &(m_aQuadPool[nNode]);
 
-	if ( pNode->nChildren == 0 &&							// IF there are no children currently
-		 pNode->nNorth && pNode->nSouth &&					// And all the neighbors at this level exist
+	if ( pNode->nChildren == 0 &&				// IF there are no children currently
+		 pNode->nNorth && pNode->nSouth &&		// And all the neighbors at this level exist
 		 pNode->nEast && pNode->nWest &&
-		 m_nFirstFree										// And there are free nodes... THEN
+		 m_nFirstFree							// And there are free nodes... THEN
 		 )
 	{
 //		Allocate 4 nodes
