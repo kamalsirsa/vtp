@@ -625,7 +625,10 @@ bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 	name += m_Params.m_strElevFile;
 	vtString grid_fname = FindFileOnPaths(m_DataPaths, name);
 	if (grid_fname == "")
+	{
+		VTLOG("\t'%s' not found on data paths.", (const char *)name);
 		return false;
+	}
 	else
 		return grid.LoadBTHeader(grid_fname);
 }
@@ -831,27 +834,27 @@ void vtTerrain::create_culture(bool bSound)
 		else
 		{
 			VTLOG("\tFound: %s\n", (const char *) plants_path);
-		}
-		bool success = m_PIA.ReadVF(plants_path);
-		if (success)
-		{
-			// Create the 3d plants
-			VTLOG("\tLoaded VF file.\n");
-			int created = m_PIA.CreatePlantNodes();
-			VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetSize());
-
-			int i, size = m_PIA.GetSize();
-			for (i = 0; i < size; i++)
+			bool success = m_PIA.ReadVF(plants_path);
+			if (success)
 			{
-				vtTransform *pTrans = m_PIA.GetPlantNode(i);
+				// Create the 3d plants
+				VTLOG("\tLoaded VF file.\n");
+				int created = m_PIA.CreatePlantNodes();
+				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetSize());
 
-				// add tree to scene graph
-				if (pTrans)
-					AddNodeToLodGrid(pTrans);
+				int i, size = m_PIA.GetSize();
+				for (i = 0; i < size; i++)
+				{
+					vtTransform *pTrans = m_PIA.GetPlantNode(i);
+
+					// add tree to scene graph
+					if (pTrans)
+						AddNodeToLodGrid(pTrans);
+				}
 			}
+			else
+				VTLOG("\tCouldn't load VF file.\n");
 		}
-		else
-			VTLOG("\tCouldn't load VF file.\n");
 	}
 
 	// create built structures
