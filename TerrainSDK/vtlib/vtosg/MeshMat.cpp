@@ -508,7 +508,7 @@ void vtMesh::Release()
 // Override with ability to get OSG bounding box
 void vtMesh::GetBoundBox(FBox3 &box)
 {
-    const BoundingBox &osg_box = m_pGeometry->getBound();
+	const BoundingBox &osg_box = m_pGeometry->getBound();
 	s2v(osg_box, box);
 }
 

@@ -106,7 +106,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 
 		// compute the matrix which takes a vertex from local coords into tex coords
 		// will use this later to specify osg::TexGen..
-		m_VPOSTransform = *ViewMatrix * 
+		m_VPOSTransform = *ViewMatrix *
 				*ProjectionMatrix *
 				osg::Matrix::translate(1.0f,1.0f,1.0f) *
 				osg::Matrix::scale(0.5f,0.5f,0.5f);
@@ -234,7 +234,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 
 	cv.pushStateSet(m_shadowedState.get());
 
-		// must traverse the shadowed           
+		// must traverse the shadowed 
 		traverse(&node,&cv);
 
 	cv.popStateSet();
@@ -249,7 +249,7 @@ void CreateProjectedShadowTextureCullCallback::operator()(osg::Node* node, osg::
     }
     else
     {
-        // must traverse the shadower            
+        // must traverse the shadower 
         traverse(node,nv);
     }
 }

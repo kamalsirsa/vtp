@@ -203,7 +203,7 @@ class MipmapVisitor : public NodeVisitor
 {
 public:
 	MipmapVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
-    virtual void apply(osg::Geode& geode)
+	virtual void apply(osg::Geode& geode)
 	{
 		for (unsigned i=0; i<geode.getNumDrawables(); ++i)
 		{
