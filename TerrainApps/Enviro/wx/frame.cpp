@@ -54,7 +54,7 @@
 #include "../Options.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
 
-#include "app.h"
+#include "EnviroApp.h"
 #include "canvas.h"
 #include "menu_id.h"
 #include "StatusBar.h"
@@ -95,7 +95,7 @@
 #include <osgDB/Registry>
 #endif
 
-DECLARE_APP(vtApp);
+DECLARE_APP(EnviroApp);
 
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 EVT_CHAR(vtFrame::OnChar)

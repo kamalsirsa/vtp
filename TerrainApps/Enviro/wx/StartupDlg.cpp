@@ -29,12 +29,12 @@
 #include "vtdata/vtLog.h"
 #include "vtui/Helper.h"	// for AddFilenamesToComboBox
 
-#include "app.h"
+#include "EnviroApp.h"
 #include "TParamsDlg.h"
 #include "TerrManDlg.h"
 #include "OptionsDlg.h"
 
-DECLARE_APP(vtApp);
+DECLARE_APP(EnviroApp);
 
 //
 // Helper: find the largest texture size supported by OpenGL
@@ -240,7 +240,7 @@ void StartupDlg::RefreshTerrainChoices()
 {
 	GetTname()->Clear();
 
-	vtApp &app = wxGetApp();
+	EnviroApp &app = wxGetApp();
 	wxString2 ws;
 
 	for (unsigned int i = 0; i < app.terrain_files.size(); i++)

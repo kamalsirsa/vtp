@@ -21,9 +21,9 @@
 #include "EnviroGUI.h"			// for g_App, GetTerrainScene
 #include "canvas.h"
 #include "frame.h"
-#include "app.h"
+#include "EnviroApp.h"
 
-DECLARE_APP(vtApp)
+DECLARE_APP(EnviroApp)
 
 /*
  * vtGLCanvas implementation

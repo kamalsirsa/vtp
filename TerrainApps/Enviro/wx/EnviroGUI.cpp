@@ -17,14 +17,14 @@
 #include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/Terrain.h"
 #include "EnviroGUI.h"
-#include "app.h"
+#include "EnviroApp.h"
 #include "frame.h"
 #include "canvas.h"
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
 
-DECLARE_APP(vtApp);
+DECLARE_APP(EnviroApp);
 
 //
 // This is a 'singleton', the only instance of the global application object

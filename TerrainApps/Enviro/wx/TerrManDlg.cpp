@@ -17,7 +17,7 @@
 #include "vtui/wxString2.h"
 #include "TerrManDlg.h"
 #include "../Options.h"
-#include "app.h"
+#include "EnviroApp.h"
 
 /////////////////////////
 
