@@ -97,6 +97,13 @@ BOOL CBExtractorApp::InitInstance()
 
 	m_pMainWnd->DragAcceptFiles(TRUE);
 
+#if 0
+	// Test code
+	POSITION pos = pDocTemplate->GetFirstDocPosition();
+	BExtractorDoc *doc = (BExtractorDoc *) pDocTemplate->GetNextDoc(pos);
+	doc->OnImportimage2("E:/Locations-USA/MD/Annapolis/o38076h4.tif");
+#endif
+
 	return TRUE;
 }
 
