@@ -332,6 +332,11 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 
 	vtUtilStruct *stnew = new vtUtilStruct;
 	stnew->m_pTower = m_pTheTerrain->LoadModel(struct_file);
+	if (!stnew->m_pTower)
+	{
+		delete stnew;
+		return false;
+	}
 	stnew->m_pTower->SetName2(sname);
 
 	// scale to match world units
