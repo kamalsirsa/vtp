@@ -201,8 +201,7 @@ void AutoDialog::AddValidator(long id, int *iptr)
 wxNumericValidator *AutoDialog::AddNumValidator(long id, int *iptr)
 {
 	wxWindow *pWin = FindWindow(id);
-	if (!pWin)
-		return NULL;
+	if (!pWin) return NULL;
 
 	// actually clones the one we pass in
 	pWin->SetValidator(wxNumericValidator(iptr));
@@ -212,8 +211,7 @@ wxNumericValidator *AutoDialog::AddNumValidator(long id, int *iptr)
 wxNumericValidator *AutoDialog::AddNumValidator(long id, float *fptr, int digits)
 {
 	wxWindow *pWin = FindWindow(id);
-	if (pWin)
-		return NULL;
+	if (!pWin) return NULL;
 
 	// actually clones the one we pass in
 	pWin->SetValidator(wxNumericValidator(fptr, digits));
@@ -223,8 +221,7 @@ wxNumericValidator *AutoDialog::AddNumValidator(long id, float *fptr, int digits
 wxNumericValidator *AutoDialog::AddNumValidator(long id, double *dptr, int digits)
 {
 	wxWindow *pWin = FindWindow(id);
-	if (!pWin)
-		return NULL;
+	if (!pWin) return NULL;
 
 	// actually clones the one we pass in
 	pWin->SetValidator(wxNumericValidator(dptr, digits));
