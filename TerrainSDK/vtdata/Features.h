@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -82,6 +82,7 @@ public:
 	void SetEntityType(int type);
 	int AddPoint(const DPoint2 &p);
 	int AddPoint(const DPoint3 &p);
+	int AddPolyLine(DLine2* pl);
 	void GetPoint(int num, DPoint3 &p);
 	void GetPoint(int num, DPoint2 &p);
 	void CopyEntity(int from, int to);
