@@ -849,7 +849,7 @@ void vtFrame::OnSceneGraph(wxCommandEvent& event)
 void vtFrame::OnSceneTerrain(wxCommandEvent& event)
 {
 	wxString2 str;
-	if (AskForTerrainName(this, str))
+	if (wxGetApp().AskForTerrainName(this, str))
 		g_App.SwitchToTerrain(str.mb_str());
 }
 
