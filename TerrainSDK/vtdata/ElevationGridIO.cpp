@@ -545,7 +545,7 @@ bool vtElevationGrid::LoadFromTerragen(const char *szFileName,
 				for (i = 0; i < m_iColumns; i++)
 				{
 					fread(&svalue, 2, 1, fp);
-					SetValue(i, j, scale.z * (BaseHeight + ((float)svalue * HeightScale / 65536.0f)));
+					SetFValue(i, j, scale.z * (BaseHeight + ((float)svalue * HeightScale / 65536.0f)));
 				}
 			}
 		}
@@ -1498,7 +1498,10 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 	ComputeCornersFromExtents();
 
 	m_proj.SetProjectionSimple(true, 1, WGS_84);
-	m_bFloatMode = true;
+	if (bytes_per_element == 4 || vertical_units != 1.0f)
+		m_bFloatMode = true;
+	else
+		m_bFloatMode = false;
 
 	AllocateArray();
 
@@ -1516,12 +1519,12 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 			if (bytes_per_element == 2)
 			{
 				FRead(data, DT_SHORT, 1, fp, BO_BIG_ENDIAN );
-				SetValue(i, m_iRows-1-j, *((short *)data) * vertical_units);
+				SetFValue(i, m_iRows-1-j, *((short *)data) * vertical_units);
 			}
 			if (bytes_per_element == 4)
 			{
 				FRead(data, DT_INT, 1, fp, BO_BIG_ENDIAN );
-				SetFValue(i, m_iRows-1-j, *((int *)data) * vertical_units);
+				SetFValue(i, m_iRows-1-j, *((float *)data) * vertical_units);
 			}
 		}
 //		if (progress_callback != NULL)

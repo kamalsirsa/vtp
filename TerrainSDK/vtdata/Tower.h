@@ -86,7 +86,7 @@ public:
 	void SetTowerMaterial(TowerMaterial m){m_TowerMaterial = m;}
 	TowerMaterial GetTowerMaterial(){ return m_TowerMaterial;}
 
-	void SetFootprint(DLine2 &dl);
+	void SetFootprint(const DLine2 &dl);
 	DLine2 &GetFootprint() { return m_Footprint; }
 
 	void SetColor(RGBi col);
@@ -100,7 +100,7 @@ public:
 
 	DRECT GetExtents();
 	void SetCenterFromPoly();
-	void Offset(DPoint2 &p);
+	void Offset(const DPoint2 &p);
 	void RectToPoly();
 
 	// used to reference which model of a certain type is used
