@@ -312,6 +312,9 @@ SOURCE=..\core\TimeEngines.cpp
 # Begin Source File
 
 SOURCE=..\core\TParams.cpp
+
+# ADD CPP /Zm150
+
 # End Source File
 # Begin Source File
 
