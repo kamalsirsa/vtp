@@ -171,15 +171,6 @@ void vtBuilding3d::FindMaterialIndices()
 }
 
 
-// helper
-void rotate_vector2d(FPoint2 &vec, double angle)
-{
-	float x = vec.x;
-	float y = vec.y;
-	vec.x = (float)(cos(angle) * x - sin(angle) * y);
-	vec.y = (float)(sin(angle) * x + cos(angle) * y);
-}
-
 #define DOOR_WIDTH		1.0f
 #define WINDOW_WIDTH	1.3f
 #define MOULDING_WIDTH	0.2f
@@ -383,6 +374,16 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 			delete m_pMesh[i];
 			m_pMesh[i] = NULL;
 		}
+	}
+
+	// resize bounding box (TODO: more elegant implementation for this)
+	if (m_pHighlight)
+	{
+		m_pContainer->RemoveChild(m_pHighlight);
+		FSphere sphere;
+		m_pGeom->GetBoundSphere(sphere);
+		m_pHighlight = CreateBoundSphereGeom(sphere);
+		m_pContainer->AddChild(m_pHighlight);
 	}
 }
 
