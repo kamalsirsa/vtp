@@ -36,8 +36,12 @@ END_MESSAGE_MAP()
 
 CSimpleApp::CSimpleApp()
 {
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+	// MFC _always_ dumps as soon as its DLL unloads.  This is a problem, because
+	// it then reports spurious memory leaks which are actually free correctly by
+	// other DLLs when then are unloaded _after_ MFC.  So one way to see which
+	// allocations are _true_ leaks is to put a distinctive marker allocation
+	// here at the beginning of the app.  Only allocations that occur _after_
+	// this point may be actual leaks.
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,8 +56,8 @@ BOOL CSimpleApp::InitInstance()
 {
 	// Standard initialization
 	// Change the registry key under which our settings are stored.
-	// TODO: You should modify this string to be something appropriate
-	// such as the name of your company or organization.
+	// This string should be something appropriate such as the name of
+	//  your company or organization.
 	SetRegistryKey(_T("Virtual Terrain Project"));
 
 	LoadStdProfileSettings();  // Load standard INI file options (including MRU)
