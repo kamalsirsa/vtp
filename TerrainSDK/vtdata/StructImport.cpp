@@ -210,12 +210,13 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	int		nEntities, nShapeType;
 	DPoint2 point;
 	DLine2	line;
-	int		i, j, k;
+	int		i, j;
 	int		field_height = -1;
 	int		field_filename = -1;
 	int		field_itemname = -1;
 	int		field_scale = -1;
 	int		field_rotation = -1;
+	PolyChecker PolyChecker;
 
 	SHPGetInfo(hSHP, &nEntities, &nShapeType, NULL, NULL);
 
@@ -312,13 +313,19 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				DLine2 foot;
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
+					foot.SetAt(j, DPoint2(psShape->padfX[j], psShape->padfY[j]));
+
+				// test clockwisdom and reverse if necessary
+				if (PolyChecker.IsClockwisePolygon(foot))
 				{
-					if (opt.bFlip)
-						k = num_points - 1 - j;
-					else
-						k = j;
-					foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
+					// grab them in reverse order
+					for (j = 0; j < num_points; j++)
+					{
+						int k = num_points - 1 - j;
+						foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
+					}
 				}
+
 				bld->SetFootprint(0, foot);
 				// Give it a flat roof with the same footprint
 				bld->SetFootprint(1, foot);
