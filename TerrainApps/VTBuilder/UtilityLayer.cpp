@@ -6,6 +6,11 @@
 //
 
 #include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "Frame.h"
 #include "UtilityLayer.h"
 #include "ScaledView.h"
@@ -64,7 +69,7 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-				pDC->SetPen(bluePen);
+	pDC->SetPen(bluePen);
 	for (i = 0; i < npoles; i++)
 	{
 		// draw each Pole
@@ -261,6 +266,5 @@ void vtUtilityLayer::DeselectAll()
 void vtUtilityLayer::InvertSelection()
 {
 }
-
 
 
