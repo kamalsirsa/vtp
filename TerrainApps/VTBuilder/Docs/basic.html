@@ -108,7 +108,7 @@ VTBuilder<br>
       </li>
       <li>Flatten Layers
         <ul>
-          <li>This will merge (&quot;flatten&quot;) all layers <i> of the currently selected layer
+          <li>This will merge (&quot;flatten&quot;) all compatible layers <i> of the currently selected layer
             type</i> into a single layer.</li>
         </ul>
       </li>
@@ -144,6 +144,13 @@ VTBuilder<br>
         <ul>
           <li>Toggles the visibility of the current layer.&nbsp; This is useful
             to hide layers, for easier editing or faster redraw.</li>
+        </ul>
+      </li>
+      <li>Show Full Layer Pathnames
+        <ul>
+          <li>Toggles the display is the entire file path for each layer, in the
+            Layers View.&nbsp; It can be useful to turn this off when your files
+            are nested deeply on your filesystem.</li>
         </ul>
       </li>
       <li>Zoom In / Out
@@ -188,6 +195,13 @@ VTBuilder<br>
         </ul>
       </li>
       <li>World Map
+        <ul>
+          <li>Toggles the display of a world map (shoreline vectors).&nbsp; The
+            data is expected to be in a folder called &quot;WorldMap&quot; below
+            the program folder.&nbsp; VTBuilder will attempt to convert the map
+            to your current projection, which may not produce good results for
+            all projections.</li>
+        </ul>
       </li>
       <li>Show UTM Boundaries
         <ul>

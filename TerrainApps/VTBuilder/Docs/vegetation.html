@@ -14,15 +14,56 @@ VTBuilder<br>
 
 <h2>Vegetation Layers</h2>
 <blockquote>
+  <p>To learn how the VTP software represents vegetation, first read the web
+  page <a href="http://vterrain.org/Implementation/Veg/">VTP Implementation
+  Vegetation</a>.&nbsp; The following assumes that you are familiar with the
+  terminology.</p>
   <p>VTBuilder can import vegetation data from these formats:</p>
   <ul>
-    <li>USGS LULC (Land Use / Land Cover, usual file extension is .gir)</li>
-    <li>ESRI Shape files</li>
+    <li>USGS LULC (Land Use / Land Cover, usual file extension is <b>.gir</b>)</li>
+    <li>ESRI Shape files (<b>.shp</b>)</li>
   </ul>
-  <p>Currently you can only display vegetation data.&nbsp; Soon, you will be
-  able to exploit the data to generate actual species distributions.</p>
-  <p>For more about how the VTP software represents vegetation, see the web page
-  <a href="http://vterrain.org/Implementation/veg.html">VTP Vegetation</a>.</p>
+  <p>There are several type of Vegetation Data.</p>
+  <ol>
+    <li><b>Density</b> - polygonal areas which contain information (0 to 1)
+      about how dense the vegetation is.</li>
+    <li><b>Biotype</b> - polygonal areas which describe which biotype is found
+      in that area.</li>
+    <li><b>Explicit</b> - a set of actual plant instances.</li>
+  </ol>
+  <p>Currently you can:</p>
+  <ul>
+    <li>import <b>Density</b> from LULC and Shapefiles.</li>
+    <li>import <b>Biotype</b> from Shapefiles</li>
+    <li>export <b>Explicit</b> instances to a VF file, which can be read by VTP
+      Enviro</li>
+  </ul>
+  <p>Use these steps to generate a vegetation distribution.</p>
+  <ol>
+    <li>Load your Plant List.&nbsp; An example file is is <code>VTP/Enviro/Data/PlantData/plants.txt</code></li>
+    <li>Load your Bioregion (list of Biotypes).&nbsp; An example file is in <code>VTP/Enviro/Data/PlantData/bioregion.txt</code></li>
+    <li>Import at least one layer with <b>Density</b></li>
+    <li>Import at least one layer with <b>Biotype</b></li>
+    <li>Use the Export Area tool to indicate the area in which to distribute the
+      vegetation</li>
+    <li>Give the command &quot;Export Area - Generate and Export
+      Vegetation&quot;&nbsp; A dialog will ask for :
+      <ul>
+        <li>Grid Spacing of Sampling, in meters.&nbsp; The distribution will
+          occur on a regular grid.&nbsp; At each point, it will test to see what
+          kind of plant belongs at that location, given all known inputs.&nbsp;
+          Then, if a plant is generated, a small random offset is applied to
+          avoid the &quot;regular&quot; look of an evenly distribution.</li>
+        <li>Artificial Scarcity.&nbsp; Most interactive simulation can't handle
+          the full density of real-world vegetation.&nbsp; You can set this to a
+          value less than 1 to produce an artificially scarce
+          distribution.&nbsp; For example, 0.001 will produce 1/1000 of the
+          normal density of vegetation.</li>
+      </ul>
+    </li>
+    <li>The resulting VF file can be used by Enviro.</li>
+  </ol>
+  <p>Please <a href="mailto:ben@vterrain.org">email any questions</a>.</p>
 </blockquote>
 
 </body>
