@@ -10,6 +10,8 @@
 #ifndef TVTERRAINH
 #define TVTERRAINH
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include <limits.h>
 #include "DynTerrain.h"
 
@@ -88,17 +90,48 @@ typedef struct {	/* triangle index */
 #define IVEXAGGER		1.0
 #define IVEXAGGERINC	0.1
 
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+/*!
+	The TVTerrain class implements the
+	<a href="http://www.cs.arizona.edu/topovista/">TopoVista</a>
+	algorithm for regular-grid terrain LOD.
+	\par
+	This algorithm requires that the input heightfield is a square regular
+	grid, of any size.  Storage requirements are around 14 bytes/vertex.
+	The data is represented in memory by a binary tree of faces.
+	\par
+	The VTP implementation consists of an adaptation of the author's own
+	source code, made to work in the vtDynTerrainGeom framework.
+	\par
+	The algorithm is very promising, but needs a lot of work:
+	 - Doesn't currently address lighting or texturing
+	 - Doesn't utilize triangle strips
+	 - Uses a very simple error metric based only on ground (2D) distance
+	\par
+	So far i have extended the algorithm in the following ways:
+	 - Added full 6-plane view-volume culling (instead of the previously
+	   simple 2D culling).   This required implementing some
+	   <a href="http://vterrain.org/LOD/culling.html">3d triangle culling</a>
+	   which was mysteriously absent from the computer graphics literature.
+ */
 class TVTerrain : public vtDynTerrainGeom
 {
 public:
 	TVTerrain();
 	~TVTerrain();
 
+	/// initialization
 	bool Init(vtLocalGrid *pGrid, float fZScale,
 				  float fOceanDepth, int &iError);
 	static int MemoryRequired(int iDimension);
 
+	// overrides
+	void DoRender();
+	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
+	void GetLocation(int iX, int iZ, FPoint3 &p);
+
+protected:
 	void mkscale(vtElevationGrid *pGrid);
 	int calcErr(vtElevationGrid *pGrid, Coord2d p1, Coord2d p2, Coord2d p3);
 	int inFOV(Coord2d p1, Coord2d p2, Coord2d p3);
@@ -129,11 +162,6 @@ public:
 	void emitDFS(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
 	void emitTri(TriIndex *t, Coord2d p1, Coord2d p2, Coord2d p3);
 	void getNormal(int,int,double,int,int,double,int,int,double,double*,double*,double*);
-
-	// overrides
-	void DoRender();
-	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
-	void GetLocation(int iX, int iZ, FPoint3 &p);
 
 private:
 	float	m_fXScale, m_fYScale, m_fZScale;

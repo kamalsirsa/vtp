@@ -43,6 +43,11 @@ struct vtMouseEvent
 	int flags;
 };
 
+/**
+ * This class simply provides the ability to store whether an object is
+ * "enabled" or not.  This is generally useful, such as for Nodes or Engines
+ * which can be turned on and off.
+ */
 class vtEnabledBase
 {
 public:
@@ -65,9 +70,7 @@ class vtEngine;
 class vtGeom;
 class vtRoot;
 
-//
-// Basic scene graph node
-//
+/** Base class for Node implementation. */
 class vtNodeBase
 {
 public:
@@ -77,11 +80,13 @@ public:
 	virtual void SetName2(const char *str) = 0;
 	virtual const char *GetName2() = 0;
 
+	/** Looks for a descendent node with a given name.  If not found, NULL
+	 is returned. */
 	vtNode *FindDescendantByName(const char *name);
 };
 
 //
-// A scene graph node that can have children
+// Base class for a Group node (scene graph node that can have children).
 //
 class vtGroupBase
 {

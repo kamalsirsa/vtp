@@ -9,6 +9,8 @@
 #ifndef LKTERRAINH
 #define LKTERRAINH
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include "DynTerrain.h"
 
 #define DO_BOUNDS_CHECK		0	// debug: bounds checking
@@ -58,24 +60,48 @@ public:
 	int base_i, base_j;
 };
 
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+/*!
+	The LKTerrain class implements the Siggraph 1996 paper "Real-Time,
+	Continuous LOD Rendering of Height Fields" by Peter Lindstrom and David
+	Koller.  It was implemented with great help from Koller himself.
+	\par
+	This algorithm requires that the input heightfield is a square regular
+	grid of dimension 2^n+1, eg. 513, 1025, or 2049.  Storage requirements
+	are rather large, but the algorithm can very quickly determine exactly
+	which vertices are to be visible to maintain a given error bound.  The
+	error metric is sophisticated and take both distance and angle into
+	consideration.
+	<h4>Differences</h4>
+	This implementation differs from the published Siggraph paper in the
+	following ways:
+	 - A single massive array is used, instead of the "block" approach
+	   described in the paper.  This is because the paper does not describe
+	   how to maintain continuity on block boundaries.
+	 - The culling algorithm proceeds top-down, rather than bottom-up.
+ */
 class LKTerrain : public vtDynTerrainGeom
 {
 public:
 	LKTerrain();
 	~LKTerrain();
 
-	// setup and initialization
+	/// initialization
 	bool Init(vtLocalGrid *pGrid, float fZScale, float fOceanDepth, int &iError);
-	void compute_delta(int left_index, int mid_index, int right_index);
-	void compute_bbox(int i, int j);
-	void ComputeLevelsAndDeltas();
-	void DumpOffsets();
 	static int MemoryRequired(int iDimension);
 
 	// overrides
 	void DoRender();
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
 	void GetLocation(int iX, int iZ, FPoint3 &p);
+
+protected:
+	// setup and initialization
+	void compute_delta(int left_index, int mid_index, int right_index);
+	void compute_bbox(int i, int j);
+	void ComputeLevelsAndDeltas();
+	void DumpOffsets();
 
 	// visibility determination and vertex tree processing
 	void evaluate_vertex(int index);
@@ -99,7 +125,8 @@ private:
 	// for Buckets
 	void empty_buckets();
 	void terrain_render_buckets();
-	void determine_bucket(int index_l, int index_r, int index_mid, int &a, int &b);
+	void determine_bucket(int index_l, int index_r, int index_mid,
+		int &a, int &b);
 
 #if DO_BOUNDS_CHECK
 	int offset(int x, int y) {

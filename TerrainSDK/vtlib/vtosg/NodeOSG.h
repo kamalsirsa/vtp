@@ -20,6 +20,9 @@ namespace osg
 //////////////////////
 // wrapper classes
 
+/**
+ * Represents a Node in the vtlib Scene Graph.
+ */
 class vtNode : public vtNodeBase, public vtEnabledBase, public osg::Referenced
 {
 public:
@@ -27,11 +30,17 @@ public:
 	void SetEnabled(bool bOn);
 
 	// implement vtNodeBase methods
+	/** Get the Bounding Box of the node, in world coordinates */
 	void GetBoundBox(FBox3 &box);
+
+	/** Get the Bounding Sphere of the node, in world coordinates */
 	void GetBoundSphere(FSphere &sphere);
+
 	vtNode *CreateClone();
 
+	/** Set the name of the node. */
 	void SetName2(const char *str);
+	/** Get the name of the node. */
 	const char *GetName2();
 
 	// implementation data
@@ -45,15 +54,26 @@ protected:
 	bool m_bGroup;
 };
 
+/**
+ * Represents a Group (a node that can have children) in the vtlib Scene Graph.
+ */
 class vtGroup : public vtNode, public vtGroupBase
 {
 public:
 	vtGroup(bool suppress = false);
 
 	// implement vtGroupBase methods
+	/** Add a node as a child of this Group. */
 	void AddChild(vtNode *pChild);
+
+	/** Remove a node as a child of this Group.  If the indicated node is not
+	 a child, then this method has no effect. */
 	void RemoveChild(vtNode *pChild);
+
+	/** Return a child node, by index. */
 	vtNode *GetChild(int num);
+
+	/** Return the number of child nodes */
 	int GetNumChildren();
 
 	// OSG-specific Implementation
@@ -65,23 +85,44 @@ protected:
 	osg::Group *m_pGroup;
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 class CustomTransform : public osg::Transform
 {
 public:
 	inline osg::Matrix& getMatrix() { return *_matrix; }
 };
 
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+/**
+ * A Transform node allows you to apply a transform (scale, rotate, translate)
+ * to all its child nodes.
+ */
 class vtTransform : public vtGroup, public vtTransformBase
 {
 public:
 	vtTransform();
 
 	// implement vtTransformBase methods
+
+	/** Set this transform to identity (no scale, rotation, or translation). */
 	void Identity();
+
+	/** Set the translation componet of the transform */
 	void SetTrans(const FPoint3 &pos);
+
+	/** Get the translation componet of the transform */
 	FPoint3 GetTrans();
+
+	/** Apply a relative offset (translation) to the transform, in the frame
+		of its parent. */
 	void Translate1(const FPoint3 &pos);
+
+	/** Apply a relative offset (translation) to the transform, in its own
+		frame of reference. */
 	void TranslateLocal(const FPoint3 &pos);
+
 	void Rotate2(const FPoint3 &axis, float angle);
 	void RotateLocal(const FPoint3 &axis, float angle);
 	void RotateParent(const FPoint3 &axis, float angle);
@@ -127,15 +168,37 @@ public:
 	vtLight	*m_pLight;
 };
 
+/** The vtGeom class represents a Geometry Node which can contain any number
+	of visible vtMesh objects.
+	\par
+	A vtGeom also manages a set of Materials (vtMaterial).  Each contained
+	mesh is assigned one of these materials, by index.
+	\par
+	This separation (Group/Mesh) provides the useful ability to define a vtMesh
+	once in memory, and have multiple vtGeom nodes which contain it, which
+	permits a large number of visual instances (each with potentially different
+	material and transform) with very little memory cost.
+ */
 class vtGeom : public vtGeomBase, public vtNode
 {
 public:
 	vtGeom();
 
+	/** Add a mesh to this geometry.
+		\param iMatIdx The material index for this mesh, which is an index
+			into the material array of the geometry. */
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
+
+	/** Remove a mesh from the geomtry.  Has no effect if the mesh is not
+		currently contained. */
 	void RemoveMesh(vtMesh *pMesh);
+
+	/** Return a contained vtMesh by index. */
 	vtMesh *GetMesh(int i);
+
+	/** Return the number of contained meshes. */
 	int GetNumMeshes();
+
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
 	osg::Geode	*m_pGeode;	// the Geode is a container for Drawables
@@ -168,6 +231,24 @@ public:
 	class vtDynGeom		*m_pDynGeom;
 };
 
+/**
+ * vtDynGeom extends the vtGeom class with the ability to have dynamic geometry
+ * which changes every frame.  The most prominent use of this feature is to do
+ * Continuous Level of Detail (CLOD) for terrain.
+ * \par
+ * To implement, you must create your own subclass and override the following
+ * methods:
+ * - DoRender()
+ * - DoCalcBoundBox()
+ * - DoCull()
+ * \par
+ * Many helpful methods are provided to make doing your own view culling very easy:
+ * - IsVisible(sphere)
+ * - IsVisible(triangle)
+ * - IsVisible(point)
+ * \par
+ * \see vtDynTerrainGeom
+ */
 class vtDynGeom : public vtGeom
 {
 public:

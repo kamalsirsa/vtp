@@ -17,6 +17,8 @@
 #ifndef ROUTEH
 #define ROUTEH
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #include "HeightField.h"
 class vtTerrain;
 class vtTower3D;
@@ -164,5 +166,7 @@ protected:
 };
 
 typedef class vtRoute *vtRoutePtr;
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 #endif //ROUTEH

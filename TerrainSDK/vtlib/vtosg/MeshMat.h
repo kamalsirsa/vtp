@@ -58,6 +58,8 @@ public:
 
 /////////////////////////////////////////////
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 class GeoSet2 : public osg::GeoSet
 {
 public:
@@ -66,14 +68,47 @@ public:
 	class vtMesh *m_pMesh;
 };
 
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+/**
+ * A Mesh is a set of graphical primitives (such as lines, triangles, or fans).
+ * \par
+ * The vtMesh class allows you to define and access a Mesh, including many
+ * functions useful for creating and dynamically changing Meshes.
+ * \par
+ * To add the vtMesh to the visible scene graph, add it to a vtGeom node.
+ */
 class vtMesh : public vtMeshBase
 {
 public:
+	/** Create a vtMesh.
+	 \param PrimType The OpenGL primitive type, e.g. GL_LINES, GL_TRIANGLE_STRIP
+	 \param VertType The types of data that are stored for each vertex.  This can
+	  be a combination of any of the following values:
+	   - VT_Normals if you need vertex normals for smooth shading.
+	   - VT_Colors if you need vertex colors.
+	   - VT_TexCoords if you need texture coordinates for each vertex.
+	 \param NumVertices The number of vertices you expect the mesh to contain.
+	  This number does not need to be exact, since the vertex buffer will be
+	  expanded as necessary, but it improves efficiency if you pass the correct
+	  number at construction time.
+	 */
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
 
+	/** Add a triangle.  p0, p1, p2 are the indices of the vertices of the triangle. */
 	void AddTri(int p0, int p1, int p2);
+
+	/** Add a triangle fan with up to 6 points (center + 5 points).  The first 3
+	 arguments are required, the rest are optional.  A fan will be created with as
+	 many point indices as you pass. */
 	void AddFan(int p0, int p1, int p2, int p3 = -1, int p4 = -1, int p5 = -1);
+
+	/** Add a triangle fan with any number of points.
+	 \param idx An array of vertex indices for the fan.
+	 \param iNVerts the number of vertices in the fan.
+	*/
 	void AddFan(int *idx, int iNVerts);
+
 	void AddStrip(int iNVerts, unsigned short *pIndices);
 	void AddQuadStrip(int iNVerts, int iStartIndex);
 	void AddLine(int p0, int p1);

@@ -40,7 +40,8 @@ protected:
 };
 
 /**
- * This engine extends vtFlyer with the ability to do terrain following.
+ * This engine extends vtFlyer with the ability to do terrain following
+ * (keeping the target "above the ground" relative to a given heightfield).
  *
  * You can set minimum height above the ground.
  */
@@ -49,16 +50,29 @@ class vtTerrainFlyer : public vtFlyer
 public:
 	vtTerrainFlyer(float fSpeed, float fHeightAboveTerrain, bool bMin);
 
+	/// Set the heightfield on which to do the terrain following.
 	void SetHeightField(vtHeightField *pGrid) { m_pHeightField = pGrid; }
+
+	/// Enables whether to do terrain following or not.  Default is true.
 	void FollowTerrain(bool bFollow);
-	void KeepAboveGround();
+
+	/// Set the desired minimum height above the terrain.
 	void SetHeight(float fHeightAboveTerrain) { m_fHeightAboveTerrain = fHeightAboveTerrain; }
+
+	/// Get the minimum height about the terrain.
 	float GetHeight() { return m_fHeightAboveTerrain; }
+
+	/// If true, the current height above the terrain is maintained.  Default is false.
 	void MaintainHeight(bool bMaintain) { m_bMaintain = bMaintain; }
+
+	/// Set the height about the terrain to maintain, or pass 0 to use the current value.
 	void SetMaintainHeight(float fheight) { m_fMaintainHeight = fheight; }
 
 	// override
 	void Eval();
+
+protected:
+	void KeepAboveGround();
 
 protected:
 	vtHeightField *m_pHeightField;

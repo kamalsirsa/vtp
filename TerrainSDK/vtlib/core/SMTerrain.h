@@ -16,6 +16,18 @@
 #define STORE_DISTANCE		1
 #define FAST_ALLOC			0	// use quick (macro, no assert) triangle stack
 
+/*
+Seumas says:
+
+  "I use bytes for my variance info, since my vertical height map
+  resolution is 25cm. Since the variance tree can get pretty big,
+  I'd suggest using bytes anyway, perhaps with a non-linear scaling
+  if you need larger dynamic range."
+
+  "I believe my implicit variance tree is max-4 levels deep, so imagine
+  the finest tessellation possible, then step back 4 levels from there."
+*/
+
 #if INTEGER_HEIGHT
 typedef short HeightType;
 typedef unsigned char VarianceType;
@@ -66,29 +78,43 @@ public:
 };
 typedef Block *BlockPtr;
 
-/*
-Seumas says:
-
-  "I use bytes for my variance info, since my vertical height map
-  resolution is 25cm. Since the variance tree can get pretty big,
-  I'd suggest using bytes anyway, perhaps with a non-linear scaling
-  if you need larger dynamic range."
-
-  "I believe my implicit variance tree is max-4 levels deep, so imagine
-  the finest tessellation possible, then step back 4 levels from there."
-*/
-
+/*!
+	The SMTerrain class implements Seumas McNally's algorithm for regular-grid
+	terrain LOD.  It was implemented directly from correspondence from the
+	<a href="http://www.gamedev.net/community/memorial/seumas/">dearly missed</a>
+	Seumas, and is highly similar to the implementation in his game
+	<a href="http://www.treadmarks.com/">Treadmarks</a>.
+	\par
+	This implementation requires that the input heightfield is a square regular
+	grid of dimension 2^n+1, e.g.. 1025, 2049, or 4097.  Storage requirements
+	are around 3-5 bytes/vertex.  The data is represented in memory by a
+	regular grid of height values, an implicit binary tree of variance values,
+	and an explicit binary tree of visible faces.
+	\par
+	This is the fastest and most memory-efficient algorithm currently known for
+	terrain rendering with a long viewing distance and an unconstrained viewpoint.
+	\par
+	<h4>Usage</h4>
+	 -# Create a new SMTerrain object
+	 -# Initialize it with a LocalGrid to provide height values
+	 -# add it to your scene graph
+	 -# set the desired level detail with SetPolygonCount()
+	 -# for a detail texture, call SetDetailMaterial()
+	 -# let the scene graph API render the terrain for you each frame
+	 \par
+	<h4>Performance Issues</h4>
+	 - Use of triangle fans can be toggled at runtime, via the m_bUseTriStrips
+	   member.  In testing, this has shown around a 15% speed increase.
+ */
 class SMTerrain : public vtDynTerrainGeom
 {
 public:
 	SMTerrain();
 	~SMTerrain();
 
-	// initialization
+	/// initialization
 	bool Init(vtLocalGrid *pGrid, float fZScale,
 				float fOceanDepth, int &iError);
-	void Init2();
-	void AllocatePool();
 	static int MemoryRequired(int iDimension);
 
 	// overrides
@@ -98,6 +124,8 @@ public:
 
 protected:
 	// initialization
+	void Init2();
+	void AllocatePool();
 	void ComputeVariances();
 	MathType ComputeTriangleVariance(int num, int v0, int v1, int va, int level);
 	void SetupBlocks();
