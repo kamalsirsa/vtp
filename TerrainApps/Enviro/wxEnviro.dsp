@@ -57,7 +57,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxdlld.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib ssg.lib sg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /out:"DebugDLL/isosurf.exe" /pdbtype:sept /libpath:"\wx2\lib" /libpath:"\plib-1.2.0\src\ssg\Debug" /libpath:"\plib-1.2.0\src\sg\Debug" /libpath:"\TerrainSDK\NetCDF"
-# ADD LINK32 wxmsw240d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_id.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /pdbtype:sept
+# ADD LINK32 wxmsw24d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_id.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /pdbtype:sept
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
 
@@ -86,7 +86,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxdll.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib opengl32.lib glu32.lib ssg.lib sg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /out:"ReleaseDLL/isosurf.exe" /libpath:"\wx2\lib"
-# ADD LINK32 wxmsw240.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
+# ADD LINK32 wxmsw24.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
 
@@ -115,7 +115,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib"
-# ADD LINK32 wxmsw240u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib" /out:"Release_Unicode/wxEnviro_u.exe"
+# ADD LINK32 wxmsw24u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib gdi32.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"MSVCRTD.lib" /out:"Release_Unicode/wxEnviro_u.exe"
 
 !ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
 
@@ -144,7 +144,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_i.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /pdbtype:sept
-# ADD LINK32 wxmsw240ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_id.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /out:"Debug_Unicode/wxEnviro_u.exe" /pdbtype:sept
+# ADD LINK32 wxmsw24ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib opengl32.lib libpng.lib zlib.lib netcdf.lib gdal_id.lib gdi32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmtd.lib" /out:"Debug_Unicode/wxEnviro_u.exe" /pdbtype:sept
 
 !ENDIF 
 

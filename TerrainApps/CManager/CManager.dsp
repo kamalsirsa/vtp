@@ -55,7 +55,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wxmsw240.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib"
+# ADD LINK32 wxmsw24.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib"
 # SUBTRACT LINK32 /debug
 
 !ELSEIF  "$(CFG)" == "CManager - Win32 Debug"
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wxmsw240d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\plib-1.3.1\lib\Debug" /libpath:"\APIs\NetCDF" /libpath:"\APIs\libpng-1.0.8"
+# ADD LINK32 wxmsw24d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\plib-1.3.1\lib\Debug" /libpath:"\APIs\NetCDF" /libpath:"\APIs\libpng-1.0.8"
 
 !ELSEIF  "$(CFG)" == "CManager - Win32 Release Unicode"
 
@@ -110,7 +110,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240.lib osg.lib osgDB.lib osgUtil.lib osgText.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib"
 # SUBTRACT BASE LINK32 /debug
-# ADD LINK32 wxmsw240u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"Release_Unicode/CManager_u.exe"
+# ADD LINK32 wxmsw24u.lib osg.lib osgDB.lib osgUtil.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"Release_Unicode/CManager_u.exe"
 # SUBTRACT LINK32 /debug
 
 !ELSEIF  "$(CFG)" == "CManager - Win32 Debug Unicode"
@@ -138,7 +138,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wxmsw240d.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib libpng.lib zlib.lib gdal_i.lib opengl32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"\APIs\plib-1.3.1\lib\Debug" /libpath:"\APIs\NetCDF" /libpath:"\APIs\libpng-1.0.8"
-# ADD LINK32 wxmsw240ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/CManager_u.exe" /pdbtype:sept /libpath:"\APIs\plib-1.3.1\lib\Debug" /libpath:"\APIs\NetCDF" /libpath:"\APIs\libpng-1.0.8"
+# ADD LINK32 wxmsw24ud.lib osgd.lib osgDBd.lib osgUtild.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_id.lib opengl32.lib glu32.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /out:"Debug_Unicode/CManager_u.exe" /pdbtype:sept /libpath:"\APIs\plib-1.3.1\lib\Debug" /libpath:"\APIs\NetCDF" /libpath:"\APIs\libpng-1.0.8"
 
 !ENDIF 
 
