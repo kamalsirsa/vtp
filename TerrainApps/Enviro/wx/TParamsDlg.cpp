@@ -17,11 +17,10 @@
 #include "wx/wx.h"
 #endif
 
-#include "vtlib/vtlib.h"
 #include "vtdata/boost/directory.h"
-#include "vtdata/Features.h"
+#include "vtdata/Features.h"		// for RefreshLabelFields()
 #include "TParamsDlg.h"
-#include "../Options.h"
+//#include "../Options.h"
 
 #define NTILES 4
 
