@@ -366,15 +366,21 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	char *str1, *str2;
 	Source.exportToWkt(&str1);
 	((vtProjection &)proj).exportToWkt(&str2);
+	VTLOG("World Map projection, converting:\n");
+	VTLOG(" From: ");
 	VTLOG(str1);
+	VTLOG("\n   To: ");
 	VTLOG(str2);
 
 	// Check texts in PROJ4
 	char *str3, *str4;
 	Source.exportToProj4(&str3);
+	VTLOG("\n From: ");
 	VTLOG(str3);
 	proj.exportToProj4(&str4);
+	VTLOG("\n   To: ");
 	VTLOG(str4);
+	VTLOG("\n");
 #endif
 
 	CPLPushErrorHandler(myErrorHandler);
