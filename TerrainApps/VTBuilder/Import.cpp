@@ -362,6 +362,8 @@ vtLayerPtr MainFrame::ImportFromDLG(wxString &strFileName, LayerType ltype)
 
 vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 {
+	bool success;
+
 	SHPHandle hSHP = SHPOpen(strFileName, "rb");
 	if (hSHP == NULL)
 	{
@@ -416,10 +418,12 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_STRUCTURE)
 	{
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
-		pSL->AddElementsFromSHP(strFileName, proj);
+		success = pSL->AddElementsFromSHP(strFileName, proj);
+		if (!success)
+			return NULL;
 	}
 
-	if (ltype ==LT_UTILITY)
+	if (ltype == LT_UTILITY)
 	{
 		vtUtilityLayer *pUL = (vtUtilityLayer *)pLayer;
 		pUL->ImportFromSHP(strFileName, proj);
