@@ -12,6 +12,8 @@
 #include "vtdata/StructArray.h"
 #include "Layer.h"
 
+class vtDLGFile;
+
 //////////////////////////////////////////////////////////
 
 class vtStructureLayer : public vtLayer, public vtStructureArray
