@@ -102,10 +102,16 @@ void vtTerrainScene::_CreateSkydome(const vtStringArray &datapath)
 	if (m_pSkyDome != NULL)
 		return;
 
+	VTLOG(" Creating SkyDome\n");
+
 	// 'bsc' is the Bright Star Catalog
 	vtString bsc = FindFileOnPaths(datapath, "Sky/bsc.data");
 	vtString sun = FindFileOnPaths(datapath, "Sky/glow2.png");
 	vtString moon = FindFileOnPaths(datapath, "Sky/moon5_256.png");
+
+	VTLOG("  Stars: '%s'\n", (const char *) bsc);
+	VTLOG("    Sun: '%s'\n", (const char *) sun);
+	VTLOG("   Moon: '%s'\n", (const char *) moon);
 
 	// create a day-night dome
 	m_pSkyDome = new vtSkyDome();
