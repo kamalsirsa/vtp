@@ -569,3 +569,17 @@ void vtRawLayer::ReadGeoURL()
 	m_pSet = pPointSet;
 }
 
+void vtRawLayer::CreateIndex(int iSize)
+{
+	vtFeatureSetPolygon *polyset = dynamic_cast<vtFeatureSetPolygon *>(m_pSet);
+	if (polyset)
+		polyset->CreateIndex(iSize);
+}
+
+void vtRawLayer::FreeIndex()
+{
+	vtFeatureSetPolygon *polyset = dynamic_cast<vtFeatureSetPolygon *>(m_pSet);
+	if (polyset)
+		polyset->FreeIndex();
+}
+

@@ -62,6 +62,10 @@ public:
 
 	void ReadGeoURL();
 
+	// speed optimization
+	void CreateIndex(int iSize);
+	void FreeIndex();
+
 protected:
 	vtFeatureSet	*m_pSet;
 	DrawStyle	m_DrawStyle;
