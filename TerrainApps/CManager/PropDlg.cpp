@@ -204,7 +204,7 @@ void PropDlg::UpdateFromControls()
 	if (m_pCurrentItem)
 	{
 		m_pCurrentItem->m_name = m_strItem.mb_str();
-		m_pCurrentItem->SetValue("type", m_strType);
+		m_pCurrentItem->SetValue("type", m_strType.mb_str());
 	}
 }
 

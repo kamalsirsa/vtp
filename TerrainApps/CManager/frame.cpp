@@ -388,7 +388,7 @@ void vtFrame::LoadContentsFile(const wxString2 &fname)
 	FreeContents();
 	try 
 	{
-		m_Man.ReadXML(fname);
+		m_Man.ReadXML(fname.mb_str());
 	}
 	catch (xh_io_exception &e)
 	{
@@ -422,7 +422,7 @@ void vtFrame::SaveContentsFile(const wxString2 &fname)
 	VTLOG("SaveContentsFile '%s'\n", fname.mb_str());
 	try 
 	{
-		m_Man.WriteXML(fname);
+		m_Man.WriteXML(fname.mb_str());
 	}
 	catch (xh_io_exception &e)
 	{
