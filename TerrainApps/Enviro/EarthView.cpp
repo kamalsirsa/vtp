@@ -19,6 +19,10 @@
 #define SPACE_DARKNESS		0.0f
 #define UNFOLD_SPEED		0.01f
 
+// these define the vertex count and height offset of the lon-lat lines
+#define LL_COUNT	640
+#define LL_RADIUS	1.002
+
 extern int pwdemo;
 vtGeom *tg = NULL;
 
@@ -172,7 +176,7 @@ void Enviro::MakeGlobe()
 	m_pGlobeTime->AddTarget((TimeTarget *)m_pIcoGlobe);
 
 if (pwdemo){
-	logo = new vtGroup;
+/*	logo = new vtGroup;
 	IcoGlobe *Globe2 = new IcoGlobe();
 	Globe2->Create(1000, g_Options.m_DataPaths, vtString(""),
 		IcoGlobe::GEODESIC);
@@ -248,7 +252,7 @@ if (pwdemo){
 		tg->AddMesh(mesh, i%6);
 	}
 	tg->SetEnabled(false);
-
+*/
 }else{
 	logo = NULL;
 }
@@ -305,40 +309,80 @@ if (pwdemo){
 	m_pSpaceAxes = new vtGeom();
 	m_pSpaceAxes->SetName2("Earth Axes");
 	m_pSpaceAxes->SetMaterials(pMats);
-	pMats->Release();	// pass ownership to Geometry
+	pMats->Release();	// pass ownership
 
 	vtMesh *mesh = new vtMesh(GL_LINES, 0, 6);
-	mesh->AddVertex(FPoint3(0,0,200));
-	mesh->AddVertex(FPoint3(0,0,0));
-	mesh->AddLine(0,1);
-	mesh->AddVertex(FPoint3(0,0,1));
-	mesh->AddVertex(FPoint3(-.07f,0,1.1f));
-	mesh->AddVertex(FPoint3( .07f,0,1.1f));
-	mesh->AddLine(2,3);
-	mesh->AddLine(2,4);
+	mesh->AddLine(FPoint3(0,0,200), FPoint3(0,0,0));
+	mesh->AddLine(FPoint3(0,0,1),   FPoint3(-.07f,0,1.1f));
+	mesh->AddLine(FPoint3(0,0,1),   FPoint3( .07f,0,1.1f));
 	m_pSpaceAxes->AddMesh(mesh, yellow);
-	mesh->Release();	// pass ownership to Geometry
+	mesh->Release();	// pass ownership
 
 	mesh = new vtMesh(GL_LINES, 0, 6);
-	mesh->AddVertex(FPoint3(1.5f,0,0));
-	mesh->AddVertex(FPoint3(-1.5f,0,0));
-	mesh->AddLine(0,1);
-	mesh->AddVertex(FPoint3(-1.4f,0.07f,0));
-	mesh->AddVertex(FPoint3(-1.4f,-0.07f,0));
-	mesh->AddLine(1,2);
-	mesh->AddLine(1,3);
+	mesh->AddLine(FPoint3(1.5f,0,0), FPoint3(-1.5f,0,0));
+	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f, 0.07f,0));
+	mesh->AddLine(FPoint3(-1.5f,0,0), FPoint3(-1.4f,-0.07f,0));
 	m_pSpaceAxes->AddMesh(mesh, green);
-	mesh->Release();	// pass ownership to Geometry
+	mesh->Release();	// pass ownership
 
 	mesh = new vtMesh(GL_LINES, 0, 6);
-	mesh->AddVertex(FPoint3(0,2,0));
-	mesh->AddVertex(FPoint3(0,-2,0));
-	mesh->AddLine(0,1);
+	mesh->AddLine(FPoint3(0,2,0), FPoint3(0,-2,0));
 	m_pSpaceAxes->AddMesh(mesh, red);
-	mesh->Release();	// pass ownership to Geometry
+	mesh->Release();	// pass ownership
 
 	m_pGlobeContainer->AddChild(m_pSpaceAxes);
 	m_pSpaceAxes->SetEnabled(false);
+
+	// Lon-lat cursor lines
+	m_pEarthLines = new vtGeom();
+	m_pEarthLines->SetName2("Earth Lines");
+	int orange = pMats->AddRGBMaterial1(RGBf(1,.7,1), false, false, true, 0.6);
+	m_pEarthLines->SetMaterials(pMats);
+
+	m_pLineMesh = new vtMesh(GL_LINE_STRIP, 0, 6);
+	for (int i = 0; i < LL_COUNT*3; i++)
+		m_pLineMesh->AddVertex(FPoint3(0,0,0));
+	m_pLineMesh->AddStrip2(LL_COUNT*2, 0);
+	m_pLineMesh->AddStrip2(LL_COUNT, LL_COUNT*2);
+	m_pLineMesh->AllowOptimize(false);
+
+	m_pEarthLines->AddMesh(m_pLineMesh, orange);
+	m_pLineMesh->Release();	// pass ownership
+	m_pIcoGlobe->GetSurface()->AddChild(m_pEarthLines);
+	m_pEarthLines->SetEnabled(false);
+
+	double lon = 14.1;
+	double lat = 37.5;
+	SetEarthLines(lon, lat);
+}
+
+void Enviro::SetEarthLines(double lon, double lat)
+{
+	int i;
+	DPoint2 p;
+	FPoint3 p3;
+
+	// lat line
+	p.y = lat;
+	for (i = 0; i < LL_COUNT+LL_COUNT; i++)
+	{
+		p.x = (double)i / (LL_COUNT+LL_COUNT-1) * 360;
+		geo_to_xyz(LL_RADIUS, p, p3);
+		m_pLineMesh->SetVtxPos(i, p3);
+	}
+	// lon line
+	p.x = lon;
+	for (i = 0; i < LL_COUNT; i++)
+	{
+		p.y = -90 + (double)i / (LL_COUNT-1) * 180;
+		geo_to_xyz(LL_RADIUS, p, p3);
+		m_pLineMesh->SetVtxPos(LL_COUNT+LL_COUNT+i, p3);
+	}
+}
+
+void Enviro::ShowEarthLines(bool bShow)
+{
+	m_pEarthLines->SetEnabled(bShow);
 }
 
 void Enviro::SetSpaceAxes(bool bShow)
@@ -484,14 +528,19 @@ void Enviro::DoCursorOnEarth()
 	if (m_pGlobePicker != NULL)
 		m_bOnTerrain = m_pGlobePicker->GetCurrentEarthPos(earthpos);
 	if (m_bOnTerrain)
+	{
 		m_EarthPos = earthpos;
 
+		// Update Earth Lines
+		SetEarthLines(m_EarthPos.x, m_EarthPos.y);
+	}
 	vtString str1, str2;
 	FormatCoordString(str1, m_EarthPos, LU_DEGREES);
 	str2 = "Cursor ";
 	str2 += str1;
 	m_pSprite2->SetText(str2);
 }
+
 
 vtTerrain *Enviro::FindTerrainOnEarth(const DPoint2 &p)
 {

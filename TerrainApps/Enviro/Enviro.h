@@ -107,6 +107,8 @@ public:
 	int AddGlobePoints(const char *fname);
 	void UpdateEarthArc();
 	void SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2);
+	void SetEarthLines(double lon, double lat);
+	void ShowEarthLines(bool bShow);
 	vtTerrain *FindTerrainOnEarth(const DPoint2 &p);
 
 	vtString GetMessage() { return m_strMessage; }
@@ -263,6 +265,8 @@ protected:
 	float		m_fFolding, m_fFoldDir;
 	vtTrackball	*m_pTrackball;
 	vtGeom		*m_pSpaceAxes;
+	vtGeom		*m_pEarthLines;
+	vtMesh		*m_pLineMesh;
 
 	// flattened globe view
 	FPQ			m_SpaceLoc;
