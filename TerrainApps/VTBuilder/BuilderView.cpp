@@ -1504,10 +1504,11 @@ void BuilderView::OnLButtonClickInfo()
 		pRL->FindAllPointsAtLocation(loc, found);
 
 		FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
-		fdlg->ShowPicked();
 		fdlg->SetFeatureSet(pRL);
+		pRL->DePickAll();
 		for (int i = 0; i < found.GetSize(); i++)
-			fdlg->ShowFeature(found[i]);
+			pRL->Pick(found[i]);
+		fdlg->ShowPicked();
 	}
 }
 
