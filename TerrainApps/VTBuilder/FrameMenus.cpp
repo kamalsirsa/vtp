@@ -158,8 +158,10 @@ EVT_UPDATE_UI(ID_TOWER_EDIT,		MainFrame::OnUpdateTowerEdit)
 
 EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
+EVT_MENU(ID_VEG_REMAP,				MainFrame::OnVegRemap)
 EVT_MENU(ID_VEG_EXPORTSHP,			MainFrame::OnVegExportSHP)
 
+EVT_UPDATE_UI(ID_VEG_REMAP,			MainFrame::OnUpdateVegExportSHP)
 EVT_UPDATE_UI(ID_VEG_EXPORTSHP,		MainFrame::OnUpdateVegExportSHP)
 
 EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
@@ -365,6 +367,8 @@ void MainFrame::CreateMenus()
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, _("Species List"), _("View/Edit list of available plant species"));
 	vegMenu->Append(ID_VEG_BIOREGIONS, _("BioRegions"), _("View/Edit list of species & density for each BioRegion"));
+	vegMenu->AppendSeparator();
+	vegMenu->Append(ID_VEG_REMAP, _("Remap Species"));
 	vegMenu->Append(ID_VEG_EXPORTSHP, _("Export SHP"));
 	m_pMenuBar->Append(vegMenu, _("Veg&etation"));
 	m_iLayerMenu[LT_VEG] = menu_num;
@@ -2398,6 +2402,58 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 
 	// Display bioregion data, calling OnInitDialog.
 	m_BioRegionDlg->Show(true);
+}
+
+void MainFrame::OnVegRemap(wxCommandEvent& event)
+{
+	vtVegLayer *pVeg = GetMainFrame()->GetActiveVegLayer();
+	if (!pVeg) return;
+
+	vtSpeciesList *list = GetPlantList();
+
+	wxArrayString choices;
+	wxString2 str;
+	unsigned int i, n = list->NumSpecies();
+	for (i = 0; i < n; i++)
+	{
+		vtPlantSpecies *spe = list->GetSpecies(i);
+		str = spe->GetSciName();
+		choices.Add(str);
+	}
+
+	wxString2 result1 = wxGetSingleChoice(_("Remap FROM Species"), _T("Species"),
+		choices, this);
+	if (result1 == _T(""))	// cancelled
+		return;
+	short species_from = list->GetSpeciesIdByName(result1.mb_str());
+
+	wxString2 result2 = wxGetSingleChoice(_("Remap TO Species"), _T("Species"),
+		choices, this);
+	if (result2 == _T(""))	// cancelled
+		return;
+	short species_to = list->GetSpeciesIdByName(result2.mb_str());
+
+	vtFeatureSet *pSet = pVeg->GetFeatureSet();
+	vtPlantInstanceArray *pPIA = dynamic_cast<vtPlantInstanceArray *>(pSet);
+	if (!pPIA)
+		return;
+
+	float size;
+	short species_id;
+	int count = 0;
+	for (i = 0; i < pPIA->GetNumEntities(); i++)
+	{
+		pPIA->GetPlant(i, size, species_id);
+		if (species_id == species_from)
+		{
+			pPIA->SetPlant(i, size, species_to);
+			count++;
+		}
+	}
+	str.Printf(_("Remap successful, %d plants remapped.\n"), count);
+	wxMessageBox(str, _("Info"));
+	if (count > 0)
+		pVeg->SetModified(true);
 }
 
 void MainFrame::OnVegExportSHP(wxCommandEvent& event)

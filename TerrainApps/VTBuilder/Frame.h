@@ -189,6 +189,7 @@ protected:
 
 	void OnVegPlants(wxCommandEvent& event);
 	void OnVegBioregions(wxCommandEvent& event);
+	void OnVegRemap(wxCommandEvent& event);
 	void OnVegExportSHP(wxCommandEvent& event);
 	void OnUpdateVegExportSHP(wxUpdateUIEvent& event);
 
