@@ -1268,14 +1268,22 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 		wxMessageBox(str, "", wxOK);
 	}
 
+	UpdateProgressDialog(50, "Cleaning link points");
+	count = pRL->CleanLinkPoints();
+	if (count)
+	{
+		str.Printf("Cleaned %d link points", count);
+		wxMessageBox(str, "", wxOK);
+	}
+
 #if 0
 	// The following cleanup operations are disabled until they are proven safe!
 
-	UpdateProgressDialog(30, "Removing degenerate roads");
+	UpdateProgressDialog(30, "Removing degenerate links");
 	count = pRL->RemoveDegenerateRoads();
 	if (count)
 	{
-		str.Printf("Removed %d degenerate roads", count);
+		str.Printf("Removed %d degenerate links", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1287,19 +1295,11 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 		wxMessageBox(str, "", wxOK);
 	}
 
-	UpdateProgressDialog(50, "Cleaning road points");
-	count = pRL->CleanRoadPoints();
-	if (count)
-	{
-		str.Printf("Cleaned %d road points", count);
-		wxMessageBox(str, "", wxOK);
-	}
-
-	UpdateProgressDialog(60, "Removing dangling roads");
+	UpdateProgressDialog(60, "Removing dangling links");
 	count = pRL->DeleteDanglingRoads();
 	if (count)
 	{
-		str.Printf("Removed %i dangling roads", count);
+		str.Printf("Removed %i dangling links", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
