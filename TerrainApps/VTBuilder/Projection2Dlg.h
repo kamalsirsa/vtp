@@ -26,7 +26,7 @@ enum ProjType
     PT_GEO,
     PT_UTM,
     PT_ALBERS,
-    PT_STATE
+    PT_LAMBERT
 };
 #endif
 
@@ -47,31 +47,42 @@ public:
     
     // WDR: method declarations for Projection2Dlg
     wxListCtrl* GetProjparam()  { return (wxListCtrl*) FindWindow( ID_PROJPARAM ); }
-    wxChoice* GetZonechoice()  { return (wxChoice*) FindWindow( ID_ZONECHOICE ); }
-    wxChoice* GetDatumchoice()  { return (wxChoice*) FindWindow( ID_DATUMCHOICE ); }
-    wxChoice* GetProjchoice()  { return (wxChoice*) FindWindow( ID_PROJCHOICE ); }
+    wxChoice* GetHorizchoice()  { return (wxChoice*) FindWindow( ID_HORUNITS ); }
+    wxChoice* GetZonechoice()  { return (wxChoice*) FindWindow( ID_ZONE ); }
+    wxChoice* GetDatumchoice()  { return (wxChoice*) FindWindow( ID_DATUM ); }
+    wxChoice* GetProjchoice()  { return (wxChoice*) FindWindow( ID_PROJ ); }
     void SetProjection(vtProjection &proj);
     void GetProjection(vtProjection &proj);
+    void SetUIFromProjection();
     void SetProjectionUI(ProjType type);
-	void UpdateControlStatus();
+    void UpdateControlStatus();
+    void DisplayProjectionSpecificParams();
+    void AskStatePlane();
 
-	wxString	m_strCaption;
-	int			m_iDatum;
-	int			m_iZone;
+    int         m_iDatum;
+    int         m_iZone;
+    vtProjection    m_proj;
 
 private:
     // WDR: member variable declarations for Projection2Dlg
     ProjType    m_eProj;
-	int			m_iProj;
+    int         m_iProj;
+    int         m_iUnits;
     wxListCtrl  *m_pParamCtrl;
     wxChoice    *m_pZoneCtrl;
+    wxChoice    *m_pHorizCtrl;
     wxChoice    *m_pDatumCtrl;
     wxChoice    *m_pProjCtrl;
 
-	bool m_bInitializedUI;
+    bool m_bInitializedUI;
 
 private:
     // WDR: handler declarations for Projection2Dlg
+    void OnDatum( wxCommandEvent &event );
+    void OnItemRightClick( wxListEvent &event );
+    void OnHorizUnits( wxCommandEvent &event );
+    void OnZone( wxCommandEvent &event );
+    void OnSetStatePlane( wxCommandEvent &event );
     void OnProjChoice( wxCommandEvent &event );
     void OnInitDialog(wxInitDialogEvent& event);
 
