@@ -38,6 +38,8 @@ protected:
 	// Overrides
 	bool OnInit();
 	DECLARE_MESSAGE_MAP()
+public:
+	virtual int ExitInstance();
 };
 
 /////////////////////////////////////////////////////////////////////////////

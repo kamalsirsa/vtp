@@ -211,3 +211,13 @@ void EnviroApp::OnAppAbout()
 /////////////////////////////////////////////////////////////////////////////
 // EnviroApp commands
 
+
+int EnviroApp::ExitInstance()
+{
+	VTLOG("App Exit\n");
+
+	g_App.Shutdown();
+	vtGetScene()->Shutdown();
+
+	return CWinApp::ExitInstance();
+}
