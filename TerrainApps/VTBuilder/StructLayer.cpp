@@ -54,7 +54,7 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 
 	GetExtents(rect);
 
-	// expand by 10 meters (TODO: is this correct if units are degrees?)
+	// expand by 10 meters (TODO: is this correct if units are degrees? No!)
 	rect.left -= 10.0f;
 	rect.right += 10.0f;
 	rect.bottom -= 10.0f;
@@ -136,17 +136,15 @@ void vtStructureLayer::DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-#define MAX_SIDES	500
-static wxPoint array[MAX_SIDES];
-
 void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 									vtBuilding *bld)
 {
-	DPoint2 corner[4];
+	DPoint2 center;
 	int i, j;
 
 	wxPoint origin;
-	pView->screen(bld->GetLocation(), origin);
+	bld->GetBaseLevelCenter(center);
+	pView->screen(center, origin);
 
 	// crosshair at building center
 	pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
@@ -166,11 +164,11 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 		int sides = dl.GetSize();
 		if (sides == 0)
 			return;
-		for (j = 0; j < sides && j < MAX_SIDES-1; j++)
-			pView->screen(dl.GetAt(j), array[j]);
-		pView->screen(dl.GetAt(0), array[j++]);
+		for (j = 0; j < sides && j < SCREENBUF_SIZE-1; j++)
+			pView->screen(dl.GetAt(j), g_screenbuf[j]);
+		pView->screen(dl.GetAt(0), g_screenbuf[j++]);
 
-		pDC->DrawLines(j, array);
+		pDC->DrawLines(j, g_screenbuf);
 	}
 }
 
@@ -230,11 +228,8 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 		vtStructure *str = GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
 		if (bld)
-		{
-			loc = bld->GetLocation();
-			trans->Transform(1, &loc.x, &loc.y);
-			bld->SetLocation(loc);
-		}
+			bld->TransformCoords(trans);
+
 		vtFence *fen = str->GetFence();
 		if (fen)
 		{
@@ -246,6 +241,7 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 				line[j] = loc;
 			}
 		}
+
 		vtStructInstance *inst = str->GetInstance();
 		if (inst)
 		{
@@ -560,7 +556,9 @@ void vtStructureLayer::UpdateMove(UIContext &ui)
 
 void vtStructureLayer::UpdateRotate(UIContext &ui)
 {
-	DPoint2 origin = ui.m_pCurBuilding->GetLocation();
+	DPoint2 origin;
+	ui.m_pCurBuilding->GetBaseLevelCenter(origin);
+
 	DPoint2 original_vector = ui.m_DownLocation - origin;
 	double length1 = original_vector.Length();
 	double angle1 = atan2(original_vector.y, original_vector.x);
@@ -595,7 +593,9 @@ void vtStructureLayer::UpdateResizeScale(UIContext &ui)
 	if (ui.m_bShift)
 		int foo = 1;
 
-	DPoint2 origin = ui.m_pCurBuilding->GetLocation();
+	DPoint2 origin;
+	ui.m_pCurBuilding->GetBaseLevelCenter(origin);
+
 	DPoint2 diff1 = ui.m_DownLocation - origin;
 	DPoint2 diff2 = ui.m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
