@@ -294,7 +294,12 @@ bool TParams::LoadFromIniFile(const char *filename)
 		{
 			vtString strFile(get_line_from_stream(input));
 			if (strFile != "")
-				m_strStructFiles.push_back(strFile);
+			{
+				ParamStructLayer psl;
+				psl.m_bVisible = true;
+				psl.m_strStructFile = strFile;
+				m_strStructFiles.push_back(psl);
+			}
 		}
 		else if (strcmp(buf, STR_STRUCTDIST) == 0 ||
 				 strcmp(buf, STR_STRUCT_SHADOWS) == 0 ||
@@ -378,14 +383,53 @@ void TParams::ConvertOldTimeValue()
 
 bool TParams::LoadFromXML(const char *fname)
 {
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG("\tReading TParams from '%s'\n", fname);
 
-	bool success = vtTagArray::LoadFromXML(fname);
+	TParamsVisitor visitor(this);
+	try
+	{
+		std::string fname2(fname);
+		readXML(fname2, visitor);
+	}
+	catch (xh_io_exception &ex)
+	{
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+		return false;
+	}
 
 	// Convert old time values to new values
 	ConvertOldTimeValue();
 
-	return success;
+	return true;
+}
+
+void TParamsVisitor::startElement(const char *name, const XMLAttributes &atts)
+{
+	TagVisitor::startElement(name, atts);
+	if (m_level == 2 && !strcmp(name, STR_STRUCTFILE))
+	{
+		m_bViz = true;
+		const char *attval = atts.getValue("Visible");
+		if (attval && !strcmp(attval, "false"))
+			m_bViz = false;
+	}
+}
+
+void TParamsVisitor::endElement(const char *name)
+{
+	if (m_level == 2 && !strcmp(name, STR_STRUCTFILE))
+	{
+		ParamStructLayer psl;
+		psl.m_bVisible = m_bViz;
+		psl.m_strStructFile = m_data.c_str();
+		m_pParams->m_strStructFiles.push_back(psl);
+		m_level--;
+	}
+	else
+		TagVisitor::endElement(name);
 }
 
 void TParams::SetPointStyle(const PointStyle &style)
@@ -438,23 +482,14 @@ vtString TParams::CookTextureFilename() const
 	return str;
 }
 
-
-bool TParams::OverrideValue(const char *szTagName, const vtString &string)
-{
-	if (!strcmp(szTagName, STR_STRUCTFILE))
-	{
-		m_strStructFiles.push_back(string);
-		return true;
-	}
-	return false;
-}
-
 void TParams::WriteOverridesToXML(FILE *fp)
 {
 	for (unsigned int i = 0; i < m_strStructFiles.size(); i++)
 	{
-		fprintf(fp, "\t<%s>%s</%s>\n", STR_STRUCTFILE,
-			(const char *) m_strStructFiles[i], STR_STRUCTFILE);
+		const ParamStructLayer &psl = m_strStructFiles[i];
+		fprintf(fp, "\t<%s Visible=\"%s\">%s</%s>\n", STR_STRUCTFILE,
+			psl.m_bVisible ? "true" : "false",
+			(const char *) psl.m_strStructFile, STR_STRUCTFILE);
 	}
 }
 

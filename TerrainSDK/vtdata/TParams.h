@@ -42,6 +42,12 @@ public:
 	RGBi m_label_color;
 };
 
+struct ParamStructLayer
+{
+	ParamStructLayer() : m_bVisible(true) {}
+	vtString m_strStructFile;
+	bool m_bVisible;
+};
 
 class TParams : public vtTagArray
 {
@@ -56,11 +62,7 @@ public:
 	bool LoadFrom(const char *fname);
 	bool LoadFromXML(const char *fname);
 
-	// this must be 
-	vtStringArray	m_strStructFiles;
-
 	// override to catch structure files
-	bool OverrideValue(const char *szTagName, const vtString &string);
 	void WriteOverridesToXML(FILE *fp);
 
 	// Convenience methods
@@ -76,10 +78,31 @@ public:
 	// Combine the parameters to produce the texture name to use
 	vtString CookTextureFilename() const;
 
+public:
+	// this must be a public member (currently..)
+	std::vector<ParamStructLayer> m_strStructFiles;
+
 private:
 	bool LoadFromIniFile(const char *fname);
 	void ConvertOldTimeValue();
 };
+
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class for XML parsing of TParams files.
+
+class TParamsVisitor : public TagVisitor
+{
+public:
+	TParamsVisitor(TParams *pParams) : TagVisitor(pParams), m_pParams(pParams) {}
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement (const char *name);
+
+protected:
+	TParams *m_pParams;
+	bool m_bViz;
+};
+
 
 #define STR_TPARAMS_FORMAT_NAME "Terrain_Parameters"
 
