@@ -15,7 +15,7 @@
 
 vtFence::vtFence() : vtStructure()
 {
-	SetType(ST_FENCE);
+	SetType(ST_LINEAR);
 
 	m_FenceType = FT_WIRE;
 	m_fHeight = FENCE_DEFAULT_HEIGHT;
@@ -24,17 +24,20 @@ vtFence::vtFence() : vtStructure()
 
 vtFence::vtFence(FenceType type, float fHeight, float fSpacing)
 {
-	SetType(ST_FENCE);
+	SetType(ST_LINEAR);
 
-	//if (m_FenceType != FT_WIRE || m_FenceType != FT_CHAINLINK)
-	m_FenceType = type;
+	SetFenceType(type);
 	m_fHeight = fHeight;
 	m_fSpacing = fSpacing;
+}
 
-	if (m_FenceType == FT_WIRE)
-		m_PostSize.Set(0.13f, m_fHeight, 0.13f);
-	else if (m_FenceType == FT_CHAINLINK)
-		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+vtFence &vtFence::operator=(const vtFence &v)
+{
+	SetFenceType(v.m_FenceType);
+	m_fHeight = v.m_fHeight;
+	m_fSpacing = v.m_fSpacing;
+	m_pFencePts = v.m_pFencePts;
+	return *this;
 }
 
 
@@ -54,6 +57,23 @@ void vtFence::AddPoint(const DPoint2 &epos)
 	}
 	else
 		m_pFencePts.Append(epos);
+}
+
+void vtFence::SetOptions(const LinStructOptions &opt)
+{
+	SetFenceType(opt.eType);
+	m_fHeight = opt.fHeight;
+	m_fSpacing = opt.fSpacing;
+}
+
+void vtFence::SetFenceType(const FenceType type)
+{
+	m_FenceType = type;
+
+	if (m_FenceType == FT_WIRE)
+		m_PostSize.Set(0.13f, m_fHeight, 0.13f);
+	else if (m_FenceType == FT_CHAINLINK)
+		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
 }
 
 bool vtFence::GetExtents(DRECT &rect) const
@@ -88,6 +108,24 @@ void vtFence::GetClosestPoint(const DPoint2 &point, DPoint2 &closest_point)
 			closest_point = pos;
 		}
 	}
+}
+
+/**
+ * Given a 2d point, return the distance to the closest point on the centerline.
+ */
+double vtFence::GetDistanceToLine(const DPoint2 &point)
+{
+	int i, size = m_pFencePts.GetSize();
+	double dist, closest = 1E8;
+	for (i = 0; i < size-1; i++)
+	{
+		DPoint2 p0 = m_pFencePts[i];
+		DPoint2 p1 = m_pFencePts[i+1];
+		dist = DistancePointToLine(p0, p1, point);
+		if (dist < closest)
+			closest = dist;
+	}
+	return closest;
 }
 
 void vtFence::WriteXML_Old(FILE *fp, bool bDegrees)
