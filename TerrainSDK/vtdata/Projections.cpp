@@ -310,6 +310,10 @@ const char *vtProjection::GetProjectionNameShort() const
  */
 OGRErr vtProjection::SetGeogCSFromDatum(int iDatum)
 {
+	// It appears that even lightweight tasks like setting up a geographic
+	//  CRS somehow runs into trouble with the Locale ./, issue.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	OGRErr err;
 	Clear();
 
@@ -991,6 +995,10 @@ int DymaxOCT::TransformEx(int nCount, double *x, double *y, double *z, int *pabS
 OCT *CreateCoordTransform(const vtProjection *pSource,
 						  const vtProjection *pTarget, bool bLog)
 {
+	// It appears that even lightweight tasks like setting up a CRS Transform
+	//  somehow runs into trouble with the Locale ./, issue.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	if (bLog)
 	{
 		// display debugging information to the log
