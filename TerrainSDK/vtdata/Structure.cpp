@@ -247,7 +247,7 @@ bool vtMaterialDescriptorArray::Load(const char *FileName)
 	catch (xh_exception &e)
 	{
 		// TODO: would be good to pass back the error message.
-		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage());
+		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage().c_str());
 		return false;
 	}
 	return true;
