@@ -620,8 +620,9 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	pGeom->SetName2("Horizon Plane");
 
 	m_pOceanGeom = new vtMovGeom(pGeom);
+	m_pOceanGeom->SetName2("Horizon");
 
-	// fudge ocean downward, to reduce z-buffer collision with near-sea-level
+	// offset the ocean/horizon plane, to reduce z-buffer collision with near-sea-level
 	// areas of land near the ocean
 	m_pOceanGeom->Translate1(FPoint3(0.0f, m_Params.m_fOceanPlaneLevel, 0.0f));
 
