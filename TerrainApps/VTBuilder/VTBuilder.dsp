@@ -184,10 +184,6 @@ SOURCE=.\Projection2Dlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ProjectionDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\RawDlg.cpp
 # End Source File
 # Begin Source File
@@ -325,10 +321,6 @@ SOURCE=.\NodeDlg.h
 # Begin Source File
 
 SOURCE=.\Projection2Dlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ProjectionDlg.h
 # End Source File
 # Begin Source File
 
