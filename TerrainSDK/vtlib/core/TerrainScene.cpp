@@ -243,13 +243,14 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 		float radius;
 		float width = world_ext.Width();
 		float depth = world_ext.Height();
-		float height = hf->m_fMaxHeight;
+		float minheight, maxheight;
+		hf->GetHeightExtents(minheight, maxheight);
 
 		radius = width;
 		if (radius < depth)
 			radius = depth;
-		if (radius < height)
-			radius = height;
+		if (radius < maxheight)
+			radius = maxheight;
 
 		radius *= 5;
 		float max_radius = 450000;

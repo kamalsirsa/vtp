@@ -328,8 +328,10 @@ void vtTinFlyer::Eval()
 
 	if (m_pTin)
 	{
-		float mini = (m_pTin->m_fMinHeight - 4.5);
-		float maxi = (m_pTin->m_fMaxHeight + 100);
+		float mini, maxi;
+		m_pTin->GetHeightExtents(mini, maxi);
+		mini -= 4.5;
+		maxi += 100;
 		if (maintain_y < mini) maintain_y = mini;
 		if (maintain_y > maxi) maintain_y = maxi;
 
