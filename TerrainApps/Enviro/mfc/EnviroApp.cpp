@@ -106,6 +106,8 @@ BOOL EnviroApp::InitInstance()
 bool EnviroApp::OnInit()
 {
 	g_Options.Read("Enviro.ini");
+
+	g_App.Startup();
 	g_App.LoadTerrainDescriptions();
 
 	//
