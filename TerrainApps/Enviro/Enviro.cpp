@@ -877,7 +877,7 @@ if (pwdemo){
 	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
 	m_pTrackball->SetName2("Trackball2");
 	m_pTrackball->SetTarget(vtGetScene()->GetCamera());
-	m_pTrackball->SetRotateButton(VT_RIGHT, 0);
+	m_pTrackball->SetRotateButton(VT_RIGHT, 0, false);
 	m_pTrackball->SetZoomButton(VT_RIGHT, VT_SHIFT);
 	vtGetScene()->AddEngine(m_pTrackball);
 
@@ -1777,7 +1777,7 @@ void Enviro::SetEarthUnfold(bool bUnfold)
 
 void Enviro::UpdateEarthArc()
 {
-	VTLOG("UpdateEarthArc %.1lf %.1lf,  %.1lf %.1lf\n", m_EarthPosDown.x, m_EarthPosDown.y, m_EarthPos.x, m_EarthPos.y);
+//	VTLOG("UpdateEarthArc %.1lf %.1lf,  %.1lf %.1lf\n", m_EarthPosDown.x, m_EarthPosDown.y, m_EarthPos.x, m_EarthPos.y);
 	DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
 	DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
 	SetDisplayedArc(epos1, epos2);
