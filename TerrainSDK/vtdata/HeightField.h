@@ -5,7 +5,7 @@
 #include <limits.h>			// for SHRT_MIN
 #include "LocalConversion.h"
 
-class vtDIB;
+class vtBitmapBase;
 #define INVALID_ELEVATION	SHRT_MIN
 
 /**
@@ -102,11 +102,11 @@ public:
 	virtual float GetElevation(int iX, int iZ) const = 0;
 	virtual void GetWorldLocation(int i, int j, FPoint3 &loc) const = 0;
 
-	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
+	void ColorDibFromElevation(vtBitmapBase *pBM, RGBi color_ocean,
 		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
-	void ShadeDibFromElevation(vtDIB *pDIB, const FPoint3 &light_dir,
+	void ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 							   float light_factor, void progress_callback(int) = NULL);
-	void ShadowCastDib(vtDIB *pDIB, const FPoint3 &ight_dir,
+	void ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &ight_dir,
 		float light_factor, void progress_callback(int) = NULL);
 
 protected:

@@ -213,18 +213,18 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
 /**
  * Use the height data in the grid to fill a bitmap with a shaded color image.
  *
- * \param pDIB			The bitmap to color.
+ * \param pBM			The bitmap to color.
  * \param color_ocean	The color to use for areas at sea level.
  * \param bZeroIsOcean	True if allow areas with elevation=0 are to be
  *							considered ocean.
  * \param progress_callback If supplied, this function will be called back
  *				with a value of 0 to 100 as the operation progresses.
  */
-void vtHeightFieldGrid3d::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
+void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, RGBi color_ocean,
 	bool bZeroIsOcean, void progress_callback(int))
 {
-	int w = pDIB->GetWidth();
-	int h = pDIB->GetHeight();
+	int w = pBM->GetWidth();
+	int h = pBM->GetHeight();
 
 	int gw, gh;
 	GetDimensions(gw, gh);
@@ -283,26 +283,26 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 			{
 				color.Set(20, 230, 20);	// flat green
 			}
-			pDIB->SetPixel24(i, h-1-j, RGB(color.r, color.g, color.b));
+			pBM->SetPixel24(i, h-1-j, color);
 		}
 	}
 }
 
 
-void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, const FPoint3 &light_dir,
+void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float light_factor, void progress_callback(int))
 {
 	// consider upward-pointing, rather than downward-pointing, normal
 	FPoint3 light_direction = -light_dir;
 
-	int w = pDIB->GetWidth();
-	int h = pDIB->GetHeight();
+	int w = pBM->GetWidth();
+	int h = pBM->GetHeight();
 	int gw = m_iColumns, gh = m_iRows;
 
 	float xFactor = (float)gw/(float)w;
 	float yFactor = (float)gh/(float)h;
 
-	bool b8bit = (pDIB->GetDepth() == 8);
+	bool b8bit = (pBM->GetDepth() == 8);
 	FPoint3 p1, p2, p3;
 	FPoint3 v1, v2, v3;
 	int i, j;
@@ -354,12 +354,55 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, const FPoint3 &ligh
 
 			// combine color and shading
 			if (b8bit)
-				pDIB->ScalePixel8(i, h-1-j, shade);
+				pBM->ScalePixel8(i, h-1-j, shade);
 			else
-				pDIB->ScalePixel24(i, h-1-j, shade);
+				pBM->ScalePixel24(i, h-1-j, shade);
 		}
 	}
 }
+
+class LightMap
+{
+public:
+	LightMap(int w, int h)
+	{
+		m_w = w;
+		m_h = h;
+		m_data = new unsigned char*[m_w];
+		int rows, cols;
+		for (cols = 0; cols < m_w; cols++)
+			m_data[cols] = new unsigned char[m_h];
+		for (cols = 0; cols < m_w; cols++)
+			for (rows = 0; rows < m_h ; rows++)
+				m_data[cols][rows] = 0;
+	}
+	~LightMap()
+	{
+		// Dispose with the temporary arrays
+		for (int cols = 0 ; cols < m_w ; ++cols)
+			delete [] m_data[cols];
+		delete [] m_data;
+	}
+	void Set(int x, int y, unsigned char val)
+	{
+		if (x < 0 || x > m_w-1 || y < 0 || y > m_h-1)
+		{
+			int foo = 1;
+		}
+		m_data[x][y] = val;
+	}
+	unsigned char Get(int x, int y)
+	{
+		if (x < 0 || x > m_w-1 || y < 0 || y > m_h-1)
+		{
+			int foo = 1;
+		}
+		return m_data[x][y];
+	}
+
+	unsigned char **m_data;
+	int m_w, m_h;
+};
 
 /**
  * ShadowCastDib - method to create shadows over the terrain based on the
@@ -368,13 +411,13 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, const FPoint3 &ligh
  * 2/20/04-Kevin Behilo
  * TODO: add code to soften and blend shadow edges (see aliasing comments below).
  */
-void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
+void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float light_factor, void progress_callback(int))
 {
 	FPoint3 light_direction = light_dir;
 
-	int w = pDIB->GetWidth();
-	int h = pDIB->GetHeight();
+	int w = pBM->GetWidth();
+	int h = pBM->GetHeight();
 
 	int gw, gh;
 	GetDimensions(gw, gh);
@@ -382,7 +425,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 	float xFactor = (float)gw/(float)w;
 	float yFactor = (float)gh/(float)h;
 
-	bool b8bit = (pDIB->GetDepth() == 8);
+	bool b8bit = (pBM->GetDepth() == 8);
 
 	float shade, f, HScale;;
 	FPoint3 p1, p2, p3;
@@ -398,20 +441,14 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 	float amb =  .4f;
 
 	//Create array to hold flags 
-	char **LightMap;
-	LightMap = new char*[h];
-	int rows , cols;
-	for (rows = 0; rows < h; rows++)
-		LightMap[rows] = new char[w];
-	for (rows = 0; rows < h; rows++)
-		for (cols = 0; cols < w ; cols++)
-			LightMap[rows][cols] = 0;
+	LightMap lightmap(w, h);
 
 	// This factor is used when applying shading to non-shadowed areas to
 	// try and keep the "contrast" down to a min. (still get "patches" of
 	// dark/light spots though).
-	// It is initialized to 10.0 which is should be impossible in a shadow area.
-	float darkest_shadow = 10.0;
+	// It is initialized to 1.0, because in case there are no shadows at all
+	//  (such as at noon) we still need a reasonable value.
+	float darkest_shadow = 1.0;
 
 	if ( fabs(light_dir.x) > fabs(light_dir.z) )
 	{
@@ -451,19 +488,27 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 		j_final=-1;
 		j_incr=-1;
 	}
+	int duration = abs(j_final - j_init);
 
 	// First pass: find each point that it is in shadow.
-	RGBi rgb;
     for (j = j_init; j != j_final; j += j_incr) 
 	{
    		if (progress_callback != NULL)
 		{
-			if ((j&7) == 0)
-				progress_callback(j * 100 / h);
+//			if ((j&7) == 0)
+				progress_callback(abs(j-j_init) * 100 / duration);
 		}
 		for (i = i_init; i != i_final; i += i_incr) 
 		{
 			float shadowheight = GetElevation(i,j);
+
+			if (shadowheight == INVALID_ELEVATION)
+			{
+				// set a flag so we won't visit this one again
+				lightmap.Set(i, j, 1);
+				continue;
+			}
+
 			bool Under_Out;
 			int k;
 			for (k=1, Under_Out=false; Under_Out == false; k++) 
@@ -472,7 +517,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 				z = (int)(j+light_direction.z*k+0.5f);
 				shadowheight+=light_direction.y*HScale;
 
-				if ((x<0) || (x>w-1) || (z<0) || (z>h-1)) 
+				if ((x<0) || (x>=w-1) || (z<0) || (z>=h-1)) 
 				{
 					Under_Out = true; //Out of the grid
 					break;
@@ -487,7 +532,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 
 				// Combine color and shading.
 				// Only do shadow if we have not shaded this i,j before.
-				if (LightMap[x][z]<1)
+				if (lightmap.Get(x,z) < 1)
 				{
 					int xx = (int) (x * xFactor);
 					int yy = (int) (z * yFactor);	
@@ -523,13 +568,13 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 					//some anti-aliasing or edge softening algorithm to the LightMap.
 					//Once that's done, apply the whole LightMap to the DIB.
 					if (b8bit)
-						pDIB->ScalePixel8(x, h-1-z, shade);
+						pBM->ScalePixel8(x, h-1-z, shade);
 					else
-						pDIB->ScalePixel24(x, h-1-z, shade);
+						pBM->ScalePixel24(x, h-1-z, shade);
 
 					//set a flag to show that this texel has been shaded.
 					// (or set to value of the shading - see comment above)
-					LightMap[x][z]++;
+					lightmap.Set(x, z, lightmap.Get(x, z)+1);
 				}
 			}
 		} //for i
@@ -548,7 +593,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 	{
 		for (i = 0; i < w-1; i++)
 		{
-			if (LightMap[i][j]<1)
+			if (lightmap.Get(i, j) < 1)
 			{
 				x = (int) (i * xFactor);
 				y = (int) (j * yFactor);	
@@ -602,19 +647,15 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
 				// Once that's done, apply the whole LightMap to the DIB.
 				// LightMap[I][J]= shade; // set to value of the shading - see comment above)
 				if (b8bit)
-					pDIB->ScalePixel8(i, h-1-j, shade);
+					pBM->ScalePixel8(i, h-1-j, shade);
 				else
-					pDIB->ScalePixel24(i, h-1-j, shade);
+					pBM->ScalePixel24(i, h-1-j, shade);
 			}
 		}
 	}
 
 	// Possible TODO: Apply edge softening algorithm (?)
 
-	// Dispose with the temporary arrays
-	for (int rows = 0 ; rows < w ; ++rows)
-		delete [] LightMap[rows];
-	delete [] LightMap;
 }
 
 
