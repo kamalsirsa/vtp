@@ -124,6 +124,12 @@ bool CubicSpline::Generate()
 	{
 		//h[i] = Vec3DiffAbs(invec[i], invec[i + 1]);
 		h[i] = ::sqrt((invec[i]-invec[i+1]).LengthSquared());
+
+		// identical points are not allowed, because a curve through them is
+		//  not mathematically defined
+		if (h[i] == 0.0)
+			return false;
+
 		ih[i] = 1.0 / h[i];
 	}
 
