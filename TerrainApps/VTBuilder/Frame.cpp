@@ -275,21 +275,17 @@ void MainFrame::CheckForGDALAndWarn()
 	}
 	if (has1 && !has2)
 	{
-		DisplayAndLog("The GDAL-data on your computer is out of date.  You will need\n"
-			" the latest files in order for full coordinate system support.\n"
-			" If you don't need full support for coordinate systems\n"
-			" including converting between different projections, you can\n"
-			" ignore this warning.  Otherwise, get the latest (gdal-data-119.zip)\n"
-			" from the VTP website or CD.");
+		DisplayAndLog("The GDAL data files on your computer are missing or out of date.\n"
+			" You will need the latest files for full coordinate system support.\n"
+			" Please get the latest (gdal-data-120.zip) from the VTP website or CD.\n"
+			" Without these files, many operations won't work.");
 	}
 	else if (!has1 || !has3)
 	{
 		DisplayAndLog("Unable to locate the necessary files for full coordinate\n"
 			" system support.  Check that the environment variables GEOTIFF_CSV\n"
 			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n"
-			" data files.  If you don't need full support for coordinate systems\n"
-			" including converting between different projections, you can ignore\n"
-			" this warning.");
+			" data files.  Without these files, many operations won't work.");
 	}
 }
 
