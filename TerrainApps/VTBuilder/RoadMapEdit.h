@@ -52,7 +52,7 @@ public:
 	void EnforceRoadEndpoints();
 
 	NodeEdit *GetNext() { return (NodeEdit *)m_pNext; }
-	class RoadEdit *GetRoad(int n) { return (RoadEdit *)m_r[n]; }
+	class RoadEdit *GetRoad(int n);
 
 	VisualIntersectionType GetVisual() { return m_iVisual; }
 	void SetVisual(VisualIntersectionType v) { m_iVisual = v; }
@@ -131,7 +131,7 @@ public:
 
 	//cleaning functions-------------------------
 	// merge nodes that are near each other
-	int MergeRedundantNodes(void progress_callback(int) = NULL);
+	int MergeRedundantNodes(bool bDegrees, void progress_callback(int) = NULL);
 	// remove BAD roads
 	int RemoveDegenerateRoads();
 	// remove nodes and merge roads if 2 adjacent roads have the same properties and the node is uncontrolled.
@@ -143,7 +143,7 @@ public:
 	//		have less than 2 points, regardless of start or end nodes.
 	int DeleteDanglingRoads();
 	// fix when two road meet at the same node along the same path
-	int FixOverlappedRoads();
+	int FixOverlappedRoads(bool bDegrees);
 	// delete roads that are really close to another road, but go nowhere coming out of a node
 	int FixExtraneousParallels();
 	// split loops.  create an uncontrolled node in the middle.
@@ -156,7 +156,10 @@ public:
 	// draw the road network in window, given size of drawing area
 	void Draw(wxDC* pDC, vtScaledView *pView, bool bNodes);
 
-	//delete selected roads.
+	// look at the road properties to guess what the intersections might be
+	void GuessIntersectionTypes();
+
+	// delete selected roads.
 	DRECT* DeleteSelected(int &nBounds);
 
 	// find which road is within a given distance of a given point
