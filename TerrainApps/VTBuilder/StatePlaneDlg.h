@@ -38,9 +38,16 @@ public:
 	// WDR: member variable declarations for StatePlaneDlg
 	int m_iStatePlane;
 	bool m_bNAD27;
+	bool m_bNAD83;
+	bool m_bMeters;
+	bool m_bFeet;
+	bool m_bFeetUS;
+	bool m_bSetting;
 	
 private:
 	// WDR: handler declarations for StatePlaneDlg
+	void OnNad83( wxCommandEvent &event );
+	void OnNad27( wxCommandEvent &event );
 	void OnListBox( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 

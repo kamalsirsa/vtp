@@ -453,7 +453,14 @@ void Projection2Dlg::AskStatePlane()
 	int bNAD83 = !dialog.m_bNAD27;
 	int usgs_code = plane_info[selection].usgs_code;
 
-	OGRErr result = m_proj.SetStatePlane(usgs_code, bNAD83);
+	OGRErr result;
+	if (dialog.m_bFeet)
+		result = m_proj.SetStatePlane(usgs_code, bNAD83, SRS_UL_FOOT, GetMetersPerUnit(LU_FEET_INT));
+	else if (dialog.m_bFeetUS)
+		result = m_proj.SetStatePlane(usgs_code, bNAD83, SRS_UL_US_FOOT, GetMetersPerUnit(LU_FEET_US));
+	else
+		result = m_proj.SetStatePlane(usgs_code, bNAD83);
+
 	if (result == OGRERR_FAILURE)
 	{
 		wxMessageBox(_T("Couldn't set state plane projection.  Perhaps the\n")
@@ -465,3 +472,4 @@ void Projection2Dlg::AskStatePlane()
 		SetUIFromProjection();
 	}
 }
+
