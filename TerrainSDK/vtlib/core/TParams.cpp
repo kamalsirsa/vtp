@@ -456,6 +456,9 @@ bool TParams::LoadFromFile(const char *filename)
 			get_line_from_stream(input);
 		}
 	}
+
+	input.close();
+
 	m_strTextureFilename.Format("%s%d", (const char *) m_strTextureBase,
 		NTILES * (m_iTilesize-1) + 1);
 	if (m_bJPEG)
