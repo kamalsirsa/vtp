@@ -397,9 +397,9 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 	// volume of sphere, 4/3 PI r^3
 	// surface area of sphere, 4 PI r^2
 	// area of circle of sphere as seen from distance, PI r^2
-	int pops;
+	int merges;
 	do {
-		pops = 0;
+		merges = 0;
 		// Try merging overlapping points together, so that information
 		// is not lost in the overlap.
 		// To consider: do we combine the blobs based on their 2d radius,
@@ -435,14 +435,14 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 						spheres[j].radius = newrad;
 						spheres[i].radius = 0.0f;
 					}
-					pops++;
+					merges++;
 					break;
 				}
 			}
 		}
-		int got = pops;
+		int got = merges;
 	}
-	while (pops != 0);
+	while (merges != 0);
 
 	// Now create and place the little geometry objects to represent the
 	// point data.
