@@ -47,7 +47,7 @@
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
 #include "vtui/DistanceDlg.h"
-#include "vtui/TimeDlg.h"
+#include "TimeDlg.h"
 
 #include "../Engines.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
@@ -214,10 +214,13 @@ EVT_MENU(ID_POPUP_RELOAD, vtFrame::OnPopupReload)
 EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
 END_EVENT_TABLE()
 
-// My frame constructor
+
+//
+// Frame constructor
+//
 vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth):
-wxFrame(parent, -1, title, pos, size, style)
+		wxFrame(parent, -1, title, pos, size, style)
 {
 	m_bCloseOnIdle = false;
 
@@ -295,6 +298,7 @@ vtFrame::~vtFrame()
 	SetStatusBar(NULL);
 	SetToolBar(NULL);
 }
+
 
 void vtFrame::CreateMenus()
 {
@@ -1486,6 +1490,9 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
 		m_pInstanceDlg->SetDataPaths(pTerrain->s_DataPaths);
 		m_pDistanceDlg->SetProjection(pTerrain->GetProjection());
+
+		// Also switch to the time engine for the terrain, not the globe.
+		SetTimeEngine(GetTerrainScene()->GetTimeEngine());
 	}
 	else
 	{
@@ -1493,6 +1500,14 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 		geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
 		m_pDistanceDlg->SetProjection(geo);
 	}
+}
+
+//
+// Called when the Earth View has been constructed
+//
+void vtFrame::SetTimeEngine(TimeEngine *pEngine)
+{
+	m_pTimeDlg->SetTimeEngine(pEngine);
 }
 
 void vtFrame::EarthPosUpdated(const DPoint3 &pos)

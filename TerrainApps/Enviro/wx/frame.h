@@ -24,6 +24,7 @@ class InstanceDlg;
 class DistanceDlg;
 class TimeDlg;
 class vtTerrain;
+class TimeDlg;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -46,6 +47,7 @@ public:
 	void SetFullScreen(bool bFull);
 	void ShowPopupMenu(const IPoint2 &pos);
 	void SetTerrainToGUI(vtTerrain *pTerrain);
+	void SetTimeEngine(TimeEngine *pEngine);
 	void Snapshot(bool bNumbered);
 	virtual void EarthPosUpdated(const DPoint3 &pos);
 	virtual void UpdateStatus();
