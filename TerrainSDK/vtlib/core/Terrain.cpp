@@ -97,6 +97,13 @@ vtTerrain::~vtTerrain()
 		delete p;
 	}
 
+	size = m_StructureSet.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		vtStructureArray3d *sa3d = m_StructureSet[i];
+		delete sa3d;
+	}
+
 	// Do not delete the PlantList, the application may be sharing the same
 	// list with several different terrains.
 //	delete m_pPlantList;
