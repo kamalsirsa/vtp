@@ -180,6 +180,7 @@ protected:
 
 	void OnMouseMove(wxMouseEvent& event);
 	void OnMouseMoveLButton(const wxPoint &point);
+	void OnMouseWheel(wxMouseEvent& event);
 
 	void OnIdle(wxIdleEvent& event);
 	void OnSize(wxSizeEvent& event);

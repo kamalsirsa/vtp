@@ -46,6 +46,7 @@ EVT_MIDDLE_UP(BuilderView::OnMiddleUp)
 EVT_RIGHT_DOWN(BuilderView::OnRightDown)
 EVT_RIGHT_UP(BuilderView::OnRightUp)
 EVT_MOTION(BuilderView::OnMouseMove)
+EVT_MOUSEWHEEL(BuilderView::OnMouseWheel)
 
 EVT_KEY_DOWN(BuilderView::OnKeyDown)
 EVT_CHAR(BuilderView::OnChar)
@@ -1329,6 +1330,17 @@ void BuilderView::OnMouseMove(wxMouseEvent& event)
 
 	m_ui.m_LastPoint = m_ui.m_CurPoint;
 	m_ui.m_PrevLocation = m_ui.m_CurLocation;
+}
+
+void BuilderView::OnMouseWheel(wxMouseEvent& event)
+{
+	if (event.m_wheelRotation > 0)
+		SetScale(GetScale() * sqrt(2.0));
+	else
+		SetScale(GetScale() / sqrt(2.0));
+
+	// update scale in status bar
+	GetMainFrame()->RefreshStatusBar();
 }
 
 void BuilderView::OnIdle(wxIdleEvent& event)
