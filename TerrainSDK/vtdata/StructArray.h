@@ -109,6 +109,7 @@ public:
 
 	bool IsEmpty() { return (GetSize() == 0); }
 	void GetExtents(DRECT &ext);
+	void Offset(const DPoint2 &delta);
 
 	int AddFoundations(vtHeightField *pHF);
 	void RemoveFoundations();

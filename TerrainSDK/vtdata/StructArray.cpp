@@ -322,6 +322,33 @@ void vtStructureArray::GetExtents(DRECT &rect)
 	}
 }
 
+void vtStructureArray::Offset(const DPoint2 &delta)
+{
+	unsigned int npoints = GetSize();
+	if (!npoints)
+		return;
+
+	unsigned int i, j;
+	DPoint2 temp;
+	for (i = 0; i < npoints; i++)
+	{
+		vtStructure *str = GetAt(i);
+		vtBuilding *bld = str->GetBuilding();
+		if (bld)
+			bld->Offset(delta);
+		vtFence *fen = str->GetFence();
+		if (fen)
+		{
+			DLine2 line = fen->GetFencePoints();
+			for (j = 0; j < line.GetSize(); j++)
+				line.GetAt(j) += delta;
+		}
+		vtStructInstance *inst = str->GetInstance();
+		if (inst)
+			inst->m_p += delta;
+	}
+}
+
 int vtStructureArray::AddFoundations(vtHeightField *pHF)
 {
 	vtLevel *pLev, *pNewLev;
