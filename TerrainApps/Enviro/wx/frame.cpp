@@ -209,7 +209,7 @@ wxFrame(parent, -1, title, pos, size, style)
 			_T("vtGLCanvas"), gl_attrib);
 
 	// Show the frame
-	Show(TRUE);
+	Show(true);
 
 	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, _T("Scene Graph"),
 			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -377,10 +377,10 @@ void vtFrame::SetMode(MouseMode mode)
 	{
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
 		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
-		m_pPlantDlg->Show(TRUE);
+		m_pPlantDlg->Show(true);
 	}
 	else
-		m_pPlantDlg->Show(FALSE);
+		m_pPlantDlg->Show(false);
 
 	// Show/hide fence dialog
 	m_pFenceDlg->Show(mode == MM_FENCES);
@@ -593,7 +593,7 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 	wxMessageBox(str, _T("About VTP Enviro"));
 
 	m_canvas->m_bRunning = true;	// start rendering again
-	m_canvas->QueueRefresh(FALSE);
+	m_canvas->QueueRefresh(false);
 }
 
 
@@ -797,7 +797,7 @@ void vtFrame::OnToolsMove(wxCommandEvent& event)
 void vtFrame::OnUpdateToolsMove(wxUpdateUIEvent& event)
 {
 	// not yet implemented
-	event.Enable(FALSE);
+	event.Enable(false);
 	event.Check(g_App.m_mode == MM_MOVE);
 }
 
@@ -816,7 +816,7 @@ void vtFrame::OnUpdateToolsNavigate(wxUpdateUIEvent& event)
 
 void vtFrame::OnSceneGraph(wxCommandEvent& event)
 {
-	m_pSceneGraphDlg->Show(TRUE);
+	m_pSceneGraphDlg->Show(true);
 }
 
 void vtFrame::OnSceneTerrain(wxCommandEvent& event)
