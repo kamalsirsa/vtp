@@ -1,7 +1,7 @@
 //
 // Name:		SceneGraphDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -12,23 +12,45 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
+#include "wx/treectrl.h"
+#include "wx/image.h"
+
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
 #include "vtui/wxString2.h"
 #include "SceneGraphDlg.h"
 
+#include <typeinfo>
+using namespace std;
+
+#if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
+#  include "icon1.xpm"
+#  include "icon2.xpm"
+#  include "icon3.xpm"
+#  include "icon4.xpm"
+#  include "icon5.xpm"
+#  include "icon6.xpm"
+#  include "icon7.xpm"
+#  include "icon8.xpm"
+#  include "icon9.xpm"
+#  include "icon10.xpm"
+#endif
 
 /////////////////////////////
 
-class SGTreeItemData : public wxTreeItemData
+class MyTreeItemData : public wxTreeItemData
 {
 public:
-	SGTreeItemData(vtNode *pNode, vtEngine *pEngine)
+	MyTreeItemData(vtNodeBase *pNode, vtEngine *pEngine)
 	{
 		m_pNode = pNode;
 		m_pEngine = pEngine;
 	}
-	vtNode *m_pNode;
+	vtNodeBase *m_pNode;
 	vtEngine *m_pEngine;
 };
 
@@ -53,11 +75,13 @@ SceneGraphDlg::SceneGraphDlg( wxWindow *parent, wxWindowID id, const wxString &t
 	const wxPoint &position, const wxSize& size, long style ) :
 	wxDialog( parent, id, title, position, size, style )
 {
-	SceneGraphFunc( this, TRUE ); 
+	SceneGraphFunc( this, TRUE );
 
 	m_pZoomTo = GetZoomto();
 	m_pEnabled = GetEnabled();
 	m_pTree = GetScenetree();
+
+	m_pZoomTo->Enable(false);
 
 	m_imageListNormal = NULL;
 	CreateImageList(16);
@@ -100,7 +124,7 @@ void SceneGraphDlg::CreateImageList(int size)
 		if ( size == sizeOrig )
 			m_imageListNormal->Add(icons[i]);
 		else
-			m_imageListNormal->Add(wxBitmap(icons[i]).ConvertToImage().Rescale(size, size));
+			m_imageListNormal->Add(wxBitmap(wxBitmap(icons[i]).ConvertToImage().Rescale(size, size)));
 	}
 	m_pTree->SetImageList(m_imageListNormal);
 }
@@ -121,34 +145,10 @@ void SceneGraphDlg::RefreshTreeContents()
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
 	wxTreeItemId hRoot = m_pTree->GetRootItem();
-	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, _T("Engines"), 7, 7);
+	wxTreeItemId hEngRoot = m_pTree->AppendItem(hRoot, _("Engines"), 7, 7);
 
-	// Fill in the tree with engines
-	wxString2 str, str2;
-	int num = scene->GetNumEngines();
-	for (int i = 0; i < num; i++)
-	{
-		vtEngine *pEng = scene->GetEngine(i);
-		str2 = pEng->GetName2();
-		str += str2;
-		vtNode *target = (vtNode *) pEng->GetTarget();
-		if (target)
-		{
-			str += _T(" -> ");
-			vtNode *node = dynamic_cast<vtNode*>(target);
-			if (node)
-			{
-				str += _T("\"");
-				str2 = node->GetName2();
-				str += str2;
-				str += _T("\"");
-			}
-			else
-				str += _T("(non-node)");
-		}
-		wxTreeItemId hEng = m_pTree->AppendItem(hEngRoot, str, 1, 1);
-		m_pTree->SetItemData(hEng, new SGTreeItemData(NULL, pEng));
-	}
+	vtEngine *pEngine = scene->GetRootEngine();
+	if (pEngine) AddEnginesRecursively(hEngRoot, pEngine, 0);
 	m_pTree->Expand(hEngRoot);
 
 	m_pSelectedEngine = NULL;
@@ -157,9 +157,9 @@ void SceneGraphDlg::RefreshTreeContents()
 
 
 void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
-										vtNode *pNode, int depth)
+										vtNodeBase *pNode, int depth)
 {
-	wxString2 str;
+	wxString str;
 	int nImage;
 	wxTreeItemId hNewItem;
 
@@ -167,12 +167,12 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	if (dynamic_cast<vtLight*>(pNode))
 	{
-		str = _T("Light");
+		str = _("Light");
 		nImage = 4;
 	}
 	else if (dynamic_cast<vtGeom*>(pNode))
 	{
-		str = _T("Geom");
+		str = _("Geometry");
 		nImage = 2;
 	}
 	else if (dynamic_cast<vtLOD*>(pNode))
@@ -185,22 +185,22 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str = _T("XForm");
 		nImage = 9;
 	}
-	else if (dynamic_cast<vtGroup*>(pNode))
+	else if (dynamic_cast<vtGroupBase*>(pNode))
 	{
 		// must be just a group for grouping's sake
-		str = _T("Group");
+		str = _("Group");
 		nImage = 3;
 	}
 	else
 	{
 		// must be something else
-		str = _T("Other");
+		str = _("Other");
 		nImage = 8;
 	}
 	if (pNode->GetName2())
 	{
 		str += _T(" \"");
-		str += (wxString2) pNode->GetName2();
+		str += wxString::FromAscii(pNode->GetName2());
 		str += _T("\"");
 	}
 
@@ -212,7 +212,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 	else
 		hNewItem = m_pTree->AppendItem(hParentItem, str, nImage, nImage);
 
-	const type_info &t1 = typeid(*pNode);
+	const std::type_info &t1 = typeid(*pNode);
 	if (t1 == typeid(vtGeom))
 	{
 		vtGeom *pGeom = dynamic_cast<vtGeom*>(pNode);
@@ -222,45 +222,44 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		for (int i = 0; i < num_mesh; i++)
 		{
 			vtMesh *pMesh = pGeom->GetMesh(i);
-			if (!pMesh)
+			if (pMesh)
 			{
-				// probably a text mesh
-				str = "(TextMesh)";
-				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
-				continue;
-			}
-			int iNumPrim = pMesh->GetNumPrims();
+				int iNumPrim = pMesh->GetNumPrims();
+				int iNumVert = pMesh->GetNumVertices();
 
-			GLenum pt = pMesh->GetPrimType();
-			const char *mtype;
-			switch (pt)
-			{
-			case GL_POINTS: mtype = "Points"; break;
-			case GL_LINES: mtype = "Lines"; break;
-			case GL_LINE_LOOP: mtype = "LineLoop"; break;
-			case GL_LINE_STRIP: mtype = "LineStrip"; break;
-			case GL_TRIANGLES: mtype = "Triangles"; break;
-			case GL_TRIANGLE_STRIP: mtype = "TriStrip"; break;
-			case GL_TRIANGLE_FAN: mtype = "TriFan"; break;
-			case GL_QUADS: mtype = "Quads"; break;
-			case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
-			case GL_POLYGON: mtype = "Polygon"; break;
+				GLenum pt = pMesh->GetPrimType();
+				const char *mtype="";
+				switch (pt)
+				{
+				case GL_POINTS: mtype = "Points"; break;
+				case GL_LINES: mtype = "Lines"; break;
+				case GL_LINE_LOOP: mtype = "LineLoop"; break;
+				case GL_LINE_STRIP: mtype = "LineStrip"; break;
+				case GL_TRIANGLES: mtype = "Triangles"; break;
+				case GL_TRIANGLE_STRIP: mtype = "TriStrip"; break;
+				case GL_TRIANGLE_FAN: mtype = "TriFan"; break;
+				case GL_QUADS: mtype = "Quads"; break;
+				case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
+				case GL_POLYGON: mtype = "Polygon"; break;
+				}
+				str.Printf(_("Mesh %d, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
+				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 			}
-			str.Printf(_T("Mesh %d, %hs, %d prims"), i, mtype, iNumPrim);
-			hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
+			else
+				hGeomItem = m_pTree->AppendItem(hNewItem, _("Text Mesh"), 6, 6);
 		}
 	}
 
-	m_pTree->SetItemData(hNewItem, new SGTreeItemData(pNode, NULL));
+	m_pTree->SetItemData(hNewItem, new MyTreeItemData(pNode, NULL));
 
-	vtGroup *pGroup = dynamic_cast<vtGroup*>(pNode);
+	wxTreeItemId hSubItem;
+	vtGroupBase *pGroup = dynamic_cast<vtGroupBase*>(pNode);
 	if (pGroup)
 	{
 		int num_children = pGroup->GetNumChildren();
 		if (num_children > 200)
 		{
-			wxTreeItemId	hSubItem;
-			str.Format(_T("(%d children)"), num_children);
+			str.Printf(_("(%d children)"), num_children);
 			hSubItem = m_pTree->AppendItem(hNewItem, str, 8, 8);
 		}
 		else
@@ -268,9 +267,10 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 			for (int i = 0; i < num_children; i++)
 			{
 				vtNode *pChild = pGroup->GetChild(i);
-				if (!pChild) continue;
-
-				AddNodeItemsRecursively(hNewItem, pChild, depth+1);
+				if (pChild)
+					AddNodeItemsRecursively(hNewItem, pChild, depth+1);
+				else
+					hSubItem = m_pTree->AppendItem(hNewItem, _("(internal node)"), 8, 8);
 			}
 		}
 	}
@@ -279,6 +279,51 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		m_pTree->Expand(hNewItem);
 }
 
+void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
+										vtEngine *pEng, int depth)
+{
+	wxTreeItemId hNewItem;
+
+	if (!pEng) return;
+
+	wxString2 str = pEng->GetName2();
+	if (str == "")
+		str = "unnamed";
+
+	int targets = pEng->NumTargets();
+	vtTarget *target = pEng->GetTarget();
+	if (target)
+	{
+		str += _T(" -> ");
+		vtNodeBase *node = dynamic_cast<vtNodeBase*>(target);
+		if (node)
+		{
+			str += _T("\"");
+			str += wxString::FromAscii(node->GetName2());
+			str += _T("\"");
+		}
+		else
+			str += _("(non-node)");
+	}
+	if (targets > 1)
+	{
+		wxString2 plus;
+		plus.Printf(_(" (%d targets total)"), targets);
+		str += plus;
+	}
+
+	hNewItem = m_pTree->AppendItem(hParentItem, str, 1, 1);
+	m_pTree->SetItemData(hNewItem, new MyTreeItemData(NULL, pEng));
+
+	for (unsigned int i = 0; i < pEng->NumChildren(); i++)
+	{
+		vtEngine *pChild = pEng->GetChild(i);
+		AddEnginesRecursively(hNewItem, pChild, depth+1);
+	}
+
+	// always expand engines
+	m_pTree->Expand(hNewItem);
+}
 
 // WDR: handler implementations for SceneGraphDlg
 
@@ -292,8 +337,16 @@ void SceneGraphDlg::OnZoomTo( wxCommandEvent &event )
 	if (m_pSelectedNode)
 	{
 		FSphere sph;
-		m_pSelectedNode->GetBoundSphere(sph);
-		vtGetScene()->GetCamera()->ZoomToSphere(sph);
+		m_pSelectedNode->GetBoundSphere(sph, true);	// global bounds
+
+		// a bit back to make sure whole volume of bounding sphere is in view
+		vtCamera *pCam = vtGetScene()->GetCamera();
+		float smallest = min(pCam->GetFOV(), pCam->GetVertFOV());
+		float alpha = smallest / 2.0f;
+		float distance = sph.radius / tanf(alpha);
+		sph.radius = distance;
+
+		pCam->ZoomToSphere(sph);
 	}
 }
 
@@ -308,7 +361,7 @@ void SceneGraphDlg::OnEnabled( wxCommandEvent &event )
 void SceneGraphDlg::OnTreeSelChanged( wxTreeEvent &event )
 {
 	wxTreeItemId item = event.GetItem();
-	SGTreeItemData *data = (SGTreeItemData *)m_pTree->GetItemData(item);
+	MyTreeItemData *data = (MyTreeItemData *)m_pTree->GetItemData(item);
 
 	m_pEnabled->Enable(data != NULL);
 
@@ -324,10 +377,13 @@ void SceneGraphDlg::OnTreeSelChanged( wxTreeEvent &event )
 	{
 		m_pSelectedNode = data->m_pNode;
 		m_pEnabled->SetValue(m_pSelectedNode->GetEnabled());
+		m_pZoomTo->Enable(true);
 	}
+	else
+		m_pZoomTo->Enable(false);
 }
 
-void SceneGraphDlg::OnInitDialog(wxInitDialogEvent& event) 
+void SceneGraphDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	RefreshTreeContents();
 

@@ -1,7 +1,7 @@
 //
-// Name:	SceneGraphDlg.h
+// Name: SceneGraphDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,9 +14,6 @@
 
 #include "wx/imaglist.h"
 #include "cmanager_wdr.h"
-
-class vtEngine;
-class vtNode;
 
 // WDR: class declarations
 
@@ -34,41 +31,41 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	~SceneGraphDlg();
 
-	void OnInitDialog(wxInitDialogEvent& event);
-	wxButton	*m_pZoomTo;
-	wxCheckBox  *m_pEnabled;
-	wxTreeCtrl  *m_pTree;
-
-	vtEngine *m_pSelectedEngine;
-	vtNode *m_pSelectedNode;
-
-	void CreateImageList(int size = 16);
 	void RefreshTreeContents();
-	void AddNodeItemsRecursively(wxTreeItemId hParentItem,
-								 vtNode *pNode, int depth);
 
+protected:
 	// WDR: method declarations for SceneGraphDlg
 	wxButton* GetZoomto()  { return (wxButton*) FindWindow( ID_ZOOMTO ); }
 	wxCheckBox* GetEnabled()  { return (wxCheckBox*) FindWindow( ID_ENABLED ); }
 	wxTreeCtrl* GetScenetree()  { return (wxTreeCtrl*) FindWindow( ID_SCENETREE ); }
 
+	void CreateImageList(int size = 16);
+	void AddNodeItemsRecursively(wxTreeItemId hParentItem,
+								 vtNodeBase *pNode, int depth);
+	void AddEnginesRecursively(wxTreeItemId hParentItem,
+							   vtEngine *pEng, int depth);
 private:
 	// WDR: member variable declarations for SceneGraphDlg
 	wxImageList *m_imageListNormal;
-	bool m_bFirst;
+	wxButton	*m_pZoomTo;
+	wxCheckBox  *m_pEnabled;
+	wxTreeCtrl  *m_pTree;
+	vtEngine *m_pSelectedEngine;
+	vtNodeBase *m_pSelectedNode;
 
 private:
 	// WDR: handler declarations for SceneGraphDlg
+	void OnInitDialog(wxInitDialogEvent& event);
 	void OnRefresh( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnEnabled( wxCommandEvent &event );
 	void OnTreeSelChanged( wxTreeEvent &event );
 
+	bool m_bFirst;
+
 private:
 	DECLARE_EVENT_TABLE()
 };
 
+#endif	// __SceneGraphDlg_H__
 
-
-
-#endif
