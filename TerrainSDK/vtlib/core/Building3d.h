@@ -16,17 +16,6 @@ class vtHeightField;
 
 #define COLOR_SPREAD	216		// 216 color variations
 
-typedef Array<FLine3 *> Footprints3d;
-// Overrides DestructItems to call constructors
-inline void Footprints3d::DestructItems(int first, int last)
-{
-	for (int i = first; i <= last; ++i)
-	{
-		FLine3 *pFL = GetAt(i);
-		delete pFL;
-	}
-}
-
 struct MatMesh
 {
 	int		m_iMatIdx;
@@ -79,11 +68,8 @@ protected:
 	// the building's local coordinate system)
 	FPoint3 m_center;
 
-	// Local-coordinate Footprints, one per level
-	Footprints3d m_lfp;
-
 	// internal methods
-	void DetermineWorldFootprints(vtHeightField3d *pHeightField);
+	void UpdateWorldLocation(vtHeightField3d *pHeightField);
 	float GetHeightOfStories();
 	void CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2);
 
@@ -111,11 +97,11 @@ protected:
 	void AddWallNormal(vtEdge *pWall, vtEdgeFeature *pFeat,
 			const FLine3 &quad);
 
-	void AddFlatRoof(FLine3 &pp, vtLevel *pLev);
+	void AddFlatRoof(const FLine3 &pp, vtLevel *pLev);
 	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
 	// Felkel straight skeleton
-	float MakeFelkelRoof(FLine3 &pp, vtLevel *pLev);
+	float MakeFelkelRoof(const FLine3 &pp, vtLevel *pLev);
 	int FindVertex(FPoint2 Point, FLine3 &RoofSection3D, Array<int> &iaVertices);
 
 	vtGeom		*m_pGeom;		// The geometry node which contains the building geometry

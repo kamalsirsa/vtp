@@ -242,30 +242,8 @@ void vtBuilding3d::FindMaterialIndices()
 //
 // Convert the footprint for each level into world coordinates
 //
-void vtBuilding3d::DetermineWorldFootprints(vtHeightField3d *pHeightField)
+void vtBuilding3d::UpdateWorldLocation(vtHeightField3d *pHeightField)
 {
-	int i, j;
-	int levs = GetNumLevels();
-	FPoint3 p3;
-
-	m_lfp.Empty();
-	for (i = 0; i < levs; i++)
-	{
-		vtLevel *lev = m_Levels[i];
-		DLine2 &foot = lev->GetFootprint();
-		int size = foot.GetSize();
-
-		// find where the footprints points are on the ground
-		FLine3 *foot3d = new FLine3();
-		foot3d->SetSize(size);
-
-		for (j = 0; j < size; j++)
-		{
-			pHeightField->ConvertEarthToSurfacePoint(foot[j], p3);
-			foot3d->SetAt(j, p3);
-		}
-		m_lfp.Append(foot3d);
-	}
 	// Embed the building in the ground such that the lowest corner of its
 	// lowest level is at ground level.
 	float base_level = CalculateBaseElevation(pHeightField);
@@ -276,22 +254,6 @@ void vtBuilding3d::DetermineWorldFootprints(vtHeightField3d *pHeightField)
 	GetBaseLevelCenter(center);
 	pHeightField->ConvertEarthToSurfacePoint(center, m_center);
 	m_center.y = base_level;
-
-	// The final footprints are expressed relative to the origin of the
-	// building (they are in the building's local coordinate system)
-	//
-	float height = 0.0f;
-	for (i = 0; i < levs; i++)
-	{
-		int size = m_lfp[i]->GetSize();
-		for (j = 0; j < size; j++)
-		{
-			p3 = m_lfp[i]->GetAt(j) - m_center;
-			p3.y = height;
-			m_lfp[i]->SetAt(j, p3);
-		}
-		height += (m_Levels[i]->m_fStoryHeight * m_Levels[i]->m_iStories);
-	}
 }
 
 float vtBuilding3d::GetHeightOfStories()
@@ -319,7 +281,7 @@ void vtBuilding3d::DestroyGeometry()
 
 void vtBuilding3d::AdjustHeight(vtHeightField3d *pHeightField)
 {
-	DetermineWorldFootprints(pHeightField);
+	UpdateWorldLocation(pHeightField);
 	m_pContainer->SetTrans(m_center);
 }
 
@@ -397,9 +359,9 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	// make sure we've got materials first
 	FindMaterialIndices();
 
-	DetermineWorldFootprints(pHeightField);
+	UpdateWorldLocation(pHeightField);
 
-	if (!PolyChecker.IsSimplePolygon(*m_lfp[0]))
+	if (!PolyChecker.IsSimplePolygon(GetLocalFootprint(0)))
 		return false;
 
 	// create the edges (walls and roof)
@@ -410,6 +372,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		for (i = 0; i < iLevels; i++)
 		{
 			vtLevel *lev = m_Levels[i];
+			const FLine3 &foot = GetLocalFootprint(i);
 			int edges = lev->m_Edges.GetSize();
 
 			int level_show = -1, edge_show = -1;
@@ -419,7 +382,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 			if (lev->IsHorizontal())
 			{
 				// make flat roof
-				AddFlatRoof(*m_lfp[i], lev);
+				AddFlatRoof(foot, lev);
 			}
 			else if (lev->IsUniform())
 			{
@@ -432,7 +395,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 				// For complicated roofs with sloped edges which meet at a
 				// roofline of uneven height, we need a sophisticated
 				// straight-skeleton solution like Petr Felkel's
-				float fRoofHeight = MakeFelkelRoof(*m_lfp[i], lev);
+				float fRoofHeight = MakeFelkelRoof(foot, lev);
 				if (fRoofHeight < 0.0)
 					return false;
 				fHeight += fRoofHeight;
@@ -440,9 +403,9 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 			else
 			{
 				// 'flat roof' for the floor
-				AddFlatRoof(*m_lfp[i], lev);
+				AddFlatRoof(foot, lev);
 
-				FLine3 poly = *m_lfp[i];
+				FLine3 poly = foot;
 				FLine3 poly2;
 
 				for (j = 0; j < lev->m_iStories; j++)
@@ -463,9 +426,11 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 		}
 	}
 
-	FLine3 *roof = m_lfp[iLevels-1];	// roof: top level
+#if 1 // testing
+	const FLine3 &roof = GetLocalFootprint(iLevels-1);	// roof: top level
 	vtLevel *roof_lev = m_Levels[iLevels-1];
 	float roof_height = (roof_lev->m_fStoryHeight * roof_lev->m_iStories);
+#endif
 
 	// wrap in a shape and set materials
 	m_pGeom = new vtGeom();
@@ -819,7 +784,7 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 }
 
 
-void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
+void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 {
 	FPoint3 up(0.0f, 1.0f, 0.0f);	// vector pointing up
 	int corners = pp.GetSize();
@@ -882,7 +847,7 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 }
 
 
-float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
+float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 {
 	PolyChecker PolyChecker;
 	CStraightSkeleton StraightSkeleton;
@@ -1084,7 +1049,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 	int iHighlightEdge)
 {
 	vtLevel *pLev = m_Levels[iLevel];
-	FLine3 poly1 = *m_lfp[iLevel];
+	FLine3 poly1 = GetLocalFootprint(iLevel);
 	FLine3 poly2;
 
 	int i;
