@@ -7,10 +7,11 @@
 
 <body bgcolor="#CCCCCC">
 
-<h2 align="center">
+<h1 align="center">
 VTBuilder<br>
-<a href="index.html"><font size="4">back to top</font></a><font size="4"> </font>
-</h2>
+<a href="index.html"><font size="3">back to index</font></a><font size="3">
+</font>
+</h1>
 
 <h3>Structure Layers</h3>
 <blockquote>
@@ -36,6 +37,7 @@ VTBuilder<br>
                   <li>Color</li>
                   <li>Number of Stories</li>
                   <li>Roof Style</li>
+                  <li>Materials</li>
                 </ul>
               </li>
             </ul>
@@ -54,6 +56,48 @@ VTBuilder<br>
                 </ul>
               </li>
             </ul>
+          </li>
+          <li>Add Points to Building Footprints<ul>
+          <li>In this mode, you can click on the edges of buildings to add 
+          points to the footprint.&nbsp; If the building has multiple levels, 
+          the point is added to all levels.</li>
+        </ul>
+
+          </li>
+          <li>Delete Points from Building Footprints<ul>
+          <li>In this mode, you can click on points of the building footprint to 
+          remove them.&nbsp; If the building has multiple levels, the point is 
+          removed from all levels.</li>
+        </ul>
+
+          </li>
+          <li>Add Linear Structures<ul>
+          <li>In this mode, click with the left mouse button to create linear 
+          structures, such as fences and walls.&nbsp; The linear structures 
+          dialog will appear to allow you to select what kind of feature you 
+          want.&nbsp; Click with the right mouse button to finish the structure.</li>
+        </ul>
+
+          </li>
+          <li>Edit Linear Structures<ul>
+          <li>In this mode, you can use the left mouse button to drag the points 
+          which define linear structures.</li>
+        </ul>
+
+          </li>
+          <li>Add Foundation Levels to Buildings<ul>
+          <li>Constructs an additional &quot;foundation&quot; level to each building, 
+          which can help with the common problem of low-resolution elevation 
+          data which has slopes and buildings on it.&nbsp; The buildings in this 
+          case can look unrealistically &quot;embedded&quot; in the terrain.<br>
+          The height of the terrain is evaluated at each point of the building's 
+          footprint, and if there is a vertical range of greater than 0.5 
+          meters, then the &quot;foundation&quot; is constructed.&nbsp; The foundation 
+          consists of a slab of cement-block which is just high enough to 
+          elevate the building, to prevent any of the non-foundation levels from 
+          intersecting the ground.</li>
+        </ul>
+
           </li>
         </ul>
 
