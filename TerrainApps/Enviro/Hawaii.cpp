@@ -99,7 +99,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		PlantModelAtPoint(container, mauna_loa);
 	}
 
-	if (m_Params.m_bVehicles || 1)
+	if (m_Params.m_bVehicles)
 	{
 		SetupVehicles();
 //		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed, bDoSound);
