@@ -717,7 +717,7 @@ void IcoGlobe::EstimateTesselation(int iTriangleCount)
 		// Frequency for a traditional geodesic tiling gives (frequency ^ 2)
 		// triangles.  Find what frequency most closely matches the desired
 		// triangle count.
-		double exact = sqrt(per_face);
+		double exact = sqrt((double)per_face);
 		int iLess = (int) floor(exact);
 		int iMore = (int) ceil(exact);
 		if ((iMore*iMore - per_face) < (per_face - iLess*iLess))
