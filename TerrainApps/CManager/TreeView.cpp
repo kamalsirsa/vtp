@@ -18,6 +18,7 @@
 #include "Frame.h"
 
 #include "vtdata/Content.h"
+#include "vtdata/vtLog.h"
 
 DECLARE_APP(vtApp)
 
@@ -93,6 +94,8 @@ wxTreeItemId rootId;
 
 void MyTreeCtrl::RefreshTreeItems(vtFrame *pFrame)
 {
+	VTLOG(" RefreshTreeItems\n");
+
 	m_bUpdating = true;
 
 	DeleteAllItems();

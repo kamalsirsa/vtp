@@ -56,6 +56,7 @@ bool vtApp::OnInit(void)
 	pScene->Init();
 	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));
 
+	VTLOG(" creating camera\n");
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetName2("Default Camera");
 
@@ -67,6 +68,7 @@ bool vtApp::OnInit(void)
 #endif
 
 	// make a simple directional light
+	VTLOG(" creating light\n");
 	vtLight *pLight = new vtLight();
 	pLight->SetName2("Light");
 	vtMovLight *pMovLight = new vtMovLight(pLight);
@@ -102,6 +104,7 @@ bool vtApp::OnInit(void)
 #endif
 
 	// make a trackball controller for the camera
+	VTLOG(" creating trackball\n");
 	m_pTrackball = new vtTrackball(3.0f);
 	m_pTrackball->SetTarget(pScene->GetCamera());
 	m_pTrackball->SetName2("Trackball");
@@ -110,6 +113,7 @@ bool vtApp::OnInit(void)
 	m_pTrackball->SetZoomScale(3000.0f);
 	pScene->AddEngine(m_pTrackball);
 
+	VTLOG(" end of OnInit\n");
 	return TRUE;
 }
 
