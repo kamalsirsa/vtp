@@ -114,10 +114,11 @@ void Enviro::Shutdown()
 		m_pNormalCamera->Release();
 	if (m_pTopDownCamera)
 		m_pTopDownCamera->Release();
-	if (m_pCursorMGeom)
-		m_pCursorMGeom->Release();
+//	if (m_pCursorMGeom)
+//		m_pCursorMGeom->Release();
 
 	// Clean up the rest of the TerrainScene container
+	vtGetScene()->SetRoot(NULL);
 	CleanupScene();
 
 	delete m_pIcoGlobe;
@@ -1463,7 +1464,7 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 void Enviro::PlantInstance()
 {
-	VTLOG("Plant Instance:\n");
+	VTLOG("Plant Instance: ");
 	vtTagArray *tags = GetInstanceFromGUI();
 	if (!tags)
 		return;
@@ -1475,19 +1476,19 @@ void Enviro::PlantInstance()
 	inst->CopyTagsFrom(*tags);
 //	inst->SetValueString("filename", path);
 	inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
-	VTLOG("  at %.7g, %.7g\n", m_EarthPos.x, m_EarthPos.y);
+	VTLOG("  at %.7g, %.7g: ", m_EarthPos.x, m_EarthPos.y);
 
 	int index = structs->Append(inst);
 	bool success = pTerr->CreateStructure(structs, index);
 	if (success)
 	{
-		VTLOG("  succeeded.\n");
+		VTLOG(" succeeded.\n");
 		RefreshLayerView();
 	}
 	else
 	{
 		// creation failed
-		VTLOG("  failed.\n");
+		VTLOG(" failed.\n");
 		inst->Select(true);
 		structs->DeleteSelected();
 		return;
