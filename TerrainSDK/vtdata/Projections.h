@@ -90,7 +90,7 @@ public:
 	bool ReadProjFile(const char *filename);
 	bool WriteProjFile(const char *filename);
 
-	double GeodesicDistance(const DPoint2 &in, DPoint2 &out);
+	double GeodesicDistance(const DPoint2 &in, DPoint2 &out, bool bQuick = false);
 
 protected:
 	DATUM	m_Datum;

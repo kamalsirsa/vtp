@@ -497,8 +497,16 @@ bool vtProjection::WriteProjFile(const char *filename)
  * return the geodesic arc distance in meters.  The WGS84 spheroid
  * is used.
  */
-double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2)
+double vtProjection::GeodesicDistance(const DPoint2 &geo1, DPoint2 &geo2,
+									  bool bQuick)
 {
+	if (bQuick)
+	{
+		// when the user cares more about speed than accuracy, just do
+		// the quick calculation assuming the earth is a sphere
+//		DPoint3
+	}
+
 	// We don't have direct access to the PROJ.4 library from this module,
 	// so we can't set the exact coordinate system (in particular, the
 	// spheroid) using exportToProj4() and pj_init().
