@@ -304,6 +304,8 @@ bool vtTagArray::operator!=(const vtTagArray &v) const
 // File IO
 bool vtTagArray::WriteToXML(const char *fname, const char *title)
 {
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
 		return false;
@@ -377,6 +379,8 @@ void TagVisitor::data(const char *s, int length)
 
 bool vtTagArray::LoadFromXML(const char *fname)
 {
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	TagVisitor visitor(this);
 	try
 	{

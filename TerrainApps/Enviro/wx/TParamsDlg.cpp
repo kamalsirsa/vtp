@@ -117,6 +117,8 @@ TParamsDlg::~TParamsDlg()
 //
 void TParamsDlg::SetParams(const TParams &Params)
 {
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// overall name
 	m_strTerrainName.from_utf8(Params.GetValueString(STR_NAME));
 
@@ -213,6 +215,8 @@ void TParamsDlg::SetParams(const TParams &Params)
 //
 void TParamsDlg::GetParams(TParams &Params)
 {
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// overall name
 	Params.SetValueString(STR_NAME, m_strTerrainName.to_utf8());
 
