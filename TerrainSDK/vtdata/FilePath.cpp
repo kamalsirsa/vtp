@@ -82,6 +82,15 @@ bool dir_iter::is_directory()
 #endif
 }
 
+bool dir_iter::is_hidden()
+{
+#if WIN32
+	return (m_data.attrib & _A_SUBDIR) != 0;
+#else
+	return S_ISDIR(it.rep->get_stat().st_mode);
+#endif
+}
+
 std::string dir_iter::filename()
 {
 #if WIN32

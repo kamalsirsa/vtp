@@ -34,6 +34,9 @@ public:
 	/// Returns true if the current object is a directory.
 	bool is_directory();
 
+	/// Returns true if the current object is hidden.
+	bool is_hidden();
+
 	/// Get the filename fo the current object.
 	std::string filename();
 
