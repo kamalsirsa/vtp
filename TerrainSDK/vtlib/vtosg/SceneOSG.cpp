@@ -354,6 +354,33 @@ bool vtScene::GetGlobalWireframe()
 	return m_bWireframe;
 }
 
+void printnode(osg::Node *node, int tab) {
+	for (int i = 0; i < tab*2; i++) {
+	   osg::notify(osg::WARN) << " ";
+	}
+	osg::notify(osg::WARN) << node->className() << " - " << node->getName() << " @ " << node << std::endl;
+	osg::Group *group = node->asGroup();
+	if (group) {
+		for (int i = 0; i < group->getNumChildren(); i++) {
+			printnode(group->getChild(i), tab+1);
+		}
+	}
+}
+
+void vtScene::ShadowVisibleNode(vtNode *node, bool bVis)
+{
+	if (!bVis) {
+		m_pShadowVisitor->shadow_ignore_nodes->Append(node->GetOsgNode());
+	}
+	else {
+		int i = m_pShadowVisitor->shadow_ignore_nodes->Find(node->GetOsgNode());
+		if (i != -1) {
+			m_pShadowVisitor->shadow_ignore_nodes->RemoveAt(i);
+		}
+	}
+	m_pShadowVisitor->RecomputeShadows();
+}
+
 void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
 							  vtTransform *pTransform, int iRez)
 {
@@ -363,6 +390,10 @@ void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode,
 		m_pShadowVisitor->SetShadower(pShadowNode->GetOsgNode());
 		m_pShadowVisitor->SetInitialLightPosition(v2s(-(pLight->GetDirection()) * 10000));
 		pTransform->GetOsgNode()->setCullCallback(m_pShadowVisitor.get());
+		m_pShadowVisitor->SetEnabled(true);
+		
+		osg::Node *node = pShadowNode->GetOsgNode();
+
 #ifdef _DEBUG
 	{
 		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
