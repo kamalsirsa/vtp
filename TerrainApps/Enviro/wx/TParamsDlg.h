@@ -126,8 +126,10 @@ public:
 	wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
 	wxComboBox* GetFilename()  { return (wxComboBox*) FindWindow( ID_FILENAME ); }
 	wxComboBox* GetFilenameTin()  { return (wxComboBox*) FindWindow( ID_FILENAME_TIN ); }
-	wxComboBox* GetRoutefile()  { return (wxComboBox*) FindWindow( ID_ROUTEFILE ); }
 	wxComboBox* GetSkytexture()  { return (wxComboBox*) FindWindow( ID_SKYTEXTURE ); }
+	wxTextCtrl* GetFogDistance()  { return (wxTextCtrl*) FindWindow( ID_FOG_DISTANCE ); }
+	wxTextCtrl* GetDepressOceanOffset()  { return (wxTextCtrl*) FindWindow( ID_DEPRESSOCEANOFFSET ); }
+	wxTextCtrl* GetOceanPlaneOffset()  { return (wxTextCtrl*) FindWindow( ID_OCEANPLANEOFFSET ); }
 
 	//  CButton m_PreLight;
 //  CButton m_TriStrips;
@@ -149,7 +151,6 @@ private:
 	wxRadioButton* m_pDerived;
 	wxRadioButton* m_pTiled;
 	wxComboBox* m_pLocFile;
-	wxComboBox* m_pRouteFile;
 	wxComboBox* m_pSkyTexture;
 
 private:
@@ -160,6 +161,7 @@ private:
 	void OnTextureSingle( wxCommandEvent &event );
 	void OnTextureDerived( wxCommandEvent &event );
 	void OnTextureTiled( wxCommandEvent &event );
+    void OnCheckBox( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()

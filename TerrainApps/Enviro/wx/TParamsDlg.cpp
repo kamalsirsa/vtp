@@ -34,12 +34,29 @@ extern void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 // WDR: event table for TParamsDlg
 
 BEGIN_EVENT_TABLE(TParamsDlg,AutoDialog)
+	EVT_RADIOBUTTON( ID_USE_GRID, TParamsDlg::OnCheckBox )
+	EVT_RADIOBUTTON( ID_USE_TIN, TParamsDlg::OnCheckBox )
+
 	EVT_TEXT( ID_TILESIZE, TParamsDlg::OnTileSize )
 	EVT_TEXT( ID_TFILEBASE, TParamsDlg::OnTextureFileBase )
+
 	EVT_RADIOBUTTON( ID_NONE, TParamsDlg::OnTextureNone )
 	EVT_RADIOBUTTON( ID_SINGLE, TParamsDlg::OnTextureSingle )
 	EVT_RADIOBUTTON( ID_DERIVED, TParamsDlg::OnTextureDerived )
 	EVT_RADIOBUTTON( ID_TILED, TParamsDlg::OnTextureTiled )
+
+	EVT_CHECKBOX( ID_REGULAR, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_DYNAMIC, TParamsDlg::OnCheckBox )
+
+	EVT_CHECKBOX( ID_BUILDINGS, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_TREES, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_ROADS, TParamsDlg::OnCheckBox )
+
+	EVT_CHECKBOX( ID_BUILDINGS, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_OCEANPLANE, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_DEPRESSOCEAN, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_SKY, TParamsDlg::OnCheckBox )
+	EVT_CHECKBOX( ID_FOG, TParamsDlg::OnCheckBox )
 END_EVENT_TABLE()
 
 TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -242,6 +259,19 @@ void TParamsDlg::UpdateTiledTextureFilename()
 
 void TParamsDlg::UpdateEnableState()
 {
+	GetFilename()->Enable(!m_bTin);
+	GetFilenameTin()->Enable(m_bTin);
+
+	FindWindow(ID_SUBSAMPLE)->Enable(m_bRegular);
+	FindWindow(ID_SUPPRESSLAND)->Enable(m_bRegular);
+	FindWindow(ID_VERTEXCOLORS)->Enable(m_bRegular);
+
+	FindWindow(ID_LODMETHOD)->Enable(m_bDynamic);
+	FindWindow(ID_PIXELERROR)->Enable(m_bDynamic);
+	FindWindow(ID_TRICOUNT)->Enable(m_bDynamic);
+	FindWindow(ID_TRISTRIPS)->Enable(m_bDynamic);
+	FindWindow(ID_DETAILTEXTURE)->Enable(m_bDynamic);
+
 	FindWindow(ID_TILESIZE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILEBASE)->Enable(m_iTexture == TE_TILED);
 	FindWindow(ID_TFILENAME)->Enable(m_iTexture == TE_TILED);
@@ -251,6 +281,25 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_PRELIT)->Enable(m_iTexture != TE_NONE);
+
+	FindWindow(ID_TREEFILE)->Enable(m_bTrees);
+	FindWindow(ID_TREEDISTANCE)->Enable(m_bTrees);
+
+	FindWindow(ID_ROADFILE)->Enable(m_bRoads);
+	FindWindow(ID_ROADHEIGHT)->Enable(m_bRoads);
+	FindWindow(ID_ROADDISTANCE)->Enable(m_bRoads);
+	FindWindow(ID_TEXROADS)->Enable(m_bRoads);
+	FindWindow(ID_ROADCULTURE)->Enable(m_bRoads);
+	FindWindow(ID_HIGHWAYS)->Enable(m_bRoads);
+	FindWindow(ID_PAVED)->Enable(m_bRoads);
+	FindWindow(ID_DIRT)->Enable(m_bRoads);
+
+	GetBuildingfile()->Enable(m_bBuildings);
+	GetOceanPlaneOffset()->Enable(m_bOceanPlane);
+	GetDepressOceanOffset()->Enable(m_bDepressOcean);
+	GetSkytexture()->Enable(m_bSky);
+	GetSkytexture()->Enable(m_bSky);
+	GetFogDistance()->Enable(m_bFog);
 }
 
 
@@ -284,7 +333,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pFilename = GetFilename();
 	m_pFilenameTin = GetFilenameTin();
 	m_pLocFile = GetLocfile();
-	m_pRouteFile = GetRoutefile();
 	m_pSkyTexture = GetSkytexture();
 
 	m_pNone = GetNone();
@@ -340,12 +388,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
 
-		// fill in Routes files
-		AddFilenamesToComboBox(m_pRouteFile, *paths[i] + "RouteData", "*.p3D");
-		sel = m_pRouteFile->FindString(m_strRouteFile);
-		if (sel != -1)
-			m_pRouteFile->SetSelection(sel);
-
 		// fill in Sky files
 		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.bmp");
 		AddFilenamesToComboBox(m_pSkyTexture, *paths[i] + "Sky", "*.png");
@@ -393,6 +435,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_SKY, &m_bSky);
 	AddValidator(ID_SKYTEXTURE, &m_strSkyTexture);
 	AddValidator(ID_FOG, &m_bFog);
+	AddNumValidator(ID_FOG_DISTANCE, &m_iFogDistance);
 
 	// texture
 	AddValidator(ID_TFILESINGLE, &m_strTextureSingle);
@@ -429,8 +472,6 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_LOCFILE, &m_strLocFile);
 	AddValidator(ID_ROADCULTURE, &m_bRoadCulture);
 	AddValidator(ID_AIRPORTS, &m_bAirports);
-	AddValidator(ID_ROUTEFILE, &m_strRouteFile);
-	AddValidator(ID_ROUTEENABLE, &m_bRouteEnable);
 	AddValidator(ID_OCEANPLANE, &m_bOceanPlane);
 	AddNumValidator(ID_OCEANPLANEOFFSET, &m_fOceanPlaneLevel);
 	AddValidator(ID_DEPRESSOCEAN, &m_bDepressOcean);
@@ -511,6 +552,12 @@ void TParamsDlg::OnTextureTiled( wxCommandEvent &event )
 {
 	if (m_bSetting || !event.IsChecked())
 		return;
+	TransferDataFromWindow();
+	UpdateEnableState();
+}
+
+void TParamsDlg::OnCheckBox( wxCommandEvent &event )
+{
 	TransferDataFromWindow();
 	UpdateEnableState();
 }
