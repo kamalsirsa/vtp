@@ -765,13 +765,20 @@ vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
 
 void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 {
-	DPoint2 corner[4];
+	// this function requires at least one level to exist
+	if (m_Levels.GetSize() == 0)
+	{
+		vtLevel *pLev = new vtLevel;
+		pLev->m_iStories = 1;
+		m_Levels.Append(pLev);
+	}
 
 	// if rotation is unset, default to none
 	if (fRotation == -1.0f)
 		fRotation = 0.0f;
 
 	DPoint2 pt(fWidth / 2.0, fDepth / 2.0);
+	DPoint2 corner[4];
 	corner[0].Set(-pt.x, -pt.y);
 	corner[1].Set(pt.x, -pt.y);
 	corner[2].Set(pt.x, pt.y);
