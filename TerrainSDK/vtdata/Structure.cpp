@@ -236,17 +236,20 @@ vtMaterialDescriptor::~vtMaterialDescriptor()
 // Methods for vtMaterialDescriptorArray
 //
 
-bool vtMaterialDescriptorArray::Load(const char *FileName)
+void vtMaterialDescriptorArray::CreatePlain()
 {
-	VTLOG("Loading materials from %s\n", FileName);
-
 	// First provide plain material, which does need to be serialized
 	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURED, 1.0f));
+}
+
+bool vtMaterialDescriptorArray::Load(const char *szFileName)
+{
+	VTLOG("Loading materials from %s\n", szFileName);
 
 	MaterialDescriptorArrayVisitor Visitor(this);
 	try
 	{
-		readXML(FileName, Visitor);
+		readXML(szFileName, Visitor);
 	}
 	catch (xh_exception &e)
 	{
@@ -273,6 +276,9 @@ const vtString *vtMaterialDescriptorArray::FindName(const char *name)
 
 bool vtMaterialDescriptorArray::LoadExternalMaterials(const vtStringArray &paths)
 {
+	// we always need at least 1 internal material
+	CreatePlain();
+
 	const char *fname = "Culture/materials.xml";
 	vtString matfile = FindFileOnPaths(paths, fname);
 	if (matfile == "")

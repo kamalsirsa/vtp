@@ -165,8 +165,11 @@ public:
 		return Output;
 	}
 	bool LoadExternalMaterials(const vtStringArray &paths);
-	bool Load(const char *FileName);
 	const vtString *FindName(const char *matname);
+	void CreatePlain();
+
+protected:
+	bool Load(const char *szFileName);
 };
 
 /**
