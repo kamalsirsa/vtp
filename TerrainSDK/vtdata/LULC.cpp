@@ -334,40 +334,27 @@ int vtLULCFile::GetRecord(FILE *fp, char *buf)
 }
 
 
-// convert from local coordinates to latlon
+// convert from "local" coordinates to latlon
 void vtLULCFile::LocalToLatlon(Coord &local, DPoint2 &latlon)
 {
-/*
-I have no idea how to do this correctly, yet.
-A close approximation might be to treat each section as its own irregular
-quadrilateral, and transform to latlon based on knowing the latlon
-coordinates of the corners.  That might be around 98% accurate.  It must
-be possible, because Maptitude does it with apparently no error at all.
-*/
-#if 0
-	// A bad way: (at best 90% accurate)
-	latlon.x = m_Corners[0].x +
-		((double)local.x - m_cCorners[0].x) /
-		(m_cCorners[3].x - m_cCorners[0].x) *
-		(m_Corners[3].x - m_Corners[0].x);
-	latlon.y = m_Corners[0].y +
-		((double)local.y - m_cCorners[0].y) /
-		(m_cCorners[3].y - m_cCorners[0].y) *
-		(m_Corners[3].y - m_Corners[0].y);
-#endif
+	/* I'm not certain how to do this correctly.
+	A close approximation might be to treat each section as its own irregular
+	quadrilateral, and transform to latlon based on knowing the latlon
+	coordinates of the corners.  That might be around 98% accurate.  It must
+	be possible, because Maptitude does it with apparently no error at all. */
 
-	// better way: use a quadrilateral-to-square mapping transform
+	// Use the quadrilateral-to-rectangle mapping transform that we set up
+	//  earlier with SetupMapping()
 	DPoint3 src, dst;
-#if 1
 	src.x = local.x;
 	src.y = local.y;
-#else
-	src.x = local.x - m_cCorners[0].x;
-	src.y = local.y - m_cCorners[0].y;
-#endif
 	src.z = 1.0f;
+
 	m_transform.Transform(src, dst);
+
+	// normalize output
 	dst /= dst.z;
+
 	latlon.x = m_Corners[0].x +	(dst.x / dst.z) * (m_Corners[3].x - m_Corners[0].x);
 	latlon.y = m_Corners[0].y +	(dst.y / dst.z) * (m_Corners[3].y - m_Corners[0].y);
 }
