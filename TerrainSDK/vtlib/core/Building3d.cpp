@@ -947,8 +947,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	mm.m_pMesh->AddVertexNUV(quad[3], norm, FPoint2(1.0f, v));
 	mm.m_pMesh->AddVertexNUV(quad[2], norm,  FPoint2(0.0f, v));
 
-	mm.m_pMesh->AddTri(start, start+1, start+2);
-	mm.m_pMesh->AddTri(start, start+2, start+3);
+	mm.m_pMesh->AddFan(start, start+1, start+2, start+3);
 	return true;
 }
 
