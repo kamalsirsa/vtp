@@ -1056,3 +1056,26 @@ bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
 	result = numer / denom;
 	return true;
 }
+
+/**
+ * Find the closest distance from a point to a line segment.
+ *
+ * \param p1, p2	The points which define the line segment.
+ * \param p3		The point to which to measure distance.
+ */
+double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &p3)
+{
+	DPoint2 vec = (p2 - p1);
+	double len2 = vec.LengthSquared();
+	double u = ((p3.x - p1.x)*(p2.x - p1.x) + (p3.y - p1.y)*(p2.y - p1.y)) / len2;
+
+	// constrain u to remain within the line segment
+	if (u < 0) u = 0;
+	if (u > 1) u = 1;
+
+	DPoint2 closest = p1 + (vec * u);
+	return (p3 - closest).Length();
+}
+
+
+
