@@ -975,10 +975,19 @@ void MainFrame::ExportElevation()
 		if (l->GetType() == LT_ELEVATION)
 		{
 			vtElevLayer *el = (vtElevLayer *)l;
-			if (el->m_pGrid->IsFloatMode())
-				floatmode = true;
-			spacing = el->m_pGrid->GetSpacing();
+			if (el->IsGrid())
+			{
+				if (el->m_pGrid->IsFloatMode())
+					floatmode = true;
+				spacing = el->m_pGrid->GetSpacing();
+			}
 		}
+	}
+	if (spacing == DPoint2(1.0f, 1.0f))
+	{
+		wxMessageBox("Sorry, you must have some elevation grid layers to\n"
+			"perform a sampling operation on them.", "Info");
+		return;
 	}
 
 	// Open the Resample dialog
