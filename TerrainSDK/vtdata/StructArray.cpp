@@ -43,13 +43,6 @@ int FindDBField(DBFHandle db, const char *field_name)
 
 /////////////////////////////////////////////////////////////////////////////
 
-void vtStructureArray::AddBuilding(vtBuilding *bld)
-{
-	vtStructure *s = NewStructure();
-	s->SetBuilding(bld);
-	Append(s);
-}
-
 // Factories
 vtBuilding *vtStructureArray::NewBuilding()
 {
@@ -203,7 +196,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 				bld->SetRoofType((RoofType) rt);
 			}
 		}
-		AddBuilding(bld);
+		Append(bld);
 	}
 	fclose(fp);
 	return true;
@@ -222,7 +215,7 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
 		fscanf(fp, "%lf %lf\n", &point.x, &point.y);
 		vtBuilding *bld = NewBuilding();
 		bld->SetLocation(point);
-		AddBuilding(bld);
+		Append(bld);
 	}
 
 	fclose(fp);
@@ -308,7 +301,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 		}
 
 		int num_points = psShape->nVertices-1;
-		vtStructure *s = NewStructure();
+
 		if (type == ST_BUILDING)
 		{
 			vtBuilding *bld = NewBuilding();
@@ -334,7 +327,6 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				bld->SetFootprint(0, foot);
 				bld->SetCenterFromPoly();
 			}
-			s->SetBuilding(bld);
 
 			int num_stories = 1;
 			if (field_stories != -1)
@@ -345,6 +337,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 					num_stories = 1;
 			}
 			bld->SetStories(num_stories);
+			Append(bld);
 		}
 		if (type == ST_INSTANCE)
 		{
@@ -386,7 +379,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				double rotation = DBFReadDoubleAttribute(db, i, field_rotation);
 				inst->m_fRotation = (float) (rotation / 180.0 * PId);
 			}
-			s->SetInstance(inst);
+			Append(inst);
 		}
 		if (type == ST_FENCE)
 		{
@@ -397,9 +390,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 				point.y = psShape->padfY[j];
 				fen->AddPoint(point);
 			}
-			s->SetFence(fen);
+			Append(fen);
 		}
-		Append(s);
 		SHPDestroyObject(psShape);
 	}
 	DBFClose(db);
@@ -723,20 +715,17 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				if (string(attval) == (string)"building")
 				{
 					vtBuilding *bld = m_pSA->NewBuilding();
-					pStruct = m_pSA->NewStructure();
-					pStruct->SetBuilding(bld);
+					pStruct = bld;
 				}
 				if (string(attval) == (string)"linear")
 				{
 					vtFence *fen = m_pSA->NewFence();
-					pStruct = m_pSA->NewStructure();
-					pStruct->SetFence(fen);
+					pStruct = fen;
 				}
 				if (string(attval) == (string)"instance")
 				{
 					vtStructInstance *inst = m_pSA->NewInstance();
-					pStruct = m_pSA->NewStructure();
-					pStruct->SetInstance(inst);
+					pStruct = inst;
 				}
 			}
 			push_state(pStruct, "structure");
@@ -943,7 +932,6 @@ void StructureVisitor::endElement(const char * name)
 {
 	State &st = state();
 	vtStructure *pStruct = st.item;
-	vtStructInstance *inst = pStruct ? pStruct->GetInstance() : NULL;
 
 	if (string(name) == (string)"structures")
 	{
@@ -959,13 +947,12 @@ void StructureVisitor::endElement(const char * name)
 	{
 		// currently, building wall information is not saved or restored, so
 		// we must manually indicate that detail should be implied upon loading
-		vtStructure *pStruct = st.item;
 		vtBuilding *bld = pStruct->GetBuilding();
 		bld->AddDefaultDetails();
 
 		pop_state();
 	}
-	if (_level == 3 && inst != NULL)
+	if (_level == 3)
 	{
 		if (string(name) != (string)"placement")
 		{
@@ -974,7 +961,7 @@ void StructureVisitor::endElement(const char * name)
 			tag->name = name;
 			tag->value = _data.c_str();
 
-			inst->AddTag(tag);
+			pStruct->AddTag(tag);
 		}
 	}
 }
@@ -986,10 +973,325 @@ void StructureVisitor::data(const char *s, int length)
 }
 
 
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of GML Structure files.
+////////////////////////////////////////////////////////////////////////
+
+// helper
+RGBi ParseHexColor(const char *str)
+{
+	RGBi color;
+	sscanf(str,   "%2hx", &color.r);
+	sscanf(str+2, "%2hx", &color.g);
+	sscanf(str+4, "%2hx", &color.b);
+	return color;
+}
+
+class StructVisitorGML : public XMLVisitor
+{
+public:
+	StructVisitorGML(vtStructureArray *sa) : m_state(0), m_pSA(sa) {}
+	void startXML() { m_state = 0; }
+	void endXML() { m_state = 0; }
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
+	void data(const char *s, int length);
+
+private:
+	string m_data;
+	int m_state;
+
+	vtStructureArray *m_pSA;
+	vtStructure *m_pStructure;
+	vtBuilding *m_pBuilding;
+	vtStructInstance *m_pInstance;
+	vtFence *m_pFence;
+	vtLevel *m_pLevel;
+	vtEdge *m_pEdge;
+
+	int m_iLevel;
+	int m_iEdge;
+};
+
+void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
+{
+	const char *attval;
+
+	// clear data at the start of each element
+	m_data = "";
+
+	if (m_state == 0 && !strcmp(name, "StructureCollection"))
+	{
+		m_state = 1;
+		return;
+	}
+
+	if (m_state == 1)
+	{
+		if (!strcmp(name, "Building"))
+		{
+			m_pBuilding = m_pSA->NewBuilding();
+			m_pStructure = m_pBuilding;
+			m_state = 2;
+			m_iLevel = 0;
+		}
+		else if (!strcmp(name, "Linear"))
+		{
+			m_pFence = m_pSA->NewFence();
+			m_pStructure = m_pFence;
+
+			attval = atts.getValue("Height");
+			if (attval)
+				m_pFence->SetHeight((float) atof(attval));
+
+			m_state = 10;
+		}
+		else if (!strcmp(name, "Imported"))
+		{
+			m_pInstance = m_pSA->NewInstance();
+			m_pStructure = m_pInstance;
+
+			m_state = 20;
+		}
+		return;
+	}
+
+	if (m_state == 2)	// Building
+	{
+		if (!strcmp(name, "Level"))
+		{
+			m_pLevel = m_pBuilding->CreateLevel();
+			attval = atts.getValue("FloorHeight");
+			if (attval)
+				m_pLevel->m_fStoryHeight = (float) atof(attval);
+			attval = atts.getValue("StoryCount");
+			if (attval)
+				m_pLevel->m_iStories = atoi(attval);
+			m_state = 3;
+			m_iEdge = 0;
+		}
+		return;
+	}
+
+	if (m_state == 3)	// Level
+	{
+		if (!strcmp(name, "Footprint"))
+			m_state = 4;
+		else if (!strcmp(name, "Edge"))
+		{
+			m_pEdge = m_pLevel->GetEdge(m_iEdge);
+			m_pEdge->m_Features.Empty();
+
+			attval = atts.getValue("Material");
+			if (attval)
+				m_pEdge->m_Material = vtBuilding::GetMaterialValue(attval);
+			attval = atts.getValue("Color");
+			if (attval)
+				m_pEdge->m_Color = ParseHexColor(attval);
+
+			m_state = 5;
+		}
+		return;
+	}
+
+	if (m_state == 4)	// Footprint
+	{
+		// nothing necessary here, catch the end of element
+	}
+
+	if (m_state == 5)	// Edge
+	{
+		if (!strcmp(name, "EdgeElement"))
+		{
+			vtEdgeFeature ef;
+
+			attval = atts.getValue("Type");
+			if (attval)
+				ef.m_code = vtBuilding::GetEdgeFeatureValue(attval);
+			attval = atts.getValue("Begin");
+			if (attval)
+				ef.m_vf1 = (float) atof(attval);
+			attval = atts.getValue("End");
+			if (attval)
+				ef.m_vf2 = (float) atof(attval);
+			m_pEdge->m_Features.Append(ef);
+		}
+	}
+
+	if (m_state == 10)	// Linear
+	{
+		if (!strcmp(name, "Path"))
+		{
+			m_state = 11;
+		}
+		else if (!strcmp(name, "Posts"))
+		{
+			// this linear structure has posts
+			const char *type = atts.getValue("Type");
+			if (!strcmp(type, "wood"))
+				m_pFence->SetFenceType(FT_WIRE);
+			else
+				m_pFence->SetFenceType(FT_CHAINLINK);
+
+			const char *size = atts.getValue("Size");
+			FPoint3 postsize;
+			postsize.y = m_pFence->GetHeight();
+			sscanf(size, "%f, %f", &postsize.x, &postsize.z);
+			m_pFence->SetPostSize(postsize);
+
+			const char *spacing = atts.getValue("Spacing");
+			if (spacing)
+				m_pFence->SetSpacing((float)atof(spacing));
+		}
+		else if (!strcmp(name, "Connect"))
+		{
+			// not yet supported; currently implied by post type
+		}
+	}
+	if (m_state == 20)	// Imported
+	{
+		if (!strcmp(name, "Location"))
+		{
+			m_state = 21;
+		}
+		else if (!strcmp(name, "Rotation"))
+		{
+		}
+	}
+}
+
+void StructVisitorGML::endElement(const char *name)
+{
+	bool bGrabAttribute = false;
+
+	if (m_state == 5 && !strcmp(name, "Edge"))
+	{
+		m_iEdge++;
+		m_state = 3;
+	}
+
+	else if (m_state == 4)
+	{
+		if (!strcmp(name, "gml:coordinates"))
+		{
+			DLine2 line;
+			const char *data = m_data.c_str();
+			double x, y;
+			while (sscanf(data, "%lf,%lf", &x, &y) == 2)
+			{
+				line.Append(DPoint2(x,y));
+				data = strchr(data, ' ');
+				if (data)
+					data++;
+				else
+					break;
+			}
+			m_pBuilding->SetFootprint(m_iLevel, line);
+		}
+		else if (!strcmp(name, "Footprint"))
+			m_state = 3;
+	}
+
+	else if (m_state == 3 && !strcmp(name, "Level"))
+	{
+		m_state = 2;
+		m_iLevel ++;
+	}
+
+	else if (m_state == 2)
+	{
+		if (!strcmp(name, "Building"))
+		{
+			m_state = 1;
+
+			m_pSA->Append(m_pStructure);
+			m_pStructure = NULL;
+		}
+		else
+			bGrabAttribute = true;
+	}
+	else if (m_state == 1 && (!strcmp(name, "SRS")))
+	{
+		m_pSA->m_proj.SetTextDescription("wkt", m_data.c_str());
+		g_Conv.Setup(m_pSA->m_proj.GetUnits(), DPoint2(0,0));
+	}
+	else if (m_state == 10)
+	{
+		if (!strcmp(name, "Linear"))
+		{
+			m_state = 1;
+
+			m_pSA->Append(m_pStructure);
+			m_pStructure = NULL;
+		}
+		else
+			bGrabAttribute = true;
+	}
+	else if (m_state == 11)
+	{
+		if (!strcmp(name, "gml:coordinates"))
+		{
+			DLine2 &fencepts = m_pFence->GetFencePoints();
+			const char *data = m_data.c_str();
+			double x, y;
+			while (sscanf(data, "%lf,%lf", &x, &y) == 2)
+			{
+				fencepts.Append(DPoint2(x,y));
+				data = strchr(data, ' ');
+				if (data)
+					data++;
+				else
+					break;
+			}
+		}
+		else if (!strcmp(name, "Path"))
+			m_state = 10;
+	}
+	else if (m_state == 20)
+	{
+		if (!strcmp(name, "Imported"))
+		{
+			m_state = 1;
+			m_pSA->Append(m_pStructure);
+			m_pStructure = NULL;
+		}
+		else
+			bGrabAttribute = true;
+	}
+	else if (m_state == 21)
+	{
+		if (!strcmp(name, "gml:coordinates"))
+		{
+			const char *data = m_data.c_str();
+			double x, y;
+			sscanf(data, "%lf,%lf", &x, &y);
+			m_pInstance->m_p.Set(x,y);
+		}
+		else if (!strcmp(name, "Location"))
+			m_state = 20;
+	}
+
+	// first check for Attribute nodes
+	if (bGrabAttribute)
+	{
+		// save these elements as literal strings
+		vtTag *tag = new vtTag;
+		tag->name = name;
+		tag->value = m_data.c_str();
+		m_pStructure->AddTag(tag);		// where does the tag go?
+	}
+}
+
+void StructVisitorGML::data(const char *s, int length)
+{
+	m_data.append(string(s, length));
+}
+
+
 /////////////////////////////////////////////////////////////////////////
 
 
-bool vtStructureArray::WriteXML(const char* filename)
+bool vtStructureArray::WriteXML_Old(const char* filename)
 {
 	int i;
 	FILE *fp = fopen(filename, "wb");
@@ -1047,17 +1349,7 @@ bool vtStructureArray::WriteXML(const char* filename)
 	for (i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
-		vtBuilding *bld = str->GetBuilding();
-		if (bld)
-			bld->WriteXML(fp, bDegrees);
-		vtFence *fen = str->GetFence();
-		if (fen)
-			fen->WriteXML(fp, bDegrees);
-		vtStructInstance *inst = str->GetInstance();
-		if (inst)
-			inst->WriteXML(fp, bDegrees);
-		// TODO: a more elegant solution; e.g. a common base class with a
-		// virtual Serialize method?
+		str->WriteXML_Old(fp, bDegrees);
 	}
 	fprintf(fp, "</structures>\n");
 	fprintf(fp, "</structures-file>\n");
@@ -1065,9 +1357,66 @@ bool vtStructureArray::WriteXML(const char* filename)
 	return true;
 }
 
+
+/////////////////////////////////////////////////////////////////////////
+
+
+bool vtStructureArray::WriteXML(const char* filename)
+{
+	int i;
+	FILE *fp = fopen(filename, "wb");
+	if (!fp)
+	{
+		throw xh_io_exception("Failed to open file", xh_location(filename),
+				"XML Writer");
+	}
+
+	fprintf(fp, "<?xml version=\"1.0\"?>\n");
+	fprintf(fp, "\n");
+	
+	fprintf(fp, "<StructureCollection xmlns=\"http://www.openplans.net\"\n"
+		"\t\t\t\t\t xmlns:gml=\"http://www.opengis.net/gml\"\n"
+		"\t\t\t\t\t xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+		"\t\t\t\t\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+		"\t\t\t\t\t xsi:schemaLocation=\"http://www.openplans.net/buildings.xsd\">\n");
+	fprintf(fp, "\n");
+
+	// Write the extents (required by gml:StructureCollection)
+	DRECT ext;
+	GetExtents(ext);
+	fprintf(fp, "\t<gml:boundedBy>\n");
+	fprintf(fp, "\t\t<gml:Box>\n");
+	fprintf(fp, "\t\t\t<gml:coordinates>");
+	fprintf(fp, "%lf,%lf %lf,%lf", ext.left, ext.bottom, ext.right, ext.top);
+	fprintf(fp, "</gml:coordinates>\n");
+	fprintf(fp, "\t\t</gml:Box>\n");
+	fprintf(fp, "\t</gml:boundedBy>\n");
+	fprintf(fp, "\n");
+
+	// Write projection
+	char *wkt;
+	OGRErr err = m_proj.exportToWkt(&wkt);
+	if (err != OGRERR_NONE)
+		return false;
+	fprintf(fp, "\t<SRS>%s</SRS>\n", wkt);
+	fprintf(fp, "\n");
+	OGRFree(wkt);
+
+	bool bDegrees = (m_proj.IsGeographic() == 1);
+
+	for (i = 0; i < GetSize(); i++)
+	{
+		vtStructure *str = GetAt(i);
+		str->WriteXML(fp, bDegrees);
+	}
+	fprintf(fp, "</StructureCollection>\n");
+	fclose(fp);
+	return true;
+}
+
 bool vtStructureArray::ReadXML(const char* pathname)
 {
-	StructureVisitor visitor(this);
+	StructVisitorGML visitor(this);
 	try
 	{
 		readXML(pathname, visitor);

@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include "MathTypes.h"
+#include "Structure.h"
 
 enum FenceType
 {
@@ -21,7 +22,7 @@ enum FenceType
 #define FENCE_DEFAULT_SPACING	2.5f
 
 
-class vtFence
+class vtFence : public vtStructure
 {
 public:
 	vtFence();
@@ -42,9 +43,12 @@ public:
 	void SetSpacing(float meters) { m_fSpacing = meters; }
 	float GetSpacing() { return m_fSpacing; }
 
-	bool GetExtents(DRECT &rect);
+	bool GetExtents(DRECT &rect) const;
 
+	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void WriteXML(FILE *fp, bool bDegrees);
+
+	bool IsContainedBy(const DRECT &rect) const;
 
 protected:
 	DLine2		m_pFencePts;	// in earth coordinates

@@ -27,7 +27,6 @@ public:
 	~vtStructureArray() { Empty(); }
 	virtual void DestructItems(int first, int last);	// override
 
-	void AddBuilding(vtBuilding *bld);
 	void DeleteSelected();
 
 	bool ReadSHP(const char* pathname, vtStructureType type,
@@ -38,6 +37,7 @@ public:
 
 	bool WriteSHP(const char* pathname);
 	bool WriteXML(const char* pathname);
+	bool WriteXML_Old(const char* pathname);
 
 	bool FindClosestBuildingCorner(const DPoint2 &point, double error,
 						   int &building, int &corner, double &distance);
@@ -60,7 +60,6 @@ public:
 
 	// override these 'Factory' methods so that the vtStructureArray base
 	// methods can be capable of handling subclasses of vtBuilding
-	virtual vtStructure *NewStructure() { return new vtStructure; }
 	virtual vtBuilding *NewBuilding();
 	virtual vtFence *NewFence();
 	virtual vtStructInstance *NewInstance();

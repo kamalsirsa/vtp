@@ -18,31 +18,7 @@
 
 class vtBuilding;
 class vtFence;
-
-/**
- * This class represents a reference to an external model, such as a unique
- * building which has been created in a 3D Modelling Tool.  It is derived from
- * vtTagArray which provides a set of arbitrary tags (name/value pairs).
- * At least one of the following two tags should be present:
- * - filename, which contains a resolvable path to an external 3d model file.
- *	 An example is filename="MyModels/GasStation.3ds"
- * - itemname, which contains the name of a content item which will be resolved
- *	 by a list maintained by a vtContentManager.  An example is
- *	 itemname="Gemini Observatory"
- */
-class vtStructInstance : public vtTagArray
-{
-public:
-	vtStructInstance();
-
-	void WriteXML(FILE *fp, bool bDegrees);
-	bool GetExtents(DRECT &rect);
-	void Offset(const DPoint2 &delta);
-
-	DPoint2	m_p;			// earth position
-	float	m_fRotation;	// in radians
-	float	m_fScale;		// meters per unit
-};
+class vtStructInstance;
 
 /**
  * Structure type.
@@ -71,38 +47,64 @@ enum vtStructureType
  * type allows you to reference any external model, such as a unique building
  * which has been created in a 3D Modelling Tool.
  */
-class vtStructure : public Selectable
+class vtStructure : public Selectable, public vtTagArray
 {
 public:
 	vtStructure();
 	virtual ~vtStructure();
 
-	void SetBuilding(vtBuilding *bld) { m_pBuilding = bld; m_type = ST_BUILDING; }
-	void SetFence(vtFence *fen) { m_pFence = fen; m_type = ST_FENCE; }
-	void SetInstance(vtStructInstance *inst) { m_pInstance = inst; m_type = ST_INSTANCE; }
-
+	void SetType(vtStructureType t) { m_type = t; }
 	vtStructureType GetType() { return m_type; }
-	vtBuilding *GetBuilding() { if (m_type == ST_BUILDING) return m_pBuilding; else return NULL; }
-	vtFence *GetFence() { if (m_type == ST_FENCE) return m_pFence; else return NULL; }
-	vtStructInstance *GetInstance() { if (m_type == ST_INSTANCE) return m_pInstance; else return NULL; }
 
-	virtual bool GetExtents(DRECT &rect);
-	bool IsContainedBy(const DRECT &rect);
+	vtBuilding *GetBuilding() { if (m_type == ST_BUILDING) return (vtBuilding *)this; else return NULL; }
+	vtFence *GetFence() { if (m_type == ST_FENCE) return (vtFence *)this; else return NULL; }
+	vtStructInstance *GetInstance() { if (m_type == ST_INSTANCE) return (vtStructInstance *)this; else return NULL; }
+
+	virtual bool GetExtents(DRECT &rect) const = 0;
+	virtual bool IsContainedBy(const DRECT &rect) const = 0;
+	virtual void WriteXML(FILE *fp, bool bDegrees) = 0;
+	virtual void WriteXML_Old(FILE *fp, bool bDegrees) = 0;
+
+	void WriteTags(FILE *fp);
 
 protected:
-	union {
-		vtBuilding *m_pBuilding;
-		vtFence *m_pFence;
-		vtStructInstance *m_pInstance;
-	};
 	vtStructureType m_type;
+
 private:
 	// Don't let unsuspecting users stumble into assuming that object
 	// copy semantics will work.  Declare them private and never
 	// define them,
-	
+
 	vtStructure( const vtStructure & );
 	vtStructure &operator=( const vtStructure & );
+};
+
+/**
+ * This class represents a reference to an external model, such as a unique
+ * building which has been created in a 3D Modelling Tool.  It is derived from
+ * vtTagArray which provides a set of arbitrary tags (name/value pairs).
+ * At least one of the following two tags should be present:
+ * - filename, which contains a resolvable path to an external 3d model file.
+ *	 An example is filename="MyModels/GasStation.3ds"
+ * - itemname, which contains the name of a content item which will be resolved
+ *	 by a list maintained by a vtContentManager.  An example is
+ *	 itemname="Gemini Observatory"
+ */
+class vtStructInstance : public vtStructure
+{
+public:
+	vtStructInstance();
+
+	void WriteXML(FILE *fp, bool bDegrees);
+	void WriteXML_Old(FILE *fp, bool bDegrees);
+	void Offset(const DPoint2 &delta);
+
+	bool GetExtents(DRECT &rect) const;
+	bool IsContainedBy(const DRECT &rect) const;
+
+	DPoint2	m_p;			// earth position
+	float	m_fRotation;	// in radians
+	float	m_fScale;		// meters per unit
 };
 
 #endif // STRUCTUREH

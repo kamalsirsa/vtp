@@ -10,17 +10,17 @@
 #include "Building.h"
 #include "Fence.h"
 
-vtStructInstance::vtStructInstance()
+vtStructInstance::vtStructInstance() : vtStructure()
 {
+	SetType(ST_INSTANCE);
+
 	m_p.Set(0, 0);
 	m_fRotation = 0.0f;
 	m_fScale = 1.0f;
 }
 
-void vtStructInstance::WriteXML(FILE *fp, bool bDegrees)
+void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)
 {
-	int i;
-
 	const char *coord_format;
 	if (bDegrees)
 		coord_format = "%lg";
@@ -40,19 +40,47 @@ void vtStructInstance::WriteXML(FILE *fp, bool bDegrees)
 		fprintf(fp, " rotation=\"%f\"", m_fRotation);
 	}
 	fprintf(fp, " />\n");
-
+/*
 	// now write any and all tags
+	int i;
 	for (i = 0; i < NumTags(); i++)
 	{
 		vtTag *tag = GetTag(i);
 		fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
 			(const char *)tag->value, (const char *)tag->name);
 	}
-
+*/
 	fprintf(fp, "\t</structure>\n");
 }
 
-bool vtStructInstance::GetExtents(DRECT &rect)
+void vtStructInstance::WriteXML(FILE *fp, bool bDegrees)
+{
+	const char *coord_format;
+	if (bDegrees)
+		coord_format = "%lg";
+	else
+		coord_format = "%.2lf";
+
+	fprintf(fp, "\t<Imported>\n");
+
+	// first write the placement
+	fprintf(fp, "\t\t<Location>\n");
+	fprintf(fp, "\t\t\t<gml:coordinates>");
+	fprintf(fp, coord_format, m_p.x);
+	fprintf(fp, ",");
+	fprintf(fp, coord_format, m_p.y);
+	fprintf(fp, "</gml:coordinates>\n");
+	fprintf(fp, "\t\t</Location>\n");
+
+	if (m_fRotation != 0.0f)
+	{
+		fprintf(fp, "\t\t<Rotation Radians=\"%f\">\n", m_fRotation);
+	}
+	WriteTags(fp);
+	fprintf(fp, "\t</Imported>\n");
+}
+
+bool vtStructInstance::GetExtents(DRECT &rect) const
 {
 	// we have no way (yet) of knowing the extents of an external
 	// reference, so just give a placeholder of a single point.
@@ -65,66 +93,34 @@ void vtStructInstance::Offset(const DPoint2 &delta)
 	m_p += delta;
 }
 
+
+bool vtStructInstance::IsContainedBy(const DRECT &rect) const
+{
+	return rect.ContainsPoint(m_p);
+}
+
+
 ///////////////////////////////////////////////////////////////////////
 
 vtStructure::vtStructure()
 {
 	m_type = ST_NONE;
-	m_pBuilding = NULL;
 }
 
 vtStructure::~vtStructure()
 {
-	switch (m_type)
-	{
-	case ST_BUILDING:
-		delete m_pBuilding;
-		break;
-
-	case ST_FENCE:
-		delete m_pFence;
-		break;
-
-	case ST_INSTANCE:
-		delete m_pInstance;
-		break;
-	}
 	m_type = ST_NONE;
-	m_pBuilding = NULL;
 }
 
-bool vtStructure::GetExtents(DRECT &rect)
+void vtStructure::WriteTags(FILE *fp)
 {
-	switch (m_type)
+	// now write all extra tags (attributes) for this structure
+	int i;
+	for (i = 0; i < NumTags(); i++)
 	{
-	case ST_BUILDING:
-		return m_pBuilding->GetExtents(rect);
-
-	case ST_FENCE:
-		return m_pFence->GetExtents(rect);
-
-	case ST_INSTANCE:
-		return m_pInstance->GetExtents(rect);
+		vtTag *tag = GetTag(i);
+		fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
+			(const char *)tag->value, (const char *)tag->name);
 	}
-	return false;
-}
-
-bool vtStructure::IsContainedBy(const DRECT &rect)
-{
-	switch (m_type)
-	{
-	case ST_BUILDING:
-		return rect.ContainsPoint(m_pBuilding->GetLocation());
-
-	case ST_FENCE:
-	{
-		const DLine2 &pts = m_pFence->GetFencePoints();
-		return rect.ContainsLine(pts);
-	}
-
-	case ST_INSTANCE:
-		return rect.ContainsPoint(m_pInstance->m_p);
-	}
-	return false;
 }
 

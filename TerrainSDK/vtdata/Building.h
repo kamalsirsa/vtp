@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include "MathTypes.h"
 #include "LocalConversion.h"
+#include "Structure.h"
 
 ////////////////////////////////////////////////////
 
@@ -159,7 +160,7 @@ protected:
 	FLine3		m_LocalFootprint;
 };
 
-class vtBuilding
+class vtBuilding : public vtStructure
 {
 public:
 	vtBuilding();
@@ -182,7 +183,7 @@ public:
 	void SetFootprint(int i, const DLine2 &dl);
 	DLine2 &GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
 
-	void SetRoofType(RoofType rt);
+	void SetRoofType(RoofType rt, int iSlope = -1, int iLev = -1);
 	RoofType GetRoofType();
 
 	void SetColor(BldColor which, RGBi col);
@@ -194,6 +195,7 @@ public:
 	int GetNumLevels() const { return m_Levels.GetSize(); }
 	vtLevel *GetLevel(int i) { return m_Levels[i]; }
 	vtLevel *CreateLevel(const DLine2 &footprint);
+	vtLevel *CreateLevel();
 
 	bool GetExtents(DRECT &rect) const;
 	void SetCenterFromPoly();
@@ -201,11 +203,17 @@ public:
 	void RectToPoly(float fWidth, float fDepth, float fRotation);
 
 	void WriteXML(FILE *fp, bool bDegrees);
+	void WriteXML_Old(FILE *fp, bool bDegrees);
 	void AddDefaultDetails();
 	void DetermineLocalFootprints();
 
 	static vtLocalConversion s_Conv;
 	static const char *GetMaterialString(BldMaterial mat);
+	static BldMaterial GetMaterialValue(const char *value);
+	static const char *GetEdgeFeatureString(int edgetype);
+	static int		   GetEdgeFeatureValue(const char *value);
+
+	bool IsContainedBy(const DRECT &rect) const;
 
 protected:
 	// information about each story

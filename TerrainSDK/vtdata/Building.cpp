@@ -536,8 +536,9 @@ bool vtLevel::GetOverallEdgeColor(RGBi &color)
 
 /////////////////////////////////////
 
-vtBuilding::vtBuilding()
+vtBuilding::vtBuilding() : vtStructure()
 {
+	SetType(ST_BUILDING);
 }
 
 vtBuilding::~vtBuilding()
@@ -705,22 +706,30 @@ void vtBuilding::SetFootprint(int i, const DLine2 &dl)
 	DetermineLocalFootprints();
 }
 
-void vtBuilding::SetRoofType(RoofType rt)
+void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 {
 	// if there is a roof level, attempt to set its edge angles to match
 	// the desired roof type
-	if (GetNumLevels() < 2)
-		return;
-
-	vtLevel *below = GetLevel(GetNumLevels()-2);
-	vtLevel *pLev = GetLevel(GetNumLevels()-1);
+	vtLevel *pLev, *below;
+	if (iLev == -1)
+	{
+		pLev = GetLevel(GetNumLevels()-1);
+		below = GetLevel(GetNumLevels()-2);
+	}
+	else
+	{
+		pLev = GetLevel(iLev);
+		below = GetLevel(iLev-1);
+	}
 
 	// provide default slopes for the roof sections
-	int iSlope = 0;
-	if (rt == ROOF_SHED)
-		iSlope = 4;
-	if (rt == ROOF_GABLE || rt == ROOF_HIP)
-		iSlope = 15;
+	if (iSlope == -1)
+	{
+		if (rt == ROOF_SHED)
+			iSlope = 4;
+		if (rt == ROOF_GABLE || rt == ROOF_HIP)
+			iSlope = 15;
+	}
 
 	pLev->SetRoofType(rt, iSlope);
 
@@ -815,10 +824,18 @@ bool vtBuilding::GetExtents(DRECT &rect) const
 	return true;
 }
 
+vtLevel *vtBuilding::CreateLevel()
+{
+	vtLevel *pLev = new vtLevel();
+	m_Levels.Append(pLev);
+	return pLev;
+}
+
 vtLevel *vtBuilding::CreateLevel(const DLine2 &footprint)
 {
 	vtLevel *pLev = new vtLevel();
 	pLev->SetFootprint(footprint);
+
 	m_Levels.Append(pLev);
 
 	// this new footprint make have altered the center of the building
@@ -866,7 +883,7 @@ void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 }
 
 
-void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
+void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 {
 	const char *coord_format;
 	if (bDegrees)
@@ -915,6 +932,97 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	fprintf(fp, "\" color=\"%d %d %d\" />\n", color.r, color.g, color.b);
 
 	fprintf(fp, "\t</structure>\n");
+}
+
+void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
+{
+	const char *coord_format;
+	if (bDegrees)
+		coord_format = "%lg";
+	else
+		coord_format = "%.2lf";
+
+	fprintf(fp, "\t<Building>\n");
+
+	int i, j, k;
+	int levels = GetNumLevels();
+	for (i = 0; i < levels; i++)
+	{
+		vtLevel *lev = GetLevel(i);
+		fprintf(fp, "\t\t<Level FloorHeight=\"%f\" StoryCount=\"%d\">\n",
+			lev->m_fStoryHeight, lev->m_iStories);
+
+		DLine2 &foot = lev->GetFootprint();
+		int points = foot.GetSize();
+		fprintf(fp, "\t\t\t<Footprint>\n");
+		fprintf(fp, "\t\t\t\t<gml:MultiPolygon>\n");
+		fprintf(fp, "\t\t\t\t\t<gml:polygonMember>\n");
+		fprintf(fp, "\t\t\t\t\t\t<gml:Polygon>\n");
+		fprintf(fp, "\t\t\t\t\t\t\t<gml:outerBoundaryIs>\n");
+		fprintf(fp, "\t\t\t\t\t\t\t\t<gml:LinearRing>\n");
+		fprintf(fp, "\t\t\t\t\t\t\t\t\t<gml:coordinates>");
+		for (int i = 0; i < points; i++)
+		{
+			DPoint2 p = foot.GetAt(i);
+			fprintf(fp, coord_format, p.x);
+			fprintf(fp, ",");
+			fprintf(fp, coord_format, p.y);
+			if (i != points-1)
+				fprintf(fp, " ");
+		}
+		fprintf(fp, "</gml:coordinates>\n");
+		fprintf(fp, "\t\t\t\t\t\t\t\t</gml:LinearRing>\n");
+		fprintf(fp, "\t\t\t\t\t\t\t</gml:outerBoundaryIs>\n");
+		fprintf(fp, "\t\t\t\t\t\t</gml:Polygon>\n");
+		fprintf(fp, "\t\t\t\t\t</gml:polygonMember>\n");
+		fprintf(fp, "\t\t\t\t</gml:MultiPolygon>\n");
+		fprintf(fp, "\t\t\t</Footprint>\n");
+
+		int edges = lev->GetNumEdges();
+		for (j = 0; j < edges; j++)
+		{
+			vtEdge *edge = lev->GetEdge(j);
+			fprintf(fp, "\t\t\t<Edge");
+
+			fprintf(fp, " Material=\"%s\"",
+				vtBuilding::GetMaterialString(edge->m_Material));
+
+			fprintf(fp, " Color=\"%02x%02x%02x\"",
+				edge->m_Color.r, edge->m_Color.g, edge->m_Color.b);
+
+			if (edge->m_iSlope != 90)
+				fprintf(fp, " Slope=\"%d\"", edge->m_iSlope);
+
+			if (edge->m_fEaveLength != 0.0f)
+				fprintf(fp, " EaveLength=\"%f\"", edge->m_fEaveLength);
+
+			fprintf(fp, ">\n");
+
+			int features = edge->NumFeatures();
+			for (k = 0; k < features; k++)
+			{
+				fprintf(fp, "\t\t\t\t<EdgeElement");
+
+				const vtEdgeFeature &feat = edge->m_Features[k];
+				fprintf(fp, " Type=\"%s\"",
+					vtBuilding::GetEdgeFeatureString(feat.m_code));
+
+				if (feat.m_vf1 != 0.0f)
+					fprintf(fp, " Begin=\"%.3f\"", feat.m_vf1);
+
+				if (feat.m_vf2 != 1.0f)
+					fprintf(fp, " End=\"%.3f\"", feat.m_vf2);
+
+				fprintf(fp, "/>\n");
+			}
+
+			fprintf(fp, "\t\t\t</Edge>\n");
+		}
+		fprintf(fp, "\t\t</Level>\n");
+	}
+
+	WriteTags(fp);
+	fprintf(fp, "\t</Building>\n");
 }
 
 void vtBuilding::AddDefaultDetails()
@@ -985,3 +1093,64 @@ const char *vtBuilding::GetMaterialString(BldMaterial mat)
 	}
 	return "Bad Value";
 }
+
+BldMaterial vtBuilding::GetMaterialValue(const char *value)
+{
+	if (!strcmp(value, "Plain"))
+		return BMAT_PLAIN;
+	else if (!strcmp(value, "Wood"))
+		return BMAT_WOOD;
+	else if (!strcmp(value, "Siding"))
+		return BMAT_SIDING;
+	else if (!strcmp(value, "Glass"))
+		return BMAT_GLASS;
+	else if (!strcmp(value, "Brick"))
+		return BMAT_BRICK;
+	else if (!strcmp(value, "Cement"))
+		return BMAT_CEMENT;
+	else if (!strcmp(value, "Stucco"))
+		return BMAT_STUCCO;
+	else if (!strcmp(value, "Corrugated"))
+		return BMAT_CORRUGATED;
+	else if (!strcmp(value, "Door"))
+		return BMAT_DOOR;
+	else if (!strcmp(value, "Window"))
+		return BMAT_WINDOW;
+	else if (!strcmp(value, "Window-Wall"))
+		return BMAT_WINDOWWALL;
+	return BMAT_UNKNOWN;
+}
+
+const char *vtBuilding::GetEdgeFeatureString(int edgetype)
+{
+	switch (edgetype)
+	{
+	case WFC_WALL: return "Wall"; break;
+	case WFC_GAP: return "Gap"; break;
+	case WFC_POST: return "Post"; break;
+	case WFC_WINDOW: return "Window"; break;
+	case WFC_DOOR: return "Door"; break;
+	}
+	return "Bad Value";
+}
+
+int vtBuilding::GetEdgeFeatureValue(const char *value)
+{
+	if (!strcmp(value, "Wall"))
+		return WFC_WALL;
+	else if (!strcmp(value, "Gap"))
+		return WFC_GAP;
+	else if (!strcmp(value, "Post"))
+		return WFC_POST;
+	else if (!strcmp(value, "Window"))
+		return WFC_WINDOW;
+	else if (!strcmp(value, "Door"))
+		return WFC_DOOR;
+	return 0;
+}
+
+bool vtBuilding::IsContainedBy(const DRECT &rect) const
+{
+	return rect.ContainsPoint(GetLocation());
+}
+
