@@ -128,6 +128,9 @@ class vtNode *vtLoadModel(const char *fname);
 #define	VT_Visible	1
 #define	VT_AllVisible	2
 
+/**
+ * This class provides basic methods for the vtMesh class.
+ */
 class vtMeshBase
 {
 public:
@@ -221,6 +224,10 @@ protected:
 	vtString m_strFilename;
 };
 
+
+/**
+ * This class provides the base methods for vtMaterial.
+ */
 class vtMaterialBase
 {
 public:
@@ -267,6 +274,12 @@ protected:
 	vtImage	*m_pImage;
 };
 
+/**
+ * Contains an array of materials.  Provides useful methods for creating
+ * material easily.
+ * This is the base class for vtMaterialArray, and provides most of the
+ * functionality for that class.
+ */
 class vtMaterialArrayBase : public Array<vtMaterial *>
 {
 public:

@@ -31,6 +31,9 @@ vtMaterial::vtMaterial() : vtMaterialBase()
 	m_pStateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 }
 
+/**
+ * Set the diffuse color of this material.
+ */
 void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 {
 	m_pMaterial->setDiffuse(FAB, osg::Vec4(r, g, b, a));
@@ -38,61 +41,101 @@ void vtMaterial::SetDiffuse(float r, float g, float b, float a)
 	if (a < 1.0f)
 		m_pStateSet->setMode(GL_BLEND, GEO_ON);
 }
+/**
+ * Get the diffuse color of this material.
+ */
 RGBAf vtMaterial::GetDiffuse()
 {
 	osg::Vec4 col = m_pMaterial->getDiffuse(FAB);
 	return RGBAf(col[0], col[1], col[2], col[3]);
 }
 
+/**
+ * Set the specular color of this material.
+ */
 void vtMaterial::SetSpecular(float r, float g, float b)
 {
 	m_pMaterial->setSpecular(FAB, osg::Vec4(r, g, b, 1.0f));
 }
+/**
+ * Get the specular color of this material.
+ */
 RGBf vtMaterial::GetSpecular()
 {
 	osg::Vec4 col = m_pMaterial->getSpecular(FAB);
 	return RGBf(col[0], col[1], col[2]);
 }
 
+/**
+ * Set the ambient color of this material.
+ */
 void vtMaterial::SetAmbient(float r, float g, float b)
 {
 	m_pMaterial->setAmbient(FAB, osg::Vec4(r, g, b, 1.0f));
 }
+/**
+ * Get the ambient color of this material.
+ */
 RGBf vtMaterial::GetAmbient()
 {
 	osg::Vec4 col = m_pMaterial->getAmbient(FAB);
 	return RGBf(col[0], col[1], col[2]);
 }
 
+/**
+ * Set the emissive color of this material.
+ */
 void vtMaterial::SetEmission(float r, float g, float b)
 {
 	m_pMaterial->setEmission(FAB, osg::Vec4(r, g, b, 1.0f));
 }
+/**
+ * Get the emissive color of this material.
+ */
 RGBf vtMaterial::GetEmission()
 {
 	osg::Vec4 col = m_pMaterial->getEmission(FAB);
 	return RGBf(col[0], col[1], col[2]);
 }
 
+/**
+ * Set the backface culling property of this material.
+ */
 void vtMaterial::SetCulling(bool bCulling)
 {
 	m_pStateSet->setMode(GL_CULL_FACE, bCulling ? GEO_ON : GEO_OFF);
 }
+/**
+ * Get the backface culling property of this material.
+ */
 bool vtMaterial::GetCulling()
 {
 	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::CULLFACE);
 	return (m == GEO_ON);
 }
+
+/**
+ * Set the lighting property of this material.
+ */
 void vtMaterial::SetLighting(bool bLighting)
 {
 	m_pStateSet->setMode(GL_LIGHTING, bLighting ? GEO_ON : GEO_OFF);
 }
+/**
+ * Get the lighting property of this material.
+ */
 bool vtMaterial::GetLighting()
 {
 	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::LIGHT);
 	return (m == GEO_ON);
 }
 
+/**
+ * Set the transparent property of this material.
+ *
+ * \param bOn True to turn on transparency (blending).
+ * \param bAdd True for additive blending.
+ */
 void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 {
 	m_pStateSet->setMode(GL_BLEND, bOn ? GEO_ON : GEO_OFF);
@@ -105,12 +148,18 @@ void vtMaterial::SetTransparent(bool bOn, bool bAdd)
 		m_pStateSet->setAttribute(trans);
 	}
 }
+/**
+ * Get the transparent property of this material.
+ */
 bool vtMaterial::GetTransparent()
 {
 	osg::StateAttribute::GLModeValue m = m_pStateSet->getMode(osg::StateAttribute::TRANSPARENCY);
 	return (m == GEO_ON);
 }
 
+/**
+ * Set the texture for this material.
+ */
 void vtMaterial::SetTexture(vtImage *pImage)
 {
 	if (!m_pTexture)
@@ -121,6 +170,9 @@ void vtMaterial::SetTexture(vtImage *pImage)
 	m_pStateSet->setAttributeAndModes(m_pTexture.get(), osg::StateAttribute::ON);
 }
 
+/**
+ * Set the texture clamping property for this material.
+ */
 void vtMaterial::SetClamp(bool bClamp)
 {
 	if (!m_pTexture)
@@ -137,6 +189,9 @@ void vtMaterial::SetClamp(bool bClamp)
 	}
 }
 
+/**
+ * Get the texture clamping property of this material.
+ */
 bool vtMaterial::GetClamp()
 {
 	if (!m_pTexture)
@@ -145,6 +200,9 @@ bool vtMaterial::GetClamp()
 	return (w == osg::Texture::CLAMP);
 }
 
+/**
+ * Set the texture mipmapping property for this material.
+ */
 void vtMaterial::SetMipMap(bool bMipMap)
 {
 	if (!m_pTexture)
@@ -155,6 +213,9 @@ void vtMaterial::SetMipMap(bool bMipMap)
 		m_pTexture->setFilter(osg::Texture::MIN_FILTER, osg::Texture::LINEAR);
 }
 
+/**
+ * Get the texture mipmapping property of this material.
+ */
 bool vtMaterial::GetMipMap()
 {
 	if (!m_pTexture)
@@ -174,6 +235,11 @@ void vtMaterial::Apply()
 
 //////////////////////////////////////////////////////////////
 
+/**
+ * Adds a material to this material array.
+ *
+ * \return The index of the material that was added.
+ */
 int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 {
 	// nothing special to do
@@ -198,6 +264,31 @@ GeoSet2::~GeoSet2()
 
 //////////////////////////////////////////////////////////////
 
+/**
+ * Construct a Mesh.  A Mesh is a container for a set of vertices and primitives.
+ *
+ * \param PrimType The type of primitive this mesh will contain.  Allowed
+ *		values are:
+ *		- GL_POINTS
+ *		- GL_LINES
+ *		- GL_LINE_STRIP
+ *		- GL_TRIANGLES
+ *		- GL_TRIANGLE_STRIP
+ *		- GL_TRIANGLE_FAN
+ *		- GL_QUADS
+ *		- GL_POLYGON
+ *
+ * \param VertType Flags which indicate what type of information is stored with each
+ *		vertex.  This can be any combination of the following bit flags:
+ *		- VT_Normals - a normal per vertex.
+ *		- VT_Colors - a color per vertex.
+ *		- VT_TexCoords - a texture coordinate (UV) per vertex.
+ *
+ * \param NumVertices The expected number of vertices that the mesh will contain.  If
+ *		more than this number of vertices are added, the mesh will automatically grow
+ *		to contain them.  However it is more efficient if you know the number at
+ *		creation time and pass it in this argument.
+ */
 vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 	vtMeshBase(PrimType, VertType, NumVertices)
 {
@@ -245,21 +336,21 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 		m_pGeoSet->setPrimType(osg::GeoSet::LINES);
 		m_pGeoSet->setNumPrims(NumVertices/2);
 		break;
+	case GL_LINE_STRIP:
+		m_pGeoSet->setPrimType(osg::GeoSet::LINE_STRIP);
+		break;
 	case GL_TRIANGLES:
 		m_pGeoSet->setPrimType(osg::GeoSet::TRIANGLES);
 		m_pGeoSet->setNumPrims(NumVertices/3);
 		break;
-	case GL_LINE_STRIP:
-		m_pGeoSet->setPrimType(osg::GeoSet::LINE_STRIP);
-		break;
 	case GL_TRIANGLE_STRIP:
 		m_pGeoSet->setPrimType(osg::GeoSet::TRIANGLE_STRIP);
 		break;
-	case GL_QUADS:
-		m_pGeoSet->setPrimType(osg::GeoSet::QUADS);
-		break;
 	case GL_TRIANGLE_FAN:
 		m_pGeoSet->setPrimType(osg::GeoSet::TRIANGLE_FAN);
+		break;
+	case GL_QUADS:
+		m_pGeoSet->setPrimType(osg::GeoSet::QUADS);
 		break;
 	case GL_POLYGON:
 		m_pGeoSet->setPrimType(osg::GeoSet::POLYGON);

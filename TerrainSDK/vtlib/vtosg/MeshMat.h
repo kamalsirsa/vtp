@@ -9,6 +9,14 @@
 #include <osgText/Font>
 #include <osgText/Text>
 
+/**
+ * A material is a description of how a surface should be rendered.  For a
+ * good description of how Materials work, see the opengl.org website or
+ * the OpenGL Red Book.
+ *
+ * Much of the functionality of vtMaterial is inherited from its base class,
+ * vtMaterialBase.
+ */
 class vtMaterial : public vtMaterialBase
 {
 public:
@@ -51,6 +59,9 @@ public:
 	osg::ref_ptr<osg::StateSet>	m_pStateSet;
 };
 
+/**
+ * Contains an array of materials.  Provides useful methods for creating material easily.
+ */
 class vtMaterialArray : public vtMaterialArrayBase
 {
 public:
@@ -77,24 +88,13 @@ public:
  * \par
  * The vtMesh class allows you to define and access a Mesh, including many
  * functions useful for creating and dynamically changing Meshes.
- * \par
  * To add the vtMesh to the visible scene graph, add it to a vtGeom node.
+ * \par
+ * Most of the useful methods of this class are defined on its parent class, vtMeshBase.
  */
 class vtMesh : public vtMeshBase
 {
 public:
-	/** Create a vtMesh.
-	 \param PrimType The OpenGL primitive type, e.g. GL_LINES, GL_TRIANGLE_STRIP
-	 \param VertType The types of data that are stored for each vertex.  This can
-	  be a combination of any of the following values:
-	   - VT_Normals if you need vertex normals for smooth shading.
-	   - VT_Colors if you need vertex colors.
-	   - VT_TexCoords if you need texture coordinates for each vertex.
-	 \param NumVertices The number of vertices you expect the mesh to contain.
-	  This number does not need to be exact, since the vertex buffer will be
-	  expanded as necessary, but it improves efficiency if you pass the correct
-	  number at construction time.
-	 */
 	vtMesh(GLenum PrimType, int VertType, int NumVertices);
 
 	/** Add a triangle.  p0, p1, p2 are the indices of the vertices of the triangle. */
