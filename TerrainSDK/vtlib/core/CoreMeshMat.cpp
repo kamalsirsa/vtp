@@ -970,6 +970,10 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 						 bool bTexGen, bool bClamp,
 						 bool bMipMap)
 {
+	// check for common mistake
+	if (*fname == 0)
+		return -1;
+
 	vtImage *pImage = new vtImage(fname);
 	if (!pImage->LoadedOK())
 	{
