@@ -149,9 +149,9 @@ vtElevLayer::~vtElevLayer()
 bool vtElevLayer::OnSave()
 {
 	if (m_pGrid)
-		return m_pGrid->SaveToBT(m_strFilename);
+		return m_pGrid->SaveToBT(m_strFilename.mb_str());
 	if (m_pTin)
-		return m_pTin->Write(m_strFilename);
+		return m_pTin->Write(m_strFilename.mb_str());
 	return false;
 }
 
@@ -161,17 +161,17 @@ bool vtElevLayer::OnLoad()
 
 	bool success = false;
 
-	if (!m_strFilename.Right(3).CmpNoCase(".bt"))
+	if (!m_strFilename.Right(3).CmpNoCase(_T(".bt")))
 	{
 		m_pGrid = new vtElevationGrid();
-		success = m_pGrid->LoadFromBT(m_strFilename, progress_callback);
+		success = m_pGrid->LoadFromBT(m_strFilename.mb_str(), progress_callback);
 		m_pGrid->GetDimensions(m_iColumns, m_iRows);
 	}
-	else if (!m_strFilename.Right(4).CmpNoCase(".tin") ||
-			 !m_strFilename.Right(4).CmpNoCase(".itf"))
+	else if (!m_strFilename.Right(4).CmpNoCase(_T(".tin")) ||
+			 !m_strFilename.Right(4).CmpNoCase(_T(".itf")))
 	{
 		m_pTin = new vtTin2d();
-		success = m_pTin->Read(m_strFilename);
+		success = m_pTin->Read(m_strFilename.mb_str());
 	}
 
 	CloseProgressDialog();
@@ -406,7 +406,7 @@ void vtElevLayer::SetupDefaults()
 {
 	m_bHasBitmap = false;
 	m_bBitmapRendered = false;
-	m_strFilename = "Untitled";
+	m_strFilename = _T("Untitled");
 
 	m_pBitmap = NULL;
 	m_pMask = NULL;
@@ -437,7 +437,7 @@ void vtElevLayer::RenderBitmap()
 		OpenProgressDialog("Rendering Bitmap");
 #endif
 
-	UpdateProgressDialog(0, "Generating colors...");
+	UpdateProgressDialog(0, _T("Generating colors..."));
 	DetermineMeterSpacing();
 
 	int r, g, b;
@@ -458,15 +458,15 @@ void vtElevLayer::RenderBitmap()
 			*data++ = b;
 		}
 	}
-	UpdateProgressDialog(80, "Generating bitmap...");
+	UpdateProgressDialog(80, _T("Generating bitmap..."));
 	m_pBitmap = new wxBitmap(m_pImage->ConvertToBitmap());
 	int ok = m_pBitmap->Ok();
 	if (!ok)
-		wxMessageBox("Couldn't create bitmap, probably too large.");
+		wxMessageBox(_T("Couldn't create bitmap, probably too large."));
 
 	if (ok && has_invalid && m_bDoMask)
 	{
-		UpdateProgressDialog(90, "Hiding unknown areas...");
+		UpdateProgressDialog(90, _T("Hiding unknown areas..."));
 		m_pMask = new wxMask(*m_pBitmap, wxColour(255, 0, 0));
 		m_pBitmap->SetMask(m_pMask);
 		m_bHasMask = true;
@@ -828,7 +828,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 
 	// The first character in the file is useful for telling which format
 	// the file really is.
-	FILE *fp = fopen(strFileName, "rb");
+	FILE *fp = fopen(strFileName.mb_str(), "rb");
 	char first = fgetc(fp);
 	fclose(fp);
 
@@ -837,73 +837,73 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	if (m_pGrid == NULL)
 		m_pGrid = new vtElevationGrid();
 
-	if (!strExt.CmpNoCase("dem"))
+	if (!strExt.CmpNoCase(_T("dem")))
 	{
 		if (first == '*')
-			success = m_pGrid->LoadFromMicroDEM(strFileName, progress_callback);
+			success = m_pGrid->LoadFromMicroDEM(strFileName.mb_str(), progress_callback);
 		else
-			success = m_pGrid->LoadFromDEM(strFileName, progress_callback);
+			success = m_pGrid->LoadFromDEM(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("asc"))
+	else if (!strExt.CmpNoCase(_T("asc")))
 	{
 //		success = m_pGrid->LoadFromASC(strFileName, progress_callback);
 		// vtElevationGrid does have its own ASC reader, but use GDAL instead
-		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
+		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("bil"))
+	else if (!strExt.CmpNoCase(_T("bil")))
 	{
-		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
+		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("mem"))
+	else if (!strExt.CmpNoCase(_T("mem")))
 	{
-		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
+		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("ter"))
+	else if (!strExt.CmpNoCase(_T("ter")))
 	{
-		success = m_pGrid->LoadFromTerragen(strFileName, progress_callback);
+		success = m_pGrid->LoadFromTerragen(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("cdf"))
+	else if (!strExt.CmpNoCase(_T("cdf")))
 	{
-		success = m_pGrid->LoadFromCDF(strFileName, progress_callback);
+		success = m_pGrid->LoadFromCDF(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("hdr"))
+	else if (!strExt.CmpNoCase(_T("hdr")))
 	{
-		success = m_pGrid->LoadFromGTOPO30(strFileName, progress_callback);
+		success = m_pGrid->LoadFromGTOPO30(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("dte") ||
-			!strExt.CmpNoCase("dt0") ||
-			!strExt.CmpNoCase("dt1") ||
-			!strExt.CmpNoCase("dt2"))
+	else if (!strExt.CmpNoCase(_T("dte")) ||
+			!strExt.CmpNoCase(_T("dt0")) ||
+			!strExt.CmpNoCase(_T("dt1")) ||
+			!strExt.CmpNoCase(_T("dt2")))
 	{
-		success = m_pGrid->LoadFromDTED(strFileName, progress_callback);
+		success = m_pGrid->LoadFromDTED(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("pgm"))
+	else if (!strExt.CmpNoCase(_T("pgm")))
 	{
-		success = m_pGrid->LoadFromPGM(strFileName, progress_callback);
+		success = m_pGrid->LoadFromPGM(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("grd"))
+	else if (!strExt.CmpNoCase(_T("grd")))
 	{
 		// might by CDF, might be GRD
 		if (first == 'D')
-			success = m_pGrid->LoadFromGRD(strFileName, progress_callback);
+			success = m_pGrid->LoadFromGRD(strFileName.mb_str(), progress_callback);
 		else
-			success = m_pGrid->LoadFromCDF(strFileName, progress_callback);
+			success = m_pGrid->LoadFromCDF(strFileName.mb_str(), progress_callback);
 		if (!success)
 		{
 			// Might be 'Arc Binary Grid', try GDAL
-			success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
+			success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 		}
 	}
-	else if (!strFileName.Right(8).CmpNoCase("catd.ddf") ||
-			!strExt.Left(3).CmpNoCase("tif") ||
-			!strExt.Left(3).CmpNoCase("png") ||
-			!strExt.CmpNoCase("adf"))
+	else if (!strFileName.Right(8).CmpNoCase(_T("catd.ddf")) ||
+			!strExt.Left(3).CmpNoCase(_T("tif")) ||
+			!strExt.Left(3).CmpNoCase(_T("png")) ||
+			!strExt.CmpNoCase(_T("adf")))
 	{	
-		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
+		success = m_pGrid->LoadWithGDAL(strFileName.mb_str(), progress_callback);
 	}
-	else if (!strExt.CmpNoCase("raw"))
+	else if (!strExt.CmpNoCase(_T("raw")))
 	{
-		RawDlg dlg(NULL, -1, "Raw Elevation File", wxDefaultPosition);
+		RawDlg dlg(NULL, -1, _T("Raw Elevation File"), wxDefaultPosition);
 		dlg.m_bUTM = true;
 		dlg.m_bFloating = false;
 		dlg.m_iBytes = 2;
@@ -914,7 +914,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		dlg.m_bBigEndian = false;
 		if (dlg.ShowModal() == wxID_OK)
 		{
-			success = m_pGrid->LoadFromRAW(strFileName, dlg.m_iWidth,
+			success = m_pGrid->LoadFromRAW(strFileName.mb_str(), dlg.m_iWidth,
 					dlg.m_iHeight, dlg.m_iBytes, dlg.m_fVUnits, dlg.m_bBigEndian,
 					progress_callback);
 		}
@@ -926,7 +926,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	}
 	if (!success)
 	{
-		wxMessageBox("Couldn't import data from that file.");
+		wxMessageBox(_T("Couldn't import data from that file."));
 	}
 
 	return success;
@@ -951,7 +951,7 @@ void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
 		percent = i * 100 / w;
 		if (percent != last)
 		{
-			str.Printf("%d%%", percent);
+			str.Printf(_T("%d%%"), percent);
 			UpdateProgressDialog(percent, str);
 			last = percent;
 		}
@@ -997,10 +997,10 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	{
 		wxString str;
 		if (after < before)
-			str.Printf("Reduced vertices from %d to %d", before, after);
+			str.Printf(_T("Reduced vertices from %d to %d"), before, after);
 		else
-			str.Printf("There are %d vertices, unable to merge any.", before);
-		wxMessageBox(str, "Merge Vertices");
+			str.Printf(_T("There are %d vertices, unable to merge any."), before);
+		wxMessageBox(str, _T("Merge Vertices"));
 	}
 }
 
@@ -1012,27 +1012,27 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 	{
 		int cols, rows;
 		m_pGrid->GetDimensions(cols, rows);
-		str.Printf("Grid size: %d x %d\n", cols, rows);
+		str.Printf(_T("Grid size: %d x %d\n"), cols, rows);
 		strIn += str;
 
-		str.Printf("Floating point: %s\n", m_pGrid->IsFloatMode() ? "Yes" : "No");
+		str.Printf(_T("Floating point: %s\n"), m_pGrid->IsFloatMode() ? "Yes" : "No");
 		strIn += str;
 
 		m_pGrid->ComputeHeightExtents();
 		float fMin, fMax;
 		m_pGrid->GetHeightExtents(fMin, fMax);
-		str.Printf("Minimum elevation: %.2f\n", fMin);
+		str.Printf(_T("Minimum elevation: %.2f\n"), fMin);
 		strIn += str;
-		str.Printf("Maximum elevation: %.2f\n", fMax);
+		str.Printf(_T("Maximum elevation: %.2f\n"), fMax);
 		strIn += str;
 
-		str.Printf("Height scale (meters per vertical unit): %f\n", m_pGrid->GetScale());
+		str.Printf(_T("Height scale (meters per vertical unit): %f\n"), m_pGrid->GetScale());
 		strIn += str;
 
 		const char *dem_name = m_pGrid->GetDEMName();
 		if (*dem_name)
 		{
-			str.Printf("Original DEM name: \"%s\"\n", dem_name);
+			str.Printf(_T("Original DEM name: \"%s\"\n"), dem_name);
 			strIn += str;
 		}
 	}
@@ -1040,7 +1040,7 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 	{
 		int verts = m_pTin->NumVerts();
 		int tris = m_pTin->NumTris();
-		str.Printf("TIN\nVertices: %d\nTriangles: %d\n", verts, tris);
+		str.Printf(_T("TIN\nVertices: %d\nTriangles: %d\n"), verts, tris);
 		strIn += str;
 	}
 }

@@ -24,7 +24,7 @@ bool MyApp::OnInit()
 	g_Log._StartLog("debug.txt");
 	VTLOG("VTBuilder\n");
 
-	MainFrame* frame = new MainFrame((wxFrame *) NULL, "VTBuilder",
+	MainFrame* frame = new MainFrame((wxFrame *) NULL, _T("VTBuilder"),
 							   wxPoint(50, 50), wxSize(700, 500));
 
 	VTLOG(" Setting up the UI.\n");

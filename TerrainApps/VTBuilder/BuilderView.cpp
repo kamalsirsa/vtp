@@ -76,7 +76,7 @@ vtScaledView(parent, id, pos, size, name )
 
 	// Cursors are a little messy, since support is not even across platforms
 #if __WXMSW__
-	m_pCursorPan = new wxCursor("cursors/panhand.cur", wxBITMAP_TYPE_CUR);
+	m_pCursorPan = new wxCursor(_T("cursors/panhand.cur"), wxBITMAP_TYPE_CUR);
 //#elif __WXMOTIF__
 //	m_pCursorPan = new wxCursor("cursors/panhand.xbm", wxBITMAP_TYPE_XBM);
 #else
@@ -368,7 +368,7 @@ void BuilderView::HideWorldMapEdges()
 void myErrorHandler(CPLErr err, int i, const char*str)
 {
 	int foo = err;
-	wxLogDebug(str);
+	VTLOG(str);
 }
 
 void BuilderView::SetWMProj(const vtProjection &proj)
@@ -396,15 +396,15 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	char *str1, *str2;
 	Source.exportToWkt(&str1);
 	((vtProjection &)proj).exportToWkt(&str2);
-	wxLogDebug(str1);
-	wxLogDebug(str2);
+	VTLOG(str1);
+	VTLOG(str2);
 
 	// Check texts in PROJ4
 	char *str3, *str4;
 	Source.exportToProj4(&str3);
-	wxLogDebug(str3);
+	VTLOG(str3);
 	proj.exportToProj4(&str4);
-	wxLogDebug(str4);
+	VTLOG(str4);
 #endif
 
 	CPLPushErrorHandler(myErrorHandler);
@@ -446,7 +446,7 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 	if (!m_bHidden)
 	{
 		VTLOG("Preparing World Map...");
-		wxDialog dialog(this, -1, "Preparing World Map...", wxDefaultPosition,
+		wxDialog dialog(this, -1, _T("Preparing World Map..."), wxDefaultPosition,
 			wxSize(400, 50), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODELESS);
 		dialog.Show(true);
 		HideWorldMapEdges();
@@ -641,8 +641,8 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 		selected = pRL->NumSelected();
 	}
 	wxString msg;
-	msg.Printf("%s %d entit%s, %d total selected", verb, changed,
-		changed == 1 ? "y" : "ies", selected);
+	msg.Printf(_T("%s %d entit%s, %d total selected"), verb, changed,
+		changed == 1 ? _T("y") : _T("ies"), selected);
 	GetMainFrame()->SetStatusText(msg);
 	GetMainFrame()->OnSelectionChanged();
 	Refresh(false);
@@ -1127,15 +1127,15 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 		wxRect screen_bound = WorldToWindow(world_bound);
 		IncreaseRect(screen_bound, BOUNDADJUST);
 		Refresh(TRUE, &screen_bound);
-		wxString str = wxString::Format("Selected 1 %s (%d total)",
-				m_ui.mode == LB_Node ? "Node" : "Road",
+		wxString str = wxString::Format(_T("Selected 1 %s (%d total)"),
+				m_ui.mode == LB_Node ? _T("Node") : _T("Road"),
 				m_ui.mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
 		GetMainFrame()->SetStatusText(str);
 	}
 	else
 	{
 		DeselectAll();
-		GetMainFrame()->SetStatusText("Deselected all");
+		GetMainFrame()->SetStatusText(_T("Deselected all"));
 	}
 }
 

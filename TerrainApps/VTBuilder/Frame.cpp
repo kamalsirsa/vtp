@@ -125,7 +125,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 void MainFrame::CreateView()
 {
 	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
-			wxPoint(0, 0), wxSize(200, 400), "MainView" );
+			wxPoint(0, 0), wxSize(200, 400), _T("MainView") );
 }
 
 void MainFrame::SetupUI()
@@ -196,12 +196,12 @@ void MainFrame::SetupUI()
 	}
 	if (warn)
 	{
-		wxMessageBox("Unable to locate the necessary files for full coordinate\n"
-			" system support.  Check that the environment variables GEOTIFF_CSV\n"
-			" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n"
-			" data files.  If you don't need full support for coordinate systems\n"
-			" including converting between different projections, you can ignore\n"
-			" this warning.", "VTBuilder Warning");
+		wxMessageBox(_T("Unable to locate the necessary files for full coordinate\n")
+			_T(" system support.  Check that the environment variables GEOTIFF_CSV\n")
+			_T(" and PROJ_LIB are set and contain correct paths to the GDAL and PROJ.4\n")
+			_T(" data files.  If you don't need full support for coordinate systems\n")
+			_T(" including converting between different projections, you can ignore\n")
+			_T(" this warning."), _T("VTBuilder Warning"));
 	}
 
 	vtProjection proj;
@@ -209,7 +209,7 @@ void MainFrame::SetupUI()
 	SetProjection(proj);
 	RefreshStatusBar();
 
-	SetStatusText("Ready");
+	SetStatusText(_T("Ready"));
 }
 
 MainFrame::~MainFrame()
@@ -235,10 +235,10 @@ void MainFrame::OnClose(wxCloseEvent &event)
 	if (num > 0)
 	{
 		wxString str;
-		str.Printf("There %s %d layer%s modified but unsaved.\n"
-				"Are you sure you want to exit?", num == 1 ? "is" : "are", num,
+		str.Printf(_T("There %s %d layer%s modified but unsaved.\n")
+				_T("Are you sure you want to exit?"), num == 1 ? _T("is") : _T("are"), num,
 			num == 1 ? "" : "s");
-		if (wxMessageBox(str, "Warning", wxYES_NO) == wxNO)
+		if (wxMessageBox(str, _T("Warning"), wxYES_NO) == wxNO)
 		{
 			event.Veto();
 			return;
@@ -378,53 +378,53 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	bool bFirst = (m_Layers.GetSize() == 0);
 
 	vtLayer *pLayer = NULL;
-	if (ext.CmpNoCase("rmf") == 0)
+	if (ext.CmpNoCase(_T("rmf")) == 0)
 	{
 		vtRoadLayer *pRL = new vtRoadLayer();
 		if (pRL->Load(fname))
 			pLayer = pRL;
 	}
-	if (ext.CmpNoCase("bt") == 0 || ext.CmpNoCase("tin") == 0)
+	if (ext.CmpNoCase(_T("bt")) == 0 || ext.CmpNoCase("tin") == 0)
 	{
 		vtElevLayer *pEL = new vtElevLayer();
 		if (pEL->Load(fname))
 			pLayer = pEL;
 	}
 #if SUPPORT_TRANSIT
-	if (ext.CmpNoCase("xml") == 0)
+	if (ext.CmpNoCase(_T("xml")) == 0)
 	{
 		vtTransitLayer *pTL = new vtTransitLayer();
 		if (pTL->Load(fname))
 			pLayer = pTL;
 	}
 #endif
-	if (ext.CmpNoCase("vtst") == 0)
+	if (ext.CmpNoCase(_T("vtst")) == 0)
 	{
 		vtStructureLayer *pSL = new vtStructureLayer();
 		if (pSL->Load(fname))
 			pLayer = pSL;
 	}
-	if (ext.CmpNoCase("vf") == 0)
+	if (ext.CmpNoCase(_T("vf")) == 0)
 	{
 		vtVegLayer *pVL = new vtVegLayer();
 		if (pVL->Load(fname))
 			pLayer = pVL;
 	}
-	if (ext.CmpNoCase("utl") == 0)
+	if (ext.CmpNoCase(_T("utl")) == 0)
 	{
 		vtUtilityLayer *pTR = new vtUtilityLayer();
 		if(pTR->Load(fname))
 			pLayer = pTR;
 	}
-	if (ext.CmpNoCase("shp") == 0 ||
-			ext.CmpNoCase("gml") == 0 ||
-			ext.CmpNoCase("xml") == 0)
+	if (ext.CmpNoCase(_T("shp")) == 0 ||
+			ext.CmpNoCase(_T("gml")) == 0 ||
+			ext.CmpNoCase(_T("xml")) == 0)
 	{
 		vtRawLayer *pRL = new vtRawLayer();
 		if (pRL->Load(fname))
 			pLayer = pRL;
  	}
-	if (ext.CmpNoCase("tif") == 0)
+	if (ext.CmpNoCase(_T("tif")) == 0)
 	{
 		vtImageLayer *pIL = new vtImageLayer();
 		if (pIL->Load(fname))

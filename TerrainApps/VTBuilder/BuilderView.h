@@ -93,7 +93,7 @@ class BuilderView : public vtScaledView
 
 public:
 	BuilderView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, const wxString& name = "");
+		const wxSize& size = wxDefaultSize, const wxString& name = _T(""));
 	virtual ~BuilderView();
 
 	virtual void OnDraw(wxDC& dc); // overridden to draw this view

@@ -14,7 +14,7 @@ class vtScaledView : public wxScrolledWindow
 {
 public:
 	vtScaledView(wxWindow* parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize, const wxString& name = "");
+		const wxSize& size = wxDefaultSize, const wxString& name = _T(""));
 
 	void SetScale(double scale);
 	double GetScale();
