@@ -46,8 +46,8 @@ public:
 	int Fill(CDib *bm, int x, int y, byte ov, byte nv, int w, int h, int diag, int count = 0);
 
 	// transform image space -> UTM space
-	float i_UTMx(int ix);
-	float i_UTMy(int iy);
+	double i_UTMx(int ix);
+	double i_UTMy(int iy);
 
 // Overrides
 	// ClassWizard generated virtual function overrides

@@ -1317,15 +1317,15 @@ bool BExtractorView::SelectionOnPicture(DPoint2 point)
 	if (GetDocument()->m_picLoaded)
 	{
 		CBImage* pImage = GetDocument()->m_pImage;
-		float width = pImage->m_fImageWidth;
-		float height = pImage->m_fImageHeight;
-		float x_base = pImage->m_xUTMoffset;
-		float y_base = pImage->m_yUTMoffset;
+		double width = pImage->m_fImageWidth;
+		double height = pImage->m_fImageHeight;
+		double x_base = pImage->m_xUTMoffset;
+		double y_base = pImage->m_yUTMoffset;
 
-		float x_min = x_base;
-		float x_max = x_base + width;
-		float y_min = y_base - height;
-		float y_max = y_base;
+		double x_min = x_base;
+		double x_max = x_base + width;
+		double y_min = y_base - height;
+		double y_max = y_base;
 
 		if ( (point.x >= x_min) && (point.x <= x_max) &&
 			 (point.y >= y_min) && (point.y <= y_max) )

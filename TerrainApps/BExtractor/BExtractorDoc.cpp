@@ -247,12 +247,12 @@ int BExtractorDoc::Fill(CDib *bm, int x, int y, byte old_v, byte new_v,
 	return size;
 }
 
-float BExtractorDoc::i_UTMx(int ix)
+double BExtractorDoc::i_UTMx(int ix)
 {
 	return (ix * m_pImage->m_xMetersPerPixel + m_pImage->m_xUTMoffset);
 }
 
-float BExtractorDoc::i_UTMy(int iy)
+double BExtractorDoc::i_UTMy(int iy)
 {
 	return ((m_pImage->m_PixelSize.y - 1 - iy) * m_pImage->m_yMetersPerPixel
 		+ m_pImage->m_yUTMoffset);

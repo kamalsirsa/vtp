@@ -146,15 +146,15 @@ protected:
 	}
 
 	// transform UTM space -> screen space
-	int UTM_sdx(float utm_x) { return (int)(utm_x / m_fScale); }
-	int UTM_sdy(float utm_y) { return (int)(-utm_y / m_fScale); }
+	int UTM_sdx(double utm_x) { return (int)(utm_x / m_fScale); }
+	int UTM_sdy(double utm_y) { return (int)(-utm_y / m_fScale); }
 	CPoint UTM_sd(DPoint2 &utm)
 	{
 		return CPoint((int)(utm.x / m_fScale),
 					  (int)(-utm.y / m_fScale));
 	}
-	double s_UTMdx(float sx) { return (sx * m_fScale); }
-	double s_UTMdy(float sy) { return (-sy * m_fScale); }
+	double s_UTMdx(double sx) { return (sx * m_fScale); }
+	double s_UTMdy(double sy) { return (-sy * m_fScale); }
 	CRect screen(DRECT &r)
 	{
 		CRect r2;
