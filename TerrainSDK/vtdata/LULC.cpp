@@ -433,11 +433,13 @@ void vtLULCFile::ProcessLULCPolys()
 
 int most_count = 0;
 int most_islands = 0;
-#define MAX_ISLANDS		100
+#define MAX_ISLANDS		300
 
 void vtLULCFile::ProcessLULCPoly(LULCSection *pSection, LULCPoly *pPoly)
 {
-	DPoint2 coord[10000];
+	assert(pPoly->NumIslands < MAX_ISLANDS);
+
+	DPoint2 coord[20000];
 	int count = 0;
 	DPoint2 island_stack[MAX_ISLANDS];
 	int island_count = 0;
@@ -474,7 +476,8 @@ void vtLULCFile::ProcessLULCPoly(LULCSection *pSection, LULCPoly *pPoly)
 				LocalToLatlon(pSection->m_pCoord[c], coord[count++]);
 		}
 	}
-	if (count > most_count) most_count = count;
+	if (count > most_count)
+		most_count = count;
 
 	// pop the island stack, retracing our route back to the polygon origin
 	if (island_count > most_islands) most_islands = island_count;
