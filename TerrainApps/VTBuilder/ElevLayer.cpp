@@ -7,6 +7,10 @@
 
 #include "wx/wxprec.h"
 
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
 #include "ElevLayer.h"
 #include "ScaledView.h"
 #include "Helper.h"
@@ -107,6 +111,9 @@ void vtElevLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
 {
+	if (!m_pGrid)
+		return;
+
 	int iColumns, iRows;
 	m_pGrid->GetDimensions(iColumns, iRows);
 
@@ -235,6 +242,8 @@ void vtElevLayer::DrawLayerOutline(wxDC* pDC, vtScaledView *pView)
 
 bool vtElevLayer::GetExtent(DRECT &rect)
 {
+	if (!m_pGrid)
+		return false;
 	rect = m_pGrid->GetGridExtents();
 	return true;
 }
@@ -246,7 +255,10 @@ void vtElevLayer::AppendDataFrom(vtLayer *pL)
 
 DRECT vtElevLayer::GetExtents()
 {
-	return m_pGrid->GetGridExtents();
+	if (m_pGrid)
+		return m_pGrid->GetGridExtents();
+	else
+		return DRECT(0,0,0,0);
 }
 
 
@@ -618,7 +630,7 @@ void vtElevLayer::DetermineMeterSpacing()
 	}
 }
 
-void vtElevLayer::Offset(DPoint2 p)
+void vtElevLayer::Offset(const DPoint2 &p)
 {
 	DRECT area = m_pGrid->GetGridExtents();
 	area.left += p.x;
@@ -769,6 +781,11 @@ void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
 
 void vtElevLayer::GetPropertyText(wxString &strIn)
 {
+	if (!m_pGrid)
+	{
+		strIn = "No grid.";
+		return;
+	}
 	int cols, rows;
 	m_pGrid->GetDimensions(cols, rows);
 	wxString str;
