@@ -248,10 +248,6 @@ StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void StartupDlg::EditParameters(const char *filename) 
 {
-#if 0
-	TParamsTabDlg dlg(this, -1, "Terrain Creation Parameters", wxDefaultPosition);
-	int result = dlg.ShowModal();
-#else
 	TParamsDlg dlg(this, -1, "Terrain Creation Parameters", wxDefaultPosition);
 
 	TParams Params;
@@ -271,7 +267,6 @@ void StartupDlg::EditParameters(const char *filename)
 			wxMessageBox(str);
 		}
 	}
-#endif
 }
 
 // WDR: handler implementations for StartupDlg
