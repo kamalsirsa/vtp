@@ -1494,9 +1494,10 @@ void vtTerrain::CreateStyledFeatures(const vtFeatureSet &feat, const vtTagArray 
 
 void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray &style)
 {
-	// We support geometry for 3D polylines
+	// We support geometry for 2D and 3D polylines
+	const vtFeatureSetLineString   *pSetLS2 = dynamic_cast<const vtFeatureSetLineString*>(&feat);
 	const vtFeatureSetLineString3D *pSetLS3 = dynamic_cast<const vtFeatureSetLineString3D*>(&feat);
-	if (!pSetLS3)
+	if (!pSetLS2 && !pSetLS3)
 		return;
 
 	// create container group
@@ -1515,21 +1516,33 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 	geom->SetMaterials(pMats);
 	pMats->Release();
 
-	int total = pSetLS3->NumPointsTotal();
+	int total = feat.NumTotalVertices();
 	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, total);
 
-	DPoint3 d3;
 	FPoint3 f3;
-	for (unsigned int i = 0; i < pSetLS3->GetNumEntities(); i++)
+	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
 	{
-		const DLine3 &dline = pSetLS3->GetPolyLine(i);
 		int start = mesh->GetNumVertices();
-		unsigned int size = dline.GetSize();
-		for (unsigned int j = 0; j < size; j++)
+		unsigned int size;
+		if (pSetLS2)
 		{
-			d3 = dline[j];
-			m_pHeightField->m_Conversion.ConvertFromEarth(d3, f3);
-			mesh->AddVertex(f3);
+			const DLine2 &dline = pSetLS2->GetPolyLine(i);
+			size = dline.GetSize();
+			for (unsigned int j = 0; j < size; j++)
+			{
+				m_pHeightField->ConvertEarthToSurfacePoint(dline[j], f3);
+				mesh->AddVertex(f3);
+			}
+		}
+		else if (pSetLS3)
+		{
+			const DLine3 &dline = pSetLS3->GetPolyLine(i);
+			size = dline.GetSize();
+			for (unsigned int j = 0; j < size; j++)
+			{
+				m_pHeightField->m_Conversion.ConvertFromEarth(dline[j], f3);
+				mesh->AddVertex(f3);
+			}
 		}
 		mesh->AddStrip2(size, start);
 	}
