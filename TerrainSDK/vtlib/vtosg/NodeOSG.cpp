@@ -544,7 +544,8 @@ vtGeom::~vtGeom()
 
 void vtGeom::Release()
 {
-	// try to destroy meshes?
+	// Release the meshes we contain, which will delete them if there are no
+	//  other references to them.
 	int i, num = m_pGeode->getNumDrawables();
 	for (i = 0; i < num; i++)
 	{
@@ -570,6 +571,9 @@ void vtGeom::Release()
 void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 {
 	m_pGeode->addDrawable(pMesh->m_pGeometry.get());
+
+	// The vtGeom owns/references the meshes it contains
+	pMesh->ref();
 
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
