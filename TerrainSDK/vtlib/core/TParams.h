@@ -68,6 +68,7 @@ public:
 	int			m_iNavStyle;
 	float		m_fNavSpeed;
 	vtString	m_strLocFile;
+	float		m_fHither;
 
 	// LOD
 	LodMethodEnum m_eLodMethod;

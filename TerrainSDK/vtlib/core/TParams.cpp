@@ -25,6 +25,7 @@ TParams::TParams()
 	m_iMinHeight = 20;
 	m_iNavStyle = 0;
 	m_fNavSpeed = 100;
+	m_fHither = 5;
 
 	m_eLodMethod = LM_ROETTGER;
 	m_fPixelError = 2.0f;
@@ -113,6 +114,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_iNavStyle = rhs.m_iNavStyle;
 	m_fNavSpeed = rhs.m_fNavSpeed;
 	m_strLocFile = rhs.m_strLocFile;
+	m_fHither = rhs.m_fHither;
 
 	m_eLodMethod = rhs.m_eLodMethod;
 	m_fPixelError = rhs.m_fPixelError;
@@ -196,6 +198,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 #define STR_NAVSTYLE "Nav_Style"
 #define STR_NAVSPEED "Nav_Speed"
 #define STR_LOCFILE "Locations_File"
+#define STR_HITHER "Hither_Distance"
 
 #define STR_LODMETHOD "LOD_Method"
 #define STR_PIXELERROR "Pixel_Error"
@@ -317,6 +320,8 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_fNavSpeed;
 		else if (strcmp(buf, STR_LOCFILENAME) == 0)
 			m_strLocFile = get_line_from_stream(input);
+		else if (strcmp(buf, STR_HITHER) == 0)
+			input >> m_fHither;
 
 		// LOD
 		else if (strcmp(buf, STR_LODMETHOD) == 0)
@@ -517,6 +522,8 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_iNavStyle << endl;
 	output << STR_LOCFILENAME << "\t";
 	output << (const char *) m_strLocFile << endl;
+	output << STR_HITHER << "\t\t";
+	output << m_fHither << endl;
 
 	output << "\n; LOD\n";
 	output << STR_LODMETHOD << "\t\t";
