@@ -167,7 +167,8 @@ void OutputSOG::WriteGeometry(FILE *fp, vtGeom *pGeom, short id)
 	for (i = 0; i < num_mesh; i++)
 	{
 		vtMesh *pMesh = pGeom->GetMesh(i);
-		WriteMesh(fp, pMesh);
+		if (pMesh)
+			WriteMesh(fp, pMesh);
 	}
 }
 
