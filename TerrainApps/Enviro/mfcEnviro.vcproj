@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="mfcEnviro"
+	ProjectGUID="{85B7F371-B172-4F4A-8EAD-202BC2DAD041}"
 	SccProjectName=""
 	SccLocalPath=""
 	Keyword="MFCProj">
@@ -151,10 +152,10 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="res\Enviro.ico">
+				RelativePath="mfc\res\Enviro.ico">
 			</File>
 			<File
-				RelativePath="mfc\res\Enviro.ico">
+				RelativePath="res\Enviro.ico">
 			</File>
 			<File
 				RelativePath="mfc\Enviro.rc">
@@ -183,10 +184,10 @@
 				RelativePath="res\EnviroDoc.ico">
 			</File>
 			<File
-				RelativePath="res\Toolbar.bmp">
+				RelativePath="mfc\res\Toolbar.bmp">
 			</File>
 			<File
-				RelativePath="mfc\res\Toolbar.bmp">
+				RelativePath="res\Toolbar.bmp">
 			</File>
 			<File
 				RelativePath="res\treeimag.bmp">

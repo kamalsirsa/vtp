@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="wxEnviro"
+	ProjectGUID="{EB511FDC-A380-4724-9A95-7FEAC5561FEA}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

@@ -2,7 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="VTBuilder">
+	Name="VTBuilder"
+	ProjectGUID="{DB63CBC9-7AD6-44B4-9E53-2C0669DD2A22}">
 	<Platforms>
 		<Platform
 			Name="Win32"/>
