@@ -126,6 +126,9 @@ if (pwdemo){
 
 		// Layer view needs to update
 		RefreshLayerView();
+
+		// Let the GUI know
+		SetTimeEngineToGUI(m_pGlobeTime);
 	}
 }
 
