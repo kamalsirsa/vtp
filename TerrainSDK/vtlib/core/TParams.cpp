@@ -423,7 +423,11 @@ bool TParams::LoadFromFile(const char *filename)
 		else if (strcmp(buf, STR_TREEFILE) == 0)
 			m_strVegFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_VEGDISTANCE) == 0)
+		{
 			input >> m_iVegDistance;
+			if (m_iVegDistance < 20)	// surely an old km value
+				m_iVegDistance *= 1000;
+		}
 		else if (strcmp(buf, STR_AGRICULTURE) == 0)
 			input >> m_bAgriculture;
 		else if (strcmp(buf, STR_WILDVEG) == 0)
