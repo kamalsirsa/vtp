@@ -19,6 +19,7 @@
 #include "vtdata/GEOnet.h"
 #include "vtdata/vtDIB.h"
 #include "vtdata/vtLog.h"
+#include "vtdata/TripDub.h"
 #include "vtdata/WFSClient.h"
 
 #include "Frame.h"
@@ -783,6 +784,106 @@ void MainFrame::OnProcessBillboard(wxCommandEvent &event)
 	CloseProgressDialog();
 }
 
+bool FindGeoPointInBuffer(const char *buffer, DPoint2 &p)
+{
+	char *lon = strstr(buffer, "<geo:long>");
+	char *lat = strstr(buffer, "<geo:lat>");
+	if (lon && lat)
+	{
+		sscanf(lon+10, "%lf", &p.x);
+		sscanf(lat+9, "%lf", &p.y);
+		return true;
+	}
+	return false;
+}
+
+bool FindWithGeocoderUS(ReqContext &webcontext,
+		const vtString &strStreet, const vtString &strCity,
+		const vtString &strState, DPoint2 &p)
+{
+	bool bFound = false;
+
+	// Must have street address; a city or zipcode won't suffice.
+	if (strStreet == "")
+		return false;
+
+	if (!strStreet.Left(6).CompareNoCase("po box") ||
+		!strStreet.Left(8).CompareNoCase("p.o. box"))
+	{
+		// forget it, geocoder.us doesn't do PO boxes
+		return false;
+	}
+	vtString url;
+	vtString result;
+	int offset, chop;
+
+	// Clean up the street address for geocoder.us
+	vtString street = strStreet;
+
+	// First, is this a multi-line street address?  If so, it's likely that only
+	//  one of the lines is the proper street that TIGER knows.
+	offset = street.Find('\n');
+	if (offset != -1)
+	{
+		// chop it and examine each part
+		vtString part1 = street.Left(offset);
+		vtString part2 = street.Mid(offset+1);
+		if (isdigit(part1[0]))
+			street = part1;
+		else if (isdigit(part2[0]))
+			street = part2;
+		else
+		{
+			int foo = 1;
+		}
+	}
+
+	static const char *snames[18] = {
+		"street ", "st. ", "avenue ", "ave. ",
+		"drive ", "dr. ", " dr ", "boulevard ", "blvd. ", "bl "
+		"blvd, ","place ", "pl. ",
+		"road ", "rd. ", "road, ", "rd., ",
+		"way ", "lane "};
+
+	// Look for apartment numbers, suite etc. (they usually follow
+	//  the "St." designation) and get rid of them.
+	vtString lower = street;
+	lower.MakeLower();
+	int n;
+	for (n = 0; n < (sizeof(snames)/sizeof(char*)); n++)
+	{
+		offset = lower.Find(snames[n]);
+		if (offset != -1)
+			break;
+	}
+	if (offset != -1)
+	{
+		chop = offset + strlen(snames[n]) - 1;
+		street = street.Left(chop);
+	}
+
+	url = "http://rpc.geocoder.us/service/rest?address=";
+	if (street != "")
+	{
+		url += street.FormatForURL();
+		url += "+";
+	}
+	if (strCity != "")
+	{
+		url += strCity.FormatForURL();
+		url += "+";
+	}
+	if (strState != "")
+	{
+		url += strState.FormatForURL();
+	}
+	if (webcontext.GetURL(url, result))
+	{
+		bFound = FindGeoPointInBuffer(result, p);
+	}
+	return bFound;
+}
+
 void MainFrame::OnGeocode(wxCommandEvent &event)
 {
 	GeocodeDlg dlg(this, -1, _("Geocode"));
@@ -801,7 +902,9 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	if (fname.Right(3) == _T("shp"))
 	{
 		shpname = fname;
-		success = feat.LoadFromSHP(shpname.mb_str());
+		OpenProgressDialog(_T("Reading"), false);
+		success = feat.LoadFromSHP(shpname.mb_str(), progress_callback);
+		CloseProgressDialog();
 	}
 	else
 	{
@@ -836,18 +939,40 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 	int rec, iKnown = 0, iFound = 0; // How many are already known
 	DPoint2 p;
 
-	Gazetteer gaz;
-	bool m_bHaveGaz = false;
-	bool m_bHaveZip = false;
-	if (dlg.m_bGazetteer)
+	if (dlg.m_bGeocodeUS)
 	{
-		m_bHaveGaz = gaz.ReadPlaces(dlg.m_strGaz.mb_str());
-		m_bHaveZip = gaz.ReadZips(dlg.m_strZip.mb_str());
 	}
 
+	// Used for geocode.us requests (when available)
+	ReqContext webcontext;
+
+	// Used by the Census Bureau Gazetteer
+	Gazetteer gaz;
+	bool bHaveGaz = false;
+	bool bHaveZip = false;
+	if (dlg.m_bGazetteer)
+	{
+		bHaveGaz = gaz.ReadPlaces(dlg.m_strGaz.mb_str());
+		bHaveZip = gaz.ReadZips(dlg.m_strZip.mb_str());
+	}
+
+	// Use by the GEOnet Name Server (GNS) data files
+	Countries countries;
+	bool bHaveGNS = false;
+	if (dlg.m_bGNS)
+	{
+		OpenProgressDialog(_T("Reading GNS file..."), false);
+		bHaveGNS = countries.ReadGCF(dlg.m_strGNS.mb_str(), progress_callback);
+		CloseProgressDialog();
+	}
+
+	OpenProgressDialog(_T("Geocoding"), true);
 	bool bFound;
 	for (rec = 0; rec < iRecords; rec++)
 	{
+		if (progress_callback(rec*100/iRecords))
+			break;
+
 		feat.GetPoint(rec, p);
 		if (p != zero)
 		{
@@ -864,22 +989,27 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 		feat.GetValueAsString(rec, 11, strCountry);
 
 		// Try geocode.us first; it has the most detail
-		if (dlg.m_bGeocodeUS)
+		if (!bFound && dlg.m_bGeocodeUS &&
+			!strCountry.CompareNoCase("United States of America"))
 		{
+			bFound = FindWithGeocoderUS(webcontext, strStreet, strCity,
+				strState, p);
 		}
 
-		// Then (for US addresses) the gazetteer can look up a point for a zip code or city
-		if (!bFound && dlg.m_bGazetteer && !strCountry.CompareNoCase("United States of America"))
+		// Then (for US addresses) the gazetteer can look up a point for a
+		//  zip code or city.
+		if (!bFound && dlg.m_bGazetteer &&
+			!strCountry.CompareNoCase("United States of America"))
 		{
 			// USA: Use zip code, if we have it
-			if (m_bHaveZip && strCode != "")
+			if (bHaveZip && strCode != "")
 			{
 				// We only use the 5-digit code
 				vtString five = strCode.Left(5);
 				int zip = atoi(five);
 				bFound = gaz.FindZip(zip, p);
 			}
-			else if (m_bHaveGaz)
+			if (!bFound && bHaveGaz)
 			{
 				// Use city/place name
 				bFound = gaz.FindPlace(strState, strCity, p);
@@ -887,8 +1017,10 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 		}
 
 		// Then (for International addresses) GNS can get a point for a city
-		if (!bFound && dlg.m_bGNS)
+		if (!bFound && bHaveGNS &&
+			strCountry.CompareNoCase("United States of America") != 0)
 		{
+			bFound = countries.FindPlaceWithGuess(strCountry, strCity, p);
 		}
 
 		if (bFound)
@@ -897,13 +1029,32 @@ void MainFrame::OnGeocode(wxCommandEvent &event)
 			iFound++;
 		}
 	}
+	CloseProgressDialog();
+
 	wxString str;
-	str.Printf(_T("Result: %d records, %d already known\n  %d/%d resolved, %d remain unknown"),
+	str.Printf(_T("%d records, %d already known\n%d/%d resolved, %d remain unknown"),
 		iRecords, iKnown, iFound, iRecords-iKnown, iRecords-iKnown-iFound);
-	wxMessageBox(str, _T("Info"));
+	wxMessageBox(str, _T("Results"));
+
 	if (iFound != 0)
 	{
-		feat.SaveToSHP(shpname.mb_str());
+		// Save to SHP
+		wxFileDialog saveFile(NULL, _T("Save to SHP"), _T(""), _T(""),
+			_T("SHP Files (*.shp)|*.shp"), wxSAVE);
+		if (saveFile.ShowModal() == wxID_OK)
+		{
+			shpname = saveFile.GetPath();
+			OpenProgressDialog(_T("Saving"), false);
+			feat.SaveToSHP(shpname.mb_str(), progress_callback);
+			CloseProgressDialog();
+		}
+	}
+
+	if (bHaveGNS)
+	{
+		OpenProgressDialog(_T("Freeing GNS data..."), false);
+		countries.Free(progress_callback);
+		CloseProgressDialog();
 	}
 }
 
