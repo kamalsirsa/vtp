@@ -98,26 +98,49 @@ void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 	BoundingSphere bs = m_pNode->getBound();
 	s2v(bs, sphere);
 
+	// Note that this isn't 100% complete; we should be
+	//  transforming the radius as well, with scale.
 	if (bGlobal)
+		LocalToWorld(sphere.center);
+}
+
+void vtNode::LocalToWorld(FPoint3 &point)
+{
+#if 0
+	// Work our way up the tree to the root, accumulating the transforms,
+	//  to get the point in the world reference frame.
+	// This code uses VTLIB calls and works find on a purely VTLIB graph.
+	vtNode *node = this;
+	while (node = node->GetParent(0))
 	{
-		// We must work our way up the tree to the root, accumulating
-		//  the transforms, to get the sphere in the global reference frame.
-		vtNode *node = this;
-		while (node = node->GetParent(0))
+		vtTransform *trans = dynamic_cast<vtTransform *>(node);
+		if (trans)
 		{
-			vtTransform *trans = dynamic_cast<vtTransform *>(node);
-			if (trans)
-			{
-				// Note that this isn't 100% complete; we should be
-				//  transforming the radius as well, with scale.
-				FMatrix4 mat;
-				trans->GetTransform1(mat);
-				FPoint3 result;
-				mat.Transform(sphere.center, result);
-				sphere.center = result;
-			}
+			FMatrix4 mat;
+			trans->GetTransform1(mat);
+			FPoint3 result;
+			mat.Transform(point, result);
+			point = result;
 		}
 	}
+#else
+	// We must use OSG native calls instead if we want to support raw OSG
+	//  nodes which might be returned from collision detection
+	osg::Vec3 pos = v2s(point);
+	osg::Node *node = GetOsgNode();
+	while (node = node->getParent(0))
+	{
+		osg::MatrixTransform *mt = dynamic_cast<osg::MatrixTransform *>(node);
+		if (mt != NULL)
+		{
+			const osg::Matrix &mat = mt->getMatrix();
+			pos = mat.preMult(pos);
+		}
+		if (node->getNumParents() == 0)
+			break;
+	}
+	s2v(pos, point);
+#endif
 }
 
 vtGroup *vtNode::GetParent(int iParent)
@@ -1410,5 +1433,79 @@ void vtImageSprite::SetPosition(float l, float t, float r, float b)
 	m_pMesh->SetVtxPos(2, FPoint3(r, t, 0));
 	m_pMesh->SetVtxPos(3, FPoint3(l, t, 0));
 	m_pMesh->ReOptimize();
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Intersection methods
+
+#include <osgUtil/IntersectVisitor>
+
+int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end, vtHitList &hitlist)
+{
+	// set up intersect visitor and create the line segment
+	osgUtil::IntersectVisitor visitor;
+	osgUtil::IntersectVisitor::HitList hlist;
+
+	osg::ref_ptr<osg::LineSegment> segment = new osg::LineSegment;
+	segment->set(v2s(start), v2s(end));
+	visitor.addLineSegment(segment.get());
+
+	// the accept() method does the intersection testing work
+	osg::Node *osgnode = pTop->GetOsgNode();
+	osgnode->accept(visitor);
+
+	hlist = visitor.getHitList(segment.get());
+
+#if 0	// Diagnostic code
+	for(osgUtil::IntersectVisitor::HitList::iterator hitr=hlist.begin();
+		hitr!=hlist.end(); ++hitr)
+	{
+		if (hitr->_geode.valid())
+		{
+			if (hitr->_geode->getName().empty())
+				VTLOG("Geode %lx\n", hitr->_geode.get());
+			else
+				// the geodes are identified by name.
+				VTLOG("Geode '%s'\n", hitr->_geode->getName().c_str());
+		}
+		else if (hitr->_drawable.valid())
+		{
+			VTLOG("Drawable class '%s'\n", hitr->_drawable->className());
+		}
+		else
+		{
+			osg::Vec3 point = hitr->getLocalIntersectPoint();
+			VTLOG("Hitpoint %.1f %.1f %.1f\n", point.x(), point.y(), point.z());
+		}
+	}
+	if (hlist.size() > 0)
+		VTLOG("\n");
+#endif
+
+	// look through the node hits that OSG returned
+	for(osgUtil::IntersectVisitor::HitList::iterator hitr=hlist.begin();
+		hitr!=hlist.end(); ++hitr)
+	{
+		if (!hitr->_geode.valid())
+			continue;
+
+		osg::Node *onode = hitr->_geode.get();
+		vtNode *vnode = (vtNode *) (hitr->_geode->getUserData());
+
+		if (vnode == NULL)
+		{
+			// a bit radical here - wrap the OSG node in a VTLIB wrapper
+			//  on the fly.  hope it doesn't get confused with refcounts.
+			vtNativeNode *native = new vtNativeNode(onode);
+			vnode = native;
+		}
+		// put it on the list of hit results
+		vtHit hit;
+		hit.node = vnode;
+		hit.point = s2v(hitr->getLocalIntersectPoint());
+		hitlist.push_back(hit);
+	}
+	return hitlist.size();
 }
 

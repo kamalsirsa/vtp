@@ -42,6 +42,9 @@ public:
 	/** Get the Bounding Sphere of the node, in world coordinates */
 	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
 
+	/** Transform a point from a node's local coordinates to world coordinates */
+	void vtNode::LocalToWorld(FPoint3 &point);
+
 	vtGroup *GetParent(int iParent = 0);
 
 	int GetTriCount() { return 0; }
@@ -51,6 +54,7 @@ public:
 	// OSG access
 	void SetOsgNode(osg::Node *n);
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
+	const osg::Node *GetOsgNode() const { return m_pNode.get(); }
 
 	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
 	static void ClearOsgModelCache();
@@ -68,6 +72,17 @@ protected:
 	// Destructor is protected so that people will use Release() instead,
 	//  to ensure that reference counting is respected.
 	virtual ~vtNode() {}
+};
+
+class vtNativeNode : public vtNode
+{
+public:
+	vtNativeNode(osg::Node *node) { SetOsgNode(node); }
+
+protected:
+	// Destructor is protected so that people will use Release() instead,
+	//  to ensure that reference counting is respected.
+	virtual ~vtNativeNode() {}
 };
 
 /**
@@ -485,14 +500,10 @@ protected:
 	IPoint2 m_Size;
 };
 
-/**
- * Not yet implemented: a convenience class for adding text to a HUD.
- */
-class vtTextSprite
-{
-public:
-	void SetText(const char *dummy) {}	// TODO
-};
+/* Intersection method */
+struct vtHit { vtNode *node; /*const char *name;*/ FPoint3 point; };
+typedef std::vector<vtHit> vtHitList;
+int vtIntersect(vtNode *pTop, const FPoint3 &start, const FPoint3 &end, vtHitList &hitlist);
 
 /*@}*/	// Group sg
 
