@@ -13,19 +13,19 @@
 //
 // Construct / Destruct
 //
-vtFeatures::vtFeatures()
+vtFeatureSet::vtFeatureSet()
 {
 	m_iSHPElems = 0;
 	m_iSHPFields = 0;
 	m_eGeomType = wkbNone;
 }
 
-vtFeatures::~vtFeatures()
+vtFeatureSet::~vtFeatureSet()
 {
-	Empty();
+	DeleteFields();
 }
 
-void vtFeatures::Empty()
+void vtFeatureSet::DeleteFields()
 {
 	int count = m_fields.GetSize();
 	for (int i = 0; i < count; i++)
@@ -39,78 +39,16 @@ void vtFeatures::Empty()
 //
 // File IO
 //
-bool vtFeatures::LoadFrom(const char *filename)
-{
-	vtString fname = filename;
-	vtString ext = fname.Right(3);
-	if (!ext.CompareNoCase("shp"))
-		return LoadFromSHP(filename);
-	else
-		return LoadWithOGR(filename);
-}
-
-bool vtFeatures::SaveToSHP(const char *filename) const
+bool vtFeatureSet::SaveToSHP(const char *filename) const
 {
 	int nSHPType = OGRToShapelib(m_eGeomType);
 	SHPHandle hSHP = SHPCreate(filename, nSHPType);
 	if (!hSHP)
 		return false;
 
-	unsigned int i, j, size;
-	SHPObject *obj;
-	DPoint2 p2;
-	DPoint3 p3;
-	if (nSHPType == SHPT_POINT)
-	{
-		size = m_Point2.GetSize();
-		for (i = 0; i < size; i++)
-		{
-			// Save to SHP
-			p2 = m_Point2[i];
-			obj = SHPCreateSimpleObject(nSHPType, 1, &p2.x, &p2.y, NULL);
-			SHPWriteObject(hSHP, -1, obj);
-			SHPDestroyObject(obj);
-		}
-	}
-	if (nSHPType == SHPT_POINTZ)
-	{
-		size = m_Point3.GetSize();
-		for (i = 0; i < size; i++)
-		{
-			// Save to SHP
-			p3 = m_Point3[i];
-			obj = SHPCreateSimpleObject(nSHPType, 1, &p3.x, &p3.y, &p3.z);
-			SHPWriteObject(hSHP, -1, obj);
-			SHPDestroyObject(obj);
-		}
-	}
-	if (nSHPType == SHPT_ARC || nSHPType == SHPT_POLYGON)
-	{
-		size = m_LinePoly.size();
-		for (i = 0; i < size; i++)	//for each polyline
-		{
-			const DLine2 &dl = m_LinePoly[i];
-			double* dX = new double[dl.GetSize()];
-			double* dY = new double[dl.GetSize()];
+	unsigned int i, j;
 
-			for (j=0; j < dl.GetSize(); j++) //for each vertex
-			{
-				DPoint2 pt = dl.GetAt(j);
-				dX[j] = pt.x;
-				dY[j] = pt.y;
-
-			}
-			// Save to SHP
-			obj = SHPCreateSimpleObject(nSHPType, dl.GetSize(),
-				dX, dY, NULL);
-
-			delete dX;
-			delete dY;
-
-			SHPWriteObject(hSHP, -1, obj);
-			SHPDestroyObject(obj);
-		}
-	}
+	SaveGeomToSHP(hSHP);
 	SHPClose(hSHP);
 
 	if (m_fields.GetSize() > 0)
@@ -121,17 +59,15 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 		dbfname += ".dbf";
 		DBFHandle db = DBFCreate(dbfname);
 		if (db == NULL)
-		{
-//			wxMessageBox("Couldn't create DBF file.");
 			return false;
-		}
 
 		Field *field;
 		for (i = 0; i < m_fields.GetSize(); i++)
 		{
 			field = m_fields[i];
 
-			DBFAddField(db, (const char *) field->m_name, field->m_type,
+			DBFFieldType dbtype = ConvertFieldType(field->m_type);
+			DBFAddField(db, (const char *) field->m_name, dbtype,
 				field->m_width, field->m_decimals );
 		}
 
@@ -144,16 +80,20 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 				field = m_fields[j];
 				switch (field->m_type)
 				{
-				case FTLogical:
+				case FT_Boolean:
 					DBFWriteLogicalAttribute(db, i, j, field->m_bool[i]);
 					break;
-				case FTInteger:
+				case FT_Integer:
 					DBFWriteIntegerAttribute(db, i, j, field->m_int[i]);
 					break;
-				case FTDouble:
+				case FT_Float:
+					// SHP does do floats, only doubles
+					DBFWriteDoubleAttribute(db, i, j, field->m_float[i]);
+					break;
+				case FT_Double:
 					DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
 					break;
-				case FTString:
+				case FT_String:
 					DBFWriteStringAttribute(db, i, j, (const char *) field->m_string[i]);
 					break;
 				}
@@ -171,189 +111,80 @@ bool vtFeatures::SaveToSHP(const char *filename) const
 	return true;
 }
 
-bool vtFeatures::LoadHeaderFromSHP(const char *filename)
+vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
+{
+	vtString fname = filename;
+	vtString ext = fname.Right(3);
+	if (!ext.CompareNoCase("shp"))
+		return LoadFromSHP(filename);
+	else
+		return LoadWithOGR(filename);
+}
+
+vtFeatureSet *vtFeatureLoader::LoadHeaderFromSHP(const char *filename)
 {
 	// Open the SHP File & Get Info from SHP:
 	SHPHandle hSHP = SHPOpen(filename, "rb");
 	if (hSHP == NULL)
 		return false;
 
-	m_strFilename = filename;
-
 	// Get number of entities (nElem) and type of data (nShapeType)
-	int		nShapeType;
-	double	adfMinBound[4], adfMaxBound[4];
-
-	SHPGetInfo(hSHP, &m_iSHPElems, &nShapeType, adfMinBound, adfMaxBound);
+	int		nElems, nShapeType;
+	SHPGetInfo(hSHP, &nElems, &nShapeType, NULL, NULL);
 
 	//  Check shape type, we only support a few types
+	vtFeatureSet *pSet = NULL;
+
 	switch (nShapeType)
 	{
 	case SHPT_POINT:
+		pSet = new vtFeatureSetPoint2D();
+		break;
 	case SHPT_POINTZ:
+		pSet = new vtFeatureSetPoint3D();
+		break;
 	case SHPT_ARC:
+		pSet = new vtFeatureSetLineString();
+		break;
 	case SHPT_POLYGON:
-		m_eGeomType = ShapelibToOGR(nShapeType);
+		pSet = new vtFeatureSetPolygon();
 		break;
 	default:
 		SHPClose(hSHP);
-		return false;
+		return NULL;
 	}
 	SHPClose(hSHP);
 
-	// Try loading DBF File as well
-	m_dbfname = filename;
-	m_dbfname = m_dbfname.Left(m_dbfname.GetLength() - 4);
-	m_dbfname += ".dbf";
-	DBFFieldType fieldtype;
-	DBFHandle db = DBFOpen(m_dbfname, "rb");
-	int iField;
-	if (db != NULL)
-	{
-		// Check for field of poly id, current default field in dbf is Id
-		m_iSHPFields = DBFGetFieldCount(db);
-		int pnWidth, pnDecimals;
-		char szFieldName[80];
+	pSet->SetFilename(filename);
+	pSet->LoadInfoFromDBF(filename);
 
-		for (iField = 0; iField < m_iSHPFields; iField++)
-		{
-			fieldtype = DBFGetFieldInfo(db, iField, szFieldName,
-				&pnWidth, &pnDecimals);
-			AddField(szFieldName, fieldtype, pnWidth);
-		}
-		DBFClose(db);
-	}
-	return true;
+	return pSet;
 }
 
-bool vtFeatures::LoadFromSHP(const char *filename)
+vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
 {
-	if (!LoadHeaderFromSHP(filename))
-		return false;
+	vtFeatureSet *pSet = LoadHeaderFromSHP(filename);
+	if (!pSet)
+		return NULL;
 
+	// These are not going to fail, as the header info loaded fine.
 	SHPHandle hSHP = SHPOpen(filename, "rb");
-	DBFHandle db = DBFOpen(m_dbfname, "rb");
 
-	// Initialize arrays
-	switch (m_eGeomType)
-	{
-	case wkbPoint:
-		m_Point2.SetSize(m_iSHPElems);
-		break;
-	case wkbPoint25D:
-		m_Point3.SetSize(m_iSHPElems);
-		break;
-	case wkbLineString:
-	case wkbPolygon:
-		m_LinePoly.reserve(m_iSHPElems);
-		break;
-	}
-
-	// Read Data from SHP into memory
-	DPoint2 p2;
-	DPoint3 p3;
-	DLine2 dline;
-	for (int i = 0; i < m_iSHPElems; i++)
-	{
-		// Get the i-th Shape in the SHP file
-		SHPObject	*psShape;
-		psShape = SHPReadObject(hSHP, i);
-
-		// beware - it is possible for the shape to not actually have any
-		// vertices
-		if (psShape->nVertices == 0)
-		{
-			switch (m_eGeomType)
-			{
-			case wkbPoint:
-				p2.Set(0,0);
-				m_Point2.SetAt(i, p2);
-				break;
-			case wkbPoint25D:
-				p3.Set(0,0,0);
-				m_Point3.SetAt(i, p3);
-				break;
-			case wkbLineString:
-			case wkbPolygon:
-				m_LinePoly[i] = dline;
-				break;
-			}
-		}
-		else
-		{
-			switch (m_eGeomType)
-			{
-			case wkbPoint:
-				p2.x = *psShape->padfX;
-				p2.y = *psShape->padfY;
-				m_Point2.SetAt(i, p2);
-				break;
-			case wkbPoint25D:
-				p3.x = *psShape->padfX;
-				p3.y = *psShape->padfY;
-				p3.z = *psShape->padfZ;
-				m_Point3.SetAt(i, p3);
-				break;
-			case wkbLineString:
-			case wkbPolygon:
-				// Store each coordinate
-				dline.SetSize(psShape->nVertices);
-				for (int j = 0; j < psShape->nVertices; j++)
-				{
-					p2.x = psShape->padfX[j];
-					p2.y = psShape->padfY[j];
-					dline.SetAt(j, p2);
-				}
-				m_LinePoly.push_back(dline);
-				break;
-			}
-		}
-		SHPDestroyObject(psShape);
-
-		// Read corresponding attributes (DBF record fields)
-		int iField;
-		if (db != NULL)
-		{
-			int rec = AddRecord();
-			for (iField = 0; iField < m_iSHPFields; iField++)
-			{
-				Field *field = m_fields[iField];
-				switch (field->m_type)
-				{
-				case FTString:
-					SetValue(rec, iField, DBFReadStringAttribute(db, rec, iField));
-					break;
-				case FTInteger:
-					SetValue(rec, iField, DBFReadIntegerAttribute(db, rec, iField));
-					break;
-				case FTDouble:
-					SetValue(rec, iField, DBFReadDoubleAttribute(db, rec, iField));
-					break;
-				case FTLogical:
-					SetValue(rec, iField, DBFReadLogicalAttribute(db, rec, iField));
-					break;
-				}
-			}
-		}
-	}
-
-	// Try loading projection from PRJ
-	m_proj.ReadProjFile(filename);
-
+	// Read Geometry Data from SHP into memory
+	pSet->LoadGeomFromSHP(hSHP);
 	SHPClose(hSHP);
-	if (db != NULL)
-		DBFClose(db);
 
-	// allocate selection array
-	m_Flags.SetSize(m_iSHPElems);
-	return true;
+	// Read corresponding attributes (DBF record fields)
+	pSet->LoadAttributesFromDBF();
+
+	return pSet;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 
 /*
-bool vtFeatures::LoadFromGML(const char *filename)
+bool vtFeatureSet::LoadFromGML(const char *filename)
 {
 	// try using OGR
 	g_GDALWrapper.RequestOGRFormats();
@@ -401,14 +232,14 @@ bool vtFeatures::LoadFromGML(const char *filename)
 
 			switch (ftype)
 			{
-			case OFTInteger:
-				AddField(fnameref, FTInteger);
+			case OFT_Integer:
+				AddField(fnameref, FT_Integer);
 				break;
 			case OFTReal:
-				AddField(fnameref, FTDouble);
+				AddField(fnameref, FT_Double);
 				break;
-			case OFTString:
-				AddField(fnameref, FTString);
+			case OFT_String:
+				AddField(fnameref, FT_String);
 				break;
 			}
 		}
@@ -475,13 +306,13 @@ bool vtFeatures::LoadFromGML(const char *filename)
 			Field *field = GetField(j);
 			switch (field->m_type)
 			{
-			case FTInteger:
+			case FT_Integer:
 				field->m_int.Append(pFeature->GetFieldAsInteger(j));
 				break;
-			case FTDouble:
+			case FT_Double:
 				field->m_double.Append(pFeature->GetFieldAsDouble(j));
 				break;
-			case FTString:
+			case FT_String:
 				field->m_string.push_back(vtString(pFeature->GetFieldAsString(j)));
 				break;
 			}
@@ -498,7 +329,7 @@ bool vtFeatures::LoadFromGML(const char *filename)
 }
 */
 
-bool vtFeatures::LoadWithOGR(const char *filename,
+vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 							 void progress_callback(int))
 {
 	// try using OGR
@@ -506,38 +337,73 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 
 	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
 	if (!pDatasource)
-		return false;
-
-	int i, j, feature_count, count;
-	bool bGotCS = false;
-	OGRLayer		*pLayer;
-	OGRFeature		*pFeature;
-	OGRGeometry		*pGeom;
+		return NULL;
 
 	// Don't iterate through the layers, there should be only one.
 	//
-	int num_layers = pDatasource->GetLayerCount();
-	if (!num_layers)
-		return false;
-
-	pLayer = pDatasource->GetLayer(0);
+	OGRLayer *pLayer = pDatasource->GetLayer(0);
 	if (!pLayer)
-		return false;
+		return NULL;
 
 	// Get basic information about the layer we're reading
-	feature_count = pLayer->GetFeatureCount();
   	pLayer->ResetReading();
 	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
 	if (!defn)
-		return false;
+		return NULL;
+	OGRwkbGeometryType geom_type = defn->GetGeomType();
 
+	vtFeatureSet *pSet = NULL;
+	if (geom_type == wkbUnknown)
+	{
+		// This usually indicates that the file contains a mix of different
+		// geometry types.  Look at the first geometry.
+		OGRFeature *pFeature = pLayer->GetNextFeature();
+		OGRGeometry *pGeom = pFeature->GetGeometryRef();
+		geom_type = pGeom->getGeometryType();
+	}
+	switch (geom_type)
+	{
+	case wkbPoint:
+		pSet = new vtFeatureSetPoint2D();
+		break;
+	case wkbPoint25D:
+		pSet = new vtFeatureSetPoint3D();
+		break;
+	case wkbLineString:
+		pSet = new vtFeatureSetLineString();
+		break;
+	case wkbPolygon:
+		pSet = new vtFeatureSetPolygon();
+		break;
+	default:
+		return NULL;
+	}
+
+	// We're going to read the file now, so take it's name
+	pSet->SetFilename(filename);
+
+	if (!pSet->LoadFromOGR(pDatasource, progress_callback))
+	{
+		delete pSet;
+		return NULL;
+	}
+	return pSet;
+}
+
+bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
+							 void progress_callback(int))
+{
+	// get informnation from the datasource
+	OGRLayer *pLayer = pDatasource->GetLayer(0);
+	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
+	int feature_count = pLayer->GetFeatureCount();
 	const char *layer_name = defn->GetName();
 	int num_fields = defn->GetFieldCount();
-	OGRwkbGeometryType geom_type = defn->GetGeomType();
 
 	// Get the projection (SpatialReference) from this layer, if we can.
 	// Sometimes (e.g. for GML) the layer doesn't have it; may have to
 	// use the first Geometry instead.
+	bool bGotCS = false;
 	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
 	if (pSpatialRef)
 	{
@@ -545,28 +411,7 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		bGotCS = true;
 	}
 
-	// Convert from OGR to our geometry type
-	switch (geom_type)
-	{
-	case wkbPoint:
-	case wkbLineString:
-	case wkbPolygon:
-	case wkbPoint25D:
-		m_eGeomType = geom_type;
-		break;
-	case wkbUnknown:
-		// This usually indicates that the file contains a mix of different
-		// geometry types.  Look at the first geometry.
-		pFeature = pLayer->GetNextFeature();
-		pGeom = pFeature->GetGeometryRef();
-		m_eGeomType = pGeom->getGeometryType();
-		break;
-	default:
-		return false;	// don't know what to do with this geom type
-	}
-
-	// We're going to read the file now, so take it's name
-	m_strFilename = filename;
+	int i, j, count;
 
 	for (j = 0; j < num_fields; j++)
 	{
@@ -575,17 +420,17 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		OGRFieldType field_type = field_def->GetType();
 		int width = field_def->GetWidth();
 
-		DBFFieldType ftype;
+		FieldType ftype;
 		switch (field_type)
 		{
 		case OFTInteger:
-			ftype = FTInteger;
+			ftype = FT_Integer;
 			break;
 		case OFTReal:
-			ftype = FTDouble;
+			ftype = FT_Double;
 			break;
 		case OFTString:
-			ftype = FTString;
+			ftype = FT_String;
 			break;
 		default:
 			continue;
@@ -593,23 +438,12 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		AddField(field_name, ftype, width);
 	}
 
-	// Initialize arrays
-	switch (m_eGeomType)
-	{
-	case wkbPoint:
-		m_Point2.SetMaxSize(feature_count);
-		break;
-	case wkbPoint25D:
-		m_Point3.SetMaxSize(feature_count);
-		break;
-	case wkbLineString:
-	case wkbPolygon:
-		m_LinePoly.reserve(feature_count);
-		break;
-	}
+	// For efficiency, pre-allocate room for the number of features
+	//  we expect, although there may be a few more.
+	Reserve(feature_count);
 
 	// Read Data from OGR into memory
-	DPoint2 p2;
+	DPoint2 p2, first_p2;
 	DPoint3 p3;
 	int num_geoms, num_points;
 	OGRPoint		*pPoint;
@@ -618,14 +452,20 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 	OGRLineString   *pLineString;
 	OGRMultiLineString   *pMulti;
 
+	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(this);
+	vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(this);
+	vtFeatureSetLineString *pSetLine = dynamic_cast<vtFeatureSetLineString *>(this);
+	vtFeatureSetPolygon *pSetPoly = dynamic_cast<vtFeatureSetPolygon *>(this);
+
 	pLayer->ResetReading();
 	count = 0;
+	OGRFeature *pFeature;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
 		if (progress_callback != NULL)
 			progress_callback(count * 100 / feature_count);
 
-		pGeom = pFeature->GetGeometryRef();
+		OGRGeometry	*pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
 			continue;
 
@@ -642,43 +482,30 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 		//  will have more than one kind of geometry per layer,
 		//  for example, both LineString and MultiLineString
 		// Get the geometry type from the Geometry, not the Layer.
-		geom_type = pGeom->getGeometryType();
+		OGRwkbGeometryType geom_type = pGeom->getGeometryType();
 		num_geoms = 1;
 
 		DLine2 dline;
+		DPolygon2 dpoly;
 
 		switch (geom_type)
 		{
 		case wkbPoint:
 			pPoint = (OGRPoint *) pGeom;
-			p2.x = pPoint->getX();
-			p2.y = pPoint->getY();
-			m_Point2.Append(p2);
+			if (pSetP2)
+				pSetP2->AddPoint(DPoint2(pPoint->getX(), pPoint->getY()));
 			break;
+
 		case wkbPoint25D:
 			pPoint = (OGRPoint *) pGeom;
-			p3.x = pPoint->getX();
-			p3.y = pPoint->getY();
-			p3.z = pPoint->getZ();
-			m_Point3.Append(p3);
+			if (pSetP3)
+				pSetP3->AddPoint(DPoint3(pPoint->getX(), pPoint->getY(), pPoint->getZ()));
 			break;
+
 		case wkbLineString:
 			pLineString = (OGRLineString *) pGeom;
-			num_points = pLineString->getNumPoints();
-			dline.SetSize(num_points);
-			for (j = 0; j < num_points; j++)
+			if (pSetLine)
 			{
-				p2.Set(pLineString->getX(j), pLineString->getY(j));
-				dline.SetAt(j, p2);
-			}
-			m_LinePoly.push_back(dline);
-			break;
-		case wkbMultiLineString:
-			pMulti = (OGRMultiLineString *) pGeom;
-			num_geoms = pMulti->getNumGeometries();
-			for (i = 0; i < num_geoms; i++)
-			{
-				pLineString = (OGRLineString *) pMulti->getGeometryRef(i);
 				num_points = pLineString->getNumPoints();
 				dline.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
@@ -686,22 +513,84 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 					p2.Set(pLineString->getX(j), pLineString->getY(j));
 					dline.SetAt(j, p2);
 				}
-				m_LinePoly.push_back(dline);
+				pSetLine->AddPolyLine(dline);
 			}
 			break;
+
+		case wkbMultiLineString:
+			pMulti = (OGRMultiLineString *) pGeom;
+			if (pSetLine)
+			{
+				num_geoms = pMulti->getNumGeometries();
+				for (i = 0; i < num_geoms; i++)
+				{
+					pLineString = (OGRLineString *) pMulti->getGeometryRef(i);
+					num_points = pLineString->getNumPoints();
+					dline.SetSize(num_points);
+					for (j = 0; j < num_points; j++)
+					{
+						p2.Set(pLineString->getX(j), pLineString->getY(j));
+						dline.SetAt(j, p2);
+					}
+					pSetLine->AddPolyLine(dline);
+				}
+			}
+			break;
+
 		case wkbPolygon:
 			pPolygon = (OGRPolygon *) pGeom;
 			pRing = pPolygon->getExteriorRing();
 			num_points = pRing->getNumPoints();
-			dline.SetSize(num_points);
+
+			dpoly.resize(0);
+
+			// do exterior ring
+			dline.SetSize(0);
+			dline.SetMaxSize(num_points);
 			for (j = 0; j < num_points; j++)
 			{
-				dline.SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
+				p2.Set(pRing->getX(j), pRing->getY(j));
+
+				// ignore last point if it's the same as the first
+				if (j == 0)
+					first_p2 = p2;
+				if (j == num_points-1 && p2 == first_p2)
+					continue;
+
+				dline.Append(p2);
 			}
-			m_LinePoly.push_back(dline);
+			dpoly.push_back(dline);
+
+			// do interior ring(s)
+			for (i = 0; i < pPolygon->getNumInteriorRings(); i++)
+			{
+				pRing = pPolygon->getInteriorRing(i);
+				num_points = pRing->getNumPoints();
+				dline.SetSize(0);
+				dline.SetMaxSize(num_points);
+				for (j = 0; j < num_points; j++)
+				{
+					p2.Set(pRing->getX(j), pRing->getY(j));
+
+					// ignore last point if it's the same as the first
+					if (j == 0)
+						first_p2 = p2;
+					if (j == num_points-1 && p2 == first_p2)
+						continue;
+
+					dline.Append(p2);
+				}
+				dpoly.push_back(dline);
+			}
+			if (pSetPoly)
+				pSetPoly->AddPolygon(dpoly);
 			break;
-		case wkbMultiPoint:
+
 		case wkbMultiPolygon:
+			// possible TODO
+			break;
+
+		case wkbMultiPoint:
 		case wkbGeometryCollection:
 			// Hopefully we won't encounter unexpected geometries, but
 			// if we do, just skip them for now.
@@ -720,16 +609,16 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 				Field *pField = GetField(j);
 				switch (pField->m_type)
 				{
-				case FTLogical:
+				case FT_Boolean:
 					SetValue(count, j, pFeature->GetFieldAsInteger(j) != 0);
 					break;
-				case FTInteger:
+				case FT_Integer:
 					SetValue(count, j, pFeature->GetFieldAsInteger(j));
 					break;
-				case FTDouble:
+				case FT_Double:
 					SetValue(count, j, pFeature->GetFieldAsDouble(j));
 					break;
-				case FTString:
+				case FT_String:
 					SetValue(count, j, pFeature->GetFieldAsString(j));
 					break;
 				}
@@ -747,7 +636,8 @@ bool vtFeatures::LoadWithOGR(const char *filename,
 }
 
 
-bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
+/*
+vtFeatureSet *vtFeatureLoader::CreateFromDLG(class vtDLGFile *pDLG)
 {
 	// A DLG file can be fairly directly interpreted as features, since
 	// it consists of nodes, areas, and lines.  However, topology is lost
@@ -757,11 +647,11 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 	int nodes = pDLG->m_iNodes, areas = pDLG->m_iAreas, lines = pDLG->m_iLines;
 	if (nodes > lines)
 	{
-		SetGeomType(wkbPoint);
+		pSet->SetGeomType(wkbPoint);
 		for (i = 0; i < nodes; i++)
 			AddPoint(pDLG->m_nodes[i].m_p);
 	}
-/*
+#if 0
 	else if (areas >= nodes && areas >= lines)
 	{
 		// "Areas" in a DLG area actually points which indicate an interior
@@ -770,7 +660,7 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 		for (i = 0; i < areas; i++)
 			AddPolyLine(&pDLG->m_areas[i].m_p);
 	}
-*/
+#endif
 	else
 	{
 		SetGeomType(wkbLineString);
@@ -779,34 +669,81 @@ bool vtFeatures::AddElementsFromDLG(class vtDLGFile *pDLG)
 	}
 	m_proj = pDLG->GetProjection();
 	return true;
+}*/
+
+bool vtFeatureSet::LoadInfoFromDBF(const char *filename)
+{
+	// Try loading DBF File as well
+	m_dbfname = filename;
+	m_dbfname = m_dbfname.Left(m_dbfname.GetLength() - 4);
+	m_dbfname += ".dbf";
+	DBFFieldType fieldtype;
+	DBFHandle db = DBFOpen(m_dbfname, "rb");
+	int iField;
+	if (db != NULL)
+	{
+		// Check for field of poly id, current default field in dbf is Id
+		m_iSHPFields = DBFGetFieldCount(db);
+		int pnWidth, pnDecimals;
+		char szFieldName[80];
+
+		for (iField = 0; iField < m_iSHPFields; iField++)
+		{
+			fieldtype = DBFGetFieldInfo(db, iField, szFieldName,
+				&pnWidth, &pnDecimals);
+
+			FieldType ftype = ConvertFieldType(fieldtype);
+
+			AddField(szFieldName, ftype, pnWidth);
+		}
+		DBFClose(db);
+	}
+
+	// Try loading projection from PRJ
+	m_proj.ReadProjFile(filename);
+
+	return true;
 }
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// feature (entity) operations
-//
-
-int vtFeatures::GetNumEntities() const
+bool vtFeatureSet::LoadAttributesFromDBF()
 {
-	if (m_eGeomType == wkbPoint)
-		return m_Point2.GetSize();
-	else if (m_eGeomType == wkbPoint25D)
-		return m_Point3.GetSize();
-	else if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
-		return m_LinePoly.size();
-	else
-		return -1;
-}
+	// Read attributes (DBF record fields)
+	DBFHandle db = DBFOpen(m_dbfname, "rb");
+	if (db == NULL)
+		return false;
 
-void vtFeatures::SetNumEntities(int iNum)
-{
-	if (m_eGeomType == wkbPoint)
-		m_Point2.SetSize(iNum);
-	else if (m_eGeomType == wkbPoint25D)
-		m_Point3.SetSize(iNum);
-	else if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
-		m_LinePoly.resize(iNum);
+	int iRecords = DBFGetRecordCount(db);
+
+	for (int i = 0; i < iRecords; i++)
+	{
+		unsigned int iField;
+		int rec = AddRecord();
+		for (iField = 0; iField < GetNumFields(); iField++)
+		{
+			Field *field = m_fields[iField];
+			switch (field->m_type)
+			{
+			case FT_String:
+				SetValue(rec, iField, DBFReadStringAttribute(db, rec, iField));
+				break;
+			case FT_Integer:
+				SetValue(rec, iField, DBFReadIntegerAttribute(db, rec, iField));
+				break;
+			case FT_Double:
+				SetValue(rec, iField, DBFReadDoubleAttribute(db, rec, iField));
+				break;
+			case FT_Boolean:
+				SetValue(rec, iField, DBFReadLogicalAttribute(db, rec, iField));
+				break;
+			}
+		}
+	}
+	DBFClose(db);
+
+	// allocate selection array
+	m_Flags.SetSize(m_iSHPElems);
+
+	return true;
 }
 
 /**
@@ -818,7 +755,7 @@ void vtFeatures::SetNumEntities(int iNum)
  *		- wkbLineString for 2D polylines
  *		- wkbPolygon for 2D polygons
  */
-OGRwkbGeometryType vtFeatures::GetGeomType() const
+OGRwkbGeometryType vtFeatureSet::GetGeomType() const
 {
 	return m_eGeomType;
 }
@@ -832,134 +769,52 @@ OGRwkbGeometryType vtFeatures::GetGeomType() const
  *		- wkbLineString for 2D polylines
  *		- wkbPolygon for 2D polygons
  */
-void vtFeatures::SetGeomType(OGRwkbGeometryType eGeomType)
+void vtFeatureSet::SetGeomType(OGRwkbGeometryType eGeomType)
 {
 	m_eGeomType = eGeomType;
 }
 
-int vtFeatures::AddPoint(const DPoint2 &p)
+bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 {
-	int rec = -1;
-	if (m_eGeomType == wkbPoint)
-	{
-		rec = m_Point2.Append(p);
-		AddRecord();
-	}
-	return rec;
-}
+	// Must be the same geometry type
+	if (pFromSet->GetGeomType() != GetGeomType())
+		return false;
 
-int vtFeatures::AddPoint(const DPoint3 &p)
-{
-	int rec = -1;
-	if (m_eGeomType == wkbPoint25D)
-	{
-		rec = m_Point3.Append(p);
-		AddRecord();
-	}
-	return rec;
-}
+	int first_appended_ent = GetNumEntities();
 
-int vtFeatures::AddPolyLine(const DLine2 &pl)
-{
-	int rec = -1;
-	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
-	{
-		m_LinePoly.push_back(pl);
-		rec = m_LinePoly.size()-1;
-		AddRecord();
-	}
-	return rec;
-}
+	// copy geometry
+	if (!AppendGeometryFrom(pFromSet))
+		return false;
 
-void vtFeatures::SetPoint(unsigned int num, const DPoint2 &p)
-{
-	if (m_eGeomType == wkbPoint)
-		m_Point2.SetAt(num, p);
-}
-
-void vtFeatures::GetPoint(unsigned int num, DPoint3 &p) const
-{
-	if (m_eGeomType == wkbPoint)
+	// copy entities
+	vtString str;
+	unsigned int i, num = pFromSet->GetNumEntities();
+	for (i = 0; i < num; i++)
 	{
-		DPoint2 p2 = m_Point2.GetAt(num);
-		p.x = p2.x;
-		p.y = p2.y;
-		p.z = 0;
-	}
-	if (m_eGeomType == wkbPoint25D)
-	{
-		p = m_Point3.GetAt(num);
-	}
-}
-
-void vtFeatures::GetPoint(unsigned int num, DPoint2 &p) const
-{
-	if (m_eGeomType == wkbPoint25D)
-	{
-		DPoint3 p3 = m_Point3.GetAt(num);
-		p.x = p3.x;
-		p.y = p3.y;
-	}
-	if (m_eGeomType == wkbPoint)
-	{
-		p = m_Point2.GetAt(num);
-	}
-}
-
-int vtFeatures::FindClosestPoint(const DPoint2 &p, double epsilon)
-{
-	int entities = GetNumEntities();
-	double dist, closest = 1E9;
-	int found = -1;
-	DPoint2 diff;
-
-	int i;
-	for (i = 0; i < entities; i++)
-	{
-		if (m_eGeomType == wkbPoint)
-			diff = p - m_Point2.GetAt(i);
-		if (m_eGeomType == wkbPoint25D)
+		// copy record data for all field names which match
+		for (unsigned int f = 0; f < pFromSet->GetNumFields(); f++)
 		{
-			DPoint3 p3 = m_Point3.GetAt(i);
-			diff.x = p.x - p3.x;
-			diff.y = p.y - p3.y;
+			Field *field1 = pFromSet->GetField(f);
+			Field *field2 = GetField((const char *) field1->m_name);
+			if (!field2)
+				continue;
+			field1->GetValueAsString(i, str);
+			field2->SetValueFromString(first_appended_ent+i, str);
 		}
-		dist = diff.Length();
-		if (dist < closest && dist < epsilon)
-		{
-			closest = dist;
-			found = i;
-		}
+		m_Flags.Append(pFromSet->m_Flags[i]);
 	}
-	return found;
-}
 
-void vtFeatures::FindAllPointsAtLocation(const DPoint2 &loc, Array<int> &found)
-{
-	int entities = GetNumEntities();
+	// empty the source layer
+	pFromSet->SetNumEntities(0);
 
-	int i;
-	for (i = 0; i < entities; i++)
-	{
-		if (m_eGeomType == wkbPoint)
-		{
-			if (loc == m_Point2.GetAt(i))
-				found.Append(i);
-		}
-		if (m_eGeomType == wkbPoint25D)
-		{
-			DPoint3 p3 = m_Point3.GetAt(i);
-			if (loc.x == p3.x && loc.y == p3.y)
-				found.Append(i);
-		}
-	}
+	return true;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Selection of Entities
 
-int vtFeatures::NumSelected()
+int vtFeatureSet::NumSelected()
 {
 	int count = 0;
 	int size = m_Flags.GetSize();
@@ -969,19 +824,19 @@ int vtFeatures::NumSelected()
 	return count;
 }
 
-void vtFeatures::DeselectAll()
+void vtFeatureSet::DeselectAll()
 {
 	for (unsigned int i = 0; i < m_Flags.GetSize(); i++)
 		m_Flags[i] &= ~FF_SELECTED;
 }
 
-void vtFeatures::InvertSelection()
+void vtFeatureSet::InvertSelection()
 {
 	for (unsigned int i = 0; i < m_Flags.GetSize(); i++)
 		m_Flags[i] ^= FF_SELECTED;
 }
 
-int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
+int vtFeatureSet::DoBoxSelect(const DRECT &rect, SelectionType st)
 {
 	int affected = 0;
 	int entities = GetNumEntities();
@@ -994,15 +849,7 @@ int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 		if (st == ST_NORMAL)
 			Select(i, false);
 
-		if (m_eGeomType == wkbPoint)
-			bIn = rect.ContainsPoint(m_Point2[i]);
-
-		if (m_eGeomType == wkbPoint25D)
-			bIn = rect.ContainsPoint(DPoint2(m_Point3[i].x, m_Point3[i].y));
-
-		if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
-			bIn = rect.ContainsLine(m_LinePoly[i]);
-
+		bIn = IsInsideRect(i, rect);
 		if (!bIn)
 			continue;
 
@@ -1029,7 +876,7 @@ int vtFeatures::DoBoxSelect(const DRECT &rect, SelectionType st)
 	return affected;
 }
 
-int vtFeatures::SelectByCondition(int iField, int iCondition,
+int vtFeatureSet::SelectByCondition(int iField, int iCondition,
 								  const char *szValue)
 {
 	bool bval, btest;
@@ -1038,6 +885,8 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 	int entities = GetNumEntities(), selected = 0;
 	int con = iCondition;
 	bool result;
+	DPoint2 p2;
+	DPoint3 p3;
 
 	if (iField < 0)
 	{
@@ -1047,15 +896,19 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 			// special field numbers are used to refer to the spatial components
 			if (m_eGeomType == wkbPoint)
 			{
-				if (iField == -1) dtest = m_Point2[i].x;
-				if (iField == -2) dtest = m_Point2[i].y;
+				vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D *>(this);
+				pSetP2->GetPoint(i, p2);
+				if (iField == -1) dtest = p2.x;
+				if (iField == -2) dtest = p2.y;
 				if (iField == -3) return -1;
 			}
 			else if (m_eGeomType == wkbPoint25D)
 			{
-				if (iField == -1) dtest = m_Point3[i].x;
-				if (iField == -2) dtest = m_Point3[i].y;
-				if (iField == -3) dtest = m_Point3[i].z;
+				vtFeatureSetPoint3D *pSetP3 = dynamic_cast<vtFeatureSetPoint3D *>(this);
+				pSetP3->GetPoint(i, p3);
+				if (iField == -1) dtest = p3.x;
+				if (iField == -2) dtest = p3.y;
+				if (iField == -3) dtest = p3.z;
 			}
 			else
 				return -1;	// TODO: support non-point types
@@ -1076,7 +929,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 	Field *field = m_fields[iField];
 	switch (field->m_type)
 	{
-	case FTString:
+	case FT_String:
 		for (i = 0; i < entities; i++)
 		{
 			const vtString &sp = field->m_string[i];
@@ -1093,7 +946,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 			}
 		}
 		break;
-	case FTInteger:
+	case FT_Integer:
 		ival = atoi(szValue);
 		for (i = 0; i < entities; i++)
 		{
@@ -1111,7 +964,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 			}
 		}
 		break;
-	case FTDouble:
+	case FT_Double:
 		dval = atof(szValue);
 		for (i = 0; i < entities; i++)
 		{
@@ -1129,7 +982,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 			}
 		}
 		break;
-	case FTLogical:
+	case FT_Boolean:
 		bval = (atoi(szValue) != 0);
 		for (i = 0; i < entities; i++)
 		{
@@ -1153,7 +1006,7 @@ int vtFeatures::SelectByCondition(int iField, int iCondition,
 	return selected;
 }
 
-void vtFeatures::DeleteSelected()
+void vtFeatureSet::DeleteSelected()
 {
 	int i, entities = GetNumEntities();
 	for (i = 0; i < entities; i++)
@@ -1167,12 +1020,12 @@ void vtFeatures::DeleteSelected()
 	ApplyDeletion();
 }
 
-void vtFeatures::SetToDelete(int iFeature)
+void vtFeatureSet::SetToDelete(int iFeature)
 {
 	m_Flags[iFeature] |= FF_DELETE;
 }
 
-void vtFeatures::ApplyDeletion()
+void vtFeatureSet::ApplyDeletion()
 {
 	int i, entities = GetNumEntities();
 
@@ -1192,44 +1045,20 @@ void vtFeatures::ApplyDeletion()
 		else
 			newtotal--;
 	}
-	_ShrinkGeomArraySize(newtotal);
+	SetNumEntities(newtotal);
 }
 
-void vtFeatures::_ShrinkGeomArraySize(int size)
-{
-	if (m_eGeomType == wkbPoint)
-		m_Point2.SetSize(size);
-	if (m_eGeomType == wkbPoint25D)
-		m_Point3.SetSize(size);
-	// TODO: check this, it might leak some memory by not freeing
-	//  the linepoly which is dropped off the end
-	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
-		m_LinePoly.resize(size);
-}
-
-void vtFeatures::CopyEntity(unsigned int from, unsigned int to)
+void vtFeatureSet::CopyEntity(unsigned int from, unsigned int to)
 {
 	// copy geometry
-	if (m_eGeomType == wkbPoint)
-	{
-		m_Point2[to] = m_Point2[from];
-	}
-	if (m_eGeomType == wkbPoint25D)
-	{
-		m_Point3[to] = m_Point3[from];
-	}
-	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
-	{
-		m_LinePoly[to] = m_LinePoly[from];
-	}
-	// copy record
+	CopyGeometry(from, to);
+
+	// copy record fields
 	for (unsigned int i = 0; i < m_fields.GetSize(); i++)
-	{
 		m_fields[i]->CopyValue(from, to);
-	}
 }
 
-void vtFeatures::DePickAll()
+void vtFeatureSet::DePickAll()
 {
 	int i, entities = GetNumEntities();
 	for (i = 0; i < entities; i++)
@@ -1240,7 +1069,7 @@ void vtFeatures::DePickAll()
 /////////////////////////////////////////////////////////////////////////////
 // Data Fields
 
-Field *vtFeatures::GetField(const char *name)
+Field *vtFeatureSet::GetField(const char *name)
 {
 	int i, num = m_fields.GetSize();
 	for (i = 0; i < num; i++)
@@ -1255,7 +1084,7 @@ Field *vtFeatures::GetField(const char *name)
  * Return the index of the field with the given name, or -1 if no field
  * with that name was found.
  */
-int vtFeatures::GetFieldIndex(const char *name) const
+int vtFeatureSet::GetFieldIndex(const char *name) const
 {
 	unsigned int i, num = m_fields.GetSize();
 	for (i = 0; i < num; i++)
@@ -1266,25 +1095,25 @@ int vtFeatures::GetFieldIndex(const char *name) const
 	return -1;
 }
 
-int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length)
+int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 {
 	Field *f = new Field(name, ftype);
-	if (ftype == FTInteger)
+	if (ftype == FT_Integer)
 	{
 		f->m_width = 11;
 		f->m_decimals = 0;
 	}
-	else if (ftype == FTDouble)
+	else if (ftype == FT_Double)
 	{
 		f->m_width = 12;
 		f->m_decimals = 12;
 	}
-	else if (ftype == FTLogical)
+	else if (ftype == FT_Boolean)
 	{
 		f->m_width = 1;
 		f->m_decimals = 0;
 	}
-	else if (ftype == FTString)
+	else if (ftype == FT_String)
 	{
 		f->m_width = string_length;
 		f->m_decimals = 0;
@@ -1292,14 +1121,14 @@ int vtFeatures::AddField(const char *name, DBFFieldType ftype, int string_length
 	else
 	{
 		VTLOG("Attempting to add field '%s' of type 'invalid', adding an integer field instead.\n", name, ftype);
-		f->m_type = FTInteger;
+		f->m_type = FT_Integer;
 		f->m_width = 1;
 		f->m_decimals = 0;
 	}
 	return m_fields.Append(f);
 }
 
-int vtFeatures::AddRecord()
+int vtFeatureSet::AddRecord()
 {
 	int recs;
 	for (unsigned int i = 0; i < m_fields.GetSize(); i++)
@@ -1310,57 +1139,63 @@ int vtFeatures::AddRecord()
 	return recs;
 }
 
-void vtFeatures::SetValue(unsigned int record, unsigned int field, const char *value)
+void vtFeatureSet::SetValue(unsigned int record, unsigned int field, const char *value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatures::SetValue(unsigned int record, unsigned int field, int value)
+void vtFeatureSet::SetValue(unsigned int record, unsigned int field, int value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatures::SetValue(unsigned int record, unsigned int field, double value)
+void vtFeatureSet::SetValue(unsigned int record, unsigned int field, double value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatures::SetValue(unsigned int record, unsigned int field, bool value)
+void vtFeatureSet::SetValue(unsigned int record, unsigned int field, bool value)
 {
 	m_fields[field]->SetValue(record, value);
 }
 
-void vtFeatures::GetValueAsString(unsigned int iRecord, unsigned int iField, vtString &str) const
+void vtFeatureSet::GetValueAsString(unsigned int iRecord, unsigned int iField, vtString &str) const
 {
 	Field *field = m_fields[iField];
 	field->GetValueAsString(iRecord, str);
 }
 
-void vtFeatures::SetValueFromString(unsigned int iRecord, unsigned int iField, const vtString &str)
+void vtFeatureSet::SetValueFromString(unsigned int iRecord, unsigned int iField, const vtString &str)
 {
 	Field *field = m_fields[iField];
 	field->SetValueFromString(iRecord, str);
 }
 
-void vtFeatures::SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str)
+void vtFeatureSet::SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str)
 {
 	Field *field = m_fields[iField];
 	field->SetValueFromString(iRecord, str);
 }
 
-int vtFeatures::GetIntegerValue(unsigned int iRecord, unsigned int iField) const
+int vtFeatureSet::GetIntegerValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
 	return field->m_int[iRecord];
 }
 
-double vtFeatures::GetDoubleValue(unsigned int iRecord, unsigned int iField) const
+float vtFeatureSet::GetFloatValue(unsigned int iRecord, unsigned int iField) const
+{
+	Field *field = m_fields[iField];
+	return field->m_float[iRecord];
+}
+
+double vtFeatureSet::GetDoubleValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
 	return field->m_double[iRecord];
 }
 
-bool vtFeatures::GetBoolValue(unsigned int iRecord, unsigned int iField) const
+bool vtFeatureSet::GetBoolValue(unsigned int iRecord, unsigned int iField) const
 {
 	Field *field = m_fields[iField];
 	return field->m_bool[iRecord];
@@ -1371,7 +1206,7 @@ bool vtFeatures::GetBoolValue(unsigned int iRecord, unsigned int iField) const
 //
 // Fields
 //
-Field::Field(const char *name, DBFFieldType ftype)
+Field::Field(const char *name, FieldType ftype)
 {
 	m_name = name;
 	m_type = ftype;
@@ -1386,10 +1221,10 @@ int Field::AddRecord()
 	int index = 0;
 	switch (m_type)
 	{
-	case FTLogical: return	m_bool.Append(false);	break;
-	case FTInteger: return	m_int.Append(0);		break;
-	case FTDouble:	return	m_double.Append(0.0);	break;
-	case FTString:
+	case FT_Boolean: return	m_bool.Append(false);	break;
+	case FT_Integer: return	m_int.Append(0);		break;
+	case FT_Double:	return	m_double.Append(0.0);	break;
+	case FT_String:
 		index = m_string.size();
 		m_string.push_back(vtString(""));
 		return index;
@@ -1399,78 +1234,78 @@ int Field::AddRecord()
 
 void Field::SetValue(unsigned int record, const char *value)
 {
-	if (m_type != FTString)
+	if (m_type != FT_String)
 		return;
 	m_string[record] = value;
 }
 
 void Field::SetValue(unsigned int record, int value)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		m_int[record] = value;
-	else if (m_type == FTDouble)
+	else if (m_type == FT_Double)
 		m_double[record] = value;
 }
 
 void Field::SetValue(unsigned int record, double value)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		m_int[record] = (int) value;
-	else if (m_type == FTDouble)
+	else if (m_type == FT_Double)
 		m_double[record] = value;
 }
 
 void Field::SetValue(unsigned int record, bool value)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		m_int[record] = (int) value;
-	else if (m_type == FTLogical)
+	else if (m_type == FT_Boolean)
 		m_bool[record] = value;
 }
 
 void Field::GetValue(unsigned int record, vtString &string)
 {
-	if (m_type != FTString)
+	if (m_type != FT_String)
 		return;
 	string = m_string[record];
 }
 
 void Field::GetValue(unsigned int record, int &value)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		value = m_int[record];
-	else if (m_type == FTDouble)
+	else if (m_type == FT_Double)
 		value = (int) m_double[record];
-	else if (m_type == FTLogical)
+	else if (m_type == FT_Boolean)
 		value = (int) m_bool[record];
 }
 
 void Field::GetValue(unsigned int record, double &value)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		value = (double) m_int[record];
-	else if (m_type == FTDouble)
+	else if (m_type == FT_Double)
 		value = m_double[record];
 }
 
 void Field::GetValue(unsigned int record, bool &value)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		value = (m_int[record] != 0);
-	else if (m_type == FTLogical)
+	else if (m_type == FT_Boolean)
 		value = m_bool[record];
 }
 
 void Field::CopyValue(unsigned int FromRecord, int ToRecord)
 {
-	if (m_type == FTInteger)
+	if (m_type == FT_Integer)
 		m_int[ToRecord] = m_int[FromRecord];
-	if (m_type == FTDouble)
+	if (m_type == FT_Double)
 		m_double[ToRecord] = m_double[FromRecord];
 
 	// when dealing with strings, copy by value not reference, to
 	// avoid memory tracking issues
-	if (m_type == FTString)
+	if (m_type == FT_String)
 		m_string[ToRecord] = m_string[FromRecord];
 }
 
@@ -1478,13 +1313,13 @@ void Field::GetValueAsString(unsigned int iRecord, vtString &str)
 {
 	switch (m_type)
 	{
-	case FTString:
+	case FT_String:
 		str = m_string[iRecord];
 		break;
-	case FTInteger:
+	case FT_Integer:
 		str.Format("%d", m_int[iRecord]);
 		break;
-	case FTDouble:
+	case FT_Double:
 		str.Format("%lf", m_double[iRecord]);
 		break;
 	}
@@ -1503,20 +1338,20 @@ void Field::SetValueFromString(unsigned int iRecord, const char *str)
 
 	switch (m_type)
 	{
-	case FTString:
+	case FT_String:
 		if (iRecord < (int) m_string.size())
 			m_string[iRecord] = str;
 		else
 			m_string.push_back(vtString(str));
 		break;
-	case FTInteger:
+	case FT_Integer:
 		i = atoi(str);
 		if (iRecord < m_int.GetSize())
 			m_int[iRecord] = i;
 		else
 			m_int.Append(i);
 		break;
-	case FTDouble:
+	case FT_Double:
 		d = atof(str);
 		if (iRecord < m_double.GetSize())
 			m_double[iRecord] = d;
@@ -1529,6 +1364,50 @@ void Field::SetValueFromString(unsigned int iRecord, const char *str)
 
 /////////////////////////////////////////////////////////////////////////////
 // Helpers
+
+const char *DescribeFieldType(FieldType type)
+{
+	switch (type)
+	{
+	case FT_Boolean: return "Boolean";
+	case FT_Integer: return "Integer";
+	case FT_Float: return "Float";
+	case FT_Double: return "Double";
+	case FT_String: return "String";
+	case FT_Unknown:
+	default:
+		return "Unknown";
+	}
+}
+
+DBFFieldType ConvertFieldType(FieldType type)
+{
+	switch (type)
+	{
+	case FT_Boolean: return FTLogical;
+	case FT_Integer: return FTInteger;
+	case FT_Float: return FTDouble;
+	case FT_Double: return FTDouble;
+	case FT_String: return FTString;
+	case FT_Unknown:
+	default:
+		return FTInvalid;
+	}
+}
+
+FieldType ConvertFieldType(DBFFieldType type)
+{
+	switch (type)
+	{
+	case FTLogical: return FT_Boolean;
+	case FTInteger: return FT_Integer;
+	case FTDouble:	return FT_Double;
+	case FTString:  return FT_String;
+	case FTInvalid:
+	default:
+		return FT_Unknown;
+	}
+}
 
 /**
  * Convert a Shapelib geometry type to an OGR type.

@@ -1,7 +1,7 @@
 //
 // Features.h
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,6 +24,16 @@ enum SelectionType
 	ST_TOGGLE
 };
 
+enum FieldType
+{
+	FT_Boolean,
+	FT_Integer,
+	FT_Float,
+	FT_Double,
+	FT_String,
+	FT_Unknown
+};
+
 /**
  * This class is used to store values in memory loaded from DBF files.
  * Alternately, we could use values directly from the DBF file instead,
@@ -33,7 +43,7 @@ enum SelectionType
 class Field
 {
 public:
-	Field(const char *name, DBFFieldType ftype);
+	Field(const char *name, FieldType ftype);
 	~Field();
 
 	int AddRecord();
@@ -45,6 +55,7 @@ public:
 
 	void GetValue(unsigned int iRecord, vtString &string);
 	void GetValue(unsigned int iRecord, int &value);
+	void GetValue(unsigned int iRecord, float &value);
 	void GetValue(unsigned int iRecord, double &value);
 	void GetValue(unsigned int iRecord, bool &value);
 
@@ -53,15 +64,21 @@ public:
 	void SetValueFromString(unsigned int iRecord, const vtString &str);
 	void SetValueFromString(unsigned int iRecord, const char *str);
 
-	DBFFieldType m_type;
+	FieldType m_type;
 	int m_width, m_decimals;	// these are for remembering SHP limitations
 	vtString m_name;
 
 	Array<int> m_int;
+	Array<float> m_float;
 	Array<double> m_double;
 	vtStringArray m_string;
 	Array<bool> m_bool;
 };
+
+// Helpers
+const char *DescribeFieldType(FieldType type);
+DBFFieldType ConvertFieldType(FieldType type);
+FieldType ConvertFieldType(DBFFieldType type);
 
 // feature flags (bit flags)
 #define FF_SELECTED		1
@@ -69,57 +86,46 @@ public:
 #define FF_DELETE		4
 
 /**
- * vtFeatures contains a collection of features which are just abstract data,
+ * vtFeatureSet contains a collection of features which are just abstract data,
  * without any specific correspondence to any aspect of the physical world.
  * This is the same as a traditional GIS file (e.g. ESRI Shapefile).
- * In fact, SHP/DBF and 'shapelib' are used as the format and basic
- * functionality for this class.
  *
  * Examples: political and property boundaries, geocoded addresses,
  * flight paths, place names.
  */
-class vtFeatures
+class vtFeatureSet
 {
 public:
-	vtFeatures();
-	~vtFeatures();
+	vtFeatureSet();
+	~vtFeatureSet();
 
 	// File IO
-	bool LoadFrom(const char *filename);
 	bool SaveToSHP(const char *filename) const;
-	bool LoadFromSHP(const char *filename);
-	bool LoadHeaderFromSHP(const char *filename);
-	bool LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
-
-	bool ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
-	bool AddElementsFromDLG(class vtDLGFile *pDLG);
+	bool LoadInfoFromDBF(const char *filename);
+	bool LoadAttributesFromDBF();
+	bool LoadFromOGR(OGRDataSource *pDatasource, void progress_callback(int));
+	virtual void LoadGeomFromSHP(SHPHandle hSHP) = 0;
 
 	void SetFilename(const vtString &str) { m_strFilename = str; }
 	vtString GetFilename() const { return m_strFilename; }
 
 	// feature (entity) operations
-	void Empty();
-	int GetNumEntities() const;
-	void SetNumEntities(int iNum);
+	virtual unsigned int GetNumEntities() const = 0;
+	virtual void SetNumEntities(int iNum) = 0;
 	OGRwkbGeometryType GetGeomType() const;
 	void SetGeomType(OGRwkbGeometryType eGeomType);
+	bool AppendDataFrom(vtFeatureSet *pFromSet);
+	/**
+	 * If you know how many entities you will be adding to this FeatureSet,
+	 * is it more efficient to reserve space for that many.
+	 */
+	virtual void Reserve(int iNum) = 0;
+	virtual bool ComputeExtent(DRECT &rect) const = 0;
+	virtual void Offset(const DPoint2 &p) = 0;
+	virtual bool TransformCoords(OCT *pTransform) = 0;
+	virtual bool AppendGeometryFrom(vtFeatureSet *pFromSet) = 0;
 
-	// geometric primitives: access
-	void GetPoint(unsigned int num, DPoint3 &p) const;
-	void GetPoint(unsigned int num, DPoint2 &p) const;
-	const DLine2 &GetLine(unsigned int num) const { return m_LinePoly[num]; }
-	DLine2 &GetLine(unsigned int num) { return m_LinePoly[num]; }
-
-	// geometric primitives: create and edit
-	int AddPoint(const DPoint2 &p);
-	int AddPoint(const DPoint3 &p);
-	int AddPolyLine(const DLine2 &pl);
-	void SetPoint(unsigned int num, const DPoint2 &p);
-
-	void CopyEntity(unsigned int from, unsigned int to);
-	int FindClosestPoint(const DPoint2 &p, double epsilon);
-	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
-
+	// deletion
 	void SetToDelete(int iFeature);
 	void ApplyDeletion();
 
@@ -138,9 +144,9 @@ public:
 	int NumSelected();
 	void DeselectAll();
 	void InvertSelection();
-	int DoBoxSelect(const DRECT &rect, SelectionType st);
 	int SelectByCondition(int iField, int iCondition, const char *szValue);
 	void DeleteSelected();
+	int DoBoxSelect(const DRECT &rect, SelectionType st);
 
 	// picking (alternate form of selection)
 	void Pick(unsigned int iEnt, bool set = true)
@@ -161,8 +167,9 @@ public:
 	Field *GetField(int i) { return m_fields.GetAt(i); }
 	Field *GetField(const char *name);
 	int GetFieldIndex(const char *name) const;
-	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
+	int AddField(const char *name, FieldType ftype, int string_length = 40);
 	int AddRecord();
+	void DeleteFields();
 
 	void SetValue(unsigned int record, unsigned int field, const char *string);
 	void SetValue(unsigned int record, unsigned int field, int value);
@@ -174,29 +181,161 @@ public:
 	void SetValueFromString(unsigned int iRecord, unsigned int iField, const char *str);
 
 	int GetIntegerValue(unsigned int iRecord, unsigned int iField) const;
+	float GetFloatValue(unsigned int iRecord, unsigned int iField) const;
 	double GetDoubleValue(unsigned int iRecord, unsigned int iField) const;
 	bool GetBoolValue(unsigned int iRecord, unsigned int iField) const;
 
+	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 	vtProjection &GetAtProjection() { return m_proj; }
 
 protected:
-	void _ShrinkGeomArraySize(int size);
+	// these must be implemented for each type of geometry
+	virtual bool IsInsideRect(int iElem, const DRECT &rect) = 0;
+	virtual void CopyGeometry(unsigned int from, unsigned int to) = 0;
+	virtual void SaveGeomToSHP(SHPHandle hSHP) const = 0;
+
+	void CopyEntity(unsigned int from, unsigned int to);
+
 	vtString	m_dbfname;
 	int			m_iSHPElems, m_iSHPFields;
 
 	OGRwkbGeometryType		m_eGeomType;
-	DLine2			m_Point2;		// wkbPoint
-	DLine3			m_Point3;		// wkbPoint25D
-	DPolyArray2		m_LinePoly;		// wkbLineString, wkbPolygon
-
 	Array<unsigned char> m_Flags;
-
 	Array<Field*> m_fields;
 
 	vtProjection	m_proj;
 
 	// remember the filename these feature were loaded from or saved to
 	vtString	m_strFilename;
+};
+
+class vtFeatureSetPoint2D : public vtFeatureSet
+{
+public:
+	vtFeatureSetPoint2D();
+
+	unsigned int GetNumEntities() const;
+	void SetNumEntities(int iNum);
+	void Reserve(int iNum);
+	bool ComputeExtent(DRECT &rect) const;
+	void Offset(const DPoint2 &p);
+	bool TransformCoords(OCT *pTransform);
+	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
+
+	int AddPoint(const DPoint2 &p);
+	void SetPoint(unsigned int num, const DPoint2 &p);
+	DPoint2 &GetPoint(unsigned int num) { return m_Point2[num]; }
+	const DPoint2 &GetPoint(unsigned int num) const { return m_Point2[num]; }
+
+	int FindClosestPoint(const DPoint2 &p, double epsilon);
+	void FindAllPointsAtLocation(const DPoint2 &p, Array<int> &found);
+	void GetPoint(unsigned int num, DPoint2 &p) const;
+
+	// implement necessary virtual methods
+	virtual bool IsInsideRect(int iElem, const DRECT &rect);
+	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+
+protected:
+	DLine2	m_Point2;	// wkbPoint
+};
+
+class vtFeatureSetPoint3D : public vtFeatureSet
+{
+public:
+	vtFeatureSetPoint3D();
+
+	unsigned int GetNumEntities() const;
+	void SetNumEntities(int iNum);
+	void Reserve(int iNum);
+	bool ComputeExtent(DRECT &rect) const;
+	void Offset(const DPoint2 &p);
+	bool TransformCoords(OCT *pTransform);
+	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
+
+	int AddPoint(const DPoint3 &p);
+	void GetPoint(unsigned int num, DPoint3 &p) const;
+	DPoint3 &GetPoint(unsigned int num) { return m_Point3[num]; }
+	const DPoint3 &GetPoint(unsigned int num) const { return m_Point3[num]; }
+	bool ComputeHeightRange(float &fmin, float &fmax);
+
+	// implement necessary virtual methods
+	virtual bool IsInsideRect(int iElem, const DRECT &rect);
+	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+
+protected:
+	DLine3	m_Point3;	// wkbPoint25D
+};
+
+class vtFeatureSetLineString : public vtFeatureSet
+{
+public:
+	vtFeatureSetLineString();
+
+	unsigned int GetNumEntities() const;
+	void SetNumEntities(int iNum);
+	void Reserve(int iNum);
+	bool ComputeExtent(DRECT &rect) const;
+	void Offset(const DPoint2 &p);
+	bool TransformCoords(OCT *pTransform);
+	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
+
+	int AddPolyLine(const DLine2 &pl);
+	const DLine2 &GetPolyLine(unsigned int num) const { return m_Line[num]; }
+	DLine2 &GetPolyLine(unsigned int num) { return m_Line[num]; }
+
+	// implement necessary virtual methods
+	virtual bool IsInsideRect(int iElem, const DRECT &rect);
+	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+
+protected:
+	DLine2Array	m_Line;		// wkbLineString
+};
+
+class vtFeatureSetPolygon : public vtFeatureSet
+{
+public:
+	vtFeatureSetPolygon();
+
+	unsigned int GetNumEntities() const;
+	void SetNumEntities(int iNum);
+	void Reserve(int iNum);
+	bool ComputeExtent(DRECT &rect) const;
+	void Offset(const DPoint2 &p);
+	bool TransformCoords(OCT *pTransform);
+	bool AppendGeometryFrom(vtFeatureSet *pFromSet);
+
+	int AddPolygon(const DPolygon2 &poly);
+	void SetPolygon(unsigned int num, const DPolygon2 &poly) { m_Poly[num] = poly; }
+	const DPolygon2 &GetPolygon(unsigned int num) const { return m_Poly[num]; }
+	DPolygon2 &GetPolygon(unsigned int num) { return m_Poly[num]; }
+	int FindSimplePolygon(const DPoint2 &p) const;
+
+	// implement necessary virtual methods
+	virtual bool IsInsideRect(int iElem, const DRECT &rect);
+	virtual void CopyGeometry(unsigned int from, unsigned int to);
+	virtual void SaveGeomToSHP(SHPHandle hSHP) const;
+	virtual void LoadGeomFromSHP(SHPHandle hSHP);
+
+protected:
+	DPolyArray	m_Poly;		// wkbPolygon
+};
+
+class vtFeatureLoader
+{
+public:
+	vtFeatureSet *LoadFrom(const char *filename);
+	vtFeatureSet *LoadFromSHP(const char *filename);
+	vtFeatureSet *LoadHeaderFromSHP(const char *filename);
+	vtFeatureSet *LoadWithOGR(const char *filename, void progress_callback(int) = NULL);
+
+	vtFeatureSet *ReadFeaturesFromWFS(const char *szServerURL, const char *layername);
+//	vtFeatureSet *CreateFromDLG(class vtDLGFile *pDLG);
 };
 
 // Helpers
