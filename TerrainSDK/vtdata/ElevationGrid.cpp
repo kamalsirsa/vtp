@@ -14,15 +14,7 @@ using namespace std;
 #include "ByteOrder.h"
 #include "vtDIB.h"
 
-#define meters_per_latitude	111300.0f
-
-#ifndef max
-#define max(a,b)	(((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)	(((a) < (b)) ? (a) : (b))
-#endif
+const float meters_per_latitude = 111300.0f;
 
 //////////////////////////////////////////////////
 

@@ -58,11 +58,6 @@ typedef struct
 } GTOPOHeader;
 
 
-#ifndef min
-#define min(a,b)	(((a) < (b)) ? (a) : (b))
-#endif
-
-
 /**
  * Load from a file whose type is not known a priori.  This will end up
  * calling one of the Load* member functions.
