@@ -151,7 +151,8 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	}
 	if (type == SHPT_POINTZ)
 	{
-		str.Format("%.2lf", p.z);
+		double scale = GetMetersPerUnit((LinearUnits) (m_iVUnits+1));
+		str.Format("%.2lf", p.z / scale);
 		GetList()->SetItem(next, field++, (const char *) str);
 	}
 
@@ -200,7 +201,13 @@ void FeatInfoDlg::OnDeleteHighlighted( wxCommandEvent &event )
 
 void FeatInfoDlg::OnChoiceVertical( wxCommandEvent &event )
 {
-	
+	TransferDataFromWindow();
+	if (m_iShow == 0)
+		ShowSelected();
+	else if (m_iShow == 1)
+		Clear();
+	else if (m_iShow == 2)
+		ShowAll();
 }
 
 void FeatInfoDlg::OnChoiceShow( wxCommandEvent &event )
