@@ -6,10 +6,12 @@
 #ifndef ENVIRO_ENGINESH
 #define ENVIRO_ENGINESH
 
-#include "vtlib/core/LocalGrid.h"
-#include "vtlib/core/Roads.h"
-#include "vtlib/core/Terrain.h"
-#include "SwapEngine.h"
+#include "vtlib/core/Engine.h"
+
+class NodeGeom;
+class RoadGeom;
+class vtRoute;
+class vtHeightField;
 
 enum AirportCodes {ITO, KOA, MUE, UPP};
 
@@ -84,13 +86,11 @@ public:
 class RouteFollowerEngine : public vtEngine
 {
 public:
-	RouteFollowerEngine(vtRoute* route, vtCamera* camera);
+	RouteFollowerEngine(vtRoute* route);
 	void Eval();
 
 	vtHeightField* m_pHeightField;
 	vtRoute* m_pRoute;
-	vtCamera* m_pCamera;
-	bool m_bFollowerOn;
 	bool m_bFirstTime;
 	long m_lnext;
 };
