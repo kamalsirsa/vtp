@@ -179,6 +179,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_bAlwaysMove = false;
 	m_bFullscreen = false;
 	m_bTopDown = false;
+	m_ToggledMode = MM_NONE;
 
 	VTLOG("Frame window: creating menus and toolbars.\n");
 	CreateMenus();
@@ -365,6 +366,8 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		m_canvas->m_bRunning = false;
 		Destroy();
 	}
+	if (key == ' ')
+		ToggleNavigate();
 
 	// Keyboard shortcuts ("accelerators")
 	if (key == 'a')
@@ -376,18 +379,10 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			g_App.m_pTFlyer->SetMaintainHeight(0);
 		}
 	}
+	// Toggle grab-pivot
 	if (key == 'd')
-	{
-		// Toggle grab-pivot
-		if (g_App.m_mode == MM_NAVIGATE)
-			g_App.EnableFlyerEngine(false);
-		if (g_App.m_nav == NT_Normal)
-			g_App.m_nav = NT_Grab;
-		else
-			g_App.m_nav = NT_Normal;
-		if (g_App.m_mode == MM_NAVIGATE)
-			g_App.EnableFlyerEngine(true);
-	}
+		g_App.SetNavType(g_App.m_nav == NT_Normal ? NT_Grab : NT_Normal);
+
 	if (key == 'f')
 		ChangeFlightSpeed(1.8f);
 	if (key == 's')
@@ -433,6 +428,18 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	{
 		// dump camera info
 		g_App.DumpCameraInfo();
+	}
+}
+
+void vtFrame::ToggleNavigate()
+{
+	MouseMode current = g_App.m_mode;
+	if (current == MM_NAVIGATE && m_ToggledMode != MM_NAVIGATE)
+		SetMode(m_ToggledMode);
+	else
+	{
+		m_ToggledMode = current;
+		SetMode(MM_NAVIGATE);
 	}
 }
 
@@ -555,12 +562,7 @@ void vtFrame::OnUpdateViewMaintain(wxUpdateUIEvent& event)
 
 void vtFrame::OnViewGrabPivot(wxCommandEvent& event)
 {
-	if (g_App.m_nav == NT_Normal)
-		g_App.m_nav = NT_Grab;
-	else
-		g_App.m_nav = NT_Normal;
-
-	g_App.EnableFlyerEngine(true);
+	g_App.SetNavType(g_App.m_nav == NT_Normal ? NT_Grab : NT_Normal);
 }
 
 void vtFrame::OnUpdateViewGrabPivot(wxUpdateUIEvent& event)
@@ -668,7 +670,6 @@ void vtFrame::OnUpdateViewLocations(wxUpdateUIEvent& event)
 void vtFrame::OnToolsSelect(wxCommandEvent& event)
 {
 	SetMode(MM_SELECT);
-	g_App.EnableFlyerEngine(false);
 }
 
 void vtFrame::OnUpdateToolsSelect(wxUpdateUIEvent& event)
@@ -680,7 +681,6 @@ void vtFrame::OnUpdateToolsSelect(wxUpdateUIEvent& event)
 void vtFrame::OnToolsFences(wxCommandEvent& event)
 {
 	SetMode(MM_FENCES);
-	g_App.EnableFlyerEngine(false);
 }
 
 void vtFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
@@ -692,7 +692,6 @@ void vtFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
 void vtFrame::OnToolsRoutes(wxCommandEvent& event)
 {
 	SetMode(MM_ROUTES);
-	g_App.EnableFlyerEngine(false);
 }
 
 void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
@@ -704,7 +703,6 @@ void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
 void vtFrame::OnToolsTrees(wxCommandEvent& event)
 {
 	SetMode(MM_PLANTS);
-	g_App.EnableFlyerEngine(false);
 }
 
 void vtFrame::OnUpdateToolsTrees(wxUpdateUIEvent& event)
@@ -716,7 +714,6 @@ void vtFrame::OnUpdateToolsTrees(wxUpdateUIEvent& event)
 void vtFrame::OnToolsMove(wxCommandEvent& event)
 {
 	SetMode(MM_MOVE);
-	g_App.EnableFlyerEngine(false);
 }
 
 void vtFrame::OnUpdateToolsMove(wxUpdateUIEvent& event)
@@ -729,7 +726,6 @@ void vtFrame::OnUpdateToolsMove(wxUpdateUIEvent& event)
 void vtFrame::OnToolsNavigate(wxCommandEvent& event)
 {
 	SetMode(MM_NAVIGATE);
-	g_App.EnableFlyerEngine(true);
 }
 
 void vtFrame::OnUpdateToolsNavigate(wxUpdateUIEvent& event)

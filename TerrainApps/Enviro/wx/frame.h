@@ -33,6 +33,7 @@ public:
 	void CreateToolbar();
 
 	void SetMode(MouseMode mode);
+	void ToggleNavigate();
 	void ChangeFlightSpeed(float factor);
 	void ChangeTerrainDetail(bool bIncrease);
 	void SetFullScreen(bool bFull);
@@ -134,6 +135,7 @@ public:
 	CameraDlg			*m_pCameraDlg;
 	LocationDlg			*m_pLocationDlg;
 	BuildingDlg3d		*m_pBuildingDlg;
+	MouseMode			m_ToggledMode;
 
 protected:
 	bool m_bMaintainHeight;
