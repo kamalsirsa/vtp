@@ -336,12 +336,15 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtBitmapBase *pBM, const FPoint3
 				v3.Normalize();
 
 				shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
-				shade /= .7071f;
-				shade = 1.0f + ((shade - 1.0f) * 2.0f);
-				if (shade < 0.3f)	// clip - don't shade down below ambient level
-					shade = 0.3f;
-				else if (shade > 1.2f)
-					shade = 1.2f;
+
+				// boost with ambient light
+				shade += 0.4f;
+
+				// clip - don't drop below ambient, or overbrighten
+				if (shade < 0.4f)
+					shade = 0.4f;
+				else if (shade > 1.1f)
+					shade = 1.1f;
 			}
 			else
 				shade = 1.0f;
