@@ -564,28 +564,35 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMeshFactory *pMF, const DPoint2 &g1, con
 	double dot = p1.Dot(p2);
 	double angle = acos(dot);
 	int points = (int) (angle * 3000);
-	if (points == 0)
-		return 0.0f;
-	if (points < 3)
-		points = 3;
+	if (points < 2)
+		points = 2;
 
-	// calculate the axis of rotation
-	DPoint3 cross = p1.Cross(p2);
-	cross.Normalize();
-	double angle_spacing = angle / (points-1);
-	DMatrix4 rot4;
-	rot4.AxisAngle(cross, angle_spacing);
-	DMatrix3 rot3;
-	rot3.SetByMatrix4(rot4);
-
-	// curved arc on great-circle path
 	pMF->PrimStart();
-	for (int i = 0; i < points; i++)
+	if (points == 2)
 	{
-		FPoint3 fp = p1 * 1.0002;
-		pMF->AddVertex(fp);
-		rot3.Transform(p1, p2);
-		p1 = p2;
+		// simple case
+		pMF->AddVertex(p1*1.0002);
+		pMF->AddVertex(p2*1.0002);
+	}
+	else
+	{
+		// calculate the axis of rotation
+		DPoint3 cross = p1.Cross(p2);
+		cross.Normalize();
+		double angle_spacing = angle / (points-1);
+		DMatrix4 rot4;
+		rot4.AxisAngle(cross, angle_spacing);
+		DMatrix3 rot3;
+		rot3.SetByMatrix4(rot4);
+
+		// curved arc on great-circle path
+		for (int i = 0; i < points; i++)
+		{
+			FPoint3 fp = p1 * 1.0002;
+			pMF->AddVertex(fp);
+			rot3.Transform(p1, p2);
+			p1 = p2;
+		}
 	}
 	pMF->PrimEnd();
 	return angle;
