@@ -186,14 +186,16 @@ wxFrame(parent, -1, title, pos, size, style)
 	CreateStatusBar();
 
 	// Make a vtGLCanvas
-#ifdef __WXMOTIF__
-	// FIXME:  Can remove this special case once wxMotif 2.3 is released
+/*#ifdef __WXMOTIF__
+	// FIXME:  Can remove this special case once wxMotif 2.3 is released?
 	int gl_attrib[20] = { GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
 		GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
 		GLX_DOUBLEBUFFER, None };
-#else
-	int *gl_attrib = NULL;
-#endif
+#else */
+
+	// We definitely want full color and a 24-bit Z-buffer!
+	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
+		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
 
 	VTLOG("Frame window: creating view canvas.\n");
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
