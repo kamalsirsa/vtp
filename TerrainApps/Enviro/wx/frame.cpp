@@ -201,6 +201,7 @@ EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 // Popup
 EVT_MENU(ID_POPUP_PROPERTIES, vtFrame::OnPopupProperties)
 EVT_MENU(ID_POPUP_FLIP, vtFrame::OnPopupFlip)
+EVT_MENU(ID_POPUP_RELOAD, vtFrame::OnPopupReload)
 EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
 END_EVENT_TABLE()
 
@@ -1398,12 +1399,21 @@ void vtFrame::ShowPopupMenu(const IPoint2 &pos)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructures();
-	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 
 	wxMenu *popmenu = new wxMenu;
 	popmenu->Append(ID_POPUP_PROPERTIES, _T("Properties"));
-	if (sa && sa->NumSelected() != 0)
-		popmenu->Append(ID_POPUP_FLIP, _T("Flip Footprint Direction"));
+	if (sa)
+	{
+		int sel = sa->GetFirstSelected();
+		if (sel != -1)
+		{
+			vtStructureType type = sa->GetAt(sel)->GetType();
+			if (type == ST_BUILDING)
+				popmenu->Append(ID_POPUP_FLIP, _T("Flip Footprint Direction"));
+			if (type == ST_INSTANCE)
+				popmenu->Append(ID_POPUP_RELOAD, _T("Reload from Disk"));
+		}
+	}
 	popmenu->AppendSeparator();
 	popmenu->Append(ID_POPUP_DELETE, _T("Delete"));
 
@@ -1415,42 +1425,36 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 {
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *sa = pTerr->GetStructures();
-	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
-
-	int i, count;
-	if (sa && sa->NumSelected() != 0)
+	if (sa)
 	{
-		count = sa->GetSize();
-		vtStructure *str;
-		vtBuilding3d *bld;
-		vtFence3d *fen;
-		for (i = 0; i < count; i++)
+		int sel = sa->GetFirstSelected();
+		if (sel != -1)
 		{
-			str = sa->GetAt(i);
-			if (!str->IsSelected())
-				continue;
+			vtBuilding3d *bld;
+			vtFence3d *fen;
 
-			bld = sa->GetBuilding(i);
-			fen = sa->GetFence(i);
+			bld = sa->GetBuilding(sel);
+			fen = sa->GetFence(sel);
 			if (bld)
 			{
 				m_pBuildingDlg->Setup(bld, pTerr->GetHeightField());
 				m_pBuildingDlg->Show(true);
-				return;
 			}
 			if (fen)
 			{
 				// TODO
 				m_pFenceDlg->Show(true);
-				return;
 			}
+			return;
 		}
 	}
+
+	vtPlantInstanceArray3d &plants = pTerr->GetPlantInstances();
 	if (plants.NumSelected() != 0)
 	{
 		int found = -1;
-		count = plants.GetSize();
-		for (i = 0; i < count; i++)
+		unsigned int count = plants.GetSize();
+		for (unsigned int i = 0; i < count; i++)
 		{
 			vtPlantInstance3d *inst3d = plants.GetInstance3d(i);
 			if (inst3d->IsSelected())
@@ -1492,6 +1496,27 @@ void vtFrame::OnPopupFlip(wxCommandEvent& event)
 		if (!bld)
 			continue;
 		bld->FlipFootprintDirection();
+		structures->ConstructStructure(structures->GetStructure3d(i));
+	}
+}
+
+void vtFrame::OnPopupReload(wxCommandEvent& event)
+{
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtStructureArray3d *structures = pTerr->GetStructures();
+
+	int count = structures->GetSize();
+	vtStructure *str;
+	vtStructInstance3d *inst;
+	for (int i = 0; i < count; i++)
+	{
+		str = structures->GetAt(i);
+		if (!str->IsSelected())
+			continue;
+
+		inst = structures->GetInstance(i);
+		if (!inst)
+			continue;
 		structures->ConstructStructure(structures->GetStructure3d(i));
 	}
 }

@@ -153,6 +153,7 @@ public:
 
 	void OnPopupProperties(wxCommandEvent& event);
 	void OnPopupFlip(wxCommandEvent& event);
+	void OnPopupReload(wxCommandEvent& event);
 	void OnPopupDelete(wxCommandEvent& event);
 
 	void OnChar(wxKeyEvent& event);
