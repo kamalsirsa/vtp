@@ -257,7 +257,7 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     wxButton *item29 = new wxButton( parent, ID_MODIFY_FACADE, _("Facade"), wxDefaultPosition, wxDefaultSize, 0 );
     item28->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_FACADE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY|wxTE_PROCESS_ENTER );
+    wxTextCtrl *item30 = new wxTextCtrl( parent, ID_FACADE, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_PROCESS_ENTER );
     item28->Add( item30, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     item22->Add( item28, 0, wxALIGN_CENTER_VERTICAL, 5 );
