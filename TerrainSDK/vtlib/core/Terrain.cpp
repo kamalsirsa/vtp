@@ -877,7 +877,7 @@ vtTransform *vtTerrain::LoadModel(const char *filename)
 		VTLOG("Couldn't locate file '%s'\n", filename);
 	}
 	else
-		node = vtLoadModel(path);
+		node = vtNode::LoadModel(path);
 
 	if (node)
 	{
