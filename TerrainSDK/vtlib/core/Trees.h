@@ -41,13 +41,16 @@ public:
 	~vtPlantAppearance3d();
 	vtPlantAppearance3d(const vtPlantAppearance &v);
 
-	void LoadAndCreate(const vtStringArray &paths, float fTreeScale,
-					   bool bShadows, bool bBillboards);
+	void CheckAvailability();
+	void LoadAndCreate();
 	bool GenerateGeom(vtTransform *container);
+	bool IsAvailable() { return m_bAvailable; }
+
+	static float s_fPlantScale;
+	static bool  s_bPlantShadows;
 
 protected:
-	vtMesh *CreateTreeMesh(float fTreeScale, bool bShadows,
-						   bool bBillboards);
+	vtMesh *CreateTreeMesh(float fTreeScale, bool bShadows);
 	void _Defaults();
 
 	vtMaterialArray	*m_pMats;
@@ -55,8 +58,10 @@ protected:
 	int				m_iMatIdx;
 	vtNode			*m_pExternal;
 #if SUPPORT_XFROG
-	CFrogModel		*m_pFrogModel;
+	CFrogModel	*m_pFrogModel;
 #endif
+	bool m_bAvailable;
+	bool m_bCreated;
 };
 
 /**
@@ -75,6 +80,9 @@ public:
 	vtPlantAppearance3d *GetRandomAppearance();
 	vtPlantAppearance3d *GetAppearance(int i) const { return (vtPlantAppearance3d *)m_Apps[i]; };
 
+	void CheckAvailability();
+	int NumAvailableInstances();
+
 	virtual void AddAppearance(AppearType type, const char *filename, float width, float height,
 		float shadow_radius, float shadow_darkness);
 };
@@ -92,12 +100,11 @@ public:
 	// copy operator
 	vtSpeciesList3d &operator=(const vtSpeciesList &v);
 
-	void CreatePlantSurfaces(const vtStringArray &paths, float fTreeScale,
-		bool bShadows, bool bBillboards);
+	int CheckAvailability();
+	void CreatePlantSurfaces();
 
 	// override / replace a few methods of vtSpeciesList
 	vtPlantSpecies3d *GetSpecies(unsigned int i) const;
-	vtPlantAppearance3d *GetAppearanceByName(const char *szName, float fHeight);
 	void AddSpecies(const char *common_name, float max_height);
 
 //	vtGeom *plant_nursery(vtHeightField *pHeightField, float lat, float lon);

@@ -22,6 +22,9 @@
 
 #define SHADOW_HEIGHT		0.1f	// distance above groundpoint in meters
 
+float vtPlantAppearance3d::s_fPlantScale = 1.0f;
+bool vtPlantAppearance3d::s_bPlantShadows = false;
+
 
 /////////////////////////////////////////////////////////////////////////////
 // vtPlantAppearance3d
@@ -68,19 +71,49 @@ void vtPlantAppearance3d::_Defaults()
 	m_pFrogModel = NULL;
 #endif
 	m_pExternal = NULL;
+	m_bAvailable = false;
+	m_bCreated = false;
 }
 
-void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
-		float fTreeScale, bool bShadows, bool bBillboards)
+// Helper
+vtString FindPlantModel(const vtString &filename)
 {
-	s_fTreeScale = fTreeScale;
+	vtString name = "PlantModels/";
+	name += filename;
+	return FindFileOnPaths(vtGetDataPath(), name);
+}
+
+void vtPlantAppearance3d::CheckAvailability()
+{
+	if (m_eType == AT_BILLBOARD || m_eType == AT_MODEL)
+	{
+		// check if file exists and is readable
+		vtString fname = FindPlantModel(m_filename);
+		if (fname == "")
+			return;
+
+		FILE *fp = fopen(fname, "rb");
+		if (fp != NULL)
+		{
+			m_bAvailable = true;
+			fclose(fp);
+		}
+	}
+	else if (m_eType == AT_XFROG)
+	{
+	}
+}
+
+void vtPlantAppearance3d::LoadAndCreate()
+{
+	// only need to create once
+	if (m_bCreated)
+		return;
 
 	if (m_eType == AT_BILLBOARD)
 	{
-		vtString name = "PlantModels/";
-		name += m_filename;
-		VTLOG("\tLoading plant texture '%s' ", (const char *) name);
-		vtString fname = FindFileOnPaths(paths, name);
+		VTLOG("\tLoading plant texture '%s' ", (const char *) m_filename);
+		vtString fname = FindPlantModel(m_filename);
 
 		m_pMats = new vtMaterialArray();
 
@@ -94,26 +127,26 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 		if (m_iMatIdx == -1)
 			VTLOG(" Failed.\n");
 		else
+		{
 			VTLOG(" OK.\n");
+			m_bCreated = true;
+		}
 
-		if (bShadows)
+		if (s_bPlantShadows)
 		{
 			// create shadow material (1)
 			m_pMats->AddShadowMaterial(m_shadow_darkness);
 		}
 
 		// create a surface object to represent the tree
-		m_pMesh = CreateTreeMesh(fTreeScale, bShadows, bBillboards);
+		m_pMesh = CreateTreeMesh(s_fPlantScale, s_bPlantShadows);
 	}
 	else if (m_eType == AT_XFROG)
 	{
 #if SUPPORT_XFROG
-		char pname[160];
-		strcpy(pname, datapath);
-		strcat(pname, "PlantModels/");
-
 		// xfrog plant
-		m_pFrogModel = new CFrogModel(pname, m_filename);
+		vtString fname = FindPlantModel(vtGetDataPath(), m_filename);
+		m_pFrogModel = new CFrogModel(fname, m_filename);
 #endif
 	}
 	else if (m_eType == AT_MODEL)
@@ -121,15 +154,12 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
 		m_pExternal = vtNode::LoadModel(m_filename);
 		if (!m_pExternal)
 		{
-			vtString fname = "PlantModels/";
-			fname += m_filename;
-			// if not directly resolvable, look on data paths
-			vtString fullpath = FindFileOnPaths(vtGetDataPath(), fname);
-			if (fullpath != "")
-				m_pExternal = vtNode::LoadModel(fullpath);
+			vtString fname = FindPlantModel(m_filename);
+			if (fname != "")
+				m_pExternal = vtNode::LoadModel(fname);
 		}
-		if (!m_pExternal)
-			return;
+		if (m_pExternal != NULL)
+			m_bCreated = true;
 	}
 }
 
@@ -137,8 +167,7 @@ void vtPlantAppearance3d::LoadAndCreate(const vtStringArray &paths,
  * Create an object to represent a textured plant billboard.
  * Makes two intersecting polygons (4 triangles).
  */
-vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
-											bool bBillboards)
+vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows)
 {
 	// first determine how many vertices we'll need for this mesh
 	int vtx_count = 0;
@@ -175,32 +204,30 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 	}
 
 	// the do the rest of the billboard geometry: two squares
-	if (bBillboards)
-	{
-		vstart = vcount;
+	vstart = vcount;
 
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, 0.0f, 0), 0.0f, 0.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, 0.0f, 0), 1.0f, 0.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, h, 0), 0.0f, 1.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, h, 0), 1.0f, 1.0f);
-		//
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f, -w2), 0.0f, 0.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f,  w2), 1.0f, 0.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h, -w2), 0.0f, 1.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h,  w2), 1.0f, 1.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, 0.0f, 0), 0.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, 0.0f, 0), 1.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, h, 0), 0.0f, 1.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, h, 0), 1.0f, 1.0f);
+	//
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f, -w2), 0.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f,  w2), 1.0f, 0.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h, -w2), 0.0f, 1.0f);
+	pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h,  w2), 1.0f, 1.0f);
 
 #if 0
-		// 4 triangles
-		pTreeMesh->AddTri(0, vstart+0, vstart+1, vstart+2);
-		pTreeMesh->AddTri(0, vstart+2, vstart+1, vstart+3);
-		pTreeMesh->AddTri(0, vstart+4, vstart+5, vstart+6);
-		pTreeMesh->AddTri(0, vstart+6, vstart+5, vstart+7);
+	// 4 triangles
+	pTreeMesh->AddTri(0, vstart+0, vstart+1, vstart+2);
+	pTreeMesh->AddTri(0, vstart+2, vstart+1, vstart+3);
+	pTreeMesh->AddTri(0, vstart+4, vstart+5, vstart+6);
+	pTreeMesh->AddTri(0, vstart+6, vstart+5, vstart+7);
 #else
-		// 2 fans
-		pTreeMesh->AddFan(vstart+0, vstart+1, vstart+3, vstart+2);
-		pTreeMesh->AddFan(vstart+4, vstart+5, vstart+7, vstart+6);
+	// 2 fans
+	pTreeMesh->AddFan(vstart+0, vstart+1, vstart+3, vstart+2);
+	pTreeMesh->AddFan(vstart+4, vstart+5, vstart+7, vstart+6);
 #endif
-	}
+
 	return pTreeMesh;
 }
 
@@ -219,7 +246,7 @@ bool vtPlantAppearance3d::GenerateGeom(vtTransform *container)
 	{
 #if SUPPORT_XFROG
 		pGeom = m_pFrogModel->CreateShape(1.0f);
-		float factor = s_fTreeScale;
+		float factor = s_fPlantScale;
 		pGeom->Scale(factor, factor, factor);
 #endif
 	}
@@ -316,6 +343,20 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetRandomAppearance()
 	return GetAppearanceByHeight(height);
 }
 
+void vtPlantSpecies3d::CheckAvailability()
+{
+	for (unsigned int i = 0; i < NumAppearances(); i++)
+		GetAppearance(i)->CheckAvailability();
+}
+
+int vtPlantSpecies3d::NumAvailableInstances()
+{
+	int num = 0;
+	for (unsigned int i = 0; i < NumAppearances(); i++)
+		if (GetAppearance(i)->IsAvailable())
+			num++;
+	return num;
+}
 
 void vtPlantSpecies3d::AddAppearance(AppearType type, const char *filename,
 	float width, float height, float shadow_radius, float shadow_darkness)
@@ -406,8 +447,21 @@ void vtSpeciesList3d::AddSpecies(const char *common_name, float max_height)
 #endif
 
 
-void vtSpeciesList3d::CreatePlantSurfaces(const vtStringArray &paths,
-		float fTreeScale, bool bShadows, bool bBillboards)
+int vtSpeciesList3d::CheckAvailability()
+{
+	int num = 0;
+	for (unsigned int i = 0; i < NumSpecies(); i++)
+	{
+		GetSpecies(i)->CheckAvailability();
+		num += GetSpecies(i)->NumAvailableInstances();
+	}
+	return num;
+}
+
+/**
+ * Create all of the appearances for all the species in this species list.
+ */
+void vtSpeciesList3d::CreatePlantSurfaces()
 {
 	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
@@ -416,27 +470,9 @@ void vtSpeciesList3d::CreatePlantSurfaces(const vtStringArray &paths,
 		for (int j = 0; j < iApps; j++)
 		{
 			vtPlantAppearance3d *pApp = pSpecies->GetAppearance(j);
-			pApp->LoadAndCreate(paths, fTreeScale, bShadows, bBillboards);
+			pApp->LoadAndCreate();
 		}
 	}
-}
-
-
-//
-// Look up an appropriate plant appearance, given a common name and a requested height
-//
-vtPlantAppearance3d *vtSpeciesList3d::GetAppearanceByName(const char *szName, float fHeight)
-{
-	for (unsigned int i = 0; i < NumSpecies(); i++)
-	{
-		vtPlantSpecies3d *ps = GetSpecies(i);
-		if (!strcmp(szName, ps->GetCommonName()))
-		{
-			// found it
-			return ps->GetAppearanceByHeight(fHeight);
-		}
-	}
-	return NULL;
 }
 
 
@@ -573,6 +609,9 @@ bool vtPlantInstanceArray3d::CreatePlantNode(unsigned int i)
 	vtPlantAppearance3d *pApp = ps->GetAppearanceByHeight(size);
 	if (!pApp)
 		return false;
+
+	// confirm that it is loaded and ready to use
+	pApp->LoadAndCreate();
 
 	if (!inst3d->m_pContainer)
 		inst3d->m_pContainer = new vtTransform();
