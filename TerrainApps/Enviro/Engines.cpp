@@ -3,7 +3,7 @@
 //
 // Engines used by Enviro
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -460,6 +460,82 @@ bool GlobePicker::GetCurrentEarthPos(DPoint3 &p)
 	if (m_bOnTerrain)
 		p = m_EarthPos;
 	return m_bOnTerrain;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+FlatFlyer::FlatFlyer()
+{
+	m_bDrag = false;
+	m_bZoom = false;
+}
+
+void FlatFlyer::OnMouse(vtMouseEvent &event)
+{
+	int previous = m_buttons;
+
+	vtLastMouse::OnMouse(event);
+
+	//  Left button down
+	bool bLeft = (m_buttons & VT_LEFT) != 0;
+	bool bRight = (m_buttons & VT_RIGHT) != 0;
+
+	if (!bLeft && !bRight)
+	{
+		m_bDrag = false;
+		m_bZoom = false;
+	}
+
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (!pTarget)
+		return;
+
+	if (bLeft || bRight)
+	{
+		if (m_buttons != previous)
+		{
+			// Previously a different mouse button was down, so capture
+			//  the starting state.
+			m_start_wp = pTarget->GetTrans();
+			m_startpos = m_pos;
+		}
+		if (!bLeft && bRight)
+		{
+			m_bDrag = true;
+			m_bZoom = false;
+		}
+		if (bLeft && bRight)
+		{
+			m_bDrag = false;
+			m_bZoom = true;
+		}
+	}
+}
+
+void FlatFlyer::Eval()
+{
+	vtTransform *pTarget = (vtTransform*) GetTarget();
+	if (!pTarget)
+		return;
+
+	FPoint3 pos = m_start_wp;
+	if (m_bDrag)
+	{
+		// Consider XZ plane of ray from initial eye to ground
+		float dx = -(m_pos.x - m_startpos.x) * 0.0015;
+		float dy = (m_pos.y - m_startpos.y) * 0.0015;
+
+		pos.x += (dx * (pos.z-0.8));
+		pos.y += (dy * (pos.z-0.8));
+		pTarget->SetTrans(pos);
+	}
+	if (m_bZoom)
+	{
+		float dz = -(m_pos.y - m_startpos.y) * 0.02;
+		pos.z += dz;
+
+		pTarget->SetTrans(pos);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////

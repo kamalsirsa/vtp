@@ -146,6 +146,23 @@ protected:
 
 ///////////////////////////////////////////////////
 
+class FlatFlyer : public vtLastMouse
+{
+public:
+	FlatFlyer();
+
+	void Eval();
+	void OnMouse(vtMouseEvent &event);
+
+protected:
+	bool m_bDrag;
+	bool m_bZoom;
+	FPoint3 m_start_wp;
+	IPoint2 m_startpos;
+};
+
+///////////////////////////////////////////////////
+
 class GrabFlyer : public vtTerrainFlyer
 {
 public:
