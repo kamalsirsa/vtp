@@ -222,6 +222,13 @@ bool vtScene::GetGlobalWireframe()
 
 vtNode *vtLoadModel(const char *filename)
 {
+	// Temporary workaround for OSG OBJ-MTL reader which doesn't like
+	// backslashes in the version we're using
+	char newname[500];
+	strcpy(newname, filename);
+	for (int i = 0; i < strlen(filename); i++)
+		if (newname[i] == '\\') newname[i] = '/';
+
 	static 	StateSet *normstate = NULL;
 
 	if (!normstate)
@@ -230,11 +237,11 @@ vtNode *vtLoadModel(const char *filename)
 		normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
 	}
 
-	Node *node = osgDB::readNodeFile(filename);
+	Node *node = osgDB::readNodeFile(newname);
 	if (node)
 	{
 		vtGroup *pGroup = new vtGroup();
-		pGroup->SetName2(filename);
+		pGroup->SetName2(newname);
 		pGroup->GetOsgGroup()->addChild(node);
 		pGroup->GetOsgNode()->setStateSet(normstate);
 		return pGroup;
