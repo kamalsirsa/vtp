@@ -103,11 +103,11 @@ vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 
 	m_strOriginalDEMName = rhs.m_strOriginalDEMName;
 
-	if( m_bFloatMode )
+	if ( m_bFloatMode )
 	{
 		m_pData = NULL;
 
-		if( rhs.m_pFData )
+		if ( rhs.m_pFData )
 		{
 			size_t Size = m_iColumns * m_iRows * sizeof(float);
 
@@ -122,7 +122,7 @@ vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &rhs)
 	{
 		m_pFData = NULL;
 
-		if( rhs.m_pData )
+		if ( rhs.m_pData )
 		{
 			size_t Size = m_iColumns * m_iRows * sizeof(short);
 
@@ -1088,3 +1088,326 @@ void vtElevationGrid::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 		}
 	}
 }
+
+
+/**
+ * ShadowCastDib - method to create shadows over the terrain based on the
+ * angle of the sun.
+ *
+ * 1/28/04-Kevin Behilo
+ * TODO: add code to soften and blend shadow edges (see aliasing comments below).
+ */
+void vtElevationGrid::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
+	float light_adj, void progress_callback(int))
+{
+
+	int w = pDIB->GetWidth();
+	int h = pDIB->GetHeight();
+
+	int gw, gh;
+	GetDimensions(gw, gh);
+
+	float xFactor = (float)gw/(float)w;
+	float yFactor = (float)gh/(float)h;
+
+	bool mono = (pDIB->GetDepth() == 8);
+	FPoint3 p1, p2, p3;
+	FPoint3 v1, v2, v3;
+	int i, j;
+	int x, y;
+	int r, g, b;
+	float shade;
+
+	//These values are hardcoded here but could be exposed in the GUI
+	//.95 and .5 work best for my textures.  
+	float sun =  0.95f;
+	float amb =  .5f;
+
+	//might want to do these calculations outside this function and simply pass in 
+	//the light_dir vector (that's how the original ShadeDibFromElevation does it)
+	float altDEG, aziDEG;
+
+	//compute angle of sun based on location, date and time  (#include "spa.h")
+//	SunAltAzi(altDEG,aziDEG,44.875,-110.875,2004,8,1,8,20,0,-7.0,1000.0);  
+
+	// TEST: hard-coded values
+	altDEG = 15.0;
+	aziDEG = 270;
+
+	// TEST results: Azimuth trouble.
+	// 0 bad: everything full shadow
+	// 1 almost ok: shadows point south, with small streaky artifacts
+	// 45 ok: shadows point SW
+	// 90 ok: shadows point west
+	// 180 ok: shadows point north
+	// 210 almost ok: shadows point NE, with small streaky artifacts
+	// 270 bad: shadows kinda point east, with major streaky artifacts
+
+	// converting sun azimuth and elevation angles to radians
+	float alt = (altDEG/180.0f*PIf);
+	float azi = (aziDEG/180.0f*PIf);
+
+	light_dir.x = (-sin(azi)*cos(alt));
+	light_dir.z = (-cos(azi)*cos(alt));
+	light_dir.y = -sin(alt);
+
+	//Create array to hold flags 
+	char **LightMap;
+	LightMap = new char*[h];
+	int rows, cols;
+	for( rows = 0; rows < h; rows++)
+		LightMap[rows] = new char[w];
+	for( rows = 0; rows < h; rows++)
+	{
+		for( cols = 0; cols < w ; cols++)
+		{
+			LightMap[rows][cols] = 0;
+		}
+	}
+
+	//used when applying shading to non-shadowed areas to try and keep the
+	// "contrast" down to a min. (still get "patches" of dark/light spots though)
+	//it is initialized to 10.0 which is should be impossible in a shadow area.
+	float darkest_shadow = 10.0;
+	
+	//no shadow rays to trace with sun overhead.
+	// (still need to handle case where sun is very close to overhead, though)
+	if (altDEG != 90.0f)
+	{
+		//iterate over the texels
+		//(One way to speed this up would be to start at the side closest
+		//to the sun; that way shadows would be cast over the texels and on the
+		//next pass they would be ignored.)
+		for (j = 0; j < h-1; j++)
+		{
+   			if (progress_callback != NULL)
+			{
+				if ((j&7) == 0)
+					progress_callback(j * 100 / h);
+			}
+
+			for (i = 0; i < w-1; i++)
+			{
+				//no need to trace a ray if this i,j has already been shaded  
+				if (LightMap[i][j] < 1)
+				{
+					/////////////////////////////////////////////////////////
+					//Given an i,j height field grid coordinate trace the ray through 
+					//the field by computing which grid cells the ray passes through.
+					//Incremental grid traversal algorithm based on:
+					//"A Fast Voxel Traversal Algorithm for Ray Tracing" by John Amanatides, Andrew Woo
+					//(I found the pdf here: http://www.cs.yorku.ca/~amana/research/grid.pdf )
+					//Initialization is simplified because our ray always starts from inside the grid.
+					/////////////////////////////////////////////////////////
+					float tMaxI ,tMaxJ, tDeltaI, tDeltaJ, tOut;  
+					int I,J, stepI, stepJ, Iedge, Jedge;
+					FPoint3 origin,rayOut;
+
+					I=i;J=j;			
+					GetWorldLocation(I,J,origin);
+
+					/////////////////////////////////////////////////////////
+					//init 
+					if (light_dir.x < 0.0) {
+						tMaxI = 0;
+						tDeltaI = -m_fXStep/light_dir.x;
+						stepI =   -1;
+						Iedge =   -1;
+					} else {
+						tMaxI =  tDeltaI = m_fXStep/light_dir.x;
+						stepI = 1;
+						Iedge = w-1;
+					}
+					if (light_dir.z < 0.0) {
+						tMaxJ = 0;
+						tDeltaJ =-m_fZStep/light_dir.z;  
+						stepJ = -1;
+						Jedge = -1;
+					} else {
+						tMaxJ =   tDeltaJ = m_fZStep/light_dir.z;
+						stepJ = 1;
+						Jedge = h-1;
+					}
+					///////////////////////////////////////////////////////////
+					//this is where the ray-tracing is done
+					while(true)  
+					{
+						//check if we are near a grid point
+						// (found this suggestion at: http://gameprog.it/hosted/gpad/)
+						if (fabs(tMaxI - tMaxJ) <= 0.001)
+						{
+							tMaxI += tDeltaI;
+							tMaxJ += tDeltaJ;
+							I += stepI;
+							J += stepJ;
+							
+							if (tMaxI<tMaxJ) tOut = tMaxI; else tOut = tMaxJ;  
+
+							if (I==Iedge) break;
+							if (J==Jedge) break;
+						}
+						else if (tMaxI < tMaxJ) 
+						{
+							tMaxI += tDeltaI;
+							I += stepI;
+							if (I==Iedge) break;
+							if (tMaxI<tMaxJ) tOut = tMaxI; else tOut = tMaxJ; 
+						} else 
+						{
+							tMaxJ += tDeltaJ;
+							J += stepJ;
+							if (J==Jedge) break;
+							if (tMaxI<tMaxJ) tOut = tMaxI; else tOut = tMaxJ; 
+						}
+
+						// just need to calculate y (not x and z)
+						// Parametric(origin,tOut,light_dir,&rayOut);
+						rayOut.y = origin.y + tOut*light_dir.y ;
+						FPoint3 loc;
+						GetWorldLocation(I,J,loc);
+	
+						//Exit while loop when the ray goes under the terrain surface
+  						if (rayOut.y < loc.y) break;
+		
+						//combine color and shading
+						if (LightMap[I][J]<1) //only do shadow if we have not shaded this i,j before
+						{
+							x = (int) (I * xFactor);
+							y = (int) (J * yFactor);	
+							GetWorldLocation(x, y, p1);
+							GetWorldLocation(x+1, y, p2);
+							GetWorldLocation(x, y+1, p3);
+
+							v1 = p2 - p1;
+							v2 = p3 - p1;
+							v3 = v1.Cross(v2);
+							v3.Normalize();
+
+							//*****************************************
+							//*****************************************
+							//shade formula based on:
+							//http://www.geocities.com/aaron_torpy/algorithms.htm#calc_intensity
+
+							//The Amb .5f value was arbitrarily chosen
+							//Need to experiment more to determine the best value
+							//perhaps calculating Sun(r, g, b) and Amb(r, g, b) for a given time of day 
+							//(e.g. warmer colors close to sunset)
+							//or give control to user since textures will differ
+
+							//I(r, g, b) = Sun(r, g, b) * scalarprod(N, v) + Amb(r, g, b) * (0.5*N[z] + 0.5) 
+							//but here the Sun(r, g, b) = 0 because we are in the shade
+							//therefore I(r, g, b) = Amb(r, g, b) * (0.5*N[z] + 0.5)
+
+							shade =  /*sun*v3.Dot(-light_dir) + */ amb* (0.5f*v3.y + 0.5f);
+							//*****************************************
+							//*****************************************
+							if (darkest_shadow > shade) darkest_shadow = shade;
+
+							unsigned long packed = pDIB->GetPixel24(I, h-1-J);
+							r = GetRValue(packed);
+							g = GetGValue(packed);
+							b = GetBValue(packed);
+
+							r = (int) (r * shade);
+							g = (int) (g * shade);
+							b = (int) (b * shade);
+							if (r > 255) r = 255;
+							if (g > 255) g = 255;
+							if (b > 255) b = 255;
+
+							//Rather than doing the shading at this point we may want to 
+							//simply save the value into the LightMap array. Then apply 
+							//some anti-aliasing or edge softening algorithm to the LightMap.
+							//Once that's done, apply the whole LightMap to the DIB.
+							pDIB->SetPixel24(I, h-1-J, RGB(r, g, b));
+							//set a flag to show that this texel has been shaded.
+							//(or set to value of the shading - see comment above)
+							LightMap[I][J]++;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//push the amb level up a bit (don't really need this but I think it
+	// makes my textures look better).
+	darkest_shadow += .1f;
+
+	//probably should modify the light direction directly above and get it
+	// right from the start
+	FPoint3 mod_light_dir;
+	mod_light_dir = light_dir;
+	mod_light_dir.Normalize();
+	mod_light_dir.z = -mod_light_dir.z;  
+
+	//now we are going to loop through the LightMap and apply the full
+	// lighting formula to each texel that has not been shaded yet.
+	for (j = 0; j < h-1; j++)
+	{
+		for (i = 0; i < w-1; i++)
+		{
+			if (LightMap[i][j]<1)
+			{
+				x = (int) (i * xFactor);
+				y = (int) (j * yFactor);	
+				GetWorldLocation(x, y, p1);
+				GetWorldLocation(x+1, y, p2);
+				GetWorldLocation(x, y+1, p3);
+
+				v1 = p2 - p1;
+				v2 = p3 - p1;
+				v3 = v1.Cross(v2);
+				FPoint3 vn=v3;
+				v3.Normalize();
+
+				//*****************************************
+				//*****************************************
+				//shade formula based on:
+				//http://www.geocities.com/aaron_torpy/algorithms.htm#calc_intensity
+
+				//The Amb value was arbitrarily chosen
+				//Need to experiment more to determine the best value
+				//perhaps calculating Sun(r, g, b) and Amb(r, g, b) for a given time of day 
+				//(e.g. warmer colors close to sunset)
+				//or give control to user since textures will differ
+
+				//I(r, g, b) = Sun(r, g, b) * scalarprod(N, v) + Amb(r, g, b) * (0.5*N[z] + 0.5)
+				shade =  sun*v3.Dot(-mod_light_dir) +  amb* (0.5f*v3.y + 0.5f);
+				
+				//*****************************************
+				//*****************************************
+				//maybe clipping values can be exposed to the user as well.
+				if (shade < darkest_shadow)	// clip - don't shade down below lowest ambient level
+					shade = darkest_shadow;
+				else if (shade > 1.2f)
+					shade = 1.2f;
+
+  				unsigned long packed = pDIB->GetPixel24(i, h-1-j);
+				r = GetRValue(packed);
+				g = GetGValue(packed);
+				b = GetBValue(packed);
+
+				r = (int) (r * shade);
+				g = (int) (g * shade);
+				b = (int) (b * shade);
+				if (r > 255) r = 255;
+				if (g > 255) g = 255;
+				if (b > 255) b = 255;
+
+				//Rather than doing the shading at this point we may want to 
+				//simply save the value into the LightMap array. Then apply 
+				//some anti-aliasing or edge softening algorithm to the LightMap.
+				//Once that's done, apply the whole LightMap to the DIB.
+				//LightMap[I][J]= shade; // set to value of the shading - see comment above)
+				pDIB->SetPixel24(i, h-1-j, RGB(r, g, b));
+			}
+		}
+	}
+
+	//edge softening algorithm then dispose with the array
+	for(int rows = 0 ; rows < w ; ++rows)
+		delete[] LightMap[rows];
+	delete[] LightMap;
+}
+

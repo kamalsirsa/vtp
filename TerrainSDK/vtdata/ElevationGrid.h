@@ -134,6 +134,8 @@ public:
 		FPoint3 *vNormal = NULL) const;
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 							   float light_adj, void progress_callback(int) = NULL);
+	void ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
+		float light_adj, void progress_callback(int) = NULL);
 
 protected:
 	bool	m_bFloatMode;

@@ -1697,7 +1697,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 }
 
 
-void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
+void vtTerrain::ApplyPreLight(vtElevationGrid *pElevGrid, vtDIB *dib)
 {
 	VTLOG("Prelighting terrain texture: ");
 	FPoint3 light_dir;
@@ -1705,7 +1705,12 @@ void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
 	light_dir.Normalize();
 
 	clock_t c1 = clock();
-	pLocalGrid->ShadeDibFromElevation(dib, light_dir, m_Params.m_fPreLightFactor);
+
+	pElevGrid->ShadeDibFromElevation(dib, light_dir, m_Params.m_fPreLightFactor);
+
+	// A more accurate alternative, still experimental
+//	pElevGrid->ShadowCastDib(dib, light_dir, m_Params.m_fPreLightFactor);
+
 	clock_t c2 = clock();
 
 	clock_t c3 = c2 - c1;
