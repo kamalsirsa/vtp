@@ -759,7 +759,12 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 		vtProjection Dest;
 		Dest.SetWellKnownGeogCS("WGS84");
 
+		// safe (won't fail on tricky Datum conversions)
 		OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
+
+		// unsafe, but potentially more accurate
+//		OCT *trans = CreateCoordTransform(&m_proj, &Dest, true);
+
 		if (!trans)
 		{
 			// inconvertible projections
