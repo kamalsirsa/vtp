@@ -41,7 +41,11 @@ public:
 	wxString2& operator=(const wxChar *psz);
 #if wxUSE_UNICODE	// supply the conversions that wxChar doesn't
 	wxString2& operator=(const char *psz);
-//	void operator+=(const char *psz);
+	void operator+=(const char *psz);
+	void operator+=(const wchar_t *psz);
+	void operator+=(const wxString &wstr);
+	void operator+=(const wxString2 &wstr);
+	void operator+=(const vtString &vtstr);
 #else
 	wxString2& operator=(const wchar_t *psz);
 //	void operator+=(const wchar_t *psz);

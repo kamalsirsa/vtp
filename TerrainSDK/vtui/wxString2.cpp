@@ -70,14 +70,30 @@ wxString2& wxString2::operator=(const char *psz)
 	delete buf;
 	return *this;
 }
-/*void wxString2::operator+=(const char *psz)
+void wxString2::operator+=(const char *psz)
 {
 	int len = strlen(psz);
 	wxChar *buf = new wchar_t[len+1];
 	int result = wxMB2WC(buf, psz, len+1);
 	(void) wxString::operator+=(buf);
 	delete buf;
-}*/
+}
+void wxString2::operator+=(const wchar_t *pwsz)
+{
+	(*(wxString*)this) += pwsz;
+}
+void wxString2::operator+=(const wxString &wstr)
+{
+	(*(wxString*)this) += wstr;
+}
+void wxString2::operator+=(const wxString2 &wstr)
+{
+	(*(wxString*)this) += (const wxString &) wstr;
+}
+void wxString2::operator+=(const vtString &vtstr)
+{
+	*this += (const char *)vtstr;
+}
 #else
 wxString2& wxString2::operator=(const wchar_t *psz)
 {
@@ -129,7 +145,6 @@ wxString2 &wxString2::operator=(const wstring2 &ws2)
 	return *this;
 }
 #endif
-
 
 wxString2::operator vtString() const
 {
