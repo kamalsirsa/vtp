@@ -45,12 +45,13 @@ void TagDlg::OnInitDialog(wxInitDialogEvent& event)
 	gv = new wxGenericValidator(&m_strName);
 	pName->SetValidator(*gv);
 
+	pName->Append(_T("country"));
+	pName->Append(_T("creator"));
+	pName->Append(_T("language"));
 	pName->Append(_T("manufacturer"));
 	pName->Append(_T("model-name"));
 	pName->Append(_T("model-year"));
 	pName->Append(_T("url"));
-	pName->Append(_T("language"));
-	pName->Append(_T("country"));
 
 	pWin = FindWindow(ID_TAGTEXT);
 	gv = new wxGenericValidator(&m_strValue);
