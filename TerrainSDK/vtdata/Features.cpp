@@ -39,6 +39,9 @@ void vtFeatureSet::DeleteFields()
 //
 bool vtFeatureSet::SaveToSHP(const char *filename) const
 {
+	// Must use "C" locale in case we write any floating-point fields
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	int nSHPType = OGRToShapelib(m_eGeomType);
 	SHPHandle hSHP = SHPCreate(filename, nSHPType);
 	if (!hSHP)
@@ -706,6 +709,9 @@ vtFeatureSet *vtFeatureLoader::CreateFromDLG(class vtDLGFile *pDLG)
 
 bool vtFeatureSet::LoadDataFromDBF(const char *filename)
 {
+	// Must use "C" locale in case we read any floating-point fields
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG(" LoadDataFromDBF\n");
 	// Try loading DBF File as well
 	vtString dbfname = MakeDBFName(filename);
@@ -830,6 +836,9 @@ void vtFeatureSet::SetGeomType(OGRwkbGeometryType eGeomType)
 
 bool vtFeatureSet::AppendDataFrom(vtFeatureSet *pFromSet)
 {
+	// When copying field data, must use C locale
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// Must be the same geometry type
 	if (pFromSet->GetGeomType() != GetGeomType())
 		return false;
