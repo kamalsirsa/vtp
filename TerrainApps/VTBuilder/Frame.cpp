@@ -1052,7 +1052,7 @@ bool MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 				if (grid)
 					fData = grid->GetFilteredValue2(p);
 				else if (tin)
-					tin->FindAltitudeAtPoint2(p, fData);
+					tin->FindAltitudeOnEarth(p, fData);
 
 				if (fData != INVALID_ELEVATION)
 					fBestData = fData;

@@ -372,7 +372,7 @@ int vtStructureArray::AddFoundations(vtHeightField *pHF)
 		float fMin = 1E9, fMax = -1E9;
 		for (j = 0; j < pts; j++)
 		{
-			pHF->FindAltitudeAtPoint2(foot.GetAt(j), fElev);
+			pHF->FindAltitudeOnEarth(foot.GetAt(j), fElev);
 
 			if (fElev < fMin) fMin = fElev;
 			if (fElev > fMax) fMax = fElev;

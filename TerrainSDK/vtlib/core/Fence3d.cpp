@@ -126,7 +126,8 @@ void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 	FLine3 p3;
 
 	DPoint2 diff, dp;
-	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight, m_Params.m_fPostDepth);
+	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight,
+		m_Params.m_fPostDepth);
 
 	if (m_Params.m_PostType != "none")
 	{

@@ -58,7 +58,7 @@ public:
 
 	// overrides for HeightField
 	void GetChecksum(unsigned char **ppChecksum) const {}
-	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
+	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// overrides for HeightField3d
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,

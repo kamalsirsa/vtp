@@ -253,7 +253,7 @@ void vtTin::GetChecksum(unsigned char **ppChecksum) const
 	// TODO
 }
 
-bool vtTin::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue) const
+bool vtTin::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
 	DPoint2 p1, p2, p3;		// 2D points
 	bool good;

@@ -907,7 +907,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		for (i = i_init; i != i_final; i += i_incr)
 		{
 			pos = GridPos(texel_base, texel_size, i, j);
-			FindAltitudeAtPoint2(pos, shadowheight, true);
+			FindAltitudeOnEarth(pos, shadowheight, true);
 
 			if (shadowheight == INVALID_ELEVATION)
 			{
@@ -930,7 +930,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 				}
 
 				pos = GridPos(texel_base, texel_size, x, z);
-				FindAltitudeAtPoint2(pos, elevation, true);
+				FindAltitudeOnEarth(pos, elevation, true);
 
 				// skip holes in the grid
 				if (elevation == INVALID_ELEVATION)
@@ -1007,7 +1007,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 			pos = GridPos(texel_base, texel_size, i, j);
 
 			// 2D elevation query to check for holes in the grid
-			FindAltitudeAtPoint2(pos, elevation, true);
+			FindAltitudeOnEarth(pos, elevation, true);
 			if (elevation == INVALID_ELEVATION)
 				continue;
 

@@ -854,7 +854,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			fMax = -1E9;
 			for (i = 0; i < iVertices; i++)
 			{
-				if (!opt.pHeightField->FindAltitudeAtPoint2(footprint.GetAt(i), fElev))
+				if (!opt.pHeightField->FindAltitudeOnEarth(footprint.GetAt(i), fElev))
 					continue;
 
 				if (fElev < fMin)

@@ -986,8 +986,8 @@ void vtElevationGrid::GetChecksum(unsigned char **ppChecksum) const
 	// TODO
 }
 
-bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude,
-										   bool bTrue) const
+bool vtElevationGrid::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude,
+										  bool bTrue) const
 {
 	// we ignore bTrue because this class always stores true elevation
 	DPoint2 spacing = GetSpacing();

@@ -126,7 +126,7 @@ public:
 
 	// Implement vtHeightField methods
 	void GetChecksum(unsigned char **ppChecksum) const;
-	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
+	bool FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue = false) const;
 
 	// Implement vtHeightField3d methods
 	virtual float GetElevation(int iX, int iZ, bool bTrue = false) const;

@@ -579,8 +579,8 @@ void vtRoadLayer::CarveRoadway(vtElevLayer *pElev, float margin)
 				//  it's draped based only on the height at each vertex of
 				//  the road.  Just use those.
 				float alt1, alt2;
-				grid->FindAltitudeAtPoint2(pLink->GetAt(roadpoint), alt1);
-				grid->FindAltitudeAtPoint2(pLink->GetAt(roadpoint+1), alt2);
+				grid->FindAltitudeOnEarth(pLink->GetAt(roadpoint), alt1);
+				grid->FindAltitudeOnEarth(pLink->GetAt(roadpoint+1), alt2);
 				height = alt1 + (alt2 - alt1) * fractional;
 
 				// If the point falls in the 'fade' region, interpolate

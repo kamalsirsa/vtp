@@ -76,7 +76,7 @@ void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatc
 }
 
 // overrides for HeightField
-bool vtDynTerrainGeom::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude, bool bTrue) const
+bool vtDynTerrainGeom::FindAltitudeOnEarth(const DPoint2 &p, float &fAltitude, bool bTrue) const
 {
 	DPoint2 spacing = GetSpacing();
 	int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);

@@ -729,7 +729,7 @@ float vtElevLayer::GetElevation(DPoint2 &p)
 	if (m_pTin)
 	{
 		float fAltitude;
-		if (m_pTin->FindAltitudeAtPoint2(p, fAltitude))
+		if (m_pTin->FindAltitudeOnEarth(p, fAltitude))
 			return fAltitude;
 	}
 	return INVALID_ELEVATION;
