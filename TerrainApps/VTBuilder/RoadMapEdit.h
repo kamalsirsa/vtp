@@ -11,15 +11,14 @@
 #include "vtdata/RoadMap.h"
 #include "vtdata/Selectable.h"
 
-#include "Layer.h"
-#include "ScaledView.h"
-
+class vtRoadLayer;
+class vtScaledView;
 class vtDLGFile;
 
 
 enum VisualIntersectionType {
-	VIT_UNKNOWN,	//uncontrolled, default to stopsign
-	VIT_NONE,		//uncontrolled, default to stopsign
+	VIT_UNKNOWN,	//uncontrolled
+	VIT_NONE,		//uncontrolled
 	VIT_ALLLIGHTS,	//controlled intersection with all lights
 	VIT_ALLSTOPS,	//controlled intersection with all stop signs
 	VIT_LIGHTS,		//controlled intersection with at least one, but not all, traffic light
@@ -42,7 +41,7 @@ public:
 	//draws the node
 	bool Draw(wxDC* pDC, vtScaledView *pView);
 	//brings up a node dialog to edit road properties	
-	bool EditProperties(vtLayer *pLayer);
+	bool EditProperties(vtRoadLayer *pLayer);
 
 	//is target inside the extent
 	bool WithinExtent(DRECT target);
@@ -94,7 +93,7 @@ public:
 	// prepare to draw the road (estimate the left and right edges)
 	void ComputeDisplayedRoadWidth(const DPoint2 &ToMeters);
 	//edit the road - brings up a road dialog box
-	bool EditProperties(vtLayer *pLayer);
+	bool EditProperties(vtRoadLayer *pLayer);
 
 	NodeEdit *GetNode(int n) { return (NodeEdit *)m_pNode[n]; }
 	RoadEdit *GetNext() { return (RoadEdit *)m_pNext; }

@@ -17,6 +17,7 @@
 #include "RoadDlg.h"
 #include "RoadLayer.h"
 #include "Frame.h"
+#include "ScaledView.h"
 
 #define NODE_RADIUS 5
 
@@ -82,11 +83,10 @@ bool NodeEdit::Draw(wxDC* pDC, vtScaledView *pView)
 //
 // bring up dialog box to edit node properties.
 //
-bool NodeEdit::EditProperties(vtLayer *pLayer)
+bool NodeEdit::EditProperties(vtRoadLayer *pLayer)
 {
-	CNodeDlg dlg(this, pLayer);
-	bool success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
-	//popup the dialog
+	NodeDlg dlg(NULL, -1, "Node Properties");
+	dlg.SetNode(this, pLayer);
 	return (dlg.ShowModal() == wxID_OK);
 }
 
@@ -369,11 +369,10 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	return true;
 }
 
-bool RoadEdit::EditProperties(vtLayer *pLayer)
+bool RoadEdit::EditProperties(vtRoadLayer *pLayer)
 {
-	CRoadDlg dlg(this, pLayer);
-	bool success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
-	//popup the dialog
+	RoadDlg dlg(NULL, -1, "Road Properties");
+	dlg.SetRoad(this, pLayer);
 	return (dlg.ShowModal() == wxID_OK);
 }
 

@@ -286,27 +286,23 @@ bool vtRoadLayer::EditNodesProperties()
 {
 	int count = 0;
 	NodeEdit* node;
-	for (NodeEdit* curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
+
+	for (NodeEdit* n = GetFirstNode(); n; n = n->GetNext())
 	{
-		if (curNode->IsSelected()) {
-			count++;
-			node = curNode;
-		}
+		if (!n->IsSelected())
+			continue;
+		count++;
+		node = n;
 	}
-	if (count == 0) {
+	if (count == 0)
 		return false;
-	}
-	if (count == 1) {
-		CNodeDlg dlg(node, this, false);
-		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
-		return (dlg.ShowModal() == wxID_OK);
-	}
+
+	NodeDlg dlg(NULL, -1, "Node Properties");
+	if (count == 1)
+		dlg.SetNode(node, this);
 	else
-	{
-		CNodeDlg dlg(GetFirstNode(), this, true);
-		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog4");
-		return (dlg.ShowModal() == wxID_OK);
-	}
+		dlg.SetNode(NULL, this);
+	return (dlg.ShowModal() == wxID_OK);
 }
 
 bool vtRoadLayer::EditRoadsProperties()
@@ -317,28 +313,20 @@ bool vtRoadLayer::EditRoadsProperties()
 	//only bring up dialog is there is a selected road.
 	for (RoadEdit* r = GetFirstRoad(); r; r = r->GetNext())
 	{
-		if (r->IsSelected())
-		{
-			count++;
-			road = r;
-		}
+		if (!r->IsSelected())
+			continue;
+		count++;
+		road = r;
 	}
 	if (count == 0)
 		return false;
 
-	//only one road found
+	RoadDlg dlg(NULL, -1, "Road Properties");
 	if (count == 1)
-	{
-		CRoadDlg dlg(road, this, false);
-		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
-		return (dlg.ShowModal() == wxID_OK);
-	}
+		dlg.SetRoad(road, this);	//only one road found
 	else
-	{
-		CRoadDlg dlg((RoadEdit*)m_pFirstRoad, this, true);
-		bool success = dlg.LoadFromResource(GetMainFrame(), "dialog5");
-		return (dlg.ShowModal() == wxID_OK);
-	}
+		dlg.SetRoad(NULL, this);
+	return (dlg.ShowModal() == wxID_OK);
 }
 
 bool vtRoadLayer::SelectArea(const DRECT &box, bool nodemode, bool crossSelect)
