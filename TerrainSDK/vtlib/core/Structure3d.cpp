@@ -47,17 +47,6 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	if (m_fScale != 1.0f)
 		m_pContainer->Scale3(m_fScale, m_fScale, m_fScale);
 
-	// try to work around 3DS coordinate axes difference problem
-	vtString fname2 = GetValueString("filename", true);
-	vtString ext = GetExtension(fname2, false);
-
-	if (ext.CompareNoCase(".3ds") == 0 ||
-		ext.CompareNoCase(".flt") == 0)
-	{
-		// Must rotate by 90 degrees for 3DS MAX -> OpenGL (or Lightwave LWO?)
-		m_pContainer->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-	}
-
 	if (m_fRotation != 0.0f)
 		m_pContainer->Rotate2(FPoint3(0,1,0), m_fRotation);
 
@@ -115,7 +104,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		m_pModel = NULL;
 	}
 
-	const char *filename = GetValueString("filename", true);
+	const char *filename = GetValueString("filename", true, true);
 	if (filename)
 	{
 		// relative path: look on the standards data paths
@@ -129,15 +118,17 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		if (!m_pModel)
 			return false;
 	}
-	const char *itemname = GetValueString("itemname");
+	const char *itemname = GetValueString("itemname", false, true);
 	if (itemname)
 	{
-		// Use ContentManager to create the structure
-		vtItem *pItem = vtTerrain::s_Content.FindItemByName(itemname);
-		if (pItem)
-		{
-			m_pModel = vtTerrain::s_Content.CreateInstanceOfItem(pItem);
-		}
+		// Use ContentManager to create the structure, using the
+		//  terrain's specific content manager
+		m_pModel = pTerr->m_Content.CreateGroupFromItemname(itemname);
+
+		// Also try the global content manager
+		if (!m_pModel)
+			m_pModel = vtTerrain::s_Content.CreateGroupFromItemname(itemname);
+
 		if (!m_pModel)
 			return false;
 	}
