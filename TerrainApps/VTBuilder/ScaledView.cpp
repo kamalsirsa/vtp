@@ -215,6 +215,8 @@ void vtScaledView::GetCanvasPosition(const wxMouseEvent &event, wxPoint &pos)
 void vtScaledView::DrawLine(wxDC *pDC, const DLine2 &dline, bool bClose)
 {
 	int i, size = dline.GetSize();
+	if (size < 2)
+		return;
 
 	for (i = 0; i < size && i < SCREENBUF_SIZE-1; i++)
 		screen(dline.GetAt(i), g_screenbuf[i]);
