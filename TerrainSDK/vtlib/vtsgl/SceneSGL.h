@@ -34,5 +34,6 @@ public:
 // global
 vtScene *vtGetScene();
 float vtGetTime();
+float vtGetFrameTime();
 
 #endif // VTSGL_SCENEH

@@ -10,6 +10,8 @@ public:
 	vtImage(const char *fname, int internalformat = -1);
 	vtImage(class vtDIB *pDIB, int internalformat = -1);
 
+	void Release();
+
 	sglTexture2D	*m_pTexture;
 };
 

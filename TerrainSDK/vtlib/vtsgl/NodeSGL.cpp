@@ -30,7 +30,7 @@ void vtNode::GetBoundSphere(FSphere &sphere)
 	s2v(s, sphere);
 }
 
-vtNode *vtNode::CreateClone()
+vtNodeBase *vtNode::CreateClone()
 {
 	// TODO
 	return new vtNode();
@@ -65,16 +65,18 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 	SetSglNode(m_pGroup);
 }
 
-void vtGroup::AddChild(vtNode *pChild)
+void vtGroup::AddChild(vtNodeBase *pChild)
 {
-	// assume that this entity is actually a branch node
-	m_pGroup->addChild(pChild->GetSglNode());
+	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
+	if (pChildNode)
+		m_pGroup->addChild(pChildNode->GetSglNode());
 }
 
-void vtGroup::RemoveChild(vtNode *pChild)
+void vtGroup::RemoveChild(vtNodeBase *pChild)
 {
-	// assume that this entity is actually a branch node
-	m_pGroup->removeChild(pChild->GetSglNode());
+	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
+	if (pChildNode)
+		m_pGroup->removeChild(pChildNode->GetSglNode());
 }
 
 vtNode *vtGroup::GetChild(int num)
@@ -289,7 +291,7 @@ int vtGeom::GetNumMeshes()
 
 vtMesh *vtGeom::GetMesh(int i)
 {
-	sglGeometry *geom = m_pGeode->getGeometry(i);
+	sglDrawable *geom = m_pGeode->getGeometry(i);
 	if (geom)
 	{
 		vtMesh *pMesh = (vtMesh *) geom->getUserData();

@@ -15,16 +15,22 @@ class sglOrthographicCamera;
 class vtNode : public vtNodeBase, public vtEnabledBase
 {
 public:
-	// implement vtEnabledBase methods
-	void SetEnabled(bool bOn);
-
 	// implement vtNodeBase methods
-	void GetBoundBox(FBox3 &box);
-	void GetBoundSphere(FSphere &sphere);
-	vtNode *CreateClone();
+	vtNodeBase *CreateClone();
+	void Release();
+
+	void SetEnabled(bool bOn);
+	bool GetEnabled();
 
 	void SetName2(const char *str);
 	const char *GetName2();
+
+	void GetBoundBox(FBox3 &box);
+	void GetBoundSphere(FSphere &sphere);
+
+	int GetTriCount() { return 0; }
+
+	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
 
 	// implementation data
 	void SetSglNode(sglNode *n);
@@ -40,10 +46,13 @@ public:
 	vtGroup(bool suppress = false);
 
 	// implement vtGroupBase methods
-	void AddChild(vtNode *pChild);
-	void RemoveChild(vtNode *pChild);
+	void AddChild(vtNodeBase *pChild);
+	void RemoveChild(vtNodeBase *pChild);
 	vtNode *GetChild(int num);
 	int GetNumChildren();
+
+	vtNodeBase *FindDescendantByName(const char *name);
+	bool ContainsChild(vtNodeBase *pNode);
 
 	// implementation data
 	void SetSglGroup(sglGroup *n)
@@ -113,11 +122,21 @@ public:
 	vtGeom();
 
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
+	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx);
 	void RemoveMesh(vtMesh *pMesh);
-	vtMesh *GetMesh(int i);
+
 	int GetNumMeshes();
+	vtMesh *GetMesh(int i);
+	vtTextMesh *GetTextMesh(int i);
+
+	virtual void SetMaterials(class vtMaterialArray *mats);
+	vtMaterialArray	*GetMaterials();
+
+	vtMaterial *GetMaterial(int i);
+
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
+	// implementation
 	sglGeode	*m_pGeode;
 };
 
@@ -141,6 +160,7 @@ public:
 	virtual const sglBoxBound &getBound();
 	virtual void drawGeometry(sglVec2f *tex_coords) const;
 	virtual void addStats(sglStats &stats) const;
+	virtual bool computeBounds();
 	virtual bool isValid() const;
 
 	class vtDynGeom *m_pDynGeom;

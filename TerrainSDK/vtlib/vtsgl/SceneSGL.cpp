@@ -128,7 +128,7 @@ float vtGetTime()
 
 ////////////////////////////////////////
 
-vtNode *vtLoadModel(const char *filename)
+vtNodeBase *vtLoadModel(const char *filename)
 {
 	// TODO
 	return NULL;

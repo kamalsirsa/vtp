@@ -40,10 +40,10 @@ RSC=rc.exe
 # PROP Output_Dir "Release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-F90=df.exe
 MTL=midl.exe
+F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_PLIB=1 /YX /FD /c
+# ADD CPP /nologo /W3 /GX /Zd /O2 /I ".." /I "..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D VTLIB_PLIB=1 /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -65,10 +65,10 @@ LIB32=link.exe -lib
 # PROP Output_Dir "Debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-F90=df.exe
 MTL=midl.exe
+F90=df.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GR /GX /Zi /Od /I ".." /I "..\.." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_LIB" /D VTLIB_SGL=1 /FR /YX"vtlib/vtlib.h" /FD /GZ /c
+# ADD CPP /nologo /MDd /W2 /Gm /GR /GX /Zi /Od /I ".." /I "..\.." /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_LIB" /D VTLIB_SGL=1 /FR /YX"vtlib/vtlib.h" /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -121,31 +121,11 @@ SOURCE=..\core\Engine.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\Fences.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\FrameTimer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\HeightField.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\IntersectionEngine.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LKTerrain.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalGrid.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalProjection.cpp
 # End Source File
 # Begin Source File
 
@@ -185,10 +165,6 @@ SOURCE=..\core\TerrainScene.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\TerrainSurface.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\TimeEngines.cpp
 # End Source File
 # Begin Source File
@@ -202,10 +178,6 @@ SOURCE=..\core\Trees.cpp
 # Begin Source File
 
 SOURCE=..\core\TVTerrain.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\vtString.cpp
 # End Source File
 # End Group
 # Begin Group "Core Headers"
@@ -237,23 +209,7 @@ SOURCE=..\core\Engine.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\core\Fences.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\core\IntersectionEngine.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LKTerrain.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalGrid.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\LocalProjection.h
 # End Source File
 # Begin Source File
 
@@ -298,10 +254,6 @@ SOURCE=..\core\TerrainPatch.h
 # Begin Source File
 
 SOURCE=..\core\TerrainScene.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\core\TerrainSurface.h
 # End Source File
 # Begin Source File
 
