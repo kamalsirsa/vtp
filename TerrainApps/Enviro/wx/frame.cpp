@@ -34,6 +34,7 @@
 #include "vtdata/vtLog.h"
 
 #include "frame.h"
+#include "StatusBar.h"
 
 // dialogs
 #include "SceneGraphDlg.h"
@@ -53,6 +54,7 @@
 #include "app.h"
 #include "canvas.h"
 #include "menu_id.h"
+#include "StatusBar.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__)
 #  include "axes.xpm"
@@ -130,6 +132,8 @@ EVT_MENU(ID_VIEW_LOCATIONS,			vtFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	vtFrame::OnUpdateViewLocations)
 EVT_MENU(ID_VIEW_SNAPSHOT,			vtFrame::OnViewSnapshot)
 EVT_MENU(ID_VIEW_SNAP_AGAIN,		vtFrame::OnViewSnapAgain)
+EVT_MENU(ID_VIEW_STATUSBAR,			vtFrame::OnViewStatusBar)
+EVT_UPDATE_UI(ID_VIEW_STATUSBAR,	vtFrame::OnUpdateViewStatusBar)
 
 EVT_UPDATE_UI(ID_VIEW_FRAMERATE,vtFrame::OnUpdateViewFramerate)
 EVT_MENU(ID_VIEW_SLOWER,		vtFrame::OnViewSlower)
@@ -209,7 +213,7 @@ END_EVENT_TABLE()
 
 // My frame constructor
 vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
-	const wxSize& size, long style):
+	const wxSize& size, long style, bool bVerticalToolbar):
 wxFrame(parent, -1, title, pos, size, style)
 {
 	// Give it an icon
@@ -221,10 +225,19 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_bTopDown = false;
 	m_ToggledMode = MM_NONE;
 
+	m_pStatusBar = NULL;
+	m_pToolbar = NULL;
+
 	VTLOG("Frame window: creating menus and toolbars.\n");
 	CreateMenus();
-	CreateToolbar();
-	CreateStatusBar();
+	CreateToolbar(bVerticalToolbar);	// argument: vertical
+
+	// Create StatusBar
+	m_pStatusBar = new MyStatusBar(this, wxST_SIZEGRIP);
+	SetStatusBar(m_pStatusBar);
+	m_pStatusBar->Show();
+	m_pStatusBar->UpdateText();
+	PositionStatusBar();
 
 	// We definitely want full color and a 24-bit Z-buffer!
 	int gl_attrib[7] = { WX_GL_RGBA, WX_GL_DOUBLEBUFFER,
@@ -269,6 +282,11 @@ vtFrame::~vtFrame()
 	delete m_pCameraDlg;
 	delete m_pLocationDlg;
 	delete m_pLayerDlg;
+
+	delete m_pStatusBar;
+	delete m_pToolbar;
+	SetStatusBar(NULL);
+	SetToolBar(NULL);
 }
 
 void vtFrame::CreateMenus()
@@ -331,6 +349,8 @@ void vtFrame::CreateMenus()
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_SNAPSHOT, _T("Save Window Snapshot"));
 	viewMenu->Append(ID_VIEW_SNAP_AGAIN, _T("Save Numbered Snapshot\tCtrl+N"));
+	viewMenu->AppendSeparator();
+	viewMenu->AppendCheckItem(ID_VIEW_STATUSBAR, _T("&Status Bar"));
 
 	wxMenu *navMenu = new wxMenu;
 	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
@@ -389,10 +409,21 @@ void vtFrame::CreateMenus()
 	SetMenuBar(m_pMenuBar);
 }
 
-void vtFrame::CreateToolbar()
+void vtFrame::CreateToolbar(bool bVertical)
 {
+    SetToolBar(NULL);
+
+	long style = wxNO_BORDER | wxTB_DOCKABLE;
+	if (bVertical)
+		style |= wxTB_VERTICAL;
+	else
+		style |= wxTB_HORIZONTAL;
+
+	if (m_pToolbar != NULL)
+		delete m_pToolbar;
+
 	// tool bar
-	m_pToolbar = CreateToolBar(wxTB_HORIZONTAL | wxNO_BORDER | wxTB_DOCKABLE);
+	m_pToolbar = CreateToolBar(style);
 	m_pToolbar->SetMargins(2, 2);
 	m_pToolbar->SetToolBitmapSize(wxSize(20, 20));
 
@@ -414,7 +445,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Layers"), false);
+	ADD_TOOL(ID_FILE_LAYERS, wxBITMAP(layers), _("Show Layer Dialog"), false);
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
 	ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
@@ -430,7 +461,10 @@ void vtFrame::CreateToolbar()
 	m_pToolbar->AddSeparator();
 	ADD_TOOL(ID_SCENE_SCENEGRAPH, wxBITMAP(sgraph), _("Scene Graph"), false);
 
+//	m_pToolbar->SetRows(32);
 	m_pToolbar->Realize();
+//	SendSizeEvent();
+//	m_pToolbar->Refresh();
 }
 
 //
@@ -925,6 +959,17 @@ void vtFrame::OnViewSnapAgain(wxCommandEvent& event)
 	Snapshot(true); // number, and don't ask for filename if we already have one
 }
 
+void vtFrame::OnViewStatusBar(wxCommandEvent& event)
+{
+	GetStatusBar()->Show(!GetStatusBar()->IsShown());
+	SendSizeEvent();
+}
+
+void vtFrame::OnUpdateViewStatusBar(wxUpdateUIEvent& event)
+{
+	event.Check(GetStatusBar()->IsShown());
+}
+
 
 ///////////////////// Tools menu //////////////////////////
 
@@ -1412,8 +1457,10 @@ void vtFrame::EarthPosUpdated(const DPoint3 &pos)
 
 void vtFrame::UpdateStatus()
 {
-	if (!GetStatusBar()) return;
+	if (m_pStatusBar)
+		m_pStatusBar->UpdateText();
 
+#if 0
 	vtString vs;
 	g_App.GetStatusText(vs);
 
@@ -1427,6 +1474,7 @@ void vtFrame::UpdateStatus()
 #endif
 
 	SetStatusText(str);
+#endif
 }
 
 
