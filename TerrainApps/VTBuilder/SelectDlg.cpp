@@ -24,7 +24,7 @@
 // WDR: event table for SelectDlg
 
 BEGIN_EVENT_TABLE(SelectDlg,AutoDialog)
-    EVT_BUTTON( wxID_OK, SelectDlg::OnOK )
+	EVT_BUTTON( wxID_OK, SelectDlg::OnOK )
 	EVT_LISTBOX( ID_FIELD, SelectDlg::OnChoiceField )
 END_EVENT_TABLE()
 

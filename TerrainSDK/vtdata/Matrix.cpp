@@ -494,12 +494,12 @@ void FMatrix3::SetFromVectors(const FPoint3 &forward, const FPoint3 &up)
 {
 	FPoint3 f = forward;
 	f.Normalize();
-    FPoint3 side = f.Cross(up);
+	FPoint3 side = f.Cross(up);
 	side.Normalize();
 
-    SetRow(0,	side.x,		side.y,		side.z);
-    SetRow(1,	up.x,		up.y,		up.z);
-    SetRow(2,	-forward.x,	-forward.y,	-forward.z);
+	SetRow(0,	side.x,		side.y,		side.z);
+	SetRow(1,	up.x,		up.y,		up.z);
+	SetRow(2,	-forward.x,	-forward.y,	-forward.z);
 }
 
 void FMatrix3::SetFromMatrix4(const FMatrix4 &mat)
@@ -603,13 +603,13 @@ void FMatrix4::SetFromVectors(const FPoint3 &pos, const FPoint3 &forward, const 
 {
 	FPoint3 f = forward;
 	f.Normalize();
-    FPoint3 side = f.Cross(up);
+	FPoint3 side = f.Cross(up);
 	side.Normalize();
 
-    SetRow(0,	side.x,		side.y,		side.z,		0.0f);
-    SetRow(1,	up.x,		up.y,		up.z,		0.0f);
-    SetRow(2,	-forward.x,	-forward.y,	-forward.z,	0.0f);
-    SetRow(3,	0.0f,		0.0f,		0.0f,		1.0f);
+	SetRow(0,	side.x,		side.y,		side.z,		0.0f);
+	SetRow(1,	up.x,		up.y,		up.z,		0.0f);
+	SetRow(2,	-forward.x,	-forward.y,	-forward.z,	0.0f);
+	SetRow(3,	0.0f,		0.0f,		0.0f,		1.0f);
 
 	Translate(pos);
 }
@@ -623,38 +623,38 @@ void FMatrix4::SetFromMatrix3(const FMatrix3 &mat)
 }
 
 #define INNER_PRODUCT(a, b, c, r) \
-     ((a).data[0][r] * (b).data[c][0]) \
-    +((a).data[1][r] * (b).data[c][1]) \
-    +((a).data[2][r] * (b).data[c][2]) \
-    +((a).data[3][r] * (b).data[c][3])
+	 ((a).data[0][r] * (b).data[c][0]) \
+	+((a).data[1][r] * (b).data[c][1]) \
+	+((a).data[2][r] * (b).data[c][2]) \
+	+((a).data[3][r] * (b).data[c][3])
 
 void FMatrix4::PreMult(const FMatrix4 &mat)
 {
-    float t[4];
-    for (int col = 0; col < 4; ++col)
+	float t[4];
+	for (int col = 0; col < 4; ++col)
 	{
-        t[0] = INNER_PRODUCT(mat, *this, col, 0);
-        t[1] = INNER_PRODUCT(mat, *this, col, 1);
-        t[2] = INNER_PRODUCT(mat, *this, col, 2);
-        t[3] = INNER_PRODUCT(mat, *this, col, 3);
-        data[col][0] = t[0];
-        data[col][1] = t[1];
-        data[col][2] = t[2];
-        data[col][3] = t[3];
-    }
+		t[0] = INNER_PRODUCT(mat, *this, col, 0);
+		t[1] = INNER_PRODUCT(mat, *this, col, 1);
+		t[2] = INNER_PRODUCT(mat, *this, col, 2);
+		t[3] = INNER_PRODUCT(mat, *this, col, 3);
+		data[col][0] = t[0];
+		data[col][1] = t[1];
+		data[col][2] = t[2];
+		data[col][3] = t[3];
+	}
 }
 
 void FMatrix4::PostMult(const FMatrix4 &mat)
 {
-    float t[4];
-    for (int row = 0; row < 4; ++row)
-    {
-        t[0] = INNER_PRODUCT(*this, mat, 0, row);
-        t[1] = INNER_PRODUCT(*this, mat, 1, row);
-        t[2] = INNER_PRODUCT(*this, mat, 2, row);
-        t[3] = INNER_PRODUCT(*this, mat, 3, row);
-        SetRow(row, t[0], t[1], t[2], t[3]);
-    }
+	float t[4];
+	for (int row = 0; row < 4; ++row)
+	{
+		t[0] = INNER_PRODUCT(*this, mat, 0, row);
+		t[1] = INNER_PRODUCT(*this, mat, 1, row);
+		t[2] = INNER_PRODUCT(*this, mat, 2, row);
+		t[3] = INNER_PRODUCT(*this, mat, 3, row);
+		SetRow(row, t[0], t[1], t[2], t[3]);
+	}
 }
 
 static float Dot3f(const float *d1, const float *d2)

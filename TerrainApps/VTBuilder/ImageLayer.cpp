@@ -105,7 +105,7 @@ bool vtImageLayer::GetAreaExtent(DRECT &rect)
 		m_Extents.Height() / (m_iYSize - 1));
 
 	rect.left =   m_Extents.left - (pixel_size.x / 2.0f);
-	rect.top =    m_Extents.top + (pixel_size.y / 2.0f);
+	rect.top =	  m_Extents.top + (pixel_size.y / 2.0f);
 	rect.right =  m_Extents.right + (pixel_size.x / 2.0f);
 	rect.bottom = m_Extents.bottom - (pixel_size.y / 2.0f);
 	return true;
@@ -872,9 +872,9 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 # The parameters are as follows:
 #   T: theme, 0=relief 1=image 2=topo
 #   S: scale, ranges are:
-#        T=0: 20-24
-#        T=1: 10-16
-#        T=2: 11-21
+#		T=0: 20-24
+#		T=1: 10-16
+#		T=2: 11-21
 #   X: UTM easting / pixels per tile / meters per pixel (@ SW corner)
 #   Y: UTM northing / pixels per tile / meters per pixel (@ SW corner)
 #   Z: UTM numeric zone
@@ -898,8 +898,8 @@ int TileThemeId = 1;	// 1 = aerial imagery
 // generate the local filename of a single terraserver image tile
 vtString TileNameLocal(int easting, int northing)
 {
-    int x = easting / MetersPerTile;
-    int y = northing / MetersPerTile;
+	int x = easting / MetersPerTile;
+	int y = northing / MetersPerTile;
 
 	vtString tilename;
 	tilename.Format("tile_S_%d_T_%d_X_%d_Y_%d_Z_%d.jpg",
@@ -934,7 +934,7 @@ vtString TileFileName(int easting, int northing)
 // if a tile is not already downloaded, generate the URL and wget it.
 bool DownloadATile(int easting, int northing)
 {
-    vtString filename = TileFileName(easting, northing);
+	vtString filename = TileFileName(easting, northing);
 
 	// check if file exists
 	FILE *fp;
@@ -942,7 +942,7 @@ bool DownloadATile(int easting, int northing)
 	{
 		fclose(fp);
 		VTLOG("already have %s\n", (const char *) filename);
-    }
+	}
 	else
 	{
 		fp = fopen(filename, "wb");
@@ -986,7 +986,7 @@ bool DownloadAllTiles()
 
 			count++;
 		}
-    }
+	}
 	return true;
 }
 
@@ -997,7 +997,7 @@ bool MosaicAllTiles(vtBitmapBase &output)
 	int firsttile = 1;
 
 	int startn = TerrainNorthingS / MetersPerTile * MetersPerTile;
-    for (int n = startn; n < TerrainNorthingN; n += MetersPerTile)
+	for (int n = startn; n < TerrainNorthingN; n += MetersPerTile)
 	{
 		int y = (int) ((double)(TerrainNorthingN - n - MetersPerTile) / MetersPerPixel);
 
@@ -1054,7 +1054,7 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 	if (MetersPerPixel == 32) TileScaleId = 15;
 	if (MetersPerPixel == 64) TileScaleId = 16;
 
-    MetersPerTile = PixelsPerTile * MetersPerPixel;
+	MetersPerTile = PixelsPerTile * MetersPerPixel;
 
 	if (!DownloadAllTiles())
 		return false;

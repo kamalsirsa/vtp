@@ -92,7 +92,7 @@ enum {
 
 typedef struct prolog_state {
   int (*handler)(struct prolog_state *state,
-	         int tok,
+		 int tok,
 		 const char *ptr,
 		 const char *end,
 		 const ENCODING *enc);

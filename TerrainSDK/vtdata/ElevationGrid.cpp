@@ -815,9 +815,9 @@ void vtElevationGrid::SetupConversion(float fVerticalExag)
 		ComputeHeightExtents();
 	}
 
-    // initialize parent class
+	// initialize parent class
 	Initialize(m_proj.GetUnits(), m_EarthExtents, m_fMinHeight, m_fMaxHeight,
-        m_iColumns, m_iRows);
+		m_iColumns, m_iRows);
 
 	m_fVerticalScale = fVerticalExag;
 }

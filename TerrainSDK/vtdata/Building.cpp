@@ -301,7 +301,7 @@ void vtLevel::SynchFromOGR()
 	int num = pRing->getNumPoints();
 	total += num;
 
-    int inside = m_Foot.getNumInteriorRings();
+	int inside = m_Foot.getNumInteriorRings();
 	int i, j;
 	for (i = 0; i < inside; i++)
 	{

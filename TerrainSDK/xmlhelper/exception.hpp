@@ -144,7 +144,7 @@ class xh_format_exception : public xh_exception
 public:
   xh_format_exception ();
   xh_format_exception (const string &message, const string &text,
-		       const string &origin = "");
+	  const string &origin = "");
   virtual ~xh_format_exception ();
   virtual const string &getText () const;
   virtual void setText (const string &text);

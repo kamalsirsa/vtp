@@ -47,8 +47,8 @@ MyStatusBar::~MyStatusBar()
 void MyStatusBar::OnSize(wxSizeEvent& event)
 {
 	// could do resizing of status bar elements here if needed
-//    m_checkbox->SetSize(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4);
-//    event.Skip();
+//	m_checkbox->SetSize(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4);
+//	event.Skip();
 }
 
 

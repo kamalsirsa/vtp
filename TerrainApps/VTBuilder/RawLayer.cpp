@@ -370,7 +370,7 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	int iEnt;
 	double epsilon = pView->odx(6);  // calculate what 6 pixels is as world coord
 
-    if (NULL == m_pSet)		// safety check
+	if (NULL == m_pSet)		// safety check
 		return;
 
 	vtFeatureSetPoint2D *pSetP2 = dynamic_cast<vtFeatureSetPoint2D*>(m_pSet);

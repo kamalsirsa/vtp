@@ -347,10 +347,10 @@ public:
  * is a problem reading the file.
  * @see XMLVisitor
  */
-extern void readXML (istream &input, XMLVisitor &visitor,
-		     const string &path="");
-extern void readCompressedXML (gzFile fp, XMLVisitor &visitor,
-							   const string& path="");
+extern void readXML(istream &input, XMLVisitor &visitor,
+					const string &path="");
+extern void readCompressedXML(gzFile fp, XMLVisitor &visitor,
+							  const string& path="");
 
 
 /**

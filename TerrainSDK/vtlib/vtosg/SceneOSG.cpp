@@ -281,9 +281,9 @@ void vtScene::CalcCullPlanes()
 	osg::Matrixd &_projection = m_pOsgSceneView->getProjectionMatrix();
 	osg::Matrixd &_modelView = m_pOsgSceneView->getViewMatrix();
 
-    Polytope tope;
-    tope.setToUnitFrustum();
-    tope.transformProvidingInverse((_modelView)*(_projection));
+	Polytope tope;
+	tope.setToUnitFrustum();
+	tope.transformProvidingInverse((_modelView)*(_projection));
 
 	const Polytope::PlaneList &planes = tope.getPlaneList();
 
