@@ -6,14 +6,18 @@
 //
 // Thanks go to Robert W. Gray (http://www.rwgrayprojects.com/) and the
 // Buckminster Fuller Institute (http://www.bfi.org/) for notes, references,
-// permission, and ancestral source for the following implementation.
+// permission, and example source for the following implementation.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "Icosa.h"
 
+//
+// C arrays which contain the vertex index and face pair information for
+// an icosahedron in the dymaxion orientation.
+//
 int icosa_face_v[21][3] =
 {
 	{ 0, 0, 0 },
@@ -39,16 +43,19 @@ int icosa_face_v[21][3] =
 	{ 12, 8, 7 }
 };
 
-/**
- * Convert spherical polar coordinates to cartesian coordinates.
- */
-void SphericalToCartesian(double theta, double phi,
-						  double *x, double *y, double *z)
+int icosa_face_pairs[10][2] =
 {
-	*x = sin(theta) * cos(phi);
-	*y = sin(theta) * sin(phi);
-	*z = cos(theta);
-}
+	{ 1, 6 },
+	{ 2, 8 },
+	{ 3, 10 },
+	{ 4, 12 },
+	{ 5, 14 },
+	{ 7, 16 },
+	{ 9, 17 },
+	{ 11, 18 },
+	{ 13, 19 },
+	{ 15, 20 }
+};
 
 /**
  * Convert cartesian coordinates into spherical polar coordinates.
@@ -79,11 +86,9 @@ void latlon_to_xyz(double lat, double lon, DPoint3 &p)
 	lat -= ( PId / 2.0f );
 	lon += ( PId );
 
-	double x1, y1, z1;
-	SphericalToCartesian(lat, lon, &x1, &y1, &z1);
-	p.x = x1;
-	p.y = z1;
-	p.z = -y1;
+	p.x = sin(lat) * cos(lon);
+	p.z = -sin(lat) * sin(lon);
+	p.y = cos(lat);
 }
 
 
@@ -93,41 +98,41 @@ void latlon_to_xyz(double lat, double lon, DPoint3 &p)
 void DymaxIcosa::FindFace(const DPoint3 &p, int &tri, int &lcd)
 {
 	// Determine which triangle and LCD triangle the point is in.
-	double  h_dist1, h_dist2, h_dist3;
+	double  dist1, dist2, dist3;
 	int i;
 
 	tri = 0;
-	h_dist1 = 9999.0;
+	dist1 = 1E9;
 
 	// Which triangle face center is the closest to the given point
 	// is the triangle in which the given point is in.
 	for (i = 1; i <=20; i = i + 1)
 	{
-		h_dist2 = (m_face[i].center - p).Length();
-		if (h_dist2 < h_dist1)
+		dist2 = (m_face[i].center - p).Length();
+		if (dist2 < dist1)
 		{
 			tri = i;
-			h_dist1 = h_dist2;
+			dist1 = dist2;
 		}
 	}
 
 	// Now the LCD triangle is determined:
 	// determine the corner vertices of this face
-	int v1 = icosa_face_v[tri][0];
-	int v2 = icosa_face_v[tri][1];
-	int v3 = icosa_face_v[tri][2];
+	int v0 = icosa_face_v[tri][0];
+	int v1 = icosa_face_v[tri][1];
+	int v2 = icosa_face_v[tri][2];
 
 	// compute distance to each corner
-	h_dist1 = (p - m_verts[v1]).Length();
-	h_dist2 = (p - m_verts[v2]).Length();
-	h_dist3 = (p - m_verts[v3]).Length();
+	dist1 = (p - m_verts[v0]).Length();
+	dist2 = (p - m_verts[v1]).Length();
+	dist3 = (p - m_verts[v2]).Length();
 
-	if ( (h_dist1 <= h_dist2) && (h_dist2 <= h_dist3) ) {lcd = 1; }
-	if ( (h_dist1 <= h_dist3) && (h_dist3 <= h_dist2) ) {lcd = 6; }
-	if ( (h_dist2 <= h_dist1) && (h_dist1 <= h_dist3) ) {lcd = 2; }
-	if ( (h_dist2 <= h_dist3) && (h_dist3 <= h_dist1) ) {lcd = 3; }
-	if ( (h_dist3 <= h_dist1) && (h_dist1 <= h_dist2) ) {lcd = 5; }
-	if ( (h_dist3 <= h_dist2) && (h_dist2 <= h_dist1) ) {lcd = 4; }
+	if ( (dist1 <= dist2) && (dist2 <= dist3) ) {lcd = 1; }
+	if ( (dist1 <= dist3) && (dist3 <= dist2) ) {lcd = 6; }
+	if ( (dist2 <= dist1) && (dist1 <= dist3) ) {lcd = 2; }
+	if ( (dist2 <= dist3) && (dist3 <= dist1) ) {lcd = 3; }
+	if ( (dist3 <= dist1) && (dist1 <= dist2) ) {lcd = 5; }
+	if ( (dist3 <= dist2) && (dist2 <= dist1) ) {lcd = 4; }
 }
 
 /**
@@ -137,6 +142,11 @@ void DymaxIcosa::FindFace(const DPoint3 &p, int &tri, int &lcd)
 void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 {
 #if 0
+	//
+	// This R.W.Gray's algorithm for determining arc distances ("true" dymaxion
+	//  projection).  If you use it, you need his permission.  Also, there is
+	//  no reverse projection known, and finally, i don't understand it :)
+	//
 	DPoint3 Pn = m_face[tri].vec_c;		// normal
 
 	// Rd = [Xd, Yd, Zd]
@@ -154,7 +164,7 @@ void DymaxIcosa::FindUV(const DPoint3 &p_in, int tri, DPoint3 &uvw)
 	// intersection point Pi = [Xi Yi Zi] = [X0 + Xd * t, Y0 + Yd * t, Z0 + Zd * t]
 	DPoint3 Pi = Rd * t;
 #else
-	// intersection point Pi
+	// We use simple Gnomonic
 	double t = -m_face[tri].d / (m_face[tri].vec_c * p_in);
 	DPoint3 Pi = p_in * t;
 #endif
