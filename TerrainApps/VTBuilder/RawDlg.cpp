@@ -6,14 +6,14 @@
 //
 
 #ifdef __GNUG__
-    #pragma implementation "RawDlg.cpp"
+	#pragma implementation "RawDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
 #ifdef __BORLANDC__
-    #pragma hdrstop
+	#pragma hdrstop
 #endif
 
 #ifndef WX_PRECOMP
@@ -37,7 +37,7 @@ RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos, const wxSize& size, long style ) :
 	AutoDialog(parent, id, title, pos, size, style)
 {
-    RawDialogFunc( this, TRUE );
+	RawDialogFunc( this, TRUE );
 }
 
 // WDR: handler implementations for RawDlg
@@ -53,7 +53,7 @@ void RawDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddNumValidator(ID_SPACING, &m_fSpacing);
 	AddValidator(ID_BIG_ENDIAN, &m_bBigEndian);
 
-    wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
+	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
 }
 
 
