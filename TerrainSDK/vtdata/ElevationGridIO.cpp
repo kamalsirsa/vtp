@@ -215,10 +215,12 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// check for version of DEM format
+	char buffer[144];
+
 	fseek(fp, 864, 0);
-	fscanf(fp, "%d", &iRow);
-	fscanf(fp, "%d", &iColumn);
-	bOldFormat = (iRow==1 && iColumn==1);
+	fread(buffer, 144, 1, fp);
+	bOldFormat = (strncmp(buffer, "     1     1", 12) == 0);
+
 	if (bOldFormat)
 		iDataStartOffset = 1024;	// 1024 is record length
 	else
@@ -234,19 +236,18 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		else
 		{
 			// might be the Non-fixed-length record format
-			// Record B can start anywhere from 892 to 1023
+			// Record B can start anywhere from 865 to 1023
 			// Record B is identified by starting with the row/column
 			//  of its first profile, "     1     1"
-			char buffer[144];
-			fseek(fp, 892, 0);
-			fread(buffer, 144, 1, fp);
-			for (i = 0; i < 144; i++)
+			fseek(fp, 865, 0);
+			fread(buffer, 158, 1, fp);
+			for (i = 0; i < 158-12; i++)
 			{
 				if (!strncmp(buffer+i, "     1     1", 12))
 				{
 					// Found it
 					bFixedLength = false;
-					iDataStartOffset = 892+i;
+					iDataStartOffset = 865+i;
 					break;
 				}
 			}
@@ -440,6 +441,10 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		fRows = m_EarthExtents.Height() * 1200.0f;
 		m_iRows = (int)fRows + 1;	// 1 more than quad spacing
 	}
+
+	// safety check
+	if (m_iRows > 4000)
+		return false;
 
 	_AllocateArray();
 
