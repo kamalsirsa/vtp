@@ -1,7 +1,7 @@
 //
 // VegLayer.h
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,17 +11,25 @@
 #include "vtdata/LULC.h"
 #include "vtdata/RoadMap.h"
 #include "vtdata/Plants.h"
-#include "Layer.h"
+#include "RawLayer.h"
 #include "VegPointOptions.h"
 
-enum VegLayerType {
+enum VegLayerType
+{
 	VLT_None,
 	VLT_Density,
 	VLT_BioMap,
 	VLT_Instances
 };
 
-class vtVegLayer : public vtLayer
+enum VegImportFieldType
+{
+	VIFT_Density,
+	VIFT_BiotypeName,
+	VIFT_BiotypeID
+};
+
+class vtVegLayer : public vtRawLayer
 {
 public:
 	vtVegLayer();
@@ -31,15 +39,15 @@ public:
 	vtProjection m_proj;
 
 	// Basics to overwrite vtLayer 
-	bool GetExtent(DRECT &rect);
+//	bool GetExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, vtScaledView *pView);
-	bool ConvertProjection(vtProjection &proj_new);
+//	bool ConvertProjection(vtProjection &proj_new);
 	bool OnSave();
 	bool OnLoad();
 	bool AppendDataFrom(vtLayer *pL);
-	void GetProjection(vtProjection &proj);
-	void SetProjection(const vtProjection &proj);
-	void Offset(const DPoint2 &p);
+//	void GetProjection(vtProjection &proj);
+//	void SetProjection(const vtProjection &proj);
+//	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
 	bool CanBeSaved();
 
@@ -47,7 +55,7 @@ public:
 	VegLayerType m_VLType;
 	void AddElementsFromLULC(vtLULCFile *pLULC);
 	void AddElementsFromSHP_Polys(const wxString2 &filename, const vtProjection &proj,
-		int fieldindex, int datatype);
+		int fieldindex, VegImportFieldType datatype);
 	bool AddElementsFromSHP_Points(const wxString2 &filename, const vtProjection &proj,
 		VegPointOptions &opt);
 
@@ -60,15 +68,12 @@ public:
 
 protected:
 	void DrawInstances(wxDC* pDC, vtScaledView *pView);
-	void DrawPolys(wxDC* pDC, vtScaledView *pView);
 
-	// Array of vegpolys made from poly attrib and array of utm points points
-	DPolyArray2		m_Poly;
-	Array<float>	m_Density;
-	Array<short>	m_Biotype;
+	int	m_field_density;
+	int m_field_biotype;
+
 	vtPlantInstanceArray m_Pia;
 };
 
-#endif
-
+#endif	// VEGLAYER_H
 

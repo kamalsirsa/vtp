@@ -1,7 +1,7 @@
 //
 // VegLayer.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -21,8 +21,9 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
+vtVegLayer::vtVegLayer() : vtRawLayer()
 {
+	m_type = LT_VEG;
 	m_VLType = VLT_None;
 }
 
@@ -30,7 +31,7 @@ vtVegLayer::~vtVegLayer()
 {
 }
 
-bool vtVegLayer::GetExtent(DRECT &rect)
+/*bool vtVegLayer::GetExtent(DRECT &rect)
 {
 	int i, size;
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
@@ -41,7 +42,10 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 		if (size == 0)
 			return false;
 		for (i = 0; i < size; i++)
-			rect.GrowToContainLine(m_Poly[i]);
+		{
+			DPolygon2 &dpoly = m_Poly[i];
+			rect.GrowToContainLine(dpoly[0]);
+		}
 	}
 	else if (m_VLType == VLT_Instances)
 	{
@@ -49,16 +53,9 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 	}
 
 	return true;
-}
+}*/
 
-void vtVegLayer::DrawPolys(wxDC* pDC, vtScaledView *pView)
-{
-	int num_polys = m_Poly.size();
-	for (int i = 0; i < num_polys; i++)
-		pView->DrawDLine(pDC, m_Poly[i], true);
-}
-
-void vtVegLayer::DrawInstances(wxDC* pDC, vtScaledView *pView)
+void vtVegLayer::DrawInstances(wxDC *pDC, vtScaledView *pView)
 {
 	wxPoint origin;
 
@@ -75,12 +72,16 @@ void vtVegLayer::DrawInstances(wxDC* pDC, vtScaledView *pView)
 
 		pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
 		pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
-
 	}
 }
 
-void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+void vtVegLayer::DrawLayer(wxDC *pDC, vtScaledView *pView)
 {
+	if (m_VLType == VLT_Instances)
+		DrawInstances(pDC, pView);
+	else
+		vtRawLayer::DrawLayer(pDC, pView);
+/*
 	//set the pen options
 	wxPen VegPen(wxColor(0,100,0), 1, wxSOLID);  //single pixel solid green pen
 	pDC->SetLogicalFunction(wxCOPY);
@@ -91,8 +92,10 @@ void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 	if (m_VLType == VLT_BioMap || m_VLType == VLT_Density)
 		DrawPolys(pDC, pView);
+	*/
 }
 
+/*
 void vtVegLayer::GetProjection(vtProjection &proj)
 {
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
@@ -126,6 +129,7 @@ void vtVegLayer::Offset(const DPoint2 &p)
 			m_Pia.GetAt(i).m_p += p;
 	}
 }
+*/
 
 void vtVegLayer::GetPropertyText(wxString &str)
 {
@@ -181,6 +185,7 @@ bool vtVegLayer::OnLoad()
 		return false;
 }
 
+/*
 bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 {
 	vtProjection proj_old;
@@ -194,8 +199,8 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 	unsigned int i, j;
 	for (i = 0; i < m_Poly.size(); i++)
 	{
-		DLine2 &poly = m_Poly[i];
-		unsigned int size = poly.GetSize();
+		DPolygon2 &dpoly = m_Poly[i];
+		unsigned int size = dpoly.GetSize();
 		for (j = 0; j < size; j++)
 		{
 			DPoint2 &p = poly.GetAt(j);
@@ -206,10 +211,12 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 
 	SetProjection(proj_new);
 	return true;
-}
+} */
 
 bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 {
+	// TODO
+	/*
 	vtVegLayer *pVL = (vtVegLayer *)(pL);
 	if (!pVL)
 		return false;
@@ -235,7 +242,8 @@ bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 	// We've stolen all the polygons from the old layer, so empty it
 	pVL->m_Poly.resize(0);
 
-	return true;
+	return true; */
+	return false;
 }
 
 
@@ -258,8 +266,13 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 		section = pLULC->GetSection(sec);
 		size = size + section->m_iNumPolys;
 	}
-	m_Poly.resize(size);
-	m_Density.SetSize(size);
+
+	vtFeatureSetPolygon *pSet = new vtFeatureSetPolygon();
+	m_pSet = pSet;
+
+	// Create density field
+	m_field_density = pSet->AddField("Density", FT_Float);
+	pSet->SetNumEntities(size);
 
 	// get each poly from LULC file
 	unsigned int i, s, p, count = 0;
@@ -291,7 +304,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 					density = 0.0f;
 					break;
 			}
-			m_Density.SetAt(count, density);
+			pSet->SetValue(count, m_field_density, density);
 
 			DLine2 dline;
 			dline.SetSize(poly->m_iCoords);
@@ -300,7 +313,12 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 			for (i = 0; i < dline.GetSize(); i++)
 				dline.SetAt(i, poly->m_p[i]);
 
-			m_Poly[count] = dline;
+			DPolygon2 dpoly;
+			dpoly.push_back(dline);
+
+			pSet->SetPolygon(count, dpoly);
+
+/*			m_Poly[count] = dline; */	// TEMP
 			count++;
 		}
 	}
@@ -318,7 +336,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
  */
 void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 										  const vtProjection &proj,
-										  int iField, int datatype)
+										  int iField, VegImportFieldType datatype)
 {
 	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename.mb_str(), "rb");
@@ -328,9 +346,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	// Get number of polys and type of data
 	int		nElem;
 	int		nShapeType;
-	double	adfMinBound[4], adfMaxBound[4];
-	FPoint2 point;
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nElem, &nShapeType, NULL, NULL);
 
 	// Check Shape Type, Veg Layer should be Poly data
 	if (nShapeType != SHPT_POLYGON)
@@ -348,76 +364,68 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	DBFFieldType fieldtype = DBFGetFieldInfo(db, iField,
 		pszFieldName, pnWidth, pnDecimals );
 
-	if (datatype == 0)
+	if (datatype == VIFT_Density)
 	{
 		if (fieldtype != FTDouble)
 			return;
-		m_VLType = VLT_Density;
-		m_Density.SetSize(nElem);
 	}
-	if (datatype == 1)
+	if (datatype == VIFT_BiotypeName)
 	{
 		if (fieldtype != FTString)
 			return;
 	}
-	if (datatype == 2)
+	if (datatype == VIFT_BiotypeID)
 	{
 		if (fieldtype != FTInteger)
 			return;
 	}
-	if (datatype == 1 || datatype == 2)
+
+	// OK, ready to allocate our featureset
+	vtFeatureSetPolygon *pSet = new vtFeatureSetPolygon();
+	m_pSet = pSet;
+
+	if (datatype == VIFT_Density)
+	{
+		m_VLType = VLT_Density;
+		m_field_density = pSet->AddField("Density", FT_Float);
+	}
+	if (datatype == VIFT_BiotypeName || datatype == VIFT_BiotypeID)
 	{
 		m_VLType = VLT_BioMap;
-		m_Biotype.SetSize(nElem);
+		m_field_biotype = pSet->AddField("Biotype", FT_Integer);
 	}
 
 	SetProjection(proj);
 
 	// Initialize arrays
-	m_Poly.resize(nElem);
+	pSet->SetNumEntities(nElem);
 
 	// Read Polys from SHP into Veg Poly
+	pSet->LoadGeomFromSHP(hSHP);
+	SHPClose(hSHP);
+
+	// Read fields
 	for (unsigned int i = 0; i < (unsigned int) nElem; i++)
 	{
 		// Read DBF Attributes per poly
-		if (datatype == 0)
+		if (datatype == VIFT_Density)
 		{
 			// density
-			m_Density.SetAt(i, (float) DBFReadDoubleAttribute(db, i, iField));
+			pSet->SetValue(i, m_field_density, (float) DBFReadDoubleAttribute(db, i, iField));
 		}
-		if (datatype == 1)
+		if (datatype == VIFT_BiotypeName)
 		{
 			const char *str = DBFReadStringAttribute(db, i, iField);
 			// TODO
 //			m_pAttrib[i] = m_BioRegions.FindBiotypeIdByName(str);
-			m_Biotype.SetAt(i, -1);
+			pSet->SetValue(i, m_field_biotype, -1);
 		}
-		if (datatype == 2)
+		if (datatype == VIFT_BiotypeID)
 		{
-			m_Biotype.SetAt(i, DBFReadIntegerAttribute(db, i, iField));
+			pSet->SetValue(i, m_field_biotype, DBFReadIntegerAttribute(db, i, iField));
 		}
-
-		// Get the i-th Poly in the SHP file
-		SHPObject	*psShape;
-		psShape = SHPReadObject(hSHP, i);
-
-		DLine2 dline;
-		dline.SetSize(psShape->nVertices);
-
-		// Store each SHP Poly Coord in Veg Poly
-		for (int j = 0; j < psShape->nVertices; j++)
-		{
-			dline.GetAt(j).x = psShape->padfX[j];
-			dline.GetAt(j).y = psShape->padfY[j];
-		}
-		// Store the number of coordinate point in the i-th poly
-		m_Poly[i] = dline;
-
-		SHPDestroyObject(psShape);
 	}
-
 	DBFClose(db);
-	SHPClose(hSHP);
 }
 
 /**
@@ -446,9 +454,7 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 	// Get number of points and type of data
 	int		nElem;
 	int		nShapeType;
-	double	adfMinBound[4], adfMaxBound[4];
-	FPoint2 point;
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nElem, &nShapeType, NULL, NULL);
 
 	// Check Shape Type, Veg Layer should be Point data
 	if (nShapeType != SHPT_POINT)
@@ -579,18 +585,18 @@ bool vtVegLayer::AddElementsFromSHP_Points(const wxString2 &filename,
 
 float vtVegLayer::FindDensity(const DPoint2 &p)
 {
-	int poly = m_Poly.FindPoly(p);
+	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindSimplePolygon(p);
 	if (poly != -1)
-		return m_Density.GetAt(poly);
+		return m_pSet->GetFloatValue(poly, m_field_density);
 	else
 		return -1;
 }
 
 int vtVegLayer::FindBiotype(const DPoint2 &p)
 {
-	int poly = m_Poly.FindPoly(p);
+	int poly = ((vtFeatureSetPolygon*)m_pSet)->FindSimplePolygon(p);
 	if (poly != -1)
-		return m_Biotype.GetAt(poly);
+		return m_pSet->GetIntegerValue(poly, m_field_biotype);
 	else
 		return -1;
 }
