@@ -12,12 +12,12 @@
 
 double adjlon (double lon)
 {
-    if (fabs(lon) <= PId)
+	if (fabs(lon) <= PId)
 		return( lon );
-    lon += PId;  /* adjust to 0..2pi rad */
-    lon -= PI2d * floor(lon / PI2d); /* remove integral # of 'revolutions'*/
-    lon -= PId;  /* adjust back to -pi..pi rad */
-    return( lon );
+	lon += PId;  /* adjust to 0..2pi rad */
+	lon -= PI2d * floor(lon / PI2d); /* remove integral # of 'revolutions'*/
+	lon -= PId;  /* adjust back to -pi..pi rad */
+	return( lon );
 }
 
 # define DTOL	1e-12

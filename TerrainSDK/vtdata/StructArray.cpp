@@ -8,7 +8,9 @@
 // Free for all uses, see license.txt for details.
 //
 
-#pragma warning( disable : 4786 )  
+#ifdef _MSC_VER
+#pragma warning( disable : 4786 ) 
+#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -414,14 +416,11 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
 
 bool vtStructureArray::WriteSHP(const char* pathname)
 {
-	char *ext = strrchr(pathname, '.');
-
 	SHPHandle hSHP = SHPCreate ( pathname, SHPT_POINT );
 	if (!hSHP)
 		return false;
 
 	int count = GetSize();
-	DPoint2 temp;
 //	SHPObject *obj;
 	for (int i = 0; i < count; i++)	//for each coordinate
 	{
@@ -446,7 +445,6 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 		return false;
 
 	building = -1;
-	DPoint2 loc;
 	double dist;
 	closest = 1E8;
 
@@ -614,7 +612,7 @@ void vtStructureArray::DeleteSelected()
 RGBi ParseRGB(const char *str)
 {
 	RGBi color;
-	sscanf(str, "%d %d %d\n", &color.r, &color.g, &color.b);
+	sscanf(str, "%hd %hd %hd\n", &color.r, &color.g, &color.b);
 	return color;
 }
 
@@ -622,7 +620,7 @@ class StructureVisitor : public XMLVisitor
 {
 public:
 	StructureVisitor(vtStructureArray *sa) :
-		m_pSA(sa), _level(0) {}
+		 _level(0), m_pSA(sa) {}
 
 	virtual ~StructureVisitor () {}
 

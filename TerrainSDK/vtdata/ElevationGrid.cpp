@@ -77,6 +77,38 @@ vtElevationGrid::vtElevationGrid(const DRECT &area, int iColumns, int iRows,
 }
 
 /**
+ * Copy constructor.
+ */
+vtElevationGrid::vtElevationGrid(const vtElevationGrid &Other)
+{
+	// Copy on write pointers for the data would be a better solution.
+	// Then we could use the default copy constructor and assignment
+	// operator, instead of writing them and their common _Copy()
+	// subroutine.
+	_Copy(Other);
+}
+
+/**
+ * Assignment operator.
+ * \return	*this with new values
+ */
+vtElevationGrid & vtElevationGrid::operator=(const vtElevationGrid &Other)
+{
+	if (this != &Other)
+	{
+		if (m_pData)
+			free(m_pData);
+
+		if (m_pFData)
+			free(m_pFData);
+
+		_Copy(Other);
+	}
+	return *this;
+}
+
+
+/**
  * Destructor
  */
 vtElevationGrid::~vtElevationGrid()
@@ -183,7 +215,7 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	_AllocateArray();
 
 	// convert each bit of data from the old array to the new
-	DPoint2 p, lat, step = GetSpacing();
+	DPoint2 p, step = GetSpacing();
 	float value;
 
 	// projects points backwards, from the target to the source
@@ -267,7 +299,7 @@ void vtElevationGrid::ComputeHeightExtents()
 /** Gets the minimum and maximum height values.  The values are placed in the
  * arguments by reference.  You must have first called ComputeHeightExtents.
  */
-void vtElevationGrid::GetHeightExtents(float &fMinHeight, float &fMaxHeight)
+void vtElevationGrid::GetHeightExtents(float &fMinHeight, float &fMaxHeight) const
 {
 	fMinHeight = m_fMinHeight;
 	fMaxHeight = m_fMaxHeight;
@@ -279,7 +311,7 @@ void vtElevationGrid::GetHeightExtents(float &fMinHeight, float &fMaxHeight)
  * \param nColumns The number of columns (east-west)
  * \param nRows THe number of rows (north-south)
  */
-void vtElevationGrid::GetDimensions(int &nColumns, int &nRows)
+void vtElevationGrid::GetDimensions(int &nColumns, int &nRows) const
 {
 	nColumns = m_iColumns;
 	nRows = m_iRows;
@@ -287,7 +319,7 @@ void vtElevationGrid::GetDimensions(int &nColumns, int &nRows)
 
 /** Get the grid spacing, the width of each column and row.
  */
-DPoint2 vtElevationGrid::GetSpacing()
+DPoint2 vtElevationGrid::GetSpacing() const
 {
 	return DPoint2(m_area.Width() / (m_iColumns - 1),
 				   m_area.Height() / (m_iRows - 1));
@@ -704,7 +736,7 @@ float vtElevationGrid::GetFilteredValue2(double x, double y)
 	return fData;
 }
 
-DRECT vtElevationGrid::GetAreaExtents()
+DRECT vtElevationGrid::GetAreaExtents() const
 {
 	DPoint2 sample_size = GetSpacing();
 	return DRECT(m_area.left - (sample_size.x / 2.0f),
@@ -750,5 +782,59 @@ void vtElevationGrid::SetCorners(const DLine2 &line)
 {
 	for (int i = 0; i < 4; i++)
 		m_Corners[i] = line[i];
+}
+
+/*
+ * Helper for copy ctor and assignment operator.
+ */
+void vtElevationGrid::_Copy(const vtElevationGrid &Other)
+{
+	m_area		 = Other.m_area;
+	m_iColumns   = Other.m_iColumns;
+	m_iRows		 = Other.m_iRows;
+	m_bFloatMode = Other.m_bFloatMode;
+	m_fVMeters   = Other.m_fVMeters;
+
+	for (unsigned ii = 0; ii < sizeof( m_Corners ) / sizeof( *m_Corners ); ++ii)
+		m_Corners[ii] = Other.m_Corners[ii];
+
+	// FIX - Deal with const issues in Projections.
+	m_proj = const_cast< vtProjection & >( Other.m_proj );
+
+	m_fMinHeight = Other.m_fMinHeight;
+	m_fMaxHeight = Other.m_fMaxHeight;
+
+	strncpy(m_szOriginalDEMName, Other.m_szOriginalDEMName, sizeof(m_szOriginalDEMName));
+
+	if( m_bFloatMode ) 
+	{
+		m_pData = NULL;
+
+		if( Other.m_pFData )
+		{
+			size_t Size = m_iColumns * m_iRows * sizeof(float);
+
+			m_pFData = (float *)malloc( Size );
+
+			memcpy( m_pFData, Other.m_pFData, Size );
+		}
+		else
+			m_pFData = NULL;
+	} 
+	else 
+	{
+		m_pFData = NULL;
+
+		if( Other.m_pData )
+		{
+			size_t Size = m_iColumns * m_iRows * sizeof(short);
+
+			m_pData = (short *)malloc(Size);
+			
+			memcpy( m_pData, Other.m_pData, Size );
+		}
+		else
+			m_pData = NULL;
+	}
 }
 

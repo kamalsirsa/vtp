@@ -75,7 +75,7 @@ class vtStructure : public Selectable
 {
 public:
 	vtStructure();
-	~vtStructure();
+	virtual ~vtStructure();
 
 	void SetBuilding(vtBuilding *bld) { m_pBuilding = bld; m_type = ST_BUILDING; }
 	void SetFence(vtFence *fen) { m_pFence = fen; m_type = ST_FENCE; }
@@ -96,6 +96,13 @@ protected:
 		vtStructInstance *m_pInstance;
 	};
 	vtStructureType m_type;
+private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	
+	vtStructure( const vtStructure & );
+	vtStructure &operator=( const vtStructure & );
 };
 
 #endif // STRUCTUREH

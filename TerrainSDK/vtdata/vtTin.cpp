@@ -198,7 +198,6 @@ void vtTin::Offset(const DPoint2 &p)
 
 bool vtTin::FindAltitudeAtPoint(const DPoint2 &p, float &fAltitude) const
 {
-	DPoint3 tp1, tp2, tp3;	// 3d triangle points
 	DPoint2 p1, p2, p3;		// 2d points
 	bool good;
 

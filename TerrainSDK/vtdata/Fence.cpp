@@ -72,7 +72,7 @@ bool vtFence::GetExtents(DRECT &rect)
  */
 void vtFence::GetClosestPoint(const DPoint2 &point, DPoint2 &closest_point)
 {
-	DPoint2 pos, diff;
+	DPoint2 pos;
 	double dist, closest = 1E8;
 
 	int size = m_pFencePts.GetSize();

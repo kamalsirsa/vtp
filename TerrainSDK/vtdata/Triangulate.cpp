@@ -104,9 +104,9 @@ bool Triangulate_f::Process(const FLine2 &contour,FLine2 &result)
 		}
 
 		/* three consecutive vertices in current polygon, <u,v,w> */
-		int u = v  ; if (nv <= u) u = 0;     /* previous */
-		v = u+1; if (nv <= v) v = 0;     /* new v    */
-		int w = v+1; if (nv <= w) w = 0;     /* next     */
+		int u = v  ; if (nv <= u) u = 0;	/* previous */
+		v = u+1; if (nv <= v) v = 0;		/* new v */
+		int w = v+1; if (nv <= w) w = 0;	/* next */
 
 		if ( Snip(contour,u,v,w,nv,V) )
 		{
@@ -236,9 +236,9 @@ bool Triangulate_d::Process(const DLine2 &contour,DLine2 &result)
 		}
 
 		/* three consecutive vertices in current polygon, <u,v,w> */
-		int u = v  ; if (nv <= u) u = 0;     /* previous */
-		v = u+1; if (nv <= v) v = 0;     /* new v    */
-		int w = v+1; if (nv <= w) w = 0;     /* next     */
+		int u = v  ; if (nv <= u) u = 0;	/* previous */
+		v = u+1; if (nv <= v) v = 0;		/* new v */
+		int w = v+1; if (nv <= w) w = 0;	/* next */
 
 		if ( Snip(contour,u,v,w,nv,V) )
 		{
@@ -269,7 +269,7 @@ bool Triangulate_d::Process(const DLine2 &contour,DLine2 &result)
 
 /************************************************************************/
 /*** END OF CODE SECTION TRIANGULATE.CPP BEGINNING OF TEST.CPP A SMALL **/
-/*** TEST APPLICATION TO DEMONSTRATE THE USAGE OF THE TRIANGULATOR     **/
+/*** TEST APPLICATION TO DEMONSTRATE THE USAGE OF THE TRIANGULATOR	   **/
 /************************************************************************/
 
 #include <stdio.h>

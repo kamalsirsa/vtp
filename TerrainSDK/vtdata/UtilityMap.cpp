@@ -21,8 +21,8 @@ vtUtilityMap::~vtUtilityMap()
 bool vtUtilityMap::ImportPolesFromSHP(const char *fname)
 {
 	SHPHandle hSHP;
-    int		nEntities, nShapeType;
-    double 	adfMinBound[4], adfMaxBound[4];
+	int		nEntities, nShapeType;
+	double 	adfMinBound[4], adfMaxBound[4];
 	DPoint2 point;
 
 	hSHP = SHPOpen(fname, "rb");
@@ -67,8 +67,8 @@ vtPole *vtUtilityMap::ClosestPole(const DPoint2 &p)
 bool vtUtilityMap::ImportLinesFromSHP(const char *fname)
 {
 	SHPHandle hSHP;
-    int		nEntities, nShapeType;
-    double 	adfMinBound[4], adfMaxBound[4];
+	int		nEntities, nShapeType;
+	double 	adfMinBound[4], adfMaxBound[4];
 	int		i, j, verts;
 
 	hSHP = SHPOpen(fname, "rb");
@@ -176,7 +176,6 @@ void vtUtilityMap::GetPoleExtents(DRECT &rect)
 
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 
-	DRECT rect2;
 	int i, size = m_Poles.GetSize();
 	for (i = 0; i < size; i++)
 	{

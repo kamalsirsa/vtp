@@ -53,11 +53,21 @@ public:
 
 	// store extents, in local coordinates, for speed in testing
 	double xmin, zmin, xmax, zmax;
+
+private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	
+	LULCPoly( const LULCPoly & );
+	LULCPoly &operator=( const LULCPoly & );
+
 };
 
 class LULCSection
 {
 public:
+	LULCSection() {};
 	~LULCSection();
 
 	int m_iNumArcs;
@@ -70,6 +80,14 @@ public:
 	Coord *m_pCoord;
 	LULCPoly *m_pPoly;
 	short *m_pFAP;
+
+private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	
+	LULCSection( const LULCSection & );
+	LULCSection &operator=( const LULCSection & );
 };
 
 class vtLULCFile
@@ -120,6 +138,13 @@ public:
 	vtLULCFile *m_pNext;
 
 private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	
+	vtLULCFile( const vtLULCFile & );
+	vtLULCFile &operator=( const vtLULCFile & );
+
 	int		m_iNumSections;
 	LULCSection *m_pSection;
 	DMatrix3 m_transform;

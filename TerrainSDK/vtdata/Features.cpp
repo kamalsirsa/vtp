@@ -168,7 +168,7 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 	int		nElem;
 	int		nShapeType;
 	double	adfMinBound[4], adfMaxBound[4];
-	FPoint2 point;
+
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
 	//  Check shape type, we only support a few types

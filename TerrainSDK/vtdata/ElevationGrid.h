@@ -30,14 +30,17 @@ class vtElevationGrid
 {
 public:
 	vtElevationGrid();
+	vtElevationGrid( const vtElevationGrid &Other );
 	vtElevationGrid(const DRECT &area, int iColumns, int iRows, bool bFloat,
 		vtProjection &proj);
 	~vtElevationGrid();
 
+	vtElevationGrid &operator=( const vtElevationGrid &rhs );
+
 	bool ConvertProjection(vtElevationGrid *pOld, vtProjection &NewProj, void progress_callback(int) = NULL);
 	void Scale(float fScale, bool bDirect);
 
-    // Load from unknown file format
+	// Load from unknown file format
 	bool LoadFromFile( const char *szFileName, void progress_callback(int) = NULL );
 
 	// Load from a specific kind of file
@@ -63,9 +66,9 @@ public:
 	bool SaveToBT(const char *szFileName, void progress_callback(int) = NULL);
 
 	void ComputeHeightExtents();
-	void GetHeightExtents(float &fMinHeight, float &fMaxHeight);
-	void GetDimensions(int &nColumns, int &nRows);
-	DPoint2 GetSpacing();
+	void GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
+	void GetDimensions(int &nColumns, int &nRows) const;
+	DPoint2 GetSpacing() const;
 
 	/// Test if a point is within the extents of the grid.
 	bool ContainsPoint(double x, double y)
@@ -87,13 +90,14 @@ public:
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */
-	char *GetDEMName()	{ return m_szOriginalDEMName; }
+	char *GetDEMName()	{ return m_szOriginalDEMName; }	
 
 	/** Return geographic extents of the grid. */
-	DRECT &GetGridExtents()	{ return m_area; }
+	DRECT &GetGridExtents()				{ return m_area; }
+	const DRECT &GetGridExtents() const { return m_area; }
 
 	/** Return geographic extents of the *area* covered by grid. */
-	DRECT GetAreaExtents();
+	DRECT GetAreaExtents() const;
 
 	/** Set the geographic extents of the grid. */
 	void SetGridExtents(DRECT &ext)	{ m_area = ext; }
@@ -101,7 +105,7 @@ public:
 	/** Get the data size of the grid: \c true if floating point (4-byte),
 	 * \c false if integer (2-byte).
 	 */
-	bool  IsFloatMode()	{ return m_bFloatMode; }
+	bool  IsFloatMode()	const { return m_bFloatMode; }
 
 	void GetEarthLocation(int i, int j, DPoint3 &loc);
 	void GetEarthLocation(int i, int j, FPoint3 &loc);
@@ -110,6 +114,7 @@ public:
 		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
 
 	vtProjection &GetProjection() { return m_proj; }
+	const vtProjection &GetProjection() const { return m_proj; }
 	void SetProjection(vtProjection &proj) { m_proj = proj; }
 
 	bool GetCorners(DLine2 &line, bool bGeo);
@@ -118,8 +123,11 @@ public:
 	short *GetData() { return m_pData; }
 	float *GetFloatData() { return m_pFData; }
 
+	const short *GetData()	  const { return m_pData;  }
+	const float *GetFloatData() const { return m_pFData; }
+
 	void SetScale(float sc) { m_fVMeters = sc; }
-	float GetScale() { return m_fVMeters; }
+	float GetScale() const { return m_fVMeters; }
 
 protected:
 	DRECT	m_area;		// bounds in the original data space
@@ -142,6 +150,7 @@ private:
 	char 	m_szOriginalDEMName[41];
 
 	void	_AllocateArray();
+	void	_Copy( const vtElevationGrid &Other );
 };
 
 #endif	// ELEVATIONGRIDH

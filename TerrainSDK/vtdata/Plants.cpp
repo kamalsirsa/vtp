@@ -5,7 +5,9 @@
 // Free for all uses, see license.txt for details.
 //
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4786 )  
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -229,7 +231,7 @@ class PlantListVisitor : public XMLVisitor
 {
 public:
 	PlantListVisitor(vtPlantList *pl) :
-		m_pPL(pl), _level(0) {}
+		_level(0), m_pPL(pl) {}
 
 	virtual ~PlantListVisitor () {}
 
@@ -627,7 +629,6 @@ bool vtPlantInstanceArray::FindClosestPlant(const DPoint2 &point, double error_m
 	if (IsEmpty())
 		return false;
 
-	DPoint2 loc;
 	double dist;
 
 	int i;

@@ -65,7 +65,7 @@ double DConvert(FILE *fp, int length)
 }
 
 #ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#define min(a,b)	(((a) < (b)) ? (a) : (b))
 #endif
 
 
@@ -1171,7 +1171,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 	/*  NOTE:  BT format is little-endian  */
 	FRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
-	FRead(&m_iRows,    DT_INT, 1, fp, BO_LITTLE_ENDIAN);
+	FRead(&m_iRows,	   DT_INT, 1, fp, BO_LITTLE_ENDIAN);
 
 	// Default to internal projection
 	external = 0;

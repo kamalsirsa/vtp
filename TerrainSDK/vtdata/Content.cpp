@@ -85,7 +85,7 @@ class ContentVisitor : public XMLVisitor
 {
 public:
 	ContentVisitor(vtContentManager *man)
-	: m_pMan(man), _level(0), _hasException(false) {}
+	: _level(0), _hasException(false), m_pMan(man) {}
 
 	virtual ~ContentVisitor() {}
 

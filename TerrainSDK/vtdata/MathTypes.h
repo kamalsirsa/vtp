@@ -22,7 +22,7 @@
 #endif
 
 #ifndef NULL
-#define NULL    0
+#define NULL	0
 #endif
 
 class DPoint3;
@@ -474,7 +474,7 @@ class FSphere
 {
 public:
 	FSphere() {}
-    FSphere(const FBox3 &src)
+	FSphere(const FBox3 &src)
 	{
 		center = src.Center();
 		radius = (center - src.min).Length();
@@ -665,7 +665,7 @@ public:
 	double Get(int i1, int i2) const { return data[i1][i2]; }
 
 	void Transform(const DPoint3 &src, DPoint3 &dst) const;
-    void SetByMatrix4(const DMatrix4 &m);
+	void SetByMatrix4(const DMatrix4 &m);
 
 protected:
 	double data[3][3];
@@ -700,7 +700,7 @@ public:
 	float Get(int i1, int i2) const { return data[i1][i2]; }
 
 	void Transform(const FPoint3 &src, FPoint3 &dst) const;
-    void SetByMatrix4(const class FMatrix4 &m);
+	void SetByMatrix4(const class FMatrix4 &m);
 
 protected:
 	float data[3][3];

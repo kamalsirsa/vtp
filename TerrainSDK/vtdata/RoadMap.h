@@ -75,6 +75,12 @@ public:
 	class Road **m_pRoads;
 	//corresponding lane to road choice
 	int *m_iLane;
+private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	LaneIO( const LaneIO & );
+	LaneIO &operator=( const LaneIO & );
 };
 
 class RoadIO {
@@ -101,6 +107,13 @@ public:
 	class Road **m_pRoads;  //points to node's roads
 	//structure to hold lanes associated with the road
 	RoadIO **m_pRoadIO;
+private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	
+	Switch( const Switch & );
+	Switch &operator=( const Switch & );
 };
 #endif //SWITCH
 
@@ -164,6 +177,13 @@ protected:
 	IntersectionType *m_IntersectTypes;	//intersection types of the roads at this node.
 	LightStatus *m_Lights;  //lights of the roads at this node.
 	class Road **m_r;  //array of roads that intersect this node.
+private:
+	// Don't let unsuspecting users stumble into assuming that object
+	// copy semantics will work.  Declare them private and never
+	// define them,
+	
+	Node( const Node & );
+	Node &operator=( const Node & );
 };
 
 
@@ -230,7 +250,7 @@ class vtRoadMap
 {
 public:
 	vtRoadMap();
-	~vtRoadMap();
+	virtual ~vtRoadMap();
 
 	Node *FindNodeByID(int id);
 	void DeleteElements();

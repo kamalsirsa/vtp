@@ -1242,7 +1242,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		tmpRoad->SetHeightAt(1, tmp);
 
 		int size;
-		fread(&size, intSize, 1, fp);    //number of coordinates making the road
+		fread(&size, intSize, 1, fp);	// number of coordinates making the road
 		tmpRoad->SetSize(size);
 
 		for (j = 0; j < tmpRoad->GetSize(); j++)

@@ -45,9 +45,9 @@ int icosa_face_v[21][3] =
 void SphericalToCartesian(double theta, double phi,
 						  double *x, double *y, double *z)
 {
-    *x = sin(theta) * cos(phi);
-    *y = sin(theta) * sin(phi);
-    *z = cos(theta);
+	*x = sin(theta) * cos(phi);
+	*y = sin(theta) * sin(phi);
+	*z = cos(theta);
 }
 
 /**
@@ -56,18 +56,18 @@ void SphericalToCartesian(double theta, double phi,
 void CartesianToSpherical(double *lng, double *lat,
 						  double x, double y, double z)
 {
-    double a;
+	double a;
 
-    if (x>0.0 && y>0.0){a = 0;}
-    if (x<0.0 && y>0.0){a = PId;}
-    if (x<0.0 && y<0.0){a = PId;}
-    if (x>0.0 && y<0.0){a = PI2d;}
-    *lat = acos(z);
-    if (x==0.0 && y>0.0){*lng = PID2d;}
-    if (x==0.0 && y<0.0){*lng = PId * 3 / 2;}
-    if (x>0.0 && y==0.0){*lng = 0;}
-    if (x<0.0 && y==0.0){*lng = PId;}
-    if (x!=0.0 && y!=0.0){*lng = atan(y/x) + a;}
+	if (x>0.0 && y>0.0){a = 0;}
+	if (x<0.0 && y>0.0){a = PId;}
+	if (x<0.0 && y<0.0){a = PId;}
+	if (x>0.0 && y<0.0){a = PI2d;}
+	*lat = acos(z);
+	if (x==0.0 && y>0.0){*lng = PID2d;}
+	if (x==0.0 && y<0.0){*lng = PId * 3 / 2;}
+	if (x>0.0 && y==0.0){*lng = 0;}
+	if (x<0.0 && y==0.0){*lng = PId;}
+	if (x!=0.0 && y!=0.0){*lng = atan(y/x) + a;}
 }
 
 
