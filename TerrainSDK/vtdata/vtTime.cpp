@@ -31,6 +31,8 @@ vtTime::vtTime()
 		VTLOG(" Local: %s", asctime(&tm_local));
 		VTLOG("   GMT: %s", asctime(&tm_gm));
 
+		// ignore daylight savings time
+		tm_local.tm_isdst = 0;
 		s_DifferenceFromGMT = mktime(&tm_local) - mktime(&tm_gm);
 
 		VTLOG(" Diff: %d seconds\n", s_DifferenceFromGMT);
