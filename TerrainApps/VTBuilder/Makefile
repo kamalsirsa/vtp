@@ -37,7 +37,7 @@ LIBS   = $(shell wx-config --libs)     \
 	  -lgdal.1.1 -lvtdata              \
 	  -lxmlhelper					   \
 	  -lnetcdf                         \
-	  -lX11 $(EXTRA_LIBS) -lm 
+	  -lGL -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)
 
