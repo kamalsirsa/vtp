@@ -241,7 +241,8 @@ bool vtStructureArray::ReadBCF_Old(FILE *fp)
  * \param pathname A resolvable filename of a Shapefile (.shp)
  * \param type The type of structure to expect (Buildings, Fences, or Instances)
  */
-bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type)
+bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type,
+							   const DRECT &rect, void progress_callback(int))
 {
 	SHPHandle hSHP = SHPOpen(pathname, "rb");
 	if (hSHP == NULL)
@@ -294,7 +295,24 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type)
 
 	for (i = 0; i < nEntities; i++)
 	{
+		if (progress_callback != NULL && (i & 0xff) == 0)
+			progress_callback(i * 100 / nEntities);
+
 		SHPObject *psShape = SHPReadObject(hSHP, i);
+
+		if (!rect.IsEmpty())
+		{
+			// do exclusion of shapes outside the indicated extents
+			if (psShape->dfXMax < rect.left ||
+				psShape->dfXMin > rect.right ||
+				psShape->dfYMax < rect.bottom ||
+				psShape->dfYMin > rect.top)
+			{
+				SHPDestroyObject(psShape);
+				continue;
+			}
+		}
+
 		int num_points = psShape->nVertices-1;
 		vtStructure *s = NewStructure();
 		if (type == ST_BUILDING)

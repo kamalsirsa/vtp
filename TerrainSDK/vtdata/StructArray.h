@@ -20,7 +20,7 @@
  * (vtStructure objects).  It can be loaded and saved to VTST files
  * with the ReadXML and WriteXML methods.
  *
- *****/
+ */
 class vtStructureArray : public Array<vtStructure*>
 {
 public:
@@ -30,7 +30,8 @@ public:
 	void AddBuilding(vtBuilding *bld);
 	void DeleteSelected();
 
-	bool ReadSHP(const char* pathname, vtStructureType type);
+	bool ReadSHP(const char* pathname, vtStructureType type,
+		const DRECT &rect, void progress_callback(int) = NULL);
 	bool ReadBCF(const char* pathname);		// read a .bcf file
 	bool ReadBCF_Old(FILE *fp);				// support obsolete format
 	bool ReadXML(const char* pathname);

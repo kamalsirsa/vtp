@@ -418,7 +418,7 @@ vtLayerPtr MainFrame::ImportFromSHP(wxString &strFileName, LayerType ltype)
 	if (ltype == LT_STRUCTURE)
 	{
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
-		success = pSL->AddElementsFromSHP(strFileName, proj);
+		success = pSL->AddElementsFromSHP(strFileName, proj, m_area);
 		if (!success)
 			return NULL;
 	}
