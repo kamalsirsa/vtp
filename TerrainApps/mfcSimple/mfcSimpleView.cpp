@@ -201,9 +201,6 @@ void CSimpleView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	
-	//Runtime code
-	//In the main loop of your code, let vtlib do its culling and rendering:
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Render the scene
 	vtGetScene()->DoUpdate();
 	//this would occur, for example, after your call to glClear() and before calling SwapBuffers() 
