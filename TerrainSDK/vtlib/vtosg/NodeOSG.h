@@ -49,14 +49,11 @@ public:
 	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
 
 	// implementation data
-	void SetOsgNode(osg::Node *n, bool bGroup = false);
+	void SetOsgNode(osg::Node *n);
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
-	bool IsGroup() { return m_bGroup; }
 
 protected:
-	//osg::Node *m_pNode;
 	osg::ref_ptr<osg::Node> m_pNode;
-	bool m_bGroup;
 };
 
 /**
@@ -83,8 +80,8 @@ public:
 
 	// OSG-specific Implementation
 	osg::Group *GetOsgGroup() { return m_pGroup; }
+
 protected:
-	Array<vtNode*> m_VtChildren;
 	void SetOsgGroup(osg::Group *g);
 
 	osg::Group *m_pGroup;
@@ -293,7 +290,7 @@ public:
 	void CalcCullPlanes();
 
 	// for culling
-	FPlane		m_cullPlanes[4];
+	FPlane		m_cullPlanes[6];
 
 protected:
 	vtDynMesh	*m_pDynMesh;
@@ -354,21 +351,6 @@ public:
 	void SetOrtho(float fWidth);
 
 	osg::Camera	*m_pOsgCamera;
-};
-
-class vtBillBoard : public vtNode
-{
-public:
-	vtBillBoard()
-	{
-		m_pBillboard = new osg::Billboard();
-	}
-	void SetAxis(FPoint3 &axis)
-	{
-//		SetAxis(v2d(axis));
-	}
-
-	osg::Billboard *m_pBillboard;
 };
 
 class vtSprite : public vtGroup

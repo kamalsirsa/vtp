@@ -3,7 +3,7 @@
 //
 // Encapsulate behavior for OSG scene graph nodes
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,17 +60,16 @@ const char *vtNode::GetName2()
 		return NULL;
 }
 
-void vtNode::SetOsgNode(Node *n, bool bGroup )
+void vtNode::SetOsgNode(Node *n)
 {
 	m_pNode = n;
 	if (m_pNode.valid())
 	{
-		// artificially increment our own "reference count", so that OSG won't try
-		// to delete us
+		// artificially increment our own "reference count", so that OSG won't
+		// try to delete us
 		ref();
 		m_pNode->setUserData((vtNode *)this);
 	}
-	m_bGroup = bGroup;
 }
 
 
@@ -90,45 +89,28 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 void vtGroup::SetOsgGroup(Group *g)
 {
 	m_pGroup = g;
-	SetOsgNode(g, true);
+	SetOsgNode(g);
 }
 
 void vtGroup::AddChild(vtNode *pChild)
 {
-	// Add the child both to our own child array, and the osg group
-	m_VtChildren.Append(pChild);
 	m_pGroup->addChild(pChild->GetOsgNode());
 }
 
 void vtGroup::RemoveChild(vtNode *pChild)
 {
-	// Remove the child both from our own child array, and the osg group
-	int i = m_VtChildren.Find(pChild);
-	if (i >= 0)
-		m_VtChildren.RemoveAt(i);
 	m_pGroup->removeChild(pChild->GetOsgNode());
 }
 
 vtNode *vtGroup::GetChild(int num)
 {
-#if 0
 	Node *pChild = (Node *) m_pGroup->getChild(num);
-	return (vtNode *) (pChild->_userData);
-#else
-	if (num < m_VtChildren.GetSize())
-		return m_VtChildren.GetAt(num);
-	else
-		return NULL;
-#endif
+	return (vtNode *) (pChild->getUserData());
 }
 
 int vtGroup::GetNumChildren()
 {
-#if 0
 	return m_pGroup->getNumChildren();
-#else
-	return m_VtChildren.GetSize();
-#endif
 }
 
 
@@ -162,47 +144,31 @@ void vtTransform::SetTrans(const FPoint3 &pos)
 
 void vtTransform::Translate1(const FPoint3 &pos)
 {
-	// 0.8.42
-//	Matrix &matrix = m_pTransform->getMatrix();
-//	matrix.postTrans(pos.x, pos.y, pos.z);
-//	m_pTransform->dirtyBound();
-	// 0.8.43
+	// OSG 0.8.43 and later
 	m_pTransform->postMult(Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void vtTransform::TranslateLocal(const FPoint3 &pos)
 {
-	// 0.8.42
-//	Matrix &matrix = m_pTransform->getMatrix();
-//	matrix.preTrans(pos.x, pos.y, pos.z);
-//	m_pTransform->dirtyBound();
-	// 0.8.43
+	// OSG 0.8.43 and later
 	m_pTransform->preMult(Matrix::translate(pos.x, pos.y, pos.z));
 }
 
 void vtTransform::Rotate2(const FPoint3 &axis, float angle)
 {
-	// 0.8.42
-//	Matrix &matrix = m_pTransform->getMatrix();
-//	matrix.postRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
-//	m_pTransform->dirtyBound();
-	// 0.8.43
+	// OSG 0.8.43 and later
 	m_pTransform->postMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void vtTransform::RotateLocal(const FPoint3 &axis, float angle)
 {
-	// 0.8.42
-//	Matrix &matrix = m_pTransform->getMatrix();
-//	matrix.preRot(-angle * 180.0f / PIf, axis.x, axis.y, axis.z);
-//	m_pTransform->dirtyBound();
-	// 0.8.43
+	// OSG 0.8.43 and later
 	m_pTransform->preMult(Matrix::rotate(angle, axis.x, axis.y, axis.z));
 }
 
 void vtTransform::RotateParent(const FPoint3 &axis, float angle)
 {
-	// 0.8.43
+	// OSG 0.8.43 and later
 	Vec3 trans = m_pTransform->getMatrix().getTrans();
 	m_pTransform->postMult(Matrix::translate(-trans)*
 			  Matrix::rotate(angle, axis.x, axis.y, axis.z)*
@@ -211,11 +177,7 @@ void vtTransform::RotateParent(const FPoint3 &axis, float angle)
 
 void vtTransform::Scale3(float x, float y, float z)
 {
-	// 0.8.42
-//	Matrix &matrix = m_pTransform->getMatrix();
-//	matrix.preScale(x, y, z);
-//	m_pTransform->dirtyBound();
-	// 0.8.43
+	// OSG 0.8.43 and later
 	m_pTransform->preMult(Matrix::scale(x, y, z));
 }
 
@@ -237,7 +199,7 @@ void vtTransform::GetTransform1(FMatrix4 &mat)
 
 void vtTransform::PointTowards(const FPoint3 &point)
 {
-	// 0.8.43
+	// OSG 0.8.43 and later
 	Matrix matrix = m_pTransform->getMatrix();
 
 	Vec3 trans = matrix.getTrans();
@@ -338,7 +300,7 @@ void vtCamera::SetFOV(float fov_x)
 //	m_pOsgCamera->setPerspective(fov_y2 * 2 * 180.0f / PIf,
 //		aspect, m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 
-	// osg 0.8.43
+	// OSG 0.8.43 and later
 	m_pOsgCamera->setFOV(fov_x * 180.0f / PIf, fov_y2 * 2.0f * 180.0f / PIf,
 		m_pOsgCamera->zNear(), m_pOsgCamera->zFar());
 }
@@ -577,7 +539,7 @@ void vtDynGeom::CalcCullPlanes()
 	// OSG 0.8.45
 //	const ClippingVolume &clipvol = hack_global_state->getClippingVolume();
 	// OSG 0.9.0
-	const Polytope &clipvol = pCam->m_pOsgCamera->getPolytope();
+	const Polytope &clipvol = hack_global_state->getViewFrustum();
 
 	const Polytope::PlaneList &planes = clipvol.getPlaneList();
 
@@ -590,7 +552,7 @@ void vtDynGeom::CalcCullPlanes()
 
 		// extract the OSG plane to our own structure
 		Vec4 pvec = plane.asVec4();
-		m_cullPlanes[i++].Set(-pvec.x(), -pvec.y(), -pvec.z(), -pvec.w());
+		m_cullPlanes[i++].Set(pvec.x(), pvec.y(), pvec.z(), pvec.w());
 	}
 #endif
 }
