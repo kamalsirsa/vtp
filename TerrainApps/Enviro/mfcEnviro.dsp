@@ -85,7 +85,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 appframe.lib terrain.lib glu32.lib opengl32.lib winmm.lib gconv32.lib XFrogCore.lib libfrog.lib libimage.lib \dev\TFormats\Release\TFormats.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /libpath:"\dism\libs" /libpath:"\dism\xfrog\libs"
-# ADD LINK32 libpng.lib zlib.lib glu32.lib opengl32.lib winmm.lib ismsml.lib netcdf.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib"
+# ADD LINK32 osg.lib osgDB.lib osgUtil.lib libpng.lib zlib.lib glu32.lib opengl32.lib winmm.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib"
 
 !ENDIF 
 
