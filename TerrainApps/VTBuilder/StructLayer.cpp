@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/Fence.h"
 #include "Frame.h"
 #include "StructLayer.h"
 #include "ScaledView.h"
@@ -46,7 +47,7 @@ bool vtStructureLayer::GetExtent(DRECT &rect)
 
 	GetExtents(rect);
 
-	// expand by 10 meters
+	// expand by 10 meters (TODO: is this correct if units are degrees?)
 	rect.left -= 10.0f;
 	rect.right += 10.0f;
 	rect.bottom -= 10.0f;
@@ -71,38 +72,47 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	for (int i = 0; i < structs; i++)
+	int i, j;
+	for (i = 0; i < structs; i++)
 	{
 		// draw each building
 		vtStructure *str = GetAt(i);
-		vtBuilding *bld = str->GetBuilding();
-		if (bld)
+		if (str->IsSelected())
 		{
-			if (str->IsSelected())
+			if (!bSel)
 			{
-				if (!bSel)
-				{
-					pDC->SetPen(yellowPen);
-					bSel = true;
-				}
+				pDC->SetPen(yellowPen);
+				bSel = true;
 			}
-			else
-			{
-				if (bSel)
-				{
-					pDC->SetPen(orangePen);
-					bSel = false;
-				}
-			}
-			DrawBuilding(pDC, pView, bld);
 		}
 		else
 		{
-			vtFence *fen = str->GetFence();
-			if (fen)
+			if (bSel)
 			{
-				// TODO
+				pDC->SetPen(orangePen);
+				bSel = false;
 			}
+		}
+		vtBuilding *bld = str->GetBuilding();
+		if (bld)
+			DrawBuilding(pDC, pView, bld);
+
+		vtFence *fen = str->GetFence();
+		if (fen)
+		{
+			DLine2 &pts = fen->GetFencePoints();
+			for (j = 0; j < pts.GetSize(); j++)
+				pView->screen(pts.GetAt(j), g_screenbuf[j]);
+			pDC->DrawLines(j, g_screenbuf);
+		}
+		vtStructInstance *inst = str->GetInstance();
+		if (inst)
+		{
+			wxPoint origin;
+			pView->screen(inst->m_p, origin);
+
+			pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
+			pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
 		}
 	}
 }
@@ -110,7 +120,8 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 #define MAX_SIDES	100
 static wxPoint array[MAX_SIDES];
 
-void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *bld)
+void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
+									vtBuilding *bld)
 {
 	DPoint2 corner[4];
 	float fWidth, fDepth, fRotation;
@@ -332,25 +343,30 @@ void vtStructureLayer::InvertSelection()
 	}
 }
 
-//
-// Helper: find the index of a field in a DBF file, given the name of the field.
-// Returns -1 if not found.
-//
-int FindDBField(DBFHandle db, const char *field_name)
+void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 {
-	int count = DBFGetFieldCount(db);
-	for (int i = 0; i < count; i++)
-	{
-		int pnWidth, pnDecimals;
-		char pszFieldName[80];
-		DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
-			pszFieldName, &pnWidth, &pnDecimals );
-		if (!stricmp(field_name, pszFieldName))
-			return i;
-	}
-	return -1;
+	wxString choices[3];
+	choices[0] = "Buildings (parametric by center or footprint)";
+	choices[1] = "Linear Structures (fences)";
+	choices[2] = "Instances (external model references)";
+
+	wxSingleChoiceDialog dialog(NULL, "These are your choices",
+		"Please indicate the type of structures in this SHP file:",
+		3, (const wxString *)choices);
+//	dialog.SetSelection(0);
+	if (dialog.ShowModal() != wxID_OK)
+		return;
+
+	vtStructureType type = (vtStructureType) dialog.GetSelection();
+
+	bool success = ReadSHP(filename, type);
+	if (!success)
+		return;
+
+	m_proj = proj;	// Set projection
 }
 
+#if 0
 void vtStructureLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 {
 	//Open the SHP File & Get Info from SHP:
@@ -461,3 +477,4 @@ void vtStructureLayer::AddElementsFromSHPPolygons(const char *filename,
 	DBFClose(db);
 }
 
+#endif
