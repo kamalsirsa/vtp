@@ -173,6 +173,8 @@ public:
 	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);
 	bool WriteVF(const char *fname);
+	bool WriteSHP(const char *fname);
+
 	bool FindClosestPlant(const DPoint2 &pos, double error_meters,
 		int &plant, double &distance);
 	bool GetExtent(DRECT &rect);

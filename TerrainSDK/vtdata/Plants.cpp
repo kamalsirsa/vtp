@@ -16,6 +16,7 @@
 #include "Plants.h"
 #include "MathTypes.h"
 #include "xmlhelper/easyxml.hpp"
+#include "shapelib/shapefil.h"
 
 float vtPlantAppearance::s_fTreeScale = 1.0f;
 
@@ -758,6 +759,58 @@ bool vtPlantInstanceArray::WriteVF(const char *fname)
 	}
 
 	fclose(fp);
+	return true;
+}
+
+bool vtPlantInstanceArray::WriteSHP(const char *fname)
+{
+	SHPHandle hSHP = SHPCreate(fname, SHPT_POINT);
+	if (!hSHP)
+		return false;
+
+	SHPObject *obj;
+
+	int i, numinstances = GetSize();
+
+	for (i = 0; i < numinstances; i++)
+	{
+		vtPlantInstance &plant = GetAt(i);
+
+		obj = SHPCreateSimpleObject(SHPT_POINT, 1,
+			&plant.m_p.x, &plant.m_p.y, NULL);
+
+		SHPWriteObject(hSHP, -1, obj);
+		SHPDestroyObject(obj);
+	}
+	SHPClose(hSHP);
+
+	// Save DBF File also
+	vtString dbfname = fname;
+	dbfname = dbfname.Left(dbfname.GetLength() - 4);
+	dbfname += ".dbf";
+	DBFHandle db = DBFCreate(dbfname);
+	if (db == NULL)
+		return false;
+
+	DBFAddField(db, "Height", FTDouble, 4, 2);
+	DBFAddField(db, "Species", FTInteger, 6, 0);
+
+	for (i = 0; i < numinstances; i++)
+	{
+		vtPlantInstance &plant = GetAt(i);
+
+		DBFWriteDoubleAttribute(db, i, 0, plant.size);
+		DBFWriteIntegerAttribute(db, i, 1, plant.species_id);
+	}
+	DBFClose(db);
+
+	// and projection
+	char prj_name[256];
+	strcpy(prj_name, fname);
+	int len = strlen(prj_name);
+	strcpy(prj_name + len - 4, ".prj"); // overwrite the .bt
+	m_proj.WriteProjFile(prj_name);
+
 	return true;
 }
 
