@@ -58,7 +58,7 @@ void MyStatusBar::UpdateText()
 	SetStatusText(ws, Field_Cursor);
 
 	str = g_App.GetStatusString(2);
-	ws = str;
+	ws.from_utf8(str);
 	SetStatusText(ws, Field_CursorVal);
 }
 
