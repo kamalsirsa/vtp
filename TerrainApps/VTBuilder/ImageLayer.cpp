@@ -11,6 +11,7 @@
 #include "wx/wx.h"
 #endif
 
+#include "vtdata/vtLog.h"
 #if ROGER
 #include "gdalwarper.h"
 #endif
@@ -585,7 +586,7 @@ bool vtImageLayer::LoadFromGDAL()
 //		}
 
 		m_pBitmap = new vtBitmap();
-		if (!m_pBitmap->Allocate(m_iXSize, m_iYSize) || 1)	// TEMP!
+		if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
 		{
 			delete m_pBitmap;
 			m_pBitmap = NULL;
@@ -593,6 +594,7 @@ bool vtImageLayer::LoadFromGDAL()
 			msg.Printf(_T("Couldn't allocate bitmap of size %d x %d.  Would you like\n")
 				_T("to create the layer using out-of-memory access to the image?"),
 				m_iXSize, m_iYSize);
+			VTLOG(msg.mb_str());
 			int result = wxMessageBox(msg, _T("Question"), wxYES_NO);
 			if (result == wxYES)
 				bDefer = true;
@@ -624,7 +626,7 @@ bool vtImageLayer::LoadFromGDAL()
 			wxString2 str = msg;
 			bRet = false;
 			wxString2 str2 = "Couldn't load Image layer: ";
-			DisplayAndLog(str2+str);
+			DisplayAndLog((str2+str).mb_str());
 		}
 	}
 
