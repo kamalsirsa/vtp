@@ -34,7 +34,7 @@ public:
 	// scene setup
 	vtRoot *BeginTerrainScene(bool bDoSound);
 	void AppendTerrain(vtTerrain *pTerrain);
-	virtual void Finish(const vtStringArray &datapath);
+	void Finish(const vtStringArray &datapath) {}	// dummy; obsolete method
 	void SetTerrain(vtTerrain *pTerrain);
 
 	/// Get the first terrain in the list.
