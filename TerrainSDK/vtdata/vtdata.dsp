@@ -43,7 +43,7 @@ RSC=rc.exe
 MTL=midl.exe
 F90=df.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /D SUPPORT_SDTS=1 /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "\APIs\netcdf-3.5.0.win32bin\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D SUPPORT_NETCDF=1 /D SUPPORT_SDTS=1 /YX /FD /c
 # ADD BASE RSC /l 0x409
 # ADD RSC /l 0x409
 BSC32=bscmake.exe
@@ -159,6 +159,10 @@ SOURCE=.\Triangulate.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\Unarchive.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\UtilityMap.cpp
 # End Source File
 # Begin Source File
@@ -252,6 +256,10 @@ SOURCE=.\Structure.h
 # Begin Source File
 
 SOURCE=.\Triangulate.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Unarchive.h
 # End Source File
 # Begin Source File
 
