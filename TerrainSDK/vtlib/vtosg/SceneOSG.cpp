@@ -294,7 +294,8 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 	osg::StateSet *set = GetOsgNode()->getStateSet();
 	if (!set)
 	{
-		set = new osg::StateSet;
+		m_pFogStateSet = new osg::StateSet;
+		set = m_pFogStateSet.get();
 		GetOsgNode()->setStateSet(set);
 	}
 
@@ -308,14 +309,14 @@ void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iTy
 		case GL_EXP2: eType = Fog::EXP2; break;
 		default: return;
 		}
-		Fog *fog = new Fog;
-		fog->setMode(eType);
-		fog->setDensity(0.25f);	// not used for linear
-		fog->setStart(start);
-		fog->setEnd(end);
-		fog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
+		m_pFog = new Fog;
+		m_pFog->setMode(eType);
+		m_pFog->setDensity(0.25f);	// not used for linear
+		m_pFog->setStart(start);
+		m_pFog->setEnd(end);
+		m_pFog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
 
-		set->setAttributeAndModes(fog, StateAttribute::OVERRIDE | StateAttribute::ON);
+		set->setAttributeAndModes(m_pFog.get(), StateAttribute::OVERRIDE | StateAttribute::ON);
 	}
 	else
 	{
