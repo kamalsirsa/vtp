@@ -574,6 +574,11 @@ public:
 		if (p.y > max.y) max.y = p.y;
 		if (p.z > max.z) max.z = p.z;
 	}
+	void GrowToContainLine(const FLine3 &line)
+	{
+		for (unsigned int i = 0; i < line.GetSize(); i++)
+			GrowToContainPoint(line[i]);
+	}
 
 	FPoint3	min, max;
 };
