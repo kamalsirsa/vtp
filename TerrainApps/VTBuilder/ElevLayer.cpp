@@ -412,7 +412,7 @@ bool vtElevLayer::AppendDataFrom(vtLayer *pL)
 	}
 	if (m_pTin && pEL->m_pTin)
 	{
-		// TODO
+		// TODO (long-term..)
 	}
 	return false;
 }
@@ -458,6 +458,40 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 	m_bNeedsDraw = true;
 }
 
+void vtElevLayer::SetupDefaultColors(ColorMap &cmap)
+{
+	cmap.m_bRelative = false;
+	cmap.Add(-450*13, RGBi(60, 60, 60	));
+	cmap.Add(-450*12, RGBi(160, 80, 0	));
+	cmap.Add(-450*11, RGBi(128, 128, 0	));
+	cmap.Add(-450*10, RGBi(160, 0, 160	));
+	cmap.Add(-450* 9, RGBi(144, 64, 144	));
+	cmap.Add(-450* 8, RGBi(128, 128, 128));
+	cmap.Add(-450* 7, RGBi(64, 128, 60	));
+	cmap.Add(-450* 6, RGBi(0, 128, 0	));
+	cmap.Add(-450* 5, RGBi(0, 128, 128	));
+	cmap.Add(-450* 4, RGBi(0, 0, 160	));
+	cmap.Add(-450* 3, RGBi(43, 90, 142	));
+	cmap.Add(-450* 2, RGBi(81, 121, 172	));
+	cmap.Add(-450* 1, RGBi(108, 156, 195));
+	cmap.Add(-0.01f  , RGBi(182, 228, 255));
+	cmap.Add(0, RGBi(0, 0, 0xee));
+	cmap.Add( 0.01f  , RGBi(40, 224, 40	));
+	cmap.Add( 450* 1, RGBi(0, 128, 0	));
+	cmap.Add( 450* 2, RGBi(100, 144, 76	));
+	cmap.Add( 450* 3, RGBi(204, 170, 136));
+	cmap.Add( 450* 4, RGBi(136, 100, 70	));
+	cmap.Add( 450* 5, RGBi(128, 128, 128));
+	cmap.Add( 450* 6, RGBi(180, 128, 64	));
+	cmap.Add( 450* 7, RGBi(255, 144, 32	));
+	cmap.Add( 450* 8, RGBi(200, 110, 80	));
+	cmap.Add( 450* 9, RGBi(160, 80, 160	));
+	cmap.Add( 450*10, RGBi(144, 40, 128	));
+	cmap.Add( 450*11, RGBi(128, 128, 128));
+	cmap.Add( 450*12, RGBi(255, 255, 255));
+	cmap.Add( 450*13, RGBi(128, 128, 128));
+}
+
 void vtElevLayer::RenderBitmap()
 {
 	// flag as being rendered
@@ -480,60 +514,44 @@ void vtElevLayer::RenderBitmap()
 	UpdateProgressDialog(0, _("Generating colors..."));
 	DetermineMeterSpacing();
 
-	int i, j;		// image coord
-	int x, y;		// elevation coord
-	int r, g, b;
-	int stepx = m_iColumns / m_iImageWidth;
-	int stepy = m_iRows / m_iImageHeight;
+	clock_t tm1 = clock();
 
-	bool has_invalid = false;
-	for (j = 0; j < m_iImageHeight; j++)
+#if 0
+	// TODO: re-enable this friendly cancel behavior
+	if (UpdateProgressDialog(j*100/m_iImageHeight))
 	{
-		if (bProg)
+		wxString2 msg = _("Turn off displayed elevation for elevation layers?");
+		if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
 		{
-			if (UpdateProgressDialog(j*100/m_iImageHeight))
-			{
-				wxString2 msg = _("Turn off displayed elevation for elevation layers?");
-				if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
-				{
-					m_draw.m_bShowElevation = false;
-					CloseProgressDialog();
-					return;
-				}
-				else
-					ResumeProgressDialog();
-			}
+			m_draw.m_bShowElevation = false;
+			CloseProgressDialog();
+			return;
 		}
-		y = m_iRows - 1 - (j * stepy);
-		for (i = 0; i < m_iImageWidth; i++)
-		{
-			x = (i * stepx);
-
-			bool bIsInvalid = (m_pGrid->GetValue(x, y) == INVALID_ELEVATION);
-			if (bIsInvalid)
-				has_invalid = true;
-
-			GenerateColorFromGrid1(x, y, r, g, b);
-		//	GenerateColorFromGrid2(x, y, r, g, b);
-			if (m_draw.m_bShading && !bIsInvalid && !m_draw.m_bCastShadows)
-				ShadePixel(x, y, r, g, b, SHADING_BIAS);
-
-			m_pBitmap->SetPixel24(i, j, r, g, b);
-		}
+		else
+			ResumeProgressDialog();
 	}
-	if (m_draw.m_bCastShadows)
-	{
-		FPoint3 light_dir;
+#endif
+	ColorMap cmap;
+	SetupDefaultColors(cmap);
 
+	bool has_invalid = m_pGrid->ColorDibFromElevation(m_pBitmap, &cmap,
+		progress_callback);
+
+	if (m_draw.m_bShading)
+	{
 		// Quick and simple sunlight vector
 		float phi = m_draw.m_iCastAngle / 180.0f * PIf;
 		float theta = m_draw.m_iCastDirection / 180.0f * PIf;
-
+		FPoint3 light_dir;
 		light_dir.x = (-sin(theta)*cos(phi));
 		light_dir.z = (-cos(theta)*cos(phi));
 		light_dir.y = -sin(phi);
 
-		m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
+		if (m_draw.m_bCastShadows)
+			m_pGrid->ShadowCastDib(m_pBitmap, light_dir, 1.0, progress_callback);
+		else
+//			m_pGrid->ShadeDibFromElevation(m_pBitmap, light_dir, 1.0, progress_callback);
+			m_pGrid->ShadeQuick(m_pBitmap, SHADING_BIAS, progress_callback);
 	}
 
 	if (has_invalid && m_draw.m_bDoMask)
@@ -545,6 +563,10 @@ void vtElevLayer::RenderBitmap()
 	}
 	else
 		m_bHasMask = false;
+
+	clock_t tm2 = clock();
+	float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
+	VTLOG("RenderBitmap: %.3f seconds.\n", time);
 
 	m_pBitmap->ContentsChanged();
 	m_bBitmapRendered = true;
@@ -563,179 +585,6 @@ void vtElevLayer::ReImage()
 	m_bBitmapRendered = false;
 }
 
-#define LEVELS 14
-#define RANGE 450
-int level_colors[LEVELS][3] = {
-	{ 40, 224, 40 },
-	{ 0, 128, 0 },
-	{ 100, 144, 76 },
-	{ 204, 170, 136 },
-	{ 136, 100, 70 },
-	{ 128, 128, 128 },
-	{ 180, 128, 64 },
-	{ 255, 144, 32 },
-	{ 200, 110, 80 },
-	{ 160, 80, 160 },
-	{ 144, 40, 128 },
-	{ 128, 128, 128 },
-	{ 255, 255, 255 },
-	{ 128, 128, 128 }
-};
-int bathy_colors[LEVELS][3] = {
-	{ 182, 228, 255 },
-	{ 108, 156, 195 },
-	{ 81, 121, 172 },
-	{ 43, 90, 142 },
-	{ 0, 0, 160 },
-	{ 0, 128, 128 },
-	{ 0, 128, 0 },
-	{ 64, 128, 60 },
-	{ 128, 128, 128 },
-	{ 144, 64, 144 },
-	{ 160, 0, 160 },
-	{ 128, 128, 0 },
-	{ 160, 80, 0 },
-	{ 60, 60, 60 }
-//	{ 255, 255, 255 }
-};
-
-//
-// This method produces a set of bright, highly visible artificial colors
-//
-void vtElevLayer::GenerateColorFromGrid1(int i, int j, int &r, int &g, int &b)
-{
-	float value = m_pGrid->GetFValue(i, j);
-	if (value == INVALID_ELEVATION)
-	{
-		r = 255;
-		g = b = 0;
-	}
-	else if (value == 0)
-	{
-		r = g = 0;
-		b = 0xee;
-	}
-	else if (value < 0)
-	{
-		int pocket = (int) ((-value) / RANGE);
-		if (pocket >= 0 && pocket < LEVELS)
-		{
-			float s = ((-(int)value) % RANGE) / (float)RANGE;
-			r = (int) (bathy_colors[pocket][0] + (s * (bathy_colors[pocket+1][0] - bathy_colors[pocket][0])));
-			g = (int) (bathy_colors[pocket][1] + (s * (bathy_colors[pocket+1][1] - bathy_colors[pocket][1])));
-			b = (int) (bathy_colors[pocket][2] + (s * (bathy_colors[pocket+1][2] - bathy_colors[pocket][2])));
-		}
-		else
-		{
-			r = g = b = 0;
-		}
-	}
-	else
-	{
-		int pocket = (int) (value / RANGE);
-		if (pocket >= 0 && pocket < LEVELS)
-		{
-			float s = ((int)value % RANGE) / (float)RANGE;
-			r = (int) (level_colors[pocket][0] + (s * (level_colors[pocket+1][0] - level_colors[pocket][0])));
-			g = (int) (level_colors[pocket][1] + (s * (level_colors[pocket+1][1] - level_colors[pocket][1])));
-			b = (int) (level_colors[pocket][2] + (s * (level_colors[pocket+1][2] - level_colors[pocket][2])));
-		}
-		else
-		{
-			r = g = b = 0;
-		}
-	}
-}
-
-#define RANGES	8
-int ranges[RANGES] = { 0, 150, 400, 800, 1600, 2800, 4000, 5000 };
-int colors[RANGES][3] = {
-	{ 221, 188, 140 },
-	{ 156, 173, 132 },
-	{ 189, 189, 148 },
-	{ 214, 214, 165 },
-	{ 231, 198, 140 },
-	{ 214, 189, 123 },
-	{ 189, 189, 189 },
-	{ 125, 125, 125 }
-};
-
-//
-// This method produces a set of earthy, vaguely realistic 'ground' colors
-//
-void vtElevLayer::GenerateColorFromGrid2(int i, int j, int &r, int &g, int &b)
-{
-	float value = m_pGrid->GetFValue(i, j);
-	if (value == INVALID_ELEVATION)
-	{
-		r = 255;
-		g = b = 0;
-	}
-	else if (value == 0.0f)
-	{
-		r = g = 0x22;
-		b = 0x99;
-	}
-	else if (value > -1.0f && value < 0.0f)
-	{
-		r = 221;
-		g = 178;	// land just below sea-level
-		b = 125;
-	}
-	else if (value < 0.0f)
-	{
-		int pocket = (int) ((-value) / RANGE);
-		if (pocket >= 0 && pocket < LEVELS)
-		{
-			float s = ((-(int)value) % RANGE) / (float)RANGE;
-			r = (int) (bathy_colors[pocket][0] + (s * (bathy_colors[pocket+1][0] - bathy_colors[pocket][0])));
-			g = (int) (bathy_colors[pocket][1] + (s * (bathy_colors[pocket+1][1] - bathy_colors[pocket][1])));
-			b = (int) (bathy_colors[pocket][2] + (s * (bathy_colors[pocket+1][2] - bathy_colors[pocket][2])));
-		}
-		else
-		{
-			r = g = b = 0;
-		}
-	}
-	else
-	{
-		r = g = b = 0;
-		for (int i = 0; i < RANGES; i++)
-		{
-			if (value > ranges[i]) continue;
-			float s = (value - ranges[i-1]) / (ranges[i] - ranges[i-1]);
-			r = (int) (colors[i-1][0] + (s * (colors[i][0] - colors[i-1][0])));
-			g = (int) (colors[i-1][1] + (s * (colors[i][1] - colors[i-1][1])));
-			b = (int) (colors[i-1][2] + (s * (colors[i][2] - colors[i-1][2])));
-			break;
-		}
-	}
-}
-
-void vtElevLayer::ShadePixel(int i, int j, int &r, int &g, int &b, int bias)
-{
-	float value = m_pGrid->GetFValue(i, j);
-	if (value != INVALID_ELEVATION && value != 0 && i < m_iColumns-1)
-	{
-		float value2 = m_pGrid->GetFValue(i+1, j);
-		int diff = (int) ((value2 - value) / m_fSpacing * bias);
-
-		// clip to keep values under control
-		if (diff > 128)
-			diff = 128;
-		else if (diff < -128)
-			diff = -128;
-		r += diff;
-		g += diff;
-		b += diff;
-		if (r < 0) r = 0;
-		else if (r > 255) r = 255;
-		if (g < 0) g = 0;
-		else if (g > 255) g = 255;
-		if (b < 0) b = 0;
-		else if (b > 255) b = 255;
-	}
-}
 
 void vtElevLayer::FillGaps()
 {
@@ -1100,44 +949,18 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 
 void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
 {
-	DetermineMeterSpacing();
-
-	int w = dib->GetWidth();
-	int h = dib->GetHeight();
-
-	wxString str;
-	int percent, last = -1;
-
-	int gw, gh;
-	m_pGrid->GetDimensions(gw, gh);
-
-	int i, j, x, y, r, g, b;
-	for (i = 0; i < w; i++)
-	{
-		percent = i * 100 / w;
-		if (percent != last)
-		{
-			str.Printf(_T("%d%%"), percent);
-			UpdateProgressDialog(percent, str);
-			last = percent;
-		}
-
-		x = i * gw / w;			// find corresponding location in terrain
-
-		for (j = 0; j < h; j++)
-		{
-			y = j * gh / h;
-			GenerateColorFromGrid2(x, y, r, g, b);
+	// TODO: call ColorDibFromElevation etc. here
 #if 0
-			r = r * 2 / 3;
-			g = g * 2 / 3;
-			b = b * 2 / 3;
-#endif
-			if (bShade)
-				ShadePixel(x, y, r, g, b, 60);
-			dib->SetPixel24(i, h-1-j, RGB(r, g, b));
-		}
+	int percent, last = -1;
+	percent = i * 100 / w;
+	if (percent != last)
+	{
+		wxString str;
+		str.Printf(_T("%d%%"), percent);
+		UpdateProgressDialog(percent, str);
+		last = percent;
 	}
+#endif
 }
 
 void vtElevLayer::SetTin(vtTin2d *pTin)

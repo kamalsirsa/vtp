@@ -113,11 +113,9 @@ public:
 
 	// drawing
 	void PaintDibFromElevation(vtDIB *dib, bool bShade);
-	void GenerateColorFromGrid1(int i, int j, int &r, int &g, int &b);
-	void GenerateColorFromGrid2(int i, int j, int &r, int &g, int &b);
-	void ShadePixel(int i, int j, int &r, int &g, int &b, int bias);
 	void SetupBitmap(wxDC* pDC);
 	void RenderBitmap();
+	void SetupDefaultColors(ColorMap &cmap);
 
 	static ElevDrawOptions m_draw;
 
