@@ -20,13 +20,12 @@
 #include "frame.h"
 #include "app.h"
 
-DECLARE_APP(vtApp)
+DECLARE_APP(vtApp);
 
 /*
  * vtGLCanvas implementation
  */
-	BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
-EVT_CLOSE(vtGLCanvas::OnClose)
+BEGIN_EVENT_TABLE(vtGLCanvas, wxGLCanvas)
 EVT_SIZE(vtGLCanvas::OnSize)
 EVT_PAINT(vtGLCanvas::OnPaint)
 EVT_CHAR(vtGLCanvas::OnChar)
@@ -55,6 +54,7 @@ void vtGLCanvas::QueueRefresh(bool eraseBackground)
 	// A Refresh routine we can call from inside OnPaint.
 	//   (queues the events rather than dispatching them immediately).
 {
+#if !WIN32
 	// With wxGTK, you can't do a Refresh() in OnPaint because it doesn't
 	//   queue (post) a Refresh event for later.  Rather it dispatches
 	//   (processes) the underlying events immediately via ProcessEvent
@@ -70,12 +70,17 @@ void vtGLCanvas::QueueRefresh(bool eraseBackground)
 	wxPaintEvent event( GetId() );
 	event.SetEventObject( this );
 	wxPostEvent( GetEventHandler(), event );
+#endif
 }
-
-extern bool CreateScene();
 
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
+	// Prevent this function from ever being called nested, it is not re-entrant
+	static bool bInside = false;
+	if (bInside)
+		return;
+	bInside = true;
+
 	vtScene *pScene = vtGetScene();
 
 	if (!pScene->HasWinInfo())
@@ -131,6 +136,8 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	// Must allow some idle processing to occur - or the toolbars will not
 	// update, and the close box will not respond!
 	wxGetApp().ProcessIdle();
+
+	bInside = false;
 }
 
 static void Reshape(int width, int height)
@@ -140,18 +147,13 @@ static void Reshape(int width, int height)
 }
 
 
-void vtGLCanvas::OnClose(wxCloseEvent& event)
-{
-	m_bRunning = false;
-}
-
 void vtGLCanvas::OnSize(wxSizeEvent& event)
 { 
-  // Presumably this is a wxMSWism.  
-  // For wxGTK & wxMotif, all canvas resize events occur before the context
-  //   is set.  So ignore this context check and grab the window width/height
-  //   when we get it so it (and derived values such as aspect ratio and
-  //   viewport parms) are computed correctly.
+	// Presumably this is a wxMSWism.  
+	// For wxGTK & wxMotif, all canvas resize events occur before the context
+	//   is set.  So ignore this context check and grab the window width/height
+	//   when we get it so it (and derived values such as aspect ratio and
+	//   viewport parms) are computed correctly.
 #ifdef __WXMSW__
 	if (!GetContext()) return;
 #endif
@@ -169,7 +171,7 @@ void vtGLCanvas::OnChar(wxKeyEvent& event)
 	long key = event.KeyCode();
 
 	if ( key == WXK_ESCAPE || key == 'q' || key == 'Q' )
-		exit(0);
+		wxGetApp().GetTopWindow()->Close();
 
 	// pass the char to the vtlib Scene
 	vtGetScene()->OnKey(key, 0);
@@ -218,7 +220,7 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	}
 	else
 	{
-		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
+		// ignore other mouse events, such as wxEVT_LEAVE_WINDOW
 		return;
 	}
 
