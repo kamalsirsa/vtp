@@ -167,6 +167,7 @@ public:
 
 	void RequestGDALFormats();
 	void RequestOGRFormats();
+	void GuessDataPaths();
 
 protected:
 	bool m_bGDALFormatsRegistered;

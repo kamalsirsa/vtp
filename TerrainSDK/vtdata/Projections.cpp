@@ -564,6 +564,7 @@ bool vtProjection::ReadProjFile(const char *filename)
 	}
 	else
 #endif
+
 	// Actually, importFromESRI() does the whole job for us, including
 	//  handling both normal .prj files, and weird ESRI variations.
 	eErr = importFromESRI(papszPrj);
@@ -1178,3 +1179,33 @@ void GDALWrapper::RequestOGRFormats()
 		m_bOGRFormatsRegistered = true;
 	}
 }
+
+//
+// Attempt to guess where the GDAL and PROJ.4 data files are located, in case
+//  the user has failed to set their data paths.  Calling this function
+//  should be harmless even if the data paths are already set correctly.
+//
+void GDALWrapper::GuessDataPaths()
+{
+#ifdef WIN32
+	// Frank says:
+	// "The GDAL_DATA value can be set programmatically with CPLSetConfigOption()"
+	// However, the user might already have the GDAL_DATA environment variable
+	//  set, and we don't want to override that.
+	CPLPushFinderLocation("../../GDAL-data");
+
+	// Frank says:
+	// "The PROJ_DATA value can be implicitly set by calling pj_set_searchpath()
+	//   or installing a file finder with pj_set_finder()."
+	// pj_set_searchpath was only added recently (2004.09, libproj 4.4.9)
+	// However, neither the VTP nor GDAL links directly to PROJ.4, so this
+	//  is a difficult method to call.
+//	pj_set_searchpath("../PROJ4-data");
+
+	// Instead, we can try manipulating the environment variable
+	char *result = getenv("PROJ_LIB");
+	if (!result)
+		_putenv("PROJ_LIB=../../PROJ4-data");
+#endif
+}
+

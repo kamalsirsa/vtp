@@ -224,6 +224,10 @@ bool EnviroApp::OnInit()
 
 	SetupLocale();
 
+	// Try to guess GDAL and PROJ.4 data paths, in case the user doesn't have
+	//  their GDAL_DATA and PROJ_LIB environment variables set.
+	g_GDALWrapper.GuessDataPaths();
+
 /*	class AA { public: virtual void func() {} };
 	class BB : public AA {};
 	VTLOG("Testing the ability to use dynamic_cast to downcast...\n");

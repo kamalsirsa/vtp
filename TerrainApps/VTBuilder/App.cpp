@@ -66,6 +66,10 @@ bool BuilderApp::OnInit()
 
 	SetupLocale();
 
+	VTLOG(" Initializing GDAL.");
+	g_GDALWrapper.GuessDataPaths();
+	g_GDALWrapper.RequestGDALFormats();
+
 	// Fill list of layer type names
 	if (vtLayer::LayerTypeNames.IsEmpty())
 	{
@@ -98,9 +102,6 @@ bool BuilderApp::OnInit()
 	frame->Show(TRUE);
 
 	SetTopWindow(frame);
-
-	VTLOG(" Initializing GDAL.");
-	g_GDALWrapper.RequestGDALFormats();
 
 	VTLOG(" GDAL-supported formats:");
 	GDALDriverManager *poDM = GetGDALDriverManager();
