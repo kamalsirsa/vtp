@@ -20,6 +20,8 @@ class vtRoadMap3d;
 class vtLodGrid;
 class vtRoute;
 class vtDynTerrainGeom;
+class vtElevationGrid;
+class vtTin;
 
 typedef vtImage *vtImagePtr;
 
@@ -38,10 +40,11 @@ typedef class vtPointOfInterest *POIPtr;
 // Terrain Feature Types
 enum TFType
 {
-	OCEAN,
-	VEGETATION,
-	ROADS,
-	TRANS_TOWERS
+	TFT_REGULAR,
+	TFT_OCEAN,
+	TFT_VEGETATION,
+	TFT_ROADS,
+	TFT_TOWERS
 };
 
 
@@ -74,6 +77,11 @@ public:
 	void SetName(vtString str) { m_Params.m_strName = str; }
 	vtString GetName() { return m_Params.m_strName; }
 
+	// you can alternately give it a grid to use instead of loading a BT
+	void SetLocalGrid(vtLocalGrid *pGrid);
+	void SetTin(vtTin *pTin);
+	vtTin *GetTin() { return m_pTin; }
+
 	/// primary creation function
 	vtGroup *CreateScene(bool bSound, int &iError);
 	bool CreateStep1(int &iError);
@@ -88,6 +96,8 @@ public:
 
 	/// set the enabled state of the terrain (whether it is shown or not)
 	void Enable(bool bVisible);
+
+	vtGroup *GetTopGroup() { return m_pTerrainGroup; }
 
 	/// load an external geometry file
 	vtTransform *LoadModel(const char *filename);
@@ -105,10 +115,9 @@ public:
 	void PlantModelAtPoint(vtTransform *model, const DPoint2 &p, bool bGeo = false);
 
 	// test whether a given point is within the current terrain
-	bool PointIsInTerrainUTM(int utm_zone, float utm_x, float utm_y);
-	bool PointIsInTerrainLL(float lat, float lon);
+	bool PointIsInTerrain(const DPoint2 &p);
 
-	// set global projection based on this terrain's elevation grid
+	// set global projection based on this terrain
 	void SetGlobalProjection();
 
 	bool LoadHeaderIntoGrid(vtElevationGrid &grid);
@@ -153,7 +162,7 @@ public:
 
 	// query
 	RGBf GetOceanColor() { return m_ocean_color; }
-	bool HasDynTerrain() { return m_pDynGeom != NULL; }
+	vtDynTerrainGeom *GetDynTerrain() { return m_pDynGeom; }
 
 	// Points of interest
 	void AddPointOfInterest(double ulx, double uly, double brx, double bry,
@@ -176,15 +185,6 @@ public:
 
 	/********************** Public Data ******************/
 
-	// main scene graph outline
-	vtGroup		*m_pTerrainGroup;
-
-	// regular terrain (brute-force)
-	vtTerrainGeom	*m_pTerrainGeom;
-
-	// dynamic terrain (CLOD)
-	vtDynTerrainGeom *m_pDynGeom;
-
 	// polygon containing geo corners of terrain area
 	DLine2		m_Corners_geo;
 
@@ -194,12 +194,12 @@ public:
 	static void SetDataPath(const StringArray &paths) { m_DataPaths = paths; }
 	static StringArray m_DataPaths;
 
-	// TODO: temporary unprotected
-	vtLodGrid		*m_pLodGrid;
 protected:
 	/********************** Protected Methods ******************/
 
 	// internal creation functions
+	bool CreateFromTIN(int &iError);
+	bool CreateFromGrid(int &iError);
 	void create_roads(vtString strRoadFile);
 	void setup_LodGrid(float fLODDistance);
 	void create_textures(int iTiles, const char *szTextureFile);
@@ -219,16 +219,29 @@ protected:
 	void CreateChoppedAppearances2(vtMaterialArray *pApp1,
 							 int patches, int patch_size, float ambient,
 							 float diffuse, float emmisive);
-	void ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib,
-						int xPatch = 0, int yPatch = 0, int nPatches = 1);
+	void ApplyPreLight(vtLocalGrid *pLocalGrid, vtDIB *dib);
 
 	/********************** Protected Data ******************/
+
+	// main scene graph outline
+	vtGroup		*m_pTerrainGroup;
+
+	// regular terrain (brute-force)
+	vtTerrainGeom	*m_pTerrainGeom;
+
+	// dynamic terrain (CLOD)
+	vtDynTerrainGeom *m_pDynGeom;
+
+	// triangular irregular network (TIN)
+	vtTin		*m_pTin;
 
 	// construction parameters used to create this terrain
 	TParams		m_Params;
 
 	// data grids
+	vtLocalGrid		*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField	*m_pHeightField;
+	vtLodGrid		*m_pLodGrid;
 
 	// if we're switching between multiple terrains, we can remember where
 	// the camera was in each one
@@ -279,6 +292,8 @@ protected:
 
 	// only used during initialization
 	vtLocalGrid		*m_pLocalGrid;
+
+	vtProjection	m_proj;
 };
 
 //helpers
