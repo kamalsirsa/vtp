@@ -200,18 +200,18 @@ void IslandTerrain::set_detail_texture()
 vtGeom *IslandTerrain::make_test_cone()
 {
 	vtMaterialArray *looks = new vtMaterialArray();
-	looks->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false);
+	looks->AddRGBMaterial1(RGBf(1.0f, 0.5f, 0.0f), false);	// orange
 
 	////////////
 	int res = 40;
 	vtMesh *pMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals, res*res);
 
-	FPoint3 tip(0, 2000, 0);
+	FPoint3 tip(0, 150, 0);
 	double cone_radius = PId/4;
 	double theta1 = PId * 1.3;
 	double theta2 = PId * 1.8;
-	double r1 = 700;
-	double r2 = 1500;
+	double r1 = 70;
+	double r2 = 150;
 
 	pMesh->CreateConicalSurface(tip, cone_radius, theta1, theta2, r1, r2, res);
 
