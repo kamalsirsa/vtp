@@ -26,6 +26,8 @@ vtFence::vtFence() : vtStructure()
 
 vtFence::vtFence(FenceType type, float fHeight, float fSpacing)
 {
+	SetType(ST_FENCE);
+
 	//if (m_FenceType != FT_WIRE || m_FenceType != FT_CHAINLINK)
 	m_FenceType = type;
 	m_fHeight = fHeight;
