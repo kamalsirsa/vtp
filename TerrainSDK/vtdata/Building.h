@@ -17,8 +17,13 @@
 #include "ogrsf_frmts.h"
 
 class vtHeightField;
+class vtStructureArray;
 
 ////////////////////////////////////////////////////
+
+#define MINIMUM_BASEMENT_SIZE 0.5 // Mininum size of an automatically generated basement layer in a building
+
+#define DEFAULT_BUILDING_SIZE 10.0  // Default size for buildings imported from points
 
 enum RoofType
 {
@@ -234,16 +239,9 @@ public:
 	bool IsContainedBy(const DRECT &rect) const;
 	void SwapLevels(int lev1, int lev2);
 
-	void SetElevationOffset(float fOffset) { m_fElevationOffset = fOffset; }
-	float GetElevationOffset() const { return m_fElevationOffset; }
-
 protected:
 	// information about each story
 	Array<vtLevel *> m_Levels;
-
-	// Offset that the building should be moved up or down relative to its
-	// default position on the ground (lowest corner of its base footprint)
-	float		m_fElevationOffset;
 
 private:
 	void DeleteStories();

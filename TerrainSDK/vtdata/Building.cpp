@@ -619,7 +619,6 @@ void vtLevel::FlipFootprintDirection()
 vtBuilding::vtBuilding() : vtStructure()
 {
 	SetType(ST_BUILDING);
-	m_fElevationOffset = 0.0f;
 }
 
 vtBuilding::~vtBuilding()
@@ -831,6 +830,12 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &dl)
 void vtBuilding::SetRoofType(RoofType rt, int iSlope, int iLev)
 {
 	int i, edges;
+
+	if (GetNumLevels() < 2)
+	{
+		// should not occur - this method is intended for buildings with roofs
+		return;
+	}
 
 	// if there is a roof level, attempt to set its edge angles to match
 	// the desired roof type
@@ -1091,8 +1096,10 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 		coord_format = "%.2lf";
 
 	fprintf(fp, "\t<Building");
-	if (m_fElevationOffset != 0.0f)
+	if (m_fElevationOffset != 0.0)
 		fprintf(fp, " ElevationOffset=\"%.2f\"", m_fElevationOffset);
+	if (m_fOriginalElevation != -1E9)
+		fprintf(fp, " OriginalElevation=\"%.2f\"", m_fOriginalElevation);
 	fprintf(fp, ">\n");
 
 	int i, j, k;

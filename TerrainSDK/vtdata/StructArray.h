@@ -40,6 +40,14 @@ public:
 	vtHeightField	*pHeightField;
 };
 
+// Well known import schemas
+
+typedef enum
+{
+	SCHEMA_OSGB_TOPO_AREA,
+	SCHEMA_OSGB_TOPO_POINT,
+	SCHEMA_UI
+} SchemaType;
 
 /**
  * The vtStructureArray class contains a list of Built Structures
@@ -65,6 +73,13 @@ public:
 	void AddElementsFromOGR_SDTS(class OGRDataSource *datasource,
 		void progress_callback(int) = NULL);
 	void AddElementsFromOGR_RAW(class OGRDataSource *datasource,
+		StructImportOptions &opt, void progress_callback(int) = NULL);
+
+	void AddBuildingsFromOGR(class OGRLayer *pLayer,
+		StructImportOptions &opt, void progress_callback(int) = NULL);
+	void AddLinearsFromOGR(class OGRLayer *pLayer,
+		StructImportOptions &opt, void progress_callback(int) = NULL);
+	void AddInstancesFromOGR(class OGRLayer *pLayer,
 		StructImportOptions &opt, void progress_callback(int) = NULL);
 
 	bool ReadBCF(const char *pathname);		// read a .bcf file
@@ -121,10 +136,8 @@ int GetSHPType(const char *filename);
 
 bool SetupDefaultStructures(const char *fname = NULL);
 vtBuilding *GetClosestDefault(vtBuilding *pBld);
-
-// When needed, we could also have:
-//vtFence *GetClosestDefault(vtFence *pBld);
-//vtStructInstance *GetClosestDefault(vtStructInstance *pBld);
+vtFence *GetClosestDefault(vtFence *pFence);
+vtStructInstance *GetClosestDefault(vtStructInstance *pInstance);
 
 #endif	// STRUCTARRAYH
 

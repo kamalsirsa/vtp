@@ -10,6 +10,8 @@
 #include "StructArray.h"
 #include "Building.h"
 #include "Fence.h"
+#include "PolyChecker.h"
+#include "vtLog.h"
 
 //
 // Helper: find the index of a field in a DBF file, given the name of the field.
@@ -583,32 +585,61 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 		StructImportOptions &opt, void progress_callback(int))
 {
-	int i, j, feature_count, count;
 	OGRLayer		*pLayer;
+
+	pLayer = pDatasource->GetLayerByName(opt.m_strLayerName);
+	if (!pLayer)
+		return;
+
+	// Get the projection (SpatialReference) from this layer
+	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
+	if (pSpatialRef)
+		m_proj.SetSpatialReference(pSpatialRef);
+
+	switch (opt.type)
+	{
+		case ST_BUILDING:
+			AddBuildingsFromOGR(pLayer, opt, progress_callback);
+			break;
+		case ST_LINEAR:
+			AddLinearsFromOGR(pLayer, opt, progress_callback);
+			break;
+		case ST_INSTANCE:
+			AddInstancesFromOGR(pLayer, opt, progress_callback);
+			break;
+		default:
+			break;
+	}
+}
+
+void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
+		StructImportOptions &opt, void progress_callback(int))
+{
+	int i, j, feature_count, count;
 	OGRFeature		*pFeature;
 	OGRGeometry		*pGeom;
 	OGRPolygon		*pPolygon;
 	vtBuilding		*pBld;
 	vtLevel         *pLevel, *pNewLevel;
 	DPoint2			point;
-	DLine2 foot;
-	OGRLinearRing *ring;
+	DLine2 footprint;
+	OGRLinearRing *pRing;
 	OGRLineString *pLineString;
 	int num_points;
 	OGRwkbGeometryType GeometryType;
-	int iHeightIndex;
-	int iElevationIndex;
-	int iFilenameIndex;
+	int iHeightIndex = -1;
+	int iElevationIndex = -1;
 	OGRFeatureDefn *pLayerDefn;
 	float fMinZ, fMaxZ, fTotalZ;
-	float dAverageZ;
+	float fAverageZ;
+	float fZ;
 	float fOriginalElevation;
 	int iVertices;
 	float fMin, fMax, fDiff, fElev;
-
-	pLayer = pDatasource->GetLayerByName(opt.m_strLayerName);
-	if (!pLayer)
-		return;
+	PolyChecker PolyChecker;
+	SchemaType Schema = SCHEMA_UI;
+	int iFeatureCode;
+	DPoint2 dPoint;
 
 	feature_count = pLayer->GetFeatureCount();
   	pLayer->ResetReading();
@@ -617,30 +648,54 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 	if (!pLayerDefn)
 		return;
 
-	GeometryType = pLayerDefn->GetGeomType();
-
-	// Get the projection (SpatialReference) from this layer
-	OGRSpatialReference *pSpatialRef = pLayer->GetSpatialRef();
-	if (pSpatialRef)
-		m_proj.SetSpatialReference(pSpatialRef);
-
 	const char *layer_name = pLayerDefn->GetName();
 
-	// Use the schema provided in the UI
-	iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
-	iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
-	iFilenameIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameFile);
+	// Check for layers with known schemas
+	if (!strcmp(layer_name, "osgb:TopographicArea"))
+		Schema = SCHEMA_OSGB_TOPO_AREA;
+	else if (!strcmp(layer_name, "osgb:TopographicPoint"))
+		Schema = SCHEMA_OSGB_TOPO_POINT;
+	else
+	{
+		iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
+		iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
+	}
 
 	count = 0;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
 		count++;
 		progress_callback(count * 100 / feature_count);
+		// Preprocess according to schema
+		switch(Schema)
+		{
+			case SCHEMA_OSGB_TOPO_AREA:
+				// Skip things that are not buildings
+				iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("osgb:featureCode"));
+				switch(iFeatureCode)
+				{
+					// Just do polygons for the time being
+					case 10021: // Building defined by area
+					case 10062: // Glasshouse
+					case 10185: // Generic structure
+					case 10190: // Archway
+					// case 10193: // Pylon
+					case 10187: // Upper level of communication
+					case 10025: // Buildings or structure
+						break;
+					default:
+						continue;
+				}
+				break;
+			default:
+				break;
+		}
 
 
 		pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
 			continue;
+		GeometryType = pGeom->getGeometryType();
 
 		// For the moment ignore multi polygons .. although we could
 		// treat them as multiple buildings !!
@@ -650,12 +705,28 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 				pPolygon = (OGRPolygon *) pGeom;
 				
 
-				ring = pPolygon->getExteriorRing();
-				num_points = ring->getNumPoints();
+				pRing = pPolygon->getExteriorRing();
+				num_points = pRing->getNumPoints();
 
-				foot.SetSize(num_points);
+				// Ignore last point if it is the same as the first
+				if (DPoint2(pRing->getX(0), pRing->getY(0)) == DPoint2(pRing->getX(num_points - 1), pRing->getY(num_points - 1)))
+					num_points--;
+
+				footprint.SetSize(num_points);
+				fMaxZ = -1E9;
+				fMinZ = 1E9;
+				fTotalZ = 0;
 				for (j = 0; j < num_points; j++)
-					foot.SetAt(j, DPoint2(ring->getX(j), ring->getY(j)));
+				{
+					fZ = (float)pRing->getZ(j);
+					if (fZ > fMaxZ)
+						fMaxZ = fZ;
+					if (fZ < fMinZ)
+						fMinZ = fZ;
+					fTotalZ += fZ;
+					footprint.SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
+				}
+				fAverageZ = fTotalZ/num_points;
 				break;
 
 			case wkbLineString:
@@ -667,40 +738,56 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 				if (DPoint2(pLineString->getX(0), pLineString->getY(0)) == DPoint2(pLineString->getX(num_points - 1), pLineString->getY(num_points - 1)))
 					num_points--;
 
-				foot.SetSize(num_points);
+				footprint.SetSize(num_points);
 				fMaxZ = -1E9;
 				fMinZ = 1E9;
 				fTotalZ = 0;
 				for (j = 0; j < num_points; j++)
 				{
-#ifdef _DEBUG
-					double dx = pLineString->getX(j);
-					double dy = pLineString->getY(j);
-#endif
-					double dz = pLineString->getZ(j);
-					if (dz > fMaxZ)
-						fMaxZ = (float) dz;
-					if (dz < fMinZ)
-						fMinZ = (float) dz;
-					fTotalZ += (float) dz;
-					foot.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
+					fZ = (float)pLineString->getZ(j);
+					if (fZ > fMaxZ)
+						fMaxZ = fZ;
+					if (fZ < fMinZ)
+						fMinZ = fZ;
+					fTotalZ += fZ;
+					footprint.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
 				}
-				dAverageZ = fTotalZ/num_points;
+				fAverageZ = fTotalZ/num_points;
 				break;
 
 			case wkbPoint:
+				dPoint = DPoint2(((OGRPoint *)pGeom)->getX(), ((OGRPoint *)pGeom)->getY());
+
+				footprint.Empty();
+				footprint.Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, - DEFAULT_BUILDING_SIZE / 2));
+				footprint.Append(dPoint + DPoint2(DEFAULT_BUILDING_SIZE / 2, - DEFAULT_BUILDING_SIZE / 2));
+				footprint.Append(dPoint + DPoint2(DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
+				footprint.Append(dPoint + DPoint2(- DEFAULT_BUILDING_SIZE / 2, DEFAULT_BUILDING_SIZE / 2));
+
+				fAverageZ = (float)((OGRPoint *)pGeom)->getZ();
+
 				break;
 
 			default:
 				continue;
 		}
 
+		// Ensure footprint is simple
+		if (!PolyChecker.IsSimplePolygon(footprint))
+			continue;
+
 		pBld = NewBuilding();
 		if (!pBld)
 			return;
 
+		pBld->SetFootprint(0, footprint);
 
-		pBld->SetFootprint(0, foot);
+		// Force footprint anticlockwise
+		if (PolyChecker.IsClockwisePolygon(footprint))
+		{
+			pBld->FlipFootprintDirection();
+			footprint  = pBld->GetFootprint(0);
+		}
 
 		vtBuilding *pDefBld = GetClosestDefault(pBld);
 		if (!pDefBld)
@@ -714,7 +801,7 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 			for (i = 0; i < pDefBld->GetNumLevels(); i++)
 			{
 				if (i != 0)
-					pBld->CreateLevel(foot);
+					pBld->CreateLevel(footprint);
 				vtLevel *pLevel = pBld->GetLevel(i);
 				pLevel->m_iStories = pDefBld->GetLevel(i)->m_iStories;
 				pLevel->m_fStoryHeight = pDefBld->GetLevel(i)->m_fStoryHeight;
@@ -724,36 +811,55 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 					pLevel->m_Edges[j]->m_iSlope = pDefBld->GetLevel(i)->m_Edges[0]->m_iSlope;
 			}
 		}
+		// Set the correct height for the roof level if neccessary
+		pLevel = pBld->GetLevel(pBld->GetNumLevels() - 1);
+		pBld->SetRoofType(pLevel->GuessRoofType(), pLevel->GetEdge(0)->m_iSlope);
+
 		// Modify the height of the building if neccessary
 		if (iHeightIndex != -1)
 		{
 			float fTotalHeight = 0;
 			float fScaleFactor;
-			for (i = 0; i < pBld->GetNumLevels(); i++)
+			int iNumLevels = pBld->GetNumLevels();
+			RoofType eRoofType = pBld->GetRoofType();
+			float fRoofHeight = pBld->GetLevel(iNumLevels - 1)->m_fStoryHeight;
+
+			// If building has a roof I must exclude this from the calculation
+			if (ROOF_UNKNOWN != eRoofType)
+				iNumLevels--;
+			else
+				fRoofHeight = 0;
+
+			for (i = 0; i < iNumLevels; i++)
 				fTotalHeight += pBld->GetLevel(i)->m_fStoryHeight;
-			fScaleFactor = (float)pFeature->GetFieldAsDouble(iHeightIndex)/fTotalHeight;
-			for (i = 0; i < pBld->GetNumLevels(); i++)
+
+			fScaleFactor = ((float)pFeature->GetFieldAsDouble(iHeightIndex) - fRoofHeight)/fTotalHeight;
+			for (i = 0; i < iNumLevels; i++)
 				pBld->GetLevel(i)->m_fStoryHeight *= fScaleFactor;
 		}
+
 		// Modify elevation of building
 		fOriginalElevation = -1E9;
 		if ((GeometryType & wkb25DBit) && (opt.bUse25DForElevation))
-			fOriginalElevation = dAverageZ;
+			fOriginalElevation = fAverageZ;
 		else if (iElevationIndex != -1)
 			fOriginalElevation = (float) pFeature->GetFieldAsDouble(iElevationIndex);
+		if (fOriginalElevation != -1E9)
+			pBld->SetOriginalElevation(fOriginalElevation);
+
 		// Add foundation
 		if ((opt.bBuildFoundations) && (NULL != opt.pHeightField))
 		{
 			// Get the footprint of the lowest level
 			pLevel = pBld->GetLevel(0);
-			foot = pLevel->GetFootprint();
-			iVertices = foot.GetSize();
+			footprint = pLevel->GetFootprint();
+			iVertices = footprint.GetSize();
 
 			fMin = 1E9;
 			fMax = -1E9;
 			for (j = 0; j < iVertices; j++)
 			{
-				if (!opt.pHeightField->FindAltitudeAtPoint2(foot.GetAt(j), fElev))
+				if (!opt.pHeightField->FindAltitudeAtPoint2(footprint.GetAt(j), fElev))
 					continue;
 
 				if (fElev < fMin)
@@ -761,37 +867,236 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 				if (fElev > fMax)
 					fMax = fElev;
 			}
-			if (fOriginalElevation != 1E9)
-			{
+			if (fOriginalElevation != -1E9)
 				// I have a valid elevation
-				if (fOriginalElevation > fMin)
-					// Build foundation to elevation level
-					fDiff = fOriginalElevation - fMin;
-				else
-				{
-					// Sink building into the ground for the time being
-					fDiff = 0.0;
-					pBld->SetElevationOffset((float)fOriginalElevation - fMin);
-				}
-			}
+				fDiff = fOriginalElevation - fMin;
 			else
 				fDiff = fMax - fMin;
 
-			if (0.0 != fDiff)
+			if (fDiff > MINIMUM_BASEMENT_SIZE)
 			{
 				// Create and add a foundation level
 				pNewLevel = new vtLevel();
 				pNewLevel->m_iStories = 1;
 				pNewLevel->m_fStoryHeight = fDiff;
 				pBld->InsertLevel(0, pNewLevel);
-				pBld->SetFootprint(0, foot);
-				pNewLevel->SetEdgeMaterial(BMAT_CEMENT);
-				pNewLevel->SetEdgeColor(RGBi(255, 255, 255));
+				pBld->SetFootprint(0, footprint);
+				pNewLevel->SetEdgeMaterial(BMAT_PLAIN);
+				pNewLevel->SetEdgeColor(RGBi(128, 128, 128));
 			}
+			else
+				pBld->SetElevationOffset(fDiff);
+
 		}
-		// Until I agree it with Ben set the offset to zero
 		Append(pBld);
 	}
 }
 
+void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
+		StructImportOptions &opt, void progress_callback(int))
+{
+	int iFeatureCount;
+	OGRFeatureDefn *pLayerDefn;
+	const char *pLayerName;
+	SchemaType eSchema = SCHEMA_UI;
+	int iCount;
+	int iFeatureCode;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRwkbGeometryType GeometryType;
+	OGRLineString *pLineString;
+	DLine2 FencePoints;
+	int iNumPoints;
+	int i;
+	float fMinZ;
+	float fMaxZ;
+	float fTotalZ;
+	float fAverageZ;
+	float fZ;
+	vtFence *pFence;
+	vtFence *pDefaultFence;
+	float fOriginalElevation;
+	int iElevationIndex = -1;
+
+	iFeatureCount = pLayer->GetFeatureCount();
+  	pLayer->ResetReading();
+
+	pLayerDefn = pLayer->GetLayerDefn();
+	if (!pLayerDefn)
+		return;
+
+	pLayerName = pLayerDefn->GetName();
+
+	// Check for layers with known schemas
+	if (!strcmp(pLayerName, "osgb:TopographicArea"))
+		eSchema = SCHEMA_OSGB_TOPO_AREA;
+	else if (!strcmp(pLayerName, "osgb:TopographicPoint"))
+		eSchema = SCHEMA_OSGB_TOPO_POINT;
+	else
+		iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
+
+	iCount = 0;
+	while((pFeature = pLayer->GetNextFeature()) != NULL )
+	{
+		iCount++;
+		progress_callback(iCount * 100 / iFeatureCount);
+		// Preprocess according to schema
+		switch(eSchema)
+		{
+			case SCHEMA_OSGB_TOPO_AREA:
+				// Skip things that are not buildings
+				iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("osgb:featureCode"));
+				switch(iFeatureCode)
+				{
+					case 1:
+					default:
+						continue;
+				}
+				break;
+			default:
+				break;
+		}
+
+
+		pGeom = pFeature->GetGeometryRef();
+		if (!pGeom)
+			continue;
+		GeometryType = pGeom->getGeometryType();
+
+		if (wkbLineString != wkbFlatten(GeometryType))
+			continue;
+
+		pLineString = (OGRLineString *) pGeom;
+		
+		iNumPoints = pLineString->getNumPoints();
+
+		FencePoints.SetSize(iNumPoints);
+		fMaxZ = -1E9;
+		fMinZ = 1E9;
+		fTotalZ = 0;
+		for (i = 0; i < iNumPoints; i++)
+		{
+			fZ = (float)pLineString->getZ(i);
+			if (fZ > fMaxZ)
+				fMaxZ = fZ;
+			if (fZ < fMinZ)
+				fMinZ = fZ;
+			fTotalZ += fZ;
+			FencePoints.SetAt(i, DPoint2(pLineString->getX(i), pLineString->getY(i)));
+		}
+		fAverageZ = fTotalZ/iNumPoints;
+
+		pFence = NewFence();
+		if (!pFence)
+			return;
+
+		for (i = 0; i < iNumPoints; i++)
+			pFence->AddPoint(FencePoints[i]);
+
+		pDefaultFence = GetClosestDefault(pFence);
+		if (!pDefaultFence)
+		{
+		}
+		else
+		{
+		}
+
+		// Modify elevation of fence
+		fOriginalElevation = -1E9;
+		if ((GeometryType & wkb25DBit) && (opt.bUse25DForElevation))
+			fOriginalElevation = fAverageZ;
+		else if (iElevationIndex != -1)
+			fOriginalElevation = (float) pFeature->GetFieldAsDouble(iElevationIndex);
+		if (fOriginalElevation != -1E9)
+			pFence->SetOriginalElevation(fOriginalElevation);
+
+		Append(pFence);
+	}
+}
+
+void vtStructureArray::AddInstancesFromOGR(OGRLayer *pLayer,
+		StructImportOptions &opt, void progress_callback(int))
+{
+	int iFeatureCount;
+	OGRFeatureDefn *pLayerDefn;
+	const char *pLayerName;
+	SchemaType eSchema = SCHEMA_UI;
+	int iCount;
+	int iFeatureCode;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRwkbGeometryType GeometryType;
+	float fAverageZ;
+	vtStructInstance *pInstance;
+	vtStructInstance *pDefaultInstance;
+	int iFilenameIndex = -1;
+	DPoint2 dPoint;
+
+	iFeatureCount = pLayer->GetFeatureCount();
+  	pLayer->ResetReading();
+
+	pLayerDefn = pLayer->GetLayerDefn();
+	if (!pLayerDefn)
+		return;
+
+	pLayerName = pLayerDefn->GetName();
+
+	// Check for layers with known schemas
+	if (!strcmp(pLayerName, "osgb:TopographicArea"))
+		eSchema = SCHEMA_OSGB_TOPO_AREA;
+	else if (!strcmp(pLayerName, "osgb:TopographicPoint"))
+		eSchema = SCHEMA_OSGB_TOPO_POINT;
+	else
+		iFilenameIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameFile);
+
+	if (-1 == iFilenameIndex)
+		return;
+
+	iCount = 0;
+	while((pFeature = pLayer->GetNextFeature()) != NULL )
+	{
+		iCount++;
+		progress_callback(iCount * 100 / iFeatureCount);
+		// Preprocess according to schema
+		switch(eSchema)
+		{
+			case SCHEMA_OSGB_TOPO_AREA:
+				// Skip things that are not buildings
+				iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("osgb:featureCode"));
+				switch(iFeatureCode)
+				{
+					case 1:
+					default:
+						continue;
+				}
+				break;
+			default:
+				break;
+		}
+
+		pGeom = pFeature->GetGeometryRef();
+		if (!pGeom)
+			continue;
+		GeometryType = pGeom->getGeometryType();
+
+		if (wkbPoint != wkbFlatten(GeometryType))
+			continue;
+
+		dPoint = DPoint2(((OGRPoint *)pGeom)->getX(), ((OGRPoint *)pGeom)->getY());
+		fAverageZ = (float)((OGRPoint *)pGeom)->getZ();
+
+		pInstance = NewInstance();
+		if (!pInstance)
+			return;
+
+		pDefaultInstance = GetClosestDefault(pInstance);
+		if (!pDefaultInstance)
+		{
+		}
+		else
+		{
+		}
+		Append(pDefaultInstance);
+	}
+}
 

@@ -749,9 +749,6 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			m_pStructure = m_pBuilding;
 			m_state = 2;
 			m_iLevel = 0;
-			attval = atts.getValue("ElevationOffset");
-			if (attval)
-				m_pBuilding->SetElevationOffset((float) atof(attval));
 		}
 		else if (!strcmp(name, "Linear"))
 		{
@@ -771,6 +768,13 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 
 			m_state = 20;
 		}
+		attval = atts.getValue("ElevationOffset");
+		if (attval)
+			m_pStructure->SetElevationOffset((float) atof(attval));
+		return;
+		attval = atts.getValue("OriginalElevation");
+		if (attval)
+			m_pStructure->SetOriginalElevation((float) atof(attval));
 		return;
 	}
 
@@ -1198,16 +1202,40 @@ vtBuilding *GetClosestDefault(vtBuilding *pBld)
 	for (i = 0; i < num; i++)
 	{
 		vtStructure *pStr = g_DefaultStructures[i]; 
-		vtBuilding *pBld = pStr->GetBuilding();
-		if (pBld)
-			return pBld;
+		vtBuilding *pDefBld = pStr->GetBuilding();
+		if (pDefBld)
+			return pDefBld;
 	}
 	return NULL;
 }
 
-// When needed, we could also have:
-//vtFence *GetClosestDefault(vtFence *pBld);
-//vtStructInstance *GetClosestDefault(vtStructInstance *pBld);
+vtFence *GetClosestDefault(vtFence *pFence)
+{
+	// For now, just grab the first fence from the defaults
+	int i, num = g_DefaultStructures.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtStructure *pStr = g_DefaultStructures[i]; 
+		vtFence *pDefFence = pStr->GetFence();
+		if (pDefFence)
+			return pDefFence;
+	}
+	return NULL;
+}
+
+vtStructInstance *GetClosestDefault(vtStructInstance *pInstance)
+{
+	// For now, just grab the first instance from the defaults
+	int i, num = g_DefaultStructures.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		vtStructure *pStr = g_DefaultStructures[i]; 
+		vtStructInstance *pDefInstance = pStr->GetInstance();
+		if (pDefInstance)
+			return pDefInstance;
+	}
+	return NULL;
+}
 
 bool SetupDefaultStructures(const char *fname)
 {

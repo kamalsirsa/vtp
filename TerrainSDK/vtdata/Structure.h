@@ -56,6 +56,11 @@ public:
 	void SetType(vtStructureType t) { m_type = t; }
 	vtStructureType GetType() { return m_type; }
 
+	void SetElevationOffset(float fOffset) { m_fElevationOffset = fOffset; }
+	float GetElevationOffset() const { return m_fElevationOffset; }
+	void SetOriginalElevation(float fOffset) { m_fOriginalElevation = fOffset; }
+	float GetOriginalElevation() const { return m_fOriginalElevation; }
+
 	vtBuilding *GetBuilding() { if (m_type == ST_BUILDING) return (vtBuilding *)this; else return NULL; }
 	vtFence *GetFence() { if (m_type == ST_LINEAR) return (vtFence *)this; else return NULL; }
 	vtStructInstance *GetInstance() { if (m_type == ST_INSTANCE) return (vtStructInstance *)this; else return NULL; }
@@ -67,8 +72,24 @@ public:
 
 	void WriteTags(FILE *fp);
 
+// VIAVTDATA
+	bool m_bIsVIAContributor;
+	bool m_bIsVIATarget;
+// VIAVTDATA
+
 protected:
 	vtStructureType m_type;
+
+	// Offset that the structure should be moved up or down relative to its
+	// default position on the ground
+	// for buildings this is (lowest corner of its base footprint)
+	// for linear features this is the lowest point of the feature.
+	// for instances this is the datum point
+	float		m_fElevationOffset;
+
+	// Original elevation information if any (meters)
+	float		m_fOriginalElevation;
+
 
 private:
 	// Don't let unsuspecting users stumble into assuming that object

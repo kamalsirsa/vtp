@@ -30,6 +30,8 @@ public:
 	int AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
 	bool IsSimplePolygon(const DLine2 &vertices);
 	bool IsSimplePolygon(const DLine3 &vertices);
+	bool IsClockwisePolygon(const DLine2 &vertices);
+	bool IsClockwisePolygon(const DLine3 &vertices);
 
 	bool Intersect(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, const FPoint2 &d);
 	bool IntersectProp(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, const FPoint2 &d);
