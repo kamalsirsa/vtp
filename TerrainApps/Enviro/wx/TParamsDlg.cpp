@@ -19,8 +19,8 @@
 
 #include "vtdata/boost/directory.h"
 #include "vtdata/Features.h"		// for RefreshLabelFields()
+#include "vtdata/FilePath.h"		// for FindFileOnPaths()
 #include "TParamsDlg.h"
-//#include "../Options.h"
 
 #define NTILES 4
 
@@ -352,7 +352,7 @@ void TParamsDlg::RefreshLabelFields()
 
 	vtString fname = "PointData/";
 	fname += m_strLabelFile.mb_str();
-	vtString fpath = FindFileOnPaths(g_Options.m_DataPaths, fname);
+	vtString fpath = FindFileOnPaths(m_datapaths, fname);
 	if (!feat.LoadHeaderFromSHP(fpath))
 		return;
 
@@ -415,7 +415,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	unsigned int i;
 	int sel;
 
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = m_datapaths;
 
 	for (i = 0; i < paths.size(); i++)
 	{
@@ -707,9 +707,8 @@ void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 	unsigned int i;
     wxArrayString strings;
 
-	vtStringArray &paths = g_Options.m_DataPaths;
-	for (i = 0; i < paths.size(); i++)
-		AddFilenamesToArray(strings, paths[i] + "BuildingData", "*.vtst");
+	for (i = 0; i < m_datapaths.size(); i++)
+		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst");
 
 	int num = strings.Count();
 

@@ -56,6 +56,7 @@ public:
 
 	void SetParams(TParams &Params);
 	void GetParams(TParams &Params);
+	void SetDataPaths(const vtStringArray &paths) { m_datapaths = paths; }
 	void UpdateTiledTextureFilename();
 	void UpdateEnableState();
 	void RefreshLabelFields();
@@ -168,6 +169,7 @@ public:
 
 	bool	m_bReady;
 	bool	m_bSetting;
+	vtStringArray m_datapaths;
 
 private:
 	// WDR: member variable declarations for TParamsDlg
