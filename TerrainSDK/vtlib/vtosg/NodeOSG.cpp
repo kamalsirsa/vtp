@@ -233,6 +233,42 @@ public:
 	}
 };
 
+// Walk an OSG scenegraph looking for geodes with textures that have an alpha
+//	map, and enable alpha blending for them.  I cannot imagine why this is not
+//  the default OSG behavior, but since it isn't, we have this visitor.
+class AlphaVisitor : public NodeVisitor
+{
+public:
+	AlphaVisitor() : NodeVisitor(NodeVisitor::TRAVERSE_ALL_CHILDREN) {}
+	virtual void apply(osg::Geode& geode)
+	{
+		for (unsigned i=0; i<geode.getNumDrawables(); ++i)
+		{
+			osg::Geometry *geo = dynamic_cast<osg::Geometry *>(geode.getDrawable(i));
+			if (!geo) continue;
+
+			StateSet *stateset = geo->getStateSet();
+			if (!stateset) continue;
+
+			StateAttribute *state = stateset->getTextureAttribute(0, StateAttribute::TEXTURE);
+			if (!state) continue;
+
+			Texture2D *texture = dynamic_cast<Texture2D *>(state);
+			if (!texture) continue;
+
+			Image *image = texture->getImage();
+			if (!image) continue;
+
+			if (image->isImageTranslucent())
+			{
+				stateset->setAttributeAndModes(new BlendFunc, StateAttribute::ON);
+				stateset->setRenderingHint(StateSet::TRANSPARENT_BIN);
+			}
+		}
+		NodeVisitor::apply(geode);
+	}
+};
+
 // Our own cache of models loaded from OSG
 static std::map<vtString, ref_ptr<Node> > m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
@@ -311,13 +347,14 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		// that we load, otherwise when they are scaled, the vertex normals
 		// will cause strange lighting.  Fortunately, we only need to create
 		// a single State object which is shared by all loaded models.
-		static 	StateSet *normstate = NULL;
-		if (!normstate)
-		{
-			normstate = new StateSet;
-			normstate->setMode(GL_NORMALIZE, StateAttribute::ON);
-		}
-		node->setStateSet(normstate);
+		StateSet *stateset = node->getOrCreateStateSet();
+		stateset->setMode(GL_NORMALIZE, StateAttribute::ON);
+
+		// For some reason, some file readers (at least .obj) will load models with
+		//  alpha textures, but _not_ enable blending for them or put them in the
+		//  transparent bin.  This visitor walks the tree and corrects that.
+		AlphaVisitor visitor_a;
+		node->accept(visitor_a);
 
 		if (bDisableMipmaps || s_bDisableMipmaps)
 		{
@@ -330,7 +367,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		//  up, and the VTP uses OpenGL coordinates which has Y up.
 		float fRotation = -PID2f;
 
-		// OSG expect OBJ models to have Y up.  I have seen model with Z up,
+		// OSG expects OBJ models to have Y up.  I have seen models with Z up,
 		//  and we used to correct for that here (fRotation = -PIf).
 		//  However, over time it has appeared that there are more OBJ out
 		//  there with Y up than with Z up.  So, we now treat all models from
