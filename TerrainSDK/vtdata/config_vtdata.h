@@ -23,5 +23,12 @@
 //
 #define SUPPORT_HTTP	1
 
+// Use the ZipArchive library, which adds support for reading from .zip files
+//
+// The library is GPL and available from:
+// http://www.artpol-software.com/index_zip.html
+//
+#define SUPPORT_UNZIP	1
+
 #endif // CONFIG_VTDATA_H
 
