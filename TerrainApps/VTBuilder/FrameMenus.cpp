@@ -222,7 +222,7 @@ void MainFrame::CreateMenus()
 	editMenu->Append(ID_EDIT_DESELECTALL, "Deselect All", "Clears selection.");
 	editMenu->Append(ID_EDIT_INVERTSELECTION, "Invert Selection", "Invert Selection.");
 #ifndef ELEVATION_ONLY
-	editMenu->Append(ID_EDIT_CROSSINGSELECTION, "Crossing Selection", "Crossing Selection.", true);
+	editMenu->AppendCheckItem(ID_EDIT_CROSSINGSELECTION, "Crossing Selection");
 #endif
 	m_pMenuBar->Append(editMenu, "&Edit");
 	menu_num++;
@@ -253,25 +253,26 @@ void MainFrame::CreateMenus()
 
 	// View
 	viewMenu = new wxMenu;
-	viewMenu->Append(ID_VIEW_SHOWLAYER, "Current Layer Visible", "Toggle Visibility of the current Layer", true);
+	viewMenu->AppendCheckItem(ID_VIEW_SHOWLAYER, "Current Layer Visible",
+		"Toggle Visibility of the current Layer");
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_ZOOMIN, "Zoom In\tCtrl++");
 	viewMenu->Append(ID_VIEW_ZOOMOUT, "Zoom Out\tCtrl+-");
 	viewMenu->Append(ID_VIEW_ZOOMALL, "Zoom All");
 	viewMenu->Append(ID_VIEW_FULLVIEW, "Zoom to Full Res (1:1)");
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_MAGNIFIER, "Magnifier\tZ", "Magnifier", true);
-	viewMenu->Append(ID_VIEW_PAN, "Pan\t<Space>", "Pan", true);
-	viewMenu->Append(ID_VIEW_DISTANCE, "Obtain Distance", "Obtain Distance", true);
-	viewMenu->Append(ID_VIEW_SETAREA, "Set Export Area", "Set Export Area", true);
+	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, "Magnifier\tZ");
+	viewMenu->AppendCheckItem(ID_VIEW_PAN, "Pan\t<Space>");
+	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, "Obtain Distance");
+	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, "Set Export Area");
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_WORLDMAP, "World Map", "Show/Hide World Map", true);
-	viewMenu->Append(ID_VIEW_SHOWUTM, "Show UTM Boundaries", "Show UTM Boundaries", true);
-//	viewMenu->Append(ID_VIEW_SHOWGRID, "Show 7.5\" Grid", "Show 7.5\" Grid", true);
+	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, "World Map", "Show/Hide World Map");
+	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, "Show UTM Boundaries");
+//	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, "Show 7.5\" Grid", "Show 7.5\" Grid", true);
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_ELEV_SHOW, "Show Terrain Elevation", "Show Terrain Elevation", true);
-	viewMenu->Append(ID_ELEV_SHADING, "Artificial Shading", "Artificial Shading", true);
-	viewMenu->Append(ID_ELEV_HIDE, "Hide Unknown Areas", "Hide Unknown Areas", true);
+	viewMenu->AppendCheckItem(ID_ELEV_SHOW, "Show Terrain Elevation");
+	viewMenu->AppendCheckItem(ID_ELEV_SHADING, "Artificial Shading");
+	viewMenu->AppendCheckItem(ID_ELEV_HIDE, "Hide Unknown Areas");
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_OPTIONS, "Options");
 	m_pMenuBar->Append(viewMenu, "&View");
@@ -280,15 +281,15 @@ void MainFrame::CreateMenus()
 #ifndef ELEVATION_ONLY
 	// Roads
 	roadMenu = new wxMenu;
-	roadMenu->Append(ID_ROAD_SELECTROAD, "Select/Modify Roads", "Select/Modify Roads", true);
-	roadMenu->Append(ID_ROAD_SELECTNODE, "Select/Modify Nodes", "Select/Modify Nodes", true);
-	roadMenu->Append(ID_ROAD_SELECTWHOLE, "Select Whole Roads", "Select Whole Roads", true);
-	roadMenu->Append(ID_ROAD_DIRECTION, "Set Road Direction", "Set Road Direction", true);
-	roadMenu->Append(ID_ROAD_EDIT, "Edit Road Points", "Edit Road Points", true);
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTROAD, "Select/Modify Roads");
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTNODE, "Select/Modify Nodes");
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTWHOLE, "Select Whole Roads");
+	roadMenu->AppendCheckItem(ID_ROAD_DIRECTION, "Set Road Direction");
+	roadMenu->AppendCheckItem(ID_ROAD_EDIT, "Edit Road Points");
 	roadMenu->AppendSeparator();
-	roadMenu->Append(ID_ROAD_SHOWNODES, "Show Nodes", "Show Nodes", true);
-	roadMenu->Append(ID_ROAD_SHOWWIDTH, "Show Width", "Show the width of each road", true);
-	roadMenu->Append(ID_ROAD_SELECTHWY, "Select by Highway Number", "Select Highway", true);
+	roadMenu->AppendCheckItem(ID_ROAD_SHOWNODES, "Show Nodes");
+	roadMenu->AppendCheckItem(ID_ROAD_SHOWWIDTH, "Show Width", "Show the width of each road");
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTHWY, "Select by Highway Number");
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, "Clean RoadMap", "Clean");
 	roadMenu->Append(ID_ROAD_GUESS, "Guess Intersection Types");
@@ -298,10 +299,10 @@ void MainFrame::CreateMenus()
 
 	// Utilities
 	utilityMenu = new wxMenu;
-	utilityMenu->Append(ID_TOWER_ADD, "Add a Transmission Tower", "Add a Transmission Tower",true);
+	utilityMenu->AppendCheckItem(ID_TOWER_ADD, "Add a Transmission Tower");
 	utilityMenu->AppendSeparator();
-	utilityMenu->Append(ID_TOWER_SELECT, "Select Utility Layer", "Select Utility Layer",true);
-	utilityMenu->Append(ID_TOWER_EDIT, "Edit Transmission Towers", "Edit Transmission Towers",true);
+	utilityMenu->AppendCheckItem(ID_TOWER_SELECT, "Select Utility Layer");
+	utilityMenu->AppendCheckItem(ID_TOWER_EDIT, "Edit Transmission Towers");
 	m_pMenuBar->Append(utilityMenu, "Util&ities");
 	m_iLayerMenu[LT_UTILITY] = menu_num;
 	menu_num++;
@@ -309,7 +310,7 @@ void MainFrame::CreateMenus()
 
 	// Elevation
 	elevMenu = new wxMenu;
-	elevMenu->Append(ID_ELEV_SELECT, "Select Elevation Layer", "Select Elevation Layer", true);
+	elevMenu->AppendCheckItem(ID_ELEV_SELECT, "Select Elevation Layer");
 	elevMenu->Append(ID_ELEV_SCALE, "Scale Elevation");
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_REMOVEABOVESEA, "Remove Terrain Above Sea");
@@ -335,10 +336,10 @@ void MainFrame::CreateMenus()
 
 	// Structures
 	bldMenu = new wxMenu;
-	bldMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
-	bldMenu->Append(ID_STRUCTURE_EDIT_BLD, "Edit Buildings", "Edit Buildings", true);
-	bldMenu->Append(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features", "Add Linear Features", true);
-	bldMenu->Append(ID_STRUCTURE_EDIT_LINEAR, "Edit Linear Features", "Edit Linear Features", true);
+	bldMenu->AppendCheckItem(ID_FEATURE_SELECT, "Select Features");
+	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_BLD, "Edit Buildings");
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features");
+	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, "Edit Linear Features");
 	bldMenu->AppendSeparator();
 	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, "Add Foundation Levels to Buildings", "");
 	m_pMenuBar->Append(bldMenu, "&Structures");
@@ -348,13 +349,13 @@ void MainFrame::CreateMenus()
 
 	// Raw
 	rawMenu = new wxMenu;
-	rawMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
-	rawMenu->Append(ID_FEATURE_PICK, "Pick Features", "Pick Features", true);
-	rawMenu->Append(ID_FEATURE_TABLE, "Show Attribute Table", "Show Attribute Table", true);
+	rawMenu->AppendCheckItem(ID_FEATURE_SELECT, "Select Features");
+	rawMenu->AppendCheckItem(ID_FEATURE_PICK, "Pick Features");
+	rawMenu->AppendCheckItem(ID_FEATURE_TABLE, "Show Attribute Table");
 #ifndef ELEVATION_ONLY
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SETTYPE, "Set Entity Type", "Set Entity Type");
-	rawMenu->Append(ID_RAW_ADDPOINTS, "Add Points with Mouse", "Add points with the mouse", true);
+	rawMenu->AppendCheckItem(ID_RAW_ADDPOINTS, "Add Points with Mouse");
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, "Add Point with Text\tCtrl+T", "Add point");
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, "Add Points with GPS", "Add points with GPS");
 #endif
