@@ -249,6 +249,17 @@ bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow
 	return true;
 }
 
+void vtScene::WorldToScreen(const FPoint3 &point, IPoint2 &result)
+{
+	Vec3 object;
+	v2s(point, object);
+	Vec3 window;
+	m_pOsgSceneView->projectObjectIntoWindow(object, window);
+	result.x = window.x();
+	result.y = window.y();
+}
+
+
 // Debugging helper
 void LogCullPlanes(FPlane *planes)
 {

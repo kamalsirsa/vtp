@@ -72,6 +72,7 @@ public:
 
 	// View methods
 	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir, vtWindow *pWindow = NULL);
+	void WorldToScreen(const FPoint3 &point, IPoint2 &result);
 	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
 	// Experimental:
