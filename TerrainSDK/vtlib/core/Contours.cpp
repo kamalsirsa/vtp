@@ -9,14 +9,10 @@
 
 #include "vtlib/vtlib.h"
 
-#include "surfgrid.h"
-#include "contour.h"
+#include "QuikGrid/surfgrid.h"
+#include "QuikGrid/contour.h"
 
 #include "Contours.h"
-
-#ifdef _MSC_VER
-#pragma comment( lib, "QuikGrid.lib" )
-#endif
 
 static ContourConverter *s_cc = NULL;
 
