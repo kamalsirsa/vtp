@@ -35,6 +35,8 @@ IMPLEMENT_APP(vtApp);
 //
 bool vtApp::OnInit(void)
 {
+	vtGetScene()->Init();
+
 	// Create the main frame window
 	m_frame = new vtFrame(NULL, _T("Simple vtlib example"), wxPoint(50, 50), wxSize(800, 600));
 
@@ -48,9 +50,6 @@ bool vtApp::CreateScene()
 {
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-
-	if (!pScene->Init())
-		return false;
 
 	// Look up the camera
 	m_pCamera = pScene->GetCamera();

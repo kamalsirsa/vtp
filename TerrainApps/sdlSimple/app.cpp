@@ -131,7 +131,6 @@ bool App::CreateScene()
 {
 	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-	pScene->Init();
 
 	// Look up the camera
 	m_pCamera = pScene->GetCamera();
@@ -296,6 +295,8 @@ void App::run()
 */
 int App::main()
 {
+	vtGetScene()->Init();
+
 #ifdef __FreeBSD__
 	/*  FreeBSD is more stringent with FP ops by default, and OSG is	*/
 	/*	doing silly things sqrt(Inf) (computing lengths of MAXFLOAT		*/
@@ -303,6 +304,7 @@ int App::main()
 	/*	the error like most platforms do by default.					*/
 	fpsetmask(0);
 #endif
+
 	printf("Initializing SDL..\n");
 	videosettings(true, false);
 

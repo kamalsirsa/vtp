@@ -279,6 +279,9 @@ bool EnviroApp::OnInit()
 	else
 		VTLOG("  Couldn't find it.\n");
 
+	// Initialize the VTP scene
+	vtGetScene()->Init();
+
 	//
 	// Create the main frame window
 	//
@@ -306,8 +309,6 @@ bool EnviroApp::OnInit()
 	bool go = true;
 	while (go)
 		go = ProcessIdle();
-
-	vtGetScene()->Init();
 
 	g_App.StartControlEngine();
 
