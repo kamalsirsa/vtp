@@ -75,7 +75,7 @@ class vtTerrain
 {
 public:
 	vtTerrain();
-	~vtTerrain();
+	virtual ~vtTerrain();
 
 	/********************** Public Methods ******************/
 
