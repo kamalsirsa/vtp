@@ -28,6 +28,7 @@
 #define MAN_LONLAT MAN_LON, MAN_LAT
 
 #define DETAIL_TILING	1200.0f
+#define DETAIL_DISTANCE 1000.0f		// 1 km
 
 #define ENABLE_PLANTS 0
 
@@ -188,7 +189,8 @@ void NevadaTerrain::CreateDetailTextures()
 					 1.0f, 0.1f,	// alpha, emmisive
 					 true);			// texgen
 	m_pDetailMat2 = m_pMats->GetAt(id);
-	m_pDynGeom->SetDetailMaterial(m_pDetailMat, DETAIL_TILING);
+	m_pDynGeom->SetDetailMaterial(m_pDetailMat,
+		DETAIL_TILING, DETAIL_DISTANCE);
 }
 
 
@@ -601,7 +603,8 @@ void EpochEngine::Eval()
 				diffuse = pMaterial->GetDiffuse();
 				diffuse.a = alpha;
 				pMaterial->SetDiffuse1(diffuse);
-				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastMat, DETAIL_TILING);
+				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastMat,
+					DETAIL_TILING, DETAIL_DISTANCE);
 			}
 			else
 			{
@@ -611,7 +614,8 @@ void EpochEngine::Eval()
 				diffuse = pMaterial->GetDiffuse();
 				diffuse.a = alpha;
 				pMaterial->SetDiffuse1(diffuse);
-				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentMat, DETAIL_TILING);
+				m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentMat,
+					DETAIL_TILING, DETAIL_DISTANCE);
 			}
 		}
 	}
