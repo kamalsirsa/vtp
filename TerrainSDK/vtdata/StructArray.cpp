@@ -22,7 +22,6 @@
 #include "Fence.h"
 
 vtStructureArray g_DefaultStructures;
-vtMaterialNamesArray g_MaterialNames;
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -828,7 +827,7 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 
 			attval = atts.getValue("Material");
 			if (attval)
-				m_pEdge->m_pMaterial = &g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(attval));
+				m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(attval);
 			attval = atts.getValue("Color");
 			if (attval)
 				m_pEdge->m_Color = ParseHexColor(attval);
@@ -1200,23 +1199,6 @@ bool vtStructureArray::ReadXML(const char* pathname)
 	}
 	return true;
 }
-
-// vtMaterialNamesArray member functions
-
-vtMaterialName& vtMaterialNamesArray::FindOrAppendMaterialName(const vtMaterialName& Name)
-{
-	int iIndex;
-	int iSize = GetSize();
-
-	for (iIndex = 0; iIndex < iSize; iIndex++)
-	{
-		vtMaterialName *pFoundName = GetAt(iIndex);
-		if (*pFoundName == Name)
-			return *pFoundName;
-	}
-	return *GetAt(Append(new vtMaterialName(Name)));
-}
-
 
 
 /////////////////////
