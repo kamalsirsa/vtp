@@ -1766,3 +1766,31 @@ int GetIntFromString(const char *buf, int len)
 	return atoi(copy);
 }
 
+/**
+ * Test if a geometry type is 2D (x, y) or 3D (x, y, z) - also known as "2.5D".
+ */
+bool GeometryTypeIs3D(OGRwkbGeometryType type)
+{
+	switch (type)
+	{
+	case wkbPoint:
+	case wkbLineString:
+	case wkbPolygon:
+	case wkbMultiPoint:
+	case wkbMultiLineString:
+	case wkbMultiPolygon:
+		return false;
+	case wkbPoint25D:
+	case wkbLineString25D:
+	case wkbPolygon25D:
+	case wkbMultiPoint25D:
+	case wkbMultiLineString25D:
+	case wkbMultiPolygon25D:
+		return true;
+	case wkbNone:
+	case wkbUnknown:
+	default:
+		return false;
+	}
+}
+

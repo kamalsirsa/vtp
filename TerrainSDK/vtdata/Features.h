@@ -434,6 +434,7 @@ OGRwkbGeometryType ShapelibToOGR(int nSHPType);
 int OGRToShapelib(OGRwkbGeometryType eGeomType);
 vtString MakeDBFName(const char *filename);
 int GetIntFromString(const char *buf, int len);
+bool GeometryTypeIs3D(OGRwkbGeometryType type);
 
 #endif // VTDATA_FEATURES
 
