@@ -1851,28 +1851,54 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	// Avoid trouble with '.' and ',' in Europe
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
-	char buf[80];
+	// first, test if we are comma or space delimited
 	double x, y, z;
-	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
-	int iNum = 0;
+	bool bCommas;
+	rewind(fp);
+	int count1 = fscanf(fp, "%lf,%lf,%lf", &x, &y, &z);
+	rewind(fp);
+	int count2 = fscanf(fp, "%lf %lf %lf", &x, &y, &z);
+
+	if (count1 == 3)
+		bCommas = true;
+	else if (count2 == 3)
+		bCommas = false;
+	else
+	{
+		fclose(fp);
+		return false;
+	}
+
+	char buf[80];
+	DRECT extents;
+	extents.SetRect(1E9, -1E9, -1E9, 1E9);
+	int count, iNum = 0;
 
 	// Make two passes over the file; the first time, we collect extents
+	rewind(fp);
 	while (fgets(buf, 80, fp) != NULL)
 	{
-		if (sscanf(buf, "%lf,%lf,%lf", &x, &y, &z) != 3)
+		if (bCommas)
+			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		else
+			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
+		if (count != 3)
 			return false;
-		m_EarthExtents.GrowToContainPoint(DPoint2(x, y));
+		extents.GrowToContainPoint(DPoint2(x, y));
 		iNum++;
 	}
 	ComputeCornersFromExtents();
 
 	// Go back and look at the first two points
-	fseek(fp, 0, SEEK_SET);
+	rewind(fp);
 	DPoint2 testp[2];
 	int i;
 	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
 	{
-		sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		if (bCommas)
+			count = sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		else
+			count = sscanf(buf, "%lf %lf %lf", &x, &y, &z);
 		testp[i].Set(x, y);
 	}
 
@@ -1881,36 +1907,42 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, bool progress_callback
 	if (diff.x == 0)
 	{
 		// column-first ordering
-		m_iRows = (int) (m_EarthExtents.Height() / fabs(diff.y)) + 1;
+		m_iRows = (int) (extents.Height() / fabs(diff.y)) + 1;
 		m_iColumns = iNum / m_iRows;
 	}
 	else if (diff.y == 0)
 	{
 		// row-first ordering
-		m_iColumns = (int) (m_EarthExtents.Width() / fabs(diff.x)) + 1;
+		m_iColumns = (int) (extents.Width() / fabs(diff.x)) + 1;
 		m_iRows = iNum / m_iColumns;
 	}
 	else
 		return false;
 
 	// Go back and read all the points
-	DPoint2 base(m_EarthExtents.left, m_EarthExtents.bottom);
+	SetEarthExtents(extents);
+	DPoint2 base(extents.left, extents.bottom);
 	DPoint2 spacing = GetSpacing();
 	_AllocateArray();
 
-	fseek(fp, 0, SEEK_SET);
+	rewind(fp);
 	DPoint2 p;
 	int xpos, ypos;
+	i = 0;
 	while (fgets(buf, 80, fp) != NULL)
 	{
 		if (progress_callback != NULL)
 			progress_callback(i * 100 / iNum);
 
-		sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		if (bCommas)
+			sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		else
+			sscanf(buf, "%lf %lf %lf", &x, &y, &z);
 		p.Set(x, y);
 		xpos = (int) ((x - base.x) / spacing.x);
 		ypos = (int) ((y - base.y) / spacing.y);
 		SetFValue(xpos, ypos, (float) z);
+		i++;
 	}
 	fclose(fp);
 	return true;
