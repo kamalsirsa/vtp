@@ -16,7 +16,7 @@
 #include "Fence3d.h"
 #include "Terrain.h"
 
-const vtMaterialName BMAT_NAME_HIGHLIGHT = _T("Highlight");
+const vtMaterialName BMAT_NAME_HIGHLIGHT = "Highlight";
 
 // Static memebers
 vtMaterialArray vtStructure3d::s_Materials;
@@ -375,7 +375,13 @@ void vtStructure3d::InitializeMaterialArrays()
 	}
 */
 
-	s_MaterialDescriptors.Load(FindFileOnPaths(vtTerrain::m_DataPaths, "GeoTypical/textures.xml"));
+	vtString matfile = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/textures.xml");
+	if (matfile == "")
+	{
+		// error - what to do?
+		return;
+	}
+	s_MaterialDescriptors.Load(matfile);
 
 	iSize = s_MaterialDescriptors.GetSize();
 
