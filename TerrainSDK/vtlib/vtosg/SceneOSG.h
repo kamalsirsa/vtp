@@ -1,12 +1,7 @@
 //
-// A "scene" currently encapsulates:
+// SceneOSG.h
 //
-// 1. a scene graph
-// 2. a set of engines
-// 3. a window
-// 4. a current camera
-//
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,6 +11,14 @@
 #include "../core/FrameTimer.h"
 #include <osg/Timer>
 
+/*
+ * A "scene" currently encapsulates:
+ *
+ * 1. a scene graph
+ * 2. a set of engines
+ * 3. a window
+ * 4. a current camera
+ */
 class vtScene : public vtSceneBase
 {
 public:
