@@ -376,13 +376,83 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 	// create simple texture-mapped sphere
 	int res = 5;
 	vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, 0, res*res*2);
-	FPoint3 size(fSize, fSize, fSize);
-	mesh->CreateEllipsoid(size, res);
+	FPoint3 scale(1.0f, 1.0f, 1.0f);
+	mesh->CreateEllipsoid(scale, res);
 
-	for (int i = 0; i < points.GetSize(); i++)
+	int i, j, k, size;
+	Array<FSphere> spheres;
+
+	size = points.GetSize();
+	spheres.SetSize(size);
+
+	for (i = 0; i < size; i++)
 	{
 		DPoint2 p = points[i];
 		if (p.x == 0.0 && p.y == 0.0)
+			continue;
+
+		FPoint3 loc;
+		geo_to_xyz(1.0, points[i], loc);
+
+		spheres[i].center = loc;
+		spheres[i].radius = fSize;
+	}
+
+	FPoint3 diff;
+
+	// volume of sphere, 4/3 PI r^3
+	// surface area of sphere, 4 PI r^2
+	// area of circle of sphere as seen from distance, PI r^2
+	int pops;
+	do {
+		pops = 0;
+		// Try merging overlapping points together, so that information
+		// is not lost in the overlap.
+		// To consider: do we combine the blobs based on their 2d radius,
+		// their 2d area, their 3d radius, or their 3d volume?  See
+		// Tufte, http://www.edwardtufte.com/
+		for (i = 0; i < size-1; i++)
+		{
+			for (j = i+1; j < size; j++)
+			{
+				if (spheres[i].radius == 0.0f || spheres[j].radius == 0.0f)
+					continue;
+
+				diff = spheres[i].center - spheres[j].center;
+
+				// if one sphere contains the center of the other
+				if (diff.Length() < spheres[i].radius ||
+					diff.Length() < spheres[j].radius)
+				{
+					// combine
+					float area1 = PIf * spheres[i].radius * spheres[i].radius;
+					float area2 = PIf * spheres[j].radius * spheres[j].radius;
+					float combined = (area1 + area2);
+					float newrad = sqrtf( combined / PIf );
+					// larger eats the smaller
+					if (area1 > area2)
+					{
+						spheres[i].radius = newrad;
+						spheres[j].radius = 0.0f;
+					}
+					else
+					{
+						spheres[j].radius = newrad;
+						spheres[i].radius = 0.0f;
+					}
+					pops++;
+					break;
+				}
+			}
+		}
+		int got = pops;
+	}
+	while (pops != 0);
+
+	size = points.GetSize();
+	for (i = 0; i < size; i++)
+	{
+		if (spheres[i].radius == 0.0f)
 			continue;
 
 		vtGeom *geom = new vtGeom();
@@ -392,11 +462,11 @@ void IcoGlobe::AddPoints(DLine2 &points, float fSize)
 		vtMovGeom *mgeom = new vtMovGeom(geom);
 		mgeom->SetName2("GlobeShape");
 
-		FPoint3 loc;
-		geo_to_xyz(1.0, points[i], loc);
-		mgeom->SetTrans(loc);
+		mgeom->SetTrans(spheres[i].center);
+		mgeom->Scale3(spheres[i].radius, spheres[i].radius, spheres[i].radius);
 		m_mgeom->AddChild(mgeom);
 	}
+
 }
 
 //
@@ -563,10 +633,11 @@ int IcoGlobe::AddGlobePoints(const char *fname)
 		SHPObject *psShape = SHPReadObject(hSHP, i);
 		point.x = psShape->padfX[0];
 		point.y = psShape->padfY[0];
-		points.SetAt(i, point);
+		if (point.x != 0.0 || point.y != 0.0)
+			points.Append(point);
 		SHPDestroyObject(psShape);
 	}
-	AddPoints(points, 0.003f);
+	AddPoints(points, 0.0015f);
 	SHPClose(hSHP);
 	return nEntities;
 }
