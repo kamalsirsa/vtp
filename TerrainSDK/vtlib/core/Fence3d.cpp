@@ -272,8 +272,8 @@ void vtFence3d::CreateMeshesWithoutPosts(vtHeightField3d *pHeightField)
 		DPoint2 dp = m_pFencePts[i];
 		pHeightField->ConvertEarthToSurfacePoint(dp.x, dp.y, pout);
 
-		pMesh->SetVtxPUV(vidx++, pout, u, 1.0f);
-		pMesh->SetVtxPUV(vidx++, pout + FPoint3(0, fFenceHeightScaled, 0), u, 0.0f);
+		pMesh->SetVtxPUV(vidx++, pout, u, 0.0f);
+		pMesh->SetVtxPUV(vidx++, pout + FPoint3(0, fFenceHeightScaled, 0), u, 1.0f);
 
 		if (i < (numfencepts - 1))
 		{
