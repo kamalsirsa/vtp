@@ -121,6 +121,7 @@ public:
 
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
+	bool LineOfSight(const FPoint3 &point1, const FPoint3 &point2) const;
 	DPoint2 GetSpacing() const;
 	FPoint2 GetWorldSpacing() const;
 	void GetDimensions(int &nColumns, int &nRows) const;
