@@ -453,6 +453,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		// fill in Vegetation files
 		AddFilenamesToComboBox(m_pTreeFile, paths[i] + "PlantData", "*.vf");
+		AddFilenamesToComboBox(m_pTreeFile, paths[i] + "PlantData", "*.shp");
 		sel = m_pTreeFile->FindString(m_strVegFile);
 		if (sel != -1)
 			m_pTreeFile->SetSelection(sel);
@@ -467,9 +468,9 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 
 		// fill in PointData files
 		AddFilenamesToComboBox(m_pLabelFile, paths[i] + "PointData", "*.shp");
-		sel = m_pTreeFile->FindString(m_strVegFile);
+		sel = m_pLabelFile->FindString(m_strLabelFile);
 		if (sel != -1)
-			m_pTreeFile->SetSelection(sel);
+			m_pLabelFile->SetSelection(sel);
 	}
 
 	m_pLodMethod->Clear();
