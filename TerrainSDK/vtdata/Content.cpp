@@ -463,6 +463,8 @@ void vtContentManager::WriteXML(const char *filename)
 			fprintf(fp, "\t\t<model filename=\"%s\"", filename);
 			if (pMod->m_distance != 0.0f)
 				fprintf(fp, " distance=\"%g\"", pMod->m_distance);
+			if (pMod->m_scale != 1.0f)
+				fprintf(fp, " scale=\"%g\"", pMod->m_scale);
 			fprintf(fp, " />\n");
 		}
 		fprintf(fp, "\t</item>\n");
