@@ -36,16 +36,7 @@ TParamsTabDlg::TParamsTabDlg( wxWindow *parent, wxWindowID id, const wxString &t
 {
 	TParamsTabFunc( this, TRUE );
 
-	wxNotebook *nb = GetNoteBook();
-//	wxNotebookSizer *ns = (wxNotebookSizer *) nb->GetSizer();
-	wxWindow *ns =  nb->GetParent();
-
-	TParamsDlg dlg(this, -1, "Terrain Creation Parameters", wxDefaultPosition);
-	nb->AddPage(&dlg, "Tab 1");
-
-	nb->SetAutoLayout( TRUE );
-//	ns->Fit(nb);
-//	ns->SetSizeHints(nb);
+	SetAutoLayout( TRUE );
 }
 
 // WDR: handler implementations for TParamsTabDlg
