@@ -333,6 +333,25 @@ vtString WIN_UNIX_STDCALL operator+(char ch, const vtString& string)
 	return s;
 }
 
+
+///////////////////////////////////////////////////////////////////////////////
+// String comparison and Testing
+
+bool vtString::IsNumber() const
+{
+	const char *s = (const char *) m_pchData;
+
+	if ((s[0] == '-') || (s[0] == '+'))
+		s++;
+	while (*s)
+	{
+		if (!isdigit((unsigned char) (*s))) return false;
+			s++;
+	}
+	return true;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Advanced direct buffer access
 

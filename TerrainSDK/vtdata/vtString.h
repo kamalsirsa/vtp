@@ -1,7 +1,7 @@
 //
 // vtString.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -75,7 +75,7 @@ public:
 	// from unsigned characters
 	vtString(const unsigned char* psz);
 
-// Attributes & Operations
+	// Attributes & Operations
 
 	// get data length
 	int GetLength() const;
@@ -125,6 +125,8 @@ public:
 	int Compare(pcchar lpsz) const;
 	// compare ignoring case
 	int CompareNoCase(pcchar lpsz) const;
+	// test if the string is an integer (with possible sign)
+	bool IsNumber() const;
 
 	// simple sub-string extraction
 
