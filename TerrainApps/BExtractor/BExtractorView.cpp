@@ -147,6 +147,7 @@ BExtractorView::BExtractorView()
 
 BExtractorView::~BExtractorView()
 {
+	FreeGlobalMaterials();
 }
 
 BOOL BExtractorView::PreCreateWindow(CREATESTRUCT& cs)
@@ -2187,8 +2188,11 @@ void BExtractorView::OnUpdateConstrain(CCmdUI* pCmdUI)
 void BExtractorView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView) 
 {
 	// update status bar
-	CMainFrame *pFrame = (CMainFrame *)AfxGetMainWnd();
-	pFrame->RefreshStatusBar(this);
+	if (bActivate == TRUE)
+	{
+		CMainFrame *pFrame = (CMainFrame *)AfxGetMainWnd();
+		pFrame->RefreshStatusBar(this);
+	}
 	
 	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 }
