@@ -1699,6 +1699,7 @@ void vtTerrain::_CreateTiledMaterials(vtMaterialArray *pMat1,
 
 void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
 {
+	VTLOG("Prelighting terrain texture: ");
 	FPoint3 light_dir;
 	light_dir.Set(-1.0f, -1.0f, 0.0f);
 	light_dir.Normalize();
@@ -1708,7 +1709,7 @@ void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
 	clock_t c2 = clock();
 
 	clock_t c3 = c2 - c1;
-	int foo = 1;
+	VTLOG("%.3f seconds.\n", (float)c3 / CLOCKS_PER_SEC);
 
 	// must also adjust ocean color to match
 //	FPoint3 up(0.0f, -1.0f, 0.0f);
