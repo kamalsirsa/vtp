@@ -23,7 +23,6 @@ zip $DIST_FILE1 VTP/TerrainSDK/Makedefs.in
 zip $DIST_FILE1 VTP/TerrainSDK/Makefile
 zip $DIST_FILE1 VTP/TerrainSDK/Makefile.in
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/*
-zip $DIST_FILE1 VTP/TerrainSDK/vtdata/boost/*
 zip $DIST_FILE1 VTP/TerrainSDK/vtdata/shapelib/*
 
 zip $DIST_FILE1 VTP/TerrainSDK/vtlib/*
@@ -47,15 +46,15 @@ zip $DIST_FILE1 VTP/TerrainApps/README.sgi
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/*.h
-zip $DIST_FILE1 VTP/TerrainApps/BExtractor/BExtractor.dsp
-zip $DIST_FILE1 VTP/TerrainApps/BExtractor/BExtractor.dsw
+zip $DIST_FILE1 VTP/TerrainApps/BExtractor/BExtractor.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/BExtractor/BExtractor.sln
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/BExtractor.rc
 zip $DIST_FILE1 VTP/TerrainApps/BExtractor/res/*
 
 zip $DIST_FILE1 VTP/TerrainApps/CManager/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/CManager/*.h
-zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager.dsp
-zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager-OSG.dsw
+zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/CManager/CManager.rc
 zip $DIST_FILE1 VTP/TerrainApps/CManager/itemtypes.txt
 zip $DIST_FILE1 VTP/TerrainApps/CManager/cmanager.wdr
@@ -67,10 +66,10 @@ zip $DIST_FILE1 VTP/TerrainApps/Enviro/*.h
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/Enviro.ini
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/Makefile
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro.dsp
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro-OSG.dsw
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro.dsp
-zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro-OSG.dsw
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/wxEnviro-OSG.sln
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfcEnviro-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/*.h
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/wx/enviro-wx.rc
@@ -81,8 +80,8 @@ zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfc/*
 zip $DIST_FILE1 VTP/TerrainApps/Enviro/mfc/res/*
 
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/app.cpp
-zip $DIST_FILE1 VTP/TerrainApps/glutSimple/glutSimple.dsp
-zip $DIST_FILE1 VTP/TerrainApps/glutSimple/glutSimple-OSG.dsw
+zip $DIST_FILE1 VTP/TerrainApps/glutSimple/glutSimple.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/glutSimple/glutSimple-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/glutSimple/README.txt
@@ -91,16 +90,16 @@ zip $DIST_FILE1 VTP/TerrainApps/glutSimple/Data/Elevation/README.txt
 
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/*.h
-zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.dsp
-zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.dsw
+zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.sln
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/mfcSimple.rc
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Simple.ini
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/Data/Elevation/README.txt
 zip $DIST_FILE1 VTP/TerrainApps/mfcSimple/res/*
 
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/app.cpp
-zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.dsp
-zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.dsw
+zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/sdlSimple.sln
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/sdlSimple/Data/Simple.ini
@@ -112,8 +111,8 @@ zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/license.txt
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.ini
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.rc
-zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.dsp
-zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.dsw
+zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.sln
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/VTBuilder.wdr
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/bitmaps/*
 zip $DIST_FILE1 VTP/TerrainApps/VTBuilder/icons/*
@@ -123,8 +122,8 @@ zip $DIST_FILE1 VTP/TerrainApps/wxSimple/*.cpp
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/*.h
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Makefile
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/README.txt
-zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple.dsp
-zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple-OSG.dsw
+zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple.vcproj
+zip $DIST_FILE1 VTP/TerrainApps/wxSimple/wxSimple-OSG.sln
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Simple.ini
 zip $DIST_FILE1 VTP/TerrainApps/wxSimple/Data/Elevation/README.txt
 
