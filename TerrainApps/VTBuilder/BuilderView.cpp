@@ -732,37 +732,38 @@ void BuilderView::HighlightTerrain(wxDC* pDC, vtElevLayer *t)
 	DRECT rect;
 	t->GetExtent(rect);
 	wxRect sr = WorldToCanvas(rect);
-	int s = sr.width / 3;
+	int sx = sr.width / 3;
+	int sy = sr.height / 3;
 	int left = sr.x, right = sr.x+sr.width,
 		top = sr.y, bottom = sr.y+sr.height;
 	int d=3,e=6;
 
 	//
 	pDC->DrawLine(left - e, top - d,
-				  left - e, top + s);
+				  left - e, top + sy);
 
 	pDC->DrawLine(left - d, top - e,
-				  left + s, top - e);
+				  left + sx, top - e);
 
 	//
-	pDC->DrawLine(right - s, top - e,
+	pDC->DrawLine(right - sx, top - e,
 				  right + e, top - e);
 
 	pDC->DrawLine(right + e, top - d,
-				  right + e, top + s);
+				  right + e, top + sy);
 
 	//
-	pDC->DrawLine(right + e, bottom - s,
+	pDC->DrawLine(right + e, bottom - sy,
 				  right + e, bottom + d);
 
-	pDC->DrawLine(right - s, bottom + e,
+	pDC->DrawLine(right - sx, bottom + e,
 				  right + e, bottom + e);
 
 	//
-	pDC->DrawLine(left - e, bottom - s,
+	pDC->DrawLine(left - e, bottom - sy,
 				  left - e, bottom + d);
 
-	pDC->DrawLine(left + s, bottom + e,
+	pDC->DrawLine(left + sx, bottom + e,
 				  left - e, bottom + e);
 }
 
