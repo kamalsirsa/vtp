@@ -33,7 +33,8 @@ public:
 
 	// implement vtStructure3d methods
 	virtual bool CreateNode(vtTerrain *pTerr);
-	vtGeom *GetGeom();
+	virtual vtGeom *GetGeom() { return m_pGeom; }
+	virtual vtNodeBase *GetContained() { return m_pGeom; }
 	virtual void DeleteNode();
 	// display a bounding box around to object to highlight it
 	virtual void ShowBounds(bool bShow);

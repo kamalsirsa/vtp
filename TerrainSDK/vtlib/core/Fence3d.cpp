@@ -351,11 +351,6 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 	return true;
 }
 
-vtGeom *vtFence3d::GetGeom()
-{
-	return m_pFenceGeom;
-}
-
 void vtFence3d::DeleteNode()
 {
 	if (m_pFenceGeom)

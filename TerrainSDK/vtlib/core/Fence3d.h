@@ -20,7 +20,8 @@ public:
 
 	// implement vtStructure3d methods
 	virtual bool CreateNode(vtTerrain *pTerr);
-	vtGeom *GetGeom();
+	virtual vtGeom *GetGeom() { return m_pFenceGeom; }
+	virtual vtNodeBase *GetContained() { return m_pFenceGeom; }
 	virtual void DeleteNode();
 
 	static void SetScale(float fScale) { s_fFenceScale = fScale; }

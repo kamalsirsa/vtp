@@ -1026,12 +1026,6 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	return true;
 }
 
-
-vtGeom *vtBuilding3d::GetGeom()
-{
-	return m_pGeom;
-}
-
 void vtBuilding3d::DeleteNode()
 {
 	if (m_pContainer)

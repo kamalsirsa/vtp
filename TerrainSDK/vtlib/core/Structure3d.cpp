@@ -68,6 +68,12 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 	m_pContainer->SetTrans(surface_pos);
 }
 
+void vtStructInstance3d::Reload()
+{
+	// Is this method necessary?  Or can the object simply be reconstructed
+	//  to produce the same effect?
+}
+
 /**
  * Display some bounding wires around the object to highlight it.
  */
@@ -106,6 +112,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	// if previously created, destroy to re-create
 	if (m_pModel)
 	{
+		m_pContainer->RemoveChild(m_pModel);
 		m_pModel->Release();
 		m_pModel = NULL;
 	}
@@ -148,6 +155,21 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 
 	UpdateTransform(pTerr->GetHeightField());
 	return true;
+}
+
+void vtStructInstance3d::DeleteNode()
+{
+	if (m_pContainer)
+	{
+		if (m_pModel)
+		{
+			m_pContainer->RemoveChild(m_pModel);
+			m_pModel->Release();
+			m_pModel = NULL;
+		}
+		m_pContainer->Release();
+		m_pContainer = NULL;
+	}
 }
 
 
