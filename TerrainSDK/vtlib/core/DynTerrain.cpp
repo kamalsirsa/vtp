@@ -131,8 +131,7 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 		{
 			// right on the edge: allow this point, but don't interpolate
 			fAltitude = GetElevation(iX, iZ, bTrue);
-			if (vNormal != NULL)
-				vNormal->Set(0,1,0);
+			if (vNormal) vNormal->Set(0,1,0);
 			return true;
 		}
 		else
@@ -141,7 +140,7 @@ bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	if (bogus)
 	{
 		fAltitude = 0.0f;
-		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
+		if (vNormal) vNormal->Set(0, 1, 0);
 		return false;
 	}
 
