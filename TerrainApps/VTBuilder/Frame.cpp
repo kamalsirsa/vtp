@@ -1141,7 +1141,6 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	vtPlantInstanceArray pia;
 	vtPlantDensity *pd;
 	vtBioType *bio;
-//	pia.m_proj.SetUTM(true);
 
 	m_BioRegions.ResetAmounts();
 
