@@ -368,7 +368,6 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item16->Add( item17, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxButton *item18 = new wxButton( parent, ID_SAVE_ANIM, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item18->Enable( false );
     item16->Add( item18, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     wxButton *item19 = new wxButton( parent, ID_LOAD_ANIM, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );

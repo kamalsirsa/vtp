@@ -19,6 +19,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtui/wxString2.h"
+#include "vtdata/FilePath.h"
 #include "canvas.h"
 #include "LocationDlg.h"
 
@@ -93,7 +94,7 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	AddValidator(ID_CONTINUOUS, &m_bContinuous);
 	AddValidator(ID_SMOOTH, &m_bSmooth);
 	AddValidator(ID_POS_ONLY, &m_bPosOnly);
-	AddNumValidator(ID_SPEED, &m_fSpeed);
+	AddNumValidator(ID_SPEED, &m_fSpeed, 2);
 	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
 	AddNumValidator(ID_RECORD_SPACING, &m_fRecordSpacing);
 	AddValidator(ID_ANIM_POS, &m_iPos);
@@ -203,6 +204,8 @@ void LocationDlg::UpdateSlider()
 
 void LocationDlg::UpdateEnabling()
 {
+	GetAnimPos()->Enable(m_iAnim != -1);
+	GetSaveAnim()->Enable(m_iAnim != -1);
 	GetActive()->Enable(m_iAnim != -1);
 	GetSpeed()->Enable(m_iAnim != -1);
 	GetReset()->Enable(m_iAnim != -1);
@@ -232,6 +235,17 @@ void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
 	entry->m_pEngine = engine;
 	entry->m_Name = name;
 	m_Entries.Append(entry);
+}
+
+vtAnimPath *LocationDlg::CreateAnimPath()
+{
+	vtAnimPath *anim = new vtAnimPath();
+
+	// Ensure that anim knows the project
+	const vtProjection &proj = m_pSaver->GetAtProjection();
+	anim->SetProjection(proj);
+
+	return anim;
 }
 
 #define SPEED_MIN   0.0f
@@ -296,6 +310,9 @@ void LocationDlg::TransferToWindow()
 
 void LocationDlg::OnAnimPosSlider( wxCommandEvent &event )
 {
+	if (m_iAnim == -1)
+		return;
+
 	TransferDataFromWindow();
 
 	float fTotalTime = GetAnim(m_iAnim)->GetLastTime();
@@ -421,39 +438,62 @@ void LocationDlg::OnPlay( wxCommandEvent &event )
 void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 {
 	wxString2 filter = _("Polyline Data Sources");
-	filter += _T(" (*.shp,*.dxf,*.igc)|*.shp;*.dxf;*.igc|");
+	filter += _T(" (*.vtap,*.shp,*.dxf,*.igc)|*.vtap;*.shp;*.dxf;*.igc|");
 	wxFileDialog loadFile(NULL, _("Load Animation Path"), _T(""), _T(""),
 		filter, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
 
+	vtAnimPath *anim;
+	bool bSuccess;
 	wxString2 str = loadFile.GetPath();
 	const char *filename = str.mb_str();
-
-	vtFeatureLoader loader;
-	vtFeatureSet *pSet = loader.LoadFrom(filename);
-	if (!pSet)
-		return;
-
-	vtAnimPath *anim = new vtAnimPath;
-	if (!anim->CreateFromLineString(m_pSaver->GetAtProjection(), pSet))
-		return;
-
-	AppendAnimPath(anim, filename);
-	RefreshAnims();
+	if (GetExtension(filename) == ".vtap")
+	{
+		anim = CreateAnimPath();
+		bSuccess = anim->Read(filename);
+	}
+	else
+	{
+		vtFeatureLoader loader;
+		vtFeatureSet *pSet = loader.LoadFrom(filename);
+		if (!pSet)
+			return;
+		anim = CreateAnimPath();
+		bSuccess = anim->CreateFromLineString(m_pSaver->GetAtProjection(), pSet);
+		delete pSet;
+	}
+	if (bSuccess)
+	{
+		AppendAnimPath(anim, filename);
+		RefreshAnims();
+	}
+	else
+		delete anim;
 }
 
 void LocationDlg::OnNewAnim( wxCommandEvent &event )
 {
-	vtAnimPath *anim = new vtAnimPath;
+	vtAnimPath *anim = CreateAnimPath();
 	AppendAnimPath(anim, "New Anim");
 	RefreshAnims();
 }
 
 void LocationDlg::OnSaveAnim( wxCommandEvent &event )
 {
-	
+	if (m_iAnim == -1)
+		return;
+	vtAnimPath *path = GetAnim(m_iAnim);
+
+	wxFileDialog saveFile(NULL, _("Save AnimPath"), _T(""), _T(""),
+		_("AnimPath Files (*.vtap)|*.vtap|"), wxSAVE);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+
+	wxString2 filepath = saveFile.GetPath();
+	path->Write(filepath.mb_str());
 }
 
 void LocationDlg::OnRemove( wxCommandEvent &event )

@@ -70,6 +70,7 @@ public:
 	wxButton* GetRecord1()  { return (wxButton*) FindWindow( ID_RECORD1 ); }
 	wxButton* GetPlay()  { return (wxButton*) FindWindow( ID_PLAY ); }
 	wxListBox* GetAnims()  { return (wxListBox*) FindWindow( ID_ANIMS ); }
+
 	wxButton* GetStoreas()  { return (wxButton*) FindWindow( ID_STOREAS ); }
 	wxButton* GetStore()  { return (wxButton*) FindWindow( ID_STORE ); }
 	wxButton* GetRecall()  { return (wxButton*) FindWindow( ID_RECALL ); }
@@ -93,6 +94,7 @@ public:
 	void SlidersToValues();
 	void ValuesToSliders();
 	void AppendAnimPath(vtAnimPath *anim, const char *name);
+	vtAnimPath *CreateAnimPath();
 
 	void SetValues(int which = PF_ALL);
 	void GetValues();
