@@ -196,7 +196,7 @@ public:
 	virtual void EarthPosUpdated() {}
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 		float fGround, float fVertical) {}
-	virtual vtString GetPathFromGUI() { return ""; }
+	virtual vtTagArray *GetInstanceFromGUI() { return NULL; }
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void SetTimeEngineToGUI(TimeEngine *pEngine) {}
 

@@ -1107,18 +1107,24 @@ void Enviro::OnMouseLeftDownTerrainSelect(vtMouseEvent &event)
 		vtStructureArray3d *structures_picked = pTerr->GetStructures();
 		vtStructure *str = structures_picked->GetAt(structure);
 		vtStructure3d *str3d = structures_picked->GetStructure3d(structure);
-		str->Select(true);
-		str3d->ShowBounds(true);
-		vtStructInstance *inst = str->GetInstance();
-		if (inst != NULL && (event.flags & VT_SHIFT) != 0)
+		if (str->GetType() != ST_INSTANCE && str3d->GetGeom() == NULL)
 		{
-			m_StartRotation = inst->m_fRotation;
-			m_bRotating = true;
+			VTLOG("  Warning: unconstructed structure.\n");
 		}
 		else
-			m_bDragging = true;
-		m_bSelectedStruct = true;
-
+		{
+			str->Select(true);
+			str3d->ShowBounds(true);
+			vtStructInstance *inst = str->GetInstance();
+			if (inst != NULL && (event.flags & VT_SHIFT) != 0)
+			{
+				m_StartRotation = inst->m_fRotation;
+				m_bRotating = true;
+			}
+			else
+				m_bDragging = true;
+			m_bSelectedStruct = true;
+		}
 		if (structures_picked != structures)
 		{
 			// active structure set (layer) has changed due to picking
@@ -1458,26 +1464,31 @@ bool Enviro::PlantATree(const DPoint2 &epos)
 
 void Enviro::PlantInstance()
 {
-	vtString path = GetPathFromGUI();
-	if (path == "")
+	VTLOG("Plant Instance:\n");
+	vtTagArray *tags = GetInstanceFromGUI();
+	if (!tags)
 		return;
 
 	// create a new Instance object
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structs = pTerr->GetStructures();
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
-	inst->SetValueString("filename", path);
+	inst->CopyTagsFrom(*tags);
+//	inst->SetValueString("filename", path);
 	inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
+	VTLOG("  at %.7g, %.7g\n", m_EarthPos.x, m_EarthPos.y);
 
 	int index = structs->Append(inst);
 	bool success = pTerr->CreateStructure(structs, index);
 	if (success)
 	{
+		VTLOG("  succeeded.\n");
 		RefreshLayerView();
 	}
 	else
 	{
 		// creation failed
+		VTLOG("  failed.\n");
 		inst->Select(true);
 		structs->DeleteSelected();
 		return;
