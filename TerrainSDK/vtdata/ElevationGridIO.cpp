@@ -2494,3 +2494,79 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, void progress_cal
 }
 
 
+/**
+ * Loads from an "XYZ file", which is a simple text file containing
+ * a set of grid points in the form X,Y,Z - where Z is elevation.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFromXYZ(const char *szFileName, void progress_callback(int))
+{
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)
+		return false;
+
+	char buf[80];
+	double x, y, z;
+	m_EarthExtents.SetRect(1E9, -1E9, -1E9, 1E9);
+	int iNum = 0;
+
+	// Make two passes over the file; the first time, we collect extents
+	while (fgets(buf, 80, fp) != NULL)
+	{
+		if (sscanf(buf, "%lf,%lf,%lf", &x, &y, &z) != 3)
+			return false;
+		m_EarthExtents.GrowToContainPoint(DPoint2(x, y));
+		iNum++;
+	}
+	ComputeCornersFromExtents();
+
+	// Go back and look at the first two points
+	fseek(fp, 0, SEEK_SET);
+	DPoint2 testp[2];
+	int i;
+	for (i = 0; fgets(buf, 80, fp) != NULL && i < 2; i++)
+	{
+		sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		testp[i].Set(x, y);
+	}
+
+	// Compare them and decide whether we are row or column order
+	DPoint2 diff = testp[1] - testp[0];
+	if (diff.x == 0)
+	{
+		// column-first ordering
+		m_iRows = (int) (m_EarthExtents.Height() / fabs(diff.y)) + 1;
+		m_iColumns = iNum / m_iRows;
+	}
+	else if (diff.y == 0)
+	{
+		// row-first ordering
+		m_iColumns = (int) (m_EarthExtents.Width() / fabs(diff.x)) + 1;
+		m_iRows = iNum / m_iColumns;
+	}
+	else
+		return false;
+
+	// Go back and read all the points
+	DPoint2 base(m_EarthExtents.left, m_EarthExtents.bottom);
+	DPoint2 spacing = GetSpacing();
+	_AllocateArray();
+
+	fseek(fp, 0, SEEK_SET);
+	DPoint2 p;
+	int xpos, ypos;
+	while (fgets(buf, 80, fp) != NULL)
+	{
+		if (progress_callback != NULL)
+			progress_callback(i * 100 / iNum);
+
+		sscanf(buf, "%lf,%lf,%lf", &x, &y, &z);
+		p.Set(x, y);
+		xpos = (int) ((x - base.x) / spacing.x);
+		ypos = (int) ((y - base.y) / spacing.y);
+		SetFValue(xpos, ypos, (float) z);
+	}
+	return true;
+}
+

@@ -50,6 +50,7 @@
 #define FSTRING_VF		_T("Vegetation Files (*.vf)|*.vf|")
 #define FSTRING_VTST	_T("Structure Files (*.vtst)|*.vtst|")
 #define FSTRING_XML		_T("XML Files (*.xml)|*.xml|")
+#define FSTRING_XYZ		_T("XYZ Text Files (*.txt)|*.txt|")
 
 #define FSTRING_COMP	_T("Compressed Files (*.tar, *.gz, *.tgz)|*.tar;*.gz;*.tgz|")
 

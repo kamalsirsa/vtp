@@ -992,6 +992,10 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	{
 		success = m_pGrid->LoadFromNTF5(strFileName.mb_str(), progress_callback);
 	}
+	else if (!strExt.CmpNoCase(_T("txt")))
+	{
+		success = m_pGrid->LoadFromXYZ(strFileName.mb_str(), progress_callback);
+	}
 	if (!success)
 		return false;
 
