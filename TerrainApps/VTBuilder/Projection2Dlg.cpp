@@ -228,6 +228,12 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 	m_pParamCtrl->DeleteAllItems();
 
 	OGR_SRSNode *root = m_proj.GetRoot();
+	if (!root)
+	{
+		m_pParamCtrl->InsertItem(0, "(Invalid projection)");
+		return;		// bogus projection
+	}
+
 	OGR_SRSNode *node, *par1, *par2;
 	const char *value;
 	int children = root->GetChildCount();
