@@ -102,9 +102,9 @@ public:
 };
 #endif //SWITCH
 
-//
-// A place where 2 or more roads meet
-//
+/**
+ * A 'Node' is a place where 2 or more roads meet.
+ */
 class Node
 {
 public:
@@ -165,9 +165,9 @@ protected:
 };
 
 
-//
-// a series of points, connecting one node to another
-//
+/**
+ * A 'Road' a series of points, connecting one node to another.
+ */
 class Road : public DLine2
 {
 public:
@@ -221,6 +221,9 @@ typedef Node *NodePtr;
 #define floatSize 4
 #define doubleSize 8
 
+/**
+ * vtRoadMap contains a sets of Nodes and Roads.
+ */
 class vtRoadMap
 {
 public:
