@@ -90,7 +90,7 @@ public:
 	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
 	void 	SetSunsetColor(const RGBf &sunset);
 	void	SetInterpCutoff(float cutoff);
-	void	SetSunLight(vtMovLight *light) { m_pSunLight = light; }
+	void	SetSunLight(vtTransform *light) { m_pSunLight = light; }
 	bool	SetTexture(const char *filename);
 	void	SetStarAltitude(float fDegrees) { m_fStarAltitude = fDegrees; }
 	void	RefreshCelestialObjects();
@@ -111,7 +111,7 @@ protected:
 	float	m_fStarAltitude;	// Cutoff for when stars should be displayed
 
 	vtStarDome	*m_pStarDome;
-	vtMovLight	*m_pSunLight;
+	vtTransform	*m_pSunLight;
 
 	RGBf 	DayHorizonCol, DayAzimuthCol, SunsetCol;
 	float	Cutoff;

@@ -77,17 +77,18 @@ void Enviro::SetupGlobe()
 	if (m_iInitStep == 3)
 	{
 		// put the light where the sun should be
-		vtMovLight *pSunLight = GetSunLight();
+		vtTransform *pSunLight = GetSunLight();
 		pSunLight->Identity();
 		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
+		vtLight *pLight = (vtLight *) pSunLight->GetChild(0);
 if (pwdemo){
-		pSunLight->m_pLight->SetDiffuse(RGBf(1, 1, 1));
-		pSunLight->m_pLight->SetAmbient(RGBf(0, 0, 0));
+		pLight->SetDiffuse(RGBf(1, 1, 1));
+		pLight->SetAmbient(RGBf(0, 0, 0));
 }else{
 		// standard bright sunlight
-		pSunLight->m_pLight->SetDiffuse(RGBf(3, 3, 3));
-		pSunLight->m_pLight->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
+		pLight->SetDiffuse(RGBf(3, 3, 3));
+		pLight->SetAmbient(RGBf(0.5f, 0.5f, 0.5f));
 }
 		vtGetScene()->SetBgColor(RGBf(SPACE_DARKNESS, SPACE_DARKNESS, SPACE_DARKNESS));
 
@@ -604,9 +605,9 @@ void Enviro::SetEarthShading(bool bShade)
 {
 	m_bEarthShade = bShade;
 
-	vtMovLight *pMovLight = GetSunLight();
+	vtTransform *pMovableLight = GetSunLight();
 
-	pMovLight->SetEnabled(bShade);
+	pMovableLight->SetEnabled(bShade);
 	m_pIcoGlobe->SetLighting(bShade);
 }
 

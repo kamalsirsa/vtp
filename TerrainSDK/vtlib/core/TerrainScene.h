@@ -76,8 +76,8 @@ public:
 
 	/// Find a terrain by its name.
 	vtTerrain *FindTerrainByName(const char *name);
-	vtMovLight *GetSunLight() { return m_pSunLight; }
-	TimeEngine *GetTimeEngine() { return m_pTime; }
+	vtTransform *GetSunLight() { return m_pSunLight; }
+	TimeEngine *GetTimeEngine() { return m_pTimeEngine; }
 
 	void SetTime(const vtTime &time);
 
@@ -118,13 +118,13 @@ protected:
 	vtTerrain	*m_pCurrentTerrain;
 
 	// engines
-	TimeEngine		 *m_pTime;
+	TimeEngine		 *m_pTimeEngine;
 	vtSkyTrackEngine *m_pSkyTrack;
 
 	// Utility structures, created on demand from global content file
 	Array<vtUtilStruct*>	m_StructObjs;
 
-	vtMovLight	*m_pSunLight;
+	vtTransform	*m_pSunLight;
 };
 
 // global helper function

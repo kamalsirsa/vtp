@@ -69,7 +69,7 @@ vtTerrainScene::vtTerrainScene()
 	m_pTop = NULL;
 	m_pSkyDome = NULL;
 	m_pCurrentTerrain = NULL;
-	m_pTime = NULL;
+	m_pTimeEngine = NULL;
 	m_pSkyTrack = NULL;
 	m_pSunLight = NULL;
 	m_pAtmosphereGroup = NULL;
@@ -123,7 +123,8 @@ void vtTerrainScene::_CreateSky()
 	VTLOG(" Creating Main Light\n");
 	vtLight *pLight = new vtLight();
 	pLight->SetName2("Main Light");
-	m_pSunLight = new vtMovLight(pLight);
+	m_pSunLight = new vtTransform();
+	m_pSunLight->AddChild(pLight);
 	m_pSunLight->SetName2("SunLight");
 	m_pTop->AddChild(m_pSunLight);
 
@@ -177,11 +178,11 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 void vtTerrainScene::_CreateEngines()
 {
 	// Set Time in motion
-	m_pTime = new TimeEngine();
-	m_pTime->SetTarget((TimeTarget *)this);
-	m_pTime->SetName2("Terrain Time");
-	m_pTime->SetEnabled(false);
-	vtGetScene()->AddEngine(m_pTime);
+	m_pTimeEngine = new TimeEngine();
+	m_pTimeEngine->SetTarget((TimeTarget *)this);
+	m_pTimeEngine->SetName2("Terrain Time");
+	m_pTimeEngine->SetEnabled(false);
+	vtGetScene()->AddEngine(m_pTimeEngine);
 }
 
 
@@ -283,8 +284,8 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	{
 		if (m_pSkyDome)
 			m_pSkyDome->SetEnabled(false);
-		if (m_pTime)
-			m_pTime->SetEnabled(false);
+		if (m_pTimeEngine)
+			m_pTimeEngine->SetEnabled(false);
 		return;
 	}
 
@@ -316,12 +317,12 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 	m_pCurrentTerrain->SetFog(param.GetValueBool(STR_FOG));
 
 	// Update the time engine, which also calls us back to update the skydome
-	m_pTime->SetTime(localtime);
+	m_pTimeEngine->SetTime(localtime);
 	if (param.GetValueBool(STR_TIMEON))
-		m_pTime->SetSpeed(param.GetValueFloat(STR_TIMESPEED));
+		m_pTimeEngine->SetSpeed(param.GetValueFloat(STR_TIMESPEED));
 	else
-		m_pTime->SetSpeed(0.0f);
-	m_pTime->SetEnabled(true);
+		m_pTimeEngine->SetSpeed(0.0f);
+	m_pTimeEngine->SetEnabled(true);
 
 	if (param.GetValueBool(STR_STRUCT_SHADOWS))
 	{
