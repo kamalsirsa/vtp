@@ -643,19 +643,22 @@ bool vtLevel::DetermineHeightFromSlopes()
 //
 const vtString vtLevel::GetOverallEdgeMaterial()
 {
-	const vtString *most = GetGlobalMaterials()->FindName(BMAT_NAME_UNKNOWN);
+	const vtString *most = NULL;
 
 	int edges = GetNumEdges();
 	for (int i = 0; i < edges; i++)
 	{
 		vtEdge *pEdge = GetEdge(i);
 		const vtString *mat = pEdge->m_pMaterial;
-		if (*most == BMAT_NAME_UNKNOWN)
+		if (most == NULL)
 			most = mat;
 		else if (*most != *mat)
-			return BMAT_NAME_UNKNOWN;
+			return "Multiple";
 	}
-	return *most;
+	if (most)
+		return *most;
+	else
+		return "None";
 }
 
 //
