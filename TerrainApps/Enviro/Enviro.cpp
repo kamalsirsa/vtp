@@ -102,6 +102,9 @@ void Enviro::Startup()
 	VTLOG(" Unicode");
 #endif
 	VTLOG("\n\n");
+
+	// set up the datum list we will use
+	SetupEPSGDatums();
 }
 
 void Enviro::Shutdown()
@@ -183,6 +186,11 @@ void Enviro::DoControl()
 		if (m_iInitStep == 2)
 		{
 			SetupScene2();
+			return;
+		}
+		if (m_iInitStep == 3)
+		{
+			SetupScene3();
 			return;
 		}
 		if (g_Options.m_bEarthView)
@@ -855,6 +863,29 @@ void Enviro::SetupScene2()
 	m_pSprite2->SetText("...");
 //	m_pRoot->AddChild(m_pSprite2);
 
+	VTLOG("Setting up Cameras\n");
+	m_pNormalCamera = vtGetScene()->GetCamera();
+#if 1
+	// Create second camera (for Top-Down view)
+	if (m_pTopDownCamera == NULL)
+	{
+		VTLOG("Creating Top-Down Camera\n");
+		m_pTopDownCamera = new vtCamera();
+		m_pTopDownCamera->SetOrtho(10000.0f);
+		m_pTopDownCamera->SetName2("Top-Down Camera");
+	}
+#endif
+
+	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
+	m_pVFlyer->SetTarget(m_pNormalCamera);
+	m_pTFlyer->SetTarget(m_pNormalCamera);
+	m_pGFlyer->SetTarget(m_pNormalCamera);
+}
+
+void Enviro::SetupScene3()
+{
+	VTLOG("SetupScene3\n");
+
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
 	vtPlantList pl;
@@ -873,24 +904,6 @@ void Enviro::SetupScene2()
 		m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
 			g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
 	}
-
-	VTLOG("Setting up Cameras\n");
-	m_pNormalCamera = vtGetScene()->GetCamera();
-#if 1
-	// Create second camera (for Top-Down view)
-	if (m_pTopDownCamera == NULL)
-	{
-		VTLOG("Creating Top-Down Camera\n");
-		m_pTopDownCamera = new vtCamera();
-		m_pTopDownCamera->SetOrtho(10000.0f);
-		m_pTopDownCamera->SetName2("Top-Down Camera");
-	}
-#endif
-
-	m_pQuakeFlyer->SetTarget(m_pNormalCamera);
-	m_pVFlyer->SetTarget(m_pNormalCamera);
-	m_pTFlyer->SetTarget(m_pNormalCamera);
-	m_pGFlyer->SetTarget(m_pNormalCamera);
 }
 
 void Enviro::SetCurrentNavigator(vtTerrainFlyer *pE)
