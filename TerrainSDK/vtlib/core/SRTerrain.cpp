@@ -65,6 +65,7 @@ SRTerrain::~SRTerrain()
 static const vtElevationGrid *s_pGrid;
 static SRTerrain *s_pSRTerrain;
 static int myfancnt, myvtxcnt;
+static int s_iRows;
 
 void beginfan_vtp()
 {
@@ -91,14 +92,14 @@ void notify_vtp(int i, int j, int size)
 	}
 }
 
-short int getelevation_vtp1(int i, int j, int size)
+short int getelevation_vtp1(int i, int j, int size, void *data_unused)
 {
-	return s_pGrid->GetValue(i, j);
+	return s_pGrid->GetValue(i, s_iRows-1-j);
 }
 
-float getelevation_vtp2(int i, int j, int size)
+float getelevation_vtp2(int i, int j, int size, void *data_unused)
 {
-	return s_pGrid->GetFValue(i, j);
+	return s_pGrid->GetFValue(i, s_iRows-1-j);
 }
 
 //
@@ -127,6 +128,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	float cellaspect = m_fZStep / m_fXStep;
 
 	s_pGrid = pGrid;
+	s_iRows = m_iRows;
 
 #if 0
 	// NOTE: the following workaround is no longer needed with libMini 5.02
@@ -162,6 +164,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 		float *image = NULL;
 		m_pMini = new ministub(image,
 				&size, &dim, m_fMaximumScale, cellaspect,
+				0.0f, 0.0f, 0.0f,	// grid center
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp2);
 	}
@@ -170,6 +173,7 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 		short *image = NULL;
 		m_pMini = new ministub(image,
 				&size, &dim, m_fMaximumScale, cellaspect,
+				0.0f, 0.0f, 0.0f,	// grid center
 				beginfan_vtp, fanvertex_vtp, notify_vtp,
 				getelevation_vtp1);
 	}
