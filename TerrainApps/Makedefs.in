@@ -24,10 +24,10 @@ bindir  	= @bindir@
 # Figure out what to build based on a .dsp file (Windows build project
 # file) to stay in sync.
 
-DSP_C_LINES	= $(shell grep "^SOURCE=.*.c$$" $(DSP_FILE))
+DSP_C_LINES	= $(shell grep "^SOURCE=.*\.c$$" $(DSP_FILE))
 CFILES		= $(subst SOURCE=,,$(subst \,/,$(DSP_C_LINES)))
 
-DSP_CXX_LINES	= $(shell grep "^SOURCE=.*.cpp$$" $(DSP_FILE))
+DSP_CXX_LINES	= $(shell grep "^SOURCE=.*\.cpp$$" $(DSP_FILE))
 CXXFILES	= $(subst SOURCE=,,$(subst \,/,$(DSP_CXX_LINES)))
 
 OBJS   		= $(CFILES:%.c=%.o) $(CXXFILES:%.cpp=%.o)
@@ -45,7 +45,9 @@ CXXFLAGS = @CXXFLAGS@ @X_CFLAGS@
 # Linking:
 
 LDLIBS =  -L$(libdir) @X_PRE_LIBS@ @X_LIBS@ @X_EXTRA_LIBS@ \
-	  -lwx_gtk -lwx_gtk_gl -lXmu \
+	  $(shell wx-config --libs) \
+	  $(shell wx-config --gl-libs) \
+	  -lXmu \
 	  -lgdal.1.1 -lvtosg -lvtdata -lxmlhelper -lMini \
 	  -losgDB -losgText -losgUtil -losg -lnetcdf \
 	  -lGLU -lGL -lX11 -lXi -lm 

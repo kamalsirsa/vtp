@@ -18,7 +18,7 @@ TARGET_EXE    	  = wxSimple
 # FIX - Get rid of the -D* in favor of a config.h methodology that
 # will look for features.  Do this once the basic autoconf works
 # across the project.
-CPPFLAGS = @CPPFLAGS@ -I.. -I$(includedir) -DUNIX -DVTLIB_OSG $(shell wx-config --cflags)
+CPPFLAGS = @CPPFLAGS@ -I.. -I$(includedir) -DUNIX -DVTLIB_OSG $(shell wx-config --cppflags)
 
 # Include all the rules to tell us how to make it:
 
