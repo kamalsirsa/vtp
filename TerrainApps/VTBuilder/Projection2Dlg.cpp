@@ -77,18 +77,13 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl = GetProjchoice();
 
 	AddValidator(ID_PROJ, &m_iProj);
-	AddValidator(ID_HORUNITS, &m_iUnits);
+//	AddValidator(ID_HORUNITS, &m_iUnits);
 	AddValidator(ID_ZONE, &m_iZone);
 
 	m_pProjCtrl->Append("Geographic");
 	m_pProjCtrl->Append("UTM");
 	m_pProjCtrl->Append("Albers Equal Area Conic");
 	m_pProjCtrl->Append("Lambert Conformal Conic");
-
-	m_pHorizCtrl->Append("Degrees");
-	m_pHorizCtrl->Append("Meters");
-	m_pHorizCtrl->Append("Feet (International)");
-	m_pHorizCtrl->Append("Feet (U.S. Survey)");
 
 	// Fill in choices for Datum
 	for (i = NO_DATUM; i <= WGS_84; i++)
@@ -169,6 +164,23 @@ void Projection2Dlg::UpdateControlStatus()
 
 	// Do horizontal units ("linear units")
 	m_iUnits =  m_proj.GetUnits();
+
+	m_pHorizCtrl->Clear();
+	if (m_eProj == PT_GEO)
+		m_pHorizCtrl->Append("Degrees", (void *) 0);
+	if (m_eProj != PT_GEO)
+		m_pHorizCtrl->Append("Meters", (void *) 1);
+	if (m_eProj != PT_GEO && m_eProj != PT_UTM)
+	{
+		m_pHorizCtrl->Append("Feet (International)", (void *) 2);
+		m_pHorizCtrl->Append("Feet (U.S. Survey)", (void *) 3);
+	}
+	// manually transfer value
+	for (i = 0; i < m_pHorizCtrl->Number(); i++)
+	{
+		if ((int) m_pHorizCtrl->GetClientData(i) == m_iUnits)
+			m_pHorizCtrl->SetSelection(i);
+	}
 
 	DisplayProjectionSpecificParams();
 
@@ -288,6 +300,7 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 
 void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 {
+#if 0
 	int previous = m_iUnits;
 
 	TransferDataFromWindow();
@@ -299,19 +312,23 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 		m_iUnits = previous;
 
 	TransferDataToWindow();
-
 	if (m_iUnits == previous)
 		return;
+#endif
+	TransferDataFromWindow();
 
-	if (m_iUnits == 1)
+	LinearUnits previous = m_proj.GetUnits();
+	LinearUnits iUnits = (LinearUnits) (int) m_pHorizCtrl->GetClientData(m_iUnits);
+
+	if (iUnits == LU_METERS)
 	{
 		m_proj.SetLinearUnits(SRS_UL_METER, 1.0);
 	}
-	if (m_iUnits == 2)
+	if (iUnits == LU_FEET_INT)
 	{
 		m_proj.SetLinearUnits(SRS_UL_FOOT, MetersPerUnit[2]);
 	}
-	if (m_iUnits == 3)
+	if (iUnits == LU_FEET_US)
 	{
 		m_proj.SetLinearUnits(SRS_UL_US_FOOT, MetersPerUnit[3]);
 	}
@@ -326,7 +343,7 @@ void Projection2Dlg::OnHorizUnits( wxCommandEvent &event )
 	//
 	if (m_iUnits > 0 && previous > 0)
 	{
-		double factor = MetersPerUnit[previous] / MetersPerUnit[m_iUnits];
+		double factor = MetersPerUnit[previous] / MetersPerUnit[iUnits];
 
 		OGR_SRSNode *root = m_proj.GetRoot();
 		OGR_SRSNode *node, *par1, *par2;
