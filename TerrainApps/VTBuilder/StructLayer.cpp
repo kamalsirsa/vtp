@@ -125,8 +125,10 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView, vtBuilding *
 	if (bld->GetShape() == SHAPE_POLY)
 	{
 		DLine2 &dl = bld->GetFootprint();
-		int size = dl.GetSize();
-		for (j = 0; j < size && j < MAX_SIDES-1; j++)
+		int sides = dl.GetSize();
+		if (sides == 0)
+			return;
+		for (j = 0; j < sides && j < MAX_SIDES-1; j++)
 			pView->screen(dl.GetAt(j), array[j]);
 		pView->screen(dl.GetAt(0), array[j++]);
 
