@@ -1135,10 +1135,10 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	m_Mesh.Append(mm);
 	// Calculate the vertices and add them to the mesh
 	float v = stories;
-	int start = mm.m_pMesh->AddVertexNUV(quad[0], norm, FPoint2(0.0f, v));
-	mm.m_pMesh->AddVertexNUV(quad[1], norm, FPoint2(1.0f, v));
-	mm.m_pMesh->AddVertexNUV(quad[3], norm, FPoint2(1.0f, 0.0f));
-	mm.m_pMesh->AddVertexNUV(quad[2], norm,  FPoint2(0.0f, 0.0f));
+	int start = mm.m_pMesh->AddVertexNUV(quad[0], norm, FPoint2(0.0f, 0.0f));
+	mm.m_pMesh->AddVertexNUV(quad[1], norm, FPoint2(1.0f, 0.0f));
+	mm.m_pMesh->AddVertexNUV(quad[3], norm, FPoint2(1.0f, v));
+	mm.m_pMesh->AddVertexNUV(quad[2], norm,  FPoint2(0.0f, v));
 
 	mm.m_pMesh->AddTri(start, start+1, start+2);
 	mm.m_pMesh->AddTri(start, start+2, start+3);
