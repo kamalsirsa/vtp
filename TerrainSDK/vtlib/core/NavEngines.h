@@ -259,6 +259,9 @@ public:
 	void Translate(const FPoint3 &trans) { m_Trans += trans; }
 	FPoint3 GetTrans() const { return m_Trans; }
 
+	void GetState(FPoint3 *state);
+	void SetState(const FPoint3 *state);
+
 	void OnMouse(vtMouseEvent &event);
 	void Eval();
 

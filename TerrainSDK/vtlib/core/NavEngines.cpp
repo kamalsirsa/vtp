@@ -929,6 +929,20 @@ void vtTrackball::MoveDirection(float fTheta, float fPhi)
 	m_Pos.y += fPhi;
 }
 
+void vtTrackball::GetState(FPoint3 *state)
+{
+	state[0] = m_Pos;
+	state[1] = m_Trans;
+	state[2] = m_Pivot;
+}
+
+void vtTrackball::SetState(const FPoint3 *state)
+{
+	m_Pos = state[0];
+	m_Trans = state[1];
+	m_Pivot = state[2];
+}
+
 void vtTrackball::Eval()
 {
 	vtTransform *pTarget = (vtTransform *) GetTarget();
