@@ -185,7 +185,7 @@ public:
 	float		m_StartRotation;
 
 	// handle to the singleton
-	static Enviro *s_pApp;
+	static Enviro *s_pEnviro;
 
 	// The following can be overridden by GUI code, to handle situations
 	//  in which the GUI must be informed of what happens in this object.
@@ -279,7 +279,6 @@ protected:
 
 // global helper functions
 vtTerrain *GetCurrentTerrain();
-vtTerrainScene *GetTerrainScene();
 
 #endif	// ENVIROH
 

@@ -24,11 +24,11 @@ int pwdemo = 0;
 
 ///////////////////////////////////////////////////////////
 
-Enviro *Enviro::s_pApp = NULL;
+Enviro *Enviro::s_pEnviro = NULL;
 
 Enviro::Enviro() : vtTerrainScene()
 {
-	s_pApp = this;
+	s_pEnviro = this;
 
 	m_mode = MM_NONE;
 	m_state = AS_Initializing;
@@ -542,8 +542,7 @@ void Enviro::SetupScene1()
 	VTLOG("SetupScene1\n");
 
 	// Set some global peroperties
-	vtTerrain::SetDataPath(g_Options.m_DataPaths);
-	vtTerrain::s_Content.SetDataPaths(&g_Options.m_DataPaths);
+	SetDataPath(g_Options.m_DataPaths);
 	vtMaterial::s_bTextureCompression = g_Options.m_bTextureCompression;
 	vtNode::s_bDisableMipmaps = g_Options.m_bDisableModelMipmaps;
 
@@ -945,7 +944,7 @@ void Enviro::SetSpeed(float x)
 	if (m_state == AS_Orbit && m_pGlobeTime)
 		m_pGlobeTime->SetSpeed(x);
 	else if (m_state == AS_Terrain)
-		GetTerrainScene()->GetTimeEngine()->SetSpeed(x);
+		vtGetTS()->GetTimeEngine()->SetSpeed(x);
 }
 
 float Enviro::GetSpeed()
@@ -953,7 +952,7 @@ float Enviro::GetSpeed()
 	if (m_state == AS_Orbit && m_pGlobeTime)
 		return m_pGlobeTime->GetSpeed();
 	else if (m_state == AS_Terrain)
-		return GetTerrainScene()->GetTimeEngine()->GetSpeed();
+		return vtGetTS()->GetTimeEngine()->GetSpeed();
 	return 0;
 }
 
@@ -1617,18 +1616,13 @@ vtString Enviro::GetStatusString(int which)
 
 void ControlEngine::Eval()
 {
-	Enviro::s_pApp->DoControl();
+	Enviro::s_pEnviro->DoControl();
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 vtTerrain *GetCurrentTerrain()
 {
-	return Enviro::s_pApp->GetCurrentTerrain();
-}
-
-vtTerrainScene *GetTerrainScene()
-{
-	return Enviro::s_pApp;
+	return Enviro::s_pEnviro->GetCurrentTerrain();
 }
 
