@@ -44,17 +44,9 @@ static int verts_in_buffer = 0;
 #define offset(x, y)  (((y) << (m_n)) + (y) + (x))
 
 // how to generate vertex locations from a heightfield index
-#if VTLIB_PLIB
-// PLIB coordinates
-#define LOCX(index) m_fXLookup[index % m_iDim]
-#define LOCY(index) -m_fZLookup[index / m_iDim]
-#define LOCZ(index)	m_pData[index]*m_fZScale
-#else
-// OpenGL coordinates
 #define LOCX(index) m_fXLookup[index % m_iDim]
 #define LOCY(index)	m_pData[index]*m_fZScale
 #define LOCZ(index) m_fZLookup[index / m_iDim]
-#endif
 
 #define MAKE_XYZ(index) LOCX(index), LOCY(index), LOCZ(index)
 #define MAKE_XYZ2(x,y) m_fXLookup[x], m_pData[offset(x,y)]*m_fZScale, m_fZLookup[y]
@@ -936,18 +928,17 @@ void SMTerrain::flush_buffer(int type)
 }
 
 #if USE_VERTEX_BUFFER	// put each vertex into a vertex buffer
-#define send_vertex(index) \
-	*g_vbuf++ = LOCX(index); \
-	*g_vbuf++ = LOCY(index); \
-	*g_vbuf++ = LOCZ(index); \
-	verts_in_buffer++;
-#define Begin(x)
-#define End()
+	#define send_vertex(index) \
+		*g_vbuf++ = LOCX(index); \
+		*g_vbuf++ = LOCY(index); \
+		*g_vbuf++ = LOCZ(index); \
+		verts_in_buffer++;
+	#define Begin(x)
+	#define End()
 #else		// send each vertex individually
-#define send_vertex(index) \
- glVertex3f(LOCX(index), LOCY(index), LOCZ(index))
-#define Begin(x) glBegin(x)
-#define End() glEnd()
+	#define send_vertex(index) glVertex3f((index%m_iDim), m_pData[index]/4, (index / m_iDim))
+	#define Begin(x) glBegin(x)
+	#define End() glEnd()
 #endif
 
 int fan_start;

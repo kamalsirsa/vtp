@@ -152,6 +152,7 @@ private:
 	int		m_iLevels;
 	int		m_iDim;
 	int		m_iTotalSize;
+	float	m_fHeightScale;
 
 	// tables for quick conversion from x,y index to output X,Z coordinates
 //	float	*fXLookup, *fYLookup;

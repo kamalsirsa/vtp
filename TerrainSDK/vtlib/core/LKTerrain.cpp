@@ -16,7 +16,6 @@
 #define USE_VERTEX_BUFFERS	1
 #define VERTEX_BUFFER_SIZE	480
 #define DO_VIEW_CULLING		1
-#define VERTICAL_SHIFT		0		// Meters upward
 #define SHORELINE_WEIGHT	15.0f	// This is done to weight the shoreline
 									// heixels - to preserve the coastline.
 
@@ -26,11 +25,12 @@
 #define offset(x, y)     (((y) << (m_iLevels)) + (y) + (x))
 #endif
 
-// how to generate vertex locations from a heightfield index
-#define LOCX(index) m_fXLookup[index % m_iDim]
-#define LOCY(index)	pVertex[index].y
-#define LOCZ(index) m_fZLookup[index / m_iDim]
-#define MAKE_XYZ2(x,z) m_fXLookup[x], pVertex[offset(x,z)].y, m_fZLookup[z]
+// how to generate OpenGL vertex locations from a heightfield index
+#define LOCX(index) m_fXLookup[(index) % m_iDim]
+#define LOCY(index)	(pVertex[(index)].y * m_fHeightScale)
+#define LOCZ(index) m_fZLookup[(index) / m_iDim]
+
+#define send_vertex(index) glVertex3f((index) % m_iDim, pVertex[(index)].y, ((index) / m_iDim))
 
 // statistics
 int stat_view_rejected, stat_eyepoint_tested, stat_evaluated,
@@ -85,6 +85,7 @@ bool LKTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 
 	m_iDim = m_iXPoints;
 	m_iLevels = vt_log2(m_iDim);
+	m_fHeightScale = fZScale;
 
 	// iXSize and iYSize must be (power of 2) + 1
 	if ((1 << m_iLevels) + 1 != m_iXPoints || (1 << m_iLevels) + 1 != m_iYPoints)
@@ -118,11 +119,13 @@ bool LKTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	for (j = 0; j < m_iYPoints; j++)
 	{
 		int index = offset(i, j);
+
 		pVertex[index].delta2 = 0;
-		pVertex[index].y = (pGrid->GetFValue(i, j) + VERTICAL_SHIFT) * fZScale;
+		pVertex[index].y = pGrid->GetFValue(i, j);
 
 		// add weight to shoreline only if the ocean depth is less than zero.
-		if (fOceanDepth < 0 && pVertex[index].y == 0) {
+		if (fOceanDepth < 0 && pVertex[index].y == 0)
+		{
 			pVertex[index].y = fOceanDepth;
 			shoreline = false;
 			// look at neighboring points.
@@ -685,10 +688,6 @@ void LKTerrain::evaluate_vertex(int index)
 	}
 }
 
-#define send_vertex(index) glVertex3f(LOCX(index), LOCY(index), LOCZ(index))
-#define send_vertex_ij(i, j) glVertex3f(m_fXLookup[i], pVertex[offset(i,j)].y, m_fZLookup[j])
-#define send_uv(u, v) glTexCoord2f(u, v)
-
 int g_level;
 int g_head, g_tail;
 
@@ -978,9 +977,9 @@ void LKTerrain::terrain_render_buckets()
 }
 
 
-void LKTerrain::GetLocation(int iX, int iZ, FPoint3 &p)
+void LKTerrain::GetLocation(int i, int j, FPoint3 &p)
 {
-	p.Set(MAKE_XYZ2(iX, iZ));
+	p.Set(m_fXLookup[i], LOCY(offset(i,j)), m_fZLookup[j]);
 }
 
 ///////////////////////////////////////////////////////
