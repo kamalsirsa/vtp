@@ -13,9 +13,9 @@
 
 vtTowerArm::vtTowerArm() : Selectable()
 {
-	m_iArms=2;
-	m_ArmMaterial= TWR_STEEL;
-	m_Type= TOWER_TUBEFRAME;
+	m_iArms = 2;
+	m_ArmMaterial = TWR_STEEL;
+	m_Type = TOWER_TUBEFRAME;
 	m_ArmColor.Set(100,100,100);
 }
 
@@ -37,7 +37,7 @@ vtTower::vtTower() : Selectable()
 vtTowerArm::~vtTowerArm()
 {
 	m_iArms=NULL;
-	m_ArmColor.Set (100,100,100);
+	m_ArmColor.Set(100,100,100);
 }
 
 /////////////////////////////////////
@@ -90,13 +90,12 @@ void vtTower::SetRectangle(float fWidth, float fDepth)
 //sets colors of the Base Tower
 void vtTower::SetColor(RGBi col)
 {
- m_BaseColor = col;
+	m_BaseColor = col;
 }
 
 RGBi vtTower::GetColor()
 {
- return m_BaseColor;
-
+	return m_BaseColor;
 }
 
 //sets rotation of the Tower.  (will affect the catenaries!)
@@ -105,7 +104,7 @@ void vtTower::SetRotation(float fRadians)
 	m_fRotation = fRadians;
 }
 
-void vtTower::SetFootprint(DLine2 &dl)
+void vtTower::SetFootprint(const DLine2 &dl)
 {
 	int size_new = dl.GetSize();
 	int size_old = m_Footprint.GetSize();
@@ -126,7 +125,7 @@ void vtTower::SetCenterFromPoly()
 	SetLocation(p);
 }
 
-void vtTower::Offset(DPoint2 &p)
+void vtTower::Offset(const DPoint2 &p)
 {
 	m_EarthPos += p;
 
