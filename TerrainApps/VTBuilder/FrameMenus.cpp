@@ -1342,6 +1342,7 @@ void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
 	event.Enable(lp &&
 			(lp->GetType() == LT_ROAD ||
 			 lp->GetType() == LT_VEG ||
+			 lp->GetType() == LT_WATER ||
 			 lp->GetType() == LT_STRUCTURE ||
 			 lp->GetType() == LT_RAW));
 }
