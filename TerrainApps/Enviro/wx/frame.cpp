@@ -1493,7 +1493,7 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 			pTerrain->GetProjection(), g_Conv);
 
 		vtString loc = "Locations/";
-		loc += pTerrain->GetParams().GetValueString(STR_LOCFILE);
+		loc += pTerrain->GetParams().GetValueString(STR_LOCFILE, true);
 		vtString path = FindFileOnPaths(pTerrain->s_DataPaths, loc);
 		if (path != "")
 		{

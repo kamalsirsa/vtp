@@ -324,7 +324,7 @@ void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)
 	m_pSkyDome->SetEnabled(bDoSky);
 	if (bDoSky)
 	{
-		vtString fname = param.GetValueString(STR_SKYTEXTURE);
+		vtString fname = param.GetValueString(STR_SKYTEXTURE, true);
 		if (fname != "")
 		{
 			vtString filename = "Sky/";

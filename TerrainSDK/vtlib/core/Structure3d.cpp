@@ -48,7 +48,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 		m_pContainer->Scale3(m_fScale, m_fScale, m_fScale);
 
 	// try to work around 3DS coordinate axes difference problem
-	vtString fname2 = GetValueString("filename");
+	vtString fname2 = GetValueString("filename", true);
 	vtString ext = GetExtension(fname2, false);
 
 	if (ext.CompareNoCase(".3ds") == 0 ||
@@ -115,7 +115,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		m_pModel = NULL;
 	}
 
-	const char *filename = GetValueString("filename");
+	const char *filename = GetValueString("filename", true);
 	if (filename)
 	{
 		// relative path: look on the standards data paths
@@ -143,13 +143,9 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	}
 	m_pContainer->AddChild(m_pModel);
 
-	const char *scale = GetValueString("scale");
-	if (scale)
-	{
-		double sc = atof(scale);
-		if (sc != 0.0)
-			m_fScale = sc;
-	}
+	float sc;
+	if (GetValueFloat("scale", sc))
+		m_fScale = sc;
 
 	UpdateTransform(pTerr->GetHeightField());
 	return true;

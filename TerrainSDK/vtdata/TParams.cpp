@@ -383,9 +383,10 @@ TextureEnum TParams::GetTextureEnum() const
 
 vtString TParams::CookTextureFilename() const
 {
-	vtString str;
-	str.Format("%s%d", (const char *) GetValueString(STR_TEXTUREBASE),
-		NTILES * (GetValueInt(STR_TILESIZE)-1) + 1);
+	vtString str = GetValueString(STR_TEXTUREBASE, true);
+	vtString str2;
+	str2.Format("%d", NTILES * (GetValueInt(STR_TILESIZE)-1) + 1);
+	str += str2;
 
 	if (GetValueBool(STR_TEXTUREFORMAT) == 1)
 		str += ".jpg";
