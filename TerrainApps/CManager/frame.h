@@ -26,6 +26,7 @@ class vtGroup;
 class vtLOD;
 class vtGeom;
 class ItemGroup;
+class vtFont;
 
 class Splitter2 : public wxSplitterWindow
 {
