@@ -9,6 +9,7 @@
 #define VTDATA_DLGH
 
 #include <stdio.h>
+#include <vector>
 #include "MathTypes.h"
 #include "Projections.h"
 
@@ -34,11 +35,10 @@ enum DLGType
 	DLG_UNKNOWN
 };
 
-typedef struct DLGAttribute
+struct DLGAttribute
 {
 	int m_iMajorAttr, m_iMinorAttr;
-} DLGAttribute;
-//};
+};
 
 class DLGNode
 {
@@ -63,15 +63,14 @@ public:
 	int m_iLeftArea, m_iRightArea;
 	int m_iCoords;
 	int m_iAttribs;
-	DLGAttribute *m_attr;
-	DPoint2 *m_p;
+	std::vector<DLGAttribute> m_attr;
+	DLine2 m_p;
 };
 
 class vtDLGFile
 {
 public:
 	vtDLGFile();	// constructor
-	~vtDLGFile();	// destructor
 
 	// Reads a file.  Pass it the name of a DLG-O (.opt) file.  Returns
 	// true if successful.
@@ -106,9 +105,9 @@ public:
 	DPoint2 m_SW_utm, m_NW_utm, m_NE_utm, m_SE_utm;
 	DPoint2 m_SW_lat, m_NW_lat, m_NE_lat, m_SE_lat;
 
-	DLGNode *m_nodes;
-	DLGArea *m_areas;
-	DLGLine *m_lines;
+	std::vector<DLGNode> m_nodes;
+	std::vector<DLGArea> m_areas;
+	std::vector<DLGLine> m_lines;
 
 	vtProjection &GetProjection() { return m_proj; }
 

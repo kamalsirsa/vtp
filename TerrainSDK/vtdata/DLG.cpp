@@ -67,9 +67,6 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 
 	// basic initialization
 	m_iError = 0;
-	m_nodes = NULL;
-	m_areas = NULL;
-	m_lines = NULL;
 
 	m_fname = fname;
 	m_fp = fopen(fname, "rb");
@@ -182,9 +179,9 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 	m_iLines = geti6(buf + 56);
 
 	// allocate storage space
-	m_nodes = new DLGNode[m_iNodes];
-	m_areas = new DLGArea[m_iAreas];
-	m_lines = new DLGLine[m_iLines];
+	m_nodes.resize(m_iNodes);
+	m_areas.resize(m_iAreas);
+	m_lines.resize(m_iLines);
 
 	int total = m_iNodes + m_iAreas + m_iLines, elem = 0;
 
@@ -255,7 +252,7 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 		m_lines[i].m_iAttribs = geti6(buf + 48);
 
 		// coordinate records
-		m_lines[i].m_p = new DPoint2[m_lines[i].m_iCoords];
+		m_lines[i].m_p.SetSize(m_lines[i].m_iCoords);
 		int offset = 0;
 		double x, y;
 		for (int c = 0; c < m_lines[i].m_iCoords; c++)
@@ -278,7 +275,7 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 		// attribute records
 		if (m_lines[i].m_iAttribs)
 		{
-			m_lines[i].m_attr = new DLGAttribute[m_lines[i].m_iAttribs];
+			m_lines[i].m_attr.resize(m_lines[i].m_iAttribs);
 			for (j = 0; j < m_lines[i].m_iAttribs; j++)
 			{
 				if (j%6 == 0)
@@ -293,8 +290,6 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 				offset += 6;
 			}
 		}
-		else
-			m_lines[i].m_attr = NULL;
 
 		if (progress_callback && (++elem % 20) == 0) progress_callback(elem * 100 / total);
 	}
@@ -303,27 +298,6 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 	fclose(m_fp);
 	m_fp = NULL;
 	return true;
-}
-
-
-//
-// destructor - free up the allocated memory
-//
-vtDLGFile::~vtDLGFile()
-{
-	if (m_nodes) delete m_nodes;
-	if (m_areas) delete m_areas;
-	if (m_lines)
-	{
-		for (int i = 0; i < m_iLines; i++)
-		{
-			if (m_lines[i].m_iAttribs)
-				delete m_lines[i].m_attr;
-			if (m_lines[i].m_p)
-				delete m_lines[i].m_p;
-		}
-		delete m_lines;
-	}
 }
 
 
