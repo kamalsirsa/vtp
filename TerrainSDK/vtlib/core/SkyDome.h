@@ -166,7 +166,7 @@ public:
 	void	Destroy();
 
 	void	SetRadius(float radius);
-	void	SetTimeOfDay(int hrs, int mins, int secs);
+	void	SetTimeOfDay(int hr, int min, int sec);
 	void	SetTimeOfDay(int time, bool bFullRefresh = false);
 	void 	SetDayColors(const RGBf &horizon, const RGBf &azimuth);
 	void	SetDawnTimes(int start_hr, int start_min, int end_hr, int end_min);

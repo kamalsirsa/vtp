@@ -222,7 +222,7 @@ public:
 	void CreateCylinder(float height, float radius, int res, bool bTop = true,
 						bool bBottom = true, bool bCentered = true);
 	void CreateRectangle(float xsize, float ysize);
-	void CreateConicalSurface(const FPoint3 &tip, double fConeRadius,
+	void CreateConicalSurface(const FPoint3 &tip, double radial_angle,
 							  double theta1, double theta2,
 							  double r1, double r2, int res = 40);
 
@@ -328,7 +328,7 @@ public:
 	int AddRGBMaterial1(const RGBf &diffuse,
 					 bool bCulling = true, bool bLighting= true, bool bWireframe = false,
 					 float fAlpha = 1.0f, float fEmissive = 0.0f);
-	void AddShadowMaterial(float Opacity);
+	void AddShadowMaterial(float fOpacity);
 
 	void CopyFrom(vtMaterialArrayBase *pFromMats);
 
