@@ -350,7 +350,7 @@ void TerrainPicker::FindGroundPoint()
 	if (!m_bOnTerrain)
 		return;
 
-	for (int i = 0; i < NumTargets(); i++)
+	for (unsigned int i = 0; i < NumTargets(); i++)
 	{
 		vtTransform *pTarget = (vtTransform *) GetTarget(i);
 		pTarget->SetTrans(result);
