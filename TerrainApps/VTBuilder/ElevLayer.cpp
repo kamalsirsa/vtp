@@ -669,6 +669,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	else if (!strExt.CmpNoCase("asc"))
 	{
 //		success = m_pGrid->LoadFromASC(strFileName, progress_callback);
+		// ElevationGrid does have its own ASC reader, but use GDAL instead
 		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
 	}
 	else if (!strExt.CmpNoCase("bil"))
@@ -710,7 +711,8 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 		}
 	}
 	else if (!strFileName.Right(8).CmpNoCase("catd.ddf") ||
-			 !strExt.Left(3).CmpNoCase("tif"))
+			 !strExt.Left(3).CmpNoCase("tif") ||
+			 !strExt.Left(3).CmpNoCase("png"))
 	{	
 		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
 	}
