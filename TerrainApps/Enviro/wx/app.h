@@ -9,8 +9,13 @@
 class vtApp: public wxApp
 {
 public:
+	vtApp();
+
 	bool OnInit();
 	int OnExit();
+	void Args(int argc, wxChar **argv);
+
+	bool m_bShowStartupDialog;
 };
 
 // helper

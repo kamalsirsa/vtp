@@ -30,11 +30,15 @@
 #include "frame.h"
 #include "StartupDlg.h"
 
-static bShowStartupDialog = true;
+IMPLEMENT_APP(vtApp)
 
-char StartupTerrainName[255];
 
-static void Args(int argc, wxChar **argv)
+vtApp::vtApp()
+{
+	m_bShowStartupDialog = true;
+}
+
+void vtApp::Args(int argc, wxChar **argv)
 {
 	for (int i = 0; i < argc; i++)
 	{
@@ -42,16 +46,16 @@ static void Args(int argc, wxChar **argv)
 		const char *cstr = str.mb_str();
 		g_App.StartupArgument(i, cstr);
 		if (!strcmp(cstr, "-no_startup_dialog"))
-			bShowStartupDialog = false;
+			m_bShowStartupDialog = false;
+		else if (!strcmp(cstr, "-fullscreen"))
+			g_Options.m_bFullscreen = true;
 		else if(!strncmp(cstr, "-terrain=", 9))
 		{
-			bShowStartupDialog = false;
-			strcpy(StartupTerrainName, &cstr[9]);
+			m_bShowStartupDialog = false;
+			g_Options.m_strInitTerrain = cstr+9;
 		}
 	}
 }
-
-IMPLEMENT_APP(vtApp)
 
 //
 // Initialize the app object
@@ -62,13 +66,7 @@ bool vtApp::OnInit()
 
 	g_App.Startup();	// starts log
 
-	StartupTerrainName[0] = 0;
 	Args(argc, argv);
-	if(StartupTerrainName[0])
-	{
-		g_Options.m_strInitTerrain = StartupTerrainName;
-		g_Options.m_bFullscreen = 1;
-	}
 
 	g_App.LoadTerrainDescriptions();
 
@@ -83,7 +81,7 @@ bool vtApp::OnInit()
 	//
 	// Create and show the Startup Dialog
 	//
-	if (bShowStartupDialog)
+	if (m_bShowStartupDialog)
 	{
 		VTLOG("Opening the Startup dialog.\n");
 		StartupDlg StartDlg(NULL, -1, _T("Enviro Startup"), wxDefaultPosition);
