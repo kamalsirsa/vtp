@@ -327,12 +327,6 @@ BOOL BExtractorDoc::OnOpenDocument(LPCTSTR szPathName)
 		success = m_Buildings.ReadBCF(szPathName);
 		if (success)
 		{
-			for (int i = 0; i < m_Buildings.GetSize(); i++)
-			{
-				vtStructure *str = m_Buildings.GetAt(i);
-				vtBuilding *bld = str->GetBuilding();
-				bld->RectToPoly();
-			}
 			if (m_Buildings.m_proj.GetUTMZone() == -1)
 			{
 				// loading file with unknown zone, assume the current

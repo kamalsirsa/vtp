@@ -291,26 +291,12 @@ void BExtractorView::DrawBuilding(CDC *pDC, vtBuilding *bld)
 	pDC->MoveTo(origin.x, origin.y-size);
 	pDC->LineTo(origin.x, origin.y+size+1);
 
-	int j, size2;
-	switch (bld->GetShape())
-	{
-	case SHAPE_RECTANGLE:
-		if (bld->GetFootprint().GetSize() == 0)
-			bld->RectToPoly();
+	int j;
+	for (j = 0; j < bld->GetFootprint().GetSize(); j++)
+		UTM_s(bld->GetFootprint().GetAt(j), array[j]);
+	array[j] = array[0];
 
-	case SHAPE_POLY:
-		for (j = 0; j < bld->GetFootprint().GetSize(); j++)
-			UTM_s(bld->GetFootprint().GetAt(j), array[j]);
-		array[j] = array[0];
-
-		pDC->Polyline(array, j+1);
-		break;
-
-	case SHAPE_CIRCLE:
-		size2 = UTM_sdx(bld->GetRadius());
-		DrawCircle(pDC, origin, size2);
-		break;
-	}
+	pDC->Polyline(array, j+1);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -837,7 +823,6 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 		{
 			// yes, done
 			vtBuilding *bld = new vtBuilding();
-			bld->SetShape(SHAPE_POLY);
 			bld->SetStories(1);
 
 			bld->SetFootprint(m_poly);
@@ -872,9 +857,6 @@ void BExtractorView::OnLButtonUpRectangle(CPoint point)
 		s_UTM(m_p2, p2);
 		s_UTM(m_p3, p3);
 
-		bld->SetShape(SHAPE_RECTANGLE);
-		bld->SetStories(1);
-
 		DPoint2 edge1 = p1 - p0, edge2 = p2 - p1;
 		DPoint2 center = (p0 + p2) / 2.0f;
 
@@ -885,10 +867,9 @@ void BExtractorView::OnLButtonUpRectangle(CPoint point)
 		float fRotation = (float) atan2(edge1.y, edge1.x);
 
 		bld->SetLocation(center.x, center.y);
-		bld->SetRectangle(fWidth, fDepth);
-		bld->SetRotation(fRotation);
-		bld->RectToPoly();
+		bld->SetRectangle(fWidth, fDepth, fRotation);
 		bld->SetCenterFromPoly();
+		bld->SetStories(1);
 
 		pDoc->m_Buildings.AddBuilding(bld);
 
@@ -911,7 +892,6 @@ void BExtractorView::OnLButtonUpCircle(CPoint point)
 
 	vtBuilding *bld = new vtBuilding();
 
-	bld->SetShape(SHAPE_CIRCLE);
 	bld->SetStories(1);
 
 	DPoint2 p;
@@ -1243,23 +1223,6 @@ void BExtractorView::UpdateMove()
 
 	m_EditBuilding = *m_pCurBuilding;
 	m_EditBuilding.Offset(moved_by);
-#if 0
-	if (m_EditBuilding.GetShape() == SHAPE_POLY)
-	{
-		DLine2 foot = m_pCurBuilding->GetFootprint();
-
-		for (int i = 0; i < foot.GetSize(); i++)
-			foot.SetAt(i, foot.GetAt(i) + moved_by);
-
-		m_EditBuilding.SetFootprint(foot);
-	}
-	p = m_pCurBuilding->GetLocation();
-	p += moved_by;
-	m_EditBuilding.SetLocation(p.x, p.y);
-#endif
-
-	if (m_EditBuilding.GetShape() == SHAPE_RECTANGLE)
-		m_EditBuilding.RectToPoly();
 }
 
 void BExtractorView::UpdateResizeScale()
@@ -1274,66 +1237,28 @@ void BExtractorView::UpdateResizeScale()
 	DPoint2 diff2 = m_curLocation - origin;
 	double fScale = diff2.Length() / diff1.Length();
 
-	if (m_EditBuilding.GetShape() == SHAPE_RECTANGLE)
+	DPoint2 p;
+	DLine2 foot = m_pCurBuilding->GetFootprint();
+	if (m_bShift)
 	{
-		float fRotation;
-		m_pCurBuilding->GetRotation(fRotation);
-		if (fRotation == -1.0f) fRotation = 0.0f;
-		diff1.Rotate(-fRotation);
-		diff2.Rotate(-fRotation);
-
-		DPoint2 ratio;
-		if (m_bShift)
-			// Scale evenly
-			ratio.x = ratio.y = fScale;
-		else
-			// Resize
-			ratio.Set(diff2.x / diff1.x, diff2.y / diff1.y);
-
-		float fWidth, fDepth;
-		m_pCurBuilding->GetRectangle(fWidth, fDepth);
-		fWidth *= (float) ratio.x;
-		fDepth *= (float) ratio.y;
-
-		// stay positive
-		if (fWidth < 0.0f) fWidth = -fWidth;
-		if (fDepth < 0.0f) fDepth = -fDepth;
-		m_EditBuilding.SetRectangle(fWidth, fDepth);
-
-		m_EditBuilding.RectToPoly();
-	}
-
-	if (m_EditBuilding.GetShape() == SHAPE_POLY)
-	{
-		DPoint2 p;
-		DLine2 foot = m_pCurBuilding->GetFootprint();
-		if (m_bShift)
+		// Scale evenly
+		for (int i = 0; i < foot.GetSize(); i++)
 		{
-			// Scale evenly
-			for (int i = 0; i < foot.GetSize(); i++)
-			{
-				p = foot.GetAt(i);
-				p -= origin;
-				p *= fScale;
-				p += origin;
-				foot.SetAt(i, p);
-			}
+			p = foot.GetAt(i);
+			p -= origin;
+			p *= fScale;
+			p += origin;
+			foot.SetAt(i, p);
 		}
-		else
-		{
-			// drag individual corner points
-			p = foot.GetAt(m_iCurCorner);
-			p += moved_by;
-			foot.SetAt(m_iCurCorner, p);
-		}
-		m_EditBuilding.SetFootprint(foot);
 	}
-	if (m_EditBuilding.GetShape() == SHAPE_CIRCLE)
+	else
 	{
-		float fRot;
-		fRot = m_pCurBuilding->GetRadius();
-		m_EditBuilding.SetRadius(fRot * (float) fScale);
+		// drag individual corner points
+		p = foot.GetAt(m_iCurCorner);
+		p += moved_by;
+		foot.SetAt(m_iCurCorner, p);
 	}
+	m_EditBuilding.SetFootprint(foot);
 }
 
 void BExtractorView::UpdateRotate()
@@ -1349,30 +1274,17 @@ void BExtractorView::UpdateRotate()
 
 	double angle_diff = angle2 - angle1;
 
-	if (m_EditBuilding.GetShape() == SHAPE_POLY)
+	DPoint2 p;
+	DLine2 foot = m_pCurBuilding->GetFootprint();
+	for (int i = 0; i < foot.GetSize(); i++)
 	{
-		DPoint2 p;
-		DLine2 foot = m_pCurBuilding->GetFootprint();
-		for (int i = 0; i < foot.GetSize(); i++)
-		{
-			p = foot.GetAt(i);
-			p -= origin;
-			p.Rotate(angle_diff);
-			p += origin;
-			foot.SetAt(i, p);
-		}
-		m_EditBuilding.SetFootprint(foot);
+		p = foot.GetAt(i);
+		p -= origin;
+		p.Rotate(angle_diff);
+		p += origin;
+		foot.SetAt(i, p);
 	}
-
-	if (m_EditBuilding.GetShape() == SHAPE_RECTANGLE)
-	{
-		float original_angle;
-		m_pCurBuilding->GetRotation(original_angle);
-		if (original_angle == -1.0f) original_angle = 0.0f;
-		m_EditBuilding.SetRotation(original_angle + (float) angle_diff);
-
-		m_EditBuilding.RectToPoly();
-	}
+	m_EditBuilding.SetFootprint(foot);
 }
 
 void BExtractorView::DrawCurrentBuilding(CDC *pDC)
