@@ -24,7 +24,7 @@
 #include "RawLayer.h"
 #include "RoadLayer.h"
 #include "StructLayer.h"
-#include "TowerLayer.h"
+#include "UtilityLayer.h"
 #include "WaterLayer.h"
 // Dialogs
 #include "ElevDlg.h"
@@ -32,7 +32,6 @@
 #include "LayerPropDlg.h"
 #include "ProjectionDlg.h"
 #include "DistribVegDlg.h"
-#include "TowerDLG.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
@@ -52,6 +51,7 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 	EVT_MENU(ID_LAYER_SAVE,			MainFrame::OnLayerSave)
 	EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
 	EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
+	EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
 	EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
 	EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
 	EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
@@ -198,6 +198,7 @@ void MainFrame::CreateMenus()
 	layerMenu->Append(ID_LAYER_SAVE, "Save Layer", "Save Active Layer");
 	layerMenu->Append(ID_LAYER_SAVE_AS, "Save Layer As...", "Save Active Layer As");
 	layerMenu->Append(ID_LAYER_IMPORT, "Import Data\tCtrl+I", "Import Data");
+	layerMenu->Append(ID_LAYER_IMPORTTIGER, "Import Data From TIGER", "Import Data From TIGER");
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, "Layer Properties", "Layer Properties");
 	layerMenu->AppendSeparator();
@@ -560,6 +561,20 @@ void MainFrame::OnLayerImport(wxCommandEvent &event)
 	if (t != LT_UNKNOWN)
 		ImportData(t);
 }
+
+void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
+{
+	// ask the user for a filename
+	// default the same directory they used last time for a layer of this type
+	wxDirDialog getDir(NULL, "Import TIGER Data From Directory");
+	bool bResult = (getDir.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString strDirName = getDir.GetPath();
+
+	ImportDataFromTIGER(strDirName);
+}
+
 
 void MainFrame::OnLayerProperties(wxCommandEvent &event)
 {
@@ -1335,6 +1350,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
 
+#if 0
 		// Read Plantlist file.
 		if (!GetPlantList()->Read(loadFile.GetPath()))
 		{
@@ -1342,6 +1358,15 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 				wxOK, this);
 			return;
 		}
+		GetPlantList()->WriteXML("species.xml");
+#else
+		if (!GetPlantList()->ReadXML(loadFile.GetPath()))
+		{
+			wxMessageBox("Couldn't read plant list from that file.", "Error",
+				wxOK, this);
+			return;
+		}
+#endif
 
 		// Create new Plant List Dialog
 		m_PlantListDlg = new PlantListDlg(this, WID_PLANTS, "Plants List", 
