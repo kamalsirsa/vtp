@@ -31,7 +31,8 @@ public:
 };
 
 
-/**  The vtStructureArray class contains a list of Built Structures
+/**
+ * The vtStructureArray class contains a list of Built Structures
  * (vtStructure objects).  It can be loaded and saved to VTST files
  * with the ReadXML and WriteXML methods.
  *
@@ -46,15 +47,18 @@ public:
 	void DeleteSelected();
 	virtual void DestroyStructure(int i) {}
 
-	bool ReadSHP(const char* pathname, StructImportOptions &opt,
+	bool ReadSHP(const char *pathname, StructImportOptions &opt,
 		void progress_callback(int) = NULL);
-	bool ReadBCF(const char* pathname);		// read a .bcf file
-	bool ReadBCF_Old(FILE *fp);				// support obsolete format
-	bool ReadXML(const char* pathname);
+	void AddElementsFromOGR(class OGRDataSource *datasource,
+		StructImportOptions &opt, void progress_callback(int) = NULL);
 
-	bool WriteSHP(const char* pathname);
-	bool WriteXML(const char* pathname);
-	bool WriteXML_Old(const char* pathname);
+	bool ReadBCF(const char *pathname);		// read a .bcf file
+	bool ReadBCF_Old(FILE *fp);				// support obsolete format
+	bool ReadXML(const char *pathname);
+
+	bool WriteSHP(const char *pathname);
+	bool WriteXML(const char *pathname);
+	bool WriteXML_Old(const char *pathname);
 
 	bool FindClosestBuildingCorner(const DPoint2 &point, double epsilon,
 						   int &building, int &corner, double &distance);
@@ -68,7 +72,7 @@ public:
 	 * reference.
 	 */
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
-						   int &building, double &distance, bool bSkipBuildings = false);
+			int &building, double &distance, bool bSkipBuildings = false);
 
 	bool IsEmpty() { return (GetSize() == 0); }
 	void GetExtents(DRECT &ext);
