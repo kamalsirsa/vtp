@@ -15,23 +15,6 @@
 
 class vtTerrainScene;
 
-struct IcoVert
-{
-	DPoint3 p;
-	FPoint2 uv;
-};
-
-// Each movable face, composed of 1 to 6 subfaces of an original
-//  icosahedron face.
-struct MFace
-{
-	vtTransform *xform;
-	vtGeom *geom;
-	vtGroup *surfgroup;
-	FPoint3 local_origin;
-	FPoint3 axis;		// axis of rotation ("hinge") for each face
-};
-
 typedef Array<vtFeatures*> vtFeaturesSet;
 
 
@@ -76,6 +59,25 @@ public:
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line);
 
 protected:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+	struct IcoVert
+	{
+		DPoint3 p;
+		FPoint2 uv;
+	};
+
+	// Each movable face, composed of 1 to 6 subfaces of an original
+	//  icosahedron face.
+	struct MFace
+	{
+		vtTransform *xform;
+		vtGeom *geom;
+		vtGroup *surfgroup;
+		FPoint3 local_origin;
+		FPoint3 axis;		// axis of rotation ("hinge") for each face
+	};
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
 	int GetMFace(int face, int subface);
 	void BuildSphericalFeatures(vtFeatures *feat, float fSize);
 	void BuildSphericalPoints(vtFeatures *feat, float fSize);
