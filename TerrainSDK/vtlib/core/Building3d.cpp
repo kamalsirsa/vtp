@@ -19,21 +19,22 @@
 //  save about 200MB of RAM.
 vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 
-#define PLAIN_MATS	216		//216 plain colors
-#define SIDING_MATS 216		//216 colors with siding texture
-#define WINDOWWALL_MATS 216	//216 colors with window-wall texture
+#define COLOR_SPREAD	216		// 216 color variations
 
-#define PLAIN_MAT_START		0	//start index for plain colors
-#define PLAIN_MAT_END		PLAIN_MAT_START + PLAIN_MATS - 1
-#define SIDING_MAT_START	PLAIN_MAT_START + PLAIN_MATS
-#define SIDING_MAT_END		SIDING_MAT_START + SIDING_MATS - 1
-#define WINDOW_MAT			SIDING_MAT_START + SIDING_MATS
+#define PLAIN_MAT_START		0	// start index for plain colors
+#define PLAIN_MAT_END		PLAIN_MAT_START + COLOR_SPREAD - 1
+#define SIDING_MAT_START	PLAIN_MAT_END + 1
+#define SIDING_MAT_END		SIDING_MAT_START + COLOR_SPREAD - 1
+#define WINDOW_MAT			SIDING_MAT_END + 1
 #define DOOR_MAT			WINDOW_MAT + 1
 #define WOOD_MAT			DOOR_MAT + 1
 #define CEMENT_MAT			WOOD_MAT + 1
-#define BRICK_MAT			CEMENT_MAT + 1
-#define WINDOWWALL_MAT_START BRICK_MAT + 1
-#define WINDOWWALL_MAT_END WINDOWWALL_MAT_START + WINDOWWALL_MATS - 1
+#define BRICK_MAT1			CEMENT_MAT + 1
+#define BRICK_MAT2			BRICK_MAT1 + 1
+#define PBRICK_MAT_START	BRICK_MAT2 + 1
+#define PBRICK_MAT_END		PBRICK_MAT_START + COLOR_SPREAD - 1
+#define WINDOWWALL_MAT_START PBRICK_MAT_END + 1
+#define WINDOWWALL_MAT_END WINDOWWALL_MAT_START + COLOR_SPREAD - 1
 
 //
 // Helper to make a material
@@ -114,7 +115,7 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	// others are literal textures - use white for diffuse
-	color.Set(1.0f,1.0f,1.0f);
+	color.Set(1.0f, 1.0f, 1.0f);
 
 	// window material
 	pMat = makeMaterial(color, false);
@@ -143,12 +144,39 @@ void vtBuilding3d::CreateSharedMaterials()
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
-	// brick material
+	// brick material 1
+	// measured average brick color: 159, 100, 83 (reddish medium brown)
 	pMat = makeMaterial(color, false);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick1_256.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
+
+	// brick material 2
+	// measured average brick color: 183, 178, 171 (slightly pinkish grey)
+	pMat = makeMaterial(color, false);
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick2_256.bmp");
+	pMat->SetTexture2(path);
+	pMat->SetClamp(false);
+	s_Materials->Append(pMat);
+
+	// painted brick material: no brick color, can be colorized for any shade
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/brick_mono_256.bmp");
+	vtImage *pPaintedBrick = new vtImage(path);
+	divisions = 6;
+	start = .25f;
+	step = (1.0f-start)/(divisions-1);
+	for (i = 0; i < divisions; i++) {
+		for (j = 0; j < divisions; j++) {
+			for (k = 0; k < divisions; k++) {
+				color.Set(start+i*step, start+j*step, start+k*step);
+				pMat = makeMaterial(color, false);
+				pMat->SetTexture(pPaintedBrick);
+				pMat->SetClamp(false);
+				s_Materials->Append(pMat);
+			}
+		}
+	}
 
 	// create window-wall materials (bright colors only)
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window_wall128.bmp");
@@ -170,7 +198,10 @@ void vtBuilding3d::CreateSharedMaterials()
 
 	int total = s_Materials->GetSize();
 	// window, door, wood, cement_block, windowwall
-	int expectedtotal = PLAIN_MATS + SIDING_MATS + WINDOWWALL_MATS + 1 + 1 + 1 + 1 + 1;
+	int expectedtotal = COLOR_SPREAD + COLOR_SPREAD +	// plain, siding
+		1 + 1 + 1 + 1 +		// window, door, wood, cement
+		1 + 1 +				// brick1, brick2
+		COLOR_SPREAD + COLOR_SPREAD;	// painted brick, window-wall
 	assert(total == expectedtotal);
 }
 
@@ -834,6 +865,16 @@ void vtBuilding3d::Randomize(int iStories)
 }
 
 
+// Linear distance in RGB space
+float ColorDiff(const RGBi &c1, const RGBi &c2)
+{
+	FPoint3 diff;
+	diff.x = (c1.r - c2.r);
+	diff.y = (c1.g - c2.g);
+	diff.z = (c1.b - c2.b);
+	return diff.Length();
+}
+
 //
 // Takes the building material and color, and tries to find the closest
 // existing vtMaterial.
@@ -851,48 +892,53 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 		return WOOD_MAT;
 	if (bldMat == BMAT_CEMENT)	// only one cement
 		return CEMENT_MAT;
-	if (bldMat == BMAT_BRICK)	// only one brick
-		return BRICK_MAT;
+	if (bldMat == BMAT_BRICK)
+	{
+		// choose one of our (currently 2) unpainted brick textures
+		RGBi b1(159, 100, 83);	// (reddish medium brown)
+		RGBi b2(183, 178, 171);	// (slightly pinkish grey)
+		if (ColorDiff(inputColor, b1) < ColorDiff(inputColor, b2))
+			return BRICK_MAT1;
+		else
+			return BRICK_MAT2;
+	}
 
+	// get the appropriate range in the indices
 	int start = 0;
 	int end = 0;
-	//get the appropriate range in the index
 	switch (bldMat)
 	{
 	case BMAT_PLAIN:
 		start = PLAIN_MAT_START;
-		end = PLAIN_MAT_END + 1;
+		end = PLAIN_MAT_END;
 		break;
 	case BMAT_SIDING:
 		start = SIDING_MAT_START;
-		end = SIDING_MAT_END + 1;
+		end = SIDING_MAT_END;
 		break;
 	case BMAT_WINDOWWALL:
 		start = WINDOWWALL_MAT_START;
-		end = WINDOWWALL_MAT_END + 1;
+		end = WINDOWWALL_MAT_END;
+		break;
+	case BMAT_PAINTED_BRICK:
+		start = PBRICK_MAT_START;
+		end = PBRICK_MAT_END;
 		break;
 	}
 
 	// match the closest color.
 	vtMaterial *mat;
-	RGBf colorD;
-	RGBf colorA;
 	RGBf color;
 
-	RGBf color2 = inputColor;
-	float bestError = 10000000.0f;
+	float bestError = 1E8;
 	int bestMatch = -1;
 	float error;
-	FPoint3 diff;
 
-	for (int i = start; i < end; i++)
+	for (int i = start; i <= end; i++)
 	{
 		mat = s_Materials->GetAt(i);
 		color = mat->GetDiffuse();
-		diff.x = (color.r - color2.r)*100;
-		diff.y = (color.g - color2.g)*100;
-		diff.z = (color.b - color2.b)*100;
-		error = diff.x*diff.x  + diff.y*diff.y + diff.z*diff.z;
+		error = ColorDiff(color, inputColor);
 
 		if (error < bestError)
 		{
