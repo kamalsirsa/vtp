@@ -21,9 +21,7 @@
 #define ADAPTION_SPEED		.00003f
 #define QUALITYCONSTANT_MIN	0.002f
 
-#define ASSUME_LOWEST_LEVEL	1	// Saves memory and increases strip length
-
-#define DETAIL_FADE_DISTANCE 1000	// in world coords (meters)
+#define ASSUME_LOWEST_LEVEL	0	// Saves memory and increases strip length
 
 #if INTEGER_HEIGHT
 #define PACK_SCALE	4.0f	// use .25 meter spacing
@@ -415,9 +413,6 @@ inline BinTri *SMTerrain::AllocateBinTri()
 	assert(m_NextBinTriPool < m_iTriPoolSize);
 	register BinTri *tri = m_TriPool + (m_NextBinTriPool++);
 	SetFrust(tri, -1);
-#if STORE_DISTANCE
-	tri->m_distance = 0.0f;
-#endif
 	return tri;
 }
 #endif
@@ -710,9 +705,6 @@ void SMTerrain::SplitIfNeeded(int num, BinTri *tri,
 		// one level above bottom, no stored variance, so always split
 		if (num >= m_iUsedNodes)
 		{
-#if STORE_DISTANCE
-			tri->m_distance = DistanceToTriangle(vc);
-#endif
 			if (m_NextBinTriPool < m_iTriPoolSize-50)	// safety check!  don't overflow
 				Split(tri);
 			return;
@@ -720,9 +712,6 @@ void SMTerrain::SplitIfNeeded(int num, BinTri *tri,
 #endif
 		// do the correct split test
 		float distance = DistanceToTriangle(vc);
-#if STORE_DISTANCE
-		tri->m_distance = distance;
-#endif
 
 #if USE_FP8
 		float variance = DecodeFP8(m_pVariance[num]);
@@ -809,10 +798,6 @@ void SMTerrain::Split2(BinTri *tri)
 		SetFrust(tri->RightChild, tri->m_frust);
 	}
 #endif
-#if STORE_DISTANCE
-	tri->LeftChild->m_distance = tri->m_distance;
-	tri->RightChild->m_distance = tri->m_distance;
-#endif
 }
 
 
@@ -863,9 +848,12 @@ void SMTerrain::flush_buffer(int type)
 
 #if USE_VERTEX_BUFFER	// put each vertex into a vertex buffer
 	#define send_vertex(index) \
-		*g_vbuf++ = LOCX(index); \
+/*		*g_vbuf++ = LOCX(index); \
 		*g_vbuf++ = LOCY(index); \
 		*g_vbuf++ = LOCZ(index); \
+*/		*g_vbuf++ = (float)(index%m_iDim); \
+		*g_vbuf++ = m_pData[index]; \
+		*g_vbuf++ = (float)(index / m_iDim); \
 		verts_in_buffer++;
 	#define Begin(x)
 	#define End()
@@ -957,6 +945,9 @@ void SMTerrain::render_triangle_as_fan(BinTri *pTri, int v0, int v1, int va,
 	m_iDrawnTriangles++;
 }
 
+//
+// non-strip logic
+//
 void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 {
 	// if there are children, descend
@@ -967,26 +958,24 @@ void SMTerrain::render_triangle_single(BinTri *pTri, int v0, int v1, int va)
 		render_triangle_single(pTri->LeftChild, va, v0, vc);
 		return;
 	}
-	// at this point, we know this is a leaf node
 
-	// non-fan logic
+	// at this point, we know this is a leaf node
 #if STORE_FRUSTUM
 	switch (pTri->m_frust)
 	{
-	case FRUST_OUT:	glColor3f(0.0f, 0.0f, 0.0f); break;
+	case FRUST_OUT:		glColor3f(0.0f, 0.0f, 0.0f); break;
 	case FRUST_PARTIN:	glColor3f(1.0f, 0.0f, 0.0f); break;
 	case FRUST_ALLIN:	glColor3f(1.0f, 1.0f, 1.0f); break;
-	default:	glColor3f(0.0f, 1.0f, 0.0f); break;
+	default:			glColor3f(0.0f, 1.0f, 0.0f); break;
 	}
 #endif
-#if STORE_DISTANCE
 	if (hack_detail_pass)
 	{
+		float dist = (DistanceToTriangle(v0) + DistanceToTriangle(v0))/2;
 		// fade out over 1 km
-		if (pTri->m_distance > DETAIL_FADE_DISTANCE) return;
-		glColor4f(1.0f, 1.0f, 1.0f, 0.5f - pTri->m_distance / DETAIL_FADE_DISTANCE);
+		if (dist > m_fDetailDistance) return;
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f - dist / m_fDetailDistance);
 	}
-#endif
 	Begin(GL_TRIANGLES);
 
 	send_vertex(v0);

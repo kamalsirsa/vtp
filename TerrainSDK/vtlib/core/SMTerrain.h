@@ -22,16 +22,12 @@
 // that they can be drawn with special colors to aid in debugging.
 #define STORE_FRUSTUM		0
 
-// Store the distance to each triangle during the culling pass, so that it
-// can used later for such things as doing an alpha-fade of a detail texture.
-#define STORE_DISTANCE		1
-
 // Use quick (macro, no assert) triangle stack, may give performance increase
 // (not compatible with STORE_FRUSTUM)
 #define FAST_ALLOC			0
 
 // Pack the variable values into a single byte, using the FP8 macros.
-// This saved memory by 1 byte per heixel.
+// This saves memory by 1 byte per heixel.
 #define USE_FP8				1
 
 
@@ -85,9 +81,6 @@ public:
 	// to add: some goop for geomorphs
 #if STORE_FRUSTUM
 	int m_frust;
-#endif
-#if STORE_DISTANCE
-	float m_distance;
 #endif
 };
 
