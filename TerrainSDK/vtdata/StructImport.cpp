@@ -583,7 +583,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 }
 
 
-#pragma message( "Look here for more things to do " __FILE__ )
+//#pragma message( "Look here for more things to do " __FILE__ )
 
 // 1. Better copy syntax for vtStructure and its descendants
 // 2. extra import fields for fences and structures.
