@@ -62,8 +62,13 @@ vtGLCanvas::~vtGLCanvas(void)
 
 void EnableContinuousRendering(bool bTrue)
 {
-	if (s_canvas)
-		s_canvas->m_bRunning = bTrue;
+	if (!s_canvas)
+		return;
+
+	bool bNeedRefresh = (s_canvas->m_bRunning == false && bTrue == true);
+	s_canvas->m_bRunning = bTrue;
+	if (bNeedRefresh)
+		s_canvas->Refresh(FALSE);
 }
 
 void vtGLCanvas::QueueRefresh(bool eraseBackground)
