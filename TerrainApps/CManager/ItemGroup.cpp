@@ -238,7 +238,7 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 			mesh->AddLine(start, start+1);
 		}
 		pGeom->AddMesh(mesh, 0);
-
+		mesh->Release();
 	}
 	for (i = 0; i < 3; i++)
 	{
@@ -264,6 +264,7 @@ vtGeom *CreateRulers(vtFont *font, float fSize)
 					text->SetAlignment(1);
 				text->SetText(str);
 				pGeom->AddTextMesh(text, 0);
+				text->Release();
 			}
 		}
 	}
