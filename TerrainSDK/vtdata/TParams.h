@@ -159,6 +159,7 @@ private:
 #define STR_DEPRESSOCEANLEVEL "Depress_Ocean_Level"
 #define STR_HORIZON "Horizon"
 #define STR_OVERLAY	"Overlay"
+#define STR_BGCOLOR "Background_Color"
 
 #define STR_LABELS "Labels"
 #define STR_LABELFILE "LabelFile"

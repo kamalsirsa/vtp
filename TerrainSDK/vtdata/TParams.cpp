@@ -116,6 +116,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_DEPRESSOCEANLEVEL, "-40");
 	AddTag(STR_HORIZON, "false");
 	AddTag(STR_OVERLAY, "false");
+	AddTag(STR_BGCOLOR, "40 75 124");	// old blue
 
 	AddTag(STR_LABELS, "false");
 	AddTag(STR_LABELFILE, "");
