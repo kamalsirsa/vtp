@@ -842,7 +842,7 @@ void Enviro::SetupScene2()
 			g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
 	}
 
-	VTLOG("Seting up Cameras\n");
+	VTLOG("Setting up Cameras\n");
 	m_pNormalCamera = vtGetScene()->GetCamera();
 #if 1
 	// Create second camera (for Top-Down view)
