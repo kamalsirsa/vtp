@@ -43,6 +43,10 @@ public:
 
 protected:
 	bool m_pbKeyState[512];
+
+	// The number of mousemoves we've gotten since last redraw
+	int m_iConsecutiveMousemoves;
+
 	DECLARE_EVENT_TABLE()
 };
 

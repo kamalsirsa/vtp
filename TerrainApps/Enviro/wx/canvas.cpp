@@ -42,7 +42,6 @@ END_EVENT_TABLE()
 
 static vtGLCanvas *s_canvas = NULL;
 
-
 vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
 		wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
@@ -58,6 +57,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	for (int i = 0; i < 512; i++)
 		m_pbKeyState[i] = false;
 	vtGetScene()->SetKeyStates(m_pbKeyState);
+	m_iConsecutiveMousemoves = 0;
 
 	s_canvas = this;
 }
@@ -170,6 +170,9 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		m_bPainting = false;
 #endif // VTLIB_PSM
 	}
+
+	// Reset the number of mousemoves we've gotten since last redraw
+	m_iConsecutiveMousemoves = 0;
 }
 
 void vtGLCanvas::OnClose(wxCloseEvent& event)
@@ -263,6 +266,7 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 	} else if (ev == wxEVT_MOTION) {
 		event.type = VT_MOVE;
 		event.button = VT_NONE;
+		m_iConsecutiveMousemoves++;		// Increment
 	} else {
 		// ignored mouse events, such as wxEVT_LEAVE_WINDOW
 		return;
@@ -307,6 +311,15 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	// inform vtlib scene, which informs the engines
 	vtGetScene()->OnMouse(event);
+
+	// Because of the way the event pump works, if it takes too long to
+	//  handle a MouseMove event, then we might get the next MouseMove
+	//  event without ever seeing a Redraw or Idle.  That's because the
+	//  MouseMove events are considered higher priority in the queue.
+	// So, to keep Enviro response smooth, we effectively ignore all but
+	//  one MouseMove event per Draw event.
+	if (m_iConsecutiveMousemoves > 1)
+		return;
 
 	// inform Enviro app
 	g_App.OnMouse(event);
