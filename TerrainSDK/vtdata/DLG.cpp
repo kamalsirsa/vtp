@@ -129,8 +129,6 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
             break;
 	}
 
-	m_proj.SetProjectionSimple(true, iUTMZone, eDatum);
-
 	// record 5-9 - Projection parameters for map transformation
 	for (i = 5; i < 10; i++)
 		if (!GetRecord(buf)) return false;
@@ -144,8 +142,6 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 	m_SW_lat.x = getd12(buf+18);
 	m_SW_utm.x = getd12(buf+36);
 	m_SW_utm.y = getd12(buf+48);
-
-//	test_conversions(m_SW_utm.x, m_SW_utm.y, m_SW_lat.x, m_SW_lat.y);
 
 	// record 12 - NW quadrangle corner
 	if (!GetRecord(buf)) return false;
@@ -167,6 +163,17 @@ bool vtDLGFile::Read(const char *fname, void progress_callback(int))
 	m_SE_lat.x = getd12(buf+18);
 	m_SE_utm.x = getd12(buf+36);
 	m_SE_utm.y = getd12(buf+48);
+
+	// Special exception: DLG for Hawai`i that says "NAD27" is actually in
+	// Old Hawaiian Datum (OHD) - so check for it.
+	if ((iUTMZone == 4 || iUTMZone == 5) && m_SW_utm.y < 3500000)
+	{
+		if (eDatum == NAD27)
+			eDatum = OLD_HAWAIIAN_MEAN;
+	}
+
+	// We now know enough to set the projection.
+	m_proj.SetProjectionSimple(true, iUTMZone, eDatum);
 
 	// record 15 - category name, attribute format code, number of nodes...
 	if (!GetRecord(buf)) return false;
