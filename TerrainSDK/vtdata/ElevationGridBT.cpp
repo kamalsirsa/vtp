@@ -10,6 +10,7 @@
 
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
+#include "vtdata/vtLog.h"
 
 
 /** Loads just the header information from a BT (Binary Terrain) file.
@@ -22,9 +23,6 @@
  */
 bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 {
-	// Avoid trouble with '.' and ',' in Europe
-	LocaleWrap normal_numbers(LC_NUMERIC, "C");
-
 	// The gz functions (gzopen etc.) behave exactly like the stdlib
 	//  functions (fopen etc.) in the case where the input file is not in
 	//  gzip format, so we can simply use them without worry.
@@ -45,6 +43,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	// Get version
 	int iMajor = (int) buf[7]-'0';
 	int iMinor = (int) buf[9]-'0';
+
+	VTLOG("BT header: version %d.%d", iMajor, iMinor);
 
 	// NOTE:  BT format is little-endian
 	GZFRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
@@ -126,6 +126,8 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 	gzclose(fp);
 
+	VTLOG(", float %d, CRS external %d", m_bFloatMode, external);
+
 	// Set up projection
 	if (external == 1)
 	{
@@ -136,10 +138,12 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	else
 	{
 		// Internal specification: proj_type 0 = Geo, 1 = UTM
+		VTLOG(" (type %d, zone %d, datum %d", proj_type, zone, datum);
 		m_proj.SetProjectionSimple(proj_type == 1, zone, datum);
 	}
 
 	ComputeCornersFromExtents();
+	VTLOG("\n");
 
 	return true;
 }
