@@ -437,7 +437,7 @@ void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *
 	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, descriptor->GetSourceName());
 	int divisions = 6;
 	float start = .25f;
-	int step = (1.0f-start)/(divisions-1);
+	int step = (int) ((1.0f-start)/(divisions-1));
 	for (int i = 0; i < COLOR_SPREAD; i++)
 	{
 		vtMaterial *pMat = MakeMaterial(m_Colors[i], true);

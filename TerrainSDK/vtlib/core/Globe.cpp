@@ -718,8 +718,8 @@ void IcoGlobe::EstimateTesselation(int iTriangleCount)
 		// triangles.  Find what frequency most closely matches the desired
 		// triangle count.
 		double exact = sqrt(per_face);
-		int iLess = floor(exact);
-		int iMore = ceil(exact);
+		int iLess = (int) floor(exact);
+		int iMore = (int) ceil(exact);
 		if ((iMore*iMore - per_face) < (per_face - iLess*iLess))
 			m_freq = iMore;
 		else
