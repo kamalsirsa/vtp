@@ -186,6 +186,7 @@ protected:
 	vtString	m_msg;
 	FILE		*m_log;
 	void		_StartLog(const char *fname);
+public:
 	void		_Log(const char *str);
 };
 
