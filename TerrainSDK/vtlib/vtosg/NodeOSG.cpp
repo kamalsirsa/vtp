@@ -219,7 +219,7 @@ public:
 
 bool vtNode::s_bDisableMipmaps = false;
 
-vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
+vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
 {
 	// Some of OSG's file readers, such as the Wavefront OBJ reader, have
 	//  sensitivity to stdio issues with '.' and ',' in European locales.
@@ -232,6 +232,8 @@ vtNode *vtNode::LoadModel(const char *filename, bool bDisableMipmaps)
 	{
 		if (newname[i] == '\\') newname[i] = '/';
 	}
+
+	osgDB::Registry::instance()->setUseObjectCacheHint(bAllowCache);
 
 	Node *node = osgDB::readNodeFile(newname);
 	if (!node)
@@ -551,7 +553,7 @@ void vtTransform::GetTransform1(FMatrix4 &mat)
 	ConvertMatrix4(&xform, &mat);
 }
 
-void vtTransform::PointTowards(const FPoint3 &point)
+void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 {
 	// OSG 0.8.43 and later
 	Matrix matrix = m_pTransform->getMatrix();
@@ -565,7 +567,11 @@ void vtTransform::PointTowards(const FPoint3 &point)
 	float dist = diff.length();
 
 	float theta = atan2f(-diff.z(), diff.x()) - PID2f;
-	float phi = asinf(diff.y() / dist);
+	float phi;
+	if (bPitch)
+		phi = asinf(diff.y() / dist);
+	else
+		phi = 0;
 
 	matrix.makeIdentity();
 	matrix.preMult(Matrix::rotate(theta, 0.0f, 1.0f, 0.0f));

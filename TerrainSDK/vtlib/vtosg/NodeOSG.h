@@ -55,7 +55,7 @@ public:
 	osg::Node *GetOsgNode() { return m_pNode.get(); }
 	vtNodeBase *Clone() { return NULL; }
 
-	static vtNode *LoadModel(const char *filename, bool bDisableMipmaps = false);
+	static vtNode *LoadModel(const char *filename, bool bAllowCache = true, bool bDisableMipmaps = false);
 	static bool s_bDisableMipmaps;	// set to disable ALL mipmaps
 
 protected:
@@ -167,7 +167,7 @@ public:
 
 	void SetTransform1(const FMatrix4 &mat);
 	void GetTransform1(FMatrix4 &mat);
-	void PointTowards(const FPoint3 &point);
+	void PointTowards(const FPoint3 &point, bool bPitch = true);
 
 	// OSG-specific Implementation
 public:
