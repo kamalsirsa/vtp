@@ -13,6 +13,7 @@
 #include "config_vtdata.h"
 #include "FilePath.h"
 #include "vtLog.h"
+#include "WFSClient.h"
 
 // The dependency on Libwww is optional.  If not desired, skip this file.
 #if SUPPORT_HTTP
@@ -33,29 +34,44 @@
 #pragma comment(lib, "wwwcore.lib")
 #pragma comment(lib, "wwwinit.lib")
 #pragma comment(lib, "wwwutils.lib")
+#pragma comment(lib, "wwwhttp.lib")
 #endif
 
-#define DEFAULT_TIMEOUT	10				  /* timeout in secs */
+#define DEFAULT_TIMEOUT	90				  /* timeout in secs */
 #define MILLIES			1000
 
 #include "xmlhelper/easyxml.hpp"
 
-class ReqContext
+struct MyCookie
 {
-public:
-	ReqContext();
-	~ReqContext();
-	char *GetURL(const char *url);
-
-	HTRequest *	request;
-	HTAnchor *	anchor;
-	char *		cwd;				  /* Current dir URL */
-
-	char *		realm;			/* For automated authentication */
-	char *		user;
-	char *		password;
+	vtString name;
+	vtString value;
 };
+std::vector<MyCookie> g_cookies;
+static int s_last_status = 0;
+static HTAnchor *new_anchor = NULL;
 
+void AddCookie(const char *name, const char *value)
+{
+	unsigned int i, size = g_cookies.size();
+	for (i = 0; i < size; i++)
+	{
+		if (g_cookies[i].name == name)
+		{
+			g_cookies[i].value = value;
+			return;
+		}
+	}
+	// otherwise we need to create a new one
+	MyCookie mc;
+	mc.name = name;
+	mc.value = value;
+	g_cookies.push_back(mc);
+}
+
+
+
+#if 1
 PRIVATE int printer (const char * fmt, va_list pArgs)
 {
 	char buf[20000];
@@ -71,20 +87,17 @@ PRIVATE int tracer (const char * fmt, va_list pArgs)
 	g_Log._Log(buf);
 	return ret;
 }
-
-PRIVATE BOOL PromptUsernameAndPassword (HTRequest * request, HTAlertOpcode op,
-					int msgnum, const char * dfault,
-					void * input, HTAlertPar * reply)
-{
-	return NO;
-}
+#endif
 
 PRIVATE int term_handler (HTRequest * request, HTResponse * response,
 				   void * param, int status)
 {
 	/* Check for status */
-	HTPrint("Load resulted in status %d\n", status);
-	
+	VTLOG("status %d\n", status);
+
+	s_last_status = status;
+    new_anchor = HTResponse_redirection(response);
+
 	/* we're not handling other requests */
 	HTEventList_stopLoop ();
 
@@ -93,99 +106,198 @@ PRIVATE int term_handler (HTRequest * request, HTResponse * response,
 }
 
 
+PRIVATE BOOL setCookie (HTRequest * request, HTCookie * cookie, void * param)
+{
+    if (cookie)
+	{
+#if 0
+		char * addr = HTAnchor_address((HTAnchor *) HTRequest_anchor(request));
+		VTLOG("While accessing `%s\', we received a cookie with parameters:\n", addr);
+		if (HTCookie_name(cookie))
+			VTLOG("\tName   : `%s\'\n", HTCookie_name(cookie));
+		if (HTCookie_value(cookie))
+			VTLOG("\tValue  : `%s\'\n", HTCookie_value(cookie));
+		if (HTCookie_domain(cookie))
+			VTLOG("\tDomain : `%s\'\n", HTCookie_domain(cookie));
+		if (HTCookie_path(cookie))
+			VTLOG("\tPath   : `%s\'\n", HTCookie_path(cookie));
+		if (HTCookie_expiration(cookie) > 0) {
+			time_t t = HTCookie_expiration(cookie);
+			VTLOG("\tExpires: `%s\'\n", HTDateTimeStr(&t, NO));
+		}
+		VTLOG("\tCookie is %ssecure\n\n", HTCookie_isSecure(cookie) ? "" : "not ");
+		HT_FREE(addr);
+#endif
+
+		// Work around bug in libwww cookie parsing: when it gets a line like this:
+		//		Set-Cookie: foo=;Expires=Thu. 01-Jan-1970...
+		// rather than give a blank string for the value it gives "Expires"
+		if (!strcmp(HTCookie_value(cookie), "Expires"))
+			return YES;
+
+		// add it to our own list
+		AddCookie(HTCookie_name(cookie), HTCookie_value(cookie));
+    }
+
+    return YES;
+}
+
+PRIVATE HTAssocList *findCookie(HTRequest * request, void * param)
+{
+//	VTLOG(" findCookie %s:\n", param);
+
+    HTAssocList * alist = HTAssocList_new();	/* Is deleted by the cookie module */
+	unsigned int i;
+	for (i = 0; i < g_cookies.size(); i++)
+	{
+	    HTAssocList_addObject(alist, g_cookies[i].name, g_cookies[i].value);
+//		VTLOG("   adding (%d) %s=%s\n", i,
+//			(const char *)g_cookies[i].name,
+//			(const char *)g_cookies[i].value);
+	}
+    return alist;
+}
+
+
+
 //-------------------------------------------------------------------------
+// ReqContext class
+//
+
+
+bool ReqContext::s_bFirst = true;
 
 ReqContext::ReqContext()
 {
-	static bFirst = true;
-	if (bFirst)
-	{
-		HTList * converters = HTList_new();		/* List of converters */
-		HTList * encodings = HTList_new();		/* List of encoders */
-		
-		/* Initialize libwww core */
-		HTLibInit("vtdata", __DATE__);
+	if (s_bFirst)
+		InitializeLibrary();
 
-		/* Need our own trace and print functions */
-		HTPrint_setCallback(printer);
-		HTTrace_setCallback(tracer);
-
-		/* On windows we must always set up the eventloop */
-#ifdef WIN32
-		HTEventInit();
-#endif
-
-		/* Register the default set of transport protocols */
-		HTTransportInit();
-
-		/* Register the default set of protocol modules */
-		HTProtocolInit();
-
-		/* Register the default set of BEFORE and AFTER callback functions */
-		HTNetInit();
-
-		/* Register the default set of converters */
-		HTConverterInit(converters);
-		HTFormat_setConversion(converters);
-
-		/* Register the default set of transfer encoders and decoders */
-		HTTransferEncoderInit(encodings);
-		HTFormat_setTransferCoding(encodings);
-
-		/* Register the default set of MIME header parsers */
-		HTMIMEInit();
-
-		/* Add our own filter to handle termination */
-		HTNet_addAfter(term_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
-
-		/* Setting event timeout */
-		int timer = DEFAULT_TIMEOUT*MILLIES;
-		HTHost_setEventTimeout(timer);
-
-		// Don't know what this will do, just trying:
-		HTHost_setActiveTimeout(timer);
-
-		bFirst = false;
-	}
-
-	cwd = HTGetCurrentDirectoryURL();
+	m_cwd = HTGetCurrentDirectoryURL();
 
 	/* Bind the ConLine object together with the Request Object */
-	request = HTRequest_new();
-	HTRequest_setOutputFormat(request, WWW_SOURCE);
+	m_request = HTRequest_new();
+	HTRequest_setOutputFormat(m_request, WWW_SOURCE);
 
 	// Setting preemptive to NO doesn't seem to make a difference
-	HTRequest_setPreemptive(request, YES);
+	HTRequest_setPreemptive(m_request, YES);
 
-	HTRequest_setContext(request, this);
+	HTRequest_setContext(m_request, this);
 }
 
 ReqContext::~ReqContext()
 {
-	HTRequest_delete(request);
-	HT_FREE(cwd);
+	HTRequest_delete(m_request);
+	HT_FREE(m_cwd);
 }
 
-char *ReqContext::GetURL(const char *url)
+
+void ReqContext::InitializeLibrary()
 {
-	HTChunk * chunk = NULL;
+	// This one call does most of the work?
+	HTProfile_newPreemptiveRobot("vtdata", __DATE__);
+//	HTProfile_newNoCacheClient("vtdata", "1.0");
 
-	char *absolute_url = HTParse(url, cwd, PARSE_ALL);
-	anchor = HTAnchor_findAddress(absolute_url);
-	chunk = HTLoadAnchorToChunk(anchor, request);
-	HT_FREE(absolute_url);
+	/* Need our own trace and print functions */
+	HTPrint_setCallback(printer);
+	HTTrace_setCallback(tracer);
 
-	/* If chunk != NULL then we have the data */
+    HTAlertInit();
+    HTAlert_setInteractive(NO);
+
+#ifdef WIN32
+	HTEventInit();
+#endif
+
+	/* Add our own filter to handle termination */
+	HTNet_addAfter(term_handler, NULL, NULL, HT_ALL, HT_FILTER_LAST);
+
+    /* Setup cookies */
+    HTCookie_init();
+    HTCookie_setCallbacks(setCookie, NULL, findCookie, NULL);
+
+	// Don't prompt for cookies - just accept them!
+	//	HTCookieMode mode = HTCookie_cookieMode();
+	HTCookie_setCookieMode((HTCookieMode) (HT_COOKIE_ACCEPT | HT_COOKIE_SEND));
+
+	/* Setting event timeout */
+	int timer = DEFAULT_TIMEOUT*MILLIES;
+	HTHost_setEventTimeout(timer);
+
+	// Don't know what this will do, just trying:
+	HTHost_setActiveTimeout(timer);
+
+	s_bFirst = false;
+}
+
+void ReqContext::AddHeader(const char *token, const char *value)
+{
+	HTRequest_addExtraHeader(m_request, (char *) token, (char *) value);
+}
+
+void ReqContext::DoQuery(vtString &str, int redirects)
+{
+	const char *address;
+
+	address = HTAnchor_address(m_anchor);
+	VTLOG("  Opening: '%s' ... ", address);
+
+	HTChunk *chunk = HTLoadAnchorToChunk(m_anchor, m_request);
+
+	/* chunk had better not be NULL, that's where the data will go */
 	if (!chunk)
-		return NULL;
+		return;
 
 	char *string;
 	/* wait until the request is over */
-	HTEventList_loop(request);
+	HTEventList_loop(m_request);
+
+	// check status - redirect?
+	if (s_last_status == HT_FOUND)	// also known as 302 Redirect
+	{
+		address = HTAnchor_address(new_anchor);
+//		VTLOG("  Redirected To: %s\n", address);
+		VTLOG("  (Redirected)");
+
+		m_anchor = new_anchor;
+
+		/* Delete any auth credendials as they get regenerated */
+		HTRequest_deleteCredentialsAll(m_request);
+		HTRequest_deleteExtraHeaderAll(m_request);
+
+		DoQuery(str, redirects + 1);
+		return;
+	}
+	if (s_last_status == HT_TIMEOUT)
+	{
+		// too long, give up
+		VTLOG("  Timeout: more than %d seconds\n", DEFAULT_TIMEOUT);
+		return;
+	}
+
 	string = HTChunk_toCString(chunk);
-//	HTPrint("%s", string ? string : "no text");
-	return string;
+//	if (string)
+//		g_Log._Log(string);
+	str = string;
+	HT_FREE(string);
 }
+
+void ReqContext::GetURL(const char *url, vtString &str)
+{
+	str = "";
+	char *absolute_url = HTParse(url, m_cwd, PARSE_ALL);
+	if (!absolute_url)
+		return;
+
+	m_anchor = HTAnchor_findAddress(absolute_url);
+	HT_FREE(absolute_url);
+
+	DoQuery(str, 0);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// vtFeatures methods
+//
 
 bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layername)
 {
@@ -193,9 +305,10 @@ bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layern
 	url += "GetFeature?typeName=";
 	url += layername;
 
+	vtString str;
 	ReqContext cl;
-	char *string = cl.GetURL(url);
-	if (!string)
+	cl.GetURL(url, str);
+	if (str == "")
 		return false;
 
 	char *temp_fname = "C:/temp/gml_temp.gml";
@@ -203,16 +316,16 @@ bool vtFeatures::ReadFeaturesFromWFS(const char *szServerURL, const char *layern
 	if (!fp)
 		return false;
 
-	fwrite(string, 1, strlen(string), fp);
+	fwrite((const char *)str, 1, str.GetLength(), fp);
 	fclose(fp);
-	HT_FREE(string);
 
 	return LoadWithOGR(temp_fname);
 }
 
+
 ////////////////////////////////////////////////////////////////////////
 // Visitor class, for XML parsing of WFS Layer List files.
-////////////////////////////////////////////////////////////////////////
+//
 
 class LayerListVisitor : public XMLVisitor
 {
@@ -222,8 +335,8 @@ public:
 
 	virtual ~LayerListVisitor () {}
 
-	void startXML ();
-	void endXML ();
+	void startXML() { _level = 0; }
+	void endXML() { _level = 0; }
 	void startElement (const char * name, const XMLAttributes &atts);
 	void endElement (const char * name);
 	void data (const char * s, int length);
@@ -235,16 +348,6 @@ private:
 	WFSLayerArray *m_pLayers;
 	vtTagArray *m_pTags;
 };
-
-void LayerListVisitor::startXML ()
-{
-	_level = 0;
-}
-
-void LayerListVisitor::endXML ()
-{
-	_level = 0;
-}
 
 void LayerListVisitor::startElement (const char * name, const XMLAttributes &atts)
 {
@@ -288,17 +391,17 @@ bool GetLayersFromWFS(const char *szServerURL, WFSLayerArray &layers)
 	vtString url = szServerURL;
 	url += "GetCapabilities?version=0.0.14";
 
+	vtString str;
 	ReqContext cl;
-	char *string = cl.GetURL(url);
-	if (!string)
+	cl.GetURL(url, str);
+	if (str == "")
 		return false;
 
 	char *temp_fname = "C:/temp/layers_temp.xml";
 	FILE *fp = fopen(temp_fname, "wb");
 	if (!fp)
 		return false;
-	fwrite(string, 1, strlen(string), fp);
-	HT_FREE(string);
+	fwrite((const char *)str, 1, str.GetLength(), fp);
 	fclose(fp);
 
 	LayerListVisitor visitor(&layers);
