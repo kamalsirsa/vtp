@@ -1,7 +1,7 @@
 //
 // VegLayer.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,12 +16,13 @@
 #include "VegLayer.h"
 #include "Helper.h"
 
+#include "Frame.h"	// for access to the application's plants and biotypes
+
 //////////////////////////////////////////////////////////////////////////
 
 vtVegLayer::vtVegLayer() : vtLayer(LT_VEG)
 {
-	m_VLType = VLT_Unknown;
-	m_pPia = NULL;
+	m_VLType = VLT_None;
 }
 
 vtVegLayer::~vtVegLayer()
@@ -30,14 +31,25 @@ vtVegLayer::~vtVegLayer()
 
 bool vtVegLayer::GetExtent(DRECT &rect)
 {
-	if (!m_Poly.GetSize())
-		return false;
-
+	int i, size;
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 
-	int size = m_Poly.GetSize();
-	for (int i = 0; i < size; i++)
-		rect.GrowToContainLine(*m_Poly.GetAt(i));
+	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
+	{
+		size = m_Poly.GetSize();
+		if (size == 0)
+			return false;
+		for (i = 0; i < size; i++)
+			rect.GrowToContainLine(*m_Poly.GetAt(i));
+	}
+	else if (m_VLType == VLT_Instances)
+	{
+		size = m_Pia.GetSize();
+		if (size == 0)
+			return false;
+		for (i = 0; i < size; i++)
+			rect.GrowToContainPoint(m_Pia.GetAt(i).m_p);
+	}
 
 	return true;
 }
@@ -106,10 +118,10 @@ void vtVegLayer::DrawInstances(wxDC* pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	size = m_pPia->GetSize();
+	size = m_Pia.GetSize();
 	for (i = 0; i < size; i++)
 	{
-		vtPlantInstance &plant = m_pPia->GetAt(i);
+		vtPlantInstance &plant = m_Pia.GetAt(i);
 
 		pView->screen(plant.m_p, origin);
 
@@ -143,19 +155,54 @@ void vtVegLayer::SetProjection(vtProjection &proj)
 	m_proj = proj;
 }
 
+void vtVegLayer::Offset(const DPoint2 &p)
+{
+	int i, size;
+
+	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
+	{
+		size = m_Poly.GetSize();
+		for (i = 0; i < size; i++)
+			m_Poly.GetAt(i)->Add(p);
+	}
+	else if (m_VLType == VLT_Instances)
+	{
+		size = m_Pia.GetSize();
+		for (i = 0; i < size; i++)
+			m_Pia.GetAt(i).m_p += p;
+	}
+}
+
+void vtVegLayer::GetPropertyText(wxString &str)
+{
+	vtString s;
+	str = "Vegetion layer type: ";
+	switch (m_VLType)
+	{
+	case VLT_None: str += "None\n"; break;
+	case VLT_Density: str += "Density\n"; break;
+	case VLT_BioMap: str += "BioMap\n"; break;
+	case VLT_Instances:
+		str += "Plant Instances\n";
+		s.Format("Number of Instances: %d\n", m_Pia.GetSize());
+		str += s;
+		break;
+	}
+}
+
+
 bool vtVegLayer::OnSave()
 {
 	// currently we can load and save VF files (Plant Instances)
 	if (m_VLType == VLT_Instances)
-		return m_pPia->WriteVF(m_strFilename);
+		return m_Pia.WriteVF(m_strFilename);
 	return false;
 }
 
 bool vtVegLayer::OnLoad()
 {
 	// currently we can load and save VF files (Plant Instances)
-	m_pPia = new vtPlantInstanceArray();
-	if (m_pPia->ReadVF(m_strFilename))
+	if (m_Pia.ReadVF(m_strFilename))
 	{
 		m_VLType = VLT_Instances;
 		return true;
@@ -283,8 +330,18 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 }
 
 
-void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj,
-									int iField, int datatype)
+/**
+ * Extract data from a SHP/DBF file and intepret it as a vegetation layer.
+ * This produces a single-valued polygonal coverage.
+ *
+ * 'iField' is the index of the field from which to pull the single value.
+ * 'datatype' is either 0, 1, or 2 for whether the indicated field should be
+ *		intepreted as a density value (double), the name of a biotype
+ *		(string), or the ID of a biotype (int).
+ */
+void vtVegLayer::AddElementsFromSHP_Polys(const char *filename,
+										  vtProjection &proj,
+										  int iField, int datatype)
 {
 	// Open the SHP File
 	SHPHandle hSHP = SHPOpen(filename, "rb");
@@ -354,8 +411,8 @@ void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj,
 		if (datatype == 1)
 		{
 			const char *str = DBFReadStringAttribute(db, i, iField);
-//			m_pAttrib[i] = m_BioRegions.FindBiotypeIdByName(str);
 			// TODO
+//			m_pAttrib[i] = m_BioRegions.FindBiotypeIdByName(str);
 			m_Biotype.SetAt(i, -1);
 		}
 		if (datatype == 2)
@@ -380,6 +437,143 @@ void vtVegLayer::AddElementsFromSHP(const char *filename, vtProjection &proj,
 			new_poly->GetAt(j).y = psShape->padfY[j];
 		}
 		SHPDestroyObject(psShape);
+	}
+
+	DBFClose(db);
+	SHPClose(hSHP);
+}
+
+/**
+ * Extract point data from a SHP/DBF file and intepret it as a vegetation
+ * layer.  This produces a set of vegetation instances.
+ *
+ * The 'opt' parameter contains a description of how the fields in the
+ * imported file are to be interpreted.
+ */
+void vtVegLayer::AddElementsFromSHP_Points(const char *filename,
+										   vtProjection &proj,
+										   VegPointOptions &opt)
+{
+	// We will be creating plant instances
+	m_VLType = VLT_Instances;
+
+	vtPlantList *pPlantList = GetMainFrame()->GetPlantList();
+	vtBioRegion *pBioRegion = GetMainFrame()->GetBioRegion();
+
+	// Open the SHP File
+	SHPHandle hSHP = SHPOpen(filename, "rb");
+	if (hSHP == NULL)
+		return;
+
+	// Get number of points and type of data
+	int		nElem;
+	int		nShapeType;
+    double	adfMinBound[4], adfMaxBound[4];
+	FPoint2 point;
+	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
+
+	// Check Shape Type, Veg Layer should be Point data
+	if (nShapeType != SHPT_POINT)
+		return;
+
+	// Open DBF File
+	DBFHandle db = DBFOpen(filename, "rb");
+	if (db == NULL)
+		return;
+
+	// Confirm that the field types are correct
+	int *pnWidth = 0, *pnDecimals = 0;
+	char *pszFieldName = NULL;
+	DBFFieldType fieldtype;
+
+	if (!opt.bFixedSpecies)
+	{
+		// we're going to get species info from a field
+		fieldtype = DBFGetFieldInfo(db, opt.iSpeciesFieldIndex, pszFieldName,
+			pnWidth, pnDecimals);
+		if (opt.iInterpretSpeciesField == 0 || opt.iInterpretSpeciesField == 3)
+		{
+			if (fieldtype != FTInteger)
+				return;
+		}
+		else
+		{
+			if (fieldtype != FTString)
+				return;
+		}
+	}
+
+	// Set projection
+	m_proj = proj;
+
+	// Initialize arrays
+	m_Pia.SetMaxSize(nElem);
+
+	// Read Points from SHP and intepret fields
+	SHPObject *psShape;
+	vtPlantInstance pi;
+	const char *str;
+	int biotype;
+	vtBioType *pBioType;
+
+	for (int i = 0; i < nElem; i++)
+	{
+		// Get the i-th Point in the SHP file
+		psShape = SHPReadObject(hSHP, i);
+		pi.m_p.x = psShape->padfX[0];
+		pi.m_p.y = psShape->padfY[0];
+		SHPDestroyObject(psShape);
+
+		// Read DBF Attributes per point
+		pi.species_id = -1;
+		if (opt.bFixedSpecies)
+			pi.species_id = pPlantList->GetSpeciesIdByName(opt.strFixedSpeciesName);
+		else
+		{
+			switch (opt.iInterpretSpeciesField)
+			{
+			case 0:
+				pi.species_id = DBFReadIntegerAttribute(db, i, opt.iSpeciesFieldIndex);
+				break;
+			case 1:
+				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
+				pi.species_id = pPlantList->GetSpeciesIdByName(str);
+				break;
+			case 2:
+				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
+				pi.species_id = pPlantList->GetSpeciesIdByCommonName(str);
+				break;
+			case 3:
+				biotype = DBFReadIntegerAttribute(db, i, opt.iSpeciesFieldIndex);
+				pBioType = pBioRegion->GetBioType(biotype);
+				if (pBioType)
+					pi.species_id = pBioType->GetWeightedRandomPlant();
+				break;
+			case 4:
+				str = DBFReadStringAttribute(db, i, opt.iSpeciesFieldIndex);
+				biotype = pBioRegion->FindBiotypeIdByName(str);
+				pBioType = pBioRegion->GetBioType(biotype);
+				if (pBioType)
+					pi.species_id = pBioType->GetWeightedRandomPlant();
+				break;
+			}
+		}
+
+		// Make sure we have a valid species
+		if (pi.species_id == -1)
+			continue;
+		vtPlantSpecies *pSpecies = pPlantList->GetSpecies(pi.species_id);
+		if (!pSpecies)
+			continue;
+
+		// Set height
+		if (opt.bHeightRandom)
+			pi.size = random(pSpecies->GetMaxHeight());
+		else
+			pi.size = (float) DBFReadDoubleAttribute(db, i, opt.iHeightFieldIndex);
+
+		// If we get here, there is a valid plant to append
+		m_Pia.Append(pi);
 	}
 
 	DBFClose(db);

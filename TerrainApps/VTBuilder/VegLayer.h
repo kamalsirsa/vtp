@@ -1,6 +1,9 @@
 //
 // VegLayer.h
 //
+// Copyright (c) 2001-2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifndef VEGLAYER_H
 #define VEGLAYER_H
@@ -9,9 +12,10 @@
 #include "vtdata/RoadMap.h"
 #include "vtdata/Plants.h"
 #include "Layer.h"
+#include "VegPointOptions.h"
 
 enum VegLayerType {
-	VLT_Unknown,
+	VLT_None,
 	VLT_Density,
 	VLT_BioMap,
 	VLT_Instances
@@ -35,12 +39,16 @@ public:
 	bool AppendDataFrom(vtLayer *pL);
 	void GetProjection(vtProjection &proj);
 	void SetProjection(vtProjection &proj);
+	void Offset(const DPoint2 &p);
+	void GetPropertyText(wxString &str);
 
 	// Importing data into veglayer
 	VegLayerType m_VLType;
 	void AddElementsFromLULC(vtLULCFile *pLULC);
-	void AddElementsFromSHP(const char *filename, vtProjection &proj,
+	void AddElementsFromSHP_Polys(const char *filename, vtProjection &proj,
 		int fieldindex, int datatype);
+	void AddElementsFromSHP_Points(const char *filename, vtProjection &proj,
+		VegPointOptions &opt);
 
 	// Search functionality
 	float FindDensity(const DPoint2 &p);
@@ -54,7 +62,7 @@ protected:
 	DPolyArray2		m_Poly;
 	Array<float>	m_Density;
 	Array<short>	m_Biotype;
-	vtPlantInstanceArray *m_pPia;
+	vtPlantInstanceArray m_Pia;
 };
 
 #endif
