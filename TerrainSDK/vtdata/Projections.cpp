@@ -112,6 +112,10 @@ bool vtProjection::operator!=(const vtProjection &ref) const
  */
 void vtProjection::SetUTMZone(int iZone)
 {
+	// It appears that even lightweight tasks like getting UTM zone
+	//  runs into trouble with the Locale ./, issue.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// reset the name of the projection so that SetUTM() will set it
 	SetProjCS("unnamed");
 
