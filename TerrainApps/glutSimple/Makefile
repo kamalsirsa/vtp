@@ -34,6 +34,7 @@ OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = glutSimple
 LIBS   = -lvtosg -lvtdata \
          -lgdal.1.1 -losgDB -losgUtil -losg -lnetcdf \
+		 -lxmlhelper \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)
