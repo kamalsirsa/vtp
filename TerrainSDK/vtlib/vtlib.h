@@ -1,6 +1,9 @@
 //
 // Main header for VT library, for all platforms
 //
+// Copyright (c) 2001-2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)	// prevent common warning about templates
@@ -10,6 +13,7 @@
 #include <stdio.h>
 
 // vtdata headers
+#include "vtdata/config_vtdata.h"
 #include "vtdata/MathTypes.h"
 
 // OpenGL headers
@@ -81,16 +85,6 @@
 
 ///////////////////////////////// OSG //////////////////////////////
 #if VTLIB_OSG
-	#include <osgUtil/SceneView>
-	#include <osg/Billboard>
-	#include <osg/Geometry>
-	#include <osg/Image>
-	#include <osg/LOD>
-	#include <osg/Material>
-	#include <osg/Texture2D>
-	#include <osg/MatrixTransform>
-	#include <osg/Vec2>
-
 	#include "vtosg/ImageOSG.h"
 	#include "vtosg/MathOSG.h"
 	#include "vtosg/MeshMat.h"
