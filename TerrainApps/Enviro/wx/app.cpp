@@ -32,6 +32,13 @@
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 
+#if INFRA
+#include "Infra/InfraFrame.h"
+#define FRAME_NAME InfraFrame
+#else
+#define FRAME_NAME vtFrame
+#endif
+
 IMPLEMENT_APP(vtApp)
 
 
@@ -124,7 +131,7 @@ bool vtApp::OnInit()
 	title += _T(" SSG");
 #endif
 	VTLOG("Creating the frame window.\n");
-	vtFrame *frame = new vtFrame(NULL, title,
+	vtFrame *frame = new FRAME_NAME(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 
 	vtGetScene()->Init();
