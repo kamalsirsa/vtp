@@ -482,6 +482,10 @@ SOURCE=.\Options.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\PlantingOptions.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\PTerrain.h
 # End Source File
 # Begin Source File
