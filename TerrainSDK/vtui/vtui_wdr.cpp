@@ -19,6 +19,19 @@
 
 #include <wx/intl.h>
 
+// Euro sign hack of the year
+#if wxUSE_UNICODE
+    #define __WDR_EURO__ wxT("\u20ac")
+#else
+    #if defined(__WXMAC__)
+        #define __WDR_EURO__ wxT("\xdb")
+    #elif defined(__WXMSW__)
+        #define __WDR_EURO__ wxT("\x80")
+    #else
+        #define __WDR_EURO__ wxT("\xa4")
+    #endif
+#endif
+
 // Implement window functions
 
 wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
@@ -39,11 +52,11 @@ wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxFlexGridSizer *item5 = new wxFlexGridSizer( 2, 0, 0 );
 
     wxButton *item6 = new wxButton( parent, ID_LEVEL_COPY, _("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Enable( FALSE );
+    item6->Enable( false );
     item5->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxButton *item7 = new wxButton( parent, ID_LEVEL_DEL, _("Del"), wxDefaultPosition, wxDefaultSize, 0 );
-    item7->Enable( FALSE );
+    item7->Enable( false );
     item5->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxButton *item8 = new wxButton( parent, ID_LEVEL_UP, _("Up"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -144,13 +157,9 @@ wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -177,11 +186,11 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
     wxFlexGridSizer *item5 = new wxFlexGridSizer( 2, 0, 0 );
 
     wxButton *item6 = new wxButton( parent, ID_LEVEL_COPY, _("Copy"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Enable( FALSE );
+    item6->Enable( false );
     item5->Add( item6, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxButton *item7 = new wxButton( parent, ID_LEVEL_DEL, _("Del"), wxDefaultPosition, wxDefaultSize, 0 );
-    item7->Enable( FALSE );
+    item7->Enable( false );
     item5->Add( item7, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     wxButton *item8 = new wxButton( parent, ID_LEVEL_UP, _("Up"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -321,13 +330,9 @@ wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit, bool set_size
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -343,7 +348,7 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_TYPE, wxDefaultPosition, wxSize(150,-1), 0, strs3, 0 );
+    wxChoice *item3 = new wxChoice( parent, ID_TYPE, wxDefaultPosition, wxSize(160,-1), 0, strs3, 0 );
     item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -353,7 +358,7 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_HEIGHTEDIT, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_HEIGHTEDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
     item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxSlider *item7 = new wxSlider( parent, ID_HEIGHTSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
@@ -366,7 +371,7 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
     wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
     item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SPACINGEDIT, wxT(""), wxDefaultPosition, wxSize(40,-1), 0 );
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SPACINGEDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
     item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxSlider *item11 = new wxSlider( parent, ID_SPACINGSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
@@ -376,13 +381,9 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -429,13 +430,9 @@ wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -515,13 +512,9 @@ wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -583,13 +576,9 @@ wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -676,13 +665,9 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -703,28 +688,28 @@ wxBitmap vtuiBitmapsFunc( size_t index )
         /* columns rows colors chars-per-pixel */
         "32 18 5 1",
         "a c Black",
-        "b c #FF0000",
-        "c c #00FF00",
+        "b c #FFFFFF",
+        "c c #FF0000",
         "d c #0000FF",
-        "e c #FFFFFF",
+        "e c #00FF00",
         /* pixels */
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "aaaaeaaaaaaeaaaaaaaaeaaeaaaaaaaa",
-        "aaaaeaaaaaeaaaaaaaaaeaaeaaaaaaaa",
-        "aaaaeaaaaaeaaaaaaaaaeaaeaaaaaaaa",
-        "aaaaeaaaeeeeaaaaaaaaeaeeeaaaaaaa",
-        "aaaaeaaaaaeaaaaaaaaaeaaeaaaaaaaa",
-        "aaaeeaaeeaeaaeeaeaeaeaaeaaaaeaaa",
-        "aaeaeaeaeaeaeaeaeaeaeaaeaaaeeeaa",
-        "aaeaeaeaeaeaeaeaeaeaeaaeaaeeeeea",
-        "aaeaeaeeaaeaeaeaeaeaeaaeaaaeeeaa",
-        "aaeaeaeaaaeaeaeaeaeaeaaeaaaaeaaa",
-        "aaaeeaaeeaeaaeaeaeaaeaaeaaaaaaaa",
+        "aaaabaaaaaabaaaaaaaabaabaaaaaaaa",
+        "aaaabaaaaabaaaaaaaaabaabaaaaaaaa",
+        "aaaabaaaaabaaaaaaaaabaabaaaaaaaa",
+        "aaaabaaabbbbaaaaaaaababbbaaaaaaa",
+        "aaaabaaaaabaaaaaaaaabaabaaaaaaaa",
+        "aaabbaabbabaabbabababaabaaaabaaa",
+        "aababababababababababaabaaabbbaa",
+        "aababababababababababaabaabbbbba",
+        "aabababbaababababababaabaaabbbaa",
+        "aabababaaababababababaabaaaabaaa",
+        "aaabbaabbabaabababaabaabaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "aabbbbbbbbaaccccccccaadddddddaaa",
+        "aaccccccccaaeeeeeeeeaadddddddaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         };
         wxBitmap bitmap( xpm_data );

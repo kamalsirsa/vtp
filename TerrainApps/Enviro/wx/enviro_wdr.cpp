@@ -1638,7 +1638,7 @@ wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs21 = (wxString*) NULL;
-    wxChoice *item21 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(100,-1), 0, strs21, 0 );
+    wxChoice *item21 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(200,-1), 0, strs21, 0 );
     item19->Add( item21, 1, wxALIGN_CENTER|wxALL, 5 );
 
     item1->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
