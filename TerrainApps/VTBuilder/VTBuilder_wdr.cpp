@@ -1040,8 +1040,8 @@ wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item2 = new wxBoxSizer( wxHORIZONTAL );
 
     wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_FIELD, wxDefaultPosition, wxSize(110,-1), 0, strs3, 0 );
-    item2->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxListBox *item3 = new wxListBox( parent, ID_FIELD, wxDefaultPosition, wxSize(100,110), 0, strs3, wxLB_SINGLE );
+    item2->Add( item3, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     wxString *strs4 = (wxString*) NULL;
     wxChoice *item4 = new wxChoice( parent, ID_CONDITION, wxDefaultPosition, wxSize(50,-1), 0, strs4, 0 );
@@ -1049,9 +1049,9 @@ wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxString *strs5 = (wxString*) NULL;
     wxComboBox *item5 = new wxComboBox( parent, ID_COMBO_VALUE, "", wxDefaultPosition, wxSize(180,-1), 0, strs5, wxCB_DROPDOWN );
-    item2->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item2->Add( item5, 1, wxALIGN_CENTRE|wxALL, 5 );
 
-    item0->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item0->Add( item2, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 
     wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
 
