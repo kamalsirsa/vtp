@@ -167,9 +167,16 @@ void vtTerrainScene::_CreateSky()
  */
 vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 {
+	VTLOG("FindTerrainByName (%s):\n", name);
 	for (unsigned int i = 0; i < NumTerrains(); i++)
+	{
 		if (m_Terrains[i]->GetName() == name)
+		{
+			VTLOG("  found terrain number %d.\n", i);
 			return m_Terrains[i];
+		}
+	}
+	VTLOG("  not found.\n");
 	return NULL;
 }
 

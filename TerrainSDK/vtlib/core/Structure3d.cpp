@@ -116,18 +116,24 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 			vtString prefix = "BuildingModels/";
 			fullpath = FindFileOnPaths(vtGetDataPath(), prefix+filename);
 		}
-		if (fullpath != "")
+		if (fullpath == "")
 		{
-			// If they are re-creating this object, it's probably because
-			//  the object has changed on disk, so force a reload
-			bool bForce = bRecreating;
-
-			m_pModel = vtNode::LoadModel(fullpath, !bForce);
-			if (m_pModel)
-				SetValueString("filename", fullpath);
-		}
-		if (!m_pModel)
+			// still can't find it - give up.
+			VTLOG("Couldn't find file '%s'\n", filename);
 			return false;
+		}
+		// If they are re-creating this object, it's probably because
+		//  the object has changed on disk, so force a reload
+		bool bForce = bRecreating;
+
+		m_pModel = vtNode::LoadModel(fullpath, !bForce);
+		if (m_pModel)
+			SetValueString("filename", fullpath);
+		else
+		{
+			VTLOG("Couldn't load model from file '%s'\n", filename);
+			return false;
+		}
 	}
 	const char *itemname = GetValueString("itemname", false, true);
 	if (itemname)
