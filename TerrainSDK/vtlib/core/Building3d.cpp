@@ -1002,9 +1002,7 @@ void vtBuilding3d::Randomize(int iStories)
  * Capable of several levels of detail (defaults to full detail).
  * If the geometry was already built previously, it is destroyed and re-created.
  *
- * \param pHeightField The heightfield on which to plant the building.
- * \param options Can contain the keywords "roof", "walls", or "details"
- *   (construct all the little details, like mouding and windows)
+ * \param pTerr The terrain on which to plant the building.
  */
 bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 {
