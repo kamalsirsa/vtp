@@ -189,6 +189,7 @@ public:
 	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
 		float fGround, float fVertical) {}
 	virtual vtString GetPathFromGUI() { return ""; }
+	virtual bool OnTerrainSelect() { return false; }
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;
