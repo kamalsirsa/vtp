@@ -18,6 +18,10 @@ enum AppearType {
 	AT_XFROG
 };
 
+/**
+ * An appearance is an representation of how a plant looks, which can be
+ * an image or a model.
+ */
 class vtPlantAppearance
 {
 public:
@@ -35,7 +39,12 @@ public:
 	static float s_fTreeScale;
 };
 
-class vtPlantSpecies {
+/**
+ * A species consists of a scientific name, any number of common names, and
+ * any number of appearances.
+ */
+class vtPlantSpecies
+{
 public:
 	vtPlantSpecies();
 	virtual ~vtPlantSpecies();
@@ -75,6 +84,11 @@ protected:
 };
 
 
+/**
+ * A plant density is a representation of how densely a plant is distributed,
+ * consisting of a reference to a species and a density, in instances per
+ * square meter.
+ */
 class vtPlantDensity
 {
 public:
@@ -87,6 +101,12 @@ public:
 	int			m_iNumPlanted;		// plant distribution process
 };
 
+/**
+ * A biotype is like a ecological type classification.  It consists of any
+ * number of plant densities, which together describe how many species are
+ * found in a certain area, and the density of each.  For example,
+ * "Hawaiian Mid-Elevation Rainforest" would be a biotype.
+ */
 class vtBioType
 {
 public:
@@ -102,6 +122,9 @@ public:
 	vtString	m_name;
 };
 
+/** 
+ * A species list is a list of species.
+ */
 class vtSpeciesList
 {
 public:
@@ -137,6 +160,12 @@ protected:
 	Array<vtPlantSpecies*> m_Species;
 };
 
+/**
+ * A bioregion is a set of all the biotypes (vtBioType) found in a given
+ * region.  For example, the California bioregion contains biotypes for
+ * coastal wetlands, temperate rainforest, dry grasslands, alpine forest,
+ * etc.
+ */
 class vtBioRegion
 {
 public:
@@ -155,6 +184,14 @@ public:
 	Array<vtBioType *> m_Types;
 };
 
+/**
+ * This class contains a set of Plant Instances.  It is implemented as a
+ * subclass of vtFeatureSetPoint2D, a set of 2D locations of the plant
+ * stems.
+ * It can be read from/written to the VF format ("vegetation file")
+ * designed specifically for the purpose of storing plants, which makes
+ * it very compact and much more efficient than, e.g. SHP format.
+ */
 class vtPlantInstanceArray : public vtFeatureSetPoint2D
 {
 public:

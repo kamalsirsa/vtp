@@ -26,7 +26,7 @@ and distributed under a completely free <a href="../../license.txt">open source 
         <li>vtBioRegion</li>
         <li>vtPlantAppearance</li>
         <li>vtPlantSpecies</li>
-        <li>vtPlantList</li>
+        <li>vtSpeciesList</li>
         <li>vtPlantInstanceArray</li>
       </ul>
       <p>Roads / Transportation</p>
