@@ -144,9 +144,11 @@ public:
 	vtGroup *GenerateGeometry(bool do_texture, const StringArray &paths);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
-	void SetLodDistance(float fDistance) { m_fLodDistance = fDistance; }
 	void SetHeightOffGround(float fHeight) { s_fHeight = fHeight; }
 	void DetermineSurfaceAppearance();
+
+	void SetLodDistance(float fDistance);
+	float GetLodDistance();
 
 public:
 	static float s_fHeight;

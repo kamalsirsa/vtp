@@ -26,6 +26,9 @@ public:
 	void RemoveFromGrid(vtGeom *pModel);
 	void RemoveNodeFromGrid(vtNodeBase *pNode);
 
+	void SetDistance(float fLODDistance);
+	float GetDistance();
+
 protected:
 	FPoint3 m_origin;
 	FPoint3 m_size;

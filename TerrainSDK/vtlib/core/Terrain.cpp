@@ -868,7 +868,7 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 
 void vtTerrain::create_culture(bool bSound)
 {
-	// m_iTreeDistance is in kilometers, so multiply to get meters
+	// The LOD distances are in meters
 	_SetupStructGrid(m_Params.m_iStructDistance);
 	_SetupVegGrid(m_Params.m_iVegDistance);
 
@@ -1381,6 +1381,10 @@ void vtTerrain::SetFeatureVisible(TFType ftype, bool bOn)
 		if (m_pVegGrid)
 			m_pVegGrid->SetEnabled(bOn);
 		break;
+	case TFT_STRUCTURES:
+		if (m_pStructGrid)
+			m_pStructGrid->SetEnabled(bOn);
+		break;
 	case TFT_ROADS:
 		if (m_pRoadGroup)
 			m_pRoadGroup->SetEnabled(bOn);
@@ -1404,6 +1408,10 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 		if (m_pVegGrid)
 			return m_pVegGrid->GetEnabled();
 		break;
+	case TFT_STRUCTURES:
+		if (m_pStructGrid)
+			return m_pStructGrid->GetEnabled();
+		break;
 	case TFT_ROADS:
 		if (m_pRoadGroup)
 			return m_pRoadGroup->GetEnabled();
@@ -1412,6 +1420,44 @@ bool vtTerrain::GetFeatureVisible(TFType ftype)
 	return false;
 }
 
+void vtTerrain::SetLODDistance(TFType ftype, float fDistance)
+{
+	switch (ftype)
+	{
+	case TFT_VEGETATION:
+		if (m_pVegGrid)
+			m_pVegGrid->SetDistance(fDistance);
+		break;
+	case TFT_STRUCTURES:
+		if (m_pStructGrid)
+			m_pStructGrid->SetDistance(fDistance);
+		break;
+	case TFT_ROADS:
+		if (m_pRoadMap)
+			m_pRoadMap->SetLodDistance(fDistance);
+		break;
+	}
+}
+
+float vtTerrain::GetLODDistance(TFType ftype)
+{
+	switch (ftype)
+	{
+	case TFT_VEGETATION:
+		if (m_pVegGrid)
+			return m_pVegGrid->GetDistance();
+		break;
+	case TFT_STRUCTURES:
+		if (m_pStructGrid)
+			return m_pStructGrid->GetDistance();
+		break;
+	case TFT_ROADS:
+		if (m_pRoadMap)
+			return m_pRoadMap->GetLodDistance();
+		break;
+	}
+	return 0.0f;
+}
 
 void vtTerrain::CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 									  int patches, int patch_size)

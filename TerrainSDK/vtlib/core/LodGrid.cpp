@@ -177,3 +177,29 @@ void vtLodGrid::RemoveNodeFromGrid(vtNodeBase *pNode)
 	}
 }
 
+void vtLodGrid::SetDistance(float fLODDistance)
+{
+	m_fLODDistance = fLODDistance;
+
+	float ranges[2];
+	ranges[0] = 0.0f;
+	ranges[1] = m_fLODDistance;
+
+	vtLOD *lod;
+	int a, b;
+	for (a = 0; a < m_dim; a++)
+	{
+		for (b = 0; b < m_dim; b++)
+		{
+			lod = m_pCells[index(a,b)];
+			if (lod)
+				lod->SetRanges(ranges, 2);
+		}
+	}
+}
+
+float vtLodGrid::GetDistance()
+{
+	return m_fLODDistance;
+}
+

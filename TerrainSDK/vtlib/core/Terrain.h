@@ -45,6 +45,7 @@ enum TFType
 	TFT_TERRAINSURFACE,
 	TFT_OCEAN,
 	TFT_VEGETATION,
+	TFT_STRUCTURES,
 	TFT_ROADS,
 	TFT_TOWERS
 };
@@ -166,6 +167,10 @@ public:
 	// turn various features on/off
 	void SetFeatureVisible(TFType ftype, bool bOn);
 	bool GetFeatureVisible(TFType ftype);
+
+	// control LOD
+	void SetLODDistance(TFType ftype, float fDistance);
+	float GetLODDistance(TFType ftype);
 
 	// query
 	RGBf GetOceanColor() { return m_ocean_color; }

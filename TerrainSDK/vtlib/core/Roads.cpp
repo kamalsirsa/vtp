@@ -1046,6 +1046,31 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 	}
 }
 
+void vtRoadMap3d::SetLodDistance(float fDistance)
+{
+	m_fLodDistance = fDistance;
+
+	if (m_pGroup)
+	{
+		float fDist[2];
+		fDist[0] = 0.0f;
+		fDist[1] = m_fLodDistance;
+
+		int a, b;
+		for (a = 0; a < ROAD_CLUSTER; a++)
+			for (b = 0; b < ROAD_CLUSTER; b++)
+			{
+				if (m_pRoads[a][b])
+					m_pRoads[a][b]->SetRanges(fDist, 2);
+			}
+	}
+}
+
+float vtRoadMap3d::GetLodDistance()
+{
+	return m_fLodDistance;
+}
+
 void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 {
 	FPoint3 p;
