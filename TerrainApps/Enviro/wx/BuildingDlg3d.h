@@ -9,7 +9,7 @@
 #define __BuildingDlg3d_H__
 
 #ifdef __GNUG__
-	#pragma interface "BuildingDlg.cpp"
+	#pragma interface "BuildingDlg3d.cpp"
 #endif
 
 #include "vtui/BuildingDlg.h"
