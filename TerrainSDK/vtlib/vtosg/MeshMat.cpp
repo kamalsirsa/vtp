@@ -919,6 +919,8 @@ bool vtFont::LoadFont(const char *filename)
  */
 vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 {
+	ref();		// artficially set refcount to 1
+
 	// OSG 0.9.3
 //	m_pOsgText = new osgText::Text(font->m_pOsgFont.get());
 
@@ -949,7 +951,11 @@ vtTextMesh::~vtTextMesh()
 
 void vtTextMesh::Release()
 {
-	m_pOsgText = NULL;	// dereference
+	unref();
+	if (_refCount == 1)	// no more references except from m_pGeometry
+		// explicit dereference. if Release is not called, this dereference should
+		//  also occur implicitly in the destructor
+		m_pOsgText = NULL;
 }
 
 void vtTextMesh::SetText(const char *text)

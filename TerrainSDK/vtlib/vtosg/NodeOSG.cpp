@@ -950,6 +950,9 @@ void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 	// connect the underlying OSG objects
 	m_pGeode->addDrawable(pTextMesh->m_pOsgText.get());
 
+	// The vtGeom owns/references the meshes it contains
+	pTextMesh->ref();
+
 	// Normally, we would assign the material state to the drawable.
 	// However, OSG treats Text specially, it cannot be affected by normal
 	//  material statesets.  For example, it always sets its own color,
