@@ -208,11 +208,35 @@ double DLine2::Length() const
 }
 
 
+//////////////////////////////////////////////////////////////////////////
+// DLine3 methods
+
+void DLine3::Add(const DPoint2 &p)
+{
+	int size = GetSize();
+	for (int i=0; i < size; i++)
+	{
+		GetAt(i).x += p.x;
+		GetAt(i).y += p.y;
+	}
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // DRECT methods
 //
 
 bool DRECT::ContainsLine(const DLine2 &line) const
+{
+	for (unsigned int i = 0; i < line.GetSize(); i++)
+	{
+		if (!ContainsPoint(line[i]))
+			return false;
+	}
+	return true;
+}
+
+bool DRECT::ContainsLine(const DLine3 &line) const
 {
 	for (unsigned int i = 0; i < line.GetSize(); i++)
 	{

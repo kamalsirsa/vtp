@@ -482,6 +482,7 @@ public:
 	DLine3 &operator=(const class DLine3 &v);
 //	DLine3 &operator=(const class FLine3 &v);
 
+	void Add(const DPoint2 &p);
 	void RemovePoint(int i);
 };
 
@@ -677,7 +678,12 @@ public:
 	{
 		return (p.x > left && p.x < right && p.y > bottom && p.y < top);
 	}
+	bool ContainsPoint(const DPoint3 &p) const
+	{
+		return (p.x > left && p.x < right && p.y > bottom && p.y < top);
+	}
 	bool ContainsLine(const DLine2 &line) const;
+	bool ContainsLine(const DLine3 &line) const;
 	bool ContainsRect(const DRECT &r2) const
 	{
 		return (r2.left >= left && r2.right <= right &&
@@ -700,6 +706,19 @@ public:
 	void GrowToContainLine(const DLine2 &line)
 	{
 		DPoint2 p;
+		int size = line.GetSize();
+		for (int i = 0; i < size; i++)
+		{
+			p = line.GetAt(i);
+			if (p.x < left)		left = p.x;
+			if (p.x > right)	right = p.x;
+			if (p.y < bottom)	bottom = p.y;
+			if (p.y > top)		top = p.y;
+		}
+	}
+	void GrowToContainLine(const DLine3 &line)
+	{
+		DPoint3 p;
 		int size = line.GetSize();
 		for (int i = 0; i < size; i++)
 		{
