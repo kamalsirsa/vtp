@@ -49,7 +49,10 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 	SetCurrent();
 
 	m_StatusTimer.SetFrame((wxFrame *)parent);
-	m_StatusTimer.Start(1000);
+
+	// Note we don't actually have to start this timer, because it is driven
+	// direct calls from OnPaint()
+//	m_StatusTimer.Start(1000);
 
 	m_bPainting = false;
 	m_bRunning = true;
@@ -58,11 +61,11 @@ wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 	s_canvas = this;
 }
 
-
 vtGLCanvas::~vtGLCanvas(void)
 {
 	VTLOG("Deleting Canvas\n");
 }
+
 
 void EnableContinuousRendering(bool bTrue)
 {
@@ -101,48 +104,17 @@ void StatusTimer::Notify()
 {
 	if (!m_pFrame || !m_pFrame->GetStatusBar()) return;
 
-	vtScene *scene = vtGetScene();
-	if (!scene) return;
-
-	wxString2 str, str2;
-
-	// get framerate
-	float fps = scene->GetFrameRate();
-
-	// only show 3 significant digits
-	if (fps < 10)
-		str.Printf(_T("fps %1.2f, "), fps);
-	else if (fps < 80)
-		str.Printf(_T("fps %2.1f, "), fps);
-	else
-		str.Printf(_T("fps %3.0f, "), fps);
-
-	// get time of day
-	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
-	if (te && te->GetEnabled())
-	{
-		int hr, min, sec;
-		te->GetTime(hr, min, sec);
-
-		str2.Printf(_T("time %02d:%02d:%02d, "), hr, min, sec);
-		str += str2;
-	}
-
 	vtString vs;
-	g_App.DescribeCoordinates(vs);
+	g_App.GetStatusText(vs);
+
+	wxString2 str;
 #if SUPPORT_WSTRING && UNICODE
 	wstring2 ws;
 	ws.from_utf8(vs);
-	str += ws.c_str();;
+	str = ws.c_str();
 #else
-	str += vs;
+	str = vs;
 #endif
-
-	// get CLOD triangle counts, if appropriate
-	g_App.DescribeCLOD(vs);
-	str += wxString::FromAscii((const char *)vs);
-
-	str += wxString::FromAscii((const char *)g_App.m_strMessage);
 
 	m_pFrame->SetStatusText(str);
 }
