@@ -9,6 +9,8 @@
 #define VTDATA_FEATURES
 
 #include "shapelib/shapefil.h"
+#include "ogrsf_frmts.h"
+
 #include "MathTypes.h"
 #include "vtString.h"
 #include "Projections.h"
@@ -69,6 +71,7 @@ public:
 	// File IO
 	bool SaveToSHP(const char *filename);
 	bool LoadFromSHP(const char *filename);
+	bool LoadFromGML(const char *filename);
 
 	// feature (entity) operations
 	int NumEntities();
@@ -133,6 +136,7 @@ public:
 
 protected:
 	void _ShrinkGeomArraySize(int size);
+	void _SetupFromOGCType(OGRwkbGeometryType type);
 
 	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
 	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON

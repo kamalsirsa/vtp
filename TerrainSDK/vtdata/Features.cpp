@@ -6,6 +6,7 @@
 //
 
 #include "Features.h"
+#include "xmlhelper/easyxml.hpp"
 
 //
 // Fields
@@ -166,7 +167,7 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 	// Get number of entities (nElem) and type of data (nShapeType)
 	int		nElem;
 	int		nShapeType;
-    double	adfMinBound[4], adfMaxBound[4];
+	double	adfMinBound[4], adfMaxBound[4];
 	FPoint2 point;
 	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
 
@@ -297,6 +298,313 @@ bool vtFeatures::LoadFromSHP(const char *filename)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of Feature files.
+////////////////////////////////////////////////////////////////////////
+
+class FeatureListVisitor : public XMLVisitor
+{
+public:
+	FeatureListVisitor(vtFeatures *pF) :
+		m_pFeatures(pF), _level(0) {}
+
+	virtual ~FeatureListVisitor () {}
+
+	void startXML ();
+	void endXML ();
+	void startElement (const char * name, const XMLAttributes &atts);
+	void endElement (const char * name);
+	void data (const char * s, int length);
+
+private:
+	struct State
+	{
+		State () : item(0), type("") {}
+		State (int _item, const char * _type)
+			: item(_item), type(_type) {}
+		int item;
+		string type;
+	};
+
+	State &state () { return _state_stack[_state_stack.size() - 1]; }
+
+	void push_state (int _item, const char *type)
+	{
+		if (type == 0)
+			_state_stack.push_back(State(_item, "unspecified"));
+		else
+			_state_stack.push_back(State(_item, type));
+		_level++;
+		_data = "";
+	}
+
+	void pop_state () {
+		_state_stack.pop_back();
+		_level--;
+	}
+
+	string _data;
+	int _level;
+	vector<State> _state_stack;
+
+	vtFeatures *m_pFeatures;
+};
+
+void FeatureListVisitor::startXML ()
+{
+	_level = 0;
+	_state_stack.resize(0);
+}
+
+void FeatureListVisitor::endXML ()
+{
+	_level = 0;
+	_state_stack.resize(0);
+}
+
+void FeatureListVisitor::startElement (const char * name, const XMLAttributes &atts)
+{
+	State &st = state();
+
+	if (_level == 0)
+	{
+		if (string(name) != (string)"species-file")
+		{
+			string message = "Root element name is ";
+			message += name;
+			message += "; expected species-file";
+			throw xh_io_exception(message, "XML Reader");
+		}
+		push_state(NULL, "top");
+		return;
+	}
+
+	const char * attval;
+
+	if (_level == 1)
+	{
+		if (string(name) == (string)"species")
+		{
+			// Get id, name, max height.
+//			attval = atts.getValue("id");
+//			push_state(pItem, "species");
+		}
+		return;
+	}
+}
+
+void FeatureListVisitor::endElement(const char * name)
+{
+	State &st = state();
+
+	if (string(name) == (string)"species")
+	{
+//		if (st.item != NULL)
+//			m_pPL->Append(st.item);
+		pop_state();
+	}
+}
+
+void FeatureListVisitor::data(const char *s, int length)
+{
+	if (state().item != NULL)
+		_data.append(string(s, length));
+}
+
+bool vtFeatures::LoadFromGML(const char *filename)
+{
+	FeatureListVisitor visitor(this);
+	try
+	{
+		readXML(filename, visitor);
+	}
+	catch (xh_exception &)
+	{
+		// TODO: would be good to pass back the error message.
+		return false;
+	}
+	return true;
+}
+*/
+
+
+bool vtFeatures::LoadFromGML(const char *filename)
+{
+	// try using OGR
+	OGRRegisterAll();
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
+	if (!pDatasource)
+		return false;
+
+	int j, feature_count;
+	DLine2		*dline;
+	DPoint2		p2;
+
+	OGRLayer		*pOGRLayer;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRPoint		*pPoint;
+	OGRLineString   *pLineString;
+	OGRPolygon		*pPolygon;
+	OGRLinearRing	*pRing;
+
+	// Assume that this data source is a "flat feature" GML file
+	//
+	// Assume there is only 1 layer.
+	//
+	int num_layers = pDatasource->GetLayerCount();
+	pOGRLayer = pDatasource->GetLayer(0);
+	if (!pOGRLayer)
+		return false;
+
+	feature_count = pOGRLayer->GetFeatureCount();
+  	pOGRLayer->ResetReading();
+	OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
+	if (!defn)
+		return false;
+	const char *layer_name = defn->GetName();
+
+	int iFields = defn->GetFieldCount();
+	for (j = 0; j < iFields; j++)
+	{
+		OGRFieldDefn *field_def1 = defn->GetFieldDefn(j);
+		if (field_def1)
+		{
+			const char *fnameref = field_def1->GetNameRef();
+			OGRFieldType ftype = field_def1->GetType();
+
+			switch (ftype)
+			{
+			case OFTInteger:
+				AddField(fnameref, FTInteger);
+				break;
+			case OFTReal:
+				AddField(fnameref, FTDouble);
+				break;
+			case OFTString:
+				AddField(fnameref, FTString);
+				break;
+			}
+		}
+	}
+
+	// Get the projection (SpatialReference) from this layer?  We can't,
+	// because for current GML the layer doesn't have it; must use the
+	// first Geometry instead.
+//	OGRSpatialReference *pSpatialRef = pOGRLayer->GetSpatialRef();
+
+	// Look at the first geometry of the first feature in order to know
+	// what kind of primitive this file has.
+	bool bFirst = true;
+	OGRwkbGeometryType eType;
+	int num_points;
+	int fcount = 0;
+
+	while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
+	{
+		pGeom = pFeature->GetGeometryRef();
+		if (!pGeom) continue;
+
+		if (bFirst)
+		{
+			OGRSpatialReference *pSpatialRef = pGeom->getSpatialReference();
+			if (pSpatialRef)
+				m_proj.SetSpatialReference(pSpatialRef);
+
+			eType = pGeom->getGeometryType();
+			_SetupFromOGCType(eType);
+			bFirst = false;
+		}
+
+		switch (eType)
+		{
+		case wkbPoint:
+			pPoint = (OGRPoint *) pGeom;
+			p2.Set(pPoint->getX(), pPoint->getY());
+			m_Point2.Append(p2);
+			break;
+		case wkbLineString:
+			pLineString = (OGRLineString *) pGeom;
+			num_points = pLineString->getNumPoints();
+			dline = new DLine2;
+			dline->SetSize(num_points);
+			for (j = 0; j < num_points; j++)
+				dline->SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
+			m_LinePoly.Append(dline);
+			break;
+		case wkbPolygon:
+			pPolygon = (OGRPolygon *) pGeom;
+			pRing = pPolygon->getExteriorRing();
+			int num_points = pRing->getNumPoints();
+			dline = new DLine2;
+			dline->SetSize(num_points);
+			for (j = 0; j < num_points; j++)
+				dline->SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
+			m_LinePoly.Append(dline);
+			break;
+		}
+
+		for (j = 0; j < iFields; j++)
+		{
+			Field *field = GetField(j);
+			switch (field->m_type)
+			{
+			case FTInteger:
+				field->m_int.Append(pFeature->GetFieldAsInteger(j));
+				break;
+			case FTDouble:
+				field->m_double.Append(pFeature->GetFieldAsDouble(j));
+				break;
+			case FTString:
+				field->m_string.Append(new vtString(pFeature->GetFieldAsString(j)));
+				break;
+			}
+		}
+		fcount++;
+	}
+
+	delete pDatasource;
+
+	// allocate selection array
+	m_Flags.SetSize(fcount);
+
+	return true;
+}
+
+void vtFeatures::_SetupFromOGCType(OGRwkbGeometryType type)
+{
+	switch (type)
+	{
+	case wkbPoint:
+		m_nSHPType = SHPT_POINT;
+		break;
+	case wkbLineString:
+		m_nSHPType = SHPT_ARC;
+		break;
+	case wkbPolygon:
+		m_nSHPType = SHPT_POLYGON;
+		break;
+	case wkbMultiPoint:
+	case wkbMultiLineString:
+	case wkbMultiPolygon:
+	case wkbGeometryCollection:
+	case wkbNone:	   // non-standard, for pure attribute records
+	case wkbPoint25D:	   // non-standard, 2.5D extension
+	case wkbLineString25D:
+	case wkbPolygon25D:
+	case wkbMultiPoint25D:
+	case wkbMultiLineString25D:
+	case wkbMultiPolygon25D:
+	case wkbGeometryCollection25D:
+		break;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////
 //
 // feature (entity) operations
 //
@@ -355,6 +663,13 @@ int vtFeatures::AddPoint(const DPoint3 &p)
 
 void vtFeatures::GetPoint(int num, DPoint3 &p)
 {
+	if (m_nSHPType == SHPT_POINT)
+	{
+		DPoint2 p2 = m_Point2.GetAt(num);
+		p.x = p2.x;
+		p.y = p2.y;
+		p.z = 0;
+	}
 	if (m_nSHPType == SHPT_POINTZ)
 	{
 		p = m_Point3.GetAt(num);
