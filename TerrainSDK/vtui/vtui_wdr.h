@@ -83,6 +83,14 @@ wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_size
 #define ID_LOCATION 10042
 wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_MAP_OFFSET 10043
+#define ID_UNITS1 10044
+#define ID_MAP_DIST 10045
+#define ID_UNITS2 10046
+#define ID_GEOD_DIST 10047
+#define ID_UNITS3 10048
+wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

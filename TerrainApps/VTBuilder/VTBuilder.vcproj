@@ -1228,9 +1228,6 @@
 				RelativePath="BuilderView.h">
 			</File>
 			<File
-				RelativePath="DistanceDlg.h">
-			</File>
-			<File
 				RelativePath="DistribVegDlg.h">
 			</File>
 			<File
@@ -1545,43 +1542,6 @@
 		<Filter
 			Name="Source - Dialogs"
 			Filter="">
-			<File
-				RelativePath="DistanceDlg.cpp">
-				<FileConfiguration
-					Name="Debug Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release Unicode|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="1"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
-				</FileConfiguration>
-			</File>
 			<File
 				RelativePath="DistribVegDlg.cpp">
 				<FileConfiguration

@@ -307,6 +307,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\DistanceDlg.cpp">
+			</File>
+			<File
 				RelativePath="HeightDlg.cpp">
 				<FileConfiguration
 					Name="Release Unicode|Win32">
@@ -559,6 +562,9 @@
 			</File>
 			<File
 				RelativePath="BuildingDlg.h">
+			</File>
+			<File
+				RelativePath=".\DistanceDlg.h">
 			</File>
 			<File
 				RelativePath="HeightDlg.h">
