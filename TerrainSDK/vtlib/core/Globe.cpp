@@ -35,6 +35,8 @@ IcoGlobe::IcoGlobe()
 IcoGlobe::~IcoGlobe()
 {
 	m_mats->Release();
+	for (int i = 0; i < m_features.GetSize(); i++)
+		delete m_features[i];
 }
 
 
@@ -403,6 +405,8 @@ void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
 		}
 		m_SurfaceGroup->AddChild(mgeom);
 	}
+	// pass mesh ownership to the geom containers
+	mesh->Release();
 }
 
 void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
