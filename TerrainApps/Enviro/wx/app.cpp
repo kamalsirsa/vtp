@@ -46,16 +46,13 @@ void vtApp::Args(int argc, wxChar **argv)
 	{
 		wxString2 str = argv[i];
 		const char *cstr = str.mb_str();
-		g_App.StartupArgument(i, cstr);
 		if (!strcmp(cstr, "-no_startup_dialog"))
 			m_bShowStartupDialog = false;
-		else if (!strcmp(cstr, "-fullscreen"))
-			g_Options.m_bFullscreen = true;
-		else if(!strncmp(cstr, "-terrain=", 9))
-		{
+		else if (!strncmp(str, "-terrain=", 9))
 			m_bShowStartupDialog = false;
-			g_Options.m_strInitTerrain = cstr+9;
-		}
+
+		// also let the core application check the command line
+		g_App.StartupArgument(i, cstr);
 	}
 }
 
