@@ -621,7 +621,7 @@ void vtPlantInstanceArray3d::VisualDeselectAll()
 void vtPlantInstanceArray3d::VisualSelect(unsigned int i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
-	if (inst3d)
+	if (inst3d && inst3d->m_pContainer != NULL)
 	{
 		Select(i, true);
 		inst3d->ShowBounds(true);
