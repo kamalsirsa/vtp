@@ -871,7 +871,7 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 				rgb.Set(pRedline[iY * xBlockSize + iX],
 					pGreenline[iY * xBlockSize + iX],
 					pBlueline[iY * xBlockSize + iX]);
-				m_row[bufrow].m_data[iX] = rgb;
+				m_row[bufrow].m_data[ixBlock*xBlockSize + iX] = rgb;
 			}
 		}
 	}

@@ -279,9 +279,6 @@ bool CDib::Setup(CDC* pDC, GDALDataset *pDataset, HDRAWDIB hdd,
 			
 			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
 
-			if (xBlockSize % iPixelWidth != 0)
-				throw "Cannot handle this block size."; // TODO Handle odd block sizes
-
 			nxBlocks = (iPixelWidth + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (iPixelHeight + yBlockSize - 1) / yBlockSize;
 
