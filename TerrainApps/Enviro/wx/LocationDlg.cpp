@@ -18,6 +18,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtui/wxString2.h"
 #include "canvas.h"
 #include "LocationDlg.h"
 
@@ -131,8 +132,8 @@ void LocationDlg::OnLoad( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString path = loadFile.GetPath();
-	SetLocFile(path.c_str());
+	wxString2 path = loadFile.GetPath();
+	SetLocFile(path.mb_str());
 }
 
 void LocationDlg::OnSave( wxCommandEvent &event )
@@ -143,8 +144,8 @@ void LocationDlg::OnSave( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	wxString str = saveFile.GetPath();
-	if (!m_pSaver->Write(str.c_str()))
+	wxString2 str = saveFile.GetPath();
+	if (!m_pSaver->Write(str.mb_str()))
 		return;  // couldn't write
 }
 
