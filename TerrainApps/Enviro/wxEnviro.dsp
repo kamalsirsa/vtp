@@ -223,26 +223,6 @@ SOURCE=.\wx\canvas.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\ChooseDlg.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"wx/wxprec.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release Unicode"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Debug Unicode"
-
-# ADD BASE CPP /YX"wx/wxprec.h"
-# ADD CPP /YX"wx/wxprec.h"
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=.\wx\enviro_wdr.cpp
 
 !IF  "$(CFG)" == "wxEnviro - Win32 Debug"
@@ -408,10 +388,6 @@ SOURCE=.\wx\CameraDlg.h
 # Begin Source File
 
 SOURCE=.\wx\canvas.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\ChooseDlg.h
 # End Source File
 # Begin Source File
 
