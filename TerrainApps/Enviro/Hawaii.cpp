@@ -251,6 +251,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 
 	//  8' =  2.4385 m
 	// 12' =  3.6576 m
+	// 28' =  8.5344 m
 	// 36' = 10.9728 m
 	// 40' = 12.1920 m
 	// 48' = 14.6304 m
@@ -259,7 +260,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	{
 		vtBuilding3d *bld = new vtBuilding3d();
 
-		DPoint2 c2, c3, c4, c5, c6, c7, c8, c9;
+		DPoint2 c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12;
 		c2 = c1 + DPoint2(10.9728, 0.0);
 		c3 = c1 + DPoint2(14.6304, 0.0);
 		c4 = c1 + DPoint2(14.6304, 12.1920);
@@ -268,6 +269,9 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		c7 = c1 + DPoint2(3.6576, 0.0);
 		c8 = c1 + DPoint2(3.6576, 3.6576);
 		c9 = c1 + DPoint2(0.0, 3.6576);
+		c10 = c1 + DPoint2(10.9728, 3.6576);
+		c11 = c1 + DPoint2(10.9728, 8.534);
+		c12 = c1 + DPoint2(3.6576, 8.534);
 		DLine2 dl;
 		vtLevel *pLev;
 		vtEdge *pEdge;
@@ -281,6 +285,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pLev->SetFootprint(dl);
 		pLev->m_fStoryHeight = 2.4385f;
 		pLev->m_iStories = 1;
+		pLev->m_Color.Set(128, 128, 128);
 
 		pEdge = pLev->m_Edges[0];
 		pEdge->m_Features.Empty();
@@ -385,24 +390,28 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pLev->m_fStoryHeight = 0.9144f;	// 3 ft
 		pLev->m_iStories = 1;
 		pLev->SetWallMaterial(BMAT_PLAIN);
-		pLev->m_Color.Set(180, 150, 150);
+		pLev->m_Color.Set(90, 75, 75);
+		pLev->SetRoofType(ROOF_HIP, 14);
+		pLev->SetEaveLength(1.0f);
+		bld->AddLevel(pLev);
 
-		pEdge = pLev->m_Edges[0];
-		pEdge->m_iSlope = 0;
-
-		pEdge = pLev->m_Edges[1];
-		pEdge->m_iSlope = 0;
-
-		pEdge = pLev->m_Edges[2];
-		pEdge->m_iSlope = 0;
-
-		pEdge = pLev->m_Edges[3];
-		pEdge->m_iSlope = 0;
-
+		//////////////////////////////
+		// second roof level
+		dl.Empty();
+		dl.Append(c8);
+		dl.Append(c10);
+		dl.Append(c11);
+		dl.Append(c12);
+		pLev = new vtLevel();
+		pLev->SetFootprint(dl);
+		pLev->m_fStoryHeight = 1.6256f;	// 5 1/3 ft
+		pLev->m_iStories = 1;
+		pLev->SetWallMaterial(BMAT_PLAIN);
+		pLev->m_Color.Set(220, 220, 220);
+		pLev->SetRoofType(ROOF_GABLE, 33);
 		bld->AddLevel(pLev);
 
 		/////////////////////////////////////////
-		bld->m_RoofType = ROOF_HIP;
 		bld->SetCenterFromPoly();
 
 		vtStructure3d *str = new vtStructure3d;
