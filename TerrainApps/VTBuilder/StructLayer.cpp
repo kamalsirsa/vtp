@@ -123,7 +123,6 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 									vtBuilding *bld)
 {
 	DPoint2 corner[4];
-	float fWidth, fDepth, fRotation;
 	int j;
 
 	wxPoint origin;
@@ -132,45 +131,15 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 	pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
 	pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
 
-	if (bld->GetShape() == SHAPE_POLY)
-	{
-		DLine2 &dl = bld->GetFootprint();
-		int sides = dl.GetSize();
-		if (sides == 0)
-			return;
-		for (j = 0; j < sides && j < MAX_SIDES-1; j++)
-			pView->screen(dl.GetAt(j), array[j]);
-		pView->screen(dl.GetAt(0), array[j++]);
+	DLine2 &dl = bld->GetFootprint();
+	int sides = dl.GetSize();
+	if (sides == 0)
+		return;
+	for (j = 0; j < sides && j < MAX_SIDES-1; j++)
+		pView->screen(dl.GetAt(j), array[j]);
+	pView->screen(dl.GetAt(0), array[j++]);
 
-		pDC->DrawLines(j, array);
-	}
-	if (bld->GetShape() == SHAPE_CIRCLE)
-	{
-		int size = pView->sdx(bld->GetRadius());
-		pDC->DrawEllipse(origin.x-size, origin.y-size,
-			size<<1, size<<1);
-	}
-	if (bld->GetShape() == SHAPE_RECTANGLE)
-	{
-		bld->GetRectangle(fWidth, fDepth);
-		bld->GetRotation(fRotation);
-		if (fRotation == -1.0f) fRotation = 0.0f;
-		DPoint2 pt(fWidth / 2.0, fDepth / 2.0);
-		corner[0].Set(-pt.x, pt.y);
-		corner[1].Set(pt.x, pt.y);
-		corner[2].Set(pt.x, -pt.y);
-		corner[3].Set(-pt.x, -pt.y);
-		corner[0].Rotate(fRotation);
-		corner[1].Rotate(fRotation);
-		corner[2].Rotate(fRotation);
-		corner[3].Rotate(fRotation);
-		array[0] = origin + pView->screen_delta(corner[0]);
-		array[1] = origin + pView->screen_delta(corner[1]);
-		array[2] = origin + pView->screen_delta(corner[2]);
-		array[3] = origin + pView->screen_delta(corner[3]);
-		array[4] = array[0];
-		pDC->DrawLines(5, array);
-	}
+	pDC->DrawLines(j, array);
 }
 
 bool vtStructureLayer::OnSave()
@@ -519,10 +488,10 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pPoint = (OGRPoint *) pGeom;
 				pBld = NewBuilding();
 
-				pBld->SetShape(SHAPE_RECTANGLE);
 				point.x = pPoint->getX();
 				point.y = pPoint->getY();
 				pBld->SetLocation(point);
+				pBld->SetRectangle(point.x, point.y);
 				pBld->SetStories(1);
 
 				vtStructure *s = NewStructure();
@@ -599,7 +568,7 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				OGRLinearRing *ring = pPolygon->getExteriorRing();
 				int num_points = ring->getNumPoints();
-				pBld->SetShape(SHAPE_POLY);
+
 				DLine2 foot;
 				foot.SetSize(num_points);
 				for (j = 0; j < num_points; j++)

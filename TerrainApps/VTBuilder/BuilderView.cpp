@@ -1675,23 +1675,18 @@ void BuilderView::UpdateMove()
 	DPoint2 p;
 	DPoint2 moved_by = m_CurLocation - m_DownLocation;
 
-	if (m_EditBuilding.GetShape() == SHAPE_POLY)
+	DLine2 dl = m_pCurBuilding->GetFootprint();
+	for (int i = 0; i < dl.GetSize(); i++)
 	{
-		DLine2 dl = m_pCurBuilding->GetFootprint();
-		for (int i = 0; i < dl.GetSize(); i++)
-		{
-			p = dl.GetAt(i);
-			p += moved_by;
-			dl.SetAt(i, p);
-		}
-		m_EditBuilding.SetFootprint(dl);
+		p = dl.GetAt(i);
+		p += moved_by;
+		dl.SetAt(i, p);
 	}
+	m_EditBuilding.SetFootprint(dl);
+
 	p = m_pCurBuilding->GetLocation();
 	p += moved_by;
 	m_EditBuilding.SetLocation(p.x, p.y);
-
-	if (m_EditBuilding.GetShape() == SHAPE_RECTANGLE)
-		m_EditBuilding.RectToPoly();
 }
 
 void BuilderView::UpdateResizeScale()
@@ -1706,60 +1701,28 @@ void BuilderView::UpdateResizeScale()
 	DPoint2 diff2 = m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
 
-	if (m_EditBuilding.GetShape() == SHAPE_RECTANGLE)
+	DLine2 dl = m_pCurBuilding->GetFootprint();
+	DPoint2 p;
+	if (m_bShift)
 	{
-		float fRotation;
-		m_pCurBuilding->GetRotation(fRotation);
-		if (fRotation == -1.0f) fRotation = 0.0f;
-		diff1.Rotate(-fRotation);
-		diff2.Rotate(-fRotation);
-
-		DPoint2 ratio;
-		if (m_bShift)
-			// Scale evenly
-			ratio.x = ratio.y = fScale;
-		else
-			// Resize
-			ratio.Set(diff2.x / diff1.x, diff2.y / diff1.y);
-
-		float fWidth, fDepth;
-		m_pCurBuilding->GetRectangle(fWidth, fDepth);
-		fWidth *= (float) ratio.x;
-		fDepth *= (float) ratio.y;
-
-		// stay positive
-		if (fWidth < 0.0f) fWidth = -fWidth;
-		if (fDepth < 0.0f) fDepth = -fDepth;
-		m_EditBuilding.SetRectangle(fWidth, fDepth);
-
-		m_EditBuilding.RectToPoly();
+		// Scale evenly
+		for (int i = 0; i < dl.GetSize(); i++)
+		{
+			p = dl.GetAt(i);
+			p -= origin;
+			p *= fScale;
+			p += origin;
+			dl.SetAt(i, p);
+		}
 	}
-
-	if (m_EditBuilding.GetShape() == SHAPE_POLY)
+	else
 	{
-		DLine2 dl = m_pCurBuilding->GetFootprint();
-		DPoint2 p;
-		if (m_bShift)
-		{
-			// Scale evenly
-			for (int i = 0; i < dl.GetSize(); i++)
-			{
-				p = dl.GetAt(i);
-				p -= origin;
-				p *= fScale;
-				p += origin;
-				dl.SetAt(i, p);
-			}
-		}
-		else
-		{
-			// drag individual corner points
-			p = dl.GetAt(m_iCurCorner);
-			p += moved_by;
-			dl.SetAt(m_iCurCorner, p);
-		}
-		m_EditBuilding.SetFootprint(dl);
+		// drag individual corner points
+		p = dl.GetAt(m_iCurCorner);
+		p += moved_by;
+		dl.SetAt(m_iCurCorner, p);
 	}
+	m_EditBuilding.SetFootprint(dl);
 }
 
 void BuilderView::UpdateRotate()
@@ -1773,38 +1736,19 @@ void BuilderView::UpdateRotate()
 	double length2 = cur_vector.Length();
 	double angle2 = atan2(cur_vector.y, cur_vector.x);
 
-//	double length_diff = length2 / length1;
 	double angle_diff = angle2 - angle1;
 
-	if (m_EditBuilding.GetShape() == SHAPE_POLY)
+	DLine2 dl = m_pCurBuilding->GetFootprint();
+	DPoint2 p;
+	for (int i = 0; i < dl.GetSize(); i++)
 	{
-		DLine2 dl = m_pCurBuilding->GetFootprint();
-		DPoint2 p;
-		for (int i = 0; i < dl.GetSize(); i++)
-		{
-			p = dl.GetAt(i);
-			p -= origin;
-//			p *= length_diff;
-			p.Rotate(angle_diff);
-			p += origin;
-			dl.SetAt(i, p);
-		}
-		m_EditBuilding.SetFootprint(dl);
+		p = dl.GetAt(i);
+		p -= origin;
+		p.Rotate(angle_diff);
+		p += origin;
+		dl.SetAt(i, p);
 	}
-
-	if (m_EditBuilding.GetShape() == SHAPE_RECTANGLE)
-	{
-//		float fWidth, fHeight;
-//		m_pCurBuilding->GetRectangle(fWidth, fHeight);
-//		m_EditBuilding.SetRectangle(fWidth * length_diff, fHeight * length_diff);
-
-		float original_angle;
-		m_pCurBuilding->GetRotation(original_angle);
-		if (original_angle == -1.0f) original_angle = 0.0f;
-		m_EditBuilding.SetRotation(original_angle + angle_diff);
-
-		m_EditBuilding.RectToPoly();
-	}
+	m_EditBuilding.SetFootprint(dl);
 }
 
 //////////////////
