@@ -1322,7 +1322,7 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_PLANTS:
 		case MM_INSTANCES:
 		case MM_MOVE:
-		case MM_LINEAR:
+		case MM_MEASURE:
 			m_pCursorMGeom->SetEnabled(true);
 			EnableFlyerEngine(false);
 			break;
@@ -1592,7 +1592,7 @@ void Enviro::OnMouseLeftDownOrbit(vtMouseEvent &event)
 		if (pTerr)
 			SwitchToTerrain(pTerr);
 	}
-	if (m_mode == MM_LINEAR)
+	if (m_mode == MM_MEASURE)
 	{
 		m_EarthPosDown = m_EarthPos;
 		m_bDragging = true;
@@ -1603,7 +1603,7 @@ void Enviro::OnMouseLeftUp(vtMouseEvent &event)
 {
 	m_bDragging = m_bRotating = false;
 
-	if (m_state == AS_Orbit && m_mode == MM_LINEAR && m_bDragging)
+	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
 	{
 		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
 		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
@@ -1690,7 +1690,7 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 				ter->ShowPOI(poi, true);
 		}
 	}
-	if (m_state == AS_Orbit && m_mode == MM_LINEAR && m_bDragging)
+	if (m_state == AS_Orbit && m_mode == MM_MEASURE && m_bDragging)
 	{
 		DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
 		DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
@@ -1803,6 +1803,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	m_fArcLength = angle * EARTH_RADIUS;
 
 	m_pArc->AddMesh(m_pArcMesh, 0);
+	m_pArcMesh->Release();
 }
 
 ////////////////////////////////////////////////////////////////
