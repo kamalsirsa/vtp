@@ -117,6 +117,11 @@ public:
 	virtual vtFence *NewFence();
 	virtual vtStructInstance *NewInstance();
 
+	// convenience methods that create, add, and return a new structure
+	vtBuilding *AddNewBuilding();
+	vtFence *AddNewFence();
+	vtStructInstance *AddNewInstance();
+
 	// override to catch edit hightlighting
 	virtual void SetEditedEdge(vtBuilding *bld, int lev, int edge);
 

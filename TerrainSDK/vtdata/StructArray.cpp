@@ -46,6 +46,27 @@ vtStructInstance *vtStructureArray::NewInstance()
 	return new vtStructInstance;
 }
 
+vtBuilding *vtStructureArray::AddNewBuilding()
+{
+	vtBuilding *nb = NewBuilding();
+	Append(nb);
+	return nb;
+}
+
+vtFence *vtStructureArray::AddNewFence()
+{
+	vtFence *nf = NewFence();
+	Append(nf);
+	return nf;
+}
+
+vtStructInstance *vtStructureArray::AddNewInstance()
+{
+	vtStructInstance *ni = NewInstance();
+	Append(ni);
+	return ni;
+}
+
 void vtStructureArray::DestructItems(int first, int last)
 {
 	for (int i = first; i <= last; i++)
