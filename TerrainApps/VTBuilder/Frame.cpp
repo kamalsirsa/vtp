@@ -301,11 +301,11 @@ void MainFrame::RefreshToolbar()
 	toolBar_main->Realize();
 
 	menuBar->EnableTop(4, lt == LT_ROAD);
-	menuBar->EnableTop(5, lt == LT_ELEVATION);
-//	menuBar->EnableTop(6, lt == LT_VEG);
-	menuBar->EnableTop(7, lt == LT_STRUCTURE);
-	menuBar->EnableTop(8, lt == LT_RAW);
-	menuBar->EnableTop(9, lt == LT_UTILITY);
+	menuBar->EnableTop(5, lt == LT_UTILITY);
+	menuBar->EnableTop(6, lt == LT_ELEVATION);
+//	menuBar->EnableTop(7, lt == LT_VEG);
+	menuBar->EnableTop(8, lt == LT_STRUCTURE);
+	menuBar->EnableTop(9, lt == LT_RAW);
 }
 
 ////////////////////////////////////////////////////////////////
