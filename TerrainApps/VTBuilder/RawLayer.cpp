@@ -80,7 +80,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	{
 		for (i = 0; i < entities; i++)
 		{
-			if (m_Selected[i]) {
+			if (IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
 			}
 			else {
@@ -99,7 +99,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		size = m_Point3.GetSize();
 		for (i = 0; i < entities; i++)
 		{
-			if (m_Selected[i]) {
+			if (IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
 			}
 			else {
@@ -118,7 +118,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		size = m_LinePoly.GetSize();
 		for (i = 0; i < entities; i++)
 		{
-			if (m_Selected[i]) {
+			if (IsSelected(i)) {
 				if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
 			}
 			else {
@@ -227,7 +227,7 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 			field1->GetValueAsString(i, str);
 			field2->SetValueFromString(result, str);
 		}
-		m_Selected.Append(pFrom->IsSelected(i));
+		m_Flags.Append(pFrom->m_Flags[i]);
 	}
 	// empty the source layer
 	switch (m_type)
