@@ -139,6 +139,7 @@ public:
 
 	void OnElevSelect(wxCommandEvent& event);
 	void OnRemoveAboveSea(wxCommandEvent& event);
+	void OnElevSetUnknown(wxCommandEvent& event);
 	void OnFillIn(wxCommandEvent& event);
 	void OnScaleElevation(wxCommandEvent& event);
 	void OnExportTerragen(wxCommandEvent& event);
@@ -150,15 +151,13 @@ public:
 
 	void OnUpdateElevSelect(wxUpdateUIEvent& event);
 	void OnUpdateViewSetArea(wxUpdateUIEvent& event);
-	void OnUpdateRemoveAboveSea(wxUpdateUIEvent& event);
-	void OnUpdateFillIn(wxUpdateUIEvent& event);
+	void OnUpdateElevSetUnknown(wxUpdateUIEvent& event);
 	void OnUpdateScaleElevation(wxUpdateUIEvent& event);
-	void OnUpdateExportTerragen(wxUpdateUIEvent& event);
 	void OnUpdateElevShow(wxUpdateUIEvent& event);
 	void OnUpdateElevShading(wxUpdateUIEvent& event);
 	void OnUpdateElevHide(wxUpdateUIEvent& event);
-	void OnUpdateExportBitmap(wxUpdateUIEvent& event);
 	void OnUpdateElevMergeTin(wxUpdateUIEvent& event);
+	void OnUpdateIsGrid(wxUpdateUIEvent& event);
 
 	void OnTowerSelect(wxCommandEvent& event);
 	void OnTowerEdit(wxCommandEvent& event);

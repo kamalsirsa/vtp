@@ -115,6 +115,7 @@ EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
 
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
+EVT_MENU(ID_ELEV_SETUNKNOWN,		MainFrame::OnElevSetUnknown)
 EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
 EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
@@ -125,14 +126,15 @@ EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
-EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateRemoveAboveSea)
-EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateFillIn)
+EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_SETUNKNOWN,	MainFrame::OnUpdateIsGrid)
+EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
-EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateExportTerragen)
+EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
 EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
 EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
-EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateExportBitmap)
+EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateIsGrid)
 EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
@@ -309,7 +311,8 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SCALE, "Scale Elevation");
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_REMOVEABOVESEA, "Remove Terrain Above Sea");
-	elevMenu->Append(ID_ELEV_FILLIN, "Fill in unknown areas");
+	elevMenu->Append(ID_ELEV_FILLIN, "Fill In Unknown areas");
+	elevMenu->Append(ID_ELEV_SETUNKNOWN, "Set Unknown Areas");
 	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, "Export to TerraGen");            
 	elevMenu->Append(ID_ELEV_BITMAP, "Generate && Export Bitmap");
 //	elevMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge Area and Export");
@@ -1356,6 +1359,12 @@ void MainFrame::OnRoadGuess(wxCommandEvent &event)
 //////////////////////////
 // Elevation
 
+void MainFrame::OnUpdateIsGrid(wxUpdateUIEvent& event)
+{
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && pEL->IsGrid());
+}
+
 void MainFrame::OnElevSelect(wxCommandEvent& event)
 {
 	m_pView->SetMode(LB_TSelect);
@@ -1388,10 +1397,47 @@ void MainFrame::OnRemoveAboveSea(wxCommandEvent &event)
 	m_pView->Refresh();
 }
 
-void MainFrame::OnUpdateRemoveAboveSea(wxUpdateUIEvent& event)
+void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 {
-	vtElevLayer *pEL = GetActiveElevLayer();
-	event.Enable(pEL && pEL->IsGrid());
+	vtElevLayer *t = GetActiveElevLayer();
+	if (!t)	return;
+	vtElevationGrid *grid = t->m_pGrid;
+
+	wxString str = wxGetTextFromUser("Set unknown areas to what value?",
+		"Set Unknown Areas", "1.0", this);
+	if (str == "")
+		return;
+
+	float fValue;
+	fValue = atof(str.c_str());
+
+	// If the Area tool defines an area, restrict ourselves to use it
+	bool bUseArea = !m_area.IsEmpty();
+
+	int iColumns, iRows;
+	DRECT area;
+	DPoint2 p, step;
+	grid->GetDimensions(iColumns, iRows);
+	t->GetExtent(area);
+	step = grid->GetSpacing();
+
+	for (int i = 0; i < iColumns; i++)
+	{
+		p.x = area.left + (i * step.x);
+		for (int j = 0; j < iRows; j++)
+		{
+			p.y = area.bottom + (j * step.y);
+			if (bUseArea)
+			{
+				if (!m_area.ContainsPoint(p))
+					continue;
+			}
+			if (grid->GetFValue(i, j) == INVALID_ELEVATION)
+				grid->SetFValue(i, j, fValue);
+		}
+	}
+	t->ReRender();
+	m_pView->Refresh();
 }
 
 void MainFrame::OnFillIn(wxCommandEvent &event)
@@ -1400,12 +1446,6 @@ void MainFrame::OnFillIn(wxCommandEvent &event)
 	el->FillGaps();
 	el->ReRender();
 	m_pView->Refresh();
-}
-
-void MainFrame::OnUpdateFillIn(wxUpdateUIEvent& event)
-{
-	vtElevLayer *pEL = GetActiveElevLayer();
-	event.Enable(pEL && pEL->IsGrid());
 }
 
 void MainFrame::OnScaleElevation(wxCommandEvent &event)
@@ -1472,12 +1512,6 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 	wxMessageBox(str);
 }
 
-void MainFrame::OnUpdateExportTerragen(wxUpdateUIEvent& event)
-{
-	vtElevLayer *pEL = GetActiveElevLayer();
-	event.Enable(pEL && pEL->IsGrid());
-}
-
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 {
 	int size = 0;
@@ -1523,12 +1557,6 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	CloseProgressDialog();
 }
 
-void MainFrame::OnUpdateExportBitmap(wxUpdateUIEvent& event)
-{
-	vtElevLayer *pEL = GetActiveElevLayer();
-	event.Enable(pEL && pEL->IsGrid());
-}
-
 void MainFrame::OnElevMergeTin(wxCommandEvent& event)
 {
 	vtElevLayer *pEL = GetActiveElevLayer();
@@ -1565,6 +1593,40 @@ void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 		m_area = dlg.m_area;
 		m_pView->Refresh();
 	}
+}
+
+void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
+{
+#if SUPPORT_HTTP
+	bool success;
+
+	wxTextEntryDialog dlg(this, "WFS Server address",
+		"Please enter server base URL", "http://10.254.0.29:8081/");
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	const char *server = dlg.GetValue();
+
+	WFSLayerArray layers;
+	success = GetLayersFromWFS(server, layers);
+
+	int numlayers = layers.GetSize();
+	wxString choices[100];
+	for (int i = 0; i < numlayers; i++)
+		choices[i] = layers[i]->GetValue("Name");
+
+	wxSingleChoiceDialog dlg2(this, "Choice Layer",
+		"Please indicate layer:", numlayers, (const wxString *)choices);
+
+	if (dlg2.ShowModal() != wxID_OK)
+		return;
+
+	vtRawLayer *pRL = new vtRawLayer();
+	success = pRL->ReadFeaturesFromWFS(server, "rail");
+	if (success)
+		AddLayerWithCheck(pRL);
+	else
+		delete pRL;
+#endif
 }
 
 void MainFrame::OnElevShow(wxCommandEvent &event)
@@ -1726,40 +1788,6 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 
 	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap &&
 			!m_area.IsEmpty());
-}
-
-void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
-{
-#if SUPPORT_HTTP
-	bool success;
-
-	wxTextEntryDialog dlg(this, "WFS Server address",
-		"Please enter server base URL", "http://10.254.0.29:8081/");
-	if (dlg.ShowModal() != wxID_OK)
-		return;
-	const char *server = dlg.GetValue();
-
-	WFSLayerArray layers;
-	success = GetLayersFromWFS(server, layers);
-
-	int numlayers = layers.GetSize();
-	wxString choices[100];
-	for (int i = 0; i < numlayers; i++)
-		choices[i] = layers[i]->GetValue("Name");
-
-	wxSingleChoiceDialog dlg2(this, "Choice Layer",
-		"Please indicate layer:", numlayers, (const wxString *)choices);
-
-	if (dlg2.ShowModal() != wxID_OK)
-		return;
-
-	vtRawLayer *pRL = new vtRawLayer();
-	success = pRL->ReadFeaturesFromWFS(server, "rail");
-	if (success)
-		AddLayerWithCheck(pRL);
-	else
-		delete pRL;
-#endif
 }
 
 
