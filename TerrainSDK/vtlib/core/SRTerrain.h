@@ -39,6 +39,8 @@ public:
 
 	int		m_iBlockSize;
 
+	static float s_fAdaptationSpeed;
+
 protected:
 	// rendering
 	void RenderSurface();

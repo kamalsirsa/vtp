@@ -35,6 +35,8 @@ using namespace mini;
 
 /////////////////////////////////////////////////////////////////////////////
 
+float SRTerrain::s_fAdaptationSpeed = .0002f;		// speed at which detail converges
+
 //
 // Constructor/destructor
 //
@@ -307,8 +309,6 @@ void SRTerrain::RenderSurface()
 }
 
 
-#define ADAPTION_SPEED	.0002f		// speed at which detail converges
-
 void SRTerrain::RenderPass()
 {
 	float ex = m_eyepos_ogl.x;
@@ -355,7 +355,7 @@ void SRTerrain::RenderPass()
 	{
 		// the amount we change resolution is proportional to how much we
 		//  missed our triangle count target
-		float change_by = -diff * ADAPTION_SPEED;
+		float change_by = -diff * s_fAdaptationSpeed;
 
 		// avoid hysteresis by using additional damping on direction change
 		if ((m_iLastDiff > 0 && diff < 0) ||
