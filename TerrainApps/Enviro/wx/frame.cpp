@@ -500,6 +500,7 @@ void vtFrame::SetMode(MouseMode mode)
 	// Show/hide plant dialog
 	if (mode == MM_PLANTS)
 	{
+		g_App.LoadPlants();
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
 		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
 		m_pPlantDlg->Show(true);
