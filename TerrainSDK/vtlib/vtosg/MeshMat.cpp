@@ -817,7 +817,7 @@ vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
 	m_pOsgText->setUserData(this);
 
 	// Set the Font reference width and height resolution in texels.
-	m_pOsgText->setFontSize(32,32);
+	m_pOsgText->setFontResolution(32,32);
 
 	// Set the rendered character size in object coordinates.
 	m_pOsgText->setCharacterSize(fSize);
@@ -863,4 +863,3 @@ void vtTextMesh::SetAlignment(int align)
 {
 	m_pOsgText->setAlignment((osgText::Text::AlignmentType) align);
 }
-
