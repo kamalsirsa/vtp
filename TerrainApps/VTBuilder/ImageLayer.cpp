@@ -19,14 +19,13 @@
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
-	m_pImage = NULL;
-	m_pBitmap = NULL;
-	m_bInMemory = false;
+	SetDefaults();
 }
 
 vtImageLayer::vtImageLayer(const DRECT &area, int xsize, int ysize,
 						   const vtProjection &proj) : vtLayer(LT_IMAGE)
 {
+	SetDefaults();
 	m_Extents = area;
 	m_iXSize = xsize;
 	m_iYSize = ysize;
@@ -43,6 +42,24 @@ vtImageLayer::~vtImageLayer()
 		delete m_pImage;
 	if (NULL != m_pBitmap)
 		delete m_pBitmap;
+	CleanupGDALUsage();
+}
+
+void vtImageLayer::SetDefaults()
+{
+	m_pImage = NULL;
+	m_pBitmap = NULL;
+	m_bInMemory = false;
+	pScanline = NULL;
+	pRedline = NULL;
+	pGreenline = NULL;
+	pBlueline = NULL;
+	pDataset = NULL;
+	pTable = NULL;
+	m_iXSize = 0;
+	m_iYSize = 0;
+	iRasterCount = 0;
+	m_use_next = 0;
 }
 
 bool vtImageLayer::GetExtent(DRECT &rect)
@@ -332,7 +349,7 @@ bool vtImageLayer::LoadFromGDAL()
 		iRasterCount = pDataset->GetRasterCount();
 
 		if (iRasterCount != 1 && iRasterCount != 3)
-			throw "Image does not have 1 or 3 bands.";
+			throw "Does not have 1 or 3 bands.";
 
 		if (iRasterCount == 1)
 		{
@@ -413,11 +430,17 @@ bool vtImageLayer::LoadFromGDAL()
 	catch (const char *msg)
 	{
 		wxString2 str = msg;
-		wxMessageBox(str);
 		if (!str.CmpNoCase(_T("Deferring load of large image")))
+		{
+			wxMessageBox(str);
 			bBitmap = false;
+		}
 		else
+		{
 			bRet = false;
+			wxString2 str2 = "Can't load Image layer: ";
+			wxMessageBox(str2+str);
+		}
 	}
 
 	if (bRet == true && bBitmap == true)

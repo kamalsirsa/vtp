@@ -54,6 +54,7 @@ public:
 	wxImage *GetImage() { return m_pImage; }
 
 protected:
+	void SetDefaults();
 	bool LoadFromGDAL();
 	void CleanupGDALUsage();
 	vtProjection	m_proj;
