@@ -5,11 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtdata", "..\..\TerrainSDK\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtosg", "..\..\TerrainSDK\vtlib\vtosg\vtosg.vcproj", "{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}"
 	ProjectSection(ProjectDependencies) = postProject
-		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008} = {89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vtui", "..\..\TerrainSDK\vtui\vtui.vcproj", "{1182B805-A4E1-4E20-AED3-C535DC09F2DD}"
 	ProjectSection(ProjectDependencies) = postProject
+		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008} = {89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro.vcproj", "{13E5F4CD-63ED-454D-A086-1545C79E2552}"
@@ -17,10 +17,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wxEnviro", "wxEnviro.vcproj
 		{1182B805-A4E1-4E20-AED3-C535DC09F2DD} = {1182B805-A4E1-4E20-AED3-C535DC09F2DD}
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8} = {CE530C9F-129C-4398-B95A-26A2F1AFB9B8}
 		{15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D} = {15A3C4DE-8E3E-47B4-B070-25EE2E66EC0D}
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353} = {12A05AF8-9B49-4D44-BABF-2E7C513D1353}
 		{89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008} = {89AE27FC-4F7E-4A0E-9CF0-F3C1C1A2D008}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xmlhelper", "..\..\TerrainSDK\xmlhelper\xmlhelper.vcproj", "{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuikGrid", "..\..\TerrainSDK\QuikGrid\QuikGrid.vcproj", "{12A05AF8-9B49-4D44-BABF-2E7C513D1353}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -72,6 +77,14 @@ Global
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release.Build.0 = Release|Win32
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release Unicode.ActiveCfg = Release Unicode|Win32
 		{CE530C9F-129C-4398-B95A-26A2F1AFB9B8}.Release Unicode.Build.0 = Release Unicode|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Debug.ActiveCfg = Debug|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Debug.Build.0 = Debug|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Debug Unicode.ActiveCfg = Debug|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Debug Unicode.Build.0 = Debug|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Release.ActiveCfg = Release|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Release.Build.0 = Release|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Release Unicode.ActiveCfg = Release|Win32
+		{12A05AF8-9B49-4D44-BABF-2E7C513D1353}.Release Unicode.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
