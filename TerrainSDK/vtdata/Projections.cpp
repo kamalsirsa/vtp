@@ -423,6 +423,7 @@ bool vtProjection::ReadProjFile(const char *filename)
 	int len = strlen(filename);
 
 	// check file extension
+	char *dot = NULL;
 	if (len >= 4 && !stricmp(filename + len - 4, ".prj"))
 	{
 		strcpy(prj_name, filename);
@@ -430,7 +431,7 @@ bool vtProjection::ReadProjFile(const char *filename)
 	else
 	{
 		strcpy(prj_name, filename);
-		char *dot = strrchr(prj_name, '.');
+		dot = strrchr(prj_name, '.');
 		if (dot)
 			strcpy(dot, ".prj");
 		else
@@ -438,6 +439,17 @@ bool vtProjection::ReadProjFile(const char *filename)
 	}
 
 	FILE *fp2 = fopen(prj_name, "rb");
+	if (!fp2 && dot)
+	{
+		// look backward one more extension, e.g. for .bt.gz
+		*dot = 0;
+		dot = strrchr(prj_name, '.');
+		if (dot)
+		{
+			strcpy(dot, ".prj");
+			fp2 = fopen(prj_name, "rb");
+		}
+	}
 	if (!fp2)
 		return false;
 	char wkt_buf[2000], *wkt = wkt_buf;
