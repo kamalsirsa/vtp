@@ -154,7 +154,7 @@ public:
 	virtual int GetNumVertices() const { return m_iNumVertsUsed; }
 	GLenum GetPrimType() const { return m_ePrimType; }
 	int GetVtxType() const { return m_iVtxType; }
-	void GetBoundBox(FBox3 &box);
+	virtual void GetBoundBox(FBox3 &box);
 
 	void SetMatIndex(int i) { m_iMatIdx = i; }
 	int GetMatIndex() const { return m_iMatIdx; }
