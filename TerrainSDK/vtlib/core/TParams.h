@@ -30,6 +30,17 @@ enum LodMethodEnum {
 	LM_BRYANQUAD
 };
 
+class PointStyle
+{
+public:
+	PointStyle();
+
+	int m_field_index;
+	float m_label_elevation;
+	float m_label_size;
+	RGBi m_label_color;
+};
+
 
 class TParams
 {
@@ -43,38 +54,46 @@ public:
 	bool SaveToFile(const char *fname);
 	bool LoadFromFile(const char *fname);
 
-	// params
+	// parameters, starting with terrain name
 	vtString	m_strName;
+
+	// elevation
 	vtString	m_strElevFile;
 	float		m_fVerticalExag;
+	bool		m_bTin;
+
+	// camera / navigation
 	int			m_iMinHeight;
+	int			m_iNavStyle;
 	float		m_fNavSpeed;
 	vtString	m_strLocFile;
 
+	// LOD
 	LodMethodEnum m_eLodMethod;
 	float		m_fPixelError;
 	int			m_iTriCount;
 	bool		m_bTriStrips;
 	bool		m_bDetailTexture;
 
-	bool		m_bTin;
-
+	// time
 	bool		m_bTimeOn;
 	unint		m_iInitTime;
 	float		m_fTimeSpeed;
 
+	// texture
 	TextureEnum	m_eTexture;
 	unint		m_iTilesize;
 	vtString	m_strTextureSingle;
 	vtString	m_strTextureBase;
-	bool		m_bJPEG;
 	vtString	m_strTextureFilename;
+	bool		m_bJPEG;
 	bool		m_bMipmap;
 	bool		m_b16bit;
 	bool		m_bPreLight;
 	bool		m_bPreLit;
 	float		m_fPreLightFactor;
 
+	// culture
 	bool		m_bRoads;
 	vtString	m_strRoadFile;
 	bool		m_bHwy;
@@ -97,14 +116,6 @@ public:
 	StringArray	m_strStructFiles;
 	unint		m_iStructDistance;
 
-	bool		m_bTransTowers;
-	vtString	m_strTowerFile;
-
-	bool		m_bVehicles;
-	float		m_fVehicleSize;
-	float		m_fVehicleSpeed;
-	int			m_iNumCars;
-
 	bool		m_bSky;
 	vtString	m_strSkyTexture;
 	bool		m_bOceanPlane;
@@ -116,6 +127,15 @@ public:
 
 	bool		m_bLabels;
 	vtString	m_strLabelFile;
+	PointStyle	m_Style;
+
+	bool		m_bVehicles;
+	float		m_fVehicleSize;
+	float		m_fVehicleSpeed;
+	int			m_iNumCars;
+
+	bool		m_bTransTowers;
+	vtString	m_strTowerFile;
 
 	vtString	m_strRouteFile;
 	bool		m_bRouteEnable;

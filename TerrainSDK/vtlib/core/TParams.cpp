@@ -22,6 +22,7 @@ TParams::TParams()
 	// provide some defaults
 	m_fVerticalExag = 1.0f;
 	m_iMinHeight = 20;
+	m_iNavStyle = 0;
 	m_fNavSpeed = 100;
 
 	m_eLodMethod = LM_ROETTGER;
@@ -102,6 +103,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_strElevFile = rhs.m_strElevFile;
 	m_fVerticalExag = rhs.m_fVerticalExag;
 	m_iMinHeight = rhs.m_iMinHeight;
+	m_iNavStyle = rhs.m_iNavStyle;
 	m_fNavSpeed = rhs.m_fNavSpeed;
 	m_strLocFile = rhs.m_strLocFile;
 
@@ -166,6 +168,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_bOverlay = rhs.m_bOverlay;
 	m_bLabels = rhs.m_bLabels;
 	m_strLabelFile = rhs.m_strLabelFile;
+	m_Style = rhs.m_Style;
 
 	m_bPreLight = rhs.m_bPreLight;
 	m_bPreLit = rhs.m_bPreLit;
@@ -216,6 +219,7 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_LOCFILENAME "Locations_File"
 #define STR_VERTICALEXAG "Vertical_Exag"
 #define STR_MINHEIGHT "Min_Height"
+#define STR_NAVSTYLE "Nav_Style"
 #define STR_NAVSPEED "Nav_Speed"
 #define STR_LOCFILE "Locations_File"
 
@@ -285,6 +289,9 @@ vtString get_line_from_stream(ifstream &input)
 
 #define STR_LABELS "Labels"
 #define STR_LABELFILE "LabelFile"
+#define STR_LABELFIELD "Label_Field"
+#define STR_LABELHEIGHT "Label_Height"
+#define STR_LABELSIZE "Label_Size"
 
 #define STR_ROUTEFILE "Route_File"
 #define STR_ROUTEENABLE "Route_Enable"
@@ -315,16 +322,26 @@ bool TParams::LoadFromFile(const char *filename)
 
 		if (strcmp(buf, STR_NAME) == 0)
 			m_strName = get_line_from_stream(input);
+
+		// elevation
 		else if (strcmp(buf, STR_ELEVFILE) == 0)
 			m_strElevFile = get_line_from_stream(input);
-		else if (strcmp(buf, STR_LOCFILENAME) == 0)
-			m_strLocFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_VERTICALEXAG) == 0)
 			input >> m_fVerticalExag;
+		else if (strcmp(buf, STR_TIN) == 0)
+			input >> m_bTin;
+
+		// navigation
 		else if (strcmp(buf, STR_MINHEIGHT) == 0)
 			input >> m_iMinHeight;
+		else if (strcmp(buf, STR_NAVSTYLE) == 0)
+			input >> m_iNavStyle;
 		else if (strcmp(buf, STR_NAVSPEED) == 0)
 			input >> m_fNavSpeed;
+		else if (strcmp(buf, STR_LOCFILENAME) == 0)
+			m_strLocFile = get_line_from_stream(input);
+
+		// LOD
 		else if (strcmp(buf, STR_LODMETHOD) == 0)
 		{
 			int dummy;
@@ -335,18 +352,20 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_fPixelError;
 		else if (strcmp(buf, STR_TRICOUNT) == 0)
 			input >> m_iTriCount;
+		else if (strcmp(buf, STR_TRISTRIPS) == 0)
+			input >> m_bTriStrips;
+		else if (strcmp(buf, STR_DETAILTEXTURE) == 0)
+			input >> m_bDetailTexture;
+
+		// time
 		else if (strcmp(buf, STR_TIMEON) == 0)
 			input >> m_bTimeOn;
 		else if (strcmp(buf, STR_INITTIME) == 0)
 			input >> m_iInitTime;
 		else if (strcmp(buf, STR_TIMESPEED) == 0)
 			input >> m_fTimeSpeed;
-		else if (strcmp(buf, STR_SKY) == 0)
-			input >> m_bSky;
-		else if (strcmp(buf, STR_SKYTEXTURE) == 0)
-			m_strSkyTexture = get_line_from_stream(input);
-		else if (strcmp(buf, STR_FOG) == 0)
-			input >> m_bFog;
+
+		// texture
 		else if (strcmp(buf, STR_TEXTURE) == 0)
 		{
 			int dummy;
@@ -371,6 +390,10 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bPreLight;
 		else if (strcmp(buf, STR_PRELIT) == 0)
 			input >> m_bPreLit;
+		else if (strcmp(buf, STR_PRELIGHTFACTOR) == 0)
+			input >> m_fPreLightFactor;
+
+		// culture
 		else if (strcmp(buf, STR_ROADS) == 0)
 			input >> m_bRoads;
 		else if (strcmp(buf, STR_ROADFILE) == 0)
@@ -389,16 +412,35 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_bTexRoads;
 		else if (strcmp(buf, STR_ROADCULTURE) == 0)
 			input >> m_bRoadCulture;
+
 		else if (strcmp(buf, STR_TREES) == 0)
 			input >> m_bTrees;
 		else if (strcmp(buf, STR_TREEFILE) == 0)
 			m_strVegFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_VEGDISTANCE) == 0)
 			input >> m_iVegDistance;
+		else if (strcmp(buf, STR_AGRICULTURE) == 0)
+			input >> m_bAgriculture;
+		else if (strcmp(buf, STR_WILDVEG) == 0)
+			input >> m_bWildVeg;
+
+		else if (strcmp(buf, STR_FOG) == 0)
+			input >> m_bFog;
 		else if (strcmp(buf, STR_FOGDISTANCE) == 0)
 			input >> m_iFogDistance;
-		else if (strcmp(buf, STR_OVERLAY) == 0)
-			input >> m_bOverlay;
+
+		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
+		{
+			vtString *strFile = new vtString(get_line_from_stream(input));
+			m_strStructFiles.Append(strFile);
+		}
+		else if (strcmp(buf, STR_STRUCTDIST) == 0)
+			input >> m_iStructDistance;
+
+		else if (strcmp(buf, STR_SKY) == 0)
+			input >> m_bSky;
+		else if (strcmp(buf, STR_SKYTEXTURE) == 0)
+			m_strSkyTexture = get_line_from_stream(input);
 		else if (strcmp(buf, STR_OCEANPLANE) == 0)
 			input >> m_bOceanPlane;
 		else if (strcmp(buf, STR_OCEANPLANELEVEL) == 0)
@@ -409,21 +451,20 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_fDepressOceanLevel;
 		else if (strcmp(buf, STR_HORIZON) == 0)
 			input >> m_bHorizon;
+		else if (strcmp(buf, STR_OVERLAY) == 0)
+			input >> m_bOverlay;
+
 		else if (strcmp(buf, STR_LABELS) == 0)
 			input >> m_bLabels;
 		else if (strcmp(buf, STR_LABELFILE) == 0)
 			m_strLabelFile = get_line_from_stream(input);
-		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
-		{
-			vtString *strFile = new vtString(get_line_from_stream(input));
-			m_strStructFiles.Append(strFile);
-		}
-		else if (strcmp(buf, STR_STRUCTDIST) == 0)
-			input >> m_iStructDistance;
-		else if (strcmp(buf, STR_TOWERS)==0)
-			input>>m_bTransTowers;
-		else if (strcmp(buf,STR_TOWERFILE)==0)
-			m_strTowerFile= get_line_from_stream(input);
+		else if (strcmp(buf, STR_LABELFIELD) == 0)
+			input >> m_Style.m_field_index;
+		else if (strcmp(buf, STR_LABELHEIGHT) == 0)
+			input >> m_Style.m_label_elevation;
+		else if (strcmp(buf, STR_LABELSIZE) == 0)
+			input >> m_Style.m_label_size;
+
 		else if (strcmp(buf, STR_VEHICLES) == 0)
 			input >> m_bVehicles;
 		else if (strcmp(buf, STR_VEHICLESIZE) == 0)
@@ -432,18 +473,11 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_fVehicleSpeed;
 		else if (strcmp(buf, STR_NUMCARS) == 0)
 			input >> m_iNumCars;
-		else if (strcmp(buf, STR_AGRICULTURE) == 0)
-			input >> m_bAgriculture;
-		else if (strcmp(buf, STR_WILDVEG) == 0)
-			input >> m_bWildVeg;
-		else if (strcmp(buf, STR_TRISTRIPS) == 0)
-			input >> m_bTriStrips;
-		else if (strcmp(buf, STR_DETAILTEXTURE) == 0)
-			input >> m_bDetailTexture;
-		else if (strcmp(buf, STR_TIN) == 0)
-			input >> m_bTin;
-		else if (strcmp(buf, STR_PRELIGHTFACTOR) == 0)
-			input >> m_fPreLightFactor;
+
+		else if (strcmp(buf, STR_TOWERS)==0)
+			input>>m_bTransTowers;
+		else if (strcmp(buf,STR_TOWERFILE)==0)
+			m_strTowerFile= get_line_from_stream(input);
 		else if (strcmp(buf, STR_ROUTEFILE) == 0)
 			 m_strRouteFile = get_line_from_stream(input);
 		else if (strcmp(buf, STR_ROUTEENABLE) == 0)
@@ -477,18 +511,26 @@ bool TParams::SaveToFile(const char *filename)
 	// write to file
 	output << STR_NAME << "\t\t\t";
 	output << (const char *) m_strName << endl;
+
+	output << "\n; Elevation\n";
 	output << STR_ELEVFILE << "\t\t";
 	output << (const char *) m_strElevFile << endl;
-	output << STR_LOCFILENAME << "\t";
-	output << (const char *) m_strLocFile << endl;
 	output << STR_VERTICALEXAG << "\t";
 	output << m_fVerticalExag << endl;
+	output << STR_TIN << "\t\t\t";
+	output << m_bTin << endl;
+
+	output << "\n; Navigation\n";
 	output << STR_MINHEIGHT << "\t\t";
 	output << m_iMinHeight << endl;
 	output << STR_NAVSPEED << "\t\t";
 	output << m_fNavSpeed << endl;
+	output << STR_NAVSTYLE << "\t\t";
+	output << m_iNavStyle << endl;
+	output << STR_LOCFILENAME << "\t";
+	output << (const char *) m_strLocFile << endl;
 
-	output << "\n";
+	output << "\n; LOD\n";
 	output << STR_LODMETHOD << "\t\t";
 	output << m_eLodMethod << endl;
 	output << STR_PIXELERROR << "\t\t";
@@ -500,11 +542,7 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_DETAILTEXTURE << "\t";
 	output << m_bDetailTexture << endl;
 
-	output << "\n";
-	output << STR_TIN << "\t\t\t";
-	output << m_bTin << endl;
-
-	output << "\n";
+	output << "\n; Time\n";
 	output << STR_TIMEON << "\t\t\t";
 	output << m_bTimeOn << endl;
 	output << STR_INITTIME << "\t\t";
@@ -512,7 +550,7 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_TIMESPEED << "\t\t";
 	output << m_fTimeSpeed << endl;
 
-	output << "\n";
+	output << "\n; Texture\n";
 	output << STR_TEXTURE << "\t\t\t";
 	output << m_eTexture << endl;
 	output << STR_NTILES << "\t\t";
@@ -536,7 +574,7 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_PRELIGHTFACTOR << "\t";
 	output << m_fPreLightFactor << endl;
 
-	output << "\n";
+	output << "\n; Roads\n";
 	output << STR_ROADS << "\t\t\t";
 	output << m_bRoads << endl;
 	output << STR_ROADFILE << "\t\t";
@@ -556,7 +594,7 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_ROADCULTURE << "\t";
 	output << m_bRoadCulture << endl;
 
-	output << "\n";
+	output << "\n; Vegetation\n";
 	output << STR_TREES << "\t\t\t";
 	output << m_bTrees << endl;
 	output << STR_TREEFILE << "\t\t";
@@ -568,13 +606,13 @@ bool TParams::SaveToFile(const char *filename)
 	output << STR_WILDVEG << "\t";
 	output << m_bWildVeg << endl;
 
-	output << "\n";
+	output << "\n; Fog\n";
 	output << STR_FOG << "\t\t\t\t";
 	output << m_bFog << endl;
 	output << STR_FOGDISTANCE << "\t";
 	output << m_iFogDistance << endl;
 
-	output << "\n";
+	output << "\n; Structures\n";
 	for (i = 0; i < m_strStructFiles.GetSize(); i++)
 	{
 		output << STR_STRUCTFILE << "\t";
@@ -584,26 +622,11 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_iStructDistance << endl;
 
 	output << "\n";
-	output << STR_TOWERS << "\t";
-	output << m_bTransTowers<<endl;
-	output << STR_TOWERFILE <<"\t";
-	output << (const char *) m_strTowerFile<<endl;
-
-	output << "\n";
-	output << STR_VEHICLES << "\t\t";
-	output << m_bVehicles << endl;
-	output << STR_VEHICLESIZE << "\t";
-	output << m_fVehicleSize << endl;
-	output << STR_VEHICLESPEED << "\t";
-	output << m_fVehicleSpeed << endl;
-	output << STR_NUMCARS << "\t";
-	output << m_iNumCars << endl;
-
-	output << "\n";
 	output << STR_SKY << "\t\t\t\t";
 	output << m_bSky << endl;
 	output << STR_SKYTEXTURE << "\t\t";
 	output << (const char *) m_strSkyTexture << endl;
+	output << "\n";
 	output << STR_OCEANPLANE << "\t\t";
 	output << m_bOceanPlane << endl;
 	output << STR_OCEANPLANELEVEL << "\t";
@@ -616,11 +639,36 @@ bool TParams::SaveToFile(const char *filename)
 	output << m_bHorizon << endl;
 	output << STR_OVERLAY << "\t\t\t";
 	output << m_bOverlay << endl;
+
+	output << "\n; Labels\n";
 	output << STR_LABELS << "\t\t\t";
 	output << m_bLabels << endl;
 	output << STR_LABELFILE << "\t\t";
 	output << (const char *) m_strLabelFile << endl;
+	output << STR_LABELFIELD << "\t\t";
+	output << m_Style.m_field_index << endl;
+	output << STR_LABELHEIGHT << "\t";
+	output << m_Style.m_label_elevation << endl;
+	output << STR_LABELSIZE << "\t\t";
+	output << m_Style.m_label_size << endl;
 
+	output << "\n";
+	output << STR_VEHICLES << "\t\t";
+	output << m_bVehicles << endl;
+	output << STR_VEHICLESIZE << "\t";
+	output << m_fVehicleSize << endl;
+	output << STR_VEHICLESPEED << "\t";
+	output << m_fVehicleSpeed << endl;
+	output << STR_NUMCARS << "\t";
+	output << m_iNumCars << endl;
+
+	output << "\n";
+	output << STR_TOWERS << "\t";
+	output << m_bTransTowers<<endl;
+	output << STR_TOWERFILE <<"\t";
+	output << (const char *) m_strTowerFile<<endl;
+
+	output << "\n";
 	output << STR_ROUTEFILE << "\t\t";
 	output << (const char *) m_strRouteFile << endl;
 	output << STR_ROUTEENABLE << "\t";
