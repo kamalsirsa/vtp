@@ -959,7 +959,7 @@ void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 				if (bHit)
 					break;
 			}
-			pTarget->GetImage()->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
+			pTarget->SetRGB(i, iRows-1-j, rgb.r, rgb.g, rgb.b);
 		}
 	}
 	CloseProgressDialog();
