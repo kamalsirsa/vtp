@@ -5,10 +5,6 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
-	#pragma implementation "BuildingDlg.cpp"
-#endif
-
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
@@ -516,11 +512,11 @@ void BuildingDlg::UpdateColorControl()
 void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 {
 	wxString choices[5];
-	choices[0] = _("Flat (all edges 0°)");
+	choices[0] = _("Flat (all edges 0)");
 	choices[1] = _("Shed");
 	choices[2] = _("Gable");
 	choices[3] = _("Hip");
-	choices[4] = _("Vertical (all edges 90°)");
+	choices[4] = _("Vertical (all edges 90)");
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
 		_("Please indicate edge slopes"), 5, (const wxString *)choices);
