@@ -203,12 +203,17 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 
 void vtRoadLayer::SetProjection(const vtProjection &proj)
 {
+	if (m_proj == proj)
+		return;
+
 	m_proj = proj;
 
 	// Extents are still valid, but we should recompute things like displayed
 	// road widths, which may have different values in another projection.
 	for (LinkEdit *link = GetFirstLink(); link; link = link->GetNext())
 		link->m_bSidesComputed = false;
+
+	SetModified(true);
 }
 
 void vtRoadLayer::Offset(const DPoint2 &p)

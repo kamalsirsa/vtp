@@ -39,8 +39,8 @@ public:
 	void SetProjection(const vtProjection &proj);
 	void Offset(const DPoint2 &p);
 
-	void AddFeature(vtWaterFeature *pFeat);
-	vtWaterFeature *GetFeature(int i) { return (vtWaterFeature *) m_Lines[i]; }
+	void AddFeature(const DLine2 &dline, bool bIsBody = false);
+	vtWaterFeature &GetFeature(int i) { return (vtWaterFeature &) m_Lines[i]; }
 
 	void PaintDibWithWater(vtDIB *dib);
 
@@ -56,6 +56,7 @@ protected:
 	// eventually, should have vector+width data for rivers, area data for bodies
 	// for now, just use plain vectors for everything
 	DPolyArray2		m_Lines;
+	std::vector<bool>	m_IsBody;
 	vtProjection	m_proj;
 };
 

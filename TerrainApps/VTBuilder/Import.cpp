@@ -532,6 +532,11 @@ vtLayerPtr MainFrame::ImportFromDLG(const wxString2 &fname_in, LayerType ltype)
 		vtStructureLayer *pSL = (vtStructureLayer *)pLayer;
 		pSL->AddElementsFromDLG(pDLG);
 	}
+	if (ltype == LT_RAW)
+	{
+		vtRawLayer *pRL = (vtRawLayer *)pLayer;
+		pRL->AddElementsFromDLG(pDLG);
+	}
 	// now we no longer need the DLG object
 	delete pDLG;
 
@@ -856,7 +861,7 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 
 //	DPolyArray2		chain;
 //	DLine2			*dline;
-	vtWaterFeature	*wfeat;
+	vtWaterFeature	wfeat;
 
 	// Assume that this data source is a TIGER/Line file
 	//
@@ -961,8 +966,8 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 			if (!strncmp(cfcc, "H", 1))
 			{
 				// Hydrography
-				wfeat = NULL;
 				int num = atoi(cfcc+1);
+				bool bSkip = true;
 				switch (num)
 				{
 				case 1:		// Shoreline of perennial water feature
@@ -971,8 +976,8 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 				case 11:	// Perennial stream or river
 				case 12:	// Intermittent stream, river, or wash
 				case 13:	// Braided stream or river
-					wfeat = new vtWaterFeature();
-					wfeat->m_bIsBody = false;
+					wfeat.m_bIsBody = false;
+					bSkip = false;
 					break;
 				case 30:	// Lake or pond
 				case 31:	// Perennial lake or pond
@@ -983,16 +988,16 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 				case 50:	// Bay, estuary, gulf, sound, sea, or ocean
 				case 51:	// Bay, estuary, gulf, or sound
 				case 52:	// Sea or ocean
-					wfeat = new vtWaterFeature();
-					wfeat->m_bIsBody = false;
+					wfeat.m_bIsBody = true;
+					bSkip = false;
 					break;
 				}
-				if (wfeat)
+				if (!bSkip)
 				{
-					wfeat->SetSize(num_points);
+					wfeat.SetSize(num_points);
 					for (j = 0; j < num_points; j++)
 					{
-						wfeat->SetAt(j, DPoint2(pLineString->getX(j),
+						wfeat.SetAt(j, DPoint2(pLineString->getX(j),
 							pLineString->getY(j)));
 					}
 					pWL->AddFeature(wfeat);

@@ -48,17 +48,17 @@ bool vtWaterLayer::ConvertProjection(vtProjection &proj_new)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	int i, c, size, num_lines = m_Lines.GetSize();
+	int i, c, size, num_lines = m_Lines.size();
 
 	DPoint2 p;
 	for (i = 0; i < num_lines; i++)
 	{
-		size = m_Lines[i]->GetSize();
+		size = m_Lines[i].GetSize();
 		for (c = 0; c < size; c++)
 		{
-			p = m_Lines[i]->GetAt(c);
+			p = m_Lines[i].GetAt(c);
 			trans->Transform(1, &p.x, &p.y);
-			m_Lines[i]->SetAt(c, p);
+			m_Lines[i].SetAt(c, p);
 		}
 	}
 	delete trans;
@@ -73,17 +73,16 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	wxBrush WaterBrush(wxColor(0,200,200), wxSOLID);
 	pDC->SetBrush(WaterBrush);
 
-	vtWaterFeature *feat;
-	int num_lines = m_Lines.GetSize();
+	int num_lines = m_Lines.size();
 	for (int i = 0; i < num_lines; i++)
 	{
-		feat = GetFeature(i);
+		const vtWaterFeature &feat = GetFeature(i);
 		int c;
-		int size = feat->GetSize();
+		int size = feat.GetSize();
 		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
-			pView->screen(feat->GetAt(c), g_screenbuf[c]);
+			pView->screen(feat.GetAt(c), g_screenbuf[c]);
 
-		if (feat->m_bIsBody)
+		if (m_IsBody[i])
 			pDC->DrawPolygon(c, g_screenbuf);
 		else
 			pDC->DrawLines(c, g_screenbuf);
@@ -92,19 +91,20 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 bool vtWaterLayer::GetExtent(DRECT &rect)
 {
-	int size = m_Lines.GetSize();
+	int size = m_Lines.size();
 	if (size == 0)
 		return false;
 
 	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 	for (int i = 0; i < size; i++)
-		rect.GrowToContainLine(*m_Lines[i]);
+		rect.GrowToContainLine(m_Lines[i]);
 	return true;
 }
 
-void vtWaterLayer::AddFeature(vtWaterFeature *pFeat)
+void vtWaterLayer::AddFeature(const DLine2 &dline, bool bIsBody)
 {
-	m_Lines.Append(pFeat);
+	m_Lines.push_back(dline);
+	m_IsBody.push_back(bIsBody);
 }
 
 bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
@@ -115,11 +115,15 @@ bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
 
 	vtWaterLayer *pFrom = (vtWaterLayer *)pL;
 
-	int from_size = pFrom->m_Lines.GetSize();
+	int from_size = pFrom->m_Lines.size();
 	for (int i = 0; i < from_size; i++)
-		m_Lines.Append(pFrom->m_Lines[i]);
+	{
+		m_Lines.push_back(pFrom->m_Lines[i]);
+		m_IsBody.push_back(pFrom->m_IsBody[i]);
+	}
 
-	pFrom->m_Lines.SetSize(0);
+	pFrom->m_Lines.resize(0);
+	pFrom->m_IsBody.resize(0);
 	return true;
 }
 
@@ -135,11 +139,11 @@ void vtWaterLayer::SetProjection(const vtProjection &proj)
 
 void vtWaterLayer::Offset(const DPoint2 &p)
 {
-	int size = m_Lines.GetSize();
+	int size = m_Lines.size();
 	for (int i = 0; i < size; i++)
 	{
-		for (int c = 0; c < m_Lines[i]->GetSize(); c++)
-			m_Lines[i]->GetAt(c) += p;
+		for (int c = 0; c < m_Lines[i].GetSize(); c++)
+			m_Lines[i].GetAt(c) += p;
 	}
 }
 
@@ -153,18 +157,44 @@ void vtWaterLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 	// set projection
 	m_proj = pDlg->GetProjection();
 
-	m_Lines.SetSize(pDlg->m_iLines);
-	for (int i = 0; i < pDlg->m_iLines; i++)
-	{
-		DLGLine *pDLine = pDlg->m_lines + i;
-		DLine2 *new_line = new DLine2();
-		new_line->SetSize(pDLine->m_iCoords);
+	m_Lines.resize(pDlg->m_iLines);
+	m_IsBody.resize(pDlg->m_iLines);
 
-		for (int j = 0; j < pDLine->m_iCoords; j++)
+	int i, j;
+	for (i = 0; i < pDlg->m_iLines; i++)
+	{
+		bool bSkip = true;
+		int attribs = pDlg->m_lines[i].m_attr.size();
+		for (j = 0; j < attribs; j++)
 		{
-			new_line->SetAt(j, pDLine->m_p[j]);
+			int iMinorAttr = pDlg->m_lines[i].m_attr[j].m_iMinorAttr;
+			switch (iMinorAttr)
+			{
+			case 200:	// major 50, coastline
+
+			case 101:	// reservoir
+			case 111:	// marsh, wetland, swamp, or bog
+			case 116:	// bay, estuary, gulf, ocean, or sea
+			case 412:	// stream
+			case 413:	// braided stream
+			case 421:	// lake or pond
+				bSkip = false;
+				break;
+			}
 		}
-		m_Lines.SetAt(i, new_line);
+		if (bSkip)
+			continue;
+
+		DLGLine &input = pDlg->m_lines[i];
+		DLine2 dline;
+		dline.SetSize(input.m_iCoords);
+
+		for (j = 0; j < input.m_iCoords; j++)
+		{
+			dline.SetAt(j, input.m_p[j]);
+		}
+		m_Lines[i] = dline;
+		m_IsBody[i] = false;	// for now
 	}
 }
 
@@ -189,7 +219,8 @@ void vtWaterLayer::AddElementsFromSHP(const wxString2 &filename, const vtProject
 	m_proj = proj;	// Set projection
 
 	// Initialize arrays
-	m_Lines.SetSize(nElem);
+	m_Lines.resize(nElem);
+	m_IsBody.resize(nElem);
 
 	// Read Polys from SHP
 	for (int i = 0; i < nElem; i++)
@@ -198,16 +229,17 @@ void vtWaterLayer::AddElementsFromSHP(const wxString2 &filename, const vtProject
 		SHPObject	*psShape;
 		psShape = SHPReadObject(hSHP, i);
 
-		DLine2 *new_poly = new DLine2();
-		new_poly->SetSize(psShape->nVertices);
+		DLine2 dline;
+		dline.SetSize(psShape->nVertices);
 
 		// Copy each SHP Poly Coord
 		for (int j = 0; j < psShape->nVertices; j++)
 		{
-			new_poly->GetAt(j).x = psShape->padfX[j];
-			new_poly->GetAt(j).y = psShape->padfY[j];
+			dline.GetAt(j).x = psShape->padfX[j];
+			dline.GetAt(j).y = psShape->padfY[j];
 		}
-		m_Lines.SetAt(i, new_poly);
+		m_Lines[i] = dline;
+		m_IsBody[i] = false;
 
 		SHPDestroyObject(psShape);
 	}
@@ -223,7 +255,7 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 	OGRGeometry		*pGeom;
 	OGRLineString   *pLineString;
 	OGRPolygon		*pPolygon;
-	vtWaterFeature	*pFeat;
+	vtWaterFeature	feat;
 
 	// Assume that this data source is a USGS SDTS DLG
 	//
@@ -273,28 +305,28 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				int iMajorAttr = numEntity / 10000;
 				int iMinorAttr = numEntity % 10000;
 
-				pFeat = NULL;
+				bool bSkip = true;
 				switch (iMinorAttr)
 				{
 				case 412:	// stream
 				case 413:	// braided stream
-					pFeat = new vtWaterFeature;
-					pFeat->m_bIsBody = false;
+					feat.m_bIsBody = false;
+					bSkip = false;
 					break;
 				}
-				if (!pFeat)
+				if (bSkip)
 					continue;
 				pGeom = pFeature->GetGeometryRef();
 				if (!pGeom) continue;
 				pLineString = (OGRLineString *) pGeom;
 
 				int num_points = pLineString->getNumPoints();
-				pFeat->SetSize(num_points);
+				feat.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
-					pFeat->SetAt(j, DPoint2(pLineString->getX(j),
+					feat.SetAt(j, DPoint2(pLineString->getX(j),
 						pLineString->getY(j)));
 
-				AddFeature(pFeat);
+				AddFeature(feat);
 			}
 		}
 		// Areas (water bodies)
@@ -321,7 +353,7 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				int iMajorAttr = numEntity / 10000;
 				int iMinorAttr = numEntity % 10000;
 
-				pFeat = NULL;
+				bool bSkip = true;
 				switch (iMinorAttr)
 				{
 				case 101:	// reservoir
@@ -330,11 +362,11 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				case 412:	// stream
 				case 413:	// braided stream
 				case 421:	// lake or pond
-					pFeat = new vtWaterFeature;
-					pFeat->m_bIsBody = true;
+					feat.m_bIsBody = false;		// for now
+					bSkip = false;
 					break;
 				}
-				if (!pFeat)
+				if (bSkip)
 					continue;
 				pGeom = pFeature->GetGeometryRef();
 				if (!pGeom) continue;
@@ -342,12 +374,12 @@ void vtWaterLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				OGRLinearRing *ring = pPolygon->getExteriorRing();
 				int num_points = ring->getNumPoints();
-				pFeat->SetSize(num_points);
+				feat.SetSize(num_points);
 				for (j = 0; j < num_points; j++)
-					pFeat->SetAt(j, DPoint2(ring->getX(j),
+					feat.SetAt(j, DPoint2(ring->getX(j),
 						ring->getY(j)));
 
-				AddFeature(pFeat);
+				AddFeature(feat);
 			}
 		}
 	}

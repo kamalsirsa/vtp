@@ -72,7 +72,7 @@ bool vtRawLayer::GetExtent(DRECT &rect)
 	{
 		rect.SetRect(1E9, -1E9, -1E9, 1E9);
 		for (i = 0; i < entities; i++)
-			rect.GrowToContainLine(*m_LinePoly[i]);
+			rect.GrowToContainLine(m_LinePoly[i]);
 	}
 	return true;
 }
@@ -129,7 +129,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
-		size = m_LinePoly.GetSize();
+		size = m_LinePoly.size();
 		for (i = 0; i < entities; i++)
 		{
 			if (IsSelected(i)) {
@@ -138,13 +138,13 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			else {
 				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
 			}
-			DLine2 *dl = m_LinePoly.GetAt(i);
-			size2 = dl->GetSize();
+			DLine2 &dline = m_LinePoly[i];
+			size2 = dline.GetSize();
 
 			for (j = 0; j < size2 && j < SCREENBUF_SIZE-1; j++)
-				pView->screen(dl->GetAt(j), g_screenbuf[j]);
+				pView->screen(dline.GetAt(j), g_screenbuf[j]);
 			if (m_nSHPType == SHPT_POLYGON)
-				pView->screen(dl->GetAt(0), g_screenbuf[j++]);
+				pView->screen(dline.GetAt(0), g_screenbuf[j++]);
 
 			pDC->DrawLines(j, g_screenbuf);
 		}
@@ -171,13 +171,13 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 	}
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
-		for (i = 0; i < m_LinePoly.GetSize(); i++)
+		for (i = 0; i < m_LinePoly.size(); i++)
 		{
-			DLine2 *dline = m_LinePoly.GetAt(i);
-			pts = dline->GetSize();
+			DLine2 &dline = m_LinePoly[i];
+			pts = dline.GetSize();
 			for (j = 0; j < pts; j++)
 			{
-				DPoint2 &p = dline->GetAt(j);
+				DPoint2 &p = dline.GetAt(j);
 				success = trans->Transform(1, &p.x, &p.y);
 				if (success == 1)
 					good++;
@@ -246,7 +246,8 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 			break;
 		case SHPT_ARC:
 		case SHPT_POLYGON:
-			result = m_LinePoly.Append(pFrom->m_LinePoly[i]);	// steal pointer
+			m_LinePoly.push_back(pFrom->m_LinePoly[i]);
+			result = m_LinePoly.size()-1;
 			break;
 		}
 		// copy record data for all field names which match
@@ -267,7 +268,7 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 	case SHPT_POINT:  pFrom->m_Point2.SetSize(0); break;
 	case SHPT_POINTZ: pFrom->m_Point3.SetSize(0); break;
 	case SHPT_ARC:
-	case SHPT_POLYGON: pFrom->m_LinePoly.SetSize(0); break;
+	case SHPT_POLYGON: pFrom->m_LinePoly.resize(0); break;
 	}
 	return true;
 }
@@ -298,7 +299,7 @@ void vtRawLayer::Offset(const DPoint2 &p)
 	if (m_nSHPType == SHPT_ARC || m_nSHPType == SHPT_POLYGON)
 	{
 		for (i = 0; i < entities; i++)
-			m_LinePoly[i]->Add(p);
+			m_LinePoly[i].Add(p);
 	}
 }
 

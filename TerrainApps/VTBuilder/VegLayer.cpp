@@ -37,11 +37,11 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
 	{
-		size = m_Poly.GetSize();
+		size = m_Poly.size();
 		if (size == 0)
 			return false;
 		for (i = 0; i < size; i++)
-			rect.GrowToContainLine(*m_Poly.GetAt(i));
+			rect.GrowToContainLine(m_Poly[i]);
 	}
 	else if (m_VLType == VLT_Instances)
 	{
@@ -56,12 +56,12 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 	// draw each polygon in m_Poly
 	bool pbNoLine[30000];
 
-	int num_polys = m_Poly.GetSize();
+	int num_polys = m_Poly.size();
 	int i, j, k;
 	for (i = 0; i < num_polys; i++)
 	{
 		int vbuflength = 0;
-		int num_points = m_Poly[i]->GetSize();
+		int num_points = m_Poly[i].GetSize();
 
 		// safety check
 		assert (num_points < 30000);
@@ -82,7 +82,7 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 					cont=false;
 					break;
 				}
-				if (m_Poly[i]->GetAt(a) == m_Poly[i]->GetAt(k))
+				if (m_Poly[i].GetAt(a) == m_Poly[i].GetAt(k))
 				{
 					pbNoLine[k] = true;
 					a -= 1;
@@ -93,7 +93,7 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 		}
 		for (int c = 0; c < num_points && c < SCREENBUF_SIZE; c++)
 		{
-			pView->screen(m_Poly[i]->GetAt(c), g_screenbuf[vbuflength]);
+			pView->screen(m_Poly[i].GetAt(c), g_screenbuf[vbuflength]);
 			vbuflength += 1;
 
 			if (pbNoLine[c] == true || c == num_points-1)
@@ -164,9 +164,9 @@ void vtVegLayer::Offset(const DPoint2 &p)
 
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
 	{
-		size = m_Poly.GetSize();
+		size = m_Poly.size();
 		for (i = 0; i < size; i++)
-			m_Poly.GetAt(i)->Add(p);
+			m_Poly[i].Add(p);
 	}
 	else if (m_VLType == VLT_Instances)
 	{
@@ -241,13 +241,13 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 		return false;		// inconvertible projections
 
 	int i, j;
-	for (i = 0; i < m_Poly.GetSize(); i++)
+	for (i = 0; i < m_Poly.size(); i++)
 	{
-		DLine2 *poly = m_Poly[i];
-		int size = poly->GetSize();
+		DLine2 &poly = m_Poly[i];
+		int size = poly.GetSize();
 		for (j = 0; j < size; j++)
 		{
-			DPoint2 &p = poly->GetAt(j);
+			DPoint2 &p = poly.GetAt(j);
 			trans->Transform(1, &(p.x), &(p.y));
 		}
 	}
@@ -269,9 +269,9 @@ bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 
 	int i, count;
 
-	count = pVL->m_Poly.GetSize();
+	count = pVL->m_Poly.size();
 	for (i = 0; i < count; i++)
-		m_Poly.Append(pVL->m_Poly.GetAt(i));
+		m_Poly.push_back(pVL->m_Poly[i]);
 
 	count = pVL->m_Biotype.GetSize();
 	for (i = 0; i < count; i++)
@@ -282,7 +282,7 @@ bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 		m_Density.Append(pVL->m_Density.GetAt(i));
 
 	// We've stolen all the polygons from the old layer, so empty it
-	pVL->m_Poly.SetSize(0);
+	pVL->m_Poly.resize(0);
 
 	return true;
 }
@@ -307,7 +307,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 		section = pLULC->GetSection(sec);
 		size = size + section->m_iNumPolys;
 	}
-	m_Poly.SetSize(size);
+	m_Poly.resize(size);
 	m_Density.SetSize(size);
 
 	// get each poly from LULC file
@@ -342,14 +342,14 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 			}
 			m_Density.SetAt(count, density);
 
-			DLine2 *new_poly = new DLine2();
-			new_poly->SetSize(poly->m_iCoords);
+			DLine2 dline;
+			dline.SetSize(poly->m_iCoords);
 
 			// get Coords of LULCpoly and store as latlon, then save in VPoly
-			for (i = 0; i < new_poly->GetSize(); i++)
-				new_poly->SetAt(i, poly->m_p[i]);
+			for (i = 0; i < dline.GetSize(); i++)
+				dline.SetAt(i, poly->m_p[i]);
 
-			m_Poly.SetAt(count, new_poly);
+			m_Poly[count] = dline;
 			count++;
 		}
 	}
@@ -423,7 +423,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	}
 
 	// Initialize arrays
-	m_Poly.SetSize(nElem);
+	m_Poly.resize(nElem);
 
 	// Read Polys from SHP into Veg Poly
 	for (int i = 0; i < nElem; i++)
@@ -450,18 +450,18 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 		SHPObject	*psShape;
 		psShape = SHPReadObject(hSHP, i);
 
-		DLine2 *new_poly = new DLine2();
-		new_poly->SetSize(psShape->nVertices);
-
-		// Store the number of coordinate point in the i-th poly
-		m_Poly.SetAt(i, new_poly);
+		DLine2 dline;
+		dline.SetSize(psShape->nVertices);
 
 		// Store each SHP Poly Coord in Veg Poly
-		for (int j = 0; j < m_Poly[i]->GetSize(); j++)
+		for (int j = 0; j < m_Poly[i].GetSize(); j++)
 		{
-			new_poly->GetAt(j).x = psShape->padfX[j];
-			new_poly->GetAt(j).y = psShape->padfY[j];
+			dline.GetAt(j).x = psShape->padfX[j];
+			dline.GetAt(j).y = psShape->padfY[j];
 		}
+		// Store the number of coordinate point in the i-th poly
+		m_Poly[i] = dline;
+
 		SHPDestroyObject(psShape);
 	}
 

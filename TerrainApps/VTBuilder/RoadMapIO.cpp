@@ -150,12 +150,12 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 	NodeEdit *pN;
 	for (i = 0; i < pDlg->m_iNodes; i++)
 	{
-		DLGNode *pDNode = pDlg->m_nodes + i;
+		DLGNode &dnode = pDlg->m_nodes[i];
 
 		// create new node
 		pN = new NodeEdit();
 		pN->m_id = id++;
-		pN->m_p = pDNode->m_p;
+		pN->m_p = dnode.m_p;
 
 		AddNode(pN);
 
@@ -166,11 +166,11 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 	int count = 0;
 	for (i = 0; i < pDlg->m_iLines; i++)
 	{
-		DLGLine *pDLine = pDlg->m_lines + i;
+		DLGLine &dline = pDlg->m_lines[i];
 		
 		int priority;
 		bool result = false;
-		result = attribute_filter_roads(pDLine, lanes, stype, priority);
+		result = attribute_filter_roads(&dline, lanes, stype, priority);
 		if (!result)
 			continue;
 
@@ -181,11 +181,11 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		pR->m_iPriority = priority;
 
 		// copy data from DLG line
-		pR->SetNode(0, pNodeLookup[pDLine->m_iNode1]);
-		pR->SetNode(1, pNodeLookup[pDLine->m_iNode2]);
+		pR->SetNode(0, pNodeLookup[dline.m_iNode1]);
+		pR->SetNode(1, pNodeLookup[dline.m_iNode2]);
 		
 		int actual_coords = 0;
-		for (j = 0; j < pDLine->m_iCoords; j++)
+		for (j = 0; j < dline.m_iCoords; j++)
 		{
 			// safety check
 			assert(actual_coords < BUFFER_SIZE);
@@ -194,7 +194,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 				//
 				// check how long this segment is
 				//
-				DPoint2 delta = pDLine->m_p[j] - pDLine->m_p[j-1];
+				DPoint2 delta = dline.m_p[j] - dline.m_p[j-1];
 				double length = delta.Length();
 
 				//
@@ -207,12 +207,12 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 					double step = 1.0 / (splits+1);
 					for (double amount = step; amount <= 0.999; amount += step)
 					{
-						buffer[actual_coords] = (pDLine->m_p[j-1] + (delta * amount));
+						buffer[actual_coords] = (dline.m_p[j-1] + (delta * amount));
 						actual_coords++;
 					}
 				}
 			}
-			buffer[actual_coords] = pDLine->m_p[j];
+			buffer[actual_coords] = dline.m_p[j];
 			actual_coords++;
 		}
 		pR->SetSize(actual_coords);
@@ -222,7 +222,7 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 		//set bounding box for the road
 		pR->ComputeExtent();
 
-		pR->m_iHwy = pDLine->HighwayNumber();
+		pR->m_iHwy = dline.HighwayNumber();
 
 		// add to list
 		AddLink(pR);

@@ -289,7 +289,7 @@ bool BuilderView::ImportWorldMap()
 		return false;
 
 	// Copy SHP data into World Map Poly data
-	WMPoly.SetMaxSize(nShapeCount * 11 / 10);
+	WMPoly.reserve(nShapeCount * 11 / 10);
 
 	int points, start, stop;
 
@@ -305,8 +305,6 @@ bool BuilderView::ImportWorldMap()
 
 		for (j = 0; j < psShape->nParts; j++)
 		{
-			DLine2 *current = new DLine2();
-
 			start = psShape->panPartStart[j];
 			if (j < psShape->nParts - 1)
 				stop = psShape->panPartStart[j+1];
@@ -314,15 +312,16 @@ bool BuilderView::ImportWorldMap()
 				stop = psShape->nVertices;
 			points = stop - start;
 
-			current->SetMaxSize(points);
+			DLine2 current;
+			current.SetMaxSize(points);
 
 			for (k = start; k < stop; k++)
 			{
 				p.x = psShape->padfX[k];
 				p.y = psShape->padfY[k];
-				current->Append(p);
+				current.Append(p);
 			}
-			WMPoly.Append(current);
+			WMPoly.push_back(current);
 		}
 		SHPDestroyObject(psShape);
 	}
@@ -331,10 +330,10 @@ bool BuilderView::ImportWorldMap()
 	SHPClose(hSHP);
 
 	// Initialize the drawn World Map WMPolyDraw to original (latlon)
-	m_iEntities = WMPoly.GetSize();
-	WMPolyDraw.SetSize(m_iEntities);
+	m_iEntities = WMPoly.size();
+	WMPolyDraw.resize(m_iEntities);
 	for (i = 0; i < m_iEntities; i++)
-		WMPolyDraw[i] = new DLine2(*WMPoly[i]);
+		WMPolyDraw[i] = WMPoly[i];
 
 	return true;
 }
@@ -349,7 +348,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 {
 	int i, j;
 
-	if (WMPoly.GetSize() == 0)
+	if (WMPoly.size() == 0)
 		return;
 
 	const char *proj_name = proj.GetProjectionNameShort();
@@ -357,7 +356,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	{
 		// the data is already in latlon so just use WMPoly
 		for (i = 0; i < m_iEntities; i++)
-			*(WMPolyDraw[i]) = *(WMPoly[i]);
+			WMPolyDraw[i] = WMPoly[i];
 		return;
 	}
 
@@ -406,11 +405,11 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	DPoint2 point;
 	for (i = 0; i < m_iEntities; i++)
 	{
-		for (j = 0; j < WMPoly[i]->GetSize(); j++)
+		for (j = 0; j < WMPoly[i].GetSize(); j++)
 		{
-			point = WMPoly[i]->GetAt(j);
+			point = WMPoly[i].GetAt(j);
 			trans->Transform(1, &point.x, &point.y);
-			WMPolyDraw[i]->SetAt(j, point);
+			WMPolyDraw[i].SetAt(j, point);
 		}
 	}
 	delete trans;
@@ -444,12 +443,12 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 	for (int i = 0; i < m_iEntities; i++)
 	{
 		wmbuflen = 0;
-		pts = WMPolyDraw[i]->GetSize();
+		pts = WMPolyDraw[i].GetSize();
 
 		for (int j = 0; j < pts && j < MAXPOINTS; j++)
 		{
-			wmbuf[j].x = pView->sx(WMPolyDraw[i]->GetAt(j).x);
-			wmbuf[j].y = pView->sy(WMPolyDraw[i]->GetAt(j).y);
+			wmbuf[j].x = pView->sx(WMPolyDraw[i].GetAt(j).x);
+			wmbuf[j].y = pView->sy(WMPolyDraw[i].GetAt(j).y);
 			wmbuflen ++;
 		}
 		if (wmbuflen > 1)
