@@ -621,6 +621,9 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 			int id = 1;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
 			{
+				// make sure we delete the feature no matter how the loop exits
+				std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
+
 				pGeom = pFeature->GetGeometryRef();
 				if (!pGeom) continue;
 				pPoint = (OGRPoint *) pGeom;
@@ -634,8 +637,6 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 
 				//add to array
 				pNodeLookup[pN->m_id] = pN;
-
-				delete pFeature;
 			}
 		}
 		// Lines (Arcs, Roads) (from an SDTS DLG file)
@@ -737,8 +738,6 @@ void RoadMapEdit::AddElementsFromOGR(OGRDataSource *pDatasource,
 				// inform the Nodes to which it belongs
 				pR->GetNode(0)->AddLink(pR);
 				pR->GetNode(1)->AddLink(pR);
-
-				delete pFeature;
 			}
 		}
 		else if (!bIsSDTS)
@@ -819,9 +818,10 @@ bool RoadMapEdit::AppendFromOGRLayer(OGRLayer *pLayer)
 	count = 0;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
 	{
-		pGeom = pFeature->GetGeometryRef();
-		delete pFeature;
+		// make sure we delete the feature no matter how the loop exits
+		std::auto_ptr<OGRFeature> ensure_deletion(pFeature);
 
+		pGeom = pFeature->GetGeometryRef();
 		if (!pGeom)
 			continue;
 
