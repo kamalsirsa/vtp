@@ -306,10 +306,6 @@ bool vtRawLayer::OnLoad()
 
 bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 {
-	// safety check
-	if (pL->GetType() != LT_RAW)
-		return false;
-
 	vtRawLayer *pFrom = (vtRawLayer *)pL;
 	vtFeatureSet *m_pFromSet = pFrom->m_pSet;
 
