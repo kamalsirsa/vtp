@@ -27,6 +27,7 @@
 
 #define ORTHO_HEIGHT		40000	// 40 km in the air
 #define INITIAL_SPACE_DIST	3.1f
+#define PLANETWORK			0
 
 //
 // This is a 'singleton', the only instance of the global application object
@@ -50,12 +51,12 @@ Enviro::Enviro()
 	m_fFenceSpacing = 2.5f;
 
 	m_bOnTerrain = false;
-	m_bShowTime = false;
+	m_bEarthShade = false;
 
+	m_pGlobeContainer = NULL;
 	m_bGlobeFlat = false;
 	m_fFlattening = 1.0f;
 	m_fFlattenDir = 0.0f;
-
 	m_bGlobeUnfolded = false;
 	m_fFolding = 0.0f;
 	m_fFoldDir = 0.0f;
@@ -72,6 +73,7 @@ Enviro::Enviro()
 
 	// plants
 	m_pPlantList = NULL;
+	m_bPlantsLoaded = false;
 	m_PlantOpt.m_iMode = 0;
 	m_PlantOpt.m_iSpecies = 0;
 	m_PlantOpt.m_fHeight = 2.0f;
@@ -188,11 +190,6 @@ void Enviro::DoControl()
 			SetupScene2();
 			return;
 		}
-		if (m_iInitStep == 3)
-		{
-			SetupScene3();
-			return;
-		}
 		if (g_Options.m_bEarthView)
 		{
 			FlyToSpace();
@@ -285,7 +282,7 @@ void Enviro::SetupGlobe()
 	}
 	if (m_iInitStep == 2)
 	{
-		if (m_pGlobeXForm == NULL)
+		if (m_pGlobeContainer == NULL)
 		{
 			MakeGlobe();
 			m_SpaceCamLocation.Identity();
@@ -295,10 +292,25 @@ void Enviro::SetupGlobe()
 	}
 	if (m_iInitStep == 3)
 	{
-		vtGetScene()->SetBgColor(RGBf(0.15f, 0.15f, 0.15f));
+		// put the light where the sun should be
+		vtMovLight *pSunLight = m_pTerrainScene->GetSunLight();
+		pSunLight->Identity();
+		pSunLight->SetTrans(FPoint3(0, 0, -5));
 
-		m_pGlobeXForm->SetEnabled(true);
-		m_pRoot->AddChild(m_pGlobeXForm);
+#if PLANETWORK
+		pSunLight->GetLight()->SetColor2(RGBf(1, 1, 1));
+		pSunLight->GetLight()->SetAmbient2(RGBf(0, 0, 0));
+#else
+		// standard bright sunlight
+		pSunLight->GetLight()->SetColor2(RGBf(3, 3, 3));
+		pSunLight->GetLight()->SetAmbient2(RGBf(0.5f, 0.5f, 0.5f));
+#endif
+		pSunLight->GetLight()->SetAmbient2(RGBf(0.5f, 0.5f, 0.5f));
+
+		vtGetScene()->SetBgColor(RGBf(0.05f, 0.05f, 0.05f));
+
+		m_pGlobeContainer->SetEnabled(true);
+		m_pRoot->AddChild(m_pGlobeContainer);
 		m_pCursorMGeom->Identity();
 	}
 	if (m_iInitStep == 4)
@@ -310,13 +322,11 @@ void Enviro::SetupGlobe()
 	}
 	if (m_iInitStep == 5)
 	{
-		time_t ltime;
-		struct tm *gmt;
-		time( &ltime );
-		gmt = gmtime( &ltime );
-		SetGlobeTime(gmt);
-
-		SetShowTime(false);
+#if PLANETWORK
+		SetEarthShading(true);
+#else
+		SetEarthShading(false);
+#endif
 	}
 	if (m_iInitStep == 6)
 	{
@@ -337,26 +347,6 @@ void Enviro::SetupGlobe()
 	}
 }
 
-void Enviro::SetGlobeTime(struct tm *gmt)
-{
-	int minute = gmt->tm_min + 60 * gmt->tm_hour;
-	float fraction_of_day = (float) minute / (24 * 60);
-	float rotation = fraction_of_day * PI2f;
-
-	// match with actual globe
-	rotation = PI2f - rotation;
-	rotation -= PID2f;
-
-	vtMovLight *pSunLight = m_pTerrainScene->GetSunLight();
-	pSunLight->Identity();
-	pSunLight->SetTrans(FPoint3(5.0f, 0.0f, 0.0f));
-	pSunLight->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotation);
-
-	// standard bright sunlight
-	pSunLight->GetLight()->SetColor2(RGBf(5.0f, 5.0f, 5.0f));
-	pSunLight->GetLight()->SetAmbient2(RGBf(0.5f, 0.5f, 0.5f));
-}
-
 bool Enviro::SwitchToTerrain(const char *name)
 {
 	vtTerrain *pTerr = m_pTerrainScene->FindTerrainByName(name);
@@ -371,12 +361,19 @@ bool Enviro::SwitchToTerrain(const char *name)
 
 void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 {
+	// The first time we switch to a terrain, try to load the plants
+	if (!m_bPlantsLoaded)
+	{
+		m_bPlantsLoaded = true;
+		SetupCommonCulture();
+	}
+
 	if (m_state == AS_Orbit)
 	{
 		// hide globe
-		if (m_pGlobeXForm != NULL)
+		if (m_pGlobeContainer != NULL)
 		{
-			m_pGlobeXForm->SetEnabled(false);
+			m_pGlobeContainer->SetEnabled(false);
 			m_pGlobePicker->SetEnabled(false);
 		}
 
@@ -701,17 +698,38 @@ void Enviro::DoPickers()
 void Enviro::MakeGlobe()
 {
 	VTLOG("MakeGlobe\n");
-#if 0
+
+	m_pGlobeTime = new TimeEngine;
+	m_pGlobeTime->SetName2("GlobeTime");
+	vtGetScene()->AddEngine(m_pGlobeTime);
+
+	m_pGlobeContainer = new vtGroup;
+	m_pGlobeContainer->SetName2("Globe Container");
+
 	// simple globe
-	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
-#else
+//	m_pGlobeXForm = CreateSimpleEarth(g_Options.m_DataPaths);
+
 	// fancy icosahedral globe
 	m_pIcoGlobe = new IcoGlobe();
 	m_pIcoGlobe->Create(5000, g_Options.m_DataPaths, g_Options.m_strImage,
 //		IcoGlobe::GEODESIC);
 //		IcoGlobe::RIGHT_TRIANGLE);
 		IcoGlobe::DYMAX_UNFOLD);
-	m_pGlobeXForm = m_pIcoGlobe->GetTop();
+	m_pGlobeContainer->AddChild(m_pIcoGlobe->GetTop());
+	m_pGlobeTime->AddTarget((TimeTarget *)m_pIcoGlobe);
+
+#if PLANETWORK
+	IcoGlobe *Globe2 = new IcoGlobe();
+	Globe2->Create(1000, g_Options.m_DataPaths, vtString(""),
+		IcoGlobe::GEODESIC);
+	vtTransform *trans = new vtTransform();
+	trans->SetName2("2nd Globe Scaler");
+	m_pGlobeContainer->AddChild(trans);
+	trans->AddChild(Globe2->GetTop());
+	trans->Scale3(1.006f, 1.006f, 1.006f);
+	m_pGlobeTime->AddTarget((TimeTarget *)Globe2);
+
+	m_pGlobeTime->SetSpeed(500);
 #endif
 
 	VTLOG("\tcreating Trackball\n");
@@ -731,7 +749,7 @@ void Enviro::MakeGlobe()
 	//
 	m_pGlobePicker = new GlobePicker();
 	m_pGlobePicker->SetName2("GlobePicker");
-	m_pGlobePicker->SetGlobeMGeom(m_pGlobeXForm);
+	m_pGlobePicker->SetGlobe(m_pIcoGlobe);
 	vtGetScene()->AddEngine(m_pGlobePicker);
 	m_pGlobePicker->SetTarget(m_pCursorMGeom);
 	m_pGlobePicker->SetRadius(1.0);
@@ -743,8 +761,8 @@ void Enviro::MakeGlobe()
 	vtString bsc_file = FindFileOnPaths(g_Options.m_DataPaths, "Sky/bsc.data");
 	if (bsc_file != "")
 	{
-		pStars->Create(bsc_file, 10.0f, 5.0f);	// radius, brightness
-		m_pGlobeXForm->AddChild(pStars);
+		pStars->Create(bsc_file, 20.0f, 5.0f);	// radius, brightness
+		m_pGlobeContainer->AddChild(pStars);
 	}
 }
 
@@ -846,7 +864,7 @@ void Enviro::SetupScene2()
 
 	// create picker object and picker engine
 	float size = 1.0;
-	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/30));
+	m_pCursorMGeom = new vtMovGeom(Create3DCursor(size, size/35));
 	m_pCursorMGeom->SetName2("Cursor");
 
 	m_pTerrainScene->m_pTop->AddChild(m_pCursorMGeom);
@@ -885,9 +903,9 @@ void Enviro::SetupScene2()
 	m_pGFlyer->SetTarget(m_pNormalCamera);
 }
 
-void Enviro::SetupScene3()
+void Enviro::SetupCommonCulture()
 {
-	VTLOG("SetupScene3\n");
+	VTLOG("SetupCommonCulture\n");
 
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
@@ -1356,19 +1374,19 @@ void Enviro::OnMouseMove(vtMouseEvent &event)
 	}
 }
 
-bool Enviro::GetShowTime()
+bool Enviro::GetEarthShading()
 {
-	return m_bShowTime;
+	return m_bEarthShade;
 }
 
-void Enviro::SetShowTime(bool bShow)
+void Enviro::SetEarthShading(bool bShade)
 {
-	m_bShowTime = bShow;
+	m_bEarthShade = bShade;
 
 	vtMovLight *pMovLight = m_pTerrainScene->GetSunLight();
 
-	pMovLight->SetEnabled(bShow);
-	m_pIcoGlobe->SetLighting(bShow);
+	pMovLight->SetEnabled(bShade);
+	m_pIcoGlobe->SetLighting(bShade);
 }
 
 void Enviro::SetEarthShape(bool bFlat)
@@ -1404,7 +1422,7 @@ void Enviro::SetDisplayedArc(const DPoint2 &g1, const DPoint2 &g2)
 	if (!m_pArc)
 	{
 		m_pArc = new vtGeom();
-		m_pGlobeXForm->AddChild(m_pArc);
+//		m_pGlobeXForm->AddChild(m_pArc);
 		vtMaterialArray *pMats = new vtMaterialArray();
 		int yellow = pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 0.0f),	// yellow
 						 false, false, false);

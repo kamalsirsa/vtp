@@ -11,6 +11,7 @@
 #include "vtdata/Fence.h"
 #include "vtdata/Projections.h"
 #include "vtlib/core/Engine.h"
+#include "vtlib/core/TimeEngines.h"
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
 
@@ -72,9 +73,8 @@ public:
 	void SwitchToTerrain(vtTerrain *pTerr);
 
 	// these work in space
-	bool GetShowTime();
-	void SetShowTime(bool bShow);
-	void SetGlobeTime(struct tm *gmt);
+	bool GetEarthShading();
+	void SetEarthShading(bool bShade);
 	void SetEarthShape(bool Flat);
 	bool GetEarthShape() { return m_bGlobeFlat; }
 	void SetEarthUnfold(bool Flat);
@@ -153,7 +153,7 @@ protected:
 	// startup methods
 	void SetupScene1();
 	void SetupScene2();
-	void SetupScene3();
+	void SetupCommonCulture();
 	void DoPickers();
 	void MakeGlobe();
 	void SetupGlobe();
@@ -164,6 +164,7 @@ protected:
 	// plants
 	vtPlantList3d	*m_pPlantList;
 	PlantingOptions m_PlantOpt;
+	bool		m_bPlantsLoaded;
 
 	// fence members
 	bool		m_bActiveFence, m_bFenceClosed;
@@ -186,9 +187,12 @@ protected:
 	vtCamera	*m_pTopDownCamera;
 
 	vtRoot		*m_pRoot;		// top of the scene graph
-	vtTransform	*m_pGlobeXForm;
+
+	// globe
+	TimeEngine	*m_pGlobeTime;
+	vtGroup		*m_pGlobeContainer;
 	IcoGlobe	*m_pIcoGlobe;
-	bool		m_bShowTime;
+	bool		m_bEarthShade;
 	bool		m_bGlobeFlat;
 	float		m_fFlattening, m_fFlattenDir;
 	bool		m_bGlobeUnfolded;
