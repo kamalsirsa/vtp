@@ -998,7 +998,7 @@ void vtTerrain::_CreateCulture()
 			if (success)
 			{
 				// Create the 3d plants
-				VTLOG("\tLoaded plants file.\n");
+				VTLOG("\tLoaded plants file.  Creating Plant geometry..\n");
 				int created = m_PIA.CreatePlantNodes();
 				VTLOG("\tCreated: %d of %d plants\n", created, m_PIA.GetNumEntities());
 
@@ -2079,6 +2079,9 @@ void vtTerrain::HideAllPOI()
 bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 {
 	int num = m_PIA.AddPlant(pos, fSize, iSpecies);
+	if (num == -1)
+		return false;
+
 	if (!m_PIA.CreatePlantNode(num))
 		return false;
 
