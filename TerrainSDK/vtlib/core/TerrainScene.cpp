@@ -273,6 +273,14 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// handle the atmosphere
 	m_pSkyDome->SetEnabled(param.m_bSky);
+	if (param.m_strSkyTexture != "")
+	{
+		vtString filename = "Sky/";
+		filename += param.m_strSkyTexture;
+		vtString skytex = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
+		if (skytex != "")
+			m_pSkyDome->SetTexture(skytex);
+	}
 	SetFog(param.m_bFog);
 }
 

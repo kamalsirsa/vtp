@@ -278,6 +278,13 @@ void vtSkyDome::SetRadius(float radius)
 	if (m_pStarDome)	m_pStarDome->SetRadius(radius);
 }
 
+bool vtSkyDome::SetTexture(const char *filename)
+{
+	if (m_pDayDome)
+		return m_pDayDome->SetTexture(filename);
+	return false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 // DayDome
@@ -312,7 +319,7 @@ void vtDayDome::Create(int depth, float radius, const char *sun_texture)
 	m_pDomeGeom->SetMaterials(m_pMats);
 
 	int res = 16;
-	m_pDomeMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Colors, res*res);
+	m_pDomeMesh = new vtMesh(GL_TRIANGLE_STRIP, VT_Colors | VT_TexCoords, res*res);
 	m_pDomeMesh->CreateEllipsoid(FPoint3(1.0f, 1.0f, 1.0f), res, true);
 	m_pDomeGeom->AddMesh(m_pDomeMesh, 0);
 
@@ -380,6 +387,7 @@ void vtDayDome::SetRadius(float radius)
 {
 	Identity();
 	Scale3(radius, radius, radius);
+	m_bHasTexture = false;
 }
 
 void vtDayDome::SetDayColors(const RGBf &horizon, const RGBf &azimuth)
@@ -393,8 +401,62 @@ void vtDayDome::SetSunsetColor(const RGBf &sunset)
 	SunsetCol = sunset;
 }
 
+bool vtDayDome::SetTexture(const char *filename)
+{
+	vtImage *pImage = new vtImage(filename);
+	if (!pImage->LoadedOK())
+		return false;
+
+	// create and apply the texture material
+	int index = m_pMats->AddTextureMaterial(pImage, false, false);
+
+	// set the UV values to cylindrically project the texture onto the hemisphere
+	int i, j;
+	int verts = m_pDomeMesh->GetNumVertices();
+	FPoint3 p;
+	FPoint2 uv;
+	FBox3 box;
+	m_pDomeMesh->GetBoundBox(box);
+
+	for (i = 0; i < verts; i++)
+		m_pDomeMesh->SetVtxColor(i, RGBf(1,1,1));	// all white vertices
+
+	// First way: do texture projection based on vertex position.  This is
+	// not ideal for the case of sky domes because of cylindrical UV
+	// wraparound: there will be a UV texture seam.
+	/*
+	for (i = 0; i < verts; i++)
+	{
+		p = m_pDomeMesh->GetVtxPos(i);
+		uv.x = (float) atan2(p.z, p.x) / PI2d;
+		uv.y = (p.y - box.min.y) / (box.max.y - box.min.y);
+		uv.y = 1.0 - uv.y;	// flip
+		m_pDomeMesh->SetVtxTexCoord(i, uv);
+	}
+	*/
+	// Second way: use our special knowledge of how the sphere vertices are
+	// constructed to set the UV values evently from 0 to 1 without
+	// wraparound.
+	int ysize = sqrt(verts/4);
+	int xsize = ysize * 4;
+	for (i =0; i < xsize; i++)
+	{
+		uv.x = (float)i / (float)(xsize-1);
+		for (j = 0; j < ysize; j++)
+		{
+			uv.y = (float)j / (float)(ysize-1);
+			m_pDomeMesh->SetVtxTexCoord(i*ysize+j, uv);
+		}
+	}
+
+	m_pDomeGeom->SetMeshMatIndex(m_pDomeMesh, index);
+	m_bHasTexture = true;
+
+	return true;
+}
+
 /**
- * Sunrise and sunset cause a warm-colored  circular glow at the point where
+ * Sunrise and sunset cause a warm-colored circular glow at the point where
  * the sun is touching the horizon.  This function sets the radius of that
  * circle.
  *
@@ -515,6 +577,10 @@ void vtDayDome::ApplyDayColors()
 	else
 		// day
 		m_fademod = 1.0f;
+
+	// Don't actually change the dome color if it already has a texture
+	if (m_bHasTexture)
+		return;
 
 	// Set day colors
 	for (i = 0; i < mesh->GetNumVertices(); i++)

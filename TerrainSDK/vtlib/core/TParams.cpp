@@ -75,6 +75,7 @@ TParams::TParams()
 	m_iNumCars = 0;
 
 	m_bSky = true;
+	m_strSkyTexture = "";
 	m_bOceanPlane = false;
 	m_fOceanPlaneLevel = -20.0f;
 	m_bDepressOcean = false;
@@ -164,6 +165,7 @@ const TParams &TParams::operator = (const TParams &rhs)
 	m_iNumCars = rhs.m_iNumCars;
 
 	m_bSky = rhs.m_bSky;
+	m_strSkyTexture = rhs.m_strSkyTexture;
 	m_bOceanPlane = rhs.m_bOceanPlane;
 	m_fOceanPlaneLevel = rhs.m_fOceanPlaneLevel;
 	m_bDepressOcean = rhs.m_bDepressOcean;
@@ -286,6 +288,7 @@ vtString get_line_from_stream(ifstream &input)
 #define STR_NUMCARS "Number_of_Cars"
 
 #define STR_SKY "Sky"
+#define STR_SKYTEXTURE "Sky_Texture"
 #define STR_OCEANPLANE "Ocean_Plane"
 #define STR_OCEANPLANELEVEL "Ocean_Plane_Level"
 #define STR_DEPRESSOCEAN "Depress_Ocean"
@@ -363,6 +366,8 @@ bool TParams::LoadFromFile(const char *filename)
 			input >> m_fTimeSpeed;
 		else if (strcmp(buf, STR_SKY) == 0)
 			input >> m_bSky;
+		else if (strcmp(buf, STR_SKYTEXTURE) == 0)
+			m_strSkyTexture = get_line_from_stream(input);
 		else if (strcmp(buf, STR_FOG) == 0)
 			input >> m_bFog;
 		else if (strcmp(buf, STR_TEXTURE) == 0)
@@ -615,6 +620,8 @@ bool TParams::SaveToFile(const char *filename)
 	output << "\n";
 	output << STR_SKY << "\t\t\t\t";
 	output << m_bSky << endl;
+	output << STR_SKYTEXTURE << "\t\t";
+	output << (const char *) m_strSkyTexture << endl;
 	output << STR_OCEANPLANE << "\t\t";
 	output << m_bOceanPlane << endl;
 	output << STR_OCEANPLANELEVEL << "\t";

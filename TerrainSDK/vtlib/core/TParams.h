@@ -109,6 +109,7 @@ public:
 	int			m_iNumCars;
 
 	bool		m_bSky;
+	vtString	m_strSkyTexture;
 	bool		m_bOceanPlane;
 	float		m_fOceanPlaneLevel;
 	bool		m_bDepressOcean;

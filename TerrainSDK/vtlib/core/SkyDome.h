@@ -58,6 +58,7 @@ public:
 	void	SetSunsetColor(const RGBf &sunset);
 	void	SetInterpCutoff(float cutoff);
 	void	SetRadius(float radius);
+	bool	SetTexture(const char *filename);
 
 	/// As measured from horizon to max of 90deg at azimuth - default = 30deg
 	void	SetMaxSunsetAngle(float sunset_angle);
@@ -92,6 +93,8 @@ private:
 
 	vtMovGeom		*m_pSunShape;
 	vtMaterial		*m_SunApp;
+
+	bool		m_bHasTexture;
 };
 
 
@@ -170,6 +173,7 @@ public:
 	void	SetMaxSunsetAngle(float sunset_angle);
 	void	SetInterpCutoff(float cutoff);
 	void	SetSunLight(vtMovLight *light) { m_pSunLight = light; }
+	bool	SetTexture(const char *filename);
 
 protected:
 	vtDayDome	*m_pDayDome;
