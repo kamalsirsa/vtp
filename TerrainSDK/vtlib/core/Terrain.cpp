@@ -1499,6 +1499,7 @@ void vtTerrain::HideAllPOI()
 
 const char *vtTerrain::DescribeError(int iError)
 {
+	VTLOG("DescribeError %d\n", iError);
 	switch (iError)
 	{
 	case TERRAIN_ERROR_NOTFOUND: return "The terrain data file was not found.";
@@ -1509,7 +1510,7 @@ square and the dimensions are a power of 2 plus 1.\n\
 For example, 513x513 and 1025x105 are supported sizes.";
 	case TERRAIN_ERROR_NOMEM: return "Not enough memory.";
 	}
-	return "No error.";
+	return "No error";
 }
 
 
