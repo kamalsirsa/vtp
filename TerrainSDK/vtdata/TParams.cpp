@@ -213,6 +213,7 @@ bool TParams::LoadFromIniFile(const char *filename)
 		// elevation
 		else if (strcmp(buf, STR_ELEVFILE) == 0 ||
 				 strcmp(buf, STR_VERTICALEXAG) == 0 ||
+				 strcmp(buf, STR_SUPPRESS) == 0 ||
 				 strcmp(buf, STR_TIN) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 

@@ -86,6 +86,7 @@ private:
 #define STR_NAME "Name"
 #define STR_ELEVFILE "Filename"
 #define STR_VERTICALEXAG "Vertical_Exag"
+#define STR_SUPPRESS "Suppress_Surface"
 
 #define STR_MINHEIGHT "Min_Height"
 #define STR_NAVSTYLE "Nav_Style"
