@@ -62,7 +62,8 @@ public:
 	void DetermineMeterSpacing();
 
 	// TIN operations
-	void MergeSharedVerts();
+	void SetTin(vtTin2d *pTin);
+	void MergeSharedVerts(bool bSilent = false);
 
 	// drawing
 	void PaintDibFromElevation(vtDIB *dib, bool bShade);

@@ -890,7 +890,13 @@ void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
 	}
 }
 
-void vtElevLayer::MergeSharedVerts()
+void vtElevLayer::SetTin(vtTin2d *pTin)
+{
+	m_pTin = pTin;
+	m_bNative = true;
+}
+
+void vtElevLayer::MergeSharedVerts(bool bSilent)
 {
 	if (!m_pTin)
 		return;
@@ -903,12 +909,15 @@ void vtElevLayer::MergeSharedVerts()
 
 	CloseProgressDialog();
 
-	wxString str;
-	if (after < before)
-		str.Printf("Reduced vertices from %d to %d", before, after);
-	else
-		str.Printf("There are %d vertices, unable to merge any.", before);
-	wxMessageBox(str, "Merge Vertices");
+	if (!bSilent)
+	{
+		wxString str;
+		if (after < before)
+			str.Printf("Reduced vertices from %d to %d", before, after);
+		else
+			str.Printf("There are %d vertices, unable to merge any.", before);
+		wxMessageBox(str, "Merge Vertices");
+	}
 }
 
 void vtElevLayer::GetPropertyText(wxString &strIn)
