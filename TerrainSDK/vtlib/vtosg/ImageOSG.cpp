@@ -78,7 +78,8 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 
 		opts = reg->getOptions();
 		if (!opts) opts = new osgDB::ReaderWriter::Options;
-		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) | osgDB::ReaderWriter::Options::CacheHintOptions::CACHE_IMAGES));
+		opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint()) |
+			osgDB::ReaderWriter::Options::CACHE_IMAGES));
 		reg->setOptions(opts);
 
 		m_pOsgImage = osgDB::readImageFile(fname);

@@ -249,9 +249,9 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 		if (!opts) opts = new osgDB::ReaderWriter::Options;
 
 	    if (bAllowCache)
-			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() | (osgDB::ReaderWriter::Options::CacheHintOptions::CACHE_NODES))));
+			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() | (osgDB::ReaderWriter::Options::CACHE_NODES))));
 		else
-			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CacheHintOptions::CACHE_NODES))));
+			opts->setObjectCacheHint((HINT) ((opts->getObjectCacheHint() & ~(osgDB::ReaderWriter::Options::CACHE_NODES))));
 
 		reg->setOptions(opts);
 
