@@ -12,7 +12,8 @@ include $(VTP_ROOT)/TerrainSDK/Make.defs
 
 IFLAGS = -I./shapelib \
          -I$(NETCDF_INC) \
-         -I$(GDAL_INC)
+         -I$(GDAL_INC) \
+		 -I$(VTP_ROOT)/TerrainSDK/
 
 #SWITCHES = -DUNIX -DSUPPORT_NETCDF=1 -DSUPPORT_SDTS=1
 SWITCHES = -DUNIX -DSUPPORT_NETCDF=1
