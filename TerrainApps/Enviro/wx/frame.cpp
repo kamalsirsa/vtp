@@ -146,13 +146,15 @@ EVT_UPDATE_UI(ID_TERRAIN_TREES, vtFrame::OnUpdateTrees)
 EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
 EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
 
-EVT_MENU(ID_EARTH_SHOWTIME, vtFrame::OnEarthShowTime)
+EVT_MENU(ID_EARTH_SHOWSHADING, vtFrame::OnEarthShowShading)
+EVT_MENU(ID_EARTH_SHOWAXES, vtFrame::OnEarthShowAxes)
 EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
 EVT_MENU(ID_EARTH_UNFOLD, vtFrame::OnEarthUnfold)
 EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
 EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
 
-EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateEarthShowTime)
+EVT_UPDATE_UI(ID_EARTH_SHOWSHADING, vtFrame::OnUpdateEarthShowShading)
+EVT_UPDATE_UI(ID_EARTH_SHOWAXES, vtFrame::OnUpdateEarthShowAxes)
 EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_UNFOLD, vtFrame::OnUpdateInOrbit)
 EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
@@ -279,7 +281,8 @@ void vtFrame::CreateMenus()
 	terrainMenu->Append(ID_TERRAIN_SAVESTRUCT, _T("Save Built Structures As..."));
 
 	wxMenu *earthMenu = new wxMenu;
-	earthMenu->AppendCheckItem(ID_EARTH_SHOWTIME, _T("&Show Time of Day\tCtrl+I"));
+	earthMenu->AppendCheckItem(ID_EARTH_SHOWSHADING, _T("&Show Shading\tCtrl+I"));
+	earthMenu->AppendCheckItem(ID_EARTH_SHOWAXES, _T("&Show Axes\tCtrl+A"));
 	earthMenu->AppendCheckItem(ID_EARTH_FLATTEN, _T("&Flatten\tCtrl+E"));
 	earthMenu->AppendCheckItem(ID_EARTH_UNFOLD, _T("&Unfold\tCtrl+U"));
 	earthMenu->Append(ID_EARTH_POINTS, _T("&Load Point Data...\tCtrl+P"));
@@ -325,7 +328,7 @@ void vtFrame::CreateToolbar()
 	ADD_TOOL(ID_SCENE_SPACE, wxBITMAP(space), _("Go to Space"), false);
 	ADD_TOOL(ID_SCENE_TERRAIN, wxBITMAP(terrain), _("Go to Terrain"), false);
 	m_pToolbar->AddSeparator();
-	ADD_TOOL(ID_EARTH_SHOWTIME, wxBITMAP(sun), _("Time of Day"), true);
+	ADD_TOOL(ID_EARTH_SHOWSHADING, wxBITMAP(sun), _("Time of Day"), true);
 	ADD_TOOL(ID_EARTH_POINTS, wxBITMAP(points), _("Add Point Data"), false);
 
 	m_pToolbar->Realize();
@@ -427,7 +430,7 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			sa->ConstructStructure(bld);
 		}
 	}
-	if (key == 1)	// Ctrl-A
+	if (key == 3)	// Ctrl-C
 	{
 		// dump camera info
 		g_App.DumpCameraInfo();
@@ -958,15 +961,26 @@ void vtFrame::OnSaveStruct(wxCommandEvent& event)
 
 ////////////////// Earth Menu //////////////////////
 
-void vtFrame::OnEarthShowTime(wxCommandEvent& event)
+void vtFrame::OnEarthShowShading(wxCommandEvent& event)
 {
 	g_App.SetEarthShading(!g_App.GetEarthShading());
 }
 
-void vtFrame::OnUpdateEarthShowTime(wxUpdateUIEvent& event)
+void vtFrame::OnUpdateEarthShowShading(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 	event.Check(g_App.GetEarthShading());
+}
+
+void vtFrame::OnEarthShowAxes(wxCommandEvent& event)
+{
+	g_App.SetSpaceAxes(!g_App.GetSpaceAxes());
+}
+
+void vtFrame::OnUpdateEarthShowAxes(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Orbit);
+	event.Check(g_App.GetSpaceAxes());
 }
 
 void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)

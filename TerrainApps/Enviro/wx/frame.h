@@ -108,13 +108,16 @@ public:
 	void OnUpdateSaveVeg(wxUpdateUIEvent& event);
 	void OnUpdateSaveStruct(wxUpdateUIEvent& event);
 
-	void OnEarthShowTime(wxCommandEvent& event);
-	void OnUpdateEarthShowTime(wxUpdateUIEvent& event);
-	void OnUpdateInOrbit(wxUpdateUIEvent& event);
+	void OnEarthShowShading(wxCommandEvent& event);
+	void OnEarthShowAxes(wxCommandEvent& event);
 	void OnEarthFlatten(wxCommandEvent& event);
 	void OnEarthUnfold(wxCommandEvent& event);
 	void OnEarthPoints(wxCommandEvent& event);
 	void OnEarthLinear(wxCommandEvent& event);
+
+	void OnUpdateEarthShowShading(wxUpdateUIEvent& event);
+	void OnUpdateEarthShowAxes(wxUpdateUIEvent& event);
+	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);
 
