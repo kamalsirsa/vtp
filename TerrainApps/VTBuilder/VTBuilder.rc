@@ -31,6 +31,7 @@ rd_shownodes	BITMAP "bitmaps/rd_shownodes.bmp"
 
 select			BITMAP "bitmaps/select.bmp"
 info			BITMAP "bitmaps/info.bmp"
+table			BITMAP "bitmaps/table.bmp"
 elev_box		BITMAP "bitmaps/elev_box.bmp"
 
 bld_edit		BITMAP "bitmaps/bld_edit.bmp"
