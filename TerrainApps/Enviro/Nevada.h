@@ -3,6 +3,7 @@
 #define NEVADAH
 
 #include "vtlib/core/Terrain.h"
+#include "vtlib/core/Engine.h"
 #include "PTerrain.h"
 
 class NevadaTerrain : public PTerrain
