@@ -14,15 +14,11 @@
 #include "TerrainScene.h"
 
 // statics
-vtMaterialArray *vtFence3d::s_pFenceMats = NULL;
-float vtFence3d::s_fFenceScale;	// fence size is exaggerated by this amount
+vtMaterialDescriptorArray3d *vtFence3d::s_pFenceMats = NULL;
+int vtFence3d::s_mi_wire;
+
 
 vtFence3d::vtFence3d() : vtFence()
-{
-	Init();
-}
-
-vtFence3d::vtFence3d(FenceType type, float fHeight, float fSpacing) : vtFence(type, fHeight, fSpacing)
 {
 	Init();
 }
@@ -33,90 +29,65 @@ void vtFence3d::Init()
 	m_pFenceGeom = NULL;
 }
 
-int vtFence3d::m_mi_woodpost;
-int vtFence3d::m_mi_wire;
-int vtFence3d::m_mi_chainlink;
-int vtFence3d::m_mi_metalpost;
-int vtFence3d::m_mi_hedgerow;
-int vtFence3d::m_mi_drystone;
-int vtFence3d::m_mi_privet;
-int vtFence3d::m_mi_stone;
-int vtFence3d::m_mi_beech;
-
 void vtFence3d::CreateMaterials()
 {
-	s_pFenceMats = new vtMaterialArray();
+	s_pFenceMats = new vtMaterialDescriptorArray3d();
+	s_pFenceMats->InitializeMaterials();
+
+	// Materials for Posts
+
+	// wood fence post
+	s_pFenceMats->Append(new vtMaterialDescriptor("wood",
+		"Culture/fencepost_64.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
 	// create wirefence post textured material (0)
-	vtString fname;
+	s_pFenceMats->Append(new vtMaterialDescriptor("steel",
+		"Culture/chainpost32.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, -1, -1));
 
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/fencepost_64.jpg");
-	m_mi_woodpost = s_pFenceMats->AddTextureMaterial2(fname,
-		true, true, false, false,
-		TERRAIN_AMBIENT,
-		TERRAIN_DIFFUSE,
-		1.0f,		// alpha
-		TERRAIN_EMISSIVE);
+	// Materials for Connections
 
-	// add wire material (1)
-	m_mi_wire = s_pFenceMats->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
+	// manually add wire material
+	s_mi_wire = s_pFenceMats->GetMatArray()->AddRGBMaterial(RGBf(0.0f, 0.0f, 0.0f), // diffuse
 		RGBf(0.5f, 0.5f, 0.5f),	// ambient
 		false, true, false,		// culling, lighting, wireframe
 		0.6f);					// alpha
 
-	// chainlink material(2)
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/chain128-4.png");
-	m_mi_chainlink = s_pFenceMats->AddTextureMaterial2(fname,
-		false, true, true, false,	// cull, light, transp, add
-		1.0f,	// ambient
-		0.0f,	// diffuse
-		1.0f,	// alpha
-		TERRAIN_EMISSIVE);
-
-	// create chainfence post textured material (3)
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/chainpost32.jpg");
-	m_mi_metalpost = s_pFenceMats->AddTextureMaterial2(fname,
-		true, true, false, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
-
-	// create hedgerow textured material
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/hedgerow256.png");
-	m_mi_hedgerow = s_pFenceMats->AddTextureMaterial2(fname,
-		false, true, true, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+	// chainlink material: twosided, ambient, and alpha-blended
+	s_pFenceMats->Append(new vtMaterialDescriptor("chain-link",
+		"Culture/chain128-4.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 0.5f, 0.5f, true, true, true));
 
 	// create drystone textured material
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/drystone256.png");
-	m_mi_drystone = s_pFenceMats->AddTextureMaterial2(fname,
-		false, true, true, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+	s_pFenceMats->Append(new vtMaterialDescriptor("drystone",
+		"Culture/drystone_wall_512.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.4f, 1.2f));
+	s_pFenceMats->Append(new vtMaterialDescriptor("stone",
+		"Culture/stone256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 2.5f, -1));
 
 	// create privet textured material
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/privet256.png");
-	m_mi_privet = s_pFenceMats->AddTextureMaterial2(fname,
-		false, true, true, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+	s_pFenceMats->Append(new vtMaterialDescriptor("privet",
+		"Culture/privet_256.jpg", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1.2f, 1.2f, true));
 
-	// create stone textured material
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/stone256.png");
-	m_mi_stone = s_pFenceMats->AddTextureMaterial2(fname,
-		false, true, true, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+	// create railing textured materials: twosided, ambient, and alpha-blended
+	s_pFenceMats->Append(new vtMaterialDescriptor("railing_pipe",
+		"Culture/railing_pipe.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
+	s_pFenceMats->Append(new vtMaterialDescriptor("railing_wire",
+		"Culture/railing_wire.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
+	s_pFenceMats->Append(new vtMaterialDescriptor("railing_eu",
+		"Culture/railing_eu.png", VT_MATERIAL_SELFCOLOURED_TEXTURE, 1, -1, true, true, true));
 
-	// create beech textured material
-	fname = FindFileOnPaths(vtGetDataPath(), "Culture/beech256.png");
-	m_mi_beech = s_pFenceMats->AddTextureMaterial2(fname,
-		false, true, true, false,	// cull, light, transp, add
-		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
+	// add red material for display of unknown material
+	s_pFenceMats->Append(new vtMaterialDescriptor("unknown", "",
+		VT_MATERIAL_COLOURED, 1, 1, true, true, false, RGBi(255,0,0)));
+
+	s_pFenceMats->CreateMaterials();
 }
 
-void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
+void vtFence3d::AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc)
 {
 	// create fencepost block
 	vtMesh *pPostMesh = new vtMesh(vtMesh::TRIANGLE_FAN, VT_Normals | VT_TexCoords, 20);
 
-	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
-	pPostMesh->CreateOptimizedBlock(PostSizeScaled );
+	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight, m_Params.m_fPostDepth);
+	pPostMesh->CreateOptimizedBlock(PostSize);
 
 	// scoot over and upwards to put it above ground
 	FMatrix4 t;
@@ -124,186 +95,297 @@ void vtFence3d::AddFencepost(FPoint3 &p1, int iMatIdx)
 	t.Translate(p1);
 	pPostMesh->TransformVertices(t);
 
-	m_pFenceGeom->AddMesh(pPostMesh, iMatIdx);
+	m_pFenceGeom->AddMesh(pPostMesh, desc->GetMaterialIndex());
 	pPostMesh->Release();	// pass ownership
 }
 
+vtMaterialDescriptor *vtFence3d::FindDescriptor(const vtString &type)
+{
+	RGBf dummy;
+	vtMaterialDescriptor *desc = s_pFenceMats->FindMaterialDescriptor(type, dummy);
+	if (!desc)
+		desc = s_pFenceMats->FindMaterialDescriptor("unknown", dummy);
+	return desc;
+}
+
+FPoint3 SidewaysVector(const FPoint3 &p0, const FPoint3 &p1)
+{
+	FPoint3 diff = p1 - p0;
+	FPoint3 up(0,1,0);
+	FPoint3 cross = diff.Cross(up);
+	cross.Normalize();
+	return cross;
+}
 
 void vtFence3d::AddFenceMeshes(vtHeightField3d *pHeightField)
 {
-	if ((FT_WIRE == m_FenceType) || (FT_CHAINLINK == m_FenceType))
-		CreateMeshesWithPosts(pHeightField);
-	else
-		// FT_HEDGEROW has no posts
-		CreateMeshesWithoutPosts(pHeightField);
-}
+	unsigned int i, j;
+	unsigned int numfencepts = m_pFencePts.GetSize();
 
-void vtFence3d::CreateMeshesWithPosts(vtHeightField3d *pHeightField)
-{
-	int i, j;
-	int numfencepts = m_pFencePts.GetSize();
-	Array<DPoint2> posts;
-	DPoint2 diff, dp;
-	float fCurrentSpacing = m_fSpacing * s_fFenceScale;
-	FPoint3 PostSizeScaled = m_PostSize * s_fFenceScale;
-
-	// first determine where the fence posts go, for this whole array
-	// of fences
-	for (i = 0; i < numfencepts; i++)
-	{
-		if (i == numfencepts-1)
-		{
-			posts.Append(m_pFencePts[i]);
-			continue;
-		}
-		// get start and end group points for this section
-		DPoint2 utm1 = m_pFencePts[i];
-		DPoint2 utm2 = m_pFencePts[i+1];
-
-		diff = utm2 - utm1;
-		double distance = diff.Length();
-		int segments = (int) (distance / fCurrentSpacing);
-		if (segments < 1) segments = 1;
-		DPoint2 diff_per_segment = diff / segments;
-
-		for (j = 0; j < segments; j++)
-		{
-			dp = utm1 + (diff_per_segment * j);
-			posts.Append(dp);
-		}
-	}
-
-	// convert post positions to world-coordinate ground locations
-	int nposts = posts.GetSize();
-
-	FPoint3 pout;
+	DLine2 posts;
 	FLine3 p3;
-	p3.SetSize(nposts);
-	for (i = 0; i < nposts; i++)
-	{
-		pHeightField->ConvertEarthToSurfacePoint(posts[i], pout);
 
-		if (i > 0 && i < nposts-1)
+	DPoint2 diff, dp;
+	FPoint3 PostSize(m_Params.m_fPostWidth, m_Params.m_fPostHeight, m_Params.m_fPostDepth);
+
+	if (m_Params.m_PostType != "none")
+	{
+		// has posts
+		// determine where the fence posts go
+		for (i = 0; i < numfencepts; i++)
 		{
-			// randomly offset by up to 4% of fence spacing, for "realism"
-			pout.x += random_offset(0.04f * fCurrentSpacing);
-			pout.z += random_offset(0.04f * fCurrentSpacing);
+			if (i == numfencepts-1)
+			{
+				posts.Append(m_pFencePts[i]);
+				continue;
+			}
+			// get start and end group points for this section
+			DPoint2 epos1 = m_pFencePts[i];
+			DPoint2 epos2 = m_pFencePts[i+1];
+
+			diff = epos2 - epos1;
+			double distance = diff.Length();
+			unsigned int segments = (unsigned int) (distance / m_Params.m_fPostSpacing);
+			if (segments < 1) segments = 1;
+			DPoint2 diff_per_segment = diff / segments;
+
+			for (j = 0; j < segments; j++)
+			{
+				dp = epos1 + (diff_per_segment * j);
+				posts.Append(dp);
+			}
 		}
-		p3[i] = pout;
+
+		// convert post positions to world-coordinate ground locations
+		FPoint3 pout;
+		p3.SetSize(posts.GetSize());
+		for (i = 0; i < posts.GetSize(); i++)
+		{
+			pHeightField->ConvertEarthToSurfacePoint(posts[i], pout);
+
+			if (i > 0 && i < posts.GetSize()-1)
+			{
+				// randomly offset by up to 4% of fence spacing, for "realism"
+				pout.x += random_offset(0.04f * m_Params.m_fPostSpacing);
+				pout.z += random_offset(0.04f * m_Params.m_fPostSpacing);
+			}
+			p3[i] = pout;
+		}
+		// generate the posts
+		vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_PostType);
+		for (i = 0; i < posts.GetSize(); i++)
+			AddFencepost(p3[i], desc);
+	}
+	else
+	{
+		// no posts, just project earth to world
+		p3.SetSize(numfencepts);
+		for (i = 0; i < numfencepts; i++)
+			pHeightField->ConvertEarthToSurfacePoint(m_pFencePts[i], p3[i]);
 	}
 
-	if (m_FenceType == FT_WIRE)
-	{
-		// generate the posts
-		for (i = 0; i < nposts; i++)
-			AddFencepost(p3[i], m_mi_woodpost);
+	// if not enough points, nothing connections to create
+	unsigned int npoints = p3.GetSize();
+	if (npoints < 2)
+		return;
 
-		// and the 3 wires
-		if (nposts > 1)
+	if (m_Params.m_ConnectType == "none")
+	{
+		// nothing to do
+	}
+	else if (m_Params.m_ConnectType == "wire")
+	{
+		// the 3 wires
+		if (npoints > 1)
 		{
 			float wire_height[3] = { 0.42f, 0.66f, 0.91f };
 
-			vtMesh *pWireMesh = new vtMesh(vtMesh::LINE_STRIP, 0, nposts);
+			vtMesh *pWireMesh = new vtMesh(vtMesh::LINE_STRIP, 0, npoints);
 			int vidx = 0;
 			for (j = 0; j < 3; j++)
 			{
 				int start = vidx;
-				for (i = 0; i < nposts; i++)
+				for (i = 0; i < npoints; i++)
 				{
-					pWireMesh->AddVertex(p3[i] + FPoint3(0, (PostSizeScaled.y * wire_height[j]), 0));
+					pWireMesh->AddVertex(p3[i] + FPoint3(0, (PostSize.y * wire_height[j]), 0));
 					vidx++;
 				}
-				pWireMesh->AddStrip2(nposts, start);
+				pWireMesh->AddStrip2(npoints, start);
 			}
-			m_pFenceGeom->AddMesh(pWireMesh, m_mi_wire);
+			m_pFenceGeom->AddMesh(pWireMesh, s_mi_wire);
 			pWireMesh->Release();	// pass ownership
 		}
 	}
-
-	if (m_FenceType == FT_CHAINLINK)
+	else if (m_Params.m_fConnectWidth == 0.0f)
 	{
+		vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords, 100);
+
+		// A single thin strip polygon with a single texture.
+		vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_ConnectType);
+		FPoint2 uvscale = desc->GetUVScale();
+
 		float u = 0.0f;
-		float fence_height_meters = m_PostSize.y;
-		float v_top = fence_height_meters * 2.0f;
+		float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
+		float v_top;
+		if (uvscale.y == -1)
+			v_top = 1.0f;
+		else
+			v_top = vertical_meters / uvscale.y;
 
-		// generate the posts
-		for (i = 0; i < nposts; i++)
-			AddFencepost(p3[i], m_mi_metalpost);
-
-		if (nposts > 1)
+		int vidx = 0;
+		for (i = 0; i < npoints; i++)
 		{
-			vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, nposts*2);
-			int vidx = 0;
-			for (i = 0; i < nposts; i++)
-			{
-				pMesh->SetVtxPUV(vidx++, p3[i], u, 0.0);
-				pMesh->SetVtxPUV(vidx++, p3[i] + FPoint3(0, PostSizeScaled.y, 0), u, v_top);
+			pMesh->SetVtxPUV(vidx++, p3[i] + FPoint3(0, m_Params.m_fConnectBottom, 0), u, 0.0);
+			pMesh->SetVtxPUV(vidx++, p3[i] + FPoint3(0, m_Params.m_fConnectTop, 0), u, v_top);
 
-				if (i < nposts+1)
+			if (i < npoints-1)
+			{
+				// increment u based on the length of each fence segment
+				float length_meters = (p3[i+1] - p3[i]).Length();
+				u += (length_meters / desc->GetUVScale().x);
+			}
+		}
+		pMesh->AddStrip2(npoints * 2, 0);
+
+		m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
+		pMesh->Release();	// pass ownership
+	}
+	else if (m_Params.m_fConnectWidth > 0.0f)
+	{
+		vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_TexCoords | VT_Normals, 100);
+
+		// a solid block, with top/left/right sides, made of 3 strips
+		vtMaterialDescriptor *desc = FindDescriptor(m_Params.m_ConnectType);
+		FPoint2 uvscale = desc->GetUVScale();
+		float vertical_meters = m_Params.m_fConnectTop - m_Params.m_fConnectBottom;
+
+		float u = 0.0f;
+		float v1 = 0.0f, v2;
+		for (int i = 0; i < 3; i++)
+		{
+			float y1, y2;
+			float z1, z2;
+			FPoint3 pos, sideways, normal;
+
+			// determine v texture coordinate
+			switch (i)
+			{
+			case 0:
+			case 2:
+				if (uvscale.y == -1)
+					v2 = 1.0f;
+				else
+					v2 = vertical_meters / uvscale.y;
+				break;
+			case 1:
+				if (uvscale.y == -1)
+					v2 = 1.0f;
+				else
+					v2 = m_Params.m_fConnectWidth / uvscale.y;
+				break;
+			}
+
+			// determine Y and Z values
+			switch (i)
+			{
+			case 0:
+				y1 = m_Params.m_fConnectBottom;
+				y2 = m_Params.m_fConnectTop;
+				z1 = m_Params.m_fConnectWidth / 2;
+				z2 = m_Params.m_fConnectWidth / 2;
+				break;
+			case 1:
+				y1 = m_Params.m_fConnectTop;
+				y2 = m_Params.m_fConnectTop;
+				z1 = m_Params.m_fConnectWidth / 2;
+				z2 = -m_Params.m_fConnectWidth / 2;
+				break;
+			case 2:
+				y1 = m_Params.m_fConnectTop;
+				y2 = m_Params.m_fConnectBottom;
+				z1 = -m_Params.m_fConnectWidth / 2;
+				z2 = -m_Params.m_fConnectWidth / 2;
+				break;
+			}
+
+			int vidx;
+			int start = pMesh->GetNumVertices();
+			for (j = 0; j < npoints; j++)
+			{
+				if (j < npoints-1)
+				{
+					// determine normal (used for shading and thickness)
+					sideways = SidewaysVector(p3[j], p3[j+1]);
+					switch (i)
+					{
+					case 0: normal = sideways; break;
+					case 1: normal.Set(0,1,0); break;	// up
+					case 2: normal = -sideways; break;
+					}
+				}
+
+				pos = p3[j];
+				pos.y += y2;
+				pos += (sideways * z2);
+				vidx = pMesh->AddVertex(pos);
+				pMesh->SetVtxTexCoord(vidx, FPoint2(u, v2));
+				pMesh->SetVtxNormal(vidx, normal);
+
+				pos = p3[j];
+				pos.y += y1;
+				pos += (sideways * z1);
+				vidx = pMesh->AddVertex(pos);
+				pMesh->SetVtxTexCoord(vidx, FPoint2(u, v1));
+				pMesh->SetVtxNormal(vidx, normal);
+
+				if (j < npoints-1)
 				{
 					// increment u based on the length of each fence segment
-					float length = (posts[i+1] - posts[i]).Length();
-					u += ((length / s_fFenceScale) * 2.0f);
+					float length_meters = (p3[j+1] - p3[j]).Length();
+					u += (length_meters / desc->GetUVScale().x);
 				}
 			}
-			pMesh->AddStrip2(nposts * 2, 0);
-			m_pFenceGeom->AddMesh(pMesh, m_mi_chainlink);
-			pMesh->Release();	// pass ownership
+			pMesh->AddStrip2(npoints * 2, start);
 		}
+
+		// add cap at beginning
+		u = m_Params.m_fConnectWidth / desc->GetUVScale().x;
+		v2 = vertical_meters / uvscale.y;
+
+		int start =
+		pMesh->AddVertex(pMesh->GetVtxPos(npoints*2*2+1));
+		pMesh->AddVertex(pMesh->GetVtxPos(npoints*2*2));
+		pMesh->AddVertex(pMesh->GetVtxPos(0));
+		pMesh->AddVertex(pMesh->GetVtxPos(1));
+		pMesh->SetVtxNormal(start+0, p3[0] - p3[1]);
+		pMesh->SetVtxNormal(start+1, p3[0] - p3[1]);
+		pMesh->SetVtxNormal(start+2, p3[0] - p3[1]);
+		pMesh->SetVtxNormal(start+3, p3[0] - p3[1]);
+		pMesh->SetVtxTexCoord(start+0, FPoint2(u, 0.0f));
+		pMesh->SetVtxTexCoord(start+1, FPoint2(u, v2));
+		pMesh->SetVtxTexCoord(start+2, FPoint2(0.0f, 0.0f));
+		pMesh->SetVtxTexCoord(start+3, FPoint2(0.0f, v2));
+		pMesh->AddStrip2(4, start);
+
+		// add cap at end
+		start =
+		pMesh->AddVertex(pMesh->GetVtxPos(npoints*2-2));
+		pMesh->AddVertex(pMesh->GetVtxPos(npoints*2-1));
+		pMesh->AddVertex(pMesh->GetVtxPos(npoints*3*2-1));
+		pMesh->AddVertex(pMesh->GetVtxPos(npoints*3*2-2));
+		pMesh->SetVtxNormal(start+0, p3[npoints-1] - p3[npoints-2]);
+		pMesh->SetVtxNormal(start+1, p3[npoints-1] - p3[npoints-2]);
+		pMesh->SetVtxNormal(start+2, p3[npoints-1] - p3[npoints-2]);
+		pMesh->SetVtxNormal(start+3, p3[npoints-1] - p3[npoints-2]);
+		pMesh->SetVtxTexCoord(start+0, FPoint2(0.0f, 0.0f));
+		pMesh->SetVtxTexCoord(start+1, FPoint2(0.0f, v2));
+		pMesh->SetVtxTexCoord(start+2, FPoint2(u, 0.0f));
+		pMesh->SetVtxTexCoord(start+3, FPoint2(u, v2));
+		pMesh->AddStrip2(4, start);
+
+		m_pFenceGeom->AddMesh(pMesh, desc->GetMaterialIndex());
+		pMesh->Release();	// pass ownership
 	}
-}
-
-void vtFence3d::CreateMeshesWithoutPosts(vtHeightField3d *pHeightField)
-{
-	int i, numfencepts = m_pFencePts.GetSize();
-
-	// FT_HEDGEROW has no posts
-	if (numfencepts < 1)
-		return;
-
-	float fFenceHeightScaled = m_fHeight * s_fFenceScale;
-	float u = 0.0f;
-	FPoint3 pout;
-	vtMesh *pMesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numfencepts * 2);
-	int vidx = 0;
-	for (i = 0; i < numfencepts; i++)
-	{
-		DPoint2 dp = m_pFencePts[i];
-		pHeightField->ConvertEarthToSurfacePoint(dp.x, dp.y, pout);
-
-		pMesh->SetVtxPUV(vidx++, pout, u, 0.0f);
-		pMesh->SetVtxPUV(vidx++, pout + FPoint3(0, fFenceHeightScaled, 0), u, 1.0f);
-
-		if (i < (numfencepts - 1))
-		{
-			// increment u based on the length of each fence segment
-			float length = (m_pFencePts[i+1] - dp).Length();
-			u += ((length / s_fFenceScale) * 0.5f);
-		}
-	}
-	pMesh->AddStrip2(numfencepts * 2, 0);
-	switch(m_FenceType)
-	{
-	case FT_HEDGEROW:
-		m_pFenceGeom->AddMesh(pMesh, m_mi_hedgerow);
-		break;
-	case FT_DRYSTONE:
-		m_pFenceGeom->AddMesh(pMesh, m_mi_drystone);
-		break;
-	case FT_PRIVET:
-		m_pFenceGeom->AddMesh(pMesh, m_mi_privet);
-		break;
-	case FT_STONE:
-		m_pFenceGeom->AddMesh(pMesh, m_mi_stone);
-		break;
-	case FT_BEECH:
-		m_pFenceGeom->AddMesh(pMesh, m_mi_beech);
-		break;
-	case FT_WIRE:
-	case FT_CHAINLINK:
-		break;
-	}
-	pMesh->Release();	// pass ownership
 }
 
 void vtFence3d::DestroyGeometry()
@@ -337,10 +419,10 @@ bool vtFence3d::CreateNode(vtTerrain *pTerr)
 
 		m_pFenceGeom = new vtGeom;
 		m_pFenceGeom->SetName2("Fence");
-		m_pFenceGeom->SetMaterials(s_pFenceMats);
+		m_pFenceGeom->SetMaterials(s_pFenceMats->GetMatArray());
 
 		if (bFirstTime)
-			s_pFenceMats->Release();
+			s_pFenceMats->GetMatArray()->Release();
 	}
 
 	if (m_bBuilt)

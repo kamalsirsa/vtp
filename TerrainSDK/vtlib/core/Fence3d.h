@@ -20,7 +20,6 @@ class vtFence3d : public vtFence, public vtStructure3d
 {
 public:
 	vtFence3d();
-	vtFence3d(FenceType type, float fHeight, float fSpacing);
 
 	// implement vtStructure3d methods
 	virtual bool CreateNode(vtTerrain *pTerr);
@@ -28,32 +27,18 @@ public:
 	virtual vtNode *GetContained() { return m_pFenceGeom; }
 	virtual void DeleteNode();
 
-	static void SetScale(float fScale) { s_fFenceScale = fScale; }
-
 	void DestroyGeometry();
 
 protected:
 	void	Init();
+	void	AddFencepost(const FPoint3 &p1, vtMaterialDescriptor *desc);
 	void	AddFenceMeshes(vtHeightField3d *pHeightField);
-	void	AddFencepost(FPoint3 &p1, int iMatIdx);
-	void	CreateMeshesWithPosts(vtHeightField3d *pHeightField);
-	void	CreateMeshesWithoutPosts(vtHeightField3d *pHeightField);
+	vtMaterialDescriptor *FindDescriptor(const vtString &type);
 
 	// all fences share the same set of materials
-	static vtMaterialArray *s_pFenceMats;
+	static vtMaterialDescriptorArray3d *s_pFenceMats;
 	static void CreateMaterials();
-	static int m_mi_woodpost;
-	static int m_mi_wire;
-	static int m_mi_chainlink;
-	static int m_mi_metalpost;
-	static int m_mi_hedgerow;
-	static int m_mi_drystone;
-	static int m_mi_privet;
-	static int m_mi_stone;
-	static int m_mi_beech;
-
-	// fence size is exaggerated by this amount
-	static float s_fFenceScale;
+	static int s_mi_wire;
 
 	vtGeom		*m_pFenceGeom;
 	bool		m_bBuilt;
