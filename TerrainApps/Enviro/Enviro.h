@@ -60,6 +60,7 @@ public:
 	void StartControlEngine();
 	void DoControl();
 	void SetTerrain(vtTerrain *pTerrain);
+	vtGroup *GetRoot() { return m_pRoot; }
 
 	// navigation and camera
 	void SetFlightSpeed(float speed);
@@ -202,6 +203,7 @@ protected:
 	// startup methods
 	void SetupScene1();
 	void SetupScene2();
+	virtual void SetupScene3() {}
 	void SetupCommonCulture();
 	void DoPickers();
 	void MakeGlobe();

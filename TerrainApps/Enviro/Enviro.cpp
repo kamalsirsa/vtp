@@ -245,6 +245,11 @@ void Enviro::DoControl()
 			SetupScene2();
 			return;
 		}
+		if (m_iInitStep == 3)
+		{
+			SetupScene3();
+			return;
+		}
 		if (g_Options.m_bStartInNeutral)
 		{
 			m_state = AS_Neutral;
