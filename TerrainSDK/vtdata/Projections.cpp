@@ -117,7 +117,7 @@ void vtProjection::SetDatum(int iDatum)
 	// OGR does not have functionality to change the Datum of an
 	// existing coordinate system.
 	//
-	if (IsGeographic())
+	if (IsGeographic() || GetRoot() == NULL)
 	{
 		// simple case: re-create the object with the new datum
 		SetGeogCSFromDatum(iDatum);
