@@ -81,7 +81,8 @@ class DPoint3;
 /**
  * A 3-component vector class, single-precision (float).
  */
-class FPoint3 {
+class FPoint3
+{
 public:
 	FPoint3() { x = y = z = 0.0f; }
 	FPoint3(float fx, float fy, float fz) { x=fx; y=fy; z=fz; }
@@ -131,7 +132,8 @@ public:
 /**
  * A 3-component vector class, double-precision.
  */
-class DPoint3 {
+class DPoint3
+{
 public:
 	DPoint3() { x = y = z = 0.0f; }
 	DPoint3(double fx, double fy, double fz) { x=fx; y=fy; z=fz; }
