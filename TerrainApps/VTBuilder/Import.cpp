@@ -602,7 +602,11 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 
 	// if layer type unknown, ask user input
 	if (ltype == LT_UNKNOWN)
+	{
 		ltype = AskLayerType();
+		if (ltype == LT_UNKNOWN)	// User cancelled the operation
+			return NULL;
+	}
 
 	// create the new layer
 	vtLayerPtr pLayer = vtLayer::CreateNewLayer(ltype);
