@@ -134,6 +134,12 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 
 	// draw building footprint for all levels
 	int levs = bld->GetNumLevels();
+
+	// unless we're XORing, in which case multiple overlapping level would
+	// cancel each other out
+	if (pDC->GetLogicalFunction() == wxINVERT)
+		levs = 1;
+
 	for (i = 0; i < levs; i++)
 	{
 		DLine2 &dl = bld->GetFootprint(i);
