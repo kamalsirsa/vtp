@@ -1937,9 +1937,9 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	}
 }
 
-vtString GetExportFilename(const char *format_filter)
+vtString GetExportFilename(const wxString &format_filter)
 {
-	wxString filter = _("All Files|*.*|");
+	wxString2 filter = _("All Files|*.*|");
 	AddType(filter, format_filter);
 
 	// ask the user for a filename
