@@ -1,5 +1,5 @@
 #
-# GNU Makefile Variable Defs:  TerrainSDK
+# GNU Makefile Global Variable Defs
 #
 
 #----------------------------------------------------------------------------
@@ -24,6 +24,11 @@ ifeq ($(findstring MINGW,$(OS)),MINGW)
 OS := MINGW
 endif
 
+#==============================================================================
+#
+#                                DIRECTORIES
+#
+#==============================================================================
 
 #----------------------------------------------------------------------------
 # General Unix systems will use these values
@@ -33,8 +38,11 @@ X11BASE   = /usr/X11R6
 PREFIX    = $(X11BASE)
 X_INC = $(X11BASE)/include
 X_LIB = $(X11BASE)/lib
-OSG_BASE = $(LOCALBASE)
-LIB_EXT = so
+
+# Mac OS X users only
+FINK_LIB   	 = /sw/lib
+FINK_INC	 = /sw/include
+OSX_APPS   = $(VTP_ROOT)/OSX
 
 #----------------------------------------------------------------------------
 # Common Build variables
@@ -46,6 +54,7 @@ CHEAD =  $(wildcard *.h)
 CXXHEAD = $(wildcard *.hpp)
 HEADERS = $(CHEAD) $(CXXHEAD)
 OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
+LIB_EXT = so
 
 SWITCHES = -DUNIX
 CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
@@ -62,7 +71,9 @@ TERRAIN_SDK_DIR  = $(VTP_ROOT)/TerrainSDK
 TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
 VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
 VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
+VTUI_DIR         = $(TERRAIN_SDK_DIR)/vtui
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
+XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
 
 NETCDF_INC = $(LOCALBASE)/include
 NETCDF_LIB = $(LOCALBASE)/lib
@@ -70,6 +81,7 @@ NETCDF_LIB = $(LOCALBASE)/lib
 PNG_INC = $(LOCALBASE)/include
 PNG_LIB = $(LOCALBASE)/lib
 
+OSG_BASE = $(LOCALBASE)
 OSG_INC = $(OSG_BASE)/include
 OSG_LIB = $(OSG_BASE)/lib
 
@@ -79,8 +91,14 @@ GDAL_LIB = $(LOCALBASE)/lib
 MINI_INC = $(LOCALBASE)/include
 MINI_LIB = $(LOCALBASE)/lib/libMini.a
 
-VTDATA_INST_DIR = $(PREFIX)/lib
-VTOSG_INST_DIR  = $(PREFIX)/lib
+VTDATA_INST_DIR = $(VTDATA_DIR)
+VTUI_INST_DIR = $(VTUI_DIR)
+VTOSG_INST_DIR  = $(VTOSG_DIR)
+XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
+
+WX_DIR		 = /usr/local
+
+-include $(HOME)/.vtp-user.defs
 
 #============================================================================
 #
@@ -160,7 +178,7 @@ ifeq ($(OS),Darwin)
    CC        = gcc
    CXX       = g++
    AR        = ar ruv
-   COPT      = -g -O -Dunix=1 -D__DARWIN_OSX__ -fPIC -I/sw/include
+   COPT      = -g -O -Dunix=1 -D__DARWIN_OSX__ -fPIC -I$(FINK_INC)
    LD        = $(CXX)
    LD_SHARED = $(CXX) -dynamiclib
    LIB_EXT   = dynlib
@@ -180,19 +198,27 @@ ifeq ($(OS),Darwin)
    FRAMEWORK_EXE = $(FRAMEWORK)/$(LIB_NAME)
 
    # flags 
-   COMMON_OPTS = -compatibility_version 1.2 -current_version 1.2.1 -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lz -F$(FRAMEWORKS)
+   COMMON_OPTS = -compatibility_version 1.2 -current_version 1.2.1 -L$(GDAL_LIB) -lgdal -L/sw/lib -lnetcdf -lpng -ljpeg -lz -F$(FRAMEWORKS)
+
+   #
+   # Enumerates the build flags required to use each lib/framework
+   #
    OSG_OPTS = -L$(OSG_LIB) -losg -losgGA -losgUtil \
 	      -losgText -losgDB -losgGA -losgUtil -lOpenThreads
    XMLHELPER_OPTS = -framework xmlhelper
    VTDATA_OPTS = -framework vtdata
 
-   # options used by individual make files
+   #
+   # options used by individual make files to build their respective packages.
+   # E.g. if you need to modify the build opts for XmlHelper, modify the 
+   # XMLHELPER_LINK_OPTS variable.
+   #
    XMLHELPER_LINK_OPTS = -lstdc++ -lz   
 
    VTDATA_LINK_OPTS =  $(COMMON_OPTS) \
 		       $(XMLHELPER_OPTS)
 
-   VTUI_LINK_OPTS = $(shell /usr/local/bin/wx-config --libs) \
+   VTUI_LINK_OPTS = $(shell $(WX_DIR)/bin/wx-config --libs) \
 		    $(COMMON_OPTS) \
 		    -flat_namespace \
 		    -undefined suppress \
@@ -208,9 +234,32 @@ ifeq ($(OS),Darwin)
 		      $(VTDATA_OPTS) \
 		      -losgText -lMini -lz
 
+   #
+   # The default rule for building an *.app package.  Requires the
+   # OSX_APPS directory. And EXEC = name of the App: Enviro, VTBuilder,
+   # etc.
+   #
+   %.app: $(OSX_APPS) 
+	-mkdir -p $(OSX_APPS)/$(EXEC).app/Contents/MacOS
+	-mkdir -p $(OSX_APPS)/$(EXEC).app/Contents/Resources
+#	not recommended, as the frameworks are 60MB+ together
+#	but if you do want a single application package,
+#	change the -install_name option when you build.
+#	See TerrainSDK/Make.defs
+#	-cp -Rf $(FRAMEWORKS) $(OSX_APPS)/$(EXEC).app/Contents
+	if [ -e $(EXEC).plist ]; then \
+		cp $(EXEC).plist $(OSX_APPS)/$(EXEC).app/Contents/Info.plist; \
+	fi
+	echo -n "APPL????" > $(OSX_APPS)/$(EXEC).app/Contents/PkgInfo
+	if [ -e $(EXEC).rsrc ]; then \
+		cp $(EXEC).rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc; \
+	fi
+	if [ -e icons/$(EXEC).icns ]; then \
+		cp icons/$(EXEC).icns $(OSX_APPS)/$(EXEC).app/Contents/Resources/; \
+	fi
 
 
-%.framework: $(HEADERS) $(FRAMEWORKS)
+   %.framework: $(HEADERS) $(FRAMEWORKS)
 	-mkdir -p $*.framework/Versions/A 
 	-mkdir -p $*.framework/Headers
 	-ln -s $*.framework/Versions/A $*.framework/Versions/Current 
@@ -268,9 +317,12 @@ endif
 # End System specific defs
 #------------------------------------------------------------------------------
 
+# Turns on debugging: to enable run "make -DDEBUG=1"
 ifeq ($(DEBUG),1)
 COPT += -DDEBUG=1
 endif
+
+#------------------------------------------------------------------------------
 
 colon:= :
 empty:=  
