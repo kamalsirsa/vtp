@@ -25,26 +25,28 @@
 // static class data, special inlines
 
 // vtChNil is left for backward compatibility
-char vtChNil = '\0';
+static char vtChNil = '\0';
 
 // For an empty string, m_pchData will point here
 // (note: avoids special case of checking for NULL m_pchData)
 // empty string data (and locked)
-/* extern */ int _vtInitData[] = { -1, 0, 0, 0 };
-/* extern */ vtStringData* _vtDataNil = (vtStringData*)&_vtInitData;
+static int _vtInitData[] = { -1, 0, 0, 0 };
+static vtStringData* _vtDataNil = (vtStringData*)&_vtInitData;
 pcchar _vtPchNil = (pcchar)(((unsigned char*)&_vtInitData)+sizeof(vtStringData));
-// special function to make vtEmptyString work even during initialization
 
 
 //////////////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 
-vtString::vtString(const vtString& stringSrc) {
-	if (stringSrc.GetData()->nRefs >= 0) {
+vtString::vtString(const vtString& stringSrc)
+{
+	if (stringSrc.GetData()->nRefs >= 0)
+	{
 		m_pchData = stringSrc.m_pchData;
 		InterlockInc(&GetData()->nRefs);
-		}
-	else {
+	}
+	else
+	{
 		Init();
 		*this = stringSrc.m_pchData;
 	}
@@ -77,7 +79,8 @@ void vtString::FreeData(vtStringData* pData)
 
 void vtString::Release()
 {
-	if (GetData() != _vtDataNil) {
+	if (GetData() != _vtDataNil)
+	{
 		if (InterlockDec(&GetData()->nRefs) <= 0)
 			FreeData(GetData());
 		Init();
@@ -86,7 +89,8 @@ void vtString::Release()
 
 void vtString::Release(vtStringData* pData)  /*  removed PASCAL  */
 {
-	if (pData != _vtDataNil) {
+	if (pData != _vtDataNil)
+	{
 		if (InterlockDec(&pData->nRefs) <= 0)
 			FreeData(pData);
 	}
@@ -122,8 +126,10 @@ void vtString::AllocBeforeWrite(int nLen)
 	}
 }
 
-vtString::~vtString()
+//
 //  free any attached data
+//
+vtString::~vtString()
 {
 	if (GetData() != _vtDataNil) {
 		if (InterlockDec(&GetData()->nRefs) <= 0)
@@ -1057,23 +1063,4 @@ const char *wstring2::to_utf8() const
 	if (buf && (len<n)) *buf = 0;
 	return s_buffer;
 }
-
-
-/////////////////////////////////////////////////////////////////////////////
-// StringArray class
-
-//
-// assignment operator
-//
-/*
-StringArray &StringArray::operator=(const class StringArray &v)
-{
-	int size = v.GetSize();
-	SetSize(size);
-	for (int i = 0; i < size; i++)
-		SetAt(i, new vtString(*(v.GetAt(i))));
-
-	return *this;
-}
-*/
 

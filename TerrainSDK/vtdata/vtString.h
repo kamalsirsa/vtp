@@ -274,7 +274,6 @@ bool WIN_UNIX_STDCALL operator>=(const vtString& s1, pcchar s2);
 bool WIN_UNIX_STDCALL operator>=(pcchar s1, const vtString& s2);
 
 // Globals
-extern char vtChNil;
 extern pcchar _vtPchNil;
 #define vtEmptyString ((vtString&)*(vtString*)&_vtPchNil)
 
