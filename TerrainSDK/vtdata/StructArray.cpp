@@ -796,9 +796,9 @@ void StructureVisitor::endElement(const char * name)
 			string(name) != (string)"placement")
 		{
 			// save all other tags as literal strings
-			vtTag *tag = new vtTag;
-			tag->name = name;
-			tag->value = _data.c_str();
+			vtTag tag;
+			tag.name = name;
+			tag.value = _data.c_str();
 
 			pStruct->AddTag(tag);
 		}
@@ -1144,9 +1144,9 @@ void StructVisitorGML::endElement(const char *name)
 	if (bGrabAttribute)
 	{
 		// save these elements as literal strings
-		vtTag *tag = new vtTag;
-		tag->name = name;
-		tag->value = data;
+		vtTag tag;
+		tag.name = name;
+		tag.value = data;
 		m_pStructure->AddTag(tag);		// where does the tag go?
 	}
 }

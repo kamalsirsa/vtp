@@ -37,8 +37,9 @@ public:
  * Each tag has two strings: a Name and a Value.
  * This is similar to the concept of a tag in XML.
  */
-struct vtTag
+class vtTag
 {
+public:
 	vtString name;
 	vtString value;
 };
@@ -53,7 +54,7 @@ struct vtTag
 class vtTagArray
 {
 public:
-	void AddTag(vtTag *pTag);
+	void AddTag(const vtTag &pTag);
 	void AddTag(const char *name, const char *value);
 
 	vtTag *FindTag(const char *szTagName);
@@ -72,7 +73,7 @@ public:
 	bool GetValue(const char *szTagName, double &value);
 
 protected:
-	Array<vtTag*>	m_tags;
+	std::vector<vtTag>	m_tags;
 };
 
 /**

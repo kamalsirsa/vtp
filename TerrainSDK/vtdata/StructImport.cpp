@@ -355,21 +355,19 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 			inst->m_p.y = psShape->padfY[0];
 			// attempt to get properties from the DBF
 			const char *string;
-			vtTag *tag;
+			vtTag tag;
 			if (field_filename != -1)
 			{
 				string = DBFReadStringAttribute(db, i, field_filename);
-				tag = new vtTag;
-				tag->name = "filename";
-				tag->value = string;
+				tag.name = "filename";
+				tag.value = string;
 				inst->AddTag(tag);
 			}
 			if (field_itemname != -1)
 			{
 				string = DBFReadStringAttribute(db, i, field_itemname);
-				tag = new vtTag;
-				tag->name = "itemname";
-				tag->value = string;
+				tag.name = "itemname";
+				tag.value = string;
 				inst->AddTag(tag);
 			}
 			if (field_scale != -1)
@@ -377,9 +375,8 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 				double scale = DBFReadDoubleAttribute(db, i, field_scale);
 				if (scale != 1.0)
 				{
-					tag = new vtTag;
-					tag->name = "scale";
-					tag->value.Format("%lf", scale);
+					tag.name = "scale";
+					tag.value.Format("%lf", scale);
 					inst->AddTag(tag);
 				}
 			}

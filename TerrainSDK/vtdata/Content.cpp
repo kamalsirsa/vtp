@@ -21,26 +21,25 @@
 // Implementation of class vtTagArray
 //
 
-void vtTagArray::AddTag(vtTag *pTag)
+void vtTagArray::AddTag(const vtTag &pTag)
 {
-	m_tags.Append(pTag);
+	m_tags.push_back(pTag);
 }
 
 void vtTagArray::AddTag(const char *name, const char *value)
 {
-	vtTag *tag = new vtTag;
-	tag->name = name;
-	tag->value = value;
-	m_tags.Append(tag);
+	vtTag tag;
+	tag.name = name;
+	tag.value = value;
+	m_tags.push_back(tag);
 }
 
 vtTag *vtTagArray::FindTag(const char *name)
 {
-	int size = m_tags.GetSize();
-	vtTag *tag;
+	int size = m_tags.size();
 	for (int i = 0; i < size; i++)
 	{
-		tag = m_tags[i];
+		vtTag *tag = &m_tags[i];
 		if (!tag->name.CompareNoCase(name))
 			return tag;
 	}
@@ -49,29 +48,29 @@ vtTag *vtTagArray::FindTag(const char *name)
 
 vtTag *vtTagArray::GetTag(int index)
 {
-	return m_tags.GetAt(index);
+	return &m_tags[index];
 }
 
 int vtTagArray::NumTags()
 {
-	return m_tags.GetSize();
+	return m_tags.size();
 }
 
 void vtTagArray::RemoveTag(int index)
 {
-	m_tags.RemoveAt(index);
+	m_tags.erase(m_tags.begin() + index);
 }
 
 void vtTagArray::RemoveTag(const char *szTagName)
 {
-	int size = m_tags.GetSize();
+	int size = m_tags.size();
 	vtTag *tag;
 	for (int i = 0; i < size; i++)
 	{
-		tag = m_tags[i];
+		tag = &m_tags[i];
 		if (!tag->name.CompareNoCase(szTagName))
 		{
-			m_tags.RemoveAt(i);
+			m_tags.erase(m_tags.begin() + i);
 			break;
 		}
 	}
@@ -317,9 +316,9 @@ void ContentVisitor::endElement(const char * name)
 		if (string(name) != (string)"model")
 		{
 			// save all other tags as literal strings
-			vtTag *tag = new vtTag;
-			tag->name = name;
-			tag->value = _data.c_str();
+			vtTag tag;
+			tag.name = name;
+			tag.value = _data.c_str();
 
 			vtItem *pItem = st.item;
 			pItem->AddTag(tag);
