@@ -81,6 +81,9 @@ void TimeDlg::PushTime()
 		time.SetTimeOfDay(hour, minute, second);
 
 		m_pTimeEngine->SetTime(time);
+
+		time.GetDate(year, month, day);
+		time.GetTimeOfDay(hour, minute, second);
 	}
 }
 
