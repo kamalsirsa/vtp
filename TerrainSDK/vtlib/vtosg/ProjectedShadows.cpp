@@ -86,7 +86,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 		// set up lighting.
 		// currently ignore lights in the scene graph itself..
 		// will do later.
-		osgUtil::RenderStage* previous_stage = cv.getCurrentRenderBin()->_stage;
+		osgUtil::RenderStage* previous_stage = cv.getCurrentRenderBin()->getStage();
 
 		// set up the background color and clear mask.
 		m_pRtts->setClearColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
@@ -188,7 +188,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 
 		// add the render to texture stage to the current stages
 		// dependancy list.
-		cv.getCurrentRenderBin()->_stage->addToDependencyList(m_pRtts.get());
+		cv.getCurrentRenderBin()->getStage()->addToDependencyList(m_pRtts.get());
 
 		// if one exists attach texture to the RenderToTextureStage.
 		if (m_texture.valid())
@@ -219,7 +219,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 		// must traverse the shadowed           
 		traverse(&node,&cv);
 
-	cv.popStateSet();    
+	cv.popStateSet();
 }
 
 void CreateProjectedShadowTextureCullCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
