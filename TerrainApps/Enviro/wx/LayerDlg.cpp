@@ -72,13 +72,17 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 	LayerItemData *data = (LayerItemData *)m_pTree->GetItemData(item);
 	if (!data)
 		return NULL;
-
 	if (data->m_item == -1)
 		return NULL;
+
 	vtStructure3d *str3d = data->m_sa->GetStructure3d(data->m_item);
-	if (bContainer)
+	vtStructure *str = data->m_sa->GetAt(data->m_item);
+	vtStructureType typ = str->GetType(); 
+
+	if (bContainer && typ != ST_LINEAR)
 		return str3d->GetContainer();
 	else
+		// always get contained geometry for linears; they have no container
 		return str3d->GetContained();
 }
 
