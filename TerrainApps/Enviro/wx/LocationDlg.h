@@ -25,6 +25,18 @@ class vtLocationSaver;
 // LocationDlg
 //----------------------------------------------------------------------------
 
+class AnimEntry
+{
+public:
+	AnimEntry() { m_pAnim = NULL; m_pEngine = NULL; }
+	~AnimEntry() {
+		vtGetScene()->RemoveEngine(m_pEngine);
+		delete m_pEngine; }	// engine owns path
+	vtAnimPath *m_pAnim;
+	vtAnimPathEngine *m_pEngine;
+	vtString m_Name;
+};
+
 class LocationDlg: public AutoDialog
 {
 public:
@@ -35,13 +47,12 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	~LocationDlg();
 
-	void OnInitDialog(wxInitDialogEvent &event) {}
-
 	// WDR: method declarations for LocationDlg
 	wxBitmapButton* GetReset()  { return (wxBitmapButton*) FindWindow( ID_RESET ); }
 	wxCheckBox* GetSmooth()  { return (wxCheckBox*) FindWindow( ID_SMOOTH ); }
 	wxButton* GetSaveAnim()  { return (wxButton*) FindWindow( ID_SAVE_ANIM ); }
 	wxButton* GetStop()  { return (wxButton*) FindWindow( ID_STOP ); }
+	wxButton* GetRecord1()  { return (wxButton*) FindWindow( ID_RECORD1 ); }
 	wxButton* GetPlay()  { return (wxButton*) FindWindow( ID_PLAY ); }
 	wxListBox* GetAnims()  { return (wxListBox*) FindWindow( ID_ANIMS ); }
 	wxButton* GetStoreas()  { return (wxButton*) FindWindow( ID_STOREAS ); }
@@ -58,9 +69,11 @@ public:
 	void RecallFrom(const vtString &locname);
 
 	void RefreshAnims();
+	void RefreshAnimsText();
 	void UpdateEnabling();
 	void SlidersToValues();
 	void ValuesToSliders();
+	void AppendAnimPath(vtAnimPath *anim, const char *name);
 
 	void SetValues();
 	void GetValues();
@@ -70,8 +83,10 @@ private:
 	// WDR: member variable declarations for LocationDlg
 	vtLocationSaver *m_pSaver;
 
-	Array<vtAnimPath3d *> m_Anims;
-	Array<vtAnimPathEngine *> m_Engines;
+	Array<AnimEntry *> m_Entries;
+
+	vtAnimPath *GetAnim(int i) { return m_Entries.GetAt(i)->m_pAnim; }
+	vtAnimPathEngine *GetEngine(int i) { return m_Entries.GetAt(i)->m_pEngine; }
 
 	wxButton* m_pStoreAs;
 	wxButton* m_pStore;
@@ -79,12 +94,14 @@ private:
 	wxButton* m_pRemove;
 	wxListBox* m_pLocList;
 
+	bool m_bLoop;
 	bool m_bSmooth;
 	bool m_bPosOnly;
 	int m_iAnim;
 	float m_fSpeed;
 	int m_iSpeed;
 	bool m_bSetting;
+	float m_fRecordSpacing;
 
 private:
 	// WDR: handler declarations for LocationDlg
@@ -94,9 +111,11 @@ private:
 	void OnCheckbox( wxCommandEvent &event );
 	void OnAnim( wxCommandEvent &event );
 	void OnStop( wxCommandEvent &event );
+	void OnRecord1( wxCommandEvent &event );
 	void OnPlay( wxCommandEvent &event );
 	void OnLoadAnim( wxCommandEvent &event );
 	void OnSaveAnim( wxCommandEvent &event );
+	void OnNewAnim( wxCommandEvent &event );
 	void OnRemove( wxCommandEvent &event );
 	void OnListDblClick( wxCommandEvent &event );
 	void OnLoad( wxCommandEvent &event );

@@ -46,11 +46,14 @@ BEGIN_EVENT_TABLE(LocationDlg,AutoDialog)
 	EVT_BUTTON( ID_LOAD, LocationDlg::OnLoad )
 	EVT_LISTBOX_DCLICK( ID_LOCLIST, LocationDlg::OnListDblClick )
 	EVT_BUTTON( ID_REMOVE, LocationDlg::OnRemove )
+	EVT_BUTTON( ID_NEW_ANIM, LocationDlg::OnNewAnim )
 	EVT_BUTTON( ID_SAVE_ANIM, LocationDlg::OnSaveAnim )
 	EVT_BUTTON( ID_LOAD_ANIM, LocationDlg::OnLoadAnim )
 	EVT_BUTTON( ID_PLAY, LocationDlg::OnPlay )
+	EVT_BUTTON( ID_RECORD1, LocationDlg::OnRecord1 )
 	EVT_BUTTON( ID_STOP, LocationDlg::OnStop )
 	EVT_LISTBOX( ID_ANIMS, LocationDlg::OnAnim )
+	EVT_CHECKBOX( ID_LOOP, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_SMOOTH, LocationDlg::OnCheckbox )
 	EVT_CHECKBOX( ID_POS_ONLY, LocationDlg::OnCheckbox )
 	EVT_BUTTON( ID_RESET, LocationDlg::OnReset )
@@ -62,11 +65,13 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
+	m_bLoop = true;
 	m_bSmooth = true;
 	m_bPosOnly = false;
 	m_iAnim = -1;
 	m_fSpeed = 1.0f;
 	m_bSetting = false;
+	m_fRecordSpacing = 1.0f;
 
 	LocationDialogFunc( this, TRUE );
 	m_pSaver = new vtLocationSaver();
@@ -76,10 +81,12 @@ LocationDlg::LocationDlg( wxWindow *parent, wxWindowID id, const wxString &title
 	m_pRemove = GetRemove();
 	m_pLocList = GetLoclist();
 
+	AddValidator(ID_LOOP, &m_bLoop);
 	AddValidator(ID_SMOOTH, &m_bSmooth);
 	AddValidator(ID_POS_ONLY, &m_bPosOnly);
 	AddNumValidator(ID_SPEED, &m_fSpeed);
 	AddValidator(ID_SPEEDSLIDER, &m_iSpeed);
+	AddNumValidator(ID_RECORD_SPACING, &m_fRecordSpacing);
 
 	RefreshButtons();
 	UpdateEnabling();
@@ -90,8 +97,8 @@ LocationDlg::~LocationDlg()
 	delete m_pSaver;
 
 	unsigned int i;
-	for (i = 0; i < m_Anims.GetSize(); i++)
-		delete m_Anims[i];
+	for (i = 0; i < m_Entries.GetSize(); i++)
+		delete m_Entries[i];
 }
 
 void LocationDlg::SetTarget(vtTransform *pTarget, const vtProjection &proj,
@@ -132,24 +139,49 @@ void LocationDlg::RefreshList()
 void LocationDlg::RefreshAnims()
 {
 	GetAnims()->Clear();
-
-	wxString str;
-	unsigned int i, num = m_Anims.GetSize();
+	unsigned int i, num = m_Entries.GetSize();
 	for (i = 0; i < num; i++)
-	{
-		vtAnimPath3d *anim = m_Anims[i];
+		GetAnims()->Append(_T("anim"));
 
-		str.Printf(_T("%hs"), (const char *) anim->GetFilename());
-		GetAnims()->Append(str);
-	}
+	RefreshAnimsText();
 }
 
+void LocationDlg::RefreshAnimsText()
+{
+	wxString str;
+	unsigned int i, num = m_Entries.GetSize();
+	for (i = 0; i < num; i++)
+	{
+		AnimEntry *entry = m_Entries[i];
+		vtAnimPath *anim = GetAnim(i);
+		vtAnimPathEngine *eng = GetEngine(i);
+
+		str.Printf(_T("%hs (%.1f/%.1f)"), (const char *) entry->m_Name,
+			eng->GetTime(), (float) anim->GetLastTime());
+		GetAnims()->SetString(i, str);
+	}
+}
 void LocationDlg::UpdateEnabling()
 {
 	GetReset()->Enable(m_iAnim != -1);
 	GetPlay()->Enable(m_iAnim != -1);
+	GetRecord1()->Enable(m_iAnim != -1);
 	GetStop()->Enable(m_iAnim != -1);
 	GetSmooth()->Enable(m_iAnim != -1);
+}
+
+void LocationDlg::AppendAnimPath(vtAnimPath *anim, const char *name)
+{
+	vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
+	engine->SetTarget(m_pSaver->GetTransform());
+	engine->SetEnabled(false);
+	vtGetScene()->AddEngine(engine);
+
+	AnimEntry *entry = new AnimEntry();
+	entry->m_pAnim = anim;
+	entry->m_pEngine = engine;
+	entry->m_Name = name;
+	m_Entries.Append(entry);
 }
 
 #define SPEED_MIN   0.0f
@@ -171,9 +203,10 @@ void LocationDlg::SetValues()
 	if (m_iAnim == -1)
 		return;
 
-	vtAnimPath3d *anim = m_Anims[m_iAnim];
+	vtAnimPath *anim = GetAnim(m_iAnim);
+	anim->SetLoop(m_bLoop);
 	anim->SetInterpMode(m_bSmooth ? vtAnimPath::CUBIC_SPLINE : vtAnimPath::LINEAR);
-	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	engine->SetPosOnly(m_bPosOnly);
 	engine->SetSpeed(m_fSpeed);
 }
@@ -183,10 +216,11 @@ void LocationDlg::GetValues()
 	if (m_iAnim == -1)
 		return;
 
-	vtAnimPath3d *anim = m_Anims[m_iAnim];
+	vtAnimPath *anim = GetAnim(m_iAnim);
+	m_bLoop = anim->GetLoop();
 	m_bSmooth = (anim->GetInterpMode() == vtAnimPath::CUBIC_SPLINE);
 
-	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	m_bPosOnly = engine->GetPosOnly();
 	m_fSpeed = engine->GetSpeed();
 }
@@ -223,7 +257,7 @@ void LocationDlg::OnSpeedSlider( wxCommandEvent &event )
 
 void LocationDlg::OnReset( wxCommandEvent &event )
 {
-	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	engine->Reset();
 }
 
@@ -246,13 +280,30 @@ void LocationDlg::OnAnim( wxCommandEvent &event )
 
 void LocationDlg::OnStop( wxCommandEvent &event )
 {
-	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	engine->SetEnabled(false);
+}
+
+void LocationDlg::OnRecord1( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
+	vtTransform *xform = (vtTransform *) engine->GetTarget();
+	vtAnimPath *path = engine->GetAnimationPath();
+
+	FPoint3 pos = xform->GetTrans();
+	FQuat rot = xform->GetOrient();
+	ControlPoint cp(pos, rot);
+	path->Insert(path->GetLastTime() + m_fRecordSpacing, cp);
+	path->ProcessPoints();
+
+	RefreshAnimsText();
 }
 
 void LocationDlg::OnPlay( wxCommandEvent &event )
 {
-	vtAnimPathEngine *engine = m_Engines[m_iAnim];
+	vtAnimPathEngine *engine = GetEngine(m_iAnim);
 	engine->SetEnabled(true);
 }
 
@@ -264,19 +315,23 @@ void LocationDlg::OnLoadAnim( wxCommandEvent &event )
 	if (!bResult)
 		return;
 
-	vtAnimPath3d *anim = new vtAnimPath3d;
-	if (!anim->LoadFromSHP(loadFile.GetPath().mb_str()))
-	{
-		delete anim;
+	vtFeatureSetLineString3D lines;
+
+	const char *filename = loadFile.GetPath().mb_str();
+	if (!lines.LoadFromSHP(filename))
 		return;
-	}
-	anim->TransformToTerrain(m_pSaver->GetAtProjection());
-	m_Anims.Append(anim);
-	vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
-	engine->SetTarget(m_pSaver->GetTransform());
-	engine->SetEnabled(false);
-	vtGetScene()->AddEngine(engine);
-	m_Engines.Append(engine);
+
+	vtAnimPath *anim = new vtAnimPath;
+	anim->CreateFromLineString(m_pSaver->GetAtProjection(), lines);
+
+	AppendAnimPath(anim, filename);
+	RefreshAnims();
+}
+
+void LocationDlg::OnNewAnim( wxCommandEvent &event )
+{
+	vtAnimPath *anim = new vtAnimPath;
+	AppendAnimPath(anim, "New Anim");
 	RefreshAnims();
 }
 

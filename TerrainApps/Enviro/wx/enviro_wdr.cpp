@@ -383,23 +383,29 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item17 = new wxButton( parent, ID_SAVE_ANIM, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item17->Enable( false );
+    wxButton *item17 = new wxButton( parent, ID_NEW_ANIM, _("New"), wxDefaultPosition, wxSize(60,-1), 0 );
     item16->Add( item17, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxButton *item18 = new wxButton( parent, ID_LOAD_ANIM, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxButton *item18 = new wxButton( parent, ID_SAVE_ANIM, _("Save"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item18->Enable( false );
     item16->Add( item18, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item16->Add( 16, 16, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item19 = new wxButton( parent, ID_LOAD_ANIM, _("Load"), wxDefaultPosition, wxSize(60,-1), 0 );
+    item16->Add( item19, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBitmapButton *item19 = new wxBitmapButton( parent, ID_RESET, MyBitmapsFunc( 1 ), wxDefaultPosition, wxDefaultSize );
-    item16->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    item16->Add( 14, 14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBitmapButton *item20 = new wxBitmapButton( parent, ID_STOP, MyBitmapsFunc( 2 ), wxDefaultPosition, wxDefaultSize );
+    wxBitmapButton *item20 = new wxBitmapButton( parent, ID_RESET, MyBitmapsFunc( 1 ), wxDefaultPosition, wxDefaultSize );
     item16->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBitmapButton *item21 = new wxBitmapButton( parent, ID_PLAY, MyBitmapsFunc( 3 ), wxDefaultPosition, wxDefaultSize );
+    wxBitmapButton *item21 = new wxBitmapButton( parent, ID_STOP, MyBitmapsFunc( 2 ), wxDefaultPosition, wxDefaultSize );
     item16->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item22 = new wxBitmapButton( parent, ID_RECORD1, MyBitmapsFunc( 4 ), wxDefaultPosition, wxDefaultSize );
+    item16->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item23 = new wxBitmapButton( parent, ID_PLAY, MyBitmapsFunc( 3 ), wxDefaultPosition, wxDefaultSize );
+    item16->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item14->Add( item16, 0, wxALIGN_CENTER, 5 );
 
@@ -407,31 +413,57 @@ wxSizer *LocationDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item13, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Playback") );
+    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
 
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxSlider *item24 = new wxSlider( parent, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(120,-1), wxSL_HORIZONTAL );
-    item22->Add( item24, 1, wxALIGN_CENTER, 5 );
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Speed:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_SPEED, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item22->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxSlider *item28 = new wxSlider( parent, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(120,-1), wxSL_HORIZONTAL );
+    item26->Add( item28, 1, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item26 = new wxStaticText( parent, ID_TEXT, _("m/s"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_SPEED, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxStaticText *item30 = new wxStaticText( parent, ID_TEXT, _("m/s"), wxDefaultPosition, wxDefaultSize, 0 );
+    item26->Add( item30, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+    item24->Add( item26, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxCheckBox *item28 = new wxCheckBox( parent, ID_SMOOTH, _("Smooth"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item28, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxCheckBox *item29 = new wxCheckBox( parent, ID_POS_ONLY, _("Position Only"), wxDefaultPosition, wxDefaultSize, 0 );
-    item27->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxCheckBox *item32 = new wxCheckBox( parent, ID_LOOP, _("Loop"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item32, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item27, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+    wxCheckBox *item33 = new wxCheckBox( parent, ID_SMOOTH, _("Smooth"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item33, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item34 = new wxCheckBox( parent, ID_POS_ONLY, _("Position Only"), wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item24->Add( item31, 0, wxALIGN_CENTER_HORIZONTAL, 5 );
+
+    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item36 = new wxStaticBox( parent, -1, _("Recording") );
+    wxStaticBoxSizer *item35 = new wxStaticBoxSizer( item36, wxVERTICAL );
+
+    wxBoxSizer *item37 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item38 = new wxStaticText( parent, ID_TEXT, _("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item39 = new wxTextCtrl( parent, ID_RECORD_SPACING, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item37->Add( item39, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item40 = new wxStaticText( parent, ID_TEXT, _("seconds"), wxDefaultPosition, wxDefaultSize, 0 );
+    item37->Add( item40, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item35->Add( item37, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item35, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -1673,6 +1705,34 @@ wxBitmap MyBitmapsFunc( size_t index )
         "     aaab       ",
         "     aab        ",
         "     ab         ",
+        "                ",
+        "                ",
+        "                "
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    if (index == 4)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "16 15 2 1",
+        "  c None",
+        "a c #FF0000",
+        /* pixels */
+        "                ",
+        "                ",
+        "                ",
+        "    aaa    aa   ",
+        "   aaaaa  aaa   ",
+        "  aaaaaaa  aa   ",
+        "  aaaaaaa  aa   ",
+        "  aaaaaaa  aa   ",
+        "  aaaaaaa  aa   ",
+        "   aaaaa   aa   ",
+        "    aaa   aaaa  ",
+        "                ",
         "                ",
         "                ",
         "                "
