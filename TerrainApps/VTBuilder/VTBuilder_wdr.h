@@ -25,6 +25,7 @@
 #include <wx/treectrl.h>
 #include <wx/notebook.h>
 #include <wx/grid.h>
+#include <wx/toolbar.h>
 
 // Declare window functions
 
@@ -227,6 +228,13 @@ wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_THEME 10150
 #define ID_MPP 10151
 wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
+#define ID_GEOTIFF 10152
+#define ID_JPEG 10153
+#define ID_CHOICE_COLORS 10154
+#define ID_EDIT_COLORS 10155
+#define ID_SHADING 10156
+wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
 
