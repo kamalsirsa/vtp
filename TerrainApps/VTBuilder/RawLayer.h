@@ -10,31 +10,29 @@
 #define RAWLAYERH
 
 #include "vtdata/shapelib/shapefil.h"
-
 #include "vtdata/Array.h"
-#include "vtdata/Array.inl"
+#include "vtdata/vtString.h"
 
 #include "Layer.h"
 
-enum FieldType {
-  FT_String,
-  FT_Integer,
-  FT_Double
-};
-
-#if 0	// not used yet
-struct Field {
-	FieldType m_type;
-	int m_size;
-	int m_offset;
-	wxString m_name;
-};
-
-class Attributes
+#if 1	// use this, or use values directly from DBF file instead?
+class Field
 {
-	Array<Field> m_fields;
-	int m_record_size;
-	Array<unsigned char *> m_records;
+public:
+	Field(const char *name, DBFFieldType ftype) { m_name = name; m_type = ftype; }
+
+	DBFFieldType m_type;
+	int m_width, m_decimals;	// these are for remembering SHP limitations
+	vtString m_name;
+
+	Array<int> m_int;
+	Array<double> m_double;
+	Array<vtString*> m_string;
+
+	int AddRecord();
+	void SetValue(int record, const char *string);
+	void SetValue(int record, int value);
+	void SetValue(int record, double value);
 };
 #endif
 
@@ -56,17 +54,27 @@ public:
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &strIn);
 
+	int NumEntities();
 	int GetEntityType();
 	void SetEntityType(int type);
-	void AddPoint(DPoint2 p);
+	void AddPoint(const DPoint2 &p);
+	void AddPoint(const DPoint3 &p);
+
+	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
+	int AddRecord();
+	void SetValue(int record, int field, const char *string);
+	void SetValue(int record, int field, int value);
+	void SetValue(int record, int field, double value);
 
 protected:
-	// supported values: SHPT_NULL, SHPT_POINT, SHPT_ARC, SHPT_POLYGON
+	// supported values for shape type are: SHPT_NULL, SHPT_POINT,
+	//	SHPT_POINTZ, SHPT_ARC, SHPT_POLYGON
 	int			m_nSHPType;
-	DLine2		m_Point;
-	DPolyArray2	m_LinePoly;
+	DLine2		m_Point2;		// SHPT_POINT
+	DLine3		m_Point3;		// SHPT_POINTZ
+	DPolyArray2	m_LinePoly;		// SHPT_ARC, SHPT_POLYGON
 
-//	Attributes	m_attrib;
+	Array<Field*> m_fields;
 
 	vtProjection	m_proj;
 };
