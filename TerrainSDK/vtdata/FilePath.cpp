@@ -61,6 +61,16 @@ StringArray &StringArray::operator=(const class StringArray &v)
 vtString FindFileOnPaths(const StringArray &paths, const char *filename)
 {
 	FILE *fp;
+
+	// it's possible that the filename is already resolvable without
+	// searching the data paths
+	fp = fopen(filename, "r");
+	if (fp != NULL)
+	{
+		fclose(fp);
+		return vtString(filename);
+	}
+
 	for (int i = 0; i < paths.GetSize(); i++)
 	{
 		vtString fname = *(paths[i]);
@@ -191,5 +201,18 @@ const char *StartOfFilename(const char *szFullPath)
 	if (tmp3 && tmp3 > tmp)
 		tmp = tmp3+1;
 	return tmp;
+}
+
+/**
+ * Return whether a path is absolute or relative.
+ */
+bool PathIsAbsolute(const char *szPath)
+{
+	int len = strlen(szPath);
+	if (len >= 2 && szPath[1] == ':')
+		return true;
+	if (len >= 1 && (szPath[0] == '/' || szPath[0] == '\\'))
+		return true;
+	return false;
 }
 
