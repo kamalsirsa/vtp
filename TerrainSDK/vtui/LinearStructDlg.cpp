@@ -1,7 +1,7 @@
 //
 // Name: LinearStructDlg.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -16,12 +16,17 @@
 #include "wx/wx.h"
 #endif
 
+#include "wxString2.h"
 #include "LinearStructDlg.h"
 
-#define HEIGHT_MIN	1.0f
-#define HEIGHT_MAX	6.0f
-#define SPACING_MIN	1.0f
-#define SPACING_MAX	4.0f
+#define VALUE_MIN  0.2f
+#define VALUE_MAX  10.2f
+#define SIZE_MIN  0.05f
+#define SIZE_MAX  2.55f
+#define BOTTOM_MIN  -1.0f
+#define BOTTOM_MAX  9.0f
+#define WIDTH_MIN	0.0f
+#define WIDTH_MAX	10.0f
 
 // WDR: class implementations
 
@@ -33,11 +38,21 @@
 
 BEGIN_EVENT_TABLE(LinearStructureDlg, AutoDialog)
 	EVT_INIT_DIALOG (LinearStructureDlg::OnInitDialog)
-	EVT_CHOICE( ID_TYPE, LinearStructureDlg::OnFenceType )
-	EVT_TEXT( ID_HEIGHTEDIT, LinearStructureDlg::OnHeightEdit )
-	EVT_TEXT( ID_SPACINGEDIT, LinearStructureDlg::OnSpacingEdit )
-	EVT_SLIDER( ID_HEIGHTSLIDER, LinearStructureDlg::OnHeightSlider )
-	EVT_SLIDER( ID_SPACINGSLIDER, LinearStructureDlg::OnSpacingSlider )
+	EVT_CHOICE( ID_LINEAR_STRUCTURE_STYLE, LinearStructureDlg::OnFenceStyle )
+	EVT_TEXT( ID_POST_HEIGHT_EDIT, LinearStructureDlg::OnTextEdit )
+	EVT_TEXT( ID_POST_SPACING_EDIT, LinearStructureDlg::OnTextEdit )
+	EVT_TEXT( ID_POST_SIZE_EDIT, LinearStructureDlg::OnTextEdit )
+	EVT_TEXT( ID_CONN_WIDTH_EDIT, LinearStructureDlg::OnTextEdit )
+	EVT_TEXT( ID_CONN_TOP_EDIT, LinearStructureDlg::OnTextEdit )
+	EVT_TEXT( ID_CONN_BOTTOM_EDIT, LinearStructureDlg::OnTextEdit )
+	EVT_SLIDER( ID_POST_HEIGHT_SLIDER, LinearStructureDlg::OnSlider )
+	EVT_SLIDER( ID_POST_SPACING_SLIDER, LinearStructureDlg::OnSlider )
+	EVT_SLIDER( ID_POST_SIZE_SLIDER, LinearStructureDlg::OnSlider )
+	EVT_SLIDER( ID_CONN_WIDTH_SLIDER, LinearStructureDlg::OnSlider )
+	EVT_SLIDER( ID_CONN_TOP_SLIDER, LinearStructureDlg::OnSlider )
+	EVT_SLIDER( ID_CONN_BOTTOM_SLIDER, LinearStructureDlg::OnSlider )
+	EVT_CHOICE( ID_POST_TYPE, LinearStructureDlg::OnPostType )
+	EVT_CHOICE( ID_CONN_TYPE, LinearStructureDlg::OnConnType )
 END_EVENT_TABLE()
 
 LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -45,87 +60,204 @@ LinearStructureDlg::LinearStructureDlg( wxWindow *parent, wxWindowID id, const w
 	AutoDialog( parent, id, title, position, size, style )
 {
 	LinearStructDialogFunc( this, TRUE );
+	m_bSetting = false;
 
-	m_pSpacingSlider = GetSpacingslider();
-	m_pHeightSlider = GetHeightslider();
-	m_pFenceChoice = GetFencetype();
+	m_iStyle = 0;
+	m_param.m_fPostHeight = FENCE_DEFAULT_HEIGHT;
+	m_param.m_fPostSpacing = FENCE_DEFAULT_SPACING;
 
-	m_iType = 0;
-	m_opts.fHeight = FENCE_DEFAULT_HEIGHT;
-	m_opts.fSpacing = FENCE_DEFAULT_SPACING;
+	AddValidator(ID_LINEAR_STRUCTURE_STYLE, &m_iStyle);
 
-	AddValidator(ID_TYPE, &m_iType);
+	AddValidator(ID_POST_HEIGHT_SLIDER, &m_iPostHeight);
+	AddValidator(ID_POST_SPACING_SLIDER, &m_iPostSpacing);
+	AddValidator(ID_POST_SIZE_SLIDER, &m_iPostSize);
+	AddValidator(ID_CONN_WIDTH_SLIDER, &m_iConnWidth);
+	AddValidator(ID_CONN_TOP_SLIDER, &m_iConnTop);
+	AddValidator(ID_CONN_BOTTOM_SLIDER, &m_iConnBottom);
 
-	AddValidator(ID_HEIGHTSLIDER, &m_iHeight);
-	AddValidator(ID_SPACINGSLIDER, &m_iSpacing);
+	AddNumValidator(ID_POST_HEIGHT_EDIT, &m_param.m_fPostHeight, 2);
+	AddNumValidator(ID_POST_SPACING_EDIT, &m_param.m_fPostSpacing, 2);
+	AddNumValidator(ID_POST_SIZE_EDIT, &m_param.m_fPostWidth, 2);
+//	AddNumValidator(ID_POST_SIZE_EDIT, &m_param.m_fPostDepth, 2);
+	AddNumValidator(ID_CONN_WIDTH_EDIT, &m_param.m_fConnectWidth, 2);
+	AddNumValidator(ID_CONN_TOP_EDIT, &m_param.m_fConnectTop, 2);
+	AddNumValidator(ID_CONN_BOTTOM_EDIT, &m_param.m_fConnectBottom, 2);
 
-	AddNumValidator(ID_HEIGHTEDIT, &m_opts.fHeight);
-	AddNumValidator(ID_SPACINGEDIT, &m_opts.fSpacing);
+	// NB -- these must match the FS_ enum in order
+	GetStyle()->Clear();
+	GetStyle()->Append(_("Wooden posts, wire"));
+	GetStyle()->Append(_("Metal posts, wire"));
+	GetStyle()->Append(_("Metal poles, chain-link"));
+	GetStyle()->Append(_("Dry-stone wall"));
+	GetStyle()->Append(_("Privet hedge"));
+	GetStyle()->Append(_("Railing (Pipe)"));
+	GetStyle()->Append(_("Railing (Wire)"));
+	GetStyle()->Append(_("Railing (EU)"));
+	GetStyle()->Append(_("(custom)"));
 
-	// NB -- these must match the FT_ enum in order
-	m_pFenceChoice->Clear();
-	m_pFenceChoice->Append(_T("Wooden posts, 3 wires"));
-	m_pFenceChoice->Append(_T("Metal poles, chain-link"));
-	m_pFenceChoice->Append(_T("English Hedgerow"));
-	m_pFenceChoice->Append(_T("English Drystone"));
-	m_pFenceChoice->Append(_T("English Privet"));
-	m_pFenceChoice->Append(_T("English Beech"));
-	m_pFenceChoice->Append(_T("Coursed Stone"));
+	GetPostType()->Append(_("none"));
+	GetPostType()->Append(_("wood"));
+	GetPostType()->Append(_("steel"));
+
+	GetConnType()->Append(_("none"));
+	GetConnType()->Append(_("wire"));
+	GetConnType()->Append(_("chain-link"));
+	GetConnType()->Append(_("drystone"));
+	GetConnType()->Append(_("privet"));
+	GetConnType()->Append(_("railing_wire"));
+	GetConnType()->Append(_("railing_eu"));
+	GetConnType()->Append(_("railing_pipe"));
 }
+
+void LinearStructureDlg::UpdateTypes()
+{
+	wxString2 ws;
+	ws = m_param.m_PostType;
+	GetPostType()->SetStringSelection(ws);
+	ws = m_param.m_ConnectType;
+	GetConnType()->SetStringSelection(ws);
+}
+
+void LinearStructureDlg::UpdateEnabling()
+{
+	GetPostSpacingEdit()->Enable(m_param.m_PostType != "none");
+	GetPostSpacingSlider()->Enable(m_param.m_PostType != "none");
+	GetPostHeightEdit()->Enable(m_param.m_PostType != "none");
+	GetPostHeightSlider()->Enable(m_param.m_PostType != "none");
+	GetPostSizeEdit()->Enable(m_param.m_PostType != "none");
+	GetPostSizeSlider()->Enable(m_param.m_PostType != "none");
+
+	GetConnWidthEdit()->Enable(m_param.m_ConnectType != "none");
+	GetConnWidthSlider()->Enable(m_param.m_ConnectType != "none");
+	GetConnTopEdit()->Enable(m_param.m_ConnectType != "none");
+	GetConnTopSlider()->Enable(m_param.m_ConnectType != "none");
+	GetConnBottomEdit()->Enable(m_param.m_ConnectType != "none");
+	GetConnBottomSlider()->Enable(m_param.m_ConnectType != "none");
+}
+
 
 // WDR: handler implementations for LinearStructureDlg
-
-void LinearStructureDlg::OnSpacingSlider( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-	SlidersToValues();
-	TransferDataToWindow();
-	OnSetOptions(m_opts);
-}
-
-void LinearStructureDlg::OnHeightSlider( wxCommandEvent &event )
-{
-	OnSpacingSlider(event);
-}
-
-void LinearStructureDlg::OnSpacingEdit( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-	ValuesToSliders();
-	TransferDataToWindow();
-	OnSetOptions(m_opts);
-}
-
-void LinearStructureDlg::OnHeightEdit( wxCommandEvent &event )
-{
-	OnSpacingEdit(event);
-}
-
-void LinearStructureDlg::OnFenceType( wxCommandEvent &event )
-{
-	TransferDataFromWindow();
-	m_opts.eType = (FenceType) m_iType;
-	OnSetOptions(m_opts);
-}
 
 void LinearStructureDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	ValuesToSliders();
+	UpdateTypes();
+	m_bSetting = true;
 	TransferDataToWindow();
-
-	m_opts.eType = (FenceType) m_iType;
-	OnSetOptions(m_opts);
+	m_bSetting = false;
+	UpdateEnabling();
 }
 
-void LinearStructureDlg::SlidersToValues()
+void LinearStructureDlg::OnConnType( wxCommandEvent &event )
 {
-	m_opts.fHeight = HEIGHT_MIN + m_iHeight * (HEIGHT_MAX - HEIGHT_MIN) / 100.0f;
-	m_opts.fSpacing = SPACING_MIN + m_iSpacing * (SPACING_MAX - SPACING_MIN) / 100.0f;
+	if (m_bSetting) return;
+
+	wxString2 ws = GetConnType()->GetStringSelection();
+	m_param.m_ConnectType = ws.vt_str();
+	UpdateEnabling();
+
+	m_iStyle = FS_TOTAL;	// custom
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	OnSetOptions(m_param);
+}
+
+void LinearStructureDlg::OnPostType( wxCommandEvent &event )
+{
+	if (m_bSetting) return;
+
+	wxString2 ws = GetPostType()->GetStringSelection();
+	m_param.m_PostType = ws.vt_str();
+	UpdateEnabling();
+
+	m_iStyle = FS_TOTAL;	// custom
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	OnSetOptions(m_param);
+}
+
+void LinearStructureDlg::OnFenceStyle( wxCommandEvent &event )
+{
+	if (m_bSetting) return;
+
+	TransferDataFromWindow();
+	FenceStyle style = (FenceStyle) m_iStyle;
+	if (style != FS_TOTAL)
+	{
+		m_param.ApplyFenceStyle(style);
+		UpdateTypes();
+		ValuesToSliders();
+		m_bSetting = true;
+		TransferDataToWindow();
+		m_bSetting = false;
+		OnSetOptions(m_param);
+		UpdateEnabling();
+	}
+}
+
+void LinearStructureDlg::OnSlider( wxCommandEvent &event )
+{
+	if (m_bSetting) return;
+
+	TransferDataFromWindow();
+	int id = event.GetId();
+	SlidersToValues(id);
+	m_iStyle = FS_TOTAL;	// custom
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	OnSetOptions(m_param);
+}
+
+void LinearStructureDlg::OnTextEdit( wxCommandEvent &event )
+{
+	if (m_bSetting) return;
+
+	TransferDataFromWindow();
+	m_param.m_fPostDepth = m_param.m_fPostWidth;
+	ValuesToSliders();
+	m_iStyle = FS_TOTAL;	// custom
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
+	OnSetOptions(m_param);
+}
+
+void LinearStructureDlg::SlidersToValues(int which)
+{
+	switch (which)
+	{
+	case ID_POST_SPACING_SLIDER:
+		m_param.m_fPostSpacing	 = VALUE_MIN + m_iPostSpacing *	(VALUE_MAX - VALUE_MIN) / 100.0f;
+		break;
+	case ID_POST_HEIGHT_SLIDER:
+		m_param.m_fPostHeight	 = VALUE_MIN + m_iPostHeight *	(VALUE_MAX - VALUE_MIN) / 100.0f;
+		break;
+	case ID_POST_SIZE_SLIDER:
+		m_param.m_fPostWidth	 = VALUE_MIN + m_iPostSize *	(VALUE_MAX - VALUE_MIN) / 100.0f;
+		m_param.m_fPostDepth	 = VALUE_MIN + m_iPostSize *	(VALUE_MAX - VALUE_MIN) / 100.0f;
+		break;
+	case ID_CONN_TOP_SLIDER:
+		m_param.m_fConnectTop	 = VALUE_MIN + m_iConnTop *		(VALUE_MAX - VALUE_MIN) / 100.0f;
+		break;
+	case ID_CONN_BOTTOM_SLIDER:
+		m_param.m_fConnectBottom = BOTTOM_MIN + m_iConnBottom *	(BOTTOM_MAX - BOTTOM_MIN) / 100.0f;
+		break;
+	case ID_CONN_WIDTH_SLIDER:
+		m_param.m_fConnectWidth  = WIDTH_MIN + m_iConnWidth *	(WIDTH_MAX - WIDTH_MIN) / 100.0f;
+		break;
+	}
 }
 
 void LinearStructureDlg::ValuesToSliders()
 {
-	m_iHeight = (int) ((m_opts.fHeight - HEIGHT_MIN) / (HEIGHT_MAX - HEIGHT_MIN) * 100.0f);
-	m_iSpacing = (int) ((m_opts.fSpacing - SPACING_MIN) / (SPACING_MAX - SPACING_MIN) * 100.0f);
+	m_iPostHeight =	 (int) ((m_param.m_fPostHeight - VALUE_MIN) /	 (VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iPostSpacing = (int) ((m_param.m_fPostSpacing - VALUE_MIN) /	 (VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iPostSize =	 (int) ((m_param.m_fPostWidth - VALUE_MIN) /	 (VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iConnTop =	 (int) ((m_param.m_fConnectTop - VALUE_MIN) /	 (VALUE_MAX - VALUE_MIN) * 100.0f);
+	m_iConnBottom =	 (int) ((m_param.m_fConnectBottom - BOTTOM_MIN) / (BOTTOM_MAX - BOTTOM_MIN) * 100.0f);
+	m_iConnWidth =	 (int) ((m_param.m_fConnectWidth - WIDTH_MIN) /  (WIDTH_MAX - WIDTH_MIN) * 100.0f);
 }
 

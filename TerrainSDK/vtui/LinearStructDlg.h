@@ -28,42 +28,58 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	void OnInitDialog(wxInitDialogEvent& event);
-	void SlidersToValues();
+	void SlidersToValues(int which);
 	void ValuesToSliders();
+	void UpdateTypes();
+	void UpdateEnabling();
 
 	// Override this with desired result
-	virtual void OnSetOptions(LinStructOptions &opt) = 0;
+	virtual void OnSetOptions(const vtLinearParams &param) = 0;
 
 	// WDR: method declarations for LinearStructureDlg
-	wxSlider* GetSpacingslider()  { return (wxSlider*) FindWindow( ID_SPACINGSLIDER ); }
-	wxSlider* GetHeightslider()  { return (wxSlider*) FindWindow( ID_HEIGHTSLIDER ); }
-	wxChoice* GetFencetype()  { return (wxChoice*) FindWindow( ID_TYPE ); }
+	wxTextCtrl* GetConnBottomEdit()  { return (wxTextCtrl*) FindWindow( ID_CONN_BOTTOM_EDIT ); }
+	wxTextCtrl* GetConnTopEdit()  { return (wxTextCtrl*) FindWindow( ID_CONN_TOP_EDIT ); }
+	wxTextCtrl* GetConnWidthEdit()  { return (wxTextCtrl*) FindWindow( ID_CONN_WIDTH_EDIT ); }
+	wxTextCtrl* GetPostSizeEdit()  { return (wxTextCtrl*) FindWindow( ID_POST_SIZE_EDIT ); }
+	wxTextCtrl* GetPostHeightEdit()  { return (wxTextCtrl*) FindWindow( ID_POST_HEIGHT_EDIT ); }
+	wxTextCtrl* GetPostSpacingEdit()  { return (wxTextCtrl*) FindWindow( ID_POST_SPACING_EDIT ); }
 
-private:
+	wxSlider* GetConnBottomSlider()  { return (wxSlider*) FindWindow( ID_CONN_BOTTOM_SLIDER ); }
+	wxSlider* GetConnTopSlider()  { return (wxSlider*) FindWindow( ID_CONN_TOP_SLIDER ); }
+	wxSlider* GetConnWidthSlider()  { return (wxSlider*) FindWindow( ID_CONN_WIDTH_SLIDER ); }
+	wxSlider* GetPostSizeSlider()  { return (wxSlider*) FindWindow( ID_POST_SIZE_SLIDER ); }
+	wxSlider* GetPostHeightSlider()  { return (wxSlider*) FindWindow( ID_POST_HEIGHT_SLIDER ); }
+	wxSlider* GetPostSpacingSlider()  { return (wxSlider*) FindWindow( ID_POST_SPACING_SLIDER ); }
+
+	wxChoice* GetConnType()  { return (wxChoice*) FindWindow( ID_CONN_TYPE ); }
+	wxChoice* GetPostType()  { return (wxChoice*) FindWindow( ID_POST_TYPE ); }
+	wxChoice* GetStyle()  { return (wxChoice*) FindWindow( ID_LINEAR_STRUCTURE_STYLE ); }
+
+protected:
 	// WDR: member variable declarations for LinearStructureDlg
-	int		m_iType;
-	int		m_iHeight;
-	int		m_iSpacing;
-	wxSlider	*m_pSpacingSlider;
-	wxSlider	*m_pHeightSlider;
-	wxChoice	*m_pFenceChoice;
+	int	 m_iStyle;
+	int	 m_iPostHeight;
+	int	 m_iPostSpacing;
+	int	 m_iPostSize;
+	int	 m_iConnWidth;
+	int	 m_iConnTop;
+	int	 m_iConnBottom;
 
-	LinStructOptions m_opts;
-//	FenceType m_fencetype;
-//	float	m_fHeight;
-//	float	m_fSpacing;
+	bool m_bSetting;
+
+	vtLinearParams m_param;
 
 private:
 	// WDR: handler declarations for LinearStructureDlg
-	void OnSpacingSlider( wxCommandEvent &event );
-	void OnHeightSlider( wxCommandEvent &event );
-	void OnSpacingEdit( wxCommandEvent &event );
-	void OnHeightEdit( wxCommandEvent &event );
-	void OnFenceType( wxCommandEvent &event );
+	void OnTextEdit( wxCommandEvent &event );
+	void OnConnType( wxCommandEvent &event );
+	void OnPostType( wxCommandEvent &event );
+	void OnSlider( wxCommandEvent &event );
+	void OnFenceStyle( wxCommandEvent &event );
 
 private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif
+#endif  // __LinearStruct_H__
 

@@ -62,52 +62,62 @@ extern wxSizer *g_pEdgeGroup;
 #define ID_FEAT_DOOR 10026
 wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TYPE 10027
-#define ID_HEIGHTEDIT 10028
-#define ID_HEIGHTSLIDER 10029
-#define ID_SPACINGEDIT 10030
-#define ID_SPACINGSLIDER 10031
+#define ID_LINEAR_STRUCTURE_STYLE 10027
+#define ID_POST_TYPE 10028
+#define ID_POST_SPACING_EDIT 10029
+#define ID_POST_SPACING_SLIDER 10030
+#define ID_POST_HEIGHT_EDIT 10031
+#define ID_POST_HEIGHT_SLIDER 10032
+#define ID_POST_SIZE_EDIT 10033
+#define ID_POST_SIZE_SLIDER 10034
+#define ID_CONN_TYPE 10035
+#define ID_CONN_TOP_EDIT 10036
+#define ID_CONN_TOP_SLIDER 10037
+#define ID_CONN_BOTTOM_EDIT 10038
+#define ID_CONN_BOTTOM_SLIDER 10039
+#define ID_CONN_WIDTH_EDIT 10040
+#define ID_CONN_WIDTH_SLIDER 10041
 wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_HEIGHTGRID 10032
-#define ID_RECALCULATEHEIGHTS 10033
-#define ID_BASELINEOFFSET 10034
+#define ID_HEIGHTGRID 10042
+#define ID_RECALCULATEHEIGHTS 10043
+#define ID_BASELINEOFFSET 10044
 wxSizer *HeightDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_RADIO_CONTENT 10035
-#define ID_CHOICE_FILE 10036
-#define ID_CHOICE_TYPE 10037
-#define ID_CHOICE_ITEM 10038
-#define ID_RADIO_MODEL 10039
-#define ID_MODEL_FILE 10040
-#define ID_BROWSE_MODEL_FILE 10041
-#define ID_LOCATION 10042
+#define ID_RADIO_CONTENT 10045
+#define ID_CHOICE_FILE 10046
+#define ID_CHOICE_TYPE 10047
+#define ID_CHOICE_ITEM 10048
+#define ID_RADIO_MODEL 10049
+#define ID_MODEL_FILE 10050
+#define ID_BROWSE_MODEL_FILE 10051
+#define ID_LOCATION 10052
 wxSizer *InstanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_MAP_OFFSET 10043
-#define ID_UNITS1 10044
-#define ID_MAP_DIST 10045
-#define ID_UNITS2 10046
-#define ID_GEOD_DIST 10047
-#define ID_UNITS3 10048
-#define ID_GROUND_DIST 10049
-#define ID_UNITS4 10050
-#define ID_VERTICAL 10051
-#define ID_UNITS5 10052
+#define ID_MAP_OFFSET 10053
+#define ID_UNITS1 10054
+#define ID_MAP_DIST 10055
+#define ID_UNITS2 10056
+#define ID_GEOD_DIST 10057
+#define ID_UNITS3 10058
+#define ID_GROUND_DIST 10059
+#define ID_UNITS4 10060
+#define ID_VERTICAL 10061
+#define ID_UNITS5 10062
 wxSizer *DistanceDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CMAP_FILE 10053
-#define ID_RELATIVE 10054
-#define ID_BLEND 10055
-#define ID_COLORLIST 10056
-#define ID_CHANGE_COLOR 10057
-#define ID_DELETE_ELEVATION 10058
-#define ID_HEIGHT_TO_ADD 10059
-#define ID_ADD 10060
-#define ID_SAVE_CMAP 10061
-#define ID_SAVE_AS_CMAP 10062
-#define ID_LOAD_CMAP 10063
-#define ID_LINE1 10064
+#define ID_CMAP_FILE 10063
+#define ID_RELATIVE 10064
+#define ID_BLEND 10065
+#define ID_COLORLIST 10066
+#define ID_CHANGE_COLOR 10067
+#define ID_DELETE_ELEVATION 10068
+#define ID_HEIGHT_TO_ADD 10069
+#define ID_ADD 10070
+#define ID_SAVE_CMAP 10071
+#define ID_SAVE_AS_CMAP 10072
+#define ID_LOAD_CMAP 10073
+#define ID_LINE1 10074
 wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

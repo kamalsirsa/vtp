@@ -344,40 +344,124 @@ wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer
 
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Defined Style:"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_TYPE, wxDefaultPosition, wxSize(160,-1), 0, strs3, 0 );
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxChoice *item3 = new wxChoice( parent, ID_LINEAR_STRUCTURE_STYLE, wxDefaultPosition, wxSize(160,-1), 0, strs3, 0 );
+    item1->Add( item3, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item5 = new wxStaticBox( parent, -1, _("Posts") );
+    wxStaticBoxSizer *item4 = new wxStaticBoxSizer( item5, wxVERTICAL );
 
-    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_HEIGHTEDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxSlider *item7 = new wxSlider( parent, ID_HEIGHTSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
-    item4->Add( item7, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxString *strs8 = (wxString*) NULL;
+    wxChoice *item8 = new wxChoice( parent, ID_POST_TYPE, wxDefaultPosition, wxSize(100,-1), 0, strs8, 0 );
+    item6->Add( item8, 1, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item4->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SPACINGEDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_POST_SPACING_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxSlider *item11 = new wxSlider( parent, ID_SPACINGSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
-    item8->Add( item11, 0, wxALIGN_CENTER|wxALL, 0 );
+    wxSlider *item12 = new wxSlider( parent, ID_POST_SPACING_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 0 );
 
-    item0->Add( item8, 0, wxALIGN_CENTER|wxALL, 0 );
+    item4->Add( item9, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_POST_HEIGHT_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item13->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item16 = new wxSlider( parent, ID_POST_HEIGHT_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item13->Add( item16, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item4->Add( item13, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item17 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, _("Size:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item19 = new wxTextCtrl( parent, ID_POST_SIZE_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item20 = new wxSlider( parent, ID_POST_SIZE_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item17->Add( item20, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item4->Add( item17, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item22 = new wxStaticBox( parent, -1, _("Connection") );
+    wxStaticBoxSizer *item21 = new wxStaticBoxSizer( item22, wxVERTICAL );
+
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Type:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs25 = (wxString*) NULL;
+    wxChoice *item25 = new wxChoice( parent, ID_CONN_TYPE, wxDefaultPosition, wxSize(100,-1), 0, strs25, 0 );
+    item23->Add( item25, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item21->Add( item23, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item27 = new wxStaticText( parent, ID_TEXT, _("Top Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item26->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_CONN_TOP_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item29 = new wxSlider( parent, ID_CONN_TOP_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item21->Add( item26, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item31 = new wxStaticText( parent, ID_TEXT, _("Bottom Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item32 = new wxTextCtrl( parent, ID_CONN_BOTTOM_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item30->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item33 = new wxSlider( parent, ID_CONN_BOTTOM_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item30->Add( item33, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item21->Add( item30, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    wxBoxSizer *item34 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item35 = new wxStaticText( parent, ID_TEXT, _("Width:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item34->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item36 = new wxTextCtrl( parent, ID_CONN_WIDTH_EDIT, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item34->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSlider *item37 = new wxSlider( parent, ID_CONN_WIDTH_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), wxSL_HORIZONTAL );
+    item34->Add( item37, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    item21->Add( item34, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item0->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     if (set_sizer)
     {
