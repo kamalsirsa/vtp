@@ -18,8 +18,10 @@
 #define IDC_SUBSAMPLE                   1000
 #define IDC_VERTEXAG                    1001
 #define IDC_FILENAME                    1002
+#define CG_IDC_PROGDLG_PROGRESS         1003
 #define IDC_TILESIZE                    1004
 #define IDC_TFILENAME                   1005
+#define CG_IDC_PROGDLG_STATUS           1005
 #define IDC_MIPMAP                      1006
 #define IDC_TFILEBASE                   1007
 #define IDC_16BIT                       1008
@@ -65,13 +67,11 @@
 #define IDC_ROADFILE                    1044
 #define IDC_VCURSOR                     1045
 #define IDC_BUILDINGFILE                1046
-#define IDC_QUAKEENGINE                 1046
 #define IDC_BUILDINGS                   1047
 #define IDC_VEHICLES                    1048
 #define IDC_WILDVEG                     1049
 #define IDC_AGRI                        1050
 #define IDC_VEHICLESIZE                 1051
-#define IDC_SPEEDTEST                   1052
 #define IDC_FENCEFILE                   1052
 #define IDC_MAXTEXSIZE                  1053
 #define IDC_AIRPORTS                    1053
@@ -98,6 +98,7 @@
 #define IDC_LODMETHOD                   1070
 #define IDC_DELETE                      1070
 #define IDC_PICKPATH                    1070
+#define IDC_EDITPROP                    1070
 #define IDC_BUTTON3                     1071
 #define IDC_EDIT                        1071
 #define IDC_BUTTON4                     1072
@@ -122,16 +123,12 @@
 #define IDC_SPACINGSLIDER               1091
 #define IDC_HEIGHTSLIDER                1092
 #define IDC_HEIGHTEDIT                  1093
-
-// dialogs
 #define IDD_TREEVIEW                    20101
 #define IDD_CAMDIALOG                   20102
 #define IDD_KEYDIALOG                   20103
 #define IDD_ORIENT                      20104
 #define IDD_ENVIRON                     20105
-#define IDD_REMOTEDIALOG	            20106
-
-// dialog controls
+#define IDD_REMOTEDIALOG                20106
 #define IDC_TREE1                       21000
 #define IDC_HITHER_S                    21001
 #define IDC_YON_S                       21002
@@ -149,7 +146,6 @@
 #define IDC_ASPECT                      21016
 #define IDC_PLAYCAM                     21017
 #define IDC_VPLIST                      21018
-
 #define IDC_BUTTON_STORE1               21020
 #define IDC_BUTTON_STORE2               21021
 #define IDC_BUTTON_STORE3               21022
@@ -162,12 +158,10 @@
 #define IDC_BUTTON_RECALL4              21029
 #define IDC_BUTTON_RECALL5              21030
 #define IDC_BUTTON_RECALL6              21031
-
 #define IDC_FSPEED_S                    21040
 #define IDC_PITCH                       21041
 #define IDC_YAW                         21042
-#define	IDC_PLAYANIM					21043
-
+#define IDC_PLAYANIM                    21043
 #define IDC_START2                      21201
 #define IDC_START1                      21202
 #define IDC_END2                        21203
@@ -179,10 +173,8 @@
 #define IDC_EXPONENTIAL2                21210
 #define IDC_DENSITY1                    21211
 #define IDC_DENSITY2                    21212
-#define	IDC_REMOTEFILE					21213
+#define IDC_REMOTEFILE                  21213
 #define IDC_AMBIENT                     21214
-
-// menu commands
 #define ID_VIEW_SCENEGRAPH              21372
 #define ID_VIEW_FULLSCREEN              21373
 #define ID_VIEW_DISABLELIGHTING         21374
@@ -192,19 +184,17 @@
 #define ID_TEST_CAMDIALOG               21392
 #define ID_VIEW_WIREFRAME               21393
 #define ID_VIEW_ENVIRON                 21394
-
 #define ID_SCPT_SAVE                    21400
 #define ID_SCPT_OPEN                    21402
 #define ID_SCPT_RECORD                  21403
-#define ID_SCPT_STOP	                21404
+#define ID_SCPT_STOP                    21404
 #define ID_SCPT_RUN                     21405
 #define ID_SCPT_STOPRUN                 21406
 #define ID_SCPT_REPLAY                  21407
 #define ID_SCPT_FASTER                  21408
 #define ID_SCPT_SLOWER                  21409
-#define	ID_OPEN_REMOTE_FILE				21410
-#define ID_VIEW_SKIN					21411
-
+#define ID_OPEN_REMOTE_FILE             21410
+#define ID_VIEW_SKIN                    21411
 #define ID_ENVIRO_TIMEON                32771
 #define ID_ENVIRO_REGULARTERRAIN        32774
 #define ID_ENVIRO_LODTERRAIN            32777
@@ -238,11 +228,6 @@
 #define ID_EARTH_FLATUNFOLD             32822
 #define ID_EARTH_ADDPOINTDATA           32823
 #define ID_TOOLS_MOVE                   32825
-
-// progress
-#define CG_IDD_PROGRESS                 102
-#define CG_IDC_PROGDLG_PROGRESS         1003
-#define CG_IDC_PROGDLG_STATUS           1005
 
 // Next default values for new objects
 // 

@@ -20,7 +20,6 @@ public:
 	//{{AFX_DATA(CChooseDlg)
 	enum { IDD = IDD_TERRAIN };
 	CButton	m_cbOK;
-	CButton	m_cbEdit;
 	CListBox	m_lbList;
 	//}}AFX_DATA
 	CString m_strTName;
@@ -34,12 +33,10 @@ public:
 
 // Implementation
 protected:
-	void EditParameters(const char *filename);
 	void UpdateEdit();
 
 	// Generated message map functions
 	//{{AFX_MSG(CChooseDlg)
-	afx_msg void OnEdit();
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
 	afx_msg void OnSelchangeTlist();
