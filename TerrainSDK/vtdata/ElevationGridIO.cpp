@@ -1676,15 +1676,18 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
  * \param width The width of the expected array.
  * \param height The height of the expected array.
  * \param bytes_per_element The number of bytes for each elevation value.  If
- * this is 1 or 2, the data is assumed to be integer.  If 4, then the data is
- * assumed to be floating-point values.
- * \param vertical_units Indicates what scale factor to apply to the elevation
- * values to convert them to meters.  E.g. if the file is in meters, pass 1.0,
- * if in feet, pass 0.3048.
+ *		this is 1 or 2, the data is assumed to be integer.  If 4, then the
+ *		data is assumed to be floating-point values.
+ * \param vertical_units Indicates what scale factor to apply to the
+ *		elevation values to convert them to meters.  E.g. if the file is in
+ *		meters, pass 1.0, if in feet, pass 0.3048.
+ * \param bBigEndian True for Big-endian byte order, false for Little-endian
+ *		(Intel byte order).
  * \returns \c true if the file was successfully opened and read.
  */
 bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
-								int bytes_per_element, float vertical_units)
+								int bytes_per_element, float vertical_units,
+								bool bBigEndian, void progress_callback(int))
 {
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
@@ -1709,27 +1712,33 @@ bool vtElevationGrid::LoadFromRAW(const char *szFileName, int width, int height,
 
 	_AllocateArray();
 
+	ByteOrder order;
+	if (bBigEndian)
+		order = BO_BIG_ENDIAN;
+	else
+		order = BO_LITTLE_ENDIAN;
+
 	int i, j, z;
 	void *data = &z;
 	for (j = 0; j < m_iRows; j++)
 	{
-//		if (progress_callback != NULL)
-//			progress_callback(100*j/m_iRows);
+		if (progress_callback != NULL)
+			progress_callback(100*j/m_iRows);
 		for (i = 0; i < m_iColumns; i++)
 		{
 			if (bytes_per_element == 1)
 			{
-				fread(data, bytes_per_element, 1, fp);
+				fread(data, 1, 1, fp);
 				SetValue(i, m_iRows-1-j, *((unsigned char *)data));
 			}
 			if (bytes_per_element == 2)
 			{
-				FRead(data, DT_SHORT, 1, fp, BO_BIG_ENDIAN);
+				FRead(data, DT_SHORT, 1, fp, order);
 				SetFValue(i, m_iRows-1-j, *((short *)data) * vertical_units);
 			}
 			if (bytes_per_element == 4)
 			{
-				FRead(data, DT_INT, 1, fp, BO_BIG_ENDIAN);
+				FRead(data, DT_FLOAT, 1, fp, order);
 				SetFValue(i, m_iRows-1-j, *((float *)data) * vertical_units);
 			}
 		}
