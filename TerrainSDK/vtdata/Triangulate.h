@@ -9,17 +9,17 @@
 #ifndef TRIANGULATE_H
 #define TRIANGULATE_H
 
-/****************************************************************/
-/* Static class to triangulate any contour/polygon efficiently **/
-/* Does not support polygons with holes.                       **/
-/* This code snippet was submitted to FlipCode.com by          **/
-/* John W. Ratcliff (jratcliff@verant.com) on July 22, 2000    **/
-/* I did not write the original code/algorithm for this        **/
-/* this triangulator, in fact, I can't even remember where I   **/
-/* found it in the first place.  However, I did rework it into **/
-/* the following black-box static class so you can make easy   **/
-/* use of it in your own code.                                 **/
-/****************************************************************/
+/*****************************************************************/
+/* Static class to triangulate any contour/polygon efficiently	**/
+/* Does not support polygons with holes.						**/
+/* This code snippet was submitted to FlipCode.com by			**/
+/* John W. Ratcliff (jratcliff@verant.com) on July 22, 2000		**/
+/* I did not write the original code/algorithm for this			**/
+/* this triangulator, in fact, I can't even remember where I	**/
+/* found it in the first place.  However, I did rework it into	**/
+/* the following black-box static class so you can make easy	**/
+/* use of it in your own code.									**/
+/*****************************************************************/
 
 
 #include "MathTypes.h"
