@@ -194,18 +194,6 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 	m_pFirstTerrain = pTerrain;
 }
 
-/**
- * Call once after you have appended all of your terrains.
- */
-void vtTerrainScene::Finish(const vtStringArray &datapath)
-{
-	_CreateSkydome(datapath);
-
-	// start out with no scene active
-	for (vtTerrain *t = m_pFirstTerrain; t != NULL; t=t->GetNext())
-		t->ActivateEngines(false);
-}
-
 
 /**
  * Set the current Terrain for the scene.  There can only be one terrain
@@ -241,28 +229,34 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	// switch to the projection of this terrain
 	m_pCurrentTerrain->SetGlobalProjection();
 
+	// if the new terrain wants a skydome, and we haven't created one yet,
+	// do so
+	if (param.m_bSky && !m_pSkyDome)
+		_CreateSkydome(vtTerrain::m_DataPaths);
+
 	// move the sky to fit the new current terrain
-	m_pSkyDome->SetEnabled(true);
+	if (m_pSkyDome)
+	{
+		// use 5x larger than terrain's maximum dimension
+		vtHeightField3d *hf = pTerrain->GetHeightField();
+		FRECT world_ext = hf->m_WorldExtents;
+		float radius;
+		float width = world_ext.Width();
+		float depth = world_ext.Height();
+		float height = hf->m_fMaxHeight;
 
-	// use 5x larger than terrain's maximum dimension
-	vtHeightField3d *hf = pTerrain->GetHeightField();
-	FRECT world_ext = hf->m_WorldExtents;
-	float radius;
-	float width = world_ext.Width();
-	float depth = world_ext.Height();
-	float height = hf->m_fMaxHeight;
+		radius = width;
+		if (radius < depth)
+			radius = depth;
+		if (radius < height)
+			radius = height;
 
-	radius = width;
-	if (radius < depth)
-		radius = depth;
-	if (radius < height)
-		radius = height;
-
-	radius *= 5;
-	float max_radius = 450000;
-	if (radius > max_radius)
-		radius = max_radius;
-	m_pSkyDome->SetRadius(radius);
+		radius *= 5;
+		float max_radius = 450000;
+		if (radius > max_radius)
+			radius = max_radius;
+		m_pSkyDome->SetRadius(radius);
+	}
 
 	// Set background color to match the ocean
 	vtGetScene()->SetBgColor(m_pCurrentTerrain->GetOceanColor());
@@ -271,8 +265,11 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pCurrentTerrain->ActivateEngines(true);
 
 	// set the time to the time of the new terrain
-	m_pSkyDome->SetSunLight(GetSunLight());
-	m_pSkyDome->SetTimeOfDay(TIME_TO_INT(param.m_iInitTime, 0, 0), true);
+	if (m_pSkyDome)
+	{
+		m_pSkyDome->SetSunLight(GetSunLight());
+		m_pSkyDome->SetTimeOfDay(TIME_TO_INT(param.m_iInitTime, 0, 0), true);
+	}
 
 	// setup time engine
 	m_pTime->SetLocalTime(param.m_iInitTime, 0, 0);
@@ -280,14 +277,17 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	m_pTime->SetEnabled(param.m_bTimeOn);
 
 	// handle the atmosphere
-	m_pSkyDome->SetEnabled(param.m_bSky);
-	if (param.m_bSky && param.m_strSkyTexture != "")
+	if (m_pSkyDome)
 	{
-		vtString filename = "Sky/";
-		filename += param.m_strSkyTexture;
-		vtString skytex = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
-		if (skytex != "")
-			m_pSkyDome->SetTexture(skytex);
+		m_pSkyDome->SetEnabled(param.m_bSky);
+		if (param.m_bSky && param.m_strSkyTexture != "")
+		{
+			vtString filename = "Sky/";
+			filename += param.m_strSkyTexture;
+			vtString skytex = FindFileOnPaths(vtTerrain::m_DataPaths, filename);
+			if (skytex != "")
+				m_pSkyDome->SetTexture(skytex);
+		}
 	}
 	m_pCurrentTerrain->SetFog(param.m_bFog);
 }
