@@ -193,6 +193,7 @@ public:
 	void OnAreaTypeIn(wxCommandEvent& event);
 	void OnAreaExportElev(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
+	void OnAreaRequestLayer(wxCommandEvent& event);
 
 	void OnUpdateAreaStretch(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
@@ -210,7 +211,7 @@ public:
 	// Layer methods
 	void LoadLayer(const wxString &fname);
 	void AddLayer(vtLayer *lp);
-	bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh);
+	bool AddLayerWithCheck(vtLayer *pLayer, bool bRefresh = true);
 	void RemoveLayer(vtLayer *lp);
 	void DeleteLayer(vtLayer *lp);
 	void SetActiveLayer(vtLayer *lp, bool refresh = false);
