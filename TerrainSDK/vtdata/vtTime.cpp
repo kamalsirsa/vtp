@@ -38,7 +38,10 @@ void vtTime::GetSystemTime()
 void vtTime::SetDate(int year, int month, int day)
 {
 	m_tm.tm_year = year - 1900;
-	m_tm.tm_mon = month;
+
+	// note that the tm structure has a 0-based month
+	m_tm.tm_mon = month-1;
+
 	m_tm.tm_mday = day;
 	m_time = mktime(&m_tm);
 	_UpdateTM();
@@ -47,7 +50,10 @@ void vtTime::SetDate(int year, int month, int day)
 void vtTime::GetDate(int &year, int &month, int &day) const
 {
 	year = 1900 + m_tm.tm_year;
-	month = m_tm.tm_mon;
+
+	// note that the tm structure has a 0-based month
+	month = m_tm.tm_mon + 1;
+
 	day = m_tm.tm_mday;
 }
 
