@@ -244,29 +244,46 @@ void IcoGlobe::ShowAxis(bool bShow)
 
 int IcoGlobe::AddGlobePoints(const char *fname, float fSize)
 {
-	bool success = m_features.LoadFromSHP(fname);
+	vtFeatures *feat = new vtFeatures();
+	bool success = feat->LoadFromSHP(fname);
 
 	if (!success)
+	{
+		delete feat;
 		return -1;
+	}
+	m_features.Append(feat);
 
-	BuildSphericalFeatures(fSize);
-	BuildFlatFeatures(fSize);
+	BuildSphericalFeatures(feat, fSize);
+	BuildFlatFeatures(feat, fSize);
 
-	return m_features.NumEntities();
+	return feat->NumEntities();
 }
 
-void IcoGlobe::BuildSphericalFeatures(float fSize)
+void IcoGlobe::BuildSphericalFeatures(vtFeatures *feat, float fSize)
+{
+	if (feat->GetEntityType() == SHPT_POINT)
+		BuildSphericalPoints(feat, fSize);
+
+	if (feat->GetEntityType() == SHPT_ARC)
+		BuildSphericalLines(feat, fSize);
+
+	if (feat->GetEntityType() == SHPT_POLYGON)
+		BuildSphericalLines(feat, fSize);
+}
+
+void IcoGlobe::BuildSphericalPoints(vtFeatures *feat, float fSize)
 {
 	int i, j, size;
 	Array<FSphere> spheres;
 
-	size = m_features.NumEntities();
+	size = feat->NumEntities();
 	spheres.SetSize(size);
 
 	DPoint2 p;
 	for (i = 0; i < size; i++)
 	{
-		m_features.GetPoint(i, p);
+		feat->GetPoint(i, p);
 
 		if (p.x == 0.0 && p.y == 0.0)	// ignore some
 			continue;
@@ -382,32 +399,67 @@ void IcoGlobe::BuildSphericalFeatures(float fSize)
 	}
 }
 
-void IcoGlobe::BuildFlatFeatures(float fSize)
+void IcoGlobe::BuildSphericalLines(vtFeatures *feat, float fSize)
 {
-	if (!m_cylinder)
-	{
-		// create cylinder mesh
-		int res = 14;
-		int verts = res * 2;
-		m_cylinder = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
-		m_cylinder->CreateCylinder(1.0f, 1.0f, res, true, false, false);
-	}
-
 	int i, size;
-	size = m_features.NumEntities();
+	size = feat->NumEntities();
 
+	vtGeom *geom = new vtGeom();
+	geom->SetName2("spherical lines");
+	geom->SetMaterials(m_mats);
+	m_SurfaceGroup->AddChild(geom);
+
+	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+	geom->AddMesh(mesh, m_yellow);
+
+	int total = 0;
+
+	DPoint2 p1, p2;
 	for (i = 0; i < size; i++)
-		BuildFlatPoint(i, fSize);
+	{
+		const DLine2 *line = feat->GetLine(i);
+		AddSurfaceLineToMesh(mesh, line);
+
+		// don't put too many vertices in any one mesh
+		if (mesh->GetNumVertices() > 10000)
+		{
+			total += mesh->GetNumVertices();
+			mesh = new vtMesh(GL_LINE_STRIP, 0, 10000);
+			geom->AddMesh(mesh, m_yellow);
+		}
+	}
+	total += mesh->GetNumVertices();
 }
 
-void IcoGlobe::BuildFlatPoint(int i, float fSize)
+void IcoGlobe::BuildFlatFeatures(vtFeatures *feat, float fSize)
+{
+	if (feat->GetEntityType() == SHPT_POINT)
+	{
+		if (!m_cylinder)
+		{
+			// create cylinder mesh
+			int res = 14;
+			int verts = res * 2;
+			m_cylinder = new vtMesh(GL_TRIANGLE_STRIP, 0, verts);
+			m_cylinder->CreateCylinder(1.0f, 1.0f, res, true, false, false);
+		}
+
+		int i, size;
+		size = feat->NumEntities();
+
+		for (i = 0; i < size; i++)
+			BuildFlatPoint(feat, i, fSize);
+	}
+}
+
+void IcoGlobe::BuildFlatPoint(vtFeatures *feat, int i, float fSize)
 {
 	// create and place the geometries
 	DPoint2 p;
 	int face, subface;
 	DPoint3 p_out;
 
-	m_features.GetPoint(i, p);
+	feat->GetPoint(i, p);
 
 	if (p.x == 0.0 && p.y == 0.0)	// ignore some
 		return;
@@ -440,6 +492,7 @@ void IcoGlobe::AddTerrainRectangles(vtTerrainScene *pTerrainScene)
 	FPoint3 p;
 
 	m_pRectangles = new vtGeom();
+	m_pRectangles->SetName2("terrain extents");
 	m_pRectangles->SetMaterials(m_mats);
 	m_SurfaceGroup->AddChild(m_pRectangles);
 
@@ -499,6 +552,66 @@ double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPo
 	return angle;
 }
 
+double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line)
+{
+	DPoint2 g1, g2;
+	DPoint3 p1, p2;
+	double scale = 1.0002;
+	int length = 0;
+	DMatrix3 rot3;
+
+	int start = mesh->GetNumVertices();
+	int i, j, size = line->GetSize();
+
+	for (i = 0; i < size-1; i++)
+	{
+		g1 = line->GetAt(i);
+		g2 = line->GetAt(i+1);
+
+		// for each pair of points, determine how many more points are needed
+		//  for a smooth arc
+		geo_to_xyz(1.0, g1, p1);
+		geo_to_xyz(1.0, g2, p2);
+		double angle = acos(p1.Dot(p2));
+		int segments = (int) (angle * 2000);
+		if (segments < 1)
+			segments = 1;
+
+		if (segments > 1)
+		{
+			// calculate the axis of rotation
+			DPoint3 cross = p1.Cross(p2);
+			cross.Normalize();
+			rot3.AxisAngle(cross, angle / segments);
+		}
+
+		// curved arc on great-circle path
+		for (j = 0; j < segments; j++)
+		{
+			FPoint3 fp = p1 * 1.0002;
+			mesh->AddVertex(fp);
+			length++;
+
+			if (j < segments-1)
+			{
+				rot3.Transform(p1, p2);
+				p1 = p2;
+			}
+		}
+	}
+
+	// last vertex
+	if (size > 1)
+	{
+		g2 = line->GetAt(size-1);
+		geo_to_xyz(1.0, g2, p2);
+		mesh->AddVertex(p2 * scale);
+		length++;
+	}
+
+	mesh->AddStrip2(length, start);
+	return 0.0;
+}
 
 ///////////////////////////////////////////////////////////////////////
 // Internal methods

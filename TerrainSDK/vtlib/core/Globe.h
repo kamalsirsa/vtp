@@ -67,12 +67,15 @@ public:
 	int AddGlobePoints(const char *fname, float fSize);
 	void AddTerrainRectangles(vtTerrainScene *pTerrainScene);
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
+	double AddSurfaceLineToMesh(vtMesh *mesh, const DLine2 *line);
 
 protected:
 	int GetMFace(int face, int subface);
-	void BuildSphericalFeatures(float fSize);
-	void BuildFlatFeatures(float fSize);
-	void BuildFlatPoint(int i, float fSize);
+	void BuildSphericalFeatures(vtFeatures *feat, float fSize);
+	void BuildSphericalPoints(vtFeatures *feat, float fSize);
+	void BuildSphericalLines(vtFeatures *feat, float fSize);
+	void BuildFlatFeatures(vtFeatures *feat, float fSize);
+	void BuildFlatPoint(vtFeatures *feat, int i, float fSize);
 	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
 	void FindLocalOrigin(int mface);
 	void SetMeshConnect(int mface);
@@ -127,7 +130,7 @@ protected:
 	FQuat	m_diff;
 
 	// Features (point, line, polygon..) draped on the globe
-	vtFeatures	m_features;
+	Array<vtFeatures*>	m_features;
 };
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath);
