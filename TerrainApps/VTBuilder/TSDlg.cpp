@@ -117,9 +117,9 @@ void TSDialog::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_RADIO_TO_FILE, &m_bToFile);
 	AddValidator(ID_TEXT_TO_FILE, &m_strToFile);
 
-	GetTheme()->Append(_T("Relief"));
-	GetTheme()->Append(_T("Image"));
-	GetTheme()->Append(_T("Topo"));
+	GetTheme()->Append(_("Relief"));
+	GetTheme()->Append(_("Image"));
+	GetTheme()->Append(_("Topo"));
 
 	m_bNewLayer = false;
 	m_bToFile = true;

@@ -1,7 +1,7 @@
 //
 // TreeView.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -156,24 +156,24 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 	DeleteAllItems();
 
-	rootId = AddRoot(_T("Layers"));
+	rootId = AddRoot(_("Layers"));
 	SetItemBold(rootId);
 
 	int	image, imageSel;
 
-	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, _T("Elevation"));
+	wxTreeItemId elevId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Grid, _("Elevation"));
 #ifndef ELEVATION_ONLY
-	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, _T("Images"));
-	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, _T("Structures"));
-	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, _T("Roads"));
-	wxTreeItemId vegId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Veg1, _T("Vegetation"));
-	wxTreeItemId waterId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Water, _T("Water"));
+	wxTreeItemId imageId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Image, _("Images"));
+	wxTreeItemId buildId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Building, _("Structures"));
+	wxTreeItemId roadId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Road, _("Roads"));
+	wxTreeItemId vegId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Veg1, _("Vegetation"));
+	wxTreeItemId waterId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Water, _("Water"));
 #if SUPPORT_TRANSIT
-	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, _T("Transit"));
+	wxTreeItemId transId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Transit, _("Transit"));
 #endif
-	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, _T("Utilities"));
+	wxTreeItemId utilityId = AddRootItem(MyTreeCtrl::TreeCtrlIcon_Utility, _("Utilities"));
 #endif
-	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _T("Raw"));
+	wxTreeItemId rawId =	AddRootItem(MyTreeCtrl::TreeCtrlIcon_Raw, _("Raw"));
 
 	image = TreeCtrlIcon_File;
 	imageSel = TreeCtrlIcon_FileSelected;

@@ -104,9 +104,8 @@ void FeatInfoDlg::ShowSelected()
 	if (selected > 2000)
 	{
 		wxString msg;
-		msg.Printf(_T("There are %d selected features.  Are you sure you\n")
-			_T("want to display them all in the table view?"), selected);
-		if (wxMessageBox(msg, _T("Warning"), wxYES_NO) == wxNO)
+		msg.Printf(_("There are %d selected features.  Are you sure you\n want to display them all in the table view?"), selected);
+		if (wxMessageBox(msg, _("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
 	int i, num = m_pFeatures->GetNumEntities();
@@ -139,9 +138,8 @@ void FeatInfoDlg::ShowAll()
 	if (num > 2000)
 	{
 		wxString msg;
-		msg.Printf(_T("There are %d features in this layer.  Are you sure\n")
-			_T("you want to display them all in the table view?"), num);
-		if (wxMessageBox(msg, _T("Warning"), wxYES_NO) == wxNO)
+		msg.Printf(_("There are %d features in this layer.  Are you sure\n you want to display them all in the table view?"), num);
+		if (wxMessageBox(msg, _("Warning"), wxYES_NO) == wxNO)
 			return;
 	}
 	for (i = 0; i < num; i++)
@@ -241,9 +239,9 @@ bool FeatInfoDlg::EditValue(int iFeature, int iColumn)
 		Field *pField = m_pFeatures->GetField(iField);
 
 		wxString message, caption;
-		message.Printf(_T("Enter a new value for field '%hs'"),
+		message.Printf(_("Enter a new value for field '%hs'"),
 			(const char *) pField->m_name);
-		caption.Printf(_T("Text entry"));
+		caption.Printf(_("Text entry"));
 		str = wxGetTextFromUser(message, caption, str, this);
 		if (str != _T(""))
 		{
@@ -265,14 +263,14 @@ void FeatInfoDlg::OnLeftDClick( wxMouseEvent &event )
 void FeatInfoDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetChoiceShow()->Clear();
-	GetChoiceShow()->Append(_T("Selected"));
-	GetChoiceShow()->Append(_T("Picked"));
-	GetChoiceShow()->Append(_T("All"));
+	GetChoiceShow()->Append(_("Selected"));
+	GetChoiceShow()->Append(_("Picked"));
+	GetChoiceShow()->Append(_("All"));
 
 	GetChoiceVertical()->Clear();
-	GetChoiceVertical()->Append(_T("Meter"));
-	GetChoiceVertical()->Append(_T("Foot"));
-	GetChoiceVertical()->Append(_T("Foot (US)"));
+	GetChoiceVertical()->Append(_("Meter"));
+	GetChoiceVertical()->Append(_("Foot"));
+	GetChoiceVertical()->Append(_("Foot (US)"));
 
 	AddValidator(ID_CHOICE_SHOW, &m_iShow);
 	AddValidator(ID_CHOICE_VERTICAL, &m_iVUnits);

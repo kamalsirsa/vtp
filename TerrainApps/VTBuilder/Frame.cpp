@@ -148,7 +148,7 @@ MainFrame::~MainFrame()
 void MainFrame::CreateView()
 {
 	m_pView = new BuilderView(m_splitter, WID_MAINVIEW,
-			wxPoint(0, 0), wxSize(200, 400), _T("MainView") );
+			wxPoint(0, 0), wxSize(200, 400), _T("") );
 }
 
 void MainFrame::ZoomAll()
@@ -219,7 +219,7 @@ void MainFrame::SetupUI()
 	// Load content files, which might be referenced by structure layers
 	LookForContentFiles();
 
-	SetStatusText(_T("Ready"));
+	SetStatusText(_("Ready"));
 }
 
 void MainFrame::DeleteContents()
@@ -298,10 +298,8 @@ void MainFrame::OnClose(wxCloseEvent &event)
 	if (num > 0)
 	{
 		wxString str;
-		str.Printf(_T("There %hs %d layer%hs modified but unsaved.\n")
-			_T("Are you sure you want to exit?"), num == 1 ? "is" : "are",
-			num, num == 1 ? "" : "s");
-		if (wxMessageBox(str, _T("Warning"), wxYES_NO) == wxNO)
+		str.Printf(_("There are %d layers modified but unsaved.\n Are you sure you want to exit?"), num);
+		if (wxMessageBox(str, _("Warning"), wxYES_NO) == wxNO)
 		{
 			event.Veto();
 			return;
@@ -567,16 +565,13 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 
 			bool keep = false;
 			wxString msg;
-			msg.Printf(_T("The data already loaded is in:\n     %hs\n")
-					_T("but the layer you are attempting to add:\n     %s\n")
-					_T("is using:\n     %hs\n")
-					_T("Would you like to attempt to convert it now to the existing projection?"),
+			msg.Printf(_("The data already loaded is in:\n     %hs\n but the layer you are attempting to add:\n     %s\n is using:\n     %hs\n Would you like to attempt to convert it now to the existing projection?"),
 				str1,
 				pLayer->GetLayerFilename().c_str(),
 				str2);
 			OGRFree(str1);
 			OGRFree(str2);
-			int ret = wxMessageBox(msg, _T("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
+			int ret = wxMessageBox(msg, _("Convert Coordinate System?"), wxYES_NO | wxCANCEL);
 			if (ret == wxNO)
 				keep = true;
 			if (ret == wxYES)
@@ -586,8 +581,8 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 					keep = true;
 				else
 				{
-					ret = wxMessageBox(_T("Couldn't convert projection.\n")
-							_T("Proceed anyway?"), _T("Warning"), wxYES_NO);
+					ret = wxMessageBox(_("Couldn't convert projection.\n Proceed anyway?"),
+						_("Warning"), wxYES_NO);
 					if (ret == wxYES)
 						keep = true;
 				}
@@ -807,13 +802,13 @@ LayerType MainFrame::AskLayerType()
 {
 	wxString choices[LAYER_TYPES];
 	for (int i = 0; i < LAYER_TYPES; i++)
-		choices[i] = vtLayer::LayerTypeName[i];
+		choices[i] = vtLayer::LayerTypeNames[i];
 
 	int n = LAYER_TYPES;
 	static int cur_type = 0;	// remember the choice for next time
 
-	wxSingleChoiceDialog dialog(this, _T("These are your choices"),
-		_T("Please indicate layer type"), n, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, _("These are your choices"),
+		_("Please indicate layer type"), n, (const wxString *)choices);
 
 	dialog.SetSelection(cur_type);
 
@@ -838,7 +833,7 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 	if (!m_pFeatInfoDlg)
 	{
 		// Create new Feature Info Dialog
-		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, _T("Feature Info"),
+		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, _("Feature Info"),
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pFeatInfoDlg->SetView(GetView());
 	}
@@ -852,7 +847,7 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 	if (!m_pDistanceDlg)
 	{
 		// Create new Distance Dialog
-		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, _T("Distance Tool"),
+		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, _("Distance Tool"),
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pDistanceDlg->SetProjection(m_proj);
 	}
@@ -879,7 +874,7 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 	{
 		// Create new Distance Dialog
 		m_pLinearStructureDlg = new LinearStructureDlg2d(this, -1,
-			_T("Linear Structures"), wxPoint(120, 80), wxSize(600, 200),
+			_("Linear Structures"), wxPoint(120, 80), wxSize(600, 200),
 			wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pLinearStructureDlg->m_pFrame = this;
 	}
@@ -895,7 +890,7 @@ InstanceDlg *MainFrame::ShowInstanceDlg(bool bShow)
 	{
 		// Create new Distance Dialog
 		m_pInstanceDlg = new InstanceDlg(this, -1,
-			_T("Structure Instances"), wxPoint(120, 80), wxSize(600, 200));
+			_("Structure Instances"), wxPoint(120, 80), wxSize(600, 200));
 
 		for (unsigned int i = 0; i < m_contents.size(); i++)
 			m_pInstanceDlg->AddContent(m_contents[i]);
@@ -978,7 +973,7 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_T("Merging and Resampling Elevation Layers"));
+	OpenProgressDialog(_("Merging and Resampling Elevation Layers"));
 
 	int num_elev = LayersOfType(LT_ELEVATION);
 	vtElevLayer **elevs = new vtElevLayer *[num_elev];
@@ -1048,7 +1043,7 @@ bool MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
 	pTarget->GetDimensions(iColumns, iRows);
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_T("Merging and Resampling Image Layers"), true);
+	OpenProgressDialog(_("Merging and Resampling Image Layers"), true);
 
 	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
 	int g, num_image = 0;
@@ -1398,7 +1393,7 @@ void MainFrame::ExportElevation()
 	}
 
 	// Open the Resample dialog
-	ResampleDlg dlg(this, -1, _T("Merge and Resample Elevation"));
+	ResampleDlg dlg(this, -1, _("Merge and Resample Elevation"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
@@ -1449,13 +1444,12 @@ void MainFrame::ExportImage()
 	}
 	if (spacing == DPoint2(0, 0))
 	{
-		DisplayAndLog("Sorry, you must have some image layers to\n"
-					  "perform a sampling operation on them.");
+		DisplayAndLog(_("Sorry, you must have some image layers to\n perform a sampling operation on them."));
 		return;
 	}
 
 	// Open the Resample dialog
-	SampleImageDlg dlg(this, -1, _T("Merge and Resample Imagery"));
+	SampleImageDlg dlg(this, -1, _("Merge and Resample Imagery"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
@@ -1463,11 +1457,11 @@ void MainFrame::ExportImage()
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
-	wxString filter = _T("All Files|*.*|");
+	wxString filter = _("All Files|*.*|");
 	AddType(filter, FSTRING_TIF);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Export Image"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Export Image"), _T(""), _T(""), filter, wxSAVE);
 	saveFile.SetFilterIndex(1);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
@@ -1529,14 +1523,14 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	vtSpeciesList *pl = GetPlantList();
 	if (!pl)
 	{
-		wxMessageBox(_T("No plant list."));
+		wxMessageBox(_("No plant list."));
 		return;
 	}
 
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 		m_PlantList.LookupPlantIndices(m_BioRegions.m_Types[i]);
 
-	OpenProgressDialog(_T("Generating Vegetation"));
+	OpenProgressDialog(_("Generating Vegetation"));
 
 	int tree_count = 0;
 
@@ -1564,7 +1558,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	for (i = 0; i < x_trees; i ++)
 	{
 		wxString str;
-		str.Printf(_T("plants: %d"), pia.GetNumEntities());
+		str.Printf(_("plants: %d"), pia.GetNumEntities());
 		UpdateProgressDialog(i * 100 / x_trees, str);
 
 		p.x = area.left + (i * fTreeSpacing);
@@ -1627,7 +1621,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 
 	// display a useful message informing the user what was planted
 	wxString2 msg, str;
-	msg = _T("Vegetation distribution results:\n");
+	msg = _("Vegetation distribution results:\n");
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
 	{
 		bio = m_BioRegions.m_Types[i];
@@ -1638,7 +1632,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			pd = bio->m_Densities[k];
 			total_this_type += pd->m_iNumPlanted;
 		}
-		str.Printf(_T("  BioType %d"), i);
+		str.Printf(_("  BioType %d"), i);
 		msg += str;
 
 		if (total_this_type != 0)
@@ -1647,13 +1641,13 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 			for (k = 0; k < bio->m_Densities.GetSize(); k++)
 			{
 				pd = bio->m_Densities[k];
-				str.Printf(_T("    Plant %d: %hs: %d generated.\n"), k,
+				str.Printf(_("    Plant %d: %hs: %d generated.\n"), k,
 					(const char *) pd->m_common_name, pd->m_iNumPlanted);
 				msg += str;
 			}
 		}
 		else
-			msg += _T(": None.\n");
+			msg += _(": None.\n");
 	}
 	DisplayAndLog(msg.mb_str());
 }

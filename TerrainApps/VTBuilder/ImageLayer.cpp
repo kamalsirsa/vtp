@@ -266,7 +266,7 @@ void vtImageLayer::SetProjection(const vtProjection &proj)
 
 void vtImageLayer::GetPropertyText(wxString &str)
 {
-	str.Printf(_T("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
+	str.Printf(_("Dimensions %d by %d pixels"), m_iXSize, m_iYSize);
 }
 
 DPoint2 vtImageLayer::GetSpacing()
@@ -429,14 +429,14 @@ bool vtImageLayer::LoadFromGDAL()
 		// if we still don't have it
 		if (!bHaveProj)
 		{
-			wxString2 msg = "File lacks a projection.  Would you like to specify one?\n"
-				"Yes - specify projection\n"
-				"No - use current projection\n";
-			int res = wxMessageBox(msg, _T("Image Import"), wxYES_NO | wxCANCEL);
+			wxString2 msg = _("File lacks a projection.  Would you like to specify one?\n");
+			msg += _("Yes - specify projection\n");
+			msg += _("No - use current projection\n");
+			int res = wxMessageBox(msg, _("Image Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
 				GetMainFrame()->GetProjection(m_proj);
-				Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
+				Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
 				dlg.SetProjection(m_proj);
 
 				if (dlg.ShowModal() == wxID_CANCEL)
@@ -481,9 +481,9 @@ bool vtImageLayer::LoadFromGDAL()
 			VTLOG("Dataset does not contain a valid affine transform.\n");
 			// No extents.
 			m_Extents.Empty();
-			wxString2 msg = "File lacks geographic location (extents).  "
-				"Would you like to specify extents?\n";
-			int res = wxMessageBox(msg, _T("Image Import"), wxYES | wxCANCEL);
+			wxString2 msg = _("File lacks geographic location (extents).  ");
+			msg += _("Would you like to specify extents?\n");
+			int res = wxMessageBox(msg, _("Image Import"), wxYES | wxCANCEL);
 			if (res == wxYES)
 			{
 				DRECT ext;
@@ -492,7 +492,7 @@ bool vtImageLayer::LoadFromGDAL()
 #else
 				ext.Empty();
 #endif
-				ExtentDlg dlg(NULL, -1, _T("Extents"));
+				ExtentDlg dlg(NULL, -1, _("Extents"));
 				dlg.SetArea(ext, (m_proj.IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)
 					m_Extents = dlg.m_area;
@@ -689,11 +689,10 @@ bool vtImageLayer::LoadFromGDAL()
 		wxString2 msg;
 		if (m_iXSize * m_iYSize > (6000 * 6000))
 		{
-			msg.Printf(_T("Image is very large (%d x %d).  Would you like\n")
-				_T("to create the layer using out-of-memory access to the image?"),
-				m_iXSize, m_iYSize);
+			msg.Printf(_("Image is very large (%d x %d).\n"), m_iXSize, m_iYSize);
+			msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 			VTLOG(msg.mb_str());
-			int result = wxMessageBox(msg, _T("Question"), wxYES_NO);
+			int result = wxMessageBox(msg, _("Question"), wxYES_NO);
 			if (result == wxYES)
 				bDefer = true;
 		}
@@ -705,11 +704,11 @@ bool vtImageLayer::LoadFromGDAL()
 			{
 				delete m_pBitmap;
 				m_pBitmap = NULL;
-				msg.Printf(_T("Couldn't allocate bitmap of size %d x %d.  Would you like\n")
-					_T("to create the layer using out-of-memory access to the image?"),
+				msg.Printf(_("Couldn't allocate bitmap of size %d x %d.\n"),
 					m_iXSize, m_iYSize);
+				msg += _("Would you like to create the layer using out-of-memory access to the image?"),
 				VTLOG(msg.mb_str());
-				int result = wxMessageBox(msg, _T("Question"), wxYES_NO);
+				int result = wxMessageBox(msg, _("Question"), wxYES_NO);
 				if (result == wxYES)
 					bDefer = true;
 				else
@@ -1049,7 +1048,7 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 		bool success = vtCreateDir("terraserver_tiles");
 		if (!success)
 		{
-			wxMessageBox(_T("Couldn't create cache directory."));
+			wxMessageBox(_("Couldn't create cache directory."));
 			return false;
 		}
 	}

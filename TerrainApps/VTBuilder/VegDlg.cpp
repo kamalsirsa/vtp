@@ -1,7 +1,7 @@
 //
 // VegDlg.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,35 +66,35 @@ void SpeciesListDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_PSTable->SetSingleStyle(wxLC_REPORT);
 	m_PSTable->InsertColumn(0, _T("SID"));
 	m_PSTable->SetColumnWidth(0, 34);
-	m_PSTable->InsertColumn(1, _T("Common Name"));
+	m_PSTable->InsertColumn(1, _("Common Name"));
 	m_PSTable->SetColumnWidth(1, 115);
-	m_PSTable->InsertColumn(2, _T("Scientific Name"));
+	m_PSTable->InsertColumn(2, _("Scientific Name"));
 	m_PSTable->SetColumnWidth(2, 160);
-	m_PSTable->InsertColumn(3, _T("Max Height"));
+	m_PSTable->InsertColumn(3, _("Max Height"));
 	m_PSTable->SetColumnWidth(3, 80);
 
 	// Setup right side with each plant appearance's attributes.
 	m_PATable = (wxListCtrl *) FindWindow( ID_LISTCTRL_APPEARANCES );
 	m_PATable->ClearAll();
 	m_PATable->SetSingleStyle(wxLC_REPORT);
-	m_PATable->InsertColumn(0, _T("Billboard"));
+	m_PATable->InsertColumn(0, _("Billboard"));
 	m_PATable->SetColumnWidth(0, 60);
-	m_PATable->InsertColumn(1, _T("FileName"));
+	m_PATable->InsertColumn(1, _("FileName"));
 	m_PATable->SetColumnWidth(1, 150);
-	m_PATable->InsertColumn(2, _T("Width"));
+	m_PATable->InsertColumn(2, _("Width"));
 	m_PATable->SetColumnWidth(2, 60);
-	m_PATable->InsertColumn(3, _T("Height"));
+	m_PATable->InsertColumn(3, _("Height"));
 	m_PATable->SetColumnWidth(3, 60);
-	m_PATable->InsertColumn(4, _T("Shadow Radius"));
+	m_PATable->InsertColumn(4, _("Shadow Radius"));
 	m_PATable->SetColumnWidth(4, 100);
-	m_PATable->InsertColumn(5, _T("Shadow Darkness"));
+	m_PATable->InsertColumn(5, _("Shadow Darkness"));
 	m_PATable->SetColumnWidth(5, 100);
 
 	// Read data imported from plantlist file and display in tables.
 	vtSpeciesList* pl = GetMainFrame()->GetPlantList();
 
 	long item1 = m_PSTable->InsertItem(0, _T(""), 0);
-	m_PSTable->SetItem(item1, 1, _T("(All species)"));
+	m_PSTable->SetItem(item1, 1, _("(All species)"));
 
 	for (unsigned int i = 0; i < pl->NumSpecies(); i++)
 	{
@@ -169,7 +169,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Create root of tree.
 	wxTreeItemId rootId;
-	rootId = m_BTree->AddRoot(_T("BioRegions"));
+	rootId = m_BTree->AddRoot(_("BioRegions"));
 	m_BTree->SetItemBold(rootId);
 
 	vtBioRegion *br = GetMainFrame()->GetBioRegion();
@@ -181,7 +181,7 @@ void BioRegionDlg::OnInitDialog(wxInitDialogEvent& event)
 		// Display biotype as level 1 of tree.
 		wxTreeItemId region;
 		wxString bt;
-		bt.Printf(_T("Type %d"), i);
+		bt.Printf(_("Type %d"), i);
 		region = m_BTree->AppendItem(rootId, bt);
 
 		int numspecies = br->m_Types[i]->m_Densities.GetSize();

@@ -158,7 +158,7 @@ bool vtElevLayer::OnSave()
 
 bool vtElevLayer::OnLoad()
 {
-	OpenProgressDialog(_T("Loading Elevation Layer"));
+	OpenProgressDialog(_("Loading Elevation Layer"));
 
 	bool success = false;
 
@@ -196,7 +196,7 @@ bool vtElevLayer::TransformCoords(vtProjection &proj_new)
 	if (proj_old == proj_new)
 		return true;		// No conversion necessary
 
-	OpenProgressDialog(_T("Converting Elevation Projection"));
+	OpenProgressDialog(_("Converting Elevation Projection"));
 
 	bool success = false;
 	if (m_pGrid)
@@ -424,7 +424,7 @@ void vtElevLayer::SetupDefaults()
 {
 	m_bNeedsDraw = false;
 	m_bBitmapRendered = false;
-	SetLayerFilename(_T("Untitled"));
+	SetLayerFilename(_("Untitled"));
 	m_bPreferGZip = false;
 
 	m_pBitmap = NULL;
@@ -451,7 +451,7 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 	m_pBitmap = new vtBitmap();
 	if (!m_pBitmap->Allocate(m_iImageWidth, m_iImageHeight))
 	{
-		DisplayAndLog("Couldn't create bitmap, probably too large.");
+		DisplayAndLog(_("Couldn't create bitmap, probably too large."));
 		delete m_pBitmap;
 		m_pBitmap = NULL;
 	}
@@ -470,14 +470,14 @@ void vtElevLayer::RenderBitmap()
 	// mew 2002-08-17: reuse of wxProgressDialog causes SIGSEGV,
 	// so just disable for now. (wxGTK 2.2.9 on Linux Mandrake 8.1)
 	if (bProg)
-		OpenProgressDialog(_T("Rendering Bitmap"), true);
+		OpenProgressDialog(_("Rendering Bitmap"), true);
 #endif
 
 	// safety check
 	if (m_iImageWidth == 0 || m_iImageHeight == 0)
 		return;
 
-	UpdateProgressDialog(0, _T("Generating colors..."));
+	UpdateProgressDialog(0, _("Generating colors..."));
 	DetermineMeterSpacing();
 
 	int i, j;		// image coord
@@ -493,7 +493,7 @@ void vtElevLayer::RenderBitmap()
 		{
 			if (UpdateProgressDialog(j*100/m_iImageHeight))
 			{
-				wxString2 msg = "Turn off displayed elevation for elevation layers?";
+				wxString2 msg = _("Turn off displayed elevation for elevation layers?");
 				if (wxMessageBox(msg, _T(""), wxYES_NO) == wxYES)
 				{
 					m_draw.m_bShowElevation = false;
@@ -538,7 +538,7 @@ void vtElevLayer::RenderBitmap()
 
 	if (has_invalid && m_draw.m_bDoMask)
 	{
-		UpdateProgressDialog(90, _T("Hiding unknown areas..."));
+		UpdateProgressDialog(90, _("Hiding unknown areas..."));
 		m_pMask = new wxMask(*m_pBitmap->m_pBitmap, wxColour(255, 0, 0));
 		m_pBitmap->m_pBitmap->SetMask(m_pMask);
 		m_bHasMask = true;
@@ -745,7 +745,7 @@ void vtElevLayer::FillGaps()
 	float *patch_column = new float[m_iRows];
 
 	// Create progress dialog for the slow part
-	OpenProgressDialog(_T("Filling Gaps"));
+	OpenProgressDialog(_("Filling Gaps"));
 
 	// For speed, remember which lines already have no gaps, so we don't have
 	// to visit them again.
@@ -985,7 +985,7 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	}
 	else if (!strExt.CmpNoCase(_T("raw")))
 	{
-		RawDlg dlg(NULL, -1, _T("Raw Elevation File"));
+		RawDlg dlg(NULL, -1, _("Raw Elevation File"));
 
 		dlg.m_iBytes = 2;
 		dlg.m_iWidth = 100;
@@ -1032,16 +1032,13 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 	if (!pProj->GetRoot())
 	{
 		// No projection.
-		wxString2 msg = "File lacks a projection.  "
-			"Would you like to specify one?\n"
-			"Yes - specify projection\n"
-			"No - use current projection\n";
-		int res = wxMessageBox(msg, _T("Elevation Import"), wxYES_NO | wxCANCEL);
+		wxString2 msg = _("File lacks a projection.\n Would you like to specify one?\n Yes - specify projection\n No - use current projection\n");
+		int res = wxMessageBox(msg, _("Elevation Import"), wxYES_NO | wxCANCEL);
 		if (res == wxYES)
 		{
 			vtProjection frame_proj;
 			GetMainFrame()->GetProjection(frame_proj);
-			Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
+			Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
 			dlg.SetProjection(frame_proj);
 
 			if (dlg.ShowModal() == wxID_CANCEL)
@@ -1060,16 +1057,13 @@ bool vtElevLayer::ImportFromFile(const wxString2 &strFileName,
 		if (m_pGrid->GetEarthExtents().IsEmpty())
 		{
 			// No extents.
-			wxString2 msg = "File lacks geographic location (extents).  "
-				"Would you like to specify extents?\n"
-				"Yes - specify extents\n"
-				"No - use some default values\n";
-			int res = wxMessageBox(msg, _T("Elevation Import"), wxYES_NO | wxCANCEL);
+			wxString2 msg = _("File lacks geographic location (extents). Would you like to specify extents?\n Yes - specify extents\n No - use some default values\n");
+			int res = wxMessageBox(msg, _("Elevation Import"), wxYES_NO | wxCANCEL);
 			if (res == wxYES)
 			{
 				DRECT ext;
 				ext.Empty();
-				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"));
+				ExtentDlg dlg(NULL, -1, _("Elevation Grid Extents"));
 				dlg.SetArea(ext, (pProj->IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)
 					m_pGrid->SetEarthExtents(dlg.m_area);
@@ -1157,7 +1151,7 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	if (!m_pTin)
 		return;
 
-	OpenProgressDialog(_T("Merging shared vertices"));
+	OpenProgressDialog(_("Merging shared vertices"));
 
 	int before = m_pTin->NumVerts();
 	m_pTin->MergeSharedVerts(progress_callback);
@@ -1168,9 +1162,9 @@ void vtElevLayer::MergeSharedVerts(bool bSilent)
 	if (!bSilent)
 	{
 		if (after < before)
-			DisplayAndLog("Reduced vertices from %d to %d", before, after);
+			DisplayAndLog(_("Reduced vertices from %d to %d"), before, after);
 		else
-			DisplayAndLog("There are %d vertices, unable to merge any.", before);
+			DisplayAndLog(_("There are %d vertices, unable to merge any."), before);
 	}
 }
 
@@ -1182,35 +1176,38 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 	{
 		int cols, rows;
 		m_pGrid->GetDimensions(cols, rows);
-		str.Printf(_T("Grid size: %d x %d\n"), cols, rows);
+		str.Printf(_("Grid size: %d x %d\n"), cols, rows);
 		result += str;
 
 		bool bGeo = (m_pGrid->GetProjection().IsGeographic() != 0);
-		result += _T("Grid spacing: ");
+		result += _("Grid spacing: ");
 		DPoint2 spacing = m_pGrid->GetSpacing();
 		result += FormatCoord(bGeo, spacing.x);
 		result += _T(" x ");
 		result += FormatCoord(bGeo, spacing.y);
 		result += _T("\n");
 
-		str.Printf(_T("Floating point: %hs\n"), m_pGrid->IsFloatMode() ? "Yes" : "No");
+		if (m_pGrid->IsFloatMode())
+			str.Printf(_("Floating point: Yes\n"));
+		else
+			str.Printf(_("Floating point: No\n"));
 		result += str;
 
 		m_pGrid->ComputeHeightExtents();
 		float fMin, fMax;
 		m_pGrid->GetHeightExtents(fMin, fMax);
-		str.Printf(_T("Minimum elevation: %.2f\n"), fMin);
+		str.Printf(_("Minimum elevation: %.2f\n"), fMin);
 		result += str;
-		str.Printf(_T("Maximum elevation: %.2f\n"), fMax);
+		str.Printf(_("Maximum elevation: %.2f\n"), fMax);
 		result += str;
 
-		str.Printf(_T("Height scale (meters per vertical unit): %f\n"), m_pGrid->GetScale());
+		str.Printf(_("Height scale (meters per vertical unit): %f\n"), m_pGrid->GetScale());
 		result += str;
 
 		const char *dem_name = m_pGrid->GetDEMName();
 		if (*dem_name)
 		{
-			str.Printf(_T("Original DEM name: \"%hs\"\n"), dem_name);
+			str.Printf(_("Original DEM name: \"%hs\"\n"), dem_name);
 			result += str;
 		}
 	}
@@ -1218,11 +1215,11 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 	{
 		int verts = m_pTin->NumVerts();
 		int tris = m_pTin->NumTris();
-		str.Printf(_T("TIN\nVertices: %d\nTriangles: %d\n"), verts, tris);
+		str.Printf(_("TIN\nVertices: %d\nTriangles: %d\n"), verts, tris);
 		result += str;
 		float minh, maxh;
 		m_pTin->GetHeightExtents(minh, maxh);
-		str.Printf(_T("Min/max elevation: %.2f, %.2f\n"), minh, maxh);
+		str.Printf(_("Min/max elevation: %.2f, %.2f\n"), minh, maxh);
 		result += str;
 	}
 	strIn = result;
@@ -1231,7 +1228,7 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 wxString vtElevLayer::GetFileExtension()
 {
 	if (m_pTin)
-		return 	_T(".itf");
+		return _T(".itf");
 	else
 	{
 		if (m_bPreferGZip)
@@ -1253,9 +1250,9 @@ bool vtElevLayer::AskForSaveFilename()
 	if (m_pTin)
 		filter = FSTRING_TIN;
 	else
-		filter = _T("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz|");
+		filter = _("BT File (.bt)|*.bt|GZipped BT File (.bt.gz)|*.bt.gz|");
 
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
+	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 	saveFile.SetFilterIndex(m_pGrid && m_bPreferGZip ? 1 : 0);
 

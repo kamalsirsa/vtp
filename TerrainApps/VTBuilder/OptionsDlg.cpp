@@ -58,9 +58,9 @@ void OptionsDlg::UpdateEnables()
 void OptionsDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	GetElevUnit()->Clear();
-	GetElevUnit()->Append(_T("Meters"));
-	GetElevUnit()->Append(_T("Feet (International)"));
-	GetElevUnit()->Append(_T("Feet (U.S. Survey)"));
+	GetElevUnit()->Append(_("Meters"));
+	GetElevUnit()->Append(_("Feet (International)"));
+	GetElevUnit()->Append(_("Feet (U.S. Survey)"));
 
 	AddValidator(ID_TOOLBAR, &m_bShowToolbar);
 	AddValidator(ID_MINUTES, &m_bShowMinutes);

@@ -1,7 +1,7 @@
 //
 // Status bar implementation
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -95,7 +95,8 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	if (pView)
 	{
 		pView->GetMouseLocation(p);
-		str = _T("Mouse: ");
+		str = _("Mouse");
+		str += _T(": ");
 		str += FormatCoord(bGeo, p.x);
 		str += _T(", ");
 		str += FormatCoord(bGeo, p.y);
@@ -117,7 +118,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 	}
 	else
 	{
-		SetStatusText(_T("Mouse"), Field_Mouse);
+		SetStatusText(_("Mouse"), Field_Mouse);
 		SetStatusText(_T(""), Field_Height);
 	}
 //	VTLOG(" Done.\n");

@@ -52,16 +52,16 @@ vtVegLayer::~vtVegLayer()
 
 void vtVegLayer::GetPropertyText(wxString &str)
 {
-	wxString s;
-	str = _T("Vegetation layer type: ");
+	wxString2 s;
+	str = _("Vegetation layer type: ");
 	switch (m_VLType)
 	{
-	case VLT_None: str += _T("None\n"); break;
-	case VLT_Density: str += _T("Density\n"); break;
-	case VLT_BioMap: str += _T("BioMap\n"); break;
+	case VLT_None: str += _("None\n"); break;
+	case VLT_Density: str += _("Density\n"); break;
+	case VLT_BioMap: str += _("BioMap\n"); break;
 	case VLT_Instances:
-		str += _T("Plant Instances\n");
-		s.Printf(_T("Number of Instances: %d\n"), m_pSet->GetNumEntities());
+		str += _("Plant Instances\n");
+		s.Printf(_("Number of Instances: %d\n"), m_pSet->GetNumEntities());
 		str += s;
 		break;
 	}
@@ -97,8 +97,7 @@ bool vtVegLayer::OnLoad()
 	vtSpeciesList *plants = GetMainFrame()->GetPlantList();
 	if (plants->NumSpecies() == 0)
 	{
-		wxMessageBox(_T("You must specify a species file (plant list) to use\n")
-			_T("before working with vegetation files.\n"));
+		wxMessageBox(_("You must specify a species file (plant list) to use\n before working with vegetation files.\n"));
 		return false;
 	}
 

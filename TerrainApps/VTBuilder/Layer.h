@@ -126,7 +126,7 @@ public:
 	virtual void OnLeftDoubleClick(BuilderView *pView, UIContext &ui) {}
 	virtual void OnMouseMove(BuilderView *pView, UIContext &ui) {}
 
-	static wxChar *LayerTypeName[];
+	static wxArrayString LayerTypeNames;
 	static wxChar *LayerFileExtension[];
 	virtual bool AskForSaveFilename();
 

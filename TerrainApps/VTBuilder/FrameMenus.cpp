@@ -222,200 +222,202 @@ void MainFrame::CreateMenus()
 
 	// Project menu
 	fileMenu = new wxMenu;
-	fileMenu->Append(ID_FILE_NEW, _T("&New\tCtrl+N"), _T("New Project"));
-	fileMenu->Append(ID_FILE_OPEN, _T("Open Project\tCtrl+O"), _T("Open Project"));
-	fileMenu->Append(ID_FILE_SAVE, _T("Save Project\tCtrl+S"), _T("Save Project As"));
+	fileMenu->Append(ID_FILE_NEW, _("&New\tCtrl+N"), _("New Project"));
+	fileMenu->Append(ID_FILE_OPEN, _("Open Project\tCtrl+O"), _("Open Project"));
+	fileMenu->Append(ID_FILE_SAVE, _("Save Project\tCtrl+S"), _("Save Project As"));
 #ifndef ELEVATION_ONLY
 	fileMenu->AppendSeparator();
 	wxMenu *specialMenu = new wxMenu;
-	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _T("Create Dymaxion Textures"));
-	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _T("Process Billboard Texture"));
-	fileMenu->Append(0, _T("Special"), specialMenu);
+	specialMenu->Append(ID_SPECIAL_DYMAX_TEXTURES, _("Create Dymaxion Textures"));
+	specialMenu->Append(ID_SPECIAL_PROCESS_BILLBOARD, _("Process Billboard Texture"));
+	fileMenu->Append(0, _("Special"), specialMenu);
 #endif
 	fileMenu->AppendSeparator();
-	fileMenu->Append(ID_FILE_EXIT, _T("E&xit\tAlt-X"), _T("Exit"));
-	m_pMenuBar->Append(fileMenu, _T("&Project"));
+	fileMenu->Append(ID_FILE_EXIT, _("E&xit\tAlt-X"), _("Exit"));
+	m_pMenuBar->Append(fileMenu, _("&Project"));
 	menu_num++;
 
  	// Edit
 	editMenu = new wxMenu;
-	editMenu->Append(ID_EDIT_DELETE, _T("Delete\tDEL"), _T("Delete."));
+	editMenu->Append(ID_EDIT_DELETE, _("Delete\tDEL"), _("Delete"));
 	editMenu->AppendSeparator();
-	editMenu->Append(ID_EDIT_DESELECTALL, _T("Deselect All"), _T("Clears selection."));
-	editMenu->Append(ID_EDIT_INVERTSELECTION, _T("Invert Selection"), _T("Invert Selection."));
+	editMenu->Append(ID_EDIT_DESELECTALL, _("Deselect All"), _("Clears selection"));
+	editMenu->Append(ID_EDIT_INVERTSELECTION, _("Invert Selection"));
 #ifndef ELEVATION_ONLY
-	editMenu->AppendCheckItem(ID_EDIT_CROSSINGSELECTION, _T("Crossing Selection"));
+	editMenu->AppendCheckItem(ID_EDIT_CROSSINGSELECTION, _("Crossing Selection"));
 #endif
-	m_pMenuBar->Append(editMenu, _T("&Edit"));
+	m_pMenuBar->Append(editMenu, _("&Edit"));
 	menu_num++;
 
 	// Layer
 	layerMenu = new wxMenu;
 #ifndef ELEVATION_ONLY
-	layerMenu->Append(ID_LAYER_NEW, _T("&New Layer"), _T("Create New Layer"));
+	layerMenu->Append(ID_LAYER_NEW, _("&New Layer"), _("Create New Layer"));
 #endif
-	layerMenu->Append(ID_LAYER_OPEN, _T("Open Layer"), _T("Open Existing Layer"));
-	layerMenu->Append(ID_LAYER_SAVE, _T("Save Layer"), _T("Save Active Layer"));
-	layerMenu->Append(ID_LAYER_SAVE_AS, _T("Save Layer As..."), _T("Save Active Layer As"));
-	layerMenu->Append(ID_LAYER_IMPORT, _T("Import Data\tCtrl+I"), _T("Import Data"));
+	layerMenu->Append(ID_LAYER_OPEN, _("Open Layer"), _("Open Existing Layer"));
+	layerMenu->Append(ID_LAYER_SAVE, _("Save Layer"), _("Save Active Layer"));
+	layerMenu->Append(ID_LAYER_SAVE_AS, _("Save Layer As..."), _("Save Active Layer As"));
+	layerMenu->Append(ID_LAYER_IMPORT, _("Import Data\tCtrl+I"), _("Import Data"));
 #ifndef ELEVATION_ONLY
-	layerMenu->Append(ID_LAYER_IMPORTTIGER, _T("Import Data From TIGER"), _T("Import Data From TIGER"));
-	layerMenu->Append(ID_LAYER_IMPORTUTIL, _T("Import Utilites From SHP"), _T("Import Utilites From SHP"));
-	layerMenu->Append(ID_LAYER_IMPORT_MS, _T("Import from MapSource file"));
+	layerMenu->Append(ID_LAYER_IMPORTTIGER, _("Import Data From TIGER"), _("Import Data From TIGER"));
+	layerMenu->Append(ID_LAYER_IMPORTUTIL, _("Import Utilites From SHP"), _("Import Utilites From SHP"));
+	layerMenu->Append(ID_LAYER_IMPORT_MS, _("Import from MapSource file"));
 #endif
 	layerMenu->AppendSeparator();
-	layerMenu->Append(ID_LAYER_PROPS, _T("Layer Properties"), _T("Layer Properties"));
-	layerMenu->Append(ID_EDIT_OFFSET, _T("Offset Coordinates"), _T("Offset"));
+	layerMenu->Append(ID_LAYER_PROPS, _("Layer Properties"), _("Layer Properties"));
+	layerMenu->Append(ID_EDIT_OFFSET, _("Offset Coordinates"), _("Offset"));
 	layerMenu->AppendSeparator();
-	layerMenu->Append(ID_LAYER_FLATTEN, _T("&Flatten Layers"), _T("Flatten"));
+	layerMenu->Append(ID_LAYER_FLATTEN, _("&Flatten Layers"), _("Flatten"));
 	layerMenu->AppendSeparator();
-	layerMenu->Append(ID_LAYER_CONVERTPROJ, _T("Convert Projection"), _T("Convert"));
-	layerMenu->Append(ID_LAYER_SETPROJ, _T("Set Projection"), _T("Set Projection"));
-	m_pMenuBar->Append(layerMenu, _T("&Layer"));
+	layerMenu->Append(ID_LAYER_CONVERTPROJ, _("Convert Projection"), _("Convert"));
+	layerMenu->Append(ID_LAYER_SETPROJ, _("Set Projection"), _("Set Projection"));
+	m_pMenuBar->Append(layerMenu, _("&Layer"));
 	menu_num++;
 
 	// View
 	viewMenu = new wxMenu;
-	viewMenu->AppendCheckItem(ID_VIEW_SHOWLAYER, _T("Current Layer &Visible"),
-		_T("Toggle Visibility of the current Layer"));
+	viewMenu->AppendCheckItem(ID_VIEW_SHOWLAYER, _("Current Layer &Visible"),
+		_("Toggle Visibility of the current Layer"));
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_ZOOMIN, _T("Zoom &In\tCtrl++"));
-	viewMenu->Append(ID_VIEW_ZOOMOUT, _T("Zoom Out\tCtrl+-"));
-	viewMenu->Append(ID_VIEW_ZOOMALL, _T("Zoom &All"));
-	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _T("Zoom to Current &Layer"));
-	viewMenu->Append(ID_VIEW_FULLVIEW, _T("Zoom to &Full Res (1:1)"));
+	viewMenu->Append(ID_VIEW_ZOOMIN, _("Zoom &In\tCtrl++"));
+	viewMenu->Append(ID_VIEW_ZOOMOUT, _("Zoom Out\tCtrl+-"));
+	viewMenu->Append(ID_VIEW_ZOOMALL, _("Zoom &All"));
+	viewMenu->Append(ID_VIEW_ZOOM_LAYER, _("Zoom to Current &Layer"));
+	viewMenu->Append(ID_VIEW_FULLVIEW, _("Zoom to &Full Res (1:1)"));
 	viewMenu->AppendSeparator();
-	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _T("&Magnifier\tZ"));
-	viewMenu->AppendCheckItem(ID_VIEW_PAN, _T("&Pan\tSPACE"));
-	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, _T("Obtain &Distance"));
-	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, _T("Area &Tool"));
+	viewMenu->AppendCheckItem(ID_VIEW_MAGNIFIER, _("&Magnifier\tZ"));
+	viewMenu->AppendCheckItem(ID_VIEW_PAN, _("&Pan\tSPACE"));
+	viewMenu->AppendCheckItem(ID_VIEW_DISTANCE, _("Obtain &Distance"));
+	viewMenu->AppendCheckItem(ID_VIEW_SETAREA, _("Area &Tool"));
 	viewMenu->AppendSeparator();
-	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, _T("&World Map"), _T("Show/Hide World Map"));
-	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _T("Show &UTM Boundaries"));
-//	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, _T("Show 7.5\" Grid"), _T("Show 7.5\" Grid"), true);
+	viewMenu->AppendCheckItem(ID_VIEW_WORLDMAP, _("&World Map"), _("Show/Hide World Map"));
+	viewMenu->AppendCheckItem(ID_VIEW_SHOWUTM, _("Show &UTM Boundaries"));
+//	viewMenu->AppendCheckItem(ID_VIEW_SHOWGRID, _("Show 7.5\" Grid"), _("Show 7.5\" Grid"), true);
 	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_OPTIONS, _T("&Options"));
-	m_pMenuBar->Append(viewMenu, _T("&View"));
+	viewMenu->Append(ID_VIEW_OPTIONS, _("&Options"));
+	m_pMenuBar->Append(viewMenu, _("&View"));
 	menu_num++;
 
 #ifndef ELEVATION_ONLY
 	// Roads
 	roadMenu = new wxMenu;
-	roadMenu->AppendCheckItem(ID_ROAD_SELECTROAD, _T("Select/Modify Roads"));
-	roadMenu->AppendCheckItem(ID_ROAD_SELECTNODE, _T("Select/Modify Nodes"));
-	roadMenu->AppendCheckItem(ID_ROAD_SELECTWHOLE, _T("Select Whole Roads"));
-	roadMenu->AppendCheckItem(ID_ROAD_DIRECTION, _T("Set Road Direction"));
-	roadMenu->AppendCheckItem(ID_ROAD_EDIT, _T("Edit Road Points"));
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTROAD, _("Select/Modify Roads"));
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTNODE, _("Select/Modify Nodes"));
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTWHOLE, _("Select Whole Roads"));
+	roadMenu->AppendCheckItem(ID_ROAD_DIRECTION, _("Set Road Direction"));
+	roadMenu->AppendCheckItem(ID_ROAD_EDIT, _("Edit Road Points"));
 	roadMenu->AppendSeparator();
-	roadMenu->AppendCheckItem(ID_ROAD_SHOWNODES, _T("Show Nodes"));
-	roadMenu->AppendCheckItem(ID_ROAD_SELECTHWY, _T("Select by Highway Number"));
+	roadMenu->AppendCheckItem(ID_ROAD_SHOWNODES, _("Show Nodes"));
+	roadMenu->AppendCheckItem(ID_ROAD_SELECTHWY, _("Select by Highway Number"));
 	roadMenu->AppendSeparator();
-	roadMenu->Append(ID_ROAD_CLEAN, _T("Clean RoadMap"), _T("Clean"));
-	roadMenu->Append(ID_ROAD_GUESS, _T("Guess Intersection Types"));
-	roadMenu->Append(ID_ROAD_FLATTEN, _T("Flatten Elevation Grid Under Roads"));
-	m_pMenuBar->Append(roadMenu, _T("&Roads"));
+	roadMenu->Append(ID_ROAD_CLEAN, _("Clean RoadMap"), _("Clean"));
+	roadMenu->Append(ID_ROAD_GUESS, _("Guess Intersection Types"));
+	roadMenu->Append(ID_ROAD_FLATTEN, _("Flatten Elevation Grid Under Roads"));
+	m_pMenuBar->Append(roadMenu, _("&Roads"));
 	m_iLayerMenu[LT_ROAD] = menu_num;
 	menu_num++;
 
 	// Utilities
 	utilityMenu = new wxMenu;
-	utilityMenu->AppendCheckItem(ID_TOWER_ADD, _T("Add a Transmission Tower"));
+	utilityMenu->AppendCheckItem(ID_TOWER_ADD, _("Add a Transmission Tower"));
 	utilityMenu->AppendSeparator();
-	utilityMenu->AppendCheckItem(ID_TOWER_SELECT, _T("Select Utility Layer"));
-	utilityMenu->AppendCheckItem(ID_TOWER_EDIT, _T("Edit Transmission Towers"));
-	m_pMenuBar->Append(utilityMenu, _T("Util&ities"));
+	utilityMenu->AppendCheckItem(ID_TOWER_SELECT, _("Select Utility Layer"));
+	utilityMenu->AppendCheckItem(ID_TOWER_EDIT, _("Edit Transmission Towers"));
+	m_pMenuBar->Append(utilityMenu, _("Util&ities"));
 	m_iLayerMenu[LT_UTILITY] = menu_num;
 	menu_num++;
 #endif
 
 	// Elevation
 	elevMenu = new wxMenu;
-	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _T("Se&lect Elevation Layer"));
-	elevMenu->Append(ID_ELEV_SCALE, _T("Sc&ale Elevation"));
+	elevMenu->AppendCheckItem(ID_ELEV_SELECT, _("Se&lect Elevation Layer"));
+	elevMenu->Append(ID_ELEV_SCALE, _("Sc&ale Elevation"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_REMOVERANGE, _T("&Remove Elevation Range..."));
-	elevMenu->Append(ID_ELEV_FILLIN, _T("&Fill In Unknown Areas"));
-	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("&Set Unknown Areas"));
+	elevMenu->Append(ID_ELEV_REMOVERANGE, _("&Remove Elevation Range..."));
+	elevMenu->Append(ID_ELEV_FILLIN, _("&Fill In Unknown Areas"));
+	elevMenu->Append(ID_ELEV_SETUNKNOWN, _("&Set Unknown Areas"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_EXPORT, _T("E&xport To..."));
-	elevMenu->Append(ID_ELEV_BITMAP, _T("Re&nder and Save Bitmap"));
+	elevMenu->Append(ID_ELEV_EXPORT, _("E&xport To..."));
+	elevMenu->Append(ID_ELEV_BITMAP, _("Re&nder and Save Bitmap"));
 	elevMenu->AppendSeparator();
-	elevMenu->Append(ID_ELEV_MERGETIN, _T("&Merge shared TIN vertices"));
-	m_pMenuBar->Append(elevMenu, _T("Elev&ation"));
+	elevMenu->Append(ID_ELEV_MERGETIN, _("&Merge shared TIN vertices"));
+	m_pMenuBar->Append(elevMenu, _("Elev&ation"));
 	m_iLayerMenu[LT_ELEVATION] = menu_num;
 	menu_num++;
 
 #ifndef ELEVATION_ONLY
 	// Vegetation
 	vegMenu = new wxMenu;
-	vegMenu->Append(ID_VEG_PLANTS, _T("Plants List"), _T("View/Edit list of available plant species"));
-	vegMenu->Append(ID_VEG_BIOREGIONS, _T("BioRegions"), _T("View/Edit list of species & density for each BioRegion"));
-	vegMenu->Append(ID_VEG_EXPORTSHP, _T("Export SHP"));
-	m_pMenuBar->Append(vegMenu, _T("Veg&etation"));
+	vegMenu->Append(ID_VEG_PLANTS, _("Plants List"), _("View/Edit list of available plant species"));
+	vegMenu->Append(ID_VEG_BIOREGIONS, _("BioRegions"), _("View/Edit list of species & density for each BioRegion"));
+	vegMenu->Append(ID_VEG_EXPORTSHP, _("Export SHP"));
+	m_pMenuBar->Append(vegMenu, _("Veg&etation"));
 	m_iLayerMenu[LT_VEG] = menu_num;
 	menu_num++;
 
 	// Structures
 	bldMenu = new wxMenu;
-	bldMenu->AppendCheckItem(ID_FEATURE_SELECT, _T("Select Features"));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_BLD, _T("Edit Buildings"));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_POINTS, _T("Add points to building footprints"), _T(""));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_DELETE_POINTS, _T("Delete points from building footprints"), _T(""));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, _T("Add Linear Structures"));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _T("Edit Linear Structures"));
-	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_INST, _T("Add Instances"));
+	bldMenu->AppendCheckItem(ID_FEATURE_SELECT, _("Select Features"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_BLD, _("Edit Buildings"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_POINTS, _("Add points to building footprints"), _T(""));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_DELETE_POINTS, _("Delete points from building footprints"), _T(""));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_LINEAR, _("Add Linear Structures"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_EDIT_LINEAR, _("Edit Linear Structures"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_ADD_INST, _("Add Instances"));
 	bldMenu->AppendSeparator();
-	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _T("Add Foundation Levels to Buildings"), _T(""));
+	bldMenu->Append(ID_STRUCTURE_ADD_FOUNDATION, _("Add Foundation Levels to Buildings"), _T(""));
 	bldMenu->AppendSeparator();
-	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _T("Constrain angles on footprint edit"));
-	m_pMenuBar->Append(bldMenu, _T("&Structures"));
+	bldMenu->AppendCheckItem(ID_STRUCTURE_CONSTRAIN, _("Constrain angles on footprint edit"));
+	m_pMenuBar->Append(bldMenu, _("&Structures"));
 	m_iLayerMenu[LT_STRUCTURE] = menu_num;
 	menu_num++;
 #endif
 
 	// Raw
 	rawMenu = new wxMenu;
-	rawMenu->AppendCheckItem(ID_FEATURE_SELECT, _T("Select Features"));
-	rawMenu->AppendCheckItem(ID_FEATURE_PICK, _T("Pick Features"));
-	rawMenu->AppendCheckItem(ID_FEATURE_TABLE, _T("Show Attribute Table"));
+	rawMenu->AppendCheckItem(ID_FEATURE_SELECT, _("Select Features"));
+	rawMenu->AppendCheckItem(ID_FEATURE_PICK, _("Pick Features"));
+	rawMenu->AppendCheckItem(ID_FEATURE_TABLE, _("Show Attribute Table"));
 #ifndef ELEVATION_ONLY
 	rawMenu->AppendSeparator();
-	rawMenu->Append(ID_RAW_SETTYPE, _T("Set Entity Type"), _T("Set Entity Type"));
-	rawMenu->AppendCheckItem(ID_RAW_ADDPOINTS, _T("Add Points with Mouse"));
-	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, _T("Add Point with Text\tCtrl+T"), _T("Add point"));
-	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _T("Add Points with GPS"), _T("Add points with GPS"));
+	rawMenu->Append(ID_RAW_SETTYPE, _("Set Entity Type"), _("Set Entity Type"));
+	rawMenu->AppendCheckItem(ID_RAW_ADDPOINTS, _("Add Points with Mouse"));
+	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, _("Add Point with Text\tCtrl+T"), _("Add point"));
+	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, _("Add Points with GPS"), _("Add points with GPS"));
 #endif
 	rawMenu->AppendSeparator();
-	rawMenu->Append(ID_RAW_SELECTCONDITION, _T("Select Features by Condition"));
-	m_pMenuBar->Append(rawMenu, _T("Ra&w"));
+	rawMenu->Append(ID_RAW_SELECTCONDITION, _("Select Features by Condition"));
+	m_pMenuBar->Append(rawMenu, _("Ra&w"));
 	m_iLayerMenu[LT_RAW] = menu_num;
 	menu_num++;
 
 	// Area
 	areaMenu = new wxMenu;
-	areaMenu->Append(ID_AREA_STRETCH, _T("Set to Extents"),
-		_T("Set the Area Tool rectangle to the combined extent of all layers."));
-	areaMenu->Append(ID_AREA_TYPEIN, _T("Numeric Values"),
-		_T("Set the Area Tool rectangle by text entry of coordinates."));
+	areaMenu->Append(ID_AREA_STRETCH, _("Set to Extents"),
+		_("Set the Area Tool rectangle to the combined extent of all layers."));
+	areaMenu->Append(ID_AREA_TYPEIN, _("Numeric Values"),
+		_("Set the Area Tool rectangle by text entry of coordinates."));
 	areaMenu->AppendSeparator();
-	areaMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge && Resample Elevation"),
-		_T("Sample all elevation data within the Area Tool to produce a single, new elevation."));
+	areaMenu->Append(ID_AREA_EXPORT_ELEV, _("&Merge && Resample Elevation"),
+		_("Sample all elevation data within the Area Tool to produce a single, new elevation."));
 #ifndef ELEVATION_ONLY
-	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _T("Extract && Export Image"),
-		_T("Sample imagery within the Area Tool to produce a single, new image."));
-	areaMenu->Append(ID_AREA_GENERATE_VEG, _T("Generate Vegetation"),
-		_T("Generate Vegetation File (*.vf) containg plant distribution."));
-	areaMenu->Append(ID_AREA_REQUEST_LAYER, _T("Request Layer from WFS"));
-	areaMenu->Append(ID_AREA_REQUEST_WMS, _T("Request Image from WMS"));
-	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _T("Request Image from Terraserver"));
+	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _("Extract && Export Image"),
+		_("Sample imagery within the Area Tool to produce a single, new image."));
+	areaMenu->Append(ID_AREA_GENERATE_VEG, _("Generate Vegetation"),
+		_("Generate Vegetation File (*.vf) containg plant distribution."));
+	areaMenu->Append(ID_AREA_REQUEST_LAYER, _("Request Layer from WFS"));
+	areaMenu->Append(ID_AREA_REQUEST_WMS, _("Request Image from WMS"));
+	areaMenu->Append(ID_AREA_REQUEST_TSERVE, _("Request Image from Terraserver"));
 #endif
-	m_pMenuBar->Append(areaMenu, _T("&Area Tool"));
+	m_pMenuBar->Append(areaMenu, _("&Area Tool"));
 	menu_num++;
 
 	// Help
 	helpMenu = new wxMenu;
-	helpMenu->Append(wxID_HELP, _T("&About"), _T("About ") _T(APPNAME));
-	m_pMenuBar->Append(helpMenu, _T("&Help"));
+	wxString2 msg = _("About ");
+	msg += _T(APPNAME);
+	helpMenu->Append(wxID_HELP, _("&About"), msg);
+	m_pMenuBar->Append(helpMenu, _("&Help"));
 	menu_num++;
 
 	SetMenuBar(m_pMenuBar);
@@ -439,12 +441,18 @@ void MainFrame::OnProjectNew(wxCommandEvent &event)
 	SetProjection(p);
 }
 
-#define PROJECT_FILTER _T(APPNAME) _T(" Project Files (*.vtb)|*.vtb|")
+wxString2 GetProjectFilter()
+{
+	wxString2 str = _T(APPNAME);
+	str += _T(" ");
+	str += _("Project Files (*.vtb)|*.vtb|");
+	return str;
+}
 
 void MainFrame::OnProjectOpen(wxCommandEvent &event)
 {
-	wxFileDialog loadFile(NULL, _T("Load Project"), _T(""), _T(""),
-		PROJECT_FILTER, wxOPEN);
+	wxFileDialog loadFile(NULL, _("Load Project"), _T(""), _T(""),
+		GetProjectFilter(), wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -453,8 +461,8 @@ void MainFrame::OnProjectOpen(wxCommandEvent &event)
 
 void MainFrame::OnProjectSave(wxCommandEvent &event)
 {
-	wxFileDialog saveFile(NULL, _T("Save Project"), _T(""), _T(""),
-		PROJECT_FILTER, wxSAVE | wxOVERWRITE_PROMPT );
+	wxFileDialog saveFile(NULL, _("Save Project"), _T(""), _T(""),
+		GetProjectFilter(), wxSAVE | wxOVERWRITE_PROMPT );
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -471,7 +479,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	double u, v;
 	double lat, lon;
 
-	wxFileDialog dlg(this, _T("Choose input file"), _T(""), _T(""), _T("*.bmp;*.png"));
+	wxFileDialog dlg(this, _("Choose input file"), _T(""), _T(""), _T("*.bmp;*.png"));
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
 
@@ -482,21 +490,21 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 	choices[3] = _T("1024");
 	choices[4] = _T("2048");
 	choices[5] = _T("4096");
-	wxSingleChoiceDialog dlg2(this, _T("Size of each output tile?"),
-		_T("Query"), 6, choices);
+	wxSingleChoiceDialog dlg2(this, _("Size of each output tile?"),
+		_("Query"), 6, choices);
 	if (dlg2.ShowModal() == wxID_CANCEL)
 		return;
 	int sel = dlg2.GetSelection();
 	int output_size = 1 << (7+sel);
 
-	wxTextEntryDialog dlg3(this, _T("Prefix for output filenames?"), _T("Query"));
+	wxTextEntryDialog dlg3(this, _("Prefix for output filenames?"), _("Query"));
 	if (dlg3.ShowModal() == wxID_CANCEL)
 		return;
 	wxString prefix = dlg3.GetValue();
 
 	wxImage::AddHandler(new wxPNGHandler);
 
-	wxProgressDialog prog(_T("Processing"), _T("Loading source bitmap.."), 100);
+	wxProgressDialog prog(_("Processing"), _("Loading source bitmap.."), 100);
 	prog.Show(TRUE);
 
 	// read texture
@@ -519,7 +527,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 		out[i].Create(output_size, output_size);
 
 		wxString msg;
-		msg.Printf(_T("Creating tile %d.."), i+1);
+		msg.Printf(_("Creating tile %d ..."), i+1);
 		prog.Update((i+1)*10, msg);
 
 		for (x = 0; x < output_size; x++)
@@ -754,7 +762,7 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 	if (pRL && (pRL->NumSelectedNodes() != 0 || pRL->NumSelectedLinks() != 0))
 	{
 		wxString str;
-		str.Printf(_T("Deleting road selection: %d nodes and %d roads"),
+		str.Printf(_("Deleting road selection: %d nodes and %d roads"),
 			pRL->NumSelectedNodes(), pRL->NumSelectedLinks());
 		SetStatusText(str);
 		m_pView->DeleteSelected(pRL);
@@ -786,8 +794,8 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 	vtLayer *pL = GetActiveLayer();
 	if (pL)
 	{
-		int result = wxMessageBox(_T("Are you sure you want to delete the current layer?"),
-				_T("Question"), wxYES_NO | wxICON_QUESTION, this);
+		int result = wxMessageBox(_("Are you sure you want to delete the current layer?"),
+				_("Question"), wxYES_NO | wxICON_QUESTION, this);
 		if (result == wxYES)
 			RemoveLayer(pL);
 	}
@@ -835,8 +843,8 @@ void MainFrame::OnUpdateCrossingSelection(wxUpdateUIEvent& event)
 
 void MainFrame::OnEditOffset(wxCommandEvent &event)
 {
-	wxTextEntryDialog dlg(this, _T("Offset"),
-		_T("Please enter horizontal offset X, Y"), _T("0.0, 0.0"));
+	wxTextEntryDialog dlg(this, _("Offset"),
+		_("Please enter horizontal offset X, Y"), _T("0, 0"));
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -878,7 +886,7 @@ void MainFrame::OnLayerNew(wxCommandEvent &event)
 
 void MainFrame::OnLayerOpen(wxCommandEvent &event)
 {
-	wxString filter = _T("Native Layer Formats||");
+	wxString filter = _("Native Layer Formats||");
 
 	AddType(filter, FSTRING_BT);	// elevation
 	AddType(filter, FSTRING_BTGZ);	// compressed elevation
@@ -896,7 +904,7 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	AddType(filter, FSTRING_SHP);	// raw files
 
 	// ask the user for a filename
-	wxFileDialog loadFile(NULL, _T("Open Layer"), _T(""), _T(""), filter, wxOPEN);
+	wxFileDialog loadFile(NULL, _("Open Layer"), _T(""), _T(""), filter, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -907,20 +915,20 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 void MainFrame::OnLayerSave(wxCommandEvent &event)
 {
 	vtLayer *lp = GetActiveLayer();
-	if (lp->GetLayerFilename().Left(8).CmpNoCase(_T("untitled")) == 0)
+	if (lp->GetLayerFilename().Left(8).CmpNoCase(_("Untitled")) == 0)
 	{
 		if (!lp->AskForSaveFilename())
 			return;
 	}
-	wxString2 msg = _T("Saving layer to file ") + lp->GetLayerFilename();
+	wxString2 msg = _("Saving layer to file ") + lp->GetLayerFilename();
 	SetStatusText(msg);
 	VTLOG(msg.mb_str());
 	VTLOG("\n");
 
 	if (lp->Save())
-		msg = _T("Saved layer to file ") + lp->GetLayerFilename();
+		msg = _("Saved layer to file ") + lp->GetLayerFilename();
 	else
-		msg = _T("Save failed.");
+		msg = _("Save failed.");
 	SetStatusText(msg);
 	VTLOG(msg.mb_str());
 	VTLOG("\n");
@@ -939,7 +947,7 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (!lp->AskForSaveFilename())
 		return;
 
-	wxString2 msg = _T("Saving layer to file as ") + lp->GetLayerFilename();
+	wxString2 msg = _("Saving layer to file as ") + lp->GetLayerFilename();
 	SetStatusText(msg);
 
 	g_Log._Log(msg.mb_str());
@@ -949,12 +957,12 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (success)
 	{
 		lp->SetModified(false);
-		msg = _T("Saved layer to file as ") + lp->GetLayerFilename();
+		msg = _("Saved layer to file as ") + lp->GetLayerFilename();
 	}
 	else
 	{
-		msg = _T("Failed to save layer to ") + lp->GetLayerFilename();
-		wxMessageBox(msg, _T("Problem"));
+		msg = _("Failed to save layer to ") + lp->GetLayerFilename();
+		wxMessageBox(msg, _("Problem"));
 	}
 	SetStatusText(msg);
 
@@ -991,7 +999,7 @@ void MainFrame::OnLayerImport(wxCommandEvent &event)
 void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 {
 	// ask the user for a directory
-	wxDirDialog getDir(NULL, _T("Import TIGER Data From Directory"));
+	wxDirDialog getDir(NULL, _("Import TIGER Data From Directory"));
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -1003,7 +1011,7 @@ void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
 void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 {
 	// ask the user for a directory
-	wxDirDialog getDir(NULL, _T("Import Utility Data from Directory of SHP Files"));
+	wxDirDialog getDir(NULL, _("Import Utility Data from Directory of SHP Files"));
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -1012,7 +1020,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 //	dlg.m_strCaption = _T("Shapefiles do not contain projection information.  ")
 //		_T("Please indicate the projection of this file:");
 	// ask user for a projection
-	Projection2Dlg dlg(NULL, -1, _T("Indicate Projection"));
+	Projection2Dlg dlg(NULL, -1, _("Indicate Projection"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -1037,8 +1045,8 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 {
 	// Use file dialog to open plant list text file.
-	wxFileDialog loadFile(NULL, _T("Import MapSource File"), _T(""), _T(""),
-		_T("MapSource Export Files (*.txt)|*.txt|"), wxOPEN);
+	wxFileDialog loadFile(NULL, _("Import MapSource File"), _T(""), _T(""),
+		_("MapSource Export Files (*.txt)|*.txt|"), wxOPEN);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
@@ -1123,8 +1131,8 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 		choices[i] += _T(")");
 	}
 
-	int nsel = wxGetMultipleChoices(selections, _T("Which layers to import?"),
-		_T("Import Tracks"), n, choices);
+	int nsel = wxGetMultipleChoices(selections, _("Which layers to import?"),
+		_("Import Tracks"), n, choices);
 
 	// for each of the layers the user wants, add them to our project
 	for (i = 0; i < nsel; i++)
@@ -1154,8 +1162,8 @@ void MainFrame::OnLayerProperties(wxCommandEvent &event)
 	LayerType ltype = lp->GetType();
 
 	wxString title;
-	title += vtLayer::LayerTypeName[ltype];
-	title += _T(" Layer Properties");
+	title += vtLayer::LayerTypeNames[ltype];
+	title += _(" Layer Properties");
 	LayerPropDlg dlg(NULL, -1, title, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 
 	// Fill in initial values for the dialog
@@ -1207,7 +1215,7 @@ void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)
 void MainFrame::OnLayerConvert(wxCommandEvent &event)
 {
 	// ask for what projection to convert to
-	Projection2Dlg dlg(NULL, 200, _T("Convert to what projection?"));
+	Projection2Dlg dlg(NULL, 200, _("Convert to what projection?"));
 	dlg.SetProjection(m_proj);
 
 	// might go from geo to utm, provide a good guess for UTM zone
@@ -1251,7 +1259,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	// Allow the user to directly specify the projection for all loaded
 	// layers (override it, without reprojecting the layer's data)
 	// ask for what projection to convert to
-	Projection2Dlg dlg(NULL, -1, _T("Set to what projection?"));
+	Projection2Dlg dlg(NULL, -1, _("Set to what projection?"));
 	dlg.SetProjection(m_proj);
 
 	if (m_proj.IsGeographic())
@@ -1311,7 +1319,7 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 
 	if (layers_merged > 0)
 	{
-		wxString newname = _T("untitled");
+		wxString newname = _("Untitled");
 		newname += pActive->GetFileExtension();
 		pActive->SetLayerFilename(newname);
 		pActive->SetModified(true);
@@ -1466,7 +1474,7 @@ void MainFrame::OnUpdateUTMBounds(wxUpdateUIEvent& event)
 
 void MainFrame::OnViewOptions(wxUpdateUIEvent& event)
 {
-	OptionsDlg dlg(this, -1, _T("Options"));
+	OptionsDlg dlg(this, -1, _("Options"));
 
 	dlg.m_bShowToolbar = toolBar_main->IsShown();
 	dlg.m_bShowMinutes = m_statbar->m_bShowMinutes;
@@ -1598,7 +1606,8 @@ void MainFrame::OnSelectHwy(wxCommandEvent &event)
 	vtRoadLayer *pRL = GetActiveRoadLayer();
 	if (!pRL) return;
 
-	wxTextEntryDialog dlg(this, _T("Please enter highway number"), _T("Select Highway"), _T(""));
+	wxTextEntryDialog dlg(this, _("Please enter highway number"),
+		_("Select Highway"), _T(""));
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		int num;
@@ -1620,16 +1629,16 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	bool bDegrees = (proj.IsGeographic() != 0);
 
 	int count;
-	OpenProgressDialog(_T("Cleaning RoadMap"));
+	OpenProgressDialog(_("Cleaning RoadMap"));
 
-	UpdateProgressDialog(10, _T("Removing unused nodes"));
+	UpdateProgressDialog(10, _("Removing unused nodes"));
 	count = pRL->RemoveUnusedNodes();
 	if (count)
 	{
 		DisplayAndLog("Removed %i nodes", count);
 	}
 
-	UpdateProgressDialog(20, _T("Merging redundant nodes"));
+	UpdateProgressDialog(20, _("Merging redundant nodes"));
 	// potentially takes a long time...
 	count = pRL->MergeRedundantNodes(bDegrees, progress_callback);
 	if (count)
@@ -1637,7 +1646,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 		DisplayAndLog("Merged %d redundant roads", count);
 	}
 
-	UpdateProgressDialog(50, _T("Cleaning link points"));
+	UpdateProgressDialog(50, _("Cleaning link points"));
 	count = pRL->CleanLinkPoints();
 	if (count)
 	{
@@ -1716,8 +1725,8 @@ void MainFrame::OnRoadFlatten(wxCommandEvent &event)
 	float margin = 2.0;
 	wxString2 str;
 	str.Printf(_("%g"), margin);
-	str = wxGetTextFromUser(_T("How many meters for the margin at the edge of each road?"),
-		_T("Flatten elevation grid under roads"), str, this);
+	str = wxGetTextFromUser(_("How many meters for the margin at the edge of each road?"),
+		_("Flatten elevation grid under roads"), str, this);
 	if (str == _T(""))
 		return;
 
@@ -1768,16 +1777,13 @@ void MainFrame::OnRemoveElevRange(wxCommandEvent &event)
 	DPoint2 step = t->m_pGrid->GetSpacing();
 
 	wxString2 str;
-	str = wxGetTextFromUser(_T("Please specify the elevation range\n")
-		_T("(minimum and maximum in the form \"X Y\")\n")
-		_T("All values within this range (and within the area\n")
-		_T("tool, if it is defined) will be set to Unknown."));
+	str = wxGetTextFromUser(_("Please specify the elevation range\n(minimum and maximum in the form \"X Y\")\nAll values within this range (and within the area\ntool, if it is defined) will be set to Unknown."));
 
 	float zmin, zmax;
 	const char *text = str.mb_str();
 	if (sscanf(text, "%f %f", &zmin, &zmax) != 2)
 	{
-		wxMessageBox(_T("Didn't get two numbers."));
+		wxMessageBox(_("Didn't get two numbers."));
 		return;
 	}
 
@@ -1821,8 +1827,8 @@ void MainFrame::OnElevSetUnknown(wxCommandEvent &event)
 	static float fValue = 1.0f;
 	wxString2 str;
 	str.Printf(_("%g"), fValue);
-	str = wxGetTextFromUser(_T("Set unknown areas to what value?"),
-		_T("Set Unknown Areas"), str, this);
+	str = wxGetTextFromUser(_("Set unknown areas to what value?"),
+		_("Set Unknown Areas"), str, this);
 	if (str == _T(""))
 		return;
 
@@ -1874,8 +1880,8 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (!grid)
 		return;
 
-	wxString2 str = wxGetTextFromUser(_T("Please enter a scale factor"),
-		_T("Scale Elevation"), _T("1.0"), this);
+	wxString2 str = wxGetTextFromUser(_("Please enter a scale factor"),
+		_("Scale Elevation"), _T("1.0"), this);
 	if (str == _T(""))
 		return;
 
@@ -1883,7 +1889,7 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	fScale = atof(str.mb_str());
 	if (fScale == 0.0f)
 	{
-		wxMessageBox(_T("Couldn't parse the number you typed."));
+		wxMessageBox(_("Couldn't parse the number you typed."));
 		return;
 	}
 	if (fScale == 1.0f)
@@ -1909,8 +1915,8 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	choices[2] = _T("BMP");
 	choices[3] = _T("STM");
 
-	wxSingleChoiceDialog dlg(this, _T("Please choose"),
-		_T("Export to file format:"), 4, choices);
+	wxSingleChoiceDialog dlg(this, _("Please choose"),
+		_("Export to file format:"), 4, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -1929,11 +1935,11 @@ void MainFrame::ExportTerragen()
 	if (!el)
 		return;
 
-	wxString filter = _T("All Files|*.*|");
+	wxString filter = _("All Files|*.*|");
 	AddType(filter, FSTRING_TER);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
 	if (saveFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -1955,7 +1961,7 @@ void MainFrame::ExportGeoTIFF()
 	AddType(filter, FSTRING_TIF);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
 	if (saveFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -1973,11 +1979,11 @@ void MainFrame::ExportBMP()
 	if (!el)
 		return;
 
-	wxString filter = _T("All Files|*.*|");
+	wxString filter = _("All Files|*.*|");
 	AddType(filter, FSTRING_BMP);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
 	if (saveFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -1995,11 +2001,11 @@ void MainFrame::ExportSTM()
 	if (!el)
 		return;
 
-	wxString filter = _T("All Files|*.*|");
+	wxString filter = _("All Files|*.*|");
 	AddType(filter, FSTRING_STM);
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
 	saveFile.SetFilterIndex(1);
 	if (saveFile.ShowModal() != wxID_OK)
 		return;
@@ -2017,8 +2023,8 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	int size = 0;
 	while (size < 32 || size > 8192)
 	{
-		wxTextEntryDialog dlg(this, _T("Please enter pixel size of bitmap"),
-			_T("Export Bitmap"), _T(""));
+		wxTextEntryDialog dlg(this, _("Please enter pixel size of bitmap"),
+			_("Export Bitmap"), _T(""));
 		if (dlg.ShowModal() != wxID_OK)
 			return;
 
@@ -2027,13 +2033,13 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 	}
 
 	// Ask for file name
-	wxFileDialog loadFile(NULL, _T("Output filename for bitmap"), _T(""), _T(""),
-		_T("Bitmap Files (*.bmp)|*.bmp|"), wxSAVE|wxOVERWRITE_PROMPT);
+	wxFileDialog loadFile(NULL, _("Output filename for bitmap"), _T(""), _T(""),
+		_("Bitmap Files (*.bmp)|*.bmp|"), wxSAVE|wxOVERWRITE_PROMPT);
 
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 
-	OpenProgressDialog(_T("Generating Bitmap"));
+	OpenProgressDialog(_("Generating Bitmap"));
 
 	wxString2 fname = loadFile.GetPath();
 	vtDIB dib;
@@ -2052,7 +2058,7 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 			((vtWaterLayer*)lp)->PaintDibWithWater(&dib);
 	}
 
-	UpdateProgressDialog(100, _T("Writing bitmap to file."));
+	UpdateProgressDialog(100, _("Writing bitmap to file."));
 	bool success = dib.WriteBMP(fname.mb_str());
 	CloseProgressDialog();
 }
@@ -2086,7 +2092,7 @@ void MainFrame::OnUpdateAreaStretch(wxUpdateUIEvent& event)
 
 void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 {
-	ExtentDlg dlg(NULL, -1, _T("Edit Area"));
+	ExtentDlg dlg(NULL, -1, _("Edit Area"));
 	dlg.SetArea(m_area, (m_proj.IsGeographic() != 0));
 	if (dlg.ShowModal() == wxID_OK)
 	{
@@ -2215,9 +2221,11 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	// if PlantList has not previously been open, get the data from file first
 	if (m_strSpeciesFilename == "")
 	{
+		wxString filter = _("Plant Species List Files (*.xml)|*.xml|");
+
 		// Use file dialog to open plant list text file.
-		wxFileDialog loadFile(NULL, _T("Load Plant Info"), _T(""), _T(""),
-			PLANTS_FILTER, wxOPEN);
+		wxFileDialog loadFile(NULL, _("Load Plant Info"), _T(""), _T(""),
+			filter, wxOPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
@@ -2229,7 +2237,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 	if (!m_SpeciesListDlg)
 	{
 		// Create new Plant List Dialog
-		m_SpeciesListDlg = new SpeciesListDlg(this, WID_PLANTS, _T("Plants List"), 
+		m_SpeciesListDlg = new SpeciesListDlg(this, WID_PLANTS, _("Plants List"), 
 				wxPoint(140, 100), wxSize(950, 400), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	}
 
@@ -2243,9 +2251,11 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 	// if data isn't there, get the data first
 	if (!m_BioRegionDlg)
 	{
+		wxString filter = _("Bioregion Files (*.txt)|*.txt|");
+
 		// Use file dialog to open bioregion text file.
-		wxFileDialog loadFile(NULL, _T("Load BioRegion Info"), _T(""), _T(""),
-			BIOREGIONS_FILTER, wxOPEN);
+		wxFileDialog loadFile(NULL, _("Load BioRegion Info"), _T(""), _T(""),
+			filter, wxOPEN);
 
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
@@ -2256,7 +2266,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 			return;
 
 		// Create new Bioregion Dialog
-		m_BioRegionDlg = new BioRegionDlg(this, WID_BIOREGIONS, _T("BioRegions List"), 
+		m_BioRegionDlg = new BioRegionDlg(this, WID_BIOREGIONS, _("BioRegions List"), 
 				wxPoint(120, 80), wxSize(300, 500), wxSYSTEM_MENU | wxCAPTION);
 	}
 
@@ -2270,8 +2280,8 @@ void MainFrame::OnVegExportSHP(wxCommandEvent& event)
 	if (!pVeg) return;
 
 	// Open File Save Dialog
-	wxFileDialog saveFile(NULL, _T("Export vegetation to SHP"), _T(""), _T(""),
-		_T("Vegetation Files (*.shp)|*.shp|"), wxSAVE | wxOVERWRITE_PROMPT);
+	wxFileDialog saveFile(NULL, _("Export vegetation to SHP"), _T(""), _T(""),
+		_("Vegetation Files (*.shp)|*.shp|"), wxSAVE | wxOVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -2288,14 +2298,14 @@ void MainFrame::OnUpdateVegExportSHP(wxUpdateUIEvent& event)
 void MainFrame::OnAreaGenerateVeg(wxCommandEvent& event)
 {
 	// Open File Save Dialog
-	wxFileDialog saveFile(NULL, _T("Save Vegetation File"), _T(""), _T(""),
-		_T("Vegetation Files (*.vf)|*.vf|"), wxSAVE | wxOVERWRITE_PROMPT);
+	wxFileDialog saveFile(NULL, _("Save Vegetation File"), _T(""), _T(""),
+		_("Vegetation Files (*.vf)|*.vf|"), wxSAVE | wxOVERWRITE_PROMPT);
 
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
 
-	DistribVegDlg dlg(this, -1, _T("Vegetation Distribution Options"));
+	DistribVegDlg dlg(this, -1, _("Vegetation Distribution Options"));
 	dlg.m_fSampling = 40.0f;
 	dlg.m_fScarcity = 0.001f;
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -2497,8 +2507,8 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 	int n = 5;
 	int cur_type = 0;
 
-	wxSingleChoiceDialog dialog(this, _T("Raw Layer Type"),
-		_T("Please indicate entity type:"), n, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, _("Raw Layer Type"),
+		_("Please indicate entity type:"), n, (const wxString *)choices);
 
 	dialog.SetSelection(cur_type);
 
@@ -2539,8 +2549,8 @@ void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 
 void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 {
-	wxString2 str = wxGetTextFromUser(_T("(X, Y) in current projection"),
-			_T("Enter coordinate"));
+	wxString2 str = wxGetTextFromUser(_("(X, Y) in current projection"),
+			_("Enter coordinate"));
 	if (str == _T(""))
 		return;
 	double x, y;
@@ -2582,7 +2592,7 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 					  "layer has no fields defined.");
 		return;
 	}
-	SelectDlg dlg(this, -1, _T("Select"));
+	SelectDlg dlg(this, -1, _("Select"));
 	dlg.SetRawLayer(pRL);
 	if (dlg.ShowModal() == wxID_OK)
 	{
@@ -2592,9 +2602,9 @@ void MainFrame::OnRawSelectCondition(wxCommandEvent& event)
 
 		wxString2 msg;
 		if (selected == -1)
-			msg = _T("Unable to select");
+			msg = _("Unable to select");
 		else
-			msg.Printf(_T("Selected %d entit%hs"), selected, selected == 1 ? "y" : "ies");
+			msg.Printf(_("Selected %d entit%hs"), selected, selected == 1 ? "y" : "ies");
 		SetStatusText(msg);
 
 		msg += _T("\n");
@@ -2623,11 +2633,16 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += _(__DATE__);
 	wxMessageBox(str, _T("About ElevTool"));
 #else
-	wxString str = _T("Virtual Terrain Builder\nPowerful, easy to use, free!\n\n");
-	str += _T("Please read the HTML documentation and license.\n\n");
-	str += _T("Send feedback to: ben@vterrain.org\n");
-	str += _T("Build date: ");
-	str += _(__DATE__);
-	wxMessageBox(str, _T("About ") _T(APPNAME));
+	wxString str = _("Virtual Terrain Builder\nPowerful, easy to use, free!\n");
+	str += _T("\n");
+	str += _("Please read the HTML documentation and license.\n");
+	str += _T("\n");
+	str += _("Send feedback to: ben@vterrain.org\n");
+	str += _("Build date: ");
+	str += _T(__DATE__);
+	wxString str2 = _("About ");
+	str2 += _T(APPNAME);
+	wxMessageBox(str, str2);
 #endif
 }
+

@@ -1,7 +1,7 @@
 //
 // Name: MapServerDlg.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -130,18 +130,18 @@ void MapServerDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_QUERY, &m_query);
 	AddValidator(ID_CHOICE_FORMAT, &m_iFormat);
 
-	GetBaseUrl()->Append(_("http://wmt.jpl.nasa.gov/cgi-bin/wmt.cgi"));
-	GetBaseUrl()->Append(_("http://globe.digitalearth.gov/viz-bin/wmt.cgi"));
-	GetBaseUrl()->Append(_("http://grid.cr.usgs.gov/cgi-bin/mapserver/elsalvador"));
-	GetBaseUrl()->Append(_("http://www.cubewerx.com/demo/cubeserv/cubeserv.cgi"));
-	GetBaseUrl()->Append(_("http://demo.cubewerx.com/demo/cubexplor/cubexplor.cgi"));
+	GetBaseUrl()->Append(_T("http://wmt.jpl.nasa.gov/cgi-bin/wmt.cgi"));
+	GetBaseUrl()->Append(_T("http://globe.digitalearth.gov/viz-bin/wmt.cgi"));
+	GetBaseUrl()->Append(_T("http://grid.cr.usgs.gov/cgi-bin/mapserver/elsalvador"));
+	GetBaseUrl()->Append(_T("http://www.cubewerx.com/demo/cubeserv/cubeserv.cgi"));
+	GetBaseUrl()->Append(_T("http://demo.cubewerx.com/demo/cubexplor/cubexplor.cgi"));
 	GetBaseUrl()->SetSelection(0);
 
-	GetLayers()->Append(_("<none>"));
+	GetLayers()->Append(_T("<none>"));
 	GetLayers()->SetSelection(0);
 
-	GetFormat()->Append(_("JPEG"));
-	GetFormat()->Append(_("PNG"));
+	GetFormat()->Append(_T("JPEG"));
+	GetFormat()->Append(_T("PNG"));
 	GetFormat()->SetSelection(0);
 
 	wxWindow::OnInitDialog(event);

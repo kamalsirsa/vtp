@@ -1,7 +1,7 @@
 //
 // Name: NodeDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -134,17 +134,17 @@ void NodeDlg::ApplyVisualToNode(NodeEdit *pNode, VisualIntersectionType vitype)
 
 void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetIntType()->Append(_T("Unknown"));
-	GetIntType()->Append(_T("Uncontrolled"));
-	GetIntType()->Append(_T("All Signal Light(s)"));
-	GetIntType()->Append(_T("All Stop Sign(s)"));
-	GetIntType()->Append(_T("Signal Light(s)"));
-	GetIntType()->Append(_T("Stop Sign(s)"));
-	GetIntType()->Append(_T("(multiple)"));
+	GetIntType()->Append(_("Unknown"));
+	GetIntType()->Append(_("Uncontrolled"));
+	GetIntType()->Append(_("All Signal Light(s)"));
+	GetIntType()->Append(_("All Stop Sign(s)"));
+	GetIntType()->Append(_("Signal Light(s)"));
+	GetIntType()->Append(_("Stop Sign(s)"));
+	GetIntType()->Append(_("(multiple)"));
 
-	GetBehavior()->Append(_T("Uncontrolled"));  // IT_NONE
-	GetBehavior()->Append(_T("Signal Light"));  // IT_LIGHT
-	GetBehavior()->Append(_T("Stop Sign")); // IT_STOPSIGN
+	GetBehavior()->Append(_("Uncontrolled"));	// IT_NONE
+	GetBehavior()->Append(_("Signal Light"));	// IT_LIGHT
+	GetBehavior()->Append(_("Stop Sign"));		// IT_STOPSIGN
 
 	// if we are editing multiple nodes at once, disable some of the
 	// editing abilities

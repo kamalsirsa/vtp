@@ -1,7 +1,7 @@
 //
 // Helper.cpp - various helper functions used by the classes
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -138,6 +138,39 @@ void DisplayAndLog(const char *pFormat, ...)
 	strcat(ach, "\n");
 	g_Log._Log(ach);
 }
+
+#if SUPPORT_WSTRING
+//
+// Also wide-character version of the same function.
+//
+void DisplayAndLog(const wchar_t *pFormat, ...)
+{
+//#ifdef UNICODE
+//	// Try to translate the string
+//	wxString2 trans = wxGetTranslation(pFormat);
+//	pFormat = trans.c_str();
+//#endif
+
+	va_list va;
+	va_start(va, pFormat);
+
+	// Use wide characters
+	wchar_t ach[2048];
+#ifdef _MSC_VER
+	vswprintf(ach, pFormat, va);
+#else
+	// apparently on non-MSVC platforms this takes 4 arguments (safer)
+	vswprintf(ach, 2048, pFormat, va);
+#endif
+
+	wxString2 msg = ach;
+	wxMessageBox(msg);
+
+	g_Log._Log(ach);
+	g_Log._Log("\n");
+}
+#endif // SUPPORT_WSTRING
+
 
 //////////////////////////////////////
 

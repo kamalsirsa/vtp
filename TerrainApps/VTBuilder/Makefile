@@ -53,3 +53,17 @@ clean :
 
 clobber :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure
+
+#
+# Internationalization steps (iso-8859-1) for VTBuilder
+#
+
+I18N_SOURCES = \
+	$(CXXSRC) \
+	VTBuilder_wdr.cpp \
+	../../TerrainSDK/vtui/vtui_wdr.cpp \
+	../../TerrainSDK/vtui/BuildingDlg.cpp
+
+update-pot:
+	xgettext --from-code=iso-8859-1 -k_ -o VTBuilder.pot $(I18N_SOURCES)
+

@@ -1,7 +1,7 @@
 //
 // Name:		RoadDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -94,13 +94,13 @@ void RoadDlg::TransferStateToControls()
 	wxString str;
 
 	if (m_iLanes == MULTIPLE)
-		str = _T("(multiple)");
+		str = _("(multiple)");
 	else
 		str.Printf(_T("%d"), m_iLanes);
 	GetNumLanes()->SetValue(str);
 
 	if (m_iHwy == MULTIPLE)
-		str = _T("(multiple)");
+		str = _("(multiple)");
 	else
 		str.Printf(_T("%d"), m_iHwy);
 	GetHwyName()->SetValue(str);
@@ -128,29 +128,29 @@ void RoadDlg::TransferStateToControls()
 
 void RoadDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	GetSurfType()->Append(_T("None"));
-	GetSurfType()->Append(_T("Gravel"));
-	GetSurfType()->Append(_T("Trail"));
-	GetSurfType()->Append(_T("2 Track"));
-	GetSurfType()->Append(_T("Dirt"));
-	GetSurfType()->Append(_T("Paved"));
-	GetSurfType()->Append(_T("Railroad"));
-	GetSurfType()->Append(_T("(multiple types)"));
+	GetSurfType()->Append(_("None"));
+	GetSurfType()->Append(_("Gravel"));
+	GetSurfType()->Append(_("Trail"));
+	GetSurfType()->Append(_("2 Track"));
+	GetSurfType()->Append(_("Dirt"));
+	GetSurfType()->Append(_("Paved"));
+	GetSurfType()->Append(_("Railroad"));
+	GetSurfType()->Append(_("(multiple types)"));
 	GetSurfType()->SetSelection(0);
 
-	GetSidewalk()->Append(_T("No"));
-	GetSidewalk()->Append(_T("Yes"));
-	GetSidewalk()->Append(_T("(multiple)"));
+	GetSidewalk()->Append(_("No"));
+	GetSidewalk()->Append(_("Yes"));
+	GetSidewalk()->Append(_("(multiple)"));
 	GetSidewalk()->SetSelection(0);
 
-	GetParking()->Append(_T("No"));
-	GetParking()->Append(_T("Yes"));
-	GetParking()->Append(_T("(multiple)"));
+	GetParking()->Append(_("No"));
+	GetParking()->Append(_("Yes"));
+	GetParking()->Append(_("(multiple)"));
 	GetParking()->SetSelection(0);
 
-	GetMargin()->Append(_T("No"));
-	GetMargin()->Append(_T("Yes"));
-	GetMargin()->Append(_T("(multiple)"));
+	GetMargin()->Append(_("No"));
+	GetMargin()->Append(_("Yes"));
+	GetMargin()->Append(_("(multiple)"));
 	GetMargin()->SetSelection(0);
 
 	ClearState();

@@ -1,7 +1,7 @@
 //
 // Name: ImportStructDlg.cpp
 //
-// Copyright (c) 2003 Virtual Terrain Project
+// Copyright (c) 2003-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -120,8 +120,8 @@ void ImportStructDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 	UpdateEnables();
 
-	GetChoiceHeightField()->Append(_T("(none)"));
-	GetChoiceFileField()->Append(_T("(none)"));
+	GetChoiceHeightField()->Append(_("(none)"));
+	GetChoiceFileField()->Append(_("(none)"));
 
 	// Open DBF File
 	DBFHandle db = DBFOpen(m_filename.mb_str(), "rb");

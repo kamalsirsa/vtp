@@ -1,7 +1,7 @@
 //
 // Name:		ImportVegDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -60,7 +60,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	SHPHandle hSHP = SHPOpen(m_filename.mb_str(), "rb");
 	if (hSHP == NULL)
 	{
-		wxMessageBox(_T("Couldn't open shapefile."));
+		wxMessageBox(_("Couldn't open shapefile."));
 		return;
 	}
 
@@ -71,8 +71,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	// Check Shape Type, Veg Layer should be Poly data
 	if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
 	{
-		wxMessageBox(_T("Shapefile must have either point features (for individual\n")
-			_T("plants) or polygon features (for plant distribution areas)."));
+		wxMessageBox(_("Shapefile must have either point features (for individual\n plants) or polygon features (for plant distribution areas)."));
 		return;
 	}
 
@@ -80,7 +79,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 	DBFHandle db = DBFOpen(m_filename.mb_str(), "rb");
 	if (db == NULL)
 	{
-		wxMessageBox(_T("Couldn't open DBF file."));
+		wxMessageBox(_("Couldn't open DBF file."));
 		return;
 	}
 	wxString2 str, fieldname;
@@ -98,11 +97,11 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 		str += fieldname;
 
 		if (fieldtype == FTString)
-			str += _T(" (String)");
+			str += _(" (String)");
 		if (fieldtype == FTInteger)
-			str += _T(" (Integer)");
+			str += _(" (Integer)");
 		if (fieldtype == FTDouble)
-			str += _T(" (Double)");
+			str += _(" (Double)");
 		m_pcbField->Append(str);
 	}
 	m_pcbField->SetSelection(0);

@@ -1,7 +1,7 @@
 //
 // Name:		VegFieldsDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -82,7 +82,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_hSHP = SHPOpen(m_filename.mb_str(), "rb");
 	if (m_hSHP == NULL)
 	{
-		wxMessageBox(_T("Couldn't open shapefile."));
+		wxMessageBox(_("Couldn't open shapefile."));
 		return;
 	}
 
@@ -93,7 +93,7 @@ void VegFieldsDlg::OnInitDialog(wxInitDialogEvent& event)
 	DBFHandle m_db = DBFOpen(m_filename.mb_str(), "rb");
 	if (m_db == NULL)
 	{
-		wxMessageBox(_T("Couldn't open DBF file."));
+		wxMessageBox(_("Couldn't open DBF file."));
 		return;
 	}
 

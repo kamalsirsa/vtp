@@ -50,6 +50,21 @@ bool MyApp::OnInit()
 	LogWindowsVersion();
 #endif
 
+	// Fill list of layer type names
+	if (vtLayer::LayerTypeNames.IsEmpty())
+	{
+		// These must correspond to the order of the LayerType enum!
+		vtLayer::LayerTypeNames.Add(_("Raw"));
+		vtLayer::LayerTypeNames.Add(_("Elevation"));
+		vtLayer::LayerTypeNames.Add(_("Image"));
+		vtLayer::LayerTypeNames.Add(_("Road"));
+		vtLayer::LayerTypeNames.Add(_("Structure"));
+		vtLayer::LayerTypeNames.Add(_("Water"));
+		vtLayer::LayerTypeNames.Add(_("Vegetation"));
+		vtLayer::LayerTypeNames.Add(_("Transit"));
+		vtLayer::LayerTypeNames.Add(_("Utility"));
+	}
+
 	VTLOG("Testing ability to allocate a frame object.\n");
 	wxFrame *frametest = new wxFrame(NULL, -1, _T("Title"));
 	delete frametest;

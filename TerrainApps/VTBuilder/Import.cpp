@@ -1,7 +1,7 @@
 //
 // Import.cpp - MainFrame methods for importing data
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -81,7 +81,7 @@ void MainFrame::ImportData(LayerType ltype)
 
 	// ask the user for a filename
 	// default the same directory they used last time for a layer of this type
-	wxFileDialog loadFile(NULL, _T("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN);
+	wxFileDialog loadFile(NULL, _("Import Data"), ImportDirectory[ltype], _T(""), filter, wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
@@ -237,7 +237,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 			DisplayAndLog("Don't know what to do with contents of archive.");
 
 		// set the original imported filename
-		for (int i = 0; i < LoadedLayers.GetSize(); i++)
+		for (unsigned int i = 0; i < LoadedLayers.GetSize(); i++)
 			LoadedLayers[i]->SetImportedFrom(fname_in);
 	}
 
@@ -270,7 +270,7 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 	}
 	fclose(fp);
 
-	wxString2 msg = _T("Importing Data from ");
+	wxString2 msg = _("Importing Data from ");
 	msg += strFileName;
 	VTLOG(msg.mb_str());
 	VTLOG("...\n");
@@ -421,13 +421,13 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 		// import failed
 		VTLOG("  import failed/cancelled.\n");
 		if (bWarn)
-			wxMessageBox(_T("Did not import any data from that file."));
+			wxMessageBox(_("Did not import any data from that file."));
 		return NULL;
 	}
 	VTLOG("  import succeeded.\n");
 
 	wxString2 fname = pLayer->GetLayerFilename();
-	if (fname.IsEmpty() || !fname.Cmp(_T("Untitled")))
+	if (fname.IsEmpty() || !fname.Cmp(_("Untitled")))
 		pLayer->SetLayerFilename(strFileName);
 
 	bool success = AddLayerWithCheck(pLayer, true);
@@ -478,7 +478,7 @@ LayerType MainFrame::GuessLayerTypeFromDLG(vtDLGFile *pDLG)
 wxString GetImportFilterString(LayerType ltype)
 {
 	wxString filter = _T("All Known ");
-	filter += vtLayer::LayerTypeName[ltype];
+	filter += vtLayer::LayerTypeNames[ltype];
 	filter += _T(" Formats||");
 
 	switch (ltype)
@@ -616,8 +616,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	SHPHandle hSHP = SHPOpen(strFileName.mb_str(), "rb");
 	if (hSHP == NULL)
 	{
-		wxMessageBox(_T("Couldn't read that Shape file.  Perhaps it is\n")
-			_T("missing its corresponding .dbf and .shx files."));
+		wxMessageBox(_("Couldn't read that Shape file.  Perhaps it is\nmissing its corresponding .dbf and .shx files."));
 		return NULL;
 	}
 	else
@@ -649,7 +648,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	else
 	{
 		// ask user for a projection
-		Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
+		Projection2Dlg dlg(NULL, -1, _("Please indicate projection"));
 		dlg.SetProjection(m_proj);
 
 		if (dlg.ShowModal() == wxID_CANCEL)
@@ -670,15 +669,14 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	{
 		if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
 		{
-			wxMessageBox(_T("The Shapefile must have either point features (for \n")
-				_T("individual plants) or polygon features (for plant distribution areas)."));
+			wxMessageBox(_("The Shapefile must have either point features\n(for individual plants) or polygon features\n (for plant distribution areas)."));
 			return NULL;
 		}
 
 		vtVegLayer *pVL = (vtVegLayer *)pLayer;
 		if (nShapeType == SHPT_POLYGON)
 		{
-			ImportVegDlg dlg(this, -1, _T("Import Vegetation Information"));
+			ImportVegDlg dlg(this, -1, _("Import Vegetation Information"));
 			dlg.SetShapefileName(strFileName);
 			if (dlg.ShowModal() == wxID_CANCEL)
 				return NULL;
@@ -689,7 +687,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 		}
 		if (nShapeType == SHPT_POINT)
 		{
-			VegFieldsDlg dlg(this, -1, _T("Map fields to attributes"));
+			VegFieldsDlg dlg(this, -1, _("Map fields to attributes"));
 			dlg.SetShapefileName(strFileName);
 			dlg.SetVegLayer(pVL);
 			if (dlg.ShowModal() == wxID_CANCEL)
@@ -864,7 +862,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerTy
 	}
 	if (ltype == LT_STRUCTURE)
 	{
-		ImportStructDlgOGR ImportDialog(GetMainFrame(), -1, _T("Import Structures"));
+		ImportStructDlgOGR ImportDialog(GetMainFrame(), -1, _("Import Structures"));
 
 		ImportDialog.SetDatasource(datasource);
 
@@ -896,7 +894,7 @@ vtLayerPtr MainFrame::ImportVectorsWithOGR(const wxString2 &strFileName, LayerTy
 		if (OGRERR_NONE != Projection.Validate())
 		{
 			// Get a projection
-			Projection2Dlg dlg(GetMainFrame(), -1, _T("Please indicate projection"));
+			Projection2Dlg dlg(GetMainFrame(), -1, _("Please indicate projection"));
 			dlg.SetProjection(m_proj);
 
 			if (dlg.ShowModal() == wxID_CANCEL)
@@ -989,7 +987,7 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 		}
 
 		// Progress Dialog
-		OpenProgressDialog(_T("Importing from TIGER..."));
+		OpenProgressDialog(_("Importing from TIGER..."));
 
 		int index_cfcc = defn->GetFieldIndex("CFCC");
 		int fcount = 0;
@@ -1136,7 +1134,7 @@ void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
 	OGRLayer		*pOGRLayer;
 	OGRFeature		*pFeature;
 	OGRGeometry		*pGeom;
-	OGRPoint		*pPoint;
+//	OGRPoint		*pPoint;
 	OGRLineString   *pLineString;
 
 	vtWaterFeature	wfeat;

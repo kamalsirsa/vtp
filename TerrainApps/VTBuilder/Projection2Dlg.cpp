@@ -1,7 +1,7 @@
 //
 // Name:		Projection2Dlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -79,26 +79,26 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_ZONE, &m_iZone);
 	AddValidator(ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
 
-	m_pProjCtrl->Append(_T("Albers Equal Area Conic"));
-	m_pProjCtrl->Append(_T("Geographic"));
-	m_pProjCtrl->Append(_T("Lambert Azimuthal Equal-Area"));
-	m_pProjCtrl->Append(_T("Lambert Conformal Conic"));
-	m_pProjCtrl->Append(_T("New Zealand Map Grid"));
-	m_pProjCtrl->Append(_T("Oblique Stereographic"));
-	m_pProjCtrl->Append(_T("Polar Stereographic"));
-	m_pProjCtrl->Append(_T("Sinusoidal"));
-	m_pProjCtrl->Append(_T("Stereographic"));
-	m_pProjCtrl->Append(_T("Transverse Mercator"));
-	m_pProjCtrl->Append(_T("UTM"));
-	m_pProjCtrl->Append(_T("Dymaxion"));
+	m_pProjCtrl->Append(_("Albers Equal Area Conic"));
+	m_pProjCtrl->Append(_("Geographic"));
+	m_pProjCtrl->Append(_("Lambert Azimuthal Equal-Area"));
+	m_pProjCtrl->Append(_("Lambert Conformal Conic"));
+	m_pProjCtrl->Append(_("New Zealand Map Grid"));
+	m_pProjCtrl->Append(_("Oblique Stereographic"));
+	m_pProjCtrl->Append(_("Polar Stereographic"));
+	m_pProjCtrl->Append(_("Sinusoidal"));
+	m_pProjCtrl->Append(_("Stereographic"));
+	m_pProjCtrl->Append(_("Transverse Mercator"));
+	m_pProjCtrl->Append(_("UTM"));
+	m_pProjCtrl->Append(_("Dymaxion"));
 
 	// Fill in choices for Datum
 	RefreshDatums();
 
 	m_pParamCtrl->ClearAll();
-	m_pParamCtrl->InsertColumn(0, _T("Attribute"));
+	m_pParamCtrl->InsertColumn(0, _("Attribute"));
 	m_pParamCtrl->SetColumnWidth(0, 130);
-	m_pParamCtrl->InsertColumn(1, _T("Value"));
+	m_pParamCtrl->InsertColumn(1, _("Value"));
 	m_pParamCtrl->SetColumnWidth(1, 85);
 
 	m_bInitializedUI = true;
@@ -113,7 +113,7 @@ void Projection2Dlg::RefreshDatums()
 	m_pDatumCtrl->Clear();
 
 	wxString2 str;
-	m_pDatumCtrl->Append(_T("Unknown"), (void *) (-1+CHOICE_OFFSET));
+	m_pDatumCtrl->Append(_("Unknown"), (void *) (-1+CHOICE_OFFSET));
 	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		int code = g_EPSGDatums[i].iCode;
@@ -195,16 +195,16 @@ void Projection2Dlg::UpdateControlStatus()
 	// Do horizontal units ("linear units")
 	m_pHorizCtrl->Clear();
 	if (m_eProj == PT_GEO)
-		m_pHorizCtrl->Append(_T("Degrees"), (void *) LU_DEGREES);
+		m_pHorizCtrl->Append(_("Degrees"), (void *) LU_DEGREES);
 	if (m_eProj != PT_GEO && m_eProj != PT_DYMAX)
-		m_pHorizCtrl->Append(_T("Meters"), (void *) LU_METERS);
+		m_pHorizCtrl->Append(_("Meters"), (void *) LU_METERS);
 	if (m_eProj != PT_GEO && m_eProj != PT_UTM && m_eProj != PT_DYMAX)
 	{
-		m_pHorizCtrl->Append(_T("Feet (International)"), (void *) LU_FEET_INT);
-		m_pHorizCtrl->Append(_T("Feet (U.S. Survey)"), (void *) LU_FEET_US);
+		m_pHorizCtrl->Append(_("Feet (International)"), (void *) LU_FEET_INT);
+		m_pHorizCtrl->Append(_("Feet (U.S. Survey)"), (void *) LU_FEET_US);
 	}
 	if (m_eProj == PT_DYMAX)
-		m_pHorizCtrl->Append(_T("Unit Edges"), (void *) LU_UNITEDGE);
+		m_pHorizCtrl->Append(_("Unit Edges"), (void *) LU_UNITEDGE);
 	// manually transfer value
 	for (i = 0; i < m_pHorizCtrl->GetCount(); i++)
 	{
@@ -244,7 +244,7 @@ void Projection2Dlg::DisplayProjectionSpecificParams()
 	OGR_SRSNode *root = m_proj.GetRoot();
 	if (!root)
 	{
-		m_pParamCtrl->InsertItem(0, _T("(Invalid projection)"));
+		m_pParamCtrl->InsertItem(0, _("(Invalid projection)"));
 		return;	 // bogus projection
 	}
 
@@ -332,8 +332,8 @@ void Projection2Dlg::GetProjection(vtProjection &proj)
 
 void Projection2Dlg::OnProjSave( wxCommandEvent &event )
 {
-	wxFileDialog saveFile(NULL, _T("Save Projection to File"), _T(""), _T(""),
-		_T("Projection Files (*.prj)|*.prj|"), wxSAVE | wxOVERWRITE_PROMPT);
+	wxFileDialog saveFile(NULL, _("Save Projection to File"), _T(""), _T(""),
+		_("Projection Files (*.prj)|*.prj|"), wxSAVE | wxOVERWRITE_PROMPT);
 	if (saveFile.ShowModal() == wxID_CANCEL)
 		return;
 	wxString2 strPathName = saveFile.GetPath();
@@ -342,8 +342,8 @@ void Projection2Dlg::OnProjSave( wxCommandEvent &event )
 
 void Projection2Dlg::OnProjLoad( wxCommandEvent &event )
 {
-	wxFileDialog loadFile(NULL, _T("Load Projection from File"), _T(""), _T(""),
-		_T("Projection Files (*.prj)|*.prj|"), wxOPEN);
+	wxFileDialog loadFile(NULL, _("Load Projection from File"), _T(""), _T(""),
+		_("Projection Files (*.prj)|*.prj|"), wxOPEN);
 	if (loadFile.ShowModal() != wxID_OK)
 		return;
 	wxString2 strPathName = loadFile.GetPath();
@@ -368,9 +368,7 @@ void Projection2Dlg::OnDatum( wxCommandEvent &event )
 	{
 		// Failed.  The OGR error message has already gone to the debug log
 		//  via CPL.  We just need to inform the user via the GUI.
-		wxMessageBox(_T("Couldn't set that Datum.  Perhaps the EPSG\n")
-			_T("tables could not be located.  Check that your\n")
-			_T("GEOTIFF_CSV environment variable is set."));
+		wxMessageBox(_("Couldn't set that Datum.  Perhaps the EPSG\n tables could not be located.  Check that your\n GEOTIFF_CSV environment variable is set."));
 		SetUIFromProjection();
 	}
 }
@@ -397,11 +395,11 @@ void Projection2Dlg::OnItemRightClick( wxListEvent &event )
 		value = par2->GetValue();
 		if (item == item_clicked)
 		{
-			wxString caption = _T("Value for ");
+			wxString caption = _("Value for ");
 			str = par1->GetValue();
 			caption += str;
 			str = value;
-			wxString2 result = wxGetTextFromUser(caption, _T("Enter new value"),
+			wxString2 result = wxGetTextFromUser(caption, _("Enter new value"),
 				str, this);
 			if (result != _T(""))
 			{
@@ -533,7 +531,7 @@ void Projection2Dlg::OnShowAllDatums( wxCommandEvent &event )
 void Projection2Dlg::AskStatePlane()
 {
 	// Pop up choices for State Plane
-	StatePlaneDlg dialog(this, 201, _T("Select State Plane"));
+	StatePlaneDlg dialog(this, 201, _("Select State Plane"));
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
@@ -552,9 +550,7 @@ void Projection2Dlg::AskStatePlane()
 
 	if (result == OGRERR_FAILURE)
 	{
-		wxMessageBox(_T("Couldn't set state plane projection.  Perhaps the\n")
-			_T("EPSG tables could not be located.  Check that your\n")
-			_T("GEOTIFF_CSV environment variable is set."));
+		wxMessageBox(_("Couldn't set state plane projection.  Perhaps the\n EPSG tables could not be located.  Check that your\n GEOTIFF_CSV environment variable is set."));
 	}
 	else
 	{

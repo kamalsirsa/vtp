@@ -23,19 +23,7 @@
 #include "UtilityLayer.h"
 #include "RawLayer.h"
 
-wxChar *vtLayer::LayerTypeName[LAYER_TYPES] =
-{
-	_T("Raw"),
-	_T("Elevation"),
-	_T("Image"),
-	_T("Road"),
-	_T("Structure"),
-	_T("Water"),
-	_T("Vegetation"),
-	_T("Transit"),
-	_T("Utility")
-};
-
+wxArrayString vtLayer::LayerTypeNames;
 wxChar *vtLayer::LayerFileExtension[LAYER_TYPES] =
 {
 	_T(".shp"),
@@ -154,14 +142,15 @@ wxString vtLayer::GetSaveFileDialogFilter()
 {
 	wxString str;
 
-	str = LayerTypeName[m_type];
-	str += _T(" Files (*");
+	str = LayerTypeNames[m_type];
+	str += _(" Files");
+	str += _T(" (*");
 
 	wxString ext = GetFileExtension();
 	str += ext;
 	str += _T(")|*");
 	str += ext;
-	str += _T("|All Files|*.*|");
+	str += _("|All Files|*.*|");
 
 	return str;
 }
@@ -174,7 +163,7 @@ bool vtLayer::AskForSaveFilename()
 	// The dumb Microsoft file dialog can have trouble with forward slashes.
 	name = name.ToBackslash();
 #endif
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), name,
+	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), name,
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 
 	VTLOG("Asking user for file name\n");

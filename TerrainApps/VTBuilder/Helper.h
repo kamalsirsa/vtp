@@ -30,6 +30,9 @@ int GuessZoneFromLongitude(double longitude);
 
 // Display a message to the user, and also send it to the log file.
 void DisplayAndLog(const char *pFormat, ...);
+#if SUPPORT_WSTRING
+void DisplayAndLog(const wchar_t *pFormat, ...);
+#endif
 
 /////
 

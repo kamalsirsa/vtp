@@ -28,7 +28,10 @@
 vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 {
 	m_pSet = NULL;
-	SetLayerFilename("Untitled.shp");
+
+	wxString2 name = _("Untitled");
+	name += _T(".shp");
+	SetLayerFilename(name);
 
 	// default dark red
 	m_DrawStyle.m_LineColor.Set(128,0,0);
@@ -117,7 +120,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	pDC->SetPen(DefPen);
 
 	wxPoint p;
-	int i, j, entities = m_pSet->GetNumEntities();
+	unsigned int i, j, entities = m_pSet->GetNumEntities();
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
 	if (type == wkbPoint)
 	{
@@ -348,17 +351,17 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 {
 	if (!m_pSet)
 	{
-		strIn += _T("No Features\n");
+		strIn += _("No Features\n");
 		return;
 	}
 
 	wxString str;
 
 	OGRwkbGeometryType type = m_pSet->GetGeomType();
-	str.Printf(_T("Entity type: %hs\n"), OGRGeometryTypeToName(type));
+	str.Printf(_("Entity type: %hs\n"), OGRGeometryTypeToName(type));
 	strIn += str;
 
-	str.Printf(_T("Entities: %d\n"), m_pSet->GetNumEntities());
+	str.Printf(_("Entities: %d\n"), m_pSet->GetNumEntities());
 	strIn += str;
 
 	if (type == wkbPoint25D)
@@ -367,10 +370,10 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		float fmin, fmax;
 		if (pSetP3->ComputeHeightRange(fmin, fmax))
 		{
-			str.Printf(_T("Minimum Height: %.2f\n"), fmin);
+			str.Printf(_("Minimum Height: %.2f\n"), fmin);
 			strIn += str;
 
-			str.Printf(_T("Maximum Height: %.2f\n"), fmax);
+			str.Printf(_("Maximum Height: %.2f\n"), fmax);
 			strIn += str;
 		}
 	}
@@ -381,10 +384,10 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		float fmin, fmax;
 		if (pLine3->ComputeHeightRange(fmin, fmax))
 		{
-			str.Printf(_T("Minimum Height: %.2f\n"), fmin);
+			str.Printf(_("Minimum Height: %.2f\n"), fmin);
 			strIn += str;
 
-			str.Printf(_T("Maximum Height: %.2f\n"), fmax);
+			str.Printf(_("Maximum Height: %.2f\n"), fmax);
 			strIn += str;
 		}
 	}
@@ -392,7 +395,7 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 	int num_fields = m_pSet->GetNumFields();
 	if (num_fields)
 	{
-		strIn += _T("Fields:\n");
+		strIn += _("Fields:\n");
 		for (int i = 0; i < num_fields; i++)
 		{
 			Field *pField = m_pSet->GetField(i);
@@ -402,7 +405,7 @@ void vtRawLayer::GetPropertyText(wxString &strIn)
 		}
 	}
 	else
-		strIn += _T("Fields: None.\n");
+		strIn += _("Fields: None.\n");
 }
 
 void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)

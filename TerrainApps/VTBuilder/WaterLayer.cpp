@@ -21,7 +21,7 @@
 
 vtWaterLayer::vtWaterLayer() : vtLayer(LT_WATER)
 {
-	SetLayerFilename(_T("Untitled.hyd"));
+	SetLayerFilename(_T("Untitled"));
 }
 
 vtWaterLayer::~vtWaterLayer()

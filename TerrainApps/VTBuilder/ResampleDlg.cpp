@@ -118,7 +118,7 @@ void ResampleDlg::OnDotDotDot( wxCommandEvent &event )
 	filter += FSTRING_BTGZ;
 
 	// ask the user for a filename
-	wxFileDialog saveFile(NULL, _T("Save Elevation"), _T(""), _T(""), filter, wxSAVE);
+	wxFileDialog saveFile(NULL, _("Save Elevation"), _T(""), _T(""), filter, wxSAVE);
 	saveFile.SetFilterIndex(0);
 	bool bResult = (saveFile.ShowModal() == wxID_OK);
 	if (!bResult)

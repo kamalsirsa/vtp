@@ -60,7 +60,7 @@ RawDlg::RawDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 void RawDlg::OnExtents( wxCommandEvent &event )
 {
-	ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"));
+	ExtentDlg dlg(NULL, -1, _("Elevation Grid Extents"));
 	dlg.SetArea(m_extents, (m_proj.IsGeographic() != 0));
 	if (dlg.ShowModal() == wxID_OK)
 		m_extents = dlg.m_area;
@@ -68,7 +68,7 @@ void RawDlg::OnExtents( wxCommandEvent &event )
 
 void RawDlg::OnCRS( wxCommandEvent &event )
 {
-	Projection2Dlg dlg(NULL, -1, _T("Please indicate CRS"));
+	Projection2Dlg dlg(NULL, -1, _("Please indicate CRS"));
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_OK)

@@ -1,7 +1,7 @@
 //
 // Name:		SelectDlg.cpp
 //
-// Copyright (c) 2002-2003 Virtual Terrain Project
+// Copyright (c) 2002-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -59,19 +59,19 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	{
 		if (proj.IsGeographic())
 		{
-			GetField()->Append(_T("X (longitude)"), (void *) 900);
-			GetField()->Append(_T("Y (latitude)"), (void *) 901);
+			GetField()->Append(_("X (longitude)"), (void *) 900);
+			GetField()->Append(_("Y (latitude)"), (void *) 901);
 		}
 		else
 		{
-			GetField()->Append(_T("X (easting)"), (void *) 900);
-			GetField()->Append(_T("Y (northing)"), (void *) 901);
+			GetField()->Append(_("X (easting)"), (void *) 900);
+			GetField()->Append(_("Y (northing)"), (void *) 901);
 		}
 		m_iFauxFields = 2;
 	}
 	if (type == wkbPoint25D)
 	{
-		GetField()->Append(_T("Z (meters)"), (void *) 902);
+		GetField()->Append(_("Z (meters)"), (void *) 902);
 		m_iFauxFields = 3;
 	}
 

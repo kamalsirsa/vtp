@@ -35,7 +35,10 @@ static bool g_bInitializedPens = false;
 
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
-	SetLayerFilename(_T("Untitled.vtst"));
+	wxString2 name = _("Untitled");
+	name += _T(".vtst");
+	SetLayerFilename(name);
+
 	m_bPreferGZip = false;
 
 	if (!g_bInitializedPens)
@@ -339,11 +342,11 @@ void vtStructureLayer::Offset(const DPoint2 &delta)
 
 void vtStructureLayer::GetPropertyText(wxString &strIn)
 {
-	wxString str;
+	wxString2 str;
 
 	int i, size = GetSize();
 
-	str.Printf(_T("Number of structures: %d\n"), size);
+	str.Printf(_("Number of structures: %d\n"), size);
 	strIn += str;
 
 	int bld = 0, lin = 0, ins = 0;
@@ -354,14 +357,14 @@ void vtStructureLayer::GetPropertyText(wxString &strIn)
 		else if (sp->GetFence()) lin++;
 		else if (sp->GetInstance()) ins++;
 	}
-	str.Printf(_T("\t%d Buildings (procedural)\n"), bld);
+	str.Printf(_("\t %d Buildings (procedural)\n"), bld);
 	strIn += str;
-	str.Printf(_T("\t%d Linear (fences/walls)\n"), lin);
+	str.Printf(_("\t %d Linear (fences/walls)\n"), lin);
 	strIn += str;
-	str.Printf(_T("\t%d Instances (imported models)\n"), ins);
+	str.Printf(_("\t %d Instances (imported models)\n"), ins);
 	strIn += str;
 
-	str.Printf(_T("Number of selected structures: %d\n"), NumSelected());
+	str.Printf(_("Number of selected structures: %d\n"), NumSelected());
 	strIn += str;
 }
 
@@ -535,7 +538,8 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 	m_pEditBuilding = pBuilding;
 	m_iEditLevel = 0;
 	pLevel = pBuilding->GetLevel(0);
-	pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection);
+	pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex,
+		dClosest, Intersection);
 	m_iEditEdge = iIndex;
 
 	// Find out the level to work on
@@ -554,8 +558,8 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 #else
 	int iLevels = pBuilding->GetNumLevels();
 	wxString msg;
-	msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-	iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
+	msg.Printf(_("Select level to edit (0 .. %d)"), iLevels);
+	iLevel = wxGetNumberFromUser(msg, _("Level"), _("Enter Value"), 0, 0, iLevels);
 	if (iLevel == -1)
 	{
 		m_pEditBuilding = NULL;
@@ -579,17 +583,22 @@ void vtStructureLayer::OnLeftDownBldAddPoints(BuilderView *pView, UIContext &ui)
 		for (i = 0; i < iNumLevels; i++)
 		{
 			pLevel = pBuilding->GetLevel(i);
-			if (-1 == pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection))
-				continue;
-			pLevel->AddEdge(iIndex, Intersection);
+			if (pLevel->GetAtFootprint().NearestSegment(ui.m_DownLocation,
+				iIndex, dClosest, Intersection))
+			{
+				pLevel->AddEdge(iIndex, Intersection);
+			}
 		}
 	}
 	else
 	{
 		// Add in specified level
 		pLevel = pBuilding->GetLevel(iLevel);
-		if (-1 != pLevel->GetFootprint().NearestSegment(ui.m_DownLocation, iIndex, Intersection))
+		if (pLevel->GetAtFootprint().NearestSegment(ui.m_DownLocation,
+			iIndex, dClosest, Intersection))
+		{
 			pLevel->AddEdge(iIndex, Intersection);
+		}
 	}
 
 	// Find new extent of building and refresh that area of the window
@@ -642,7 +651,7 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 	int iLevels = pBuilding->GetNumLevels();
 	wxString msg;
 	msg.Printf(_T("Select level to edit (0 .. %d)"), iLevels);
-	iLevel = wxGetNumberFromUser(msg, _T("Level"), _T("Enter Value"), 0, 0, iLevels);
+	iLevel = wxGetNumberFromUser(msg, _("Level"), _("Enter Value"), 0, 0, iLevels);
 	if (iLevel == -1)
 	{
 		m_pEditBuilding = NULL;
@@ -665,7 +674,7 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 		for (i = 0; i <iNumLevels; i++)
 		{
 			pLevel = pBuilding->GetLevel(i);
-			pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
+			pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex, dClosest);
 			pLevel->DeleteEdge(iIndex);
 		}
 	}
@@ -673,7 +682,7 @@ void vtStructureLayer::OnLeftDownBldDeletePoints(BuilderView *pView, UIContext &
 	{
 		// Remove in specified level
 		pLevel = pBuilding->GetLevel(iLevel);
-		pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex);
+		pLevel->GetFootprint().NearestPoint(ui.m_DownLocation, iIndex, dClosest);
 		pLevel->DeleteEdge(iIndex);
 	}
 
@@ -933,7 +942,7 @@ bool vtStructureLayer::EditBuildingProperties()
 	// the building (pessimistic)
 	SetModified(true);
 
-	BuildingDlg dlg(NULL, -1, _T("Building Properties"));
+	BuildingDlg dlg(NULL, -1, _("Building Properties"));
 	dlg.Setup(this, bld_selected, pHeightField);
 
 	dlg.ShowModal();
@@ -1087,7 +1096,7 @@ void vtStructureLayer::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 bool vtStructureLayer::AddElementsFromSHP(const wxString2 &filename,
 										  const vtProjection &proj, DRECT rect)
 {
-	ImportStructDlg dlg(NULL, -1, _T("Import Structures"));
+	ImportStructDlg dlg(NULL, -1, _("Import Structures"));
 
 	dlg.SetFileName(filename);
 	if (dlg.ShowModal() != wxID_OK)
@@ -1120,8 +1129,10 @@ void vtStructureLayer::AddElementsFromDLG(vtDLGFile *pDlg)
 
 bool vtStructureLayer::AskForSaveFilename()
 {
-	wxString filter = _T("VTST File (.vtst)|*.vtst|GZipped VTST File (.vtst.gz)|*.vtst.gz|");
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
+	wxString filter;
+	filter += _T("VTST File (.vtst)|*.vtst|");
+	filter += _T("GZipped VTST File (.vtst.gz)|*.vtst.gz|");
+	wxFileDialog saveFile(NULL, _("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 	saveFile.SetFilterIndex( m_bPreferGZip ? 1 : 0);
 

@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -591,28 +591,28 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 	vtLayer *pL = GetMainFrame()->GetActiveLayer();
 	if (!pL) return;
 
-	const char *verb;
+	wxString verb;
 	SelectionType st;
 	// operation may be select, add (shift), subtract (alt), toggle (ctrl)
 	if (event.ShiftDown())
 	{
 		st = ST_ADD;
-		verb = "Added";
+		verb = _("Added");
 	}
 	else if (event.AltDown())
 	{
 		st = ST_SUBTRACT;
-		verb = "Subtracted";
+		verb = _("Subtracted");
 	}
 	else if (event.ControlDown())
 	{
 		st = ST_TOGGLE;
-		verb = "Toggled";
+		verb = _("Toggled");
 	}
 	else
 	{
 		st = ST_NORMAL;
-		verb = "Selected";
+		verb = _("Selected");
 	}
 
 	int changed, selected;
@@ -629,9 +629,14 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 		selected = pRL->GetFeatureSet()->NumSelected();
 	}
 	wxString msg;
-	msg.Printf(_T("%hs %d entit%s, %d total selected"), verb, changed,
-		changed == 1 ? _T("y") : _T("ies"), selected);
-	GetMainFrame()->SetStatusText(msg);
+	if (changed == 1)
+		msg.Printf(_("1 entity, %d total selected"), verb, selected);
+	else
+		msg.Printf(_("%d entities, %d total selected"), verb, changed, selected);
+	verb += _T(" ");
+	verb += msg;
+	GetMainFrame()->SetStatusText(verb);
+
 	GetMainFrame()->OnSelectionChanged();
 	Refresh(false);
 }
@@ -1120,15 +1125,17 @@ void BuilderView::OnLButtonClickElement(vtRoadLayer *pRL)
 		wxRect screen_bound = WorldToWindow(world_bound);
 		IncreaseRect(screen_bound, BOUNDADJUST);
 		Refresh(TRUE, &screen_bound);
-		wxString str = wxString::Format(_T("Selected 1 %s (%d total)"),
-				m_ui.mode == LB_Node ? _T("Node") : _T("Road"),
-				m_ui.mode == LB_Node ? pRL->GetSelectedNodes() : pRL->GetSelectedLinks());
+		wxString str;
+		if (m_ui.mode == LB_Node)
+			str.Format(_("Selected 1 Node (%d total)"), pRL->GetSelectedNodes());
+		else
+			str.Format(_("Selected 1 Road (%d total)"), pRL->GetSelectedLinks());
 		GetMainFrame()->SetStatusText(str);
 	}
 	else
 	{
 		DeselectAll();
-		GetMainFrame()->SetStatusText(_T("Deselected all"));
+		GetMainFrame()->SetStatusText(_("Deselected all"));
 	}
 }
 
