@@ -1400,7 +1400,7 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxTextCtrl *item9 = new wxTextCtrl( parent, ID_OVERLAY_FILE, wxT(""), wxDefaultPosition, wxSize(160,-1), 0 );
     item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item10 = new wxButton( parent, ID_BUTTON, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
+    wxButton *item10 = new wxButton( parent, ID_OVERLAY_DOTDOTDOT, _("..."), wxDefaultPosition, wxSize(22,-1), 0 );
     item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item5->Add( item8, 0, wxALIGN_CENTER, 5 );

@@ -205,7 +205,7 @@ wxSizer *TParams5Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_RAWFILES 10145
 #define ID_STYLE 10146
 #define ID_OVERLAY_FILE 10147
-#define ID_BUTTON 10148
+#define ID_OVERLAY_DOTDOTDOT 10148
 #define ID_OVERLAY_X 10149
 #define ID_OVERLAY_Y 10150
 wxSizer *TParams6Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
