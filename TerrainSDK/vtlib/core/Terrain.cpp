@@ -380,6 +380,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		bTextured = true;
 	}
 
+	VTLOG(" LOD method %d\n", m_Params.m_eLodMethod);
 //	if (m_Params.m_eLodMethod == LM_LINDSTROMKOLLER)
 //	{
 //		m_pDynGeom = new LKTerrain();
@@ -418,7 +419,10 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		m_pDynGeom->SetName2("Roettger Geom");
 	}
 	if (!m_pDynGeom)
+	{
+		VTLOG(" Could not construct CLOD\n");
 		return false;
+	}
 
 	// add your own LOD method here!
 
@@ -431,6 +435,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	{
 		delete m_pDynGeom;
 		m_pDynGeom = NULL;
+		VTLOG(" Could not initialize CLOD\n");
 		return false;
 	}
 
@@ -1022,7 +1027,14 @@ bool vtTerrain::CreateStep1(int &iError)
 		if (status == false)
 		{
 			iError = TERRAIN_ERROR_NOTFOUND;
+			VTLOG("\tGrid load failed.\n");
 			return false;
+		}
+		else
+		{
+			int col, row;
+			m_pElevGrid->GetDimensions(col, row);
+			VTLOG("\tGrid load succeeded, size %d x %d.\n", col, row);
 		}
 		m_pElevGrid->SetupConversion(m_Params.m_fVerticalExag);
 	}
@@ -1075,6 +1087,7 @@ clock_t tm;
 
 bool vtTerrain::CreateFromGrid(int &iError)
 {
+	VTLOG(" CreateFromGrid\n");
 	float fOceanDepth;
 	if (m_Params.m_bDepressOcean)
 		fOceanDepth = m_Params.m_fDepressOceanLevel;
@@ -1086,7 +1099,7 @@ bool vtTerrain::CreateFromGrid(int &iError)
 	// create elegant dynamic LOD terrain
 	if (!create_dynamic_terrain(fOceanDepth, iError))
 	{
-		//AfxMessageBox("Couldn't create dynamic LOD terrain");
+		iError = TERRAIN_ERROR_LODFAILED;
 		return false;
 	}
 	else
@@ -1509,8 +1522,9 @@ The continuous LOD algorithms require that the data is\n\
 square and the dimensions are a power of 2 plus 1.\n\
 For example, 513x513 and 1025x105 are supported sizes.";
 	case TERRAIN_ERROR_NOMEM: return "Not enough memory.";
+	case TERRAIN_ERROR_LODFAILED: return "Couldn't create CLOD terrain surface.";
 	}
-	return "No error";
+	return "No error.";
 }
 
 
