@@ -23,6 +23,113 @@
 
 #define MULTIPLE	5000
 
+static wxPoint buf[10];
+
+void NodeDlgView::OnDraw(wxDC &dc)
+{
+	if (!m_pNode)
+		return;
+
+	wxPoint center;
+	screen(m_pNode->m_p, center);
+	m_pNode->Draw(&dc, this);
+
+	wxString string;
+	for (int i = 0; i < m_pNode->m_iLinks; i++)
+	{
+		LinkEdit *pR = m_pNode->GetLink(i);
+		pR->Draw(&dc, this);
+
+		//we need to use the original node here because the roads point to it.
+		DPoint2 close = m_pNode->find_adjacent_roadpoint2d(pR);
+		DPoint2 vector = close - m_pNode->m_p;
+		vector.Normalize();
+		IPoint2 vec;
+
+		vec.x = (int)(center.x + vector.x*20);
+		vec.y = (int)(center.y - vector.y*20);
+
+		//draw signal lights or stop signs as necessary.
+		dc.SetLogicalFunction(wxCOPY);
+		wxPen pen;
+
+		switch (m_pNode->GetIntersectType(i))
+		{
+		case IT_STOPSIGN:
+			pen.SetColour(128,0,0);
+			dc.SetPen(pen);
+			vec.x += 2;
+			vec.y += 6;
+			buf[0].x = vec.x; buf[0].y = vec.y;
+			vec.x -= 4;
+			buf[1].x = vec.x; buf[1].y = vec.y;
+			vec.x -= 3;
+			vec.y -= 3;
+			buf[2].x = vec.x; buf[2].y = vec.y;
+			vec.y -= 4;
+			buf[3].x = vec.x; buf[3].y = vec.y;
+			vec.x += 3;
+			vec.y -= 3;
+			buf[4].x = vec.x; buf[4].y = vec.y;
+			vec.x += 4;
+			buf[5].x = vec.x; buf[5].y = vec.y;
+			vec.x += 3;
+			vec.y += 3;
+			buf[6].x = vec.x; buf[6].y = vec.y;
+			vec.y += 4;
+			buf[7].x = vec.x; buf[7].y = vec.y;
+			vec.x -= 3;
+			vec.y += 3;
+			buf[8].x = vec.x; buf[8].y = vec.y;
+			dc.DrawLines(9, buf);
+			break;
+		case IT_LIGHT:
+			wxBrush brush;
+			switch (m_pNode->GetLightStatus(i))
+			{
+			case LT_INVALID:
+				pen.SetColour(0,0,0);
+				brush.SetColour(0,0,0);
+				break;
+			case LT_RED:
+				pen.SetColour(128,0,0);
+				brush.SetColour(128,0,0);
+				break;
+			case LT_YELLOW:
+				pen.SetColour(0,128,128);
+				brush.SetColour(0,128,128);
+				break;
+			case LT_GREEN:
+				pen.SetColour(0,128,0);
+				brush.SetColour(0,128,0);
+				break;
+			default:
+				//unrecognized
+				pen.SetColour(0,0,255);
+				brush.SetColour(0,0,255);
+				break;
+			}
+
+			dc.SetPen(pen);
+			dc.SetBrush(brush);
+			wxRect box;
+			int radius = 4;
+			box.y = vec.y - radius;
+			box.height = (radius << 1);
+			box.x = vec.x - radius;
+			box.width = (radius << 1);
+			dc.DrawEllipse(box.x, box.y, box.width, box.height);
+			break;
+		} 
+
+		//draw text labels
+		vec.x = (int)(center.x + vector.x*40);
+		vec.y = (int)(center.y - vector.y*40);
+		string.Printf(_T("%i"), i);
+		dc.DrawText(string, vec.x-10, vec.y-10);
+	}
+}
+
 // WDR: class implementations
 
 //----------------------------------------------------------------------------
@@ -33,7 +140,6 @@
 
 BEGIN_EVENT_TABLE(NodeDlg, AutoDialog)
 	EVT_INIT_DIALOG (NodeDlg::OnInitDialog)
-	EVT_PAINT(NodeDlg::OnPaint)
 	EVT_LISTBOX( ID_INTTYPE, NodeDlg::OnIntType )
 	EVT_LISTBOX( ID_ROADNUM, NodeDlg::OnLinkNum )
 	EVT_LISTBOX( ID_BEHAVIOR, NodeDlg::OnBehavior )
@@ -56,12 +162,20 @@ NodeDlg::NodeDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	GetBehavior()->Append(_("Uncontrolled"));	// IT_NONE
 	GetBehavior()->Append(_("Signal Light"));	// IT_LIGHT
 	GetBehavior()->Append(_("Stop Sign"));		// IT_STOPSIGN
+
+	m_pView = (NodeDlgView *) FindWindow( ID_SCROLLED );
+
+	vtScaledView *pMainView = GetMainFrame()->GetView();
+	float fScale = pMainView->GetScale();
+	m_pView->SetScale(fScale);
 }
 
 void NodeDlg::SetNode(NodeEdit *pSingleNode, vtRoadLayer *pLayer)
 {
 	m_pNode = pSingleNode;
 	m_pLayer = pLayer;
+	m_pView->m_pNode = m_pNode;
+	m_pView->ZoomToPoint(m_pNode->m_p);
 }
 
 // WDR: handler implementations for NodeDlg
@@ -186,126 +300,5 @@ void NodeDlg::OnInitDialog(wxInitDialogEvent& event)
 		int itype = m_pNode->GetIntersectType(0);
 		GetBehavior()->SetSelection(itype);
 	}
-}
-
-void NodeDlg::OnPaint(wxPaintEvent& event)
-{
-//  wxEvtHandler::OnPaint(event);
-	wxPaintDC dc(this);
-	OnDraw(dc);
-}
-
-static wxPoint buf[10];
-
-//draw the node structure on the dialog box.
-void NodeDlg::OnDraw(wxDC &dc) 
-{
-	if (!m_pNode)
-		return;
-
-	vtScaledView *pView = GetMainFrame()->GetView();
-	float fSaveScale = pView->GetScale();
-	pView->SetScale(1.0f);
-
-	wxPoint off;
-	off.x = pView->sx(m_pNode->m_p.x);
-	off.y = pView->sy(m_pNode->m_p.y);
-	dc.SetDeviceOrigin(-off.x + 315, -off.y +125);
-	dc.DrawLine(0, 0, 400, 400);
-	m_pNode->Draw(&dc, pView);
-
-	wxString string;
-	for (int i = 0; i < m_pNode->m_iLinks; i++)
-	{
-		LinkEdit *pR = m_pNode->GetLink(i);
-		pR->Draw(&dc, pView);
-
-		//we need to use the original node here because the roads point to it.
-		DPoint2 close = m_pNode->find_adjacent_roadpoint2d(pR);
-		DPoint2 vector = close - m_pNode->m_p;
-		vector.Normalize();
-		IPoint2 vec;
-
-		vec.x = (int)(off.x + vector.x*20);
-		vec.y = (int)(off.y - vector.y*20);
-
-		//draw signal lights or stop signs as necessary.
-		dc.SetLogicalFunction(wxCOPY);
-		wxPen pen;
-
-		switch (m_pNode->GetIntersectType(i))
-		{
-			case IT_STOPSIGN:
-				pen.SetColour(128,0,0);
-				dc.SetPen(pen);
-				vec.x += 2;
-				vec.y += 6;
-				buf[0].x = vec.x; buf[0].y = vec.y;
-				vec.x -= 4;
-				buf[1].x = vec.x; buf[1].y = vec.y;
-				vec.x -= 3;
-				vec.y -= 3;
-				buf[2].x = vec.x; buf[2].y = vec.y;
-				vec.y -= 4;
-				buf[3].x = vec.x; buf[3].y = vec.y;
-				vec.x += 3;
-				vec.y -= 3;
-				buf[4].x = vec.x; buf[4].y = vec.y;
-				vec.x += 4;
-				buf[5].x = vec.x; buf[5].y = vec.y;
-				vec.x += 3;
-				vec.y += 3;
-				buf[6].x = vec.x; buf[6].y = vec.y;
-				vec.y += 4;
-				buf[7].x = vec.x; buf[7].y = vec.y;
-				vec.x -= 3;
-				vec.y += 3;
-				buf[8].x = vec.x; buf[8].y = vec.y;
-				dc.DrawLines(9, buf);
-				break;
-			case IT_LIGHT:
-				wxBrush brush;
-				switch (m_pNode->GetLightStatus(i)) {
-					case LT_INVALID:
-						pen.SetColour(0,0,0);
-						brush.SetColour(0,0,0);
-						break;
-					case LT_RED:
-						pen.SetColour(128,0,0);
-						brush.SetColour(128,0,0);
-						break;
-					case LT_YELLOW:
-						pen.SetColour(0,128,128);
-						brush.SetColour(0,128,128);
-						break;
-					case LT_GREEN:
-						pen.SetColour(0,128,0);
-						brush.SetColour(0,128,0);
-						break;
-					default:
-				//unrecognized
-						pen.SetColour(0,0,255);
-						brush.SetColour(0,0,255);
-				}
-
-				dc.SetPen(pen);
-				dc.SetBrush(brush);
-				wxRect box;
-				int radius = 4;
-				box.y = vec.y - radius;
-				box.height = (radius << 1);
-				box.x = vec.x - radius;
-				box.width = (radius << 1);
-				dc.DrawEllipse(box.x, box.y, box.width, box.height);
-				break;
-		} 
-
-		vec.x = (int)(off.x + vector.x*40);
-		vec.y = (int)(off.y - vector.y*40);
-		string.Printf(_T("%i"), i);
-		//draw text labels
-		dc.DrawText(string, vec.x-10, vec.y-10);
-	}
-	pView->SetScale(fSaveScale);
 }
 

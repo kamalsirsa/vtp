@@ -124,129 +124,130 @@ wxSizer *RoadPropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_INTTYPE 10074
 #define ID_ROADNUM 10075
 #define ID_BEHAVIOR 10076
+#define ID_SCROLLED 10077
 wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_RADIO_CREATE_NEW 10077
-#define ID_RADIO_TO_FILE 10078
-#define ID_TEXT_TO_FILE 10079
-#define ID_DOTDOTDOT 10080
-#define ID_SPACINGX 10081
-#define ID_SPACINGY 10082
-#define ID_SIZEX 10083
-#define ID_SIZEY 10084
-#define ID_CONSTRAIN 10085
-#define ID_SMALLER 10086
-#define ID_BIGGER 10087
-#define ID_FLOATS 10088
-#define ID_SHORTS 10089
-#define ID_AREAX 10090
-#define ID_AREAY 10091
-#define ID_ESTX 10092
-#define ID_ESTY 10093
+#define ID_RADIO_CREATE_NEW 10078
+#define ID_RADIO_TO_FILE 10079
+#define ID_TEXT_TO_FILE 10080
+#define ID_DOTDOTDOT 10081
+#define ID_SPACINGX 10082
+#define ID_SPACINGY 10083
+#define ID_SIZEX 10084
+#define ID_SIZEY 10085
+#define ID_CONSTRAIN 10086
+#define ID_SMALLER 10087
+#define ID_BIGGER 10088
+#define ID_FLOATS 10089
+#define ID_SHORTS 10090
+#define ID_AREAX 10091
+#define ID_AREAY 10092
+#define ID_ESTX 10093
+#define ID_ESTY 10094
 wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_CONDITION 10094
-#define ID_COMBO_VALUE 10095
+#define ID_CONDITION 10095
+#define ID_COMBO_VALUE 10096
 wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TEXT_SHOW 10096
-#define ID_CHOICE_SHOW 10097
-#define ID_TEXT_VERTICAL 10098
-#define ID_CHOICE_VERTICAL 10099
-#define ID_DEL_HIGH 10100
-#define ID_LIST 10101
+#define ID_TEXT_SHOW 10097
+#define ID_CHOICE_SHOW 10098
+#define ID_TEXT_VERTICAL 10099
+#define ID_CHOICE_VERTICAL 10100
+#define ID_DEL_HIGH 10101
+#define ID_LIST 10102
 wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TOOLBAR 10102
-#define ID_MINUTES 10103
-#define ID_ELEVUNIT 10104
-#define ID_RADIO_OUTLINE_ONLY 10105
-#define ID_RADIO_COLOR 10106
-#define ID_RADIO_NO_SHADING 10107
-#define ID_RADIO_SIMPLE_SHADING 10108
-#define ID_RADIO_CAST_SHADOWS 10109
-#define ID_SPIN_CAST_ANGLE 10110
-#define ID_SPIN_CAST_DIRECTION 10111
-#define ID_CHECK_HIDE_UNKNOWN 10112
-#define ID_CHECK_SHOW_ROAD_WIDTH 10113
-#define ID_PATHNAMES 10114
+#define ID_TOOLBAR 10103
+#define ID_MINUTES 10104
+#define ID_ELEVUNIT 10105
+#define ID_RADIO_OUTLINE_ONLY 10106
+#define ID_RADIO_COLOR 10107
+#define ID_RADIO_NO_SHADING 10108
+#define ID_RADIO_SIMPLE_SHADING 10109
+#define ID_RADIO_CAST_SHADOWS 10110
+#define ID_SPIN_CAST_ANGLE 10111
+#define ID_SPIN_CAST_DIRECTION 10112
+#define ID_CHECK_HIDE_UNKNOWN 10113
+#define ID_CHECK_SHOW_ROAD_WIDTH 10114
+#define ID_PATHNAMES 10115
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_USE_SPECIES 10115
-#define ID_SPECIES_CHOICE 10116
-#define ID_SPECIES_USE_FIELD 10117
-#define ID_SPECIES_FIELD 10118
-#define ID_SPECIES_ID 10119
-#define ID_SPECIES_NAME 10120
-#define ID_COMMON_NAME 10121
-#define ID_BIOTYPE_INT 10122
-#define ID_BIOTYPE_STRING 10123
-#define ID_HEIGHT_RANDOM 10124
-#define ID_HEIGHT_USE_FIELD 10125
-#define ID_HEIGHT_FIELD 10126
+#define ID_USE_SPECIES 10116
+#define ID_SPECIES_CHOICE 10117
+#define ID_SPECIES_USE_FIELD 10118
+#define ID_SPECIES_FIELD 10119
+#define ID_SPECIES_ID 10120
+#define ID_SPECIES_NAME 10121
+#define ID_COMMON_NAME 10122
+#define ID_BIOTYPE_INT 10123
+#define ID_BIOTYPE_STRING 10124
+#define ID_HEIGHT_RANDOM 10125
+#define ID_HEIGHT_USE_FIELD 10126
+#define ID_HEIGHT_FIELD 10127
 wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TYPE_CENTER 10127
-#define ID_TYPE_FOOTPRINT 10128
-#define ID_FLIP 10129
-#define ID_CHOICE_HEIGHT_FIELD 10130
-#define ID_CHOICE_HEIGHT_TYPE 10131
-#define ID_TYPE_LINEAR 10132
-#define ID_TYPE_INSTANCE 10133
-#define ID_CHOICE_FILE_FIELD 10134
-#define ID_INSIDE_AREA 10135
+#define ID_TYPE_CENTER 10128
+#define ID_TYPE_FOOTPRINT 10129
+#define ID_FLIP 10130
+#define ID_CHOICE_HEIGHT_FIELD 10131
+#define ID_CHOICE_HEIGHT_TYPE 10132
+#define ID_TYPE_LINEAR 10133
+#define ID_TYPE_INSTANCE 10134
+#define ID_CHOICE_FILE_FIELD 10135
+#define ID_INSIDE_AREA 10136
 wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LAYERNAME 10136
-#define ID_ELEVATION_FIELDNAME 10137
-#define ID_ELEVATION_UNITS 10138
-#define ID_TYPE_BUILDING 10139
-#define ID_BUILD_FOUNDATIONS 10140
-#define ID_USE_25D 10141
+#define ID_LAYERNAME 10137
+#define ID_ELEVATION_FIELDNAME 10138
+#define ID_ELEVATION_UNITS 10139
+#define ID_TYPE_BUILDING 10140
+#define ID_BUILD_FOUNDATIONS 10141
+#define ID_USE_25D 10142
 wxSizer *ImportStructFuncOGR( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LEVEL_CHOICE 10142
+#define ID_LEVEL_CHOICE 10143
 wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TILING 10143
+#define ID_TILING 10144
 wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_BASE_URL 10144
-#define ID_CHOICE_LAYERS 10145
-#define ID_QUERY_LAYERS 10146
-#define ID_CHOICE_FORMAT 10147
-#define ID_QUERY 10148
+#define ID_BASE_URL 10145
+#define ID_CHOICE_LAYERS 10146
+#define ID_QUERY_LAYERS 10147
+#define ID_CHOICE_FORMAT 10148
+#define ID_QUERY 10149
 wxSizer *MapServerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPLITTER1 10149
+#define ID_SPLITTER1 10150
 wxSizer *SpeciesListFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LISTCTRL_SPECIES 10150
+#define ID_LISTCTRL_SPECIES 10151
 wxSizer *Species1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LISTCTRL_APPEARANCES 10151
+#define ID_LISTCTRL_APPEARANCES 10152
 wxSizer *Species2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_THEME 10152
-#define ID_MPP 10153
+#define ID_THEME 10153
+#define ID_MPP 10154
 wxSizer *TSDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_GEOTIFF 10154
-#define ID_JPEG 10155
-#define ID_CHOICE_COLORS 10156
-#define ID_EDIT_COLORS 10157
-#define ID_SHADING 10158
+#define ID_GEOTIFF 10155
+#define ID_JPEG 10156
+#define ID_CHOICE_COLORS 10157
+#define ID_EDIT_COLORS 10158
+#define ID_SHADING 10159
 wxSizer *RenderBitmapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_LINK_FIELD 10159
+#define ID_LINK_FIELD 10160
 wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_EASTING 10160
-#define ID_NORTHING 10161
-#define ID_SET_CRS 10162
-#define ID_FORMAT_DECIMAL 10163
-#define ID_FORMAT_DMS 10164
-#define ID_LONGITUDE_WEST 10165
+#define ID_EASTING 10161
+#define ID_NORTHING 10162
+#define ID_SET_CRS 10163
+#define ID_FORMAT_DECIMAL 10164
+#define ID_FORMAT_DMS 10165
+#define ID_LONGITUDE_WEST 10166
 wxSizer *ImportPointDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

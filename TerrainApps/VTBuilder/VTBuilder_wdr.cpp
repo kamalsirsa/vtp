@@ -32,6 +32,9 @@
     #endif
 #endif
 
+// Custom source
+#include "NodeDlg.h"
+
 // Implement window functions
 
 wxSizer *ExtentDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
@@ -806,11 +809,14 @@ wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    wxBoxSizer *item12 = new wxBoxSizer( wxVERTICAL );
+    wxStaticBox *item13 = new wxStaticBox( parent, -1, _("View") );
+    wxStaticBoxSizer *item12 = new wxStaticBoxSizer( item13, wxVERTICAL );
 
-    item12->Add( 250, 250, 0, wxALIGN_CENTER|wxALL, 5 );
+    NodeDlgView *item14 = new NodeDlgView( parent, ID_SCROLLED, wxDefaultPosition, wxSize(200,160), wxHSCROLL|wxVSCROLL );
+    item14->SetScrollbars( 10, 10, 20, 100, 0, 0 );
+    item12->Add( item14, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item12, 1, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -1975,7 +1981,11 @@ wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, 
-        _("This operation will take the current contents of the\nwindow and export them a PNG file.\nA corresponding HTML file will be written with an\nimage map with clickable areas derived from\nthe polygon features of the active Raw layer."),
+        _("This operation will take the current contents of the\n"
+          "window and export them a PNG file.\n"
+          "A corresponding HTML file will be written with an\n"
+          "image map with clickable areas derived from\n"
+          "the polygon features of the active Raw layer."),
         wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
