@@ -3,14 +3,18 @@
 //
 // Terrain implementation specific to the Big Island of Hawai`i.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/DynTerrain.h"
+#include "vtlib/core/Content3d.h"
 #include "vtdata/Features.h"
+#include "vtdata/vtLog.h"
+#include "xmlhelper/easyxml.hpp"
+
 #include "Hawaii.h"
 #include "Nevada.h"
 
@@ -400,10 +404,31 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		{
 			// model is at .1 inch per unit
 			float scale = .1f * 2.54f / 100;
-			scale *= 100;	// Make it temporarily larger for testing purposes
+			scale *= 10;	// Make it temporarily larger for testing purposes
 			table->Scale3(scale, scale, scale);
 			// Must rotate by 90 degrees for 3DS MAX -> OpenGL
 			table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
+			PlantModelAtPoint(table, DPoint2(234900, 2185840));
+			m_pLodGrid->AppendToGrid(table);
+		}
+
+		// Test the new vtContentManager3d class
+		vtContentManager3d mgr;
+		try 
+		{
+			mgr.ReadXML("C:/VTP/TerrainApps/Data/kai.vtco");
+		}
+		catch (xh_io_exception &e)
+		{
+			string str = e.getFormattedMessage();
+			VTLOG(str.c_str());
+		}
+		mgr.SetDataPaths(&m_DataPaths);
+
+		vtItem *item = mgr.FindItemByName("Riesenbuehl");
+		if (item)
+		{
+			table = mgr.CreateInstanceOfItem(item);
 			PlantModelAtPoint(table, DPoint2(234900, 2185840));
 			m_pLodGrid->AppendToGrid(table);
 		}
