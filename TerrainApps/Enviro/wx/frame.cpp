@@ -1054,7 +1054,8 @@ void vtFrame::OnSaveVeg(wxCommandEvent& event)
 	}
 	wxString2 str = saveFile.GetPath();
 
-	vtPlantInstanceArray &pia = GetCurrentTerrain()->GetPlantInstances();
+	vtTerrain *pTerr = GetCurrentTerrain();
+	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
 	pia.WriteVF(str.mb_str());
 }
 
