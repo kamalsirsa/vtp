@@ -172,6 +172,9 @@ public:
 		reference. */
 	void RotateParent(const FPoint3 &axis, double angle);
 
+	/** Get the orientation (rotate relative to default) of the transform */
+	FQuat GetOrient() const;
+
 	/** Get the direction, which by convention is shorthand for the -Z axis
 		of the local frame.  For oriented objects such as the camera, this
 		is the direction the object is facing. */

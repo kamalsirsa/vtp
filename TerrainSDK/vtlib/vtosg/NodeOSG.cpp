@@ -624,6 +624,14 @@ void vtTransform::RotateParent(const FPoint3 &axis, double angle)
 			  Matrix::translate(trans));
 }
 
+FQuat vtTransform::GetOrient() const
+{
+	const Matrix &xform = m_pTransform->getMatrix();
+	Quat q;
+	xform.get(q);
+	return FQuat(q.x(), q.y(), q.z(), q.w());
+}
+
 FPoint3 vtTransform::GetDirection() const
 {
 	const Matrix &xform = m_pTransform->getMatrix();
