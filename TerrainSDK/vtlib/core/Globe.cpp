@@ -1420,8 +1420,6 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 
 	// we don't know elevation (yet)
 	geo.z = 0.0f;
-
-	int foo = 1;
 }
 
 
