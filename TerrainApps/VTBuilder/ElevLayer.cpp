@@ -109,7 +109,8 @@ bool vtElevLayer::OnLoad()
 		success = m_pGrid->LoadFromBT(m_strFilename, progress_callback);
 		m_pGrid->GetDimensions(m_iColumns, m_iRows);
 	}
-	else if (!m_strFilename.Right(4).CmpNoCase(".tin"))
+	else if (!m_strFilename.Right(4).CmpNoCase(".tin") ||
+			 !m_strFilename.Right(4).CmpNoCase(".itf"))
 	{
 		m_pTin = new vtTin2d();
 		success = m_pTin->Read(m_strFilename);
@@ -967,7 +968,7 @@ void vtElevLayer::GetPropertyText(wxString &strIn)
 char *vtElevLayer::GetFileExtension()
 {
 	if (m_pTin)
-		return 	".tin";
+		return 	".itf";
 	else
 		return 	".bt";
 }
