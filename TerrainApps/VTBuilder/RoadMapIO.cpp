@@ -329,6 +329,99 @@ void RoadMapEdit::AddElementsFromDLG(vtDLGFile *pDlg)
 	}
 }
 
+bool RoadMapEdit::ApplyCFCC(RoadEdit *pR, const char *str)
+{
+	bool bReject = false;
+
+	if (str[0] != 'A')
+		return false;
+	int code1 = str[1] - '0';
+	int code2 = str[2] - '0';
+	switch (code1)
+	{
+	case 1:
+		// Primary Highway With Limited Access
+		pR->m_iLanes = 4;
+		pR->m_iHwy = 1;		// better to have actual highway number
+		break;
+	case 2:
+		// Primary Road Without Limited Access
+		pR->m_iLanes = 2;
+		pR->m_iHwy = 1;		// better to have actual highway number
+		break;
+	case 3:
+		// Secondary and Connecting Road
+		pR->m_iLanes = 2;
+		break;
+	case 4:
+		// Local, Neighborhood, and Rural Road 
+		pR->m_iLanes = 2;
+		break;
+	case 5:
+		// Vehicular Trail
+		pR->m_iLanes = 1;
+		pR->m_Surface = ST_2TRACK;
+		break;
+	// Road with Special Characteristics 
+	case 6:
+		if (code2 == 1)
+		{
+			// cul-de-sac
+		}
+		if (code2 == 2)
+		{
+			// traffic circle
+		}
+		if (code2 == 3)
+		{
+			// access ramp
+			// 1 lane, 1 direction
+			pR->m_iLanes = 1;
+			pR->m_iFlags &= ~RF_REVERSE;
+		}
+		if (code2 == 4)
+		{
+			 // service drive
+		}
+		if (code2 == 5)
+		{
+			// ferry crossing
+			bReject = true;
+		}
+		break;
+	// 
+	case 7:
+		// Road as Other Thoroughfare 
+		if (code2 == 1)
+		{
+			// Walkway or trail for pedestrians, usually unnamed
+			pR->m_iLanes = 1;
+			pR->m_Surface = ST_TRAIL;
+		}
+		if (code2 == 2)
+		{
+			// Stairway, stepped road for pedestrians, usually unnamed
+			bReject = true;
+		}
+		if (code2 == 3)
+		{
+			// Alley, road for service vehicles, usually unnamed, located at
+			// the rear of buildings and property
+			pR->m_iLanes = 1;
+		}
+		if (code2 == 4)
+		{
+			// Driveway or service road, usually privately owned and unnamed,
+			// used as access to residences, trailer parks, and apartment
+			// complexes, or as access to logging areas, oil rigs, ranches,
+			// farms, and park lands
+			pR->m_iLanes = 1;
+		}
+		break;
+	}
+	return bReject;
+}
+
 void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 									 void progress_callback(int))
 {
@@ -343,6 +436,23 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 	SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound, adfMaxBound);
 	if (nShapeType != SHPT_ARC)
 		return;
+
+	// Open DBF File, if one exists
+	int cfcc = -1;
+	DBFHandle db = DBFOpen(filename, "rb");
+	if (db != NULL)
+	{
+		int fields, i, *pnWidth = 0, *pnDecimals = 0;
+		char pszFieldName[20];
+		fields = DBFGetFieldCount(db);
+		for (i = 0; i < fields; i++)
+		{
+			DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
+				pszFieldName, pnWidth, pnDecimals );
+			if (!strcmp(pszFieldName, "CFCC"))
+				cfcc = i;
+		}
+	}
 
 	// set projection
 	m_proj = proj;
@@ -386,8 +496,14 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 		pR->SetHeightAt(0, 0);
 		pR->SetHeightAt(1, 0);
 		pR->m_iPriority = 1;
+		pR->m_iHwy = -1;
 
-		// copy data from DLG line
+		if (cfcc != -1)
+		{
+			const char *str = DBFReadStringAttribute(db, i, cfcc);
+			ApplyCFCC(pR, str);
+		}
+		// copy point data
 		pR->SetNode(0, pN1);
 		pR->SetNode(1, pN2);
 
@@ -400,7 +516,6 @@ void RoadMapEdit::AddElementsFromSHP(const char *filename, vtProjection &proj,
 
 		//set bounding box for the road
 		pR->ComputeExtent();
-		pR->m_iHwy = -1;
 
 		// add to list
 		AddRoad(pR);

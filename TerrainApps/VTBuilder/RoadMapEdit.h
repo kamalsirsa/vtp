@@ -119,7 +119,9 @@ public:
 
 	// Import from DLG
 	void AddElementsFromDLG(vtDLGFile *pDlg);
-	// Import from DLG
+
+	// Import from SHP
+	bool ApplyCFCC(RoadEdit *pR, const char *str);
 	void AddElementsFromSHP(const char *filename, vtProjection &proj,
 		void progress_callback(int) = NULL);
 
