@@ -116,7 +116,7 @@ void vtStructureLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-#define MAX_SIDES	100
+#define MAX_SIDES	500
 static wxPoint array[MAX_SIDES];
 
 void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
