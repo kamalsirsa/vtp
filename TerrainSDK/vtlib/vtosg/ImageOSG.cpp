@@ -27,10 +27,19 @@ vtImage::vtImage(const char *fname, int internalformat) : vtImageBase(fname)
 #if !USE_OSG_FOR_BMP
 	if (!stricmp(fname + strlen(fname) - 3, "bmp"))
 	{
-		vtDIB pDIB;
-		if (pDIB.ReadBMP(fname))
+		vtDIB dib;
+		if (dib.ReadBMP(fname))
 		{
-			_CreateFromDIB(&pDIB);
+			if (dib.GetDepth() == 8)
+			{
+				// We are presumably going to use this for a texture, and we
+				// don't want to worry about 8-bit color paletted textures.
+				vtDIB dib2;
+				dib2.Create24From8bit(dib);
+				_CreateFromDIB(&dib2);
+			}
+			else
+				_CreateFromDIB(&dib);
 			m_bLoaded = true;
 		}
 	}
