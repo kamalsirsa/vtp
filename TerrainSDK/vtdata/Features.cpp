@@ -343,19 +343,9 @@ bool vtFeatureSet::LoadFromGML(const char *filename)
 }
 */
 
-vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
+vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 							 bool progress_callback(int))
 {
-	// try using OGR
-	g_GDALWrapper.RequestOGRFormats();
-
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
-	if (!pDatasource)
-		return NULL;
-
-	// Don't iterate through the layers, there should be only one.
-	//
-	OGRLayer *pLayer = pDatasource->GetLayer(0);
 	if (!pLayer)
 		return NULL;
 
@@ -396,10 +386,7 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 		return NULL;
 	}
 
-	// We're going to read the file now, so take it's name
-	pSet->SetFilename(filename);
-
-	if (!pSet->LoadFromOGR(pDatasource, progress_callback))
+	if (!pSet->LoadFromOGR(pLayer, progress_callback))
 	{
 		delete pSet;
 		return NULL;
@@ -407,13 +394,34 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
 	return pSet;
 }
 
-bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
+vtFeatureSet *vtFeatureLoader::LoadWithOGR(const char *filename,
+							 bool progress_callback(int))
+{
+	// try using OGR
+	g_GDALWrapper.RequestOGRFormats();
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
+	if (!pDatasource)
+		return NULL;
+
+	// Take the contents of the first layer only.
+	OGRLayer *pLayer = pDatasource->GetLayer(0);
+	vtFeatureSet *pSet = LoadWithOGR(pLayer);
+	if (pSet)
+		// We've read the file now, so take it's name
+		pSet->SetFilename(filename);
+
+	delete pDatasource;
+
+	return pSet;
+}
+
+bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 							 bool progress_callback(int))
 {
 	VTLOG(" LoadFromOGR\n");
 
 	// get informnation from the datasource
-	OGRLayer *pLayer = pDatasource->GetLayer(0);
 	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
 	int feature_count = pLayer->GetFeatureCount();
 	const char *layer_name = defn->GetName();
@@ -667,7 +675,6 @@ bool vtFeatureSet::LoadFromOGR(OGRDataSource *pDatasource,
 		// features returned from OGRLayer::GetNextFeature are our responsibility to delete!
 		delete pFeature;
 	}
-	delete pDatasource;
 	return true;
 }
 
