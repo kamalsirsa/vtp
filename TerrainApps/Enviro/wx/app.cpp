@@ -134,6 +134,10 @@ bool vtApp::OnInit()
 	vtFrame *frame = new FRAME_NAME(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 
+	bool go = true;
+	while (go)
+		go = ProcessIdle();
+
 	vtGetScene()->Init();
 
 	g_App.StartControlEngine();
