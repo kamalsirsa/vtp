@@ -18,6 +18,8 @@
 #include "vtdata/vtLog.h"
 #include "gdal_priv.h"
 
+//#include "StructLayer.h"
+
 IMPLEMENT_APP(MyApp)
 
 bool MyApp::OnInit()
@@ -56,6 +58,13 @@ bool MyApp::OnInit()
 //	frame->ImportDataFromFile(LT_ELEVATION, "E:/Earth/NOAA Globe/g10g.hdr", false);
 //	wxString str("E:/VTP User's Data/Mike Flaxman/catrct_nur.tif");
 //	frame->LoadLayer(str);
+
+//	wxString fname("E:/VTP User's Data/Hangzhou/Data/BuildingData/a-bldgs-18dec-subset1.vtst");
+//	frame->LoadLayer(fname);
+//	vtStructureLayer *pSL = frame->GetActiveStructureLayer();
+//	vtStructure *str = pSL->GetAt(0);
+//	str->Select(true);
+//	pSL->EditBuildingProperties();
 
 	frame->GetView()->ZoomAll();
 
