@@ -51,7 +51,6 @@ public:
 	void Coord(float x, float y, bool bStart);
 
 protected:
-	void NewMesh();
 	void Flush();
 
 	SurfaceGrid *m_pGrid;
@@ -65,7 +64,7 @@ protected:
 	DLine2	m_line;
 	vtTransform *m_pTrans;
 	vtGeom *m_pGeom;
-	vtMesh *m_pMesh;
+	vtMeshFactory *m_pMF;
 };
 
 #endif // SUPPORT_QUIKGRID

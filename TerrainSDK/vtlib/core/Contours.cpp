@@ -38,12 +38,13 @@ void DoLineTo( float x, float y, int drawtype )
 
 ContourConverter::ContourConverter()
 {
-	m_pMesh = NULL;
+	m_pMF = NULL;
 	m_pGrid = NULL;
 }
 
 ContourConverter::~ContourConverter()
 {
+	delete m_pMF;
 	delete m_pGrid;
 }
 
@@ -95,6 +96,7 @@ vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float 
 			m_pGrid->zset(i, j, m_pHF->GetElevation(i, j, true));
 		}
 	}
+	m_pMF = new vtMeshFactory(m_pGeom, vtMesh::LINE_STRIP, 0, 30000, 0);
 
 	// Since we have to interface to a global callback, set a global
 	//  pointer to the recipient of the callback.
@@ -103,15 +105,6 @@ vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float 
 	return m_pTrans;
 }
 
-void ContourConverter::NewMesh()
-{
-	if (m_pMesh)
-	{
-		m_pGeom->AddMesh(m_pMesh, 0);
-		m_pMesh->Release();		// pass ownership
-	}
-	m_pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, 2000);
-}
 
 /**
  * Generate a contour line to be draped on the terrain.
@@ -120,7 +113,6 @@ void ContourConverter::NewMesh()
  */
 void ContourConverter::GenerateContour(float fAlt)
 {
-	NewMesh();
 	Contour(*m_pGrid, fAlt);
 }
 
@@ -141,7 +133,6 @@ void ContourConverter::GenerateContours(float fInterval)
 
 	for (int i = start; i <= stop; i++)
 	{
-		NewMesh();
 		Contour(*m_pGrid, i * fInterval);
 	}
 }
@@ -165,12 +156,6 @@ void ContourConverter::Finish()
 {
 	Flush();
 
-	if (m_pMesh)
-	{
-		m_pGeom->AddMesh(m_pMesh, 0);
-		m_pMesh->Release();		// pass ownership
-	}
-
 	m_pTerrain->AddNode(m_pTrans);
 	float fExag = m_pTerrain->GetVerticalExag();
 	m_pTrans->Scale3(1, fExag, 1);
@@ -182,7 +167,7 @@ void ContourConverter::Flush()
 {
 	if (m_line.GetSize() > 2)
 	{
-		m_pTerrain->AddSurfaceLineToMesh(m_pMesh, m_line, m_fHeight,
+		m_pTerrain->AddSurfaceLineToMesh2(m_pMF, m_line, m_fHeight,
 			false, true);	// use true elevation, not scaled
 	}
 	m_line.Empty();
