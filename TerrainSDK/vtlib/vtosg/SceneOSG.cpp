@@ -361,7 +361,7 @@ void printnode(osg::Node *node, int tab) {
 	osg::notify(osg::WARN) << node->className() << " - " << node->getName() << " @ " << node << std::endl;
 	osg::Group *group = node->asGroup();
 	if (group) {
-		for (int i = 0; i < group->getNumChildren(); i++) {
+		for (unsigned int i = 0; i < group->getNumChildren(); i++) {
 			printnode(group->getChild(i), tab+1);
 		}
 	}
