@@ -12,6 +12,7 @@
 #include <math.h>
 #include <locale.h>
 #include <vector>
+#include <string>
 #include "Array.h"
 
 // willemsn: this was taken from OSG's Math include file.
@@ -1183,4 +1184,3 @@ void vtLogMatrix(const FMatrix4 &mat);
 void vtLogMatrix(const FMatrix3 &mat);
 
 #endif	// VTMATHTYPESH
-
