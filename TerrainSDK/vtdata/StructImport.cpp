@@ -24,8 +24,7 @@ int FindDBField(DBFHandle db, const char *field_name)
 	{
 		int pnWidth, pnDecimals;
 		char pszFieldName[80];
-		DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
-			pszFieldName, &pnWidth, &pnDecimals );
+		DBFGetFieldInfo(db, i, pszFieldName, &pnWidth, &pnDecimals);
 		if (!stricmp(field_name, pszFieldName))
 			return i;
 	}
@@ -280,7 +279,6 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 		}
 
 		int num_points = psShape->nVertices;
-
 		if (opt.type == ST_BUILDING)
 		{
 			vtBuilding *bld = NewBuilding();
@@ -480,9 +478,6 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 		}
 		else if (!strcmp(layer_name, "NE01"))
 		{
-			// get field indices
-			int index_entity = pLayerDefn->GetFieldIndex("ENTITY_LABEL");
-
 			count = 0;
 			while( (pFeature = pLayer->GetNextFeature()) != NULL )
 			{
@@ -527,7 +522,7 @@ void vtStructureArray::AddElementsFromOGR_SDTS(OGRDataSource *pDatasource,
 				// values such as number of lanes, etc.
 				const char *str_entity = pFeature->GetFieldAsString(index_entity);
 				int numEntity = atoi(str_entity);
-				int iMajorAttr = numEntity / 10000;
+				// int iMajorAttr = numEntity / 10000;
 				int iMinorAttr = numEntity % 10000;
 
 				int num_stories = 1; // Use this as a multiplier
@@ -623,17 +618,17 @@ void vtStructureArray::AddElementsFromOGR_RAW(OGRDataSource *pDatasource,
 void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		StructImportOptions &opt, bool progress_callback(int))
 {
-	unsigned int	i, j;
-	int				count;
-	OGRFeature		*pFeature;
-	OGRPolygon		*pPolygon;
-	vtBuilding		*pBld;
-	vtLevel			*pLevel, *pNewLevel;
-	DPoint2			point;
+	unsigned int i;
+	int			 j;
+	int			 count;
+	OGRFeature	 *pFeature;
+	OGRPolygon	 *pPolygon;
+	vtBuilding	 *pBld;
+	vtLevel		 *pLevel, *pNewLevel;
+	DPoint2		 point;
 	DLine2 footprint;
 	OGRLinearRing *pRing;
 	OGRLineString *pLineString;
-	unsigned int num_points;
 	OGRwkbGeometryType GeometryType;
 	int iHeightIndex = -1;
 	int iElevationIndex = -1;
@@ -702,6 +697,8 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			continue;
 		GeometryType = pGeom->getGeometryType();
 
+		int line_points=0;
+
 		// For the moment ignore multi polygons .. although we could
 		// treat them as multiple buildings !!
 		switch (wkbFlatten(GeometryType))
@@ -709,17 +706,18 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 			case wkbPolygon:
 				pPolygon = (OGRPolygon *) pGeom;
 				pRing = pPolygon->getExteriorRing();
-				num_points = pRing->getNumPoints();
+				line_points = pRing->getNumPoints();
 
 				// Ignore last point if it is the same as the first
-				if (DPoint2(pRing->getX(0), pRing->getY(0)) == DPoint2(pRing->getX(num_points - 1), pRing->getY(num_points - 1)))
-					num_points--;
+				if (DPoint2(pRing->getX(0), pRing->getY(0)) ==
+					DPoint2(pRing->getX(line_points - 1), pRing->getY(line_points - 1)))
+					line_points--;
 
-				footprint.SetSize(num_points);
+				footprint.SetSize(line_points);
 				fMaxZ = -1E9;
 				fMinZ = 1E9;
 				fTotalZ = 0;
-				for (j = 0; j < num_points; j++)
+				for (j = 0; j < line_points; j++)
 				{
 					fZ = (float)pRing->getZ(j);
 					if (fZ > fMaxZ)
@@ -729,22 +727,23 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 					fTotalZ += fZ;
 					footprint.SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
 				}
-				fAverageZ = fTotalZ/num_points;
+				fAverageZ = fTotalZ/line_points;
 				break;
 
 			case wkbLineString:
 				pLineString = (OGRLineString *) pGeom;
-				num_points = pLineString->getNumPoints();
+				line_points = pLineString->getNumPoints();
 
 				// Ignore last point if it is the same as the first
-				if (DPoint2(pLineString->getX(0), pLineString->getY(0)) == DPoint2(pLineString->getX(num_points - 1), pLineString->getY(num_points - 1)))
-					num_points--;
+				if (DPoint2(pLineString->getX(0), pLineString->getY(0)) ==
+					DPoint2(pLineString->getX(line_points - 1), pLineString->getY(line_points - 1)))
+					line_points--;
 
-				footprint.SetSize(num_points);
+				footprint.SetSize(line_points);
 				fMaxZ = -1E9;
 				fMinZ = 1E9;
 				fTotalZ = 0;
-				for (j = 0; j < num_points; j++)
+				for (j = 0; j < line_points; j++)
 				{
 					fZ = (float)pLineString->getZ(j);
 					if (fZ > fMaxZ)
@@ -754,7 +753,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 					fTotalZ += fZ;
 					footprint.SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
 				}
-				fAverageZ = fTotalZ/num_points;
+				fAverageZ = fTotalZ/line_points;
 				break;
 
 			case wkbPoint:
@@ -781,10 +780,10 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		if (opt.bInsideOnly)
 		{
 			// Exclude footprints outside the indicated extents
-			for (i = 0; i < num_points; i++)
-				if (!opt.rect.ContainsPoint(footprint.GetAt(i)))
+			for (j = 0; j < line_points; j++)
+				if (!opt.rect.ContainsPoint(footprint.GetAt(j)))
 					break;
-			if (i != num_points)
+			if (j != line_points)
 				continue;
 		}
 
@@ -853,9 +852,9 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 
 			fMin = 1E9;
 			fMax = -1E9;
-			for (j = 0; j < iVertices; j++)
+			for (i = 0; i < iVertices; i++)
 			{
-				if (!opt.pHeightField->FindAltitudeAtPoint2(footprint.GetAt(j), fElev))
+				if (!opt.pHeightField->FindAltitudeAtPoint2(footprint.GetAt(i), fElev))
 					continue;
 
 				if (fElev < fMin)

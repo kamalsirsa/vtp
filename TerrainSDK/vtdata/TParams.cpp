@@ -284,11 +284,11 @@ bool TParams::LoadFromIniFile(const char *filename)
 				 strcmp(buf, STR_FOGDISTANCE) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 		else if (strcmp(buf, STR_FOGCOLORR) == 0)
-			fog_color.r = atoi(get_line_from_stream(input));
+			fog_color.r = (short) atoi(get_line_from_stream(input));
 		else if (strcmp(buf, STR_FOGCOLORG) == 0)
-			fog_color.g = atoi(get_line_from_stream(input));
+			fog_color.g = (short) atoi(get_line_from_stream(input));
 		else if (strcmp(buf, STR_FOGCOLORB) == 0)
-			fog_color.b = atoi(get_line_from_stream(input));
+			fog_color.b = (short) atoi(get_line_from_stream(input));
 
 		else if (strcmp(buf, STR_BUILDINGFILE) == 0 || strcmp(buf, STR_STRUCTFILE) == 0)
 		{

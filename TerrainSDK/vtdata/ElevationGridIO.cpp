@@ -78,7 +78,7 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
 		return false;
-	char FirstChar = fgetc(fp);
+	int FirstChar = fgetc(fp);
 	fclose(fp);
 
 	bool Success = false;
@@ -337,7 +337,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 		}
 		for (j = 0; j < ncols; j++)
 		{
-			int num = fscanf(fp, "%f", &z);
+			fscanf(fp, "%f", &z);
 			if (z == nodata)
 				SetFValue(j, nrows-1-i, INVALID_ELEVATION);
 			else
@@ -619,7 +619,6 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 
 	// each elevation, z, is stored in 2 bytes
 	const int z_len = 2;
-	short z = 0;
 	unsigned char swap[z_len];
 
 	int i, j, offset;
@@ -721,7 +720,7 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 
 	// Read the no data value
 	hdrFile >> strName >> strValue;
-	gh.NoData = atoi(strValue);
+	gh.NoData = (short) atoi(strValue);
 
 	// Read the upper left x coordinate
 	hdrFile >> strName >> strValue;
@@ -1047,7 +1046,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	int ysize = atoi(sbuf);
 	fscanf(fp,"%s\n",sbuf);		// read maxval of array
 	char *junk;					// unconverted part of a number
-	double maxval = strtod(sbuf, &junk);/* store maxval. could throw away. */
+//	double maxval = strtod(sbuf, &junk);// maxval. could throw away.
 
 	// Set the projection (actually we don't know it)
 	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
@@ -1109,8 +1108,8 @@ bool vtElevationGrid::SaveToTerragen(const char *szFileName)
 	if (!fp)
 		return false;
 
-	short w = m_iColumns;
-	short h = m_iRows;
+	short w = (short) m_iColumns;
+	short h = (short) m_iRows;
 	short dummy = 0;
 
 	// write identifying header
@@ -1313,7 +1312,7 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 	ComputeCornersFromExtents();
 
 	// Raster count should be 1 for elevation datasets
-	int rc = poDataset->GetRasterCount();
+//	int rc = poDataset->GetRasterCount();
 
 	GDALRasterBand *poBand = poDataset->GetRasterBand(1);
 

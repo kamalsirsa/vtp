@@ -72,7 +72,7 @@ public:
 	vtString m_name;
 
 	Array<bool> m_bool;
-	Array<int> m_short;
+	Array<short> m_short;
 	Array<int> m_int;
 	Array<float> m_float;
 	Array<double> m_double;

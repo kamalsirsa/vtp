@@ -428,7 +428,6 @@ bool vtFeatureSet::LoadFromOGR(OGRLayer *pLayer,
 	// get informnation from the datasource
 	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
 	int feature_count = pLayer->GetFeatureCount();
-	const char *layer_name = defn->GetName();
 	int num_fields = defn->GetFieldCount();
 
 	// Get the projection (SpatialReference) from this layer, if we can.
@@ -956,10 +955,10 @@ int vtFeatureSet::SelectByCondition(int iField, int iCondition,
 	bool bval, btest;
 	int i, ival, itest;
 	short sval;
-	double dval, dtest;
+	double dval, dtest=0;
 	int entities = GetNumEntities(), selected = 0;
 	int con = iCondition;
-	bool result;
+	bool result=false;
 	DPoint2 p2;
 	DPoint3 p3;
 
@@ -1233,7 +1232,7 @@ int vtFeatureSet::AddField(const char *name, FieldType ftype, int string_length)
 
 int vtFeatureSet::AddRecord()
 {
-	int recs;
+	int recs=-1;
 	for (unsigned int i = 0; i < m_fields.GetSize(); i++)
 	{
 		recs = m_fields[i]->AddRecord();
@@ -1374,7 +1373,7 @@ void Field::SetValue(unsigned int record, int value)
 	if (m_type == FT_Integer)
 		m_int[record] = value;
 	else if (m_type == FT_Short)
-		m_short[record] = value;
+		m_short[record] = (short) value;
 	else if (m_type == FT_Double)
 		m_double[record] = value;
 	else if (m_type == FT_Float)
@@ -1390,7 +1389,7 @@ void Field::SetValue(unsigned int record, double value)
 	else if (m_type == FT_Integer)
 		m_int[record] = (int) value;
 	else if (m_type == FT_Short)
-		m_short[record] = (int) value;
+		m_short[record] = (short) value;
 }
 
 void Field::SetValue(unsigned int record, bool value)
@@ -1400,7 +1399,7 @@ void Field::SetValue(unsigned int record, bool value)
 	else if (m_type == FT_Integer)
 		m_int[record] = (int) value;
 	else if (m_type == FT_Short)
-		m_short[record] = (int) value;
+		m_short[record] = (short) value;
 }
 
 void Field::GetValue(unsigned int record, vtString &string)
@@ -1415,11 +1414,11 @@ void Field::GetValue(unsigned int record, short &value)
 	if (m_type == FT_Short)
 		value = m_short[record];
 	else if (m_type == FT_Integer)
-		value = m_int[record];
+		value = (short) m_int[record];
 	else if (m_type == FT_Double)
-		value = (int) m_double[record];
+		value = (short) m_double[record];
 	else if (m_type == FT_Boolean)
-		value = (int) m_bool[record];
+		value = (short) m_bool[record];
 }
 
 void Field::GetValue(unsigned int record, int &value)

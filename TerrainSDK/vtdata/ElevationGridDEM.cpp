@@ -167,8 +167,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 		break;
 	case 3:		// Albers Conical Equal Area
 		{
-			double semi_major = dProjParams[0];
-			double eccentricity = dProjParams[1];
+			// double semi_major = dProjParams[0];		// unused
+			// double eccentricity = dProjParams[1];	// unused
 			double lat_1st_std_parallel = dProjParams[2];
 			double lat_2nd_std_parallel = dProjParams[3];
 			double lon_central_meridian = dProjParams[4];
@@ -231,7 +231,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	fseek(fp, 816, 0);
-	double dxdelta = DConvert(fp, 12);
+	DConvert(fp, 12);	// dxdelta (unused)
 	double dydelta = DConvert(fp, 12);
 	double dzdelta = DConvert(fp, 12);
 
@@ -266,7 +266,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	double dElevMax = DConvert(fp, 24);
 
 	fseek(fp, 852, 0);
-	int rows = IConvert(fp, 6);
+	IConvert(fp, 6);	// This "Rows" value will always be 1
 	int iProfiles = IConvert(fp, 6);
 
 	m_iColumns = iProfiles;
@@ -397,13 +397,15 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			if (iElev == -32767 || iElev == -32768)
 				SetValue(i, j, INVALID_ELEVATION);
 			else
-				SetValue(i, j, iElev);
+				SetValue(i, j, (short) iElev);
 		}
 	}
 	fclose(fp);
 
 	m_fVMeters = (float) (fVertUnits * dzdelta);
 	ComputeHeightExtents();
+	if (m_fMinHeight != dElevMin || m_fMaxHeight != dElevMax)
+		VTLOG("Warning: elevation extents in .dem don't match data.\n");
 
 	return true;
 }
