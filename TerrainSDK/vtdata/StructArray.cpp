@@ -205,7 +205,7 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 			{
 				int rt;
 				fscanf(fp, "%d\n", &rt);
-				bld->m_RoofType = (RoofType) rt;
+				bld->SetRoofType((RoofType) rt);
 			}
 		}
 		AddBuilding(bld);
@@ -800,13 +800,13 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		{
 			const char *type = atts.getValue("type");
 			if (bld && (string)type == (string)"flat")
-				bld->m_RoofType = ROOF_FLAT;
+				bld->SetRoofType(ROOF_FLAT);
 			if (bld && (string)type == (string)"shed")
-				bld->m_RoofType = ROOF_SHED;
+				bld->SetRoofType(ROOF_SHED);
 			if (bld && (string)type == (string)"gable")
-				bld->m_RoofType = ROOF_GABLE;
+				bld->SetRoofType(ROOF_GABLE);
 			if (bld && (string)type == (string)"hip")
-				bld->m_RoofType = ROOF_HIP;
+				bld->SetRoofType(ROOF_HIP);
 			const char *color = atts.getValue("color");
 			if (bld && color)
 				bld->SetColor(BLD_ROOF, ParseRGB(color));
@@ -970,13 +970,11 @@ void StructureVisitor::endElement(const char * name)
 	}
 	if (string(name) == (string)"shapes")
 	{
-#if 0
 		// currently, building wall information is not saved or restored, so
-		// we must manually indicate that walls should be implied upon loading
+		// we must manually indicate that detail should be implied upon loading
 		vtStructure *pItem = st.item;
 		vtBuilding *bld = pItem->GetBuilding();
-		bld->RebuildWalls();
-#endif
+		bld->AddDefaultDetails();
 
 		pop_state();
 	}

@@ -119,7 +119,7 @@ void BuildingDlg::OnOK( wxCommandEvent &event )
 		color[c].Set(m_Color[c].Red(), m_Color[c].Green(), m_Color[c].Blue());
 
 	m_pBuilding->SetStories(m_iStories);
-	m_pBuilding->m_RoofType = (enum RoofType) m_iRoofType;
+	m_pBuilding->SetRoofType((enum RoofType) m_iRoofType);
 	m_pBuilding->m_bMoulding = m_bTrim;
 	m_pBuilding->m_bElevated = m_bElevated;
 	for (c = 0; c < 3; c++)
@@ -147,7 +147,7 @@ void BuildingDlg::OnInitDialog(wxInitDialogEvent& event)
 		m_Color[c].Set(col.r, col.g, col.b);
 	}
 	m_iStories = m_pBuilding->GetStories();
-	m_iRoofType = m_pBuilding->m_RoofType;
+	m_iRoofType = m_pBuilding->GetRoofType();
 	m_bTrim = m_pBuilding->m_bMoulding;
 	m_bElevated = m_pBuilding->m_bElevated;
 
