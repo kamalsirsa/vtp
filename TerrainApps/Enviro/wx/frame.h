@@ -94,6 +94,7 @@ public:
 	void OnSky(wxCommandEvent& event);
 	void OnOcean(wxCommandEvent& event);
 	void OnTrees(wxCommandEvent& event);
+	void OnStructures(wxCommandEvent& event);
 	void OnRoads(wxCommandEvent& event);
 	void OnFog(wxCommandEvent& event);
 	void OnIncrease(wxCommandEvent& event);
@@ -106,6 +107,7 @@ public:
 	void OnUpdateSky(wxUpdateUIEvent& event);
 	void OnUpdateOcean(wxUpdateUIEvent& event);
 	void OnUpdateTrees(wxUpdateUIEvent& event);
+	void OnUpdateStructures(wxUpdateUIEvent& event);
 	void OnUpdateRoads(wxUpdateUIEvent& event);
 	void OnUpdateFog(wxUpdateUIEvent& event);
 	void OnUpdateSaveVeg(wxUpdateUIEvent& event);

@@ -134,6 +134,7 @@ EVT_MENU(ID_TERRAIN_CULLONCE, vtFrame::OnCullOnce)
 EVT_MENU(ID_TERRAIN_SKY, vtFrame::OnSky)
 EVT_MENU(ID_TERRAIN_OCEAN, vtFrame::OnOcean)
 EVT_MENU(ID_TERRAIN_TREES, vtFrame::OnTrees)
+EVT_MENU(ID_TERRAIN_STRUCTURES, vtFrame::OnStructures)
 EVT_MENU(ID_TERRAIN_ROADS, vtFrame::OnRoads)
 EVT_MENU(ID_TERRAIN_FOG, vtFrame::OnFog)
 EVT_MENU(ID_TERRAIN_INCREASE, vtFrame::OnIncrease)
@@ -146,6 +147,7 @@ EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
 EVT_UPDATE_UI(ID_TERRAIN_SKY, vtFrame::OnUpdateSky)
 EVT_UPDATE_UI(ID_TERRAIN_OCEAN, vtFrame::OnUpdateOcean)
 EVT_UPDATE_UI(ID_TERRAIN_TREES, vtFrame::OnUpdateTrees)
+EVT_UPDATE_UI(ID_TERRAIN_STRUCTURES, vtFrame::OnUpdateStructures)
 EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
 EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
 
@@ -278,9 +280,10 @@ void vtFrame::CreateMenus()
 	terrainMenu->AppendSeparator();
 	terrainMenu->AppendCheckItem(ID_TERRAIN_SKY, _T("Show Sky\tF4"));
 	terrainMenu->AppendCheckItem(ID_TERRAIN_OCEAN, _T("Show Ocean\tF5"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_TREES, _T("Show Trees and Buildings\tF6"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF7"));
-	terrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF8"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_TREES, _T("Show Trees\tF6"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_STRUCTURES, _T("Show Structures\tF7"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_ROADS, _T("Show Roads\tF8"));
+	terrainMenu->AppendCheckItem(ID_TERRAIN_FOG, _T("Show Fog\tF9"));
 	terrainMenu->AppendSeparator();
 	terrainMenu->Append(ID_TERRAIN_INCREASE, _T("Increase Detail (+)"));
 	terrainMenu->Append(ID_TERRAIN_DECREASE, _T("Decrease Detail (-)"));
@@ -773,21 +776,9 @@ void vtFrame::OnSceneGraph(wxCommandEvent& event)
 
 void vtFrame::OnSceneTerrain(wxCommandEvent& event)
 {
-#if 0
-	ChooseTerrainDlg dlg(this, -1, "Choose Terrain", wxDefaultPosition);
-	dlg.m_strTName = "none";
-	dlg.CenterOnParent();
-	int result = dlg.ShowModal();
-	if (result == wxID_OK)
-	{
-		wxString fname = dlg.m_strTName;
-		g_App.SwitchToTerrain(fname);
-	}
-#else
 	wxString2 str;
 	if (AskForTerrainName(this, str))
 		g_App.SwitchToTerrain(str.mb_str());
-#endif
 }
 
 void vtFrame::OnUpdateSceneTerrain(wxUpdateUIEvent& event)
@@ -918,6 +909,22 @@ void vtFrame::OnUpdateTrees(wxUpdateUIEvent& event)
 	bool on = false;
 	if (t)
 		on = t->GetFeatureVisible(TFT_VEGETATION);
+	event.Enable(t != NULL);
+	event.Check(on);
+}
+
+void vtFrame::OnStructures(wxCommandEvent& event)
+{
+	vtTerrain *t = GetCurrentTerrain();
+	if (t) t->SetFeatureVisible(TFT_STRUCTURES, !t->GetFeatureVisible(TFT_STRUCTURES));
+}
+
+void vtFrame::OnUpdateStructures(wxUpdateUIEvent& event)
+{
+	vtTerrain *t = GetCurrentTerrain();
+	bool on = false;
+	if (t)
+		on = t->GetFeatureVisible(TFT_STRUCTURES);
 	event.Enable(t != NULL);
 	event.Check(on);
 }
