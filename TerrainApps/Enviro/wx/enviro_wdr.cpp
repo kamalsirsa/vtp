@@ -1241,25 +1241,31 @@ wxSizer *TParams6Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item10->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Height (meters above ground)"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Height above ground"), wxDefaultPosition, wxDefaultSize, 0 );
     item10->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxTextCtrl *item12 = new wxTextCtrl( parent, ID_LABEL_HEIGHT, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
     item10->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
 
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item10->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
     item2->Add( item10, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
 
-    item13->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
+    item14->Add( 20, 20, 0, wxALIGN_CENTER, 5 );
 
-    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Label size (meter height of text)"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, _("Label Size (vertical)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_LABEL_SIZE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item13->Add( item15, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxTextCtrl *item16 = new wxTextCtrl( parent, ID_LABEL_SIZE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    item2->Add( item13, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item2->Add( item14, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
     item0->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
