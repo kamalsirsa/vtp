@@ -709,7 +709,7 @@ const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint
 	Determinant = a * q - p * b;
 	if (fabs(Determinant - 0.0) > fEpsilon)
 	{
-		Origin = FPoint3((b * s - d * q) / Determinant, (p * d - a * s) / Determinant, 0.0);
+		Origin = FPoint3((b * s - d * q) / Determinant, (p * d - a * s) / Determinant, 0.0f);
 		Direction = FPoint3(b * r - c * q, p * c - a * r, Determinant);
 		return INTERSECTING;
 	}
@@ -717,7 +717,7 @@ const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint
 	Determinant = a * r - p * c;
 	if (fabs(Determinant - 0.0) > fEpsilon)
 	{
-		Origin = FPoint3((c * s - d * r) / Determinant, 0.0, (p * d - a * s) / Determinant);
+		Origin = FPoint3((c * s - d * r) / Determinant, 0.0f, (p * d - a * s) / Determinant);
 		Direction = FPoint3(c * q - b * r, Determinant, p * b - a * q);
 		return INTERSECTING;
 	}
@@ -725,7 +725,7 @@ const FPlane::IntersectionType  FPlane::Intersection(const FPlane& Plane, FPoint
 	Determinant = b * r - c * q;
 	if (fabs(Determinant - 0.0) > fEpsilon)
 	{
-		Origin = FPoint3(0.0, (c * s - d * r) / Determinant, (d * q - b * s) / Determinant);
+		Origin = FPoint3(0.0f, (c * s - d * r) / Determinant, (d * q - b * s) / Determinant);
 		Direction = FPoint3(Determinant, c * p - a * r, a * q - b * p);
 		return INTERSECTING;
 	}
