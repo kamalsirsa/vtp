@@ -191,7 +191,7 @@ void RoadEdit::ComputeExtent()
 
 	// also refresh the parallel left and right road edges
 	DPoint2 p2, vec, norm, p3;
-	m_fWidth = (m_iLanes * 3.3f);
+	m_fWidth = EstimateWidth();
 	float half_width = m_fWidth / 2;	// Warning: assumes meters-based
 	for (i = 0; i < size; i++)
 	{
