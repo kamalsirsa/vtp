@@ -228,7 +228,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, StructImportOptions &opt,
 	if (opt.type == ST_BUILDING)
 	{
 		if (nShapeType != SHPT_POINT &&
-			nShapeType != SHPT_POINTZ && 
+			nShapeType != SHPT_POINTZ &&
 			nShapeType != SHPT_POLYGON &&
 			nShapeType != SHPT_ARC &&
 			nShapeType != SHPT_POLYGONZ)
@@ -628,7 +628,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 	OGRFeature		*pFeature;
 	OGRPolygon		*pPolygon;
 	vtBuilding		*pBld;
-	vtLevel         *pLevel, *pNewLevel;
+	vtLevel			*pLevel, *pNewLevel;
 	DPoint2			point;
 	DLine2 footprint;
 	OGRLinearRing *pRing;

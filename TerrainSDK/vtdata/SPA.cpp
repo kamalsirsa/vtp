@@ -1,12 +1,12 @@
 //------------------------------------------------------------------------------
 // For convenient integration into the VTP a few minor changes to this file have been made:
 //
-// 1) changed the extension of this file from c to cpp 
+// 1) changed the extension of this file from c to cpp
 // 2) added type casts for "floor" function (a side effet of moving over to cpp)
-// 3) added topocentric altitude angle 
+// 3) added topocentric altitude angle
 // 4) Added helper proc at bottom of file
 //
-// You can find the changes I made by searching for "KMB" 
+// You can find the changes I made by searching for "KMB"
 // -Kevin Behilo 1/9/04
 //------------------------------------------------------------------------------
 
@@ -523,7 +523,7 @@ double julian_day (int year, int month, int day, int hour, int minute, int secon
 		a = (int)floor((float)year/(float)100);  //***KMB added cast to avoid ambiguous calls to overloaded function
 		julian_day += (2 - a + (int)floor((float)a/(float)4)); //***KMB added cast to avoid ambiguous calls to overloaded function
 	}
-	 
+	
 	return julian_day;
 }
 
@@ -576,7 +576,7 @@ double earth_heliocentric_longitude(double jme)
 	double sum[L_COUNT];
 	int i;
 	
-	for (i = 0; i < L_COUNT; i++) 
+	for (i = 0; i < L_COUNT; i++)
 		sum[i] = earth_periodic_term_summation(L_TERMS[i], l_subcount[i], jme);
 		
 	return limit_degrees(rad2deg(earth_values(sum, L_COUNT, jme)));
@@ -588,7 +588,7 @@ double earth_heliocentric_latitude(double jme)
 	double sum[B_COUNT];
 	int i;
 	
-	for (i = 0; i < B_COUNT; i++) 
+	for (i = 0; i < B_COUNT; i++)
 		sum[i] = earth_periodic_term_summation(B_TERMS[i], b_subcount[i], jme);
 		
 	return rad2deg(earth_values(sum, B_COUNT, jme));
@@ -600,7 +600,7 @@ double earth_radius_vector(double jme)
 	double sum[R_COUNT];
 	int i;
 	
-	for (i = 0; i < R_COUNT; i++) 
+	for (i = 0; i < R_COUNT; i++)
 		sum[i] = earth_periodic_term_summation(R_TERMS[i], r_subcount[i], jme);
 		
 	return earth_values(sum, R_COUNT, jme);
@@ -677,7 +677,7 @@ double ecliptic_mean_obliquity(double jme)
 {
 	double u = jme/10.0;
 	
-	return 84381.448 + u*(-4680.96 + u*(-1.55 + u*(1999.25 + u*(-51.38 + u*(-249.67 + 
+	return 84381.448 + u*(-4680.96 + u*(-1.55 + u*(1999.25 + u*(-51.38 + u*(-249.67 +
 					   u*(  -39.05 + u*( 7.12 + u*(  27.87 + u*(  5.79 + u*2.45)))))))));
 }
 
@@ -698,7 +698,7 @@ double apparent_sun_longitude(double theta, double delta_psi, double delta_tau)
 
 double greenwich_mean_sidereal_time (double jd, double jc)
 {
-	return limit_degrees(280.46061837 + 360.98564736629 * (jd - 2451545.0) + 
+	return limit_degrees(280.46061837 + 360.98564736629 * (jd - 2451545.0) +
 							jc*jc*(0.000387933 - jc/38710000.0));
 }
 
@@ -712,16 +712,16 @@ double geocentric_sun_right_ascension(double lamda, double epsilon, double beta)
 	double lamda_rad   = deg2rad(lamda);
 	double epsilon_rad = deg2rad(epsilon);
 	
-	return limit_degrees(rad2deg(atan2(sin(lamda_rad)*cos(epsilon_rad) - 
+	return limit_degrees(rad2deg(atan2(sin(lamda_rad)*cos(epsilon_rad) -
 									   tan(deg2rad(beta))*sin(epsilon_rad), cos(lamda_rad))));
 }
-  
+
 double geocentric_sun_declination(double beta, double epsilon, double lamda)
 {
 	double beta_rad		= deg2rad(beta);
 	double epsilon_rad	= deg2rad(epsilon);
 	
-	return rad2deg(asin(sin(beta_rad)*cos(epsilon_rad) + 
+	return rad2deg(asin(sin(beta_rad)*cos(epsilon_rad) +
 						cos(beta_rad)*sin(epsilon_rad)*sin(deg2rad(lamda))));
 }
 
@@ -746,10 +746,10 @@ void sun_right_ascension_parallax_and_topocentric_dec(float latitude, float elev
 	double y = 0.99664717 * sin(u) + elevation*sin(lat_rad)/6378140.0;
 	double x =				cos(u) + elevation*cos(lat_rad)/6378140.0;
 	
-	*delta_alpha = rad2deg(atan2(-x*sin(xi_rad)*sin(h_rad), cos(delta_rad) - 
+	*delta_alpha = rad2deg(atan2(-x*sin(xi_rad)*sin(h_rad), cos(delta_rad) -
 								  x*sin(xi_rad)*cos(h_rad)));
 
-	*delta_prime = rad2deg(atan2((sin(delta_rad) - y*sin(xi_rad))*cos(*delta_alpha), 
+	*delta_prime = rad2deg(atan2((sin(delta_rad) - y*sin(xi_rad))*cos(*delta_alpha),
 								  cos(delta_rad) - x*sin(xi_rad) *cos(h_rad)));
 }
 
@@ -768,13 +768,13 @@ double topocentric_elevation_angle(float latitude, double delta_prime, double h_
 	double lat_rad		   = deg2rad(latitude);
 	double delta_prime_rad = deg2rad(delta_prime);
 	
-	return rad2deg(asin(sin(lat_rad)*sin(delta_prime_rad) + 
+	return rad2deg(asin(sin(lat_rad)*sin(delta_prime_rad) +
 						cos(lat_rad)*cos(delta_prime_rad) * cos(deg2rad(h_prime))));
 }
 
 double atmospheric_refraction_correction(float pressure, float temperature, double e0)
 {
-	return (pressure / 1010.0) * (283.0 / (273.0 + temperature)) * 
+	return (pressure / 1010.0) * (283.0 / (273.0 + temperature)) *
 			1.02 / (60 * tan(deg2rad(e0 + 10.3/(e0 + 5.11))));
 }
 
@@ -793,7 +793,7 @@ double topocentric_azimuth_angle_neg180_180(double h_prime, float latitude, doub
 	double h_prime_rad = deg2rad(h_prime);
 	double lat_rad	   = deg2rad(latitude);
 	
-	return rad2deg(atan2(sin(h_prime_rad), 
+	return rad2deg(atan2(sin(h_prime_rad),
 						 cos(h_prime_rad)*sin(lat_rad) - tan(deg2rad(delta_prime))*cos(lat_rad)));
 }
 
@@ -807,19 +807,19 @@ double surface_incidence_angle(double zenith, double azimuth180, float azm_rotat
 	double zenith_rad = deg2rad(zenith);
 	double slope_rad  = deg2rad(slope);
 	
-	return rad2deg(acos(cos(zenith_rad)*cos(slope_rad)  + 
+	return rad2deg(acos(cos(zenith_rad)*cos(slope_rad)  +
 						sin(slope_rad )*sin(zenith_rad) * cos(deg2rad(azimuth180 - azm_rotation))));
 }
 
 double sun_mean_longitude(double jme)
 {
-	return limit_degrees(280.4664567 + jme*(360007.6982779 + jme*(0.03032028 + 
+	return limit_degrees(280.4664567 + jme*(360007.6982779 + jme*(0.03032028 +
 					jme*(1/49931.0   + jme*(-1/15300.0	   + jme*(-1/2000000.0))))));
 }
 
 double eot(double m, double alpha, double del_psi, double epsilon)
 {
-	return 4.0*(m - 0.0057183 - alpha + del_psi*cos(deg2rad(epsilon))); 
+	return 4.0*(m - 0.0057183 - alpha + del_psi*cos(deg2rad(epsilon)));
 }
 
 double approx_sun_transit_time(double alpha_zero, float longitude, double nu)
@@ -832,7 +832,7 @@ double sun_hour_angle_at_rise_set(float latitude, double delta_zero, double h0_p
 	double h0			  = -99999;
 	double latitude_rad	  = deg2rad(latitude);
 	double delta_zero_rad = deg2rad(delta_zero);
-	double argument		  = (sin(deg2rad(h0_prime)) - sin(latitude_rad)*sin(delta_zero_rad)) / 
+	double argument		  = (sin(deg2rad(h0_prime)) - sin(latitude_rad)*sin(delta_zero_rad)) /
 													 (cos(latitude_rad)*cos(delta_zero_rad));
 	
 	if (fabs(argument) <= 1) h0 = limit_degrees180(rad2deg(acos(argument)));
@@ -849,7 +849,7 @@ void approx_sun_rise_and_set(double *m_rts, double h0)
 	m_rts[SUN_TRANSIT]	= limit_zero2one(m_rts[SUN_TRANSIT]);
 }
 
-double rts_alpha_delta_prime(double *ad, double n) 
+double rts_alpha_delta_prime(double *ad, double n)
 {
 	double a = ad[JD_ZERO] - ad[JD_MINUS];
 	double b = ad[JD_PLUS] - ad[JD_ZERO];
@@ -862,43 +862,43 @@ double rts_sun_altitude(double latitude, double delta_prime, double h_prime)
 	double latitude_rad    = deg2rad(latitude);
 	double delta_prime_rad = deg2rad(delta_prime);
 	
-	return rad2deg(asin(sin(latitude_rad)*sin(delta_prime_rad) + 
+	return rad2deg(asin(sin(latitude_rad)*sin(delta_prime_rad) +
 	                    cos(latitude_rad)*cos(delta_prime_rad)*cos(deg2rad(h_prime))));
 }
 
-double sun_rise_and_set(double *m_rts,   double *h_rts,   double *delta_prime, double latitude, 
+double sun_rise_and_set(double *m_rts,   double *h_rts,   double *delta_prime, double latitude,
                         double *h_prime, double h0_prime, int sun)
 {
-	return m_rts[sun] + (h_rts[sun] - h0_prime) / 
+	return m_rts[sun] + (h_rts[sun] - h0_prime) /
 	      (360.0*cos(deg2rad(delta_prime[sun]))*cos(deg2rad(latitude))*sin(deg2rad(h_prime[sun])));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// Calculate required SPA parameters to get the right ascension (alpha) and declination (delta) 
+// Calculate required SPA parameters to get the right ascension (alpha) and declination (delta)
 // Note: JD must be already calculated and in structure
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void calculate_geocentric_sun_right_ascension_and_declination(spa_data *spa)
 {
 	double x[TERM_X_COUNT];
 
-	spa->jc = julian_century(spa->jd);											 
+	spa->jc = julian_century(spa->jd);											
 
-	spa->jde = julian_ephemeris_day(spa->jd, spa->delta_t);       
-	spa->jce = julian_ephemeris_century(spa->jde);		 
-	spa->jme = julian_ephemeris_millennium(spa->jce); 
+	spa->jde = julian_ephemeris_day(spa->jd, spa->delta_t);
+	spa->jce = julian_ephemeris_century(spa->jde);		
+	spa->jme = julian_ephemeris_millennium(spa->jce);
 
-	spa->l = earth_heliocentric_longitude(spa->jme);   
-	spa->b = earth_heliocentric_latitude(spa->jme);	   
-	spa->r = earth_radius_vector(spa->jme);			   
+	spa->l = earth_heliocentric_longitude(spa->jme);
+	spa->b = earth_heliocentric_latitude(spa->jme);	
+	spa->r = earth_radius_vector(spa->jme);			
 
 	spa->theta = geocentric_longitude(spa->l);
 	spa->beta  = geocentric_latitude(spa->b);
 
-	spa->x0 = mean_elongation_moon_sun(spa->jce);  
-	spa->x1 = mean_anomaly_sun(spa->jce);          
-	spa->x2 = mean_anomaly_moon(spa->jce);         
-	spa->x3 = argument_latitude_moon(spa->jce);    
-	spa->x4 = ascending_longitude_moon(spa->jce);  			  
+	spa->x0 = mean_elongation_moon_sun(spa->jce);
+	spa->x1 = mean_anomaly_sun(spa->jce);
+	spa->x2 = mean_anomaly_moon(spa->jce);
+	spa->x3 = argument_latitude_moon(spa->jce);
+	spa->x4 = ascending_longitude_moon(spa->jce);  			
 
 	x[TERM_X0] = spa->x0;
 	x[TERM_X1] = spa->x1;
@@ -943,8 +943,8 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 	sun_rts.second   = 0;
 	sun_rts.timezone = 0;
 	sun_rts.jd = julian_day (sun_rts.year, sun_rts.month,  sun_rts.day,
-	                         sun_rts.hour, sun_rts.minute, sun_rts.second, sun_rts.timezone);  
-	                         
+	                         sun_rts.hour, sun_rts.minute, sun_rts.second, sun_rts.timezone);
+	
 	calculate_geocentric_sun_right_ascension_and_declination(&sun_rts);
 	nu = sun_rts.nu;
 	
@@ -977,13 +977,13 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 			h_rts[i]       = rts_sun_altitude(spa->latitude, delta_prime[i], h_prime[i]);
 		}
 		
-		spa->suntransit = dayfrac_to_local_hr(m_rts[SUN_TRANSIT] - h_prime[SUN_TRANSIT] / 360.0, 
+		spa->suntransit = dayfrac_to_local_hr(m_rts[SUN_TRANSIT] - h_prime[SUN_TRANSIT] / 360.0,
 		                                      spa->timezone);
 		
 		spa->sunrise = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
 		                  spa->latitude, h_prime, h0_prime, SUN_RISE), spa->timezone);
-		                                                       
-		spa->sunset  = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime, 
+
+		spa->sunset  = dayfrac_to_local_hr(sun_rise_and_set(m_rts, h_rts, delta_prime,
 		                  spa->latitude, h_prime, h0_prime, SUN_SET),  spa->timezone);
 		
 	} else {
@@ -999,15 +999,15 @@ void calculate_eot_and_sun_rise_transit_set(spa_data *spa)
 ///////////////////////////////////////////////////////////////////////////////////////////		
 void spa_calculate(spa_data *spa)
 {
-	spa->jd = julian_day (spa->year, spa->month,  spa->day, 
-	                      spa->hour, spa->minute, spa->second, spa->timezone);  
-	                      
+	spa->jd = julian_day (spa->year, spa->month,  spa->day,
+	                      spa->hour, spa->minute, spa->second, spa->timezone);
+	
 	calculate_geocentric_sun_right_ascension_and_declination(spa);
 	
 	spa->h  = observer_hour_angle(spa->nu, spa->longitude, spa->alpha);
 	spa->xi = sun_equatorial_horizontal_parallax(spa->r);
 
-	sun_right_ascension_parallax_and_topocentric_dec(spa->latitude, spa->elevation, spa->xi, spa->h, 
+	sun_right_ascension_parallax_and_topocentric_dec(spa->latitude, spa->elevation, spa->xi, spa->h,
 	                                            spa->delta, &(spa->del_alpha), &(spa->delta_prime));
 
 	spa->alpha_prime = topocentric_sun_right_ascension(spa->alpha, spa->del_alpha);
@@ -1015,15 +1015,15 @@ void spa_calculate(spa_data *spa)
 	spa->e0          = topocentric_elevation_angle(spa->latitude, spa->delta_prime, spa->h_prime);
 	spa->del_e       = atmospheric_refraction_correction(spa->pressure, spa->temperature, spa->e0);
 	spa->e           = topocentric_elevation_angle_corrected(spa->e0, spa->del_e);
-	 
+	
 	spa->zenith      = topocentric_zenith_angle(spa->e);
-	spa->azimuth180  = topocentric_azimuth_angle_neg180_180(spa->h_prime, spa->latitude, 
+	spa->azimuth180  = topocentric_azimuth_angle_neg180_180(spa->h_prime, spa->latitude,
 	                                                                      spa->delta_prime);
 	spa->azimuth     = topocentric_azimuth_angle_zero_360(spa->azimuth180);
-	spa->incidence   = surface_incidence_angle(spa->zenith, spa->azimuth180, spa->azm_rotation, 
+	spa->incidence   = surface_incidence_angle(spa->zenith, spa->azimuth180, spa->azm_rotation,
 	                                                                         spa->slope);
 	spa->altitude    = 90.0 - spa->incidence;   //**KMB
-	                                                                         
+
 	calculate_eot_and_sun_rise_transit_set(spa);
 }
 
@@ -1042,12 +1042,12 @@ void SetCommonValues(spa_data &spa, float longitude, float latitude,
 	spa.hour= hour;
 	spa.minute= minute;
 	spa.second = second;
-	spa.delta_t = 67.0f;	// Found this value somewhere on the Internet (seems to work). 
+	spa.delta_t = 67.0f;	// Found this value somewhere on the Internet (seems to work).
 	spa.timezone = timezone;
 	spa.longitude = longitude;
 	spa.latitude = latitude;
 	spa.elevation = elevation;
-	spa.pressure=800.0f;	// A reasonable value (?) ~ most users/locations are somewhat above sea level 
+	spa.pressure=800.0f;	// A reasonable value (?) ~ most users/locations are somewhat above sea level
 	spa.temperature =18.0f;	// A reasonable value ~ about average for most inhabited places
 	spa.slope = 0.0f;		// I think this is for a solar panel; we want flat ground.
 	spa.azm_rotation=0.0f;	// I think this is for a solar panel; we want flat ground.

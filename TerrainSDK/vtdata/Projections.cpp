@@ -944,7 +944,7 @@ public:
 	OGRSpatialReference *GetTargetCS() { return m_pStandardConversion->GetTargetCS(); }
 
 	int Transform(int nCount, double *x, double *y, double *z = NULL);
-    int TransformEx(int nCount, double *x, double *y, double *z = NULL, int *pabSuccess = NULL );
+	int TransformEx(int nCount, double *x, double *y, double *z = NULL, int *pabSuccess = NULL );
 
 	OCT *m_pStandardConversion;
 	bool m_bDirection;		// true: to dymax, false: from dymax

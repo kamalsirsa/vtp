@@ -705,7 +705,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 				iPrevSlope = 90;
 			else if (iPrevSlope < 1)
 				iPrevSlope = 0;
-			// If edges are in line and slopes are different then 
+			// If edges are in line and slopes are different then
 			if ((iPrevSlope != iSlope)
 				&& Collinear2d(PreviousPoint, CurrentPoint, NextPoint))
 			{

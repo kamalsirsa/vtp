@@ -1018,7 +1018,7 @@ bool Countries::FindPlaceWithGuess(const char *country, const char *place,
 
 	// Serbia - GEOnet doesn't know "Serbia"
 	if (!strCountry.CompareNoCase("Serbia"))
-		strCountry = "Yugoslavia"; 
+		strCountry = "Yugoslavia";
 
 	// Spain
 	// "Bellaterra (municipality of Cerdanyola del Vallès), between the towns of

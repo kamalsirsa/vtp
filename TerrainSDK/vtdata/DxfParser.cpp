@@ -22,7 +22,7 @@ DxfParser::DxfParser(const vtString &sFileName,
 	m_entities(entities),
 	m_layers(layers)
 {
-	m_sFileName = sFileName; 
+	m_sFileName = sFileName;
 }
 
 /**

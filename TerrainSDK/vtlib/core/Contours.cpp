@@ -47,7 +47,7 @@ ContourConverter::~ContourConverter()
 	delete m_pGrid;
 }
 
-/** 
+/**
  * Set up the class to do draping on a terrain.
  *
  * \param pTerr The terrain you will generate the contour lines on.

@@ -605,7 +605,7 @@ bool vtElevationGrid::LoadFromDTED(const char *szFileName,
 	// REF: record header length + (2 * number of rows) + checksum length
 	int line_length = 8 + (2 * m_iRows) + 4;
 	unsigned char *linebuf = new unsigned char[line_length];
- 
+
 	// Skip DSI and ACC headers
 	fseek(fp, 648 + 2700, SEEK_CUR);
 
@@ -2078,7 +2078,7 @@ bool vtElevationGrid::SaveToPlanet(const char *szDirName, void progress_callback
 
 		fprintf(indexfile, "%s %g %g %g %g %g\n",
 			(const char *) fname2,
-			area.left,   area.right, 
+			area.left,   area.right,
 			area.bottom, area.top,
 			m_dXStep);		// apparently spacing must be even in both directions
 	}

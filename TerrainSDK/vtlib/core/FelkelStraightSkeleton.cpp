@@ -385,7 +385,7 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 			{
 				// Current edge is not a boundary edge then skip any candidates were I am
 				// considering the higher vertex of the boundary edge
-				if (!bBoundaryEdge && 
+				if (!bBoundaryEdge &&
 						(*s1).m_ID < m_NumberOfBoundaryEdges &&
 						(OldPoint == (*s1).m_higher.m_vertex->m_point))
 					continue;

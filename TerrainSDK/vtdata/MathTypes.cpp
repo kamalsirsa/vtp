@@ -295,10 +295,10 @@ bool DPolygon2::ContainsPoint(const DPoint2 &p) const
 	//  rings as input.  So, there are two options, both inefficient:
 	//
 	// 1. Unwind the rings into a temporary array with all the vertices
-	//    present, and test against that.
+	//	present, and test against that.
 	//
 	// 2. Test against each ring: inside the outside ring, and outside of
-	//    each internal ring.  (This is what GEOS does.)
+	//	each internal ring.  (This is what GEOS does.)
 	//
 	// Here we take option 1.  TODO: make this faster and more efficient!!
 
