@@ -49,20 +49,21 @@ extern wxSizer *g_pTopGroup;
 #define ID_EDGE 10015
 extern wxSizer *g_pEdgeGroup;
 #define ID_MATERIAL2 10016
-#define ID_COLOR2 10017
-#define ID_EDGE_SLOPE 10018
-#define ID_FEATURES 10019
-#define ID_FEAT_CLEAR 10020
-#define ID_FEAT_WALL 10021
-#define ID_FEAT_WINDOW 10022
-#define ID_FEAT_DOOR 10023
+#define ID_FACADE 10017
+#define ID_COLOR2 10018
+#define ID_EDGE_SLOPE 10019
+#define ID_FEATURES 10020
+#define ID_FEAT_CLEAR 10021
+#define ID_FEAT_WALL 10022
+#define ID_FEAT_WINDOW 10023
+#define ID_FEAT_DOOR 10024
 wxSizer *BuildingEdgesDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_TYPE 10024
-#define ID_HEIGHTEDIT 10025
-#define ID_HEIGHTSLIDER 10026
-#define ID_SPACINGEDIT 10027
-#define ID_SPACINGSLIDER 10028
+#define ID_TYPE 10025
+#define ID_HEIGHTEDIT 10026
+#define ID_HEIGHTSLIDER 10027
+#define ID_SPACINGEDIT 10028
+#define ID_SPACINGSLIDER 10029
 wxSizer *LinearStructDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
