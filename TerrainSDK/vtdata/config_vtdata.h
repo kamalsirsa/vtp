@@ -7,6 +7,14 @@
 #ifndef CONFIG_VTDATA_H
 #define CONFIG_VTDATA_H
 
+// Use the QuikGrid library, which adds support for operations such as
+// generating contour lines.
+//
+// The QuikGrid library is LGPL and available from:
+//		http://www.perspectiveedge.com/
+//
+#define SUPPORT_QUIKGRID	1
+
 // Use the NetCDF library, which adds support for the "CDF" file format,
 // which is commonly used for bathymetry.
 //
