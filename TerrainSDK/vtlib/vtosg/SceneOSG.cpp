@@ -115,6 +115,7 @@ void vtScene::Shutdown()
 {
 	VTLOG("vtScene::Shutdown\n");
 	vtNode::ClearOsgModelCache();
+	vtImageCacheClear();
 	osgDB::Registry::instance()->clearObjectCache();
 }
 
