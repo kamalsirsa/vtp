@@ -88,11 +88,11 @@ bool MyApp::OnInit()
 
 	VTLOG(" GDAL-supported formats:");
 	GDALDriverManager *poDM = GetGDALDriverManager();
-    for( int iDriver = 0; iDriver < poDM->GetDriverCount(); iDriver++ )
-    {
+	for( int iDriver = 0; iDriver < poDM->GetDriverCount(); iDriver++ )
+	{
 		if ((iDriver % 13) == 0)
 			VTLOG("\n  ");
-        GDALDriver *poDriver = poDM->GetDriver( iDriver );
+		GDALDriver *poDriver = poDM->GetDriver( iDriver );
 		const char *name = poDriver->GetDescription();
 		VTLOG("%s ", name);
 	}
