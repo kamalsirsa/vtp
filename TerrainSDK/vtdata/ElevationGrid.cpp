@@ -129,6 +129,11 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	// round up to the nearest integer
 	m_iColumns = (int)(fColumns + 0.999);
 	m_iRows = (int)(fRows + 0.999);
+
+	// do safety check
+	if (m_iColumns > 40000 || m_iRows > 40000)
+		return false;
+
 	AllocateArray();
 
 	// convert each bit of data from the old array to the new
@@ -489,6 +494,7 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo)
 
 		Dest.SetWellKnownGeogCS("WGS84");
 
+		// TODO - 
 		// We can't convert datum yet.  Force assumption that destination
 		// datum is the same as the source.
 		const char *datum_string = m_proj.GetAttrValue("DATUM");
@@ -508,6 +514,7 @@ bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo)
 			trans->Transform(1, &p.x, &p.y);
 			line.SetAt(i, p);
 		}
+		delete trans;
 	}
 	return true;
 }
