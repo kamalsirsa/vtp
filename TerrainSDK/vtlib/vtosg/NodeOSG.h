@@ -341,9 +341,10 @@ public:
 	float GetHither();
 	void SetYon(float f);
 	float GetYon();
-
 	void SetFOV(float f);
 	float GetFOV();
+
+	void GetDirection(FPoint3 &dir);
 
 	void ZoomToSphere(const FSphere &sphere);
 

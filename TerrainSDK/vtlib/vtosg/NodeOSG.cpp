@@ -351,6 +351,14 @@ float vtCamera::GetFOV()
 	return (fov_x / 180.0f * PIf);
 }
 
+void vtCamera::GetDirection(FPoint3 &dir)
+{
+	FMatrix4 mat;
+	GetTransform1(mat);
+	FPoint3 forward(0, 0, -1);
+	mat.TransformVector(forward, dir);
+}
+
 void vtCamera::ZoomToSphere(const FSphere &sphere)
 {
 	Identity();
