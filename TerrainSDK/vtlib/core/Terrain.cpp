@@ -1364,8 +1364,12 @@ void vtTerrain::SetFogDistance(float fMeters)
  */
 vtTime vtTerrain::GetInitialTime()
 {
+	const char *str = m_Params.GetValueString(STR_INITTIME);
+
+	VTLOG("Initial time: %s\n", str);
+
 	vtTime localtime;
-	localtime.SetFromString(m_Params.GetValueString(STR_INITTIME));
+	localtime.SetFromString(str);
 	return localtime;
 }
 
