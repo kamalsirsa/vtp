@@ -30,10 +30,10 @@ vtUtilityLayer::vtUtilityLayer() : vtLayer(LT_UTILITY)
 
 bool vtUtilityLayer::GetExtent(DRECT &rect)
 {
-/*	if (IsEmpty())
+	if (m_Poles.IsEmpty())
 		return false;
 
-	GetExtents(rect);
+	GetPoleExtents(rect);
 
 	// expand by 2 meters
 	rect.left -= 2.0f;
@@ -42,17 +42,18 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 	rect.top += 2.0f;
 
 	return true;
-	*/
-	return false;
 }
 
-#define BLENGTH 5
+#define MAXPOINTS 80
+static wxPoint pointbuf[MAXPOINTS];
 
 void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-/*
-	int npoints = GetSize();
-	if (!npoints)
+	int i, j;
+	int npoles = m_Poles.GetSize();
+	int nlines = m_Lines.GetSize();
+
+	if (!npoles)
 		return;
 
 	pDC->SetPen(greenPen);
@@ -63,12 +64,13 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	for (int i = 0; i < npoints; i++)
+				pDC->SetPen(bluePen);
+	for (i = 0; i < npoles; i++)
 	{
-		// draw each Tower
-		vtTower *twr = GetAt(i);
+		// draw each Pole
+		vtPole *pole = m_Poles.GetAt(i);
 
-		if (twr->IsSelected())
+/*		if (pole->IsSelected())
 		{
 			if (!bSel)
 			{
@@ -83,66 +85,29 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 				pDC->SetPen(greenPen);
 				bSel = false;
 			}
-		}
-		DrawTower(pDC, pView, twr);
+		} */
+		DrawPole(pDC, pView, pole);
 	}
-	*/
+	pDC->SetPen(greenPen);
+	for (i = 0; i < nlines; i++)
+	{
+		vtLine *line = m_Lines.GetAt(i);
+		for (j = 0; j < line->GetSize(); j++)
+			pView->screen(line->GetAt(j), pointbuf[j]);
+
+		pDC->DrawLines(j, pointbuf);
+	}
 }
 
-/*
-#define MAX_SIDES	45
-static wxPoint array[MAX_SIDES];
 
-void vtUtilityLayer::DrawTower(wxDC* pDC, vtScaledView *pView, vtTower *tower)
+void vtUtilityLayer::DrawPole(wxDC* pDC, vtScaledView *pView, vtPole *pole)
 {
-	DPoint2 corner[4];
-	float fWidth, fDepth, fRotation;
+	wxPoint center;
+	pView->screen(pole->m_p, center);
 
-	wxPoint origin;
-	pView->screen(tower->GetLocation(), origin);
-
-	pDC->DrawLine(origin.x-m_size, origin.y, origin.x+m_size+1, origin.y);
-	pDC->DrawLine(origin.x, origin.y-m_size, origin.x, origin.y+m_size+1);
-
-	if (tower->GetShape() == TSHAPE_POLY)
-	{
-		DLine2 &dl = tower->GetFootprint();
-		int size = dl.GetSize();
-		for (int j = 0; j < size && j < MAX_SIDES-1; j++)
-			pView->screen(dl.GetAt(j), array[j]);
-		pView->screen(dl.GetAt(0), array[j++]);
-
-		pDC->DrawLines(j, array);
-	}
-	if (tower->GetShape() == TSHAPE_CIRCLE)
-	{
-		int size = pView->sdx(tower->GetRadius());
-		pDC->DrawEllipse(origin.x-size, origin.y-size,
-			size<<1, size<<1);
-	}
-	if (tower->GetShape() == TSHAPE_RECTANGLE)
-	{
-		tower->GetRectangle(fWidth, fDepth);
-		tower->GetRotation(fRotation);
-		if (fRotation == -1.0f) fRotation = 0.0f;
-		DPoint2 pt(fWidth / 2.0, fDepth / 2.0);
-		corner[0].Set(-pt.x, pt.y);
-		corner[1].Set(pt.x, pt.y);
-		corner[2].Set(pt.x, -pt.y);
-		corner[3].Set(-pt.x, -pt.y);
-		corner[0].Rotate(fRotation);
-		corner[1].Rotate(fRotation);
-		corner[2].Rotate(fRotation);
-		corner[3].Rotate(fRotation);
-		array[0] = origin + pView->screen_delta(corner[0]);
-		array[1] = origin + pView->screen_delta(corner[1]);
-		array[2] = origin + pView->screen_delta(corner[2]);
-		array[3] = origin + pView->screen_delta(corner[3]);
-		array[4] = array[0];
-		pDC->DrawLines(5, array);
-	}
+	pDC->DrawLine(center.x-m_size, center.y, center.x+m_size+1, center.y);
+	pDC->DrawLine(center.x, center.y-m_size, center.x, center.y+m_size+1);
 }
-*/
 
 bool vtUtilityLayer::OnSave()
 {
@@ -165,6 +130,11 @@ bool vtUtilityLayer::OnLoad()
 void vtUtilityLayer::GetProjection(vtProjection &proj)
 {
 	proj = m_proj;
+}
+
+void vtUtilityLayer::SetProjection(vtProjection &proj)
+{
+	m_proj = proj;
 }
 
 bool vtUtilityLayer::ConvertProjection(vtProjection &proj)
@@ -232,25 +202,6 @@ void vtUtilityLayer::Offset(DPoint2 p)
 }
 
 //
-// Helper: find the index of a field in a DBF file, given the name of the field.
-// Returns -1 if not found.
-//
-int FindDBFieldT(DBFHandle db, const char *field_name)
-{
-	int count = DBFGetFieldCount(db);
-	for (int i = 0; i < count; i++)
-	{
-		int pnWidth, pnDecimals;
-		char pszFieldName[80];
-		DBFFieldType fieldtype = DBFGetFieldInfo(db, i,
-			pszFieldName, &pnWidth, &pnDecimals );
-		if (!stricmp(field_name, pszFieldName))
-			return i;
-	}
-	return -1;
-}
-
-//
 // inverts Selected value of tower within error or utmCoord
 //
 /*bool vtUtilityLayer::SelectTower(DPoint2 utmCoord, float error, DRECT &bound)
@@ -312,109 +263,4 @@ void vtUtilityLayer::InvertSelection()
 }
 
 
-void vtUtilityLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
-{
-	// Open the SHP File & Get Info from SHP:
-	SHPHandle hSHP = SHPOpen(filename, "rb");
-	if (hSHP == NULL)
-		return;
-
-	//  Get number of polys (m_iNumPolys) and type of data (nShapeType)
-	int		nElem;
-	int		nShapeType;
-    double	adfMinBound[4], adfMaxBound[4];
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
-
-	//  Check Shape Type, Building outlines should be Poly data
-	if (nShapeType == SHPT_POINT)
-		AddElementsFromSHPPoints(hSHP, nElem);
-	else if (nShapeType == SHPT_POLYGON)
-		AddElementsFromSHPPolygons(filename, hSHP, nElem);
-
-	m_proj = proj;	// Set projection
-
-	SHPClose(hSHP);
-}
-
-void vtUtilityLayer::AddElementsFromSHPPoints(SHPHandle hSHP, int nElem)
-{
-/*
-	// Initialize arrays
-	SetMaxSize(nElem);
-
-	// Read Points from SHP
-	int i;
-	SHPObject *psShape;
-	for (i = 0; i < nElem; i++)
-	{
-		// Get the i-th Point in the SHP file
-		psShape = SHPReadObject(hSHP, i);
-
-		vtTower *new_tower = new vtTower();
-		new_tower->SetShape(TSHAPE_RECTANGLE);
-		new_tower->SetLocation(DPoint2(psShape->padfX[0], psShape->padfY[0]));
-		//new_tower->SetStories(1);
-		AddTower(new_tower);
-
-		SHPDestroyObject(psShape);
-	}
-	*/
-}
-
-void vtUtilityLayer::AddElementsFromSHPPolygons(const char *filename,
-												 SHPHandle hSHP, int nElem)
-{
-	/*
-	// Open DBF File & Get DBF Info:
-	DBFHandle db = DBFOpen(filename, "rb");
-	if (db == NULL)
-		return;
-
-	// Check for field with number of stories
-	int stories_field = FindDBFieldT(db, "Stories");
-
-	// Initialize arrays
-	SetMaxSize(nElem);
-
-	// Read Polys from SHP
-	int i;
-	SHPObject *psShape;
-	for (i = 0; i < nElem; i++)
-	{
-		// Get the i-th Poly in the SHP file
-		psShape = SHPReadObject(hSHP, i);
-
-		// Store each SHP Poly as Building Footprint
-
-		// The SHP appears to repeat the first point as the last, so ignore
-		// the last point.
-		int num_points = psShape->nVertices-1;
-
-		vtTower *new_tower = new vtTower();
-		new_tower->SetShape(TSHAPE_POLY);
-
-		DLine2 foot;
-		foot.SetSize(num_points);
-
-		int j, k;
-		for (j = 0; j < num_points; j++)
-		{
-			// The SHP polygons appear to be clockwise - but the vtBuilding
-			//  convention is counter-clockwise, so reverse the order.
-			k = num_points-1-j;
-
-			foot.SetAt(j, DPoint2(psShape->padfX[k], psShape->padfY[k]));
-		}
-		new_tower->SetFootprint(foot);
-		new_tower->SetCenterFromPoly();
-
-	//	new_tower->SetArms(num_arms);
-
-		AddTower(new_tower);
-
-		SHPDestroyObject(psShape);
-	}
-	DBFClose(db);
-	*/
-}
 

@@ -9,11 +9,11 @@
 #define UTILITYLAYER_H
 
 #include "Layer.h"
-#include "vtdata/shapelib/shapefil.h"
+#include "vtdata/UtilityMap.h"
 
 //////////////////////////////////////////////////////////
 
-class vtUtilityLayer : public vtLayer
+class vtUtilityLayer : public vtLayer, public vtUtilityMap
 {
 public:
 	vtUtilityLayer();
@@ -24,19 +24,17 @@ public:
 	bool OnSave();
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
+	void SetProjection(vtProjection &proj);
 	bool AppendDataFrom(vtLayer *pL);
 	void Offset(DPoint2 p);
-
-	void AddElementsFromSHP(const char *filename, vtProjection &proj);
-	void AddElementsFromSHPPoints(SHPHandle hSHP, int nElem);
-	void AddElementsFromSHPPolygons(const char *filename,
-									SHPHandle hSHP, int nElem);
 
 	void DeselectAll();
 	void InvertSelection();
 
 protected:
-	vtProjection m_proj;
+	void DrawPole(wxDC* pDC, vtScaledView *pView, vtPole *pole);
+
+	int m_size;
 };
 
 #endif
