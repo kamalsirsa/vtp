@@ -191,9 +191,6 @@ bool vtApp::OnInit()
 
 	SetupLocale();
 
-	// Look for all terrains on all data paths
-	RefreshTerrainList();
-
 /*	class AA { public: virtual void func() {} };
 	class BB : public AA {};
 	VTLOG("Testing the ability to use dynamic_cast to downcast...\n");
@@ -207,6 +204,10 @@ bool vtApp::OnInit()
 	//
 	if (m_bShowStartupDialog)
 	{
+		// Look for all terrains on all data paths, so that we have a list
+		//  of them even before we call vtlib.
+		RefreshTerrainList();
+
 		VTLOG("Opening the Startup dialog.\n");
 		wxString appname = _T(STRING_APPNAME);
 		appname += _(" Startup");
@@ -309,18 +310,18 @@ void vtApp::RefreshTerrainList()
 }
 
 //
-// ask the user to choose from a list of known terrain
+// Ask the user to choose from a list of all loaded terrain.
 //
 bool vtApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 {
-	// convert all the terrain names to wxStrings
+	vtTerrainScene *ts = GetTerrainScene();
 	int num = 0, first_idx = 0;
 	std::vector<wxString> choices;
 
-	for (unsigned int i = 0; i < terrain_files.size(); i++)
+	for (vtTerrain *terr = ts->GetFirstTerrain(); terr; terr=terr->GetNext())
 	{
 		wxString2 wstr;
-		wstr.from_utf8(terrain_names[i]);
+		wstr.from_utf8(terr->GetName());
 		choices.push_back(wstr);
 		if (wstr.Cmp(strTerrainName) == 0)
 			first_idx = num;
