@@ -563,7 +563,7 @@ vtMesh *vtBuilding3d::FindMatMesh(BldMaterial bm, RGBi color, int iPrimType)
 // Edges are created from a series of features ("panels", "sections")
 //
 void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1,
-	FLine3 &poly2, int iEdge, bool bShowEdge)
+									  FLine3 &poly2, int iEdge, bool bShowEdge)
 {
 	int num_Edgess = pLev->m_Edges.GetSize();
 	int i = iEdge, j = (i+1)%num_Edgess;
@@ -653,7 +653,7 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1,
  * Creates geometry for a highlighted area (an edge).
  */
 void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
-	const FLine3 &quad)
+								  const FLine3 &quad)
 {
 	// determine 4 points at corners of wall section
 	FPoint3 p0 = quad[0];
@@ -667,7 +667,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	FPoint3 norm = Normal(p0,p1,p2);
 
 	int start =
-		mesh->AddVertex(p0 + norm);
+	mesh->AddVertex(p0 + norm);
 	mesh->AddVertex(p1 + norm);
 	mesh->AddVertex(p2 + norm);
 	mesh->AddVertex(p3 + norm);
@@ -693,7 +693,7 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
 	norm *= 0.95f;
 	mesh = FindMatMesh(BMAT_PLAIN, RGBi(255,0,0), GL_LINE_STRIP);
 	start =
-		mesh->AddVertex(p0 + norm);
+	mesh->AddVertex(p0 + norm);
 	mesh->AddVertex(p1 + norm);
 	mesh->AddVertex(p2 + norm);
 	mesh->AddVertex(p3 + norm);
@@ -706,8 +706,8 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
  * starting height.
  */
 void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
-	const FLine3 &quad,
-	float vf1, float vf2, float hf1)
+								  const FLine3 &quad,
+								  float vf1, float vf2, float hf1)
 {
 	// determine 4 points at corners of wall section
 	FPoint3 up1 = (quad[2] - quad[0]);
@@ -752,7 +752,7 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 	}
 
 	int start =
-		mesh->AddVertexNUV(p0, norm, uv0);
+	mesh->AddVertexNUV(p0, norm, uv0);
 	mesh->AddVertexNUV(p1, norm, uv1);
 	mesh->AddVertexNUV(p2, norm, uv2);
 	mesh->AddVertexNUV(p3, norm, uv3);
@@ -761,7 +761,7 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, BldMaterial bmat,
 }
 
 void vtBuilding3d::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
-	const FLine3 &quad)
+								 const FLine3 &quad)
 {
 	float vf1 = pFeat->m_vf1;
 	float vf2 = pFeat->m_vf2;
@@ -773,7 +773,7 @@ void vtBuilding3d::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
  * height.
  */
 void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
-	const FLine3 &quad)
+								  const FLine3 &quad)
 {
 	float vf1 = 0;
 	float vf2 = pFeat->m_vf2;
@@ -792,7 +792,7 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 norm = Normal(p0, p1, p2);
 
 	int start =
-		mesh->AddVertexNUV(p0, norm, FPoint2(1.0f, 1.0f));
+	mesh->AddVertexNUV(p0, norm, FPoint2(1.0f, 1.0f));
 	mesh->AddVertexNUV(p1, norm, FPoint2(0.0f, 1.0f));
 	mesh->AddVertexNUV(p2, norm, FPoint2(0.0f, 0.0f));
 	mesh->AddVertexNUV(p3, norm, FPoint2(1.0f, 0.0f));
@@ -805,7 +805,7 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 
 //builds a window section.  builds the wall below and above a window too.
 void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
-	const FLine3 &quad)
+									const FLine3 &quad)
 {
 	float vf1 = pFeat->m_vf1;
 	float vf2 = pFeat->m_vf2;
@@ -830,7 +830,7 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	FPoint3 norm = Normal(p0,p1,p2);
 
 	int start =
-		mesh->AddVertexNUV(p0, norm, FPoint2(1.0f, 1.0f));
+	mesh->AddVertexNUV(p0, norm, FPoint2(1.0f, 1.0f));
 	mesh->AddVertexNUV(p1, norm, FPoint2(0.0f, 1.0f));
 	mesh->AddVertexNUV(p2, norm, FPoint2(0.0f, 0.0f));
 	mesh->AddVertexNUV(p3, norm, FPoint2(1.0f, 0.0f));
@@ -915,7 +915,6 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 	CSkeletonLine *pNextEdge;
 	bool bEdgeReversed;
 	float EaveY = EavePolygon[0].y;
-	float fSlope;
 #ifdef _DEBUG
 	float DebugX;
 	float DebugY;
@@ -923,8 +922,6 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 #endif
 
 	// Make a roof using felkels straight skeleton algorithm
-	// N.B. this version uses a fixed pitch picked up from the first edge
-	// section
 
 	// First of all build the eave footprint.
 	// The algorithm can handle buildings with holes in them (i.e. a courtyard)
@@ -933,24 +930,13 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 	RoofEaves.push_back(Contour());
 
 	for (i = 0; i < iVertices; i++)
-		RoofEaves[0].push_back(C2DPoint(EavePolygon[i].x, EavePolygon[i].z));
+		RoofEaves[0].push_back(CEdge(EavePolygon[i].x, 0, EavePolygon[i].z, pLev->m_Edges[i]->m_iSlope / 180.0f * PIf));
 
 	// Now build the skeleton
 	StraightSkeleton.MakeSkeleton(RoofEaves);
 
 	// Merge the original eaves back into the skeleton
-	StraightSkeleton.CompleteWingedEdgeStructure(RoofEaves);
-
-	// Clamp the roof pitch
-	fSlope = (float)pLev->m_Edges[0]->m_iSlope;
-	if (fSlope > 97.0)
-		fSlope = 97.0;
-	if (fSlope < 3.0)
-		fSlope = 3.0;
-	fSlope = fSlope * PId / 180.0;
-
-	// Fill in the height values of the interior nodes
-	Skeleton = StraightSkeleton.MakeRoof(RoofEaves, fSlope);
+	Skeleton = StraightSkeleton.CompleteWingedEdgeStructure(RoofEaves);
 
 	if (0 == Skeleton.size())
 		return 0.0;
@@ -976,11 +962,10 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 			int i, j;
 			Array<int> iaVertices;
 
-			C2DPoint& p1 = points[pi];
-			C2DPoint& p2 = points[(pi+1)%points.size()];
+			C3DPoint& p1 = points[pi].m_Point;
+			C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
 			// Find the starting edge
-			CSkeleton::iterator s1;
-			for (s1 = Skeleton.begin(); s1 != Skeleton.end(); s1++)
+			for (CSkeleton::iterator s1 = Skeleton.begin(); s1 != Skeleton.end(); s1++)
 			{
 				if (((*s1).m_lower.m_vertex->m_point == p1) &&
 					((*s1).m_higher.m_vertex->m_point == p2))
@@ -1003,8 +988,8 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 #endif
 					if (pEdge->m_higher.m_vertex->m_point.m_z > (double)fMaxHeight)
 						fMaxHeight = pEdge->m_higher.m_vertex->m_point.m_z;
-					RoofSection2D.Append(FPoint2(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_y));
-					RoofSection3D.Append(FPoint3(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_z + EaveY, pEdge->m_higher.m_vertex->m_point.m_y));
+					RoofSection2D.Append(FPoint2(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_z));
+					RoofSection3D.Append(FPoint3(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_y + EaveY, pEdge->m_higher.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_higher.m_left;
 					if (pEdge->m_higher.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
 						bEdgeReversed = true;
@@ -1020,8 +1005,8 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 #endif
 					if (pEdge->m_lower.m_vertex->m_point.m_z > (double)fMaxHeight)
 						fMaxHeight = pEdge->m_lower.m_vertex->m_point.m_z;
-					RoofSection2D.Append(FPoint2(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_y));
-					RoofSection3D.Append(FPoint3(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_z + EaveY, pEdge->m_lower.m_vertex->m_point.m_y));
+					RoofSection2D.Append(FPoint2(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_z));
+					RoofSection3D.Append(FPoint3(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_y + EaveY, pEdge->m_lower.m_vertex->m_point.m_z));
 					pNextEdge = pEdge->m_lower.m_right;
 					if (pEdge->m_lower.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
 						bEdgeReversed = true;
@@ -1065,7 +1050,7 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 }
 
 int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D,
-	Array<int> &iaVertices)
+							 Array<int> &iaVertices)
 {
 	int iSize = RoofSection3D.GetSize();
 
@@ -1092,7 +1077,7 @@ int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D,
 // optimized geometry in which each whole wall is a single quad.
 //
 void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
-	int iHighlightEdge)
+									  int iHighlightEdge)
 {
 	vtLevel *pLev = m_Levels[iLevel];
 	FLine3 poly1 = *m_lfp[iLevel];
@@ -1168,11 +1153,11 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 		return false;
 
 	mm.m_iMatIdx = s_Materials->AddTextureMaterial2(fname,
-			true, true, false, false,
-			TERRAIN_AMBIENT,
-			TERRAIN_DIFFUSE,
-			1.0f,		// alpha
-			TERRAIN_EMISSIVE);
+		true, true, false, false,
+		TERRAIN_AMBIENT,
+		TERRAIN_DIFFUSE,
+		1.0f,		// alpha
+		TERRAIN_EMISSIVE);
 	// Create a mesh for the new material and add this to the mesh array
 	mm.m_pMesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
 	m_Mesh.Append(mm);
@@ -1223,11 +1208,11 @@ void vtBuilding3d::Randomize(int iStories)
 		// random roof color
 		int r = rand() %5;
 		switch (r) {
-			case 0: color.Set(255, 255, 250); break;	//off-white
-			case 1: color.Set(153, 51, 51); break;		//reddish
-			case 2: color.Set(153, 153, 255); break;	//blue-ish
-			case 3: color.Set(153, 255, 153); break;	//green-ish
-			case 4: color.Set(178, 102, 51); break;		//brown
+		case 0: color.Set(255, 255, 250); break;	//off-white
+		case 1: color.Set(153, 51, 51); break;		//reddish
+		case 2: color.Set(153, 153, 255); break;	//blue-ish
+		case 3: color.Set(153, 255, 153); break;	//green-ish
+		case 4: color.Set(178, 102, 51); break;		//brown
 		}
 
 		SetColor(BLD_ROOF, color);
@@ -1278,26 +1263,26 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 	int end = 0;
 	switch (bldMat)
 	{
-		case BMAT_PLAIN:
-			start = PLAIN_MAT_START;
-			end = PLAIN_MAT_END;
-			break;
-		case BMAT_SIDING:
-			start = SIDING_MAT_START;
-			end = SIDING_MAT_END;
-			break;
-		case BMAT_WINDOWWALL:
-			start = WINDOWWALL_MAT_START;
-			end = WINDOWWALL_MAT_END;
-			break;
-		case BMAT_PAINTED_BRICK:
-			start = PBRICK_MAT_START;
-			end = PBRICK_MAT_END;
-			break;
-		case BMAT_ROLLED_ROOFING:
-			start = RROOFING_MAT_START;
-			end = RROOFING_MAT_END;
-			break;
+	case BMAT_PLAIN:
+		start = PLAIN_MAT_START;
+		end = PLAIN_MAT_END;
+		break;
+	case BMAT_SIDING:
+		start = SIDING_MAT_START;
+		end = SIDING_MAT_END;
+		break;
+	case BMAT_WINDOWWALL:
+		start = WINDOWWALL_MAT_START;
+		end = WINDOWWALL_MAT_END;
+		break;
+	case BMAT_PAINTED_BRICK:
+		start = PBRICK_MAT_START;
+		end = PBRICK_MAT_END;
+		break;
+	case BMAT_ROLLED_ROOFING:
+		start = RROOFING_MAT_START;
+		end = RROOFING_MAT_END;
+		break;
 	}
 
 	// match the closest color.

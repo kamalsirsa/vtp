@@ -30,7 +30,7 @@ public:
 	void ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq);
 	void ApplyLast3(CSkeleton &skeleton, CVertexList &vl);
 
-	C2DPoint m_poi;
+	C3DPoint m_poi; 
 	CVertex *m_leftVertex, *m_rightVertex;
 	CNumber m_height;
 	enum Type { CONVEX, NONCONVEX } m_type;

@@ -14,38 +14,67 @@
 #include "FelkelIntersection.h"
 
 //
-// Implementation of the CBisector class.
+// Implementation of the CRidgeLine class.
 //
 
-CBisector::CBisector(const C2DPoint &p, const C2DPoint &q)
-: m_Origin(p)
+CRidgeLine::CRidgeLine(const C3DPoint &p, const C3DPoint &q, const CNumber &Slope, const bool IsRidgeLine)
+          : m_Origin(p)
 {
-	double d = atan2 (q.m_y - p.m_y, q.m_x - p.m_x);
-	m_Angle = d;
+	m_Angle = atan2 (q.m_z - p.m_z, q.m_x - p.m_x);
+	m_Slope = Slope;
+	m_IsRidgeLine = IsRidgeLine;
 }
 
-CBisector CBisector::AngleAxis (const C2DPoint &b, const C2DPoint &a,
-	const C2DPoint &c)
+CRidgeLine CRidgeLine::AngleAxis (const C3DPoint &b, const C3DPoint &a, const CNumber &sa, const C3DPoint &c, const CNumber &sc)
 {
-	CBisector ba (b, a);
-	CBisector bc (b, c);
+	CNumber theta;
 	CNumber theta1;
+	CNumber theta2;
+	CRidgeLine ba (b, a, -1);
+	CRidgeLine bc (b, c, -1);
 
-	if (ba.m_Angle > bc.m_Angle) ba.m_Angle = ba.m_Angle - 2*CN_PI;
 
-	theta1 = (ba.m_Angle + bc.m_Angle) / 2;
+	theta = bc.m_Angle - ba.m_Angle;
 
-	return CBisector (b, theta1);
+
+	theta1 = atan(sin(theta)/(cos(theta) + tan(sa)/tan(sc)));
+	theta1 += ba.m_Angle;
+
+	if (ba.m_Angle > bc.m_Angle)
+		ba.m_Angle = ba.m_Angle - 2*CN_PI;
+
+	if (fabs(bc.m_Angle - ba.m_Angle) > CN_PI)
+		// Reflex angle flip the angle
+		theta1 += CN_PI;
+
+	theta2 = theta1 - ba.m_Angle;
+	theta2 = atan(sin(theta2) * tan(sa));
+
+	return CRidgeLine (b, theta1, theta2, true);
 }
 
-C2DPoint CBisector::Intersection(const CBisector &a)
+C3DPoint CRidgeLine::Intersection(const CRidgeLine &a)
 {
-	if (m_Origin == a.m_Origin) return m_Origin;
-	if (PointOnBisector (a.m_Origin) && a.PointOnBisector(m_Origin))
-		return C2DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, (m_Origin.m_y + a.m_Origin.m_y)/2);
-	if (PointOnBisector (a.m_Origin)) return a.m_Origin;
-	if (a.PointOnBisector (m_Origin)) return m_Origin;
-	if (Colinear(a)) return C2DPoint(CN_INFINITY, CN_INFINITY);
+	if (m_Origin == a.m_Origin)
+		return m_Origin;
+	if (PointOnRidgeLine(a.m_Origin) && a.PointOnRidgeLine(m_Origin))
+	{
+		if (m_IsRidgeLine && a.m_IsRidgeLine)
+		{
+			CNumber Ratio = tan(m_Slope) / tan(a.m_Slope);
+			return C3DPoint (m_Origin.m_x + Ratio * (a.m_Origin.m_x - m_Origin.m_x) / (Ratio + 1),
+							0,
+							m_Origin.m_z + Ratio * (a.m_Origin.m_z - m_Origin.m_z) / (Ratio + 1));
+		}
+		else
+			return C3DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, 0, (m_Origin.m_z + a.m_Origin.m_z)/2);
+	}
+	if (PointOnRidgeLine (a.m_Origin))
+		return a.m_Origin;
+	if (a.PointOnRidgeLine (m_Origin))
+		return m_Origin;
+	if (Colinear(a))
+		return C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY);
 
 	CNumber sa = sin (m_Angle);
 	CNumber sb = sin (a.m_Angle);
@@ -53,29 +82,56 @@ C2DPoint CBisector::Intersection(const CBisector &a)
 	CNumber cb = cos (a.m_Angle);
 	CNumber x = sb*ca - sa*cb;
 
-	if (x == 0.0) return C2DPoint (CN_INFINITY, CN_INFINITY);
-	CNumber u = (cb*(m_Origin.m_y - a.m_Origin.m_y) - sb*(m_Origin.m_x - a.m_Origin.m_x))/x;
-	if (u != 0.0 && u < 0.0) return C2DPoint (CN_INFINITY, CN_INFINITY);
-	if ((ca*(a.m_Origin.m_y - m_Origin.m_y) - sa*(a.m_Origin.m_x - m_Origin.m_x))/x > 0) return C2DPoint (CN_INFINITY, CN_INFINITY);
-	return C2DPoint (m_Origin.m_x + u*ca, m_Origin.m_y + u*sa);
+	if (x == 0.0)
+		return C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
+	CNumber u = (cb*(m_Origin.m_z - a.m_Origin.m_z) - sb*(m_Origin.m_x - a.m_Origin.m_x))/x;
+	if (u != 0.0 && u < 0.0)
+		return C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
+	if ((ca*(a.m_Origin.m_z - m_Origin.m_z) - sa*(a.m_Origin.m_x - m_Origin.m_x))/x > 0)
+		return C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
+	return C3DPoint (m_Origin.m_x + u*ca, 0, m_Origin.m_z + u*sa);
 };
 
-C2DPoint CBisector::IntersectionAnywhere (const CBisector& a) const
+C3DPoint CRidgeLine::IntersectionAnywhere (const CRidgeLine& a) const
 {
-	CBisector OpaqueBisector1, OpaqueBisector2;
+	CRidgeLine OpaqueRidgeLine1 , OpaqueRidgeLine2;
 
-	if (m_Origin == a.m_Origin) return m_Origin;
-	if (PointOnBisector (a.m_Origin) && a.PointOnBisector(m_Origin))
-		return C2DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, (m_Origin.m_y + a.m_Origin.m_y)/2);
-	if (PointOnBisector (a.m_Origin)) return a.m_Origin;
-	if (a.PointOnBisector (m_Origin)) return m_Origin;
-	if (Colinear(a)) return C2DPoint(CN_INFINITY, CN_INFINITY);
+	if (m_Origin == a.m_Origin)
+		return m_Origin;
+	if (PointOnRidgeLine (a.m_Origin) && a.PointOnRidgeLine(m_Origin))
+	{
+		if (m_IsRidgeLine && a.m_IsRidgeLine)
+		{
+			CNumber Ratio = tan(m_Slope) / tan(a.m_Slope);
+			return C3DPoint (m_Origin.m_x + Ratio * (a.m_Origin.m_x - m_Origin.m_x) / (Ratio + 1),
+							0,
+							m_Origin.m_z + Ratio * (a.m_Origin.m_z - m_Origin.m_z) / (Ratio + 1));
+		}
+		else
+			return C3DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, 0, (m_Origin.m_z + a.m_Origin.m_z)/2);
+	}
+	if (PointOnRidgeLine (a.m_Origin))
+		return a.m_Origin;
+	if (a.PointOnRidgeLine (m_Origin))
+		return m_Origin;
+	if (Colinear(a))
+		return C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY);
 
-	OpaqueBisector1 = Opaque();
-	OpaqueBisector2 = a.Opaque();
+	OpaqueRidgeLine1 = Opaque();
+	OpaqueRidgeLine2 = a.Opaque();
 
-	if (OpaqueBisector1.PointOnBisector(a.m_Origin) && OpaqueBisector2.PointOnBisector(m_Origin))
-		return C2DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, (m_Origin.m_y + a.m_Origin.m_y)/2);
+	if (OpaqueRidgeLine1.PointOnRidgeLine(a.m_Origin) && OpaqueRidgeLine2.PointOnRidgeLine(m_Origin))
+	{
+		if (m_IsRidgeLine && a.m_IsRidgeLine)
+		{
+			CNumber Ratio = tan(m_Slope) / tan(a.m_Slope);
+			return C3DPoint (m_Origin.m_x + Ratio * (a.m_Origin.m_x - m_Origin.m_x) / (Ratio + 1),
+							0,
+							m_Origin.m_z + Ratio * (a.m_Origin.m_z - m_Origin.m_z) / (Ratio + 1));
+		}
+		else
+			return C3DPoint ((m_Origin.m_x + a.m_Origin.m_x)/2, 0, (m_Origin.m_z + a.m_Origin.m_z)/2);
+	}
 
 	CNumber sa = sin (m_Angle);
 	CNumber sb = sin (a.m_Angle);
@@ -83,13 +139,14 @@ C2DPoint CBisector::IntersectionAnywhere (const CBisector& a) const
 	CNumber cb = cos (a.m_Angle);
 	CNumber x = sb*ca - sa*cb;
 
-	if (x == 0.0) return C2DPoint (CN_INFINITY, CN_INFINITY);
-	CNumber u = (cb*(m_Origin.m_y - a.m_Origin.m_y) - sb*(m_Origin.m_x - a.m_Origin.m_x))/x;
-	return C2DPoint (m_Origin.m_x + u*ca, m_Origin.m_y + u*sa);
+	if (x == 0.0)
+		return C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
+	CNumber u = (cb*(m_Origin.m_z - a.m_Origin.m_z) - sb*(m_Origin.m_x - a.m_Origin.m_x))/x;
+	return C3DPoint (m_Origin.m_x + u*ca, 0, m_Origin.m_z + u*sa);
 };
 
 
-bool CBisector::Colinear(const CBisector &a) const
+bool CRidgeLine::Colinear(const CRidgeLine &a) const
 {
 	CNumber aa = m_Angle;
 	CNumber ba = a.m_Angle;
@@ -101,10 +158,10 @@ bool CBisector::Colinear(const CBisector &a) const
 	return (ba == aa || ba == aa2) ? true : false;
 }
 
-CNumber CBisector::Dist(const C2DPoint &p)
+CNumber CRidgeLine::Dist(const C3DPoint &p)
 {
-	CNumber a = m_Angle - CBisector(m_Origin, p).m_Angle;
-	CNumber d = sin (a) * m_Origin.Dist(p);
+	CNumber a = m_Angle - CRidgeLine(m_Origin, p, -1).m_Angle;
+	CNumber d = sin (a) * m_Origin.DistXZ(p);
 	if (d < 0.0) return -d;
 	return d;
 }
@@ -142,6 +199,12 @@ CNumber CNumber::NormalizedAngle()
 	return temp;
 }
 
+bool CNumber::Similar(const CNumber &x)
+{
+	// TBD  put some code here to check exp and mantissa separately
+	// for similarity at least significant point
+	return true;
+}
 //
 // Implementation of the CVertex class.
 //
@@ -149,77 +212,77 @@ CNumber CNumber::NormalizedAngle()
 //
 // Constructor
 //
-CVertex::CVertex (const C2DPoint &p, CVertex &left, CVertex &right)
-: m_point (p), m_done (false), m_higher (NULL), m_ID (-1),
-m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
-m_advancingSkeletonLine (NULL)
+CVertex :: CVertex (const C3DPoint &p, CVertex &left, CVertex &right) 
+				: m_point (p), m_done (false), m_higher (NULL), m_ID (-1), m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL),
+				  m_advancingSkeletonLine (NULL)
 {
-	m_leftLine = left.m_leftLine;
+	// This constructor links the new vertex in the current active contour
+	m_leftLine = left.m_leftLine; 
 	m_rightLine = right.m_rightLine;
 	m_leftVertex = &left;
 	m_rightVertex = &right;
 
-//	assert (m_leftLine.Dist(m_point) == m_rightLine.Dist(m_point));
-	C2DPoint i = m_leftLine.Intersection (m_rightLine);
-	if (i.m_x == CN_INFINITY)
+	// Create the associated ridgeline for this vertex
+#ifdef FELKELDEBUG
 	{
-		assert (i.m_y == CN_INFINITY);
+		CNumber n1 = m_leftLine.Dist(m_point) * tan(m_leftLine.m_Slope);
+		CNumber n2 = m_rightLine.Dist(m_point) * tan(m_rightLine.m_Slope);
+//		assert (n1 == n2);
+	}
+#endif
+	C3DPoint i = m_leftLine.Intersection (m_rightLine); 
+	if (i.m_x == CN_INFINITY)
+	{                                                               
+		assert (i.m_z == CN_INFINITY);
 		i = m_leftLine.IntersectionAnywhere (m_rightLine);
 		if (i.m_x == CN_INFINITY)
 		{
-			assert (i.m_y == CN_INFINITY);
-			m_axis = CBisector(m_point, m_leftLine.m_Angle);
+			assert (i.m_z == CN_INFINITY);
+			m_axis = CRidgeLine(m_point, m_leftLine.m_Angle, -1);
 		}
-		else
+		else 
 		{
-			m_axis = CBisector(m_point, i);
-			m_axis.m_Angle = m_axis.m_Angle + CN_PI;
+			m_axis = CRidgeLine(m_point, i);
+			m_axis.m_Angle = m_axis.m_Angle + CN_PI;  
 		}
 	}
 	else
 	{
-		m_axis = CBisector(m_point, i);
+		m_axis = CRidgeLine(m_point, i);
 	}
 }
-/*
-bool CVertex::IntersectionFromLeft (const CBisector &l)
-{
-	if (m_axis.Intersection(l) != C2DPoint(CN_INFINITY, CN_INFINITY)) return false;
-	if (m_rightVertex == this) return false;
-	if (m_rightVertex->m_axis.Intersection(l) != C2DPoint(CN_INFINITY, CN_INFINITY)) return true;
-	return m_rightVertex->IntersectionFromLeft(l);
-}
 
-bool CVertex::IntersectionFromRight (const CBisector &l)
+C3DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, const CVertex &right)
 {
-	if (m_axis.Intersection(l) != C2DPoint(CN_INFINITY, CN_INFINITY)) return false;
-	if (m_leftVertex == this) return false;
-	if (m_leftVertex->m_axis.Intersection(l) != C2DPoint(CN_INFINITY, CN_INFINITY)) return true;
-	return m_leftVertex->IntersectionFromRight(l);
-}
-*/
-C2DPoint CVertex::CoordinatesOfAnyIntersectionOfTypeB (const CVertex &left, const CVertex &right)
-{
-	C2DPoint p1 = m_rightLine.IntersectionAnywhere(right.m_leftLine);
-	C2DPoint p2 = m_leftLine.IntersectionAnywhere(left.m_rightLine);
-	C2DPoint poi (CN_INFINITY, CN_INFINITY);
+	C3DPoint p1 = m_rightLine.IntersectionAnywhere(right.m_leftLine);
+	C3DPoint p2 = m_leftLine.IntersectionAnywhere(left.m_rightLine);
+	C3DPoint poi(CN_INFINITY, CN_INFINITY, CN_INFINITY);
+	CNumber Slope;
 
-	if (p1 != C2DPoint(CN_INFINITY, CN_INFINITY) && p2 != C2DPoint(CN_INFINITY, CN_INFINITY))
+	assert(right.m_leftLine.m_Slope == left.m_rightLine.m_Slope);
+
+	if (p1 != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) && p2 != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY))
 	{
-		if (m_rightLine.PointOnBisector(p1)) return C2DPoint(CN_INFINITY, CN_INFINITY);
-		if (m_leftLine.PointOnBisector(p2))  return C2DPoint(CN_INFINITY, CN_INFINITY);
-		poi = CBisector::AngleAxis(p1, p2, m_point).IntersectionAnywhere (m_axis);
+		if (m_rightLine.PointOnRidgeLine(p1)) return C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY);
+		if (m_leftLine.PointOnRidgeLine(p2))  return C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY);
+		poi = CRidgeLine::AngleAxis(p1, p2, right.m_leftLine.m_Slope, m_point, m_rightLine.m_Slope).IntersectionAnywhere (m_axis);
 	}
-	else //if (p1 != Point (CN_INFINITY, CN_INFINITY))
+	else //if (p1 != Point (CN_INFINITY, CN_INFINITY))                             
 	{
 		poi = left.m_rightLine.IntersectionAnywhere(m_axis);
-		poi.m_x = (poi.m_x + m_point.m_x) / 2;
-		poi.m_y = (poi.m_y + m_point.m_y) / 2;
+		if (p1 == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY))
+			Slope = m_rightLine.m_Slope;
+		else
+			Slope = m_leftLine.m_Slope;
+
+		poi.m_x = (((m_point.m_x - poi.m_x) * tan(Slope)) / (tan(left.m_rightLine.m_Slope) + tan(Slope))) + poi.m_x;
+		poi.m_z = (((m_point.m_z - poi.m_z) * tan(Slope)) / (tan(left.m_rightLine.m_Slope) + tan(Slope))) + poi.m_z;
+
 	}
 	return poi;
 }
 
-C2DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right)
+C3DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right)
 {
 	assert (m_prevVertex == NULL || m_leftLine.FacingTowards(m_prevVertex->m_rightLine));
 	assert (m_nextVertex == NULL || m_rightLine.FacingTowards(m_nextVertex->m_leftLine));
@@ -228,91 +291,109 @@ C2DPoint CVertex::IntersectionOfTypeB (const CVertex &left, const CVertex &right
 	assert (right.m_prevVertex == NULL || right.m_leftLine.FacingTowards(right.m_prevVertex->m_rightLine));
 	assert (right.m_nextVertex == NULL || right.m_rightLine.FacingTowards(right.m_nextVertex->m_leftLine));
 
-	C2DPoint pl(m_axis.Intersection(left.m_rightLine));
-	C2DPoint pr(m_axis.Intersection(right.m_leftLine));
-	if (pl == C2DPoint(CN_INFINITY, CN_INFINITY) && pr == C2DPoint(CN_INFINITY, CN_INFINITY))
-		return C2DPoint(CN_INFINITY, CN_INFINITY);
+	C3DPoint pl(m_axis.Intersection(left.m_rightLine));
+	C3DPoint pr(m_axis.Intersection(right.m_leftLine));
+	if (pl == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) && pr == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY))
+		return C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY);
 
-	C2DPoint p;
-	if (pl != C2DPoint(CN_INFINITY, CN_INFINITY)) p = pl;
-	if (pr != C2DPoint(CN_INFINITY, CN_INFINITY)) p = pr;
-	assert (p != C2DPoint(CN_INFINITY, CN_INFINITY));
+	C3DPoint p;
+	if (pl != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)) p = pl;
+	if (pr != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)) p = pr;
+	assert (p != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
 // Dont know why this triggers......Needs fixing some day!!!!!!!!
 //	assert (pl == C2DPoint(CN_INFINITY, CN_INFINITY) || pr == C2DPoint(CN_INFINITY, CN_INFINITY) || pl == pr);
 
-	C2DPoint poi = CoordinatesOfAnyIntersectionOfTypeB(left, right);
+	C3DPoint poi = CoordinatesOfAnyIntersectionOfTypeB(left, right); 
 	CNumber al = left.m_axis.m_Angle - left.m_rightLine.m_Angle;
-	CNumber ar = right.m_axis.m_Angle - right.m_leftLine.m_Angle;
+	CNumber ar = right.m_axis.m_Angle - right.m_leftLine.m_Angle; 
 
-	CNumber alp = CBisector(left.m_point, poi).m_Angle - left.m_rightLine.m_Angle;
-	CNumber arp = CBisector(right.m_point, poi).m_Angle - right.m_leftLine.m_Angle;
+	CNumber alp = CRidgeLine(left.m_point, poi).m_Angle - left.m_rightLine.m_Angle;
+	CNumber arp = CRidgeLine(right.m_point, poi).m_Angle - right.m_leftLine.m_Angle;
 
 	al.NormalizeAngle(); ar.NormalizeAngle(); alp.NormalizeAngle(); arp.NormalizeAngle();
-//	assert (al <= 0.0);
-//	assert (ar >= 0.0 || ar == -CN_PI);
+	assert (al <= 0.0);
+	assert (ar >= 0.0 || ar == -CN_PI);
 
 	if ((alp > 0.0 || alp < al) && !ANGLE_SIMILAR(alp, CNumber(0)) && !ANGLE_SIMILAR(alp, al))
-		return C2DPoint (CN_INFINITY, CN_INFINITY);
+		return C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
 	if ((arp < 0.0 || arp > ar) && !ANGLE_SIMILAR(arp, CNumber(0)) && !ANGLE_SIMILAR(arp, ar))
-		return C2DPoint (CN_INFINITY, CN_INFINITY);
+		return C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY);
 	return poi;
 }
 
-CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C2DPoint &p)
+CNumber CVertex::NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p)
 {
 	CNumber minDist = CN_INFINITY;
-	CVertexList::iterator minI = vl.end ();
-	CVertexList :: iterator i;
-	for (i = vl.begin (); i != vl.end (); i++)
+	CVertexList::iterator minI = vl.end (); 
+	for (CVertexList :: iterator i = vl.begin (); i != vl.end (); i++)
 	{
 		if ((*i).m_done) continue;
 		if ((*i).m_nextVertex == NULL || (*i).m_prevVertex == NULL) continue;
 		if (&*i == this || (*i).m_nextVertex == this) continue;
 		assert ((*i).m_rightVertex != NULL);
 		assert ((*i).m_leftVertex != NULL);
-		C2DPoint poi = IntersectionOfTypeB((*i), *(*i).m_nextVertex);
-		if (poi == C2DPoint (CN_INFINITY, CN_INFINITY)) continue;
-		CNumber d = poi.Dist(m_point);
+		C3DPoint poi = IntersectionOfTypeB((*i), *(*i).m_nextVertex);
+		if (poi == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY)) continue;
+		CNumber d = poi.DistXZ(m_point);
 		if (d < minDist) { minDist = d; minI = i; }
 	}
-	if (minDist == CN_INFINITY)
-		return CN_INFINITY;
+	if (minDist == CN_INFINITY) return CN_INFINITY;
 
 	i = minI;
-	C2DPoint poi = CoordinatesOfAnyIntersectionOfTypeB((*i), *(*i).m_nextVertex);
+	C3DPoint poi = CoordinatesOfAnyIntersectionOfTypeB((*i), *(*i).m_nextVertex);
 
-	CNumber d = m_leftLine.Dist(poi);
-//	assert (d == m_rightLine.Dist(poi));
-//	assert (d == (*i).m_rightLine.Dist(poi));
-//	assert (d == (*i).m_nextVertex->m_leftLine.Dist(poi));
+	// Calculate heights
+	poi.m_y = m_leftLine.Dist(poi) * tan(m_leftLine.m_Slope);
+
+/*
+#ifdef FELKELDEBUG
+	{
+		CNumber db1 = m_rightLine.Dist(poi) * tan(m_rightLine.m_Slope);
+		CNumber db2 = (*i).m_rightLine.Dist(poi) * tan((*i).m_rightLine.m_Slope);
+		CNumber db3 = (*i).m_nextVertex->m_leftLine.Dist(poi) * tan((*i).m_nextVertex->m_leftLine.m_Slope);
+		assert (SIMILAR(poi.m_y, db1));
+		assert (SIMILAR(poi.m_y, db2));
+		assert (SIMILAR(poi.m_y, db3));
+	}
+#endif
+*/
 
 	p = poi;
 	*left = (CVertex *) &*i;
 	*right = (*i).m_nextVertex;
 
-	return d;
+	return poi.m_y;
 }
 
 bool CVertex::InvalidIntersection (CVertexList &vl, const CIntersection &is)
 {
 	for (CVertexList :: iterator i = vl.begin (); i != vl.end (); i++)
 	{
-		if ((*i).m_done) continue;
-		if ((*i).m_nextVertex == NULL || (*i).m_prevVertex == NULL) continue;
-		C2DPoint poi = m_axis.Intersection((*i).m_axis);
-		if (poi == C2DPoint (CN_INFINITY, CN_INFINITY)) continue;
-		if (&*i == is.m_leftVertex || &*i == is.m_rightVertex) continue;
+		if ((*i).m_done)
+			continue;
+		if ((*i).m_nextVertex == NULL || (*i).m_prevVertex == NULL)
+			continue;
 
-		CNumber dv = m_leftLine.Dist(poi);
-		CNumber dvx = m_rightLine.Dist(poi);
-		//		assert (SIMILAR (dv, dist (poi, v.rightLine)));
+		C3DPoint poi = m_axis.Intersection((*i).m_axis);
+		if (poi == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY))
+			continue;
+		if (&*i == is.m_leftVertex || &*i == is.m_rightVertex)
+			continue;
+		if (m_axis.PointOnRidgeLine((*i).m_axis.m_Origin) && (*i).m_axis.PointOnRidgeLine(m_axis.m_Origin))
+			continue;
+
+		// Calculate height of intersection
+		CNumber dv = m_leftLine.Dist(poi) * tan(m_leftLine.m_Slope);
+		CNumber dvx = m_rightLine.Dist(poi) * tan(m_rightLine.m_Slope);
 //		assert (dv == dvx);
-		if (dv > is.m_height) continue;
+		if (dv > is.m_height)
+			continue;
 
-		CNumber di = (*i).m_leftLine.Dist(poi);
-//		assert (di == (*i).m_rightLine.Dist(poi));
-		if (di > dv + MIN_DIFF) continue;
-		//		if (di > is.height) continue;
+		CNumber di = (*i).m_leftLine.Dist(poi) * tan((*i).m_leftLine.m_Slope);
+		CNumber dix = (*i).m_rightLine.Dist(poi) * tan((*i).m_rightLine.m_Slope);
+//		assert (di == dix);
+		if (di > dv + MIN_DIFF)
+			continue;
 
 		return true;
 	}

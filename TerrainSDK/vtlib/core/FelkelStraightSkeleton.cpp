@@ -20,19 +20,26 @@ using namespace std;
 
 #define EPSILON numeric_limits<double>epsilon()
 
-//
+//////////////////////////////////////////////////////////////////////
 // Construction/Destruction
-//
+//////////////////////////////////////////////////////////////////////
+
 CStraightSkeleton::CStraightSkeleton()
 {
+
 }
 
 CStraightSkeleton::~CStraightSkeleton()
 {
+
 }
 
 CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 {
+#ifdef FELKELDEBUG
+	char DebugString[1024];
+#endif
+
 	while (m_iq.size ())
 		m_iq.pop (); 	
 	m_vl.erase(m_vl.begin(), m_vl.end());
@@ -45,7 +52,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 
 		Contour::iterator first = points.begin();
 		if (first == points.end())
-			break;
+			break; 
 
 		Contour::iterator next = first;
 
@@ -67,7 +74,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		{
 			if (0 == f)
 			{
-				m_vl.push_back(CVertex(points[f], points[(s+f-1)%s], points[(s+f+1)%s]));
+				m_vl.push_back(CVertex(points[0].m_Point, points[s - 1].m_Point, points[s - 1].m_Slope, points[1].m_Point, points[0].m_Slope));
 				to = m_vl.end();
 				to--;
 				start = to;
@@ -81,7 +88,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 			else
 			{
 				from = to;
-				m_vl.push_back(CVertex(points[f], points[(s+f-1)%s], points[(s+f+1)%s]));
+				m_vl.push_back(CVertex(points[f].m_Point, points[f - 1].m_Point, points[f - 1].m_Slope, points[(f + 1) % s].m_Point, points[f].m_Slope));
 				to = m_vl.end();
 				to--;
 				m_boundaryedges.push_front(CSkeletonLine(*from, *to));
@@ -122,19 +129,23 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 
 #ifdef EPS
 	extern ostream *epsStream;
-
+	
 	*epsStream << "%Hranice" << endl;
 	for (i = m_vl.begin (); i != m_vl.end (); i++)
 	{
 		if (!(*i).m_done)
 		{
-			*epsStream << (*i).m_point.m_x << ' ' << (*i).m_point.m_y << " moveto ";
-			*epsStream << (*i).m_nextVertex ->m_point.m_x << ' ' << (*i).m_nextVertex->m_point.m_y << " lineto\n";
+			*epsStream << (*i).m_point.m_x << ' ' << (*i).m_point.m_z << " moveto ";
+			*epsStream << (*i).m_nextVertex ->m_point.m_x << ' ' << (*i).m_nextVertex->m_point.m_z << " lineto\n";
 		}
 	}
 	*epsStream << "%Vnitrek" << endl;
 #endif
 
+#ifdef FELKELDEBUG
+	sprintf(DebugString, "Building initial intersection queue\n");
+	OutputDebugString(DebugString);
+#endif
 	for (i = m_vl.begin(); i != m_vl.end (); i++)
 	{
 		if (!(*i).m_done)
@@ -145,12 +156,21 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		}
 	}
 
+#ifdef FELKELDEBUG
+	sprintf(DebugString, "Processing intersection queue\n");
+	OutputDebugString(DebugString);
+#endif
 	while (m_iq.size ())
 	{
 		CIntersection i = m_iq.top ();
 
 		m_iq.pop ();
 
+#ifdef FELKELDEBUG
+		sprintf(DebugString, "Processing %d %d left done %d right done %d\n",
+			i.m_leftVertex->m_ID, i.m_rightVertex->m_ID, i.m_leftVertex->m_done, i.m_rightVertex->m_done);
+		OutputDebugString(DebugString);
+#endif
 		if (i.m_leftVertex->m_done && i.m_rightVertex->m_done)
 			continue;
 		if (i.m_leftVertex->m_done || i.m_rightVertex->m_done)
@@ -166,11 +186,17 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(ContourVector &contours)
 		assert(i.m_rightVertex->m_nextVertex != i.m_leftVertex);
 		if (i.m_type == CIntersection::CONVEX)
 			if (i.m_leftVertex->m_prevVertex->m_prevVertex == i.m_rightVertex || i.m_rightVertex->m_nextVertex->m_nextVertex == i.m_leftVertex)
-				i.ApplyLast3(m_skeleton, m_vl);
-			else i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
+				i.ApplyLast3(m_skeleton, m_vl); 
+			else
+				i.ApplyConvexIntersection(m_skeleton, m_vl, m_iq);
 		if (i.m_type == CIntersection :: NONCONVEX)
 			i.ApplyNonconvexIntersection(m_skeleton, m_vl, m_iq);
 	}
+
+#ifdef FELKELDEBUG
+	Dump();
+#endif
+
 	return m_skeleton;
 }
 
@@ -183,7 +209,7 @@ CSkeleton& CStraightSkeleton::MakeSkeleton(Contour &points)
 	return MakeSkeleton(vv);
 }
 
-CSkeleton& CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours)
+CSkeleton CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contours)
 {
 	int iCount = 0;
 
@@ -250,19 +276,21 @@ CSkeleton& CStraightSkeleton::CompleteWingedEdgeStructure(ContourVector &contour
 		}
 	}
 
+#ifdef FELKELDEBUG
+	Dump();
+#endif
+
 	for (size_t ci = 0; ci < contours.size(); ci++)
-	{
-		if (!FixSkeleton(contours[ci]))
-		{
-			m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
-			return m_skeleton;
-		}
-	}
+		FixSkeleton(contours[ci]);
+
+#ifdef FELKELDEBUG
+	Dump();
+#endif
 
 	return m_skeleton;
 }
 
-bool CStraightSkeleton::FixSkeleton(Contour& points)
+void CStraightSkeleton::FixSkeleton(Contour& points)
 {
 	CSkeletonLine* pNextEdge;
 	CSkeletonLine* pPrevEdge;
@@ -271,15 +299,12 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 	for (size_t pi = 0; pi < points.size(); pi++)
 	{
 		bool bReversed = false;
-		C2DPoint& p1 = points[pi];
-		C2DPoint& p2 = points[(pi+1)%points.size()];
+		C3DPoint& p1 = points[pi].m_Point;
+		C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
 
-		CSkeleton::iterator s1;
-		for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-		{
+		for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 			if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
 				break;
-		}
 		pNextEdge = &(*s1);
 		// Circumnavigate the right face
 		do
@@ -289,27 +314,20 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 			pPrevEdge = pNextEdge;
 
 			pNextEdge = FindNextRightEdge(pPrevEdge, &bReversed);
-//			assert (pNextEdge != NULL);
-			if (NULL == pNextEdge)
-				return false;
 			// Join up the edges if needed
 			if (bReversed)
 			{
 				if (bPrevReversed)
 				{
 					// Joining lower to higher
-//					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left));
-					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_higher.m_left))
-						return false;
+					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_higher.m_left));
 					pPrevEdge->m_lower.m_left = pNextEdge;
 					pNextEdge->m_higher.m_left = pPrevEdge;
 				}
 				else
 				{
 					// Joing higher to higher
-//					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left));
-					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_higher.m_left))
-						return false;
+					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_higher.m_left));
 					pPrevEdge->m_higher.m_right = pNextEdge;
 					pNextEdge->m_higher.m_left = pPrevEdge;
 				}
@@ -319,18 +337,14 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 				if (bPrevReversed)
 				{
 					// Joining lower to lower
-//					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right));
-					if ((NULL != pPrevEdge->m_lower.m_left) || (NULL != pNextEdge->m_lower.m_right))
-						return false;
+					assert((NULL == pPrevEdge->m_lower.m_left) && (NULL == pNextEdge->m_lower.m_right));
 					pPrevEdge->m_lower.m_left = pNextEdge;
 					pNextEdge->m_lower.m_right = pPrevEdge;
 				}
 				else
 				{
 					// Joining higher to lower
-//					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right));
-					if ((NULL != pPrevEdge->m_higher.m_right) || (NULL != pNextEdge->m_lower.m_right))
-						return false;
+					assert((NULL == pPrevEdge->m_higher.m_right) && (NULL == pNextEdge->m_lower.m_right));
 					pPrevEdge->m_higher.m_right = pNextEdge;
 					pNextEdge->m_lower.m_right = pPrevEdge;
 				}
@@ -338,18 +352,17 @@ bool CStraightSkeleton::FixSkeleton(Contour& points)
 		}
 		while (bReversed ? p2 != pNextEdge->m_lower.m_vertex->m_point : p2 != pNextEdge->m_higher.m_vertex->m_point);
 	}
-	return true;
 }
 
 CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed)
 {
-	CSkeletonLine* pNextEdge = NULL;
-	C2DPoint OldPoint;
-	C2DPoint OldEdgeVector;
-	C2DPoint NewEdgeVector;
+	CSkeletonLine* pNextEdge;
+	C3DPoint OldPoint;
+	C3DPoint OldEdgeVector;
+	C3DPoint NewEdgeVector;
 	CNumber CosTheta;
 	CNumber HighestCosTheta = 0;
-
+	
 	if(*bReversed)
 	{
 		OldPoint = pEdge->m_lower.m_vertex->m_point;
@@ -363,7 +376,7 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 
 	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 	{
-#ifdef _DEBUG
+#ifdef FELKELDEBUG
 		CSkeletonLine& db = (*s1);
 		double Cross, Dot, l1, l2;
 #endif
@@ -384,8 +397,8 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 					NewEdgeVector = (*s1).m_lower.m_vertex->m_point - OldPoint;
 					bTemp = true;
 				}
-				CosTheta = OldEdgeVector.Dot(NewEdgeVector)/(OldEdgeVector.Length() * NewEdgeVector.Length());
-				if ((double)OldEdgeVector.Cross(NewEdgeVector) < 0)
+				CosTheta = OldEdgeVector.DotXZ(NewEdgeVector)/(OldEdgeVector.LengthXZ() * NewEdgeVector.LengthXZ());
+				if ((double)OldEdgeVector.CrossXZ(NewEdgeVector) < 0)
 					CosTheta = 3 - CosTheta;
 				else
 					CosTheta += 1;
@@ -395,11 +408,11 @@ CSkeletonLine* CStraightSkeleton::FindNextRightEdge(CSkeletonLine* pEdge, bool *
 					pNextEdge = &(*s1);
 					*bReversed = bTemp;
 				}
-#ifdef _DEBUG
-				Cross = (double)OldEdgeVector.Cross(NewEdgeVector);
-				Dot = (double)OldEdgeVector.Dot(NewEdgeVector);
-				l1 = (double)OldEdgeVector.Length();
-				l2 = (double)NewEdgeVector.Length();
+#ifdef FELKELDEBUG
+				Cross = (double)OldEdgeVector.CrossXZ(NewEdgeVector);
+				Dot = (double)OldEdgeVector.DotXZ(NewEdgeVector);
+				l1 = (double)OldEdgeVector.LengthXZ();
+				l2 = (double)NewEdgeVector.LengthXZ();
 #endif
 			}
 		}
@@ -415,10 +428,10 @@ bool CStraightSkeleton::IsClockwise(Contour& points)
 
 	for (size_t pi = 0; pi < points.size(); pi++)
 	{
-		C2DPoint& p1 = points[pi];
-		C2DPoint& p2 = points[(pi+1)%points.size()];
+		C3DPoint& p1 = points[pi].m_Point;
+		C3DPoint& p2 = points[(pi+1)%points.size()].m_Point;
 
-		Area += (p2.m_x - p1.m_x) * (p2.m_y + p1.m_y);
+		Area += (p2.m_x - p1.m_x) * (p2.m_z + p1.m_z);
 	}
 
 	if (Area > 0)
@@ -427,127 +440,25 @@ bool CStraightSkeleton::IsClockwise(Contour& points)
 		return false;
 }
 
-CSkeleton& CStraightSkeleton::MakeRoof(ContourVector &contours, double dSlopeRadians)
+CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C3DPoint& Point)
 {
-	CSkeletonLine* pNextEdge = NULL;
-	CSkeletonLine* pPrevEdge;
-	CSkeletonLine* pStartEdge;
-	CSkeletonLine* pStopEdge;
-	bool bNextReversed;
-	bool bPrevReversed;
-	CNumber z;
-	CNumber Normal;
-
-	// Compute the z values
-	// Set proportionate to the distance from the edge normal
-	// scale to get an appropriate slope
-	for (size_t ci = 0; ci < contours.size(); ci++)
-	{
-		Contour& points = contours[ci];
-		for (size_t pi = 0; pi < points.size(); pi++)
-		{
-			// For each boundary edge zip round the polygon
-			// and fill in the z for eaqch non boundary point that
-			// has not been calculated already
-			C2DPoint& p1 = points[pi];
-			C2DPoint& p2 = points[(pi+1)%points.size()];
-			// Find the starting edge
-			CSkeleton::iterator s1;
-			for (s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
-			{
-				if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
-					break;
-			}
-			if (s1 == m_skeleton.end())
-				goto ErrorExit;
-			pStartEdge = &(*s1);
-			pPrevEdge = pStartEdge;
-			pStopEdge = pStartEdge->m_lower.m_right;
-			if (NULL == pStopEdge)
-				goto ErrorExit;
-			bPrevReversed = false;
-			do
-			{
-				bNextReversed = false;
-				if (bPrevReversed)
-				{
-					pNextEdge = pPrevEdge->m_lower.m_left;
-					if (NULL == pNextEdge)
-						goto ErrorExit;
-					if (pPrevEdge->m_lower.m_vertex->m_point != pNextEdge->m_lower.m_vertex->m_point)
-						bNextReversed = true;
-				}
-				else
-				{
-					pNextEdge = pPrevEdge->m_higher.m_right;
-					if (NULL == pNextEdge)
-						goto ErrorExit;
-					if (pPrevEdge->m_higher.m_vertex->m_point != pNextEdge->m_lower.m_vertex->m_point)
-						bNextReversed = true;
-				}
-				if (pNextEdge != pStopEdge)
-				{
-					if (bNextReversed)
-					{
-						Normal = CalculateNormal(*pStartEdge, pNextEdge->m_lower.m_vertex->m_point);
-						z = Normal * tan(dSlopeRadians);
-						if (pNextEdge->m_lower.m_vertex->m_point.m_z != 0.0)
-						{
-//							assert(pNextEdge->m_lower.m_vertex->m_point.m_z == z);
-						}
-						else
-						{
-							pNextEdge->m_lower.m_vertex->m_point.m_z = z;
-						}
-					}
-					else
-					{
-						Normal = CalculateNormal(*pStartEdge, pNextEdge->m_higher.m_vertex->m_point);
-						z = Normal * tan(dSlopeRadians);
-						if (pNextEdge->m_higher.m_vertex->m_point.m_z != 0.0)
-						{
-//							assert(pNextEdge->m_higher.m_vertex->m_point.m_z == z);
-						}
-						else
-						{
-							pNextEdge->m_higher.m_vertex->m_point.m_z = z;
-						}
-					}
-					pPrevEdge = pNextEdge;
-					bPrevReversed = bNextReversed;
-				}
-			}
-			while (pNextEdge != pStopEdge);
-		}
-	}
-	return m_skeleton;
-
-ErrorExit:
-	m_skeleton.erase(m_skeleton.begin(), m_skeleton.end());
-	return m_skeleton;
-}
-
-CNumber CStraightSkeleton::CalculateNormal(const CSkeletonLine& Edge, const C2DPoint& Point)
-{
-	C2DPoint p1 = Edge.m_lower.m_vertex->m_point;
-	C2DPoint p2 = Edge.m_higher.m_vertex->m_point;
-	C2DPoint p3 = Point;
-	C2DPoint pIntersection;
-	CNumber SegmentLength = (p2 - p1).Length();
+	C3DPoint p1 = Edge.m_lower.m_vertex->m_point;
+	C3DPoint p2 = Edge.m_higher.m_vertex->m_point;
+	C3DPoint p3 = Point;
+	C3DPoint pIntersection;
+	CNumber SegmentLength = (p2 - p1).LengthXZ();
 	CNumber U;
 
-	U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_y - p1.m_y) * (p2.m_y - p1.m_y))) /
-		(SegmentLength * SegmentLength);
+    U = (((p3.m_x - p1.m_x) * (p2.m_x - p1.m_x)) + ((p3.m_z - p1.m_z) * (p2.m_z - p1.m_z))) /
+					(SegmentLength * SegmentLength);
 
 	pIntersection.m_x = p1.m_x + U * (p2.m_x - p1.m_x);
-	pIntersection.m_y = p1.m_y + U * (p2.m_y - p1.m_y);
+	pIntersection.m_z = p1.m_z + U * (p2.m_z - p1.m_z);
 
-	return (pIntersection - p3).Length();
+	return (pIntersection - p3).LengthXZ();
 }
 
-#ifdef _DEBUG
-#include "windows.h"
-
+#ifdef FELKELDEBUG
 void CStraightSkeleton::Dump()
 {
 	char DebugString[1024];
@@ -560,14 +471,14 @@ void CStraightSkeleton::Dump()
 	for (CSkeleton::iterator s1 = m_skeleton.begin(); s1 != m_skeleton.end(); s1++)
 	{
 		CSkeletonLine& db = (*s1);
-		sprintf(DebugString, "ID: %d\tlwr lID %d rID %d vID %d (%f %f %f)\n\t\thgr lID %d rID %d vID %d (%f %f %f)\n",
-			db.m_ID,
-			db.m_lower.LeftID(),
-			db.m_lower.RightID(),
-			db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
-			db.m_higher.LeftID(),
-			db.m_higher.RightID(),
-			db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
+		sprintf(DebugString, "ID: %d lower leftID %d rightID %d vertexID %d (%f %f %f) higher leftID %d rightID %d vertexID %d (%f %f %f)\n",
+							db.m_ID,
+							db.m_lower.LeftID(),
+							db.m_lower.RightID(),
+							db.m_lower.VertexID(), db.m_lower.m_vertex->m_point.m_x, db.m_lower.m_vertex->m_point.m_y, db.m_lower.m_vertex->m_point.m_z,
+							db.m_higher.LeftID(),
+							db.m_higher.RightID(),
+							db.m_higher.VertexID(), db.m_higher.m_vertex->m_point.m_x, db.m_higher.m_vertex->m_point.m_y, db.m_higher.m_vertex->m_point.m_z);
 		OutputDebugString(DebugString);
 	}
 }

@@ -16,16 +16,15 @@
 #include "FelkelComponents.h"
 #include "FelkelIntersection.h"
 
-class CStraightSkeleton
+class CStraightSkeleton  
 {
 public:
 	CStraightSkeleton();
 	virtual ~CStraightSkeleton();
 
-	CSkeleton &MakeSkeleton(ContourVector &contours);
-	CSkeleton &MakeSkeleton(Contour &points);
-	CSkeleton &CompleteWingedEdgeStructure(ContourVector &contours);
-	CSkeleton &MakeRoof(ContourVector &contours, double dSlopeRadians);
+	CSkeleton& MakeSkeleton(ContourVector &contours);
+	CSkeleton& MakeSkeleton(Contour &points);
+	CSkeleton CompleteWingedEdgeStructure(ContourVector &contours);
 #ifdef _DEBUG
 	void Dump();
 #endif
@@ -35,12 +34,11 @@ public:
 	CSkeleton m_skeleton;
 	CSkeleton m_boundaryedges;
 	int m_NumberOfBoundaryVertices;
-
 private:
-	bool IsClockwise(Contour &points);
-	bool FixSkeleton(Contour &points);
-	CSkeletonLine *FindNextRightEdge(CSkeletonLine *pEdge, bool *bReversed);
-	CNumber CalculateNormal(const CSkeletonLine &Edge, const C2DPoint &Point);
+	bool IsClockwise(Contour& points);
+	void FixSkeleton(Contour& points);
+	CSkeletonLine* FindNextRightEdge(CSkeletonLine* pEdge, bool *bReversed);
+	CNumber CalculateNormal(const CSkeletonLine& Edge, const C3DPoint& Point);
 };
 
 #endif // STRAIGHTSKELETONH

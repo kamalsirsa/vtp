@@ -12,11 +12,15 @@
 
 #include "FelkelIntersection.h"
 
-//
+//////////////////////////////////////////////////////////////////////
 // Construction/Destruction
-//
+//////////////////////////////////////////////////////////////////////
+
 CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 {
+#ifdef FELKELDEBUG
+	char DebugString[1024];
+#endif
 	assert (v.m_prevVertex == NULL || v.m_leftLine.FacingTowards (v.m_prevVertex -> m_rightLine));
 	assert (v.m_nextVertex == NULL || v.m_rightLine.FacingTowards (v.m_nextVertex -> m_leftLine));
 
@@ -32,47 +36,86 @@ CIntersection :: CIntersection (CVertexList &vl, CVertex &v)
 	CNumber ar = v.m_axis.m_Angle - r.m_axis.m_Angle;
 	ar.NormalizeAngle();
 
-	C2DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
-	C2DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
+	C3DPoint i1 = v.m_axis.FacingTowards(l.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(l.m_axis);
+	C3DPoint i2 = v.m_axis.FacingTowards (r.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v.m_axis.Intersection(r.m_axis);
 
-	CNumber d1 = v.m_point.Dist(i1);
-	CNumber d2 = v.m_point.Dist(i2);
+	CNumber d1 = v.m_point.DistXZ(i1);
+	CNumber d2 = v.m_point.DistXZ(i2);
+
+#ifdef FELKELDEBUG
+	sprintf(DebugString, "New Intersection\n al %e ar %e\ni1.x %e i1.y %e i1.z %e\ni2.x %e i2.y %e i2.z %e\nd1 %e d2 %e\n",
+		al, ar, i1.m_x, i1.m_y, i1.m_z, i2.m_x, i2.m_y, i2.m_z, d1, d2);
+	OutputDebugString(DebugString);
+#endif
 
 	CVertex *leftPointer, *rightPointer;
-	C2DPoint p;
-	CNumber d3 = CN_INFINITY;
+	C3DPoint p;
+	CNumber d3 = CN_INFINITY; 
 	CNumber av = v.m_leftLine.m_Angle - v.m_rightLine.m_Angle;
 
 	av.NormalizeAngle();
-	if (av > 0.0 && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C2DPoint(CN_INFINITY, CN_INFINITY)))
+	if (av > 0.0 && (v.m_leftLine.Intersection(v.m_rightLine) == v.m_point || v.m_leftLine.Intersection(v.m_rightLine) == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY)))
 		d3 = v.NearestIntersection(vl, &leftPointer, &rightPointer, p);
 
-	if (d1 <= d2 && d1 <= d3) { m_leftVertex = &l; m_rightVertex = &v; m_poi = i1; m_type = CONVEX; m_height = v.m_leftLine.Dist(i1); }
-	else if (d2 <= d1 && d2 <= d3) { m_leftVertex = &v; m_rightVertex = &r; m_poi = i2; m_type = CONVEX; m_height = v.m_rightLine.Dist(i2); }
-	else if (d3 <= d1 && d3 <= d2) { m_poi = p; m_leftVertex = m_rightVertex = &v; m_type = NONCONVEX; m_height = d3; }
+	if (d1 <= d2 && d1 <= d3)
+	{
+		m_leftVertex = &l;
+		m_rightVertex = &v;
+		m_poi = i1;
+		m_type = CONVEX;
+		m_poi.m_y = m_height = v.m_leftLine.Dist(i1) * tan(v.m_leftLine.m_Slope);
+	}
+	else if (d2 <= d1 && d2 <= d3)
+	{
+		m_leftVertex = &v;
+		m_rightVertex = &r;
+		m_poi = i2;
+		m_type = CONVEX;
+		m_poi.m_y = m_height = v.m_rightLine.Dist(i2) * tan(v.m_rightLine.m_Slope);
+	}
+	else if (d3 <= d1 && d3 <= d2)
+	{
+		m_poi = p;
+		m_leftVertex = m_rightVertex = &v;
+		m_type = NONCONVEX;
+		m_poi.m_y = m_height = d3;
+	}
 
-	if (m_poi == C2DPoint (CN_INFINITY, CN_INFINITY)) m_height = CN_INFINITY;
-	if (m_type == NONCONVEX && v.InvalidIntersection (vl, *this)) m_height = CN_INFINITY;
+	if (m_poi == C3DPoint (CN_INFINITY, CN_INFINITY, CN_INFINITY))
+		m_poi.m_y = m_height = CN_INFINITY;
+	if (m_type == NONCONVEX && v.InvalidIntersection (vl, *this))
+		m_poi.m_y = m_height = CN_INFINITY;
+#ifdef FELKELDEBUG
+	sprintf(DebugString, "New Intersection %d %d x %e y %e z %e height %e\n",
+		m_leftVertex->m_ID, m_rightVertex->m_ID, m_poi.m_x, m_poi.m_y, m_poi.m_z, m_height);
+	OutputDebugString(DebugString);
+#endif
 }
 
 void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
 {
+#ifdef FELKELDEBUG
+	char DebugString[1024];
+
+	sprintf(DebugString, "ApplyNonconvexIntersection\n");
+	OutputDebugString(DebugString);
+#endif
 	assert (m_leftVertex == m_rightVertex);
 
 	CVertex *leftPointer, *rightPointer;
-	C2DPoint p;
+	C3DPoint p;
 	CNumber d3 = CN_INFINITY;
 
 	d3 = m_leftVertex->NearestIntersection(vl, &leftPointer, &rightPointer, p);
 	if (d3 == CN_INFINITY) return;
-							
+							   
 	if (p != m_poi) return;
-							
+							   
 	CVertex v1 (p, *rightPointer, *m_rightVertex);
 	CVertex v2 (p, *m_leftVertex, *leftPointer);
 
-	assert (v1.m_point != C2DPoint(CN_INFINITY, CN_INFINITY));
-	assert (v2.m_point != C2DPoint(CN_INFINITY, CN_INFINITY));
+	assert (v1.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+	assert (v2.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
 
 	m_leftVertex->m_done = true;
 	//  i.rightVertex -> done = true;
@@ -184,9 +227,17 @@ void CIntersection::ApplyNonconvexIntersection(CSkeleton &skeleton, CVertexList 
 
 void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl, IntersectionQueue &iq)
 {
-	CVertex vtx (m_poi, *m_leftVertex, *m_rightVertex);
-	assert(vtx.m_point != C2DPoint(CN_INFINITY, CN_INFINITY));
+#ifdef FELKELDEBUG
+	char DebugString[1024];
 
+	sprintf(DebugString, "ApplyConvexIntersection\n");
+	OutputDebugString(DebugString);
+#endif
+	// create new vertex and link into current contour
+	CVertex vtx (m_poi, *m_leftVertex, *m_rightVertex);
+	assert(vtx.m_point != C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+
+	// Link vertex into overall chain
 	CVertex *newNext = m_rightVertex->m_nextVertex;
 	CVertex *newPrev = m_leftVertex->m_prevVertex;
 
@@ -199,9 +250,13 @@ void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl
 
 	newPrev->m_nextVertex = vtxPointer;
 	newNext->m_prevVertex = vtxPointer;
+
+	// Set this vertex as the higher skeleton point for the vertices which have been
+	// removed from the active contour
 	m_leftVertex->m_higher = vtxPointer;
 	m_rightVertex->m_higher = vtxPointer;
 
+	// mark vertices as inactive
 	m_leftVertex->m_done = true;
 	m_rightVertex->m_done = true;
 
@@ -244,6 +299,12 @@ void CIntersection::ApplyConvexIntersection(CSkeleton &skeleton, CVertexList &vl
 
 void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 {
+#ifdef FELKELDEBUG
+	char DebugString[1024];
+
+	sprintf(DebugString, "ApplyLast3\n");
+	OutputDebugString(DebugString);
+#endif
 	assert(m_leftVertex->m_nextVertex == m_rightVertex);
 	assert(m_rightVertex->m_prevVertex == m_leftVertex);
 	assert(m_leftVertex->m_prevVertex->m_prevVertex == m_rightVertex);
@@ -257,14 +318,14 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 	v2.m_done = true;
 	v3.m_done = true;
 
-	C2DPoint is1 = v1.m_axis.FacingTowards(v2.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v1.m_axis.Intersection(v2.m_axis);
-	C2DPoint is2 = v2.m_axis.FacingTowards(v3.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v2.m_axis.Intersection(v3.m_axis);
-	C2DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C2DPoint(CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
+	C3DPoint is1 = v1.m_axis.FacingTowards(v2.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v1.m_axis.Intersection(v2.m_axis);
+	C3DPoint is2 = v2.m_axis.FacingTowards(v3.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v2.m_axis.Intersection(v3.m_axis);
+	C3DPoint is3 = v3.m_axis.FacingTowards(v1.m_axis) ? C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY) : v3.m_axis.Intersection(v1.m_axis);
 
-	C2DPoint is = m_poi;
-	//assert(is == is1 || is1 == C2DPoint(CN_INFINITY, CN_INFINITY));
-	//assert(is == is2 || is2 == C2DPoint(CN_INFINITY, CN_INFINITY));
-	//assert(is == is3 || is3 == C2DPoint(CN_INFINITY, CN_INFINITY));
+	C3DPoint is = m_poi;
+	assert(is == is1 || is1 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+	assert(is == is2 || is2 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
+	assert(is == is3 || is3 == C3DPoint(CN_INFINITY, CN_INFINITY, CN_INFINITY));
 
 	CVertex v(is);
 
@@ -284,7 +345,7 @@ void CIntersection::ApplyLast3(CSkeleton &skeleton, CVertexList &vl)
 
 	CSkeletonLine *line3Ptr = &skeleton.back ();
 
-	line1Ptr->m_higher.m_right = line2Ptr; // zapojeni okridlenych hran
+	line1Ptr->m_higher.m_right = line2Ptr;                             // zapojeni okridlenych hran
 	line2Ptr->m_higher.m_right = line3Ptr;
 	line3Ptr->m_higher.m_right = line1Ptr;
 
