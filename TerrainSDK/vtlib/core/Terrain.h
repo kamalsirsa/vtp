@@ -24,6 +24,7 @@ class vtDynTerrainGeom;
 class vtElevationGrid;
 class vtTin;
 class vtTin3d;
+class vtFeatures;
 
 typedef vtImage *vtImagePtr;
 
@@ -188,6 +189,9 @@ public:
 	void ShowPOI(vtPointOfInterest *poi, bool bShow);
 	void HideAllPOI();
 
+	// symbols and labels for abstract data
+	void CreateStyledFeatures(const vtFeatures &feat, const char *fontname, const PointStyle &style);
+
 	// Access the viewpoint associated with this terrain
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
 	FMatrix4 &GetCamLocation() { return m_CamLocation; }
@@ -217,12 +221,12 @@ protected:
 	void create_roads(vtString strRoadFile);
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
+	void _CreateLabels();
 	void create_textures();
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 	void create_culture(bool bSound);
-	void create_floating_labels(const char *filename, const char *fontname);
 
 	void CreateChoppedTextures(vtElevationGrid *pLocalGrid, vtDIB *dib1,
 								int patches, int patch_size);

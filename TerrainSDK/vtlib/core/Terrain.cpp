@@ -35,6 +35,16 @@
 // use a grid of LOD cells of size LOD_GRIDSIZE x LOD_GRIDSIZE
 #define LOD_GRIDSIZE		192
 
+///////////////////////////////////////////////////////////////////////
+
+PointStyle::PointStyle()
+{
+	m_field_index = 0;
+	m_label_elevation = 100.0f;	// 100m above the ground
+	m_label_size = 10.0f;		// 10m tall text
+	m_label_color.Set(255,255,255);	// white
+}
+
 // All terrains share a static data path and content manager
 StringArray vtTerrain::m_DataPaths;
 vtContentManager3d vtTerrain::s_Content;
@@ -1024,7 +1034,31 @@ void vtTerrain::_SetupStructGrid(float fLODDistance)
 
 /////////////////////////
 
-void vtTerrain::create_floating_labels(const char *filename, const char *fontname)
+void vtTerrain::_CreateLabels()
+{
+	vtString fname = "PointData/";
+	fname += m_Params.m_strLabelFile;
+	vtString labels_path = FindFileOnPaths(m_DataPaths, fname);
+	if (labels_path == "")
+	{
+		VTLOG("Couldn't find features file '%s'\n", (const char *) fname);
+		return;
+	}
+
+	vtFeatures feat;
+	if (!feat.LoadFrom(labels_path))
+	{
+		VTLOG("Couldn't read features from file '%s'\n", (const char *) labels_path);
+		return;
+	}
+	VTLOG("Read features from file '%s'\n", (const char *) labels_path);
+
+	PointStyle default_style;
+	CreateStyledFeatures(feat, "Fonts/Arial.ttf", default_style);
+}
+
+void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontname,
+									 const PointStyle &style)
 {
 	// create container group
 	vtGroup *pPlaceNames = new vtGroup();
@@ -1039,7 +1073,7 @@ void vtTerrain::create_floating_labels(const char *filename, const char *fontnam
 	}
 
 	vtMaterialArray *pMats = new vtMaterialArray();
-	int index = pMats->AddRGBMaterial1(RGBf(1,1,1), false, false);
+	int index = pMats->AddRGBMaterial1(style.m_label_color, false, false);
 	vtFont *font = new vtFont;
 	bool success = font->LoadFont(font_path);
 	if (success)
@@ -1047,16 +1081,7 @@ void vtTerrain::create_floating_labels(const char *filename, const char *fontnam
 	else
 		VTLOG("Couldn't read font from file '%s'\n", fontname);
 
-	vtFeatures feat;
-	if (!feat.LoadFrom(filename))
-	{
-		VTLOG("Couldn't read features from file '%s'\n", filename);
-		return;
-	}
-	VTLOG("Read features from file '%s'\n", filename);
-
 	int features = feat.NumEntities();
-	int field_num = 0;
 	DPoint3 p;
 	FPoint3 p3;
 	vtString str;
@@ -1064,9 +1089,9 @@ void vtTerrain::create_floating_labels(const char *filename, const char *fontnam
 	{
 		vtTransform *bb = new vtTransform();
 
-		vtTextMesh *text = new vtTextMesh(font, true);	// center
+		vtTextMesh *text = new vtTextMesh(font, style.m_label_size, true);	// center
 
-		feat.GetValueAsString(i, field_num, str);
+		feat.GetValueAsString(i, style.m_field_index, str);
 		feat.GetPoint(i, p);
 		// text might be UTF-8
 		wstring2 wide_string;
@@ -1082,12 +1107,10 @@ void vtTerrain::create_floating_labels(const char *filename, const char *fontnam
 		// toward the viewer
 		bb->AddChild(geom);
 
-		float width = 250.0f;
-		float height = 250.0f;
-		bb->Scale3(width/20, height/20, 1.0f);
+//		bb->Scale3(style.m_label_size, style.m_label_size, 1.0f);
 
 		m_pHeightField->ConvertEarthToSurfacePoint(p.x, p.y, p3);
-		p3.y += (200.0f + p.z);
+		p3.y += (style.m_label_elevation + p.z);
 		bb->SetTrans(p3);
 		pPlaceNames->AddChild(bb);
 	}
@@ -1260,13 +1283,7 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 	}
 
 	if (m_Params.m_bLabels)
-	{
-		vtString fname = "PointData/";
-		fname += m_Params.m_strLabelFile;
-		vtString labels_path = FindFileOnPaths(m_DataPaths, fname);
-		if (labels_path != "")
-			create_floating_labels(labels_path, "Fonts/Arial.ttf");
-	}
+		_CreateLabels();
 
 	return true;
 }
