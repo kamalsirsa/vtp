@@ -459,19 +459,23 @@ void vtElevLayer::SetupBitmap(wxDC* pDC)
 void vtElevLayer::SetupDefaultColors(ColorMap &cmap)
 {
 	cmap.m_bRelative = false;
-	cmap.Add(-450*13, RGBi(60, 60, 60	));
-	cmap.Add(-450*12, RGBi(160, 80, 0	));
-	cmap.Add(-450*11, RGBi(128, 128, 0	));
-	cmap.Add(-450*10, RGBi(160, 0, 160	));
-	cmap.Add(-450* 9, RGBi(144, 64, 144	));
-	cmap.Add(-450* 8, RGBi(128, 128, 128));
-	cmap.Add(-450* 7, RGBi(64, 128, 60	));
-	cmap.Add(-450* 6, RGBi(0, 128, 0	));
-	cmap.Add(-450* 5, RGBi(0, 128, 128	));
-	cmap.Add(-450* 4, RGBi(0, 0, 160	));
-	cmap.Add(-450* 3, RGBi(43, 90, 142	));
-	cmap.Add(-450* 2, RGBi(81, 121, 172	));
-	cmap.Add(-450* 1, RGBi(108, 156, 195));
+	cmap.Add(-400*17, RGBi(255, 255, 255));
+	cmap.Add(-400*16, RGBi(0, 0, 0	));
+	cmap.Add(-400*15, RGBi(60, 60, 70	));
+	cmap.Add(-400*14, RGBi(120, 120, 130));
+	cmap.Add(-400*13, RGBi(180, 185, 190));
+	cmap.Add(-400*12, RGBi(160, 80, 0	));
+	cmap.Add(-400*11, RGBi(128, 128, 0	));
+	cmap.Add(-400*10, RGBi(160, 0, 160	));
+	cmap.Add(-400* 9, RGBi(144, 64, 144	));
+	cmap.Add(-400* 8, RGBi(128, 128, 128));
+	cmap.Add(-400* 7, RGBi(64, 128, 60	));
+	cmap.Add(-400* 6, RGBi(0, 128, 0	));
+	cmap.Add(-400* 5, RGBi(0, 128, 128	));
+	cmap.Add(-400* 4, RGBi(0, 0, 160	));
+	cmap.Add(-400* 3, RGBi(43, 90, 142	));
+	cmap.Add(-400* 2, RGBi(81, 121, 172	));
+	cmap.Add(-400* 1, RGBi(108, 156, 195));
 	cmap.Add(-0.01f  , RGBi(182, 228, 255));
 	cmap.Add(0, RGBi(0, 0, 0xee));
 	cmap.Add( 0.01f  , RGBi(40, 224, 40	));
