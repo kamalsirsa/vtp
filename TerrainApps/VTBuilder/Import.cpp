@@ -116,109 +116,131 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
 	if (ext.CmpNoCase(_T("zip")) == 0)
 		bZip = true;
 
-	if (bGZip || bZip)
+	if (!bGZip && !bZip)
 	{
-		// try to uncompress
-		wxString2 prepend_path;
-		prepend_path = GetTempFolderName(fname_in.mb_str());
-		int result;
-		result = vtCreateDir(prepend_path.mb_str());
-		if (result == 0 && errno != EEXIST)
+		// simple case
+		ImportDataFromFile(ltype, fname, bRefresh);
+		return;
+	}
+
+	// try to uncompress
+	wxString2 prepend_path;
+	prepend_path = GetTempFolderName(fname_in.mb_str());
+	int result;
+	result = vtCreateDir(prepend_path.mb_str());
+	if (result == 0 && errno != EEXIST)
+	{
+		DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
+		return;
+	}
+	prepend_path += _T("/");
+
+	vtString str1 = fname_in.mb_str();
+	vtString str2 = prepend_path.mb_str();
+
+	if (bGZip)
+		result = ExpandTGZ(str1, str2);
+	if (bZip)
+		result = ExpandZip(str1, str2);
+
+	if (result < 1)
+	{
+		DisplayAndLog("Couldn't expand archive.");
+	}
+	else if (result == 1)
+	{
+		// the archive contained a single file
+		wxString2 internal_name;
+		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 		{
-			DisplayAndLog("Couldn't create temporary directory to hold contents of archive.");
-			return;
+			if (it.is_directory())
+				continue;
+			std::string name1 = it.filename();
+			fname = prepend_path;
+			internal_name = name1.c_str();
+			fname += internal_name;
+			break;
 		}
-		prepend_path += _T("/");
-
-		vtString str1 = fname_in.mb_str();
-		vtString str2 = prepend_path.mb_str();
-
-		if (bGZip)
-			result = ExpandTGZ(str1, str2);
-		if (bZip)
-			result = ExpandZip(str1, str2);
-
-		if (result < 1)
+		vtLayer *pLayer = ImportDataFromFile(ltype, fname, bRefresh);
+		if (pLayer)
 		{
-			DisplayAndLog("Couldn't expand archive.");
+			// use the internal filename, not the archive filename which is temporary
+			pLayer->SetLayerFilename(internal_name);
+			pLayer->SetImportedFrom(fname_in);
 		}
-		else if (result == 1)
+	}
+	else if (result > 1)
+	{
+		Array<vtLayer *> LoadedLayers;
+		vtLayer *pLayer;
+
+		// probably SDTS
+		// try to guess layer type from original file name
+		if (fname.Contains(_T(".hy")) || fname.Contains(_T(".HY")))
+			ltype = LT_WATER;
+		if (fname.Contains(_T(".rd")) || fname.Contains(_T(".RD")))
+			ltype = LT_ROAD;
+		if (fname.Contains(_T(".dem")) || fname.Contains(_T(".DEM")))
+			ltype = LT_ELEVATION;
+		if (fname.Contains(_T(".ms")) || fname.Contains(_T(".MS")))
+			ltype = LT_STRUCTURE;
+
+		// look for an SDTS catalog file
+		bool found_cat = false;
+		wxString2 fname2;
+		for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 		{
-			// the archive contained a single file
-			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
+			if (it.is_directory()) continue;
+			fname2 = it.filename();
+			if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
 			{
-				if (it.is_directory())
-					continue;
-				std::string name1 = it.filename();
 				fname = prepend_path;
-				wxString2 tmp = name1.c_str();
-				fname += tmp;
+				fname += fname2;
+				found_cat = true;
 				break;
 			}
-			ImportDataFromFile(ltype, fname, bRefresh);
 		}
-		else if (result > 1)
+		if (found_cat)
 		{
-			// probably SDTS
-			// try to guess layer type from original file name
-			if (fname.Contains(_T(".hy")) || fname.Contains(_T(".HY")))
-				ltype = LT_WATER;
-			if (fname.Contains(_T(".rd")) || fname.Contains(_T(".RD")))
-				ltype = LT_ROAD;
-			if (fname.Contains(_T(".dem")) || fname.Contains(_T(".DEM")))
-				ltype = LT_ELEVATION;
-			if (fname.Contains(_T(".ms")) || fname.Contains(_T(".MS")))
-				ltype = LT_STRUCTURE;
-
-			// look for an SDTS catalog file
-			bool found_something = false;
-			bool found_cat = false;
-			wxString2 fname2;
+			pLayer = ImportDataFromFile(ltype, fname, bRefresh);
+			if (pLayer)
+			{
+				pLayer->SetLayerFilename(fname2);
+				LoadedLayers.Append(pLayer);
+			}
+		}
+		else
+		{
+			// Look through archive for individual files (like .dem)
 			for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
 			{
 				if (it.is_directory()) continue;
 				fname2 = it.filename();
-				if (fname2.Right(8).CmpNoCase(_T("catd.ddf")) == 0)
+
+				fname = prepend_path;
+				fname += fname2;
+
+				// Try importing w/o warning on failure, since it could just
+				// be some harmless files in there.
+				pLayer = ImportDataFromFile(ltype, fname, bRefresh, false);
+				if (pLayer)
 				{
-					fname = prepend_path;
-					fname += fname2;
-					found_cat = true;
-					found_something = true;
-					break;
+					pLayer->SetLayerFilename(fname2);
+					LoadedLayers.Append(pLayer);
 				}
 			}
-			if (found_cat)
-				ImportDataFromFile(ltype, fname, bRefresh);
-			else
-			{
-				// Look through archive for individual files (like .dem)
-				for (dir_iter it((std::string) (prepend_path.mb_str())); it != dir_iter(); ++it)
-				{
-					if (it.is_directory()) continue;
-					fname2 = it.filename();
-
-					fname = prepend_path;
-					fname += fname2;
-
-					// Try importing w/o warning on failure, since it could just
-					// be some harmless files in there.
-					if (ImportDataFromFile(ltype, fname, bRefresh, false))
-						found_something = true;
-				}
-			}
-			if (!found_something)
-				DisplayAndLog("Don't know what to do with contents of archive.");
 		}
+		if (LoadedLayers.GetSize() == 0)
+			DisplayAndLog("Don't know what to do with contents of archive.");
 
-		// clean up after ourselves
-		prepend_path = GetTempFolderName(fname_in.mb_str());
-		vtDestroyDir(prepend_path.mb_str());
+		// set the original imported filename
+		for (int i = 0; i < LoadedLayers.GetSize(); i++)
+			LoadedLayers[i]->SetImportedFrom(fname_in);
 	}
-	else
-	{
-		// simple case
-		ImportDataFromFile(ltype, fname, bRefresh);
-	}
+
+	// clean up after ourselves
+	prepend_path = GetTempFolderName(fname_in.mb_str());
+	vtDestroyDir(prepend_path.mb_str());
 }
 
 /**
@@ -232,7 +254,7 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, const wxString2 &fname_in
  * \return	True if a layer was created from the given file, or false if
  *			nothing importable was found in the file.
  */
-bool MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
+vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName,
 								   bool bRefresh, bool bWarn)
 {
 	// check to see if the file is readable
@@ -397,7 +419,7 @@ bool MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 		VTLOG("  import failed/cancelled.\n");
 		if (bWarn)
 			wxMessageBox(_T("Did not import any data from that file."));
-		return false;
+		return NULL;
 	}
 	VTLOG("  import succeeded.\n");
 
@@ -406,9 +428,13 @@ bool MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 		pLayer->SetLayerFilename(strFileName);
 
 	bool success = AddLayerWithCheck(pLayer, true);
-	if (!success)
+	if (success)
+		return pLayer;
+	else
+	{
 		delete pLayer;
-	return true;
+		return NULL;
+	}
 }
 
 //

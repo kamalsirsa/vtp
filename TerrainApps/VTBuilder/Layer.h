@@ -56,7 +56,7 @@
 #define FSTRING_XML		_T("XML Files (*.xml)|*.xml|")
 #define FSTRING_XYZ		_T("XYZ Text Files (*.txt)|*.txt|")
 
-#define FSTRING_COMP	_T("Compressed Files (*.tar, *.gz, *.tgz)|*.tar;*.gz;*.tgz|")
+#define FSTRING_COMP	_T("Compressed Files (*.tar, *.gz, *.tgz, *.zip)|*.tar;*.gz;*.tgz;*.zip|")
 
 enum LayerType
 {
@@ -90,6 +90,9 @@ public:
 	void SetModified(bool bModified);
 	bool GetModified() { return m_bModified; }
 	bool IsNative() { return m_bNative; }
+
+	wxString2 GetImportedFrom() { return m_wsImportedFrom; }
+	void SetImportedFrom(const wxString2 &fname) { m_wsImportedFrom = fname; }
 
 	// operations
 	static vtLayer *CreateNewLayer(LayerType ltype);
@@ -132,6 +135,10 @@ protected:
 
 	// this filename is only used if the layer subclass doesn't have its own
 	wxString2	m_wsFilename;
+
+	// remember what file this layer was imported from
+	wxString2	m_wsImportedFrom;
+
 	LayerType	m_type;
 	bool		m_bVisible;
 	bool		m_bModified;

@@ -1293,11 +1293,20 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 	{
 		lp = m_Layers.GetAt(i);
 
-		fprintf(fp, "type %d, %s", lp->GetType(), lp->IsNative() ? "native" : "import");
+		bool bNative = lp->IsNative();
+
+		fprintf(fp, "type %d, %s", lp->GetType(), bNative ? "native" : "import");
 		if (!lp->GetVisible())
 			fprintf(fp, " hidden");
 		fprintf(fp, "\n");
-		fprintf(fp, "%s\n", lp->GetLayerFilename().mb_str());
+
+		wxString2 fname = lp->GetLayerFilename();
+		if (!bNative)
+		{
+			if (lp->GetImportedFrom() != _T(""))
+				fname = lp->GetImportedFrom();
+		}
+		fprintf(fp, "%s\n", fname.mb_str());
 	}
 
 	// write area
