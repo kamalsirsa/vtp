@@ -93,6 +93,7 @@ void IcoGlobe::set_face_verts1(vtMesh *mesh, int face, float f)
 	}
 	if (f != 1.0f)
 	{
+		// recalculate vertex normals from the current vertex locations
 		idx = 0;
 		DPoint3 d0, d1;
 		for (j = 0; j <= m_freq; j++)
@@ -135,7 +136,7 @@ void IcoGlobe::set_face_verts2(vtMesh *mesh, int face, float f)
 
 	if (f == 1.0f)
 	{
-		// sphere normals
+		// sphere normals pointing straight outwards
 		for (int i = 0; i < m_rtv[face].GetSize(); i++)
 			mesh->SetVtxNormal(i, m_rtv[face][i].p);
 	}
@@ -156,50 +157,7 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 	FPoint3 vp0;
 	double len, mag = 1.0;
 
-#if 0
-	// naive way - no strips, no vertex sharing, independent triangles
-	int size = 3;
-	DPoint3 p0, p1, p2;
-	FPoint3 vp0, vp1, vp2;
-	for (j = 0; j < freq; j++)
-	{
-		for (i = 0; i < (freq-j); i++)
-		{
-			p0 = v0 + (vec0 * i) + (vec1 * j);
-			p1 = v0 + (vec0 * (i+1)) + (vec1 * j);
-			p2 = v0 + (vec0 * i) + (vec1 * (j+1));
-			len = p0.Length();
-			p0 = p0 / len * (f * mag + (1 - f) * len);
-			len = p1.Length();
-			p1 = p1 / len * (f * mag + (1 - f) * len);
-			len = p2.Length();
-			p2 = p2 / len * (f * mag + (1 - f) * len);
-
-			// convert doubles -> floats
-			vp0 = p0;
-			vp1 = p1;
-			vp2 = p2;
-
-			m_mesh->SetVtxPos(m_vidx, vp0);
-			m_mesh->SetVtxPos(m_vidx+1, vp1);
-			m_mesh->SetVtxPos(m_vidx+2, vp2);
-
-			FPoint2 coord;
-			coord.u = (float)i / freq;
-			coord.v = (float)j / freq;
-			m_mesh->SetVtxTexCoord(m_vidx, coord);
-			coord.u = (float)(i+1) / freq;
-			coord.v = (float)j / freq;
-			m_mesh->SetVtxTexCoord(m_vidx+1, coord);
-			coord.u = (float)i / freq;
-			coord.v = (float)(j+1) / freq;
-			m_mesh->SetVtxTexCoord(m_vidx+2, coord);
-
-			m_vidx += 3;
-		}
-	}
-#else
-	// better way, two passes
+	// two passes
 	// first pass: create the vertices
 	int idx = 0;
 	int vtx_base = 0;
@@ -259,13 +217,11 @@ void IcoGlobe::add_face1(vtMesh *mesh, int face, bool second)
 		row_start += row_len;
 	}
 	delete [] indices;
-#endif
 }
 
 void IcoGlobe::add_face2(vtMesh *mesh, int face, bool second, float f)
 {
 	int i;
-	int depth = 3;
 	IcoVert v0, v1, v2, e0, e1, e2, center;
 
 	v0.p = m_verts[icosa_face_v[face][0]];
@@ -310,14 +266,14 @@ void IcoGlobe::add_face2(vtMesh *mesh, int face, bool second, float f)
 		mesh->AddVertexNUV(m_rtv[face][i].p, m_rtv[face][i].p, m_rtv[face][i].uv);
 
 	// iterate the 6 subfaces
-	add_subface(mesh, face, 0, 3, 6, false, depth, f);
-	add_subface(mesh, face, 1, 3, 6, true, depth, f);
+	add_subface(mesh, face, 0, 3, 6, false, m_depth, f);
+	add_subface(mesh, face, 1, 3, 6, true, m_depth, f);
 
-	add_subface(mesh, face, 1, 4, 6, false, depth, f);
-	add_subface(mesh, face, 2, 4, 6, true, depth, f);
+	add_subface(mesh, face, 1, 4, 6, false, m_depth, f);
+	add_subface(mesh, face, 2, 4, 6, true, m_depth, f);
 
-	add_subface(mesh, face, 2, 5, 6, false, depth, f);
-	add_subface(mesh, face, 0, 5, 6, true, depth, f);
+	add_subface(mesh, face, 2, 5, 6, false, m_depth, f);
+	add_subface(mesh, face, 0, 5, 6, true, m_depth, f);
 
 	// now, deal with curvature
 	refresh_face_positions(mesh, face, f);
@@ -383,38 +339,8 @@ void IcoGlobe::add_subface(vtMesh *mesh, int face, int v0, int v1, int v2,
 }
 
 
-void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefix)
+void IcoGlobe::CreateMaterials(const StringArray &paths, const vtString &strImagePrefix)
 {
-	VTLOG("IcoGlobe::Create\n");
-	int i;
-	m_freq = freq;
-
-	InitIcosa();
-
-	int numvtx = (freq + 1) * (freq + 2) / 2;
-	for (i = 1; i <= 20; i++)
-	{
-		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
-		m_mesh[i]->AllowOptimize(false);
-	}
-
-	int pair;
-	for (pair = 0; pair < 10; pair++)
-	{
-		int f1 = icosa_face_pairs[pair][0];
-		int f2 = icosa_face_pairs[pair][1];
-
-//		add_face1(m_mesh[f1], f1, false);
-//		add_face1(m_mesh[f2], f2, true);
-		add_face2(m_mesh[f1], f1, false, 1);
-		add_face2(m_mesh[f2], f2, true, 1);
-	}
-
-	m_geom = new vtGeom();
-	m_geom->SetName2("GlobeGeom");
-	m_mgeom = new vtMovGeom(m_geom);
-	m_mgeom->SetName2("GlobeShape");
-
 	m_mats = new vtMaterialArray();
 	bool bCulling = true;
 	bool bLighting = false;
@@ -428,7 +354,7 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 	vtString fname;
 	vtString fullpath;
 
-	int index;
+	int pair, index;
 	for (pair = 0; pair < 10; pair++)
 	{
 		int f1 = icosa_face_pairs[pair][0];
@@ -470,8 +396,90 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 		else
 			m_globe_mat[pair] = index;
 	}
+}
 
+void IcoGlobe::Create(int iTriangleCount, const StringArray &paths,
+					  const vtString &strImagePrefix, Style style)
+{
+	VTLOG("IcoGlobe::Create\n");
+
+	m_style = style;
+	InitIcosa();
+
+	int per_face = iTriangleCount / 20;
+	if (m_style == GEODESIC)
+	{
+		// Frequency for a traditional geodesic tiling gives (frequency ^ 2)
+		// triangles.  Find what frequency most closely matches the desired
+		// triangle count.
+		double exact = sqrt(per_face);
+		int iLess = floor(exact);
+		int iMore = ceil(exact);
+		if ((iMore*iMore - per_face) < (per_face - iLess*iLess))
+			m_freq = iMore;
+		else
+			m_freq = iLess;
+	}
+	else if (style == RIGHT_TRIANGLE)
+	{
+		// Recursive right-triangle subdivision gives (2 * 3 ^ (depth+1))
+		// triangles.  Find what depth most closely matches the desired
+		// triangle count.
+		int a, b = 6;
+		for (a = 1; a < 10; a++)
+		{
+			b *= 3;
+			if (b > per_face) break;
+		}
+		if ((b - per_face) < (per_face - b/3))
+			m_depth = a;
+		else
+			m_depth = a-1;
+	}
+
+	int i;
+	int numvtx;
+	if (m_style == GEODESIC)
+	{
+		numvtx = (m_freq + 1) * (m_freq + 2) / 2;
+	}
+	else if (style == RIGHT_TRIANGLE)
+	{
+		numvtx = 1 + 2 * ((int) pow(3, m_depth+1));
+	}
+
+	for (i = 1; i <= 20; i++)
+	{
+		m_mesh[i] = new vtMesh(GL_TRIANGLE_STRIP, VT_Normals | VT_TexCoords, numvtx);
+		m_mesh[i]->AllowOptimize(false);
+	}
+
+	int pair;
+	for (pair = 0; pair < 10; pair++)
+	{
+		int f1 = icosa_face_pairs[pair][0];
+		int f2 = icosa_face_pairs[pair][1];
+
+		if (m_style == GEODESIC)
+		{
+			add_face1(m_mesh[f1], f1, false);
+			add_face1(m_mesh[f2], f2, true);
+		}
+		else if (style == RIGHT_TRIANGLE)
+		{
+			add_face2(m_mesh[f1], f1, false, 1);
+			add_face2(m_mesh[f2], f2, true, 1);
+		}
+	}
+
+	CreateMaterials(paths, strImagePrefix);
+
+	m_geom = new vtGeom();
+	m_geom->SetName2("GlobeGeom");
 	m_geom->SetMaterials(m_mats);
+
+	m_mgeom = new vtMovGeom(m_geom);
+	m_mgeom->SetName2("GlobeShape");
 
 	for (pair = 0; pair < 10; pair++)
 	{
@@ -487,13 +495,12 @@ void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefi
 //
 void IcoGlobe::SetInflation(float f)
 {
-	for (int pair = 0; pair < 10; pair++)
+	for (int face = 1; face <= 20; face++)
 	{
-		int f1 = icosa_face_pairs[pair][0];
-		int f2 = icosa_face_pairs[pair][1];
-
-		set_face_verts2(m_mesh[f1], f1, f);
-		set_face_verts2(m_mesh[f2], f2, f);
+		if (m_style == GEODESIC)
+			set_face_verts1(m_mesh[face], face, f);
+		else if (m_style == RIGHT_TRIANGLE)
+			set_face_verts2(m_mesh[face], face, f);
 	}
 }
 

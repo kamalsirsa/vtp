@@ -24,7 +24,14 @@ class IcoGlobe : public DymaxIcosa
 public:
 	IcoGlobe();
 
-	void Create(int freq, const StringArray &paths, vtString strImagePrefix);
+	enum Style
+	{
+		GEODESIC, RIGHT_TRIANGLE
+	};
+
+	void Create(int iTriangleCount, const StringArray &paths,
+		const vtString &strImagePrefix, Style style = GEODESIC);
+	void CreateMaterials(const StringArray &paths, const vtString &strImagePrefix);
 	void SetInflation(float f);
 	void SetLighting(bool bLight);
 	void AddPoints(DLine2 &points, float fSize);
@@ -33,8 +40,9 @@ public:
 	int AddGlobePoints(const char *fname);
 	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
 
-	vtGeom		*m_geom;
+	vtGroup		*m_group;
 	vtMovGeom	*m_mgeom;
+	vtGeom		*m_geom;
 	int		m_red;
 	int		m_yellow;
 
@@ -53,10 +61,16 @@ protected:
 	vtMaterialArray	*m_mats;
 	int		m_globe_mat[10];
 	vtMesh	*m_mesh[21];
+
+	IcoGlobe::Style m_style;
+
+	// for GEODESIC
+	int		m_freq;		// tesselation frequency
+
+	// for RIGHT_TRIANGLE
 	int		m_vert;
 	Array<IcoVert>	m_rtv[21];	// right-triangle vertices
-
-	int		m_freq;	// tesselation frequency
+	int		m_depth;	// tesselation depth
 };
 
 vtMovGeom *CreateSimpleEarth(vtString strDataPath);
