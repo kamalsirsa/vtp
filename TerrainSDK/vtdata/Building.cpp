@@ -78,7 +78,6 @@ void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 	door.m_vf2 = DOOR_TOP;
 
 	int num_Edgess = iDoors + iWindows + 1;
-	int num_feat = iDoors + iWindows + num_Edgess;
 
 	m_Features.Empty();
 	m_Features.Append(wall);
@@ -344,6 +343,36 @@ bool vtLevel::IsCornerConvex(int i)
 	double xprod = v1.Cross(v2);
 	return (xprod > 0);
 }
+
+#if 0
+void vtLevel::GetEdgePlane(int i, FPlane3 &plane)
+{
+	vtEdge *edge = m_Edges[i];
+}
+
+//
+// Look at the sloped edges to see if they meet at a particular point;
+// if so, set that as the Level's story height.  Return true on success.
+//
+bool vtLevel::DetermineHeightFromSlopes()
+{
+	// In order to find a roof point, we need 3 adjacent edges whose
+	// edges intersect.
+	int i, edges = GetNumEdges();
+
+	FPlane3 *planes = new FPlane3[edges];
+	for (i = 0; i < edges; i++)
+	{
+		GetEdgePlane(i, planes[i]);
+	}
+	for (i = 0; i < edges; i++)
+	{
+//		vtEdge *edge1 = m_Edges[(i+1)%edges];
+//		vtEdge *edge2 = m_Edges[(i+2)%edges];
+	}
+	delete [] planes;
+}
+#endif
 
 
 /////////////////////////////////////
