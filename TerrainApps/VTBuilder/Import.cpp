@@ -427,6 +427,8 @@ vtLayer *MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFile
 	case LT_RAW:
 		if (!strExt.CmpNoCase(_T("shp")))
 			pLayer = ImportFromSHP(strFileName, ltype);
+		else if (!strExt.CmpNoCase(_T("dxf")))
+			pLayer = ImportFromDXF(strFileName, ltype);
 		else
 		{
 			pLayer = ImportRawFromOGR(strFileName);
@@ -505,10 +507,11 @@ wxString GetImportFilterString(LayerType ltype)
 	{
 	case LT_RAW:
 		// shp
-		AddType(filter, FSTRING_SHP);
+		AddType(filter, FSTRING_DXF);
+		AddType(filter, FSTRING_IGC);
 		AddType(filter, FSTRING_MI);
 		AddType(filter, FSTRING_NTF);
-		AddType(filter, FSTRING_IGC);
+		AddType(filter, FSTRING_SHP);
 		break;
 	case LT_ELEVATION:
 		// dem, etc.
@@ -754,6 +757,36 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 	return pLayer;
 }
 
+vtLayerPtr MainFrame::ImportFromDXF(const wxString2 &strFileName, LayerType ltype)
+{
+	if (ltype == LT_ELEVATION)
+	{
+		vtElevLayer *pEL = new vtElevLayer();
+		if (pEL->ImportFromFile(strFileName))
+			return pEL;
+		else
+			return NULL;
+	}
+	if (ltype == LT_RAW)
+	{
+		vtFeatureLoader loader;
+		vtFeatureSet *pSet = loader.LoadFromDXF(strFileName.mb_str());
+		if (!pSet)
+			return NULL;
+
+		// We should ask for a CRS
+		vtProjection &Proj = pSet->GetAtProjection();
+		if (!GetMainFrame()->ConfirmValidCRS(&Proj))
+		{
+			delete pSet;
+			return NULL;
+		}
+		vtRawLayer *pRL = new vtRawLayer();
+		pRL->SetFeatureSet(pSet);
+		return pRL;
+	}
+	return NULL;
+}
 
 vtLayerPtr MainFrame::ImportElevation(const wxString2 &strFileName, bool bWarn)
 {
