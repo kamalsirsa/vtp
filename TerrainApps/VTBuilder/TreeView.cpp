@@ -251,7 +251,7 @@ void MyTreeCtrl::RefreshTreeItems(MainFrame *pFrame)
 
 void MyTreeCtrl::RefreshTreeStatus(MainFrame *pFrame)
 {
-	VTLOG("Refreshing Tree Status\n");
+	VTLOG("(Refreshing Tree Status)\n");
 
 	wxTreeItemId root = GetRootItem();
 	wxTreeItemId parent, item;
