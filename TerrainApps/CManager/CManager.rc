@@ -6,6 +6,7 @@ contents_open	BITMAP "bitmaps/contents_open.bmp"
 item_new		BITMAP "bitmaps/item_new.bmp"
 item_addmodel	BITMAP "bitmaps/item_addmodel.bmp"
 item_remmodel	BITMAP "bitmaps/item_remmodel.bmp"
+item_rem		BITMAP "bitmaps/item_rem.bmp"
 
 icon1   ICON "icons/camera.ico"
 icon2   ICON "icons/engine.ico"

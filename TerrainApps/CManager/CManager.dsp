@@ -263,6 +263,10 @@ SOURCE=.\wx\msw\info.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\bitmaps\item_rem.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\icons\light.ico
 # End Source File
 # Begin Source File
