@@ -1486,11 +1486,11 @@ void vtTerrain::ApplyPreLight(vtElevationGrid *pLocalGrid, vtDIB *dib)
 //	m_ocean_color *= shade;
 }
 
-void vtTerrain::AddPointOfInterest(double ulx, double uly, double brx, double bry,
-								  const char *name, const char *url)
+void vtTerrain::AddPointOfInterest(double left, double bottom, double right,
+					   double top, const char *name, const char *url)
 {
 	POIPtr p = new vtPointOfInterest();
-	p->m_rect.SetRect(ulx, uly, brx, bry);
+	p->m_rect.SetRect(left, top, right, bottom);
 	p->m_name = name;
 	p->m_url = url;
 
@@ -1526,7 +1526,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		return;
 	}
 
-	vtMesh *pGeom = new vtMesh(GL_LINES, 0, STEPS*4);
+	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, STEPS*4);
 
 	FPoint3 v1, v2, v3, v4, v;
 	g_Conv.convert_earth_to_local_xz(poi->m_rect.left, poi->m_rect.top, v1.x, v1.z);
@@ -1540,40 +1540,39 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		v.Set(v1.x + (v2.x - v1.x) / STEPS * i, 0.0f, v1.z + (v2.z - v1.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
 		v.y += 10.0f;
-		pGeom->AddVertex(v);
+		mesh->AddVertex(v);
 	}
 	for (i = 0; i < STEPS; i++)
 	{
 		v.Set(v2.x + (v3.x - v2.x) / STEPS * i, 0.0f, v2.z + (v3.z - v2.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
 		v.y += 10.0f;
-		pGeom->AddVertex(v);
+		mesh->AddVertex(v);
 	}
 	for (i = 0; i < STEPS; i++)
 	{
 		v.Set(v3.x + (v4.x - v3.x) / STEPS * i, 0.0f, v3.z + (v4.z - v3.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
 		v.y += 10.0f;
-		pGeom->AddVertex(v);
+		mesh->AddVertex(v);
 	}
 	for (i = 0; i < STEPS; i++)
 	{
 		v.Set(v4.x + (v1.x - v4.x) / STEPS * i, 0.0f, v4.z + (v1.z - v4.z) / STEPS * i);
 		m_pHeightField->FindAltitudeAtPoint(v, v.y);
 		v.y += 10.0f;
-		pGeom->AddVertex(v);
+		mesh->AddVertex(v);
 	}
-
+	mesh->AddStrip2(STEPS * 4, 0);
 
 	poi->m_pGeom = new vtGeom();
 
 	vtMaterialArray *pApp = new vtMaterialArray();
-	pApp->AddRGBMaterial(RGBf(1.0f, 0.0f, 0.0f),
-		RGBf(0.2f, 0.0f, 0.0f), true, false); // red
+	pApp->AddRGBMaterial1(RGBf(1.0f, 0.0f, 0.0f), false, false); // red
 
 	poi->m_pGeom->SetMaterials(pApp);
-	poi->m_pGeom->SetName2("POI group");
-	poi->m_pGeom->AddMesh(pGeom, 0);
+	poi->m_pGeom->SetName2("POI Geom");
+	poi->m_pGeom->AddMesh(mesh, 0);
 
 	m_pTerrainGroup->AddChild(poi->m_pGeom);
 }

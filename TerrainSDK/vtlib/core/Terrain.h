@@ -176,8 +176,8 @@ public:
 	vtProjection &GetProjection() { return m_proj; }
 
 	// Points of interest
-	void AddPointOfInterest(double ulx, double uly, double brx, double bry,
-							  const char *name, const char *url);
+	void AddPointOfInterest(double left, double bottom, double right,
+					   double top, const char *name, const char *url);
 	vtPointOfInterest *FindPointOfInterest(DPoint2 utm);
 	void SetShowPOI( bool flag ) { m_bShowPOI = flag; }
 	bool GetShowPOI() { return m_bShowPOI; }
