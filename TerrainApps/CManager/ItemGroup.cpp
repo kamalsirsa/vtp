@@ -18,6 +18,7 @@
 #endif
 
 #include "vtlib/vtlib.h"
+#include "vtdata/vtLog.h"
 #include "frame.h"
 #include "ItemGroup.h"
 
@@ -29,7 +30,8 @@ ItemGroup::ItemGroup(vtItem *pItem)
 
 void ItemGroup::CreateNodes()
 {
-	m_pCage = NULL;
+	m_pAxes = NULL;
+	m_pRulers = NULL;
 	m_pGroup = new vtGroup();
 	m_pLOD = new vtLOD();
 	m_pTop = new vtGroup;
@@ -78,16 +80,36 @@ void ItemGroup::AttachModels()
 		}
 	}
 
-	// Update ruler
-	if (m_pCage)
+	// Update origin crosshair
+	if (m_pAxes)
 	{
-		m_pTop->RemoveChild(m_pCage);
-		delete m_pCage;
+		m_pTop->RemoveChild(m_pAxes);
+		m_pAxes->Destroy();
 	}
-	float size = sph.radius * 1.1f;
-	m_pCage = Create3DCursor(size, size/40);
-	m_pCage->SetName2("Cage");
-	m_pTop->AddChild(m_pCage);
+	float size = sph.radius * 2;
+	m_pAxes = Create3DCursor(size, size/100, 0.4f);
+	m_pAxes->SetName2("Origin Axes");
+	m_pTop->AddChild(m_pAxes);
+
+	// Update rulers
+	if (m_pRulers)
+	{
+		m_pTop->RemoveChild(m_pRulers);
+		m_pRulers->Destroy();
+	}
+	m_pRulers = CreateRulers(size);
+	m_pRulers->SetName2("Rulers");
+	m_pTop->AddChild(m_pRulers);
+}
+
+void ItemGroup::ShowOrigin(bool bShow)
+{
+	m_pAxes->SetEnabled(bShow);
+}
+
+void ItemGroup::ShowRulers(bool bShow)
+{
+	m_pRulers->SetEnabled(bShow);
 }
 
 void ItemGroup::SetRanges()
@@ -144,5 +166,106 @@ void ItemGroup::ShowLOD(bool bTrue)
 				trans->SetEnabled(false);
 		}
 	}
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Ruler geometry
+
+vtGeom *CreateRulers(float fSize)
+{
+	static vtFont *font = NULL;
+
+	if (!font)
+	{
+		font = new vtFont();
+		const char *fontname = "Fonts/Arial.ttf";
+		vtString font_path = FindFileOnPaths(vtFrame::m_DataPaths, fontname);
+		if (font_path == "")
+			VTLOG("Couldn't read font from file '%s'\n", fontname);
+		font->LoadFont(font_path);
+	}
+
+	int i, j, start;
+	vtMesh *mesh;
+	vtTextMesh *text;
+
+	vtGeom *pGeom = new vtGeom();
+	vtMaterialArray *pMats = new vtMaterialArray();
+	pMats->AddRGBMaterial1(RGBf(1.0f, 1.0f, 1.0f), false, false, false);
+	pGeom->SetMaterials(pMats);
+
+	int up = 0;
+	float interval = 0.001f;
+	while (fSize / interval > 22)
+	{
+		if (up == 0)
+			interval *= 2;
+		if (up == 1)
+			interval *= 2.5;
+		if (up == 1)
+			interval *= 2;
+		up++;
+		if (up > 2) up = 0;
+	}
+	int ticks = fSize / interval;
+
+	vtString str;
+	FPoint3 p;
+	float *wide;
+	float *thin;
+	for (i = 0; i < 3; i++)
+	{
+		p.Set(0,0,0);
+
+		mesh = new vtMesh(GL_LINES, VT_Normals, 24);
+
+		if (i == 0) { wide = &p.x; thin = &p.z; }
+		if (i == 1) { wide = &p.y; thin = &p.x; }
+		if (i == 2) { wide = &p.z; thin = &p.x; }
+
+		*wide = -fSize;
+		mesh->AddVertex(p);
+		*wide =  fSize;
+		mesh->AddVertex(p);
+		mesh->AddLine(0, 1);
+
+		for (j = 1; j <= ticks; j++)
+		{
+			*wide = j * interval;
+			*thin = -interval/2;
+			start = mesh->AddVertex(p);
+			*thin =  interval/2;
+			mesh->AddVertex(p);
+			mesh->AddLine(start, start+1);
+		}
+		pGeom->AddMesh(mesh, 0);
+
+	}
+	for (i = 0; i < 3; i++)
+	{
+		p.Set(0,0,0);
+
+		if (i == 0) { wide = &p.x; thin = &p.z; }
+		if (i == 1) { wide = &p.y; thin = &p.x; }
+		if (i == 2) { wide = &p.z; thin = &p.x; }
+
+		for (j = 1; j <= ticks; j++)
+		{
+			*wide = j * interval;
+			*thin = interval/2;
+
+			str.Format("%g", j * interval);
+			text = new vtTextMesh(font, interval/2, false);
+			text->SetPosition(p);
+			if (i == 0)
+				text->SetAlignment(0);
+			else
+				text->SetAlignment(1);
+			text->SetText(str);
+			pGeom->AddText(text, 0);
+		}
+	}
+	return pGeom;
 }
 

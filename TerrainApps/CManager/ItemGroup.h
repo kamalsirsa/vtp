@@ -21,15 +21,21 @@ public:
 	void ShowLOD(bool bTrue);
 	void SetRanges();
 	vtGroup	*GetTop() { return m_pTop; }
+	void ShowOrigin(bool bShow);
+	void ShowRulers(bool bShow);
 
 protected:
 	vtItem	*m_pItem;
 	vtGroup	*m_pTop;
 	vtGroup *m_pGroup;
 	vtLOD	*m_pLOD;
-	vtGeom	*m_pCage;
+	vtGeom	*m_pAxes;
+	vtGeom	*m_pRulers;
 	float m_ranges[20];		// One LOD distance for each child
 };
+
+// helper
+vtGeom *CreateRulers(float fSize);
 
 #endif // ITEMGROUPH
 
