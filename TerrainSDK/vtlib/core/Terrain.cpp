@@ -922,19 +922,12 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	pGeom->SetMaterials(pMat_Ocean);
 	pMat_Ocean->Release();
 
-	float width, depth;
-	int i, j;
-
 	FRECT world_extents = m_pHeightField->m_WorldExtents;
 	FPoint2 world_size(world_extents.Width(), world_extents.Height());
 
-	width = (float) world_size.x;
-	depth = (float) world_size.y;
-	FPoint3 base, size(width, 0, depth);
-
-	for (i = -3; i < 4; i++)
+	for (int i = -3; i < 4; i++)
 	{
-		for (j = -3; j < 4; j++)
+		for (int j = -3; j < 4; j++)
 		{
 			// don't need to do far corners
 			if ((i == -3 || i == 3) && (j == -3 || j == 3)) continue;
@@ -946,12 +939,12 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 				if (!bHorizon) continue;
 			}
 
-			base.x = world_extents.left + (i * width);
-			base.y = 0;
-			base.z = world_extents.bottom - (j * depth);
+			FPoint2 base;
+			base.x = world_extents.left + (i * world_size.x);
+			base.y = world_extents.bottom - (j * world_size.y);
 
 			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VtxType, 4);
-			mesh->CreateRectangle(1, 1, base, size, 5.0f);
+			mesh->CreateRectangle(1, 1, 0, 2, 1, base, base+world_size, 5.0f);
 
 			pGeom->AddMesh(mesh, 0);	// actually add
 			mesh->Release();	// pass ownership to the Geometry
