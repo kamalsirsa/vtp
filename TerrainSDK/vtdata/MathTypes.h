@@ -915,8 +915,8 @@ public:
 	RGBi &operator=(const RGBi &v) { r = v.r; g = v.g; b = v.b; return *this; }
 	RGBi &operator=(const class RGBf &v);
 
-	bool operator==(const RGBi &v) { return (r == v.r && g == v.g && b == v.b); }
-	bool operator!=(const RGBi &v) { return (r != v.r || g != v.g || b != v.b); }
+	bool operator==(const RGBi &v) const { return (r == v.r && g == v.g && b == v.b); }
+	bool operator!=(const RGBi &v) const { return (r != v.r || g != v.g || b != v.b); }
 
 	short r, g, b;
 };
@@ -975,9 +975,9 @@ public:
 	RGBf &operator=(const class RGBi &v);
 	RGBf &operator=(const class RGBAf &v);
 
-	bool operator==(const RGBf &v2)
+	bool operator==(const RGBf &v2) const
 	{ return (r == v2.r && g == v2.g && b == v2.b); }
-	bool operator!=(const RGBf &v2)
+	bool operator!=(const RGBf &v2) const
 	{ return (r != v2.r || g != v2.g || b != v2.b); }
 
 	float r, g, b;
