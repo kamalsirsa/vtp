@@ -12,10 +12,6 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-	#pragma hdrstop
-#endif
-
 #include "vtlib/vtlib.h"
 #include "vtui/Helper.h"	// for FillWithColor
 #include "LightDlg.h"
