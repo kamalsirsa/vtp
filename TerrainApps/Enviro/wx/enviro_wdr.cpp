@@ -55,7 +55,7 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item5->Add( item6, 0, wxALIGN_CENTER|wxALL, 0 );
 
     wxString *strs7 = (wxString*) NULL;
-    wxComboBox *item7 = new wxComboBox( parent, ID_IMAGE, wxT(""), wxDefaultPosition, wxSize(125,100), 0, strs7, wxCB_DROPDOWN );
+    wxComboBox *item7 = new wxComboBox( parent, ID_IMAGE, wxT(""), wxDefaultPosition, wxSize(125,-1), 0, strs7, wxCB_DROPDOWN );
     item5->Add( item7, 1, wxALIGN_CENTER|wxALL, 0 );
 
     item2->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -78,62 +78,29 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item0->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 10 );
 
-    wxButton *item12 = new wxButton( parent, ID_TERRMAN, _("Terrain Manager..."), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item12, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item14 = new wxStaticBox( parent, -1, _("Global options") );
-    wxStaticBoxSizer *item13 = new wxStaticBoxSizer( item14, wxVERTICAL );
+    wxButton *item13 = new wxButton( parent, ID_TERRMAN, _("Terrain Manager"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item15 = new wxBoxSizer( wxVERTICAL );
+    wxButton *item14 = new wxButton( parent, ID_OPTIONS, _("Global Options"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxGridSizer *item16 = new wxGridSizer( 2, 0, 0 );
+    wxButton *item15 = new wxButton( parent, ID_OPENGL, _("OpenGL Info"), wxDefaultPosition, wxDefaultSize, 0 );
+    item12->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxCheckBox *item17 = new wxCheckBox( parent, ID_FULLSCREEN, _("Full Screen"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item17, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item0->Add( item12, 0, wxALIGN_CENTER, 5 );
 
-    wxCheckBox *item18 = new wxCheckBox( parent, ID_TEXTURE_COMPRESSION, _("Texture Compression"), wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
 
-    item15->Add( item16, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxButton *item17 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item17->SetDefault();
+    item16->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+    wxButton *item18 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item16->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Size Exaggeration for Plants and Fences: "), wxDefaultPosition, wxDefaultSize, 0 );
-    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_PLANTSIZE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
-    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item15->Add( item19, 0, wxALIGN_CENTER, 5 );
-
-    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, _("Content file:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxString *strs24 = (wxString*) NULL;
-    wxChoice *item24 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(100,-1), 0, strs24, 0 );
-    item22->Add( item24, 1, wxALIGN_CENTER|wxALL, 5 );
-
-    item15->Add( item22, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
-
-    item13->Add( item15, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    item0->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 10 );
-
-    wxBoxSizer *item25 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxButton *item26 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item26->SetDefault();
-    item25->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item27 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item25->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    wxButton *item28 = new wxButton( parent, ID_OPENGL, _("OpenGL Info..."), wxDefaultPosition, wxDefaultSize, 0 );
-    item25->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
-
-    item0->Add( item25, 0, wxALIGN_CENTER|wxALL, 5 );
+    item0->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -1603,6 +1570,99 @@ wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item15->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
 
     item0->Add( item15, 0, wxALIGN_CENTER|wxALL, 0 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
+    }
+    
+    return item0;
+}
+
+wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
+
+    wxCheckBox *item2 = new wxCheckBox( parent, ID_FULLSCREEN, _("Full screen"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item3 = new wxCheckBox( parent, ID_TEXTURE_COMPRESSION, _("Texture compression"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxCheckBox *item4 = new wxCheckBox( parent, ID_DISABLE_MIPMAPS, _("Disable model mipmaps"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item6 = new wxStaticBox( parent, -1, _("Selection") );
+    wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
+
+    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Selection cutoff distance:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_SELECTION_CUTOFF, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item7->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item5->Add( item7, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 0 );
+
+    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item12 = new wxStaticText( parent, ID_TEXT, _("Maximum radius for selecting models:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_SELECTION_RADIUS, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item11->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item5->Add( item11, 0, wxALIGN_CENTER_VERTICAL, 0 );
+
+    item1->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Size exaggeration for plants and fences: "), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_PLANTSIZE, wxT(""), wxDefaultPosition, wxSize(50,-1), 0 );
+    item15->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item15, 0, wxALIGN_CENTER_VERTICAL, 0 );
+
+    wxCheckBox *item18 = new wxCheckBox( parent, ID_ONLY_AVAILABLE_SPECIES, _("Show only species with available appearances"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Global content file:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs21 = (wxString*) NULL;
+    wxChoice *item21 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(100,-1), 0, strs21, 0 );
+    item19->Add( item21, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item19, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item22 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item23 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->SetDefault();
+    item22->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item24 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item22->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item1->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
