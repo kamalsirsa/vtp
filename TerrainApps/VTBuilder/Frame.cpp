@@ -789,7 +789,7 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 	double x, y;
 	int i, j, l, layers = m_Layers.GetSize();
-	double fData, fBestData;
+	float fData, fBestData;
 	int iColumns, iRows;
 	pTarget->m_pGrid->GetDimensions(iColumns, iRows);
 
@@ -820,11 +820,16 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 			for (g = 0; g < num_elevs; g++)
 			{
 				vtElevLayer *elev = elevs[g];
-				vtElevationGrid *grid = elev->m_pGrid;
 
-				fData = grid->GetFilteredValue2(x, y);
+				vtElevationGrid *grid = elev->m_pGrid;
+				vtTin2d *tin = elev->m_pTin;
+				if (grid)
+					fData = grid->GetFilteredValue2(x, y);
+				else if (tin)
+					tin->FindAltitudeAtPoint(DPoint2(x, y), fData);
+
 				if (fData != INVALID_ELEVATION &&
-						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
+					(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
 					fBestData = fData;
 				if (fBestData != INVALID_ELEVATION && fBestData != 0)
 					break;
