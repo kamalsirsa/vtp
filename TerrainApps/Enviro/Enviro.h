@@ -186,6 +186,8 @@ public:
 	virtual void ShowLayerView() {}
 	virtual void RefreshLayerView() {}
 	virtual void EarthPosUpdated() {}
+	virtual void ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
+		float fGround, float fVertical) {}
 	virtual vtString GetPathFromGUI() { return ""; }
 
 	// temporary for demo use

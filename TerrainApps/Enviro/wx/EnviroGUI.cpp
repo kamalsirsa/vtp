@@ -19,6 +19,7 @@
 #include "frame.h"
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
+#include "vtui/DistanceDlg.h"
 
 DECLARE_APP(vtApp);
 
@@ -66,6 +67,13 @@ void EnviroGUI::ShowLayerView()
 void EnviroGUI::EarthPosUpdated()
 {
 	GetFrame()->EarthPosUpdated(m_EarthPos);
+}
+
+void EnviroGUI::ShowDistance(const DPoint2 &p1, const DPoint2 &p2,
+							 float fGround, float fVertical)
+{
+	GetFrame()->m_pDistanceDlg->SetPoints(p1, p2, false);
+	GetFrame()->m_pDistanceDlg->SetGroundAndVertical(fGround, fVertical, true);
 }
 
 vtString EnviroGUI::GetPathFromGUI()

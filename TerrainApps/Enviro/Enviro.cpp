@@ -317,6 +317,9 @@ void Enviro::FlyToSpace()
 
 	// Layer view needs to stop showing terrain layers
 	RefreshLayerView();
+
+	// Inform the GUI that there is no terrain
+	SetTerrainToGUI(NULL);
 }
 
 void Enviro::SetupGlobe()
@@ -1416,7 +1419,9 @@ void Enviro::OnMouse(vtMouseEvent &event)
 			OnMouseRightDown(event);
 	}
 	if (event.type == VT_MOVE)
+	{
 		OnMouseMove(event);
+	}
 	if (event.type == VT_UP)
 	{
 		if (event.button == VT_LEFT)
@@ -1685,9 +1690,11 @@ void Enviro::OnMouseMoveTerrain(vtMouseEvent &event)
 	}
 	if (m_mode == MM_MEASURE && m_bDragging && m_bOnTerrain)
 	{
+//		VTLOG("MouseMove, MEASURE & Drag & OnTerrain: %.1lf, %.1lf\n", m_EarthPos.x, m_EarthPos.y);
 		DPoint2 g1(m_EarthPosDown.x, m_EarthPosDown.y);
 		DPoint2 g2(m_EarthPos.x, m_EarthPos.y);
 		SetTerrainMeasure(g1, g2);
+		ShowDistance(g1, g2, m_fArcLength, m_EarthPos.z - m_EarthPosDown.z);
 	}
 }
 
@@ -1774,6 +1781,7 @@ void Enviro::UpdateEarthArc()
 	DPoint2 epos1(m_EarthPosDown.x, m_EarthPosDown.y);
 	DPoint2 epos2(m_EarthPos.x, m_EarthPos.y);
 	SetDisplayedArc(epos1, epos2);
+	ShowDistance(epos1, epos2, FLT_MIN, FLT_MIN);
 }
 
 void Enviro::SetupArcMesh()
