@@ -608,7 +608,6 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	int iNumberofMaterials = g_MaterialNames.GetSize();
 	int iNumberOfVisibleMaterials = 0;
 
-
 	m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
 
 	for (i = 0; i < iNumberofMaterials; i++)
@@ -623,7 +622,8 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 		const vtMaterialName& MaterialName = *g_MaterialNames.GetAt(i);
 		if (MaterialName.GetUIVisible())
 		{
-			pChoices[iNumberOfVisibleMaterials] = MaterialName;
+			wxString2 matname = (const char *) MaterialName;
+			pChoices[iNumberOfVisibleMaterials] = matname;
 			if (pChoices[iNumberOfVisibleMaterials] == m_strMaterial)
 				iInitialSelection = i;
 			iNumberOfVisibleMaterials++;
