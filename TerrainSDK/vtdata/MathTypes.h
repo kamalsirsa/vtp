@@ -390,9 +390,10 @@ public:
 	void RemovePoint(int i);
 	bool ContainsPoint(const DPoint2 &p) const;
 	double SegmentLength(unsigned int i) const;
-	double NearestSegment(const DPoint2 &Point, int &iIndex, DPoint2 &Intersection) const;
-	double NearestPoint(const DPoint2 &Point, int &iIndex) const;
-	DPoint2 GetSafePoint(int index) const;
+	void NearestPoint(const DPoint2 &Point, int &iIndex, double &dist) const;
+	bool NearestSegment(const DPoint2 &Point, int &iIndex, double &dist, DPoint2 &Intersection) const;
+
+	DPoint2 &GetSafePoint(int index) const;
 	void SetSafePoint(int index, const DPoint2 &p);
 	double Length() const;
 };
@@ -483,7 +484,7 @@ public:
 //	DLine3 &operator=(const class FLine3 &v);
 
 	void Add(const DPoint2 &p);
-	void RemovePoint(int i);
+	void NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dist) const;
 };
 
 /**

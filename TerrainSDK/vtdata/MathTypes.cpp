@@ -90,13 +90,20 @@ bool DLine2::ContainsPoint(const DPoint2 &p) const
 }
 
 /**
- * Returns the index of the first point of the nearest line segment
- * that has a normal to the specified point
+ * Returns the location of the closest point on the line to a given point.
+ *
+ * \param Point The input point.
+ * \param iIndex Index of the first point of the nearest line segment.
+ * \param dist Distance from the DLine2 to the input point.
+ * \param Intersection The closest point on the DLine2.
+ *
+ * \return True if a closest point was found.
  */
-double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Intersection) const
+bool DLine2::NearestSegment(const DPoint2 &Point, int &iIndex,
+							double &dist, DPoint2 &Intersection) const
 {
 	int iNumPoints = GetSize();
-	int i;
+	int i, closest = -1;
 	double dMagnitude;
 	double dDistance;
 	double dMinDistance = 1E9;
@@ -108,10 +115,10 @@ double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Inters
 		p0 = GetAt(i);
 		p1 = GetAt((i + 1) % iNumPoints);
 		dMagnitude = SegmentLength(i);
-		// Calcualate U for standard line equation
+		// Calculate U for standard line equation:
 		// values of U between 0.0 and +1.0 mean normal intersects segment
-		dU = ((( Point.x - p0.x) * (p1.x - p0.x)) +
-				((Point.y - p0.y) * (p1.y - p0.y))) / (dMagnitude * dMagnitude);
+		dU = (((Point.x - p0.x) * (p1.x - p0.x)) +
+			  ((Point.y - p0.y) * (p1.y - p0.y))) / (dMagnitude * dMagnitude);
 		if ((dU < 0.0) || (dU > 1.0))
 			continue;
 		p2.x = p0.x + dU * (p1.x - p0.x);
@@ -120,48 +127,50 @@ double DLine2::NearestSegment(const DPoint2 &Point, int& iIndex, DPoint2 &Inters
 		if (dDistance < dMinDistance)
 		{
 			dMinDistance = dDistance;
-			iIndex = i;
+			closest = i;
 			Intersection = p2;
 		}
 	}
-	if (dMinDistance != 1E9)
-		return dMinDistance;
-	else
-		return -1;
+	if (closest != -1)
+	{
+		iIndex = closest;
+		dist = dMinDistance;
+		return true;
+	}
+	return false;
 }
 
 /**
- * Return the nearest point
+ * Return the nearest point (of the points which make up the line).
+ * This is not the same as the closest place on the line, which may
+ * lie between the defining points; use NearestSegment to find that.
+ *
+ * \param Point The input point.
+ * \param iIndex Index of the first point of the nearest line segment.
+ * \param dist Distance from the DLine2 to the input point.
  */
-double DLine2::NearestPoint(const DPoint2 &Point, int &iIndex) const
+void DLine2::NearestPoint(const DPoint2 &Point, int &iIndex, double &dClosest) const
 {
-	int iNumPoints = GetSize();
-	int i;
-	double dMinDistance = 1E9;
+	unsigned int iNumPoints = GetSize();
+	dClosest = 1E9;
 	double dDistance;
-	DPoint2 p0;
 
-	for (i = 0; i < iNumPoints; i++)
+	for (unsigned int i = 0; i < iNumPoints; i++)
 	{
-		p0 = GetAt(i);
-		dDistance = DPoint2(Point - p0).Length();
-		if (dDistance < dMinDistance)
+		dDistance = (Point - GetAt(i)).Length();
+		if (dDistance < dClosest)
 		{
-			dMinDistance = dDistance;
+			dClosest = dDistance;
 			iIndex = i;
 		}
 	}
-	if (dMinDistance != 1E9)
-		return dMinDistance;
-	else
-		return -1;
 }
 
 /**
  * Get a point on the line, safely wrapping around to the end or beginning
  * for index values that are out of range.
  */
-DPoint2 DLine2::GetSafePoint(int index) const
+DPoint2 &DLine2::GetSafePoint(int index) const
 {
 	int points = GetSize();
 	if (index < 0)
@@ -218,6 +227,35 @@ void DLine3::Add(const DPoint2 &p)
 	{
 		GetAt(i).x += p.x;
 		GetAt(i).y += p.y;
+	}
+}
+
+/**
+ * Return the nearest (2D distance) point (of the points which make up the
+ * line). This is not the same as the closest place on the line, which may
+ * lie between the defining points.
+ *
+ * \param Point The input point.
+ * \param iIndex Index of the first point of the nearest line segment.
+ * \param dist Distance from the DLine2 to the input point.
+ */
+void DLine3::NearestPoint2D(const DPoint2 &Point, int &iIndex, double &dClosest) const
+{
+	unsigned int iNumPoints = GetSize();
+	dClosest = 1E9;
+	double dDistance;
+	DPoint2 p2;
+
+	for (unsigned int i = 0; i < iNumPoints; i++)
+	{
+		p2.x = GetAt(i).x;
+		p2.y = GetAt(i).y;
+		dDistance = (Point - p2).Length();
+		if (dDistance < dClosest)
+		{
+			dClosest = dDistance;
+			iIndex = i;
+		}
 	}
 }
 
@@ -631,7 +669,7 @@ int vt_log2(int n)
  * Tests whether the 2D polygon \a pgon with \a numverts number of vertices
  * contains the test point \a point.
  *
- * \returns 1 if inside, 0 if outside.
+ * \return 1 if inside, 0 if outside.
  */
 bool CrossingsTest(const DPoint2 *pgon, int numverts, const DPoint2 &point)
 {
