@@ -1262,11 +1262,7 @@ double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
 
 void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 {
-	const char *coord_format;
-	if (bDegrees)
-		coord_format = "%.9lg";
-	else
-		coord_format = "%.2lg";
+	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	fprintf(fp, "\t<structure type=\"building\">\n");
 
@@ -1313,11 +1309,7 @@ void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 
 void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 {
-	const char *coord_format;
-	if (bDegrees)
-		coord_format = "%.9lg";
-	else
-		coord_format = "%.2lg";
+	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	fprintf(fp, "\t<Building");
 	if (m_fElevationOffset != 0.0)

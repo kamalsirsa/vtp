@@ -25,11 +25,7 @@ vtStructInstance::vtStructInstance() : vtStructure()
 
 void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)
 {
-	const char *coord_format;
-	if (bDegrees)
-		coord_format = "%.9lg";
-	else
-		coord_format = "%.2lg";
+	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	fprintf(fp, "\t<structure type=\"instance\">\n");
 
@@ -59,11 +55,7 @@ void vtStructInstance::WriteXML_Old(FILE *fp, bool bDegrees)
 
 void vtStructInstance::WriteXML(FILE *fp, bool bDegrees)
 {
-	const char *coord_format;
-	if (bDegrees)
-		coord_format = "%.9lg";
-	else
-		coord_format = "%.2lg";
+	const char *coord_format = "%.9lg";	// up to 9 significant digits
 
 	fprintf(fp, "\t<Imported>\n");
 
