@@ -31,6 +31,7 @@
 #include "vtlib/core/TerrainSurface.h"
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/Building3d.h"
+#include "vtdata/vtLog.h"
 
 #include "frame.h"
 
@@ -76,97 +77,97 @@
 
 DECLARE_APP(vtApp)
 
-BEGIN_EVENT_TABLE(vtFrame, wxFrame)
-	EVT_CHAR(vtFrame::OnChar)
-	EVT_MENU(wxID_EXIT, vtFrame::OnExit)
+	BEGIN_EVENT_TABLE(vtFrame, wxFrame)
+EVT_CHAR(vtFrame::OnChar)
+EVT_MENU(wxID_EXIT, vtFrame::OnExit)
 
-	EVT_MENU(ID_TOOLS_SELECT, vtFrame::OnToolsSelect)
-	EVT_UPDATE_UI(ID_TOOLS_SELECT, vtFrame::OnUpdateToolsSelect)
-	EVT_MENU(ID_TOOLS_FENCES, vtFrame::OnToolsFences)
-	EVT_UPDATE_UI(ID_TOOLS_FENCES, vtFrame::OnUpdateToolsFences)
-	EVT_MENU(ID_TOOLS_ROUTES, vtFrame::OnToolsRoutes)
-	EVT_UPDATE_UI(ID_TOOLS_ROUTES, vtFrame::OnUpdateToolsRoutes)
-	EVT_MENU(ID_TOOLS_TREES, vtFrame::OnToolsTrees)
-	EVT_UPDATE_UI(ID_TOOLS_TREES, vtFrame::OnUpdateToolsTrees)
-	EVT_MENU(ID_TOOLS_MOVE, vtFrame::OnToolsMove)
-	EVT_UPDATE_UI(ID_TOOLS_MOVE, vtFrame::OnUpdateToolsMove)
-	EVT_MENU(ID_TOOLS_NAVIGATE, vtFrame::OnToolsNavigate)
-	EVT_UPDATE_UI(ID_TOOLS_NAVIGATE, vtFrame::OnUpdateToolsNavigate)
+EVT_MENU(ID_TOOLS_SELECT, vtFrame::OnToolsSelect)
+EVT_UPDATE_UI(ID_TOOLS_SELECT, vtFrame::OnUpdateToolsSelect)
+EVT_MENU(ID_TOOLS_FENCES, vtFrame::OnToolsFences)
+EVT_UPDATE_UI(ID_TOOLS_FENCES, vtFrame::OnUpdateToolsFences)
+EVT_MENU(ID_TOOLS_ROUTES, vtFrame::OnToolsRoutes)
+EVT_UPDATE_UI(ID_TOOLS_ROUTES, vtFrame::OnUpdateToolsRoutes)
+EVT_MENU(ID_TOOLS_TREES, vtFrame::OnToolsTrees)
+EVT_UPDATE_UI(ID_TOOLS_TREES, vtFrame::OnUpdateToolsTrees)
+EVT_MENU(ID_TOOLS_MOVE, vtFrame::OnToolsMove)
+EVT_UPDATE_UI(ID_TOOLS_MOVE, vtFrame::OnUpdateToolsMove)
+EVT_MENU(ID_TOOLS_NAVIGATE, vtFrame::OnToolsNavigate)
+EVT_UPDATE_UI(ID_TOOLS_NAVIGATE, vtFrame::OnUpdateToolsNavigate)
 
-	EVT_MENU(ID_VIEW_MAINTAIN, vtFrame::OnViewMaintain)
-	EVT_UPDATE_UI(ID_VIEW_MAINTAIN,	vtFrame::OnUpdateViewMaintain)
-	EVT_MENU(ID_VIEW_GRAB_PIVOT, vtFrame::OnViewGrabPivot)
-	EVT_UPDATE_UI(ID_VIEW_GRAB_PIVOT,	vtFrame::OnUpdateViewGrabPivot)
-	EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
-	EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	vtFrame::OnUpdateViewWireframe)
-	EVT_MENU(ID_VIEW_FULLSCREEN, vtFrame::OnViewFullscreen)
-	EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	vtFrame::OnUpdateViewFullscreen)
-	EVT_MENU(ID_VIEW_TOPDOWN, vtFrame::OnViewTopDown)
-	EVT_UPDATE_UI(ID_VIEW_TOPDOWN,	vtFrame::OnUpdateViewTopDown)
-	EVT_MENU(ID_VIEW_FRAMERATE, vtFrame::OnViewFramerate)
-	EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
-	EVT_MENU(ID_VIEW_SLOWER, vtFrame::OnViewSlower)
-	EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
-	EVT_MENU(ID_VIEW_FASTER, vtFrame::OnViewFaster)
-	EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
-	EVT_MENU(ID_VIEW_SETTINGS, vtFrame::OnViewSettings)
-	EVT_MENU(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnViewFollowRoute)
-	EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
-	EVT_MENU(ID_VIEW_LOCATIONS, vtFrame::OnViewLocations)
-	EVT_UPDATE_UI(ID_VIEW_LOCATIONS, vtFrame::OnUpdateViewLocations)
+EVT_MENU(ID_VIEW_MAINTAIN, vtFrame::OnViewMaintain)
+EVT_UPDATE_UI(ID_VIEW_MAINTAIN,	vtFrame::OnUpdateViewMaintain)
+EVT_MENU(ID_VIEW_GRAB_PIVOT, vtFrame::OnViewGrabPivot)
+EVT_UPDATE_UI(ID_VIEW_GRAB_PIVOT,	vtFrame::OnUpdateViewGrabPivot)
+EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
+EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	vtFrame::OnUpdateViewWireframe)
+EVT_MENU(ID_VIEW_FULLSCREEN, vtFrame::OnViewFullscreen)
+EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	vtFrame::OnUpdateViewFullscreen)
+EVT_MENU(ID_VIEW_TOPDOWN, vtFrame::OnViewTopDown)
+EVT_UPDATE_UI(ID_VIEW_TOPDOWN,	vtFrame::OnUpdateViewTopDown)
+EVT_MENU(ID_VIEW_FRAMERATE, vtFrame::OnViewFramerate)
+EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
+EVT_MENU(ID_VIEW_SLOWER, vtFrame::OnViewSlower)
+EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
+EVT_MENU(ID_VIEW_FASTER, vtFrame::OnViewFaster)
+EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
+EVT_MENU(ID_VIEW_SETTINGS, vtFrame::OnViewSettings)
+EVT_MENU(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnViewFollowRoute)
+EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
+EVT_MENU(ID_VIEW_LOCATIONS, vtFrame::OnViewLocations)
+EVT_UPDATE_UI(ID_VIEW_LOCATIONS, vtFrame::OnUpdateViewLocations)
 
-	EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
-	EVT_MENU(ID_SCENE_TERRAIN, vtFrame::OnSceneTerrain)
-	EVT_UPDATE_UI(ID_SCENE_TERRAIN,	vtFrame::OnUpdateSceneTerrain)
-	EVT_MENU(ID_SCENE_SPACE, vtFrame::OnSceneSpace)
-	EVT_UPDATE_UI(ID_SCENE_SPACE, vtFrame::OnUpdateSceneSpace)
+EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
+EVT_MENU(ID_SCENE_TERRAIN, vtFrame::OnSceneTerrain)
+EVT_UPDATE_UI(ID_SCENE_TERRAIN,	vtFrame::OnUpdateSceneTerrain)
+EVT_MENU(ID_SCENE_SPACE, vtFrame::OnSceneSpace)
+EVT_UPDATE_UI(ID_SCENE_SPACE, vtFrame::OnUpdateSceneSpace)
 #if VTLIB_OSG
-	EVT_MENU(ID_SCENE_SAVE, vtFrame::OnSceneSave)
+EVT_MENU(ID_SCENE_SAVE, vtFrame::OnSceneSave)
 #endif
 
-	EVT_MENU(ID_TERRAIN_REGULAR, vtFrame::OnRegular)
-	EVT_MENU(ID_TERRAIN_DYNAMIC, vtFrame::OnDynamic)
-	EVT_MENU(ID_TERRAIN_CULLEVERY, vtFrame::OnCullEvery)
-	EVT_MENU(ID_TERRAIN_CULLONCE, vtFrame::OnCullOnce)
-	EVT_MENU(ID_TERRAIN_SKY, vtFrame::OnSky)
-	EVT_MENU(ID_TERRAIN_OCEAN, vtFrame::OnOcean)
-	EVT_MENU(ID_TERRAIN_TREES, vtFrame::OnTrees)
-	EVT_MENU(ID_TERRAIN_ROADS, vtFrame::OnRoads)
-	EVT_MENU(ID_TERRAIN_FOG, vtFrame::OnFog)
-	EVT_MENU(ID_TERRAIN_INCREASE, vtFrame::OnIncrease)
-	EVT_MENU(ID_TERRAIN_DECREASE, vtFrame::OnDecrease)
-	EVT_MENU(ID_TERRAIN_SAVEVEG, vtFrame::OnSaveVeg)
-	EVT_MENU(ID_TERRAIN_SAVESTRUCT, vtFrame::OnSaveStruct)
+EVT_MENU(ID_TERRAIN_REGULAR, vtFrame::OnRegular)
+EVT_MENU(ID_TERRAIN_DYNAMIC, vtFrame::OnDynamic)
+EVT_MENU(ID_TERRAIN_CULLEVERY, vtFrame::OnCullEvery)
+EVT_MENU(ID_TERRAIN_CULLONCE, vtFrame::OnCullOnce)
+EVT_MENU(ID_TERRAIN_SKY, vtFrame::OnSky)
+EVT_MENU(ID_TERRAIN_OCEAN, vtFrame::OnOcean)
+EVT_MENU(ID_TERRAIN_TREES, vtFrame::OnTrees)
+EVT_MENU(ID_TERRAIN_ROADS, vtFrame::OnRoads)
+EVT_MENU(ID_TERRAIN_FOG, vtFrame::OnFog)
+EVT_MENU(ID_TERRAIN_INCREASE, vtFrame::OnIncrease)
+EVT_MENU(ID_TERRAIN_DECREASE, vtFrame::OnDecrease)
+EVT_MENU(ID_TERRAIN_SAVEVEG, vtFrame::OnSaveVeg)
+EVT_MENU(ID_TERRAIN_SAVESTRUCT, vtFrame::OnSaveStruct)
 
-	EVT_UPDATE_UI(ID_TERRAIN_REGULAR, vtFrame::OnUpdateRegular)
-	EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC, vtFrame::OnUpdateDynamic)
-	EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
-	EVT_UPDATE_UI(ID_TERRAIN_SKY, vtFrame::OnUpdateSky)
-	EVT_UPDATE_UI(ID_TERRAIN_OCEAN, vtFrame::OnUpdateOcean)
-	EVT_UPDATE_UI(ID_TERRAIN_TREES, vtFrame::OnUpdateTrees)
-	EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
-	EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
+EVT_UPDATE_UI(ID_TERRAIN_REGULAR, vtFrame::OnUpdateRegular)
+EVT_UPDATE_UI(ID_TERRAIN_DYNAMIC, vtFrame::OnUpdateDynamic)
+EVT_UPDATE_UI(ID_TERRAIN_CULLEVERY, vtFrame::OnUpdateCullEvery)
+EVT_UPDATE_UI(ID_TERRAIN_SKY, vtFrame::OnUpdateSky)
+EVT_UPDATE_UI(ID_TERRAIN_OCEAN, vtFrame::OnUpdateOcean)
+EVT_UPDATE_UI(ID_TERRAIN_TREES, vtFrame::OnUpdateTrees)
+EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
+EVT_UPDATE_UI(ID_TERRAIN_FOG, vtFrame::OnUpdateFog)
 
-	EVT_MENU(ID_EARTH_SHOWTIME, vtFrame::OnEarthShowTime)
-	EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
-	EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
-	EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
-	EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
-	EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
-	EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
-	EVT_UPDATE_UI(ID_EARTH_LINEAR, vtFrame::OnUpdateInOrbit)
+EVT_MENU(ID_EARTH_SHOWTIME, vtFrame::OnEarthShowTime)
+EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
+EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
+EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
+EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
+EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
+EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
+EVT_UPDATE_UI(ID_EARTH_LINEAR, vtFrame::OnUpdateInOrbit)
 
-	EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
+EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 
 	// Popup
-	EVT_MENU(ID_POPUP_PROPERTIES, vtFrame::OnPopupProperties)
-	EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
+EVT_MENU(ID_POPUP_PROPERTIES, vtFrame::OnPopupProperties)
+EVT_MENU(ID_POPUP_DELETE, vtFrame::OnPopupDelete)
 END_EVENT_TABLE()
 
 // My frame constructor
 vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style):
-	wxFrame(parent, -1, title, pos, size, style)
+wxFrame(parent, -1, title, pos, size, style)
 {
 	// Give it an icon
 	SetIcon(wxIcon("enviro"));
@@ -177,6 +178,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_bFullscreen = false;
 	m_bTopDown = false;
 
+	VTLOG("Frame window: creating menus and toolbars.\n");
 	CreateMenus();
 	CreateToolbar();
 	CreateStatusBar();
@@ -185,20 +187,21 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 #ifdef __WXMOTIF__
 	// FIXME:  Can remove this special case once wxMotif 2.3 is released
 	int gl_attrib[20] = { GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
-			GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
-			GLX_DOUBLEBUFFER, None };
+		GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
+		GLX_DOUBLEBUFFER, None };
 #else
 	int *gl_attrib = NULL;
 #endif
 
+	VTLOG("Frame window: creating view canvas.\n");
 	m_canvas = new vtGLCanvas(this, -1, wxPoint(0, 0), wxSize(-1, -1), 0,
-		"vtGLCanvas", gl_attrib);
+			"vtGLCanvas", gl_attrib);
 
 	// Show the frame
 	Show(TRUE);
 
 	m_pSceneGraphDlg = new SceneGraphDlg(this, -1, "Scene Graph",
-		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
 
 	m_pPlantDlg = new PlantDlg(this, -1, "Plants", wxDefaultPosition);
@@ -206,7 +209,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pUtilDlg = new UtilDlg(this, -1, "Utility", wxDefaultPosition);
 	m_pCameraDlg = new CameraDlg(this, -1, "Camera-View", wxDefaultPosition);
 	m_pLocationDlg = new LocationDlg(this, -1, "Locations",
-		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+			wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pBuildingDlg = new BuildingDlg3d(this, -1, "Building Properties", wxDefaultPosition);
 
 	m_canvas->SetCurrent();
@@ -465,9 +468,9 @@ void vtFrame::SetFullScreen(bool bFull)
 	{
 		ShowFullScreen(true, wxFULLSCREEN_NOMENUBAR |
 //							 wxFULLSCREEN_NOTOOLBAR |	// leave toolbar visible
-							 wxFULLSCREEN_NOSTATUSBAR | 
-							 wxFULLSCREEN_NOBORDER |
-							 wxFULLSCREEN_NOCAPTION );
+			wxFULLSCREEN_NOSTATUSBAR | 
+			wxFULLSCREEN_NOBORDER |
+			wxFULLSCREEN_NOCAPTION );
 	}
 	else
 		ShowFullScreen(false);
