@@ -255,7 +255,6 @@ bool CreateScene()
 		return false;
 	}
 
-	ts->Finish(paths);
 	ts->SetTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain

@@ -534,10 +534,6 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 9)
 	{
-		// "Finish" terrain scene
-		VTLOG("Finishing Terrain Scene\n");
-		m_pTerrainScene->Finish(g_Options.m_DataPaths);
-
 		if (g_Options.m_bSpeedTest)
 		{
 			// Benchmark engine - removed, need a better one
@@ -545,6 +541,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		}
 		else
 		{
+			VTLOG("Setting Camera Location\n");
 			m_pNormalCamera->SetTransform1(pTerr->GetCamLocation());
 		}
 		SetMessage("Switching to Terrain");

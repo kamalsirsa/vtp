@@ -85,7 +85,6 @@ bool vtApp::CreateScene()
 			"data file isn't in the expected location?");
 		return false;
 	}
-	m_pTerrainScene->Finish(paths);
 	m_pTerrainScene->SetTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain
