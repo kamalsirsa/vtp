@@ -66,6 +66,9 @@ public:
 
 	void Apply();
 
+	// global option
+	static bool s_bTextureCompression;
+
 	// remember this for convenience
 	osg::ref_ptr<vtImage>	m_pImage;
 

@@ -1,5 +1,7 @@
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// MeshMat.cpp - Meshes and Materials for vtlib-OSG
+//
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +11,8 @@
 using namespace osg;
 
 ///////////////////////////////////
+
+bool vtMaterial::s_bTextureCompression = false;
 
 #define FAB		Material::FRONT_AND_BACK
 #define SA_ON	StateAttribute::ON
@@ -235,6 +239,13 @@ void vtMaterial::SetTexture(vtImage *pImage)
 
 	// store a reference so that it won't get deleted without this material's permission
 	m_pImage = pImage;
+
+	/** "Note, If the mode is set USE_IMAGE_DATA_FORMAT, USE_ARB_COMPRESSION,
+	 * USE_S3TC_COMPRESSION the internalFormat is automatically selected, and
+	 * will overwrite the previous _internalFormat. */
+//	m_pTexture->setInternalFormatMode(osg::Texture::USE_S3TC_DXT1_COMPRESSION);
+	if (s_bTextureCompression)
+		m_pTexture->setInternalFormatMode(osg::Texture::USE_ARB_COMPRESSION);
 
 	// From the OSG list: "Why doesn't the OSG deallocate image buffer right
 	// *after* a glTextImage2D?
