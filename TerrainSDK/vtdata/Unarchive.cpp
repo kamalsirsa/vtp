@@ -300,15 +300,23 @@ int ExpandZip(const char *archive_fname, const char *prepend_path)
 	CZipArchive zip;
 	try
 	{
-		zip.Open(archive_fname, CZipArchive::zipOpenReadOnly, iVolumeSize);
+#ifdef UNICODE
+		wstring2 fname = archive_fname;
+		wstring2 path = prepend_path;
+#else
+		std::string fname = archive_fname;
+		std::string path = prepend_path;
+#endif
+
+		zip.Open(fname.c_str(), CZipArchive::zipOpenReadOnly, iVolumeSize);
 		iCount = zip.GetCount();
 
 		CZipFileHeader fh;
 		for (i = 0; i < iCount; i++)
 		{
-			if (zip.GetFileInfo(fh, i))
-				printf("%d: %s\n", i, fh.GetFileName());
-			zip.ExtractFile(i, prepend_path);
+//			if (zip.GetFileInfo(fh, i))
+//				printf("%d: %s\n", i, fh.GetFileName());
+			zip.ExtractFile(i, path.c_str());
 		}
 	}
 	catch(...)
