@@ -94,7 +94,6 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node, osgU
 		// set up to charge the same RenderStageLighting is the parent previous stage.
 		m_pRtts->setRenderStageLighting(previous_stage->getRenderStageLighting());
 
-
 		// record the render bin, to be restored after creation
 		// of the render to text
 		osgUtil::RenderBin* previousRenderBin = cv.getCurrentRenderBin();
@@ -112,7 +111,6 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node, osgU
 				*ProjectionMatrix *
 				osg::Matrix::translate(1.0f,1.0f,1.0f) *
 				osg::Matrix::scale(0.5f,0.5f,0.5f);
-
 
 		// make the material black for a shadow.
 		osg::Material* material = new osg::Material;
@@ -159,12 +157,10 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node, osgU
 			node.setNodeMask(NodeMask);
 		}
 
-
 		cv.popStateSet();
 
 		// restore the previous model view matrix.
 		cv.popModelViewMatrix();
-
 
 		// restore the previous model view matrix.
 		cv.popProjectionMatrix();
@@ -253,5 +249,4 @@ void CreateProjectedShadowTextureCullCallback::SetLightPosition(const osg::Vec3&
 		m_bRecomputeShadows = true;
 	}
 }
-
 
