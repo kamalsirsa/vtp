@@ -1868,6 +1868,46 @@ void Enviro::ToggleLogo()
 	}
 }
 
+void Enviro::GetStatusText(vtString &str)
+{
+	vtScene *scene = vtGetScene();
+	if (!scene) return;
+
+	vtString str2;
+
+	// get framerate
+	float fps = scene->GetFrameRate();
+
+	// only show 3 significant digits
+	if (fps < 10)
+		str.Format("fps %1.2f, ", fps);
+	else if (fps < 80)
+		str.Format("fps %2.1f, ", fps);
+	else
+		str.Format("fps %3.0f, ", fps);
+
+	// get time of day
+	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
+	if (te && te->GetEnabled())
+	{
+		int hr, min, sec;
+		te->GetTime(hr, min, sec);
+
+		str2.Format("time %02d:%02d:%02d, ", hr, min, sec);
+		str += str2;
+	}
+
+	vtString vs;
+	DescribeCoordinates(vs);
+	str += vs;
+
+	// get CLOD triangle counts, if appropriate
+	DescribeCLOD(vs);
+	str += vs;
+
+	str += m_strMessage;
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 void ControlEngine::Eval()

@@ -77,6 +77,7 @@ public:
 	void DumpCameraInfo();
 	void SetSpeed(float x);
 	float GetSpeed();
+	void GetStatusText(vtString &str);
 
 	// go to space or a terrain
 	void FlyToSpace();
