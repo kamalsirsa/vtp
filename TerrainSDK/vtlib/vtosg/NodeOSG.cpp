@@ -225,7 +225,7 @@ public:
 };
 
 // Our own cache of models loaded from OSG
-static std::map<vtString, osg::Node*> m_ModelCache;
+static std::map<vtString, ref_ptr<Node> > m_ModelCache;
 bool vtNode::s_bDisableMipmaps = false;
 
 vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableMipmaps)
@@ -245,7 +245,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 	//  it is in the OSG object cache.  If it is in the cache, then we musn't
 	//  apply the rotation below, because it's already been applied to the
 	//  one in the cache that we've gotten again.
-	Node *node, *existing_node = m_ModelCache[fname];
+	Node *node, *existing_node = m_ModelCache[fname].get();
 	bool bInCache = (existing_node != NULL);
 
 	bool bDoLoad = (!bInCache || !bAllowCache);
@@ -356,16 +356,7 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 
 void vtNode::ClearOsgModelCache()
 {
-	int count = m_ModelCache.size();
-
-	std::map<vtString, osg::Node*>::iterator it;
-	for (it = m_ModelCache.begin(); it != m_ModelCache.end(); it++)
-	{
-		vtString fname = it->first;
-		osg::Node *node = it->second;
-		if (node)
-			node->unref();
-	}
+	m_ModelCache.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////
