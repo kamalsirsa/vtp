@@ -1,9 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:        ModelDlg.cpp
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2001-2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
     #pragma implementation "ModelDlg.cpp"
@@ -12,8 +12,8 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
-#ifdef __BORLANDC__
-    #pragma hdrstop
+#ifdef _MSC_VER
+#pragma warning( disable : 4786 ) 
 #endif
 
 #include "ModelDlg.h"

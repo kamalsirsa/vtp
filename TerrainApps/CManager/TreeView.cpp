@@ -8,6 +8,10 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4786 ) 
+#endif
+
 #include "App.h"
 #include "TreeView.h"
 #include "menu_id.h"
