@@ -399,7 +399,7 @@ void vtPlantList3d::AddSpecies(const char *common_name, float max_height)
 void vtPlantList3d::CreatePlantSurfaces(const vtStringArray &paths,
 		float fTreeScale, bool bShadows, bool bBillboards)
 {
-	for (int i = 0; i < NumSpecies(); i++)
+	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *pSpecies = GetSpecies(i);
 		int iApps = pSpecies->NumAppearances();
@@ -417,7 +417,7 @@ void vtPlantList3d::CreatePlantSurfaces(const vtStringArray &paths,
 //
 vtPlantAppearance3d *vtPlantList3d::GetAppearanceByName(const char *szName, float fHeight)
 {
-	for (int i = 0; i < NumSpecies(); i++)
+	for (unsigned int i = 0; i < NumSpecies(); i++)
 	{
 		vtPlantSpecies3d *ps = GetSpecies(i);
 		if (!strcmp(szName, ps->GetCommonName()))
