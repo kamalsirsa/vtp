@@ -29,16 +29,18 @@ wxNumericValidator::wxNumericValidator(int *val) : wxValidator()
 	m_pValInt = val;
 }
 
-wxNumericValidator::wxNumericValidator(float *val) : wxValidator()
+wxNumericValidator::wxNumericValidator(float *val, int digits) : wxValidator()
 {
 	Initialize();
 	m_pValFloat = val;
+	m_iDigits = digits;
 }
 
-wxNumericValidator::wxNumericValidator(double *val) : wxValidator()
+wxNumericValidator::wxNumericValidator(double *val, int digits) : wxValidator()
 {
 	Initialize();
 	m_pValDouble = val;
+	m_iDigits = digits;
 }
 
 wxNumericValidator::wxNumericValidator(const wxNumericValidator& val)
@@ -53,6 +55,7 @@ bool wxNumericValidator::Copy(const wxNumericValidator& val)
 	m_pValInt = val.m_pValInt;
 	m_pValFloat = val.m_pValFloat;
 	m_pValDouble = val.m_pValDouble;
+	m_iDigits = val.m_iDigits;
 
 	return TRUE;
 }
@@ -63,13 +66,29 @@ bool wxNumericValidator::TransferToWindow()
 	if ( !m_validatorWindow )
 		return FALSE;
 
-	wxString str;
+	wxString str, format;
 	if (m_pValInt)
 		str.Printf(_T("%d"), *m_pValInt);
 	if (m_pValFloat)
-		str.Printf(_T("%f"), *m_pValFloat);
+	{
+		if (m_iDigits != -1)
+		{
+			format.Printf(_T("%%.%df"), m_iDigits);
+			str.Printf(format, *m_pValFloat);
+		}
+		else
+			str.Printf(_T("%f"), *m_pValFloat);
+	}
 	if (m_pValDouble)
-		str.Printf(_T("%lf"), *m_pValDouble);
+	{
+		if (m_iDigits != -1)
+		{
+			format.Printf(_T("%%.%dlf"), m_iDigits);
+			str.Printf(format, *m_pValDouble);
+		}
+		else
+			str.Printf(_T("%lf"), *m_pValDouble);
+	}
 
 	if (m_validatorWindow->IsKindOf(CLASSINFO(wxStaticText)) )
 	{
@@ -185,22 +204,22 @@ void AutoDialog::AddNumValidator(long id, int *iptr)
 	}
 }
 
-void AutoDialog::AddNumValidator(long id, float *fptr)
+void AutoDialog::AddNumValidator(long id, float *fptr, int digits)
 {
 	wxWindow *pWin = FindWindow(id);
 	if (pWin)
 	{
-		wxNumericValidator *gv = new wxNumericValidator(fptr);
+		wxNumericValidator *gv = new wxNumericValidator(fptr, digits);
 		pWin->SetValidator(*gv);
 	}
 }
 
-void AutoDialog::AddNumValidator(long id, double *dptr)
+void AutoDialog::AddNumValidator(long id, double *dptr, int digits)
 {
 	wxWindow *pWin = FindWindow(id);
 	if (pWin)
 	{
-		wxNumericValidator *gv = new wxNumericValidator(dptr);
+		wxNumericValidator *gv = new wxNumericValidator(dptr, digits);
 		pWin->SetValidator(*gv);
 	}
 }

@@ -17,8 +17,8 @@ class wxNumericValidator: public wxValidator
 {
 public:
 	wxNumericValidator(int* val);
-	wxNumericValidator(float* val);
-	wxNumericValidator(double* val);
+	wxNumericValidator(float* val, int digits = -1);
+	wxNumericValidator(double* val, int digits = -1);
 	wxNumericValidator(const wxNumericValidator& copyFrom);
 
 	// Make a clone of this validator (or return NULL) - currently necessary
@@ -44,6 +44,11 @@ protected:
 	int		*m_pValInt;
 	float	*m_pValFloat;
 	double	*m_pValDouble;
+
+	// For a floating-point value, specify the number of digits to display.
+	// A value of -1 means to use printf's default (6 digits for floats,
+	//	more digits for doubles)
+	int		m_iDigits;
 };
 
 #endif // NUMERIC_VALIDATOR
@@ -66,8 +71,8 @@ public:
 	void AddValidator(long id, bool *bptr);
 	void AddValidator(long id, int *iptr);
 	void AddNumValidator(long id, int *iptr);
-	void AddNumValidator(long id, float *fptr);
-	void AddNumValidator(long id, double *dptr);
+	void AddNumValidator(long id, float *fptr, int digits = -1);
+	void AddNumValidator(long id, double *dptr, int digits = -1);
 
 	DECLARE_EVENT_TABLE()
 };
