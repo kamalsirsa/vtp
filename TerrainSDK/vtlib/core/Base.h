@@ -188,8 +188,8 @@ public:
 	virtual void AddFan(int *idx, int iNVerts) = 0;
 	void AddStrip2(int iNVerts, int iStartIndex);
 	virtual void AddStrip(int iNVerts, unsigned short *pIndices) = 0;
-	virtual void AddQuadStrip(int iNVerts, int iStartIndex) = 0;
 
+	// Access vertex properties
 	virtual void SetVtxPos(int, const FPoint3&) = 0;
 	virtual FPoint3 GetVtxPos(int i) const = 0;
 

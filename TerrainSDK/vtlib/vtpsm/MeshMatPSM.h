@@ -155,7 +155,6 @@ public:
 
 	void AddStrip(int iNVerts, unsigned short *pIndices);
 	void AddStrip2(int iNVerts, int startindex);
-	void AddQuadStrip(int iNVerts, int iStartIndex);
 	void AddLine(int p0, int p1);
 
 	void SetVtxPos(int, const FPoint3&);

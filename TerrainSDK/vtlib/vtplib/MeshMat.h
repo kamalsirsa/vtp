@@ -104,7 +104,6 @@ public:
 	void AddFan(int p0, int p1, int p2, int p3 = -1, int p4 = -1, int p5 = -1);
 	void AddFan(int *idx, int iNVerts);
 	void AddStrip(int iNVerts, unsigned short *pIndices);
-	void AddQuadStrip(int iNVerts, int iStartIndex);
 	void AddLine(int p0, int p1);
 
 	void SetVtxPos(int, const FPoint3&);

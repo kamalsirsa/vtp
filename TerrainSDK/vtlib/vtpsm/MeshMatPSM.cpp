@@ -583,12 +583,6 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 	AddPrim(prim, NULL);
 }
 
-void vtMesh::AddQuadStrip(int iNVerts, int iStartIndex)
-{
-	// for PSM, stored the same
-	AddStrip2(iNVerts, iStartIndex);
-}
-
 void vtMesh::AddLine(int p0, int p1)
 {
 	AddIndex(p0);

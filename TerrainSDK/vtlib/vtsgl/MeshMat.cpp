@@ -267,12 +267,6 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 	SendPointersToSGL();
 }
 
-void vtMesh::AddQuadStrip(int iNVerts, int iStartIndex)
-{
-	// for SGL, stored the same
-	AddStrip2(iNVerts, iStartIndex);
-}
-
 void vtMesh::AddLine(int p0, int p1)
 {
 	m_Index.Append(p0);

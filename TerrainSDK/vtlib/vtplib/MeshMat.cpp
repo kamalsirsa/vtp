@@ -318,17 +318,6 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
 #endif
 }
 
-void vtMesh::AddQuadStrip(int iNVerts, int iStartIndex)
-{
-#if 0
-	// no indexing - the start index IS the index into the vertex array
-	GeoPrim		strip(GEO_Strip, iNVerts, appidx);
-	strip.VtxIndex = iStartIndex;
-
-	AddPrim(&strip, NULL, true);
-#endif
-}
-
 void vtMesh::AddLine(int iNVerts, int iStartIndex)
 {
 #if 0
