@@ -939,25 +939,28 @@ void vtTerrain::_CreateCulture()
 {
 	// Read terrain-specific content file
 	vtString con_file = m_Params.GetValueString(STR_CONTENT_FILE);
-	VTLOG(" Looking for terrain-specific content file: '%s'\n", (const char *) con_file);
-	vtString fname = FindFileOnPaths(vtGetDataPath(), con_file);
-	if (fname != "")
+	if (con_file != "")
 	{
-		VTLOG("  Found.\n");
-		try
+		VTLOG(" Looking for terrain-specific content file: '%s'\n", (const char *) con_file);
+		vtString fname = FindFileOnPaths(vtGetDataPath(), con_file);
+		if (fname != "")
 		{
-			m_Content.ReadXML(fname);
+			VTLOG("  Found.\n");
+			try
+			{
+				m_Content.ReadXML(fname);
+			}
+			catch (xh_io_exception &ex)
+			{
+				// display (or a least log) error message here
+				VTLOG("  XML error:");
+				VTLOG(ex.getFormattedMessage().c_str());
+				return;
+			}
 		}
-		catch (xh_io_exception &ex)
-		{
-			// display (or a least log) error message here
-			VTLOG("  XML error:");
-			VTLOG(ex.getFormattedMessage().c_str());
-			return;
-		}
+		else
+			VTLOG("  Not found.\n");
 	}
-	else
-		VTLOG("  Not found.\n");
 
 	// The LOD distances are in meters
 	_SetupStructGrid((float) m_Params.GetValueInt(STR_STRUCTDIST));
