@@ -634,7 +634,7 @@ void Enviro::LookUpTerrainLocations()
 	vtTerrain *pTerr;
 	for (pTerr = GetTerrainScene().m_pFirstTerrain; pTerr; pTerr=pTerr->GetNext())
 	{
-		m_msg.Format("\tlooking up: %s\n", pTerr->GetName());
+		m_msg.Format("\tlooking up: %s\n", (const char *) pTerr->GetName());
 		_Log(m_msg);
 
 		vtElevationGrid grid;
