@@ -76,6 +76,7 @@ public:
 	void UnsetShadowedNode(vtTransform *pTransform);
 	void UpdateShadowLightDirection(vtTransform *pLight);
 	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
+	void ShadowVisibleNode(vtNode *node, bool bVis);
 
 protected:
 	// OSG-specific implementation
