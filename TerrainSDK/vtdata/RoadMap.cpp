@@ -786,6 +786,9 @@ void vtRoadMap::RemoveLink(Link *pLink)
 bool vtRoadMap::ReadRMF(const char *filename,
 						bool bHwy, bool bPaved, bool bDirt)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	char buffer[12];
 	FILE *fp = fopen(filename, "rb");
 	if (!fp)

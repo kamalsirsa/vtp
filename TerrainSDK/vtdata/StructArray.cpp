@@ -20,6 +20,7 @@
 #include "StructArray.h"
 #include "Building.h"
 #include "Fence.h"
+#include "vtLog.h"
 
 vtStructureArray g_DefaultStructures;
 
@@ -944,23 +945,26 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 		else if (!strcmp(name, "Edge"))
 		{
 			m_pEdge = m_pLevel->GetEdge(m_iEdge);
-			m_pEdge->m_Features.clear();
+			if (m_pEdge)	// safety check
+			{
+				m_pEdge->m_Features.clear();
 
-			attval = atts.getValue("Material");
-			if (attval)
-				m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(attval);
-			attval = atts.getValue("Color");
-			if (attval)
-				m_pEdge->m_Color = ParseHexColor(attval);
-			attval = atts.getValue("Slope");
-			if (attval)
-				m_pEdge->m_iSlope = atoi(attval);
-			attval = atts.getValue("EaveLength");
-			if (attval)
-				m_pEdge->m_fEaveLength = (float) atof(attval);
-			attval = atts.getValue("Facade");
-			if (attval)
-				m_pEdge->m_Facade = attval;
+				attval = atts.getValue("Material");
+				if (attval)
+					m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(attval);
+				attval = atts.getValue("Color");
+				if (attval)
+					m_pEdge->m_Color = ParseHexColor(attval);
+				attval = atts.getValue("Slope");
+				if (attval)
+					m_pEdge->m_iSlope = atoi(attval);
+				attval = atts.getValue("EaveLength");
+				if (attval)
+					m_pEdge->m_fEaveLength = (float) atof(attval);
+				attval = atts.getValue("Facade");
+				if (attval)
+					m_pEdge->m_Facade = attval;
+			}
 
 			m_state = 5;
 		}
@@ -987,7 +991,8 @@ void StructVisitorGML::startElement(const char *name, const XMLAttributes &atts)
 			attval = atts.getValue("End");
 			if (attval)
 				ef.m_vf2 = (float) atof(attval);
-			m_pEdge->m_Features.push_back(ef);
+			if (m_pEdge)
+				m_pEdge->m_Features.push_back(ef);
 		}
 	}
 
@@ -1220,6 +1225,9 @@ bool vtStructureArray::WriteXML_Old(const char* filename)
 
 bool vtStructureArray::WriteXML(const char* filename)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	unsigned int i;
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
@@ -1273,6 +1281,11 @@ bool vtStructureArray::WriteXML(const char* filename)
 
 bool vtStructureArray::ReadXML(const char *pathname)
 {
+	// The locale might be set to something European that interprets '.' as ','
+	//  and vice versa, which would break our usage of sscanf/atof terribly.
+	//  So, push the 'standard' locale, it is restored when it goes out of scope.
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// check to see if it's old or new format
 	bool bOldFormat = false;
 	FILE *fp = fopen(pathname, "r");
@@ -1296,16 +1309,20 @@ bool vtStructureArray::ReadXML(const char *pathname)
 
 	fclose(fp);
 
+	bool success = false;
 	if (bOldFormat)
 	{
 		StructureVisitor visitor(this);
 		try
 		{
 			readXML(pathname, visitor);
+			success = true;
 		}
-		catch (xh_exception &)
+		catch (xh_exception &ex)
 		{
 			// TODO: would be good to pass back the error message.
+			VTLOG("XML Error: ");
+			VTLOG(ex.getFormattedMessage().c_str());
 			return false;
 		}
 	}
@@ -1315,14 +1332,18 @@ bool vtStructureArray::ReadXML(const char *pathname)
 		try
 		{
 			readXML(pathname, visitor);
+			success = true;
 		}
-		catch (xh_exception &)
+		catch (xh_exception &ex)
 		{
 			// TODO: would be good to pass back the error message.
+			VTLOG("XML Error: ");
+			VTLOG(ex.getFormattedMessage().c_str());
 			return false;
 		}
 	}
-	return true;
+
+	return success;
 }
 
 

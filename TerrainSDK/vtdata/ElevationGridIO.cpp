@@ -1462,8 +1462,9 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		return false;		// Not a current BT file
 	}
 
-	float version;
-	sscanf(buf+7, "%f", &version);
+	// Get version
+	int iMajor = (int) buf[7]-'0';
+	int iMinor = (int) buf[9]-'0';
 
 	// NOTE:  BT format is little-endian
 	GZFRead(&m_iColumns, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
@@ -1475,7 +1476,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 	short svalue, proj_type, zone, datum;
 	int ivalue;
 	float ftmp;
-	if (version == 1.0f)
+	if (iMajor == 1 && iMinor == 0)		// Version 1.0
 	{
 		// data size
 		GZFRead(&ivalue, DT_INT, 1, fp, BO_LITTLE_ENDIAN);
@@ -1507,8 +1508,10 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		if (m_bFloatMode != true)
 			m_bFloatMode = false;
 	}
-	else if (version == 1.1f || version == 1.2f || version == 1.3f)
+	else if (iMajor == 1 && (iMinor == 1 || iMinor == 2 || iMinor == 3))
 	{
+		// Version 1.1, 1.2, or 1.3
+
 		// data size
 		GZFRead(&svalue, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 
@@ -1534,7 +1537,7 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 		// External projection flag
 		GZFRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
 	}
-	if (version == 1.3f)
+	if (iMajor == 1 && iMinor == 3)
 	{
 		GZFRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 	}
@@ -2522,6 +2525,9 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, void progress_callback
 	FILE *fp = fopen(szFileName, "rb");
 	if (!fp)
 		return false;
+
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	char buf[80];
 	double x, y, z;

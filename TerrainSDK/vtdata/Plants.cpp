@@ -124,6 +124,9 @@ bool vtSpeciesList::Read(const char *fname)
 
 bool vtSpeciesList::Write(const char *fname)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "wb");
 	if (!fp) return false;
 
@@ -153,6 +156,9 @@ bool vtSpeciesList::Write(const char *fname)
 
 bool vtSpeciesList::WriteXML(const char *fname)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
 	{

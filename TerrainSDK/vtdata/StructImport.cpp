@@ -40,6 +40,9 @@ bool vtStructureArray::ReadBCF(const char* pathname)
 	if ( (fp = fopen(pathname, "rb")) == NULL )
 		return false;
 
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	char buf[4];
 	fread(buf, 3, 1, fp);
 	if (strncmp(buf, "bcf", 3))

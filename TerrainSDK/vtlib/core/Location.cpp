@@ -36,6 +36,9 @@ void vtLocationSaver::Empty()
 
 bool vtLocationSaver::Write(const vtString &fname_in)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	vtString fname;
 	if (fname_in != "")
 		fname = fname_in;
@@ -163,6 +166,9 @@ void LocationVisitor::data(const char *s, int length)
 
 bool vtLocationSaver::Read(const vtString &fname)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	LocationVisitor visitor(this);
 	try
 	{

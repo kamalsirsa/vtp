@@ -679,6 +679,9 @@ void vtContentManager::ReadXML(const char *filename)
  */
 void vtContentManager::WriteXML(const char *filename)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	unsigned int i, j;
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
