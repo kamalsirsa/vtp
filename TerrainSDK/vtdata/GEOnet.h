@@ -8,9 +8,8 @@
 #ifndef GEONET_H
 #define GEONET_H
 
-#include "vtdata/Array.h"
-#include "vtdata/MathTypes.h"
-#include "vtdata/vtString.h"
+#include "MathTypes.h"
+#include "vtString.h"
 
 class Place
 {
