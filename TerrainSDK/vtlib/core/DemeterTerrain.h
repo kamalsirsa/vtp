@@ -11,7 +11,12 @@
 #include "DynTerrain.h"
 namespace Demeter { class Terrain; class DemeterDrawable; }
 
-
+/**
+ * This class wraps the Demeter CLOD terrain rendering algorithm for use in
+ * the vtlib library.
+ *
+ * This implementation is unfinished and disabled.
+ */
 class DemeterTerrain : public vtDynTerrainGeom
 {
 public:

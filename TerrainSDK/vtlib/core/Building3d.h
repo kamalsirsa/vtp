@@ -25,6 +25,10 @@ struct MatMesh
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
+/**
+ * This class extends vtBuilding with the abiliity to construct and
+ * operate on a 3D model of a parametric building.
+ */
 class vtBuilding3d : public vtBuilding, public vtStructure3d
 {
 public:

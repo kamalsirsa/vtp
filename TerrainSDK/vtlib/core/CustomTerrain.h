@@ -10,6 +10,16 @@
 
 #include "DynTerrain.h"
 
+/**
+ * This class provides an example of how to add a CLOD implementation to
+ * the vtlib library.  It contains the bare skeleton of a terrain rendering
+ * algorithm, taking an elevation grid as input and rendering all the
+ * geometry via OpenGL each frame.
+ *
+ * To add, or wrap, your own terrain rendering algorithm, simply make a
+ * copy of CustomTerrain and rename it, then fill in the methods with your
+ * own functionality.
+ */
 class CustomTerrain : public vtDynTerrainGeom
 {
 public:

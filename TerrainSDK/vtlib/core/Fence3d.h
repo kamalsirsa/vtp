@@ -12,6 +12,10 @@
 #include "vtdata/HeightField.h"
 #include "Structure3d.h"
 
+/**
+ * This class extends vtFence with the abiliity to construct and
+ * operate on a 3D model of a parametric fence or wall.
+ */
 class vtFence3d : public vtFence, public vtStructure3d
 {
 public:
