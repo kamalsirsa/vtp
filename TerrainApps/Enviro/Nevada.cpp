@@ -126,7 +126,7 @@ void NevadaTerrain::CreateWater()
 	vtGeom *geom;
 
 	// create water plane
-	geom = CreatePlaneGeom(m_pMats, id, org, size, 125.0f, 10);
+	geom = CreatePlaneGeom(m_pMats, id, 0, 2, 1, org, org+size, 125.0f, 10);
 	m_pWaterShape = new vtMovGeom(geom);
 	m_pWaterShape->SetName2("WaterSurface");
 	AddNode(m_pWaterShape);
@@ -137,7 +137,7 @@ void NevadaTerrain::CreateWater()
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
 
 	// and another plane
-	geom = CreatePlaneGeom(m_pMats, id, org, size, 260.3f, 10);
+	geom = CreatePlaneGeom(m_pMats, id,  0, 2, 1, org, org+size, 260.3f, 10);
 	m_pWaterShape2 = new vtMovGeom(geom);
 	m_pWaterShape2->SetName2("WaterSurface2");
 	m_pWaterShape2->Translate1(FPoint3(0.0f, .01f, 0.0f));
