@@ -299,6 +299,7 @@ void vtMaterial::SetClamp(bool bClamp)
 		return;
 	if (bClamp)
 	{
+		// TODO: try   texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE);
 		m_pTexture->setWrap(Texture::WRAP_S, Texture::CLAMP);
 		m_pTexture->setWrap(Texture::WRAP_T, Texture::CLAMP);
 	}
@@ -983,7 +984,17 @@ void vtTextMesh::SetRotation(const FQuat &rot)
 
 void vtTextMesh::SetAlignment(int align)
 {
-	m_pOsgText->setAxisAlignment((osgText::Text::AxisAlignment) align);
+	osgText::Text::AxisAlignment osga;
+
+	if (align == 0)
+		osga = osgText::Text::XY_PLANE;
+	else if (align == 1)
+		osga = osgText::Text::XZ_PLANE;
+	else if (align == 2)
+		osga = osgText::Text::YZ_PLANE;
+	else return;
+
+	m_pOsgText->setAxisAlignment(osga);
 }
 
 void vtTextMesh::SetColor(const RGBAf &rgba)
