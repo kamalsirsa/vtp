@@ -26,7 +26,7 @@ bool vtTin3d::Read(const char *fname)
 	if (!vtTin::Read(fname))
 		return false;
 
-	ComputeExtents();
+	Initialize(m_proj.GetUnits(), m_EarthExtents, m_fMinHeight, m_fMaxHeight);
 	return true;
 }
 
@@ -146,7 +146,6 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 		{
 			tri = bref[j];
 			int tribase = tri * 3;
-			int vertbase = j * 3;
 
 			for (k = 0; k < 3; k++)
 			{
@@ -157,19 +156,23 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 			norm = ComputeNormal(p[0], p[1], p[2]);
 
 			float shade = norm.Dot(light_dir);	// shading 0 (dark) to 1 (light)
+			if (shade < 0)
+				shade = -shade;
 
+			int vert_base = pMesh->GetNumVertices();
 			for (k = 0; k < 3; k++)
 			{
 				vidx = m_tri[tribase + k];
 
 				r = (m_z[vidx] - m_fMinHeight) / height_range;
-				pMesh->AddVertex(p[k]);
-				pMesh->SetVtxNormal(vertbase + k, norm);
+				int vert_index = pMesh->AddVertex(p[k]);
+				pMesh->SetVtxNormal(vert_index, norm);
 
 				color.Set(r, g, b);
 				color *= shade;
-				pMesh->SetVtxColor(vertbase + k, color);
+				pMesh->SetVtxColor(vert_index, color);
 			}
+			pMesh->AddTri(vert_base, vert_base+1, vert_base+2);
 		}
 		m_pGeom->AddMesh(pMesh, 0);
 		m_Meshes.Append(pMesh);
