@@ -12,7 +12,9 @@
 #include "vtlib/vtlib.h"
 #include "SRTerrain.h"
 
+#if ENABLE_SRTERRAIN
 using namespace mini;
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -30,11 +32,7 @@ SRTerrain::~SRTerrain()
 
 /////////////////////////////////////////////////////////////////////////////
 
-namespace mini
-{
-
-void MiniMod::Initialize(vtLocalGrid *pGrid, float fOceanDepth)
-{
+#if 0
 	int i, j;
 	float elev;
 	for (i = 0; i<S; i++)
@@ -47,10 +45,22 @@ void MiniMod::Initialize(vtLocalGrid *pGrid, float fOceanDepth)
 			y[i][j] = elev;
 		}
 	}
+#endif
 
+static int myfancnt, myvtxcnt;
+
+void beginfan_vtp()
+{
+	if (myfancnt++>0)
+		glEnd();
+	glBegin(GL_TRIANGLE_FAN);
 }
 
-} // namespace mini
+void fanvertex_vtp(float x,float y,float z)
+{
+   glVertex3f(x,y,z);
+   myvtxcnt++;
+}
 
 //
 // Initialize the terrain data
@@ -59,28 +69,33 @@ void MiniMod::Initialize(vtLocalGrid *pGrid, float fOceanDepth)
 bool SRTerrain::Init(vtLocalGrid *pGrid, float fZScale, 
 					 float fOceanDepth, int &iError)
 {
+#if ENABLE_SRTERRAIN
 	// Initializes necessary field of the parent class
 	BasicInit(pGrid);
 
 	m_fHeightScale = fZScale;
 
-	void GetDimensions(int &nColumns, int &nRows);
 	int size = m_iXPoints;
 	float dim = m_fXStep;
 	float cellaspect = m_fZStep / m_fXStep;
 
-	m_terrain.initmap1(&size, &dim, fZScale, cellaspect);
-
-	//
-	// copy data from supplied elevation grid
-	//
-	m_terrain.Initialize(pGrid, fOceanDepth);
-
-	void *map, *d2map;
-
-	map = m_terrain.initmap3(&d2map, &size, &dim);
+	if (pGrid->IsFloatMode())
+	{
+		float *image = pGrid->GetFloatData();
+		m_pMini = new ministub(image,
+				&size, &dim, fZScale, cellaspect,
+				beginfan_vtp, fanvertex_vtp);
+	}
+	else
+	{
+		short *image = pGrid->GetData();
+		m_pMini = new ministub(image,
+				&size, &dim, fZScale, cellaspect,
+				beginfan_vtp, fanvertex_vtp);
+	}
 
 	m_iDrawnTriangles = -1;
+#endif
 	return true;
 }
 
@@ -150,6 +165,7 @@ void SRTerrain::RenderSurface()
 
 void SRTerrain::RenderPass()
 {
+#if ENABLE_SRTERRAIN
 	// grab necessary values from the VTP Scene framework
 	vtScene *pScene = vtGetScene();
 	vtCamera *pCamera = pScene->GetCamera();
@@ -191,17 +207,21 @@ void SRTerrain::RenderPass()
 	float dy = eye_forward.y;
 	float dz = eye_forward.z;
 
-	m_terrain.drawlandscape(m_fResolution, 
+	myfancnt = myvtxcnt = 0;
+
+	m_pMini->draw(m_fResolution, 
 				ex, ey, ez, 
-				fx, fy, fz, 
+//				fx, fy, fz, 
 				dx, dy, dz, 
 				ux, uy, uz, 
 				fov, aspect, 
 				nearp, farp);
 
+	if (myfancnt>0) glEnd();
+
 	// We are drawing fans, so the number of triangles is roughly equal to
 	// number of vertices
-	m_iDrawnTriangles = m_terrain.vtxcnt;
+//	m_iDrawnTriangles = mini::getvtxcnt();
 
 	// adaptively adjust resolution threshold up or down to attain
 	// the desired polygon (vertex) count target
@@ -218,6 +238,7 @@ void SRTerrain::RenderPass()
 		m_fResolution = 1.0f;
 	if (m_fResolution > 1E7)
 		m_fResolution = 1E7;
+#endif
 }
 
 //
@@ -227,6 +248,10 @@ void SRTerrain::RenderPass()
 //
 void SRTerrain::GetLocation(int i, int j, FPoint3 &p)
 {
-	p.Set(m_fXLookup[i], m_terrain.y[i][j]*m_fHeightScale, m_fZLookup[j]);
+#if ENABLE_SRTERRAIN
+	p.Set(m_fXLookup[i],
+		  m_pMini->getheight(i, j) /* *m_fHeightScale */,
+		  m_fZLookup[j]);
+#endif
 }
 

@@ -14,19 +14,12 @@
 
 #include "DynTerrain.h"
 
+#define ENABLE_SRTERRAIN 0
+
+#if ENABLE_SRTERRAIN
 #include "mini.h"
-
-namespace mini
-{
-
-class MiniMod : public Mini
-{
-public:
-	// implement our own logic which can access members of Mini
-	void Initialize(vtLocalGrid *pGrid, float fOceanDepth);
-};
-
-} // namespace mini
+#include "ministub.hpp"
+#endif
 
 /*!
 	The SRTerrain class implements Stefan Roettger's algorithm for
@@ -55,7 +48,9 @@ protected:
 	void LoadSingleMaterial();
 
 private:
-	mini::MiniMod m_terrain;
+#if ENABLE_SRTERRAIN
+	ministub *m_pMini;
+#endif
 
 	float m_fResolution;
 	float m_fHeightScale;
