@@ -37,35 +37,35 @@
 #------------------------------------------------------------------------------
 # FreeBSD with GCC (tested with ver. 2.95.2)
 #------------------------------------------------------------------------------
-CC        = gcc
-CXX       = g++
-AR        = ar ruv
-#COPT      = -O -fpic -DPIC
-LD        = $(CXX)
-LD_SHARED = $(CXX) -shared
-PTHREAD_LIBS = -pthread
-
-GLUT_LIB = -lglut
-GLU_LIB  = -lGLU
-EXTRA_LIBS = -lXi $(PTHREAD_LIBS)
-LDIRFLAGS = $(LDIRS:%=-L%)                \
-            -rpath $(subst $(space),$(colon),$(LDIRS))
+## CC        = gcc
+## CXX       = g++
+## AR        = ar ruv
+## #COPT      = -O -fpic -DPIC
+## LD        = $(CXX)
+## LD_SHARED = $(CXX) -shared
+## PTHREAD_LIBS = -pthread
+## 
+## GLUT_LIB = -lglut
+## GLU_LIB  = -lGLU
+## EXTRA_LIBS = -lXi $(PTHREAD_LIBS)
+## LDIRFLAGS = $(LDIRS:%=-L%)                \
+##             -rpath $(subst $(space),$(colon),$(LDIRS))
 
 #------------------------------------------------------------------------------
 # Linux with GCC (tested with ver. 2.95.3)
 #------------------------------------------------------------------------------
-## CC        = gcc
-## CXX       = g++
-## AR        = ar ruv
-## COPT      = -O -g
-## LD        = $(CXX)
-## LD_SHARED = $(CXX) -shared
-## 
-## GLUT_LIB = -lglut
-## GLU_LIB  = -lGLU
-## EXTRA_LIBS = -lXi
-## LDIRFLAGS = $(LDIRS:%=-L%)                \
-## 	       -R $(subst $(space),$(colon),$(LDIRS))
+CC        = gcc
+CXX       = g++
+AR        = ar ruv
+COPT      = -O -g
+LD        = $(CXX)
+LD_SHARED = $(CXX) -shared
+
+GLUT_LIB = -lglut
+GLU_LIB  = -lGLU
+EXTRA_LIBS = -lXi
+LDIRFLAGS = $(LDIRS:%=-L%)
+#	       -R $(subst $(space),$(colon),$(LDIRS))
 
 #------------------------------------------------------------------------------
 
@@ -96,6 +96,7 @@ TERRAIN_APPS_DIR = $(VTP_ROOT)/TerrainApps
 VTDATA_DIR       = $(TERRAIN_SDK_DIR)/vtdata
 VTLIB_DIR        = $(TERRAIN_SDK_DIR)/vtlib
 VTOSG_DIR        = $(VTLIB_DIR)/vtosg
+XMLHELPER_DIR    = $(TERRAIN_SDK_DIR)/xmlhelper
 
 #NETCDF_INC = $(APIS_DIR)/NetCDF/include
 #NETCDF_LIB = $(APIS_DIR)/NetCDF/lib
@@ -115,7 +116,8 @@ OSG_LIB = $(LOCALBASE)/lib
 GDAL_INC = $(LOCALBASE)/include
 GDAL_LIB = $(LOCALBASE)/lib
 
-#VTDATA_INST_DIR = $(VTDATA_DIR)
-#VTOSG_INST_DIR  = $(VTOSG_DIR)
-VTDATA_INST_DIR = $(PREFIX)/lib
-VTOSG_INST_DIR  = $(PREFIX)/lib
+VTDATA_INST_DIR = $(VTDATA_DIR)
+VTOSG_INST_DIR  = $(VTOSG_DIR)
+XMLHELPER_INST_DIR = $(XMLHELPER_DIR)
+#VTDATA_INST_DIR = $(PREFIX)/lib
+#VTOSG_INST_DIR  = $(PREFIX)/lib
