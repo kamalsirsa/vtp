@@ -10,10 +10,33 @@
 
 #include "MathTypes.h"
 
+/**
+ * A highly virtual class which defines the basic functionality that any
+ * bitmap must expose.
+ */
+class vtBitmapBase
+{
+public:
+	virtual void GetPixel24(int x, int y, RGBi &rgb) const = 0;
+	virtual void SetPixel24(int x, int y, const RGBi &rgb) = 0;
+
+	virtual unsigned char GetPixel8(int x, int y) const = 0;
+	virtual void SetPixel8(int x, int y, unsigned char color) = 0;
+
+	virtual unsigned int GetWidth() const = 0;
+	virtual unsigned int GetHeight() const = 0;
+	virtual unsigned int GetDepth() const = 0;
+
+	void ScalePixel24(int x, int y, float fScale);
+	void ScalePixel8(int x, int y, float fScale);
+};
+
 // for non-Win32 systems (or code which doesn't include the Win32 headers),
 // define some Microsoft types used by the DIB code
 #ifdef _WINGDI_
+//  #ifndef _WINDEF_
 	typedef DWORD dword;
+//  #endif
 #else
 	typedef unsigned long dword;
 	typedef unsigned short word;
@@ -30,7 +53,7 @@
  * bitmap in memory which has its origins in early MS Windows usage, but
  * is entirely applicable to normal bitmap operations.
  */
-class vtDIB
+class vtDIB : public vtBitmapBase
 {
 public:
 	vtDIB();
@@ -59,7 +82,7 @@ public:
 	void SetPixel32(int x, int y, const RGBAi &rgba);
 
 	unsigned char GetPixel8(int x, int y) const;
-	void SetPixel8(int x, int y, byte color);
+	void SetPixel8(int x, int y, unsigned char color);
 
 	bool GetPixel1(int x, int y) const;
 	void SetPixel1(int x, int y, bool color);
