@@ -6,8 +6,12 @@
 //
 
 #include "vtdata/vtString.h"
+#include "vtdata/MathTypes.h"
 
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
+void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color);
+void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color);
+
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars = 0);
 int AddFilenamesToChoice(wxChoice *choice, const char *directory,

@@ -31,6 +31,26 @@ wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color)
 	return pBitmap;
 }
 
+void FillWithColor(wxStaticBitmap *pStaticBitmap, const RGBi &color)
+{
+	wxColour Color(color.r, color.g, color.b);
+	wxBitmap &bm = pStaticBitmap->GetBitmap();
+
+	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), Color);
+	pStaticBitmap->SetBitmap(*pNewBitmap);
+	delete pNewBitmap;
+}
+
+void FillWithColor(wxBitmapButton *pBitmapButton, const RGBi &color)
+{
+	wxColour Color(color.r, color.g, color.b);
+	wxBitmap &bm = pBitmapButton->GetBitmapLabel();
+
+	wxBitmap *pNewBitmap = MakeColorBitmap(bm.GetWidth(), bm.GetHeight(), Color);
+	pBitmapButton->SetBitmapLabel(*pNewBitmap);
+	delete pNewBitmap;
+}
+
 /**
  * This function is used to find all files in a given directory,
  * and if they match a wildcard, add them to a combo box.
