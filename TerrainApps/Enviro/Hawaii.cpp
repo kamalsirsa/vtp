@@ -259,15 +259,18 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	{
 		vtBuilding3d *bld = new vtBuilding3d();
 
-		DPoint2 c2, c3, c4, c5, c6;
+		DPoint2 c2, c3, c4, c5, c6, c7, c8, c9;
 		c2 = c1 + DPoint2(10.9728, 0.0);
 		c3 = c1 + DPoint2(14.6304, 0.0);
 		c4 = c1 + DPoint2(14.6304, 12.1920);
 		c5 = c1 + DPoint2(10.9728, 12.1920);
 		c6 = c1 + DPoint2(0.0, 12.1920);
+		c7 = c1 + DPoint2(3.6576, 0.0);
+		c8 = c1 + DPoint2(3.6576, 3.6576);
+		c9 = c1 + DPoint2(0.0, 3.6576);
 		DLine2 dl;
 		vtLevel *pLev;
-		vtWall *pWall;
+		vtEdge *pWall;
 
 		// basement/garage level
 		dl.Append(c2);
@@ -281,39 +284,93 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 
 		pWall = pLev->m_Wall[0];
 		pWall->m_Features.Empty();
-		pWall->m_Features.Append(vtWallFeature(WFC_GAP));
+		pWall->AddFeature(WFC_GAP);
 
 		pWall = pLev->m_Wall[1];
 		pWall->m_Features.Empty();
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1));
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -2, 0, 0.5));
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -4));
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -2, 0, 0.5));
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1));
+		pWall->AddFeature(WFC_WALL, -1);
+		pWall->AddFeature(WFC_WALL, -2, 0, 0.5);
+		pWall->AddFeature(WFC_WALL, -4);
+		pWall->AddFeature(WFC_WALL, -2, 0, 0.5);
+		pWall->AddFeature(WFC_WALL, -1);
+		pWall->m_Material = BMAT_WOOD;
 
 		pWall = pLev->m_Wall[2];
 		pWall->m_Features.Empty();
-		pWall->m_Features.Append(vtWallFeature(WFC_GAP));
+		pWall->AddFeature(WFC_GAP);
 
 		pWall = pLev->m_Wall[3];
 		pWall->m_Features.Empty();
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1, 0, 0.5));
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL));
-		pWall->m_Features.Append(vtWallFeature(WFC_WALL, -1, 0, 0.5));
+		pWall->AddFeature(WFC_WALL, -1, 0, 0.5);
+		pWall->AddFeature(WFC_WALL);
+		pWall->AddFeature(WFC_WALL, -1, 0, 0.5);
+		pWall->m_Material = BMAT_CEMENT;
 
 		bld->AddLevel(pLev);
 
 		// main floor level
 		dl.Empty();
-		dl.Append(c1);
+		dl.Append(c7);
 		dl.Append(c3);
 		dl.Append(c4);
 		dl.Append(c6);
+		dl.Append(c9);
+		dl.Append(c8);
 		pLev = new vtLevel();
 		pLev->SetFootprint(dl);
 		pLev->m_fStoryHeight = 2.4385f;
 		pLev->m_iStories = 1;
-		// pLev->m_Wall
+		pLev->SetWallMaterial(BMAT_WOOD);
+
+		pWall = pLev->m_Wall[0];
+		pWall->m_Features.Empty();
+		pWall->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -8);
+		pWall->AddFeature(WFC_WINDOW, -8, 0.5f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -1);
+		pWall->AddFeature(WFC_DOOR, -3);
+		pWall->AddFeature(WFC_WALL, -8);
+
+		pWall = pLev->m_Wall[1];
+		pWall->m_Features.Empty();
+		pWall->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -4);
+		pWall->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -6);
+		pWall->AddFeature(WFC_WINDOW, -2, 0.4f, 0.8f);
+		pWall->AddFeature(WFC_WALL, -4);
+		pWall->AddFeature(WFC_WINDOW, -4, 0.7f, 1.0f);
+
+		pWall = pLev->m_Wall[2];
+		pWall->m_Features.Empty();
+		pWall->AddFeature(WFC_WALL, -6);
+		pWall->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -2);
+		pWall->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -8);
+		pWall->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -4);
+		pWall->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -8);
+
+		pWall = pLev->m_Wall[3];
+		pWall->m_Features.Empty();
+		pWall->AddFeature(WFC_WALL, -8);
+		pWall->AddFeature(WFC_WINDOW, -4, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -4);
+		pWall->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
+		pWall->AddFeature(WFC_WALL, -4);
+
+		pWall = pLev->m_Wall[4];
+		pWall->m_Features.Empty();
+		pWall->AddFeature(WFC_WALL, -4);
+		pWall->AddFeature(WFC_WINDOW, -8, 0.3f, 1.0f);
+
+		pWall = pLev->m_Wall[5];
+		pWall->m_Features.Empty();
+		pWall->AddFeature(WFC_DOOR, -4);
+		pWall->AddFeature(WFC_WALL, -8);
+
 		bld->AddLevel(pLev);
 
 		bld->m_RoofType = ROOF_HIP;

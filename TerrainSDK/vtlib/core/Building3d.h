@@ -76,18 +76,18 @@ protected:
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+	void AddWallSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
 		FPoint3 p0, FPoint3 p1, float h1, float h2);
 
 	//adds a wall section with a door
-	void AddDoorSection(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+	void AddDoorSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
 		const FPoint3 &p0, const FPoint3 &p1);
 
 	//adds a wall section with a window
-	void AddWindowSection(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+	void AddWindowSection(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
 		FPoint3 p0, FPoint3 p1);
 
-	void AddWallNormal(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+	void AddWallNormal(vtLevel *pLev, vtEdge *pWall, vtEdgeFeature *pFeat,
 			const FPoint3 &p0, const FPoint3 &p1);
 
 	void AddFlatRoof(Array<FPoint3> &pp, float height);

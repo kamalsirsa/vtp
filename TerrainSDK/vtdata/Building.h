@@ -42,18 +42,18 @@ enum BldMaterial {
 };
 
 
-// Wall feature codes
+// Edge feature codes
 #define WFC_WALL		1
 #define WFC_GAP			2
 #define WFC_POST		3
 #define WFC_WINDOW		4
 #define WFC_DOOR		5
 
-class vtWallFeature
+class vtEdgeFeature
 {
 public:
-	vtWallFeature();
-	vtWallFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
+	vtEdgeFeature();
+	vtEdgeFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
 
 	void SetDefaults();
 
@@ -75,21 +75,27 @@ public:
 	float	m_vf2;
 };
 
-class vtWall
+class vtEdge
 {
 public:
-	vtWall();
-	vtWall(const vtWall &lhs);
-	~vtWall();
+	vtEdge();
+	vtEdge(const vtEdge &lhs);
+	~vtEdge();
 
 	void Set(int doors, int windows, BldMaterial material);
+	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
 	int NumFeatures() const { return m_Features.GetSize(); }
 	float FixedFeaturesWidth();
 	float ProportionTotal();
 
+	// color
+
+	// slope
+	// eave_length
+
 	// members
 	enum BldMaterial	m_Material;
-	Array<vtWallFeature>	m_Features;
+	Array<vtEdgeFeature>	m_Features;
 };
 
 #define MAX_WALLS	24	// the largest number of walls
@@ -109,8 +115,9 @@ public:
 	void SetWalls(int n);
 	void SetFootprint(const DLine2 &dl);
 	DLine2 &GetFootprint() { return m_Footprint; }
+	void SetWallMaterial(BldMaterial bm);
 
-	Array<vtWall *> m_Wall;
+	Array<vtEdge *> m_Wall;
 
 	int		m_iStories;
 	float	m_fStoryHeight;

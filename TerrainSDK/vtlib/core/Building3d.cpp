@@ -18,18 +18,16 @@
 //this is done to save memory.  for a list of 16000+ buildings, this can save about 200MB of RAM.
 vtMaterialArray *vtBuilding3d::s_Materials = NULL;
 
-#define PLAIN_MATS	216	//216 plain colors
-#define SIDING_MATS 216 //216 colors with siding texture
-#define WINDOW_MATS 2	//2 different windows
-#define DOOR_MATS 1		//1 door
+#define PLAIN_MATS	216		//216 plain colors
+#define SIDING_MATS 216		//216 colors with siding texture
 #define PLAIN_MAT_START		0	//start index for plain colors
-#define PLAIN_MAT_END		PLAIN_MAT_START + PLAIN_MATS - 1	//end index for plain colors
-#define SIDING_MAT_START	PLAIN_MAT_START + PLAIN_MATS		//start index for siding texture
-#define SIDING_MAT_END		SIDING_MAT_START + SIDING_MATS - 1	//end index for siding texture
-#define WINDOW_MAT_START	SIDING_MAT_START + SIDING_MATS			//start index for window material
-#define WINDOW_MAT_END		WINDOW_MAT_START + WINDOW_MATS - 1	//end index for window material
-#define DOOR_MAT_START		WINDOW_MAT_START + WINDOW_MATS		//start index for door material
-#define DOOR_MAT_END		DOOR_MAT_START + DOOR_MATS - 1		//end index for door material
+#define PLAIN_MAT_END		PLAIN_MAT_START + PLAIN_MATS - 1
+#define SIDING_MAT_START	PLAIN_MAT_START + PLAIN_MATS
+#define SIDING_MAT_END		SIDING_MAT_START + SIDING_MATS - 1
+#define WINDOW_MAT			SIDING_MAT_START + SIDING_MATS
+#define DOOR_MAT			WINDOW_MAT + 1
+#define WOOD_MAT			DOOR_MAT + 1
+#define CEMENT_MAT			WOOD_MAT + 1
 
 //helper to make a material
 vtMaterial *makeMaterial(RGBf &color, bool culling)
@@ -110,16 +108,7 @@ void vtBuilding3d::CreateSharedMaterials()
 
 	// window material
 	color.Set(1.0f,1.0f,1.0f);
-	pMat = makeMaterial(color, true);
-	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.bmp");
-	pMat->SetTexture2(path);
-	pMat->SetClamp(false);
-	//window stays on at night
-	pMat->SetLighting(false);
-	s_Materials->Append(pMat);
-
-	color.Set(1.0f,1.0f,1.0f);
-	pMat = makeMaterial(color, true);
+	pMat = makeMaterial(color, false);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.bmp");
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
@@ -127,16 +116,30 @@ void vtBuilding3d::CreateSharedMaterials()
 
 	// door material
 	color.Set(1.0f, 1.0f, 1.0f);
-	pMat = makeMaterial(color, true);
+	pMat = makeMaterial(color, false);
 	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/door.bmp");
 	pMat->SetTexture2(path);
 	s_Materials->Append(pMat);
 
+	// wood material
+	color.Set(1.0f, 1.0f, 1.0f);
+	pMat = makeMaterial(color, false);
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/wood1_256.bmp");
+	pMat->SetTexture2(path);
+	pMat->SetClamp(false);
+	s_Materials->Append(pMat);
+
+	// cement block material
+	color.Set(1.0f, 1.0f, 1.0f);
+	pMat = makeMaterial(color, false);
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/cement_block1_256.bmp");
+	pMat->SetTexture2(path);
+	pMat->SetClamp(false);
+	s_Materials->Append(pMat);
+
 	int total = s_Materials->GetSize();
-	int expectedtotal = PLAIN_MATS + SIDING_MATS + WINDOW_MATS + DOOR_MATS;
-	if (total != expectedtotal) {
-		assert(false);
-	}
+	int expectedtotal = PLAIN_MATS + SIDING_MATS + 1 + 1 + 1 + 1;	// window, door, wood, cement_block
+	assert(total == expectedtotal);
 }
 
 void vtBuilding3d::FindMaterialIndices()
@@ -324,7 +327,8 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField, bool bDoRoof,
 			vtLevel *lev = m_Levels[i];
 			for (j = 0; j < lev->m_iStories; j++)
 			{
-				for (k = 0; k < corners; k++)
+				int walls = lev->m_Wall.GetSize();
+				for (k = 0; k < walls; k++)
 					CreateWallGeometry(*m_lfp[i], lev, fHeight, k, details);
 				fHeight += lev->m_fStoryHeight;
 			}
@@ -433,7 +437,7 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
 
 	FPoint3 point[30];
 
-	vtWall	*pWall = pLev->m_Wall[iWall];
+	vtEdge	*pWall = pLev->m_Wall[iWall];
 
 	// start with the whole wall section
 	point[0] = corners[i];
@@ -461,7 +465,7 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
 	// point[0] is the first starting point of a panel.
 	for (i = 0; i < pWall->NumFeatures(); i++)
 	{
-		vtWallFeature &feat = pWall->m_Features[i];
+		vtEdgeFeature &feat = pWall->m_Features[i];
 
 		// determine real width
 		float meter_width = 0.0f;
@@ -499,8 +503,8 @@ void vtBuilding3d::CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
  * Builds a wall, given material index, starting and end points, height, and
  * starting height.
  */
-void vtBuilding3d::AddWallSection(vtLevel *pLev, vtWall *pWall,
-								  vtWallFeature *pFeat,
+void vtBuilding3d::AddWallSection(vtLevel *pLev, vtEdge *pWall,
+								  vtEdgeFeature *pFeat,
 								  FPoint3 p0, FPoint3 p1,
 								  float h1, float h2)
 {
@@ -525,8 +529,8 @@ void vtBuilding3d::AddWallSection(vtLevel *pLev, vtWall *pWall,
 	mesh->AddFan(start, start+1, start+2, start+3);
 }
 
-void vtBuilding3d::AddWallNormal(vtLevel *pLev, vtWall *pWall,
-								 vtWallFeature *pFeat,
+void vtBuilding3d::AddWallNormal(vtLevel *pLev, vtEdge *pWall,
+								 vtEdgeFeature *pFeat,
 								 const FPoint3 &p0, const FPoint3 &p1)
 {
 	float h1 = (pFeat->m_vf1 * pLev->m_fStoryHeight);
@@ -538,8 +542,8 @@ void vtBuilding3d::AddWallNormal(vtLevel *pLev, vtWall *pWall,
  * Builds a door section.  will also build the wall above the door to ceiling
  * height.
  */
-void vtBuilding3d::AddDoorSection(vtLevel *pLev, vtWall *pWall,
-								  vtWallFeature *pFeat,
+void vtBuilding3d::AddDoorSection(vtLevel *pLev, vtEdge *pWall,
+								  vtEdgeFeature *pFeat,
 								  const FPoint3 &p0, const FPoint3 &p1)
 {
 	float h1 = 0;
@@ -569,8 +573,8 @@ void vtBuilding3d::AddDoorSection(vtLevel *pLev, vtWall *pWall,
 }
 
 //builds a window section.  builds the wall below and above a window too.
-void vtBuilding3d::AddWindowSection(vtLevel *pLev, vtWall *pWall,
-									vtWallFeature *pFeat,
+void vtBuilding3d::AddWindowSection(vtLevel *pLev, vtEdge *pWall,
+									vtEdgeFeature *pFeat,
 									FPoint3 p0, FPoint3 p1)
 {
 	float h1 = (pFeat->m_vf1 * pLev->m_fStoryHeight);
@@ -693,7 +697,7 @@ void vtBuilding3d::AddShedRoof(Array<FPoint3> &pp, float height)
 	idx[3] = mesh->AddVertexN(p[3], norm);
 	mesh->AddFan(idx, 4);
 
-	vtWall *pWall;
+	vtEdge *pWall;
 	pWall = pTopLev->m_Wall[0];
 	mesh = FindMatMesh(pWall->m_Material, m_Color, false);
 
@@ -1021,19 +1025,20 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 	if (s_Materials == NULL)
 		return -1;
 
-	if (bldMat == BMAT_WINDOW) {
-		//only one kinda of window.
-		//caller knows to choose between the 2 windows
-		return WINDOW_MAT_START;
-	} else if (bldMat == BMAT_DOOR) {
-		//only one door.
-		return DOOR_MAT_START;
-	}
+	if (bldMat == BMAT_WINDOW)	// only one kind of window
+		return WINDOW_MAT;
+	if (bldMat == BMAT_DOOR)	// only one door
+		return DOOR_MAT;
+	if (bldMat == BMAT_WOOD)	// only one wood
+		return WOOD_MAT;
+	if (bldMat == BMAT_CEMENT)	// only one cement
+		return CEMENT_MAT;
 
 	int start = 0;
 	int end = 0;
 	//get the appropriate range in the index
-	switch (bldMat) {
+	switch (bldMat)
+	{
 	case BMAT_PLAIN:
 		start = PLAIN_MAT_START;
 		end = PLAIN_MAT_END + 1;
@@ -1065,7 +1070,8 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
 		diff.z = (color.b - color2.b)*100;
 		error = diff.x*diff.x  + diff.y*diff.y + diff.z*diff.z;
 
-		if (error < bestError) {
+		if (error < bestError)
+		{
 			bestMatch  = i;
 			bestError = error;
 		}

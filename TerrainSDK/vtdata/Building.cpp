@@ -21,12 +21,12 @@
 
 /////////////////////////////////////
 
-vtWallFeature::vtWallFeature()
+vtEdgeFeature::vtEdgeFeature()
 {
 	SetDefaults();
 }
 
-vtWallFeature::vtWallFeature(int code, float width, float vf1, float vf2)
+vtEdgeFeature::vtEdgeFeature(int code, float width, float vf1, float vf2)
 {
 	m_code = code;
 	m_width = width;
@@ -34,7 +34,7 @@ vtWallFeature::vtWallFeature(int code, float width, float vf1, float vf2)
 	m_vf2 = vf2;
 }
 
-void vtWallFeature::SetDefaults()
+void vtEdgeFeature::SetDefaults()
 {
 	m_code = WFC_WALL;
 	m_width = -1.0f;
@@ -45,25 +45,25 @@ void vtWallFeature::SetDefaults()
 
 /////////////////////////////////////
 
-vtWall::vtWall()
+vtEdge::vtEdge()
 {
 	m_Material = BMAT_PLAIN;
 }
 
-vtWall::~vtWall()
+vtEdge::~vtEdge()
 {
 }
 
-vtWall::vtWall(const vtWall &lhs)
+vtEdge::vtEdge(const vtEdge &lhs)
 {
 	m_Material = lhs.m_Material;
 	for (int i = 0; i < lhs.m_Features.GetSize(); i++)
 		m_Features.Append(lhs.m_Features[i]);
 }
 
-void vtWall::Set(int iDoors, int iWindows, BldMaterial material)
+void vtEdge::Set(int iDoors, int iWindows, BldMaterial material)
 {
-	vtWallFeature wall, window, door;
+	vtEdgeFeature wall, window, door;
 
 	window.m_code = WFC_WINDOW;
 	window.m_width = WINDOW_WIDTH;
@@ -106,7 +106,12 @@ void vtWall::Set(int iDoors, int iWindows, BldMaterial material)
 	m_Material = material;
 }
 
-float vtWall::FixedFeaturesWidth()
+void vtEdge::AddFeature(int code, float width, float vf1, float vf2)
+{
+	m_Features.Append(vtEdgeFeature(code, width, vf1, vf2));
+}
+
+float vtEdge::FixedFeaturesWidth()
 {
 	float width = 0.0f, fwidth;
 	int size = m_Features.GetSize();
@@ -119,7 +124,7 @@ float vtWall::FixedFeaturesWidth()
 	return width;
 }
 
-float vtWall::ProportionTotal()
+float vtEdge::ProportionTotal()
 {
 	float width = 0.0f, fwidth;
 	int size = m_Features.GetSize();
@@ -158,7 +163,7 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 	m_Wall.SetSize(v.m_Wall.GetSize());
 	for (int i = 0; i < v.m_Wall.GetSize(); i++)
 	{
-		vtWall *pnew = new vtWall(*v.m_Wall[i]);
+		vtEdge *pnew = new vtEdge(*v.m_Wall[i]);
 		m_Wall.SetAt(i, pnew);
 	}
 	m_Footprint = v.m_Footprint;
@@ -176,12 +181,18 @@ void vtLevel::SetFootprint(const DLine2 &dl)
 		SetWalls(curr);
 }
 
+void vtLevel::SetWallMaterial(BldMaterial bm)
+{
+	for (int i = 0; i < m_Wall.GetSize(); i++)
+		m_Wall[i]->m_Material = bm;
+}
+
 void vtLevel::SetWalls(int n)
 {
 	DeleteWalls();
 	for (int i = 0; i < n; i++)
 	{
-		vtWall *pnew = new vtWall;
+		vtEdge *pnew = new vtEdge;
 		pnew->Set(0, 0, BMAT_PLAIN);
 		m_Wall.Append(pnew);
 	}
