@@ -6,7 +6,7 @@
 //
 
 #ifdef __GNUG__
-	#pragma implementation "StartupDlg.cpp"
+#pragma implementation "StartupDlg.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -31,6 +31,7 @@
 #include "../Enviro.h"	// for GetCurrentTerrain
 #include "../Options.h"
 #include "vtdata/boost/directory.h"
+#include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "TParamsDlg.h"
@@ -40,17 +41,22 @@
 // and if they match a wildcard, add them to a combo box.
 //
 void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
-							const char *wildcard, int omit_chars)
+	const char *wildcard, int omit_chars)
 {
+	VTLOG(" AddFilenamesToComboBox '%s', '%s':", directory, wildcard);
+
 	using namespace boost::filesystem;
+	int entries = 0, matches = 0;
 
 	wxString2 wildstr = wildcard;
 	for (dir_it it((const char *)directory); it != dir_it(); ++it)
 	{
+		entries++;
+		std::string name1 = *it;
+		//		VTLOG("   entry: '%s'", name1.c_str());
 		if (get<is_hidden>(it) || get<is_directory>(it))
 			continue;
 
-		std::string name1 = *it;
 		wxString2 name = name1.c_str();
 		if (name.Matches(wildstr))
 		{
@@ -58,8 +64,10 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 				box->Append(name.Left(name.Length()-omit_chars));
 			else
 				box->Append(name);
+			matches++;
 		}
 	}
+	VTLOG(" %d entries, %d matches\n", entries, matches);
 }
 
 //
@@ -68,7 +76,7 @@ void AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 #ifdef WIN32
 static void ShowOGLInfo(HDC hdc)
 #else
-static void ShowOGLInfo()
+	static void ShowOGLInfo()
 #endif
 {
 #if defined(WIN32)
@@ -105,8 +113,8 @@ static void ShowOGLInfo()
 	wglMakeCurrent(hdc, device);
 #elif defined(UNIX)
 	static int dblBuf[] =  {GLX_RGBA, GLX_RED_SIZE, 1, GLX_GREEN_SIZE, 1,
-							GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
-							GLX_DOUBLEBUFFER, None};
+		GLX_BLUE_SIZE, 1, GLX_DEPTH_SIZE, 1,
+		GLX_DOUBLEBUFFER, None};
 	Display *dpy;
 	Window win;
 	XVisualInfo *vi;
@@ -131,17 +139,17 @@ static void ShowOGLInfo()
 		wxFatalError( "TrueColor visual required for this program" );
 
 	cmap = XCreateColormap(dpy, RootWindow(dpy, vi->screen),
-						   vi->visual, AllocNone);
+			vi->visual, AllocNone);
 	swa.colormap = cmap;
 	swa.border_pixel = 0;
 	swa.event_mask = ExposureMask | ButtonPressMask | StructureNotifyMask;
 	win = XCreateWindow(dpy, RootWindow(dpy, vi->screen),
-						0, 0, 300, 300, 0, vi->depth,
-						InputOutput, vi->visual,
-						CWBorderPixel | CWColormap | CWEventMask, &swa);
+			0, 0, 300, 300, 0, vi->depth,
+			InputOutput, vi->visual,
+			CWBorderPixel | CWColormap | CWEventMask, &swa);
 
 	XSetStandardProperties(dpy, win, "test", "test",
-						   None, NULL, 0, NULL);
+		None, NULL, 0, NULL);
 
 	cx = glXCreateContext(dpy, vi, None, True);
 	if (cx == NULL)
@@ -232,17 +240,17 @@ void StartupDlg::UpdateState()
 // WDR: event table for StartupDlg
 
 BEGIN_EVENT_TABLE(StartupDlg,AutoDialog)
-	EVT_BUTTON( ID_TSELECT, StartupDlg::OnSelectTerrain )
-	EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
-	EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
-	EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
-	EVT_RADIOBUTTON( ID_TERRAIN, StartupDlg::OnTerrain )
-	EVT_BUTTON( ID_EDITPROP, StartupDlg::OnEditProp )
+EVT_BUTTON( ID_TSELECT, StartupDlg::OnSelectTerrain )
+EVT_BUTTON( wxID_OK, StartupDlg::OnOK )
+EVT_BUTTON( ID_OPENGL, StartupDlg::OnOpenGLInfo )
+EVT_RADIOBUTTON( ID_EARTHVIEW, StartupDlg::OnEarthView )
+EVT_RADIOBUTTON( ID_TERRAIN, StartupDlg::OnTerrain )
+EVT_BUTTON( ID_EDITPROP, StartupDlg::OnEditProp )
 END_EVENT_TABLE()
 
 StartupDlg::StartupDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
-	AutoDialog( parent, id, title, position, size, style )
+AutoDialog( parent, id, title, position, size, style )
 {
 	StartupDialogFunc( this, TRUE ); 
 }
@@ -264,7 +272,7 @@ void StartupDlg::EditParameters(const char *filename)
 		{
 			wxString str;
 			str.Printf(_T("Couldn't save to file %hs.\n")
-					   _T("Please make sure the file is not read-only."), filename);
+				_T("Please make sure the file is not read-only."), filename);
 			wxMessageBox(str);
 		}
 	}
@@ -378,5 +386,4 @@ void StartupDlg::OnSelectTerrain( wxCommandEvent &event )
 
 	TransferDataToWindow();
 }
-
 
