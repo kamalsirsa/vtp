@@ -597,34 +597,42 @@ void vtMeshBase::CreateConicalSurface(const FPoint3 &tip, double radial_angle,
  * \param size The size of the rectangle (only X and Z are used).
  * \param fTiling UV tiling.  Set to 1 for UV coordinate of O..1.
  */
-void vtMeshBase::CreateRectangle(int iXQuads, int iZQuads,
-								 const FPoint3 &base, const FPoint3 &size,
-								 float fTiling)
+void vtMeshBase::CreateRectangle(int iQuads1, int iQuads2,
+		int Axis1, int Axis2, int Axis3,
+		const FPoint2 &min1, const FPoint2 &max1, float fTiling)
 {
-	int iXVerts = iXQuads + 1;
-	int iZVerts = iZQuads + 1;
-	int i, j;
+	int iVerts1 = iQuads1 + 1;
+	int iVerts2 = iQuads2 + 1;
 
-	FPoint3 pos, up(0, 1, 0);
-	for (i = 0; i < iXVerts; i++)
+	FPoint2 size = max1 - min1;
+	FPoint3 pos, normal;
+
+	pos[Axis3] = 0;
+	normal[Axis1] = 0;
+	normal[Axis2] = 0;
+	normal[Axis3] = 1;
+
+	for (int i = 0; i < iVerts1; i++)
 	{
-		for (j = 0; j < iZVerts; j++)
+		pos[Axis1] = min1.x + (size.x / iQuads1) * i;
+		for (int j = 0; j < iVerts2; j++)
 		{
-			pos = base + FPoint3((i * size.x), 0, (j * size.z));
+			pos[Axis2] = min1.y + (size.y / iQuads2) * j;
+
 			int vidx = AddVertex(pos);
 
 			if (GetVtxType() & VT_Normals)
-				SetVtxNormal(vidx, up);
+				SetVtxNormal(vidx, normal);
 
 			if (GetVtxType() & VT_TexCoords)		/* compute tex coords */
 			{
-				FPoint2 tc((float) i/iXQuads * fTiling,
-							(float) j/iZQuads * fTiling);
+				FPoint2 tc((float) i/iQuads1 * fTiling,
+							(float) j/iQuads2 * fTiling);
 				SetVtxTexCoord(vidx, tc);
 			}
 		}
 	}
-	CreateRectangularMesh(iXVerts, iZVerts);
+	CreateRectangularMesh(iVerts1, iVerts2);
 }
 
 /**
