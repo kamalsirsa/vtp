@@ -10,7 +10,7 @@
 #include "vtlib/vtlib.h"
 #include "AnimPath.h"
 #include "vtdata/LocalConversion.h"
-#include "vtdata/vtLOg.h"
+#include "vtdata/vtLog.h"
 
 
 void ControlPoint::Interpolate(float ratio, const ControlPoint &first, const ControlPoint &second)
