@@ -63,14 +63,26 @@ public:
 	void RemoveTag(int index);
 	void RemoveTag(const char *szTagName);
 
-	void SetValue(const char *szTagName, const char *szValue);
-	void SetValue(const char *szTagName, int value);
-	void SetValue(const char *szTagName, double value);
+	// Set value
+	void SetValueString(const char *szTagName, const vtString &string);
+	void SetValueBool(const char *szTagName, bool value);
+	void SetValueInt(const char *szTagName, int value);
+	void SetValueFloat(const char *szTagName, float value);
+	void SetValueDouble(const char *szTagName, double value);
 
-	const char *GetValue(const char *szTagName);
-	bool GetValue(const char *szTagName, vtString &string);
-	bool GetValue(const char *szTagName, int &value);
-	bool GetValue(const char *szTagName, double &value);
+	// Get value directly
+	const char *GetValueString(const char *szTagName);
+	bool GetValueBool(const char *szTagName);
+	int GetValueInt(const char *szTagName);
+	float GetValueFloat(const char *szTagName);
+	double GetValueDouble(const char *szTagName);
+
+	// Get by reference
+	bool GetValueString(const char *szTagName, vtString &string);
+	bool GetValueBool(const char *szTagName, bool &bValue);
+	bool GetValueInt(const char *szTagName, int &iValue);
+	bool GetValueFloat(const char *szTagName, float &fValue);
+	bool GetValueDouble(const char *szTagName, double &dValue);
 
 protected:
 	std::vector<vtTag>	m_tags;

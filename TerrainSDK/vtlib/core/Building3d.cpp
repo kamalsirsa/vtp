@@ -165,8 +165,8 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	unsigned int iLevels = GetNumLevels();
 
 	int level_show = -1, edge_show = -1;
-	GetValue("level", level_show);
-	GetValue("edge", edge_show);
+	GetValueInt("level", level_show);
+	GetValueInt("edge", edge_show);
 
 	for (i = 0; i < iLevels; i++)
 	{

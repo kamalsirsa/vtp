@@ -4,7 +4,7 @@
 // Implements the ContentManager class, including the ability to read
 // and write the contents to an XML file.
 //
-// Copyright (c) 2001 Virtual Terrain Project.
+// Copyright (c) 2001-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -76,61 +76,136 @@ void vtTagArray::RemoveTag(const char *szTagName)
 	}
 }
 
-void vtTagArray::SetValue(const char *name, const char *szValue)
+//
+// Set
+//
+
+void vtTagArray::SetValueString(const char *szTagName, const vtString &string)
 {
-	vtTag *tag = FindTag(name);
+	vtTag *tag = FindTag(szTagName);
 	if (tag)
-		tag->value = szValue;
+		tag->value = string;
 	else
-		AddTag(name, szValue);
+		AddTag(szTagName, string);
 }
 
-void vtTagArray::SetValue(const char *name, int iValue)
+void vtTagArray::SetValueBool(const char *szTagName, bool bValue)
+{
+	if (bValue)
+		SetValueString(szTagName, "true");
+	else
+		SetValueString(szTagName, "false");
+}
+
+void vtTagArray::SetValueInt(const char *szTagName, int iValue)
 {
 	vtString str;
 	str.Format("%d", iValue);
-	SetValue(name, str);
+	SetValueString(szTagName, str);
 }
 
-void vtTagArray::SetValue(const char *name, double dValue)
+void vtTagArray::SetValueFloat(const char *szTagName, float fValue)
+{
+	vtString str;
+	str.Format("%f", fValue);
+	SetValueString(szTagName, str);
+}
+
+void vtTagArray::SetValueDouble(const char *szTagName, double dValue)
 {
 	vtString str;
 	str.Format("%lf", dValue);
-	SetValue(name, str);
+	SetValueString(szTagName, str);
 }
 
-const char *vtTagArray::GetValue(const char *name)
+//
+// Get
+//
+
+const char *vtTagArray::GetValueString(const char *szTagName)
 {
-	vtTag *tag = FindTag(name);
+	vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return tag->value;
 	else
 		return NULL;
 }
 
-bool vtTagArray::GetValue(const char *name, vtString &string)
+bool vtTagArray::GetValueBool(const char *szTagName)
 {
-	vtTag *tag = FindTag(name);
+	vtTag *tag = FindTag(szTagName);
+	if (tag)
+		return (tag->value[0] == 't');
+	return false;
+}
+
+int vtTagArray::GetValueInt(const char *szTagName)
+{
+	vtTag *tag = FindTag(szTagName);
+	if (tag)
+		return atoi((const char *)tag->value);
+	return 0;
+}
+
+float vtTagArray::GetValueFloat(const char *szTagName)
+{
+	vtTag *tag = FindTag(szTagName);
+	if (tag)
+		return (float) atof((const char *)tag->value);
+	return 0.0f;
+}
+
+double vtTagArray::GetValueDouble(const char *szTagName)
+{
+	vtTag *tag = FindTag(szTagName);
+	if (tag)
+		return atof((const char *)tag->value);
+	return 0.0;
+}
+
+//
+// Get by reference
+//
+bool vtTagArray::GetValueString(const char *szTagName, vtString &string)
+{
+	vtTag *tag = FindTag(szTagName);
 	if (tag)
 		string = tag->value;
 	return (tag != NULL);
 }
 
-bool vtTagArray::GetValue(const char *name, int &value)
+bool vtTagArray::GetValueBool(const char *szTagName, bool &bValue)
 {
-	vtTag *tag = FindTag(name);
+	vtTag *tag = FindTag(szTagName);
 	if (tag)
-		value = atoi((const char *)tag->value);
+		bValue = (tag->value[0] == 't');
 	return (tag != NULL);
 }
 
-bool vtTagArray::GetValue(const char *name, double &value)
+bool vtTagArray::GetValueInt(const char *szTagName, int &iValue)
 {
-	vtTag *tag = FindTag(name);
+	vtTag *tag = FindTag(szTagName);
 	if (tag)
-		value = atof((const char *)tag->value);
+		iValue = atoi((const char *)tag->value);
 	return (tag != NULL);
 }
+
+bool vtTagArray::GetValueFloat(const char *szTagName, float &fValue)
+{
+	vtTag *tag = FindTag(szTagName);
+	if (tag)
+		fValue = (float) atof((const char *)tag->value);
+	return (tag != NULL);
+}
+
+bool vtTagArray::GetValueDouble(const char *szTagName, double &dValue)
+{
+	vtTag *tag = FindTag(szTagName);
+	if (tag)
+		dValue = atof((const char *)tag->value);
+	return (tag != NULL);
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 // Implementation of class vtItem

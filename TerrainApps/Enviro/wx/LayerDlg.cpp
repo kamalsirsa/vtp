@@ -152,7 +152,7 @@ void LayerDlg::RefreshTreeTerrain()
 					hItem = m_pTree->AppendItem(hLayer, _T("Fence"), -1, -1);
 				if (vtStructInstance *inst = sa->GetInstance(j))
 				{
-					vtString vs = inst->GetValue("filename");
+					vtString vs = inst->GetValueString("filename");
 					if (vs != "")
 					{
 						str = "File ";
@@ -160,7 +160,7 @@ void LayerDlg::RefreshTreeTerrain()
 					}
 					else
 					{
-						vs = inst->GetValue("itemname");
+						vs = inst->GetValueString("itemname");
 						str = "Item ";
 						str += vs;
 					}

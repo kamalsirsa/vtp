@@ -48,7 +48,7 @@ void vtStructInstance3d::UpdateTransform(vtHeightField3d *pHeightField)
 		m_pContainer->Scale3(m_fScale, m_fScale, m_fScale);
 
 	// try to work around 3DS coordinate axes difference problem
-	vtString fname2 = GetValue("filename");
+	vtString fname2 = GetValueString("filename");
 	int dot = fname2.ReverseFind('.');
 	if (dot > 0)
 	{
@@ -118,7 +118,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		m_pModel = NULL;
 	}
 
-	const char *filename = GetValue("filename");
+	const char *filename = GetValueString("filename");
 	if (filename)
 	{
 		// relative path: look on the standards data paths
@@ -127,12 +127,12 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 		{
 			m_pModel = vtLoadModel(fullpath);
 			if (m_pModel)
-				SetValue("filename", fullpath);
+				SetValueString("filename", fullpath);
 		}
 		if (!m_pModel)
 			return false;
 	}
-	const char *itemname = GetValue("itemname");
+	const char *itemname = GetValueString("itemname");
 	if (itemname)
 	{
 		// Use ContentManager to create the structure
@@ -146,7 +146,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	}
 	m_pContainer->AddChild(m_pModel);
 
-	const char *scale = GetValue("scale");
+	const char *scale = GetValueString("scale");
 	if (scale)
 	{
 		double sc = atof(scale);
@@ -294,8 +294,8 @@ void vtStructureArray3d::SetEditedEdge(vtBuilding *bld, int lev, int edge)
 
 	if (m_pEditBuilding)
 	{
-		m_pEditBuilding->SetValue("level", m_iEditLevel);
-		m_pEditBuilding->SetValue("edge", m_iEditEdge);
+		m_pEditBuilding->SetValueInt("level", m_iEditLevel);
+		m_pEditBuilding->SetValueInt("edge", m_iEditEdge);
 		str2 = (vtStructure3d *) (vtBuilding3d *) m_pEditBuilding;
 		ConstructStructure(str2);
 	}

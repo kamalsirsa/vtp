@@ -2079,7 +2079,10 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 	int numlayers = layers.size();
 	wxString choices[100];
 	for (int i = 0; i < numlayers; i++)
-		choices[i] = wxString::FromAscii(layers[i]->GetValue("Name"));
+	{
+		const char *string = layers[i]->GetValueString("Name");
+		choices[i] = wxString::FromAscii(string);
+	}
 
 	wxSingleChoiceDialog dlg2(this, _T("Choice Layer"),
 		_T("Please indicate layer:"), numlayers, (const wxString *)choices);

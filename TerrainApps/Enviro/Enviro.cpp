@@ -2003,7 +2003,7 @@ void Enviro::PlantInstance()
 	vtTerrain *pTerr = GetCurrentTerrain();
 	vtStructureArray3d *structs = pTerr->GetStructures();
 	vtStructInstance3d *inst = (vtStructInstance3d *) structs->NewInstance();
-	inst->SetValue("filename", path);
+	inst->SetValueString("filename", path);
 	inst->m_p.Set(m_EarthPos.x, m_EarthPos.y);
 
 	int index = structs->Append(inst);

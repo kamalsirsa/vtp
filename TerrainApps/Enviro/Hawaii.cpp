@@ -148,7 +148,7 @@ void IslandTerrain::create_state_park()
 	//	desired location on the terrain.
 	int index = m_pSA->GetSize();
 	vtStructInstance *inst = m_pSA->AddNewInstance();
-	inst->SetValue("itemname", "Riesenbuehl");
+	inst->SetValueString("itemname", "Riesenbuehl");
 	inst->m_p = park_location;
 	bool bSuccess = CreateStructure(m_pSA, index);
 
