@@ -90,6 +90,9 @@ void MainFrame::ImportData(LayerType ltype)
 	// remember the directory they used
 	ImportDirectory[ltype] = loadFile.GetDirectory();
 
+	// TESTING code here
+//	ImportDataFromS57(strFileName);
+
 	ImportDataFromArchive(ltype, strFileName, true);
 }
 
@@ -1061,6 +1064,172 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 					break;
 				}
 				if (!bSkip)
+				{
+					wfeat.SetSize(num_points);
+					for (j = 0; j < num_points; j++)
+					{
+						wfeat.SetAt(j, DPoint2(pLineString->getX(j),
+							pLineString->getY(j)));
+					}
+					pWL->AddFeature(wfeat);
+				}
+			}
+
+			fcount++;
+		}
+		CloseProgressDialog();
+	}
+
+	delete pDatasource;
+
+	// Merge nodes
+//	OpenProgressDialog("Removing redundant nodes...");
+//	pRL->MergeRedundantNodes(true, progress_callback);
+
+	// Set visual properties
+	for (NodeEdit *pN = pRL->GetFirstNode(); pN; pN = pN->GetNext())
+	{
+		pN->DetermineVisualFromLinks();
+	}
+
+	bool success;
+	success = AddLayerWithCheck(pWL, true);
+	if (!success)
+		delete pWL;
+
+	success = AddLayerWithCheck(pRL, true);
+	if (!success)
+		delete pRL;
+}
+
+
+void MainFrame::ImportDataFromS57(const wxString2 &strDirName)
+{
+	g_GDALWrapper.RequestOGRFormats();
+
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open(strDirName.mb_str());
+	if (!pDatasource)
+		return;
+
+	// create the new layers
+	vtWaterLayer *pWL = new vtWaterLayer;
+	pWL->SetLayerFilename(strDirName + _T("/water"));
+	pWL->SetModified(true);
+
+	vtRoadLayer *pRL = new vtRoadLayer;
+	pRL->SetLayerFilename(strDirName + _T("/roads"));
+	pRL->SetModified(true);
+
+	vtElevLayer *pEL = new vtElevLayer;
+	pEL->SetLayerFilename(strDirName + _T("/elev"));
+	pEL->SetModified(true);
+
+	int i, j, feature_count;
+	OGRLayer		*pOGRLayer;
+	OGRFeature		*pFeature;
+	OGRGeometry		*pGeom;
+	OGRPoint		*pPoint;
+	OGRLineString   *pLineString;
+
+	vtWaterFeature	wfeat;
+
+	// Assume that this data source is a TIGER/Line file
+	//
+	// Iterate through the layers looking for the ones we care about
+	//
+	int num_layers = pDatasource->GetLayerCount();
+	for (i = 0; i < num_layers; i++)
+	{
+		pOGRLayer = pDatasource->GetLayer(i);
+		if (!pOGRLayer)
+			continue;
+
+		feature_count = pOGRLayer->GetFeatureCount();
+  		pOGRLayer->ResetReading();
+		OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
+		if (!defn)
+			continue;
+
+#if 1
+		//Debug:
+		int field_count1 = defn->GetFieldCount();
+		for (j = 0; j < field_count1; j++)
+		{
+			OGRFieldDefn *field_def1 = defn->GetFieldDefn(j);
+			if (field_def1)
+			{
+				const char *fnameref = field_def1->GetNameRef();
+				OGRFieldType ftype = field_def1->GetType();
+			}
+		}
+#endif
+
+		// Get the projection (SpatialReference) from this layer
+		OGRSpatialReference *pSpatialRef = pOGRLayer->GetSpatialRef();
+		if (pSpatialRef)
+		{
+			vtProjection proj;
+			proj.SetSpatialReference(pSpatialRef);
+			pWL->SetProjection(proj);
+			pRL->SetProjection(proj);
+		}
+
+		// Progress Dialog
+		OpenProgressDialog(_T("Importing from S-57..."));
+
+		// Get line features
+		const char *layer_name = defn->GetName();
+		if (strcmp(layer_name, "Line"))
+			continue;
+
+//		int index_cfcc = defn->GetFieldIndex("CFCC");
+		int fcount = 0;
+		while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
+		{
+			UpdateProgressDialog(100 * fcount / feature_count);
+
+			pGeom = pFeature->GetGeometryRef();
+			if (!pGeom) continue;
+
+//			if (!pFeature->IsFieldSet(index_cfcc))
+//				continue;
+
+//			const char *cfcc = pFeature->GetFieldAsString(index_cfcc);
+
+			pLineString = (OGRLineString *) pGeom;
+			int num_points = pLineString->getNumPoints();
+
+//			if (!strncmp(cfcc, "A", 1))
+			if (!strcmp(layer_name, "Line"))
+			{
+				// Hydrography
+/*				int num = atoi(cfcc+1);
+				bool bSkip = true;
+				switch (num)
+				{
+				case 1:		// Shoreline of perennial water feature
+				case 2:		// Shoreline of intermittent water feature
+					break;
+				case 11:	// Perennial stream or river
+				case 12:	// Intermittent stream, river, or wash
+				case 13:	// Braided stream or river
+					wfeat.m_bIsBody = false;
+					bSkip = false;
+					break;
+				case 30:	// Lake or pond
+				case 31:	// Perennial lake or pond
+				case 32:	// Intermittent lake or pond
+				case 40:	// Reservoir
+				case 41:	// Perennial reservoir
+				case 42:	// Intermittent reservoir
+				case 50:	// Bay, estuary, gulf, sound, sea, or ocean
+				case 51:	// Bay, estuary, gulf, or sound
+				case 52:	// Sea or ocean
+					wfeat.m_bIsBody = true;
+					bSkip = false;
+					break;
+				}*/
+//				if (!bSkip)
 				{
 					wfeat.SetSize(num_points);
 					for (j = 0; j < num_points; j++)
