@@ -298,15 +298,19 @@ void vtTerrainScene::SetCurrentTerrain(vtTerrain *pTerrain)
 		m_pTime->SetSpeed(0.0f);
 	m_pTime->SetEnabled(true);
 
-#if VTLIB_OSG && 0
-	// Experimental OSG-specific code!
-
-	// Set up cull callback on the dynamic geometry transform node
-	vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
-	vtTransform *pTransform = dynamic_cast<vtTransform*>(m_pCurrentTerrain->GetTopGroup()->GetOsgGroup()->getChild(0)->getUserData());
-	if (NULL != pTransform)
-		vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pTransform);
+	if (param.GetValueBool(STR_STRUCT_SHADOWS))
+	{
+		int iRez = param.GetValueInt(STR_SHADOW_REZ);
+		// Experimental OSG-specific code!
+#if VTLIB_OSG
+		// Set up cull callback on the dynamic geometry transform node
+		vtLodGrid *pStructures = m_pCurrentTerrain->GetStructureGrid();
+		osg::Referenced *ref = m_pCurrentTerrain->GetTopGroup()->GetOsgGroup()->getChild(0)->getUserData();
+		vtTransform *pTransform = dynamic_cast<vtTransform*>(ref);
+		if (NULL != pTransform)
+			vtGetScene()->SetShadowedNode(m_pSunLight, pStructures, pTransform, iRez);
 #endif
+	}
 }
 
 void vtTerrainScene::_UpdateSkydomeForTerrain(vtTerrain *pTerrain)

@@ -96,6 +96,8 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_FOGCOLOR, "-1 -1 -1");	// unset
 
 	AddTag(STR_STRUCTDIST, "2000");		// 2 km
+	AddTag(STR_STRUCT_SHADOWS, "false");
+	AddTag(STR_SHADOW_REZ, "1024");
 	AddTag(STR_CONTENT_FILE, "");
 
 	AddTag(STR_TOWERS, "false");
@@ -280,9 +282,10 @@ bool TParams::LoadFromIniFile(const char *filename)
 			if (strFile != "")
 				m_strStructFiles.push_back(strFile);
 		}
-		else if (strcmp(buf, STR_STRUCTDIST) == 0)
-			SetValueString(buf, get_line_from_stream(input));
-		else if (strcmp(buf, STR_CONTENT_FILE) == 0)
+		else if (strcmp(buf, STR_STRUCTDIST) == 0 ||
+				 strcmp(buf, STR_STRUCT_SHADOWS) == 0 ||
+				 strcmp(buf, STR_SHADOW_REZ) == 0 ||
+				 strcmp(buf, STR_CONTENT_FILE) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 
 		// sky and ocean

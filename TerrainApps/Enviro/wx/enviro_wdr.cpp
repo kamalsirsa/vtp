@@ -909,7 +909,7 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
     wxChoice *item37 = new wxChoice( parent, ID_CHOICE_CONTENT, wxDefaultPosition, wxSize(100,-1), 0, strs37, 0 );
     item35->Add( item37, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item34->Add( item35, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item34->Add( item35, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxStaticBox *item39 = new wxStaticBox( parent, -1, _("Structure Files") );
     wxStaticBoxSizer *item38 = new wxStaticBoxSizer( item39, wxVERTICAL );
@@ -931,14 +931,34 @@ wxSizer *TParams3Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item38->Add( item41, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item34->Add( item38, 0, wxALL, 5 );
+    wxBoxSizer *item45 = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer *item45 = new wxBoxSizer( wxHORIZONTAL );
+    wxCheckBox *item46 = new wxCheckBox( parent, ID_CHECK_STRUCTURE_SHADOWS, _("Structure shadows (preliminary!)"), wxDefaultPosition, wxDefaultSize, 0 );
+    item45->Add( item46, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item46 = new wxCheckBox( parent, ID_VEHICLES, _("Enable Vehicles"), wxDefaultPosition, wxDefaultSize, 0 );
-    item45->Add( item46, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item47 = new wxBoxSizer( wxHORIZONTAL );
 
-    item34->Add( item45, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    item47->Add( 20, 10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item48 = new wxStaticText( parent, ID_TEXT, _("Resolution:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item47->Add( item48, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs49 = (wxString*) NULL;
+    wxChoice *item49 = new wxChoice( parent, ID_CHOICE_SHADOW_REZ, wxDefaultPosition, wxSize(100,-1), 0, strs49, 0 );
+    item47->Add( item49, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item45->Add( item47, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item38->Add( item45, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item34->Add( item38, 0, wxGROW|wxALL, 5 );
+
+    wxBoxSizer *item50 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxCheckBox *item51 = new wxCheckBox( parent, ID_VEHICLES, _("Enable Vehicles"), wxDefaultPosition, wxDefaultSize, 0 );
+    item50->Add( item51, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item34->Add( item50, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item34, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
 

@@ -65,42 +65,42 @@ public:
 	void UpdateTimeString();
 
 	// overall name
-	wxString2	m_strTerrainName;
+	wxString2   m_strTerrainName;
 
 	// elevation
-	wxString2	m_strFilename;
-	wxString2	m_strFilenameTin;
+	wxString2   m_strFilename;
+	wxString2   m_strFilenameTin;
 	float   m_fVerticalExag;
 	bool	m_bTin;
 
 	// navigation
-	int		m_iMinHeight;
-	int		m_iNavStyle;
-	float	m_fNavSpeed;
-	wxString2	m_strLocFile;
-	int		m_iInitLocation;
-	wxString2	m_strInitLocation;
-	float	m_fHither;
+	int	 m_iMinHeight;
+	int	 m_iNavStyle;
+	float   m_fNavSpeed;
+	wxString2   m_strLocFile;
+	int	 m_iInitLocation;
+	wxString2   m_strInitLocation;
+	float   m_fHither;
 	bool	m_bAccel;
 
 	// LOD
-	int		m_iLodMethod;
-	float	m_fPixelError;
-	int		m_iTriCount;
+	int	 m_iLodMethod;
+	float   m_fPixelError;
+	int	 m_iTriCount;
 	bool	m_bTriStrips;
 	bool	m_bDetailTexture;
 
 	// time
 	bool	m_bTimeOn;
-	vtTime	m_InitTime;
+	vtTime  m_InitTime;
 	float   m_fTimeSpeed;
 
 	// texture
-	int		m_iTexture;
-	int		m_iTilesize;
-	wxString2	m_strTextureSingle;
-	wxString2	m_strTextureBase;
-	wxString2	m_strTextureFilename;
+	int	 m_iTexture;
+	int	 m_iTilesize;
+	wxString2   m_strTextureSingle;
+	wxString2   m_strTextureBase;
+	wxString2   m_strTextureFilename;
 	bool	m_bJPEG;
 	bool	m_bMipmap;
 	bool	m_b16bit;
@@ -110,7 +110,7 @@ public:
 
 	// culture
 	bool	m_bRoads;
-	wxString2	m_strRoadFile;
+	wxString2   m_strRoadFile;
 	bool	m_bHwy;
 	bool	m_bPaved;
 	bool	m_bDirt;
@@ -120,41 +120,45 @@ public:
 	bool	m_bRoadCulture;
 
 	bool	m_bPlants;
-	wxString2	m_strVegFile;
-	int		m_iVegDistance;
+	wxString2   m_strVegFile;
+	int	 m_iVegDistance;
 
 	bool	m_bFog;
-	float	m_fFogDistance;
+	float   m_fFogDistance;
 
-	wxStringArray	m_strStructFiles;
-	int		m_iStructDistance;
+	wxStringArray   m_strStructFiles;
+	int	   m_iStructDistance;
+	bool   m_bStructureShadows;
+	int    m_bStructureRez;
 	wxString2 m_strContent;
 
 	bool	m_bSky;
-	wxString2	m_strSkyTexture;
+	wxString2   m_strSkyTexture;
 	bool	m_bOceanPlane;
-	float	m_fOceanPlaneLevel;
+	float   m_fOceanPlaneLevel;
 	bool	m_bDepressOcean;
-	float	m_fDepressOceanLevel;
+	float   m_fDepressOceanLevel;
 	bool	m_bHorizon;
 //  bool	m_bOverlay;
 
 	bool	m_bLabels;
-	wxString2	m_strLabelFile;
-	PointStyle	m_Style;
+	wxString2   m_strLabelFile;
+	PointStyle  m_Style;
 
 	bool	m_bVehicles;
 //  float   m_fVehicleSize;
 //  float   m_fVehicleSpeed;
-//  int		m_iNumCars;
+//  int	 m_iNumCars;
 
 	bool	m_bRouteEnable;
 	wxString2 m_strRouteFile;
 
 	wxString2 m_strInitTime;
-//  wxString2	m_strMemRequired;
+//  wxString2   m_strMemRequired;
 
 	// WDR: method declarations for TParamsDlg
+	wxChoice* GetChoiceShadowRez()  { return (wxChoice*) FindWindow( ID_CHOICE_SHADOW_REZ ); }
+	wxCheckBox* GetCheckStructureShadows()  { return (wxCheckBox*) FindWindow( ID_CHECK_STRUCTURE_SHADOWS ); }
 	wxChoice* GetContentFile()  { return (wxChoice*) FindWindow( ID_CHOICE_CONTENT ); }
 	wxChoice* GetNavStyle()  { return (wxChoice*) FindWindow( ID_NAV_STYLE ); }
 	wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
@@ -205,6 +209,7 @@ private:
 	wxChoice* m_pLabelField;
 	wxChoice* m_pLocField;
 	wxListBoxEventHandler *m_pBoxHandler;
+	wxChoice* m_pShadowRez;
 
 private:
 	// WDR: handler declarations for TParamsDlg
@@ -225,5 +230,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __TParamsDlg_H__
+#endif  // __TParamsDlg_H__
 
