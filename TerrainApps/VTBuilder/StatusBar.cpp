@@ -17,10 +17,9 @@
 #include "BuilderView.h"
 #include "Helper.h"
 
-MyStatusBar::MyStatusBar(wxWindow *parent)
-           : wxStatusBar(parent, -1)
+MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 {
-	static const int widths[Field_Max] = { -1, 38, 50, 65, 152, 68 };
+	static const int widths[Field_Max] = { -1, 38, 50, 65, 170, 68 };
 
 	SetFieldsCount(Field_Max);
 	SetStatusWidths(Field_Max, widths);
@@ -42,24 +41,16 @@ void MyStatusBar::OnSize(wxSizeEvent& event)
 
 wxString MyStatusBar::FormatCoord(bool bGeo, double coord)
 {
+	wxString str;
 	if (bGeo)
 	{
-		// display degrees
-		if (m_bShowMinutes)
-			return DegreeToString(coord);
-		else
-		{
-			wxString str;
-			str = wxString::Format("%.5f", coord);
-			return str;
-		}
+		str = ::FormatCoord(bGeo, coord, m_bShowMinutes);
 	}
 	else	// something meters-based
 	{
-		wxString str;
 		str = wxString::Format("%.0f", coord);
-		return str;
 	}
+	return str;
 }
 
 void MyStatusBar::SetTexts(MainFrame *frame)
