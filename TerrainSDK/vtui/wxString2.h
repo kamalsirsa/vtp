@@ -57,15 +57,10 @@ public:
 	wxString2& operator=(const wstring2 &ws2);
 #endif
 
-	// implicit conversion to vtString
-	operator vtString() const;
-
-	// implicit conversion to C string
-	operator const char*() const;
-
+	// explicit conversion to vtString
 	vtString vt_str() const;
 
-	// conversion to UTF8
+	// conversion to and from UTF8
 	const char *to_utf8() const;
 	void from_utf8(const char *input);
 

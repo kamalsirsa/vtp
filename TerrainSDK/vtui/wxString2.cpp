@@ -146,16 +146,6 @@ wxString2 &wxString2::operator=(const wstring2 &ws2)
 }
 #endif
 
-wxString2::operator vtString() const
-{
-	return vtString(mb_str());
-}
-
-wxString2::operator const char*() const
-{
-	return mb_str();
-}
-
 #if wxUSE_UNICODE
 char wxString2::s_buffer[MAX_WXSTRING2_SIZE];
 const char *wxString2::mb_str() const
