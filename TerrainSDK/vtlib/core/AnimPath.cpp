@@ -170,11 +170,11 @@ void vtAnimPathEngine::Eval()
 	if (!tr)
 		return;
 
-	float fTime = vtGetTime();
+	float fNow = vtGetTime();
 	if (m_fLastTime==DBL_MAX)
-		m_fLastTime = fTime;
+		m_fLastTime = fNow;
 
-	float fElapsed = fTime - m_fLastTime;
+	float fElapsed = fNow - m_fLastTime;
 	m_fTime += fElapsed * m_fSpeed;
 
 	ControlPoint cp;
@@ -191,7 +191,7 @@ void vtAnimPathEngine::Eval()
 		else
 			tr->SetTransform1(matrix);
 	}
-	m_fLastTime = fTime;
+	m_fLastTime = fNow;
 }
 
 void vtAnimPathEngine::Reset()
