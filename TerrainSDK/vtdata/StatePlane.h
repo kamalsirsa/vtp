@@ -50,7 +50,7 @@ StatePlaneInfo g_StatePlaneInfo[] = {
 { "KENTUCKY SOUTH", 2, 1602 },
 { "LOUISIANA NORTH", 2, 1701 },
 { "LOUISIANA SOUTH", 2, 1702 },
-{ "LOUISIANA OFFSHORE", 2, 1703 },
+//{ "LOUISIANA OFFSHORE", 2, 1703 },	// Not actually present in EPSG table
 { "MAINE EAST", 1, 1801 },
 { "MAINE WEST", 1, 1802 },
 { "MARYLAND ---", 2, 1900 },
