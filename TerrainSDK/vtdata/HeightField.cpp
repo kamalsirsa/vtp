@@ -681,7 +681,7 @@ void vtHeightFieldGrid3d::ShadeQuick(vtBitmapBase *pBM, float light_factor,
 			float value2 = GetElevation(x+1, y);
 			if (value2 == INVALID_ELEVATION)
 				value2 = value;
-			int diff = (int) ((value2 - value) / m_dXStep * light_factor);
+			int diff = (int) ((value2 - value) / m_fXStep * light_factor);
 
 			// clip to keep values under control
 			if (diff > 128)
