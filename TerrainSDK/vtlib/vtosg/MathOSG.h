@@ -46,21 +46,23 @@ inline void s2v(osg::BoundingSphere &bs, FSphere &sph)
 
 inline void ConvertMatrix4(const osg::Matrix *mat_osg, FMatrix4 *mat)
 {
+	const float *ptr = mat_osg->ptr();
 	int i, j;
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
 		{
-			mat->Set(i, j, mat_osg->_mat[j][i]);
+			mat->Set(j, i, ptr[(i<<2)+j]);
 		}
 }
 
 inline void ConvertMatrix4(const FMatrix4 *mat, osg::Matrix *mat_osg)
 {
+	float *ptr = mat_osg->ptr();
 	int i, j;
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
 		{
-			mat_osg->_mat[i][j] = mat->Get(j, i);
+			ptr[(i<<2)+j] = mat->Get(j, i);
 		}
 }
 
