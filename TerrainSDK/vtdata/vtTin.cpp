@@ -247,6 +247,11 @@ bool vtTin::ConvertProjection(vtProjection &proj_new)
 		DPoint2 &p = m_vert[i];
 		trans->Transform(1, &p.x, &p.y);
 	}
+	delete trans;
+
+	// adopt new projection
+	m_proj = proj_new;
+
 	return true;
 }
 
