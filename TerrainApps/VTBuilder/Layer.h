@@ -22,6 +22,7 @@
 
 #define FSTRING_ADF		_T("Arc Data Files (*.adf)|*.adf|")
 #define FSTRING_ASC		_T("ArcInfo ASCII grid (*.asc)|*.asc|")
+#define FSTRING_BMP		_T("Bitmap (*.bmp)|*.bmp|")
 #define FSTRING_BIL		_T("ArcInfo BIL grid (*.bil)|*.bil|")
 #define FSTRING_CDF		_T("CDF Files (*.cdf, *.grd)|*.cdf;*.grd|")
 #define FSTRING_DEM		_T("DEM Files (*.dem)|*.dem|")
