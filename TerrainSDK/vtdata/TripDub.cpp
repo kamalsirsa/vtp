@@ -26,8 +26,13 @@
 // avoid preprocessor conflict between MSVC errno.h and WWWlib
 #undef EINVAL
 
+#ifdef UNIX
+#include "w3c-libwww/WWWLib.h"
+#include "w3c-libwww/WWWInit.h"
+#else
 #include "WWWLib.h"
 #include "WWWInit.h"
+#endif
 
 #ifdef _MSC_VER
 // We will now need to link with several of the Libwww libraries.  This can
