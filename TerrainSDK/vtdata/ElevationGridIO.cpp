@@ -35,6 +35,7 @@ typedef struct
 {
 	char			ByteOrder[30];		//	Byte order in which image pixel values are stored
 										//		M = Motorola byte order (MSB first)
+										//		I = Intel byte order (LSB first)
 	char			Layout[30];			//	Organization of the bands in the file
 										//		BIL = Band interleaved by line (DEM = single band image)
 	unsigned long	NumRows;			//	Number of rows in the image
@@ -1007,10 +1008,13 @@ bool vtElevationGrid::LoadFromGTOPO30(const char *szFileName,
 		{
 			/*  FIXME:  there be byte order issues here.  See below in this routine.  */
 			fread(&z, sizeof(short), 1, fp);
-			// must swap byte order
-			temp = cp[0];
-			cp[0] = cp[1];
-			cp[1] = temp;
+			if (gh.ByteOrder[0] == 'M')
+			{
+				// must swap byte order
+				temp = cp[0];
+				cp[0] = cp[1];
+				cp[1] = temp;
+			}
 			SetValue(i, m_iRows-1-j, (z == gh.NoData) ? 0 : z);
 		}
 	}
