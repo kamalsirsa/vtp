@@ -377,6 +377,7 @@ public:
 	vtLayer *ImportVectorsWithOGR(const wxString2 &strFileName, LayerType ltype);
 	vtStructureLayer *ImportFromBCF(const wxString2 &strFileName);
 	void ImportDataFromTIGER(const wxString2 &strDirName);
+	void ImportDataFromS57(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
 	// Export
