@@ -60,6 +60,11 @@ bool vtApp::OnInit(void)
 	g_Log._StartLog("debug.txt");
 	VTLOG("CManager\n");
 
+	VTLOG("Setup scene\n");
+	vtScene *pScene = vtGetScene();
+	pScene->Init();
+	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));
+
 	//
 	// Create the main frame window
 	//
@@ -67,11 +72,6 @@ bool vtApp::OnInit(void)
 	wxString title = _T("Content Manager");
 	vtFrame *frame = new vtFrame(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
-
-	VTLOG("Setup scene\n");
-	vtScene *pScene = vtGetScene();
-	pScene->Init();
-	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));
 
 	VTLOG(" creating camera\n");
 	vtCamera *pCamera = pScene->GetCamera();
