@@ -110,10 +110,10 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item25 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item26 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxSize(60,-1), 0 );
+    wxButton *item26 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
     item25->Add( item26, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item27 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxSize(70,-1), 0 );
+    wxButton *item27 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
     item25->Add( item27, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxButton *item28 = new wxButton( parent, ID_OPENGL, _("OpenGL Info..."), wxDefaultPosition, wxDefaultSize, 0 );
@@ -1068,7 +1068,7 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item26->Add( item34, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    item0->Add( item26, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 10 );
+    item0->Add( item26, 1, wxALIGN_CENTER_HORIZONTAL|wxRIGHT|wxTOP|wxBOTTOM, 10 );
 
     if (set_sizer)
     {
