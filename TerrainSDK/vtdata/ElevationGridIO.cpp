@@ -1477,7 +1477,7 @@ bool vtElevationGrid::LoadFromNTF5(const char *szFileName,
 		// this is a horrible kludge
 		int iRowCount = 0;
 		OGRPoint *pPoint;
-		double dX;
+		double dX = 0;	// set to avoid compiler warning
 		while ( (pFeature = pLayer->GetNextFeature()) != NULL )
 		{
 			// make sure we delete the feature no matter how the loop exits
