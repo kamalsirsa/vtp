@@ -7,7 +7,6 @@
 
 #include "CameraDlg.h"
 #include "../Enviro.h"
-#include "vtlib/core/LocalProjection.h"
 
 #define MIN_EXP		-2.0f
 #define EXP_RANGE	6.0f
