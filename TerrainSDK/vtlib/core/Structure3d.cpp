@@ -8,7 +8,6 @@
 #include "vtlib/vtlib.h"
 
 #include <fstream>
-#include "xmlhelper/easyxml.hpp"
 #include "vtdata/vtlog.h"
 
 #include "Structure3d.h"
@@ -16,16 +15,21 @@
 #include "Fence3d.h"
 #include "Terrain.h"
 
-const vtMaterialName BMAT_NAME_HIGHLIGHT = "Highlight";
+const vtString BMAT_NAME_HIGHLIGHT = "Highlight";
 
 // Static members
-vtMaterialArray *vtStructure3d::s_pMaterials = NULL;
-vtMaterialDescriptorArray vtStructure3d::s_MaterialDescriptors;
+vtMaterialDescriptorArray3d vtStructure3d::s_MaterialDescriptors;
 
-// There is a single array of materials, shared by all buildings.
-// This is done to save memory.  For a list of 16000+ buildings, this can
-//  save about 200MB of RAM.
-RGBf vtStructure3d::s_Colors[COLOR_SPREAD];
+
+// Helper: Linear distance in RGB space
+float ColorDiff(const RGBi &c1, const RGBi &c2)
+{
+	FPoint3 diff;
+	diff.x = (float) (c1.r - c2.r);
+	diff.y = (float) (c1.g - c2.g);
+	diff.z = (float) (c1.b - c2.b);
+	return diff.Length();
+}
 
 ///////////////////////////////////////////////////////////////////////
 
@@ -284,15 +288,22 @@ void vtStructureArray3d::DestroyStructure(int i)
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Methods for vtStructure3d
+// Methods for vtMaterialDescriptorArray3d
 //
 
-void vtStructure3d::InitializeMaterialArrays()
+vtMaterialDescriptorArray3d::vtMaterialDescriptorArray3d()
 {
-	if (s_pMaterials != NULL)	// already initialized
+	m_pMaterials = NULL;
+	m_pWindowWall = NULL;
+}
+
+void vtMaterialDescriptorArray3d::InitializeMaterials()
+{
+	if (m_pMaterials != NULL)	// already initialized
 		return;
 
-	vtString path;
+	VTLOG("Creating Building Materials\n");
+
 	int i, j, k;
 	RGBf color;
 	vtMaterial *pMat;
@@ -306,155 +317,136 @@ void vtStructure3d::InitializeMaterialArrays()
 	for (i = 0; i < divisions; i++) {
 		for (j = 0; j < divisions; j++) {
 			for (k = 0; k < divisions; k++) {
-				s_Colors[count++].Set(start+i*step, start+j*step, start+k*step);
+				m_Colors[count++].Set(start+i*step, start+j*step, start+k*step);
 			}
 		}
 	}
 
-	s_pMaterials = new vtMaterialArray();
-	s_pMaterials->SetMaxSize(500);
+	m_pMaterials = new vtMaterialArray();
+	m_pMaterials->SetMaxSize(500);
 /*
-	// Uncooment this to make a default textures file
+	// Uncomment this to make a default textures file
 	// remember to create an empty file in the correct place first (for FindFileOnPaths)
 
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_PLAIN),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN),
 									"",
 									VT_MATERIAL_COLOURED,
 									1.0f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_SIDING),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_SIDING),
 									"BuildingModels/siding64.jpg",
 									VT_MATERIAL_COLOURABLE_TEXTURE,
 									1.0f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WINDOW),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_WINDOW),
 									"BuildingModels/window.jpg",
 									VT_MATERIAL_SELFCOLOURED_TEXTURE,
 									1.0f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_DOOR),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_DOOR),
 									"BuildingModels/door.jpg",
 									VT_MATERIAL_SELFCOLOURED_TEXTURE,
 									1.0f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WOOD),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_WOOD),
 									"BuildingModels/wood1_256.jpg",
 									VT_MATERIAL_SELFCOLOURED_TEXTURE,
 									0.6f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_CEMENT),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_CEMENT),
 									"BuildingModels/cement_block1_256.jpg",
 									VT_MATERIAL_SELFCOLOURED_TEXTURE,
 									1.0f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_BRICK),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_BRICK),
 									"BuildingModels/brick1_256.jpg",
 									VT_MATERIAL_BRICK,
 									0.8f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_BRICK),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_BRICK),
 									"BuildingModels/brick2_256.jpg",
 									VT_MATERIAL_BRICK,
 									0.8f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_PAINTED_BRICK),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_PAINTED_BRICK),
 									"BuildingModels/brick_mono_256.jpg",
 									VT_MATERIAL_COLOURABLE_TEXTURE,
 									0.8f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_ROLLED_ROOFING),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_ROLLED_ROOFING),
 									"BuildingModels/roofing1_256.jpg",
 									VT_MATERIAL_COLOURABLE_TEXTURE,
 									1.0f));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WINDOWWALL),
+	s_MaterialDescriptors.Append(new vtMaterialDescriptor(BMAT_NAME_WINDOWWALL),
 									"BuildingModels/window_wall128.jpg",
 									VT_MATERIAL_COLOURABLE_TEXTURE,
 									1.0f,
 									false));
-	s_MaterialDescriptors.Append(new vtMaterialDescriptor(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_HIGHLIGHT),
-									"",
-									VT_MATERIAL_HIGHLIGHT,
-									1.0f,
-									false));
-
 	{
-		std::ofstream ops(FindFileOnPaths(vtTerrain::m_DataPaths, "GeoTypical/textures.xml"));
-
+		std::ofstream ops(FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/materials.xml"));
 		ops << s_MaterialDescriptors;
-
 		ops.close();
 	}
 */
 
-	vtString matfile = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/textures.xml");
-	if (matfile == "")
-	{
-		// error - what to do?
-		return;
-	}
-	s_MaterialDescriptors.Load(matfile);
+	// First create internal materials (only needed by vtlib, not vtdata)
+	m_hightlight1 = m_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true);
+	m_hightlight2 = m_pMaterials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
 
-	iSize = s_MaterialDescriptors.GetSize();
+	m_pWindowWall = new vtMaterialDescriptor(BMAT_NAME_WINDOWWALL,
+		"BuildingModels/window_wall128.jpg", VT_MATERIAL_COLOURABLE_TEXTURE, 1.0f);
+	CreateColorableMaterial(m_pWindowWall);
+
+	// Now load external materials (user-modifiable, user-extendable)
+	if (!LoadExternalMaterials(vtTerrain::m_DataPaths))
+		return;
+
+	iSize = GetSize();
 
 	for (j = 0; j < iSize; j++)
 	{
-		vtMaterialDescriptor& Descriptor = *s_MaterialDescriptors.GetAt(j);
+		vtMaterialDescriptor *descriptor = GetAt(j);
 
-		switch(Descriptor.GetMaterialType())
+		switch (descriptor->GetColorable())
 		{
-			case VT_MATERIAL_COLOURED:
-				for (i = 0; i < COLOR_SPREAD; i++)
-				{
-					pMat = MakeMaterial(s_Colors[i], true);
-					if (i == 0)
-						Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
-					else
-						s_pMaterials->AppendMaterial(pMat);
-				}
-				break;
+		case VT_MATERIAL_COLOURED:
+			for (i = 0; i < COLOR_SPREAD; i++)
+			{
+				pMat = MakeMaterial(m_Colors[i], true);
+				if (i == 0)
+					descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
+				else
+					m_pMaterials->AppendMaterial(pMat);
+			}
+			break;
 
-			case VT_MATERIAL_SELFCOLOURED_TEXTURE:
-			case VT_MATERIAL_BRICK:
-				color.Set(1.0f, 1.0f, 1.0f);
-				pMat = MakeMaterial(color, true);
-				path = FindFileOnPaths(vtTerrain::m_DataPaths, Descriptor.GetSourceName());
-				pMat->SetTexture2(path);
-				pMat->SetClamp(false);
-				Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
-				break;
+		case VT_MATERIAL_SELFCOLOURED_TEXTURE:
+			CreateSelfColoredMaterial(descriptor);
+			break;
 
-			case VT_MATERIAL_COLOURABLE_TEXTURE:
-				path = FindFileOnPaths(vtTerrain::m_DataPaths, Descriptor.GetSourceName());
-				divisions = 6;
-				start = .25f;
-				step = (1.0f-start)/(divisions-1);
-				for (i = 0; i < COLOR_SPREAD; i++)
-				{
-					pMat = MakeMaterial(s_Colors[i], true);
-					pMat->SetTexture2(path);
-					pMat->SetClamp(false);
-					if (i == 0)
-						Descriptor.SetMaterialIndex(s_pMaterials->AppendMaterial(pMat));
-					else
-						s_pMaterials->AppendMaterial(pMat);
-				}
-				break;
-			case VT_MATERIAL_HIGHLIGHT:
-				Descriptor.SetMaterialIndex(s_pMaterials->AddRGBMaterial1(RGBf(1,1,1), false, false, true));
-				s_pMaterials->AddRGBMaterial1(RGBf(1,0,0), false, false, true);
-				break;
+		case VT_MATERIAL_COLOURABLE_TEXTURE:
+			CreateColorableMaterial(descriptor);
+			break;
 		}
 	}
-/*
-	int total = s_pMaterials->GetSize();
-	// window, door, wood, cement_block, windowwall
-	int expectedtotal = COLOR_SPREAD + COLOR_SPREAD +	// plain, siding
-		1 + 1 + 1 + 1 +		// window, door, wood, cement
-		1 + 1 +				// brick1, brick2
-		COLOR_SPREAD + COLOR_SPREAD +	// painted brick, window-wall
-		COLOR_SPREAD +		// rolled roofing
-		1 + 1;				// highlight colors
-	assert(total == expectedtotal);
-*/
 }
 
-void vtStructure3d::ReleaseSharedMaterials()
+void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor)
 {
-	if (s_pMaterials)
+	RGBf color(1.0f, 1.0f, 1.0f);
+	vtMaterial *pMat = MakeMaterial(color, true);
+	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, descriptor->GetSourceName());
+	pMat->SetTexture2(path);
+	pMat->SetClamp(false);
+	descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
+}
+
+void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *descriptor)
+{
+	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, descriptor->GetSourceName());
+	int divisions = 6;
+	float start = .25f;
+	int step = (1.0f-start)/(divisions-1);
+	for (int i = 0; i < COLOR_SPREAD; i++)
 	{
-		s_pMaterials->Release();
-		s_pMaterials = NULL;
+		vtMaterial *pMat = MakeMaterial(m_Colors[i], true);
+		pMat->SetTexture2(path);
+		pMat->SetClamp(false);
+		if (i == 0)
+			descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
+		else
+			m_pMaterials->AppendMaterial(pMat);
 	}
 }
 
@@ -463,40 +455,43 @@ void vtStructure3d::ReleaseSharedMaterials()
 // Takes the building material and color, and tries to find the closest
 // existing vtMaterial.
 //
-int vtStructure3d::FindMatIndex(const vtMaterialName& Material, RGBi inputColor)
+int vtMaterialDescriptorArray3d::FindMatIndex(const vtString& Material,
+											  const RGBf &inputColor)
 {
-	if (s_pMaterials == NULL)
-		return -1;
-	
-	vtMaterialDescriptor const *pMaterialDescriptor = FindMaterialDescriptor(Material);
+	// handle special case of internal materials
+	if (Material == "Highlight")
+	{
+		// Choose the correct highlight
+		if (inputColor == RGBf(1,1,1))
+			return m_hightlight1;
+		else
+			return m_hightlight2;
+	}
+
+	vtMaterialDescriptor const *pMaterialDescriptor;
+	if (Material == BMAT_NAME_WINDOWWALL)
+		pMaterialDescriptor = m_pWindowWall;
+	else
+		pMaterialDescriptor = FindMaterialDescriptor(Material, inputColor);
+
 	if (pMaterialDescriptor == NULL)
 		return -1;
 	int iIndex = pMaterialDescriptor->GetMaterialIndex();
-	vtMaterialTypeEnum Type = pMaterialDescriptor->GetMaterialType();
+	vtMaterialColorEnum Type = pMaterialDescriptor->GetColorable();
 
 	if (Type == VT_MATERIAL_SELFCOLOURED_TEXTURE)
-		return iIndex;
-
-	if (Type == VT_MATERIAL_BRICK)
 	{
-		// choose one of our (currently 2) unpainted brick textures
-		RGBi b1(159, 100, 83);	// (reddish medium brown)
-		RGBi b2(183, 178, 171);	// (slightly pinkish grey)
-		if (ColorDiff(inputColor, b1) < ColorDiff(inputColor, b2))
+/*
+		if (Material == BMAT_NAME_BRICK)
+		{
+		RGBi b1(159, 100, 83);	// (reddish medium brown)	// "0.623 0.392 0.325" // "9F 64 53"
+		RGBi b2(183, 178, 171);	// (slightly pinkish grey)	// "0.718 0.698 0.670" // "B7 B2 AB"
+		}
+*/
 			return iIndex;
-		else
-			return iIndex + 1;
 	}
 
-	if (Type == VT_MATERIAL_HIGHLIGHT)
-	{
-		// Choose the correct highlight
-		if (inputColor == RGBi(255,255,255))
-			return iIndex;
-		else
-			return iIndex + 1;
-	}
-
+	// otherwise, it is of type VT_MATERIAL_COLOURED or VT_MATERIAL_COLOURABLE_TEXTURE
 	// match the closest color.
 	float bestError = 1E8;
 	int bestMatch = -1;
@@ -504,7 +499,7 @@ int vtStructure3d::FindMatIndex(const vtMaterialName& Material, RGBi inputColor)
 
 	for (int i = 0; i < COLOR_SPREAD; i++)
 	{
-		error = ColorDiff(s_Colors[i], inputColor);
+		error = ColorDiff(m_Colors[i], inputColor);
 		if (error < bestError)
 		{
 			bestMatch  = iIndex + i;
@@ -514,25 +509,66 @@ int vtStructure3d::FindMatIndex(const vtMaterialName& Material, RGBi inputColor)
 	return bestMatch;
 }
 
-vtMaterialDescriptor *vtStructure3d::FindMaterialDescriptor(const vtMaterialName& MaterialName)
+vtMaterialDescriptor *vtMaterialDescriptorArray3d::FindMaterialDescriptor(const vtString& MaterialName,
+																		  const RGBf &color)
 {
-	int iIndex;
-	int iSize = s_MaterialDescriptors.GetSize();
+	float bestError = 1E8;
+	int bestMatch = -1;
+	float error;
 
-	for (iIndex = 0;  iIndex < iSize; iIndex++)
+	vtMaterialDescriptor *desc;
+	int i, iSize = GetSize();
+	for (i = 0; i < iSize; i++)
 	{
-		vtMaterialDescriptor *ptr = s_MaterialDescriptors.GetAt(iIndex);
-		if (ptr->GetName() == MaterialName)
-			return ptr;
+		desc = GetAt(i);
+		if (desc->GetName() != MaterialName)
+			continue;
+
+		// look for matching name with closest color
+		const RGBi rgb = desc->GetRGB();
+		error = ColorDiff(rgb, color);
+		if (error < bestError)
+		{
+			bestMatch  = i;
+			bestError = error;
+		}
 	}
-	return NULL; 
+	if (bestMatch != -1)
+		return GetAt(bestMatch);
+	return NULL;
 }
 
+void vtMaterialDescriptorArray3d::ReleaseMaterials()
+{
+	if (m_pMaterials)
+	{
+		m_pMaterials->Release();
+		m_pMaterials = NULL;
+		// do not free them - they were not dynamically allocated
+		// FreeGlobalMaterials();
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Methods for vtStructure3d
+//
+
+void vtStructure3d::InitializeMaterialArrays()
+{
+	s_MaterialDescriptors.InitializeMaterials();
+	SetGlobalMaterials(&s_MaterialDescriptors);
+}
+
+void vtStructure3d::ReleaseSharedMaterials()
+{
+	s_MaterialDescriptors.ReleaseMaterials();
+}
 
 //
 // Helper to make a material
 //
-vtMaterial *vtStructure3d::MakeMaterial(RGBf &color, bool culling)
+vtMaterial *vtMaterialDescriptorArray3d::MakeMaterial(RGBf &color, bool culling)
 {
 	vtMaterial *pMat = new vtMaterial();
 	pMat->SetDiffuse1(color * 0.7f);
@@ -541,90 +577,6 @@ vtMaterial *vtStructure3d::MakeMaterial(RGBf &color, bool culling)
 	pMat->SetCulling(culling);
 	pMat->SetLighting(true);
 	return pMat;
-}
-
-// Linear distance in RGB space
-float vtStructure3d::ColorDiff(const RGBi &c1, const RGBi &c2)
-{
-	FPoint3 diff;
-	diff.x = (float) (c1.r - c2.r);
-	diff.y = (float) (c1.g - c2.g);
-	diff.z = (float) (c1.b - c2.b);
-	return diff.Length();
-}
-
-// XML parser for MaterialDescriptorArray
-
-class MaterialDescriptorArrayVisitor : public XMLVisitor
-{
-public:
-	MaterialDescriptorArrayVisitor(vtMaterialDescriptorArray *MDA) : m_state(0), m_pMDA(MDA) {}
-	void startXML() { m_state = 0; }
-	void endXML() { m_state = 0; }
-	void startElement(const char *name, const XMLAttributes &atts);
-
-private:
-	int m_state;
-
-	vtMaterialDescriptorArray *m_pMDA;
-};
-
-void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAttributes &atts)
-{
-	const char *attval;
-
-	if (m_state == 0 && !strcmp(name, "MaterialDescriptorArray"))
-		m_state = 1;
-	else if (m_state == 1)
-	{
-		if (!strcmp(name, "MaterialDescriptor"))
-		{
-			vtMaterialDescriptor *pDescriptor = new vtMaterialDescriptor;
-			if (NULL == pDescriptor)
-				throw "Out of memory";
-			attval = atts.getValue("Name");
-			if (attval)
-				pDescriptor->SetName(g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(attval)));
-			attval = atts.getValue("Type");
-			if (attval)
-				pDescriptor->SetMaterialType((vtMaterialTypeEnum)atoi(attval));
-			attval = atts.getValue("Source");
-			if (attval)
-				pDescriptor->SetSourceName(attval);
-			attval = atts.getValue("Scale");
-			if (attval)
-				pDescriptor->SetUVScale((float)atof(attval));
-			attval = atts.getValue("UIVisible");
-			if (attval)
-				pDescriptor->SetUIVisible(0 == atoi(attval)? false : true);
-			attval = atts.getValue("RGB");
-			if (attval)
-			{
-				short r, g, b;
-				sscanf(attval, "%hu %hu %hu", &r, &g, &b);
-				pDescriptor->SetRGB(RGBi(r, g, b));
-			}
-			m_pMDA->Append(pDescriptor);
-		}
-	}
-}
-
-// Methods for MaterialDescriptorArray
-
-bool vtMaterialDescriptorArray::Load(const char *FileName)
-{
-	MaterialDescriptorArrayVisitor Visitor(this);
-	try
-	{
-		readXML(FileName, Visitor);
-	}
-	catch (xh_exception &e)
-	{
-		// TODO: would be good to pass back the error message.
-		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage());
-		return false;
-	}
-	return true;
 }
 
 

@@ -52,7 +52,7 @@ protected:
 	// the geometry is composed of several meshes, one for each potential material used
 	Array<MatMesh>	m_Mesh;
 
-	vtMesh *FindMatMesh(const vtMaterialName &Material, RGBi color, int iPrimType);
+	vtMesh *FindMatMesh(const vtString &Material, const RGBi &color, int iPrimType);
 	// center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
 	FPoint3 m_center;
@@ -70,8 +70,8 @@ protected:
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
-		const FLine3 &quad, float h1, float h2, float hf1 = -1.0f);
+	void AddWallSection(vtEdge *pEdge, bool bUniform, const FLine3 &quad,
+		float h1, float h2, float hf1 = -1.0f);
 
 	void AddHighlightSection(vtEdge *pEdge, const FLine3 &quad);
 

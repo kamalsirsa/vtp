@@ -325,7 +325,7 @@ void IslandTerrain::create_building_manually()
 	pEdge->AddFeature(WFC_WALL, -4);
 	pEdge->AddFeature(WFC_WALL, -2, 0, 0.5);
 	pEdge->AddFeature(WFC_WALL, -1);
-	pEdge->m_pMaterial = &g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WOOD);
+	pEdge->m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_WOOD);
 
 	pEdge = pLev->m_Edges[2];
 	pEdge->m_Features.Empty();
@@ -336,7 +336,7 @@ void IslandTerrain::create_building_manually()
 	pEdge->AddFeature(WFC_WALL, -1, 0, 0.5);
 	pEdge->AddFeature(WFC_WALL);
 	pEdge->AddFeature(WFC_WALL, -1, 0, 0.5);
-	pEdge->m_pMaterial = &g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_CEMENT);
+	pEdge->m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_CEMENT);
 
 	// main floor level (1)
 	dl.Empty();
@@ -349,7 +349,7 @@ void IslandTerrain::create_building_manually()
 	pLev = bld->CreateLevel(dl);
 	pLev->m_fStoryHeight = 2.4385f;
 	pLev->m_iStories = 1;
-	pLev->SetEdgeMaterial(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_WOOD));
+	pLev->SetEdgeMaterial(BMAT_NAME_WOOD);
 
 	pEdge = pLev->m_Edges[0];
 	pEdge->m_Features.Empty();
@@ -409,7 +409,7 @@ void IslandTerrain::create_building_manually()
 	dl.Append(c6);
 	pLev = bld->CreateLevel(dl);
 	pLev->m_iStories = 1;
-	pLev->SetEdgeMaterial(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_PLAIN));
+	pLev->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLev->SetEdgeColor(RGBi(90, 75, 75));
 	bld->SetRoofType(ROOF_HIP, 14, 2);
 	pLev->m_fStoryHeight = 0.9144f;	// 3 ft
@@ -424,7 +424,7 @@ void IslandTerrain::create_building_manually()
 	dl.Append(c12);
 	pLev = bld->CreateLevel(dl);
 	pLev->m_iStories = 1;
-	pLev->SetEdgeMaterial(g_MaterialNames.FindOrAppendMaterialName(BMAT_NAME_PLAIN));
+	pLev->SetEdgeMaterial(BMAT_NAME_PLAIN);
 	pLev->SetEdgeColor(RGBi(220, 220, 220));
 	bld->SetRoofType(ROOF_GABLE, 33, 3);
 	pLev->m_fStoryHeight = 1.6256f;	// 5 1/3 ft

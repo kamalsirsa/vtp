@@ -24,159 +24,37 @@ class vtNode;
 class vtTerrain;
 class vtTransform;
 
-extern const vtMaterialName BMAT_NAME_HIGHLIGHT;
+extern const vtString BMAT_NAME_HIGHLIGHT;
 
-enum vtMaterialTypeEnum
-{
-	VT_MATERIAL_RGB,
-	VT_MATERIAL_COLOURED,
-	VT_MATERIAL_SELFCOLOURED_TEXTURE,
-	VT_MATERIAL_COLOURABLE_TEXTURE,
-	VT_MATERIAL_BRICK,
-	VT_MATERIAL_HIGHLIGHT
-};
-
-/**
- * This class encapsulates the description of a shared material
- */
-class vtMaterialDescriptor
+class vtMaterialDescriptorArray3d : public vtMaterialDescriptorArray
 {
 public:
-	vtMaterialDescriptor()
-	{
-		m_pName = NULL;
-		m_Type = VT_MATERIAL_SELFCOLOURED_TEXTURE;
-		m_fUVScale = 0.0;
-		m_RGB = RGBi(0,0,0);
-	}
-	vtMaterialDescriptor(vtMaterialName& Name,
-					const vtString& SourceName,
-					const vtMaterialTypeEnum Type = VT_MATERIAL_SELFCOLOURED_TEXTURE,
-					const float UVScale = 0.0,
-					bool bUIVisible = true,
-					RGBi Color = RGBi(0,0,0))
-	{
-		m_pName = &Name;
-		m_SourceName = SourceName;
-		m_Type = Type;
-		m_fUVScale = UVScale;
-		if (NULL != m_pName)
-			m_pName->SetUIVisible(bUIVisible);
-		m_RGB = Color;
-	}
-	inline void SetName(vtMaterialName& Name)
-	{
-		m_pName = &Name;
-	}
-	inline const vtMaterialName& GetName() const
-	{
-		return *m_pName;
-	}
-	inline void SetUVScale(const float fScale)
-	{
-		m_fUVScale = fScale;
-	}
-	inline const float GetUVScale() const
-	{
-		return m_fUVScale;
-	}
-	inline void SetMaterialIndex(const int Index)
-	{
-		m_iMaterialIndex = Index;
-	}
-	inline const int GetMaterialIndex() const
-	{
-		return m_iMaterialIndex;
-	}
-	inline void SetMaterialType(const vtMaterialTypeEnum Type)
-	{
-		m_Type = Type;
-	}
-	inline const vtMaterialTypeEnum GetMaterialType() const
-	{
-		return m_Type;
-	}
-	inline void SetSourceName(const vtString &SourceName)
-	{
-		m_SourceName = SourceName;
-	}
-	inline const vtString& GetSourceName() const
-	{
-		return m_SourceName;
-	}
-	inline void SetUIVisible(const bool bUIVisible)
-	{
-		if (NULL != m_pName)
-			m_pName->SetUIVisible(bUIVisible);
-	}
-	inline const bool GetUIVisible() const
-	{
-		if (NULL != m_pName)
-			return m_pName->GetUIVisible();
-		else
-			return false;
-	}
-	inline void SetRGB(const RGBi Color)
-	{
-		m_RGB = Color;
-	}
-	inline const RGBi GetRGB() const
-	{
-		return m_RGB;
-	}
-	// Operator  overloads
-	inline bool operator == (const vtMaterialDescriptor& rhs) const
-	{
-		return(*this->m_pName == *rhs.m_pName);
-	}
-	inline bool operator == (const vtMaterialDescriptor& rhs)
-	{
-		return(*this->m_pName == *rhs.m_pName);
-	}
-	friend inline std::ostream &operator << (std::ostream & Output, const vtMaterialDescriptor &Input)
-	{
-		const RGBi &rgb = Input.m_RGB;
-		Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
-				<< " Type=\"" << Input.m_Type << "\""
-				<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
-				<< " Scale=\"" << Input.m_fUVScale << "\""
-				<< " UIVisible=\"" << Input.m_pName->GetUIVisible() << "\""
-				<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
-				<< "/>" << std::endl;
-		return Output;
-	}
-private:
-	vtMaterialName *m_pName; // Name of material
-	vtMaterialTypeEnum m_Type;
-	vtString m_SourceName; // Source of material
-	float m_fUVScale; // Texel scale;
-	RGBi m_RGB; // Color for VT_MATERIAL_RGB
+	vtMaterialDescriptorArray3d();
 
-	int m_iMaterialIndex; // Starting or only index of this material in the shared materials array
-};
+	vtMaterial *MakeMaterial(RGBf &color, bool culling);
+	int FindMatIndex(const vtString & Material, const RGBf &inputColor);
+	vtMaterialDescriptor * FindMaterialDescriptor(const vtString& MaterialName, const RGBf &color);
+	void InitializeMaterials();
+	void ReleaseMaterials();
 
-class vtMaterialDescriptorArray : public Array<vtMaterialDescriptor*>
-{
 public:
-	virtual ~vtMaterialDescriptorArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
-	inline void DestructItems(int first, int last)
-	{
-		for (int i = first; i <= last; i++)
-			delete GetAt(i);
-	}
+	// There is a single array of materials, shared by all buildings.
+	// This is done to save memory.  For a list of 16000+ buildings, this can
+	//  save about 200MB of RAM.
+	vtMaterialArray *m_pMaterials;
 
-	friend inline std::ostream &operator << (std::ostream & Output, vtMaterialDescriptorArray &Input)
-	{
-		int iSize = Input.GetSize();
-		Output << "<?xml version=\"1.0\"?>" << std::endl;
-		Output << "<MaterialDescriptorArray>" << std::endl;
-		for (int i = 0; i < iSize; i++)
-			Output << *Input.GetAt(i);
-		Output << "</MaterialDescriptorArray>" << std::endl;
-		return Output;
-	}
-	bool Load(const char *FileName);
+protected:
+	void CreateSelfColoredMaterial(vtMaterialDescriptor *descriptor);
+	void CreateColorableMaterial(vtMaterialDescriptor *descriptor);
+
+	RGBf m_Colors[COLOR_SPREAD];
+
+	// indices of internal materials
+	int m_hightlight1;
+	int m_hightlight2;
+	vtMaterialDescriptor *m_pWindowWall;
 };
+
 
 /**
  * This class contains the extra methods needed by a vtStructure to
@@ -202,30 +80,27 @@ public:
 	// Get the material descriptors
 	const vtMaterialDescriptorArray& GetMaterialDescriptors()
 	{
-		if (s_pMaterials == NULL)
-			InitializeMaterialArrays();
 		return s_MaterialDescriptors;
 	}
 
+	static void InitializeMaterialArrays();
 	static void ReleaseSharedMaterials();
 
 protected:
 	// material
-	void InitializeMaterialArrays();
-	int FindMatIndex(const vtMaterialName & Material, RGBi inputColor=RGBi(0,0,0));
-	vtMaterialDescriptor * FindMaterialDescriptor(const vtMaterialName& MaterialName);
+	int FindMatIndex(const vtString & Material, const RGBf &inputColor)
+	{
+		return s_MaterialDescriptors.FindMatIndex(Material, inputColor);
+	}
 	vtMaterialArray *GetSharedMaterialArray() const
 	{
-		return s_pMaterials;
+		return s_MaterialDescriptors.m_pMaterials;
 	}
 	vtTransform	*m_pContainer;	// The transform which is used to position the object
 
-private:
-	vtMaterial *MakeMaterial(RGBf &color, bool culling);
+protected:
 	float ColorDiff(const RGBi &c1, const RGBi &c2);
-	static RGBf s_Colors[COLOR_SPREAD];
-	static vtMaterialArray *s_pMaterials;
-	static vtMaterialDescriptorArray s_MaterialDescriptors;
+	static vtMaterialDescriptorArray3d s_MaterialDescriptors;
 };
 
 
@@ -290,3 +165,4 @@ protected:
 };
 
 #endif // STRUCTURE3DH
+

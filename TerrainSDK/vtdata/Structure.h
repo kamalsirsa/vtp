@@ -20,45 +20,156 @@ class vtBuilding;
 class vtFence;
 class vtStructInstance;
 
-// Well known material strings
+// Well known material names
+#define BMAT_NAME_UNKNOWN		"Unknown"
+#define BMAT_NAME_PLAIN			"Plain"
+#define BMAT_NAME_WOOD			"Wood"
+#define BMAT_NAME_SIDING		"Siding"
+#define BMAT_NAME_GLASS			"Glass"
+#define BMAT_NAME_BRICK			"Brick"
+#define BMAT_NAME_PAINTED_BRICK	"Painted-Brick"
+#define BMAT_NAME_ROLLED_ROOFING "Rolled-Roofing"
+#define BMAT_NAME_CEMENT		"Cement"
+#define BMAT_NAME_STUCCO		"Stucco"
+#define BMAT_NAME_CORRUGATED	"Corrugated"
+#define BMAT_NAME_DOOR			"Door"
+#define BMAT_NAME_WINDOW		"Window"
+#define BMAT_NAME_WINDOWWALL	"WindowWall"
 
-class vtMaterialName : public vtString
+enum vtMaterialColorEnum
 {
-public:
-	vtMaterialName()
-	{
-		m_bUIVisible = true;
-	}
-	vtMaterialName(const vtString &Name, bool bUIVisible = true) : vtString(Name)
-	{
-		m_bUIVisible = bUIVisible;
-	}
-	inline void SetUIVisible(const bool bUIVisible)
-	{
-		m_bUIVisible = bUIVisible;
-	}
-	inline const bool GetUIVisible() const
-	{
-		return m_bUIVisible;
-	}
-private:
-	bool m_bUIVisible;
+	VT_MATERIAL_COLOURED,
+	VT_MATERIAL_SELFCOLOURED_TEXTURE,
+	VT_MATERIAL_COLOURABLE_TEXTURE
 };
 
-extern const vtMaterialName BMAT_NAME_UNKNOWN;
-extern const vtMaterialName BMAT_NAME_PLAIN;
-extern const vtMaterialName BMAT_NAME_WOOD;
-extern const vtMaterialName BMAT_NAME_SIDING;
-extern const vtMaterialName BMAT_NAME_GLASS;
-extern const vtMaterialName BMAT_NAME_BRICK;
-extern const vtMaterialName BMAT_NAME_PAINTED_BRICK;
-extern const vtMaterialName BMAT_NAME_ROLLED_ROOFING;
-extern const vtMaterialName BMAT_NAME_CEMENT;
-extern const vtMaterialName BMAT_NAME_STUCCO;
-extern const vtMaterialName BMAT_NAME_CORRUGATED;
-extern const vtMaterialName BMAT_NAME_DOOR;
-extern const vtMaterialName BMAT_NAME_WINDOW;
-extern const vtMaterialName BMAT_NAME_WINDOWWALL;
+/**
+ * This class encapsulates the description of a shared material
+ */
+class vtMaterialDescriptor
+{
+public:
+	vtMaterialDescriptor();
+	vtMaterialDescriptor(const char *name,
+					const vtString &SourceName,
+					const vtMaterialColorEnum Colorable = VT_MATERIAL_SELFCOLOURED_TEXTURE,
+					const float UVScale = 0.0,
+					RGBi Color = RGBi(0,0,0));
+	~vtMaterialDescriptor();
+
+	void SetName(const vtString& Name)
+	{
+		m_pName = &Name;
+	}
+	const vtString& GetName() const
+	{
+		return *m_pName;
+	}
+	void SetType(int type)
+	{
+		m_Type = type;
+	}
+	int GetType() const
+	{
+		return m_Type;
+	}
+	void SetUVScale(const float fScale)
+	{
+		m_fUVScale = fScale;
+	}
+	const float GetUVScale() const
+	{
+		return m_fUVScale;
+	}
+	void SetMaterialIndex(const int Index)
+	{
+		m_iMaterialIndex = Index;
+	}
+	const int GetMaterialIndex() const
+	{
+		return m_iMaterialIndex;
+	}
+	void SetColorable(const vtMaterialColorEnum Type)
+	{
+		m_Colorable = Type;
+	}
+	const vtMaterialColorEnum GetColorable() const
+	{
+		return m_Colorable;
+	}
+	void SetSourceName(const vtString &SourceName)
+	{
+		m_SourceName = SourceName;
+	}
+	const vtString& GetSourceName() const
+	{
+		return m_SourceName;
+	}
+	void SetRGB(const RGBi Color)
+	{
+		m_RGB = Color;
+	}
+	const RGBi GetRGB() const
+	{
+		return m_RGB;
+	}
+	// Operator  overloads
+	bool operator == (const vtMaterialDescriptor& rhs) const
+	{
+		return(*this->m_pName == *rhs.m_pName);
+	}
+	bool operator == (const vtMaterialDescriptor& rhs)
+	{
+		return(*this->m_pName == *rhs.m_pName);
+	}
+	friend std::ostream &operator << (std::ostream & Output, const vtMaterialDescriptor &Input)
+	{
+		const RGBi &rgb = Input.m_RGB;
+		Output << "\t<MaterialDescriptor Name=\""<< (pcchar)*Input.m_pName << "\""
+			<< " Colorable=\"" << (Input.m_Colorable == VT_MATERIAL_COLOURABLE_TEXTURE) << "\""
+			<< " Source=\"" << (pcchar)Input.m_SourceName << "\""
+			<< " Scale=\"" << Input.m_fUVScale << "\""
+			<< " RGB=\"" << rgb.r << " " << rgb.g << " " << rgb.b << "\""
+			<< "/>" << std::endl;
+		return Output;
+	}
+private:
+	const vtString *m_pName; // Name of material
+	int m_Type;		// 0 for surface materials, >0 for classification type
+	vtMaterialColorEnum m_Colorable;
+	vtString m_SourceName; // Source of material
+	float m_fUVScale; // Texel scale;
+	RGBi m_RGB; // Color for VT_MATERIAL_RGB
+
+	// The following field is only used in 3d construction, but it's not
+	//  enough distinction to warrant creating a subclass to contain it.
+	int m_iMaterialIndex; // Starting or only index of this material in the shared materials array
+};
+
+class vtMaterialDescriptorArray : public Array<vtMaterialDescriptor*>
+{
+public:
+	virtual ~vtMaterialDescriptorArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; i++)
+			delete GetAt(i);
+	}
+
+	friend std::ostream &operator << (std::ostream & Output, vtMaterialDescriptorArray &Input)
+	{
+		int iSize = Input.GetSize();
+		Output << "<?xml version=\"1.0\"?>" << std::endl;
+		Output << "<MaterialDescriptorArray>" << std::endl;
+		for (int i = 0; i < iSize; i++)
+			Output << *Input.GetAt(i);
+		Output << "</MaterialDescriptorArray>" << std::endl;
+		return Output;
+	}
+	bool LoadExternalMaterials(const vtStringArray &paths);
+	bool Load(const char *FileName);
+	const vtString *FindName(const char *matname);
+};
 
 /**
  * Structure type.
@@ -166,6 +277,11 @@ public:
 	float	m_fRotation;	// in radians
 	float	m_fScale;		// meters per unit
 };
+
+bool LoadGlobalMaterials(const vtStringArray &paths);
+void SetGlobalMaterials(vtMaterialDescriptorArray *mats);
+vtMaterialDescriptorArray *GetGlobalMaterials();
+void FreeGlobalMaterials();
 
 #endif // STRUCTUREH
 

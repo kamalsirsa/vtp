@@ -7,24 +7,12 @@
 
 #include <stdio.h>
 #include "Structure.h"
+#include "StructArray.h"
 #include "Building.h"
 #include "Fence.h"
-
-// Well known material strings
-const vtMaterialName BMAT_NAME_UNKNOWN("Unknown");
-const vtMaterialName BMAT_NAME_PLAIN("Plain");
-const vtMaterialName BMAT_NAME_WOOD("Wood");
-const vtMaterialName BMAT_NAME_SIDING("Siding");
-const vtMaterialName BMAT_NAME_GLASS("Glass");
-const vtMaterialName BMAT_NAME_BRICK("Brick");
-const vtMaterialName BMAT_NAME_PAINTED_BRICK("Painted-Brick");
-const vtMaterialName BMAT_NAME_ROLLED_ROOFING("Rolled-Roofing");
-const vtMaterialName BMAT_NAME_CEMENT("Cement");
-const vtMaterialName BMAT_NAME_STUCCO("Stucco");
-const vtMaterialName BMAT_NAME_CORRUGATED("Corrugated");
-const vtMaterialName BMAT_NAME_DOOR("Door");
-const vtMaterialName BMAT_NAME_WINDOW("Window");
-const vtMaterialName BMAT_NAME_WINDOWWALL("WindowWall");
+#include "xmlhelper/easyxml.hpp"
+#include "vtLog.h"
+#include "FilePath.h"
 
 vtStructInstance::vtStructInstance() : vtStructure()
 {
@@ -144,5 +132,180 @@ void vtStructure::WriteTags(FILE *fp)
 		fprintf(fp, "\t\t<%s>%s</%s>\n", (const char *)tag->name,
 			(const char *)tag->value, (const char *)tag->name);
 	}
+}
+
+////////////////////////////////////////////////////////////////////////
+
+
+// XML parser for MaterialDescriptorArray
+
+class MaterialDescriptorArrayVisitor : public XMLVisitor
+{
+public:
+	MaterialDescriptorArrayVisitor(vtMaterialDescriptorArray *MDA) : m_state(0), m_pMDA(MDA) {}
+	void startXML() { m_state = 0; }
+	void endXML() { m_state = 0; }
+	void startElement(const char *name, const XMLAttributes &atts);
+
+private:
+	int m_state;
+
+	vtMaterialDescriptorArray *m_pMDA;
+};
+
+void MaterialDescriptorArrayVisitor::startElement(const char *name, const XMLAttributes &atts)
+{
+	const char *attval;
+
+	if (m_state == 0 && !strcmp(name, "MaterialDescriptorArray"))
+		m_state = 1;
+	else if (m_state == 1)
+	{
+		if (!strcmp(name, "MaterialDescriptor"))
+		{
+			vtMaterialDescriptor *pDescriptor = new vtMaterialDescriptor;
+			attval = atts.getValue("Name");
+			if (attval)
+				pDescriptor->SetName(*(new vtString(attval)));
+
+			pDescriptor->SetColorable(VT_MATERIAL_SELFCOLOURED_TEXTURE);
+			attval = atts.getValue("Colorable");
+			if (attval && !strcmp(attval, "true"))
+				pDescriptor->SetColorable(VT_MATERIAL_COLOURABLE_TEXTURE);
+
+			attval = atts.getValue("Type");
+			if (attval)
+				pDescriptor->SetType(atoi(attval));
+			attval = atts.getValue("Source");
+			if (attval)
+				pDescriptor->SetSourceName(attval);
+			attval = atts.getValue("Scale");
+			if (attval)
+				pDescriptor->SetUVScale((float)atof(attval));
+			attval = atts.getValue("RGB");
+			if (attval)
+			{
+				short r, g, b;
+				sscanf(attval, "%2hx %2hx %2hx", &r, &g, &b);
+				pDescriptor->SetRGB(RGBi(r, g, b));
+			}
+			m_pMDA->Append(pDescriptor);
+		}
+	}
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Methods for vtMaterialDescriptor
+//
+vtMaterialDescriptor::vtMaterialDescriptor()
+{
+	m_pName = NULL;
+	m_Type = 0;
+	m_Colorable = VT_MATERIAL_SELFCOLOURED_TEXTURE;
+	m_fUVScale = 0.0;
+	m_RGB.Set(0,0,0);
+	m_iMaterialIndex = -1;
+}
+
+vtMaterialDescriptor::vtMaterialDescriptor(const char *name,
+	const vtString &SourceName, const vtMaterialColorEnum Colorable,
+	const float UVScale, RGBi Color)
+{
+	m_pName = new vtString(name);	//GetGlobalMaterials()->FindName(name);
+	m_Type = 0;
+	m_SourceName = SourceName;
+	m_Colorable = Colorable;
+	m_fUVScale = UVScale;
+	m_RGB = Color;
+	m_iMaterialIndex = -1;
+}
+
+vtMaterialDescriptor::~vtMaterialDescriptor()
+{
+	if (m_pName)
+		delete m_pName;
+}
+
+
+///////////////////////////////////////////////////////////////////////
+// Methods for vtMaterialDescriptorArray
+//
+
+bool vtMaterialDescriptorArray::Load(const char *FileName)
+{
+	VTLOG("Loading materials from %s\n", FileName);
+
+	// First provide plain material, which does need to be serialized
+	Append(new vtMaterialDescriptor(BMAT_NAME_PLAIN, "", VT_MATERIAL_COLOURED, 1.0f));
+
+	MaterialDescriptorArrayVisitor Visitor(this);
+	try
+	{
+		readXML(FileName, Visitor);
+	}
+	catch (xh_exception &e)
+	{
+		// TODO: would be good to pass back the error message.
+		VTLOG("vtMaterialDescriptorArray::Load xml error %s\n", e.getMessage());
+		return false;
+	}
+	return true;
+}
+
+const vtString *vtMaterialDescriptorArray::FindName(const char *name)
+{
+	int iIndex;
+	int iSize = GetSize();
+
+	for (iIndex = 0; iIndex < iSize; iIndex++)
+	{
+		const vtString *pFoundName = &GetAt(iIndex)->GetName();
+		if (pFoundName && *pFoundName == name)
+			return pFoundName;
+	}
+	return NULL;
+}
+
+bool vtMaterialDescriptorArray::LoadExternalMaterials(const vtStringArray &paths)
+{
+	const char *fname = "Culture/materials.xml";
+	vtString matfile = FindFileOnPaths(paths, fname);
+	if (matfile == "")
+	{
+		VTLOG("Couldn't find '%s' on Data paths, building materials will "\
+			"not be available.\n", fname);
+		return false;
+	}
+	return Load(matfile);
+}
+
+//
+// Global material descriptors
+//
+static vtMaterialDescriptorArray *g_pMaterials = NULL;
+
+bool LoadGlobalMaterials(const vtStringArray &paths)
+{
+	GetGlobalMaterials();
+	return g_pMaterials->LoadExternalMaterials(paths);
+}
+
+void SetGlobalMaterials(vtMaterialDescriptorArray *mats)
+{
+	g_pMaterials = mats;
+}
+
+vtMaterialDescriptorArray *GetGlobalMaterials()
+{
+	if (!g_pMaterials)
+		g_pMaterials = new vtMaterialDescriptorArray;
+	return g_pMaterials;
+}
+
+void FreeGlobalMaterials()
+{
+	delete g_pMaterials;
+	g_pMaterials = NULL;
 }
 

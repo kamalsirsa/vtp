@@ -160,9 +160,6 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	PolyChecker PolyChecker;
 	int i, j, k;
 
-	// make sure we've got materials first
-	InitializeMaterialArrays();
-
 	UpdateWorldLocation(pHeightField);
 
 	if (!PolyChecker.IsSimplePolygon(GetLocalFootprint(0)))
@@ -268,21 +265,23 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 // Since each set of primitives with a specific material requires its own
 // mesh, this method looks up or creates the mesh as needed.
 //
-vtMesh *vtBuilding3d::FindMatMesh(const vtMaterialName &Material, RGBi color, int iPrimType)
+vtMesh *vtBuilding3d::FindMatMesh(const vtString &Material,
+								  const RGBi &color, int iPrimType)
 {
 	int mi;
 	int VertType;
+	RGBf fcolor = color;
 
 	// wireframe is a special case, used for highlight materials
 	if (iPrimType == GL_LINE_STRIP)
 	{
-		mi = FindMatIndex(BMAT_NAME_HIGHLIGHT, color);
+		mi = FindMatIndex(BMAT_NAME_HIGHLIGHT, fcolor);
 		VertType = 0;
 	}
 	else
 	{
 		// otherwise, find normal stored material
-		mi = FindMatIndex(Material, color);
+		mi = FindMatIndex(Material, fcolor);
 		VertType = VT_Normals | VT_TexCoords;
 	}
 
@@ -452,9 +451,8 @@ void vtBuilding3d::AddHighlightSection(vtEdge *pEdge,
  * Builds a wall, given material index, starting and end points, height, and
  * starting height.
  */
-void vtBuilding3d::AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
-	const FLine3 &quad,
-	float vf1, float vf2, float hf1)
+void vtBuilding3d::AddWallSection(vtEdge *pEdge, bool bUniform,
+	const FLine3 &quad, float vf1, float vf2, float hf1)
 {
 	// determine 4 points at corners of wall section
 	FPoint3 up1 = (quad[2] - quad[0]);
@@ -464,7 +462,11 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
 	FPoint3 p3 = quad[0] + (up1 * vf2);
 	FPoint3 p2 = quad[1] + (up2 * vf2);
 
-	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, GL_TRIANGLE_FAN);
+	vtMesh *mesh;
+	if (bUniform)
+		mesh = FindMatMesh(BMAT_NAME_WINDOWWALL, pEdge->m_Color, GL_TRIANGLE_FAN);
+	else
+		mesh = FindMatMesh(*pEdge->m_pMaterial, pEdge->m_Color, GL_TRIANGLE_FAN);
 
 	// determine normal and primary axes of the face
 	FPoint3 norm = Normal(p0, p1, p2);
@@ -475,7 +477,7 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
 
 	// determine UVs - special case for window-wall texture
 	FPoint2 uv0, uv1, uv2, uv3;
-	if (Material == BMAT_NAME_WINDOWWALL)
+	if (bUniform)
 	{
 		uv0.Set(0, 0);
 		uv1.Set(hf1, 0);
@@ -488,7 +490,8 @@ void vtBuilding3d::AddWallSection(vtEdge *pEdge, const vtMaterialName &Material,
 		float u2 = (p2 - p0).Dot(axis0);
 		float u3 = (p3 - p0).Dot(axis0);
 		float v2 = (p2 - p0).Dot(axis1);
-		float fUVScale = FindMaterialDescriptor(Material) == NULL ? 1.0f : FindMaterialDescriptor(Material)->GetUVScale();
+		vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(*pEdge->m_pMaterial, pEdge->m_Color);
+		float fUVScale = md == NULL ? 1.0f : md->GetUVScale();
 		uv0.Set(0, 0);
 		uv1.Set(u1, 0);
 		uv2.Set(u2, v2);
@@ -513,7 +516,7 @@ void vtBuilding3d::AddWallNormal(vtEdge *pEdge, vtEdgeFeature *pFeat,
 {
 	float vf1 = pFeat->m_vf1;
 	float vf2 = pFeat->m_vf2;
-	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, vf1, vf2);
+	AddWallSection(pEdge, false, quad, vf1, vf2);
 }
 
 /**
@@ -548,7 +551,7 @@ void vtBuilding3d::AddDoorSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	mesh->AddFan(start, start+1, start+2, start+3);
 
 	//add wall above door
-	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, vf2, 1.0f);
+	AddWallSection(pEdge, false, quad, vf2, 1.0f);
 }
 
 //builds a window section.  builds the wall below and above a window too.
@@ -559,10 +562,10 @@ void vtBuilding3d::AddWindowSection(vtEdge *pEdge, vtEdgeFeature *pFeat,
 	float vf2 = pFeat->m_vf2;
 
 	// build wall to base of window.
-	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, 0, vf1);
+	AddWallSection(pEdge, false, quad, 0, vf1);
 
 	// build wall above window
-	AddWallSection(pEdge, *pEdge->m_pMaterial, quad, vf2, 1.0f);
+	AddWallSection(pEdge, false, quad, vf2, 1.0f);
 
 	// determine 4 points at corners of section
 	FPoint3 up1 = (quad[2] - quad[0]);
@@ -594,8 +597,10 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 	int i, j;
 	FPoint2 uv;
 
-	const vtMaterialName& Material = *pLev->m_Edges[0]->m_pMaterial;
-	vtMesh *mesh = FindMatMesh(Material, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
+	vtEdge *pEdge = pLev->m_Edges[0];
+	const vtString& Material = *pEdge->m_pMaterial;
+	vtMesh *mesh = FindMatMesh(Material, pEdge->m_Color, GL_TRIANGLES);
+	vtMaterialDescriptor *md = s_MaterialDescriptors.FindMaterialDescriptor(Material, pEdge->m_Color);
 
 	if (corners > 4)
 	{
@@ -626,7 +631,7 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 				gp = result[i*3+j];
 				p.Set(gp.x, roof_y, gp.y);
 				uv.Set(gp.x, gp.y);
-				uv *= FindMaterialDescriptor(Material) == NULL ? 1.0f : FindMaterialDescriptor(Material)->GetUVScale();
+				uv *= (md == NULL) ? 1.0f : md->GetUVScale();
 				ind[j] = mesh->AddVertexNUV(p, up, uv);
 			}
 			mesh->AddTri(ind[0], ind[2], ind[1]);
@@ -639,7 +644,7 @@ void vtBuilding3d::AddFlatRoof(const FLine3 &pp, vtLevel *pLev)
 		{
 			FPoint3 p = pp[i];
 			uv.Set(p.x, p.z);
-			uv *= FindMaterialDescriptor(Material) == NULL ? 1.0f : FindMaterialDescriptor(Material)->GetUVScale();
+			uv *= (md == NULL) ? 1.0f : md->GetUVScale();
 			idx[i] = mesh->AddVertexNUV(p, up, uv);
 		}
 		if (corners > 2)
@@ -721,7 +726,7 @@ float vtBuilding3d::MakeFelkelRoof(const FLine3 &EavePolygon, vtLevel *pLev)
 		{
 			// For each boundary edge zip round the polygon anticlockwise
 			// and build the vertex array
-			const vtMaterialName bmat = *pLev->m_Edges[0]->m_pMaterial;
+			const vtString bmat = *pLev->m_Edges[0]->m_pMaterial;
 			vtMesh *pMesh = FindMatMesh(bmat, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
 			FLine2 RoofSection2D;
 			FLine2 TriangulatedRoofSection2D;
@@ -894,7 +899,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 		float h1 = 0.0f;
 		float h2 = (float) pLev->m_iStories;
 		float hf1 = (float) pEdge->NumFeaturesOfCode(WFC_WINDOW);
-		AddWallSection(pEdge, BMAT_NAME_WINDOWWALL, quad, h1, h2, hf1);
+		AddWallSection(pEdge, true, quad, h1, h2, hf1);
 
 		if (i == iHighlightEdge)
 		{

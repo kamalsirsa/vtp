@@ -604,35 +604,43 @@ void BuildingDlg::UpdateFacade()
 
 void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 {
-	int i;
+	int i, j;
 	int iInitialSelection = -1;
-	int iNumberofMaterials = g_MaterialNames.GetSize();
-	int iNumberOfVisibleMaterials = 0;
+	int iNumberofMaterials = GetGlobalMaterials()->GetSize();
 
 	m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
 
-	for (i = 0; i < iNumberofMaterials; i++)
-		if (g_MaterialNames.GetAt(i)->GetUIVisible())
-			iNumberOfVisibleMaterials++;
+	wxString *pChoices = new wxString[iNumberofMaterials];
 
-	wxString *pChoices = new wxString[iNumberOfVisibleMaterials];
-
-	iNumberOfVisibleMaterials = 0;
+	int iShown = 0;
 	for (i = 0; i < iNumberofMaterials; i++)
 	{
-		const vtMaterialName& MaterialName = *g_MaterialNames.GetAt(i);
-		if (MaterialName.GetUIVisible())
+		vtMaterialDescriptor *mat = GetGlobalMaterials()->GetAt(i);
+
+		// only show surface materials, not typed feature materials
+		if (mat->GetType() > 0)
+			continue;
+
+		const vtString& MaterialName = mat->GetName();
+		wxString2 matname = (const char *) MaterialName;
+
+		// for multiple materials with the same name, only show them once
+		bool bFound = false;
+		for (j = 0; j < iShown; j++)
 		{
-			wxString2 matname = (const char *) MaterialName;
-			pChoices[iNumberOfVisibleMaterials] = matname;
-			if (pChoices[iNumberOfVisibleMaterials] == m_strMaterial)
-				iInitialSelection = i;
-			iNumberOfVisibleMaterials++;
+			if (pChoices[j] == matname) bFound = true;
 		}
+		if (bFound)
+			continue;
+
+		pChoices[iShown] = matname;
+		if (pChoices[iShown] == m_strMaterial)
+			iInitialSelection = i;
+		iShown++;
 	}
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_T("Set Building Material for All Edges"), iNumberOfVisibleMaterials, pChoices);
+		_T("Set Building Material for All Edges"), iNumberofMaterials, pChoices);
 
 
 	if (iInitialSelection != -1)
@@ -646,9 +654,9 @@ void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 	delete[] pChoices;
 
 	if (m_bEdges)
-		m_pEdge->m_pMaterial = &g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(m_strMaterial));
+		m_pEdge->m_pMaterial = GetGlobalMaterials()->FindName(m_strMaterial);
 	else
-		m_pLevel->SetEdgeMaterial(g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(m_strMaterial)));
+		m_pLevel->SetEdgeMaterial(*GetGlobalMaterials()->FindName(m_strMaterial));
 
 	m_bSetting = true;
 	TransferDataToWindow();
