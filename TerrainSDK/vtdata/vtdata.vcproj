@@ -121,7 +121,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".."
-				PreprocessorDefinitions="_DEBUG;DEBUG=1;WIN32;_WINDOWS"
+				PreprocessorDefinitions="_DEBUG;DEBUG=1;WIN32=1;_WINDOWS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/vtdata.pch"
