@@ -299,7 +299,7 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_fFogDistance =	Params.GetValueFloat(STR_FOGDISTANCE);
 
 	if (Params.m_strStructFiles.size() > 0)
-		m_strBuildingFile = (const char *) Params.m_strStructFiles[0];
+		m_strBuildingFile = (const char *) Params.m_strStructFiles[0].m_strStructFile;
 	else
 		m_strBuildingFile = "";
 
@@ -361,7 +361,9 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.SetValueFloat(STR_FOGDISTANCE, m_fFogDistance);
 
 	Params.m_strStructFiles.clear();
-	Params.m_strStructFiles.push_back(vtString((const char *) m_strBuildingFile));
+		ParamStructLayer psl;
+		psl.m_strStructFile = (const char *) m_strBuildingFile;
+		Params.m_strStructFiles.push_back(psl);
 
 	Params.SetValueBool(STR_VEHICLES, m_bVehicles);
 //	Params.SetValueFloat(STR_VEHICLESIZE, m_fVehicleSize);
