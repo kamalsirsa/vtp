@@ -1231,7 +1231,7 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item3->Add( item4, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxString *strs5 = (wxString*) NULL;
-    wxChoice *item5 = new wxChoice( parent, ID_SPECIES_CHOICE, wxDefaultPosition, wxSize(120,-1), 0, strs5, 0 );
+    wxChoice *item5 = new wxChoice( parent, ID_SPECIES_CHOICE, wxDefaultPosition, wxSize(140,-1), 0, strs5, 0 );
     item3->Add( item5, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     item1->Add( item3, 0, wxALIGN_CENTRE|wxTOP, 5 );
@@ -1242,7 +1242,7 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxString *strs8 = (wxString*) NULL;
-    wxChoice *item8 = new wxChoice( parent, ID_SPECIES_FIELD, wxDefaultPosition, wxSize(120,-1), 0, strs8, 0 );
+    wxChoice *item8 = new wxChoice( parent, ID_SPECIES_FIELD, wxDefaultPosition, wxSize(140,-1), 0, strs8, 0 );
     item6->Add( item8, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
 
     item1->Add( item6, 0, wxALIGN_CENTER_VERTICAL, 5 );
@@ -1284,7 +1284,7 @@ wxSizer *VegFieldsDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item19->Add( item20, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxString *strs21 = (wxString*) NULL;
-    wxChoice *item21 = new wxChoice( parent, ID_HEIGHT_FIELD, wxDefaultPosition, wxSize(120,-1), 0, strs21, 0 );
+    wxChoice *item21 = new wxChoice( parent, ID_HEIGHT_FIELD, wxDefaultPosition, wxSize(140,-1), 0, strs21, 0 );
     item19->Add( item21, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item15->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
