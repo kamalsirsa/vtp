@@ -12,11 +12,14 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#include "wx/colordlg.h"
+
 #include "StyleDlg.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/TerrainScene.h"
 #include "vtdata/Features.h"
 #include "vtui/wxString2.h"
+#include "vtui/Helper.h"
 
 // WDR: class implementations
 
@@ -28,7 +31,8 @@
 
 BEGIN_EVENT_TABLE(StyleDlg,AutoDialog)
 	EVT_INIT_DIALOG (StyleDlg::OnInitDialog)
-	EVT_BUTTON( ID_COLOR, StyleDlg::OnColor )
+	EVT_BUTTON( ID_GEOM_COLOR, StyleDlg::OnGeomColor )
+	EVT_BUTTON( ID_LABEL_COLOR, StyleDlg::OnLabelColor )
 	EVT_CHECKBOX( ID_GEOMETRY, StyleDlg::OnCheck )
 	EVT_CHECKBOX( ID_TEXT_LABELS, StyleDlg::OnCheck )
 END_EVENT_TABLE()
@@ -40,6 +44,11 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	// WDR: dialog function StyleDialogFunc for StyleDlg
 	StyleDialogFunc( this, TRUE ); 
 
+	m_bGeometry = true;
+	m_GeomColor.Set(255,255,255);
+
+	m_bTextLabels = false;
+	m_LabelColor.Set(255,255,255);
 	m_iTextField = 0;
 	m_iColorField = 0;
 	m_fLabelHeight = 0.0f;
@@ -59,19 +68,33 @@ StyleDlg::StyleDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void StyleDlg::OnInitDialog(wxInitDialogEvent& event)
 {
 	RefreshFields();
+	UpdateEnabling();
+	UpdateColorButtons();
 	wxDialog::OnInitDialog(event);
 }
 
-void StyleDlg::SetRawLayer(vtStringArray &datapaths, const vtTagArray &Layer)
+void StyleDlg::SetOptions(vtStringArray &datapaths, const vtTagArray &Layer)
 {
 	// for our purposes, we need the actual file location
 	m_strFilename = Layer.GetValueString("Filename");
 
-	RGBi label_color = Layer.GetValueRGBi("Color");
+	m_bGeometry = Layer.GetValueBool("Geometry");
+	if (!Layer.GetValueRGBi("GeomColor", m_GeomColor))
+		m_GeomColor.Set(255,255,255);
+
+	m_bTextLabels = Layer.GetValueBool("Labels");
+	if (!Layer.GetValueRGBi("LabelColor", m_LabelColor))
+		m_LabelColor.Set(255,255,255);
+
 	if (!Layer.GetValueInt("TextFieldIndex", m_iTextField))
 		m_iTextField = -1;
 	if (!Layer.GetValueInt("ColorFieldIndex", m_iColorField))
 		m_iColorField = -1;
+
+	if (!Layer.GetValueFloat("Elevation", m_fLabelHeight))
+		m_fLabelHeight= 0;
+	if (!Layer.GetValueFloat("LabelSize", m_fLabelSize))
+		m_fLabelSize = 20;
 
 	m_strResolved = m_strFilename;
 	m_strResolved = FindFileOnPaths(datapaths, m_strResolved);
@@ -83,8 +106,31 @@ void StyleDlg::SetRawLayer(vtStringArray &datapaths, const vtTagArray &Layer)
 	}
 }
 
-void StyleDlg::GetRawLayer(vtTagArray &pLayer)
+void StyleDlg::GetOptions(vtTagArray &pLayer)
 {
+	pLayer.SetValueBool("Geometry", m_bGeometry);
+	if (m_bGeometry)
+		pLayer.SetValueRGBi("GeomColor", m_GeomColor);
+	else
+		pLayer.RemoveTag("GeomColor");
+
+	pLayer.SetValueBool("Labels", m_bTextLabels);
+	if (m_bTextLabels)
+	{
+		pLayer.SetValueRGBi("LabelColor", m_LabelColor);
+		pLayer.SetValueBool("TextFieldIndex", m_bTextLabels);
+		pLayer.SetValueInt("ColorFieldIndex", m_iColorField);
+		pLayer.SetValueFloat("Elevation", m_fLabelHeight);
+		pLayer.SetValueFloat("LabelSize", m_fLabelSize);
+	}
+	else
+	{
+		pLayer.RemoveTag("LabelColor");
+		pLayer.RemoveTag("TextFieldIndex");
+		pLayer.RemoveTag("ColorFieldIndex");
+		pLayer.RemoveTag("Elevation");
+		pLayer.RemoveTag("LabelSize");
+	}
 }
 
 void StyleDlg::RefreshFields()
@@ -96,13 +142,12 @@ void StyleDlg::RefreshFields()
 	m_type = GetFeatureGeomType(m_strResolved);
 	m_strFeatureType = OGRGeometryTypeToName(m_type);
 
-	vtFeatureSetPoint2D dummy;
-	if (dummy.LoadFieldInfoFromDBF(m_strResolved))
+	if (m_Fields.LoadFieldInfoFromDBF(m_strResolved))
 	{
-		int i, num = dummy.GetNumFields();
+		int i, num = m_Fields.GetNumFields();
 		for (i = 0; i < num; i++)
 		{
-			Field *field = dummy.GetField(i);
+			Field *field = m_Fields.GetField(i);
 			wxString2 field_name = field->m_name;
 			GetTextField()->Append(field_name);
 			GetColorField()->Append(field_name);
@@ -123,27 +168,61 @@ void StyleDlg::RefreshFields()
 
 void StyleDlg::UpdateEnabling()
 {
-	GetColor()->Enable(m_bGeometry);
+	GetGeomColor()->Enable(m_bGeometry);
 
-	GetTextField()->Enable();
-	GetTextField()->Enable();
-	GetTextField()->Enable();
-	GetTextField()->Enable();
+	GetLabelColor()->Enable(m_bTextLabels);
+	GetTextField()->Enable(m_bTextLabels);
+	GetColorField()->Enable(m_bTextLabels && m_Fields.GetNumFields() > 1);
+	GetLabelSize()->Enable(m_bTextLabels);
+	GetLabelHeight()->Enable(m_bTextLabels);
 }
 
+void StyleDlg::UpdateColorButtons()
+{
+	FillWithColor(GetGeomColor(), m_GeomColor);
+	FillWithColor(GetLabelColor(), m_LabelColor);
+}
+
+RGBi StyleDlg::AskColor(const RGBi &input)
+{
+	m_Colour.Set(input.r, input.g, input.b);
+	m_ColourData.SetChooseFull(true);
+	m_ColourData.SetColour(m_Colour);
+
+	wxColourDialog dlg(this, &m_ColourData);
+	if (dlg.ShowModal() == wxID_OK)
+	{
+		m_ColourData = dlg.GetColourData();
+		m_Colour = m_ColourData.GetColour();
+		return RGBi(m_Colour.Red(), m_Colour.Green(), m_Colour.Blue());
+	}
+	else
+		return RGBi(-1,-1,-1);
+}
 
 // WDR: handler implementations for StyleDlg
 
 void StyleDlg::OnCheck( wxCommandEvent &event )
 {
+	TransferDataFromWindow();
 	UpdateEnabling();
 }
 
-void StyleDlg::OnColor( wxCommandEvent &event )
+void StyleDlg::OnGeomColor( wxCommandEvent &event )
 {
-	
+	RGBi result = AskColor(m_GeomColor);
+	if (result.r == -1)
+		return;
+	m_GeomColor = result;
+	UpdateColorButtons();
 }
 
-
-
+void StyleDlg::OnLabelColor( wxCommandEvent &event )
+{
+	RGBi result = AskColor(m_LabelColor);
+	if (result.r == -1)
+		return;
+	m_LabelColor = result;
+	UpdateColorButtons();
+}
 
