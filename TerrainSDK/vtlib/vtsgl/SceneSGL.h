@@ -26,9 +26,6 @@ public:
 	bool Init();
 	void DoUpdate();
 
-	bool HasWinInfo() { return m_bWinInfo; }
-	void SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
-
 //protected:
 	sglView		 m_SglView;
 	sglScene	*m_pSglRootNode;

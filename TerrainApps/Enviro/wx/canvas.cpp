@@ -105,18 +105,6 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	vtScene *pScene = vtGetScene();
 
-	if (!pScene->HasWinInfo())
-	{
-		VTLOG("First OnPaint message.\n");
-#ifdef WIN32
-		HWND handle = (HWND) GetHandle();
-		pScene->SetWinInfo(handle, m_glContext);
-#else
-		pScene->SetWinInfo(NULL, NULL);
-#endif
-//		CreateScene();
-	}
-
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
