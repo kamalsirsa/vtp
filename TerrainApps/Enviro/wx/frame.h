@@ -20,6 +20,7 @@ class BuildingDlg3d;
 class UtilDlg;
 class LayerDlg;
 class InstanceDlg;
+class DistanceDlg;
 
 // some shortcuts
 #define ADD_TOOL(id, bmp, tooltip, tog)	 \
@@ -173,6 +174,7 @@ public:
 	BuildingDlg3d		*m_pBuildingDlg;
 	LayerDlg			*m_pLayerDlg;
 	InstanceDlg			*m_pInstanceDlg;
+	DistanceDlg			*m_pDistanceDlg;
 	MouseMode			m_ToggledMode;
 
 protected:

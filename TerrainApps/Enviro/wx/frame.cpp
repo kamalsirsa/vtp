@@ -45,6 +45,7 @@
 #include "BuildingDlg3d.h"
 #include "LayerDlg.h"
 #include "vtui/InstanceDlg.h"
+#include "vtui/DistanceDlg.h"
 
 #include "../Engines.h"
 #include "EnviroGUI.h"	// for GetCurrentTerrain
@@ -252,6 +253,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	m_pLayerDlg->SetSize(600, 250);
 	m_pInstanceDlg = new InstanceDlg(this, -1, _T("Instances"), wxDefaultPosition,
 		wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+	m_pDistanceDlg = new DistanceDlg(this, -1, _T("Distance"));
 
 	m_canvas->SetCurrent();
 }
@@ -447,14 +449,11 @@ void vtFrame::SetMode(MouseMode mode)
 	else
 		m_pPlantDlg->Show(false);
 
-	// Show/hide fence dialog
+	// Show/hide the other modeless dialogs as appropriate
 	m_pFenceDlg->Show(mode == MM_FENCES);
-
-	// Show/hide fence dialog
 	m_pUtilDlg->Show(mode == MM_ROUTES);
-
-	// Show/hide instance dialog
 	m_pInstanceDlg->Show(mode == MM_INSTANCES);
+	m_pDistanceDlg->Show(mode == MM_MEASURE);
 
 	g_App.SetMode(mode);
 }
@@ -1380,20 +1379,30 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 //
 void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 {
-	m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
-		pTerrain->GetProjection(), g_Conv);
-
-	vtString loc = "Locations/";
-	loc += pTerrain->GetParams().m_strLocFile;
-	vtString path = FindFileOnPaths(pTerrain->s_DataPaths, loc);
-	if (path != "")
+	if (pTerrain)
 	{
-		m_pLocationDlg->SetLocFile((const char *)path);
-		m_pLocationDlg->RecallFrom(pTerrain->GetParams().m_strInitLocation);
-	}
+		m_pLocationDlg->SetTarget(vtGetScene()->GetCamera(),
+			pTerrain->GetProjection(), g_Conv);
 
-	m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
-	m_pInstanceDlg->SetDataPaths(pTerrain->s_DataPaths);
+		vtString loc = "Locations/";
+		loc += pTerrain->GetParams().m_strLocFile;
+		vtString path = FindFileOnPaths(pTerrain->s_DataPaths, loc);
+		if (path != "")
+		{
+			m_pLocationDlg->SetLocFile((const char *)path);
+			m_pLocationDlg->RecallFrom(pTerrain->GetParams().m_strInitLocation);
+		}
+
+		m_pInstanceDlg->SetProjection(pTerrain->GetProjection());
+		m_pInstanceDlg->SetDataPaths(pTerrain->s_DataPaths);
+		m_pDistanceDlg->SetProjection(pTerrain->GetProjection());
+	}
+	else
+	{
+		vtProjection geo;
+		geo.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
+		m_pDistanceDlg->SetProjection(geo);
+	}
 }
 
 void vtFrame::EarthPosUpdated(const DPoint3 &pos)
