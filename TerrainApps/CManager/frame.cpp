@@ -148,6 +148,18 @@ void ItemGroup::ShowLOD(bool bTrue)
 				trans->SetEnabled(true);
 		}
 	}
+	else
+	{
+		// Group requires all models to be (initially) disabled
+		int i, num_models = m_pItem->NumModels();
+		for (i = 0; i < num_models; i++)
+		{
+			vtModel *mod = m_pItem->GetModel(i);
+			vtTransform *trans = GetMainFrame()->m_nodemap[mod];
+			if (trans)
+				trans->SetEnabled(false);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -155,14 +167,16 @@ void ItemGroup::ShowLOD(bool bTrue)
 
 void Splitter2::SizeWindows()
 {
-	int w, h;
-	GetClientSize(&w, &h);
+	if (!bResetting)
+	{
+		int w, h;
+		GetClientSize(&w, &h);
 
-	int pos = GetSashPosition();
-	if (pos != 0) m_last = pos;
-//	if (h > 190)
-//		SetSashPosition(h - 180, false);
-
+		int pos = GetSashPosition();
+		if (pos != 0) m_last = pos;
+//		if (h > 190)
+//			SetSashPosition(h - 180, false);
+	}
 	wxSplitterWindow::SizeWindows();
 }
 
@@ -612,6 +626,7 @@ void vtFrame::AddNewItem()
 
 vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 {
+#if 0
 	const char *fname = StartOfFilename(fname_in.mb_str());
 
 	vtString onpath = FindFileOnPaths(m_DataPaths, fname);
@@ -632,6 +647,10 @@ vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 		DisplayMessageBox(str);
 		return NULL;
 	}
+#else
+	// data path code is too complicated, just store absolute paths
+	const char *fname = fname_in.mb_str();
+#endif
 
 	// If there is no item, make a new one.
 	if (!m_pCurrentItem)
@@ -663,8 +682,13 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 {
 	model->m_attempted_load = true;
 
-	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
-	vtNodeBase *pNode = vtLoadModel(fullpath);
+	vtNodeBase *pNode = vtLoadModel(model->m_filename);
+	if (!pNode)
+	{
+		// perhaps it's a relative path
+		vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
+		vtNodeBase *pNode = vtLoadModel(fullpath);
+	}
 	if (!pNode)
 	{
 		wxString2 str;
@@ -687,7 +711,9 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 
 void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 {
+	m_splitter2->bResetting = true;
 	m_splitter2->Unsplit();
+	m_splitter2->bResetting = false;
 	if (item != NULL && model == NULL)
 	{
 		SetCurrentItem(item);
@@ -751,6 +777,9 @@ void vtFrame::UpdateItemGroup(vtItem *item)
 	ig->SetRanges();
 }
 
+//
+// True to show the current item as an LOD'd object
+//
 void vtFrame::ShowItemGroupLOD(bool bTrue)
 {
 	if (!m_pCurrentItem)
@@ -779,8 +808,10 @@ void vtFrame::SetCurrentModel(vtModel *model)
 
 	// update 3d scene graph
 	if (model)
+	{
 		DisplayCurrentModel();
-
+		ZoomToCurrentModel();
+	}
 	// update tree view
 	m_pTree->RefreshTreeStatus(this);
 }
@@ -792,6 +823,9 @@ void vtFrame::SetCurrentModel(vtModel *model)
 //
 void vtFrame::DisplayCurrentModel()
 {
+	// show this individual model, not the LOD'd item
+	ShowItemGroupLOD(false);
+
 	vtTransform *trans = m_nodemap[m_pCurrentModel];
 	if (!trans && !m_pCurrentModel->m_attempted_load)
 	{
@@ -800,22 +834,36 @@ void vtFrame::DisplayCurrentModel()
 	if (trans)
 	{
 		trans->SetEnabled(true);
-
-		FSphere sph;
-		trans->GetBoundSphere(sph);
-		wxGetApp().m_pTrackball->SetRadius(sph.radius * 2.0f);
-		wxGetApp().m_pTrackball->SetZoomScale(sph.radius);
-
-		vtCamera *pCamera = vtGetScene()->GetCamera();
-		pCamera->SetYon(sph.radius * 100.0f);
-
 		m_pModelDlg->SetModelStatus("Good");
 	}
 	else
 	{
 		m_pModelDlg->SetModelStatus("Failed to load.");
 	}
-	ShowItemGroupLOD(false);
+}
+
+void vtFrame::ZoomToCurrentModel()
+{
+	vtTransform *trans = m_nodemap[m_pCurrentModel];
+	if (!trans)
+		return;
+
+	vtCamera *pCamera = vtGetScene()->GetCamera();
+	float fYon = pCamera->GetFOV();
+
+	FSphere sph;
+	trans->GetBoundSphere(sph);
+
+	// consider the origin-center bounding sphere
+	float origin_centered = sph.center.Length() + sph.radius;
+
+	// how far back does the camera have to be to see the whole sphere
+	float dist = origin_centered / sinf(fYon / 2);
+
+	wxGetApp().m_pTrackball->SetRadius(dist);
+	wxGetApp().m_pTrackball->SetZoomScale(sph.radius);
+
+	pCamera->SetYon(sph.radius * 100.0f);
 }
 
 void vtFrame::DisplayCurrentItem()

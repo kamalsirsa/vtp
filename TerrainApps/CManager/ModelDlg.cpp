@@ -54,11 +54,14 @@ void ModelDlg::OnTextScale( wxCommandEvent &event )
 
 	// change in Scale should be passed to the 3d scene graph
 	GetMainFrame()->UpdateScale(m_pCurrentModel);
-	GetMainFrame()->DisplayCurrentModel();
+	GetMainFrame()->ZoomToCurrentModel();
 }
 
 void ModelDlg::OnTextVisible( wxCommandEvent &event )
 {
+	if (m_bUpdating)
+		return;
+
 	UpdateFromControls();
 
 	// change in LOD visibility distance should be passed to the 3d scene graph

@@ -34,9 +34,13 @@ public:
 			  const wxSize& size = wxDefaultSize,
 			  long style = wxSP_3D|wxCLIP_CHILDREN,
 			  const wxString& name = _T("splitter")) :
-		wxSplitterWindow(parent, id, pos, size, style, name) {}
+		wxSplitterWindow(parent, id, pos, size, style, name)
+	{
+		bResetting = false;
+	}
 	virtual void SizeWindows();
 
+	bool bResetting;
 	int m_last;
 };
 
@@ -138,6 +142,7 @@ public:
 	void		ShowItemGroupLOD(bool bTrue);
 	void		AddNewItem();
 	void		DisplayCurrentModel();
+	void		ZoomToCurrentModel();
 	void		DisplayCurrentItem();
 
 	vtContentManager	m_Man;
