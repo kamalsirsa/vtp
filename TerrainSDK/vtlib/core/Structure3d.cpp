@@ -136,7 +136,7 @@ bool vtStructure3d::CreateNode(vtHeightField *hf, const char *options)
 		bool bSuccess = inst->CreateShape(hf);
 		if (!bSuccess)
 		{
-			// try again with the supplied path
+			// try again, looking on the standards data paths
 			vtTag *tag = inst->FindTag("filename");
 			if (tag)
 			{
