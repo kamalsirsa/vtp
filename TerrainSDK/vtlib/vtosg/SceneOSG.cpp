@@ -70,22 +70,12 @@ vtScene *vtGetScene()
 
 float vtGetTime()
 {
-	float sec;
+	return g_Scene.GetTime();
+}
 
-	// clock(), while ANSI C, is generally a low-res timer on most systems.
-	//   Use a high-res timer if one exists.
-#ifdef __FreeBSD__
-	struct rusage ru;
-	if (getrusage(RUSAGE_SELF, &ru))
-		sec = -1.0 / 1000000;
-	else
-		sec = (ru.ru_utime.tv_sec  + ru.ru_stime.tv_sec ) +
-			  (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec) / 1000000.0;
-#else
-	sec = (float)clock() / CLOCKS_PER_SEC;
-#endif
-
-	return sec;
+float vtGetFrameTime()
+{
+	return g_Scene.GetFrameTime();
 }
 
 void vtScene::SetBgColor(RGBf color)
@@ -99,11 +89,6 @@ void vtScene::SetAmbient(RGBf color)
 {
 	// TODO?  Or should applications simply set the ambient component of
 	// their lights.
-}
-
-float vtScene::GetFrameRate()
-{
-	return (float) frameRate();
 }
 
 bool vtScene::Init()

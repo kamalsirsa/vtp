@@ -35,7 +35,10 @@ public:
 
 	bool Init();
 	void DoUpdate();
-	float GetFrameRate();
+	float GetFrameRate()
+	{
+		return 1.0 / _timer.delta_s(_lastFrameTick,_frameTick);
+	}
 	void DrawFrameRateChart();
 
 	// OSG-specific implementation
@@ -43,6 +46,15 @@ public:
 
 	bool HasWinInfo() { return m_bWinInfo; }
 	void SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
+
+	float GetTime()
+	{
+		return _timer.delta_s(_initialTick,_frameTick);
+	}
+	float GetFrameTime()
+	{
+		return _timer.delta_s(_lastFrameTick,_frameTick);
+	}
 
 protected:
 	osg::ref_ptr<osg::Group>	m_pOsgSceneRoot;
@@ -52,10 +64,6 @@ protected:
 	osg::Timer_t _lastFrameTick;
 	osg::Timer_t _frameTick;
 
-	// time from the current frame update and the previous one in seconds.
-	double frameSeconds() { return _timer.delta_s(_lastFrameTick,_frameTick); }
-	double frameRate() { return 1.0/frameSeconds(); }
-
 	bool	m_bWinInfo;
 	bool	m_bInitialized;
 	bool	m_bWireframe;
@@ -64,5 +72,7 @@ protected:
 // global
 vtScene *vtGetScene();
 float vtGetTime();
+float vtGetFrameTime();
 
-#endif
+#endif	// VTOSG_SCENEH
+
