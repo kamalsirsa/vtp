@@ -1490,6 +1490,11 @@ bool vtTerrain::CreateStep1()
 	if (m_pInputGrid)
 	{
 		m_pElevGrid = m_pInputGrid;
+		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
+		m_pHeightField = m_pElevGrid;
+		m_proj = m_pElevGrid->GetProjection();
+		// set global projection based on this terrain
+		g_Conv = m_pElevGrid->m_Conversion;
 		return true;
 	}
 	vtString elev_file = m_Params.GetValueString(STR_ELEVFILE, true);
