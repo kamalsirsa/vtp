@@ -5,21 +5,25 @@
 // Free for all uses, see license.txt for details.
 //
 
+#pragma warning( disable : 4786 )  
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "Plants.h"
 #include "MathTypes.h"
+#include "xmlhelper/easyxml.hpp"
 
 float vtPlantAppearance::s_fTreeScale = 1.0f;
 
 /////////////////////////
 
-vtPlantAppearance::vtPlantAppearance(bool billboard, const char *filename,
+vtPlantAppearance::vtPlantAppearance(AppearType type, const char *filename,
 								 float width, float height,
 								 float shadow_radius, float shadow_darkness)
 {
-	m_bBillboard = billboard;
+	m_eType = type;
 	m_filename = filename;
 	m_width = width;
 	m_height = height;
@@ -104,7 +108,8 @@ bool vtPlantList::Read(const char *fname)
 		for (j = 0; j < iApps; j++)
 		{
 			fscanf(fp, "%d %s %f %f %f %f\n", &apptype, buf1, &f1, &f2, &f3, &f4);
-			pSpecies->AddAppearance((apptype == 1), buf1, f1, f2, f3, f4);
+			pSpecies->AddAppearance((apptype == 1) ? AT_BILLBOARD : AT_XFROG,
+				buf1, f1, f2, f3, f4);
 		}
 	}
 	fclose(fp);
@@ -131,14 +136,50 @@ bool vtPlantList::Write(const char *fname)
 		{
 			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
 			fprintf(fp, "%d %s %f %f %f %f\n",
-				app->m_bBillboard, (const char *)app->m_filename, app->m_width, app->
-				m_height,
-				app->m_shadow_radius, app->m_shadow_darkness);
+				app->m_eType, (const char *)app->m_filename, app->m_width,
+				app->m_height, app->m_shadow_radius, app->m_shadow_darkness);
 		}
 	}
 	fclose(fp);
 	return true;
 }
+
+
+bool vtPlantList::WriteXML(const char *fname)
+{
+	FILE *fp = fopen(fname, "wb");
+	if (!fp)
+	{
+		throw xh_io_exception("Failed to open file", xh_location(fname),
+				"XML Writer");
+	}
+
+	fprintf(fp, "<?xml version=\"1.0\"?>\n\n");
+	fprintf(fp, "<species-file file-format-version=\"1.0\">\n");
+
+	for (int i = 0; i < NumSpecies(); i++)
+	{
+		fprintf(fp, "\t<species id=\"%d\" name=\"%s\" max_height=\"%.2f\">\n",
+			GetSpecies(i)->GetSpecieID(),
+			GetSpecies(i)->GetSciName(),
+			GetSpecies(i)->GetMaxHeight());
+		fprintf(fp, "\t\t<common name=\"%s\" />\n",
+			GetSpecies(i)->GetCommonName());
+		for (int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
+		{
+			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
+			fprintf(fp, "\t\t<appearance type=\"%d\" filename=\"%s\" "
+				"width=\"%.2f\" height=\"%.2f\" shadow_radius=\"%.1f\" shadow_darkness=\"%.1f\" />\n",
+				app->m_eType, (const char *)app->m_filename, app->m_width,
+				app->m_height, app->m_shadow_radius, app->m_shadow_darkness);
+		}
+		fprintf(fp, "\t</species>\n");
+	}
+	fprintf(fp, "</species-file>\n");
+	fclose(fp);
+	return true;
+}
+
 
 void vtPlantList::AddSpecies(int SpecieID, const char *CommonName,
 						   const char *SciName, float MaxHeight)
@@ -179,6 +220,188 @@ int vtPlantList::GetSpeciesIdByCommonName(const char *name)
 	}
 	return -1;
 }
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of PlantList files.
+////////////////////////////////////////////////////////////////////////
+
+class PlantListVisitor : public XMLVisitor
+{
+public:
+	PlantListVisitor(vtPlantList *pl) :
+		m_pPL(pl), _level(0) {}
+
+	virtual ~PlantListVisitor () {}
+
+	void startXML ();
+	void endXML ();
+	void startElement (const char * name, const XMLAttributes &atts);
+	void endElement (const char * name);
+	void data (const char * s, int length);
+
+private:
+	struct State
+	{
+		State () : item(0), type("") {}
+		State (vtPlantSpecies * _item, const char * _type)
+			: item(_item), type(_type) {}
+		vtPlantSpecies * item;
+		string type;
+	};
+
+	State &state () { return _state_stack[_state_stack.size() - 1]; }
+
+	void push_state (vtPlantSpecies *_item, const char *type)
+	{
+		if (type == 0)
+			_state_stack.push_back(State(_item, "unspecified"));
+		else
+			_state_stack.push_back(State(_item, type));
+		_level++;
+		_data = "";
+	}
+
+	void pop_state () {
+		_state_stack.pop_back();
+		_level--;
+	}
+
+	string _data;
+	int _level;
+	vector<State> _state_stack;
+
+	vtPlantList *m_pPL;
+};
+
+void PlantListVisitor::startXML ()
+{
+  _level = 0;
+  _state_stack.resize(0);
+}
+
+void PlantListVisitor::endXML ()
+{
+  _level = 0;
+  _state_stack.resize(0);
+}
+
+void PlantListVisitor::startElement (const char * name, const XMLAttributes &atts)
+{
+	State &st = state();
+
+	if (_level == 0)
+	{
+		if (string(name) != (string)"species-file")
+		{
+			string message = "Root element name is ";
+			message += name;
+			message += "; expected species-file";
+			throw xh_io_exception(message, "XML Reader");
+		}
+		push_state(NULL, "top");
+		return;
+	}
+
+	const char * attval;
+
+	if (_level == 1)
+	{
+		if (string(name) == (string)"species")
+		{
+			vtPlantSpecies *pItem = new vtPlantSpecies();
+
+			// Get id, name, max height.
+			attval = atts.getValue("id");
+			if (attval != NULL)
+				pItem->SetSpecieID(atoi(attval));
+			attval = atts.getValue("name");
+			if (attval != NULL)
+				pItem->SetSciName(attval);
+			attval = atts.getValue("max_height");
+			if (attval != NULL)
+				pItem->SetMaxHeight(atof(attval));
+
+			push_state(pItem, "species");
+		}
+		return;
+	}
+
+	vtPlantSpecies *pItem = st.item;
+	if (!pItem)
+		return;
+
+	if (_level == 2)
+	{
+		if (string(name) == (string)"common")
+		{
+			// Get the common name (assumes English language)
+			attval = atts.getValue("name");
+			if (attval != NULL)
+				pItem->SetCommonName(attval);
+		}
+		else if (string(name) == (string)"appearance")
+		{
+			AppearType type;
+			vtString filename;
+			float width, height, shadow_radius, shadow_darkness;
+			attval = atts.getValue("type");
+			if (attval != NULL)
+				type = (AppearType) atoi(attval);
+			attval = atts.getValue("filename");
+			if (attval != NULL)
+				filename = attval;
+			attval = atts.getValue("width");
+			if (attval != NULL)
+				width = atof(attval);
+			attval = atts.getValue("height");
+			if (attval != NULL)
+				height = atof(attval);
+			attval = atts.getValue("shadow_radius");
+			if (attval != NULL)
+				shadow_radius = atof(attval);
+			attval = atts.getValue("shadow_darkness");
+			if (attval != NULL)
+				shadow_darkness = atof(attval);
+			pItem->AddAppearance(type, filename, width, height, shadow_radius, shadow_darkness);
+		}
+		return;
+	}
+
+}
+
+void PlantListVisitor::endElement(const char * name)
+{
+	State &st = state();
+
+	if (string(name) == (string)"species")
+	{
+		if (st.item != NULL)
+			m_pPL->Append(st.item);
+		pop_state();
+	}
+}
+
+void PlantListVisitor::data(const char *s, int length)
+{
+	if (state().item != NULL)
+		_data.append(string(s, length));
+}
+
+bool vtPlantList::ReadXML(const char* pathname)
+{
+	PlantListVisitor visitor(this);
+	try
+	{
+		readXML(pathname, visitor);
+	}
+	catch (xh_exception &e)
+	{
+		// TODO: would be good to pass back the error message.
+		return false;
+	}
+	return true;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 
