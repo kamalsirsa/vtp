@@ -59,6 +59,7 @@ public:
 	void SetTopDown(bool bTopDown);
 	void SetTerrain(vtTerrain *pTerrain);
 	void EnableFlyerEngine(bool bEnable);
+	void SetNavType(NavType nav);
 	void SetCurrentNavigator(vtTerrainFlyer *pE);
 	void SetMode(MouseMode mode);
 	void SetRouteFollower(bool bOn);

@@ -937,6 +937,15 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 		SetCurrentNavigator(NULL);
 }
 
+void Enviro::SetNavType(NavType nav)
+{
+	if (m_mode == MM_NAVIGATE)
+		EnableFlyerEngine(false);
+	m_nav = nav;
+	if (m_mode == MM_NAVIGATE)
+		EnableFlyerEngine(true);
+}
+
 extern void SetTerrainToGUI(vtTerrain *pTerrain);
 
 void Enviro::SetTerrain(vtTerrain *pTerrain)
@@ -1049,6 +1058,10 @@ void Enviro::SetMode(MouseMode mode)
 	{
 		switch (mode)
 		{
+		case MM_NAVIGATE:
+			m_pCursorMGeom->SetEnabled(false);
+			EnableFlyerEngine(true);
+			break;
 		case MM_SELECT:
 		case MM_FENCES:
 		case MM_ROUTES:
@@ -1056,13 +1069,14 @@ void Enviro::SetMode(MouseMode mode)
 		case MM_MOVE:
 		case MM_LINEAR:
 			m_pCursorMGeom->SetEnabled(true);
+			EnableFlyerEngine(false);
 			break;
-		default:
+		case MM_FLYROUTE:
 			m_pCursorMGeom->SetEnabled(false);
+			EnableFlyerEngine(false);
 			break;
 		}
 	}
-
 	m_bActiveFence = false;
 	m_mode = mode;
 }
@@ -1105,7 +1119,7 @@ void Enviro::SetTopDown(bool bTopDown)
 
 void Enviro::DumpCameraInfo()
 {
-	vtCamera *cam = g_App.m_pNormalCamera;
+	vtCamera *cam = m_pNormalCamera;
 	FPoint3 pos = cam->GetTrans();
 	FPoint3 dir;
 	cam->GetDirection(dir);
