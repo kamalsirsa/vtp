@@ -1256,26 +1256,17 @@ void vtTerrain::_CreateCulture()
 	}
 
 	// create HUD overlay geometry
-	vtString ovstring = m_Params.GetValueString(STR_HUD_OVERLAY);
-	if (ovstring != "")
+	vtString fname;
+	int x, y;
+	if (m_Params.GetOverlay(fname, x, y))
 	{
-		char buf[256];
-		strcpy(buf, ovstring);
-		const char *fname = strtok(buf, ",");
-		const char *xstr = strtok(NULL, ",");
-		const char *ystr = strtok(NULL, ",");
-		if (fname && xstr && ystr)
+		vtImageSprite *pSprite = new vtImageSprite();
+		if (pSprite->Create(fname, true))	// blending true
 		{
-			int x = atof(xstr);
-			int y = atof(ystr);
-			vtImageSprite *pSprite = new vtImageSprite();
-			if (pSprite->Create(fname, true))	// blending true
-			{
-				m_pOverlay = new vtGroup;
-				IPoint2 size = pSprite->GetSize();
-				pSprite->SetPosition(x, y+size.y, x+size.x, y);
-				m_pOverlay->AddChild(pSprite->GetNode());
-			}
+			m_pOverlay = new vtGroup;
+			IPoint2 size = pSprite->GetSize();
+			pSprite->SetPosition(x, y+size.y, x+size.x, y);
+			m_pOverlay->AddChild(pSprite->GetNode());
 		}
 	}
 
