@@ -127,8 +127,6 @@ void MainFrame::SetupUI()
 
 	m_pTree = new MyTreeCtrl(m_splitter, LayerTree_Ctrl,
 			wxPoint(0, 0), wxSize(200, 400),
-//		wxTR_HAS_BUTTONS |
-//		wxTR_EDIT_LABELS |
 #ifndef NO_VARIABLE_HEIGHT
 			wxTR_HAS_VARIABLE_ROW_HEIGHT |
 #endif
@@ -489,7 +487,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 			bool keep = false;
 			wxString msg;
 			msg.Printf("The data already loaded is in:\n     %s\n"
-					"but the file you are attempting to load:\n     %s\n"
+					"but the layer you are attempting to add:\n     %s\n"
 					"is using:\n     %s\n"
 					"Would you like to attempt to convert it now to the existing projection?",
 				str1,
@@ -587,6 +585,9 @@ void MainFrame::SetActiveLayer(vtLayer *lp, bool refresh)
 			m_pView->SetMode(LB_FSelect);
 
 		if (lp->GetType() == LT_UTILITY && last != LT_UTILITY)
+			m_pView->SetMode(LB_FSelect);
+
+		if (lp->GetType() == LT_RAW && last != LT_RAW)
 			m_pView->SetMode(LB_FSelect);
 	}
 }
