@@ -293,7 +293,7 @@ void SRTerrain::RenderPass()
 // position of the terrain at a given grid point.  Supply the height
 // value from our own data structures.
 //
-void SRTerrain::GetLocation(int i, int j, FPoint3 &p)
+void SRTerrain::GetLocation(int i, int j, FPoint3 &p) const
 {
 	p.Set(m_fXLookup[i],
 		  m_pMini->getheight(i, j),

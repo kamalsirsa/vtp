@@ -1129,7 +1129,7 @@ void SMTerrain::RenderSurface()
 }
 
 
-void SMTerrain::GetLocation(int iX, int iZ, FPoint3 &p)
+void SMTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));
 }

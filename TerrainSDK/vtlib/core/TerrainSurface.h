@@ -51,11 +51,12 @@ public:
 		 bool bLighting = true);
 
 	// overrides for vtHeightField
-	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude, FPoint3 *vNormal);
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		FPoint3 *vNormal) const;
 	void GetEarthExtents(DRECT &ext);
 	void GetTerrainExtents(FRECT &ext);
 
-	TerrainPatch *GetPatch(int x, int z);
+	TerrainPatch *GetPatch(int x, int z) const;
 	void SetPatch(int x, int z, TerrainPatch *pPatch);
 
 	FPoint3 *ComputeNormals(FPoint3 *pLocations);

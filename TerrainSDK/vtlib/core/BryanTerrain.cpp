@@ -195,7 +195,7 @@ void BryanTerrain::RenderPass()
 */
 }
 
-void BryanTerrain::GetLocation(int iX, int iZ, FPoint3 &p)
+void BryanTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));
 }

@@ -44,7 +44,7 @@ void vtHeightField::Initialize(vtTin3d *pTin)
 /**
  * \return 0 if below terrain, 1 if above terrain, -1 if off terrain.
  */
-int vtHeightField::PointIsAboveTerrain(const FPoint3 &p1)
+int vtHeightField::PointIsAboveTerrain(const FPoint3 &p1) const
 {
 	float alt;
 	if (!FindAltitudeAtPoint(p1, alt))
@@ -55,30 +55,31 @@ int vtHeightField::PointIsAboveTerrain(const FPoint3 &p1)
 		return 0;
 }
 
-#define PICK_ACCURACY	1000
+#define PICK_DISTANCE	1000
 
 /**
  * Tests a ray against a heightfield grid.
  *
- * Note: this algorithm is NOT guaranteed to give correct results,
- * nor is it fast or efficient.  It checks a series of PICK_ACCURACY
- * line segments against the terrain.  When one is found to straddle
- * the terrain, it refines the segment in a binary fashion.
+ * Note: this algorithm is not guaranteed to give absolutely correct results,
+ * but it is reasonably fast or efficient.  It checks a series of PICK_DISTANCE
+ * points along the ray against the terrain.  When a pair of points (segment)
+ * is found to straddle the terrain, it refines the segment in a binary fashion.
  *
- * Need a better algorithm!  There are probably many ray-heightfield
- * approaches in the raytracing literature.
+ * Since the length of the test is proportional to a single grid element,
+ * there is a very small chance that it will give results that are off by
+ * a small distance (less than 1 grid element)
  *
  * \return true if hit terrain.
  */
 bool vtHeightFieldGrid::CastRayToSurface(const FPoint3 &point,
-										 const FPoint3 &dir, FPoint3 &result)
+										 const FPoint3 &dir, FPoint3 &result) const
 {
 	// cast a series of line segment along the ray
 	int i, above;
 	FPoint3 p0 = point, p1, p2 = point;
 	FPoint3 delta = dir * (m_fDiagonalLength / (m_iXPoints * 1.41f));
 	bool found_above = false;
-	for (i = 0; i < PICK_ACCURACY; i++)
+	for (i = 0; i < PICK_DISTANCE; i++)
 	{
 		above = PointIsAboveTerrain(p2);
 		if (above == 0)	// below
@@ -93,7 +94,7 @@ bool vtHeightFieldGrid::CastRayToSurface(const FPoint3 &point,
 		}
 		p2 += delta;
 	}
-	if (i == PICK_ACCURACY || !found_above)
+	if (i == PICK_DISTANCE || !found_above)
 		return false;
 	// now, do a binary search to refine the result
 	for (i = 0; i < 10; i++)
@@ -130,7 +131,8 @@ void vtHeightField::ConvertEarthToSurfacePoint(double x, double y, FPoint3 &p3)
  */
 bool vtHeightField::PointIsInTerrain(float x, float z)
 {
-	return m_Conversion.m_WorldExtents.ContainsPoint(x, z);
+	const FRECT &we = m_Conversion.m_WorldExtents;
+	return (x > we.left && x < we.right && z < we.bottom && z > we.top);
 }
 
 

@@ -148,7 +148,7 @@ void TerrainPatch::SetVertexColors()
 // This approach is really straightforward, so it could be majorly sped up if needed
 //
 bool TerrainPatch::FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
-									   FPoint3 *vNormal)
+									   FPoint3 *vNormal) const
 {
 	if (m_bIsFlat)
 	{

@@ -801,7 +801,7 @@ bool TVTerrain::Init(vtLocalGrid *pGrid, float fZScale,
 	return true;
 }
 
-void TVTerrain::GetLocation(int iX, int iZ, FPoint3 &p)
+void TVTerrain::GetLocation(int iX, int iZ, FPoint3 &p) const
 {
 	p.Set(MAKE_XYZ2(iX, iZ));
 }

@@ -21,11 +21,12 @@ public:
 
 	void SetGlobalProjection();
 	float GetWorldValue(int i, int j);
-	void GetWorldLocation(int i, int j, FPoint3 &loc);
+	void GetWorldLocation(int i, int j, FPoint3 &loc) const;
 
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 		float light_adj, void progress_callback(int) = NULL);
-	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude, FPoint3 *vNormal = NULL);
+	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
+		FPoint3 *vNormal = NULL) const;
 	DPoint2 GetWorldSpacing();
 
 	void SetupConversion(float fVerticalExag);

@@ -977,7 +977,7 @@ void LKTerrain::terrain_render_buckets()
 }
 
 
-void LKTerrain::GetLocation(int i, int j, FPoint3 &p)
+void LKTerrain::GetLocation(int i, int j, FPoint3 &p) const
 {
 	p.Set(m_fXLookup[i], LOCY(offset(i,j)), m_fZLookup[j]);
 }

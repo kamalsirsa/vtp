@@ -35,7 +35,7 @@ public:
 	// overrides
 	void DoRender();
 	void DoCulling(FPoint3 &eyepos_ogl, IPoint2 window_size, float fov);
-	void GetLocation(int iX, int iZ, FPoint3 &p);
+	void GetLocation(int iX, int iZ, FPoint3 &p) const;
 
 	void LoadSingleMaterial();
 	void LoadBlockMaterial(int a, int b);

@@ -261,7 +261,8 @@ vtGeom *vtTin3d::CreateGeometry(bool bDropShadowMesh)
 	return m_pGeom;
 }
 
-bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude, FPoint3 *vNormal)
+bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
+								  FPoint3 *vNormal) const
 {
 	// First try to identify which triangle
 	FPoint2 p(input.x, input.z);
@@ -358,7 +359,8 @@ bool intersect_triangle(const FPoint3 &orig, const FPoint3 &dir,
 	return true;
 }
 
-bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir, FPoint3 &result)
+bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
+							   FPoint3 &result) const
 {
 	FPoint3 wp1, wp2, wp3;
 	float t, u, v, closest = 1E9;

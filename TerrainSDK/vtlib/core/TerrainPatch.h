@@ -22,7 +22,7 @@ public:
 	void SetVertexTextureCoords();
 	void SetVertexColors();
 	bool FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
-		FPoint3 *vNormal);
+		FPoint3 *vNormal) const;
 
 	int		m_iXVerts, m_iZVerts;
 	float	m_fXSize, m_fZSize;

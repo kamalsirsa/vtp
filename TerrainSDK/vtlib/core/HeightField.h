@@ -22,13 +22,13 @@ public:
 
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
-		FPoint3 *vNormal = NULL) = 0;
+		FPoint3 *vNormal = NULL) const = 0;
 
 	/// Find the intersection point of a ray with the heightfield
 	virtual bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
-		FPoint3 &result) = 0;
+		FPoint3 &result) const = 0;
 
-	int PointIsAboveTerrain(const FPoint3 &p1);
+	int PointIsAboveTerrain(const FPoint3 &p1) const;
 
 	void ConvertEarthToSurfacePoint(double ex, double ey, FPoint3 &p3);
 	void ConvertEarthToSurfacePoint(const DPoint2 &epos, FPoint3 &p3)
@@ -57,7 +57,8 @@ class vtHeightFieldGrid : public vtHeightField
 {
 public:
 	void Initialize(vtLocalGrid *pLocalGrid);
-	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir, FPoint3 &result);
+	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
+		FPoint3 &result) const;
 
 protected:
 	int		m_iXPoints, m_iYPoints;	// height field grid dimensions

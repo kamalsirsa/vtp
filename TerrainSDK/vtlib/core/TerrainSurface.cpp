@@ -251,7 +251,7 @@ bool vtTerrainGeom::CreateFromLocalGrid(vtLocalGrid *pGrid, int VtxType,
 // Returns true if the point was over the terrain
 //
 bool vtTerrainGeom::FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
-										FPoint3 *vNormal)
+										FPoint3 *vNormal) const
 {
 	int iX = -1, iZ = -1;
 	for (int a = 0; a < m_iXPatches; a++)
@@ -281,7 +281,7 @@ bool vtTerrainGeom::FindAltitudeAtPoint(const FPoint3 &point, float &fAltitude,
 	return pPatch->FindAltitudeAtPoint(point, fAltitude, vNormal);
 }
 
-TerrainPatch *vtTerrainGeom::GetPatch(int x, int z)
+TerrainPatch *vtTerrainGeom::GetPatch(int x, int z) const
 {
 	return m_pPatches[x * m_iZPatches + z];
 }

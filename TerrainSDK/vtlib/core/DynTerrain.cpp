@@ -61,7 +61,7 @@ void vtDynTerrainGeom::SetOptions(bool bUseTriStrips, int iTPatchDim, int iTPatc
 }
 
 bool vtDynTerrainGeom::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-									FPoint3 *vNormal)
+									FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_Conversion.m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)(-(p.z - m_Conversion.m_WorldExtents.bottom) / m_fZStep);

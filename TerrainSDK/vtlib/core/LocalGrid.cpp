@@ -41,7 +41,7 @@ void vtLocalGrid::SetupConversion(float fVerticalExag)
 	m_fZStep = -m_Conversion.m_WorldExtents.Height() / (m_iRows - 1);
 }
 
-void vtLocalGrid::GetWorldLocation(int i, int j, FPoint3 &loc)
+void vtLocalGrid::GetWorldLocation(int i, int j, FPoint3 &loc) const
 {
 	if (m_bFloatMode)
 		loc.Set(m_Conversion.m_WorldExtents.left + i * m_fXStep,
@@ -60,7 +60,7 @@ void vtLocalGrid::GetWorldLocation(int i, int j, FPoint3 &loc)
 // This approach is really straightforward, so it could be majorly sped up if needed
 //
 bool vtLocalGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
-									  FPoint3 *vNormal)
+									  FPoint3 *vNormal) const
 {
 	int iX = (int)((p.x - m_Conversion.m_WorldExtents.left) / m_fXStep);
 	int iZ = (int)((p.z - m_Conversion.m_WorldExtents.bottom) / m_fZStep);
