@@ -36,7 +36,6 @@ public:
 	float		m_height;
 	float		m_shadow_radius;
 	float		m_shadow_darkness;
-	static float s_fTreeScale;
 };
 
 /**
@@ -72,7 +71,7 @@ public:
 		m_Apps.Append(pApp);
 	}
 
-	int NumAppearances() const { return m_Apps.GetSize(); }
+	unsigned int NumAppearances() const { return m_Apps.GetSize(); }
 	vtPlantAppearance *GetAppearance(int i) const { return m_Apps[i]; }
 
 protected:

@@ -21,8 +21,6 @@
 
 extern int FindDBField(DBFHandle db, const char *field_name);
 
-float vtPlantAppearance::s_fTreeScale = 1.0f;
-
 /////////////////////////
 
 vtPlantAppearance::vtPlantAppearance(AppearType type, const char *filename,
@@ -150,7 +148,7 @@ bool vtSpeciesList::Write(const char *fname)
 		fprintf(fp, "max height: %f\n", GetSpecies(i)->GetMaxHeight() );
 		fprintf(fp, "appearances: %d\n", GetSpecies(i)->NumAppearances() );
 
-		for (int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
+		for (unsigned int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
 		{
 			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
 			fprintf(fp, "%d %s %f %f %f %f\n",
@@ -186,7 +184,7 @@ bool vtSpeciesList::WriteXML(const char *fname)
 			GetSpecies(i)->GetMaxHeight());
 		fprintf(fp, "\t\t<common name=\"%s\" />\n",
 			GetSpecies(i)->GetCommonName());
-		for (int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
+		for (unsigned int j = 0; j < GetSpecies(i)->NumAppearances(); j++)
 		{
 			vtPlantAppearance* app = GetSpecies(i)->GetAppearance(j);
 			fprintf(fp, "\t\t<appearance type=\"%d\" filename=\"%s\" "
