@@ -195,7 +195,11 @@ void MainFrame::SetupUI()
 	// Load structure defaults
 	vtStringArray paths;
 	ReadEnviroPaths(paths);
-	LoadGlobalMaterials(paths);
+	bool foundmaterials = LoadGlobalMaterials(paths);
+	if (!foundmaterials)
+		DisplayAndLog("The building materials file (Culture/materials.xml) was not found\n"
+			" on your Data Path.  Without this file, materials will not be handled\n"
+			" correctly.  Please check your Data Paths to avoid this problem.");
 	SetupDefaultStructures();
 
 	SetStatusText(_T("Ready"));
