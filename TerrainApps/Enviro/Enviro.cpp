@@ -480,8 +480,6 @@ void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 
 void Enviro::SetupTerrain(vtTerrain *pTerr)
 {
-	int iError;
-
 	if (m_iInitStep == 1)
 	{
 		vtString str;
@@ -505,50 +503,50 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 			LoadPlants();
 
 		pTerr->SetPlantList(m_pPlantList);
-		if (!pTerr->CreateStep1(iError))
+		if (!pTerr->CreateStep1())
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DescribeError(iError));
+			SetMessage(pTerr->GetLastError());
 			return;
 		}
 		SetMessage("Loading/Chopping/Prelighting Textures");
 	}
 	if (m_iInitStep == 4)
 	{
-		if (!pTerr->CreateStep2(iError))
+		if (!pTerr->CreateStep2())
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DescribeError(iError));
+			SetMessage(pTerr->GetLastError());
 			return;
 		}
 		SetMessage("Building Terrain");
 	}
 	if (m_iInitStep == 5)
 	{
-		if (!pTerr->CreateStep3(iError))
+		if (!pTerr->CreateStep3())
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DescribeError(iError));
+			SetMessage(pTerr->GetLastError());
 			return;
 		}
 		SetMessage("Building CLOD");
 	}
 	if (m_iInitStep == 6)
 	{
-		if (!pTerr->CreateStep4(iError))
+		if (!pTerr->CreateStep4())
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DescribeError(iError));
+			SetMessage(pTerr->GetLastError());
 			return;
 		}
 		SetMessage("Creating Culture");
 	}
 	if (m_iInitStep == 7)
 	{
-		if (!pTerr->CreateStep5(false, iError))
+		if (!pTerr->CreateStep5())
 		{
 			m_state = AS_Error;
-			SetMessage(pTerr->DescribeError(iError));
+			SetMessage(pTerr->GetLastError());
 			return;
 		}
 
@@ -1237,11 +1235,9 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 // The fTime argument lets you specify how long the message should
 // appear, in seconds.
 //
-void Enviro::SetMessage(const char *msg, float fTime)
+void Enviro::SetMessage(const vtString &msg, float fTime)
 {
-	VTLOG("  SetMessage: '%s'\n", msg);
-
-	vtString str = msg;
+	VTLOG("  SetMessage: '%s'\n", (const char *) msg);
 
 #if 0
 	if (m_pMessageSprite == NULL)
@@ -1250,23 +1246,23 @@ void Enviro::SetMessage(const char *msg, float fTime)
 		m_pMessageSprite->SetName2("MessageSprite");
 		m_pRoot->AddChild(m_pMessageSprite);
 	}
-	if (str == "")
+	if (msg == "")
 		m_pMessageSprite->SetEnabled(false);
 	else
 	{
 		m_pMessageSprite->SetEnabled(true);
-		m_pMessageSprite->SetText(str);
-		int len = str.GetLength();
+		m_pMessageSprite->SetText(msg);
+		int len = msg.GetLength();
 		m_pMessageSprite->SetWindowRect(0.5f - (len * 0.01f), 0.45f, 
 										0.5f + (len * 0.01f), 0.55f);
 	}
 #endif
-	if (str != "" && fTime != 0.0f)
+	if (msg != "" && fTime != 0.0f)
 	{
 		m_fMessageStart = vtGetTime();
 		m_fMessageTime = fTime;
 	}
-	m_strMessage = str;
+	m_strMessage = msg;
 }
 
 void Enviro::SetFlightSpeed(float speed)
