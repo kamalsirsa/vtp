@@ -4,7 +4,7 @@
 // This library has a concept of current conversion from earth to world
 // coordinates which is represented by the vtLocalConversion class.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -18,8 +18,9 @@
 
 //
 // The following class represents a mapping between real earth coordinates
-// (geographic or projected, elevation in meters) and the OpenGL coordinates as
-// rendered (x,y,z, with xz ground plane) including vertical exaggeration.
+// (geographic or projected, elevation in meters) and a local, meters-based
+// 3D coordinate system, which uses the right-handed OpenGL axis convention
+// (X right, Y up, Z backwards)
 //
 class vtLocalConversion
 {
