@@ -11,20 +11,20 @@
 #include "Fence.h"
 
 // Well known material strings
-const vtMaterialName BMAT_NAME_UNKNOWN = "Unknown";
-const vtMaterialName BMAT_NAME_PLAIN = "Plain";
-const vtMaterialName BMAT_NAME_WOOD = "Wood";
-const vtMaterialName BMAT_NAME_SIDING = "Siding";
-const vtMaterialName BMAT_NAME_GLASS = "Glass";
-const vtMaterialName BMAT_NAME_BRICK = "Brick";
-const vtMaterialName BMAT_NAME_PAINTED_BRICK = "Painted-Brick";
-const vtMaterialName BMAT_NAME_ROLLED_ROOFING = "Rolled-Roofing";
-const vtMaterialName BMAT_NAME_CEMENT = "Cement";
-const vtMaterialName BMAT_NAME_STUCCO = "Stucco";
-const vtMaterialName BMAT_NAME_CORRUGATED = "Corrugated";
-const vtMaterialName BMAT_NAME_DOOR = "Door";
-const vtMaterialName BMAT_NAME_WINDOW = "Window";
-const vtMaterialName BMAT_NAME_WINDOWWALL = "WindowWall";
+const vtMaterialName BMAT_NAME_UNKNOWN("Unknown");
+const vtMaterialName BMAT_NAME_PLAIN("Plain");
+const vtMaterialName BMAT_NAME_WOOD("Wood");
+const vtMaterialName BMAT_NAME_SIDING("Siding");
+const vtMaterialName BMAT_NAME_GLASS("Glass");
+const vtMaterialName BMAT_NAME_BRICK("Brick");
+const vtMaterialName BMAT_NAME_PAINTED_BRICK("Painted-Brick");
+const vtMaterialName BMAT_NAME_ROLLED_ROOFING("Rolled-Roofing");
+const vtMaterialName BMAT_NAME_CEMENT("Cement");
+const vtMaterialName BMAT_NAME_STUCCO("Stucco");
+const vtMaterialName BMAT_NAME_CORRUGATED("Corrugated");
+const vtMaterialName BMAT_NAME_DOOR("Door");
+const vtMaterialName BMAT_NAME_WINDOW("Window");
+const vtMaterialName BMAT_NAME_WINDOWWALL("WindowWall");
 
 vtStructInstance::vtStructInstance() : vtStructure()
 {
