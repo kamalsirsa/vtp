@@ -29,8 +29,7 @@ vtBuilding3d::vtBuilding3d() : vtBuilding()
 
 vtBuilding3d::~vtBuilding3d()
 {
-	for (int i = 0; i < m_Mesh.GetSize(); i++)
-		delete m_Mesh[i].m_pMesh;
+	// meshes will be automatically deleted by the geometry they're in
 }
 
 vtBuilding3d &vtBuilding3d::operator=(const vtBuilding &v)
@@ -236,7 +235,8 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	// wrap in a shape and set materials
 	m_pGeom = new vtGeom();
 	m_pGeom->SetName2("building-geom");
-	m_pGeom->SetMaterials(GetSharedMaterialArray());
+	vtMaterialArray *pShared = GetSharedMaterialArray();
+	m_pGeom->SetMaterials(pShared);
 
 	for (i = 0; i < m_Mesh.GetSize(); i++)
 	{
