@@ -550,6 +550,8 @@ void vtMaterialDescriptorArray3d::ReleaseMaterials()
 		// do not free them - they were not dynamically allocated
 		// FreeGlobalMaterials();
 	}
+	delete m_pWindowWall;
+	m_pWindowWall = NULL;
 }
 
 
