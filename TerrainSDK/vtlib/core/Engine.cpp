@@ -7,6 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "Engine.h"
+#include "Event.h"
 
 vtEngine::vtEngine() : vtEnabledBase()
 {
