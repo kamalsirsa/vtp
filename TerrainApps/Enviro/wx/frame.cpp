@@ -98,6 +98,7 @@ EVT_CHAR(vtFrame::OnChar)
 EVT_MENU(ID_FILE_LAYERS,		vtFrame::OnFileLayers)
 EVT_MENU(wxID_EXIT, vtFrame::OnExit)
 EVT_CLOSE(vtFrame::OnClose)
+EVT_IDLE(vtFrame::OnIdle)
 
 EVT_MENU(ID_TOOLS_SELECT,			vtFrame::OnToolsSelect)
 EVT_UPDATE_UI(ID_TOOLS_SELECT,		vtFrame::OnUpdateToolsSelect)
@@ -216,6 +217,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style, bool bVerticalToolbar, bool bEnableEarth):
 wxFrame(parent, -1, title, pos, size, style)
 {
+	m_bCloseOnIdle = false;
+
 	// Give it an icon
 	SetIcon(wxIcon(_T(ICON_NAME)));
 
@@ -516,10 +519,11 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	{
 	case 27:
 		// Esc: exit application
+		// It's not safe to close immediately, as that will kill the canvas,
+		//  and it might some Canvas event that caused us to close.  So,
+		//  simply stop rendering, and delay closing until the next Idle event.
 		m_canvas->m_bRunning = false;
-		delete m_canvas;
-		m_canvas = NULL;
-		Destroy();
+		m_bCloseOnIdle = true;
 		break;
 
 	case ' ':
@@ -677,7 +681,7 @@ void vtFrame::SetFullScreen(bool bFull)
 
 void vtFrame::OnExit(wxCommandEvent& event)
 {
-	VTLOG("Got Exit event.\n");
+	VTLOG("Got Exit event, shutting down.\n");
 	if (m_canvas)
 	{
 		m_canvas->m_bRunning = false;
@@ -697,6 +701,13 @@ void vtFrame::OnClose(wxCloseEvent &event)
 		m_canvas = NULL;
 	}
 	event.Skip();
+}
+
+void vtFrame::OnIdle(wxIdleEvent& event)
+{
+	// Check if we were requested to close on the next Idle event.
+	if (m_bCloseOnIdle)
+		Close();
 }
 
 void vtFrame::OnHelpAbout(wxCommandEvent& event)

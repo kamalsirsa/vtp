@@ -53,6 +53,7 @@ public:
 	// command handlers
 	void OnExit(wxCommandEvent& event);
 	void OnClose(wxCloseEvent &event);
+	void OnIdle(wxIdleEvent& event);
 
 	void OnFileLayers(wxCommandEvent& event);
 
@@ -200,6 +201,8 @@ protected:
 	wxString2 m_strSnapshotFilename;
 	int		m_iSnapshotNumber;
 	int		m_iFormat;
+
+	bool m_bCloseOnIdle;
 
 DECLARE_EVENT_TABLE()
 };
