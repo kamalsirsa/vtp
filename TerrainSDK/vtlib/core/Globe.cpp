@@ -35,7 +35,7 @@ IcoGlobe::IcoGlobe()
 IcoGlobe::~IcoGlobe()
 {
 	m_mats->Release();
-	for (int i = 0; i < m_features.GetSize(); i++)
+	for (unsigned int i = 0; i < m_features.GetSize(); i++)
 		delete m_features[i];
 	if (m_cylinder)
 		m_cylinder->Release();
@@ -829,7 +829,7 @@ void IcoGlobe::set_face_verts2(vtMesh *mesh, int mface, float f)
 	if (f == 1.0f)
 	{
 		// sphere normals pointing straight outwards
-		for (int i = 0; i < m_rtv[mface].GetSize(); i++)
+		for (unsigned int i = 0; i < m_rtv[mface].GetSize(); i++)
 			mesh->SetVtxNormal(i, m_rtv[mface][i].p);
 	}
 	else

@@ -85,9 +85,9 @@ public:
 	void SetProjection(const vtProjection &proj) { m_proj = proj; }
 
 #if SUPPORT_WSTRING
-	bool StoreTo(int num, const wstring2 &name = L"");
+	bool StoreTo(unsigned int num, const wstring2 &name = L"");
 #else
-	bool StoreTo(int num, const std::string &name = "");
+	bool StoreTo(unsigned int num, const std::string &name = "");
 #endif
 	bool RecallFrom(int num);
 

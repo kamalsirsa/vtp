@@ -276,7 +276,7 @@ protected:
 
 	// built structures, e.g. buildings and fences
 	StructureSet	m_StructureSet;
-	int				m_iStructSet;
+	unsigned int	m_iStructSet;
 	vtLodGrid		*m_pStructGrid;
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain

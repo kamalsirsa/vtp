@@ -174,7 +174,7 @@ bool vtLocationSaver::Read(const vtString &fname)
 	return true;
 }
 
-bool vtLocationSaver::StoreTo(int num, const LocNameString &name)
+bool vtLocationSaver::StoreTo(unsigned int num, const LocNameString &name)
 {
 	if (!m_pTransform)
 		return false;

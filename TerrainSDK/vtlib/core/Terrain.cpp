@@ -753,7 +753,7 @@ void vtTerrain::DeleteSelectedStructures()
 	vtStructureArray3d *structures = GetStructures();
 
 	// first remove them from the terrain
-	for (int i = 0; i < structures->GetSize(); i++)
+	for (unsigned int i = 0; i < structures->GetSize(); i++)
 	{
 		vtStructure *str = structures->GetAt(i);
 		if (str->IsSelected())
@@ -1446,7 +1446,7 @@ void vtTerrain::AddEngine(vtEngine *pE)
 void vtTerrain::ActivateEngines(bool bActive)
 {
 	// turn off the engine specific to the previous terrain
-	for (int k = 0; k < m_Engines.GetSize(); k++)
+	for (unsigned int k = 0; k < m_Engines.GetSize(); k++)
 	{
 		vtEngine *pE = m_Engines.GetAt(k);
 		pE->SetEnabled(bActive);
@@ -1800,7 +1800,7 @@ bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 void vtTerrain::DeleteSelectedPlants()
 {
 	// first remove them from the terrain
-	for (int i = 0; i < m_PIA.GetSize(); i++)
+	for (unsigned int i = 0; i < m_PIA.GetSize(); i++)
 	{
 		vtPlantInstance3d *inst3d = m_PIA.GetInstance3d(i);
 		if (inst3d->IsSelected())

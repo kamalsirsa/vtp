@@ -305,7 +305,7 @@ bool vtRoute::_LoadStructure(vtUtilNode *node)
 	vtString sStructure = sStructureDataPath;
 	vtString sWires;
 
-	int i;
+	unsigned int i;
 	for (i = 0; i < m_StructObjs.GetSize(); i++)
 	{
 		if (m_StructObjs[i]->m_sStructName == sname)

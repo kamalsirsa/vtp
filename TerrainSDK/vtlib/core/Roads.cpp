@@ -356,7 +356,7 @@ void LinkGeom::SetupBuildInfo(RoadBuildInfo &bi)
 	float length = 0.0f;
 
 	//  for each point in the road, determine coordinates
-	for (int j = 0; j < GetSize(); j++)
+	for (unsigned int j = 0; j < GetSize(); j++)
 	{
 		if (j > 0)
 		{
@@ -410,7 +410,7 @@ void LinkGeom::AddRoadStrip(vtMesh *pMesh, RoadBuildInfo &bi,
 	float texture_v;
 	FPoint2 uv;
 
-	for (int j = 0; j < GetSize(); j++)
+	for (unsigned int j = 0; j < GetSize(); j++)
 	{
 		texture_v = bi.fvLength[j] * uv_scale;
 
@@ -443,8 +443,6 @@ void LinkGeom::AddRoadStrip(vtMesh *pMesh, RoadBuildInfo &bi,
 
 void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 {
-	int j;
-
 	if (GetSize() < 2 || (m_pNode[0] == m_pNode[1]))
 		return;
 
@@ -618,11 +616,11 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 
 	// set lane coordinates
 	m_Lanes.resize(m_iLanes);
-	for (int i = 0; i < m_iLanes; i++)
+	for (unsigned int i = 0; i < m_iLanes; i++)
 	{
 		m_Lanes.at(i).SetSize(GetSize());
 	}
-	for (j = 0; j < GetSize(); j++)
+	for (unsigned int j = 0; j < GetSize(); j++)
 	{
 		for (int i = 0; i < m_iLanes; i++)
 		{
@@ -650,7 +648,7 @@ FPoint3 LinkGeom::FindPointAlongRoad(float fDistance)
 		return m_centerline[0];
 	}
 	// compute 2D length of this road, by adding up the 2d road segment lengths
-	for (int j = 0; j < GetSize()-1; j++)
+	for (unsigned int j = 0; j < GetSize()-1; j++)
 	{
 		// consider length of next segment
 		v.x = m_centerline[j+1].x - m_centerline[j].x;
@@ -681,7 +679,7 @@ float LinkGeom::Length()
 	float length = 0.0f;
 
 	// compute 2D length of this road, by adding up the 2d road segment lengths
-	for (int j = 0; j < GetSize(); j++)
+	for (unsigned int j = 0; j < GetSize(); j++)
 	{
 		if (j > 0)
 		{
@@ -1112,7 +1110,7 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField3d *pHeightField)
 	for (LinkGeom *pR = GetFirstLink(); pR; pR = (LinkGeom *)pR->m_pNext)
 	{
 		pR->m_centerline.SetSize(pR->GetSize());
-		for (int j = 0; j < pR->GetSize(); j++)
+		for (unsigned int j = 0; j < pR->GetSize(); j++)
 		{
 			pHeightField->ConvertEarthToSurfacePoint(pR->GetAt(j), p);
 			pR->m_centerline[j] = p;

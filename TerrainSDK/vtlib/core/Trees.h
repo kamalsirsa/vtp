@@ -96,7 +96,7 @@ public:
 		bool bShadows, bool bBillboards);
 
 	// override / replace a few methods of vtPlantList
-	vtPlantSpecies3d *GetSpecies(int i) const;
+	vtPlantSpecies3d *GetSpecies(unsigned int i) const;
 	vtPlantAppearance3d *GetAppearanceByName(const char *szName, float fHeight);
 	void AddSpecies(const char *common_name, float max_height);
 
@@ -136,8 +136,8 @@ public:
 	int CreatePlantNodes();
 	bool CreatePlantNode(int i);
 
-	vtTransform *GetPlantNode(int i) const;
-	vtPlantInstance3d *GetInstance3d(int i) const;
+	vtTransform *GetPlantNode(unsigned int i) const;
+	vtPlantInstance3d *GetInstance3d(unsigned int i) const;
 
 	/// Indicate the heightfield which will be used for the structures in this array
 	void SetHeightField(vtHeightField3d *hf) { m_pHeightField = hf; }
@@ -149,17 +149,17 @@ public:
 	void VisualDeselectAll();
 
 	/// Select a single plant, and visually highlight it
-	void VisualSelect(int i);
+	void VisualSelect(unsigned int i);
 
 	// return the number of selected plants
 	int NumSelected() const;
 
 	void OffsetSelectedPlants(const DPoint2 &offset);
 
-	void ReleasePlantGeometry(int i);
-	void DeletePlant(int i);
+	void ReleasePlantGeometry(unsigned int i);
+	void DeletePlant(unsigned int i);
 
-	void UpdateTransform(int i);
+	void UpdateTransform(unsigned int i);
 
 protected:
 	Array<vtPlantInstance3d*>	m_Instances3d;

@@ -59,7 +59,7 @@ vtSceneBase::~vtSceneBase()
 void vtSceneBase::OnMouse(vtMouseEvent &event)
 {
 	// Pass event to Engines
-	for (int i = 0; i < m_Engines.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
 	{
 		vtEngine *pEng = m_Engines.GetAt(i);
 		if (pEng->GetEnabled())
@@ -70,7 +70,7 @@ void vtSceneBase::OnMouse(vtMouseEvent &event)
 void vtSceneBase::OnKey(int key, int flags)
 {
 	// Pass event to Engines
-	for (int i = 0; i < m_Engines.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
 	{
 		vtEngine *pEng = m_Engines.GetAt(i);
 		if (pEng->GetEnabled())
@@ -81,7 +81,7 @@ void vtSceneBase::OnKey(int key, int flags)
 void vtSceneBase::DoEngines()
 {
 	// Evaluate Engines
-	for (int i = 0; i < m_Engines.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Engines.GetSize(); i++)
 	{
 		vtEngine *pEng = m_Engines.GetAt(i);
 		if (pEng->GetEnabled())

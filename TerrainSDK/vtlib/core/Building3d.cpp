@@ -153,7 +153,7 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 {
 	PolyChecker PolyChecker;
-	int i, j, k;
+	unsigned int i, j, k;
 
 	UpdateWorldLocation(pHeightField);
 
@@ -162,7 +162,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;
-	int iLevels = GetNumLevels();
+	unsigned int iLevels = GetNumLevels();
 
 	int level_show = -1, edge_show = -1;
 	GetValue("level", level_show);
@@ -172,7 +172,7 @@ bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 	{
 		vtLevel *lev = m_Levels[i];
 		const FLine3 &foot = GetLocalFootprint(i);
-		int edges = lev->NumEdges();
+		unsigned int edges = lev->NumEdges();
 
 		if (lev->IsHorizontal())
 		{
@@ -902,7 +902,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 
 		if (i == iHighlightEdge)
 		{
-			for (int j = 0; j < pLev->m_iStories; j++)
+			for (unsigned int j = 0; j < pLev->m_iStories; j++)
 			{
 				AddHighlightSection(pEdge, quad);
 				quad[0].y += pLev->m_fStoryHeight;

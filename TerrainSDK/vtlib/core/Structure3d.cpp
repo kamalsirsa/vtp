@@ -211,7 +211,7 @@ bool vtStructureArray3d::ConstructStructure(int index)
 void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 {
 	vtStructure *str;
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		str = GetAt(i);
 		if (!str->IsSelected())
@@ -242,7 +242,7 @@ void vtStructureArray3d::OffsetSelectedStructures(const DPoint2 &offset)
 
 void vtStructureArray3d::VisualDeselectAll()
 {
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = (vtStructure *) GetAt(i);
 		vtStructure3d *str3d = GetStructure3d(i);

@@ -281,7 +281,7 @@ vtPlantAppearance3d *vtPlantSpecies3d::GetAppearanceByHeight(float fHeight)
 	float closest_diff = m_fMaxHeight;
 	vtPlantAppearance *closest = NULL;
 
-	for (int i = 0; i < m_Apps.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Apps.GetSize(); i++)
 	{
 		vtPlantAppearance *pa = m_Apps[i];
 		float diff = fabsf(pa->m_height - fHeight);
@@ -339,7 +339,7 @@ vtPlantList3d &vtPlantList3d::operator=(const vtPlantList &v)
 }
 
 
-vtPlantSpecies3d *vtPlantList3d::GetSpecies(int i) const
+vtPlantSpecies3d *vtPlantList3d::GetSpecies(unsigned int i) const
 {
 	if (i >= 0 && i < m_Species.GetSize())
 		return (vtPlantSpecies3d *) m_Species[i];
@@ -509,7 +509,7 @@ vtPlantInstanceArray3d::~vtPlantInstanceArray3d()
 	}
 }
 
-vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(int i) const
+vtPlantInstance3d *vtPlantInstanceArray3d::GetInstance3d(unsigned int i) const
 {
 	if (i < 0 || i >= m_Instances3d.GetSize())
 		return NULL;
@@ -580,7 +580,7 @@ bool vtPlantInstanceArray3d::CreatePlantNode(int i)
 	return true;
 }
 
-void vtPlantInstanceArray3d::ReleasePlantGeometry(int i)
+void vtPlantInstanceArray3d::ReleasePlantGeometry(unsigned int i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d)
@@ -589,9 +589,9 @@ void vtPlantInstanceArray3d::ReleasePlantGeometry(int i)
 	}
 }
 
-vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i) const
+vtTransform *vtPlantInstanceArray3d::GetPlantNode(unsigned int i) const
 {
-	if (i < 0 || i >= m_Instances3d.GetSize())
+	if (i >= m_Instances3d.GetSize())
 		return NULL;
 
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
@@ -602,9 +602,9 @@ vtTransform *vtPlantInstanceArray3d::GetPlantNode(int i) const
 
 void vtPlantInstanceArray3d::VisualDeselectAll()
 {
-	int size = GetSize();
+	unsigned int size = GetSize();
 
-	for (int i = 0; i < size; i++)
+	for (unsigned int i = 0; i < size; i++)
 	{
 		vtPlantInstance3d *inst3d = GetInstance3d(i);
 		if (inst3d)
@@ -615,7 +615,7 @@ void vtPlantInstanceArray3d::VisualDeselectAll()
 	}
 }
 
-void vtPlantInstanceArray3d::VisualSelect(int i)
+void vtPlantInstanceArray3d::VisualSelect(unsigned int i)
 {
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
 	if (inst3d)
@@ -628,7 +628,7 @@ void vtPlantInstanceArray3d::VisualSelect(int i)
 int vtPlantInstanceArray3d::NumSelected() const
 {
 	int count = 0, size = GetSize();
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtPlantInstance3d *inst3d = GetInstance3d(i);
 		if (!inst3d || !inst3d->IsSelected())
@@ -641,7 +641,7 @@ int vtPlantInstanceArray3d::NumSelected() const
 void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 {
 	int size = GetSize();
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtPlantInstance &pi = GetAt(i);
 		vtPlantInstance3d *inst3d = GetInstance3d(i);
@@ -654,7 +654,7 @@ void vtPlantInstanceArray3d::OffsetSelectedPlants(const DPoint2 &offset)
 	}
 }
 
-void vtPlantInstanceArray3d::UpdateTransform(int i)
+void vtPlantInstanceArray3d::UpdateTransform(unsigned int i)
 {
 	vtPlantInstance &pi = GetAt(i);
 	vtPlantInstance3d *inst3d = GetInstance3d(i);
@@ -673,7 +673,7 @@ void vtPlantInstanceArray3d::UpdateTransform(int i)
 //
 // Note you must remove the plant from the scene graph before deleting it!
 //
-void vtPlantInstanceArray3d::DeletePlant(int i)
+void vtPlantInstanceArray3d::DeletePlant(unsigned int i)
 {
 	vtPlantInstance &pi = GetAt(i);
 	vtPlantInstance3d *inst3d = GetInstance3d(i);

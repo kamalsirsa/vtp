@@ -275,7 +275,7 @@ bool vtTin3d::FindAltitudeAtPoint(const FPoint3 &input, float &fAltitude,
 	FPoint2 p1, p2, p3;
 	bool good;
 
-	for (int m = 0; m < m_Meshes.GetSize(); m++)
+	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
 		int tris = mesh->GetNumVertices() / 3;
@@ -370,7 +370,7 @@ bool vtTin3d::CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 	float t, u, v, closest = 1E9;
 	int i;
 
-	for (int m = 0; m < m_Meshes.GetSize(); m++)
+	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
 		int tris = mesh->GetNumVertices() / 3;
@@ -399,7 +399,7 @@ FPoint3 vtTin3d::FindVectorToClosestVertex(const FPoint3 &pos)
 	FPoint3 vert, diff, closest_diff;
 	float len, minlen = 1E9;
 
-	for (int m = 0; m < m_Meshes.GetSize(); m++)
+	for (unsigned int m = 0; m < m_Meshes.GetSize(); m++)
 	{
 		vtMesh *mesh = m_Meshes[m];
 		int points = mesh->GetNumVertices();

@@ -75,9 +75,9 @@ public:
 	vtGeom *GetGeom() { return m_pWireGeom; }
 
 	// Station set readers.
-	vtUtilNode *GetAt(int iter)
+	vtUtilNode *GetAt(unsigned int iter)
 	{
-		return (iter < m_Nodes.GetSize() ? m_Nodes[iter] : m_Nodes[0]);
+		return (iter < m_Nodes.GetSize() ? m_Nodes[iter] : NULL);
 	}
 	long GetSize() { return m_Nodes.GetSize(); }
 
