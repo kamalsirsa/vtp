@@ -108,7 +108,7 @@ public:
 		else if (m_Slope < CN_SLOPE_MIN)
 			m_Slope = CN_SLOPE_MIN;
 	};
-	operator == (const CEdge &p) const { return m_Point == p.m_Point; }
+	bool operator == (const CEdge &p) const { return m_Point == p.m_Point; }
 	C3DPoint m_Point;
 	CNumber m_Slope;
 };
@@ -155,14 +155,14 @@ class CVertex
 public:
 	CVertex (void) : m_ID (-1) { };
 	CVertex (const C3DPoint &p, const C3DPoint &prev = C3DPoint (), const CNumber &prevslope = -1, const C3DPoint &next = C3DPoint (), const CNumber &nextslope = -1)
-		: m_point (p), m_axis (CRidgeLine::AngleAxis (p, prev, prevslope,  next, nextslope)), m_leftLine (p, prev, prevslope), m_rightLine (p, next, nextslope), m_higher (NULL),
-		m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
-		m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
+	: m_point (p), m_axis (CRidgeLine::AngleAxis (p, prev, prevslope,  next, nextslope)), m_leftLine (p, prev, prevslope), m_rightLine (p, next, nextslope), m_higher (NULL),
+	m_leftVertex (NULL), m_rightVertex (NULL), m_nextVertex (NULL), m_prevVertex (NULL), m_done (false), m_ID (-1),
+	m_leftSkeletonLine (NULL), m_rightSkeletonLine (NULL), m_advancingSkeletonLine (NULL) { }
 	CVertex (const C3DPoint &p, CVertex &left, CVertex &right);
 	CVertex *Highest (void) { return m_higher ? m_higher -> Highest () : this; }
 	bool AtContour (void) const { return m_leftVertex == this && m_rightVertex == this; }
-	operator == (const CVertex &v) const { return m_point == v.m_point; }
-	operator < (const CVertex &) const { assert (false); return false; } 
+	bool operator == (const CVertex &v) const { return m_point == v.m_point; }
+	bool operator < (const CVertex &) const { assert (false); return false; } 
 	C3DPoint CoordinatesOfAnyIntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	C3DPoint IntersectionOfTypeB(const CVertex &left, const CVertex &right);
 	CNumber NearestIntersection (CVertexList &vl, CVertex **left, CVertex **right, C3DPoint &p);
@@ -231,11 +231,11 @@ public:
 		int RightID (void) const { if (!m_right) return -1; return m_right -> m_ID; }
 		int VertexID (void) const { if (!m_vertex) return -1; return m_vertex -> m_ID; }
 	} m_lower, m_higher;
-	operator == (const CSkeletonLine &s) const
+	bool operator == (const CSkeletonLine &s) const
 	{
 		return m_higher.m_vertex -> m_ID == s.m_higher.m_vertex -> m_ID  && m_lower.m_vertex -> m_ID  == s.m_lower.m_vertex -> m_ID ;
 	}
-	operator < (const CSkeletonLine &) const { assert (false); return false; }
+	bool operator < (const CSkeletonLine &) const { assert (false); return false; }
 	int m_ID;
 };
 
@@ -257,4 +257,3 @@ public:
 };
 
 #endif // FELKELCOMPONENTSH
-
