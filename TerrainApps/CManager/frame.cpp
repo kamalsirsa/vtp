@@ -209,8 +209,6 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		SetIcon(icon);
 	}
 
-	m_strDataPath = "C:\\VTP\\TerrainApps\\Data\\";
-
 	ReadINI();
 
 	m_pCurrentModel = NULL;
@@ -286,25 +284,48 @@ vtFrame::~vtFrame()
 	delete m_pSceneGraphDlg;
 }
 
+#define STR_DATAPATH "DataPath"
+
 extern vtString get_line_from_stream(ifstream &input);
 
 void vtFrame::ReadINI()
 {
-	ifstream input("CManager.ini", ios::in | ios::binary);
+	ifstream input;
+	input.open("CManager.ini", ios::in | ios::binary);
+	if (!input.is_open())
+	{
+		input.clear();
+		input.open("Enviro.ini", ios::in | ios::binary);
+	}
+	if (!input.is_open())
+	{
+		input.clear();
+		input.open("../Enviro/Enviro.ini", ios::in | ios::binary);
+	}
 	if (!input.is_open())
 		return;
 
-	m_strDataPath = get_line_from_stream(input);
-}
+	char buf[80];
+	while (!input.eof())
+	{
+		if (input.peek() == '\n')
+			input.ignore();
+		input >> buf;
 
-void vtFrame::WriteINI()
-{
-	ofstream output("CManager.ini", ios::binary);
-	if (!output.is_open())
-		return;
+		// data value should been separated by a tab or space
+		int next = input.peek();
+		if (next != '\t' && next != ' ')
+			continue;
+		while (input.peek() == '\t' || input.peek() == ' ')
+			input.ignore();
 
-	output << (const char *) m_strDataPath;
-	output << "\n";
+		if (strcmp(buf, STR_DATAPATH) == 0)
+		{
+			vtString string = get_line_from_stream(input);
+			vtString *path = new vtString(string);
+			m_DataPaths.Append(path);
+		}
+	}
 }
 
 void vtFrame::CreateMenus()
@@ -591,20 +612,23 @@ void vtFrame::AddNewItem()
 
 vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 {
-	wxString2 fname = fname_in;
+	const char *fname = StartOfFilename(fname_in.mb_str());
 
-	int pathlen = m_strDataPath.Len();
-	if (!strncmp(fname.mb_str(), (const char *) m_strDataPath, pathlen))
-	{
-		// Remove the data path
-		fname = fname.Mid(pathlen);
-	}
-	else
+	vtString onpath = FindFileOnPaths(m_DataPaths, fname);
+	if (onpath == "")
 	{
 		// Warning!  May not be on the data path.
 		wxString2 str;
-		str.Printf(_T("That file:\n%s\ndoes not appear to be on the data")
-			_T(" path:\n%s"), fname.mb_str(), (const char *) m_strDataPath);
+		str.Printf(_T("That file:\n%hs\ndoes not appear to be on the data")
+			_T(" paths:"), fname);
+		for (int i = 0; i < m_DataPaths.GetSize(); i++)
+		{
+			vtString *vts = m_DataPaths[i];
+			const char *cpath = (const char *) *vts;
+			wxString2 path = cpath;
+			str += _T("\n");
+			str += path;
+		}
 		DisplayMessageBox(str);
 		return NULL;
 	}
@@ -614,7 +638,7 @@ vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 		AddNewItem();
 
 	vtModel *new_model = new vtModel();
-	new_model->m_filename = (const char *) fname;
+	new_model->m_filename = fname;
 
 	vtNode *node = AttemptLoad(new_model);
 	if (!node)
@@ -637,16 +661,14 @@ vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 
 vtTransform *vtFrame::AttemptLoad(vtModel *model)
 {
-	wxString2 path = m_strDataPath, name = model->m_filename;
-	wxString2 fname = path + name;
-
 	model->m_attempted_load = true;
 
-	vtNodeBase *pNode = vtLoadModel(fname);
+	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
+	vtNodeBase *pNode = vtLoadModel(fullpath);
 	if (!pNode)
 	{
 		wxString2 str;
-		str.Printf(_T("Sorry, couldn't load model from %hs"), fname.mb_str());
+		str.Printf(_T("Sorry, couldn't load model from %hs"), (const char *) model->m_filename);
 		DisplayMessageBox(str);
 		return NULL;
 	}
@@ -838,6 +860,7 @@ void vtFrame::OnTestXML(wxCommandEvent& event)
 
 void vtFrame::OnSetDataPath(wxCommandEvent& event)
 {
+#if 0
 	m_canvas->m_bRunning = false;
 
 	wxDirDialog dlg(this, _T("Please indicate your data directory"), m_strDataPath);
@@ -855,6 +878,7 @@ void vtFrame::OnSetDataPath(wxCommandEvent& event)
 
 	m_canvas->m_bRunning = true;
 	m_canvas->Refresh(FALSE);
+#endif
 }
 
 void vtFrame::DisplayMessageBox(const wxString2 &str)

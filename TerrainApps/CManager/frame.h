@@ -11,6 +11,7 @@
 #include <wx/dnd.h>
 #include <wx/splitter.h>
 #include "vtdata/Content.h"
+#include "vtdata/FilePath.h"
 #include "vtui/wxString2.h"
 #include <map>
 
@@ -76,7 +77,6 @@ protected:
 	void CreateMenus();
 	void CreateToolbar();
 	void ReadINI();
-	void WriteINI();
 
 	// command handlers
 	void OnClose(wxCloseEvent &event);
@@ -147,7 +147,7 @@ public:
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;
 
-	wxString2	m_strDataPath;
+	StringArray m_DataPaths;
 
 	DECLARE_EVENT_TABLE()
 };
