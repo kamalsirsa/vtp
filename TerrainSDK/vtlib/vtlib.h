@@ -25,13 +25,10 @@
 
 #if !VTLIB_PSM
   #include <GL/gl.h>
-#endif
-
 //
 // Base classes from which the API-specific implementation
 // classes are derived.
 //
-#if !VTLIB_PSM
   #include "core/Base.h"
 #endif
 
@@ -41,7 +38,6 @@
 
 ////////////////////////////// PSM ///////////////////////////////
 #if VTLIB_PSM
-	#define SUPPORT_XFROG 0
 	#define PV_OGL
 
 	#include "psm.h"
@@ -49,10 +45,10 @@
 
 	#include <GL/gl.h>
 
-	#include "vtpsm/BasePSM.h"
+	#include "core/Base.h"
 	#include "vtpsm/MathPSM.h"
 	#include "vtpsm/ImagePSM.h"
-	#include "vtpsm/MeshMat.h"
+	#include "vtpsm/MeshMatPSM.h"
 	#include "vtpsm/NodePSM.h"
 	#include "vtpsm/ScenePSM.h"
 
