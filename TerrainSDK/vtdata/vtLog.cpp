@@ -9,7 +9,10 @@
 #include "vtString.h"
 #include "vtLog.h"
 #include <stdarg.h>
+
+#ifndef __DARWIN_OSX__
 #include <wchar.h>		// for fputws()
+#endif
 
 #ifdef _MSC_VER
 #include <windows.h>	// for OutputDebugString, unfortunately
@@ -64,6 +67,7 @@ void vtLog::_Log(const char *msg)
 
 void vtLog::_Log(const wchar_t *msg)
 {
+#ifndef __DARWIN_OSX__
 	if (m_log)
 	{
 		// it is not so useful to write wide characters to the file, which
@@ -73,6 +77,8 @@ void vtLog::_Log(const wchar_t *msg)
 		fputs(str.eb_str(), m_log);
 		fflush(m_log);
 	}
+#endif	// __DARWIN_OSX__
+
 #ifdef _MSC_VER
 	OutputDebugStringW(msg);
 #endif
@@ -91,6 +97,7 @@ void vtLog::Printf(const char *pFormat, ...)
 
 void vtLog::Printf(const wchar_t *pFormat, ...)
 {
+#ifndef __DARWIN_OSX__
 	va_list va;
 	va_start(va, pFormat);
 
@@ -112,4 +119,5 @@ void vtLog::Printf(const wchar_t *pFormat, ...)
 #endif
 
 	_Log(ach);
+#endif	// __DARWIN_OSX__
 }
