@@ -1,6 +1,7 @@
+//
 // MainFrm.cpp : implementation of the CMainFrame class
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,19 +34,13 @@ END_MESSAGE_MAP()
 
 CMainFrame::CMainFrame()
 {
-	// TODO: add member initialization code here
-	
-}
-
-CMainFrame::~CMainFrame()
-{
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
-	
+
 	return 0;
 }
 
