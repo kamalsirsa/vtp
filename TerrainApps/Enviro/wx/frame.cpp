@@ -637,21 +637,14 @@ void vtFrame::OnViewFollowRoute(wxCommandEvent& event)
 	if (!g_App.m_pCurRoute)
 		return;
 
-	if (!g_App.m_pRouteFollower)
-	{
-		g_App.m_pRouteFollower = new RouteFollowerEngine(g_App.m_pCurRoute);
-		g_App.m_pRouteFollower->SetTarget(vtGetScene()->GetCamera());
-		vtGetScene()->AddEngine(g_App.m_pRouteFollower);
-		return;
-	}
-	bool on = g_App.m_pRouteFollower->GetEnabled();
-	g_App.m_pRouteFollower->SetEnabled(!on);
+	bool bOn = g_App.GetRouteFollower();
+	g_App.SetRouteFollower(!bOn);
 }
 
 void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
-	event.Check(g_App.m_pRouteFollower && g_App.m_pRouteFollower->GetEnabled());
+	event.Check(g_App.GetRouteFollower());
 }
 
 void vtFrame::OnViewLocations(wxCommandEvent& event)
