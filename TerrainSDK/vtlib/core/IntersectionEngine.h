@@ -11,6 +11,9 @@
 #include "Roads.h"
 #include "Engine.h"
 
+/** \addtogroup transp */
+/*@{*/
+
 //traffic light times
 #define LT_SWITCH_TIME 10
 #define LT_SWITCH_TIME2 1  //for yellow lights.
@@ -41,6 +44,8 @@ protected:
 	float m_fNextChange;
 	bool m_bFirstTime;
 };
+
+/*@}*/  // transp
 
 #endif	// INTERSECTIONENGINE
 

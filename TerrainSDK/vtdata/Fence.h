@@ -52,6 +52,11 @@ public:
 	// ConnectWidth assumed same at top and bottom
 };
 
+/**
+ * The vtFence class represents any linear structure.  This can be a fence,
+ * a wall, a railing, or any other kind of build structure which follows
+ * a line on the ground.
+ */
 class vtFence : public vtStructure
 {
 public:

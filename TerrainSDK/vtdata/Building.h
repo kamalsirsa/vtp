@@ -3,7 +3,7 @@
 //
 // Implements the vtBuilding class which represents a single built structure.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -71,6 +71,14 @@ public:
 	float	m_vf2;
 };
 
+/**
+ * Each building level (vtLevel) is composed of a number of edges (vtEdge).
+ * There should be one vtEdge for each edge of the level's footprint.
+ *
+ * Each edge is in turn composed of a number of vtEdgeFeature objects,
+ * which represent such things as walls, doors, and windows.  An edge
+ * can also simply consist of a Facade texture map.
+ */
 class vtEdge
 {
 public:
@@ -103,6 +111,21 @@ public:
 #define MAX_WALLS	360	// the largest number of walls
 						// (largest number of points in a poly-shaped building)
 
+/**
+ * The vtLevel class represents a level of a building.  In the VTP's
+ * parametric building representation, each building is composed of one
+ * or more levels, and each level is defined horizontally by a number
+ * of edges (vtEdge) and vertical by a story height and number of stories.
+ * The edges contain further description of the appearance of each side
+ * of this level of the building.
+ *
+ * Generally, a simple building will have two levels: one for the walls,
+ * and one for the roof.  Some buildings may have an additional level for
+ * base, such as a cement foundation.
+ *
+ * Each level can have its own footprint polygon, although in simple cases
+ * they will all be the same polygon.
+ */
 class vtLevel
 {
 	friend class vtBuilding;
@@ -171,11 +194,12 @@ private:
 /**
  * This class contains a parametric representation of a building.
  *
- * The geometry is described by a series of levels, each of which contains
- * a set of edges, which in turn are composed of edge features.
- * These components can vary in color, material, size, and number, which
- * gives a high-level representation of a building, which can be used to
- * construct a reasonable (visually similar) model of the building.
+ * The geometry is described by a series of levels (vtLevel), each of which
+ * contains a set of edges (vtEdge), which in turn are composed of edge
+ * features (vtEdgeFeature).  These components can vary in color, material,
+ * size, and number, which gives a high-level representation of a building,
+ * which can be used to construct a reasonable (visually similar) model of
+ * the building.
  */
 class vtBuilding : public vtStructure
 {

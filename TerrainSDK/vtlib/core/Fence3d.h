@@ -12,6 +12,9 @@
 #include "vtdata/HeightField.h"
 #include "Structure3d.h"
 
+/** \addtogroup struct */
+/*@{*/
+
 /**
  * This class extends vtFence with the abiliity to construct and
  * operate on a 3D model of a linear structore (parametric fence or wall.)

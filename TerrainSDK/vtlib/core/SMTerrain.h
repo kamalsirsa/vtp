@@ -11,6 +11,9 @@
 #include <limits.h>
 #include "DynTerrain.h"
 
+/** \addtogroup dynterr */
+/*@{*/
+
 // Configure the implementation with the following definitions:
 
 // Converts all elevation values to signed short integers, such that each
@@ -212,5 +215,7 @@ private:
 
 	bool hack_detail_pass;
 };
+
+/*@}*/	// Group dynterr
 
 #endif

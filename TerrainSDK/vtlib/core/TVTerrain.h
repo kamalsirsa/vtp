@@ -3,12 +3,15 @@
 //
 // Original authors: Will Evans and Gregg Townsend of the University of Arizona
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef TVTERRAINH
 #define TVTERRAINH
+
+/** \addtogroup dynterr */
+/*@{*/
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -208,5 +211,7 @@ private:
 	Coord2d eyeP;
 };
 
-#endif
+/*@}*/	// Group dynterr
+
+#endif	// TVTERRAINH
 

@@ -1609,6 +1609,9 @@
 				RelativePath="..\core\Engine.h">
 			</File>
 			<File
+				RelativePath="..\core\Event.h">
+			</File>
+			<File
 				RelativePath="..\core\FelkelComponents.h">
 			</File>
 			<File

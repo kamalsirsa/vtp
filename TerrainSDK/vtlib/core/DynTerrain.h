@@ -11,6 +11,12 @@
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/HeightField.h"
 
+/** \defgroup dynterr Dynamic Terrain (CLOD)
+ * These classes are used for dynamically rendered terrain surfaces, including
+ * implementations of Continuous Level of Detail (CLOD).
+ */
+/*@{*/
+
 // A set of errors that may be returned from the dynamic terrain classes.
 enum DTErr
 {
@@ -104,6 +110,8 @@ protected:
 protected:
 	~vtDynTerrainGeom();
 };
+
+/*@}*/	// Group dynterr
 
 #endif	// DYNTERRAINH
 

@@ -330,12 +330,16 @@ public:
 	void RemoveMaterial(vtMaterial *pMat);
 };
 
+/**
+ * This class represents a window, an area of the display which corresponds
+ * to an OpenGL drawing surface and has the potential to receive UI events.
+ */
 class vtWindow
 {
 public:
 	vtWindow();
 
-	/// Set the background color for the scene (the rendering window).
+	/// Set the background color for the window.
 	void SetBgColor(const RGBf &color) { m_BgColor = color; }
 	RGBf GetBgColor() { return m_BgColor; }
 

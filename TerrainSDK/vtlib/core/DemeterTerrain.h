@@ -1,7 +1,7 @@
 //
 // DemeterTerrain class
 //
-// Copyright (c) 2002-2004 Virtual Terrain Project
+// Copyright (c) 2002-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,9 @@
 
 #include "DynTerrain.h"
 namespace Demeter { class Terrain; class DemeterDrawable; }
+
+/** \addtogroup dynterr */
+/*@{*/
 
 /**
  * This class wraps the Demeter CLOD terrain rendering algorithm for use in
@@ -44,5 +47,7 @@ private:
 	float *m_pData;			// the elevation height array
 	float m_fZScale;
 };
+
+/*@}*/	// Group dynterr
 
 #endif	// DEMETERTERRAINH

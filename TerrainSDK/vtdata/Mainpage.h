@@ -4,7 +4,7 @@
 \section overview Overview
 The <b>vtdata</b> library handles many types of geospatial data.
 It is part of the <a href="http://vterrain.org/">Virtual Terrain Project</a>
-and distributed under a completely free <a href="../../license.txt">open source license</a>.
+and distributed under a completely free <a href="../license.txt">open source license</a>.
 
 \section hier Classes
 <table border="1" cellpadding="7" cellspacing="0" bgcolor="#DBDBDB">

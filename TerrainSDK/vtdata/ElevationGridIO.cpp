@@ -1838,7 +1838,9 @@ bool vtElevationGrid::LoadFromMicroDEM(const char *szFileName, bool progress_cal
 
 /**
  * Loads from an "XYZ file", which is a simple text file containing
- * a set of grid points in the form X,Y,Z - where Z is elevation.
+ * a set of grid points in the form X,Y,Z - where X and Y are ground
+ * coordinates, and Z is elevation.  The values may be separated either
+ * by commas (X, Y, Z) or by whitespace (X Y Z).
  *
  * \returns \c true if the file was successfully opened and read.
  */

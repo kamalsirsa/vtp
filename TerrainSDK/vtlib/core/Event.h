@@ -1,12 +1,15 @@
 //
 // Event.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTLIB_EVENTH
 #define VTLIB_EVENTH
+
+/** \addtogroup eng */
+/*@{*/
 
 enum vtMouseEventType
 {
@@ -108,6 +111,8 @@ enum vtKeyCode
 	VTK_NUMLOCK,
 	VTK_SCROLL
 };
+
+/*@}*/	// Group eng
 
 #endif // VTLIB_EVENTH
 

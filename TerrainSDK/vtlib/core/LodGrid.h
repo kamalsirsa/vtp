@@ -1,7 +1,7 @@
 //
 // LodGrid.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,6 +11,9 @@
 class vtGeom;
 class vtTransform;
 class vtHeightField;
+
+/** \addtogroup sg */
+/*@{*/
 
 /**
  * An LOD Grid is a useful way of grouping objects in your scene graph.
@@ -60,5 +63,7 @@ protected:
 	void AllocateCell(int a, int b);
 	void DetermineCell(const FPoint3 &pos, int &a, int &b);
 };
+
+/*@}*/  // sg
 
 #endif

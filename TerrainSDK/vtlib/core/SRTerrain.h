@@ -14,6 +14,9 @@
 
 #include "DynTerrain.h"
 
+/** \addtogroup dynterr */
+/*@{*/
+
 /*!
 	The SRTerrain class implements Stefan Roettger's algorithm for
 	regular-grid terrain LOD.  It was adapted directly from his sample
@@ -70,5 +73,7 @@ private:
 	int m_iLastDiff;
 	float m_fDamping;
 };
+
+/*@}*/	// Group dynterr
 
 #endif	// SRTerrain

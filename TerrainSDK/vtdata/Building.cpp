@@ -1020,8 +1020,8 @@ void vtBuilding::SetFootprint(int lev, const DLine2 &foot)
  *		- ROOF_SHED
  *		- ROOF_GABLE
  *		- ROOF_HIP
- * \param iSlope For non-flat roof, the slope in degrees of the sloped edges.
- *		This varies from 0 (horizontal) to 90 (vertical).
+ * \param iSlope For a non-flat roof, this is the slope in degrees of the
+ *		sloped edges. This varies from 0 (horizontal) to 90 (vertical).
  * \param iLev (optional) The number of the level to assume is the roof.
  *		If omitted, the top level is assumed to be the roof.
  */

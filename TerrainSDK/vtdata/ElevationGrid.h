@@ -18,12 +18,14 @@ class vtDIB;
 
 /**
  * The vtElevationGrid class represents a generic grid of elevation data.
- * It supports reading and writing the data from several file formats.
- * \par
+ * It supports reading and writing the data from many file formats, testing
+ * the height at any given point, reprojecting the grid between coordinate
+ * systems, and many other operations.
+ *
  * Height elements ("heixels") can be either integer (2 bytes) or floating
  * point (4 bytes).  Heixel values are always in meters.  Areas of unknown
  * elevation are represented by the value INVALID_ELEVATION.
- * \par
+ *
  * To load a grid from a file, first create an empty grid, then call the
  * appropriated Load method.
  */

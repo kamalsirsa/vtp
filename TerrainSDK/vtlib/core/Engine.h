@@ -1,16 +1,24 @@
 //
 // Engine.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef VTENGINEH
 #define VTENGINEH
 
+#include "vtdata/vtString.h"
+
 class vtWindow;
 
-#include "vtdata/vtString.h"
+/** \defgroup eng Engines and Events 
+ * These classes are used for per-frame simulation and user interaction.
+ * See the <a href="group__nav.html">Navigation</a> module for engines
+ * which are specifically for navigation.
+ */
+/*@{*/
+
 
 /**
  * The vtEngine class represents an Engine, which is a convenient way to
@@ -148,6 +156,8 @@ public:
 	bool m_bPitch;
 	float m_fAngleOffset;
 };
+
+/*@}*/	// Group eng
 
 #endif	// VTENGINEH
 

@@ -13,6 +13,9 @@
 
 class CreateProjectedShadowTextureCullCallback;
 
+/** \addtogroup sg */
+/*@{*/
+
 /**
  * A Scene is the all-encompassing container for all 3D objects
  * that are to be managed and drawn by the scene graph / graphics
@@ -119,6 +122,8 @@ vtScene *vtGetScene();
 float vtGetTime();
 float vtGetFrameTime();
 int vtGetMaxTextureSize();
+
+/*@}*/	// Group sg
 
 #endif	// VTOSG_SCENEH
 

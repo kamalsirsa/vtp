@@ -1,12 +1,15 @@
 //
 // CustomTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifndef CUSTOMTERRAINH
 #define CUSTOMTERRAINH
+
+/** \addtogroup dynterr
+/*@{*/
 
 #include "DynTerrain.h"
 
@@ -46,5 +49,7 @@ private:
 	float *m_pData;			// the elevation height array
 	float m_fZScale;
 };
+
+/*@}*/	// Group dynterr
 
 #endif

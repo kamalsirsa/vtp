@@ -3,7 +3,7 @@
 //
 // Implementation animation path capabilities.
 //
-// Copyright (c) 2004 Virtual Terrain Project
+// Copyright (c) 2004-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -587,6 +587,7 @@ bool vtAnimPath::CreateFromLineString(const vtProjection &proj,
 	return true;
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 /* Convenience classes for organizing a set of animation paths. */
 vtAnimContainer::vtAnimContainer()
@@ -613,4 +614,5 @@ void vtAnimContainer::AppendEntry(vtAnimEntry *pEntry)
 	Append(pEntry);
 }
 
+#endif	// DOXYGEN_SHOULD_SKIP_THIS
 
