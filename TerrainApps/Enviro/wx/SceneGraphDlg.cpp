@@ -151,39 +151,6 @@ void SceneGraphDlg::RefreshTreeContents()
 	if (pEngine) AddEnginesRecursively(hEngRoot, pEngine, 0);
 	m_pTree->Expand(hEngRoot);
 
-/*	// Fill in the tree with engines
-	int num = scene->GetNumEngines();
-	vtTarget *target;
-	for (int i = 0; i < num; i++)
-	{
-		vtEngine *pEng = scene->GetEngine(i);
-		wxString2 str = pEng->GetName2();
-		int targets = pEng->NumTargets();
-		target = pEng->GetTarget();
-		if (target)
-		{
-			str += _T(" -> ");
-			vtNodeBase *node = dynamic_cast<vtNodeBase*>(target);
-			if (node)
-			{
-				str += _T("\"");
-				str += wxString::FromAscii(node->GetName2());
-				str += _T("\"");
-			}
-			else
-				str += _("(non-node)");
-		}
-		if (targets > 1)
-		{
-			wxString2 plus;
-			plus.Printf(_(" (%d targets total)"), targets);
-			str += plus;
-		}
-		wxTreeItemId hEng = m_pTree->AppendItem(hEngRoot, str, 1, 1);
-		m_pTree->SetItemData(hEng, new MyTreeItemData(NULL, pEng));
-	}
-	m_pTree->Expand(hEngRoot);
-*/
 	m_pSelectedEngine = NULL;
 	m_pSelectedNode = NULL;
 }
@@ -320,7 +287,7 @@ void SceneGraphDlg::AddEnginesRecursively(wxTreeItemId hParentItem,
 	if (!pEng) return;
 
 	wxString2 str = pEng->GetName2();
-	if (str == "")
+	if (str == wxString2(""))
 		str = "unnamed";
 
 	int targets = pEng->NumTargets();
