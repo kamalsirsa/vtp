@@ -16,6 +16,8 @@
 #include "ScaledView.h"
 #include "ImageLayer.h"
 #include "Helper.h"
+#include "Projection2Dlg.h"
+#include "Frame.h"
 
 vtImageLayer::vtImageLayer() : vtLayer(LT_IMAGE)
 {
@@ -295,29 +297,48 @@ bool vtImageLayer::LoadFromGDAL()
 		m_iXSize = pDataset->GetRasterXSize();
 		m_iYSize = pDataset->GetRasterYSize();
 
-		if (NULL == (pProjectionString = pDataset->GetProjectionRef()))
+		if (CE_None != pDataset->GetGeoTransform(affineTransform))
+			throw "Dataset does not contain a valid affine transform.";
+
+		bool bHaveProj = false;
+		pProjectionString = pDataset->GetProjectionRef();
+		if (pProjectionString)
+		{
+			err = m_proj.importFromWkt((char**)&pProjectionString);
+			if (err == OGRERR_NONE)
+				bHaveProj = true;
+		}
+		if (!bHaveProj)
 		{
 			// check for existence of .prj file
 			bool bSuccess = m_proj.ReadProjFile(m_strFilename.mb_str());
-
-			if (!bSuccess)
-				throw "Unknown coordinate system.";
+			if (bSuccess)
+				bHaveProj = true;
 		}
-		else
+		// if we still don't have it
+		if (!bHaveProj)
 		{
-			err = m_proj.importFromWkt((char**)&pProjectionString);
-			if (err != OGRERR_NONE)
+			wxString2 msg = "File lacks a projection.  Would you like to specify one?\n"
+				"Yes - specify projection\n"
+				"No - use current projection\n";
+			int res = wxMessageBox(msg, "Image Import", wxYES_NO | wxCANCEL);
+			if (res == wxYES)
 			{
-				// check for existence of .prj file
-				bool bSuccess = m_proj.ReadProjFile(m_strFilename.mb_str());
+				GetMainFrame()->GetProjection(m_proj);
+				Projection2Dlg dlg(NULL, -1, _T("Please indicate projection"));
+				dlg.SetProjection(m_proj);
 
-				if (!bSuccess)
-					throw "Unknown coordinate system.";
+				if (dlg.ShowModal() == wxID_CANCEL)
+					throw "Import Cancelled";
+				dlg.GetProjection(m_proj);
 			}
+			if (res == wxNO)
+			{
+				GetMainFrame()->GetProjection(m_proj);
+			}
+			if (res == wxCANCEL)
+				throw "Import Cancelled.";
 		}
-
-		if (CE_None != pDataset->GetGeoTransform(affineTransform))
-			throw "Dataset does not contain a valid affine transform.";
 
 		if (m_proj.IsGeographic())
 		{
@@ -357,10 +378,18 @@ bool vtImageLayer::LoadFromGDAL()
 			// Check data type - it's either integer or float
 			if (GDT_Byte != pBand->GetRasterDataType())
 				throw "Raster is not of type byte.";
-			if (GCI_PaletteIndex != pBand->GetColorInterpretation())
-				throw "Couldn't get palette.";
-			if (NULL == (pTable = pBand->GetColorTable()))
-				throw "Couldn't get color table.";
+			GDALColorInterp ci = pBand->GetColorInterpretation();
+			if (ci == GCI_PaletteIndex)
+			{
+				if (NULL == (pTable = pBand->GetColorTable()))
+					throw "Couldn't get color table.";
+			}
+			else if (ci == GCI_GrayIndex)
+			{
+				// we will assume 0-255 is black to white
+			}
+			else
+				throw "Unsupported color interpretation.";
 
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
 			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
@@ -537,8 +566,17 @@ void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 
 			for( int iX = 0; iX < nxValid; iX++ )
 			{
-				pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
-				m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
+				int val = pScanline[iY * xBlockSize + iX];
+				if (pTable)
+				{
+					pTable->GetColorEntryAsRGB(val, &Ent);
+					m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
+				}
+				else
+				{
+					// greyscale
+					m_row[bufrow].m_data[iX].Set(val, val, val);
+				}
 			}
 		}
 	}
