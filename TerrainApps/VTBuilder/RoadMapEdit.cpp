@@ -21,10 +21,15 @@
 
 #define NODE_RADIUS 5
 
-wxPen RoadPen[10];
+wxPen RoadPen[11];
 wxPen NodePen[VIT_TOTAL];
 static bool g_bInitializedPens = false;
 
+#define RP_HIGHWAY 0
+// 1 through 7 are SURFT_GRAVEL through SURFT_STONE
+#define RP_SELECTION 8
+#define RP_DIRECTION 9
+#define RP_CROSSES	10
 
 NodeEdit::NodeEdit() : Node()
 {
@@ -258,7 +263,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	// base road color on type of road
 	pDC->SetLogicalFunction(wxCOPY);
 	if (m_iHwy != -1)
-		pDC->SetPen(RoadPen[0]);
+		pDC->SetPen(RoadPen[RP_HIGHWAY]);
 	else
 		pDC->SetPen(RoadPen[m_Surface]);
 
@@ -274,7 +279,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	if (m_bSelect)
 	{
 		pDC->SetLogicalFunction(wxINVERT);
-		pDC->SetPen(RoadPen[7]);
+		pDC->SetPen(RoadPen[RP_SELECTION]);
 		pDC->DrawLines(GetSize(), g_screenbuf);
 	}
 	if (bShowDirection)
@@ -302,7 +307,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 		fw.Normalize();
 		side.x = -fw.y;
 		side.y = fw.x;
-		pDC->SetPen(RoadPen[8]);
+		pDC->SetPen(RoadPen[RP_DIRECTION]);
 		if (m_iFlags & RF_FORWARD)
 		{
 			pDC->DrawLine((int) (center.x - side.x * 5.0f),
@@ -328,7 +333,7 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	}
 	if (m_bDrawPoints)
 	{
-		pDC->SetPen(RoadPen[9]);
+		pDC->SetPen(RoadPen[RP_CROSSES]);
 		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
 		{
 			pDC->DrawLine(g_screenbuf[c].x-3, g_screenbuf[c].y,
@@ -374,8 +379,8 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 	{
 		g_bInitializedPens = true;
 
-		RoadPen[0].SetColour(128,0,0);
-		RoadPen[0].SetWidth(2);
+		RoadPen[RP_HIGHWAY].SetColour(128,0,0);	// dark red highways
+		RoadPen[RP_HIGHWAY].SetWidth(2);
 
 		RoadPen[SURFT_GRAVEL].SetColour(128,128,128);
 
@@ -391,13 +396,13 @@ RoadMapEdit::RoadMapEdit() : vtRoadMap()
 		RoadPen[SURFT_RAILROAD].SetColour(0,0,0);
 		RoadPen[SURFT_RAILROAD].SetStyle(wxSHORT_DASH);
 
-		RoadPen[7].SetColour(255,255,255);	// for selection
-		RoadPen[7].SetWidth(3);
+		RoadPen[RP_SELECTION].SetColour(255,255,255);	// for selection
+		RoadPen[RP_SELECTION].SetWidth(3);
 
-		RoadPen[8].SetColour(0,180,0);	// for direction
-		RoadPen[8].SetWidth(2);
+		RoadPen[RP_DIRECTION].SetColour(0,180,0);	// for direction
+		RoadPen[RP_DIRECTION].SetWidth(2);
 
-		RoadPen[9].SetColour(128,0,128);	// for edit crosses
+		RoadPen[RP_CROSSES].SetColour(128,0,128);	// for edit crosses
 
 		NodePen[VIT_UNKNOWN].SetColour(255,0,255);
 
