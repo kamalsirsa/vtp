@@ -41,7 +41,9 @@ bool vtApp::OnInit(void)
 	vtFrame *frame = new vtFrame(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 
-	return CreateScene();
+	// Get a handle to the vtScene - one is already created for you
+	vtScene *pScene = vtGetScene();
+	return pScene->Init();
 }
 
 //
@@ -49,9 +51,7 @@ bool vtApp::OnInit(void)
 //
 bool CreateScene()
 {
-	// Get a handle to the vtScene - one is already created for you
 	vtScene *pScene = vtGetScene();
-	pScene->Init();
 
 	// Set the global data path
 	StringArray paths;
