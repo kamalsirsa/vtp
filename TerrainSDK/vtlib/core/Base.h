@@ -68,7 +68,6 @@ class vtGroup;
 class vtRoot;
 class vtEngine;
 class vtGeom;
-class vtRoot;
 
 /** Base class for Node implementation. */
 class vtNodeBase
