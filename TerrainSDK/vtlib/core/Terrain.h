@@ -12,13 +12,13 @@
 #include "Trees.h"
 #include "Structure3d.h"
 #include "vtdata/FilePath.h"
+#include "Route.h"
 
 class vtTerrainGeom;
 class vtTextureCoverage;
 class vtFence3d;
 class vtRoadMap3d;
 class vtLodGrid;
-class vtRoute;
 class vtDynTerrainGeom;
 class vtElevationGrid;
 class vtTin;
@@ -78,9 +78,9 @@ public:
 	vtString GetName() { return m_Params.m_strName; }
 
 	// you can alternately give it a grid to use instead of loading a BT
-	void SetLocalGrid(vtLocalGrid *pGrid);
-	void SetTin(vtTin *pTin);
-	vtTin *GetTin() { return m_pTin; }
+	void SetLocalGrid(vtLocalGrid *pGrid, bool bPreserve);
+	void SetTin(vtTin3d *pTin);
+	vtTin3d *GetTin() { return m_pTin; }
 
 	/// primary creation function
 	vtGroup *CreateScene(bool bSound, int &iError);
@@ -124,17 +124,16 @@ public:
 
 	// fences
 	void AddFence(vtFence3d *f);
-	void AddFencepoint(vtFence3d *f, const DPoint2 &utm);
+	void AddFencepoint(vtFence3d *f, const DPoint2 &epos);
 	void RedrawFence(vtFence3d *f);
 
 	// Route
 	void AddRoute(vtRoute *f);
-	void add_routepoint_earth(vtRoute *f, const DPoint2 &utm);
+	void add_routepoint_earth(vtRoute *f, const DPoint2 &epos, const char *structname);
 	void RedrawRoute(vtRoute *f);
-	void LoadRoute(float fRouteOffL, float fRouteOffR, float fRouteStInc,
-					vtString sRouteName);
 	void SaveRoute();
-	vtRoute* GetLastRoute() { return m_pRoutes.GetSize()>0?m_pRoutes[m_pRoutes.GetSize()-1]:0; }
+	vtRoute* GetLastRoute() { return m_Routes.GetSize()>0?m_Routes[m_Routes.GetSize()-1]:0; }
+	vtRouteMap &GetRouteMap() { return m_Routes; }
 
 	// plants
 	void AddPlant(const DPoint2 &pos, int iSpecies, float fSize);
@@ -202,7 +201,7 @@ protected:
 	bool CreateFromGrid(int &iError);
 	void create_roads(vtString strRoadFile);
 	void setup_LodGrid(float fLODDistance);
-	void create_textures(int iTiles, const char *szTextureFile);
+	void create_textures();
 	bool create_regular_terrain(float fOceanDepth);
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
@@ -233,7 +232,7 @@ protected:
 	vtDynTerrainGeom *m_pDynGeom;
 
 	// triangular irregular network (TIN)
-	vtTin		*m_pTin;
+	vtTin3d		*m_pTin;
 
 	// construction parameters used to create this terrain
 	TParams		m_Params;
@@ -242,6 +241,7 @@ protected:
 	vtLocalGrid		*m_pInputGrid;	// if non-NULL, use instead of BT
 	vtHeightField	*m_pHeightField;
 	vtLodGrid		*m_pLodGrid;
+	bool			m_bPreserveInputGrid;
 
 	// if we're switching between multiple terrains, we can remember where
 	// the camera was in each one
@@ -266,7 +266,7 @@ protected:
 	vtPlantList3d		*m_pPlantList;
 
 	// routes
-	Array<vtRoute *>	m_pRoutes;
+	vtRouteMap		m_Routes;
 
 	// ground texture
 	vtDIB				*m_pDIB;
