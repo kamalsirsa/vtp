@@ -11,6 +11,12 @@
 #include "ElevationGrid.h"
 #include "vtLog.h"
 
+#ifdef DEBUG
+#define DEBUG_DEM true
+#else
+#define DEBUG_DEM false
+#endif
+
 // ************** DConvert - DEM Helper function ****************
 
 double DConvert(FILE *fp, int length, bool bDebug=false)
@@ -236,9 +242,9 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	fseek(fp, 816, 0);
-	DConvert(fp, 12, DEBUG);	// dxdelta (unused)
-	double dydelta = DConvert(fp, 12, DEBUG);
-	double dzdelta = DConvert(fp, 12, DEBUG);
+	DConvert(fp, 12, DEBUG_DEM);	// dxdelta (unused)
+	double dydelta = DConvert(fp, 12, DEBUG_DEM);
+	double dzdelta = DConvert(fp, 12, DEBUG_DEM);
 
 	m_bFloatMode = false;
 
@@ -248,8 +254,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	fseek(fp, 546, 0);
 	for (i = 0; i < 4; i++)
 	{
-		corners[i].x = DConvert(fp, 24, DEBUG);
-		corners[i].y = DConvert(fp, 24, DEBUG);
+		corners[i].x = DConvert(fp, 24, DEBUG_DEM);
+		corners[i].y = DConvert(fp, 24, DEBUG_DEM);
 	}
 	for (i = 0; i < 4; i++)
 		VTLOG(" (%lf, %lf)", corners[i].x, corners[i].y);
@@ -271,8 +277,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			m_Corners[i] = corners[i];
 	}
 
-	double dElevMin = DConvert(fp, 24, DEBUG);
-	double dElevMax = DConvert(fp, 24, DEBUG);
+	double dElevMin = DConvert(fp, 24, DEBUG_DEM);
+	double dElevMax = DConvert(fp, 24, DEBUG_DEM);
 
 	fseek(fp, 852, 0);
 	IConvert(fp, 6);	// This "Rows" value will always be 1
