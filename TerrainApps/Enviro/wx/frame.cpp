@@ -233,7 +233,7 @@ wxFrame(parent, -1, title, pos, size, style)
 	CreateToolbar(bVerticalToolbar);	// argument: vertical
 
 	// Create StatusBar
-	m_pStatusBar = new MyStatusBar(this, wxST_SIZEGRIP);
+	m_pStatusBar = new MyStatusBar(this);
 	SetStatusBar(m_pStatusBar);
 	m_pStatusBar->Show();
 	m_pStatusBar->UpdateText();
