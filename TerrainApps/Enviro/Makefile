@@ -59,13 +59,7 @@ clobber :
 I18N_SOURCES = \
 	wx/app.cpp \
 	wx/frame.cpp \
-	wx/CameraDlg.cpp \
-	wx/LayerDlg.cpp \
-	wx/LocationDlg.cpp \
-	wx/SceneGraphDlg.cpp \
-	wx/StartupDlg.cpp \
-	wx/TerrManDlg.cpp \
-	wx/TParamsDlg.cpp \
+	wx/*Dlg.cpp \
 	wx/Enviro_wdr.cpp \
 	../../TerrainSDK/vtui/vtui_wdr.cpp \
 	../../TerrainSDK/vtui/BuildingDlg.cpp
@@ -74,10 +68,14 @@ update-pot:
 	xgettext --from-code=iso-8859-1 -k_ -o Enviro.pot $(I18N_SOURCES)
 
 #----------
+publish-af:
+	cp af/Enviro.pox af/Enviro.po
+	msgfmt af/Enviro.po -o af/Enviro.mo
 
 update-af:
 	msgmerge --no-fuzzy-matching af/Enviro.po Enviro.pot -o af/Enviro.pox
 
+#----------
 publish-zh:
 	cp zh/Enviro.pox zh/Enviro.po
 	msgfmt zh/Enviro.po -o zh/Enviro.mo
@@ -85,6 +83,7 @@ publish-zh:
 update-zh:
 	msgmerge --no-fuzzy-matching zh/Enviro.po Enviro.pot -o zh/Enviro.pox
 
+#----------
 publish-de:
 	cp de/Enviro.pox de/Enviro.po
 	msgfmt de/Enviro.po -o de/Enviro.mo
@@ -92,6 +91,7 @@ publish-de:
 update-de:
 	msgmerge --no-fuzzy-matching de/Enviro.po Enviro.pot -o de/Enviro.pox
 
+#----------
 publish-hu:
 	cp hu/Enviro.pox hu/Enviro.po
 	msgfmt hu/Enviro.po -o hu/Enviro.mo
@@ -99,6 +99,7 @@ publish-hu:
 update-hu:
 	msgmerge --no-fuzzy-matching hu/Enviro.po Enviro.pot -o hu/Enviro.pox
 
+#----------
 publish-pt:
 	cp pt/Enviro.pox pt/Enviro.po
 	msgfmt pt/Enviro.po -o pt/Enviro.mo
@@ -106,10 +107,15 @@ publish-pt:
 update-pt:
 	msgmerge --no-fuzzy-matching pt/Enviro.po Enviro.pot -o pt/Enviro.pox
 
+#----------
 publish-ro:
 	cp ro/Enviro.pox ro/Enviro.po
 	msgfmt ro/Enviro.po -o ro/Enviro.mo
 
+update-ro:
+	msgmerge --no-fuzzy-matching ro/Enviro.po Enviro.pot -o ro/Enviro.pox
+
+#----------
 publish-sv:
 	cp sv/Enviro.pox sv/Enviro.po
 	msgfmt sv/Enviro.po -o sv/Enviro.mo
@@ -117,13 +123,10 @@ publish-sv:
 update-sv:
 	msgmerge --no-fuzzy-matching sv/Enviro.po Enviro.pot -o sv/Enviro.pox
 
+#----------
 publish-uk:
 	cp en_GB/Enviro.pox en_GB/Enviro.po
 	msgfmt en_GB/Enviro.po -o en_GB/Enviro.mo
-
-publish-af:
-	cp af/Enviro.pox af/Enviro.po
-	msgfmt af/Enviro.po -o af/Enviro.mo
 
 #
 # Internationalization steps for Infra (iso-8859-1)
