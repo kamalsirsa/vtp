@@ -536,7 +536,7 @@ void vtGeomBase::SetMaterials(class vtMaterialArray *mats)
 
 vtMaterial *vtGeomBase::GetMaterial(int idx)
 {
-	if (m_pMaterialArray && idx < m_pMaterialArray->GetSize())
+	if (m_pMaterialArray && idx >= 0 && idx < m_pMaterialArray->GetSize())
 		return m_pMaterialArray->GetAt(idx);
 	else
 		return NULL;
