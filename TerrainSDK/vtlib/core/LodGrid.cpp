@@ -35,19 +35,28 @@ vtLodGrid::vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
 	m_pHeightField = pHF;
 }
 
-vtLodGrid::~vtLodGrid()
+void vtLodGrid::Destroy()
 {
-#if 1
+	// get rid of children first
+	vtLOD *lod;
 	int a, b;
 	for (a = 0; a < m_dim; a++)
+	{
 		for (b = 0; b < m_dim; b++)
 		{
-			if (m_pCells[index(a,b)] != NULL)
-				delete m_pCells[index(a,b)];
+			lod = m_pCells[index(a,b)];
+			if (lod != NULL)
+			{
+				RemoveChild(lod);
+				lod->Destroy();
+			}
 		}
-#endif
+	}
 	free(m_pCells);
 	m_pCells = NULL;
+
+	// now self-destruct
+	vtGroup::Destroy();
 }
 
 
@@ -130,3 +139,31 @@ void vtLodGrid::RemoveFromGrid(vtGeom *pGNode)
 	if (pGroup)
 		pGroup->RemoveChild(pGNode);
 }
+
+/**
+ * This version is slower but safer than calling RemoveFromGrid.  Is
+ * searches through all of the LOD grid's cells looking for the node,
+ * so it will work even in cases where the object may have moved
+ * out of its original cell.
+ */
+void vtLodGrid::RemoveNodeFromGrid(vtNode *pNode)
+{
+	vtLOD *lod;
+	int a, b;
+	for (a = 0; a < m_dim; a++)
+	{
+		for (b = 0; b < m_dim; b++)
+		{
+			lod = m_pCells[index(a,b)];
+			if (lod == NULL)
+				continue;
+			vtGroup *group = (vtGroup *) lod->GetChild(0);
+			if (group->ContainsChild(pNode))
+			{
+				group->RemoveChild(pNode);
+				return;
+			}
+		}
+	}
+}
+

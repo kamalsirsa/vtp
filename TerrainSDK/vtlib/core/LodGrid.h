@@ -17,13 +17,14 @@ class vtLodGrid : public vtGroup
 public:
 	vtLodGrid(const FPoint3 &origin, const FPoint3 &size,
 		int iDimension, float fLODDistance, vtHeightField *pHF = NULL);
-	~vtLodGrid();
+	void Destroy();
 
 	// methods
 	void AppendToGrid(vtTransform *pTrans);
 	void AppendToGrid(vtGeom *pGeom);
 	void RemoveFromGrid(vtTransform *pTNode);
 	void RemoveFromGrid(vtGeom *pModel);
+	void RemoveNodeFromGrid(vtNode *pNode);
 
 protected:
 	FPoint3 m_origin;
