@@ -136,7 +136,8 @@
 	#include "vtsgl/SceneSGL.h"
 #endif	// SGL
 
-#ifdef _MSC_VER && DEBUG && 0
+#if defined(_MSC_VER) && _DEBUG && !defined(_STDAFX_H_INCLUDED_) && 0
+#pragma message("(Including MemTracker)")
 #include "vtlib/core/MemoryTracker.h"
 #endif
 
