@@ -549,6 +549,11 @@ void vtMesh::AddFan(int p0, int p1, int p2, int p3, int p4, int p5)
 void vtMesh::AddFan(int *idx, int iNVerts)
 {
 	DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
+	if (!pDrawArrayLengths)
+	{
+		VTLOG("Error, calling AddFan when primtype is %d\n", m_ePrimType);
+		return;
+	}
 	for (int i = 0; i < iNVerts; i++)
 		m_Index->push_back(idx[i]);
 
@@ -581,11 +586,19 @@ void vtMesh::AddStrip(int iNVerts, unsigned short *pIndices)
  */
 void vtMesh::AddLine(int p0, int p1)
 {
-	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
 	m_Index->push_back(p0);
 	m_Index->push_back(p1);
 
-	pDrawArrays->setCount(m_Index->size());
+	if (m_ePrimType == GL_LINES)
+	{
+		DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+		pDrawArrays->setCount(m_Index->size());
+	}
+	else if (m_ePrimType == GL_LINE_STRIP)
+	{
+		DrawArrayLengths *pDrawArrayLengths = dynamic_cast<DrawArrayLengths*>(m_pPrimSet.get());
+		pDrawArrayLengths->push_back(2);
+	}
 }
 
 /**
@@ -595,6 +608,11 @@ void vtMesh::AddLine(int p0, int p1)
 void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
 {
 	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
+	if (!pDrawArrays)
+	{
+		VTLOG("Error, calling AddQuad when primtype is %d\n", m_ePrimType);
+		return;
+	}
 	m_Index->push_back(p0);
 	m_Index->push_back(p1);
 	m_Index->push_back(p2);
@@ -609,7 +627,6 @@ void vtMesh::AddQuad(int p0, int p1, int p2, int p3)
  */
 void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 {
-	DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
 	Vec3 s;
 	v2s(p, s);
 
@@ -624,6 +641,7 @@ void vtMesh::SetVtxPos(int i, const FPoint3 &p)
 			m_Index->resize(i + 1);
 
 		m_Index->at(i) = i;
+		DrawArrays *pDrawArrays = dynamic_cast<DrawArrays*>(m_pPrimSet.get());
 		pDrawArrays->setCount(m_Vert->size());
 	}
 }
