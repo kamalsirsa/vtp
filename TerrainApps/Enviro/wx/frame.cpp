@@ -587,7 +587,23 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			g_App.m_pTFlyer->SetAlwaysMove(m_bAlwaysMove);
 		break;
 
+	case '[':
+		{
+			float exag = pTerr->GetVerticalExag();
+			exag /= 1.01;
+			pTerr->SetVerticalExag(exag);
+		}
+		break;
+	case ']':
+		{
+			float exag = pTerr->GetVerticalExag();
+			exag *= 1.01;
+			pTerr->SetVerticalExag(exag);
+		}
+		break;
+
 	case 'z':
+		// A handy place to put test code
 #if 0
 		if (pTerr && g_App.m_bSelectedStruct)
 		{
@@ -600,12 +616,14 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			sa->ConstructStructure(bld);
 		}
 #endif
+#if 0
 		if (pTerr)
 		{
 			// Show 
 			vtGetTS()->GetSkyDome()->SetStarAltitude(90);
 			vtGetTS()->GetSkyDome()->RefreshCelestialObjects();
 		}
+#endif
 		break;
 
 	case 4:	// Ctrl-D
