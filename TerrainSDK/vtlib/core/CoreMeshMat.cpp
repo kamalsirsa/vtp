@@ -878,8 +878,10 @@ int vtMaterialArrayBase::AddTextureMaterial2(const char *fname,
 						 bool bMipMap)
 {
 	vtImage *pImage = new vtImage(fname);
+#if !VTLIB_PSM	// PSM loads asynchronously so we can't tell if it failed until later
 	if (!pImage->LoadedOK())
 		return -1;
+#endif
 
 	return AddTextureMaterial(pImage, bCulling, bLighting,
 		bTransp, bAdditive, fAmbient, fDiffuse, fAlpha, fEmissive, bTexGen, bClamp);
