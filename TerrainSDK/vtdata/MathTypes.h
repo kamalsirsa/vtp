@@ -1033,6 +1033,7 @@ public:
 	RGBf() {}
 	RGBf(float _r, float _g, float _b) { r = _r; g = _g; b = _b; }
 	RGBf(const class RGBi &v) { *this = v; }
+	RGBf(const class RGBAf &v) { *this = v; }
 
 	void Set(float _r, float _g, float _b) { r = _r; g = _g; b = _b; }
 	RGBf operator +(const RGBf &v) const { return RGBf(r+v.r, g+v.g, b+v.b); }
@@ -1084,7 +1085,7 @@ public:
 	RGBAf(float _r, float _g, float _b, float _a) { r = _r; g = _g; b = _b; a = _a; }
 	RGBAf(const class RGBf &v) { *this = v; }
 
-	void Set(float _r, float _g, float _b) { r = _r; g = _g; b = _b; }
+	void Set(float _r, float _g, float _b, float _a) { r = _r; g = _g; b = _b; a = _a; }
 	RGBAf operator +(const RGBAf &v) const { return RGBAf(r+v.r, g+v.g, b+v.b, a+v.a); }
 	RGBAf operator -(const RGBAf &v) const { return RGBAf(r-v.r, g-v.g, b-v.b, a+v.a); }
 	RGBAf operator *(float s) const { return RGBAf(r*s, g*s, b*s); }
@@ -1093,6 +1094,12 @@ public:
 
 	// assignment
 	RGBAf &operator=(const RGBf &v) { r = v.r; g = v.g; b = v.b; a = 1.0f; return *this; }
+
+	// comparison
+	bool operator==(const RGBAf &v2) const
+	{ return (r == v2.r && g == v2.g && b == v2.b && a == v2.a); }
+	bool operator!=(const RGBAf &v2) const
+	{ return (r != v2.r || g != v2.g || b != v2.b || a != v2.a); }
 
 	float r, g, b, a;
 };
