@@ -130,13 +130,12 @@ public:
 	VFlyer(float scale, float fHeightAboveTerrain, bool bMin);
 
 	void SetUpwardVelocity(float velocity);
-	void SetGravity(bool bGrav) { m_bGravity = bGrav; }
 
 	void Eval();	// overrides
 
 protected:
 	FPoint3	m_Velocity;
-	bool	m_bGravity;
+	float	m_last_time;
 };
 
 

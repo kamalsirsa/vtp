@@ -7,6 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/vtTin3d.h"
+#include "vtdata/vtLog.h"
 #include "NavEngines.h"
 
 #define GRAVITY_CONSTANT 9.81	// g = 9.81 meters/sec^2
@@ -28,27 +29,35 @@ void vtFlyer::SetAlwaysMove(bool bMove)
 
 void vtFlyer::Eval()
 {
+	float elapsed = vtGetFrameTime();
+
 	vtTransform *pTarget = (vtTransform*) GetTarget();
 	if (!pTarget)
 		return;
 
-	vtScene* scene = vtGetScene();
-	IPoint2	WinSize = scene->GetWindowSize();
-	float	mx = (float) m_pos.x / WinSize.x;
-	float	my = (float) m_pos.y / WinSize.y;
+	float mx, my;
+	GetNormalizedMouseCoords(mx, my);
 
 	//	Left button: forward-backward, yaw
 	if (m_bAlwaysMove ||
 		((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT)))
 	{
-		float trans = (my - 0.5f) * m_fSpeed;
-		float rotate = -(mx - 0.5f) / 15.0f;
+		float trans = my * m_fSpeed * elapsed;
+		float rotate = -mx * elapsed;
 
 		pTarget->TranslateLocal(FPoint3(0.0f, 0.0f, trans));
 		if (m_bPreventRoll)
 			pTarget->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), rotate);
 		else
 			pTarget->RotateLocal(FPoint3(0.0f, 1.0f, 0.0f), rotate);
+
+/*		static float temp = 0;
+		temp += elapsed;
+		if (temp > 1)
+		{
+			VTLOG("m_fSpeed %f, trans w/o elapsed %.1f\n", m_fSpeed, my * m_fSpeed);
+			temp = 0;
+		}*/
 	}
 
 	//  Right button: up-down, left-right
@@ -56,8 +65,8 @@ void vtFlyer::Eval()
 	{
 		FPoint3 pos = pTarget->GetTrans();
 
-		float updown = -(my - 0.5f) * m_fSpeed;
-		float leftright = (mx - 0.5f) * m_fSpeed;
+		float updown = -my * m_fSpeed * elapsed;
+		float leftright = mx * m_fSpeed * elapsed;
 
 		pTarget->TranslateLocal(FPoint3(leftright, updown, 0.0f));
 	}
@@ -65,8 +74,8 @@ void vtFlyer::Eval()
 	//  Both buttons: pitch, roll
 	if ((m_buttons & VT_LEFT) && (m_buttons & VT_RIGHT))
 	{
-		float updown = -(my - 0.5f) / 20.0f;
-		float leftright = (mx - 0.5f) / 20.0f;
+		float updown = -my * elapsed;
+		float leftright = mx * elapsed;
 		if (fabs(updown) > fabs(leftright))
 			pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
 		else if (!m_bPreventRoll)
@@ -229,7 +238,6 @@ void vtTinFlyer::Eval()
 	pTarget->SetTrans(pos);
 }
 
-
 //////////////////////
 //
 // VFlyer
@@ -239,26 +247,25 @@ VFlyer::VFlyer(float scale, float fHeightAboveTerrain, bool bMin)
  : vtTerrainFlyer(0.4f, fHeightAboveTerrain, bMin)	// hardcode scale override
 {
 	m_Velocity.Set(0, 0, 0);
-	m_bGravity = false;
+	m_last_time = -1.0f;
 }
 
 void VFlyer::Eval()
 {
+	float elapsed = vtGetFrameTime();
+
 	vtTransform *pTarget = (vtTransform*) GetTarget();
 	if (!pTarget)
 		return;
 
-	bool bUpDown = false;
-	vtScene* scene = vtGetScene();
-	IPoint2	WinSize = scene->GetWindowSize();
-	float	mx = (float) m_pos.x / WinSize.x;
-	float	my = (float) m_pos.y / WinSize.y;
+	float mx, my;
+	GetNormalizedMouseCoords(mx, my);
 
 	// Left button: forward-backward, yaw
 	if ((m_buttons & VT_LEFT) && !(m_buttons & VT_RIGHT))
 	{
-		float trans = (my - 0.5f) * m_fSpeed;
-		float rotate = -(mx - 0.5f) / 15.0f;
+		float trans = my * m_fSpeed * elapsed * 8;
+		float rotate = -mx * elapsed;
 
 		m_Velocity.z += trans;
 		if (m_bPreventRoll)
@@ -268,12 +275,13 @@ void VFlyer::Eval()
 	}
 
 	// Right button: up-down, left-right
+	bool bUpDown = false;
 	if ((m_buttons & VT_RIGHT) && !(m_buttons & VT_LEFT))
 	{
 		FPoint3 pos = pTarget->GetTrans();
 
-		float updown = -(my - 0.5f) * m_fSpeed;
-		float leftright = (mx - 0.5f) * m_fSpeed;
+		float updown = -my * m_fSpeed * elapsed * 8;
+		float leftright = mx * m_fSpeed * elapsed * 8;
 		if (updown != 0.0f) bUpDown = true;
 
 		m_Velocity.x += leftright;
@@ -283,16 +291,29 @@ void VFlyer::Eval()
 	// Both buttons: pitch, roll
 	if ((m_buttons & VT_LEFT) && (m_buttons & VT_RIGHT))
 	{
-		float updown = -(my - 0.5f) / 20.0f;
-		float leftright = (mx - 0.5f) / 20.0f;
+		float updown = -my * elapsed;
+		float leftright = mx * elapsed;
 		if (fabs(updown) > fabs(leftright))
 			pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
 		else if (!m_bPreventRoll)
 			pTarget->RotateLocal(FPoint3(0.0f, 0.0f, 1.0f), -leftright);
 	}
 
-	m_Velocity *= 0.9f;
-	pTarget->TranslateLocal(m_Velocity);
+	// dampen velocity based on elapsed time
+	if (elapsed > 0)
+	{
+		float damp = powf(0.5f, elapsed * 10);
+		m_Velocity *= damp;
+	}
+	pTarget->TranslateLocal(m_Velocity * elapsed);
+
+/*	static float temp = 0;
+	temp += elapsed;
+	if (temp > 1)
+	{
+		VTLOG("m_fSpeed %f, m_Velocity %.1f %.1f, %.1f\n", m_fSpeed, m_Velocity.x, m_Velocity.y, m_Velocity.z);
+		temp = 0;
+	}*/
 
 	// allow the user to move up-down even in maintain-height mode
 	bool bPreserveMaintain;
@@ -572,5 +593,4 @@ void vtTrackball::Eval()
 	pTarget->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -m_Pos.y);
 	pTarget->Rotate2(FPoint3(0.0f, 1.0f, 0.0f), -m_Pos.x);
 }
-
 
