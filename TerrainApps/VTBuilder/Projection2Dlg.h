@@ -25,6 +25,7 @@ enum ProjType
 	PT_NZMG,
 	PT_OS,
 	PT_PS,
+	PT_SINUS,
 	PT_STEREO,
 	PT_TM,
 	PT_UTM

@@ -82,6 +82,7 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl->Append(_T("New Zealand Map Grid"));
 	m_pProjCtrl->Append(_T("Oblique Stereographic"));
 	m_pProjCtrl->Append(_T("Polar Stereographic"));
+	m_pProjCtrl->Append(_T("Sinusoidal"));
 	m_pProjCtrl->Append(_T("Stereographic"));
 	m_pProjCtrl->Append(_T("Transverse Mercator"));
 	m_pProjCtrl->Append(_T("UTM"));
@@ -171,6 +172,7 @@ void Projection2Dlg::UpdateControlStatus()
 	case PT_LAMBERT:
 	case PT_NZMG:
 	case PT_TM:
+	case PT_SINUS:
 	case PT_STEREO:
 	case PT_OS:
 	case PT_PS:
@@ -285,6 +287,9 @@ void Projection2Dlg::SetUIFromProjection()
 
 		if (!strcmp(proj_string, SRS_PT_NEW_ZEALAND_MAP_GRID))
 			SetProjectionUI(PT_NZMG);
+
+		if (!strcmp(proj_string, SRS_PT_SINUSOIDAL))
+			SetProjectionUI(PT_SINUS);
 
 		if (!strcmp(proj_string, SRS_PT_STEREOGRAPHIC))
 			SetProjectionUI(PT_STEREO);
@@ -422,6 +427,10 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 		// Put in some default values
 		// These are for the OSGB projection, a common case
 		m_proj.SetTM(49.0, -2.0, 0.999601272, 400000, -100000);
+		break;
+	case PT_SINUS:
+		// Put in some default values
+		m_proj.SetSinusoidal(0, 0, 0); // dfCenterLong, dfFalseEasting, dfFalseNorthing
 		break;
 	case PT_STEREO:
 		// Put in some default values
