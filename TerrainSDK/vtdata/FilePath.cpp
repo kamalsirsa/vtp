@@ -12,6 +12,7 @@
 
 #ifdef unix
 # include <unistd.h>
+# include <sys/stat.h>
 #else
 # include <direct.h>
 # include <io.h>
@@ -133,7 +134,8 @@ void vtDestroyDir(const char *dirname)
 	StringArray con;
 
 	char fullname[1024];
-	for (dir_it it(dirname); it != dir_it(); ++it)
+	dir_it it(dirname);
+	for (; it != dir_it(); ++it)
 	{
 		std::string name1 = *it;
 		if (name1 == "." || name1 == "..")

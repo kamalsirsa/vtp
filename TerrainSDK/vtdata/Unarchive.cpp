@@ -10,6 +10,7 @@
 
 #ifdef UNIX
 # include <unistd.h>
+# include <utime.h>
 #endif
 
 #include "FilePath.h"
