@@ -138,6 +138,10 @@ SOURCE=.\Helper.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ImageLayer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Import.cpp
 # End Source File
 # Begin Source File
@@ -253,6 +257,10 @@ SOURCE=.\Frame.h
 # Begin Source File
 
 SOURCE=.\Helper.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ImageLayer.h
 # End Source File
 # Begin Source File
 
