@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 opengl32.lib glu32.lib glaux.lib osg.lib osgUtil.lib osgDB.lib osgText.lib netcdf.lib libpng.lib zlib.lib gdal_i_dbg.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept
+# ADD LINK32 opengl32.lib glu32.lib glaux.lib osgd.lib osgUtild.lib osgDBd.lib osgTextd.lib netcdf.lib libpng.lib zlib.lib gdal_i_dbg.lib jpeg.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcmt.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept
 
 !ENDIF 
 
