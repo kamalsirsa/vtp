@@ -535,9 +535,7 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pBld->SetRectangle(point.x, point.y);
 				pBld->SetStories(1);
 
-				vtStructure *s = NewStructure();
-				s->SetBuilding(pBld);
-				Append(s);
+				Append(pBld);
 
 				count++;
 			}
@@ -620,9 +618,7 @@ void vtStructureLayer::AddElementsFromOGR(OGRDataSource *pDatasource,
 				pBld->SetCenterFromPoly();
 				pBld->SetStories(num_stories);
 
-				vtStructure *s = NewStructure();
-				s->SetBuilding(pBld);
-				Append(s);
+				Append(pBld);
 			}
 		}
 	}
