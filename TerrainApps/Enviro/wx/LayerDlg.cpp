@@ -64,7 +64,7 @@ void LayerDlg::SetShowAll(bool bTrue)
 // For an item in the tree which corresponds to an actual structure,
 //  return the node associated with that structure.
 //
-vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item)
+vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item, bool bContainer)
 {
 	if (!item.IsOk())
 		return NULL;
@@ -76,7 +76,10 @@ vtNode *LayerDlg::GetNodeFromItem(wxTreeItemId item)
 	if (data->m_item == -1)
 		return NULL;
 	vtStructure3d *str3d = data->m_sa->GetStructure3d(data->m_item);
-	return str3d->GetContained();
+	if (bContainer)
+		return str3d->GetContainer();
+	else
+		return str3d->GetContained();
 }
 
 vtStructureArray3d *LayerDlg::GetStructureArray3dFromItem(wxTreeItemId item)
@@ -301,7 +304,7 @@ void LayerDlg::OnLayerActivate( wxCommandEvent &event )
 
 void LayerDlg::OnZoomTo( wxCommandEvent &event )
 {
-	vtNodeBase *pThing = GetNodeFromItem(m_item);
+	vtNode *pThing = GetNodeFromItem(m_item, true);	// get container
 	if (pThing)
 	{
 		FSphere sphere;
@@ -310,8 +313,9 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 
 		// Put the camera a bit back from the sphere; sufficiently so that
 		//  the whole volume of the bounding sphere is visible.
-		float alpha = pCam->GetFOV() / 2.0f;
-		float distance = sphere.radius / sinf(alpha);
+		float smallest = min(pCam->GetFOV(), pCam->GetVertFOV());
+		float alpha = smallest / 2.0f;
+		float distance = sphere.radius / tanf(alpha);
 		pCam->Identity();
 		pCam->Rotate2(FPoint3(1,0,0), -PID2f/2);	// tilt down a little
 		pCam->Translate1(sphere.center);
