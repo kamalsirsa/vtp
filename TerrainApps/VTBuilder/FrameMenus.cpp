@@ -1830,7 +1830,7 @@ void MainFrame::OnUpdateAreaStretch(wxUpdateUIEvent& event)
 void MainFrame::OnAreaTypeIn(wxCommandEvent &event)
 {
 	ExtentDlg dlg(NULL, -1, _T("Edit Area"), wxDefaultPosition);
-	dlg.SetArea(m_area, !m_proj.IsGeographic());
+	dlg.SetArea(m_area, (m_proj.IsGeographic() != 0));
 	if (dlg.ShowModal() == wxID_OK)
 	{
 		m_area = dlg.m_area;
