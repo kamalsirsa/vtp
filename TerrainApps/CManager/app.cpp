@@ -2,7 +2,7 @@
 // Name:     app.cpp
 // Purpose:  The application class for a wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -20,10 +20,11 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/NavEngines.h"
+#include "vtlib/core/vtSOG.h"
+#include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "frame.h"
-#include "vtlib/core/vtSOG.h"
 
 static void Args(int argc, wxChar **argv)
 {
@@ -39,13 +40,18 @@ bool vtApp::OnInit(void)
 {
 	Args(argc, argv);
 
+	g_Log._StartLog("debug.txt");
+	VTLOG("CManager\n");
+
 	//
 	// Create the main frame window
 	//
+	VTLOG("Creating frame\n");
 	wxString title = _T("Content Manager");
 	vtFrame *frame = new vtFrame(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 
+	VTLOG("Setup scene\n");
 	vtScene *pScene = vtGetScene();
 	pScene->Init();
 	pScene->SetBgColor(RGBf(0.5f, 0.5f, 0.5f));
