@@ -451,16 +451,12 @@ void BuildingDlg::SetLevel(int iLev)
 
 void BuildingDlg::UpdateMaterialControl()
 {
-	BldMaterial mat;
-
 	// In the case of a whole level, attempt to show the most
 	//  commonly occuring material.
 	if (m_bEdges == false)
-		mat = m_pLevel->GetOverallEdgeMaterial();
+		m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
 	else
-		mat = m_pEdge->m_Material;
-
-	m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(mat));
+		m_strMaterial = *m_pEdge->m_pMaterial;
 }
 
 void BuildingDlg::UpdateColorControl()
@@ -608,33 +604,51 @@ void BuildingDlg::UpdateFacade()
 void BuildingDlg::OnSetMaterial( wxCommandEvent &event )
 {
 	int i;
-	BldMaterial bm;
-	wxString choices[EXPOSED_BUILDING_MATS];
+	int iInitialSelection = -1;
+	int iNumberofMaterials = g_MaterialNames.GetSize();
+	int iNumberOfVisibleMaterials = 0;
 
-	for (i = BMAT_PLAIN; i < BMAT_DOOR; i++)
+
+	m_strMaterial = m_pLevel->GetOverallEdgeMaterial();
+
+	for (i = 0; i < iNumberofMaterials; i++)
+		if (g_MaterialNames.GetAt(i)->GetUIVisible())
+			iNumberOfVisibleMaterials++;
+
+	wxString *pChoices = new wxString[iNumberOfVisibleMaterials];
+
+	iNumberOfVisibleMaterials = 0;
+	for (i = 0; i < iNumberofMaterials; i++)
 	{
-		bm = (BldMaterial) i;
-		choices[i-1] = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
+		const vtMaterialName& MaterialName = *g_MaterialNames.GetAt(i);
+		if (MaterialName.GetUIVisible())
+		{
+			pChoices[iNumberOfVisibleMaterials] = MaterialName;
+			if (pChoices[iNumberOfVisibleMaterials] == m_strMaterial)
+				iInitialSelection = i;
+			iNumberOfVisibleMaterials++;
+		}
 	}
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_T("Set Building Material for All Edges"), 8, (const wxString *)choices);
+		_T("Set Building Material for All Edges"), iNumberOfVisibleMaterials, pChoices);
 
-	bm = m_pLevel->GetOverallEdgeMaterial();
-	if (bm != BMAT_UNKNOWN)
-		dialog.SetSelection((int) (bm - 1));
+
+	if (iInitialSelection != -1)
+		dialog.SetSelection(iInitialSelection);
 
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
-	int sel = dialog.GetSelection();
-	bm = (BldMaterial) (sel + 1);
-	if (m_bEdges)
-		m_pEdge->m_Material = bm;
-	else
-		m_pLevel->SetEdgeMaterial(bm);
+	m_strMaterial = pChoices[dialog.GetSelection()];
+	
+	delete[] pChoices;
 
-	m_strMaterial = wxString::FromAscii(vtBuilding::GetMaterialString(bm));
+	if (m_bEdges)
+		m_pEdge->m_pMaterial = &g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(m_strMaterial));
+	else
+		m_pLevel->SetEdgeMaterial(g_MaterialNames.FindOrAppendMaterialName(vtMaterialName(m_strMaterial)));
+
 	m_bSetting = true;
 	TransferDataToWindow();
 	m_bSetting = false;
