@@ -276,6 +276,7 @@ void Enviro::DoControl()
 
 bool Enviro::SwitchToTerrain(const char *name)
 {
+	VTLOG("SwitchToTerrain (%s)\n", name);
 	vtTerrain *pTerr = FindTerrainByName(name);
 
 	if (!IsAcceptable(pTerr))
@@ -292,6 +293,7 @@ bool Enviro::SwitchToTerrain(const char *name)
 
 void Enviro::SwitchToTerrain(vtTerrain *pTerr)
 {
+	VTLOG("SwitchToTerrain %lx\n", pTerr);
 	if (m_state == AS_Orbit)
 	{
 		// hide globe
