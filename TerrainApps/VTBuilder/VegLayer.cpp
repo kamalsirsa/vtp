@@ -277,7 +277,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	LULCPoly *poly;
 
 	//set projections
-	m_proj.SetProjectionSimple(0, -1, WGS_84);
+	m_proj.SetProjectionSimple(0, -1, EPSG_DATUM_WGS84);
 
 	m_VLType = VLT_Density;
 

@@ -466,48 +466,55 @@ wxSizer *ProjectionDialog2Func( wxWindow *parent, bool call_fit, bool set_sizer 
     wxChoice *item2 = new wxChoice( parent, ID_PROJ, wxDefaultPosition, wxSize(170,-1), 0, strs2, 0 );
     item0->Add( item2, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, _("Datum:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxString *strs4 = (wxString*) NULL;
-    wxChoice *item4 = new wxChoice( parent, ID_DATUM, wxDefaultPosition, wxSize(100,-1), 0, strs4, 0 );
-    item0->Add( item4, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Datum:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 1, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Horizontal Units:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item5 = new wxCheckBox( parent, ID_SHOW_ALL_DATUMS, _("Show All Datums"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item3, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     wxString *strs6 = (wxString*) NULL;
-    wxChoice *item6 = new wxChoice( parent, ID_HORUNITS, wxDefaultPosition, wxSize(130,-1), 0, strs6, 0 );
-    item0->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxChoice *item6 = new wxChoice( parent, ID_DATUM, wxDefaultPosition, wxSize(100,-1), 0, strs6, 0 );
+    item0->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Zone:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Horizontal Units:"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item7, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxString *strs8 = (wxString*) NULL;
-    wxChoice *item8 = new wxChoice( parent, ID_ZONE, wxDefaultPosition, wxSize(100,-1), 0, strs8, 0 );
-    item0->Add( item8, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxChoice *item8 = new wxChoice( parent, ID_HORUNITS, wxDefaultPosition, wxSize(130,-1), 0, strs8, 0 );
+    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Parameters:"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, _("Zone:"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxListCtrl *item10 = new wxListCtrl( parent, ID_PROJPARAM, wxDefaultPosition, wxSize(230,120), wxLC_REPORT|wxSUNKEN_BORDER );
-    item0->Add( item10, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+    wxString *strs10 = (wxString*) NULL;
+    wxChoice *item10 = new wxChoice( parent, ID_ZONE, wxDefaultPosition, wxSize(100,-1), 0, strs10, 0 );
+    item0->Add( item10, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxButton *item11 = new wxButton( parent, ID_STATEPLANE, _("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
-    item0->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxStaticText *item11 = new wxStaticText( parent, ID_TEXT, _("Parameters:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxStaticLine *item12 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
-    item0->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxListCtrl *item12 = new wxListCtrl( parent, ID_PROJPARAM, wxDefaultPosition, wxSize(230,120), wxLC_REPORT|wxSUNKEN_BORDER );
+    item0->Add( item12, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
-    wxBoxSizer *item13 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxButton *item14 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item14, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxButton *item15 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item13->Add( item15, 0, wxALIGN_CENTRE|wxALL, 5 );
-
+    wxButton *item13 = new wxButton( parent, ID_STATEPLANE, _("Set State Plane Projection"), wxDefaultPosition, wxDefaultSize, 0 );
     item0->Add( item13, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxStaticLine *item14 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item0->Add( item14, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item16 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item17 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item15, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     if (set_sizer)
     {

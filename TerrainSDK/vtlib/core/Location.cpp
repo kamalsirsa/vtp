@@ -188,7 +188,7 @@ bool vtLocationSaver::StoreTo(int num, const wstring2 &name)
 
 	// convert from projected to global CS
 	vtProjection global_proj;
-	global_proj.SetGeogCSFromDatum(WGS_84);
+	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
 
 	OCT *conversion = CreateCoordTransform(&m_proj, &global_proj, true);
 	if (!conversion)
@@ -233,7 +233,7 @@ bool vtLocationSaver::RecallFrom(int num)
 
 	// convert from global CS to projected
 	vtProjection global_proj;
-	global_proj.SetGeogCSFromDatum(WGS_84);
+	global_proj.SetGeogCSFromDatum(EPSG_DATUM_WGS84);
 
 	OCT *conversion = OGRCreateCoordinateTransformation(&global_proj, &m_proj);
 	if (!conversion)

@@ -129,6 +129,9 @@ void MainFrame::CreateView()
 
 void MainFrame::SetupUI()
 {
+	// set up the datum list we will use
+	SetupEPSGDatums();
+
 	m_statbar = new MyStatusBar(this);
 	SetStatusBar(m_statbar);
 	m_statbar->Show();

@@ -74,7 +74,7 @@ void MyStatusBar::SetTexts(MainFrame *frame)
 		str = _T("");
 	SetStatusText(str, Field_Zone);
 
-	str = datumToStringShort(proj.GetDatum());
+	str = DatumToStringShort(proj.GetDatum());
 	SetStatusText(str, Field_Datum);
 
 	LinearUnits lu = proj.GetUnits();

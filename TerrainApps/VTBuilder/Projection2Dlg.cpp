@@ -32,9 +32,9 @@
 
 // WDR: class implementations
 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // Projection2Dlg
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 // WDR: event table for Projection2Dlg
 
@@ -45,6 +45,7 @@ BEGIN_EVENT_TABLE(Projection2Dlg,AutoDialog)
 	EVT_CHOICE( ID_HORUNITS, Projection2Dlg::OnHorizUnits )
 	EVT_LIST_ITEM_RIGHT_CLICK( ID_PROJPARAM, Projection2Dlg::OnItemRightClick )
 	EVT_CHOICE( ID_DATUM, Projection2Dlg::OnDatum )
+    EVT_CHECKBOX( ID_SHOW_ALL_DATUMS, Projection2Dlg::OnShowAllDatums )
 END_EVENT_TABLE()
 
 Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -52,6 +53,7 @@ Projection2Dlg::Projection2Dlg( wxWindow *parent, wxWindowID id, const wxString 
 	AutoDialog( parent, id, title, position, size, style )
 {
 	m_bInitializedUI = false;
+	m_bShowAllDatums = false;
 	ProjectionDialog2Func( this, TRUE ); 
 }
 
@@ -64,8 +66,6 @@ void Projection2Dlg::SetProjection(const vtProjection &proj)
 
 void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	int i;
-
 	m_pParamCtrl = GetProjparam();
 	m_pZoneCtrl = GetZonechoice();
 	m_pHorizCtrl = GetHorizchoice();
@@ -74,6 +74,7 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 
 	AddValidator(ID_PROJ, &m_iProj);
 	AddValidator(ID_ZONE, &m_iZone);
+	AddValidator(ID_SHOW_ALL_DATUMS, &m_bShowAllDatums);
 
 	m_pProjCtrl->Append(_T("Geographic"));
 	m_pProjCtrl->Append(_T("UTM"));
@@ -82,12 +83,7 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pProjCtrl->Append(_T("Transverse Mercator"));
 
 	// Fill in choices for Datum
-	wxString2 str;
-	for (i = NO_DATUM; i <= WGS_84; i++)
-	{
-		str = datumToString((DATUM) i);
-		m_pDatumCtrl->Append(str, (void *) (i+CHOICE_OFFSET));
-	}
+	RefreshDatums();
 
 	m_pParamCtrl->ClearAll();
 	m_pParamCtrl->InsertColumn(0, _T("Attribute"));
@@ -101,6 +97,27 @@ void Projection2Dlg::OnInitDialog(wxInitDialogEvent& event)
 
 	wxDialog::OnInitDialog(event);  // calls TransferDataToWindow()
 }
+
+void Projection2Dlg::RefreshDatums()
+{
+	m_pDatumCtrl->Clear();
+
+	int i;
+	wxString2 str;
+	m_pDatumCtrl->Append(_T("Unknown"), (void *) (-1+CHOICE_OFFSET));
+	for (i = 0; i < g_EPSGDatums.GetSize(); i++)
+	{
+		int code = g_EPSGDatums[i].iCode;
+		str = g_EPSGDatums[i].szName;
+		if (!m_bShowAllDatums)
+		{
+			if (!g_EPSGDatums[i].bCommon)
+				continue;
+		}
+		m_pDatumCtrl->Append(str, (void *) (code+CHOICE_OFFSET));
+	}
+}
+
 
 // Re-arrange the UI for a given projection
 void Projection2Dlg::SetProjectionUI(ProjType type)
@@ -159,9 +176,8 @@ void Projection2Dlg::UpdateControlStatus()
 		m_pZoneCtrl->Enable(false);
 		break;
 	}
-	m_iDatum = (int) m_proj.GetDatum();
-	str = datumToString((DATUM)m_iDatum);
-	m_pDatumCtrl->SetStringSelection(str);
+	m_iDatum = m_proj.GetDatum();
+	UpdateDatumStatus();
 
 	// Do horizontal units ("linear units")
 	m_pHorizCtrl->Clear();
@@ -184,6 +200,27 @@ void Projection2Dlg::UpdateControlStatus()
 	DisplayProjectionSpecificParams();
 
 	TransferDataToWindow();
+}
+
+void Projection2Dlg::UpdateDatumStatus()
+{
+	int i;
+	bool bIsCommon = false;
+	for (i = 0; i < g_EPSGDatums.GetSize(); i++)
+	{
+		if (g_EPSGDatums[i].iCode == m_iDatum)
+			bIsCommon = g_EPSGDatums[i].bCommon;
+	}
+	// If we've got a rare datum, but the UI is set to show the short list,
+	//  change it to show the full list instead.
+	if (!bIsCommon && !m_bShowAllDatums)
+	{
+		m_bShowAllDatums = true;
+		RefreshDatums();
+		TransferDataToWindow();
+	}
+	wxString2 str = DatumToString(m_iDatum);
+	m_pDatumCtrl->SetStringSelection(str);
 }
 
 void Projection2Dlg::DisplayProjectionSpecificParams()
@@ -264,7 +301,7 @@ void Projection2Dlg::OnDatum( wxCommandEvent &event )
 {
 	int sel = event.GetInt();
 	m_iDatum = ((int) m_pDatumCtrl->GetClientData(sel)) - CHOICE_OFFSET;
-	m_proj.SetDatum((DATUM) m_iDatum);
+	m_proj.SetDatum(m_iDatum);
 }
 
 void Projection2Dlg::OnItemRightClick( wxListEvent &event )
@@ -353,7 +390,7 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	m_proj.SetGeogCSFromDatum((DATUM) m_iDatum);
+	m_proj.SetGeogCSFromDatum(m_iDatum);
 
 	m_eProj = (ProjType) m_iProj;
 	switch (m_eProj)
@@ -378,6 +415,13 @@ void Projection2Dlg::OnProjChoice( wxCommandEvent &event )
 	}
 
 	SetProjectionUI( (ProjType) m_iProj );
+}
+
+void Projection2Dlg::OnShowAllDatums( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	RefreshDatums();
+	UpdateDatumStatus();
 }
 
 void Projection2Dlg::AskStatePlane()
