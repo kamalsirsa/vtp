@@ -173,7 +173,6 @@ wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit = TRUE, bool set_size
 wxSizer *ImportStructFuncOGR( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_LEVEL_CHOICE 10108
-#define ID_BUTTON 10109
 wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
