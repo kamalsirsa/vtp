@@ -112,7 +112,6 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	float cellaspect = m_fZStep / m_fXStep;
 
 	s_pGrid = pGrid;
-	m_fHeightScale = fZScale;
 
 	// Totally strange but repeatable behavior: runtime exit in Release-mode
 	//  libMini with values over a certain level.  Workaround here!
@@ -131,7 +130,9 @@ DTErr SRTerrain::Init(const vtElevationGrid *pGrid, float fZScale)
 	if (fMaxMax > 10)
 		fMaxMax = 10;
 
+	m_fHeightScale = fZScale;
 	m_fMaximumScale = fMaxMax;
+	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 
 	if (pGrid->IsFloatMode())
 	{
@@ -163,6 +164,8 @@ void SRTerrain::SetVerticalExag(float fExag)
 	// safety check
 	if (m_fHeightScale > m_fMaximumScale)
 		m_fHeightScale = m_fMaximumScale;
+
+	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 }
 
 
@@ -306,7 +309,6 @@ void SRTerrain::RenderPass()
 	ex -= (m_iColumns/2)*m_fXStep;
 	ez += (m_iRows/2)*m_fZStep;
 
-	m_fDrawScale = m_fHeightScale / m_fMaximumScale;
 	m_pMini->draw(m_fResolution,
 				ex, ey, ez,
 				dx, dy, dz,
@@ -345,17 +347,21 @@ void SRTerrain::RenderPass()
 //
 float SRTerrain::GetElevation(int iX, int iZ, bool bTrue) const
 {
+	float height = m_pMini->getheight(iX, iZ);
+
 	if (bTrue)
-		return m_pMini->getheight(iX, iZ) * m_fDrawScale;
+		// convert stored value to true value
+		return height / m_fMaximumScale;
 	else
-		return m_pMini->getheight(iX, iZ);
+		// convert stored value to drawn value
+		return height * m_fDrawScale;
 }
 
 void SRTerrain::GetWorldLocation(int i, int j, FPoint3 &p) const
 {
 	float height = m_pMini->getheight(i, j);
 
-	// workaround
+	// convert stored value to drawn value
 	height *= m_fDrawScale;
 
 	p.Set(m_fXLookup[i],
