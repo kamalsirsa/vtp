@@ -667,6 +667,7 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 
 	if (progress_callback != NULL) progress_callback(0);
 	char buf[4000];
+	char token[40];
 
 	// get dimension IDs
 	fgets(buf, 4000, fp);
@@ -689,14 +690,17 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	sscanf(buf, "cellsize %d", &cellsize);
 
 	fgets(buf, 4000, fp);
-	sscanf(buf, "NODATA_value %d", &nodata);
+	sscanf(buf, "%s %d", token, &nodata);
 
 	m_iColumns = ncols;
 	m_iRows = nrows;
 
-	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
+	// There is no projection info in a ASC file
+	m_proj.Clear();
 
-	m_bFloatMode = false;
+	// Some ASC files contain integer data, some contain floating point.
+	// There's no way for us to know in advance, so just assume float.
+	m_bFloatMode = true;
 
 	m_EarthExtents.left = xllcorner;
 	m_EarthExtents.right = xllcorner + (ncols - 1) * cellsize;
@@ -706,15 +710,18 @@ bool vtElevationGrid::LoadFromASC(const char *szFileName,
 	ComputeCornersFromExtents();
 	_AllocateArray();
 
-	int i, j, z;
+	int i, j;
+	float z;
 	for (i = 0; i < nrows; i++)
 	{
 		if (progress_callback != NULL) progress_callback(i*100/nrows);
 		for (j = 0; j < ncols; j++)
 		{
-			fscanf(fp, "%d", &z);
-			if (z != nodata)
-				SetValue(j, nrows-1-i, (short)z);
+			int num = fscanf(fp, "%f", &z);
+			if (z == nodata)
+				SetFValue(j, nrows-1-i, INVALID_ELEVATION);
+			else
+				SetFValue(j, nrows-1-i, z);
 		}
 	}
 	fclose(fp);
