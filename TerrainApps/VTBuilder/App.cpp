@@ -18,12 +18,15 @@
 #include "vtdata/vtLog.h"
 #include "gdal_priv.h"
 
-//#include "StructLayer.h"
-
 IMPLEMENT_APP(MyApp)
+
 
 bool MyApp::OnInit()
 {
+#if WIN32 && defined(_MSC_VER) && DEBUG
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+#endif
+
 	g_Log._StartLog("debug.txt");
 	VTLOG(APPNAME "\nBuild:");
 #if DEBUG
@@ -67,6 +70,7 @@ bool MyApp::OnInit()
 //	pSL->EditBuildingProperties();
 //	wxString fname("E:/Locations-USA/Hawai`i Island Data/DRG/O19154F8.TIF");
 //	frame->ImportDataFromFile(LT_IMAGE, fname, true);
+//	frame->LoadProject("E:/Locations-USA/Hawai`i Island Content/Honoka`a/latest_temp.vtb");
 
 	frame->GetView()->ZoomAll();
 
