@@ -1,6 +1,6 @@
 //
 // Name:     app.cpp
-// Purpose:  The application class for a wxWindows application.
+// Purpose:  The application class the CManager application.
 //
 // Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
@@ -73,10 +73,11 @@ bool vtApp::OnInit(void)
 	pLight->SetName2("Light");
 	vtMovLight *pMovLight = new vtMovLight(pLight);
 	pMovLight->SetName2("Movable Light");
-	pLight->SetAmbient2(RGBf(1, 1, 1));
+	pLight->SetAmbient(RGBf(1, 1, 1));
 	pMovLight->SetTrans(FPoint3(0.0f, 0.0f, 5.0f));
 	m_pRoot->AddChild(pMovLight);
 
+	// SOG testing, currently disabled
 #if 0
 #if 0
 	// make a yellow sphere
@@ -84,6 +85,7 @@ bool vtApp::OnInit(void)
 	pMats->AddRGBMaterial(RGBf(1.0f, 1.0f, 0.0f), RGBf(0.0f, 0.0f, 1.0f));
 	vtGeom *pGeom = CreateSphereGeom(pMats, 0, VT_Normals, 0.5, 16);
 	pGeom->SetName2("Yellow Sphere");
+	pMats->Release();
 
 	OutputSOG osog;
 
@@ -109,9 +111,14 @@ bool vtApp::OnInit(void)
 	m_pTrackball->SetTarget(pScene->GetCamera());
 	m_pTrackball->SetName2("Trackball");
 	m_pTrackball->SetRotateButton(VT_LEFT, 0);
-	m_pTrackball->SetZoomButton(VT_RIGHT, 0);
+	m_pTrackball->SetZoomButton(VT_LEFT|VT_RIGHT, 0);
 	m_pTrackball->SetZoomScale(3000.0f);
+	m_pTrackball->SetTranslateButton(VT_RIGHT, 0);
 	pScene->AddEngine(m_pTrackball);
+
+	// Memleak Testing
+//	GetMainFrame()->AddModelFromFile("E:/3D/IDA Free Models/schoolbus.flt");
+//	GetMainFrame()->AddNewItem();
 
 	VTLOG(" end of OnInit\n");
 	return TRUE;
@@ -120,6 +127,9 @@ bool vtApp::OnInit(void)
 
 int vtApp::OnExit(void)
 {
+	vtCamera *pCamera = vtGetScene()->GetCamera();
+	pCamera->Release();
+
 	m_pRoot->Release();
 	return 0;
 }
