@@ -635,6 +635,10 @@ bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 ///////////////////////////////////////////////
 // Built Structures
 
+/**
+ * Attempt to load structures from a VTST file.  If successful, the structures
+ * will be added to the Terrain's set of structure arrays.
+ */
 vtStructureArray3d *vtTerrain::CreateStructuresFromXML(const vtString &strFilename)
 {
 	VTLOG("CreateStructuresFromXML '%s'\n", (const char *) strFilename);
@@ -642,6 +646,7 @@ vtStructureArray3d *vtTerrain::CreateStructuresFromXML(const vtString &strFilena
 	if (!structures->ReadXML(strFilename))
 	{
 		VTLOG("\tCouldn't load file.\n");
+		delete structures;
 		return NULL;
 	}
 	structures->SetTerrain(this);
@@ -692,7 +697,7 @@ bool vtTerrain::CreateStructure(vtStructureArray3d *structures, int index)
 	return bSuccess;
 }
 
-/** 
+/**
  * Get the currently active structure array for this terrain.
  */
 vtStructureArray3d *vtTerrain::GetStructures()
@@ -703,7 +708,7 @@ vtStructureArray3d *vtTerrain::GetStructures()
 		return NULL;
 }
 
-/** 
+/**
  * Create a new structure array for this terrain, and return it.
  */
 vtStructureArray3d *vtTerrain::NewStructureArray()
@@ -718,7 +723,7 @@ vtStructureArray3d *vtTerrain::NewStructureArray()
 	return sa;
 }
 
-/** 
+/**
  * Delete all the selected structures in the terrain's active structure array.
  */
 void vtTerrain::DeleteSelectedStructures()
