@@ -1827,6 +1827,7 @@ void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 	DPoint2 p(x, y);
 	vtRawLayer *pRL = GetActiveRawLayer();
 	pRL->AddPoint(p);
+	pRL->SetModified(true);
 	m_pView->Refresh();
 }
 
