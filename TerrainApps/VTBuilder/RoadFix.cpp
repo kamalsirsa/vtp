@@ -102,7 +102,7 @@ int RoadMapEdit::MergeRedundantNodes(bool bDegrees, void progress_callback(int))
 			}
 		}
 		count += (nodes - count1);
-		count_tick = count / tick_size;
+		count_tick = (int) (count / tick_size);
 		if (count_tick > count_last_tick)
 		{
 			count_last_tick = count_tick;
