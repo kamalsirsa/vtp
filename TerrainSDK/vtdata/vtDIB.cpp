@@ -106,6 +106,7 @@ vtDIB::~vtDIB()
 	{
 		if (m_pDIB != NULL)
 			free(m_pDIB);
+		m_pDIB = NULL;
 	}
 }
 
