@@ -6,7 +6,7 @@
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/vtTin.h"
+#include "vtlib/core/vtTin3d.h"
 #include "NavEngines.h"
 
 #define GRAVITY_CONSTANT 9.81*WORLD_SCALE  //g = 9.81 meters/sec^2
@@ -151,7 +151,7 @@ vtTinFlyer::vtTinFlyer(float fSpeed) : vtLastMouse()
 	m_fPitch = 0.0f;
 }
 
-void vtTinFlyer::SetTin(vtTin *pTin)
+void vtTinFlyer::SetTin(vtTin3d *pTin)
 {
 	m_pTin = pTin;
 }

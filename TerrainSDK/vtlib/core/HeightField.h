@@ -5,7 +5,7 @@
 #include "LocalProjection.h"
 
 class vtLocalGrid;
-class vtTin;
+class vtTin3d;
 
 /**
  * A heightfield is any collection of surfaces such that, given a horizontal
@@ -18,7 +18,7 @@ public:
 	void Initialize(vtLocalGrid *pLocalGrid);
 
 	/// Initialize this object from a Tin
-	void Initialize(vtTin *pTin);
+	void Initialize(vtTin3d *pTin);
 
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,

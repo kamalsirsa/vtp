@@ -98,7 +98,7 @@ public:
 	float GetSpeed() { return m_fSpeed; }
 
 	/// Set the TIN heightfield to which to constrain
-	void SetTin(vtTin *pTin);
+	void SetTin(vtTin3d *pTin);
 
 	/// Set the desired minimum height above the terrain.
 	void SetHeight(float fHeightAboveTerrain) { m_fHeightAboveTerrain = fHeightAboveTerrain; }
@@ -111,7 +111,7 @@ public:
 
 protected:
 	float	m_fSpeed;	// max units per frame of movement
-	vtTin	*m_pTin;
+	vtTin3d	*m_pTin;
 	float	m_fHeightAboveTerrain;
 	float	m_fPitch;
 
