@@ -498,6 +498,16 @@ void BuildingDlg::UpdateColorControl()
 	//  commonly occuring material.
 	if (m_bEdges == false)
 	{
+		int edges = m_pLevel->NumEdges();
+		if (edges == 0)
+		{
+			// badly formed building; don't crash
+			m_Color.Set(0, 0, 0);
+			wxBitmap *pBitmap = MakeColorBitmap(32, 18, m_Color);
+			m_pColorBitmapControl->SetBitmap(*pBitmap);
+			delete pBitmap;
+			return;
+		}
 		// color
 		bool uniform = m_pLevel->GetOverallEdgeColor(color);
 		if (uniform)
@@ -507,7 +517,6 @@ void BuildingDlg::UpdateColorControl()
 
 		// Draw the image with vertical bands corresponding to all the edges
 		int xsize = 32, ysize = 18;
-		int edges = m_pLevel->NumEdges();
 		float factor = (float) edges / (float) xsize * .9999f;
 		wxImage pImage(xsize, ysize);
 		int i, j;
