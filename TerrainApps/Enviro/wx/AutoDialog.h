@@ -10,6 +10,9 @@
 
 #include <wx/valgen.h>
 
+#ifndef NUMERIC_VALIDATOR
+#define NUMERIC_VALIDATOR
+
 class wxNumericValidator: public wxValidator
 {
 public:
@@ -43,6 +46,8 @@ protected:
 	double	*m_pValDouble;
 };
 
+#endif // NUMERIC_VALIDATOR
+
 
 class AutoDialog : public wxDialog
 {
@@ -67,6 +72,28 @@ public:
 	void AddNumValidator(long id, double *dptr);
 
 	DECLARE_EVENT_TABLE()
+};
+
+class AutoPanel : public wxPanel
+{
+public:
+	AutoPanel() {}
+	AutoPanel(wxWindow *parent, wxWindowID id,
+             const wxPoint& pos = wxDefaultPosition,
+             const wxSize& size = wxDefaultSize,
+             long style = wxDEFAULT_DIALOG_STYLE) :
+	  wxPanel(parent, id, pos, size, style) {}
+
+	virtual void OnInitDialog(wxInitDialogEvent& event) = 0;
+
+	void AddValidator(long id, wxString *sptr);
+	void AddValidator(long id, bool *bptr);
+	void AddValidator(long id, int *iptr);
+	void AddNumValidator(long id, int *iptr);
+	void AddNumValidator(long id, float *fptr);
+	void AddNumValidator(long id, double *dptr);
+
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

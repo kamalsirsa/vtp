@@ -1,7 +1,9 @@
 //
 // Implements the following classes:
 //
-// AutoDialog - An improvement to wxDialog which maked validation easier.
+// AutoDialog - An improvement to wxDialog which makes validation easier.
+//
+// AutoPanel - An improvement to wxPanel which makes validation easier.
 //
 // wxNumericValidator - A validator capable of transfering numeric values.
 //
@@ -192,6 +194,68 @@ void AutoDialog::AddNumValidator(long id, float *fptr)
 }
 
 void AutoDialog::AddNumValidator(long id, double *dptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (pWin)
+	{
+		wxNumericValidator *gv = new wxNumericValidator(dptr);
+		pWin->SetValidator(*gv);
+	}
+}
+
+
+/////////////////////////////////////////////////
+//
+
+BEGIN_EVENT_TABLE(AutoPanel, wxPanel)
+EVT_INIT_DIALOG (AutoPanel::OnInitDialog)
+END_EVENT_TABLE()
+
+void AutoPanel::AddValidator(long id, wxString *sptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (!pWin) return;
+	wxGenericValidator *gv = new wxGenericValidator(sptr);
+	pWin->SetValidator(*gv);
+}
+
+void AutoPanel::AddValidator(long id, bool *bptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (!pWin) return;
+	wxGenericValidator *gv = new wxGenericValidator(bptr);
+	pWin->SetValidator(*gv);
+}
+
+void AutoPanel::AddValidator(long id, int *iptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (!pWin) return;
+	wxGenericValidator *gv = new wxGenericValidator(iptr);
+	pWin->SetValidator(*gv);
+}
+
+void AutoPanel::AddNumValidator(long id, int *iptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (pWin)
+	{
+		wxNumericValidator *gv = new wxNumericValidator(iptr);
+		pWin->SetValidator(*gv);
+	}
+}
+
+void AutoPanel::AddNumValidator(long id, float *fptr)
+{
+	wxWindow *pWin = FindWindow(id);
+	if (pWin)
+	{
+		wxNumericValidator *gv = new wxNumericValidator(fptr);
+		pWin->SetValidator(*gv);
+	}
+}
+
+void AutoPanel::AddNumValidator(long id, double *dptr)
 {
 	wxWindow *pWin = FindWindow(id);
 	if (pWin)
