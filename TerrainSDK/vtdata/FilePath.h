@@ -17,3 +17,4 @@ bool vtCreateDir(const char *dirname);
 void vtDestroyDir(const char *dirname);
 
 #endif // FILEPATHH
+
