@@ -7,6 +7,7 @@
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "vtlib/core/TerrainScene.h"
+#include "vtdata/vtLog.h"
 #include "StartupDlg.h"
 #include "ChooseDlg.h"
 #include "CreateDlg.h"
@@ -118,17 +119,24 @@ END_MESSAGE_MAP()
 //
 void AddFilesToComboBox(CComboBox *box, CString wildcard)
 {
+	VTLOG(" AddFilenamesToComboBox '%s':", (const char *) wildcard);
+
 	CFileFind finder; 
+	int entries = 0, matches = 0;
 	BOOL bWorking = finder.FindFile(wildcard); 
+
 	while (bWorking)
 	{
+		entries++;
 		bWorking = finder.FindNextFile();
 		if (!finder.IsDirectory())
 		{
 			CString str = finder.GetFileName();
 			box->AddString(str.Left(str.GetLength()-9));
+			matches++;
 		}
 	}
+	VTLOG(" %d entries, %d matches\n", entries, matches);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -149,6 +157,7 @@ BOOL CStartupDlg::OnInitDialog()
 	{
 		CString path = (const char *) (*paths[i]);
 		AddFilesToComboBox(&m_cbImage, path + "WholeEarth/*_0106.png");
+		AddFilesToComboBox(&m_cbImage, path + "WholeEarth/*_0106.jpg");
 	}
 	m_cbImage.SelectString(-1, m_strImage);
 
