@@ -1,12 +1,12 @@
 //
-// Name:		BuildingDlg.cpp
+// Name:		BuildingDlg3d.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #ifdef __GNUG__
-	#pragma implementation "BuildingDlg.cpp"
+	#pragma implementation "BuildingDlg3d.cpp"
 #endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
