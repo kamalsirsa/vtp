@@ -355,9 +355,12 @@ vtCamera::vtCamera() : vtTransform()
 	// Increase reference count so it won't get undesirably deleted later
 	m_pOsgCamera->ref();
 
+#if 0
 	// Tell OSG to use our transform as the location of the camera
+	// (This is no longer possible as of OSG 0.9.3?)
 	m_pOsgCamera->attachTransform(Camera::EYE_TO_MODEL,
 		&m_pTransform->getMatrix());
+#endif
 }
 
 void vtCamera::SetHither(float f)

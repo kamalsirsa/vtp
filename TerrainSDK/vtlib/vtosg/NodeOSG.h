@@ -98,7 +98,7 @@ protected:
 class CustomTransform : public osg::MatrixTransform
 {
 public:
-	inline osg::Matrix& getMatrix() { return *_matrix; }
+	inline osg::Matrix& getMatrix() { return _matrix; }
 };
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */

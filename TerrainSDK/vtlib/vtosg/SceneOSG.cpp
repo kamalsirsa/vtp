@@ -132,6 +132,15 @@ void vtScene::DoUpdate()
 	// apparently no longer needed as of OSG 0.8.45
 //	pOsgCam->dirtyTransform();
 
+	// Copy the camera transform position to camera.  With OSG 0.9.2, we
+	// used to be able to do this one call to Camera::attachTransform.
+	// With 0.9.3, we have to do it each frame:
+	static RefMatrix *cmat = NULL;
+	if (cmat == NULL) cmat = new RefMatrix;
+	Matrix &rcmat = *cmat;
+	rcmat = m_pCamera->m_pTransform->getMatrix();
+	pOsgCam->attachTransform(Camera::EYE_TO_MODEL, cmat);
+
 	m_pOsgSceneView->setCamera(pOsgCam);
 	m_pOsgSceneView->setViewport(0, 0, m_WindowSize.x, m_WindowSize.y);
 	m_pOsgSceneView->cull();
