@@ -33,6 +33,7 @@
 #include "ModelDlg.h"
 #include "SceneGraphDlg.h"
 #include "ItemGroup.h"
+#include "LightDlg.h"
 
 #if VTLIB_OSG
 #include <osgDB/Registry>
@@ -112,6 +113,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_VIEW_ORIGIN, vtFrame::OnUpdateViewOrigin)
 	EVT_MENU(ID_VIEW_RULERS, vtFrame::OnViewRulers)
 	EVT_UPDATE_UI(ID_VIEW_RULERS, vtFrame::OnUpdateViewRulers)
+	EVT_MENU(ID_VIEW_LIGHTS, vtFrame::OnViewLights)
 
 	EVT_UPDATE_UI(ID_ITEM_SAVESOG, vtFrame::OnUpdateItemSaveSOG)
 	EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
@@ -195,6 +197,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	m_pModelDlg->Show(FALSE);
 	m_pModelDlg->InitDialog();
 
+	m_pLightDlg = new LightDlg(this, -1, _T("Lights"));
+
 	m_splitter->Initialize(m_splitter2);
 
 	////////////////////////
@@ -240,6 +244,12 @@ vtFrame::~vtFrame()
 	delete m_pFont;
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
+	delete m_pLightDlg;
+}
+
+void vtFrame::UseLight(vtMovLight *pLight)
+{
+	m_pLightDlg->UseLight(pLight);
 }
 
 #define STR_DATAPATH "DataPath"
@@ -321,6 +331,7 @@ void vtFrame::CreateMenus()
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
 	viewMenu->AppendCheckItem(ID_VIEW_RULERS, _T("Show Rulers"));
+	viewMenu->AppendCheckItem(ID_VIEW_LIGHTS, _T("Lights"));
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Content Manager..."));
@@ -673,6 +684,11 @@ void vtFrame::OnViewRulers(wxCommandEvent& event)
 void vtFrame::OnUpdateViewRulers(wxUpdateUIEvent& event)
 {
 	event.Check(m_bShowRulers);
+}
+
+void vtFrame::OnViewLights(wxCommandEvent& event)
+{
+	m_pLightDlg->Show(TRUE);
 }
 
 void vtFrame::OnHelpAbout(wxCommandEvent& event)

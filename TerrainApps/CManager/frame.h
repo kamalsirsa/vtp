@@ -1,7 +1,7 @@
 //
-// Name:		frame.h
+// Name: frame.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -22,9 +22,11 @@ class vtTransform;
 class SceneGraphDlg;
 class PropDlg;
 class ModelDlg;
+class LightDlg;
 class vtGroup;
 class vtLOD;
 class vtGeom;
+class vtMovLight;
 class ItemGroup;
 class vtFont;
 
@@ -83,6 +85,7 @@ protected:
 	void OnUpdateViewOrigin(wxUpdateUIEvent& event);
 	void OnViewRulers(wxCommandEvent& event);
 	void OnUpdateViewRulers(wxUpdateUIEvent& event);
+	void OnViewLights(wxCommandEvent& event);
 	void OnHelpAbout(wxCommandEvent& event);
 
 	void OnUpdateItemAddModel(wxUpdateUIEvent& event);
@@ -108,6 +111,7 @@ public:
 	SceneGraphDlg	*m_pSceneGraphDlg;
 	PropDlg			*m_pPropDlg;
 	ModelDlg		*m_pModelDlg;
+	LightDlg		*m_pLightDlg;
 
 public:
 	void RenderingPause();
@@ -115,6 +119,7 @@ public:
 	void AddModelFromFile(const wxString2 &fname);
 	int GetModelTriCount(vtModel *model);
 	void OnChar(wxKeyEvent& event);
+	void UseLight(vtMovLight *pLight);
 
 public:
 	void		UpdateCurrentModelLOD();

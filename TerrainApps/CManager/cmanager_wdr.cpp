@@ -19,6 +19,19 @@
 
 #include <wx/intl.h>
 
+// Euro sign hack of the year
+#if wxUSE_UNICODE
+    #define __WDR_EURO__ wxT("\u20ac")
+#else
+    #if defined(__WXMAC__)
+        #define __WDR_EURO__ wxT("\xdb")
+    #elif defined(__WXMSW__)
+        #define __WDR_EURO__ wxT("\x80")
+    #else
+        #define __WDR_EURO__ wxT("\xa4")
+    #endif
+#endif
+
 // Implement window functions
 
 wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit, bool set_sizer )
@@ -43,13 +56,9 @@ wxSizer *SceneGraphFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -106,13 +115,9 @@ wxSizer *PropDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -172,13 +177,9 @@ wxSizer *ModelDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
     }
     
     return item0;
@@ -222,13 +223,69 @@ wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     if (set_sizer)
     {
-        parent->SetAutoLayout( TRUE );
         parent->SetSizer( item0 );
         if (call_fit)
-        {
-            item0->Fit( parent );
             item0->SetSizeHints( parent );
-        }
+    }
+    
+    return item0;
+}
+
+wxSizer *LightDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, _("Light:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString strs3[] = 
+    {
+        _("Default")
+    };
+    wxChoice *item3 = new wxChoice( parent, ID_LIGHT, wxDefaultPosition, wxSize(100,-1), 1, strs3, 0 );
+    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item1, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxFlexGridSizer *item4 = new wxFlexGridSizer( 2, 0, 0 );
+
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, _("Ambient"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBitmapButton *item6 = new wxBitmapButton( parent, ID_AMBIENT, MyBitmapsFunc( 0 ), wxDefaultPosition, wxDefaultSize );
+    item4->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, _("Diffuse"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item7, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBitmapButton *item8 = new wxBitmapButton( parent, ID_DIFFUSE, MyBitmapsFunc( 0 ), wxDefaultPosition, wxDefaultSize );
+    item4->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item4, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxBoxSizer *item9 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Direction"), wxDefaultPosition, wxDefaultSize, 0 );
+    item9->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item11 = new wxTextCtrl( parent, ID_DIRX, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_PROCESS_ENTER );
+    item9->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item12 = new wxTextCtrl( parent, ID_DIRY, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_PROCESS_ENTER );
+    item9->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxTextCtrl *item13 = new wxTextCtrl( parent, ID_DIRZ, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_PROCESS_ENTER );
+    item9->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetSizer( item0 );
+        if (call_fit)
+            item0->SetSizeHints( parent );
     }
     
     return item0;
@@ -239,6 +296,39 @@ wxSizer *TagDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 // Implement toolbar functions
 
 // Implement bitmap functions
+
+wxBitmap MyBitmapsFunc( size_t index )
+{
+    if (index == 0)
+    {
+        /* XPM */
+        static const char *xpm_data[] = {
+        /* columns rows colors chars-per-pixel */
+        "26 14 3 1",
+        "  c None",
+        "a c #FFFFFF",
+        "b c #FF0000",
+        /* pixels */
+        "baaaaaaaaaaaaaaaaaaaaaaaab",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "a                        a",
+        "baaaaaaaaaaaaaaaaaaaaaaaab"
+        };
+        wxBitmap bitmap( xpm_data );
+        return bitmap;
+    }
+    return wxNullBitmap;
+}
 
 
 // End of generated file

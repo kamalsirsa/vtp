@@ -490,6 +490,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\LightDlg.cpp">
+			</File>
+			<File
 				RelativePath="ModelDlg.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
@@ -745,6 +748,9 @@
 			</File>
 			<File
 				RelativePath="ItemGroup.h">
+			</File>
+			<File
+				RelativePath=".\LightDlg.h">
 			</File>
 			<File
 				RelativePath="menu_id.h">
