@@ -16,6 +16,8 @@
 class vtPlantDensity
 {
 public:
+	void ResetAmounts() { m_amount = 0.0f; m_iNumPlanted = 0; }
+
 	vtString	m_common_name;
 	float		m_plant_per_m2;
 
@@ -32,6 +34,7 @@ public:
 	~vtBioType();
 
 	void AddPlant(int i, const char *common_name, float plant_per_m2);
+	void ResetAmounts();
 
 	Array<vtPlantDensity *> m_Densities;
 
@@ -48,6 +51,7 @@ public:
 	bool Write(const char *fname);
 	void AddType(vtBioType *bt) { m_Types.Append(bt); }
 	int FindBiotypeIdByName(const char *name);
+	void ResetAmounts();
 
 	Array<vtBioType *> m_Types;
 };
