@@ -20,28 +20,29 @@ public:
 	virtual ~PolyChecker();
 
 	bool Xor(bool x, bool y);
-	bool Intersect(DPoint2 a, DPoint2 b, DPoint2 c, DPoint2 d);
-	bool IntersectProp(DPoint2 a, DPoint2 b, DPoint2 c, DPoint2 d);
-	bool Between(DPoint2 a, DPoint2 b, DPoint2 c);
-	bool Left(DPoint2 a, DPoint2 b, DPoint2 c);
-	bool LeftOn(DPoint2 a, DPoint2 b, DPoint2 c);
-	bool Collinear(DPoint2 a, DPoint2 b, DPoint2 c);
-	double Area2(DPoint2 a, DPoint2 b, DPoint2 c);
-	int AreaSign(DPoint2 a, DPoint2 b, DPoint2 c);
-	bool IsSimplePolygon(DLine2 &vertices);
-	bool IsSimplePolygon(DLine3 &vertices);
-	bool Intersect(FPoint2 a, FPoint2 b, FPoint2 c, FPoint2 d);
-	bool IntersectProp(FPoint2 a, FPoint2 b, FPoint2 c, FPoint2 d);
-	bool Between(FPoint2 a, FPoint2 b, FPoint2 c);
-	bool Left(FPoint2 a, FPoint2 b, FPoint2 c);
-	bool LeftOn(FPoint2 a, FPoint2 b, FPoint2 c);
-	bool Collinear(FPoint2 a, FPoint2 b, FPoint2 c);
-	float Area2(FPoint2 a, FPoint2 b, FPoint2 c);
-	int AreaSign(FPoint2 a, FPoint2 b, FPoint2 c);
-	bool IsSimplePolygon(FLine2 &vertices);
-	bool IsSimplePolygon(FLine3 &vertices);
-	bool IsClockwisePolygon(FLine2 &vertices);
-	bool IsClockwisePolygon(FLine3 &vertices);
+	bool Intersect(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c, const DPoint2 &d);
+	bool IntersectProp(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c, const DPoint2 &d);
+	bool Between(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	bool Left(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	bool LeftOn(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	bool Collinear(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	double Area2(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	int AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c);
+	bool IsSimplePolygon(const DLine2 &vertices);
+	bool IsSimplePolygon(const DLine3 &vertices);
+
+	bool Intersect(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, const FPoint2 &d);
+	bool IntersectProp(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, const FPoint2 &d);
+	bool Between(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	bool Left(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	bool LeftOn(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	bool Collinear(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	float Area2(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	int AreaSign(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c);
+	bool IsSimplePolygon(const FLine2 &vertices);
+	bool IsSimplePolygon(const FLine3 &vertices);
+	bool IsClockwisePolygon(const FLine2 &vertices);
+	bool IsClockwisePolygon(const FLine3 &vertices);
 };
 
 #endif // POLYCHECKER_H

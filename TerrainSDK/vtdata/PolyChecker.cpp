@@ -23,7 +23,7 @@ bool PolyChecker::Xor(bool x, bool y)
    return !x ^ !y;
 }
 
-bool PolyChecker::Intersect(DPoint2 a, DPoint2 b, DPoint2 c, DPoint2 d)
+bool PolyChecker::Intersect(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c, const DPoint2 &d)
 {
 	if (IntersectProp(a, b, c, d))
 		return true;
@@ -34,7 +34,7 @@ bool PolyChecker::Intersect(DPoint2 a, DPoint2 b, DPoint2 c, DPoint2 d)
 		return false;
 }
 
-bool PolyChecker::IntersectProp(DPoint2 a, DPoint2 b, DPoint2 c, DPoint2 d)
+bool PolyChecker::IntersectProp(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c, const DPoint2 &d)
 {
 	if (Collinear(a, b, c) || Collinear(a, b, d) ||
 		Collinear(c, d, a) || Collinear(c, d, b))
@@ -43,7 +43,7 @@ bool PolyChecker::IntersectProp(DPoint2 a, DPoint2 b, DPoint2 c, DPoint2 d)
 	return Xor(Left(a, b, c), Left(a, b, d)) && Xor(Left(c, d, a), Left(c, d, b));
 }
 
-bool PolyChecker::Between(DPoint2 a, DPoint2 b, DPoint2 c)
+bool PolyChecker::Between(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 {
 	DPoint2	ba, ca;
 
@@ -56,27 +56,27 @@ bool PolyChecker::Between(DPoint2 a, DPoint2 b, DPoint2 c)
 		return ((a.y <= c.y) && (c.y <= b.y)) || ((a.y >= c.y) && (c.y >= b.y));
 }
 
-bool PolyChecker::Left(DPoint2 a, DPoint2 b, DPoint2 c)
+bool PolyChecker::Left(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 {
    return AreaSign( a, b, c ) > 0;
 }
 
-bool PolyChecker::LeftOn(DPoint2 a, DPoint2 b, DPoint2 c)
+bool PolyChecker::LeftOn(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 {
    return AreaSign( a, b, c ) >= 0;
 }
 
-bool PolyChecker::Collinear(DPoint2 a, DPoint2 b, DPoint2 c)
+bool PolyChecker::Collinear(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 {
 	return AreaSign(a, b, c) == 0;
 }
 
-double PolyChecker::Area2(DPoint2 a, DPoint2 b, DPoint2 c)
+double PolyChecker::Area2(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 {
 	return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
 
-int PolyChecker::AreaSign(DPoint2 a, DPoint2 b, DPoint2 c)
+int PolyChecker::AreaSign(const DPoint2 &a, const DPoint2 &b, const DPoint2 &c)
 {
 	double area2 = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 
@@ -88,7 +88,7 @@ int PolyChecker::AreaSign(DPoint2 a, DPoint2 b, DPoint2 c)
 		return 0;
 }
 
-bool PolyChecker::IsSimplePolygon(DLine2 &vertices)
+bool PolyChecker::IsSimplePolygon(const DLine2 &vertices)
 {
 	int iSize = vertices.GetSize();
 	int i,j;
@@ -101,7 +101,7 @@ bool PolyChecker::IsSimplePolygon(DLine2 &vertices)
 	return true;
 }
 
-bool PolyChecker::IsSimplePolygon(DLine3 &vertices)
+bool PolyChecker::IsSimplePolygon(const DLine3 &vertices)
 {
 	int iSize = vertices.GetSize();
 	DPoint2 v1, v2, v3, v4;
@@ -124,7 +124,7 @@ bool PolyChecker::IsSimplePolygon(DLine3 &vertices)
 	return true;
 }
 
-bool PolyChecker::Intersect(FPoint2 a, FPoint2 b, FPoint2 c, FPoint2 d)
+bool PolyChecker::Intersect(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, const FPoint2 &d)
 {
 	if (IntersectProp(a, b, c, d))
 		return true;
@@ -135,7 +135,7 @@ bool PolyChecker::Intersect(FPoint2 a, FPoint2 b, FPoint2 c, FPoint2 d)
 		return false;
 }
 
-bool PolyChecker::IntersectProp(FPoint2 a, FPoint2 b, FPoint2 c, FPoint2 d)
+bool PolyChecker::IntersectProp(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c, const FPoint2 &d)
 {
 	if (Collinear(a, b, c) || Collinear(a, b, d) ||
 		Collinear(c, d, a) || Collinear(c, d, b))
@@ -144,7 +144,7 @@ bool PolyChecker::IntersectProp(FPoint2 a, FPoint2 b, FPoint2 c, FPoint2 d)
 	return Xor(Left(a, b, c), Left(a, b, d)) && Xor(Left(c, d, a), Left(c, d, b));
 }
 
-bool PolyChecker::Between(FPoint2 a, FPoint2 b, FPoint2 c)
+bool PolyChecker::Between(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 {
 	FPoint2	ba, ca;
 
@@ -157,27 +157,27 @@ bool PolyChecker::Between(FPoint2 a, FPoint2 b, FPoint2 c)
 		return ((a.y <= c.y) && (c.y <= b.y)) || ((a.y >= c.y) && (c.y >= b.y));
 }
 
-bool PolyChecker::Left(FPoint2 a, FPoint2 b, FPoint2 c)
+bool PolyChecker::Left(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 {
    return AreaSign( a, b, c ) > 0;
 }
 
-bool PolyChecker::LeftOn(FPoint2 a, FPoint2 b, FPoint2 c)
+bool PolyChecker::LeftOn(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 {
    return AreaSign( a, b, c ) >= 0;
 }
 
-bool PolyChecker::Collinear(FPoint2 a, FPoint2 b, FPoint2 c)
+bool PolyChecker::Collinear(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 {
 	return AreaSign(a, b, c) == 0;
 }
 
-float PolyChecker::Area2(FPoint2 a, FPoint2 b, FPoint2 c)
+float PolyChecker::Area2(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 {
 	return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
 
-int PolyChecker::AreaSign(FPoint2 a, FPoint2 b, FPoint2 c)
+int PolyChecker::AreaSign(const FPoint2 &a, const FPoint2 &b, const FPoint2 &c)
 {
 	float area2 = (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 
@@ -189,7 +189,7 @@ int PolyChecker::AreaSign(FPoint2 a, FPoint2 b, FPoint2 c)
 		return 0;
 }
 
-bool PolyChecker::IsSimplePolygon(FLine2 &vertices)
+bool PolyChecker::IsSimplePolygon(const FLine2 &vertices)
 {
 	int iSize = vertices.GetSize();
 	int i,j;
@@ -202,7 +202,7 @@ bool PolyChecker::IsSimplePolygon(FLine2 &vertices)
 	return true;
 }
 
-bool PolyChecker::IsSimplePolygon(FLine3 &vertices)
+bool PolyChecker::IsSimplePolygon(const FLine3 &vertices)
 {
 	int iSize = vertices.GetSize();
 	FPoint2 v1, v2, v3, v4;
@@ -225,7 +225,7 @@ bool PolyChecker::IsSimplePolygon(FLine3 &vertices)
 	return true;
 }
 
-bool PolyChecker::IsClockwisePolygon(FLine2 &vertices)
+bool PolyChecker::IsClockwisePolygon(const FLine2 &vertices)
 {
 	FPoint2 p1, p2;
 	int iSize = vertices.GetSize();
@@ -246,7 +246,7 @@ bool PolyChecker::IsClockwisePolygon(FLine2 &vertices)
 		return false;
 }
 
-bool PolyChecker::IsClockwisePolygon(FLine3 &vertices)
+bool PolyChecker::IsClockwisePolygon(const FLine3 &vertices)
 {
 	FPoint2 p1, p2;
 	int iSize = vertices.GetSize();
