@@ -655,32 +655,17 @@ void vtTransform::GetTransform1(FMatrix4 &mat) const
 
 void vtTransform::PointTowards(const FPoint3 &point, bool bPitch)
 {
-	// OSG 0.8.43 and later
-	Matrix matrix = m_pTransform->getMatrix();
+	FMatrix4 m4;
+	GetTransform1(m4);
+	FPoint3 trans = m4.GetTrans();
 
-	Vec3 trans = matrix.getTrans();
+	FMatrix3 m3;
+	m3.MakeOrientation(point - GetTrans(), bPitch);
 
-	Vec3 p;
-	v2s(point, p);
-
-	Vec3 diff = p - trans;
-	float dist = diff.length();
-
-	float theta = atan2f(-diff.z(), diff.x()) - PID2f;
-	float phi;
-	if (bPitch)
-		phi = asinf(diff.y() / dist);
-	else
-		phi = 0;
-
-	matrix.makeIdentity();
-	matrix.preMult(Matrix::rotate(theta, 0.0f, 1.0f, 0.0f));
-	matrix.preMult(Matrix::rotate(phi, 1.0f, 0.0f, 0.0f));
-	matrix.postMult(Matrix::translate(trans));
-
-	m_pTransform->setMatrix(matrix);
+	m4.SetFromMatrix3(m3);
+	m4.SetTrans(trans);
+	SetTransform1(m4);
 }
-
 
 ///////////////////////////////////////////////////////////////////////
 // vtLight
