@@ -279,10 +279,6 @@ SOURCE=.\wx\TParamsDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\TParamsTabDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\wx\UtilDlg.cpp
 # End Source File
 # End Group
@@ -348,10 +344,6 @@ SOURCE=.\wx\StartupDlg.h
 # Begin Source File
 
 SOURCE=.\wx\TParamsDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\TParamsTabDlg.h
 # End Source File
 # Begin Source File
 
