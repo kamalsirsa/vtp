@@ -398,14 +398,14 @@ bool vtImageLayer::LoadFromGDAL()
 			throw "Couldn't create image.";
 
 		// Read the data
-		for(int iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+		for(int iy = 0; iy < m_iYSize; iy++ )
 		{
-			ReadScanline(iyBlock, 0);
-			progress_callback(iyBlock * 100 / nyBlocks);
+			ReadScanline(iy, 0);
+			progress_callback(iy * 100 / m_iYSize);
 			for(int iX = 0; iX < m_iXSize; iX++ )
 			{
 				RGBi rgb = m_row[0].m_data[iX];
-				m_pImage->SetRGB(iX, iyBlock, rgb.r, rgb.g, rgb.b);
+				m_pImage->SetRGB(iX, iy, rgb.r, rgb.g, rgb.b);
 			}
 		}
 	}
@@ -486,13 +486,15 @@ RGBi *vtImageLayer::GetScanlineFromBuffer(int y)
 	return data;
 }
 
-void vtImageLayer::ReadScanline(int iyBlock, int bufrow)
+void vtImageLayer::ReadScanline(int iYRequest, int bufrow)
 {
 	CPLErr Err;
 	GDALColorEntry Ent;
-	int x, y;
 	int ixBlock;
-	int nxValid, nyValid;
+	int nxValid;
+
+	int iyBlock = iYRequest / yBlockSize;
+	int iY = iYRequest - (iyBlock * yBlockSize);
 
 	if (iRasterCount == 1)
 	{
@@ -510,25 +512,16 @@ void vtImageLayer::ReadScanline(int iyBlock, int bufrow)
 			else
 				nxValid = xBlockSize;
 
-			if( (iyBlock+1) * yBlockSize > m_iYSize)
-				nyValid = m_iYSize - iyBlock * yBlockSize;
-			else
-				nyValid = yBlockSize;
-
-			for( int iY = 0; iY < nyValid; iY++ )
+			for( int iX = 0; iX < nxValid; iX++ )
 			{
-				y = (iyBlock * yBlockSize + iY);
-				for( int iX = 0; iX < nxValid; iX++ )
-				{
-					x = (ixBlock * xBlockSize) + iX;
-					pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
-					m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
-				}
+				pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
+				m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
 			}
 		}
 	}
 	if (iRasterCount == 3)
 	{
+		RGBi rgb;
 		for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
 		{
 			Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
@@ -548,21 +541,12 @@ void vtImageLayer::ReadScanline(int iyBlock, int bufrow)
 			else
 				nxValid = xBlockSize;
 
-			if( (iyBlock+1) * yBlockSize > m_iYSize)
-				nyValid = m_iYSize - iyBlock * yBlockSize;
-			else
-				nyValid = yBlockSize;
-
-			for( int iY = 0; iY < nyValid; iY++ )
+			for( int iX = 0; iX < nxValid; iX++ )
 			{
-				y = (iyBlock * yBlockSize + iY);
-				for( int iX = 0; iX < nxValid; iX++ )
-				{
-					x = (ixBlock * xBlockSize) + iX;
-					m_row[bufrow].m_data[iX].Set(pRedline[iY * xBlockSize + iX],
-						pGreenline[iY * xBlockSize + iX],
-						pBlueline[iY * xBlockSize + iX]);
-				}
+				rgb.Set(pRedline[iY * xBlockSize + iX],
+					pGreenline[iY * xBlockSize + iX],
+					pBlueline[iY * xBlockSize + iX]);
+				m_row[bufrow].m_data[iX] = rgb;
 			}
 		}
 	}
