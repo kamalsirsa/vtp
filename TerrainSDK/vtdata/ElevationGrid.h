@@ -28,7 +28,7 @@ class vtDIB;
  * To load a grid from a file, first create an empty grid, then call the
  * appropriated Load method.
  */
-class vtElevationGrid : public vtHeightFieldGrid
+class vtElevationGrid : public vtHeightFieldGrid3d
 {
 public:
 	vtElevationGrid();
@@ -71,7 +71,6 @@ public:
 	void ComputeHeightExtents();
 	void GetHeightExtents(float &fMinHeight, float &fMaxHeight) const;
 	void GetDimensions(int &nColumns, int &nRows) const;
-	DPoint2 GetSpacing() const;
 
 	// Set/Get height values
 	void  SetFValue(int i, int j, float value);
@@ -97,7 +96,6 @@ public:
 	bool  IsFloatMode()	const { return m_bFloatMode; }
 
 	void GetEarthLocation(int i, int j, DPoint3 &loc) const;
-	void GetEarthLocation(int i, int j, FPoint3 &loc) const;
 
 	void ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 		bool bZeroIsOcean = true, void progress_callback(int) = NULL);
@@ -124,6 +122,7 @@ public:
 	float GetWorldValue(int i, int j) const;
 	bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const;
+	bool FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const;
 	void ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 							   float light_adj, void progress_callback(int) = NULL);
 

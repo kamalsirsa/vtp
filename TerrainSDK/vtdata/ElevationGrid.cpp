@@ -328,14 +328,6 @@ void vtElevationGrid::GetDimensions(int &nColumns, int &nRows) const
 	nRows = m_iRows;
 }
 
-/** Get the grid spacing, the width of each column and row.
- */
-DPoint2 vtElevationGrid::GetSpacing() const
-{
-	return DPoint2(m_EarthExtents.Width() / (m_iColumns - 1),
-		m_EarthExtents.Height() / (m_iRows - 1));
-}
-
 /** Set an elevation value to the grid.
  * \param i, j Column and row location in the grid.
  * \param value The value in (integer) meters.
@@ -934,6 +926,42 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 			vNormal->Normalize();
 		}
 	}
+	return true;
+}
+
+bool vtElevationGrid::FindAltitudeAtPoint2(const DPoint2 &p, float &fAltitude) const
+{
+	DPoint2 spacing = GetSpacing();
+	int iX = (int)((p.x - m_EarthExtents.left) / spacing.x);
+	int iY = (int)((p.y - m_EarthExtents.bottom) / spacing.y);
+
+	// safety check
+	if (iX < 0 || iX >= m_iColumns-1 || iY < 0 || iY >= m_iRows-1)
+	{
+		fAltitude = 0.0f;
+		return false;
+	}
+
+//	GetWorldLocation(iX, iZ, p0);
+//	GetWorldLocation(iX+1, iZ, p1);
+//	GetWorldLocation(iX+1, iZ+1, p2);
+//	GetWorldLocation(iX, iZ+1, p3);
+	float alt0, alt1, alt2, alt3;
+	alt0 = GetFValue(iX, iY);
+	alt1 = GetFValue(iX+1, iY);
+	alt2 = GetFValue(iX+1, iY+1);
+	alt3 = GetFValue(iX, iY+1);
+
+	// find fractional amount (0..1 across quad)
+	double fX = (p.x - (m_EarthExtents.left + iX * spacing.x)) / spacing.x;
+	double fY = (p.y - (m_EarthExtents.bottom + iY * spacing.y)) / spacing.y;
+
+	// which of the two triangles in the quad is it?
+	if (fX + fY < 1)
+		fAltitude = (float) (alt0 + fX * (alt1 - alt0) + fY * (alt3 - alt0));
+	else
+		fAltitude = (float) (alt2 + (1.0-fX) * (alt3 - alt2) + (1.0-fY) * (alt1 - alt2));
+
 	return true;
 }
 
