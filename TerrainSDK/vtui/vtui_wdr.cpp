@@ -611,61 +611,68 @@ wxSizer *ColorMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item6 = new wxStaticBox( parent, -1, _("Colors") );
-    wxStaticBoxSizer *item5 = new wxStaticBoxSizer( item6, wxVERTICAL );
+    wxCheckBox *item5 = new wxCheckBox( parent, ID_RELATIVE, _("Scale relative to elevation range"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxListCtrl *item7 = new wxListCtrl( parent, ID_COLORLIST, wxDefaultPosition, wxSize(160,120), wxLC_REPORT|wxLC_NO_HEADER|wxSUNKEN_BORDER );
-    item5->Add( item7, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxCheckBox *item6 = new wxCheckBox( parent, ID_BLEND, _("Blend colors smoothly"), wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
+    item0->Add( item4, 0, wxALIGN_CENTER, 5 );
 
-    wxButton *item9 = new wxButton( parent, ID_CHANGE_COLOR, _("Change Color..."), wxDefaultPosition, wxDefaultSize, 0 );
-    item8->Add( item9, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item10 = new wxButton( parent, ID_DELETE_ELEVATION, _("Delete Color"), wxDefaultPosition, wxDefaultSize, 0 );
-    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item9 = new wxStaticBox( parent, -1, _("Colors") );
+    wxStaticBoxSizer *item8 = new wxStaticBoxSizer( item9, wxVERTICAL );
 
-    item5->Add( item8, 0, wxALIGN_CENTER, 5 );
+    wxListCtrl *item10 = new wxListCtrl( parent, ID_COLORLIST, wxDefaultPosition, wxSize(-1,120), wxLC_REPORT|wxLC_NO_HEADER|wxSUNKEN_BORDER );
+    item8->Add( item10, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxCheckBox *item11 = new wxCheckBox( parent, ID_RELATIVE, _("Scale relative to elevation range"), wxDefaultPosition, wxDefaultSize, 0 );
-    item5->Add( item11, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticBox *item13 = new wxStaticBox( parent, -1, _("New Color") );
-    wxStaticBoxSizer *item12 = new wxStaticBoxSizer( item13, wxHORIZONTAL );
+    wxButton *item12 = new wxButton( parent, ID_CHANGE_COLOR, _("Change Color..."), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
-    item12->Add( item14, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item13 = new wxButton( parent, ID_DELETE_ELEVATION, _("Delete Color"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxTextCtrl *item15 = new wxTextCtrl( parent, ID_HEIGHT_TO_ADD, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item12->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+    item8->Add( item11, 0, wxALIGN_CENTER, 5 );
 
-    wxButton *item16 = new wxButton( parent, ID_ADD, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
-    item12->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxStaticBox *item15 = new wxStaticBox( parent, -1, _("New Color") );
+    wxStaticBoxSizer *item14 = new wxStaticBoxSizer( item15, wxHORIZONTAL );
 
-    item5->Add( item12, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, _("Height:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item4->Add( item5, 1, wxGROW|wxALL, 5 );
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_HEIGHT_TO_ADD, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item14->Add( item17, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxBoxSizer *item17 = new wxBoxSizer( wxVERTICAL );
+    wxButton *item18 = new wxButton( parent, ID_ADD, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item18 = new wxButton( parent, ID_SAVE_CMAP, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item18, 0, wxALIGN_CENTER|wxALL, 5 );
+    item8->Add( item14, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxButton *item19 = new wxButton( parent, ID_SAVE_AS_CMAP, _("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item19, 0, wxALIGN_CENTER|wxALL, 5 );
+    item7->Add( item8, 1, wxGROW|wxALL, 5 );
 
-    wxButton *item20 = new wxButton( parent, ID_LOAD_CMAP, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item19 = new wxBoxSizer( wxVERTICAL );
 
-    wxStaticLine *item21 = new wxStaticLine( parent, ID_LINE1, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
-    item17->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item20 = new wxButton( parent, ID_SAVE_CMAP, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    wxButton *item22 = new wxButton( parent, wxID_OK, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
-    item17->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxButton *item21 = new wxButton( parent, ID_SAVE_AS_CMAP, _("Save As..."), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item21, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item4->Add( item17, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+    wxButton *item22 = new wxButton( parent, ID_LOAD_CMAP, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
 
-    item0->Add( item4, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticLine *item23 = new wxStaticLine( parent, ID_LINE1, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item19->Add( item23, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item24 = new wxButton( parent, wxID_OK, _("Close"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item24, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item7->Add( item19, 0, wxALIGN_CENTER|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    item0->Add( item7, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
     if (set_sizer)
     {

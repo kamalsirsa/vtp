@@ -15,13 +15,14 @@ class vtBitmapBase;
 class ColorMap
 {
 public:
-	ColorMap() { m_bRelative = true; }
+	ColorMap();
 	bool Save(const char *fname);
 	bool Load(const char *fname);
 	void Add(float elev, const RGBi &color);
 	void RemoveAt(int num);
 	int Num() const;
 
+	bool m_bBlend;
 	bool m_bRelative;
 	std::vector<float> m_elev;
 	std::vector<RGBi> m_color;

@@ -52,7 +52,7 @@ private:
 	ColorMap	m_cmap;
 	wxString2	m_strFile;
 	float		m_fHeight;
-	bool		m_bRelative;
+	bool		m_bRelative, m_bBlend;
 	long		m_iItem;
 	wxColourData m_ColorData;
 	wxColour	m_Color;

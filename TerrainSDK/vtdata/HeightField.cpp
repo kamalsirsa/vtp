@@ -8,12 +8,23 @@
 #include "HeightField.h"
 #include "vtDIB.h"
 
+
+//
+// Class implementation: ColorMap
+//
+ColorMap::ColorMap()
+{
+	m_bBlend = true;
+	m_bRelative = true;
+}
+
 bool ColorMap::Save(const char *fname)
 {
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
 		return false;
 	fprintf(fp, "colormap1\n");
+	fprintf(fp, "blend: %d\n", m_bBlend);
 	fprintf(fp, "relative: %d\n", m_bRelative);
 	int size = m_elev.size();
 	fprintf(fp, "size %d\n", size);
@@ -31,19 +42,36 @@ bool ColorMap::Load(const char *fname)
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)
 		return false;
-	fscanf(fp, "colormap1\n");
-	fscanf(fp, "relative: %d\n", &m_bRelative);
-	int size;
-	fscanf(fp, "size %d\n", &size);
-	m_elev.resize(size);
-	m_color.resize(size);
-	for (int i = 0; i < size; i++)
+
+	char buf[80];
+	fgets(buf, 80, fp);
+	if (strncmp(buf, "colormap1", 9))
+		return false;
+
+	while (fgets(buf, 80, fp) != NULL)
 	{
-		float f;
-		int r, g, b;
-		fscanf(fp, "\telev %f color %d %d %d\n", &f, &r, &g, &b);
-		m_elev[i] = f;
-		m_color[i].Set(r, g, b);
+		if (!strncmp(buf, "blend", 5))
+			sscanf(buf, "blend: %d\n", &m_bBlend);
+
+		else if (!strncmp(buf, "relative", 8))
+			sscanf(buf, "relative: %d\n", &m_bRelative);
+
+		else if (!strncmp(buf, "size", 4))
+		{
+			int size;
+			sscanf(buf, "size %d\n", &size);
+
+			m_elev.resize(size);
+			m_color.resize(size);
+			for (int i = 0; i < size; i++)
+			{
+				float f;
+				int r, g, b;
+				fscanf(fp, "\telev %f color %d %d %d\n", &f, &r, &g, &b);
+				m_elev[i] = f;
+				m_color[i].Set(r, g, b);
+			}
+		}
 	}
 	fclose(fp);
 	return true;
@@ -346,6 +374,7 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 	{
 		if (cmap->m_bRelative == false)
 		{
+			// use absolute elevations
 			while (current < num-1 && elev >= cmap->m_elev[current+1])
 			{
 				current++;
@@ -358,6 +387,7 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 		}
 		else
 		{
+			// use regular divisions
 			int bracket = (int) ((elev-fMin) / fRange * (num-1));
 			if (bracket != current)
 			{
@@ -367,13 +397,18 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtBitmapBase *pBM, const ColorMa
 				c2 = cmap->m_color[current+1];
 			}
 		}
-		fraction = (elev - base) / bracket_size;
-		c3 = c1 * (1-fraction) + c2 * fraction;
+		if (cmap->m_bBlend)
+		{
+			fraction = (elev - base) / bracket_size;
+			c3 = c1 * (1-fraction) + c2 * fraction;
+		}
+		else
+			c3 = c1;
 		table.push_back(c3);
 		elev += step;
 	}
 
-	// iterate over the texels
+	// now iterate over the texels
 	for (i = 0; i < w; i++)
 	{
 		if (progress_callback != NULL)

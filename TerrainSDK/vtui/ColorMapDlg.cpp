@@ -50,6 +50,7 @@ ColorMapDlg::ColorMapDlg( wxWindow *parent, wxWindowID id,
 	AddValidator(ID_CMAP_FILE, &m_strFile);
 	AddNumValidator(ID_HEIGHT_TO_ADD, &m_fHeight);
 	AddValidator(ID_RELATIVE, &m_bRelative);
+	AddValidator(ID_BLEND, &m_bBlend);
 
 	m_iItem = -1;
 	m_fHeight = 0.0f;
@@ -71,6 +72,7 @@ void ColorMapDlg::SetFile(const char *fname)
 
 	m_strFile = fname;
 	m_bRelative = m_cmap.m_bRelative;
+	m_bBlend = m_cmap.m_bBlend;
 
 	TransferDataToWindow();
 	UpdateItems();
@@ -136,6 +138,7 @@ void ColorMapDlg::OnSave( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	m_cmap.m_bRelative = m_bRelative;
+	m_cmap.m_bBlend = m_bBlend;
 
 	vtString fname = m_strFile.vt_str();
 	m_cmap.Save(fname);
@@ -145,6 +148,7 @@ void ColorMapDlg::OnSaveAs( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 	m_cmap.m_bRelative = m_bRelative;
+	m_cmap.m_bBlend = m_bBlend;
 
 	wxFileDialog saveFile(NULL, _("Save ColorMap"), _T(""), _T(""),
 		_("ColorMap Files (*.cmt)|*.cmt|"), wxSAVE);
