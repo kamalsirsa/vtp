@@ -63,7 +63,9 @@ vtTerrain::vtTerrain()
 	// vegetation
 	m_pVegGrid = NULL;
 	m_pPlantList = NULL;
+
 	m_pBBEngine = NULL;
+	m_pEngineGroup = NULL;
 
 	m_bShowPOI = true;
 	m_pPOIGroup = NULL;
@@ -90,6 +92,8 @@ vtTerrain::~vtTerrain()
 
 	// some things need to be manually deleted
 	m_Content.ReleaseContents();
+
+	m_AnimContainer.Empty();
 
 	int i, size = m_PointsOfInterest.GetSize();
 	for (i = 0; i < size; i++)
@@ -1901,11 +1905,19 @@ bool vtTerrain::CreateStep1()
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// create terrain group - this holds all surfaces for the terrain
-	m_pTerrainGroup = new vtGroup();
+	m_pTerrainGroup = new vtGroup;
 	m_pTerrainGroup->SetName2("Terrain Group");
 #ifdef VTLIB_PSM
 	m_pTerrainGroup->IncUse();
 #endif
+
+	// create engine group, the parent of all engines for this terrain
+	m_pEngineGroup = new vtEngine;
+	vtString name = "Engines for ";
+	name += GetName();
+	m_pEngineGroup->SetName2(name);
+	vtGetScene()->AddEngine(m_pEngineGroup);
+	m_AnimContainer.SetEngineContainer(m_pEngineGroup);
 
 	if (m_pInputGrid)
 	{
@@ -2125,6 +2137,37 @@ bool vtTerrain::CreateStep5()
 	m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
 	m_LocSaver.SetProjection(m_proj);
 
+	// Read stored animpaths
+	for (unsigned int i = 0; i < m_Params.m_AnimPaths.size(); i++)
+	{
+		vtString fname1 = m_Params.m_AnimPaths[i];
+		vtString fname2 = "Locations/" + fname1;
+		vtString path = FindFileOnPaths(vtGetDataPath(), fname2);
+		if (path == "")
+			continue;
+
+		vtAnimPath *anim = new vtAnimPath;
+		// Ensure that anim knows the projection
+		anim->SetProjection(GetProjection());
+		if (!anim->Read(path))
+		{
+			delete anim;
+			continue;
+		}
+		vtAnimPathEngine *engine = new vtAnimPathEngine(anim);
+		engine->SetName2("AnimPathEngine");
+		engine->SetTarget(vtGetScene()->GetCamera());
+		engine->SetEnabled(false);
+		AddEngine(engine);
+
+		vtAnimEntry *entry = new vtAnimEntry();
+		entry->m_pAnim = anim;
+		entry->m_pEngine = engine;
+		entry->m_Name = fname1;
+
+		m_AnimContainer.Append(entry);
+	}
+
 	return true;
 }
 
@@ -2171,26 +2214,20 @@ bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 
 void vtTerrain::CreateCustomCulture()
 {
+	// The base class does nothing; this method is meant to be overridden
+	//  by your terrain subclass to add its own culture.
 }
 
 
 void vtTerrain::AddEngine(vtEngine *pE)
 {
-	// if the user didn't indicate which scene, default
-	vtGetScene()->AddEngine(pE);
-
 	// add to this Terrain's engine list
-	m_Engines.Append(pE);
+	m_pEngineGroup->AddChild(pE);
 }
 
 void vtTerrain::ActivateEngines(bool bActive)
 {
-	// turn off the engine specific to the previous terrain
-	for (unsigned int k = 0; k < m_Engines.GetSize(); k++)
-	{
-		vtEngine *pE = m_Engines.GetAt(k);
-		pE->SetEnabled(bActive);
-	}
+	m_pEngineGroup->SetEnabled(bActive);
 }
 
 //////////////////////////

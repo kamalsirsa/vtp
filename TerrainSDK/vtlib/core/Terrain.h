@@ -19,6 +19,7 @@
 #include "Content3d.h"
 #include "GeomUtil.h"	// for MeshFactory
 #include "Location.h"
+#include "AnimPath.h"
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -244,6 +245,9 @@ public:
 	void Visited(bool bVisited) { m_bVisited = bVisited; }
 	bool IsVisited() { return m_bVisited; }
 
+	// Access the animation paths associated with this terrain
+	vtAnimContainer *GetAnimContainer() { return &m_AnimContainer; }
+ 
 	// Sky and Fog
 	void SetFog(bool fog);
 	void SetFogColor(const RGBf &color);
@@ -323,8 +327,11 @@ protected:
 	// if we're switching between multiple terrains, we can remember where
 	// the camera was in each one
 	FMatrix4		m_CamLocation;
-	vtLocationSaver	m_LocSaver;
 	bool			m_bVisited;
+
+	// Associate a set of saved locations and animation paths with the terrain
+	vtLocationSaver	m_LocSaver;
+	vtAnimContainer m_AnimContainer;
 
 	// ocean and fog
 	vtMovGeom		*m_pOceanGeom;
@@ -364,8 +371,8 @@ protected:
 	RGBf			m_ocean_color;
 	vtString		m_strParamFile;
 
-	// keep a list of all the engines specific to this terrain
-	Array<vtEngine*>  m_Engines;
+	// contain the engines specific to this terrain
+	vtEngine		*m_pEngineGroup;
 	SimpleBillboardEngine	*m_pBBEngine;
 
 	Array<POIPtr>	m_PointsOfInterest;
