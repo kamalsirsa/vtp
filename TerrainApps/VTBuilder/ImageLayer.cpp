@@ -12,6 +12,9 @@
 #endif
 
 #include "vtdata/vtLog.h"
+#ifdef ENVIRON
+#include "vtdata/vtError.h"
+#endif
 #if ROGER
 #include "gdalwarper.h"
 #endif
@@ -42,7 +45,12 @@ vtImageLayer::vtImageLayer(const DRECT &area, int xsize, int ysize,
 
 	// yes, we could use some error-checking here
 	m_pBitmap = new vtBitmap();
+#ifdef ENVIRON
+	if (!m_pBitmap->Allocate(m_iXSize, m_iYSize))
+		throw VTERR_ALLOCATE;
+#else
 	m_pBitmap->Allocate(m_iXSize, m_iYSize);
+#endif
 }
 
 vtImageLayer::~vtImageLayer()
@@ -111,7 +119,11 @@ bool vtImageLayer::GetAreaExtent(DRECT &rect)
 	return true;
 }
 
+#ifdef ENVIRON
+void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView, UIContext &ui)
+#else
 void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
+#endif
 {
 	bool bDrawImage = true;
 	if (m_pBitmap == NULL)
@@ -259,22 +271,21 @@ void vtImageLayer::GetPropertyText(wxString &str)
 
 DPoint2 vtImageLayer::GetSpacing()
 {
-	return DPoint2(m_Extents.Width() / (m_iXSize - 1),
-		m_Extents.Height() / (m_iYSize - 1));
+	return DPoint2(m_Extents.Width() / (m_iXSize),
+		m_Extents.Height() / (m_iYSize));
 }
 
 bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
 {
 	// could speed this up by keeping these values around
 	DPoint2 spacing = GetSpacing();
-	DPoint2 half = spacing/2;
 
-	double u = (x - m_Extents.left + half.x) / spacing.x;
+	double u = (x - m_Extents.left) / spacing.x;
 	int ix = (int) u;
 	if (ix < 0 || ix >= m_iXSize)
 		return false;
 
-	double v = (m_Extents.top - y + half.y) / spacing.y;
+	double v = (m_Extents.top - y) / spacing.y;
 	int iy = (int) v;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
@@ -400,11 +411,6 @@ bool vtImageLayer::LoadFromGDAL()
 		OriginalSize.x = m_iXSize;
 		OriginalSize.y = m_iYSize;
 
-		// adjust raster X for wxImage and ImageMagick compatibility
-		// the same adjustment is done in CwxBitmapSection::CreateSectionFromGDAL
-		// where the image is padded out to the right with junk
-		m_iXSize = (m_iXSize + 11)/12 * 12;
-
 		bool bHaveProj = false;
 		pProjectionString = pDataset->GetProjectionRef();
 		if (pProjectionString)
@@ -448,9 +454,9 @@ bool vtImageLayer::LoadFromGDAL()
 		if (pDataset->GetGeoTransform(affineTransform) == CE_None)
 		{
 			m_Extents.left = affineTransform[0];
-			m_Extents.right = m_Extents.left + affineTransform[1] * (m_iXSize-1);
+			m_Extents.right = m_Extents.left + affineTransform[1] * m_iXSize;
 			m_Extents.top = affineTransform[3];
-			m_Extents.bottom = m_Extents.top + affineTransform[5] * (m_iYSize-1);
+			m_Extents.bottom = m_Extents.top + affineTransform[5] * m_iYSize;
 
 #if ROGER
 			// Roger thinks that this special case is needed for
@@ -481,7 +487,11 @@ bool vtImageLayer::LoadFromGDAL()
 			if (res == wxYES)
 			{
 				DRECT ext;
+#ifdef ENVIRON
+				ext = GetMainFrame()->m_area;
+#else
 				ext.Empty();
+#endif
 				ExtentDlg dlg(NULL, -1, _T("Elevation Grid Extents"), wxDefaultPosition);
 				dlg.SetArea(ext, (m_proj.IsGeographic() != 0));
 				if (dlg.ShowModal() == wxID_OK)
