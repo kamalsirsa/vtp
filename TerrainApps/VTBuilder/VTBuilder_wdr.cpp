@@ -1101,14 +1101,14 @@ wxSizer *ImportStructFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxRadioButton *item3 = new wxRadioButton( parent, ID_TYPE_CENTER, "Buildings (parametric by center)", wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     item2->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    wxRadioButton *item4 = new wxRadioButton( parent, ID_TYPE_FOOTPRINT, "Buildings (parametric by footprint)", wxDefaultPosition, wxDefaultSize, 0 );
+    wxRadioButton *item4 = new wxRadioButton( parent, ID_TYPE_FOOTPRINT, "Buildings (parametric by footprint, polygon or closed polyline)", wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
 
     item5->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 0 );
 
-    wxCheckBox *item6 = new wxCheckBox( parent, ID_FLIP, "Flip polygon direction (clockwise to counter-clockwise)", wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item6 = new wxCheckBox( parent, ID_FLIP, "Flip footprint direction (clockwise to counter-clockwise)", wxDefaultPosition, wxDefaultSize, 0 );
     item5->Add( item6, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
     item2->Add( item5, 0, wxALIGN_CENTRE|wxALL, 0 );
