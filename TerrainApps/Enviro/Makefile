@@ -13,6 +13,7 @@ include $(VTP_ROOT)/TerrainApps/Make.defs
 IFLAGS = $(shell wx-config --cflags) \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(OSG_INC)               \
+	  -I$(GDAL_INC)              \
 	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/bitmap \
 	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/icons
 
@@ -24,6 +25,7 @@ LDIRS  = \
 	  $(XMLHELPER_INST_DIR)          \
 	  $(SHAPE_LIB)                   \
 	  $(PNG_LIB)                     \
+	  $(GDAL_LIB)                    \
 	  $(NETCDF_LIB)                  \
 	  $(X_LIB)                       \
 	  $(EXTRA_LDIRS)

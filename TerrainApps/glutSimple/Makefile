@@ -14,6 +14,7 @@ IFLAGS = -I$(X_INC)                 \
          -I$(TERRAIN_SDK_DIR)       \
          -I$(VTLIB_DIR)             \
 	 -I$(OSG_INC)               \
+	 -I$(GDAL_INC)              \
 	 -I$(X_INC)
 
 LDIRS  = $(OSG_LIB)                     \
@@ -23,6 +24,7 @@ LDIRS  = $(OSG_LIB)                     \
 	 $(VTOSG_INST_DIR)              \
          $(PNG_LIB)                     \
          $(NETCDF_LIB)                  \
+         $(GDAL_LIB)                    \
 	 $(X_LIB)                       \
 	 $(EXTRA_LDIRS)
 

@@ -11,6 +11,7 @@ VTP_ROOT = $(shell cd ../..; pwd)
 include $(VTP_ROOT)/TerrainApps/Make.defs
 
 IFLAGS = $(shell wx-config --cflags) \
+	  -I$(GDAL_INC)              \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(TERRAIN_APPS_DIR)/VTBuilder/bitmaps \
 	  -I$(TERRAIN_APPS_DIR)/VTBuilder/icons
@@ -20,6 +21,7 @@ LDIRS  = \
 	  $(VTUI_INST_DIR)               \
  	  $(XMLHELPER_INST_DIR)          \
 	  $(SHAPE_LIB)                   \
+	  $(GDAL_LIB)                    \
 	  $(PNG_LIB)                     \
 	  $(NETCDF_LIB)                  \
 	  $(X_LIB)                       \
