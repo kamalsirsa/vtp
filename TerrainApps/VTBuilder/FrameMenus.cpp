@@ -2029,14 +2029,19 @@ void MainFrame::ExportSTM()
 
 void MainFrame::ExportPlanet()
 {
+	static wxString default_path = wxEmptyString;
+
 	// ask the user for a directory
 	wxDirDialog getDir(this, _("Export Planet Data to Directory"),
-		wxEmptyString, wxDD_DEFAULT_STYLE);
+		default_path, wxDD_DEFAULT_STYLE);
 	getDir.SetWindowStyle(getDir.GetWindowStyle() | wxDD_NEW_DIR_BUTTON);
 	bool bResult = (getDir.ShowModal() == wxID_OK);
 	if (!bResult)
 		return;
+
 	wxString strDirName = getDir.GetPath();
+	default_path = strDirName;	// save it for next time
+
 	if (strDirName == _T(""))
 		return;
 	bool success = GetActiveElevLayer()->m_pGrid->SaveToPlanet(strDirName.mb_str());
