@@ -219,7 +219,7 @@ void MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 	msg += strFileName;
 	VTLOG(msg.mb_str());
 	VTLOG("...\n");
-	OpenProgressDialog(msg);
+	OpenProgressDialog(msg, true);
 
 	// check the file extension
 	wxString strExt = strFileName.AfterLast('.');
