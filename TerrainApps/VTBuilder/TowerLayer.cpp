@@ -9,7 +9,6 @@
 #include "Frame.h"
 #include "TowerLayer.h"
 #include "ScaledView.h"
-#include "TowerDlg.h"
 
 wxPen greenPen;
 wxPen bluePen;
