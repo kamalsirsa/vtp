@@ -382,6 +382,8 @@ bool vtHeightFieldGrid3d::CastRayToSurface(const FPoint3 &point,
 	float mag2 = sqrt(dir.x*dir.x+dir.z*dir.z);
 	if (fabs(mag2) < .000001)
 	{
+		result = point;
+		result.y = alt;
 		if (!bOn)
 			return false;
 		if (dir.y > 0)	// points up
