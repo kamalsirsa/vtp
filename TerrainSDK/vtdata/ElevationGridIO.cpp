@@ -19,6 +19,7 @@ using namespace std;
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
 #include "vtString.h"
+#include "FilePath.h"
 
 #if SUPPORT_NETCDF
 extern "C" {
@@ -151,6 +152,10 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			 !FileExt.CompareNoCase("adf"))
 	{
 		Success = LoadWithGDAL(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase("hgt"))
+	{
+		Success = LoadFromHGT(szFileName, progress_callback);
 	}
 	return Success;
 }
@@ -2567,6 +2572,68 @@ bool vtElevationGrid::LoadFromXYZ(const char *szFileName, void progress_callback
 		ypos = (int) ((y - base.y) / spacing.y);
 		SetFValue(xpos, ypos, (float) z);
 	}
+	fclose(fp);
+	return true;
+}
+
+
+/**
+ * Loads from an "HGT" file, which is the format used by the USGS SRTM
+ * FTP site for their 1-degree blocks of SRTM data.
+ * It is simply a raw block of signed 2-byte data, in WGS84 geographic coords.
+ *
+ * \returns \c true if the file was successfully opened and read.
+ */
+bool vtElevationGrid::LoadFromHGT(const char *szFileName, void progress_callback(int))
+{
+	FILE *fp = fopen(szFileName, "rb");
+	if (!fp)
+		return false;
+
+	// extract extents from the filename
+	const char *fname = StartOfFilename(szFileName);
+	if (!fname)
+		return false;
+
+	char ns, ew;
+	int lat, lon;
+	sscanf(fname, "%c%02d%c%03d", &ns, &lat, &ew, &lon);
+	if (ns == 'S')
+		lat = -lat;
+	else if (ns != 'N')
+		return false;
+	if (ew == 'W')
+		lon = -lon;
+	else if (ew != 'E')
+		return false;
+
+	m_EarthExtents.SetRect(lon, lat+1, lon+1, lat);
+	ComputeCornersFromExtents();
+
+	// Projection is always geographic, integer
+	m_proj.SetProjectionSimple(false, 0, EPSG_DATUM_WGS84);
+	m_bFloatMode = false;
+
+	m_iColumns = m_iRows = 1201;
+	_AllocateArray();
+
+#define SWAP_2(x) ( (((x) & 0xff) << 8) | ((unsigned short)(x) >> 8) )
+
+	short buf[1201], value;
+	int i, j;
+	for (j = 0; j < m_iRows; j++)
+	{
+		if (progress_callback != NULL)
+			progress_callback(j * 100 / m_iRows);
+
+		fread(buf, 2, 1201, fp);
+		for (i = 0; i < m_iColumns; i++)
+		{
+			value = SWAP_2(buf[i]);
+			SetValue(i, m_iRows-1-j, value);
+		}
+	}
+	fclose(fp);
 	return true;
 }
 
