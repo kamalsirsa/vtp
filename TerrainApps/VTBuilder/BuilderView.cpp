@@ -47,6 +47,7 @@ EVT_RIGHT_DOWN(BuilderView::OnRightDown)
 EVT_RIGHT_UP(BuilderView::OnRightUp)
 EVT_MOTION(BuilderView::OnMouseMove)
 
+EVT_KEY_DOWN(BuilderView::OnKeyDown)
 EVT_CHAR(BuilderView::OnChar)
 EVT_IDLE(BuilderView::OnIdle)
 EVT_SIZE(BuilderView::OnSize)
@@ -1359,6 +1360,10 @@ void BuilderView::OnSize(wxSizeEvent& event)
 
 void BuilderView::OnChar(wxKeyEvent& event)
 {
+#if DEBUG
+	VTLOG("Char %d (%c) ctrl:%d\n", event.GetKeyCode(), event.GetKeyCode(), event.ControlDown());
+#endif
+
 	bool ctrl = event.ControlDown();
 	int code = event.KeyCode();
 
@@ -1468,6 +1473,28 @@ void BuilderView::OnChar(wxKeyEvent& event)
 		}
 #endif
 	}
+	else
+		event.Skip();
+}
+
+void BuilderView::OnKeyDown(wxKeyEvent& event)
+{
+	int code = event.GetKeyCode();
+	bool ctrl = event.ControlDown();
+#if DEBUG
+	VTLOG("KeyDown %d (%c) ctrl:%d\n", code, event.GetKeyCode(), ctrl);
+#endif
+
+	wxCommandEvent dummy;
+	MainFrame *pFrame = GetMainFrame();
+
+	// Some accelerators aren't caught properly (at least on Windows)
+	//  So, explicitly check for them here.
+	if (code == 43 && ctrl)
+		pFrame->OnViewZoomIn(dummy);
+	else if (code == 45 && ctrl)
+		pFrame->OnViewZoomOut(dummy);
+
 	else
 		event.Skip();
 }

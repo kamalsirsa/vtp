@@ -119,6 +119,7 @@ public:
 
 	// Key handler
 	void OnChar(wxKeyEvent& event);
+    void OnKeyDown(wxKeyEvent& event);
 
 	// More public methods
 	void AreaStretch();
