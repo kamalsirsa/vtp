@@ -1,7 +1,7 @@
 //
 // TerrainScene.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -48,24 +48,20 @@ public:
 	vtMovLight *GetSunLight() { return m_pSunLight; }
 	TimeEngine *GetTimeEngine() { return m_pTime; }
 
-	void ToggleFog();
-	void SetFog(bool fog);
-	void SetFogColor(const RGBf &color);
-	bool GetFog() { return m_bFog; }
 	void SetTime(time_t time);
 
 	// main scene graph outline
 	vtRoot		*m_pTop;
 	vtSkyDome	*m_pSkyDome;
 
+	// skydome
+	RGBf		horizon_color, azimuth_color;
+
 protected:
 	void _CreateSkydome(const vtStringArray &datapath);
 	void _CreateEngines(bool bDoSound);
 
 	vtGroup		*m_pAtmosphereGroup;
-
-	// atmospherics
-	RGBf		horizon_color, azimuth_color, fog_color;
 
 	// start of a linked list
 	vtTerrain	*m_pFirstTerrain;
@@ -77,8 +73,8 @@ protected:
 	TimeEngine		 *m_pTime;
 	vtSkyTrackEngine *m_pSkyTrack;
 
-	bool		m_bFog;
 	vtMovLight	*m_pSunLight;
 };
 
-#endif
+#endif	// TERRAINSCENEH
+

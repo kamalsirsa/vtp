@@ -54,6 +54,7 @@ vtContentManager3d vtTerrain::s_Content;
 vtTerrain::vtTerrain()
 {
 	m_ocean_color.Set(40.0f/255, 75.0f/255, 124.0f/255);	// unshaded color
+	m_fog_color.Set(-1.0f, -1.0f, -1.0f);
 
 	m_pTerrainGroup = (vtGroup*) NULL;
 	m_pDIB = NULL;
@@ -1136,6 +1137,37 @@ void vtTerrain::CreateStyledFeatures(const vtFeatures &feat, const char *fontnam
 	pLabelMats->Release();
 
 	VTLOG("Created %d text labels\n", features);
+}
+
+void vtTerrain::SetFogColor(const RGBf &color)
+{
+	m_fog_color = color;
+	if (m_bFog) SetFog(true);
+}
+
+void vtTerrain::SetFogDistance(float fMeters)
+{
+	m_Params.m_fFogDistance = fMeters / 1000;
+	if (m_bFog) SetFog(true);
+}
+
+void vtTerrain::SetFog(bool fog)
+{
+	m_bFog = fog;
+	if (m_bFog)
+	{
+		float dist = m_Params.m_fFogDistance * 1000;
+
+		if (m_fog_color.r != -1)
+			m_pTerrainGroup->SetFog(true, 0, dist, m_fog_color);
+		else
+			m_pTerrainGroup->SetFog(true, 0, dist);
+	}
+	else
+	{
+		m_pTerrainGroup->SetFog(false);
+		vtGetScene()->SetBgColor(m_ocean_color);
+	}
 }
 
 

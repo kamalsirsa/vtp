@@ -56,7 +56,6 @@ vtTerrainScene::vtTerrainScene()
 {
 	horizon_color.Set(0.70f, 0.85f, 1.0f);
 	azimuth_color.Set(0.12f, 0.32f, 0.70f);
-	fog_color.Set(-1.0f, -1.0f, -1.0f);
 
 	m_pTop = NULL;
 	m_pSkyDome = NULL;
@@ -110,12 +109,10 @@ void vtTerrainScene::_CreateSkydome(const vtStringArray &datapath)
 
 	// create a day-night dome
 	m_pSkyDome = new vtSkyDome();
-	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
+	m_pSkyDome->Create(bsc, 3, 1.0f, sun, moon);	// initially unit radius
 	m_pSkyDome->SetDawnTimes(5, 0, 7, 0);
 	m_pSkyDome->SetDuskTimes(17, 0, 19, 0);
-
-	m_pSkyDome->Create(bsc, 3, 1.0f,	// initially unit radius
-		sun, moon);
+	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
 	m_pSkyDome->SetName2("The Sky");
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
 
@@ -124,6 +121,8 @@ void vtTerrainScene::_CreateSkydome(const vtStringArray &datapath)
 	m_pSkyTrack->m_pCamera = vtGetScene()->GetCamera();
 	m_pSkyTrack->SetTarget(m_pSkyDome);
 	vtGetScene()->AddEngine(m_pSkyTrack);
+
+	vtGetScene()->SetBgColor(horizon_color);
 }
 
 /**
@@ -294,42 +293,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 		if (skytex != "")
 			m_pSkyDome->SetTexture(skytex);
 	}
-	SetFogColor(param.m_FogColor);
-	SetFog(param.m_bFog);
-}
-
-void vtTerrainScene::SetFogColor(const RGBf &color)
-{
-	fog_color = color;
-}
-
-void vtTerrainScene::ToggleFog()
-{
-	SetFog(!m_bFog);
-}
-
-void vtTerrainScene::SetFog(bool fog)
-{
-	if (!m_pCurrentTerrain)
-		return;
-	m_bFog = fog;
-	if (m_bFog)
-	{
-		TParams &param = m_pCurrentTerrain->GetParams();
-		float dist = param.m_fFogDistance * 1000.0f;
-
-		if(fog_color.r != -1)
-			m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, dist, fog_color);
-		else
-			m_pCurrentTerrain->GetTopGroup()->SetFog(true, 0, dist);
-
-		vtGetScene()->SetBgColor(horizon_color);
-	}
-	else
-	{
-		m_pCurrentTerrain->GetTopGroup()->SetFog(false);
-		vtGetScene()->SetBgColor(m_pCurrentTerrain->GetOceanColor());
-	}
+	m_pCurrentTerrain->SetFog(param.m_bFog);
 }
 
 void vtTerrainScene::SetTime(time_t time)

@@ -197,6 +197,12 @@ public:
 	void SetCamLocation(FMatrix4 &mat) { m_CamLocation = mat; }
 	FMatrix4 &GetCamLocation() { return m_CamLocation; }
 
+	// Fog
+	void SetFog(bool fog);
+	void SetFogColor(const RGBf &color);
+	void SetFogDistance(float fMeters);
+	bool GetFog() { return m_bFog; }
+
 	// linked list of terrains
 	void SetNext(vtTerrain *t) { m_pNext = t; }
 	vtTerrain *GetNext() { return m_pNext; }
@@ -259,8 +265,10 @@ protected:
 	// the camera was in each one
 	FMatrix4		m_CamLocation;
 
-	// ocean
+	// ocean and fog
 	vtMovGeom		*m_pOceanGeom;
+	bool			m_bFog;
+	RGBf			m_fog_color;
 
 	// built structures, e.g. buildings and fences
 	Array<vtStructureArray3d *> m_StructureSet;
