@@ -90,6 +90,9 @@ bool MyApp::OnInit()
 //	frame->ImportDataFromFile(LT_IMAGE, fname, true);
 //	frame->LoadProject("E:/Locations-USA/Hawai`i Island Content/Honoka`a/latest_temp.vtb");
 
+//	vtString fname = "E:/Earth Imagery/NASA BlueMarble/FullRes/MOD09A1.W.interpol.cyl.retouched.topo.3x21600x10800-N.bmp";
+//	frame->ImportDataFromFile(LT_IMAGE, fname, true);
+
 	frame->ZoomAll();
 
 #if HEAPBUSTER
