@@ -177,10 +177,20 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 		// Call OSG to attempt image load.
 		osg::ref_ptr<osg::Image> pOsgImage = osgDB::readImageFile(fname);
 
-		// If it succeeded , the _very carefully_ copy the entire resulting image
-		//  into our own image class.
-		if (pOsgImage.valid())
+		if (!pOsgImage.valid())
+			return false;
+
+		// beware - NO_DELETE means that OSG has given us the same image again
+		//  so don't try to steal it again
+		osg::Image::AllocationMode mode = pOsgImage->getAllocationMode();
+		if (mode == osg::Image::NO_DELETE)
 		{
+			// do nothing - we already have the buffer from the previous time
+		}
+		else
+		{
+			// _Very carefully_ copy the entire resulting image into our own
+			//   image class.
 			_fileName = pOsgImage->getFileName();
 			_s = pOsgImage->s(); _t = pOsgImage->t(); _r = pOsgImage->r();
 			_internalTextureFormat = pOsgImage->getInternalTextureFormat();
@@ -198,14 +208,8 @@ bool vtImage::Read(const char *fname, bool bAllowCache)
 //				memcpy(_data,pOsgImage->data(),size);
 
 				// Steal the data by grabbing the pointer
-				// beware - NO_DELETE means that OSG has given us the same image again
-				// so don't free the one we got before
-				osg::Image::AllocationMode mode = pOsgImage->getAllocationMode();
-				if (mode != osg::Image::NO_DELETE)
-				{
-					pOsgImage->setAllocationMode(osg::Image::NO_DELETE);
-					setData(pOsgImage->data(), mode);
-				}
+				pOsgImage->setAllocationMode(osg::Image::NO_DELETE);
+				setData(pOsgImage->data(), mode);
 			}
 		}
 		m_iRowSize = computeRowWidthInBytes(_s, _pixelFormat, _dataType, _packing);
