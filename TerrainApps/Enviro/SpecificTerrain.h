@@ -11,13 +11,13 @@
 class Romania : public vtTerrain
 {
 public:
-	void CreateCustomCulture(bool bDoSound);
+	void CreateCustomCulture();
 };
 
 class TransitTerrain : public PTerrain
 {
 public:
-	void CreateCustomCulture(bool bDoSound);
+	void CreateCustomCulture();
 	vtGeom *MakeBlockGeom(FPoint3 size);
 };
 

@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to Black Rock City, Nevada.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -54,7 +54,7 @@ NevadaTerrain::~NevadaTerrain()
 //
 // Nevada culture
 //
-void NevadaTerrain::CreateCustomCulture(bool bDoSound)
+void NevadaTerrain::CreateCustomCulture()
 {
 	// We use a different horizon color
 	vtTerrainScene *scene = GetTerrainScene();

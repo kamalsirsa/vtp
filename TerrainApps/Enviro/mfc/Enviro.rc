@@ -373,9 +373,7 @@ BEGIN
                     WS_TABSTOP,43,109,66,9
     CONTROL         "HTML Pane",IDC_HTMLPANE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,43,121,51,9
-    CONTROL         "Sound",IDC_SOUND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    117,109,58,9
-    CONTROL         "Earth View",IDC_LAUNCH1,"Button",BS_AUTORADIOBUTTON | 
+     CONTROL         "Earth View",IDC_LAUNCH1,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP,15,18,50,10
     CONTROL         "Terrain:",IDC_LAUNCH2,"Button",BS_AUTORADIOBUTTON,15,47,
                     40,10

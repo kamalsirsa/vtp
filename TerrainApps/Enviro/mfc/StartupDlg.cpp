@@ -1,6 +1,9 @@
 //
 // StartupDlg.cpp : implementation file
 //
+// Copyright (c) 2001-2004 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #include "StdAfx.h"
 
@@ -27,7 +30,6 @@ void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_bFullscreen = opt.m_bFullscreen;
 	m_bHtmlpane = opt.m_bHtmlpane;
 	m_bFloatingToolbar = opt.m_bFloatingToolbar;
-	m_bSound = opt.m_bSound;
 	m_bSpeedTest = opt.m_bSpeedTest;
 	m_fPlantSize = opt.m_fPlantScale;
 	m_bShadows = opt.m_bShadows;
@@ -41,7 +43,6 @@ void CStartupDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_bFullscreen = m_bFullscreen;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
-	opt.m_bSound = m_bSound;
 	opt.m_bSpeedTest = m_bSpeedTest;
 	opt.m_fPlantScale = m_fPlantSize;
 	opt.m_bShadows = m_bShadows;
@@ -58,7 +59,6 @@ CStartupDlg::CStartupDlg(CWnd* pParent /*=NULL*/)
 	m_bFullscreen = FALSE;
 	m_bHtmlpane = FALSE;
 	m_bFloatingToolbar = FALSE;
-	m_bSound = FALSE;
 	m_bSpeedTest = FALSE;
 	m_iLaunch = -1;
 	m_strTName = _T("");
@@ -80,7 +80,6 @@ void CStartupDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_FULLSCREEN, m_bFullscreen);
 	DDX_Check(pDX, IDC_HTMLPANE, m_bHtmlpane);
 	DDX_Check(pDX, IDC_TOOLBAR, m_bFloatingToolbar);
-	DDX_Check(pDX, IDC_SOUND, m_bSound);
 	DDX_Radio(pDX, IDC_LAUNCH1, m_iLaunch);
 	DDX_Text(pDX, IDC_TNAME, m_strTName);
 	DDX_Text(pDX, IDC_IMAGE, m_strImage);

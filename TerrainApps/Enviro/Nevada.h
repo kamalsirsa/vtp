@@ -12,7 +12,7 @@ public:
 	NevadaTerrain();
 	~NevadaTerrain();
 
-	void CreateCustomCulture(bool bDoSound);
+	void CreateCustomCulture();
 
 	void SetWaterHeight(float fWaterHeight);
 	void SetWaterOn(bool on);

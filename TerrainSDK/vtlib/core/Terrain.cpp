@@ -804,7 +804,7 @@ bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
  *
  * \par Example:
 	\code
-MyTerrain::CreateCustomCulture(bool bSound)
+MyTerrain::CreateCustomCulture()
 {
 	// model is in centimeters (cm)
 	vtTransform *pFountain = LoadModel("Culture/fountain.3ds");
@@ -876,7 +876,7 @@ void vtTerrain::PlantModelAtPoint(vtTransform *model, const DPoint2 &pos)
 }
 
 
-void vtTerrain::_CreateCulture(bool bSound)
+void vtTerrain::_CreateCulture()
 {
 	// The LOD distances are in meters
 	_SetupStructGrid((float) m_Params.m_iStructDistance);
@@ -1004,7 +1004,7 @@ void vtTerrain::_CreateCulture(bool bSound)
 		// TODO
 	}
 
-	CreateCustomCulture(bSound);
+	CreateCustomCulture();
 }
 
 
@@ -1491,13 +1491,13 @@ bool vtTerrain::CreateStep4(int &iError)
 /**
  * Next step in terrain creation: create the culture and labels.
  */
-bool vtTerrain::CreateStep5(bool bSound, int &iError)
+bool vtTerrain::CreateStep5(bool bDummy, int &iError)
 {
 	// must have a heightfield by this point
 	if (!m_pHeightField)
 		return false;
 
-	_CreateCulture(bSound);
+	_CreateCulture();
 
 	if (m_Params.m_bOceanPlane || m_Params.m_bHorizon)
 	{
@@ -1519,11 +1519,11 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 /**
  * CreateScene constructs all geometry, textures and objects for a given terrain.
  *
- * \param bSound : Allow sounds to be created.
+ * \param bDummy : Ignore this parameter.
  * \param iError : Returns by reference an error value, or 0 for no error.
  * \returns A vtGroup which is the top of the terrain scene graph.
  */
-vtGroup *vtTerrain::CreateScene(bool bSound, int &iError)
+vtGroup *vtTerrain::CreateScene(bool bDummy, int &iError)
 {
 	if (!CreateStep1(iError))
 		return NULL;
@@ -1537,7 +1537,7 @@ vtGroup *vtTerrain::CreateScene(bool bSound, int &iError)
 	if (!CreateStep4(iError))
 		return NULL;
 
-	if (!CreateStep5(bSound, iError))
+	if (!CreateStep5(false, iError))
 		return NULL;
 
 	return m_pTerrainGroup;
@@ -1584,7 +1584,7 @@ bool vtTerrain::PointIsInTerrain(const DPoint2 &p)
 	return m_pHeightField->ContainsWorldPoint(x, z);
 }
 
-void vtTerrain::CreateCustomCulture(bool bDoSound)
+void vtTerrain::CreateCustomCulture()
 {
 }
 

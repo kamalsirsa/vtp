@@ -7,7 +7,7 @@
 //	Hawaii.cpp, Nevada.cpp).  You can put your own implementation here, in
 //	a file by itself, or wherever you like.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -19,7 +19,7 @@
 ///////////////////////////////
 // Romania
 
-void Romania::CreateCustomCulture(bool bDoSound)
+void Romania::CreateCustomCulture()
 {
 #if 0
 	vtString fname = "PointData/";
@@ -56,7 +56,7 @@ void Romania::CreateCustomCulture(bool bDoSound)
 // TransitTerrain
 // (an unfinished project to procedurally create PRT structures)
 
-void TransitTerrain::CreateCustomCulture(bool bDoSound)
+void TransitTerrain::CreateCustomCulture()
 {
 	//
 	// TODO

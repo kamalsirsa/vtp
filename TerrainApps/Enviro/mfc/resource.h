@@ -58,7 +58,6 @@
 #define IDC_MINHEIGHT                   1039
 #define IDC_PAVED                       1040
 #define IDC_DIRT                        1041
-#define IDC_SOUND                       1042
 #define IDC_PRELIT                      1042
 #define IDC_TREEFILE                    1043
 #define IDC_ROADFILE                    1044

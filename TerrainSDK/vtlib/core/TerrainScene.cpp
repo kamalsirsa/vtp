@@ -144,7 +144,7 @@ vtTerrain *vtTerrainScene::FindTerrainByName(const char *name)
 	return NULL;
 }
 
-void vtTerrainScene::_CreateEngines(bool bDoSound)
+void vtTerrainScene::_CreateEngines()
 {
 	// Set Time in motion
 	m_pTime = new TimeEngine();
@@ -159,10 +159,10 @@ void vtTerrainScene::_CreateEngines(bool bDoSound)
  * Call this method once before adding any terrains, to initialize
  * the vtTerrainScene object.
  */
-vtGroup *vtTerrainScene::BeginTerrainScene(bool bDoSound)
+vtGroup *vtTerrainScene::BeginTerrainScene()
 {
 	VTLOG("BeginTerrainScene:\n");
-	_CreateEngines(bDoSound);
+	_CreateEngines();
 
 	m_pTop = new vtGroup();
 	m_pTop->SetName2("All Terrain");

@@ -32,7 +32,6 @@ public:
 	BOOL	m_bFullscreen;
 	BOOL	m_bHtmlpane;
 	BOOL	m_bFloatingToolbar;
-	BOOL	m_bSound;
 	BOOL	m_bSpeedTest;
 	int		m_iLaunch;
 	CString	m_strTName;

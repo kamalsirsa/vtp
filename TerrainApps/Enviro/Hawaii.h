@@ -28,7 +28,7 @@ public:
 	~IslandTerrain();
 
 	// methods
-	void CreateCustomCulture(bool bDoSound);
+	void CreateCustomCulture();
 
 	vtGeom *make_test_cone();
 	vtGeom *make_red_cube();
@@ -38,8 +38,8 @@ public:
 	void create_building_manually();
 	void set_detail_texture();
 	void do_test_code();
-	void create_airplanes(float fSize, float fSpeed, bool bDoSound);
-	void create_airplane(int i, float fSize, float fSpeed, bool bDoSound);
+	void create_airplanes(float fSize, float fSpeed);
+	void create_airplane(int i, float fSize, float fSpeed);
 
 	vtMaterialArray *m_pDetailMats;
 	vtMaterial *m_pDetailMat;

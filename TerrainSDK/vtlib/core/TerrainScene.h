@@ -1,7 +1,7 @@
 //
 // TerrainScene.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -32,7 +32,7 @@ public:
 	~vtTerrainScene();
 
 	// scene setup
-	vtGroup *BeginTerrainScene(bool bDoSound);
+	vtGroup *BeginTerrainScene();
 	void AppendTerrain(vtTerrain *pTerrain);
 	void Finish(const vtStringArray &datapath) {}	// dummy; obsolete method
 	void SetTerrain(vtTerrain *pTerrain);
@@ -62,7 +62,7 @@ protected:
 	vtSkyDome	*m_pSkyDome;
 
 	void _CreateSkydome(const vtStringArray &datapath);
-	void _CreateEngines(bool bDoSound);
+	void _CreateEngines();
 
 	vtGroup		*m_pAtmosphereGroup;
 

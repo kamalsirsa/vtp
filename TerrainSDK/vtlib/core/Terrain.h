@@ -97,12 +97,12 @@ public:
 	vtTin3d *GetTin() { return m_pTin; }
 
 	/// primary creation function
-	vtGroup *CreateScene(bool bSound, int &iError);
+	vtGroup *CreateScene(bool bDummy, int &iError);
 	bool CreateStep1(int &iError);
 	bool CreateStep2(int &iError);
 	bool CreateStep3(int &iError);
 	bool CreateStep4(int &iError);
-	bool CreateStep5(bool bSound, int &iError);
+	bool CreateStep5(bool bDummy, int &iError);
 	const char *DescribeError(int iError);
 
 	/// return true if the terrain has been created
@@ -165,7 +165,7 @@ public:
 	void RemoveNodeFromStructGrid(vtNodeBase *pNode);
 
 	// overridable by subclasses to extend culture
-	virtual void CreateCustomCulture(bool bDoSound);
+	virtual void CreateCustomCulture();
 
 	// manage engines specific to this terrain
 	void AddEngine(vtEngine *pE);
@@ -252,7 +252,7 @@ protected:
 	bool create_dynamic_terrain(float fOceanDepth, int &iError);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
-	void _CreateCulture(bool bSound);
+	void _CreateCulture();
 
 	void _CreateChoppedTextures(int patches, int patch_size);
 	void _CreateTiledMaterials(vtMaterialArray *pMat1,

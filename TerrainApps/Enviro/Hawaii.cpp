@@ -47,7 +47,7 @@ IslandTerrain::~IslandTerrain()
 		m_pDetailMats->Release();
 }
 
-void IslandTerrain::CreateCustomCulture(bool bDoSound)
+void IslandTerrain::CreateCustomCulture()
 {
 	// create a container for the Hawai'i-specific structures
 	m_pSA = NewStructureArray();
@@ -99,8 +99,8 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	if (m_Params.m_bVehicles)
 	{
 		SetupVehicles();
-//		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed, bDoSound);
-		create_airplanes(1, m_Params.m_fVehicleSpeed, bDoSound);
+//		create_airplanes(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed);
+		create_airplanes(1, m_Params.m_fVehicleSpeed);
 		create_ground_vehicles(m_Params.m_fVehicleSize, m_Params.m_fVehicleSpeed);
 	}
 
@@ -562,14 +562,14 @@ void IslandTerrain::do_test_code()
 #endif
 }
 
-void IslandTerrain::create_airplanes(float fScale, float fSpeed, bool bDoSound)
+void IslandTerrain::create_airplanes(float fScale, float fSpeed)
 {
 	// make some planes
 	for (int i = 0; i < 6; i++)
-		create_airplane(i, fScale, fSpeed, bDoSound);
+		create_airplane(i, fScale, fSpeed);
 }
 
-void IslandTerrain::create_airplane(int i, float fScale, float fSpeed, bool bDoSound)
+void IslandTerrain::create_airplane(int i, float fScale, float fSpeed)
 {
 	RGBf red(1.0f, 1.0f, 0.0f);
 	vtTransform *copy = CreateVehicle("747", red, fScale);
@@ -588,9 +588,9 @@ void IslandTerrain::create_airplane(int i, float fScale, float fSpeed, bool bDoS
 	pEng->SetHoop(i);
 	AddEngine(pEng);
 
+#if 0
 	if (bDoSound)
 	{
-#if 0
 		//sound stuff
 		vtSound3D* plane = new vtSound3D(m_strDataPath + "Vehicles/Airport-trim1.wav");
 		plane->Initialize();
@@ -600,7 +600,7 @@ void IslandTerrain::create_airplane(int i, float fScale, float fSpeed, bool bDoS
 		plane->SetMute(true);			//mute the sound until later
 		plane->Play(0, 0.0f);			//play the sound (muted)
 		AddEngine(plane, pScene);
-#endif
 	}
+#endif
 }
 
