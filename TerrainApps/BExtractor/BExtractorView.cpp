@@ -329,7 +329,7 @@ void BExtractorView::DrawBuildings(CDC *pDC)
 	pDC->SelectObject(bgPen);
 
 	DPoint2 temp;
-	for (int i = 0; i < pDoc->m_Buildings.GetSize(); i++)
+	for (unsigned int i = 0; i < pDoc->m_Buildings.GetSize(); i++)
 	{
 		// draw each "building"
 		// TODO: draw other structure types as well?  That depends on how
@@ -360,7 +360,7 @@ void BExtractorView::DrawBuilding(CDC *pDC, vtBuilding *bld)
 	pDC->MoveTo(origin.x, origin.y-size);
 	pDC->LineTo(origin.x, origin.y+size+1);
 
-	int j;
+	unsigned int j;
 	for (j = 0; j < bld->GetFootprint(0).GetSize() && j < 500-1; j++)
 		UTM_s(bld->GetFootprint(0).GetAt(j), array[j]);
 	array[j] = array[0];
@@ -1257,7 +1257,7 @@ void BExtractorView::DrawRectangle(CDC *pDC)
 void BExtractorView::DrawPoly(CDC *pDC)
 {
 	CPoint screen;
-	for (int i = 0; i < m_poly.GetSize(); i++)
+	for (unsigned int i = 0; i < m_poly.GetSize(); i++)
 	{
 		UTM_s(m_poly[i], screen);
 		if (i == 0)
@@ -1326,7 +1326,7 @@ void BExtractorView::UpdateResizeScale()
 	if (m_bShift)
 	{
 		// Scale evenly
-		for (int i = 0; i < foot.GetSize(); i++)
+		for (unsigned int i = 0; i < foot.GetSize(); i++)
 		{
 			p = foot.GetAt(i);
 			p -= origin;
@@ -1388,7 +1388,7 @@ void BExtractorView::UpdateRotate()
 
 	DPoint2 p;
 	DLine2 foot = m_pCurBuilding->GetFootprint(0);
-	for (int i = 0; i < foot.GetSize(); i++)
+	for (unsigned int i = 0; i < foot.GetSize(); i++)
 	{
 		p = foot.GetAt(i);
 		p -= origin;
@@ -1409,7 +1409,7 @@ void BExtractorView::InvalidatePolyExtent()
 	CRect e(1000, 1000, -1000, -1000);
 	CPoint screen;
 
-	for (int i = 0; i < m_poly.GetSize(); i++)
+	for (unsigned int i = 0; i < m_poly.GetSize(); i++)
 	{
 		UTM_s(m_poly[i], screen);
 		if (screen.x < e.left) e.left = screen.x;
