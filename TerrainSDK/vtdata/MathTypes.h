@@ -9,10 +9,6 @@
 #ifndef VTMATHTYPESH
 #define VTMATHTYPESH
 
-#ifdef _MSC_VER
-#pragma warning( disable : 4786 )
-#endif
-
 #include <math.h>
 #include "Array.h"
 
