@@ -77,15 +77,8 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	for (int i = 0; i < num_lines; i++)
 	{
 		const vtWaterFeature &feat = GetFeature(i);
-		int c;
-		int size = feat.GetSize();
-		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
-			pView->screen(feat.GetAt(c), g_screenbuf[c]);
 
-		if (m_IsBody[i])
-			pDC->DrawPolygon(c, g_screenbuf);
-		else
-			pDC->DrawLines(c, g_screenbuf);
+		pView->DrawDLine(pDC, feat, false);
 	}
 }
 

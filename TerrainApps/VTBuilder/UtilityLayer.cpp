@@ -51,7 +51,7 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 
 void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	unsigned int i, j;
+	unsigned int i;
 	unsigned int npoles = m_Poles.GetSize();
 	unsigned int nlines = m_Lines.GetSize();
 
@@ -94,10 +94,7 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	for (i = 0; i < nlines; i++)
 	{
 		vtLine *line = m_Lines.GetAt(i);
-		for (j = 0; j < line->GetSize(); j++)
-			pView->screen(line->GetAt(j), g_screenbuf[j]);
-
-		pDC->DrawLines(j, g_screenbuf);
+		pView->DrawDLine(pDC, *line, false);
 	}
 }
 

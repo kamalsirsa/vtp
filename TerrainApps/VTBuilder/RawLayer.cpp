@@ -85,7 +85,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(DefPen);
-	int i, j, size, size2;
+	int i, size;
 
 	wxPoint p;
 	int entities = GetNumEntities();
@@ -138,14 +138,9 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 				if (pen == 1) { pDC->SetPen(DefPen); pen = 0; }
 			}
 			DLine2 &dline = m_LinePoly[i];
-			size2 = dline.GetSize();
 
-			for (j = 0; j < size2 && j < SCREENBUF_SIZE-1; j++)
-				pView->screen(dline.GetAt(j), g_screenbuf[j]);
-			if (m_eGeomType == wkbPolygon)
-				pView->screen(dline.GetAt(0), g_screenbuf[j++]);
-
-			pDC->DrawLines(j, g_screenbuf);
+			bool bClosed = (m_eGeomType == wkbPolygon);
+			pView->DrawDLine(pDC, dline, bClosed);
 		}
 	}
 }
@@ -161,12 +156,24 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 	if (m_eGeomType == wkbPoint)
 	{
 		for (i = 0; i < m_Point2.GetSize(); i++)
-			trans->Transform(1, &m_Point2[i].x, &m_Point2[i].y);
+		{
+			success = trans->Transform(1, &m_Point2[i].x, &m_Point2[i].y);
+			if (success == 1)
+				good++;
+			else
+				bad++;
+		}
 	}
 	if (m_eGeomType == wkbPoint25D)
 	{
 		for (i = 0; i < m_Point3.GetSize(); i++)
-			trans->Transform(1, &m_Point3[i].x, &m_Point3[i].y);
+		{
+			success = trans->Transform(1, &m_Point3[i].x, &m_Point3[i].y);
+			if (success == 1)
+				good++;
+			else
+				bad++;
+		}
 	}
 	if (m_eGeomType == wkbLineString || m_eGeomType == wkbPolygon)
 	{

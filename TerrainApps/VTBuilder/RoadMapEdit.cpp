@@ -265,20 +265,12 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	int c, size = GetSize();
 	if (bShowWidth)
 	{
-		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
-			pView->screen(m_Left.GetAt(c), g_screenbuf[c]);
-		pDC->DrawLines(c, g_screenbuf);
-		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
-			pView->screen(m_Right.GetAt(c), g_screenbuf[c]);
-		pDC->DrawLines(c, g_screenbuf);
+		pView->DrawDLine(pDC, m_Left, false);
+		pView->DrawDLine(pDC, m_Right, false);
 	}
 	else
-	{
-		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
-			pView->screen(GetAt(c), g_screenbuf[c]);
+		pView->DrawDLine(pDC, *this, false);
 
-		pDC->DrawLines(c, g_screenbuf);
-	}
 	if (m_bSelect)
 	{
 		pDC->SetLogicalFunction(wxINVERT);

@@ -51,64 +51,11 @@ bool vtVegLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
+void vtVegLayer::DrawPolys(wxDC* pDC, vtScaledView *pView)
 {
-	// draw each polygon in m_Poly
-	bool pbNoLine[30000];
-
 	int num_polys = m_Poly.size();
-	int i, k;
-	for (i = 0; i < num_polys; i++)
-	{
-		int vbuflength = 0;
-		unsigned int j, num_points = m_Poly[i].GetSize();
-
-		// safety check
-		assert (num_points < 30000);
-
-		for (j = 0; j < num_points; j++)
-			pbNoLine[j] = false;
-
-		bool cont = true;
-		int a = num_points - 1, b = 0;
-
-		while (cont)
-		{
-			// safety check
-			if (a < 0)
-				break;
-
-			pbNoLine[a] = true;
-			for (k = b+1; k; k++)
-			{
-				if (a == k)
-				{
-					cont=false;
-					break;
-				}
-				if (m_Poly[i].GetAt(a) == m_Poly[i].GetAt(k))
-				{
-					pbNoLine[k] = true;
-					a -= 1;
-					b = k+1;
-					break;
-				}
-			}
-		}
-
-		for (unsigned int c = 0; c < num_points && c < SCREENBUF_SIZE; c++)
-		{
-			pView->screen(m_Poly[i].GetAt(c), g_screenbuf[vbuflength]);
-			vbuflength += 1;
-
-			if (pbNoLine[c] == true || c == num_points-1)
-			{
-				if (vbuflength > 1)
-					pDC->DrawLines(vbuflength, g_screenbuf);
-				vbuflength = 0;
-			}
-		}
-	}
+	for (int i = 0; i < num_polys; i++)
+		pView->DrawDLine(pDC, m_Poly[i], true);
 }
 
 void vtVegLayer::DrawInstances(wxDC* pDC, vtScaledView *pView)
@@ -143,7 +90,7 @@ void vtVegLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		DrawInstances(pDC, pView);
 
 	if (m_VLType == VLT_BioMap || m_VLType == VLT_Density)
-		DrawPolysHiddenLines(pDC, pView);
+		DrawPolys(pDC, pView);
 }
 
 void vtVegLayer::GetProjection(vtProjection &proj)

@@ -60,7 +60,7 @@ public:
 
 protected:
 	void DrawInstances(wxDC* pDC, vtScaledView *pView);
-	void DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView);
+	void DrawPolys(wxDC* pDC, vtScaledView *pView);
 
 	// Array of vegpolys made from poly attrib and array of utm points points
 	DPolyArray2		m_Poly;

@@ -176,14 +176,9 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 	for (i = 0; i < levs; i++)
 	{
 		const DLine2 &dl = bld->GetFootprint(i);
-		int sides = dl.GetSize();
-		if (sides == 0)
-			return;
-		for (j = 0; j < sides && j < SCREENBUF_SIZE-1; j++)
-			pView->screen(dl.GetAt(j), g_screenbuf[j]);
-		pView->screen(dl.GetAt(0), g_screenbuf[j++]);
+		pView->DrawDLine(pDC, dl, true);
 
-		pDC->DrawLines(j, g_screenbuf);
+		int sides = dl.GetSize();
 		for (j = 0; j < sides; j++)
 			pDC->DrawCircle(g_screenbuf[j], 3);
 	}
@@ -192,10 +187,12 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 {
 	unsigned int j;
+
+	// draw the line itself
 	DLine2 &pts = fen->GetFencePoints();
-	for (j = 0; j < pts.GetSize(); j++)
-		pView->screen(pts.GetAt(j), g_screenbuf[j]);
-	pDC->DrawLines(j, g_screenbuf);
+	pView->DrawDLine(pDC, pts, false);
+
+	// draw a small crosshair on each vertex
 	for (j = 0; j < pts.GetSize(); j++)
 	{
 		pDC->DrawLine(g_screenbuf[j].x-2, g_screenbuf[j].y,
