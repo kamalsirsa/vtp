@@ -1100,7 +1100,7 @@ void MainFrame::OnLayerImportMapSource(wxCommandEvent &event)
 				name[i-6] = ch;
 			}
 			name[i] = 0;
-			pRL->SetFilename(wxString2(name));
+			pRL->SetFilename(vtString(name));
 		}
 		if (!strncmp(buf, "Trackpoint", 10))
 		{
