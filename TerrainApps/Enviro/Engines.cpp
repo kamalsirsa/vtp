@@ -14,8 +14,6 @@
 #include "Hawaii.h"
 #include "Globe.h"
 
-#define SET_FOG_EACH_FRAME 1
-
 //////////////////////////////////////////////////////////////
 
 float utm_points_ito[5][2] = {
@@ -114,7 +112,6 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 }
 
 
-
 void PlaneEngine::Eval()
 {
 	// determine vectors between last hoop, current position, and next hoop
@@ -175,14 +172,12 @@ void PlaneEngine::Eval()
 	pTarget->SetTrans(m_pos);
 }
 
-
-
-
 void PlaneEngine::SetHoop(int i)
 {
 	m_hoop = i;
 	m_pos = m_hoop_pos[i];
 }
+
 
 //////////////////////////////////////////////////////////////
 
@@ -647,5 +642,4 @@ bool GlobePicker::GetCurrentEarthPos(DPoint3 &p)
 		p = m_EarthPos;
 	return m_bOnTerrain;
 }
-
 
