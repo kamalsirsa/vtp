@@ -49,6 +49,9 @@ void ModelDlg::OnTextScale( wxCommandEvent &event )
 {
 	UpdateFromControls();
 
+	if (!m_pCurrentModel)
+		return;
+
 	// change in Scale should be passed to the 3d scene graph
 	GetMainFrame()->UpdateScale(m_pCurrentModel);
 	GetMainFrame()->DisplayCurrentModel();
