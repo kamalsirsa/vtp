@@ -23,6 +23,8 @@ navroute    BITMAP "bitmap/navroute.bmp"
 unfold	    BITMAP "bitmap/unfold.bmp"
 stop	    BITMAP "bitmap/stop.bmp"
 faster	    BITMAP "bitmap/faster.bmp"
+axes	    BITMAP "bitmap/axes.bmp"
+tilt	    BITMAP "bitmap/tilt.bmp"
 
 icon1   ICON "wx/icons/camera.ico"
 icon2   ICON "wx/icons/engine.ico"
