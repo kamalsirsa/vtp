@@ -90,35 +90,6 @@ bool NodeEdit::EditProperties(vtRoadLayer *pLayer)
 	return (dlg.ShowModal() == wxID_OK);
 }
 
-//is target inside the extent
-bool NodeEdit::WithinExtent(DRECT target)
-{
-	return (m_p.x > target.left && m_p.x < target.right && 
-		m_p.y > target.bottom && m_p.y < target.top);
-}
-
-//is the node in "bound"
-bool NodeEdit::InBounds(DRECT bound)
-{
-	//eliminate easy cases.
-	if (m_p.y < bound.bottom || 
-			m_p.y > bound.top ||
-			m_p.x < bound.left ||
-			m_p.x > bound.right) {
-		return false;
-	}
-
-	//simple correct case:
-	if ((m_p.y < bound.top) &&
-			(m_p.y > bound.bottom) &&
-			(m_p.x < bound.right) &&
-			(m_p.x > bound.left)) {
-		return true;
-	}
-
-	return false;
-}
-
 void NodeEdit::Translate(DPoint2 offset)
 {
 	m_p += offset;
@@ -521,21 +492,19 @@ void RoadMapEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bNodes)
 //
 // delete all selected roads
 //
-DRECT *RoadMapEdit::DeleteSelected(int &nBounds)
+DRECT *RoadMapEdit::DeleteSelected(int &nDeleted)
 {
-	int n = NumSelectedLinks();
-
-	DRECT* array = new DRECT[n];
-	nBounds = n;
-	if (nBounds == 0) {
+	nDeleted = NumSelectedLinks();
+	if (nDeleted == 0)
 		return NULL;
-	}
-	n = 0;
+
+	DRECT* array = new DRECT[nDeleted];
 
 	LinkEdit *prevLink = NULL;
 	LinkEdit *tmpLink;
 	LinkEdit *curLink = GetFirstLink();
 	Node *tmpNode;
+	int n = 0;
 
 	while (curLink)
 	{
@@ -570,11 +539,11 @@ DRECT *RoadMapEdit::DeleteSelected(int &nBounds)
 
 bool RoadMapEdit::SelectLink(DPoint2 point, float error, DRECT &bound)
 {
-	LinkEdit* road = SelectLink(point, error, true, false);
-	if (road)
+	LinkEdit *link = FindLink(point, error);
+	if (link)
 	{
-		bound = road->m_extent;
-//		wxLogMessage("road has %i.  there are %i roads.\n", road->GetSize(), NumRoads());
+		link->ToggleSelect();
+		bound = link->m_extent;
 		return true;
 	}
 	return false;
@@ -593,12 +562,13 @@ int RoadMapEdit::SelectLinks(DRECT bound, bool bval)
 	return found;
 }
 
-bool RoadMapEdit::SelectAndExtendLink(DPoint2 utmCoord, float error, DRECT &bound)
+bool RoadMapEdit::SelectAndExtendLink(DPoint2 point, float error, DRECT &bound)
 {
-	LinkEdit* originalLink = SelectLink(utmCoord, error, false, true);
-	if (originalLink == NULL) {
+	LinkEdit *originalLink = FindLink(point, error);
+	if (originalLink == NULL)
 		return false;
-	}
+
+	originalLink->Select(true);
 	bound = originalLink->m_extent;
 	//extend the given road
 	NodeEdit* node;
@@ -726,16 +696,19 @@ void RoadMapEdit::InvertSelection()
 }
 
 //
-// inverts Selected value of node within error or utmCoord
+// Inverts selected value of node within epsilon of point
 //
-bool RoadMapEdit::SelectNode(DPoint2 utmCoord, float error, DRECT &bound)
+bool RoadMapEdit::SelectNode(const DPoint2 &point, float epsilon, DRECT &bound)
 {
-	NodeEdit* node = SelectNode(utmCoord, error, true, false);
-	if (node) {
+	NodeEdit *node = (NodeEdit *) FindNodeAtPoint(point, epsilon);
+	if (node)
+	{
+		node->ToggleSelect();
 		bound.left = bound.right = node->m_p.x;
 		bound.top = bound.bottom = node->m_p.y;
 		return true;
-	} else
+	}
+	else
 		return false;
 }
 
@@ -745,7 +718,8 @@ int RoadMapEdit::SelectNodes(DRECT bound, bool bval)
 	int found = 0;
 	for (NodeEdit* curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
 	{
-		if (curNode->InBounds(bound)) {
+		if (bound.ContainsPoint(curNode->m_p))
+		{
 			curNode->Select(bval);
 			found++;
 		}
@@ -804,44 +778,6 @@ DRECT *RoadMapEdit::DeSelectAll(int &numRegions)
 	return array;
 }
 
-//returns appropriate node at utmCoord within error
-//toggle:	toggles the select value
-//selectVal: what to assign the select value.
-// toggle has precendence over selectVal.
-NodeEdit* RoadMapEdit::SelectNode(DPoint2 point, float error, bool toggle, bool selectVal)
-{
-	NodeEdit* bestSoFar;
-	float dist = (float)error;
-	float result;
-	bool found = false;
-
-	//a backwards rectangle, to provide greater flexibility for finding the node
-	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
-	for (NodeEdit* curNode = GetFirstNode(); curNode; curNode = curNode->GetNext())
-	{
-		if (curNode->WithinExtent(target))
-		{
-			result = curNode->DistanceToPoint(point);
-			if (result < dist) {
-				bestSoFar = curNode;
-				dist = result;
-				found = true;
-			}
-		}
-	}
-
-	if (found)
-	{
-		if (toggle)
-			bestSoFar->ToggleSelect();
-		else
-			bestSoFar->Select(selectVal);
-		return bestSoFar;
-	}
-	else
-		return NULL;
-}
-
 
 LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
 {
@@ -862,34 +798,6 @@ LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
 		}
 	}
 	return bestSoFar;
-}
-
-//returns appropriate road at utmCoord within error
-//toggle:	toggles the select value
-//selectVal: what to assign the select value.
-// toggle has precendence over selectVal.
-LinkEdit* RoadMapEdit::SelectLink(DPoint2 point, float error, bool toggle, bool selectVal)
-{
-	LinkEdit *pPickedLink = FindLink(point, error);
-	if (pPickedLink)
-	{
-		if (toggle)
-			pPickedLink->ToggleSelect();
-		else
-			pPickedLink->Select(selectVal);
-	}
-	return pPickedLink;
-}
-
-
-NodeEdit* RoadMapEdit::GetNode(DPoint2 point, float error)
-{
-	return SelectNode(point, error, false, true);
-}
-
-LinkEdit* RoadMapEdit::GetLink(DPoint2 point, float error)
-{
-	return SelectLink(point, error, false, true);
 }
 
 void RoadMapEdit::DeleteSingleLink(LinkEdit *pDeleteLink)
@@ -925,9 +833,8 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 			pN2->AddLink(pR);
 			type = pN->GetIntersectType(pR);
 			pN2->SetIntersectType(pR, type);
-			if (type == IT_LIGHT) {
+			if (type == IT_LIGHT)
 				lights = true;
-			}
 		}
 		if (pR->GetNode(1) == pN)
 		{
@@ -935,9 +842,8 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 			pN2->AddLink(pR);
 			type = pN->GetIntersectType(pR);
 			pN2->SetIntersectType(pR, type);
-			if (type == IT_LIGHT) {
+			if (type == IT_LIGHT)
 				lights = true;
-			}
 		}
 		pN->DetachLink(pR);
 	}

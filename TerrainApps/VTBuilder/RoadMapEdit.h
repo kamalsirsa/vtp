@@ -44,11 +44,6 @@ public:
 	//brings up a node dialog to edit road properties	
 	bool EditProperties(vtRoadLayer *pLayer);
 
-	//is target inside the extent
-	bool WithinExtent(DRECT target);
-	//is the node in "bound"
-	bool InBounds(DRECT bound);
-
 	//move the node
 	void Translate(DPoint2 offset);
 	//makes sure road endpoints match the node's position
@@ -178,20 +173,15 @@ public:
 	//selects all roads with given highway number
 	bool SelectHwyNum(int num);
 
-	// returns and selects (m_bSelect=true) road within error of utmCoord
-	LinkEdit* GetLink(DPoint2 point, float error);
-
 	//selects road if it is only partially in the box.
 	bool CrossSelectLinks(DRECT bound, bool bval);
 	//inverts selection values on all roads and nodes.
 	void InvertSelection();
 
-	//inverts m_bSelect value of node within error of utmCoord
-	bool SelectNode(DPoint2 point, float error, DRECT &bound);
+	//inverts m_bSelect value of node within epsilon of point
+	bool SelectNode(const DPoint2 &point, float epsilon, DRECT &bound);
 	//if bval true, select nodes within bound.  otherwise deselect nodes
 	int SelectNodes(DRECT bound, bool bval);
-	//returns and selects (m_bSelect=true) node within error of utmCoord
-	NodeEdit* GetNode(DPoint2 point, float error);
 
 	//return the number of selected nodes.
 	int NumSelectedNodes();
@@ -213,13 +203,6 @@ protected:
 	void DeleteSingleLink(LinkEdit *pLink);
 	//replace a node
 	void ReplaceNode(NodeEdit *pN, NodeEdit *pN2);
-
-	//returns appropriate node/road at utmCoord within error
-	//toggle:	toggles the select value
-	//selectVal: what to assign the select value.
-	// toggle has precendence over selectVal.
-	NodeEdit *SelectNode(DPoint2 point, float error, bool toggle, bool selectVal);
-	LinkEdit *SelectLink(DPoint2 point, float error, bool toggle, bool selectVal);
 };
 
 typedef NodeEdit *NodeEditPtr;
