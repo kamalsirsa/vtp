@@ -151,7 +151,7 @@ void ImportStructDlg::UpdateEnables()
 	GetTypeCenter()->Enable(m_nShapeType == SHPT_POINT);
 
 	GetTypeFootprint()->Enable(m_nShapeType == SHPT_POLYGON ||
-		m_nShapeType == SHPT_POLYGONZ);
+		m_nShapeType == SHPT_POLYGONZ || m_nShapeType == SHPT_ARC);
 
 	GetTypeLinear()->Enable(m_nShapeType == SHPT_ARC ||
 		m_nShapeType == SHPT_POLYGON);
