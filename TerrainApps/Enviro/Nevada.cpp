@@ -209,7 +209,8 @@ void NevadaTerrain::CreatePast()
 #if ENABLE_TREES	// enable/disable trees
 	//tree generation
 #define TREE_EXAG	6.0f
-	vtPlantAppearance3d *pPlantApp = new vtPlantAppearance3d(true, "SEQ.png",
+	vtPlantAppearance3d *pPlantApp = new vtPlantAppearance3d(AT_BILLBOARD,
+		"SEQ.png",
 		6.0f, 8.5f,	// width, height
 		0.0f, 0.0f);
 	pPlantApp->LoadAndCreate("Data/", TREE_EXAG, false, true);	// shadows, billboards

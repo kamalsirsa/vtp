@@ -39,7 +39,7 @@ void PlantListCtrl::OnSelect(wxListEvent &event)
 		vtPlantAppearance* app = ps->GetAppearance(j);
 		wxString str1;
 		long item1;
-		str1.Printf("%d", app->m_bBillboard);
+		str1.Printf("%d", app->m_eType == AT_BILLBOARD);
 		item1 = apps->InsertItem(j, str1, 0);
 		str1 = app->m_filename;
 		item1 = apps->SetItem(j, 1, str1);
@@ -126,7 +126,7 @@ void PlantListDlg::OnInitDialog(wxInitDialogEvent& event)
 			wxString str1;
 			long item1;
 
-			str1.Printf("%d", app->m_bBillboard);
+			str1.Printf("%d", app->m_eType == AT_BILLBOARD);
 			item1 = m_PATable->InsertItem(j, str1, 0);
 			str1 = app->m_filename;
 			item1 = m_PATable->SetItem(j, 1, str1);
