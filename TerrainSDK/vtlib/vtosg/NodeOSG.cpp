@@ -81,10 +81,42 @@ void vtNode::GetBoundBox(FBox3 &box)
 //	box = s2v(b);
 }
 
-void vtNode::GetBoundSphere(FSphere &sphere)
+void vtNode::GetBoundSphere(FSphere &sphere, bool bGlobal)
 {
 	BoundingSphere bs = m_pNode->getBound();
 	s2v(bs, sphere);
+
+	if (bGlobal)
+	{
+		// We must work our way up the tree to the root, accumulating
+		//  the transforms, to get the sphere in the global reference frame.
+		vtNode *node = this;
+		while (node = node->GetParent(0))
+		{
+			vtTransform *trans = dynamic_cast<vtTransform *>(node);
+			if (trans)
+			{
+				// Note that this isn't 100% complete; we should be
+				//  transforming the radius as well, with scale.
+				FMatrix4 mat;
+				trans->GetTransform1(mat);
+				FPoint3 result;
+				mat.Transform(sphere.center, result);
+				sphere.center = result;
+			}
+		}
+	}
+}
+
+vtNode *vtNode::GetParent(int iParent)
+{
+	int num = m_pNode->getNumParents();
+	if (iParent >= num)
+		return NULL;
+	osg::Group *parent = m_pNode->getParent(iParent);
+	if (!parent)
+		return NULL;
+	return (vtNode *) (parent->getUserData());
 }
 
 vtNodeBase *vtNode::CreateClone()

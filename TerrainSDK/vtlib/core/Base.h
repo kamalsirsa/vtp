@@ -98,10 +98,11 @@ public:
 	virtual void		SetName2(const char *str) = 0;
 	virtual const char*	GetName2() = 0;
 
-	virtual void GetBoundBox(FBox3 &box) = 0;
-	virtual void GetBoundSphere(FSphere &sphere) = 0;
+	virtual void	GetBoundBox(FBox3 &box) = 0;
+	virtual void	GetBoundSphere(FSphere &sphere, bool bGlobal = false) = 0;
 
-	virtual int GetTriCount() = 0;
+	virtual vtNode*	GetParent(int iParent = 0) = 0;
+	virtual int		GetTriCount() = 0;
 
 	static RGBf s_white;
 	virtual void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR) = 0;

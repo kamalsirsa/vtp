@@ -45,7 +45,9 @@ public:
 	void GetBoundBox(FBox3 &box);
 
 	/** Get the Bounding Sphere of the node, in world coordinates */
-	void GetBoundSphere(FSphere &sphere);
+	void GetBoundSphere(FSphere &sphere, bool bGlobal = false);
+
+	vtNode *GetParent(int iParent = 0);
 
 	int GetTriCount() { return 0; }
 
