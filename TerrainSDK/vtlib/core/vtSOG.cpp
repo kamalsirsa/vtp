@@ -97,7 +97,7 @@ void OutputSOG::WriteHeader(FILE *fp)
 //
 // Write the materials
 //
-void OutputSOG::WriteMaterials(FILE *fp, vtMaterialArray *pMats)
+void OutputSOG::WriteMaterials(FILE *fp, const vtMaterialArray *pMats)
 {
 	int i;
 	short num_mat = pMats->GetSize();
@@ -110,9 +110,9 @@ void OutputSOG::WriteMaterials(FILE *fp, vtMaterialArray *pMats)
 	}
 }
 
-void OutputSOG::WriteSingleGeometry(FILE *fp, vtGeom *pGeom)
+void OutputSOG::WriteSingleGeometry(FILE *fp, const vtGeom *pGeom)
 {
-	vtMaterialArray	*pMats = pGeom->GetMaterials();
+	const vtMaterialArray	*pMats = pGeom->GetMaterials();
 	WriteMaterials(fp, pMats);
 
 	short num_geom = 1;
@@ -120,7 +120,7 @@ void OutputSOG::WriteSingleGeometry(FILE *fp, vtGeom *pGeom)
 	WriteGeometry(fp, pGeom, 0);
 }
 
-void OutputSOG::WriteMultiGeometry(FILE *fp, vtGroup *pParent)
+void OutputSOG::WriteMultiGeometry(FILE *fp, const vtGroup *pParent)
 {
 	int i;
 	short num_geom = pParent->GetNumChildren();
@@ -133,7 +133,7 @@ void OutputSOG::WriteMultiGeometry(FILE *fp, vtGroup *pParent)
 		if (i == 0)
 		{
 			// assume that they share the same materials
-			vtMaterialArray	*pMats = pGeom->GetMaterials();
+			const vtMaterialArray	*pMats = pGeom->GetMaterials();
 			WriteMaterials(fp, pMats);
 		}
 		WriteGeometry(fp, pGeom, i);
@@ -143,7 +143,7 @@ void OutputSOG::WriteMultiGeometry(FILE *fp, vtGroup *pParent)
 //
 //
 //
-void OutputSOG::WriteGeometry(FILE *fp, vtGeom *pGeom, short id)
+void OutputSOG::WriteGeometry(FILE *fp, const vtGeom *pGeom, short id)
 {
 	int i;
 
@@ -172,7 +172,7 @@ void OutputSOG::WriteGeometry(FILE *fp, vtGeom *pGeom, short id)
 	}
 }
 
-void OutputSOG::WriteMaterial(FILE *fp, vtMaterial *pMat)
+void OutputSOG::WriteMaterial(FILE *fp, const vtMaterial *pMat)
 {
 	RGBAf rgba;
 	RGBf rgb;
@@ -218,7 +218,7 @@ void OutputSOG::WriteMaterial(FILE *fp, vtMaterial *pMat)
 	}
 }
 
-void OutputSOG::WriteMesh(FILE *fp, vtMesh *pMesh)
+void OutputSOG::WriteMesh(FILE *fp, const vtMesh *pMesh)
 {
 	int i;
 	FPoint3 p;
