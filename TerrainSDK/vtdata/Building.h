@@ -133,6 +133,7 @@ public:
 	BldMaterial GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
+	void FlipFootprintDirection();
 
 	bool HasSlopedEdges();
 	bool IsHorizontal();
@@ -183,6 +184,7 @@ public:
 	DPoint2 GetLocation() const { return m_EarthPos; }
 
 	void SetRectangle(float fWidth, float fDepth, float fRotation = 0.0f);
+	void FlipFootprintDirection();
 
 	void SetRadius(float fRad);
 	float GetRadius() const;

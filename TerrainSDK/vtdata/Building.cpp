@@ -581,6 +581,19 @@ RoofType vtLevel::GuessRoofType()
 	return ROOF_UNKNOWN;
 }
 
+void vtLevel::FlipFootprintDirection()
+{
+	DPoint2 p;
+
+	int i, size = m_Footprint.GetSize();
+	for (i = 0; i < size/2; i++)
+	{
+		p = m_Footprint[i];
+		m_Footprint[i] = m_Footprint[size-1-i];
+		m_Footprint[size-1-i] = p;
+	}
+}
+
 /////////////////////////////////////
 
 vtBuilding::vtBuilding() : vtStructure()
@@ -615,6 +628,13 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 void vtBuilding::SetRectangle(float fWidth, float fDepth, float fRotation)
 {
 	RectToPoly(fWidth, fDepth, fRotation);
+}
+
+void vtBuilding::FlipFootprintDirection()
+{
+	// Flip the direction (clockwisdom) of each level
+	for (int i = 0; i < m_Levels.GetSize(); i++)
+		m_Levels[i]->FlipFootprintDirection();
 }
 
 void vtBuilding::SetRadius(float fRad)
