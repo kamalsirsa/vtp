@@ -197,7 +197,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 	if (m_pCurrentTerrain != NULL)
 	{
 		// turn off the scene graph of the previous terrain
-		m_pCurrentTerrain->m_pTerrainGroup->SetEnabled(false);
+		m_pCurrentTerrain->Enable(false);
 
 		// turn off the engines specific to the previous terrain
 		m_pCurrentTerrain->ActivateEngines(false);
@@ -214,7 +214,7 @@ void vtTerrainScene::SetTerrain(vtTerrain *pTerrain)
 
 	// switch
 	m_pTop->AddChild(m_pCurrentTerrain->m_pTerrainGroup);
-	m_pCurrentTerrain->m_pTerrainGroup->SetEnabled(true);
+	m_pCurrentTerrain->Enable(true);
 
 	// switch to the projection of this terrain
 	m_pCurrentTerrain->SetGlobalProjection();
