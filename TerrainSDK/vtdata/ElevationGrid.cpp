@@ -906,9 +906,22 @@ bool vtElevationGrid::FindAltitudeAtPoint(const FPoint3 &p, float &fAltitude,
 	// safety check
 	if (iX < 0 || iX >= m_iColumns-1 || iZ < 0 || iZ >= m_iRows-1)
 	{
-		fAltitude = 0.0f;
-		if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
-		return false;
+		if (p.x == m_WorldExtents.right || p.z == m_WorldExtents.top)
+		{
+			// right on the edge: allow this point, but don't interpolate
+			fAltitude = GetFValue(iX, iZ);
+			if (!bTrue)
+				fAltitude *= m_fVerticalScale;
+			if (vNormal != NULL)
+				vNormal->Set(0,1,0);
+			return true;
+		}
+		else
+		{
+			fAltitude = 0.0f;
+			if (vNormal) vNormal->Set(0.0f, 1.0f, 0.0f);
+			return false;
+		}
 	}
 
 	if (vNormal != NULL)
