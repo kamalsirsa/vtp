@@ -347,7 +347,11 @@ extern State *hack_global_state;
 void vtMaterial::Apply()
 {
 	if (hack_global_state)
+	{
 		hack_global_state->apply(m_pStateSet.get());
+		// Dynamic terrain assumes texture unit 0
+		hack_global_state->setActiveTextureUnit(0);
+	}
 }
 
 
@@ -784,18 +788,17 @@ void vtMesh::ReOptimize()
 	m_pGeometry->dirtyDisplayList();
 }
 
-	osg::ref_ptr<osg::LineWidth> lws;
-	osg::ref_ptr<osg::StateSet> ss;
-
 void vtMesh::SetLineWidth(float fWidth)
 {
-	lws = new osg::LineWidth;
-	ss = new osg::StateSet;
+	osg::LineWidth *lws = new osg::LineWidth;
+	osg::StateSet *ss = new osg::StateSet;
 
 	lws->setWidth(fWidth);
-	ss->setAttributeAndModes(lws.get(),
-		osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
-	m_pGeometry->setStateSet(ss.get());
+	ss->setAttribute(lws);
+//	ss->setAttributeAndModes(lws,
+//		osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
+	m_pGeometry->setStateSet(ss);
+	m_pGeometry->setUseDisplayList(false);
 }
 
 /**
