@@ -43,10 +43,18 @@ private:
 	int m_iNear;
 	int m_iFar;
 	int m_iSpeed;
+	int m_iDistVeg;
+	int m_iDistStruct;
+	int m_iDistRoad;
+
 	float m_fFov;
 	float m_fNear;
 	float m_fFar;
 	float m_fSpeed;
+	float m_fDistVeg;
+	float m_fDistStruct;
+	float m_fDistRoad;
+
 	bool m_bSet;
 
 private:
@@ -55,10 +63,12 @@ private:
 	void OnFarSlider( wxCommandEvent &event );
 	void OnNearSlider( wxCommandEvent &event );
 	void OnFovSlider( wxCommandEvent &event );
-	void OnSpeed( wxCommandEvent &event );
-	void OnFar( wxCommandEvent &event );
-	void OnNear( wxCommandEvent &event );
-	void OnFov( wxCommandEvent &event );
+
+	void OnSliderVeg( wxCommandEvent &event );
+	void OnSliderStruct( wxCommandEvent &event );
+	void OnSliderRoad( wxCommandEvent &event );
+
+	void OnText( wxCommandEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);
 
 private:

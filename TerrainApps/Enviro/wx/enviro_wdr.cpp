@@ -32,25 +32,27 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticBoxSizer *item2 = new wxStaticBoxSizer( item3, wxVERTICAL );
 
     wxRadioButton *item4 = new wxRadioButton( parent, ID_EARTHVIEW, _("Earth View"), wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item2->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP, 5 );
 
     wxBoxSizer *item5 = new wxBoxSizer( wxHORIZONTAL );
+
+    item5->Add( 20, 20, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxStaticText *item6 = new wxStaticText( parent, ID_IMAGETEXT, _("Image:  "), wxDefaultPosition, wxDefaultSize, 0 );
     item5->Add( item6, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     wxString *strs7 = (wxString*) NULL;
     wxComboBox *item7 = new wxComboBox( parent, ID_IMAGE, wxT(""), wxDefaultPosition, wxSize(125,100), 0, strs7, wxCB_DROPDOWN );
-    item5->Add( item7, 0, wxALIGN_CENTRE|wxALL, 0 );
+    item5->Add( item7, 1, wxALIGN_CENTRE|wxALL, 0 );
 
-    item2->Add( item5, 0, wxALIGN_CENTRE|wxALL, 0 );
+    item2->Add( item5, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxRadioButton *item8 = new wxRadioButton( parent, ID_TERRAIN, _("Terrain"), wxDefaultPosition, wxDefaultSize, 0 );
     item2->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_TNAME, wxT(""), wxDefaultPosition, wxSize(125,-1), wxTE_READONLY );
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_TNAME, wxT(""), wxDefaultPosition, wxSize(140,-1), wxTE_READONLY );
     item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxButton *item11 = new wxButton( parent, ID_TSELECT, _("Select..."), wxDefaultPosition, wxSize(55,-1), 0 );
@@ -123,54 +125,6 @@ wxSizer *StartupDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item27->Add( item30, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item0->Add( item27, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    if (set_sizer)
-    {
-        parent->SetAutoLayout( TRUE );
-        parent->SetSizer( item0 );
-        if (call_fit)
-        {
-            item0->Fit( parent );
-            item0->SetSizeHints( parent );
-        }
-    }
-    
-    return item0;
-}
-
-wxSizer *TerrainDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
-{
-    wxBoxSizer *item0 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxBoxSizer *item1 = new wxBoxSizer( wxVERTICAL );
-
-    wxString *strs2 = (wxString*) NULL;
-    wxListBox *item2 = new wxListBox( parent, ID_TLIST, wxDefaultPosition, wxSize(80,100), 0, strs2, wxLB_SINGLE|wxLB_SORT );
-    item1->Add( item2, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxButton *item4 = new wxButton( parent, ID_NEW, _("New"), wxDefaultPosition, wxSize(40,-1), 0 );
-    item4->Enable( FALSE );
-    item3->Add( item4, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxButton *item5 = new wxButton( parent, ID_DELETE, _("Delete"), wxDefaultPosition, wxSize(60,-1), 0 );
-    item5->Enable( FALSE );
-    item3->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    item1->Add( item3, 0, wxALIGN_CENTRE|wxALL, 0 );
-
-    item0->Add( item1, 0, wxALIGN_CENTRE|wxLEFT|wxTOP|wxBOTTOM, 5 );
-
-    wxBoxSizer *item6 = new wxBoxSizer( wxVERTICAL );
-
-    wxButton *item7 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxButton *item8 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    item0->Add( item6, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
     if (set_sizer)
     {
@@ -472,7 +426,49 @@ wxSizer *CameraDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxSlider *item17 = new wxSlider( parent, ID_SPEEDSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), 0 );
     item14->Add( item17, 0, wxALIGN_CENTRE, 0 );
 
-    item0->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxBOTTOM, 5 );
+    item0->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxStaticLine *item18 = new wxStaticLine( parent, ID_LINE, wxDefaultPosition, wxSize(20,-1), wxLI_HORIZONTAL );
+    item0->Add( item18, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Vegetation"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_LOD_VEG, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item19->Add( item21, 0, wxALIGN_CENTRE, 5 );
+
+    wxSlider *item22 = new wxSlider( parent, ID_SLIDER_VEG, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item19->Add( item22, 0, wxALIGN_CENTRE, 0 );
+
+    item0->Add( item19, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Structures"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_LOD_STRUCT, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item23->Add( item25, 0, wxALIGN_CENTRE, 5 );
+
+    wxSlider *item26 = new wxSlider( parent, ID_SLIDER_STRUCT, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item23->Add( item26, 0, wxALIGN_CENTRE, 0 );
+
+    item0->Add( item23, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP, 5 );
+
+    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, _("LOD distance for Roads"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item28, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_LOD_ROAD, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item27->Add( item29, 0, wxALIGN_CENTRE, 5 );
+
+    wxSlider *item30 = new wxSlider( parent, ID_SLIDER_ROAD, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item27->Add( item30, 0, wxALIGN_CENTRE, 0 );
+
+    item0->Add( item27, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxTOP|wxBOTTOM, 5 );
 
     if (set_sizer)
     {
