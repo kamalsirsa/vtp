@@ -172,7 +172,6 @@ void vtFlyer::DoKeyNavigation()
 			updown = -updown;
 		pTarget->RotateLocal(FPoint3(1.0f, 0.0f, 0.0f), updown);
 	}
-
 }
 
 //
