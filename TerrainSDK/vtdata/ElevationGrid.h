@@ -35,6 +35,7 @@ public:
 	~vtElevationGrid();
 
 	bool ConvertProjection(vtElevationGrid *pOld, vtProjection &NewProj, void progress_callback(int) = NULL);
+	void Scale(float fScale, bool bDirect);
 
 	// Load
 	bool LoadFromDEM(const char *szFileName, void progress_callback(int) = NULL);
@@ -62,8 +63,7 @@ public:
 	void GetDimensions(int &nColumns, int &nRows);
 	DPoint2 GetSpacing();
 
-	/** Test if a point is within the extents of the grid.
-	 */
+	/// Test if a point is within the extents of the grid.
 	bool ContainsPoint(double x, double y)
 	{
 		return (m_area.left <= x && x <= m_area.right &&
@@ -75,9 +75,11 @@ public:
 	void  SetValue(int i, int j, short value);
 	int   GetValue(int i, int j);	// returns height value as a integer
 	float GetFValue(int i, int j);	// returns height value as a float
+	float GetFValueSafe(int i, int j);
 
 	float GetClosestValue(double x, double y);
 	float GetFilteredValue(double x, double y);
+	float GetFilteredValue2(double x, double y);
 
 	// Accessors
 	/** Return the embedded name of the DEM is it has one */
@@ -112,6 +114,9 @@ public:
 	short *GetData() { return m_pData; }
 	float *GetFloatData() { return m_pFData; }
 
+	void SetScale(float sc) { m_fVMeters = sc; }
+	float GetScale() { return m_fVMeters; }
+
 protected:
 	DRECT	m_area;		// bounds in the original data space
 	int		m_iColumns;
@@ -119,25 +124,20 @@ protected:
 	bool	m_bFloatMode;
 	short	*m_pData;
 	float	*m_pFData;
+	float	m_fVMeters;	// scale factor to convert stored heights to meters
 
 	void ComputeExtentsFromCorners();
 	void ComputeCornersFromExtents();
 
-	DPoint2		m_Corners[4];		// data corners, in the projection of this terrain
-
-	vtProjection	m_proj;
+	DPoint2		m_Corners[4];	// data corners, in the projection of this terrain
+	vtProjection	m_proj;		// a grid always has some projection
 
 private:
 	// minimum and maximum height values for the whole grid
 	float	m_fMinHeight, m_fMaxHeight;
 	char 	m_szOriginalDEMName[41];
 
-	void	AllocateArray();
-
-	// only used by DEM reader code
-	double	m_fVMeters;
-	double	m_fGRes;
-	int		m_iDataSize;
+	void	_AllocateArray();
 };
 
 #endif	// ELEVATIONGRIDH
