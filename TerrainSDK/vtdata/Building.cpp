@@ -54,7 +54,7 @@ vtEdge::vtEdge()
 	m_Color.Set(255,0,0);		// default color: red
 	m_iSlope = 90;		// vertical
 	m_fEaveLength = 0.0f;
-	m_pMaterial = &BMAT_NAME_PLAIN;
+	m_pMaterial = GetGlobalMaterials()->FindName(BMAT_NAME_PLAIN);
 }
 
 vtEdge::~vtEdge()
@@ -71,7 +71,7 @@ vtEdge::vtEdge(const vtEdge &lhs)
 	m_pMaterial = lhs.m_pMaterial;
 }
 
-void vtEdge::Set(int iDoors, int iWindows, const vtMaterialName& material)
+void vtEdge::Set(int iDoors, int iWindows, const vtString& material)
 {
 	vtEdgeFeature wall, window, door;
 
@@ -343,10 +343,11 @@ void vtLevel::SynchFromOGR()
 #endif
 }
 
-void vtLevel::SetEdgeMaterial(const vtMaterialName& Material)
+void vtLevel::SetEdgeMaterial(const char *matname)
 {
+	const vtString *str = GetGlobalMaterials()->FindName(matname);
 	for (int i = 0; i < m_Edges.GetSize(); i++)
-		m_Edges[i]->m_pMaterial = &Material;
+		m_Edges[i]->m_pMaterial = str;
 }
 
 void vtLevel::SetEdgeColor(RGBi color)
@@ -640,15 +641,15 @@ bool vtLevel::DetermineHeightFromSlopes()
 // Look at the materials of this level's edges.  If they all use the
 // same material, return it.  Otherwise, return BMAT_UNKNOWN.
 //
-const vtMaterialName& vtLevel::GetOverallEdgeMaterial()
+const vtString vtLevel::GetOverallEdgeMaterial()
 {
-	const vtMaterialName *most = &BMAT_NAME_UNKNOWN;
+	const vtString *most = GetGlobalMaterials()->FindName(BMAT_NAME_UNKNOWN);
 
 	int edges = GetNumEdges();
 	for (int i = 0; i < edges; i++)
 	{
 		vtEdge *pEdge = GetEdge(i);
-		const vtMaterialName *mat = pEdge->m_pMaterial;
+		const vtString *mat = pEdge->m_pMaterial;
 		if (*most == BMAT_NAME_UNKNOWN)
 			most = mat;
 		else if (*most != *mat)

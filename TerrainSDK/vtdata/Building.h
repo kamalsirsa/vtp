@@ -59,8 +59,8 @@ public:
 	// style (to classify window/door/post style)
 	// TODO
 
-	// overall color, or special values:
-	// TODO?
+	// overall color of this feature, or "-1 -1 -1" for default color
+	RGBi	m_color;
 
 	// width: positive values mean meters,
 	//	negative values mean proportional scaling factors
@@ -78,7 +78,7 @@ public:
 	vtEdge(const vtEdge &lhs);
 	~vtEdge();
 
-	void Set(int doors, int windows, const vtMaterialName& material);
+	void Set(int doors, int windows, const vtString& material);
 	void AddFeature(int code, float width = -1.0f, float vf1 = 0.0f, float vf2 = 1.0f);
 	int NumFeatures() const { return m_Features.GetSize(); }
 	int NumFeaturesOfCode(int code);
@@ -95,7 +95,7 @@ public:
 	float m_fEaveLength;
 
 	// members
-	const vtMaterialName *m_pMaterial;
+	const vtString		*m_pMaterial;
 	Array<vtEdgeFeature> m_Features;
 	vtString			 m_Facade;
 };
@@ -119,7 +119,7 @@ public:
 	int GetNumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
-	const vtMaterialName& GetOverallEdgeMaterial();
+	const vtString GetOverallEdgeMaterial();
 	bool GetOverallEdgeColor(RGBi &color);
 	RoofType GuessRoofType();
 	void FlipFootprintDirection();
@@ -130,7 +130,7 @@ public:
 	bool IsCornerConvex(int i);
 	bool IsUniform();
 
-	void SetEdgeMaterial(const vtMaterialName &Material);
+	void SetEdgeMaterial(const char *matname);
 	void SetEdgeColor(RGBi color);
 	void SetRoofType(RoofType rt, int iSlopeDegrees);
 	void SetEaveLength(float fMeters);
