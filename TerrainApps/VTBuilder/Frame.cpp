@@ -96,7 +96,7 @@ DECLARE_APP(MyApp)
 
 //////////////////////////////////////////////////////////////////
 
-MainFrame *GetMainFrame()
+	MainFrame *GetMainFrame()
 {
 	return (MainFrame *) wxGetApp().GetTopWindow();
 }
@@ -198,7 +198,7 @@ void MainFrame::OnClose(wxCloseEvent &event)
 	{
 		wxString str;
 		str.Printf("There %s %d layer%s modified but unsaved.\n"
-			"Are you sure you want to exit?", num == 1 ? "is" : "are", num,
+				"Are you sure you want to exit?", num == 1 ? "is" : "are", num,
 			num == 1 ? "" : "s");
 		if (wxMessageBox(str, "Warning", wxYES_NO) == wxNO)
 		{
@@ -371,7 +371,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	GetTempFolderName(prepend_path, fname_in);
 
 	if (ext.CmpNoCase("gz") == 0 || ext.CmpNoCase("tgz") == 0 ||
-		ext.CmpNoCase("tar") == 0)
+			ext.CmpNoCase("tar") == 0)
 	{
 		// try to uncompress
 		const char *input_filename = fname;
@@ -484,8 +484,8 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 			pLayer = pTR;
 	}
 	if (ext.CmpNoCase("shp") == 0 ||
-		ext.CmpNoCase("gml") == 0 ||
-		ext.CmpNoCase("xml") == 0)
+			ext.CmpNoCase("gml") == 0 ||
+			ext.CmpNoCase("xml") == 0)
 	{
 		vtRawLayer *pRL = new vtRawLayer();
 		if (pRL->Load(fname))
@@ -822,7 +822,7 @@ class LinearStructureDlg2d: public LinearStructureDlg
 public:
 	LinearStructureDlg2d(wxWindow *parent, wxWindowID id, const wxString &title,
 		const wxPoint& pos, const wxSize& size, long style) :
-			LinearStructureDlg(parent, id, title, pos, size, style) {}
+	LinearStructureDlg(parent, id, title, pos, size, style) {}
 	void OnSetOptions(LinStructOptions &opt)
 	{
 		m_pFrame->m_LSOptions = opt;
@@ -896,7 +896,7 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 					tin->FindAltitudeAtPoint(DPoint2(x, y), fData);
 
 				if (fData != INVALID_ELEVATION &&
-					(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
+						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
 					fBestData = fData;
 				if (fBestData != INVALID_ELEVATION && fBestData != 0)
 					break;
@@ -1112,7 +1112,7 @@ void MainFrame::ExportElevation()
 	if (spacing == DPoint2(1.0f, 1.0f))
 	{
 		wxMessageBox("Sorry, you must have some elevation grid layers to\n"
-			"perform a sampling operation on them.", "Info");
+				"perform a sampling operation on them.", "Info");
 		return;
 	}
 
@@ -1301,4 +1301,3 @@ void MainFrame::OnChar(wxKeyEvent& event)
 {
 	m_pView->OnChar(event);
 }
-
