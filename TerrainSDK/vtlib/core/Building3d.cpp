@@ -4,15 +4,17 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3d geometry of the buildings.
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/Triangulate.h"
+#include "vtdata/PolyChecker.h"
 #include "Building3d.h"
 #include "Terrain.h"
+#include "FelkelStraightSkeleton.h"
 
 // There is a single array of materials, shared by all buildings.
 // This is done to save memory.  For a list of 16000+ buildings, this can
@@ -393,7 +395,6 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 
 			// vector of plane intersection is cross product of their normals
 			FPoint3 inter = norm1.Cross(norm2);
-
 			// Test that intersection vector is pointing into the polygon
 			// need a better test if we are going to handle downward sloping roofs
 			if (inter.y < 0)
@@ -408,8 +409,9 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 	}
 }
 
-void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
+bool vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 {
+	PolyChecker PolyChecker;
 	int i, j, k;
 
 	bool bDoWalls = true;
@@ -419,6 +421,9 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 
 	DetermineWorldFootprints(pHeightField);
 
+	if (!PolyChecker.IsSimplePolygon(*m_lfp[0]))
+		return false;
+
 	// create the edges (walls and roof)
 	float fHeight = 0.0f;
 	int iLevels = GetNumLevels();
@@ -426,45 +431,61 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 	{
 		for (i = 0; i < iLevels; i++)
 		{
+			vtLevel *lev = m_Levels[i];
+			int edges = lev->m_Edges.GetSize();
+
+			// case BLEV_FELKEL:
+			/*
+			if (lev->IsHorizontal())
+				AddFlatRoof(*m_lfp[i], lev);
+			else
+				fHeight += MakeFelkelRoof(*m_lfp[i], lev);
+			break;
+			*/
 			int level_show = -1, edge_show = -1;
 			GetValue("level", level_show);
 			GetValue("edge", edge_show);
 
-			vtLevel *lev = m_Levels[i];
 			if (lev->IsHorizontal())
 			{
 				// make flat roof
 				AddFlatRoof(*m_lfp[i], lev);
-				continue;
 			}
 			else if (lev->IsUniform())
 			{
 				int iHighlightEdge = level_show == i ? edge_show : -1;
 				CreateUniformLevel(i, fHeight, iHighlightEdge);
 				fHeight += lev->m_iStories * lev->m_fStoryHeight;
-				continue;
+			}
+			else if (lev->HasSlopedEdges() && edges > 4)
+			{
+				// For complicated roofs with sloped edges which meet at a
+				// roofline of uneven height, we need a sophisticated
+				// straight-skeleton solution like Petr Felkel's
+				fHeight += MakeFelkelRoof(*m_lfp[i], lev);
 			}
 			else
+			{
 				// 'flat roof' for the floor
 				AddFlatRoof(*m_lfp[i], lev);
 
-			FLine3 poly = *m_lfp[i];
-			FLine3 poly2;
+				FLine3 poly = *m_lfp[i];
+				FLine3 poly2;
 
-			for (j = 0; j < lev->m_iStories; j++)
-			{
-				int edges = lev->m_Edges.GetSize();
-				for (k = 0; k < edges; k++)
+				for (j = 0; j < lev->m_iStories; j++)
 				{
-					poly[k].y = fHeight;
+					for (k = 0; k < edges; k++)
+					{
+						poly[k].y = fHeight;
+					}
+					CreateUpperPolygon(lev, poly, poly2);
+					for (k = 0; k < edges; k++)
+					{
+						bool bShowEdge = (level_show == i && edge_show == k);
+						CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
+					}
+					fHeight += lev->m_fStoryHeight;
 				}
-				CreateUpperPolygon(lev, poly, poly2);
-				for (k = 0; k < edges; k++)
-				{
-					bool bShowEdge = (level_show == i && edge_show == k);
-					CreateEdgeGeometry(lev, poly, poly2, k, bShowEdge);
-				}
-				fHeight += lev->m_fStoryHeight;
 			}
 		}
 	}
@@ -494,6 +515,7 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 		m_pHighlight = CreateBoundSphereGeom(sphere);
 		m_pContainer->AddChild(m_pHighlight);
 	}
+	return true;
 }
 
 
@@ -882,13 +904,191 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 }
 
 
+float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
+{
+	CStraightSkeleton StraightSkeleton;
+	CSkeleton Skeleton;
+	float fMaxHeight = 0.0;
+	ContourVector RoofEaves;
+	int iVertices = EavePolygon.GetSize();
+	int i;
+	CSkeletonLine *pStartEdge;
+	CSkeletonLine *pEdge;
+	CSkeletonLine *pNextEdge;
+	bool bEdgeReversed;
+	float EaveY = EavePolygon[0].y;
+	float fSlope;
+#ifdef _DEBUG
+	float DebugX;
+	float DebugY;
+	float DebugZ;
+#endif
+
+	// Make a roof using felkels straight skeleton algorithm
+	// N.B. this version uses a fixed pitch picked up from the first edge
+	// section
+
+	// First of all build the eave footprint.
+	// The algorithm can handle buildings with holes in them (i.e. a courtyard)
+	// but at the moment I assume the EavePolygon passed in is the the single
+	// outer polygon the roof edges. It must be clockwise oriented!
+	RoofEaves.push_back(Contour());
+
+	for (i = 0; i < iVertices; i++)
+		RoofEaves[0].push_back(C2DPoint(EavePolygon[i].x, EavePolygon[i].z));
+
+	// Now build the skeleton
+	StraightSkeleton.MakeSkeleton(RoofEaves);
+
+	// Merge the original eaves back into the skeleton
+	StraightSkeleton.CompleteWingedEdgeStructure(RoofEaves);
+
+	// Clamp the roof pitch
+	fSlope = (float)pLev->m_Edges[0]->m_iSlope;
+	if (fSlope > 97.0)
+		fSlope = 97.0;
+	if (fSlope < 3.0)
+		fSlope = 3.0;
+	fSlope = fSlope * M_PI / 180.0;
+
+	// Fill in the height values of the interior nodes
+	Skeleton = StraightSkeleton.MakeRoof(RoofEaves, fSlope);
+
+	if (0 == Skeleton.size())
+		return 0.0;
+
+	// TODO - texture co-ordinates
+	// Build the geometry
+	for (size_t ci = 0; ci < RoofEaves.size(); ci++)
+	{
+		Contour& points = RoofEaves[ci];
+		for (size_t pi = 0; pi < points.size(); pi++)
+		{
+			// For each boundary edge zip round the polygon anticlockwise
+			// and build the vertex array
+			BldMaterial bmat = pLev->m_Edges[0]->m_Material;
+			vtMesh *pMesh = FindMatMesh(bmat, pLev->m_Edges[0]->m_Color, GL_TRIANGLES);
+			FLine2 RoofSection2D;
+			FLine2 TriangulatedRoofSection2D;
+			FLine3 RoofSection3D;
+			int iTriangleCount = 0;
+			FPoint3 PanelNormal;
+			FPoint3 EaveAxis;
+			FPoint3 PanelAxis;
+			int i, j;
+			Array<int> iaVertices;
+
+			C2DPoint& p1 = points[pi];
+			C2DPoint& p2 = points[(pi+1)%points.size()];
+			// Find the starting edge
+			for (CSkeleton::iterator s1 = Skeleton.begin(); s1 != Skeleton.end(); s1++)
+				if (((*s1).m_lower.m_vertex->m_point == p1) && ((*s1).m_higher.m_vertex->m_point == p2))
+					break;
+			if (s1 == Skeleton.end())
+				break;
+			
+			pStartEdge = &(*s1);
+			pEdge = pStartEdge;
+			bEdgeReversed = false;
+			do
+			{
+				if (bEdgeReversed)
+				{
+#ifdef _DEBUG
+					DebugX = pEdge->m_higher.m_vertex->m_point.m_x;
+					DebugY = pEdge->m_higher.m_vertex->m_point.m_y;
+					DebugZ = pEdge->m_higher.m_vertex->m_point.m_z;
+#endif
+					if (pEdge->m_higher.m_vertex->m_point.m_z > (double)fMaxHeight)
+						fMaxHeight = pEdge->m_higher.m_vertex->m_point.m_z;
+					RoofSection2D.Append(FPoint2(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_y));
+					RoofSection3D.Append(FPoint3(pEdge->m_higher.m_vertex->m_point.m_x, pEdge->m_higher.m_vertex->m_point.m_z + EaveY, pEdge->m_higher.m_vertex->m_point.m_y));
+					pNextEdge = pEdge->m_higher.m_left;
+					if (pEdge->m_higher.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
+						bEdgeReversed = true;
+					else
+						bEdgeReversed = false;
+				}
+				else
+				{
+#ifdef _DEBUG
+					DebugX = pEdge->m_lower.m_vertex->m_point.m_x;
+					DebugY = pEdge->m_lower.m_vertex->m_point.m_y;
+					DebugZ = pEdge->m_lower.m_vertex->m_point.m_z;
+#endif
+					if (pEdge->m_lower.m_vertex->m_point.m_z > (double)fMaxHeight)
+						fMaxHeight = pEdge->m_lower.m_vertex->m_point.m_z;
+					RoofSection2D.Append(FPoint2(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_y));
+					RoofSection3D.Append(FPoint3(pEdge->m_lower.m_vertex->m_point.m_x, pEdge->m_lower.m_vertex->m_point.m_z + EaveY, pEdge->m_lower.m_vertex->m_point.m_y));
+					pNextEdge = pEdge->m_lower.m_right;
+					if (pEdge->m_lower.m_vertex->m_point != pNextEdge->m_higher.m_vertex->m_point)
+						bEdgeReversed = true;
+					else
+						bEdgeReversed = false;
+				}
+				pEdge = pNextEdge;
+			}
+			// For some reason the pointers dont end up quite the same
+			// I will work it out someday
+			while (pEdge->m_ID != pStartEdge->m_ID);
+
+			//  Invoke the triangulator to triangulate this polygon.
+			Triangulate_f::Process(RoofSection2D, TriangulatedRoofSection2D);
+			iTriangleCount = TriangulatedRoofSection2D.GetSize() / 3;
+
+			// determine normal and primary axes of the face
+			PanelNormal = Normal(RoofSection3D[2], RoofSection3D[1], RoofSection3D[0]);
+			EaveAxis = RoofSection3D[1] - RoofSection3D[0];
+			EaveAxis.Normalize();
+			PanelAxis = PanelNormal.Cross(EaveAxis);
+
+			// Build vertex list
+			j = RoofSection3D.GetSize();
+			for (i = 0; i < j; i++)
+				iaVertices.Append(pMesh->AddVertexNUV(RoofSection3D[i], PanelNormal, FPoint2(0, 0)));
+
+			for (i = 0; i < iTriangleCount; i++)
+			{
+				int iaIndex[3];
+
+				for (j = 0; j < 3; j++)
+				{
+					FPoint2 Point2D = TriangulatedRoofSection2D[i * 3 + j];
+					iaIndex[j] = FindVertex(Point2D, RoofSection3D, iaVertices);
+				}
+				pMesh->AddTri(iaIndex[0], iaIndex[2], iaIndex[1]);
+			}
+
+		}
+	}
+
+	return fMaxHeight;	
+}
+
+int vtBuilding3d::FindVertex(FPoint2 Point, FLine3 &RoofSection3D, Array<int> &iaVertices)
+{
+	int iSize = RoofSection3D.GetSize();
+
+	for (int i = 0; i < iSize; i++)
+		if ((Point.x == RoofSection3D[i].x) && (Point.y == RoofSection3D[i].z))
+			break;
+
+	if (i < iSize)
+		return iaVertices[i];
+	else
+	{
+		assert(false);
+		return iaVertices[0];
+	}
+}
+
 //
 // Walls which consist of regularly spaced windows and 'siding' material
 // can be modelled far more efficiently.  This is very useful for rendering
 // speed for large scenes in which the user doesn't have or doesn't care
 // about the exact material/windows of the buildings.  We create
 // optimized geometry in which each whole wall is a single quad.
-// 
+//
 void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 									  int iHighlightEdge)
 {
@@ -1090,7 +1290,8 @@ bool vtBuilding3d::CreateNode(vtHeightField *pHeightField, const vtTagArray &opt
 		m_pContainer = new vtTransform();
 		m_pContainer->SetName2("building");
 	}
-	CreateGeometry(pHeightField);
+	if (!CreateGeometry(pHeightField))
+		return false;
 	m_pContainer->AddChild(m_pGeom);
 	m_pContainer->SetTrans(m_center);
 	return true;
