@@ -42,19 +42,26 @@ BEGIN_EVENT_TABLE(PlantDlg,AutoDialog)
 	EVT_RADIOBUTTON( ID_PLANT_CONTINUOUS, PlantDlg::OnRadio )
 	EVT_TEXT( ID_PLANT_VARIANCE_EDIT, PlantDlg::OnVariance )
 	EVT_SLIDER( ID_PLANT_VARIANCE_SLIDER, PlantDlg::OnVarianceSlider )
+	EVT_CHECKBOX( ID_COMMON_NAMES, PlantDlg::OnCommonNames )
+	EVT_CHOICE( ID_LANGUAGE, PlantDlg::OnLanguage )
 END_EVENT_TABLE()
 
 PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	const wxPoint &position, const wxSize& size, long style ) :
 	AutoDialog( parent, id, title, position, size, style )
 {
-	PlantDialogFunc( this, TRUE );	
+	PlantDialogFunc( this, TRUE );  
 
 	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
 	m_bSetting = false;
+	m_bCommonNames = true;
+	m_iLanguage = 0;
+	m_opt.m_iSpecies = -1;
 
 	AddValidator(ID_SPECIES, &m_opt.m_iSpecies);
+	AddValidator(ID_COMMON_NAMES, &m_bCommonNames);
+	AddValidator(ID_LANGUAGE, &m_iLanguage);
 	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);
 	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing);
 
@@ -66,33 +73,68 @@ void PlantDlg::SetPlantList(vtSpeciesList3d *plants)
 {
 	if (m_pPlantList == plants)
 		return;
-
 	m_pPlantList = plants;
-	if (!plants) return;
+	UpdatePlantSizes();
+	UpdatePlantNames();
+}
+
+void PlantDlg::UpdatePlantSizes()
+{
+	if (!m_pPlantList)
+		return;
+
+	unsigned int num = m_pPlantList->NumSpecies();
+	m_PreferredSizes.SetSize(num);
+	for (unsigned int i = 0; i < num; i++)
+	{
+		// Default to 80% of the maximum height of each species
+		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
+		m_PreferredSizes[i] = plant->GetMaxHeight() * 0.80f;
+	}
+}
+
+void PlantDlg::UpdatePlantNames()
+{
+	// if we are changing, and the control is already populated, try to keep
+	//  the same plant selected, to avoid UI disruption
+	vtPlantSpecies *previous = NULL;
+	if (m_opt.m_iSpecies != -1)
+		previous = (vtPlantSpecies *) m_pSpecies->GetClientData(m_opt.m_iSpecies);
 
 	m_pSpecies->Clear();
+
+	if (!m_pPlantList)
+		return;
+
 	wxString2 str;
-	vtPlantSpecies *plant;
-
-	int i, num = plants->NumSpecies();
-	m_PreferredSizes.SetSize(num);
-
-	for (i = 0; i < num; i++)
+	for (unsigned int i = 0; i < m_pPlantList->NumSpecies(); i++)
 	{
-		plant = plants->GetSpecies(i);
-#if 1
-		str.from_utf8(plant->GetCommonName());
-#else
-		// ZLF says this is required for Chinese locale, otherwise it crashes?
-		// However, we don't have wstring2 on every platform.
-		wstring2 ws;
-		ws.from_utf8(plant->GetCommonName());
-		str = ws._Myptr();
-#endif
-		m_pSpecies->Append(str);
+		vtPlantSpecies *plant = m_pPlantList->GetSpecies(i);
 
-		// Default to 80% of the maximum height of each species
-		m_PreferredSizes[i] = plant->GetMaxHeight() * 0.80;
+		if (m_bCommonNames)
+		{
+			str.from_utf8(plant->GetCommonName());
+			m_pSpecies->Append(str, plant);
+		}
+		else
+		{
+			str = plant->GetSciName();
+			m_pSpecies->Append(str, plant);
+		}
+	}
+
+	if (previous != NULL)
+	{
+		// look for a corresponding entry
+		for (int j = 0; j < m_pSpecies->GetCount(); j++)
+		{
+			void *data = m_pSpecies->GetClientData(j);
+			if (data == previous)
+			{
+				m_pSpecies->SetSelection(j);
+				break;
+			}
+		}
 	}
 }
 
@@ -107,13 +149,25 @@ void PlantDlg::SetPlantOptions(PlantingOptions &opt)
 	{
 		float size = pSpecies->GetMaxHeight();
 		if (m_opt.m_fHeight > size)
-			m_opt.m_fHeight = size * 0.80;
+			m_opt.m_fHeight = size * 0.80f;
 	}
 }
 
 
 /////////////////////////////////////////////////////////////////////////////
 // WDR: handler implementations for PlantDlg
+
+void PlantDlg::OnLanguage( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	UpdatePlantNames();
+}
+
+void PlantDlg::OnCommonNames( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	UpdatePlantNames();
+}
 
 void PlantDlg::OnVarianceSlider( wxCommandEvent &event )
 {
@@ -242,7 +296,7 @@ void PlantDlg::ModeToRadio()
 	if (m_opt.m_iMode == 2) GetPlantContinuous()->SetValue(true);
 }
 
-void PlantDlg::OnInitDialog(wxInitDialogEvent& event)	
+void PlantDlg::OnInitDialog(wxInitDialogEvent& event)   
 {
 	HeightToSlider();
 	ModeToRadio();

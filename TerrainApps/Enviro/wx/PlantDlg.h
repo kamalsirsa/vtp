@@ -38,22 +38,12 @@ public:
 	void SetPlantList(vtSpeciesList3d *plants);
 	void SetPlantOptions(PlantingOptions &opt);
 
-//	void SetActivePlant(vtPlantInstance3d *p);
-
-	void HeightToSlider();
-	void ModeToRadio();
-
-	void OnInitDialog(wxInitDialogEvent& event);
-	wxSlider	*m_pHeightSlider;
-	wxChoice	*m_pSpecies;
-	vtSpeciesList3d   *m_pPlantList;
-
 	// planting options
 	PlantingOptions m_opt;
-	int	 m_iHeightSlider;
-	int	 m_iVarianceSlider;
 
 	// WDR: method declarations for PlantDlg
+	wxChoice* GetLanguage()  { return (wxChoice*) FindWindow( ID_LANGUAGE ); }
+	wxCheckBox* GetCommonNames()  { return (wxCheckBox*) FindWindow( ID_COMMON_NAMES ); }
 	wxSlider* GetPlantVarianceSlider()  { return (wxSlider*) FindWindow( ID_PLANT_VARIANCE_SLIDER ); }
 	wxRadioButton* GetPlantContinuous()  { return (wxRadioButton*) FindWindow( ID_PLANT_CONTINUOUS ); }
 	wxRadioButton* GetPlantLinear()  { return (wxRadioButton*) FindWindow( ID_PLANT_LINEAR ); }
@@ -61,16 +51,34 @@ public:
 	wxSlider* GetHeightSlider()  { return (wxSlider*) FindWindow( ID_HEIGHT_SLIDER ); }
 	wxChoice* GetSpecies()  { return (wxChoice*) FindWindow( ID_SPECIES ); }
 
+protected:
+	void UpdatePlantSizes();
+	void UpdatePlantNames();
+	void HeightToSlider();
+	void ModeToRadio();
+
 private:
 	// WDR: member variable declarations for PlantDlg
-//	vtPlantInstance3d *m_pPlant;
+//  vtPlantInstance3d *m_pPlant;
 	bool m_bSetting;
+
+	bool m_bCommonNames;
+	int  m_iLanguage;
+	int  m_iHeightSlider;
+	int  m_iVarianceSlider;
+
+	wxSlider		*m_pHeightSlider;
+	wxChoice		*m_pSpecies;
+	vtSpeciesList3d *m_pPlantList;
 
 	// Each species has a size (height) which the user has indicated
 	Array<float> m_PreferredSizes;
 
 private:
 	// WDR: handler declarations for PlantDlg
+	void OnInitDialog(wxInitDialogEvent& event);
+	void OnLanguage( wxCommandEvent &event );
+	void OnCommonNames( wxCommandEvent &event );
 	void OnVarianceSlider( wxCommandEvent &event );
 	void OnVariance( wxCommandEvent &event );
 	void OnRadio( wxCommandEvent &event );
