@@ -383,22 +383,8 @@ public:
 			delete [] m_data[cols];
 		delete [] m_data;
 	}
-	void Set(int x, int y, unsigned char val)
-	{
-		if (x < 0 || x > m_w-1 || y < 0 || y > m_h-1)
-		{
-			int foo = 1;
-		}
-		m_data[x][y] = val;
-	}
-	unsigned char Get(int x, int y)
-	{
-		if (x < 0 || x > m_w-1 || y < 0 || y > m_h-1)
-		{
-			int foo = 1;
-		}
-		return m_data[x][y];
-	}
+	void Set(int x, int y, unsigned char val) { m_data[x][y] = val; }
+	unsigned char Get(int x, int y) { return m_data[x][y]; }
 
 	unsigned char **m_data;
 	int m_w, m_h;
@@ -408,8 +394,13 @@ public:
  * ShadowCastDib - method to create shadows over the terrain based on the
  * angle of the sun.
  *
- * 2/20/04-Kevin Behilo
- * TODO: add code to soften and blend shadow edges (see aliasing comments below).
+ * Core code contributed by Kevin Behilo, 2/20/04
+ * Possible TODO: add code to soften and blend shadow edges
+ *  (see aliasing comments below).
+ *
+ * Definitely TODO: the whole thing can be sped up by precalculating the
+ *  surface normals once.  In fact that should be placed in a separate Shading
+ *  Context, so that it could be re-used for quickly re-shading multiple times.
  */
 void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_dir,
 	float light_factor, void progress_callback(int))
@@ -435,12 +426,11 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	int i_init, i_final, i_incr;
 	int j_init, j_final, j_incr;
 
-	//These values are hardcoded here but could be exposed in the GUI
-	//.95 and .5 work best for my textures.  
+	// These values are hardcoded here but could be exposed in the GUI
 	float sun =  0.7f;
-	float amb =  .4f;
+	float amb =  0.4f;
 
-	//Create array to hold flags 
+	// Create array to hold flags 
 	LightMap lightmap(w, h);
 
 	// This factor is used when applying shading to non-shadowed areas to
@@ -488,15 +478,14 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 		j_final=-1;
 		j_incr=-1;
 	}
-	int duration = abs(j_final - j_init);
 
 	// First pass: find each point that it is in shadow.
     for (j = j_init; j != j_final; j += j_incr) 
 	{
    		if (progress_callback != NULL)
 		{
-//			if ((j&7) == 0)
-				progress_callback(abs(j-j_init) * 100 / duration);
+			if ((j&3) == 0)
+				progress_callback(abs(j-j_init) * 100 / h);
 		}
 		for (i = i_init; i != i_final; i += i_incr) 
 		{
@@ -523,7 +512,13 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 					break;
 				}
 
-				if (GetElevation(x,z) - shadowheight > 0) 
+				float elevation = GetElevation(x,z);
+
+				// skip holes in the grid
+				if (elevation == INVALID_ELEVATION)
+					continue;
+
+				if (elevation - shadowheight > 0) 
 				{ 	
 					if (k>1)
 						Under_Out = true; //Under the terrain 
@@ -591,66 +586,74 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtBitmapBase *pBM, const FPoint3 &light_
 	//  the full lighting formula to each texel that has not been shaded yet.
 	for (j = 0; j < h-1; j++)
 	{
+   		if (progress_callback != NULL)
+		{
+			if ((j&3) == 0)
+				progress_callback(j * 100 / h);
+		}
 		for (i = 0; i < w-1; i++)
 		{
-			if (lightmap.Get(i, j) < 1)
-			{
-				x = (int) (i * xFactor);
-				y = (int) (j * yFactor);	
-				GetWorldLocation(x, y, p1);
-				GetWorldLocation(x+1, y, p2);
-				GetWorldLocation(x, y+1, p3);
+			if (lightmap.Get(i, j) > 0)
+				continue;
 
-				v1 = p2 - p1;
-				v2 = p3 - p1;
-				v3 = v1.Cross(v2);
-				FPoint3 vn=v3;
-				v3.Normalize();
-				
-				//*****************************************
-				//*****************************************
-				//shade formula based on:
-				//http://www.geocities.com/aaron_torpy/algorithms.htm#calc_intensity
+			if (GetElevation(i,j) == INVALID_ELEVATION)
+				continue;
 
-				// The Amb value was arbitrarily chosen
-				// Need to experiment more to determine the best value
-				// Perhaps calculating Sun(r, g, b) and Amb(r, g, b) for a
-				//  given time of day (e.g. warmer colors close to sunset)
-				// or give control to user since textures will differ
+			x = (int) (i * xFactor);
+			y = (int) (j * yFactor);	
+			GetWorldLocation(x, y, p1);
+			GetWorldLocation(x+1, y, p2);
+			GetWorldLocation(x, y+1, p3);
 
-				// I(r, g, b) = Sun(r, g, b) * scalarprod(N, v) + Amb(r, g, b) * (0.5*N[z] + 0.5)
-				shade = sun * v3.Dot(inv_mod_light_dir);
+			v1 = p2 - p1;
+			v2 = p3 - p1;
+			v3 = v1.Cross(v2);
+			FPoint3 vn=v3;
+			v3.Normalize();
+			
+			//*****************************************
+			//*****************************************
+			//shade formula based on:
+			//http://www.geocities.com/aaron_torpy/algorithms.htm#calc_intensity
 
-				// It's a reasonable assuption that an angle of 45 degrees is
-				//  sufficient to fully illuminate the ground.
-				shade /= .7071f;
+			// The Amb value was arbitrarily chosen
+			// Need to experiment more to determine the best value
+			// Perhaps calculating Sun(r, g, b) and Amb(r, g, b) for a
+			//  given time of day (e.g. warmer colors close to sunset)
+			// or give control to user since textures will differ
 
-				// Now add ambient component
-				shade += amb * (0.5f*v3.y + 0.5f);
+			// I(r, g, b) = Sun(r, g, b) * scalarprod(N, v) + Amb(r, g, b) * (0.5*N[z] + 0.5)
+			shade = sun * v3.Dot(inv_mod_light_dir);
 
-				// Maybe clipping values can be exposed to the user as well.
-				// Clip - don't shade down below lowest ambient level
-				if (shade < darkest_shadow)
-					shade = darkest_shadow;
-				else if (shade > 1.2f)
-					shade = 1.2f;
+			// It's a reasonable assuption that an angle of 45 degrees is
+			//  sufficient to fully illuminate the ground.
+			shade /= .7071f;
 
-				// Push the value of 'shade' toward 1.0 by the light_factor factor.
-				// This means that light_factor=0 means no lighting, 1 means full lighting.
-				float diff = 1 - shade;
-				diff = diff * (1 - light_factor);
-				shade += diff;
+			// Now add ambient component
+			shade += amb * (0.5f*v3.y + 0.5f);
 
-				// Rather than doing the shading at this point we may want to 
-				// simply save the value into the LightMap array. Then apply 
-				// some anti-aliasing or edge softening algorithm to the LightMap.
-				// Once that's done, apply the whole LightMap to the DIB.
-				// LightMap[I][J]= shade; // set to value of the shading - see comment above)
-				if (b8bit)
-					pBM->ScalePixel8(i, h-1-j, shade);
-				else
-					pBM->ScalePixel24(i, h-1-j, shade);
-			}
+			// Maybe clipping values can be exposed to the user as well.
+			// Clip - don't shade down below lowest ambient level
+			if (shade < darkest_shadow)
+				shade = darkest_shadow;
+			else if (shade > 1.2f)
+				shade = 1.2f;
+
+			// Push the value of 'shade' toward 1.0 by the light_factor factor.
+			// This means that light_factor=0 means no lighting, 1 means full lighting.
+			float diff = 1 - shade;
+			diff = diff * (1 - light_factor);
+			shade += diff;
+
+			// Rather than doing the shading at this point we may want to 
+			// simply save the value into the LightMap array. Then apply 
+			// some anti-aliasing or edge softening algorithm to the LightMap.
+			// Once that's done, apply the whole LightMap to the DIB.
+			// LightMap[I][J]= shade; // set to value of the shading - see comment above)
+			if (b8bit)
+				pBM->ScalePixel8(i, h-1-j, shade);
+			else
+				pBM->ScalePixel24(i, h-1-j, shade);
 		}
 	}
 
