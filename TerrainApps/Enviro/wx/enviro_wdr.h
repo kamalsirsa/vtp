@@ -123,7 +123,7 @@ wxSizer *TParams1Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = 
 #define ID_16BIT 10074
 #define ID_PRELIGHT 10075
 #define ID_LIGHT_FACTOR 10076
-#define ID_PRELIT 10077
+#define ID_CAST_SHADOWS 10077
 wxSizer *TParams2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 #define ID_PLANTS 10078

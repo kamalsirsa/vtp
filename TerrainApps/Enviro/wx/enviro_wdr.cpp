@@ -760,10 +760,10 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
 
     item22->Add( item24, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxCheckBox *item27 = new wxCheckBox( parent, ID_PRELIT, _("Pre-lit"), wxDefaultPosition, wxDefaultSize, 0 );
+    wxCheckBox *item27 = new wxCheckBox( parent, ID_CAST_SHADOWS, _("Cast shadows"), wxDefaultPosition, wxDefaultSize, 0 );
     item22->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item18->Add( item22, 0, wxALIGN_CENTER|wxALL, 0 );
+    item18->Add( item22, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 0 );
 
     item1->Add( item18, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 

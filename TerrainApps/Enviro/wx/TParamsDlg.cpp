@@ -199,7 +199,7 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_fDepressOceanLevel = Params.m_fDepressOceanLevel;
 
 	m_bPreLight = Params.m_bPreLight;
-	m_bPreLit = Params.m_bPreLit;
+	m_bCastShadows = Params.m_bCastShadows;
 	m_fPreLightFactor = Params.m_fPreLightFactor;
 
 	m_strRouteFile = wxString::FromAscii((const char *)Params.m_strRouteFile);
@@ -300,7 +300,7 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_fDepressOceanLevel = m_fDepressOceanLevel;
 
 	Params.m_bPreLight = m_bPreLight;
-	Params.m_bPreLit = m_bPreLit;
+	Params.m_bCastShadows = m_bCastShadows;
 	Params.m_fPreLightFactor = m_fPreLightFactor;
 
 	Params.m_strRouteFile = m_strRouteFile.mb_str();
@@ -339,7 +339,7 @@ void TParamsDlg::UpdateEnableState()
 	FindWindow(ID_16BIT)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_PRELIGHT)->Enable(m_iTexture != TE_NONE);
 	FindWindow(ID_LIGHT_FACTOR)->Enable(m_iTexture != TE_NONE);
-	FindWindow(ID_PRELIT)->Enable(m_iTexture != TE_NONE);
+	FindWindow(ID_CAST_SHADOWS)->Enable(m_iTexture != TE_NONE);
 
 	FindWindow(ID_TREEFILE)->Enable(m_bPlants);
 //	FindWindow(ID_VEGDISTANCE)->Enable(m_bPlants); // user might want to adjust
@@ -597,7 +597,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	AddValidator(ID_MIPMAP, &m_bMipmap);
 	AddValidator(ID_16BIT, &m_b16bit);
 	AddValidator(ID_PRELIGHT, &m_bPreLight);
-	AddValidator(ID_PRELIT, &m_bPreLit);
+	AddValidator(ID_CAST_SHADOWS, &m_bCastShadows);
 	AddNumValidator(ID_LIGHT_FACTOR, &m_fPreLightFactor, 2);
 
 	// culture page
@@ -698,7 +698,6 @@ void TParamsDlg::OnTextureNone( wxCommandEvent &event )
 		// turn off "Prelighting" if there is no texture
 		TransferDataFromWindow();
 		m_bPreLight = false;
-		m_bPreLit = false;
 		TransferDataToWindow();
 	}
 	UpdateEnableState();
@@ -721,7 +720,6 @@ void TParamsDlg::OnTextureDerived( wxCommandEvent &event )
 		// turn on "Prelighting" if the user wants a derived texture
 		TransferDataFromWindow();
 		m_bPreLight = true;
-		m_bPreLit = true;
 		TransferDataToWindow();
 	}
 	UpdateEnableState();

@@ -103,8 +103,8 @@ public:
 	bool	m_bMipmap;
 	bool	m_b16bit;
 	bool	m_bPreLight;
-	bool	m_bPreLit;
 	float   m_fPreLightFactor;
+	bool	m_bCastShadows;
 
 	// culture
 	bool	m_bRoads;
