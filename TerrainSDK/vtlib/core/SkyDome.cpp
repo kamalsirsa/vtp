@@ -807,7 +807,7 @@ void vtStarDome::AddStars(vtMesh *mesh)
 	// Add each star to the GeoMesh's vertex array
 	for (int i = 0; i < NumStars; i++)
 	{
-		mesh->SetVtxPos(i, Starfield[i].cartpt);
+		mesh->AddVertex(Starfield[i].cartpt);
 		tempcol = (Starfield[i].relmag > 1.0f) ? white : white * Starfield[i].relmag;
 #if 0
 		TRACE("Star #%d %f RGB(%f,%f,%f)\n", i, Starfield[i].relmag,
