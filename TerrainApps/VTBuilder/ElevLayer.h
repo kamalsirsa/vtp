@@ -9,8 +9,17 @@
 #define ELEVLAYER_H
 
 #include "wx/image.h"
-#include "vtdata/ElevationGrid.h"
 #include "Layer.h"
+#include "vtdata/vtTin.h"
+
+class vtElevationGrid;
+class vtDIB;
+
+class vtTin2d : public vtTin
+{
+public:
+	void DrawTin(wxDC* pDC, vtScaledView *pView);
+};
 
 //////////////////////////////////////////////////////////
 
@@ -19,7 +28,7 @@ class vtElevLayer : public vtLayer
 public:
 	vtElevLayer();
 	vtElevLayer(const DRECT &area, int iColumns, int iRows,
-		bool bFloats, vtProjection proj);
+		bool bFloats, float fScale, vtProjection proj);
 	virtual ~vtElevLayer();
 
 	// overrides
@@ -31,24 +40,29 @@ public:
 	void GetProjection(vtProjection &proj);
 	void SetProjection(vtProjection &proj);
 	void GetPropertyText(wxString &str);
+	char *vtElevLayer::GetFileExtension();
 
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
 	bool AppendDataFrom(vtLayer *pL);
 	void ReRender() { m_bBitmapRendered = false; }
 	void ReImage();
+	bool IsGrid() { return m_pGrid != NULL; }
 
 	void SetupDefaults();
 
 	// heightfield operations
-//	double GetWidth() { return m_pGrid->GetExtents().Width(); }
-//	double GetHeight() { return m_pGrid->GetExtents().Height(); }
+	void Offset(const DPoint2 &p);
+	float GetElevation(DPoint2 &p);
+	bool ImportFromFile(wxString &strFileName, void progress_callback(int am));
+
+	// grid operations
 	void Resample(int iNewWidth, int iNewHeight);
 	void FillGaps();
 	void DetermineMeterSpacing();
-	void Offset(const DPoint2 &p);
-	DRECT GetExtents();
-	bool ImportFromFile(wxString &strFileName, void progress_callback(int am));
+
+	// TIN operations
+	void MergeSharedVerts();
 
 	// drawing
 	void PaintDibFromElevation(vtDIB *dib, bool bShade);
@@ -64,6 +78,7 @@ public:
 	static bool m_bDoMask;
 
 	vtElevationGrid	*m_pGrid;
+	vtTin2d *m_pTin;
 
 protected:
 	bool	m_bHasBitmap;

@@ -15,9 +15,35 @@
 #include "ScaledView.h"
 #include "Helper.h"
 #include "RawDlg.h"
+#include "vtdata/ElevationGrid.h"
 #include "vtdata/vtDIB.h"
 
 #define SHADING_BIAS	200
+
+////////////////////////////////////////////////////////////////////
+
+void vtTin2d::DrawTin(wxDC* pDC, vtScaledView *pView)
+{
+	wxPen TinPen(wxColor(128,0,128), 1, wxSOLID);
+	pDC->SetLogicalFunction(wxCOPY);
+	pDC->SetPen(TinPen);
+
+	FPoint2 p2;
+	int tris = NumTris();
+	for (int j = 0; j < tris; j++)
+	{
+		int v0 = m_tri[j*3+0];
+		int v1 = m_tri[j*3+1];
+		int v2 = m_tri[j*3+2];
+
+		pView->screen(m_vert[v0], g_screenbuf[0]);
+		pView->screen(m_vert[v1], g_screenbuf[1]);
+		pView->screen(m_vert[v2], g_screenbuf[2]);
+
+		g_screenbuf[3] = g_screenbuf[0];
+		pDC->DrawLines(4, g_screenbuf);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////
 
@@ -29,14 +55,16 @@ vtElevLayer::vtElevLayer() : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
 	m_pGrid = NULL;
+	m_pTin = NULL;
 }
 
 vtElevLayer::vtElevLayer(const DRECT &area, int iColumns, int iRows,
-	bool bFloats, vtProjection proj) : vtLayer(LT_ELEVATION)
+	bool bFloats, float fScale, vtProjection proj) : vtLayer(LT_ELEVATION)
 {
 	SetupDefaults();
 	m_pGrid = new vtElevationGrid(area, iColumns, iRows,
 			bFloats, proj);
+	m_pGrid->SetScale(fScale);
 	m_pGrid->GetDimensions(m_iColumns, m_iRows);
 }
 
@@ -54,20 +82,36 @@ vtElevLayer::~vtElevLayer()
 	}
 	if (m_pGrid)
 		delete m_pGrid;
+	if (m_pTin)
+		delete m_pTin;
 }
 
 bool vtElevLayer::OnSave()
 {
-	return m_pGrid->SaveToBT(m_strFilename);
+	if (m_pGrid)
+		return m_pGrid->SaveToBT(m_strFilename);
+	if (m_pTin)
+		return m_pTin->Write(m_strFilename);
+	return false;
 }
 
 bool vtElevLayer::OnLoad()
 {
 	OpenProgressDialog("Loading Elevation Layer");
 
-	m_pGrid = new vtElevationGrid();
-	bool success = m_pGrid->LoadFromBT(m_strFilename, progress_callback);
-	m_pGrid->GetDimensions(m_iColumns, m_iRows);
+	bool success = false;
+
+	if (!m_strFilename.Right(3).CmpNoCase(".bt"))
+	{
+		m_pGrid = new vtElevationGrid();
+		success = m_pGrid->LoadFromBT(m_strFilename, progress_callback);
+		m_pGrid->GetDimensions(m_iColumns, m_iRows);
+	}
+	else if (!m_strFilename.Right(4).CmpNoCase(".tin"))
+	{
+		m_pTin = new vtTin2d();
+		success = m_pTin->Read(m_strFilename);
+	}
 
 	CloseProgressDialog();
 	return success;
@@ -83,18 +127,26 @@ bool vtElevLayer::ConvertProjection(vtProjection &proj_new)
 
 	OpenProgressDialog("Converting Elevation Projection");
 
-	vtElevationGrid *grid_new = new vtElevationGrid();
-
-	bool success = grid_new->ConvertProjection(m_pGrid, proj_new, progress_callback);
-
-	if (success)
+	bool success = false;
+	if (m_pGrid)
 	{
-		delete m_pGrid;
-		m_pGrid = grid_new;
-		ReImage();
+		vtElevationGrid *grid_new = new vtElevationGrid();
+
+		success = grid_new->ConvertProjection(m_pGrid, proj_new, progress_callback);
+
+		if (success)
+		{
+			delete m_pGrid;
+			m_pGrid = grid_new;
+			ReImage();
+		}
+		else
+			delete grid_new;
 	}
-	else
-		delete grid_new;
+	if (m_pTin)
+	{
+		success = m_pTin->ConvertProjection(proj_new);
+	}
 
 	CloseProgressDialog();
 	return success;
@@ -102,10 +154,17 @@ bool vtElevLayer::ConvertProjection(vtProjection &proj_new)
 
 void vtElevLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	if (m_bShowElevation)
-		DrawLayerBitmap(pDC, pView);
-	else
-		DrawLayerOutline(pDC, pView);
+	if (m_pGrid)
+	{
+		if (m_bShowElevation)
+			DrawLayerBitmap(pDC, pView);
+		else
+			DrawLayerOutline(pDC, pView);
+	}
+	if (m_pTin)
+	{
+		m_pTin->DrawTin(pDC, pView);
+	}
 }
 
 void vtElevLayer::DrawLayerBitmap(wxDC* pDC, vtScaledView *pView)
@@ -242,24 +301,36 @@ void vtElevLayer::DrawLayerOutline(wxDC* pDC, vtScaledView *pView)
 
 bool vtElevLayer::GetExtent(DRECT &rect)
 {
-	if (!m_pGrid)
-		return false;
-	rect = m_pGrid->GetGridExtents();
-	return true;
+	if (m_pGrid)
+	{
+		rect = m_pGrid->GetGridExtents();
+		return true;
+	}
+	if (m_pTin)
+	{
+		float minh, maxh;
+		m_pTin->GetExtents(rect, minh, maxh);
+		return true;
+	}
+	return false;
 }
 
 bool vtElevLayer::AppendDataFrom(vtLayer *pL)
 {
-	// unimplemented
-	return false;
-}
+	if (pL->GetType() != LT_ELEVATION)
+		return false;
 
-DRECT vtElevLayer::GetExtents()
-{
+	vtElevLayer *pEL = (vtElevLayer *)pL;
 	if (m_pGrid)
-		return m_pGrid->GetGridExtents();
-	else
-		return DRECT(0,0,0,0);
+	{
+		// deliberately unimplemented - it does not make sense to do this
+		// operation with grids
+	}
+	if (m_pTin && pEL->m_pTin)
+	{
+		// TODO
+	}
+	return false;
 }
 
 
@@ -535,13 +606,16 @@ void vtElevLayer::ShadePixel(int i, int j, int &r, int &g, int &b, int bias)
 
 void vtElevLayer::FillGaps()
 {
-	int i, j, k, ix, jx, surrounding, start_invalid;
+	int i, j, ix, jx, surrounding;
 	bool gaps_exist = true;
 	float value, value2, sum;
+	float *patch_column = new float[m_iRows];
 
 	// Create progress dialog for the slow part
 	OpenProgressDialog("Filling Gaps");
 
+	// For speed, remember which lines already have no gaps, so we don't have
+	// to visit them again.
 	bool *line_gap = new bool[m_iColumns];
 	for (i = 0; i < m_iColumns; i++)
 		line_gap[i] = true;
@@ -557,20 +631,15 @@ void vtElevLayer::FillGaps()
 				continue;
 			line_gap[i] = false;
 
-			start_invalid = 0;
+			bool patches = false;
+			for (j = 0; j < m_iRows; j++)
+				patch_column[j] = INVALID_ELEVATION;
+
 			for (j = 0; j < m_iRows; j++)
 			{
 				value = m_pGrid->GetFValue(i, j);
 				if (value != INVALID_ELEVATION)
-				{
-					if (start_invalid == 0)
-					{
-						for (k = 0; k < j; k++)
-							m_pGrid->SetFValue(i, k, 0.0f);
-					}
-					start_invalid = j+1;
 					continue;
-				}
 
 				// else gap
 				gaps_exist = true;
@@ -580,28 +649,35 @@ void vtElevLayer::FillGaps()
 				sum = 0;
 				surrounding = 0;
 				for (ix = -1; ix <= 1; ix++)
+				{
 					for (jx = -1; jx <= 1; jx++)
 					{
-						if (ix == 0 && jx == 0) continue;
-						if (i+ix < 0 || i+ix >= m_iColumns) continue;
-						if (j+jx < 0 || j+jx >= m_iRows) continue;
-
-						value2 = m_pGrid->GetFValue(i+ix, j+jx);
-						if (value2 == INVALID_ELEVATION) continue;
-						sum += value2;
-						surrounding++;
+						value2 = m_pGrid->GetFValueSafe(i+ix, j+jx);
+						if (value2 != INVALID_ELEVATION)
+						{
+							sum += value2;
+							surrounding++;
+						}
 					}
+				}
 				if (surrounding != 0)
-					m_pGrid->SetFValue(i, j, sum / surrounding);
+				{
+					patch_column[j] = sum / surrounding;
+					patches = true;
+				}
 			}
-			if (start_invalid < m_iRows)
+			if (patches)
 			{
-				for (k = start_invalid; k < m_iRows; k++)
-					m_pGrid->SetFValue(i, k, 0.0f);
+				for (j = 0; j < m_iRows; j++)
+				{
+					if (patch_column[j] != INVALID_ELEVATION)
+						m_pGrid->SetFValue(i, j, patch_column[j]);
+				}
 			}
 		}
 	}
 	delete line_gap;
+	delete patch_column;
 	CloseProgressDialog();
 }
 
@@ -629,23 +705,48 @@ void vtElevLayer::DetermineMeterSpacing()
 
 void vtElevLayer::Offset(const DPoint2 &p)
 {
-	DRECT area = m_pGrid->GetGridExtents();
-	area.left += p.x;
-	area.right += p.x;
-	area.top += p.y;
-	area.bottom += p.y;
-	m_pGrid->SetGridExtents(area);
+	if (m_pGrid)
+	{
+		DRECT area = m_pGrid->GetGridExtents();
+		area.left += p.x;
+		area.right += p.x;
+		area.top += p.y;
+		area.bottom += p.y;
+		m_pGrid->SetGridExtents(area);
+	}
+	if (m_pTin)
+	{
+		m_pTin->Offset(p);
+	}
+}
+
+float vtElevLayer::GetElevation(DPoint2 &p)
+{
+	if (m_pGrid)
+		return m_pGrid->GetFilteredValue(p.x, p.y);
+	if (m_pTin)
+	{
+		float fAltitude;
+		if (m_pTin->FindAltitudeAtPoint(p, fAltitude))
+			return fAltitude;
+	}
+	return INVALID_ELEVATION;
 }
 
 void vtElevLayer::GetProjection(vtProjection &proj)
 {
-	proj = m_pGrid->GetProjection();
+	if (m_pGrid)
+		proj = m_pGrid->GetProjection();
+	else if (m_pTin)
+		proj = m_pTin->m_proj;
 }
 
 void vtElevLayer::SetProjection(vtProjection &proj)
 {
 	if (m_pGrid)
 		m_pGrid->SetProjection(proj);
+	if (m_pTin)
+		m_pTin->m_proj = proj;
 }
 
 bool vtElevLayer::ImportFromFile(wxString &strFileName,
@@ -671,7 +772,7 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	else if (!strExt.CmpNoCase("asc"))
 	{
 //		success = m_pGrid->LoadFromASC(strFileName, progress_callback);
-		// ElevationGrid does have its own ASC reader, but use GDAL instead
+		// vtElevationGrid does have its own ASC reader, but use GDAL instead
 		success = m_pGrid->LoadWithGDAL(strFileName, progress_callback);
 	}
 	else if (!strExt.CmpNoCase("bil"))
@@ -787,34 +888,73 @@ void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
 	}
 }
 
+void vtElevLayer::MergeSharedVerts()
+{
+	if (!m_pTin)
+		return;
+
+	OpenProgressDialog("Merging shared vertices");
+
+	int before = m_pTin->NumVerts();
+	m_pTin->MergeSharedVerts(progress_callback);
+	int after = m_pTin->NumVerts();
+
+	CloseProgressDialog();
+
+	wxString str;
+	if (after < before)
+		str.Printf("Reduced vertices from %d to %d", before, after);
+	else
+		str.Printf("There are %d vertices, unable to merge any.", before);
+	wxMessageBox(str, "Merge Vertices");
+}
+
 void vtElevLayer::GetPropertyText(wxString &strIn)
 {
-	if (!m_pGrid)
-	{
-		strIn = "No grid.";
-		return;
-	}
-	int cols, rows;
-	m_pGrid->GetDimensions(cols, rows);
 	wxString str;
-	str.Printf("Grid size: %d x %d\n", cols, rows);
-	strIn += str;
 
-	str.Printf("Floating point: %s\n", m_pGrid->IsFloatMode() ? "Yes" : "No");
-	strIn += str;
-
-	m_pGrid->ComputeHeightExtents();
-	float fMin, fMax;
-	m_pGrid->GetHeightExtents(fMin, fMax);
-	str.Printf("Minimum elevation: %.2f\n", fMin);
-	strIn += str;
-	str.Printf("Maximum elevation: %.2f\n", fMax);
-	strIn += str;
-
-	const char *dem_name = m_pGrid->GetDEMName();
-	if (*dem_name)
+	if (m_pGrid)
 	{
-		str.Printf("Original DEM name: \"%s\"\n", dem_name);
+		int cols, rows;
+		m_pGrid->GetDimensions(cols, rows);
+		str.Printf("Grid size: %d x %d\n", cols, rows);
+		strIn += str;
+
+		str.Printf("Floating point: %s\n", m_pGrid->IsFloatMode() ? "Yes" : "No");
+		strIn += str;
+
+		m_pGrid->ComputeHeightExtents();
+		float fMin, fMax;
+		m_pGrid->GetHeightExtents(fMin, fMax);
+		str.Printf("Minimum elevation: %.2f\n", fMin);
+		strIn += str;
+		str.Printf("Maximum elevation: %.2f\n", fMax);
+		strIn += str;
+
+		str.Printf("Height scale (meters per vertical unit): %f\n", m_pGrid->GetScale());
+		strIn += str;
+
+		const char *dem_name = m_pGrid->GetDEMName();
+		if (*dem_name)
+		{
+			str.Printf("Original DEM name: \"%s\"\n", dem_name);
+			strIn += str;
+		}
+	}
+	if (m_pTin)
+	{
+		int verts = m_pTin->NumVerts();
+		int tris = m_pTin->NumTris();
+		str.Printf("TIN\nVertices: %d\nTriangles: %d\n", verts, tris);
 		strIn += str;
 	}
 }
+
+char *vtElevLayer::GetFileExtension()
+{
+	if (m_pTin)
+		return 	".tin";
+	else
+		return 	".bt";
+}
+
