@@ -844,12 +844,7 @@ void vtElevLayer::Offset(const DPoint2 &p)
 {
 	if (m_pGrid)
 	{
-		DRECT area = m_pGrid->GetEarthExtents();
-		area.left += p.x;
-		area.right += p.x;
-		area.top += p.y;
-		area.bottom += p.y;
-		m_pGrid->SetEarthExtents(area);
+		m_pGrid->Offset(p);
 	}
 	if (m_pTin)
 	{
