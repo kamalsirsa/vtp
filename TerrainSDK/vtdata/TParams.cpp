@@ -76,6 +76,7 @@ TParams::TParams() : vtTagArray()
 	AddTag(STR_PRELIGHT, "true");
 	AddTag(STR_PRELIGHTFACTOR, "1.0");
 	AddTag(STR_CAST_SHADOWS, "false");
+	AddTag(STR_COLOR_MAP, "");
 
 	AddTag(STR_ROADS, "false");
 	AddTag(STR_ROADFILE, "");
@@ -245,7 +246,8 @@ bool TParams::LoadFromIniFile(const char *filename)
 				 strcmp(buf, STR_MIPMAP) == 0 ||
 				 strcmp(buf, STR_PRELIGHT) == 0 ||
 				 strcmp(buf, STR_PRELIGHTFACTOR) == 0 ||
-				 strcmp(buf, STR_CAST_SHADOWS) == 0)
+				 strcmp(buf, STR_CAST_SHADOWS) == 0 ||
+				 strcmp(buf, STR_COLOR_MAP) == 0)
 			SetValueString(buf, get_line_from_stream(input));
 		else if (strcmp(buf, STR_16BIT) == 0)
 			SetValueString(STR_REQUEST16BIT, get_line_from_stream(input));

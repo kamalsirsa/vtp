@@ -118,6 +118,7 @@ private:
 #define STR_PRELIGHT "Pre-Light"
 #define STR_PRELIGHTFACTOR "PreLight_Factor"
 #define STR_CAST_SHADOWS "Cast_Shadows"
+#define STR_COLOR_MAP "Color_Map"
 
 #define STR_ROADS "Roads"
 #define STR_ROADFILE "Road_File"
