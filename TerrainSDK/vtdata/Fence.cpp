@@ -72,10 +72,39 @@ void vtFence::SetFenceType(const FenceType type)
 {
 	m_FenceType = type;
 
-	if (m_FenceType == FT_WIRE)
+	switch (m_FenceType)
+	{
+	case FT_WIRE:
 		m_PostSize.Set(0.13f, m_fHeight, 0.13f);
-	else if (m_FenceType == FT_CHAINLINK)
+		break;
+
+	case FT_CHAINLINK:
 		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+		break;
+	
+	case FT_HEDGEROW:
+		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+		break;
+
+	case FT_DRYSTONE:
+		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+		break;
+
+	case FT_PRIVET:
+		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+		break;
+
+	case FT_STONE:
+		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+		break;
+
+	case FT_BEECH:
+		m_PostSize.Set(0.05f, m_fHeight, 0.05f);
+
+	default:
+		m_PostSize.Set(0.13f, m_fHeight, 0.13f);
+		break;
+	}
 }
 
 bool vtFence::GetExtents(DRECT &rect) const
@@ -156,8 +185,50 @@ void vtFence::WriteXML_Old(FILE *fp, bool bDegrees)
 	fprintf(fp, "\" />\n");
 
 	// This must be expanded when we support more than 2 kinds of fence!
-	const char *post_type = (m_FenceType == FT_WIRE) ? "wood" : "steel";
-	const char *conn_type = (m_FenceType == FT_WIRE) ? "wire" : "chain-link";
+	const char *post_type;
+	const char *conn_type;
+	switch (m_FenceType)
+	{
+	case FT_WIRE:
+		post_type = "wood";
+		conn_type = "wire";
+		break;
+
+	case FT_CHAINLINK:
+		post_type = "steel";
+		conn_type = "chain-link";
+		break;
+	
+	case FT_HEDGEROW:
+		post_type = "hedgerow";
+		conn_type = "hedgerow";
+		break;
+
+	case FT_DRYSTONE:
+		post_type = "drystone";
+		conn_type = "drystone";
+		break;
+
+	case FT_PRIVET:
+		post_type = "privet";
+		conn_type = "privet";
+		break;
+
+	case FT_STONE:
+		post_type = "stone";
+		conn_type = "stone";
+		break;
+
+	case FT_BEECH:
+		post_type = "beech";
+		conn_type = "beech";
+		break;
+
+	default:
+		post_type = "wood";
+		conn_type = "wire";
+		break;
+	}
 
 	fprintf(fp, "\t\t<height abs=\"%.2f\" />\n", m_fHeight);
 	fprintf(fp, "\t\t<posts type=\"%s\" size=\"%.2f, %.2f\" spacing=\"%.2f\" />\n",
