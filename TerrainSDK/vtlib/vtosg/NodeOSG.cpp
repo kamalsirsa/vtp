@@ -253,9 +253,18 @@ vtNode *vtNode::LoadModel(const char *filename, bool bAllowCache, bool bDisableM
 	bool bDoLoad = (!bInCache || !bAllowCache);
 	if (bDoLoad)
 	{
+#define HINT osgDB::Registry::CacheHintOptions
 		// In case of reloading a previously loaded model, we must empty
 		//  our own cache as well as disable OSG's cache.
-		osgDB::Registry::instance()->setUseObjectCacheHint(bAllowCache);
+		osgDB::Registry *reg = osgDB::Registry::instance();
+		HINT hint = reg->getUseObjectCacheHint();
+		if (bAllowCache)
+			hint = (HINT) (hint | (osgDB::Registry::CACHE_OBJECTS));
+		else
+			hint = (HINT) (hint & ~(osgDB::Registry::CACHE_OBJECTS));
+		reg->setUseObjectCacheHint(hint);
+
+		// Now actually request the node from OSG
 		node = osgDB::readNodeFile((const char *)fname);
 		if (!node)
 			return NULL;
