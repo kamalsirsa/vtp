@@ -786,6 +786,12 @@ vtGeom *CreateLineGridGeom(vtMaterialArray *pMats, int iMatIdx,
 
 ////////////////////////////////////////////////////////////////////
 
+void vtMaterialArrayBase::DestructItems(int first, int last)
+{
+	for (int i = first; i <= last; i++)
+		delete GetAt(i);
+}
+
 /**
  * Create and add a simple textured material.  This method takes a vtImage
  * and let you control many other aspects of the material.  Only the first

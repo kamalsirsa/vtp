@@ -158,6 +158,7 @@ private:
 class vtMaterialDescriptorArray : public Array<vtMaterialDescriptor*>
 {
 public:
+	virtual ~vtMaterialDescriptorArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 	inline void DestructItems(int first, int last)
 	{
 		for (int i = first; i <= last; i++)

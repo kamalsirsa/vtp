@@ -109,6 +109,13 @@ protected:
 class vtRouteMap : public Array<vtRoute *>
 {
 public:
+	virtual ~vtRouteMap() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; i++)
+			delete GetAt(i);
+	}
+
 	bool FindClosestUtilNode(const DPoint2 &point, double error,
 					   vtRoute* &route, vtUtilNode* &node, double &closest);
 	void BuildGeometry(vtHeightField3d *pHeightField);

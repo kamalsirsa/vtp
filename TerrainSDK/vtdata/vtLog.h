@@ -14,6 +14,7 @@ class vtLog
 {
 public:
 	vtLog();
+	~vtLog();
 
 	void _StartLog(const char *fname);
 	void _Log(const char *str);

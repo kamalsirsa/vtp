@@ -34,6 +34,16 @@ vtLog::vtLog()
 	m_log = NULL;
 }
 
+vtLog::~vtLog()
+{
+	if (m_log)
+	{
+		CPLPopErrorHandler();
+		fclose(m_log);
+		m_log = NULL;
+	}
+}
+
 void vtLog::_StartLog(const char *fname)
 {
 	m_log = fopen(fname, "wb");

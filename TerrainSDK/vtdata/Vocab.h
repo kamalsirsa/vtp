@@ -38,6 +38,10 @@ typedef Array<InputToken *> SentenceIn;
 class SentenceMatch : public Array<MatchToken *>
 {
 public:
+	virtual ~SentenceMatch() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	void DestructItems(int first, int last) {
+		for (int i = first; i <= last; i++) delete GetAt(i);
+	}
 	MatchToken *AddLiteral(bool required, const char *str1,
 		const char *str2 = NULL, const char *str3 = NULL, const char *str4 = NULL);
 	MatchToken *AddToken(bool required, enum TokenType type);

@@ -327,6 +327,9 @@ protected:
 class vtMaterialArrayBase : public Array<vtMaterial *>
 {
 public:
+	virtual ~vtMaterialArrayBase() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	void DestructItems(int first, int last);
+
 	int AddTextureMaterial(class vtImage *pImage,
 						 bool bCulling, bool bLighting,
 						 bool bTransp = false, bool bAdditive = false,
