@@ -202,6 +202,7 @@ public:
 	virtual bool OnMouseEvent(vtMouseEvent &event) { return false; }
 	virtual void SetTimeEngineToGUI(TimeEngine *pEngine) {}
 	virtual bool IsAcceptable(vtTerrain *pTerr) { return true; }
+	virtual void ShowMessage(const vtString &str) {}
 
 	// temporary for demo use
 	void ToggleLogo(); vtGroup *logo;

@@ -28,6 +28,7 @@ public:
 	virtual void SetupScene3();
 	virtual void SetTimeEngineToGUI(class TimeEngine *pEngine);
 	virtual bool IsAcceptable(vtTerrain *pTerr);
+	virtual void ShowMessage(const vtString &str);
 
 	// The following are useful methods
 	void SaveVegetation();

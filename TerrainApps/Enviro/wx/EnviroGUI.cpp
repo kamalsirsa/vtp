@@ -150,3 +150,12 @@ bool EnviroGUI::IsAcceptable(vtTerrain *pTerr)
 	return GetFrame()->IsAcceptable(pTerr);
 }
 
+void EnviroGUI::ShowMessage(const vtString &str)
+{
+	EnableContinuousRendering(false);
+
+	wxString2 str2 = str;
+	wxMessageBox(str2);
+
+	EnableContinuousRendering(true);
+}
