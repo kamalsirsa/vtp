@@ -386,6 +386,10 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 	{
 		for (i = 0; i < iLevels; i++)
 		{
+			int level_show = -1, edge_show = -1;
+			GetValue("level", level_show);
+			GetValue("edge", edge_show);
+
 			vtLevel *lev = m_Levels[i];
 			if (lev->IsHorizontal())
 			{
@@ -395,7 +399,8 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 			}
 			else if (lev->IsUniform())
 			{
-				CreateUniformLevel(i, fHeight);
+				int iHighlightEdge = level_show == i ? edge_show : -1;
+				CreateUniformLevel(i, fHeight, iHighlightEdge);
 				fHeight += lev->m_iStories * lev->m_fStoryHeight;
 				continue;
 			}
@@ -405,10 +410,6 @@ void vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 
 			FLine3 poly = *m_lfp[i];
 			FLine3 poly2;
-
-			int level_show = -1, edge_show = -1;
-			GetValue("level", level_show);
-			GetValue("edge", edge_show);
 
 			for (j = 0; j < lev->m_iStories; j++)
 			{
@@ -504,7 +505,7 @@ vtMesh *vtBuilding3d::FindMatMesh(BldMaterial bm, RGBi color, int iPrimType)
 }
 
 //
-// Walls/edges are created in panels (sections)
+// Edges are created from a series of features ("panels", "sections")
 //
 void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly2,
 									  int iEdge, bool bShowEdge)
@@ -832,7 +833,8 @@ void vtBuilding3d::AddFlatRoof(FLine3 &pp, vtLevel *pLev)
 }
 
 
-void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight)
+void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
+									  int iHighlightEdge)
 {
 	vtLevel *pLev = m_Levels[iLevel];
 	FLine3 poly1 = *m_lfp[iLevel];
@@ -853,7 +855,7 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight)
 
 		FLine3 quad(4);
 
-		vtEdge	*pWall = pLev->m_Edges[j];
+		vtEdge	*pEdge = pLev->m_Edges[j];
 
 		// do the whole wall section
 		quad[0] = poly1[a];
@@ -863,8 +865,11 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight)
 
 		float h1 = 0.0f;
 		float h2 = pLev->m_iStories;
-		AddWallSection(pWall, BMAT_WINDOWWALL, quad, h1, h2,
-			pWall->NumFeaturesOfCode(WFC_WINDOW));
+		AddWallSection(pEdge, BMAT_WINDOWWALL, quad, h1, h2,
+			pEdge->NumFeaturesOfCode(WFC_WINDOW));
+
+		if (j == iHighlightEdge)
+			AddHighlightSection(pEdge, quad);
 	}
 }
 

@@ -90,7 +90,7 @@ protected:
 		int iEdge, bool bShowEdge);
 
 	// create special, simple geometry for a level which is uniform
-	void CreateUniformLevel(int iLevel, float fHeight);
+	void CreateUniformLevel(int iLevel, float fHeight, int iHighlightEdge);
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
