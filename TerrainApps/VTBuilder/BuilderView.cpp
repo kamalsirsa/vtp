@@ -610,7 +610,7 @@ void BuilderView::EndBoxFeatureSelect(const wxMouseEvent& event)
 		selected = pRL->NumSelected();
 	}
 	wxString msg;
-	msg.Printf(_T("%s %d entit%s, %d total selected"), verb, changed,
+	msg.Printf(_T("%hs %d entit%s, %d total selected"), verb, changed,
 		changed == 1 ? _T("y") : _T("ies"), selected);
 	GetMainFrame()->SetStatusText(msg);
 	GetMainFrame()->OnSelectionChanged();
