@@ -49,7 +49,6 @@
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "camera.xpm"
 #  include "fence.xpm"
-#  include "route.xpm"
 #  include "loc.xpm"
 #  include "maintain.xpm"
 #  include "move.xpm"
