@@ -1,9 +1,9 @@
-/////////////////////////////////////////////////////////////////////////////
+//
 // Name:        ExtentDlg.cpp
-// Author:      XX
-// Created:     XX/XX/XX
-// Copyright:   XX
-/////////////////////////////////////////////////////////////////////////////
+//
+// Copyright (c) 2002 Virtual Terrain Project
+// Free for all uses, see license.txt for details.
+//
 
 #ifdef __GNUG__
     #pragma implementation "ExtentDlg.cpp"
