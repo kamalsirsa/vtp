@@ -127,7 +127,13 @@ bool vtTerrain::LoadParams()
  * instead of loading the BT file specified in the TParams.
  *
  * You must allocate this grid dynamically with 'new', since vtTerrain
- * will 'delete' it after using it during initialization.
+ * will 'delete' it after using it during initialization.  If you don't
+ * want the memory to be deleted, pass 'true' for bPreserve.
+ *
+ * \param pGrid The grid object which the terrain should use.
+ * \param bPreserve True if the terrain should not delete the grid object,
+ * otherwise false.
+ *
  */
 void vtTerrain::SetLocalGrid(vtLocalGrid *pGrid, bool bPreserve)
 {
