@@ -2,7 +2,7 @@
 // Name:	 frame.cpp
 // Purpose:  The frame class for the wxWindows application.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -33,6 +33,11 @@
 #include "ModelDlg.h"
 #include "SceneGraphDlg.h"
 #include "ItemGroup.h"
+
+#if VTLIB_OSG
+#include <osgDB/Registry>
+#include <osgDB/ReadFile>
+#endif
 
 DECLARE_APP(vtApp)
 
@@ -71,6 +76,8 @@ vtStringArray vtFrame::m_DataPaths;
 BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_CHAR(vtFrame::OnChar)
 	EVT_CLOSE(vtFrame::OnClose)
+	EVT_IDLE(vtFrame::OnIdle)
+
 	EVT_MENU(wxID_OPEN, vtFrame::OnOpen)
 	EVT_MENU(wxID_SAVE, vtFrame::OnSave)
 	EVT_MENU(wxID_EXIT, vtFrame::OnExit)
@@ -84,6 +91,7 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_MENU(ID_ITEM_REMOVEMODEL, vtFrame::OnItemRemoveModel)
 	EVT_UPDATE_UI(ID_ITEM_REMOVEMODEL, vtFrame::OnUpdateItemRemoveModel)
 	EVT_MENU(ID_ITEM_SAVESOG, vtFrame::OnItemSaveSOG)
+	EVT_MENU(ID_ITEM_SAVEOSG, vtFrame::OnItemSaveOSG)
 
 	EVT_MENU(ID_VIEW_ORIGIN, vtFrame::OnViewOrigin)
 	EVT_UPDATE_UI(ID_VIEW_ORIGIN, vtFrame::OnUpdateViewOrigin)
@@ -106,6 +114,8 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style) :
 	wxFrame(parent, WID_FRAME, title, pos, size, style)
 {
+	m_bCloseOnIdle = false;
+
 	VTLOG(" constructing Frame\n");
 	// Give it an icon
 	{
@@ -197,11 +207,18 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		m_pFont->LoadFont(font_path);
 	}
 
+#if VTLIB_OSG && 0
+	// TEST CODE
+	osg::Node *node = osgDB::readNodeFile("in.obj");
+	osgDB::Registry::instance()->writeNode(*node, "out.osg");
+#endif
+
 	m_pTree->RefreshTreeItems(this);
 }
 
 vtFrame::~vtFrame()
 {
+	VTLOG(" destructing Frame\n");
 	delete m_pFont;
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
@@ -279,6 +296,9 @@ void vtFrame::CreateMenus()
 	itemMenu->Append(ID_ITEM_REMOVEMODEL, _T("Remove Model"));
 	itemMenu->AppendSeparator();
 	itemMenu->Append(ID_ITEM_SAVESOG, _T("Save Model as SOG"));
+#if VTLIB_OSG
+	itemMenu->Append(ID_ITEM_SAVEOSG, _T("Save Model as OSG"));
+#endif
 
 	wxMenu *viewMenu = new wxMenu;
 	viewMenu->AppendCheckItem(ID_VIEW_ORIGIN, _T("Show Local Origin"));
@@ -327,24 +347,42 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	if (key == 27)
 	{
 		// Esc: exit application
+		// It's not safe to close immediately, as that will kill the canvas,
+		//  and it might some Canvas event that caused us to close.  So,
+		//  simply stop rendering, and delay closing until the next Idle event.
 		m_canvas->m_bRunning = false;
-		Destroy();
+		m_bCloseOnIdle = true;
 	}
 }
 
 void vtFrame::OnClose(wxCloseEvent &event)
 {
 	VTLOG("Frame OnClose\n");
+
+	// Turn on lots of debugging info in case of problems on exit
+//	wxLog::SetVerbose(true);
+//	wxLog::SetTraceMask(0xf);
+
 	if (m_canvas)
 	{
 		m_canvas->m_bRunning = false;
 		delete m_canvas;
 		m_canvas = NULL;
 	}
-
 	FreeContents();
-
 	event.Skip();
+}
+
+void vtFrame::OnIdle(wxIdleEvent& event)
+{
+	// Check if we were requested to close on the next Idle event.
+	if (m_bCloseOnIdle)
+	{
+		VTLOG("CloseOnIdle, calling Close()\n");
+		Close();
+	}
+	else
+		event.Skip();
 }
 
 
@@ -449,7 +487,13 @@ int vtFrame::GetModelTriCount(vtModel *model)
 
 void vtFrame::OnExit(wxCommandEvent& event)
 {
-	m_canvas->m_bRunning = false;
+	VTLOG("Got Exit event, shutting down.\n");
+	if (m_canvas)
+	{
+		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
+	}
 	Destroy();
 }
 
@@ -478,8 +522,11 @@ void vtFrame::OnItemDelete(wxCommandEvent& event)
 void vtFrame::OnItemAddModel(wxCommandEvent& event)
 {
 	wxFileDialog loadFile(NULL, _T("Load 3d Model"), _T(""), _T(""),
-		_T("3DS Files (*.3ds)|*.3ds|")
-		_T("FLT Files (*.flt)|*.flt|")
+		_T("All 3D Models (*.3ds, *.flt, *.lwo, *.obj)|*.3ds;*.flt;*.lwo;*.obj|")
+		_T("3D Studio Files (*.3ds)|*.3ds|")
+		_T("OpenFlight Files (*.flt)|*.flt|")
+		_T("LightWave Files (*.lwo)|*.lwo|")
+		_T("Wavefront Files (*.obj)|*.obj|")
 		_T("All Files (*.*)|*.*|"), wxOPEN);
 	loadFile.SetFilterIndex(0);
 	if (loadFile.ShowModal() != wxID_OK)
@@ -526,6 +573,33 @@ void vtFrame::OnItemSaveSOG(wxCommandEvent& event)
 	osog.WriteHeader(fp);
 	osog.WriteSingleGeometry(fp, geom);
 	fclose(fp);
+}
+
+void vtFrame::OnItemSaveOSG(wxCommandEvent& event)
+{
+	vtTransform *trans = m_nodemap[m_pCurrentModel];
+	if (!trans)
+		return;
+	vtNode *node = dynamic_cast<vtNode*>(trans->GetChild(0));
+	if (!node)
+		return;
+
+#if VTLIB_OSG
+	osg::Node *onode = node->GetOsgNode();
+	osgDB::ReaderWriter::WriteResult result;
+	result = osgDB::Registry::instance()->writeNode(*onode, "model.osg");
+	//if (result == osgDB::ReaderWriter::WriteResult::FILE_NOT_HANDLED)
+	//{
+	//}
+	//else if (result == osgDB::ReaderWriter::WriteResult::FILE_SAVED)
+	//{
+	//}
+	//else if (result == osgDB::ReaderWriter::WriteResult::ERROR_IN_WRITING_FILE)
+	//{
+	//}
+	int foo = 1;
+                   
+#endif
 }
 
 void vtFrame::OnUpdateItemSaveSOG(wxUpdateUIEvent& event)
@@ -682,10 +756,6 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
 	vtNodeBase *pNode = vtNode::LoadModel(fullpath);
 
-	// check
-	FSphere sphere;
-	pNode->GetBoundSphere(sphere);
-
 	if (!pNode)
 	{
 		wxString2 str;
@@ -693,6 +763,10 @@ vtTransform *vtFrame::AttemptLoad(vtModel *model)
 		DisplayMessageBox(str);
 		return NULL;
 	}
+
+	// check
+	FSphere sphere;
+	pNode->GetBoundSphere(sphere);
 
 	// Wrap in a transform node so that we can scale/rotate the node
 	vtTransform *pTrans = new vtTransform();
@@ -991,13 +1065,6 @@ void vtFrame::UpdateTransform(vtModel *model)
 	trans->Identity();
 
 	vtString ext = GetExtension(model->m_filename, false);
-	if (ext.CompareNoCase(".3ds") == 0 ||
-		ext.CompareNoCase(".flt") == 0)
-	{
-		// Must rotate by 90 degrees for 3DS MAX -> OpenGL
-		trans->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
-	}
-
 	trans->Scale3(model->m_scale, model->m_scale, model->m_scale);
 }
 

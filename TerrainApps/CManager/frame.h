@@ -64,10 +64,12 @@ protected:
 	void ReadINI();
 
 	// command handlers
+	void OnExit(wxCommandEvent& event);
 	void OnClose(wxCloseEvent &event);
+	void OnIdle(wxIdleEvent& event);
+
 	void OnOpen(wxCommandEvent& event);
 	void OnSave(wxCommandEvent& event);
-	void OnExit(wxCommandEvent& event);
 	void OnTestXML(wxCommandEvent& event);
 	void OnSetDataPath(wxCommandEvent& event);
 	void OnItemNew(wxCommandEvent& event);
@@ -75,6 +77,7 @@ protected:
 	void OnItemAddModel(wxCommandEvent& event);
 	void OnItemRemoveModel(wxCommandEvent& event);
 	void OnItemSaveSOG(wxCommandEvent& event);
+	void OnItemSaveOSG(wxCommandEvent& event);
 	void OnSceneGraph(wxCommandEvent& event);
 	void OnViewOrigin(wxCommandEvent& event);
 	void OnUpdateViewOrigin(wxUpdateUIEvent& event);
@@ -148,6 +151,8 @@ public:
 
 	bool m_bShowOrigin;
 	bool m_bShowRulers;
+
+	bool m_bCloseOnIdle;
 
 	DECLARE_EVENT_TABLE()
 };
