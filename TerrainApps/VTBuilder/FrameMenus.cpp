@@ -552,7 +552,7 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 			}
 		}
 		wxString name;
-		name.Printf(_T("%s%02d%02d.png"), prefix.c_str(),
+		name.Printf(_T("%s_%02d%02d.png"), prefix.c_str(),
 			icosa_face_pairs[i][0]+1, icosa_face_pairs[i][1]+1);
 		bool success = out[i].SaveFile(name, wxBITMAP_TYPE_PNG);
 		if (!success)
