@@ -30,16 +30,18 @@
 
 #define ID_TEXT 10000
 #define ID_LEVEL 10001
-#define ID_ADD_LEVEL 10002
-#define ID_DEL_LEVEL 10003
-#define ID_STORIES 10004
-#define ID_STORY_HEIGHT 10005
-#define ID_MATERIAL 10006
-#define ID_SET_MATERIAL 10007
-#define ID_COLOR 10008
-#define ID_SET_COLOR 10009
-#define ID_EDGE_SLOPES 10010
-#define ID_SET_EDGE_SLOPES 10011
+#define ID_LEVEL_COPY 10002
+#define ID_LEVEL_DEL 10003
+#define ID_LEVEL_UP 10004
+#define ID_LEVEL_DOWN 10005
+#define ID_STORIES 10006
+#define ID_STORY_HEIGHT 10007
+#define ID_MATERIAL 10008
+#define ID_SET_MATERIAL 10009
+#define ID_COLOR 10010
+#define ID_SET_COLOR 10011
+#define ID_EDGE_SLOPES 10012
+#define ID_SET_EDGE_SLOPES 10013
 wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions

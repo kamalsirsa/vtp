@@ -28,101 +28,111 @@ wxSizer *BuildingDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item2 = new wxBoxSizer( wxVERTICAL );
 
-    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, "Level", wxDefaultPosition, wxDefaultSize, 0 );
-    item2->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+    wxStaticText *item3 = new wxStaticText( parent, ID_TEXT, "Building Levels", wxDefaultPosition, wxDefaultSize, 0 );
+    item2->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     wxString *strs4 = (wxString*) NULL;
     wxListBox *item4 = new wxListBox( parent, ID_LEVEL, wxDefaultPosition, wxSize(60,100), 0, strs4, wxLB_SINGLE );
-    item2->Add( item4, 1, wxALIGN_CENTER_VERTICAL, 5 );
+    item2->Add( item4, 1, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
 
-    wxButton *item5 = new wxButton( parent, ID_ADD_LEVEL, "Add", wxDefaultPosition, wxSize(40,-1), 0 );
-    item5->Enable( FALSE );
-    item2->Add( item5, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+    wxFlexGridSizer *item5 = new wxFlexGridSizer( 2, 0, 0 );
 
-    wxButton *item6 = new wxButton( parent, ID_DEL_LEVEL, "Del", wxDefaultPosition, wxSize(40,-1), 0 );
+    wxButton *item6 = new wxButton( parent, ID_LEVEL_COPY, "Copy", wxDefaultPosition, wxSize(40,-1), 0 );
     item6->Enable( FALSE );
-    item2->Add( item6, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+    item5->Add( item6, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxButton *item7 = new wxButton( parent, ID_LEVEL_DEL, "Del", wxDefaultPosition, wxSize(40,-1), 0 );
+    item7->Enable( FALSE );
+    item5->Add( item7, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxButton *item8 = new wxButton( parent, ID_LEVEL_UP, "Up", wxDefaultPosition, wxSize(40,-1), 0 );
+    item5->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item9 = new wxButton( parent, ID_LEVEL_DOWN, "Down", wxDefaultPosition, wxSize(40,-1), 0 );
+    item5->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item2->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item1->Add( item2, 0, wxGROW|wxALIGN_CENTER_HORIZONTAL|wxALL, 5 );
 
-    wxStaticBox *item8 = new wxStaticBox( parent, -1, "Level Properties" );
-    wxStaticBoxSizer *item7 = new wxStaticBoxSizer( item8, wxVERTICAL );
-
-    wxBoxSizer *item9 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, "Stories:", wxDefaultPosition, wxDefaultSize, 0 );
-    item9->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxSpinCtrl *item11 = new wxSpinCtrl( parent, ID_STORIES, "0", wxDefaultPosition, wxSize(60,-1), 0, 0, 100, 0 );
-    item9->Add( item11, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    item7->Add( item9, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticBox *item11 = new wxStaticBox( parent, -1, "Level Properties" );
+    wxStaticBoxSizer *item10 = new wxStaticBoxSizer( item11, wxVERTICAL );
 
     wxBoxSizer *item12 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, "Story Height:", wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item13 = new wxStaticText( parent, ID_TEXT, "Stories:", wxDefaultPosition, wxDefaultSize, 0 );
     item12->Add( item13, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item14 = new wxTextCtrl( parent, ID_STORY_HEIGHT, "", wxDefaultPosition, wxSize(60,-1), 0 );
+    wxSpinCtrl *item14 = new wxSpinCtrl( parent, ID_STORIES, "0", wxDefaultPosition, wxSize(60,-1), 0, 0, 100, 0 );
     item12->Add( item14, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticText *item15 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
-    item12->Add( item15, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+    item10->Add( item12, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item7->Add( item12, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item16 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, "Story Height:", wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticText *item17 = new wxStaticText( parent, ID_TEXT, "Material:", wxDefaultPosition, wxDefaultSize, 0 );
-    item16->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_STORY_HEIGHT, "", wxDefaultPosition, wxSize(60,-1), 0 );
+    item15->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item18 = new wxTextCtrl( parent, ID_MATERIAL, "", wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item16->Add( item18, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item18, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
 
-    wxButton *item19 = new wxButton( parent, ID_SET_MATERIAL, "Set", wxDefaultPosition, wxSize(40,-1), 0 );
-    item16->Add( item19, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item10->Add( item15, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item7->Add( item16, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, "Material:", wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, "Color:", wxDefaultPosition, wxDefaultSize, 0 );
-    item20->Add( item21, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_MATERIAL, "", wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item19->Add( item21, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticBitmap *item22 = new wxStaticBitmap( parent, ID_COLOR, vtuiBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
-    item20->Add( item22, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxButton *item22 = new wxButton( parent, ID_SET_MATERIAL, "Set", wxDefaultPosition, wxSize(40,-1), 0 );
+    item19->Add( item22, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxButton *item23 = new wxButton( parent, ID_SET_COLOR, "Set", wxDefaultPosition, wxSize(40,-1), 0 );
-    item20->Add( item23, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item10->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item7->Add( item20, 0, wxALIGN_CENTER_VERTICAL, 5 );
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxBoxSizer *item24 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, "Color:", wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxStaticText *item25 = new wxStaticText( parent, ID_TEXT, "Edge Slopes:", wxDefaultPosition, wxDefaultSize, 0 );
-    item24->Add( item25, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxStaticBitmap *item25 = new wxStaticBitmap( parent, ID_COLOR, vtuiBitmapsFunc( 0 ), wxDefaultPosition, wxSize(32,18) );
+    item23->Add( item25, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_EDGE_SLOPES, "", wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
-    item24->Add( item26, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+    wxButton *item26 = new wxButton( parent, ID_SET_COLOR, "Set", wxDefaultPosition, wxSize(40,-1), 0 );
+    item23->Add( item26, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxButton *item27 = new wxButton( parent, ID_SET_EDGE_SLOPES, "Set", wxDefaultPosition, wxSize(40,-1), 0 );
-    item24->Add( item27, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item10->Add( item23, 0, wxALIGN_CENTER_VERTICAL, 5 );
 
-    item7->Add( item24, 0, wxALIGN_CENTRE, 5 );
+    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
 
-    item1->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxStaticText *item28 = new wxStaticText( parent, ID_TEXT, "Edge Slopes:", wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item28, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item29 = new wxTextCtrl( parent, ID_EDGE_SLOPES, "", wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item27->Add( item29, 0, wxALIGN_CENTRE|wxRIGHT|wxTOP|wxBOTTOM, 5 );
+
+    wxButton *item30 = new wxButton( parent, ID_SET_EDGE_SLOPES, "Set", wxDefaultPosition, wxSize(40,-1), 0 );
+    item27->Add( item30, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item10->Add( item27, 0, wxALIGN_CENTRE, 5 );
+
+    item1->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxBoxSizer *item28 = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer *item31 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item29 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
-    item28->Add( item29, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxButton *item32 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item32, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxButton *item30 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
-    item28->Add( item30, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxButton *item33 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item31->Add( item33, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    item0->Add( item28, 0, wxALIGN_CENTRE|wxALL, 5 );
+    item0->Add( item31, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     if (set_sizer)
     {
