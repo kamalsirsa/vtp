@@ -32,6 +32,7 @@
 #include "VegLayer.h"
 // Dialogs
 #include "ResampleDlg.h"
+#include "SampleImageDlg.h"
 #include "FeatInfoDlg.h"
 #include "DistanceDlg.h"
 #include "vtui/LinearStructDlg.h"
@@ -1191,11 +1192,10 @@ void MainFrame::ExportImage()
 	}
 
 	// Open the Resample dialog
-	ResampleDlg dlg(this, -1, _T("Merge and Resample Imagery"));
+	SampleImageDlg dlg(this, -1, _T("Merge and Resample Imagery"));
 	dlg.m_fEstX = spacing.x;
 	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
-	dlg.m_bFloats = false;
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;

@@ -357,6 +357,10 @@ SOURCE=.\RoadMapEdit.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SampleImageDlg.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ScaledView.h
 # End Source File
 # Begin Source File
@@ -668,6 +672,10 @@ SOURCE=.\ResampleDlg.cpp
 # Begin Source File
 
 SOURCE=.\RoadDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SampleImageDlg.cpp
 # End Source File
 # Begin Source File
 

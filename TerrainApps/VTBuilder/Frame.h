@@ -215,6 +215,7 @@ public:
 	void OnAreaExportImage(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
 	void OnAreaRequestLayer(wxCommandEvent& event);
+	void OnAreaRequestWMS(wxCommandEvent& event);
 
 	void OnUpdateAreaStretch(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);

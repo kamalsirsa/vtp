@@ -188,6 +188,7 @@ EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
+EVT_MENU(ID_AREA_REQUEST_WMS,		MainFrame::OnAreaRequestWMS)
 
 EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
@@ -386,12 +387,13 @@ void MainFrame::CreateMenus()
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge && Export Elevation"),
 		_T("Sample all elevation data within the Export Area to produce a single, new elevation."));
+#ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _T("Extract && Export Image"),
 		_T("Sample imagery within the Export Area to produce a single, new image."));
-#ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _T("Generate && Export Vegetation"),
 		_T("Generate Vegetation File (*.vf) containg plant distribution."));
 	areaMenu->Append(ID_AREA_REQUEST_LAYER, _T("Request Layer from WFS"));
+	areaMenu->Append(ID_AREA_REQUEST_WMS, _T("Request Image from WMS"));
 #endif
 	m_pMenuBar->Append(areaMenu, _T("Export &Area"));
 	menu_num++;
@@ -1815,6 +1817,41 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 
 	wxTextEntryDialog dlg(this, _T("WFS Server address"),
 		_T("Please enter server base URL"), _T("http://10.254.0.29:8081/"));
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	wxString2 value = dlg.GetValue();
+	const char *server = value.mb_str();
+
+	WFSLayerArray layers;
+	success = GetLayersFromWFS(server, layers);
+
+	int numlayers = layers.GetSize();
+	wxString choices[100];
+	for (int i = 0; i < numlayers; i++)
+		choices[i] = wxString::FromAscii(layers[i]->GetValue("Name"));
+
+	wxSingleChoiceDialog dlg2(this, _T("Choice Layer"),
+		_T("Please indicate layer:"), numlayers, (const wxString *)choices);
+
+	if (dlg2.ShowModal() != wxID_OK)
+		return;
+
+	vtRawLayer *pRL = new vtRawLayer();
+	success = pRL->ReadFeaturesFromWFS(server, "rail");
+	if (success)
+		AddLayerWithCheck(pRL);
+	else
+		delete pRL;
+#endif
+}
+
+void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
+{
+#if SUPPORT_HTTP
+	bool success;
+
+	wxTextEntryDialog dlg(this, _T("WMS Server address"),
+		_T("Please enter server base URL"), _T("http://wmt.jpl.nasa.gov/cgi-bin/wmt.cgi"));
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 	wxString2 value = dlg.GetValue();

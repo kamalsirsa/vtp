@@ -1361,6 +1361,116 @@ wxSizer *LevelSelectionDialogFunc( wxWindow *parent, bool call_fit, bool set_siz
     return item0;
 }
 
+wxSizer *SampleImageDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticBox *item2 = new wxStaticBox( parent, -1, _("Sampling") );
+    wxStaticBoxSizer *item1 = new wxStaticBoxSizer( item2, wxVERTICAL );
+
+    wxBoxSizer *item3 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Image size:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item3->Add( item4, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item5 = new wxTextCtrl( parent, ID_SIZEX, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item3->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_SIZEY, wxT(""), wxDefaultPosition, wxSize(60,-1), 0 );
+    item3->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item1->Add( item3, 0, wxALIGN_CENTRE, 5 );
+
+    wxBoxSizer *item7 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item8 = new wxStaticText( parent, ID_TEXT, _("Pixel spacing:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item7->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item9 = new wxTextCtrl( parent, ID_SPACINGX, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item7->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SPACINGY, wxT(""), wxDefaultPosition, wxSize(70,-1), 0 );
+    item7->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item1->Add( item7, 0, wxALIGN_CENTRE, 5 );
+
+    wxBoxSizer *item11 = new wxBoxSizer( wxVERTICAL );
+
+    wxCheckBox *item12 = new wxCheckBox( parent, ID_CONSTRAIN, _("Size constraint: power of 2 for texture map"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxCheckBox *item13 = new wxCheckBox( parent, ID_TILING, _("Constrain to size for 4x4 overlap tiling"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item1->Add( item11, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item15 = new wxButton( parent, ID_SMALLER, _("<< Smaller"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item16 = new wxButton( parent, ID_BIGGER, _(">> Bigger"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item16, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item1->Add( item14, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item1, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item18 = new wxStaticBox( parent, -1, _("Information") );
+    wxStaticBoxSizer *item17 = new wxStaticBoxSizer( item18, wxVERTICAL );
+
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item20 = new wxStaticText( parent, ID_TEXT, _("Size of sample area:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item19->Add( item20, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item21 = new wxTextCtrl( parent, ID_AREAX, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item19->Add( item21, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_AREAY, wxT(""), wxDefaultPosition, wxSize(80,-1), wxTE_READONLY );
+    item19->Add( item22, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item17->Add( item19, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5 );
+
+    wxBoxSizer *item23 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item24 = new wxStaticText( parent, ID_TEXT, _("Estimated grid spacing of existing data:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item23->Add( item24, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item25 = new wxTextCtrl( parent, ID_ESTX, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    item23->Add( item25, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item26 = new wxTextCtrl( parent, ID_ESTY, wxT(""), wxDefaultPosition, wxSize(60,-1), wxTE_READONLY );
+    item23->Add( item26, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item17->Add( item23, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item0->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxBoxSizer *item27 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item28 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item28, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item29 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item27->Add( item29, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item27, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
