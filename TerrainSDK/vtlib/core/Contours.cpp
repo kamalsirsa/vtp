@@ -49,9 +49,15 @@ ContourConverter::~ContourConverter()
  * \param fHeight The height above the terrain to drape the lines.  Generally
  *		you will want to use a small offset value here, to keep the lines from
  *		colliding with the terrain itself.
+ * \return A transform object which sits above the contours.  This is useful
+ *		in case you later want to stretch or scale the contours, such as
+ *		keeping them on the surface of an exaggerated terrain.
  */
-void ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
+vtTransform *ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 {
+	if (!pTerr)
+		return NULL;
+
 	// Make a note of this terrain and its attributes
 	m_pTerrain = pTerr;
 	m_pHF = pTerr->GetHeightFieldGrid3d();
@@ -62,10 +68,13 @@ void ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 	// Create material and geometry to contain the vector geometry
 	vtMaterialArray *pMats = new vtMaterialArray();
 	pMats->AddRGBMaterial1(color, false, false, true);
+
+	m_pTrans = new vtTransform;
 	m_pGeom = new vtGeom();
 	m_pGeom->SetName2("Contour Lines");
 	m_pGeom->SetMaterials(pMats);
 	pMats->Release();		// pass ownership
+	m_pTrans->AddChild(m_pGeom);
 
 	// copy data from our grid to a QuikGrid object
 	int nx, ny;
@@ -76,13 +85,16 @@ void ContourConverter::Setup(vtTerrain *pTerr, const RGBf &color, float fHeight)
 	{
 		for (j = 0; j < ny; j++)
 		{
-			m_pGrid->zset(i, j, m_pHF->GetElevation(i, j));
+			// use the true elevation, for true contours
+			m_pGrid->zset(i, j, m_pHF->GetElevation(i, j, true));
 		}
 	}
 
 	// Since we have to interface to a global callback, set a global
 	//  pointer to the recipient of the callback.
 	s_cc = this;
+
+	return m_pTrans;
 }
 
 void ContourConverter::NewMesh()
@@ -121,7 +133,7 @@ void ContourConverter::GenerateContours(float fInterval)
 	int start = (int) (fMin / fInterval) + 1;
 	int stop = (int) (fMax / fInterval);
 
-	for (int i = start; i < stop; i++)
+	for (int i = start; i <= stop; i++)
 	{
 		NewMesh();
 		Contour(*m_pGrid, i * fInterval);
@@ -153,7 +165,9 @@ void ContourConverter::Finish()
 		m_pMesh->Release();		// pass ownership
 	}
 
-	m_pTerrain->AddNode(m_pGeom);
+	m_pTerrain->AddNode(m_pTrans);
+	float fExag = m_pTerrain->GetVerticalExag();
+	m_pTrans->Scale3(1, fExag, 1);
 
 	s_cc = NULL;
 }
@@ -161,7 +175,11 @@ void ContourConverter::Finish()
 void ContourConverter::Flush()
 {
 	if (m_line.GetSize() > 2)
-		m_pTerrain->AddSurfaceLineToMesh(m_pMesh, m_line, m_fHeight, false);
+	{
+		m_pTerrain->AddSurfaceLineToMesh(m_pMesh, m_line, m_fHeight,
+			false, true);	// use true elevation, not scaled
+	}
 	m_line.Empty();
 }
+
 
