@@ -9,8 +9,6 @@
 
 #include "Fence.h"
 
-#define FENCE_SPACING		(2.5f * m_fFenceScale)	// 2.5 meters
-
 #define LONGEST_FENCE 2000   // in meters
 
 ///////////////////
