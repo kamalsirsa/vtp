@@ -37,6 +37,7 @@
 #define FRAME_NAME InfraFrame
 #else
 #define FRAME_NAME vtFrame
+#define LoadAppCatalog(locale)
 #endif
 
 IMPLEMENT_APP(vtApp)
@@ -154,8 +155,11 @@ void vtApp::SetupLocale()
 		VTLOG(" not found.\n");
 	VTLOG("\n");
 
+	// Load any other catalogs which may be specific to this application.
+	LoadAppCatalog(m_locale);
+
 	// Test it
-	wxString test = _("&File");
+//	wxString test = _("&File");
 
 	wxLog::SetVerbose(false);
 }
@@ -325,12 +329,12 @@ bool vtApp::AskForTerrainName(wxWindow *pParent, wxString &strTerrainName)
 
 	if (!num)
 	{
-		wxMessageBox(_T("No terrains found (datapath/Terrains/*.ini)"));
+		wxMessageBox(_("No terrains found (datapath/Terrains/*.xml)"));
 		return false;
 	}
 
-	wxSingleChoiceDialog dlg(pParent, _T("Please choose a terrain"),
-		_T("Select Terrain"), num, &(choices.front()));
+	wxSingleChoiceDialog dlg(pParent, _("Please choose a terrain"),
+		_("Select Terrain"), num, &(choices.front()));
 	dlg.SetSelection(first_idx);
 
 	if (dlg.ShowModal() == wxID_OK)
@@ -356,13 +360,13 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 {
 	vtString fname = filename;
 
-	TParamsDlg dlg(parent, -1, _T("Terrain Creation Parameters"), wxDefaultPosition);
+	TParamsDlg dlg(parent, -1, _("Terrain Creation Parameters"), wxDefaultPosition);
 	dlg.SetDataPaths(g_Options.m_DataPaths);
 
 	TParams Params;
 	if (!Params.LoadFrom(fname))
 	{
-		wxMessageBox(_T("Couldn't load from that file."));
+		wxMessageBox(_("Couldn't load from that file."));
 		return wxID_CANCEL;
 	}
 	dlg.SetParams(Params);
@@ -375,8 +379,8 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 		vtString ext = GetExtension(fname, false);
 		if (ext.CompareNoCase(".ini") == 0)
 		{
-			wxString2 str = _T("Upgrading the .ini to a .xml file.\n")
-				_T("Deleting old file: ");
+			wxString2 str = _("Upgrading the .ini to a .xml file.\n");
+			str += _("Deleting old file: ");
 			str += fname;
 			wxMessageBox(str);
 
@@ -389,9 +393,8 @@ int EditTerrainParameters(wxWindow *parent, const char *filename)
 		if (!Params.WriteToXML(fname, STR_TPARAMS_FORMAT_NAME))
 		{
 			wxString str;
-			str.Printf(_T("Couldn't save to file %hs.\n")
-				_T("Please make sure the file is not read-only."),
-				(const char *)fname);
+			str.Printf(_("Couldn't save to file %hs.\n"), (const char *)fname);
+			str += _("Please make sure the file is not read-only.");
 			wxMessageBox(str);
 			result = wxID_CANCEL;
 		}
