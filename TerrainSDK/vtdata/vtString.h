@@ -137,11 +137,6 @@ public:
 	// return nCount characters from end of string
 	vtString Right(int nCount) const;
 
-	//  characters from beginning that are also in passed string
-	vtString SpanIncluding(pcchar lpszCharSet) const;
-	// characters from beginning that are not also in passed string
-	vtString SpanExcluding(pcchar lpszCharSet) const;
-
 	// upper/lower/reverse conversion
 
 	// NLS aware conversion to uppercase
@@ -158,37 +153,6 @@ public:
 	// remove whitespace starting from left side
 	void TrimLeft();
 
-	// trimming anything (either side)
-
-	// remove continuous occurrences of chTarget starting from right
-	void TrimRight(char chTarget);
-	// remove continuous occcurrences of characters in passed string,
-	// starting from right
-	void TrimRight(pcchar lpszTargets);
-	// remove continuous occurrences of chTarget starting from left
-	void TrimLeft(char chTarget);
-	// remove continuous occcurrences of characters in
-	// passed string, starting from left
-	void TrimLeft(pcchar lpszTargets);
-
-	// advanced manipulation
-
-	// replace occurrences of chOld with chNew
-	int Replace(char chOld, char chNew);
-	// replace occurrences of substring lpszOld with lpszNew;
-	// empty lpszNew removes instances of lpszOld
-	int Replace(pcchar lpszOld, pcchar lpszNew);
-	// remove occurrences of chRemove
-	int Remove(char chRemove);
-	// insert character at zero-based index; concatenates
-	// if index is past end of string
-	int Insert(int nIndex, char ch);
-	// insert substring at zero-based index; concatenates
-	// if index is past end of string
-	int Insert(int nIndex, pcchar pstr);
-	// delete nCount characters starting at zero-based index
-	int Delete(int nIndex, int nCount = 1);
-
 	// searching
 
 	// find character starting at left, -1 if not found
@@ -203,6 +167,21 @@ public:
 	int Find(pcchar szSub) const;
 	// find first instance of substring starting at zero-based index
 	int Find(pcchar szSub, int nStart) const;
+
+	// advanced manipulation
+
+	// replace occurrences of chOld with chNew
+	int Replace(char chOld, char chNew);
+	// remove occurrences of chRemove
+	int Remove(char chRemove);
+	// insert character at zero-based index; concatenates
+	// if index is past end of string
+	int Insert(int nIndex, char ch);
+	// insert substring at zero-based index; concatenates
+	// if index is past end of string
+	int Insert(int nIndex, pcchar pstr);
+	// delete nCount characters starting at zero-based index
+	int Delete(int nIndex, int nCount = 1);
 
 	// simple formatting
 	// printf-like formatting using passed string
@@ -310,10 +289,11 @@ inline vtString::operator pcchar() const
 inline size_t WIN_UNIX_STDCALL vtString::SafeStrlen(pcchar lpsz)
 	{ return (lpsz == NULL) ? 0 : strlen(lpsz); }
 
-// vtString support (windows specific)
+// string comparison
 inline int vtString::Compare(pcchar lpsz) const
 	{ return strcmp(m_pchData, lpsz); }	// MBCS/Unicode aware
-
+inline int vtString::CompareNoCase(pcchar lpsz) const
+	{ return stricmp(m_pchData, lpsz); }
 
 inline char vtString::GetAt(int nIndex) const
 {

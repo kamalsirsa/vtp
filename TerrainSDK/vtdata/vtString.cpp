@@ -87,7 +87,7 @@ void vtString::Release()
 	}
 }
 
-void vtString::Release(vtStringData* pData)  /*  removed PASCAL  */
+void vtString::Release(vtStringData* pData)
 {
 	if (pData != _vtDataNil)
 	{
@@ -464,10 +464,6 @@ void vtString::MakeReverse()
 #endif
 }
 
-int vtString::CompareNoCase(pcchar lpsz) const
-{
-	return stricmp(m_pchData, lpsz);
-}
 
 void vtString::SetAt(int nIndex, char ch)
 {
@@ -799,6 +795,95 @@ int vtString::Find(pcchar szSub, int nStart) const
 
 	// return -1 for not found, distance from beginning otherwise
 	return (lpsz == NULL) ? -1 : (int)(lpsz - m_pchData);
+}
+
+
+// advanced manipulation
+
+// replace occurrences of chOld with chNew
+int vtString::Replace(char chOld, char chNew)
+{
+	int nCount = 0;
+
+	// short-circuit the nop case
+	if (chOld != chNew)
+	{
+
+		char *pszBuffer = m_pchData;
+
+		// otherwise modify each character that matches in the string
+		bool bCopied = false;
+		int nLength = GetLength();
+		;
+		for (int iChar = 0; iChar < nLength; iChar ++)
+		{
+			// replace instances of the specified character only
+			if( pszBuffer[iChar] == chOld )
+			{
+				if( !bCopied )
+				{
+					bCopied = true;
+					CopyBeforeWrite();
+				}
+				pszBuffer[iChar] = chNew;
+				nCount++;
+			}
+		}
+	}
+	return nCount;
+}
+
+#if 0
+// remove occurrences of chRemove
+int vtString::Remove(char chRemove)
+{
+	int nCount = 0;
+	return nCount;
+}
+
+// insert character at zero-based index; concatenates
+// if index is past end of string
+int vtString::Insert(int nIndex, char ch)
+{
+	int nCount = 0;
+	return nCount;
+}
+
+// insert substring at zero-based index; concatenates
+// if index is past end of string
+int vtString::Insert(int nIndex, pcchar pstr)
+{
+	int nCount = 0;
+	return nCount;
+}
+#endif
+
+// delete nCount characters starting at zero-based index
+int vtString::Delete(int iIndex, int nCount)
+{
+	// check bounds first
+	if (iIndex < 0)
+		iIndex = 0;
+	
+	if (nCount < 0)
+		nCount = 0;
+
+	int nLength = GetLength();
+	if ((nCount+iIndex) > nLength)
+	{
+		nCount = nLength-iIndex;
+	}
+
+	// now actuall remove characters
+	if (nCount > 0)
+	{
+		CopyBeforeWrite();
+
+		int nNewLength = nLength-nCount;
+		int nCharsToCopy = nLength-(iIndex+nCount)+1;
+		memmove( m_pchData+iIndex, m_pchData+iIndex+nCount, nCharsToCopy );
+	}
+	return GetLength();
 }
 
 
