@@ -32,6 +32,7 @@ public:
 	wxString2(const std::string &in);
 	wxString2(const wxString &in) : wxString(in) {}
 	wxString2(const vtString &vtstr);
+	wxString2(const vtString *vtstrp);
 
 	// Assignment
 	wxString2& operator=(const wxChar *psz);
@@ -44,6 +45,7 @@ public:
 #endif
 	wxString2& operator=(const wxString &str);
 	wxString2& operator=(const vtString &vtstr);
+	wxString2& operator=(const vtString *vtstrp);
 
 	// implicit conversion to vtString
 	operator vtString() const;
@@ -61,4 +63,21 @@ private:
 #endif
 };
 
+/**
+ * Also very convenient, an array of wxString2 objects.
+ */
+class wxStringArray : public Array<wxString2 *>
+{
+public:
+	virtual ~wxStringArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual	void DestructItems(int first, int last)
+	{
+		for (int i = first; i <= last; ++i)
+			delete GetAt(i);
+	}
+	// handy direct access to an element as reference
+	wxString2 &Get(int i) { return *GetAt(i); }
+};
+
 #endif // __wxString2_h__
+

@@ -41,6 +41,11 @@ wxString2::wxString2(const vtString &vtstr)
 	*this = (const char *) vtstr;
 }
 
+wxString2::wxString2(const vtString *vtstrp)
+{
+	*this = (const char *) (*vtstrp);
+}
+
 // Assignment
 wxString2& wxString2::operator=(const wxChar *psz)
 {
@@ -96,6 +101,12 @@ wxString2& wxString2::operator=(const wxString &str)
 wxString2& wxString2::operator=(const vtString &vtstr)
 {
 	*this = (const char *) vtstr;
+	return *this;
+}
+
+wxString2& wxString2::operator=(const vtString *vtstrp)
+{
+	*this = (const char *) (*vtstrp);
 	return *this;
 }
 
