@@ -19,8 +19,6 @@
 
 #include "ProjectedShadows.h"
 
-using namespace osg;
-
 #define SHADOW_UPDATE_ANGLE 5.0f
 
 void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
@@ -152,7 +150,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 #define TOGGLE_SHADOWS 1
 #ifdef TOGGLE_SHADOWS
 			/* Set ignore node masks */
-			for (int i = 0; i < shadow_ignore_nodes->GetSize(); i++) {
+			for (unsigned int i = 0; i < shadow_ignore_nodes->GetSize(); i++) {
 				osg::Node *n = (*shadow_ignore_nodes)[i];
 				nodemasks[i] = n->getNodeMask();
 				n->setNodeMask(0);
@@ -164,7 +162,7 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 
 			/* Restore ignore node masks */
 #if TOGGLE_SHADOWS
-			for (int i = 0; i < shadow_ignore_nodes->GetSize(); i++) {
+			for (unsigned int i = 0; i < shadow_ignore_nodes->GetSize(); i++) {
 				osg::Node *n = (*shadow_ignore_nodes)[i];
 				n->setNodeMask(nodemasks[i]);
 			}
