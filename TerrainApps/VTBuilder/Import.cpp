@@ -133,7 +133,9 @@ void MainFrame::ImportDataFromArchive(LayerType ltype, wxString fname_org,
 		}
 		prepend_path += _T("/");
 
-		result = ExpandTGZ(fname_in.mb_str(), prepend_path.mb_str());
+		vtString str1 = fname_in.mb_str();
+		vtString str2 = prepend_path.mb_str();
+		result = ExpandTGZ(str1, str2);
 		if (result < 1)
 		{
 			wxMessageBox(_T("Couldn't expand archive."));
