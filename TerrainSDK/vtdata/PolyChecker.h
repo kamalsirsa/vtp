@@ -40,6 +40,8 @@ public:
 	int AreaSign(FPoint2 a, FPoint2 b, FPoint2 c);
 	bool IsSimplePolygon(FLine2 &vertices);
 	bool IsSimplePolygon(FLine3 &vertices);
+	bool IsClockwisePolygon(FLine2 &vertices);
+	bool IsClockwisePolygon(FLine3 &vertices);
 };
 
 #endif // POLYCHECKER_H

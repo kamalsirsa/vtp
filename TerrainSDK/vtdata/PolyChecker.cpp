@@ -225,3 +225,45 @@ bool PolyChecker::IsSimplePolygon(FLine3 &vertices)
 	return true;
 }
 
+bool PolyChecker::IsClockwisePolygon(FLine2 &vertices)
+{
+	FPoint2 p1, p2;
+	int iSize = vertices.GetSize();
+	// Cannot remember if this works for all Jordan
+	double Area = 0;
+
+	for (int i = 0; i < iSize; i++)
+	{
+		p1 = vertices[i];
+		p2 = vertices[(i+1)%iSize];
+
+		Area += (p2.x - p1.x) * (p2.y + p1.y);
+	}
+
+	if (Area > 0)
+		return true;
+	else
+		return false;
+}
+
+bool PolyChecker::IsClockwisePolygon(FLine3 &vertices)
+{
+	FPoint2 p1, p2;
+	int iSize = vertices.GetSize();
+	double Area = 0;
+
+	for (int i = 0; i < iSize; i++)
+	{
+		p1.x = vertices[i].x;
+		p1.y = vertices[i].z;
+		p2.x = vertices[(i+1)%iSize].x;
+		p2.y = vertices[(i+1)%iSize].z;
+
+		Area += (p2.x - p1.x) * (p2.y + p1.y);
+	}
+
+	if (Area > 0)
+		return true;
+	else
+		return false;
+}
