@@ -221,7 +221,7 @@ void vtStructureArray3d::VisualDeselectAll()
 	for (int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = (vtStructure *) GetAt(i);
-		vtStructure3d *str3d = (vtStructure3d *) GetAt(i);
+		vtStructure3d *str3d = GetStructure3d(i);
 
 //		Selectable *sel = (Selectable *) GetAt(i);
 
@@ -229,13 +229,4 @@ void vtStructureArray3d::VisualDeselectAll()
 		str3d->ShowBounds(false);
 	}
 }
-
-void vtStructureArray3d::VisualSelect(vtStructure3d *str3d)
-{
-	vtStructure *str = (vtStructure *) str3d;
-	str->Select(true);
-
-	str3d->ShowBounds(true);
-}
-
 

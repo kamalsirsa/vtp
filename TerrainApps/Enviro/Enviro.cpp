@@ -3,7 +3,7 @@
 //
 // Main functionality of the Enviro application
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2002 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -1100,8 +1100,10 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 
 		if (click_struct)
 		{
-			vtStructure3d *str = structures.GetStructure3d(structure);
-			structures.VisualSelect(str);
+			vtStructure *str = structures.GetAt(structure);
+			vtStructure3d *str3d = structures.GetStructure3d(structure);
+			str->Select(true);
+			str3d->ShowBounds(true);
 			m_bDragging = true;
 			m_bSelectedStruct = true;
 		}

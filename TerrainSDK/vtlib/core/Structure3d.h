@@ -97,9 +97,6 @@ public:
 	/// Deselect all structures including turning off their visual highlights
 	void VisualDeselectAll();
 
-	/// Select a single structure, and visually highlight it
-	void VisualSelect(vtStructure3d *str);
-
 protected:
 	vtHeightField *m_pHeightField;
 };
