@@ -1186,5 +1186,8 @@ bool PlaneIntersection(const FPlane &plane1, const FPlane &plane2,
 double DistancePointToLine(const DPoint2 &p1, const DPoint2 &p2, const DPoint2 &p3);
 void vtLogMatrix(const FMatrix4 &mat);
 void vtLogMatrix(const FMatrix3 &mat);
+bool RaySphereIntersection(const FPoint3 &rkOrigin, const FPoint3 &rkDirection,
+		  const FSphere& rkSphere, int& riQuantity, FPoint3 akPoint[2]);
+
 
 #endif	// VTMATHTYPESH

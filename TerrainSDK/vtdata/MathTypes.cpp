@@ -824,3 +824,48 @@ void vtLogMatrix(const FMatrix3 &mat)
 		  mat(0,2), mat(1,2), mat(2,2));
 }
 
+//
+// Ray-Sphere intersection
+//
+bool RaySphereIntersection(const FPoint3 &origin, const FPoint3 &dir,
+		  const FSphere &sphere, int &iQuantity, FPoint3 point[2])
+{
+	// set up quadratic Q(t) = a*t^2 + 2*b*t + c
+	FPoint3 kDiff = origin - sphere.center;
+	double fA = dir.LengthSquared();
+	double fB = kDiff.Dot(dir);
+	double fC = kDiff.LengthSquared() -
+		sphere.radius*sphere.radius;
+
+	double afT[2];
+	double fDiscr = fB*fB - fA*fC;
+	if ( fDiscr < 0.0 )
+	{
+		iQuantity = 0;
+	}
+	else if ( fDiscr > 0.0 )
+	{
+		double fRoot = sqrt(fDiscr);
+		double fInvA = 1.0/fA;
+		afT[0] = (-fB - fRoot)*fInvA;
+		afT[1] = (-fB + fRoot)*fInvA;
+
+		if ( afT[0] >= 0.0 )
+			iQuantity = 2;
+		else if ( afT[1] >= 0.0 )
+			iQuantity = 1;
+		else
+			iQuantity = 0;
+	}
+	else
+	{
+		afT[0] = -fB/fA;
+		iQuantity = ( afT[0] >= 0.0 ? 1 : 0 );
+	}
+
+	for (int i = 0; i < iQuantity; i++)
+		point[i] = origin + dir * (float) afT[i];
+
+	return iQuantity > 0;
+}
+
