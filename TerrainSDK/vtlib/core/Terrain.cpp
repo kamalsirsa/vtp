@@ -572,6 +572,7 @@ void vtTerrain::AddRoute(vtRoute *f)
 void vtTerrain::add_routepoint_earth(vtRoute *route, const DPoint2 &epos,
 									 const char *structname)
 {
+	VTLOG("Route AddPoint %.1lf %.1lf\n", epos.x, epos.y);
 	route->AddPoint(epos, structname);
 	route->BuildGeometry(m_pHeightField);
 }
