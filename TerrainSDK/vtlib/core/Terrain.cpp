@@ -2096,11 +2096,9 @@ bool vtTerrain::CreateStep5()
 	loc += m_Params.GetValueString(STR_LOCFILE, true);
 	vtString path = FindFileOnPaths(vtGetDataPath(), loc);
 	if (path != "")
-	{
 		m_LocSaver.Read(path);
-		m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
-		m_LocSaver.SetProjection(m_proj);
-	}
+	m_LocSaver.SetConversion(m_pHeightField->m_Conversion);
+	m_LocSaver.SetProjection(m_proj);
 
 	return true;
 }
