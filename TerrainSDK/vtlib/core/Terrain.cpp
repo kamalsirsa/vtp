@@ -286,6 +286,8 @@ void vtTerrain::create_textures()
 		int tsize = cols-1;
 		if ((tmax > 0) && (tsize > tmax))
 			tsize = tmax;
+		VTLOG("\t grid width is %d, texture max is %d, creating artificial texture of dimention %d\n",
+			cols, tmax, tsize);
 
 		// derive color from elevation
 		m_pDIB = new vtDIB();
