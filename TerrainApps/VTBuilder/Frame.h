@@ -228,8 +228,8 @@ public:
 	void OnChar(wxKeyEvent& event);
 
 	// project
-	void LoadProject(const wxString &strPathName);
-	void SaveProject(const wxString &strPathName);
+	void LoadProject(const wxString2 &strPathName);
+	void SaveProject(const wxString2 &strPathName);
 
 	// Layer methods
 	void LoadLayer(const wxString &fname);
@@ -330,17 +330,17 @@ public:
 
 	// import
 	void ImportData(LayerType ltype);
-	void ImportDataFromArchive(LayerType ltype, wxString strFileName, bool bRefresh);
-	void ImportDataFromFile(LayerType ltype, wxString strFileName, bool bRefresh);
-	vtLayer *ImportFromDLG(wxString &strFileName, LayerType ltype);
-	vtLayer *ImportFromSHP(wxString &strFileName, LayerType ltype);
-	vtLayer *ImportElevation(wxString &strFileName);
-	vtLayer *ImportImage(wxString &strFileName);
-	vtLayer *ImportFromLULC(wxString &strFileName, LayerType ltype);
-	vtLayer *ImportRawFromOGR(wxString &strFileName);
-	vtLayer *ImportVectorsWithOGR(wxString &strFileName, LayerType ltype);
-	vtStructureLayer *ImportFromBCF(wxString &strFileName);
-	void ImportDataFromTIGER(wxString &strDirName);
+	void ImportDataFromArchive(LayerType ltype, const wxString2 &fname_org, bool bRefresh);
+	void ImportDataFromFile(LayerType ltype, const wxString2 &strFileName, bool bRefresh);
+	vtLayer *ImportFromDLG(const wxString2 &strFileName, LayerType ltype);
+	vtLayer *ImportFromSHP(const wxString2 &strFileName, LayerType ltype);
+	vtLayer *ImportElevation(const wxString2 &strFileName);
+	vtLayer *ImportImage(const wxString2 &strFileName);
+	vtLayer *ImportFromLULC(const wxString2 &strFileName, LayerType ltype);
+	vtLayer *ImportRawFromOGR(const wxString2 &strFileName);
+	vtLayer *ImportVectorsWithOGR(const wxString2 &strFileName, LayerType ltype);
+	vtStructureLayer *ImportFromBCF(const wxString2 &strFileName);
+	void ImportDataFromTIGER(const wxString2 &strDirName);
 	LayerType GuessLayerTypeFromDLG(vtDLGFile *pDLG);
 
 	// export
