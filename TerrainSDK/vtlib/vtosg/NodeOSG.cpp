@@ -180,8 +180,14 @@ void vtGroup::RemoveChild(vtNodeBase *pChild)
 
 vtNode *vtGroup::GetChild(int num)
 {
-	Node *pChild = (Node *) m_pGroup->getChild(num);
-	return (vtNode *) (pChild->getUserData());
+	int children = m_pGroup->getNumChildren();
+	if (num >= 0 && num < children)
+	{
+		Node *pChild = (Node *) m_pGroup->getChild(num);
+		return (vtNode *) (pChild->getUserData());
+	}
+	else
+		return NULL;
 }
 
 int vtGroup::GetNumChildren()
