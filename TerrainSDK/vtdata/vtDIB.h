@@ -47,7 +47,7 @@ public:
 	bool ReadJPEG(const char *fname);
 	bool WritePNG(const char *fname);
 
-	unsigned long GetPixel24(int x, int y) const;
+	unsigned int GetPixel24(int x, int y) const;
 	void GetPixel24(int x, int y, RGBi &rgb) const;
 	void GetPixel24From8bit(int x, int y, RGBi &rgb) const;
 	void SetPixel24(int x, int y, dword color);

@@ -822,7 +822,7 @@ void vtDIB::LeaveInternalDIB(bool bLeaveIt)
 /**
  * Get a 24-bit RGB value from a 24-bit bitmap.
  */
-dword vtDIB::GetPixel24(int x, int y) const
+unsigned int vtDIB::GetPixel24(int x, int y) const
 {
 	register byte* adr;
 
@@ -977,4 +977,3 @@ void vtDIB::SetColor(const RGBi &rgb)
 			SetPixel24(i, j, rgb);
 		}
 }
-
