@@ -1781,6 +1781,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\ProjectedShadows.cpp">
+			</File>
+			<File
 				RelativePath="SceneOSG.cpp">
 				<FileConfiguration
 					Name="Debug Unicode|Win32">
@@ -1836,6 +1839,9 @@
 			</File>
 			<File
 				RelativePath="NodeOSG.h">
+			</File>
+			<File
+				RelativePath=".\ProjectedShadows.h">
 			</File>
 			<File
 				RelativePath="SceneOSG.h">
