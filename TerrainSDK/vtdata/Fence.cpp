@@ -38,6 +38,8 @@ vtFence &vtFence::operator=(const vtFence &v)
 	m_fHeight = v.m_fHeight;
 	m_fSpacing = v.m_fSpacing;
 	m_pFencePts = v.m_pFencePts;
+	SetElevationOffset(v.GetElevationOffset());
+	SetOriginalElevation(v.GetOriginalElevation());
 	return *this;
 }
 
