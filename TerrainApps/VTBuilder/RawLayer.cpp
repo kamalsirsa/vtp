@@ -232,7 +232,7 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 
 	// copy entities
 	vtString str;
-	int i, f, result;
+	int i, result;
 	int num = pFrom->NumEntities();
 	for (i = 0; i < num; i++)
 	{
@@ -252,7 +252,7 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 			break;
 		}
 		// copy record data for all field names which match
-		for (f = 0; f < pFrom->GetNumFields(); f++)
+		for (unsigned int f = 0; f < pFrom->GetNumFields(); f++)
 		{
 			Field *field1 = pFrom->GetField(f);
 			Field *field2 = GetField((const char *) field1->m_name);

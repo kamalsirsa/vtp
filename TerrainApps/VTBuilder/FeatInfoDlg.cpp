@@ -76,7 +76,7 @@ void FeatInfoDlg::SetFeatureSet(vtRawLayer *pFeatures)
 	GetTextVertical()->Enable(type == SHPT_POINTZ);
 	GetChoiceVertical()->Enable(type == SHPT_POINTZ);
 
-	int i;
+	unsigned int i;
 	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		Field *pField = m_pFeatures->GetField(i);
@@ -161,7 +161,6 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 {
 	wxString2 str;
-	int i;
 	int field = 0;
 	DPoint3 p;
 	m_pFeatures->GetPoint(iFeat, p);
@@ -187,7 +186,7 @@ void FeatInfoDlg::UpdateFeatureText(int iItem, int iFeat)
 		GetList()->SetItem(iItem, field++, str);
 	}
 
-	for (i = 0; i < m_pFeatures->GetNumFields(); i++)
+	for (unsigned int i = 0; i < m_pFeatures->GetNumFields(); i++)
 	{
 		vtString vs;
 		m_pFeatures->GetValueAsString(iFeat, i, vs);

@@ -57,11 +57,11 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 	bool pbNoLine[30000];
 
 	int num_polys = m_Poly.size();
-	int i, j, k;
+	int i, k;
 	for (i = 0; i < num_polys; i++)
 	{
 		int vbuflength = 0;
-		int num_points = m_Poly[i].GetSize();
+		unsigned int j, num_points = m_Poly[i].GetSize();
 
 		// safety check
 		assert (num_points < 30000);
@@ -74,6 +74,10 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 
 		while (cont)
 		{
+			// safety check
+			if (a < 0)
+				break;
+
 			pbNoLine[a] = true;
 			for (k = b+1; k; k++)
 			{
@@ -91,7 +95,8 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 				}
 			}
 		}
-		for (int c = 0; c < num_points && c < SCREENBUF_SIZE; c++)
+
+		for (unsigned int c = 0; c < num_points && c < SCREENBUF_SIZE; c++)
 		{
 			pView->screen(m_Poly[i].GetAt(c), g_screenbuf[vbuflength]);
 			vbuflength += 1;
@@ -108,15 +113,14 @@ void vtVegLayer::DrawPolysHiddenLines(wxDC* pDC, vtScaledView *pView)
 
 void vtVegLayer::DrawInstances(wxDC* pDC, vtScaledView *pView)
 {
-	int i, size;
 	wxPoint origin;
 
 	int m_size = pView->sdx(20);
 	if (m_size > 5) m_size = 5;
 	if (m_size < 1) m_size = 1;
 
-	size = m_Pia.GetSize();
-	for (i = 0; i < size; i++)
+	unsigned int size = m_Pia.GetSize();
+	for (unsigned int i = 0; i < size; i++)
 	{
 		vtPlantInstance &plant = m_Pia.GetAt(i);
 
@@ -160,7 +164,7 @@ void vtVegLayer::SetProjection(const vtProjection &proj)
 
 void vtVegLayer::Offset(const DPoint2 &p)
 {
-	int i, size;
+	unsigned int i, size;
 
 	if (m_VLType == VLT_Density || m_VLType == VLT_BioMap)
 	{
@@ -267,7 +271,7 @@ bool vtVegLayer::AppendDataFrom(vtLayer *pL)
 	if (m_VLType != pVL->m_VLType)
 		return false;
 
-	int i, count;
+	unsigned int i, count;
 
 	count = pVL->m_Poly.size();
 	for (i = 0; i < count; i++)
@@ -454,7 +458,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 		dline.SetSize(psShape->nVertices);
 
 		// Store each SHP Poly Coord in Veg Poly
-		for (unsigned int j = 0; j < m_Poly[i].GetSize(); j++)
+		for (int j = 0; j < psShape->nVertices; j++)
 		{
 			dline.GetAt(j).x = psShape->padfX[j];
 			dline.GetAt(j).y = psShape->padfY[j];

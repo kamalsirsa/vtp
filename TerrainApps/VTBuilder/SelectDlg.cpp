@@ -44,8 +44,6 @@ void SelectDlg::SetRawLayer(vtRawLayer *pRL)
 
 void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 {
-	int i;
-
 	m_iField = 0;
 	m_iCondition = 0;
 	m_strValue = _T("");
@@ -76,7 +74,7 @@ void SelectDlg::OnInitDialog(wxInitDialogEvent& event)
 	}
 
 	wxString2 str;
-	for (i = 0; i < m_pLayer->GetNumFields(); i++)
+	for (unsigned int i = 0; i < m_pLayer->GetNumFields(); i++)
 	{
 		Field *field = m_pLayer->GetField(i);
 		str = field->m_name;
