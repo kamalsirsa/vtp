@@ -623,7 +623,6 @@ Node *vtRoadMap::FindNodeAtPoint(const DPoint2 &point, double epsilon)
 {
 	Node *closest = NULL;
 	double result, dist = 1E9;
-	bool found = false;
 
 	// a target rectangle, to quickly cull points too far away
 	DRECT target(point.x-epsilon, point.y+epsilon, point.x+epsilon, point.y-epsilon);
@@ -815,8 +814,8 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	float version = (float)atof(buffer+7);
 
 	// work around nasty release-mode MSVC bug: values returned from atof
-	// aren't immediately correct until another function is called
-	float version2 = (float)atof(buffer+7);
+	// sometimes aren't immediately correct until another function is called
+	version = (float)atof(buffer+7);
 
 	if (version < RMFVERSION_SUPPORTED)
 	{
@@ -833,7 +832,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	// Projection
 	if (version < 1.9f)
 	{
-		int proj_type, iUTMZone;
+		int proj_type=1, iUTMZone;
 		int iDatum = EPSG_DATUM_WGS84;
 		if (version >= 1.8f)
 		{
@@ -939,14 +938,14 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		if (version < 1.89)
 		{
 			fread(&itmp, intSize, 1, fp);			//highway number
-			tmpLink->m_iHwy = itmp;
+			tmpLink->m_iHwy = (short) itmp;
 			fread(&(tmpLink->m_fWidth), floatSize, 1, fp);	//width
 			fread(&itmp, intSize, 1, fp);			//number of lanes
-			tmpLink->m_iLanes = itmp;
+			tmpLink->m_iLanes = (unsigned short) itmp;
 			fread(&itmp, intSize, 1, fp);			//surface type
 			tmpLink->m_Surface =  (SurfaceType) itmp;
 			fread(&itmp, intSize, 1, fp);			//FLAG
-			tmpLink->m_iFlags = (itmp >> 16);
+			tmpLink->m_iFlags = (short) (itmp >> 16);
 		}
 		else
 		{
@@ -1134,7 +1133,7 @@ bool vtRoadMap::WriteRMF(const char *filename)
 	OGRErr err = m_proj.exportToWkt(&wkt);
 	if (err != OGRERR_NONE)
 		return false;
-	short len = strlen(wkt);
+	short len = (short) strlen(wkt);
 	FWrite(&len, shortSize);
 	FWrite(wkt, len);
 	OGRFree(wkt);

@@ -233,7 +233,7 @@ bool vtStructureArray::FindClosestStructure(const DPoint2 &point, double epsilon
 		return false;
 
 	DPoint2 loc;
-	double dist;
+	double dist=0;
 
 	for (unsigned int i = 0; i < GetSize(); i++)
 	{
@@ -573,7 +573,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		return;
 	}
 
-	const char * attval;
+	const char *attval;
 
 	if (_level == 2)
 	{
@@ -622,20 +622,20 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 	{
 		if (string(name) == (string)"height")
 		{
-			const char *sto_str = atts.getValue("stories");
-			if (sto_str)
+			attval = atts.getValue("stories");
+			if (attval)
 			{
 				// height in stories ("floors")
-				int stories = atoi(sto_str);
+				int stories = atoi(attval);
 				if (bld)
 					bld->SetStories(stories);
 			}
 		}
 		if (string(name) == (string)"walls")
 		{
-			const char *color = atts.getValue("color");
-			if (bld && color)
-				st.wall_color = ParseRGB(color);
+			attval = atts.getValue("color");
+			if (bld && attval)
+				st.wall_color = ParseRGB(attval);
 		}
 		if (string(name) == (string)"shapes")
 		{
@@ -656,13 +656,13 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 				bld->SetRoofType(ROOF_GABLE);
 			if (bld && (string)type == (string)"hip")
 				bld->SetRoofType(ROOF_HIP);
-			const char *color = atts.getValue("color");
-			if (bld && color)
-				bld->SetColor(BLD_ROOF, ParseRGB(color));
+			attval = atts.getValue("color");
+			if (bld && attval)
+				bld->SetColor(BLD_ROOF, ParseRGB(attval));
 		}
 		if (string(name) == (string)"points")
 		{
-			const char *num = atts.getValue("num");
+			attval = atts.getValue("num");
 		}
 		return;
 	}
@@ -729,7 +729,7 @@ void StructureVisitor::startElement (const char * name, const XMLAttributes &att
 		}
 		if (string(name) == (string)"connect")
 		{
-			const char *type = atts.getValue("type");
+			attval = atts.getValue("type");
 			// not yet supported; currently implied by post type
 		}
 		return;
