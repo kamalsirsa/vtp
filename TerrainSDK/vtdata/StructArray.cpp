@@ -1456,8 +1456,11 @@ vtStructInstance *GetClosestDefault(vtStructInstance *pInstance)
 
 bool SetupDefaultStructures(const vtString &fname)
 {
-	if (g_DefaultStructures.ReadXML(fname))
-		return true;
+	if (fname != "")
+	{
+		if (g_DefaultStructures.ReadXML(fname))
+			return true;
+	}
 
 	// else supply some internal defaults and let the user know the load failed
 	vtBuilding *pBld = g_DefaultStructures.NewBuilding();
