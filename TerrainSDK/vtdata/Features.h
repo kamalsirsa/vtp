@@ -425,6 +425,7 @@ public:
 };
 
 // Helpers
+OGRwkbGeometryType GetFeatureGeomType(const char *filename);
 OGRwkbGeometryType ShapelibToOGR(int nSHPType);
 int OGRToShapelib(OGRwkbGeometryType eGeomType);
 vtString MakeDBFName(const char *filename);

@@ -150,7 +150,67 @@ vtFeatureSet *vtFeatureLoader::LoadFrom(const char *filename)
 	if (!ext.CompareNoCase("shp"))
 		return LoadFromSHP(filename);
 	else
+	if (!ext.CompareNoCase("igc"))
+		return LoadFromIGC(filename);
+	else
 		return LoadWithOGR(filename);
+}
+
+OGRwkbGeometryType GetTypeFromOGR(OGRLayer *pLayer)
+{
+	// Get basic information about the layer we're reading
+  	pLayer->ResetReading();
+	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
+	if (!defn)
+		return wkbUnknown;
+	OGRwkbGeometryType geom_type = defn->GetGeomType();
+
+	if (geom_type == wkbUnknown)
+	{
+		// This usually indicates that the file contains a mix of different
+		// geometry types.  Look at the first geometry.
+		OGRFeature *pFeature = pLayer->GetNextFeature();
+		OGRGeometry *pGeom = pFeature->GetGeometryRef();
+		geom_type = pGeom->getGeometryType();
+	}
+	return geom_type;
+}
+
+OGRwkbGeometryType GetTypeFromOGR(const char *filename)
+{
+	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
+	if (!pDatasource)
+		return wkbUnknown;
+
+	// Take the contents of the first layer only.
+	OGRLayer *pLayer = pDatasource->GetLayer(0);
+	OGRwkbGeometryType type = GetTypeFromOGR(pLayer);
+	delete pDatasource;
+	return type;
+}
+
+OGRwkbGeometryType GetFeatureGeomType(const char *filename)
+{
+	vtString fname = filename;
+	vtString ext = fname.Right(3);
+	if (!ext.CompareNoCase("shp"))
+	{
+		// Open the SHP File & Get Info from SHP:
+		SHPHandle hSHP = SHPOpen(filename, "rb");
+		if (hSHP == NULL)
+			return wkbUnknown;
+		int nElems, nShapeType;
+		SHPGetInfo(hSHP, &nElems, &nShapeType, NULL, NULL);
+		SHPClose(hSHP);
+		return ShapelibToOGR(nShapeType);
+	}
+	else if (!ext.CompareNoCase("igc"))
+	{
+		// IGC is always 3D linestring
+		return wkbLineString25D;
+	}
+	else
+		return GetTypeFromOGR(filename);
 }
 
 vtFeatureSet *vtFeatureLoader::LoadFromSHP(const char *filename)
@@ -280,153 +340,8 @@ vtFeatureSet *vtFeatureLoader::LoadFromIGC(const char *filename)
 
 	return pSet;
 }
+
 /////////////////////////////////////////////////////////////////////////////
-
-/*
-bool vtFeatureSet::LoadFromGML(const char *filename)
-{
-	// try using OGR
-	g_GDALWrapper.RequestOGRFormats();
-
-	OGRDataSource *pDatasource = OGRSFDriverRegistrar::Open( filename );
-	if (!pDatasource)
-		return false;
-
-	int j, feature_count;
-	DLine2		*dline;
-	DPoint2		p2;
-
-	OGRLayer		*pOGRLayer;
-	OGRFeature		*pFeature;
-	OGRGeometry		*pGeom;
-	OGRPoint		*pPoint;
-	OGRLineString   *pLineString;
-	OGRPolygon		*pPolygon;
-	OGRLinearRing	*pRing;
-
-	// Assume that this data source is a "flat feature" GML file
-	//
-	// Assume there is only 1 layer.
-	//
-	int num_layers = pDatasource->GetLayerCount();
-	pOGRLayer = pDatasource->GetLayer(0);
-	if (!pOGRLayer)
-		return false;
-
-	feature_count = pOGRLayer->GetFeatureCount();
-  	pOGRLayer->ResetReading();
-	OGRFeatureDefn *defn = pOGRLayer->GetLayerDefn();
-	if (!defn)
-		return false;
-	const char *layer_name = defn->GetName();
-
-	int iFields = defn->GetFieldCount();
-	for (j = 0; j < iFields; j++)
-	{
-		OGRFieldDefn *field_def1 = defn->GetFieldDefn(j);
-		if (field_def1)
-		{
-			const char *fnameref = field_def1->GetNameRef();
-			OGRFieldType ftype = field_def1->GetType();
-
-			switch (ftype)
-			{
-			case OFT_Integer:
-				AddField(fnameref, FT_Integer);
-				break;
-			case OFTReal:
-				AddField(fnameref, FT_Double);
-				break;
-			case OFT_String:
-				AddField(fnameref, FT_String);
-				break;
-			}
-		}
-	}
-
-	// Get the projection (SpatialReference) from this layer?  We can't,
-	// because for current GML the layer doesn't have it; must use the
-	// first Geometry instead.
-//	OGRSpatialReference *pSpatialRef = pOGRLayer->GetSpatialRef();
-
-	// Look at the first geometry of the first feature in order to know
-	// what kind of primitive this file has.
-	bool bFirst = true;
-	OGRwkbGeometryType eType;
-	int num_points;
-	int fcount = 0;
-
-	while( (pFeature = pOGRLayer->GetNextFeature()) != NULL )
-	{
-		pGeom = pFeature->GetGeometryRef();
-		if (!pGeom) continue;
-
-		if (bFirst)
-		{
-			OGRSpatialReference *pSpatialRef = pGeom->getSpatialReference();
-			if (pSpatialRef)
-				m_proj.SetSpatialReference(pSpatialRef);
-
-			eType = pGeom->getGeometryType();
-			_SetupFromOGCType(eType);
-			bFirst = false;
-		}
-
-		switch (eType)
-		{
-		case wkbPoint:
-			pPoint = (OGRPoint *) pGeom;
-			p2.Set(pPoint->getX(), pPoint->getY());
-			m_Point2.Append(p2);
-			break;
-		case wkbLineString:
-			pLineString = (OGRLineString *) pGeom;
-			num_points = pLineString->getNumPoints();
-			dline = new DLine2;
-			dline->SetSize(num_points);
-			for (j = 0; j < num_points; j++)
-				dline->SetAt(j, DPoint2(pLineString->getX(j), pLineString->getY(j)));
-			m_LinePoly.Append(dline);
-			break;
-		case wkbPolygon:
-			pPolygon = (OGRPolygon *) pGeom;
-			pRing = pPolygon->getExteriorRing();
-			int num_points = pRing->getNumPoints();
-			dline = new DLine2;
-			dline->SetSize(num_points);
-			for (j = 0; j < num_points; j++)
-				dline->SetAt(j, DPoint2(pRing->getX(j), pRing->getY(j)));
-			m_LinePoly.Append(dline);
-			break;
-		}
-
-		for (j = 0; j < iFields; j++)
-		{
-			Field *field = GetField(j);
-			switch (field->m_type)
-			{
-			case FT_Integer:
-				field->m_int.Append(pFeature->GetFieldAsInteger(j));
-				break;
-			case FT_Double:
-				field->m_double.Append(pFeature->GetFieldAsDouble(j));
-				break;
-			case FT_String:
-				field->m_string.push_back(vtString(pFeature->GetFieldAsString(j)));
-				break;
-			}
-		}
-		fcount++;
-	}
-
-	delete pDatasource;
-
-	// allocate selection array
-	m_Flags.resize(fcount, 0);
-
-	return true;
-}
-*/
 
 vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 							 bool progress_callback(int))
@@ -435,21 +350,9 @@ vtFeatureSet *vtFeatureLoader::LoadWithOGR(OGRLayer *pLayer,
 		return NULL;
 
 	// Get basic information about the layer we're reading
-  	pLayer->ResetReading();
-	OGRFeatureDefn *defn = pLayer->GetLayerDefn();
-	if (!defn)
-		return NULL;
-	OGRwkbGeometryType geom_type = defn->GetGeomType();
+	OGRwkbGeometryType geom_type = GetTypeFromOGR(pLayer);
 
 	vtFeatureSet *pSet = NULL;
-	if (geom_type == wkbUnknown)
-	{
-		// This usually indicates that the file contains a mix of different
-		// geometry types.  Look at the first geometry.
-		OGRFeature *pFeature = pLayer->GetNextFeature();
-		OGRGeometry *pGeom = pFeature->GetGeometryRef();
-		geom_type = pGeom->getGeometryType();
-	}
 	switch (geom_type)
 	{
 	case wkbPoint:
