@@ -922,6 +922,30 @@ void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 	lev->SetFootprint(dl);
 }
 
+/** 
+ * Find the closest distance from a given point to the interior of a
+ * building's lowest footprint.  If the point is inside the footprint,
+ * the value 0.0 is returned.
+ */
+double vtBuilding::GetDistanceToInterior(const DPoint2 &point) const
+{
+	vtLevel *lev = m_Levels[0];
+	DLine2 &foot = lev->GetFootprint();
+	if (foot.ContainsPoint(point))
+		return 0.0;
+
+	int i, edges = foot.GetSize();
+	double dist, closest = 1E8;
+	for (i = 0; i < edges; i++)
+	{
+		DPoint2 p0 = foot[i];
+		DPoint2 p1 = foot[(i+1)%edges];
+		dist = DistancePointToLine(p0, p1, point);
+		if (dist < closest)
+			closest = dist;
+	}
+	return closest;
+}
 
 void vtBuilding::WriteXML_Old(FILE *fp, bool bDegrees)
 {

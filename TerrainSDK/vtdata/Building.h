@@ -205,6 +205,7 @@ public:
 	void SetCenterFromPoly();
 	void Offset(const DPoint2 &delta);
 	void RectToPoly(float fWidth, float fDepth, float fRotation);
+	double GetDistanceToInterior(const DPoint2 &point) const;
 
 	void WriteXML(FILE *fp, bool bDegrees);
 	void WriteXML_Old(FILE *fp, bool bDegrees);
