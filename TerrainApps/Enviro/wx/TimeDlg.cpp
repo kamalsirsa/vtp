@@ -163,7 +163,9 @@ void TimeDlg::SetTimeControls(const vtTime &time)
 	time.GetDate(year, month, day);
 	time.GetTimeOfDay(hour, minute, second);
 
+	m_bSetting = true;
 	TransferDataToWindow();
+	m_bSetting = false;
 }
 
 void TimeDlg::OnInitDialog(wxInitDialogEvent& event)
