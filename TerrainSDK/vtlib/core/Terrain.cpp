@@ -382,8 +382,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 		// Determine the correct size for the derived texture: ideally
 		// as large as the input grid, but not larger than the hardware
 		// texture size limit.
-		GLint tmax = 0;	// TODO: cannot make direct GL calls in threaded environment
-		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
+		int tmax = vtGetMaxTextureSize();
 
 		int cols, rows;
 		pHFGrid->GetDimensions(cols, rows);
@@ -416,7 +415,7 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 			// single texture
 			bool b16bit = m_Params.GetValueBool(STR_REQUEST16BIT);
 			vtImage *pImage = new vtImage(m_pDIB,
-				(m_pDIB->GetDepth() > 8 && b16bit) ? GL_RGB5 : -1);
+				(m_pDIB->GetDepth() > 8 && b16bit));
 			m_Images.Append(pImage);
 		}
 	}
@@ -909,7 +908,7 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 			base.y = 0;
 			base.z = world_extents.bottom - (j * depth);
 
-			vtMesh *mesh = new vtMesh(GL_TRIANGLE_STRIP, VtxType, 4);
+			vtMesh *mesh = new vtMesh(vtMesh::TRIANGLE_STRIP, VtxType, 4);
 			mesh->CreateRectangle(1, 1, base, size, 5.0f);
 
 			pGeom->AddMesh(mesh, 0);	// actually add
@@ -1519,7 +1518,7 @@ void vtTerrain::CreateFeatureGeometry(const vtFeatureSet &feat, const vtTagArray
 	pMats->Release();
 
 	int total = feat.NumTotalVertices();
-	vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, total);
+	vtMesh *mesh = new vtMesh(vtMesh::LINE_STRIP, 0, total);
 
 	FPoint3 f3;
 	for (unsigned int i = 0; i < feat.GetNumEntities(); i++)
@@ -2285,12 +2284,12 @@ void vtTerrain::_CreateChoppedTextures(int patches, int patch_size)
 					}
 			}
 
-			int internalformat;
+			bool b16bit;
 			if (!mono && m_Params.GetValueBool(STR_REQUEST16BIT))
-				internalformat = GL_RGB5;
+				b16bit = true;
 			else
-				internalformat = -1;
-			vtImage *pImage = new vtImage(dib2, internalformat);
+				b16bit = false;
+			vtImage *pImage = new vtImage(dib2, b16bit);
 
 			// Can we delete the internals DIBs here, or does the scene graph
 			//   needs the data?  Actually no, the scene graph gets a copy of it.
@@ -2395,7 +2394,7 @@ void vtTerrain::ShowPOI(vtPointOfInterest *poi, bool bShow)
 		return;
 	}
 
-	vtMesh *pMesh = new vtMesh(GL_LINE_STRIP, 0, STEPS*4);
+	vtMesh *pMesh = new vtMesh(vtMesh::LINE_STRIP, 0, STEPS*4);
 
 	DLine2 dline;
 	dline.Append(DPoint2(poi->m_rect.left, poi->m_rect.top));
