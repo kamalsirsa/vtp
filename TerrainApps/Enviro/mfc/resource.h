@@ -62,7 +62,6 @@
 #define IDC_PRELIT                      1042
 #define IDC_TREEFILE                    1043
 #define IDC_ROADFILE                    1044
-#define IDC_VCURSOR                     1045
 #define IDC_BUILDINGFILE                1046
 #define IDC_BUILDINGS                   1047
 #define IDC_VEHICLES                    1048
@@ -77,7 +76,6 @@
 #define IDC_DETAILTEXTURE               1056
 #define IDC_ROADDISTANCE                1057
 #define IDC_DOSCRIPT                    1058
-#define IDC_GRAVITY                     1059
 #define IDC_NAVSPEED                    1060
 #define IDC_LIGHT_FACTOR                1061
 #define IDC_TREESCARCITY                1062

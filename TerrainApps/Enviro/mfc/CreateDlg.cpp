@@ -39,7 +39,6 @@ CCreateDlg::CCreateDlg(CWnd* pParent /*=NULL*/)
 	m_b16bit = TRUE;
 	m_bRoads = FALSE;
 	m_strRoadFile = _T("");
-	m_fWidthExag = 0.0f;
 	m_bTexRoads = TRUE;
 	m_bTrees = FALSE;
 	m_strTreeFile = _T("");
@@ -125,13 +124,11 @@ void CCreateDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_16BIT, m_b16bit);
 	DDX_Check(pDX, IDC_ROADS, m_bRoads);
 	DDX_CBString(pDX, IDC_ROADFILE, m_strRoadFile);
-	DDX_Text(pDX, IDC_WIDTHEXAG, m_fWidthExag);
-	DDV_MinMaxFloat(pDX, m_fWidthExag, 0.5f, 10.f);
 	DDX_Check(pDX, IDC_TEXROADS, m_bTexRoads);
 	DDX_Check(pDX, IDC_TREES, m_bTrees);
 	DDX_CBString(pDX, IDC_TREEFILE, m_strTreeFile);
 	DDX_Text(pDX, IDC_VEGDISTANCE, m_iVegDistance);
-	DDV_MinMaxUInt(pDX, m_iVegDistance, 1, 500);
+	DDV_MinMaxUInt(pDX, m_iVegDistance, 10, 100000);
 	DDX_Text(pDX, IDC_FOGDISTANCE, m_iFogDistance);
 	DDX_Check(pDX, IDC_OVERLAY, m_bOverlay);
 	DDX_Check(pDX, IDC_OCEANPLANE, m_bOceanPlane);
@@ -238,7 +235,7 @@ BOOL CCreateDlg::OnInitDialog()
 		m_cbTreeFile.SelectString(-1, m_strTreeFile);
 	}
 
-	m_cbLodMethod.AddString("Lindstrom-Koller");
+	m_cbLodMethod.AddString("Roettger");
 	m_cbLodMethod.AddString("TopoVista");
 	m_cbLodMethod.AddString("McNally");
 	m_cbLodMethod.SetCurSel(m_iLodMethod);
@@ -298,7 +295,10 @@ void CCreateDlg::SetParams(TParams &Params)
 	m_bFog = Params.m_bFog;
 	m_iFogDistance = Params.m_iFogDistance;
 
-	m_strBuildingFile = Params.m_strBuildingFile;
+	if (Params.m_strStructFiles.GetSize() > 0)
+		m_strBuildingFile = (const char *) Params.m_strStructFiles[0];
+	else
+		m_strBuildingFile = "";
 
 	m_bVehicles = Params.m_bVehicles;
 	m_fVehicleSize = Params.m_fVehicleSize;
@@ -359,7 +359,8 @@ void CCreateDlg::GetParams(TParams &Params)
 	Params.m_bFog = m_bFog;
 	Params.m_iFogDistance = m_iFogDistance;
 
-	Params.m_strBuildingFile = m_strBuildingFile;
+	Params.m_strStructFiles.Empty();
+	Params.m_strStructFiles.Append(new vtString((const char *) m_strBuildingFile));
 
 	Params.m_bVehicles = m_bVehicles;
 	Params.m_fVehicleSize = m_fVehicleSize;

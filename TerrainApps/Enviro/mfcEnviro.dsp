@@ -168,8 +168,7 @@ SOURCE=.\PTerrain.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\TransitTerrain.cpp
-# ADD CPP /YX"vtlib/vtlib.h"
+SOURCE=.\SpecificTerrain.cpp
 # End Source File
 # Begin Source File
 
@@ -340,6 +339,10 @@ SOURCE=.\Options.h
 # Begin Source File
 
 SOURCE=.\PTerrain.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SpecificTerrain.h
 # End Source File
 # Begin Source File
 

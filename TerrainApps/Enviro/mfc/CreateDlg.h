@@ -51,11 +51,10 @@ public:
 	BOOL	m_b16bit;
 	BOOL	m_bRoads;
 	CString	m_strRoadFile;
-	float	m_fWidthExag;
 	BOOL	m_bTexRoads;
 	BOOL	m_bTrees;
 	CString	m_strTreeFile;
-	UINT	m_iTreeDistance;
+	UINT	m_iVegDistance;
 	int		m_iFogDistance;
 	BOOL	m_bOverlay;
 	BOOL	m_bOceanPlane;

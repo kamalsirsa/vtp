@@ -25,13 +25,10 @@ void CStartupDlg::GetOptionsFrom(EnviroOptions &opt)
 	m_strImage = opt.m_strImage;
 	m_strTName = opt.m_strInitTerrain;
 	m_bFullscreen = opt.m_bFullscreen;
-	m_bGravity = opt.m_bGravity;
 	m_bHtmlpane = opt.m_bHtmlpane;
 	m_bFloatingToolbar = opt.m_bFloatingToolbar;
 	m_bSound = opt.m_bSound;
-	m_bVCursor = opt.m_bVCursor;
 	m_bSpeedTest = opt.m_bSpeedTest;
-	m_bQuakeNavigation = opt.m_bQuakeNavigation;
 	m_fPlantSize = opt.m_fPlantScale;
 	m_bShadows = opt.m_bShadows;
 }
@@ -42,13 +39,10 @@ void CStartupDlg::PutOptionsTo(EnviroOptions &opt)
 	opt.m_strImage = m_strImage;
 	opt.m_strInitTerrain = m_strTName;
 	opt.m_bFullscreen = m_bFullscreen;
-	opt.m_bGravity = m_bGravity;
 	opt.m_bHtmlpane = m_bHtmlpane;
 	opt.m_bFloatingToolbar = m_bFloatingToolbar;
 	opt.m_bSound = m_bSound;
-	opt.m_bVCursor = m_bVCursor;
 	opt.m_bSpeedTest = m_bSpeedTest;
-	opt.m_bQuakeNavigation = m_bQuakeNavigation;
 	opt.m_fPlantScale = m_fPlantSize;
 	opt.m_bShadows = m_bShadows;
 }
@@ -62,13 +56,10 @@ CStartupDlg::CStartupDlg(CWnd* pParent /*=NULL*/)
 {
 	//{{AFX_DATA_INIT(CStartupDlg)
 	m_bFullscreen = FALSE;
-	m_bGravity = FALSE;
 	m_bHtmlpane = FALSE;
 	m_bFloatingToolbar = FALSE;
 	m_bSound = FALSE;
-	m_bVCursor = FALSE;
 	m_bSpeedTest = FALSE;
-	m_bQuakeNavigation = FALSE;
 	m_iLaunch = -1;
 	m_strTName = _T("");
 	m_strImage = _T("");
@@ -87,11 +78,9 @@ void CStartupDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_TSELECT, m_cbTSelect);
 	DDX_Control(pDX, IDC_TNAME, m_editTName);
 	DDX_Check(pDX, IDC_FULLSCREEN, m_bFullscreen);
-	DDX_Check(pDX, IDC_GRAVITY, m_bGravity);
 	DDX_Check(pDX, IDC_HTMLPANE, m_bHtmlpane);
 	DDX_Check(pDX, IDC_TOOLBAR, m_bFloatingToolbar);
 	DDX_Check(pDX, IDC_SOUND, m_bSound);
-	DDX_Check(pDX, IDC_VCURSOR, m_bVCursor);
 	DDX_Radio(pDX, IDC_LAUNCH1, m_iLaunch);
 	DDX_Text(pDX, IDC_TNAME, m_strTName);
 	DDX_Text(pDX, IDC_IMAGE, m_strImage);
