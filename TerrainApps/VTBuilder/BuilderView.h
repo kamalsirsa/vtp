@@ -123,7 +123,6 @@ public:
     void OnKeyDown(wxKeyEvent& event);
 
 	// More public methods
-	void AreaStretch();
 	void DeselectAll();
 	void DeleteSelected(vtRoadLayer *pRL);
 	void SetActiveLayer(vtLayer *lp);
@@ -131,6 +130,7 @@ public:
 	void MatchZoomToImage(vtImageLayer *pEL);
 	void SetShowMap(bool bShow);
 	bool GetShowMap() { return m_bShowMap; }
+	void InvertAreaTool(const DRECT &rect);
 
 	bool	m_bCrossSelect;
 	bool	m_bShowUTMBounds;
@@ -188,7 +188,7 @@ protected:
 
 	void InvertRect(wxDC *pDC, const wxRect &r, bool bDashed = false);
 	void InvertRect(wxDC *pDC, const wxPoint &one, const wxPoint &two, bool bDashed = false);
-	void DrawArea(wxDC *pDC);
+	void DrawAreaTool(wxDC *pDC, const DRECT &area);
 
 	wxSize m_previous_size;
 	DRECT m_world_rect;		// rectangle box drawn by mouse

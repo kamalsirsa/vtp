@@ -150,7 +150,7 @@ void BuilderView::OnDraw(wxDC& dc)  // overridden to draw this view
 	if (m_bShowUTMBounds)
 		DrawUTMBounds(&dc);
 
-	DrawArea(&dc);
+	DrawAreaTool(&dc, pFrame->m_area);
 }
 
 void BuilderView::DrawDymaxionOutline(wxDC *pDC)
@@ -535,6 +535,8 @@ void BuilderView::BeginBox()
 
 void BuilderView::EndBox(const wxMouseEvent& event)
 {
+	MainFrame *frame = GetMainFrame();
+
 	m_bBoxing = false;
 
 	if (!m_bMouseMoved)
@@ -556,9 +558,9 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 				ZoomToRect(m_world_rect, 0.0f);
 			break;
 		case LB_Box:
-			DrawArea(&dc);
-			GetMainFrame()->m_area = m_world_rect;
-			DrawArea(&dc);
+			DrawAreaTool(&dc, frame->m_area);
+			frame->m_area = m_world_rect;
+			DrawAreaTool(&dc, frame->m_area);
 			break;
 		case LB_Node:
 		case LB_Link:
@@ -650,14 +652,17 @@ void BuilderView::DoBox(wxPoint point)
 	InvertRect(&dc, m_ui.m_DownPoint, point);
 }
 
-void BuilderView::DrawArea(wxDC *pDC)
+void BuilderView::DrawAreaTool(wxDC *pDC, const DRECT &area)
 {
-	DRECT area = GetMainFrame()->m_area;
 	if (!area.IsEmpty())
 	{
 		int d = 3;
 		wxRect r = WorldToCanvas(area);
+
+		// dashed-line rectangle
 		InvertRect(pDC, r, true);
+
+		// four small rectangles, for the handles at each corner
 		InvertRect(pDC, wxPoint(r.x-d, r.y-d), wxPoint(r.x+d, r.y+d));
 		InvertRect(pDC, wxPoint(r.x+r.width-d, r.y-d), wxPoint(r.x+r.width+d, r.y+d));
 		InvertRect(pDC, wxPoint(r.x-d, r.y+r.height-d), wxPoint(r.x+d, r.y+r.height+d));
@@ -831,25 +836,26 @@ void BuilderView::DoArea(wxPoint point)	// in canvas coordinates
 {
 	wxClientDC dc(this);
 	PrepareDC(dc);
-	DrawArea(&dc);
+
+	MainFrame *frame = GetMainFrame();
+
+	DrawAreaTool(&dc, frame->m_area);
 	if (m_iDragSide & 1)
-		GetMainFrame()->m_area.left = ox(point.x);
+		frame->m_area.left = ox(point.x);
 	if (m_iDragSide & 2)
-		GetMainFrame()->m_area.right = ox(point.x);
+		frame->m_area.right = ox(point.x);
 	if (m_iDragSide & 4)
-		GetMainFrame()->m_area.top = oy(point.y);
+		frame->m_area.top = oy(point.y);
 	if (m_iDragSide & 8)
-		GetMainFrame()->m_area.bottom = oy(point.y);
-	DrawArea(&dc);
+		frame->m_area.bottom = oy(point.y);
+	DrawAreaTool(&dc, frame->m_area);
 }
 
-void BuilderView::AreaStretch()
+void BuilderView::InvertAreaTool(const DRECT &rect)
 {
 	wxClientDC dc(this);
 	PrepareDC(dc);
-	DrawArea(&dc);
-	GetMainFrame()->StretchArea();
-	DrawArea(&dc);
+	DrawAreaTool(&dc, rect);
 }
 
 void BuilderView::DeselectAll()
