@@ -106,6 +106,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	const wxSize& size, long style) :
 	wxFrame(parent, WID_FRAME, title, pos, size, style)
 {
+	VTLOG(" constructing Frame\n");
 	// Give it an icon
 	{
 		wxString name = _T("cmanager");
@@ -113,6 +114,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		SetIcon(icon);
 	}
 
+	VTLOG(" reading INI file\n");
 	ReadINI();
 
 	m_pCurrentModel = NULL;
@@ -130,6 +132,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	// frame icon
 	SetIcon(wxICON(cmanager));
 
+	VTLOG(" creating component windows\n");
 	// splitter
 	m_splitter = new wxSplitterWindow(this, WID_SPLITTER, wxDefaultPosition,
 		wxDefaultSize, wxSP_3D /*| wxSP_LIVE_UPDATE*/);
@@ -148,9 +151,11 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 		WX_GL_BUFFER_SIZE, 24, WX_GL_DEPTH_SIZE, 24, 0	};
 
 	// Make a vtGLCanvas
+	VTLOG(" creating canvas\n");
 	m_canvas = new vtGLCanvas(m_splitter, WID_MAINVIEW, wxPoint(0, 0), wxSize(-1, -1),
 		0, _T("vtGLCanvas"), gl_attrib);
 
+	VTLOG(" creating scenegraphdialog\n");
 	m_pSceneGraphDlg = new SceneGraphDlg(this, WID_SCENEGRAPH, _T("Scene Graph"),
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 	m_pSceneGraphDlg->SetSize(250, 350);
@@ -242,6 +247,14 @@ void vtFrame::ReadINI()
 			vtString string = get_line_from_stream(input);
 			m_DataPaths.push_back(vtString(string));
 		}
+	}
+	VTLOG("Datapaths:\n");
+	int i, n = m_DataPaths.size();
+	if (n == 0)
+		VTLOG("   none.\n");
+	for (i = 0; i < n; i++)
+	{
+		VTLOG("   %s\n", (const char *) m_DataPaths[i]);
 	}
 }
 
@@ -392,13 +405,18 @@ void vtFrame::LoadContentsFile(const wxString2 &fname)
 
 void vtFrame::FreeContents()
 {
+	VTLOG("FreeContents\n");
 	for (int i = 0; i < m_Man.NumItems(); i++)
 	{
 		vtItem *item = m_Man.GetItem(i);
 		ItemGroup *ig = m_itemmap[item];
 		delete ig;
 	}
+	m_itemmap.clear();
+	m_nodemap.clear();
 	m_Man.Empty();
+	m_pCurrentItem = NULL;
+	m_pCurrentModel = NULL;
 }
 
 void vtFrame::SaveContentsFile(const wxString2 &fname)
@@ -596,6 +614,7 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
 
 void vtFrame::AddNewItem()
 {
+	VTLOG("Creating new Item\n");
 	vtItem *pItem = new vtItem();
 	pItem->m_name = "untitled";
 	m_Man.AddItem(pItem);
@@ -604,6 +623,7 @@ void vtFrame::AddNewItem()
 
 vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 {
+	VTLOG("AddModel %s\n", fname_in.mb_str());
 #if 0
 	const char *fname = StartOfFilename(fname_in.mb_str());
 
@@ -658,6 +678,7 @@ vtModel *vtFrame::AddModel(const wxString2 &fname_in)
 
 vtTransform *vtFrame::AttemptLoad(vtModel *model)
 {
+	VTLOG("AttemptLoad '%s'\n", (const char *) model->m_filename);
 	model->m_attempted_load = true;
 
 	vtString fullpath = FindFileOnPaths(m_DataPaths, model->m_filename);
@@ -708,6 +729,8 @@ void vtFrame::SetCurrentItemAndModel(vtItem *item, vtModel *model)
 
 void vtFrame::SetCurrentItem(vtItem *item)
 {
+	VTLOG("SetCurrentItem(%s)\n", item == NULL ? "none" : item->m_name);
+
 	if (item == m_pCurrentItem)
 		return;
 
@@ -768,6 +791,8 @@ void vtFrame::ShowItemGroupLOD(bool bTrue)
 
 void vtFrame::SetCurrentModel(vtModel *model)
 {
+	VTLOG("SetCurrentModel(%s)\n", model == NULL ? "none" : model->m_filename);
+
 	if (model == m_pCurrentModel)
 		return;
 
