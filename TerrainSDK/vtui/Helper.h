@@ -5,6 +5,8 @@
 // Free for all uses, see license.txt for details.
 //
 
+#include "vtdata/vtString.h"
+
 wxBitmap *MakeColorBitmap(int xsize, int ysize, wxColour color);
 int AddFilenamesToComboBox(wxComboBox *box, const char *directory,
 	const char *wildcard, int omit_chars = 0);
