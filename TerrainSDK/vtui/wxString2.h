@@ -11,6 +11,8 @@
 #include "vtdata/vtString.h"
 #include "wx/string.h"
 
+#define MAX_WXSTRING2_SIZE 2048
+
 /**
  * The purpose of this class is that wxString does not seem to always return
  * correct C strings when asked, with the mb_str() method.  In particular,
@@ -73,7 +75,6 @@ public:
 	const char *mb_str() const;
 
 private:
-#define MAX_WXSTRING2_SIZE 2048
 	static char s_buffer[MAX_WXSTRING2_SIZE];
 #endif
 };
