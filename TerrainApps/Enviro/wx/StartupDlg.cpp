@@ -230,9 +230,12 @@ void StartupDlg::RefreshTerrainChoices()
 	GetTname()->Clear();
 
 	vtApp &app = wxGetApp();
+	wxString2 ws;
+
 	for (unsigned int i = 0; i < app.terrain_files.size(); i++)
 	{
-		GetTname()->Append(wxString2(app.terrain_names[i]));
+		ws.from_utf8(app.terrain_names[i]);
+		GetTname()->Append(ws);
 	}
 }
 
