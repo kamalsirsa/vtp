@@ -12,7 +12,7 @@
 #include "vtlib/core/SkyDome.h"
 #include "vtlib/core/TimeEngines.h"
 
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 #include "../Engines.h"
 
 #include "EnviroFrame.h"

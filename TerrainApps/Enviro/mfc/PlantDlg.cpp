@@ -8,7 +8,7 @@
 #include "PlantDlg.h"
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Trees.h"
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -12,7 +12,7 @@
 
 #include "HtmlVw.h"
 #include "../Options.h"
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // EnviroFrame
@@ -308,15 +308,18 @@ void EnviroFrame::OnUpdateToolsSelect(CCmdUI* pCmdUI)
 
 /////////////////////////////////////////////////////
 
-void ShowPopupMenu(const IPoint2 &pos)
+void EnviroFrame::ShowPopupMenu(const IPoint2 &pos)
 {
 	// TODO
 }
 
-
-//
 // Called by Enviro when the GUI needs to be informed of a new terrain
-//
-void SetTerrainToGUI(vtTerrain *pTerrain)
+void EnviroFrame::SetTerrainToGUI(vtTerrain *pTerrain)
+{
+	// TODO
+}
+
+void EnviroFrame::EarthPosUpdated(const DPoint3 &pos)
 {
 }
+

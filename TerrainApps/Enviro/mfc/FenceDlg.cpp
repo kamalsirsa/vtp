@@ -5,7 +5,7 @@
 
 #include "vtlib/vtlib.h"
 
-#include "../Enviro.h"
+#include "EnviroGUI.h"
 
 #include "EnviroApp.h"
 #include "FenceDlg.h"

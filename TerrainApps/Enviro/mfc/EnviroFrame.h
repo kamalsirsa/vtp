@@ -28,6 +28,9 @@ protected:
 public:
 	void SetMode(MouseMode mode);
 	void UpdateStatusBar();
+	void ShowPopupMenu(const IPoint2 &pos);
+	void SetTerrainToGUI(class vtTerrain *pTerrain);
+	void EarthPosUpdated(const DPoint3 &pos);
 
 // Operations
 public:

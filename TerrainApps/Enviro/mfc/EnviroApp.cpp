@@ -11,7 +11,7 @@
 #include "CameraDlg.h"
 #include "EnviroView.h"
 #include "EnviroFrame.h"
-#include "../Enviro.h"	// for GetCurrentTerrain
+#include "EnviroGUI.h"	// for GetCurrentTerrain
 
 /////////////////////////////////////////////////////////////////////////////
 // EnviroApp
