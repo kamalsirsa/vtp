@@ -10,6 +10,7 @@
 #include "Projections.h"
 #include "StatePlane.h"
 #include "MathTypes.h"
+#include "vtString.h"	// for stricmp
 
 /////////////////////////////////////////////////////////////////////////////
 // Implementation of class vtProjection
