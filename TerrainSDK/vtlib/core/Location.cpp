@@ -8,6 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "Location.h"
 #include "xmlhelper/easyxml.hpp"
+#include "vtdata/vtLog.h"
 
 ///////////////////////////////
 
@@ -48,7 +49,7 @@ bool vtLocationSaver::Write(const char *fname)
 	{
 		vtLocation *loc = m_loc[i];
 		fprintf(fp, "  <location>\n");
-		fprintf(fp, "   <name>%s</name>\n", (pcchar) loc->m_name);
+		fprintf(fp, "   <name>%s</name>\n", (pcchar) EscapeStringForXML(loc->m_name));
 		fprintf(fp, "   <point1>%.12lf,%.12lf,%.2f</point1>\n",
 			loc->m_pos1.x, loc->m_pos1.y, loc->m_fElevation1);
 		fprintf(fp, "   <point2>%.12lf,%.12lf,%.2f</point2>\n",
@@ -136,6 +137,7 @@ bool vtLocationSaver::Read(const char *fname)
 	catch (xh_io_exception &exp)
 	{
 		// TODO: would be good to pass back the error message.
+		VTLOG("XML parsing error: %s\n", exp.getFormattedMessage());
 		return false;
 	}
 	return true;
