@@ -295,6 +295,15 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 //		VTLOG("\n");
 	}
 
+	// Because of the way the event pump works, if it takes too long to
+	//  handle a MouseMove event, then we might get the next MouseMove
+	//  event without ever seeing a Redraw or Idle.  That's because the
+	//  MouseMove events are considered higher priority in the queue.
+	// So, to keep Enviro response smooth, we effectively ignore all but
+	//  one MouseMove event per Draw event.
+	if (ev == wxEVT_MOTION && m_iConsecutiveMousemoves > 1)
+		return;
+
 	event.flags = 0;
 	wxCoord xpos, ypos;
 	event1.GetPosition(&xpos, &ypos);
@@ -311,15 +320,6 @@ void vtGLCanvas::OnMouseEvent(wxMouseEvent& event1)
 
 	// inform vtlib scene, which informs the engines
 	vtGetScene()->OnMouse(event);
-
-	// Because of the way the event pump works, if it takes too long to
-	//  handle a MouseMove event, then we might get the next MouseMove
-	//  event without ever seeing a Redraw or Idle.  That's because the
-	//  MouseMove events are considered higher priority in the queue.
-	// So, to keep Enviro response smooth, we effectively ignore all but
-	//  one MouseMove event per Draw event.
-	if (m_iConsecutiveMousemoves > 1)
-		return;
 
 	// inform Enviro app
 	g_App.OnMouse(event);
