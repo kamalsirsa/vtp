@@ -224,11 +224,6 @@ bool CreateScene()
 	vtScene *pScene = vtGetScene();
 	pScene->Init();
 
-	// Set the global data path
-	vtStringArray paths;
-	paths.push_back(vtString("Data/"));
-	vtTerrain::SetDataPath(paths);
-
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetHither(10);
@@ -238,6 +233,11 @@ bool CreateScene()
 	// that are created.
 	ts = new vtTerrainScene();
 	vtGroup *pTopGroup = ts->BeginTerrainScene();
+
+	// Set the global data path
+	vtStringArray paths;
+	paths.push_back(vtString("Data/"));
+	ts->SetDataPath(paths);
 
 	// Tell the scene graph to point to this terrain scene
 	pScene->SetRoot(pTopGroup);
