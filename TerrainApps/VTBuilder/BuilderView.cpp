@@ -607,10 +607,7 @@ void BuilderView::EndBox(const wxMouseEvent& event)
 			for (int i = 0; i < pSL->GetSize(); i++)
 			{
 				vtStructure *str = pSL->GetAt(i);
-				vtBuilding *bld = str->GetBuilding();
-				if (!bld)
-					continue;
-				bool bSelect = world_rect.ContainsPoint(bld->GetLocation());
+				bool bSelect = str->IsContainedBy(world_rect);
 				str->Select(bSelect);
 				if (bSelect) selected++;
 			}
