@@ -696,6 +696,7 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 		return;
 	}
 	int num_structs = m_Structures.GetSize();
+	int suceeded = 0;
 
 	m_Structures.SetHeightField(m_pHeightField);
 	for (int i = 0; i < num_structs; i++)
@@ -708,18 +709,21 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 		if (!bSuccess)
 			continue;
 
+		bSuccess = false;
 		vtTransform *pTrans = str3d->GetTransform();
 		if (pTrans)
-		{
-			AddNodeToLodGrid(pTrans);
-		}
+			bSuccess = AddNodeToLodGrid(pTrans);
 		else
 		{
 			vtGeom *pGeom = str3d->GetGeom();
 			if (pGeom)
-				AddNodeToLodGrid(pGeom);
+				bSuccess = AddNodeToLodGrid(pGeom);
 		}
+		if (bSuccess)
+			suceeded++;
 	}
+	VTLOG("\tSuccessfully created and added %d of %d structures.\n",
+		suceeded, num_structs);
 }
 
 void vtTerrain::DeleteSelectedStructures()
@@ -1651,10 +1655,12 @@ void vtTerrain::AddNode(vtNode *pNode)
  *
  * \sa AddNode
  */
-void vtTerrain::AddNodeToLodGrid(vtTransform *pTrans)
+bool vtTerrain::AddNodeToLodGrid(vtTransform *pTrans)
 {
 	if (m_pLodGrid)
-		m_pLodGrid->AppendToGrid(pTrans);
+		return m_pLodGrid->AppendToGrid(pTrans);
+	else
+		return false;
 }
 
 /**
@@ -1667,10 +1673,12 @@ void vtTerrain::AddNodeToLodGrid(vtTransform *pTrans)
  *
  * \sa AddNode
  */
-void vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
+bool vtTerrain::AddNodeToLodGrid(vtGeom *pGeom)
 {
 	if (m_pLodGrid)
-		m_pLodGrid->AppendToGrid(pGeom);
+		return m_pLodGrid->AppendToGrid(pGeom);
+	else
+		return false;
 }
 
 
