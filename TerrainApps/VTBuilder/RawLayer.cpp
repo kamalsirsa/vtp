@@ -39,6 +39,8 @@ vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 
 vtRawLayer::~vtRawLayer()
 {
+	delete m_pSet;
+	m_pSet = NULL;
 }
 
 void vtRawLayer::SetGeomType(OGRwkbGeometryType type)
@@ -193,7 +195,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 				pDC->SetPen(NoPen);
 			else
 			{
-				if (m_pSet->IsSelected(i)) {
+				if (pSetPoly->IsSelected(i)) {
 					if (pen == 0) { pDC->SetPen(SelPen); pen = 1; }
 				}
 				else {
@@ -205,7 +207,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 			if (bFill)
 			{
-				if (m_pSet->IsSelected(i))
+				if (pSetPoly->IsSelected(i))
 					pDC->SetPen(SelPen);
 				else
 					pDC->SetPen(DefPen);
@@ -215,7 +217,7 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	}
 }
 
-bool vtRawLayer::ConvertProjection(vtProjection &proj)
+bool vtRawLayer::TransformCoords(vtProjection &proj)
 {
 	// Create conversion object
 	OCT *trans = CreateCoordTransform(&(m_pSet->GetAtProjection()), &proj);
