@@ -5,7 +5,7 @@
 // Free for all uses, see license.txt for details.
 //
 
-#ifdef __GNUG__
+#ifdef __GNUG__ && !defined(__APPLE__)
 	#pragma implementation "VegFieldsDlg.cpp"
 #endif
 
