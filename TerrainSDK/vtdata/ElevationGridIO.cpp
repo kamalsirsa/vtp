@@ -68,9 +68,7 @@ typedef struct
 bool vtElevationGrid::LoadFromFile(const char *szFileName,
 								   void progress_callback(int))
 {
-	vtString FileName(szFileName);
-	vtString FileExt = FileName.Right(3);
-	vtString FileExtGZ = FileName.Right(6);
+	vtString FileExt = GetExtension(szFileName);
 
 	if (FileExt == "")
 		return false;
@@ -85,34 +83,37 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 
 	bool Success = false;
 
-	if ((!FileExt.CompareNoCase(".bt")) || (!FileExtGZ.CompareNoCase(".bt.gz")))
+	if ((!FileExt.CompareNoCase(".bt")) || (!FileExt.CompareNoCase(".bt.gz")))
 	{
 		Success = LoadFromBT(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("dem"))
+	else if (!FileExt.CompareNoCase(".dem"))
 	{
 		if (FirstChar == '*')
 			Success = LoadFromMicroDEM(szFileName, progress_callback);
 		else
 			Success = LoadFromDEM(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("asc"))
+	else if (!FileExt.CompareNoCase(".asc"))
+	{
+		// GDAL's ASC reader has trouble on some machines
+//		Success = LoadWithGDAL(szFileName, progress_callback);
+
+		Success = LoadFromASC(szFileName, progress_callback);
+	}
+	else if (!FileExt.CompareNoCase(".bil"))
 	{
 		Success = LoadWithGDAL(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("bil"))
-	{
-		Success = LoadWithGDAL(szFileName, progress_callback);
-	}
-	else if (!FileExt.CompareNoCase("ter"))
+	else if (!FileExt.CompareNoCase(".ter"))
 	{
 		Success = LoadFromTerragen(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("cdf"))
+	else if (!FileExt.CompareNoCase(".cdf"))
 	{
 		Success = LoadFromCDF(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("hdr"))
+	else if (!FileExt.CompareNoCase(".hdr"))
 	{
 		Success = LoadFromGTOPO30(szFileName, progress_callback);
 		if (!Success)
@@ -121,18 +122,18 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			Success = LoadFromGLOBE(szFileName, progress_callback);
 		}
 	}
-	else if (!FileExt.CompareNoCase("dte") ||
-			 !FileExt.CompareNoCase("dt0") ||
-			 !FileExt.CompareNoCase("dt1") ||
-			 !FileExt.CompareNoCase("dt2"))
+	else if (!FileExt.CompareNoCase(".dte") ||
+			 !FileExt.CompareNoCase(".dt0") ||
+			 !FileExt.CompareNoCase(".dt1") ||
+			 !FileExt.CompareNoCase(".dt2"))
 	{
 		Success = LoadFromDTED(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("pgm"))
+	else if (!FileExt.CompareNoCase(".pgm"))
 	{
 		Success = LoadFromPGM(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("grd"))
+	else if (!FileExt.CompareNoCase(".grd"))
 	{
 		// might by CDF, might be GRD
 		if (FirstChar == 'D')
@@ -146,14 +147,15 @@ bool vtElevationGrid::LoadFromFile(const char *szFileName,
 			Success = LoadWithGDAL(szFileName, progress_callback);
 		}
 	}
-	else if (!FileName.Right(8).CompareNoCase("catd.ddf") ||
-			 !FileExt.CompareNoCase("tif") ||
-			 !FileExt.CompareNoCase("png") ||
-			 !FileExt.CompareNoCase("adf"))
+	else if (!FileExt.CompareNoCase(".catd.ddf") ||
+			 !FileExt.CompareNoCase(".tif") ||
+			 !FileExt.CompareNoCase(".tiff") ||
+			 !FileExt.CompareNoCase(".png") ||
+			 !FileExt.CompareNoCase(".adf"))
 	{
 		Success = LoadWithGDAL(szFileName, progress_callback);
 	}
-	else if (!FileExt.CompareNoCase("hgt"))
+	else if (!FileExt.CompareNoCase(".hgt"))
 	{
 		Success = LoadFromHGT(szFileName, progress_callback);
 	}
