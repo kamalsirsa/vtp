@@ -15,6 +15,8 @@
 #include "EnviroEnum.h"
 #include "PlantingOptions.h"
 
+#define INITIAL_SPACE_DIST	3.1f
+
 // Use forward declarations to minimize rebuild dependencies
 class vtTerrainScene;
 class vtTerrain;
@@ -59,6 +61,7 @@ public:
 	void LoadTerrainDescriptions();
 	void StartControlEngine();
 	void DoControl();
+	void DoControlOrbit();
 	void SetTerrain(vtTerrain *pTerrain);
 	vtGroup *GetRoot() { return m_pRoot; }
 
@@ -108,7 +111,8 @@ public:
 	vtString GetMessage() { return m_strMessage; }
 	void SetMessage(const vtString &msg, float time = 0.0f);
 	void FormatCoordString(vtString &str, const DPoint3 &coord, LinearUnits units, bool seconds = false);
-	void DescribeCoordinates(vtString &str);
+	void DescribeCoordinatesEarth(vtString &str);
+	void DescribeCoordinatesTerrain(vtString &str);
 	void DescribeCLOD(vtString &str);
 
 	// location of 3d cursor on the ground, in earth coordinates
@@ -205,7 +209,8 @@ protected:
 	void SetupScene2();
 	virtual void SetupScene3() {}
 	void SetupCommonCulture();
-	void DoPickers();
+	void DoCursorOnEarth();
+	void DoCursorOnTerrain();
 	void MakeGlobe();
 	void SetupGlobe();
 	void LookUpTerrainLocations();
