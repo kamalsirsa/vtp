@@ -23,6 +23,8 @@ bool MyApp::OnInit()
 	MainFrame* frame = new MainFrame((wxFrame *) NULL, "VTBuilder",
 							   wxPoint(50, 50), wxSize(700, 500));
 
+	frame->SetupUI();
+
 	// Show the frame
 	frame->Show(TRUE);
 
