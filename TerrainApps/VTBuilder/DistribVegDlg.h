@@ -1,7 +1,7 @@
 //
 // Name: DistribVegDlg.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -31,8 +31,28 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 
 	float m_fSampling, m_fScarcity;
+	int m_iChoiceSpecies;
+	int m_iChoiceBiotype;
+	int m_iChoiceBiotypeLayer;
+	int m_iChoiceDensityLayer;
+	float m_fFixedSize;
+	int m_iRandomFrom, m_iRandomTo;
 
 	// WDR: method declarations for DistribVegDlg
+	wxTextCtrl* GetTextFixedSize()  { return (wxTextCtrl*) FindWindow( ID_TEXT_FIXED_SIZE ); }
+	wxSpinCtrl* GetSpinRandomTo()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_RANDOM_TO ); }
+	wxSpinCtrl* GetSpinRandomFrom()  { return (wxSpinCtrl*) FindWindow( ID_SPIN_RANDOM_FROM ); }
+	wxChoice* GetChoiceDensityLayer()  { return (wxChoice*) FindWindow( ID_CHOICE_DENSITY_LAYER ); }
+	wxChoice* GetChoiceBiotypeLayer()  { return (wxChoice*) FindWindow( ID_CHOICE_BIOTYPE_LAYER ); }
+	wxChoice* GetChoiceBiotype()  { return (wxChoice*) FindWindow( ID_CHOICE_BIOTYPE ); }
+	wxChoice* GetChoiceSpecies()  { return (wxChoice*) FindWindow( ID_CHOICE_SPECIES ); }
+	wxRadioButton* GetSize2()  { return (wxRadioButton*) FindWindow( ID_SIZE2 ); }
+	wxRadioButton* GetSize1()  { return (wxRadioButton*) FindWindow( ID_SIZE1 ); }
+	wxRadioButton* GetDensity2()  { return (wxRadioButton*) FindWindow( ID_DENSITY2 ); }
+	wxRadioButton* GetDensity1()  { return (wxRadioButton*) FindWindow( ID_DENSITY1 ); }
+	wxRadioButton* GetSpecies3()  { return (wxRadioButton*) FindWindow( ID_SPECIES3 ); }
+	wxRadioButton* GetSpecies2()  { return (wxRadioButton*) FindWindow( ID_SPECIES2 ); }
+	wxRadioButton* GetSpecies1()  { return (wxRadioButton*) FindWindow( ID_SPECIES1 ); }
 
 private:
 	// WDR: member variable declarations for DistribVegDlg
@@ -45,5 +65,5 @@ private:
 	DECLARE_EVENT_TABLE()
 };
 
-#endif	// __DistribVegDlg_H__
+#endif  // __DistribVegDlg_H__
 
