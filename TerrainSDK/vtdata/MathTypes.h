@@ -106,6 +106,17 @@ public:
 	{
 		return FPoint3(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x);
 	}
+	/**
+	* Determine the unit cross product (normal vector) to the triangle
+	*  made up of the three given points.
+	*/
+	void UnitNormal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2)
+	{
+		FPoint3 edge0 = p1 - p0;
+		FPoint3 edge1 = p2 - p0;
+		*this = edge0.Cross(edge1);
+		this->Normalize();
+	}
 
 	// assignment
 	FPoint3 &operator=(const FPoint3 &v) { x = v.x; y = v.y; z = v.z; return *this; }
