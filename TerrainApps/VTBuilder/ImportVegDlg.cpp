@@ -66,8 +66,7 @@ void ImportVegDlg::OnInitDialog(wxInitDialogEvent& event)
 
 	// Get number of polys and type of data
 	int	 nElem, nShapeType;
-	double  adfMinBound[4], adfMaxBound[4];
-	SHPGetInfo(hSHP, &nElem, &nShapeType, adfMinBound, adfMaxBound);
+	SHPGetInfo(hSHP, &nElem, &nShapeType, NULL, NULL);
 
 	// Check Shape Type, Veg Layer should be Poly data
 	if (nShapeType != SHPT_POLYGON && nShapeType != SHPT_POINT)
@@ -121,11 +120,13 @@ void ImportVegDlg::OnOK( wxCommandEvent &event )
 	m_fieldindex = m_pcbField->GetSelection();
 
 	if (m_pDensity->GetValue())
-		m_datatype = 0;
+		m_datatype = VIFT_Density;
+
 	if (m_pBiotype1->GetValue())
-		m_datatype = 1;
+		m_datatype = VIFT_BiotypeName;
+
 	if (m_pBiotype2->GetValue())
-		m_datatype = 2;
+		m_datatype = VIFT_BiotypeID;
 
 	wxDialog::OnOK(event);
 }

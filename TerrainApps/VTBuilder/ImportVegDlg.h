@@ -14,6 +14,7 @@
 
 #include "VTBuilder_wdr.h"
 #include "vtui/wxString2.h"
+#include "VegLayer.h"
 
 // WDR: class declarations
 
@@ -34,7 +35,8 @@ public:
 	void SetShapefileName(const wxString &filename);
 
 	// Data
-	int m_fieldindex, m_datatype;
+	int m_fieldindex;
+	VegImportFieldType m_datatype;
 	wxComboBox *m_pcbField;
 	wxRadioButton *m_pDensity, *m_pBiotype1, *m_pBiotype2;
 	wxString2 m_filename;
