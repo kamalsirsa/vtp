@@ -1220,8 +1220,9 @@ bool vtElevationGrid::LoadFromBT(const char *szFileName, void progress_callback(
 }
 
 
-/** Writes the grid to a TerraGen Terrain file.
- * \param fp A pointer to a file open for writing.
+/**
+ * Writes the grid to a TerraGen Terrain file.
+ * \param szFileName The filename to write to.
  */
 bool vtElevationGrid::SaveToTerragen(const char *szFileName)
 {
