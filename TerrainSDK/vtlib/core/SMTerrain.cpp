@@ -8,6 +8,7 @@
 
 #include "vtlib/vtlib.h"
 #include "SMTerrain.h"
+#include "LocalGrid.h"
 #include "FP8.h"
 
 #ifdef _DEBUG

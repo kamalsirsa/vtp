@@ -11,6 +11,7 @@
 
 #include "vtlib/vtlib.h"
 #include "SRTerrain.h"
+#include "LocalGrid.h"
 
 #if ENABLE_SRTERRAIN
 using namespace mini;

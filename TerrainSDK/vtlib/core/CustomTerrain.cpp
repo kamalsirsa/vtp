@@ -7,6 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "CustomTerrain.h"
+#include "LocalGrid.h"
 
 //
 // Macro used to determine the index of a vertex (element of the height

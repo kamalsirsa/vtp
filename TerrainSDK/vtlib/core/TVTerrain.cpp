@@ -18,6 +18,7 @@
 #define DO_VIEW_CULLING		1
 
 #include "TVTerrain.h"
+#include "LocalGrid.h"
 
 // this is how to produce an offset into the vertex array
 #define offset(x, y)     (((y) << m_iLevels) + (y) + (x))
