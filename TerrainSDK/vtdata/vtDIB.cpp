@@ -321,6 +321,7 @@ bool vtDIB::ReadJPEG(const char *fname)
 		*/
 		JSAMPROW inptr = buffer[0];
 		byte *adr = ((byte *)m_Data) + (m_iHeight-cur_output_row-1)*m_iByteWidth;
+//		byte *adr = ((byte *)m_Data) + (cur_output_row)*m_iByteWidth;
 
 		if (bitdepth == 8)
 		{
