@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 gbm.lib vfw32.lib gdal_i.lib ipl.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmtd.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept /libpath:"\APIs\GBM"
+# ADD LINK32 vfw32.lib gdal_i.lib ipl.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmtd.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept /libpath:"\APIs\GBM"
 # SUBTRACT LINK32 /pdb:none /incremental:no
 
 !ENDIF 
@@ -118,11 +118,6 @@ SOURCE=.\Dib.cpp
 # Begin Source File
 
 SOURCE=.\FloodDialog.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GBMWrapper.cpp
-# SUBTRACT CPP /YX /Yc /Yu
 # End Source File
 # Begin Source File
 
@@ -176,10 +171,6 @@ SOURCE=.\Dib.h
 # Begin Source File
 
 SOURCE=.\FloodDialog.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\GBMWrapper.h
 # End Source File
 # Begin Source File
 
