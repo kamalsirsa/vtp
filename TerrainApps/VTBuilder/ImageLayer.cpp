@@ -476,7 +476,7 @@ bool vtImageLayer::LoadFromGDAL()
 			m_Extents.Empty();
 			wxString2 msg = "File lacks geographic location (extents).  "
 				"Would you like to specify extents?\n";
-			int res = wxMessageBox(msg, _T("Import Import"), wxYES | wxCANCEL);
+			int res = wxMessageBox(msg, _T("Image Import"), wxYES | wxCANCEL);
 			if (res == wxYES)
 			{
 				DRECT ext;
@@ -892,7 +892,7 @@ int TerrainNorthingS;
 int TerrainNorthingN;
 
 int TileScaleId;
-vtString TileDownloadDir = "./terraserver_tiles";	// cache for downloaded tiles
+#define TileDownloadDir "terraserver_tiles"	// cache for downloaded tiles
 int TileThemeId = 1;	// 1 = aerial imagery
 
 // generate the local filename of a single terraserver image tile
@@ -925,7 +925,8 @@ vtString TileURL(int easting, int northing)
 // generate the filename of a locally-cached image tile
 vtString TileFileName(int easting, int northing)
 {
-	vtString fname = TileDownloadDir;
+	vtString fname = "./";
+	fname += TileDownloadDir;
 	fname += "/";
 	fname += TileNameLocal(easting, northing);
 	return fname;
@@ -1022,8 +1023,28 @@ bool vtImageLayer::ReadFeaturesFromTerraserver(const DRECT &area, int iTheme,
 											   const char *filename)
 {
 #if SUPPORT_HTTP
-	// tsmosaic boulder.png 16 13 473000 479000 4425000 4434000
+
+	// The cache directory needs to exist; test if it's already there.
+	const char *testname = TileDownloadDir "/test.txt";
+	FILE *fp = fopen(testname, "wb");
+	if (fp)
+	{
+		// directory already exists
+		fclose(fp);
+		vtDeleteFile(testname);
+	}
+	else
+	{
+		bool success = vtCreateDir("terraserver_tiles");
+		if (!success)
+		{
+			wxMessageBox(_T("Couldn't create cache directory."));
+			return false;
+		}
+	}
+
 #if 0
+	// tsmosaic boulder.png 16 13 473000 479000 4425000 4434000
 	MetersPerPixel = 16;
 	TerrainZone = 13;
 	TerrainEastingW = 473000;
