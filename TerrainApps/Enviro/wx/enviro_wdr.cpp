@@ -664,6 +664,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5 );
 
     wxFlexGridSizer *item9 = new wxFlexGridSizer( 2, 0, 0 );
+    item9->AddGrowableCol( 1 );
 
     wxStaticText *item10 = new wxStaticText( parent, ID_TEXT, _("Tile size: "), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item10, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
@@ -675,7 +676,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item9->Add( item12, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxTextCtrl *item13 = new wxTextCtrl( parent, ID_TFILEBASE, wxT(""), wxDefaultPosition, wxSize(220,-1), 0 );
-    item9->Add( item13, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item9->Add( item13, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxStaticText *item14 = new wxStaticText( parent, ID_TEXT, _("File Format:"), wxDefaultPosition, wxDefaultSize, 0 );
     item9->Add( item14, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
@@ -687,7 +688,7 @@ wxSizer *TParams2Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item9->Add( item16, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     wxTextCtrl *item17 = new wxTextCtrl( parent, ID_TFILENAME, wxT(""), wxDefaultPosition, wxSize(220,-1), 0 );
-    item9->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    item9->Add( item17, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
     item1->Add( item9, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
 
@@ -1100,7 +1101,7 @@ wxSizer *TParams4Func( wxWindow *parent, bool call_fit, bool set_sizer )
     item43->Add( item44, 0, wxALIGN_CENTER|wxALL, 5 );
 
     wxString *strs45 = (wxString*) NULL;
-    wxChoice *item45 = new wxChoice( parent, ID_LABEL_FIELD, wxDefaultPosition, wxSize(140,-1), 0, strs45, 0 );
+    wxChoice *item45 = new wxChoice( parent, ID_LABEL_FIELD, wxDefaultPosition, wxSize(160,-1), 0, strs45, 0 );
     item43->Add( item45, 0, wxALIGN_CENTER|wxTOP, 5 );
 
     item38->Add( item43, 0, wxALIGN_CENTER_VERTICAL, 5 );
