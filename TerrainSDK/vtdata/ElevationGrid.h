@@ -111,7 +111,7 @@ public:
 
 	vtProjection &GetProjection() { return m_proj; }
 	const vtProjection &GetProjection() const { return m_proj; }
-	void SetProjection(const vtProjection &proj) { m_proj = proj; }
+	void SetProjection(const vtProjection &proj);
 
 	bool GetCorners(DLine2 &line, bool bGeo) const;
 	void SetCorners(const DLine2 &line);
@@ -149,7 +149,7 @@ protected:
 	void ComputeExtentsFromCorners();
 	void ComputeCornersFromExtents();
 
-	DPoint2		m_Corners[4];	// data corners, in the projection of this terrain
+	DPoint2		m_Corners[4];	// data corners, in the CRS of this terrain
 	vtProjection	m_proj;		// a grid always has some projection
 
 	void	_AllocateArray();

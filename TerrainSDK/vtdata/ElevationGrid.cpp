@@ -797,6 +797,19 @@ DRECT vtElevationGrid::GetAreaExtents() const
 		m_EarthExtents.bottom - (m_dYStep / 2.0f));
 }
 
+void vtElevationGrid::SetProjection(const vtProjection &proj)
+{
+	LinearUnits newunits = proj.GetUnits();
+	if (newunits != m_proj.GetUnits())
+	{
+		// change of units requires change in local coordinate system
+		// units change; all else remains same
+		vtHeightFieldGrid3d::Initialize(newunits, m_EarthExtents,
+			m_fMinHeight, m_fMaxHeight, m_iColumns, m_iRows);
+	}
+	m_proj = proj;
+}
+
 bool vtElevationGrid::GetCorners(DLine2 &line, bool bGeo) const
 {
 	int i;
