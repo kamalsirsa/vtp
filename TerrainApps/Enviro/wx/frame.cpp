@@ -24,6 +24,7 @@
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
+#include "vtlib/core/TerrainScene.h"
 #include "vtlib/core/NavEngines.h"
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/TerrainSurface.h"
@@ -34,13 +35,13 @@
 #include "SceneGraphDlg.h"
 #include "PlantDlg.h"
 #include "FenceDlg.h"
+#include "UtilDlg.h"
 #include "CameraDlg.h"
 #include "LocationDlg.h"
 #include "BuildingDlg.h"
 
 #include "../Engines.h"
-#include "../Enviro.h"
-#include "../TerrainSceneWP.h"	// for GetCurrentTerrain
+#include "../Enviro.h"	// for GetCurrentTerrain
 
 #include "app.h"
 #include "canvas.h"
@@ -196,6 +197,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 
 	m_pPlantDlg = new PlantDlg(this, -1, "Plants", wxDefaultPosition);
 	m_pFenceDlg = new FenceDlg(this, -1, "Fences", wxDefaultPosition);
+	m_pUtilDlg = new UtilDlg(this, -1, "Utility", wxDefaultPosition);
 	m_pCameraDlg = new CameraDlg(this, -1, "Camera-View", wxDefaultPosition);
 	m_pLocationDlg = new LocationDlg(this, -1, "Locations",
 		wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
@@ -210,6 +212,7 @@ vtFrame::~vtFrame()
 	delete m_pSceneGraphDlg;
 	delete m_pPlantDlg;
 	delete m_pFenceDlg;
+	delete m_pUtilDlg;
 	delete m_pCameraDlg;
 	delete m_pLocationDlg;
 }
@@ -336,6 +339,9 @@ void vtFrame::SetMode(MouseMode mode)
 
 	// Show/hide fence dialog
 	m_pFenceDlg->Show(mode == MM_FENCES);
+
+	// Show/hide fence dialog
+	m_pUtilDlg->Show(mode == MM_ROUTES);
 
 	g_App.SetMode(mode);
 }
@@ -562,21 +568,22 @@ void vtFrame::OnViewFollowRoute(wxCommandEvent& event)
 		if (!g_App.m_pRouteFollower)
 		{
 			g_App.SetFollowerCamera();
-			g_App.m_pRouteFollower = new RouteFollowerEngine(g_App.m_pCurRoute, g_App.m_pRouteFollowerCamera);
+			g_App.m_pRouteFollower = new RouteFollowerEngine(g_App.m_pCurRoute);
+			g_App.m_pRouteFollower->SetTarget(vtGetScene()->GetCamera());
 			vtGetScene()->AddEngine(g_App.m_pRouteFollower);
 	//		vtGetScene()->DoUpdate();
 			// did it work?
 			if (!g_App.m_pRouteFollower) return;
 		}
-		if (!g_App.m_pRouteFollower->m_bFollowerOn)
+		if (!g_App.m_pRouteFollower->GetEnabled())
 		{
 			// Control the follower camera.
 			g_App.m_pRouteFollower->Eval();
-			g_App.m_pRouteFollower->m_bFollowerOn = true;
+			g_App.m_pRouteFollower->SetEnabled(true);
 		}
 		else
 		{
-			g_App.m_pRouteFollower->m_bFollowerOn = false;
+			g_App.m_pRouteFollower->SetEnabled(false);
 			g_App.m_nav=NT_Normal;
 			SetMode(MM_NAVIGATE);
 		}
@@ -585,17 +592,8 @@ void vtFrame::OnViewFollowRoute(wxCommandEvent& event)
 
 void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
 {
-	if (g_App.m_pCurRoute)
-	{
-		if (g_App.m_pRouteFollower)
-		{
-			if (g_App.m_pRouteFollower->m_bFollowerOn)
-			{
-				g_App.m_pRouteFollower->Eval();
-			}
-		}
-	}
 	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_pRouteFollower && g_App.m_pRouteFollower->GetEnabled());
 }
 
 void vtFrame::OnViewLocations(wxCommandEvent& event)
@@ -638,16 +636,16 @@ void vtFrame::OnUpdateToolsFences(wxUpdateUIEvent& event)
 
 void vtFrame::OnToolsRoutes(wxCommandEvent& event)
 {
-//	SetMode(MM_ROUTES);
-//	g_App.EnableFlyerEngine(false);
-	if (g_App.m_pCurRoute)
-		g_App.SetFollowerCamera();
+	SetMode(MM_ROUTES);
+	g_App.EnableFlyerEngine(false);
+//	if (g_App.m_pCurRoute)
+//		g_App.SetFollowerCamera();
 }
 
 void vtFrame::OnUpdateToolsRoutes(wxUpdateUIEvent& event)
 {
-//	event.Enable(g_App.m_state == AS_Terrain);
-//	event.Check(g_App.m_mode == MM_ROUTES);
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_mode == MM_ROUTES);
 }
 
 void vtFrame::OnToolsTrees(wxCommandEvent& event)
@@ -731,7 +729,7 @@ void vtFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
 void vtFrame::OnSceneSave(wxCommandEvent& event)
 {
 #if VTLIB_OSG
-	vtRoot *pRoot = GetTerrainScene().m_pTop;
+	vtRoot *pRoot = GetTerrainScene()->m_pTop;
 	osgDB::Registry::instance()->writeNode(*pRoot->m_pOsgRoot, "scene.osg");
 #endif
 }
@@ -808,7 +806,7 @@ void vtFrame::OnCullOnce(wxCommandEvent& event)
 
 void vtFrame::OnSky(wxCommandEvent& event)
 {
-	vtSkyDome *sky = GetTerrainScene().m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	sky->SetEnabled(!on);
@@ -816,7 +814,7 @@ void vtFrame::OnSky(wxCommandEvent& event)
 
 void vtFrame::OnUpdateSky(wxUpdateUIEvent& event)
 {
-	vtSkyDome *sky = GetTerrainScene().m_pSkyDome;
+	vtSkyDome *sky = GetTerrainScene()->m_pSkyDome;
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	event.Check(on);
@@ -1032,7 +1030,6 @@ void vtFrame::OnPopupProperties(wxCommandEvent& event)
 		}
 		if (fen)
 		{
-//			m_pFenceDlg->Setup(bld);
 			m_pFenceDlg->Show(true);
 			return;
 		}
