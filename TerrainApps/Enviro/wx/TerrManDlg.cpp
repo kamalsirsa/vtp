@@ -64,7 +64,7 @@ void TerrainManagerDlg::RefreshTreeContents()
 {
 	m_pTree->DeleteAllItems();
 
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = m_DataPaths;
 	int i, num = paths.size();
 	wxString2 wstr, wstr2;
 
@@ -204,7 +204,7 @@ void TerrainManagerDlg::OnEditParams( wxCommandEvent &event )
 
 void TerrainManagerDlg::OnDelete( wxCommandEvent &event )
 {
-	vtStringArray &paths = g_Options.m_DataPaths;
+	vtStringArray &paths = m_DataPaths;
 	if (m_iSelect == 1)
 	{
 		// remove path
@@ -282,7 +282,7 @@ void TerrainManagerDlg::OnAddPath( wxCommandEvent &event )
 			str += _T("/");
 	}
 
-	g_Options.m_DataPaths.push_back(vtString(str.mb_str()));
+	m_DataPaths.push_back(vtString(str.mb_str()));
 	RefreshTreeContents();
 }
 

@@ -41,6 +41,8 @@ public:
 	wxString GetCurrentPath();
 	wxString GetCurrentTerrainPath();
 
+	vtStringArray m_DataPaths;
+
 private:
 	// WDR: member variable declarations for TerrainManagerDlg
 	wxTreeCtrl *m_pTree;

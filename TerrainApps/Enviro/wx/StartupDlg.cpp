@@ -298,8 +298,11 @@ void StartupDlg::OnTnameChoice( wxCommandEvent &event )
 void StartupDlg::OnTerrMan( wxCommandEvent &event )
 {
 	TerrainManagerDlg dlg(this, -1, _("Terrain Manager"), wxDefaultPosition);
+	dlg.m_DataPaths = m_opt.m_DataPaths;
 	if (dlg.ShowModal() == wxID_OK)
 	{
+		m_opt.m_DataPaths = dlg.m_DataPaths;
+		g_Options = m_opt;
 		g_Options.Write();
 		wxGetApp().RefreshTerrainList();
 		RefreshTerrainChoices();
