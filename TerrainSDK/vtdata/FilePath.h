@@ -57,6 +57,12 @@ private:
 	std::string m_current;
 	struct stat m_stat;
 	bool        m_stat_p;
+	struct stat &get_stat()
+	{
+		if (!m_stat_p)
+			stat(m_current.c_str(), &m_stat);
+		return m_stat;
+	}
 #endif
 };
 
@@ -68,4 +74,3 @@ bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
 
 #endif // FILEPATHH
-

@@ -78,7 +78,7 @@ bool dir_iter::is_directory()
 #if WIN32
 	return (m_data.attrib & _A_SUBDIR) != 0;
 #else
-	return S_ISDIR(it.rep->get_stat().st_mode);
+	return S_ISDIR(get_stat().st_mode);
 #endif
 }
 
@@ -87,7 +87,7 @@ bool dir_iter::is_hidden()
 #if WIN32
 	return (m_data.attrib & _A_SUBDIR) != 0;
 #else
-	return S_ISDIR(it.rep->get_stat().st_mode);
+	return S_ISDIR(get_stat().st_mode);
 #endif
 }
 
@@ -339,4 +339,3 @@ vtString get_line_from_stream(ifstream &input)
 	return vtString(buf);
 }
 */
-
