@@ -146,8 +146,12 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 	if (!pScene->HasWinInfo())
 	{
 		VTLOG("First OnPaint message.\n");
+#ifdef WIN32
 		HWND handle = (HWND) GetHandle();
 		pScene->SetWinInfo(handle, m_glContext);
+#else
+		pScene->SetWinInfo(NULL, NULL);
+#endif
 //		CreateScene();
 	}
 
