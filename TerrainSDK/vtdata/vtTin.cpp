@@ -378,7 +378,6 @@ void vtTin::MergeSharedVerts(bool progress_callback(int))
 	int bin;
 
 	DRECT rect = m_EarthExtents;
-	float minh = m_fMinHeight, maxh = m_fMaxHeight;
 	double width = rect.Width();
 
 	// make it slightly larger avoid edge condition
