@@ -359,8 +359,10 @@ vtDimension::vtDimension(const FPoint3 &p1, const FPoint3 &p2, float height,
 
 	m_pLabel->SetText(message);
 	m_pLabel->SetColor(color);
-	m_pLabel->SetAlignment(1);	// 1 = align to XZ axis
+	m_pLabel->SetAlignment(2);	// YZ plane
 	m_pLabel->SetPosition(FPoint3(0, 0, -diff.Length()/2));
+	FQuat rot(FPoint3(0,1,0), PID2f);
+	m_pLabel->SetRotation(rot);
 
 	// Now, orient it into the desired location
 	PointTowards(diff);
