@@ -78,6 +78,7 @@ BuilderView::BuilderView(wxWindow* parent, wxWindowID id, const wxPoint& pos,
 	// Import world map SHP file
 	WMPoly = NULL;
 	WMPolyDraw = NULL;
+	m_NoLines = NULL;
 	ImportWorldMap();
 }
 
