@@ -261,6 +261,7 @@ protected:
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateLabels();
 	void _CreateTextures(const FPoint3 &light_dir);
+	void _CreateDetailTexture();
 	bool _CreateDynamicTerrain();
 	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
 	void _SetErrorMessage(const vtString &msg);
@@ -313,6 +314,7 @@ protected:
 	vtLodGrid		*m_pStructGrid;
 
 	vtMaterialArray	*m_pTerrMats;	// materials for the LOD terrain
+	vtMaterialArray *m_pDetailMats;
 
 	// roads
 	vtGroup			*m_pRoadGroup;

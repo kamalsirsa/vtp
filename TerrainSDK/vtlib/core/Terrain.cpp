@@ -51,6 +51,7 @@ vtTerrain::vtTerrain()
 	m_bPreserveInputGrid = false;
 	m_pElevGrid = NULL;
 	m_pTextureColors = NULL;
+	m_pDetailMats = NULL;
 
 	m_pOceanGeom = NULL;
 	m_pRoadGroup = NULL;
@@ -154,6 +155,9 @@ vtTerrain::~vtTerrain()
 		delete m_pBBEngine;
 	}
 	delete m_pTextureColors;
+
+	if (m_pDetailMats)
+		m_pDetailMats->Release();
 }
 
 
@@ -405,6 +409,49 @@ void vtTerrain::_CreateTextures(const FPoint3 &light_dir)
 	for (i = 0; i < num; i++)
 		m_Images[i]->Release();
 	m_Images.Empty();
+}
+
+//
+// prepare detail texture
+//
+void vtTerrain::_CreateDetailTexture()
+{
+	vtString fname = m_Params.GetValueString(STR_DTEXTURE_NAME, true);
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
+	if (path == "")
+	{
+		vtString prefix = "GeoTypical/";
+		path = FindFileOnPaths(vtGetDataPath(), prefix+fname);
+		if (path == "")
+			return;
+	}
+	vtDIB dib;
+	if (!dib.Read(path))
+		return;
+
+	m_pDetailMats = new vtMaterialArray();
+	vtImage *pDetailTexture = new vtImage(&dib);
+
+	int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
+					 true,	// culling
+					 false,	// lighting
+					 true,	// transp: blend
+					 false,	// additive
+					 0.0f, 1.0f,	// ambient, diffuse
+					 0.5f, 0.0f,	// alpha, emmisive
+					 true, false,	// texgen, clamp
+					 true);			// mipmap
+	vtMaterial *pDetailMat = m_pDetailMats->GetAt(index);
+
+	// pass ownership to the material
+	pDetailTexture->Release();
+
+	float scale = m_Params.GetValueFloat(STR_DTEXTURE_SCALE);
+	float dist = m_Params.GetValueFloat(STR_DTEXTURE_DISTANCE);
+
+	FRECT r = m_pHeightField->m_WorldExtents;
+	float width_meters = r.Width();
+	m_pDynGeom->SetDetailMaterial(pDetailMat, width_meters / scale, dist);
 }
 
 //
@@ -1693,6 +1740,10 @@ bool vtTerrain::CreateStep4()
 		float time = ((float)tm2 - tm1)/CLOCKS_PER_SEC;
 		VTLOG("CLOD construction: %.3f seconds.\n", time);
 	}
+
+	if (m_Params.GetValueBool(STR_DETAILTEXTURE))
+		_CreateDetailTexture();
+
 	return true;
 }
 
