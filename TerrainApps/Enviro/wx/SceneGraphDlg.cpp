@@ -11,20 +11,21 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
-#include "wx/image.h"
 
 #ifndef WX_PRECOMP
 #include "wx/wx.h"
 #endif
 
 #include "wx/treectrl.h"
-#include <typeinfo>
-using namespace std;
+#include "wx/image.h"
 
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Engine.h"
 #include "vtui/wxString2.h"
 #include "SceneGraphDlg.h"
+
+#include <typeinfo>
+using namespace std;
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "icon1.xpm"
@@ -149,11 +150,12 @@ void SceneGraphDlg::RefreshTreeContents()
 
 	// Fill in the tree with engines
 	int num = scene->GetNumEngines();
+	vtTarget *target;
 	for (int i = 0; i < num; i++)
 	{
 		vtEngine *pEng = scene->GetEngine(i);
 		wxString2 str = pEng->GetName2();
-		vtNode *target = (vtNode *) pEng->GetTarget();
+		target = pEng->GetTarget();
 		if (target)
 		{
 			str += _T(" -> ");
@@ -248,6 +250,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 			if (pMesh)
 			{
 				int iNumPrim = pMesh->GetNumPrims();
+				int iNumVert = pMesh->GetNumVertices();
 
 				GLenum pt = pMesh->GetPrimType();
 				const char *mtype;
@@ -264,7 +267,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 				case GL_QUAD_STRIP: mtype = "QuadStrip"; break;
 				case GL_POLYGON: mtype = "Polygon"; break;
 				}
-				str.Printf(_T("Mesh %d, %hs, %d prims"), i, mtype, iNumPrim);
+				str.Printf(_T("Mesh %d, %hs, %d verts, %d prims"), i, mtype, iNumVert, iNumPrim);
 				hGeomItem = m_pTree->AppendItem(hNewItem, str, 6, 6);
 			}
 			else
