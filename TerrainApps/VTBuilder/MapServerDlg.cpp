@@ -17,6 +17,7 @@
 #endif
 
 #include "MapServerDlg.h"
+#include "Vtdata/WFSClient.h"
 
 // WDR: class implementations
 
@@ -49,7 +50,51 @@ MapServerDlg::MapServerDlg( wxWindow *parent, wxWindowID id, const wxString &tit
 
 void MapServerDlg::OnQueryLayers( wxCommandEvent &event )
 {
-	
+	WFSLayerArray layers;
+	wxString2 val = GetBaseUrl()->GetValue();
+	vtString url = val.mb_str();
+	bool success = GetLayersFromWMS(url, layers);
+	if (!success)
+		return;
+
+	GetLayers()->Clear();
+	int num = layers.size();
+	if (num == 0)
+		GetLayers()->Append(_("<none>"));
+	else
+	{
+		for (int i = 0; i < num; i++)
+		{
+			vtString str;
+			vtTagArray *tags = layers[i];
+#if 0
+			// this shows all data of all tags
+			for (int j = 0; j < tags->NumTags(); j++)
+			{
+				str += "\'";
+				str += tags->GetTag(j)->name;
+				str += "\' \'";
+				str += tags->GetTag(j)->value;
+				str += "\' ";
+			}
+			GetLayers()->Append(wxString2(str));
+#else
+			vtTag *tag = tags->FindTag("Name");
+			if (!tag)
+				continue;
+			str += tag->value;
+/*		  tag = tags->FindTag("Title");
+			if (tag && tag->value != str)
+			{
+				str += "(";
+				str += tag->value;
+				str += ")";
+			}*/
+			GetLayers()->Append(wxString2(str));
+#endif
+		}
+	}
+	GetLayers()->SetSelection(0);
 }
 
 void MapServerDlg::OnLayer( wxCommandEvent &event )
@@ -114,13 +159,15 @@ void MapServerDlg::OnBaseUrlText( wxCommandEvent &event )
 
 void MapServerDlg::UpdateURL()
 {
-	wxString2 val = GetBaseUrl()->GetValue();
+	wxString2 urlvalue = GetBaseUrl()->GetValue();
+	vtString url = urlvalue.mb_str(), str;
 
-	vtString url = val.mb_str(), str;
+	wxString2 layervalue = GetLayers()->GetString(GetLayers()->GetSelection());
 
 	url += "?WMTVER=1.0.0&REQUEST=map";
-	url += "&LAYERS=africa";
-	url += "&STYLES=&SRS=EPSG:4326";
+	url += "&LAYERS=";
+	url += layervalue.mb_str();
+	url += "&STYLES=&SRS=EPSG:4326";	// 4326 = WGS84
 
 	str.Format("&BBOX=%lf,%lf,%lf,%lf", m_area.left, m_area.bottom, m_area.right, m_area.top);
 	url += str;
