@@ -1,7 +1,7 @@
 //
 // Base.h
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,13 +10,19 @@
 
 #include "vtdata/vtString.h"
 
-#ifndef MAX
-#define MAX(a, b) (((a)>(b))?(a):(b))
-#endif
+class vtNode;
+class vtMaterial;
+class vtMaterialArray;
+class vtCamera;
+class vtGroup;
+class vtEngine;
+struct vtMouseEvent;
 
-#ifndef MIN
-#define MIN(a, b) (((a)>(b))?(b):(a))
-#endif
+/** \defgroup sg Scene Graph
+ * These classes are used for scene graph functionality: geometry, cameras,
+ * rendering, LOD, and simulation.
+ */
+/*@{*/
 
 /**
  * This class simply provides the ability to store whether an object is
@@ -34,21 +40,6 @@ public:
 protected:
 	bool m_bEnabled;
 };
-
-class vtNode;
-class vtMaterial;
-class vtMaterialArray;
-class vtCamera;
-class vtGroup;
-class vtEngine;
-class vtGeom;
-struct vtMouseEvent;
-
-/** \defgroup sg Scene Graph
- * These classes are used for scene graph functionality: geometry, cameras,
- * rendering, LOD, and simulation.
- */
-/*@{*/
 
 /** This class is a placeholder parent class for all objects which can
  * be the target of an Engine (vtEngine).  Given a vtTarget point, you
@@ -434,21 +425,6 @@ protected:
 	vtEngine	*m_pRootEngine;
 	bool		*m_piKeyState;
 };
-
-// helper functions
-vtGeom *Create3DCursor(float fSize, float fSmall, float fAlpha = 0.5f);
-vtGeom *CreateBoundSphereGeom(const FSphere &sphere, int res = 24);
-vtGeom *CreateSphereGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
-						 float fRadius, int res);
-vtGeom *CreateCylinderGeom(const vtMaterialArray *pMats, int iMatIdx, int iVertType,
-						   float hHeight, float fRadius, int res,
-						   bool bTop = true, bool bBottom = true,
-						   bool bCentered = true, int direction = 1);
-vtGeom *CreateLineGridGeom(const vtMaterialArray *pMats, int iMatIdx,
-					   const FPoint3 &min1, const FPoint3 &max1, int steps);
-vtGeom *CreatePlaneGeom(const vtMaterialArray *pMats, int iMatIdx,
-						const FPoint2 &base, const FPoint2 &size,
-						float fTiling, int steps);
 
 /*@}*/	// Group sg
 
