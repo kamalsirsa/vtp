@@ -155,6 +155,18 @@ wxSizer *FeatInfoDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_PATHNAMES 10092
 wxSizer *OptionsDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_LEVEL 10093
+#define ID_ADD_LEVEL 10094
+#define ID_DEL_LEVEL 10095
+#define ID_STORY_HEIGHT 10096
+#define ID_MATERIAL 10097
+#define ID_SET_MATERIAL 10098
+#define ID_COLOR 10099
+#define ID_SET_COLOR 10100
+#define ID_EDGE_SLOPES 10101
+#define ID_SET_EDGE_SLOPES 10102
+wxSizer *BuildingDialog2Func( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions
