@@ -248,9 +248,10 @@ bool vtElevLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtElevLayer::AppendDataFrom(vtLayer *pL)
+bool vtElevLayer::AppendDataFrom(vtLayer *pL)
 {
 	// unimplemented
+	return false;
 }
 
 DRECT vtElevLayer::GetExtents()

@@ -25,7 +25,7 @@ public:
 	bool OnSave();
 	bool OnLoad();
 	void GetProjection(vtProjection &proj);
-	void AppendDataFrom(vtLayer *pL);
+	bool AppendDataFrom(vtLayer *pL);
 	void Offset(const DPoint2 &p);
 
 	void AddElementsFromSHP(const char *filename, vtProjection &proj);

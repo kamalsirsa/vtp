@@ -241,9 +241,10 @@ bool vtRawLayer::OnLoad()
 	return true;
 }
 
-void vtRawLayer::AppendDataFrom(vtLayer *pL)
+bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 {
 	// unimplemented
+	return false;
 }
 
 void vtRawLayer::GetProjection(vtProjection &proj)

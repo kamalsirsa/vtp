@@ -157,11 +157,11 @@ void vtWaterLayer::AddElementsFromSHP(const char *filename, vtProjection &proj)
 }
 
 
-void vtWaterLayer::AppendDataFrom(vtLayer *pL)
+bool vtWaterLayer::AppendDataFrom(vtLayer *pL)
 {
 	// safety check
 	if (pL->GetType() != LT_WATER)
-		return;
+		return false;
 
 	vtWaterLayer *pFrom = (vtWaterLayer *)pL;
 
@@ -170,6 +170,7 @@ void vtWaterLayer::AppendDataFrom(vtLayer *pL)
 		m_Lines.Append(pFrom->m_Lines[i]);
 
 	pFrom->m_Lines.SetSize(0);
+	return true;
 }
 
 void vtWaterLayer::GetProjection(vtProjection &proj)

@@ -79,7 +79,7 @@ public:
 	virtual bool ConvertProjection(vtProjection &proj) = 0;
 	virtual bool OnSave() = 0;
 	virtual bool OnLoad() = 0;
-	virtual void AppendDataFrom(vtLayer *pL) = 0;
+	virtual bool AppendDataFrom(vtLayer *pL) = 0;
 	virtual void GetProjection(vtProjection &proj);
 	virtual void SetProjection(vtProjection &proj) {}
 	virtual void Offset(const DPoint2 &p);

@@ -35,7 +35,7 @@ public:
 
 	void DrawLayerBitmap(wxDC* pDC, vtScaledView *pView);
 	void DrawLayerOutline(wxDC* pDC, vtScaledView *pView);
-	void AppendDataFrom(vtLayer *pL);
+	bool AppendDataFrom(vtLayer *pL);
 	void ReRender() { m_bBitmapRendered = false; }
 	void ReImage();
 

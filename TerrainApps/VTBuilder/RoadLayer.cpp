@@ -87,11 +87,11 @@ void vtRoadLayer::GetProjection(vtProjection &proj)
 	proj = vtRoadMap::GetProjection();
 }
 
-void vtRoadLayer::AppendDataFrom(vtLayer *pL)
+bool vtRoadLayer::AppendDataFrom(vtLayer *pL)
 {
 	// safety check
 	if (pL->GetType() != LT_ROAD)
-		return;
+		return false;
 
 	vtRoadLayer *pFrom = (vtRoadLayer *)pL;
 
@@ -117,6 +117,8 @@ void vtRoadLayer::AppendDataFrom(vtLayer *pL)
 	pFrom->m_pFirstNode = NULL;
 
 	ComputeExtents();
+
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////

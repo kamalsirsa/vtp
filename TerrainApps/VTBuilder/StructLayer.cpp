@@ -212,11 +212,11 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 	return false;
 }
 
-void vtStructureLayer::AppendDataFrom(vtLayer *pL)
+bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
 {
 	// safety check
 	if (pL->GetType() != LT_STRUCTURE)
-		return;
+		return false;
 
 	vtStructureLayer *pFrom = (vtStructureLayer *)pL;
 
@@ -226,6 +226,7 @@ void vtStructureLayer::AppendDataFrom(vtLayer *pL)
 		vtStructure *str = pFrom->GetAt(i);
 		Append(str);
 	}
+	return true;
 }
 
 void vtStructureLayer::Offset(const DPoint2 &p)

@@ -173,7 +173,7 @@ bool vtTransitLayer::GetExtent(DRECT &rect)
 	return true;
 }
 
-void vtTransitLayer::AppendDataFrom(vtLayer *pL)
+bool vtTransitLayer::AppendDataFrom(vtLayer *pL)
 {
 	// safety check
 	if (pL->GetType() != LT_TRANSIT)
