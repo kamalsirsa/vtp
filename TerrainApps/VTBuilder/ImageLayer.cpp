@@ -33,7 +33,19 @@ vtImageLayer::~vtImageLayer()
 
 bool vtImageLayer::GetExtent(DRECT &rect)
 {
-	rect = m_Area;
+	rect = m_Extents;
+	return true;
+}
+
+bool vtImageLayer::GetAreaExtent(DRECT &rect)
+{
+	DPoint2 pixel_size(m_Extents.Width() / (m_pImage->GetWidth() - 1),
+		m_Extents.Height() / (m_pImage->GetHeight() - 1));
+
+	rect.left =   m_Extents.left - (pixel_size.x / 2.0f);
+	rect.top =    m_Extents.top + (pixel_size.y / 2.0f);
+	rect.right =  m_Extents.right + (pixel_size.x / 2.0f);
+	rect.bottom = m_Extents.bottom - (pixel_size.y / 2.0f);
 	return true;
 }
 
@@ -44,26 +56,39 @@ void vtImageLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	if (!m_pImage->Ok())
 		return;
 
-	wxRect screenrect = pView->WorldToCanvas(m_Area);
+	DRECT area;
+	GetAreaExtent(area);
+
+	wxRect screenrect = pView->WorldToCanvas(area);
 	wxRect destRect = screenrect;
 	wxRect srcRect(0, 0, m_pImage->GetWidth(), m_pImage->GetHeight());
 
-	double ratio_x = (float) srcRect.GetWidth() / destRect.GetWidth();
-	double ratio_y = (float) srcRect.GetHeight() / destRect.GetHeight();
+	wxPen yellow(wxColor(255,255,0), 1, wxSOLID);
+	pDC->SetLogicalFunction(wxCOPY);
+	pDC->SetPen(yellow);
+	pDC->DrawRectangle(screenrect.x, screenrect.y, screenrect.width, screenrect.height);
 
+#if WIN32
+	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
+
+	wxDC2 *pDC2 = (wxDC2 *) pDC;
+	pDC2->StretchBlit(*m_pBitmap, destRect.x, destRect.y,
+		destRect.width, destRect.height);
+#else
 	// scale and draw the bitmap
 	// must use SetUserScale since StretchBlt is not supported
+	double ratio_x = (double) srcRect.GetWidth() / destRect.GetWidth();
+	double ratio_y = (double) srcRect.GetHeight() / destRect.GetHeight();
+
 	double scale_x = 1.0/ratio_x;
 	double scale_y = 1.0/ratio_y;
 	pDC->SetUserScale(scale_x, scale_y);
-#if WIN32
-	::SetStretchBltMode((HDC) (pDC->GetHDC()), HALFTONE );
-#endif
 	pDC->DrawBitmap(*m_pBitmap, (int) (destRect.x/scale_x),
 		(int) (destRect.y/scale_y), false);
 
 	// restore
 	pDC->SetUserScale(1.0, 1.0);
+#endif
 }
 
 bool vtImageLayer::ConvertProjection(vtProjection &proj)
@@ -96,6 +121,8 @@ void vtImageLayer::SetProjection(const vtProjection &proj)
 	m_Proj = proj;
 }
 
+#include "vtdata/vtDIB.h"
+
 bool vtImageLayer::LoadFromGDAL()
 {
 	GDALDataset *pDataset = NULL;
@@ -126,7 +153,6 @@ bool vtImageLayer::LoadFromGDAL()
 	int x, y;
 	int iPixelHeight;
 	int iPixelWidth;
-	double TLGeoX, TLGeoY, BRGeoX, BRGeoY;
 
 	try
 	{
@@ -163,50 +189,22 @@ bool vtImageLayer::LoadFromGDAL()
 
 		if (SpatialReference.IsGeographic())
 		{
-			// More work needed...
-			// Try to convert to projected
-			OGRCoordinateTransformation *pCoordTransform;
-			OGRSpatialReference NewSpatialReference;
-			double Lat, Long;
-
-			NewSpatialReference.SetWellKnownGeogCS("WGS84");
-
-			// Get GEO coords of centre of image
-			Long = affineTransform[0] + affineTransform[1] * iPixelWidth / 2 + affineTransform[2] * iPixelHeight / 2;
-			Lat = affineTransform[3] + affineTransform[4] * iPixelWidth / 2 + affineTransform[5] * iPixelHeight / 2;
-
-			// Set UTM projection
-			NewSpatialReference.SetUTM((int)(Long + 180)/6 + 1, Lat > 0 ? 1 : 0);
-
-			// Convert top left and bottom right to UTM
-			if (NULL == (pCoordTransform = OGRCreateCoordinateTransformation(&SpatialReference, &NewSpatialReference)))
-				throw "Couldn't create coordinate conversion.";
-			// Calculate image size in metres
-			TLGeoX = affineTransform[0];
-			TLGeoY = affineTransform[3];
-			BRGeoX = affineTransform[0] + affineTransform[1] * iPixelWidth + affineTransform[2] * iPixelHeight;
-			BRGeoY = affineTransform[3] + affineTransform[4] * iPixelWidth + affineTransform[5] * iPixelHeight;
-			if (!pCoordTransform->Transform(1, &TLGeoX, &TLGeoY))
-				throw "Couldn't transform coordinates.";
-			if (!pCoordTransform->Transform(1, &BRGeoX, &BRGeoY))
-				throw "Couldn't transform coordinates.";
-			m_Area.top = TLGeoY;
-			m_Area.bottom = BRGeoY;
-			m_Area.left = TLGeoX;
-			m_Area.right = BRGeoX;
-			m_Proj.SetSpatialReference(&NewSpatialReference);
+			m_Extents.left = affineTransform[0];
+			m_Extents.right = m_Extents.left + affineTransform[1] * (iPixelWidth-1);
+			m_Extents.top = affineTransform[3];
+			m_Extents.bottom = m_Extents.top + affineTransform[5] * (iPixelHeight-1);
 		}
 		else
 		{
 			linearConversionFactor = SpatialReference.GetLinearUnits();
 
 			// Compute extent using the top left and bottom right image co-ordinates
-			m_Area.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * iPixelHeight) * linearConversionFactor;
-			m_Area.right = (affineTransform[0] + affineTransform[1] * iPixelWidth /*+ affineTransform[2] * 0*/) * linearConversionFactor;
-			m_Area.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * iPixelHeight) * linearConversionFactor;
-			m_Area.bottom = (affineTransform[3] + affineTransform[4] * iPixelWidth /*+ affineTransform[5] * 0*/) * linearConversionFactor;
-			m_Proj.SetSpatialReference(&SpatialReference);
+			m_Extents.left = (affineTransform[0] /*+ affineTransform[1] * 0*/ + affineTransform[2] * iPixelHeight) * linearConversionFactor;
+			m_Extents.right = (affineTransform[0] + affineTransform[1] * iPixelWidth /*+ affineTransform[2] * 0*/) * linearConversionFactor;
+			m_Extents.top = (affineTransform[3] /*+ affineTransform[4] * 0*/ + affineTransform[5] * iPixelHeight) * linearConversionFactor;
+			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * iPixelWidth /*+ affineTransform[5] * 0*/) * linearConversionFactor;
 		}
+		m_Proj.SetSpatialReference(&SpatialReference);
 
 		// Set up bitmap
 		if (NULL == (m_pImage = new wxImage(iPixelWidth, iPixelHeight)))
@@ -265,9 +263,6 @@ bool vtImageLayer::LoadFromGDAL()
 							x = (ixBlock * xBlockSize) + iX;
 							pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
 							m_pImage->SetRGB(x, y, Ent.c1, Ent.c2, Ent.c3);
-//							*(pData + (y * iPixelWidth) + x) = Ent.c1;
-//							*(pData + (y * iPixelWidth) + x + 1) = Ent.c2;
-//							*(pData + (y * iPixelWidth) + x + 2) = Ent.c3;
 						}
 					}
 				}
@@ -346,9 +341,6 @@ bool vtImageLayer::LoadFromGDAL()
 								pRedline[iY * xBlockSize + iX],
 								pGreenline[iY * xBlockSize + iX],
 								pBlueline[iY * xBlockSize + iX]);
-//							*(pData + (y * iPixelWidth) + x) = pRedline[iY * xBlockSize + iX];
-//							*(pData + (y * iPixelWidth) + x + 1) = pGreenline[iY * xBlockSize + iX];
-//							*(pData + (y * iPixelWidth) + x + 2) = pBlueline[iY * xBlockSize + iX];
 						}
 					}
 				}

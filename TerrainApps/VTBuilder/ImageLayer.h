@@ -21,6 +21,7 @@ public:
 
 	// overrides for vtLayer methods
 	bool GetExtent(DRECT &rect);
+	bool GetAreaExtent(DRECT &rect);
 	void DrawLayer(wxDC* pDC, class vtScaledView *pView);
 	bool ConvertProjection(vtProjection &proj);
 	bool OnSave();
@@ -34,7 +35,7 @@ private:
 	vtProjection	m_Proj;
 	wxImage		*m_pImage;
 	wxBitmap	*m_pBitmap;
-	DRECT   m_Area;
+	DRECT   m_Extents;
 };
 
 #endif
