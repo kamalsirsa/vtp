@@ -153,7 +153,6 @@ public:
 	bool	m_bDepressOcean;
 	float   m_fDepressOceanLevel;
 	bool	m_bHorizon;
-//  bool	m_bOverlay;
 	wxColor	m_BgColor;
 
 	bool	m_bVehicles;

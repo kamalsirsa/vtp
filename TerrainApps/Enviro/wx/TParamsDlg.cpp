@@ -324,7 +324,6 @@ void TParamsDlg::SetParams(const TParams &Params)
 	m_bDepressOcean =   Params.GetValueBool(STR_DEPRESSOCEAN);
 	m_fDepressOceanLevel = Params.GetValueFloat(STR_DEPRESSOCEANLEVEL);
 	m_bHorizon =		Params.GetValueBool(STR_HORIZON);
-//  m_bOverlay =		Params.GetValueBool(STR_OVERLAY);
 	RGBi col = 			Params.GetValueRGBi(STR_BGCOLOR);
 	m_BgColor.Set(col.r, col.g, col.b);
 
@@ -434,7 +433,6 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.SetValueBool(STR_DEPRESSOCEAN, m_bDepressOcean);
 	Params.SetValueFloat(STR_DEPRESSOCEANLEVEL, m_fDepressOceanLevel);
 	Params.SetValueBool(STR_HORIZON, m_bHorizon);
-//  Params.SetValueBool(STR_OVERLAY, m_bOverlay);
 	RGBi col(m_BgColor.Red(), m_BgColor.Green(), m_BgColor.Blue());
 	Params.SetValueRGBi(STR_BGCOLOR, col);
 
