@@ -118,7 +118,7 @@ public:
 	// plants
 	vtPlantList3d	*GetPlantList() { return m_pPlantList; }
 	PlantingOptions &GetPlantOptions() { return m_PlantOpt; }
-	void PlantATree(const DPoint2 &epos);
+	bool PlantATree(const DPoint2 &epos);
 	void SetPlantOptions(PlantingOptions &opt) { m_PlantOpt = opt; }
 
 	// global state

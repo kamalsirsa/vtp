@@ -962,7 +962,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 //
 void Enviro::SetMessage(const char *msg, float fTime)
 {
-	VTLOG("  SetMessage: %s\n", msg);
+	VTLOG("  SetMessage: '%s'\n", msg);
 
 	vtString str = msg;
 
@@ -1123,7 +1123,9 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 	if (m_bOnTerrain && m_mode == MM_PLANTS)
 	{
 		// try planting a tree there
-		PlantATree(DPoint2(m_EarthPos.x, m_EarthPos.y));
+		VTLOG("Create a plant at %.2lf,%.2lf:", m_EarthPos.x, m_EarthPos.y);
+		bool success = PlantATree(DPoint2(m_EarthPos.x, m_EarthPos.y));
+		VTLOG(" %s.\n", success ? "yes" : "no");
 	}
 	if (m_bOnTerrain && m_mode == MM_SELECT)
 	{
@@ -1443,14 +1445,14 @@ void Enviro::SetRouteOptions(const vtString &sStructType)
 /**
  * Plant a tree at the given location (in earth coordinates)
  */
-void Enviro::PlantATree(const DPoint2 &epos)
+bool Enviro::PlantATree(const DPoint2 &epos)
 {
 	if (!m_pPlantList)
-		return;
+		return false;
 
 	vtTerrain *pTerr = GetCurrentTerrain();
 	if (!pTerr)
-		return;
+		return false;
 
 	// check distance from other plants
 	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
@@ -1470,14 +1472,18 @@ void Enviro::PlantATree(const DPoint2 &epos)
 		}
 		if (closest < m_PlantOpt.m_fSpacing)
 			bPlant = false;
+		VTLOG(" closest plant %.2fm,%s planting..", closest, bPlant ? "" : " not");
 	}
-	if (bPlant)
-	{
-		float height = m_PlantOpt.m_fHeight;
-		float variance = m_PlantOpt.m_iVariance / 100.0f;
-		height *= (1.0 + random(variance*2) - variance);
-		pTerr->AddPlant(epos, m_PlantOpt.m_iSpecies, height);
-	}
+	if (!bPlant)
+		return false;
+
+	float height = m_PlantOpt.m_fHeight;
+	float variance = m_PlantOpt.m_iVariance / 100.0f;
+	height *= (1.0 + random(variance*2) - variance);
+	if (!pTerr->AddPlant(epos, m_PlantOpt.m_iSpecies, height))
+		return false;
+
+	return true;
 }
 
 
