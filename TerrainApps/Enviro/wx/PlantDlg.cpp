@@ -1,7 +1,7 @@
 //
-// Name:		PlantDlg.cpp
+// Name: PlantDlg.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,18 +24,23 @@
 
 // WDR: class implementations
 
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // PlantDlg
-//----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 
 // WDR: event table for PlantDlg
 
 BEGIN_EVENT_TABLE(PlantDlg,AutoDialog)
 	EVT_INIT_DIALOG (PlantDlg::OnInitDialog)
-	EVT_TEXT( ID_SIZEEDIT, PlantDlg::OnSizeEdit )
-	EVT_SLIDER( ID_SIZESLIDER, PlantDlg::OnSizeSlider )
+	EVT_TEXT( ID_PLANT_HEIGHT_EDIT, PlantDlg::OnHeightEdit )
+	EVT_SLIDER( ID_HEIGHT_SLIDER, PlantDlg::OnHeightSlider )
 	EVT_CHOICE( ID_SPECIES, PlantDlg::OnSelChangeSpecies )
 	EVT_TEXT( ID_PLANT_SPACING_EDIT, PlantDlg::OnSpacingEdit )
+	EVT_RADIOBUTTON( ID_PLANT_INDIVIDUAL, PlantDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_PLANT_LINEAR, PlantDlg::OnRadio )
+	EVT_RADIOBUTTON( ID_PLANT_CONTINUOUS, PlantDlg::OnRadio )
+	EVT_TEXT( ID_PLANT_VARIANCE_EDIT, PlantDlg::OnVariance )
+	EVT_SLIDER( ID_PLANT_VARIANCE_SLIDER, PlantDlg::OnVarianceSlider )
 END_EVENT_TABLE()
 
 PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
@@ -44,7 +49,7 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 {
 	PlantDialogFunc( this, TRUE ); 
 
-	m_pSizeSlider = GetSizeslider();
+	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
 }
 
@@ -63,60 +68,99 @@ void PlantDlg::SetPlantList(vtPlantList3d *plants)
 
 // WDR: handler implementations for PlantDlg
 
+void PlantDlg::OnVarianceSlider( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	m_opt.m_iVariance = m_iVarianceSlider;
+	TransferDataToWindow();
+
+	g_App.SetPlantOptions(m_opt);
+}
+
+void PlantDlg::OnVariance( wxCommandEvent &event )
+{
+	TransferDataFromWindow();
+	if (m_opt.m_iVariance < 0) m_opt.m_iVariance = 0;
+	if (m_opt.m_iVariance > 100) m_opt.m_iVariance = 100;
+	m_iVarianceSlider = m_opt.m_iVariance;
+	TransferDataToWindow();
+
+	g_App.SetPlantOptions(m_opt);
+}
+
+void PlantDlg::OnRadio( wxCommandEvent &event )
+{
+	if (GetPlantIndividual()->GetValue()) m_opt.m_iMode = 0;
+	if (GetPlantLinear()->GetValue()) m_opt.m_iMode = 1;
+	if (GetPlantContinuous()->GetValue()) m_opt.m_iMode = 2;
+ 
+	g_App.SetPlantOptions(m_opt);
+}
+
 void PlantDlg::OnSpacingEdit( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	g_App.SetPlantOptions(m_iSpecies, m_fSize, m_fSpacing);
+	g_App.SetPlantOptions(m_opt);
 }
 
 void PlantDlg::OnSelChangeSpecies( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
 
-	g_App.SetPlantOptions(m_iSpecies, m_fSize, m_fSpacing);
+	g_App.SetPlantOptions(m_opt);
 }
 
-void PlantDlg::OnSizeSlider( wxCommandEvent &event )
+void PlantDlg::OnHeightSlider( wxCommandEvent &event )
 {
-	m_iSizeSlider = m_pSizeSlider->GetValue();
-	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_iSpecies);
+	m_iHeightSlider = m_pHeightSlider->GetValue();
+	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
-		m_fSize = m_iSizeSlider * pSpecies->GetMaxHeight() / 100.0f;
+		m_opt.m_fHeight = m_iHeightSlider * pSpecies->GetMaxHeight() / 100.0f;
 	else
-		m_fSize = 0.0f;
+		m_opt.m_fHeight = 0.0f;
 	TransferDataToWindow();
 
-	g_App.SetPlantOptions(m_iSpecies, m_fSize, m_fSpacing);
+	g_App.SetPlantOptions(m_opt);
 }
 
-void PlantDlg::OnSizeEdit( wxCommandEvent &event )
+void PlantDlg::OnHeightEdit( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
+	HeightToSlider();
+	g_App.SetPlantOptions(m_opt);
+}
 
-    vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_iSpecies);
+void PlantDlg::HeightToSlider()
+{
+	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
 	if (pSpecies)
-	    m_iSizeSlider = (int) (m_fSize / pSpecies->GetMaxHeight() * 100.0f);
+		m_iHeightSlider = (int) (m_opt.m_fHeight / pSpecies->GetMaxHeight() * 100.0f);
 	else
-		m_iSizeSlider = 0;
-	m_pSizeSlider->SetValue(m_iSizeSlider);
+		m_iHeightSlider = 0;
+	m_pHeightSlider->SetValue(m_iHeightSlider);
+}
 
-	g_App.SetPlantOptions(m_iSpecies, m_fSize, m_fSpacing);
+void PlantDlg::ModeToRadio()
+{
+	if (m_opt.m_iMode == 0) GetPlantIndividual()->SetValue(true);
+	if (m_opt.m_iMode == 1) GetPlantLinear()->SetValue(true);
+	if (m_opt.m_iMode == 2) GetPlantContinuous()->SetValue(true);
 }
 
 void PlantDlg::OnInitDialog(wxInitDialogEvent& event) 
 {
-	AddValidator(ID_SPECIES, &m_iSpecies);
-	AddNumValidator(ID_SIZEEDIT, &m_fSize);
-	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_fSpacing);
+	AddValidator(ID_SPECIES, &m_opt.m_iSpecies);
+	AddNumValidator(ID_PLANT_HEIGHT_EDIT, &m_opt.m_fHeight);
+	AddNumValidator(ID_PLANT_SPACING_EDIT, &m_opt.m_fSpacing);
 
-	m_iSpecies = 0;
-	m_fSize = 2.0f;
-	m_fSpacing = 4.0f;
-	m_iSizeSlider = 1;
+	AddNumValidator(ID_PLANT_VARIANCE_EDIT, &m_opt.m_iVariance);
+	AddValidator(ID_PLANT_VARIANCE_SLIDER, &m_iVarianceSlider);
+
+	HeightToSlider();
+	ModeToRadio();
+	m_iVarianceSlider = m_opt.m_iVariance;
 
 	TransferDataToWindow();
-
-	g_App.SetPlantOptions(m_iSpecies, m_fSize, m_fSpacing);
 }
 

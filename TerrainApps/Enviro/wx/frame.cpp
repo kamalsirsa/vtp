@@ -344,6 +344,7 @@ void vtFrame::SetMode(MouseMode mode)
 	if (mode == MM_PLANTS)
 	{
 		m_pPlantDlg->SetPlantList(g_App.GetPlantList());
+		m_pPlantDlg->SetPlantOptions(g_App.GetPlantOptions());
 		m_pPlantDlg->Show(TRUE);
 	}
 	else

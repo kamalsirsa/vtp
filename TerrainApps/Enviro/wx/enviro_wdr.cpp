@@ -285,26 +285,68 @@ wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
 
     wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "      Size:", wxDefaultPosition, wxDefaultSize, 0 );
+    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "    Height:", wxDefaultPosition, wxDefaultSize, 0 );
     item4->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_SIZEEDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
+    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_PLANT_HEIGHT_EDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
     item4->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxSlider *item7 = new wxSlider( parent, ID_SIZESLIDER, 0, 0, 100, wxDefaultPosition, wxSize(120,-1), wxSL_HORIZONTAL );
-    item4->Add( item7, 0, wxALIGN_CENTRE|wxALL, 0 );
+    wxStaticText *item7 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
+    item4->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxSlider *item8 = new wxSlider( parent, ID_HEIGHT_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(120,-1), wxSL_HORIZONTAL );
+    item4->Add( item8, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     item0->Add( item4, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
 
-    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item10 = new wxStaticBox( parent, -1, "Planting Options" );
+    wxStaticBoxSizer *item9 = new wxStaticBoxSizer( item10, wxVERTICAL );
 
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, "Spacing:", wxDefaultPosition, wxDefaultSize, 0 );
-    item8->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxBoxSizer *item11 = new wxBoxSizer( wxVERTICAL );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_PLANT_SPACING_EDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
-    item8->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
+    wxRadioButton *item12 = new wxRadioButton( parent, ID_PLANT_INDIVIDUAL, "Individual instances", wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+    wxRadioButton *item13 = new wxRadioButton( parent, ID_PLANT_LINEAR, "Straight line", wxDefaultPosition, wxDefaultSize, 0 );
+    item13->Enable( FALSE );
+    item11->Add( item13, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    wxRadioButton *item14 = new wxRadioButton( parent, ID_PLANT_CONTINUOUS, "Continuously", wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Enable( FALSE );
+    item11->Add( item14, 0, wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM, 5 );
+
+    item9->Add( item11, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item15 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item16 = new wxStaticText( parent, ID_TEXT, "Height variance:", wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item16, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item17 = new wxTextCtrl( parent, ID_PLANT_VARIANCE_EDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
+    item15->Add( item17, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxStaticText *item18 = new wxStaticText( parent, ID_TEXT, "%", wxDefaultPosition, wxDefaultSize, 0 );
+    item15->Add( item18, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxSlider *item19 = new wxSlider( parent, ID_PLANT_VARIANCE_SLIDER, 0, 0, 100, wxDefaultPosition, wxSize(100,-1), wxSL_HORIZONTAL );
+    item15->Add( item19, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item9->Add( item15, 0, wxALIGN_CENTRE|wxLEFT|wxRIGHT, 5 );
+
+    wxBoxSizer *item20 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxStaticText *item21 = new wxStaticText( parent, ID_TEXT, "Minimum spacing:", wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item21, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxTextCtrl *item22 = new wxTextCtrl( parent, ID_PLANT_SPACING_EDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
+    item20->Add( item22, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxStaticText *item23 = new wxStaticText( parent, ID_TEXT, "meters", wxDefaultPosition, wxDefaultSize, 0 );
+    item20->Add( item23, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item9->Add( item20, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
+
+    item0->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     if (set_sizer)
     {
