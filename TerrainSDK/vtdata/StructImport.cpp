@@ -770,7 +770,7 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 		{
 			// Exclude footprints outside the indicated extents
 			for (i = 0; i < num_points; i++)
-				if (opt.rect.ContainsPoint(footprint.GetAt(i)))
+				if (!opt.rect.ContainsPoint(footprint.GetAt(i)))
 					break;
 			if (i != num_points)
 				continue;
@@ -978,7 +978,7 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 		{
 			// Exclude fences outside the indicated extents
 			for (i = 0; i < iNumPoints; i++)
-				if (opt.rect.ContainsPoint(FencePoints.GetAt(i)))
+				if (!opt.rect.ContainsPoint(FencePoints.GetAt(i)))
 					break;
 			if (i != iNumPoints)
 				continue;
