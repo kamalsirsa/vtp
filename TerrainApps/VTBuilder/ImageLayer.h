@@ -51,6 +51,7 @@ public:
 	void GetPropertyText(wxString &str);
 
 	DPoint2 GetSpacing();
+	vtBitmap *GetBitmap() { return m_pBitmap; }
 
 	void GetDimensions(int &xsize, int &ysize)
 	{
