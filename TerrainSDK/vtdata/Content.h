@@ -3,7 +3,7 @@
 //
 // Header for the Content Management classes.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project.
+// Copyright (c) 2001-2004 Virtual Terrain Project.
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,7 +11,7 @@
 #define VTDATA_CONTENTH
 
 #include "vtString.h"
-#include "Array.h"
+#include "MathTypes.h"
 
 /**
  * vtModel contains a reference to a 3d polygonal model: a filename, the
@@ -42,6 +42,15 @@ class vtTag
 public:
 	vtString name;
 	vtString value;
+
+	bool operator==(const vtTag &v) const
+	{
+		return (name == v.name && value == v.value);
+	}
+	bool operator!=(const vtTag &v) const
+	{
+		return (name != v.name || value != v.value);
+	}
 };
 
 /**
@@ -58,7 +67,11 @@ public:
 	void AddTag(const char *name, const char *value);
 
 	vtTag *FindTag(const char *szTagName);
+	const vtTag *FindTag(const char *szTagName) const;
+
 	vtTag *GetTag(int index);
+	const vtTag *GetTag(int index) const;
+
 	unsigned int NumTags();
 	void RemoveTag(int index);
 	void RemoveTag(const char *szTagName);
@@ -69,20 +82,39 @@ public:
 	void SetValueInt(const char *szTagName, int value);
 	void SetValueFloat(const char *szTagName, float value);
 	void SetValueDouble(const char *szTagName, double value);
+	void SetValueRGBi(const char *szTagName, const RGBi &value);
 
 	// Get value directly
-	const char *GetValueString(const char *szTagName);
-	bool GetValueBool(const char *szTagName);
-	int GetValueInt(const char *szTagName);
-	float GetValueFloat(const char *szTagName);
-	double GetValueDouble(const char *szTagName);
+	const char *GetValueString(const char *szTagName) const;
+	bool GetValueBool(const char *szTagName) const;
+	int GetValueInt(const char *szTagName) const;
+	float GetValueFloat(const char *szTagName) const;
+	double GetValueDouble(const char *szTagName) const;
+	RGBi GetValueRGBi(const char *szTagName) const;
 
 	// Get by reference
-	bool GetValueString(const char *szTagName, vtString &string);
-	bool GetValueBool(const char *szTagName, bool &bValue);
-	bool GetValueInt(const char *szTagName, int &iValue);
-	bool GetValueFloat(const char *szTagName, float &fValue);
-	bool GetValueDouble(const char *szTagName, double &dValue);
+	bool GetValueString(const char *szTagName, vtString &string) const;
+	bool GetValueBool(const char *szTagName, bool &bValue) const;
+	bool GetValueInt(const char *szTagName, int &iValue) const;
+	bool GetValueFloat(const char *szTagName, float &fValue) const;
+	bool GetValueDouble(const char *szTagName, double &dValue) const;
+	bool GetValueRGBi(const char *szTagName, RGBi &color) const;
+
+	// Operators
+	vtTagArray &operator=(const vtTagArray &v);
+	bool operator==(const vtTagArray &v) const;
+	bool operator!=(const vtTagArray &v) const;
+
+	// File IO
+	bool WriteToXML(const char *fname, const char *title);
+	bool LoadFromXML(const char *fname);
+
+	// Allow overriding values by subclasses
+	virtual bool OverrideValue(const char *szTagName, const vtString &string)
+	{
+		return false;
+	}
+	virtual void WriteOverridesToXML(FILE *fp) {}
 
 protected:
 	std::vector<vtTag>	m_tags;

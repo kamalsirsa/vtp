@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "xmlhelper/easyxml.hpp"
 #include "Content.h"
+#include "vtLog.h"
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,24 @@ vtTag *vtTagArray::FindTag(const char *name)
 	return NULL;
 }
 
+const vtTag *vtTagArray::FindTag(const char *name) const
+{
+	int size = m_tags.size();
+	for (int i = 0; i < size; i++)
+	{
+		const vtTag *tag = &m_tags[i];
+		if (!tag->name.CompareNoCase(name))
+			return tag;
+	}
+	return NULL;
+}
+
 vtTag *vtTagArray::GetTag(int index)
+{
+	return &m_tags[index];
+}
+
+const vtTag *vtTagArray::GetTag(int index) const
 {
 	return &m_tags[index];
 }
@@ -86,7 +104,14 @@ void vtTagArray::SetValueString(const char *szTagName, const vtString &string)
 	if (tag)
 		tag->value = string;
 	else
+	{
+		// might be overridden by a derived class
+		if (OverrideValue(szTagName, string))
+			return;
+
+		// if not, add it as a new tag
 		AddTag(szTagName, string);
+	}
 }
 
 void vtTagArray::SetValueBool(const char *szTagName, bool bValue)
@@ -118,92 +143,253 @@ void vtTagArray::SetValueDouble(const char *szTagName, double dValue)
 	SetValueString(szTagName, str);
 }
 
+void vtTagArray::SetValueRGBi(const char *szTagName, const RGBi &color)
+{
+	vtString str;
+	str.Format("%d %d %d", color.r, color.g, color.b);
+	SetValueString(szTagName, str);
+}
+
+
 //
-// Get
+// Get values directly.  Convenient syntax, but can't report failure
+//  if the tag doesn't exist.
 //
 
-const char *vtTagArray::GetValueString(const char *szTagName)
+const char *vtTagArray::GetValueString(const char *szTagName) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return tag->value;
 	else
 		return NULL;
 }
 
-bool vtTagArray::GetValueBool(const char *szTagName)
+bool vtTagArray::GetValueBool(const char *szTagName) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
-		return (tag->value[0] == 't');
+		return (tag->value[0] == 't' || tag->value[0] == '1');
 	return false;
 }
 
-int vtTagArray::GetValueInt(const char *szTagName)
+int vtTagArray::GetValueInt(const char *szTagName) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return atoi((const char *)tag->value);
 	return 0;
 }
 
-float vtTagArray::GetValueFloat(const char *szTagName)
+float vtTagArray::GetValueFloat(const char *szTagName) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return (float) atof((const char *)tag->value);
 	return 0.0f;
 }
 
-double vtTagArray::GetValueDouble(const char *szTagName)
+double vtTagArray::GetValueDouble(const char *szTagName) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		return atof((const char *)tag->value);
 	return 0.0;
 }
 
+RGBi vtTagArray::GetValueRGBi(const char *szTagName) const
+{
+	const vtTag *tag = FindTag(szTagName);
+	if (tag)
+	{
+		RGBi color;
+		if (sscanf(tag->value, "%d %d %d", &color.r, &color.g, &color.b) == 3)
+			return color;
+	}
+	return RGBi(-1, -1, -1);
+}
+
 //
 // Get by reference
 //
-bool vtTagArray::GetValueString(const char *szTagName, vtString &string)
+bool vtTagArray::GetValueString(const char *szTagName, vtString &string) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		string = tag->value;
 	return (tag != NULL);
 }
 
-bool vtTagArray::GetValueBool(const char *szTagName, bool &bValue)
+bool vtTagArray::GetValueBool(const char *szTagName, bool &bValue) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
-		bValue = (tag->value[0] == 't');
+		bValue = (tag->value[0] == 't' || tag->value[0] == '1');
 	return (tag != NULL);
 }
 
-bool vtTagArray::GetValueInt(const char *szTagName, int &iValue)
+bool vtTagArray::GetValueInt(const char *szTagName, int &iValue) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		iValue = atoi((const char *)tag->value);
 	return (tag != NULL);
 }
 
-bool vtTagArray::GetValueFloat(const char *szTagName, float &fValue)
+bool vtTagArray::GetValueFloat(const char *szTagName, float &fValue) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		fValue = (float) atof((const char *)tag->value);
 	return (tag != NULL);
 }
 
-bool vtTagArray::GetValueDouble(const char *szTagName, double &dValue)
+bool vtTagArray::GetValueDouble(const char *szTagName, double &dValue) const
 {
-	vtTag *tag = FindTag(szTagName);
+	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 		dValue = atof((const char *)tag->value);
 	return (tag != NULL);
+}
+
+bool vtTagArray::GetValueRGBi(const char *szTagName, RGBi &color) const
+{
+	const vtTag *tag = FindTag(szTagName);
+	if (tag)
+	{
+		RGBi cval;
+		if (sscanf(tag->value, "%d %d %d", &color.r, &color.g, &color.b) == 3)
+			color = cval;
+		else
+			return false;
+	}
+	return (tag != NULL);
+}
+
+
+//
+// Operators
+//
+vtTagArray &vtTagArray::operator=(const vtTagArray &v)
+{
+	m_tags = v.m_tags;
+	return *this;
+}
+
+bool vtTagArray::operator==(const vtTagArray &v) const
+{
+	unsigned int size = m_tags.size();
+	if (size != v.m_tags.size())
+		return false;
+
+	for (unsigned int i = 0; i < size; i++)
+	{
+		const vtTag *tag = GetTag(i);
+		const vtTag *tag2 = v.FindTag(tag->name);
+		if (!tag2)
+			return false;
+		if (*tag != *tag2)
+			return false;
+	}
+	return true;
+}
+
+bool vtTagArray::operator!=(const vtTagArray &v) const
+{
+//	return (m_tags != v.m_tags);
+	return true;
+}
+
+
+// File IO
+bool vtTagArray::WriteToXML(const char *fname, const char *title)
+{
+	FILE *fp = fopen(fname, "wb");
+	if (!fp)
+		return false;
+
+	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	fprintf(fp, "<%s>\n", title);
+
+	unsigned int i, size = NumTags();
+	for (i = 0; i < size; i++)
+	{
+		vtTag *tag = GetTag(i);
+		fprintf(fp, "\t<%s>%s</%s>\n", (const char *) tag->name,
+			(const char *) tag->value, (const char *) tag->name);
+	}
+	WriteOverridesToXML(fp);
+	fprintf(fp, "</%s>\n", title);
+	fclose(fp);
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Visitor class, for XML parsing of Content files.
+////////////////////////////////////////////////////////////////////////
+
+class TagVisitor : public XMLVisitor
+{
+public:
+	TagVisitor(vtTagArray *pArray) :
+		m_level(0), _hasException(false), m_pArray(pArray) {}
+	virtual ~TagVisitor() {}
+
+	void startElement(const char *name, const XMLAttributes &atts);
+	void endElement(const char *name);
+	void data(const char *s, int length);
+
+	bool hasException() const { return _hasException; }
+	xh_io_exception &getException() { return _exception; }
+	void setException(const xh_io_exception &exception)
+	{
+		_exception = exception;
+		_hasException = true;
+	}
+
+private:
+	int m_level;
+	string m_data;
+	xh_io_exception _exception;
+	bool _hasException;
+
+	vtTagArray *m_pArray;
+};
+
+void TagVisitor::startElement(const char *name, const XMLAttributes &atts)
+{
+	m_level++;
+	m_data = "";
+}
+
+void TagVisitor::endElement(const char *name)
+{
+	if (m_level == 2)
+		m_pArray->SetValueString(name, m_data.c_str());
+
+	m_level--;
+}
+
+void TagVisitor::data(const char *s, int length)
+{
+	m_data.append(string(s, length));
+}
+
+bool vtTagArray::LoadFromXML(const char *fname)
+{
+	TagVisitor visitor(this);
+	try
+	{
+		readXML(fname, visitor);
+	}
+	catch (xh_io_exception &ex)
+	{
+//		throw visitor.getException();
+		const string msg = ex.getFormattedMessage();
+		VTLOG(" XML problem: %s\n", msg.c_str());
+		return false;
+	}
+	return true;
 }
 
 
@@ -290,7 +476,6 @@ private:
 	string _data;
 	int _level;
 	vector<State> _state_stack;
-	string _base;
 	xh_io_exception _exception;
 	bool _hasException;
 
