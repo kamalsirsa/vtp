@@ -775,7 +775,7 @@ void TParamsDlg::OnListDblClick( wxCommandEvent &event )
 	wxArrayString strings;
 
 	for (i = 0; i < m_datapaths.size(); i++)
-		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst");
+		AddFilenamesToArray(strings, m_datapaths[i] + "BuildingData", "*.vtst*");
 
 	int num = strings.Count();
 
