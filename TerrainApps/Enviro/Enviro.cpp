@@ -1115,44 +1115,34 @@ void Enviro::OnMouseLeftDownTerrain(vtMouseEvent &event)
 		//  to just test whether the ground cursor is near a structure
 		DPoint2 gpos(m_EarthPos.x, m_EarthPos.y);
 
-		double distance;
+		double distance1, distance2;
 		vtStructureArray3d &structures = pTerr->GetStructures();
-#if 0
-		int building;		// index of closest building
-		bool result = structures.FindClosestBuildingCenter(gpos, 20.0,
-			building, distance);
-		if (result)
-		{
-			vtBuilding3d *bld;
-			vtStructure *str;
-			for (int i = 0; i < structures.GetSize(); i++)
-			{
-				str = structures.GetAt(i);
-				bld = (vtBuilding3d *) str->GetBuilding();
-				str->Select(false);
-				if (bld)
-					bld->ShowBounds(false);
-			}
-			str = structures.GetAt(building);
-			bld = (vtBuilding3d *) str->GetBuilding();
-			str->Select(true);
-			bld->ShowBounds(true);
-			m_bDragging = true;
-		}
-#else
-		int structure;		// index of closest structure
-		bool result = structures.FindClosestStructure(gpos, 20.0,
-			structure, distance);
-		if (result)
-		{
-			structures.VisualDeselectAll();
+		structures.VisualDeselectAll();
 
+		int structure;		// index of closest structure
+		bool result1 = structures.FindClosestStructure(gpos, 20.0,
+			structure, distance1);
+
+		vtPlantInstanceArray3d &plants = GetCurrentTerrain()->GetPlantInstances();
+		plants.VisualDeselectAll();
+
+		int plant;		// index of closest plant
+		bool result2 = plants.FindClosestPlant(gpos, 20.0, plant, distance2);
+
+		bool click_struct = (result1 && distance1 < distance2);
+		bool click_plant = (result2 && distance2 < distance1);
+
+		if (click_struct)
+		{
 			vtStructure3d *str = structures.GetStructure(structure);
 			structures.VisualSelect(str);
-
 			m_bDragging = true;
 		}
-#endif
+		if (click_plant)
+		{
+			plants.VisualSelect(plant);
+			m_bDragging = true;
+		}
 		m_EarthPosDown = m_EarthPosLast = m_EarthPos;
 	}
 }
@@ -1332,13 +1322,14 @@ void Enviro::PlantATree(const DPoint2 &epos)
 		return;
 
 	// check distance from other plants
-	int size = pTerr->m_PIA.GetSize();
+	vtPlantInstanceArray &pia = pTerr->GetPlantInstances();
+	int size = pia.GetSize();
 	double len, closest = 1E8;
 	DPoint2 diff;
 
 	for (int i = 0; i < size; i++)
 	{
-		diff = epos - pTerr->m_PIA.GetAt(i).m_p;
+		diff = epos - pia.GetAt(i).m_p;
 		len = diff.Length();
 
 		if (len < closest) closest = len;
