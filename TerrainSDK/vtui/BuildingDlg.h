@@ -57,6 +57,7 @@ public:
 	void CopyCurrentLevel();
 	void SetEdgeFacade();
 	void SetupValidators();
+	bool AskForTypeAndSlope(bool bAll, RoofType &eType, int &iSlope);
 
 	// allow the dialog to control rendering (in case its being used w/3d)
 	virtual void EnableRendering(bool bEnable) {}
@@ -81,6 +82,7 @@ protected:
 	wxString2   m_strFeatures;
 	wxString2   m_strFacade;
 	wxColour	m_Color;
+	static wxColourData s_ColorData;
 	int   m_iEdgeSlope;
 
 	wxStaticBitmap  *m_pColorBitmapControl;
@@ -114,6 +116,7 @@ protected:
 	void OnInitDialog(wxInitDialogEvent& event);
 	void OnLevel( wxCommandEvent &event );
 	void OnEdge( wxCommandEvent &event );
+	void OnSetRoofType( wxCommandEvent &event );
 	void OnSetEdgeSlopes( wxCommandEvent &event );
 	void OnSetMaterial( wxCommandEvent &event );
 	void OnCharHook( wxKeyEvent &event );

@@ -27,6 +27,10 @@
 // BuildingDlg
 //----------------------------------------------------------------------------
 
+// Statics
+wxColourData BuildingDlg::s_ColorData;
+
+
 // WDR: event table for BuildingDlg
 
 BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
@@ -35,6 +39,7 @@ BEGIN_EVENT_TABLE(BuildingDlg, AutoDialog)
 	EVT_BUTTON( ID_SET_COLOR, BuildingDlg::OnColor1 )
 	EVT_LISTBOX( ID_LEVEL, BuildingDlg::OnLevel )
 	EVT_LISTBOX( ID_EDGE, BuildingDlg::OnEdge )
+	EVT_BUTTON( ID_SET_ROOF_TYPE, BuildingDlg::OnSetRoofType )
 	EVT_BUTTON( ID_SET_EDGE_SLOPES, BuildingDlg::OnSetEdgeSlopes )
 	EVT_BUTTON( ID_SET_MATERIAL, BuildingDlg::OnSetMaterial )
 	EVT_SPINCTRL( ID_STORIES, BuildingDlg::OnSpinStories )
@@ -96,18 +101,30 @@ void BuildingDlg::Setup(vtStructureArray *pSA, vtBuilding *bld, vtHeightField *p
 
 void BuildingDlg::EditColor()
 {
-	wxColourData data;
-	data.SetChooseFull(true);
-	data.SetColour(m_Color);
+	s_ColorData.SetChooseFull(true);
+
+	// Set the existing color to the dialog
+	RGBi rgb;
+	if (m_bEdges)
+		rgb = m_pEdge->m_Color;
+	else
+	{
+		if (!m_pLevel->GetOverallEdgeColor(rgb))
+			rgb = m_pLevel->GetEdge(0)->m_Color;
+	}
+	m_Color.Set(rgb.r, rgb.g, rgb.b);
+	s_ColorData.SetColour(m_Color);
 
 	EnableRendering(false);
-	wxColourDialog dlg(this, &data);
+	wxColourDialog dlg(this, &s_ColorData);
 	if (dlg.ShowModal() == wxID_OK)
 	{
-		wxColourData data2 = dlg.GetColourData();
-		m_Color = data2.GetColour();
-
+		// Get the color from the dialog
+		s_ColorData = dlg.GetColourData();
+		m_Color = s_ColorData.GetColour();
 		RGBi result(m_Color.Red(), m_Color.Green(), m_Color.Blue());
+
+		// and apply it to the appropriate feature
 		if (m_bEdges)
 			m_pEdge->m_Color = result;
 		else
@@ -509,7 +526,7 @@ void BuildingDlg::UpdateColorControl()
 	}
 }
 
-void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
+bool BuildingDlg::AskForTypeAndSlope(bool bAll, RoofType &eType, int &iSlope)
 {
 	wxString choices[5];
 	choices[0] = _("Flat (all edges 0)");
@@ -517,32 +534,58 @@ void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
 	choices[2] = _("Gable");
 	choices[3] = _("Hip");
 	choices[4] = _("Vertical (all edges 90)");
+	int num = 5;
+	if (!bAll)
+		num = 4;
 
 	wxSingleChoiceDialog dialog(this, _T("Choice"),
-		_("Please indicate edge slopes"), 5, (const wxString *)choices);
+		_("Please indicate edge slopes"), num, (const wxString *)choices);
 
 	dialog.SetSelection(0);
 
 	if (dialog.ShowModal() != wxID_OK)
-		return;
+		return false;
 
 	int sel = dialog.GetSelection();
 	if (sel == 1 || sel == 2 || sel == 3)
 	{
 		// need slope
-		int slope=0;	// set to 0 to avoid compiler warning
-		if (sel == 1) slope = 4;
-		if (sel == 2) slope = 15;
-		if (sel == 3) slope = 15;
-		slope = wxGetNumberFromUser(_("Sloped edges"), _("Degrees"),
-			_("Slope"), slope, 0, 90);
-		if (slope == -1)
-			return;
-		m_pLevel->SetRoofType((RoofType)sel, slope);
+		if (sel == 1) iSlope = 4;
+		if (sel == 2) iSlope = 15;
+		if (sel == 3) iSlope = 15;
+		iSlope = wxGetNumberFromUser(_("Sloped edges"), _("Degrees"),
+			_("Slope"), iSlope, 0, 90);
+		if (iSlope == -1)
+			return false;
 	}
-	else if (sel == 0)
-		m_pLevel->SetRoofType(ROOF_FLAT, 0);
-	else if (sel == 4)
+	eType = (enum RoofType) sel;
+	return true;
+}
+
+void BuildingDlg::OnSetRoofType( wxCommandEvent &event )
+{
+	RoofType type;
+	int slope;
+	if (!AskForTypeAndSlope(false, type, slope))
+		return;
+
+	m_pBuilding->SetRoofType(type, slope);
+	UpdateSlopes();
+	RefreshLevelsBox();
+	HighlightSelectedLevel();
+	Modified();
+}
+
+void BuildingDlg::OnSetEdgeSlopes( wxCommandEvent &event )
+{
+	RoofType type;
+	int slope;
+	if (!AskForTypeAndSlope(true, type, slope))
+		return;
+
+	if (type != ROOF_UNKNOWN)
+		m_pLevel->SetRoofType(type, slope);
+	else
 	{
 		int i, edges = m_pLevel->NumEdges();
 		for (i = 0; i < edges; i++)
