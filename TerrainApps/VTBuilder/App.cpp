@@ -16,6 +16,7 @@
 #include "Frame.h"
 #include "BuilderView.h"
 #include "vtdata/vtLog.h"
+#include "gdal_priv.h"
 
 IMPLEMENT_APP(MyApp)
 
@@ -46,6 +47,24 @@ bool MyApp::OnInit()
 
 	frame->GetView()->ZoomAll();
 
+	// prepare to call GDAL format functions
+	// only needs to be done once at startup
+	GDALAllRegister();
+
+	// Stuff for testing
+//	wxString str("E:/Earth Imagery/NASA BlueMarble/MOD09A1.E.interpol.cyl.retouched.topo.3x00054x00027-N.bmp");
+//	wxString str("E:/Data-USA/Elevation/crater_0513.bt");
+//	vtLayer *pLayer = frame->ImportImage(str);
+//	bool success = frame->AddLayerWithCheck(pLayer, true);
+//	frame->LoadLayer(str);
+
 	return TRUE;
 }
 
+int MyApp::OnExit()
+{
+	// only needs to be done once at exit
+	GDALDestroyDriverManager();
+
+	return wxApp::OnExit();
+}

@@ -8,6 +8,7 @@
 class MyApp: public wxApp
 {
 public:
-  bool OnInit();
+	bool OnInit();
+    int OnExit();
 };
 
