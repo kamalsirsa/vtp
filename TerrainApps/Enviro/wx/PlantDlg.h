@@ -15,8 +15,10 @@
 #include "enviro_wdr.h"
 #include "vtui/AutoDialog.h"
 #include "../PlantingOptions.h"
+#include "vtdata/Array.h"
 
 class vtPlantList3d;
+class vtPlantInstance3d;
 
 // WDR: class declarations
 
@@ -34,7 +36,10 @@ public:
 		long style = wxDEFAULT_DIALOG_STYLE );
 	
 	void SetPlantList(vtPlantList3d *plants);
-	void SetPlantOptions(PlantingOptions &opt) { m_opt = opt; }
+	void SetPlantOptions(PlantingOptions &opt);
+
+//	void SetActivePlant(vtPlantInstance3d *p);
+
 	void HeightToSlider();
 	void ModeToRadio();
 
@@ -55,10 +60,15 @@ public:
 	wxRadioButton* GetPlantIndividual()  { return (wxRadioButton*) FindWindow( ID_PLANT_INDIVIDUAL ); }
 	wxSlider* GetHeightSlider()  { return (wxSlider*) FindWindow( ID_HEIGHT_SLIDER ); }
 	wxChoice* GetSpecies()  { return (wxChoice*) FindWindow( ID_SPECIES ); }
-	
+
 private:
 	// WDR: member variable declarations for PlantDlg
-	
+//	vtPlantInstance3d *m_pPlant;
+	bool m_bSetting;
+
+	// Each species has a size (height) which the user has indicated
+	Array<float> m_PreferredSizes;
+
 private:
 	// WDR: handler declarations for PlantDlg
 	void OnVarianceSlider( wxCommandEvent &event );

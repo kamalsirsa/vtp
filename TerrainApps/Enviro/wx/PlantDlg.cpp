@@ -52,47 +52,91 @@ PlantDlg::PlantDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 
 	m_pHeightSlider = GetHeightSlider();
 	m_pSpecies = GetSpecies();
+	m_bSetting = false;
 }
 
 void PlantDlg::SetPlantList(vtPlantList3d *plants) 
 {
+	if (m_pPlantList == plants)
+		return;
+
 	m_pPlantList = plants;
 	if (!plants) return;
 
 	m_pSpecies->Clear();
 	wxString2 str;
-	for (int i = 0; i < plants->NumSpecies(); i++)
+	vtPlantSpecies *plant;
+
+	int i, num = plants->NumSpecies();
+	m_PreferredSizes.SetSize(num);
+
+	for (i = 0; i < num; i++)
 	{
-		vtPlantSpecies3d *plant = plants->GetSpecies(i);
+		plant = plants->GetSpecies(i);
 		str = plant->GetCommonName();
 		m_pSpecies->Append(str);
+
+		// Default to 80% of the maximum height of each species
+		m_PreferredSizes[i] = plant->GetMaxHeight() * 0.80;
 	}
 }
 
+void PlantDlg::SetPlantOptions(PlantingOptions &opt)
+{
+	m_opt = opt;
+	if (m_opt.m_fHeight < 0)
+		m_opt.m_fHeight = 0;
+
+	vtPlantSpecies *pSpecies = m_pPlantList->GetSpecies(m_opt.m_iSpecies);
+	if (pSpecies)
+	{
+		float size = pSpecies->GetMaxHeight();
+		if (m_opt.m_fHeight > size)
+			m_opt.m_fHeight = size * 0.80;
+	}
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
 // WDR: handler implementations for PlantDlg
 
 void PlantDlg::OnVarianceSlider( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	TransferDataFromWindow();
 	m_opt.m_iVariance = m_iVarianceSlider;
+
+	m_bSetting = true;
 	TransferDataToWindow();
+	m_bSetting = false;
 
 	g_App.SetPlantOptions(m_opt);
 }
 
 void PlantDlg::OnVariance( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	TransferDataFromWindow();
 	if (m_opt.m_iVariance < 0) m_opt.m_iVariance = 0;
 	if (m_opt.m_iVariance > 100) m_opt.m_iVariance = 100;
 	m_iVarianceSlider = m_opt.m_iVariance;
+
+	m_bSetting = true;
 	TransferDataToWindow();
+	m_bSetting = false;
 
 	g_App.SetPlantOptions(m_opt);
 }
 
 void PlantDlg::OnRadio( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	if (GetPlantIndividual()->GetValue()) m_opt.m_iMode = 0;
 	if (GetPlantLinear()->GetValue()) m_opt.m_iMode = 1;
 	if (GetPlantContinuous()->GetValue()) m_opt.m_iMode = 2;
@@ -102,6 +146,9 @@ void PlantDlg::OnRadio( wxCommandEvent &event )
 
 void PlantDlg::OnSpacingEdit( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	TransferDataFromWindow();
 
 	g_App.SetPlantOptions(m_opt);
@@ -109,13 +156,27 @@ void PlantDlg::OnSpacingEdit( wxCommandEvent &event )
 
 void PlantDlg::OnSelChangeSpecies( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	TransferDataFromWindow();
+
+	// show a reasonable value for the height
+	m_opt.m_fHeight = m_PreferredSizes[m_opt.m_iSpecies];
+	HeightToSlider();
+
+	m_bSetting = true;
+	TransferDataToWindow();
+	m_bSetting = false;
 
 	g_App.SetPlantOptions(m_opt);
 }
 
 void PlantDlg::OnHeightSlider( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	if (!m_pPlantList) return;
 
 	m_iHeightSlider = m_pHeightSlider->GetValue();
@@ -124,14 +185,22 @@ void PlantDlg::OnHeightSlider( wxCommandEvent &event )
 		m_opt.m_fHeight = m_iHeightSlider * pSpecies->GetMaxHeight() / 100.0f;
 	else
 		m_opt.m_fHeight = 0.0f;
+	m_PreferredSizes[m_opt.m_iSpecies] = m_opt.m_fHeight;
+
+	m_bSetting = true;
 	TransferDataToWindow();
+	m_bSetting = false;
 
 	g_App.SetPlantOptions(m_opt);
 }
 
 void PlantDlg::OnHeightEdit( wxCommandEvent &event )
 {
+	if (m_bSetting)
+		return;
+
 	TransferDataFromWindow();
+	m_PreferredSizes[m_opt.m_iSpecies] = m_opt.m_fHeight;
 	HeightToSlider();
 	g_App.SetPlantOptions(m_opt);
 }
@@ -145,7 +214,10 @@ void PlantDlg::HeightToSlider()
 		m_iHeightSlider = (int) (m_opt.m_fHeight / pSpecies->GetMaxHeight() * 100.0f);
 	else
 		m_iHeightSlider = 0;
+
+	m_bSetting = true;
 	m_pHeightSlider->SetValue(m_iHeightSlider);
+	m_bSetting = false;
 }
 
 void PlantDlg::ModeToRadio()
@@ -168,6 +240,8 @@ void PlantDlg::OnInitDialog(wxInitDialogEvent& event)
 	ModeToRadio();
 	m_iVarianceSlider = m_opt.m_iVariance;
 
+	m_bSetting = true;
 	TransferDataToWindow();
+	m_bSetting = false;
 }
 
