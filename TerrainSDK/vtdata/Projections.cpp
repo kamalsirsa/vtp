@@ -401,6 +401,9 @@ OGRErr vtProjection::SetGeogCSFromDatum(int iDatum)
  */
 bool vtProjection::SetProjectionSimple(bool bUTM, int iUTMZone, int iDatum)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	OGRErr err = SetGeogCSFromDatum(iDatum);
 	if (err != OGRERR_NONE)
 		return false;
@@ -544,6 +547,9 @@ bool vtProjection::ReadProjFile(const char *filename)
 	if (!fp)
 		return false;
 	fclose(fp);
+
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
 	// Now read and parse the file
 	OGRErr eErr;
