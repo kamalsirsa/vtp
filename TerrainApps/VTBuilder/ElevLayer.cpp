@@ -856,6 +856,8 @@ bool vtElevLayer::ImportFromFile(wxString &strFileName,
 	else if (!strExt.CmpNoCase(_T("hdr")))
 	{
 		success = m_pGrid->LoadFromGTOPO30(strFileName.mb_str(), progress_callback);
+		if (!success)
+			success = m_pGrid->LoadFromGLOBE(strFileName.mb_str(), progress_callback);
 	}
 	else if (!strExt.CmpNoCase(_T("dte")) ||
 			!strExt.CmpNoCase(_T("dt0")) ||
