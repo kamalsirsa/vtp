@@ -11,6 +11,7 @@
 #include "Light.h"
 #include "Terrain.h"
 #include "Fence3d.h"
+#include "TerrainScene.h"
 
 // statics
 vtMaterialArray *vtFence3d::s_pFenceMats = NULL;
@@ -49,7 +50,7 @@ void vtFence3d::CreateMaterials()
 	// create wirefence post textured material (0)
 	vtString fname;
 
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/fencepost_64.jpg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/fencepost_64.jpg");
 	m_mi_woodpost = s_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,
 		TERRAIN_AMBIENT,
@@ -64,7 +65,7 @@ void vtFence3d::CreateMaterials()
 		0.6f);					// alpha
 
 	// chainlink material(2)
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/chain128-4.png");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/chain128-4.png");
 	m_mi_chainlink = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		1.0f,	// ambient
@@ -73,37 +74,37 @@ void vtFence3d::CreateMaterials()
 		TERRAIN_EMISSIVE);
 
 	// create chainfence post textured material (3)
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/chainpost32.jpg");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/chainpost32.jpg");
 	m_mi_metalpost = s_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
 	// create hedgerow textured material
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/hedgerow256.png");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/hedgerow256.png");
 	m_mi_hedgerow = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
 	// create drystone textured material
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/drystone256.png");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/drystone256.png");
 	m_mi_drystone = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
 	// create privet textured material
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/privet256.png");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/privet256.png");
 	m_mi_privet = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
 	// create stone textured material
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/stone256.png");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/stone256.png");
 	m_mi_stone = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);
 
 	// create beech textured material
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/beech256.png");
+	fname = FindFileOnPaths(vtGetDataPath(), "Culture/beech256.png");
 	m_mi_beech = s_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE);

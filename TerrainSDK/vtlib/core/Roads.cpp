@@ -918,9 +918,9 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 
 #if 0
 	vtString path;
-	path = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/stopsign4.dsm");
+	path = FindFileOnPaths(vtGetDataPath(), "Culture/stopsign4.dsm");
 	vtNode *stopsign = vtLoadModel(path);
-	path = FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/stoplight8rt.dsm");
+	path = FindFileOnPaths(vtGetDataPath(), "Culture/stoplight8rt.dsm");
 	vtNode *stoplight = vtLoadModel(path);
 
 	if (stopsign && stoplight)

@@ -11,6 +11,7 @@
 #include "vtlib/core/Building3d.h"
 #include "vtlib/core/DynTerrain.h"
 #include "vtlib/core/Content3d.h"
+#include "vtlib/core/TerrainScene.h"
 #include "vtdata/Features.h"
 #include "vtdata/vtLog.h"
 #include "vtdata/FilePath.h"
@@ -137,7 +138,7 @@ void IslandTerrain::create_state_park()
 	//	file (vtco) to the global content manager.
 	try
 	{
-		s_Content.ReadXML("../Data/kai.vtco");
+		vtGetContent().ReadXML("../Data/kai.vtco");
 	}
 	catch (xh_io_exception &e)
 	{
@@ -157,12 +158,12 @@ void IslandTerrain::create_state_park()
 #if 0
 	// Here is an example of how to directly create a content item and
 	//	plant it manually on the terrain.
-	vtGroup *group = s_Content.CreateGroupFromItemname("Riesenbuehl");
-	if (group)
+	vtNode *node = s_Content.CreateNodeFromItemname("Riesenbuehl");
+	if (node)
 	{
 		// plant it
 		vtTransform *xform = new vtTransform();
-		xform->AddChild(group);
+		xform->AddChild(node);
 		PlantModelAtPoint(xform, park_location);
 		m_pLodGrid->AppendToGrid(xform);
 	}
@@ -173,7 +174,7 @@ void IslandTerrain::set_detail_texture()
 {
 	const char *fname = "GeoTypical/grass_repeat2_512.jpg";
 
-	vtString path = FindFileOnPaths(s_DataPaths, fname);
+	vtString path = FindFileOnPaths(vtGetDataPath(), fname);
 	vtDIB *dib = new vtDIB;
 
 	if (!dib->ReadBMP((const char *) path))

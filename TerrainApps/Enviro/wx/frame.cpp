@@ -603,8 +603,8 @@ void vtFrame::OnChar(wxKeyEvent& event)
 		if (pTerr)
 		{
 			// Show 
-			GetTerrainScene()->GetSkyDome()->SetStarAltitude(90);
-			GetTerrainScene()->GetSkyDome()->RefreshCelestialObjects();
+			vtGetTS()->GetSkyDome()->SetStarAltitude(90);
+			vtGetTS()->GetSkyDome()->RefreshCelestialObjects();
 		}
 		break;
 
@@ -1138,7 +1138,7 @@ void vtFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
 void vtFrame::OnSceneSave(wxCommandEvent& event)
 {
 #if VTLIB_OSG
-	vtGroup *pRoot = GetTerrainScene()->GetTop();
+	vtGroup *pRoot = vtGetTS()->GetTop();
 	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");
 #endif
 }
@@ -1211,7 +1211,7 @@ void vtFrame::OnCullOnce(wxCommandEvent& event)
 
 void vtFrame::OnSky(wxCommandEvent& event)
 {
-	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
+	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	sky->SetEnabled(!on);
@@ -1219,7 +1219,7 @@ void vtFrame::OnSky(wxCommandEvent& event)
 
 void vtFrame::OnUpdateSky(wxUpdateUIEvent& event)
 {
-	vtSkyDome *sky = GetTerrainScene()->GetSkyDome();
+	vtSkyDome *sky = vtGetTS()->GetSkyDome();
 	if (!sky) return;
 	bool on = sky->GetEnabled();
 	event.Check(on);
@@ -1393,7 +1393,7 @@ void vtFrame::OnTerrainReshade(wxCommandEvent& event)
 	if (!pTerr)
 		return;
 
-	pTerr->recreate_textures(GetTerrainScene()->GetSunLight());
+	pTerr->recreate_textures(vtGetTS()->GetSunLight());
 }
 
 
@@ -1494,7 +1494,7 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 
 		vtString loc = "Locations/";
 		loc += pTerrain->GetParams().GetValueString(STR_LOCFILE, true);
-		vtString path = FindFileOnPaths(pTerrain->s_DataPaths, loc);
+		vtString path = FindFileOnPaths(vtGetDataPath(), loc);
 		if (path != "")
 		{
 			m_pLocationDlg->SetLocFile((const char *)path);
@@ -1506,11 +1506,11 @@ void vtFrame::SetTerrainToGUI(vtTerrain *pTerrain)
 
 		// Fill instance dialog with global and terrain-specific content
 		m_pInstanceDlg->ClearContent();
-		m_pInstanceDlg->AddContent(&vtTerrain::s_Content);
+		m_pInstanceDlg->AddContent(&vtGetContent());
 		m_pInstanceDlg->AddContent(&pTerrain->m_Content);
 
 		// Also switch to the time engine for the terrain, not the globe.
-		SetTimeEngine(GetTerrainScene()->GetTimeEngine());
+		SetTimeEngine(vtGetTS()->GetTimeEngine());
 	}
 	else
 	{

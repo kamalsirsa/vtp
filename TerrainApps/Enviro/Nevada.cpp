@@ -57,7 +57,7 @@ NevadaTerrain::~NevadaTerrain()
 void NevadaTerrain::CreateCustomCulture()
 {
 	// We use a different horizon color
-	vtTerrainScene *scene = GetTerrainScene();
+	vtTerrainScene *scene = vtGetTS();
 	scene->horizon_color = HORIZON_FOG;
 	scene->azimuth_color = RGBi(30, 70, 255);
 
@@ -81,7 +81,7 @@ void NevadaTerrain::CreateCustomCulture()
 	vtTransform *gateway1 = LoadModel("Culture/portal1.dsm");
 	vtTransform *copy = (vtTransform *) gateway1->Clone();
 
-	vtTerrain *pIsland = GetTerrainScene()->FindTerrainByName("Big Island");
+	vtTerrain *pIsland = vtGetTS()->FindTerrainByName("Big Island");
 
 	if (pIsland && gateway1)
 	{
@@ -122,7 +122,7 @@ void NevadaTerrain::CreateWater()
 	size.y = (float) world_extents.Height();
 
 	// create water material: texture waves
-	vtString str = FindFileOnPaths(s_DataPaths, "GeoTypical/ocean1_256.jpg");
+	vtString str = FindFileOnPaths(vtGetDataPath(), "GeoTypical/ocean1_256.jpg");
 
 	int id;
 
@@ -161,9 +161,9 @@ void NevadaTerrain::CreateDetailTextures()
 {
 	vtString str;
 
-	str = FindFileOnPaths(s_DataPaths, "Nevada/playa3.png");
+	str = FindFileOnPaths(vtGetDataPath(), "Nevada/playa3.png");
 	vtImage *pDetailTexture = new vtImage(str);
-	str = FindFileOnPaths(s_DataPaths, "Nevada/green3.png");
+	str = FindFileOnPaths(vtGetDataPath(), "Nevada/green3.png");
 	vtImage *pDetailTexture2 = new vtImage(str);
 
 	int id;
@@ -239,7 +239,7 @@ void NevadaTerrain::CreatePast()
 		"SEQ.png",
 		6.0f, 8.5f,	// width, height
 		0.0f, 0.0f);
-	pPlantApp->LoadAndCreate(s_DataPaths, TREE_EXAG, false, true);	// shadows, billboards
+	pPlantApp->LoadAndCreate(vtGetDataPath(), TREE_EXAG, false, true);	// shadows, billboards
 
 	vtTransform *tree;
 	FPoint3 p3;

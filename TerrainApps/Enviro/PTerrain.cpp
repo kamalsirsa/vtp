@@ -1,12 +1,13 @@
 //
 // PTerrain.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
 #include "PTerrain.h"
+#include "vtlib/core/TerrainScene.h"
 #include "Engines.h"
 #include "CarEngine.h"
 
@@ -54,33 +55,33 @@ void PTerrain::SetupVehicles()
 	// the bronco is modeled in centimeters (0.01)
 	VehicleType *bronco = new VehicleType("bronco");
 	vtString fname;
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/bronco/bronco_v2.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/bronco/bronco_v2.3ds");
 	bronco->AddModel(fname, 0.01f, 500);
 	AddVehicleType(bronco);
 
 	// the discovery is modeled in centimeters (0.01)
 	VehicleType *discovery = new VehicleType("discovery");
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD01.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD01.3ds");
 	discovery->AddModel(fname, 0.01f, 50);
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD02.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD02.3ds");
 	discovery->AddModel(fname, 0.01f, 100);
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD03.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD03.3ds");
 	discovery->AddModel(fname, 0.01f, 200);
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/discovery/discovery_LOD04.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/discovery/discovery_LOD04.3ds");
 	discovery->AddModel(fname, 0.01f, 500);
 	AddVehicleType(discovery);
 
 	// the bus is modeled in centimeters (0.01)
 	VehicleType *hele_on = new VehicleType("bus");
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/hele-on/bus020101.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/hele-on/bus020101.3ds");
 	hele_on->AddModel(fname, 0.01f, 800);
 	AddVehicleType(hele_on);
 
 	// the 747 is modeled in meters (1.0)
 	VehicleType *b747 = new VehicleType("747");
-	fname = FindFileOnPaths(s_DataPaths, "Vehicles/747/747-lod00.3ds");
+	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747/747-lod00.3ds");
 	b747->AddModel(fname, 1.0f, 200);
-//	fname = FindFileOnPaths(s_DataPaths, "Vehicles/747-LOD01.3ds");
+//	fname = FindFileOnPaths(vtGetDataPath(), "Vehicles/747-LOD01.3ds");
 //	b747->AddModelLod(1, fname, 1000);
 	AddVehicleType(b747);
 }

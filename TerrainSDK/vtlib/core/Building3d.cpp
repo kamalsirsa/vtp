@@ -4,17 +4,19 @@
 // The vtBuilding3d class extends vtBuilding with the ability to procedurally
 // create 3D geometry of the buildings.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
-#include "vtlib/core/Light.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/Triangulate.h"
 #include "vtdata/PolyChecker.h"
-#include "Building3d.h"
+
+#include "Light.h"
 #include "Terrain.h"
+#include "TerrainScene.h"
+#include "Building3d.h"
 #include "FelkelStraightSkeleton.h"
 
 
@@ -928,7 +930,7 @@ bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories)
 	FPoint3 norm = Normal(quad[0],quad[1],quad[3]);
 
 	fname += pEdge->m_Facade;
-	fname = FindFileOnPaths(vtTerrain::s_DataPaths, (pcchar)fname);
+	fname = FindFileOnPaths(vtGetDataPath(), (pcchar)fname);
 	if (fname == "")
 		return false;
 
@@ -1019,7 +1021,7 @@ bool vtBuilding3d::CreateNode(vtTerrain *pTerr)
 	{
 		// constructing for the first time
 		m_pContainer = new vtTransform();
-		m_pContainer->SetName2("building");
+		m_pContainer->SetName2("building container");
 	}
 	if (!CreateGeometry(pTerr->GetHeightField()))
 		return false;

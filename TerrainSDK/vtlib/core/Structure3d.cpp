@@ -1,7 +1,7 @@
 //
 // Structure3d.cpp
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -14,6 +14,7 @@
 #include "Building3d.h"
 #include "Fence3d.h"
 #include "Terrain.h"
+#include "TerrainScene.h"
 
 const vtString BMAT_NAME_HIGHLIGHT = "Highlight";
 
@@ -94,6 +95,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	{
 		// constructing for the first time
 		m_pContainer = new vtTransform();
+		m_pContainer->SetName2("instance container");
 	}
 
 	// if previously created, destroy to re-create
@@ -108,7 +110,7 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	if (filename)
 	{
 		// relative path: look on the standards data paths
-		vtString fullpath = FindFileOnPaths(vtTerrain::s_DataPaths, filename);
+		vtString fullpath = FindFileOnPaths(vtGetDataPath(), filename);
 		if (fullpath != "")
 		{
 			m_pModel = vtNode::LoadModel(fullpath);
@@ -123,11 +125,11 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	{
 		// Use ContentManager to create the structure, using the
 		//  terrain's specific content manager
-		m_pModel = pTerr->m_Content.CreateGroupFromItemname(itemname);
+		m_pModel = pTerr->m_Content.CreateNodeFromItemname(itemname);
 
 		// Also try the global content manager
 		if (!m_pModel)
-			m_pModel = vtTerrain::s_Content.CreateGroupFromItemname(itemname);
+			m_pModel = vtGetContent().CreateNodeFromItemname(itemname);
 
 		if (!m_pModel)
 			return false;
@@ -385,7 +387,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 									1.0f,
 									false));
 	{
-		std::ofstream ops(FindFileOnPaths(vtTerrain::s_DataPaths, "Culture/materials.xml"));
+		std::ofstream ops(FindFileOnPaths(vtGetDataPath(), "Culture/materials.xml"));
 		ops << s_MaterialDescriptors;
 		ops.close();
 	}
@@ -399,7 +401,7 @@ void vtMaterialDescriptorArray3d::InitializeMaterials()
 		"BuildingModels/window_wall128.jpg", VT_MATERIAL_COLOURABLE_TEXTURE, 1.0f);
 
 	// Now load external materials (user-modifiable, user-extendable)
-	if (!LoadExternalMaterials(vtTerrain::s_DataPaths))
+	if (!LoadExternalMaterials(vtGetDataPath()))
 		return;
 }
 
@@ -450,7 +452,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 {
 	RGBf color(1.0f, 1.0f, 1.0f);
 	vtMaterial *pMat = MakeMaterial(color, true);
-	vtString path = FindFileOnPaths(vtTerrain::s_DataPaths, descriptor->GetSourceName());
+	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetSourceName());
 	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	descriptor->SetMaterialIndex(m_pMaterials->AppendMaterial(pMat));
@@ -458,7 +460,7 @@ void vtMaterialDescriptorArray3d::CreateSelfColoredMaterial(vtMaterialDescriptor
 
 void vtMaterialDescriptorArray3d::CreateColorableMaterial(vtMaterialDescriptor *descriptor)
 {
-	vtString path = FindFileOnPaths(vtTerrain::s_DataPaths, descriptor->GetSourceName());
+	vtString path = FindFileOnPaths(vtGetDataPath(), descriptor->GetSourceName());
 	if (path == "")
 		return;
 
