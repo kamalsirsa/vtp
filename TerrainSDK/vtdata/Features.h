@@ -108,7 +108,8 @@ public:
 	int AddPolyLine(const DLine2 &pl);
 	void GetPoint(unsigned int num, DPoint3 &p) const;
 	void GetPoint(unsigned int num, DPoint2 &p) const;
-	const DLine2 &GetLine(unsigned int num) { return m_LinePoly[num]; }
+	const DLine2 &GetLine(unsigned int num) const { return m_LinePoly[num]; }
+	DLine2 &GetLine(unsigned int num) { return m_LinePoly[num]; }
 
 	void CopyEntity(unsigned int from, unsigned int to);
 	int FindClosestPoint(const DPoint2 &p, double epsilon);
