@@ -367,7 +367,7 @@ bool vtStructureArray::ReadSHP(const char *pathname, vtStructureType type)
 			if (field_rotation != -1)
 			{
 				double rotation = DBFReadDoubleAttribute(db, i, field_rotation);
-				inst->m_fRotation = (float) (rotation / 180.0 * PI);
+				inst->m_fRotation = (float) (rotation / 180.0 * PId);
 			}
 			s->SetInstance(inst);
 		}

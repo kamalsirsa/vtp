@@ -12,15 +12,13 @@
 #include "Array.h"
 #include "Array.inl"
 
-#ifndef PI
-#define PI		3.141592653589793238
-#endif
-#ifndef PI2
-#define PIf 	3.141592653589793238f
-#define PI2 	6.283185307179586476
-#define PI2f 	6.283185307179586476f
-#define PID2 	1.570796326794896619
-#define PID2f 	1.570796326794896619f
+#ifndef PId
+ #define PId		3.141592653589793238
+ #define PIf 	3.141592653589793238f
+ #define PI2d 	6.283185307179586476
+ #define PI2f 	6.283185307179586476f
+ #define PID2d 1.570796326794896619
+ #define PID2f 1.570796326794896619f
 #endif
 
 #ifndef NULL

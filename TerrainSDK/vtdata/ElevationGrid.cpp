@@ -117,13 +117,13 @@ bool vtElevationGrid::ConvertProjection(vtElevationGrid *pOld,
 	if (bOldGeo && !bNewGeo)
 	{
 		// convert degrees to meters (approximately)
-		new_step.x = old_step.x * meters_per_latitude * cos(pOld->m_Corners[0].y / 180.0 * PI);
+		new_step.x = old_step.x * meters_per_latitude * cos(pOld->m_Corners[0].y / 180.0 * PId);
 		new_step.y = old_step.y * meters_per_latitude;
 	}
 	else if (!bOldGeo && bNewGeo)
 	{
 		// convert meters to degrees (approximately)
-		new_step.x = old_step.x / (meters_per_latitude * cos(m_Corners[0].y / 180.0 * PI));
+		new_step.x = old_step.x / (meters_per_latitude * cos(m_Corners[0].y / 180.0 * PId));
 		new_step.y = old_step.y / (meters_per_latitude);	// convert degrees to meters (approximately)
 	}
 	else

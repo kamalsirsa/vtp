@@ -329,8 +329,8 @@ const char *datumToString(DATUM d)
 double EstimateDegreesToMeters(double latitude)
 {
 	// estimate meters per degree of longitude, using the terrain origin
-	double r0 = EARTH_RADIUS * cos(latitude / 180.0 * PI);
-	double circ = 2.0 * r0 * PI;
+	double r0 = EARTH_RADIUS * cos(latitude / 180.0 * PId);
+	double circ = 2.0 * r0 * PId;
 	return circ / 360.0f;
 }
 

@@ -59,25 +59,25 @@ void CartesianToSpherical(double *lng, double *lat,
     double a;
 
     if (x>0.0 && y>0.0){a = 0;}
-    if (x<0.0 && y>0.0){a = PI;}
-    if (x<0.0 && y<0.0){a = PI;}
-    if (x>0.0 && y<0.0){a = PI2;}
+    if (x<0.0 && y>0.0){a = PId;}
+    if (x<0.0 && y<0.0){a = PId;}
+    if (x>0.0 && y<0.0){a = PI2d;}
     *lat = acos(z);
-    if (x==0.0 && y>0.0){*lng = PID2;}
-    if (x==0.0 && y<0.0){*lng = PI * 3 / 2;}
+    if (x==0.0 && y>0.0){*lng = PID2d;}
+    if (x==0.0 && y<0.0){*lng = PId * 3 / 2;}
     if (x>0.0 && y==0.0){*lng = 0;}
-    if (x<0.0 && y==0.0){*lng = PI;}
+    if (x<0.0 && y==0.0){*lng = PId;}
     if (x!=0.0 && y!=0.0){*lng = atan(y/x) + a;}
 }
 
 
 void latlon_to_xyz(double lat, double lon, DPoint3 &p)
 {
-	lat *= (PI / 180.0);
-	lon *= (PI / 180.0);
+	lat *= (PId / 180.0);
+	lon *= (PId / 180.0);
 
-	lat -= ( PI / 2.0f );
-	lon += ( PI );
+	lat -= ( PId / 2.0f );
+	lon += ( PId );
 
 	double x1, y1, z1;
 	SphericalToCartesian(lat, lon, &x1, &y1, &z1);
@@ -185,8 +185,9 @@ void DymaxIcosa::faceuv_to_latlon(int tri, DPoint3 &uvw, double &lat, double &lo
 	p2.y = -p_out.z;
 	p2.z = p_out.y;
 	CartesianToSpherical(&lon, &lat, p2.x, p2.y, p2.z);
-	lon += PI;
-	if (lon > PI2) lon -= PI2;
+	lon += PId;
+	if (lon > PI2d)
+		lon -= PI2d;
 }
 
 void DymaxIcosa::InitIcosa()
