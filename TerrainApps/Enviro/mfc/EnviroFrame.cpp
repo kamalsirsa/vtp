@@ -59,6 +59,9 @@ static UINT indicators[] =
 
 EnviroFrame::EnviroFrame() : CFrameWnd()
 {
+	// test code
+	CString str;
+	str.Delete(3, 1);
 }
 
 EnviroFrame::~EnviroFrame()
