@@ -280,8 +280,8 @@ bool vtTagArray::GetValueRGBi(const char *szTagName, RGBi &color) const
 	const vtTag *tag = FindTag(szTagName);
 	if (tag)
 	{
-		int r, g, b;
-		if (sscanf(tag->value, "%d %d %d", &r, &g, &b) == 3)
+		short r, g, b;
+		if (sscanf(tag->value, "%hd %hd %hd", &r, &g, &b) == 3)
 			color.Set(r, g, b);
 		else
 			return false;
@@ -615,7 +615,7 @@ vtContentManager::~vtContentManager()
 
 void vtContentManager::Empty()
 {
-	int items = m_items.GetSize();
+	unsigned int items = m_items.GetSize();
 	if (items)
 		VTLOG("vtContentManager::Empty, %d items to delete\n", items);
 	for (unsigned int i = 0; i < items; i++)

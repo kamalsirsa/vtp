@@ -116,11 +116,15 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 		// External projection flag
 		GZFRead(&external, DT_SHORT, 1, fp, BO_LITTLE_ENDIAN);
+
+		// 1.3 adds the vertical scale field
+		if (iMajor == 1 && iMinor == 3)
+			GZFRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
 	}
-	if (iMajor == 1 && iMinor == 3)
-	{
-		GZFRead(&m_fVMeters, DT_FLOAT, 1, fp, BO_LITTLE_ENDIAN);
-	}
+	else
+		return false;	// unsupported version
+
+	gzclose(fp);
 
 	// Set up projection
 	if (external == 1)
@@ -137,7 +141,6 @@ bool vtElevationGrid::LoadBTHeader(const char *szFileName)
 
 	ComputeCornersFromExtents();
 
-	gzclose(fp);
 	return true;
 }
 
@@ -245,7 +248,7 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 {
 	int w = m_iColumns;
 	int h = m_iRows;
-	short zone = m_proj.GetUTMZone();
+	short zone = (short) m_proj.GetUTMZone();
 	short datum = (short) m_proj.GetDatum();
 	short isfloat = (short) IsFloatMode();
 	short external = 1;		// always true: we always write an external .prj file
