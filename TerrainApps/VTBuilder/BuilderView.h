@@ -38,6 +38,8 @@ enum LBMode {
 	LB_Box,			// set area box
 	LB_FSelect,		// select feature
 	LB_BldEdit,		// edit built structures
+	LB_BldAddPoints,		// add footprint points
+	LB_BldDeletePoints,		// delete footprint points
 	LB_AddLinear,	// structures: add linear features
 	LB_EditLinear,	// structures: add linear features
 	LB_AddPoints,	// add raw points
