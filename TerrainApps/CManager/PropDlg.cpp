@@ -12,6 +12,8 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
 
+#include "vtlib/vtlib.h"
+
 #ifdef _MSC_VER
 #pragma warning( disable : 4786 ) 
 #endif

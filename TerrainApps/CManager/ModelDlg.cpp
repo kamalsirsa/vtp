@@ -16,6 +16,8 @@
 #pragma warning( disable : 4786 ) 
 #endif
 
+#include "vtlib/vtlib.h"
+
 #include "ModelDlg.h"
 #include "vtdata/Content.h"
 #include "Frame.h"
