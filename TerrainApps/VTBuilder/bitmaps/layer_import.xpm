@@ -10,7 +10,7 @@ static char *layer_import_xpm[] = {
 "b c #000080",
 "c c #800080",
 "d c #008080",
-"e c #c0c0c0",
+"e c None",
 "f c #808080",
 "g c #ff0000",
 "h c #00ff00",
