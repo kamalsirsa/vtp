@@ -197,6 +197,11 @@ void NodeGeom::BuildIntersection()
 			float offset_largest = MAX(offset_next, offset_prev);
 			offset_largest += 2.0f;
 
+			// Safety check to avoid links with very close angles giving huge values
+//			assert(offset_largest < 100);
+			if (offset_largest > w_avg*4)
+				offset_largest = w_avg*4;
+
 			pn0 = m_p3;
 			pn0 += (v * (offset_largest / 2.0f));
 			v *= (w/2.0f);
@@ -721,8 +726,12 @@ vtRoadMap3d::~vtRoadMap3d()
 
 void vtRoadMap3d::BuildIntersections()
 {
+	int count = 0;
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
+	{
 		pN->BuildIntersection();
+		count++;
+	}
 }
 
 
@@ -907,15 +916,20 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 #endif
 
 	vtMesh *pMesh;
+	int count = 0;
 	for (LinkGeom *pR = GetFirstLink(); pR; pR=(LinkGeom *)pR->m_pNext)
 	{
 		pR->GenerateGeometry(this);
 //		if (pMesh) AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
+		count++;
 	}
+	count = 0;
 	for (NodeGeom *pN = GetFirstNode(); pN; pN = (NodeGeom *)pN->m_pNext)
 	{
 		pMesh = pN->GenerateGeometry();
-		if (pMesh) AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
+		if (pMesh)
+			AddMeshToGrid(pMesh, 0);	// TODO: correct matidx
+		count++;
 	}
 
 	// return top road group, ready to be added to scene graph
