@@ -272,13 +272,18 @@ vtPlantSpecies3d::vtPlantSpecies3d() : vtPlantSpecies()
 
 vtPlantSpecies3d &vtPlantSpecies3d::operator=(const vtPlantSpecies &v)
 {
-	m_iSpecieID = v.GetSpecieID();
-	m_strCommonName = v.GetCommonName();
+	unsigned int i;
+
 	m_szSciName = v.GetSciName();
 	m_fMaxHeight = v.GetMaxHeight();
 
-	int apps = v.NumAppearances();
-	for (int i = 0; i < apps; i++)
+	unsigned int cnames = v.NumCommonNames();
+	m_CommonNames.resize(cnames);
+	for (i = 0; i < cnames; i++)
+		m_CommonNames[i] = v.GetCommonName(i);
+
+	unsigned int apps = v.NumAppearances();
+	for (i = 0; i < apps; i++)
 	{
 		vtPlantAppearance3d *pa3d = new vtPlantAppearance3d(*(v.GetAppearance(i)));
 		m_Apps.Append(pa3d);
@@ -398,13 +403,6 @@ vtPlantSpecies3d *vtSpeciesList3d::GetSpecies(unsigned int i) const
 		return NULL;
 }
 
-void vtSpeciesList3d::AddSpecies(const char *common_name, float max_height)
-{
-	vtPlantSpecies3d *pSpe = new vtPlantSpecies3d();
-	pSpe->SetCommonName(common_name);
-	pSpe->SetMaxHeight(max_height);
-	m_Species.Append(pSpe);
-}
 
 ////////////
 

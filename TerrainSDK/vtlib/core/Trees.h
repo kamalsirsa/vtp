@@ -105,7 +105,6 @@ public:
 
 	// override / replace a few methods of vtSpeciesList
 	vtPlantSpecies3d *GetSpecies(unsigned int i) const;
-	void AddSpecies(const char *common_name, float max_height);
 
 //	vtGeom *plant_nursery(vtHeightField *pHeightField, float lat, float lon);
 };
