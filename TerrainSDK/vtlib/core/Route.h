@@ -30,20 +30,20 @@ class vtStation
 {
 public:
 	long lRoutePointIndex;
-	DPoint3 m_dpStationPoint;	// x,y,z in World Coord on the ground
+	DPoint3 m_dpStationPoint;		// x,y,z in World Coord on the ground
 	DPoint2 m_dpOffsetElevations;	// x=Left, y=Right
 	DPoint2 m_dpOffsetDistances;	// x=Left, y=Right
-	double dRadAzimuth;		// azimuth.
-	double dRadLineAngle;	// diff from last azimuth.
+	double dRadAzimuth;			// azimuth.
+	double dRadLineAngle;		// diff from last azimuth.
 	int m_iRoutePointNumber;	// if the station point is also
 								//	a route point. -1 otherewise
-//	vtNode*	m_pTower;		// The station may have a tower placed on it
-	vtStructureObj* ObjList;	//Objs to draw.
-	char sStructure[30];	// Structure Family
+//	vtNode*	m_pTower;			// The station may have a tower placed on it
+	vtStructureObj* ObjList;	// Objs to draw.
+	char sStructure[30];		// Structure Family
 	float m_fTowerHeight;
 	int m_iNumWires;
-	FPoint3 m_fpWireAtt1[7]; // where are the wires?
-	FPoint3 m_fpWireAtt2[7]; // where are the wires?
+	FPoint3 m_fpWireAtt1[7];	 // where are the wires?
+	FPoint3 m_fpWireAtt2[7];	 // where are the wires?
 
 //	vtStation();
 };
