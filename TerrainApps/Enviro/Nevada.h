@@ -71,7 +71,7 @@ public:
 	float m_fHigh;
 	float m_fWaterHeight;
 
-	vtTextSprite *m_pSprite;
+	vtTextMesh *m_pSprite;
 
 	vtMaterial *m_pPastMat;
 	vtMaterial *m_pPresentMat;

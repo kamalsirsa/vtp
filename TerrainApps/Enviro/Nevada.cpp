@@ -3,7 +3,7 @@
 //
 // Terrain implementation specific to Black Rock City, Nevada.
 //
-// Copyright (c) 2001-2004 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -66,7 +66,7 @@ void NevadaTerrain::CreateCustomCulture()
 	scene->horizon_color = HORIZON_FOG;
 	scene->azimuth_color = RGBi(30, 70, 255);
 
-	m_pHeightField->ConvertEarthToSurfacePoint(MAN_LONLAT, man_location);
+	m_pHeightField->ConvertEarthToSurfacePoint(DPoint2(MAN_LONLAT), man_location);
 
 	m_fGround = 1200 * m_Params.GetValueFloat(STR_VERTICALEXAG);
 	m_fHigh = m_fGround + (50);
@@ -126,7 +126,6 @@ void NevadaTerrain::CreateWater()
 	vtGeom *geom;
 
 	// create water plane
-//	m_pWaterShape = CreatePlaneMGeom(m_pMats, id, org, size, 125.0f, 125.0f, 10);	// matidx 0
 	geom = CreatePlaneGeom(m_pMats, id, org, size, 125.0f, 10);
 	m_pWaterShape = new vtMovGeom(geom);
 	m_pWaterShape->SetName2("WaterSurface");
@@ -138,7 +137,6 @@ void NevadaTerrain::CreateWater()
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
 
 	// and another plane
-//	m_pWaterShape2 = CreatePlaneMGeom(m_pMats, id, org, size, 260.3f, 260.3f, 10);	// matidx 1
 	geom = CreatePlaneGeom(m_pMats, id, org, size, 260.3f, 10);
 	m_pWaterShape2 = new vtMovGeom(geom);
 	m_pWaterShape2->SetName2("WaterSurface2");
