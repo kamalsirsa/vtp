@@ -1353,6 +1353,9 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 	if (m_Params.m_bLabels)
 		_CreateLabels();
 
+	// Engines will be activated later in vtTerrainScene::SetTerrain
+	ActivateEngines(false);
+
 	return true;
 }
 
@@ -1786,6 +1789,24 @@ bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 	// add tree to scene graph
 	AddNodeToVegGrid(pTrans);
 	return true;
+}
+
+/**
+ * Delete all the selected plants in the terrain's plant array.
+ */
+void vtTerrain::DeleteSelectedPlants()
+{
+	// first remove them from the terrain
+	for (int i = 0; i < m_PIA.GetSize(); i++)
+	{
+		vtPlantInstance3d *inst3d = m_PIA.GetInstance3d(i);
+		if (inst3d->IsSelected())
+		{
+			vtTransform *pTrans = m_PIA.GetPlantNode(i);
+			m_pVegGrid->RemoveFromGrid(pTrans);
+			m_PIA.DeletePlant(i);
+		}
+	}
 }
 
 
