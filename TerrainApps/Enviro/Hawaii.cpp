@@ -129,8 +129,6 @@ void IslandTerrain::create_state_park()
 		float scale = .1f * 2.54f / 100;
 		scale *= 10;	// Exaggerate its size to make it easier to find
 		table->Scale3(scale, scale, scale);
-		// Must rotate by 90 degrees for 3DS MAX -> OpenGL
-		table->Rotate2(FPoint3(1.0f, 0.0f, 0.0f), -PID2f);
 		PlantModelAtPoint(table, park_location);
 		AddNodeToStructGrid(table);
 	}
