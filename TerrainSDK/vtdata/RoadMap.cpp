@@ -1,7 +1,7 @@
 //
 // RoadMap.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -811,11 +811,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 		fclose(fp);
 		return false;
 	}
-	float version = (float)atof(buffer+7);
-
-	// work around nasty release-mode MSVC bug: values returned from atof
-	// sometimes aren't immediately correct until another function is called
-	version = (float)atof(buffer+7);
+	double version = atof(buffer+7);
 
 	if (version < RMFVERSION_SUPPORTED)
 	{
@@ -830,7 +826,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	DeleteElements();
 
 	// Projection
-	if (version < 1.9f)
+	if (version < 1.9)
 	{
 		int proj_type=1, iUTMZone;
 		int iDatum = EPSG_DATUM_WGS84;
@@ -859,7 +855,7 @@ bool vtRoadMap::ReadRMF(const char *filename,
 	}
 
 	// Extents
-	if (version < 1.9f)
+	if (version < 1.9)
 	{
 		int le, ri, to, bo;
 		fread(&ri, intSize, 1, fp);

@@ -1,7 +1,7 @@
 //
 // RoadMap.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2005 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -11,8 +11,8 @@
 #include "DLG.h"
 
 #define RMFVERSION_STRING "RMFFile1.9"
-#define RMFVERSION_CURRENT 1.9f
-#define RMFVERSION_SUPPORTED 1.7f	// oldest supported version
+#define RMFVERSION_CURRENT 1.9
+#define RMFVERSION_SUPPORTED 1.7	// oldest supported version
 
 enum SurfaceType {
 	SURFT_NONE,		// 0
