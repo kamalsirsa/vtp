@@ -145,14 +145,14 @@ void CCameraDlg::SliderMoved(CSliderCtrl *pSlider, int nPos)
 	if (pSlider == &m_Hither)
 	{
 		// exponential range from 0.1 to 1000.0
-		m_fHither = (float)pow(10.0, (fNewVal * EXP_RANGE + MIN_EXP));
+		m_fHither = (float)pow(10.0, (double) (fNewVal * EXP_RANGE + MIN_EXP));
 		pCam->SetHither(m_fHither);
 		UpdateData(FALSE);
 	}
 	if (pSlider == &m_Yon)
 	{
 		// exponential range from 0.1 to 1000.0
-		m_fYon = (float)pow(10.0, (fNewVal * EXP_RANGE + MIN_EXP));
+		m_fYon = (float)pow(10.0, (double) (fNewVal * EXP_RANGE + MIN_EXP));
 		pCam->SetYon(m_fYon);
 		UpdateData(FALSE);
 	}
