@@ -46,8 +46,7 @@ inline ByteOrder NativeByteOrder( void )
  */
 inline short SwapShort( short data )
 {
-	assert( sizeof(short) == 2 );
-	return (data << 8) | (data >> 8);
+	return (data << 8) | ((data >> 8) & 0x00ff);
 }
 inline long SwapLong( long data )
 {
