@@ -204,7 +204,9 @@ bool vtApp::OnInit()
 	if (m_bShowStartupDialog)
 	{
 		VTLOG("Opening the Startup dialog.\n");
-		StartupDlg StartDlg(NULL, -1, _T(STRING_APPNAME) _T(" Startup"), wxDefaultPosition);
+		wxString appname = _T(STRING_APPNAME);
+		appname += _(" Startup");
+		StartupDlg StartDlg(NULL, -1, appname, wxDefaultPosition);
 		StartDlg.GetOptionsFrom(g_Options);
 		StartDlg.CenterOnParent();
 		int result = StartDlg.ShowModal();
