@@ -1,8 +1,8 @@
 //
 // Name:     app.cpp
-// Purpose:  The application class for a wxWindows application.
+// Purpose:  The application class for our wxWindows application.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -24,6 +24,7 @@
 #include "vtlib/core/TerrainScene.h"
 #include "../Enviro.h"		// for g_App, GetTerrainScene
 #include "../Options.h"
+#include "vtdata/vtLog.h"
 
 #include "app.h"
 #include "frame.h"
@@ -45,12 +46,13 @@ bool vtApp::OnInit()
 
 	g_Options.Read("Enviro.ini");
 
-	g_App.Startup();
+	g_App.Startup();	// starts log
 	g_App.LoadTerrainDescriptions();
 
 	//
 	// Create and show the Startup Dialog
 	//
+	VTLOG("Opening the Startup dialog.\n");
 	StartupDlg StartDlg(NULL, -1, "Enviro Startup", wxDefaultPosition);
 	StartDlg.GetOptionsFrom(g_Options);
 	StartDlg.CenterOnParent();
@@ -58,28 +60,30 @@ bool vtApp::OnInit()
 	if (result == wxID_CANCEL)
 		return FALSE;
 
+	VTLOG("Writing options to Enviro.ini\n");
 	StartDlg.PutOptionsTo(g_Options);
 	g_Options.Write();
 
 	//
 	// Create the main frame window
 	//
-	wxString title = "VTP Enviro ";
-#if VTLIB_DSM
-	title += "DSM";
+	wxString title = "VTP Enviro";
+#if VTLIB_PSM
+	title += " PSM";
 #elif VTLIB_OSG
-	title += "OSG";
+	title += " OSG";
 #elif VTLIB_SGL
-	title += "SGL";
+	title += " SGL";
 #elif VTLIB_SSG
-	title += "SSG";
+	title += " SSG";
 #endif
+	VTLOG("Creating the frame window.\n");
 	vtFrame *frame = new vtFrame(NULL, title,
 		wxPoint(50, 50), wxSize(800, 600));
 
 	vtGetScene()->Init();
 
-	g_App.StartControlEngine(NULL);
+	g_App.StartControlEngine();
 
 	if (g_Options.m_bFullscreen)
 		frame->SetFullScreen(true);

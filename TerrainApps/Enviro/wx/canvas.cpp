@@ -43,6 +43,7 @@ vtGLCanvas::vtGLCanvas(wxWindow *parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name, int* gl_attrib):
 wxGLCanvas(parent, id, pos, size, style, name, gl_attrib)
 {
+	VTLOG("Constructing vtGLCanvas\n");
 	parent->Show(TRUE);
 	SetCurrent();
 
@@ -63,6 +64,7 @@ vtGLCanvas::~vtGLCanvas(void)
 
 void EnableContinuousRendering(bool bTrue)
 {
+	VTLOG("EnableContinuousRendering %d\n", bTrue);
 	if (!s_canvas)
 		return;
 
@@ -140,14 +142,15 @@ void StatusTimer::Notify()
 void vtGLCanvas::OnPaint( wxPaintEvent& event )
 {
 	vtScene *pScene = vtGetScene();
-#ifdef WIN32
+
 	if (!pScene->HasWinInfo())
 	{
+		VTLOG("First OnPaint message.\n");
 		HWND handle = (HWND) GetHandle();
 		pScene->SetWinInfo(handle, m_glContext);
 //		CreateScene();
 	}
-#endif
+
 	// place the dc inside a scope, to delete it before the end of function
 	if (1)
 	{
