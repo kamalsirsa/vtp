@@ -316,25 +316,123 @@ wxSizer *DistribVegFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     item1->Add( item2, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxTextCtrl *item3 = new wxTextCtrl( parent, IDC_SAMPLING, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item1->Add( item3, 0, wxALIGN_CENTER|wxALL, 5 );
+    item1->Add( item3, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxStaticText *item4 = new wxStaticText( parent, ID_TEXT, _("Artificial scarcity, set to 1.0 for full density:"), wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     wxTextCtrl *item5 = new wxTextCtrl( parent, IDC_SCARCITY, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
-    item1->Add( item5, 0, wxALIGN_CENTER|wxALL, 5 );
+    item1->Add( item5, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
     item0->Add( item1, 0, wxALIGN_CENTER|wxLEFT|wxRIGHT|wxTOP, 5 );
 
-    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+    wxStaticBox *item7 = new wxStaticBox( parent, -1, _("Species") );
+    wxStaticBoxSizer *item6 = new wxStaticBoxSizer( item7, wxVERTICAL );
 
-    wxButton *item7 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item7, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
 
-    wxButton *item8 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    item6->Add( item8, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxRadioButton *item9 = new wxRadioButton( parent, ID_SPECIES1, _("Single species:"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item8->Add( item9, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
-    item0->Add( item6, 0, wxALIGN_CENTER|wxALL, 5 );
+    wxString *strs10 = (wxString*) NULL;
+    wxChoice *item10 = new wxChoice( parent, ID_CHOICE_SPECIES, wxDefaultPosition, wxSize(200,-1), 0, strs10, 0 );
+    item8->Add( item10, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item6->Add( item8, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item11 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item12 = new wxRadioButton( parent, ID_SPECIES2, _("Single biotype:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item11->Add( item12, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs13 = (wxString*) NULL;
+    wxChoice *item13 = new wxChoice( parent, ID_CHOICE_BIOTYPE, wxDefaultPosition, wxSize(200,-1), 0, strs13, 0 );
+    item11->Add( item13, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item6->Add( item11, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item14 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item15 = new wxRadioButton( parent, ID_SPECIES3, _("Biotype from layer:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item14->Add( item15, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs16 = (wxString*) NULL;
+    wxChoice *item16 = new wxChoice( parent, ID_CHOICE_BIOTYPE_LAYER, wxDefaultPosition, wxSize(200,-1), 0, strs16, 0 );
+    item14->Add( item16, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item6->Add( item14, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item6, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item18 = new wxStaticBox( parent, -1, _("Density") );
+    wxStaticBoxSizer *item17 = new wxStaticBoxSizer( item18, wxVERTICAL );
+
+    wxBoxSizer *item19 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item20 = new wxRadioButton( parent, ID_DENSITY1, _("Normal"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item19->Add( item20, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    item17->Add( item19, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item21 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item22 = new wxRadioButton( parent, ID_DENSITY2, _("Density from layer:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item21->Add( item22, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxString *strs23 = (wxString*) NULL;
+    wxChoice *item23 = new wxChoice( parent, ID_CHOICE_DENSITY_LAYER, wxDefaultPosition, wxSize(200,-1), 0, strs23, 0 );
+    item21->Add( item23, 1, wxALIGN_CENTER|wxALL, 5 );
+
+    item17->Add( item21, 0, wxGROW|wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item17, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxStaticBox *item25 = new wxStaticBox( parent, -1, _("Size") );
+    wxStaticBoxSizer *item24 = new wxStaticBoxSizer( item25, wxVERTICAL );
+
+    wxBoxSizer *item26 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item27 = new wxRadioButton( parent, ID_SIZE1, _("Fixed size:"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    item26->Add( item27, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxTextCtrl *item28 = new wxTextCtrl( parent, ID_TEXT_FIXED_SIZE, wxT(""), wxDefaultPosition, wxSize(80,-1), 0 );
+    item26->Add( item28, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item29 = new wxStaticText( parent, ID_TEXT, _("meters"), wxDefaultPosition, wxDefaultSize, 0 );
+    item26->Add( item29, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item24->Add( item26, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    wxBoxSizer *item30 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxRadioButton *item31 = new wxRadioButton( parent, ID_SIZE2, _("Randomize from:"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item31, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item32 = new wxSpinCtrl( parent, ID_SPIN_RANDOM_FROM, wxT("0"), wxDefaultPosition, wxSize(60,-1), 0, 0, 100, 0 );
+    item30->Add( item32, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item33 = new wxStaticText( parent, ID_TEXT, _("to"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item33, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxSpinCtrl *item34 = new wxSpinCtrl( parent, ID_SPIN_RANDOM_TO, wxT("0"), wxDefaultPosition, wxSize(60,-1), 0, 0, 100, 0 );
+    item30->Add( item34, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxStaticText *item35 = new wxStaticText( parent, ID_TEXT, _("percent of maximum"), wxDefaultPosition, wxDefaultSize, 0 );
+    item30->Add( item35, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item24->Add( item30, 0, wxALIGN_CENTER_VERTICAL, 5 );
+
+    item0->Add( item24, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+    wxBoxSizer *item36 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item37 = new wxButton( parent, wxID_OK, _("OK"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item37, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    wxButton *item38 = new wxButton( parent, wxID_CANCEL, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
+    item36->Add( item38, 0, wxALIGN_CENTER|wxALL, 5 );
+
+    item0->Add( item36, 0, wxALIGN_CENTER|wxALL, 5 );
 
     if (set_sizer)
     {
