@@ -954,6 +954,8 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 	vtLayer *pActive = GetActiveLayer();
 	LayerType t = pActive->GetType();
 
+	int layers_merged = 0;
+
 	// count down through the layer array, flattening
 	int layers = m_Layers.GetSize();
 	for (int i = layers-1; i >= 0; i--)
@@ -968,13 +970,17 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 		{
 			// successfully merged contents, so second layer can be deleted
 			RemoveLayer(pL);
+			layers_merged++;
 		}
 	}
 
-	wxString newname = "untitled";
-	newname += pActive->GetFileExtension();
-	pActive->SetFilename(newname);
-	pActive->SetModified(true);
+	if (layers_merged > 0)
+	{
+		wxString newname = "untitled";
+		newname += pActive->GetFileExtension();
+		pActive->SetFilename(newname);
+		pActive->SetModified(true);
+	}
 }
 
 void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
