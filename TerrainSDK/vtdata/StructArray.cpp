@@ -101,7 +101,7 @@ bool vtStructureArray::FindClosestBuildingCorner(const DPoint2 &point,
 			continue;
 		vtBuilding *bld = str->GetBuilding();
 
-		DLine2 &dl = bld->GetFootprint(0);
+		const DLine2 &dl = bld->GetAtFootprint(0);
 		for (j = 0; j < dl.GetSize(); j++)
 		{
 			dist = (dl.GetAt(j) - point).Length();
