@@ -24,8 +24,11 @@
 #define TEXTURE_ARGS(alpha)		true, true, alpha, false, ROAD_AMBIENT, \
 	ROAD_DIFFUSE, 1.0f, TERRAIN_EMISSIVE, false, false
 
-#define ROADTEXTURE_4WD		"GeoTypical/road_4wd1.png"
-#define ROADTEXTURE_TRAIL	"GeoTypical/trail1.png"
+#define ROADTEXTURE_4WD		"GeoTypical/road_4wd2.png"
+#define ROADTEXTURE_TRAIL	"GeoTypical/trail2.png"
+#define ROAD_FILENAME		"GeoTypical/roadset_2k.jpg"
+#define ROAD_REZ 2048
+
 
 ////////////////////////////////////////////////////////////////////
 
@@ -633,7 +636,7 @@ void LinkGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	}
 
 	assert(total_vertices == bi.verts);
-	rmgeom->AddMeshToGrid(pMesh, rmgeom->m_mi_roads);
+	rmgeom->AddMeshToGrid(pMesh, rmgeom->m_vt[m_vti].m_idx);
 }
 
 
@@ -829,7 +832,7 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 		m_pMats->AddTextureMaterial2("GeoTypical/water.jpg",
 			TEXTURE_ARGS(false));
 #endif
-		path = FindFileOnPaths(paths, "GeoTypical/roadset_1k.jpg");
+		path = FindFileOnPaths(paths, ROAD_FILENAME);
 		m_mi_roads = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(false));
 
 		path = FindFileOnPaths(paths, ROADTEXTURE_4WD);
@@ -839,31 +842,40 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 		m_mi_trail = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
 
 		m_vt[VTI_MARGIN].m_idx = m_mi_roads;
-		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/1024, 1, 992.0f/1024, 0);
+		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/ROAD_REZ, 1, 992.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_SIDEWALK].m_idx = m_mi_roads;
-		m_vt[VTI_SIDEWALK].m_rect.SetRect(512.0f/1024, 1, 640.0f/1024, 0);
+		m_vt[VTI_SIDEWALK].m_rect.SetRect(512.0f/ROAD_REZ, 1, 640.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_1LANE].m_idx = m_mi_roads;
-		m_vt[VTI_1LANE].m_rect.SetRect(451.0f/1024, 1, 511.0f/1024, 0);
+		m_vt[VTI_1LANE].m_rect.SetRect(451.0f/ROAD_REZ, 1, 511.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_2LANE1WAY].m_idx = m_mi_roads;
-		m_vt[VTI_2LANE1WAY].m_rect.SetRect(4.0f/1024, 1, 124.0f/1024, 0);
+		m_vt[VTI_2LANE1WAY].m_rect.SetRect(4.0f/ROAD_REZ, 1, 124.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_2LANE2WAY].m_idx = m_mi_roads;
-		m_vt[VTI_2LANE2WAY].m_rect.SetRect(640.0f/1024, 1, 768.0f/1024, 0);
+		m_vt[VTI_2LANE2WAY].m_rect.SetRect(640.0f/ROAD_REZ, 1, 768.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_3LANE1WAY].m_idx = m_mi_roads;
-		m_vt[VTI_3LANE1WAY].m_rect.SetRect(2.0f/1024, 1, 190.0f/1024, 0);
+		m_vt[VTI_3LANE1WAY].m_rect.SetRect(2.0f/ROAD_REZ, 1, 190.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_3LANE2WAY].m_idx = m_mi_roads;
-		m_vt[VTI_3LANE2WAY].m_rect.SetRect(768.0f/1024, 1, .0f/1024, 0);
+		m_vt[VTI_3LANE2WAY].m_rect.SetRect(768.0f/ROAD_REZ, 1, .0f/ROAD_REZ, 0);
 
 		m_vt[VTI_4LANE1WAY].m_idx = m_mi_roads;
-		m_vt[VTI_4LANE1WAY].m_rect.SetRect(0.0f/1024, 1, 256.0f/1024, 0);
+		m_vt[VTI_4LANE1WAY].m_rect.SetRect(0.0f/ROAD_REZ, 1, 256.0f/ROAD_REZ, 0);
 
 		m_vt[VTI_4LANE2WAY].m_idx = m_mi_roads;
-		m_vt[VTI_4LANE2WAY].m_rect.SetRect(256.0f/1024, 1, 512.0f/1024, 0);
+		m_vt[VTI_4LANE2WAY].m_rect.SetRect(256.0f/ROAD_REZ, 1, 512.0f/ROAD_REZ, 0);
+
+		m_vt[VTI_RAIL].m_idx = m_mi_roads;
+		m_vt[VTI_RAIL].m_rect.SetRect(992.0f/ROAD_REZ, 1, 1248.0f/ROAD_REZ, 0);
+
+		m_vt[VTI_4WD].m_idx = m_mi_4wd;
+		m_vt[VTI_4WD].m_rect.SetRect(0, 0, 1, 1);
+
+		m_vt[VTI_TRAIL].m_idx = m_mi_trail;
+		m_vt[VTI_TRAIL].m_rect.SetRect(0, 0, 1, 1);
 	}
 	else
 	{
@@ -1005,13 +1017,11 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 			pR->m_vti = 0;
 			break;
 		case SURFT_TRAIL:
-//			pR->m_vti = MATIDX_TRAIL;
-			pR->m_vti = 0;
+			pR->m_vti = VTI_TRAIL;
 			break;
 		case SURFT_2TRACK:
 		case SURFT_DIRT:
-//			pR->m_vti = MATIDX_4WD;
-			pR->m_vti = 0;
+			pR->m_vti = VTI_4WD;
 			break;
 		case SURFT_PAVED:
 			switch (pR->m_iLanes)
@@ -1029,6 +1039,9 @@ void vtRoadMap3d::DetermineSurfaceAppearance()
 				pR->m_vti = two_way ? VTI_4LANE2WAY : VTI_4LANE1WAY;
 				break;
 			}
+			break;
+		case SURFT_RAILROAD:
+			pR->m_vti = VTI_RAIL;
 			break;
 		}
 	}
