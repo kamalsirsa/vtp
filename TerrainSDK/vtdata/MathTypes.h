@@ -711,14 +711,19 @@ protected:
 	float data[3][3];
 };
 
+typedef float FMatrix4Data[4][4];
+
 /**
- * A 4x4 matrix class, double-precision.
+ * A 4x4 matrix class, single-precision.
  */
 class FMatrix4
 {
 public:
 	void  Set(int i1, int i2, float v) { data[i1][i2] = v; }
 	float Get(int i1, int i2) const { return data[i1][i2]; }
+
+	void  SetData(FMatrix4Data data_in) { memcpy(data, data_in, 64); }
+	const FMatrix4Data &GetData() const { return data; }
 
 	// set/modify
 	void Identity();
