@@ -997,6 +997,7 @@ GDALWrapper::~GDALWrapper()
 	// unregistering.  So this handles the situation where we've use OGR
 	// but not GDAL.
 	CSVDeaccess(NULL);
+	CPLFinderClean();
 
 	if (m_bOGRFormatsRegistered)
 	{
