@@ -149,50 +149,19 @@ inline double SwapBytes( double	data,
 		return SwapDouble( data );
 }
 
-/**
- * If the byte orders differ, swap bytes; if not, don't; return the result.
- * This is the memory buffer version of the SwapBytes() macros, and as such
- * supports an array of data.  It also parametizes the element type to avoid
- * function explosion.
- * \param items the data items to order
- * \param type the type of each item in the array
- * \param nitems the number if items in the array
- * \param data_order the byte order of the data
- * \param desired_order the desired byte ordering
- *
- */
 void SwapMemBytes( void *items, DataType type, size_t count,
 				   ByteOrder file_order, ByteOrder desired_order );
 
-/**
- * Just like stdio's fread(), but adds an optional byte swapping phase for
- * the data read.
- * \param ptr data buffer to read items into
- * \param type the data type of items to be read
- * \param nitems the number of items to read
- * \param stream the stdio stream open for read
- * \param file_order the byte ordering of data read from the file
- * \param desired_order the desired byte ordering
- * \return fread() return value (num items read, or negative for error)
- *
- */
 size_t FRead( void *ptr, DataType type, size_t nitems, FILE *stream,
 			  ByteOrder file_order, ByteOrder desired_order = BO_MACHINE );
 
-/**
- * Just like stdio's fread(), but adds an optional byte swapping phase for
- * the data read. File access is done via zlib's gzip IO routines to
- * be compatible with gzopen(), etc.
- * \param ptr data buffer to read items into
- * \param type the data type of items to be read
- * \param nitems the number of items to read
- * \param stream the stdio stream open for read
- * \param file_order the byte ordering of data read from the file
- * \param desired_order the desired byte ordering
- * \return fread() return value (num items read, or negative for error)
- *
- */
 size_t GZFRead( void *ptr, DataType type, size_t nitems, gzFile gzstream,
 			  ByteOrder file_order, ByteOrder desired_order = BO_MACHINE );
+
+size_t FWrite( void *ptr, DataType type, size_t nitems, FILE *stream,
+			  ByteOrder file_order, ByteOrder data_order = BO_MACHINE );
+
+size_t GZFWrite( void *ptr, DataType type, size_t nitems, gzFile gzstream,
+			  ByteOrder file_order, ByteOrder data_order = BO_MACHINE );
 
 #endif
