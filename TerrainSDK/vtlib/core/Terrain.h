@@ -119,8 +119,7 @@ public:
 	void AddRoute(vtRoute *f);
 	void add_routepoint_earth(vtRoute *f, const DPoint2 &utm);
 	void RedrawRoute(vtRoute *f);
-	void LoadRoute(vtString filename, float fRouteHeight, float fRouteSpacing,
-					float fRouteOffL, float fRouteOffR, float fRouteStInc,
+	void LoadRoute(float fRouteOffL, float fRouteOffR, float fRouteStInc,
 					vtString sRouteName);
 	void SaveRoute();
 	vtRoute* GetLastRoute() { return m_pRoutes.GetSize()>0?m_pRoutes[m_pRoutes.GetSize()-1]:0; }
