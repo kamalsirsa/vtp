@@ -1583,9 +1583,7 @@ void BuilderView::OnRightUpRoad(vtRoadLayer *pRL)
 
 void BuilderView::OnRightUpStructure(vtStructureLayer *pSL) 
 {
-	bool status = pSL->EditBuildingProperties();
-	if (status)
-		Refresh();
+	pSL->EditBuildingProperties();
 }
 
 void BuilderView::OnRightUpUtility(vtUtilityLayer *pTL)
