@@ -1045,8 +1045,7 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	fscanf(fp,"%s",sbuf);		// read ysize of array
 	int ysize = atoi(sbuf);
 	fscanf(fp,"%s\n",sbuf);		// read maxval of array
-	char *junk;					// unconverted part of a number
-//	double maxval = strtod(sbuf, &junk);// maxval. could throw away.
+	int maxval = atoi(sbuf);
 
 	// Set the projection (actually we don't know it)
 	m_proj.SetProjectionSimple(true, 1, EPSG_DATUM_WGS84);
@@ -1065,7 +1064,9 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 	_AllocateArray();
 
 	unsigned char oneb;		// one byte from file
+	short twob;				// two bytes from file
 	double a;
+	char *junk;					// unconverted part of a number
 	if (bBinary)
 	{
 		// read PGM binary
@@ -1074,8 +1075,16 @@ bool vtElevationGrid::LoadFromPGM(const char *szFileName, bool progress_callback
 			if (progress_callback != NULL) progress_callback(j * 100 / ysize);
 			for (int i = 0; i < xsize; i++)
 			{
-				fread(&oneb, sizeof(unsigned char), 1, fp);
-				SetFValue(i, ysize-1-j, oneb);
+				if (maxval == 32767)
+				{
+					fread(&twob, sizeof(short), 2, fp);
+					SetFValue(i, ysize-1-j, twob);
+				}
+				else
+				{
+					fread(&oneb, sizeof(unsigned char), 1, fp);
+					SetFValue(i, ysize-1-j, oneb);
+				}
 			}
 		}
 	}
