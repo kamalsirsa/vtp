@@ -167,7 +167,7 @@ void vtGLCanvas::OnPaint( wxPaintEvent& event )
 		if (!GetContext()) return;
 #endif
 
-		if (m_bPainting || !m_bRunning) return;
+		if (m_bPainting) return;
 
 #if !VTLIB_PSM
 		m_bPainting = true;
