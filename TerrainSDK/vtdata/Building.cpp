@@ -491,12 +491,53 @@ bool vtLevel::DetermineHeightFromSlopes()
 	return bFoundASolution;
 }
 
+//
+// Look at the materials of this level's edges.  If they all use the
+// same material, return it.  Otherwise, return BMAT_UNKNOWN.
+//
+BldMaterial vtLevel::GetOverallEdgeMaterial()
+{
+	BldMaterial most = BMAT_UNKNOWN;
+
+	int edges = GetNumEdges();
+	for (int i = 0; i < edges; i++)
+	{
+		vtEdge *pEdge = GetEdge(i);
+		BldMaterial mat = pEdge->m_Material;
+		if (most == BMAT_UNKNOWN)
+			most = mat;
+		else if (most != mat)
+			return BMAT_UNKNOWN;
+	}
+	return most;
+}
+
+//
+// Look at the materials of this level's edges.  If they all use the
+// same material, return it.  Otherwise, return BMAT_UNKNOWN.
+//
+bool vtLevel::GetOverallEdgeColor(RGBi &color)
+{
+	RGBi col1(-1, -1, -1);
+
+	int edges = GetNumEdges();
+	for (int i = 0; i < edges; i++)
+	{
+		vtEdge *pEdge = GetEdge(i);
+		RGBi col2 = pEdge->m_Color;
+		if (col1.r == -1)
+			col1 = col2;
+		else if (col1 != col2)
+			return false;
+	}
+	color = col1;
+	return true;
+}
 
 /////////////////////////////////////
 
 vtBuilding::vtBuilding()
 {
-	m_RoofType = ROOF_FLAT;			// default roof
 	m_bMoulding = false;
 	m_bElevated = false;			// default placement
 }
@@ -515,7 +556,6 @@ void vtBuilding::DeleteStories()
 
 vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 {
-	m_RoofType = v.m_RoofType;
 	m_bMoulding = v.m_bMoulding;
 	m_bElevated = v.m_bElevated;
 	m_EarthPos = v.m_EarthPos;
@@ -671,8 +711,6 @@ void vtBuilding::SetFootprint(int i, const DLine2 &dl)
 
 void vtBuilding::SetRoofType(RoofType rt)
 {
-	m_RoofType = rt;
-
 	// if there is a roof level, attempt to set its edge angles to match
 	// the desired roof type
 	if (GetNumLevels() < 2)
@@ -703,6 +741,39 @@ void vtBuilding::SetRoofType(RoofType rt)
 			edge1->m_Color = edge0->m_Color;
 		}
 	}
+}
+
+RoofType vtBuilding::GetRoofType()
+{
+	// try to guess type of roof from looking at slopes of edges of
+	// the top level
+	vtLevel *pLev = GetLevel(GetNumLevels()-1);
+
+	int sloped = 0, vert = 0, hori = 0;
+	int i, edges = pLev->GetNumEdges();
+	for (i = 0; i < edges; i++)
+	{
+		vtEdge *edge = pLev->GetEdge(i);
+		if (edge->m_iSlope == 0)
+			hori++;
+		else if (edge->m_iSlope == 90)
+			vert++;
+		else
+			sloped++;
+	}
+	if (hori)
+		return ROOF_FLAT;
+
+	if (sloped == 1 && vert == edges-1)
+		return ROOF_SHED;
+
+	if (sloped == edges)
+		return ROOF_HIP;
+
+	if (sloped > 0 && vert > 0)
+		return ROOF_GABLE;
+
+	return ROOF_UNKNOWN;
 }
 
 void vtBuilding::SetCenterFromPoly()
@@ -841,12 +912,13 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	fprintf(fp, "\t\t</shapes>\n");
 
 	fprintf(fp, "\t\t<roof type=\"");
-	switch (m_RoofType)
+	switch (GetRoofType())
 	{
 	case ROOF_FLAT: fprintf(fp, "flat"); break;
 	case ROOF_SHED: fprintf(fp, "shed"); break;
 	case ROOF_GABLE: fprintf(fp, "gable"); break;
 	case ROOF_HIP: fprintf(fp, "hip"); break;
+	case ROOF_UNKNOWN: fprintf(fp, "unknown"); break;
 	}
 	color = GetColor(BLD_ROOF);
 	fprintf(fp, "\" color=\"%d %d %d\" />\n", color.r, color.g, color.b);
@@ -903,3 +975,22 @@ void vtBuilding::DetermineLocalFootprints()
 	}
 }
 
+const char *vtBuilding::GetMaterialString(BldMaterial mat)
+{
+	switch (mat)
+	{
+	case BMAT_UNKNOWN: return "Unknown"; break;
+	case BMAT_PLAIN: return "Plain"; break;
+	case BMAT_WOOD: return "Wood"; break;
+	case BMAT_SIDING: return "Siding"; break;
+	case BMAT_GLASS: return "Glass"; break;
+	case BMAT_BRICK: return "Brick"; break;
+	case BMAT_CEMENT: return "Cement"; break;
+	case BMAT_STUCCO: return "Stucco"; break;
+	case BMAT_CORRUGATED: return "Corrugated"; break;
+	case BMAT_DOOR: return "Door"; break;
+	case BMAT_WINDOW: return "Window"; break;
+	case BMAT_WINDOWWALL: return "Window-Wall"; break;
+	}
+	return "Bad Value";
+}

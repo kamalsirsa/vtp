@@ -18,7 +18,7 @@
 
 enum RoofType
 {
-	ROOF_FLAT, ROOF_SHED, ROOF_GABLE, ROOF_HIP, NUM_ROOFTYPES
+	ROOF_FLAT, ROOF_SHED, ROOF_GABLE, ROOF_HIP, ROOF_UNKNOWN, NUM_ROOFTYPES
 };
 
 enum BldColor
@@ -92,7 +92,7 @@ public:
 	float ProportionTotal();
 
 	// color
-	RGBi	m_Color;			// overall edge color
+	RGBi	m_Color;	// overall edge color
 
 	// slope in degrees: 90 is vertical, 0 is horizontal
 	int	m_iSlope;
@@ -123,6 +123,9 @@ public:
 	int GetNumEdges() { return m_Edges.GetSize(); }
 	vtEdge *GetEdge(int i) { return m_Edges[i]; }
 	float GetEdgeLength(int i);
+	BldMaterial GetOverallEdgeMaterial();
+	bool GetOverallEdgeColor(RGBi &color);
+
 	bool HasSlopedEdges();
 	bool IsHorizontal();
 	bool IsEdgeConvex(int i);
@@ -181,7 +184,7 @@ public:
 	DLine2 &GetFootprint(int i) { return m_Levels[i]->GetFootprint(); }
 
 	void SetRoofType(RoofType rt);
-	RoofType GetRoofType() { return m_RoofType; }
+	RoofType GetRoofType();
 
 	void SetColor(BldColor which, RGBi col);
 	RGBi GetColor(BldColor which) const;
@@ -206,6 +209,7 @@ public:
 	bool		m_bElevated;
 
 	static vtLocalConversion s_Conv;
+	static const char *GetMaterialString(BldMaterial mat);
 
 protected:
 	// information about each story
@@ -215,7 +219,6 @@ protected:
 	DPoint2		m_EarthPos;			// location of building center
 
 private:
-	RoofType	m_RoofType;
 	void DeleteStories();
 };
 
