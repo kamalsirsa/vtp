@@ -273,7 +273,8 @@ bool BuilderView::ImportWorldMap()
 	SHPHandle	hSHP;
 	int			nShapeType, nShapeCount;
 	double		adfMinBound[4], adfMaxBound[4];
-	int			i, j, k;
+	unsigned int i;
+	int j, k;
 
 	const char *filename = "WorldMap/gnv19.shp";
 	VTLOG(" Attempting to open %s\n", filename);
@@ -287,13 +288,14 @@ bool BuilderView::ImportWorldMap()
 	SHPGetInfo(hSHP, &nShapeCount, &nShapeType, adfMinBound, adfMaxBound);
 	if (nShapeType != SHPT_POLYGON)
 		return false;
+	unsigned int iShapeCount = nShapeCount;
 
 	// Copy SHP data into World Map Poly data
-	WMPoly.reserve(nShapeCount * 11 / 10);
+	WMPoly.reserve(iShapeCount * 11 / 10);
 
 	int points, start, stop;
 
-	for (i = 0; i < nShapeCount; i++)
+	for (i = 0; i < iShapeCount; i++)
 	{
 		DPoint2 p;
 
@@ -346,7 +348,7 @@ void myErrorHandler(CPLErr err, int i, const char*str)
 
 void BuilderView::SetWMProj(const vtProjection &proj)
 {
-	int i, j;
+	unsigned int i, j;
 
 	if (WMPoly.size() == 0)
 		return;
@@ -439,13 +441,13 @@ void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 	pDC->SetPen(WMPen);
 
 	// Draw each poly in WMPolyDraw
-	int wmbuflen, pts;
-	for (int i = 0; i < m_iEntities; i++)
+	unsigned int wmbuflen, pts;
+	for (unsigned int i = 0; i < m_iEntities; i++)
 	{
 		wmbuflen = 0;
 		pts = WMPolyDraw[i].GetSize();
 
-		for (int j = 0; j < pts && j < MAXPOINTS; j++)
+		for (unsigned int j = 0; j < pts && j < MAXPOINTS; j++)
 		{
 			wmbuf[j].x = pView->sx(WMPolyDraw[i].GetAt(j).x);
 			wmbuf[j].y = pView->sy(WMPolyDraw[i].GetAt(j).y);

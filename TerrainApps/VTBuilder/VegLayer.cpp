@@ -205,7 +205,7 @@ bool vtVegLayer::OnSave()
 {
 	// currently we can load and save VF files (Plant Instances)
 	if (m_VLType == VLT_Instances)
-		return m_Pia.WriteVF(m_strFilename.mb_str());
+		return m_Pia.WriteVF(GetLayerFilename().mb_str());
 	return false;
 }
 
@@ -221,7 +221,7 @@ bool vtVegLayer::OnLoad()
 	// currently we can load and save VF files (Plant Instances), so if they
 	//  are loading, we can assume it is from a plant instance file
 	m_Pia.SetPlantList(plants);
-	if (m_Pia.ReadVF(m_strFilename.mb_str()))
+	if (m_Pia.ReadVF(GetLayerFilename().mb_str()))
 	{
 		m_VLType = VLT_Instances;
 		return true;
@@ -240,11 +240,11 @@ bool vtVegLayer::ConvertProjection(vtProjection &proj_new)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	int i, j;
+	unsigned int i, j;
 	for (i = 0; i < m_Poly.size(); i++)
 	{
 		DLine2 &poly = m_Poly[i];
-		int size = poly.GetSize();
+		unsigned int size = poly.GetSize();
 		for (j = 0; j < size; j++)
 		{
 			DPoint2 &p = poly.GetAt(j);
@@ -301,8 +301,8 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	m_VLType = VLT_Density;
 
 	// figure out the number of polygons in file 
-	int size = 0;
-	for (int sec = 0; sec < pLULC->NumSections(); sec++)
+	unsigned int size = 0;
+	for (unsigned int sec = 0; sec < pLULC->NumSections(); sec++)
 	{
 		section = pLULC->GetSection(sec);
 		size = size + section->m_iNumPolys;
@@ -311,7 +311,7 @@ void vtVegLayer::AddElementsFromLULC(vtLULCFile *pLULC)
 	m_Density.SetSize(size);
 
 	// get each poly from LULC file
-	int i, s, p, count = 0;
+	unsigned int i, s, p, count = 0;
 	float density;
 	for (s = 0; s < pLULC->NumSections(); s++)
 	{
@@ -426,7 +426,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 	m_Poly.resize(nElem);
 
 	// Read Polys from SHP into Veg Poly
-	for (int i = 0; i < nElem; i++)
+	for (unsigned int i = 0; i < (unsigned int) nElem; i++)
 	{
 		// Read DBF Attributes per poly
 		if (datatype == 0)
@@ -454,7 +454,7 @@ void vtVegLayer::AddElementsFromSHP_Polys(const wxString2 &filename,
 		dline.SetSize(psShape->nVertices);
 
 		// Store each SHP Poly Coord in Veg Poly
-		for (int j = 0; j < m_Poly[i].GetSize(); j++)
+		for (unsigned int j = 0; j < m_Poly[i].GetSize(); j++)
 		{
 			dline.GetAt(j).x = psShape->padfX[j];
 			dline.GetAt(j).y = psShape->padfY[j];

@@ -149,9 +149,9 @@ vtElevLayer::~vtElevLayer()
 bool vtElevLayer::OnSave()
 {
 	if (m_pGrid)
-		return m_pGrid->SaveToBT(m_strFilename.mb_str(), NULL, m_bPreferGZip);
+		return m_pGrid->SaveToBT(GetLayerFilename().mb_str(), NULL, m_bPreferGZip);
 	if (m_pTin)
-		return m_pTin->Write(m_strFilename.mb_str());
+		return m_pTin->Write(GetLayerFilename().mb_str());
 	return false;
 }
 
@@ -161,21 +161,22 @@ bool vtElevLayer::OnLoad()
 
 	bool success = false;
 
-	if (m_strFilename.Contains(_T(".bt")))
+	wxString2 fname = GetLayerFilename();
+	if (fname.Contains(_T(".bt")))
 	{
 		// remember whether this layer was read from a compressed file
-		if (!m_strFilename.Right(6).CmpNoCase(_T(".bt.gz")))
+		if (!fname.Right(6).CmpNoCase(_T(".bt.gz")))
 			m_bPreferGZip = true;
 
 		m_pGrid = new vtElevationGrid();
-		success = m_pGrid->LoadFromBT(m_strFilename.mb_str(), progress_callback);
+		success = m_pGrid->LoadFromBT(fname.mb_str(), progress_callback);
 		m_pGrid->GetDimensions(m_iColumns, m_iRows);
 	}
-	else if (!m_strFilename.Right(4).CmpNoCase(_T(".tin")) ||
-			 !m_strFilename.Right(4).CmpNoCase(_T(".itf")))
+	else if (!fname.Right(4).CmpNoCase(_T(".tin")) ||
+			 !fname.Right(4).CmpNoCase(_T(".itf")))
 	{
 		m_pTin = new vtTin2d();
-		success = m_pTin->Read(m_strFilename.mb_str());
+		success = m_pTin->Read(fname.mb_str());
 	}
 
 	CloseProgressDialog();
@@ -419,7 +420,7 @@ void vtElevLayer::SetupDefaults()
 {
 	m_bNeedsDraw = false;
 	m_bBitmapRendered = false;
-	m_strFilename = _T("Untitled");
+	SetLayerFilename(_T("Untitled"));
 	m_bPreferGZip = false;
 
 	m_pBitmap = NULL;
@@ -1215,7 +1216,7 @@ bool vtElevLayer::AskForSaveFilename()
 //		AddType(filter, _T(""));
 	}
 
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), m_strFilename,
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 
 	if (m_pGrid && m_bPreferGZip)
@@ -1247,7 +1248,7 @@ bool vtElevLayer::AskForSaveFilename()
 			name += _T(".bt");
 	}
 
-	SetFilename(name);
+	SetLayerFilename(name);
 	m_bNative = true;
 	return true;
 }

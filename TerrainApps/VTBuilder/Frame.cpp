@@ -548,7 +548,7 @@ bool MainFrame::AddLayerWithCheck(vtLayer *pLayer, bool bRefresh)
 					_T("is using:\n     %hs\n")
 					_T("Would you like to attempt to convert it now to the existing projection?"),
 				str1,
-				pLayer->GetFilename().c_str(),
+				pLayer->GetLayerFilename().c_str(),
 				str2);
 			OGRFree(str1);
 			OGRFree(str2);
@@ -1153,7 +1153,7 @@ void MainFrame::SaveProject(const wxString2 &strPathName)
 		if (!lp->GetVisible())
 			fprintf(fp, " hidden");
 		fprintf(fp, "\n");
-		fprintf(fp, "%s\n", lp->GetFilename().mb_str());
+		fprintf(fp, "%s\n", lp->GetLayerFilename().mb_str());
 	}
 
 	// write area
@@ -1211,7 +1211,7 @@ void MainFrame::ExportElevation()
 
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
-	for (int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() == LT_ELEVATION)
@@ -1257,7 +1257,7 @@ void MainFrame::ExportElevation()
 	// Make new terrain
 	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
-	pOutput->SetFilename(strPathName);
+	pOutput->SetLayerFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
 	SampleCurrentTerrains(pOutput);
@@ -1281,7 +1281,7 @@ void MainFrame::ExportImage()
 {
 	// sample spacing in meters/heixel or degrees/heixel
 	DPoint2 spacing(0, 0);
-	for (int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() == LT_IMAGE)
@@ -1320,7 +1320,7 @@ void MainFrame::ExportImage()
 	// Make new image
 	vtImageLayer *pOutput = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
 			dlg.m_iSizeY, m_proj);
-	pOutput->SetFilename(strPathName);
+	pOutput->SetLayerFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
 	SampleCurrentImages(pOutput);
@@ -1339,7 +1339,7 @@ void MainFrame::ExportImage()
 
 void MainFrame::FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap)
 {
-	for (int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *lp = m_Layers.GetAt(i);
 		if (lp->GetType() == LT_VEG)
@@ -1364,7 +1364,7 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 	vtVegLayer *pDensity, vtVegLayer *pVegType,
 	float fTreeSpacing, float fTreeScarcity)
 {
-	int i, j, k;
+	unsigned int i, j, k;
 	DPoint2 p, p2;
 
 	for (i = 0; i < m_BioRegions.m_Types.GetSize(); i++)
@@ -1376,8 +1376,8 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 
 	float x_size = (area.right - area.left);
 	float y_size = (area.top - area.bottom);
-	int x_trees = (int)(x_size / fTreeSpacing);
-	int y_trees = (int)(y_size / fTreeSpacing);
+	unsigned int x_trees = (unsigned int)(x_size / fTreeSpacing);
+	unsigned int y_trees = (unsigned int)(y_size / fTreeSpacing);
 
 	int bio_type;
 	float density_scale;

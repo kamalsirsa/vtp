@@ -28,7 +28,7 @@
 
 vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 {
-	m_strFilename = _T("Untitled.shp");
+	SetFilename("Untitled.shp");
 	m_nSHPType = SHPT_NULL;
 }
 
@@ -158,7 +158,7 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 	if (!trans)
 		return false;		// inconvertible projections
 
-	int i, j, pts, success, good = 0, bad = 0;
+	unsigned int i, j, pts, success, good = 0, bad = 0;
 	if (m_nSHPType == SHPT_POINT)
 	{
 		for (i = 0; i < m_Point2.GetSize(); i++)
@@ -198,19 +198,20 @@ bool vtRawLayer::ConvertProjection(vtProjection &proj)
 
 bool vtRawLayer::OnSave()
 {
-	return SaveToSHP(m_strFilename.mb_str());
+	return SaveToSHP(GetFilename());
 }
 
 bool vtRawLayer::OnLoad()
 {
-	if (!m_strFilename.Right(4).CmpNoCase(_T(".gml")) ||
-		 !m_strFilename.Right(4).CmpNoCase(_T(".xml")))
+	wxString2 fname = GetLayerFilename();
+	if (!fname.Right(4).CmpNoCase(_T(".gml")) ||
+		 !fname.Right(4).CmpNoCase(_T(".xml")))
 	{
-		return LoadWithOGR(m_strFilename.mb_str(), progress_callback);
+		return LoadWithOGR(fname.mb_str(), progress_callback);
 	}
-	else if (!m_strFilename.Right(4).CmpNoCase(_T(".shp")))
+	else if (!fname.Right(4).CmpNoCase(_T(".shp")))
 	{
-		return LoadFromSHP(m_strFilename.mb_str());
+		return LoadFromSHP(fname.mb_str());
 	}
 	return false;
 }
@@ -360,7 +361,7 @@ void vtRawLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 			FeatInfoDlg	*fdlg = GetMainFrame()->ShowFeatInfoDlg();
 			fdlg->SetFeatureSet(this);
 			DePickAll();
-			for (int i = 0; i < found.GetSize(); i++)
+			for (unsigned int i = 0; i < found.GetSize(); i++)
 				Pick(found[i]);
 			fdlg->ShowPicked();
 		}

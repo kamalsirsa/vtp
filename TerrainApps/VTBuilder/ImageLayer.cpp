@@ -227,7 +227,7 @@ bool vtImageLayer::ConvertProjection(vtProjection &proj)
 
 bool vtImageLayer::OnSave()
 {
-	return SaveToFile(m_strFilename);
+	return SaveToFile(GetLayerFilename().mb_str());
 }
 
 bool vtImageLayer::OnLoad()
@@ -386,7 +386,7 @@ bool vtImageLayer::LoadFromGDAL()
 
 	try
 	{
-		pDataset = (GDALDataset *) GDALOpen(m_strFilename.mb_str(), GA_ReadOnly);
+		pDataset = (GDALDataset *) GDALOpen(GetLayerFilename().mb_str(), GA_ReadOnly);
 		if(pDataset == NULL )
 			throw "Couldn't open that file.";
 
@@ -413,7 +413,7 @@ bool vtImageLayer::LoadFromGDAL()
 		if (!bHaveProj)
 		{
 			// check for existence of .prj file
-			bool bSuccess = m_proj.ReadProjFile(m_strFilename.mb_str());
+			bool bSuccess = m_proj.ReadProjFile(GetLayerFilename().mb_str());
 			if (bSuccess)
 				bHaveProj = true;
 		}

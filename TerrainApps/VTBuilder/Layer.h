@@ -79,8 +79,6 @@ public:
 	virtual ~vtLayer();
 
 	// attributes
-	wxString2 GetFilename() { return m_strFilename; }
-	void SetFilename(const wxString &fname);
 	LayerType GetType() { return m_type; }
 	bool SetVisible(bool bVisible);
 	bool GetVisible() { return m_bVisible; }
@@ -108,6 +106,8 @@ public:
 	virtual void GetPropertyText(wxString &str) {}
 	virtual wxString GetFileExtension();
 	virtual bool CanBeSaved() { return true; }
+	virtual wxString2 GetLayerFilename() { return m_wsFilename; }
+	virtual void SetLayerFilename(const wxString2 &fname);
 
 	// UI event handlers which can be implemented if desired
 	virtual void OnLeftDown(BuilderView *pView, UIContext &ui) {}
@@ -125,7 +125,8 @@ protected:
 	wxString GetSaveFileDialogFilter();
 	void SetMessageText(const wxString &msg);
 
-	wxString2	m_strFilename;
+	// this filename is only used if the layer subclass doesn't have its own
+	wxString2	m_wsFilename;
 	LayerType	m_type;
 	bool		m_bVisible;
 	bool		m_bModified;

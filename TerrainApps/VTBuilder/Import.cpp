@@ -401,9 +401,9 @@ bool MainFrame::ImportDataFromFile(LayerType ltype, const wxString2 &strFileName
 	}
 	VTLOG("  import succeeded.\n");
 
-	wxString2 fname = pLayer->GetFilename();
+	wxString2 fname = pLayer->GetLayerFilename();
 	if (fname.IsEmpty() || !fname.Cmp(_T("Untitled")))
-		pLayer->SetFilename(strFileName);
+		pLayer->SetLayerFilename(strFileName);
 
 	bool success = AddLayerWithCheck(pLayer, true);
 	if (!success)
@@ -677,7 +677,7 @@ vtLayerPtr MainFrame::ImportFromSHP(const wxString2 &strFileName, LayerType ltyp
 
 	if (ltype == LT_RAW)
 	{
-		pLayer->SetFilename(strFileName);
+		pLayer->SetLayerFilename(strFileName);
 		if (!pLayer->OnLoad())
 		{
 			delete pLayer;
@@ -713,7 +713,7 @@ vtLayerPtr MainFrame::ImportImage(const wxString2 &strFileName)
 {
 	vtImageLayer *pLayer = new vtImageLayer();
 
-	pLayer->SetFilename(strFileName);
+	pLayer->SetLayerFilename(strFileName);
 	bool success = pLayer->OnLoad();
 
 	if (success)
@@ -879,11 +879,11 @@ void MainFrame::ImportDataFromTIGER(const wxString2 &strDirName)
 
 	// create the new layers
 	vtWaterLayer *pWL = new vtWaterLayer;
-	pWL->SetFilename(strDirName + _T("/water"));
+	pWL->SetLayerFilename(strDirName + _T("/water"));
 	pWL->SetModified(true);
 
 	vtRoadLayer *pRL = new vtRoadLayer;
-	pRL->SetFilename(strDirName + _T("/roads"));
+	pRL->SetLayerFilename(strDirName + _T("/roads"));
 	pRL->SetModified(true);
 
 	int i, j, feature_count;

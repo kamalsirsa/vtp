@@ -33,7 +33,7 @@ static bool g_bInitializedPens = false;
 
 vtStructureLayer::vtStructureLayer() : vtLayer(LT_STRUCTURE)
 {
-	m_strFilename = _T("Untitled.vtst");
+	SetLayerFilename(_T("Untitled.vtst"));
 
 	if (!g_bInitializedPens)
 	{
@@ -191,7 +191,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 
 void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 {
-	int j;
+	unsigned int j;
 	DLine2 &pts = fen->GetFencePoints();
 	for (j = 0; j < pts.GetSize(); j++)
 		pView->screen(pts.GetAt(j), g_screenbuf[j]);
@@ -207,12 +207,12 @@ void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 
 bool vtStructureLayer::OnSave()
 {
-	return WriteXML(m_strFilename.mb_str());
+	return WriteXML(GetFilename());
 }
 
 bool vtStructureLayer::OnLoad()
 {
-	return ReadXML(m_strFilename.mb_str());
+	return ReadXML(GetFilename());
 }
 
 void vtStructureLayer::GetProjection(vtProjection &proj)
@@ -238,8 +238,8 @@ bool vtStructureLayer::ConvertProjection(vtProjection &proj)
 		return false;		// inconvertible projections
 
 	DPoint2 loc;
-	int i, j;
-	int count = GetSize();
+	unsigned int i, j;
+	unsigned int count = GetSize();
 	for (i = 0; i < count; i++)
 	{
 		vtStructure *str = GetAt(i);
@@ -297,11 +297,11 @@ bool vtStructureLayer::AppendDataFrom(vtLayer *pL)
 
 void vtStructureLayer::Offset(const DPoint2 &delta)
 {
-	int npoints = GetSize();
+	unsigned int npoints = GetSize();
 	if (!npoints)
 		return;
 
-	int i, j;
+	unsigned int i, j;
 	DPoint2 temp;
 	for (i = 0; i < npoints; i++)
 	{
@@ -771,7 +771,7 @@ void vtStructureLayer::UpdateRotate(UIContext &ui)
 	double angle_diff = angle2 - angle1;
 
 	DPoint2 p;
-	int i, j, levs = ui.m_pCurBuilding->GetNumLevels();
+	unsigned int i, j, levs = ui.m_pCurBuilding->GetNumLevels();
 	for (i = 0; i < levs; i++)
 	{
 		DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
@@ -801,12 +801,12 @@ void vtStructureLayer::UpdateResizeScale(BuilderView *pView, UIContext &ui)
 	DPoint2 diff2 = ui.m_CurLocation - origin;
 	float fScale = diff2.Length() / diff1.Length();
 
-	int i, j;
+	unsigned int i, j;
 	DPoint2 p;
 	if (ui.m_bShift)
 	{
 		// Scale evenly
-		int levs = ui.m_pCurBuilding->GetNumLevels();
+		unsigned int levs = ui.m_pCurBuilding->GetNumLevels();
 		for (i = 0; i < levs; i++)
 		{
 			DLine2 dl = ui.m_pCurBuilding->GetFootprint(i);
@@ -991,7 +991,7 @@ int vtStructureLayer::DoBoxSelect(const DRECT &rect, SelectionType st)
 	int affected = 0;
 	bool bWas;
 
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		vtStructure *str = GetAt(i);
 

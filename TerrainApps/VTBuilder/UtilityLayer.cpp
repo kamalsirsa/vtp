@@ -23,7 +23,7 @@ static bool g_bInitializedPens = false;
 
 vtUtilityLayer::vtUtilityLayer() : vtLayer(LT_UTILITY)
 {
-	m_strFilename = _T("Untitled.utl");
+	SetLayerFilename(_T("Untitled.utl"));
 
 	if (!g_bInitializedPens)
 	{
@@ -51,9 +51,9 @@ bool vtUtilityLayer::GetExtent(DRECT &rect)
 
 void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 {
-	int i, j;
-	int npoles = m_Poles.GetSize();
-	int nlines = m_Lines.GetSize();
+	unsigned int i, j;
+	unsigned int npoles = m_Poles.GetSize();
+	unsigned int nlines = m_Lines.GetSize();
 
 	if (!npoles)
 		return;
@@ -113,7 +113,7 @@ void vtUtilityLayer::DrawPole(wxDC* pDC, vtScaledView *pView, vtPole *pole)
 
 bool vtUtilityLayer::OnSave()
 {
-	wxString strExt = m_strFilename.AfterLast('.');
+	wxString strExt = GetLayerFilename().AfterLast('.');
 
 //	if (!strExt.CmpNoCase("utl"))
 //		return WriteUTL(m_strFilename);
@@ -122,7 +122,7 @@ bool vtUtilityLayer::OnSave()
 
 bool vtUtilityLayer::OnLoad()
 {
-	wxString strExt = m_strFilename.AfterLast('.');
+	wxString strExt = GetLayerFilename().AfterLast('.');
 
 //	if (!strExt.CmpNoCase("utl"))
 //		return ReadUTL(m_strFilename);

@@ -31,6 +31,13 @@ public:
 	void GetPropertyText(wxString &strIn);
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
 
+	wxString2 GetLayerFilename() { return wxString2(GetFilename()); }
+	void SetLayerFilename(const wxString2 &fname)
+	{
+		SetFilename(fname.mb_str());
+		vtLayer::SetLayerFilename(fname);
+	}
+
 	void ReadGeoURL();
 };
 

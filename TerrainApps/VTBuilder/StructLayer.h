@@ -36,6 +36,13 @@ public:
 	void Offset(const DPoint2 &p);
 	void GetPropertyText(wxString &str);
 
+	wxString2 GetLayerFilename() { return wxString2(GetFilename()); }
+	void SetLayerFilename(const wxString2 &fname)
+	{
+		SetFilename(fname.mb_str());
+		vtLayer::SetLayerFilename(fname);
+	}
+
 	// UI event handlers
 	void OnLeftDown(BuilderView *pView, UIContext &ui);
 	void OnLeftUp(BuilderView *pView, UIContext &ui);

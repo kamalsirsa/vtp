@@ -206,7 +206,7 @@ protected:
 	bool	m_bShowMap;
 	DPolyArray2		WMPoly;		// Original data from SHP file
 	DPolyArray2		WMPolyDraw; // This is the WM that is drawn
-	int		m_iEntities;
+	unsigned int	m_iEntities;
 	bool	m_bAttemptedLoad;
 
 	bool ImportWorldMap();

@@ -238,7 +238,7 @@ bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 	}
 
 	//simple correct case:
-	for (int i = 0; i < GetSize(); i++)
+	for (unsigned int i = 0; i < GetSize(); i++)
 	{
 		DPoint2 point = GetAt(i);
 		if (point.x > bound.left && point.x < bound.right &&

@@ -116,7 +116,7 @@ bool vtLayer::Save(const wxString &filename)
 bool vtLayer::Load(const wxString &filename)
 {
 	if (filename != _T(""))
-		SetFilename(filename);
+		SetLayerFilename(filename);
 	bool success = OnLoad();
 	if (success)
 		m_bNative = true;
@@ -138,12 +138,12 @@ void vtLayer::SetModified(bool bModified)
 		GetMainFrame()->RefreshTreeStatus();
 }
 
-void vtLayer::SetFilename(const wxString &fname)
+void vtLayer::SetLayerFilename(const wxString2 &fname)
 {
 	wxString2 fname_in = fname;
 	VTLOG("Setting layer filename to '%s'\n", fname_in.mb_str());
-	bool bNeedRefresh = (m_strFilename.Cmp(fname_in) != 0);
-	m_strFilename = fname_in;
+	bool bNeedRefresh = (m_wsFilename.Cmp(fname_in) != 0);
+	m_wsFilename = fname_in;
 	if (bNeedRefresh)
 		GetMainFrame()->RefreshTreeStatus();
 }
@@ -167,7 +167,7 @@ wxString vtLayer::GetSaveFileDialogFilter()
 bool vtLayer::AskForSaveFilename()
 {
 	wxString filter = GetSaveFileDialogFilter();
-	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), m_strFilename,
+	wxFileDialog saveFile(NULL, _T("Save Layer"), _T(""), GetLayerFilename(),
 		filter, wxSAVE | wxOVERWRITE_PROMPT);
 
 	VTLOG("Asking user for file name\n");
@@ -184,7 +184,7 @@ bool vtLayer::AskForSaveFilename()
 	{
 		name += ext;
 	}
-	SetFilename(name);
+	SetLayerFilename(name);
 	m_bNative = true;
 	return true;
 }

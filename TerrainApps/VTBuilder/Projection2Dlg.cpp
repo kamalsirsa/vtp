@@ -110,10 +110,9 @@ void Projection2Dlg::RefreshDatums()
 {
 	m_pDatumCtrl->Clear();
 
-	int i;
 	wxString2 str;
 	m_pDatumCtrl->Append(_T("Unknown"), (void *) (-1+CHOICE_OFFSET));
-	for (i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		int code = g_EPSGDatums[i].iCode;
 		str = g_EPSGDatums[i].szName;
@@ -211,9 +210,8 @@ void Projection2Dlg::UpdateControlStatus()
 
 void Projection2Dlg::UpdateDatumStatus()
 {
-	int i;
 	bool bIsCommon = false;
-	for (i = 0; i < g_EPSGDatums.GetSize(); i++)
+	for (unsigned int i = 0; i < g_EPSGDatums.GetSize(); i++)
 	{
 		if (g_EPSGDatums[i].iCode == m_iDatum)
 			bIsCommon = g_EPSGDatums[i].bCommon;

@@ -21,7 +21,7 @@
 
 vtWaterLayer::vtWaterLayer() : vtLayer(LT_WATER)
 {
-	m_strFilename = _T("Untitled.hyd");
+	SetLayerFilename(_T("Untitled.hyd"));
 }
 
 vtWaterLayer::~vtWaterLayer()
@@ -139,10 +139,10 @@ void vtWaterLayer::SetProjection(const vtProjection &proj)
 
 void vtWaterLayer::Offset(const DPoint2 &p)
 {
-	int size = m_Lines.size();
-	for (int i = 0; i < size; i++)
+	unsigned int size = m_Lines.size();
+	for (unsigned int i = 0; i < size; i++)
 	{
-		for (int c = 0; c < m_Lines[i].GetSize(); c++)
+		for (unsigned int c = 0; c < m_Lines[i].GetSize(); c++)
 			m_Lines[i].GetAt(c) += p;
 	}
 }

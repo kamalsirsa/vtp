@@ -139,7 +139,7 @@ wxString MyTreeCtrl::MakeItemName(vtLayerPtr lp)
 	wxString str;
 	if (lp->GetModified())
 		str = _T("(*) ");
-	wxString2 fullpath = lp->GetFilename();
+	wxString2 fullpath = lp->GetLayerFilename();
 
 	if (!m_bShowPaths)
 	{

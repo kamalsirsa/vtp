@@ -932,18 +932,18 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 void MainFrame::OnLayerSave(wxCommandEvent &event)
 {
 	vtLayer *lp = GetActiveLayer();
-	if (lp->GetFilename().Left(9).CmpNoCase(_T("untitled.")) == 0)
+	if (lp->GetLayerFilename().Left(9).CmpNoCase(_T("untitled.")) == 0)
 	{
 		if (!lp->AskForSaveFilename())
 			return;
 	}
-	wxString2 msg = _T("Saving layer to file ") + lp->GetFilename();
+	wxString2 msg = _T("Saving layer to file ") + lp->GetLayerFilename();
 	SetStatusText(msg);
 	VTLOG(msg.mb_str());
 	VTLOG("\n");
 
 	if (lp->Save())
-		msg = _T("Saved layer to file ") + lp->GetFilename();
+		msg = _T("Saved layer to file ") + lp->GetLayerFilename();
 	else
 		msg = _T("Save failed.");
 	SetStatusText(msg);
@@ -964,7 +964,7 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (!lp->AskForSaveFilename())
 		return;
 
-	wxString2 msg = _T("Saving layer to file as ") + lp->GetFilename();
+	wxString2 msg = _T("Saving layer to file as ") + lp->GetLayerFilename();
 	SetStatusText(msg);
 
 	g_Log._Log(msg.mb_str());
@@ -974,11 +974,11 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	if (success)
 	{
 		lp->SetModified(false);
-		msg = _T("Saved layer to file as ") + lp->GetFilename();
+		msg = _T("Saved layer to file as ") + lp->GetLayerFilename();
 	}
 	else
 	{
-		msg = _T("Failed to save layer to ") + lp->GetFilename();
+		msg = _T("Failed to save layer to ") + lp->GetLayerFilename();
 		wxMessageBox(msg, _T("Problem"));
 	}
 	SetStatusText(msg);
@@ -1049,7 +1049,7 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 	vtUtilityLayer *pUL = new vtUtilityLayer;
 	if (pUL->ImportFromSHP(strDirName.mb_str(), proj))
 	{
-		pUL->SetFilename(strDirName);
+		pUL->SetLayerFilename(strDirName);
 		pUL->SetModified(true);
 
 		if (!AddLayerWithCheck(pUL, true))
@@ -1338,7 +1338,7 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 	{
 		wxString newname = _T("untitled");
 		newname += pActive->GetFileExtension();
-		pActive->SetFilename(newname);
+		pActive->SetLayerFilename(newname);
 		pActive->SetModified(true);
 	}
 }
@@ -2120,7 +2120,7 @@ void MainFrame::OnElevShading(wxCommandEvent &event)
 		return;
 
 	// refresh the display
-	for (int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *lp = m_Layers.GetAt(i);
 		if (lp->GetType() == LT_ELEVATION)
@@ -2145,7 +2145,7 @@ void MainFrame::OnElevHide(wxCommandEvent &event)
 		return;
 
 	// refresh the display
-	for (int i = 0; i < m_Layers.GetSize(); i++)
+	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
 	{
 		vtLayer *lp = m_Layers.GetAt(i);
 		if (lp->GetType() == LT_ELEVATION)

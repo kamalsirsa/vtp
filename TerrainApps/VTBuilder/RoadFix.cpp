@@ -392,7 +392,7 @@ int RoadMapEdit::CleanLinkPoints()
 
 	for (LinkEdit *pR = GetFirstLink(); pR; pR = pR->GetNext())
 	{
-		for (int i = 1; i < pR->GetSize(); i++)
+		for (unsigned int i = 1; i < pR->GetSize(); i++)
 		{
 			if (pR->GetAt(i-1) == pR->GetAt(i))
 			{
@@ -592,20 +592,23 @@ int RoadMapEdit::FixExtraneousParallels()
 
 //if a road starts and ends at the same node, split it into 2 roads (at the middle point.)
 //will create a new uncontrolled node in the middle.
-int RoadMapEdit::SplitLoopingLinks() {
+int RoadMapEdit::SplitLoopingLinks()
+{
 	int count = 0;
 	LinkEdit *curLink = GetFirstLink();
 	NodeEdit *curNode;
 	LinkEdit *roadA, *roadB, *tmpLink;
 
-	while (curLink) {
-		if (curLink->GetNode(0) == curLink->GetNode(1)) {
+	while (curLink)
+	{
+		if (curLink->GetNode(0) == curLink->GetNode(1))
+		{
 			//we have a looping road.  split it in half.
 			curNode = curLink->GetNode(0);
 
 			//create 2 new roads.
-			int switchPoint = curLink->GetSize()/2 + 1;
-			int i = 0;
+			unsigned int switchPoint = curLink->GetSize()/2 + 1;
+			unsigned int i = 0;
 			roadA = new LinkEdit();
 			roadA->SetSize(switchPoint);
 			roadB = new LinkEdit();
@@ -613,7 +616,7 @@ int RoadMapEdit::SplitLoopingLinks() {
 			for (; i < switchPoint; i++)
 				roadA->SetAt(i, curLink->GetAt(i));
 
-			int j = 0;
+			unsigned int j = 0;
 			i--;
 			for (; i < curLink->GetSize(); i++)
 			{
@@ -678,7 +681,9 @@ int RoadMapEdit::SplitLoopingLinks() {
 			curNode->AdjustForLights();			
 
 			count++;
-		} else {
+		}
+		else
+		{
 			curLink = (LinkEdit*) curLink->m_pNext;
 		}
 	}

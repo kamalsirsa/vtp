@@ -26,7 +26,7 @@ bool vtRoadLayer::m_bDrawWidth = false;
 
 vtRoadLayer::vtRoadLayer() : vtLayer(LT_ROAD)
 {
-	m_strFilename = _T("Untitled.rmf");
+	SetLayerFilename(_T("Untitled.rmf"));
 }
 
 vtRoadLayer::~vtRoadLayer()
@@ -54,12 +54,12 @@ void vtRoadLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 
 bool vtRoadLayer::OnSave()
 {
-	return WriteRMF(m_strFilename.mb_str());
+	return WriteRMF(GetLayerFilename().mb_str());
 }
 
 bool vtRoadLayer::OnLoad()
 {
-	bool success = ReadRMF(m_strFilename.mb_str(), true, true, true);
+	bool success = ReadRMF(GetLayerFilename().mb_str(), true, true, true);
 	if (!success)
 		return false;
 
@@ -182,7 +182,7 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	NodeEdit *n;
 	for (r = GetFirstLink(); r; r=r->GetNext())
 	{
-		for (int i = 0; i < r->GetSize(); i++)
+		for (unsigned int i = 0; i < r->GetSize(); i++)
 			trans->Transform(1, &(r->GetAt(i).x), &(r->GetAt(i).y));
 	}
 	for (n = GetFirstNode(); n; n=n->GetNext())
@@ -220,7 +220,7 @@ void vtRoadLayer::Offset(const DPoint2 &p)
 {
 	for (LinkEdit *link = GetFirstLink(); link; link=link->GetNext())
 	{
-		for (int i = 0; i < link->GetSize(); i++)
+		for (unsigned int i = 0; i < link->GetSize(); i++)
 		{
 			link->GetAt(i) += p;
 		}
@@ -253,7 +253,7 @@ void vtRoadLayer::OnLeftDown(BuilderView *pView, UIContext &ui)
 	{
 		double closest = 1E8;
 		int closest_i;
-		for (int i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
+		for (unsigned int i = 0; i < ui.m_pEditingRoad->GetSize(); i++)
 		{
 			DPoint2 diff = ui.m_DownLocation - ui.m_pEditingRoad->GetAt(i);
 			double dist = diff.Length();
