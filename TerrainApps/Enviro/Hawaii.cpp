@@ -402,9 +402,10 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	{
 		m_pDetailMats = new vtMaterialArray();
 		vtString path = FindFileOnPaths(m_DataPaths, "GeoTypical/grass_repeat2_512.bmp");
-		vtImage *pDetailTexture = new vtImage(path);
-		if (pDetailTexture->LoadedOK())
+		vtDIB *dib = new vtDIB;
+		if (dib->ReadBMP((const char *) path))
 		{
+			vtImage *pDetailTexture = new vtImage(dib);
 			int index = m_pDetailMats->AddTextureMaterial(pDetailTexture,
 							 true,	// culling
 							 false,	// lighting
