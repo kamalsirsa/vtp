@@ -21,8 +21,8 @@
 #define TEXTURE_ARGS(alpha)		true, true, alpha, false, TERRAIN_AMBIENT, \
 	TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE, false, false
 
-#define ROADTEXTURE_4WD		"Data/GeoTypical/road_4wd1.png"
-#define ROADTEXTURE_TRAIL	"Data/GeoTypical/trail1.png"
+#define ROADTEXTURE_4WD		"GeoTypical/road_4wd1.png"
+#define ROADTEXTURE_TRAIL	"GeoTypical/trail1.png"
 
 ////////////////////////////////////////////////////////////////////
 
@@ -786,7 +786,7 @@ void vtRoadMap3d::AddMesh(vtMesh *pMesh, int iMatIdx)
 
 
 vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
-									   const vtString &strDataPath)
+									   const StringArray &paths)
 {
 	m_pMats = new vtMaterialArray();
 
@@ -794,46 +794,48 @@ vtGroup *vtRoadMap3d::GenerateGeometry(bool do_texture,
 	if (do_texture)
 	{
 		vtString path;
-		path = strDataPath + "GeoTypical/roadside_32.png";
+		path = FindFileOnPaths(paths, "GeoTypical/roadside_32.png");
 		m_mi_roadside = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
 #if 0
 		// 1
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/margin_32.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/margin_32.bmp",
 			TEXTURE_ARGS(false));
 		// 2
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/sidewalk1_v2_512.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/sidewalk1_v2_512.bmp",
 			TEXTURE_ARGS(false));
 		// 3
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/1lane_64.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/1lane_64.bmp",
 			TEXTURE_ARGS(false));
 		// 4
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/2lane1way_128.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/2lane1way_128.bmp",
 			TEXTURE_ARGS(false));
 		// 5
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/2lane2way_128.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/2lane2way_128.bmp",
 			TEXTURE_ARGS(false));
 		// 6
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/3lane1way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/3lane1way_256.bmp",
 			TEXTURE_ARGS(false));
 		// 7
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/3lane2way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/3lane2way_256.bmp",
 			TEXTURE_ARGS(false));
 		// 8
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/4lane1way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/4lane1way_256.bmp",
 			TEXTURE_ARGS(false));
 		// 9
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/4lane2way_256.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/4lane2way_256.bmp",
 			TEXTURE_ARGS(true));
 		// 10
-		m_pMats->AddTextureMaterial2("Data/GeoTypical/water.bmp",
+		m_pMats->AddTextureMaterial2("GeoTypical/water.bmp",
 			TEXTURE_ARGS(false));
 #endif
-		path = strDataPath + "GeoTypical/roadset_1k.bmp";
+		path = FindFileOnPaths(paths, "GeoTypical/roadset_1k.bmp");
 		m_mi_roads = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(false));
-		m_mi_4wd = m_pMats->AddTextureMaterial2(ROADTEXTURE_4WD,
-			TEXTURE_ARGS(true));
-		m_mi_trail = m_pMats->AddTextureMaterial2(ROADTEXTURE_TRAIL,
-			TEXTURE_ARGS(true));
+
+		path = FindFileOnPaths(paths, ROADTEXTURE_4WD);
+		m_mi_4wd = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
+
+		path = FindFileOnPaths(paths, ROADTEXTURE_TRAIL);
+		m_mi_trail = m_pMats->AddTextureMaterial2(path, TEXTURE_ARGS(true));
 
 		m_vt[VTI_MARGIN].m_idx = m_mi_roads;
 		m_vt[VTI_MARGIN].m_rect.SetRect(960.0f/1024, 1, 992.0f/1024, 0);
@@ -917,8 +919,11 @@ void vtRoadMap3d::GenerateSigns(vtLodGrid *pLodGrid)
 		return;
 
 #if 0
-	vtNode *stopsign = vtLoadModel("Data/Culture/stopsign4.dsm");
-	vtNode *stoplight = vtLoadModel("Data/Culture/stoplight8rt.dsm");
+	vtString path;
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/stopsign4.dsm");
+	vtNode *stopsign = vtLoadModel(path);
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/stoplight8rt.dsm");
+	vtNode *stoplight = vtLoadModel(path);
 
 	if (stopsign && stoplight)
 	{

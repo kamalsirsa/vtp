@@ -104,8 +104,7 @@ void NevadaTerrain::CreateWater()
 {
 	// create water material: texture waves
 	vtMaterialArray *pMats = new vtMaterialArray();
-	vtString str = m_strDataPath;
-	str += "GeoTypical/ocean1_256.bmp";
+	vtString str = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.bmp");
 	pMats->AddTextureMaterial2(str,
 		false, true,	// cull, light
 		false, false,	// transp, add
@@ -140,8 +139,12 @@ void NevadaTerrain::CreateWater()
 
 void NevadaTerrain::CreateDetailTextures()
 {
-	vtImage *pDetailTexture = new vtImage("Data/Nevada/playa3.png");
-	vtImage *pDetailTexture2 = new vtImage("Data/Nevada/green3.png");
+	vtString str;
+
+	str = FindFileOnPaths(m_DataPaths, "Nevada/playa3.png");
+	vtImage *pDetailTexture = new vtImage(str);
+	str = FindFileOnPaths(m_DataPaths, "Nevada/green3.png");
+	vtImage *pDetailTexture2 = new vtImage(str);
 
 	vtMaterialArray *pDetailApps = new vtMaterialArray();
 	pDetailApps->AddTextureMaterial(pDetailTexture,
@@ -214,7 +217,7 @@ void NevadaTerrain::CreatePast()
 		"SEQ.png",
 		6.0f, 8.5f,	// width, height
 		0.0f, 0.0f);
-	pPlantApp->LoadAndCreate("Data/", TREE_EXAG, false, true);	// shadows, billboards
+	pPlantApp->LoadAndCreate(m_DataPaths, TREE_EXAG, false, true);	// shadows, billboards
 
 	vtTransform *tree;
 	FPoint3 p3;

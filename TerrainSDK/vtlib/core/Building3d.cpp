@@ -12,6 +12,7 @@
 #include "vtlib/core/HeightField.h"
 #include "vtdata/Triangulate.h"
 #include "Building3d.h"
+#include "Terrain.h"
 
 //an array of materials.  buildings pull their colors from a common list of materials.
 //this is done to save memory.  for a list of 16000+ buildings, this can save about 200MB of RAM.
@@ -95,7 +96,9 @@ void vtBuilding3d::CreateSharedMaterials()
 	}
 
 	//create siding materials (bright colors only)
-	vtImage *pImageSiding = new vtImage("Data/BuildingModels/siding64.bmp");
+	vtString path;
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/siding64.bmp");
+	vtImage *pImageSiding = new vtImage(path);
 	divisions = 6;
 	start = .25f;
 	step = (1.0f-start)/(divisions-1);
@@ -127,21 +130,25 @@ void vtBuilding3d::CreateSharedMaterials()
 	// window material
 	color.Set(1.0f,1.0f,1.0f);
 	pMat = makeMaterial(color, true);
-	pMat->SetTexture2("Data/BuildingModels/window.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.bmp");
+	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	//window stays on at night
+	pMat->SetLighting(false);
 	s_Materials->Append(pMat);
 
 	color.Set(1.0f,1.0f,1.0f);
 	pMat = makeMaterial(color, true);
-	pMat->SetTexture2("Data/BuildingModels/window.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/window.bmp");
+	pMat->SetTexture2(path);
 	pMat->SetClamp(false);
 	s_Materials->Append(pMat);
 
 	// door material
 	color.Set(1.0f, 1.0f, 1.0f);
 	pMat = makeMaterial(color, true);
-	pMat->SetTexture2("Data/BuildingModels/door.bmp");
+	path = FindFileOnPaths(vtTerrain::m_DataPaths, "BuildingModels/door.bmp");
+	pMat->SetTexture2(path);
 	s_Materials->Append(pMat);
 
 	int total = s_Materials->GetSize();

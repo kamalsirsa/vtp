@@ -8,6 +8,8 @@
 #ifndef OPTIONSH
 #define OPTIONSH
 
+#include "vtdata/FilePath.h"
+
 class EnviroOptions
 {
 public:
@@ -16,10 +18,10 @@ public:
 	bool Read(const char *szFilename);
 	bool Write();
 
-	vtString m_strDataPath;
-	bool	m_bEarthView;
-	vtString m_strImage;
-	vtString m_strInitTerrain;
+	StringArray m_DataPaths;
+	bool		m_bEarthView;
+	vtString	m_strImage;
+	vtString	m_strInitTerrain;
 	bool	m_bFullscreen;
 	bool	m_bGravity;
 	bool	m_bHtmlpane;

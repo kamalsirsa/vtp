@@ -10,6 +10,7 @@
 
 #include "vtdata/Plants.h"
 #include "vtdata/LULC.h"
+#include "vtdata/FilePath.h"
 #include "vtlib/core/HeightField.h"
 #include "vtlib/core/LodGrid.h"
 
@@ -27,7 +28,7 @@ public:
 	~vtPlantAppearance3d();
 	vtPlantAppearance3d(const vtPlantAppearance &v);
 
-	void LoadAndCreate(const char *datapath, float fTreeScale,
+	void LoadAndCreate(const StringArray &paths, float fTreeScale,
 					   bool bShadows, bool bBillboards);
 	vtTransform *GenerateGeom();
 
@@ -70,7 +71,7 @@ public:
 	// copy
 	vtPlantList3d &operator=(const vtPlantList &v);
 
-	void CreatePlantSurfaces(const char *datapath, float fTreeScale,
+	void CreatePlantSurfaces(const StringArray &paths, float fTreeScale,
 		bool bShadows, bool bBillboards);
 
 	// override / replace a few methods of vtPlantList

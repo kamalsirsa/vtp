@@ -219,7 +219,9 @@ bool CreateScene()
 	pScene->Init();
 
 	// Set the global data path
-	vtTerrain::SetDataPath("Data/");
+	StringArray paths;
+	paths.Append(new vtString("Data/"));
+	vtTerrain::SetDataPath(paths);
 
 	// Look up the camera
 	vtCamera *pCamera = pScene->GetCamera();
@@ -245,7 +247,7 @@ bool CreateScene()
 		AfxMessageBox("Terrain creation failed.");
 		return false;
 	}
-	ts->Finish("Data/");
+	ts->Finish(paths);
 	ts->SetTerrain(pTerr);
 
 	// Create a navigation engine to move around on the terrain

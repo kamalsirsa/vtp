@@ -257,7 +257,7 @@ void IcoGlobe::add_face(vtMesh *mesh, int face, int appidx, bool second)
 #endif
 }
 
-void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
+void IcoGlobe::Create(int freq, const StringArray &paths, vtString strImagePrefix)
 {
 	int i;
 	m_freq = freq;
@@ -300,8 +300,7 @@ void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
 		int f1 = icos_face_pairs[pair][0];
 		int f2 = icos_face_pairs[pair][1];
 
-		vtString base = strDataPath;
-		base += "WholeEarth/";
+		vtString base = "WholeEarth/";
 		base += strImagePrefix;
 		base += "_";
 
@@ -312,7 +311,9 @@ void IcoGlobe::Create(int freq, vtString strDataPath, vtString strImagePrefix)
 		msg.Format("\t texture: %s\n", (const char *)fname);
 		g_App._Log(msg);
 
-		int index = m_mats->AddTextureMaterial2(fname,
+		vtString fullpath = FindFileOnPaths(paths, (const char *)fname);
+
+		int index = m_mats->AddTextureMaterial2(fullpath,
 						 bCulling, bLighting,
 						 false, false,				// transp, additive
 						 0.1f, 1.0f, 1.0f, 0.0f,	// ambient, diffuse, alpha, emmisive
@@ -449,11 +450,11 @@ void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p)
 {
 	// Convert spherical polar coordinates to cartesian coordinates
 	// The angles are given in degrees
-	double theta = geo.x / 180.0 * PI;
-	double phi = (geo.y / 180.0 * PI);
+	double theta = geo.x / 180.0 * PId;
+	double phi = (geo.y / 180.0 * PId);
 
-	phi += PID2;
-	theta = PI2 - theta;
+	phi += PID2d;
+	theta = PI2d - theta;
 
 	double x = sin(phi) * cos(theta) * radius;
 	double y = sin(phi) * sin(theta) * radius;
@@ -466,7 +467,7 @@ void geo_to_xyz(double radius, const DPoint2 &geo, FPoint3 &p)
 
 double radians(double degrees)
 {
-    return degrees / 180.0 * PI;
+    return degrees / 180.0 * PId;
 }
 
 void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
@@ -487,12 +488,12 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 	if (x<0.0 && y==0.0) lng = radians(180.0);
 	if (x!=0.0 && y!=0.0) lng = atan(y/x) + a;
 
-	lng = PI2 - lng;
-	lat = lat - PID2;
+	lng = PI2d - lng;
+	lat = lat - PID2d;
 
 	// convert angles to degrees
-	geo.x = lng * 180.0 / PI;
-	geo.y = lat * 180.0 / PI;
+	geo.x = lng * 180.0 / PId;
+	geo.y = lat * 180.0 / PId;
 
 	// keep in expected range
 	if (geo.x > 180.0) geo.x -= 360.0;

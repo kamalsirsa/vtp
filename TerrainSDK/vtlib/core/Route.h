@@ -152,8 +152,6 @@ protected:
 
 	ProfileHeader m_phTheHeader;
 
-	vtString m_sDataPath;
-
 	// Add a station
 	bool AddStation(vtHeightField *pHeightField, vtStation &sp);
 	// Add a list of stations

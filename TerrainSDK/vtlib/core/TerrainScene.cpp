@@ -68,20 +68,23 @@ vtTerrainScene::~vtTerrainScene()
 	// TODO: proper cleanup
 }
 
-void vtTerrainScene::create_skydome(vtString datapath)
+void vtTerrainScene::create_skydome(const StringArray &datapath)
 {
 	if (m_pSkyDome != NULL)
 		return;
+
+	vtString bsc = FindFileOnPaths(datapath, "Sky/bsc.data");
+	vtString sun = FindFileOnPaths(datapath, "Sky/glow2.png");
+	vtString moon = FindFileOnPaths(datapath, "Sky/moon5_256.png");
 
 	// create a day-night dome
 	m_pSkyDome = new vtSkyDome();
 	m_pSkyDome->SetDayColors(horizon_color, azimuth_color);
 	m_pSkyDome->SetDawnTimes(5, 0, 7, 0);
 	m_pSkyDome->SetDuskTimes(17, 0, 19, 0);
-	m_pSkyDome->Create(datapath + "Sky/bsc.data", 3,
-					   1.0f,		// initially unit radius
-					   datapath + "Sky/glow2.png",
-					   datapath + "Sky/moon5_256.png");
+
+	m_pSkyDome->Create(bsc, 3, 1.0f,	// initially unit radius
+					   sun, moon);
 	m_pSkyDome->SetName2("The Sky");
 	m_pAtmosphereGroup->AddChild(m_pSkyDome);
 
@@ -178,7 +181,7 @@ void vtTerrainScene::AppendTerrain(vtTerrain *pTerrain)
 //
 // call after you have appended all terrains
 //
-void vtTerrainScene::Finish(const char *datapath)
+void vtTerrainScene::Finish(const StringArray &datapath)
 {
 	create_skydome(datapath);
 

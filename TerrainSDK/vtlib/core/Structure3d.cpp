@@ -7,6 +7,7 @@
 #include "Structure3d.h"
 #include "Building3d.h"
 #include "Fence3d.h"
+#include "Terrain.h"
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -130,11 +131,14 @@ bool vtStructure3d::CreateNode(vtHeightField *hf, const char *options)
 			vtTag *tag = inst->FindTag("filename");
 			if (tag)
 			{
-				vtString path = options;
-				tag->value = path + tag->value;
+				vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, tag->value);
+				if (path != "")
+				{
+					tag->value = path + tag->value;
+					// try again
+					bSuccess = inst->CreateShape(hf);
+				}
 			}
-			// try again
-			bSuccess = inst->CreateShape(hf);
 		}
 		return bSuccess;
 	}

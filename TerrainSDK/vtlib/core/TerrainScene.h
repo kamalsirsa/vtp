@@ -8,6 +8,8 @@
 #ifndef TERRAINSCENEH
 #define TERRAINSCENEH
 
+#include "vtdata/FilePath.h"
+
 // Forward references
 class vtSkyDome;
 class vtTerrain;
@@ -41,7 +43,7 @@ public:
 	// engines
 	TimeEngine	*m_pTime;
 
-	void create_skydome(vtString datapath);
+	void create_skydome(const StringArray &datapath);
 	void create_fog();
 	void create_engines(bool bDoSound);
 
@@ -50,7 +52,7 @@ public:
 	// scene setup
 	vtRoot *BeginTerrainScene(bool bDoSound);
 	void AppendTerrain(vtTerrain *pTerrain);
-	virtual void Finish(const char *datapath);
+	virtual void Finish(const StringArray &datapath);
 	void SetTerrain(vtTerrain *pTerrain);
 
 	void ToggleFog();

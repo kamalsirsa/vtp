@@ -20,12 +20,13 @@ Butterfly::Butterfly(vtTerrain *terrain, float radius, float speed,
 
 	char *fname;
 	int number = (num++)%3;
-	if (number == 0)		fname = "Data/Nevada/butterfly1_v3.png";
-    else if (number == 1)	fname = "Data/Nevada/butterfly2_v1.png";
-	else if (number == 2)	fname = "Data/Nevada/butterfly3_v2.png";
+	if (number == 0)		fname = "Nevada/butterfly1_v3.png";
+    else if (number == 1)	fname = "Nevada/butterfly2_v1.png";
+	else if (number == 2)	fname = "Nevada/butterfly3_v2.png";
 
+	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, fname);
 	m_pApps = new vtMaterialArray();
-	m_pApps->AddTextureMaterial2(fname,
+	m_pApps->AddTextureMaterial2(path,
 		false, true,	// cull, light
 		true, false,	// transp: blend, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE,
@@ -113,7 +114,7 @@ void FlyingCritterEngine::Eval()
 	float delta_x, delta_z;
 	delta_x = vNext.x - m_vCurPos.x;
 	delta_z = vNext.z - m_vCurPos.z;
-	float newangle = atan2f(-delta_z, delta_x) - PI/2.0f;
+	float newangle = atan2f(-delta_z, delta_x) - PIf/2.0f;
 
 	// calculate new y position
 	float fAltitude;

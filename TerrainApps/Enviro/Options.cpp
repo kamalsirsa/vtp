@@ -33,7 +33,6 @@ EnviroOptions g_Options;
 
 EnviroOptions::EnviroOptions()
 {
-	m_strDataPath = "Data/";
 	m_strImage = "free_512";
 }
 
@@ -63,7 +62,10 @@ bool EnviroOptions::Read(const char *szFilename)
 			input.ignore();
 
 		if (strcmp(buf, STR_DATAPATH) == 0)
-			m_strDataPath = get_line_from_stream(input);
+		{
+			vtString *path = new vtString(get_line_from_stream(input));
+			m_DataPaths.Append(path);
+		}
 		else if (strcmp(buf, STR_EARTHVIEW) == 0)
 			input >> m_bEarthView;
 		else if (strcmp(buf, STR_EARTHIMAGE) == 0)
@@ -114,8 +116,11 @@ bool EnviroOptions::Write()
 	}
 
 	// write to file
-	output << STR_DATAPATH << "\t\t";
-	output << ((const char *)m_strDataPath) << endl;
+	for (int i = 0; i < m_DataPaths.GetSize(); i++)
+	{
+		output << STR_DATAPATH << "\t\t";
+		output << ((const char *)(*m_DataPaths[i])) << endl;
+	}
 	output << STR_EARTHVIEW << "\t\t";
 	output << m_bEarthView << endl;
 	output << STR_EARTHIMAGE << "\t\t";

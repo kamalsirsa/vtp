@@ -11,6 +11,7 @@
 #include "TParams.h"
 #include "Trees.h"
 #include "Structure3d.h"
+#include "vtdata/FilePath.h"
 
 class vtTerrainGeom;
 class vtTextureCoverage;
@@ -192,8 +193,8 @@ public:
 	/********************** Statics ******************/
 
 	// during creation, all data will be looked for on the data path
-	static void SetDataPath(const char *path) { m_strDataPath = path; }
-	static vtString	m_strDataPath;
+	static void SetDataPath(const StringArray &paths) { m_DataPaths = paths; }
+	static StringArray m_DataPaths;
 
 	// TODO: temporary unprotected
 	vtLodGrid		*m_pLodGrid;

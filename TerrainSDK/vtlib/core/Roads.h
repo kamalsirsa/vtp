@@ -8,8 +8,9 @@
 #ifndef TERRAINROADSH
 #define TERRAINROADSH
 
-#include "vtlib/core/HeightField.h"
+#include "vtdata/FilePath.h"
 #include "vtdata/RoadMap.h"
+#include "vtlib/core/HeightField.h"
 #include "vtlib/core/LodGrid.h"
 
 #define ROAD_CLUSTER	16
@@ -140,7 +141,7 @@ public:
 	void BuildIntersections();
 	void AddMesh(vtMesh *pMesh, int iMatIdx);
 	void GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max);
-	vtGroup *GenerateGeometry(bool do_texture, const vtString &strDataPath);
+	vtGroup *GenerateGeometry(bool do_texture, const StringArray &paths);
 	void GenerateSigns(vtLodGrid *pLodGrid);
 	vtGroup *GetGroup() { return m_pGroup; }
 	void SetLodDistance(float fDistance) { m_fLodDistance = fDistance; }

@@ -43,7 +43,8 @@ void IslandTerrain::create_telescopes()
 	CreateStructuresFromXML(m_strDataPath + "BuildingData/tscope_loc.vtst");
 #elif 1
 	vtStructureArray3d sa;
-	bool success = sa.ReadXML(m_strDataPath + "BuildingData/tscope_loc.vtst");
+	vtString fname = FindFileOnPaths(m_DataPaths, "BuildingData/tscope_loc.vtst");
+	bool success = sa.ReadXML(fname);
 	if (!success)
 		return;
 
@@ -53,7 +54,7 @@ void IslandTerrain::create_telescopes()
 	{
 		vtStructure3d *str = sa.GetStructure(i);
 
-		success = sa.ConstructStructure(str, m_strDataPath);
+		success = sa.ConstructStructure(str);
 		if (!success)
 			continue;
 
@@ -225,7 +226,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	if (m_Params.m_bDetailTexture)
 	{
 		m_pDetailMats = new vtMaterialArray();
-		vtString path = m_strDataPath + "GeoTypical/grass_repeat2_512.bmp";
+		vtString path = FindFileOnPaths(m_DataPaths, "GeoTypical/grass_repeat2_512.bmp");
 		vtImage *pDetailTexture = new vtImage(path);
 		if (pDetailTexture->LoadedOK())
 		{

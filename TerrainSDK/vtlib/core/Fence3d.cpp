@@ -48,8 +48,10 @@ void vtFence3d::CreateMaterials()
 	m_pFenceMats = new vtMaterialArray();
 
 	// create wirefence post textured material (0)
-	vtString str = vtTerrain::m_strDataPath + "Culture/fencepost_64.bmp";
-	m_mi_woodpost = m_pFenceMats->AddTextureMaterial2(str,
+	vtString fname;
+
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/fencepost_64.bmp");
+	m_mi_woodpost = m_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,
 		TERRAIN_AMBIENT,
 		TERRAIN_DIFFUSE,
@@ -63,8 +65,8 @@ void vtFence3d::CreateMaterials()
 		0.6f);					// alpha
 
 	// chainlink material(2)
-	str = vtTerrain::m_strDataPath + "Culture/chain128-4.png";
-	m_mi_chainlink = m_pFenceMats->AddTextureMaterial2(str,
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/chain128-4.png");
+	m_mi_chainlink = m_pFenceMats->AddTextureMaterial2(fname,
 		false, true, true, false,	// cull, light, transp, add
 		1.0f,	// ambient
 		0.0f,	// diffuse
@@ -72,8 +74,8 @@ void vtFence3d::CreateMaterials()
 		TERRAIN_EMISSIVE);
 
 	// create chainfence post textured material (3)
-	str = vtTerrain::m_strDataPath + "Culture/chainpost32.bmp";
-	m_mi_metalpost = m_pFenceMats->AddTextureMaterial2(str,
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/chainpost32.bmp");
+	m_mi_metalpost = m_pFenceMats->AddTextureMaterial2(fname,
 		true, true, false, false,	// cull, light, transp, add
 		TERRAIN_AMBIENT,
 		TERRAIN_DIFFUSE,

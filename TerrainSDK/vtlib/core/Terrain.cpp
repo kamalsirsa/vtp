@@ -31,7 +31,7 @@
 #define LOD_GRIDSIZE		192
 
 // static data path
-vtString  vtTerrain::m_strDataPath;
+StringArray vtTerrain::m_DataPaths;
 
 //////////////////////////////////////////////////////////////////////
 
@@ -127,7 +127,7 @@ void vtTerrain::create_roads(vtString strRoadFile)
 
 	m_pRoadMap->SetLodDistance(m_Params.m_fRoadDistance * 1000);	// convert km to m
 	m_pRoadGroup = m_pRoadMap->GenerateGeometry(m_Params.m_bTexRoads != 0,
-		m_strDataPath);
+		m_DataPaths);
 	m_pTerrainGroup->AddChild(m_pRoadGroup);
 	if (m_Params.m_bRoadCulture)
 		m_pRoadMap->GenerateSigns(m_pLodGrid);
@@ -472,10 +472,10 @@ void vtTerrain::LoadRoute(float fRouteOffL, float fRouteOffR,
 		holder[end-holder]='\0';
 	else
 		return;
-	vtString filename = m_strDataPath + "RouteData/";
-	filename += holder;
-	vtString logFile = filename+".xyz";
-	vtString p3DFile = filename+".p3D";
+	vtString base = "RouteData/";
+	base += holder;
+	vtString logFile = FindFileOnPaths(m_DataPaths, base + ".xyz");
+	vtString p3DFile = FindFileOnPaths(m_DataPaths, base + ".p3D");
 
 	FILE *fplog = fopen(logFile, "r"); // m_strDatapath +
 	if (!fplog)
@@ -492,7 +492,7 @@ void vtTerrain::LoadRoute(float fRouteOffL, float fRouteOffR,
 		if (pRoute->p3DReader(fpp3D))
 		{
 			// Get the needed tower images
-			if (!pRoute->StructureReader(m_strDataPath + "RouteData/"))
+			if (!pRoute->StructureReader(*(m_DataPaths[0]) + "RouteData/"))
 				return;	//error loading structures.  don't display these routes
 			AddRoute(pRoute);
 			pRoute->BuildGeometry(m_pHeightField);
@@ -524,27 +524,6 @@ void vtTerrain::LoadRoute(float fRouteOffL, float fRouteOffR,
 
 void vtTerrain::SaveRoute()
 {
-	vtString route_fname = m_strDataPath;
-	route_fname += "RouteData/testsave.fmf"; // fix this
-
-	int numroutes = m_pRoutes.GetSize();
-
-	vtRoute *temproute;
-
-	FILE *fp = fopen(route_fname, "w");
-	if (fp)
-	{
-//		fwrite("FMF1.0\n", 7, 1, fp);  // header
-
-		for (int i = 0; i < numroutes; i++)  // save each route
-		{
-			temproute = m_pRoutes.GetAt(i);
-			temproute->save(fp);
-		}
-
-//		fwrite("EOF", 3, 1, fp);
-		fclose(fp);
-	}
 }
 
 /**
@@ -571,8 +550,8 @@ void vtTerrain::create_artificial_horizon(bool bWater, bool bHorizon,
 	if (bWater)
 	{
 		// create ocean material: texture waves
-		vtString str = m_strDataPath + "GeoTypical/ocean1_256.bmp";
-		pApp_Ocean->AddTextureMaterial2(str,
+		vtString fname = FindFileOnPaths(m_DataPaths, "GeoTypical/ocean1_256.bmp");
+		pApp_Ocean->AddTextureMaterial2(fname,
 			false, false,		// culling, lighting
 			false,				// the texture itself has no alpha
 			false,				// additive
@@ -663,11 +642,13 @@ void vtTerrain::SetGlobalProjection()
 
 bool vtTerrain::LoadHeaderIntoGrid(vtElevationGrid &grid)
 {
-	vtString grid_fname = m_strDataPath;
-	grid_fname += "Elevation/";
-	grid_fname += m_Params.m_strElevFile;
-
-	return grid.LoadBTHeader(grid_fname);
+	vtString name = "Elevation/";
+	name += m_Params.m_strElevFile;
+	vtString grid_fname = FindFileOnPaths(m_DataPaths, name);
+	if (grid_fname == "")
+		return false;
+	else
+		return grid.LoadBTHeader(grid_fname);
 }
 
 
@@ -691,8 +672,6 @@ void vtTerrain::CreateStructuresFromXML(vtString strFilename)
 		const char *options = NULL;
 		if (str->GetType() == ST_BUILDING)
 			options = "roof walls detail";
-		if (str->GetType() == ST_INSTANCE)
-			options = m_strDataPath;
 
 		// Construct
 		bool bSuccess = m_Structures.ConstructStructure(str, options);
@@ -741,7 +720,15 @@ MyTerrain::CreateCustomCulture(bool bSound)
  */
 vtTransform *vtTerrain::LoadModel(const char *filename)
 {
-	vtNode *node = vtLoadModel(m_strDataPath + filename);
+	vtNode *node = vtLoadModel(filename);
+	if (!node)
+	{
+		vtString path = FindFileOnPaths(m_DataPaths, filename);
+		if (path != "")
+		{
+			vtNode *node = vtLoadModel(path);
+		}
+	}
 	if (node)
 	{
 		vtTransform *trans = new vtTransform();
@@ -804,10 +791,10 @@ void vtTerrain::create_culture(bool bSound)
 	// create roads
 	if (m_Params.m_bRoads)
 	{
-		vtString road_fname = m_strDataPath;
-		road_fname += "RoadData/";
+		vtString road_fname = "RoadData/";
 		road_fname += m_Params.m_strRoadFile;
-		create_roads(road_fname);
+		vtString road_path = FindFileOnPaths(m_DataPaths, road_fname);
+		create_roads(road_path);
 
 		if (m_pRoadMap && m_Params.m_bRoadCulture)
 		{
@@ -833,10 +820,10 @@ void vtTerrain::create_culture(bool bSound)
 	if (m_Params.m_bTrees)
 	{
 		// Read the VF file
-		vtString plants_fname = m_strDataPath;
-		plants_fname += "PlantData/";
+		vtString plants_fname = "PlantData/";
 		plants_fname += m_Params.m_strTreeFile;
-		bool success = m_PIA.ReadVF(plants_fname);
+		vtString plants_path = FindFileOnPaths(m_DataPaths, plants_fname);
+		bool success = m_PIA.ReadVF(plants_path);
 		if (success)
 		{
 			// Create the 3d plants
@@ -847,10 +834,10 @@ void vtTerrain::create_culture(bool bSound)
 	// create built structures
 	if (m_Params.m_bBuildings)
 	{
-		vtString building_fname = m_strDataPath;
-		building_fname += "BuildingData/";
+		vtString building_fname = "BuildingData/";
 		building_fname += m_Params.m_strBuildingFile;
-		CreateStructuresFromXML(building_fname);
+		vtString building_path = FindFileOnPaths(m_DataPaths, building_fname);
+		CreateStructuresFromXML(building_path);
 	}
 	else
 	{
@@ -952,12 +939,12 @@ bool vtTerrain::CreateStep1(int &iError)
 	m_pTerrainGroup->SetName2("Terrain Group");
 
 	// Loading elevation grid...
-	vtString grid_fname = m_strDataPath;
-	grid_fname += "Elevation/";
+	vtString grid_fname = "Elevation/";
 	grid_fname += m_Params.m_strElevFile;
+	vtString grid_path = FindFileOnPaths(m_DataPaths, grid_fname);
 
 	m_pLocalGrid = new vtLocalGrid();
-	bool status = m_pLocalGrid->LoadFromBT(grid_fname);
+	bool status = m_pLocalGrid->LoadFromBT(grid_path);
 	if (status != true)
 	{
 		iError = TERRAIN_ERROR_NOTFOUND;
@@ -975,14 +962,14 @@ bool vtTerrain::CreateStep2(int &iError)
 	// set up ability to do terrain following on source array
 	m_pLocalGrid->Setup(m_Params.m_fVerticalExag);
 
-	vtString texture_fname = m_strDataPath;
-	texture_fname += "GeoSpecific/";
+	vtString texture_fname = "GeoSpecific/";
 	if (m_Params.m_eTexture == TE_SINGLE)
 		texture_fname += m_Params.m_strTextureSingle;	// single texture
 	else
 		texture_fname += m_Params.m_strTextureFilename;
+	vtString texture_path = FindFileOnPaths(m_DataPaths, texture_fname);
 
-	create_textures(4, texture_fname);
+	create_textures(4, texture_path);
 	return true;
 }
 
@@ -1074,7 +1061,10 @@ bool vtTerrain::CreateStep5(bool bSound, int &iError)
 	}
 
 	if (m_Params.m_bLabels)
-		create_floating_labels(m_strDataPath + "places.txt");
+	{
+		vtString labels_path = FindFileOnPaths(m_DataPaths, "places.txt");
+		create_floating_labels(labels_path);
+	}
 
 	return true;
 }

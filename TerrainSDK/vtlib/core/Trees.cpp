@@ -54,17 +54,16 @@ vtPlantAppearance3d::vtPlantAppearance3d(const vtPlantAppearance &v)
 	m_shadow_darkness = v.m_shadow_darkness;
 }
 
-void vtPlantAppearance3d::LoadAndCreate(const char *datapath, float fTreeScale,
-									bool bShadows, bool bBillboards)
+void vtPlantAppearance3d::LoadAndCreate(const StringArray &paths,
+		float fTreeScale, bool bShadows, bool bBillboards)
 {
 	s_fTreeScale = fTreeScale;
 
 	if (m_eType == AT_BILLBOARD)
 	{
-		char fname[160];
-		strcpy(fname, datapath);
-		strcat(fname, "PlantModels/");
-		strcat(fname, m_filename);
+		vtString name = "PlantModels/";
+		name += m_filename;
+		vtString fname = FindFileOnPaths(paths, name);
 
 		m_pMats = new vtMaterialArray();
 
@@ -86,11 +85,11 @@ void vtPlantAppearance3d::LoadAndCreate(const char *datapath, float fTreeScale,
 	}
 	else
 	{
+#if SUPPORT_XFROG
 		char pname[160];
 		strcpy(pname, datapath);
 		strcat(pname, "PlantModels/");
 
-#if SUPPORT_XFROG
 		// xfrog plant
 		m_pFrogModel = new CFrogModel(pname, m_filename);
 #endif
@@ -398,8 +397,8 @@ void vtPlantList3d::AddSpecies(const char *common_name, float max_height)
 #endif
 
 
-void vtPlantList3d::CreatePlantSurfaces(const char *datapath, float fTreeScale,
-									bool bShadows, bool bBillboards)
+void vtPlantList3d::CreatePlantSurfaces(const StringArray &paths,
+		float fTreeScale, bool bShadows, bool bBillboards)
 {
 	for (int i = 0; i < NumSpecies(); i++)
 	{
@@ -408,7 +407,7 @@ void vtPlantList3d::CreatePlantSurfaces(const char *datapath, float fTreeScale,
 		for (int j = 0; j < iApps; j++)
 		{
 			vtPlantAppearance3d *pApp = pSpecies->GetAppearance(j);
-			pApp->LoadAndCreate(datapath, fTreeScale, bShadows, bBillboards);
+			pApp->LoadAndCreate(paths, fTreeScale, bShadows, bBillboards);
 		}
 	}
 }

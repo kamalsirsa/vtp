@@ -16,6 +16,7 @@
 #include "vtlib/core/DynTerrain.h"
 
 #include "vtdata/boost/directory.h"
+#include "vtdata/FilePath.h"
 
 #include "Enviro.h"
 #include "TerrainSceneWP.h"
@@ -81,27 +82,30 @@ void Enviro::LoadTerrainDescriptions()
 	using namespace boost::filesystem;
 
 	vtTerrain *pTerr;
-	vtString directory = g_Options.m_strDataPath + "Terrains";
-	for (dir_it it((const char *)directory); it != dir_it(); ++it)
+	for (int i = 0; i < g_Options.m_DataPaths.GetSize(); i++)
 	{
-		if (get<is_hidden>(it) || get<is_directory>(it))
-			continue;
+		vtString directory = *(g_Options.m_DataPaths[i]) + "Terrains";
+		for (dir_it it((const char *)directory); it != dir_it(); ++it)
+		{
+			if (get<is_hidden>(it) || get<is_directory>(it))
+				continue;
 
-		std::string name1 = *it;
-		vtString name = name1.c_str();
+			std::string name1 = *it;
+			vtString name = name1.c_str();
 
-		// Some terrain .ini files want to use a different Terrain class
-		if (name == "Hawai`i.ini" || name == "Honoka`a.ini" || name == "Kealakekua.ini" )
-			pTerr = new IslandTerrain();
-		else if (name == "Nevada.ini")
-			pTerr = new NevadaTerrain();
-		else if (name == "TransitTerrain.ini")
-			pTerr = new TransitTerrain();
-		else
-			pTerr = new vtTerrain();
+			// Some terrain .ini files want to use a different Terrain class
+			if (name == "Hawai`i.ini" || name == "Honoka`a.ini" || name == "Kealakekua.ini" )
+				pTerr = new IslandTerrain();
+			else if (name == "Nevada.ini")
+				pTerr = new NevadaTerrain();
+			else if (name == "TransitTerrain.ini")
+				pTerr = new TransitTerrain();
+			else
+				pTerr = new vtTerrain();
 
-		if (pTerr->SetParamFile(directory + "/" + name))
-			GetTerrainScene().AppendTerrain(pTerr);
+			if (pTerr->SetParamFile(directory + "/" + name))
+				GetTerrainScene().AppendTerrain(pTerr);
+		}
 	}
 }
 
@@ -412,7 +416,7 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 		SetupCameras();
 
 		_Log("Finishing Terrain Scene\n");
-		GetTerrainScene().Finish(g_Options.m_strDataPath);
+		GetTerrainScene().Finish(g_Options.m_DataPaths);
 
 		if (g_Options.m_bSpeedTest)
 		{
@@ -610,11 +614,11 @@ void Enviro::MakeGlobe()
 	_Log("MakeGlobe\n");
 #if 0
 	// simple globe
-	m_pGlobeMGeom = CreateSimpleEarth(g_Options.m_strDataPath);
+	m_pGlobeMGeom = CreateSimpleEarth(g_Options.m_DataPaths);
 #else
 	// fancy icosahedral globe
 	m_pIcoGlobe = new IcoGlobe();
-	m_pIcoGlobe->Create(16, g_Options.m_strDataPath, g_Options.m_strImage);
+	m_pIcoGlobe->Create(16, g_Options.m_DataPaths, g_Options.m_strImage);
 	m_pGlobeMGeom = m_pIcoGlobe->m_mgeom;
 #endif
 
@@ -644,9 +648,12 @@ void Enviro::MakeGlobe()
 	// create some stars around the earth
 	//
 	vtStarDome *pStars = new vtStarDome();
-	pStars->Create(g_Options.m_strDataPath + "Sky/bsc.data",
-		10.0f, 5.0f);	// radius, brightness
-	m_pGlobeMGeom->AddChild(pStars);
+	vtString bsc_file = FindFileOnPaths(g_Options.m_DataPaths, "Sky/bsc.data");
+	if (bsc_file != "")
+	{
+		pStars->Create(bsc_file, 10.0f, 5.0f);	// radius, brightness
+		m_pGlobeMGeom->AddChild(pStars);
+	}
 }
 
 
@@ -704,7 +711,7 @@ void Enviro::SetupScene1()
 
 	vtScene *pScene = vtGetScene();
 
-	vtTerrain::SetDataPath(g_Options.m_strDataPath);
+	vtTerrain::SetDataPath(g_Options.m_DataPaths);
 
 	vtCamera *pCamera = pScene->GetCamera();
 	if (pCamera) pCamera->SetName2("Standard Camera");
@@ -765,11 +772,12 @@ void Enviro::SetupScene2()
 	vtRoute::SetScale(g_Options.m_fPlantScale);
 
 	vtPlantList pl;
-	if (pl.ReadXML(g_Options.m_strDataPath + "PlantData/species.xml"))
+	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
+	if (pl.ReadXML(species_path))
 	{
 		m_pPlantList = new vtPlantList3d();
 		*m_pPlantList = pl;
-		m_pPlantList->CreatePlantSurfaces(g_Options.m_strDataPath,
+		m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
 			g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
 	}
 }

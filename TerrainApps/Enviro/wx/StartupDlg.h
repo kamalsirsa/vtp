@@ -58,7 +58,6 @@ private:
     bool    m_bStartEarth;
     bool    m_bStartTerrain;
     wxString    m_strTName;
-    wxString    m_strDataPath;
     wxString    m_strImage;
     float       m_fPlantScale;
     bool        m_bShadows;
@@ -68,7 +67,7 @@ private:
     wxStaticText    *m_psImage;
     wxComboBox      *m_pImage;
 
-    vtString    m_strFilename;
+	vtString    m_strFilename;
 
 private:
     // WDR: handler declarations for StartupDlg

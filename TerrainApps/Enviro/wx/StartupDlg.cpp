@@ -185,7 +185,6 @@ static void ShowOGLInfo()
 
 void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 {
-    m_strDataPath = opt.m_strDataPath;
     m_bStartEarth = (opt.m_bEarthView == TRUE);
     m_bStartTerrain = !opt.m_bEarthView;
     m_strImage = opt.m_strImage;
@@ -204,7 +203,6 @@ void StartupDlg::GetOptionsFrom(EnviroOptions &opt)
 
 void StartupDlg::PutOptionsTo(EnviroOptions &opt)
 {
-    opt.m_strDataPath = m_strDataPath;
     opt.m_bEarthView = (m_bStartEarth == 1);
     opt.m_strImage = m_strImage;
     opt.m_strInitTerrain = m_strTName;
@@ -251,7 +249,6 @@ void StartupDlg::EditParameters(const char *filename)
     TParamsDlg dlg(this, -1, "Terrain Creation Parameters", wxDefaultPosition);
 
     TParams Params;
-    dlg.SetPath(m_strDataPath);
     if (Params.LoadFromFile(filename))
         dlg.SetParams(Params);
 
@@ -339,8 +336,13 @@ void StartupDlg::OnInitDialog(wxInitDialogEvent& event)
     m_psImage = GetImagetext();
     m_pImage = GetImage();
 
-    AddFilenamesToComboBox(m_pImage, m_strDataPath + "WholeEarth/",
-        "*_0106.png", 9);
+	StringArray &paths = g_Options.m_DataPaths;
+	for (int i = 0; i < paths.GetSize(); i++)
+	{
+		vtString path = *paths[i];
+		path += "WholeEarth/";
+		AddFilenamesToComboBox(m_pImage, path, "*_0106.png", 9);
+	}
     int sel = m_pImage->FindString(m_strImage);
     if (sel != -1)
         m_pImage->SetSelection(sel);

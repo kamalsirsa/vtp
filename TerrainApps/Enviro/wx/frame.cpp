@@ -394,12 +394,12 @@ void vtFrame::ChangeTerrainDetail(bool bIncrease)
 
 	if (bIncrease)
 	{
-		pTerr->SetPixelError(pTerr->GetPixelError()+0.1f);
+		pTerr->SetPixelError(pTerr->GetPixelError()*1.1f);
 		pTerr->SetPolygonCount(pTerr->GetPolygonCount()+1000);
 	}
 	else
 	{
-		pTerr->SetPixelError(pTerr->GetPixelError()-0.1f);
+		pTerr->SetPixelError(pTerr->GetPixelError()/1.1f);
 		pTerr->SetPolygonCount(pTerr->GetPolygonCount()-1000);
 	}
 }
@@ -985,8 +985,11 @@ void SetTerrainToGUI(vtTerrain *pTerrain)
 {
 	vtFrame *pFrame = (vtFrame *) (wxGetApp().GetTopWindow());
 
-	vtString loc = pTerrain->GetParams().m_strLocFile;
-	pFrame->m_pLocationDlg->SetLocFile(pTerrain->m_strDataPath + "Locations/" + loc);
+	vtString loc = "Locations/";
+	loc += pTerrain->GetParams().m_strLocFile;
+	vtString path = FindFileOnPaths(pTerrain->m_DataPaths, loc);
+	if (path != "")
+		pFrame->m_pLocationDlg->SetLocFile(path);
 }
 
 

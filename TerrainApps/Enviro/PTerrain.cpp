@@ -64,25 +64,36 @@ void PTerrain::AddVehicleType(VehicleType *vt)
 void PTerrain::SetupVehicles()
 {
 	VehicleType *bronco = new VehicleType("bronco");
-	bronco->SetModelLod(0, m_strDataPath + "Vehicles/bronco_v2.dsm", 500);
+	vtString fname;
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/bronco_v2.dsm");
+	bronco->SetModelLod(0, fname, 500);
 	AddVehicleType(bronco);
 
 	VehicleType *discovery = new VehicleType("discovery");
-	discovery->SetModelLod(0, m_strDataPath + "Vehicles/discovery_LOD01.dsm", 50);
-	discovery->SetModelLod(1, m_strDataPath + "Vehicles/discovery_LOD02.dsm", 100);
-	discovery->SetModelLod(2, m_strDataPath + "Vehicles/discovery_LOD03.dsm", 200);
-	discovery->SetModelLod(3, m_strDataPath + "Vehicles/discovery_LOD04.dsm", 500);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD01.dsm");
+	discovery->SetModelLod(0, fname, 50);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD02.dsm");
+	discovery->SetModelLod(1, fname, 100);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD03.dsm");
+	discovery->SetModelLod(2, fname, 200);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/discovery_LOD04.dsm");
+	discovery->SetModelLod(3, fname, 500);
 	AddVehicleType(discovery);
 
 	VehicleType *hele_on = new VehicleType("bus");
-	hele_on->SetModelLod(0, m_strDataPath + "Vehicles/bus991025-3.dsm", 800);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/bus991025-3.dsm");
+	hele_on->SetModelLod(0, fname, 800);
 	AddVehicleType(hele_on);
 
 	VehicleType *b747 = new VehicleType("747");
-	b747->SetModelLod(0, m_strDataPath + "Vehicles/747-LOD00.dsm", 200);
-	b747->SetModelLod(1, m_strDataPath + "Vehicles/747-LOD01.dsm", 1000);
-	b747->SetModelLod(2, m_strDataPath + "Vehicles/747-LOD02.dsm", 2000);
-	b747->SetModelLod(3, m_strDataPath + "Vehicles/747-LOD03.dsm", 5000);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD00.dsm");
+	b747->SetModelLod(0, fname, 200);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD01.dsm");
+	b747->SetModelLod(1, fname, 1000);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD02.dsm");
+	b747->SetModelLod(2, fname, 2000);
+	fname = FindFileOnPaths(m_DataPaths, "Vehicles/747-LOD03.dsm");
+	b747->SetModelLod(3, fname, 5000);
 	AddVehicleType(b747);
 }
 

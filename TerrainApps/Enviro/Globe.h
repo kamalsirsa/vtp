@@ -9,11 +9,12 @@
 #define GLOBEH
 
 #include "vtdata/Icosa.h"
+#include "vtdata/FilePath.h"
 
 class IcoGlobe : public DymaxIcosa
 {
 public:
-	void Create(int freq, vtString strDataPath, vtString strImagePrefix);
+	void Create(int freq, const StringArray &paths, vtString strImagePrefix);
 	void SetInflation(float f);
 	void SetLighting(bool bLight);
 	void AddPoints(DLine2 &points, float fSize);

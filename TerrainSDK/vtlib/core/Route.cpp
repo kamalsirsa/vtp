@@ -24,6 +24,10 @@
 #define LONGEST_ROUTE		2000   // in meters
 #define NUM_WIRE_SEGMENTS	100
 
+#ifndef PI
+#define PI PIf
+#endif
+
 vtMaterialArray *vtRoute::m_pRouteMats;
 float vtRoute::m_fRouteScale;	// route size is exaggerated by this amount
 
@@ -93,8 +97,8 @@ void vtRoute::CreateMaterials()
 	m_pRouteMats = new vtMaterialArray();
 
 	// create wirefence post textured material (0)
-	vtString str = vtTerrain::m_strDataPath + "Culture/fencepost_64.bmp";
-	m_mi_woodpost = m_pRouteMats->AddTextureMaterial2(str,
+	vtString path = FindFileOnPaths(vtTerrain::m_DataPaths, "Culture/fencepost_64.bmp");
+	m_mi_woodpost = m_pRouteMats->AddTextureMaterial2(path,
 		true, true, false, false,
 		TERRAIN_AMBIENT,
 		TERRAIN_DIFFUSE,
@@ -116,8 +120,6 @@ void vtRoute::BuildGeometry(vtHeightField *pHeightField)
 {
 	if (m_bBuilt)
 		DestroyGeometry();
-
-	m_sDataPath = m_pTheTerrain->m_strDataPath;
 
 	// create surface and shape
 	AddRouteMeshes(pHeightField);
