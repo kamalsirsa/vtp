@@ -151,13 +151,13 @@ void CustomTerrain::RenderPass()
 	// triangle strips.  (Replace with your own algorithm.)
 	//
 	int i, j;
-	for (i = 0; i < m_iColumns-5; i+=4)
+	for (i = 0; i < m_iColumns-3; i+=2)
 	{
 		glBegin(GL_TRIANGLE_STRIP);
-		for (j = 0; j < m_iRows; j+=4)
+		for (j = 0; j < m_iRows; j+=2)
 		{
 			glVertex3f(MAKE_XYZ2(i, j));
-			glVertex3f(MAKE_XYZ2(i+4, j));
+			glVertex3f(MAKE_XYZ2(i+2, j));
 			m_iDrawnTriangles += 2;
 		}
 		glEnd();
