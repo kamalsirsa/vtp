@@ -155,15 +155,15 @@ vtMesh *vtPlantAppearance3d::CreateTreeMesh(float fTreeScale, bool bShadows,
 	{
 		vstart = vcount;
 
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, 0.0f, 0), 0.0f, 1.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, 0.0f, 0), 1.0f, 1.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, h, 0), 0.0f, 0.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, h, 0), 1.0f, 0.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, 0.0f, 0), 0.0f, 0.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, 0.0f, 0), 1.0f, 0.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3(-w2, h, 0), 0.0f, 1.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3( w2, h, 0), 1.0f, 1.0f);
 		//
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f, -w2), 0.0f, 1.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f,  w2), 1.0f, 1.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h, -w2), 0.0f, 0.0f);
-		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h,  w2), 1.0f, 0.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f, -w2), 0.0f, 0.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, 0.0f,  w2), 1.0f, 0.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h, -w2), 0.0f, 1.0f);
+		pTreeMesh->SetVtxPUV(vcount++, FPoint3(0, h,  w2), 1.0f, 1.0f);
 
 #if 0
 		// 4 triangles

@@ -458,7 +458,7 @@ bool vtDayDome::SetTexture(const char *filename)
 		uv.x = (float)i / (float)(xsize-1);
 		for (j = 0; j < ysize; j++)
 		{
-			uv.y = (float)j / (float)(ysize-1);
+			uv.y = 1.0f - (float)j / (float)(ysize-1);
 			m_pDomeMesh->SetVtxTexCoord(i*ysize+j, uv);
 		}
 	}
