@@ -657,16 +657,14 @@ void vtStructureArray::AddBuildingsFromOGR(OGRLayer *pLayer,
 
 	const char *layer_name = pLayerDefn->GetName();
 
+	iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
+	iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
+
 	// Check for layers with known schemas
 	if (!strcmp(layer_name, "osgb:TopographicArea"))
 		Schema = SCHEMA_OSGB_TOPO_AREA;
 	else if (!strcmp(layer_name, "osgb:TopographicPoint"))
 		Schema = SCHEMA_OSGB_TOPO_POINT;
-	else
-	{
-		iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
-		iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
-	}
 
 	count = 0;
 	while( (pFeature = pLayer->GetNextFeature()) != NULL )
@@ -945,16 +943,14 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 
 	pLayerName = pLayerDefn->GetName();
 
+	iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
+	iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
+
 	// Check for layers with known schemas
-	if (!strcmp(pLayerName, "osgb:TopographicArea"))
-		eSchema = SCHEMA_OSGB_TOPO_AREA;
+	if (!strcmp(pLayerName, "osgb:TopographicLine"))
+		eSchema = SCHEMA_OSGB_TOPO_LINE;
 	else if (!strcmp(pLayerName, "osgb:TopographicPoint"))
 		eSchema = SCHEMA_OSGB_TOPO_POINT;
-	else
-	{
-		iHeightIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameHeight);
-		iElevationIndex = pLayerDefn->GetFieldIndex(opt.m_strFieldNameElevation);
-	}
 
 	iCount = 0;
 	while((pFeature = pLayer->GetNextFeature()) != NULL )
@@ -964,12 +960,15 @@ void vtStructureArray::AddLinearsFromOGR(OGRLayer *pLayer,
 		// Preprocess according to schema
 		switch(eSchema)
 		{
-			case SCHEMA_OSGB_TOPO_AREA:
-				// Skip things that are not buildings
+			case SCHEMA_OSGB_TOPO_LINE:
+			case SCHEMA_OSGB_TOPO_POINT:
+				// Skip things that are not linears
 				iFeatureCode = pFeature->GetFieldAsInteger(pLayerDefn->GetFieldIndex("osgb:featureCode"));
 				switch(iFeatureCode)
 				{
-					case 1:
+					case 10045: // General feature - point
+					case 10046: // General feature - line
+						break;
 					default:
 						continue;
 				}
