@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 gdi32.lib wxdll.lib netcdfs.lib vtdata.lib ProjectionLib.lib gctpc.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /libpath:"\TerrainSDK\vtdata\Release" /libpath:"\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Release" /libpath:"\TerrainSDK\gctpc\Release" /libpath:"\TerrainSDK\shapelib\Release" /libpath:"\TerrainSDK\sdtsxx\builder\Release" /libpath:"\TerrainSDK\sdtsxx\container\Release" /libpath:"\TerrainSDK\sdtsxx\io\Release"
-# ADD LINK32 wx22_7.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 wx22_9.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 
 !ELSEIF  "$(CFG)" == "VTBuilder - Win32 Debug"
 
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 wx22_1d.lib netcdfs.lib vtdatad.lib ProjectionLib.lib gctpc.lib gdi32.lib Shapelib.lib io.lib container.lib builder.lib ws2_32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /nodefaultlib:"libcpd.lib" /pdbtype:sept /libpath:"\TerrainSDK\vtdata\Debug" /libpath:"\APIs\wx2\lib" /libpath:"\TerrainSDK\NetCDF" /libpath:"\TerrainSDK\ProjectionLib\Debug" /libpath:"\TerrainSDK\gctpc\Debug" /libpath:"\TerrainSDK\shapelib\Debug" /libpath:"\TerrainSDK\sdtsxx\builder\Debug" /libpath:"\TerrainSDK\sdtsxx\container\Debug" /libpath:"\TerrainSDK\sdtsxx\io\Debug"
-# ADD LINK32 wx22_7d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
+# ADD LINK32 wx22_9d.lib gdi32.lib ws2_32.lib netcdf.lib gdal_i.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /nodefaultlib:"libcd.lib" /pdbtype:sept /libpath:"\APIs\wx2\lib" /libpath:"\APIs\NetCDF" /libpath:"\APIs\netcdf-3.5.0.win32bin\lib"
 
 !ENDIF 
 
