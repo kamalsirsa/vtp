@@ -166,6 +166,7 @@ public:
 	bool AddNodeToStructGrid(vtTransform *pTrans);
 	bool AddNodeToStructGrid(vtGeom *pGeom);
 	void RemoveNodeFromStructGrid(vtNodeBase *pNode);
+	vtLodGrid *GetStructureGrid() { return m_pStructGrid; }
 
 	// Terrain-specific content
 	vtContentManager3d m_Content;
