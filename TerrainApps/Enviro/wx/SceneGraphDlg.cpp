@@ -141,6 +141,7 @@ void SceneGraphDlg::RefreshTreeContents()
 	m_pTree->DeleteAllItems();
 
 	// Fill in the tree with nodes
+	m_bFirst = true;
 	vtNodeBase *pRoot = scene->GetRoot();
 	if (pRoot) AddNodeItemsRecursively(wxTreeItemId(), pRoot, 0);
 
@@ -194,12 +195,7 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 
 	if (!pNode) return;
 
-	if (dynamic_cast<vtRoot*>(pNode))
-	{
-		str = _T("Root");
-		nImage = 7;
-	}
-	else if (dynamic_cast<vtLight*>(pNode))
+	if (dynamic_cast<vtLight*>(pNode))
 	{
 		str = _T("Light");
 		nImage = 4;
@@ -238,8 +234,11 @@ void SceneGraphDlg::AddNodeItemsRecursively(wxTreeItemId hParentItem,
 		str += _T("\"");
 	}
 
-	if (dynamic_cast<vtRoot*>(pNode))
+	if (m_bFirst)
+	{
 		hNewItem = m_pTree->AddRoot(str);
+		m_bFirst = false;
+	}
 	else
 		hNewItem = m_pTree->AppendItem(hParentItem, str, nImage, nImage);
 

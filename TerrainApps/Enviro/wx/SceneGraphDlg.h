@@ -60,6 +60,8 @@ private:
 	void OnEnabled( wxCommandEvent &event );
 	void OnTreeSelChanged( wxTreeEvent &event );
 
+	bool m_bFirst;
+
 private:
 	DECLARE_EVENT_TABLE()
 };

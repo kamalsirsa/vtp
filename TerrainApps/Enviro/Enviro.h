@@ -211,7 +211,7 @@ protected:
 	vtCamera	*m_pTopDownCamera;
 	bool		m_bTopDown;
 
-	vtRoot		*m_pRoot;		// top of the scene graph
+	vtGroup		*m_pRoot;		// top of the scene graph
 
 	// globe
 	TimeEngine	*m_pGlobeTime;

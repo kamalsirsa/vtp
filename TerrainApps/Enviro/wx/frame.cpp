@@ -871,8 +871,8 @@ void vtFrame::OnUpdateSceneSpace(wxUpdateUIEvent& event)
 void vtFrame::OnSceneSave(wxCommandEvent& event)
 {
 #if VTLIB_OSG
-	vtRoot *pRoot = GetTerrainScene()->GetTop();
-	osgDB::Registry::instance()->writeNode(*pRoot->m_pOsgRoot, "scene.osg");
+	vtGroup *pRoot = GetTerrainScene()->GetTop();
+	osgDB::Registry::instance()->writeNode(*pRoot->GetOsgGroup(), "scene.osg");
 #endif
 }
 
