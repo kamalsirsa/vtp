@@ -636,6 +636,9 @@ void vtTerrain::recreate_textures(vtTransform *pSunLight)
 
 bool vtTerrain::_CreateDynamicTerrain()
 {
+	// for GetValueFloat below
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	int texture_patches;
 	if (m_Params.GetTextureEnum() == TE_TILED)
 		texture_patches = 4;	// tiled, which is always 4x4
@@ -1942,7 +1945,10 @@ bool vtTerrain::CreateStep1()
 		VTLOG("\t\tEarth Extents LRTB: %lf %lf %lf %lf\n",
 			rect.left, rect.right, rect.top, rect.bottom);
 
-		m_pElevGrid->SetupConversion(m_Params.GetValueFloat(STR_VERTICALEXAG));
+		float exag = m_Params.GetValueFloat(STR_VERTICALEXAG);
+		VTLOG("\t\tVertical exaggeration: %f\n", exag);
+		m_pElevGrid->SetupConversion(exag);
+
 		g_Conv = m_pElevGrid->m_Conversion;
 
 		FRECT frect = m_pElevGrid->m_WorldExtents;
