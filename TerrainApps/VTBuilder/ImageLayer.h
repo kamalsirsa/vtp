@@ -1,7 +1,7 @@
 //
 // ImageLayer.h
 //
-// Copyright (c) 2002 Virtual Terrain Project
+// Copyright (c) 2002-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,6 +10,17 @@
 
 #include "wx/image.h"
 #include "Layer.h"
+
+class GDALDataset;
+class GDALRasterBand;
+class GDALColorTable;
+
+struct Scanline
+{
+	RGBi *m_data;
+	int m_y;
+};
+#define BUF_SCANLINES	4
 
 //////////////////////////////////////////////////////////
 
@@ -44,6 +55,7 @@ public:
 
 protected:
 	bool LoadFromGDAL();
+	void CleanupGDALUsage();
 	vtProjection	m_proj;
 
 	bool	m_bInMemory;
@@ -53,6 +65,27 @@ protected:
 
 	wxImage		*m_pImage;
 	wxBitmap	*m_pBitmap;
+
+	// used when reading from a file with GDAL
+	int iRasterCount;
+	unsigned char *pScanline;
+	unsigned char *pRedline;
+	unsigned char *pGreenline;
+	unsigned char *pBlueline;
+	GDALRasterBand *pBand;
+	GDALRasterBand *pRed;
+	GDALRasterBand *pGreen;
+	GDALRasterBand *pBlue;
+	int nxBlocks, nyBlocks;
+	int xBlockSize, yBlockSize;
+	GDALColorTable *pTable;
+	GDALDataset *pDataset;
+
+	Scanline m_row[BUF_SCANLINES];
+	int m_use_next;
+
+	RGBi *GetScanlineFromBuffer(int y);
+	void ReadScanline(int y, int bufrow);
 };
 
 #endif

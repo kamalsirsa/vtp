@@ -149,38 +149,40 @@ void vtImageLayer::SetProjection(const vtProjection &proj)
 
 DPoint2 vtImageLayer::GetSpacing()
 {
-	if (!m_pImage)
-		return DPoint2(0,0);
-
 	return DPoint2(m_Extents.Width() / (m_iXSize - 1),
 		m_Extents.Height() / (m_iYSize - 1));
 }
 
 bool vtImageLayer::GetFilteredColor(double x, double y, RGBi &rgb)
 {
-	// TODO: support out-of-memory image here
-	if (!m_pImage)
-		return false;
-
+	// could speed this up by keeping these values around
 	DPoint2 spacing = GetSpacing();
 	DPoint2 half = spacing/2;
 
-	// TODO: test against actual full area of this image
-	double u = (x - m_Extents.left + half.x) / m_Extents.Width();
-	int ix = u * m_iXSize;
+	double u = (x - m_Extents.left + half.x) / spacing.x;
+	int ix = (int) u;
 	if (ix < 0 || ix >= m_iXSize)
 		return false;
 
-	double v = (y - m_Extents.bottom + half.y) / m_Extents.Height();
-	int iy = v * m_iYSize;
+	double v = (m_Extents.top - y + half.y) / spacing.y;
+	int iy = (int) v;
 	if (iy < 0 || iy >= m_iYSize)
 		return false;
 
-	// TODO: real filtering (interpolation)
-	// for now, just grab closest pixel
-	rgb.r = m_pImage->GetRed(ix, iy);
-	rgb.g = m_pImage->GetGreen(ix, iy);
-	rgb.b = m_pImage->GetBlue(ix, iy);
+	if (!m_pImage)
+	{
+		// support for out-of-memory image here
+		RGBi *data = GetScanlineFromBuffer(iy);
+		rgb = data[ix];
+	}
+	else
+	{
+		// TODO: real filtering (interpolation)
+		// for now, just grab closest pixel
+		rgb.r = m_pImage->GetRed(ix, iy);
+		rgb.g = m_pImage->GetGreen(ix, iy);
+		rgb.b = m_pImage->GetBlue(ix, iy);
+	}
 	return true;
 }
 
@@ -248,31 +250,22 @@ bool vtImageLayer::SaveToFile(const char *fname)
 
 bool vtImageLayer::LoadFromGDAL()
 {
-	GDALDataset *pDataset = NULL;
 	OGRErr err;
 	const char *pProjectionString;
 	double affineTransform[6];
 	double linearConversionFactor;
-	GDALRasterBand *pBand;
-	GDALColorTable *pTable;
-	GDALColorEntry Ent;
 	int i;
-	int iRasterCount;
 	bool bRet = true, bBitmap = true;
-	unsigned char *pData;
-	int xBlockSize, yBlockSize;
-	int nxBlocks, nyBlocks;
-	int ixBlock, iyBlock;
-	int nxValid, nyValid;
-	CPLErr Err;
-	char *pScanline = NULL;
-	char *pRedline = NULL;
-	char *pGreenline = NULL;
-	char *pBlueline = NULL;
-	GDALRasterBand *pRed = NULL;
-	GDALRasterBand *pGreen = NULL;
-	GDALRasterBand *pBlue = NULL;
-	int x, y;
+
+	pDataset = NULL;
+	pScanline = NULL;
+	pRedline = NULL;
+	pGreenline = NULL;
+	pBlueline = NULL;
+	pBand = NULL;
+	pRed = NULL;
+	pGreen = NULL;
+	pBlue = NULL;
 
 	try
 	{
@@ -325,20 +318,20 @@ bool vtImageLayer::LoadFromGDAL()
 			m_Extents.bottom = (affineTransform[3] + affineTransform[4] * m_iXSize /*+ affineTransform[5] * 0*/) * linearConversionFactor;
 		}
 
-		if (m_iXSize * m_iYSize > (3000 * 3000))
+		// Prepare scanline buffers
+		for (i = 0; i < BUF_SCANLINES; i++)
 		{
-			// don't try to load giant image
-			throw "Deferring load of large image";
+			m_row[i].m_data = new RGBi[m_iXSize];
+			m_row[i].m_y = -1;
 		}
-
-		// Set up bitmap
-		if (NULL == (m_pImage = new wxImage(m_iXSize, m_iYSize)))
-			throw "Couldn't create image.";
-		
-		pData = m_pImage->GetData();
+		m_use_next = 0;
 
 		// Raster count should be 3 for colour images (assume RGB)
 		iRasterCount = pDataset->GetRasterCount();
+
+		if (iRasterCount != 1 && iRasterCount != 3)
+			throw "Image does not have 1 or 3 bands.";
+
 		if (iRasterCount == 1)
 		{
 			pBand = pDataset->GetRasterBand(1);
@@ -350,50 +343,14 @@ bool vtImageLayer::LoadFromGDAL()
 			if (NULL == (pTable = pBand->GetColorTable()))
 				throw "Couldn't get color table.";
 
-			pBand->FlushBlock(0, 0);
-
 			pBand->GetBlockSize(&xBlockSize, &yBlockSize);
 			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (m_iYSize + yBlockSize - 1) / yBlockSize;
-			if (NULL == (pScanline = new char[xBlockSize * yBlockSize]))
+			if (NULL == (pScanline = new unsigned char[xBlockSize * yBlockSize]))
 				throw "Couldnt allocate scan line.";
-			// Read the data
-			// Convert to rgb and write to image
-			for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
-			{
-				progress_callback(iyBlock * 100 / nyBlocks);
-				for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
-				{
-					Err = pBand->ReadBlock(ixBlock, iyBlock, pScanline);
-					if (Err != CE_None)
-						return false;
-
-					// Compute the portion of the block that is valid
-					// for partial edge blocks.
-					if ((ixBlock+1) * xBlockSize > m_iXSize)
-						nxValid = m_iXSize - ixBlock * xBlockSize;
-					else
-						nxValid = xBlockSize;
-
-					if( (iyBlock+1) * yBlockSize > m_iYSize)
-						nyValid = m_iYSize - iyBlock * yBlockSize;
-					else
-						nyValid = yBlockSize;
-
-					for( int iY = 0; iY < nyValid; iY++ )
-					{
-						y = (iyBlock * yBlockSize + iY);
-						for( int iX = 0; iX < nxValid; iX++ )
-						{
-							x = (ixBlock * xBlockSize) + iX;
-							pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
-							m_pImage->SetRGB(x, y, Ent.c1, Ent.c2, Ent.c3);
-						}
-					}
-				}
-			}
 		}
-		else if (iRasterCount == 3)
+
+		if (iRasterCount == 3)
 		{
 			for (i = 1; i <= 3; i++)
 			{
@@ -422,57 +379,33 @@ bool vtImageLayer::LoadFromGDAL()
 			pRed->GetBlockSize(&xBlockSize, &yBlockSize);
 			nxBlocks = (m_iXSize + xBlockSize - 1) / xBlockSize;
 			nyBlocks = (m_iYSize + yBlockSize - 1) / yBlockSize;
-			pRed->FlushBlock(0, 0);
-			pGreen->FlushBlock(0, 0);
-			pBlue->FlushBlock(0, 0);
-			pRedline = new char[xBlockSize * yBlockSize];
-			pGreenline = new char[xBlockSize * yBlockSize];
-			pBlueline = new char[xBlockSize * yBlockSize];
 
-			for( iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+			pRedline = new unsigned char[xBlockSize * yBlockSize];
+			pGreenline = new unsigned char[xBlockSize * yBlockSize];
+			pBlueline = new unsigned char[xBlockSize * yBlockSize];
+		}
+
+		if (m_iXSize * m_iYSize > (4096 * 4096))
+		{
+			// don't try to load giant image
+			throw "Deferring load of large image";
+		}
+
+		// Set up wxWindows image
+		if (NULL == (m_pImage = new wxImage(m_iXSize, m_iYSize)))
+			throw "Couldn't create image.";
+
+		// Read the data
+		for(int iyBlock = 0; iyBlock < nyBlocks; iyBlock++ )
+		{
+			ReadScanline(iyBlock, 0);
+			progress_callback(iyBlock * 100 / nyBlocks);
+			for(int iX = 0; iX < m_iXSize; iX++ )
 			{
-				progress_callback(iyBlock * 100 / nyBlocks);
-				for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
-				{
-					Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
-					if (Err != CE_None)
-						return false;
-					Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
-					if (Err != CE_None)
-						return false;
-					Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
-					if (Err != CE_None)
-						return false;
-
-					// Compute the portion of the block that is valid
-					// for partial edge blocks.
-					if ((ixBlock+1) * xBlockSize > m_iXSize)
-						nxValid = m_iXSize - ixBlock * xBlockSize;
-					else
-						nxValid = xBlockSize;
-
-					if( (iyBlock+1) * yBlockSize > m_iYSize)
-						nyValid = m_iYSize - iyBlock * yBlockSize;
-					else
-						nyValid = yBlockSize;
-
-					for( int iY = 0; iY < nyValid; iY++ )
-					{
-						y = (iyBlock * yBlockSize + iY);
-						for( int iX = 0; iX < nxValid; iX++ )
-						{
-							x = (ixBlock * xBlockSize) + iX;
-							m_pImage->SetRGB(x, y,
-								pRedline[iY * xBlockSize + iX],
-								pGreenline[iY * xBlockSize + iX],
-								pBlueline[iY * xBlockSize + iX]);
-						}
-					}
-				}
+				RGBi rgb = m_row[0].m_data[iX];
+				m_pImage->SetRGB(iX, iyBlock, rgb.r, rgb.g, rgb.b);
 			}
 		}
-		else
-			throw "Image does not have 1 or 3 bands.";
 	}
 	
 	catch (const char *msg)
@@ -484,17 +417,6 @@ bool vtImageLayer::LoadFromGDAL()
 		else
 			bRet = false;
 	}
-
-	if (NULL != pDataset)
-		GDALClose(pDataset);
-	if (NULL != pScanline)
-		delete pScanline;
-	if (NULL != pRedline)
-		delete pRedline;
-	if (NULL != pGreenline)
-		delete pGreenline;
-	if (NULL != pBlueline)
-		delete pBlueline;
 
 	if (bRet == true && bBitmap == true)
 	{
@@ -513,7 +435,7 @@ bool vtImageLayer::LoadFromGDAL()
 	}
 	if (bRet == false)
 	{
-		// Tidy up
+		// Tidy up on failure
 		if (NULL != m_pImage)
 		{
 			delete m_pImage;
@@ -523,3 +445,125 @@ bool vtImageLayer::LoadFromGDAL()
 	return bRet;
 }
 
+void vtImageLayer::CleanupGDALUsage()
+{
+	if (NULL != pDataset)
+		GDALClose(pDataset);
+	if (NULL != pScanline)
+		delete pScanline;
+	if (NULL != pRedline)
+		delete pRedline;
+	if (NULL != pGreenline)
+		delete pGreenline;
+	if (NULL != pBlueline)
+		delete pBlueline;
+}
+
+RGBi *vtImageLayer::GetScanlineFromBuffer(int y)
+{
+	// first check if the row is already in memory
+	int i;
+	for (i = 0; i < BUF_SCANLINES; i++)
+	{
+		if (m_row[i].m_y == y)
+		{
+			// yes it is
+			return m_row[i].m_data;
+		}
+	}
+
+	// ok, it isn't. load it into the next appropriate slot.
+	RGBi *data;
+	ReadScanline(y, m_use_next);
+	m_row[m_use_next].m_y = y;
+	data = m_row[m_use_next].m_data;
+
+	// increment which row we'll use next
+	m_use_next++;
+	if (m_use_next == BUF_SCANLINES)
+		m_use_next = 0;
+
+	return data;
+}
+
+void vtImageLayer::ReadScanline(int iyBlock, int bufrow)
+{
+	CPLErr Err;
+	GDALColorEntry Ent;
+	int x, y;
+	int ixBlock;
+	int nxValid, nyValid;
+
+	if (iRasterCount == 1)
+	{
+		// Convert to rgb and write to image
+		for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+		{
+			Err = pBand->ReadBlock(ixBlock, iyBlock, pScanline);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+
+			// Compute the portion of the block that is valid
+			// for partial edge blocks.
+			if ((ixBlock+1) * xBlockSize > m_iXSize)
+				nxValid = m_iXSize - ixBlock * xBlockSize;
+			else
+				nxValid = xBlockSize;
+
+			if( (iyBlock+1) * yBlockSize > m_iYSize)
+				nyValid = m_iYSize - iyBlock * yBlockSize;
+			else
+				nyValid = yBlockSize;
+
+			for( int iY = 0; iY < nyValid; iY++ )
+			{
+				y = (iyBlock * yBlockSize + iY);
+				for( int iX = 0; iX < nxValid; iX++ )
+				{
+					x = (ixBlock * xBlockSize) + iX;
+					pTable->GetColorEntryAsRGB(pScanline[iY * xBlockSize + iX], &Ent);
+					m_row[bufrow].m_data[iX].Set(Ent.c1, Ent.c2, Ent.c3);
+				}
+			}
+		}
+	}
+	if (iRasterCount == 3)
+	{
+		for( ixBlock = 0; ixBlock < nxBlocks; ixBlock++ )
+		{
+			Err = pRed->ReadBlock(ixBlock, iyBlock, pRedline);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+			Err = pGreen->ReadBlock(ixBlock, iyBlock, pGreenline);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+			Err = pBlue->ReadBlock(ixBlock, iyBlock, pBlueline);
+			if (Err != CE_None)
+				throw "Readblock failed.";
+
+			// Compute the portion of the block that is valid
+			// for partial edge blocks.
+			if ((ixBlock+1) * xBlockSize > m_iXSize)
+				nxValid = m_iXSize - ixBlock * xBlockSize;
+			else
+				nxValid = xBlockSize;
+
+			if( (iyBlock+1) * yBlockSize > m_iYSize)
+				nyValid = m_iYSize - iyBlock * yBlockSize;
+			else
+				nyValid = yBlockSize;
+
+			for( int iY = 0; iY < nyValid; iY++ )
+			{
+				y = (iyBlock * yBlockSize + iY);
+				for( int iX = 0; iX < nxValid; iX++ )
+				{
+					x = (ixBlock * xBlockSize) + iX;
+					m_row[bufrow].m_data[iX].Set(pRedline[iY * xBlockSize + iX],
+						pGreenline[iY * xBlockSize + iX],
+						pBlueline[iY * xBlockSize + iX]);
+				}
+			}
+		}
+	}
+}
