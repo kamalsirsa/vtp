@@ -21,7 +21,7 @@
 #  include <sys/resource.h>
 #endif
 
-#include <streambuf>
+#include <iostream>
 #include "vtdata/vtLog.h"
 
 using namespace osg;
