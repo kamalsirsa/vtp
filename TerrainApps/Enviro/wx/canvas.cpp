@@ -94,15 +94,29 @@ void StatusTimer::Notify()
 	vtScene *scene = vtGetScene();
 	if (!scene) return;
 
+	vtString str, str2;
+
 	// get framerate
 	float fps = scene->GetFrameRate();
 
-	// get time of day
-	int hr, min, sec;
-	GetTerrainScene()->m_pTime->GetTime(hr, min, sec);
+	// only show 3 significant digits
+	if (fps < 10)
+		str.Format("fps %1.2f, ", fps);
+	else if (fps < 80)
+		str.Format("fps %2.1f, ", fps);
+	else
+		str.Format("fps %3.0f, ", fps);
 
-	vtString str, str2;
-	str.Format("fps %3.1f, time %02d:%02d:%02d, ", fps, hr, min, sec);
+	// get time of day
+	TimeEngine *te = GetTerrainScene()->m_pTime;
+	if (te->GetEnabled())
+	{
+		int hr, min, sec;
+		te->GetTime(hr, min, sec);
+
+		str2.Format("time %02d:%02d:%02d, ", hr, min, sec);
+		str += str2;
+	}
 
 	g_App.DescribeCoordinates(str2);
 	str += str2;
