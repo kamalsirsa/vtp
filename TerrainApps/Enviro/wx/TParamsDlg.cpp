@@ -43,6 +43,13 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 	AutoDialog( parent, id, title, position, size, style )
 {
 	TParamsFunc( this, TRUE );
+
+	// make sure that validation gets down to the child windows
+	SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
+	// including the children of the notebook
+	wxNotebook *notebook = (wxNotebook*) FindWindow( ID_NOTEBOOK );
+	notebook->SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 }
 
 
@@ -52,6 +59,7 @@ TParamsDlg::TParamsDlg( wxWindow *parent, wxWindowID id, const wxString &title,
 void TParamsDlg::SetParams(TParams &Params)
 {
 	m_strFilename = Params.m_strElevFile;
+	m_strFilenameTin = Params.m_strElevFile;
 	m_fVerticalExag = Params.m_fVerticalExag;
 	m_iMinHeight = Params.m_iMinHeight;
 	m_fNavSpeed = Params.m_fNavSpeed;
@@ -66,6 +74,8 @@ void TParamsDlg::SetParams(TParams &Params)
 	m_iTriCount = Params.m_iTriCount;
 	m_bTriStrips = Params.m_bTriStrips;
 	m_bDetailTexture = Params.m_bDetailTexture;
+
+	m_bTin = Params.m_bTin;
 
 	m_bTimeOn = Params.m_bTimeOn;
 	m_iInitTime = Params.m_iInitTime;
@@ -135,7 +145,11 @@ void TParamsDlg::SetParams(TParams &Params)
 //
 void TParamsDlg::GetParams(TParams &Params)
 {
-	Params.m_strElevFile = m_strFilename;
+	if (m_bTin)
+		Params.m_strElevFile = m_strFilenameTin;
+	else
+		Params.m_strElevFile = m_strFilename;
+
 	// LocationsFilename
 	Params.m_fVerticalExag = m_fVerticalExag;
 	Params.m_iMinHeight = m_iMinHeight;
@@ -151,6 +165,8 @@ void TParamsDlg::GetParams(TParams &Params)
 	Params.m_iTriCount = m_iTriCount;
 	Params.m_bTriStrips = m_bTriStrips;
 	Params.m_bDetailTexture = m_bDetailTexture;
+
+	Params.m_bTin = m_bTin;
 
 	Params.m_bTimeOn = m_bTimeOn;
 	Params.m_iInitTime = m_iInitTime;
@@ -247,6 +263,7 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 	m_pTextureFileSingle = GetTfilesingle();
 	m_pLodMethod = GetLodmethod();
 	m_pFilename = GetFilename();
+	m_pFilenameTin = GetFilenameTin();
 	m_pLocFile = GetLocfile();
 	m_pRouteFile = GetRoutefile();
 
@@ -264,6 +281,12 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 		// fill the "terrain filename" control with available terrain files
 		AddFilenamesToComboBox(m_pFilename, *paths[i] + "Elevation", "*.bt");
 		sel = m_pFilename->FindString(m_strFilename);
+		if (sel != -1)
+			m_pFilename->SetSelection(sel);
+
+		// fill the "terrain filename" control with available terrain files
+		AddFilenamesToComboBox(m_pFilenameTin, *paths[i] + "Elevation", "*.tin");
+		sel = m_pFilenameTin->FindString(m_strFilenameTin);
 		if (sel != -1)
 			m_pFilename->SetSelection(sel);
 
@@ -321,8 +344,14 @@ void TParamsDlg::OnInitDialog(wxInitDialogEvent& event)
 //  OnChangeMem();
 	UpdateTiledTextureFilename();
 
+	GetUseGrid()->SetValue(!m_bTin);
+	GetUseTin()->SetValue(m_bTin);
+
 	AddValidator(ID_FILENAME, &m_strFilename);
+	AddValidator(ID_FILENAME_TIN, &m_strFilenameTin);
 	AddNumValidator(ID_VERTEXAG, &m_fVerticalExag);
+
+	AddValidator(ID_USE_TIN, &m_bTin);
 
 	AddValidator(ID_TIMEMOVES, &m_bTimeOn);
 	AddNumValidator(ID_INITTIME, &m_iInitTime);

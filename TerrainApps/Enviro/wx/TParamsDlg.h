@@ -41,7 +41,9 @@ public:
     void UpdateTiledTextureFilename();
 
     wxString    m_strFilename;
+    wxString    m_strFilenameTin;
     float   m_fVerticalExag;
+	bool	m_bTin;
     bool    m_bRegular;
     int     m_iSubsample;
     bool    m_bDynamic;
@@ -108,6 +110,8 @@ public:
     wxString m_strInitTime;
 
     // WDR: method declarations for TParamsDlg
+    wxRadioButton* GetUseGrid()  { return (wxRadioButton*) FindWindow( ID_USE_GRID ); }
+    wxRadioButton* GetUseTin()  { return (wxRadioButton*) FindWindow( ID_USE_TIN ); }
     wxComboBox* GetLocfile()  { return (wxComboBox*) FindWindow( ID_LOCFILE ); }
     wxRadioButton* GetTiled()  { return (wxRadioButton*) FindWindow( ID_TILED ); }
     wxRadioButton* GetDerived()  { return (wxRadioButton*) FindWindow( ID_DERIVED ); }
@@ -120,6 +124,7 @@ public:
     wxComboBox* GetTfilesingle()  { return (wxComboBox*) FindWindow( ID_TFILESINGLE ); }
     wxChoice* GetLodmethod()  { return (wxChoice*) FindWindow( ID_LODMETHOD ); }
     wxComboBox* GetFilename()  { return (wxComboBox*) FindWindow( ID_FILENAME ); }
+    wxComboBox* GetFilenameTin()  { return (wxComboBox*) FindWindow( ID_FILENAME_TIN ); }
     wxComboBox* GetRoutefile()  { return (wxComboBox*) FindWindow( ID_ROUTEFILE ); }
 
 	//  CButton m_PreLight;
@@ -135,6 +140,7 @@ private:
     wxComboBox* m_pTextureFileSingle;
     wxChoice* m_pLodMethod;
     wxComboBox* m_pFilename;
+    wxComboBox* m_pFilenameTin;
     wxRadioButton* m_pNone;
     wxRadioButton* m_pSingle;
     wxRadioButton* m_pDerived;
