@@ -14,7 +14,8 @@
 using namespace std;
 
 #include "config_vtdata.h"
-#include "vtdata/vtLog.h"
+#include "vtLog.h"
+#include "vtDIB.h"
 #include "ElevationGrid.h"
 #include "ByteOrder.h"
 #include "vtString.h"
@@ -1864,6 +1865,96 @@ bool vtElevationGrid::SaveToBT(const char *szFileName,
 	}
 
 	return true;
+}
+
+
+/**
+ * Write the elevation grid to a 16-bit greyscale GeoTIFF.
+ */
+bool vtElevationGrid::SaveToGeoTIFF(const char *szFileName)
+{
+	g_GDALWrapper.RequestGDALFormats();
+
+	// Save with GDAL to GeoTIFF
+	GDALDriverManager *pManager = GetGDALDriverManager();
+	if (!pManager)
+		return false;
+
+	GDALDriver *pDriver = pManager->GetDriverByName("GTiff");
+	if (!pDriver)
+		return false;
+
+	char **papszParmList = NULL;
+
+	GDALDataset *pDataset = pDriver->Create(szFileName, m_iColumns, m_iRows,
+		1, GDT_Int16, papszParmList );
+	if (!pDataset)
+		return false;
+
+	DPoint2 spacing = GetSpacing();
+	double adfGeoTransform[6] = { m_EarthExtents.left, spacing.x, 0,
+								  m_EarthExtents.top, 0, -spacing.y };
+	pDataset->SetGeoTransform(adfGeoTransform);
+
+	GInt16 *raster = new GInt16[m_iColumns*m_iRows];
+
+	char *pszSRS_WKT = NULL;
+	m_proj.exportToWkt( &pszSRS_WKT );
+	pDataset->SetProjection(pszSRS_WKT);
+	CPLFree( pszSRS_WKT );
+
+	GDALRasterBand *pBand = pDataset->GetRasterBand(1);
+
+	int x, y;
+	float value;
+	for (x = 0; x < m_iColumns; x++)
+	{
+		for (y = 0; y < m_iRows; y++)
+		{
+			value = GetFValue(x, y);
+			raster[y*m_iColumns + x] = (short) value;
+		}
+	}
+	pBand->RasterIO( GF_Write, 0, 0, m_iColumns, m_iRows, 
+		raster, m_iColumns, m_iRows, GDT_Int16, 0, 0 );
+
+	delete raster;
+	GDALClose(pDataset);
+
+	return true;
+}
+
+
+/**
+ * Write the elevation grid to a 8-bit BMP file.  Much information is lost,
+ * including precision, sign, and geographic location.
+ */
+bool vtElevationGrid::SaveToBMP(const char *szFileName)
+{
+	vtDIB dib;
+
+	// We must scale from our actual range down to 8 bits
+	float fMin = m_fMinHeight;
+	if (fMin < 0)
+		fMin = 0;
+	float fMax = m_fMaxHeight;
+	float fRange = fMax - fMin;
+	float fScale = (fRange == 0.0f ? 0.0f : 255.0f / fRange);
+
+	if (!dib.Create(m_iColumns, m_iRows, 8, true))
+		return false;
+
+	int x, y;
+	float value;
+	for (x = 0; x < m_iColumns; x++)
+	{
+		for (y = 0; y < m_iRows; y++)
+		{
+			value = GetFValue(x, y);
+			dib.SetPixel8(x, y, (unsigned char) ((value - fMin) * fScale));
+		}
+	}
+	return dib.WriteBMP(szFileName);
 }
 
 
