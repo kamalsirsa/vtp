@@ -114,8 +114,7 @@ void NevadaTerrain::CreateWater()
 		true, false,	// transp, add
 		TERRAIN_AMBIENT, TERRAIN_DIFFUSE, 0.6f, TERRAIN_EMISSIVE);
 
-	FRECT world_extents;
-	m_pHeightField->GetWorldExtents(world_extents);
+	FRECT world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
 	FPoint2 org, size;
 	org.x = (float) world_extents.left;
 	org.y = (float) world_extents.bottom;
@@ -182,7 +181,7 @@ void NevadaTerrain::CreatePast()
 //  float height = (float) m_Params.m_iMinHeight + 1.0f*WORLD_SCALE;
 	float height = 80.0f * WORLD_SCALE;
 	FPoint3 center;
-	g_Proj.convert_latlon_to_local_xz(MAN_LAT, MAN_LON, center.x, center.z);
+	g_Conv.convert_geo_to_local_xz(MAN_LON, MAN_LAT, center.x, center.z);
 
 #if 0
 	//butterfly: circle radius, speed, height above ground, center, size_exag
@@ -225,8 +224,7 @@ void NevadaTerrain::CreatePast()
 	// setup Tree LOD Grid
 	float fLODDistance = 14000.0f;
 
-	FRECT world_extents;
-	m_pHeightField->GetWorldExtents(world_extents);
+	FRECT world_extents = m_pHeightField->m_Conversion.m_WorldExtents;
 	FPoint3 origin, size;
 	origin.x = (float) world_extents.left;
 	origin.y = 0.0f;
@@ -573,7 +571,7 @@ void EpochEngine::Eval()
 			diffuse = pMaterial->GetDiffuse();
 			diffuse.a = alpha;
 			pMaterial->SetDiffuse1(diffuse);
-			m_pNevada->m_pDynGeom->SetDetailMaterial(m_pPastApp, DETAIL_TILING);
+			m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPastApp, DETAIL_TILING);
 		}
 		else
 		{
@@ -583,7 +581,7 @@ void EpochEngine::Eval()
 			diffuse = pMaterial->GetDiffuse();
 			diffuse.a = alpha;
 			pMaterial->SetDiffuse1(diffuse);
-			m_pNevada->m_pDynGeom->SetDetailMaterial(m_pPresentApp, DETAIL_TILING);
+			m_pNevada->GetDynTerrain()->SetDetailMaterial(m_pPresentApp, DETAIL_TILING);
 		}
 	}
 	m_pNevada->m_Past.SetEnabled(m_iYear == PAST);
