@@ -77,7 +77,6 @@ bool vtApp::CreateScene()
 
 	// Add the terrain to the scene, and contruct it
 	m_pTerrainScene->AppendTerrain(pTerr);
-	int iError;
 	if (!m_pTerrainScene->BuildTerrain(pTerr))
 	{
 		m_frame->m_canvas->m_bRunning = false;
