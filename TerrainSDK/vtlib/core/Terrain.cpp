@@ -831,7 +831,8 @@ void vtTerrain::create_culture(bool bSound)
 				vtTransform *pTrans = m_PIA.GetPlantNode(i);
 
 				// add tree to scene graph
-				AddNodeToLodGrid(pTrans);
+				if (pTrans)
+					AddNodeToLodGrid(pTrans);
 			}
 		}
 	}
