@@ -63,7 +63,7 @@ public:
 protected:
 	int FindMatIndex(BldMaterial bldApp, RGBi inputColor=RGBi(0,0,0));
 	void CreateSharedMaterials();
-	bool MakeFacade(vtEdge *pEdge, FLine3 &quad);
+	bool MakeFacade(vtEdge *pEdge, FLine3 &quad, int stories);
 
 protected:
 	// material
