@@ -34,6 +34,7 @@
 #include "Projection2Dlg.h"
 #include "DistribVegDlg.h"
 #include "SelectDlg.h"
+#include "VegDlg.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
 EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
@@ -150,10 +151,12 @@ EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
 EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
 
 EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
+EVT_MENU(ID_FEATURE_INFO,			MainFrame::OnFeatureInfo)
 EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
 EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 
 EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
+EVT_UPDATE_UI(ID_FEATURE_INFO,		MainFrame::OnUpdateFeatureInfo)
 EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
 EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 
@@ -343,11 +346,14 @@ void MainFrame::CreateMenus()
 	// Raw
 	rawMenu = new wxMenu;
 	rawMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
+	rawMenu->Append(ID_FEATURE_INFO, "Feature Info", "Feature Info", true);
+#ifndef ELEVATION_ONLY
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SETTYPE, "Set Entity Type", "Set Entity Type");
 	rawMenu->Append(ID_RAW_ADDPOINTS, "Add Points with Mouse", "Add points with the mouse", true);
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, "Add Point with Text\tCtrl+T", "Add point");
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, "Add Points with GPS", "Add points with GPS");
+#endif
 	rawMenu->AppendSeparator();
 	rawMenu->Append(ID_RAW_SELECTCONDITION, "Select Features by Condition");
 	m_pMenuBar->Append(rawMenu, "Ra&w");
@@ -1652,7 +1658,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 			return;
 
 		// Read bioregions, data kept on frame with m_pBioRegion.
-		if (!GetBioRegion()->Read(loadFile.GetPath()))
+		if (!m_BioRegions.Read(loadFile.GetPath()))
 		{
 			wxMessageBox("Couldn't read bioregion list from that file.",
 				"Error", wxOK, this);
@@ -1748,6 +1754,16 @@ void MainFrame::OnFeatureSelect(wxCommandEvent &event)
 void MainFrame::OnUpdateFeatureSelect(wxUpdateUIEvent& event)
 {
 	event.Check(m_pView->GetMode() == LB_FSelect);
+}
+
+void MainFrame::OnFeatureInfo(wxCommandEvent &event)
+{
+	m_pView->SetMode(LB_Info);
+}
+
+void MainFrame::OnUpdateFeatureInfo(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode() == LB_Info);
 }
 
 void MainFrame::OnBuildingEdit(wxCommandEvent &event)
