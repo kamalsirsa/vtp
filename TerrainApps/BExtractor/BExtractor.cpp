@@ -108,7 +108,6 @@ BOOL CBExtractorApp::InitInstance()
 
 	m_pMainWnd->DragAcceptFiles(TRUE);
 
-
 	return TRUE;
 }
 
