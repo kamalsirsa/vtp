@@ -542,7 +542,13 @@ void WIN_UNIX_CDECL vtString::Format(pcchar lpszFormat, ...) {
 
 void vtString::FormatV(pcchar lpszFormat, va_list argList)
 {
+#ifdef _MSC_VER
 	va_list argListSave = argList;
+#else
+	// probably gcc, which has the newer standard "va_copy" macro
+	va_list argListSave;
+	va_copy(argListSave, argList);
+#endif
 
 	// make a guess at the maximum length of the resulting string
 	int nMaxLen = 0;
