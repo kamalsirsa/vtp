@@ -32,6 +32,9 @@ vtRawLayer::vtRawLayer() : vtLayer(LT_RAW)
 
 	// default dark red
 	m_DrawStyle.m_LineColor.Set(128,0,0);
+
+	m_DrawStyle.m_MarkerShape = 0;
+	m_DrawStyle.m_MarkerSize = 1;
 }
 
 vtRawLayer::~vtRawLayer()
@@ -124,11 +127,20 @@ void vtRawLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 			}
 			const DPoint2 &p2 = pSetP2->GetPoint(i);
 			pView->screen(p2, p);
-			pDC->DrawPoint(p);
-			pDC->DrawPoint(p.x+1, p.y);
-			pDC->DrawPoint(p.x, p.y+1);
-			pDC->DrawPoint(p.x-1, p.y);
-			pDC->DrawPoint(p.x, p.y-1);
+			if (m_DrawStyle.m_MarkerShape == 0)	// dot
+			{
+				pDC->DrawPoint(p);
+				pDC->DrawPoint(p.x+1, p.y);
+				pDC->DrawPoint(p.x, p.y+1);
+				pDC->DrawPoint(p.x-1, p.y);
+				pDC->DrawPoint(p.x, p.y-1);
+			}
+			if (m_DrawStyle.m_MarkerShape == 1)	// crosshair
+			{
+				int ms = m_DrawStyle.m_MarkerSize;
+				pDC->DrawLine(p.x-ms, p.y, p.x+ms+1, p.y);
+				pDC->DrawLine(p.x, p.y-ms, p.x, p.y+ms+1);
+			}
 		}
 	}
 	if (type == wkbPoint25D)
