@@ -902,6 +902,7 @@ void MainFrame::OnLayerConvert(wxCommandEvent &event)
 
 	SetProjection(proj);
 	m_pView->ZoomAll();
+	RefreshStatusBar();
 }
 
 void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
@@ -934,6 +935,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 
 	SetProjection(proj);
 	m_pView->ZoomAll();
+	RefreshStatusBar();
 }
 
 void MainFrame::OnUpdateLayerConvert(wxUpdateUIEvent& event)

@@ -158,6 +158,7 @@ void MainFrame::SetupUI()
 	vtProjection proj;
 	proj.SetWellKnownGeogCS("WGS84");
 	SetProjection(proj);
+	RefreshStatusBar();
 }
 
 MainFrame::~MainFrame()
