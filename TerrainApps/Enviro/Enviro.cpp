@@ -18,6 +18,7 @@
 
 #include "vtdata/boost/directory.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/vtLog.h"
 
 #include "Enviro.h"
 #include "Options.h"
@@ -82,8 +83,8 @@ void Enviro::Startup()
 {
 	m_pTerrainScene = new vtTerrainScene();
 
-	_StartLog("debug.txt");
-	_Log("\nEnviro\n\n");
+	g_Log._StartLog("debug.txt");
+	VTLOG("\nEnviro\n\n");
 }
 
 void Enviro::Shutdown()
@@ -94,7 +95,7 @@ void Enviro::Shutdown()
 
 void Enviro::LoadTerrainDescriptions()
 {
-	_Log("LoadTerrainDescriptions\n");
+	VTLOG("LoadTerrainDescriptions\n");
 
 	using namespace boost::filesystem;
 
@@ -132,7 +133,7 @@ void Enviro::LoadTerrainDescriptions()
 
 void Enviro::StartControlEngine(const char *filename)
 {
-	_Log("StartControlEngine\n");
+	VTLOG("StartControlEngine\n");
 	m_bSuppliedFilename = (filename != NULL);
 
 	m_pControlEng = new ControlEngine();
@@ -154,9 +155,7 @@ void Enviro::DoControl()
 	{
 		m_iInitStep++;
 
-		m_msg.Format("AS_Initializing initstep=%d", m_iInitStep);
-		_Log(m_msg);
-		_Log("\n");
+		VTLOG("AS_Initializing initstep=%d\n", m_iInitStep);
 
 		if (m_iInitStep == 1)
 		{
@@ -212,7 +211,7 @@ void Enviro::DoControl()
 
 void Enviro::FlyToSpace()
 {
-	_Log("FlyToSpace\n");
+	VTLOG("FlyToSpace\n");
 	if (m_state == AS_Terrain)
 	{
 		// remember camera position
@@ -233,8 +232,7 @@ void Enviro::FlyToSpace()
 
 void Enviro::SetupGlobe()
 {
-	m_msg.Format("SetupGlobe step %d\n", m_iInitStep);
-	_Log(m_msg);
+	VTLOG("SetupGlobe step %d\n", m_iInitStep);
 
 	if (m_iInitStep == 1)
 	{
@@ -368,7 +366,9 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 	if (m_iInitStep == 1)
 	{
-		SetMessage("Creating Terrain");
+		m_msg = "Creating Terrain ";
+		m_msg += pTerr->GetName();
+		SetMessage(m_msg);
 	}
 	if (m_iInitStep == 2)
 	{
@@ -430,17 +430,17 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 	}
 	if (m_iInitStep == 8)
 	{
+		SetMessage("Setting hither/yon");
 		vtCamera *pCam = vtGetScene()->GetCamera();
 		pCam->SetHither(5.0f);
 		pCam->SetYon(500000.0f);
-		SetMessage("Switching to Terrain");
 	}
 	if (m_iInitStep == 9)
 	{
-		// "Finish" terrain scene
 		SetupCameras();
 
-		_Log("Finishing Terrain Scene\n");
+		// "Finish" terrain scene
+		VTLOG("Finishing Terrain Scene\n");
 		m_pTerrainScene->Finish(g_Options.m_DataPaths);
 
 		if (g_Options.m_bSpeedTest)
@@ -646,7 +646,7 @@ void Enviro::DoPickers()
 //
 void Enviro::MakeGlobe()
 {
-	_Log("MakeGlobe\n");
+	VTLOG("MakeGlobe\n");
 #if 0
 	// simple globe
 	m_pGlobeMGeom = CreateSimpleEarth(g_Options.m_DataPaths);
@@ -657,7 +657,7 @@ void Enviro::MakeGlobe()
 	m_pGlobeMGeom = m_pIcoGlobe->m_mgeom;
 #endif
 
-	_Log("\tcreating Trackball\n");
+	VTLOG("\tcreating Trackball\n");
 	// use a trackball engine for navigation
 	//
 	m_pTrackball = new vtTrackball(INITIAL_SPACE_DIST);
@@ -694,43 +694,40 @@ void Enviro::MakeGlobe()
 
 void Enviro::LookUpTerrainLocations()
 {
-	_Log("LookUpTerrainLocations\n");
+	VTLOG("LookUpTerrainLocations\n");
 
 	// look up the earth location of each known terrain
 	vtTerrain *pTerr;
 	for (pTerr = m_pTerrainScene->GetFirstTerrain(); pTerr; pTerr=pTerr->GetNext())
 	{
-		m_msg.Format("\tlooking up: %s\n", (const char *) pTerr->GetName());
-		_Log(m_msg);
+		VTLOG("\tlooking up: %s\n", (const char *) pTerr->GetName());
 
 		vtElevationGrid grid;
 		bool success = pTerr->LoadHeaderIntoGrid(grid);
 
 		if (!success)
 		{
-			_Log("\t\tFailed to load header info.\n");
+			VTLOG("\t\tFailed to load header info.\n");
 			continue;
 		}
 		char msg1[2000], msg2[2000];
 		grid.GetProjection().GetTextDescription(msg1, msg2);
-		m_msg.Format("\t\tprojection: type %s, value %s\n", msg1, msg2);
-		_Log(m_msg);
+		VTLOG("\t\tprojection: type %s, value %s\n", msg1, msg2);
 
 		DPoint2 sw, nw, ne, se;
-		_Log("\t\tGetting terrain corners\n");
+		VTLOG("\t\tGetting terrain corners\n");
 		grid.GetCorners(pTerr->m_Corners_geo, true);
 		nw = pTerr->m_Corners_geo[1];
 		se = pTerr->m_Corners_geo[3];
-		m_msg.Format("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)\n", nw.x, nw.y, se.x, se.y);
-		_Log(m_msg);
-		_Log("\t\tGot terrain corners\n");
+		VTLOG("\t\t(%.2lf,%.2lf) - (%.2lf,%.2lf)\n", nw.x, nw.y, se.x, se.y);
+		VTLOG("\t\tGot terrain corners\n");
 	}
-	_Log("\tLookUpTerrainLocations: done\n");
+	VTLOG("\tLookUpTerrainLocations: done\n");
 }
 
 void Enviro::AddTerrainRectangles()
 {
-	_Log("AddTerrainRectangles\n");
+	VTLOG("AddTerrainRectangles\n");
 	m_pIcoGlobe->AddTerrainRectangles();
 }
 
@@ -742,7 +739,7 @@ int Enviro::AddGlobePoints(const char *fname)
 
 void Enviro::SetupScene1()
 {
-	_Log("SetupScene1\n");
+	VTLOG("SetupScene1\n");
 
 	vtScene *pScene = vtGetScene();
 
@@ -759,7 +756,7 @@ void Enviro::SetupScene1()
 
 void Enviro::SetupScene2()
 {
-	_Log("SetupScene2\n");
+	VTLOG("SetupScene2\n");
 
 	// Make navigation engines
 	m_pQuakeFlyer = new QuakeFlyer(1.0f, 1.0f, true);
@@ -849,7 +846,7 @@ extern void SetTerrainToGUI(vtTerrain *pTerrain);
 
 void Enviro::SetTerrain(vtTerrain *pTerrain)
 {
-	_Log("SetTerrain\n");
+	VTLOG("Enviro::SetTerrain '%s'\n", (const char *) pTerrain->GetName());
 
 	// safety check
 	if (!pTerrain)
@@ -899,10 +896,7 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 //
 void Enviro::SetMessage(const char *msg, float fTime)
 {
-	m_msg = "\tSetMessage: ";
-	m_msg += msg;
-	_Log(m_msg);
-	_Log("\n");
+	VTLOG("  SetMessage: %s\n", m_msg);
 
 	vtString str = msg;
 
@@ -946,8 +940,7 @@ float Enviro::GetFlightSpeed()
 
 void Enviro::SetMode(MouseMode mode)
 {
-	m_msg.Format("SetMode %d\n", mode);
-	_Log(m_msg);
+	VTLOG("SetMode %d\n", mode);
 
 	if (m_pCursorMGeom)
 	{
@@ -973,13 +966,13 @@ void Enviro::SetMode(MouseMode mode)
 
 void Enviro::SetupCameras()
 {
-	_Log("SetupCameras: Creating normal camera\n");
+	VTLOG("SetupCameras: Creating normal camera\n");
 
 	// create normal camera
 	m_pNormalCamera = vtGetScene()->GetCamera();
 	float fov = m_pNormalCamera->GetFOV();
 
-	_Log("Setting hither and yon\n");
+	VTLOG("Setting hither and yon\n");
 	FPoint3 pos = m_pNormalCamera->GetTrans();
 	m_pNormalCamera->SetHither(10);		// 10 m
 	m_pNormalCamera->SetYon(500000);		// 500 km
@@ -988,7 +981,7 @@ void Enviro::SetupCameras()
 	// Create second camera (for Top-Down view)
 	if (m_pTopDownCamera == NULL)
 	{
-		_Log("Creating Top-Down Camera\n");
+		VTLOG("Creating Top-Down Camera\n");
 		m_pTopDownCamera = new vtCamera();
 		m_pTopDownCamera->SetOrtho(10000.0f);
 		m_pTopDownCamera->SetName2("Top-Down Camera");
@@ -1429,22 +1422,6 @@ void Enviro::SetPlantOptions(int iSpecies, float fSize, float fSpacing)
 	m_iSpecies = iSpecies;
 	m_fPlantSize = fSize;
 	m_fPlantSpacing = fSpacing;
-}
-
-////////////////////////////////////////////////////////////////////////
-
-void Enviro::_StartLog(const char *fname)
-{
-	m_log = fopen(fname, "wb");
-}
-
-void Enviro::_Log(const char *str)
-{
-	if (m_log)
-	{
-		fputs(str, m_log);
-		fflush(m_log);
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////
