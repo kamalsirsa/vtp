@@ -237,54 +237,21 @@ void DymaxIcosa::FaceUVToGeo(int face, DPoint3 &uvw, double &lon, double &lat)
  */
 void DymaxIcosa::InitIcosa()
 {
-	double v_x[12], v_y[12], v_z[12];
-
 	// Cartesian coordinates for the 12 vertices of icosahedron
-	v_x[0] =	0.420152426708710003;
-	v_y[0] =	0.078145249402782959;
-	v_z[0] =	0.904082550615019298;
-	v_x[1] =	0.995009439436241649;
-	v_y[1] =   -0.091347795276427931;
-	v_z[1] =	0.040147175877166645;
-	v_x[2] =	0.518836730327364437;
-	v_y[2] =	0.835420380378235850;
-	v_z[2] =	0.181331837557262454;
-	v_x[3] =   -0.414682225320335218;
-	v_y[3] =	0.655962405434800777;
-	v_z[3] =	0.630675807891475371;
-	v_x[4] =   -0.515455959944041808;
-	v_y[4] =   -0.381716898287133011;
-	v_z[4] =	0.767200992517747538;
-	v_x[5] =	0.355781402532944713;
-	v_y[5] =   -0.843580002466178147;
-	v_z[5] =	0.402234226602925571;
-	v_x[6] =	0.414682225320335218;
-	v_y[6] =   -0.655962405434800777;
-	v_z[6] =   -0.630675807891475371;
-	v_x[7] =	0.515455959944041808;
-	v_y[7] =	0.381716898287133011;
-	v_z[7] =   -0.767200992517747538;
-	v_x[8] =   -0.355781402532944713;
-	v_y[8] =	0.843580002466178147;
-	v_z[8] =   -0.402234226602925571;
-	v_x[9] =   -0.995009439436241649;
-	v_y[9] =	0.091347795276427931;
-	v_z[9] =   -0.040147175877166645;
-	v_x[10] =   -0.518836730327364437;
-	v_y[10] =   -0.835420380378235850;
-	v_z[10] =   -0.181331837557262454;
-	v_x[11] =   -0.420152426708710003;
-	v_y[11] =   -0.078145249402782959;
-	v_z[11] =   -0.904082550615019298;
+	m_verts[0].Set(  0.420152426708710003,  0.904082550615019298, -0.078145249402782959);
+	m_verts[1].Set(  0.995009439436241649,  0.040147175877166645,  0.091347795276427931);
+	m_verts[2].Set(  0.518836730327364437,  0.181331837557262454, -0.835420380378235850);
+	m_verts[3].Set( -0.414682225320335218,  0.630675807891475371, -0.655962405434800777);
+	m_verts[4].Set( -0.515455959944041808,  0.767200992517747538,  0.381716898287133011);
+	m_verts[5].Set(  0.355781402532944713,  0.402234226602925571,  0.843580002466178147);
+	m_verts[6].Set(  0.414682225320335218, -0.630675807891475371,  0.655962405434800777);
+	m_verts[7].Set(  0.515455959944041808, -0.767200992517747538, -0.381716898287133011);
+	m_verts[8].Set( -0.355781402532944713, -0.402234226602925571, -0.843580002466178147);
+	m_verts[9].Set( -0.995009439436241649, -0.040147175877166645, -0.091347795276427931);
+	m_verts[10].Set(-0.518836730327364437, -0.181331837557262454,  0.835420380378235850);
+	m_verts[11].Set(-0.420152426708710003, -0.904082550615019298,  0.078145249402782959);
 
-	int i;
-	for (i = 0; i < 12; i++)
-	{
-		m_verts[i].x = v_x[i];
-		m_verts[i].y = v_z[i];
-		m_verts[i].z = -v_y[i];
-	}
-	for (i = 0; i < 20; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		// look up corners of the face
 		DPoint3 v1 = m_verts[icosa_face_v[i][0]];
@@ -335,6 +302,40 @@ void DymaxIcosa::InitIcosa()
 		// so, d = -ax0 -by0 -cz0
 		m_face[i].d = -(vec_c.x * v1.x) -(vec_c.y * v1.y) -(vec_c.z * v1.z);
 	}
+
+	// parts of a unit-edge 2D triangle
+#define SR3		1.732050807568877293527446341	// square root of 3
+#define SR3D2	0.866025403784438646763723170	// square root of 3 divided by 2
+#define TRI_H	SR3D2		// triangle height
+#define TRI_DE	(1/(2*SR3))	// distance center to edge
+#define TRI_DC	(1/SR3)		// distance center to corner
+
+	m_flatverts[0].Set(0.5, 0);
+	m_flatverts[1].Set(1.5, 0);
+	m_flatverts[2].Set(2.5, 0);
+	m_flatverts[3].Set(3.5, 0);
+	m_flatverts[4].Set(4.5, 0);
+	m_flatverts[5].Set(0.75, TRI_H / 2);
+	m_flatverts[6].Set(1.5, TRI_DC);
+	m_flatverts[7].Set(2, TRI_DE);
+	m_flatverts[8].Set(0, TRI_H);
+	m_flatverts[9].Set(1, TRI_H);
+	m_flatverts[10].Set(2, TRI_H);
+	m_flatverts[11].Set(3, TRI_H);
+	m_flatverts[12].Set(4, TRI_H);
+	m_flatverts[13].Set(5, TRI_H);
+	m_flatverts[14].Set(5.5, TRI_H);
+	m_flatverts[15].Set(0.5, TRI_H*2);
+	m_flatverts[16].Set(1.5, TRI_H*2);
+	m_flatverts[17].Set(2.5, TRI_H*2);
+	m_flatverts[18].Set(3.5, TRI_H*2);
+	m_flatverts[29].Set(4.5, TRI_H*2);
+	m_flatverts[20].Set(5.5, TRI_H*2);
+	m_flatverts[21].Set(1, TRI_H*3);
+	m_flatverts[22].Set(2, TRI_H*3);
+	m_flatverts[23].Set(3, TRI_H*3);
+	m_flatverts[24].Set(4, TRI_H*3);
+	m_flatverts[25].Set(5, TRI_H*3);
 }
 
 double DymaxIcosa::DihedralAngle()
@@ -342,5 +343,26 @@ double DymaxIcosa::DihedralAngle()
 	double dot = m_face[1].vec_c * m_face[2].vec_c;
 	double dihedral = acos(dot);
 	return dihedral;
+}
+
+bool DymaxIcosa::GeoToDymax(const DPoint2 &geo, DPoint2 &dymax)
+{
+	int face, subface;
+	DPoint3 p_out;
+	GeoToFaceUV(geo, face, subface, p_out);
+	DPoint2 uv(p_out.x, p_out.y);
+
+	DPoint2 base;
+	double dRot;
+	switch (face)
+	{
+	case 0:
+		base = m_flatverts[17]; dRot = PID3d * 2;
+		break;
+	default: return false;
+	}
+	uv.Rotate(dRot);
+	dymax = base + uv;
+	return true;
 }
 

@@ -5,7 +5,7 @@
 // Buckminster Fuller Institute (http://www.bfi.org/) for notes, references,
 // permission, and ancestral source for the following implementation.
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -50,6 +50,7 @@ public:
 
 	void GeoToFaceUV(const DPoint2 &p, int &face, int &subface, DPoint3 &p_out);
 	void FaceUVToGeo(int face, DPoint3 &uvw, double &lon, double &lat);
+	bool GeoToDymax(const DPoint2 &geo, DPoint2 &dymax);
 
 	double DihedralAngle();
 
@@ -57,6 +58,7 @@ protected:
 	// icosahedron data
 	DPoint3 m_verts[12];
 	icoface m_face[20];
+	DPoint2 m_flatverts[26];
 	double m_edge_length;	// edge length of icosahedron (~1.05 for unit radius)
 };
 
