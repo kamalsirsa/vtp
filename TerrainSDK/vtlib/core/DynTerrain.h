@@ -1,7 +1,7 @@
 //
 // DynTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -95,9 +95,5 @@ protected:
 	vtMaterial *m_pDetailMat;
 };
 
-
-// helper
-int vt_log2(int n);
-
-#endif
+#endif	// DYNTERRAINH
 

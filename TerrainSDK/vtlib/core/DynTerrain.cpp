@@ -343,20 +343,3 @@ void vtDynTerrainGeom::PostRender() const
 #endif
 }
 
-///////////////////////////////////////////////////////////////
-// Helper
-
-//
-// Compute base-2 logarithm of an integer.
-// There's probably an even simpler way to do this with sneaky
-// logical ops or without a loop, but this works.
-//
-int vt_log2(int n)
-{
-	int temp = n, i;
-	for (i = 0; temp > 1; i++)
-		temp >>= 1;
-	return i;
-}
-
-
