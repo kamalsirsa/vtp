@@ -300,7 +300,7 @@ void vtMeshBase::CreateRectangularMesh(int xsize, int ysize)
 		}
 		AddStrip(ysize*2, strip);
 	}
-	delete strip;
+	delete [] strip;
 }
 
 /**
