@@ -7,9 +7,7 @@
 
 #include "vtlib/vtlib.h"
 #include "PTerrain.h"
-#include "SwapEngine.h"
 #include "Engines.h"
-#include "TerrainSceneWP.h"
 
 PTerrain::PTerrain() : vtTerrain()
 {
@@ -24,15 +22,6 @@ void PTerrain::MakePortal(vtTerrain* pTargetTerrain, vtTransform* gateway,
 	gateway->Scale3(sc, sc, sc);
 	gateway->SetName2(name);
 	AddNode(gateway);
-
-#if 0
-	float ws = 500.0f * sc;		// convert to 3d system units
-	TriggerEngine *pTE = new TriggerEngine(pTargetTerrain, destination_index,
-		GetTerrainScene().m_pSwapEng, gateway, ws);
-	pTE->SetName2("Portal Trigger");
-	pTE->SetTarget(pScene->GetCamera());
-	AddEngine(pTE, pScene);
-#endif
 
 	SimpleBBEngine *pSBBE = new SimpleBBEngine(gateway, vtGetScene()->GetCamera());
 	pSBBE->SetName2("SimpleBB Engine");

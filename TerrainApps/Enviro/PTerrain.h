@@ -2,7 +2,6 @@
 #define PTERRAINH
 
 #include "vtlib/core/Terrain.h"
-#include "SwapEngine.h"
 #include "Vehicles.h"
 //#include "CarEngine.h"
 
