@@ -275,14 +275,15 @@ void vtTerrain::create_textures()
 		// Determine the correct size for the derived texture: ideally
 		// as large as the input grid, but not larger than the hardware
 		// texture size limit.
-		GLint tmax;
+		GLint tmax = 0;	// TODO: cannot make direct GL calls in threaded environment
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE, &tmax);
 
 		int cols, rows;
 		m_pElevGrid->GetDimensions(cols, rows);
 
 		int tsize = cols-1;
-		if (tsize > tmax) tsize = tmax;
+		if ((tmax > 0) && (tsize > tmax))
+			tsize = tmax;
 
 		// derive color from elevation
 		m_pDIB = new vtDIB();
@@ -328,7 +329,9 @@ void vtTerrain::create_textures()
 	// We're not going to use it anymore, so we're done with the DIB
 	if (m_pDIB != NULL)
 	{
+#ifndef VTLIB_PSM	// PSM deletes the DIB
 		delete m_pDIB;
+#endif
 		m_pDIB = NULL;
 	}
 	if (eTex == TE_SINGLE || eTex == TE_DERIVED)

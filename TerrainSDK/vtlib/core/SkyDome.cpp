@@ -416,8 +416,10 @@ void vtDayDome::SetSunsetColor(const RGBf &sunset)
 bool vtDayDome::SetTexture(const char *filename)
 {
 	vtImage *pImage = new vtImage(filename);
+#ifndef VTLIB_PSM
 	if (!pImage->LoadedOK())
 		return false;
+#endif
 
 	// create and apply the texture material
 	int index = m_pMats->AddTextureMaterial(pImage, false, false);
@@ -530,8 +532,13 @@ void vtDayDome::SetTimeOfDay(int time, bool bFullRefresh)
 //
 void vtDayDome::SetSunColor(const RGBf &color)
 {
+#ifdef VTLIB_PSM
+	if (m_SunApp)
+		m_SunApp->SetDiffuse1(color);
+#else
 	if (m_SunApp)
 		m_SunApp->vtMaterialBase::SetDiffuse1(color);
+#endif
 }
 
 //
