@@ -159,15 +159,30 @@ public:
 		frame of reference. */
 	void TranslateLocal(const FPoint3 &pos);
 
+	/** Rotate around a given axis by a given angle, in radians. */
 	void Rotate2(const FPoint3 &axis, double angle);
+
+	/** Similar to Rotate2, but operates in the local frame of reference. */
 	void RotateLocal(const FPoint3 &axis, double angle);
+
+	/** Similar to Rotate2, but the rotation occurs in the parent's frame of
+		reference. */
 	void RotateParent(const FPoint3 &axis, double angle);
+
+	/** Get the direction, which by convention is shorthand for the -Z axis
+		of the local frame.  For oriented objects such as the camera, this
+		is the direction the object is facing. */
 	FPoint3 GetDirection() const;
 
+	/** Scale (stretch) by given factors in the x,y,z dimensions. */
 	void Scale3(float x, float y, float z);
 
 	void SetTransform1(const FMatrix4 &mat);
 	void GetTransform1(FMatrix4 &mat) const;
+
+	/** Rotate the object such that it points toward a given point.  By
+		convention, this means that the object's -Z axis points in the
+		desired direction. */
 	void PointTowards(const FPoint3 &point, bool bPitch = true);
 
 	// OSG-specific Implementation
