@@ -1,10 +1,11 @@
 
 #include "vtlib/vtlib.h"
 #include "CarEngine.h"
+#include "vtdata/vtLog.h"
 
 #include <iostream>
 #include <fstream>
-
+using namespace std;
 
 //accelertion in meters per second^2 (for the car.)
 #define ACCELERATION 25
@@ -40,7 +41,7 @@ float angleNormal(float val) {
 
 //setup engine to drive in a straight line.
 //target speed in kilometers per hour
-CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed, float wRadius) 
+CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius) 
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
 	m_pCurNode = NULL;
@@ -50,7 +51,7 @@ CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed, float
 
 //setup engine to drive in circles
 //target speed in kilometers per hour
-CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed,
+CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed,
 					 float wRadius, FPoint3 center) 
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
@@ -64,7 +65,7 @@ CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed,
 
 //setup engine to drive on roads, starting from node n.
 //ignores pos.  takes position from given node.
-CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed,
+CarEngine::CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed,
 					 float wRadius, Node *n, int lane, float roadheight)
 {
 	SharedConstructor(pos, grid, target_speed, wRadius);
@@ -80,7 +81,7 @@ CarEngine::CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed,
 }
 
 //shared constructor
-void CarEngine::SharedConstructor(FPoint3 pos, vtHeightField*  grid, float target_speed, float wRadius){
+void CarEngine::SharedConstructor(const FPoint3 &pos, vtHeightField3d * grid, float target_speed, float wRadius){
 	m_vCurPos = pos;
 
 	m_pHeightField = grid;
@@ -118,7 +119,8 @@ void CarEngine::SharedConstructor(FPoint3 pos, vtHeightField*  grid, float targe
 }
 
 //gets the path from given file.
-void CarEngine::GetPath(const char* filename, vtRoadMap3d* roadmap) {
+void CarEngine::GetPath(const char* filename, vtRoadMap3d* roadmap)
+{
 	ifstream file(filename, ios::in);
 	if (!file) {
 		//error
@@ -141,13 +143,15 @@ void CarEngine::GetPath(const char* filename, vtRoadMap3d* roadmap) {
 }
 
 //evaluate the car engine.
-bool CarEngine::Eval(float t)
+void CarEngine::Eval()
 {
-	FPoint3 vNext;
+	float t = vtGetTime();
 	float fDeltaTime = t - m_fPrevTime;
+	FPoint3 vNext;
 
-	vtTransform *pTarget = (vtTransform *)m_pTarget;
-	if (!pTarget) return false;
+	vtTransform *pTarget = dynamic_cast<vtTransform*> (GetTarget());
+	if (!pTarget)
+		return;
 
 	//find vNext location
 	switch (m_eMode) {
@@ -170,7 +174,7 @@ bool CarEngine::Eval(float t)
 		case PATH:
 		case ROAD:
 			if (!m_pCurRoad) {
-				return false;  //safety check
+				return;  //safety check
 			}
 			if (!m_bFirstTime)
 			{
@@ -185,9 +189,6 @@ bool CarEngine::Eval(float t)
 					//if we are not stopped, then move
 					if (!m_bStopped)
 					{
-						//undo orientation.
-						UndoOrientation();
-
 						//turn appropriately - but there is a limit on how much the car can turn.
 						TurnToward(target, .01f);
 						//move forward based on speed.
@@ -212,9 +213,9 @@ bool CarEngine::Eval(float t)
 				//ism_printf("curpos: %f, %f, %f",m_vCurPos.x, m_vCurPos.y, m_vCurPos.z);
 				break;
 			} else {
-				vNext.x = ((RoadGeom*)m_pCurRoad)->m_p3[m_iRCoord].x;
-				vNext.y = ((RoadGeom*)m_pCurRoad)->m_p3[m_iRCoord].y + m_fRoadHeight;
-				vNext.z = ((RoadGeom*)m_pCurRoad)->m_p3[m_iRCoord].z;
+				vNext.x = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].x;
+				vNext.y = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].y + m_fRoadHeight;
+				vNext.z = ((LinkGeom*)m_pCurRoad)->m_centerline[m_iRCoord].z;
 				pTarget->SetTrans(vNext);
 				m_vCurPos = vNext;
 				m_bFirstTime = false;
@@ -224,108 +225,62 @@ bool CarEngine::Eval(float t)
 	// spin the wheels, adjusted for speed.
 	SpinWheels(fDeltaTime*m_fSpeed/m_fWheelRadius);  
 	m_fPrevTime = t;
-	return true;
 }
 
-void CarEngine::Circle(FPoint3 &vNext, gfloat t) 
+void CarEngine::Circle(FPoint3 &vNext, float t) 
 {
 	//calculate position
-	gfloat time = t * m_fSpeed / m_fCircleRadius;
+	float time = t * m_fSpeed / m_fCircleRadius;
 	vNext.x = m_vCenterPos.x + m_fCircleRadius * cosf(time);
 	vNext.z = m_vCenterPos.z + m_fCircleRadius * sinf(time);
-}
-
-void CarEngine::UndoOrientation()
-{
-	vtTransform* car = (vtTransform*)m_pTarget;
-	//rotate orientation back
-	car->Rotate2(m_vAxis, -m_fCurPitch);
-	m_fCurPitch = 0.0f;
-	m_vAxis = YAXIS;
 }
 
 //sets the orientation of the car, based on tire positions
 //returns height of the car.
 float CarEngine::SetOrientation()
 {
-	vtTransform* car = (vtTransform*)m_pTarget;
-	FPoint3 fL, fR, rL, rR, rM, fM, vNormal;
-	FMatrix4 transform;
+	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
+	if (!car)
+		return 1.0f;
 
-	UndoOrientation();
+	FSphere fL, fR, rL, rR;
 
-	car->TotalTransform(&transform);
 	// find tire locations in current orientation
-	m_pFrontLeft->TotalTransform(fL);
-	m_pFrontRight->TotalTransform(fR);
-	m_pRearLeft->TotalTransform(rL);
-	m_pRearRight->TotalTransform(rR);
-//	transform.TransformVector(m_vFL_pos, fL);
-//	transform.TransformVector(m_vFR_pos, fR);
-//	transform.TransformVector(m_vRL_pos, rL);
-//	transform.TransformVector(m_vRR_pos, rR);
-	// current tire positions.
-	fL+=m_vCurPos;
-	fR+=m_vCurPos;
-	rL+=m_vCurPos;
-	rR+=m_vCurPos;
+	m_pFrontLeft->GetBoundSphere(fL, true);
+	m_pFrontRight->GetBoundSphere(fR, true);
+	m_pRearLeft->GetBoundSphere(rL, true);
+	m_pRearRight->GetBoundSphere(rR, true);
 
-	//float a;
-	float b;
+	m_pHeightField->FindAltitudeAtPoint(fL.center, fL.center.y);
+	m_pHeightField->FindAltitudeAtPoint(fR.center, fR.center.y);
+	m_pHeightField->FindAltitudeAtPoint(rL.center, rL.center.y);
+	m_pHeightField->FindAltitudeAtPoint(rR.center, rR.center.y);
 
-	//vNormal is used as a dummy var here
-	m_pHeightField->FindAltitudeAtPoint(fL, fL.y);
-	m_pHeightField->FindAltitudeAtPoint(fR, fR.y);
-	m_pHeightField->FindAltitudeAtPoint(rL, rL.y);
-	m_pHeightField->FindAltitudeAtPoint(rR, rR.y);
-	//===============================
-	//use midpoint of 2 rear tires.
-	//rM.x = (rL.x + rR.x)/2;
-	// do not randomly reorder the lines below!!!!
-	// there  might be either a Visual C++ 6 compiler mistake or a hardware scheduling mistake if
-	// rM.z is written to RIGHT BEFORE we read from it.
+	// find midpoints between the tires.
+	FPoint3 rM, fM;
+	rM = (rL.center + rR.center)/2;
+	fM = (fL.center + fR.center)/2;
 
-	/*
-	//incorrect results
-	rM.x = (rL.x + rR.x)/2;
-	rM.y = (rL.y + rR.y)/2;
-	rM.z = (rL.z + rR.z)/2;
+	FPoint3 back_side = rR.center - rL.center;
+	FPoint3 left_side = fL.center - rL.center;
 
-	vNormal.x = fL.y*(rM.z-fR.z) + rM.y*(fR.z-fL.z) + fR.y*(fL.z-rM.z);
-	vNormal.y = fL.z*(rM.x-fR.x) + rM.z*(fR.x-fL.x) + fR.z*(fL.x-rM.x);
-	vNormal.z = fL.x*(rM.y-fR.y) + rM.x*(fR.y-fL.y) + fR.x*(fL.y-rM.y);
+	// vNormal the upwards vector
+	FPoint3 vNormal = back_side.Cross(left_side);
 
-	a = vNormal.x;
-	*/
-	//correct results
-	rM.y = (rL.y + rR.y)/2;
-	rM.z = (rL.z + rR.z)/2;
-	rM.x = (rL.x + rR.x)/2;
+	// new orientation
+	m_vAxis = back_side;
 
-	vNormal.x = fL.y*(rM.z-fR.z) + rM.y*(fR.z-fL.z) + fR.y*(fL.z-rM.z);
-	vNormal.y = fL.z*(rM.x-fR.x) + rM.z*(fR.x-fL.x) + fR.z*(fL.x-rM.x);
-	vNormal.z = fL.x*(rM.y-fR.y) + rM.x*(fR.y-fL.y) + fR.x*(fL.y-rM.y);
+	// new pitch
+	FPoint3 horiz = left_side;
+	horiz.y = 0;
+	float xz = horiz.Length();
 
-	b = vNormal.x;
-
-	//===============================
-
-	//new orientation
-	m_vAxis = vNormal.Cross(YAXIS);
-	//dot product:  a.b = |a||b|cos(THETA)
-	m_fCurPitch = -acosf(vNormal.Dot(YAXIS)/(vNormal.Length()*YAXIS.Length()));
+	// sin(pitch) = y / xz, so pitch = asin(y/xz);
+	m_fCurPitch = asinf(left_side.y / xz);
 
 	car->Rotate2(m_vAxis, m_fCurPitch);
-	//find midpoint of all wheels.
-	fM.x = (fL.x + fR.x)/2;
-	fM.y = (fL.y + fR.y)/2;
-	fM.z = (fL.z + fR.z)/2;
-	/*
-	if (a!=b) {
-		//floating point bug???
-		//VTLOG("computation are different: %.8f, %.8f\n", a,b);
-	}
-	*/
+
+	// return height of midpoint of all wheels.
 	return (fM.y+rM.y)/2;
 }
 
@@ -333,11 +288,12 @@ float CarEngine::SetOrientation()
 //sets orientation of car.  next_pos is modified to be new location.
 void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos) 
 {
-	vtTransform* car = (vtTransform*)m_pTarget;
+	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
+	if (!car)
+		return;
+
 	FPoint3 tempVec;
 	float newangle,angle,deltax,deltaz;
-
-	UndoOrientation();
 
 	deltax = next_pos.x - m_vCurPos.x;
 	deltaz = next_pos.z - m_vCurPos.z;
@@ -354,13 +310,13 @@ void CarEngine::SetOrientationAndHeight(FPoint3 &next_pos)
 	//VTLOG("newangle: %f\t wheel: %f\t m_CurRot: %f \n",newangle, m_fWheelSteerRotation, m_fCurRotation);
 	FPoint3 trans;
 	trans = m_pFrontLeft->GetTrans();
-	m_pFrontLeft->Translate2(-trans);
+	m_pFrontLeft->Translate1(-trans);
 	m_pFrontLeft->Rotate2(YAXIS, newangle);
-	m_pFrontLeft->Translate2(trans);
+	m_pFrontLeft->Translate1(trans);
 	trans = m_pFrontRight->GetTrans();
-	m_pFrontRight->Translate2(-trans);
+	m_pFrontRight->Translate1(-trans);
 	m_pFrontRight->Rotate2(YAXIS, newangle);
-	m_pFrontRight->Translate2(trans);
+	m_pFrontRight->Translate1(trans);
 
 	//modify the orientation of the car to match the terrain
 	//points of the tires
@@ -424,8 +380,13 @@ bool strend (const char* first, const char* second)
 	*/
 bool CarEngine::SetTires() 
 {
-	vtGroup *tires = FindTires((vtTransform *) GetTarget());
-	if (tires != NULL) {
+	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
+	if (!car)
+		return false;
+
+	vtGroup *tires = FindTires(car);
+	if (tires != NULL)
+	{
 		vtTransform *tModel;
 		const char* tName;
 		int numChild = tires->GetNumChildren();
@@ -442,13 +403,13 @@ bool CarEngine::SetTires()
 			} else if (strend  (tName, "rear right")) {
 				m_pRearRight = tModel;
 			} else {
-				VTLOG("INVALID TIRE IN MODEL: %s!!!!!\n", ((vtTransform *) GetTarget())->GetName2());
+				VTLOG("INVALID TIRE IN MODEL: %s!!!!!\n", car->GetName2());
 			}
 			i++;
 		}
 		return true;
 	} else {
-		VTLOG("TIRES NOT FOUND IN MODEL: %s!!!!!\n", ((vtTransform *) GetTarget())->GetName2());
+		VTLOG("TIRES NOT FOUND IN MODEL: %s!!!!!\n", car->GetName2());
 		return false;
 	}
 
@@ -499,8 +460,8 @@ void CarEngine::PickFirstRoad()
 	if (m_eMode == PATH) {
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
-		for (i = 0; i < m_pCurNode->m_iRoads; i++) {
-			Road *r = m_pCurNode->GetRoad(i);
+		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
+			Link *r = m_pCurNode->GetLink(i);
 			if (r->m_id == roadID) {
 				//found road.
 				//determine next road to follow.
@@ -521,8 +482,8 @@ void CarEngine::PickFirstRoad()
 	} else {
 		//road following.
 		//make sure car can go in the direction of the road.
-		for (i = 0; i < m_pCurNode->m_iRoads; i++) {
-			Road *r = m_pCurNode->GetRoad(i);
+		for (i = 0; i < m_pCurNode->m_iLinks; i++) {
+			Link *r = m_pCurNode->GetLink(i);
 			if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pCurNode)
 				||
 				(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pCurNode)) {
@@ -532,7 +493,7 @@ void CarEngine::PickFirstRoad()
 	}
 
 	//the first road to follow.
-	m_pCurRoad = m_pCurNode->GetRoad(i);
+	m_pCurRoad = m_pCurNode->GetLink(i);
 	m_bForwards = (m_pCurRoad->GetNode(0) == m_pCurNode);
 
 	//determine what's the next intersect type (so we know whether to slow down or not.)
@@ -606,8 +567,8 @@ void CarEngine::PickNextRoad() {
 	if (m_eMode == PATH) {
 		//pick road based on path.
 		int roadID = m_iRoads[m_iNextRoad];
-		for (i = 0; i < m_pNextNode->m_iRoads; i++) {
-			Road *r = m_pNextNode->GetRoad(i);
+		for (i = 0; i < m_pNextNode->m_iLinks; i++) {
+			Link *r = m_pNextNode->GetLink(i);
 			if (r->m_id == roadID) {
 				//found road.
 				//determine next road to follow.
@@ -627,16 +588,16 @@ void CarEngine::PickNextRoad() {
 		}
 	} else {
 		//select the next road to follow.
-		if (m_pNextNode->m_iRoads != 1)
+		if (m_pNextNode->m_iLinks != 1)
 		{
-			i = m_pNextNode->m_iRoads;
+			i = m_pNextNode->m_iLinks;
 			// pick vNext available road
 			if (m_pCurRoad->m_iHwy > 0)
 			{
 				// special logic: follow the highway
-				for (i = 0; i < m_pNextNode->m_iRoads; i++)
+				for (i = 0; i < m_pNextNode->m_iLinks; i++)
 				{
-					Road *r = m_pNextNode->GetRoad(i);
+					Link *r = m_pNextNode->GetLink(i);
 					if ((r != m_pCurRoad && r->m_iHwy > 0)
 						&&
 						((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
@@ -648,28 +609,28 @@ void CarEngine::PickNextRoad() {
 				}
 				// if no highway, do normal logic
 			}
-			if (i == m_pNextNode->m_iRoads)
+			if (i == m_pNextNode->m_iLinks)
 			{
 				//find index for current road
 				int r_index;
-				for (i = 0; i < m_pNextNode->m_iRoads; i++)
+				for (i = 0; i < m_pNextNode->m_iLinks; i++)
 				{
-					if (m_pNextNode->GetRoad(i) == m_pCurRoad)
+					if (m_pNextNode->GetLink(i) == m_pCurRoad)
 					{
 						r_index = i;
 						i++;
 						//wrap around
-						i %= m_pNextNode->m_iRoads;
+						i %= m_pNextNode->m_iLinks;
 						break;
 					}
 				}
 				int temp_i = -1;
 				//find next road available with traffic going out from the node.
-				for (i = 1; i < m_pNextNode->m_iRoads; i++)
+				for (i = 1; i < m_pNextNode->m_iLinks; i++)
 				{
 					//wrap around
-					temp_i = (r_index + i)% m_pNextNode->m_iRoads;
-					Road *r = m_pNextNode->GetRoad(temp_i);
+					temp_i = (r_index + i)% m_pNextNode->m_iLinks;
+					Link *r = m_pNextNode->GetLink(temp_i);
 					if ((r->m_iFlags & RF_FORWARD && r->GetNode(0) == m_pNextNode)
 						||
 						(r->m_iFlags & RF_REVERSE && r->GetNode(1) == m_pNextNode))
@@ -681,8 +642,8 @@ void CarEngine::PickNextRoad() {
 			}
 		}
 	}
-	if (i < m_pNextNode->m_iRoads) {
-		m_pNextRoad = m_pNextNode->GetRoad(i);
+	if (i < m_pNextNode->m_iLinks) {
+		m_pNextRoad = m_pNextNode->GetLink(i);
 	} else {
 		m_pNextRoad = m_pCurRoad;
 	}
@@ -701,9 +662,9 @@ void CarEngine::PickNextRoad() {
 	} else {
 		index = 1;
 	}
-	FPoint3 curVec(((RoadGeom*)m_pCurRoad)->m_p3[index].x,
+	FPoint3 curVec(((LinkGeom*)m_pCurRoad)->m_centerline[index].x,
 					0,
-					((RoadGeom*)m_pCurRoad)->m_p3[index].z);
+					((LinkGeom*)m_pCurRoad)->m_centerline[index].z);
 
 	if (m_pNextRoad->GetNode(0) == m_pNextNode) {
 		//we're going forward
@@ -712,9 +673,9 @@ void CarEngine::PickNextRoad() {
 		//going from node 1 to 0
 		index = m_pNextRoad->GetSize()-2;
 	}
-	FPoint3 nextVec(((RoadGeom*)m_pNextRoad)->m_p3[index].x,
+	FPoint3 nextVec(((LinkGeom*)m_pNextRoad)->m_centerline[index].x,
 					0,
-					((RoadGeom*)m_pNextRoad)->m_p3[index].z);
+					((LinkGeom*)m_pNextRoad)->m_centerline[index].z);
 
 	//find the angle between curVec and nextVec
 	m_fAngle = fabsf(Angle(center, curVec, nextVec));
@@ -730,8 +691,11 @@ int CarEngine::PickLane() {
 	}
 }
 
-void CarEngine::MoveCar(FPoint3 vNext) {
-	vtTransform *pTarget = (vtTransform *) GetTarget();
+void CarEngine::MoveCar(FPoint3 vNext)
+{
+	vtTransform *pTarget = dynamic_cast<vtTransform*> (GetTarget());
+	if (!pTarget)
+		return;
 
 	//move the car so that the wheels will be set at new location
 	pTarget->SetTrans(vNext);
@@ -757,10 +721,12 @@ void CarEngine::SpinWheels(float dist) {
 }
 
 //get next point to drive toward
-FPoint3 CarEngine::GetNextTarget(float fCurTime) {
+FPoint3 CarEngine::GetNextTarget(float fCurTime)
+{
 	int lane = PickLane();
 //	ism_printf("%i of %i",m_iRCoord, m_pCurRoad->GetSize());
-	FPoint3 nextPoint = ((RoadGeom*)m_pCurRoad)->m_pLanes[lane].m_p3[m_iRCoord];
+	const FLine3 &lanepoints = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane];
+	FPoint3 nextPoint = lanepoints.GetAt(m_iRCoord);
 
 	//if we're stopped, figure out if we can move!
 	if (m_bStopped) {
@@ -771,7 +737,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 			{
 				m_bStopped = false;
 				PickRoad();
-				nextPoint = ((RoadGeom*)m_pCurRoad)->m_pLanes[lane].m_p3[m_iRCoord];
+				nextPoint = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane].GetAt(m_iRCoord);
 			} else {
 				FPoint3 r(nextPoint.x, nextPoint.y, nextPoint.z);
 				return r;
@@ -782,7 +748,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 			if (m_pNextNode->GetLightStatus(m_pCurRoad) == LT_GREEN) {
 				m_bStopped = false;
 				PickRoad();
-				nextPoint = ((RoadGeom*)m_pCurRoad)->m_pLanes[lane].m_p3[m_iRCoord];
+				nextPoint = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane].GetAt(m_iRCoord);
 			} else {
 				FPoint3 r(nextPoint.x, nextPoint.y, nextPoint.z);
 				return r;
@@ -796,19 +762,15 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 	} else {
 		endIndex = 0;
 	}
-//	FPoint3 endPoint = ((RoadGeom*)m_pCurRoad)->m_pLanes[lane].m_p3[endIndex];
 	FPoint3 curPos(m_vCurPos.x, m_vCurPos.y, m_vCurPos.z);
 	FPoint3 delta = nextPoint - curPos;
-//	FPoint3 delta2 = endPoint - curPos;
 
-//	float dist2end = delta2.Length();
 	float dist = delta.Length();
 
 	//if we're getting close, look at the next point to reach.
 	float threshold;
 	threshold = 2.5f;
 
-	//ism_printf("%f", m_fRDistance);
 	if (dist < threshold || (dist > 1.125f*m_fRDistance  && m_fRDistance >=0)) {
 		//assume that we've past target, get next target.
 		bool newroad = false;
@@ -837,7 +799,7 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 			}
 		}
 		lane = PickLane();
-		nextPoint = ((RoadGeom*)m_pCurRoad)->m_pLanes[lane].m_p3[m_iRCoord];
+		nextPoint = ((LinkGeom*)m_pCurRoad)->m_Lanes[lane].GetAt(m_iRCoord);
 		m_fRDistance = -1;
 	} else {
 		m_fRDistance = dist;
@@ -848,11 +810,13 @@ FPoint3 CarEngine::GetNextTarget(float fCurTime) {
 }
 
 //turn toward coordinates, but there will be a limit on how much of a turn.
-void CarEngine::TurnToward(FPoint3 target, float time) {
-	vtTransform *car = (vtTransform *) GetTarget();
-	float newangle,angle,deltax,deltaz;
+void CarEngine::TurnToward(FPoint3 target, float time)
+{
+	vtTransform *car = dynamic_cast<vtTransform*> (GetTarget());
+	if (!car)
+		return;
 
-	UndoOrientation();
+	float newangle, angle, deltax, deltaz;
 
 	deltax = target.x - m_vCurPos.x;
 	deltaz = target.z - m_vCurPos.z;
@@ -893,13 +857,13 @@ void CarEngine::TurnToward(FPoint3 target, float time) {
 	//ism_printf("newangle: %f\t wheel: %f\t m_CurRot: %f \n",newangle, m_fWheelSteerRotation, m_fCurRotation);
 	FPoint3 trans;
 	trans = m_pFrontLeft->GetTrans();
-	m_pFrontLeft->Translate2(-trans);
+	m_pFrontLeft->Translate1(-trans);
 	m_pFrontLeft->Rotate2(YAXIS, newangle);
-	m_pFrontLeft->Translate2(trans);
+	m_pFrontLeft->Translate1(trans);
 	trans = m_pFrontRight->GetTrans();
-	m_pFrontRight->Translate2(-trans);
+	m_pFrontRight->Translate1(-trans);
 	m_pFrontRight->Rotate2(YAXIS, newangle);
-	m_pFrontRight->Translate2(trans);
+	m_pFrontRight->Translate1(trans);
 }
 
 #define ANGLETOLERANCE PI2f/3

@@ -6,7 +6,7 @@
 #ifndef ISLAND_CARENGINESH
 #define ISLAND_CARENGINESH
 
-#include "vtlib/core/HeightField.h"
+#include "vtdata/HeightField.h"
 #include "vtlib/core/Roads.h"
 #include "vtlib/core/IntersectionEngine.h"
 
@@ -28,11 +28,11 @@ public:
 	// lane is which lane to drive on.
 	// road height is how high road is off the ground.
 	//take target_speed in km per hour.  drives in a straight line
-	CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed, float wRadius);
+	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius);
 	//drives in a circle.
-	CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed, float wRadius, FPoint3 center);
+	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, FPoint3 center);
 	//drives from the given node.  ignores pos value.  takes position from given node.
-	CarEngine(FPoint3 pos, vtHeightField *grid, float target_speed, float wRadius, Node *n, int lane=1, float roadheight=0);
+	CarEngine(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius, Node *n, int lane=1, float roadheight=0);
 
 	//load a path from a file.  overides any previous modes.
 	void GetPath(const char* filename, vtRoadMap3d* roadmap);
@@ -43,10 +43,11 @@ public:
 	*/
 	bool SetTires();
 
-	void Eval(float t);
+	void Eval();
+
 private:
 	//called to constructor for basic setup
-	void SharedConstructor(FPoint3 pos, vtHeightField *grid, float target_speed, float wRadius);
+	void SharedConstructor(const FPoint3 &pos, vtHeightField3d *grid, float target_speed, float wRadius);
 
 	//find the next destination point when driving in a circle (simple test case.)
 	void Circle(FPoint3 &next_pos, float t);
@@ -84,7 +85,7 @@ private:
 	//calculates angle in x-z plane.
 	float Angle(FPoint3 center, FPoint3 curVec, FPoint3 nextVec);
 
-	vtHeightField* m_pHeightField;
+	vtHeightField3d *m_pHeightField;
 
 	//what mode the engine is operating at.
 	CarEngineMode m_eMode;
@@ -116,8 +117,8 @@ private:
 	//road following 
 	Node* m_pCurNode;	//the last node the we visited.
 	Node* m_pNextNode;	//the next node we're going to visit
-	Road* m_pCurRoad;	//current road we're driving on (from m_pCurNode to m_pNextNode)
-	Road* m_pNextRoad;	//the next road to drive on (after NextNode)
+	Link* m_pCurRoad;	//current road we're driving on (from m_pCurNode to m_pNextNode)
+	Link* m_pNextRoad;	//the next road to drive on (after NextNode)
 	bool m_bForwards;	//true if we are driving  from node 0-1 on current road
 	int m_iLane;  //lane to drive on
 	IntersectionType m_iNextIntersect;	//intersection type of next node.
