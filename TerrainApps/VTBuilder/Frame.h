@@ -212,11 +212,13 @@ public:
 	void OnAreaStretch(wxCommandEvent& event);
 	void OnAreaTypeIn(wxCommandEvent& event);
 	void OnAreaExportElev(wxCommandEvent& event);
+	void OnAreaExportImage(wxCommandEvent& event);
 	void OnAreaGenerateVeg(wxCommandEvent& event);
 	void OnAreaRequestLayer(wxCommandEvent& event);
 
 	void OnUpdateAreaStretch(wxUpdateUIEvent& event);
 	void OnUpdateAreaExportElev(wxUpdateUIEvent& event);
+	void OnUpdateAreaExportImage(wxUpdateUIEvent& event);
 	void OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);
@@ -302,6 +304,9 @@ public:
 	void SampleCurrentTerrains(vtElevLayer *pTarget);
 	double GetHeightFromTerrain(DPoint2 &p);
 
+	// Images
+	void SampleCurrentImages(vtImageLayer *pTarget);
+
 	// Structures
 	LinearStructureDlg *ShowLinearStructureDlg(bool bShow = true);
 	LinearStructureDlg2d *m_pLinearStructureDlg;
@@ -340,6 +345,7 @@ public:
 	// export
 	void StretchArea();
 	void ExportElevation();
+	void ExportImage();
 
 	// Application Data
 	LayerArray	m_Layers;

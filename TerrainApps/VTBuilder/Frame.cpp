@@ -788,7 +788,7 @@ LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
 
 
 //
-// merge all terrain data into this one
+// sample all elevation layers into this one
 //
 void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 {
@@ -848,6 +848,61 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	}
 	CloseProgressDialog();
 	delete elevs;
+}
+
+
+//
+// sample all image data into this one
+//
+void MainFrame::SampleCurrentImages(vtImageLayer *pTarget)
+{
+	DRECT area;
+	pTarget->GetExtent(area);
+	DPoint2 step = pTarget->GetSpacing();
+
+	double x, y;
+	int i, j, l, layers = m_Layers.GetSize();
+	int iColumns, iRows;
+	pTarget->GetDimensions(iColumns, iRows);
+
+	// Create progress dialog for the slow part
+	OpenProgressDialog(_T("Merging and Resampling Image Layers"));
+
+	vtImageLayer **images = new vtImageLayer *[LayersOfType(LT_IMAGE)];
+	int g, num_image = 0;
+	for (l = 0; l < layers; l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == LT_IMAGE)
+			images[num_image++] = (vtImageLayer *)lp;
+	}
+
+	// iterate through the pixels of the new image
+	RGBi rgb;
+	bool bHit;
+	for (i = 0; i < iColumns; i++)
+	{
+		UpdateProgressDialog(i*100/iColumns);
+		x = area.left + (i * step.x);
+		for (j = 0; j < iRows; j++)
+		{
+			y = area.bottom + (j * step.y);
+
+			// find some data for this point
+			rgb.Set(0,0,0);
+			for (g = 0; g < num_image; g++)
+			{
+				vtImageLayer *image = images[g];
+
+				bHit = image->GetFilteredColor(x, y, rgb);
+				if (bHit)
+					break;
+			}
+			pTarget->GetImage()->SetRGB(i, j, rgb.r, rgb.g, rgb.b);
+		}
+	}
+	CloseProgressDialog();
+	delete images;
 }
 
 
@@ -1031,6 +1086,7 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 	return TRUE;
 }
 
+
 //////////////////////////
 // Elevation ops
 
@@ -1104,6 +1160,73 @@ void MainFrame::ExportElevation()
 	}
 
 	wxString str = _T("Successfully wrote BT file ");
+	str += strPathName;
+	wxMessageBox(str);
+	delete pOutput;
+}
+
+
+//////////////////////////////////////////////////////////
+// Image ops
+
+void MainFrame::ExportImage()
+{
+	// sample spacing in meters/heixel or degrees/heixel
+	DPoint2 spacing(1.0f, 1.0f);
+	for (int i = 0; i < m_Layers.GetSize(); i++)
+	{
+		vtLayer *l = m_Layers.GetAt(i);
+		if (l->GetType() == LT_IMAGE)
+		{
+			vtImageLayer *im = (vtImageLayer *)l;
+			spacing = im->GetSpacing();
+		}
+	}
+	if (spacing == DPoint2(0.0f, 0.0f))
+	{
+		wxMessageBox(_T("Sorry, you must have some image layers to\n")
+				_T("perform a sampling operation on them."), _T("Info"));
+		return;
+	}
+
+	// Open the Resample dialog
+	ResampleDlg dlg(this, -1, _T("Merge and Resample Imagery"));
+	dlg.m_fEstX = spacing.x;
+	dlg.m_fEstY = spacing.y;
+	dlg.m_area = m_area;
+	dlg.m_bFloats = false;
+
+	if (dlg.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxString filter = _T("All Files|*.*|");
+	AddType(filter, FSTRING_TIF);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _T("Export Image"), _T(""), _T(""), filter, wxSAVE);
+	saveFile.SetFilterIndex(1);
+	bool bResult = (saveFile.ShowModal() == wxID_OK);
+	if (!bResult)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+
+	// Make new image
+	vtImageLayer *pOutput = new vtImageLayer(dlg.m_area, dlg.m_iSizeX,
+			dlg.m_iSizeY, m_proj);
+	pOutput->SetFilename(strPathName);
+
+	// fill in the value for pBig by merging samples from all other terrain
+	SampleCurrentImages(pOutput);
+
+	bool success = pOutput->SaveToFile(strPathName.mb_str());
+	if (!success)
+	{
+		wxMessageBox(_T("Couldn't write image file."));
+		delete pOutput;
+		return;
+	}
+
+	wxString str = _T("Successfully wrote image file ");
 	str += strPathName;
 	wxMessageBox(str);
 	delete pOutput;

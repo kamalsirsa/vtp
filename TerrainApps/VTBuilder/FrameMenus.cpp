@@ -185,11 +185,13 @@ EVT_UPDATE_UI(ID_RAW_SELECTCONDITION,	MainFrame::OnUpdateRawSelectCondition)
 EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
+EVT_MENU(ID_AREA_EXPORT_IMAGE,		MainFrame::OnAreaExportImage)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
 
 EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
+EVT_UPDATE_UI(ID_AREA_EXPORT_IMAGE,	MainFrame::OnUpdateAreaExportImage)
 EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 
 EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
@@ -327,7 +329,6 @@ void MainFrame::CreateMenus()
 	elevMenu->Append(ID_ELEV_SETUNKNOWN, _T("Set Unknown Areas"));
 	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, _T("Export to TerraGen"));            
 	elevMenu->Append(ID_ELEV_BITMAP, _T("Generate && Export Bitmap"));
-//	elevMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge Area and Export"));
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_MERGETIN, _T("Merge shared TIN vertices"));
 	m_pMenuBar->Append(elevMenu, _T("Elev&ation"));
@@ -385,6 +386,8 @@ void MainFrame::CreateMenus()
 	areaMenu->AppendSeparator();
 	areaMenu->Append(ID_AREA_EXPORT_ELEV, _T("&Merge && Export Elevation"),
 		_T("Sample all elevation data within the Export Area to produce a single, new elevation."));
+	areaMenu->Append(ID_AREA_EXPORT_IMAGE, _T("Extract && Export Image"),
+		_T("Sample imagery within the Export Area to produce a single, new image."));
 #ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_GENERATE_VEG, _T("Generate && Export Vegetation"),
 		_T("Generate Vegetation File (*.vf) containg plant distribution."));
@@ -1071,6 +1074,16 @@ void MainFrame::OnAreaExportElev(wxCommandEvent &event)
 void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
 {
 	event.Enable(LayersOfType(LT_ELEVATION) > 0 && !m_area.IsEmpty());
+}
+
+void MainFrame::OnAreaExportImage(wxCommandEvent &event)
+{
+	ExportImage();
+}
+
+void MainFrame::OnUpdateAreaExportImage(wxUpdateUIEvent& event)
+{
+	event.Enable(LayersOfType(LT_IMAGE) > 0 && !m_area.IsEmpty());
 }
 
 void MainFrame::OnLayerConvert(wxCommandEvent &event)
