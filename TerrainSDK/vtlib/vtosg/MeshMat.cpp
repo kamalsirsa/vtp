@@ -183,6 +183,8 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 
 //////////////////////////////////////////////////////////////
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 GeoSet2::GeoSet2()
 {
 	m_pMesh = NULL;
@@ -191,6 +193,8 @@ GeoSet2::GeoSet2()
 GeoSet2::~GeoSet2()
 {
 }
+
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 //////////////////////////////////////////////////////////////
 
