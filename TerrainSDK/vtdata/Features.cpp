@@ -126,6 +126,9 @@ bool vtFeatureSet::LoadFromSHP(const char *fname)
 
 	SetFilename(fname);
 
+	// Attempt to load corresponding .prj file, if there is one
+	m_proj.ReadProjFile(fname);
+
 	// Read corresponding attributes (DBF fields and records)
 	LoadDataFromDBF(fname);
 
