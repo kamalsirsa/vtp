@@ -7,7 +7,7 @@
 #------------------------------------------------------------------------------
 
 VTP_ROOT = $(shell cd ../..; pwd)
-
+EXEC = glutSimple
 include $(VTP_ROOT)/TerrainApps/Make.defs
 
 IFLAGS = -I$(X_INC)                 \
@@ -35,16 +35,36 @@ LDFLAGS  = $(LDIRFLAGS) $(EXTRA_LDFLAGS)
 
 CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
-EXEC   = glutSimple
+
+ifeq ($(OS),Darwin)
+OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
+LIBS   = -bind_at_load -F$(FRAMEWORKS) \
+	-framework vtosg -framework vtdata \
+	-lgdal -losgGA -losgDB -losgUtil -losgText -losg -lOpenThreads \
+	-L$(FINK_LIB) -lnetcdf \
+	-framework xmlhelper $(MINI_LIB) \
+        $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) \
+	-framework Carbon -lobjc -lm 
+
+all : $(OSX_APP)
+
+else
 LIBS   = -lvtosg -lvtdata \
          -lgdal -losgDB -losgUtil -losgText -losg -lnetcdf \
 		 -lxmlhelper $(MINI_LIB) \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)
+endif
+
+
 
 $(EXEC) : $(OBJS)
 	$(LD) -o $(EXEC) $(LDFLAGS) $(OBJS) $(LIBS)
+
+$(OSX_APP) : $(OBJS) $(OSX_APPS)/$(EXEC).app
+	$(LD) -o $(OSX_APP) $(OBJS) $(LDFLAGS) $(LIBS)
+	cp $(WX_DIR)/lib/libwx_mac-2.4.0.rsrc $(OSX_APPS)/$(EXEC).app/Contents/Resources/$(EXEC).rsrc
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files

@@ -7,32 +7,33 @@
 #------------------------------------------------------------------------------
 
 VTP_ROOT = $(shell cd ../..; pwd)
+LIB_NAME = vtdata
 
 include $(VTP_ROOT)/TerrainSDK/Make.defs
 
 IFLAGS = -I./shapelib \
          -I$(NETCDF_INC) \
          -I$(GDAL_INC) \
-		 -I$(VTP_ROOT)/TerrainSDK/
+	 -I$(VTP_ROOT)/TerrainSDK/
 
-#SWITCHES = -DUNIX -DSUPPORT_NETCDF=1 -DSUPPORT_SDTS=1
-SWITCHES = -DUNIX
-CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
-CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 
-CSRC   = $(wildcard *.c)
-CXXSRC = $(wildcard *.cpp)
-OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
-LIB    = libvtdata.so
-
+ifeq ($(OS), Darwin)
+all : $(FRAMEWORK_LIB)
+else
 all : $(LIB)
+endif
 
 $(LIB) : $(OBJS)
-	$(LD_SHARED) -o $(LIB) $(OBJS)
-#	$(AR) $(LIB) $(OBJS)
+	$(LD_SHARED) -o $(LIB) $(VTDATA_LINK_OPTS) $(OBJS) 
+
+
+$(FRAMEWORK_LIB) : $(OBJS) $(FRAMEWORK)
+	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name @executable_path$(FRAMEWORK_INSTALL_NAME) $(VTDATA_LINK_OPTS) $(OBJS) 
+	-ln -s $(FRAMEWORK_LIB) $(FRAMEWORK_EXE)
 
 clean :
 	rm -rf $(OBJS) ii_files so_locations
 
 clobber :
-	rm -rf $(OBJS) $(LIB) ii_files so_locations
+	rm -rf $(OBJS) $(LIB) ii_files so_locations $(FRAMEWORK)
+

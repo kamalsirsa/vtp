@@ -2,23 +2,24 @@
 # GNU Makefile:  TerrainApps/Enviro
 #
 
-VTP_ROOT = $(shell cd ../..; pwd)
+#------------------------------------------------------------------------------
+# You shouldn't need to tweak below this line
+#------------------------------------------------------------------------------
 
+VTP_ROOT = $(shell cd ../..; pwd)
+EXEC = Enviro
 include $(VTP_ROOT)/TerrainApps/Make.defs
 
-IFLAGS = $(shell wx-config --cflags) \
+IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(OSG_INC)               \
 	  -I$(GDAL_INC)              \
 	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/bitmap \
-	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/icons
+	  -I$(TERRAIN_APPS_DIR)/Enviro/wx/icons \
+	  -I$(X_INC)
 
 LDIRS  = \
 	  $(OSG_LIB)                     \
-	  $(VTDATA_INST_DIR)             \
-	  $(VTUI_INST_DIR)               \
-	  $(VTOSG_INST_DIR)              \
-	  $(XMLHELPER_INST_DIR)          \
 	  $(SHAPE_LIB)                   \
 	  $(PNG_LIB)                     \
 	  $(GDAL_LIB)                    \
@@ -35,22 +36,48 @@ LDFLAGS  = $(LDIRFLAGS) \
 CXXSRC = $(wildcard *.cpp) \
 	 $(filter-out wx/StartupDlg0.cpp, $(wildcard wx/*.cpp))
 OBJS   = $(CXXSRC:%.cpp=%.o)
-EXEC   = wxEnviro
-LIBS   = $(shell wx-config --libs) $(shell wx-config --gl-libs) \
-	  -lgdal -lvtosg -lvtui -lvtdata -lxmlhelper $(MINI_LIB) \
-	  -losgDB -losgText -losgUtil -losg -lnetcdf \
-	  $(GLU_LIB) -lGL -lX11 $(EXTRA_LIBS) -lm 
+LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
+	 $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
+	 -lgdal -lGL $(MINI_LIB) \
+	 -lm $(EXTRA_LIBS)
+
+# Support of Mac OS X
+ifeq ($(OS),Darwin)
+OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
+LIBS   += -F$(FRAMEWORKS) \
+	  -lobjc -framework Carbon \
+	  -losg -losgDB -losgGA -losgText -losgUtil -lOpenThreads \
+	  -framework vtdata -framework vtui -framework vtosg \
+	  -framework xmlhelper \
+	  -L$(FINK_LIB) -lnetcdf \
+	  -lX11 -L$(X11BASE)/lib \
+	  -lz -lstdc++
+
+all : $(OSX_APP)
+
+else
+# Support for all other Unix platforms
+LIBS   +=  $(GLU_LIB) -lX11 \
+	  -lxmlhelper -lvtdata -lvtui -lvtosg \
+	  -lnetcdf                 
 
 all : $(EXEC)
+endif
 
 $(EXEC) : $(OBJS)
 	$(LD) -o $(EXEC) $(LDFLAGS) $(OBJS) $(LIBS)
+
+$(OSX_APP) : $(OBJS) $(OSX_APPS)/$(EXEC).app
+	$(LD) -o $(OSX_APP) $(OBJS) $(LDFLAGS) $(LIBS)
+	sed -e "s/IDENTIFIER/`echo $(EXEC) | sed 's,/,.,g'`/" \
+		-e "s/EXECUTABLE/$(EXEC)/" \
+		-e "s/VERSION/2.4.0/" ./Info.plist.in > $(OSX_APPS)/$(EXEC).app/Contents/Info.plist
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files
 
 clobber :
-	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure
+	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure $(OSX_APPS)/$(EXEC).app
 
 #
 # Internationalization steps (iso-8859-1) for Enviro

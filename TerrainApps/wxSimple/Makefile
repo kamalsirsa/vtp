@@ -10,7 +10,7 @@ VTP_ROOT = $(shell cd ../..; pwd)
 
 include $(VTP_ROOT)/TerrainApps/Make.defs
 
-IFLAGS = $(shell wx-config --cflags) \
+IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(GDAL_INC)              \
 	  -I$(OSG_INC)               \
@@ -36,15 +36,23 @@ LDFLAGS  = $(LDIRFLAGS) \
 CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = wxSimple
-LIBS   = $(shell wx-config --libs) $(shell wx-config --gl-libs) \
-         -lvtosg -lvtdata -lxmlhelper $(MINI_LIB)   \
-         -lgdal -losgDB -losgText -losgUtil -losg -lnetcdf    \
-         $(GLU_LIB) -lGL -lX11 $(EXTRA_LIBS) -lm 
+LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) $(shell $(WX_DIR)/bin/wx-config --gl-libs) \
+	-F$(VTP_ROOT)/VTerrain_OSX/Frameworks \
+	-framework vtosg -framework vtdata \
+        -framework xmlhelper $(MINI_LIB)   \
+         -lgdal -losgGA -losgDB -losgText -losgUtil -losg -lOpenThreads \
+	-L/sw/lib -lnetcdf    \
+         $(GLU_LIB) -lX11 $(EXTRA_LIBS) -lobjc -lm 
 
 all : $(EXEC)
 
 $(EXEC) : $(OBJS)
-	$(LD) -o $(EXEC) $(LDFLAGS) $(OBJS) $(LIBS)
+	-mkdir -p $(VTP_ROOT)/VTerrain_OSX/$(EXEC).app/Contents/MacOS
+	-mkdir -p $(VTP_ROOT)/VTerrain_OSX/$(EXEC).app/Contents/Resources
+	$(LD) -o $(VTP_ROOT)/VTerrain_OSX/$(EXEC).app/Contents/MacOS/$(EXEC) $(OBJS) $(LDFLAGS) $(LIBS)
+	cp $(EXEC).plist $(VTP_ROOT)/VTerrain_OSX/$(EXEC).app/Contents/Info.plist
+	echo -n "APPL????" > $(VTP_ROOT)/VTerrain_OSX/$(EXEC).app/Contents/PkgInfo
+	cp /usr/local/lib/libwx_mac-2.4.0.rsrc $(VTP_ROOT)/VTerrain_OSX/$(EXEC).app/Contents/Resources/$(EXEC).rsrc
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files

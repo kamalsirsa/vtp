@@ -7,19 +7,16 @@
 #------------------------------------------------------------------------------
 
 VTP_ROOT = $(shell cd ../..; pwd)
-
+EXEC   = VTBuilder
 include $(VTP_ROOT)/TerrainApps/Make.defs
 
-IFLAGS = $(shell wx-config --cflags) \
+IFLAGS = $(shell $(WX_DIR)/bin/wx-config --cflags) \
 	  -I$(GDAL_INC)              \
 	  -I$(TERRAIN_SDK_DIR)       \
 	  -I$(TERRAIN_APPS_DIR)/VTBuilder/bitmaps \
 	  -I$(TERRAIN_APPS_DIR)/VTBuilder/icons
 
 LDIRS  = \
-	  $(VTDATA_INST_DIR)             \
-	  $(VTUI_INST_DIR)               \
- 	  $(XMLHELPER_INST_DIR)          \
 	  $(SHAPE_LIB)                   \
 	  $(GDAL_LIB)                    \
 	  $(PNG_LIB)                     \
@@ -35,24 +32,42 @@ LDFLAGS  = $(LDIRFLAGS) \
 
 CXXSRC = $(filter-out pre.cpp, $(wildcard *.cpp))
 OBJS   = $(CXXSRC:%.cpp=%.o)
-EXEC   = VTBuilder
-LIBS   = $(shell wx-config --libs)     \
-	  $(shell wx-config --gl-libs)     \
-	  -lgdal -lvtdata -lvtui       \
-	  -lxmlhelper					   \
-	  -lnetcdf                         \
-	  -lGL -lX11 $(EXTRA_LIBS) -lm 
+LIBS   = $(shell $(WX_DIR)/bin/wx-config --libs) \
+	-lgdal -lm
+
+# Support of Mac OS X
+ifeq ($(OS),Darwin)
+OSX_APP = $(OSX_APPS)/$(EXEC).app/Contents/MacOS/$(EXEC)
+LIBS   += -F$(FRAMEWORKS) \
+	  -lobjc -framework Carbon \
+	  -losg -losgDB -losgGA -losgText -losgUtil -lOpenThreads \
+	  -framework vtdata -framework vtui \
+	  -framework xmlhelper \
+	  -L$(FINK_LIB) -lnetcdf \
+	  -lz
+
+all : $(OSX_APP)
+
+else
+# Support for all other Unix platforms
+LIBS   +=  -lGL -lX11 $(EXTRA_LIBS)   \
+	  -lxmlhelper -lvtdata -lvtui \
+	  -lnetcdf                  
 
 all : $(EXEC)
+endif
 
 $(EXEC) : $(OBJS)
 	$(LD) -o $(EXEC) $(LDFLAGS) $(OBJS) $(LIBS)
+
+$(OSX_APP) : $(OBJS) $(OSX_APPS)/$(EXEC).app
+	$(LD) -o $(OSX_APP) $(OBJS) $(LDFLAGS) $(LIBS)
 
 clean :
 	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files
 
 clobber :
-	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure
+	rm -rf $(OBJS) $(EXEC).core core ii_files wx/ii_files $(EXEC) $(EXEC).pure $(OSX_APPS)/$(EXEC).app
 
 #
 # Internationalization steps (iso-8859-1) for VTBuilder

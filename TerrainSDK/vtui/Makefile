@@ -7,30 +7,32 @@
 #------------------------------------------------------------------------------
 
 VTP_ROOT = $(shell cd ../..; pwd)
+LIB_NAME = vtui
 
 include $(VTP_ROOT)/TerrainSDK/Make.defs
 
-IFLAGS = $(shell wx-config --cflags) \
+IFLAGS = $(shell /usr/local/bin/wx-config --cflags) \
 	-I$(GDAL_INC) \
 	-I$(TERRAIN_SDK_DIR)
 
-SWITCHES = -DUNIX
-CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
-CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 
-CSRC   = $(wildcard *.c)
-CXXSRC = $(wildcard *.cpp)
-OBJS   = $(CSRC:%.c=%.o) $(CXXSRC:%.cpp=%.o)
-LIB    = libvtui.so
-
+ifeq ($(OS), Darwin)
+all : $(FRAMEWORK_LIB)
+else
 all : $(LIB)
+endif
 
 $(LIB) : $(OBJS)
-	$(LD_SHARED) -o $(LIB) $(OBJS)
-#	$(AR) $(LIB) $(OBJS)
+	$(LD_SHARED) -o $(LIB) $(VTUI_LINK_OPTS) $(OBJS) 
+
+
+$(FRAMEWORK_LIB) : $(OBJS) $(FRAMEWORK)
+	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name @executable_path$(FRAMEWORK_INSTALL_NAME) $(VTUI_LINK_OPTS) $(OBJS) 
+	-ln -s $(FRAMEWORK_LIB) $(FRAMEWORK_EXE)
 
 clean :
 	rm -rf $(OBJS) ii_files so_locations
 
 clobber :
-	rm -rf $(OBJS) $(LIB) ii_files so_locations
+	rm -rf $(OBJS) $(LIB) ii_files so_locations $(FRAMEWORK)
+

@@ -7,8 +7,14 @@
 #------------------------------------------------------------------------------
 
 VTP_ROOT = $(shell cd ../../..; pwd)
+LIB_NAME = vtosg
 
 include $(VTP_ROOT)/TerrainSDK/Make.defs
+
+SWITCHES += -DVTLIB_OSG=1
+override CXXSRC = $(wildcard *.cpp) $(wildcard ../core/*.cpp) 
+override OBJS = $(CXXSRC:%.cpp=%.o)
+HEADERS += $(wildcard ../core/*.h) $(wildcard ../core/*.hpp)
 
 IFLAGS = -I$(TERRAIN_SDK_DIR) \
          -I$(VTLIB_DIR)       \
@@ -19,23 +25,24 @@ IFLAGS = -I$(TERRAIN_SDK_DIR) \
 	 -I$(APIS_DIR)        \
 	 -I$(X_INC)
 
-SWITCHES = -DUNIX -DVTLIB_OSG=1
-CFLAGS   = $(COPT) $(SWITCHES) $(IFLAGS)
-CXXFLAGS = $(COPT) $(SWITCHES) $(IFLAGS)
 
-CXXSRC = $(wildcard *.cpp) \
-         $(wildcard ../core/*.cpp)
-OBJS   = $(CXXSRC:%.cpp=%.o)
-LIB    = libvtosg.so
-
+ifeq ($(OS), Darwin)
+all : $(FRAMEWORK_LIB)
+else
 all : $(LIB)
+endif
 
 $(LIB) : $(OBJS)
-	$(LD_SHARED) -o $(LIB) $(OBJS)
-#	$(AR) $(LIB) $(OBJS)
+	$(LD_SHARED) -o $(LIB) $(VTOSG_LINK_OPTS) $(OBJS) 
+
+
+$(FRAMEWORK_LIB) : $(OBJS) $(FRAMEWORK)
+	$(LD_SHARED) -o $(FRAMEWORK_LIB) -install_name @executable_path$(FRAMEWORK_INSTALL_NAME) $(VTOSG_LINK_OPTS) $(OBJS) 
+	-ln -s $(FRAMEWORK_LIB) $(FRAMEWORK_EXE)
 
 clean :
 	rm -rf $(OBJS) ii_files so_locations
 
 clobber :
-	rm -rf $(OBJS) $(LIB) ii_files ../core/ii_files so_locations
+	rm -rf $(OBJS) $(LIB) ii_files so_locations $(FRAMEWORK)
+
