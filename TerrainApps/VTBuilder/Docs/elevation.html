@@ -17,7 +17,7 @@ VTBuilder<br>
   <p>VTBuilder will read in elevation files and save them to a simple binary
   terrain format (BT). You can load multiple files, merge them, and select the
   area of interest to export.</p>
-  <p>VTBuilder can import elevation from these formats:</p>
+  <p>VTBuilder can import elevation grid data from these formats:</p>
   <ul>
     <li>USGS DEM (Digital Elevation Models)</li>
     <li>SDTS DEM</li>
@@ -41,10 +41,21 @@ VTBuilder<br>
     If any of your terrain grids use different coordinates (such as different UTM
     zones), VTBuilder can convert them to the same projection for you.</p>
   </blockquote>
-  <p>The native format for elevation is the
+  <p>The native format for elevation grids is the
   <a href="http://vterrain.org/Implementation/Formats/BT.html">BT
   format</a>.&nbsp; BT can be read by the VTP <b>Enviro</b> program and other
   virtual terrain software.</p>
+</blockquote>
+  <h4>TINs (Triangular Irregular Networks)</h4>
+<blockquote>
+  <p>Additionally, VTBuilder can import TIN elevation from these formats:</p>
+  <ul>
+    <li>AutoCAD DXF</li>
+  </ul>
+  <p>The native format for TIN data is the ITF file format.&nbsp; ITF can be read by the VTP <b>Enviro</b> program 
+  for visualization.&nbsp; Unfortunately, there is no common standard file 
+  format for TIN data.&nbsp; That is why we had to invent our own ad-hoc native 
+  format (ITF).</p>
 </blockquote>
 <h4>Display of Elevation Layers</h4>
 <blockquote>
@@ -62,7 +73,7 @@ VTBuilder<br>
   <li>Use the command &quot;<b>Area Tool - <a href="export_area.html"> Merge and 
   Resample Elevation</a></b>&quot; to
     create a BT file.&nbsp; There may also be a PRJ file created with the same
-    name as the BT file, which contains a full description of the projection.<br>
+    name as the BT file, which contains a full description of the projection.
     For example:
     <div align="center">
       <center>
@@ -86,54 +97,48 @@ VTBuilder<br>
   high-resolution layers, and want to merge them together, load the 
   low-resolution layers <i>first.</i></li>
 </ul>
-<h4>Elevation Menus</h4>
+<h3>Elevation Menu</h3>
 <ul>
-      <li><a name="Elevation"><b>Elevation</b></a>
-        <ul>
-          <li>Select Elevation Layer
-            <ul>
-              <li>Use this mode to pick elevation layers with the mouse.</li>
-            </ul>
-          </li>
-          <li>Remove Terrain Above Sea
-        <ul>
-          <li>For the currently selected layer, sets all elevation points
-            which are above sea level to 'unknown' (shown as red)</li>
-        </ul>
-          </li>
-          <li>Fill in unknown areas
-        <ul>
-          <li>For the currently selected layer, this feature can be used to
-            fill &quot;cracks&quot; of unknown values.&nbsp; The unknown areas
-            are filled in by interpolating the surrounding known areas.</li>
-        </ul>
-          </li>
-          <li>Scale Elevation
+      <li><b>Select Elevation Layer </b>
+<ul>
+      <li>Use this mode to pick elevation layers with the mouse.</li>
+</ul>
+
+      </li>
+      <li><b>Scale Elevation </b>
         <ul>
           <li>For the currently selected layer, scales the elevation values up
             or down.</li>
         </ul>
           </li>
-          <li>Export to TerraGen
-            <ul>
-              <li>Saves the current elevation layer to a TerraGen file.</li>
+      <li><b>Remove Elevation Range...</b><ul>
+          <li>For the currently selected layer, asks the user for a range of 
+          elevation, for example -100 to 100 meters, then sets all elevation points
+            which are within this range to 'unknown' (shown as red)</li>
+        </ul>
+          </li>
+      <li><b>Fill In Unknown Areas</b><ul>
+          <li>For the currently selected layer, this feature can be used to
+            fill &quot;cracks&quot; of unknown values.&nbsp; The unknown areas
+            are filled in by interpolating the surrounding known areas.</li>
+        </ul>
+          </li>
+      <li><b>Export To...</b><ul>
+              <li>Writes the current elevation grid layer to one of the 
+              following file formats: ArcInfo ASCII Grid, GeoTIFF, TerraGen, BMP 
+              (scaled to 8-bit), STM, or MSI Planet.</li>
             </ul>
           </li>
-      <li>Generate and Export Bitmap
-        <ul>
-          <li>Creates and saves a square bitmap (BMP) of the currently selected
-            Elevation Layer.&nbsp; The elevation will be used to provide artificial color and
-            shading for the bitmap.&nbsp; When you don't have any imagery for
+      <li><b>Render to Bitmap...</b><ul>
+          <li>Creates and a rendered bitmap (GeoTIFF or JPEG) of the currently selected
+            Elevation Layer.&nbsp; The elevation is used to provide artificial color and
+            shading for the bitmap.&nbsp; The bitmap can either be written to 
+          disk, or created a new Image Layer.&nbsp; When you don't have any imagery for
             your area, only elevation, this can give you a visually useful image
             - similar to the &quot;Texture: Derive from Elevation&quot; option
-            in Enviro, but better because the image is generated before runtime.<br>
-          VTBuilder will ask for a size in pixels (N) and make a square image (N 
-          x N).&nbsp; The reason for squareness is that 3D hardware, for any 3D 
-          runtime, prefers square images.</li>
+            in Enviro, but better because the image is generated before runtime.</li>
         </ul>
       </li>
-        </ul>
-  </li>
 </ul>
 
 </body>
