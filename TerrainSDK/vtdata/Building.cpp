@@ -690,7 +690,13 @@ void vtBuilding::SetStories(int iStories)
 	if (previous == iStories)
 		return;
 
+	// must have at least one level
 	int levels = m_Levels.GetSize();
+	if (!levels)
+	{
+		CreateLevel();
+		levels = 1;
+	}
 
 	// increase if necessary
 	if (iStories > previous)
