@@ -103,7 +103,11 @@ public:
 	bool GetCurrentPoint(FPoint3 &p);
 	bool GetCurrentEarthPos(DPoint3 &p);
 
+	void OnMouse(vtMouseEvent &event);
+
 protected:
+	void FindGroundPoint();
+
 	FPoint3			m_GroundPoint;
 	vtHeightField3d *m_pHeightField;
 	DPoint3			m_EarthPos;

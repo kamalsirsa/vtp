@@ -11,6 +11,7 @@
 #include "vtlib/core/Route.h"
 #include "vtlib/core/Roads.h"
 #include "vtlib/core/Globe.h"
+#include "vtdata/vtLog.h"
 
 #include "Engines.h"
 #include "Hawaii.h"
@@ -323,7 +324,14 @@ TerrainPicker::TerrainPicker() : vtLastMouse()
 	m_bOnTerrain = false;
 }
 
-void TerrainPicker::Eval()
+void TerrainPicker::OnMouse(vtMouseEvent &event)
+{
+	vtLastMouse::OnMouse(event);
+
+	FindGroundPoint();
+}
+
+void TerrainPicker::FindGroundPoint()
 {
 	if (!m_pHeightField) return;
 
@@ -347,6 +355,12 @@ void TerrainPicker::Eval()
 
 	// Find corresponding earth coordinates
 	g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos); 
+}
+
+void TerrainPicker::Eval()
+{
+	// Don't calculate here, since we can get OnMouse events out of synch
+	//  with the Paint events that trigger the scene update and engine Eval().
 }
 
 bool TerrainPicker::GetCurrentPoint(FPoint3 &p)
