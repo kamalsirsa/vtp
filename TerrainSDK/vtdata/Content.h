@@ -81,12 +81,12 @@ public:
 	void Clear();
 
 	// Set value
-	void SetValueString(const char *szTagName, const vtString &string, bool bSuppressWarning = false);
-	void SetValueBool(const char *szTagName, bool value);
-	void SetValueInt(const char *szTagName, int value);
-	void SetValueFloat(const char *szTagName, float value);
-	void SetValueDouble(const char *szTagName, double value);
-	void SetValueRGBi(const char *szTagName, const RGBi &value);
+	void SetValueString(const char *szTagName, const vtString &string, bool bCreating = false);
+	void SetValueBool(const char *szTagName, bool value, bool bCreating = false);
+	void SetValueInt(const char *szTagName, int value, bool bCreating = false);
+	void SetValueFloat(const char *szTagName, float value, bool bCreating = false);
+	void SetValueDouble(const char *szTagName, double value, bool bCreating = false);
+	void SetValueRGBi(const char *szTagName, const RGBi &value, bool bCreating = false);
 
 	// Get value directly
 	const char *GetValueString(const char *szTagName, bool bUTF8ToAnsi = false,
@@ -114,7 +114,8 @@ public:
 	void CopyTagsFrom(const vtTagArray &v);
 
 	// File IO
-	bool WriteToXML(const char *fname, const char *title);
+	bool WriteToXML(const char *fname, const char *title) const;
+	void WriteToXMLBody(FILE *fp, int iIndent) const;
 	bool LoadFromXML(const char *fname);
 
 	// Allow overriding values by subclasses
@@ -122,7 +123,7 @@ public:
 	{
 		return false;
 	}
-	virtual void WriteOverridesToXML(FILE *fp) {}
+	virtual void WriteOverridesToXML(FILE *fp) const {}
 
 protected:
 	std::vector<vtTag>	m_tags;

@@ -104,7 +104,7 @@ void vtTagArray::Clear()
 //
 
 void vtTagArray::SetValueString(const char *szTagName, const vtString &string,
-								bool bSuppressWarning)
+								bool bCreating)
 {
 	vtTag *tag = FindTag(szTagName);
 	if (tag)
@@ -116,46 +116,46 @@ void vtTagArray::SetValueString(const char *szTagName, const vtString &string,
 			return;
 
 		// if not, add it as a new tag
-		if (!bSuppressWarning)
+		if (!bCreating)
 			VTLOG("\tWarning: tag %s was not found, creating.\n", szTagName);
 		AddTag(szTagName, string);
 	}
 }
 
-void vtTagArray::SetValueBool(const char *szTagName, bool bValue)
+void vtTagArray::SetValueBool(const char *szTagName, bool bValue, bool bCreating)
 {
 	if (bValue)
-		SetValueString(szTagName, "true");
+		SetValueString(szTagName, "true", bCreating);
 	else
-		SetValueString(szTagName, "false");
+		SetValueString(szTagName, "false", bCreating);
 }
 
-void vtTagArray::SetValueInt(const char *szTagName, int iValue)
+void vtTagArray::SetValueInt(const char *szTagName, int iValue, bool bCreating)
 {
 	vtString str;
 	str.Format("%d", iValue);
-	SetValueString(szTagName, str);
+	SetValueString(szTagName, str, bCreating);
 }
 
-void vtTagArray::SetValueFloat(const char *szTagName, float fValue)
+void vtTagArray::SetValueFloat(const char *szTagName, float fValue, bool bCreating)
 {
 	vtString str;
 	str.Format("%f", fValue);
-	SetValueString(szTagName, str);
+	SetValueString(szTagName, str, bCreating);
 }
 
-void vtTagArray::SetValueDouble(const char *szTagName, double dValue)
+void vtTagArray::SetValueDouble(const char *szTagName, double dValue, bool bCreating)
 {
 	vtString str;
 	str.Format("%lf", dValue);
-	SetValueString(szTagName, str);
+	SetValueString(szTagName, str, bCreating);
 }
 
-void vtTagArray::SetValueRGBi(const char *szTagName, const RGBi &color)
+void vtTagArray::SetValueRGBi(const char *szTagName, const RGBi &color, bool bCreating)
 {
 	vtString str;
 	str.Format("%d %d %d", color.r, color.g, color.b);
-	SetValueString(szTagName, str);
+	SetValueString(szTagName, str, bCreating);
 }
 
 
@@ -333,7 +333,7 @@ void vtTagArray::CopyTagsFrom(const vtTagArray &v)
 }
 
 // File IO
-bool vtTagArray::WriteToXML(const char *fname, const char *title)
+bool vtTagArray::WriteToXML(const char *fname, const char *title) const
 {
 	LocaleWrap normal_numbers(LC_NUMERIC, "C");
 
@@ -343,18 +343,27 @@ bool vtTagArray::WriteToXML(const char *fname, const char *title)
 
 	fprintf(fp, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	fprintf(fp, "<%s>\n", title);
-
-	unsigned int i, size = NumTags();
-	for (i = 0; i < size; i++)
-	{
-		vtTag *tag = GetTag(i);
-		fprintf(fp, "\t<%s>%s</%s>\n", (const char *) tag->name,
-			(const char *) EscapeStringForXML(tag->value), (const char *) tag->name);
-	}
-	WriteOverridesToXML(fp);
+	WriteToXMLBody(fp, 1);
 	fprintf(fp, "</%s>\n", title);
 	fclose(fp);
 	return true;
+}
+
+void vtTagArray::WriteToXMLBody(FILE *fp, int iIndent) const
+{
+	unsigned int i, size = NumTags();
+	for (i = 0; i < size; i++)
+	{
+		// indent
+		for (int j = 0; j < iIndent; j++)
+			fprintf(fp, "\t");
+
+		// write field as an XML element
+		const vtTag *tag = GetTag(i);
+		fprintf(fp, "<%s>%s</%s>\n", (const char *) tag->name,
+			(const char *) EscapeStringForXML(tag->value), (const char *) tag->name);
+	}
+	WriteOverridesToXML(fp);
 }
 
 ////////////////////////////////////////////////////////////////////////
