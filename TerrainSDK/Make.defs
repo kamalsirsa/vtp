@@ -62,6 +62,22 @@ OSG_BASE = $(LOCALBASE)
 ##             -rpath $(subst $(space),$(colon),$(LDIRS))
 
 #------------------------------------------------------------------------------
+# Mac OS X (10.2.6) with GCC
+#------------------------------------------------------------------------------
+## CC        = gcc
+## CXX       = g++
+## AR        = ar ruv
+## COPT      = -g -O -Dunix=1 -D__DARWIN_OSX__ -fno-common
+## LD        = $(CXX)
+## LD_SHARED = $(CXX) -shared
+## LD_SHARED = $(CXX) -dynamiclib -flat_namespace
+## 
+## GLUT_LIB = -framework GLUT
+## GLU_LIB  = -framework OpenGL -framework Carbon
+## EXTRA_LIBS = -lXi
+## LDIRFLAGS = $(LDIRS:%=-L%)
+
+#------------------------------------------------------------------------------
 # Linux with GCC (tested with ver. 2.95.3)
 #------------------------------------------------------------------------------
 CC        = gcc
