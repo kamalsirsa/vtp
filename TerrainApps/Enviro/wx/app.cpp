@@ -119,29 +119,6 @@ void TestLocale()
 	catfile.TestHash(true);
 }
 
-int GetLangFromName(const wxString &name)
-{
-	int lang;
-	for (lang = wxLANGUAGE_ABKHAZIAN; lang < wxLANGUAGE_USER_DEFINED; lang++)
-	{
-		const wxLanguageInfo *info = wxLocale::GetLanguageInfo(lang);
-		if (name.CmpNoCase(info->Description) == 0)
-			return lang;
-		if (name.Length() == 2)
-		{
-			wxString shortname = info->CanonicalName.Left(2);
-			if (name.CmpNoCase(shortname) == 0)
-				return lang;
-		}
-		else if (name.Length() == 5 && name[2] == '_')
-		{
-			if (name.CmpNoCase(info->CanonicalName) == 0)
-				return lang;
-		}
-	}
-	return wxLANGUAGE_UNKNOWN;
-}
-
 void vtApp::SetupLocale()
 {
 	wxLog::SetVerbose(true);
