@@ -12,8 +12,9 @@
 #endif
 #include <wx/progdlg.h>
 
-#include "vtdata/vtDIB.h"
+#include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
+#include "vtdata/vtDIB.h"
 
 #include "Frame.h"
 #include "MenuEnum.h"
@@ -28,7 +29,6 @@
 #include "UtilityLayer.h"
 #include "WaterLayer.h"
 // Dialogs
-#include "ElevDlg.h"
 #include "ExtentDlg.h"
 #include "LayerPropDlg.h"
 #include "ProjectionDlg.h"
@@ -78,7 +78,7 @@ EVT_MENU(ID_VIEW_ZOOMIN,		MainFrame::OnViewZoomIn)
 EVT_MENU(ID_VIEW_ZOOMOUT,		MainFrame::OnViewZoomOut)
 EVT_MENU(ID_VIEW_ZOOMALL,		MainFrame::OnViewZoomAll)
 EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
-EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnElevBox)
+EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnViewSetArea)
 EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
 EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
 EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
@@ -91,7 +91,7 @@ EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
 EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
 EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
 EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
-EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateElevBox)
+EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
 EVT_UPDATE_UI(ID_VIEW_SHOWMINUTES,	MainFrame::OnUpdateMinutes)
@@ -119,22 +119,24 @@ EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
 EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
 EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
 EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
-EVT_MENU(ID_ELEV_SCALEELEVATION,	MainFrame::OnScaleElevation)
+EVT_MENU(ID_ELEV_SCALE,				MainFrame::OnScaleElevation)
 EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
 EVT_MENU(ID_ELEV_SHOW,				MainFrame::OnElevShow)
 EVT_MENU(ID_ELEV_SHADING,			MainFrame::OnElevShading)
 EVT_MENU(ID_ELEV_HIDE,				MainFrame::OnElevHide)
 EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
+EVT_MENU(ID_ELEV_MERGETIN,			MainFrame::OnElevMergeTin)
 
 EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
 EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateRemoveAboveSea)
 EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateFillIn)
-EVT_UPDATE_UI(ID_ELEV_SCALEELEVATION, MainFrame::OnUpdateScaleElevation)
+EVT_UPDATE_UI(ID_ELEV_SCALE,		MainFrame::OnUpdateScaleElevation)
 EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateExportTerragen)
 EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
 EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
 EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
 EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateExportBitmap)
+EVT_UPDATE_UI(ID_ELEV_MERGETIN,		MainFrame::OnUpdateElevMergeTin)
 
 EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
 EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
@@ -180,44 +182,62 @@ END_EVENT_TABLE()
 
 void MainFrame::CreateMenus()
 {
+	int menu_num = 0;
+
+	menuBar = new wxMenuBar;
+
 	// Project menu
 	fileMenu = new wxMenu;
 	fileMenu->Append(ID_FILE_NEW, "&New\tCtrl+N", "New Project");
 	fileMenu->Append(ID_FILE_OPEN, "Open Project\tCtrl+O", "Open Project");
 	fileMenu->Append(ID_FILE_SAVE, "Save Project\tCtrl+S", "Save Project As");
+#ifndef ELEVATION_ONLY
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_DYMAX_TEXTURES, "Create Dymaxion Textures");
+#endif
 	fileMenu->AppendSeparator();
 	fileMenu->Append(ID_FILE_EXIT, "E&xit\tAlt-X", "Exit");
+	menuBar->Append(fileMenu, "&Project");
+	menu_num++;
 
- 	// Edit (1)
+ 	// Edit
 	editMenu = new wxMenu;
 	editMenu->Append(ID_EDIT_DELETE, "Delete\tDEL", "Delete.");
 	editMenu->AppendSeparator();
 	editMenu->Append(ID_EDIT_DESELECTALL, "Deselect All", "Clears selection.");
 	editMenu->Append(ID_EDIT_INVERTSELECTION, "Invert Selection", "Invert Selection.");
 	editMenu->Append(ID_EDIT_CROSSINGSELECTION, "Crossing Selection", "Crossing Selection.", true);
+	menuBar->Append(editMenu, "&Edit");
+	menu_num++;
 
-	// Layer (2)
+	// Layer
 	layerMenu = new wxMenu;
+#ifndef ELEVATION_ONLY
 	layerMenu->Append(ID_LAYER_NEW, "&New Layer", "Create New Layer");
+#endif
 	layerMenu->Append(ID_LAYER_OPEN, "Open Layer", "Open Existing Layer");
 	layerMenu->Append(ID_LAYER_SAVE, "Save Layer", "Save Active Layer");
 	layerMenu->Append(ID_LAYER_SAVE_AS, "Save Layer As...", "Save Active Layer As");
 	layerMenu->Append(ID_LAYER_IMPORT, "Import Data\tCtrl+I", "Import Data");
+#ifndef ELEVATION_ONLY
 	layerMenu->Append(ID_LAYER_IMPORTTIGER, "Import Data From TIGER", "Import Data From TIGER");
 	layerMenu->Append(ID_LAYER_IMPORTUTIL, "Import Utilites From SHP", "Import Utilites From SHP");
+#endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_PROPS, "Layer Properties", "Layer Properties");
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_EDIT_OFFSET, "Offset Coordinates", "Offset");
+#ifndef ELEVATION_ONLY
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_FLATTEN, "&Flatten Layers", "Flatten");
+#endif
 	layerMenu->AppendSeparator();
 	layerMenu->Append(ID_LAYER_CONVERTPROJ, "Convert Projection", "Convert");
 	layerMenu->Append(ID_LAYER_SETPROJ, "Set Projection", "Set Projection");
+	menuBar->Append(layerMenu, "&Layer");
+	menu_num++;
 
-	// View (3)
+	// View
 	viewMenu = new wxMenu;
 	viewMenu->Append(ID_VIEW_TOOLBAR, "Toolbar", "Show Toolbar", true);
 	viewMenu->Append(ID_VIEW_STATUSBAR, "Status Bar", "Show Status Bar", true);
@@ -242,10 +262,15 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_ELEV_SHOW, "Show Terrain Elevation", "Show Terrain Elevation", true);
 	viewMenu->Append(ID_ELEV_SHADING, "Artificial Shading", "Artificial Shading", true);
 	viewMenu->Append(ID_ELEV_HIDE, "Hide Unknown Areas", "Hide Unknown Areas", true);
+#ifndef ELEVATION_ONLY
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_FILLWATER, "Show Water Bodies Filled", "Show Water Bodies Filled", true);
+#endif
+	menuBar->Append(viewMenu, "&View");
+	menu_num++;
 
-	// Roads (4)
+#ifndef ELEVATION_ONLY
+	// Roads
 	roadMenu = new wxMenu;
 	roadMenu->Append(ID_ROAD_SELECTROAD, "Select/Modify Roads", "Select/Modify Roads", true);
 	roadMenu->Append(ID_ROAD_SELECTNODE, "Select/Modify Nodes", "Select/Modify Nodes", true);
@@ -259,46 +284,68 @@ void MainFrame::CreateMenus()
 	roadMenu->AppendSeparator();
 	roadMenu->Append(ID_ROAD_CLEAN, "Clean RoadMap", "Clean");
 	roadMenu->Append(ID_ROAD_GUESS, "Guess Intersection Types");
+	menuBar->Append(roadMenu, "&Roads");
+	m_iLayerMenu[LT_ROAD] = menu_num;
+	menu_num++;
 
-	// Utilities(5)
+	// Utilities
 	utilityMenu = new wxMenu;
 	utilityMenu->Append(ID_TOWER_ADD, "Add a Transmission Tower", "Add a Transmission Tower",true);
 	utilityMenu->AppendSeparator();
 	utilityMenu->Append(ID_TOWER_SELECT, "Select Utility Layer", "Select Utility Layer",true);
 	utilityMenu->Append(ID_TOWER_EDIT, "Edit Transmission Towers", "Edit Transmission Towers",true);
+	menuBar->Append(utilityMenu, "Util&ities");
+	m_iLayerMenu[LT_UTILITY] = menu_num;
+	menu_num++;
+#endif
 
-	// Elevation (6)
+	// Elevation
 	elevMenu = new wxMenu;
 	elevMenu->Append(ID_ELEV_SELECT, "Select Elevation Layer", "Select Elevation Layer", true);
+	elevMenu->Append(ID_ELEV_SCALE, "Scale Elevation");
 	elevMenu->AppendSeparator();
 	elevMenu->Append(ID_ELEV_REMOVEABOVESEA, "Remove Terrain Above Sea");
 	elevMenu->Append(ID_ELEV_FILLIN, "Fill in unknown areas");
-	elevMenu->Append(ID_ELEV_SCALEELEVATION, "Scale Elevation");            
 	elevMenu->Append(ID_ELEV_EXPORTTERRAGEN, "Export to TerraGen");            
 	elevMenu->Append(ID_ELEV_BITMAP, "Generate && Export Bitmap");
-//	elevMenu->AppendSeparator();
 //	elevMenu->Append(ID_AREA_EXPORT_ELEV, "&Merge Area and Export");
+	elevMenu->AppendSeparator();
+	elevMenu->Append(ID_ELEV_MERGETIN, "Merge shared TIN vertices");
+	menuBar->Append(elevMenu, "Elev&ation");
+	m_iLayerMenu[LT_ELEVATION] = menu_num;
+	menu_num++;
 
-	// Vegetation (7)
+#ifndef ELEVATION_ONLY
+	// Vegetation
 	vegMenu = new wxMenu;
 	vegMenu->Append(ID_VEG_PLANTS, "Plants List", "View/Edit list of available plant species");
 	vegMenu->Append(ID_VEG_BIOREGIONS, "BioRegions", "View/Edit list of species & density for each BioRegion");
 //	vegMenu->Append(ID_AREA_GENERATE_VEG, "Generate");
+	menuBar->Append(vegMenu, "Veg&etation");
+	m_iLayerMenu[LT_VEG] = menu_num;
+	menu_num++;
 
-	// Structures (8)
+	// Structures
 	bldMenu = new wxMenu;
 	bldMenu->Append(ID_FEATURE_SELECT, "Select Features", "Select Features", true);
 	bldMenu->Append(ID_STRUCTURE_EDIT_BLD, "Edit Buildings", "Edit Buildings", true);
 	bldMenu->Append(ID_STRUCTURE_ADD_LINEAR, "Add Linear Features", "Add Linear Features", true);
+	menuBar->Append(bldMenu, "&Structures");
+	m_iLayerMenu[LT_STRUCTURE] = menu_num;
+	menu_num++;
 
-	// Raw (9)
+	// Raw
 	rawMenu = new wxMenu;
 	rawMenu->Append(ID_RAW_SETTYPE, "Set Entity Type", "Set Entity Type");
 	rawMenu->Append(ID_RAW_ADDPOINTS, "Add Points with Mouse", "Add points with the mouse", true);
 	rawMenu->Append(ID_RAW_ADDPOINT_TEXT, "Add Point with Text\tCtrl+T", "Add point");
 	rawMenu->Append(ID_RAW_ADDPOINTS_GPS, "Add Points with GPS", "Add points with GPS");
+	menuBar->Append(rawMenu, "Ra&w");
+	m_iLayerMenu[LT_RAW] = menu_num;
+	menu_num++;
+#endif
 
-	// Area (10)
+	// Area
 	areaMenu = new wxMenu;
 	areaMenu->Append(ID_AREA_STRETCH, "Set to Extents",
 		"Set the Export Area rectangle to the combined extent of all layers.");
@@ -309,24 +356,15 @@ void MainFrame::CreateMenus()
 		"Sample all elevation data within the Export Area to produce a single, new elevation.");
 	areaMenu->Append(ID_AREA_GENERATE_VEG, "Generate && Export Vegetation",
 		"Generate Vegetation File (*.vf) containg plant distribution.");
+	menuBar->Append(areaMenu, "Export &Area");
+	menu_num++;
 
-	// Help (11)
+	// Help
 	helpMenu = new wxMenu;
 	helpMenu->Append(wxID_HELP, "&About", "About VTBuilder");
-
-	menuBar = new wxMenuBar;
-	menuBar->Append(fileMenu, "&Project");
-	menuBar->Append(editMenu, "&Edit");
-	menuBar->Append(layerMenu, "&Layer");
-	menuBar->Append(viewMenu, "&View");
-	menuBar->Append(roadMenu, "&Roads");
-	menuBar->Append(utilityMenu, "Util&ities");
-	menuBar->Append(elevMenu, "Elev&ation");
-	menuBar->Append(vegMenu, "Veg&etation");
-	menuBar->Append(bldMenu, "&Structures");
-	menuBar->Append(rawMenu, "Ra&w");
-	menuBar->Append(areaMenu, "Export &Area");
 	menuBar->Append(helpMenu, "&Help");
+	menu_num++;
+
 	SetMenuBar(menuBar);
 
 #if 0
@@ -609,11 +647,14 @@ void MainFrame::OnLayerOpen(wxCommandEvent &event)
 	wxString filter = "Native Layer Formats||";
 
 	AddType(filter, FSTRING_BT);	// elevation
+	AddType(filter, FSTRING_TIN);	// elevation
+#ifndef ELEVATION_ONLY
 	AddType(filter, FSTRING_RMF);	// roads
 	AddType(filter, FSTRING_SHP);	// raw
 	AddType(filter, FSTRING_UTL);	// utility towers
 	AddType(filter, FSTRING_VTST);	// structures
 	AddType(filter, FSTRING_VF);	// vegetation files
+#endif
 
 	// ask the user for a filename
 	wxFileDialog loadFile(NULL, "Open Layer", "", "", filter, wxOPEN);
@@ -684,10 +725,17 @@ void MainFrame::OnUpdateLayerProperties(wxUpdateUIEvent& event)
 
 void MainFrame::OnLayerImport(wxCommandEvent &event)
 {
+	LayerType lt;
+
+#ifdef ELEVATION_ONLY
+	lt = LT_ELEVATION;
+#else
 	// first ask what kind of data layer
-	LayerType t = AskLayerType();
-	if (t != LT_UNKNOWN)
-		ImportData(t);
+	lt = AskLayerType();
+	if (lt == LT_UNKNOWN)
+		return;
+#endif
+	ImportData(lt);
 }
 
 void MainFrame::OnLayerImportTIGER(wxCommandEvent &event)
@@ -712,10 +760,10 @@ void MainFrame::OnLayerImportUtil(wxCommandEvent &event)
 		return;
 	wxString strDirName = getDir.GetPath();
 
+//	dlg.m_strCaption = "Shapefiles do not contain projection information.  "
+//		"Please indicate the projection of this file:";
 	// ask user for a projection
-	ProjectionDlg dlg(NULL, -1, "Projection", wxDefaultPosition);
-	dlg.m_strCaption = "Shapefiles do not contain projection information.  "
-		"Please indicate the projection of this file:";
+	ProjectionDlg dlg(NULL, -1, "Indicate Projection", wxDefaultPosition);
 	dlg.SetProjection(m_proj);
 
 	if (dlg.ShowModal() == wxID_CANCEL)
@@ -793,8 +841,7 @@ void MainFrame::OnUpdateAreaExportElev(wxUpdateUIEvent& event)
 void MainFrame::OnLayerConvert(wxCommandEvent &event)
 {
 	// ask for what projection to convert to
-	ProjectionDlg dlg(NULL, -1, "Projection", wxDefaultPosition);
-	dlg.m_strCaption = "Convert to what projection?";
+	Projection2Dlg dlg(NULL, 200, "Convert to what projection?", wxDefaultPosition);
 	dlg.SetProjection(m_proj);
 
 	// might go from geo to utm, provide a good guess for UTM zone
@@ -839,8 +886,7 @@ void MainFrame::OnLayerSetProjection(wxCommandEvent &event)
 	// Allow the user to directly specify the projection for all loaded
 	// layers (override it, without reprojecting the layer's data)
 	// ask for what projection to convert to
-	ProjectionDlg dlg(NULL, -1, "Projection", wxDefaultPosition);
-	dlg.m_strCaption = "Set to what projection?";
+	Projection2Dlg dlg(NULL, -1, "Set to what projection?", wxDefaultPosition);
 	dlg.SetProjection(m_proj);
 
 	if (m_proj.IsGeographic())
@@ -895,7 +941,7 @@ void MainFrame::OnLayerFlatten(wxCommandEvent &event)
 	}
 
 	wxString newname = "untitled";
-	newname += vtLayer::LayerFileExtension[t];
+	newname += pActive->GetFileExtension();
 	pActive->SetFilename(newname);
 	pActive->SetModified(true);
 }
@@ -987,6 +1033,16 @@ void MainFrame::OnViewDistance(wxCommandEvent &event)
 void MainFrame::OnUpdateDistance(wxUpdateUIEvent& event)
 {
 	event.Check( m_pView->GetMode() == LB_Dist );
+}
+
+void MainFrame::OnViewSetArea(wxCommandEvent& event)
+{
+	m_pView->SetMode(LB_Box);
+}
+
+void MainFrame::OnUpdateViewSetArea(wxUpdateUIEvent& event)
+{
+	event.Check(m_pView->GetMode() == LB_Box);
 }
 
 void MainFrame::OnViewZoomIn(wxCommandEvent &event)
@@ -1172,7 +1228,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->RemoveUnusedNodes();
 	if (count)
 	{
-		str = wxString::Format("Removed %i nodes\n", count);
+		str.Printf("Removed %i nodes\n", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1181,7 +1237,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->MergeRedundantNodes(bDegrees, progress_callback);
 	if (count)
 	{
-		str = wxString::Format("Merged %d redundant roads", count);
+		str.Printf("Merged %d redundant roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1192,7 +1248,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->RemoveDegenerateRoads();
 	if (count)
 	{
-		str = wxString::Format("Removed %d degenerate roads", count);
+		str.Printf("Removed %d degenerate roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1200,7 +1256,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->RemoveUnnecessaryNodes();
 	if (count)
 	{
-		str = wxString::Format("Removed %d unnecessary nodes", count);
+		str.Printf("Removed %d unnecessary nodes", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1208,7 +1264,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->CleanRoadPoints();
 	if (count)
 	{
-		str = wxString::Format("Cleaned %d road points", count);
+		str.Printf("Cleaned %d road points", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1216,7 +1272,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->DeleteDanglingRoads();
 	if (count)
 	{
-		str = wxString::Format("Removed %i dangling roads", count);
+		str.Printf("Removed %i dangling roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1224,7 +1280,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->FixOverlappedRoads(bDegrees);
 	if (count)
 	{
-		str = wxString::Format("Fixed %i overlapped roads", count);
+		str.Printf("Fixed %i overlapped roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1232,7 +1288,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->FixExtraneousParallels();
 	if (count)
 	{
-		str = wxString::Format("Fixed %i extraneous parallels", count);
+		str.Printf("Fixed %i extraneous parallels", count);
 		wxMessageBox(str, "", wxOK);
 	}
 
@@ -1240,7 +1296,7 @@ void MainFrame::OnRoadClean(wxCommandEvent &event)
 	count = pRL->SplitLoopingRoads();
 	if (count)
 	{
-		str = wxString::Format("Split %d looping roads", count);
+		str.Printf("Split %d looping roads", count);
 		wxMessageBox(str, "", wxOK);
 	}
 #endif
@@ -1280,16 +1336,6 @@ void MainFrame::OnUpdateElevSelect(wxUpdateUIEvent& event)
 	event.Check(m_pView->GetMode() == LB_TSelect);
 }
 
-void MainFrame::OnElevBox(wxCommandEvent& event)
-{
-	m_pView->SetMode(LB_Box);
-}
-
-void MainFrame::OnUpdateElevBox(wxUpdateUIEvent& event)
-{
-	event.Check(m_pView->GetMode() == LB_Box);
-}
-
 void MainFrame::OnRemoveAboveSea(wxCommandEvent &event)
 {
 	vtElevLayer *t = GetActiveElevLayer();
@@ -1314,7 +1360,8 @@ void MainFrame::OnRemoveAboveSea(wxCommandEvent &event)
 
 void MainFrame::OnUpdateRemoveAboveSea(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveElevLayer() != NULL);
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && pEL->IsGrid());
 }
 
 void MainFrame::OnFillIn(wxCommandEvent &event)
@@ -1327,7 +1374,8 @@ void MainFrame::OnFillIn(wxCommandEvent &event)
 
 void MainFrame::OnUpdateFillIn(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveElevLayer() != NULL);
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && pEL->IsGrid());
 }
 
 void MainFrame::OnScaleElevation(wxCommandEvent &event)
@@ -1336,33 +1384,23 @@ void MainFrame::OnScaleElevation(wxCommandEvent &event)
 	if (!el)
 		return;
 
-	ScaleDlg dlg;
-	dlg.LoadFromResource(this, "dialog2");
-	dlg.m_bScaleUp = true;
-	dlg.m_strUpBy = "1.0";
-	dlg.m_strDownBy = "1.0";
-	if (dlg.ShowModal() != wxID_OK)
+	wxString str = wxGetTextFromUser("Please enter a scale factor",
+		"Scale Elevation", "1.0", this);
+	if (str == "")
 		return;
 
 	float fScale;
-	if (dlg.m_bScaleUp)
-		fScale = atof(dlg.m_strUpBy);
-	else
-		fScale = 1.0f / atof(dlg.m_strDownBy);
+	fScale = atof(str.c_str());
+	if (fScale == 0.0f)
+	{
+		wxMessageBox("Couldn't parse the number you typed.");
+		return;
+	}
+	if (fScale == 1.0f)
+		return;
 
 	vtElevationGrid *grid = el->m_pGrid;
-
-	int iColumns, iRows;
-	grid->GetDimensions(iColumns, iRows);
-	for (int i = 0; i < iColumns; i++)
-	{
-		for (int j = 0; j < iRows; j++)
-		{
-			float f = grid->GetFValue(i, j);
-			if (f != INVALID_ELEVATION)
-				grid->SetFValue(i, j, f * fScale);
-		}
-	}
+	grid->Scale(fScale, true);
 	el->SetModified(true);
 	el->ReRender();
 
@@ -1404,7 +1442,8 @@ void MainFrame::OnExportTerragen(wxCommandEvent &event)
 
 void MainFrame::OnUpdateExportTerragen(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveElevLayer() != NULL);
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && pEL->IsGrid());
 }
 
 void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
@@ -1437,6 +1476,15 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 
 	pEL->PaintDibFromElevation(&dib, true);
 
+	// TEST - try coloring from water polygons
+	int layers = m_Layers.GetSize();
+	for (int l = 0; l < layers; l++)
+	{
+		vtLayer *lp = m_Layers.GetAt(l);
+		if (lp->GetType() == LT_WATER)
+			((vtWaterLayer*)lp)->PaintDibWithWater(&dib);
+	}
+
 	UpdateProgressDialog(100, "Writing bitmap to file.");
 	bool success = dib.WriteBMP(fname);
 	CloseProgressDialog();
@@ -1444,10 +1492,23 @@ void MainFrame::OnElevExportBitmap(wxCommandEvent& event)
 
 void MainFrame::OnUpdateExportBitmap(wxUpdateUIEvent& event)
 {
-	event.Enable(GetActiveElevLayer() != NULL);
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && pEL->IsGrid());
 }
 
+void MainFrame::OnElevMergeTin(wxCommandEvent& event)
+{
+	vtElevLayer *pEL = GetActiveElevLayer();
+	pEL->MergeSharedVerts();
+}
 
+void MainFrame::OnUpdateElevMergeTin(wxUpdateUIEvent& event)
+{
+	vtElevLayer *pEL = GetActiveElevLayer();
+	event.Enable(pEL && !pEL->IsGrid());
+}
+
+	
 //////////////////////////////////////////////////////////////////////////
 // Area Menu
 //
@@ -1535,23 +1596,12 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 		if (loadFile.ShowModal() != wxID_OK)
 			return;
 
-#if 0
-		// Read Plantlist file.
-		if (!GetPlantList()->Read(loadFile.GetPath()))
-		{
-			wxMessageBox("Couldn't read plant list from that file.", "Error",
-				wxOK, this);
-			return;
-		}
-		GetPlantList()->WriteXML("species.xml");
-#else
 		if (!GetPlantList()->ReadXML(loadFile.GetPath()))
 		{
 			wxMessageBox("Couldn't read plant list from that file.", "Error",
 				wxOK, this);
 			return;
 		}
-#endif
 
 		// Create new Plant List Dialog
 		m_PlantListDlg = new PlantListDlg(this, WID_PLANTS, "Plants List", 
@@ -1770,10 +1820,17 @@ void MainFrame::OnUpdateRawAddPointsGPS(wxUpdateUIEvent& event)
 
 void MainFrame::OnHelpAbout(wxCommandEvent &event)
 {
+#ifdef ELEVATION_ONLY
+	wxString str = "Elevation Tool\n\n";
+	str += "Build date: ";
+	str += __DATE__;
+	wxMessageBox(str, "About ElevTool");
+#else
 	wxString str = "Virtual Terrain Builder\nPowerful, easy to use, free!\n\n";
 	str += "Please read the HTML documentation and license.\n\n";
 	str += "Send feedback to: ben@vterrain.org\n";
 	str += "Build date: ";
 	str += __DATE__;
 	wxMessageBox(str, "About VTBuilder");
+#endif
 }
