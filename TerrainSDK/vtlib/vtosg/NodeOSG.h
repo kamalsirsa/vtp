@@ -15,6 +15,7 @@ namespace osg
 	class Node;
 	class Referenced;
 	class Matrix;
+	class Fog;
 }
 
 
@@ -52,6 +53,8 @@ public:
 
 protected:
 	osg::ref_ptr<osg::Node> m_pNode;
+	osg::ref_ptr<osg::StateSet> m_pFogStateSet;
+	osg::ref_ptr<osg::Fog> m_pFog;
 };
 
 /**
@@ -87,12 +90,12 @@ public:
 	bool ContainsChild(vtNodeBase *pNode);
 
 	// OSG-specific Implementation
-	osg::Group *GetOsgGroup() { return m_pGroup; }
+	osg::Group *GetOsgGroup() { return m_pGroup.get(); }
 
 protected:
 	void SetOsgGroup(osg::Group *g);
 
-	osg::Group *m_pGroup;
+	osg::ref_ptr<osg::Group> m_pGroup;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -113,6 +116,8 @@ class vtTransform : public vtGroup, public vtTransformBase
 {
 public:
 	vtTransform();
+	~vtTransform();
+	void Destroy();
 
 	// implement vtTransformBase methods
 
@@ -144,26 +149,28 @@ public:
 
 	// OSG-specific Implementation
 public:
-	CustomTransform	*m_pTransform;
+	osg::ref_ptr<CustomTransform> m_pTransform;
 	FPoint3			m_Scale;
 };
 
 class vtRoot : public vtGroup
 {
 public:
-	vtRoot() : vtGroup(true)
-	{
-		m_pOsgRoot = new osg::Group();
-		SetOsgGroup(m_pOsgRoot);
-	}
+	vtRoot();
+	~vtRoot();
+	void Destroy();
 
-	osg::Group *m_pOsgRoot;
+	osg::ref_ptr<osg::Group> m_pOsgRoot;
 };
 
 class vtLight : public vtNode
 {
 public:
 	vtLight();
+	~vtLight();
+
+	void vtLight::Destroy();
+
 	void SetColor2(const RGBf &color);
 	void SetAmbient2(const RGBf &color);
 
@@ -215,18 +222,27 @@ public:
 		\param pMesh The mesh to add
 		\param iMatIdx The material index for this mesh, which is an index
 			into the material array of the geometry. */
-	void AddText(vtTextMesh *pMesh, int iMatIdx);
+	void AddTextMesh(vtTextMesh *pMesh, int iMatIdx);
+
+	/** Return the number of contained meshes. */
+	int GetNumMeshes();
 
 	/** Return a contained vtMesh by index. */
 	vtMesh *GetMesh(int i);
 
-	/** Return the number of contained meshes. */
-	int GetNumMeshes();
+	/** Return a contained vtTextMesh by index. */
+	vtTextMesh *GetTextMesh(int i);
+
+	virtual void SetMaterials(class vtMaterialArray *mats);
+	vtMaterialArray	*GetMaterials();
+
+	vtMaterial *GetMaterial(int idx);
 
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
 	void Destroy();
 
+	osg::ref_ptr<vtMaterialArray> m_pMaterialArray;
 	osg::ref_ptr<osg::Geode> m_pGeode;	// the Geode is a container for Drawables
 };
 
@@ -325,14 +341,14 @@ public:
 	{
 		m_pLOD = new osg::LOD();
 		m_pLOD->setCenter(osg::Vec3(0, 0, 0));
-		SetOsgGroup(m_pLOD);
+		SetOsgGroup(m_pLOD.get());
 	}
 
 	void SetRanges(float *ranges, int nranges);
 	void SetCenter(FPoint3 &center);
 
 protected:
-	osg::LOD	*m_pLOD;
+	osg::ref_ptr<osg::LOD>	m_pLOD;
 };
 
 class vtCamera : public vtTransform
@@ -340,6 +356,7 @@ class vtCamera : public vtTransform
 public:
 	vtCamera();
 	~vtCamera();
+	void Destroy();
 
 	void SetHither(float f);
 	float GetHither();

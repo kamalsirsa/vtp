@@ -10,6 +10,7 @@
 #include "vtlib/vtlib.h"
 #include <osg/Polytope>
 #include <osg/LightSource>
+#include <osg/Fog>
 
 using namespace osg;
 
@@ -23,6 +24,17 @@ vtNode::~vtNode()
 
 void vtNode::Destroy()
 {
+	// remove the OSG node from its OSG group parent(s)
+	unsigned int parents = m_pNode->getNumParents();
+	if (parents)
+	{
+		Group *parent = m_pNode->getParent(0);
+		parent->removeChild(m_pNode.get());
+	}
+
+	m_pFogStateSet = NULL;
+	m_pFog = NULL;
+
 	// Tell OSG that we're through with this node
 	// The following statement calls unref() on m_pNode, which deletes
 	//  the OSG node, which decrements its reference to us, which would
@@ -125,11 +137,9 @@ void vtNode::SetOsgNode(Node *n)
 
 vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 {
-	if (suppress)
-		m_pGroup = NULL;
-	else
+	if (!suppress)
 		m_pGroup = new Group;
-	SetOsgNode(m_pGroup);
+	SetOsgNode(m_pGroup.get());
 }
 
 void vtGroup::Destroy()
@@ -155,6 +165,7 @@ void vtGroup::Destroy()
 		}
 	}
 	// Now destroy itself
+	m_pGroup = NULL;	// decrease refcount
 	vtNode::Destroy();
 }
 
@@ -213,7 +224,17 @@ bool vtGroup::ContainsChild(vtNodeBase *pNode)
 vtTransform::vtTransform() : vtGroup(true), vtTransformBase()
 {
 	m_pTransform = new CustomTransform;
-	SetOsgGroup(m_pTransform);
+	SetOsgGroup(m_pTransform.get());
+}
+
+vtTransform::~vtTransform()
+{
+}
+
+void vtTransform::Destroy()
+{
+	m_pTransform = NULL;
+	vtGroup::Destroy();
 }
 
 void vtTransform::Identity()
@@ -314,6 +335,27 @@ void vtTransform::PointTowards(const FPoint3 &point)
 
 
 ///////////////////////////////////////////////////////////////////////
+// vtRoot
+//
+
+vtRoot::vtRoot() : vtGroup(true)
+{
+	m_pOsgRoot = new osg::Group();
+	SetOsgGroup(m_pOsgRoot.get());
+}
+
+vtRoot::~vtRoot()
+{
+}
+
+void vtRoot::Destroy()
+{
+	m_pOsgRoot = NULL;
+	vtGroup::Destroy();
+}
+
+
+///////////////////////////////////////////////////////////////////////
 // vtLight
 //
 
@@ -326,6 +368,17 @@ vtLight::vtLight()
 	m_pLight = (osg::Light *) m_pLightSource->getLight();
 
 	SetOsgNode(m_pLightSource.get());
+}
+
+vtLight::~vtLight()
+{
+}
+
+void vtLight::Destroy()
+{
+	m_pLight = NULL;	// explicit refcount decrement
+	m_pLightSource = NULL;
+	vtNode::Destroy();
 }
 
 void vtLight::SetColor2(const RGBf &color)
@@ -379,8 +432,12 @@ vtCamera::vtCamera() : vtTransform()
 
 vtCamera::~vtCamera()
 {
-	// don't manually deref?
-//	m_pOsgCamera->unref();
+}
+
+void vtCamera::Destroy()
+{
+	m_pOsgCamera = NULL;
+	vtTransform::Destroy();
 }
 
 void vtCamera::SetHither(float f)
@@ -489,10 +546,19 @@ void vtGeom::Destroy()
 		vtMesh *mesh = GetMesh(i);
 		if (mesh)
 			mesh->Destroy();
+		else
+		{
+			vtTextMesh *textmesh = GetTextMesh(i);
+			if (textmesh)
+				textmesh->Destroy();
+		}
 	}
 	m_pGeode->removeDrawable(0, num);
 
+	// dereference
+	m_pMaterialArray = NULL;
 	m_pGeode = NULL;
+
 	vtNode::Destroy();
 }
 
@@ -503,15 +569,15 @@ void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 	SetMeshMatIndex(pMesh, iMatIdx);
 }
 
-void vtGeom::AddText(vtTextMesh *pMesh, int iMatIdx)
+void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
 {
-	m_pGeode->addDrawable(pMesh->m_pOsgText.get());
+	m_pGeode->addDrawable(pTextMesh->m_pOsgText.get());
 
 	vtMaterial *pMat = GetMaterial(iMatIdx);
 	if (pMat)
 	{
 		StateSet *pState = pMat->m_pStateSet.get();
-		pMesh->m_pOsgText->setStateSet(pState);
+		pTextMesh->m_pOsgText->setStateSet(pState);
 	}
 }
 
@@ -530,11 +596,12 @@ void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 			GeoSet::BindingType bd = pMesh->m_pGeoSet->getColorBinding();
 			if (bd != GeoSet::BIND_PERVERTEX)
 			{
-				RGBAf color = pMat->GetDiffuse();
-				Vec4 *lp = new Vec4;
-				lp->set(color.r, color.g, color.b, color.a);
-
-				pMesh->m_pGeoSet->setColors(lp);
+				// not lit, not vertex colors
+				// here is a sneaky way of forcing OSG to use the diffuse
+				// color for the unlit color
+				const Vec4 &color = pMat->m_pMaterial->getDiffuse(Material::FRONT_AND_BACK);
+				Vec4 &unconst = (Vec4 &) color;
+				pMesh->m_pGeoSet->setColors(&unconst);
 				pMesh->m_pGeoSet->setColorBinding(GeoSet::BIND_OVERALL);
 			}
 		}
@@ -554,17 +621,40 @@ int vtGeom::GetNumMeshes()
 
 vtMesh *vtGeom::GetMesh(int i)
 {
-	// Unfortunately we can't just store a backpointer to the vtMesh in the
-	// GeoSet, since it does not have a mechanism to support this.  Instead,
-	// we use a subclass called "GeoSet2" which provides the backpointer.
 	Drawable *draw = m_pGeode->getDrawable(i);
-	GeoSet2 *gs2 = dynamic_cast<GeoSet2*>(draw);
-	if (gs2)
-		return gs2->m_pMesh;
-	else
-		return NULL;
+	osg::Referenced *ref = draw->getUserData();
+
+	vtMesh *mesh = dynamic_cast<vtMesh*>(ref);
+	return mesh;
 }
 
+vtTextMesh *vtGeom::GetTextMesh(int i)
+{
+	Drawable *draw = m_pGeode->getDrawable(i);
+	osg::Referenced *ref = draw->getUserData();
+
+	vtTextMesh *mesh = dynamic_cast<vtTextMesh*>(ref);
+	return mesh;
+}
+
+void vtGeom::SetMaterials(class vtMaterialArray *mats)
+{
+	m_pMaterialArray = mats;	// increases reference count
+}
+
+vtMaterialArray	*vtGeom::GetMaterials()
+{
+	return m_pMaterialArray.get();
+}
+
+vtMaterial *vtGeom::GetMaterial(int idx)
+{
+	if (!m_pMaterialArray.valid())
+		return NULL;
+	if (idx < 0 || idx >= m_pMaterialArray->GetSize())
+		return NULL;
+	return m_pMaterialArray->GetAt(idx);
+}
 
 ///////////////////////////////////////////////////////////////////////
 // vtLOD
