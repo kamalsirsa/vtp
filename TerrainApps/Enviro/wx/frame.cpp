@@ -199,7 +199,7 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 wxFrame(parent, -1, title, pos, size, style)
 {
 	// Give it an icon
-	SetIcon(wxIcon(_T("enviro")));
+	SetIcon(wxIcon(_T(ICON_NAME)));
 
 	m_bCulleveryframe = true;
 	m_bAlwaysMove = false;
@@ -351,7 +351,7 @@ void vtFrame::CreateMenus()
 	earthMenu->Append(ID_EARTH_LINEAR, _T("Add &Linear Features...\tCtrl+L"));
 
 	wxMenu *helpMenu = new wxMenu;
-	helpMenu->Append(ID_HELP_ABOUT, _T("About VTP Enviro..."));
+	helpMenu->Append(ID_HELP_ABOUT, _T("About ") WSTRING_APPORG _T("..."));
 
 	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(fileMenu, _T("&File"));
@@ -623,13 +623,17 @@ void vtFrame::OnClose(wxCloseEvent &event)
 
 void vtFrame::OnHelpAbout(wxCommandEvent& event)
 {
-	m_canvas->m_bRunning = false;	// stop rendering
+	EnableContinuousRendering(false);
 
- 	wxString str = _T("VTP Enviro\n");
- 	str += _T("The runtime environment for the Virtual Terrain Project\n\n");
+ 	wxString str = WSTRING_APPORG _T("\n\n");
+#ifdef ENVIRO_NATIVE
+	str += _T("The runtime environment for the Virtual Terrain Project.\n\n");
  	str += _T("Please read the HTML documentation and license.\n\n");
- 	str += _T("Send feedback to: ben@vterrain.org\n\n");
- 	str += _T("This version was built with the ");
+ 	str += _T("Send feedback to: ben@vterrain.org\n");
+#else
+	str += _T("Based on the Virtual Terrain Project 3D Runtime Environment.\n");
+#endif
+ 	str += _T("\nThis version built with the ");
  #if VTLIB_DSM
  	str += _T("DSM");
  #elif VTLIB_OSG
@@ -642,10 +646,9 @@ void vtFrame::OnHelpAbout(wxCommandEvent& event)
  	str += _T(" Library.\n\n");
 	str += _T("Build date: ");
 	str += _T(__DATE__);
-	wxMessageBox(str, _T("About VTP Enviro"));
+	wxMessageBox(str, _T("About ") WSTRING_APPORG);
 
-	m_canvas->m_bRunning = true;	// start rendering again
-	m_canvas->QueueRefresh(false);
+	EnableContinuousRendering(true);
 }
 
 

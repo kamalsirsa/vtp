@@ -68,7 +68,7 @@ bool vtApp::OnInit()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	g_Options.Read("Enviro.ini");
+	g_Options.Read(STRING_APPNAME ".ini");
 
 	g_App.Startup();	// starts log
 
@@ -92,14 +92,14 @@ bool vtApp::OnInit()
 	if (m_bShowStartupDialog)
 	{
 		VTLOG("Opening the Startup dialog.\n");
-		StartupDlg StartDlg(NULL, -1, _T("Enviro Startup"), wxDefaultPosition);
+		StartupDlg StartDlg(NULL, -1, _T(STRING_APPNAME) _T(" Startup"), wxDefaultPosition);
 		StartDlg.GetOptionsFrom(g_Options);
 		StartDlg.CenterOnParent();
 		int result = StartDlg.ShowModal();
 		if (result == wxID_CANCEL)
 			return FALSE;
 
-		VTLOG("Writing options to Enviro.ini\n");
+		VTLOG("Writing options to " STRING_APPNAME ".ini\n");
 		StartDlg.PutOptionsTo(g_Options);
 		g_Options.Write();
 	}
@@ -110,7 +110,7 @@ bool vtApp::OnInit()
 	//
 	// Create the main frame window
 	//
-	wxString title = _T("VTP Enviro");
+	wxString title = WSTRING_APPORG;
 #if VTLIB_PSM
 	title += _T(" PSM");
 #elif VTLIB_OSG

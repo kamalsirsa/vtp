@@ -29,3 +29,18 @@ public:
 // helpers
 int EditTerrainParameters(wxWindow *parent, const char *filename);
 
+#ifndef STRING_ORGNAME
+#define STRING_ORGNAME "VTP"
+#endif
+
+#ifndef STRING_APPNAME
+#define STRING_APPNAME "Enviro"
+#define ENVIRO_NATIVE
+#endif
+
+#ifndef ICON_NAME
+#define ICON_NAME "enviro"
+#endif
+
+#define WSTRING_APPORG _T(STRING_ORGNAME) _T(" ") _T(STRING_APPNAME)
+
