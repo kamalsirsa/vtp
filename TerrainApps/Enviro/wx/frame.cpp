@@ -526,16 +526,20 @@ void vtFrame::SetFullScreen(bool bFull)
 void vtFrame::OnExit(wxCommandEvent& event)
 {
 	VTLOG("Got Exit event.\n");
-	m_canvas->m_bRunning = false;
+	if (m_canvas)
+		m_canvas->m_bRunning = false;
 	Destroy();
 }
 
 void vtFrame::OnClose(wxCloseEvent &event)
 {
 	VTLOG("Got Close event, shutting down.\n");
-	m_canvas->m_bRunning = false;
-	delete m_canvas;
-	m_canvas = NULL;
+	if (m_canvas)
+	{
+		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
+	}
 	event.Skip();
 }
 

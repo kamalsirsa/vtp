@@ -310,9 +310,12 @@ void vtFrame::OnChar(wxKeyEvent& event)
 void vtFrame::OnClose(wxCloseEvent &event)
 {
 	VTLOG("Frame OnClose\n");
-	m_canvas->m_bRunning = false;
-	delete m_canvas;
-	m_canvas = NULL;
+	if (m_canvas)
+	{
+		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
+	}
 	event.Skip();
 }
 

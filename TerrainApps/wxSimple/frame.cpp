@@ -60,9 +60,12 @@ vtFrame::~vtFrame()
 //
 void vtFrame::OnClose(wxCloseEvent &event)
 {
-	m_canvas->m_bRunning = false;
-	delete m_canvas;
-	m_canvas = NULL;
+	if (m_canvas)
+	{
+		m_canvas->m_bRunning = false;
+		delete m_canvas;
+		m_canvas = NULL;
+	}
 	event.Skip();
 }
 
