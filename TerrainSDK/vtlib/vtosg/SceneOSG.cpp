@@ -33,6 +33,7 @@ vtScene::vtScene() : vtSceneBase()
 {
 	m_bInitialized = false;
 	m_bWireframe = false;
+	m_bWinInfo = false;
 }
 
 vtScene *vtGetScene()
@@ -78,7 +79,7 @@ float vtScene::GetFrameRate()
 	return (float) frameRate();
 }
 
-void vtScene::Init()
+bool vtScene::Init()
 {
 	SetCamera(new vtCamera());
 
@@ -109,6 +110,8 @@ void vtScene::Init()
 
 	_initialTick = _timer.tick();
 	_frameTick = _initialTick;
+
+	return true;
 }
 
 void vtScene::AddMovLight(vtMovLight *pML)

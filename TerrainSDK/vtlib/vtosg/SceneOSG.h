@@ -29,7 +29,7 @@ public:
 	void SetGlobalWireframe(bool bWire);
 	bool GetGlobalWireframe();
 
-	void Init();
+	bool Init();
 	void DoUpdate();
 	float GetFrameRate();
 	void DrawFrameRateChart();
@@ -37,6 +37,11 @@ public:
 	// OSG-specific implementation
 	void AddMovLight(vtMovLight *pTrans);
 	osgUtil::SceneView	*m_pOsgSceneView;
+
+#if WIN32
+	bool vtScene::HasWinInfo() { return m_bWinInfo; }
+	void vtScene::SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
+#endif
 
 protected:
 	osg::Group			*m_pOsgSceneRoot;
@@ -51,6 +56,7 @@ protected:
 	double frameSeconds() { return _timer.delta_s(_lastFrameTick,_frameTick); }
 	double frameRate() { return 1.0/frameSeconds(); }
 
+	bool	m_bWinInfo;
 	bool	m_bInitialized;
 	bool	m_bWireframe;
 };
