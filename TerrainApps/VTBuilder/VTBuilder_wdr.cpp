@@ -1030,6 +1030,53 @@ wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     return item0;
 }
 
+wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
+{
+    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
+
+    wxStaticText *item1 = new wxStaticText( parent, ID_TEXT, "Select all features which satisfy the condition:", wxDefaultPosition, wxDefaultSize, 0 );
+    item0->Add( item1, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxBoxSizer *item2 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxString *strs3 = (wxString*) NULL;
+    wxChoice *item3 = new wxChoice( parent, ID_FIELD, wxDefaultPosition, wxSize(110,-1), 0, strs3, 0 );
+    item2->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxString *strs4 = (wxString*) NULL;
+    wxChoice *item4 = new wxChoice( parent, ID_CONDITION, wxDefaultPosition, wxSize(50,-1), 0, strs4, 0 );
+    item2->Add( item4, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxString *strs5 = (wxString*) NULL;
+    wxComboBox *item5 = new wxComboBox( parent, ID_COMBO_VALUE, "", wxDefaultPosition, wxSize(180,-1), 0, strs5, wxCB_DROPDOWN );
+    item2->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxBoxSizer *item6 = new wxBoxSizer( wxHORIZONTAL );
+
+    wxButton *item7 = new wxButton( parent, wxID_OK, "OK", wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item7, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    wxButton *item8 = new wxButton( parent, wxID_CANCEL, "Cancel", wxDefaultPosition, wxDefaultSize, 0 );
+    item6->Add( item8, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    item0->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
+
+    if (set_sizer)
+    {
+        parent->SetAutoLayout( TRUE );
+        parent->SetSizer( item0 );
+        if (call_fit)
+        {
+            item0->Fit( parent );
+            item0->SetSizeHints( parent );
+        }
+    }
+    
+    return item0;
+}
+
 // Implement menubar functions
 
 // Implement toolbar functions
@@ -1041,32 +1088,33 @@ wxBitmap MyBitmapsFunc( size_t index )
     if (index == 0)
     {
         /* XPM */
-        static char *xpm_data[] = {
+        static const char *xpm_data[] = {
         /* columns rows colors chars-per-pixel */
         "32 18 5 1",
+        "  c None",
         "a c Black",
-        "b c #FFFFFF",
-        "c c #0000FF",
-        "d c #00FF00",
-        "e c #FF0000",
+        "b c #FF0000",
+        "c c #00FF00",
+        "d c #0000FF",
+        "f c #FFFFFF",
         /* pixels */
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "aaaabaaaaaabaaaaaaaabaabaaaaaaaa",
-        "aaaabaaaaabaaaaaaaaabaabaaaaaaaa",
-        "aaaabaaaaabaaaaaaaaabaabaaaaaaaa",
-        "aaaabaaabbbbaaaaaaaababbbaaaaaaa",
-        "aaaabaaaaabaaaaaaaaabaabaaaaaaaa",
-        "aaabbaabbabaabbabababaabaaaabaaa",
-        "aababababababababababaabaaabbbaa",
-        "aababababababababababaabaabbbbba",
-        "aabababbaababababababaabaaabbbaa",
-        "aabababaaababababababaabaaaabaaa",
-        "aaabbaabbabaabababaabaabaaaaaaaa",
+        "aaaafaaaaaafaaaaaaaafaafaaaaaaaa",
+        "aaaafaaaaafaaaaaaaaafaafaaaaaaaa",
+        "aaaafaaaaafaaaaaaaaafaafaaaaaaaa",
+        "aaaafaaaffffaaaaaaaafafffaaaaaaa",
+        "aaaafaaaaafaaaaaaaaafaafaaaaaaaa",
+        "aaaffaaffafaaffafafafaafaaaafaaa",
+        "aafafafafafafafafafafaafaaafffaa",
+        "aafafafafafafafafafafaafaafffffa",
+        "aafafaffaafafafafafafaafaaafffaa",
+        "aafafafaaafafafafafafaafaaaafaaa",
+        "aaaffaaffafaafafafaafaafaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "aaeeeeeeeeaaddddddddaacccccccaaa",
+        "aabbbbbbbbaaccccccccaadddddddaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         };
         wxBitmap bitmap( xpm_data );
@@ -1075,24 +1123,25 @@ wxBitmap MyBitmapsFunc( size_t index )
     if (index == 1)
     {
         /* XPM */
-        static char *xpm_data[] = {
+        static const char *xpm_data[] = {
         /* columns rows colors chars-per-pixel */
         "32 18 2 1",
+        "  c None",
         "a c Black",
-        "b c #FFFFFF",
+        "c c #FFFFFF",
         /* pixels */
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "aaaaaaaaabaaaaaaaaaaaaaaaaaaaaaa",
-        "aaaaaaaaabaaaaaaaaaaaaaaaaaaaaaa",
-        "aaaaaaaaabaaaaaaaaaaaaaaaaaaaaaa",
-        "aaaaaaaaabaaaaaaaaaaaaaaaaaaaaaa",
-        "abababbaabababbaaabaababababbaaa",
-        "abababababbaabababababababababaa",
-        "abababababababababababababababaa",
-        "abababababababababababababababaa",
-        "aabbababababababaabaaababaababaa",
+        "aaaaaaaaacaaaaaaaaaaaaaaaaaaaaaa",
+        "aaaaaaaaacaaaaaaaaaaaaaaaaaaaaaa",
+        "aaaaaaaaacaaaaaaaaaaaaaaaaaaaaaa",
+        "aaaaaaaaacaaaaaaaaaaaaaaaaaaaaaa",
+        "acacaccaacacaccaaacaacacacaccaaa",
+        "acacacacaccaacacacacacacacacacaa",
+        "acacacacacacacacacacacacacacacaa",
+        "acacacacacacacacacacacacacacacaa",
+        "aaccacacacacacacaacaaacacaacacaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",

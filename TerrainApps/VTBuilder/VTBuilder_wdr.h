@@ -134,6 +134,10 @@ wxSizer *NodePropDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_si
 #define ID_ESTY 10077
 wxSizer *ResampleDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
+#define ID_CONDITION 10078
+#define ID_COMBO_VALUE 10079
+wxSizer *SelectDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
+
 // Declare menubar functions
 
 // Declare toolbar functions

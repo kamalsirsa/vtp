@@ -108,27 +108,11 @@ SOURCE=.\App.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\AutoDialog.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\BuilderView.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\BuildingDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\DistribVegDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ElevLayer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ExtentDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -158,19 +142,7 @@ SOURCE=.\Import.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ImportVegDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\Layer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\LayerPropDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\NodeDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -180,23 +152,7 @@ SOURCE=.\pre.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Projection2Dlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\RawDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\RawLayer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ResampleDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\RoadDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -220,10 +176,6 @@ SOURCE=.\ScaledView.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\StatePlaneDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\StatusBar.cpp
 # End Source File
 # Begin Source File
@@ -241,10 +193,6 @@ SOURCE=.\TreeView.cpp
 # Begin Source File
 
 SOURCE=.\UtilityLayer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\VegDlg.cpp
 # End Source File
 # Begin Source File
 
@@ -349,6 +297,10 @@ SOURCE=.\RoadMapEdit.h
 # Begin Source File
 
 SOURCE=.\ScaledView.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SelectDlg.h
 # End Source File
 # Begin Source File
 
@@ -587,6 +539,66 @@ SOURCE=.\icons\veg1.ico
 # Begin Source File
 
 SOURCE=.\icons\water.ico
+# End Source File
+# End Group
+# Begin Group "Source - Dialogs"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\AutoDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\BuildingDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\DistribVegDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ExtentDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ImportVegDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\LayerPropDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\NodeDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\Projection2Dlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\RawDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ResampleDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\RoadDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\SelectDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StatePlaneDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\VegDlg.cpp
 # End Source File
 # End Group
 # End Target
