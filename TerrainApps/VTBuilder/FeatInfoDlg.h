@@ -16,6 +16,7 @@
 #include "AutoDialog.h"
 
 class vtFeatures;
+class BuilderView;
 
 // WDR: class declarations
 
@@ -32,12 +33,14 @@ public:
 		const wxSize& size = wxDefaultSize,
 		long style = wxDEFAULT_DIALOG_STYLE );
 
+	void SetView(BuilderView *pView) { m_pView = pView; }
 	void SetFeatureSet(vtFeatures *pFeatures);
 	void Clear();
 	void ShowSelected();
 	void ShowPicked();
 	void ShowAll();
 	void ShowFeature(int iFeat);
+	void RefreshItems();
 
 	// WDR: method declarations for FeatInfoDlg
 	wxStaticText* GetTextVertical()  { return (wxStaticText*) FindWindow( ID_TEXT_VERTICAL ); }
@@ -48,6 +51,7 @@ public:
 	
 private:
 	// WDR: member variable declarations for FeatInfoDlg
+	BuilderView *m_pView;
 	vtFeatures *m_pFeatures;
 	int	 m_iShow;
 	int	 m_iVUnits;

@@ -14,6 +14,7 @@
 
 #include "FeatInfoDlg.h"
 #include "vtdata/Features.h"
+#include "BuilderView.h"
 
 // WDR: class implementations
 
@@ -107,6 +108,12 @@ void FeatInfoDlg::ShowPicked()
 	m_iShow = 1;
 	TransferDataToWindow();
 	Clear();
+	int i, num = m_pFeatures->NumEntities();
+	for (i = 0; i < num; i++)
+	{
+		if (m_pFeatures->IsPicked(i))
+			ShowFeature(i);
+	}
 }
 
 void FeatInfoDlg::ShowAll()
@@ -136,6 +143,7 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 
 	next = GetList()->GetItemCount();
 	GetList()->InsertItem(next, "temp");
+	GetList()->SetItemData(next, iFeat);
 
 	int field = 0;
 	DPoint3 p;
@@ -163,6 +171,15 @@ void FeatInfoDlg::ShowFeature(int iFeat)
 	}
 }
 
+void FeatInfoDlg::RefreshItems()
+{
+	if (m_iShow == 0)
+		ShowSelected();
+	else if (m_iShow == 1)
+		ShowPicked();
+	else if (m_iShow == 2)
+		ShowAll();
+}
 
 // WDR: handler implementations for FeatInfoDlg
 
@@ -189,6 +206,7 @@ void FeatInfoDlg::OnInitDialog(wxInitDialogEvent& event)
 
 void FeatInfoDlg::OnDeleteHighlighted( wxCommandEvent &event )
 {
+	int iFeat;
 	int item = -1;
 	for ( ;; )
 	{
@@ -196,29 +214,24 @@ void FeatInfoDlg::OnDeleteHighlighted( wxCommandEvent &event )
 									 wxLIST_STATE_SELECTED);
 		if ( item == -1 )
 			break;
+		iFeat = (int) GetList()->GetItemData(item);
+		m_pFeatures->SetToDelete(iFeat);
 	}
+	m_pFeatures->ApplyDeletion();
+	m_pView->Refresh();
+	RefreshItems();
 }
 
 void FeatInfoDlg::OnChoiceVertical( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	if (m_iShow == 0)
-		ShowSelected();
-	else if (m_iShow == 1)
-		Clear();
-	else if (m_iShow == 2)
-		ShowAll();
+	RefreshItems();
 }
 
 void FeatInfoDlg::OnChoiceShow( wxCommandEvent &event )
 {
 	TransferDataFromWindow();
-	if (m_iShow == 0)
-		ShowSelected();
-	else if (m_iShow == 1)
-		ShowPicked();
-	else if (m_iShow == 2)
-		ShowAll();
+	RefreshItems();
 }
 
 void FeatInfoDlg::OnListRightClick( wxListEvent &event )
