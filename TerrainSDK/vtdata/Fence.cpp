@@ -29,6 +29,7 @@ vtFence::vtFence(FenceType type, float fHeight, float fSpacing)
 	SetFenceType(type);
 	m_fHeight = fHeight;
 	m_fSpacing = fSpacing;
+	m_PostSize.y = m_fHeight;
 }
 
 vtFence &vtFence::operator=(const vtFence &v)
@@ -64,6 +65,7 @@ void vtFence::SetOptions(const LinStructOptions &opt)
 	SetFenceType(opt.eType);
 	m_fHeight = opt.fHeight;
 	m_fSpacing = opt.fSpacing;
+	m_PostSize.y = opt.fHeight;
 }
 
 void vtFence::SetFenceType(const FenceType type)
