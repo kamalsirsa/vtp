@@ -147,7 +147,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 #if 0
 	if (m_Params.m_bBuildings)
 	{
-		if (PointIsInTerrainUTM(5, bound[7].x, bound[7].y)) // if area includes ben's house
+		if (PointIsInTerrain(bound[7].x, bound[7].y)) // if area includes ben's house
 		{
 			// test ability to import a max model (a house)
 			vtTransform *house = LoadModel("BuildingModels/house3.dsm");
@@ -190,12 +190,12 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 	{
 		create_airports();
 		// more max-modeled buildings
-		if (PointIsInTerrainUTM(5, 240749, 2194370)) // if area includes top of Mauna Kea
+		if (PointIsInTerrain(DPoint2(240749, 2194370))) // if area includes top of Mauna Kea
 			create_telescopes();
 	}
 
 #if 1
-	if (PointIsInTerrainUTM(5, 234900, 2185840)) // if area includes saddle
+	if (PointIsInTerrain(DPoint2(234900, 2185840))) // if area includes saddle
 	{
 		vtTransform *bench = LoadModel("Culture/parkbench.3ds");
 		if (bench)
@@ -209,7 +209,7 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 #endif
 
 #if 1
-	if (PointIsInTerrainUTM(5, 227611, 2155222)) // if area includes top of Mauna Loa
+	if (PointIsInTerrain(DPoint2(227611, 2155222))) // if area includes top of Mauna Loa
 	{
 		vtGeom *thebox = make_red_cube();
 	}
@@ -243,9 +243,8 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 							 true);			// mipmap
 			m_pDetailMat = m_pDetailMats->GetAt(index);
 
-			DRECT r;
-			m_pHeightField->GetEarthExtents(r);
-			float width_meters = (float) r.Width();
+			FRECT r = m_pHeightField->m_Conversion.m_WorldExtents;
+			float width_meters = r.Width() / WORLD_SCALE;
 			m_pDynGeom->SetDetailMaterial(m_pDetailMat, 0.025f * width_meters);
 		}
 	}

@@ -38,21 +38,22 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 
 	// set up some initial points
 	float x, y, z;
-	float utm_points[5][2];
+	DPoint3 utm_points[5];
 
 	for (int i = 0; i < 5; i++)
 	{
 		if (code == KOA)
 		{
-			utm_points[i][0] = utm_points_koa[i][0];
-			utm_points[i][1] = utm_points_koa[i][1];
+			utm_points[i].x = utm_points_koa[i][0];
+			utm_points[i].y = utm_points_koa[i][1];
 		}
 		else
 		if (code == ITO)
 		{
-			utm_points[i][0] = utm_points_ito[i][0];
-			utm_points[i][1] = utm_points_ito[i][1];
+			utm_points[i].x = utm_points_ito[i][0];
+			utm_points[i].y = utm_points_ito[i][1];
 		}
+		utm_points[i].z = 0.0;
 	}
 
 	// 1 mile = 1.60934 km
@@ -68,32 +69,27 @@ PlaneEngine::PlaneEngine(float fSpeedExag, AirportCodes code) : vtEngine()
 	// done setting initial positions and speed
 
 	// begin approach
-	y = 800.0f * WORLD_SCALE;
-	g_Proj.convert_meters_to_local_xz(utm_points[3][0], utm_points[3][1], x, z);
-	m_hoop_pos[1].Set(x, y, z);
+	utm_points[3].z = 800.0f;
+	g_Conv.ConvertFromEarth(utm_points[3], m_hoop_pos[1]);
 	m_hoop_speed[1] = 150.0f * WORLD_SCALE;
 
 	// touchdown
 	// center of plane is 15m above ground + 1.5m airport above ground + .5m of runway thickness
-	y = 17.0f * WORLD_SCALE;// * fSizeExag;
-	g_Proj.convert_meters_to_local_xz(utm_points[0][0], utm_points[0][1], x, z);
-	m_hoop_pos[2].Set(x, y, z);
+	utm_points[0].z = 17.0f;
+	g_Conv.ConvertFromEarth(utm_points[0], m_hoop_pos[2]);
 	m_hoop_speed[2] = 25.0f * WORLD_SCALE;
 
 	// speeding up to takeoff point
-	g_Proj.convert_meters_to_local_xz(utm_points[1][0], utm_points[1][1], x, z);
-	m_hoop_pos[3].Set(x, y, z);
+	g_Conv.ConvertFromEarth(utm_points[1], m_hoop_pos[3]);
 	m_hoop_speed[3] = 5.0f * WORLD_SCALE;
 
 	// takeoff to this point
-	g_Proj.convert_meters_to_local_xz(utm_points[2][0], utm_points[2][1], x, z);
-	m_hoop_pos[4].Set(x, y, z);
+	g_Conv.ConvertFromEarth(utm_points[2], m_hoop_pos[4]);
 	m_hoop_speed[4] = 35.0f * WORLD_SCALE;
 
 	// point to loop to
-	y = 800.0f * WORLD_SCALE;
-	g_Proj.convert_meters_to_local_xz(utm_points[4][0], utm_points[4][1], x, z);
-	m_hoop_pos[5].Set(x, y, z);
+	utm_points[4].z = 800.0f;
+	g_Conv.ConvertFromEarth(utm_points[4], m_hoop_pos[5]);
 	m_hoop_speed[5] = 150.0f * WORLD_SCALE;
 
 	// saving last hoop info
@@ -384,7 +380,7 @@ RouteFollowerEngine::RouteFollowerEngine(vtRoute* route, vtCamera* camera)
 	vtStation st = (*m_pRoute)[0L];
 	DPoint3 dp = st.m_dpStationPoint;
 	FPoint3 fp;
-	g_Proj.ConvertFromEarth(dp, fp); 
+	g_Conv.ConvertFromEarth(dp, fp); 
 	m_pHeightField->FindAltitudeAtPoint(fp, fp.y);
 
 	m_pCamera->Identity();
@@ -411,7 +407,7 @@ void RouteFollowerEngine::Eval()
 		vtStation st = (*m_pRoute)[(++m_lnext)%m_pRoute->GetSize()];
 		DPoint3 dp = st.m_dpStationPoint;
 		FPoint3 fp;
-		g_Proj.ConvertFromEarth(dp, fp); 
+		g_Conv.ConvertFromEarth(dp, fp); 
 		m_pHeightField->FindAltitudeAtPoint(fp, fp.y);
 
 		target->SetTrans(fp);
@@ -550,7 +546,7 @@ void TerrainPicker::Eval()
 		m_GroundPoint = result;
 
 		// Find corresponding UTM coordinates
-		g_Proj.ConvertToEarth(m_GroundPoint, m_EarthPos); 
+		g_Conv.ConvertToEarth(m_GroundPoint, m_EarthPos); 
 	}
 }
 
