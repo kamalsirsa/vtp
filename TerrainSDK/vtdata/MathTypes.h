@@ -45,7 +45,7 @@ public:
 	{
 		return x*fp[0]+y*fp[1]+z*fp[2];
 	}
-	FPoint3 Cross(const FPoint3 &v)
+	FPoint3 Cross(const FPoint3 &v) const
 	{
 		return FPoint3(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x);
 	}
@@ -86,7 +86,7 @@ public:
 	{
 		return x*rhs.x+y*rhs.y+z*rhs.z;
 	}
-	DPoint3 Cross(const DPoint3 &v)
+	DPoint3 Cross(const DPoint3 &v) const
 	{
 		return DPoint3(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x);
 	}
@@ -164,6 +164,10 @@ public:
 	float Length() const { return sqrtf(x*x+y*y); }
 	void Normalize() { float s = 1.0f/Length(); x*=s; y*=s; }
 	void Set(float fx, float fy) { x=fx; y=fy; }
+	float Dot(const FPoint2 &rhs) const
+	{
+		return x*rhs.x+y*rhs.y;
+	}
 
 	// assignment
 	FPoint2 &operator=(const FPoint2 &v) { x = v.x; y = v.y; return *this; }
@@ -567,6 +571,11 @@ public:
 	{
 		return (x > left && x < right && y > bottom && y < top);
 	}
+	void Center(FPoint2 &center)
+	{
+		center.x = (left + right)/2;
+		center.y = (bottom + top)/2;
+	}
 
 	float	left;
 	float	top;
@@ -759,5 +768,9 @@ inline RGBf &RGBf::operator=(const class RGBAf &v)
 float random_offset(float x);
 float random(float x);
 bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point);
+bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
+					 const FPoint2 &p3);
+bool BarycentricCoords(const FPoint2 &p1, const FPoint2 &p2,
+					   const FPoint2 &p3, const FPoint2 &p, float fBary[3]);
 
 #endif

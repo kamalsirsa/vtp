@@ -7,14 +7,13 @@
 
 #include "MathTypes.h"
 
-//
-// Return the index of the polygon at a specified point, or
-// -1 if there is no polygon there.
-//
-// For speed, it first test the polygon which was found
-// last time.  For spatially linear testing, this is a 10x
-// speedup.
-//
+/**
+ * Return the index of the polygon at a specified point, or -1 if
+ * there is no polygon there.
+ *
+ * For speed, it first test the polygon which was found last time.
+ * For spatially linear testing, this can be a 10x speedup.
+ */
 int DPolyArray2::FindPoly(DPoint2 p)
 {
 	if (m_previous_poly != -1)
@@ -425,7 +424,7 @@ static void Up_triangle_Inverse_Xform(const double src[4][4], double dst[4][4])
     }
 }
 
-void DMatrix4::Invert(const DMatrix4& src)
+void DMatrix4::Invert(const DMatrix4 &src)
 {
     if ((src.data[0][3] == 0) && (src.data[1][3] == 0) && (src.data[2][3] == 0)) {
         Down_triangle_Inverse_Xform(src.data, data);
@@ -761,7 +760,7 @@ void FMatrix4::Identity()
     data[3][3] = 1.0f;
 }
 
-void FMatrix4::Invert(const FMatrix4& src)
+void FMatrix4::Invert(const FMatrix4 &src)
 {
     if ((src.data[0][3] == 0) && (src.data[1][3] == 0) && (src.data[2][3] == 0)) {
         Down_triangle_Inverse_Xform(src.data, data);
@@ -823,34 +822,23 @@ float random(float x)
 }
 
 
-//
-// Point-in-polygon test
-//
-// From: Graphics Gems IV
-//
-
-/* Define WINDING if a non-zero winding number should be used as the criterion
- * for being inside the polygon.  Only used by the general crossings test and
- * Weiler test.	 The winding number computed for each is the number of
- * counter-clockwise loops the polygon makes around the point.
- */
-/* #define WINDING */
-
-/* ======= Crossings algorithm ============================================ */
-
-/* Shoot a test ray along +X axis.  The strategy, from MacMartin, is to
+/*
+ * ======= Crossings algorithm ============================================
+ *
+ * Adapted from: Graphics Gems IV
+ *
+ * Shoot a test ray along +X axis.  The strategy, from MacMartin, is to
  * compare vertex Y values to the testing point's Y and quickly discard
  * edges which are entirely to one side of the test ray.
+ */
+/**
+ * Point-in-polygon test.
  *
  * Input 2D polygon _pgon_ with _numverts_ number of vertices and test point
- * _point_, returns 1 if inside, 0 if outside.	WINDING and CONVEX can be
- * defined for this test.
+ * _point_, returns 1 if inside, 0 if outside.
  */
 bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point)
 {
-#ifdef	WINDING
-	register int	crossings;
-#endif
 	register int	j, yflag0, yflag1, xflag0;
 	register double ty, tx;
 	register bool inside_flag;
@@ -864,11 +852,7 @@ bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point)
     yflag0 = (vtx0->y >= ty);
     vtx1 = pgon;
 
-#ifdef	WINDING
-    crossings = 0;
-#else
     inside_flag = false;
-#endif
     for (j = numverts+1; --j;)
 	{
 		yflag1 = (vtx1->y >= ty);
@@ -884,11 +868,7 @@ bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point)
 			if (xflag0 == (vtx1->x >= tx))
 			{
 				/* if edge's X values both right of the point, must hit */
-#ifdef	WINDING
-				if (xflag0) crossings += (yflag0 ? -1 : 1);
-#else
 				if (xflag0) inside_flag = !inside_flag;
-#endif
 			}
 			else
 			{
@@ -897,11 +877,7 @@ bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point)
 				 */
 				if ((vtx1->x - (vtx1->y-ty)*
 					 (vtx0->x-vtx1->x)/(vtx0->y-vtx1->y)) >= tx) {
-#ifdef	WINDING
-					crossings += (yflag0 ? -1 : 1);
-#else
 					inside_flag = !inside_flag;
-#endif
 				}
 			}
 		}
@@ -911,11 +887,50 @@ bool CrossingsTest(DPoint2 *pgon, int numverts, const DPoint2 &point)
 		vtx1 += 1;
     }
 
-#ifdef	WINDING
-    /* test if crossings is not zero */
-    inside_flag = (crossings != 0);
-#endif
-
     return inside_flag;
+}
+
+/**
+ * 2d point in triangle containment test.
+ *
+ * \return true if the point is inside the triangle, otherwise false.
+ */
+bool PointInTriangle(const FPoint2 &p, const FPoint2 &p1, const FPoint2 &p2,
+					 const FPoint2 &p3)
+{
+	float fAB = (p.y-p1.y)*(p2.x-p1.x) - (p.x-p1.x)*(p2.y-p1.y);
+	float fBC = (p.y-p2.y)*(p3.x-p2.x) - (p.x-p2.x)*(p3.y-p2.y);
+	float fCA = (p.y-p3.y)*(p1.x-p3.x) - (p.x-p3.x)*(p1.y-p3.y);
+
+	return (fAB * fBC >= 0) && (fBC * fCA >= 0);
+}
+
+/**
+ * Compute the 3 barycentric coordinates of a 2d point in a 2d triangle.
+ *
+ * \return false if a problem was encountered (e.g. degenerate triangle),
+ * otherwise true.
+ */
+bool BarycentricCoords(const FPoint2 &p1, const FPoint2 &p2,
+					   const FPoint2 &p3, const FPoint2 &p, float fBary[3])
+{
+    FPoint2 vec13 = p1 - p3;
+    FPoint2 vec23 = p2 - p3;
+    FPoint2 vecp3 = p - p3;
+
+    float m11 = vec13.Dot(vec13);
+    float m12 = vec13.Dot(vec23);
+    float m22 = vec23.Dot(vec23);
+    float fR0 = vec13.Dot(vecp3);
+    float fR1 = vec23.Dot(vecp3);
+    float fDet = m11*m22 - m12*m12;
+	if (fDet == 0.0f)
+		return false;
+    float fInvDet = 1.0f/fDet;
+
+    fBary[0] = (m22*fR0 - m12*fR1)*fInvDet;
+    fBary[1] = (m11*fR1 - m12*fR0)*fInvDet;
+    fBary[2] = 1.0f - fBary[0] - fBary[1];
+	return true;
 }
 
