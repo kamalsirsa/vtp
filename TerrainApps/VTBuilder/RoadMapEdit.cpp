@@ -355,6 +355,23 @@ bool LinkEdit::EditProperties(vtRoadLayer *pLayer)
 	return (dlg.ShowModal() == wxID_OK);
 }
 
+	// override because we need to update width when flags change
+void LinkEdit::SetFlag(int flag, bool value)
+{
+	int before = m_iFlags & (RF_SIDEWALK | RF_PARKING | RF_MARGIN);
+	Link::SetFlag(flag, value);
+	int after = m_iFlags & (RF_SIDEWALK | RF_PARKING | RF_MARGIN);
+	if (before != after)
+		m_bSidesComputed = false;
+}
+
+// call whenever the link's goemetry is changed
+void LinkEdit::Dirtied()
+{
+	ComputeExtent();
+	m_bSidesComputed = false;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
