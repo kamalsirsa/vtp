@@ -10,10 +10,17 @@
 #define ARRAYH
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4786 )
+  #pragma warning( disable : 4786 )
 #endif
 
-#include <stdlib.h>	// for free()
+#if WIN32 && defined(_MSC_VER) && DEBUG
+  #define CRTDBG_MAP_ALLOC
+  #include <stdlib.h>	// for free()
+  #include <crtdbg.h>
+#else
+  #include <stdlib.h>	// for free()
+#endif
+
 #include <memory.h>	// for memcpy()
 #include <assert.h>	// for assert()
 
