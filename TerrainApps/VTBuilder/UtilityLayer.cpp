@@ -94,7 +94,7 @@ void vtUtilityLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 	for (i = 0; i < nlines; i++)
 	{
 		vtLine *line = m_Lines.GetAt(i);
-		pView->DrawDLine(pDC, *line, false);
+		pView->DrawLine(pDC, *line, false);
 	}
 }
 

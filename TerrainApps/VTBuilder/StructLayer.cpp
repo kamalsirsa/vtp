@@ -176,7 +176,7 @@ void vtStructureLayer::DrawBuilding(wxDC* pDC, vtScaledView *pView,
 	for (i = 0; i < levs; i++)
 	{
 		const DLine2 &dl = bld->GetFootprint(i);
-		pView->DrawDLine(pDC, dl, true);
+		pView->DrawLine(pDC, dl, true);
 
 		int sides = dl.GetSize();
 		for (j = 0; j < sides; j++)
@@ -190,7 +190,7 @@ void vtStructureLayer::DrawLinear(wxDC* pDC, vtScaledView *pView, vtFence *fen)
 
 	// draw the line itself
 	DLine2 &pts = fen->GetFencePoints();
-	pView->DrawDLine(pDC, pts, false);
+	pView->DrawLine(pDC, pts, false);
 
 	// draw a small crosshair on each vertex
 	for (j = 0; j < pts.GetSize(); j++)

@@ -265,11 +265,11 @@ bool LinkEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 	int c, size = GetSize();
 	if (bShowWidth)
 	{
-		pView->DrawDLine(pDC, m_Left, false);
-		pView->DrawDLine(pDC, m_Right, false);
+		pView->DrawLine(pDC, m_Left, false);
+		pView->DrawLine(pDC, m_Right, false);
 	}
 	else
-		pView->DrawDLine(pDC, *this, false);
+		pView->DrawLine(pDC, *this, false);
 
 	if (m_bSelect)
 	{
