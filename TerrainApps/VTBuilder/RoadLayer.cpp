@@ -192,8 +192,16 @@ bool vtRoadLayer::ConvertProjection(vtProjection &proj_new)
 	for (r = GetFirstRoad(); r; r=r->GetNext())
 		r->ComputeExtent();
 
+	// set the vtRoadMap projection
+	m_proj = proj_new;
+
 	m_bValidExtents = false;
 	return true;
+}
+
+void vtRoadLayer::SetProjection(vtProjection &proj)
+{
+	m_proj = proj;
 }
 
 void vtRoadLayer::Offset(const DPoint2 &p)
