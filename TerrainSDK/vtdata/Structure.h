@@ -23,7 +23,7 @@ class vtFence;
  * vtTagArray which provides a set of arbitrary tags (name/value pairs).
  * At least one of the following two tags should be present:
  * - filename, which contains a resolvable path to an external 3d model file.
- *	 An example is filename="Data/Buildings/GasStation.3ds"
+ *	 An example is filename="MyModels/GasStation.3ds"
  * - itemname, which contains the name of a content item which will be resolved
  *	 by a list maintained by a vtContentManager.  An example is
  *	 itemname="Gemini Observatory"
