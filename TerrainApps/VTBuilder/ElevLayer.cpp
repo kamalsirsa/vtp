@@ -773,7 +773,7 @@ void vtElevLayer::PaintDibFromElevation(vtDIB *dib, bool bShade)
 #endif
 			if (bShade)
 				ShadePixel(x, y, r, g, b, 60);
-			dib->SetPixel24(i, h-1-j, RGB(b, g, r));
+			dib->SetPixel24(i, h-1-j, RGB(r, g, b));
 		}
 	}
 }
