@@ -597,6 +597,8 @@ public:
 
 /////////////////////////////////////
 
+class DRECT;
+
 typedef std::vector<DLine2> DLine2Array;
 
 /**
@@ -609,6 +611,7 @@ class DPolygon2 : public DLine2Array
 public:
 	bool ContainsPoint(const DPoint2 &p) const;
 	void Add(const DPoint2 &p);
+	bool ComputeExtents(DRECT &rect) const;
 
 	void GetAsDLine2(DLine2 &dline) const;
 };

@@ -354,6 +354,22 @@ void DPolygon2::GetAsDLine2(DLine2 &dline) const
 	}
 }
 
+bool DPolygon2::ComputeExtents(DRECT &rect) const
+{
+	if (size() == 0)
+		return false;
+
+	rect.SetRect(1E9,-1E9,-1E9,1E9);
+	for (unsigned int ringnum = 0; ringnum < size(); ringnum++)
+	{
+		const DLine2 &ring = at(ringnum);
+		for (unsigned i = 0; i < ring.GetSize(); i++)
+			rect.GrowToContainPoint(ring[i]);
+	}
+	return true;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 // FQuat methods
 
