@@ -81,6 +81,7 @@ public:
 	void ShadowVisibleNode(vtNode *node, bool bVis);
 
 	void SetHUD(vtHUD *hud) { m_pHUD = hud; }
+	vtHUD *GetHUD() { return m_pHUD; }
 	void SetWindowSize(int w, int h);
 
 protected:
