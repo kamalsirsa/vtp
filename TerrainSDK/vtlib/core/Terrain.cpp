@@ -501,14 +501,17 @@ void vtTerrain::AddFencepoint(vtFence3d *f, const DPoint2 &epos)
 	m_pLodGrid->RemoveFromGrid(f->GetGeom());
 
 	f->AddPoint(epos);
-	f->BuildGeometry(m_pHeightField);
+
+	vtTagArray dummy;
+	f->CreateNode(m_pHeightField, dummy);
 
 	AddNodeToLodGrid(f->GetGeom());
 }
 
 void vtTerrain::RedrawFence(vtFence3d *f)
 {
-	f->BuildGeometry(m_pHeightField);
+	vtTagArray dummy;
+	f->CreateNode(m_pHeightField, dummy);
 }
 
 // routes
@@ -523,16 +526,16 @@ void vtTerrain::AddRoute(vtRoute *f)
 //	AddNodeToLodGrid(f->GetGeom());
 }
 
-void vtTerrain::add_routepoint_earth(vtRoute *f, const DPoint2 &epos,
+void vtTerrain::add_routepoint_earth(vtRoute *route, const DPoint2 &epos,
 									 const char *structname)
 {
-	f->AddPoint(epos, structname);
-	f->BuildGeometry(m_pHeightField);
+	route->AddPoint(epos, structname);
+	route->BuildGeometry(m_pHeightField);
 }
 
-void vtTerrain::RedrawRoute(vtRoute *f)
+void vtTerrain::RedrawRoute(vtRoute *route)
 {
-	f->BuildGeometry(m_pHeightField);
+	route->BuildGeometry(m_pHeightField);
 }
 
 void vtTerrain::SaveRoute()
