@@ -97,8 +97,6 @@ EVT_UPDATE_UI(ID_TOOLS_NAVIGATE, vtFrame::OnUpdateToolsNavigate)
 
 EVT_MENU(ID_VIEW_MAINTAIN, vtFrame::OnViewMaintain)
 EVT_UPDATE_UI(ID_VIEW_MAINTAIN,	vtFrame::OnUpdateViewMaintain)
-EVT_MENU(ID_VIEW_GRAB_PIVOT, vtFrame::OnViewGrabPivot)
-EVT_UPDATE_UI(ID_VIEW_GRAB_PIVOT,	vtFrame::OnUpdateViewGrabPivot)
 EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
 EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	vtFrame::OnUpdateViewWireframe)
 EVT_MENU(ID_VIEW_FULLSCREEN, vtFrame::OnViewFullscreen)
@@ -106,16 +104,23 @@ EVT_UPDATE_UI(ID_VIEW_FULLSCREEN,	vtFrame::OnUpdateViewFullscreen)
 EVT_MENU(ID_VIEW_TOPDOWN, vtFrame::OnViewTopDown)
 EVT_UPDATE_UI(ID_VIEW_TOPDOWN,	vtFrame::OnUpdateViewTopDown)
 EVT_MENU(ID_VIEW_FRAMERATE, vtFrame::OnViewFramerate)
-EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
-EVT_MENU(ID_VIEW_SLOWER, vtFrame::OnViewSlower)
-EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
-EVT_MENU(ID_VIEW_FASTER, vtFrame::OnViewFaster)
-EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
 EVT_MENU(ID_VIEW_SETTINGS, vtFrame::OnViewSettings)
 EVT_MENU(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnViewFollowRoute)
 EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
 EVT_MENU(ID_VIEW_LOCATIONS, vtFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS, vtFrame::OnUpdateViewLocations)
+
+EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
+EVT_MENU(ID_VIEW_SLOWER, vtFrame::OnViewSlower)
+EVT_UPDATE_UI(ID_VIEW_SLOWER,	vtFrame::OnUpdateViewSlower)
+EVT_MENU(ID_VIEW_FASTER, vtFrame::OnViewFaster)
+EVT_UPDATE_UI(ID_VIEW_FASTER,	vtFrame::OnUpdateViewFaster)
+EVT_MENU(ID_NAV_NORMAL, vtFrame::OnNavNormal)
+EVT_UPDATE_UI(ID_NAV_NORMAL,	vtFrame::OnUpdateNavNormal)
+EVT_MENU(ID_NAV_VELO, vtFrame::OnNavVelo)
+EVT_UPDATE_UI(ID_NAV_VELO,	vtFrame::OnUpdateNavVelo)
+EVT_MENU(ID_NAV_GRAB_PIVOT, vtFrame::OnNavGrabPivot)
+EVT_UPDATE_UI(ID_NAV_GRAB_PIVOT,	vtFrame::OnUpdateNavGrabPivot)
 
 EVT_MENU(ID_SCENE_SCENEGRAPH, vtFrame::OnSceneGraph)
 EVT_MENU(ID_SCENE_TERRAIN, vtFrame::OnSceneTerrain)
@@ -261,10 +266,6 @@ void vtFrame::CreateMenus()
 	sceneMenu->Append(ID_TIME_FASTER, _T("Time Faster"));
 
 	wxMenu *viewMenu = new wxMenu;
-	viewMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
-	viewMenu->Append(ID_VIEW_FASTER, _T("Fly Faster (F)"));
-	viewMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _T("Maintain height above ground (A)"));
-	viewMenu->AppendCheckItem(ID_VIEW_GRAB_PIVOT, _T("Use Grab-Pivot Navigation (D)"));
 	viewMenu->AppendCheckItem(ID_VIEW_WIREFRAME, _T("Wireframe\tCtrl+W"));
 	viewMenu->AppendCheckItem(ID_VIEW_FULLSCREEN, _T("Fullscreen\tCtrl+F"));
 	viewMenu->AppendCheckItem(ID_VIEW_TOPDOWN, _T("Top-Down Camera\tCtrl+T"));
@@ -272,6 +273,18 @@ void vtFrame::CreateMenus()
 	viewMenu->AppendSeparator();
 	viewMenu->Append(ID_VIEW_SETTINGS, _T("Camera - View Settings"));
 	viewMenu->Append(ID_VIEW_LOCATIONS, _T("Store/Recall Locations"));
+
+	wxMenu *navMenu = new wxMenu;
+	navMenu->Append(ID_VIEW_SLOWER, _T("Fly Slower (S)"));
+	navMenu->Append(ID_VIEW_FASTER, _T("Fly Faster (F)"));
+	navMenu->AppendCheckItem(ID_VIEW_MAINTAIN, _T("Maintain height above ground (A)"));
+
+		wxMenu *navstyleMenu = new wxMenu;
+		navstyleMenu->AppendCheckItem(ID_NAV_NORMAL, _T("Normal Terrain Flyer"));
+		navstyleMenu->AppendCheckItem(ID_NAV_VELO, _T("Flyer with Velocity"));
+		navstyleMenu->AppendCheckItem(ID_NAV_GRAB_PIVOT, _T("Grab-Pivot"));
+//		navstyleMenu->AppendCheckItem(ID_NAV_QUAKE, _T("Keyboard Walk"));
+		navMenu->Append(0, _T("Navigation Style"), navstyleMenu);
 
 	wxMenu *terrainMenu = new wxMenu;
 	terrainMenu->AppendCheckItem(ID_TERRAIN_DYNAMIC, _T("LOD Terrain Surface\tF3"));
@@ -308,6 +321,7 @@ void vtFrame::CreateMenus()
 	menuBar->Append(toolsMenu, _T("&Tools"));
 	menuBar->Append(sceneMenu, _T("&Scene"));
 	menuBar->Append(viewMenu, _T("&View"));
+	menuBar->Append(navMenu, _T("&Navigate"));
 	menuBar->Append(terrainMenu, _T("Te&rrain"));
 	menuBar->Append(earthMenu, _T("&Earth"));
 	menuBar->Append(helpMenu, _T("&Help"));
@@ -405,7 +419,16 @@ void vtFrame::OnChar(wxKeyEvent& event)
 	}
 	// Toggle grab-pivot
 	if (key == 'd')
-		g_App.SetNavType(g_App.m_nav == NT_Normal ? NT_Grab : NT_Normal);
+	{
+		static NavType prev = NT_Normal;
+		if (g_App.m_nav == NT_Grab)
+			g_App.SetNavType(prev);
+		else
+		{
+			prev = g_App.m_nav;
+			g_App.SetNavType(NT_Grab);
+		}
+	}
 
 	if (key == 'f')
 		ChangeFlightSpeed(1.8f);
@@ -593,12 +616,34 @@ void vtFrame::OnUpdateViewMaintain(wxUpdateUIEvent& event)
 	event.Check(m_bMaintainHeight);
 }
 
-void vtFrame::OnViewGrabPivot(wxCommandEvent& event)
+void vtFrame::OnNavNormal(wxCommandEvent& event)
 {
-	g_App.SetNavType(g_App.m_nav == NT_Normal ? NT_Grab : NT_Normal);
+	g_App.SetNavType(NT_Normal);
 }
 
-void vtFrame::OnUpdateViewGrabPivot(wxUpdateUIEvent& event)
+void vtFrame::OnUpdateNavNormal(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_nav == NT_Normal);
+}
+
+void vtFrame::OnNavVelo(wxCommandEvent& event)
+{
+	g_App.SetNavType(NT_Velo);
+}
+
+void vtFrame::OnUpdateNavVelo(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_nav == NT_Velo);
+}
+
+void vtFrame::OnNavGrabPivot(wxCommandEvent& event)
+{
+	g_App.SetNavType(NT_Grab);
+}
+
+void vtFrame::OnUpdateNavGrabPivot(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(g_App.m_nav == NT_Grab);

@@ -17,7 +17,7 @@ enum AppState {
 
 enum NavType {
 	NT_Normal,
-	NT_Gravity,
+	NT_Velo,
 	NT_Grab,
 	NT_Quake
 };

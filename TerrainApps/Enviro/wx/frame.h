@@ -44,26 +44,33 @@ public:
 	void OnClose(wxCloseEvent &event);
 
 	void OnViewMaintain(wxCommandEvent& event);
-	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
-	void OnViewGrabPivot(wxCommandEvent& event);
-	void OnUpdateViewGrabPivot(wxUpdateUIEvent& event);
 	void OnViewWireframe(wxCommandEvent& event);
-	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
 	void OnViewFullscreen(wxCommandEvent& event);
-	void OnUpdateViewFullscreen(wxUpdateUIEvent& event);
 	void OnViewTopDown(wxCommandEvent& event);
-	void OnUpdateViewTopDown(wxUpdateUIEvent& event);
 	void OnViewFramerate(wxCommandEvent& event);
-	void OnUpdateViewFramerate(wxUpdateUIEvent& event);
-	void OnViewSlower(wxCommandEvent& event);
-	void OnUpdateViewSlower(wxUpdateUIEvent& event);
-	void OnViewFaster(wxCommandEvent& event);
-	void OnUpdateViewFaster(wxUpdateUIEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
 	void OnViewFollowRoute(wxCommandEvent& event);
-	void OnUpdateViewFollowRoute(wxUpdateUIEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
+
+	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
+	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
+	void OnUpdateViewFullscreen(wxUpdateUIEvent& event);
+	void OnUpdateViewTopDown(wxUpdateUIEvent& event);
+	void OnUpdateViewFramerate(wxUpdateUIEvent& event);
+	void OnUpdateViewFollowRoute(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
+
+	void OnViewSlower(wxCommandEvent& event);
+	void OnViewFaster(wxCommandEvent& event);
+	void OnNavNormal(wxCommandEvent& event);
+	void OnNavVelo(wxCommandEvent& event);
+	void OnNavGrabPivot(wxCommandEvent& event);
+
+	void OnUpdateViewSlower(wxUpdateUIEvent& event);
+	void OnUpdateViewFaster(wxUpdateUIEvent& event);
+	void OnUpdateNavNormal(wxUpdateUIEvent& event);
+	void OnUpdateNavVelo(wxUpdateUIEvent& event);
+	void OnUpdateNavGrabPivot(wxUpdateUIEvent& event);
 
 	void OnToolsSelect(wxCommandEvent& event);
 	void OnUpdateToolsSelect(wxUpdateUIEvent& event);

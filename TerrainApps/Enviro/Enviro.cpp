@@ -1098,14 +1098,14 @@ void Enviro::EnableFlyerEngine(bool bEnable)
 {
 	if (bEnable)
 	{
-		if (m_nav == NT_Quake)
-			SetCurrentNavigator(m_pQuakeFlyer);
-		if (m_nav == NT_Gravity)
-			SetCurrentNavigator(m_pVFlyer);
 		if (m_nav == NT_Normal)
 			SetCurrentNavigator(m_pTFlyer);
+		if (m_nav == NT_Velo)
+			SetCurrentNavigator(m_pVFlyer);
 		if (m_nav == NT_Grab)
 			SetCurrentNavigator(m_pGFlyer);
+		if (m_nav == NT_Quake)
+			SetCurrentNavigator(m_pQuakeFlyer);
 	}
 	else
 		SetCurrentNavigator(NULL);
@@ -1144,7 +1144,8 @@ void Enviro::SetTerrain(vtTerrain *pTerrain)
 	// inform the navigation engine of the new terrain
 	m_pCurrentFlyer->SetTarget(m_pNormalCamera);
 	m_pCurrentFlyer->SetHeight(param.m_iMinHeight);
-	m_pCurrentFlyer->SetSpeed(param.m_fNavSpeed);
+	m_pTFlyer->SetSpeed(param.m_fNavSpeed);
+	m_pVFlyer->SetSpeed(param.m_fNavSpeed);
 	m_pCurrentFlyer->SetEnabled(true);
 
 	// TODO: a more elegant way of keeping all nav engines current
