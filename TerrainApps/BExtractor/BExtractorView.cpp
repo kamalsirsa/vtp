@@ -264,15 +264,19 @@ void BExtractorView::DrawBuildings(CDC *pDC)
 	color = m_buildingColor;
 	CPen bgPen( PS_SOLID, 1, color); 
 	pDC->SelectObject(bgPen);
-//		pDC->SetBkColor( RGB(0xff, 0x00, 0x00));
 
 	DPoint2 temp;
 	for (int i = 0; i < pDoc->m_Buildings.GetSize(); i++)
 	{
-		//draw each "building"
+		// draw each "building"
+		// TODO: draw other structure types as well?  That depends on how
+		// full-featured we intend BExtractor to be.  If it becomes much
+		// more than a simple "building extractor", we'll want the other
+		// structure types.
 		vtStructure *str = pDoc->m_Buildings.GetAt(i);
 		vtBuilding *bld = str->GetBuilding();
-		DrawBuilding(pDC, bld);
+		if (bld)
+			DrawBuilding(pDC, bld);
 	}
 }
 
