@@ -29,7 +29,7 @@ MyStatusBar::MyStatusBar(wxWindow *parent) : wxStatusBar(parent, -1)
 		55,		// Zone
 		65,		// Datum
 		58,		// Units
-		190,	// Coordinates of cursor
+		208,	// Coordinates of cursor
 		86		// Elevation under cursor
 	};
 
