@@ -8,61 +8,15 @@
 #
 ########################################################################
 
-# What we need to compile.
+# All info about what to compile and what headers to install comes
+# from the .dsp file, since this project is primarily developed on
+# Win.
 
-CORE_CXXFILES 	= AttribMap.cpp			\
-		  BryanTerrain.cpp		\
-		  Building3d.cpp		\
-		  CoreMeshMat.cpp		\
-		  CoreScene.cpp			\
-		  CustomTerrain.cpp		\
-		  DynTerrain.cpp		\
-		  Engine.cpp			\
-		  Fence3d.cpp			\
-		  FrameTimer.cpp		\
-		  HeightField.cpp		\
-		  IntersectionEngine.cpp	\
-		  LocalGrid.cpp			\
-		  LocalProjection.cpp		\
-		  Location.cpp			\
-		  LodGrid.cpp			\
-		  NavEngines.cpp		\
-		  Roads.cpp			\
-		  Route.cpp			\
-		  SkyDome.cpp			\
-		  SMTerrain.cpp			\
-		  SRTerrain.cpp			\
-		  Structure3d.cpp		\
-		  Terrain.cpp			\
-		  TerrainPatch.cpp		\
-		  TerrainScene.cpp		\
-		  TerrainSurface.cpp		\
-		  TimeEngines.cpp		\
-		  TParams.cpp			\
-		  Trees.cpp			\
-		  TVTerrain.cpp			\
-		  vtSOG.cpp			\
-		  vtTin3d.cpp
-
-CXXFILES 	= ImageOSG.cpp 			\
-		  MeshMat.cpp 			\
-		  NodeOSG.cpp 			\
-		  SceneOSG.cpp			\
-		  $(CORE_CXXFILES:%=../core/%)
-
-OBJS   		= $(CXXFILES:%.cpp=%.o)
-TARGET_LIB    	= libvtosg.so
-
-# Headers to install
-
-TARGET_HDRS 	= ImageOSG.h 			\
-		  MathOSG.h 			\
-		  MeshMat.h 			\
-		  NodeOSG.h 			\
-		  SceneOSG.h
+DSP_FILE   	  = vtosg.dsp
 
 TARGET_HDR_SUBDIR = vtlib/vtosg
 
+TARGET_LIB    	  = libvtosg.so
 
 # FIX - Get rid of the -DUNIX in favor of a config.h methodology that
 # will look for features.  Do this once the basic autoconf works
