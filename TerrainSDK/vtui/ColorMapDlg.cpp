@@ -199,6 +199,17 @@ void ColorMapDlg::OnDeleteColor( wxCommandEvent &event )
 {
 	m_cmap.RemoveAt(m_iItem);
 	UpdateItems();
+	if (GetList()->GetItemCount() > 0)
+	{
+		GetList()->SetItemState(m_iItem, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+		m_iItem = GetList()->GetNextItem(-1, wxLIST_NEXT_ALL,
+										wxLIST_STATE_SELECTED);
+		if (m_iItem != -1)
+			GetList()->EnsureVisible(m_iItem);
+	}
+	else
+		m_iItem = -1;
+	UpdateEnabling();
 }
 
 void ColorMapDlg::OnChangeColor( wxCommandEvent &event )
