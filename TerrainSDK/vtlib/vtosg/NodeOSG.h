@@ -45,6 +45,9 @@ public:
 	/** Get the name of the node. */
 	const char *GetName2();
 
+	static RGBf s_white;
+	void SetFog(bool bOn, float start = 0, float end = 10000, const RGBf &color = s_white, int iType = GL_LINEAR);
+
 	// implementation data
 	void SetOsgNode(osg::Node *n, bool bGroup = false);
 	osg::Node *GetOsgNode() { return m_pNode.get(); }

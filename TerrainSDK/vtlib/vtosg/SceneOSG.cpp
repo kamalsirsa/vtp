@@ -11,6 +11,7 @@
 #include <osg/LightSource>
 #include <osg/PolygonMode>
 #include <osg/Switch>
+#include <osg/Fog>
 #include <osgDB/Registry>
 #include <osgDB/ReadFile>
 #include <time.h>		// clock() & CLOCKS_PER_SEC
@@ -237,7 +238,7 @@ vtNode *vtLoadModel(const char *filename)
 	// backslashes in the version we're using
 	char newname[500];
 	strcpy(newname, filename);
-	for (int i = 0; i < strlen(filename); i++)
+	for (unsigned int i = 0; i < strlen(filename); i++)
 		if (newname[i] == '\\') newname[i] = '/';
 
 	static 	StateSet *normstate = NULL;
@@ -260,4 +261,58 @@ vtNode *vtLoadModel(const char *filename)
 	else
 		return NULL;
 }
+
+RGBf vtNode::s_white(1, 1, 1);
+
+/**
+ * Set the Fog state for a node.
+ *
+ * You can turn fog on or off.  When you turn fog on, it affects this node
+ * and all others below it in the scene graph.
+ *
+ * \param bOn True to turn fog on, false to turn it off.
+ * \param start The distance from the camera at which fog starts, in meters.
+ * \param end The distance from the camera at which fog end, in meters.  This
+ *		is the point at which it becomes totally opaque.
+ * \param color The color of the fog.  All geometry will be faded toward this
+ *		color.
+ * \param iType Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
+ *		increase of the fog density.
+ */
+void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iType)
+{
+	osg::StateSet *set = GetOsgNode()->getStateSet();
+	if (!set)
+	{
+		set = new osg::StateSet;
+		GetOsgNode()->setStateSet(set);
+	}
+
+	if (bOn)
+	{
+		Fog::Mode eType;
+		switch (iType)
+		{
+		case GL_LINEAR: eType = Fog::Mode::LINEAR; break;
+		case GL_EXP: eType = Fog::Mode::EXP; break;
+		case GL_EXP2: eType = Fog::Mode::EXP2; break;
+		default: return;
+		}
+		Fog *fog = new Fog;
+		fog->setMode(eType);
+		fog->setDensity(0.25f);	// not used for linear
+		fog->setStart(start);
+		fog->setEnd(end);
+		fog->setColor(osg::Vec4(color.r, color.g, color.b, 1));
+
+		set->setAttributeAndModes(fog, StateAttribute::OVERRIDE_ON);
+	}
+	else
+	{
+		// turn fog off
+		set->setModeToInherit(GL_FOG);
+	}
+}
+
+
 
