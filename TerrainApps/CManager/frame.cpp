@@ -209,8 +209,6 @@ vtFrame::~vtFrame()
 
 #define STR_DATAPATH "DataPath"
 
-extern vtString get_line_from_stream(ifstream &input);
-
 void vtFrame::ReadINI()
 {
 	ifstream input;

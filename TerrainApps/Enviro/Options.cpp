@@ -12,8 +12,6 @@
 #include <fstream>
 using namespace std;
 
-extern vtString get_line_from_stream(ifstream &input);
-
 EnviroOptions g_Options;
 
 #define STR_DATAPATH "DataPath"
