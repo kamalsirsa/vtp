@@ -4,6 +4,8 @@ enviro ICON "icons/Enviro.ico"
 
 camera		BITMAP "bitmap/camera.bmp"
 fence		BITMAP "bitmap/fence.bmp"
+instances	BITMAP "bitmap/instances.bmp"
+layers		BITMAP "bitmap/layers.bmp"
 loc			BITMAP "bitmap/loc.bmp"
 maintain	BITMAP "bitmap/maintain.bmp"
 move		BITMAP "bitmap/move.bmp"
