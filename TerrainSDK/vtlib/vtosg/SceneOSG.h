@@ -1,7 +1,7 @@
 //
 // SceneOSG.h
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -9,6 +9,8 @@
 #define VTOSG_SCENEH
 
 #include <osg/Timer>
+
+class CreateProjectedShadowTextureCullCallback;
 
 /**
  * A Scene is the all-encompassing container for all 3D objects
@@ -60,9 +62,15 @@ public:
 	bool CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir);
 	FPlane *GetCullPlanes() { return m_cullPlanes; }
 
+	// Object shadow casting, only for OSG
+	void SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform);
+	void UnsetShadowedNode(vtTransform *pTransform);
+
 protected:
 	// OSG-specific implementation
 	osg::ref_ptr<osgUtil::SceneView>	m_pOsgSceneView;
+
+	osg::ref_ptr<CreateProjectedShadowTextureCullCallback> m_pShadowVisitor;
 
 	// for culling
 	void CalcCullPlanes();

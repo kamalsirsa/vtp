@@ -3,11 +3,13 @@
 //
 // Implementation of vtScene for the OSG library
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
 #include "vtlib/vtlib.h"
+#include "ProjectedShadows.h"
+
 #include <osg/LightSource>
 #include <osg/PolygonMode>
 #include <osg/Switch>
@@ -353,6 +355,36 @@ bool vtScene::GetGlobalWireframe()
 	return m_bWireframe;
 }
 
+void vtScene::SetShadowedNode(vtTransform *pLight, vtNode *pShadowNode, vtTransform *pTransform)
+{
+	if (!m_pShadowVisitor.valid())
+		m_pShadowVisitor = new CreateProjectedShadowTextureCullCallback(pShadowNode->GetOsgNode());
+	else
+		m_pShadowVisitor->SetShadower(pShadowNode->GetOsgNode());
+		m_pShadowVisitor->SetInitialLightPosition(v2s(-(pLight->GetDirection()) * 10000));
+		pTransform->GetOsgNode()->setCullCallback(m_pShadowVisitor.get());
+#ifdef _DEBUG
+	{
+		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
+		osg::Geode *pGeode = (osg::Geode*)pGroup->getChild(0);
+		osg::Drawable* pDrawable = pGeode->getDrawable(0);
+		pDrawable->setDrawCallback(new MyDrawCallback);
+	}
+#endif
+}
+ 
+void vtScene::UnsetShadowedNode(vtTransform *pTransform)
+{
+	pTransform->GetOsgNode()->setCullCallback(NULL);
+#ifdef _DEBUG
+	{
+		osg::Group *pGroup = (osg::Group*)pTransform->GetOsgNode();
+		osg::Geode *pGeode = (osg::Geode*)pGroup->getChild(0);
+		osg::Drawable* pDrawable = pGeode->getDrawable(0);
+		pDrawable->setDrawCallback(NULL);
+	}
+#endif
+}
 
 ////////////////////////////////////////
 
