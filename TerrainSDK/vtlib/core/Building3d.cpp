@@ -9,6 +9,7 @@
 //
 
 #include "vtlib/vtlib.h"
+#include "vtlib/core/Light.h"
 #include "vtdata/HeightField.h"
 #include "vtdata/Triangulate.h"
 #include "vtdata/PolyChecker.h"
@@ -434,14 +435,6 @@ bool vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
 			vtLevel *lev = m_Levels[i];
 			int edges = lev->m_Edges.GetSize();
 
-			// case BLEV_FELKEL:
-			/*
-			if (lev->IsHorizontal())
-				AddFlatRoof(*m_lfp[i], lev);
-			else
-				fHeight += MakeFelkelRoof(*m_lfp[i], lev);
-			break;
-			*/
 			int level_show = -1, edge_show = -1;
 			GetValue("level", level_show);
 			GetValue("edge", edge_show);
@@ -585,9 +578,6 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 	quad[2] = poly2[i];
 	quad[3] = poly2[j];
 
-	// figure out how many features we have
-	int totalfeatures = pEdge->NumFeatures();
-
 	// length of the edge
 	FPoint3 dir1 = quad[1] - quad[0];
 	FPoint3 dir2 = quad[3] - quad[2];
@@ -609,6 +599,14 @@ void vtBuilding3d::CreateEdgeGeometry(vtLevel *pLev, FLine3 &poly1, FLine3 &poly
 	float fixed_width = pEdge->FixedFeaturesWidth();
 	float total_prop = pEdge->ProportionTotal();
 	float dyn_width = total_length1 - fixed_width;
+
+	if (pEdge->m_Facade != "")
+	{
+		// If we can successfully construct the facade, we don't need to
+		//  use the edge features.
+		if (MakeFacade(pEdge, quad))
+			return;
+	}
 
 	// build the edge features.
 	// point[0] is the first starting point of a panel.
@@ -1039,9 +1037,6 @@ float vtBuilding3d::MakeFelkelRoof(FLine3 &EavePolygon, vtLevel *pLev)
 			// determine normal and primary axes of the face
 			j = RoofSection3D.GetSize();
 			PanelNormal = Normal(RoofSection3D[1], RoofSection3D[0], RoofSection3D[j-1]);
-			EaveAxis = RoofSection3D[1] - RoofSection3D[0];
-			EaveAxis.Normalize();
-			PanelAxis = PanelNormal.Cross(EaveAxis);
 
 			// Build vertex list
 			for (i = 0; i < j; i++)
@@ -1119,6 +1114,14 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 		quad[2] = poly2[a];
 		quad[3] = poly2[b];
 
+		if (pEdge->m_Facade != "")
+		{
+			// If we can successfully construct the facade, we don't need to
+			//  use the edge features.
+			if (MakeFacade(pEdge, quad))
+				continue;
+		}
+
 		float h1 = 0.0f;
 		float h2 = pLev->m_iStories;
 		AddWallSection(pEdge, BMAT_WINDOWWALL, quad, h1, h2,
@@ -1136,6 +1139,40 @@ void vtBuilding3d::CreateUniformLevel(int iLevel, float fHeight,
 			}
 		}
 	}
+}
+
+bool vtBuilding3d::MakeFacade(vtEdge *pEdge, FLine3 &quad)
+{
+	// Paint a facade on this edge
+	// Add the facade image to the materials array
+	// Assume quad is ordered 0,1,3,2
+	vtString fname = "BuildingModels\\";
+	MatMesh mm;
+	FPoint3 norm = Normal(quad[0],quad[1],quad[3]);
+
+	fname += pEdge->m_Facade;
+	fname = FindFileOnPaths(vtTerrain::m_DataPaths, (pcchar)fname);
+	if (fname == "")
+		return false;
+
+	mm.m_iMatIdx = s_Materials->AddTextureMaterial2(fname,
+		true, true, false, false,
+		TERRAIN_AMBIENT,
+		TERRAIN_DIFFUSE,
+		1.0f,		// alpha
+		TERRAIN_EMISSIVE);
+	// Create a mesh for the new material and add this to the mesh array
+	mm.m_pMesh = new vtMesh(GL_TRIANGLE_FAN, VT_Normals | VT_TexCoords, 6);
+	m_Mesh.Append(mm);
+	// Caculate the vertices and add them to the mesh
+	int start = mm.m_pMesh->AddVertexNUV(quad[0], norm, FPoint2(0.0f, 1.0f));
+	mm.m_pMesh->AddVertexNUV(quad[1], norm, FPoint2(1.0f, 1.0f));
+	mm.m_pMesh->AddVertexNUV(quad[3], norm, FPoint2(1.0f, 0.0f));
+	mm.m_pMesh->AddVertexNUV(quad[2], norm,  FPoint2(0.0f, 0.0f));
+
+	mm.m_pMesh->AddTri(start, start+1, start+2);
+	mm.m_pMesh->AddTri(start, start+2, start+3);
+	return true;
 }
 
 FPoint3 vtBuilding3d::Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2)

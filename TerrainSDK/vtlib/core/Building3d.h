@@ -1,7 +1,7 @@
 //
 // Building3d.h
 //
-// Copyright (c) 2001-2002 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -63,6 +63,7 @@ public:
 protected:
 	int FindMatIndex(BldMaterial bldApp, RGBi inputColor=RGBi(0,0,0));
 	void CreateSharedMaterials();
+	bool MakeFacade(vtEdge *pEdge, FLine3 &quad);
 
 protected:
 	// material
