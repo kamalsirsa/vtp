@@ -66,22 +66,6 @@ public:
 
 //////////////////////////////////////////////////
 
-// Follow the current route
-class RouteFollowerEngine : public vtEngine
-{
-public:
-	RouteFollowerEngine(vtRoute *route);
-	void Eval();
-
-	vtHeightField3d *m_pHeightField;
-	vtRoute *m_pRoute;
-
-	int m_cur, m_next;
-	float m_inc;
-};
-
-//////////////////////////////////////////////////
-
 class FollowerEngine : public vtEngine
 {
 public:

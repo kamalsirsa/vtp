@@ -935,35 +935,11 @@ void Enviro::SetMode(MouseMode mode)
 			m_pCursorMGeom->SetEnabled(true);
 			EnableFlyerEngine(false);
 			break;
-		case MM_FLYROUTE:
-			m_pCursorMGeom->SetEnabled(false);
-			EnableFlyerEngine(false);
-			break;
 		}
 	}
 	m_bActiveFence = false;
 	m_mode = mode;
 }
-
-void Enviro::SetRouteFollower(bool bOn)
-{
-	if (!m_pRouteFollower)
-	{
-		m_pRouteFollower = new RouteFollowerEngine(m_pCurRoute);
-		m_pRouteFollower->SetTarget(vtGetScene()->GetCamera());
-		vtGetScene()->AddEngine(m_pRouteFollower);
-	}
-	m_pRouteFollower->SetEnabled(bOn);
-}
-
-bool Enviro::GetRouteFollower()
-{
-	if (m_pRouteFollower)
-		return m_pRouteFollower->GetEnabled();
-	else
-		return false;
-}
-
 
 void Enviro::SetTopDown(bool bTopDown)
 {

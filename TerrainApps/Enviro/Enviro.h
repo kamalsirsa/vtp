@@ -28,7 +28,6 @@ class vtUtilNode;
 class vtFence3d;
 
 // Engines
-class RouteFollowerEngine;
 class GlobePicker;
 class GrabFlyer;
 class FlatFlyer;
@@ -76,8 +75,6 @@ public:
 	bool GetMaintain();
 
 	void SetMode(MouseMode mode);
-	void SetRouteFollower(bool bOn);
-	bool GetRouteFollower();
 	void DumpCameraInfo();
 	void SetSpeed(float x);
 	float GetSpeed();
@@ -240,7 +237,6 @@ protected:
 	// route members
 	bool		m_bActiveRoute;
 	vtString	m_sStructType;
-	RouteFollowerEngine	*m_pRouteFollower;
 
 	// linear arc on Earth (or Distance Tool on the Terrain)
 	vtGeom		*m_pArc;

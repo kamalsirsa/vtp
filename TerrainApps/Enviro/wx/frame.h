@@ -70,7 +70,6 @@ public:
 	void OnViewFramerate(wxCommandEvent& event);
 	void OnViewElevLegend(wxCommandEvent& event);
 	void OnViewSettings(wxCommandEvent& event);
-	void OnViewFollowRoute(wxCommandEvent& event);
 	void OnViewLocations(wxCommandEvent& event);
 	void OnViewSnapshot(wxCommandEvent& event);
 	void OnViewSnapAgain(wxCommandEvent& event);
@@ -82,7 +81,6 @@ public:
 	void OnUpdateViewTopDown(wxUpdateUIEvent& event);
 	void OnUpdateViewFramerate(wxUpdateUIEvent& event);
 	void OnUpdateViewElevLegend(wxUpdateUIEvent& event);
-	void OnUpdateViewFollowRoute(wxUpdateUIEvent& event);
 	void OnUpdateViewLocations(wxUpdateUIEvent& event);
 	void OnUpdateViewStatusBar(wxUpdateUIEvent& event);
 

@@ -264,64 +264,6 @@ void RoadFollowEngine::Eval()
 //////////////////////////////////////////////////////////////////////
 
 //
-// RouteFollowerEngine
-//
-RouteFollowerEngine::RouteFollowerEngine(vtRoute* route)
-{
-	m_pHeightField = GetCurrentTerrain()->GetHeightField();
-	m_pRoute = route;
-	m_cur = 0;
-	m_next = 1;
-	m_inc = 0.0f;
-}
-
-void RouteFollowerEngine::Eval()
-{
-	// Position the View to the beginning of the route
-	//	and follow the route with the camera.
-	vtCamera *target = (vtCamera*) GetTarget();
-	if (!target)
-		return;
-	if (!m_pRoute)
-		return;
-
-	vtUtilNode *st0 = m_pRoute->GetAt(m_cur);
-	vtUtilNode *st1 = m_pRoute->GetAt(m_next);
-
-	DPoint2 diff = st1->m_Point - st0->m_Point;
-	diff *= m_inc;
-	DPoint2 ep = st0->m_Point + diff;
-
-	FPoint3 fp, fp2;
-	m_pHeightField->ConvertEarthToSurfacePoint(ep, fp);
-	m_pHeightField->ConvertEarthToSurfacePoint(st1->m_Point, fp2);
-	FPoint3 dir = fp2 - fp;
-
-	double angle = atan2(-dir.z, dir.x) - PID2d;
-
-	target->Identity();
-	target->SetTrans(fp);
-	target->RotateParent(FPoint3(0.0f, 1.0f, 0.0f), angle);
-
-	TParams &params = GetCurrentTerrain()->GetParams();
-	target->TranslateLocal(FPoint3(0.0f, params.GetValueInt(STR_MINHEIGHT) * 3, 0.0f));
-
-	m_inc += 0.03f;
-
-	if (m_inc >= 1.0f)
-	{
-		m_cur++;
-		if (m_cur > m_pRoute->GetSize() - 2)
-			m_cur = 0;
-		m_next = m_cur+1;
-		m_inc = 0.0f;
-	}
-}
-
-
-/////////////////////////////////////////////////////////////////////////////
-
-//
 // Terrain picking ability
 //
 TerrainPicker::TerrainPicker() : vtLastMouse()

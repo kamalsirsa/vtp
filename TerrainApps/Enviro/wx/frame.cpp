@@ -74,7 +74,6 @@
 #  include "nav_fast.xpm"
 #  include "nav_set.xpm"
 #  include "nav_slow.xpm"
-#  include "navroute.xpm"
 #  include "points.xpm"
 #  include "route.xpm"
 #  include "select.xpm"
@@ -134,8 +133,6 @@ EVT_UPDATE_UI(ID_VIEW_FRAMERATE,	vtFrame::OnUpdateViewFramerate)
 EVT_MENU(ID_VIEW_ELEV_LEGEND,		vtFrame::OnViewElevLegend)
 EVT_UPDATE_UI(ID_VIEW_ELEV_LEGEND,	vtFrame::OnUpdateViewElevLegend)
 EVT_MENU(ID_VIEW_SETTINGS,			vtFrame::OnViewSettings)
-EVT_MENU(ID_VIEW_FOLLOW_ROUTE,		vtFrame::OnViewFollowRoute)
-EVT_UPDATE_UI(ID_VIEW_FOLLOW_ROUTE, vtFrame::OnUpdateViewFollowRoute)
 EVT_MENU(ID_VIEW_LOCATIONS,			vtFrame::OnViewLocations)
 EVT_UPDATE_UI(ID_VIEW_LOCATIONS,	vtFrame::OnUpdateViewLocations)
 EVT_MENU(ID_VIEW_SNAPSHOT,			vtFrame::OnViewSnapshot)
@@ -480,7 +477,6 @@ void vtFrame::CreateToolbar(bool bVertical)
 	ADD_TOOL(ID_VIEW_FASTER, wxBITMAP(nav_fast), _("Fly Faster"), false);
 	ADD_TOOL(ID_VIEW_SLOWER, wxBITMAP(nav_slow), _("Fly Slower"), false);
 	ADD_TOOL(ID_VIEW_SETTINGS, wxBITMAP(nav_set), _("Camera Dialog"), false);
-	ADD_TOOL(ID_VIEW_FOLLOW_ROUTE, wxBITMAP(navroute), _("Follow Route"), true);
 	ADD_TOOL(ID_VIEW_LOCATIONS, wxBITMAP(loc), _("Locations"), false);
 	ADD_TOOL(ID_VIEW_SNAPSHOT, wxBITMAP(snap), _("Snapshot"), false);
 	ADD_TOOL(ID_VIEW_SNAP_AGAIN, wxBITMAP(snap_num), _("Numbered Snapshot"), false);
@@ -960,21 +956,6 @@ void vtFrame::OnUpdateViewFaster(wxUpdateUIEvent& event)
 void vtFrame::OnViewSettings(wxCommandEvent& event)
 {
 	m_pCameraDlg->Show(true);
-}
-
-void vtFrame::OnViewFollowRoute(wxCommandEvent& event)
-{
-	if (!g_App.m_pCurRoute)
-		return;
-
-	bool bOn = g_App.GetRouteFollower();
-	g_App.SetRouteFollower(!bOn);
-}
-
-void vtFrame::OnUpdateViewFollowRoute(wxUpdateUIEvent& event)
-{
-	event.Enable(g_App.m_state == AS_Terrain);
-	event.Check(g_App.GetRouteFollower());
 }
 
 void vtFrame::OnViewLocations(wxCommandEvent& event)
