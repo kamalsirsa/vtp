@@ -1460,10 +1460,14 @@ void vtTerrain::_ComputeCenterLocation()
 	vtProjection Dest;
 	Dest.SetWellKnownGeogCS("WGS84");
 
-	// safe (won't fail on tricky Datum conversions)
+	// We won't fail on tricky Datum conversions, but we still might
+	//  conceivably fail if the GDAL/PROJ files aren't found.
 	OCT *trans = CreateConversionIgnoringDatum(&m_proj, &Dest);
-	trans->Transform(1, &m_CenterGeoLocation.x, &m_CenterGeoLocation.y);
-	delete trans;
+	if (trans)
+	{
+		trans->Transform(1, &m_CenterGeoLocation.x, &m_CenterGeoLocation.y);
+		delete trans;
+	}
 
 	// calculate offset FROM GMT
 	// longitude of 180 deg = 12 hours = 720 min = 43200 sec
