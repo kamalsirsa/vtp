@@ -57,6 +57,13 @@ public:
 	{
 		m_tags.Append(pTag);
 	}
+	void AddTag(const char *name, const char *value)
+	{
+		vtTag *tag = new vtTag;
+		tag->name = name;
+		tag->value = value;
+		m_tags.Append(tag);
+	}
 	vtTag *FindTag(const char *szTagName);
 	vtTag *GetTag(int index)
 	{
