@@ -35,6 +35,7 @@ BEGIN_EVENT_TABLE(LayerDlg,wxDialog)
 	EVT_TREE_SEL_CHANGED( ID_LAYER_TREE, LayerDlg::OnSelChanged )
 	EVT_CHECKBOX( ID_SHOW_ALL, LayerDlg::OnShowAll )
 	EVT_CHECKBOX( ID_LAYER_VISIBLE, LayerDlg::OnVisible )
+	EVT_CHECKBOX( ID_SHADOW_VISIBLE, LayerDlg::OnShadowVisible )
 	EVT_BUTTON( ID_LAYER_ZOOM_TO, LayerDlg::OnZoomTo )
 	EVT_BUTTON( ID_LAYER_ACTIVE, LayerDlg::OnLayerActivate )
 	EVT_BUTTON( ID_LAYER_SAVE, LayerDlg::OnLayerSave )
@@ -316,6 +317,32 @@ void LayerDlg::OnZoomTo( wxCommandEvent &event )
 	}
 }
 
+
+void LayerDlg::OnShadowVisible( wxCommandEvent &event)
+{
+	bool bVis = event.IsChecked();
+
+	vtNode *pThing = GetNodeFromItem(m_item);
+	if (pThing) {
+		vtGetScene()->ShadowVisibleNode(pThing, bVis);
+	}
+
+	vtStructureArray3d *sa = GetStructureArray3dFromItem(m_item);
+	if (sa) {
+		for (unsigned int j = 0; j < sa->GetSize(); j++) {
+			vtStructure3d *str3d = sa->GetStructure3d(j);
+			if (str3d) {
+				pThing = str3d->GetContained();
+				if (pThing) 
+					vtGetScene()->ShadowVisibleNode(pThing, bVis);
+			}
+		}
+		LayerItemData *data = GetLayerDataFromItem(m_item);
+		if (data)
+			data->shadow_last_visible = bVis;
+	}
+}
+
 void LayerDlg::OnVisible( wxCommandEvent &event )
 {
 	bool bVis = event.IsChecked();
@@ -364,13 +391,16 @@ void LayerDlg::UpdateEnabling()
 
 	GetZoomTo()->Enable(pThing != NULL);
 	GetVisible()->Enable((pThing != NULL) || (sa != NULL));
+	GetShadow()->Enable((pThing != NULL) || (sa != NULL));
 
 	if (pThing)
 		GetVisible()->SetValue(pThing->GetEnabled());
 	if (sa)
 	{
-		if (data)
+		if (data) {
 			GetVisible()->SetValue(data->last_visible);
+			GetShadow()->SetValue(data->shadow_last_visible);
+		}
 	}
 
 	GetLayerActivate()->Enable(sa != NULL);

@@ -31,6 +31,7 @@ public:
 	int m_index;
 	int m_item;
 	bool last_visible;
+	bool shadow_last_visible;
 };
 
 
@@ -55,6 +56,7 @@ public:
 	wxButton* GetLayerActivate()  { return (wxButton*) FindWindow( ID_LAYER_ACTIVE ); }
 	wxButton* GetZoomTo()  { return (wxButton*) FindWindow( ID_LAYER_ZOOM_TO ); }
 	wxCheckBox* GetVisible()  { return (wxCheckBox*) FindWindow( ID_LAYER_VISIBLE ); }
+	wxCheckBox* GetShadow()  { return (wxCheckBox*) FindWindow( ID_SHADOW_VISIBLE ); }
 	wxCheckBox* GetShowAll()  { return (wxCheckBox*) FindWindow( ID_SHOW_ALL ); }
 	wxTreeCtrl *GetTree()  { return (wxTreeCtrl*) FindWindow( ID_LAYER_TREE ); }
 	void RefreshTreeContents();
@@ -82,6 +84,7 @@ private:
 	void OnLayerActivate( wxCommandEvent &event );
 	void OnZoomTo( wxCommandEvent &event );
 	void OnVisible( wxCommandEvent &event );
+	void OnShadowVisible( wxCommandEvent &event );
 	void OnShowAll( wxCommandEvent &event );
 	void OnSelChanged( wxTreeEvent &event );
 	void OnInitDialog(wxInitDialogEvent& event);

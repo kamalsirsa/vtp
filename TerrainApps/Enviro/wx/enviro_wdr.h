@@ -196,23 +196,24 @@ extern wxSizer *g_pLayerSizer1;
 extern wxSizer *g_pLayerSizer2;
 #define ID_LAYER_ACTIVE 10134
 #define ID_LAYER_VISIBLE 10135
-#define ID_LAYER_ZOOM_TO 10136
-#define ID_LAYER_SAVE 10137
-#define ID_LAYER_CREATE 10138
-#define ID_LAYER_REMOVE 10139
-#define ID_SHOW_ALL 10140
-#define ID_LAYER_TREE 10141
+#define ID_SHADOW_VISIBLE  10136
+#define ID_LAYER_ZOOM_TO 10137
+#define ID_LAYER_SAVE 10138
+#define ID_LAYER_CREATE 10139
+#define ID_LAYER_REMOVE 10140
+#define ID_SHOW_ALL 10141
+#define ID_LAYER_TREE 10142
 wxSizer *LayerDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
-#define ID_SPIN_YEAR 10142
-#define ID_SPIN_MONTH 10143
-#define ID_SPIN_DAY 10144
-#define ID_SPIN_HOUR 10145
-#define ID_SPIN_MINUTE 10146
-#define ID_SPIN_SECOND 10147
-#define ID_TEXT_SPEED 10148
-#define ID_SLIDER_SPEED 10149
-#define ID_STOP 10150
+#define ID_SPIN_YEAR 10143
+#define ID_SPIN_MONTH 10144
+#define ID_SPIN_DAY 10145
+#define ID_SPIN_HOUR 10146
+#define ID_SPIN_MINUTE 10147
+#define ID_SPIN_SECOND 10148
+#define ID_TEXT_SPEED 10149
+#define ID_SLIDER_SPEED 10150
+#define ID_STOP 10151
 wxSizer *TimeDialogFunc( wxWindow *parent, bool call_fit = TRUE, bool set_sizer = TRUE );
 
 // Declare menubar functions
