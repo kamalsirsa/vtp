@@ -8,7 +8,6 @@
 // Free for all uses, see license.txt for details.
 //
 
-
 #ifndef TOWER3DH
 #define TOWER3DH
 
@@ -49,4 +48,6 @@ public:
 protected:
 	vtHeightField *m_pTHeightField;
 };
+
 #endif
+

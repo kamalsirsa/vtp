@@ -60,4 +60,5 @@ enum FileToken
 	FT_PRIM_LEN_ARRAY
 };
 
-#endif SOGH
+#endif // SOGH
+
