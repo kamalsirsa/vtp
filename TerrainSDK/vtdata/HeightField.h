@@ -22,6 +22,9 @@ public:
 	/// Initialize this object from a Tin
 	void Initialize(vtTin *pTin);
 
+	/// Return an MD5 checksum for this heightfield
+	virtual void GetChecksum(unsigned char **ppChecksum) const = 0;
+
 	/// Given a point in world coordinates, determine the elevation
 	virtual bool FindAltitudeAtPoint(const FPoint3 &p3, float &fAltitude,
 		FPoint3 *vNormal = NULL) const = 0;
@@ -76,6 +79,7 @@ public:
 	vtHeightFieldGrid();
 
 	void Initialize(vtElevationGrid *pGrid);
+	void GetChecksum(unsigned char **ppChecksum) const;
 	bool CastRayToSurface(const FPoint3 &point, const FPoint3 &dir,
 		FPoint3 &result) const;
 	DPoint2 GetWorldSpacing();
@@ -86,4 +90,5 @@ protected:
 };
 
 #endif	// HEIGHTFIELDH
+
 

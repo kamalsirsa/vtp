@@ -179,6 +179,11 @@ void vtHeightFieldGrid::Initialize(vtElevationGrid *pGrid)
 	m_fZStep = -m_WorldExtents.Height() / (m_iRows-1);
 }
 
+void vtHeightFieldGrid::GetChecksum(unsigned char **ppChecksum) const
+{
+	// TODO
+}
+
 DPoint2 vtHeightFieldGrid::GetWorldSpacing()
 {
 	return DPoint2(m_fXStep, m_fZStep);
