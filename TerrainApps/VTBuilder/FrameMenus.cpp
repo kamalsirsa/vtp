@@ -35,6 +35,7 @@
 #include "ExtentDlg.h"
 #include "FeatInfoDlg.h"
 #include "LayerPropDlg.h"
+#include "MapServerDlg.h"
 #include "OptionsDlg.h"
 #include "Projection2Dlg.h"
 #include "SelectDlg.h"
@@ -1848,35 +1849,25 @@ void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 void MainFrame::OnAreaRequestWMS(wxCommandEvent& event)
 {
 #if SUPPORT_HTTP
-	bool success;
 
-	wxTextEntryDialog dlg(this, _T("WMS Server address"),
-		_T("Please enter server base URL"), _T("http://wmt.jpl.nasa.gov/cgi-bin/wmt.cgi"));
+	MapServerDlg dlg(this, -1, _T("WMS Request"));
+
+	dlg.m_area = m_area;
+
 	if (dlg.ShowModal() != wxID_OK)
 		return;
-	wxString2 value = dlg.GetValue();
-	const char *server = value.mb_str();
+	wxString2 query = dlg.m_query;
 
-	WFSLayerArray layers;
-	success = GetLayersFromWFS(server, layers);
+/*	bool success;
+	success = GetLayersFromWMS(query);
 
-	int numlayers = layers.GetSize();
-	wxString choices[100];
-	for (int i = 0; i < numlayers; i++)
-		choices[i] = wxString::FromAscii(layers[i]->GetValue("Name"));
-
-	wxSingleChoiceDialog dlg2(this, _T("Choice Layer"),
-		_T("Please indicate layer:"), numlayers, (const wxString *)choices);
-
-	if (dlg2.ShowModal() != wxID_OK)
-		return;
-
-	vtRawLayer *pRL = new vtRawLayer();
+	vtImageLayer *pIL = new vtImageLayer();
 	success = pRL->ReadFeaturesFromWFS(server, "rail");
 	if (success)
 		AddLayerWithCheck(pRL);
 	else
 		delete pRL;
+*/
 #endif
 }
 
