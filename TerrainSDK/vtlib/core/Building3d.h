@@ -41,7 +41,7 @@ public:
 	~vtBuilding3d();
 
 	// implement vtStructure3d methods
-	virtual bool CreateNode(vtHeightField *hf, const vtTagArray &options);
+	virtual bool CreateNode(vtHeightField3d *hf, const vtTagArray &options);
 	vtGeom *GetGeom();
 	virtual void DeleteNode();
 	// display a bounding box around to object to highlight it
@@ -54,8 +54,8 @@ public:
 	void FindMaterialIndices();
 
 	void DestroyGeometry();
-	bool CreateGeometry(vtHeightField *pHeightField);
-	void AdjustHeight(vtHeightField *pHeightField);
+	bool CreateGeometry(vtHeightField3d *pHeightField);
+	void AdjustHeight(vtHeightField3d *pHeightField);
 
 	// randomize building properties
 	void Randomize(int iStories);
@@ -83,7 +83,7 @@ protected:
 	Footprints3d m_lfp;
 
 	// internal methods
-	void DetermineWorldFootprints(vtHeightField *pHeightField);
+	void DetermineWorldFootprints(vtHeightField3d *pHeightField);
 	float GetHeightOfStories();
 	void CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2);
 

@@ -242,7 +242,7 @@ void vtBuilding3d::FindMaterialIndices()
 //
 // Convert the footprint for each level into world coordinates
 //
-void vtBuilding3d::DetermineWorldFootprints(vtHeightField *pHeightField)
+void vtBuilding3d::DetermineWorldFootprints(vtHeightField3d *pHeightField)
 {
 	int i, j;
 	int levs = GetNumLevels();
@@ -315,7 +315,7 @@ void vtBuilding3d::DestroyGeometry()
 	m_Mesh.Empty();
 }
 
-void vtBuilding3d::AdjustHeight(vtHeightField *pHeightField)
+void vtBuilding3d::AdjustHeight(vtHeightField3d *pHeightField)
 {
 	DetermineWorldFootprints(pHeightField);
 	m_pContainer->SetTrans(m_center);
@@ -385,7 +385,7 @@ void vtBuilding3d::CreateUpperPolygon(vtLevel *lev, FLine3 &poly, FLine3 &poly2)
 	}
 }
 
-bool vtBuilding3d::CreateGeometry(vtHeightField *pHeightField)
+bool vtBuilding3d::CreateGeometry(vtHeightField3d *pHeightField)
 {
 	PolyChecker PolyChecker;
 	int i, j, k;
@@ -1314,7 +1314,7 @@ int vtBuilding3d::FindMatIndex(BldMaterial bldMat, RGBi inputColor)
  * \param options Can contain the keywords "roof", "walls", or "details"
  *   (construct all the little details, like mouding and windows)
  */
-bool vtBuilding3d::CreateNode(vtHeightField *pHeightField, const vtTagArray &options)
+bool vtBuilding3d::CreateNode(vtHeightField3d *pHeightField, const vtTagArray &options)
 {
 	if (m_pContainer)
 	{
