@@ -403,12 +403,13 @@ private:
 class StringArray : public Array<vtString*>
 {
 public:
-	virtual ~StringArray() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
+	virtual ~StringArray() { Wipe(); }
 	virtual	void DestructItems(int first, int last)
 	{
 		for (int i = first; i <= last; ++i)
 			delete GetAt(i);
 	}
+	void Wipe() { Empty(); free(m_Data); m_Data = NULL; m_MaxSize = 0; }
 
 	// assignment
 	StringArray &operator=(const class StringArray &v);
