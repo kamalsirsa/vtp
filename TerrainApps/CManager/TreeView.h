@@ -69,12 +69,6 @@ public:
 	void DoToggleIcon(const wxTreeItemId& item);
 
 protected:
-	// is this the test item which we use in several event handlers?
-	bool IsTestItem(const wxTreeItemId& item)
-	{
-		// the test item is the first child folder
-		return GetParent(item) == GetRootItem() && !GetPrevSibling(item);
-	}
 
 private:
 	wxImageList *m_imageListNormal;
