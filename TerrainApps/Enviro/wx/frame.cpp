@@ -15,7 +15,7 @@
 #include "wx/wxprec.h"
 
 #ifdef UNIX
-#  include <unistd.h>
+#include <unistd.h>
 #endif
 
 #ifndef WX_PRECOMP
@@ -875,7 +875,8 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 	// save current directory
 	GetCwd( path, sizeof(path) );
 
-	wxFileDialog loadFile(NULL, "Load Point Data", "", "", "Point Data Sources (*.shp)|*.shp|", wxOPEN);
+	wxFileDialog loadFile(NULL, "Load Point Data", "", "",
+		"Point Data Sources (*.shp)|*.shp|", wxOPEN);
 	bool bResult = (loadFile.ShowModal() == wxID_OK);
 	if (!bResult)
 	{
