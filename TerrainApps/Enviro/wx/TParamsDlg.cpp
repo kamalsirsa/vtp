@@ -834,7 +834,7 @@ void TParamsDlg::OnEditColors( wxCommandEvent &event )
 	name = FindFileOnPaths(m_datapaths, name);
 	if (name == "")
 	{
-		wxMessageBox("Couldn't locate file.");
+		wxMessageBox(_("Couldn't locate file."));
 		return;
 	}
 
