@@ -15,7 +15,7 @@ SUBPROJECTS = xmlhelper vtdata vtlib/core vtlib/vtosg
 
 MAKE_RECURSIVE = $(SUBPROJECTS:%=$(MAKE) -C % $@;) 
 
-RECURSIVE_TARGETS = all install uninstall clean clobber
+RECURSIVE_TARGETS = all install uninstall clean clobber depend
 
 $(RECURSIVE_TARGETS):
 	$(MAKE_RECURSIVE)

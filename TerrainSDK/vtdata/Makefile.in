@@ -16,6 +16,7 @@
 DSP_FILE   	  = vtdata.dsp
 
 TARGET_HDR_SUBDIR = vtdata
+EXTRA_TARGET_HDRS = shapelib/shapefil.h
 
 TARGET_LIB    	  = libvtdata.so
 
