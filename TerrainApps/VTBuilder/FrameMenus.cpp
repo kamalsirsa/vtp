@@ -12,6 +12,7 @@
 #endif
 #include <wx/progdlg.h>
 
+#include "vtdata/config_vtdata.h"
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/Icosa.h"
 #include "vtdata/vtDIB.h"
@@ -173,6 +174,7 @@ EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
 EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
 EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
 EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
+EVT_MENU(ID_AREA_REQUEST_LAYER,		MainFrame::OnAreaRequestLayer)
 
 EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
 EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
@@ -364,6 +366,7 @@ void MainFrame::CreateMenus()
 #ifndef ELEVATION_ONLY
 	areaMenu->Append(ID_AREA_GENERATE_VEG, "Generate && Export Vegetation",
 		"Generate Vegetation File (*.vf) containg plant distribution.");
+	areaMenu->Append(ID_AREA_REQUEST_LAYER, "Request Layer from WFS");
 #endif
 	m_pMenuBar->Append(areaMenu, "Export &Area");
 	menu_num++;
@@ -1713,6 +1716,18 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 
 	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap &&
 			!m_area.IsEmpty());
+}
+
+void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
+{
+#if SUPPORT_HTTP
+	vtRawLayer *pRL = new vtRawLayer();
+	bool success = pRL->ReadFeaturesFromWFS("http://10.254.0.29:8080/GetFeature?typeName=rail");
+	if (success)
+		AddLayerWithCheck(pRL);
+	else
+		delete pRL;
+#endif
 }
 
 
