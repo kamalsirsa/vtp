@@ -386,9 +386,9 @@ void BExtractorDoc::OnImportimage2(LPCTSTR szPathName)
 			m_Links.GetProjection().SetUTMZone(dlg.m_iZone);
 			break;
 		case 1: // OSGB
-			m_proj.SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
-			m_Buildings.m_proj.SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
-			m_Links.GetProjection().SetProjectionSimple(false, -1, ORDNANCE_SURVEY_1936);
+			m_proj.SetProjectionSimple(false, -1, 6277);	// OSGB 1936
+			m_Buildings.m_proj.SetProjectionSimple(false, -1, 6277);
+			m_Links.GetProjection().SetProjectionSimple(false, -1, 6277);
 			break;
 		default: // default to UTM
 			m_proj.SetUTMZone(dlg.m_iZone);
