@@ -127,6 +127,7 @@ void Enviro::Shutdown()
 	if (m_pCursorMGeom)
 		m_pCursorMGeom->Release();
 	delete m_pTerrainScene;
+	delete m_pIcoGlobe;
 }
 
 void Enviro::StartupArgument(int i, const char *str)
