@@ -32,7 +32,9 @@ public:
 
 	// WDR: member variable declarations for BuildingDlg
 	vtStructure3d	*m_pStructure3d;
-//	vtBuilding3d  *m_pBuilding;
+
+	// allow the dialog to control rendering
+	virtual void EnableRendering(bool bEnable);
 
 protected:
 	// WDR: handler declarations for BuildingDlg

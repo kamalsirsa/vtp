@@ -16,8 +16,6 @@
 #include "wx/wx.h"
 #endif
 
-#include <wx/colordlg.h>
-
 #include "vtlib/vtlib.h"
 #include "vtlib/core/Terrain.h"
 #include "BuildingDlg3d.h"
@@ -50,5 +48,10 @@ void BuildingDlg3d::OnOK( wxCommandEvent &event )
 
 	vtTerrain *pTerr = GetCurrentTerrain();
 	pTerr->GetStructures().ReConstructStructure(m_pStructure3d, "roof walls detail");
+}
+
+void BuildingDlg3d::EnableRendering(bool bEnable)
+{
+	EnableContinuousRendering(bEnable);
 }
 

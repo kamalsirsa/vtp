@@ -46,6 +46,9 @@ public:
 	void HighlightSelectedLevel();
 	void UpdateColorControl();
 
+	// allow the dialog to control rendering (in case its being used w/3d)
+	virtual void EnableRendering(bool bEnable) {}
+
 protected:
 	// WDR: member variable declarations for BuildingDlg
 	vtBuilding  *m_pBuilding;

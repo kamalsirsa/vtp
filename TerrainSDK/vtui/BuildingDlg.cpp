@@ -78,6 +78,7 @@ void BuildingDlg::EditColor()
 	data.SetChooseFull(true);
 	data.SetColour(m_Color);
 
+	EnableRendering(false);
 	wxColourDialog dlg(this, &data);
 	if (dlg.ShowModal() == wxID_OK)
 	{
@@ -88,6 +89,7 @@ void BuildingDlg::EditColor()
 
 		UpdateColorControl();
 	}
+	EnableRendering(true);
 }
 
 void BuildingDlg::HighlightSelectedLevel()
