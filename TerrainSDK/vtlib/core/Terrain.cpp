@@ -494,25 +494,34 @@ void vtTerrain::PaintDib()
 	{
 		// If this member hasn't been set by a subclass, then we can go ahead
 		//  and use the info from the terrain parameters
+		m_pTextureColors = new ColorMap;
 		ColorMap cmap;
 		vtString name = m_Params.GetValueString(STR_COLOR_MAP);
 		if (name != "")
 		{
-			if (!cmap.Load(name))
+			if (!m_pTextureColors->Load(name))
 			{
 				// Look on data paths
 				vtString name2 = "GeoTypical/";
 				name2 += name;
 				name2 = FindFileOnPaths(vtGetDataPath(), name2);
 				if (name2 != "")
-					cmap.Load(name2);
+					m_pTextureColors->Load(name2);
 			}
 		}
-		if (cmap.Num() != 0)
-			m_pTextureColors = new ColorMap(cmap);
+		// If the colors weren't provided by a subclass, and couldn't be
+		//  loaded either, then make up some default colors.
+		if (m_pTextureColors->Num() == 0)
+		{
+			m_pTextureColors->m_bRelative = true;
+			m_pTextureColors->Add(0, RGBi(0x20, 0x90, 0x20));	// medium green
+			m_pTextureColors->Add(1, RGBi(0x40, 0xE0, 0x40));	// light green
+			m_pTextureColors->Add(2, RGBi(0xE0, 0xD0, 0xC0));	// tan
+			m_pTextureColors->Add(3, RGBi(0xE0, 0x80, 0x10));	// orange
+			m_pTextureColors->Add(4, RGBi(0xE0, 0xE0, 0xE0));	// light grey
+		}
 	}
 	vtHeightFieldGrid3d *pHFGrid = GetHeightFieldGrid3d();
-
 	pHFGrid->ColorDibFromElevation(m_pDIB, m_pTextureColors, 4000);
 }
 
