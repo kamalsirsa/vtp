@@ -826,7 +826,14 @@ void Enviro::SetupScene2()
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
 	vtPlantList pl;
-	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
+
+	// First look for species.xml with terrain name prepended, otherwise fall
+	//  back on just "species.xml"
+	vtString species_fname = "PlantData/" + g_Options.m_strInitTerrain + "-species.xml";
+	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, species_fname);
+	if (species_path == "")
+		species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
+
 	if (species_path != "" && pl.ReadXML(species_path))
 	{
 		m_pPlantList = new vtPlantList3d();
