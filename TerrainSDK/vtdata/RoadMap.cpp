@@ -995,7 +995,7 @@ DRECT vtRoadMap::GetMapExtent()
 
 void vtRoadMap::ComputeExtents()
 {
-	if (NumRoads() == 0 || NumNodes() == 0)
+	if (NumRoads() == 0)
 	{
 		m_bValidExtents = false;
 		return;
