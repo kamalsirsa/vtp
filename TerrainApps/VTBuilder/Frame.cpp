@@ -35,6 +35,7 @@
 #include "ResampleDlg.h"
 #include "FeatInfoDlg.h"
 #include "DistanceDlg.h"
+#include "vtui/LinearStructDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "bld_edit.xpm"
@@ -88,6 +89,7 @@ DECLARE_APP(MyApp)
 #define WID_FRAME		101
 #define WID_MAINVIEW	102
 #define WID_FEATINFO	103
+#define WID_DISTANCE	104
 
 
 //////////////////////////////////////////////////////////////////
@@ -111,6 +113,7 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_BioRegionDlg = NULL;
 	m_pFeatInfoDlg = NULL;
 	m_pDistanceDlg = NULL;
+	m_pLinearStructureDlg = NULL;
 	m_szIniFilename = "VTBuilder.ini";
 
 	// frame icon
@@ -165,6 +168,8 @@ void MainFrame::SetupUI()
 	proj.SetWellKnownGeogCS("WGS84");
 	SetProjection(proj);
 	RefreshStatusBar();
+
+	SetStatusText("Ready");
 }
 
 MainFrame::~MainFrame()
@@ -181,8 +186,25 @@ void MainFrame::DeleteContents()
 
 void MainFrame::OnSize(wxSizeEvent& event)
 {
-	int foo = 1;
 	wxFrame::OnSize(event);
+}
+
+void MainFrame::OnClose(wxCloseEvent &event)
+{
+	int num = NumModifiedLayers();
+	if (num > 0)
+	{
+		wxString str;
+		str.Printf("There %s %d layer%s modified but unsaved.\n"
+			"Are you sure you want to exit?", num == 1 ? "is" : "are", num,
+			num == 1 ? "" : "s");
+		if (wxMessageBox(str, "Warning", wxYES_NO) == wxNO)
+		{
+			event.Veto();
+			return;
+		}
+	}
+	Destroy();
 }
 
 void MainFrame::CreateToolbar()
@@ -244,7 +266,8 @@ void MainFrame::RefreshToolbar()
 			toolBar_main->AddSeparator();
 			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
 			ADD_TOOL(ID_STRUCTURE_EDIT_BLD, wxBITMAP(bld_edit), _("Edit Buildings"), true);
-			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Features"), true);
+			ADD_TOOL(ID_STRUCTURE_ADD_LINEAR, wxBITMAP(str_add_linear), _("Add Linear Structures"), true);
+			ADD_TOOL(ID_STRUCTURE_EDIT_LINEAR, wxBITMAP(str_edit_linear), _("Edit Linear Structures"), true);
 			break;
 		case LT_UTILITY:
 			toolBar_main->AddSeparator();
@@ -258,6 +281,7 @@ void MainFrame::RefreshToolbar()
 			ADD_TOOL(ID_FEATURE_SELECT, wxBITMAP(select), _("Select Features"), true);
 			ADD_TOOL(ID_FEATURE_PICK, wxBITMAP(info), _("Pick Features"), true);
 			ADD_TOOL(ID_FEATURE_TABLE, wxBITMAP(table), _("Table"), true);
+			ADD_TOOL(ID_RAW_ADDPOINTS, wxBITMAP(raw_add_point), _("Add Points with Mouse"), true);
 	}
 	toolBar_main->Realize();
 
@@ -598,7 +622,7 @@ void MainFrame::SetActiveLayer(vtLayer *lp, bool refresh)
 			m_pView->SetMode(LB_TSelect);
 
 		if (lp->GetType() == LT_ROAD && last != LT_ROAD)
-			m_pView->SetMode(LB_Road);
+			m_pView->SetMode(LB_Link);
 
 		if (lp->GetType() == LT_STRUCTURE && last != LT_STRUCTURE)
 			m_pView->SetMode(LB_FSelect);
@@ -626,6 +650,18 @@ int MainFrame::LayersOfType(LayerType lt)
 	return count;
 }
 
+int MainFrame::NumModifiedLayers()
+{
+	int count = 0;
+	int layers = m_Layers.GetSize();
+	for (int l = 0; l < layers; l++)
+	{
+		if (m_Layers.GetAt(l)->GetModified())
+			count++;
+	}
+	return count;
+}
+
 vtLayer *MainFrame::FindLayerOfType(LayerType lt)
 {
 	int layers = m_Layers.GetSize();
@@ -647,15 +683,17 @@ bool MainFrame::ReadINI()
 
 	if (m_fpIni)
 	{
-		int ShowMap, ShowElev, Shading, DoMask, DoUTM;
-		fscanf(m_fpIni, "%d %d %d %d %d", &ShowMap, &ShowElev, &Shading,
-			&DoMask, &DoUTM);
+		int ShowMap, ShowElev, Shading, DoMask, DoUTM, ShowPaths, DrawWidth;
+		fscanf(m_fpIni, "%d %d %d %d %d %d %d", &ShowMap, &ShowElev, &Shading,
+			&DoMask, &DoUTM, &ShowPaths, &DrawWidth);
 
 		m_pView->m_bShowMap = (ShowMap != 0);
 		vtElevLayer::m_bShowElevation = (ShowElev != 0);
 		vtElevLayer::m_bShading = (Shading != 0);
 		vtElevLayer::m_bDoMask = (DoMask != 0);
 		m_pView->m_bShowUTMBounds = (DoUTM != 0);
+		m_pTree->SetShowPaths(ShowPaths != 0);
+		vtRoadLayer::SetDrawWidth(DrawWidth != 0);
 
 		return true;
 	}
@@ -668,10 +706,11 @@ bool MainFrame::WriteINI()
 	if (m_fpIni)
 	{
 		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d", m_pView->m_bShowMap,
+		fprintf(m_fpIni, "%d %d %d %d %d %d %d", m_pView->m_bShowMap,
 			vtElevLayer::m_bShowElevation,
 			vtElevLayer::m_bShading, vtElevLayer::m_bDoMask,
-			m_pView->m_bShowUTMBounds);
+			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
+			vtRoadLayer::GetDrawWidth());
 		fclose(m_fpIni);
 		m_fpIni = NULL;
 		return true;
@@ -753,7 +792,7 @@ FeatInfoDlg	*MainFrame::ShowFeatInfoDlg()
 {
 	if (!m_pFeatInfoDlg)
 	{
-		// Create new Bioregion Dialog
+		// Create new Feature Info Dialog
 		m_pFeatInfoDlg = new FeatInfoDlg(this, WID_FEATINFO, "Feature Info",
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pFeatInfoDlg->SetView(GetView());
@@ -767,8 +806,8 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 {
 	if (!m_pDistanceDlg)
 	{
-		// Create new Bioregion Dialog
-		m_pDistanceDlg = new DistanceDlg(this, WID_FEATINFO, "Feature Info",
+		// Create new Distance Dialog
+		m_pDistanceDlg = new DistanceDlg(this, WID_DISTANCE, "Distance Tool",
 				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
 		m_pDistanceDlg->SetProjection(&m_proj);
 	}
@@ -776,6 +815,32 @@ DistanceDlg	*MainFrame::ShowDistanceDlg()
 	return m_pDistanceDlg;
 }
 
+class LinearStructureDlg2d: public LinearStructureDlg
+{
+public:
+	LinearStructureDlg2d(wxWindow *parent, wxWindowID id, const wxString &title,
+		const wxPoint& pos, const wxSize& size, long style) :
+			LinearStructureDlg(parent, id, title, pos, size, style) {}
+	void OnSetOptions(LinStructOptions &opt)
+	{
+		m_pFrame->m_LSOptions = opt;
+	}
+	MainFrame *m_pFrame;
+};
+
+LinearStructureDlg *MainFrame::ShowLinearStructureDlg(bool bShow)
+{
+	if (bShow && !m_pLinearStructureDlg)
+	{
+		// Create new Distance Dialog
+		m_pLinearStructureDlg = new LinearStructureDlg2d(this, WID_DISTANCE, "Linear Structures",
+				wxPoint(120, 80), wxSize(600, 200), wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER);
+		m_pLinearStructureDlg->m_pFrame = this;
+	}
+	if (m_pLinearStructureDlg)
+		m_pLinearStructureDlg->Show(bShow);
+	return m_pLinearStructureDlg;
+}
 
 
 //
@@ -1234,3 +1299,4 @@ void MainFrame::OnChar(wxKeyEvent& event)
 {
 	m_pView->OnChar(event);
 }
+
