@@ -85,9 +85,9 @@ bool dir_iter::is_directory()
 bool dir_iter::is_hidden()
 {
 #if WIN32
-	return (m_data.attrib & _A_SUBDIR) != 0;
+	return (m_data.attrib & _A_HIDDEN) != 0;
 #else
-	return S_ISDIR(get_stat().st_mode);
+	return (m_current[0] == '.');
 #endif
 }
 

@@ -60,7 +60,10 @@ private:
 	struct stat &get_stat()
 	{
 		if (!m_stat_p)
+		{
 			stat(m_current.c_str(), &m_stat);
+			m_stat_p = true;
+		}
 		return m_stat;
 	}
 #endif
