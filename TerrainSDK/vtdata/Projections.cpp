@@ -46,12 +46,11 @@ vtProjection::vtProjection() : OGRSpatialReference()
  */
 vtProjection &vtProjection::operator=(const vtProjection &ref)
 {
-	// copy new projection
+	// copy projection
 	if (ref.GetRoot() != NULL)
 	{
-		OGRSpatialReference *ref_copy = ref.Clone();
-		(*(OGRSpatialReference *)this) = *ref_copy;
-		delete ref_copy;
+		const OGRSpatialReference &ref_as_osr = ref;
+		(*(OGRSpatialReference *)this) = ref_as_osr;
 	}
 	return *this;
 }
@@ -750,6 +749,7 @@ void SetupEPSGDatums()
 	int count = sizeof(epsg_datums) / sizeof(epsg_datum);
 	EPSGDatum dat;
 
+	g_EPSGDatums.SetMaxSize(count);
 	for (int i = 0; i < count; i++)
 	{
 		dat.bCommon = epsg_datums[i].common != 0;
@@ -758,6 +758,11 @@ void SetupEPSGDatums()
 		dat.szShortName = epsg_datums[i].shortname;
 		g_EPSGDatums.Append(dat);
 	}
+}
+
+void CleanupEPSGDatums()
+{
+	g_EPSGDatums.Empty();
 }
 
 /**
