@@ -67,6 +67,12 @@ void vtApp::Args(int argc, wxChar **argv)
 }
 
 
+//
+// The following is a test case for a bug which affects wxWindows's ability
+//  to use .mo Locale files which have a character set explicitly stated to
+//  be "iso-8859-1".  In theory it should work fine, but on some machines
+//  it causes the wxMessagesHash class to fail.
+//
 WX_DECLARE_EXPORTED_STRING_HASH_MAP(wxString, wxMessagesHash);
 class MyMsgCatalogFile
 {
@@ -74,19 +80,22 @@ public:
     // fills the hash with string-translation pairs
     void TestHash(bool convertEncoding)
 	{
+		VTLOG("(Hash/conversion test: ");
 		wxCSConv *csConv = new wxCSConv(_T("iso-8859-1"));
 
+		// This first test should always work
 		wxString key = wxString("Key1", *wxConvCurrent);
 		m_messages[key] = _T("Value1");
 
 		const wxChar *result = GetString(_T("Key1"));
-		VTLOG(result == NULL? "test1: bad\n" : "test1: good\n");
+		VTLOG(result == NULL? "test1: bad, " : "test1: good, ");
 
+		// This second test fails on some machines, illustrating the bug
 		wxString key2 = wxString("Key2", *csConv);
 		m_messages[key2] = _T("Value2");
 
 		const wxChar *result2 = GetString(_T("Key2"));
-		VTLOG(result2 == NULL? "test2: bad\n" : "test2: good\n");
+		VTLOG(result2 == NULL? "test2: bad.)\n" : "test2: good.)\n");
 
 		delete csConv;
 	}
@@ -123,6 +132,11 @@ int GetLangFromName(const wxString &name)
 			if (name.CmpNoCase(shortname) == 0)
 				return lang;
 		}
+		else if (name.Length() == 5 && name[2] == '_')
+		{
+			if (name.CmpNoCase(info->CanonicalName) == 0)
+				return lang;
+		}
 	}
 	return wxLANGUAGE_UNKNOWN;
 }
@@ -135,10 +149,14 @@ void vtApp::SetupLocale()
 	TestLocale();
 
 	// Locale stuff
-	VTLOG("\n");
 	int lang = wxLANGUAGE_DEFAULT;
 	int default_lang = m_locale.GetSystemLanguage();
 
+	const wxLanguageInfo *info = wxLocale::GetLanguageInfo(default_lang);
+	VTLOG("Default language: %d (%s)\n",
+		default_lang, info->Description.mb_str());
+
+	bool bSuccess;
 	if (m_locale_name != "")
 	{
 		VTLOG("Looking up language: %s\n", (const char *) m_locale_name);
@@ -150,34 +168,34 @@ void vtApp::SetupLocale()
 		}
 		else
 		{
-			VTLOG("Initializing locale to language %d\n", lang);
-			m_locale.Init(lang);
+			info = m_locale.GetLanguageInfo(lang);
+			VTLOG("Initializing locale to language %d, Canonical name '%s', Description: '%s':\n", lang,
+				info->CanonicalName.mb_str(), info->Description.mb_str());
+			bSuccess = m_locale.Init(lang, wxLOCALE_CONV_ENCODING);
 		}
 	}
 	if (lang == wxLANGUAGE_DEFAULT)
 	{
-		// auto detect the language
-		lang = m_locale.GetSystemLanguage();
-		VTLOG("Initializing locale to default language: %d\n", lang);
-		m_locale.Init(wxLANGUAGE_DEFAULT);
+		VTLOG("Initializing locale to default language:\n");
+		bSuccess = m_locale.Init(wxLANGUAGE_DEFAULT, wxLOCALE_CONV_ENCODING);
+		if (bSuccess)
+			lang = default_lang;
 	}
-
-	const wxLanguageInfo *info = m_locale.GetLanguageInfo(lang);
-	if (info)
-	{
-		VTLOG("Locale info: Canonical name '%s', Description: '%s'\n",
-			info->CanonicalName.mb_str(), info->Description.mb_str());
-	}
-	else
-		VTLOG("Locale info: unavailable.\n");
-
-	VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
-	bool success = m_locale.AddCatalog(wxT("Enviro"));
-	if (success)
+	if (bSuccess)
 		VTLOG(" succeeded.\n");
 	else
-		VTLOG(" not found.\n");
-	VTLOG("\n");
+		VTLOG(" failed.\n");
+
+	if (lang != wxLANGUAGE_ENGLISH_US)
+	{
+		VTLOG("Attempting to load the 'Enviro.mo' catalog for the current locale.\n");
+		bSuccess = m_locale.AddCatalog(wxT("Enviro"));
+		if (bSuccess)
+			VTLOG(" succeeded.\n");
+		else
+			VTLOG(" not found.\n");
+		VTLOG("\n");
+	}
 
 	// Load any other catalogs which may be specific to this application.
 	LoadAppCatalog(m_locale);
@@ -188,6 +206,15 @@ void vtApp::SetupLocale()
 	wxLog::SetVerbose(false);
 }
 
+class LogCatcher : public wxLog
+{
+    void DoLogString(const wxChar *szString, time_t t)
+	{
+		VTLOG(" wxLog: ");
+		VTLOG(szString);
+		VTLOG("\n");
+	}
+};
 
 //
 // Initialize the app object
@@ -210,6 +237,10 @@ bool vtApp::OnInit()
 	LogWindowsVersion();
 #endif
 	VTLOG("\n");
+
+	// Redirect the wxWindows log messages to our own logging stream
+	wxLog *logger = new LogCatcher();
+	wxLog::SetActiveTarget(logger);
 
 	Args(argc, argv);
 
