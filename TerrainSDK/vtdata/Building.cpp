@@ -379,7 +379,7 @@ void vtLevel::SetWalls(unsigned int n)
 	for (unsigned int i = 0; i < n; i++)
 	{
 		vtEdge *pnew = new vtEdge;
-		pnew->Set(0, 0, BMAT_NAME_PLAIN);
+		pnew->Set(0, 0, BMAT_NAME_SIDING);
 		m_Edges.Append(pnew);
 	}
 }
