@@ -101,7 +101,6 @@ public:
 	void OnViewWorldMap();
 	void OnViewUTMBounds();
 	void OnViewMinutes();
-	void OnViewFillWater();
 
 	void OnUpdateToolbar(wxUpdateUIEvent& event);
 	void OnUpdateLayerShow(wxUpdateUIEvent& event);
@@ -114,7 +113,6 @@ public:
 	void OnUpdateWorldMap(wxUpdateUIEvent& event);
 	void OnUpdateUTMBounds(wxUpdateUIEvent& event);
 	void OnUpdateMinutes(wxUpdateUIEvent& event);
-	void OnUpdateFillWater(wxUpdateUIEvent& event);
 
 	void OnSelectRoad(wxCommandEvent& event);
 	void OnSelectNode(wxCommandEvent& event);

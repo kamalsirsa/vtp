@@ -51,8 +51,6 @@ public:
 	void AddElementsFromOGR(class OGRDataSource *datasource,
 		void progress_callback(int) = NULL);
 
-	static bool	m_bFill;
-
 protected:
 	// data for rivers and water bodies
 	// eventually, should have vector+width data for rivers, area data for bodies

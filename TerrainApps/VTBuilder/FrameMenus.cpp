@@ -83,7 +83,6 @@ EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnViewSetArea)
 EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
 EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
 EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
-EVT_MENU(ID_VIEW_FILLWATER,		MainFrame::OnViewFillWater)
 
 EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateToolbar)
 EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
@@ -96,7 +95,6 @@ EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateViewSetArea)
 EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
 EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
 EVT_UPDATE_UI(ID_VIEW_SHOWMINUTES,	MainFrame::OnUpdateMinutes)
-EVT_UPDATE_UI(ID_VIEW_FILLWATER,	MainFrame::OnUpdateFillWater)
 
 EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectRoad)
 EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
@@ -249,7 +247,6 @@ void MainFrame::CreateMenus()
 	// View
 	viewMenu = new wxMenu;
 	viewMenu->Append(ID_VIEW_TOOLBAR, "Toolbar", "Show Toolbar", true);
-	viewMenu->Append(ID_VIEW_STATUSBAR, "Status Bar", "Show Status Bar", true);
 	viewMenu->Append(ID_VIEW_SHOWLAYER, "Current Layer Visible", "Toggle Visibility of the current Layer", true);
 	viewMenu->Append(ID_VIEW_LAYERPATHS, "Show Full Layer Pathnames", "Show the full path information for each Layer", true);
 	viewMenu->AppendSeparator();
@@ -271,10 +268,6 @@ void MainFrame::CreateMenus()
 	viewMenu->Append(ID_ELEV_SHOW, "Show Terrain Elevation", "Show Terrain Elevation", true);
 	viewMenu->Append(ID_ELEV_SHADING, "Artificial Shading", "Artificial Shading", true);
 	viewMenu->Append(ID_ELEV_HIDE, "Hide Unknown Areas", "Hide Unknown Areas", true);
-#ifndef ELEVATION_ONLY
-	viewMenu->AppendSeparator();
-	viewMenu->Append(ID_VIEW_FILLWATER, "Show Water Bodies Filled", "Show Water Bodies Filled", true);
-#endif
 	m_pMenuBar->Append(viewMenu, "&View");
 	menu_num++;
 
@@ -1146,15 +1139,6 @@ void MainFrame::OnUpdateMinutes(wxUpdateUIEvent& event)
 	event.Check(m_bShowMinutes);
 }
 
-void MainFrame::OnViewFillWater()
-{
-	vtWaterLayer::m_bFill = !vtWaterLayer::m_bFill;
-}
-
-void MainFrame::OnUpdateFillWater(wxUpdateUIEvent& event)
-{
-	event.Check(vtWaterLayer::m_bFill);
-}
 
 //////////////////////////
 // Road

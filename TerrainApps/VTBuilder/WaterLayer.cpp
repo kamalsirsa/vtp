@@ -16,7 +16,6 @@
 #include "Helper.h"
 #include "ogrsf_frmts.h"
 
-bool vtWaterLayer::m_bFill = false;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +83,7 @@ void vtWaterLayer::DrawLayer(wxDC* pDC, vtScaledView *pView)
 		for (c = 0; c < size && c < SCREENBUF_SIZE; c++)
 			pView->screen(feat->GetAt(c), g_screenbuf[c]);
 
-		if (m_bFill && feat->m_bIsBody)
+		if (feat->m_bIsBody)
 			pDC->DrawPolygon(c, g_screenbuf);
 		else
 			pDC->DrawLines(c, g_screenbuf);
