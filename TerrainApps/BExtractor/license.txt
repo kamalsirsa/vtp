@@ -1,6 +1,6 @@
 
 The source code and data in this distribution
-are Copyright (c) 2001 Virtual Terrain Project.
+are Copyright (c) 2001-2005 Virtual Terrain Project.
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
