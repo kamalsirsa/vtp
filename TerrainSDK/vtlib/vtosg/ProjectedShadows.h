@@ -65,42 +65,24 @@ protected:
 class CreateProjectedShadowTextureCullCallback : public osg::NodeCallback
 {
 public:
-	CreateProjectedShadowTextureCullCallback(osg::Node* shadower, int iRez = 1024, const osg::Vec3& position = osg::Vec3(), const osg::Vec4& ambientLightColor = osg::Vec4(), unsigned int textureUnit = 1):
-		m_shadower(shadower),
-		m_position(position),
-		m_ambientLightColor(ambientLightColor),
-		m_unit(textureUnit),
-		m_shadowState(new osg::StateSet),
-		m_shadowedState(new osg::StateSet)
-	{
-#ifdef _DEBUG
-		m_texture = new MyTexture2D;
-#else
-		m_texture = new osg::Texture2D;
-#endif
-		m_texture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
-		m_texture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
-		m_texture->setWrap(osg::Texture2D::WRAP_S,osg::Texture2D::CLAMP_TO_BORDER);
-		m_texture->setWrap(osg::Texture2D::WRAP_T,osg::Texture2D::CLAMP_TO_BORDER);
-		m_texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
-		m_bRecomputeShadows = false;
-		m_iRez = iRez;
-
-		shadow_ignore_nodes = new Array<osg::Node *>;
-	}
+	CreateProjectedShadowTextureCullCallback(osg::Node* shadower,
+		int iRez = 1024, const osg::Vec3 &position = osg::Vec3(),
+		const osg::Vec4 &ambientLightColor = osg::Vec4(),
+		unsigned int textureUnit = 1);
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
-	void SetLightPosition(const osg::Vec3& position);
-	void SetInitialLightPosition(const osg::Vec3& position) { m_position = position; m_bRecomputeShadows = true; }
-	void SetAmbientLightColor(const osg::Vec4& ambientLightColor) { m_ambientLightColor = ambientLightColor; }
+	void SetLightPosition(const osg::Vec3 &position);
+	void SetInitialLightPosition(const osg::Vec3 &position) { m_position = position; m_bRecomputeShadows = true; }
+	void SetAmbientLightColor(const osg::Vec4 &ambientLightColor) { m_ambientLightColor = ambientLightColor; }
 	void SetShadower(osg::Node* pShadower) { m_shadower = pShadower; }
 	void SetEnabled(bool enable) { m_bDrawEnabled = enable; }
 	void RecomputeShadows() { m_bRecomputeShadows = true; }
 	Array<osg::Node *> *shadow_ignore_nodes;
-	
+
 protected:
 	void doPreRender(osg::Node& node, osgUtil::CullVisitor& cv);
+	void DoRecomputeShadows(osg::Node& node, osgUtil::CullVisitor &cv);
 	
  	bool m_bRecomputeShadows;
 	bool m_bInCallback;
