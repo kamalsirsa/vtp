@@ -301,65 +301,10 @@ wxSizer *PlantDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, "Spacing:", wxDefaultPosition, wxDefaultSize, 0 );
     item8->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
 
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SPACINGEDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
+    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_PLANT_SPACING_EDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
     item8->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
 
     item0->Add( item8, 0, wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-
-    if (set_sizer)
-    {
-        parent->SetAutoLayout( TRUE );
-        parent->SetSizer( item0 );
-        if (call_fit)
-        {
-            item0->Fit( parent );
-            item0->SetSizeHints( parent );
-        }
-    }
-    
-    return item0;
-}
-
-wxSizer *FenceDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
-{
-    wxBoxSizer *item0 = new wxBoxSizer( wxVERTICAL );
-
-    wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, "Type:", wxDefaultPosition, wxDefaultSize, 0 );
-    item1->Add( item2, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxString *strs3 = (wxString*) NULL;
-    wxChoice *item3 = new wxChoice( parent, ID_FENCETYPE, wxDefaultPosition, wxSize(150,-1), 0, strs3, 0 );
-    item1->Add( item3, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    item0->Add( item1, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-
-    wxBoxSizer *item4 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item5 = new wxStaticText( parent, ID_TEXT, "Height:", wxDefaultPosition, wxDefaultSize, 0 );
-    item4->Add( item5, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxTextCtrl *item6 = new wxTextCtrl( parent, ID_HEIGHTEDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
-    item4->Add( item6, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxSlider *item7 = new wxSlider( parent, ID_HEIGHTSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), 0 );
-    item4->Add( item7, 0, wxALIGN_CENTRE|wxALL, 0 );
-
-    item0->Add( item4, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 0 );
-
-    wxBoxSizer *item8 = new wxBoxSizer( wxHORIZONTAL );
-
-    wxStaticText *item9 = new wxStaticText( parent, ID_TEXT, "Spacing:", wxDefaultPosition, wxDefaultSize, 0 );
-    item8->Add( item9, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxTextCtrl *item10 = new wxTextCtrl( parent, ID_SPACINGEDIT, "", wxDefaultPosition, wxSize(40,-1), 0 );
-    item8->Add( item10, 0, wxALIGN_CENTRE|wxALL, 5 );
-
-    wxSlider *item11 = new wxSlider( parent, ID_SPACINGSLIDER, 0, 0, 100, wxDefaultPosition, wxSize(110,-1), 0 );
-    item8->Add( item11, 0, wxALIGN_CENTRE|wxALL, 0 );
-
-    item0->Add( item8, 0, wxALIGN_CENTRE|wxALL, 0 );
 
     if (set_sizer)
     {
