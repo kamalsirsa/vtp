@@ -187,44 +187,23 @@ int IConvert(FILE *fp, int length)
 bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 								  void progress_callback(int))
 {
-	FILE	*fp;
-	int		i, j;
-	int		iRow, iColumn;
-	int		iElev;
-	double	fRows;
-	double	fVertUnits;
-	double 	dxdelta, dydelta, dzdelta;
-	double	dElevMax, dElevMin;
-	bool	bOldFormat = false, bNewFormat = false, bFixedLength = true;
-	int		iCoordSystem;
-	char	szName[41];
-	char	szDateBuffer[5];
-	DPoint2	corners[4];			// SW, NW, NE, SE
-	double	fGMeters;			// ground (horizontal) units
-	int		iDataStartOffset;
-	bool	bGeographic;
-	int		iUTMZone;
-	int		iDatum;
-	int		iProfileRows, iProfileCols;
-	double	dLocalDatumElev, dProfileMin, dProfileMax;
-	int		ygap;
-	DPoint2 start;
-	double	dMinY;
-
 	if (progress_callback != NULL) progress_callback(0);
 
-	if (NULL == (fp = fopen(szFileName,"rb")))
-	{
-		// Cannot Open File
+	FILE *fp = fopen(szFileName,"rb");
+	if (!fp)		// Cannot Open File
 		return false;
-	}
 
 	// check for version of DEM format
+	int		iRow, iColumn;
 	char buffer[144];
 
 	fseek(fp, 864, 0);
 	fread(buffer, 144, 1, fp);
-	bOldFormat = (strncmp(buffer, "     1     1", 12) == 0);
+	bool bOldFormat = (strncmp(buffer, "     1     1", 12) == 0);
+	bool bNewFormat = false;
+	bool bFixedLength = true;
+	int  iDataStartOffset;
+	int  i, j;
 
 	if (bOldFormat)
 		iDataStartOffset = 1024;	// 1024 is record length
@@ -266,6 +245,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// Read the embedded DEM name
+	char szName[41];
 	fseek(fp, 0, 0);
 	fgets(szName, 41, fp);
 	int len = strlen(szName);	// trim trailing whitespace
@@ -277,20 +257,21 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	m_strOriginalDEMName = szName;
 
 	fseek(fp, 156, 0);
-	iCoordSystem = IConvert(fp, 6);
-	iUTMZone = IConvert(fp, 6);
+	int iCoordSystem = IConvert(fp, 6);
+	int iUTMZone = IConvert(fp, 6);
 
 	fseek(fp, 168, 0);
 	double dProjParams[15];
 	for (i = 0; i < 15; i++)
 		dProjParams[i] = DConvert(fp, 24);
 
-	iDatum = EPSG_DATUM_NAD27;	// default
+	int iDatum = EPSG_DATUM_NAD27;	// default
 
 	// OLD format header ends at byte 864; new format has Datum
 	if (bNewFormat)
 	{
 		// year of data compilation
+		char szDateBuffer[5];
 		fseek(fp, 876, 0);		// 0x36C
 		fread(szDateBuffer, 4, 1, fp);
 		szDateBuffer[4] = 0;
@@ -317,7 +298,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// Set up the projection
-	bGeographic = false;
+	bool bGeographic = false;
 	switch (iCoordSystem)
 	{
 	case 0:		// geographic (lat-lon)
@@ -370,7 +351,8 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	int iGUnit = IConvert(fp, 6);
 	int iVUnit = IConvert(fp, 6);
 
-	// Ground Units in meters
+	// Ground (Horizontal) Units in meters
+	double	fGMeters;
 	switch (iGUnit)
 	{
 	case 0: fGMeters = 1.0;		break;	// 0 = radians (never encountered)
@@ -380,6 +362,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// Vertical Units in meters
+	double	fVertUnits;
 	switch (iVUnit)
 	{
 	case 1:  fVertUnits = 0.3048f; break;	// feet to meter conversion
@@ -388,13 +371,14 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	fseek(fp, 816, 0);
-	dxdelta = DConvert(fp, 12);
-	dydelta = DConvert(fp, 12);
-	dzdelta = DConvert(fp, 12);
+	double dxdelta = DConvert(fp, 12);
+	double dydelta = DConvert(fp, 12);
+	double dzdelta = DConvert(fp, 12);
 
 	m_bFloatMode = false;
 
 	// Read the coordinates of the 4 corners
+	DPoint2	corners[4];			// SW, NW, NE, SE
 	fseek(fp, 546, 0);
 	for (i = 0; i < 4; i++)
 	{
@@ -418,14 +402,22 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 			m_Corners[i] = corners[i];
 	}
 
-	dElevMin = DConvert(fp, 24);
-	dElevMax = DConvert(fp, 24);
+	double dElevMin = DConvert(fp, 24);
+	double dElevMax = DConvert(fp, 24);
 
 	fseek(fp, 852, 0);
 	int rows = IConvert(fp, 6);
 	int iProfiles = IConvert(fp, 6);
 
 	m_iColumns = iProfiles;
+
+	// values we'll need while scanning the elevation profiles
+	int		iProfileRows, iProfileCols;
+	int		iElev;
+	double	dLocalDatumElev, dProfileMin, dProfileMax;
+	int		ygap;
+	double	dMinY;
+	DPoint2 start;
 
 	if (bGeographic)
 	{
@@ -490,6 +482,7 @@ bool vtElevationGrid::LoadFromDEM(const char *szFileName,
 	}
 
 	// Compute number of rows
+	double	fRows;
 	if (bGeographic)
 	{
 		// degrees
