@@ -12,10 +12,9 @@
 #include "wx/wx.h"
 #endif
 
-#include "wx/resource.h"
-
-#include "vtdata/Unarchive.h"
+#include "vtdata/ElevationGrid.h"
 #include "vtdata/FilePath.h"
+#include "vtdata/Unarchive.h"
 #include "vtdata/boost/directory.h"
 
 #include "Frame.h"
@@ -33,22 +32,7 @@
 #include "StructLayer.h"
 #include "UtilityLayer.h"
 // Dialogs
-#include "ElevDlg.h"
-
-#if defined(__WXMSW__)
-static char *dialog1 = NULL;
-static char *dialog2 = NULL;
-static char *dialog3 = NULL;
-static char *dialog4 = NULL;
-static char *dialog5 = NULL;
-#else
-// Other platforms should have compilers that cope with long strings.
-#include "dialog1.wxr"
-#include "dialog2.wxr"
-#include "dialog3.wxr"
-#include "dialog4.wxr"
-#include "dialog5.wxr"
-#endif
+#include "ResampleDlg.h"
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__)
 #  include "bld_edit.xpm"
@@ -103,7 +87,7 @@ DECLARE_APP(MyApp)
 
 //////////////////////////////////////////////////////////////////
 
-	MainFrame *GetMainFrame()
+MainFrame *GetMainFrame()
 {
 	return (MainFrame *) wxGetApp().GetTopWindow();
 }
@@ -120,29 +104,6 @@ wxFrame(frame, WID_FRAME, title, pos, size)
 	m_pActiveLayer = NULL;
 	m_PlantListDlg = NULL;
 	m_BioRegionDlg = NULL;
-
-#if defined(__WXMSW__)
-	// Load the .wxr 'file' from a .rc resource, under Windows.
-	dialog1 = wxLoadUserResource("dialog1", "TEXT");
-	dialog2 = wxLoadUserResource("dialog2", "TEXT");
-	dialog3 = wxLoadUserResource("dialog3", "TEXT");
-	dialog4 = wxLoadUserResource("dialog4", "TEXT");
-	dialog5 = wxLoadUserResource("dialog5", "TEXT");
-
-	// prepare resources
-	bool b1 = wxResourceParseString(dialog1);
-	bool b2 = wxResourceParseString(dialog2);
-	bool b3 = wxResourceParseString(dialog3);
-	bool b4 = wxResourceParseString(dialog4);
-	bool b5 = wxResourceParseString(dialog5);
-#else
-	// prepare resources
-	bool b1 = wxResourceParseData(dialog1);	// merge and resample
-	bool b2 = wxResourceParseData(dialog2);	// scale elevation
-	bool b3 = wxResourceParseData(dialog3);	// specific projection
-	bool b4 = wxResourceParseData(dialog4);	// node properties
-	bool b5 = wxResourceParseData(dialog5);	// road properties
-#endif
 
 	// frame icon
 	SetIcon(wxICON(vtbuilder));
@@ -197,11 +158,6 @@ MainFrame::~MainFrame()
 {
 	WriteINI();
 	DeleteContents();
-#if defined(__WXMSW__) && 0
-	delete dialog1;		// not safe apparently, to delete memory allocated in the DLL
-	delete dialog2;
-	delete dialog3;
-#endif
 }
 
 void MainFrame::DeleteContents()
@@ -307,12 +263,14 @@ void MainFrame::RefreshToolbar()
 	}
 	toolBar_main->Realize();
 
-	menuBar->EnableTop(4, lt == LT_ROAD);
-	menuBar->EnableTop(5, lt == LT_UTILITY);
-	menuBar->EnableTop(6, lt == LT_ELEVATION);
-//	menuBar->EnableTop(7, lt == LT_VEG);
-	menuBar->EnableTop(8, lt == LT_STRUCTURE);
-	menuBar->EnableTop(9, lt == LT_RAW);
+	menuBar->EnableTop(m_iLayerMenu[LT_ELEVATION], lt == LT_ELEVATION);
+#ifndef ELEVATION_ONLY
+	menuBar->EnableTop(m_iLayerMenu[LT_ROAD], lt == LT_ROAD);
+	menuBar->EnableTop(m_iLayerMenu[LT_UTILITY], lt == LT_UTILITY);
+//	menuBar->EnableTop(m_iLayerMenu[LT_VEG], lt == LT_VEG);
+	menuBar->EnableTop(m_iLayerMenu[LT_STRUCTURE], lt == LT_STRUCTURE);
+	menuBar->EnableTop(m_iLayerMenu[LT_RAW], lt == LT_RAW);
+#endif
 }
 
 
@@ -348,6 +306,8 @@ void GetTempFolderName(char *path, const char *base)
 //
 void MainFrame::LoadLayer(const wxString &fname_in)
 {
+	LayerType ltype = LT_UNKNOWN;
+
 	// check file extension
 	wxString fname = fname_in;
 	wxString ext = fname.AfterLast('.');
@@ -397,7 +357,18 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		}
 		else if (result > 1)
 		{
-			// probably SDTS, look for the catalog file
+			// probably SDTS
+			// try to guess layer type from original file name
+			if (fname.Contains(".hy") || fname.Contains(".HY"))
+				ltype = LT_WATER;
+			if (fname.Contains(".rd") || fname.Contains(".RD"))
+				ltype = LT_ROAD;
+			if (fname.Contains(".dem") || fname.Contains(".DEM"))
+				ltype = LT_ELEVATION;
+			if (fname.Contains(".ms") || fname.Contains(".MS"))
+				ltype = LT_STRUCTURE;
+
+			// look for the catalog file
 			bool found = false;
 			for (dir_it it(prepend_path); it != dir_it(); ++it)
 			{
@@ -431,7 +402,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 		if (pRL->Load(fname))
 			pLayer = pRL;
 	}
-	if (ext.CmpNoCase("bt") == 0)
+	if (ext.CmpNoCase("bt") == 0 || ext.CmpNoCase("tin") == 0)
 	{
 		vtElevLayer *pEL = new vtElevLayer();
 		if (pEL->Load(fname))
@@ -478,7 +449,7 @@ void MainFrame::LoadLayer(const wxString &fname_in)
 	else
 	{
 		// try importing
-		ImportDataFromFile(LT_UNKNOWN, fname, true);
+		ImportDataFromFile(ltype, fname, true);
 	}
 
 	if (bExpandedArchive)
@@ -756,7 +727,8 @@ LayerType MainFrame::AskLayerType()
 //
 void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 {
-	DRECT area = pTarget->GetExtents();
+	DRECT area;
+	pTarget->GetExtent(area);
 	DPoint2 step = pTarget->m_pGrid->GetSpacing();
 
 	double x, y;
@@ -769,13 +741,13 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 	OpenProgressDialog("Merging and Resampling Elevation Layers");
 
 	int num_elev = LayersOfType(LT_ELEVATION);
-	vtElevationGrid **grids = new vtElevationGrid *[num_elev];
-	int g, num_grids = 0;
+	vtElevLayer **elevs = new vtElevLayer *[num_elev];
+	int g, num_elevs = 0;
 	for (l = 0; l < layers; l++)
 	{
 		vtLayer *lp = m_Layers.GetAt(l);
 		if (lp->GetType() == LT_ELEVATION)
-			grids[num_grids++] = ((vtElevLayer *)lp)->m_pGrid;
+			elevs[num_elevs++] = (vtElevLayer *)lp;
 	}
 
 	// iterate through the vertices of the new terrain
@@ -789,15 +761,12 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 
 			// find some data for this point
 			fBestData = INVALID_ELEVATION;
-			for (g = 0; g < num_grids; g++)
+			for (g = 0; g < num_elevs; g++)
 			{
-				vtElevationGrid *grid = grids[g];
+				vtElevLayer *elev = elevs[g];
+				vtElevationGrid *grid = elev->m_pGrid;
 
-				// is our point inside the extents of this terrain?
-				if (! grid->ContainsPoint(x, y))
-					continue;
-
-				fData = grid->GetFilteredValue(x, y);
+				fData = grid->GetFilteredValue2(x, y);
 				if (fData != INVALID_ELEVATION &&
 						(fBestData == INVALID_ELEVATION || fBestData == 0.0f))
 					fBestData = fData;
@@ -808,10 +777,11 @@ void MainFrame::SampleCurrentTerrains(vtElevLayer *pTarget)
 		}
 	}
 	CloseProgressDialog();
+	delete elevs;
 }
 
 
-double MainFrame::GetHeightFromTerrain(double lx, double ly)
+double MainFrame::GetHeightFromTerrain(DPoint2 &p)
 {
 	double height = INVALID_ELEVATION;
 
@@ -820,10 +790,8 @@ double MainFrame::GetHeightFromTerrain(double lx, double ly)
 	{
 		vtLayer *l = m_Layers.GetAt(i);
 		if (l->GetType() != LT_ELEVATION) continue;
-		vtElevLayer *pTerr = (vtElevLayer *)l;
-		if (!pTerr->m_pGrid) continue;
-
-		height = pTerr->m_pGrid->GetFilteredValue(lx, ly);
+		vtElevLayer *pEL = (vtElevLayer *)l;
+		height = pEL->GetElevation(p);
 		if (height != INVALID_ELEVATION)
 			break;
 	}
@@ -992,7 +960,8 @@ bool DnDFile::OnDropFiles(wxCoord, wxCoord, const wxArrayString& filenames)
 
 void MainFrame::ExportElevation()
 {
-	// If any of the input terrain are floats, the output should be float
+	// If any of the input terrain are floats, then recommend to the user
+	// that the output should be float as well.
 	bool floatmode = false;
 
 	// sample spacing in meters/heixel or degrees/heixel
@@ -1010,9 +979,11 @@ void MainFrame::ExportElevation()
 	}
 
 	// Open the Resample dialog
-	ResampleDlg dlg(!m_proj.IsGeographic(), spacing.x);
-	dlg.LoadFromResource(this, "dialog1");
+	ResampleDlg dlg(this, -1, "Merge and Resample Elevation");
+	dlg.m_fEstX = spacing.x;
+	dlg.m_fEstY = spacing.y;
 	dlg.m_area = m_area;
+	dlg.m_bFloats = floatmode;
 
 	if (dlg.ShowModal() == wxID_CANCEL)
 		return;
@@ -1029,26 +1000,28 @@ void MainFrame::ExportElevation()
 	wxString strPathName = saveFile.GetPath();
 
 	// Make new terrain
-	vtElevLayer *pBig = new vtElevLayer(dlg.m_area, dlg.m_iXSamples,
-			dlg.m_iYSamples, floatmode, m_proj);
-	pBig->SetFilename(strPathName);
+	vtElevLayer *pOutput = new vtElevLayer(dlg.m_area, dlg.m_iSizeX,
+			dlg.m_iSizeY, dlg.m_bFloats, dlg.m_fVUnits, m_proj);
+	pOutput->SetFilename(strPathName);
 
 	// fill in the value for pBig by merging samples from all other terrain
-	SampleCurrentTerrains(pBig);
-	pBig->FillGaps();
+	SampleCurrentTerrains(pOutput);
+#if 1
+	pOutput->FillGaps();
+#endif
 
-	bool success = pBig->m_pGrid->SaveToBT(strPathName);
+	bool success = pOutput->m_pGrid->SaveToBT(strPathName);
 	if (!success)
 	{
 		wxMessageBox("Couldn't open file for writing.");
-		delete pBig;
+		delete pOutput;
 		return;
 	}
 
 	wxString str = "Successfully wrote BT file ";
 	str += strPathName;
 	wxMessageBox(str);
-	delete pBig;
+	delete pOutput;
 }
 
 
