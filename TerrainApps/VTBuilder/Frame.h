@@ -385,6 +385,7 @@ public:
 	void ExportGeoTIFF();
 	void ExportBMP();
 	void ExportSTM();
+	void ExportPlanet();
 
 	// area tool
 	void StretchArea();

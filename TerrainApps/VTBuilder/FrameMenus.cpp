@@ -1909,14 +1909,15 @@ void MainFrame::OnUpdateScaleElevation(wxUpdateUIEvent& event)
 
 void MainFrame::OnElevExport(wxCommandEvent &event)
 {
-	wxString choices[4];
+	wxString choices[5];
 	choices[0] = _T("TerraGen");
 	choices[1] = _T("GeoTIFF");
 	choices[2] = _T("BMP");
 	choices[3] = _T("STM");
+	choices[4] = _T("MSI Planet");
 
 	wxSingleChoiceDialog dlg(this, _("Please choose"),
-		_("Export to file format:"), 4, choices);
+		_("Export to file format:"), 5, choices);
 	if (dlg.ShowModal() != wxID_OK)
 		return;
 
@@ -1926,6 +1927,7 @@ void MainFrame::OnElevExport(wxCommandEvent &event)
 	case 1: ExportGeoTIFF(); break;
 	case 2: ExportBMP(); break;
 	case 3: ExportSTM(); break;
+	case 4: ExportPlanet(); break;
 	}
 }
 
@@ -2014,6 +2016,29 @@ void MainFrame::ExportSTM()
 	bool success = el->m_pGrid->SaveToSTM(strPathName.mb_str());
 	if (success)
 		DisplayAndLog("Successfully wrote STM file '%s'", strPathName.mb_str());
+	else
+		DisplayAndLog("Error writing file.");
+}
+
+void MainFrame::ExportPlanet()
+{
+	vtElevLayer *el = GetActiveElevLayer();
+	if (!el)
+		return;
+
+	wxString filter = _("All Files|*.*|");
+	AddType(filter, FSTRING_Planet);
+
+	// ask the user for a filename
+	wxFileDialog saveFile(NULL, _("Export Elevation"), _T(""), _T(""), filter, wxSAVE);
+	saveFile.SetFilterIndex(1);
+	if (saveFile.ShowModal() != wxID_OK)
+		return;
+	wxString2 strPathName = saveFile.GetPath();
+
+	bool success = el->m_pGrid->SaveToPlanet(strPathName.mb_str());
+	if (success)
+		DisplayAndLog("Successfully wrote Planet file '%s'", strPathName.mb_str());
 	else
 		DisplayAndLog("Error writing file.");
 }
