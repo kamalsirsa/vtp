@@ -1,12 +1,12 @@
 //
 // Plants.h
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
-#ifndef PLANTSH
-#define PLANTSH
+#ifndef VTDATA_PLANTSH
+#define VTDATA_PLANTSH
 
 #include "Projections.h"
 #include "vtString.h"
@@ -165,14 +165,21 @@ struct vtPlantInstance {
 class vtPlantInstanceArray : public Array<vtPlantInstance>
 {
 public:
+	vtPlantInstanceArray();
+
+	void SetPlantList(vtPlantList *list) { m_pPlantList = list; }
 	void AddInstance(DPoint2 &pos, float size, short species_id);
 
+	bool ReadVF_version11(const char *fname);
 	bool ReadVF(const char *fname);
 	bool WriteVF(const char *fname);
 	bool FindClosestPlant(const DPoint2 &pos, double error_meters,
 		int &plant, double &distance);
+	bool GetExtent(DRECT &rect);
 
+	vtPlantList *m_pPlantList;
 	vtProjection m_proj;
 };
 
-#endif
+#endif	// VTDATA_PLANTSH
+

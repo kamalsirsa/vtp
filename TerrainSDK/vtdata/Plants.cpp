@@ -1,7 +1,7 @@
 //
 // Plants.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -520,6 +520,11 @@ int vtBioType::GetWeightedRandomPlant()
 
 ///////////////////////////////////////////////////////////////////////
 
+vtPlantInstanceArray::vtPlantInstanceArray()
+{
+	m_pPlantList = NULL;
+}
+
 void vtPlantInstanceArray::AddInstance(DPoint2 &pos, float size,
 									   short species_id)
 {
@@ -542,7 +547,7 @@ struct PlantInstance11 {
 	short species_id;
 };
 
-bool vtPlantInstanceArray::ReadVF(const char *fname)
+bool vtPlantInstanceArray::ReadVF_version11(const char *fname)
 {
 	FILE *fp = fopen(fname, "rb");
 	if (!fp)
@@ -605,24 +610,153 @@ bool vtPlantInstanceArray::ReadVF(const char *fname)
 	return true;
 }
 
+bool vtPlantInstanceArray::ReadVF(const char *fname)
+{
+	FILE *fp = fopen(fname, "rb");
+	if (!fp)
+		return false;
+
+	char buf[6];
+	fread(buf, 6, 1, fp);
+	if (strncmp(buf, "vf", 2))
+	{
+		fclose(fp);
+		return false;
+	}
+	float version = (float) atof(buf+2);
+	if (version < 2.0f)
+	{
+		fclose(fp);
+		return ReadVF_version11(fname);
+	}
+
+	int i, numinstances, numspecies;
+
+	// read WKT SRS
+	short len;
+	fread(&len, sizeof(short), 1, fp);
+
+	char wkt_buf[2000], *wkt = wkt_buf;
+	fread(wkt, len, 1, fp);
+	OGRErr err = m_proj.importFromWkt(&wkt);
+	if (err != OGRERR_NONE)
+		return false;
+
+	// read number of species
+	fread(&numspecies, sizeof(int), 1, fp);
+
+	// read species binomial strings, creating lookup table of new IDs
+	short *id = new short[numspecies];
+	char name[200];
+	for (i = 0; i < numspecies; i++)
+	{
+		fread(&len, sizeof(short), 1, fp);
+		fread(name, len, 1, fp);
+		name[len] = 0;
+		id[i] = m_pPlantList->GetSpeciesIdByName(name);
+	}
+
+	// read number of instances
+	fread(&numinstances, sizeof(int), 1, fp);
+	SetSize(numinstances);
+
+	// read local origin (center of exents) as double-precision coordinates
+	DPoint2 origin;
+	fread(&origin, sizeof(double), 2, fp);
+
+	// read instances
+	short height;
+	FPoint2 local_offset;
+	short local_species_id;
+	for (i = 0; i < numinstances; i++)
+	{
+		// location
+		fread(&local_offset, sizeof(float), 2, fp);
+		GetAt(i).m_p = origin + DPoint2(local_offset);
+
+		// height in centimeters
+		fread(&height, sizeof(short), 1, fp);
+		GetAt(i).size = (float) height / 100.0f;
+
+		// species id
+		fread(&local_species_id, sizeof(short), 1, fp);
+		// convert from file-local id to new id
+		GetAt(i).species_id = id[local_species_id];
+	}
+
+	fclose(fp);
+	return true;
+}
+
 bool vtPlantInstanceArray::WriteVF(const char *fname)
 {
+	int i, numinstances = GetSize();
+	if (numinstances == 0)
+		return false;	// empty files not allowed
+	if (!m_pPlantList)
+		return false;
+	int numspecies = m_pPlantList->NumSpecies();
+	short len;	// for string lengths
+
 	FILE *fp = fopen(fname, "wb");
 	if (!fp)
 		return false;
 
-	fwrite("vf1.1", 6, 1, fp);
-	int zone = m_proj.GetUTMZone(), datum = m_proj.GetDatum();
-	bool utm = (zone != 0);
-	fwrite(&utm, 1, 1, fp);
-	/*  FIXME:  Ahoy, there be byte order issues here.  See below in this routine.  */
-	fwrite(&zone, 4, 1, fp);
-	fwrite(&datum, 4, 1, fp);
+	fwrite("vf2.0", 6, 1, fp);
 
-	int size = GetSize();
-	fwrite(&size, 4, 1, fp);
+	// work around GDAL problem: exportToWkt is not yet const
+	OGRSpatialReference *notconst = (OGRSpatialReference *)(&m_proj);
 
-	fwrite(m_Data, sizeof(vtPlantInstance), size, fp);
+	// write SRS as WKT
+	char *wkt;
+	OGRErr err = notconst->exportToWkt(&wkt);
+	if (err != OGRERR_NONE)
+		return false;
+	len = strlen(wkt);
+	fwrite(&len, sizeof(short), 1, fp);
+	fwrite(wkt, len, 1, fp);
+	OGRFree(wkt);
+
+	// write number of species
+	fwrite(&numspecies, sizeof(int), 1, fp);
+
+	// write species binomial strings
+	for (i = 0; i < numspecies; i++)
+	{
+		const char *name = m_pPlantList->GetSpecies(i)->GetSciName();
+		len = strlen(name);
+		fwrite(&len, sizeof(short), 1, fp);
+		fwrite(name, len, 1, fp);
+	}
+
+	// write number of instances
+	fwrite(&numinstances, sizeof(int), 1, fp);
+
+	// write local origin (center of exents) as double-precision coordinates
+	DRECT rect;
+	GetExtent(rect);
+	DPoint2 origin, diff;
+	rect.GetCenter(origin);
+	fwrite(&origin, sizeof(double), 2, fp);
+
+	// write instances
+	FPoint2 offset;
+	for (i = 0; i < numinstances; i++)
+	{
+		// location
+		diff = GetAt(i).m_p - origin;
+		offset = diff;	// acceptable to use single precision for local offset
+		fwrite(&offset, sizeof(float), 2, fp);
+
+		// height in centimeters
+		short height = (short) (GetAt(i).size * 100);
+		fwrite(&height, sizeof(short), 1, fp);
+
+		// species id
+		short species_id = GetAt(i).species_id;
+		fwrite(&species_id, sizeof(short), 1, fp);
+	}
+
 	fclose(fp);
 	return true;
 }
@@ -638,8 +772,7 @@ bool vtPlantInstanceArray::FindClosestPlant(const DPoint2 &point, double error_m
 
 	double dist;
 
-	int i;
-	for (i = 0; i < GetSize(); i++)
+	for (int i = 0; i < GetSize(); i++)
 	{
 		vtPlantInstance &pi = GetAt(i);
 		dist = (pi.m_p - point).Length();
@@ -652,4 +785,14 @@ bool vtPlantInstanceArray::FindClosestPlant(const DPoint2 &point, double error_m
 		}
 	}
 	return (plant != -1);
+}
+
+bool vtPlantInstanceArray::GetExtent(DRECT &rect)
+{
+	int size = GetSize();
+	if (size == 0)
+		return false;
+	for (int i = 0; i < size; i++)
+		rect.GrowToContainPoint(GetAt(i).m_p);
+	return true;
 }
