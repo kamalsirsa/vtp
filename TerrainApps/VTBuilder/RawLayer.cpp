@@ -236,7 +236,7 @@ bool vtRawLayer::OnSave()
 				DBFWriteDoubleAttribute(db, i, j, field->m_double[i]);
 				break;
 			case FTString:
-				DBFWriteStringAttribute(db, i, j, (const char *) field->m_string[i]);
+				DBFWriteStringAttribute(db, i, j, (const char *) *(field->m_string[i]));
 				break;
 			}
 		}
