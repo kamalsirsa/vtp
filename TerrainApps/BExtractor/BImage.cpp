@@ -166,20 +166,23 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 	}
 	else
 	{
+		double dBottom, dTop, dLeft, dRight;
 		// I have not fully checked if there is any dependency on these units
 		// being metres elsewhere
 		linearConversionFactor = SpatialReference.GetLinearUnits();
 
 		// Compute sizes in metres along NW/SE axis for compatibility with
 		// world files, i.e. xright - xleft and ytop - ybottom
-		m_fImageWidth = (m_PixelSize.x * affineTransform[1] - m_PixelSize.y * affineTransform[2]) * linearConversionFactor;
-		m_fImageHeight = (m_PixelSize.y * affineTransform[5] - m_PixelSize.x * affineTransform[4]) * linearConversionFactor;
+		dLeft = affineTransform[0];
+		dTop = affineTransform[3];
+		dRight = affineTransform[0] + affineTransform[1] * m_PixelSize.x + affineTransform[2] * m_PixelSize.y;
+		dBottom = affineTransform[3] + affineTransform[4] * m_PixelSize.x + affineTransform[5] * m_PixelSize.y;
+		m_fImageWidth = (dRight - dLeft) * linearConversionFactor;
+		m_fImageHeight = (dTop - dBottom) * linearConversionFactor;
+
+		// This is the bottom left corner
 		m_xUTMoffset = (affineTransform[0] + affineTransform[2] *  m_PixelSize.y) * linearConversionFactor;
 		m_yUTMoffset = (affineTransform[3] + affineTransform[5] *  m_PixelSize.y) * linearConversionFactor;
-
-		// sanity check
-		if (m_fImageHeight < 0)
-			m_fImageHeight = -m_fImageHeight;
 
 		if (NULL == (m_pSpatialReference = SpatialReference.Clone()))
 		{
