@@ -30,7 +30,7 @@
 #define SPACE_DARKNESS		0.0f
 #define UNFOLD_SPEED		0.01f
 
-extern int pwdemo;
+int pwdemo = 0;
 vtGeom *tg = NULL;
 
 
@@ -48,6 +48,7 @@ Enviro::Enviro()
 	m_mode = MM_NONE;
 	m_state = AS_Initializing;
 	m_iInitStep = 0;
+	m_bDoPlants = true;
 
 	m_bActiveFence = false;
 	m_pCurFence = NULL;
@@ -121,6 +122,17 @@ void Enviro::Shutdown()
 	VTLOG("Shutdown.\n");
 	delete m_pPlantList;
 	delete m_pTerrainScene;
+}
+
+void Enviro::StartupArgument(int i, const char *str)
+{
+	VTLOG("Command line %d: %s\n", i, str);
+
+	if (!strcmp(str, "-p"))
+		pwdemo = 1;
+
+	if (!strcmp(str, "-no_plants"))
+		m_bDoPlants = false;
 }
 
 void Enviro::LoadTerrainDescriptions()
@@ -1062,21 +1074,23 @@ void Enviro::SetupCommonCulture()
 
 	vtFence3d::SetScale(g_Options.m_fPlantScale);
 
-	vtPlantList pl;
-
-	// First look for species.xml with terrain name prepended, otherwise fall
-	//  back on just "species.xml"
-	vtString species_fname = "PlantData/" + g_Options.m_strInitTerrain + "-species.xml";
-	vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, species_fname);
-	if (species_path == "")
-		species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
-
-	if (species_path != "" && pl.ReadXML(species_path))
+	if (m_bDoPlants)
 	{
-		m_pPlantList = new vtPlantList3d();
-		*m_pPlantList = pl;
-		m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
-			g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
+		// First look for species.xml with terrain name prepended, otherwise fall
+		//  back on just "species.xml"
+		vtString species_fname = "PlantData/" + g_Options.m_strInitTerrain + "-species.xml";
+		vtString species_path = FindFileOnPaths(g_Options.m_DataPaths, species_fname);
+		if (species_path == "")
+			species_path = FindFileOnPaths(g_Options.m_DataPaths, "PlantData/species.xml");
+
+		vtPlantList pl;
+		if (species_path != "" && pl.ReadXML(species_path))
+		{
+			m_pPlantList = new vtPlantList3d();
+			*m_pPlantList = pl;
+			m_pPlantList->CreatePlantSurfaces(g_Options.m_DataPaths,
+				g_Options.m_fPlantScale, g_Options.m_bShadows != 0, true);
+		}
 	}
 }
 

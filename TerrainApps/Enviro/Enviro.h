@@ -52,6 +52,7 @@ public:
 	// methods
 	void Startup();
 	void Shutdown();
+	void StartupArgument(int i, const char *str);
 
 	void LoadTerrainDescriptions();
 	void StartControlEngine();
@@ -172,6 +173,7 @@ protected:
 	void SetupGlobe();
 	void LookUpTerrainLocations();
 	void SetupTerrain(vtTerrain *pTerr);
+	bool m_bDoPlants;
 
 	// plants
 	vtPlantList3d	*m_pPlantList;
