@@ -13,14 +13,123 @@
 
 // Defaults
 #define STORY_HEIGHT	3.0f
+#define WINDOW_WIDTH	1.3f
+#define WINDOW_BOTTOM	0.4f
+#define WINDOW_TOP		0.8f
+#define DOOR_WIDTH		1.0f
+#define DOOR_TOP		0.7f
 
 /////////////////////////////////////
 
-void vtWall::Set(int iDoors, int iWindows, WallMaterial Type)
+vtWallFeature::vtWallFeature()
 {
-	m_iDoors = iDoors;
-	m_iWindows = iWindows;
-	m_Type = Type;
+	SetDefaults();
+}
+
+vtWallFeature::vtWallFeature(int code, float width, float vf1, float vf2)
+{
+	m_code = code;
+	m_width = width;
+	m_vf1 = vf1;
+	m_vf2 = vf2;
+}
+
+void vtWallFeature::SetDefaults()
+{
+	m_code = WFC_WALL;
+	m_width = -1.0f;
+	m_vf1 = 0.0f;
+	m_vf2 = 1.0f;
+}
+
+
+/////////////////////////////////////
+
+vtWall::vtWall()
+{
+	m_Material = BMAT_PLAIN;
+}
+
+vtWall::~vtWall()
+{
+}
+
+vtWall::vtWall(const vtWall &lhs)
+{
+	m_Material = lhs.m_Material;
+	for (int i = 0; i < lhs.m_Features.GetSize(); i++)
+		m_Features.Append(lhs.m_Features[i]);
+}
+
+void vtWall::Set(int iDoors, int iWindows, BldMaterial material)
+{
+	vtWallFeature wall, window, door;
+
+	window.m_code = WFC_WINDOW;
+	window.m_width = WINDOW_WIDTH;
+	window.m_vf1 = WINDOW_BOTTOM;
+	window.m_vf2 = WINDOW_TOP;
+
+	door.m_code = WFC_DOOR;
+	door.m_width = DOOR_WIDTH;
+	door.m_vf1 = 0.0f;
+	door.m_vf2 = DOOR_TOP;
+
+	int num_walls = iDoors + iWindows + 1;
+	int num_feat = iDoors + iWindows + num_walls;
+
+	m_Features.Empty();
+	m_Features.Append(wall);
+
+	bool do_door, do_window, flip = false;
+	while (iDoors || iWindows)
+	{
+		do_door = do_window = false;
+		if (iDoors && iWindows)
+		{
+			if (flip)
+				do_door = true;
+			else
+				do_window = true;
+		}
+		else if (iDoors)
+			do_door = true;
+		else if (iWindows)
+			do_window = true;
+
+		if (do_door)
+			m_Features.Append(door);
+		if (do_window)
+			m_Features.Append(window);
+		m_Features.Append(wall);
+	}
+	m_Material = material;
+}
+
+float vtWall::FixedFeaturesWidth()
+{
+	float width = 0.0f, fwidth;
+	int size = m_Features.GetSize();
+	for (int i = 0; i < size; i++)
+	{
+		fwidth = m_Features[i].m_width;
+		if (fwidth > 0)
+			width += fwidth;
+	}
+	return width;
+}
+
+float vtWall::ProportionTotal()
+{
+	float width = 0.0f, fwidth;
+	int size = m_Features.GetSize();
+	for (int i = 0; i < size; i++)
+	{
+		fwidth = m_Features[i].m_width;
+		if (fwidth < 0)
+			width += fwidth;
+	}
+	return width;
 }
 
 /////////////////////////////////////
@@ -49,19 +158,31 @@ vtLevel &vtLevel::operator=(const vtLevel &v)
 	m_Wall.SetSize(v.m_Wall.GetSize());
 	for (int i = 0; i < v.m_Wall.GetSize(); i++)
 	{
-		vtWall *pnew = new vtWall;
-		*pnew = *v.m_Wall[i];
+		vtWall *pnew = new vtWall(*v.m_Wall[i]);
 		m_Wall.SetAt(i, pnew);
 	}
+	m_Footprint = v.m_Footprint;
 	return *this;
 }
+
+void vtLevel::SetFootprint(const DLine2 &dl)
+{
+	int prev = m_Footprint.GetSize();
+	int curr = dl.GetSize();
+
+	m_Footprint = dl;
+
+	if (curr != prev)
+		SetWalls(curr);
+}
+
 void vtLevel::SetWalls(int n)
 {
 	DeleteWalls();
 	for (int i = 0; i < n; i++)
 	{
 		vtWall *pnew = new vtWall;
-		pnew->Set(0, 0, vtWall::UNKNOWN);
+		pnew->Set(0, 0, BMAT_PLAIN);
 		m_Wall.Append(pnew);
 	}
 }
@@ -78,15 +199,11 @@ vtBuilding::vtBuilding()
 	m_Color.Set(255,0,0);			// red
 	m_RoofColor.Set(160,255,160);	// lime green
 	m_MouldingColor.Set(255,255,255);	// white
-
-	// size / position
-	SetRectangle(10.0f, 10.0f);
 }
 
 vtBuilding::~vtBuilding()
 {
 	DeleteStories();
-	//m_Footprint.Empty(); don't need to do this, it happens automatically
 }
 
 void vtBuilding::DeleteStories()
@@ -108,12 +225,9 @@ vtBuilding &vtBuilding::operator=(const vtBuilding &v)
 
 	m_EarthPos = v.m_EarthPos;
 
-	m_Footprint.SetSize(v.m_Footprint.GetSize());
 	int i;
-	for (i = 0; i < v.m_Footprint.GetSize(); i++)
-		m_Footprint.SetAt(i, v.m_Footprint.GetAt(i));
-
-	SetStories(v.GetStories());
+	for (i = 0; i < v.m_Levels.GetSize(); i++)
+		m_Levels.Append(new vtLevel(* v.m_Levels.GetAt(i)));
 
 	return *this;
 }
@@ -125,10 +239,11 @@ void vtBuilding::SetRectangle(float fWidth, float fDepth, float fRotation)
 
 bool vtBuilding::GetRectangle(float &fWidth, float &fDepth) const
 {
-	if (m_Footprint.GetSize() == 4)
+	DLine2 &fp = m_Levels[0]->GetFootprint();
+	if (fp.GetSize() == 4)
 	{
-		fWidth = (float) m_Footprint.SegmentLength(0);
-		fDepth = (float) m_Footprint.SegmentLength(1);
+		fWidth = (float) fp.SegmentLength(0);
+		fDepth = (float) fp.SegmentLength(1);
 		return true;
 	}
 	return false;
@@ -136,13 +251,14 @@ bool vtBuilding::GetRectangle(float &fWidth, float &fDepth) const
 
 void vtBuilding::SetRadius(float fRad)
 {
-	m_Footprint.Empty();
+	DLine2 &fp = m_Levels[0]->GetFootprint();
+	fp.Empty();
 	int i;
 	for (i = 0; i < 20; i++)
 	{
 		double angle = i * PI2d / 20;
 		DPoint2 vec(cos(angle) * fRad, sin(angle) * fRad);
-		m_Footprint.Append(m_EarthPos + vec);
+		fp.Append(m_EarthPos + vec);
 	}
 }
 
@@ -218,54 +334,31 @@ int vtBuilding::GetStories() const
 	return stories;
 }
 
-void vtBuilding::SetFootprint(DLine2 &dl)
+void vtBuilding::SetFootprint(int i, const DLine2 &dl)
 {
-	int size_new = dl.GetSize();
-	int size_old = m_Footprint.GetSize();
-
-	m_Footprint = dl;
-
-	if (size_new != size_old)
-	{
-		// must rebuild stories and walls
-//		delete m_pStory;
-//		m_pStory = new vtLevel[m_iStories];
-		RebuildWalls();
-	}
+	m_Levels[i]->SetFootprint(dl);
 };
-
-void vtBuilding::RebuildWalls()
-{
-	for (int s = 0; s < m_Levels.GetSize(); s++)
-	{
-		m_Levels[s]->SetWalls(m_Footprint.GetSize());
-		for (int w = 0; w < m_Levels[s]->m_Wall.GetSize(); w++)
-		{
-			// Doors, Windows, WallType
-			m_Levels[s]->m_Wall[w]->Set(0, 2, vtWall::SIDING);
-		}
-	}
-}
 
 void vtBuilding::SetCenterFromPoly()
 {
+	DRECT rect;
+	GetExtents(rect);
 	DPoint2 p;
-
-	int size = m_Footprint.GetSize();
-	for (int i = 0; i < size; i++)
-	{
-		p += m_Footprint.GetAt(i);
-	}
-	p *= (1.0f / size);
+	rect.GetCenter(p);
 	SetLocation(p);
 }
 
 void vtBuilding::Offset(const DPoint2 &p)
 {
+	int i;
+
 	m_EarthPos += p;
 
-	for (int j = 0; j < m_Footprint.GetSize(); j++)
-		m_Footprint[j] += p;
+	for (i = 0; i < m_Levels.GetSize(); i++)
+	{
+		vtLevel *lev = m_Levels[i];
+		lev->GetFootprint().Add(p);
+	}
 }
 
 //
@@ -274,13 +367,18 @@ void vtBuilding::Offset(const DPoint2 &p)
 //
 bool vtBuilding::GetExtents(DRECT &rect) const
 {
-	int size = m_Footprint.GetSize();
-	if (size == 0)
+	int i, j;
+	int levs = m_Levels.GetSize();
+	if (levs == 0)
 		return false;
-	rect.SetRect(1E9, -1E9, -1E9, 1E9);
 
-	for (int j = 0; j < size; j++)
-		rect.GrowToContainPoint(m_Footprint[j]);
+	rect.SetRect(1E9, -1E9, -1E9, 1E9);
+	for (i = 0; i < levs; i++)
+	{
+		vtLevel *lev = m_Levels[i];
+		for (j = 0; j < lev->GetFootprint().GetSize(); j++)
+			rect.GrowToContainPoint(lev->GetFootprint()[j]);
+	}
 	return true;
 }
 
@@ -303,11 +401,14 @@ void vtBuilding::RectToPoly(float fWidth, float fDepth, float fRotation)
 	corner[2].Rotate(fRotation);
 	corner[3].Rotate(fRotation);
 
-	m_Footprint.Empty();
-	m_Footprint.Append(m_EarthPos + corner[0]);
-	m_Footprint.Append(m_EarthPos + corner[1]);
-	m_Footprint.Append(m_EarthPos + corner[2]);
-	m_Footprint.Append(m_EarthPos + corner[3]);
+	DLine2 dl;
+	dl.Append(m_EarthPos + corner[0]);
+	dl.Append(m_EarthPos + corner[1]);
+	dl.Append(m_EarthPos + corner[2]);
+	dl.Append(m_EarthPos + corner[3]);
+
+	vtLevel *lev = m_Levels[0];
+	lev->SetFootprint(dl);
 }
 
 
@@ -336,11 +437,13 @@ void vtBuilding::WriteXML(FILE *fp, bool bDegrees)
 	}
 	fprintf(fp, "\t\t<shapes>\n");
 
-	int points = m_Footprint.GetSize();
+	vtLevel *lev = m_Levels[0];
+	DLine2 &foot = lev->GetFootprint();
+	int points = foot.GetSize();
 	fprintf(fp, "\t\t\t<poly num=\"%d\" coords=\"", points);
 	for (int i = 0; i < points; i++)
 	{
-		DPoint2 p = m_Footprint.GetAt(i);
+		DPoint2 p = foot.GetAt(i);
 		fprintf(fp, coord_format, p.x);
 		fprintf(fp, " ");
 		fprintf(fp, coord_format, p.y);

@@ -13,18 +13,11 @@
 
 class vtHeightField;
 
-enum BuildingMesh {
-	BM_WALL,
-	BM_TRIM,
-	BM_DOOR,
-	BM_WINDOW,
-	BM_ROOF,
-	BM_TOTAL
-};
-
-enum BuildingMaterial
+struct MatMesh
 {
-	BAP_PLAIN, BAP_SIDING, BAP_ROOF, BAP_WINDOW, BAP_DOOR 
+//	vtMaterial	*m_pMat;
+	int			m_iMatIdx;
+	vtMesh		*m_pMesh;
 };
 
 class vtBuilding3d : public vtBuilding
@@ -55,20 +48,27 @@ public:
 	void ShowBounds(bool bShow);
 
 protected:
-	int FindMatIndex(BuildingMaterial bldApp, RGBi inputColor=RGBi(0,0,0));
+	int FindMatIndex(BldMaterial bldApp, RGBi inputColor=RGBi(0,0,0));
 	void CreateSharedMaterials();
 
 protected:
 	// material
 	static vtMaterialArray *s_Materials;
-	int m_iMatIdx[BM_TOTAL];
+
+	// the geometry is composed of several meshes, one for each potential material used
+	Array<MatMesh>	m_Mesh;
+
+	vtMesh *FindMatMesh(BldMaterial bm, RGBi color, bool bFans);
 
 	// center of the building in world coordinates (the origin of
 	// the building's local coordinate system)
 	FPoint3 m_center;
 
+	// Local-coordinate Footprints, one per level
+	Array<FLine3 *> m_lfp;
+
 	// internal methods
-	void DetermineBaseCorners(vtHeightField *pHeightField, FLine3 &base_corner);
+	void DetermineWorldFootprints(vtHeightField *pHeightField);
 	float GetHeightOfStories();
 
 	void CreateWallGeometry(Array<FPoint3> &corners, vtLevel *pLev,
@@ -76,12 +76,20 @@ protected:
 
 	// creates a wall.  base_height is height from base of floor
 	// (to make siding texture match up right.)
-	void AddWallSection(BuildingMesh bm, FPoint3 &p0, FPoint3 &p1,
-		float height, float base_height);
+	void AddWallSection(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+		FPoint3 p0, FPoint3 p1, float h1, float h2);
+
 	//adds a wall section with a door
-	void AddDoorSection(FPoint3 &p0, FPoint3 &p1, float height);
+	void AddDoorSection(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+		const FPoint3 &p0, const FPoint3 &p1);
+
 	//adds a wall section with a window
-	void AddWindowSection(FPoint3 p0, FPoint3 p1, float height);
+	void AddWindowSection(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+		FPoint3 p0, FPoint3 p1);
+
+	void AddWallNormal(vtLevel *pLev, vtWall *pWall, vtWallFeature *pFeat,
+			const FPoint3 &p0, const FPoint3 &p1);
+
 	void AddFlatRoof(Array<FPoint3> &pp, float height);
 	void AddShedRoof(Array<FPoint3> &pp, float height);
 	/*	Top view:
@@ -102,16 +110,11 @@ protected:
 	void	AddHipRoof(Array<FPoint3> &pp, float height);
 	void	AddGableRoof(Array<FPoint3> &pp, float height);
 	void	BuildRoofPanel(FPoint3 *v, int n, ...);
-	FPoint3	Normal(FPoint3 &p0, FPoint3 &p1, FPoint3 &p2);
-	//normal slightly tilted up.
-	FPoint3	WallNormal(FPoint3 &p0, FPoint3 &p1, FPoint3 &p2);
+	FPoint3	Normal(const FPoint3 &p0, const FPoint3 &p1, const FPoint3 &p2);
 
 	vtTransform	*m_pContainer;	// The transform which is used to position the building
 	vtGeom		*m_pGeom;		// The geometry node which contains the building geometry
 	vtGeom		*m_pHighlight;	// The wireframe highlight
-
-	// the geometry is composed of several meshes, one for each potential material used
-	vtMesh		*m_pMesh[BM_TOTAL];
 };
 
 #endif
