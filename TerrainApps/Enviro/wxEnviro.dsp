@@ -110,16 +110,7 @@ SOURCE=.\wx\app.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\BuildingDlg.cpp
-
-!IF  "$(CFG)" == "wxEnviro - Win32 Debug"
-
-# ADD CPP /YX"wx/wxprec.h"
-
-!ELSEIF  "$(CFG)" == "wxEnviro - Win32 Release"
-
-!ENDIF 
-
+SOURCE=.\wx\BuildingDlg3d.cpp
 # End Source File
 # Begin Source File
 
@@ -278,7 +269,7 @@ SOURCE=.\wx\app.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\wx\BuildingDlg.h
+SOURCE=.\wx\BuildingDlg3d.h
 # End Source File
 # Begin Source File
 
