@@ -18,7 +18,7 @@
 
 INLINE unsigned char EncodeFP8( unsigned short nVal )
 {
-	if( nVal < 64   ) return          nVal;
+	if( nVal < 64   ) return (unsigned char) nVal;
 	if( nVal < 128  ) return (0x40 | (nVal-  64)/2);
 	if( nVal < 256  ) return (0x60 | (nVal- 128)/4);
 	if( nVal < 512  ) return (0x80 | (nVal- 256)/8);
