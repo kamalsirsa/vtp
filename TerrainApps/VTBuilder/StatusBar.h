@@ -10,16 +10,18 @@
 
 #include "Frame.h"
 
+#include <wx/statusbr.h>
+
 class MainFrame;
 
 class MyStatusBar : public wxStatusBar
 {
 public:
-    MyStatusBar(wxWindow *parent);
-    virtual ~MyStatusBar();
+	MyStatusBar(wxWindow *parent);
+	virtual ~MyStatusBar();
 
     // event handlers
-    void OnSize(wxSizeEvent& event);
+	void OnSize(wxSizeEvent& event);
 
 	void SetTexts(MainFrame *frame);
 
@@ -28,21 +30,20 @@ public:
 private:
 	wxString FormatCoord(bool bGeo, double coord);
 
-    enum
-    {
-        Field_Text,
-        Field_Coord,
-        Field_Zone,
-        Field_Datum,
-        Field_Mouse,
-        Field_Height,
-        Field_Max
-    };
+	enum
+	{
+		Field_Text,
+		Field_Coord,
+		Field_Zone,
+		Field_Datum,
+		Field_Mouse,
+		Field_Height,
+		Field_Max
+	};
 
 	bool	m_bShowMinutes;
 
-    DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif
-
