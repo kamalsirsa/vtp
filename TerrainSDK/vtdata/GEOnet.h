@@ -61,4 +61,5 @@ protected:
 	vtString m_path;
 };
 
-#endif GEONET_H
+#endif // GEONET_H
+
