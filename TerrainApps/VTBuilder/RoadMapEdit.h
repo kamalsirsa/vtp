@@ -78,11 +78,13 @@ public:
 	// determine bounding box
 	void ComputeExtent();
 	//is target in the bounding box?
-	bool WithinExtent(DRECT target);
+	bool WithinExtent(const DRECT &target);
+	bool WithinExtent(const DPoint2 &target);
+
 	//is extent of the road in "bound"
-	bool InBounds(DRECT bound);
+	bool InBounds(const DRECT &bound);
 	//if only part of road is in "bound"
-	bool PartiallyInBounds(DRECT bound);
+	bool PartiallyInBounds(const DRECT &bound);
 
 	//draw the road
 	bool Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection = false,

@@ -192,14 +192,20 @@ void LinkEdit::ComputeDisplayedLinkWidth(const DPoint2 &ToMeters)
 	}
 }
 
-bool LinkEdit::WithinExtent(DRECT target)
+bool LinkEdit::WithinExtent(const DRECT &target)
 {
 	return (target.left < m_extent.right && target.right > m_extent.left && 
 		target.top > m_extent.bottom && target.bottom < m_extent.top);
 }
 
+bool LinkEdit::WithinExtent(const DPoint2 &p)
+{
+	return (p.x > m_extent.left && p.x < m_extent.right && 
+			p.y > m_extent.bottom && p.y < m_extent.top);
+}
+
 //is extent of the road in "bound"
-bool LinkEdit::InBounds(DRECT bound)
+bool LinkEdit::InBounds(const DRECT &bound)
 {
 	//eliminate easy cases.
 	if (m_extent.top < bound.bottom ||
@@ -221,7 +227,7 @@ bool LinkEdit::InBounds(DRECT bound)
 }
 
 //is extent of the road in "bound"
-bool LinkEdit::PartiallyInBounds(DRECT bound)
+bool LinkEdit::PartiallyInBounds(const DRECT &bound)
 {
 	//eliminate easy cases.
 	if (m_extent.top < bound.bottom || 
@@ -784,18 +790,20 @@ DRECT *RoadMapEdit::DeSelectAll(int &numRegions)
 LinkEdit *RoadMapEdit::FindLink(DPoint2 point, float error)
 {
 	LinkEdit *bestSoFar = NULL;
-	float dist = (float)error;
-	float result;
+	double dist = error;
+	double b;
 
 	//a backwards rectangle, to provide greater flexibility for finding the road.
 	DRECT target(point.x-error, point.y+error, point.x+error, point.y-error);
 	for (LinkEdit* curLink = GetFirstLink(); curLink; curLink = curLink->GetNext())
 	{
-		if (curLink->WithinExtent(target)) {
-			result = curLink->DistanceToPoint(point);
-			if (result < dist) {
+		if (curLink->WithinExtent(target))
+		{
+			b = curLink->DistanceToPoint(point);
+			if (b < dist)
+			{
 				bestSoFar = curLink;
-				dist = result;
+				dist = b;
 			}
 		}
 	}
