@@ -18,6 +18,7 @@ IFLAGS = -I$(X_INC)                 \
 
 LDIRS  = $(OSG_LIB)                     \
 	 $(VTDATA_INST_DIR)             \
+	 $(XMLHELPER_INST_DIR)          \
 	 $(VTOSG_INST_DIR)              \
          $(PNG_LIB)                     \
          $(NETCDF_LIB)                  \
@@ -33,8 +34,8 @@ CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = glutSimple
 LIBS   = -lvtosg -lvtdata \
-         -lgdal.1.1 -losgDB -losgUtil -losg -lnetcdf \
-		 -lxmlhelper \
+         -lgdal.1.1 -losgDB -losgUtil -losgText -losg -lnetcdf \
+		 -lxmlhelper $(MINI_LIB) \
          $(GLUT_LIB) $(GLU_LIB) -lGL -lXmu -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)

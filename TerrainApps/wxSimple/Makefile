@@ -34,11 +34,11 @@ LDFLAGS  = $(LDIRFLAGS) \
 CXXSRC = $(wildcard *.cpp)
 OBJS   = $(CXXSRC:%.cpp=%.o)
 EXEC   = wxSimple
-LIBS   = $(shell wx-config --libs)   \
+LIBS   = $(shell wx-config --libs) $(shell wx-config --gl-libs) \
 		 -lwx_gtk_gl                 \
          -lvtosg -lvtdata            \
-		 -lxmlhelper				 \
-         -lgdal.1.1 -losgDB -losgUtil -losg -lnetcdf    \
+		 -lxmlhelper  $(MINI_LIB)	 \
+         -lgdal.1.1 -losgDB -losgUtil -losgText -losg -lnetcdf    \
          $(GLU_LIB) -lGL -lX11 $(EXTRA_LIBS) -lm 
 
 all : $(EXEC)
