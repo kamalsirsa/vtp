@@ -21,8 +21,8 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 	int i;
 
 	vtGeom *pShape;
-	vtMaterialArray *pApps;
-	vtMaterial *pApp;
+	vtMaterialArray *pMats;
+	vtMaterial *pMat;
 
 	// TODO
 	// walk down through a part of the scene graph, converting
@@ -31,15 +31,15 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 	{
 		pShape = (vtGeom *)pModel;
 		bool has_purple = false;
-		pApps = pShape->GetMaterials();
-		if (!pApps)
+		pMats = pShape->GetMaterials();
+		if (!pMats)
 			return;
-		for (i = 0; i < pApps->GetSize(); i++)
+		for (i = 0; i < pMats->GetSize(); i++)
 		{
-			pApp = pApps->GetAt(i);
+			pMat = pMats->GetAt(i);
 
 			// is purple?
-			color = pApp->GetDiffuse();
+			color = pMat->GetDiffuse();
 			if (color.r == 1.0f && color.g == 0.0f && color.b == 1.0f)
 			{
 				has_purple = true;
@@ -48,22 +48,22 @@ void ConvertPurpleToColor(vtGroupBase *pModel, RGBf replace)
 		}
 		if (has_purple)
 		{
-			vtMaterialArray *pApps2 = new vtMaterialArray();
-			pApps2->CopyFrom(pApps);
-			pShape->SetMaterials(pApps2);
-			pApps2->Release();
-			for (i = 0; i < pApps2->GetSize(); i++)
+			vtMaterialArray *pMats2 = new vtMaterialArray();
+			pMats2->CopyFrom(pMats);
+			pShape->SetMaterials(pMats2);
+			pMats2->Release();
+			for (i = 0; i < pMats2->GetSize(); i++)
 			{
-				pApp = pApps2->GetAt(i);
-				if (!pApp) continue;
-				color = pApp->GetDiffuse();
+				pMat = pMats2->GetAt(i);
+				if (!pMat) continue;
+				color = pMat->GetDiffuse();
 				if (color.r == 1.0f && color.g == 0.0f && color.b == 1.0f)
 				{
-					vtMaterial *pApp2 = new vtMaterial();
-					pApp2->Copy(pApp);
-					pApps2->SetAt(i, pApp2);
-					pApp2->SetDiffuse2(replace);
-					pApp2->SetAmbient2(replace*0.6f);
+					vtMaterial *pMat2 = new vtMaterial();
+					pMat2->Copy(pMat);
+					pMats2->SetAt(i, pMat2);
+					pMat2->SetDiffuse2(replace);
+					pMat2->SetAmbient2(replace*0.6f);
 				}
 			}
 		}
