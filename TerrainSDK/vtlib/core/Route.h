@@ -23,6 +23,9 @@ class vtTower3D;
 
 typedef DPoint3 RoutePoint;
 
+
+struct vtStructureObj;
+
 class vtStation
 {
 public:
@@ -34,16 +37,23 @@ public:
 	double dRadLineAngle;	// diff from last azimuth.
 	int m_iRoutePointNumber;	// if the station point is also
 								//	a route point. -1 otherewise
-	vtNode*	m_pTower;		// The station may have a tower placed on it
+//	vtNode*	m_pTower;		// The station may have a tower placed on it
+	vtStructureObj* ObjList;	//Objs to draw.
 	char sStructure[30];	// Structure Family
 	float m_fTowerHeight;
-	int m_iNUmWires;
-	FPoint3 m_fpWireAtt[7]; // where are the wires?
-
+	int m_iNumWires;
+	FPoint3 m_fpWireAtt1[7]; // where are the wires?
+	FPoint3 m_fpWireAtt2[7]; // where are the wires?
 
 //	vtStation();
 };
 
+struct vtStructureObj
+{
+	vtNode*	m_pTower;		// The station may have a tower placed on it
+	char sStructName[3];
+	vtStructureObj* next;
+};
 
 struct PolePlacement
 {
@@ -76,8 +86,8 @@ typedef struct _profilerecord
 class vtRoute
 {
 public:
-	vtRoute(float fHeight, float fSpacing, float fOffR
-		, float fOffL, float fStInc, vtString sName, vtTerrain* pT);
+	vtRoute(float fHeight, float fSpacing, float fOffR, float fOffL,
+		float fStInc, vtString sName, vtTerrain* pT);
 
 	void add_point(const DPoint2 &epos);
 	bool close_route(); // return true if redraw necessary
@@ -107,8 +117,6 @@ public:
 	long GetSize() { return m_StationArray.GetSize(); }
 
 protected:
-	void add_Pole(FPoint3 &p1, int iMatIdx);	//Copied from Fences
-
 	void add_Pole(DPoint3 &p1, long lStationIndex);	// Mine
 
 	// route size is exaggerated by this amount
@@ -129,6 +137,7 @@ protected:
 	Array<PolePlacement>  m_aRoutePlaces;
 	FPoint3		m_PostSize;
 	vtTerrain*	m_pTheTerrain;
+	vtStructureObj* structObjList;
 
 	float	m_fHeight;
 	float	m_fSpacing;
@@ -151,14 +160,14 @@ protected:
 	vtString m_sDataPath;
 
 	// Add a station
-	bool AddStation(vtHeightField* pHeightField, vtStation &sp);
+	bool AddStation(vtHeightField *pHeightField, vtStation &sp);
 	// Add a list of stations
-	bool AddStations(vtHeightField* pHeightField, RoutePoint rp);
+	bool AddStations(vtHeightField *pHeightField, RoutePoint rp);
 	double isangle(DLine3 L);
 	double isangle(DPoint3 P0, DPoint3 P1, DPoint3 P2);
 	void StringWires(long lTowerIndex, vtHeightField *pHeightField);	
-	void DrawCat(FPoint3 p0, FPoint3 p1, double Azimuth
-		, double catenary, double segmentlen, vtMesh* pWireMesh);
+	void DrawCat(FPoint3 p0, FPoint3 p1, double Azimuth,
+		double catenary, int iNumSegs, vtMesh *pWireMesh);
 };
 
 typedef class vtRoute *vtRoutePtr;
