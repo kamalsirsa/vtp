@@ -1,7 +1,7 @@
 //
 // BuilderView.cpp
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2003 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -85,20 +85,13 @@ vtScaledView(parent, id, pos, size, name )
 	m_pCursorPan = new wxCursor(wxCURSOR_HAND);
 #endif
 
-	// Import world map SHP file
-	WMPoly = NULL;
-	WMPolyDraw = NULL;
-	m_NoLines = NULL;
+	// world map SHP file
 	m_iEntities = 0;
-	m_bHidden = false;
-	ImportWorldMap();
+	m_bAttemptedLoad = false;
 }
 
 BuilderView::~BuilderView()
 {
-	delete [] WMPoly;
-	delete [] WMPolyDraw;
-	delete [] m_NoLines;
 }
 
 ////////////////////////////////////////////////////////////
@@ -271,99 +264,76 @@ void BuilderView::DrawUTMBounds(wxDC *pDC)
 // Added capability to read & display world map, poly SHP file.
 
 // Get data out of SHP into WMPolys
-void BuilderView::ImportWorldMap()
+bool BuilderView::ImportWorldMap()
 {
 	SHPHandle	hSHP;
-	int			nShapeType;
+	int			nShapeType, nShapeCount;
 	double		adfMinBound[4], adfMaxBound[4];
-	int			i, j;
+	int			i, j, k;
 
 	const char *filename = "WorldMap/gnv19.shp";
 	VTLOG(" Attempting to open %s\n", filename);
 
 	// Open SHP file
 	hSHP = SHPOpen(filename, "rb");
-	if (hSHP == NULL) return;
+	if (hSHP == NULL)
+		return false;
 
 	VTLOG(" Opened, reading worldmap.\n");
-	SHPGetInfo(hSHP, &m_iEntities, &nShapeType, adfMinBound, adfMaxBound);
-	if (nShapeType != SHPT_POLYGON) return;
+	SHPGetInfo(hSHP, &nShapeCount, &nShapeType, adfMinBound, adfMaxBound);
+	if (nShapeType != SHPT_POLYGON)
+		return false;
 
 	// Copy SHP data into World Map Poly data
-	WMPoly = new DLine2[m_iEntities];
-	WMPolyDraw = new DLine2[m_iEntities];
-	m_NoLines = new BoolArray[m_iEntities];
+	WMPoly.SetMaxSize(nShapeCount * 11 / 10);
 
-	for (i = 0; i < m_iEntities; i++)
+	int points, start, stop;
+
+	for (i = 0; i < nShapeCount; i++)
 	{
-		DLine2 &current = WMPoly[i];
-		BoolArray &noline = m_NoLines[i];
-
 		DPoint2 p;
 
 		SHPObject	*psShape;
 		psShape = SHPReadObject(hSHP, i);
 
-		int points = psShape->nVertices;
+		if (psShape->nParts > 1)
+			p.Set(0,0);
 
-		current.SetMaxSize(points);
-		noline.SetMaxSize(points);
-
-		for (j = 0; j < points; j++)
+		for (j = 0; j < psShape->nParts; j++)
 		{
-			p.x = psShape->padfX[j];
-			p.y = psShape->padfY[j];
-			current.Append(p);
+			DLine2 *current = new DLine2();
+
+			start = psShape->panPartStart[j];
+			if (j < psShape->nParts - 1)
+				stop = psShape->panPartStart[j+1];
+			else
+				stop = psShape->nVertices;
+			points = stop - start;
+
+			current->SetMaxSize(points);
+
+			for (k = start; k < stop; k++)
+			{
+				p.x = psShape->padfX[k];
+				p.y = psShape->padfY[k];
+				current->Append(p);
+			}
+			WMPoly.Append(current);
 		}
 		SHPDestroyObject(psShape);
-
-		for (j = 0; j < points; j++)
-			noline[j] = false;
 	}
 
 	// Close SHP file
 	SHPClose(hSHP);
 
 	// Initialize the drawn World Map WMPolyDraw to original (latlon)
+	m_iEntities = WMPoly.GetSize();
+	WMPolyDraw.SetSize(m_iEntities);
 	for (i = 0; i < m_iEntities; i++)
-		WMPolyDraw[i] = WMPoly[i];
+		WMPolyDraw[i] = new DLine2(*WMPoly[i]);
+
+	return true;
 }
-
-//
-// post-process WMPoly to determine lines not to draw 
-//
-void BuilderView::HideWorldMapEdges()
-{
-	int i, points;
-
-	for (i = 0; i < m_iEntities; i++)
-	{
-		DLine2 &current = WMPoly[i];
-		BoolArray &noline = m_NoLines[i];
-		points = current.GetSize();
-		// must have at least 8 points to worry about internal edges
-		if (points < 8 || points > 8000)
-			continue;
-
-		// detect and turn off internal edges
-		int a, b;
-		for (a = 0; a < points-2; a++)
-		{
-			for (b = a+1; b < points-1; b++)
-			{
-				if (current[a] == current[b])
-				{
-					// This is an internal edge
-					noline[a+1] = true;
-					noline[b] = true;
-					break;
-				}
-			}
-		}
-	}
-	m_bHidden = true;
-}
-
 
 void myErrorHandler(CPLErr err, int i, const char*str)
 {
@@ -375,7 +345,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 {
 	int i, j;
 
-	if (!WMPoly)
+	if (WMPoly.GetSize() == 0)
 		return;
 
 	const char *proj_name = proj.GetProjectionNameShort();
@@ -383,7 +353,7 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	{
 		// the data is already in latlon so just use WMPoly
 		for (i = 0; i < m_iEntities; i++)
-			WMPolyDraw[i] = WMPoly[i];
+			*(WMPolyDraw[i]) = *(WMPoly[i]);
 		return;
 	}
 
@@ -421,11 +391,11 @@ void BuilderView::SetWMProj(const vtProjection &proj)
 	DPoint2 point;
 	for (i = 0; i < m_iEntities; i++)
 	{
-		for (j = 0; j < WMPoly[i].GetSize(); j++)
+		for (j = 0; j < WMPoly[i]->GetSize(); j++)
 		{
-			point = WMPoly[i][j];
+			point = WMPoly[i]->GetAt(j);
 			trans->Transform(1, &point.x, &point.y);
-			WMPolyDraw[i][j] = point;
+			WMPolyDraw[i]->SetAt(j, point);
 		}
 	}
 }
@@ -438,43 +408,36 @@ static wxPoint wmbuf[MAXPOINTS];
 
 void BuilderView::DrawWorldMap(wxDC* pDC, vtScaledView *pView)
 {
+	if (m_iEntities == 0 && !m_bAttemptedLoad)
+	{
+		m_bAttemptedLoad = true;
+		if (!ImportWorldMap())
+		{
+			m_bShowMap = false;
+			return;
+		}
+	}
+
 	// Set pen options
 	wxPen WMPen(wxColor(0,0,0), 1, wxSOLID);  //solid black pen
 	pDC->SetLogicalFunction(wxCOPY);
 	pDC->SetPen(WMPen);
 
-	if (!m_bHidden)
-	{
-		VTLOG("Preparing World Map...");
-		wxDialog dialog(this, -1, _T("Preparing World Map..."), wxDefaultPosition,
-			wxSize(400, 50), wxDEFAULT_DIALOG_STYLE | wxDIALOG_MODELESS);
-		dialog.Show(true);
-		HideWorldMapEdges();
-		dialog.Show(false);
-		Refresh();
-		VTLOG(" Done.\n");
-	}
-
 	// Draw each poly in WMPolyDraw
+	int wmbuflen, pts;
 	for (int i = 0; i < m_iEntities; i++)
 	{
-		int wmbuflen = 0;
-		if (WMPolyDraw[i].GetSize() > MAXPOINTS)
-			continue;
-
-		for (int j = 0; j < WMPolyDraw[i].GetSize(); j++)
-		{
-			wmbuf[j].x = pView->sx(WMPolyDraw[i][j].x);
-			wmbuf[j].y = pView->sy(WMPolyDraw[i][j].y);
-			wmbuflen += 1;
-			if (m_NoLines[i][j] == true)
-			{
-				if (wmbuflen > 2) pDC->DrawLines(wmbuflen - 1, wmbuf);
-				wmbuflen = 0;
-			}
-		}
-		if (wmbuflen > 1) pDC->DrawLines(wmbuflen, wmbuf);
 		wmbuflen = 0;
+		pts = WMPolyDraw[i]->GetSize();
+
+		for (int j = 0; j < pts && j < MAXPOINTS; j++)
+		{
+			wmbuf[j].x = pView->sx(WMPolyDraw[i]->GetAt(j).x);
+			wmbuf[j].y = pView->sy(WMPolyDraw[i]->GetAt(j).y);
+			wmbuflen ++;
+		}
+		if (wmbuflen > 1)
+			pDC->DrawLines(wmbuflen, wmbuf);
 	}
 }
 
@@ -947,6 +910,13 @@ void BuilderView::MatchZoomToElev(vtElevLayer *pEL)
 	ZoomToPoint(center);
 
 	Refresh();
+}
+
+void BuilderView::SetShowMap(bool bShow)
+{
+	if (bShow)
+		m_bAttemptedLoad = false;
+	m_bShowMap = bShow;
 }
 
 /////////////////////////////////////////////////////////////

@@ -1286,13 +1286,13 @@ void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 
 void MainFrame::OnViewWorldMap(wxUpdateUIEvent& event)
 {
-	m_pView->m_bShowMap = !m_pView->m_bShowMap;
+	m_pView->SetShowMap(!m_pView->GetShowMap());
 	m_pView->Refresh();
 }
 
 void MainFrame::OnUpdateWorldMap(wxUpdateUIEvent& event)
 {
-	event.Check(m_pView->m_bShowMap);
+	event.Check(m_pView->GetShowMap());
 }
 
 void MainFrame::OnViewUTMBounds(wxUpdateUIEvent& event)

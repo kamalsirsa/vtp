@@ -121,9 +121,10 @@ public:
 	void DeleteSelected(vtRoadLayer *pRL);
 	void SetActiveLayer(vtLayer *lp);
 	void MatchZoomToElev(vtElevLayer *pEL);
+	void SetShowMap(bool bShow);
+	bool GetShowMap() { return m_bShowMap; }
 
 	bool	m_bCrossSelect;
-	bool	m_bShowMap;
 	bool	m_bShowUTMBounds;
 
 protected:
@@ -194,15 +195,14 @@ protected:
 	bool		m_bMouseCaptured;
 
 	// World Map
-	DLine2	*WMPoly;	 // Original data from SHP file
-	DLine2	*WMPolyDraw; // This is WM that is drawn
-	BoolArray *m_NoLines;
+	bool	m_bShowMap;
+	DPolyArray2		WMPoly;		// Original data from SHP file
+	DPolyArray2		WMPolyDraw; // This is the WM that is drawn
 	int		m_iEntities;
-	bool	m_bHidden;	// Set to true after the hidden line algo has run
+	bool	m_bAttemptedLoad;
 
-	void ImportWorldMap();
+	bool ImportWorldMap();
 	void DrawWorldMap(wxDC* pDC, vtScaledView *pView);
-	void HideWorldMapEdges();
 
 	UIContext m_ui;
 

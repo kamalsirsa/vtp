@@ -622,7 +622,7 @@ bool MainFrame::ReadINI()
 		fscanf(m_fpIni, "%d %d %d %d %d %d %d", &ShowMap, &ShowElev, &Shading,
 			&DoMask, &DoUTM, &ShowPaths, &DrawWidth);
 
-		m_pView->m_bShowMap = (ShowMap != 0);
+		m_pView->SetShowMap(ShowMap != 0);
 		vtElevLayer::m_bShowElevation = (ShowElev != 0);
 		vtElevLayer::m_bShading = (Shading != 0);
 		vtElevLayer::m_bDoMask = (DoMask != 0);
@@ -641,7 +641,7 @@ bool MainFrame::WriteINI()
 	if (m_fpIni)
 	{
 		rewind(m_fpIni);
-		fprintf(m_fpIni, "%d %d %d %d %d %d %d", m_pView->m_bShowMap,
+		fprintf(m_fpIni, "%d %d %d %d %d %d %d", m_pView->GetShowMap(),
 			vtElevLayer::m_bShowElevation,
 			vtElevLayer::m_bShading, vtElevLayer::m_bDoMask,
 			m_pView->m_bShowUTMBounds, m_pTree->GetShowPaths(),
