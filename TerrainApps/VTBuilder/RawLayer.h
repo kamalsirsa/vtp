@@ -15,7 +15,12 @@
 
 #include "Layer.h"
 
-#if 1	// use this, or use values directly from DBF file instead?
+//
+// This class is used to store values in memory loaded from DBF files.
+// Alternately, we could use values directly from DBF file instead,
+//  or eventually some combination where a window into the DBF is
+//  cached in memory to support very large files.
+//
 class Field
 {
 public:
@@ -34,7 +39,7 @@ public:
 	void SetValue(int record, int value);
 	void SetValue(int record, double value);
 };
-#endif
+
 
 class vtRawLayer : public vtLayer
 {
@@ -57,8 +62,8 @@ public:
 	int NumEntities();
 	int GetEntityType();
 	void SetEntityType(int type);
-	void AddPoint(const DPoint2 &p);
-	void AddPoint(const DPoint3 &p);
+	int AddPoint(const DPoint2 &p);
+	int AddPoint(const DPoint3 &p);
 
 	int AddField(const char *name, DBFFieldType ftype, int string_length = 40);
 	int AddRecord();
