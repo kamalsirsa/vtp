@@ -1446,12 +1446,15 @@ bool vtElevationGrid::LoadWithGDAL(const char *szFileName,
 		for (i = 0; i < nXSize; i++)
 		{
 			elev = pasScanline[i];
-			if (elev == -9999 || elev == -32766)
+
+			// check for several different commonly used values meaning
+			// "no data at this location"
+			if (elev == -9999 || elev == -32766 || elev == 32767)
 				SetValue(i, m_iRows-1-j, INVALID_ELEVATION);
 			else
 				SetFValue(i, m_iRows-1-j, elev * fScale);
 		}
-		if (progress_callback != NULL) // 100 * cell number we on div total number cells
+		if (progress_callback != NULL)
 			progress_callback(100*j/m_iRows);
 	}
 
