@@ -16,7 +16,7 @@
 // Implementation of class vtProjection
 //
 
-vtProjection::vtProjection()
+vtProjection::vtProjection() : OGRSpatialReference()
 {
 	m_Datum = NO_DATUM;
 }
