@@ -12,9 +12,10 @@
 #include "vtdata/MathTypes.h"
 
 extern void progress_callback(int amount);
-void OpenProgressDialog(const wxString &title);
+void OpenProgressDialog(const wxString &title, bool bCancellable = false);
 void CloseProgressDialog();
-void UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));
+bool UpdateProgressDialog(int amount, const wxString& newmsg = wxT(""));
+void ResumeProgressDialog();
 
 /////
 
