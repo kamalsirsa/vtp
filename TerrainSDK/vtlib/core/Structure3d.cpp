@@ -117,6 +117,12 @@ bool vtStructInstance3d::CreateNode(vtTerrain *pTerr)
 	{
 		// relative path: look on the standards data paths
 		vtString fullpath = FindFileOnPaths(vtGetDataPath(), filename);
+		if (fullpath == "")
+		{
+			// also look in BuildingModels on data path
+			vtString prefix = "BuildingModels/";
+			fullpath = FindFileOnPaths(vtGetDataPath(), prefix+filename);
+		}
 		if (fullpath != "")
 		{
 			// If they are re-creating this object, it's probably because
