@@ -73,6 +73,11 @@ I18N_SOURCES = \
 update-pot:
 	xgettext -k_ -o Enviro.pot $(I18N_SOURCES)
 
+#----------
+
+update-af:
+	msgmerge --no-fuzzy-matching af/Enviro.po Enviro.pot -o af/Enviro.pox
+
 publish-de:
 	cp de/Enviro.pox de/Enviro.po
 	msgfmt de/Enviro.po -o de/Enviro.mo
@@ -80,12 +85,12 @@ publish-de:
 update-de:
 	msgmerge --no-fuzzy-matching de/Enviro.po Enviro.pot -o de/Enviro.pox
 
-publish-sv:
-	cp sv/Enviro.pox sv/Enviro.po
-	msgfmt sv/Enviro.po -o sv/Enviro.mo
+publish-hu:
+	cp hu/Enviro.pox hu/Enviro.po
+	msgfmt hu/Enviro.po -o hu/Enviro.mo
 
-update-sv:
-	msgmerge --no-fuzzy-matching sv/Enviro.po Enviro.pot -o sv/Enviro.pox
+update-hu:
+	msgmerge --no-fuzzy-matching hu/Enviro.po Enviro.pot -o hu/Enviro.pox
 
 publish-pt:
 	cp pt/Enviro.pox pt/Enviro.po
@@ -94,12 +99,16 @@ publish-pt:
 update-pt:
 	msgmerge --no-fuzzy-matching pt/Enviro.po Enviro.pot -o pt/Enviro.pox
 
-publish-hu:
-	cp hu/Enviro.pox hu/Enviro.po
-	msgfmt hu/Enviro.po -o hu/Enviro.mo
+publish-ro:
+	cp ro/Enviro.pox ro/Enviro.po
+	msgfmt ro/Enviro.po -o ro/Enviro.mo
 
-update-hu:
-	msgmerge --no-fuzzy-matching hu/Enviro.po Enviro.pot -o hu/Enviro.pox
+publish-sv:
+	cp sv/Enviro.pox sv/Enviro.po
+	msgfmt sv/Enviro.po -o sv/Enviro.mo
+
+update-sv:
+	msgmerge --no-fuzzy-matching sv/Enviro.po Enviro.pot -o sv/Enviro.pox
 
 publish-uk:
 	cp en_GB/Enviro.pox en_GB/Enviro.po
@@ -109,15 +118,13 @@ publish-af:
 	cp af/Enviro.pox af/Enviro.po
 	msgfmt af/Enviro.po -o af/Enviro.mo
 
-update-af:
-	msgmerge --no-fuzzy-matching af/Enviro.po Enviro.pot -o af/Enviro.pox
-
 #
 # Internationalization steps for Infra (iso-8859-1)
 #
 
 I18N_SOURCES_INFRA = \
 	wx/Infra/InfraFrame.cpp \
+	wx/Infra/InfraDlg.cpp \
 	wx/Infra/Infra_wdr.cpp
 
 publish-infra:
