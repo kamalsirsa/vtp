@@ -1341,6 +1341,10 @@ void BuilderView::OnChar(wxKeyEvent& event)
 	{
 		SetScale(GetScale() / 1.2);
 	}
+	else if (code == WXK_F10)
+	{
+		// a place to put quick hacks
+	}
 	else
 		event.Skip();
 }
