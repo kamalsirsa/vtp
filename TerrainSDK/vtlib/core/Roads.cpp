@@ -12,18 +12,12 @@
 #include "Roads.h"
 
 #define ROAD_HEIGHT			(vtRoadMap3d::s_fHeight)	// height about the ground
-#define SIDEWALK_WIDTH		(1.50f*WORLD_SCALE)
-#define CURB_HEIGHT			(0.15f*WORLD_SCALE)		// typical
-#define MARGIN_WIDTH		(1.60f*WORLD_SCALE)
-#define LANE_WIDTH			(3.30f*WORLD_SCALE)
-#define PARKING_WIDTH		LANE_WIDTH
-#define ROADSIDE_WIDTH		(2.0f*WORLD_SCALE)
+#define ROADSIDE_WIDTH		2.0f
 #define ROADSIDE_DEPTH		-ROADSIDE_WIDTH
 
 #define UV_SCALE_ROAD		(.08f)
 #define UV_SCALE_SIDEWALK	(1.00f)
 
-//#define MINFILTER_FLAGS		APP_Linear
 #define TEXTURE_ARGS(alpha)		true, true, alpha, false, TERRAIN_AMBIENT, \
 	TERRAIN_DIFFUSE, 1.0f, TERRAIN_EMISSIVE, false, false
 
@@ -102,6 +96,7 @@ FPoint3 NodeGeom::GetRoadVector(int i)
 	FPoint3 pn1 = find_adjacent_roadpoint(pR, this);
 	return CreateRoadVector(m_p3, pn1, pR->m_fWidth);
 }
+
 FPoint3 NodeGeom::GetUnitRoadVector(int i)
 {
 	FPoint3 pn1 = find_adjacent_roadpoint(GetRoad(i), this);
@@ -491,26 +486,26 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 
 	float offset = -m_fWidth/2;
 	if (m_iFlags & RF_MARGIN)
-		offset -= MARGIN_WIDTH;
+		offset -= (MARGIN_WIDTH * WORLD_SCALE);
 	if (m_iFlags & RF_PARKING)
-		offset -= PARKING_WIDTH;
+		offset -= (PARKING_WIDTH * WORLD_SCALE);
 	if (m_iFlags & RF_SIDEWALK)
-		offset -= SIDEWALK_WIDTH;
+		offset -= (SIDEWALK_WIDTH * WORLD_SCALE);
 	if (do_roadside)
-		offset -= ROADSIDE_WIDTH;
+		offset -= (ROADSIDE_WIDTH * WORLD_SCALE);
 
 #if 0
 	// create left roadside strip
 	if (do_roadside)
 	{
 		AddRoadStrip(pMesh, bi,
-					offset, offset+ROADSIDE_WIDTH,
+					offset, offset+(ROADSIDE_WIDTH * WORLD_SCALE),
 					ROADSIDE_DEPTH,
-					(m_iFlags & RF_SIDEWALK) ? CURB_HEIGHT : 0.0f,
+					(m_iFlags & RF_SIDEWALK) ? (CURB_HEIGHT * WORLD_SCALE) : 0.0f,
 					rmgeom->m_vt[],
 					0.02f, 0.98f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += ROADSIDE_WIDTH;
+		offset += (ROADSIDE_WIDTH * WORLD_SCALE);
 	}
 #endif
 
@@ -519,16 +514,16 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + SIDEWALK_WIDTH,
-					CURB_HEIGHT, CURB_HEIGHT,
+					offset + (SIDEWALK_WIDTH * WORLD_SCALE),
+					(CURB_HEIGHT * WORLD_SCALE), (CURB_HEIGHT * WORLD_SCALE),
 					rmgeom->m_vt[VTI_SIDEWALK],
 					0.0f, 0.93f, UV_SCALE_SIDEWALK,
 					ND_UP);
-		offset += SIDEWALK_WIDTH;
+		offset += (SIDEWALK_WIDTH * WORLD_SCALE);
 		AddRoadStrip(pMesh, bi,
 					offset,
 					offset,
-					CURB_HEIGHT, 0.0f,
+					(CURB_HEIGHT * WORLD_SCALE), 0.0f,
 					rmgeom->m_vt[VTI_SIDEWALK],
 					0.93f, 1.0f, UV_SCALE_SIDEWALK,
 					ND_RIGHT);
@@ -538,24 +533,24 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + PARKING_WIDTH,
+					offset + (PARKING_WIDTH * WORLD_SCALE),
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_1LANE],
 					0.0f, 1.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += PARKING_WIDTH;
+		offset += (PARKING_WIDTH * WORLD_SCALE);
 	}
 	// create left margin
 	if (m_iFlags & RF_MARGIN)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + MARGIN_WIDTH,
+					offset + (MARGIN_WIDTH * WORLD_SCALE),
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_MARGIN],
 					0.0f, 1.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += MARGIN_WIDTH;
+		offset += (MARGIN_WIDTH * WORLD_SCALE);
 	}
 
 	// create main road surface
@@ -572,24 +567,24 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + MARGIN_WIDTH,
+					offset + (MARGIN_WIDTH * WORLD_SCALE),
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_MARGIN],
 					1.0f, 0.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += MARGIN_WIDTH;
+		offset += (MARGIN_WIDTH * WORLD_SCALE);
 	}
 	// create left parking lane
 	if (m_iFlags & RF_PARKING)
 	{
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + PARKING_WIDTH,
+					offset + (PARKING_WIDTH * WORLD_SCALE),
 					0.0f, 0.0f,
 					rmgeom->m_vt[VTI_1LANE],
 					0.0f, 1.0f, UV_SCALE_ROAD,
 					ND_UP);
-		offset += PARKING_WIDTH;
+		offset += (PARKING_WIDTH * WORLD_SCALE);
 	}
 
 	// create right sidwalk
@@ -598,18 +593,18 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 		AddRoadStrip(pMesh, bi,
 					offset,
 					offset,
-					0.0f, CURB_HEIGHT,
+					0.0f, (CURB_HEIGHT * WORLD_SCALE),
 					rmgeom->m_vt[VTI_SIDEWALK],
 					1.0f, 0.93f, UV_SCALE_SIDEWALK,
 					ND_LEFT);
 		AddRoadStrip(pMesh, bi,
 					offset,
-					offset + SIDEWALK_WIDTH,
-					CURB_HEIGHT, CURB_HEIGHT,
+					offset + (SIDEWALK_WIDTH * WORLD_SCALE),
+					(CURB_HEIGHT * WORLD_SCALE), (CURB_HEIGHT * WORLD_SCALE),
 					rmgeom->m_vt[VTI_SIDEWALK],
 					0.93f, 0.0f, UV_SCALE_SIDEWALK,
 					ND_UP);
-		offset += SIDEWALK_WIDTH;
+		offset += (SIDEWALK_WIDTH * WORLD_SCALE);
 	}
 
 #if 0
@@ -617,8 +612,8 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 	{
 		// create left roadside strip
 		AddRoadStrip(pMesh, bi,
-					offset, offset+ROADSIDE_WIDTH,
-					(m_iFlags & RF_SIDEWALK) ? CURB_HEIGHT : 0.0f,
+					offset, offset+(ROADSIDE_WIDTH * WORLD_SCALE),
+					(m_iFlags & RF_SIDEWALK) ? (CURB_HEIGHT * WORLD_SCALE) : 0.0f,
 					ROADSIDE_DEPTH,
 					APPIDX_ROADSIDE,
 					0.98f, 0.02f, UV_SCALE_ROAD,
@@ -635,7 +630,7 @@ void RoadGeom::GenerateGeometry(vtRoadMap3d *rmgeom)
 		for (int i = 0; i < m_iLanes; i++)
 		{
 			float offset = -((float)(m_iLanes-1) / 2.0f) + i;
-			offset *= LANE_WIDTH;
+			offset *= (LANE_WIDTH * WORLD_SCALE);
 			FPoint3 offset_diff = bi.crossvector[j] * offset;
 			m_pLanes[i].m_p3[j] = bi.center[j] + offset_diff;
 		}
@@ -995,249 +990,6 @@ void vtRoadMap3d::GatherExtents(FPoint3 &cluster_min, FPoint3 &cluster_max)
 	cluster_max += (diff / 20.0f);
 }
 
-#if 0
-//
-// Read an RMF (Road Map File)
-// Returns true if operation sucessful.
-//
-bool vtRoadMap3d::ReadRMF(const char *filename,
-						  bool bHwy, bool bPaved, bool bDirt)
-{
-	char buffer[12];
-	FILE *fp = fopen(filename, "rb");
-	if (!fp)
-	{
-		// "Error opening file: %s",filename
-		return false;
-	}
-
-	int numNodes, numRoads, i, j, nodeNum, dummy;
-	NodeGeom* tmpNode;
-	RoadGeom* tmpRoad;
-
-	//is it a RMF File? and check version number
-	fread(buffer,11,1,fp);
-	buffer[11] = 0;
-
-	if (strncmp(buffer, RMFVERSION_STRING, 7))
-	{
-		// Not an RMF file!
-		fclose(fp);
-		return false;
-	}
-	float version = (float)atof(buffer+7);
-
-	// work around nasty release-mode MSVC bug: values returned from atof
-	// aren't immediately correct until another function is called
-	float version2 = (float)atof(buffer+7);
-
-	if (version < RMFVERSION_SUPPORTED)
-	{
-		// not recent version
-		fclose(fp);
-		return false;
-	}
-
-	// Erasing existing network
-	DeleteElements();
-
-	// Projection
-	int proj_type, iUTMZone;
-	DATUM eDatum;
-	if (version >= 1.8f)
-	{
-		int iUTM;
-		fread(&iUTM, intSize, 1, fp);
-		proj_type = (iUTM != 0);
-	}
-	fread(&iUTMZone, intSize, 1, fp);
-	if (version >= 1.8f)
-	{
-		int iDatum;
-		fread(&iDatum, intSize, 1, fp);
-		eDatum = (DATUM) iDatum;
-	}
-	m_proj.SetProjectionSimple(proj_type, iUTMZone, eDatum);
-
-	// Extents
-	int le, ri, to, bo;
-	fread(&ri, intSize, 1, fp);
-	fread(&to, intSize, 1, fp);
-	fread(&le, intSize, 1, fp);
-	fread(&bo, intSize, 1, fp);
-	m_extents.left = le;
-	m_extents.right = ri;
-	m_extents.top = to;
-	m_extents.bottom = bo;
-	m_bValidExtents = true;
-
-	//get number of nodes and roads
-	fread(&numNodes, intSize, 1, fp);
-	fread(&numRoads, intSize, 1, fp);
-
-	fread(buffer,7,1,fp);
-	if (strcmp(buffer, "Nodes:"))
-	{
-		fclose(fp);
-		return false;
-	}
-
-	// Use a temporary array for fast lookup
-	NodeGeomPtr *pNodeLookup = new NodeGeomPtr[numNodes+1];
-
-	// Read the nodes
-	int ivalue;
-	for (i = 1; i <= numNodes; i++)
-	{
-		tmpNode = new NodeGeom();
-		fread(&(tmpNode->m_id), intSize, 1, fp);
-		if (version < 1.8f)
-		{
-			fread(&ivalue, intSize, 1, fp);
-			tmpNode->m_p.x = ivalue;
-			fread(&ivalue, intSize, 1, fp);
-			tmpNode->m_p.y = ivalue;
-		}
-		else
-		{
-			fread(&tmpNode->m_p.x, doubleSize, 1, fp);
-			fread(&tmpNode->m_p.y, doubleSize, 1, fp);
-		}
-		//add node to list
-		AddNode(tmpNode);
-
-		// and to quick lookup table
-		pNodeLookup[i] = tmpNode;
-	}
-
-	fread(buffer,7,1,fp);
-	if (strcmp(buffer, "Roads:"))
-	{
-		fclose(fp);
-		return false;
-	}
-
-	// Read the roads
-	for (i = 1; i <= numRoads; i++)
-	{
-		tmpRoad = new RoadGeom();
-		float tmp;
-		fread(&(tmpRoad->m_id), intSize, 1, fp);		//id
-		fread(&(tmpRoad->m_iHwy), intSize, 1, fp);		//highway number
-		fread(&(tmpRoad->m_fWidth), floatSize, 1, fp);	//width
-		fread(&(tmpRoad->m_iLanes), intSize, 1, fp);	//number of lanes
-		fread(&(tmpRoad->m_Surface), intSize, 1, fp);	//surface type
-		fread(&(tmpRoad->m_iFlags), intSize, 1, fp);		//FLAG
-		fread(&tmp, floatSize, 1, fp);		//height of road at node 0
-		tmpRoad->SetHeightAt(0, tmp);
-		fread(&tmp, floatSize, 1, fp);		//height of road at node 1
-		tmpRoad->SetHeightAt(1, tmp);
-
-		int size;
-		fread(&size, intSize, 1, fp);    //number of coordinates making the road
-		tmpRoad->SetSize(size);
-
-		for (j = 0; j < tmpRoad->GetSize(); j++)
-		{
-			if (version < 1.8f)
-			{
-				fread(&ivalue, intSize, 1, fp);
-				(*tmpRoad)[j].x = ivalue;
-				fread(&ivalue, intSize, 1, fp);
-				(*tmpRoad)[j].y = ivalue;
-			}
-			else
-			{
-				fread(&((*tmpRoad)[j].x), doubleSize, 1, fp);
-				fread(&((*tmpRoad)[j].y), doubleSize, 1, fp);
-			}
-		}
-
-		//set the end points
-		fread(&nodeNum, intSize, 1, fp);
-		tmpRoad->SetNode(0, pNodeLookup[nodeNum]);
-		fread(&nodeNum, intSize, 1, fp);
-		tmpRoad->SetNode(1, pNodeLookup[nodeNum]);
-
-		// check for inclusion
-		bool include = false;
-		if (bHwy && tmpRoad->m_iHwy > 0) include = true;
-		if (bPaved && tmpRoad->m_Surface == ST_PAVED) include = true;
-		if (bDirt && (tmpRoad->m_Surface == ST_TRAIL ||
-			tmpRoad->m_Surface == ST_2TRACK ||
-			tmpRoad->m_Surface == ST_DIRT ||
-			tmpRoad->m_Surface == ST_GRAVEL)) include = true;
-
-		if (!include)
-		{
-			delete tmpRoad;
-			continue;
-		}
-
-		// Inform the Nodes to which it belongs
-		tmpRoad->GetNode(0)->AddRoad(tmpRoad);
-		tmpRoad->GetNode(1)->AddRoad(tmpRoad);
-
-		// Add to list
-		AddRoad(tmpRoad);
-	}
-
-	// Read traffic control information
-	fread(buffer,9, 1, fp);
-	if (strcmp(buffer, "Traffic:"))
-	{
-		fclose(fp);
-		return false;
-	}
-
-	for (i = 0; i < numNodes; i++)
-	{
-		int id, numRoads;
-
-		fread(&id, intSize, 1, fp);  //node ID
-		// safety check
-		if (id < 1 || id > numNodes)
-		{
-			fclose(fp);
-			return false;
-		}
-
-		tmpNode = pNodeLookup[id];
-		fread(&dummy, intSize, 1, fp);
-		fread(&numRoads, intSize, 1, fp);
-
-		//get specifics for each road at the intersection:
-		for (j = 0; j < numRoads; j++)
-		{
-			//match road number
-			IntersectionType type;
-			LightStatus lStatus;
-			//read in data
-			fread(&id, intSize, 1, fp);  //road ID
-			fread(&type, intSize, 1, fp);
-			fread(&lStatus, intSize, 1, fp);
-			//now figure out which roads at the node get what behavior
-			id = tmpNode->FindRoad(id);
-			if (id >= 0)
-			{
-				tmpNode->SetIntersectType(id, type);
-				tmpNode->SetLightStatus(id, lStatus);
-			}
-		}
-	}
-
-	// We don't need the lookup table any more
-	delete pNodeLookup;
-
-	//are we at end of file?
-	fread(buffer,8, 1, fp);
-	fclose(fp);
-	if (strcmp(buffer, "End RMF"))
-		return false;
-
-	return true;
-}
-#endif
 
 void vtRoadMap3d::DetermineSurfaceAppearance()
 {
@@ -1345,8 +1097,8 @@ void vtRoadMap3d::DrapeOnTerrain(vtHeightField *pHeightField)
 			pR->m_p3[j].y = p.y;
 			pR->m_p3[j].z = p.z;
 		}
-		// ignore width from file - imply from lanes
-		pR->m_fWidth = pR->m_iLanes * 3.3f * WORLD_SCALE;
+		// ignore width from file - imply from properties
+		pR->m_fWidth = pR->m_iLanes * (LANE_WIDTH * WORLD_SCALE);
 		if (pR->m_fWidth==0) {
 			pR->m_fWidth = 10.0f * WORLD_SCALE;
 		}
