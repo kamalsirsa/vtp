@@ -49,9 +49,6 @@ public:
 	void DrawBuildingHighlight(wxDC* pDC, vtScaledView *pView);
 	bool AddElementsFromSHP(const wxString2 &filename, vtProjection &proj, DRECT rect);
 	void AddElementsFromDLG(vtDLGFile *pDlg);
-	// Import from SDTS via OGR
-	void AddElementsFromOGR(class OGRDataSource *datasource,
-		void progress_callback(int) = NULL);
 
 	bool EditBuildingProperties();
 	void AddFoundations(vtElevLayer *pEL);
@@ -70,9 +67,6 @@ public:
 protected:
 	int m_size;	// size in pixels of the small crosshair at building center
 };
-
-// Helper
-int GetSHPType(const char *filename);
 
 #endif
 
