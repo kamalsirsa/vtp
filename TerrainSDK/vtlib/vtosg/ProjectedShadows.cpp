@@ -148,8 +148,28 @@ void CreateProjectedShadowTextureCullCallback::doPreRender(osg::Node& node,
 				pGrid->SetDistance(1E9);
 			}
 
+			Array<osg::Node::NodeMask> nodemasks(shadow_ignore_nodes->GetSize());
+#define TOGGLE_SHADOWS 1
+#ifdef TOGGLE_SHADOWS
+			/* Set ignore node masks */
+			for (int i = 0; i < shadow_ignore_nodes->GetSize(); i++) {
+				osg::Node *n = (*shadow_ignore_nodes)[i];
+				nodemasks[i] = n->getNodeMask();
+				n->setNodeMask(0);
+			}
+#endif
+
 			// traverse the shadower
 			m_shadower->accept(cv);
+
+			/* Restore ignore node masks */
+#if TOGGLE_SHADOWS
+			for (int i = 0; i < shadow_ignore_nodes->GetSize(); i++) {
+				osg::Node *n = (*shadow_ignore_nodes)[i];
+				n->setNodeMask(nodemasks[i]);
+			}
+#endif
+			
 
  			if (NULL != pGrid)
 				pGrid->SetDistance(fOldDistance);

@@ -85,6 +85,8 @@ public:
 		m_texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
 		m_bRecomputeShadows = false;
 		m_iRez = iRez;
+
+		shadow_ignore_nodes = new Array<osg::Node *>;
 	}
 
 	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
@@ -93,12 +95,16 @@ public:
 	void SetInitialLightPosition(const osg::Vec3& position) { m_position = position; m_bRecomputeShadows = true; }
 	void SetAmbientLightColor(const osg::Vec4& ambientLightColor) { m_ambientLightColor = ambientLightColor; }
 	void SetShadower(osg::Node* pShadower) { m_shadower = pShadower; }
+	void SetEnabled(bool enable) { m_bDrawEnabled = enable; }
+	void RecomputeShadows() { m_bRecomputeShadows = true; }
+	Array<osg::Node *> *shadow_ignore_nodes;
 	
 protected:
 	void doPreRender(osg::Node& node, osgUtil::CullVisitor& cv);
 	
  	bool m_bRecomputeShadows;
 	bool m_bInCallback;
+	bool m_bDrawEnabled;
 	osg::ref_ptr<osg::Node>      m_shadower;
 	osg::Vec3                    m_position;
 	osg::Vec4                    m_ambientLightColor;
