@@ -29,6 +29,7 @@
 #define FSTRING_GTOPO	"GTOPO30 Files (*.hdr)|*.hdr|"	
 #define FSTRING_LULC	"LULC Files (*.gir)|*.gir|"
 #define FSTRING_PGM		"PGM Files (*.pgm)|*.pgm|"
+#define FSTRING_PNG		"PNG Files (*.png)|*.png|"
 #define FSTRING_RAW		"Raw raster files (*.raw)|*.raw|"
 #define FSTRING_SDTS	"SDTS Files (*catd.ddf)|*catd.ddf|"	
 #define FSTRING_SHP		"ArcView Shape Files (*.shp)|*.shp|"
