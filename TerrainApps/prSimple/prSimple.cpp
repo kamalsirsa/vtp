@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
 
 	vtScene *pScene = vtGetScene();
 	pScene->SetWindowSize(width, height);
-	pScene->GetWindow(0)->SetBgColor(RGBf(0.5f,0,0));
+	pScene->SetBgColor(RGBf(0.5f,0,0));
 
 	// create the window to draw to.
 	osg::ref_ptr<Producer::RenderSurface> renderSurface = new Producer::RenderSurface;
