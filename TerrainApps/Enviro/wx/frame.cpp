@@ -94,6 +94,8 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 
 	EVT_MENU(ID_VIEW_MAINTAIN, vtFrame::OnViewMaintain)
 	EVT_UPDATE_UI(ID_VIEW_MAINTAIN,	vtFrame::OnUpdateViewMaintain)
+	EVT_MENU(ID_VIEW_GRAB_PIVOT, vtFrame::OnViewGrabPivot)
+	EVT_UPDATE_UI(ID_VIEW_GRAB_PIVOT,	vtFrame::OnUpdateViewGrabPivot)
 	EVT_MENU(ID_VIEW_WIREFRAME, vtFrame::OnViewWireframe)
 	EVT_UPDATE_UI(ID_VIEW_WIREFRAME,	vtFrame::OnUpdateViewWireframe)
 	EVT_MENU(ID_VIEW_FULLSCREEN, vtFrame::OnViewFullscreen)
@@ -248,6 +250,7 @@ void vtFrame::CreateMenus()
 	viewMenu->Append(ID_VIEW_SLOWER, "Fly Slower (S)");
 	viewMenu->Append(ID_VIEW_FASTER, "Fly Faster (F)");
 	viewMenu->Append(ID_VIEW_MAINTAIN, "Maintain height above ground (A)", "Maintain height above ground", true);
+	viewMenu->Append(ID_VIEW_GRAB_PIVOT, "Use Grab-Pivot Navigation (D)", "Maintain height above ground", true);
 	viewMenu->Append(ID_VIEW_WIREFRAME, "Wireframe\tCtrl+W", "Wireframe", true);
 	viewMenu->Append(ID_VIEW_FULLSCREEN, "Fullscreen\tCtrl+F", "Fullscreen", true);
 	viewMenu->Append(ID_VIEW_TOPDOWN, "Top-Down Camera\tCtrl+T", "Top-Down", true);
@@ -370,6 +373,15 @@ void vtFrame::OnChar(wxKeyEvent& event)
 			g_App.m_pTFlyer->MaintainHeight(m_bMaintainHeight);
 			g_App.m_pTFlyer->SetMaintainHeight(0);
 		}
+	}
+	if (key == 'd')
+	{
+		// Toggle grab-pivot
+		if (g_App.m_nav == NT_Normal)
+			g_App.m_nav = NT_Grab;
+		else
+			g_App.m_nav = NT_Normal;
+		g_App.EnableFlyerEngine(true);
 	}
 	if (key == 'f')
 		ChangeFlightSpeed(1.8f);
@@ -528,6 +540,22 @@ void vtFrame::OnUpdateViewMaintain(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Terrain);
 	event.Check(m_bMaintainHeight);
+}
+
+void vtFrame::OnViewGrabPivot(wxCommandEvent& event)
+{
+	if (g_App.m_nav == NT_Normal)
+		g_App.m_nav = NT_Grab;
+	else
+		g_App.m_nav = NT_Normal;
+
+	g_App.EnableFlyerEngine(true);
+}
+
+void vtFrame::OnUpdateViewGrabPivot(wxUpdateUIEvent& event)
+{
+	event.Enable(g_App.m_state == AS_Terrain);
+	event.Check(g_App.m_nav == NT_Grab);
 }
 
 void vtFrame::OnViewWireframe(wxCommandEvent& event)

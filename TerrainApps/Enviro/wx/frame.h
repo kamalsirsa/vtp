@@ -43,6 +43,8 @@ public:
 
 	void OnViewMaintain(wxCommandEvent& event);
 	void OnUpdateViewMaintain(wxUpdateUIEvent& event);
+	void OnViewGrabPivot(wxCommandEvent& event);
+	void OnUpdateViewGrabPivot(wxUpdateUIEvent& event);
 	void OnViewWireframe(wxCommandEvent& event);
 	void OnUpdateViewWireframe(wxUpdateUIEvent& event);
 	void OnViewFullscreen(wxCommandEvent& event);
