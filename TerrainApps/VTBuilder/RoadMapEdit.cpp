@@ -90,7 +90,7 @@ bool NodeEdit::EditProperties(vtLayer *pLayer)
 bool NodeEdit::WithinExtent(DRECT target)
 {
 	return (m_p.x > target.left && m_p.x < target.right && 
-			m_p.y > target.bottom && m_p.y < target.top);
+		m_p.y > target.bottom && m_p.y < target.top);
 }
 
 //is the node in "bound"
@@ -98,17 +98,17 @@ bool NodeEdit::InBounds(DRECT bound)
 {
 	//eliminate easy cases.
 	if (m_p.y < bound.bottom || 
-		m_p.y > bound.top ||
-		m_p.x < bound.left ||
-		m_p.x > bound.right) {
+			m_p.y > bound.top ||
+			m_p.x < bound.left ||
+			m_p.x > bound.right) {
 		return false;
 	}
 
 	//simple correct case:
 	if ((m_p.y < bound.top) &&
-		(m_p.y > bound.bottom) &&
-		(m_p.x < bound.right) &&
-		(m_p.x > bound.left)) {
+			(m_p.y > bound.bottom) &&
+			(m_p.x < bound.right) &&
+			(m_p.x > bound.left)) {
 		return true;
 	}
 
@@ -174,7 +174,7 @@ bool RoadEdit::operator==(RoadEdit &ref)
 		return false;
 
 	return (m_iPriority == ref.m_iPriority &&
-			m_fLength == ref.m_fLength);
+		m_fLength == ref.m_fLength);
 }
 
 void RoadEdit::ComputeExtent()
@@ -225,17 +225,17 @@ bool RoadEdit::InBounds(DRECT bound)
 {
 	//eliminate easy cases.
 	if (m_extent.top < bound.bottom ||
-		m_extent.bottom > bound.top ||
-		m_extent.right < bound.left ||
-		m_extent.left > bound.right) {
+			m_extent.bottom > bound.top ||
+			m_extent.right < bound.left ||
+			m_extent.left > bound.right) {
 		return false;
 	}
 
 	//simple correct case:
 	if ((m_extent.top < bound.top) &&
-		(m_extent.bottom > bound.bottom) &&
-		(m_extent.right < bound.right) &&
-		(m_extent.left > bound.left)) {
+			(m_extent.bottom > bound.bottom) &&
+			(m_extent.right < bound.right) &&
+			(m_extent.left > bound.left)) {
 		return true;
 	}
 
@@ -247,9 +247,9 @@ bool RoadEdit::PartiallyInBounds(DRECT bound)
 {
 	//eliminate easy cases.
 	if (m_extent.top < bound.bottom || 
-		m_extent.bottom > bound.top ||
-		m_extent.right < bound.left ||
-		m_extent.left > bound.right) {
+			m_extent.bottom > bound.top ||
+			m_extent.right < bound.left ||
+			m_extent.left > bound.right) {
 		return false;
 	}
 
@@ -258,7 +258,7 @@ bool RoadEdit::PartiallyInBounds(DRECT bound)
 	{
 		DPoint2 point = GetAt(i);
 		if (point.x > bound.left && point.x < bound.right &&
-			point.y > bound.bottom && point.y < bound.top) 
+				point.y > bound.bottom && point.y < bound.top) 
 		{
 			return true;
 		}
@@ -271,7 +271,7 @@ bool RoadEdit::PartiallyInBounds(DRECT bound)
 static wxPoint roadbuf[MAXPOINTS];
 
 bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
-					bool bShowWidth) 
+	bool bShowWidth) 
 {
 	// base road color on type of road
 	pDC->SetLogicalFunction(wxCOPY);
@@ -331,17 +331,25 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 		pDC->SetPen(RoadPen[8]);
 		if (m_iFlags & RF_FORWARD)
 		{
-			pDC->DrawLine(center.x - side.x * 5.0f, center.y - side.y * 5.0f,
-						  center.x + fw.x * 6.0f, center.y + fw.y * 6.0f);
-			pDC->DrawLine(center.x + fw.x * 6.0f, center.y + fw.y * 6.0f,
-						  center.x + side.x * 5.0f, center.y + side.y * 5.0f);
+			pDC->DrawLine((int) (center.x - side.x * 5.0f),
+				(int) (center.y - side.y * 5.0f),
+				(int) (center.x + fw.x * 6.0f),
+				(int) (center.y + fw.y * 6.0f));
+			pDC->DrawLine((int) (center.x + fw.x * 6.0f),
+				(int) (center.y + fw.y * 6.0f),
+				(int) (center.x + side.x * 5.0f),
+				(int) (center.y + side.y * 5.0f));
 		}
 		if (m_iFlags & RF_REVERSE)
 		{
-			pDC->DrawLine(center.x - side.x * 5.0f, center.y - side.y * 5.0f,
-						  center.x - fw.x * 6.0f, center.y - fw.y * 6.0f);
-			pDC->DrawLine(center.x - fw.x * 6.0f, center.y - fw.y * 6.0f,
-						  center.x + side.x * 5.0f, center.y + side.y * 5.0f);
+			pDC->DrawLine((int) (center.x - side.x * 5.0f),
+				(int) (center.y - side.y * 5.0f),
+				(int) (center.x - fw.x * 6.0f),
+				(int) (center.y - fw.y * 6.0f));
+			pDC->DrawLine((int) (center.x - fw.x * 6.0f),
+				(int) (center.y - fw.y * 6.0f),
+				(int) (center.x + side.x * 5.0f),
+				(int) (center.y + side.y * 5.0f));
 		}
 	}
 	if (m_bDrawPoints)
@@ -350,9 +358,9 @@ bool RoadEdit::Draw(wxDC* pDC, vtScaledView *pView, bool bShowDirection,
 		for (c = 0; c < size && c < MAXPOINTS; c++)
 		{
 			pDC->DrawLine(roadbuf[c].x-3, roadbuf[c].y,
-						  roadbuf[c].x+3, roadbuf[c].y);
+				roadbuf[c].x+3, roadbuf[c].y);
 			pDC->DrawLine(roadbuf[c].x, roadbuf[c].y-3,
-						  roadbuf[c].x, roadbuf[c].y+3);
+				roadbuf[c].x, roadbuf[c].y+3);
 		}
 	}
 	return true;
@@ -610,7 +618,7 @@ bool RoadMapEdit::SelectAndExtendRoad(DPoint2 utmCoord, float error, DRECT &boun
 						index = j;	
 					}
 				}
-				
+
 				//compare index with all the other roads at the node.
 				for (j = 0; j < node->m_iRoads; j++) {
 					if (j != index) {
@@ -931,5 +939,4 @@ void RoadMapEdit::ReplaceNode(NodeEdit *pN, NodeEdit *pN2)
 		pN2->AdjustForLights();
 	}
 }
-
 

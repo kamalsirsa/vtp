@@ -29,7 +29,7 @@ CNodeDlg::CNodeDlg(NodeEdit *node, vtLayer *pLayer, bool bMultiple)
 	m_pTempNode = new NodeEdit();
 	m_pTempNode->Copy(m_pNode);
 	m_pLayer = pLayer;
-	
+
 	m_bMultiple = bMultiple;
 }
 
@@ -52,7 +52,7 @@ END_EVENT_TABLE()
 void CNodeDlg::OnPaint(wxPaintEvent& event)
 {
 //	wxEvtHandler::OnPaint(event);
-    wxPaintDC dc(this);
+	wxPaintDC dc(this);
 	OnDraw(dc);
 }
 
@@ -166,11 +166,11 @@ bool CNodeDlg::OnOKMultiple()
 			if (vit == VIT_ALLLIGHTS)
 				m_pNode->SetIntersectType(i, IT_LIGHT);
 			else
-			if (vit == VIT_ALLSTOPS)
-				m_pNode->SetIntersectType(i, IT_STOPSIGN);
-			else
-			if (vit == VIT_NONE)
-				m_pNode->SetIntersectType(i, IT_NONE);
+				if (vit == VIT_ALLSTOPS)
+					m_pNode->SetIntersectType(i, IT_STOPSIGN);
+				else
+					if (vit == VIT_NONE)
+						m_pNode->SetIntersectType(i, IT_NONE);
 		}
 		m_pNode->DetermineVisualFromRoads();
 		if (m_pTempNode->HasLights())
@@ -279,28 +279,28 @@ void CNodeDlg::OnSelchangeNodeIntersect(wxCommandEvent &event)
 	//overwrite all behaviors at the roads to match new assigned node behavior.
 	switch (itype)
 	{
-	case IT_NONE:
+		case IT_NONE:
 		//make all intersections uncontrolled
-		for (i = 0; i < m_pTempNode->m_iRoads; i++) {
-			m_pTempNode->SetIntersectType(i, IT_NONE);
-		}
-		m_pcRoadBehavior->SetSelection(IT_NONE);
-		break;
-	case IT_STOPSIGN:
+			for (i = 0; i < m_pTempNode->m_iRoads; i++) {
+				m_pTempNode->SetIntersectType(i, IT_NONE);
+			}
+			m_pcRoadBehavior->SetSelection(IT_NONE);
+			break;
+		case IT_STOPSIGN:
 		//make all intersections stop signs
-		for (i = 0; i < m_pTempNode->m_iRoads; i++) {
-			m_pTempNode->SetIntersectType(i, IT_STOPSIGN);
-		}
-		m_pcRoadBehavior->SetSelection(IT_STOPSIGN);
-		break;
-	case IT_LIGHT:
+			for (i = 0; i < m_pTempNode->m_iRoads; i++) {
+				m_pTempNode->SetIntersectType(i, IT_STOPSIGN);
+			}
+			m_pcRoadBehavior->SetSelection(IT_STOPSIGN);
+			break;
+		case IT_LIGHT:
 		//make all intersections lights
-		for (i = 0; i < m_pTempNode->m_iRoads; i++) {
-			m_pTempNode->SetIntersectType(i, IT_LIGHT);
-		}
-		m_pcRoadBehavior->SetSelection(IT_LIGHT);
-		m_pTempNode->AdjustForLights();
-		break;
+			for (i = 0; i < m_pTempNode->m_iRoads; i++) {
+				m_pTempNode->SetIntersectType(i, IT_LIGHT);
+			}
+			m_pcRoadBehavior->SetSelection(IT_LIGHT);
+			m_pTempNode->AdjustForLights();
+			break;
 	}
 	Refresh();
 }
@@ -345,78 +345,76 @@ void CNodeDlg::OnDraw(wxDC &dc)
 
 		switch (m_pTempNode->GetIntersectType(i))
 		{
-		case IT_STOPSIGN:
-			pen.SetColour(128,0,0);
-			dc.SetPen(pen);
-			vec.x += 2;
-			vec.y += 6;
-			buf[0].x = vec.x; buf[0].y = vec.y;
-			vec.x -= 4;
-			buf[1].x = vec.x; buf[1].y = vec.y;
-			vec.x -= 3;
-			vec.y -= 3;
-			buf[2].x = vec.x; buf[2].y = vec.y;
-			vec.y -= 4;
-			buf[3].x = vec.x; buf[3].y = vec.y;
-			vec.x += 3;
-			vec.y -= 3;
-			buf[4].x = vec.x; buf[4].y = vec.y;
-			vec.x += 4;
-			buf[5].x = vec.x; buf[5].y = vec.y;
-			vec.x += 3;
-			vec.y += 3;
-			buf[6].x = vec.x; buf[6].y = vec.y;
-			vec.y += 4;
-			buf[7].x = vec.x; buf[7].y = vec.y;
-			vec.x -= 3;
-			vec.y += 3;
-			buf[8].x = vec.x; buf[8].y = vec.y;
-			dc.DrawLines(9, buf);
-			break;
-		case IT_LIGHT:
-			wxBrush brush;
-			switch (m_pTempNode->GetLightStatus(i)) {
-			case LT_INVALID:
-				pen.SetColour(0,0,0);
-				brush.SetColour(0,0,0);
-				break;
-			case LT_RED:
+			case IT_STOPSIGN:
 				pen.SetColour(128,0,0);
-				brush.SetColour(128,0,0);
+				dc.SetPen(pen);
+				vec.x += 2;
+				vec.y += 6;
+				buf[0].x = vec.x; buf[0].y = vec.y;
+				vec.x -= 4;
+				buf[1].x = vec.x; buf[1].y = vec.y;
+				vec.x -= 3;
+				vec.y -= 3;
+				buf[2].x = vec.x; buf[2].y = vec.y;
+				vec.y -= 4;
+				buf[3].x = vec.x; buf[3].y = vec.y;
+				vec.x += 3;
+				vec.y -= 3;
+				buf[4].x = vec.x; buf[4].y = vec.y;
+				vec.x += 4;
+				buf[5].x = vec.x; buf[5].y = vec.y;
+				vec.x += 3;
+				vec.y += 3;
+				buf[6].x = vec.x; buf[6].y = vec.y;
+				vec.y += 4;
+				buf[7].x = vec.x; buf[7].y = vec.y;
+				vec.x -= 3;
+				vec.y += 3;
+				buf[8].x = vec.x; buf[8].y = vec.y;
+				dc.DrawLines(9, buf);
 				break;
-			case LT_YELLOW:
-				pen.SetColour(0,128,128);
-				brush.SetColour(0,128,128);
-				break;
-			case LT_GREEN:
-				pen.SetColour(0,128,0);
-				brush.SetColour(0,128,0);
-				break;
-			default:
+			case IT_LIGHT:
+				wxBrush brush;
+				switch (m_pTempNode->GetLightStatus(i)) {
+					case LT_INVALID:
+						pen.SetColour(0,0,0);
+						brush.SetColour(0,0,0);
+						break;
+					case LT_RED:
+						pen.SetColour(128,0,0);
+						brush.SetColour(128,0,0);
+						break;
+					case LT_YELLOW:
+						pen.SetColour(0,128,128);
+						brush.SetColour(0,128,128);
+						break;
+					case LT_GREEN:
+						pen.SetColour(0,128,0);
+						brush.SetColour(0,128,0);
+						break;
+					default:
 				//unrecognized
-				pen.SetColour(0,0,255);
-				brush.SetColour(0,0,255);
-			}
-		
-			dc.SetPen(pen);
-			dc.SetBrush(brush);
-			wxRect box;
-			int radius = 4;
-			box.y = vec.y - radius;
-			box.height = (radius << 1);
-			box.x = vec.x - radius;
-			box.width = (radius << 1);
-			dc.DrawEllipse(box.x, box.y, box.width, box.height);
-			break;
+						pen.SetColour(0,0,255);
+						brush.SetColour(0,0,255);
+				}
+
+				dc.SetPen(pen);
+				dc.SetBrush(brush);
+				wxRect box;
+				int radius = 4;
+				box.y = vec.y - radius;
+				box.height = (radius << 1);
+				box.x = vec.x - radius;
+				box.width = (radius << 1);
+				dc.DrawEllipse(box.x, box.y, box.width, box.height);
+				break;
 		} 
 
-		
-		vec.x = (float)(off.x + vector.x*40);
-		vec.y = (float)(off.y - vector.y*40);
+		vec.x = (int)(off.x + vector.x*40);
+		vec.y = (int)(off.y - vector.y*40);
 		string = wxString::Format("%i", i);
 		//draw text labels
 		dc.DrawText(string, vec.x-10, vec.y-10);
 	}
 	pView->SetScale(fSaveScale);
 }
-

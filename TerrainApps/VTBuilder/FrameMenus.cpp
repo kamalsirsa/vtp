@@ -35,143 +35,143 @@
 #include "DistribVegDlg.h"
 
 BEGIN_EVENT_TABLE(MainFrame, wxFrame)
-	EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
-	EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
-	EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
-	EVT_MENU(ID_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
-	EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
+EVT_MENU(ID_FILE_NEW,		MainFrame::OnProjectNew)
+EVT_MENU(ID_FILE_OPEN,		MainFrame::OnProjectOpen)
+EVT_MENU(ID_FILE_SAVE,		MainFrame::OnProjectSave)
+EVT_MENU(ID_DYMAX_TEXTURES,	MainFrame::OnDymaxTexture)
+EVT_MENU(ID_FILE_EXIT,		MainFrame::OnQuit)
 
-	EVT_MENU(ID_EDIT_DELETE, MainFrame::OnEditDelete)
-	EVT_MENU(ID_EDIT_DESELECTALL, MainFrame::OnEditDeselectAll)
-	EVT_MENU(ID_EDIT_INVERTSELECTION, MainFrame::OnEditInvertSelection)
-	EVT_MENU(ID_EDIT_CROSSINGSELECTION, MainFrame::OnEditCrossingSelection)
+EVT_MENU(ID_EDIT_DELETE, MainFrame::OnEditDelete)
+EVT_MENU(ID_EDIT_DESELECTALL, MainFrame::OnEditDeselectAll)
+EVT_MENU(ID_EDIT_INVERTSELECTION, MainFrame::OnEditInvertSelection)
+EVT_MENU(ID_EDIT_CROSSINGSELECTION, MainFrame::OnEditCrossingSelection)
 
-	EVT_UPDATE_UI(ID_EDIT_DELETE,	MainFrame::OnUpdateEditDelete)
+EVT_UPDATE_UI(ID_EDIT_DELETE,	MainFrame::OnUpdateEditDelete)
 
-	EVT_MENU(ID_LAYER_NEW,			MainFrame::OnLayerNew)
-	EVT_MENU(ID_LAYER_OPEN,			MainFrame::OnLayerOpen)
-	EVT_MENU(ID_LAYER_SAVE,			MainFrame::OnLayerSave)
-	EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
-	EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
-	EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
-	EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
-	EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
-	EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
-	EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
-	EVT_MENU(ID_LAYER_FLATTEN,		MainFrame::OnLayerFlatten)
-	EVT_MENU(ID_EDIT_OFFSET,		MainFrame::OnEditOffset)
+EVT_MENU(ID_LAYER_NEW,			MainFrame::OnLayerNew)
+EVT_MENU(ID_LAYER_OPEN,			MainFrame::OnLayerOpen)
+EVT_MENU(ID_LAYER_SAVE,			MainFrame::OnLayerSave)
+EVT_MENU(ID_LAYER_SAVE_AS,		MainFrame::OnLayerSaveAs)
+EVT_MENU(ID_LAYER_IMPORT,		MainFrame::OnLayerImport)
+EVT_MENU(ID_LAYER_IMPORTTIGER,	MainFrame::OnLayerImportTIGER)
+EVT_MENU(ID_LAYER_IMPORTUTIL,	MainFrame::OnLayerImportUtil)
+EVT_MENU(ID_LAYER_PROPS,		MainFrame::OnLayerProperties)
+EVT_MENU(ID_LAYER_CONVERTPROJ,	MainFrame::OnLayerConvert)
+EVT_MENU(ID_LAYER_SETPROJ,		MainFrame::OnLayerSetProjection)
+EVT_MENU(ID_LAYER_FLATTEN,		MainFrame::OnLayerFlatten)
+EVT_MENU(ID_EDIT_OFFSET,		MainFrame::OnEditOffset)
 
-	EVT_UPDATE_UI(ID_LAYER_SAVE,	MainFrame::OnUpdateLayerSave)
-	EVT_UPDATE_UI(ID_LAYER_SAVE_AS,	MainFrame::OnUpdateLayerSaveAs)
-	EVT_UPDATE_UI(ID_LAYER_PROPS,	MainFrame::OnUpdateLayerProperties)
-	EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
-	EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
+EVT_UPDATE_UI(ID_LAYER_SAVE,	MainFrame::OnUpdateLayerSave)
+EVT_UPDATE_UI(ID_LAYER_SAVE_AS,	MainFrame::OnUpdateLayerSaveAs)
+EVT_UPDATE_UI(ID_LAYER_PROPS,	MainFrame::OnUpdateLayerProperties)
+EVT_UPDATE_UI(ID_LAYER_FLATTEN,	MainFrame::OnUpdateLayerFlatten)
+EVT_UPDATE_UI(ID_EDIT_OFFSET,	MainFrame::OnUpdateEditOffset)
 
-	EVT_MENU(ID_VIEW_TOOLBAR,		MainFrame::OnViewToolbar)
-	EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
-	EVT_MENU(ID_VIEW_LAYERPATHS,	MainFrame::OnViewLayerPaths)
-	EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
-	EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
-	EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
-	EVT_MENU(ID_VIEW_ZOOMIN,		MainFrame::OnViewZoomIn)
-	EVT_MENU(ID_VIEW_ZOOMOUT,		MainFrame::OnViewZoomOut)
-	EVT_MENU(ID_VIEW_ZOOMALL,		MainFrame::OnViewZoomAll)
-	EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
-	EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnElevBox)
-	EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
-	EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
-	EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
-	EVT_MENU(ID_VIEW_FILLWATER,		MainFrame::OnViewFillWater)
+EVT_MENU(ID_VIEW_TOOLBAR,		MainFrame::OnViewToolbar)
+EVT_MENU(ID_VIEW_SHOWLAYER,		MainFrame::OnLayerShow)
+EVT_MENU(ID_VIEW_LAYERPATHS,	MainFrame::OnViewLayerPaths)
+EVT_MENU(ID_VIEW_MAGNIFIER,		MainFrame::OnViewMagnifier)
+EVT_MENU(ID_VIEW_PAN,			MainFrame::OnViewPan)
+EVT_MENU(ID_VIEW_DISTANCE,		MainFrame::OnViewDistance)
+EVT_MENU(ID_VIEW_ZOOMIN,		MainFrame::OnViewZoomIn)
+EVT_MENU(ID_VIEW_ZOOMOUT,		MainFrame::OnViewZoomOut)
+EVT_MENU(ID_VIEW_ZOOMALL,		MainFrame::OnViewZoomAll)
+EVT_MENU(ID_VIEW_FULLVIEW,		MainFrame::OnViewFull)
+EVT_MENU(ID_VIEW_SETAREA,		MainFrame::OnElevBox)
+EVT_MENU(ID_VIEW_WORLDMAP,		MainFrame::OnViewWorldMap)
+EVT_MENU(ID_VIEW_SHOWUTM,		MainFrame::OnViewUTMBounds)
+EVT_MENU(ID_VIEW_SHOWMINUTES,	MainFrame::OnViewMinutes)
+EVT_MENU(ID_VIEW_FILLWATER,		MainFrame::OnViewFillWater)
 
-	EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateToolbar)
-	EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
-	EVT_UPDATE_UI(ID_VIEW_LAYERPATHS,	MainFrame::OnUpdateLayerPaths)
-	EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
-	EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
-	EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
-	EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
-	EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateElevBox)
-	EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
-	EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
-	EVT_UPDATE_UI(ID_VIEW_SHOWMINUTES,	MainFrame::OnUpdateMinutes)
-	EVT_UPDATE_UI(ID_VIEW_FILLWATER,	MainFrame::OnUpdateFillWater)
+EVT_UPDATE_UI(ID_VIEW_TOOLBAR,		MainFrame::OnUpdateToolbar)
+EVT_UPDATE_UI(ID_VIEW_SHOWLAYER,	MainFrame::OnUpdateLayerShow)
+EVT_UPDATE_UI(ID_VIEW_LAYERPATHS,	MainFrame::OnUpdateLayerPaths)
+EVT_UPDATE_UI(ID_VIEW_MAGNIFIER,	MainFrame::OnUpdateMagnifier)
+EVT_UPDATE_UI(ID_VIEW_PAN,			MainFrame::OnUpdatePan)
+EVT_UPDATE_UI(ID_VIEW_DISTANCE,		MainFrame::OnUpdateDistance)
+EVT_UPDATE_UI(ID_VIEW_FULLVIEW,		MainFrame::OnUpdateViewFull)
+EVT_UPDATE_UI(ID_VIEW_SETAREA,		MainFrame::OnUpdateElevBox)
+EVT_UPDATE_UI(ID_VIEW_WORLDMAP,		MainFrame::OnUpdateWorldMap)
+EVT_UPDATE_UI(ID_VIEW_SHOWUTM,		MainFrame::OnUpdateUTMBounds)
+EVT_UPDATE_UI(ID_VIEW_SHOWMINUTES,	MainFrame::OnUpdateMinutes)
+EVT_UPDATE_UI(ID_VIEW_FILLWATER,	MainFrame::OnUpdateFillWater)
 
-	EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectRoad)
-	EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
-	EVT_MENU(ID_ROAD_SELECTWHOLE,	MainFrame::OnSelectWhole)
-	EVT_MENU(ID_ROAD_DIRECTION,		MainFrame::OnDirection)
-	EVT_MENU(ID_ROAD_EDIT,			MainFrame::OnRoadEdit)
-	EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnRoadShowNodes)
-	EVT_MENU(ID_ROAD_SHOWWIDTH,		MainFrame::OnRoadShowWidth)
-	EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
-	EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
+EVT_MENU(ID_ROAD_SELECTROAD,	MainFrame::OnSelectRoad)
+EVT_MENU(ID_ROAD_SELECTNODE,	MainFrame::OnSelectNode)
+EVT_MENU(ID_ROAD_SELECTWHOLE,	MainFrame::OnSelectWhole)
+EVT_MENU(ID_ROAD_DIRECTION,		MainFrame::OnDirection)
+EVT_MENU(ID_ROAD_EDIT,			MainFrame::OnRoadEdit)
+EVT_MENU(ID_ROAD_SHOWNODES,		MainFrame::OnRoadShowNodes)
+EVT_MENU(ID_ROAD_SHOWWIDTH,		MainFrame::OnRoadShowWidth)
+EVT_MENU(ID_ROAD_SELECTHWY,		MainFrame::OnSelectHwy)
+EVT_MENU(ID_ROAD_CLEAN,			MainFrame::OnRoadClean)
 
-	EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectRoad)
-	EVT_UPDATE_UI(ID_ROAD_SELECTNODE,	MainFrame::OnUpdateSelectNode)
-	EVT_UPDATE_UI(ID_ROAD_SELECTWHOLE,	MainFrame::OnUpdateSelectWhole)
-	EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
-	EVT_UPDATE_UI(ID_ROAD_EDIT,			MainFrame::OnUpdateRoadEdit)
-	EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
-	EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
+EVT_UPDATE_UI(ID_ROAD_SELECTROAD,	MainFrame::OnUpdateSelectRoad)
+EVT_UPDATE_UI(ID_ROAD_SELECTNODE,	MainFrame::OnUpdateSelectNode)
+EVT_UPDATE_UI(ID_ROAD_SELECTWHOLE,	MainFrame::OnUpdateSelectWhole)
+EVT_UPDATE_UI(ID_ROAD_DIRECTION,	MainFrame::OnUpdateDirection)
+EVT_UPDATE_UI(ID_ROAD_EDIT,			MainFrame::OnUpdateRoadEdit)
+EVT_UPDATE_UI(ID_ROAD_SHOWNODES,	MainFrame::OnUpdateRoadShowNodes)
+EVT_UPDATE_UI(ID_ROAD_SHOWWIDTH,	MainFrame::OnUpdateRoadShowWidth)
 
-	EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
-	EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
-	EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
-	EVT_MENU(ID_ELEV_SCALEELEVATION,	MainFrame::OnScaleElevation)
-	EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
-	EVT_MENU(ID_ELEV_SHOW,				MainFrame::OnElevShow)
-	EVT_MENU(ID_ELEV_SHADING,			MainFrame::OnElevShading)
-	EVT_MENU(ID_ELEV_HIDE,				MainFrame::OnElevHide)
-	EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
+EVT_MENU(ID_ELEV_SELECT,			MainFrame::OnElevSelect)
+EVT_MENU(ID_ELEV_REMOVEABOVESEA,	MainFrame::OnRemoveAboveSea)
+EVT_MENU(ID_ELEV_FILLIN,			MainFrame::OnFillIn)
+EVT_MENU(ID_ELEV_SCALEELEVATION,	MainFrame::OnScaleElevation)
+EVT_MENU(ID_ELEV_EXPORTTERRAGEN,	MainFrame::OnExportTerragen)
+EVT_MENU(ID_ELEV_SHOW,				MainFrame::OnElevShow)
+EVT_MENU(ID_ELEV_SHADING,			MainFrame::OnElevShading)
+EVT_MENU(ID_ELEV_HIDE,				MainFrame::OnElevHide)
+EVT_MENU(ID_ELEV_BITMAP,			MainFrame::OnElevExportBitmap)
 
-	EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
-	EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateRemoveAboveSea)
-	EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateFillIn)
-	EVT_UPDATE_UI(ID_ELEV_SCALEELEVATION, MainFrame::OnUpdateScaleElevation)
-	EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateExportTerragen)
-	EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
-	EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
-	EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
-	EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateExportBitmap)
+EVT_UPDATE_UI(ID_ELEV_SELECT,		MainFrame::OnUpdateElevSelect)
+EVT_UPDATE_UI(ID_ELEV_REMOVEABOVESEA, MainFrame::OnUpdateRemoveAboveSea)
+EVT_UPDATE_UI(ID_ELEV_FILLIN,		MainFrame::OnUpdateFillIn)
+EVT_UPDATE_UI(ID_ELEV_SCALEELEVATION, MainFrame::OnUpdateScaleElevation)
+EVT_UPDATE_UI(ID_ELEV_EXPORTTERRAGEN, MainFrame::OnUpdateExportTerragen)
+EVT_UPDATE_UI(ID_ELEV_SHOW,			MainFrame::OnUpdateElevShow)
+EVT_UPDATE_UI(ID_ELEV_SHADING,		MainFrame::OnUpdateElevShading)
+EVT_UPDATE_UI(ID_ELEV_HIDE,			MainFrame::OnUpdateElevHide)
+EVT_UPDATE_UI(ID_ELEV_BITMAP,		MainFrame::OnUpdateExportBitmap)
 
-	EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
-	EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
-	EVT_MENU(ID_TOWER_EDIT,				MainFrame::OnTowerEdit)
+EVT_MENU(ID_TOWER_ADD,				MainFrame::OnTowerAdd)
+EVT_MENU(ID_TOWER_SELECT,			MainFrame::OnTowerSelect)
+EVT_MENU(ID_TOWER_EDIT,				MainFrame::OnTowerEdit)
 
-	EVT_UPDATE_UI(ID_TOWER_ADD,			MainFrame::OnUpdateTowerAdd)
-	EVT_UPDATE_UI(ID_TOWER_SELECT,		MainFrame::OnUpdateTowerSelect)
-	EVT_UPDATE_UI(ID_TOWER_EDIT,		MainFrame::OnUpdateTowerEdit)
+EVT_UPDATE_UI(ID_TOWER_ADD,			MainFrame::OnUpdateTowerAdd)
+EVT_UPDATE_UI(ID_TOWER_SELECT,		MainFrame::OnUpdateTowerSelect)
+EVT_UPDATE_UI(ID_TOWER_EDIT,		MainFrame::OnUpdateTowerEdit)
 
-	EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
-	EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
+EVT_MENU(ID_VEG_PLANTS,				MainFrame::OnVegPlants)
+EVT_MENU(ID_VEG_BIOREGIONS,			MainFrame::OnVegBioregions)
 
-	EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
-	EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
-	EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
+EVT_MENU(ID_FEATURE_SELECT,			MainFrame::OnFeatureSelect)
+EVT_MENU(ID_STRUCTURE_EDIT_BLD,		MainFrame::OnBuildingEdit)
+EVT_MENU(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnStructureAddLinear)
 
-	EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
-	EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
-	EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
+EVT_UPDATE_UI(ID_FEATURE_SELECT,	MainFrame::OnUpdateFeatureSelect)
+EVT_UPDATE_UI(ID_STRUCTURE_EDIT_BLD,	MainFrame::OnUpdateBuildingEdit)
+EVT_UPDATE_UI(ID_STRUCTURE_ADD_LINEAR,	MainFrame::OnUpdateStructureAddLinear)
 
-	EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
-	EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
-	EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
-	EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
+EVT_MENU(ID_RAW_SETTYPE,			MainFrame::OnRawSetType)
+EVT_MENU(ID_RAW_ADDPOINTS,			MainFrame::OnRawAddPoints)
+EVT_MENU(ID_RAW_ADDPOINT_TEXT,		MainFrame::OnRawAddPointText)
+EVT_MENU(ID_RAW_ADDPOINTS_GPS,		MainFrame::OnRawAddPointsGPS)
 
-	EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
-	EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
-	EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
-	EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
+EVT_MENU(ID_AREA_STRETCH,			MainFrame::OnAreaStretch)
+EVT_MENU(ID_AREA_TYPEIN,			MainFrame::OnAreaTypeIn)
+EVT_MENU(ID_AREA_EXPORT_ELEV,		MainFrame::OnAreaExportElev)
+EVT_MENU(ID_AREA_GENERATE_VEG,		MainFrame::OnAreaGenerateVeg)
 
-	EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
-	EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
-	EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
+EVT_UPDATE_UI(ID_AREA_STRETCH,		MainFrame::OnUpdateAreaStretch)
+EVT_UPDATE_UI(ID_AREA_EXPORT_ELEV,	MainFrame::OnUpdateAreaExportElev)
+EVT_UPDATE_UI(ID_AREA_GENERATE_VEG,	MainFrame::OnUpdateAreaGenerateVeg)
 
-	EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
+EVT_MENU(wxID_HELP,				MainFrame::OnHelpAbout)
 
-	EVT_SIZE(MainFrame::OnSize)
+EVT_SIZE(MainFrame::OnSize)
 
-	EVT_CHAR(MainFrame::OnChar)
+EVT_CHAR(MainFrame::OnChar)
 
 END_EVENT_TABLE()
 
@@ -309,7 +309,7 @@ void MainFrame::CreateMenus()
 
 	// Help (11)
 	helpMenu = new wxMenu;
-    helpMenu->Append(wxID_HELP, "&About", "About VTBuilder");
+	helpMenu->Append(wxID_HELP, "&About", "About VTBuilder");
 
 	menuBar = new wxMenuBar;
 	menuBar->Append(fileMenu, "&Project");
@@ -328,14 +328,14 @@ void MainFrame::CreateMenus()
 
 #if 0
     // Accelerators
-    wxAcceleratorEntry entries[5];
-    entries[0].Set(wxACCEL_CTRL, (int) 'O', ID_FILE_OPEN);
-    entries[1].Set(wxACCEL_CTRL, (int) 'S', ID_FILE_SAVE);
-    entries[2].Set(wxACCEL_CTRL, (int) '+', ID_VIEW_ZOOMIN);
-    entries[3].Set(wxACCEL_CTRL, (int) '-', ID_VIEW_ZOOMOUT);
-    entries[4].Set(wxACCEL_NORMAL,  WXK_DELETE,    ID_EDIT_DELETE);
-    wxAcceleratorTable accel(5, entries);
-    SetAcceleratorTable(accel);
+	wxAcceleratorEntry entries[5];
+	entries[0].Set(wxACCEL_CTRL, (int) 'O', ID_FILE_OPEN);
+	entries[1].Set(wxACCEL_CTRL, (int) 'S', ID_FILE_SAVE);
+	entries[2].Set(wxACCEL_CTRL, (int) '+', ID_VIEW_ZOOMIN);
+	entries[3].Set(wxACCEL_CTRL, (int) '-', ID_VIEW_ZOOMOUT);
+	entries[4].Set(wxACCEL_NORMAL,  WXK_DELETE,    ID_EDIT_DELETE);
+	wxAcceleratorTable accel(5, entries);
+	SetAcceleratorTable(accel);
 #endif
 }
 
@@ -474,8 +474,8 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 				uvw.y = v;
 				ico.faceuv_to_latlon(face, uvw, lat, lon);
 
-				int source_x = lon / PI2 * input_x;
-				int source_y = lat / PI * input_y;
+				int source_x = (int) (lon / PI2 * input_x);
+				int source_y = (int) (lat / PI * input_y);
 
 				r = img.GetRed(source_x, source_y);
 				g = img.GetGreen(source_x, source_y);
@@ -485,7 +485,8 @@ void MainFrame::OnDymaxTexture(wxCommandEvent &event)
 			}
 		}
 		wxString name;
-		name.Printf("%s%02d%02d.png", prefix, face_pairs[i][0], face_pairs[i][1]);
+		name.Printf("%s%02d%02d.png", (const char *) prefix,
+			face_pairs[i][0], face_pairs[i][1]);
 		bool success = out[i].SaveFile(name, wxBITMAP_TYPE_PNG);
 	}
 }
@@ -520,7 +521,7 @@ void MainFrame::OnEditDelete(wxCommandEvent &event)
 	if (pL)
 	{
 		int result = wxMessageBox("Are you sure you want to delete the current layer?",
-			"Question", wxYES_NO | wxICON_QUESTION, this);
+				"Question", wxYES_NO | wxICON_QUESTION, this);
 		if (result == wxYES)
 			RemoveLayer(pL);
 	}
@@ -648,7 +649,7 @@ void MainFrame::OnLayerSaveAs(wxCommandEvent &event)
 	vtLayer *lp = GetActiveLayer();
 
 	if (!lp->AskForSaveFilename())
-			return;
+		return;
 
 	wxString msg = "Saving layer to file as " + lp->GetFilename();
 	SetStatusText(msg);
@@ -892,9 +893,9 @@ void MainFrame::OnUpdateLayerFlatten(wxUpdateUIEvent& event)
 {
 	vtLayer *lp = GetActiveLayer();
 	event.Enable(lp &&
-		(lp->GetType() == LT_ROAD ||
-		 lp->GetType() == LT_VEG ||
-		 lp->GetType() == LT_STRUCTURE));
+			(lp->GetType() == LT_ROAD ||
+				lp->GetType() == LT_VEG ||
+				lp->GetType() == LT_STRUCTURE));
 }
 
 ////////////////////////////////////////////////////////////
@@ -1003,7 +1004,7 @@ void MainFrame::OnUpdateViewFull(wxUpdateUIEvent& event)
 {
 	vtLayer *lp = GetActiveLayer();
 	event.Enable(lp &&
-		(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
+			(lp->GetType() == LT_ELEVATION || lp->GetType() == LT_IMAGE));
 }
 
 void MainFrame::OnViewWorldMap()
@@ -1520,7 +1521,7 @@ void MainFrame::OnVegPlants(wxCommandEvent& event)
 
 		// Create new Plant List Dialog
 		m_PlantListDlg = new PlantListDlg(this, WID_PLANTS, "Plants List", 
-		wxPoint(140, 100), wxSize(950, 400), wxSYSTEM_MENU | wxCAPTION);
+				wxPoint(140, 100), wxSize(950, 400), wxSYSTEM_MENU | wxCAPTION);
 	}
 
 	// Display plant list data, calling OnInitDialog.
@@ -1550,7 +1551,7 @@ void MainFrame::OnVegBioregions(wxCommandEvent& event)
 
 		// Create new Bioregion Dialog
 		m_BioRegionDlg = new BioRegionDlg(this, WID_BIOREGIONS, "BioRegions List", 
-			wxPoint(120, 80), wxSize(300, 500), wxSYSTEM_MENU | wxCAPTION);
+				wxPoint(120, 80), wxSize(300, 500), wxSYSTEM_MENU | wxCAPTION);
 	}
 
 	// Display bioregion data, calling OnInitDialog.
@@ -1592,7 +1593,7 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 	FindVegLayers(&Density, &BioMap);
 
 	event.Enable(m_PlantListDlg && m_BioRegionDlg && Density && BioMap &&
-		!m_area.IsEmpty());
+			!m_area.IsEmpty());
 }
 
 
@@ -1670,15 +1671,15 @@ void MainFrame::OnRawSetType(wxCommandEvent& event)
 	for (int i = 0; i < 4; i++)
 		choices[i] = SHPTypeName(types[i]);
 
-    int n = 4;
+	int n = 4;
 	int cur_type = 0;
 
-    wxSingleChoiceDialog dialog(this, "These are your choices",
-        "Please indicate entity type:", n, (const wxString *)choices);
+	wxSingleChoiceDialog dialog(this, "These are your choices",
+		"Please indicate entity type:", n, (const wxString *)choices);
 
-    dialog.SetSelection(cur_type);
+	dialog.SetSelection(cur_type);
 
-    if (dialog.ShowModal() == wxID_OK)
+	if (dialog.ShowModal() == wxID_OK)
 	{
 		cur_type = dialog.GetSelection();
 		vtRawLayer *pRL = (vtRawLayer *) GetActiveLayer();
@@ -1700,7 +1701,7 @@ void MainFrame::OnUpdateRawAddPoints(wxUpdateUIEvent& event)
 void MainFrame::OnRawAddPointText(wxCommandEvent& event)
 {
 	wxString str = wxGetTextFromUser("(X, Y) in current projection",
-		"Enter coordinate");
+			"Enter coordinate");
 	if (str == "")
 		return;
 	double x, y;
@@ -1742,4 +1743,3 @@ void MainFrame::OnHelpAbout(wxCommandEvent &event)
 	str += __DATE__;
 	wxMessageBox(str, "About VTBuilder");
 }
-
