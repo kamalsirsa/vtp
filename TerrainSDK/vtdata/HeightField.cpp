@@ -289,11 +289,11 @@ void vtHeightFieldGrid3d::ColorDibFromElevation(vtDIB *pDIB, RGBi color_ocean,
 }
 
 
-void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
-	float light_adj, void progress_callback(int))
+void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, const FPoint3 &light_dir,
+	float light_factor, void progress_callback(int))
 {
 	// consider upward-pointing, rather than downward-pointing, normal
-	light_dir = -light_dir;
+	FPoint3 light_direction = -light_dir;
 
 	int w = pDIB->GetWidth();
 	int h = pDIB->GetHeight();
@@ -335,7 +335,7 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 				v3 = v1.Cross(v2);
 				v3.Normalize();
 
-				shade = v3.Dot(light_dir);	// shading 0 (dark) to 1 (light)
+				shade = v3.Dot(light_direction); // shading 0 (dark) to 1 (light)
 				shade /= .7071f;
 				shade = 1.0f + ((shade - 1.0f) * 2.0f);
 				if (shade < 0.3f)	// clip - don't shade down below ambient level
@@ -346,10 +346,10 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
 			else
 				shade = 1.0f;
 
-			// Push the value of 'shade' toward 1.0 by the light_adj factor.
-			// This means that light_adj=0 means no lighting, 1 means full lighting.
+			// Push the value of 'shade' toward 1.0 by the light_factor factor.
+			// This means that light_factor=0 means no lighting, 1 means full lighting.
 			float diff = 1 - shade;
-			diff = diff * (1 - light_adj);
+			diff = diff * (1 - light_factor);
 			shade += diff;
 
 			// combine color and shading
@@ -368,9 +368,11 @@ void vtHeightFieldGrid3d::ShadeDibFromElevation(vtDIB *pDIB, FPoint3 light_dir,
  * 2/20/04-Kevin Behilo
  * TODO: add code to soften and blend shadow edges (see aliasing comments below).
  */
-void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
-	float light_adj, void progress_callback(int))
+void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, const FPoint3 &light_dir,
+	float light_factor, void progress_callback(int))
 {
+	FPoint3 light_direction = light_dir;
+
 	int w = pDIB->GetWidth();
 	int h = pDIB->GetHeight();
 
@@ -394,26 +396,6 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 	//.95 and .5 work best for my textures.  
 	float sun =  0.7f;
 	float amb =  .4f;
-
-#if 1
-	//might want to do these calculations outside this function and simply pass in 
-	//the light_dir vector (that's how the original ShadeDibFromElevation does it)
-	float altDEG,aziDEG;//,alt,azi;
-
-	//compute angle of sun based on location, date and time  (#include "spa.h")
-//	SunAltAzi(altDEG,aziDEG,44.875,-110.875,2004,8,1,8,20,0,-7.0,1000.0);  
-	altDEG = 45.0; //12.0; 
-	aziDEG = 90; // 90.0; //269.0; 270.0;     89.0; 90.0; 
-
-	// converting sun azimuth and elevation angles to radians
-	float alt, azi;
-	alt=(altDEG/180.0f*PIf);
-	azi=(aziDEG/180.0f*PIf);
-
-	light_dir.x=(-sin(azi)*cos(alt));
-	light_dir.z=(-cos(azi)*cos(alt));
-	light_dir.y=-sin(alt);
-#endif
 
 	//Create array to hold flags 
 	char **LightMap;
@@ -443,9 +425,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 	}
 	//Code adapted from aaron_torpy:
 	//http://www.geocities.com/aaron_torpy/algorithms.htm
-	light_dir /= f;
+	light_direction /= f;
 		
-	if (light_dir.x > 0)
+	if (light_direction.x > 0)
 	{
 		i_init=0;
 		i_final=w-1;
@@ -457,7 +439,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 		i_final=-1;
 		i_incr=-1;
 	}
-	if (light_dir.z > 0)
+	if (light_direction.z > 0)
 	{
 		j_init=0;
 		j_final=h-1;
@@ -486,9 +468,9 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 			int k;
 			for (k=1, Under_Out=false; Under_Out == false; k++) 
 			{
-				x = (int)(i+light_dir.x*k+0.5f);
-				z = (int)(j+light_dir.z*k+0.5f);
-				shadowheight+=light_dir.y*HScale;
+				x = (int)(i+light_direction.x*k+0.5f);
+				z = (int)(j+light_direction.z*k+0.5f);
+				shadowheight+=light_direction.y*HScale;
 
 				if ((x<0) || (x>w-1) || (z<0) || (z>h-1)) 
 				{
@@ -529,7 +511,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 					// Here the Sun(r, g, b) = 0 because we are in the shade
 					// therefore I(r, g, b) = Amb(r, g, b) * (0.5*N[z] + 0.5)
 
-				//	shade =  sun*v3.Dot(-light_dir) + amb * (0.5f*v3.y + 0.5f);
+				//	shade =  sun*v3.Dot(-light_direction) + amb * (0.5f*v3.y + 0.5f);
 					shade =  amb * (0.5f*v3.y + 0.5f);
 					//*****************************************
 					//*****************************************
@@ -555,7 +537,7 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 
 	// BD: Kevin, why do we flip the Z coordinate here?
 	FPoint3 mod_light_dir;
-	mod_light_dir = light_dir;
+	mod_light_dir = light_direction;
 	mod_light_dir.Normalize();
 	mod_light_dir.z = -mod_light_dir.z;
 	FPoint3 inv_mod_light_dir = -mod_light_dir;
@@ -608,10 +590,10 @@ void vtHeightFieldGrid3d::ShadowCastDib(vtDIB *pDIB, FPoint3 light_dir,
 				else if (shade > 1.2f)
 					shade = 1.2f;
 
-				// Push the value of 'shade' toward 1.0 by the light_adj factor.
-				// This means that light_adj=0 means no lighting, 1 means full lighting.
+				// Push the value of 'shade' toward 1.0 by the light_factor factor.
+				// This means that light_factor=0 means no lighting, 1 means full lighting.
 				float diff = 1 - shade;
-				diff = diff * (1 - light_adj);
+				diff = diff * (1 - light_factor);
 				shade += diff;
 
 				// Rather than doing the shading at this point we may want to 
