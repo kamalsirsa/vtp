@@ -1,3 +1,6 @@
+//
+// Enumerations for the Enviro application.
+//
 
 #ifndef ENVIROENUMH
 #define ENVIROENUMH
@@ -33,4 +36,5 @@ enum MouseMode
 	MM_NONE
 };
 
-#endif
+#endif	// ENVIROENUMH
+
