@@ -96,9 +96,12 @@ float getelevation_vtp2(int i, int j, int size)
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth, int &iError)
+DTErr SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
+					 float fOceanDepth)
 {
+	if (m_iColumns != m_iRows)
+		return DTErr_NOTSQUARE;
+
 	// Initializes necessary field of the parent class
 	BasicInit(pGrid);
 
@@ -109,10 +112,7 @@ bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	int n = vt_log2(m_iColumns - 1);
 	int required_size = (1<<n) + 1;
 	if (m_iColumns != required_size || m_iRows != required_size)
-	{
-		iError = TERRAIN_ERROR_NOTPOWER2;
-		return false;
-	}
+		return DTErr_NOTPOWER2;
 
 	int size = m_iColumns;
 	float dim = m_fXStep;
@@ -140,7 +140,8 @@ bool SRTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 
 	m_iDrawnTriangles = -1;
 	m_iBlockSize = m_iColumns / 4;
-	return true;
+
+	return DTErr_OK;
 }
 
 

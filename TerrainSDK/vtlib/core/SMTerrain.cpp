@@ -2,7 +2,7 @@
 // SMTerrain class : An implementation a terrain rendering engine
 //		based on the ideas and input of Seumas McNally.
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -127,22 +127,23 @@ SMTerrain::SMTerrain() : vtDynTerrainGeom()
 	m_pData = NULL;
 	m_pVariance = NULL;
 	m_TriPool = NULL;
+	m_HypoLength = NULL;
+	m_pBlockArray = NULL;
 }
 
 SMTerrain::~SMTerrain()
 {
-	if (m_pData)
-		delete m_pData;
-	if (m_pVariance)
-		delete m_pVariance;
-	if (m_TriPool)
-		delete m_TriPool;
-
+	delete m_pData;
+	delete m_pVariance;
+	delete m_TriPool;
 	delete m_HypoLength;
 
-	for (int i = 0; i < m_iBlockArrayDim; i++)
-		delete m_pBlockArray[i];
-	delete m_pBlockArray;
+	if (m_pBlockArray)
+	{
+		for (int i = 0; i < m_iBlockArrayDim; i++)
+			delete m_pBlockArray[i];
+		delete m_pBlockArray;
+	}
 }
 
 
@@ -154,10 +155,11 @@ SMTerrain::~SMTerrain()
 //
 // fZScale converts from height values (meters) to world coordinates
 //
-bool SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth, int &iError)
+DTErr SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
+					 float fOceanDepth)
 {
-	int i, j;
+	if (m_iColumns != m_iRows)
+		return DTErr_NOTSQUARE;
 
 	BasicInit(pGrid);
 
@@ -170,10 +172,7 @@ bool SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	// ensure that the grid is size (1 << n) + 1
 	int required_size = (1<<m_n) + 1;
 	if (m_iColumns != required_size || m_iRows != required_size)
-	{
-		iError = TERRAIN_ERROR_NOTPOWER2;
-		return false;
-	}
+		return DTErr_NOTPOWER2;
 
 	// the triangle bintree will have (2n + 2) levels
 	// these levels are numbered with 1-based numbering, (1 2 3...)
@@ -199,6 +198,7 @@ bool SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	m_iBlockArrayDim = 1 << (m_n - m_iBlockN);
 
 	// Allocate a 2D array of blocks
+	int i, j;
 	m_pBlockArray = new BlockPtr[m_iBlockArrayDim];
 	for (i = 0; i < m_iBlockArrayDim; i++)
 		m_pBlockArray[i] = new Block[m_iBlockArrayDim];
@@ -226,10 +226,7 @@ bool SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 
 	// this is potentially a big chunk of memory, so it may fail
 	if (!m_pData)
-	{
-		iError = TERRAIN_ERROR_NOMEM;
-		return false;
-	}
+		return DTErr_NOMEM;
 
 	// copy data from supplied elevation grid
 	float elev;
@@ -256,7 +253,7 @@ bool SMTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	m_iDrawnTriangles = -1;
 	hack_detail_pass = false;
 
-	return true;
+	return DTErr_OK;
 }
 
 

@@ -399,7 +399,7 @@ void vtTerrain::recreate_textures(const vtTime &time)
 
 /////////////////////
 
-bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
+bool vtTerrain::_CreateDynamicTerrain(float fOceanDepth)
 {
 	int texture_patches;
 	if (m_Params.GetTextureEnum() == TE_TILED)
@@ -448,7 +448,7 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	}
 	if (!m_pDynGeom)
 	{
-		VTLOG(" Could not construct CLOD\n");
+		_SetErrorMessage("Unknown LOD method.");
 		return false;
 	}
 
@@ -458,12 +458,14 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 		texture_patches, m_Params.GetValueInt(STR_TILESIZE));
 
 	float fExag = m_Params.GetValueFloat(STR_VERTICALEXAG);
-	bool result = m_pDynGeom->Init(m_pElevGrid, fExag, fOceanDepth, iError);
-	if (result == false)
+	DTErr result = m_pDynGeom->Init(m_pElevGrid, fExag, fOceanDepth);
+	if (result != DTErr_OK)
 	{
 		m_pDynGeom->Release();
 		m_pDynGeom = NULL;
-		VTLOG(" Could not initialize CLOD\n");
+
+		_CreateErrorMessage(result, m_pElevGrid);
+		VTLOG(" Could not initialize CLOD: %s\n", (const char *) m_strErrorMsg);
 		return false;
 	}
 
@@ -482,6 +484,36 @@ bool vtTerrain::create_dynamic_terrain(float fOceanDepth, int &iError)
 	m_pTerrainGroup->AddChild(m_pDynGeomScale);
 
 	return true;
+}
+
+void vtTerrain::_CreateErrorMessage(DTErr error, vtElevationGrid *pGrid)
+{
+	int x, y;
+	pGrid->GetDimensions(x, y);
+	switch (error)
+	{
+	case DTErr_OK:
+		m_strErrorMsg = "No Error";
+		break;
+	case DTErr_NOTSQUARE:
+		m_strErrorMsg.Format("The elevation grid (%d x %d) is not square.", x, y);
+		break;
+	case DTErr_NOTPOWER2:
+		m_strErrorMsg.Format("The elevation grid (%d x %d) is of an unsupported size.",
+			x, y);
+		break;
+	case DTErr_NOMEM:
+		m_strErrorMsg = "Not enough memory for CLOD.";
+		break;
+	default:
+		m_strErrorMsg = "Unknown error.";
+	}
+}
+
+void vtTerrain::_SetErrorMessage(const vtString &msg)
+{
+	m_strErrorMsg = msg;
+	VTLOG("\t%s.\n", (const char *) msg);
 }
 
 
@@ -1347,7 +1379,7 @@ void vtTerrain::_ComputeCenterLongitude()
 /**
  * First step in terrain creation: load elevation.
  */
-bool vtTerrain::CreateStep1(int &iError)
+bool vtTerrain::CreateStep1()
 {
 	// create terrain group - this holds all surfaces for the terrain
 	m_pTerrainGroup = new vtGroup();
@@ -1368,7 +1400,6 @@ bool vtTerrain::CreateStep1(int &iError)
 	vtString fullpath = FindFileOnPaths(s_DataPaths, fname);
 	if (fullpath == "")
 	{
-		iError = TERRAIN_ERROR_NOTFOUND;
 		VTLOG("\t\tNot found.\n");
 		return false;
 	}
@@ -1390,8 +1421,7 @@ bool vtTerrain::CreateStep1(int &iError)
 		bool status = m_pElevGrid->LoadFromBT(fullpath);
 		if (status == false)
 		{
-			iError = TERRAIN_ERROR_NOTFOUND;
-			VTLOG("\tGrid load failed.\n");
+			_SetErrorMessage("Grid load failed.");
 			return false;
 		}
 		else
@@ -1408,7 +1438,7 @@ bool vtTerrain::CreateStep1(int &iError)
 /**
  * Next step in terrain creation: create textures.
  */
-bool vtTerrain::CreateStep2(int &iError)
+bool vtTerrain::CreateStep2()
 {
 	if (m_Params.GetValueBool(STR_TIN))
 	{
@@ -1434,15 +1464,15 @@ bool vtTerrain::CreateStep2(int &iError)
 /**
  * Next step in terrain creation: create 3D geometry for the terrain.
  */
-bool vtTerrain::CreateStep3(int &iError)
+bool vtTerrain::CreateStep3()
 {
 	if (m_Params.GetValueBool(STR_TIN))
-		return CreateFromTIN(iError);
+		return CreateFromTIN();
 	else
-		return CreateFromGrid(iError);
+		return CreateFromGrid();
 }
 
-bool vtTerrain::CreateFromTIN(int &iError)
+bool vtTerrain::CreateFromTIN()
 {
 	m_pHeightField = m_pTin;
 
@@ -1457,7 +1487,7 @@ bool vtTerrain::CreateFromTIN(int &iError)
 // for timing how long the CLOD takes to initialize
 clock_t tm;
 
-bool vtTerrain::CreateFromGrid(int &iError)
+bool vtTerrain::CreateFromGrid()
 {
 	VTLOG(" CreateFromGrid\n");
 	float fOceanDepth;
@@ -1469,11 +1499,8 @@ bool vtTerrain::CreateFromGrid(int &iError)
 	tm = clock();
 
 	// create elegant dynamic LOD terrain
-	iError = 0;
-	if (!create_dynamic_terrain(fOceanDepth, iError))
+	if (!_CreateDynamicTerrain(fOceanDepth))
 	{
-		if (iError == 0)
-			iError = TERRAIN_ERROR_LODFAILED;
 		return false;
 	}
 	else
@@ -1494,7 +1521,7 @@ bool vtTerrain::CreateFromGrid(int &iError)
 /**
  * Next step in terrain creation: additional CLOD construction.
  */
-bool vtTerrain::CreateStep4(int &iError)
+bool vtTerrain::CreateStep4()
 {
 	// some algorithms need an additional stage of initialization
 	if (m_pDynGeom != NULL)
@@ -1511,7 +1538,7 @@ bool vtTerrain::CreateStep4(int &iError)
 /**
  * Next step in terrain creation: create the culture and labels.
  */
-bool vtTerrain::CreateStep5(bool bDummy, int &iError)
+bool vtTerrain::CreateStep5()
 {
 	// must have a heightfield by this point
 	if (!m_pHeightField)
@@ -1544,21 +1571,21 @@ bool vtTerrain::CreateStep5(bool bDummy, int &iError)
  * \param iError : Returns by reference an error value, or 0 for no error.
  * \returns A vtGroup which is the top of the terrain scene graph.
  */
-vtGroup *vtTerrain::CreateScene(bool bDummy, int &iError)
+vtGroup *vtTerrain::CreateScene()
 {
-	if (!CreateStep1(iError))
+	if (!CreateStep1())
 		return NULL;
 
-	if (!CreateStep2(iError))
+	if (!CreateStep2())
 		return NULL;
 
-	if (!CreateStep3(iError))
+	if (!CreateStep3())
 		return NULL;
 
-	if (!CreateStep4(iError))
+	if (!CreateStep4())
 		return NULL;
 
-	if (!CreateStep5(false, iError))
+	if (!CreateStep5())
 		return NULL;
 
 	return m_pTerrainGroup;
@@ -2048,24 +2075,6 @@ void vtTerrain::HideAllPOI()
 		ShowPOI(p, false);
 	}
 }
-
-const char *vtTerrain::DescribeError(int iError)
-{
-	VTLOG("DescribeError %d\n", iError);
-	switch (iError)
-	{
-	case TERRAIN_ERROR_NOTFOUND: return "The terrain data file was not found.";
-	case TERRAIN_ERROR_NOREGULAR: return "The regular grid terrain could not be constructed.";
-	case TERRAIN_ERROR_NOTPOWER2: return "The elevation data is of an unsupported size.\n\
-The continuous LOD algorithms require that the data is\n\
-square and the dimensions are a power of 2 plus 1.\n\
-For example, 513x513 and 1025x105 are supported sizes.";
-	case TERRAIN_ERROR_NOMEM: return "Not enough memory.";
-	case TERRAIN_ERROR_LODFAILED: return "Couldn't create CLOD terrain surface.";
-	}
-	return "No error.";
-}
-
 
 bool vtTerrain::AddPlant(const DPoint2 &pos, int iSpecies, float fSize)
 {

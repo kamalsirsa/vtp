@@ -721,8 +721,8 @@ void TVTerrain::mkscale(vtElevationGrid *pGrid)
 //
 // fZScale converts from height values (meters) to world coordinates
 //
-bool TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-			  float fOceanDepth, int &iError)
+DTErr TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
+			  float fOceanDepth)
 {
 	int i;
 
@@ -797,7 +797,7 @@ bool TVTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 	m_err[0] = MAXERR;
 	m_info[0] = 0;
 
-	return true;
+	return DTErr_OK;
 }
 
 float TVTerrain::GetElevation(int iX, int iZ) const

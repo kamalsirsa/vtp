@@ -10,11 +10,13 @@
 
 #include "vtdata/TParams.h"
 #include "vtdata/vtTime.h"
+#include "vtdata/FilePath.h"
+
 #include "Trees.h"
 #include "Structure3d.h"
-#include "vtdata/FilePath.h"
 #include "Route.h"
 #include "Content3d.h"
+#include "DynTerrain.h"
 
 // Try to reduce compile-time dependencies with these forward declarations
 class vtDIB;
@@ -23,7 +25,6 @@ class vtTextureCoverage;
 class vtFence3d;
 class vtRoadMap3d;
 class vtLodGrid;
-class vtDynTerrainGeom;
 class vtElevationGrid;
 class vtTin;
 class vtTin3d;
@@ -97,13 +98,13 @@ public:
 	vtTin3d *GetTin() { return m_pTin; }
 
 	/// primary creation function
-	vtGroup *CreateScene(bool bDummy, int &iError);
-	bool CreateStep1(int &iError);
-	bool CreateStep2(int &iError);
-	bool CreateStep3(int &iError);
-	bool CreateStep4(int &iError);
-	bool CreateStep5(bool bDummy, int &iError);
-	const char *DescribeError(int iError);
+	vtGroup *CreateScene();
+	bool CreateStep1();
+	bool CreateStep2();
+	bool CreateStep3();
+	bool CreateStep4();
+	bool CreateStep5();
+	vtString GetLastError() { return m_strErrorMsg; }
 
 	/// return true if the terrain has been created
 	bool IsCreated();
@@ -242,14 +243,16 @@ protected:
 	/********************** Protected Methods ******************/
 
 	// internal creation functions
-	bool CreateFromTIN(int &iError);
-	bool CreateFromGrid(int &iError);
+	bool CreateFromTIN();
+	bool CreateFromGrid();
 	void create_roads(const vtString &strRoadFile);
 	void _SetupVegGrid(float fLODDistance);
 	void _SetupStructGrid(float fLODDistance);
 	void _CreateLabels();
 	void _CreateTextures(const vtTime &time);
-	bool create_dynamic_terrain(float fOceanDepth, int &iError);
+	bool _CreateDynamicTerrain(float fOceanDepth);
+	void _CreateErrorMessage(DTErr error, vtElevationGrid *pGrid);
+	void _SetErrorMessage(const vtString &msg);
 	void create_artificial_horizon(bool bWater, bool bHorizon,
 		bool bCenter, float fTransparency);
 	void _CreateCulture();
@@ -337,6 +340,9 @@ protected:
 	// a useful value for computing "local time"
 	double m_fCenterLongitude;
 	int m_iDifferenceFromGMT;
+
+	// hold an informative message in case anything goes wrong
+	vtString	m_strErrorMsg;
 
 	vtProjection	m_proj;
 };

@@ -48,8 +48,8 @@ DemeterTerrain::~DemeterTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool DemeterTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth, int &iError)
+DTErr DemeterTerrain::Init(vtElevationGrid *pGrid, float fZScale,
+					 float fOceanDepth)
 {
 	// Initializes necessary field of the parent class
 	BasicInit(pGrid);
@@ -98,7 +98,8 @@ bool DemeterTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 
 	m_fZScale = fZScale;
 	m_iDrawnTriangles = -1;
-	return true;
+
+	return DTErr_OK;
 }
 
 

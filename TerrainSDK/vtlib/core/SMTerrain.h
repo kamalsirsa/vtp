@@ -1,7 +1,7 @@
 //
 // SMTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -139,8 +139,7 @@ public:
 	SMTerrain();
 
 	/// initialization
-	bool Init(vtElevationGrid *pGrid, float fZScale,
-				float fOceanDepth, int &iError);
+	DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth);
 	static int MemoryRequired(int iDimension);
 
 	// overrides

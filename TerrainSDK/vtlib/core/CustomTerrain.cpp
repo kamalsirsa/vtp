@@ -41,8 +41,8 @@ CustomTerrain::~CustomTerrain()
 // Initialize the terrain data
 // fZScale converts from height values (meters) to world coordinates
 //
-bool CustomTerrain::Init(vtElevationGrid *pGrid, float fZScale,
-					 float fOceanDepth, int &iError)
+DTErr CustomTerrain::Init(vtElevationGrid *pGrid, float fZScale,
+					 float fOceanDepth)
 {
 	// Initializes necessary field of the parent class
 	BasicInit(pGrid);
@@ -62,7 +62,8 @@ bool CustomTerrain::Init(vtElevationGrid *pGrid, float fZScale,
 
 	m_fZScale = fZScale;
 	m_iDrawnTriangles = -1;
-	return true;
+
+	return DTErr_OK;
 }
 
 

@@ -28,8 +28,7 @@ public:
 	SRTerrain();
 
 	// initialization
-	bool Init(vtElevationGrid *pGrid, float fZScale,
-				float fOceanDepth, int &iError);
+	DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth);
 
 	// overrides
 	void DoRender();

@@ -121,8 +121,7 @@ public:
 	TVTerrain();
 
 	/// initialization
-	bool Init(vtElevationGrid *pGrid, float fZScale,
-				  float fOceanDepth, int &iError);
+	DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth);
 	static int MemoryRequired(int iDimension);
 
 	// overrides

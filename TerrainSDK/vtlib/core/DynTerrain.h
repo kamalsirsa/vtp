@@ -1,7 +1,7 @@
 //
 // DynTerrain class : Dynamically rendering terrain
 //
-// Copyright (c) 2001-2003 Virtual Terrain Project
+// Copyright (c) 2001-2004 Virtual Terrain Project
 // Free for all uses, see license.txt for details.
 //
 
@@ -10,7 +10,15 @@
 
 #include "vtdata/ElevationGrid.h"
 #include "vtdata/HeightField.h"
-#include "TerrainErr.h"
+
+// A set of errors that may be returned from the dynamic terrain classes.
+enum DTErr
+{
+	DTErr_OK,
+	DTErr_NOTSQUARE,
+	DTErr_NOTPOWER2,
+	DTErr_NOMEM
+};
 
 /**
  * This class provides a framework for implementing any kind of dynamic
@@ -23,8 +31,7 @@ class vtDynTerrainGeom : public vtDynGeom, public vtHeightFieldGrid3d
 public:
 	vtDynTerrainGeom();
 
-	virtual bool Init(vtElevationGrid *pGrid, float fZScale,
-				  float fOceanDepth, int &iError) = 0;
+	virtual DTErr Init(vtElevationGrid *pGrid, float fZScale, float fOceanDepth) = 0;
 	virtual void Init2();
 	void BasicInit(vtElevationGrid *pGrid);
 	void SetOptions(bool bUseTriStrips, int iBlockArrayDim, int iTextureSize);
