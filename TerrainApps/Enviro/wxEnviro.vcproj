@@ -878,6 +878,9 @@
 			Name="Source-vtlib"
 			Filter="">
 			<File
+				RelativePath=".\CarEngine.cpp">
+			</File>
+			<File
 				RelativePath="Engines.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">

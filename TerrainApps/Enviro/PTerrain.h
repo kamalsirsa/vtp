@@ -12,7 +12,7 @@
 
 #include "vtlib/core/Terrain.h"
 #include "Vehicles.h"
-//#include "CarEngine.h"
+#include "CarEngine.h"
 
 class PTerrain : public vtTerrain
 {
@@ -32,7 +32,7 @@ public:
 	void ReleaseVehicles();
 	void AddVehicleType(VehicleType *vt);
 	Vehicle *CreateVehicle(const char *szType, const RGBf &cColor, float fSize);
-#if 0
+#if 1
 	void AddCarEngine(vtTransform *pVehicleModel,
 					  float fSpeed, Node *pNode = NULL);
 	void AddCarEngine(vtTransform *pVehicleModel,

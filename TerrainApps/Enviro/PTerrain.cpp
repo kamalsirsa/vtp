@@ -8,6 +8,7 @@
 #include "vtlib/vtlib.h"
 #include "PTerrain.h"
 #include "Engines.h"
+#include "CarEngine.h"
 
 PTerrain::PTerrain() : vtTerrain()
 {
@@ -114,7 +115,7 @@ Vehicle *PTerrain::CreateVehicle(const char *szType, const RGBf &cColor, float f
 }
 
 
-#if 0
+#if 1
 void PTerrain::AddCarEngine(vtTransform *pVehicleModel,
 							float fSpeed, Node *pNode)
 {
