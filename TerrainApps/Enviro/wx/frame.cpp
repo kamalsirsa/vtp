@@ -141,11 +141,13 @@ BEGIN_EVENT_TABLE(vtFrame, wxFrame)
 	EVT_UPDATE_UI(ID_TERRAIN_ROADS, vtFrame::OnUpdateRoads)
 
 	EVT_MENU(ID_EARTH_SHOWTIME, vtFrame::OnEarthShowTime)
-	EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateEarthShowTime)
+	EVT_UPDATE_UI(ID_EARTH_SHOWTIME, vtFrame::OnUpdateInOrbit)
 	EVT_MENU(ID_EARTH_FLATTEN, vtFrame::OnEarthFlatten)
-	EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateEarthFlatten)
+	EVT_UPDATE_UI(ID_EARTH_FLATTEN, vtFrame::OnUpdateInOrbit)
 	EVT_MENU(ID_EARTH_POINTS, vtFrame::OnEarthPoints)
-	EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateEarthPoints)
+	EVT_UPDATE_UI(ID_EARTH_POINTS, vtFrame::OnUpdateInOrbit)
+	EVT_MENU(ID_EARTH_LINEAR, vtFrame::OnEarthLinear)
+	EVT_UPDATE_UI(ID_EARTH_LINEAR, vtFrame::OnUpdateInOrbit)
 
 	EVT_MENU(ID_HELP_ABOUT, vtFrame::OnHelpAbout)
 
@@ -268,7 +270,8 @@ void vtFrame::CreateMenus()
 	wxMenu *earthMenu = new wxMenu;
 	earthMenu->Append(ID_EARTH_SHOWTIME, "&Show Time of Day\tCtrl+I", "Show Time of Day", true);
 	earthMenu->Append(ID_EARTH_FLATTEN, "&Flatten\tCtrl+F", "Flatten", true);
-	earthMenu->Append(ID_EARTH_POINTS, "&Add Point Data...\tCtrl+P");
+	earthMenu->Append(ID_EARTH_POINTS, "&Load Point Data...\tCtrl+P");
+	earthMenu->Append(ID_EARTH_LINEAR, "Add &Linear Features...\tCtrl+L");
 
 	wxMenu *helpMenu = new wxMenu;
 	helpMenu->Append(ID_HELP_ABOUT, "About VTP Enviro...");
@@ -897,7 +900,8 @@ void vtFrame::OnSaveVeg(wxCommandEvent& event)
 	}
 	wxString str = saveFile.GetPath();
 
-	GetCurrentTerrain()->m_PIA.WriteVF(str);
+	vtPlantInstanceArray &pia = GetCurrentTerrain()->GetPlantInstances();
+	pia.WriteVF(str);
 }
 
 void vtFrame::OnSaveStruct(wxCommandEvent& event)
@@ -928,7 +932,7 @@ void vtFrame::OnEarthShowTime(wxCommandEvent& event)
 	g_App.SetShowTime(!g_App.GetShowTime());
 }
 
-void vtFrame::OnUpdateEarthShowTime(wxUpdateUIEvent& event)
+void vtFrame::OnUpdateInOrbit(wxUpdateUIEvent& event)
 {
 	event.Enable(g_App.m_state == AS_Orbit);
 }
@@ -936,11 +940,6 @@ void vtFrame::OnUpdateEarthShowTime(wxUpdateUIEvent& event)
 void vtFrame::OnEarthFlatten(wxCommandEvent& event)
 {
 	g_App.SetEarthShape(!g_App.GetEarthShape());
-}
-
-void vtFrame::OnUpdateEarthFlatten(wxUpdateUIEvent& event)
-{
-	event.Enable(g_App.m_state == AS_Orbit);
 }
 
 void vtFrame::OnEarthPoints(wxCommandEvent& event)
@@ -971,9 +970,9 @@ void vtFrame::OnEarthPoints(wxCommandEvent& event)
 	SetCwd(path);
 }
 
-void vtFrame::OnUpdateEarthPoints(wxUpdateUIEvent& event)
+void vtFrame::OnEarthLinear(wxCommandEvent& event)
 {
-	event.Enable(g_App.m_state == AS_Orbit);
+	SetMode(MM_LINEAR);
 }
 
 //////////////////////////////////////////////////////

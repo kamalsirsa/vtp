@@ -27,6 +27,7 @@ enum MouseMode
 	MM_PLANTS,
 	MM_MOVE,
 	MM_FLYROUTE,
+	MM_LINEAR,
 
 	MM_NONE
 };

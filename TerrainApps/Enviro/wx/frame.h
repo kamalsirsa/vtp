@@ -104,11 +104,10 @@ public:
 	void OnUpdateSaveStruct(wxUpdateUIEvent& event);
 
 	void OnEarthShowTime(wxCommandEvent& event);
-	void OnUpdateEarthShowTime(wxUpdateUIEvent& event);
+	void OnUpdateInOrbit(wxUpdateUIEvent& event);
 	void OnEarthFlatten(wxCommandEvent& event);
-	void OnUpdateEarthFlatten(wxUpdateUIEvent& event);
 	void OnEarthPoints(wxCommandEvent& event);
-	void OnUpdateEarthPoints(wxUpdateUIEvent& event);
+	void OnEarthLinear(wxCommandEvent& event);
 
 	void OnHelpAbout(wxCommandEvent& event);
 
