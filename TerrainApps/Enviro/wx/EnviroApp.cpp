@@ -28,15 +28,12 @@
 #include "StartupDlg.h"
 #include "TParamsDlg.h"
 
-#if INFRA
-#include "Infra/InfraFrame.h"
-#define FRAME_NAME InfraFrame
-#elif VIDEOTRACK
-#include "../VideoTrack/VTrackFrame.h"
-#define FRAME_NAME VideoTrackerFrame
+// Allow customized versions of Enviro to provide their own Frame
+#ifdef FRAME_NAME
+  #include FRAME_INCLUDE
 #else
-#define FRAME_NAME vtFrame
-#define LoadAppCatalog(locale)
+  #define FRAME_NAME vtFrame
+  #define LoadAppCatalog(locale)
 #endif
 
 IMPLEMENT_APP(EnviroApp)
