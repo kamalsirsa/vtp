@@ -118,6 +118,7 @@ protected:
 	CPoint	m_downPoint;		// point at which mouse was clicked down (used in hand mode and mop-up mode
 	DPoint2	m_downLocation;
 	DPoint2	m_curLocation;
+	DPoint2 m_curBuildingCenter;
 
 	// Used while editing buildings
 	vtBuilding	*m_pCurBuilding, m_EditBuilding;

@@ -372,8 +372,6 @@ void IslandTerrain::CreateCustomCulture(bool bDoSound)
 		pLev->m_fStoryHeight = 1.6256f;	// 5 1/3 ft
 
 		/////////////////////////////////////////
-		bld->SetCenterFromPoly();
-
 		vtTagArray options;
 		bool success = bld->CreateNode(m_pHeightField, options);
 		vtTransform *trans = bld->GetTransform();

@@ -280,21 +280,23 @@ void BExtractorView::DrawBuildings(CDC *pDC)
 
 void BExtractorView::DrawBuilding(CDC *pDC, vtBuilding *bld)
 {
-	CPoint origin, array[50];
-	UTM_s(bld->GetLocation(), origin);
+	CPoint origin, array[500];
+	DPoint2 center;
+	bld->GetBaseLevelCenter(center);
+	UTM_s(center, origin);
 
 	int size = UTM_sdx(20);
 	if (size > BLENGTH) size = BLENGTH;
 	if (size < 1) size = 1;
 
-	// always draw center
+	// always draw crosshair at center of extents
 	pDC->MoveTo(origin.x-size, origin.y);
 	pDC->LineTo(origin.x+size+1, origin.y);
 	pDC->MoveTo(origin.x, origin.y-size);
 	pDC->LineTo(origin.x, origin.y+size+1);
 
 	int j;
-	for (j = 0; j < bld->GetFootprint(0).GetSize(); j++)
+	for (j = 0; j < bld->GetFootprint(0).GetSize() && j < 500-1; j++)
 		UTM_s(bld->GetFootprint(0).GetAt(j), array[j]);
 	array[j] = array[0];
 
@@ -812,7 +814,6 @@ void BExtractorView::OnLButtonUpFootprint(CPoint point)
 			bld->SetStories(1);
 
 			bld->SetFootprint(0, m_poly);
-			bld->SetCenterFromPoly();
 			pDoc->m_Buildings.Append(bld);
 
 			InvalidatePolyExtent();
@@ -852,9 +853,7 @@ void BExtractorView::OnLButtonUpRectangle(CPoint point)
 		// get rotation from the slope of the first edge
 		float fRotation = (float) atan2(edge1.y, edge1.x);
 
-		bld->SetLocation(center.x, center.y);
-		bld->SetRectangle(fWidth, fDepth, fRotation);
-		bld->SetCenterFromPoly();
+		bld->SetRectangle(center, fWidth, fDepth, fRotation);
 		bld->SetStories(1);
 
 		pDoc->m_Buildings.Append(bld);
@@ -882,11 +881,9 @@ void BExtractorView::OnLButtonUpCircle(CPoint point)
 
 	DPoint2 p;
 	s_UTM(m_p0, p);
-	bld->SetLocation(p);
-
 	float fCoordRadius = (float) s_UTMdx(m_fPixelRadius);
 
-	bld->SetRadius(fCoordRadius);
+	bld->SetCircle(p, fCoordRadius);
 	pDoc->m_Buildings.Append(bld);
 
 	DRECT extent_new;
@@ -915,8 +912,7 @@ void BExtractorView::OnLButtonUpAddRemove(CPoint point)
 
 		// create and add building
 		vtBuilding *bld = new vtBuilding();
-		bld->SetLocation(imagepoint);
-		bld->SetRectangle(10, 10);
+		bld->SetRectangle(imagepoint, 10, 10);
 		bld->SetStories(1);
 		pDoc->m_Buildings.Append(bld);
 
@@ -1129,18 +1125,12 @@ void BExtractorView::UpdateRectangle(CPoint point)
 
 		float s = ((A.y-C.y)*(B.x-A.x)-(A.x-C.x)*(B.y-A.y)) / L2;
 
-#if 1
 		FPoint2 norm((float)-AB.y, (float)AB.x);
 		norm.Normalize();
 		m_p2.x = (long) (B.x - (norm.x * s * L));
 		m_p2.y = (long) (B.y - (norm.y * s * L));
 		m_p3.x = (long) (A.x - (norm.x * s * L));
 		m_p3.y = (long) (A.y - (norm.y * s * L));
-#else
-		fWidth = L;
-		fDepth = s;
-		m_Building.SetRectangle(fWidth, fDepth);
-#endif
 	}
 }
 
@@ -1221,7 +1211,9 @@ void BExtractorView::UpdateResizeScale()
 	if (m_bShift)
 		int foo = 1;
 
-	DPoint2 origin = m_pCurBuilding->GetLocation();
+	DPoint2 origin;
+	m_pCurBuilding->GetBaseLevelCenter(origin);
+
 	DPoint2 diff1 = m_downLocation - origin;
 	DPoint2 diff2 = m_curLocation - origin;
 	double fScale = diff2.Length() / diff1.Length();
@@ -1252,7 +1244,9 @@ void BExtractorView::UpdateResizeScale()
 
 void BExtractorView::UpdateRotate()
 {
-	DPoint2 origin = m_pCurBuilding->GetLocation();
+	DPoint2 origin;
+	m_pCurBuilding->GetBaseLevelCenter(origin);
+
 	DPoint2 original_vector = m_downLocation - origin;
 	double length1 = original_vector.Length();
 	double angle1 = atan2(original_vector.y, original_vector.x);
@@ -1354,7 +1348,8 @@ void BExtractorView::MopRemove(DPoint2 start, DPoint2 end)
 		vtBuilding *bld = doc->m_Buildings.GetAt(i)->GetBuilding();
 		if (!bld)
 			continue;
-		DPoint2 point = bld->GetLocation();
+		DPoint2 point;
+		bld->GetBaseLevelCenter(point);
 
 		if (drect.ContainsPoint(point))
 		{
@@ -1618,13 +1613,16 @@ void BExtractorView::OnFunctionsConvolve()
 	for (int k = 0; k < num; )
 	{
 		vtBuilding *bld = doc->m_Buildings.GetAt(k)->GetBuilding();
-		DPoint2 point = bld->GetLocation();
+
+		DPoint2 point, point2;
+		
+		bld->GetBaseLevelCenter(point);
 		for (l = 0; (!match)&&(l < num); l++)
 		{
 			if (l!=k)
 			{
 				vtBuilding *bld2 = doc->m_Buildings.GetAt(l)->GetBuilding();
-				DPoint2 point2 = bld2->GetLocation();
+				bld2->GetBaseLevelCenter(point2);
 
 				if ( (fabs(point.x - point2.x) < 11) && (fabs(point.y - point2.y) < 7))
 					match = true;
