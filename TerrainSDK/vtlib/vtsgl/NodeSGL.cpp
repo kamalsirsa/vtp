@@ -10,10 +10,33 @@
 #include <sgl/sglOrthographicCamera.hpp>
 
 
+vtNode::vtNode()
+{
+	// Artificially increment our own reference count, so that OSG
+	// won't try to delete us when it removes its reference to us.
+//	ref();
+}
+
+vtNode::~vtNode()
+{
+}
+
+void vtNode::Release()
+{
+	// TEMP!!
+	delete this;
+}
+
 void vtNode::SetEnabled(bool bOn)
 {
 //	m_pModel->SetActive(bOn);	// TODO
 	vtEnabledBase::SetEnabled(bOn);
+}
+
+bool vtNode::GetEnabled()
+{
+	// TODO: sgl-specific implementation?
+	return vtEnabledBase::GetEnabled();
 }
 
 void vtNode::GetBoundBox(FBox3 &box)
@@ -65,6 +88,33 @@ vtGroup::vtGroup(bool suppress) : vtNode(), vtGroupBase()
 	SetSglNode(m_pGroup);
 }
 
+vtGroup::~vtGroup()
+{
+}
+
+vtNodeBase *vtGroup::FindDescendantByName(const char *name)
+{
+	if (!strcmp(GetName2(), name))
+		return (dynamic_cast<vtNode *>(this));
+
+	vtGroupBase *pGroup = dynamic_cast<vtGroupBase *>(this);
+	if (pGroup)
+	{
+		for (int i = 0; i < pGroup->GetNumChildren(); i++)
+		{
+			vtNodeBase *pChild = pGroup->GetChild(i);
+			vtGroup *pGroupChild = dynamic_cast<vtGroup *>(pChild);
+			if (pGroupChild)
+			{
+				vtNodeBase *pResult = pGroupChild->FindDescendantByName(name);
+				if (pResult)
+					return pResult;
+			}
+		}
+	}
+	return NULL;
+}
+
 void vtGroup::AddChild(vtNodeBase *pChild)
 {
 	vtNode *pChildNode = dynamic_cast<vtNode *>(pChild);
@@ -93,6 +143,17 @@ vtNode *vtGroup::GetChild(int num)
 int vtGroup::GetNumChildren()
 {
 	return m_pGroup->getNumChildren();
+}
+
+bool vtGroup::ContainsChild(vtNodeBase *pNode)
+{
+	int i, children = GetNumChildren();
+	for (i = 0; i < children; i++)
+	{
+		if (GetChild(i) == pNode)
+			return true;
+	}
+	return false;
 }
 
 
@@ -269,6 +330,18 @@ void vtGeom::AddMesh(vtMesh *pMesh, int iMatIdx)
 	pMesh->SetMatIndex(iMatIdx);
 }
 
+void vtGeom::AddTextMesh(vtTextMesh *pTextMesh, int iMatIdx)
+{
+/*	m_pGeode->addDrawable(pTextMesh->m_pOsgText.get());
+
+	vtMaterial *pMat = GetMaterial(iMatIdx);
+	if (pMat)
+	{
+		StateSet *pState = pMat->m_pStateSet.get();
+		pTextMesh->m_pOsgText->setStateSet(pState);
+	} */
+}
+
 void vtGeom::SetMeshMatIndex(vtMesh *pMesh, int iMatIdx)
 {
 	vtMaterial *pMat = GetMaterial(iMatIdx);
@@ -299,6 +372,31 @@ vtMesh *vtGeom::GetMesh(int i)
 	}
 	return NULL;
 }
+
+vtTextMesh *vtGeom::GetTextMesh(int i)
+{
+	return NULL;
+}
+
+void vtGeom::SetMaterials(class vtMaterialArray *mats)
+{
+	m_pMaterialArray = mats;
+}
+
+vtMaterialArray	*vtGeom::GetMaterials()
+{
+	return m_pMaterialArray;
+}
+
+vtMaterial *vtGeom::GetMaterial(int idx)
+{
+	if (m_pMaterialArray == NULL)
+		return NULL;
+	if (idx < 0 || idx >= m_pMaterialArray->GetSize())
+		return NULL;
+	return m_pMaterialArray->GetAt(idx);
+}
+
 
 //////////////////////////////////////////
 
@@ -365,6 +463,22 @@ void vtDynDrawable::drawGeometry(sglVec2f *tex_coords) const
 void vtDynDrawable::addStats(sglStats &stats) const
 {
 	// TODO
+}
+
+bool vtDynDrawable::computeBounds()
+{
+   m_dirty &= ~eBOUND;
+
+	FBox3 box;
+	m_pDynGeom->DoCalcBoundBox(box);
+
+	sglVec3f mi, ma;
+	v2s(box.min, mi);
+	v2s(box.max, ma);
+	m_bbox.setMin(mi);
+	m_bbox.setMax(ma);
+
+	return true;
 }
 
 bool vtDynDrawable::isValid() const

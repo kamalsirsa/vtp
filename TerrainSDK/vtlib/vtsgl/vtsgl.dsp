@@ -101,6 +101,10 @@ SOURCE=..\core\Building3d.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\Content3d.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\CoreMeshMat.cpp
 # End Source File
 # Begin Source File
@@ -118,6 +122,22 @@ SOURCE=..\core\DynTerrain.cpp
 # Begin Source File
 
 SOURCE=..\core\Engine.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelComponents.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelIntersection.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\FelkelStraightSkeleton.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\Fence3d.cpp
 # End Source File
 # Begin Source File
 
@@ -145,11 +165,23 @@ SOURCE=..\core\Roads.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\core\Route.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\core\SkyDome.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\core\SMTerrain.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\SRTerrain.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\Structure3d.cpp
 # End Source File
 # Begin Source File
 
@@ -178,6 +210,10 @@ SOURCE=..\core\Trees.cpp
 # Begin Source File
 
 SOURCE=..\core\TVTerrain.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\core\vtTin3d.cpp
 # End Source File
 # End Group
 # Begin Group "Core Headers"

@@ -23,12 +23,18 @@ public:
 	void SetGlobalWireframe(bool bWire);
 	bool GetGlobalWireframe();
 
-	void Init();
+	bool Init();
 	void DoUpdate();
+
+	bool HasWinInfo() { return m_bWinInfo; }
+	void SetWinInfo(void *handle, void *context) { m_bWinInfo = true; }
 
 //protected:
 	sglView		 m_SglView;
 	sglScene	*m_pSglRootNode;
+	bool		m_bWinInfo;
+	sglTimespec	m_TimeCurrent, m_TimePrevious;
+	float		m_fFrameRate;
 };
 
 // global

@@ -6,6 +6,7 @@ vtScene::vtScene() : vtSceneBase()
 {
 	m_pCamera = NULL;
 	m_pSglRootNode = NULL;
+	m_bWinInfo = false;
 }
 
 void vtScene::SetBgColor(RGBf color)
@@ -46,7 +47,7 @@ bool vtScene::GetGlobalWireframe()
 }
 
 
-void vtScene::Init()
+bool vtScene::Init()
 {
 	sgl::initialize();
 
@@ -56,6 +57,8 @@ void vtScene::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glShadeModel(GL_SMOOTH);
+
+	return true;
 }
 
 //sglCullf	 trav_state;
@@ -65,6 +68,11 @@ deque<const sglStatelet*> override_statelets;
 
 void vtScene::DoUpdate()
 {
+	sglTimespec::getSysTime(m_TimeCurrent);
+	sglTimespec diffTime = m_TimeCurrent - m_TimePrevious;
+	double diff = sglTimespec::convertToDouble(diffTime);
+	m_fFrameRate = 1.0f / (float)diff;
+
 	DoEngines();
 
 	// Set camera position to SGL
@@ -123,8 +131,15 @@ vtScene *vtGetScene()
 
 float vtGetTime()
 {
-	return (float)clock() / CLOCKS_PER_SEC;
+//	return (float)clock() / CLOCKS_PER_SEC;
+	return (float) sglTimespec::convertToDouble(g_Scene.m_TimeCurrent);
 }
+
+float vtGetFrameTime()
+{
+	return g_Scene.m_fFrameRate;
+}
+
 
 ////////////////////////////////////////
 
@@ -132,5 +147,30 @@ vtNodeBase *vtLoadModel(const char *filename)
 {
 	// TODO
 	return NULL;
+}
+
+
+/////////////////////////
+
+RGBf vtNodeBase::s_white(1, 1, 1);
+
+/**
+ * Set the Fog state for a node.
+ *
+ * You can turn fog on or off.  When you turn fog on, it affects this node
+ * and all others below it in the scene graph.
+ *
+ * \param bOn True to turn fog on, false to turn it off.
+ * \param start The distance from the camera at which fog starts, in meters.
+ * \param end The distance from the camera at which fog end, in meters.  This
+ *		is the point at which it becomes totally opaque.
+ * \param color The color of the fog.  All geometry will be faded toward this
+ *		color.
+ * \param iType Can be GL_LINEAR, GL_EXP or GL_EXP2 for linear or exponential
+ *		increase of the fog density.
+ */
+void vtNode::SetFog(bool bOn, float start, float end, const RGBf &color, int iType)
+{
+	// TODO
 }
 

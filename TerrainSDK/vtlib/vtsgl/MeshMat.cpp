@@ -95,11 +95,42 @@ bool vtMaterial::GetTransparent()
 	return true;
 }
 
+/**
+ * Set the wireframe property of this material.
+ *
+ * \param bOn True to turn on wireframe.
+ */
+void vtMaterial::SetWireframe(bool bOn)
+{
+}
+
+/**
+ * Get the wireframe property of this material.
+ */
+bool vtMaterial::GetWireframe()
+{
+	return false;
+}
+
 void vtMaterial::SetTexture(vtImage *pImage)
 {
 	m_pTexture = pImage->m_pTexture;
 	m_pImage = pImage;
 }
+
+/**
+ * Loads and sets the texture for a material.
+ */
+void vtMaterial::SetTexture2(const char *szFilename)
+{
+	vtImage *image = new vtImage(szFilename);
+	if (image->LoadedOK())
+	{
+		SetTexture(image);
+	}
+	image->Release();	// don't hold on to it; it will either be owned by this material, or deleted
+}
+
 
 void vtMaterial::SetClamp(bool bClamp)
 {
@@ -126,6 +157,7 @@ void vtMaterial::Apply()
 		m_pTexture->apply(hack_global_state);
 }
 
+
 //////////////////////////////////////////////////////////////
 
 int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
@@ -133,6 +165,12 @@ int vtMaterialArray::AppendMaterial(vtMaterial *pMat)
 	// nothing special to do?
 	return Append(pMat);
 }
+
+void vtMaterialArray::Release()
+{
+	// TODO: cleanup memory
+}
+
 
 //////////////////////////////////////////////////////////////
 
@@ -193,6 +231,14 @@ vtMesh::vtMesh(GLenum PrimType, int VertType, int NumVertices) :
 //		m_pGeoSet->setTextureCoords(m_Tex.GetData());
 //		m_pGeoSet->setTextureBinding(osg::GeoSet::BIND_PERVERTEX);
 	}
+}
+
+vtMesh::~vtMesh()
+{
+}
+
+void vtMesh::Release()
+{
 }
 
 /*int vtMesh::GetNumVertices()
@@ -345,6 +391,51 @@ void vtMesh::ReOptimize()
 void vtMesh::AllowOptimize(bool bAllow)
 {
 	// TODO?
+}
+
+
+////
+
+vtFont::vtFont()
+{
+}
+
+bool vtFont::LoadFont(const char *filename)
+{
+	return false;
+}
+
+vtTextMesh::vtTextMesh(vtFont *font, float fSize, bool bCenter)
+{
+	// TODO
+}
+
+vtTextMesh::~vtTextMesh()
+{
+}
+
+void vtTextMesh::Release()
+{
+}
+
+void vtTextMesh::SetText(const char *text)
+{
+}
+
+void vtTextMesh::SetText(const wchar_t *text)
+{
+}
+
+void vtTextMesh::SetText(const std::wstring &text)
+{
+}
+
+void vtTextMesh::SetPosition(const FPoint3 &pos)
+{
+}
+
+void vtTextMesh::SetAlignment(int align)
+{
 }
 
 

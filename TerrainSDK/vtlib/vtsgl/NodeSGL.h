@@ -15,6 +15,8 @@ class sglOrthographicCamera;
 class vtNode : public vtNodeBase, public vtEnabledBase
 {
 public:
+	vtNode();
+
 	// implement vtNodeBase methods
 	vtNodeBase *CreateClone();
 	void Release();
@@ -37,6 +39,7 @@ public:
 	sglNode *GetSglNode() { return m_pNode; }
 
 protected:
+	~vtNode();
 	sglNode	*m_pNode;
 };
 
@@ -63,6 +66,7 @@ public:
 	sglGroup *GetSglGroup() { return m_pGroup; }
 
 protected:
+	~vtGroup();
 	sglGroup	*m_pGroup;
 };
 
@@ -137,6 +141,7 @@ public:
 	void SetMeshMatIndex(vtMesh *pMesh, int iMatIdx);
 
 	// implementation
+	vtMaterialArray *m_pMaterialArray;
 	sglGeode	*m_pGeode;
 };
 

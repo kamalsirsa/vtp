@@ -12,3 +12,10 @@ vtImage::vtImage(class vtDIB *pDIB, int internalformat)
 	// TODO
 //	m_pTexture = new sglTexture2D(pDIB);
 }
+
+void vtImage::Release()
+{
+	// TODO: cleanup memory
+}
+
+
