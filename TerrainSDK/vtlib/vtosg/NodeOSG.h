@@ -24,6 +24,8 @@ namespace osg
 class vtNode : public vtNodeBase, public osg::Referenced
 {
 public:
+	~vtNode();
+
 	virtual vtNodeBase *CreateClone();
 	virtual void Destroy();
 
@@ -168,8 +170,8 @@ public:
 	// provide override to catch this state
 	virtual void SetEnabled(bool bOn);
 
-	osg::LightSource *m_pLightSource;
-	osg::Light		 *m_pLight;
+	osg::ref_ptr<osg::LightSource> m_pLightSource;
+	osg::ref_ptr<osg::Light> m_pLight;
 };
 
 class vtMovLight : public vtTransform
@@ -349,7 +351,7 @@ public:
 
 	void SetOrtho(float fWidth);
 
-	osg::Camera	*m_pOsgCamera;
+	osg::ref_ptr<osg::Camera> m_pOsgCamera;
 };
 
 class vtSprite : public vtGroup

@@ -60,7 +60,8 @@ vtScene::vtScene() : vtSceneBase()
 
 vtScene::~vtScene()
 {
-	delete m_pCamera;
+	if (m_pCamera)
+		m_pCamera->Destroy();
 }
 
 vtScene *vtGetScene()
@@ -153,7 +154,7 @@ void vtScene::DoUpdate()
 
 	DoEngines();
 
-	Camera *pOsgCam = m_pCamera->m_pOsgCamera;
+	Camera *pOsgCam = m_pCamera->m_pOsgCamera.get();
 
 	// let the OSG Camera know that its transform has (probably) changed
 	// apparently no longer needed as of OSG 0.8.45
