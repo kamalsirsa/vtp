@@ -1596,23 +1596,6 @@ vtString Enviro::GetStatusString(int which)
 	return str;
 }
 
-#if 0	// TODO: move the 'time' stuff to a new Time dialog
-void Enviro::GetStatusText(vtString &str)
-{
-	// get time of day
-	TimeEngine *te = GetTerrainScene()->GetTimeEngine();
-	if (te && te->GetEnabled())
-	{
-		int hr, min, sec;
-		te->GetTime(hr, min, sec);
-
-		vtString str2;
-		str2.Format("time %02d:%02d:%02d, ", hr, min, sec);
-		str += str2;
-	}
-	str += m_strMessage;
-}
-#endif
 
 ////////////////////////////////////////////////////////////////////////
 
