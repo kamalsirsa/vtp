@@ -177,6 +177,10 @@ bool CBImage::LoadGDAL(const char *szPathName, CDC *pDC, HDRAWDIB hdd)
 		m_xUTMoffset = (affineTransform[0] + affineTransform[2] *  m_PixelSize.y) * linearConversionFactor;
 		m_yUTMoffset = (affineTransform[3] + affineTransform[5] *  m_PixelSize.y) * linearConversionFactor;
 
+		// sanity check
+		if (m_fImageHeight < 0)
+			m_fImageHeight = -m_fImageHeight;
+
 		if (NULL == (m_pSpatialReference = SpatialReference.Clone()))
 		{
 			bRet = false;
