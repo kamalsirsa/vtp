@@ -74,7 +74,12 @@ wxString2& wxString2::operator=(const char *psz)
 #else
 wxString2& wxString2::operator=(const wchar_t *psz)
 {
+#if wxUSE_WCHAR_T
+	int len = wxWcslen(psz);
+#else
 	int len = wcslen(psz);
+#endif
+
 	char *buf = new char[len+1];
 	int result = wxWC2MB(buf, psz, len+1);
 	(void) wxString::operator=(buf);
