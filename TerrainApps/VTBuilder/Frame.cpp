@@ -1178,6 +1178,9 @@ void trim_eol(char *buf)
 
 void MainFrame::LoadProject(const wxString2 &strPathName)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	VTLOG("Loading project: '%s'\n", strPathName.mb_str());
 
 	// read project file
@@ -1296,6 +1299,9 @@ void MainFrame::LoadProject(const wxString2 &strPathName)
 
 void MainFrame::SaveProject(const wxString2 &strPathName)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	// write project file
 	wxString2 str = strPathName;
 	FILE *fp = fopen(str.mb_str(), "wb");
@@ -1538,24 +1544,6 @@ void MainFrame::ExportImage()
 //////////////////////////
 // Vegetation ops
 
-void MainFrame::FindVegLayers(vtVegLayer **Density, vtVegLayer **BioMap)
-{
-	for (unsigned int i = 0; i < m_Layers.GetSize(); i++)
-	{
-		vtLayer *lp = m_Layers.GetAt(i);
-		if (lp->GetType() == LT_VEG)
-		{
-			vtVegLayer *veg = (vtVegLayer *)lp;
-			VegLayerType vltype = veg->GetVegType();
-
-			if (vltype == VLT_Density)
-				*Density = veg;
-			if (vltype == VLT_BioMap)
-				*BioMap = veg;
-		}
-	}
-}
-
 /**
  * Generate vegetation in a given area, and writes it to a VF file.
  * All options are given in the VegGenOptions object passed in.
@@ -1566,6 +1554,8 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 {
 	OpenProgressDialog(_("Generating Vegetation"), true);
 
+	clock_t time1 = clock();
+
 	vtBioType SingleBiotype;
 	if (opt.m_iSingleSpecies != -1)
 	{
@@ -1575,18 +1565,37 @@ void MainFrame::GenerateVegetation(const char *vf_file, DRECT area,
 		opt.m_iSingleBiotype = m_BioRegions.AddType(&SingleBiotype);
 	}
 
+	// Create some optimization indices to speed it up
+	if (opt.m_pBiotypeLayer)
+		opt.m_pBiotypeLayer->CreateIndex(10);
+	if (opt.m_pDensityLayer)
+		opt.m_pDensityLayer->CreateIndex(10);
+
 	GenerateVegetationPhase2(vf_file, area, opt);
+
+	// Clean up the optimization indices
+	if (opt.m_pBiotypeLayer)
+		opt.m_pBiotypeLayer->FreeIndex();
+	if (opt.m_pDensityLayer)
+		opt.m_pDensityLayer->FreeIndex();
 
 	// clean up temporary biotype
 	if (opt.m_iSingleSpecies != -1)
 	{
 		m_BioRegions.m_Types.RemoveAt(opt.m_iSingleBiotype);
 	}
+
+	clock_t time2 = clock();
+	float time = ((float)time2 - time1)/CLOCKS_PER_SEC;
+	VTLOG("GenerateVegetation: %.3f seconds.\n", time);
 }
 
 void MainFrame::GenerateVegetationPhase2(const char *vf_file, DRECT area, 
 	VegGenOptions &opt)
 {
+	// Avoid trouble with '.' and ',' in Europe
+	LocaleWrap normal_numbers(LC_NUMERIC, "C");
+
 	unsigned int i, j, k;
 	DPoint2 p, p2;
 
