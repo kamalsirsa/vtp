@@ -192,25 +192,40 @@ bool vtRawLayer::AppendDataFrom(vtLayer *pL)
 	// compatibility check
 	if (pFrom->m_type != m_type)
 		return false;
+	if (pFrom->GetEntityType() != GetEntityType())
+		return false;
 
 	// copy entities
-	int i;
+	vtString str;
+	int i, f, result;
 	int num = pFrom->NumEntities();
 	for (i = 0; i < num; i++)
 	{
-		switch (m_type)
+		// copy geometry
+		switch (m_nSHPType)
 		{
 		case SHPT_POINT:
-			m_Point2.Append(pFrom->m_Point2[i]);
+			result = m_Point2.Append(pFrom->m_Point2[i]);
 			break;
 		case SHPT_POINTZ:
-			m_Point3.Append(pFrom->m_Point3[i]);
+			result = m_Point3.Append(pFrom->m_Point3[i]);
 			break;
 		case SHPT_ARC:
 		case SHPT_POLYGON:
-			m_LinePoly.Append(pFrom->m_LinePoly[i]);	// steal pointer
+			result = m_LinePoly.Append(pFrom->m_LinePoly[i]);	// steal pointer
 			break;
 		}
+		// copy record data for all field names which match
+		for (f = 0; f < pFrom->GetNumFields(); f++)
+		{
+			Field *field1 = pFrom->GetField(f);
+			Field *field2 = GetField((const char *) field1->m_name);
+			if (!field2)
+				continue;
+			field1->GetValueAsString(i, str);
+			field2->SetValueFromString(result, str);
+		}
+		m_Selected.Append(pFrom->IsSelected(i));
 	}
 	// empty the source layer
 	switch (m_type)
