@@ -27,6 +27,11 @@ class vtEngine : public vtEnabledBase
 public:
 	vtEngine();
 
+	/**
+	 * Get a target from the engine.  Most engines will have only a single
+	 * target.
+	 * \param which The number of the target (default 0).
+	 */
 	vtTarget *GetTarget(int which = 0)
 	{
 		if (which < NumTargets())
@@ -34,16 +39,33 @@ public:
 		else
 			return NULL;
 	}
-	void SetTarget(vtTarget *ptr) { m_pTargets.SetAt(0, ptr); }
+	/**
+	 * Adds a target to the engine.
+	 */
 	void AddTarget(vtTarget *ptr) { m_pTargets.Append(ptr); }
+	/**
+	 * Sets a single target for this engine (for backward compatibility.)
+	 */
+	void SetTarget(vtTarget *ptr) { m_pTargets.SetAt(0, ptr); }
+
+	/// Return the number of targets for this engine.
 	int NumTargets() { return m_pTargets.GetSize(); }
 
 	void SetName2(const char *str) { m_strName = str; }
 	const char *GetName2() { return m_strName; }
 
+	/// Virtual handler, to catch mouse events, can be overridden by your engine class.
 	virtual void OnMouse(vtMouseEvent &event);
+
+	/// Virtual handler, to catch keyboard events, can be overridden by your engine class.
 	virtual void OnKey(int key, int flags);
+
+	/// Virtual handler, to catch resize events, can be overridden by your engine class.
 	virtual void OnWindowSize(int width, int height);
+
+	/** Virtual handler, will be called every frame to do the work of the engine.  You
+	 * must override this if you want your engine to be useful.
+	 */
 	virtual void Eval();
 
 protected:

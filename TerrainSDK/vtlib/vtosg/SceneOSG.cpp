@@ -82,12 +82,6 @@ void vtScene::SetBgColor(RGBf color)
 	m_pOsgSceneView->setBackgroundColor(color2);
 }
 
-void vtScene::SetAmbient(RGBf color)
-{
-	// TODO?  Or should applications simply set the ambient component of
-	// their lights.
-}
-
 bool vtScene::Init()
 {
 	// Redirect cout messages (where OSG sends its messages) to our own log
@@ -183,10 +177,10 @@ void vtScene::SetRoot(vtGroup *pRoot)
 	m_pRoot = pRoot;
 }
 
-//
-// convert window coordinates (in pixels) to a ray from the camera
-// in world coordinates
-//
+/**
+ * Convert window coordinates (in pixels) to a ray from the camera
+ * in world coordinates.
+ */
 bool vtScene::CameraRay(const IPoint2 &win, FPoint3 &pos, FPoint3 &dir)
 {
 	Vec3 near_point, far_point, diff;

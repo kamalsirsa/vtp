@@ -351,29 +351,42 @@ public:
 	~vtSceneBase();
 
 	virtual void SetBgColor(RGBf color) = 0;
-	virtual void SetAmbient(RGBf color) = 0;
 
+	/// Add an Engine to the scene.
 	void AddEngine(vtEngine *ptr);
+
+	/// Remove an Engine from the scene.
 	void RemoveEngine(vtEngine *ptr);
+
+	/// Get the number of engines in the scene.
 	int GetNumEngines() { return m_Engines.GetSize(); }
+
+	/// Get an engine from the scene by index.
 	vtEngine *GetEngine(int i) { return m_Engines.GetAt(i); }
 
+	/** Set the camera associated with this scene.  The scene has
+	 * a default camera already supplied; you can use GetCamera()
+	 * to simply use it instead of making your own.
+	 */
 	void SetCamera(vtCamera *cam) { m_pCamera = cam; }
+	/// Get the camera associated with the scene.
 	vtCamera *GetCamera() { return m_pCamera; }
 
 	void OnMouse(vtMouseEvent &event);
 	void OnKey(int key, int flags);
 	void SetKeyStates(bool *piKeyState) { m_piKeyState = piKeyState; }
 	bool GetKeyState(int key);
-	void DoEngines();
 
 	void SetWindowSize(int w, int h);
 	IPoint2 GetWindowSize() { return m_WindowSize; }
 
 	virtual void SetRoot(vtGroup *pRoot) = 0;
+	/// Get the root node, which is the top of the scene graph.
 	vtGroup *GetRoot() { return m_pRoot; }
 
 protected:
+	void DoEngines();
+
 	Array<vtEngine *> m_Engines;
 	vtCamera *m_pCamera;
 	IPoint2	m_WindowSize;

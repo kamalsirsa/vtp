@@ -29,17 +29,25 @@ public:
 	vtScene();
 	~vtScene();
 
+	/// Set the background color for the scene (the rendering window).
 	void SetBgColor(RGBf color);
-	void SetAmbient(RGBf color);
+
+	/// Set the root node, the top node of the scene graph.
 	void SetRoot(vtGroup *pRoot);
 
+	/// Set global wireframe, which will force all objects to be drawn wireframe.
 	void SetGlobalWireframe(bool bWire);
+	/// Get the global wireframe state.
 	bool GetGlobalWireframe();
 
+	/// Call this method once before calling any other vtlib methods.
 	bool Init();
+
+	/// Call this method after all other vtlib methods, to free memory.
 	void Shutdown();
 
 	void DoUpdate();
+	/// Return the instantaneous framerate in frames per seconds estimated.
 	float GetFrameRate()
 	{
 		return 1.0 / _timer.delta_s(_lastFrameTick,_frameTick);
