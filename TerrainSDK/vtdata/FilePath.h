@@ -48,7 +48,6 @@ public:
 
 private:
 	std::string        m_directory;
-	int                m_refcount;
 #ifdef WIN32
 	struct _finddata_t m_data;
 	long               m_handle;
@@ -76,5 +75,7 @@ void vtDeleteFile(const char *filename);
 const char *StartOfFilename(const char *szFullPath);
 bool PathIsAbsolute(const char *szPath);
 vtString get_line_from_stream(std::ifstream &input);
+void RemoveFileExtensions(vtString &fname);
+vtString GetExtension(const vtString &fname);
 
 #endif // FILEPATHH

@@ -35,74 +35,44 @@
 #  include <utime.h>
 #endif
 
+/**
+ * The dir_iter class provides a cross-platform way to read directories.
+ */
+#if WIN32
+
 dir_iter::dir_iter()
 {
-#if WIN32
 	m_handle = -1;
-#else
-	m_handle = 0;
-	m_stat_p = false;
-#endif
-	m_refcount = 1;
 }
 
 dir_iter::dir_iter(std::string const &dirname)
 {
-#if WIN32
 	m_handle = _findfirst((dirname + "\\*").c_str(), &m_data);
-#else
-	m_handle = opendir(dirname.c_str());
-	m_directory = dirname;
-	m_stat_p = false;
-
-	if (m_directory[m_directory.size() - 1] != '/')
-		m_directory += '/';
-	operator++ ();
-#endif
-	m_refcount = 1;
 }
 
 dir_iter::~dir_iter()
 {
-#if WIN32
 	if (m_handle != -1)
 		_findclose(m_handle);
-#else
-	if (m_handle)
-		closedir(m_handle);
-#endif
 }
 
 bool dir_iter::is_directory()
 {
-#if WIN32
 	return (m_data.attrib & _A_SUBDIR) != 0;
-#else
-	return S_ISDIR(get_stat().st_mode);
-#endif
 }
 
 bool dir_iter::is_hidden()
 {
-#if WIN32
 	return (m_data.attrib & _A_HIDDEN) != 0;
-#else
-	return (m_current[0] == '.');
-#endif
 }
 
 std::string dir_iter::filename()
 {
-#if WIN32
 	return m_data.name;
-#else
-	return m_current;
-#endif
 }
 
 void dir_iter::operator++()
 {
-#if WIN32
 	if (m_handle != -1)
 	{
 		if (_findnext(m_handle, &m_data) == -1)
@@ -111,31 +81,77 @@ void dir_iter::operator++()
 			m_handle = -1;
 		}
 	}
-#else
-	if (m_handle)
-	{
-		m_stat_p = false;
-		dirent *rc = readdir(m_handle);
-		if (rc != 0)
-			m_current = rc->d_name;
-		else
-		{
-			m_current = "";
-			closedir(m_handle);
-			m_handle = 0;
-		}
-	}
-#endif
 }
 
 bool dir_iter::operator!=(const dir_iter &it)
 {
-#if WIN32
 	return (m_handle == -1) != (it.m_handle == -1);
-#else
-	return (m_handle == 0) != (it.m_handle == 0);
-#endif
 }
+
+///////////////////////////////////////////////////////////////////////
+#else	// non-WIN32 platforms, i.e. generally Unix
+
+dir_iter::dir_iter()
+{
+	m_handle = 0;
+	m_stat_p = false;
+}
+
+dir_iter::dir_iter(std::string const &dirname)
+{
+	m_handle = opendir(dirname.c_str());
+	m_directory = dirname;
+	m_stat_p = false;
+
+	if (m_directory[m_directory.size() - 1] != '/')
+		m_directory += '/';
+	operator++ ();
+}
+
+dir_iter::~dir_iter()
+{
+	if (m_handle)
+		closedir(m_handle);
+}
+
+bool dir_iter::is_directory()
+{
+	return S_ISDIR(get_stat().st_mode);
+}
+
+bool dir_iter::is_hidden()
+{
+	return (m_current[0] == '.');
+}
+
+std::string dir_iter::filename()
+{
+	return m_current;
+}
+
+void dir_iter::operator++()
+{
+	if (!m_handle)
+		return;
+
+	m_stat_p = false;
+	dirent *rc = readdir(m_handle);
+	if (rc != 0)
+		m_current = rc->d_name;
+	else
+	{
+		m_current = "";
+		closedir(m_handle);
+		m_handle = 0;
+	}
+}
+
+bool dir_iter::operator!=(const dir_iter &it)
+{
+	return (m_handle == 0) != (it.m_handle == 0);
+}
+
+#endif	// !WIN32
 
 
 /**
@@ -313,6 +329,49 @@ bool PathIsAbsolute(const char *szPath)
 	return false;
 }
 
+/**
+ * Given a filename (which may include a path), remove any file extension(s)
+ * which it may have.
+ */
+void RemoveFileExtensions(vtString &fname)
+{
+	for (int i = fname.GetLength()-1; i >= 0; i--)
+	{
+		char ch = fname[i];
+
+		// If we hit a path divider, stop
+		if (ch == ':' || ch == '\\' || ch == '/')
+			break;
+
+		// If we hit a period which indicates an extension, snip
+		if (ch == '.')
+			fname = fname.Left(i);
+	}
+}
+
+/**
+ * Get the full file extension(s) from a filename.
+ */
+vtString GetExtension(const vtString &fname)
+{
+	int chop = -1;
+	for (int i = fname.GetLength()-1; i >= 0; i--)
+	{
+		char ch = fname[i];
+
+		// If we hit a path divider, stop
+		if (ch == ':' || ch == '\\' || ch == '/')
+			break;
+
+		// If we hit a period which indicates an extension, note it.
+		if (ch == '.')
+			chop = i;
+	}
+	if (chop == -1)
+		return vtString("");
+	else
+		return fname.Right(fname.GetLength() - chop);
+}
 
 #include <fstream>
 using namespace std;
