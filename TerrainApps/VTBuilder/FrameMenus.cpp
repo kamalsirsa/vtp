@@ -1721,8 +1721,30 @@ void MainFrame::OnUpdateAreaGenerateVeg(wxUpdateUIEvent& event)
 void MainFrame::OnAreaRequestLayer(wxCommandEvent& event)
 {
 #if SUPPORT_HTTP
+	bool success;
+
+	wxTextEntryDialog dlg(this, "WFS Server address",
+		"Please enter server base URL", "http://10.254.0.29:8081/");
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+	const char *server = dlg.GetValue();
+
+	WFSLayerArray layers;
+	success = GetLayersFromWFS(server, layers);
+
+	int numlayers = layers.GetSize();
+	wxString choices[100];
+	for (int i = 0; i < numlayers; i++)
+		choices[i] = layers[i]->GetValue("Name");
+
+	wxSingleChoiceDialog dlg2(this, "Choice Layer",
+		"Please indicate layer:", numlayers, (const wxString *)choices);
+
+	if (dlg2.ShowModal() != wxID_OK)
+		return;
+
 	vtRawLayer *pRL = new vtRawLayer();
-	bool success = pRL->ReadFeaturesFromWFS("http://10.254.0.29:8080/GetFeature?typeName=rail");
+	success = pRL->ReadFeaturesFromWFS(server, "rail");
 	if (success)
 		AddLayerWithCheck(pRL);
 	else
