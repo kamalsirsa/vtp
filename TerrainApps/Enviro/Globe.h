@@ -21,6 +21,7 @@ public:
 
 	void AddTerrainRectangles();
 	int AddGlobePoints(const char *fname);
+	double AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2);
 
 	vtGeom		*m_geom;
 	vtMovGeom	*m_mgeom;

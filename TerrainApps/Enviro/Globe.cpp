@@ -631,6 +631,39 @@ void xyz_to_geo(double radius, const FPoint3 &p, DPoint3 &geo)
 	int foo = 1;
 }
 
+double IcoGlobe::AddSurfaceLineToMesh(vtMesh *mesh, const DPoint2 &g1, const DPoint2 &g2)
+{
+	// first determine how many points we should use for a smooth arc
+	DPoint3 p1, p2;
+	geo_to_xyz(1.0, g1, p1);
+	geo_to_xyz(1.0, g2, p2);
+	double angle = acos(p1.Dot(p2));
+	int points = (int) (angle * 3000);
+	if (points < 3)
+		points = 3;
+
+	// calculate the axis of rotation
+	DPoint3 cross = p1.Cross(p2);
+	cross.Normalize();
+	double angle_spacing = angle / (points-1);
+	DMatrix4 rot4;
+	rot4.AxisAngle(cross, angle_spacing);
+	DMatrix3 rot3;
+	rot3.SetByMatrix4(rot4);
+
+	// curved arc on great-circle path
+	int start = mesh->GetNumVertices();
+	for (int i = 0; i < points; i++)
+	{
+		FPoint3 fp = p1 * 1.0002;
+		mesh->AddVertex(fp);
+		rot3.Transform(p1, p2);
+		p1 = p2;
+	}
+	mesh->AddStrip2(points, start);
+	return angle;
+}
+
 void IcoGlobe::AddTerrainRectangles()
 {
 	FPoint3 p;
@@ -645,15 +678,15 @@ void IcoGlobe::AddTerrainRectangles()
 		int numvtx = 4;
 		vtMesh *mesh = new vtMesh(GL_LINE_STRIP, 0, numvtx);
 
-		for (int i = 0; i < 5; i++)
+		int i, j;
+		DPoint2 p1, p2;
+		for (i = 0; i < 4; i++)
 		{
-			int j = i % 4;
-			DPoint2 geo = pTerr->m_Corners_geo[j];
-			geo_to_xyz(1.001, geo, p);
-			mesh->AddVertex(p);
+			j = (i+1) % 4;
+			p1 = pTerr->m_Corners_geo[i];
+			p2 = pTerr->m_Corners_geo[j];
+			AddSurfaceLineToMesh(mesh, p1, p2);
 		}
-
-		mesh->AddStrip2(5, 0);
 		m_geom->AddMesh(mesh, m_red);
 	}
 }
