@@ -1354,9 +1354,9 @@ void vtTerrain::CreateChoppedTextures(vtLocalGrid *pLocalGrid, vtDIB *dib1,
 
 			vtImage *pImage = new vtImage(dib2, (!mono && m_Params.m_b16bit) ? GL_RGB5 : -1);
 
-			// Can't delete the internals DIBs here because DISM holds on
-			//   to its pointer, that we passed with SetBitmap
-			dib2->LeaveInternalDIB(true);
+			// Can't delete the internals DIBs here because the scene graph
+			//   needs the data?  Actually no, the scene graph gets a copy of it.
+//			dib2->LeaveInternalDIB(true);
 			delete dib2;
 
 			m_Images.SetAt(i*patches+j, pImage);
