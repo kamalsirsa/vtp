@@ -64,23 +64,6 @@ public:
 
 //////////////////////////////////////////////////
 
-class BenchEngine : public vtEngine
-{
-public:
-	BenchEngine(const char *loc_fname);
-	void Eval();
-	void Convert(float result, FILE* fp, bool last);
-
-	FILE* m_fp;
-	int m_idone;
-	int m_iviewpoint;
-	int m_iframesElapsed;
-	float m_fstartTime;
-	float m_fresults;	//total framerate (to be divided by # of viewpoints)
-};
-
-//////////////////////////////////////////////////
-
 // Follow the current route
 class RouteFollowerEngine : public vtEngine
 {
@@ -105,20 +88,6 @@ public:
 
 	vtTransform *m_model;
 	vtCamera *m_pCamera;
-};
-
-class ProximityEngine : public vtEngine
-{
-public:
-	ProximityEngine(vtTransform* far_model, vtTransform* near_model,
-		vtCamera* camera, float distance);
-	void Eval();
-
-	vtTransform *m_FarModel;
-	vtTransform *m_NearModel;
-	vtCamera *m_pCamera;
-	bool m_bFarOn;
-	float m_distance;
 };
 
 class SimpleBBEngine : public vtEngine

@@ -22,7 +22,6 @@ class RouteFollowerEngine;
 class VFlyer;
 class QuakeFlyer;
 class vtTrackball;
-class BenchEngine;
 class GlobePicker;
 
 // Plants
@@ -172,7 +171,6 @@ protected:
 	// view and navigation
 	vtCamera	*m_pNormalCamera;
 	vtCamera	*m_pTopDownCamera;
-	BenchEngine	*m_pBench;
 
 	vtRoot		*m_pRoot;		// top of the scene graph
 	vtMovGeom	*m_pGlobeMGeom;

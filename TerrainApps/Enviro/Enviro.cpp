@@ -445,9 +445,8 @@ void Enviro::SetupTerrain(vtTerrain *pTerr)
 
 		if (g_Options.m_bSpeedTest)
 		{
-			// Benchmark engine
-			m_pBench = new BenchEngine("benchmark.loc");
-			vtGetScene()->AddEngine(m_pBench);
+			// Benchmark engine - removed, need a better one
+			// m_pBench = new BenchEngine();
 		}
 		else
 		{
