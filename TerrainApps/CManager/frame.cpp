@@ -178,11 +178,26 @@ vtFrame::vtFrame(wxFrame *parent, const wxString& title, const wxPoint& pos,
 	// Show the frame
 	Show(TRUE);
 
+	// Load the font
+	const char *fontname = "Fonts/Arial.ttf";
+	vtString font_path = FindFileOnPaths(vtFrame::m_DataPaths, fontname);
+	if (font_path == "")
+	{
+		VTLOG("Couldn't find or read font from file '%s'\n", fontname);
+		m_pFont = NULL;
+	}
+	else
+	{
+		m_pFont = new vtFont();
+		m_pFont->LoadFont(font_path);
+	}
+
 	m_pTree->RefreshTreeItems(this);
 }
 
 vtFrame::~vtFrame()
 {
+	delete m_pFont;
 	delete m_canvas;
 	delete m_pSceneGraphDlg;
 }
@@ -316,6 +331,9 @@ void vtFrame::OnClose(wxCloseEvent &event)
 		delete m_canvas;
 		m_canvas = NULL;
 	}
+
+	FreeContents();
+
 	event.Skip();
 }
 
@@ -357,7 +375,7 @@ void vtFrame::OnSave(wxCommandEvent& event)
 void vtFrame::LoadContentsFile(const wxString2 &fname)
 {
 	VTLOG("LoadContentsFile '%s'\n", fname.mb_str());
-	m_Man.Empty();
+	FreeContents();
 	try 
 	{
 		m_Man.ReadXML(fname);
@@ -371,6 +389,17 @@ void vtFrame::LoadContentsFile(const wxString2 &fname)
 	SetCurrentItem(NULL);
 	SetCurrentModel(NULL);
 	m_pTree->RefreshTreeItems(this);
+}
+
+void vtFrame::FreeContents()
+{
+	for (int i = 0; i < m_Man.NumItems(); i++)
+	{
+		vtItem *item = m_Man.GetItem(i);
+		ItemGroup *ig = m_itemmap[item];
+		delete ig;
+	}
+	m_Man.Empty();
 }
 
 void vtFrame::SaveContentsFile(const wxString2 &fname)
@@ -712,7 +741,7 @@ void vtFrame::UpdateItemGroup(vtItem *item)
 {
 	ItemGroup *ig = GetItemGroup(item);
 	ig->AttemptToLoadModels();
-	ig->AttachModels();
+	ig->AttachModels(m_pFont);
 	ig->ShowOrigin(m_bShowOrigin);
 	ig->ShowRulers(m_bShowRulers);
 	ig->SetRanges();

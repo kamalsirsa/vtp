@@ -87,6 +87,7 @@ protected:
 
 	void LoadContentsFile(const wxString2 &fname);
 	void SaveContentsFile(const wxString2 &fname);
+	void FreeContents();
 
 	void DisplayMessageBox(const wxString2 &str);
 
@@ -136,6 +137,7 @@ public:
 	vtContentManager	m_Man;
 	vtItem				*m_pCurrentItem;
 	vtModel				*m_pCurrentModel;
+	vtFont				*m_pFont;
 
 	std::map<vtItem *, ItemGroup *> m_itemmap;
 	std::map<vtModel *, vtTransform *> m_nodemap;

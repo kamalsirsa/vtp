@@ -59,8 +59,8 @@ bool vtApp::OnInit(void)
 	vtCamera *pCamera = pScene->GetCamera();
 	pCamera->SetName2("Default Camera");
 
-	vtRoot *pRoot = new vtRoot();
-	pScene->SetRoot(pRoot);
+	m_pRoot = new vtRoot();
+	pScene->SetRoot(m_pRoot);
 
 #if VTLIB_SGL
 	CreateTestSGLScene();
@@ -73,7 +73,7 @@ bool vtApp::OnInit(void)
 	pMovLight->SetName2("Movable Light");
 	pLight->SetAmbient2(RGBf(1, 1, 1));
 	pMovLight->SetTrans(FPoint3(0.0f, 0.0f, 5.0f));
-	pRoot->AddChild(pMovLight);
+	m_pRoot->AddChild(pMovLight);
 
 #if 0
 #if 0
@@ -89,7 +89,7 @@ bool vtApp::OnInit(void)
 	osog.WriteHeader(fp);
 	osog.WriteSingleGeometry(fp, pGeom);
 	fclose(fp);
-	pRoot->AddChild(pGeom);
+	m_pRoot->AddChild(pGeom);
 #else
 	InputSOG isog;
 
@@ -97,7 +97,7 @@ bool vtApp::OnInit(void)
 	vtGroup *pGroup = new vtGroup;
 	bool success = isog.ReadContents(fp, pGroup);
 	fclose(fp);
-	pRoot->AddChild(pGroup);
+	m_pRoot->AddChild(pGroup);
 #endif
 #endif
 
@@ -113,4 +113,10 @@ bool vtApp::OnInit(void)
 	return TRUE;
 }
 
+
+int vtApp::OnExit(void)
+{
+	m_pRoot->Release();
+	return 0;
+}
 

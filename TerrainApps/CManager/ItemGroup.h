@@ -17,7 +17,7 @@ public:
 	ItemGroup(vtItem *pItem);
 	void CreateNodes();
 	void AttemptToLoadModels();
-	void AttachModels();
+	void AttachModels(vtFont *font);
 	void ShowLOD(bool bTrue);
 	void SetRanges();
 	vtGroup	*GetTop() { return m_pTop; }
@@ -35,7 +35,7 @@ protected:
 };
 
 // helper
-vtGeom *CreateRulers(float fSize);
+vtGeom *CreateRulers(vtFont *font, float fSize);
 
 #endif // ITEMGROUPH
 

@@ -6,13 +6,16 @@
 //
 
 class vtTrackball;
+class vtRoot;
 
 // Define a new application type
 class vtApp: public wxApp
 {
 public:
 	bool OnInit(void);
+	int OnExit(void);
 
 	vtTrackball	*m_pTrackball;
+	vtRoot *m_pRoot;
 };
 

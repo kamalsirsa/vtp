@@ -56,7 +56,7 @@ void ItemGroup::AttemptToLoadModels()
 	}
 }
 
-void ItemGroup::AttachModels()
+void ItemGroup::AttachModels(vtFont *font)
 {
 	// Undo previous attachments
 	vtNode *pNode;
@@ -84,7 +84,7 @@ void ItemGroup::AttachModels()
 	if (m_pAxes)
 	{
 		m_pTop->RemoveChild(m_pAxes);
-		m_pAxes->Destroy();
+		m_pAxes->Release();
 	}
 	float size = sph.radius * 2;
 	m_pAxes = Create3DCursor(size, size/100, 0.4f);
@@ -95,9 +95,9 @@ void ItemGroup::AttachModels()
 	if (m_pRulers)
 	{
 		m_pTop->RemoveChild(m_pRulers);
-		m_pRulers->Destroy();
+		m_pRulers->Release();
 	}
-	m_pRulers = CreateRulers(size);
+	m_pRulers = CreateRulers(font, size);
 	m_pRulers->SetName2("Rulers");
 	m_pTop->AddChild(m_pRulers);
 }
@@ -172,20 +172,8 @@ void ItemGroup::ShowLOD(bool bTrue)
 ///////////////////////////////////////////////////////////////////////
 // Ruler geometry
 
-vtGeom *CreateRulers(float fSize)
+vtGeom *CreateRulers(vtFont *font, float fSize)
 {
-	static vtFont *font = NULL;
-
-	if (!font)
-	{
-		font = new vtFont();
-		const char *fontname = "Fonts/Arial.ttf";
-		vtString font_path = FindFileOnPaths(vtFrame::m_DataPaths, fontname);
-		if (font_path == "")
-			VTLOG("Couldn't read font from file '%s'\n", fontname);
-		font->LoadFont(font_path);
-	}
-
 	int i, j, start;
 	vtMesh *mesh;
 	vtTextMesh *text;
@@ -264,7 +252,7 @@ vtGeom *CreateRulers(float fSize)
 			else
 				text->SetAlignment(1);
 			text->SetText(str);
-			pGeom->AddText(text, 0);
+			pGeom->AddTextMesh(text, 0);
 		}
 	}
 	return pGeom;
