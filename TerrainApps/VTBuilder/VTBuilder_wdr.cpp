@@ -1975,11 +1975,7 @@ wxSizer *ImageMapDialogFunc( wxWindow *parent, bool call_fit, bool set_sizer )
     wxBoxSizer *item1 = new wxBoxSizer( wxHORIZONTAL );
 
     wxStaticText *item2 = new wxStaticText( parent, ID_TEXT, 
-        _("This operation will take the current contents of the\n"
-          "window and export them a PNG file.\n"
-          "A corresponding HTML file will be written with an\n"
-          "image map with clickable areas derived from\n"
-          "the polygon features of the active Raw layer."),
+        _("This operation will take the current contents of the\nwindow and export them a PNG file.\nA corresponding HTML file will be written with an\nimage map with clickable areas derived from\nthe polygon features of the active Raw layer."),
         wxDefaultPosition, wxDefaultSize, 0 );
     item1->Add( item2, 0, wxALIGN_CENTER|wxALL, 5 );
 
