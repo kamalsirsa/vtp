@@ -785,6 +785,16 @@ vtStructureArray3d *vtTerrain::GetStructures()
 		return NULL;
 }
 
+int vtTerrain::GetStructureIndex()
+{
+	return m_iStructSet;
+}
+
+void vtTerrain::SetStructureIndex(int index)
+{
+	m_iStructSet = index;
+}
+
 /**
  * Create a new structure array for this terrain, and return it.
  */
@@ -821,6 +831,21 @@ void vtTerrain::DeleteSelectedStructures()
 
 	// then do a normal delete-selected
 	structures->DeleteSelected();
+}
+
+void vtTerrain::DeleteStructureSet(int index)
+{
+	vtStructureArray3d *sa = m_StructureSet[index];
+
+	// first remove them from the terrain
+	for (unsigned int i = 0; i < sa->GetSize(); i++)
+	{
+		vtStructure3d *str3d = sa->GetStructure3d(i);
+		RemoveNodeFromStructGrid(str3d->GetContainer());
+		str3d->DeleteNode();
+	}
+	m_StructureSet.RemoveAt(index);
+	delete sa;
 }
 
 bool vtTerrain::FindClosestStructure(const DPoint2 &point, double epsilon,
@@ -1052,12 +1077,11 @@ void vtTerrain::_CreateCulture()
 		}
 	}
 
-	// create built structures - there is always at least one structure array
+	// create built structures
 	vtStructure3d::InitializeMaterialArrays();
-	vtStructureArray3d *sa = NewStructureArray();
-	sa->SetFilename("default.vtst");
 
 	unsigned int i, num = m_Params.m_strStructFiles.size();
+	int created = 0;
 	for (i = 0; i < num; i++)
 	{
 		vtString building_fname = "BuildingData/";
@@ -1073,14 +1097,18 @@ void vtTerrain::_CreateCulture()
 		else
 		{
 			VTLOG("\tFound: %s\n", (const char *) building_path);
-			CreateStructuresFromXML(building_path);
+			if (CreateStructuresFromXML(building_path))
+				created++;
 		}
 	}
-	if (num == 0)
+	if (created == 0)
 	{
-		// No structures loaded, but the user might create some later, so set
-		// the projection to match the terrain.
-		GetStructures()->m_proj = m_proj;
+		// No structures loaded, but the user might want to create some later,
+		//  so create a default structure set, and set the projection to match
+		//  the terrain.
+		vtStructureArray3d *sa = NewStructureArray();
+		sa->SetFilename("Untitled.vtst");
+		sa->m_proj = m_proj;
 	}
 
 	// create utility structures (routes = towers and wires)

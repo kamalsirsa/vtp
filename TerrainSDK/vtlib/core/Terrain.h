@@ -153,11 +153,14 @@ public:
 	// structures
 	StructureSet &GetStructureSet() { return m_StructureSet; }
 	vtStructureArray3d *GetStructures();
+	int GetStructureIndex();
+	void SetStructureIndex(int index);
 	vtStructureArray3d *NewStructureArray();
 	vtStructureArray3d *CreateStructuresFromXML(const vtString &strFilename);
 	void CreateStructures(vtStructureArray3d *structures);
 	bool CreateStructure(vtStructureArray3d *structures, int index);
 	void DeleteSelectedStructures();
+	void DeleteStructureSet(int index);
 	bool FindClosestStructure(const DPoint2 &point, double epsilon,
 							  int &structure, double &closest);
 	bool AddNodeToStructGrid(vtTransform *pTrans);
