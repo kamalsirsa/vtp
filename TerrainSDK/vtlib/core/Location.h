@@ -24,7 +24,7 @@ public:
 	vtLocation(const vtLocation &v) { *this = v; }
 	vtLocation &operator=(const vtLocation &v)
 	{
-		m_name = v.m_name;
+		m_strName = v.m_strName;
 		m_pos1 = v.m_pos1;
 		m_fElevation1 = v.m_fElevation1;
 		m_pos2 = v.m_pos2;
@@ -32,7 +32,7 @@ public:
 		return *this;
 	}
 
-	vtString m_name;
+	wstring2 m_strName;
 
 	// Location and view direction are encoded as two 3D points.  The first
 	//  is the location, the second is the "Look At" point.  Heading and
@@ -59,11 +59,11 @@ class vtLocationSaver
 	friend class LocationVisitor;
 public:
 	vtLocationSaver();
-	vtLocationSaver(const char* fname);
+	vtLocationSaver(const wstring2 &fname);
 	~vtLocationSaver();
 
-	bool Read(const char *fname);
-	bool Write(const char *fname = NULL);
+	bool Read(const wstring2 &fname);
+	bool Write(const wstring2 &fname = L"");
 	void Remove(int num);
 	int GetNumLocations() { return m_loc.GetSize(); }
 	vtLocation *GetLocation(int num) const { return m_loc[num]; }
@@ -74,7 +74,7 @@ public:
 	void SetConversion(vtLocalConversion conv) { m_conv = conv; }
 	void SetProjection(vtProjection proj) { m_proj = proj; }
 
-	bool StoreTo(int num, const char *name = NULL);
+	bool StoreTo(int num, const wstring2 &name = L"");
 	bool RecallFrom(int num);
 
 	// Store information necessary to convert from global earth CS
@@ -85,7 +85,7 @@ public:
 
 // Implementation
 protected:
-	vtString m_strFilename;
+	wstring2 m_strFilename;
 
 	Array<vtLocation*> m_loc;
 };
